@@ -59,7 +59,6 @@
 #endif
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAre;
@@ -140,7 +139,7 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
 
 class MockOverlayInfoCbHandler {
  public:
-  MOCK_METHOD2(Call, void(bool, media::ProvideOverlayInfoCB));
+  MOCK_METHOD1(Call, void(media::ProvideOverlayInfoCB));
 };
 
 class MockContextProviderCommandBuffer
@@ -148,16 +147,7 @@ class MockContextProviderCommandBuffer
  public:
   explicit MockContextProviderCommandBuffer(
       scoped_refptr<gpu::GpuChannelHost> channel)
-      : viz::ContextProviderCommandBuffer(
-            std::move(channel),
-            kGpuStreamIdDefault,
-            kGpuStreamPriorityDefault,
-            GURL(),
-            false,
-            true,
-            gpu::SharedMemoryLimits(),
-            gpu::ContextCreationAttribs(),
-            viz::command_buffer_metrics::ContextType::FOR_TESTING) {}
+      : viz::ContextProviderCommandBuffer(std::move(channel)) {}
 
   MOCK_METHOD(gpu::CommandBufferProxyImpl*,
               GetCommandBufferProxy,
@@ -169,7 +159,6 @@ class MockContextProviderCommandBuffer
   MOCK_METHOD(gpu::gles2::GLES2Interface*, ContextGL, (), (override));
   MOCK_METHOD(gpu::raster::RasterInterface*, RasterInterface, (), (override));
   MOCK_METHOD(gpu::ContextSupport*, ContextSupport, (), (override));
-  MOCK_METHOD(class GrDirectContext*, GrContext, (), (override));
   MOCK_METHOD(gpu::SharedImageInterface*, SharedImageInterface, (), (override));
   MOCK_METHOD(viz::ContextCacheController*, CacheController, (), (override));
   MOCK_METHOD(base::Lock*, GetLock, (), (override));
@@ -328,9 +317,7 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
       mojo::PendingReceiver<media::mojom::Renderer> receiver,
       mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-          renderer_extension_receiver,
-      mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-          client_extension_remote) override {}
+          renderer_extension_receiver) override {}
 #endif  // BUILDFLAG(IS_WIN)
   void CreateCdm(const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) override {}
@@ -414,7 +401,7 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
     // Simulate success, since we're not actually talking to the service
     // in this test suite.
     ON_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _, _))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [&](gpu::mojom::CreateCommandBufferParamsPtr params,
                 int32_t routing_id, base::UnsafeSharedMemoryRegion shared_state,
                 mojo::PendingAssociatedReceiver<gpu::mojom::CommandBuffer>
@@ -430,12 +417,12 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
               receiver.EnableUnassociatedUsage();
               *result = gpu::ContextResult::kSuccess;
               return true;
-            }));
+            });
     ON_CALL(mock_gpu_channel_, GetChannelToken(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [&](gpu::MockGpuChannel::GetChannelTokenCallback callback) -> void {
               std::move(callback).Run(base::UnguessableToken::Create());
-            }));
+            });
   }
 
   void MockContextProvider() {
@@ -449,9 +436,11 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
     gpu_command_buffer_proxy_ = std::make_unique<gpu::CommandBufferProxyImpl>(
         gpu_channel_host_, kGpuStreamIdDefault,
         task_environment_.GetMainThreadTaskRunner());
-    gpu_command_buffer_proxy_->Initialize(nullptr, kGpuStreamPriorityDefault,
-                                          gpu::ContextCreationAttribs(),
-                                          GURL());
+    gpu_command_buffer_proxy_->Initialize(
+        kGpuStreamPriorityDefault,
+        gpu::mojom::ContextCreationAttribs::NewGles(
+            gpu::mojom::GLESCreationAttribs::New()),
+        GURL());
     ON_CALL(*mock_context_provider_, GetCommandBufferProxy())
         .WillByDefault(Return(gpu_command_buffer_proxy_.get()));
   }

@@ -18,9 +18,6 @@ class PasswordManagerUtilBridgeInterface {
   // Returns whether Chrome's internal backend is available.
   virtual bool IsInternalBackendPresent() = 0;
 
-  // Returns whether Play Store is installed on the device.
-  virtual bool IsPlayStoreAppPresent() = 0;
-
   // Returns whether Google Play Services is installed on the device and
   // whether Google Play Store exists to allow updating Google Play Services.
   virtual bool IsGooglePlayServicesUpdatable() = 0;

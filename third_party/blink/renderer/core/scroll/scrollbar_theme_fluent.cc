@@ -37,9 +37,7 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
           : theme_engine->GetSize(WebThemeEngine::kPartScrollbarUpArrow)
                 .height();
 
-  is_fluent_overlay_scrollbar_enabled_ =
-      theme_engine->IsFluentOverlayScrollbarEnabled();
-  if (!is_fluent_overlay_scrollbar_enabled_) {
+  if (!OverlayScrollbarsEnabled()) {
     return;
   }
   // Hit testable invisible border around the scrollbar's track.
@@ -115,7 +113,7 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
 }
 
 bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
-  return is_fluent_overlay_scrollbar_enabled_;
+  return OverlayScrollbarsEnabled();
 }
 
 bool ScrollbarThemeFluent::UsesFluentScrollbars() const {

@@ -20,6 +20,8 @@ source_set("public") {
     "auth_hub.h",
     "auth_parts.h",
     "auth_policy_connector.h",
+    "auth_policy_utils.cc",
+    "auth_policy_utils.h",
     "auth_session_storage.h",
     "common_types.h",
     "cryptohome_core.h",
@@ -27,4 +29,14 @@ source_set("public") {
     "string_utils.cc",
     "string_utils.h",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":public",
+    "//base",
+    "//testing/gtest",
+  ]
+  sources = [ "auth_policy_utils_unittest.cc" ]
 }

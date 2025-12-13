@@ -31,9 +31,9 @@ class DataSharingServiceFactory : public ProfileKeyedServiceFactoryIOS {
   DataSharingServiceFactory();
   ~DataSharingServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace data_sharing

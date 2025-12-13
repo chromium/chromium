@@ -32,12 +32,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implements;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
@@ -52,50 +49,25 @@ import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.LoadListener;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.util.function.Consumer;
 
 /** Tests for {@link SearchActivityPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        shadows = {
-            SearchActivityPreferencesManagerTest.ShadowLensController.class,
-            SearchActivityPreferencesManagerTest.ShadowVoiceRecognitionUtil.class,
-        })
 public class SearchActivityPreferencesManagerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TemplateUrlService mTemplateUrlServiceMock;
-    @Mock private LibraryLoader mLibraryLoaderMock;
     @Mock private TemplateUrl mTemplateUrlMock;
     @Mock private Profile mProfile;
+    @Mock private LensController mLensController;
 
     private LoadListener mTemplateUrlServiceLoadListener;
     private TemplateUrlServiceObserver mTemplateUrlServiceObserver;
 
-    @Implements(LensController.class)
-    public static class ShadowLensController {
-        public static boolean sIsAvailable = true;
-
-        public static LensController getInstance() {
-            var controller = mock(LensController.class);
-            doAnswer(i -> sIsAvailable).when(controller).isLensEnabled(any());
-            return controller;
-        }
-    }
-
-    @Implements(VoiceRecognitionUtil.class)
-    public static class ShadowVoiceRecognitionUtil {
-        public static boolean sIsAvailable = true;
-
-        public static boolean isVoiceSearchEnabled(AndroidPermissionDelegate delegate) {
-            return sIsAvailable;
-        }
-    }
-
     @Before
     public void setUp() {
+        LensController.setInstanceForTesting(mLensController);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlServiceMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
@@ -379,7 +351,6 @@ public class SearchActivityPreferencesManagerTest {
         verifyNoMoreInteractions(mTemplateUrlServiceMock);
 
         // Signal the Manager that Native Libraries are ready.
-        doReturn(true).when(mLibraryLoaderMock).isInitialized();
         SearchActivityPreferencesManager.onNativeLibraryReady();
         verify(mTemplateUrlServiceMock, times(1)).registerLoadListener(any());
         verify(mTemplateUrlServiceMock, times(1)).addObserver(any());
@@ -423,7 +394,6 @@ public class SearchActivityPreferencesManagerTest {
                 .getDefaultSearchEngineTemplateUrl();
 
         // Signal the Manager that Native Libraries are ready.
-        doReturn(true).when(mLibraryLoaderMock).isInitialized();
         SearchActivityPreferencesManager.onNativeLibraryReady();
 
         // Simulate the event where we had everything readily available when TemplateUrlService is
@@ -475,8 +445,8 @@ public class SearchActivityPreferencesManagerTest {
 
     @Test
     public void updateFeatureAvailability() {
-        ShadowLensController.sIsAvailable = true;
-        ShadowVoiceRecognitionUtil.sIsAvailable = true;
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         IncognitoUtils.setEnabledForTesting(true);
 
         SearchActivityPreferencesManager.updateFeatureAvailability(
@@ -487,7 +457,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.incognitoAvailable);
 
         // Disable Lens.
-        ShadowLensController.sIsAvailable = false;
+        doReturn(false).when(mLensController).isLensEnabled(any());
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
         data = SearchActivityPreferencesManager.getCurrent();
@@ -496,7 +466,7 @@ public class SearchActivityPreferencesManagerTest {
         Assert.assertTrue(data.incognitoAvailable);
 
         // Disable Voice.
-        ShadowVoiceRecognitionUtil.sIsAvailable = false;
+        VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(false);
         SearchActivityPreferencesManager.updateFeatureAvailability(
                 ContextUtils.getApplicationContext(), null);
         data = SearchActivityPreferencesManager.getCurrent();

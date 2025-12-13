@@ -18,7 +18,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/notifications",
   "+chrome/browser/ash/preferences/preferences.h",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_commands_global_registry.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/login",

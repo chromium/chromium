@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -43,7 +44,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationOperation::kSettings, notification_type_,
             notification_.origin_url(), notification_.id(), std::nullopt,
-            std::nullopt, std::nullopt /* by_user */, base::DoNothing());
+            std::nullopt, std::nullopt /* by_user */,
+            std::nullopt /* is_suspicious */, base::DoNothing());
   }
 
   void DisableNotification() override {
@@ -52,7 +54,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
             NotificationOperation::kDisablePermission, notification_type_,
             notification_.origin_url(), notification_.id(),
             std::nullopt /* action_index */, std::nullopt /* reply */,
-            std::nullopt /* by_user */, base::DoNothing());
+            std::nullopt /* by_user */, std::nullopt /* is_suspicious */,
+            base::DoNothing());
   }
 
   void Close(bool by_user) override {
@@ -61,7 +64,7 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
             NotificationOperation::kClose, notification_type_,
             notification_.origin_url(), notification_.id(),
             std::nullopt /* action_index */, std::nullopt /* reply */, by_user,
-            base::DoNothing());
+            std::nullopt /* is_suspicious */, base::DoNothing());
   }
 
   void Click(const std::optional<int>& button_index,
@@ -70,7 +73,8 @@ class PassThroughDelegate : public message_center::NotificationDelegate {
         ->ProcessNotificationOperation(
             NotificationOperation::kClick, notification_type_,
             notification_.origin_url(), notification_.id(), button_index, reply,
-            std::nullopt /* by_user */, base::DoNothing());
+            std::nullopt /* by_user */, std::nullopt /* is_suspicious */,
+            base::DoNothing());
   }
 
  protected:

@@ -17,14 +17,17 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -34,11 +37,13 @@
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
-
+namespace {
 using storage::FileSystemURL;
 using testing::_;
 using HandleType = FileSystemAccessPermissionContext::HandleType;
@@ -46,10 +51,69 @@ using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
 using LockType = FileSystemAccessLockManager::LockType;
+using blink::mojom::PermissionStatus;
 
-class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
+// A matcher to check if a `RequestPermission()` call is successful and
+// returns the expected permission status.
+MATCHER_P(IsOkAndPermissionStatus, status, "") {
+  if (arg.first->status != blink::mojom::FileSystemAccessStatus::kOk) {
+    *result_listener << "FileSystemAccessStatus is " << arg.first->status;
+    return false;
+  }
+  if (arg.second != status) {
+    *result_listener << "PermissionStatus is " << arg.second;
+    return false;
+  }
+  return true;
+}
+struct WriteModeTestParams {
+  const char* test_name_suffix;
+  bool is_feature_enabled;
+};
+
+constexpr WriteModeTestParams kTestParams[] = {
+    {"WriteModeDisabled", false},
+    {"WriteModeEnabled", true},
+};
+
+// A test implementation of FileSystemAccessDirectoryEntriesListener interface.
+class TestFileSystemAccessDirectoryEntriesListener
+    : public blink::mojom::FileSystemAccessDirectoryEntriesListener {
  public:
-  FileSystemAccessDirectoryHandleImplTest()
+  TestFileSystemAccessDirectoryEntriesListener(
+      std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries,
+      blink::mojom::FileSystemAccessErrorPtr* final_result,
+      base::OnceClosure done)
+      : entries_(entries),
+        final_result_(final_result),
+        done_(std::move(done)) {}
+
+  void DidReadDirectory(
+      blink::mojom::FileSystemAccessErrorPtr result,
+      std::vector<blink::mojom::FileSystemAccessEntryPtr> entries,
+      bool has_more_entries) override {
+    entries_->insert(entries_->end(), std::make_move_iterator(entries.begin()),
+                     std::make_move_iterator(entries.end()));
+    if (has_more_entries) {
+      EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+    } else {
+      *final_result_ = std::move(result);
+      std::move(done_).Run();
+    }
+  }
+
+ private:
+  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_ =
+      nullptr;
+  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_ = nullptr;
+  base::OnceClosure done_;
+};
+}  // namespace
+
+// Base class for FileSystemAccessDirectoryHandleImpl unit tests.
+class FileSystemAccessDirectoryHandleImplTestBase : public testing::Test {
+ public:
+  FileSystemAccessDirectoryHandleImplTestBase()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -142,39 +206,86 @@ class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
   std::unique_ptr<FileSystemAccessDirectoryHandleImpl> denied_handle_;
 };
 
-namespace {
-class TestFileSystemAccessDirectoryEntriesListener
-    : public blink::mojom::FileSystemAccessDirectoryEntriesListener {
+// Base class for permission-related FileSystemAccessDirectoryHandleImpl unit
+// tests.
+class FileSystemAccessDirectoryHandleImplPermissionTestBase
+    : public FileSystemAccessDirectoryHandleImplTestBase {
  public:
-  TestFileSystemAccessDirectoryEntriesListener(
-      std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries,
-      blink::mojom::FileSystemAccessErrorPtr* final_result,
-      base::OnceClosure done)
-      : entries_(entries),
-        final_result_(final_result),
-        done_(std::move(done)) {}
-
-  void DidReadDirectory(
-      blink::mojom::FileSystemAccessErrorPtr result,
-      std::vector<blink::mojom::FileSystemAccessEntryPtr> entries,
-      bool has_more_entries) override {
-    entries_->insert(entries_->end(), std::make_move_iterator(entries.begin()),
-                     std::make_move_iterator(entries.end()));
-    if (has_more_entries) {
-      EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
-    } else {
-      *final_result_ = std::move(result);
-      std::move(done_).Run();
-    }
+  void SetUp() override {
+    FileSystemAccessDirectoryHandleImplTestBase::SetUp();
+    mock_read_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+    mock_write_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
   }
 
- private:
-  raw_ptr<std::vector<blink::mojom::FileSystemAccessEntryPtr>> entries_ =
-      nullptr;
-  raw_ptr<blink::mojom::FileSystemAccessErrorPtr> final_result_ = nullptr;
-  base::OnceClosure done_;
+ protected:
+  // Creates a handle to a directory named "test_dir" in the test directory.
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateHandle() {
+    auto test_path = dir_.GetPath().AppendASCII("test_dir");
+    EXPECT_TRUE(base::CreateDirectory(test_path));
+    auto url = manager_->CreateFileSystemURLFromPath(PathInfo(test_path));
+    return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+        manager_.get(), kFrameBindingContext, url,
+        FileSystemAccessManagerImpl::SharedHandleState(mock_read_grant_,
+                                                       mock_write_grant_));
+  }
+
+  // Calls GetPermissionStatus() on the given `handle` and waits for the result.
+  void GetPermissionStatus(FileSystemAccessDirectoryHandleImpl* handle,
+                           blink::mojom::FileSystemAccessPermissionMode mode,
+                           blink::mojom::PermissionStatus* out_status) {
+    base::test::TestFuture<blink::mojom::PermissionStatus> future;
+    handle->GetPermissionStatus(mode, future.GetCallback());
+    *out_status = future.Get();
+  }
+
+  // Calls RequestPermission() on the given `handle` and waits for the result.
+  std::pair<blink::mojom::FileSystemAccessErrorPtr,
+            blink::mojom::PermissionStatus>
+  RequestPermission(FileSystemAccessDirectoryHandleImpl* handle,
+                    blink::mojom::FileSystemAccessPermissionMode mode) {
+    base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                           blink::mojom::PermissionStatus>
+        future;
+    handle->RequestPermission(mode, future.GetCallback());
+    return future.Take();
+  }
+
+  // Sets up expectations for a call to `RequestPermission()` on a mock grant.
+  void SetUpGrantExpectations(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>& grant,
+      PermissionStatus new_status,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
+    EXPECT_CALL(grant, GetStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+    EXPECT_CALL(
+        grant,
+        RequestPermission_(
+            kFrameId,
+            FileSystemAccessPermissionGrant::UserActivationState::kRequired, _))
+        .WillOnce(
+            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
+                             EXPECT_CALL(grant, GetStatus())
+                                 .WillRepeatedly(testing::Return(new_status));
+                           }),
+                           base::test::RunOnceCallback<2>(outcome)));
+  }
+
+  const int kProcessId = 1;
+  const int kFrameRoutingId = 2;
+  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
+  const FileSystemAccessManagerImpl::BindingContext kFrameBindingContext = {
+      test_src_storage_key_, test_src_url_, kFrameId};
+
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_read_grant_;
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_write_grant_;
 };
-}  // namespace
+
+class FileSystemAccessDirectoryHandleImplTest
+    : public FileSystemAccessDirectoryHandleImplTestBase {};
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   constexpr const char* kSafeNames[] = {"a", "a.txt", "My Computer", "lnk.txt",
@@ -360,7 +471,31 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   EXPECT_TRUE(entries.empty());
 }
 
-TEST_F(FileSystemAccessDirectoryHandleImplTest, Remove_NoWriteAccess) {
+// Tests for `FileSystemAccessDirectoryHandleImpl::Remove()`.
+class FileSystemAccessDirectoryHandleImplRemoveTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTestBase,
+      public testing::WithParamInterface<WriteModeTestParams> {
+ public:
+  FileSystemAccessDirectoryHandleImplRemoveTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that `Remove` returns a permission denied error when the handle does
+// not have write access.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, NoWriteAccess) {
   base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
   ASSERT_TRUE(base::CreateDirectory(dir));
 
@@ -374,9 +509,15 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, Remove_NoWriteAccess) {
   EXPECT_TRUE(base::DirectoryExists(dir));
 }
 
-TEST_F(FileSystemAccessDirectoryHandleImplTest, Remove_HasWriteAccess) {
+// Verifies that `Remove` successfully removes a directory when the handle has
+// write access.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, HasWriteAccess) {
   base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
   ASSERT_TRUE(base::CreateDirectory(dir));
+
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
 
   auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
 
@@ -387,7 +528,119 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, Remove_HasWriteAccess) {
   EXPECT_FALSE(base::DirectoryExists(dir));
 }
 
-TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
+// Verifies that `Remove` with `recurse=true` successfully removes a non-empty
+// directory.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, Recurse_NonEmpty) {
+  base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  base::FilePath file = dir.AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file, "test data"));
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
+
+  auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(
+      /*recurse=*/true, future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::DirectoryExists(dir));
+}
+
+// Verifies that `Remove` with `recurse=false` fails to remove a non-empty
+// directory.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, NoRecurse_NonEmpty) {
+  base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
+  ASSERT_TRUE(base::CreateDirectory(dir));
+  base::FilePath file = dir.AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file, "test data"));
+
+  auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(
+      /*recurse=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_TRUE(base::DirectoryExists(dir));
+}
+
+// Verifies that `Remove` fails when the directory does not exist.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest, NonExistent) {
+  base::FilePath dir = dir_.GetPath().AppendASCII("non_existent_dir");
+  auto handle = GetHandleWithPermissions(dir, /*read=*/true, /*write=*/true);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(
+      /*recurse=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+}
+
+// Verifies that `Remove()` requests the correct permissions before removing a
+// directory. When `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveTest,
+       RequestsCorrectPermissions) {
+  auto handle = CreateHandle();
+  auto test_dir_path = dir_.GetPath().AppendASCII("test_dir");
+
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  } else {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->Remove(/*recurse=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(test_dir_path));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDirectoryHandleImplRemoveTest,
+    testing::ValuesIn(kTestParams),
+    [](const testing::TestParamInfo<WriteModeTestParams>& info) {
+      return info.param.test_name_suffix;
+    });
+
+// TODO(crbug.com/40276567): Verifies that `Remove` fails when called on a file
+// handle.
+
+// Tests for `FileSystemAccessDirectoryHandleImpl::RemoveEntry()`.
+class FileSystemAccessDirectoryHandleImplRemoveEntryTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTestBase,
+      public testing::WithParamInterface<WriteModeTestParams> {
+ public:
+  FileSystemAccessDirectoryHandleImplRemoveEntryTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Covers various scenarios for `RemoveEntry`, including removing an unlocked
+// file, attempting to remove a file with an exclusive lock, and attempting to
+// remove a file with a WFS siloed lock.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest, RemoveEntry) {
   base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
   ASSERT_TRUE(base::CreateDirectory(dir));
   base::FilePath file;
@@ -398,6 +651,10 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
 
   LockType exclusive_lock_type = manager_->GetExclusiveLockType();
   LockType wfs_siloed_lock_type = manager_->GetWFSSiloedLockType();
+
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
 
   // Calling removeEntry() on an unlocked file should succeed.
   {
@@ -456,6 +713,113 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
   }
 }
 
+// Verifies that `RemoveEntry` fails with an invalid file name.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest, InvalidName) {
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle_->RemoveEntry("invalid:name", /*recurse=*/false, future.GetCallback());
+
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kInvalidArgument);
+}
+
+// Verifies that `RemoveEntry` fails when the entry does not exist.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest, NonExistent) {
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle_->RemoveEntry("non_existent_file", /*recurse=*/false,
+                       future.GetCallback());
+
+  EXPECT_EQ(future.Get()->file_error, base::File::FILE_ERROR_NOT_FOUND);
+}
+
+// Verifies that `RemoveEntry` fails when the handle does not have write
+// access.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest, NoWriteAccess) {
+  base::FilePath file_path = dir_.GetPath().AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+
+  auto handle =
+      GetHandleWithPermissions(dir_.GetPath(), /*read=*/true, /*write=*/false);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->RemoveEntry("test_file.txt", /*recurse=*/false, future.GetCallback());
+
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kPermissionDenied);
+  EXPECT_TRUE(base::PathExists(file_path));
+}
+
+// Verifies that `RemoveEntry` with `recurse=true` successfully removes a
+// non-empty directory.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
+       Recurse_NonEmptyDirectory) {
+  base::FilePath subdir_path = dir_.GetPath().AppendASCII("subdir");
+  ASSERT_TRUE(base::CreateDirectory(subdir_path));
+  base::FilePath file_path = subdir_path.AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  }
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle_->RemoveEntry("subdir", /*recurse=*/true, future.GetCallback());
+
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::DirectoryExists(subdir_path));
+}
+
+// Verifies that `RemoveEntry` with `recurse=false` fails to remove a non-empty
+// directory.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
+       NoRecurse_NonEmptyDirectory) {
+  base::FilePath subdir_path = dir_.GetPath().AppendASCII("subdir");
+  ASSERT_TRUE(base::CreateDirectory(subdir_path));
+  base::FilePath file_path = subdir_path.AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle_->RemoveEntry("subdir", /*recurse=*/false, future.GetCallback());
+
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kFileError);
+  EXPECT_TRUE(base::DirectoryExists(subdir_path));
+}
+
+// Verifies that `RemoveEntry()` requests the correct permissions before
+// removing an entry. When `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessDirectoryHandleImplRemoveEntryTest,
+       RequestsCorrectPermissions) {
+  auto handle = CreateHandle();
+  base::FilePath test_dir = dir_.GetPath().AppendASCII("test_dir");
+  base::FilePath file_path = test_dir.AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file_path, "test data"));
+
+  if (GetParam().is_feature_enabled) {
+    EXPECT_CALL(permission_context_, NotifyEntryRemoved(_, _)).Times(1);
+  } else {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->RemoveEntry("test_file.txt", /*recurse=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get()->status, blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(base::PathExists(file_path));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessDirectoryHandleImplRemoveEntryTest,
+    testing::ValuesIn(kTestParams),
+    [](const testing::TestParamInfo<WriteModeTestParams>& info) {
+      return info.param.test_name_suffix;
+    });
+
 TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
   base::FilePath dir = dir_.GetPath().AppendASCII("dirname");
   ASSERT_TRUE(base::CreateDirectory(dir));
@@ -481,6 +845,210 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetChildURL_CustomBucket) {
             base::File::Error::FILE_OK);
   EXPECT_TRUE(file_url.bucket());
   EXPECT_EQ(file_url.bucket().value(), custom_bucket);
+}
+
+// Tests for `FileSystemAccessDirectoryHandleImpl::GetPermissionStatus()`.
+class FileSystemAccessDirectoryHandleImplGetPermissionStatusTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTestBase {};
+
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest, ReadHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto read_only_handle =
+      GetHandleWithPermissions(test_path, /*read=*/true, /*write=*/false);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_only_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+  }
+
+  GetPermissionStatus(read_only_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest,
+       WriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto write_handle =
+      GetHandleWithPermissions(test_path, /*read=*/false, /*write=*/true);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::DENIED);
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplGetPermissionStatusTest,
+       ReadWriteHandle) {
+  auto test_path = dir_.GetPath().AppendASCII("test_dir");
+  ASSERT_TRUE(base::CreateDirectory(test_path));
+
+  auto read_write_handle =
+      GetHandleWithPermissions(test_path, /*read=*/true, /*write=*/true);
+
+  blink::mojom::PermissionStatus status;
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kRead,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+
+  {
+    base::test::ScopedFeatureList features;
+    features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+    GetPermissionStatus(read_write_handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite,
+                        &status);
+    EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+  }
+
+  GetPermissionStatus(read_write_handle.get(),
+                      blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                      &status);
+  EXPECT_EQ(status, blink::mojom::PermissionStatus::GRANTED);
+}
+
+// Tests for `FileSystemAccessDirectoryHandleImpl::RequestPermission()`.
+class FileSystemAccessDirectoryHandleImplRequestPermissionTest
+    : public FileSystemAccessDirectoryHandleImplPermissionTestBase {};
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestRead_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestRead_Denied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kRead),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_Granted) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_ReadDenied) {
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_read_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestReadWrite_WriteDenied) {
+  auto handle = CreateHandle();
+
+  EXPECT_CALL(*mock_read_grant_, GetStatus())
+      .WillRepeatedly(testing::Return(PermissionStatus::GRANTED));
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(RequestPermission(
+                  handle.get(),
+                  blink::mojom::FileSystemAccessPermissionMode::kReadWrite),
+              IsOkAndPermissionStatus(PermissionStatus::DENIED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestWrite_Granted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::GRANTED));
+}
+
+TEST_F(FileSystemAccessDirectoryHandleImplRequestPermissionTest,
+       RequestWrite_Denied) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(blink::features::kFileSystemAccessWriteMode);
+  auto handle = CreateHandle();
+
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::DENIED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserDenied);
+
+  EXPECT_THAT(
+      RequestPermission(handle.get(),
+                        blink::mojom::FileSystemAccessPermissionMode::kWrite),
+      IsOkAndPermissionStatus(PermissionStatus::DENIED));
 }
 
 }  // namespace content

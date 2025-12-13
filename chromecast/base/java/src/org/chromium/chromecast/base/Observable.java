@@ -220,8 +220,13 @@ public interface Observable<T> {
     }
 
     /** Returns an Observable that is activated only when the given Observable is not activated. */
-    static Observable<?> not(Observable<?> observable) {
-        return observable.count().filter(n -> n == 0);
+    static Observable<Unit> not(Observable<?> observable) {
+        return observable.count().filter(n -> n == 0).opaque();
+    }
+
+    /** Returns an Observable that is activated when the input has at least one activation. */
+    static Observable<Unit> any(Observable<?> observable) {
+        return not(not(observable));
     }
 
     /** A degenerate Observable that has no data. */

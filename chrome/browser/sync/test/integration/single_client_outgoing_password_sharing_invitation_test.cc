@@ -85,10 +85,20 @@ class InvitationCommittedChecker
   const size_t expected_entities_count_;
 };
 
-class SingleClientOutgoingPasswordSharingInvitationTest : public SyncTest {
+class SingleClientOutgoingPasswordSharingInvitationTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientOutgoingPasswordSharingInvitationTest()
       : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   PasswordSenderService* GetPasswordSenderService() {
@@ -114,9 +124,17 @@ class SingleClientOutgoingPasswordSharingInvitationTest : public SyncTest {
     DCHECK(nigori_specifics.has_cross_user_sharing_public_key());
     return nigori_specifics.cross_user_sharing_public_key();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientOutgoingPasswordSharingInvitationTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientOutgoingPasswordSharingInvitationTest,
                        ShouldCommitSentPassword) {
   ASSERT_TRUE(SetupSync());
 
@@ -141,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   EXPECT_EQ(specifics.recipient_key_version(), kRecipientPublicKeyVersion);
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
+IN_PROC_BROWSER_TEST_P(SingleClientOutgoingPasswordSharingInvitationTest,
                        ShouldCommitSentPasswordGroup) {
   ASSERT_TRUE(SetupSync());
 
@@ -202,30 +220,5 @@ IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
   EXPECT_THAT(username_elements,
               UnorderedElementsAre(kUsernameElement, "username_element_2"));
 }
-
-// The unconsented primary account isn't supported on ChromeOS.
-// TODO(crbug.com/358053884): enable on Android once transport mode for
-// Passwords is supported.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientOutgoingPasswordSharingInvitationTest,
-                       ShouldCommitSentPasswordInTransportMode) {
-  // First, setup sync (in transport mode) to initialize Nigori node with a
-  // cross user sharing key pair to be able to send passwords.
-  ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
-  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      GetProfile(0)->GetPrefs(), GetSyncService(0)));
-
-  PasswordRecipient recipient = {
-      .user_id = kRecipientUserId,
-      .public_key = PublicKey::FromProto(PublicKeyFromKeyPair(
-          syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()))};
-  GetPasswordSenderService()->SendPasswords({MakePasswordForm()}, recipient);
-
-  EXPECT_TRUE(InvitationCommittedChecker(/*expected_entities_count=*/1).Wait());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -175,3 +175,12 @@ SearchPreloadResponseController::CreateDeferrableResponse(
           this, service_deferral_type_, code, headers, response_body);
   return res;
 }
+
+void SearchPreloadResponseController::
+    InitializeAutocompleteControllerWithExtendedTimer(
+        AutocompleteController* autocomplete_controller,
+        const AutocompleteInput& input) {
+  // Prevent the stop timer from killing the hints fetch early.
+  autocomplete_controller->config_.stop_timer_duration = base::Seconds(10);
+  autocomplete_controller->Start(input);
+}

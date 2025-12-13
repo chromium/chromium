@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.83"
 name = "icu_casemap"
-version = "2.0.0"
+version = "2.1.1"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -39,11 +39,11 @@ categories = ["internationalization"]
 license = "Unicode-3.0"
 repository = "https://github.com/unicode-org/icu4x"
 
-[package.metadata.cargo-all-features]
-skip_optional_dependencies = true
-
 [package.metadata.docs.rs]
 all-features = true
+
+[package.metadata.cargo-all-features]
+skip_optional_dependencies = true
 
 [features]
 compiled_data = [
@@ -72,10 +72,6 @@ serde = [
 name = "icu_casemap"
 path = "src/lib.rs"
 
-[[example]]
-name = "casemapping"
-path = "examples/casemapping.rs"
-
 [[test]]
 name = "conversions"
 path = "tests/conversions.rs"
@@ -102,35 +98,32 @@ features = ["derive"]
 optional = true
 default-features = false
 
-[dependencies.displaydoc]
-version = "0.2.3"
-default-features = false
-
 [dependencies.icu_casemap_data]
-version = "~2.0.0"
+version = "~2.1.1"
 optional = true
 default-features = false
 
 [dependencies.icu_collections]
-version = "~2.0.0"
+version = "~2.1.1"
 features = ["alloc"]
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.1.1"
 features = ["alloc"]
 default-features = false
 
 [dependencies.icu_properties]
-version = "~2.0.0"
+version = "~2.1.1"
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.1.1"
+features = ["alloc"]
 default-features = false
 
 [dependencies.potential_utf]
-version = "0.1.1"
+version = "0.1.3"
 features = [
     "alloc",
     "zerovec",
@@ -138,7 +131,7 @@ features = [
 default-features = false
 
 [dependencies.serde]
-version = "1.0.110"
+version = "1.0.220"
 features = [
     "derive",
     "alloc",
@@ -151,7 +144,7 @@ version = "0.6.0"
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.1"
+version = "0.11.3"
 features = [
     "alloc",
     "yoke",

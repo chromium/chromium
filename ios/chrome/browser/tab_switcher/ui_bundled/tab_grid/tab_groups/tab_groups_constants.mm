@@ -31,6 +31,7 @@ NSString* const kTabGroupFacePileButtonIdentifier =
 UIColor* TabGroupViewButtonBackgroundColor() {
   return [[UIColor colorNamed:kGrey200Color] colorWithAlphaComponent:0.35];
 }
+const CGFloat kTabGroupButtonHeight = 26;
 
 NSString* const kTabGroupRecentActivityIdentifier =
     @"kTabGroupRecentActivityIdentifier";

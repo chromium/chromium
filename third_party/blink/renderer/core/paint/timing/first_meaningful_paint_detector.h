@@ -16,7 +16,7 @@ class TickClock;
 }
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace blink {

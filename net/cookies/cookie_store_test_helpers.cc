@@ -32,7 +32,7 @@ std::string GetRegistry(const GURL& url) {
                                              INCLUDE_PRIVATE_REGISTRIES);
   if (registry_length == 0)
     return std::string();
-  return std::string(url.host(), url.host().length() - registry_length,
+  return std::string(url.GetHost(), url.GetHost().length() - registry_length,
                      registry_length);
 }
 

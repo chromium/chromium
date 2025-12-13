@@ -10,7 +10,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/webauthn/enclave_keys_waiter.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/fake_recovery_key_store.h"
 #include "chrome/browser/webauthn/fake_security_domain_service.h"
@@ -45,7 +49,7 @@
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
-#include "device/fido/features.h"
+#include "enclave_authenticator_browsertest_base.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -94,7 +98,7 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
 #endif
       recovery_key_store_(FakeRecoveryKeyStore::New()),
       fake_hw_provider_(
-          std::make_unique<crypto::ScopedFakeUnexportableKeyProvider>()) {
+          std::make_unique<WebAuthnScopedFakeUnexportableKeyProvider>()) {
 #if BUILDFLAG(IS_WIN)
   fake_webauthn_dll_->set_available(false);
   biometrics_override_ =
@@ -107,11 +111,6 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
   }
   scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{device::kWebAuthnLargeBlobForGPM,
-                            device::kWebAuthnNoAccountTimeout,
-                            device::kWebAuthnSignalApiHidePasskeys},
-      /*disabled_features=*/{});
   OSCryptMocker::SetUp();
   scoped_vmodule_.InitWithSwitches("device_event_log_impl=2");
 
@@ -181,7 +180,7 @@ void EnclaveAuthenticatorTestBase::SetUpOnMainThread() {
   identity_test_env_adaptor_ =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
           browser()->profile());
-  identity_test_env()->SetAutomaticIssueOfAccessTokens(true);
+  identity_test_env().SetAutomaticIssueOfAccessTokens(true);
 
   sync_harness_ = SyncServiceImplHarness::Create(
       browser()->profile(), SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
@@ -208,14 +207,19 @@ void EnclaveAuthenticatorTestBase::TearDownOnMainThread() {
   SyncTest::TearDownOnMainThread();
 }
 
-signin::IdentityTestEnvironment*
+signin::IdentityTestEnvironment&
 EnclaveAuthenticatorTestBase::identity_test_env() {
-  return identity_test_env_adaptor_->identity_test_env();
+  return CHECK_DEREF(identity_test_env_adaptor_->identity_test_env());
 }
 
-webauthn::PasskeyModel* EnclaveAuthenticatorTestBase::passkey_model() {
-  return PasskeyModelFactory::GetInstance()->GetForProfile(
-      browser()->profile());
+webauthn::PasskeyModel& EnclaveAuthenticatorTestBase::passkey_model() {
+  return CHECK_DEREF(
+      PasskeyModelFactory::GetInstance()->GetForProfile(browser()->profile()));
+}
+
+EnclaveManager& EnclaveAuthenticatorTestBase::enclave_manager() {
+  return CHECK_DEREF(EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
+      browser()->profile()));
 }
 
 void EnclaveAuthenticatorTestBase::EnableUVKeySupport(
@@ -255,7 +259,43 @@ void EnclaveAuthenticatorTestBase::SetBiometricsEnabled(bool enabled) {
 void EnclaveAuthenticatorTestBase::AddTestPasskeyToModel() {
   sync_pb::WebauthnCredentialSpecifics passkey;
   CHECK(passkey.ParseFromArray(kTestProtobuf, sizeof(kTestProtobuf)));
-  passkey_model()->AddNewPasskeyForTesting(passkey);
+  passkey_model().AddNewPasskeyForTesting(passkey);
+}
+
+void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
+    base::span<const uint8_t> trusted_vault_key,
+    int trusted_vault_key_version,
+    bool with_store_keys_lock) {
+  if (with_store_keys_lock) {
+    auto store_keys_lock = enclave_manager().GetStoreKeysLock();
+    enclave_manager().StoreKeys(kSyncGaiaId,
+                                {base::ToVector(trusted_vault_key)},
+                                trusted_vault_key_version);
+  } else {
+    enclave_manager().StoreKeys(kSyncGaiaId,
+                                {base::ToVector(trusted_vault_key)},
+                                trusted_vault_key_version);
+  }
+}
+
+void EnclaveAuthenticatorTestBase::SimulateTrustedVaultKeyRetrieval(
+    bool with_store_keys_lock) {
+  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret, kSecretVersion,
+                                   with_store_keys_lock);
+}
+
+void EnclaveAuthenticatorTestBase::
+    SimulateOpportunisticTrustedVaultKeyRetrieval() {
+  EnclaveKeysWaiter enclave_keys_waiter(&enclave_manager());
+  // Performing key retrieval without acquiring a lock via
+  // `EnclaveManager::GetStoreKeysLock()`. The absence of acquired lock
+  // indicates an opportunistic key retrieval logic. In this case (if either a
+  // system UV or a usable GPM PIN is present) Enclave Manager stores keys and
+  // adds device to account.
+  SimulateTrustedVaultKeyRetrieval(/*with_store_keys_lock=*/false);
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded);
 }
 
 void EnclaveAuthenticatorTestBase::SetMockVaultConnectionOnRequestDelegate(
@@ -327,38 +367,26 @@ void EnclaveAuthenticatorTestBase::SimulateSuccessfulGpmPinCreation(
     const std::string& pin_value) {
   WaitForEnclaveLoaded();
 
-  EnclaveManager* enclave_manager =
-      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
-  ASSERT_TRUE(enclave_manager);
-
-  enclave_manager->StoreKeys(
-      kSyncGaiaId,
-      {std::vector<uint8_t>(std::begin(kSecurityDomainSecret),
-                            std::end(kSecurityDomainSecret))},
-      /*last_key_version=*/0);
+  SimulateTrustedVaultKeyRetrieval(kSecurityDomainSecret,
+                                   /*trusted_vault_key_version=*/0,
+                                   /*with_store_keys_lock=*/true);
 
   base::test::TestFuture<bool> add_device_future;
-  enclave_manager->AddDeviceAndPINToAccount(
+  enclave_manager().AddDeviceAndPINToAccount(
       "123456",
       /*previous_pin_public_key=*/std::nullopt,
       add_device_future.GetCallback());
   ASSERT_TRUE(add_device_future.Wait()) << "AddDeviceAndPINToAccount timed out";
   ASSERT_TRUE(add_device_future.Get()) << "AddDeviceAndPINToAccount failed";
 
-  ASSERT_TRUE(enclave_manager->is_ready());
-  ASSERT_TRUE(enclave_manager->has_wrapped_pin());
+  ASSERT_TRUE(enclave_manager().is_ready());
+  ASSERT_TRUE(enclave_manager().has_wrapped_pin());
 }
 
 void EnclaveAuthenticatorTestBase::WaitForEnclaveLoaded() {
-  EnclaveManager* enclave_manager =
-      EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
-          browser()->profile());
-  ASSERT_TRUE(enclave_manager);
-
-  if (!enclave_manager->is_loaded()) {
+  if (!enclave_manager().is_loaded()) {
     base::test::TestFuture<void> load_future;
-    enclave_manager->Load(load_future.GetCallback());
+    enclave_manager().Load(load_future.GetCallback());
     ASSERT_TRUE(load_future.Wait());
   }
 }

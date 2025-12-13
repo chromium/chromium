@@ -23,6 +23,10 @@ class GURL;
 class LocationBar;
 class Profile;
 
+namespace omnibox {
+class OmniboxPopupCloser;
+}  // namespace omnibox
+
 class ChromeOmniboxClient final : public OmniboxClient {
  public:
   ChromeOmniboxClient(LocationBar* location_bar,
@@ -51,6 +55,7 @@ class ChromeOmniboxClient final : public OmniboxClient {
   TemplateURLService* GetTemplateURLService() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
+  omnibox::OmniboxPopupCloser* GetOmniboxPopupCloser() override;
   bool ShouldDefaultTypedNavigationsToHttps() const override;
   int GetHttpsPortForTesting() const override;
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
@@ -64,6 +69,8 @@ class ChromeOmniboxClient final : public OmniboxClient {
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
+  metrics::OmniboxEventProto::PageClassification
+  GetOmniboxComposeboxPageClassification() const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -120,8 +127,10 @@ class ChromeOmniboxClient final : public OmniboxClient {
       const AutocompleteMatch& alternative_nav_match) override;
   void OnInputInProgress(bool in_progress) override;
   void OnPopupVisibilityChanged(bool popup_is_open) override;
+  void OpenUrl(GURL gurl) override;
   void OpenIphLink(GURL gurl) override;
   bool IsHistoryEmbeddingsEnabled() const override;
+  bool IsAimPopupEnabled() const override;
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
   void MaybePrewarmForDefaultSearchEngine() override;

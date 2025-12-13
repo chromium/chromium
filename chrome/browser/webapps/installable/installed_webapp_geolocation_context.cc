@@ -19,7 +19,8 @@ InstalledWebappGeolocationContext::~InstalledWebappGeolocationContext() =
 void InstalledWebappGeolocationContext::BindGeolocation(
     mojo::PendingReceiver<device::mojom::Geolocation> receiver,
     const GURL& requesting_url,
-    device::mojom::GeolocationClientId client_id) {
+    device::mojom::GeolocationClientId client_id,
+    bool has_precise_permission) {
   impls_.push_back(std::make_unique<InstalledWebappGeolocationBridge>(
       std::move(receiver), requesting_url, this));
   if (geoposition_override_)
@@ -38,6 +39,17 @@ void InstalledWebappGeolocationContext::OnPermissionRevoked(
     impl->OnPermissionRevoked();
     return true;
   });
+}
+
+void InstalledWebappGeolocationContext::OnPermissionUpdated(
+    const url::Origin& origin,
+    device::mojom::GeolocationPermissionLevel permission_level) {
+  // For subclasses that support approximate geolocation, `kPrecise` and
+  // `kApproximate` are meant for changing accuracy settings. For subclasses
+  // that do not support this feature, these cases are no-ops.
+  if (permission_level == device::mojom::GeolocationPermissionLevel::kDenied) {
+    OnPermissionRevoked(origin);
+  }
 }
 
 void InstalledWebappGeolocationContext::OnConnectionError(

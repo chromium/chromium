@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_matchers.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/NSString+Chromium.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -117,11 +118,11 @@ using base::test::ios::WaitUntilConditionOrTimeout;
         performAction:grey_tap()];
 
   } else {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(
-                grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier),
-                grey_sufficientlyVisible(), nil)] performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:
+                   grey_allOf(grey_accessibilityID(
+                                  kOmniboxCancelButtonAccessibilityIdentifier),
+                              grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
   }
   // Wait for animation to finish.
   [ChromeEarlGreyUI waitForAppToIdle];

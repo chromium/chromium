@@ -19,17 +19,9 @@ import org.chromium.build.annotations.Nullable;
 @SuppressWarnings("deprecation")
 @NullMarked
 class VideoCaptureFactory {
-    @CalledByNative
-    static boolean isLegacyOrDeprecatedDevice(int id) {
-        return VideoCaptureCamera2.isLegacyDevice(id);
-    }
-
     // Factory methods.
     @CalledByNative
     static VideoCapture createVideoCapture(int id, long nativeVideoCaptureDeviceAndroid) {
-        if (isLegacyOrDeprecatedDevice(id)) {
-            return new VideoCaptureCamera(id, nativeVideoCaptureDeviceAndroid);
-        }
         return new VideoCaptureCamera2(id, nativeVideoCaptureDeviceAndroid);
     }
 
@@ -40,49 +32,31 @@ class VideoCaptureFactory {
 
     @CalledByNative
     static int getCaptureApiType(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getCaptureApiType(index);
-        }
         return VideoCaptureCamera2.getCaptureApiType(index);
     }
 
     @CalledByNative
     static boolean isZoomSupported(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.isZoomSupported(index);
-        }
         return VideoCaptureCamera2.isZoomSupported(index);
     }
 
     @CalledByNative
     static int getFacingMode(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getFacingMode(index);
-        }
         return VideoCaptureCamera2.getFacingMode(index);
     }
 
     @CalledByNative
     static @Nullable String getDeviceId(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getDeviceId(index);
-        }
         return VideoCaptureCamera2.getDeviceId(index);
     }
 
     @CalledByNative
     static @Nullable String getDeviceName(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getName(index);
-        }
         return VideoCaptureCamera2.getName(index);
     }
 
     @CalledByNative
     static VideoCaptureFormat @Nullable [] getDeviceSupportedFormats(int index) {
-        if (isLegacyOrDeprecatedDevice(index)) {
-            return VideoCaptureCamera.getDeviceSupportedFormats(index);
-        }
         return VideoCaptureCamera2.getDeviceSupportedFormats(index);
     }
 

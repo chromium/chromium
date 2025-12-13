@@ -93,7 +93,9 @@ class NET_EXPORT ChunkedUploadDataStream : public UploadDataStream {
   // True once all data has been appended to the stream.
   bool all_data_appended_ = false;
 
-  std::vector<std::unique_ptr<std::vector<uint8_t>>> upload_data_;
+  // As data arrives, it is added here. Nothing depends on stability of these
+  // pointers, as data is copied from here directly to the caller's IOBuffer.
+  std::vector<std::vector<uint8_t>> upload_data_;
 
   // Buffer to write the next read's data to. Only set when a call to
   // ReadInternal reads no data.

@@ -7,19 +7,18 @@
 
 #include "base/memory/read_only_shared_memory_region.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 
 namespace enterprise_connectors {
 
-// A BinaryUploadService::Request implementation that gets the content of a
-// to-be-printed web page through a base::ReadOnlySharedMemoryRegion.
-class PagePrintAnalysisRequest
-    : public safe_browsing::BinaryUploadService::Request {
+// A BinaryUploadRequest implementation that gets the content of a to-be-printed
+// web page through a base::ReadOnlySharedMemoryRegion.
+class PagePrintAnalysisRequest : public BinaryUploadRequest {
  public:
   PagePrintAnalysisRequest(
       const AnalysisSettings& analysis_settings,
       base::ReadOnlySharedMemoryRegion page,
-      safe_browsing::BinaryUploadService::ContentAnalysisCallback callback);
+      BinaryUploadRequest::ContentAnalysisCallback callback);
   ~PagePrintAnalysisRequest() override;
 
   void GetRequestData(DataCallback callback) override;

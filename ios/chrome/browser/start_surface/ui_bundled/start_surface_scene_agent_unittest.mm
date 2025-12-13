@@ -14,6 +14,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
@@ -38,12 +40,17 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 using tab_groups::TabGroupId;
 
 namespace {
+
 const char kURL[] = "https://chromium.org/";
-}
+const char kOneHourTreshold[] = "3600";
+const char kFourHoursTreshold[] = "14400";
+
+}  // namespace
 
 class StartSurfaceSceneAgentTest : public PlatformTest {
  public:
@@ -66,10 +73,13 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
 
     agent_ = [[StartSurfaceSceneAgent alloc] init];
     agent_.sceneState = scene_state_;
-    Browser* browser =
-        scene_state_.browserProviderInterface.mainBrowserProvider.browser;
+
+    Browser* browser = GetBrowser();
+
+    dispatcher_ = browser->GetCommandDispatcher();
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
     TabInsertionBrowserAgent::CreateForBrowser(browser);
+    application_handler_ = OCMProtocolMock(@protocol(ApplicationCommands));
   }
 
   void TearDown() override {
@@ -87,6 +97,7 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     [scene_state_ shutdown];
     scene_state_ = nil;
     agent_ = nil;
+    dispatcher_ = nil;
 
     PlatformTest::TearDown();
   }
@@ -109,14 +120,23 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
   StartSurfaceSceneAgent* agent_;
   ScopedKeyWindow scoped_window_;
   base::HistogramTester histogram_tester_;
+  id<ApplicationCommands> application_handler_;
+  id dispatcher_;
 
-  // Returns the WebStateList for the SceneState.
-  WebStateList* GetWebStateList() {
-    return scene_state_.browserProviderInterface.mainBrowserProvider.browser
-        ->GetWebStateList();
+  // Returns the Browser for the SceneState.
+  Browser* GetBrowser() {
+    return scene_state_.browserProviderInterface.currentBrowserProvider.browser;
   }
 
-  // Create WebState at `index` with `url` as the current url.
+  // Returns the regular WebStateList for the SceneState.
+  WebStateList* GetWebStateList() { return GetBrowser()->GetWebStateList(); }
+
+  // Returns the incognito WebStateList for the SceneState.
+  WebStateList* GetIncognitoWebStateList() {
+    return GetBrowser()->GetWebStateList();
+  }
+
+  // Inserts a WebState at `index` with `url` as the current url.
   void InsertNewWebState(int index, GURL url) {
     auto test_web_state = std::make_unique<web::FakeWebState>();
     test_web_state->SetCurrentURL(url);
@@ -124,6 +144,18 @@ class StartSurfaceSceneAgentTest : public PlatformTest {
     test_web_state->SetBrowserState(profile_.get());
     NewTabPageTabHelper::CreateForWebState(test_web_state.get());
     GetWebStateList()->InsertWebState(
+        std::move(test_web_state),
+        WebStateList::InsertionParams::AtIndex(index));
+  }
+
+  // Inserts an incognito WebState at `index` with `url` as the current url.
+  void InsertNewIncognitoWebState(int index, GURL url) {
+    auto test_web_state = std::make_unique<web::FakeWebState>();
+    test_web_state->SetCurrentURL(url);
+    test_web_state->SetNavigationItemCount(1);
+    test_web_state->SetBrowserState(profile_.get());
+    NewTabPageTabHelper::CreateForWebState(test_web_state.get());
+    GetIncognitoWebStateList()->InsertWebState(
         std::move(test_web_state),
         WebStateList::InsertionParams::AtIndex(index));
   }
@@ -167,9 +199,7 @@ TEST_F(StartSurfaceSceneAgentTest, RemoveExcessNTPs) {
   histogram_tester_.ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 2, 1);
   // Incognito browser got no NTP removed.
   histogram_tester_.ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
   // NTP at index 3 should be the one saved, so the remaining WebState with an
   // NTP should now be at index 1.
@@ -204,9 +234,7 @@ TEST_F(StartSurfaceSceneAgentTest, OnlyRemoveEmptyNTPs) {
   histogram_tester_.ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 2, 1);
   // Incognito browser got no NTP removed.
   histogram_tester_.ExpectBucketCount("IOS.NTP.ExcessRemovedTabCount", 0, 1);
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   ASSERT_EQ(2, web_state_list->count());
   EXPECT_EQ(web_state_list->GetWebStateAt(0)->GetVisibleURL(), kURL);
   EXPECT_TRUE(IsUrlNtp(web_state_list->GetWebStateAt(1)->GetVisibleURL()));
@@ -225,9 +253,7 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAndActivateNonEmptyNTP) {
   InsertNewWebStateWithNavigationHistory(0, GURL(kChromeUINewTabURL));
   InsertNewWebState(1, GURL(kURL));
   InsertNewWebState(2, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   web_state_list->ActivateWebStateAt(2);
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   histogram_tester_.ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
@@ -265,9 +291,7 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAtMostOneEmptyNTPPerGroup) {
   InsertNewWebState(4, GURL(kChromeUINewTabURL));
   InsertNewWebStateWithNavigationHistory(5, GURL(kChromeUINewTabURL));
   InsertNewWebState(6, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   const TabGroup* group_0 =
       web_state_list->CreateGroup({0, 1, 2, 3}, {}, TabGroupId::GenerateNew());
   const TabGroup* group_1 =
@@ -314,9 +338,7 @@ TEST_F(StartSurfaceSceneAgentTest,
   scoped_feature_list.InitWithFeatures(enabled_features, {});
   InsertNewWebState(0, GURL(kChromeUINewTabURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
   const TabGroup* group_0 =
       web_state_list->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
@@ -357,9 +379,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectWarmStartHistogram) {
 
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list->GetActiveWebState(),
@@ -384,9 +404,7 @@ TEST_F(StartSurfaceSceneAgentTest, LogCorrectColdStartHistogram) {
 
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list->GetActiveWebState(),
@@ -411,9 +429,7 @@ TEST_F(StartSurfaceSceneAgentTest, PrefetchCapabilitiesOnAppStart) {
 
   InsertNewWebState(0, GURL(kURL));
   InsertNewWebState(1, GURL(kChromeUINewTabURL));
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
   favicon::WebFaviconDriver::CreateForWebState(
       web_state_list->GetActiveWebState(),
@@ -451,9 +467,7 @@ TEST_F(StartSurfaceSceneAgentTest, ActivateSavedNTPWebStateIndex) {
   InsertNewWebState(2, GURL(kURL));
   InsertNewWebState(3, GURL(kChromeUINewTabURL));
 
-  WebStateList* web_state_list =
-      scene_state_.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList();
+  WebStateList* web_state_list = GetWebStateList();
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   web_state_list->ActivateWebStateAt(2);
   favicon::WebFaviconDriver::CreateForWebState(
@@ -470,4 +484,328 @@ TEST_F(StartSurfaceSceneAgentTest, ActivateSavedNTPWebStateIndex) {
   // The existing NTP should be the active WebState (no new NTPs added).
   EXPECT_TRUE(IsUrlNtp(web_state_list->GetActiveWebState()->GetVisibleURL()));
   ASSERT_EQ(2, web_state_list->count());
+}
+
+// Tests that the tab group in grid view is opened if Chrome is activated in the
+// right time interval.
+TEST_F(StartSurfaceSceneAgentTest, ShowTabGroupInGridOnStart) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Within the interval.
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+
+  OCMExpect(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is activated in
+// the right time interval but in IncognitoMode.
+TEST_F(StartSurfaceSceneAgentTest,
+       DoNotShowTabGroupInGridOnStartInIncognitoMode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Within the interval
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  // Forcing the current BrowserProvider to be incognito.
+  scene_state_.browserProviderInterface.currentBrowserProvider =
+      scene_state_.browserProviderInterface.incognitoBrowserProvider;
+  CommandDispatcher* dispatcherIncognito =
+      scene_state_.browserProviderInterface.currentBrowserProvider.browser
+          ->GetCommandDispatcher();
+
+  [dispatcherIncognito startDispatchingToTarget:application_handler_
+                                    forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewIncognitoWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetIncognitoWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+
+  OCMReject(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcherIncognito stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is activated
+// before the time interval.
+TEST_F(StartSurfaceSceneAgentTest,
+       DoNotShowTabGroupInGridOnStartIfOpenedTooEarly) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Not in interval.
+  base::Time time_last_background = base::Time::Now() - base::Minutes(30);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+
+  OCMReject(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that the tab group in grid view is not opened if Chrome is activated
+// after the time interval.
+TEST_F(StartSurfaceSceneAgentTest,
+       DoNotShowTabGroupInGridOnStartIfOpenedTooLate) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Not in interval.
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  OCMReject(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that the tab group in grid view is not opened if the active tab is not
+// part of a group.
+TEST_F(StartSurfaceSceneAgentTest,
+       DoNotShowTabGroupInGridOnStartIfNotInAGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Within the interval but no group.
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+
+  OCMReject(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that the tab group in grid view is not opened before the activation
+// level is set to ForegroundActive.
+TEST_F(StartSurfaceSceneAgentTest,
+       DoNotShowTabGroupInGridOnStartBeforeForegroundActivation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  // Within the interval.
+  base::Time time_last_background = base::Time::Now() - base::Hours(2);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+
+  OCMReject(
+      [application_handler_ displayTabGridInMode:TabGridOpeningMode::kDefault]);
+
+  // Not in foreground.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  EXPECT_OCMOCK_VERIFY((OCMockObject*)application_handler_);
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is created when Chrome is foregrounded after being +4 hours
+// in background.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHours) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_EQ(2, web_state_list->count());
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
+}
+
+// Tests that a NTP is created outside the active group when Chrome is
+// foregrounded after being +4 hours in background.
+TEST_F(StartSurfaceSceneAgentTest, OpenNTPAfterFourHoursOutsideActiveGroup) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Setting the ReturnToStartSurfaceInactiveDuration to 4 hours and the
+  // ShowTabGroupInGridInactiveDuration to 1 hour.
+  base::FieldTrialParams start_time_params = {
+      {kReturnToStartSurfaceInactiveDurationInSeconds, kFourHoursTreshold}};
+  base::FieldTrialParams show_tab_grid_treshold = {
+      {kShowTabGroupInGridInactiveDurationInSeconds, kOneHourTreshold}};
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{kStartSurface, start_time_params},
+       {kShowTabGroupInGridOnStart, show_tab_grid_treshold}},
+      /*disabled_features=*/{});
+
+  base::Time time_last_background = base::Time::Now() - base::Hours(5);
+  test::SetStartSurfaceSessionObjectForSceneStateForTesting(
+      scene_state_, time_last_background);
+
+  [dispatcher_ startDispatchingToTarget:application_handler_
+                            forProtocol:@protocol(ApplicationCommands)];
+
+  InsertNewWebState(0, GURL(kURL));
+  WebStateList* web_state_list = GetWebStateList();
+  web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
+  web_state_list->ActivateWebStateAt(0);
+  favicon::WebFaviconDriver::CreateForWebState(
+      web_state_list->GetActiveWebState(),
+      /*favicon_service=*/nullptr);
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  ASSERT_EQ(2, web_state_list->count());
+  ASSERT_FALSE(web_state_list->GetGroupOfWebStateAt(1));
+
+  [dispatcher_ stopDispatchingToTarget:application_handler_];
 }

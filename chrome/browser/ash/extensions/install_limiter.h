@@ -11,7 +11,7 @@
 #include <set>
 
 #include "base/containers/queue.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/crx_installer.h"

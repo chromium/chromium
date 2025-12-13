@@ -6,6 +6,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/test/task_environment.h"

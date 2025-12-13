@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#target">
 <link rel="help" href="https://drafts.csswg.org/css-anchor-1/#determining">
 <link rel="author" href="mailto:kojii@chromium.org">
 <script src="/resources/testharness.js"></script>
@@ -19,14 +20,6 @@
 .abspos {
   position: absolute;
 }
-.columns {
-  column-count: 2;
-  column-fill: auto;
-  column-gap: 10px;
-  column-width: 100px;
-  width: 210px;
-  height: 100px;
-}
 .anchor {
   anchor-name: --a1;
   background: orange;
@@ -38,15 +31,17 @@
   background: lime;
 }
 </style>
-<body onload="checkLayoutForAnchorPos('.target')">
-  <div class="container relpos xcolumns">
+<body>
+  <div class="container relpos">
     <div style="height: 150px"></div>
     <div class="relpos">
-      <span class="target" data-expected-width=20></span>
+      <span class="target" data-expected-width=30></span>
       <span class="relpos">
-        <span class="target" data-expected-width=20></span>
+        <span class="target" data-expected-width=30></span>
         <span class="relpos">
+          <span class="target" data-expected-width=20></span>
           <span class="anchor">12</span>
+          <span class="target" data-expected-width=20></span>
           <span class="anchor abspos">123</span>
           <span class="target" data-expected-width=30></span>
         </span>
@@ -55,4 +50,7 @@
       <span class="target" data-expected-width=30></span>
     </div>
   </div>
+  <script>
+  document.fonts.ready.then(() => checkLayoutForAnchorPos('.target'));
+  </script>
 </body>

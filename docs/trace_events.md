@@ -42,7 +42,7 @@ analysis.
 ## Trace Event Usage
 
 ### Trace Event Macros
-  * Most use cases are served by `#include "base/trace_event/track_event.h"`
+  * Most use cases are served by `#include "base/trace_event/trace_event.h"`
   * **Use Perfetto Macros:** Employ the modern macros documented in
     [`perfetto/include/perfetto/tracing/track_event.h`](https://cs.chromium.org/chromium/src/third_party/perfetto/include/perfetto/tracing/track_event.h).
       *   `TRACE_EVENT()`
@@ -55,6 +55,8 @@ analysis.
     as `TRACE_EVENT0/1/2`, `TRACE_EVENT_ASYNC_BEGIN0/1/2` or any other macro
     that has 0/1/2 suffix.
     * These macros are deprecated and should not be used in new code.
+  * Do not emit synchronous events when a thread is idle. This yields misleading
+    process activity summary shown by perfetto UI.
 
 ### Static Strings
   * **Always Use Static Strings:** For event names, *always* use static strings.
@@ -94,7 +96,7 @@ TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Constructor",
     perfetto::Flow::FromPointer(this));
 
 TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Destructor",
-    perfetto::Flow::TerminatingFlow(this));
+    perfetto::TerminatingFlow::FromPointer(this));
 ```
 
 ### Named Tracks
@@ -106,20 +108,16 @@ TRACE_EVENT_INSTANT("my_component.debug.lifetime", "MyObject::Destructor",
 #include "base/trace_event/track_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
-const perfetto::NamedTrack CreateFrameParentTrack() {
-  perfetto::NamedTrack track("Frames", 0, perfetto::Track());
-  if (perfetto::Tracing::IsInitialized()) {
-    // Because the track doesn't get any events of its own it must manually
-    // emit the track descriptor. This is done conditionally to avoid
-    // crashing in unit tests where tracing isn't initialized.
-    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
-  }
-  return track;
+perfetto::NamedTrack CreateFrameParentTrack() {
+  return perfetto::NamedTrack("Frames", 0, perfetto::Track());
 }
 
 perfetto::NamedTrack GetFrameVisibleTrack(int64_t frame_id) {
-  static const perfetto::NamedTrack parent_track = CreateFrameParentTrack();
-  return perfetto::NamedTrack("Frame Visibility", frame_id, parent_track);
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      parent_track(CreateFrameParentTrack());
+  return perfetto::NamedTrack("Frame Visibility", frame_id,
+      parent_track->track());
 }
 
 void MyFunction(int64_t frame_id, int64_t start_ts, int64_t end_ts) {

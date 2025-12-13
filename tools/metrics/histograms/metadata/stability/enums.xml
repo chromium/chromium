@@ -491,10 +491,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="323" label="MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE"/>
   <int value="324" label="MH_MULTIPLE_MIDI_SESSIONS"/>
   <int value="325" label="RFHI_INVALID_NET_ERROR_CODE"/>
-  <int value="326" label="MSDH_DISABLED_FEATURE_IS_SET"/>
+  <int value="326" label="MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED"/>
   <int value="327" label="RFH_SAME_DOC_INSECURE_REQUEST_POLICY_CHANGE"/>
   <int value="328" label="RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE"/>
   <int value="329" label="RFH_ORIGIN_TO_COMMIT_MISMATCH"/>
+  <int value="330" label="RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE"/>
+  <int value="331" label="RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED"/>
+  <int value="332" label="RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

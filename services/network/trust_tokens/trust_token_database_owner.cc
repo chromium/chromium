@@ -57,6 +57,15 @@ TrustTokenDatabaseOwner::~TrustTokenDatabaseOwner() {
   db_task_runner_->DeleteSoon(FROM_HERE, toplevel_table_.release());
   db_task_runner_->DeleteSoon(FROM_HERE, issuer_table_.release());
 
+  // Prevent `table_manager_` from holding a dangling pointer to
+  // `backing_database_`.
+  db_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&sqlite_proto::ProtoTableManager::WillShutdown,
+                     base::Unretained(table_manager_.get())),
+      base::BindOnce([](sqlite_proto::ProtoTableManager*) {},
+                     base::RetainedRef(table_manager_)));
+
   db_task_runner_->DeleteSoon(FROM_HERE, backing_database_.release());
 }
 
@@ -86,9 +95,6 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
     base::OnceCallback<void(std::unique_ptr<TrustTokenDatabaseOwner>)>
         on_done_initializing)
     : on_done_initializing_(std::move(on_done_initializing)),
-      table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
-          db_task_runner)),
-      db_task_runner_(db_task_runner),
       backing_database_(std::make_unique<sql::Database>(
           sql::DatabaseOptions()
               .set_preload(true)
@@ -97,6 +103,9 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
               .set_enable_views_discouraged(
                   true),  // Required by mmap_alt_status.
           sql::Database::Tag("TrustTokens"))),
+      table_manager_(base::MakeRefCounted<sqlite_proto::ProtoTableManager>(
+          db_task_runner)),
+      db_task_runner_(db_task_runner),
       issuer_table_(
           std::make_unique<sqlite_proto::KeyValueTable<TrustTokenIssuerConfig>>(
               kIssuerTableName)),

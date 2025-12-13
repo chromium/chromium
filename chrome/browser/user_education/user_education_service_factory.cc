@@ -91,8 +91,7 @@ UserEducationServiceFactory::BuildServiceInstanceForBrowserContextImpl(
 
   // Create the user education service.
   auto result = std::make_unique<UserEducationService>(
-      std::make_unique<BrowserUserEducationStorageService>(profile),
-      ProfileAllowsUserEducation(profile));
+      profile, ProfileAllowsUserEducation(profile));
 
   // Set up the session manager.
   result->user_education_session_manager().Init(

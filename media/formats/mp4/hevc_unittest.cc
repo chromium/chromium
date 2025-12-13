@@ -10,8 +10,7 @@
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
   struct TestCases {
@@ -41,16 +40,14 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
 
 TEST(HEVCAnalyzeAnnexBTest, EmptyBuffer) {
   std::vector<SubsampleEntry> subsamples;
-  auto result = HEVC::AnalyzeAnnexB(nullptr, 0, subsamples);
+  auto result = HEVC::AnalyzeAnnexB(base::span<const uint8_t>(), subsamples);
   EXPECT_TRUE(result.is_conformant);
   EXPECT_TRUE(subsamples.empty());
   EXPECT_FALSE(result.is_keyframe.has_value());
@@ -91,9 +88,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch,
-                 HEVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
-                 expected)
+    EXPECT_PRED2(AnalysesMatch, HEVC::AnalyzeAnnexB(buf, subsamples), expected)
         << "'" << test_cases[i].case_string << "' failed";
   }
 }
@@ -110,11 +105,10 @@ TEST(HEVCAnalyzeAnnexBTest, HEVCDecoderConfigurationRecordTakenFromStream) {
       0xca, 0xe0, 0x10, 0x00, 0x00, 0x06, 0x40, 0x00, 0x00, 0xbb, 0x50, 0x80,
       0x22, 0x00, 0x01, 0x00, 0x06, 0x44, 0x01, 0xc1, 0x73, 0xd1, 0x89};
   HEVCDecoderConfigurationRecord record;
-  EXPECT_TRUE(record.Parse(test_data.data(), test_data.size()));
+  EXPECT_TRUE(record.Parse(test_data));
   std::vector<uint8_t> output;
   EXPECT_TRUE(record.Serialize(output));
   EXPECT_TRUE(test_data == output);
 }
 
-}  // namespace mp4
-}  // namespace media
+}  // namespace media::mp4

@@ -4,32 +4,40 @@
 
 package org.chromium.chrome.browser.readaloud;
 
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * A {@link UnownedUserDataSupplier} which manages the supplier and UnownedUserData for a {@link
- * ReadAloudController}.
- */
+/** A class which manages the supplier and UnownedUserData for a {@link ReadAloudController}. */
 @NullMarked
-public class ReadAloudControllerSupplier extends UnownedUserDataSupplier<ReadAloudController> {
-    private static final UnownedUserDataKey<ReadAloudControllerSupplier> KEY =
-            new UnownedUserDataKey<>(ReadAloudControllerSupplier.class);
+public class ReadAloudControllerSupplier {
+    private static final UnownedUserDataKey<ObservableSupplier<ReadAloudController>> KEY =
+            new UnownedUserDataKey<>();
 
     /**
      * Return {@link ReadAloudController} supplier associated with the given {@link WindowAndroid}.
      */
-    @Nullable
-    public static ObservableSupplier<ReadAloudController> from(WindowAndroid windowAndroid) {
+    public static @Nullable ObservableSupplier<ReadAloudController> from(
+            WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
-    /** Constructs a ReadAloudControllerSupplier and attaches it to the {@link WindowAndroid} */
-    public ReadAloudControllerSupplier() {
-        super(KEY);
+    /**
+     * Attach to the specified host.
+     *
+     * @param host The host to attach the supplier to.
+     */
+    public static void attach(
+            UnownedUserDataHost host, ObservableSupplier<ReadAloudController> supplier) {
+        KEY.attachToHost(host, supplier);
     }
+
+    public static void destroy(ObservableSupplier<ReadAloudController> supplier) {
+        KEY.detachFromAllHosts(supplier);
+    }
+
+    private ReadAloudControllerSupplier() {}
 }

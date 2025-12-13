@@ -8,12 +8,12 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {CrExpandButtonElement, StorageAccessStaticSiteListEntry, StorageAccessSiteException, StorageAccessSiteListEntryElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 
-import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import {createStorageAccessSiteException, createStorageAccessEmbeddingException} from './test_util.js';
 // clang-format on
 
@@ -60,12 +60,12 @@ suite('StorageAccessSiteListEntry', function() {
   /**
    * The mock proxy object to use during test.
    */
-  let browserProxy: TestSiteSettingsPrefsBrowserProxy;
+  let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a storage-access-site-list-entry before each test.
   setup(function() {
-    browserProxy = new TestSiteSettingsPrefsBrowserProxy();
-    SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('storage-access-site-list-entry');
     document.body.appendChild(testElement);
@@ -90,7 +90,7 @@ suite('StorageAccessSiteListEntry', function() {
     // Validate that the StorageAccess origin is displayed on the top level row.
     assertEquals(
         origin,
-        displayName.querySelector('.site-representation')!.textContent!.trim());
+        displayName.querySelector('.site-representation')!.textContent.trim());
   });
 
   test('origin site description', async function() {
@@ -105,8 +105,7 @@ suite('StorageAccessSiteListEntry', function() {
 
     // Validate the row description when closed.
     assertEquals(
-        storageAccessException.closeDescription,
-        secondLine.textContent!.trim());
+        storageAccessException.closeDescription, secondLine.textContent.trim());
 
     const expandButton =
         testElement.shadowRoot.querySelector<CrExpandButtonElement>(
@@ -117,7 +116,7 @@ suite('StorageAccessSiteListEntry', function() {
 
     // Validate the row description when opened.
     assertEquals(
-        storageAccessException.openDescription, secondLine.textContent!.trim());
+        storageAccessException.openDescription, secondLine.textContent.trim());
   });
 
   test('nested site rows', async function() {

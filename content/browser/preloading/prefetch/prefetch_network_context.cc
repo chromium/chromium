@@ -4,9 +4,10 @@
 
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
 
-#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/variations/net/omnibox_autofocus_http_headers.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/loader/url_loader_factory_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context_client.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
@@ -21,17 +22,28 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/isolation_info.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 
 namespace content {
+
+namespace {
+
+// Enable Zstd for cross-site prefetch (crbug.com/444393104).
+BASE_FEATURE(kZstdForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allow the variations header to be treated as CORS exempted for cross-site
+// prefetch (crbug.com/444264052).
+BASE_FEATURE(kVariationsHeaderForCrossSiteSpeculationRulesPrefetch,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
 
 PrefetchNetworkContext::PrefetchNetworkContext(
     bool use_isolated_network_context,
@@ -95,7 +107,15 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
 
   auto context_params = network::mojom::NetworkContextParams::New();
   context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+
+  // These should be synced with
+  // `SystemNetworkContextManager::ConfigureDefaultNetworkContextParams()`.
+  // TODO(crbug.com/444335342): Unify NetworkContextParams setup with other
+  // places.
+  context_params->enable_zstd =
+      base::FeatureList::IsEnabled(kZstdForCrossSiteSpeculationRulesPrefetch);
   context_params->user_agent = embedder_support::GetUserAgent();
+
   // The verifier created here does not have the same parameters as used in the
   // profile (where additional parameters are added in
   // chrome/browser/net/profile_network_context_service.h
@@ -113,6 +133,11 @@ void PrefetchNetworkContext::CreateIsolatedURLLoaderFactory(
   context_params->cert_verifier_params = GetCertVerifierParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   context_params->cors_exempt_header_list = {blink::kPurposeHeaderName};
+  if (base::FeatureList::IsEnabled(
+          kVariationsHeaderForCrossSiteSpeculationRulesPrefetch)) {
+    variations::UpdateCorsExemptHeaderForVariations(context_params.get());
+    variations::UpdateCorsExemptHeaderForOmniboxAutofocus(context_params.get());
+  }
   context_params->cookie_manager_params =
       network::mojom::CookieManagerParams::New();
 

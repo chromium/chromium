@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profile_resetter/reset_report_uploader.h"
+
+#include <optional>
 #include <string>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/escape.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
-#include "chrome/browser/profile_resetter/reset_report_uploader.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/google_api_keys.h"
@@ -100,7 +102,7 @@ void ResetReportUploader::DispatchReportInternal(
 
 void ResetReportUploader::OnSimpleLoaderComplete(
     SimpleURLLoaderList::iterator it,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   simple_url_loaders_.erase(it);
 }
 

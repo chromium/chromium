@@ -9,25 +9,34 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.tile.TileView;
-import org.chromium.ui.base.ViewUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LinearLayout with helpers to add and visit tile Views (TileView). A container View for tiles can
- * extend this class, and add a mixture of {tile, non-tile} Views as children. To visit tile Views
- * only, one would use {@link #getTileCount()} and {@link #getTileAt()} instead of {@link
- * #getChildCount()} and {@link #getChildAt()}.
+ * LinearLayout with helpers to add and visit tile Views (TileView) mixed with other Views:
+ *
+ * <ul>
+ *   <li>Tiles: MVT tiles with known width, separated by interval margin.
+ *   <li>Dividers: Non-tiles that squeezes inside an interval margin, thus consuming no width.
+ *   <li>UI Views: Non-tiles with arbitary width, separated by interval margin.
+ * </ul>
+ *
+ * A container View for tiles can extend this class. To visit tile Views only, one would use {@link
+ * #getTileCount()} and {@link #getTileAt()} instead of {@link #getChildCount()} and {@link
+ * #getChildAt()}.
  */
 @NullMarked
 public class TilesLinearLayout extends LinearLayout {
     private final List<TileView> mTileList = new ArrayList<>();
 
-    protected float mNonTileViewsTotalWidthDp;
+    protected int mTileAndUiViewCount;
+    protected @Px float mUiViewsTotalWidth;
 
     public TilesLinearLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -36,7 +45,8 @@ public class TilesLinearLayout extends LinearLayout {
     @Override
     public void removeAllViews() {
         mTileList.clear();
-        mNonTileViewsTotalWidthDp = 0f;
+        mTileAndUiViewCount = 0;
+        mUiViewsTotalWidth = 0f;
         super.removeAllViews();
     }
 
@@ -45,7 +55,7 @@ public class TilesLinearLayout extends LinearLayout {
      *
      * @param margin The margin to set.
      */
-    void setIntervalMargins(int margin) {
+    void setIntervalMargins(@Px int margin) {
         int childCount = getChildCount();
         for (int i = 1; i < childCount; i++) {
             updateViewStartMargin(getChildAt(i), margin);
@@ -58,7 +68,7 @@ public class TilesLinearLayout extends LinearLayout {
      *
      * @param margin The margin to set.
      */
-    void setEdgeMargins(int margin) {
+    void setEdgeMargins(@Px int margin) {
         int childCount = getChildCount();
         if (childCount > 0) {
             updateViewStartMargin(getChildAt(0), margin);
@@ -72,8 +82,30 @@ public class TilesLinearLayout extends LinearLayout {
      * @param tileView The tile View to add.
      */
     public void addTile(TileView tileView) {
-        super.addView(tileView);
+        addView(tileView);
         mTileList.add(tileView);
+        ++mTileAndUiViewCount;
+    }
+
+    /**
+     * Specialized addView() for dividers.
+     *
+     * @param divider The divider View to add.
+     */
+    public void addDivider(SuggestionsTileVerticalDivider divider) {
+        addView(divider);
+    }
+
+    /**
+     * Specialized addView() for UI Views.
+     *
+     * @param view The UI View to add.
+     * @param width The width of the added View, in Px.
+     */
+    public void addUiView(View uiView, @Px float width) {
+        addView(uiView);
+        mUiViewsTotalWidth += width;
+        ++mTileAndUiViewCount;
     }
 
     /**
@@ -94,34 +126,18 @@ public class TilesLinearLayout extends LinearLayout {
         return mTileList.get(index);
     }
 
-    /**
-     * Specialized addView() for non-tile Views.
-     *
-     * @param view The View to add.
-     * @param widthDp The width of the View to add, in dp.
-     */
-    public void addNonTileViewWithWidth(View view, float widthDp) {
-        super.addView(view);
-        mNonTileViewsTotalWidthDp += widthDp;
-    }
-
-    /** Returns the total width of non-tile Views added, in pixel. */
-    public int getNonTileViewsTotalWidthPx() {
-        return ViewUtils.dpToPx(getContext(), mNonTileViewsTotalWidthDp);
-    }
-
-    private void updateViewStartMargin(View view, int newStartMarginPx) {
+    protected void updateViewStartMargin(View view, @Px int newStartMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
-        if (newStartMarginPx != layoutParams.getMarginStart()) {
-            layoutParams.setMarginStart(newStartMarginPx);
+        if (newStartMargin != layoutParams.getMarginStart()) {
+            layoutParams.setMarginStart(newStartMargin);
             view.setLayoutParams(layoutParams);
         }
     }
 
-    private void updateViewEndMargin(View view, int newEndMarginPx) {
+    protected void updateViewEndMargin(View view, @Px int newEndMargin) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) view.getLayoutParams();
-        if (newEndMarginPx != layoutParams.getMarginEnd()) {
-            layoutParams.setMarginEnd(newEndMarginPx);
+        if (newEndMargin != layoutParams.getMarginEnd()) {
+            layoutParams.setMarginEnd(newEndMargin);
             view.setLayoutParams(layoutParams);
         }
     }

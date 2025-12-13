@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom";
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
+
+// TabStripExperimentService is a staging area that allows for rapid prototyping
+// and iteration. It is intentionally separate from the core, stable level
+// TabStripService and not intended for production use. This API should still
+// adhere to security best practices.
+interface TabStripExperimentService {
+  // Update the TabGroup visual data. This is a last-one-wins update mutation
+  // and may be subject to race conditions.
+  UpdateTabGroupVisual(NodeId id, TabGroupVisualData visual_data)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
+};

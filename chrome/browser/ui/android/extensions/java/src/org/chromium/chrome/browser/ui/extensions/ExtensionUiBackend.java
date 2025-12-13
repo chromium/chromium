@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 @NullMarked
 public interface ExtensionUiBackend {
     /** Instantiates the implementation if it is available. */
-    public static @Nullable ExtensionUiBackend maybeCreate() {
+    static @Nullable ExtensionUiBackend maybeCreate() {
         return ServiceLoaderUtil.maybeCreate(ExtensionUiBackend.class);
     }
 

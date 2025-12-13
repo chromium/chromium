@@ -60,8 +60,8 @@ class TestPrerenderWebClient : public web::WebClient {
   }
 
  private:
-  raw_ptr<web::WebTestWithWebState> test_case_;
-  raw_ptr<web::WebState> web_state_;
+  raw_ptr<web::WebTestWithWebState, DanglingUntriaged> test_case_;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_;
 };
 
 // Verifies that the current permission states matches expected.

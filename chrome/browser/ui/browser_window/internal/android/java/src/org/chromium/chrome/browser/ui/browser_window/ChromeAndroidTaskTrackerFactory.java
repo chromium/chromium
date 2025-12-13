@@ -16,9 +16,8 @@ public final class ChromeAndroidTaskTrackerFactory {
     /**
      * Obtains the singleton instance of {@link ChromeAndroidTaskTracker}.
      *
-     * <p>Note: this class is compiled using the {@code android_library_factory} GN template, so
-     * this method will return null if {@link ChromeAndroidTaskTrackerImpl} isn't compiled into the
-     * build.
+     * <p>We mark the return value as nullable to be consistent with the stub factory in
+     * //chrome/browser/ui/browser_window/stub.
      */
     @Nullable
     public static ChromeAndroidTaskTracker getInstance() {

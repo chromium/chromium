@@ -27,11 +27,11 @@
 #include "components/viz/service/gl/exit_code.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shm_count.h"
+#include "gpu/command_buffer/service/gpu_persistent_cache.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
@@ -42,7 +42,6 @@
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
@@ -51,7 +50,7 @@
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/gl/direct_composition_support.h"
@@ -59,9 +58,7 @@
 
 namespace gpu {
 class DawnContextProvider;
-class GpuMemoryBufferFactory;
 class GpuWatchdogThread;
-class ImageDecodeAcceleratorWorker;
 class Scheduler;
 class SharedContextState;
 class SharedImageManager;
@@ -166,12 +163,17 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void EstablishGpuChannel(int32_t client_id,
                            uint64_t client_tracing_id,
                            bool is_gpu_host,
+                           bool enable_extra_handles_validation,
                            EstablishGpuChannelCallback callback) override;
   void SetChannelClientPid(int32_t client_id,
                            base::ProcessId client_pid) override;
   void SetChannelDiskCacheHandle(
       int32_t client_id,
       const gpu::GpuDiskCacheHandle& handle) override;
+  void SetChannelPersistentCachePendingBackend(
+      int32_t client_id,
+      const gpu::GpuDiskCacheHandle& handle,
+      persistent_cache::PendingBackend pending_backend) override;
   void OnDiskCacheHandleDestoyed(
       const gpu::GpuDiskCacheHandle& handle) override;
   void CloseChannel(int32_t client_id) override;
@@ -203,9 +205,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   void GetVideoMemoryUsageStats(
       GetVideoMemoryUsageStatsCallback callback) override;
-  void AddVideoMemoryUsageStatsOnCompositorGpu(
-      GetVideoMemoryUsageStatsCallback callback,
-      gpu::VideoMemoryUsageStats video_memory_usage_stats);
 
   // These methods can be called from the CrBrowserMain thread and the
   // VizCompositorThread (with InputVizard) for PeakGpuMemory tracking.
@@ -219,7 +218,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
                   const std::string& key,
                   const std::string& data) override;
   void WakeUpGpu() override;
-  void GpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void GpuSwitched() override;
   void DisplayAdded() override;
   void DisplayRemoved() override;
   void DisplayMetricsChanged() override;
@@ -228,8 +227,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   void OnBackgrounded() override;
   void OnForegrounded() override;
 #if !BUILDFLAG(IS_ANDROID)
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level) override;
+  void OnMemoryPressure(base::MemoryPressureLevel level) override;
 #endif
 #if BUILDFLAG(IS_APPLE)
   void BeginCATransaction() override;
@@ -298,10 +296,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   CompositorGpuThread* compositor_gpu_thread() {
     return compositor_gpu_thread_.get();
-  }
-
-  gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory() {
-    return gpu_memory_buffer_factory_.get();
   }
 
   gpu::SharedImageManager* shared_image_manager() {
@@ -407,9 +401,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   gpu::Scheduler* CreateScheduler(gpu::SyncPointManager* sync_point_manager);
   base::WaitableEvent* CreateShutdownEvent();
 
-  bool IsNativeBufferSupported(gfx::BufferFormat format,
-                               gfx::BufferUsage usage);
-
 #if BUILDFLAG(IS_WIN)
   void RequestDXGIInfoOnMainThread(RequestDXGIInfoCallback callback);
 #endif
@@ -489,7 +480,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   // Information about the GPU process populated on creation.
   gfx::GpuExtraInfo gpu_extra_info_;
 
-  gpu::GpuProcessShmCount use_shader_cache_shm_count_;
+  scoped_refptr<gpu::RefCountedGpuProcessShmCount> use_shader_cache_shm_count_;
 
   mojo::SharedRemote<mojom::GpuHost> gpu_host_;
   std::unique_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
@@ -531,7 +522,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   std::unique_ptr<webnn::WebNNContextProviderImpl> webnn_context_provider_;
 
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
+  gpu::GpuPersistentCacheCollection persistent_caches_;
 
   // An event that will be signalled when we shutdown. On some platforms it
   // comes from external sources.
@@ -543,20 +534,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 
   base::AtomicFlag is_exiting_;
 
-  // Used for performing hardware decode acceleration of images. This is shared
-  // by all the GPU channels.
-  std::unique_ptr<gpu::ImageDecodeAcceleratorWorker>
-      image_decode_accelerator_worker_;
-
   base::TimeTicks start_time_;
 
   // Used to track the task to bind |receiver_| on the IO thread.
   base::CancelableTaskTracker bind_task_tracker_;
   // Should only be accessed on the IO thread after creation.
   mojo::Receiver<mojom::GpuService> receiver_{this};
-
-  gpu::GpuMemoryBufferConfigurationSet supported_gmb_configurations_;
-  bool supported_gmb_configurations_inited_ = false;
 
   VisibilityChangedCallback visibility_changed_callback_;
 

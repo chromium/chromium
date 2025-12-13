@@ -24,7 +24,7 @@
 // Download progress. 1.0 if the download is complete.
 @property(nonatomic) float progress;
 
-// State of the download task. Default is kDownloadManagerStateNotStarted.
+// State of the download task. Default is DownloadManagerState::kNotStarted.
 @property(nonatomic) DownloadManagerState state;
 
 // Visible state of Install Google Drive button.

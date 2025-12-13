@@ -37,7 +37,7 @@ source_set("local_search_service") {
 
   public_deps = [
     "//base",
-    "//components/metrics:metrics",
+    "//components/metrics",
     "//components/prefs",
     "//ui/gfx",
   ]
@@ -55,7 +55,7 @@ source_set("local_search_service_provider") {
     ":local_search_service",
     "//chromeos/ash/components/local_search_service/public/cpp:local_search_service_provider",
     "//chromeos/ash/components/local_search_service/public/mojom",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }
 
@@ -97,7 +97,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/local_search_service/public/cpp:local_search_service_provider",
     "//components/prefs:test_support",
     "//content/test:test_support",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }

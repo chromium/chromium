@@ -603,7 +603,11 @@ protocol::Response InspectorPageAgent::addScriptToEvaluateOnNewDocument(
     // Runtime.enable that forces main context creation. In this case, we would
     // not normally evaluate the script, but we should.
     for (LocalFrame* frame : *inspected_frames_) {
-      EvaluateScriptOnNewDocument(*frame, *identifier);
+      // Don't evaluate scripts on provisional frames:
+      // https://crbug.com/390710982
+      if (!frame->IsProvisional()) {
+        EvaluateScriptOnNewDocument(*frame, *identifier);
+      }
     }
   }
 
@@ -793,7 +797,7 @@ void InspectorPageAgent::getResourceContent(
   }
   inspector_resource_content_loader_->EnsureResourcesContentLoaded(
       resource_content_loader_client_id_,
-      WTF::BindOnce(
+      BindOnce(
           &InspectorPageAgent::GetResourceContentAfterResourcesContentLoaded,
           WrapPersistent(this), frame_id, url, std::move(callback)));
 }
@@ -888,11 +892,10 @@ void InspectorPageAgent::searchInResource(
   }
   inspector_resource_content_loader_->EnsureResourcesContentLoaded(
       resource_content_loader_client_id_,
-      WTF::BindOnce(
-          &InspectorPageAgent::SearchContentAfterResourcesContentLoaded,
-          WrapPersistent(this), frame_id, url, query,
-          optional_case_sensitive.value_or(false),
-          optional_is_regex.value_or(false), std::move(callback)));
+      BindOnce(&InspectorPageAgent::SearchContentAfterResourcesContentLoaded,
+               WrapPersistent(this), frame_id, url, query,
+               optional_case_sensitive.value_or(false),
+               optional_is_regex.value_or(false), std::move(callback)));
 }
 
 protocol::Response InspectorPageAgent::setBypassCSP(bool enabled) {
@@ -1620,7 +1623,7 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .setContentSize(cached_resource->GetResponse().DecodedBodyLength())
             .build();
     std::optional<base::Time> last_modified =
-        cached_resource->GetResponse().LastModified(*frame->GetDocument());
+        cached_resource->GetResponse().LastModified();
     if (last_modified) {
       resource_object->setLastModified(
           last_modified.value().InSecondsFSinceUnixEpoch());

@@ -18,7 +18,7 @@
 namespace device {
 
 // Converts a MAC address stored as an array of uint8_t to a string.
-std::string MacAddressAsString(const uint8_t mac_as_int[6]);
+std::string MacAddressAsString(base::span<const uint8_t, 6> mac_as_int);
 
 // Base class to promote code sharing between platform specific wifi data
 // providers. It's optional for specific platforms to derive this, but if they
@@ -32,8 +32,11 @@ class WifiDataProviderCommon : public WifiDataProvider {
   class WlanApiInterface {
    public:
     virtual ~WlanApiInterface() {}
-    // Gets wifi data for all visible access points.
-    virtual bool GetAccessPointData(WifiData::AccessPointDataSet* data) = 0;
+    // Gets wifi data for all visible access points. The callback will receive a
+    // nullptr on failure, or a (potentially empty) data set on success.
+    virtual void GetAccessPointData(
+        base::OnceCallback<void(std::unique_ptr<WifiData::AccessPointDataSet>)>
+            callback) = 0;
   };
 
   WifiDataProviderCommon();
@@ -59,6 +62,10 @@ class WifiDataProviderCommon : public WifiDataProvider {
  private:
   // Runs a scan. Calls the callbacks if new data is found.
   void DoWifiScanTask();
+
+  // The callback for when the scan is complete.
+  void OnWifiScanTaskDone(
+      std::unique_ptr<WifiData::AccessPointDataSet> new_access_point_data);
 
   // Will schedule a scan; i.e. enqueue DoWifiScanTask deferred task.
   void ScheduleNextScan(int interval);

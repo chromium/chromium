@@ -47,12 +47,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Completed"/>
 </enum>
 
-<enum name="PaymentRequestPrePurchaseQuery">
-  <int value="0" label="Other type of query"/>
-  <int value="1" label="Service Worker event"/>
-  <int value="2" label="Android intent"/>
-</enum>
-
 <!-- LINT.IfChange(PaymentRequestTryShowOutcome) -->
 
 <enum name="PaymentRequestTryShowOutcome">
@@ -95,7 +89,7 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="User wants to opt out of future SPC authentications"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/payments/content/android/spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java:SecurePaymentRequestOutcome) -->
+<!-- LINT.ThenChange(//components/payments/content/android/spc/java/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnController.java:SecurePaymentRequestOutcome, //components/payments/content/secure_payment_confirmation_controller.h:SecurePaymentRequestOutcome) -->
 
 </enums>
 

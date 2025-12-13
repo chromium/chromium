@@ -45,9 +45,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
 
 namespace password_manager_util {
 namespace {
@@ -142,11 +139,6 @@ class PasswordManagerUtilTest : public testing::Test {
         password_manager::prefs::kOfferToSavePasswordsEnabledGMS, true);
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutoSignInEnabledGMS, true);
-    pref_service_.registry()->RegisterBooleanPref(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        false);
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
     pref_service_.registry()->RegisterBooleanPref(
@@ -489,6 +481,28 @@ TEST(PasswordManagerUtil, GetMatchForUpdating_MatchUsernamePSLAnotherPassword) {
 }
 
 TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialPSLAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kPSL;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
+
+  EXPECT_EQ(&stored, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
+     GetMatchForUpdating_PasswordChangeCredentialGroupedAnotherPassword) {
+  PasswordForm stored = GetTestCredential();
+  stored.match_type = PasswordForm::MatchType::kGrouped;
+  PasswordForm parsed = GetTestCredential();
+  parsed.password_value = u"new_password";
+  parsed.type = PasswordForm::Type::kChangeSubmission;
+
+  EXPECT_EQ(nullptr, GetMatchForUpdating(parsed, {&stored}));
+}
+
+TEST(PasswordManagerUtil,
      GetMatchForUpdating_MatchUsernamePSLNewPasswordKnown) {
   PasswordForm stored = GetTestCredential();
   stored.match_type = PasswordForm::MatchType::kPSL;
@@ -674,128 +688,10 @@ TEST(PasswordManagerUtil, FindLoginWithChangedPassword) {
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillOnce(testing::ReturnRef(submitted_form));
 
-  EXPECT_EQ(*FindLoginWithChangedPassword(*form_manager.get()),
+  EXPECT_EQ(*FindChangedPasswordLoginWithBackup(*form_manager.get()),
             backup_password_match);
 }
 
-// TODO(crbug.com/378653046): Merge android and non-android tests when
-// kLoginDbDeprecationAndroid flag and kPasswordsUseUPMLocalAndSeparateStores
-// pref are gone. Merge into 2 tests: IsAbleToSavePasswords_Syncing and
-// IsAbleToSavePasswords_NotSyncing.
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(PasswordManagerUtilTest,
-       IsAbleToSavePasswords_Syncing_AfterLoginDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  // The pref shouldn't be relevant in this case, check, by setting it to off.
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
-  EnableSyncForTestAccount();
-
-  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
-      new password_manager::MockPasswordStoreInterface);
-  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
-      .WillRepeatedly(testing::Return(account_store.get()));
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(profile_store.get()));
-
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).WillOnce(Return(true));
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).Times(0);
-
-  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).WillOnce(Return(false));
-
-  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest,
-       IsAbleToSavePasswords_NotSyncing_AfterLoginDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  // The pref shouldn't be relevant in this case, check, by setting it to off.
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 0);
-  DisableSyncFeature();
-
-  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
-      new password_manager::MockPasswordStoreInterface);
-  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
-      .WillRepeatedly(testing::Return(account_store.get()));
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(profile_store.get()));
-
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).Times(0);
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(true));
-
-  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(false));
-
-  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_Syncing_AfterStoreSplit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
-  EnableSyncForTestAccount();
-
-  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
-      new password_manager::MockPasswordStoreInterface);
-  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
-      .WillRepeatedly(testing::Return(account_store.get()));
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(profile_store.get()));
-
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).Times(0);
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).WillOnce(Return(true));
-
-  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).WillOnce(Return(false));
-
-  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
-}
-
-TEST_F(PasswordManagerUtilTest,
-       IsAbleToSavePasswords_NotSyncing_AfterStoreSplit) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      password_manager::features::kLoginDbDeprecationAndroid);
-  pref_service()->SetInteger(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
-  DisableSyncFeature();
-
-  scoped_refptr<password_manager::MockPasswordStoreInterface> account_store(
-      new password_manager::MockPasswordStoreInterface);
-  scoped_refptr<password_manager::MockPasswordStoreInterface> profile_store(
-      new password_manager::MockPasswordStoreInterface);
-  EXPECT_CALL(mock_client_, GetAccountPasswordStore)
-      .WillRepeatedly(testing::Return(account_store.get()));
-  EXPECT_CALL(mock_client_, GetProfilePasswordStore)
-      .WillRepeatedly(testing::Return(profile_store.get()));
-
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).Times(0);
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(true));
-
-  EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
-
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(false));
-
-  EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
-}
-#else   // BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_Syncing) {
   EnableSyncForTestAccount();
 
@@ -808,12 +704,22 @@ TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_Syncing) {
   EXPECT_CALL(mock_client_, GetProfilePasswordStore)
       .WillRepeatedly(testing::Return(profile_store.get()));
 
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(true));
-  EXPECT_CALL(*account_store, IsAbleToSavePasswords).Times(0);
+  password_manager::MockPasswordStoreInterface* used_store =
+      profile_store.get();
+  password_manager::MockPasswordStoreInterface* unused_store =
+      account_store.get();
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, users with ConsentLevel::kSync save to the account store
+  // instead of the profile store. See go/upm-local-passwords for context
+  // (sorry, Googlers only).
+  std::swap(used_store, unused_store);
+#endif
+  EXPECT_CALL(*used_store, IsAbleToSavePasswords).WillOnce(Return(true));
+  EXPECT_CALL(*unused_store, IsAbleToSavePasswords).Times(0);
 
   EXPECT_TRUE(IsAbleToSavePasswords(&mock_client_));
 
-  EXPECT_CALL(*profile_store, IsAbleToSavePasswords).WillOnce(Return(false));
+  EXPECT_CALL(*used_store, IsAbleToSavePasswords).WillOnce(Return(false));
 
   EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
 }
@@ -839,6 +745,5 @@ TEST_F(PasswordManagerUtilTest, IsAbleToSavePasswords_NotSyncing) {
 
   EXPECT_FALSE(IsAbleToSavePasswords(&mock_client_));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager_util

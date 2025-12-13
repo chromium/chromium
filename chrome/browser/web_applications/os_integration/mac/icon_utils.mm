@@ -21,6 +21,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
 
 namespace {
@@ -115,11 +116,9 @@ IconGridParameters GetIconGridParameters(int base_size) {
 
 SkPath CreateMaskingIconGridBoundingBoxPath(int base_size,
                                             const IconGridParameters& params) {
-  SkPath path;
   SkRect rect = SkRect::MakeIWH(base_size, base_size)
                     .makeInset(params.inset, params.inset);
-  path.addRoundRect(rect, params.corner_radius, params.corner_radius);
-  return path;
+  return SkPath::RRect(rect, params.corner_radius, params.corner_radius);
 }
 
 // Scales the given icon down to fit appropriately within the masked area.

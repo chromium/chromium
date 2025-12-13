@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "media/base/android/android_util.h"
 #include "media/base/media_drm_storage.h"
 #include "url/origin.h"
 
@@ -50,35 +49,37 @@ class MediaDrmStorageBridge {
   // will record the time as provisioning time.
   void OnProvisioned(JNIEnv* env,
                      // Callback<Boolean>
-                     const base::android::JavaParamRef<jobject>& j_callback);
+                     const base::android::JavaRef<jobject>& j_callback);
 
   // Called by the java object to load session data into memory. |j_callback|
   // will return a null object if load fails.
   void OnLoadInfo(JNIEnv* env,
-                  const base::android::JavaParamRef<jbyteArray>& j_session_id,
+                  const base::android::JavaRef<jbyteArray>& j_session_id,
                   // Callback<PersistentInfo>
-                  const base::android::JavaParamRef<jobject>& j_callback);
+                  const base::android::JavaRef<jobject>& j_callback);
 
   // Called by the java object to persistent session data.
   void OnSaveInfo(JNIEnv* env,
                   // PersistentInfo
-                  const base::android::JavaParamRef<jobject>& j_persist_info,
+                  const base::android::JavaRef<jobject>& j_persist_info,
                   // Callback<Boolean>
-                  const base::android::JavaParamRef<jobject>& j_callback);
+                  const base::android::JavaRef<jobject>& j_callback);
 
   // Called by the java object to remove persistent session data.
   void OnClearInfo(JNIEnv* env,
-                   const base::android::JavaParamRef<jbyteArray>& j_session_id,
+                   const base::android::JavaRef<jbyteArray>& j_session_id,
                    // Callback<Boolean>
-                   const base::android::JavaParamRef<jobject>& j_callback);
+                   const base::android::JavaRef<jobject>& j_callback);
 
  private:
-  void RunAndroidBoolCallback(JavaObjectPtr j_callback, bool success);
+  void RunAndroidBoolCallback(
+      base::android::ScopedJavaGlobalRef<jobject> j_callback,
+      bool success);
   void OnInitialized(InitCB init_cb,
                      bool success,
                      const MediaDrmStorage::MediaDrmOriginId& origin_id);
   void OnSessionDataLoaded(
-      JavaObjectPtr j_callback,
+      const base::android::ScopedJavaGlobalRef<jobject>& j_callback,
       const std::string& session_id,
       std::unique_ptr<MediaDrmStorage::SessionData> session_data);
 

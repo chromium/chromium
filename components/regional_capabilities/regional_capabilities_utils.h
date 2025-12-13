@@ -24,13 +24,15 @@ namespace regional_capabilities {
 enum class SearchEngineListType;
 enum class Program;
 
-// Returns whether `country_id` refers to a country member of the European
-// Economic Area.
-// See `//components/country_codes` for the Country ID format.
-bool IsEeaCountry(country_codes::CountryId country_id);
+// Override of the regional program set from the
+// `switches::kSearchEngineChoiceCountry` command line flag.
+enum class RegionalProgramOverride {
+  // Display the program for Japan
+  kTaiyaki,
+};
 
-// The state of the search engine choice country command line override.
-// See `switches::kSearchEngineChoiceCountry`.
+// Override of the search engines list set from the
+// `switches::kSearchEngineChoiceCountry` command line flag.
 enum class SearchEngineCountryListOverride {
   // Display all the search engines used in the EEA region.
   kEeaAll,
@@ -38,8 +40,12 @@ enum class SearchEngineCountryListOverride {
   kEeaDefault,
 };
 
+// The state of the search engine choice country command line override.
+// See `switches::kSearchEngineChoiceCountry`.
 using SearchEngineCountryOverride =
-    std::variant<country_codes::CountryId, SearchEngineCountryListOverride>;
+    std::variant<country_codes::CountryId,
+                 RegionalProgramOverride,
+                 SearchEngineCountryListOverride>;
 
 // Gets the search engine country command line override.
 // Returns an int if the country id is passed to the command line or a

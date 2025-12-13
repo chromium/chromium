@@ -5,11 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_UNIQUE_FONT_SELECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_UNIQUE_FONT_SELECTOR_H_
 
+#include <optional>
+
+#include "base/memory/memory_pressure_listener.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/wtf/vector_backed_linked_list.h"
 
@@ -24,10 +28,14 @@ class FontSelectorClient;
 // equivalent blink::FontDescription instances.
 class CORE_EXPORT UniqueFontSelector
     : public GarbageCollected<UniqueFontSelector>,
-      public MemoryPressureListener {
+      public base::MemoryPressureListener {
+  USING_PRE_FINALIZER(UniqueFontSelector, Dispose);
+
  public:
-  UniqueFontSelector(FontSelector* base_selector, bool enable_cache);
-  void Trace(Visitor* visitor) const override;
+  explicit UniqueFontSelector(FontSelector* base_selector);
+  void Trace(Visitor* visitor) const;
+
+  void Dispose();
 
   const Font* FindOrCreateFont(const FontDescription& description);
   void DidSwitchFrame();
@@ -38,8 +46,11 @@ class CORE_EXPORT UniqueFontSelector
   void RegisterForInvalidationCallbacks(FontSelectorClient* client);
 
  private:
-  // MemoryPressureListener override:
-  void OnPurgeMemory() override;
+  friend class OffscreenCanvasTest;
+  friend class UniqueFontSelectorTest;
+
+  // base::MemoryPressureListener:
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   Member<FontSelector> base_selector_;
 
@@ -63,7 +74,8 @@ class CORE_EXPORT UniqueFontSelector
   VectorBackedLinkedList<LruListKey> lru_list_;
   uint32_t frame_generation_ = 0;
 
-  const bool enable_cache_;
+  std::optional<MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 };
 
 }  // namespace blink

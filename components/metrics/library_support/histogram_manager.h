@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/synchronization/lock.h"
@@ -39,8 +38,6 @@ class HistogramManager : public base::HistogramFlattener {
   static HistogramManager* GetInstance();
 
  private:
-  friend struct base::LazyInstanceTraitsBase<HistogramManager>;
-
   // base::HistogramFlattener:
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override;

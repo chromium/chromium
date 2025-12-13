@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!--
+@WAIT-FOR:Ready
+@EXECUTE-AND-WAIT-FOR:selectSwitch()
+@EXECUTE-AND-WAIT-FOR:deselectSwitch()
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Material Web Switches</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady } from "./resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-switch",
+            "md-icon"
+        ];
+
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const switches = [
+                { text: "Off switch", id: "test-switch" },
+                { text: "On switch", checked: true },
+                { text: "Disabled off", disabled: true },
+                { text: "Disabled on", disabled: true, checked: true },
+                { text: "Required switch", required: true },
+                {
+                    text: "Switch with icons",
+                    icons: true,
+                    onIcon: "check",
+                    offIcon: "close"
+                }
+            ];
+            switches.forEach(switchInfo => {
+                const switchEl = document.createElement("md-switch");
+                switchEl.textContent = switchInfo.text;
+                if (switchInfo.id) {
+                    switchEl.id = switchInfo.id;
+                }
+                if (switchInfo.checked) {
+                    switchEl.checked = true;
+                }
+                if (switchInfo.disabled) {
+                    switchEl.disabled = true;
+                }
+                if (switchInfo.required) {
+                    switchEl.required = true;
+                }
+                if (switchInfo.icons) {
+                    switchEl.icons = true;
+                    const onIcon = document.createElement("md-icon");
+                    onIcon.slot = "on-icon";
+                    onIcon.textContent = switchInfo.onIcon;
+                    const offIcon = document.createElement("md-icon");
+                    offIcon.slot = "off-icon";
+                    offIcon.textContent = switchInfo.offIcon;
+                    switchEl.appendChild(onIcon);
+                    switchEl.appendChild(offIcon);
+                }
+                statusDiv.appendChild(switchEl);
+            });
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    async function selectSwitch() {
+        const switchEl = document.getElementById("test-switch");
+        if (switchEl) {
+            switchEl.selected = true;
+            await switchEl.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Switch Selected";
+            statusDiv.appendChild(statusText);
+            return "Switch Selected";
+        }
+        return "Failed to select switch";
+    }
+
+    async function deselectSwitch() {
+        const switchEl = document.getElementById("test-switch");
+        if (switchEl) {
+            switchEl.selected = false;
+            await switchEl.updateComplete;
+            const statusDiv = document.getElementById("status");
+            const statusText = document.createElement("div");
+            statusText.textContent = "Switch Deselected";
+            statusDiv.appendChild(statusText);
+            return "Switch Deselected";
+        }
+        return "Failed to deselect switch";
+    }
+</script>
+</html>

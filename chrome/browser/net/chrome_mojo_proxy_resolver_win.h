@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_NET_CHROME_MOJO_PROXY_RESOLVER_WIN_H_
 
 #include "base/time/time.h"
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "url/gurl.h"
 
 // WindowsSystemProxyResolver that acts as a proxy to the proxy_resolver_win
@@ -15,7 +15,7 @@
 //
 // ChromeMojoProxyResolverWin must be created and used only on the UI thread.
 class ChromeMojoProxyResolverWin
-    : public proxy_resolver_win::mojom::WindowsSystemProxyResolver {
+    : public proxy_resolver::mojom::SystemProxyResolver {
  public:
   explicit ChromeMojoProxyResolverWin(const base::TimeDelta& idle_timeout);
   ChromeMojoProxyResolverWin(const ChromeMojoProxyResolverWin&) = delete;
@@ -25,14 +25,14 @@ class ChromeMojoProxyResolverWin
 
   // Convenience method that creates a self-owned WindowsSystemProxyResolver and
   // returns a remote endpoint to control it.
-  static mojo::PendingRemote<WindowsSystemProxyResolver>
+  static mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
   CreateWithSelfOwnedReceiver();
 
   // The test version allows for setting a custom idle timeout.
-  static mojo::PendingRemote<WindowsSystemProxyResolver>
+  static mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
   CreateWithSelfOwnedReceiverForTesting(const base::TimeDelta& idle_timeout);
 
-  // proxy_resolver_win::mojom::WindowsSystemProxyResolver implementation:
+  // proxy_resolver::mojom::SystemProxyResolver implementation:
   void GetProxyForUrl(const GURL& url,
                       GetProxyForUrlCallback callback) override;
 

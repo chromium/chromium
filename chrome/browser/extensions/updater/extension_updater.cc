@@ -52,6 +52,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_update_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -68,6 +69,8 @@
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using base::RandDouble;
 using base::UnguessableToken;
 using content::BrowserThread;
@@ -77,8 +80,6 @@ using PingResult = extensions::ExtensionDownloaderDelegate::PingResult;
 namespace extensions {
 
 namespace {
-
-bool g_should_immediately_update = false;
 
 // For sanity checking on update frequency - enforced in release mode only.
 #if defined(NDEBUG)
@@ -95,9 +96,7 @@ bool g_force_use_update_service_for_tests = false;
 // is a special sentinel value that means "never pinged", and other negative
 // values don't make sense.
 int SanitizeDays(int days) {
-  if (days < 0)
-    return 0;
-  return days;
+  return days < 0 ? 0 : days;
 }
 
 // Calculates the value to use for the ping days parameter.
@@ -111,10 +110,12 @@ int CalculatePingDaysForExtension(const base::Time& last_ping_day) {
 
 int CalculateActivePingDays(const base::Time& last_active_ping_day,
                             bool hasActiveBit) {
-  if (!hasActiveBit)
+  if (!hasActiveBit) {
     return 0;
-  if (last_active_ping_day.is_null())
+  }
+  if (last_active_ping_day.is_null()) {
     return extensions::ManifestFetchData::kNeverPinged;
+  }
   return SanitizeDays((base::Time::Now() - last_active_ping_day).InDays());
 }
 
@@ -230,10 +231,7 @@ void ExtensionUpdater::Start() {
   alive_ = true;
   // Check soon, and set up the first delayed check.
   if (!g_skip_scheduled_checks_for_tests) {
-    if (g_should_immediately_update)
-      CheckNow({});
-    else
-      CheckSoon();
+    CheckSoon();
     ScheduleNextCheck();
   }
 }
@@ -270,16 +268,18 @@ void ExtensionUpdater::ScheduleNextCheck() {
 }
 
 void ExtensionUpdater::NextCheck() {
-  if (!alive_)
+  if (!alive_) {
     return;
+  }
   CheckNow(CheckParams());
   ScheduleNextCheck();
 }
 
 void ExtensionUpdater::CheckSoon() {
   DCHECK(alive_);
-  if (will_check_soon_)
+  if (will_check_soon_) {
     return;
+  }
   if (content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
           ->PostTask(FROM_HERE,
                      base::BindOnce(&ExtensionUpdater::DoCheckSoon,
@@ -322,11 +322,6 @@ void ExtensionUpdater::SetExtensionCacheForTesting(
 void ExtensionUpdater::SetExtensionDownloaderForTesting(
     std::unique_ptr<ExtensionDownloader> downloader) {
   downloader_.swap(downloader);
-}
-
-// static
-void ExtensionUpdater::UpdateImmediatelyForFirstRun() {
-  g_should_immediately_update = true;
 }
 
 void ExtensionUpdater::SetBackoffPolicyForTesting(
@@ -391,8 +386,9 @@ void ExtensionUpdater::AddToDownloader(
     // An extension might be overwritten by policy, and have its update url
     // changed. Make sure existing extensions aren't fetched again, if a
     // pending fetch for an extension with the same id already exists.
-    if (base::Contains(pending_ids, extension_id))
+    if (base::Contains(pending_ids, extension_id)) {
       continue;
+    }
 
     if (extension.location() == mojom::ManifestLocation::kExternalPolicy &&
         kiosk_crx_manifest_update_url_ignored) {
@@ -426,8 +422,9 @@ bool ExtensionUpdater::AddExtensionToDownloader(
   // data.  At the moment there is no extra data that an extension can
   // communicate to the gallery update servers.
   std::string update_url_data;
-  if (!ManifestURL::UpdatesFromGallery(&extension))
+  if (!ManifestURL::UpdatesFromGallery(&extension)) {
     update_url_data = GetUpdateURLData(extension_prefs_, extension.id());
+  }
 
   return downloader_->AddPendingExtension(ExtensionDownloaderTask(
       extension.id(), update_url, extension.location(),
@@ -443,11 +440,20 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
     will_check_soon_ = false;
   }
 
+  std::unique_ptr<ScopedProfileKeepAlive> keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(
+          profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
+  if (!keep_alive) {
+    // Profile will be destroyed soon, don't start an update check.
+    return;
+  }
+
   int request_id = next_request_id_++;
 
   VLOG(2) << "Starting update check " << request_id;
-  if (params.ids.empty())
+  if (params.ids.empty()) {
     NotifyStarted();
+  }
 
   DCHECK(alive_);
 
@@ -455,8 +461,7 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
   request.update_found_callback = params.update_found_callback;
   request.callback = std::move(params.callback);
   request.install_immediately = params.install_immediately;
-  request.profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kExtensionUpdater);
+  request.profile_keep_alive = std::move(keep_alive);
 
   EnsureDownloaderCreated();
 
@@ -502,8 +507,9 @@ void ExtensionUpdater::CheckNow(CheckParams params) {
         // It is possible that the user deletes the extension between the time
         // it was detected as corrupted and now. In that case, `extension` will
         // be null and we should just skip it.
-        if (!extension)
+        if (!extension) {
           continue;
+        }
         // Policy installed extensions are not necessarily from the webstore,
         // but should have an `info` and never hit this path.
         DCHECK(extension->from_webstore()) << "Extension with id " << pending_id
@@ -750,14 +756,16 @@ bool ExtensionUpdater::GetExtensionExistingVersion(const ExtensionId& id,
   DCHECK(alive_);
   const Extension* extension =
       registry_->GetExtensionById(id, ExtensionRegistry::EVERYTHING);
-  if (!extension)
+  if (!extension) {
     return false;
+  }
   const Extension* update =
       delayed_install_manager_->GetPendingExtensionUpdate(id);
-  if (update)
+  if (update) {
     *version = update->VersionString();
-  else
+  } else {
     *version = extension->VersionString();
+  }
   return true;
 }
 
@@ -779,8 +787,9 @@ ExtensionUpdateData ExtensionUpdater::GetExtensionUpdateData(
 void ExtensionUpdater::UpdatePingData(const ExtensionId& id,
                                       const PingResult& ping_result) {
   DCHECK(alive_);
-  if (ping_result.did_ping)
+  if (ping_result.did_ping) {
     extension_prefs_->SetLastPingDay(id, ping_result.day_start);
+  }
   if (extension_prefs_->GetActiveBit(id)) {
     extension_prefs_->SetActiveBit(id, false);
     extension_prefs_->SetLastActivePingDay(id, ping_result.day_start);
@@ -814,25 +823,29 @@ void ExtensionUpdater::CleanUpCrxFileIfNeeded(const base::FilePath& crx_path,
 
 bool ExtensionUpdater::CanUseUpdateService(
     const ExtensionId& extension_id) const {
-  if (g_force_use_update_service_for_tests)
+  if (g_force_use_update_service_for_tests) {
     return true;
+  }
 
   // Won't update extensions with empty IDs.
-  if (extension_id.empty())
+  if (extension_id.empty()) {
     return false;
+  }
 
   // Update service can only update extensions that have been installed on the
   // system.
   const Extension* extension = registry_->GetInstalledExtension(extension_id);
-  if (extension == nullptr)
+  if (extension == nullptr) {
     return false;
+  }
 
   // Furthermore, we can only update extensions that were installed from the
   // default webstore or extensions with empty update URLs not converted from
   // user scripts.
   GURL update_url = GetEffectiveUpdateURL(*extension);
-  if (update_url.is_empty())
+  if (update_url.is_empty()) {
     return !extension->converted_from_user_script();
+  }
   return extension_urls::IsWebstoreUpdateUrl(update_url);
 }
 
@@ -1029,8 +1042,9 @@ void ExtensionUpdater::OnInstallerDone(
 }
 
 void ExtensionUpdater::NotifyStarted() {
-  if (updating_started_callback_)
+  if (updating_started_callback_) {
     updating_started_callback_.Run();
+  }
 }
 
 void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
@@ -1044,11 +1058,13 @@ void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
 void ExtensionUpdater::NotifyIfFinished(int request_id) {
   DCHECK(base::Contains(requests_in_progress_, request_id));
   InProgressCheck& request = requests_in_progress_[request_id];
-  if (!request.in_progress_ids.empty() || request.awaiting_update_service)
+  if (!request.in_progress_ids.empty() || request.awaiting_update_service) {
     return;  // This request is not done yet.
+  }
   VLOG(2) << "Finished update check " << request_id;
-  if (!request.callback.is_null())
+  if (!request.callback.is_null()) {
     std::move(request.callback).Run();
+  }
   requests_in_progress_.erase(request_id);
 }
 

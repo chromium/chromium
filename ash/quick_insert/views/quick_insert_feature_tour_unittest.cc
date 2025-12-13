@@ -14,6 +14,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
@@ -63,7 +64,7 @@ TEST_F(QuickInsertFeatureTourTest,
 }
 
 TEST_F(QuickInsertFeatureTourTest,
-       ClickingLearnMoreButtonClosesWidgetAndTriggersCallback) {
+       ClickingLearnMoreLinkClosesWidgetAndTriggersCallback) {
   QuickInsertFeatureTour feature_tour;
   base::test::TestFuture<void> learn_more_future;
   feature_tour.MaybeShowForFirstUse(
@@ -71,9 +72,9 @@ TEST_F(QuickInsertFeatureTourTest,
       learn_more_future.GetRepeatingCallback(), base::DoNothing());
   views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
 
-  const views::Button* button = feature_tour.learn_more_button_for_testing();
-  ASSERT_NE(button, nullptr);
-  LeftClickOn(button);
+  const views::Link* link = feature_tour.learn_more_link_for_testing();
+  ASSERT_NE(link, nullptr);
+  LeftClickOn(link);
 
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
   EXPECT_TRUE(learn_more_future.Wait());
@@ -94,6 +95,42 @@ TEST_F(QuickInsertFeatureTourTest,
   views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
   EXPECT_TRUE(completed_future.Wait());
   EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+}
+
+TEST_F(QuickInsertFeatureTourTest,
+       PressingEscClosesWidgetWithoutTriggeringCallback) {
+  QuickInsertFeatureTour feature_tour;
+  base::test::TestFuture<void> completed_future;
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), completed_future.GetRepeatingCallback());
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  ASSERT_TRUE(feature_tour.widget_for_testing()->IsVisible());
+
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE);
+
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+  EXPECT_FALSE(completed_future.IsReady());
+}
+
+TEST_F(QuickInsertFeatureTourTest,
+       PressingCloseButtonClosesWidgetWithoutTriggeringCallback) {
+  QuickInsertFeatureTour feature_tour;
+  base::test::TestFuture<void> completed_future;
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), completed_future.GetRepeatingCallback());
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  ASSERT_TRUE(feature_tour.widget_for_testing()->IsVisible());
+
+  const views::Button* button = feature_tour.close_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  LeftClickOn(button);
+
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+  EXPECT_FALSE(completed_future.IsReady());
 }
 
 TEST_F(QuickInsertFeatureTourTest, ShouldNotShowDialogSecondTime) {

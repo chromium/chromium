@@ -31,7 +31,7 @@ class PLATFORM_EXPORT BidiParagraph {
 
  public:
   BidiParagraph() = default;
-  BidiParagraph(const WTF::String& text,
+  BidiParagraph(const String& text,
                 std::optional<TextDirection> base_direction) {
     SetParagraph(text, base_direction);
   }
@@ -41,8 +41,7 @@ class PLATFORM_EXPORT BidiParagraph {
   //
   // Returns false on failure. Nothing other than the destructor should be
   // called.
-  bool SetParagraph(const WTF::String&,
-                    std::optional<TextDirection> base_direction);
+  bool SetParagraph(const String&, std::optional<TextDirection> base_direction);
 
   // @return the entire text is unidirectional.
   bool IsUnidirectional() const {
@@ -73,8 +72,8 @@ class PLATFORM_EXPORT BidiParagraph {
   // string with a Unicode BiDi override character (LRO or ROL) and PDF.
   // https://unicode.org/reports/tr9/#Explicit_Directional_Overrides
   // https://unicode.org/reports/tr9/#Terminating_Explicit_Directional_Embeddings_and_Overrides
-  static WTF::String StringWithDirectionalOverride(const StringView& text,
-                                                   TextDirection direction);
+  static String StringWithDirectionalOverride(const StringView& text,
+                                              TextDirection direction);
 
   struct Run {
     Run(unsigned start, unsigned end, UBiDiLevel level)
@@ -98,7 +97,7 @@ class PLATFORM_EXPORT BidiParagraph {
   // Get a list of `Run` in the logical order (before bidi reorder.)
   // `text` must be the same one as `SetParagraph`.
   // This is higher-level API for `GetLogicalRun`.
-  void GetLogicalRuns(const WTF::String& text, Runs* runs) const;
+  void GetLogicalRuns(const String& text, Runs* runs) const;
 
   // Returns the end offset of a logical run that starts from the |start|
   // offset.
@@ -107,7 +106,7 @@ class PLATFORM_EXPORT BidiParagraph {
   // Get a list of `Run` in the visual order (after bidi reorder.)
   // `text` must be the same one as `SetParagraph`.
   // This is higher-level API for `GetLogicalRuns` and `IndicesInVisualOrder`.
-  void GetVisualRuns(const WTF::String& text, Runs* runs) const;
+  void GetVisualRuns(const String& text, Runs* runs) const;
 
   // Create a list of indices in the visual order.
   // A wrapper for ICU |ubidi_reorderVisual()|.

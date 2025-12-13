@@ -12,7 +12,7 @@
 
 @class AccountErrorUIInfo;
 class ProfileIOS;
-@protocol SyncPresenter;
+@protocol SyncPresenterCommands;
 
 namespace web {
 class WebState;
@@ -50,7 +50,7 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error);
 // Returns true if an infobar was brought up.
 bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
-                       id<SyncPresenter> presenter,
+                       id<SyncPresenterCommands> sync_presenter_handler,
                        SyncErrorInfoBarTrigger trigger);
 
 // Logs sync error infobar dismissal metric for a given `error`.

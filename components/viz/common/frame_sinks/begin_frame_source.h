@@ -76,13 +76,6 @@ class VIZ_COMMON_EXPORT BeginFrameObserver {
 
   // Whether the observer also wants to receive animate_only BeginFrames.
   virtual bool WantsAnimateOnlyBeginFrames() const = 0;
-
-  // Indicates whether this observer is the root frame sink. This helps in
-  // a workaround for input jank, allowing us to deliver BeginFrames to the
-  // root last, avoiding a race.
-  // TODO(ericrk): Remove this once we have a longer-term fix.
-  // https://crbug.com/947717
-  virtual bool IsRoot() const;
 };
 
 // Simple base class which implements a BeginFrameObserver which checks the
@@ -143,6 +136,18 @@ class VIZ_COMMON_EXPORT DynamicBeginFrameDeadlineOffsetSource {
 // all BeginFrameSources *must* provide.
 class VIZ_COMMON_EXPORT BeginFrameSource {
  public:
+  // The `SchedulerClient` will be notified of the `BeginFrame` after all
+  // `BeginFrameObservers` have first been notified. Thus guaranteeing that we
+  // will know the expected state of the observers for making scheduling
+  // decisions.
+  class VIZ_COMMON_EXPORT SchedulerClient {
+   public:
+    virtual ~SchedulerClient() = default;
+    virtual void OnBeginFrameForScheduling(const BeginFrameArgs& args) = 0;
+  };
+
+  BeginFrameSource();
+
   class VIZ_COMMON_EXPORT BeginFrameArgsGenerator {
    public:
     BeginFrameArgsGenerator() = default;
@@ -198,6 +203,8 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // RequestCallbackOnGpuAvailable() for more details.
   void SetIsGpuBusy(bool busy);
 
+  void SetSchedulerClient(SchedulerClient* scheduler_client);
+
   // BeginFrameObservers use DidFinishFrame to provide back pressure to a frame
   // source about frame processing (rather than toggling SetNeedsBeginFrames
   // every frame). For example, the BackToBackFrameSource uses them to make sure
@@ -230,6 +237,9 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
 #if BUILDFLAG(IS_MAC)
   void RecordBeginFrameSourceAccuracy(base::TimeDelta delta);
 #endif
+  // Notify the `SchedulerClient` of the `BeginFrame`. This is to be called by
+  // subclasses only after having first called all observers.
+  void IssueBeginFrameToSchedulerClient(const BeginFrameArgs& args);
 
  private:
   // The higher 32 bits are used for a process restart id that changes if a
@@ -263,6 +273,7 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   // every 3600 frames, which is equivalent to every minute on a 60Hz monitors .
   int frames_since_last_recording_ = 0;
 #endif
+  raw_ptr<SchedulerClient> scheduler_client_ = nullptr;
 };
 
 // A BeginFrameSource that does nothing.

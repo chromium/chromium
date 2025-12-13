@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -213,10 +214,10 @@ void SetMediaKeysHandler::ClearExistingMediaKeys() {
       //       attribute to decrypt media data and remove the association
       //       with the media element.
       // (All 3 steps handled as needed in Chromium.)
-      SuccessCallback success_callback = WTF::BindOnce(
-          &SetMediaKeysHandler::SetNewMediaKeys, WrapPersistent(this));
-      FailureCallback failure_callback = WTF::BindOnce(
-          &SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
+      SuccessCallback success_callback =
+          BindOnce(&SetMediaKeysHandler::SetNewMediaKeys, WrapPersistent(this));
+      FailureCallback failure_callback =
+          BindOnce(&SetMediaKeysHandler::ClearFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));
@@ -245,9 +246,9 @@ void SetMediaKeysHandler::SetNewMediaKeys() {
     //       (Handled in Chromium).
     if (element_->GetWebMediaPlayer()) {
       SuccessCallback success_callback =
-          WTF::BindOnce(&SetMediaKeysHandler::Finish, WrapPersistent(this));
+          BindOnce(&SetMediaKeysHandler::Finish, WrapPersistent(this));
       FailureCallback failure_callback =
-          WTF::BindOnce(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
+          BindOnce(&SetMediaKeysHandler::SetFailed, WrapPersistent(this));
       ContentDecryptionModuleResult* result =
           MakeGarbageCollected<SetContentDecryptionModuleResult>(
               std::move(success_callback), std::move(failure_callback));
@@ -406,13 +407,11 @@ ScriptPromise<IDLUndefined> HTMLMediaElementEncryptedMedia::setMediaKeys(
 
 // Create a MediaEncryptedEvent for WD EME.
 static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
-                                   const unsigned char* init_data,
-                                   unsigned init_data_length) {
+                                   base::span<const uint8_t> init_data) {
   MediaEncryptedEventInit* initializer = MediaEncryptedEventInit::Create();
   initializer->setInitDataType(
       EncryptedMediaUtils::ConvertFromInitDataType(init_data_type));
-  initializer->setInitData(DOMArrayBuffer::Create(
-      UNSAFE_TODO(base::span(init_data, init_data_length))));
+  initializer->setInitData(DOMArrayBuffer::Create(init_data));
   initializer->setBubbles(false);
   initializer->setCancelable(false);
 
@@ -422,17 +421,16 @@ static Event* CreateEncryptedEvent(media::EmeInitDataType init_data_type,
 
 void HTMLMediaElementEncryptedMedia::Encrypted(
     media::EmeInitDataType init_data_type,
-    const unsigned char* init_data,
-    unsigned init_data_length) {
+    base::span<const uint8_t> init_data) {
   DVLOG(EME_LOG_LEVEL) << __func__;
 
   Event* event;
   if (GetSupplementable()->IsMediaDataCorsSameOrigin()) {
-    event = CreateEncryptedEvent(init_data_type, init_data, init_data_length);
+    event = CreateEncryptedEvent(init_data_type, init_data);
   } else {
     // Current page is not allowed to see content from the media file,
     // so don't return the initData. However, they still get an event.
-    event = CreateEncryptedEvent(media::EmeInitDataType::UNKNOWN, nullptr, 0);
+    event = CreateEncryptedEvent(media::EmeInitDataType::UNKNOWN, {});
     GetSupplementable()->GetExecutionContext()->AddConsoleMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kJavaScript,

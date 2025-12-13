@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

@@ -71,16 +71,14 @@ public class CastContentWindowAndroid
     @SuppressWarnings("unused")
     @CalledByNative
     private void createWindowForWebContents(
-            WebContents webContents, String appId, boolean shouldRequestAudioFocus) {
+            WebContents webContents, boolean shouldRequestAudioFocus) {
         Log.d(
                 TAG,
-                "Creating window for WebContents: sessionId=%s, appId=%s, audioFocus=%b",
+                "Creating window for WebContents: sessionId=%s, audioFocus=%b",
                 mSessionId,
-                appId,
                 shouldRequestAudioFocus);
         mStartParams =
-                new CastWebContentsComponent.StartParams(
-                        webContents, appId, shouldRequestAudioFocus);
+                new CastWebContentsComponent.StartParams(webContents, shouldRequestAudioFocus);
         maybeStartComponent();
     }
 
@@ -109,17 +107,6 @@ public class CastContentWindowAndroid
     @CalledByNative
     private void enableTouchInput(boolean enabled) {
         mComponent.enableTouchInput(enabled);
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private void setAllowPictureInPicture(boolean allowPictureInPicture) {
-        mComponent.setAllowPictureInPicture(allowPictureInPicture);
-    }
-
-    @CalledByNative
-    private void setMediaPlaying(boolean mediaPlaying) {
-        mComponent.setMediaPlaying(mediaPlaying);
     }
 
     @SuppressWarnings("unused")

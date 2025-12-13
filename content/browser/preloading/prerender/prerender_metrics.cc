@@ -56,8 +56,8 @@ int32_t InterfaceNameHasher(const std::string& interface_name) {
 int32_t HeaderMismatchHasher(const std::string& header,
                              HeaderMismatchType mismatch_type) {
   // Throw two bits away to encode the mismatch type.
-  // {0---30} bits are the encoded hash number.
-  // {31, 32} bits encode the mismatch type.
+  // {0---29} bits are the encoded hash number.
+  // {30, 31} bits encode the mismatch type.
   static_assert(HeaderMismatchType::kMaxValue == 3u,
                 "HeaderMismatchType should use 2 bits at most.");
   return static_cast<int32_t>(base::HashMetricNameAs32Bits(header) << 2 |

@@ -81,7 +81,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   V8MLOperandDataType dataType() const;
   Vector<uint32_t> shape() const;
 
-  MLConstantOperand const* AsConstantOperand() const;
+  MLConstantOperand* AsConstantOperand();
 
   void AddDependentOperator(MLOperator* ml_operator);
 
@@ -92,7 +92,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
 
   // Represents a valid MLOperandDescriptor.
   // https://www.w3.org/TR/webnn/#dictdef-mloperanddescriptor
-  const webnn::OperandDescriptor descriptor_;
+  webnn::OperandDescriptor descriptor_;
 
   // The name of input operand. According to
   // https://www.w3.org/TR/webnn/#dom-mlgraphbuilder-input, only input operand

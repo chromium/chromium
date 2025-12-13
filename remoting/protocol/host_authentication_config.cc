@@ -14,11 +14,13 @@ HostAuthenticationConfig::HostAuthenticationConfig(
     scoped_refptr<RsaKeyPair> key_pair)
     : local_cert(local_cert), key_pair(key_pair) {}
 
-HostAuthenticationConfig::~HostAuthenticationConfig() = default;
 HostAuthenticationConfig::HostAuthenticationConfig(
-    const HostAuthenticationConfig&) = default;
-HostAuthenticationConfig::HostAuthenticationConfig(HostAuthenticationConfig&&) =
-    default;
+    const HostAuthenticationConfig& other) = default;
+
+HostAuthenticationConfig& HostAuthenticationConfig::operator=(
+    const HostAuthenticationConfig& other) = default;
+
+HostAuthenticationConfig::~HostAuthenticationConfig() = default;
 
 void HostAuthenticationConfig::AddSessionAuthzAuth(
     scoped_refptr<SessionAuthzServiceClientFactory> factory) {

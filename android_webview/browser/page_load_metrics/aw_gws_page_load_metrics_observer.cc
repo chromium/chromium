@@ -22,4 +22,15 @@ bool AwGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
   return false;
 }
 
+bool AwGWSPageLoadMetricsObserver::IsSignedIn(
+    content::BrowserContext* browser_context) const {
+  // Not implemented. Always returns false.
+  return false;
+}
+
+content::BrowserContext*
+AwGWSPageLoadMetricsObserver::GetOriginalBrowserContext() {
+  return nullptr;
+}
+
 }  // namespace android_webview

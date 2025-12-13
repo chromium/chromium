@@ -80,7 +80,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::SetConsumer(
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
     JNIEnv* env,
     jint job_id,
-    const base::android::JavaParamRef<jbyteArray>& passwords) {
+    const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   consumer_->OnCompleteWithLogins(
@@ -91,7 +91,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithLogins(
 void PasswordStoreAndroidBackendReceiverBridgeImpl::OnCompleteWithBrandedLogins(
     JNIEnv* env,
     jint job_id,
-    const base::android::JavaParamRef<jbyteArray>& passwords) {
+    const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(consumer_);
   consumer_->OnCompleteWithLogins(
@@ -103,7 +103,7 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::
     OnCompleteWithAffiliatedLogins(
         JNIEnv* env,
         jint job_id,
-        const base::android::JavaParamRef<jbyteArray>& passwords) {
+        const base::android::JavaRef<jbyteArray>& passwords) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   CHECK(consumer_);
   consumer_->OnCompleteWithLogins(
@@ -150,3 +150,5 @@ void PasswordStoreAndroidBackendReceiverBridgeImpl::OnLoginChanged(
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordStoreAndroidBackendReceiverBridgeImpl)

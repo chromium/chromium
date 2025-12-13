@@ -12,7 +12,7 @@
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"

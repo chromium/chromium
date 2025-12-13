@@ -16,6 +16,8 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "components/version_info/channel.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/prefs_helper.h"
@@ -66,6 +68,7 @@ class RulesetManagerTest : public DNRTestBase {
   using RequestActionType = RequestAction::Type;
 
   // Helper to create a composite matcher instance for the given |rules|.
+  // TODO(crbug.com/40804030): Remove has_background_script argument.
   void CreateMatcherForRules(
       const std::vector<TestRule>& rules,
       const std::string& extension_dirname,
@@ -77,9 +80,10 @@ class RulesetManagerTest : public DNRTestBase {
 
     // Create extension directory.
     ASSERT_TRUE(base::CreateDirectory(extension_dir));
-    ConfigFlag flags = has_background_script
-                           ? ConfigFlag::kConfig_HasBackgroundScript
-                           : ConfigFlag::kConfig_None;
+    auto flags = has_background_script
+                     ? (ConfigFlag::kConfig_HasBackgroundScript |
+                        ConfigFlag::kConfig_DEPRECATED_ManifestVersion2)
+                     : ConfigFlag::kConfig_None;
 
     constexpr char kRulesetID[] = "id";
     constexpr char kJSONRulesFilename[] = "rules_file.json";
@@ -428,7 +432,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_1 = last_loaded_extension();
     manager()->AddRuleset(extension_1->id(), std::move(matcher));
   }
@@ -446,7 +450,7 @@ TEST_P(RulesetManagerTest, ExtensionScheme) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_2", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_2 = last_loaded_extension();
     manager()->AddRuleset(extension_2->id(), std::move(matcher));
   }
@@ -697,8 +701,7 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
     std::vector<std::string> host_permissions = {"*://yahoo.com/*",
                                                  "*://example.com/*"};
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-        {rule}, "redirecting extension", &redirect_matcher, host_permissions,
-        false /* has_background_script */));
+        {rule}, "redirecting extension", &redirect_matcher, host_permissions));
   }
   std::string redirect_extension_id = last_loaded_extension()->id();
 
@@ -710,9 +713,8 @@ TEST_P(RulesetManagerTest, HostPermissionForInitiator) {
     TestRule rule = CreateGenericRule();
     rule.id = kMinValidID;
     rule.condition->url_filter = std::string("example.com");
-    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
-        {rule}, "blocking extension", &blocking_matcher,
-        {} /* host_permissions */, false /* has_background_script */));
+    ASSERT_NO_FATAL_FAILURE(
+        CreateMatcherForRules({rule}, "blocking extension", &blocking_matcher));
   }
   std::string blocking_extension_id = last_loaded_extension()->id();
 
@@ -831,9 +833,8 @@ TEST_P(RulesetManagerResponseHeadersTest, MergeModifyHeaderActions) {
   auto load_extension_with_rules = [this](const std::string& name,
                                           const std::vector<TestRule>& rules) {
     std::unique_ptr<CompositeMatcher> matcher;
-    ASSERT_NO_FATAL_FAILURE(
-        CreateMatcherForRules(rules, name, &matcher, {"<all_urls>"},
-                              /*has_background_script=*/false));
+    ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+        rules, name, &matcher, {URLPattern::kAllUrlsPattern}));
     manager()->AddRuleset(last_loaded_extension()->id(), std::move(matcher));
   };
 
@@ -973,7 +974,7 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_1", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_1 = last_loaded_extension();
     manager()->AddRuleset(extension_1->id(), std::move(matcher));
   }
@@ -984,7 +985,7 @@ TEST_P(RulesetManagerTest, CrossExtensionRequestBlocking) {
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {}, "test extension_2", &matcher,
         std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        /*has_background_script=*/true));
     extension_2 = last_loaded_extension();
   }
 
@@ -1066,8 +1067,7 @@ TEST_P(RulesetManagerTest, QueryTransformRemoveParamsTrailingQuestionMark) {
 
     ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
         {rule}, "test extension_1", &matcher,
-        std::vector<std::string>({URLPattern::kAllUrlsPattern}),
-        true /* has_background_script */));
+        std::vector<std::string>({URLPattern::kAllUrlsPattern})));
     extension = last_loaded_extension();
     manager()->AddRuleset(extension->id(), std::move(matcher));
   }
@@ -1097,6 +1097,83 @@ TEST_P(RulesetManagerTest, QueryTransformRemoveParamsTrailingQuestionMark) {
       ASSERT_EQ(1u, request.dnr_actions->size());
       EXPECT_EQ(GURL(test_case.expected_redirected_url),
                 (*request.dnr_actions)[0].redirect_url);
+    }
+  }
+}
+
+// Tests that extensions can match requests based on the top-level frame domain.
+TEST_P(RulesetManagerTest, TopDomainRequestMatching) {
+  std::unique_ptr<CompositeMatcher> matcher;
+
+  // Create a rule that blocks requests to any domain, if the top-level frame
+  // (or initiator where top-level frame is unavailable) is from
+  // `block.example`.
+  TestRule rule = CreateGenericRule();
+  rule.condition->url_filter = std::string("*");
+  rule.condition->top_domains = std::vector<std::string>{"block.example"};
+  ASSERT_NO_FATAL_FAILURE(CreateMatcherForRules(
+      {rule}, "test extension", &matcher,
+      std::vector<std::string>({URLPattern::kAllUrlsPattern}),
+      true /* has_background_script */));
+  const Extension* extension = last_loaded_extension();
+  manager()->AddRuleset(extension->id(), std::move(matcher));
+
+  EXPECT_EQ(1u, manager()->GetMatcherCountForTest());
+
+  std::string request_url = "https://request.example";
+  url::Origin block_origin = url::Origin::Create(GURL("https://block.example"));
+  url::Origin other_origin = url::Origin::Create(GURL("https://other.example"));
+
+  struct TestCase {
+    std::optional<url::Origin> initiator_origin;
+    url::Origin top_level_frame_origin;
+    bool expected_blocked;
+  } test_cases[] = {{other_origin, block_origin, true},
+                    {block_origin, other_origin, false},
+                    {block_origin, url::Origin(), true},
+                    {other_origin, url::Origin(), false},
+                    {url::Origin(), url::Origin(), false}};
+
+  for (const auto& [initiator_origin, top_level_frame_origin,
+                    expected_blocked] : test_cases) {
+    SCOPED_TRACE(base::StringPrintf(
+        "Initiator: %s, Top-level Frame: %s",
+        initiator_origin ? initiator_origin->Serialize().c_str() : "empty",
+        top_level_frame_origin.Serialize().c_str()));
+
+    // Simulate the top-level frame origin.
+    std::unique_ptr<content::WebContents> web_contents =
+        content::WebContentsTester::CreateTestWebContents(
+            browser_context(),
+            content::SiteInstance::Create(browser_context()));
+    ASSERT_TRUE(web_contents);
+
+    GURL tab_url = top_level_frame_origin.GetURL();
+    content::WebContentsTester::For(web_contents.get())
+        ->NavigateAndCommit(tab_url);
+
+    testing::NiceMock<content::MockNavigationHandle> navigation_handle(
+        tab_url, web_contents->GetPrimaryMainFrame());
+    navigation_handle.set_has_committed(true);
+    manager()->OnDidFinishNavigation(&navigation_handle);
+
+    // Simulate the request.
+    WebRequestInfoInitParams request_params =
+        GetRequestParamsForURL(request_url, initiator_origin);
+    request_params.parent_routing_id =
+        web_contents->GetPrimaryMainFrame()->GetGlobalId();
+    WebRequestInfo request(std::move(request_params));
+
+    manager()->EvaluateBeforeRequest(request, false /*is_incognito_context*/);
+
+    if (expected_blocked) {
+      ASSERT_EQ(1u, request.dnr_actions->size());
+      EXPECT_EQ(CreateRequestActionForTesting(
+                    RequestActionType::BLOCK, kMinValidID, kDefaultPriority,
+                    kMinValidStaticRulesetID, extension->id()),
+                (*request.dnr_actions)[0]);
+    } else {
+      EXPECT_TRUE(request.dnr_actions->empty());
     }
   }
 }

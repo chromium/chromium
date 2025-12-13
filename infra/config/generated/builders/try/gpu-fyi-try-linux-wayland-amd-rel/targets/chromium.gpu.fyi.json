@@ -5,7 +5,7 @@
         "args": [
           "--enable-gpu",
           "--use-gpu-in-tests",
-          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--gtest_filter=*MappableBufferTest*",
           "--ozone-platform=wayland",
           "--xvfb",
           "--no-xvfb",
@@ -15,7 +15,9 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "gpu_memory_buffer_impl_tests",
+        "module_name": "//gpu:gpu_unittests",
+        "module_scheme": "gtest",
+        "name": "mappable_buffer_tests",
         "swarming": {
           "containment_type": "AUTO",
           "dimensions": {
@@ -52,6 +54,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test",
+        "module_scheme": "flat",
         "name": "noop_sleep_tests",
         "swarming": {
           "containment_type": "AUTO",

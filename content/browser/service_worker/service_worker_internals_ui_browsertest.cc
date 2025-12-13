@@ -423,7 +423,7 @@ class ServiceWorkerInternalsUIBrowserTest : public ContentBrowserTest {
     static constexpr char kScript[] = R"(
       const button = document.body.querySelector('#serviceworker-list \
           .serviceworker-registration[data-registration-id=\'%d\'] \
-          button[data-command=\'%s\']');
+          cr-button[data-command=\'%s\']');
       button.click();
     )";
     EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
@@ -548,8 +548,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerInternalsUIBrowserTest,
   TearDownWindow(sw_internal_ui_window);
 }
 
-// The test is flaky on Mac and Linux. crbug.com/1324856
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// The test is flaky on Mac, Linux, Android. http://crbug.com/1324856
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_StopStartSWReflectedOnInternalUI \
   DISABLED_StopStartSWReflectedOnInternalUI
 #else

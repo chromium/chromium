@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -145,15 +146,10 @@ class WasmCodeCachingCallback {
                        std::move(serialized_data))));
   }
 
-  void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
-    cached_module_ = cached_module;
-  }
-
  private:
   const String response_url_;
   const base::Time response_time_;
   const String cache_storage_cache_name_;
-  scoped_refptr<CachedMetadata> cached_module_;
   scoped_refptr<base::SingleThreadTaskRunner> execution_context_task_runner_;
   CrossThreadWeakPersistent<ExecutionContext> execution_context_;
 };
@@ -162,6 +158,17 @@ class WasmCodeCachingCallback {
 // received bytes get forwarded to the V8 API class |WasmStreaming|.
 class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                                               public BytesConsumer::Client {
+  // The enum values need to match "WasmCodeCaching" in
+  // tools/metrics/histograms/enums.xml.
+  enum class WasmCodeCaching {
+    kMiss = 0,
+    kHit = 1,
+    kInvalidCacheEntry = 2,
+    kNoCacheHandler = 3,
+
+    kMaxValue = kNoCacheHandler
+  };
+
  public:
   FetchDataLoaderForWasmStreaming(
       const String& url,
@@ -212,11 +219,6 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
             code_cache_state_ = MaybeConsumeCodeCache();
 
           auto bytes = base::as_bytes(buffer);
-          if (code_cache_state_ == CodeCacheState::kUseCodeCache) {
-            TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                         "v8.wasm.compileDigestForConsume");
-            digestor_.Update(bytes);
-          }
           streaming_->OnBytesReceived(bytes.data(), bytes.size());
         }
         result = consumer_->EndRead(buffer.size());
@@ -231,7 +233,69 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                        "v8.wasm.compileConsumeDone");
           {
             ScriptState::Scope scope(script_state_);
-            streaming_->Finish(HasValidCodeCache());
+            v8::WasmStreaming::ModuleCachingCallback caching_callback;
+            if (code_cache_state_ == CodeCacheState::kUseCodeCache) {
+              caching_callback = [this](
+                                     v8::WasmStreaming::ModuleCachingInterface&
+                                         caching_interface) {
+                DCHECK(cache_handler_);
+                scoped_refptr<CachedMetadata> cached_module =
+                    cache_handler_->GetCachedMetadata(kWasmModuleTag);
+                if (!cached_module) {
+                  return;
+                }
+                base::span<const uint8_t> metadata_with_digest =
+                    cached_module->Data();
+                if (metadata_with_digest.size() < kWireBytesDigestSize) {
+                  return;
+                }
+
+                DigestValue wire_bytes_digest;
+                {
+                  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                               "v8.wasm.compileDigestForConsume");
+                  CHECK(ComputeDigest(kHashAlgorithmSha256,
+                                      caching_interface.GetWireBytes(),
+                                      wire_bytes_digest));
+                }
+
+                const bool digest_matches =
+                    wire_bytes_digest ==
+                    metadata_with_digest.first(kWireBytesDigestSize);
+
+                // Pass the cached bytes to V8; V8 tells us if they were
+                // valid. If not, clear them from the cache.
+                auto metadata =
+                    metadata_with_digest.subspan(kWireBytesDigestSize);
+                const bool bytes_are_valid =
+                    digest_matches &&
+                    caching_interface.SetCachedCompiledModuleBytes(
+                        {metadata.data(), metadata.size()});
+                if (!bytes_are_valid) {
+                  TRACE_EVENT_INSTANT0(
+                      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
+                      digest_matches ? "v8.wasm.moduleCacheInvalid"
+                                     : "v8.wasm.moduleCacheInvalidDigest",
+                      TRACE_EVENT_SCOPE_THREAD);
+                  base::UmaHistogramEnumeration(
+                      "V8.WasmCodeCaching",
+                      WasmCodeCaching::kInvalidCacheEntry);
+                  // TODO(mythria): Also support using context specific code
+                  // cache host here. When we pass nullptr for CodeCacheHost
+                  // we use per-process interface. Currently this code is
+                  // run on a thread started via a Platform::PostJob. So it
+                  // isn't safe to use CodeCacheHost interface that was
+                  // bound on the frame / worker threads. We should instead
+                  // post a task back to the frame / worker threads with the
+                  // required data which can then write to generated code
+                  // caches.
+                  cache_handler_->ClearCachedMetadata(
+                      /*code_cache_host*/ nullptr,
+                      CachedMetadataHandler::kClearPersistentStorage);
+                }
+              };
+            }
+            streaming_->Finish(caching_callback);
           }
           client_->DidFetchDataLoadedCustomFormat();
           streaming_.reset();
@@ -240,7 +304,8 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
         case BytesConsumer::Result::kError:
           DCHECK_EQ(BytesConsumer::PublicState::kErrored,
                     consumer_->GetPublicState());
-          AbortCompilation("Network error: " + consumer_->GetError().Message());
+          AbortCompilation(
+              StrCat({"Network error: ", consumer_->GetError().Message()}));
           break;
       }
     }
@@ -298,7 +363,7 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
       ScriptState::Scope scope(script_state_);
       streaming_->Abort(V8ThrowException::CreateTypeError(
           script_state_->GetIsolate(),
-          "WebAssembly compilation aborted: " + reason));
+          StrCat({"WebAssembly compilation aborted: ", reason})));
     } else {
       // We are not allowed to execute a script, which indicates that we should
       // not reject the promise of the streaming compilation. By passing no
@@ -310,17 +375,6 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   }
 
   CodeCacheState MaybeConsumeCodeCache() {
-    // The enum values need to match "WasmCodeCaching" in
-    // tools/metrics/histograms/enums.xml.
-    enum class WasmCodeCaching {
-      kMiss = 0,
-      kHit = 1,
-      kInvalidCacheEntry = 2,
-      kNoCacheHandler = 3,
-
-      kMaxValue = kNoCacheHandler
-    };
-
     if (!cache_handler_) {
       base::UmaHistogramEnumeration("V8.WasmCodeCaching",
                                     WasmCodeCaching::kNoCacheHandler);
@@ -345,68 +399,10 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
                          "url", url_.Utf8(), "consumedCacheSize",
                          metadata_with_digest.size());
 
-    bool is_valid = false;
-    if (metadata_with_digest.size() >= kWireBytesDigestSize) {
-      auto metadata = metadata_with_digest.subspan(kWireBytesDigestSize);
-      is_valid =
-          streaming_->SetCompiledModuleBytes(metadata.data(), metadata.size());
-    }
-
-    if (!is_valid) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                           "v8.wasm.moduleCacheInvalid",
-                           TRACE_EVENT_SCOPE_THREAD);
-      base::UmaHistogramEnumeration("V8.WasmCodeCaching",
-                                    WasmCodeCaching::kInvalidCacheEntry);
-      // TODO(mythria): Also support using context specific code cache host
-      // here. When we pass nullptr for CodeCacheHost we use per-process
-      // interface. Currently this code is run on a thread started via a
-      // Platform::PostJob. So it isn't safe to use CodeCacheHost interface
-      // that was bound on the frame / worker threads. We should instead post
-      // a task back to the frame / worker threads with the required data
-      // which can then write to generated code caches.
-      cache_handler_->ClearCachedMetadata(
-          /*code_cache_host*/ nullptr,
-          CachedMetadataHandler::kClearPersistentStorage);
-      return CodeCacheState::kNoCodeCache;
-    }
+    streaming_->SetHasCompiledModuleBytes();
 
     base::UmaHistogramEnumeration("V8.WasmCodeCaching", WasmCodeCaching::kHit);
-    // Keep the buffer alive until V8 is ready to deserialize it.
-    // TODO(wasm): Shorten the life time of {cached_module} to reduce memory
-    // usage.
-    code_caching_callback_->SetBuffer(cached_module);
     return CodeCacheState::kUseCodeCache;
-  }
-
-  bool HasValidCodeCache() {
-    if (code_cache_state_ != CodeCacheState::kUseCodeCache)
-      return false;
-    if (!cache_handler_)
-      return false;
-    scoped_refptr<CachedMetadata> cached_module =
-        cache_handler_->GetCachedMetadata(kWasmModuleTag);
-    if (!cached_module)
-      return false;
-    base::span<const uint8_t> metadata_with_digest = cached_module->Data();
-    if (metadata_with_digest.size() < kWireBytesDigestSize) {
-      return false;
-    }
-
-    DigestValue wire_bytes_digest;
-    digestor_.Finish(wire_bytes_digest);
-    if (digestor_.has_failed() ||
-        wire_bytes_digest != metadata_with_digest.first(kWireBytesDigestSize)) {
-      TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                           "v8.wasm.moduleCacheInvalidDigest",
-                           TRACE_EVENT_SCOPE_THREAD);
-      cache_handler_->ClearCachedMetadata(
-          /*code_cache_host*/ nullptr,
-          CachedMetadataHandler::kClearPersistentStorage);
-      return false;
-    }
-
-    return true;
   }
 
   const String url_;
@@ -417,7 +413,6 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
   Member<CachedMetadataHandler> cache_handler_;
   std::shared_ptr<WasmCodeCachingCallback> code_caching_callback_;
   CodeCacheState code_cache_state_ = CodeCacheState::kBeforeFirstByte;
-  Digestor digestor_{kHashAlgorithmSha256};
 };
 
 // TODO(mtrofin): WasmDataLoaderClient is necessary so we may provide an
@@ -455,8 +450,8 @@ void PropagateExceptionToWasmStreaming(
     v8::Local<v8::Value> exception,
     std::shared_ptr<v8::WasmStreaming>& streaming) {
   ApplyContextToException(script_state, exception,
-                          ExceptionContext(v8::ExceptionContext::kOperation,
-                                           "WebAssembly", "compile"));
+                          v8::ExceptionContext::kOperation, "WebAssembly",
+                          "compile");
   streaming->Abort(exception);
   streaming.reset();
 }

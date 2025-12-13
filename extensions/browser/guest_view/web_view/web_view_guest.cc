@@ -198,6 +198,8 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
       return "integrity failure";
 #endif
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+      return "evicted for memory";
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
@@ -1165,11 +1167,10 @@ bool WebViewGuest::ClearData(base::Time remove_since,
   if (removal_mask & webview::WEB_VIEW_REMOVE_DATA_MASK_CACHE) {
     // First clear http cache data and then clear the code cache in
     // |ClearCodeCache| and the rest is cleared in |ClearDataInternal|.
-    int render_process_id = guest_main_frame->GetProcess()->GetDeprecatedID();
     // We need to clear renderer cache separately for our process because
     // StoragePartitionHttpCacheDataRemover::ClearData() does not clear that.
     web_cache::WebCacheManager::GetInstance()->ClearCacheForProcess(
-        render_process_id);
+        guest_main_frame->GetProcess()->GetID());
 
     base::OnceClosure cache_removal_done_callback = base::BindOnce(
         &WebViewGuest::ClearCodeCache, weak_ptr_factory_.GetWeakPtr(),
@@ -1199,7 +1200,7 @@ WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
               switches::kEnableSpatialNavigation)) {
   if (IsOwnedByControlledFrameEmbedder()) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-        owner_rfh, blink::mojom::WebFeature::kControlledFrameElement);
+        owner_rfh, blink::mojom::WebFeature::kHTMLControlledFrameElement);
   }
 }
 
@@ -1976,7 +1977,7 @@ WebContents* WebViewGuest::OpenURLFromTab(
   // tab, etc., are also handled by the WebContentsDelegate.
   if (!params.is_renderer_initiated &&
       (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-           params.url.scheme()) ||
+           params.url.GetScheme()) ||
        params.disposition != WindowOpenDisposition::CURRENT_TAB)) {
     if (!owner_web_contents()->GetDelegate()) {
       return nullptr;
@@ -2119,7 +2120,7 @@ void WebViewGuest::LoadURLWithParams(
 
   bool scheme_is_blocked =
       (!content::ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-           url.scheme()) &&
+           url.GetScheme()) &&
        !url.SchemeIs(url::kAboutScheme)) ||
       url.SchemeIs(url::kJavaScriptScheme);
 

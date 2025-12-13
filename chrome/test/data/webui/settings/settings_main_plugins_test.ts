@@ -22,8 +22,20 @@ suite('SettingsMain', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  function createSettingsMain() {
+  function createSettingsMain(overrides?: {[key: string]: any}) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues(Object.assign(
+        {
+          enableYourSavedInfoSettingsPage: false,
+          isGuest: false,
+          showAiPage: false,
+          showResetProfileBanner: false,
+        },
+        overrides || {}));
+    resetPageVisibilityForTesting();
+    resetRouterForTesting();
+
     searchManager = new TestSearchManager();
     setSearchManagerForTesting(searchManager);
     Router.getInstance().navigateTo(routes.BASIC);
@@ -35,11 +47,8 @@ suite('SettingsMain', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({
-      isGuest: false,
-      showAiPage: false,
-    });
     createSettingsMain();
+    return settingsMain.whenViewSwitchingDone();
   });
 
   test('UpdatesActiveViewWhenRouteChanges', async function() {
@@ -52,23 +61,10 @@ suite('SettingsMain', function() {
           `.active[slot=view] > :not(${pluginTag}, dom-if)`));
     }
 
-    // Check routes that are still residing within the old settings-basic-page
-    // "plugin".
-    const nonMigratedRoutes = [
-      routes.BASIC,
-      routes.PRIVACY,
-    ];
-
-    for (const route of nonMigratedRoutes) {
-      Router.getInstance().navigateTo(route);
-      assertActive('settings-basic-page', route.path);
-    }
-
-    // Check routes that have been promoted to individual "plugins".
-    const migratedRoutes: Array<{route: Route, pluginTag: string}> = [
-      // TODO(crbug.com/424223101): Update this list as more routes are
-      // migrated.
-
+    const routesToVisit: Array<{route: Route, pluginTag: string}> = [
+      {route: routes.PEOPLE, pluginTag: 'settings-people-page-index'},
+      {route: routes.BASIC, pluginTag: 'settings-people-page-index'},
+      {route: routes.PRIVACY, pluginTag: 'settings-privacy-page-index'},
       {route: routes.AUTOFILL, pluginTag: 'settings-autofill-page-index'},
       {route: routes.PERFORMANCE, pluginTag: 'settings-performance-page-index'},
       {route: routes.APPEARANCE, pluginTag: 'settings-appearance-page-index'},
@@ -80,7 +76,12 @@ suite('SettingsMain', function() {
       },
       // </if>
       {route: routes.ON_STARTUP, pluginTag: 'settings-on-startup-page'},
+      // <if expr="is_chromeos">
+      {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index-cros'},
+      // </if>
+      // <if expr="not is_chromeos">
       {route: routes.LANGUAGES, pluginTag: 'settings-languages-page-index'},
+      // </if>
       {route: routes.DOWNLOADS, pluginTag: 'settings-downloads-page'},
       {route: routes.ACCESSIBILITY, pluginTag: 'settings-a11y-page-index'},
       // <if expr="not is_chromeos">
@@ -90,9 +91,9 @@ suite('SettingsMain', function() {
       {route: routes.ABOUT, pluginTag: 'settings-about-page'},
     ];
 
-    for (const {route, pluginTag} of migratedRoutes) {
+    for (const {route, pluginTag} of routesToVisit) {
       Router.getInstance().navigateTo(route);
-      await flushTasks();
+      await settingsMain.whenViewSwitchingDone();
       assertActive(pluginTag, route.path);
     }
   });
@@ -131,7 +132,7 @@ suite('SettingsMain', function() {
     function assertVisibilityRespected() {
       const viewIds: string[] = [
         'a11y', 'about', 'appearance', 'downloads', 'languages', 'onStartup',
-        'performance', 'reset', 'search',
+        'people', 'performance', 'reset', 'search',
 
         // <if expr='not is_chromeos'>
         'defaultBrowser', 'system',
@@ -156,10 +157,7 @@ suite('SettingsMain', function() {
     assertVisibilityRespected();
 
     // Case2: Guest mode
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    // Create a new instance for the visibility to have an effect.
-    createSettingsMain();
+    createSettingsMain({isGuest: true});
     assertVisibilityRespected();
   });
 
@@ -167,27 +165,23 @@ suite('SettingsMain', function() {
     assertFalse(loadTimeData.getBoolean('showAiPage'));
     assertFalse(!!queryView('ai'));
 
-    loadTimeData.overrideValues({showAiPage: true});
-    resetPageVisibilityForTesting();
-    resetRouterForTesting();
-    createSettingsMain();
+    createSettingsMain({showAiPage: true});
     assertTrue(!!queryView('ai'));
   });
 
   // Test which section is displayed when chrome://settings/ is visited.
-  test('TopLevelRoute', function() {
+  test('TopLevelRoute', async function() {
+    await flushTasks();
     // Case1: Default (non-guest mode)
     assertFalse(loadTimeData.getBoolean('isGuest'));
     let active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
-    assertEquals('old', active.id);
+    assertEquals('people', active.id);
 
     // Case2: Guest mode.
-    loadTimeData.overrideValues({isGuest: true});
-    resetPageVisibilityForTesting();
-    // Create a new instance for the visibility to have an effect.
-    createSettingsMain();
+    createSettingsMain({isGuest: true});
+    await settingsMain.whenViewSwitchingDone();
     active = settingsMain.$.switcher.querySelector<HTMLElement>(
         '.active[slot=view]');
     assertTrue(!!active);
@@ -195,7 +189,31 @@ suite('SettingsMain', function() {
     assertEquals('search', active.id);
     // </if>
     // <if expr="is_chromeos">
-    assertEquals('old', active.id);
+    assertEquals('privacy', active.id);
     // </if>
+  });
+
+  test('ResetProfileBannerShown', function() {
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(
+        'settings-reset-profile-banner'));
+    createSettingsMain({showResetProfileBanner: true});
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(
+        'settings-reset-profile-banner'));
+  });
+
+    test('shows either autofill or yourSavedInfo page', function() {
+    // Reset tested element and set yourSavedInfo experiment to false
+    createSettingsMain();
+
+    // Only autofill page should be visible
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
+
+    // Reset tested element and set yourSavedInfo experiment to true
+    createSettingsMain({enableYourSavedInfoSettingsPage: true});
+
+    // Only yourSavedInfo page should be visible
+    assertFalse(!!settingsMain.shadowRoot!.querySelector(`#autofill`));
+    assertTrue(!!settingsMain.shadowRoot!.querySelector(`#yourSavedInfo`));
   });
 });

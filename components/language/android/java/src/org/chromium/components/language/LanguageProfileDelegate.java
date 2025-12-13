@@ -19,6 +19,6 @@ public interface LanguageProfileDelegate {
      * @param timeoutInSeconds Seconds to wait before timing out on call to device.
      * @return A list of language tags ordered by preference for |accountName|
      */
-    public List<String> getLanguagePreferences(@Nullable String accountName, int timeoutInSeconds)
+    List<String> getLanguagePreferences(@Nullable String accountName, int timeoutInSeconds)
             throws ExecutionException, InterruptedException, TimeoutException;
 }

@@ -1,0 +1,19 @@
+# Note: Unless you want a specific reviewer's expertise, please send CLs to
+# chrome-signin-desktop-reviews@google.com rather than to specific individuals.
+#
+# These CLs will be automatically reassigned to a reviewer within
+# about 5 minutes. This approach helps our team to load-balance incoming
+# reviews.
+chrome-signin-desktop-reviews@google.com
+
+# keep-sorted start
+alexilin@chromium.org  #{LAST_RESORT_SUGGESTION}
+amelies@google.com     #{LAST_RESORT_SUGGESTION}
+anthie@google.com      #{LAST_RESORT_SUGGESTION}
+ddac@chromium.org      #{LAST_RESORT_SUGGESTION}
+droger@chromium.org    #{LAST_RESORT_SUGGESTION}
+ernn@google.com        #{LAST_RESORT_SUGGESTION}
+msalama@chromium.org   #{LAST_RESORT_SUGGESTION}
+msarda@chromium.org    #{LAST_RESORT_SUGGESTION}
+rsult@google.com       #{LAST_RESORT_SUGGESTION}
+# keep-sorted end

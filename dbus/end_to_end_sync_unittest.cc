@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -36,7 +37,7 @@ class EndToEndSyncTest : public testing::Test {
     Bus::Options client_bus_options;
     client_bus_options.bus_type = Bus::SESSION;
     client_bus_options.connection_type = Bus::PRIVATE;
-    client_bus_ = new Bus(client_bus_options);
+    client_bus_ = new Bus(std::move(client_bus_options));
     object_proxy_ = client_bus_->GetObjectProxy(
         test_service_->service_name(),
         ObjectPath("/org/chromium/TestObject"));

@@ -49,7 +49,8 @@
 #include "third_party/metrics_proto/user_action_event.pb.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -224,10 +225,12 @@ namespace internal {
 
 SystemProfileProto::InstallerPackage ToInstallerPackage(
     std::string_view installer_package_name) {
-  if (installer_package_name.empty())
+  if (installer_package_name.empty()) {
     return SystemProfileProto::INSTALLER_PACKAGE_NONE;
-  if (installer_package_name == "com.android.vending")
+  }
+  if (installer_package_name == "com.android.vending") {
     return SystemProfileProto::INSTALLER_PACKAGE_GOOGLE_PLAY_STORE;
+  }
   return SystemProfileProto::INSTALLER_PACKAGE_OTHER;
 }
 
@@ -271,8 +274,9 @@ MetricsLog::MetricsLog(const std::string& client_id,
 
   const int32_t product = client_->GetProduct();
   // Only set the product if it differs from the default value.
-  if (product != uma_proto_.product())
+  if (product != uma_proto_.product()) {
     uma_proto_.set_product(product);
+  }
 
   SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
   // Record the unhashed the client_id to system profile. This is used to
@@ -309,8 +313,9 @@ uint64_t MetricsLog::Hash(const std::string& value) {
 // static
 int64_t MetricsLog::GetBuildTime() {
   static int64_t integral_build_time = 0;
-  if (!integral_build_time)
+  if (!integral_build_time) {
     integral_build_time = static_cast<int64_t>(base::GetBuildTime().ToTimeT());
+  }
   return integral_build_time;
 }
 
@@ -367,8 +372,9 @@ void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
       client->GetAppPackageNameIfLoggable(), system_profile);
 
   std::string brand_code;
-  if (client->GetBrand(&brand_code))
+  if (client->GetBrand(&brand_code)) {
     system_profile->set_brand_code(brand_code);
+  }
 
   // Records 32-bit hashes of the command line keys.
   base::CommandLine command_line_copy(*base::CommandLine::ForCurrentProcess());
@@ -400,8 +406,9 @@ void MetricsLog::RecordCoreSystemProfile(
   system_profile->set_build_timestamp(metrics::MetricsLog::GetBuildTime());
   system_profile->set_app_version(version);
   system_profile->set_channel(channel);
-  if (is_extended_stable_channel)
+  if (is_extended_stable_channel) {
     system_profile->set_is_extended_stable_channel(true);
+  }
   system_profile->set_application_locale(application_locale);
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
@@ -419,9 +426,10 @@ void MetricsLog::RecordCoreSystemProfile(
       system_profile->mutable_hardware();
   hardware->set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
   auto app_os_arch = base::SysInfo::ProcessCPUArchitecture();
-  if (!app_os_arch.empty())
+  if (!app_os_arch.empty()) {
     hardware->set_app_cpu_architecture(app_os_arch);
-  hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
+  }
+  hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemory().InMiB());
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
 #if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
@@ -446,12 +454,12 @@ void MetricsLog::RecordCoreSystemProfile(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  const auto* build_info = base::android::BuildInfo::GetInstance();
-  os->set_build_fingerprint(build_info->android_build_fp());
-  if (!package_name.empty() && package_name != "com.android.chrome")
+  os->set_build_fingerprint(base::android::android_info::android_build_fp());
+  if (!package_name.empty() && package_name != "com.android.chrome") {
     system_profile->set_app_package_name(package_name);
-  system_profile->set_installer_package(
-      internal::ToInstallerPackage(build_info->installer_package_name()));
+  }
+  system_profile->set_installer_package(internal::ToInstallerPackage(
+      base::android::apk_info::installer_package_name()));
 #elif BUILDFLAG(IS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif
@@ -468,7 +476,8 @@ void MetricsLog::RecordHistogramDelta(std::string_view histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
   log_metadata_.AddSampleCount(snapshot.TotalCount());
-  EncodeHistogramDelta(histogram_name, snapshot, &uma_proto_);
+  EncodeHistogramDelta(histogram_name, snapshot,
+                       uma_proto_.add_histogram_event());
 }
 
 void MetricsLog::RecordPreviousSessionData(
@@ -587,8 +596,9 @@ void MetricsLog::FinalizeLog(
     const std::string& current_app_version,
     std::optional<ChromeUserMetricsExtension::RealLocalTime> close_time,
     std::string* encoded_log) {
-  if (truncate_events)
+  if (truncate_events) {
     TruncateEvents();
+  }
   RecordLogWrittenByAppVersionIfNeeded(current_app_version);
   if (close_time.has_value()) {
     *uma_proto_.mutable_time_log_closed() = std::move(close_time.value());

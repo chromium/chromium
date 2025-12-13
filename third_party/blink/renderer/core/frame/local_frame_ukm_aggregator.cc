@@ -18,6 +18,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -33,7 +34,6 @@ inline int64_t ApplyBucket(int64_t value) {
 }
 
 BASE_FEATURE(kAvoidUnnecessaryForcedLayoutMeasurements,
-             "AvoidUnnecessaryForcedLayoutMeasurements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
@@ -702,7 +702,7 @@ void LocalFrameUkmAggregator::EndForcedLayout(
       break;
 
     case DocumentUpdateReason::kCanvas:
-    case DocumentUpdateReason::kCanvasDrawElement:
+    case DocumentUpdateReason::kCanvasDrawElementImage:
     case DocumentUpdateReason::kPlugin:
     case DocumentUpdateReason::kSVGImage:
       sub_metric = kContentDocumentUpdate;

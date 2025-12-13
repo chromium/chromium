@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/tool.h"
+#include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/tabs/public/tab_interface.h"
@@ -29,20 +30,25 @@ namespace actor {
 class HistoryTool : public Tool, content::WebContentsObserver {
  public:
   HistoryTool(TaskId task_id,
-              AggregatedJournal& journal,
+              ToolDelegate& tool_delegate,
               tabs::TabInterface& tab,
               HistoryToolRequest::Direction direction);
   ~HistoryTool() override;
 
   // actor::Tool
-  void Validate(ValidateCallback callback) override;
-  void Invoke(InvokeCallback callback) override;
+  void Validate(ToolCallback callback) override;
+  mojom::ActionResultPtr TimeOfUseValidation(
+      const optimization_guide::proto::AnnotatedPageContent* last_observation)
+      override;
+  void Invoke(ToolCallback callback) override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
-  std::unique_ptr<ObservationDelayController> GetObservationDelayer()
-      const override;
+  std::unique_ptr<ObservationDelayController> GetObservationDelayer(
+      ObservationDelayController::PageStabilityConfig page_stability_config)
+      override;
   void UpdateTaskBeforeInvoke(ActorTask& task,
-                              InvokeCallback callback) const override;
+                              ToolCallback callback) const override;
+  tabs::TabHandle GetTargetTab() const override;
 
   // content::WebContentsObserver
   void DidStartNavigation(
@@ -71,7 +77,10 @@ class HistoryTool : public Tool, content::WebContentsObserver {
   absl::flat_hash_set<uint64_t> in_flight_navigation_ids_;
 
   // Holds the callback to the Invoke method. Null before invoke is called.
-  InvokeCallback invoke_callback_;
+  ToolCallback invoke_callback_;
+
+  // The unique ID of the navigation entry at the time of validation.
+  int validated_entry_id_ = 0;
 
   tabs::TabHandle tab_handle_;
 

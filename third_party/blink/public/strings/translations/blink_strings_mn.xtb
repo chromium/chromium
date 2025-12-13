@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Энэ текстийг <ph name="MAX_CHARACTERS" /> тэмдэгтүүд рүү богиносгох эсвэл  багасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгтүүдийг ашиглаж байна).</translation>
 <translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-р бичлэг</translation>
+<translation id="2500270406326775625">Өгөгдлийн URL</translation>
 <translation id="2507943997699731163">Энэ талбарыг бөглөнө үү.</translation>
 <translation id="2613802280814924224">Хүчинтэй утга оруулна уу. Хамгийн ойролцоо хүчинтэй утга нь <ph name="VALID_VALUE" /> юм.</translation>
 <translation id="2653659639078652383">Илгээх</translation>

@@ -138,9 +138,10 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // called before blit request was set on the copy request.
   void set_result_selection(const gfx::Rect& selection) {
     DCHECK(result_format_ == ResultFormat::RGBA ||
+           result_format_ == ResultFormat::RGBAF16 ||
            (selection.width() % 2 == 0 && selection.height() % 2 == 0))
         << "CopyOutputRequest supports odd-sized result_selection() only for "
-           "RGBA!";
+           "RGBA and RGBAF16!";
     DCHECK(!has_blit_request());
     result_selection_ = selection;
   }

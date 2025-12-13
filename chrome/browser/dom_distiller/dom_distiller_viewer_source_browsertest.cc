@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/dom_distiller/content/browser/dom_distiller_viewer_source.h"
+
 #include <string.h>
 
 #include <memory>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +29,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
-#include "components/dom_distiller/content/browser/dom_distiller_viewer_source.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller.h"
@@ -100,7 +103,10 @@ class PrefChangeObserver : public DistilledPagePrefs::Observer {
   void OnChangeFontFamily(mojom::FontFamily font_family) override {
     callback_.Run();
   }
-  void OnChangeTheme(mojom::Theme theme) override { callback_.Run(); }
+  void OnChangeTheme(mojom::Theme theme,
+                     ThemeSettingsUpdateSource source) override {
+    callback_.Run();
+  }
   void OnChangeFontScaling(float scaling) override { callback_.Run(); }
 
  private:
@@ -133,7 +139,7 @@ class DomDistillerViewerSourceBrowserTest : public InProcessBrowserTest {
         std::move(distiller_factory), std::move(distiller_page_factory),
         std::make_unique<DistilledPagePrefs>(
             Profile::FromBrowserContext(context)->GetPrefs()),
-        /* distiller_ui_handle */ nullptr);
+        /* distiller_ui_handle */ nullptr, base::CallbackListSubscription());
     if (expect_distillation_) {
       // There will only be destillation of an article if the database contains
       // the article.
@@ -513,7 +519,7 @@ void DomDistillerViewerSourceBrowserTest::PrefTest(bool is_error_page) {
           ->GetDistilledPagePrefs();
 
   // Test theme.
-  distilled_page_prefs->SetTheme(mojom::Theme::kDark);
+  distilled_page_prefs->SetUserPrefTheme(mojom::Theme::kDark);
   base::RunLoop().RunUntilIdle();
   ExpectBodyHasThemeAndFont(contents, "dark", "sans-serif");
 
@@ -531,7 +537,7 @@ void DomDistillerViewerSourceBrowserTest::PrefTest(bool is_error_page) {
   base::StringToDouble(result, &oldFontSize);
 
   const double kScale = 1.23;
-  distilled_page_prefs->SetFontScaling(kScale);
+  distilled_page_prefs->SetUserPrefFontScaling(kScale);
   base::RunLoop().RunUntilIdle();
   result = content::EvalJs(contents, kGetFontSize).ExtractString();
   double fontSize;
@@ -558,9 +564,9 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
 
   // Set preference.
   const double kScale = 1.23;
-  distilled_page_prefs->SetTheme(mojom::Theme::kDark);
+  distilled_page_prefs->SetUserPrefTheme(mojom::Theme::kDark);
   distilled_page_prefs->SetFontFamily(mojom::FontFamily::kMonospace);
-  distilled_page_prefs->SetFontScaling(kScale);
+  distilled_page_prefs->SetUserPrefFontScaling(kScale);
 
   base::RunLoop().RunUntilIdle();
   ExpectBodyHasThemeAndFont(contents, "dark", "monospace");
@@ -586,7 +592,13 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
   ASSERT_FLOAT_EQ(kScale, fontSize / oldFontSize);
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, UISetsPrefs) {
+// Flaky on MacOS (crbug.com/447462280).
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_UISetsPrefs DISABLED_UISetsPrefs
+#else
+#define MAYBE_UISetsPrefs UISetsPrefs
+#endif
+IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MAYBE_UISetsPrefs) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -603,7 +615,12 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, UISetsPrefs) {
   // Wait for all currently executing scripts to finish. Otherwise, the
   // distiller object used to send the prefs to the browser from the JavaScript
   // may not exist, causing test flakiness.
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(contents, kTestDistillerObject,
+                           content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                           ISOLATED_WORLD_ID_CHROME_INTERNAL)
+        .ExtractBool();
+  }));
 
   DistilledPagePrefs* distilled_page_prefs =
       DomDistillerServiceFactory::GetForBrowserContext(browser()->profile())

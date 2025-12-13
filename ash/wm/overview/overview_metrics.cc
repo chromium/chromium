@@ -55,7 +55,7 @@ const char* GetOverviewEnterPresentationTimeMetricName(
     case OverviewStartAction::kOverviewDeskSwitch:
     case OverviewStartAction::kDeskButton:
     case OverviewStartAction::kFasterSplitScreenSetup:
-      return display::Screen::GetScreen()->InTabletMode()
+      return display::Screen::Get()->InTabletMode()
                  ? METRIC_PREFIX "UserInitiatedTablet"
                  : METRIC_PREFIX "UserInitiatedClamshell";
   }

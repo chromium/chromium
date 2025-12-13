@@ -149,6 +149,8 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
         return CrPolicyStrings.controlledSettingParent!;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return CrPolicyStrings.controlledSettingChildRestriction!;
+      default:
+        break;
     }
     return '';
   }
@@ -192,6 +194,8 @@ export class CrPolicyPrefIndicatorElement extends PolymerElement {
           return CrPolicyIndicatorType.PARENT;
         case chrome.settingsPrivate.ControlledBy.CHILD_RESTRICTION:
           return CrPolicyIndicatorType.CHILD_RESTRICTION;
+        default:
+          break;
       }
     }
     if (enforcement === chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {

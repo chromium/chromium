@@ -17,6 +17,7 @@ PerformanceContainerTiming* PerformanceContainerTiming::Create(
     DOMHighResTimeStamp start_time,
     const gfx::Rect& intersection_rect,
     double size,
+    Element* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
     DOMHighResTimeStamp first_render_time,
@@ -26,7 +27,7 @@ PerformanceContainerTiming* PerformanceContainerTiming::Create(
   // time
   return MakeGarbageCollected<PerformanceContainerTiming>(
       name, start_time, start_time /* end_time */, intersection_rect, size,
-      identifier, last_painted_element, first_render_time, source,
+      root_element, identifier, last_painted_element, first_render_time, source,
       navigation_id);
 }
 
@@ -36,6 +37,7 @@ PerformanceContainerTiming::PerformanceContainerTiming(
     DOMHighResTimeStamp end_time,
     const gfx::Rect& intersection_rect,
     double size,
+    Element* root_element,
     const AtomicString& identifier,
     Element* last_painted_element,
     DOMHighResTimeStamp first_render_time,
@@ -44,6 +46,7 @@ PerformanceContainerTiming::PerformanceContainerTiming(
     : PerformanceEntry(name, start_time, end_time, source, navigation_id),
       intersection_rect_(DOMRectReadOnly::FromRect(intersection_rect)),
       size_(size),
+      root_element_(root_element),
       identifier_(identifier),
       last_painted_element_(last_painted_element),
       first_render_time_(first_render_time) {}
@@ -56,6 +59,10 @@ const AtomicString& PerformanceContainerTiming::entryType() const {
 
 PerformanceEntryType PerformanceContainerTiming::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kContainer;
+}
+
+Element* PerformanceContainerTiming::rootElement() const {
+  return Performance::CanExposeNode(root_element_) ? root_element_ : nullptr;
 }
 
 Element* PerformanceContainerTiming::lastPaintedElement() const {
@@ -90,6 +97,7 @@ void PerformanceContainerTiming::BuildJSONValue(
 
 void PerformanceContainerTiming::Trace(Visitor* visitor) const {
   visitor->Trace(intersection_rect_);
+  visitor->Trace(root_element_);
   visitor->Trace(last_painted_element_);
   PerformanceEntry::Trace(visitor);
 }

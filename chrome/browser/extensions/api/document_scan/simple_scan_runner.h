@@ -12,8 +12,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/api/document_scan.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "extensions/common/extension_id.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 
@@ -30,7 +35,8 @@ class SimpleScanRunner {
       base::OnceCallback<void(crosapi::mojom::ScanFailureMode,
                               const std::optional<std::string>&)>;
 
-  SimpleScanRunner(scoped_refptr<const Extension> extension,
+  SimpleScanRunner(content::BrowserContext* browser_context,
+                   scoped_refptr<const Extension> extension,
                    crosapi::mojom::DocumentScan* document_scan);
 
   ~SimpleScanRunner();
@@ -42,7 +48,7 @@ class SimpleScanRunner {
  private:
   void OnSimpleScanListReceived(
       bool force_virtual_usb_printer,
-      crosapi::mojom::GetScannerListResponsePtr response);
+      const std::optional<lorgnette::ListScannersResponse>& response);
   void OnOpenScannerResponse(crosapi::mojom::OpenScannerResponsePtr response);
   void OnStartPreparedScanResponse(
       crosapi::mojom::StartPreparedScanResponsePtr response);
@@ -53,8 +59,8 @@ class SimpleScanRunner {
   void OpenFirstScanner();
   void ReadScanData();
 
+  const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
-
   const raw_ptr<crosapi::mojom::DocumentScan> document_scan_;
 
   // List of potential scanners to open.

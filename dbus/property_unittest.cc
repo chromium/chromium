@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "dbus/property.h"
 
 #include <stddef.h>
@@ -15,8 +10,10 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -82,7 +79,7 @@ class PropertyTest : public testing::Test {
     bus_options.bus_type = Bus::SESSION;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     object_proxy_ = bus_->GetObjectProxy(
         test_service_->service_name(),
         ObjectPath("/org/chromium/TestObject"));
@@ -401,7 +398,7 @@ TEST(PropertyTestStatic, ReadWriteNetAddressArray) {
   for (auto& item : ip_list.value()) {
     ASSERT_EQ(5U, item.first.size());
     ip_bytes[4] = 0x30 + item_index;
-    EXPECT_EQ(0, memcmp(ip_bytes, item.first.data(), 5U));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(ip_bytes, item.first.data(), 5U)));
     EXPECT_EQ(item_index, item.second);
     ++item_index;
   }

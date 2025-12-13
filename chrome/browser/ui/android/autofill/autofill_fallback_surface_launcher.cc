@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/plus_addresses/features.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -43,3 +43,5 @@ JNI_AutofillFallbackSurfaceLauncher_GetPlusAddressManagementUrl(JNIEnv* env) {
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillFallbackSurfaceLauncher)

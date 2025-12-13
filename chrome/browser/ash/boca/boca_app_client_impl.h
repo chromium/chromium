@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 #define CHROME_BROWSER_ASH_BOCA_BOCA_APP_CLIENT_IMPL_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 
@@ -17,6 +19,9 @@ class IdentityManager;
 }
 
 namespace ash::boca {
+
+class SharedCrdSessionWrapper;
+
 class BocaAppClientImpl : public BocaAppClient {
  public:
   BocaAppClientImpl();
@@ -29,8 +34,10 @@ class BocaAppClientImpl : public BocaAppClient {
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   std::string GetDeviceId() override;
   void LaunchApp() override;
-  bool HasApp() override;
+  int GetAppInstanceCount() override;
   void OpenFeedbackDialog() override;
+  std::unique_ptr<SharedCrdSessionWrapper> CreateSharedCrdSessionWrapper()
+      override;
 };
 }  // namespace ash::boca
 

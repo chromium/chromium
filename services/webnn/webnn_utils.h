@@ -57,6 +57,9 @@ std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_SERVICE)
 bool COMPONENT_EXPORT(WEBNN_SERVICE)
     IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind);
 
+bool COMPONENT_EXPORT(WEBNN_SERVICE)
+    IsLogicalElementWiseUnary(mojom::ElementWiseUnary::Kind kind);
+
 std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_SERVICE)
     CalculateStrides(base::span<const uint32_t> dimensions);
 

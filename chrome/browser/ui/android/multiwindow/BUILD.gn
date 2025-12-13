@@ -9,12 +9,14 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/multiwindow/CloseConfirmationDialogView.java",
     "java/src/org/chromium/chrome/browser/multiwindow/DialogListItemDecoration.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceInfo.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherActionsDelegate.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceIphController.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceState.java",
+    "java/src/org/chromium/chrome/browser/multiwindow/RenameWindowDialogView.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorCoordinator.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemProperties.java",
     "java/src/org/chromium/chrome/browser/multiwindow/TargetSelectorItemViewBinder.java",
@@ -25,6 +27,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:incognito_utils_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
@@ -40,9 +43,11 @@ android_library("java") {
     "//components/favicon/android:java",
     "//components/feature_engagement/public:public_java",
     "//components/messages/android:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_constraintlayout_constraintlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java__classes",
     "//ui/android:ui_no_recycler_view_java",
@@ -55,6 +60,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color/instance_switcher_item_foreground_color_list.xml",
+    "java/res/color/instance_switcher_item_secondary_text_color_list.xml",
     "java/res/drawable/checkmark_24dp.xml",
     "java/res/drawable/checkmark_circle_24dp.xml",
     "java/res/drawable/circle_green.xml",
@@ -70,10 +77,9 @@ android_resources("java_resources") {
     "java/res/layout/instance_switcher_item.xml",
     "java/res/layout/instance_switcher_item_v2.xml",
     "java/res/layout/instance_switcher_list.xml",
+    "java/res/layout/rename_window_dialog.xml",
     "java/res/layout/target_selector_dialog.xml",
     "java/res/layout/target_selector_dialog_v2.xml",
-    "java/res/color/instance_switcher_item_foreground_color_list.xml",
-    "java/res/color/instance_switcher_item_secondary_text_color_list.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
@@ -92,6 +98,7 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.multiwindow"
   sources = [
+    "java/src/org/chromium/chrome/browser/multiwindow/InstanceSwitcherCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/multiwindow/UiUtilsUnitTest.java",
   ]
@@ -103,13 +110,17 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/util:java",
     "//components/favicon/android:java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }
 

@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history/core/browser/history_service.h"
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientEmptyReferer) {
 // Tests to make sure a location change when a pending redirect exists isn't
 // flagged as a redirect.
 IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
-  GURL first_url = ui_test_utils::GetTestUrl(
+  GURL first_url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath().AppendASCII("cancelled_redirect_test.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ClientCancelled) {
   // change is not considered as client redirect and the meta-refresh
   // won't have fired yet.
   ASSERT_EQ(0U, redirects.size());
-  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().ref());
+  EXPECT_EQ("myanchor", web_contents->GetLastCommittedURL().GetRef());
 }
 
 // Tests a client->server->server redirect
@@ -222,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
                      ->tab_strip_model()
                      ->GetActiveWebContents()
                      ->GetLastCommittedURL()
-                     .ref());
+                     .GetRef());
 }
 
 // Test that redirect from http:// to file:// :
@@ -232,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, ServerReference) {
 // Flaky on XP and Vista, http://crbug.com/69390.
 IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL file_url = ui_test_utils::GetTestUrl(
+  GURL file_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath().AppendASCII("http_to_file.html"));
 
   GURL initial_url =
@@ -249,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(RedirectTest, NoHttpToFile) {
 // flagged as client redirects. See bug 1139823.
 IN_PROC_BROWSER_TEST_F(RedirectTest, ClientFragments) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GURL first_url = ui_test_utils::GetTestUrl(
+  GURL first_url = chrome_test_utils::GetTestUrl(
       base::FilePath(), base::FilePath().AppendASCII("ref_redirect.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
   std::vector<GURL> redirects = GetRedirects(first_url);

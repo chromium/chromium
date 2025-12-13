@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 

@@ -1,0 +1,8 @@
+specific_include_rules = {
+   'user_cloud_signin_restriction_policy_fetcher.cc': [
+      '+net/http/http_response_headers.h',
+   ],
+   'user_cloud_signin_restriction_policy_fetcher_unittest.cc': [
+      '+net/http/http_response_headers.h',
+   ],
+}

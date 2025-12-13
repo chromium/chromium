@@ -17,6 +17,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "url/gurl.h"
 
+class HostContentSettingsMap;
 class Profile;
 
 // Revokes the notifications permission if an origin marked as abusive or
@@ -51,6 +52,13 @@ class PermissionRevocationRequest {
 
   static void ExemptOriginFromFutureRevocations(Profile* profile,
                                                 const GURL& origin);
+
+  static void ExemptOriginFromFutureRevocations(HostContentSettingsMap* hcsm,
+                                                const GURL& origin);
+
+  static void UndoExemptOriginFromFutureRevocations(
+      HostContentSettingsMap* hcsm,
+      const GURL& origin);
 
   static bool IsOriginExemptedFromFutureRevocations(Profile* profile,
                                                     const GURL& origin);

@@ -282,10 +282,6 @@ void RealtimeAudioDestinationHandler::Render(
 void RealtimeAudioDestinationHandler::OnRenderError() {
   DCHECK(IsMainThread());
 
-  if (!RuntimeEnabledFeatures::AudioContextOnErrorEnabled()) {
-    return;
-  }
-
   // When this method gets executed by the task runner, it is possible that
   // the corresponding GC-managed objects are not valid anymore. Check the
   // initialization state and stop if the disposition already happened.
@@ -313,6 +309,8 @@ void RealtimeAudioDestinationHandler::SetDetectSilenceIfNecessary(
 
   // Post a cross-thread task only when the detecting condition has changed.
   if (is_detecting_silence_ != needs_silence_detection) {
+    TRACE_EVENT1("webaudio", __func__,
+                 "needs_silence_detection (changed)", needs_silence_detection);
     PostCrossThreadTask(
         *task_runner_, FROM_HERE,
         CrossThreadBindOnce(&RealtimeAudioDestinationHandler::SetDetectSilence,
@@ -356,7 +354,7 @@ void RealtimeAudioDestinationHandler::CreatePlatformDestination() {
 
   platform_destination_ = AudioDestination::Create(
       *this, sink_descriptor_, ChannelCount(), latency_hint_, sample_rate_,
-      Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      Context()->renderQuantumSize());
 
   // if `sample_rate_` is nullopt, it is supposed to use the default device
   // sample rate. Update the internal sample rate for subsequent device change
@@ -491,9 +489,9 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
 
   // Create a pending AudioDestination to replace the current one.
   scoped_refptr<AudioDestination> pending_platform_destination =
-      AudioDestination::Create(
-          *this, sink_descriptor, ChannelCount(), latency_hint_, sample_rate_,
-          Context()->GetDeferredTaskHandler().RenderQuantumFrames());
+      AudioDestination::Create(*this, sink_descriptor, ChannelCount(),
+                               latency_hint_, sample_rate_,
+                               Context()->renderQuantumSize());
 
   // With this pending AudioDestination, create and initialize an underlying
   // sink in order to query the device status. If the status is OK, then replace
@@ -506,7 +504,14 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
     const bool was_playing = platform_destination_->IsPlaying();
     StopPlatformDestination();
+
+    // The elapsed frame count of the current destination must be transferred
+    // to the new one. This ensures that `getOutputTimestamp().contextTime`
+    // does not go backward after the device change.
+    pending_platform_destination->TransferElapsedFramesFrom(
+        platform_destination_);
     platform_destination_ = pending_platform_destination;
+
     // Update the echo cancellation reference on next start if there is already
     // a pending change, or if the sink has actually changed.
     update_echo_cancellation_on_next_start_ =

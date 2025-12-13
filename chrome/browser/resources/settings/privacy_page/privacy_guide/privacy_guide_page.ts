@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../../settings_shared.css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import './privacy_guide_ad_topics_fragment.js';
 import './privacy_guide_completion_fragment.js';
 import './privacy_guide_cookies_fragment.js';
 import './privacy_guide_history_sync_fragment.js';
@@ -33,11 +34,11 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
-import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
+import {SafeBrowsingSetting} from '../safe_browsing_types.js';
 import {routes} from '../../route.js';
 import type {Route} from '../../router.js';
 import {RouteObserverMixin, Router} from '../../router.js';
-import {ContentSetting, CookieControlsMode} from '../../site_settings/constants.js';
+import {ContentSetting} from '../../site_settings/constants.js';
 
 import {PrivacyGuideStep} from './constants.js';
 import {PrivacyGuideAvailabilityMixin} from './privacy_guide_availability_mixin.js';
@@ -127,7 +128,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyGuideStep_, prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       },
 
       shouldShowAdTopicsCard_: {
@@ -141,7 +142,7 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
 
   static get observers() {
     return [
-      'onPrefsChanged_(prefs.profile.cookie_controls_mode, prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
+      'onPrefsChanged_(prefs.generated.cookie_default_content_setting, prefs.generated.safe_browsing, prefs.generated.third_party_cookie_blocking_setting, prefs.net.network_prediction_options)',
       'exitIfNecessary(isPrivacyGuideAvailable)',
     ];
   }
@@ -254,7 +255,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
           // unavailable. Otherwise we would skip it in
           // `navigateForwardIfCurrentCardNoLongerAvailable` before
           // `onSyncStatusChanged_` is called asynchronously.
-          isAvailable: () => !this.syncStatus_ || this.isSyncOn_(),
+          isAvailable: () =>
+              !this.syncStatus_ || this.shouldShowHistorySyncCard_(),
         },
       ],
       [
@@ -519,10 +521,14 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     };
   }
 
-  private isSyncOn_(): boolean {
+  private shouldShowHistorySyncCard_(): boolean {
     assert(this.syncStatus_);
-    return this.syncStatus_.signedInState === SignedInState.SYNCING &&
-        !this.syncStatus_.hasError;
+    if (this.syncStatus_.hasError) {
+      return false;
+    }
+    return this.syncStatus_.signedInState === SignedInState.SYNCING ||
+        (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+         this.syncStatus_.signedInState === SignedInState.SIGNED_IN);
   }
 
   private shouldShowCookiesCard_(): boolean {
@@ -533,13 +539,9 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
       return false;
     }
-    // Don't show the 3PC card if the user has chosen to allow 3PCs, block
-    // 1PCs, or if AlwaysBlock3pcsIncognito is disabled.
+    // Don't show the 3PC card if the user has chosen to block 1PCs.
     return this.getPref('generated.cookie_default_content_setting').value !==
-        ContentSetting.BLOCK &&
-        (this.getPref('profile.cookie_controls_mode').value !==
-             CookieControlsMode.OFF ||
-         loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'));
+        ContentSetting.BLOCK;
   }
 
   private shouldShowSafeBrowsingCard_(): boolean {
@@ -566,6 +568,8 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
         break;
       case 'ArrowRight':
         isLtr ? this.navigateForward_() : this.navigateBackward_();
+        break;
+      default:
         break;
     }
   }

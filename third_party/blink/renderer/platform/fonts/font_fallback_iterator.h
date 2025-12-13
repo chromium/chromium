@@ -33,9 +33,6 @@ class PLATFORM_EXPORT FontFallbackIterator {
   FontFallbackIterator& operator=(const FontFallbackIterator&) = delete;
 
   bool operator==(const FontFallbackIterator& other) const;
-  bool operator!=(const FontFallbackIterator& other) const {
-    return !(*this == other);
-  }
 
   bool HasNext() const { return fallback_stage_ != kOutOfLuck; }
   // Returns whether the next call to Next() needs a full hint list, or whether
@@ -45,6 +42,7 @@ class PLATFORM_EXPORT FontFallbackIterator {
   // segmented font, i.e. one that requires the hint list to work out which
   // unicode range segment should be used.
   bool NeedsHintList() const;
+  static unsigned ChooseHintIndex(const FontFallbackIterator::HintCharList&);
 
   // Some system fallback APIs (Windows, Android) require a character, or a
   // portion of the string to be passed.  On Mac and Linux, we get a list of

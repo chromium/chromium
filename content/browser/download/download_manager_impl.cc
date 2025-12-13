@@ -66,7 +66,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
@@ -235,7 +234,7 @@ CreatePendingSharedURLLoaderFactory(StoragePartitionImpl* storage_partition,
         static_cast<RenderFrameHostImpl*>(rfh))
         .Run(/*is_navigation=*/true,
              /*is_download=*/true, factory_builder,
-             nullptr /* factory_override */);
+             nullptr /* factory_override */, /*header_client=*/nullptr);
 
     // Also allow the Content embedder to inject itself if it wants to.
     GetContentClient()->browser()->WillCreateURLLoaderFactory(
@@ -717,7 +716,7 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
     download::InProgressDownloadManager::StartDownloadItemCallback callback,
     uint32_t id) {
 #if BUILDFLAG(IS_ANDROID)
-  if (info->transient && !info->is_must_download &&
+  if (info->transient && info->allow_auto_open_after_completion &&
       delegate_->ShouldOpenPdfInline() &&
       base::EqualsCaseInsensitiveASCII(info->mime_type, kPdfMimeType)) {
     if (IsOffTheRecord()) {
@@ -735,7 +734,7 @@ void DownloadManagerImpl::OnNewDownloadIdRetrieved(
           continue;
         }
 
-        if (!item->IsTransient() || item->IsMustDownload()) {
+        if (!item->IsTransient() || !item->AllowAutoOpenAfterCompletion()) {
           continue;
         }
 
@@ -1463,7 +1462,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
   } else if (rfh && params->url().SchemeIs(content::kChromeUIScheme)) {
     pending_url_loader_factory =
         std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(
-            CreateWebUIURLLoaderFactory(rfh, params->url().scheme(),
+            CreateWebUIURLLoaderFactory(rfh, params->url().GetScheme(),
                                         base::flat_set<std::string>()));
   } else if (rfh && params->url().SchemeIsFileSystem()) {
     StoragePartitionImpl* storage_partition = GetStoragePartitionForConfig(
@@ -1488,7 +1487,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
             params->render_process_host_id(),
             params->render_frame_host_routing_id(), params->initiator(),
             &non_network_url_loader_factories);
-    auto it = non_network_url_loader_factories.find(params->url().scheme());
+    auto it = non_network_url_loader_factories.find(params->url().GetScheme());
     if (it != non_network_url_loader_factories.end()) {
       pending_url_loader_factory =
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

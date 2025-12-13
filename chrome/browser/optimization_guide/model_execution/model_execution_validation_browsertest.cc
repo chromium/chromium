@@ -42,7 +42,7 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host()};
+        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).GetHost()};
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(
         base::BindRepeating(&ModelExecutionValidationBrowserTestBase::
@@ -56,9 +56,9 @@ class ModelExecutionValidationBrowserTestBase : public InProcessBrowserTest {
     cmd->AppendSwitchASCII(
         switches::kOptimizationGuideServiceModelExecutionURL,
         model_execution_server_
-            ->GetURL(
-                GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
-                "/")
+            ->GetURL(GURL(kOptimizationGuideServiceModelExecutionDefaultURL)
+                         .GetHost(),
+                     "/")
             .spec());
   }
 

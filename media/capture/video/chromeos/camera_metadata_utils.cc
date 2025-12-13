@@ -5,9 +5,9 @@
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 
 #include <algorithm>
-#include <unordered_set>
 
 #include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {
 
@@ -114,7 +114,7 @@ void MergeMetadata(cros::mojom::CameraMetadataPtr* to,
     return;
   }
 
-  std::unordered_set<cros::mojom::CameraMetadataTag> tags;
+  absl::flat_hash_set<cros::mojom::CameraMetadataTag> tags;
   if ((*to)->entries) {
     for (const auto& entry : (*to)->entries.value()) {
       tags.insert(entry->tag);

@@ -105,7 +105,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
 
     // Constructs a Result based on the result of the network download.
     Result(GURL signals_url,
-           std::unique_ptr<std::string> response_body,
+           std::optional<std::string> response_body,
            scoped_refptr<net::HttpResponseHeaders> headers,
            std::optional<std::string> error);
 
@@ -234,7 +234,7 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
   // Result objects in `coalesced_downloads_` that are waiting on the URL.
   void OnSignalsDownloaded(GURL signals_url,
                            base::TimeTicks start_time,
-                           std::unique_ptr<std::string> response_body,
+                           std::optional<std::string> response_body,
                            scoped_refptr<net::HttpResponseHeaders> headers,
                            std::optional<std::string> error);
 

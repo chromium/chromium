@@ -12,9 +12,9 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/unguessable_token.h"
@@ -285,6 +285,13 @@ class COMPONENT_EXPORT(URL) Origin {
   friend bool operator==(const Origin& left, const Origin& right) = default;
   friend auto operator<=>(const Origin& left, const Origin& right) = default;
 
+  // Allows Origin to be used as a key in ABSL (for example, absl::flat_hash_set
+  // or absl::flat_hash_map).
+  template <typename H>
+  friend H AbslHashValue(H h, const Origin& o) {
+    return H::combine(std::move(h), o.tuple_, o.nonce_);
+  }
+
   // Creates a new opaque origin that is guaranteed to be cross-origin to all
   // currently existing origins. An origin created by this method retains its
   // identity across copies. Copies are guaranteed to be same-origin to each
@@ -394,6 +401,13 @@ class COMPONENT_EXPORT(URL) Origin {
     // |token_| lazy-initialization. Equality comparisons do not.
     std::strong_ordering operator<=>(const Nonce& other) const;
     bool operator==(const Nonce& other) const;
+
+    // Hashes the Nonce for absl hash containers. Will trigger |token_|
+    // lazy-initialization.
+    template <typename H>
+    friend H AbslHashValue(H h, const Nonce& n) {
+      return H::combine(std::move(h), n.token());
+    }
 
    private:
     friend class OriginTest;

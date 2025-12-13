@@ -75,9 +75,6 @@ class OmniboxTabHelper
   // the signal could not be calculated.
   std::optional<bool> IsPagePaywalled();
 
-  // Returns the previously observed omnibox focus state.
-  OmniboxFocusState focus_state() const;
-
  private:
   OmniboxTabHelper(content::WebContents* contents, Profile* profile);
   friend class content::WebContentsUserData<OmniboxTabHelper>;
@@ -123,7 +120,6 @@ class OmniboxTabHelper
   // Whether the timings from a navigation to the omnibox being focused have
   // been logged for this navigation.
   bool logged_current_navigation_timings_ = false;
-  OmniboxFocusState focus_state_ = OmniboxFocusState::OMNIBOX_FOCUS_NONE;
 
   // Observer to observer Annotated Page Content updates. Updates are fire on
   // every page, not only the current tab. The page content is generated a few

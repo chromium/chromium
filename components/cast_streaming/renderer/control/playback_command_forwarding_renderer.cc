@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace cast_streaming {
 namespace {

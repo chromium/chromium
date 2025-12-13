@@ -90,7 +90,7 @@ const CGFloat kNTPTabGridPageControlCornerRadius = 13.0f;
         referencedViewUnderName:kSelectedRegularCellGuide];
   } else if (_step == GuidedTourStep::kTabGridTabGroup) {
     return [LayoutGuideCenterForBrowser(nil)
-        referencedViewUnderName:kTabGridPageControlThirdPanelGuide];
+        referencedViewUnderName:kTabGridPageControlTabGroupsGuide];
   }
   NOTREACHED() << "A layout guide view needs to be fetched for each step";
 }

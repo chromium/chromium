@@ -12,8 +12,8 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:143-
 owners:
 - file://content/browser/smart_card/OWNERS
 schema:

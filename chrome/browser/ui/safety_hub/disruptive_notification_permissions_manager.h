@@ -8,16 +8,16 @@
 #include <memory>
 #include <set>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class RevokedPermissionsOSNotificationDisplayManager;
 class GURL;
 class Profile;
 
@@ -27,8 +27,7 @@ class SiteEngagementService;
 
 // This class keeps track of disruptive notification permissions by checking the
 // average daily notification counts and site engagement score.
-class DisruptiveNotificationPermissionsManager
-    : public content_settings::Observer {
+class DisruptiveNotificationPermissionsManager {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -62,7 +61,8 @@ class DisruptiveNotificationPermissionsManager
     // kAlreadyFalsePositive = 9,  // deprecated, now reported as kNotDisruptive
     kRevoke = 10,
     kIgnore = 11,
-    kMaxValue = kIgnore,
+    kAbusiveRevocationIgnored = 12,
+    kMaxValue = kAbusiveRevocationIgnored,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:DisruptiveNotificationRevocationResult)
 
@@ -88,40 +88,34 @@ class DisruptiveNotificationPermissionsManager
   enum class RevocationState {
     kProposed = 1,
     kRevoked = 2,
-    kIgnore = 3,
+    kIgnoreInsideSH = 3,
     kAcknowledged = 4,
-    kMaxValue = kAcknowledged,
+    kIgnoreOutsideSH = 5,
+    kMaxValue = kIgnoreOutsideSH,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DisruptiveNotificationRevocationState)
 
-  class SafetyHubNotificationWrapper {
-   public:
-    virtual ~SafetyHubNotificationWrapper();
-    virtual void DisplayNotification(int num_revoked_permissions) = 0;
-    virtual void UpdateNotification(int num_revoked_permissions) = 0;
-  };
-
   explicit DisruptiveNotificationPermissionsManager(
       scoped_refptr<HostContentSettingsMap> hcsm,
-      site_engagement::SiteEngagementService* site_engagement_service);
+      site_engagement::SiteEngagementService* site_engagement_service,
+      RevokedPermissionsOSNotificationDisplayManager*
+          revoked_permissions_notification_display_manager);
 
   DisruptiveNotificationPermissionsManager(
       const DisruptiveNotificationPermissionsManager&) = delete;
   DisruptiveNotificationPermissionsManager& operator=(
       const DisruptiveNotificationPermissionsManager&) = delete;
 
-  ~DisruptiveNotificationPermissionsManager() override;
+  ~DisruptiveNotificationPermissionsManager();
 
   // Revokes notification permissions for disruptive sites and records
   // the revoked websites in the content setting.
   void RevokeDisruptiveNotifications();
 
-  // Returns the list of revoked disruptive notifications, excluding proposed
-  // revocations and false positives.
-  ContentSettingsForOneType GetRevokedNotifications();
-
-  // Returns true if settings are being changed due to auto revocation;
-  bool IsRunning();
+  // Returns true if settings are being changed due to auto revocation or if
+  // this service is responsible for changing notification permissions
+  // (regrants, undoing regrants etc).
+  bool IsChangingContentSettings();
 
   // If the url has a revoked disruptive notification permission, this method
   // allows the notification permissions again and adds a constraint so that
@@ -150,6 +144,12 @@ class DisruptiveNotificationPermissionsManager
       const ContentSettingsPattern& primary_pattern,
       content_settings::ContentSettingConstraints constraints);
 
+  // Called when the notification content setting was changed outside of the
+  // service. Either record the regrant of the notification permission or clean
+  // up the matching revocation entries.
+  void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,
+                           const ContentSettingsPattern& secondary_pattern);
+
   // If the URL is in the revoke or proposed revoke list, report a false
   // positive and record metrics.
   static void MaybeReportFalsePositive(Profile* profile,
@@ -163,24 +163,29 @@ class DisruptiveNotificationPermissionsManager
                          const GURL& url,
                          ukm::SourceId source_id);
 
+  // Returns the list of revoked disruptive notifications, excluding proposed
+  // revocations and false positives.
+  static ContentSettingsForOneType GetRevokedNotifications(
+      HostContentSettingsMap* hcsm);
+
   // Returns true if `url` has been revoked notification permissions because of
   // sending disruptive notifications.
   static bool IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
                                                  const GURL& url);
 
-  // content_settings::Observer implementation.
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsTypeSet content_type_set) override;
+  // Returns true if notification permission should not be revoked for the URL
+  // since the user already regranted a previously revoked permission.
+  static bool IsUrlIgnoredForRevokedDisruptiveNotification(
+      HostContentSettingsMap* hcsm,
+      const GURL& url);
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);
-  void SetNotificationWrapperForTesting(
-      std::unique_ptr<SafetyHubNotificationWrapper> wrapper);
 
  private:
   friend class DisruptiveNotificationPermissionsManagerTest;
+  friend class DisruptiveNotificationPermissionsMigrationTest;
+  friend class RevokedPermissionsOSNotificationDisplayManagerTest;
   friend class RevokedPermissionsServiceBrowserTest;
   friend class RevokedPermissionsServiceTest;
   FRIEND_TEST_ALL_PREFIXES(
@@ -209,6 +214,9 @@ class DisruptiveNotificationPermissionsManager
 
     // Timestamp of proposed or actual revocation.
     base::Time timestamp;
+
+    // If lifetime is 0, it doesn't expire.
+    base::TimeDelta lifetime;
 
     bool has_reported_proposal = false;
     bool has_reported_false_positive = false;
@@ -247,14 +255,6 @@ class DisruptiveNotificationPermissionsManager
   // revoke and reports metrics.
   void RevokeNotifications(const GURL& url, RevocationEntry revocation_entry);
 
-  // Displays the safety hub notification informing the users about revoked
-  // notification permissions.
-  void DisplayNotification();
-
-  // Updates the count of revoked notification permissions in the safety hub
-  // notification informing the users about revoked notification permissions.
-  void UpdateNotificationCount();
-
   // Updates content settings for notification permissions.
   void UpdateNotificationPermission(const GURL& url,
                                     ContentSetting setting_value);
@@ -271,9 +271,8 @@ class DisruptiveNotificationPermissionsManager
 
   raw_ptr<site_engagement::SiteEngagementService> site_engagement_service_;
 
-  // Observer to watch for content settings changed.
-  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
-      content_settings_observation_{this};
+  raw_ptr<RevokedPermissionsOSNotificationDisplayManager>
+      revoked_permissions_notification_display_manager_;
 
   raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
@@ -282,8 +281,6 @@ class DisruptiveNotificationPermissionsManager
   // Track whether this service is responsible for changing notification
   // permissions, in order to ignore this case inside OnContentSettingChanged.
   bool is_changing_notification_permission_ = false;
-
-  std::unique_ptr<SafetyHubNotificationWrapper> notification_wrapper_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_DISRUPTIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_

@@ -133,7 +133,10 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MockAcceleratedVideoDecoder() = default;
   ~MockAcceleratedVideoDecoder() override = default;
 
-  MOCK_METHOD(void, SetStream, (int32_t, const DecoderBuffer&), (override));
+  MOCK_METHOD(void,
+              SetStream,
+              (int32_t, scoped_refptr<DecoderBuffer>),
+              (override));
   MOCK_METHOD(bool, Flush, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
   MOCK_METHOD(DecodeResult, Decode, (), (override));
@@ -143,10 +146,7 @@ class MockAcceleratedVideoDecoder : public AcceleratedVideoDecoder {
   MOCK_METHOD(uint8_t, GetBitDepth, (), (const, override));
   MOCK_METHOD(VideoChromaSampling, GetChromaSampling, (), (const, override));
   MOCK_METHOD(VideoColorSpace, GetVideoColorSpace, (), (const, override));
-  MOCK_METHOD(std::optional<gfx::HDRMetadata>,
-              GetHDRMetadata,
-              (),
-              (const, override));
+  MOCK_METHOD(gfx::HDRMetadata, GetHDRMetadata, (), (const, override));
   MOCK_METHOD(size_t, GetRequiredNumOfPictures, (), (const, override));
   MOCK_METHOD(size_t, GetNumReferenceFrames, (), (const, override));
 };

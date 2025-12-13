@@ -10,10 +10,12 @@
 //ios/chrome/test/data/policy/pref_mapping/AutofillAddressEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/AutofillCreditCardEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/BrowserSignin.json
+//ios/chrome/test/data/policy/pref_mapping/BrowserThemeColor.json
 //ios/chrome/test/data/policy/pref_mapping/ChromeDataRegionSetting.json
 //ios/chrome/test/data/policy/pref_mapping/ChromeVariations.json
 //ios/chrome/test/data/policy/pref_mapping/CloudManagementEnrollmentToken.json
 //ios/chrome/test/data/policy/pref_mapping/CloudPolicyOverridesPlatformPolicy.json
+//ios/chrome/test/data/policy/pref_mapping/CloudProfileReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/CloudReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/CloudReportingUploadFrequency.json
 //ios/chrome/test/data/policy/pref_mapping/CloudUserPolicyMerge.json
@@ -21,6 +23,7 @@
 //ios/chrome/test/data/policy/pref_mapping/ComponentUpdatesEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ContextMenuPhotoSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/CredentialProviderPromoEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/DataControlsRules.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultPopupsSetting.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultSearchProviderAlternateURLs.json
 //ios/chrome/test/data/policy/pref_mapping/DefaultSearchProviderEnabled.json
@@ -47,13 +50,16 @@
 //ios/chrome/test/data/policy/pref_mapping/GenAiDefaultSettings.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeout.json
 //ios/chrome/test/data/policy/pref_mapping/IdleTimeoutActions.json
+//ios/chrome/test/data/policy/pref_mapping/IncognitoModeAllowlist.json
 //ios/chrome/test/data/policy/pref_mapping/IncognitoModeAvailability.json
+//ios/chrome/test/data/policy/pref_mapping/IncognitoModeBlocklist.json
 //ios/chrome/test/data/policy/pref_mapping/InsecureFormsWarningsEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/LensCameraAssistedSearchEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/LensOverlaySettings.json
 //ios/chrome/test/data/policy/pref_mapping/ManagedBookmarks.json
 //ios/chrome/test/data/policy/pref_mapping/MetricsReportingEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NTPContentSuggestionsEnabled.json
+//ios/chrome/test/data/policy/pref_mapping/NTPCustomBackgroundEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/NewTabPageLocation.json
 //ios/chrome/test/data/policy/pref_mapping/OnSecurityEventEnterpriseConnector.json
 //ios/chrome/test/data/policy/pref_mapping/OptimizationGuideFetchingEnabled.json
@@ -75,6 +81,7 @@
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProtectionLevel.json
 //ios/chrome/test/data/policy/pref_mapping/SafeBrowsingProxiedRealTimeChecksAllowed.json
 //ios/chrome/test/data/policy/pref_mapping/SavingBrowserHistoryDisabled.json
+//ios/chrome/test/data/policy/pref_mapping/SearchContentSharingSettings.json
 //ios/chrome/test/data/policy/pref_mapping/SearchSuggestEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/ShoppingListEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/SyncDisabled.json

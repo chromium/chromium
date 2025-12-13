@@ -9,14 +9,16 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.PreferenceUpdateObserver;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /** Preference fragment for showing the Site Settings UI. */
 @NullMarked
 public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
-        implements FragmentSettingsNavigation {
+        implements FragmentSettingsNavigation, PreferenceUpdateObserver.Provider {
     private @Nullable SiteSettingsDelegate mSiteSettingsDelegate;
     private @Nullable SettingsNavigation mSettingsNavigation;
+    private @Nullable PreferenceUpdateObserver mPreferenceUpdateObserver;
 
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
@@ -55,5 +57,22 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
     /** Returns the associated {@link SettingsNavigation}. */
     public @Nullable SettingsNavigation getSettingsNavigation() {
         return mSettingsNavigation;
+    }
+
+    @Override
+    public void setPreferenceUpdateObserver(PreferenceUpdateObserver observer) {
+        mPreferenceUpdateObserver = observer;
+    }
+
+    @Override
+    public void removePreferenceUpdateObserver() {
+        mPreferenceUpdateObserver = null;
+    }
+
+    /** Notifies the observer that the preferences have been updated. */
+    protected void notifyPreferencesUpdated() {
+        if (mPreferenceUpdateObserver != null) {
+            mPreferenceUpdateObserver.onPreferencesUpdated(this);
+        }
     }
 }

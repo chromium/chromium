@@ -465,9 +465,10 @@ enum StatePropertyError {
 };
 
 // Defines the properties specific to the kUpdateDeviceInformation state.
-// These boolean flags indicate whether a particular piece of device
-// information can be modified in the current RMA flow.
 struct UpdateDeviceInfoStateProperty {
+  // Device information input modifiability.
+  // These boolean flags indicate whether a particular piece of device
+  // information can be modified in the current RMA flow.
   // True if the serial number can be modified.
   bool serial_number_modifiable;
   // True if the region can be modified.
@@ -480,6 +481,11 @@ struct UpdateDeviceInfoStateProperty {
   bool dram_part_number_modifiable;
   // True if the feature level can be modified.
   bool feature_level_modifiable;
+
+  // Customized serial number naming.
+  string customized_serial_number_naming;
+  // True if the Google SKU IDs should be hidden in the dropdown.
+  bool hide_google_sku;
 };
 
 // A union to hold different sets of state-specific properties.

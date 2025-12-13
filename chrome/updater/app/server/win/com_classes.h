@@ -10,6 +10,7 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <typeinfo>
 
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -25,9 +26,7 @@ namespace updater {
 // to RPC method calls which model COM events.
 class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
  public:
-  explicit UpdateStateImpl(const UpdateService::UpdateState& update_state)
-      : DYNAMICIIDSIMPL(IUpdateState)(GetUpdaterScope()),
-        update_state_(update_state) {}
+  explicit UpdateStateImpl(const UpdateService::UpdateState& update_state);
   UpdateStateImpl(const UpdateStateImpl&) = delete;
   UpdateStateImpl& operator=(const UpdateStateImpl&) = delete;
 
@@ -45,7 +44,7 @@ class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
   IFACEMETHODIMP get_installerCommandLine(BSTR* installer_cmd_line) override;
 
  private:
-  ~UpdateStateImpl() override = default;
+  ~UpdateStateImpl() override;
 
   const UpdateService::UpdateState update_state_;
 };
@@ -54,10 +53,7 @@ class UpdateStateImpl : public DYNAMICIIDSIMPL(IUpdateState) {
 // object.
 class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
  public:
-  CompleteStatusImpl(int code, const std::wstring& message)
-      : DYNAMICIIDSIMPL(ICompleteStatus)(GetUpdaterScope()),
-        code_(code),
-        message_(message) {}
+  CompleteStatusImpl(int code, const std::wstring& message);
   CompleteStatusImpl(const CompleteStatusImpl&) = delete;
   CompleteStatusImpl& operator=(const CompleteStatusImpl&) = delete;
 
@@ -66,7 +62,7 @@ class CompleteStatusImpl : public DYNAMICIIDSIMPL(ICompleteStatus) {
   IFACEMETHODIMP get_statusMessage(BSTR* message) override;
 
  private:
-  ~CompleteStatusImpl() override = default;
+  ~CompleteStatusImpl() override;
 
   const int code_;
   const std::wstring message_;

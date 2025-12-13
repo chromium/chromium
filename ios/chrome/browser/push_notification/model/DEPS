@@ -1,6 +1,9 @@
 include_rules = [
+  "+components/sharing_message",
+  "+components/desktop_to_mobile_promos",
   "+ios/chrome/browser/commerce/model",
   "+ios/chrome/browser/content_notification/model",
+  "+ios/chrome/browser/cross_platform_promos/model",
   "+ios/chrome/browser/reminder_notifications/model",
   "+ios/chrome/browser/safety_check_notifications/model",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",

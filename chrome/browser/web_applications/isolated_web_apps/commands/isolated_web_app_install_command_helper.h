@@ -24,6 +24,7 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 class Profile;
@@ -40,12 +41,7 @@ enum class WebAppUrlLoaderResult;
 namespace web_app {
 
 enum class IconsDownloadedResult;
-class IsolatedWebAppResponseReader;
-class IsolatedWebAppStorageLocation;
-class IsolatedWebAppResponseReaderFactory;
-class IwaSourceWithMode;
 class IwaSourceWithModeAndFileOp;
-class UnusableSwbnFileError;
 class WebAppDataRetriever;
 class WebAppRegistrar;
 
@@ -75,10 +71,6 @@ void CleanupLocationIfOwned(const base::FilePath& profile_dir,
 base::expected<std::reference_wrapper<const WebApp>, std::string>
 GetIsolatedWebAppById(const WebAppRegistrar& registrar,
                       const webapps::AppId& iwa_id);
-
-base::flat_map<web_package::SignedWebBundleId,
-               std::reference_wrapper<const WebApp>>
-GetInstalledIwas(const WebAppRegistrar& registrar);
 
 enum class KeyRotationLookupResult { kNoKeyRotation, kKeyFound, kKeyBlocked };
 
@@ -114,8 +106,8 @@ KeyRotationData GetKeyRotationData(
 
 // Checks if version change is allowed for given arguments.
 VersionChangeValidationResult ValidateVersionChangeFeasibility(
-    const base::Version& expected_version,
-    const base::Version& installed_version,
+    const IwaVersion& expected_version,
+    const IwaVersion& installed_version,
     bool allow_downgrades,
     bool same_version_update_allowed_by_key_rotation);
 
@@ -123,17 +115,12 @@ VersionChangeValidationResult ValidateVersionChangeFeasibility(
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {
  public:
-  static std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-  CreateDefaultResponseReaderFactory(Profile& profile);
-
   static std::unique_ptr<content::WebContents> CreateIsolatedWebAppWebContents(
       Profile& profile);
 
   IsolatedWebAppInstallCommandHelper(
       IsolatedWebAppUrlInfo url_info,
-      std::unique_ptr<WebAppDataRetriever> data_retriever,
-      std::unique_ptr<IsolatedWebAppResponseReaderFactory>
-          response_reader_factory);
+      std::unique_ptr<WebAppDataRetriever> data_retriever);
   ~IsolatedWebAppInstallCommandHelper();
 
   IsolatedWebAppInstallCommandHelper(
@@ -171,34 +158,18 @@ class IsolatedWebAppInstallCommandHelper {
       base::OnceCallback<void(
           base::expected<blink::mojom::ManifestPtr, std::string>)> callback);
 
-  base::expected<base::Version, std::string> ValidateManifestAndGetVersion(
-      const std::optional<base::Version>& expected_version,
+  base::expected<IwaVersion, std::string> ValidateManifestAndGetVersion(
+      const std::optional<IwaVersion>& expected_version,
       const blink::mojom::Manifest& manifest);
 
   void RetrieveInstallInfoWithIconsFromManifest(
       const blink::mojom::Manifest& manifest,
       content::WebContents& web_contents,
-      const base::Version parsed_version,
+      IwaVersion parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback);
 
  private:
-  void CheckTrustAndSignaturesOfBundle(
-      const base::FilePath& path,
-      bool dev_mode,
-      base::OnceCallback<
-          void(base::expected<
-               std::optional<web_package::SignedWebBundleIntegrityBlock>,
-               std::string>)> callback);
-
-  void OnTrustAndSignaturesOfBundleChecked(
-      base::OnceCallback<
-          void(base::expected<
-               std::optional<web_package::SignedWebBundleIntegrityBlock>,
-               std::string>)> callback,
-      base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
-                     UnusableSwbnFileError> status);
-
   void OnLoadInstallUrl(
       base::OnceCallback<void(base::expected<void, std::string>)> callback,
       webapps::WebAppUrlLoaderResult result);
@@ -211,14 +182,13 @@ class IsolatedWebAppInstallCommandHelper {
       webapps::InstallableStatusCode error_code);
 
   void OnGettingInstallInfoFromManifest(
-      const base::Version parsed_version,
+      IwaVersion parsed_version,
       base::OnceCallback<void(base::expected<WebAppInstallInfo, std::string>)>
           callback,
       std::unique_ptr<WebAppInstallInfo> install_info);
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<IsolatedWebAppResponseReaderFactory> response_reader_factory_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
   base::Value::Dict manifest_to_info_debug_data_;
 

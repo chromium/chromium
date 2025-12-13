@@ -42,21 +42,17 @@ system.
 "foreground service," in which case the system will prioritize this process over
 most others when the system is low on memory.
 
-## Monochrome compatibility
+## Other notes
 
-Because Monochrome declares both Chrome's and WebView's
-[components](https://developer.android.com/guide/components/fundamentals#Components),
-we need to take several precautions to make sure these don't interfere with each
-other:
+We need to take several precautions to make sure our
+[components](https://developer.android.com/guide/components/fundamentals#Components)
+don't interfere with each other:
 
-- Activities need to be marked with `android:process=":webview_apk"` to ensure
-  process isolation from Chrome's browser process.
-- Services need to be marked with `android:process=":webview_service"` to ensure
-  the service runs in a separate process from both the UI code and Chrome's
-  code.
+- Activities need to be marked with `android:process=":webview_apk"`.
+- Services should usually be marked with `android:process=":webview_service"` to
+  ensure these run in the lightweight service process.
 - ContentProviders also need an explicit `android:process`, although this may
   declare either process depending on what it needs.
-- Activities also need an explicit `android:taskAffinity`, otherwise using the
-  WebView Activity will replace the current Chrome session from the task stack
-  (or vice versa). The taskAffinity should include the WebView package name,
-  otherwise Activities from different WebView channels will trample each other.
+- Activities also need an explicit `android:taskAffinity` including the WebView
+  package name, otherwise Activities from different WebView channels will
+  trample each other.

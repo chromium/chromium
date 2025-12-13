@@ -35,11 +35,12 @@ BaseState::~BaseState() = default;
 void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
   if (event->IsWorkspaceEvent()) {
     HandleWorkspaceEvents(window_state, event);
-    if (window_state->IsSnapped() && !window_state->CanSnap())
+    if (window_state->IsSnapped() && !window_state->CanSnap()) {
       window_state->Restore();
+    }
     return;
   }
-  if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
+  if ((window_state->IsLockedFullscreen() || window_state->IsPinned()) &&
       (event->type() != WM_EVENT_NORMAL && event->type() != WM_EVENT_RESTORE &&
        event->IsTransitionEvent())) {
     // PIN state can be exited only by normal event or restore event.
@@ -91,8 +92,8 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
       return WindowStateType::kPip;
     case WM_EVENT_FLOAT:
       return WindowStateType::kFloated;
-    case WM_EVENT_TRUSTED_PIN:
-      return WindowStateType::kTrustedPinned;
+    case WM_EVENT_LOCKED_FULLSCREEN:
+      return WindowStateType::kLockedFullscreen;
     default:
       break;
   }
@@ -111,7 +112,7 @@ WindowStateType BaseState::GetStateForTransitionEvent(WindowState* window_state,
 void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
   auto* shell = Shell::Get();
   // For tablet mode, use `TabletModeWindowState::CycleTabletSnap`.
-  DCHECK(!display::Screen::GetScreen()->InTabletMode());
+  DCHECK(!display::Screen::Get()->InTabletMode());
 
   WindowStateType desired_snap_state = event == WM_EVENT_CYCLE_SNAP_PRIMARY
                                            ? WindowStateType::kPrimarySnapped
@@ -146,11 +147,20 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
                                    : IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT);
     return;
   }
-  // If |window| is already in |desired_snap_state|, then unsnap |window|.
+  // If |window| is in a snap group, ungroup it. If it's not in a snap group and
+  // it's already snapped, restore it.
   if (window_state->IsSnapped()) {
-    window_state->Restore();
-    window_state->ReadOutWindowCycleSnapAction(
-        IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);
+    auto* snap_group_controller = Shell::Get()->snap_group_controller();
+    auto* snap_group = snap_group_controller->GetSnapGroupForGivenWindow(
+        window_state->window());
+    if (snap_group) {
+      snap_group_controller->RemoveSnapGroup(
+          snap_group, SnapGroupExitPoint::kToggleSnapGroupAccelerator);
+    } else {
+      window_state->Restore();
+      window_state->ReadOutWindowCycleSnapAction(
+          IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);
+    }
     return;
   }
   // If |window| cannot be snapped, then do a window bounce animation.
@@ -203,7 +213,7 @@ gfx::Rect BaseState::GetSnappedWindowBoundsInParent(
 
   if (auto* split_view_controller = SplitViewController::Get(window);
       split_view_controller->IsWindowInSplitView(window) ||
-      Shell::Get()->IsInTabletMode()) {
+      display::Screen::Get()->InTabletMode()) {
     // In tablet mode `SplitViewController` always manages snapped windows, in
     // clamshell state it only manages windows in split view.
     return split_view_controller->GetSnappedWindowBoundsInParent(

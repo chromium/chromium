@@ -1,0 +1,7 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x100]
+    <Container> [box: 0,0 800x100]
+      <Container> [box: 79,79 142x142]
+        <Container> [box: 100,100 100x100]
+          <Text> "x" [box: 190,100 10x10]
+

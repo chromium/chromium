@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cronet/config.gni")
-import("//build/config/features.gni")
 import("//components/gwp_asan/buildflags/buildflags.gni")
 
 declare_args() {
@@ -167,6 +166,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 

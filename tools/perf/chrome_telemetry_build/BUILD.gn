@@ -104,13 +104,10 @@ group("telemetry_chrome_test") {
 # overhead. A new one should be added each time a new type of APK is supported
 # and its suffix added to android_browser_types.gni.
 if (is_android) {
-  _bitness_if_needed = ""
   _webview_bitness_if_needed = ""
   if (defined(android_app_secondary_abi)) {
-    _bitness_if_needed = "_64_32"
-    _webview_bitness_if_needed = "_32_64"
+    _webview_bitness_if_needed = "_64_32"
   } else if (android_64bit_target_cpu) {
-    _bitness_if_needed = "_64"
     _webview_bitness_if_needed = "_64"
   }
   group("telemetry_chrome_test_android_chrome") {
@@ -119,24 +116,6 @@ if (is_android) {
     data_deps = [
       ":telemetry_chrome_test",
       "//chrome/android:chrome_public_apk",
-    ]
-  }
-
-  group("telemetry_chrome_test_android_monochrome") {
-    testonly = true
-
-    data_deps = [
-      ":telemetry_chrome_test",
-      "//chrome/android:monochrome${_bitness_if_needed}_public_apk",
-    ]
-  }
-
-  group("telemetry_chrome_test_android_monochrome_bundle") {
-    testonly = true
-
-    data_deps = [
-      ":telemetry_chrome_test",
-      "//chrome/android:monochrome${_bitness_if_needed}_public_bundle",
     ]
   }
 
@@ -166,7 +145,7 @@ if (is_android) {
 
       data_deps = [
         ":telemetry_chrome_test",
-        "//chrome/android:trichrome_chrome${_bitness_if_needed}_bundle",
+        "//chrome/android:trichrome_chrome_64_32_bundle",
       ]
     }
   }

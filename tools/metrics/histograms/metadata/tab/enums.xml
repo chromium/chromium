@@ -35,15 +35,30 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_strip_combo_button.cc:AccidentalClickType) -->
 
+<!-- LINT.IfChange(AnimationFreezeCheckerState) -->
+
+<enum name="AnimationFreezeCheckerState">
+  <int value="0" label="Started"/>
+  <int value="1" label="Ended"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Timed out"/>
+  <int value="4" label="Cancelled or ended after timeout"/>
+  <int value="5" label="Ended looped"/>
+  <int value="6" label="Cancelled looped"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/AnimationFreezeChecker.java:AnimationState) -->
+
 <!-- LINT.IfChange(AttemptFastKillForDiscardResult) -->
 
 <enum name="AttemptFastKillForDiscardResult">
   <int value="0" label="Killed"/>
   <int value="1" label="Skipped"/>
   <int value="2" label="Killed without unload handlers"/>
+  <int value="3" label="Killed without unload handlers or worker checks"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/tab_lifecycle_unit.cc:AttemptFastKillForDiscardResult) -->
+<!-- LINT.ThenChange(//chrome/browser/resource_coordinator/utils.h:AttemptFastKillForDiscardResult) -->
 
 <enum name="BooleanFocusedTab">
   <int value="0" label="Not Focused"/>
@@ -86,6 +101,15 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/performance_manager/mechanisms/page_discarder.cc:DiscardPageOnUIThreadOutcome) -->
+
+<!-- LINT.IfChange(DiscardReason) -->
+
+<enum name="DiscardReason">
+  <int value="0" label="OnDemand"/>
+  <int value="1" label="AppendNavigation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/tab/TabImpl.java:DiscardReason) -->
 
 <!-- LINT.IfChange(DiscardTabOutcome) -->
 
@@ -178,6 +202,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Tab strip menu option"/>
   <int value="3" label="New tab button in toolbar for touch"/>
   <int value="4" label="New tab button in the WebUI tab strip"/>
+  <int value="5" label="No user action taken"/>
 </enum>
 
 <enum name="PullDownGestureAction">
@@ -201,6 +226,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Button clicked"/>
   <int value="2" label="Learn more clicked"/>
 </enum>
+
+<!-- LINT.IfChange(SavedTabGroupOpenedSubmenuDesktop) -->
+
+<enum name="SavedTabGroupOpenedSubmenuDesktop">
+  <int value="0"
+      label="Opened from the tab group submenu from the bookmarks bar."/>
+  <int value="1"
+      label="Opened from the tab group submenu from the everything menu."/>
+  <int value="2" label="Opened from the tab group submenu from the app menu."/>
+  <int value="3"
+      label="Opened from the tab group submenu from the mac system menu."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SavedTabGroupOpenedSubmenuDesktop) -->
 
 <!-- LINT.IfChange(SavedTabGroupSyncBridge.MigrationResult) -->
 
@@ -255,11 +294,38 @@ chromium-metrics-reviews@google.com.
 <enum name="SharedTabGroupRecallTypeDesktop">
   <int value="0" label="Opened from the bookmarks bar."/>
   <int value="1" label="Opened from the everything menu."/>
-  <int value="2" label="Opened from the tab groups sub menu."/>
+  <int value="2"
+      label="Opened from the tab groups sub menu. Replaced by additional
+             entries to this histogram specifying the type of submenu."/>
   <int value="3" label="Closed from the tab group editor bubble."/>
+  <int value="4"
+      label="Opened from the tab group submenu from the bookmarks bar."/>
+  <int value="5"
+      label="Opened from the tab group submenu from the everything menu."/>
+  <int value="6" label="Opened from the tab group submenu from the app menu."/>
+  <int value="7"
+      label="Opened from the tab group submenu from the mac system menu."/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h:SharedTabGroupRecallTypeDesktop) -->
+
+<!-- LINT.IfChange(SplitTabCreatedSource) -->
+
+<enum name="SplitTabCreatedSource">
+  <int value="0" label="Toolbar button"/>
+  <int value="1" label="Drag and drop link"/>
+  <int value="2" label="Drag and drop tab"/>
+  <int value="3" label="Bookmark context menu"/>
+  <int value="4" label="Link context menu"/>
+  <int value="5" label="Tab context menu"/>
+  <int value="6" label="Duplicate split"/>
+  <int value="7" label="Extensions API"/>
+  <int value="8" label="What's new"/>
+  <int value="9" label="Keyboard shortcut"/>
+  <int value="10" label="New tab button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_metrics.h:SplitTabCreatedSource) -->
 
 <!-- LINT.IfChange(SplitViewMenuEntry) -->
 
@@ -270,6 +336,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Close start tab"/>
   <int value="3" label="Close end tab"/>
   <int value="4" label="Exit split"/>
+  <int value="5" label="Send feedback"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/split_tab_menu_model.h:SplitViewMenuEntry) -->
@@ -284,6 +351,20 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="AppMenu"/>
   <int value="2" label="Selector"/>
 </enum>
+
+<!-- LINT.IfChange(TabGroupingTransitionType) -->
+
+<enum name="TabGroupingTransitionType">
+  <int value="0" label="Invalid type"/>
+  <int value="1" label="Active tab was ungrouped, new tab was left ungrouped"/>
+  <int value="2" label="Active tab was ungrouped, new tab later grouped"/>
+  <int value="3" label="Active tab was grouped, new tab left ungrouped"/>
+  <int value="4" label="Active tab was grouped, new tab left in that group"/>
+  <int value="5"
+      label="Active tab was grouped, new tab put in different group"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_creation_metrics_controller.h:TabGroupingTransitionType) -->
 
 <!-- LINT.IfChange(TabGroupLoadedEmptiness)-->
 
@@ -408,7 +489,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Trailing"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/tab_strip_region_view.h:TabSearchPositionEnum) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h:TabSearchPositionEnum) -->
 
 <enum name="TabSearchRecentlyClosedItemOpenAction">
   <int value="0"
@@ -460,6 +541,16 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Evicted due to page loading when backgrounding"/>
   <int value="11" label="Evicted due to OS terminating the renderer."/>
 </enum>
+
+<!-- LINT.IfChange(VerticalTabsState) -->
+
+<enum name="VerticalTabsState">
+  <int value="0" label="AllHorizontal"/>
+  <int value="1" label="Mixed"/>
+  <int value="2" label="AllVertical"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_metrics_provider.h:VerticalTabsState) -->
 
 </enums>
 

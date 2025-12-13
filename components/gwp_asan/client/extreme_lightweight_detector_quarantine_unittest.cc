@@ -8,6 +8,7 @@
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/partition_stats.h"
+#include "partition_alloc/slot_start.h"
 #include "partition_alloc/thread_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,17 +55,22 @@ class PartitionAllocExtremeLightweightDetectorQuarantineTest
   QuarantineBranch* GetQuarantineBranch() { return &branch_.value(); }
 
   bool Quarantine(void* object) {
-    auto* slot_span = partition_alloc::internal::SlotSpanMetadata<
-        partition_alloc::internal::MetadataKind::kReadOnly>::FromObject(object);
-    uintptr_t slot_start = GetPartitionRoot()->ObjectToSlotStart(object);
+    auto slot_start = partition_alloc::internal::SlotStart::Checked(
+                          object, GetPartitionRoot())
+                          .Untag();
+    auto* slot_span =
+        partition_alloc::internal::SlotSpanMetadata::FromSlotStart(slot_start);
     size_t usable_size = GetPartitionRoot()->GetSlotUsableSize(slot_span);
-    return GetQuarantineBranch()->Quarantine(object, slot_span, slot_start,
-                                             usable_size);
+    return GetQuarantineBranch()->Quarantine(object, slot_span,
+                                             slot_start.value(), usable_size);
   }
 
   size_t GetObjectSize(void* object) {
-    auto* entry_slot_span = partition_alloc::internal::SlotSpanMetadata<
-        partition_alloc::internal::MetadataKind::kReadOnly>::FromObject(object);
+    auto slot_start = partition_alloc::internal::SlotStart::Checked(
+                          object, GetPartitionRoot())
+                          .Untag();
+    auto* entry_slot_span =
+        partition_alloc::internal::SlotSpanMetadata::FromSlotStart(slot_start);
     return GetPartitionRoot()->GetSlotUsableSize(entry_slot_span);
   }
 

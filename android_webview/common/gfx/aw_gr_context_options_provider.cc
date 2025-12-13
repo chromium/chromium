@@ -5,13 +5,14 @@
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 
 #include "android_webview/common/aw_features.h"
+#include "android_webview/common_jni/AwGrContextOptionsProvider_jni.h"
 
 namespace android_webview {
 
 void AwGrContextOptionsProvider::SetCustomGrContextOptions(
     GrContextOptions& options) const {
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewDisableSharpeningAndMSAA)) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  if (Java_AwGrContextOptionsProvider_shouldEnableTvSmoothing(env)) {
     // crbug.com/364872963
     options.fInternalMultisampleCount = 0;
     options.fSharpenMipmappedTextures = false;
@@ -19,3 +20,5 @@ void AwGrContextOptionsProvider::SetCustomGrContextOptions(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwGrContextOptionsProvider)

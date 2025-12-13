@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"

@@ -4,6 +4,13 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 [INTERFACES]
 interface Clipboard : EventTarget
+    getter onclipboardchange
+    setter onclipboardchange
+interface ClipboardChangeEvent : Event
+    attribute @@toStringTag
+    getter changeId
+    getter types
+    method constructor
 interface Navigator
 interface Notification : EventTarget
     getter image

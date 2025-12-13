@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Please shorten this text to <ph name="MAX_CHARACTERS" /> characters or less (you are currently using <ph name="CURRENT_LENGTH" /> characters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">Data URL</translation>
 <translation id="2507943997699731163">Please fill in this field.</translation>
 <translation id="2613802280814924224">Please enter a valid value. The nearest valid value is <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Submit</translation>

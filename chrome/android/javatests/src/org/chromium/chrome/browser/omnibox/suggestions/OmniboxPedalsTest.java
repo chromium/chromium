@@ -10,12 +10,9 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
@@ -29,28 +26,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.SupportedProfileType;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
-import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
-import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.safety_hub.SafetyHubFragment;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -72,13 +68,10 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
-import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -87,11 +80,13 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class OmniboxPedalsTest {
+    @Rule
     public ReusedCtaTransitTestRule<WebPageStation> mActivityTestRule =
             ChromeTransitTestRules.blankPageStartReusedActivityRule();
+
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    private @Mock OmniboxActionJni mOmniboxActionJni;
 
     private WebPageStation mStartingPage;
     private OmniboxTestUtils mOmniboxUtils;
@@ -102,7 +97,6 @@ public class OmniboxPedalsTest {
         OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         mStartingPage = mActivityTestRule.start();
         mOmniboxUtils = new OmniboxTestUtils(mStartingPage.getActivity());
-        OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
     }
 
     @After
@@ -121,7 +115,6 @@ public class OmniboxPedalsTest {
                                 .getModalDialogManager()
                                 .dismissAllDialogs(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED));
         AutocompleteControllerJni.setInstanceForTesting(null);
-        OmniboxActionJni.setInstanceForTesting(null);
     }
 
     /**
@@ -180,51 +173,22 @@ public class OmniboxPedalsTest {
         mOmniboxUtils.clickOnAction(0, 0);
 
         onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        verify(mOmniboxActionJni)
-                .recordActionShown(
-                        OmniboxPedalId.CLEAR_BROWSING_DATA,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.ONLY_TABLET) // https://crbug.com/338976917
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    @DisableFeatures(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)
-    public void testManagePasswordsNoUpmFlow() throws InterruptedException {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PrefService prefService = UserPrefs.get(mActivityTestRule.getProfile(false));
-                    prefService.setInteger(
-                            "passwords_use_upm_local_and_separate_stores",
-                            /*UseUpmLocalAndSeparateStoresState = Off*/ 0);
-                });
-
-        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
-        clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_PASSWORDS, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
-    }
-
-    @Test
-    @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testManagePaymentMethods() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AutofillPaymentMethodsFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.UPDATE_CREDIT_CARD, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
     @MediumTest
-    public void testOpenIncognitoTab() throws InterruptedException {
+    @Restriction(DeviceFormFactor.PHONE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOpenIncognitoTab_Phone() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
 
         mOmniboxUtils.clickOnAction(0, 0);
@@ -234,48 +198,46 @@ public class OmniboxPedalsTest {
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(tab.isIncognito(), Matchers.is(true));
                 });
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.LAUNCH_INCOGNITO, /* position= */ 0, /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.SAFETY_HUB, ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID})
-    public void testRunChromeSafetyCheck() throws InterruptedException {
-        setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
+    @ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
+    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testOpenIncognitoTab_Tablet() throws InterruptedException {
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
 
-        HistogramWatcher safetyCheckHistogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectAnyRecord("Settings.SafetyCheck.UpdatesResult")
-                        .build();
-        clickOnPedalToSettings(
-                () -> mOmniboxUtils.clickOnAction(0, 0), SafetyCheckSettingsFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        // Make sure the safety check was ran.
-        safetyCheckHistogramWatcher.pollInstrumentationThreadUntilSatisfied();
-        verifyNoMoreInteractions(mOmniboxActionJni);
+        mOmniboxUtils.clickOnAction(0, 0);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<Activity> activities = ApplicationStatus.getRunningActivities();
+                    ChromeTabbedActivity cta = null;
+                    int regularCta = 0;
+                    int incognitoCta = 0;
+                    for (Activity activity : activities) {
+                        if (activity instanceof ChromeTabbedActivity) {
+                            cta = (ChromeTabbedActivity) activity;
+                            if (cta.getSupportedProfileType() == SupportedProfileType.REGULAR) {
+                                regularCta++;
+                            }
+                            if (cta.getSupportedProfileType()
+                                    == SupportedProfileType.OFF_THE_RECORD) {
+                                incognitoCta++;
+                            }
+                        }
+                    }
+                    return regularCta == 1 && incognitoCta == 1;
+                });
     }
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testOpenChromeSafetyHub() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SafetyHubFragment.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.RUN_CHROME_SAFETY_CHECK,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -283,26 +245,15 @@ public class OmniboxPedalsTest {
     public void testManageSiteSettings() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_SITE_SETTINGS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SiteSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_SITE_SETTINGS,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testManageChromeSettings() throws InterruptedException {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_SETTINGS));
 
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), MainSettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_SETTINGS,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -316,15 +267,9 @@ public class OmniboxPedalsTest {
                     Tab tab = mActivityTestRule.getActivity().getActivityTab();
                     Criteria.checkThat(tab, Matchers.notNullValue());
                     Criteria.checkThat(
-                            tab.getUrl().getSpec(), Matchers.startsWith(UrlConstants.HISTORY_URL));
+                            tab.getUrl().getSpec(),
+                            Matchers.startsWith(UrlConstants.NATIVE_HISTORY_URL));
                 });
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.VIEW_CHROME_HISTORY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -333,12 +278,6 @@ public class OmniboxPedalsTest {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AccessibilitySettings.class);
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -353,13 +292,6 @@ public class OmniboxPedalsTest {
                     onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
                 },
                 AccessibilitySettings.class);
-
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 
     @Test
@@ -375,11 +307,5 @@ public class OmniboxPedalsTest {
                     Criteria.checkThat(
                             tab.getUrl().getSpec(), Matchers.equalTo(UrlConstants.CHROME_DINO_URL));
                 });
-        verify(mOmniboxActionJni, times(1))
-                .recordActionShown(
-                        OmniboxPedalId.PLAY_CHROME_DINO_GAME,
-                        /* position= */ 0,
-                        /* executed= */ true);
-        verifyNoMoreInteractions(mOmniboxActionJni);
     }
 }

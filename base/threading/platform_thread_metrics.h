@@ -5,12 +5,21 @@
 #ifndef BASE_THREADING_PLATFORM_THREAD_METRICS_H_
 #define BASE_THREADING_PLATFORM_THREAD_METRICS_H_
 
+#include <map>
 #include <memory>
+#include <mutex>
 #include <optional>
+#include <string>
+#include <string_view>
 
 #include "base/base_export.h"
+#include "base/functional/callback_forward.h"
+#include "base/metrics/histogram.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -18,6 +27,13 @@
 #endif
 
 namespace base {
+
+#if BUILDFLAG(IS_ANDROID)
+// Forward declaration
+template <typename T>
+class NoDestructor;
+class PlatformThreadPriorityMonitorTest;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Used to log metrics about a specific thread. Modeled on ProcessMetrics.
 //
@@ -108,6 +124,52 @@ class BASE_EXPORT PlatformThreadMetrics {
   std::optional<TimeTicks> last_cpu_time_;
   TimeDelta last_cumulative_cpu_;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+// A class to monitor thread priorities on Android.
+class BASE_EXPORT PlatformThreadPriorityMonitor {
+ public:
+  // Gets the singleton instance of the monitor.
+  static PlatformThreadPriorityMonitor& Get();
+
+  // Registers the current thread for priority monitoring. A histogram named
+  // "Scheduling.ThreadPriority.<Process>.<suffix>" will be created to record
+  // the thread's nice value. The thread will be unregistered automatically on
+  // join.
+  void RegisterCurrentThread(const std::string_view suffix);
+
+  // Removes the current thread from priority monitoring.
+  void UnregisterCurrentThread();
+
+  // Start recording the current priority (nice value) of all registered threads
+  // to their respective histograms. Sampled every 5 minutes.
+  void Start();
+
+ private:
+  friend class NoDestructor<PlatformThreadPriorityMonitor>;
+  friend class PlatformThreadPriorityMonitorTest;
+
+  // The mean interval between two consecutive recordings of thread
+  // priorities.
+  static constexpr TimeDelta kMinSamplingInterval = Minutes(5);
+
+  PlatformThreadPriorityMonitor();
+  ~PlatformThreadPriorityMonitor();
+  void RecordThreadPriorities();
+  std::string GetHistogramNameForSuffix(const std::string_view suffix);
+  static void ScheduleRecordingTask();
+
+  Lock lock_;
+  // Maps a thread ID to the histogram used to record its priority.
+  std::map<PlatformThreadId, raw_ptr<HistogramBase>> thread_id_to_histogram_
+      GUARDED_BY(lock_);
+  std::optional<TimeTicks> next_reporting_time_ GUARDED_BY(lock_);
+
+  std::once_flag once_flag_;
+  const std::string process_name_;
+};
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace base
 

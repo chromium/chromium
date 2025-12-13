@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -27,6 +28,7 @@ namespace {
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
 using base::UTF8ToUTF16;
+using base::test::EqualsProto;
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
 
@@ -65,12 +67,6 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_LAST_CONJUNCTION, u"o",
                                            VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"John Doe",
-                                           VerificationStatus::kUserVerified);
-  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
-                                           VerificationStatus::kParsed);
-  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
-                                           VerificationStatus::kParsed);
 
   // Set email, phone and company testing values.
   profile.SetRawInfo(EMAIL_ADDRESS, u"user@example.com");
@@ -93,8 +89,14 @@ AutofillProfile ConstructBaseProfile(
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
 
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043-4567",
                                            VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_PREFIX, u"94043",
+                                           VerificationStatus::kParsed);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP_SUFFIX, u"4567",
+                                           VerificationStatus::kParsed);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca",
                                            VerificationStatus::kObserved);
@@ -324,6 +326,18 @@ AutofillProfile ConstructCompleteProfileIN() {
   return profile;
 }
 
+AutofillProfile ConstructCompleteProfileJP() {
+  AutofillProfile profile = ConstructBaseProfile(AddressCountryCode("JP"));
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME,
+                                           u"やまもと あおい",
+                                           VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"あおい",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"やまもと",
+                                           VerificationStatus::kParsed);
+  return profile;
+}
+
 // Returns AutofillProfileSpecifics with all Autofill profile fields set.
 // Contains identical data to the data returned from ConstructBaseProfile().
 AutofillProfileSpecifics ConstructBaseSpecifics() {
@@ -383,20 +397,20 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
       AutofillProfileSpecifics::VerificationStatus::
           AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
 
-  specifics.set_alternative_given_name("John");
+  specifics.set_alternative_given_name("");
   specifics.set_alternative_given_name_status(
       AutofillProfileSpecifics::VerificationStatus::
-          AutofillProfileSpecifics_VerificationStatus_PARSED);
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
-  specifics.set_alternative_family_name("Doe");
+  specifics.set_alternative_family_name("");
   specifics.set_alternative_family_name_status(
       AutofillProfileSpecifics::VerificationStatus::
-          AutofillProfileSpecifics_VerificationStatus_PARSED);
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
-  specifics.set_alternative_full_name("John Doe");
+  specifics.set_alternative_full_name("");
   specifics.set_alternative_full_name_status(
       AutofillProfileSpecifics::VerificationStatus::
-          AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
+          AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED);
 
   // Set testing values for email, phone and company.
   specifics.add_email_address("user@example.com");
@@ -447,9 +461,17 @@ AutofillProfileSpecifics ConstructBaseSpecifics() {
   specifics.set_address_home_state_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_zip("94043");
+  specifics.set_address_home_zip("94043-4567");
   specifics.set_address_home_zip_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
+  specifics.set_address_home_zip_prefix("94043");
+  specifics.set_address_home_zip_prefix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_address_home_zip_suffix("4567");
+  specifics.set_address_home_zip_suffix_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_PARSED);
 
   specifics.set_address_home_country("ES");
   specifics.set_address_home_country_status(
@@ -934,13 +956,37 @@ AutofillProfileSpecifics ConstructCompleteSpecificsIN() {
   return specifics;
 }
 
+AutofillProfileSpecifics ConstructCompleteSpecificsJP() {
+  AutofillProfileSpecifics specifics = ConstructBaseSpecifics();
+  specifics.set_address_home_country("JP");
+  specifics.set_address_home_country_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+  specifics.set_alternative_given_name("あおい");
+  specifics.set_alternative_given_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_family_name("やまもと");
+  specifics.set_alternative_family_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_PARSED);
+
+  specifics.set_alternative_full_name("やまもと あおい");
+  specifics.set_alternative_full_name_status(
+      AutofillProfileSpecifics::VerificationStatus::
+          AutofillProfileSpecifics_VerificationStatus_USER_VERIFIED);
+
+  return specifics;
+}
+
 enum class I18nCountryModel {
   kLegacy = 0,
   kAU = 1,
   kBR = 2,
   kDE = 3,
   kIN = 4,
-  kMX = 5
+  kMX = 5,
+  kJP = 6
 };
 
 // The tests are parameterized with a country to assert that all custom address
@@ -956,6 +1002,7 @@ class AutofillProfileSyncUtilTest
             features::kAutofillUseINAddressModel,
             features::kAutofillSupportPhoneticNameForJP,
             features::kAutofillSupportLastNamePrefix,
+            features::kAutofillSupportSplitZipCode,
         },
         {});
     task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
@@ -975,6 +1022,8 @@ class AutofillProfileSyncUtilTest
         return ConstructCompleteProfileMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteProfileIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteProfileJP();
     }
   }
 
@@ -993,6 +1042,8 @@ class AutofillProfileSyncUtilTest
         return ConstructCompleteSpecificsMX();
       case I18nCountryModel::kIN:
         return ConstructCompleteSpecificsIN();
+      case I18nCountryModel::kJP:
+        return ConstructCompleteSpecificsJP();
     }
   }
 
@@ -1013,8 +1064,8 @@ TEST_P(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
   // The non-unique name should be set to the guid of the profile.
   EXPECT_EQ(entity_data->name, profile.guid());
 
-  EXPECT_EQ(specifics.SerializeAsString(),
-            entity_data->specifics.autofill_profile().SerializeAsString());
+  EXPECT_THAT(specifics,
+              EqualsProto(entity_data->specifics.autofill_profile()));
 }
 
 // Test that fields not set for the input are empty in the output.
@@ -1185,7 +1236,8 @@ INSTANTIATE_TEST_SUITE_P(AutofillI18nModels,
                                          I18nCountryModel::kBR,
                                          I18nCountryModel::kDE,
                                          I18nCountryModel::kMX,
-                                         I18nCountryModel::kIN));
+                                         I18nCountryModel::kIN,
+                                         I18nCountryModel::kJP));
 
 }  // namespace
 }  // namespace autofill

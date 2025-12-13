@@ -258,9 +258,11 @@ struct intN_numeric_limits_base {
   static inline constexpr const bool has_infinity = false;
   static inline constexpr const bool has_quiet_NaN = false;
   static inline constexpr const bool has_signaling_NaN = false;
+#if !defined(__cplusplus) || __cplusplus < 202302L
   static inline constexpr const std::float_denorm_style has_denorm =
       std::denorm_absent;
   static inline constexpr const bool has_denorm_loss = false;
+#endif
   static inline constexpr const std::float_round_style round_style =
       std::round_toward_zero;
   static inline constexpr const bool is_iec559 = false;

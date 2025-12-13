@@ -78,7 +78,7 @@ source_set("service_sources") {
   public_deps = [
     "//base",
     "//gpu/command_buffer/common",
-    "//url:url",
+    "//url",
   ]
   deps = [
     "//base",
@@ -172,6 +172,8 @@ target(link_target_type, "gles2_sources") {
     "gles2_query_manager.h",
     "gpu_fence_manager.cc",
     "gpu_fence_manager.h",
+    "gpu_persistent_cache.cc",
+    "gpu_persistent_cache.h",
     "gpu_state_tracer.cc",
     "gpu_state_tracer.h",
     "gpu_task_scheduler_helper.cc",
@@ -199,12 +201,12 @@ target(link_target_type, "gles2_sources") {
     "isolation_key_provider.h",
     "logger.cc",
     "logger.h",
+    "memory_cache.cc",
+    "memory_cache.h",
     "memory_program_cache.cc",
     "memory_program_cache.h",
     "multi_draw_manager.cc",
     "multi_draw_manager.h",
-    "passthrough_discardable_manager.cc",
-    "passthrough_discardable_manager.h",
     "passthrough_program_cache.cc",
     "passthrough_program_cache.h",
     "program_cache.cc",
@@ -225,8 +227,6 @@ target(link_target_type, "gles2_sources") {
     "sampler_manager.h",
     "scheduler_sequence.cc",
     "scheduler_sequence.h",
-    "service_discardable_manager.cc",
-    "service_discardable_manager.h",
     "service_font_manager.cc",
     "service_font_manager.h",
     "service_transfer_cache.cc",
@@ -245,6 +245,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/compound_image_backing.h",
     "shared_image/copy_image_plane.cc",
     "shared_image/copy_image_plane.h",
+    "shared_image/cpu_readback_upload_copy_strategy.cc",
+    "shared_image/cpu_readback_upload_copy_strategy.h",
     "shared_image/egl_image_backing.cc",
     "shared_image/egl_image_backing.h",
     "shared_image/egl_image_backing_factory.cc",
@@ -269,6 +271,9 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_backing.h",
     "shared_image/shared_image_backing_factory.cc",
     "shared_image/shared_image_backing_factory.h",
+    "shared_image/shared_image_copy_manager.cc",
+    "shared_image/shared_image_copy_manager.h",
+    "shared_image/shared_image_copy_strategy.h",
     "shared_image/shared_image_factory.cc",
     "shared_image/shared_image_factory.h",
     "shared_image/shared_image_format_service_utils.cc",
@@ -281,6 +286,8 @@ target(link_target_type, "gles2_sources") {
     "shared_image/shared_image_pool_service.h",
     "shared_image/shared_image_representation.cc",
     "shared_image/shared_image_representation.h",
+    "shared_image/shared_memory_copy_strategy.cc",
+    "shared_image/shared_memory_copy_strategy.h",
     "shared_image/shared_memory_image_backing.cc",
     "shared_image/shared_memory_image_backing.h",
     "shared_image/shared_memory_image_backing_factory.cc",
@@ -341,8 +348,14 @@ target(link_target_type, "gles2_sources") {
       "dawn_service_memory_transfer_service.h",
       "dawn_service_serializer.cc",
       "dawn_service_serializer.h",
+      "shared_image/dawn_copy_strategy.cc",
+      "shared_image/dawn_copy_strategy.h",
       "shared_image/dawn_fallback_image_representation.cc",
       "shared_image/dawn_fallback_image_representation.h",
+      "shared_image/dawn_image_backing.cc",
+      "shared_image/dawn_image_backing.h",
+      "shared_image/dawn_image_backing_factory.cc",
+      "shared_image/dawn_image_backing_factory.h",
       "webgpu_decoder_impl.cc",
       "webgpu_decoder_impl.h",
     ]
@@ -356,6 +369,10 @@ target(link_target_type, "gles2_sources") {
     "//third_party/khronos:khronos_headers",
   ]
 
+  # This target pulls in angle headers that can't be built with this
+  # warning active: crbug.com/430317494
+  cflags_cc = [ "-Wno-thread-safety" ]
+
   public_deps = [
     "//base",
     "//cc/paint",
@@ -363,6 +380,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:gles2_sources",
     "//gpu/command_buffer/common:raster_sources",
     "//gpu/command_buffer/common:webgpu_sources",
+    "//gpu/ipc/common:surface_handle_type",
     "//skia",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//third_party/dawn/include/dawn:cpp_headers",
@@ -373,7 +391,8 @@ target(link_target_type, "gles2_sources") {
     "//base",
     "//build:chromecast_buildflags",
     "//components/crash/core/common",
-    "//components/viz/common:shared_image_format",
+    "//components/persistent_cache",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common:gles2_utils",
     "//gpu/config",
@@ -454,11 +473,19 @@ target(link_target_type, "gles2_sources") {
 
     if (use_ozone) {
       sources += [
+        "drm_modifiers_filter_vulkan.cc",
+        "drm_modifiers_filter_vulkan.h",
         "shared_image/skia_vk_ozone_image_representation.cc",
         "shared_image/skia_vk_ozone_image_representation.h",
         "shared_image/vulkan_ozone_image_representation.cc",
         "shared_image/vulkan_ozone_image_representation.h",
       ]
+
+      deps += [ "//ui/ozone" ]
+
+      if (is_chromeos) {
+        deps += [ "//ui/gfx/linux:drm" ]
+      }
     }
 
     if (is_linux && use_dawn) {
@@ -610,6 +637,8 @@ target(link_target_type, "gles2_sources") {
     sources += [
       "dxgi_shared_handle_manager.cc",
       "dxgi_shared_handle_manager.h",
+      "shared_image/d3d11_image_same_adapter_copy_strategy.cc",
+      "shared_image/d3d11_image_same_adapter_copy_strategy.h",
       "shared_image/d3d_image_backing.cc",
       "shared_image/d3d_image_backing.h",
       "shared_image/d3d_image_backing_factory.cc",
@@ -630,6 +659,7 @@ target(link_target_type, "gles2_sources") {
       "shared_image/dxgi_swap_chain_image_representation.h",
     ]
     libs = [
+      "d3d11.lib",
       "d3d12.lib",
       "dxguid.lib",
       "onecore.lib",

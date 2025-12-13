@@ -999,8 +999,9 @@ DocumentFragment* Range::createContextualFragment(
 
   // Step 1: Invoke Get Trusted Type compliant string.
   String compliant_markup = TrustedTypesCheckForHTML(
-      markup, OwnerDocument().GetExecutionContext(), "Range",
-      "createContextualFragment", exception_state);
+      markup, OwnerDocument().GetExecutionContext(),
+      trusted_types_names::kRange,
+      trusted_types_names::kCreateContextualFragment, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -1812,18 +1813,15 @@ void Range::UpdateSelectionIfAddedToSelection() {
 
   Position start_position = StartPosition();
   Position end_position = EndPosition();
-  if (RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled()) {
-    switch (update_selection_behavior_) {
-      case UpdateSelectionBehavior::kEndOnly:
-        start_position =
-            selection.GetSelectionInDOMTree().ComputeStartPosition();
-        break;
-      case UpdateSelectionBehavior::kStartOnly:
-        end_position = selection.GetSelectionInDOMTree().ComputeEndPosition();
-        break;
-      case UpdateSelectionBehavior::kAll:
-        break;
-    }
+  switch (update_selection_behavior_) {
+    case UpdateSelectionBehavior::kEndOnly:
+      start_position = selection.GetSelectionInDOMTree().ComputeStartPosition();
+      break;
+    case UpdateSelectionBehavior::kStartOnly:
+      end_position = selection.GetSelectionInDOMTree().ComputeEndPosition();
+      break;
+    case UpdateSelectionBehavior::kAll:
+      break;
   }
 
   selection.SetSelection(SelectionInDOMTree::Builder()

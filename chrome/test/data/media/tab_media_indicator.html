@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tab Media Indicator Test</title>
+</head>
+<body>
+  <video id="video" playsinline width="200">
+    <source src="bigbuck.webm" type="video/webm">
+  </video>
+   <br>
+  <button id="mute">Mute</button>
+  <button id="unmute">Unmute</button>
+   <br>
+  <button id="request-mic">Request Mic</button>
+  <button id="stop-mic">Stop Mic</button>
+  <br>
+  <button id="request-cam">Request Cam</button>
+  <button id="stop-cam">Stop Cam</button>
+
+  <script>
+    const video = document.getElementById('video');
+    document.getElementById('mute').onclick = () => video.muted = true;
+    document.getElementById('unmute').onclick = () => video.muted = false;
+
+    function requestMic() {
+      navigator.mediaDevices.getUserMedia({audio: true})
+        .then(stream => {
+          console.log('Mic access granted');
+        })
+        .catch(err => console.error('Mic access denied', err));
+    }
+
+    function requestCam() {
+      navigator.mediaDevices.getUserMedia({video: true})
+        .then(stream => {
+          console.log('Cam access granted');
+        })
+        .catch(err => console.error('Cam access denied', err));
+    }
+
+    document.getElementById('request-mic').onclick = requestMic;
+    document.getElementById('request-cam').onclick = requestCam;
+  </script>
+</body>
+</html>

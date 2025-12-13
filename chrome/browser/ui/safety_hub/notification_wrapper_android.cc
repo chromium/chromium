@@ -22,3 +22,5 @@ void NotificationWrapperAndroid::UpdateNotification(
   Java_UnsubscribedNotificationsNotificationManager_updateNotification(
       env, num_revoked_permissions);
 }
+
+DEFINE_JNI(UnsubscribedNotificationsNotificationManager)

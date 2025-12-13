@@ -27,8 +27,14 @@ OpenXrPlatformHelperAndroid::~OpenXrPlatformHelperAndroid() = default;
 
 std::unique_ptr<device::OpenXrGraphicsBinding>
 OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
-  return std::make_unique<device::OpenXrGraphicsBindingOpenGLES>(
-      GetExtensionEnumeration());
+  auto graphics_binding =
+      std::make_unique<device::OpenXrGraphicsBindingOpenGLES>(
+          GetExtensionEnumeration());
+  if (graphics_binding->InitializeGl()) {
+    return graphics_binding;
+  }
+
+  return nullptr;
 }
 
 void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
@@ -51,7 +57,7 @@ void OpenXrPlatformHelperAndroid::PrepareForSessionShutdown(
 
 void OpenXrPlatformHelperAndroid::OnXrActivityReady(
     PlatformCreateInfoReadyCallback callback,
-    const base::android::JavaParamRef<jobject>& activity) {
+    const base::android::JavaRef<jobject>& activity) {
   activity_ = activity;
 
   create_info_.next = nullptr;

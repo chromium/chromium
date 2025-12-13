@@ -69,7 +69,7 @@ class TestWithProfile : public PlatformTest {
   web::WebTaskEnvironment web_task_environment_{
       web::WebTaskEnvironment::IOThreadType::REAL_THREAD_DELAYED};
   // Some KeyedService requires a VariationsIdsProvider to be installed.
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   const base::FilePath profile_data_dir_;
   ProfileManagerIOSImpl profile_manager_;

@@ -48,9 +48,9 @@ void GetStorageStatsImpl(const base::FilePath& temporary_archives_dir,
   // Currently both temporary and private archive directories are in the
   // internal storage.
   storage_stats.internal_free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(temporary_archives_dir);
+      base::SysInfo::AmountOfFreeDiskSpace(temporary_archives_dir).value_or(-1);
   storage_stats.external_free_disk_space =
-      base::SysInfo::AmountOfFreeDiskSpace(public_archives_dir);
+      base::SysInfo::AmountOfFreeDiskSpace(public_archives_dir).value_or(-1);
   if (!temporary_archives_dir.empty()) {
     storage_stats.temporary_archives_size =
         base::ComputeDirectorySize(temporary_archives_dir);

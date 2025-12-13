@@ -60,7 +60,6 @@ void AddHostPermissions(const std::string& host, RenderFrameHost* rfh) {
                                std::move(patterns), {}, run_loop.QuitClosure());
   run_loop.Run();
 }
-
 }  // namespace
 
 class RenderFrameHostImplTest : public RenderViewHostImplTestHarness {
@@ -595,6 +594,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptShowLoadingUi) {
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
+  params->document_sequence_number = 1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
       blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept,
@@ -645,6 +645,7 @@ TEST_F(RenderFrameHostImplTest, NavigationApiInterceptBrowserInitiated) {
   params->method = "GET";
   params->page_state = blink::PageState::CreateFromURL(url2);
   params->post_id = -1;
+  params->document_sequence_number = 1;
   main_test_rfh()->SendDidCommitSameDocumentNavigation(
       std::move(params),
       blink::mojom::SameDocumentNavigationType::kNavigationApiIntercept, true);
@@ -853,314 +854,6 @@ TEST_F(RenderFrameHostImplTest,
                 url::Origin::Create(no_host_permissions_url), nullptr));
 }
 
-// Test that the correct StorageKey is calculated when a RFH takes its document
-// properties from a navigation.
-// TODO(crbug.com/40092527): Once we are able to compute the origin to
-// commit in the browser, `navigation_request->commit_params().storage_key`
-// will contain the correct origin and it won't be necessary to override it
-// with `param.origin` anymore. Meaning this test may be removed because we
-// already check that the NavigationRequest calculates the correct key.
-TEST_F(RenderFrameHostImplTest,
-       CalculateStorageKeyTakeNewDocumentPropertiesFromNavigation) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Because the StorageKey's (and Storage Partitioning's) usage of
-  // RuntimeFeatureState is only meant to disable partitioning (i.e.:
-  // first-party only), we need the make sure the net::features is always
-  // enabled.
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
-
-  // This lamdba performs the navigation and disables Storage Partitioning for
-  // the navigation if `disable_sp` is true. It returns the new
-  // TestRenderFrameHost* to the navigated frame.
-  auto NavigateFrame = [](NavigationSimulator* navigation,
-                          bool disable_sp = false) -> TestRenderFrameHost* {
-    navigation->Start();
-
-    if (disable_sp) {
-      NavigationRequest* request =
-          NavigationRequest::From(navigation->GetNavigationHandle());
-      // Disable Storage Partitioning by enabling the user bypass.
-      request->GetMutableRuntimeFeatureStateContext()
-          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
-    }
-
-    navigation->Commit();
-    return static_cast<TestRenderFrameHost*>(
-        navigation->GetFinalRenderFrameHost());
-  };
-
-  // Throughout the test we'll be creating a frame tree with a main frame, a
-  // child frame, and a grandchild frame.
-  GURL main_url("https://main.com");
-  GURL b_url("https://b.com");
-  GURL c_url("https://c.com");
-
-  url::Origin main_origin = url::Origin::Create(main_url);
-  url::Origin b_origin = url::Origin::Create(b_url);
-  url::Origin c_origin = url::Origin::Create(c_url);
-
-  // Begin by testing with Storage Partitioning enabled.
-
-  auto main_navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
-
-  // By definition the main frame's StorageKey will always be first party
-  blink::StorageKey main_frame_key =
-      blink::StorageKey::CreateFirstParty(main_origin);
-
-  NavigateFrame(main_navigation.get());
-
-  EXPECT_EQ(main_frame_key, main_test_rfh()->GetStorageKey());
-
-  TestRenderFrameHost* child_frame = static_cast<TestRenderFrameHost*>(
-      RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
-
-  auto child_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
-
-  // The child and grandchild should both be third-party keys.
-  blink::StorageKey child_frame_key =
-      blink::StorageKey::Create(b_origin, net::SchemefulSite(main_origin),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-
-  child_frame = NavigateFrame(child_navigation.get());
-
-  EXPECT_EQ(child_frame_key, child_frame->GetStorageKey());
-
-  TestRenderFrameHost* grandchild_frame =
-      child_frame->AppendChild("grandchild");
-
-  auto grandchild_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
-
-  blink::StorageKey grandchild_frame_key =
-      blink::StorageKey::Create(c_origin, net::SchemefulSite(main_origin),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  grandchild_frame = NavigateFrame(grandchild_navigation.get());
-
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
-
-  // Only the RuntimeFeatureStateContext in the main frame's matters. So
-  // disabling Storage Partitioning in the child_frame shouldn't affect the
-  // child's or the grandchild's StorageKey.
-  child_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
-
-  child_frame = NavigateFrame(child_navigation.get(),
-                              /*disable_sp=*/true);
-  EXPECT_EQ(child_frame_key, child_frame->GetStorageKey());
-
-  grandchild_frame = child_frame->AppendChild("grandchild");
-
-  grandchild_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
-
-  grandchild_frame = NavigateFrame(grandchild_navigation.get());
-
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
-
-  // Disabling Storage Partitioning on the main frame should cause the child's
-  // and grandchild's StorageKey to be first-party.
-  main_navigation =
-      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
-
-  NavigateFrame(main_navigation.get(),
-                /*disable_sp=*/true);
-
-  child_frame = static_cast<TestRenderFrameHost*>(
-      RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
-
-  child_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(b_url, child_frame);
-
-  // The child and grandchild should both be first-party keys.
-  blink::StorageKey child_frame_key_1p =
-      blink::StorageKey::CreateFirstParty(b_origin);
-
-  child_frame = NavigateFrame(child_navigation.get());
-
-  EXPECT_EQ(child_frame_key_1p, child_frame->GetStorageKey());
-
-  grandchild_frame = child_frame->AppendChild("grandchild");
-
-  blink::StorageKey grandchild_frame_key_1p =
-      blink::StorageKey::CreateFirstParty(c_origin);
-
-  grandchild_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(c_url, grandchild_frame);
-
-  grandchild_frame = NavigateFrame(grandchild_navigation.get());
-
-  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->GetStorageKey());
-}
-
-// Tests that the StorageKey calculated for a frame under an extension main
-// frame has storage partitioning enabled/disabled as expected via the
-// RuntimeFeatureStateReadContext when the extension has host permissions.
-// TODO(crbug.com/40260854): This test should be migrated to //chrome.
-TEST_F(RenderFrameHostImplTest,
-       CalculateStorageKeyStoragePartitioningCorrectFrameWithExtension) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Because the StorageKey's (and Storage Partitioning's) usage of
-  // RuntimeFeatureState is only meant to disable partitioning (i.e.:
-  // first-party only), we need the make sure the net::features is always
-  // enabled.
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
-
-  // Register extension scheme for testing.
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
-
-  GURL initial_url_ext = GURL("chrome-extension://initial.example.test/");
-  NavigationSimulator::CreateRendererInitiated(initial_url_ext, main_rfh())
-      ->Commit();
-
-  // Create a child frame, disable Storage Partitioning, and navigate to
-  // `child_url`.
-  auto* child_frame = static_cast<TestRenderFrameHost*>(
-      content::RenderFrameHostTester::For(main_test_rfh())
-          ->AppendChild("child"));
-
-  GURL child_url = GURL("https://childframe.com");
-  auto child_navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(child_url, child_frame);
-
-  // This lamdba performs the navigation and disables Storage Partitioning for
-  // the navigation if `disable_sp` is true. It returns the new
-  // TestRenderFrameHost* to the navigated frame.
-  auto NavigateFrame = [](NavigationSimulator* navigation,
-                          bool disable_sp = false) -> TestRenderFrameHost* {
-    navigation->Start();
-
-    if (disable_sp) {
-      NavigationRequest* request =
-          NavigationRequest::From(navigation->GetNavigationHandle());
-      request->GetMutableRuntimeFeatureStateContext()
-          .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
-    }
-
-    navigation->Commit();
-    return static_cast<TestRenderFrameHost*>(
-        navigation->GetFinalRenderFrameHost());
-  };
-
-  child_frame = NavigateFrame(child_navigation.get(), /*disable_sp=*/true);
-
-  // Create a grandchild frame and navigate to `grandchild_url`.
-  auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
-      content::RenderFrameHostTester::For(child_frame)
-          ->AppendChild("grandchild"));
-
-  GURL grandchild_url = GURL("https://grandchildframe.com/");
-  grandchild_frame = static_cast<TestRenderFrameHost*>(
-      NavigationSimulator::NavigateAndCommitFromDocument(grandchild_url,
-                                                         grandchild_frame));
-
-  // At this point the extension doesn't have host permissions for the
-  // child_frame, so the child_frame's RuntimeFeatureStateReadContext's state
-  // isn't used and therefore any StorageKeys created for the grandchild_frame
-  // will be third-party.
-  url::Origin grandchild_origin = url::Origin::Create(grandchild_url);
-  blink::StorageKey grandchild_frame_key = blink::StorageKey::Create(
-      grandchild_origin, net::SchemefulSite(initial_url_ext),
-      blink::mojom::AncestorChainBit::kCrossSite);
-
-  EXPECT_EQ(grandchild_frame_key,
-            grandchild_frame->CalculateStorageKey(
-                grandchild_frame->GetLastCommittedOrigin(), nullptr));
-
-  // Now give extension host permissions to `child_frame`. Since the root
-  // extension rfh has host permissions to`child_frame` calling
-  // `CalculateStorageKey` should use the RuntimeFeatureStateReadContext in
-  // child_frame thereby creating a first-party StorageKey in grandchild_frame
-  // (since we disabled storage partitioning).
-  AddHostPermissions("childframe.com", main_rfh());
-
-  blink::StorageKey grandchild_frame_key_1P =
-      blink::StorageKey::CreateFirstParty(grandchild_origin);
-
-  EXPECT_EQ(grandchild_frame_key_1P,
-            grandchild_frame->CalculateStorageKey(
-                grandchild_frame->GetLastCommittedOrigin(), nullptr));
-}
-
-// Test that CalculateStorageKey creates a first-party or third-party key
-// depending on state of Storage Partitioning the main frame's
-// RuntimeFeatureStateReadContext for a new unnavigated frame.
-TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Because Storage partitioning's usage of RuntimeFeatureState is only meant
-  // to disable (i.e.: 1p only) partitioning, we need the make sure the feature
-  // is on first.
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
-
-  // This test will create a main frame that has Storage Partitioning disabled
-  // via its RuntimeFeatureStateReadContext. It will have a navigated child
-  // frame's whose RFSRC will be the default (i.e.: Storage Partitioning
-  // enabled) and that child will then spawn an unnavigated grandchild whose
-  // StorageKey should still depend upon the main frame's RFSRC.
-
-  GURL url = GURL("https://a.com");
-  GURL child_url = GURL("https://b.com");
-
-  // Start by giving the main frame a SP disabled
-  // RuntimeFeatureStateReadContext.
-  auto navigation =
-      NavigationSimulator::CreateRendererInitiated(url, main_rfh());
-  navigation->Start();
-
-  NavigationRequest* request =
-      NavigationRequest::From(navigation->GetNavigationHandle());
-
-  // Disable Storage Partitioning by enabling the user bypass.
-  request->GetMutableRuntimeFeatureStateContext()
-      .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
-
-  navigation->Commit();
-
-  EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_state_read_context()
-                  .IsThirdPartyStoragePartitioningUserBypassEnabled());
-
-  // Create a child frame and navigate to `child_url`.
-  auto* child_frame = main_test_rfh()->AppendChild("child");
-  auto child_navigation =
-      NavigationSimulator::CreateRendererInitiated(child_url, child_frame);
-  child_navigation->Commit();
-  child_frame = static_cast<TestRenderFrameHost*>(
-      child_navigation->GetFinalRenderFrameHost());
-
-  // Create a grand child and check it's StorageKey.
-  auto* grandchild_frame = child_frame->AppendChild("grandchild");
-
-  // Since Storage Partitioning is disabled, the key should be first party.
-  blink::StorageKey grandchild_frame_key_1p =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url));
-  EXPECT_EQ(grandchild_frame_key_1p, grandchild_frame->GetStorageKey());
-
-  // Now perform the same test, except the main frame also gets a default
-  // RuntimeFeatureStateReadContext. (I.e.: Storage Partitioning enabled).
-  NavigationSimulator::NavigateAndCommitFromDocument(url, main_rfh());
-
-  child_frame = main_test_rfh()->AppendChild("child");
-  child_navigation =
-      NavigationSimulator::CreateRendererInitiated(child_url, child_frame);
-  child_navigation->Commit();
-  child_frame = static_cast<TestRenderFrameHost*>(
-      child_navigation->GetFinalRenderFrameHost());
-
-  grandchild_frame = child_frame->AppendChild("grandchild");
-
-  blink::StorageKey grandchild_frame_key =
-      blink::StorageKey::Create(url::Origin::Create(child_url),
-                                net::SchemefulSite(url::Origin::Create(url)),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  EXPECT_EQ(grandchild_frame_key, grandchild_frame->GetStorageKey());
-}
-
 TEST_F(RenderFrameHostImplTest,
        NewFrameInheritsRuntimeFeatureStateReadContext) {
   GURL url = GURL("https://a.com");
@@ -1201,109 +894,6 @@ TEST_F(RenderFrameHostImplTest,
       RuntimeFeatureStateDocumentData::GetForCurrentDocument(child_frame)
           ->runtime_feature_state_read_context()
           .IsTestFeatureEnabled());
-}
-
-class TestUnpartitionedStorageAcessContentBrowserClient
-    : public ContentBrowserClient {
- public:
-  TestUnpartitionedStorageAcessContentBrowserClient() = default;
-  ~TestUnpartitionedStorageAcessContentBrowserClient() override = default;
-
-  bool IsUnpartitionedStorageAccessAllowedByUserPreference(
-      BrowserContext* browser_context,
-      const GURL& url,
-      const net::SiteForCookies& site_for_cookies,
-      const url::Origin& top_frame_origin) override {
-    return is_unpartitioned_storage_access_allowed_by_user_preference_;
-  }
-
-  void SetIsUnpartitionedStorageAccessAllowedByUserPreference(bool value) {
-    is_unpartitioned_storage_access_allowed_by_user_preference_ = value;
-  }
-
- private:
-  bool is_unpartitioned_storage_access_allowed_by_user_preference_ = false;
-};
-
-// Test that CalculateStorageKey will create a first-party or third-party key,
-// in the presence of a user bypass, depending on the state of
-// IsUnpartitionedStorageAccessAllowedByUserPreference()
-TEST_F(
-    RenderFrameHostImplTest,
-    CalculateStorageKeyWithIsUnpartitionedStorageAccessAllowedByUserPreference) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Because Storage partitioning's usage of RuntimeFeatureState is only meant
-  // to disable (i.e.: 1p only) partitioning, we need the make sure the feature
-  // is on first.
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kThirdPartyStoragePartitioning);
-
-  TestUnpartitionedStorageAcessContentBrowserClient client;
-  ContentBrowserClient* regular_client = SetBrowserClientForTesting(&client);
-
-  client.SetIsUnpartitionedStorageAccessAllowedByUserPreference(true);
-
-  // This test will create a main frame that has a storage partitioning
-  // user bypass active and a child frame that is navigated to a
-  // third-party site. Since IsUnpartitionedStorageAccessAllowedByUserPreference
-  // returns true the child frame's StorageKey should be first-party.
-
-  GURL url = GURL("https://a.com");
-  GURL child_url = GURL("https://b.com");
-
-  // Start by giving the main frame a SP disabled
-  // RuntimeFeatureStateReadContext.
-  auto navigation =
-      NavigationSimulator::CreateRendererInitiated(url, main_rfh());
-  navigation->Start();
-
-  NavigationRequest* request =
-      NavigationRequest::From(navigation->GetNavigationHandle());
-
-  // Disable Storage Partitioning by enabling the user bypass.
-  request->GetMutableRuntimeFeatureStateContext()
-      .SetThirdPartyStoragePartitioningUserBypassEnabled(true);
-
-  navigation->Commit();
-
-  EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
-                  ->runtime_feature_state_read_context()
-                  .IsThirdPartyStoragePartitioningUserBypassEnabled());
-
-  // Create a child frame and navigate to `child_url`.
-  auto* child_frame = main_test_rfh()->AppendChild("child");
-  auto child_navigation =
-      NavigationSimulator::CreateRendererInitiated(child_url, child_frame);
-  child_navigation->Commit();
-  child_frame = static_cast<TestRenderFrameHost*>(
-      child_navigation->GetFinalRenderFrameHost());
-
-  // Since IsUnpartitionedStorageAccessAllowedByUserPreference is true the
-  // StorageKey should be first-party.
-  blink::StorageKey child_frame_key_1p =
-      blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url));
-  EXPECT_EQ(child_frame_key_1p, child_frame->GetStorageKey());
-
-  // Now perform the same test, except
-  // IsUnpartitionedStorageAccessAllowedByUserPreference is false.
-  client.SetIsUnpartitionedStorageAccessAllowedByUserPreference(false);
-  GURL child_url2 = GURL("https://c.com");
-
-  child_navigation =
-      NavigationSimulator::CreateRendererInitiated(child_url2, child_frame);
-  child_navigation->Commit();
-  child_frame = static_cast<TestRenderFrameHost*>(
-      child_navigation->GetFinalRenderFrameHost());
-
-  // Since IsUnpartitionedStorageAccessAllowedByUserPreference is false the
-  // StorageKey should be third-party.
-  blink::StorageKey child_frame_key_3p =
-      blink::StorageKey::Create(url::Origin::Create(child_url2),
-                                net::SchemefulSite(url::Origin::Create(url)),
-                                blink::mojom::AncestorChainBit::kCrossSite);
-  EXPECT_EQ(child_frame_key_3p, child_frame->GetStorageKey());
-
-  SetBrowserClientForTesting(regular_client);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1585,6 +1175,40 @@ TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
   SetBrowserClientForTesting(old_browser_client);
 }
 
+class SkipBeforeUnloadDialogAndNavigateContentBrowserClient
+    : public ContentBrowserClient {
+ public:
+  bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override {
+    called_ = true;
+    return true;
+  }
+
+  bool called() const { return called_; }
+
+ private:
+  bool called_ = false;
+};
+
+TEST_F(RenderFrameHostImplTest, RunBeforeUnloadConfirm_SkipDialogAndNavigate) {
+  SkipBeforeUnloadDialogAndNavigateContentBrowserClient skip_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&skip_client);
+
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+
+  bool callback_ran = false;
+  rfh->RunBeforeUnloadConfirm(
+      /*is_reload=*/false, base::BindLambdaForTesting([&](bool success) {
+        EXPECT_TRUE(success);
+        callback_ran = true;
+      }));
+
+  EXPECT_TRUE(callback_ran);
+  EXPECT_TRUE(skip_client.called());
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
       public testing::WithParamInterface<bool> {
@@ -1605,6 +1229,49 @@ class RenderFrameHostImplThirdPartyStorageTest
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+class RenderFrameHostImplLazyBrowserInterfaceBrokerTest
+    : public RenderFrameHostImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplLazyBrowserInterfaceBrokerTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kLazyBrowserInterfaceBroker);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kLazyBrowserInterfaceBroker);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that kLazyBrowserInterfaceBroker controls whether the
+// RenderFrameHostImpl is constructed with a BrokerHolder. When the flag is
+// enabled the test also confirms that lazy initialization works correctly.
+TEST_P(RenderFrameHostImplLazyBrowserInterfaceBrokerTest,
+       LazyBrowserInterfaceBroker) {
+  scoped_refptr<SiteInstance> instance =
+      SiteInstance::Create(GetBrowserContext());
+  std::unique_ptr<TestWebContents> web_contents =
+      TestWebContents::Create(GetBrowserContext(), std::move(instance));
+  RenderFrameHostImpl* rfh = web_contents->GetPrimaryMainFrame();
+  if (GetParam()) {
+    EXPECT_FALSE(rfh->has_broker_holder_for_testing());
+    mojo::Remote<blink::mojom::BrowserInterfaceBroker> broker_remote;
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
+        broker_receiver = broker_remote.BindNewPipeAndPassReceiver();
+    rfh->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
+    EXPECT_TRUE(rfh->has_broker_holder_for_testing());
+  } else {
+    EXPECT_TRUE(rfh->has_broker_holder_for_testing());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplLazyBrowserInterfaceBrokerTest,
+                         testing::Bool());
 
 INSTANTIATE_TEST_SUITE_P(
     All,

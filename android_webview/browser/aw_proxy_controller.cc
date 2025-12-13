@@ -20,7 +20,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::HasException;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -48,14 +47,14 @@ void ProxyOverrideChanged(const JavaRef<jobject>& obj,
 
 }  // namespace
 
-std::string JNI_AwProxyController_SetProxyOverride(
+static std::string JNI_AwProxyController_SetProxyOverride(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobjectArray>& jurl_schemes,
-    const base::android::JavaParamRef<jobjectArray>& jproxy_urls,
-    const base::android::JavaParamRef<jobjectArray>& jbypass_rules,
-    const JavaParamRef<jobject>& listener,
-    const JavaParamRef<jobject>& executor,
+    const JavaRef<jobject>& obj,
+    const base::android::JavaRef<jobjectArray>& jurl_schemes,
+    const base::android::JavaRef<jobjectArray>& jproxy_urls,
+    const base::android::JavaRef<jobjectArray>& jbypass_rules,
+    const JavaRef<jobject>& listener,
+    const JavaRef<jobject>& executor,
     const jboolean reverse_bypass) {
   std::vector<std::string> url_schemes;
   base::android::AppendJavaStringArrayToStringVector(env, jurl_schemes,
@@ -83,11 +82,11 @@ std::string JNI_AwProxyController_SetProxyOverride(
   return result;
 }
 
-void JNI_AwProxyController_ClearProxyOverride(
+static void JNI_AwProxyController_ClearProxyOverride(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& listener,
-    const JavaParamRef<jobject>& executor) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& listener,
+    const JavaRef<jobject>& executor) {
   AwProxyConfigMonitor::GetInstance()->ClearProxyOverride(base::BindOnce(
       &ProxyOverrideChanged, ScopedJavaGlobalRef<jobject>(env, obj),
       ScopedJavaGlobalRef<jobject>(env, listener),
@@ -95,3 +94,5 @@ void JNI_AwProxyController_ClearProxyOverride(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwProxyController)

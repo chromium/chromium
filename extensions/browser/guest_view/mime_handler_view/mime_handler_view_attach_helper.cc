@@ -31,7 +31,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/grit/components_resources.h"
 #include "components/pdf/common/constants.h"
@@ -65,7 +64,7 @@ SkColor GetBackgroundColorStringForMimeType(const GURL& url,
   std::vector<content::WebPluginInfo> web_plugin_info_array;
   std::vector<std::string> unused_actual_mime_types;
   content::PluginService::GetInstance()->GetPluginInfoArray(
-      url, mime_type, true, &web_plugin_info_array, &unused_actual_mime_types);
+      url, mime_type, &web_plugin_info_array, &unused_actual_mime_types);
   if (!web_plugin_info_array.empty()) {
     return web_plugin_info_array.front().background_color;
   }
@@ -104,7 +103,6 @@ std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
     const GURL& resource_url,
     const std::string& mime_type,
     const std::string& internal_id) {
-  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
 #if BUILDFLAG(ENABLE_PDF)
   if (chrome_pdf::features::IsOopifPdfEnabled() &&
       mime_type == pdf::kPDFMimeType) {
@@ -112,14 +110,11 @@ std::string MimeHandlerViewAttachHelper::CreateTemplateMimeHandlerPage(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_PDF_EMBEDDER_HTML);
     return base::ReplaceStringPlaceholders(
-        pdf_embedder_html,
-        {base::NumberToString(SkColorGetR(color)),
-         base::NumberToString(SkColorGetG(color)),
-         base::NumberToString(SkColorGetB(color)), internal_id, mime_type,
-         internal_id},
+        pdf_embedder_html, {internal_id, mime_type, internal_id},
         /*offsets=*/nullptr);
   }
 #endif
+  auto color = GetBackgroundColorStringForMimeType(resource_url, mime_type);
   return base::StringPrintf(kFullPageMimeHandlerViewHTML, SkColorGetR(color),
                             SkColorGetG(color), SkColorGetB(color),
                             internal_id.c_str(), mime_type.c_str(),

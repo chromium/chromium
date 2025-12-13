@@ -88,16 +88,20 @@ class AutofillDriverIOS final : public AutofillDriver,
   LocalFrameToken GetFrameToken() const override;
   std::optional<LocalFrameToken> Resolve(FrameToken query) override;
   AutofillDriverIOS* GetParent() override;
+  bool IsActive() const override;
+  bool IsEmbedded() const override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  bool IsActive() const override;
-  bool HasSharedAutofillPermission() const override;
+  bool IsPolicyControlledFeatureAutofillEnabled() const override;
+  bool IsPolicyControlledFeatureManualTextEnabled() const override;
   bool CanShowAutofillUi() const override;
   base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> fields,
+      const FillId& fill_id,
+      bool supports_refill,
       const url::Origin& triggered_origin,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map,
       const Section& section_for_clear_form_on_ios) override;
@@ -105,11 +109,11 @@ class AutofillDriverIOS final : public AutofillDriver,
                         mojom::ActionPersistence action_persistence,
                         const FieldGlobalId& field_id,
                         const std::u16string& value) override;
-  void ExtractForm(
-      FormGlobalId form,
+  void ExtractFormWithField(
+      FieldGlobalId field_id,
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
           response_callback) override;
-  void ExposeDomNodeIDs() override;
+  void ExposeDomNodeIdsInAllFrames() override;
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldTriggerSuggestions(
@@ -132,6 +136,9 @@ class AutofillDriverIOS final : public AutofillDriver,
       uint32_t number_of_ancestor_levels_to_search,
       base::OnceCallback<void(const std::string& amount)> response_callback)
       override;
+  void DispatchEmailVerifiedEvent(
+      FieldGlobalId field_id,
+      const std::string& presentation_token) override;
 
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
@@ -152,7 +159,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   // components/autofill/content/common/mojom/autofill_driver.mojom
   // for further documentation of each method.
   void AskForValuesToFill(const FormData& form, const FieldGlobalId& field_id);
-  void DidFillAutofillFormData(const FormData& form, base::TimeTicks timestamp);
+  void DidAutofillForm(const FormData& form);
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(const FormData& form,
@@ -275,7 +282,7 @@ class AutofillDriverIOS final : public AutofillDriver,
   base::flat_set<RemoteFrameToken> known_child_frames_;
 
   // AutofillDriverIOSBridge instance that is passed in.
-  __unsafe_unretained id<AutofillDriverIOSBridge> bridge_;
+  __weak id<AutofillDriverIOSBridge> bridge_;
 
   // Whether the initial processing has been done (JavaScript observers have
   // been enabled and the forms have been extracted).

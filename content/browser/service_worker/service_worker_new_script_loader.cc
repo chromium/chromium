@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/service_worker/service_worker_cache_writer.h"
@@ -575,9 +576,8 @@ void ServiceWorkerNewScriptLoader::OnNetworkDataAvailable(MojoResult) {
 void ServiceWorkerNewScriptLoader::WriteData(
     scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer,
     uint32_t bytes_available) {
-  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(UNSAFE_TODO(
-      base::span(pending_buffer ? pending_buffer->buffer() : nullptr,
-                 pending_buffer ? pending_buffer->size() : 0)));
+  auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
+      pending_buffer ? base::span(*pending_buffer) : base::span<const char>());
 
   // Cap the buffer size up to |kReadBufferSize|. The remaining will be written
   // next time.

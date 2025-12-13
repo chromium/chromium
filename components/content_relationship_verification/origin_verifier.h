@@ -33,18 +33,17 @@ class OriginVerifier {
 
   // Verify origin with the given parameters. No network requests can be made
   // if the params are null.
-  bool VerifyOrigin(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& j_package_name,
-      const base::android::JavaParamRef<jobjectArray>& j_fingerprints,
-      const base::android::JavaParamRef<jstring>& j_origin,
-      const base::android::JavaParamRef<jstring>& j_relationship,
-      const base::android::JavaRef<jobject>& jweb_contents);
+  bool VerifyOrigin(JNIEnv* env,
+                    const base::android::JavaRef<jstring>& j_package_name,
+                    const base::android::JavaRef<jobjectArray>& j_fingerprints,
+                    const base::android::JavaRef<jstring>& j_origin,
+                    const base::android::JavaRef<jstring>& j_relationship,
+                    const base::android::JavaRef<jobject>& jweb_contents);
 
   static jlong Init(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jbrowser_context_handle);
+      const base::android::JavaRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& jbrowser_context_handle);
 
   void Destroy(JNIEnv* env);
 

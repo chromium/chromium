@@ -5,16 +5,17 @@
 #import "ios/web/content/web_state/content_web_state_builder.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "content/public/browser/navigation_controller.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/restore_type.h"
 #import "ios/web/content/content_browser_context.h"
 #import "ios/web/content/web_state/content_web_state.h"
+#import "ios/web/navigation/proto_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 #import "net/http/http_util.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -22,134 +23,163 @@ namespace web {
 
 void ExtractContentSessionStorage(ContentWebState* web_state,
                                   content::NavigationController& controller,
-                                  web::BrowserState* browser_state,
-                                  CRWSessionStorage* session_storage) {
-  web_state->SetHasOpener(session_storage.hasOpener);
-  NSArray<CRWNavigationItemStorage*>* item_storages =
-      session_storage.itemStorages;
-  std::vector<std::unique_ptr<content::NavigationEntry>> items(
-      item_storages.count);
-
+                                  BrowserState* browser_state,
+                                  proto::WebStateStorage storage) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(browser_state);
 
-  for (size_t index = 0; index < item_storages.count; ++index) {
-    CRWNavigationItemStorage* navigation_item_storage = item_storages[index];
-    std::unique_ptr<content::NavigationEntry> new_entry =
-        content::NavigationController::CreateNavigationEntry(
-            navigation_item_storage.virtualURL, content::Referrer(),
-            /* initiator_origin= */ std::nullopt,
-            /* initiator_base_url= */ std::nullopt, ui::PAGE_TRANSITION_RELOAD,
-            /* is_renderer_initiated= */ false, std::string(), browser_context,
-            /* blob_url_loader_factory= */ nullptr);
-    new_entry->SetOriginalRequestURL(navigation_item_storage.URL);
-    if (navigation_item_storage.URL.SchemeIsHTTPOrHTTPS()) {
-      new_entry->SetURL(navigation_item_storage.URL);
-      new_entry->SetVirtualURL(navigation_item_storage.virtualURL);
-    } else {
-      new_entry->SetURL(navigation_item_storage.virtualURL);
-    }
-    new_entry->SetTimestamp(navigation_item_storage.timestamp);
-    new_entry->SetTitle(navigation_item_storage.title);
-    new_entry->SetTransitionType(ui::PAGE_TRANSITION_RELOAD);
-    std::ostringstream ss;
-    for (id key in navigation_item_storage.HTTPRequestHeaders) {
-      auto key_utf8 = base::SysNSStringToUTF8(key);
-      auto value_utf8 = base::SysNSStringToUTF8(
-          [navigation_item_storage.HTTPRequestHeaders objectForKey:key]);
-      if (!net::HttpUtil::IsValidHeaderName(key_utf8) ||
-          !net::HttpUtil::IsValidHeaderValue(value_utf8)) {
-        continue;
+  web_state->SetHasOpener(storage.has_opener());
+  std::vector<std::unique_ptr<content::NavigationEntry>> items;
+  int last_committed_item_index = -1;
+
+  if (storage.has_navigation()) {
+    const proto::NavigationStorage& navigation = storage.navigation();
+    items.reserve(static_cast<size_t>(navigation.items_size()));
+    last_committed_item_index = navigation.last_committed_item_index();
+
+    for (const proto::NavigationItemStorage& item : navigation.items()) {
+      GURL url = GURL(item.url());
+      GURL virtual_url = GURL(item.virtual_url());
+      if (virtual_url.is_empty()) {
+        virtual_url = url;
       }
-      ss << key_utf8 << ": " << value_utf8 << "\n";
-    }
-    if (!ss.str().empty()) {
-      new_entry->AddExtraHeaders(ss.str());
+
+      std::unique_ptr<content::NavigationEntry> new_entry =
+          content::NavigationController::CreateNavigationEntry(
+              /* url= */ virtual_url,
+              /* referrer= */ content::Referrer(),
+              /* initiator_origin= */ std::nullopt,
+              /* initiator_base_url= */ std::nullopt,
+              /* transition= */ ui::PAGE_TRANSITION_RELOAD,
+              /* is_renderer_initiated= */ false,
+              /* extra_headers= */ std::string(), browser_context,
+              /* blub_url_loader_factory= */ nullptr);
+
+      new_entry->SetOriginalRequestURL(url);
+      if (url.SchemeIsHTTPOrHTTPS()) {
+        new_entry->SetURL(url);
+        new_entry->SetVirtualURL(virtual_url);
+      } else {
+        new_entry->SetURL(virtual_url);
+      }
+
+      new_entry->SetTimestamp(TimeFromProto(item.timestamp()));
+      new_entry->SetTitle(base::UTF8ToUTF16(item.title()));
+      new_entry->SetTransitionType(ui::PAGE_TRANSITION_RELOAD);
+
+      if (item.has_http_request_headers()) {
+        std::ostringstream buffer;
+        for (const proto::HttpHeaderStorage& header :
+             item.http_request_headers().headers()) {
+          if (!net::HttpUtil::IsValidHeaderName(header.name()) ||
+              !net::HttpUtil::IsValidHeaderValue(header.value())) {
+            continue;
+          }
+
+          buffer << header.name() << ": " << header.value() << "\r\n";
+        }
+        const std::string extra_headers = buffer.str();
+        if (!extra_headers.empty()) {
+          new_entry->AddExtraHeaders(extra_headers);
+        }
+      }
+
+      GURL rewritten_url = url;
+      if (BrowserURLRewriter::GetInstance()->RewriteURLIfNecessary(
+              &rewritten_url, browser_state)) {
+        new_entry->SetURL(rewritten_url);
+        new_entry->SetVirtualURL(url);
+      }
+
+      // Content doesn't allow about://newtab
+      if (rewritten_url.possibly_invalid_spec() == "about://newtab/") {
+        new_entry->SetURL(GURL("chrome://newtab"));
+      }
+
+      items.push_back(std::move(new_entry));
     }
 
-    GURL url = new_entry->GetURL();
-    if (web::BrowserURLRewriter::GetInstance()->RewriteURLIfNecessary(
-            &url, browser_state)) {
-      GURL virtual_url = new_entry->GetURL();
-      new_entry->SetURL(url);
-      new_entry->SetVirtualURL(virtual_url);
+    if (last_committed_item_index < 0 ||
+        static_cast<size_t>(last_committed_item_index) >= items.size()) {
+      last_committed_item_index = static_cast<int>(items.size()) - 1;
     }
-
-    // Content doesn't allow about://newtab
-    if (url.possibly_invalid_spec() == "about://newtab/") {
-      new_entry->SetURL(GURL("chrome://newtab"));
-    }
-
-    items[index] = std::move(new_entry);
   }
-  controller.Restore(session_storage.lastCommittedItemIndex,
-                     content::RestoreType::kRestored, &items);
 
-  SerializableUserDataManager::FromWebState(web_state)->SetUserDataFromSession(
-      session_storage.userData);
+  controller.Restore(last_committed_item_index, content::RestoreType::kRestored,
+                     &items);
 }
 
-CRWSessionStorage* BuildContentSessionStorage(
-    const ContentWebState* web_state,
-    ContentNavigationManager* navigation_manager) {
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.lastActiveTime = web_state->GetLastActiveTime();
-  session_storage.creationTime = web_state->GetCreationTime();
-  session_storage.stableIdentifier = web_state->GetStableIdentifier();
-  session_storage.hasOpener = web_state->HasOpener();
-  session_storage.lastCommittedItemIndex =
+void SerializeContentStorage(const ContentWebState* web_state,
+                             const ContentNavigationManager* navigation_manager,
+                             proto::WebStateStorage& storage) {
+  const int navigation_items = navigation_manager->GetItemCount();
+  int last_committed_item_index =
       navigation_manager->GetLastCommittedItemIndex();
-  if (session_storage.lastCommittedItemIndex == -1) {
+  if (last_committed_item_index == -1) {
     // This can happen when a session is saved during restoration. Instead,
     // default to GetItemCount() - 1.
-    session_storage.lastCommittedItemIndex =
-        navigation_manager->GetItemCount() - 1;
+    last_committed_item_index = navigation_items - 1;
   }
 
-  NSMutableArray<CRWNavigationItemStorage*>* item_storages =
-      [[NSMutableArray alloc] init];
-  const size_t original_index = session_storage.lastCommittedItemIndex;
-  const size_t navigation_items =
-      static_cast<size_t>(navigation_manager->GetItemCount());
-
-  // Drop URLs larger than a certain threshold.
-  for (size_t index = 0; index < navigation_items; ++index) {
+  const int original_index = last_committed_item_index;
+  proto::NavigationStorage& navigation_storage = *storage.mutable_navigation();
+  for (int index = 0; index < navigation_items; ++index) {
     const NavigationItem* item = navigation_manager->GetItemAtIndex(index);
     if (item->GetURL().spec().size() > url::kMaxURLChars) {
-      if (index <= original_index) {
-        session_storage.lastCommittedItemIndex--;
+      if (index < original_index) {
+        --last_committed_item_index;
       }
       continue;
     }
 
-    CRWNavigationItemStorage* storage = [[CRWNavigationItemStorage alloc] init];
-    storage.virtualURL = item->GetVirtualURL();
-    storage.URL = item->GetURL();
+    proto::NavigationItemStorage& item_storage =
+        *navigation_storage.add_items();
+    item_storage.set_virtual_url(item->GetVirtualURL().spec());
+    item_storage.set_url(item->GetURL().spec());
+
     // Use default referrer if URL is longer than allowed. Navigation items with
     // these long URLs will not be serialized, so there is no point in keeping
     // referrer URL.
-    if (item->GetReferrer().url.spec().size() <= url::kMaxURLChars) {
-      storage.referrer = item->GetReferrer();
+    const Referrer& referrer = item->GetReferrer();
+    if (referrer.url.is_valid() &&
+        referrer.url.spec().size() <= url::kMaxURLChars) {
+      SerializeReferrerToProto(referrer, *item_storage.mutable_referrer());
     }
-    storage.timestamp = item->GetTimestamp();
-    storage.title = item->GetTitle();
-    storage.userAgentType = item->GetUserAgentType();
-    storage.HTTPRequestHeaders = item->GetHttpRequestHeaders();
-    [item_storages addObject:storage];
-  }
-  session_storage.itemStorages = item_storages;
-  session_storage.certPolicyCacheStorage =
-      [[CRWSessionCertificatePolicyCacheStorage alloc] init];
-  session_storage.certPolicyCacheStorage.certificateStorages =
-      [NSMutableSet set];
-  const SerializableUserDataManager* user_data_manager =
-      SerializableUserDataManager::FromWebState(web_state);
-  if (user_data_manager) {
-    session_storage.userData = user_data_manager->GetUserDataForSession();
-  }
-  session_storage.userAgentType = UserAgentType::AUTOMATIC;
 
-  return session_storage;
+    SerializeTimeToProto(item->GetTimestamp(),
+                         *item_storage.mutable_timestamp());
+    item_storage.set_title(base::UTF16ToUTF8(item->GetTitle()));
+    item_storage.set_user_agent(UserAgentTypeToProto(item->GetUserAgentType()));
+
+    NavigationItem::HttpRequestHeaders* headers = item->GetHttpRequestHeaders();
+    if (headers.count > 0) {
+      SerializeHttpRequestHeadersToProto(
+          headers, *item_storage.mutable_http_request_headers());
+    }
+  }
+
+  navigation_storage.set_last_committed_item_index(last_committed_item_index);
+
+  proto::WebStateMetadataStorage& metadata = *storage.mutable_metadata();
+  metadata.set_navigation_item_count(navigation_storage.items_size());
+  if (0 <= last_committed_item_index &&
+      last_committed_item_index < navigation_storage.items_size()) {
+    const proto::NavigationItemStorage& item_storage =
+        navigation_storage.items(last_committed_item_index);
+
+    proto::PageMetadataStorage& active_page = *metadata.mutable_active_page();
+    active_page.set_page_title(item_storage.title());
+    if (item_storage.virtual_url().empty()) {
+      active_page.set_page_url(item_storage.url());
+    } else {
+      active_page.set_page_url(item_storage.virtual_url());
+    }
+  }
+
+  SerializeTimeToProto(web_state->GetCreationTime(),
+                       *metadata.mutable_creation_time());
+  SerializeTimeToProto(web_state->GetLastActiveTime(),
+                       *metadata.mutable_last_active_time());
 }
 
 }  // namespace web

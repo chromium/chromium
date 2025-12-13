@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -56,7 +52,7 @@ class TestAwContentsLifecycleNotifier : public AwContentsLifecycleNotifier {
   ~TestAwContentsLifecycleNotifier() override = default;
 
   size_t GetAwContentsStateCount(AwContentsState state) const {
-    return state_count_[ToIndex(state)];
+    return UNSAFE_TODO(state_count_[ToIndex(state)]);
   }
 
   bool HasAwContentsInstanceForTesting() const {

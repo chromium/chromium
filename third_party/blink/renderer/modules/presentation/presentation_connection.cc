@@ -609,8 +609,8 @@ void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
   DCHECK(buffer);
   if (!base::CheckedNumeric<wtf_size_t>(buffer->ByteLength()).IsValid()) {
     // TODO(crbug.com/1036565): generate error message? The problem is that the
-    // content of {buffer} is copied into a WTF::Vector, but a DOMArrayBuffer
-    // has a bigger maximum size than a WTF::Vector. Ignore the current failed
+    // content of {buffer} is copied into a Vector, but a DOMArrayBuffer
+    // has a bigger maximum size than a Vector. Ignore the current failed
     // blob item and continue with next items.
     messages_.pop_front();
     blob_loader_.Clear();

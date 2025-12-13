@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/numerics/checked_math.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/stream_parser_buffer.h"
 #include "partition_alloc/partition_alloc.h"
@@ -81,6 +82,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::WebSourceBuffer;
 
@@ -108,7 +110,7 @@ static bool ThrowExceptionIfRemovedOrUpdating(bool is_removed,
   return false;
 }
 
-WTF::String WebTimeRangesToString(const WebTimeRanges& ranges) {
+String WebTimeRangesToString(const WebTimeRanges& ranges) {
   StringBuilder string_builder;
   string_builder.Append('{');
   for (auto& r : ranges) {
@@ -278,9 +280,9 @@ void SourceBuffer::setMode(const V8AppendMode& new_mode,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
-          &SourceBuffer::SetMode_Locked, WrapPersistent(this),
-          new_mode.AsEnum(), WTF::Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(
+          blink::BindOnce(&SourceBuffer::SetMode_Locked, WrapPersistent(this),
+                          new_mode.AsEnum(), Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -354,8 +356,8 @@ TimeRanges* SourceBuffer::buffered(ExceptionState& exception_state) const {
   // an attachment because !IsRemoved().
   WebTimeRanges ranges;
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::GetBuffered_Locked, WrapPersistent(this),
-                        WTF::Unretained(&ranges)))) {
+          blink::BindOnce(&SourceBuffer::GetBuffered_Locked,
+                          WrapPersistent(this), Unretained(&ranges)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -404,9 +406,9 @@ void SourceBuffer::setTimestampOffset(double offset,
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case). Note, we must have |source_| and |source_| must have
   // an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::SetTimestampOffset_Locked, WrapPersistent(this),
-          offset, WTF::Unretained(&exception_state)))) {
+          offset, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -501,8 +503,8 @@ void SourceBuffer::setAppendWindowStart(double start,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::SetAppendWindowStart_Locked,
-                        WrapPersistent(this), start))) {
+          blink::BindOnce(&SourceBuffer::SetAppendWindowStart_Locked,
+                          WrapPersistent(this), start))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -563,8 +565,8 @@ void SourceBuffer::setAppendWindowEnd(double end,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::SetAppendWindowEnd_Locked,
-                        WrapPersistent(this), end))) {
+          blink::BindOnce(&SourceBuffer::SetAppendWindowEnd_Locked,
+                          WrapPersistent(this), end))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -619,13 +621,13 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kMediaSourceExtensionsForWebCodecs);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendEncodedChunks",
+                    perfetto::Track::FromPointer(this));
 
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
                                         exception_state)) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
+                    perfetto::Track::FromPointer(this));
     return EmptyPromise();
   }
 
@@ -701,9 +703,9 @@ ScriptPromise<IDLUndefined> SourceBuffer::appendEncodedChunks(
   // only if attachment is usable and underlying demuxer is protected from
   // destruction (applicable especially for MSE-in-Worker case). Note, we must
   // have |source_| and |source_| must have an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendEncodedChunks_Locked, WrapPersistent(this),
-          std::move(buffer_queue), size, WTF::Unretained(&exception_state)))) {
+          std::move(buffer_queue), size, Unretained(&exception_state)))) {
     // TODO(crbug.com/878133): Determine in specification what the specific,
     // app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -732,8 +734,8 @@ void SourceBuffer::AppendEncodedChunks_Locked(
 
   double media_time = GetMediaTime();
   if (!PrepareAppend(media_time, size, *exception_state)) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
+                    perfetto::Track::FromPointer(this));
     append_encoded_chunks_resolver_ = nullptr;
     return;
   }
@@ -752,11 +754,11 @@ void SourceBuffer::AppendEncodedChunks_Locked(
   append_encoded_chunks_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart,
-                    WrapPersistent(this)));
+      BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart,
+               WrapPersistent(this)));
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "delay", TRACE_ID_LOCAL(this),
-                                    "type", "initialDelay");
+  TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
+                    "type", "initialDelay");
 }
 
 void SourceBuffer::abort(ExceptionState& exception_state) {
@@ -785,19 +787,10 @@ void SourceBuffer::abort(ExceptionState& exception_state) {
   //    InvalidStateError exception and abort these steps.
   if (pending_remove_start_ != -1) {
     DCHECK(updating_);
-    // Throwing the exception and aborting these steps is new behavior that
-    // is implemented behind the MediaSourceNewAbortAndDuration
-    // RuntimeEnabledFeature.
-    if (RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
-      MediaSource::LogAndThrowDOMException(
-          exception_state, DOMExceptionCode::kInvalidStateError,
-          "Aborting asynchronous remove() operation is disallowed.");
-      return;
-    }
-
-    Deprecation::CountDeprecation(GetExecutionContext(),
-                                  WebFeature::kMediaSourceAbortRemove);
-    CancelRemove();
+    MediaSource::LogAndThrowDOMException(
+        exception_state, DOMExceptionCode::kInvalidStateError,
+        "Aborting asynchronous remove() operation is disallowed.");
+    return;
   }
 
   // 4. If the sourceBuffer.updating attribute equals true, then run the
@@ -809,7 +802,7 @@ void SourceBuffer::abort(ExceptionState& exception_state) {
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::Abort_Locked, WrapPersistent(this)))) {
+          blink::BindOnce(&SourceBuffer::Abort_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -862,8 +855,8 @@ void SourceBuffer::remove(double start,
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::Remove_Locked, WrapPersistent(this),
-                        start, end, WTF::Unretained(&exception_state)))) {
+          blink::BindOnce(&SourceBuffer::Remove_Locked, WrapPersistent(this),
+                          start, end, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -901,14 +894,14 @@ void SourceBuffer::Remove_Locked(
   if (end <= start || std::isnan(end)) {
     MediaSource::LogAndThrowTypeError(
         *exception_state,
-        "The end value provided (" + String::Number(end) +
-            ") must be greater than the start value provided (" +
-            String::Number(start) + ").");
+        StrCat({"The end value provided (", String::Number(end),
+                ") must be greater than the start value provided (",
+                String::Number(start), ")."}));
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "SourceBuffer::remove",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::remove",
+                    perfetto::Track::FromPointer(this));
 
   // 6. If the readyState attribute of the parent media source is in the "ended"
   //    state then run the following steps:
@@ -933,7 +926,7 @@ void SourceBuffer::Remove_Locked(
   remove_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::RemoveAsyncPart, WrapPersistent(this)));
+      BindOnce(&SourceBuffer::RemoveAsyncPart, WrapPersistent(this)));
 }
 
 void SourceBuffer::changeType(const String& type,
@@ -964,9 +957,9 @@ void SourceBuffer::changeType(const String& type,
   // is protected from destruction (applicable especially for MSE-in-Worker
   // case). Note, we must have |source_| and |source_| must have an attachment
   // because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::ChangeType_Locked, WrapPersistent(this),
-                        type, WTF::Unretained(&exception_state)))) {
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
+          &SourceBuffer::ChangeType_Locked, WrapPersistent(this), type,
+          Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -1037,7 +1030,8 @@ void SourceBuffer::ChangeType_Locked(
       !web_source_buffer_->CanChangeType(content_type.GetType(), codecs)) {
     MediaSource::LogAndThrowDOMException(
         *exception_state, DOMExceptionCode::kNotSupportedError,
-        "Changing to the type provided ('" + type + "') is not supported.");
+        StrCat({"Changing to the type provided ('", type,
+                "') is not supported."}));
     return;
   }
 
@@ -1096,13 +1090,8 @@ void SourceBuffer::CancelRemove() {
   pending_remove_end_ = -1;
   updating_ = false;
 
-  if (!RuntimeEnabledFeatures::MediaSourceNewAbortAndDurationEnabled()) {
-    ScheduleEvent(event_type_names::kAbort);
-    ScheduleEvent(event_type_names::kUpdateend);
-  }
-
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::remove",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::remove*/
+                  perfetto::Track::FromPointer(this));
 }
 
 void SourceBuffer::AbortIfUpdating() {
@@ -1139,8 +1128,8 @@ void SourceBuffer::AbortIfUpdating() {
         append_encoded_chunks_resolver_->GetScriptState()->GetIsolate(),
         DOMExceptionCode::kAbortError, "Aborted by explicit abort()"));
     append_encoded_chunks_resolver_ = nullptr;
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "media", "SourceBuffer::appendEncodedChunks", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendEncodedChunks*/
+                    perfetto::Track::FromPointer(this));
     return;
   }
 
@@ -1157,8 +1146,8 @@ void SourceBuffer::AbortIfUpdating() {
   //      SourceBuffer object.
   ScheduleEvent(event_type_names::kUpdateend);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendBuffer",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
+                  perfetto::Track::FromPointer(this));
 }
 
 void SourceBuffer::RemovedFromMediaSource() {
@@ -1861,8 +1850,8 @@ bool SourceBuffer::PrepareAppend(double media_time,
   // done by the caller.
   // http://w3c.github.io/media-source/#sourcebuffer-prepare-append
   // 3.5.4 Prepare Append Algorithm
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "SourceBuffer::prepareAppend",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::prepareAppend",
+                    perfetto::Track::FromPointer(this));
   // 3. If the HTMLMediaElement.error attribute is not null, then throw an
   //    InvalidStateError exception and abort these steps.
   DCHECK(source_);
@@ -1873,8 +1862,8 @@ bool SourceBuffer::PrepareAppend(double media_time,
     MediaSource::LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kInvalidStateError,
         "The HTMLMediaElement.error attribute is not null.");
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAppend",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
+                    perfetto::Track::FromPointer(this));
     return false;
   }
 
@@ -1897,13 +1886,13 @@ bool SourceBuffer::PrepareAppend(double media_time,
         exception_state,
         "The SourceBuffer is full, and cannot free space to append additional "
         "buffers.");
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAppend",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
+                    perfetto::Track::FromPointer(this));
     return false;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAppend",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::prepareAppend*/
+                  perfetto::Track::FromPointer(this));
   return true;
 }
 
@@ -1927,8 +1916,8 @@ bool SourceBuffer::EvictCodedFrames(double media_time, size_t new_data_size) {
 
 void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
                                         ExceptionState& exception_state) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "SourceBuffer::appendBuffer",
-                                    TRACE_ID_LOCAL(this), "size", data.size());
+  TRACE_EVENT_BEGIN("media", "SourceBuffer::appendBuffer",
+                    perfetto::Track::FromPointer(this), "size", data.size());
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   //
@@ -1948,8 +1937,8 @@ void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
   //    exception and abort these steps.
   if (ThrowExceptionIfRemovedOrUpdating(IsRemoved(), updating_,
                                         exception_state)) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendBuffer",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
+                    perfetto::Track::FromPointer(this));
     return;
   }
 
@@ -1957,9 +1946,9 @@ void SourceBuffer::AppendBufferInternal(base::span<const unsigned char> data,
   // attachment is usable and underlying demuxer is protected from destruction
   // (applicable especially for MSE-in-Worker case). Note, we must have
   // |source_| and |source_| must have an attachment because !IsRemoved().
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendBufferInternal_Locked, WrapPersistent(this),
-          data, WTF::Unretained(&exception_state)))) {
+          data, Unretained(&exception_state)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, exception should be for this case.
     MediaSource::LogAndThrowDOMException(
@@ -1979,12 +1968,12 @@ void SourceBuffer::AppendBufferInternal_Locked(
   // Finish the prepare append algorithm begun by the caller.
   double media_time = GetMediaTime();
   if (!PrepareAppend(media_time, data.size(), *exception_state)) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendBuffer",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
+                    perfetto::Track::FromPointer(this));
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "prepareAsyncAppend",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("media", "prepareAsyncAppend",
+                    perfetto::Track::FromPointer(this));
 
   // 2. Add data to the end of the input buffer. Zero-length appends result in
   // just a single async segment parser loop run later, with nothing added to
@@ -1993,8 +1982,8 @@ void SourceBuffer::AppendBufferInternal_Locked(
     MediaSource::LogAndThrowQuotaExceededError(
         *exception_state,
         "Unable to allocate space required to buffer appended media.");
-    TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::prepareAsyncAppend",
-                                    TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("media", /*prepareAsyncAppend*/
+                    perfetto::Track::FromPointer(this));
     return;
   }
 
@@ -2009,13 +1998,12 @@ void SourceBuffer::AppendBufferInternal_Locked(
   append_buffer_async_task_handle_ = PostCancellableTask(
       *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
       FROM_HERE,
-      WTF::BindOnce(&SourceBuffer::AppendBufferAsyncPart,
-                    WrapPersistent(this)));
+      BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "prepareAsyncAppend",
-                                  TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "delay", TRACE_ID_LOCAL(this),
-                                    "type", "initialDelay");
+  TRACE_EVENT_END("media", /*prepareAsyncAppend*/
+                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
+                    "type", "initialDelay");
 }
 
 void SourceBuffer::AppendEncodedChunksAsyncPart() {
@@ -2024,8 +2012,8 @@ void SourceBuffer::AppendEncodedChunksAsyncPart() {
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
   if (!source_->RunUnlessElementGoneOrClosingUs(
-          WTF::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart_Locked,
-                        WrapPersistent(this)))) {
+          blink::BindOnce(&SourceBuffer::AppendEncodedChunksAsyncPart_Locked,
+                          WrapPersistent(this)))) {
     // TODO(crbug.com/878133): Determine in specification what the specific,
     // app-visible, behavior should be for this case. In this implementation,
     // the safest thing to do is nothing here now. See more verbose reason in
@@ -2040,7 +2028,7 @@ void SourceBuffer::AppendBufferAsyncPart() {
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::AppendBufferAsyncPart_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, behavior should be for this case. In this
@@ -2069,10 +2057,9 @@ void SourceBuffer::AppendEncodedChunksAsyncPart_Locked(
   // TODO(crbug.com/1144908): Consider buffering |pending_chunks_to_buffer_| in
   // multiple async iterations if it contains many buffers. It is unclear if
   // this is necessary when buffering encoded chunks.
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "delay", TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "appending", TRACE_ID_LOCAL(this),
-                                    "chunkCount",
-                                    pending_chunks_to_buffer_->size());
+  TRACE_EVENT_END("media", /* delay */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "appending", perfetto::Track::FromPointer(this),
+                    "chunkCount", pending_chunks_to_buffer_->size());
 
   bool append_success = web_source_buffer_->AppendChunks(
       std::move(pending_chunks_to_buffer_), &timestamp_offset_);
@@ -2098,9 +2085,10 @@ void SourceBuffer::AppendEncodedChunksAsyncPart_Locked(
     append_encoded_chunks_resolver_ = nullptr;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "appending", TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendEncodedChunks",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /* appending */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media",
+                  /* SourceBuffer::appendEncodedChunks */
+                  perfetto::Track::FromPointer(this));
 
   DVLOG(3) << __func__ << " done. this=" << this
            << " media_time=" << GetMediaTime() << " buffered="
@@ -2119,8 +2107,8 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
   // 1. Run the segment parser loop algorithm.
   // Step 2 doesn't apply since we run Step 1 synchronously here.
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "delay", TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "appending", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /* delay */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("media", "appending", perfetto::Track::FromPointer(this));
   // The segment parser loop may not consume all of the pending appended data,
   // and lets us know via a distinct ParseStatus result. We parse incrementally
   // to avoid blocking the renderer event loop for too long. Note that even in
@@ -2141,12 +2129,11 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
       append_buffer_async_task_handle_ = PostCancellableTask(
           *GetExecutionContext()->GetTaskRunner(TaskType::kMediaElementEvent),
           FROM_HERE,
-          WTF::BindOnce(&SourceBuffer::AppendBufferAsyncPart,
-                        WrapPersistent(this)));
-      TRACE_EVENT_NESTABLE_ASYNC_END0("media", "appending",
-                                      TRACE_ID_LOCAL(this));
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "delay", TRACE_ID_LOCAL(this),
-                                        "type", "nextPieceDelay");
+          BindOnce(&SourceBuffer::AppendBufferAsyncPart, WrapPersistent(this)));
+      TRACE_EVENT_END("media",
+                      /* appending */ perfetto::Track::FromPointer(this));
+      TRACE_EVENT_BEGIN("media", "delay", perfetto::Track::FromPointer(this),
+                        "type", "nextPieceDelay");
       return;
     case media::StreamParser::ParseStatus::kSuccess:
       // 3. Set the updating attribute to false.
@@ -2164,9 +2151,9 @@ void SourceBuffer::AppendBufferAsyncPart_Locked(
       break;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "appending", TRACE_ID_LOCAL(this));
-  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "SourceBuffer::appendBuffer",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("media", /* appending */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("media", /*SourceBuffer::appendBuffer*/
+                  perfetto::Track::FromPointer(this));
 
   double media_time = GetMediaTime();
   DVLOG(3) << __func__ << " done. this=" << this << " media_time=" << media_time
@@ -2179,7 +2166,7 @@ void SourceBuffer::RemoveAsyncPart() {
   // demuxer is protected from destruction (applicable especially for
   // MSE-in-Worker case).
   DCHECK(!IsRemoved());  // So must have |source_| and it must have attachment.
-  if (!source_->RunUnlessElementGoneOrClosingUs(WTF::BindOnce(
+  if (!source_->RunUnlessElementGoneOrClosingUs(blink::BindOnce(
           &SourceBuffer::RemoveAsyncPart_Locked, WrapPersistent(this)))) {
     // TODO(https://crbug.com/878133): Determine in specification what the
     // specific, app-visible, behavior should be for this case. This

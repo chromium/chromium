@@ -89,8 +89,7 @@ public class BluetoothChooserDialog
     final Context mContext;
 
     // The dialog to show to let the user pick a device.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public ItemChooserDialog mItemChooserDialog;
+    @VisibleForTesting public ItemChooserDialog mItemChooserDialog;
 
     // The origin for the site wanting to pair with the bluetooth devices.
     final String mOrigin;
@@ -102,18 +101,14 @@ public class BluetoothChooserDialog
     // The embedder-provided delegate.
     final BluetoothChooserAndroidDelegate mDelegate;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public @Nullable Drawable mConnectedIcon;
+    @VisibleForTesting public @Nullable Drawable mConnectedIcon;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public String mConnectedIconDescription;
+    @VisibleForTesting public String mConnectedIconDescription;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public Drawable[] mSignalStrengthLevelIcon;
+    @VisibleForTesting public Drawable[] mSignalStrengthLevelIcon;
 
     // A pointer back to the native part of the implementation for this dialog.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public long mNativeBluetoothChooserDialogPtr;
+    @VisibleForTesting public long mNativeBluetoothChooserDialogPtr;
 
     // Used to keep track of when the Mode Changed Receiver is registered.
     boolean mIsLocationModeChangedReceiverRegistered;
@@ -124,7 +119,7 @@ public class BluetoothChooserDialog
     // The status message to show when the bluetooth adapter is turned off.
     private final SpannableString mAdapterOffStatus;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public final BroadcastReceiver mLocationModeBroadcastReceiver =
             new BroadcastReceiver() {
                 @Override
@@ -162,7 +157,7 @@ public class BluetoothChooserDialog
     }
 
     /** Creates the BluetoothChooserDialog. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public BluetoothChooserDialog(
             WindowAndroid windowAndroid,
             String origin,
@@ -215,7 +210,7 @@ public class BluetoothChooserDialog
     }
 
     /** Show the BluetoothChooserDialog. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @Initializer
     public void show() {
         SpannableString origin = new SpannableString(mOrigin);
@@ -472,7 +467,7 @@ public class BluetoothChooserDialog
         return dialog;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void addOrUpdateDevice(
             String deviceId, String deviceName, boolean isGATTConnected, int signalStrengthLevel) {
@@ -496,14 +491,14 @@ public class BluetoothChooserDialog
         mItemChooserDialog.addOrUpdateItem(deviceId, deviceName, icon, iconDescription);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void closeDialog() {
         mNativeBluetoothChooserDialogPtr = 0;
         mItemChooserDialog.dismiss();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void notifyAdapterTurnedOff() {
         SpannableString adapterOffMessage =
@@ -519,13 +514,13 @@ public class BluetoothChooserDialog
         mItemChooserDialog.clear();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void notifyAdapterUnauthorized() {
         checkLocationServicesAndPermission();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void notifyDiscoveryState(@DiscoveryMode int discoveryState) {
         switch (discoveryState) {

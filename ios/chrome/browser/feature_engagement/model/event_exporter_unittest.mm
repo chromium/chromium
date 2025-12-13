@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/feature_engagement/model/event_exporter.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
@@ -485,9 +486,9 @@ TEST_F(EventExporterTest, TestSigninFullscreenPromoImpressionsMigration) {
   FakeSystemIdentityManager::FromSystemIdentityManager(
       GetApplicationContext()->GetSystemIdentityManager())
       ->AddIdentity(fake_identity1);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
-  signin::RecordUpgradePromoSigninStarted(
+  signin::RecordFullscreenSigninPromoStarted(
       identity_manager_, account_manager_service_, version_1_0);
 
   RequestExportEventsAndVerifyCallback();

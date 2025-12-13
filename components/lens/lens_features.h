@@ -37,15 +37,6 @@ BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 
-// Enables the Lens overlay searchbox for omnibox suggestions. This does the
-// same thing as kLensOverlayContextualSearchbox, but is used to enable the
-// feature from the omnibox contextual suggestions experiment. This relies on
-// the same params as kLensOverlayContextualSearchbox. This flag turns the meta
-// feature on to remove the dependency between the CSB experiment and omnibox
-// experiment.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayContextualSearchboxForOmniboxSuggestions);
-
 // Enables the migration for Lens overlay suggestions URL params, independent
 // of the CSB feature.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -67,30 +58,13 @@ BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 
-// Enables the Lens overlay simplified selection flow.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlaySimplifiedSelection);
-
 // Enables the Lens overlay visual selection updates.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdates);
 
-// Enables the Lens overlay visual selection updates for omnibox suggestions.
-// This does the same thing as kLensOverlayVisualSelectionUpdates, but is used
-// to enable the feature from the omnibox contextual suggestions experiment.
-// This relies on the same params as kLensOverlayVisualSelectionUpdates. This
-// flag turns the meta feature on to remove the dependency between the visual
-// selection ramp up and omnibox experiment.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayVisualSelectionUpdatesForOmniboxSuggestions);
-
 // Enables the Lens overlay updated client context.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
-
-// Enables opening the Lens overlay MGT feature in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayMGTInSidePanel);
 
 // Enables the Lens Overlay omnibox entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -108,10 +82,6 @@ BASE_DECLARE_FEATURE(kLensSearchSidePanelNewFeedback);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayRecontextualizeOnQuery);
 
-// Enables a limited scroll to functionality to the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSearchSidePanelScrollToAPI);
-
 // Enables the Lens overlay simplified selection flow.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayCornerSliders);
@@ -124,10 +94,6 @@ BASE_DECLARE_FEATURE(kLensSearchProtectedPage);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayEduActionChip);
 
-// Enables the modification of the default width of the Lens search side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSearchSidePanelDefaultWidthChange);
-
 // Enables keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
@@ -135,10 +101,6 @@ BASE_DECLARE_FEATURE(kLensOverlayKeyboardSelection);
 // Use alternate appearance for permission bubble.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
-
-// Enables the back to live page functionality in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayBackToPage);
 
 // Enables the search not found on page toast when a user clicks a citation for
 // the current page they are viewing but the text was not found.
@@ -148,6 +110,74 @@ BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
 // Enables straight to SRP flows are enabled in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
+
+// Enables AIM follow ups with the Lens overlay results side panel globally.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3);
+
+// Enables AIM follow ups with the Lens overlay results side panel in en-US.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3EnUs);
+
+// Enables AIM follow ups with the Lens overlay results side panel if the AIM
+// Eligibility Service indicates the user is eligible.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchAimM3UseAimEligibility);
+
+// Enables the Lens button in the AIM Searchbox for reinvocation of selection
+// overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchReinvocationAffordance);
+
+// Enables overriding the Lens overlay entrypoint label with an alternate
+// string.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayEntrypointLabelAlt);
+
+// Enables making the text selection context menu option a Lens overlay
+// entrypoint.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayTextSelectionContextMenuEntrypoint);
+
+// Force Lens overlay invocations to perform an empty CSB query. For internal
+// debugging only.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayForceEmptyCsbQuery);
+
+// Enables using a webview for the results frame instead of an iframe.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSidePanelEnableWebviewResults);
+
+// Enables AIM suggestions in the composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensAimSuggestions);
+
+// Enables configuring the gradient background for AIM suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensAimSuggestionsGradientBackground);
+
+// Enables the zero state contextual searchbox feature which opens the SRP
+// immediately when entering Lens entry points.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSearchZeroStateCsb);
+
+// Enables handling for the video citations feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensVideoCitations);
+
+// Enables the updated feedback entrypoint in the Lens side panel. This differs
+// from the "kLensSearchSidePanelNewFeedback" because this does not add a new
+// entrypoint, but updates the existing one.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensUpdatedFeedbackEntrypoint);
+
+// Enables using the optimization filter for triggering the action chip.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
+
+// Enables using the non-blocking privacy notice for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
 
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -199,9 +229,23 @@ extern const base::FeatureParam<bool> kLensOverlayEnableOpenInNewTab;
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<bool> kLensOverlayEduActionChipDisabledByGlic;
 
-// The default width of the Lens search side panel.
+// Value representing the string to use to override the Lens overlay entrypoint
+// label.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern const base::FeatureParam<int> kLensSearchSidePanelDefaultWidth;
+extern const base::FeatureParam<int> kLensOverlayEntrypointLabelAltId;
+
+// Whether the Lens overlay text selection context menu entrypoint should
+// issue contextual queries. If false, contextualization will be suppressed for
+// all queries in the session.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<bool>
+    kLensOverlayTextSelectionContextMenuEntrypointContextualize;
+
+// If positive, the maximum number of times to show the non-blocking privacy
+// notice. Otherwise, the notice may appear an unlimited number of times.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<int>
+    kLensOverlayNonBlockingPrivacyNoticeImpressionCap;
 
 // The URL for the Lens home page.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -408,6 +452,11 @@ extern bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest();
 // the Lens search box.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendImageSignalsForLensSuggest();
+
+// Returns whether or not to send the vit as image data in suggest requests
+// from the Lens search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendVitAsImageForLensSuggest();
 
 // Returns the max number of bytes to allow for content uploads.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -639,13 +688,6 @@ extern bool IsLensOverlayClusterInfoOptimizationEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
 
-// Whether to enable the early StartQueryFlow optimization for the Lens Overlay.
-// This optimization allows the full image request to be sent as soon as the
-// screenshotted image is ready instead of waiting for all client-side
-// initialization has completed.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayEarlyStartQueryFlowOptimizationEnabled();
-
 // Time delay for the results trigger of the Lens Overlay HaTS survey.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensOverlaySurveyResultsTime();
@@ -675,6 +717,10 @@ extern bool ShowContextualSearchboxGhostLoaderLoadingState();
 // The timeout set for autocomplete for lens searchboxes.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern base::TimeDelta GetLensSearchboxAutocompleteTimeout();
+
+// The timeout for receiving suggestions in the Lens composebox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensAimSuggestionTimeout();
 
 // The list of source languages supported by Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -708,7 +754,6 @@ extern bool IsLensOverlayRoutingInfoEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool HandleSidePanelTextDirectivesEnabled();
 
-
 // The compression level to use when compressing the PDF bytes using zstd.
 // Higher values mean better compression but also take longer to compress.
 // See the introduction section in third_party/zstd/src/lib/zstd.h for more
@@ -730,34 +775,6 @@ extern double GetUploadProgressBarShowHeuristic();
 // first opened.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShouldAutoFocusSearchbox();
-
-// Whether to enable the simplified selection flow in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsSimplifiedSelectionEnabled();
-
-// The text received timeout for the simplified selection feature. Time to wait
-// for Lens text response before displaying the selected region context menu, in
-// milliseconds.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetSimplifiedSelectionTextReceivedTimeout();
-
-// The copy text received timeout for the simplified selection feature. Time to
-// wait for text in the interaction response before falling back to using the
-// full image response to copy text from a region.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetCopyTextReceivedTimeout();
-
-// The translate text received timeout for the simplified selection feature.
-// Time to wait for text in the interaction response before falling back to
-// using the full image response to translate text from a region.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern int GetTranslateTextReceivedTimeout();
-
-// Whether the copy keyboard command (ex: CMD+C) should copy the selected region
-// as an image or copy the text within the region when the simplified selection
-// feature is enabled.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetShouldCopyAsImage();
 
 // Whether the visual selection updates are enabled. This is true if the
 // visual selection updates feature flag is enabled or if the omnibox
@@ -822,9 +839,67 @@ extern bool ShowContextualSearchboxZeroPrefixSuggest();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsUpdatedClientContextEnabled();
 
-// Whether to show open MGT search pages in the side panel.
+// Whether to show open AIM search pages in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
-extern bool ShouldShowMGTInSidePanel();
+extern bool ShouldShowAimInSidePanel();
+
+// Whether the AIM Searchbox is enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSearchboxEnabled();
+
+// Whether the side panel ghost loader is disabled for AIM interactions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetSidePanelGhostLoaderDisabledForAim();
+
+// Whether the composebox should contextualize on focus.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldComposeboxContextualizeOnFocus();
+
+// Whether lens should show AIM suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSuggestionsEnabled();
+
+// Whether lens should show AIM suggestions with a gradient background.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetAimSuggestionsGradientBackgroundEnabled();
+
+// Enum for the parameter values.
+enum class LensAimSuggestionsType {
+  kNone,
+  kContextual,
+  kMultimodal,
+};
+
+// Returns the type of AIM suggestions to show.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern LensAimSuggestionsType GetLensAimSuggestionsType();
+
+// Whether to enable AIM type ahead suggestions.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensAimTypeAheadSuggestionsEnabled();
+
+// Whether to clear the vsint param from the multimodal request when there is no
+// region selection.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ClearVsintWhenNoRegionSelection();
+
+// Whether to close the overlay when the user transitions to the AIM UI.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShouldCloseOverlayOnAimTransition();
+
+// Whether to enable the floating G for the header. This is a transparent G that
+// will float to on top of the remotely rendered header.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableFloatingGForHeader();
+
+// Whether to enable the client side header. This is a header that is rendered
+// on the client side and takes up space from the results UI.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableClientSideHeader();
+
+// Whether to enable the Lens button in the AIM searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetEnableLensButtonInSearchbox();
 
 // Whether to use the alt loading hint when overlay is opened on web pages.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -850,13 +925,13 @@ uint32_t GetLensOverlayChunkSizeBytes();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayUploadChunkEndpointURL();
 
-// Whether to enable debug options for upload chunking.
-COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensOverlayUploadChunkingUseDebugOptionsEnabled();
-
 // The timeout set for upload chunk requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayUploadChunkRequestTimeoutMs();
+
+// The retry limit after a missing chunk error occurs.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayUploadChunkRetries();
 
 // Whether to the new feedback entry point in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -877,10 +952,6 @@ extern int GetLensOverlaySliderChangedTimeout();
 // Whether the protected page for the side panel is enabled.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensSearchProtectedPageEnabled();
-
-// Whether to enable the limited scroll-to API functionality in the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensSearchSidePanelScrollToAPIEnabled();
 
 // Whether to enable the EDU action chip.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -914,13 +985,9 @@ extern std::string GetLensOverlayEduHashedDomainBlockFilters();
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayEduActionChipDisabledByGlic();
 
-// Whether to enable the default width change for the side panel.
+// The number of times the EDU action chip can be shown.
 COMPONENT_EXPORT(LENS_FEATURES)
-bool IsLensSearchSidePanelDefaultWidthChangeEnabled();
-
-// The default width for the side panel.
-COMPONENT_EXPORT(LENS_FEATURES)
-int GetLensSearchSidePanelDefaultWidth();
+int GetLensOverlayEduActionChipMaxShownCount();
 
 // Whether to enable keyboard selection in the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -929,10 +996,6 @@ extern bool IsLensOverlayKeyboardSelectionEnabled();
 // Whether to use alternate appearance for permission bubble.
 COMPONENT_EXPORT(LENS_FEATURES)
 bool IsLensOverlayPermissionBubbleAltEnabled();
-
-// Whether the back to live page functionality is enabled in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayBackToPageEnabled();
 
 // Whether to enable the not found on page toast.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -945,6 +1008,81 @@ extern bool IsLensOverlayStraightToSrpEnabled();
 // If set, overrides the query text used in the Straight to SRP flow.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetStraightToSrpQuery();
+
+// Whether the text selection context menu option should be a Lens overlay
+// entrypoint.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTextSelectionContextMenuEntrypointEnabled();
+
+// Whether the Lens overlay text selection context menu entrypoint should
+// issue contextual queries. If false, contextualization will be suppressed for
+// all queries in the session.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTextSelectionContextMenuEntrypointContextualized();
+
+// Whether to force Lens overlay invocations to perform an empty CSB query. For
+// internal debugging only.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayForceEmptyCsbQueryEnabled();
+
+// Whether to use a webview for the results frame instead of an iframe.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSidePanelWebviewResultsEnabled();
+
+// Whether to enable zero state contextual suggest in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSearchZeroStateCsbEnabled();
+
+// The query text to use for zero state CSB in the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetZeroStateCsbQuery();
+
+// Whether the feature to enable the special handling for video citations is
+// enabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensVideoCitationsEnabled();
+
+// Whether to enable the updated feedback entry point in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensUpdatedFeedbackEnabled();
+
+// The timeout for showing the feedback toast in the Lens side panel.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensUpdatedFeedbackToastTimeoutMs();
+
+// Whether to enable using the optimization filter for triggering the action
+// chip.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayOptimizationFilterEnabled();
+
+// Flag to control the type of suggestions for Lens Aim.
+// Access this value using: kLensAimSuggestionsType.Get()
+COMPONENT_EXPORT(LENS_FEATURES)
+extern const base::FeatureParam<LensAimSuggestionsType> kLensAimSuggestionsType;
+
+// String constants for LensAimSuggestionsType. These are used in the
+// Field Trial configuration.
+inline constexpr char kLensAimSuggestionsTypeNone[] = "None";
+inline constexpr char kLensAimSuggestionsTypeContextual[] = "Contextual";
+inline constexpr char kLensAimSuggestionsTypeMultimodal[] = "Multimodal";
+
+// Returns the string representation of LensAimSuggestionsType for
+// logging/telemetry.
+std::string_view LensAimSuggestionModeToString(LensAimSuggestionsType type);
+
+// Returns the number of AIM suggestions to show.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensAimSuggestionsCount();
+
+// Whether to use the non-blocking privacy notice for the Lens overlay.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayNonBlockingPrivacyNoticeEnabled();
+
+// Returns the maximum number of times to show the non-blocking privacy
+// notice. If the notice may appear an unlimited number of times, returns a
+// non-positive value.
+COMPONENT_EXPORT(LENS_FEATURES)
+int GetLensOverlayNonBlockingPrivacyNoticeImpressionCap();
 
 }  // namespace lens::features
 #endif  // COMPONENTS_LENS_LENS_FEATURES_H_

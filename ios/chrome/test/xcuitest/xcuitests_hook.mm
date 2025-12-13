@@ -2,13 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+#import "ios/chrome/app/tests_hook.h"
+// clang-format on
+
 #import "base/test/allow_check_is_test_for_testing.h"
 #import "base/time/time.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#import "ios/chrome/app/tests_hook.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 
 namespace tests_hook {
+
+bool DisableGeminiEligibilityCheck() {
+  return false;
+}
 
 bool DisableAppGroupAccess() {
   return true;
@@ -42,7 +51,7 @@ bool DisablePromoManagerDisplayingPromo() {
   return true;
 }
 
-bool DisableUpgradeSigninPromo() {
+bool DisableFullscreenSigninPromo() {
   return true;
 }
 
@@ -56,6 +65,10 @@ bool DelayAppLaunchPromos() {
 
 bool NeverPurgeDiscardedSessionsData() {
   return true;
+}
+
+bool LoadMinimalAppUI() {
+  return false;
 }
 
 std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
@@ -81,6 +94,11 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
 }
 
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ProfileIOS* profile) {
+  return nullptr;
+}
+
+std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
     ProfileIOS* profile) {
   return nullptr;
 }
@@ -128,10 +146,6 @@ base::TimeDelta PasswordCheckMinimumDuration() {
   return base::Seconds(0);
 }
 
-base::TimeDelta GetOverriddenSnackbarDuration() {
-  return base::Seconds(0);
-}
-
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
 }
@@ -140,13 +154,21 @@ feature_engagement::FeatureActivation FETDemoModeOverride() {
   return feature_engagement::FeatureActivation::AllEnabled();
 }
 
-void WipeProfileIfRequested(int argc, char* argv[]) {
+void WipeProfileIfRequested(base::span<const char* const> args) {
   // Do nothing.
 }
 
 base::TimeDelta
 GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
   return base::Seconds(0);
+}
+
+base::TimeDelta GetSnackbarMessageDuration() {
+  return kSnackbarMessageDuration;
+}
+
+UIImage* GetPHPickerViewControllerImage() {
+  return nil;
 }
 
 }  // namespace tests_hook

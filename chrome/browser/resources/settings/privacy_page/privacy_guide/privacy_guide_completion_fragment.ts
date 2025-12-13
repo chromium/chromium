@@ -22,12 +22,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {UpdateSyncStateEvent} from '../../clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
 import {ClearBrowsingDataBrowserProxyImpl} from '../../clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../../hats_browser_proxy.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import type {PrivacySandboxBrowserProxy} from '../../privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from '../../privacy_sandbox/privacy_sandbox_browser_proxy.js';
+import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
@@ -61,9 +61,7 @@ export class PrivacyGuideCompletionFragmentElement extends
 
       shouldShowAiSettings_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableAiSettingsInPrivacyGuide') &&
-            loadTimeData.getBoolean('showAiPage'),
+        value: () => loadTimeData.getBoolean('showAiPage'),
       },
 
       shouldShowPrivacySandbox_: {

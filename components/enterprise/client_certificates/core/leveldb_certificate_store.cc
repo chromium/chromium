@@ -246,6 +246,42 @@ void LevelDbCertificateStore::GetIdentityProto(
                       base::BindOnce(OnIdentityFetched, std::move(callback)));
 }
 
+void LevelDbCertificateStore::DeleteIdentities(
+    const std::vector<std::string>& identity_names,
+    base::OnceCallback<void(std::optional<StoreError>)> callback) {
+  for (const auto& identity_name : identity_names) {
+    if (identity_name.empty()) {
+      std::move(callback).Run(StoreError::kInvalidIdentityName);
+      return;
+    }
+  }
+
+  if (database_state_ != DatabaseState::kInitialized) {
+    pending_operations_.push_back(base::BindOnce(
+        &LevelDbCertificateStore::DeleteIdentities, weak_factory_.GetWeakPtr(),
+        identity_names, std::move(callback)));
+    InitializeDatabase();
+    return;
+  }
+
+  auto mod_keys = std::make_unique<std::vector<std::string>>(identity_names);
+
+  database_->UpdateEntries(
+      std::make_unique<leveldb_proto::ProtoDatabase<
+          client_certificates_pb::ClientIdentity>::KeyEntryVector>(),
+      std::move(mod_keys),
+      base::BindOnce(
+          [](base::OnceCallback<void(std::optional<StoreError>)> callback,
+             bool success) {
+            if (!success) {
+              std::move(callback).Run(StoreError::kDeleteIdentityFailed);
+              return;
+            }
+            std::move(callback).Run(std::nullopt);
+          },
+          std::move(callback)));
+}
+
 void LevelDbCertificateStore::CreatePrivateKeyInner(
     const std::string& identity_name,
     base::OnceCallback<void(StoreErrorOr<scoped_refptr<PrivateKey>>)> callback,

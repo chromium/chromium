@@ -129,13 +129,17 @@ BrowserDelegate* FindSystemWebAppBrowser(Profile* profile,
                                          BrowserType browser_type,
                                          const GURL& url = GURL());
 
+// Returns a count of the `app_type` SWA Browser instances for `profile`.
+int CountSystemWebAppBrowsers(Profile* profile, SystemWebAppType app_type);
+
 // Returns true if the |browser| is dedicated (see above) to hosting a system
 // web app.
 bool IsSystemWebApp(Browser* browser);
 
 // Returns whether the |browser| is dedicated (see above) to hosting the system
 // app |type|.
-bool IsBrowserForSystemWebApp(Browser* browser, SystemWebAppType type);
+bool IsBrowserForSystemWebApp(BrowserWindowInterface* browser,
+                              SystemWebAppType type);
 
 // Returns the SystemWebAppType that should capture the |url|.
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,

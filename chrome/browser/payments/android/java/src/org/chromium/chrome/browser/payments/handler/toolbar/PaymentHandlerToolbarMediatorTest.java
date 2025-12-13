@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.payments.handler.toolbar;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,7 +49,7 @@ public class PaymentHandlerToolbarMediatorTest {
         Mockito.doReturn(ConnectionSecurityLevel.NONE).when(mMockDelegate).getSecurityLevel();
         Mockito.doReturn(123)
                 .when(mMockDelegate)
-                .getSecurityIconResource(ConnectionSecurityLevel.NONE);
+                .getSecurityIconResource(eq(ConnectionSecurityLevel.NONE), any());
         Mockito.doReturn("this is content description.")
                 .when(mMockDelegate)
                 .getSecurityIconContentDescription(ConnectionSecurityLevel.NONE);
@@ -62,10 +65,12 @@ public class PaymentHandlerToolbarMediatorTest {
     @Test
     @Feature({"Payments"})
     public void testDidStartNavigation() {
-        Mockito.doReturn(123).when(mMockDelegate).getSecurityIconResource(Mockito.anyInt());
+        Mockito.doReturn(123)
+                .when(mMockDelegate)
+                .getSecurityIconResource(eq(ConnectionSecurityLevel.NONE), any());
         Mockito.doReturn("this is content description.")
                 .when(mMockDelegate)
-                .getSecurityIconContentDescription(Mockito.anyInt());
+                .getSecurityIconContentDescription(ConnectionSecurityLevel.NONE);
 
         NavigationHandle navigation = Mockito.mock(NavigationHandle.class);
         Mockito.when(navigation.isSameDocument()).thenReturn(false);

@@ -16,7 +16,7 @@
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash {
 namespace {

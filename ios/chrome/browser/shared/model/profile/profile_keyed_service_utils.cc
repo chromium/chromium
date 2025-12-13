@@ -5,17 +5,16 @@
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
 
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 
-web::BrowserState* GetContextToUseForKeyedServiceFactory(
-    web::BrowserState* context,
+ProfileIOS* GetContextToUseForKeyedServiceFactory(
+    ProfileIOS* profile,
     ProfileSelection profile_selection) {
-  if (!context) {
+  if (!profile) {
     return nullptr;
   }
 
-  if (!context->IsOffTheRecord()) {
-    return context;
+  if (!profile->IsOffTheRecord()) {
+    return profile;
   }
 
   switch (profile_selection) {
@@ -23,9 +22,9 @@ web::BrowserState* GetContextToUseForKeyedServiceFactory(
       return nullptr;
 
     case ProfileSelection::kRedirectedInIncognito:
-      return ProfileIOS::FromBrowserState(context)->GetOriginalProfile();
+      return profile->GetOriginalProfile();
 
     case ProfileSelection::kOwnInstanceInIncognito:
-      return context;
+      return profile;
   }
 }

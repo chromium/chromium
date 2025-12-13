@@ -154,55 +154,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                             content_settings::ProviderType::kPrefProvider)))));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdTrial) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  map->SetContentSettingDefaultScope(
-      GURL("https://example.org"), GURL("https://example.net"),
-      ContentSettingsType::TPCD_TRIAL, CONTENT_SETTING_ALLOW);
-  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
-      future;
-  remote_->ReadContentSettings(ContentSettingsType::TPCD_TRIAL,
-                               future.GetCallback());
-  auto& content_settings_cb_data_ = future.Get();
-  EXPECT_THAT(
-      content_settings_cb_data_,
-      AllOf(SizeIs(Ge(1u)),
-            Contains(
-                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
-                            ContentSettingsPattern::FromString(
-                                "https://example.org:443")),
-                      Field(&ContentSettingPatternSource::secondary_pattern,
-                            ContentSettingsPattern::FromString(
-                                "https://[*.]example.net")),
-                      Field(&ContentSettingPatternSource::source,
-                            content_settings::ProviderType::kPrefProvider)))));
-}
-
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTopLevelTpcdTrial) {
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  map->SetContentSettingDefaultScope(
-      GURL("https://example.org"), GURL("https://example.net"),
-      ContentSettingsType::TOP_LEVEL_TPCD_TRIAL, CONTENT_SETTING_ALLOW);
-  base::test::TestFuture<const std::vector<ContentSettingPatternSource>&>
-      future;
-  remote_->ReadContentSettings(ContentSettingsType::TOP_LEVEL_TPCD_TRIAL,
-                               future.GetCallback());
-  auto& content_settings_cb_data_ = future.Get();
-  EXPECT_THAT(
-      content_settings_cb_data_,
-      AllOf(SizeIs(Ge(1u)),
-            Contains(
-                AllOf(Field(&ContentSettingPatternSource::primary_pattern,
-                            ContentSettingsPattern::FromString(
-                                "https://example.org:443")),
-                      Field(&ContentSettingPatternSource::secondary_pattern,
-                            ContentSettingsPattern::FromString("*")),
-                      Field(&ContentSettingPatternSource::source,
-                            content_settings::ProviderType::kPrefProvider)))));
-}
-
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
                        ContentSettingsPatternToString) {
   for (const std::string& regex :

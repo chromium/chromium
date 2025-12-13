@@ -217,7 +217,7 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
                                    .Set("a", 1));
 
   // Succeeds when "a" is not recognized.
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension = Extension::Create(
       base::FilePath(), mojom::ManifestLocation::kInvalidLocation, manifest_a,
       Extension::NO_FLAGS, &error);
@@ -233,7 +233,7 @@ TEST_F(ManifestHandlerTest, FailingHandlers) {
                                 mojom::ManifestLocation::kInvalidLocation,
                                 manifest_a, Extension::NO_FLAGS, &error);
   EXPECT_FALSE(extension.get());
-  EXPECT_EQ("A", error);
+  EXPECT_EQ(u"A", error);
 }
 
 TEST_F(ManifestHandlerTest, Validate) {

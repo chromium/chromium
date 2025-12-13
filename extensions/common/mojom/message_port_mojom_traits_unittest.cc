@@ -4,7 +4,13 @@
 
 #include "extensions/common/mojom/message_port_mojom_traits.h"
 
+#include "base/containers/span.h"
+#include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
+#include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_id.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/mojom/message_port.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,35 +63,67 @@ TEST(MessagePortMojomTraitsTest, MessageEmpty) {
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input, output);
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
 }
 
-TEST(MessagePortMojomTraitsTest, MessageValues) {
-  Message input;
-  input.data = "some text";
-  input.format = mojom::SerializationFormat::kStructuredCloned;
-  input.user_gesture = true;
-  input.from_privileged_context = true;
+TEST(MessagePortMojomTraitsTest, JSONMessageValues) {
+  Message input("some text", mojom::SerializationFormat::kJson,
+                /*user_gesture=*/true, /*from_privileged_context=*/true);
   Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input, output);
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
+}
 
-  input.user_gesture = false;
+TEST(MessagePortMojomTraitsTest, MessageDataJson) {
+  MessageData input = std::string("json data");
+  MessageData output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<extensions::mojom::MessageData>(
+          input, output));
+  EXPECT_TRUE(std::holds_alternative<std::string>(output));
+  EXPECT_EQ(std::get<std::string>(input), std::get<std::string>(output));
+}
+
+class StructuredMessagePortMojomTraitsTest : public testing::Test {
+ public:
+  StructuredMessagePortMojomTraitsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kStructuredCloningForMessaging);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(StructuredMessagePortMojomTraitsTest, StructuredMessageValues) {
+  const std::string kData("text");
+  StructureClonedMessageWireData wire_format_data(base::as_byte_span(kData));
+  Message input(std::move(wire_format_data),
+                mojom::SerializationFormat::kStructuredCloned,
+                /*user_gesture=*/true, /*from_privileged_context=*/true);
+  Message output;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<extensions::mojom::Message>(
       input, output));
 
-  EXPECT_EQ(input.data, output.data);
-  EXPECT_EQ(input.format, output.format);
-  EXPECT_EQ(input.user_gesture, output.user_gesture);
-  EXPECT_EQ(input.from_privileged_context, output.from_privileged_context);
+  EXPECT_EQ(input, output);
+  EXPECT_EQ(input.from_privileged_context(), output.from_privileged_context());
+}
+
+TEST_F(StructuredMessagePortMojomTraitsTest, MessageDataStructured) {
+  const std::string kData("text");
+  StructureClonedMessageWireData wire_format_data(base::as_byte_span(kData));
+  MessageData input = std::move(wire_format_data);
+  MessageData output;
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<extensions::mojom::MessageData>(
+          input, output));
+  EXPECT_TRUE(std::holds_alternative<StructureClonedMessageWireData>(output));
+  EXPECT_EQ(base::span(std::get<StructureClonedMessageWireData>(input)),
+            base::span(std::get<StructureClonedMessageWireData>(output)));
 }
 
 }  // namespace extensions

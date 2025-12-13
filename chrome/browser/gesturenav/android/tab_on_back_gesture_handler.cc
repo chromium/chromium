@@ -23,10 +23,6 @@ namespace gesturenav {
 
 namespace {
 
-const base::FeatureParam<bool> kDumpWithoutCrashTabOnBackGestureHandler{
-    &blink::features::kBackForwardTransitions,
-    "dump-without-crash-tab-on-back-gesture-handler", false};
-
 using NavDirection =
     content::BackForwardTransitionAnimationManager::NavigationDirection;
 
@@ -49,13 +45,7 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             bool is_gesture_mode) {
   is_gesture_mode_ = is_gesture_mode;
   SCOPED_CRASH_KEY_BOOL("OnBackStarted", "gesture mode", is_gesture_mode);
-  // Ideally the OS shouldn't start a new gesture without finishing the previous
-  // gesture but we see this pattern on multiple devices.
-  // See crbug.com/41484247.
   if (is_in_progress_) {
-    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
-      base::debug::DumpWithoutCrashing();
-    }
     OnBackCancelled(env, is_gesture_mode);
     CHECK(!is_in_progress_);
   }
@@ -79,29 +69,8 @@ void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                bool forward,
                                                bool is_gesture_mode) {
   SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "gesture mode", is_gesture_mode);
-  if (
-      // http://crbug.com/373617224. Gracefully handle this case until the
-      // upstream is fixed.
-      !is_in_progress_ ||
-      // Ideally the edge value should not be changed during a navigation
-      // however, we see multiple instances with different edge values from
-      // start to progress. See crbug.com/370105609.
+  if (!is_in_progress_ ||
       started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
-    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
-      std::ostringstream strs;
-      strs << std::fixed << std::setprecision(6) << progress;
-      SCOPED_CRASH_KEY_STRING64("OnBackProgressed", "progress", strs.str());
-      SCOPED_CRASH_KEY_STRING32(
-          "OnBackProgressed", "started edge",
-          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
-                                                               : "right");
-      SCOPED_CRASH_KEY_STRING32("OnBackProgressed", "edge",
-                                edge == 0 ? "left" : "right");
-      SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "forward", forward);
-      SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "is in progress",
-                            is_in_progress_);
-      base::debug::DumpWithoutCrashing();
-    }
     if (is_in_progress_) {
       OnBackCancelled(env, is_gesture_mode);
     }
@@ -126,13 +95,6 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env,
                                               bool is_gesture_mode) {
   SCOPED_CRASH_KEY_BOOL("OnBackCancelled", "gesture mode", is_gesture_mode);
   if (!is_in_progress_) {
-    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
-      SCOPED_CRASH_KEY_STRING32(
-          "OnBackCancelled", "started edge",
-          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
-                                                               : "right");
-      base::debug::DumpWithoutCrashing();
-    }
     return;
   }
 
@@ -148,13 +110,6 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env,
 void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env, bool is_gesture_mode) {
   SCOPED_CRASH_KEY_BOOL("OnBackInvoked", "gesture mode", is_gesture_mode);
   if (!is_in_progress_) {
-    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
-      SCOPED_CRASH_KEY_STRING32(
-          "OnBackInvoked", "started edge",
-          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
-                                                               : "right");
-      base::debug::DumpWithoutCrashing();
-    }
     return;
   }
 
@@ -186,15 +141,15 @@ void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
 // ----------------------------------------------------------------------------
 
 // static
-jlong JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& jtab) {
+static jlong JNI_TabOnBackGestureHandler_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& jtab) {
   TabOnBackGestureHandler* handler =
       new TabOnBackGestureHandler(TabAndroid::GetNativeTab(env, jtab));
   return reinterpret_cast<intptr_t>(handler);
 }
 
 // static
-jboolean JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
+static jboolean JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
     JNIEnv* env,
     jboolean forward,
     jint edge) {
@@ -207,3 +162,5 @@ jboolean JNI_TabOnBackGestureHandler_ShouldAnimateNavigationTransition(
 }
 
 }  // namespace gesturenav
+
+DEFINE_JNI(TabOnBackGestureHandler)

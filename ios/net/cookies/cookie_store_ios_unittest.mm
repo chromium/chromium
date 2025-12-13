@@ -165,10 +165,10 @@ class CookieStoreIOSTest : public PlatformTest {
                        const std::string& value) {
     system_store_->SetCookieAsync(
         [NSHTTPCookie cookieWithProperties:@{
-          NSHTTPCookiePath : base::SysUTF8ToNSString(url.path()),
+          NSHTTPCookiePath : base::SysUTF8ToNSString(url.GetPath()),
           NSHTTPCookieName : base::SysUTF8ToNSString(name),
           NSHTTPCookieValue : base::SysUTF8ToNSString(value),
-          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.host()),
+          NSHTTPCookieDomain : base::SysUTF8ToNSString(url.GetHost()),
         }],
         base::BindOnce(&net::CookieStoreIOS::NotifySystemCookiesChanged));
     base::RunLoop().RunUntilIdle();
@@ -205,7 +205,7 @@ class CookieStoreIOSTest : public PlatformTest {
   // |system_store_| will point to the NSHTTPSystemCookieStore object owned by
   // |store_|. Once the store_ object is deleted the NSHTTPSystemCookieStore
   // object will be deleted.
-  raw_ptr<net::SystemCookieStore> system_store_;
+  raw_ptr<net::SystemCookieStore, DanglingUntriaged> system_store_;
   std::unique_ptr<net::CookieStoreIOS> store_;
   std::unique_ptr<net::CookieChangeSubscription> cookie_change_subscription_;
   std::vector<net::CanonicalCookie> cookies_changed_;

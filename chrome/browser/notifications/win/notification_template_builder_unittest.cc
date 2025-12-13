@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -287,31 +288,7 @@ TEST_F(NotificationTemplateBuilderTest, RequireInteraction) {
   ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, kExpectedXml));
 }
 
-TEST_F(NotificationTemplateBuilderTest, RequireInteractionSuppressed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kNotificationDurationLongForRequireInteraction);
 
-  message_center::Notification notification = BuildNotification();
-  notification.set_never_timeout(true);
-
-  const wchar_t kExpectedXml[] =
-      LR"(<toast launch="0|0|Default|aumi|0|https://example.com/|notification_id" duration="long" displayTimestamp="1998-09-04T01:02:03Z">
- <visual>
-  <binding template="ToastGeneric">
-   <text>My Title</text>
-   <text>My Message</text>
-   <text placement="attribution">example.com</text>
-  </binding>
- </visual>
- <actions>
-  <action content="settings" placement="contextMenu" activationType="foreground" arguments="2|0|Default|aumi|0|https://example.com/|notification_id"/>
- </actions>
-</toast>
-)";
-
-  ASSERT_NO_FATAL_FAILURE(VerifyXml(notification, kExpectedXml));
-}
 
 TEST_F(NotificationTemplateBuilderTest, NullTimestamp) {
   message_center::Notification notification = BuildNotification();

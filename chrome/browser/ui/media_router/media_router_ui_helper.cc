@@ -48,7 +48,7 @@ std::string GetHostFromURL(const GURL& gurl) {
   if (gurl.is_empty()) {
     return std::string();
   }
-  std::string host = gurl.host();
+  std::string host = gurl.GetHost();
   if (base::StartsWith(host, "www.", base::CompareCase::INSENSITIVE_ASCII)) {
     host = host.substr(4);
   }

@@ -15,9 +15,6 @@
 - (void)googleServicesSettingsViewControllerLoadModel:
     (GoogleServicesSettingsViewController*)controller;
 
-// Called to know if the table item is of the type for allow sign-in.
-- (BOOL)isAllowChromeSigninItem:(int)type;
-
 // Returns true if the view controller should apply parental controls.
 - (BOOL)isViewControllerSubjectToParentalControls;
 

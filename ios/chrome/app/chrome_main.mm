@@ -8,6 +8,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/at_exit.h"
 #import "base/debug/crash_logging.h"
+#import "base/feature_list.h"
 #import "base/memory/page_size.h"
 #import "base/memory/safety_checks.h"
 #import "base/strings/sys_string_conversions.h"
@@ -41,7 +42,6 @@ namespace {
 // Kill switch to disable adding memory ranges to crash data when heap
 // corruption or double free is detected by PA-E.
 BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
-             "IOSCorruptionDetectedMemoryRangesKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // The number of times a PA-E double free or corruption has been detected.
@@ -109,7 +109,10 @@ int ChromeMain(int argc, char* argv[]) {
   DumpSandboxIfRequested();
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
-  tests_hook::WipeProfileIfRequested(argc, argv);
+  // SAFETY: according to the C++ standard, main() `argv` contains at least
+  // `argc` elements.
+  tests_hook::WipeProfileIfRequested(
+      UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc))));
 
   // Set NSUserDefaults keys to force pseudo-RTL if needed.
   SetTextDirectionIfPseudoRTLEnabled();

@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,6 +32,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/buildflags.h"
@@ -119,7 +120,7 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     url_loader_interceptor_ = std::make_unique<content::URLLoaderInterceptor>(
         base::BindLambdaForTesting(
             [&](content::URLLoaderInterceptor::RequestParams* params) {
-              std::string path = params->url_request.url.path();
+              std::string path = params->url_request.url.GetPath();
               std::string path_prefix = std::string("/") + test_path_;
               for (auto& it : test_files_) {
                 std::string file = path_prefix + it;
@@ -299,12 +300,9 @@ class BetterSessionRestoreTest : public InProcessBrowserTest {
     helper.SetForceBrowserNotAliveWithNoWindows(true);
 
     // Create a new window, which may trigger session restore.
-    size_t count = BrowserList::GetInstance()->size();
+    ui_test_utils::BrowserCreatedObserver created_observer;
     chrome::NewEmptyWindow(profile);
-    if (count == BrowserList::GetInstance()->size())
-      return ui_test_utils::WaitForBrowserToOpen();
-
-    return BrowserList::GetInstance()->get(count);
+    return created_observer.Wait();
   }
 
   std::string fake_server_address() {
@@ -564,12 +562,16 @@ class RestartTest : public BetterSessionRestoreTest {
  protected:
   void Restart() {
     // Simulate restarting the browser, but let the test exit peacefully.
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      browser->profile()->SaveSessionState();
-      SessionDataServiceFactory::GetForProfile(browser->profile())
-          ->SetForceKeepSessionState();
-    }
-    PrefService* pref_service = g_browser_process->local_state();
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [](BrowserWindowInterface* browser) {
+          Profile* const profile = browser->GetProfile();
+          profile->SaveSessionState();
+
+          SessionDataServiceFactory::GetForProfile(profile)
+              ->SetForceKeepSessionState();
+          return true;
+        });
+    PrefService* const pref_service = g_browser_process->local_state();
     pref_service->SetBoolean(prefs::kWasRestarted, true);
   }
 };

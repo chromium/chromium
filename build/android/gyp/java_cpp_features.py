@@ -17,22 +17,66 @@ import zip_helpers
 
 class FeatureParserDelegate(java_cpp_utils.CppConstantParser.Delegate):
   # Ex. 'BASE_FEATURE(kConstantName, "StringNameOfTheFeature", ...);'
+  # or 'BASE_FEATURE(kConstantName, ...);'
   # would parse as:
   #   ExtractConstantName() -> 'ConstantName'
-  #   ExtractValue() -> '"StringNameOfTheFeature"'
-  FEATURE_RE = re.compile(r'BASE_FEATURE\(k([^,]+),')
-  VALUE_RE = re.compile(r'\s*("(?:\"|[^"])*")\s*,')
+  #   ExtractValue() -> '"StringNameOfTheFeature"' or '"ConstantName"'
+  _FEATURE_RE = re.compile(r'BASE_FEATURE\(\s*(k\w+),')
+  _STRING_LITERAL_RE = re.compile(r'"(?:\\"|[^"])*"')
+  _constant_name = None  # The name of the current macro.
+  _comma_count = 0  # Number of commas seen in the current macro.
+  _string_literals = []  # All string literals seen in the current macro.
 
   def ExtractConstantName(self, line):
-    match = FeatureParserDelegate.FEATURE_RE.match(line)
-    return match.group(1) if match else None
+    # Reset to a clean state when extracting constant name.
+    self._comma_count = 0
+    self._string_literals = []
+    self._constant_name = None
+
+    match = self._FEATURE_RE.match(line)
+    if match:
+      # The regex ensures that the feature name starts with 'k'.
+      feature_name = match.group(1)
+      self._constant_name = feature_name[1:]
+      return self._constant_name
+    return None
 
   def ExtractValue(self, line):
-    match = FeatureParserDelegate.VALUE_RE.search(line)
-    return match.group(1) if match else None
+    if line.strip().startswith('#') or line.strip().startswith("//"):
+      # Skip C++ directives and comments within macros
+      return None
+
+    # Track all string literals.
+    self._string_literals.extend(self._STRING_LITERAL_RE.findall(line))
+
+    self._comma_count += line.count(',')
+
+    # The value of a feature is determined once the whole macro has been parsed.
+    if ')' not in line:
+      return None
+
+    # If there is exactly one string literal, that is the value. This handles
+    # the 3-arg form of BASE_FEATURE.
+    if len(self._string_literals) == 1:
+      return self._string_literals[0]
+
+    # If there are multiple string literals, we can't be sure which is correct.
+    if len(self._string_literals) > 1:
+      return None
+
+    # If there is no string literal, this might be the 2-arg form. The value is
+    # the constant name, quoted.
+    if self._comma_count == 1:
+      return f'"{self._constant_name}"'
+
+    return None
 
   def CreateJavaConstant(self, name, value, comments):
     return java_cpp_utils.JavaString(name, value, comments)
+
+  # This delegate requires multiline parsing to determine the feature string.
+  def RequiresMultilineValueParsing(self):
+    return True
 
 
 def _GenerateOutput(template, source_paths, features):

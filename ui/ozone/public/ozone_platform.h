@@ -16,7 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
@@ -112,6 +112,13 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     PlatformProperties& operator=(const PlatformProperties& other) = delete;
     ~PlatformProperties();
 
+    // Values to override the value of a property in tests.
+    enum class SupportsForTest {
+      kNotSet,  // The property is not overridden.
+      kYes,     // The platform should return true.
+      kNo,      // The platform should return false.
+    };
+
     // Determines whether we should default to native decorations or the custom
     // frame based on the currently-running window manager.
     bool custom_frame_pref_default = false;
@@ -136,16 +143,18 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // should be given parents explicitly.
     bool set_parent_for_non_top_level_windows = false;
 
+    // Allows overriding whether `set_parent_for_non_top_level_windows` is
+    // enabled in tests. This value must be reset at the end of each test to
+    // avoid affecting subsequent tests.
+    static SupportsForTest
+        override_set_parent_for_non_top_level_windows_for_test;
+
     // If true, the platform shows and updates the drag image.
     bool platform_shows_drag_image = true;
 
     // Determines if the application modal dialogs should use the event blocker
     // to allow the only browser window receiving UI events.
     bool app_modal_dialogs_use_event_blocker = false;
-
-    // Determines whether buffer formats should be fetched on GPU and passed
-    // back via gpu extra info.
-    bool fetch_buffer_formats_for_gmb_on_gpu = false;
 
     // Indicates that the platform allows client applications to manipulate
     // global screen coordinates. Wayland, for example, disallow it by design.
@@ -154,10 +163,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Whether the platform supports system/shell integrated color picker
     // dialog. An example is XDG Desktop Portal provided PickColor dialog.
     bool supports_color_picker_dialog = true;
-
-    // Whether the platform supports drag and drop as an entrypoint to create
-    // new Split Views.
-    bool supports_split_view_drag_and_drop = true;
   };
 
   // Groups platform properties that can only be known at run time.
@@ -168,7 +173,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     enum class SupportsForTest {
       kNotSet,  // The property is not overridden.
       kYes,     // The platform should return true.
-      kNo,      // The plafrorm should return false.
+      kNo,      // The platform should return false.
     };
 
     // Whether the underlying platform supports deferring compositing of buffers

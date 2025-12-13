@@ -17,16 +17,18 @@
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_secure_payment_confirmation_credential_finder.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
+#include "components/payments/content/secure_payment_confirmation_app.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
-#include "components/webdata/common/web_data_results.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_web_contents.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -35,10 +37,9 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/payments/content/secure_payment_confirmation_app.h"
-#include "components/webdata/common/web_data_service_consumer.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/payments/content/mock_content_payment_request_delegate.h"
+#endif
 
 namespace payments {
 namespace {
@@ -64,12 +65,19 @@ constexpr int kDefaultFakeBitmapHeight = 32;
 
 struct MockAuthenticatorOptions {
   bool is_user_verifying_platform_authenticator_available = true;
-  bool is_matching_credential_api_supported = true;
-  // When std::nullopt, GetMatchingCredentialIds() is not mocked and could
-  // be mocked by the caller of CreateMockInternalAuthenticator.
-  std::optional<std::vector<std::vector<uint8_t>>>
-      response_to_get_matching_credential_ids = std::nullopt;
 };
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
+NoMatchingCredentials() {
+  return std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
+std::optional<std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>
+GetMatchingCredentialsIsUnsupported() {
+  return {};
+}
 
 class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
  protected:
@@ -85,6 +93,32 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
     secure_payment_confirmation_app_factory_ =
         std::make_unique<SecurePaymentConfirmationAppFactory>();
+
+    auto mock_credential_finder =
+        std::make_unique<MockSecurePaymentConfirmationCredentialFinder>();
+    mock_credential_finder_ = mock_credential_finder.get();
+    secure_payment_confirmation_app_factory_->SetCredentialFinderForTesting(
+        std::move(mock_credential_finder));
+
+    mock_authenticator_ = CreateMockInternalAuthenticator();
+    mock_service_ = base::MakeRefCounted<MockWebPaymentsWebDataService>();
+  }
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> CreateMockDelegate(
+      mojom::PaymentMethodDataPtr method_data) {
+    auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+        web_contents_, std::move(method_data));
+    EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+        .WillOnce(Return(ByMove(std::move(mock_authenticator_))));
+    EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
+        .WillRepeatedly(Return(mock_service_));
+#if !BUILDFLAG(IS_ANDROID)
+    ON_CALL(*mock_delegate, GetPaymentRequestDelegate())
+        .WillByDefault(testing::Return(
+            mock_content_payment_request_delegate_.GetContentWeakPtr()));
+#endif
+
+    return mock_delegate;
   }
 
   std::unique_ptr<webauthn::MockInternalAuthenticator>
@@ -95,13 +129,6 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
             IsUserVerifyingPlatformAuthenticatorAvailable(_))
         .WillByDefault(RunOnceCallback<0>(
             options.is_user_verifying_platform_authenticator_available));
-    ON_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
-        .WillByDefault(Return(options.is_matching_credential_api_supported));
-    if (options.response_to_get_matching_credential_ids) {
-      EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
-          .WillOnce(RunOnceCallback<3>(
-              std::move(*options.response_to_get_matching_credential_ids)));
-    }
     return mock_authenticator;
   }
 
@@ -128,6 +155,20 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
     return spc_request;
   }
 
+  void MockFindMatchingCredential(std::string credential_id_bytes) {
+    std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
+        credentials;
+    std::vector<uint8_t> credential_id(credential_id_bytes.begin(),
+                                       credential_id_bytes.end());
+    credentials.emplace_back(
+        std::make_unique<SecurePaymentConfirmationCredential>(
+            std::move(credential_id), kRpId,
+            /*user_id=*/std::vector<uint8_t>()));
+
+    EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+        .WillOnce(RunOnceCallback<5>(std::move(credentials)));
+  }
+
   // Using mock time in this environment to reduce flakiness in TSAN builders.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -139,6 +180,19 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
       secure_payment_confirmation_app_factory_;
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
+  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator_;
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service_;
+  // Owned by `secure_payment_confirmation_app_factory_`, so must be declared
+  // after it to avoid a dangling raw_ptr during destruction.
+  raw_ptr<MockSecurePaymentConfirmationCredentialFinder>
+      mock_credential_finder_;
+
+ private:
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
+  // MockContentPaymentRequestDelegate is not available on Android.
+#if !BUILDFLAG(IS_ANDROID)
+  MockContentPaymentRequestDelegate mock_content_payment_request_delegate_;
+#endif
 };
 
 // Test that parsing a valid SecureConfirmationPaymentRequest succeeds.
@@ -500,6 +554,141 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       AppDisabledIfCredentialFetchingFails) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  url::Origin caller_origin = url::Origin::Create(GURL("https://rp.example"));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+
+  EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+      .WillOnce(RunOnceCallback<5>(GetMatchingCredentialsIsUnsupported()));
+
+  // When the credential store APIs are unavailable, we do not create an SPC app
+  // (which in turn makes canMakePayment() return false).
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
+// Test that the payment instrument details string is made available to the
+// SecurePaymentConfirmationApp.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       SecureConfirmationPaymentRequest_PaymentInstrumentDetails) {
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  method_data->secure_payment_confirmation->instrument->details =
+      "instrument details";
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  ASSERT_EQ(credential_ids.size(), 1u);
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+
+  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+
+  MockFindMatchingCredential(credential_id_bytes_);
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+
+  ASSERT_TRUE(secure_payment_confirmation_app);
+  EXPECT_EQ(secure_payment_confirmation_app->GetSublabel(),
+            u"instrument details");
+}
+
+// Test that a the app is not created when the PaymentRequestSpec becomes null
+// just prior to downloads finishing.
+TEST_F(
+    SecurePaymentConfirmationAppFactoryTest,
+    SecureConfirmationPaymentRequest_WhenMissingPaymentRequestSpecDuringDownload) {
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  method_data->secure_payment_confirmation->instrument->details =
+      "instrument details";
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  ASSERT_EQ(credential_ids.size(), 1u);
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps());
+
+  MockFindMatchingCredential(credential_id_bytes_);
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+
+  mock_delegate->ResetSpec();
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+}
+
+// Test that SecurePaymentConfirmationAppFactory passes the input credentials,
+// relying party, etc, down into the credential finder.
+TEST_F(SecurePaymentConfirmationAppFactoryTest,
+       CallsCredentialFinderWithCorrectParameters) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  std::string relying_party_id =
+      method_data->secure_payment_confirmation->rp_id;
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+
+  // Ensure that the SecurePaymentConfirmationAppFactory extracts and passes in
+  // the correct set of credentials, relying party id, and caller origin. The
+  // remaining parameters are the InternalAuthenticator, the
+  // WebPaymentsWebDataService, and the result callback - these are not
+  // important to verify.
+  EXPECT_CALL(*mock_credential_finder_,
+              GetMatchingCredentials(Eq(credential_ids), relying_party_id,
+                                     caller_origin, _, _, _));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+}
+
 // Class wrapping tests relating to payment entity logos support in
 // SecurePaymentConfirmationAppFactory.
 class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
@@ -511,58 +700,8 @@ class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
       GURL("https://payment-entity-2.example/icon.png");
   const GURL kPaymentEntity3LogoUrl =
       GURL("https://payment-entity-3.example/icon.png");
-  const WebDataServiceBase::Handle kWebDataServiceHandle = 1234;
 
-  SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest() {
-    // For test setup simplicity, force tests in this fixture to use the (mocked
-    // out) database storage path.
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kSecurePaymentConfirmationUxRefresh},
-        /*disabled_features=*/{
-            features::kSecurePaymentConfirmationUseCredentialStoreAPIs});
-  }
-
-  void SetUp() override {
-    SecurePaymentConfirmationAppFactoryTest::SetUp();
-
-    mock_authenticator_ = CreateMockInternalAuthenticator();
-
-    mock_service_ = base::MakeRefCounted<MockPaymentManifestWebDataService>();
-    EXPECT_CALL(*mock_service_,
-                GetSecurePaymentConfirmationCredentials(_, _, _))
-        .WillOnce(Return(kWebDataServiceHandle));
-  }
-
-  std::unique_ptr<MockPaymentAppFactoryDelegate> CreateMockDelegate(
-      mojom::PaymentMethodDataPtr method_data) {
-    auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-        web_contents_, std::move(method_data));
-    EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-        .WillOnce(Return(ByMove(std::move(mock_authenticator_))));
-    EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-        .WillRepeatedly(Return(mock_service_));
-
-    return mock_delegate;
-  }
-
-  void FakeCredentialFetchedFromDatabase(std::string credential_id_bytes) {
-    std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
-        credentials;
-    std::vector<uint8_t> credential_id(credential_id_bytes.begin(),
-                                       credential_id_bytes.end());
-    credentials.emplace_back(
-        std::make_unique<SecurePaymentConfirmationCredential>(
-            std::move(credential_id), kRpId,
-            /*user_id=*/std::vector<uint8_t>()));
-
-    std::unique_ptr<WDTypedResult> result = std::make_unique<WDResult<
-        std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>>(
-        SECURE_PAYMENT_CONFIRMATION, std::move(credentials));
-
-    secure_payment_confirmation_app_factory_->OnWebDataServiceRequestDone(
-        kWebDataServiceHandle, std::move(result));
-  }
+  SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest() = default;
 
   // The height can be set here, and expected in a test using
   // IsSkBitmapWithHeight().
@@ -582,9 +721,8 @@ class SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest
                                            std::move(icon_sizes)));
   }
 
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator_;
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kSecurePaymentConfirmationUxRefresh};
 };
 
 Matcher<const SkBitmap*> IsSkBitmapWithHeight(int height) {
@@ -621,14 +759,18 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
 
   std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
       CreateMockDelegate(std::move(method_data));
+  url::Origin caller_origin = url::Origin::Create(GURL("https://rp.example"));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
 
   std::unique_ptr<PaymentApp> created_payment_app;
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
       .WillOnce(MoveArg<0>(&created_payment_app));
 
+  MockFindMatchingCredential(credential_id_bytes_);
+
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 
-  FakeCredentialFetchedFromDatabase(credential_id_bytes_);
   FakeImageDownloaded(kInstrumentIconUrl);
   FakeImageDownloaded(kPaymentEntity1LogoUrl, /*succeeded=*/true,
                       /*height=*/50);
@@ -648,177 +790,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryPaymentEntitiesLogosTest,
                               kPaymentEntity2LogoUrl)));
 }
 
-class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
-    : public SecurePaymentConfirmationAppFactoryTest {
- public:
-  SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kSecurePaymentConfirmationUseCredentialStoreAPIs);
-  }
-
-  // Tests that the third-party payment bit is set as required or not correctly
-  // for a given origin. The RP ID for this setup is 'rp.example'.
-  void TestThirdPartyPaymentBitSetCorrectly(
-      url::Origin caller_origin,
-      bool expected_require_third_party_payment_bit) {
-    auto method_data = mojom::PaymentMethodData::New();
-    method_data->supported_method = "secure-payment-confirmation";
-    method_data->secure_payment_confirmation =
-        CreateSecurePaymentConfirmationRequest();
-
-    auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-        web_contents_, std::move(method_data));
-
-    std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-        CreateMockInternalAuthenticator();
-
-    // This is the core 'test' line of this method. It ensures that the
-    // authenticator device is asked for the right RP ID and credentials, and
-    // that the 'third-party payment bit required' flag is set as expected.
-    std::vector<std::vector<uint8_t>> expected_credential_ids;
-    expected_credential_ids.emplace_back(credential_id_bytes_.begin(),
-                                         credential_id_bytes_.end());
-    EXPECT_CALL(
-        *mock_authenticator,
-        GetMatchingCredentialIds("rp.example", Eq(expected_credential_ids),
-                                 expected_require_third_party_payment_bit, _))
-        .Times(1);
-
-    scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-        base::MakeRefCounted<MockPaymentManifestWebDataService>();
-
-    EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-        .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-    EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-        .WillRepeatedly(Return(mock_service));
-    EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
-        .WillOnce(ReturnRef(caller_origin));
-
-    secure_payment_confirmation_app_factory_->Create(
-        mock_delegate->GetWeakPtr());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(
-    SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-    CorrectlyCalculatesThirdPartyPaymentRequirement_OriginDifferentFromRpId) {
-  // Because the RP ID is 'rp.example', and our origin is
-  // 'https://site.example', this is a third-party payment authentication.
-  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
-  TestThirdPartyPaymentBitSetCorrectly(
-      caller_origin, /*expected_require_third_party_payment_bit=*/true);
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-       CorrectlyCalculatesThirdPartyPaymentRequirement_OriginSameAsRpId) {
-  // Because the RP ID is 'rp.example', and our origin is 'https://rp.example'
-  // too, this is a first-party payment authentication.
-  url::Origin caller_origin = url::Origin::Create(GURL("https://rp.example"));
-  TestThirdPartyPaymentBitSetCorrectly(
-      caller_origin, /*expected_require_third_party_payment_bit=*/false);
-}
-
-TEST_F(
-    SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-    CorrectlyCalculatesThirdPartyPaymentRequirGement_OriginSameDomainAsRpId) {
-  // Because the RP ID is 'rp.example', and our origin is
-  // 'https://www.rp.example', this is a first-party payment authentication.
-  url::Origin caller_origin =
-      url::Origin::Create(GURL("https://www.rp.example"));
-  TestThirdPartyPaymentBitSetCorrectly(
-      caller_origin, /*expected_require_third_party_payment_bit=*/false);
-}
-
-TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-       AppDisabledIfCredentialStoreAPIsUnavailable) {
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  method_data->secure_payment_confirmation =
-      CreateSecurePaymentConfirmationRequest();
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.is_matching_credential_api_supported = false});
-  // Expect IsGetMatchingCredentialIdsSupported() to be called to ensure we
-  // reach the point of checking for the API (instead of returning early due to
-  // another reason).
-  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported);
-
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
-
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-      .WillRepeatedly(Return(mock_service));
-
-  // When the credential store APIs are unavailable, we do not create an SPC app
-  // (which in turn makes canMakePayment() return false).
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_)).Times(0);
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
-  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-}
-
-// Test that the payment instrument details string is made available to the
-// SecurePaymentConfirmationApp.
-TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
-       SecureConfirmationPaymentRequest_PaymentInstrumentDetails) {
-  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
-  auto method_data = mojom::PaymentMethodData::New();
-  method_data->supported_method = "secure-payment-confirmation";
-  method_data->secure_payment_confirmation =
-      CreateSecurePaymentConfirmationRequest();
-  method_data->secure_payment_confirmation->instrument->details =
-      "instrument details";
-  std::vector<std::vector<uint8_t>> credential_ids =
-      method_data->secure_payment_confirmation->credential_ids;
-  ASSERT_EQ(credential_ids.size(), 1u);
-  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
-
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.response_to_get_matching_credential_ids =
-               method_data->secure_payment_confirmation->credential_ids});
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-      .WillRepeatedly(Return(mock_service));
-  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
-      .WillOnce(ReturnRef(caller_origin));
-  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
-  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
-      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
-
-  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
-  std::vector<gfx::Size> icon_sizes({{32, 32}});
-  std::vector<SkBitmap> icon_bitmaps(1);
-  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
-  static_cast<content::TestWebContents*>(web_contents_.get())
-      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
-                             std::move(icon_bitmaps), std::move(icon_sizes));
-
-  ASSERT_TRUE(secure_payment_confirmation_app);
-  EXPECT_EQ(secure_payment_confirmation_app->GetSublabel(),
-            u"instrument details");
-}
-
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS)
 class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
-    : public SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest {
+    : public SecurePaymentConfirmationAppFactoryTest {
  protected:
   scoped_refptr<FakeBrowserBoundKeyStore> browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
@@ -831,8 +805,6 @@ class SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest
 // Test that the browser bound key is retrieved
 TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
        ProvidesBrowserBoundingToSecurePaymentConfirmationApp) {
-  base::test::ScopedFeatureList feature_list{
-      blink::features::kSecurePaymentConfirmationBrowserBoundKeys};
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
   auto method_data = mojom::PaymentMethodData::New();
@@ -849,25 +821,15 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   secure_payment_confirmation_app_factory_->SetBrowserBoundKeyStoreForTesting(
       browser_bound_key_store_);
 
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.response_to_get_matching_credential_ids =
-               method_data->secure_payment_confirmation->credential_ids});
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-      .WillRepeatedly(Return(mock_service));
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
   EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
       .WillOnce(ReturnRef(caller_origin));
   std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+
+  MockFindMatchingCredential(credential_id_bytes_);
 
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
   std::vector<gfx::Size> icon_sizes({{32, 32}});
@@ -885,10 +847,12 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   ASSERT_TRUE(passkey_browser_binder);
   EXPECT_EQ(browser_bound_key_store_.get(),
             passkey_browser_binder->GetBrowserBoundKeyStoreForTesting());
-  EXPECT_EQ(mock_service.get(),
+  EXPECT_EQ(mock_service_.get(),
             passkey_browser_binder->GetWebDataServiceForTesting());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
+#if BUILDFLAG(IS_ANDROID)
 class SecurePaymentConfirmationAppFactoryFallbackTest
     : public SecurePaymentConfirmationAppFactoryTest {
  public:
@@ -911,20 +875,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryFallbackTest,
       CreateSecurePaymentConfirmationRequest();
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.response_to_get_matching_credential_ids =
-               std::vector<std::vector<uint8_t>>()});
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-      .WillRepeatedly(Return(mock_service));
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
       .WillOnce(ReturnRef(caller_origin));
@@ -933,6 +885,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryFallbackTest,
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
   EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+      .WillOnce(RunOnceCallback<5>(NoMatchingCredentials()));
 
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
   std::vector<gfx::Size> icon_sizes({{32, 32}});
@@ -953,10 +908,11 @@ class SecurePaymentConfirmationAppFactoryUxRefreshTest
       blink::features::kSecurePaymentConfirmationUxRefresh};
 };
 
-// Test that the SecurePaymentConfirmationApp can be created without an
-// authenticator.
+// Test that the SecurePaymentConfirmationApp can be created even when there is
+// no user-verify platform authenticator available. This will ultimately create
+// a fallback experience for the user.
 TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
-       Fallback_NoAuthenticator) {
+       Fallback_NoUserVerifyingPlatformAuthenticator) {
   auto method_data = mojom::PaymentMethodData::New();
   method_data->supported_method = "secure-payment-confirmation";
   method_data->secure_payment_confirmation =
@@ -970,11 +926,11 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
 
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service =
+      base::MakeRefCounted<MockWebPaymentsWebDataService>();
   EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
       .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+  EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
       .WillRepeatedly(Return(mock_service));
   std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
@@ -1004,20 +960,8 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
       CreateSecurePaymentConfirmationRequest();
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
-  std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator =
-      CreateMockInternalAuthenticator(
-          {.response_to_get_matching_credential_ids =
-               std::vector<std::vector<uint8_t>>()});
-
-  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
-      web_contents_, std::move(method_data));
-
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
-  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
-      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
-      .WillRepeatedly(Return(mock_service));
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
   url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
   EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
       .WillOnce(ReturnRef(caller_origin));
@@ -1026,6 +970,9 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
   EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+      .WillOnce(RunOnceCallback<5>(NoMatchingCredentials()));
 
   secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
   std::vector<gfx::Size> icon_sizes({{32, 32}});
@@ -1038,6 +985,47 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
   ASSERT_TRUE(secure_payment_confirmation_app);
   EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
 }
+
+// Test that a the app is not created when the PaymentRequestSpec becomes null
+// just prior to downloads finishing.
+TEST_F(
+    SecurePaymentConfirmationAppFactoryUxRefreshTest,
+    SecureConfirmationPaymentRequest_WhenMissingPaymentRequestSpecDuringDownload) {
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  method_data->secure_payment_confirmation->instrument->details =
+      "instrument details";
+  std::vector<std::vector<uint8_t>> credential_ids =
+      method_data->secure_payment_confirmation->credential_ids;
+  ASSERT_EQ(credential_ids.size(), 1u);
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  std::unique_ptr<MockPaymentAppFactoryDelegate> mock_delegate =
+      CreateMockDelegate(std::move(method_data));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps());
+
+  // Mock out not having credential, so that the flag checks are relevant.
+  EXPECT_CALL(*mock_credential_finder_, GetMatchingCredentials)
+      .WillOnce(RunOnceCallback<5>(NoMatchingCredentials()));
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+
+  mock_delegate->ResetSpec();
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

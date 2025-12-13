@@ -23,17 +23,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
 
 #include <memory>
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -43,6 +39,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
@@ -90,8 +88,9 @@ v8::Local<v8::ArrayBuffer> CreateArrayBuffer(
     base::span<const uint8_t> array_buffer_bytes) {
   v8::Local<v8::ArrayBuffer> array_buffer =
       v8::ArrayBuffer::New(isolate, array_buffer_bytes.size());
-  std::memcpy(array_buffer->GetBackingStore()->Data(),
-              array_buffer_bytes.data(), array_buffer_bytes.size());
+  UNSAFE_TODO(std::memcpy(array_buffer->GetBackingStore()->Data(),
+                          array_buffer_bytes.data(),
+                          array_buffer_bytes.size()));
   return array_buffer;
 }
 
@@ -100,9 +99,9 @@ mojom::blink::IDBReturnValuePtr CreateIDBReturnValuePtrWithBlob(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value) {
   NonThrowableExceptionState non_throwable_exception_state;
-  IDBValueWrapper wrapper(isolate, v8_value,
-                          SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+  IDBValueWrapper wrapper(
+      isolate, v8_value, SerializedScriptValue::SerializeOptions::kSerialize,
+      non_throwable_exception_state, /*backend_uses_sqlite=*/false);
   wrapper.set_wrapping_threshold_for_test(0);
   wrapper.DoneCloning();
 
@@ -119,9 +118,9 @@ std::unique_ptr<IDBValue> CreateIDBValueWithV8Value(
     v8::Isolate* isolate,
     v8::Local<v8::Value> v8_value) {
   NonThrowableExceptionState non_throwable_exception_state;
-  IDBValueWrapper wrapper(isolate, v8_value,
-                          SerializedScriptValue::SerializeOptions::kSerialize,
-                          non_throwable_exception_state);
+  IDBValueWrapper wrapper(
+      isolate, v8_value, SerializedScriptValue::SerializeOptions::kSerialize,
+      non_throwable_exception_state, /*backend_uses_sqlite=*/false);
   wrapper.DoneCloning();
   return std::move(wrapper).Build();
 }
@@ -299,8 +298,8 @@ class BackendDatabaseWithMockedClose
           pending_receiver)
       : receiver_(this, std::move(pending_receiver)) {
     receiver_.set_disconnect_handler(
-        WTF::BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
-                      base::Unretained(this)));
+        BindOnce(&BackendDatabaseWithMockedClose::DatabaseDestroyed,
+                 base::Unretained(this)));
   }
 
   void DatabaseDestroyed() { destroyed_ = true; }

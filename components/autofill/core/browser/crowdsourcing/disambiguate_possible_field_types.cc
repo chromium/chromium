@@ -16,10 +16,10 @@ namespace {
 
 // Returns whether the `field` is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
-  return field.Type().group() == FieldTypeGroup::kName ||
-         field.Type().GetStorableType() == CREDIT_CARD_NAME_FULL ||
-         field.Type().GetStorableType() == CREDIT_CARD_NAME_FIRST ||
-         field.Type().GetStorableType() == CREDIT_CARD_NAME_LAST;
+  return field.Type().GetGroups().contains(FieldTypeGroup::kName) ||
+         field.Type().GetTypes().contains_any({CREDIT_CARD_NAME_FULL,
+                                               CREDIT_CARD_NAME_FIRST,
+                                               CREDIT_CARD_NAME_LAST});
 }
 
 // Selects the probable name types for the possible field types of the `field`.
@@ -99,7 +99,7 @@ bool IsNameType(const AutofillField& field) {
     if (!IsNameType(prev_field)) {
       has_found_previous_type = true;
       is_previous_credit_card =
-          prev_field.Type().group() == FieldTypeGroup::kCreditCard;
+          prev_field.Type().GetGroups().contains(FieldTypeGroup::kCreditCard);
     }
   }
 
@@ -112,7 +112,7 @@ bool IsNameType(const AutofillField& field) {
     if (!IsNameType(next_field)) {
       has_found_next_type = true;
       is_next_credit_card =
-          next_field.Type().group() == FieldTypeGroup::kCreditCard;
+          next_field.Type().GetGroups().contains(FieldTypeGroup::kCreditCard);
     }
   }
 

@@ -11,7 +11,6 @@
 #include "ash/quick_insert/views/quick_insert_item_view.h"
 #include "ash/quick_insert/views/quick_insert_list_item_view.h"
 #include "ash/quick_insert/views/quick_insert_pseudo_focus.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"

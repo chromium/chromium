@@ -5,6 +5,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -19,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/cookie_config/cookie_store_util.h"
+#include "components/os_crypt/async/browser/test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -137,10 +139,16 @@ class ChromeNetworkServiceBrowserTest
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
                        PRE_PRE_EncryptedCookies) {
   // These test is only valid if crypto is enabled on the platform.
-  auto crypto_delegate = cookie_config::GetCookieCryptoDelegate();
+  auto os_crypt_async = os_crypt_async::GetTestOSCryptAsyncForTesting(
+      /*is_sync_for_unittests=*/true);
+  auto crypto_delegate = cookie_config::GetCookieCryptoDelegate(
+      os_crypt_async.get(), base::SequencedTaskRunner::GetCurrentDefault());
   if (!crypto_delegate) {
     GTEST_SKIP() << "No crypto on this platform.";
   }
+  base::RunLoop run_loop;
+  crypto_delegate->Init(run_loop.QuitClosure());
+  run_loop.Run();
   std::string ciphertext;
   crypto_delegate->EncryptString(kCookieValue, &ciphertext);
   ASSERT_NE(ciphertext, kCookieValue) << "Crypto should really encrypt.";

@@ -13,9 +13,7 @@ namespace base::sequence_manager::internal {
 namespace {
 
 // Activate the power management events that affect task scheduling.
-BASE_FEATURE(kUsePowerMonitorWithThreadController,
-             "UsePowerMonitorWithThreadController",
-             FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUsePowerMonitorWithThreadController, FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40127966): Remove this when the experiment becomes the
 // default.

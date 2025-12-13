@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_device_cache.h"
 #include "chromeos/ash/services/bluetooth_config/fake_system_properties_observer.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -54,7 +55,8 @@ class SystemPropertiesProviderImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     fake_user_manager_.Reset(

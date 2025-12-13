@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -21,13 +17,14 @@ namespace {
 
 template <class T>
 T* advance_by_byte_size(T* p, unsigned byte_size) {
-  return reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(p) + byte_size);
+  return reinterpret_cast<T*>(
+      UNSAFE_TODO(reinterpret_cast<uint8_t*>(p) + byte_size));
 }
 
 template <class T>
 const T* advance_by_byte_size(const T* p, unsigned byte_size) {
-  return reinterpret_cast<const T*>(reinterpret_cast<const uint8_t*>(p) +
-                                    byte_size);
+  return reinterpret_cast<const T*>(
+      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(p) + byte_size));
 }
 
 }  // namespace
@@ -61,23 +58,26 @@ void SkFontGetGlyphWidthForHarfBuzz(const SkFont& font,
   // Batch the call to getWidths because its function entry cost is not
   // cheap. getWidths accepts multiple glyphd ID, but not from a sparse
   // array that copy them to a regular array.
-  Vector<Glyph, 256> glyph_array(count);
+  Vector<Glyph, 256> glyph_array;
+  glyph_array.ReserveInitialCapacity(count);
   for (unsigned i = 0; i < count;
        i++, glyphs = advance_by_byte_size(glyphs, glyph_stride)) {
-    glyph_array[i] = *glyphs;
+    glyph_array.push_back(*glyphs);
   }
   Vector<SkScalar, 256> sk_width_array(count);
   font.getWidths(glyph_array, sk_width_array);
 
-  if (!font.isSubpixel()) {
-    for (unsigned i = 0; i < count; i++)
-      sk_width_array[i] = SkScalarRoundToInt(sk_width_array[i]);
-  }
-
-  // Copy the results back to the sparse array.
-  for (unsigned i = 0; i < count;
-       i++, advances = advance_by_byte_size(advances, advance_stride)) {
-    *advances = SkiaScalarToHarfBuzzPosition(sk_width_array[i]);
+  if (font.isSubpixel()) {
+    for (unsigned i = 0; i < count;
+         i++, advances = advance_by_byte_size(advances, advance_stride)) {
+      *advances = SkiaScalarToHarfBuzzPosition(sk_width_array[i]);
+    }
+  } else {
+    for (unsigned i = 0; i < count;
+         i++, advances = advance_by_byte_size(advances, advance_stride)) {
+      *advances =
+          SkiaScalarToHarfBuzzPosition(SkScalarRoundToInt(sk_width_array[i]));
+    }
   }
 }
 
@@ -105,9 +105,8 @@ void SkFontGetGlyphExtentsForHarfBuzz(const SkFont& font,
 #if BUILDFLAG(IS_APPLE)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
-  SkPath path;
-  if (font.getPath(glyph, &path)) {
-    sk_bounds = path.getBounds();
+  if (const auto path = font.getPath(glyph)) {
+    sk_bounds = path->getBounds();
   } else {
     sk_bounds = font.getBounds(glyph, nullptr);
   }
@@ -132,9 +131,8 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
 #if BUILDFLAG(IS_APPLE)
   // TODO(drott): Remove this once we have better metrics bounds
   // on Mac, https://bugs.chromium.org/p/skia/issues/detail?id=5328
-  SkPath path;
-  if (font.getPath(glyph, &path)) {
-    *bounds = path.getBounds();
+  if (const auto path = font.getPath(glyph)) {
+    *bounds = path->getBounds();
   } else {
     // Fonts like Apple Color Emoji have no paths, fall back to bounds here.
     *bounds = font.getBounds(glyph, nullptr);
@@ -152,14 +150,14 @@ void SkFontGetBoundsForGlyph(const SkFont& font, Glyph glyph, SkRect* bounds) {
 
 void SkFontGetBoundsForGlyphs(const SkFont& font,
                               const Vector<Glyph, 256>& glyphs,
-                              SkRect* bounds) {
+                              base::span<SkRect> bounds) {
 #if BUILDFLAG(IS_APPLE)
   for (unsigned i = 0; i < glyphs.size(); i++) {
     SkFontGetBoundsForGlyph(font, glyphs[i], &bounds[i]);
   }
 #else
   static_assert(sizeof(Glyph) == 2, "Skia expects 2 bytes glyph id.");
-  font.getBounds(glyphs, {bounds, glyphs.size()}, nullptr);
+  font.getBounds(glyphs, {bounds.data(), glyphs.size()}, nullptr);
 
   if (!font.isSubpixel()) {
     for (unsigned i = 0; i < glyphs.size(); i++) {
@@ -177,7 +175,7 @@ float SkFontGetWidthForGlyph(const SkFont& font, Glyph glyph) {
   if (!font.isSubpixel())
     sk_width = SkScalarRoundToInt(sk_width);
 
-  return SkScalarToFloat(sk_width);
+  return sk_width;
 }
 
 hb_position_t SkiaScalarToHarfBuzzPosition(SkScalar value) {

@@ -6,17 +6,40 @@
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_UI_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace views {
 class Widget;
 class View;
 }  // namespace views
+
+// How to handle focus on the view when taking the screenshot.
+enum class ScreenshotFocusMode {
+  // Clear focus before taking the screenshot to reduce flakiness. This is the
+  // default to reduce flakiness. See VerifyPixelUi() implementation for more
+  // details.
+  kClearFocus,
+  // Leave focus where it is.
+  kLeaveFocusWhereItIs,
+};
+
+// Options for taking a screenshot.
+struct ScreenshotOptions {
+  // The region of the view to take a screenshot of. If std::nullopt, the entire
+  // view is captured.
+  std::optional<gfx::Rect> region;
+  // How to handle focus on the view when taking the screenshot. Defaults to
+  // kClearFocus which will clear focus before taking the screenshot to reduce
+  // flakiness. See VerifyPixelUi() implementation for more details.
+  ScreenshotFocusMode focus = ScreenshotFocusMode::kClearFocus;
+};
 
 // TestBrowserUi provides a way to register an InProcessBrowserTest testing
 // harness with a framework that invokes Chrome browser UI in a consistent way.
@@ -101,6 +124,13 @@ class TestBrowserUi {
 
   // Can be called by VerifyUi() to ensure pixel correctness.
   ui::test::ActionResult VerifyPixelUi(views::View* view,
+                                       const std::string& screenshot_prefix,
+                                       const std::string& screenshot_name);
+
+  // Verifies a region within a View. For example, verify an element within
+  // web content.
+  ui::test::ActionResult VerifyPixelUi(views::View* view,
+                                       const ScreenshotOptions& options,
                                        const std::string& screenshot_prefix,
                                        const std::string& screenshot_name);
 

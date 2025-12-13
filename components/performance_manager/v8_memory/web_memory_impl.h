@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/mojom/web_memory.mojom.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"

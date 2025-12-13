@@ -6,7 +6,6 @@
 
 // For APIs marked as RuntimeEnabled = CapturedSurfaceControl, see the spec at:
 // https://screen-share.github.io/captured-surface-control/
-// TODO(crbug.com/1466247): Measure these APIs.
 
 enum CaptureStartFocusBehavior {
   "focus-capturing-application",

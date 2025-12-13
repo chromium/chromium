@@ -6,8 +6,8 @@ include_rules = [
   "+components/live_caption",
   "+components/tabs/public",
   "+components/app_icon_loader",
-  "+dbus",
   "+extensions/strings/grit/extensions_strings.h",
+  "+components/webapps/isolated_web_apps/scheme.h",
   "+services/network/public",
 
   # Fuzzer tests require ICU initialization.
@@ -19,48 +19,48 @@ include_rules = [
   "-chrome/browser/apps",
 ]
 specific_include_rules = {
-  ".*test(_chromeos)?\.(cc|h)$": [
+  ".*test(_chromeos)?\\.(cc|h)$": [
     # For now, tests are allowed to depend on app_browsertest_util.h, since
     # that's where PlatformAppBrowserTest is defined. Ideally, we'd eventually
     # move all Platform App-specific tests to chrome/browser/apps/platform_apps.
     "+chrome/browser/apps/platform_apps/app_browsertest_util.h",
   ],
 
-  "extension_protocols_unittest\.cc": [
+  "extension_protocols_unittest\\.cc": [
     "+services/network/test",
   ],
-  "extension_gcm_app_handler_unittest\.cc": [
+  "extension_gcm_app_handler_unittest\\.cc": [
     "+services/network/test",
   ],
-  "zipfile_installer_unittest.cc": [
+  "zipfile_installer_unittest\\.cc": [
     "+services/data_decoder",
   ],
-  "test_extension_system.cc": [
+  "test_extension_system\\.cc": [
     "+services/data_decoder",
   ],
-  "updater/extension_updater_unittest\.cc": [
+  "updater/extension_updater_unittest\\.cc": [
     "+services/network/test",
   ],
 
-  "chrome_extension_cookies\.h": [
+  "chrome_extension_cookies\\.h": [
     # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_settings.h",
   ],
 
-  "chrome_extension_cookies\.cc": [
+  "chrome_extension_cookies\\.cc": [
     # TODO(crbug.com/40672800): Remove.
     "+services/network/cookie_manager.h",
     "+services/network/restricted_cookie_manager.h",
   ],
 
-  "webstore_private_apitest.cc" : [
+  "webstore_private_apitest\\.cc" : [
     # TODO(crbug.com/40135906): Remove this layering violation.
     "+chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h",
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "browsertest_util\.cc": [
+  "browsertest_util\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
@@ -69,13 +69,13 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "chrome_extension_host_delegate\.cc": [
+  "chrome_extension_host_delegate\\.cc": [
     "+chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h",
   ],
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "extension_apitest\.cc": [
+  "extension_apitest\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
@@ -84,7 +84,7 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "extension_browsertest_platform_delegate_non_android\.cc": [
+  "extension_browsertest_platform_delegate_non_android\\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
@@ -93,16 +93,20 @@ specific_include_rules = {
 
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "external_pref_loader\.cc": [
+  "external_pref_loader\\.cc": [
     "+chrome/browser/apps/user_type_filter.h",
   ],
 
-  "extension_service_unittest.cc" : [
+  "extension_service_unittest\\.cc" : [
     "+components/services/storage/privileged/mojom/indexed_db_control.mojom.h",
     "+components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h",
   ],
 
-  "window_open_apitest\.cc": [
+  "locked_fullscreen_window_apitest\\.cc": [
     "+ash/wm/window_pin_util.h",
-  ]
+  ],
+
+  "orb_and_cors_extension_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h",
+  ],
 }

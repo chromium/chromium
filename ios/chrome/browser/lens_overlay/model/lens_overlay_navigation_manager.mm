@@ -123,24 +123,78 @@ void LensOverlayNavigationManager::ClearNavigations() {
 
 #pragma mark - web::WebStateObserver
 
+void LensOverlayNavigationManager::DidStartLoading(web::WebState* web_state) {
+  // Resets a currently loading result to a stopped state. This does not cancel
+  // the actual loading process in the web view.
+  if (loading_result_) {
+    [loading_result_ resultLoadingCancelledInWebView];
+    loading_result_ = nil;
+  }
+
+  loading_navigation_context_id_ = 0;
+  loading_navigation_error_ = nil;
+
+  if (!lens_navigation_items_.empty()) {
+    loading_result_ = lens_navigation_items_.back()->lens_result();
+  }
+}
+
+void LensOverlayNavigationManager::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (load_completion_status == web::PageLoadCompletionStatus::SUCCESS) {
+    [loading_result_ resultSuccessfullyLoadedInWebView];
+  } else {
+    [loading_result_
+        resultFailedToLoadInWebViewWithError:loading_navigation_error_];
+  }
+
+  loading_result_ = nil;
+  loading_navigation_context_id_ = 0;
+  loading_navigation_error_ = nil;
+}
+
 void LensOverlayNavigationManager::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (navigation_context && !navigation_context->IsSameDocument()) {
-    GURL navigation_url = navigation_context->GetUrl();
-
-    BOOL isLensOverLaySRP = lens::IsLensOverlaySRP(navigation_url);
-    BOOL isLensMultimodalSRP = lens::IsLensMultimodalSRP(navigation_url);
-    if (isLensOverLaySRP || isLensMultimodalSRP) {
-      NSString* omnibox_text = [NSString
-          cr_fromString:lens::ExtractQueryFromLensOverlaySRP(navigation_url)];
-      [mutator_ onSRPLoadWithOmniboxText:omnibox_text
-                            isMultimodal:isLensMultimodalSRP];
-      RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
-    } else {
-      RegisterSubNavigation(navigation_url, PreviousOmniboxText());
-    }
+  if (!navigation_context || navigation_context->IsSameDocument()) {
+    return;
   }
+
+  // Store the loading navigation context id for the duration of the navigation.
+  loading_navigation_context_id_ = navigation_context->GetNavigationId();
+
+  GURL navigation_url = navigation_context->GetUrl();
+
+  BOOL isLensOverLaySRP = lens::IsLensOverlaySRP(navigation_url);
+  BOOL isLensMultimodalSRP = lens::IsLensMultimodalSRP(navigation_url);
+  if (isLensOverLaySRP || isLensMultimodalSRP) {
+    NSString* omnibox_text = [NSString
+        cr_fromString:lens::ExtractQueryFromLensOverlaySRP(navigation_url)];
+    [mutator_ onSRPLoadWithOmniboxText:omnibox_text
+                          isMultimodal:isLensMultimodalSRP];
+    RegisterSubNavigation(navigation_url, omnibox_text.cr_UTF16String);
+  } else {
+    RegisterSubNavigation(navigation_url, PreviousOmniboxText());
+  }
+}
+
+void LensOverlayNavigationManager::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (!navigation_context || navigation_context->IsSameDocument()) {
+    return;
+  }
+
+  // The stored navigation context ID must be valid and match the current
+  // navigation context ID.
+  if (!loading_navigation_context_id_ ||
+      loading_navigation_context_id_ != navigation_context->GetNavigationId()) {
+    return;
+  }
+
+  loading_navigation_error_ = navigation_context->GetError();
+  loading_navigation_context_id_ = 0;
 }
 
 void LensOverlayNavigationManager::WebStateDestroyed(web::WebState* web_state) {

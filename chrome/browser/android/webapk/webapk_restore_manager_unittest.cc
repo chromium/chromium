@@ -28,9 +28,8 @@ std::vector<WebApkRestoreData> CreateRestoreAppsList(
   std::vector<WebApkRestoreData> apps;
   for (const auto& manifest_id : manifest_ids) {
     auto shortcut_info = std::make_unique<webapps::ShortcutInfo>(manifest_id);
-    apps.emplace_back(
-        WebApkRestoreData(GenerateAppIdFromManifestId(manifest_id),
-                          std::move(shortcut_info), base::Time()));
+    apps.emplace_back(GenerateAppIdFromManifestId(manifest_id),
+                      std::move(shortcut_info));
   }
   return apps;
 }
@@ -44,13 +43,11 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
       WebApkInstallService* web_apk_install_service,
       WebApkRestoreWebContentsManager* web_contents_manager,
       std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
-      base::Time last_used_time,
       std::vector<std::pair<GURL, std::string>>* task_log)
       : WebApkRestoreTask(pass_key,
                           web_apk_install_service,
                           web_contents_manager,
-                          std::move(shortcut_info),
-                          last_used_time),
+                          std::move(shortcut_info)),
         task_log_(task_log) {}
   ~MockWebApkRestoreTask() override = default;
 
@@ -111,13 +108,11 @@ class TestWebApkRestoreManager : public WebApkRestoreManager {
  private:
   // Mock CreateNewTask to create the Mock task instead.
   std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
-      base::Time last_used_time) override {
+      std::unique_ptr<webapps::ShortcutInfo> shortcut_info) override {
     task_log_.emplace_back(shortcut_info->manifest_id, "Create");
     return std::make_unique<MockWebApkRestoreTask>(
         WebApkRestoreManager::PassKeyForTesting(), web_apk_install_service_,
-        web_contents_manager(), std::move(shortcut_info), last_used_time,
-        &task_log_);
+        web_contents_manager(), std::move(shortcut_info), &task_log_);
   }
 
   const raw_ptr<WebApkInstallService> web_apk_install_service_;
@@ -162,17 +157,14 @@ TEST_F(WebApkRestoreManagerTest, GetAppResults) {
   shortcut_info_1->name = u"app1";
   auto shortcut_info_2 = std::make_unique<webapps::ShortcutInfo>(kManifestId2);
   shortcut_info_2->name = u"app2";
-  apps.emplace_back(
-      WebApkRestoreData(kAppId1, std::move(shortcut_info_1), base::Time()));
-  apps.emplace_back(
-      WebApkRestoreData(kAppId2, std::move(shortcut_info_2), base::Time()));
+  apps.emplace_back(kAppId1, std::move(shortcut_info_1));
+  apps.emplace_back(kAppId2, std::move(shortcut_info_2));
 
   base::RunLoop run_loop;
   manager->PrepareRestorableApps(
       std::move(apps),
       base::BindLambdaForTesting([&](const std::vector<std::string>& ids,
                                      const std::vector<std::u16string>& names,
-                                     const std::vector<int>& last_used_in_days,
                                      const std::vector<SkBitmap>& icons) {
         EXPECT_THAT(ids, testing::ElementsAre(
                              GenerateAppIdFromManifestId(kManifestId1),

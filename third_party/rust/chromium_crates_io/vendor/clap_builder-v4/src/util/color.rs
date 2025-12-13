@@ -2,7 +2,7 @@ use crate::builder::PossibleValue;
 use crate::derive::ValueEnum;
 
 /// Represents the color preferences for program output
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default)]
 pub enum ColorChoice {
     /// Enables colored output only when the output is going to a terminal or TTY.
     ///
@@ -23,6 +23,7 @@ pub enum ColorChoice {
     ///     .get_matches();
     /// # }
     /// ```
+    #[default]
     Auto,
 
     /// Enables colored output regardless of whether or not the output is going to a terminal/TTY.
@@ -62,12 +63,6 @@ impl ColorChoice {
         Self::value_variants()
             .iter()
             .filter_map(ValueEnum::to_possible_value)
-    }
-}
-
-impl Default for ColorChoice {
-    fn default() -> Self {
-        Self::Auto
     }
 }
 

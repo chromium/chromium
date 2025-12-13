@@ -16,7 +16,6 @@
 #include "components/page_load_metrics/common/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_timing_sender.h"
-#include "components/page_load_metrics/renderer/soft_navigation_metrics_type_converter.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -74,7 +73,6 @@ PageTimingMetricsSender::PageTimingMetricsSender(
       soft_navigation_metrics_(CreateSoftNavigationMetrics()),
       buffer_timer_delay_ms_(GetBufferTimerDelayMillis(TimerType::kRenderer)),
       metadata_recorder_(initial_monotonic_timing, is_main_frame) {
-  InitiateUserInteractionTiming();
   if (initial_request) {
     int resource_id = initial_request->resource_id();
     page_resource_data_use_[resource_id] = std::move(initial_request);
@@ -126,7 +124,7 @@ void PageTimingMetricsSender::DidObserveNewFeatureUsage(
 }
 
 void PageTimingMetricsSender::DidObserveSoftNavigation(
-    blink::SoftNavigationMetrics new_metrics) {
+    blink::SoftNavigationMetricsForReporting new_metrics) {
   // The start_time is a TimeDelta, and its resolution is in microseconds.
   // Every time we observe a new soft navigation we expect the total count to
   // increase by one, and the navigation_id to update, however, we have no
@@ -141,6 +139,9 @@ void PageTimingMetricsSender::DidObserveSoftNavigation(
   soft_navigation_metrics_->start_time = new_metrics.start_time;
 
   soft_navigation_metrics_->navigation_id = new_metrics.navigation_id;
+
+  soft_navigation_metrics_->same_document_metrics_token =
+      new_metrics.same_document_metrics_token;
 
   EnsureSendTimer();
 }
@@ -172,7 +173,7 @@ void PageTimingMetricsSender::DidStartResponse(
 
 void PageTimingMetricsSender::DidReceiveTransferSizeUpdate(
     int resource_id,
-    int received_data_length) {
+    base::ByteCount received_data_length) {
   // Transfer size updates are called in a throttled manner.
   auto resource_it = page_resource_data_use_.find(resource_id);
 
@@ -207,7 +208,7 @@ void PageTimingMetricsSender::DidCancelResponse(int resource_id) {
 void PageTimingMetricsSender::DidLoadResourceFromMemoryCache(
     const GURL& response_url,
     int request_id,
-    int64_t encoded_body_length,
+    base::ByteCount encoded_body_length,
     const std::string& mime_type) {
   // In general, we should not observe the same resource being loaded twice in
   // the frame. This is possible due to an existing workaround in
@@ -233,10 +234,10 @@ void PageTimingMetricsSender::OnMainFrameViewportRectangleChanged(
   EnsureSendTimer();
 }
 
-void PageTimingMetricsSender::OnMainFrameImageAdRectangleChanged(
+void PageTimingMetricsSender::OnMainFrameAdRectangleChanged(
     int element_id,
-    const gfx::Rect& image_ad_rect) {
-  metadata_->main_frame_image_ad_rects[element_id] = image_ad_rect;
+    const gfx::Rect& ad_rect) {
+  metadata_->main_frame_ad_rects[element_id] = ad_rect;
   EnsureSendTimer();
 }
 
@@ -357,11 +358,10 @@ void PageTimingMetricsSender::SendNow() {
                       soft_navigation_metrics_);
 
   input_timing_delta_ = mojom::InputTiming::New();
-  InitiateUserInteractionTiming();
   new_features_.clear();
   metadata_->main_frame_intersection_rect.reset();
   metadata_->main_frame_viewport_rect.reset();
-  metadata_->main_frame_image_ad_rects.clear();
+  metadata_->main_frame_ad_rects.clear();
   last_cpu_timing_->task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();
@@ -381,27 +381,21 @@ PageResourceDataUse* PageTimingMetricsSender::FindOrInsertPageResourceDataUse(
   return data_use.get();
 }
 
-void PageTimingMetricsSender::InitiateUserInteractionTiming() {
-  input_timing_delta_->max_event_durations =
-      mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
-}
-
 void PageTimingMetricsSender::DidObserveUserInteraction(
     base::TimeTicks max_event_start,
     base::TimeTicks max_event_queued_main_thread,
     base::TimeTicks max_event_commit_finish,
     base::TimeTicks max_event_end,
     uint64_t interaction_offset) {
-  input_timing_delta_->num_interactions++;
   metadata_recorder_.AddInteractionDurationMetadata(max_event_start,
                                                     max_event_end);
   metadata_recorder_.AddInteractionDurationAfterQueueingMetadata(
       max_event_start, max_event_queued_main_thread, max_event_commit_finish,
       max_event_end);
   base::TimeDelta max_event_duration = max_event_end - max_event_start;
-  input_timing_delta_->max_event_durations->get_user_interaction_latencies()
-      .emplace_back(mojom::UserInteractionLatency::New(
-          max_event_duration, interaction_offset, max_event_start));
+  input_timing_delta_->user_interaction_latencies.emplace_back(
+      mojom::UserInteractionLatency::New(max_event_duration, interaction_offset,
+                                         max_event_start));
   EnsureSendTimer();
 }
 }  // namespace page_load_metrics

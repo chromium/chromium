@@ -49,11 +49,10 @@ jobs:
         if: ${{ !matrix.config.continuous-only || inputs.continuous-run }}
         uses: protocolbuffers/protobuf-ci/bazel-docker@v4
         with:
-          image: us-docker.pkg.dev/protobuf-build/containers/test/linux/sanitize:${{ matrix.config.bazel_version || '7.1.2' }}-2c05f44c25a209933743ddf0296ef0c1e583d2c3
+          image: us-docker.pkg.dev/protobuf-build/containers/test/linux/sanitize:${{ matrix.config.bazel_version || '7.6.1' }}-12e21b8dda91028bc14212a3ab582c7c4d149fac
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: upb-bazel
-          # TODO: Enable bzlmod once python headers are supported for python dist.
-          bazel: test --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/... ${{ matrix.config.flags }}
+          bazel: test //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/... ${{ matrix.config.flags }}
           exclude-targets: ${{ matrix.config.exclude-targets }}
 
   linux-gcc:
@@ -69,11 +68,11 @@ jobs:
       - name: Run tests
         uses: protocolbuffers/protobuf-ci/bazel-docker@v4
         with:
-          image: "us-docker.pkg.dev/protobuf-build/containers/test/linux/gcc:7.1.2-12.2-e78301df86b3e4c46ec9ac4d98be00e19305d8f3"
+          image: "us-docker.pkg.dev/protobuf-build/containers/test/linux/gcc:7.6.1-12.2-12e21b8dda91028bc14212a3ab582c7c4d149fac"
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-gcc"
           bazel: >-
-            test --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 -c opt
+            test -c opt
             --copt="-Wno-error=maybe-uninitialized" --java_runtime_version=remotejdk_11
             //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
 
@@ -92,8 +91,9 @@ jobs:
         with:
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-windows"
-          bazel: test --noenable_bzlmod --cxxopt=/std:c++17 --host_cxxopt=/std:c++17 //upb/... //upb_generator/... //python/...
-          version: 7.1.2
+          # TODO: Enable python tests here once rules_python supports Windows better.
+          bazel: test //upb/... //upb_generator/...
+          version: 7.6.1
           exclude-targets: -//python:conformance_test -//upb/reflection:def_builder_test
 
   macos:
@@ -121,30 +121,8 @@ jobs:
         with:
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: "upb-bazel-macos"
-          bazel: ${{ matrix.config.bazel-command }} --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 ${{ matrix.config.flags }} //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
-          version: 7.1.2
-
-  no-python:
-    strategy:
-      fail-fast: false   # Don't cancel all jobs if one fails.
-    name: No System Python
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout pending changes
-        uses: protocolbuffers/protobuf-ci/checkout@v4
-        with:
-          ref: ${{ inputs.safe-checkout }}
-      - name: Run tests
-        uses: protocolbuffers/protobuf-ci/bazel-docker@v4
-        with:
-          image: us-docker.pkg.dev/protobuf-build/containers/common/linux/bazel:7.1.2-27cf7b86212020d7e552bc13b1e084abb971da75
-          credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
-          bazel-cache: "upb-bazel-no-python"
-          bash: >-
-            which python3 &&
-            mv `which python3` /tmp &&
-            ! which python3 &&
-            bazel test $BAZEL_FLAGS --noenable_bzlmod --cxxopt=-std=c++17 --host_cxxopt=-std=c++17 //python/... -- -//python/dist:source_wheel -//python:aarch64_test -//python:x86_64_test -//python:google/protobuf/pyext/_message.so -//python:proto_api
+          bazel: ${{ matrix.config.bazel-command }} ${{ matrix.config.flags }} //bazel/... //benchmarks/... //lua/... //python/... //upb/... //upb_generator/...
+          version: 7.6.1
 
   build_wheels:
     name: Build Wheels
@@ -158,10 +136,10 @@ jobs:
       - name: Build Wheels
         uses: protocolbuffers/protobuf-ci/bazel-docker@v4
         with:
-          image: us-docker.pkg.dev/protobuf-build/release-containers/linux/apple:7.1.2-d9624f2aa83cba3eaf906f751d75b36aacb9aa82
+          image: us-docker.pkg.dev/protobuf-build/release-containers/linux/apple:7.6.1-12e21b8dda91028bc14212a3ab582c7c4d149fac
           credentials: ${{ secrets.GAR_SERVICE_ACCOUNT }}
           bazel-cache: upb-bazel-python
-          bazel: build --noenable_bzlmod --crosstool_top=//toolchain:clang_suite --//toolchain:release=true --symlink_prefix=/ -c dbg --incompatible_enable_cc_toolchain_resolution=false //python/dist //python/dist:test_wheel //python/dist:source_wheel
+          bazel: build --crosstool_top=//toolchain:clang_suite --//toolchain:release=true --symlink_prefix=/ -c dbg --incompatible_enable_cc_toolchain_resolution=false //python/dist //python/dist:test_wheel //python/dist:source_wheel
       - name: Move Wheels
         run: mkdir wheels && find _build/out \( -name 'protobuf*.whl' -o -name 'protobuf-*.tar.gz' \) -exec mv '{}' wheels ';'
       - uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
@@ -185,24 +163,24 @@ jobs:
           # coverage.
           - { os: ubuntu-latest, python-version: "3.9", architecture: x64, type: 'binary' }
           - { os: macos-13, python-version: "3.9", architecture: x64, type: 'binary' }
-          - { os: ubuntu-latest, python-version: "3.12", architecture: x64, type: 'binary' }
-          - { os: macos-13, python-version: "3.12", architecture: x64, type: 'binary' }
-          - { os: ubuntu-latest, python-version: "3.12", architecture: x64, type: 'source', continuous-only: true }
-          - { os: macos-13, python-version: "3.12", architecture: x64, type: 'source', continuous-only: true }
-          - { os: ubuntu-latest, python-version: "3.13", architecture: x64, type: 'source', continuous-only: true }
+          - { os: ubuntu-latest, python-version: "3.13", architecture: x64, type: 'binary' }
+          - { os: macos-13, python-version: "3.13", architecture: x64, type: 'binary' }
+          - { os: ubuntu-latest, python-version: "3.9", architecture: x64, type: 'source'}
+          - { os: macos-13, python-version: "3.9", architecture: x64, type: 'source', continuous-only: true }
+          - { os: ubuntu-latest, python-version: "3.13", architecture: x64, type: 'source'}
           - { os: macos-13, python-version: "3.13", architecture: x64, type: 'source', continuous-only: true }
 
           # Windows uses the full API up until Python 3.10.
-          - { os: windows-2019, python-version: "3.9", architecture: x86, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.10", architecture: x86, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.11", architecture: x86, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.12", architecture: x86, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.13", architecture: x86, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.9", architecture: x64, type: 'binary' }
-          - { os: windows-2019, python-version: "3.10", architecture: x64, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.11", architecture: x64, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.12", architecture: x64, type: 'binary', continuous-only: true }
-          - { os: windows-2019, python-version: "3.13", architecture: x64, type: 'binary' }
+          - { os: windows-2022, python-version: "3.9", architecture: x86, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.10", architecture: x86, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.11", architecture: x86, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.12", architecture: x86, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.13", architecture: x86, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.9", architecture: x64, type: 'binary' }
+          - { os: windows-2022, python-version: "3.10", architecture: x64, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.11", architecture: x64, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.12", architecture: x64, type: 'binary', continuous-only: true }
+          - { os: windows-2022, python-version: "3.13", architecture: x64, type: 'binary' }
     name: ${{ matrix.continuous-only && inputs.continuous-prefix || '' }} Test Wheels Python ${{ matrix.python-version }} ${{ matrix.os }} ${{ matrix.architecture }} ${{ matrix.type }}
     needs: build_wheels
     runs-on: ${{ matrix.os }}
@@ -262,15 +240,10 @@ jobs:
         run: pip install -vvv --no-index --find-links wheels protobuftests
       - name: Run unit tests
         if: ${{ !matrix.continuous-only || inputs.continuous-run }}
-        # Newer upb tests are in the standard google.protobuf.internal path.
-        # We will eventually make this into a wildcard rule once all tests
-        # have been migrated to be compatible with upb.
-        # TODO: b/378725969 - Use wildcard expansion to ensure that we don't
-        # accidentally miss test coverage.
         run: |
-          TESTS=(message_test message_factory_test descriptor_test proto_builder_test descriptor_pool_test generator_test reflection_test reflection_cpp_test)
+          TESTS=$(pip show -f protobuftests | grep _test.py | grep --invert-match _pybind11_test.py | sed 's,[/\\],.,g' | sed -E 's,.py$,,g')
           for test in ${TESTS[@]}; do
-            python -m unittest -v google.protobuf.internal.${test}
+            python -m unittest -v ${test}
           done
 
   test_pure_python_wheels:
@@ -315,3 +288,69 @@ jobs:
           for test in $TESTS; do
             python -m unittest -v $test
           done
+
+  test_python_compatibility:
+    name: ${{ inputs.continuous-prefix }} Test Python Compatibility (${{ matrix.implementation }} - ${{ matrix.version }})
+    needs: build_wheels
+    strategy:
+      fail-fast: false   # Don't cancel all jobs if one fails.
+      matrix:
+        # Test the first release of each python major version, plus some extra coverage for 3.x.y
+        # since it predates our breaking change policies.
+        # Major versions: 4.21.0, 5.26.0, 6.30.0
+        version: ["3.19.0", "3.20.0", "21.0", "26.0", "30.0"]
+        implementation: ["Pure", "upb"]
+        include:
+          # We don't support 3.19.0 anymore, so our infra should show a failure.
+          - version: "3.19.0"
+            fail: true
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request_target' }}
+    steps:
+      - name: Checkout pending changes
+        if: ${{ inputs.continuous-run }}
+        uses: protocolbuffers/protobuf-ci/checkout@v4
+        with:
+          ref: ${{ inputs.safe-checkout }}
+      - name: Download Wheels
+        if: ${{ inputs.continuous-run }}
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 #4.1.8
+        with:
+          name: python-wheels
+          path: wheels
+      - name: Delete Binary Wheels (pure python only)
+        if: ${{ inputs.continuous-run && matrix.implementation == 'Pure' }}
+        run: find wheels -type f | grep -v none-any | xargs rm
+      - name: Setup Python
+        if: ${{ inputs.continuous-run }}
+        uses: actions/setup-python@61a6322f88396a6271a6ee3565807d608ecaddd1 # v4.7.0
+        with:
+          python-version: 3.13
+      - name: Setup Python venv
+        if: ${{ inputs.continuous-run }}
+        run: |
+          python -m pip install --upgrade pip
+          python -m venv env
+          source env/bin/activate
+          echo "VIRTUAL ENV:" $VIRTUAL_ENV
+      - name: Download Requirements
+        if: ${{ inputs.continuous-run }}
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 #4.1.8
+        with:
+          name: requirements
+          path: requirements
+      - name: Install requirements
+        if: ${{ inputs.continuous-run }}
+        run: pip install -r requirements/requirements.txt
+      - name: Install Protobuf Wheels
+        if: ${{ inputs.continuous-run }}
+        run: pip install -vvv --no-index --find-links wheels protobuf protobuftests
+      - name: Make the test script executable
+        if: ${{ inputs.continuous-run }}
+        run: chmod +x ci/python_compatibility.sh
+      - name: Run compatibility tests
+        if: ${{ inputs.continuous-run && !matrix.fail }}
+        run: ci/python_compatibility.sh ${{ matrix.version }}
+      - name: Run failing compatibility tests
+        if: ${{ inputs.continuous-run && matrix.fail }}
+        run: (! ci/python_compatibility.sh ${{ matrix.version }})

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
@@ -11,11 +12,16 @@
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#endif
 
 namespace {
 
@@ -23,21 +29,32 @@ namespace {
 // visible, instead of when it's active in the tab strip (this signal is known
 // to be broken crbug.com/413080225#comment8).
 BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
-             "SessionRestoreShowThrobberOnVisible",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace
 
+DEFINE_USER_DATA(TabUIHelper);
+
 TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
-    : ContentsObservingTabFeature(tab_interface) {}
+    : ContentsObservingTabFeature(tab_interface),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
 
 TabUIHelper::~TabUIHelper() = default;
 
+// static
+const TabUIHelper* TabUIHelper::From(const tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
+// static
+TabUIHelper* TabUIHelper::From(tabs::TabInterface* tab) {
+  return Get(tab->GetUnownedUserDataHost());
+}
+
 std::u16string TabUIHelper::GetTitle() const {
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
-      tab_interface->GetTabFeatures()->saved_tab_group_web_contents_listener();
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
   if (wc_listener) {
     if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
             wc_listener->deferred_tab_state()) {
@@ -58,10 +75,8 @@ std::u16string TabUIHelper::GetTitle() const {
 }
 
 ui::ImageModel TabUIHelper::GetFavicon() const {
-  tabs::TabInterface* const tab_interface =
-      tabs::TabInterface::GetFromContents(web_contents());
   const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
-      tab_interface->GetTabFeatures()->saved_tab_group_web_contents_listener();
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
   if (wc_listener) {
     if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
             wc_listener->deferred_tab_state()) {
@@ -90,6 +105,15 @@ void TabUIHelper::SetWasActiveAtLeastOnce() {
   }
 }
 
+base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(
+    TitleUpdatedCallbackList::CallbackType callback) {
+  return title_change_callbacks_.Add(std::move(callback));
+}
+
+void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
+  title_change_callbacks_.Notify(GetTitle());
+}
+
 void TabUIHelper::DidStopLoading() {
   // Reset the properties after the initial navigation finishes loading, so that
   // latter navigations are not affected. Note that the prerendered page won't
@@ -103,3 +127,13 @@ void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
     was_active_at_least_once_ = true;
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void TabUIHelper::PrimaryPageChanged(content::Page& page) {
+  if (tab().IsSplit()) {
+    split_tabs::LogSplitViewUpdatedUKM(
+        tab().GetBrowserWindowInterface()->GetTabStripModel(),
+        tab().GetSplit().value());
+  }
+}
+#endif

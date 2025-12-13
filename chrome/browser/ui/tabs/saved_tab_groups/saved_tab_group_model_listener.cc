@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/local_tab_group_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -37,26 +38,26 @@ SavedTabGroupModelListener::SavedTabGroupModelListener(
   CHECK(service);
   CHECK(profile);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserAdded(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 
   BrowserList::GetInstance()->AddObserver(this);
 }
 
 SavedTabGroupModelListener::~SavedTabGroupModelListener() {
   BrowserList::GetInstance()->RemoveObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserRemoved(browser);
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser) {
+        OnBrowserRemoved(browser->GetBrowserForMigrationOnly());
+        return true;
+      });
 }
 
 void SavedTabGroupModelListener::OnTabGroupAdded(
     const tab_groups::TabGroupId& group_id) {
-  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    return;
-  }
-
   if (local_tab_group_listeners_.contains(group_id)) {
     return;
   }
@@ -68,16 +69,17 @@ void SavedTabGroupModelListener::OnTabGroupAdded(
       group_and_tab_guid_mapping.second;
   service_->AddGroup(std::move(copy_group));
 
+  // It's possible that the group is null, which happens in case
+  // TabGroupSyncService is not yet initialized. In that case, we will skip the
+  // "Connect" step, as that will happen as a part of post-init reconcilition.
   std::optional<SavedTabGroup> group = service_->GetGroup(group_id);
-  ConnectToLocalTabGroup(group.value(), tab_guid_mapping);
+  if (group.has_value()) {
+    ConnectToLocalTabGroup(group.value(), tab_guid_mapping);
+  }
 }
 
 void SavedTabGroupModelListener::OnTabGroupWillBeRemoved(
     const tab_groups::TabGroupId& group_id) {
-  if (!tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    return;
-  }
-
   if (!local_tab_group_listeners_.contains(group_id)) {
     return;
   }
@@ -357,8 +359,8 @@ SavedTabGroupModelListener::CreateSavedTabGroupAndTabMapping(
 
   const gfx::Range tab_range = tab_group->ListTabs();
   std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping;
-  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+  for (tabs::TabInterface* tab :
+       tab_strip_model->GetTabsAtIndices(tab_range.ToIntVector())) {
     CHECK(tab);
 
     tab_groups::SavedTabGroupTab saved_tab_group_tab =

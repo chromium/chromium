@@ -1,5 +1,5 @@
 include_rules = [
-  "+cc/paint/paint_canvas.h",
+  "+cc/paint",
   "+chrome/browser/themes/theme_properties.h",
   "+printing",
   "+third_party/skia",

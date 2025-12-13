@@ -11,6 +11,8 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/dom_distiller/core/url_constants.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
@@ -44,7 +46,6 @@ class MockHistoryService : public history::HistoryService {
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               QueryURL,
               (const GURL& url,
-               bool want_visits,
                history::HistoryService::QueryURLCallback callback,
                base::CancelableTaskTracker* tracker),
               (override));
@@ -317,6 +318,34 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   // Destroy it to avoid dangling pointers.
   mock_client_.set_template_url_service(nullptr);
 }
+TEST_P(ZeroSuggestVerbatimMatchProviderTest,
+       UpdateFillIntoEditWhenUrlIsDistilledPage) {
+  GURL original_url("https://www.wired.com/article");
+
+  GURL distilled_url = dom_distiller::url_utils::GetDistillerViewUrlFromUrl(
+      dom_distiller::kDomDistillerScheme, original_url, "");
+
+  AutocompleteInput input(std::u16string(), GetParam(), TestSchemeClassifier());
+  input.set_current_title(u"title");
+  input.set_current_url(distilled_url);
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+
+  GURL extracted_original_url =
+      dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(distilled_url);
+
+  ASSERT_TRUE(extracted_original_url.is_valid());
+
+  provider_->Start(input, false);
+
+  if (IsVerbatimMatchEligible()) {
+    ASSERT_FALSE(provider_->matches().empty());
+    const auto& match = provider_->matches()[0];
+    EXPECT_EQ(base::UTF8ToUTF16(extracted_original_url.spec()),
+              match.fill_into_edit);
+    EXPECT_EQ(u"wired.com/article", match.contents);
+    EXPECT_EQ(u"title", match.description);
+  }
+}
 #endif
 
 TEST_P(ZeroSuggestVerbatimMatchProviderTest,
@@ -358,13 +387,11 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 
   history::HistoryService::QueryURLCallback callback;
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
-        .WillOnce([&](GURL url, bool want_visits,
-                      history::HistoryService::QueryURLCallback cb,
+    EXPECT_CALL(mock_service, QueryURL(_, _, _))
+        .WillOnce([&](GURL url, history::HistoryService::QueryURLCallback cb,
                       base::CancelableTaskTracker* tracker)
                       -> base::CancelableTaskTracker::TaskId {
           EXPECT_EQ("https://www.wired.com/", url.spec());
-          EXPECT_FALSE(want_visits);
           callback = std::move(cb);
           return {};
         });
@@ -409,7 +436,7 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
   }
 
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _)).Times(0);
+    EXPECT_CALL(mock_service, QueryURL(_, _, _)).Times(0);
     provider_->Start(input, false);
 
     ASSERT_FALSE(provider_->matches().empty());
@@ -439,13 +466,11 @@ TEST_P(ZeroSuggestVerbatimMatchProviderTest,
 
   history::HistoryService::QueryURLCallback callback;
   {
-    EXPECT_CALL(mock_service, QueryURL(_, _, _, _))
-        .WillOnce([&](GURL url, bool want_visits,
-                      history::HistoryService::QueryURLCallback cb,
+    EXPECT_CALL(mock_service, QueryURL(_, _, _))
+        .WillOnce([&](GURL url, history::HistoryService::QueryURLCallback cb,
                       base::CancelableTaskTracker* tracker)
                       -> base::CancelableTaskTracker::TaskId {
           EXPECT_EQ("https://www.wired.com/", url.spec());
-          EXPECT_FALSE(want_visits);
           callback = std::move(cb);
           return {};
         });

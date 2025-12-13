@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/media_session.h"
@@ -110,7 +111,7 @@ class AudioDuckerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
                        DucksAudioInOtherTabs_MediaPlaying) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTestPage));
 
@@ -173,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
                        DucksAudioInOtherTabs_NoMediaPlaying) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTestPage));
 
@@ -184,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(AudioDuckerBrowserTest,
   PlayVideoAndWaitForAudioFocus(*web_contents1);
 
   // Open a second test page that has no video.
-  GURL test_page_no_player_url = ui_test_utils::GetTestUrl(
+  GURL test_page_no_player_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTestPageStartWithNoPlayer));
 

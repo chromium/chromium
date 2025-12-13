@@ -108,6 +108,7 @@ source_set("unit_tests") {
     "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
     "color_transform_unittest.cc",
+    "dynamic_color/palette_factory_unittest.cc",
     "sys_color_mixer_unittest.cc",
   ]
 
@@ -117,6 +118,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
+    "//ui/color/dynamic_color",
   ]
 }
 
@@ -193,6 +195,7 @@ component("mixers") {
     sources += [
       "win/css_system_color_mixer_win.cc",
       "win/native_color_mixers_win.cc",
+      "win/native_color_mixers_win.h",
     ]
     deps += [ ":accent_color_observer" ]
   }

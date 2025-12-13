@@ -77,12 +77,6 @@ bool ContentRendererClient::OverrideCreatePlugin(
   return false;
 }
 
-blink::WebPlugin* ContentRendererClient::CreatePluginReplacement(
-    RenderFrame* render_frame,
-    const base::FilePath& plugin_path) {
-  return nullptr;
-}
-
 void ContentRendererClient::PrepareErrorPageForHttpStatusError(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,
@@ -164,6 +158,8 @@ void ContentRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {}
 
+void ContentRendererClient::WaitForProcessReady() {}
+
 bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }
@@ -218,6 +214,10 @@ bool ContentRendererClient::IsEncoderSupportedVideoType(
     const media::VideoType& type) {
   // Defer to media's default support.
   return ::media::IsDefaultEncoderSupportedVideoType(type);
+}
+
+bool ContentRendererClient::ShouldSuppressAudioTracks() {
+  return false;
 }
 
 media::ExternalMemoryAllocator* ContentRendererClient::GetMediaAllocator() {

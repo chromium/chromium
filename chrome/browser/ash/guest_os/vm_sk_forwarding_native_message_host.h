@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 

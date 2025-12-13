@@ -43,7 +43,7 @@ GroupData CreateGroupData(int member_count) {
   CHECK_GT(member_count, 0);
   GroupData group_data = GroupData();
   GroupMember group_owner = GroupMember();
-  group_owner.gaia_id = GaiaId([FakeSystemIdentity fakeIdentity1].gaiaID);
+  group_owner.gaia_id = [FakeSystemIdentity fakeIdentity1].gaiaId;
   group_owner.role = MemberRole::kOwner;
   group_data.members.push_back(group_owner);
   for (int counter = 1; counter < member_count; counter++) {

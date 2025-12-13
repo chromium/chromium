@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/views_export.h"
 
 namespace views {

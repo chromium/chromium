@@ -79,11 +79,6 @@ GURL StripAuth(const GURL& gurl);
 // Strips any authentication data, as well as query and ref portions of URL.
 GURL StripAuthAndParams(const GURL& gurl);
 
-// Checks if the user triggered Autofill on a field manually through the Chrome
-// context menu.
-bool IsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source);
-
 // Checks if the user triggered passwords Autofill on a field manually through
 // the Chrome context menu.
 IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
@@ -101,6 +96,12 @@ bool IsPaymentsFieldSwappingEnabled();
 
 // Extracts comma-separated strings from a ButtonTitleList.
 std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);
+
+// Returns true if `form` is considered "perfectly filled".
+//
+// A form is perfectly filled if the user did not have to manually type into any
+// field that Autofill didn't assist with.
+bool IsFormPerfectlyFilled(const FormData& form);
 
 }  // namespace autofill
 

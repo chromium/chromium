@@ -88,6 +88,14 @@ const char* const kCommonSwitches[] = {
     embedder_support::kDisablePopupBlocking,
     "enable-automation",
     "allow-pre-commit-input",
+    // https://crbug.com/445332809.
+    "disable-features=IgnoreDuplicateNavs",
+    // https://crbug.com/431928370.
+    "disable-features=Prewarm",
+    // https://github.com/GoogleChromeLabs/chromium-bidi/issues/3894.
+    "disable-background-networking",
+    "disable-background-timer-throttling",
+    "disable-backgrounding-occluded-windows",
 };
 
 const char* const kDesktopSwitches[] = {
@@ -104,14 +112,6 @@ const char* const kDesktopSwitches[] = {
     "test-type=webdriver",
     "no-service-autorun",
 };
-
-#if BUILDFLAG(IS_WIN)
-
-const char* const kWindowsDesktopSwitches[] = {
-    "disable-backgrounding-occluded-windows",
-};
-
-#endif
 
 const char* const kAndroidSwitches[] = {
     "disable-fre", "enable-remote-debugging",
@@ -721,9 +721,8 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     if (chrome_exit_code == CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
         chrome_exit_code == content::RESULT_CODE_NORMAL_EXIT) {
       return Status(kSessionNotCreated,
-                    "probably user data directory is already in use, "
-                    "please specify a unique value for --user-data-dir "
-                    "argument, or don't use --user-data-dir");
+                    "Chrome instance exited. "
+                    "Examine ChromeDriver verbose log to determine the cause.");
     }
     std::string termination_reason =
         internal::GetTerminationReason(chrome_status);
@@ -991,11 +990,6 @@ Switches GetDesktopSwitches() {
   for (auto* desktop_switch : kDesktopSwitches) {
     switches.SetUnparsedSwitch(desktop_switch);
   }
-#if BUILDFLAG(IS_WIN)
-  for (auto* win_desktop_switch : kWindowsDesktopSwitches) {
-    switches.SetUnparsedSwitch(win_desktop_switch);
-  }
-#endif
   return switches;
 }
 
@@ -1049,7 +1043,7 @@ void ConvertHexadecimalToIDAlphabet(std::string& id) {
 std::string GenerateExtensionId(std::string_view input) {
   auto hash = crypto::hash::Sha256(input);
   auto hash_first16 = base::span<uint8_t>(hash).first<16>();
-  std::string output = base::ToLowerASCII(base::HexEncode(hash_first16));
+  std::string output = base::HexEncodeLower(hash_first16);
   ConvertHexadecimalToIDAlphabet(output);
   return output;
 }
@@ -1140,8 +1134,8 @@ Status ProcessExtension(const std::string& extension,
   std::string manifest_data;
   if (!base::ReadFileToString(manifest_path, &manifest_data))
     return Status(kUnknownError, "cannot read manifest");
-  std::optional<base::Value> manifest_value =
-      base::JSONReader::Read(manifest_data);
+  std::optional<base::Value> manifest_value = base::JSONReader::Read(
+      manifest_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* manifest =
       manifest_value ? manifest_value->GetIfDict() : nullptr;
   if (!manifest)
@@ -1170,7 +1164,7 @@ Status ProcessExtension(const std::string& extension,
     }
   } else {
     manifest->Set("key", public_key_base64);
-    base::JSONWriter::Write(*manifest, &manifest_data);
+    manifest_data = base::WriteJson(*manifest).value_or("");
     if (!base::WriteFile(manifest_path, manifest_data)) {
       return Status(kUnknownError, "cannot add 'key' to manifest");
     }
@@ -1230,8 +1224,8 @@ Status ProcessExtensions(const std::vector<std::string>& extensions,
 Status WritePrefsFile(const std::string& template_string,
                       const base::FilePath& path,
                       const base::Value::Dict* custom_prefs) {
-  auto parsed_json =
-      base::JSONReader::ReadAndReturnValueWithError(template_string);
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      template_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
     return Status(kUnknownError, "cannot parse internal JSON template: " +
                                      parsed_json.error().message);
@@ -1247,8 +1241,7 @@ Status WritePrefsFile(const std::string& template_string,
     }
   }
 
-  std::string prefs_str;
-  base::JSONWriter::Write(*prefs, &prefs_str);
+  std::string prefs_str = base::WriteJson(*prefs).value_or("");
   VLOG(0) << "Populating " << path.BaseName().value()
           << " file: " << PrettyPrintValue(*prefs);
   return base::WriteFile(path, prefs_str)
@@ -1368,6 +1361,8 @@ std::string GetTerminationReason(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
       return "integrity failure";
 #endif
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+      return "evicted for memory";
     case base::TERMINATION_STATUS_MAX_ENUM:
       NOTREACHED();
   }

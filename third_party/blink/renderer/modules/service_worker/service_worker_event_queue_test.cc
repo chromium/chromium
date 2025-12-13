@@ -38,8 +38,8 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueNormal(
         *event_id_,
-        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         std::nullopt);
   }
 
@@ -47,8 +47,8 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueuePending(
         *event_id_,
-        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         std::nullopt);
   }
 
@@ -57,8 +57,8 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueueNormal(
         *event_id_,
-        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         custom_timeout);
   }
 
@@ -67,8 +67,8 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueuePending(
         *event_id_,
-        WTF::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
-        WTF::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Start, weak_factory_.GetWeakPtr()),
+        blink::BindOnce(&MockEvent::Abort, weak_factory_.GetWeakPtr()),
         custom_timeout);
   }
 
@@ -78,7 +78,7 @@ class MockEvent {
     event_id_ = event_queue->NextEventId();
     event_queue->EnqueuePending(
         *event_id_,
-        WTF::BindOnce(
+        BindOnce(
             [](ServiceWorkerEventQueue* event_queue, MockEvent* event,
                String tag, Vector<String>* out_tags, int /* event id */) {
               event->EnqueueTo(event_queue);
@@ -89,8 +89,8 @@ class MockEvent {
               EXPECT_FALSE(event->status().has_value());
               out_tags->emplace_back(std::move(tag));
             },
-            WTF::Unretained(event_queue), WTF::Unretained(this), std::move(tag),
-            WTF::Unretained(out_tags)),
+            Unretained(event_queue), Unretained(this), std::move(tag),
+            Unretained(out_tags)),
         base::DoNothing(), std::nullopt);
   }
 
@@ -114,8 +114,8 @@ class MockEvent {
 };
 
 base::RepeatingClosure CreateReceiverWithCalledFlag(bool* out_is_called) {
-  return WTF::BindRepeating([](bool* out_is_called) { *out_is_called = true; },
-                            WTF::Unretained(out_is_called));
+  return BindRepeating([](bool* out_is_called) { *out_is_called = true; },
+                       Unretained(out_is_called));
 }
 
 }  // namespace

@@ -60,8 +60,7 @@ class VisitSegmentDatabase {
       int max_result_count,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       const std::optional<std::string>& recency_factor_name = std::nullopt,
-      std::optional<size_t> recency_window_days = std::nullopt,
-      bool visual_deduplication_enabled = false);
+      std::optional<size_t> recency_window_days = std::nullopt);
 
   // Deletes all segment data older than `older_than`.
   bool DeleteSegmentDataOlderThan(base::Time older_than);

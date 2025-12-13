@@ -124,8 +124,7 @@ void ApplyTestState(
       user_content_setting_provider->SetWebsiteSetting(
           ContentSettingsPattern::Wildcard(),
           ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-          base::Value(content_setting), /*constraints=*/{},
-          content_settings::PartitionKey::GetDefaultForTesting());
+          base::Value(content_setting), /*constraints=*/{});
       return;
     }
     case (StateKey::kSiteDataUserExceptions): {
@@ -136,8 +135,7 @@ void ApplyTestState(
         user_content_setting_provider->SetWebsiteSetting(
             ContentSettingsPattern::FromString(primary_pattern),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
-            base::Value(content_setting), /*constraints=*/{},
-            content_settings::PartitionKey::GetDefaultForTesting());
+            base::Value(content_setting), /*constraints=*/{});
       }
       return;
     }
@@ -300,18 +298,6 @@ void ApplyTestState(
       SCOPED_TRACE("State Setup: Disable FLEDGE joining for eTLD+1");
       privacy_sandbox_settings->SetFledgeJoiningAllowed(
           GetItemValue<std::string>(value), false);
-      return;
-    }
-    case (StateKey::kBlockAll3pcToggleEnabledUserPrefValue): {
-      SCOPED_TRACE("State Setup: Block all 3pc toggle enabled");
-      testing_pref_service->SetUserPref(prefs::kBlockAll3pcToggleEnabled,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
-    case (StateKey::kTrackingProtection3pcdEnabledUserPrefValue): {
-      SCOPED_TRACE("State Setup: Tracking protection 3pcd enabled");
-      testing_pref_service->SetUserPref(prefs::kTrackingProtection3pcdEnabled,
-                                        base::Value(GetItemValue<bool>(value)));
       return;
     }
     default:
@@ -976,19 +962,6 @@ void CheckOutput(
       histogram_tester.ExpectUniqueSample(
           "PrivacySandbox.IsAttributionReportingEverAllowed", histogram_value,
           1);
-      return;
-    }
-    case (OutputKey::kIsCookieDeprecationLabelAllowedForContext): {
-      SCOPED_TRACE("Check Output: IsCookieDeprecatioinAllowedForContext");
-      auto top_frame_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kTopFrameOrigin, input);
-      auto context_origin =
-          GetItemValueForKey<url::Origin>(InputKey::kAccessingOrigin, input);
-      auto return_value = GetItemValue<bool>(output_value);
-      ASSERT_EQ(
-          return_value,
-          privacy_sandbox_settings->IsCookieDeprecationLabelAllowedForContext(
-              top_frame_origin, context_origin));
       return;
     }
     case (OutputKey::kIsSharedStorageAllowedDebugMessage): {

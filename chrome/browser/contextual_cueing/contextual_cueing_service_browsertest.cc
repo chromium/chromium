@@ -13,9 +13,11 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -51,9 +53,6 @@ class ContextualCueingServiceBrowserTest : public InProcessBrowserTest {
     ContextualCueingServiceFactory::GetInstance();
     InProcessBrowserTest::SetUp();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -62,11 +61,17 @@ class ContextualCueingServiceBrowserTestZSSFlag
  public:
   ContextualCueingServiceBrowserTestZSSFlag() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kGlicZeroStateSuggestions,
-          {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "false"}}},
-         {features::kGlic, {}},
-         {features::kTabstripComboButton, {}}},
+        {
+            {kGlicZeroStateSuggestions,
+             {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "false"}}},
+        },
         {});
+    // Initialize `scoped_prewarm_feature_list_` after the
+    // `scoped_feature_list_` that will be removed in the parent class's
+    // destructor, so that these instances are destroyed in the reversed order.
+    scoped_prewarm_feature_list_ =
+        std::make_unique<test::ScopedPrewarmFeatureList>(
+            test::ScopedPrewarmFeatureList::PrewarmState::kDisabled);
   }
 
   void SetUpOnMainThread() override {
@@ -77,6 +82,16 @@ class ContextualCueingServiceBrowserTestZSSFlag
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kGlicDev);
   }
+
+ private:
+  glic::GlicTestEnvironment glic_test_environment_{{
+      .force_signin_and_glic_capability = false,
+  }};
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  std::unique_ptr<test::ScopedPrewarmFeatureList> scoped_prewarm_feature_list_;
 };
 
 // A WebContentsObserver that asks for zero state suggestions every
@@ -298,6 +313,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions",
+      false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
@@ -326,6 +344,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions",
+      false, 1);
 }
 
 class ContextualCueingServiceBrowserTestAllowZSSForSrp
@@ -348,6 +369,9 @@ class ContextualCueingServiceBrowserTestAllowZSSForSrp
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kGlicDev);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
@@ -376,6 +400,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestAllowZSSForSrp,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.GlicSuggestions.FocusedTabEligibleForSuggestions", true,
+      1);
 }
 
 #endif  // ENABLE_GLIC
@@ -386,6 +413,9 @@ class ContextualCueingServiceBrowserTestCCFlag
   ContextualCueingServiceBrowserTestCCFlag() {
     scoped_feature_list_.InitAndEnableFeature(kContextualCueing);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestCCFlag,
@@ -402,6 +432,9 @@ class ContextualCueingServiceBrowserTestDisabledFeatures
         /*enabled_features=*/{},
         {kContextualCueing, kGlicZeroStateSuggestions});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestDisabledFeatures,

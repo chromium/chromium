@@ -17,24 +17,21 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_drag_data.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
-#include "third_party/blink/renderer/core/dom/document_fragment.h"
-#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#endif
 
 namespace blink {
 
@@ -92,10 +89,10 @@ bool SystemClipboard::IsFormatAvailable(blink::mojom::ClipboardFormat format) {
   return result;
 }
 
-ClipboardSequenceNumberToken SystemClipboard::SequenceNumber() {
+absl::uint128 SystemClipboard::SequenceNumber() {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
-    return ClipboardSequenceNumberToken();
-  ClipboardSequenceNumberToken result;
+    return 0;
+  absl::uint128 result;
   clipboard_->GetSequenceNumber(buffer_, &result);
   return result;
 }
@@ -141,11 +138,7 @@ void SystemClipboard::ReadPlainText(
 
 void SystemClipboard::WritePlainText(const String& plain_text,
                                      SmartReplaceOption) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -153,7 +146,7 @@ void SystemClipboard::WritePlainText(const String& plain_text,
   // currently under-specified.
   String text = plain_text;
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(text);
+  text = NormalizeLineEndingsToCRLF(text);
 #endif
   clipboard_->WriteText(NonNullString(text));
 }
@@ -210,11 +203,7 @@ void SystemClipboard::ReadHTML(
 void SystemClipboard::WriteHTML(const String& markup,
                                 const KURL& document_url,
                                 SmartReplaceOption smart_replace_option) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -233,11 +222,7 @@ void SystemClipboard::ReadSvg(
 }
 
 void SystemClipboard::WriteSvg(const String& markup) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -288,11 +273,7 @@ String SystemClipboard::ReadImageAsImageMarkup(
 void SystemClipboard::WriteImageWithTag(Image* image,
                                         const KURL& url,
                                         const String& title) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   DCHECK(image);
 
@@ -338,11 +319,7 @@ void SystemClipboard::WriteImageWithTag(Image* image,
 }
 
 void SystemClipboard::WriteImage(const SkBitmap& bitmap) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -384,11 +361,7 @@ String SystemClipboard::ReadDataTransferCustomData(const String& type) {
 }
 
 void SystemClipboard::WriteDataObject(DataObject* data_object) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   DCHECK(data_object);
   if (!clipboard_.is_bound())
@@ -422,11 +395,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
 }
 
 void SystemClipboard::CommitWrite() {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound())
     return;
@@ -476,11 +445,7 @@ void SystemClipboard::ReadUnsanitizedCustomFormat(
 
 void SystemClipboard::WriteUnsanitizedCustomFormat(const String& type,
                                                    mojo_base::BigBuffer data) {
-  if (RuntimeEnabledFeatures::ClipboardSnapshotResetOnWriteEnabled()) {
-    ResetSnapshot();
-  } else {
-    DCHECK(!snapshot_);
-  }
+  ResetSnapshot();
 
   if (!clipboard_.is_bound() ||
       data.size() >= mojom::blink::ClipboardHost::kMaxDataSize) {
@@ -670,19 +635,22 @@ void SystemClipboard::Snapshot::SetCustomData(
   custom_data_.Set(type, data);
 }
 
-void SystemClipboard::OnClipboardDataChanged() {
-  // If we're not listening (receiver not bound), don't notify controllers
-  if (!clipboard_listener_receiver_.is_bound()) {
-    return;
-  }
+void SystemClipboard::OnClipboardDataChanged(const Vector<String>& types,
+                                             const absl::uint128& change_id) {
+  clipboard_change_data_.emplace(types, BigInt(change_id));
+
+  // TODO(crbug.com/457463706): Reevaluate whether this is the right
+  // abstraction, possibly use a clipboard-specific interface here.
   NotifyControllers();
 }
 
-void SystemClipboard::StartListening(LocalDOMWindow* window) {
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent)) {
-    return;
-  }
+const SystemClipboard::ClipboardChangeData&
+SystemClipboard::GetClipboardChangeEventData() {
+  CHECK(!!clipboard_change_data_);
+  return clipboard_change_data_.value();
+}
 
+void SystemClipboard::StartListening(LocalDOMWindow* window) {
   // If we're already listening (receiver is bound), no need to register again
   if (!clipboard_listener_receiver_.is_bound() && clipboard_.is_bound()) {
     clipboard_->RegisterClipboardListener(
@@ -702,7 +670,7 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::Snapshot::CloneFiles(
     return {};
   }
 
-  WTF::Vector<mojom::blink::DataTransferFilePtr> vec;
+  Vector<mojom::blink::DataTransferFilePtr> vec;
   for (auto& dtf : files->files) {
     auto clones = CloneFsaToken(std::move(dtf->file_system_access_token));
     dtf->file_system_access_token = std::move(clones.first);

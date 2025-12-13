@@ -42,8 +42,10 @@ pub mod chinese_based;
 pub mod coptic;
 /// Error handling
 mod error;
-/// The ethiopian calendar
+/// The Ethiopian calendar
 pub mod ethiopian;
+/// The Gregorian calendar
+pub mod gregorian;
 /// The Hebrew calendar
 pub mod hebrew;
 pub mod hebrew_keviyah;
@@ -51,11 +53,24 @@ pub mod hebrew_keviyah;
 pub mod helpers;
 /// Various islamic lunar calendars
 pub mod islamic;
-/// The ISO calendar (also usable as Gregorian)
-pub mod iso;
+/// Aliases for the Gregorian calendar.
+///
+/// This is *not* the ISO week calendar as described in the book.
+#[deprecated(since = "0.2.3", note = "use `gregorian`")]
+pub mod iso {
+    pub use crate::gregorian::day_before_year;
+    pub use crate::gregorian::days_before_month;
+    pub use crate::gregorian::easter;
+    pub use crate::gregorian::fixed_from_gregorian as const_fixed_from_iso;
+    pub use crate::gregorian::fixed_from_gregorian as fixed_from_iso;
+    pub use crate::gregorian::gregorian_from_fixed as iso_from_fixed;
+    pub use crate::gregorian::is_leap_year;
+    pub use crate::gregorian::year_day;
+    pub use crate::gregorian::year_from_fixed as iso_year_from_fixed;
+}
 /// The Julian calendar
 pub mod julian;
-/// The persian calendar
+/// The Persian calendar
 pub mod persian;
 /// Representation of Rata Die (R.D.) dates, which are
 /// represented as the number of days since ISO date 0001-01-01.

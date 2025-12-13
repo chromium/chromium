@@ -26,11 +26,11 @@ void IntSetToWorkarounds(const std::vector<int32_t>& enabled_workarounds,
         NOTIMPLEMENTED();
     }
   }
-  if (workarounds->webgl_or_caps_max_texture_size_limit_4096)
+  if (workarounds->webgl_or_caps_max_texture_size_limit_4096) {
     workarounds->webgl_or_caps_max_texture_size = 4096;
-
-  if (workarounds->max_copy_texture_chromium_size_1048576)
-    workarounds->max_copy_texture_chromium_size = 1048576;
+  } else if (workarounds->webgl_or_caps_max_texture_size_limit_8192) {
+    workarounds->webgl_or_caps_max_texture_size = 8192;
+  }
 
   if (workarounds->max_3d_array_texture_size_1024)
     workarounds->max_3d_array_texture_size = 1024;
@@ -77,8 +77,6 @@ void GpuDriverBugWorkarounds::Append(const GpuDriverBugWorkarounds& extra) {
 
   webgl_or_caps_max_texture_size = LowerMax(
       webgl_or_caps_max_texture_size, extra.webgl_or_caps_max_texture_size);
-  max_copy_texture_chromium_size = LowerMax(
-      max_copy_texture_chromium_size, extra.max_copy_texture_chromium_size);
   max_3d_array_texture_size =
       LowerMax(max_3d_array_texture_size, extra.max_3d_array_texture_size);
 }

@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.longClick;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -49,6 +50,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
@@ -88,6 +90,7 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the reading list in the bookmark manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@ImportantFormFactors(DeviceFormFactor.ONLY_TABLET)
 @DoNotBatch(reason = "BookmarkTest has behaviours and thus can't be batched.")
 public class ReadingListTest {
     @Rule
@@ -133,18 +136,14 @@ public class ReadingListTest {
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
         if (mActivityTestRule.getActivity().isTablet()) {
-            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_URL);
+            mActivityTestRule.loadUrl(UrlConstants.BOOKMARKS_NATIVE_URL);
             mItemsContainer =
                     mActivityTestRule
                             .getActivity()
                             .findViewById(R.id.selectable_list_recycler_view);
             mItemsContainer.setItemAnimator(null); // Disable animation to reduce flakiness.
             mBookmarkManagerCoordinator =
-                    ((BookmarkPage)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getActivityTab()
-                                            .getNativePage())
+                    ((BookmarkPage) mActivityTestRule.getActivityTab().getNativePage())
                             .getManagerForTesting();
         } else {
             // phone
@@ -305,18 +304,23 @@ public class ReadingListTest {
         openRootFolder();
         openReadingList();
 
-        // Enter search UI, but don't enter any search key word.
-        ThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
-        Assert.assertEquals(
-                "Wrong state, should be searching",
-                BookmarkUiMode.SEARCHING,
-                getBookmarkDelegate().getCurrentUiMode());
+        // On tablets, the search UI is always visible. On phones, we have to open it.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivityTestRule.getActivity())) {
+            onView(withId(R.id.row_search_text)).perform(replaceText(TEST_PAGE_TITLE_GOOGLE));
+        } else {
+            // Enter search UI, but don't enter any search key word.
+            ThreadUtils.runOnUiThreadBlocking(getBookmarkDelegate()::openSearchUi);
+            Assert.assertEquals(
+                    "Wrong state, should be searching",
+                    BookmarkUiMode.SEARCHING,
+                    getBookmarkDelegate().getCurrentUiMode());
 
-        runOnUiThreadBlocking(
-                () ->
-                        mBookmarkManagerCoordinator
-                                .getTestingDelegate()
-                                .searchForTesting(TEST_PAGE_TITLE_GOOGLE));
+            runOnUiThreadBlocking(
+                    () ->
+                            mBookmarkManagerCoordinator
+                                    .getTestingDelegate()
+                                    .searchForTesting(TEST_PAGE_TITLE_GOOGLE));
+        }
 
         // Blocking wait to go from 4 items to post-search 2 items (search row and 1 item result).
         // Just waitForStableRecyclerView has not been sufficient, see https://crbug.com/369092966.

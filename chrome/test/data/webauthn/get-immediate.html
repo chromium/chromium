@@ -12,8 +12,9 @@
             timeout: 30000,
             userVerification: 'preferred',
           },
-        }).then(success => {
+        }).then(cred => {
             document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
           }, error => {
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('message-container').innerText = error.toString();
@@ -28,8 +29,9 @@
             timeout: 30000,
             userVerification: 'discouraged',
           },
-        }).then(success => {
+        }).then(cred => {
             document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
           }, error => {
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('message-container').innerText = error.toString();
@@ -44,8 +46,9 @@
             timeout: 30000,
             userVerification: 'required',
           },
-        }).then(success => {
+        }).then(cred => {
             document.getElementById('success-message').style.display = 'block';
+            document.getElementById('message-container').innerText = cred.id;
           }, error => {
             document.getElementById('error-message').style.display = 'block';
             document.getElementById('message-container').innerText = error.toString();

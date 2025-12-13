@@ -62,9 +62,12 @@ void HTMLObjectElement::Trace(Visitor* visitor) const {
 
 const AttrNameToTrustedType& HTMLObjectElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"data", SpecificTrustedType::kScriptURL},
-                        {"codebase", SpecificTrustedType::kScriptURL}}));
+  DEFINE_STATIC_LOCAL(
+      AttrNameToTrustedType, attribute_map,
+      ({{"data", std::pair{SpecificTrustedType::kScriptURL,
+                           trusted_types_names::kHTMLObjectElement}},
+        {"codebase", std::pair{SpecificTrustedType::kScriptURL,
+                               trusted_types_names::kHTMLObjectElement}}}));
   return attribute_map;
 }
 
@@ -340,8 +343,8 @@ V8UnionTrustedScriptURLOrUSVString* HTMLObjectElement::data() {
 void HTMLObjectElement::setData(const V8UnionTrustedScriptURLOrUSVString* value,
                                 ExceptionState& exception_state) {
   String compliant_value = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLObjectElement", "data",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLObjectElement,
+      trusted_types_names::kData, exception_state);
   if (exception_state.HadException()) {
     return;
   }
@@ -358,8 +361,8 @@ void HTMLObjectElement::setCodeBase(
     const V8UnionTrustedScriptURLOrUSVString* value,
     ExceptionState& exception_state) {
   String compliant_value = TrustedTypesCheckForScriptURL(
-      value, GetExecutionContext(), "HTMLObjectElement", "codeBase",
-      exception_state);
+      value, GetExecutionContext(), trusted_types_names::kHTMLObjectElement,
+      trusted_types_names::kCodeBase, exception_state);
   if (exception_state.HadException()) {
     return;
   }

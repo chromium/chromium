@@ -12,7 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 @NullMarked
-class AwContextMenuItemProperties {
+public class AwContextMenuItemProperties {
     public static final WritableObjectPropertyKey<CharSequence> TEXT =
             new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey MENU_ID = new WritableIntPropertyKey();

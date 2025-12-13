@@ -12,6 +12,7 @@
 #include <string_view>
 #include <unordered_set>
 
+#include "base/byte_count.h"
 #include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -126,7 +127,7 @@ TEST_P(CommonHttpResponseHeadersTest, TestCommon) {
   EXPECT_EQ(test.expected_status_text, parsed->GetStatusText());
 }
 
-TestData response_headers_tests[] = {
+TestData kResponseHeadersTests[] = {
     {// Normalize whitespace.
      "HTTP/1.1    202   Accepted  \n"
      "Content-TYPE  : text/html; charset=utf-8  \n"
@@ -370,7 +371,7 @@ TestData response_headers_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          CommonHttpResponseHeadersTest,
-                         testing::ValuesIn(response_headers_tests));
+                         testing::ValuesIn(kResponseHeadersTests));
 
 struct PersistData {
   HttpResponseHeaders::PersistOptions options;
@@ -399,7 +400,7 @@ TEST_P(PersistenceTest, Persist) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed2));
 }
 
-const struct PersistData persistence_tests[] = {
+constexpr PersistData kPersistenceTests[] = {
     {HttpResponseHeaders::PERSIST_ALL,
      "HTTP/1.1 200 OK\n"
      "Cache-control:private\n"
@@ -559,7 +560,7 @@ const struct PersistData persistence_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          PersistenceTest,
-                         testing::ValuesIn(persistence_tests));
+                         testing::ValuesIn(kPersistenceTests));
 
 TEST(HttpResponseHeadersTest, EnumerateHeader_Coalesced) {
   // Ensure that commas in quoted strings are not regarded as value separators.
@@ -767,142 +768,142 @@ TEST_P(ContentTypeTest, GetMimeType) {
 }
 
 // clang-format off
-const ContentTypeTestData mimetype_tests[] = {
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "", false,
-    "text/html" },
-  // Multiple content-type headers should give us the last one.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "", false,
-    "text/html, text/html" },
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/plain\n"
-    "Content-type: text/html\n"
-    "Content-type: text/plain\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "", false,
-    "text/plain, text/html, text/plain, text/html" },
-  // Test charset parsing.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html\n"
-    "Content-type: text/html; charset=ISO-8859-1\n",
-    "text/html", true,
-    "iso-8859-1", true,
-    "text/html, text/html; charset=ISO-8859-1" },
-  // Test charset in double quotes.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html\n"
-    "Content-type: text/html; charset=\"ISO-8859-1\"\n",
-    "text/html", true,
-    "iso-8859-1", true,
-    "text/html, text/html; charset=\"ISO-8859-1\"" },
-  // If there are multiple matching content-type headers, we carry
-  // over the charset value.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html;charset=utf-8\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "utf-8", true,
-    "text/html;charset=utf-8, text/html" },
-  // Regression test for https://crbug.com/772350:
-  // Single quotes are not delimiters but must be treated as part of charset.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html;charset='utf-8'\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "'utf-8'", true,
-    "text/html;charset='utf-8', text/html" },
-  // First charset wins if matching content-type.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html;charset=utf-8\n"
-    "Content-type: text/html;charset=iso-8859-1\n",
-    "text/html", true,
-    "iso-8859-1", true,
-    "text/html;charset=utf-8, text/html;charset=iso-8859-1" },
-  // Charset is ignored if the content types change.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/plain;charset=utf-8\n"
-    "Content-type: text/html\n",
-    "text/html", true,
-    "", false,
-    "text/plain;charset=utf-8, text/html" },
-  // Empty content-type.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: \n",
-    "", false,
-    "", false,
-    "" },
-  // Emtpy charset.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html;charset=\n",
-    "text/html", true,
-    "", false,
-    "text/html;charset=" },
-  // Multiple charsets, first one wins.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html;charset=utf-8; charset=iso-8859-1\n",
-    "text/html", true,
-    "utf-8", true,
-    "text/html;charset=utf-8; charset=iso-8859-1" },
-  // Multiple params.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html; foo=utf-8; charset=iso-8859-1\n",
-    "text/html", true,
-    "iso-8859-1", true,
-    "text/html; foo=utf-8; charset=iso-8859-1" },
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html ; charset=utf-8 ; bar=iso-8859-1\n",
-    "text/html", true,
-    "utf-8", true,
-    "text/html ; charset=utf-8 ; bar=iso-8859-1" },
-  // Comma embeded in quotes.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html ; charset=\"utf-8,text/plain\" ;\n",
-    "text/html", true,
-    "utf-8,text/plain", true,
-    "text/html ; charset=\"utf-8,text/plain\" ;" },
-  // Charset with leading spaces.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html ; charset= \"utf-8\" ;\n",
-    "text/html", true,
-    "utf-8", true,
-    "text/html ; charset= \"utf-8\" ;" },
-  // Media type comments in mime-type.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html (html)\n",
-    "text/html", true,
-    "", false,
-   "text/html (html)" },
-  // Incomplete charset= param.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: text/html; char=\n",
-    "text/html", true,
-    "", false,
-    "text/html; char=" },
-  // Invalid media type: no slash.
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: texthtml\n",
-    "", false,
-    "", false,
-    "texthtml" },
-  // Invalid media type: "*/*".
-  { "HTTP/1.1 200 OK\n"
-    "Content-type: */*\n",
-    "", false,
-    "", false,
-    "*/*" },
+const ContentTypeTestData kMimeTypeTests[] = {
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "", false,
+     "text/html"},
+    // Multiple content-type headers should give us the last one.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "", false,
+     "text/html, text/html" },
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/plain\n"
+     "Content-type: text/html\n"
+     "Content-type: text/plain\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "", false,
+     "text/plain, text/html, text/plain, text/html" },
+    // Test charset parsing.
+    { "HTTP/1.1 200 OK\n"
+     "Content-type: text/html\n"
+     "Content-type: text/html; charset=ISO-8859-1\n",
+     "text/html", true,
+     "iso-8859-1", true,
+     "text/html, text/html; charset=ISO-8859-1" },
+    // Test charset in double quotes.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html\n"
+     "Content-type: text/html; charset=\"ISO-8859-1\"\n",
+     "text/html", true,
+     "iso-8859-1", true,
+     "text/html, text/html; charset=\"ISO-8859-1\"" },
+    // If there are multiple matching content-type headers, we carry
+    // over the charset value.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html;charset=utf-8\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "utf-8", true,
+     "text/html;charset=utf-8, text/html" },
+    // Regression test for https://crbug.com/772350:
+    // Single quotes are not delimiters but must be treated as part of charset.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html;charset='utf-8'\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "'utf-8'", true,
+     "text/html;charset='utf-8', text/html" },
+    // First charset wins if matching content-type.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html;charset=utf-8\n"
+     "Content-type: text/html;charset=iso-8859-1\n",
+     "text/html", true,
+     "iso-8859-1", true,
+     "text/html;charset=utf-8, text/html;charset=iso-8859-1" },
+    // Charset is ignored if the content types change.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/plain;charset=utf-8\n"
+     "Content-type: text/html\n",
+     "text/html", true,
+     "", false,
+     "text/plain;charset=utf-8, text/html" },
+    // Empty content-type.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: \n",
+     "", false,
+     "", false,
+     "" },
+    // Emtpy charset.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html;charset=\n",
+     "text/html", true,
+     "", false,
+     "text/html;charset=" },
+    // Multiple charsets, first one wins.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html;charset=utf-8; charset=iso-8859-1\n",
+     "text/html", true,
+     "utf-8", true,
+     "text/html;charset=utf-8; charset=iso-8859-1" },
+    // Multiple params.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html; foo=utf-8; charset=iso-8859-1\n",
+     "text/html", true,
+     "iso-8859-1", true,
+     "text/html; foo=utf-8; charset=iso-8859-1" },
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html ; charset=utf-8 ; bar=iso-8859-1\n",
+     "text/html", true,
+     "utf-8", true,
+     "text/html ; charset=utf-8 ; bar=iso-8859-1" },
+    // Comma embeded in quotes.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html ; charset=\"utf-8,text/plain\" ;\n",
+     "text/html", true,
+     "utf-8,text/plain", true,
+     "text/html ; charset=\"utf-8,text/plain\" ;" },
+    // Charset with leading spaces.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html ; charset= \"utf-8\" ;\n",
+     "text/html", true,
+     "utf-8", true,
+     "text/html ; charset= \"utf-8\" ;" },
+    // Media type comments in mime-type.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html (html)\n",
+     "text/html", true,
+     "", false,
+     "text/html (html)" },
+    // Incomplete charset= param.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: text/html; char=\n",
+     "text/html", true,
+     "", false,
+     "text/html; char=" },
+    // Invalid media type: no slash.
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: texthtml\n",
+     "", false,
+     "", false,
+     "texthtml" },
+    // Invalid media type: "*/*".
+    {"HTTP/1.1 200 OK\n"
+     "Content-type: */*\n",
+     "", false,
+     "", false,
+     "*/*" },
 };
 // clang-format on
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          ContentTypeTest,
-                         testing::ValuesIn(mimetype_tests));
+                         testing::ValuesIn(kMimeTypeTests));
 
 struct RequiresValidationTestData {
   const char* headers;
@@ -934,7 +935,7 @@ TEST_P(RequiresValidationTest, RequiresValidation) {
   EXPECT_EQ(test.validation_type, validation_type);
 }
 
-const struct RequiresValidationTestData requires_validation_tests[] = {
+constexpr RequiresValidationTestData kRequiresValidationTests[] = {
     // No expiry info: expires immediately.
     {"HTTP/1.1 200 OK\n"
      "\n",
@@ -1138,7 +1139,7 @@ const struct RequiresValidationTestData requires_validation_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          RequiresValidationTest,
-                         testing::ValuesIn(requires_validation_tests));
+                         testing::ValuesIn(kRequiresValidationTests));
 
 struct UpdateTestData {
   const char* orig_headers;
@@ -1167,7 +1168,7 @@ TEST_P(UpdateTest, Update) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 }
 
-const UpdateTestData update_tests[] = {
+constexpr UpdateTestData kUpdateTests[] = {
     {"HTTP/1.1 200 OK\n",
 
      "HTTP/1/1 304 Not Modified\n"
@@ -1273,7 +1274,7 @@ const UpdateTestData update_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          UpdateTest,
-                         testing::ValuesIn(update_tests));
+                         testing::ValuesIn(kUpdateTests));
 
 struct EnumerateHeaderTestData {
   const char* headers;
@@ -1305,7 +1306,7 @@ TEST_P(EnumerateHeaderLinesTest, EnumerateHeaderLines) {
   EXPECT_EQ(std::string(test.expected_lines), lines);
 }
 
-const EnumerateHeaderTestData enumerate_header_tests[] = {
+constexpr EnumerateHeaderTestData kEnumerateHeaderTests[] = {
     {"HTTP/1.1 200 OK\n",
 
      ""},
@@ -1331,7 +1332,7 @@ const EnumerateHeaderTestData enumerate_header_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          EnumerateHeaderLinesTest,
-                         testing::ValuesIn(enumerate_header_tests));
+                         testing::ValuesIn(kEnumerateHeaderTests));
 
 struct IsRedirectTestData {
   const char* headers;
@@ -1356,69 +1357,71 @@ TEST_P(IsRedirectTest, IsRedirect) {
   EXPECT_EQ(location, test.location);
 }
 
-const IsRedirectTestData is_redirect_tests[] = {
-  { "HTTP/1.1 200 OK\n",
-    "",
-    false
-  },
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foopy/\n",
-    "http://foopy/",
-    true
-  },
-  { "HTTP/1.1 301 Moved\n"
-    "Location: \t \n",
-    "",
-    false
-  },
-  // We use the first location header as the target of the redirect.
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/\n"
-    "Location: http://bar/\n",
-    "http://foo/",
-    true
-  },
-  // We use the first _valid_ location header as the target of the redirect.
-  { "HTTP/1.1 301 Moved\n"
-    "Location: \n"
-    "Location: http://bar/\n",
-    "http://bar/",
-    true
-  },
-  // Bug 1050541 (location header with an unescaped comma).
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/bar,baz.html\n",
-    "http://foo/bar,baz.html",
-    true
-  },
-  // Bug 1224617 (location header with non-ASCII bytes).
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/bar?key=\xE4\xF6\xFC\n",
-    "http://foo/bar?key=%E4%F6%FC",
-    true
-  },
-  // Shift_JIS, Big5, and GBK contain multibyte characters with the trailing
-  // byte falling in the ASCII range.
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/bar?key=\x81\x5E\xD8\xBF\n",
-    "http://foo/bar?key=%81^%D8%BF",
-    true
-  },
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/bar?key=\x82\x40\xBD\xC4\n",
-    "http://foo/bar?key=%82@%BD%C4",
-    true
-  },
-  { "HTTP/1.1 301 Moved\n"
-    "Location: http://foo/bar?key=\x83\x5C\x82\x5D\xCB\xD7\n",
-    "http://foo/bar?key=%83\\%82]%CB%D7",
-    true
-  },
+// clang-format off
+constexpr IsRedirectTestData kIsRedirectTests[] = {
+    {"HTTP/1.1 200 OK\n",
+     "",
+     false
+    },
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foopy/\n",
+     "http://foopy/",
+     true
+    },
+    {"HTTP/1.1 301 Moved\n"
+     "Location: \t \n",
+     "",
+     false
+    },
+    // We use the first location header as the target of the redirect.
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/\n"
+     "Location: http://bar/\n",
+     "http://foo/",
+     true
+    },
+    // We use the first _valid_ location header as the target of the redirect.
+    {"HTTP/1.1 301 Moved\n"
+     "Location: \n"
+     "Location: http://bar/\n",
+     "http://bar/",
+     true
+    },
+    // Bug 1050541 (location header with an unescaped comma).
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/bar,baz.html\n",
+     "http://foo/bar,baz.html",
+     true
+    },
+    // Bug 1224617 (location header with non-ASCII bytes).
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/bar?key=\xE4\xF6\xFC\n",
+     "http://foo/bar?key=%E4%F6%FC",
+     true
+    },
+    // Shift_JIS, Big5, and GBK contain multibyte characters with the trailing
+    // byte falling in the ASCII range.
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/bar?key=\x81\x5E\xD8\xBF\n",
+     "http://foo/bar?key=%81^%D8%BF",
+     true
+    },
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/bar?key=\x82\x40\xBD\xC4\n",
+     "http://foo/bar?key=%82@%BD%C4",
+     true
+    },
+    {"HTTP/1.1 301 Moved\n"
+     "Location: http://foo/bar?key=\x83\x5C\x82\x5D\xCB\xD7\n",
+     "http://foo/bar?key=%83\\%82]%CB%D7",
+     true
+    },
 };
+// clang-format on
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          IsRedirectTest,
-                         testing::ValuesIn(is_redirect_tests));
+                         testing::ValuesIn(kIsRedirectTests));
 
 struct HasStorageAccessRetryTestData {
   const char* headers;
@@ -1443,7 +1446,7 @@ TEST_P(HasStorageAccessRetryTest, HasStorageAccessRetry) {
             test.want_result);
 }
 
-const HasStorageAccessRetryTestData has_storage_access_retry_tests[] = {
+const HasStorageAccessRetryTestData kHasStorageAccessTetryTests[] = {
     // No expected initiator; explicit allowlist.
     {"HTTP/1.1 200 OK\n"
      R"(Activate-Storage-Access: retry; allowed-origin="https://example.com:123")"
@@ -1504,11 +1507,11 @@ const HasStorageAccessRetryTestData has_storage_access_retry_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          HasStorageAccessRetryTest,
-                         testing::ValuesIn(has_storage_access_retry_tests));
+                         testing::ValuesIn(kHasStorageAccessTetryTests));
 
 struct ContentLengthTestData {
   const char* headers;
-  int64_t expected_len;
+  std::optional<base::ByteCount> expected_len;
 };
 
 class GetContentLengthTest
@@ -1526,62 +1529,161 @@ TEST_P(GetContentLengthTest, GetContentLength) {
   EXPECT_EQ(test.expected_len, parsed->GetContentLength());
 }
 
-const ContentLengthTestData content_length_tests[] = {
-    {"HTTP/1.1 200 OK\n", -1},
+constexpr ContentLengthTestData kContentLengthTests[] = {
+    {"HTTP/1.1 200 OK\n", std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Content-Length: 0\n",
+     base::ByteCount(0)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: abc\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: -10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length:  +10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 23xb5\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 0xA\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 010\n",
-     10},
+     base::ByteCount(10)},
     // Content-Length too big, will overflow an int64_t.
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 40000000000000000000\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length:       10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 10  \n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \t10\n",
-     10},
+     base::ByteCount(10)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \v10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: \f10\n",
-     -1},
+     std::nullopt},
     {"HTTP/1.1 200 OK\n"
      "cOnTeNt-LENgth: 33\n",
-     33},
+     base::ByteCount(33)},
     {"HTTP/1.1 200 OK\n"
      "Content-Length: 34\r\n",
-     -1},
+     std::nullopt},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          GetContentLengthTest,
-                         testing::ValuesIn(content_length_tests));
+                         testing::ValuesIn(kContentLengthTests));
+
+struct GetInt64HeaderValueTestData {
+  const char* headers;
+  std::optional<int64_t> expected_len;
+};
+
+class GetInt64HeaderValueTest
+    : public HttpResponseHeadersTest,
+      public ::testing::WithParamInterface<GetInt64HeaderValueTestData> {};
+
+TEST_P(GetInt64HeaderValueTest, GetInt64HeaderValue) {
+  const GetInt64HeaderValueTestData test = GetParam();
+
+  std::string headers(test.headers);
+  HeadersToRaw(&headers);
+  auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
+
+  EXPECT_EQ(test.expected_len, parsed->GetInt64HeaderValue("heaDer"));
+}
+
+constexpr GetInt64HeaderValueTestData kGetInt64HeaderValueTests[] = {
+    {"HTTP/1.1 200 OK\n", std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Not-Header: 10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 0\n",
+     0},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: abc\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: -10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header:  +10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 23xb5\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 0xA\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 010\n",
+     10},
+    // Header too big, will overflow an int64_t.
+    {"HTTP/1.1 200 OK\n"
+     "Header: 40000000000000000000\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header:       10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 10  \n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \t10\n",
+     10},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \v10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Header: \f10\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "hEaDeR: 33\n",
+     33},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 34\r\n",
+     std::nullopt},
+    {"HTTP/1.1 200 OK\n"
+     "Bar: 1\n"
+     "Header: 34\n"
+     "Foo: 10\n",
+     34},
+    // In the case of multiple headers, the value of the first is returned.
+    {"HTTP/1.1 200 OK\n"
+     "Header: 1\n"
+     "Header: 2\n"
+     "Header: 3\n",
+     1},
+    {"HTTP/1.1 200 OK\n"
+     "Header: 1, 2, 3\n",
+     1},
+};
+
+INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
+                         GetInt64HeaderValueTest,
+                         testing::ValuesIn(kGetInt64HeaderValueTests));
 
 struct ContentRangeTestData {
   const char* headers;
@@ -1614,7 +1716,7 @@ TEST_P(ContentRangeTest, GetContentRangeFor206) {
   EXPECT_EQ(test.expected_instance_size, instance_size);
 }
 
-const ContentRangeTestData content_range_tests[] = {
+constexpr ContentRangeTestData kContentRangeTests[] = {
     {"HTTP/1.1 206 Partial Content", false, -1, -1, -1},
     {"HTTP/1.1 206 Partial Content\n"
      "Content-Range:",
@@ -1635,7 +1737,7 @@ const ContentRangeTestData content_range_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          ContentRangeTest,
-                         testing::ValuesIn(content_range_tests));
+                         testing::ValuesIn(kContentRangeTests));
 
 struct KeepAliveTestData {
   const char* headers;
@@ -1665,145 +1767,147 @@ TEST_P(IsKeepAliveTest, IsKeepAlive) {
   EXPECT_EQ(test.expected_keep_alive, parsed->IsKeepAlive());
 }
 
-const KeepAliveTestData keepalive_tests[] = {
-  // The status line fabricated by HttpNetworkTransaction for a 0.9 response.
-  // Treated as 0.9.
-  { "HTTP/0.9 200 OK",
-    false
-  },
-  // This could come from a broken server.  Treated as 1.0 because it has a
-  // header.
-  { "HTTP/0.9 200 OK\n"
-    "connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n",
-    true
-  },
-  { "HTTP/1.0 200 OK\n",
-    false
-  },
-  { "HTTP/1.0 200 OK\n"
-    "connection: close\n",
-    false
-  },
-  { "HTTP/1.0 200 OK\n"
-    "connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.0 200 OK\n"
-    "connection: kEeP-AliVe\n",
-    true
-  },
-  { "HTTP/1.0 200 OK\n"
-    "connection: keep-aliveX\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.0 200 OK\n"
-    "proxy-connection: close\n",
-    false
-  },
-  { "HTTP/1.0 200 OK\n"
-    "proxy-connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "proxy-connection: close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "proxy-connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade, close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade, keep-alive\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade\n"
-    "Connection: close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade\n"
-    "Connection: keep-alive\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: close, Upgrade\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: keep-alive, Upgrade\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade\n"
-    "Proxy-Connection: close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: Upgrade\n"
-    "Proxy-Connection: keep-alive\n",
-    true
-  },
-  // In situations where the response headers conflict with themselves, use the
-  // first one for backwards-compatibility.
-  { "HTTP/1.1 200 OK\n"
-    "Connection: close\n"
-    "Connection: keep-alive\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Connection: keep-alive\n"
-    "Connection: close\n",
-    true
-  },
-  { "HTTP/1.0 200 OK\n"
-    "Connection: close\n"
-    "Connection: keep-alive\n",
-    false
-  },
-  { "HTTP/1.0 200 OK\n"
-    "Connection: keep-alive\n"
-    "Connection: close\n",
-    true
-  },
-  // Ignore the Proxy-Connection header if at all possible.
-  { "HTTP/1.0 200 OK\n"
-    "Proxy-Connection: keep-alive\n"
-    "Connection: close\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Proxy-Connection: close\n"
-    "Connection: keep-alive\n",
-    true
-  },
-  // Older versions of Chrome would have ignored Proxy-Connection in this case,
-  // but it doesn't seem safe.
-  { "HTTP/1.1 200 OK\n"
-    "Proxy-Connection: close\n"
-    "Connection: Transfer-Encoding\n",
-    false
-  },
+// clang-format off
+constexpr KeepAliveTestData kKeepAliveTests[] = {
+    // The status line fabricated by HttpNetworkTransaction for a 0.9 response.
+    // Treated as 0.9.
+    {"HTTP/0.9 200 OK",
+     false
+    },
+    // This could come from a broken server.  Treated as 1.0 because it has a
+    // header.
+    {"HTTP/0.9 200 OK\n"
+     "connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n",
+     true
+    },
+    {"HTTP/1.0 200 OK\n",
+     false
+    },
+    {"HTTP/1.0 200 OK\n"
+     "connection: close\n",
+     false
+    },
+    {"HTTP/1.0 200 OK\n"
+     "connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.0 200 OK\n"
+     "connection: kEeP-AliVe\n",
+     true
+    },
+    {"HTTP/1.0 200 OK\n"
+     "connection: keep-aliveX\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "connection: close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.0 200 OK\n"
+     "proxy-connection: close\n",
+     false
+    },
+    {"HTTP/1.0 200 OK\n"
+     "proxy-connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "proxy-connection: close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "proxy-connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade, close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade, keep-alive\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade\n"
+     "Connection: close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade\n"
+     "Connection: keep-alive\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: close, Upgrade\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: keep-alive, Upgrade\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade\n"
+     "Proxy-Connection: close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: Upgrade\n"
+     "Proxy-Connection: keep-alive\n",
+     true
+    },
+    // In situations where the response headers conflict with themselves, use
+    // the first one for backwards-compatibility.
+    {"HTTP/1.1 200 OK\n"
+     "Connection: close\n"
+     "Connection: keep-alive\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Connection: keep-alive\n"
+     "Connection: close\n",
+     true
+    },
+    {"HTTP/1.0 200 OK\n"
+     "Connection: close\n"
+     "Connection: keep-alive\n",
+     false
+    },
+    {"HTTP/1.0 200 OK\n"
+     "Connection: keep-alive\n"
+     "Connection: close\n",
+     true
+    },
+    // Ignore the Proxy-Connection header if at all possible.
+    {"HTTP/1.0 200 OK\n"
+     "Proxy-Connection: keep-alive\n"
+     "Connection: close\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Proxy-Connection: close\n"
+     "Connection: keep-alive\n",
+     true
+    },
+    // Older versions of Chrome would have ignored Proxy-Connection in this
+    // case, but it doesn't seem safe.
+    {"HTTP/1.1 200 OK\n"
+     "Proxy-Connection: close\n"
+     "Connection: Transfer-Encoding\n",
+     false
+    },
 };
+// clang-format on
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          IsKeepAliveTest,
-                         testing::ValuesIn(keepalive_tests));
+                         testing::ValuesIn(kKeepAliveTests));
 
 struct HasStrongValidatorsTestData {
   const char* headers;
@@ -1829,55 +1933,57 @@ TEST_P(HasStrongValidatorsTest, HasStrongValidators) {
   }
 }
 
-const HasStrongValidatorsTestData strong_validators_tests[] = {
-  { "HTTP/0.9 200 OK",
-    false
-  },
-  { "HTTP/1.0 200 OK\n"
-    "Date: Wed, 28 Nov 2007 01:40:10 GMT\n"
-    "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n"
-    "ETag: \"foo\"\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Date: Wed, 28 Nov 2007 01:40:10 GMT\n"
-    "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n"
-    "ETag: \"foo\"\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Date: Wed, 28 Nov 2007 00:41:10 GMT\n"
-    "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n",
-    true
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Date: Wed, 28 Nov 2007 00:41:09 GMT\n"
-    "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "ETag: \"foo\"\n",
-    true
-  },
-  // This is not really a weak etag:
-  { "HTTP/1.1 200 OK\n"
-    "etag: \"w/foo\"\n",
-    true
-  },
-  // This is a weak etag:
-  { "HTTP/1.1 200 OK\n"
-    "etag: w/\"foo\"\n",
-    false
-  },
-  { "HTTP/1.1 200 OK\n"
-    "etag:    W  /   \"foo\"\n",
-    false
-  }
+// clang-format off
+constexpr HasStrongValidatorsTestData kStrongValidatorsTest[] = {
+    {"HTTP/0.9 200 OK",
+     false
+    },
+    {"HTTP/1.0 200 OK\n"
+     "Date: Wed, 28 Nov 2007 01:40:10 GMT\n"
+     "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n"
+     "ETag: \"foo\"\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Date: Wed, 28 Nov 2007 01:40:10 GMT\n"
+     "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n"
+     "ETag: \"foo\"\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Date: Wed, 28 Nov 2007 00:41:10 GMT\n"
+     "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n",
+     true
+    },
+    {"HTTP/1.1 200 OK\n"
+     "Date: Wed, 28 Nov 2007 00:41:09 GMT\n"
+     "Last-Modified: Wed, 28 Nov 2007 00:40:10 GMT\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "ETag: \"foo\"\n",
+     true
+    },
+    // This is not really a weak etag:
+    {"HTTP/1.1 200 OK\n"
+     "etag: \"w/foo\"\n",
+     true
+    },
+    // This is a weak etag:
+    {"HTTP/1.1 200 OK\n"
+     "etag: w/\"foo\"\n",
+     false
+    },
+    {"HTTP/1.1 200 OK\n"
+     "etag:    W  /   \"foo\"\n",
+     false
+    }
 };
+// clang-format on
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          HasStrongValidatorsTest,
-                         testing::ValuesIn(strong_validators_tests));
+                         testing::ValuesIn(kStrongValidatorsTest));
 
 TEST(HttpResponseHeadersTest, HasValidatorsNone) {
   std::string headers("HTTP/1.1 200 OK");
@@ -2064,34 +2170,32 @@ TEST_P(RemoveHeaderTest, RemoveHeader) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 }
 
-const RemoveHeaderTestData remove_header_tests[] = {
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n",
+constexpr RemoveHeaderTestData kRemoveHeaderTests[] = {
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"
+     "Content-Length: 450\n",
 
-    "Content-Length",
+     "Content-Length",
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Content-Length  : 450  \n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Content-Length  : 450  \n"
+     "Cache-control: max-age=10000\n",
 
-    "Content-Length",
+     "Content-Length",
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-  },
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          RemoveHeaderTest,
-                         testing::ValuesIn(remove_header_tests));
+                         testing::ValuesIn(kRemoveHeaderTests));
 
 struct RemoveHeadersTestData {
   const char* orig_headers;
@@ -2120,7 +2224,7 @@ TEST_P(RemoveHeadersTest, RemoveHeaders) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 }
 
-const RemoveHeadersTestData remove_headers_tests[] = {
+constexpr RemoveHeadersTestData kRemoveHeadersTests[] = {
     {"HTTP/1.1 200 OK\n"
      "connection: keep-alive\n"
      "Cache-control: max-age=10000\n"
@@ -2152,7 +2256,7 @@ const RemoveHeadersTestData remove_headers_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          RemoveHeadersTest,
-                         testing::ValuesIn(remove_headers_tests));
+                         testing::ValuesIn(kRemoveHeadersTests));
 
 struct RemoveIndividualHeaderTestData {
   const char* orig_headers;
@@ -2180,81 +2284,76 @@ TEST_P(RemoveIndividualHeaderTest, RemoveIndividualHeader) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 }
 
-const RemoveIndividualHeaderTestData remove_individual_header_tests[] = {
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n",
+constexpr RemoveIndividualHeaderTestData kRemoveIndividualHeaderTests[] = {
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"
+     "Content-Length: 450\n",
 
-    "Content-Length",
+     "Content-Length",
 
-    "450",
+     "450",
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Content-Length  : 450  \n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Content-Length  : 450  \n"
+     "Cache-control: max-age=10000\n",
 
-    "Content-Length",
+     "Content-Length",
 
-    "450",
+     "450",
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Content-Length: 450\n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Content-Length: 450\n"
+     "Cache-control: max-age=10000\n",
 
-    "Content-Length",  // Matching name.
+     "Content-Length",  // Matching name.
 
-    "999",  // Mismatching value.
+     "999",  // Mismatching value.
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Content-Length: 450\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Foo: bar, baz\n"
-    "Foo: bar\n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Content-Length: 450\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Foo: bar, baz\n"
+     "Foo: bar\n"
+     "Cache-control: max-age=10000\n",
 
-    "Foo",
+     "Foo",
 
-    "bar, baz",  // Space in value.
+     "bar, baz",  // Space in value.
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Foo: bar\n"
-    "Cache-control: max-age=10000\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Foo: bar, baz\n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Foo: bar\n"
+     "Cache-control: max-age=10000\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Foo: bar, baz\n"
+     "Cache-control: max-age=10000\n",
 
-    "Foo",
+     "Foo",
 
-    "baz",  // Only partial match -> ignored.
+     "baz",  // Only partial match -> ignored.
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Foo: bar, baz\n"
-    "Cache-control: max-age=10000\n"
-  },
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Foo: bar, baz\n"
+     "Cache-control: max-age=10000\n"},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          RemoveIndividualHeaderTest,
-                         testing::ValuesIn(remove_individual_header_tests));
+                         testing::ValuesIn(kRemoveIndividualHeaderTests));
 
 struct ReplaceStatusTestData {
   const char* orig_headers;
@@ -2280,44 +2379,41 @@ TEST_P(ReplaceStatusTest, ReplaceStatus) {
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 }
 
-const ReplaceStatusTestData replace_status_tests[] = {
-  { "HTTP/1.1 206 Partial Content\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n",
+constexpr ReplaceStatusTestData kReplaceStatusTests[] = {
+    {"HTTP/1.1 206 Partial Content\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"
+     "Content-Length: 450\n",
 
-    "HTTP/1.1 200 OK",
+     "HTTP/1.1 200 OK",
 
-    "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n"
-    "Cache-control: max-age=10000\n"
-    "Content-Length: 450\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive\n",
+     "HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n"
+     "Cache-control: max-age=10000\n"
+     "Content-Length: 450\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive\n",
 
-    "HTTP/1.1 304 Not Modified",
+     "HTTP/1.1 304 Not Modified",
 
-    "HTTP/1.1 304 Not Modified\n"
-    "connection: keep-alive\n"
-  },
-  { "HTTP/1.1 200 OK\n"
-    "connection: keep-alive  \n"
-    "Content-Length  : 450   \n"
-    "Cache-control: max-age=10000\n",
+     "HTTP/1.1 304 Not Modified\n"
+     "connection: keep-alive\n"},
+    {"HTTP/1.1 200 OK\n"
+     "connection: keep-alive  \n"
+     "Content-Length  : 450   \n"
+     "Cache-control: max-age=10000\n",
 
-    "HTTP/1//1 304 Not Modified",
+     "HTTP/1//1 304 Not Modified",
 
-    "HTTP/1.0 304 Not Modified\n"
-    "connection: keep-alive\n"
-    "Content-Length: 450\n"
-    "Cache-control: max-age=10000\n"
-  },
+     "HTTP/1.0 304 Not Modified\n"
+     "connection: keep-alive\n"
+     "Content-Length: 450\n"
+     "Cache-control: max-age=10000\n"},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          ReplaceStatusTest,
-                         testing::ValuesIn(replace_status_tests));
+                         testing::ValuesIn(kReplaceStatusTests));
 
 struct UpdateWithNewRangeTestData {
   const char* orig_headers;
@@ -2338,46 +2434,51 @@ TEST_P(UpdateWithNewRangeTest, UpdateWithNewRange) {
   std::string orig_headers(test.orig_headers);
   std::replace(orig_headers.begin(), orig_headers.end(), '\n', '\0');
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(orig_headers + '\0');
-  int64_t content_size = parsed->GetContentLength();
+  std::optional<base::ByteCount> content_length = parsed->GetContentLength();
+  ASSERT_TRUE(content_length);
 
   // Update headers without replacing status line.
-  parsed->UpdateWithNewRange(range, content_size, false);
+  parsed->UpdateWithNewRange(range, content_length->InBytes(),
+                             /*replace_status_line=*/false);
   EXPECT_EQ(std::string(test.expected_headers), ToSimpleString(parsed));
 
   // Replace status line too.
-  parsed->UpdateWithNewRange(range, content_size, true);
+  parsed->UpdateWithNewRange(range, content_length->InBytes(),
+                             /*replace_status_line=*/true);
   EXPECT_EQ(std::string(test.expected_headers_with_replaced_status),
             ToSimpleString(parsed));
 }
 
-const UpdateWithNewRangeTestData update_range_tests[] = {
-  { "HTTP/1.1 200 OK\n"
-    "Content-Length: 450\n",
+constexpr UpdateWithNewRangeTestData kUpdateRangeTests[] = {
+    {
+        "HTTP/1.1 200 OK\n"
+        "Content-Length: 450\n",
 
-    "HTTP/1.1 200 OK\n"
-    "Content-Range: bytes 3-5/450\n"
-    "Content-Length: 3\n",
+        "HTTP/1.1 200 OK\n"
+        "Content-Range: bytes 3-5/450\n"
+        "Content-Length: 3\n",
 
-    "HTTP/1.1 206 Partial Content\n"
-    "Content-Range: bytes 3-5/450\n"
-    "Content-Length: 3\n",
-  },
-  { "HTTP/1.1 200 OK\n"
-    "Content-Length: 5\n",
+        "HTTP/1.1 206 Partial Content\n"
+        "Content-Range: bytes 3-5/450\n"
+        "Content-Length: 3\n",
+    },
+    {
+        "HTTP/1.1 200 OK\n"
+        "Content-Length: 5\n",
 
-    "HTTP/1.1 200 OK\n"
-    "Content-Range: bytes 3-5/5\n"
-    "Content-Length: 3\n",
+        "HTTP/1.1 200 OK\n"
+        "Content-Range: bytes 3-5/5\n"
+        "Content-Length: 3\n",
 
-    "HTTP/1.1 206 Partial Content\n"
-    "Content-Range: bytes 3-5/5\n"
-    "Content-Length: 3\n",
-  },
+        "HTTP/1.1 206 Partial Content\n"
+        "Content-Range: bytes 3-5/5\n"
+        "Content-Length: 3\n",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          UpdateWithNewRangeTest,
-                         testing::ValuesIn(update_range_tests));
+                         testing::ValuesIn(kUpdateRangeTests));
 
 TEST_F(HttpResponseHeadersCacheControlTest, AbsentMaxAgeReturnsFalse) {
   InitializeHeadersWithCacheControl("nocache");
@@ -2464,7 +2565,7 @@ TEST_P(MaxAgeEdgeCasesTest, MaxAgeEdgeCases) {
   }
 }
 
-const MaxAgeTestData max_age_tests[] = {
+constexpr MaxAgeTestData kMaxAgeTests[] = {
     {" 1 ", 1},  // Spaces are ignored.
     {"-1", std::nullopt},
     {"--1", std::nullopt},
@@ -2485,7 +2586,7 @@ const MaxAgeTestData max_age_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeadersCacheControl,
                          MaxAgeEdgeCasesTest,
-                         testing::ValuesIn(max_age_tests));
+                         testing::ValuesIn(kMaxAgeTests));
 
 TEST_F(HttpResponseHeadersCacheControlTest,
        AbsentStaleWhileRevalidateReturnsFalse) {
@@ -2547,7 +2648,7 @@ TEST_P(GetCurrentAgeTest, GetCurrentAge) {
   EXPECT_EQ(test.expected_age, age.InSeconds());
 }
 
-const struct GetCurrentAgeTestData get_current_age_tests[] = {
+constexpr GetCurrentAgeTestData kGetCurrentAgeTests[] = {
     // Without Date header.
     {"HTTP/1.1 200 OK\n"
      "Age: 2",
@@ -2564,8 +2665,8 @@ const struct GetCurrentAgeTestData get_current_age_tests[] = {
      "Age: 2\n",
      "Fri, 20 Jan 2011 10:40:08 GMT", "Fri, 20 Jan 2011 10:40:12 GMT",
      "Fri, 20 Jan 2011 10:40:14 GMT", 8},
-     // date_value > response_time without Age header.
-     {"HTTP/1.1 200 OK\n"
+    // date_value > response_time without Age header.
+    {"HTTP/1.1 200 OK\n"
      "Date: Fri, 20 Jan 2011 10:40:14 GMT\n",
      "Fri, 20 Jan 2011 10:40:08 GMT", "Fri, 20 Jan 2011 10:40:12 GMT",
      "Fri, 20 Jan 2011 10:40:14 GMT", 6},
@@ -2578,7 +2679,7 @@ const struct GetCurrentAgeTestData get_current_age_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          GetCurrentAgeTest,
-                         testing::ValuesIn(get_current_age_tests));
+                         testing::ValuesIn(kGetCurrentAgeTests));
 
 TEST(HttpResponseHeadersBuilderTest, Version) {
   for (HttpVersion version :
@@ -2711,7 +2812,7 @@ TEST_P(BuilderHeadersTest, Common) {
   EXPECT_EQ(expected_headers, output_headers);
 }
 
-const BuilderHeadersTestData builder_headers_tests[] = {
+const BuilderHeadersTestData kBuilderHeadersTests[] = {
     {// Single header.
      {{"Content-Type", "text/html"}},
 
@@ -2758,7 +2859,7 @@ const BuilderHeadersTestData builder_headers_tests[] = {
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
                          BuilderHeadersTest,
-                         testing::ValuesIn(builder_headers_tests));
+                         testing::ValuesIn(kBuilderHeadersTests));
 
 TEST(HttpResponseHeadersTest, StrictlyEqualsSuccess) {
   constexpr char kRawHeaders[] =

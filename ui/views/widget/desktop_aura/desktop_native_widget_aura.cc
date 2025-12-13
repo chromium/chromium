@@ -550,6 +550,18 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
   content_window_->SetFillsBoundsCompletely(true);
 }
 
+Widget::Widgets DesktopNativeWidgetAura::GetOwnedDesktopWidgets() {
+  Widget::Widgets widgets;
+  // Adds any Widgets owned by this NativeWidget's tree host.
+  DesktopWindowTreeHost::WindowTreeHosts owned_tree_hosts =
+      desktop_window_tree_host_->GetOwnedWindowTreeHosts();
+  for (aura::WindowTreeHost* owned_tree_host : owned_tree_hosts) {
+    widgets.merge(
+        NativeWidgetPrivate::GetAllOwnedWidgets(owned_tree_host->window()));
+  }
+  return widgets;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // DesktopNativeWidgetAura, internal::NativeWidgetPrivate implementation:
 void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
@@ -621,10 +633,10 @@ void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
       cursor_manager_ = new wm::CursorManager(
           std::unique_ptr<wm::NativeCursorManager>(native_cursor_manager_));
       cursor_manager_->SetDisplay(
-          display::Screen::GetScreen()->GetDisplayNearestWindow(
-              host_->window()));
-      if (features::IsSystemCursorSizeSupported()) {
-        native_cursor_manager_->InitCursorSizeObserver(cursor_manager_);
+          display::Screen::Get()->GetDisplayNearestWindow(host_->window()));
+      if (features::IsSystemCursorSizeSupported() ||
+          features::ShouldUseCursorEventHook()) {
+        native_cursor_manager_->InitSystemCursorObservers(cursor_manager_);
       }
     }
     aura::client::SetCursorClient(host_->window(), cursor_manager_);
@@ -710,9 +722,8 @@ void DesktopNativeWidgetAura::ReparentNativeViewImpl(
                  : gfx::kNullAcceleratedWidget);
 }
 
-std::unique_ptr<NonClientFrameView>
-DesktopNativeWidgetAura::CreateNonClientFrameView() {
-  return desktop_window_tree_host_->CreateNonClientFrameView();
+std::unique_ptr<FrameView> DesktopNativeWidgetAura::CreateFrameView() {
+  return desktop_window_tree_host_->CreateFrameView();
 }
 
 bool DesktopNativeWidgetAura::ShouldUseNativeFrame() const {
@@ -859,10 +870,8 @@ void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
   desktop_window_tree_host_->InitModalType(modal_type);
 }
 
-void DesktopNativeWidgetAura::OnWidgetThemeChanged(
-    ui::ColorProviderKey::ColorMode color_mode,
-    std::optional<SkColor> background_color) {
-  desktop_window_tree_host_->OnWidgetThemeChanged(color_mode, background_color);
+void DesktopNativeWidgetAura::SetBackgroundColor(SkColor background_color) {
+  desktop_window_tree_host_->SetBackgroundColor(background_color);
 }
 
 gfx::Rect DesktopNativeWidgetAura::GetWindowBoundsInScreen() const {

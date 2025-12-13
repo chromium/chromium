@@ -21,31 +21,33 @@
 #ifndef __G_NETWORKING_H__
 #define __G_NETWORKING_H__
 
-#include <gio/gio-visibility.h>
 #include <glib.h>
+#include <gio/gio-visibility.h>
 
 #ifdef G_OS_WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-#include <iphlpapi.h>
-#include <mswsock.h>
 #include <windns.h>
+#include <mswsock.h>
 #include <wspiapi.h>
+#include <iphlpapi.h>
 #undef interface
 
 #else /* !G_OS_WIN32 */
 
-#include <arpa/inet.h>
-#include <arpa/nameser.h>
-#include <net/if.h>
+#include <sys/types.h>
+
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
 #include <resolv.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <sys/un.h>
+#include <net/if.h>
+
+#include <arpa/inet.h>
+#include <arpa/nameser.h>
+
 
 #ifndef __GI_SCANNER__
 
@@ -61,23 +63,22 @@
 /* CMSG_LEN and CMSG_SPACE are defined by RFC 2292, but missing on
  * some older platforms.
  */
-#define CMSG_LEN(len) ((size_t)CMSG_DATA((struct cmsghdr*)NULL) + (len))
+#define CMSG_LEN(len) ((size_t)CMSG_DATA((struct cmsghdr *)NULL) + (len))
 
 /* CMSG_SPACE must add at least as much padding as CMSG_NXTHDR()
  * adds. We overestimate here.
  */
-#define GLIB_ALIGN_TO_SIZEOF(len, obj) \
-  (((len) + sizeof(obj) - 1) & ~(sizeof(obj) - 1))
-#define CMSG_SPACE(len) GLIB_ALIGN_TO_SIZEOF(CMSG_LEN(len), struct cmsghdr)
+#define GLIB_ALIGN_TO_SIZEOF(len, obj) (((len) + sizeof (obj) - 1) & ~(sizeof (obj) - 1))
+#define CMSG_SPACE(len) GLIB_ALIGN_TO_SIZEOF (CMSG_LEN (len), struct cmsghdr)
 #endif
 #endif
 
-#endif /* !__GI_SCANNER__ */
+#endif  /* !__GI_SCANNER__ */
 
 G_BEGIN_DECLS
 
 GIO_AVAILABLE_IN_2_36
-void g_networking_init(void);
+void g_networking_init (void);
 
 G_END_DECLS
 

@@ -11,6 +11,7 @@ class AutocompleteController;
 @class OmniboxAutocompleteController;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
+enum class OmniboxPresentationContext;
 @protocol ToolbarOmniboxConsumer;
 
 /// Coordinator for the Omnibox Popup.
@@ -22,6 +23,8 @@ class AutocompleteController;
                         (AutocompleteController*)autocompleteController
              omniboxAutocompleteController:
                  (OmniboxAutocompleteController*)omniboxAutocompleteController
+                       presentationContext:
+                           (OmniboxPresentationContext)presentationContext
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -37,8 +40,7 @@ class AutocompleteController;
 /// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxKeyboardDelegate>
     KeyboardDelegate;
-
-// Returns the toolbar omnibox consumer.
+/// Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 
 /// Toggle visibility of the omnibox debugger view.

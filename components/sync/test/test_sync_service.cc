@@ -11,10 +11,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
-#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync_enums.pb.h"
+#include "components/sync/service/sync_error.h"
 #include "components/sync/service/sync_token_status.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -133,6 +134,10 @@ void TestSyncService::SetFailedDataTypes(const DataTypeSet& types) {
   failed_data_types_ = types;
 }
 
+void TestSyncService::SetBookmarksLimitExceeded(bool exceeded) {
+  bookmarks_limit_exceeded_ = exceeded;
+}
+
 void TestSyncService::SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot) {
   last_cycle_snapshot_ = snapshot;
 }
@@ -225,22 +230,48 @@ SyncService::TransportState TestSyncService::GetTransportState() const {
 
 SyncService::UserActionableError TestSyncService::GetUserActionableError()
     const {
-  if (GetTransportState() == TransportState::PAUSED) {
+#if !BUILDFLAG(IS_IOS)
+  if (HasSyncConsent()) {
+    if (!user_settings_.IsInitialSyncFeatureSetupComplete()) {
+      return UserActionableError::kNeedsSettingsConfirmation;
+    }
+    // RequiresClientUpgrade() is unrecoverable, but is treated separately
+    // below.
+    if (HasUnrecoverableError() &&
+        detailed_sync_status_.sync_protocol_error.action !=
+            syncer::UPGRADE_CLIENT) {
+      return UserActionableError::kUnrecoverableError;
+    }
+  }
+#endif  // !BUILDFLAG(IS_IOS)
+
+  if (GetAuthError().state() != GoogleServiceAuthError::NONE) {
     return UserActionableError::kSignInNeedsUpdate;
+  }
+  if (detailed_sync_status_.sync_protocol_error.action ==
+      syncer::UPGRADE_CLIENT) {
+    return UserActionableError::kNeedsClientUpgrade;
   }
   if (user_settings_.IsPassphraseRequiredForPreferredDataTypes()) {
     return UserActionableError::kNeedsPassphrase;
   }
-  if (user_settings_.IsTrustedVaultKeyRequired()) {
-    return UserActionableError::kNeedsTrustedVaultKeyForEverything;
-  }
   if (user_settings_.IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
-    return UserActionableError::kNeedsTrustedVaultKeyForPasswords;
+    return user_settings_.IsEncryptEverythingEnabled()
+               ? UserActionableError::kNeedsTrustedVaultKeyForEverything
+               : UserActionableError::kNeedsTrustedVaultKeyForPasswords;
   }
   if (user_settings_.IsTrustedVaultRecoverabilityDegraded()) {
-    return UserActionableError::
-        kTrustedVaultRecoverabilityDegradedForEverything;
+    return user_settings_.IsEncryptEverythingEnabled()
+               ? UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForEverything
+               : UserActionableError::
+                     kTrustedVaultRecoverabilityDegradedForPasswords;
   }
+
+  if (bookmarks_limit_exceeded_) {
+    return UserActionableError::kBookmarksLimitExceeded;
+  }
+
   return UserActionableError::kNone;
 }
 
@@ -270,11 +301,6 @@ bool TestSyncService::HasCachedPersistentAuthErrorForMetrics() const {
 
 base::Time TestSyncService::GetAuthErrorTime() const {
   return base::Time();
-}
-
-bool TestSyncService::RequiresClientUpgrade() const {
-  return detailed_sync_status_.sync_protocol_error.action ==
-         syncer::UPGRADE_CLIENT;
 }
 
 std::unique_ptr<SyncSetupInProgressHandle>
@@ -327,9 +353,10 @@ DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(DataType type) {}
 
-void TestSyncService::TriggerRefresh(const DataTypeSet& types) {
+void TestSyncService::TriggerRefresh(TriggerRefreshSource source,
+                                     const DataTypeSet& types) {
   if (trigger_refresh_cb_) {
-    trigger_refresh_cb_.Run(types);
+    trigger_refresh_cb_.Run(source, types);
   }
 }
 
@@ -465,9 +492,13 @@ void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
     DataType data_type,
     std::vector<LocalDataItemModel::DataId> items) {}
 
+void TestSyncService::AcknowledgeBookmarksLimitExceededError() {
+  bookmarks_limit_exceeded_ = false;
+}
+
 void TestSyncService::SetTriggerRefreshCallback(
-    const base::RepeatingCallback<void(syncer::DataTypeSet)>&
-        trigger_refresh_cb) {
+    const base::RepeatingCallback<
+        void(TriggerRefreshSource, const DataTypeSet&)>& trigger_refresh_cb) {
   trigger_refresh_cb_ = trigger_refresh_cb;
 }
 

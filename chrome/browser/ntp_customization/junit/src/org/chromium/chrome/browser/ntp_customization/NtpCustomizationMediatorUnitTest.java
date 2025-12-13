@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -16,22 +17,30 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.CHROME_COLORS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MVT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +49,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -49,6 +57,9 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -59,6 +70,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCustomizationMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -72,6 +84,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
     @Mock private Profile mProfile;
+    @Mock private NtpCustomizationConfigManager mConfigManager;
 
     private NtpCustomizationMediator mMediator;
     private Map<Integer, Integer> mViewFlipperMap;
@@ -86,8 +99,10 @@ public class NtpCustomizationMediatorUnitTest {
         NtpCustomizationMediator.setPrefForTesting(mPrefService);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedFeatures.setFakePrefsForTest(mPrefService);
+        NtpCustomizationConfigManager.setInstanceForTesting(mConfigManager);
         mMediator =
                 new NtpCustomizationMediator(
+                        mContext,
                         mBottomSheetController,
                         mBottomSheetContent,
                         mViewFlipperPropertyModel,
@@ -95,6 +110,11 @@ public class NtpCustomizationMediatorUnitTest {
                         mProfileSupplier);
         mViewFlipperMap = mMediator.getViewFlipperMapForTesting();
         mListDelegate = mMediator.createListDelegate();
+    }
+
+    @After
+    public void tearDown() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 
     @Test
@@ -281,6 +301,29 @@ public class NtpCustomizationMediatorUnitTest {
         observer.onSheetClosed(0); // Closes the sheet by clicking the system back button.
         verify(mBottomSheetContent).onSheetClosed();
         verify(mBottomSheetController).removeObserver(eq(observer));
+
+        NtpThemeStateProvider.setInstanceForTesting(null);
+    }
+
+    @Test
+    public void testBottomSheetObserver_notifyApplyThemeChanges() {
+        BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
+        NtpThemeStateProvider ntpThemeStateProvider = mock(NtpThemeStateProvider.class);
+        NtpThemeStateProvider.setInstanceForTesting(ntpThemeStateProvider);
+
+        // Verifies notifyApplyThemeChanges() is called when a different theme color is selected.
+        mMediator.onNewColorSelected(/* isDifferentColor= */ true);
+        observer.onSheetClosed(2);
+        verify(ntpThemeStateProvider).notifyApplyThemeChanges();
+
+        clearInvocations(ntpThemeStateProvider);
+
+        // Verifies notifyApplyThemeChanges() is NOT called when theme color isn't changed.
+        mMediator.onNewColorSelected(/* isDifferentColor= */ false);
+        observer.onSheetClosed(2);
+        verify(ntpThemeStateProvider, never()).notifyApplyThemeChanges();
+
+        NtpThemeStateProvider.setInstanceForTesting(null);
     }
 
     @Test
@@ -371,5 +414,80 @@ public class NtpCustomizationMediatorUnitTest {
         mMediator.updateFeedSectionSubtitle(/* isFeedVisible= */ false);
         verify(mContainerPropertyModel)
                 .set(eq(MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE), eq(R.string.text_off));
+    }
+
+    @Test
+    public void testBackPressOnThemeBottomSheet() {
+        mViewFlipperMap.put(THEME_COLLECTIONS, 0);
+        mViewFlipperMap.put(THEME, 1);
+        mViewFlipperMap.put(MAIN, 2);
+
+        mMediator.setCurrentBottomSheetForTesting(SINGLE_THEME_COLLECTION);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME_COLLECTIONS, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(0));
+
+        mMediator.setCurrentBottomSheetForTesting(THEME_COLLECTIONS);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(1));
+
+        mMediator.setCurrentBottomSheetForTesting(CHROME_COLORS);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(THEME, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel, times(2)).set(eq(LAYOUT_TO_DISPLAY), eq(1));
+
+        mMediator.setCurrentBottomSheetForTesting(THEME);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        mMediator.backPressOnCurrentBottomSheet();
+        assertEquals(MAIN, (int) mMediator.getCurrentBottomSheetType());
+        verify(mViewFlipperPropertyModel).set(eq(LAYOUT_TO_DISPLAY), eq(2));
+    }
+
+    @Test
+    public void testOnNewThemeCollectionImageSelected_onSheetClosed() {
+        BottomSheetObserver observer = mMediator.getBottomSheetObserverForTesting();
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+
+        // Verifies pickAndSavePrimaryColor() is called when a new theme collection image is
+        // selected and the background image type is THEME_COLLECTION.
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mMediator.onNewThemeCollectionImageSelected(bitmap);
+        when(mConfigManager.getBackgroundImageType()).thenReturn(THEME_COLLECTION);
+
+        observer.onSheetClosed(0);
+
+        assertNotEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+
+        // Verifies pickAndSavePrimaryColor() is NOT called if background image type is not
+        // THEME_COLLECTION.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        when(mConfigManager.getBackgroundImageType())
+                .thenReturn(NtpBackgroundImageType.IMAGE_FROM_DISK);
+        mMediator.onNewThemeCollectionImageSelected(bitmap);
+        observer.onSheetClosed(0);
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+
+        // Verifies pickAndSavePrimaryColor() is not called when mNewThemeCollectionImage is null.
+        mMediator.onNewThemeCollectionImageSelected(null);
+        // Clean up shared preference for the test.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        when(mConfigManager.getBackgroundImageType()).thenReturn(THEME_COLLECTION);
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
+
+        observer.onSheetClosed(0);
+
+        assertEquals(
+                NtpThemeColorInfo.COLOR_NOT_SET,
+                NtpCustomizationUtils.getCustomizedPrimaryColorFromSharedPreference());
     }
 }

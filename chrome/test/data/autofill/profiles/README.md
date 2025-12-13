@@ -1,5 +1,7 @@
-profiles.json contains descriptions of fully-structured profiles intended for
+The JSON files in this directory contains descriptions of profiles intended for
 manual testing. They can be imported using the following command line flag:
---autofill-profiles-for-manual-testing=path/to/profiles.json
+```
+--autofill-profiles-for-manual-testing=path/to/json
+```
 This overwrites all existing profiles permanently. It is therefore
-recommended to use a temporary --user-data-dir=/tmp/...
+recommended to use a temporary user data dir: `--user-data-dir=/tmp/...`

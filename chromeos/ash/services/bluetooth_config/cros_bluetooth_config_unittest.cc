@@ -18,6 +18,7 @@
 #include "chromeos/ash/services/bluetooth_config/fake_system_properties_observer.h"
 #include "chromeos/ash/services/bluetooth_config/initializer_impl.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -86,7 +87,8 @@ class CrosBluetoothConfigTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<user_manager::FakeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<FakeFastPairDelegate> fake_fast_pair_delegate_;
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;

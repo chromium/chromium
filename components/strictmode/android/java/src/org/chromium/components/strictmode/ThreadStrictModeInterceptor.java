@@ -27,10 +27,10 @@ public interface ThreadStrictModeInterceptor {
     void install(ThreadPolicy detectors);
 
     /**
-     * Builds ThreadStrictModeInterceptor with the death penalty and with
-     * {@link KnownViolations} exempted.
+     * Builds ThreadStrictModeInterceptor with the death penalty and with {@link KnownViolations}
+     * exempted.
      */
-    public static ThreadStrictModeInterceptor buildWithDeathPenaltyAndKnownViolationExemptions() {
+    static ThreadStrictModeInterceptor buildWithDeathPenaltyAndKnownViolationExemptions() {
         ThreadStrictModeInterceptor.Builder threadInterceptor =
                 new ThreadStrictModeInterceptor.Builder();
         threadInterceptor.replaceAllPenaltiesWithDeathPenalty();

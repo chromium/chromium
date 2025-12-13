@@ -539,20 +539,52 @@ TEST(FoundationUtilTest, CFDataToSpan) {
 #define EXPECT_LOG_EQ(expected, val) \
   EXPECT_EQ(expected, (std::ostringstream() << (val)).str())
 
-TEST(FoundationLoggingTest, ObjCObject) {
-  EXPECT_LOG_EQ("Hello, world!", @"Hello, world!");
+TEST(FoundationLoggingTest, CFErrorRef) {
+  EXPECT_LOG_EQ("(null CFErrorRef)", static_cast<CFErrorRef>(nullptr));
+  ScopedCFTypeRef<CFErrorRef> error(
+      CFErrorCreate(kCFAllocatorDefault, kCFErrorDomainOSStatus, -50, nullptr));
+  EXPECT_LOG_EQ("Code: -50 Domain: NSOSStatusErrorDomain Desc: The operation "
+                "couldn’t be completed. (OSStatus error -50.)",
+                error.get());
 }
 
-TEST(FoundationLoggingTest, ObjCNil) {
-  EXPECT_LOG_EQ("(nil)", static_cast<id>(nil));
+TEST(FoundationLoggingTest, CFStringRef) {
+  EXPECT_LOG_EQ("(null CFStringRef)", static_cast<CFStringRef>(nullptr));
+  EXPECT_LOG_EQ("Hello, world!", CFSTR("Hello, world!"));
 }
 
 TEST(FoundationLoggingTest, CFRange) {
   EXPECT_LOG_EQ("{0, 100}", CFRangeMake(0, 100));
 }
 
+TEST(FoundationLoggingTest, ObjCObject) {
+  EXPECT_LOG_EQ("Hello, world!", @"Hello, world!");
+  NSArray* array = @[ @1, @2, @3 ];
+  EXPECT_LOG_EQ("(\n    1,\n    2,\n    3\n)", array);
+  NSDictionary* dict = @{@"key1" : @"value1", @"key2" : @"value2"};
+  EXPECT_LOG_EQ("{\n    key1 = value1;\n    key2 = value2;\n}", dict);
+}
+
+TEST(FoundationLoggingTest, ObjCNil) {
+  EXPECT_LOG_EQ("(nil)", static_cast<id>(nil));
+}
+
 TEST(FoundationLoggingTest, NSRange) {
   EXPECT_LOG_EQ("{0, 100}", NSMakeRange(0, 100));
 }
+
+#if BUILDFLAG(IS_MAC)
+
+TEST(FoundationLoggingTest, NSPoint) {
+  EXPECT_LOG_EQ("{50, 100}", NSMakePoint(50, 100));
+}
+TEST(FoundationLoggingTest, NSRect) {
+  EXPECT_LOG_EQ("{{10, 20}, {30, 40}}", NSMakeRect(10, 20, 30, 40));
+}
+TEST(FoundationLoggingTest, NSSize) {
+  EXPECT_LOG_EQ("{0, 100}", NSMakeSize(0, 100));
+}
+
+#endif  // IS_MAC
 
 }  // namespace base::apple

@@ -40,7 +40,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -269,7 +270,8 @@ public class JsSandboxServiceTest {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_ISOLATE_TERMINATION));
 
-            Vector<ListenableFuture<String>> resultFutures = new Vector<ListenableFuture<String>>();
+            List<ListenableFuture<String>> resultFutures =
+                    new ArrayList<ListenableFuture<String>>();
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                 for (int i = 0; i < num_of_evaluations; i++) {
                     ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
@@ -279,7 +281,7 @@ public class JsSandboxServiceTest {
 
             for (int i = 0; i < num_of_evaluations; i++) {
                 try {
-                    resultFutures.elementAt(i).get(5, TimeUnit.SECONDS);
+                    resultFutures.get(i).get(5, TimeUnit.SECONDS);
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     if (!(e.getCause() instanceof IsolateTerminatedException)) {
@@ -981,6 +983,7 @@ public class JsSandboxServiceTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/450361757")
     public void testArrayBufferSizeEnforced() throws Throwable {
         final long maxHeapSize = REASONABLE_HEAP_SIZE;
         // V8 cannot sparsely allocate array buffers, so no fill required.

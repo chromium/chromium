@@ -207,7 +207,7 @@ void InspectorPerformanceTimelineAgent::CollectEntries(AtomicString type,
     if (!window)
       continue;
     WindowPerformance* performance = DOMWindowPerformance::performance(*window);
-    for (Member<PerformanceEntry> entry :
+    for (Member<PerformanceEntry>& entry :
          performance->getBufferedEntriesByType(type)) {
       events->push_back(
           BuildProtocolEvent(frame_id, performance->timeOrigin(), entry));

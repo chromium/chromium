@@ -9,7 +9,6 @@ import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_
 import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import type {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
@@ -76,7 +75,7 @@ suite('acceleratorRowTest', function() {
     assertEquals(
         description,
         rowElement.shadowRoot!.querySelector(
-                                  '#descriptionText')!.textContent!.trim());
+                                  '#descriptionText')!.textContent.trim());
 
     const keys1: NodeListOf<ShortcutInputKeyElement> =
         acceleratorElements[0]!.shadowRoot!.querySelectorAll(
@@ -85,12 +84,12 @@ suite('acceleratorRowTest', function() {
     assertEquals(3, keys1.length);
     assertEquals(
         'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'shift',
-        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'g', keys1[2]!.shadowRoot!.querySelector('#key')!.textContent.trim());
 
     const keys2 = acceleratorElements[1]!.shadowRoot!.querySelectorAll(
         'shortcut-input-key');
@@ -98,9 +97,9 @@ suite('acceleratorRowTest', function() {
     assertEquals(2, keys2.length);
     assertEquals(
         'ctrl',
-        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys2[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
-        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        'c', keys2[1]!.shadowRoot!.querySelector('#key')!.textContent.trim());
   });
 
   test('ShowDialogOnClickWhenCustomizationEnabled', async () => {
@@ -179,7 +178,7 @@ suite('acceleratorRowTest', function() {
     rowElement = initAcceleratorRowElement(LayoutStyle.kText);
 
     const accelerators = [createTextAcceleratorInfo([{
-      text: stringToMojoString16('ctrl'),
+      text: 'ctrl',
       type: TextAcceleratorPartType.kModifier,
     }])];
 
@@ -227,7 +226,7 @@ suite('acceleratorRowTest', function() {
     assertEquals(
         description,
         rowElement.shadowRoot!.querySelector(
-                                  '#descriptionText')!.textContent!.trim());
+                                  '#descriptionText')!.textContent.trim());
 
     // Because rowElement.layoutStyle is kDefault, we don't expect any
     // 'text-accelerator' elements to be shown, even though the property
@@ -299,23 +298,23 @@ suite('acceleratorRowTest', function() {
     const accelerators = [createTextAcceleratorInfo(
         [
           {
-            text: stringToMojoString16('ctrl'),
+            text: 'ctrl',
             type: TextAcceleratorPartType.kModifier,
           },
           {
-            text: stringToMojoString16(' + '),
+            text: ' + ',
             type: TextAcceleratorPartType.kDelimiter,
           },
           {
-            text: stringToMojoString16('1 '),
+            text: '1 ',
             type: TextAcceleratorPartType.kKey,
           },
           {
-            text: stringToMojoString16('through '),
+            text: 'through ',
             type: TextAcceleratorPartType.kPlainText,
           },
           {
-            text: stringToMojoString16('8'),
+            text: '8',
             type: TextAcceleratorPartType.kKey,
           },
         ],

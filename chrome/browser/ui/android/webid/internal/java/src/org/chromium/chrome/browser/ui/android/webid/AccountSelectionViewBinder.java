@@ -788,6 +788,7 @@ class AccountSelectionViewBinder {
         }
 
         if (key == HeaderProperties.RP_FOR_DISPLAY
+                || key == HeaderProperties.IFRAME_FOR_DISPLAY
                 || key == HeaderProperties.IDP_FOR_DISPLAY
                 || key == HeaderProperties.TYPE
                 || key == HeaderProperties.RP_CONTEXT
@@ -802,7 +803,9 @@ class AccountSelectionViewBinder {
             String subtitle =
                     computeHeaderSubtitle(
                             resources,
+                            model.get(HeaderProperties.TYPE),
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
+                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE),
                             model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER),
                             model.get(HeaderProperties.IS_MULTIPLE_IDPS));
@@ -815,6 +818,7 @@ class AccountSelectionViewBinder {
                 }
                 headerSubtitleText.setText(subtitle);
                 headerSubtitleText.setMovementMethod(LinkMovementMethod.getInstance());
+                headerSubtitleText.setVisibility(View.VISIBLE);
             } else {
                 headerSubtitleText.setVisibility(View.GONE);
             }
@@ -824,6 +828,7 @@ class AccountSelectionViewBinder {
                             resources,
                             headerType,
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
+                            model.get(HeaderProperties.IFRAME_FOR_DISPLAY),
                             model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_CONTEXT),
                             model.get(HeaderProperties.RP_MODE),
@@ -945,31 +950,57 @@ class AccountSelectionViewBinder {
     private static String computeHeaderTitle(
             Resources resources,
             HeaderProperties.HeaderType type,
-            String rpUrl,
+            String topLevelUrl,
+            String iframeUrl,
             String idpUrl,
             @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleIdps) {
+        if (topLevelUrl.isEmpty()) {
+            return "";
+        }
         @StringRes int titleStringId;
         // In single IDP active mode, show the title with RP and IDP.
-        if (rpMode == RpMode.ACTIVE && !isMultipleIdps) {
+        if (rpMode == RpMode.ACTIVE) {
+            // We do not currently support multiple IDPs in active mode.
+            assert !isMultipleIdps;
+            // If the iframe is not present, use only the IDP string in the title.
+            if (iframeUrl.isEmpty()) {
+                switch (rpContext) {
+                    case RpContext.SIGN_UP:
+                        titleStringId =
+                                R.string.account_selection_button_mode_sheet_title_explicit_signup;
+                        break;
+                    case RpContext.USE:
+                        titleStringId =
+                                R.string.account_selection_button_mode_sheet_title_explicit_use;
+                        break;
+                    case RpContext.CONTINUE:
+                        titleStringId =
+                                R.string
+                                        .account_selection_button_mode_sheet_title_explicit_continue;
+                        break;
+                    default:
+                        titleStringId =
+                                R.string.account_selection_button_mode_sheet_title_explicit_signin;
+                }
+                return String.format(resources.getString(titleStringId), idpUrl);
+            }
+            // Otherwise, use both IDP and iframe strings in the title.
             switch (rpContext) {
                 case RpContext.SIGN_UP:
-                    titleStringId =
-                            R.string.account_selection_button_mode_sheet_title_explicit_signup;
+                    titleStringId = R.string.account_selection_sheet_title_explicit_signup;
                     break;
                 case RpContext.USE:
-                    titleStringId = R.string.account_selection_button_mode_sheet_title_explicit_use;
+                    titleStringId = R.string.account_selection_sheet_title_explicit_use;
                     break;
                 case RpContext.CONTINUE:
-                    titleStringId =
-                            R.string.account_selection_button_mode_sheet_title_explicit_continue;
+                    titleStringId = R.string.account_selection_sheet_title_explicit_continue;
                     break;
                 default:
-                    titleStringId =
-                            R.string.account_selection_button_mode_sheet_title_explicit_signin;
+                    titleStringId = R.string.account_selection_sheet_title_explicit_signin;
             }
-            return String.format(resources.getString(titleStringId), idpUrl);
+            return String.format(resources.getString(titleStringId), iframeUrl, idpUrl);
         }
 
         // In passive mode, we change the title when signing in the user.
@@ -979,6 +1010,8 @@ class AccountSelectionViewBinder {
         if (rpMode == RpMode.PASSIVE && type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
             return resources.getString(getVerifyHeaderAutoReauthnStringId());
         }
+
+        String rpUrl = iframeUrl.isEmpty() ? topLevelUrl : iframeUrl;
 
         // If there are multiple IDPs, show the title with just the RP.
         if (isMultipleIdps) {
@@ -1009,10 +1042,25 @@ class AccountSelectionViewBinder {
 
     private static String computeHeaderSubtitle(
             Resources resources,
+            HeaderProperties.HeaderType type,
             String rpUrl,
+            String iframeUrl,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleAccountChooser,
             Boolean isMultipleIdps) {
+        if (type == HeaderProperties.HeaderType.VERIFY
+                || type == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN) {
+            return "";
+        }
+        if (rpUrl.isEmpty()) {
+            return "";
+        }
+        if (!iframeUrl.isEmpty()) {
+            return String.format(
+                    resources.getString(R.string.account_selection_sheet_subtitle_for_embed),
+                    rpUrl,
+                    iframeUrl);
+        }
         if (rpMode == RpMode.PASSIVE || isMultipleIdps) return "";
 
         if (isMultipleAccountChooser) {

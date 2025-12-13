@@ -21,6 +21,7 @@ import types
 from typing import Any, Type
 import unittest
 
+from telemetry.internal.actions import page_action
 from telemetry.internal.browser import browser_options as bo
 from telemetry.internal.platform import gpu_info as telemetry_gpu_info
 from telemetry.internal.platform import system_info as si_module
@@ -230,6 +231,15 @@ class GpuIntegrationTest(
     if cls._finder_options.extra_overlay_config_json:
       overlay_support.ParseOverlayJsonFile(
           cls._finder_options.extra_overlay_config_json)
+    # Tests for web-engine-shell and cast-streaming-shell are running on very
+    # less performant smart display devices and also use DCHECK-enabled
+    # binaries. The combination can cause a significant slowness of the
+    # javascript execution. So the default timeout used by javascript execution
+    # is explicitly doubled to avoid flakiness.
+    if cls._finder_options.browser_type in [
+        'web-engine-shell', 'cast-streaming-shell'
+    ]:
+      page_action.DEFAULT_TIMEOUT = 120
 
   @classmethod
   def AddCommandlineArgs(cls, parser: ct.CmdArgParser) -> None:
@@ -301,6 +311,9 @@ class GpuIntegrationTest(
         # results. (Note that this argument takes a list of IPH that will be
         # allowed; specifying none disables all IPH.)
         '--propagate-iph-for-testing',
+        # TODO(crbug.com/458424927): Remove this once the feature no longer
+        # causes test failures.
+        '--disable-features=SessionRestoreInfobar',
     ]
     if cls._SuiteSupportsParallelTests():
       # When running tests in parallel, windows can be treated as occluded if a
@@ -565,8 +578,9 @@ class GpuIntegrationTest(
 
     # chrome://gpu does not exist for Webview or the Fuchsia cast streaming
     # shell.
-    if cls.browser.browser_type in ('android-webview-instrumentation',
-                                    'cast-streaming-shell'):
+    if (isinstance(cls.browser.browser_type, str)
+        and ('webview' in cls.browser.browser_type
+             or cls.browser.browser_type == 'cast-streaming-shell')):
       return
 
     # TODO(crbug.com/376498163): Remove this early return once Telemetry's
@@ -627,10 +641,24 @@ class GpuIntegrationTest(
       cls.SetBrowserOptions(cls.GetOriginalFinderOptions())
       cls.StartBrowser()
     else:
+      is_cros = cls.browser.platform.GetOSName() == 'chromeos'
+      if is_cros:
+        logging.info('crbug.com/449866954: Stopping browser')
       cls.StopBrowser()
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Browser stopped, restarting TS Proxy')
       cls.platform.RestartTsProxyServerOnRemotePlatforms()
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Proxy restarted, setting browser options')
       cls.SetBrowserOptions(cls._finder_options)
+      if is_cros:
+        logging.info(
+            'crbug.com/449866954: Browser options set, starting browser')
       cls.StartBrowser()
+      if is_cros:
+        logging.info('crbug.com/449866954: Browser started')
 
   @classmethod
   def _ClearFeatureValues(cls) -> None:
@@ -1359,6 +1387,7 @@ class GpuIntegrationTest(
         'qualcomm-adreno-(tm)-740',  # android-sm-s911u1
         'arm-mali-g78',  # android-pixel-6
         'nvidia-nvidia-tegra',  # android-shield-android-tv
+        'imagination-technologies-0x71061212',  # android-pixel-10
         'vmware,',  # VMs
         'vmware,-0x1050',  # ChromeOS VMs
         'mesa/x.org',  # ChromeOS VMs

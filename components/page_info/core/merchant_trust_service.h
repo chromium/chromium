@@ -27,10 +27,6 @@ class OptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace page_info {
 
 enum class MerchantFamiliarity {
@@ -61,13 +57,8 @@ static constexpr double kMerchantFamiliarityThreshold = 5;
 // Provides merchant information for a web site.
 class MerchantTrustService : public KeyedService {
  public:
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   class Delegate {
    public:
-    // Launches the evaluation survey based on the experiment state.
-    virtual void ShowEvaluationSurvey() = 0;
-
     virtual double GetSiteEngagementScore(const GURL url) = 0;
 
     virtual ~Delegate() = default;
@@ -90,10 +81,6 @@ class MerchantTrustService : public KeyedService {
   // Asynchronously fetches merchant trust information for the given URL.
   virtual void GetMerchantTrustInfo(const GURL& url,
                             MerchantDataCallback callback) const;
-
-  // Attempt to show an evaluation survey if the conditions apply. It will show
-  // either a control or an experiment survey depending on the feature state.
-  virtual void MaybeShowEvaluationSurvey();
 
   virtual void RecordMerchantTrustInteraction(
       const GURL& url,
@@ -126,10 +113,6 @@ class MerchantTrustService : public KeyedService {
 
   std::optional<page_info::MerchantData> GetMerchantDataFromProto(
       const std::optional<commerce::MerchantTrustSignalsV2>& metadata) const;
-
-  // Whether the evaluation survey should be shown based on how long ago user
-  // interacted with the feature.
-  bool CanShowEvaluationSurvey();
 
   void RecordEngagementScore(const GURL& url,
                              MerchantTrustInteraction interaction) const;

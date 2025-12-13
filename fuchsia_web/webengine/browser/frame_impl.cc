@@ -46,6 +46,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -224,7 +225,7 @@ std::optional<blink::PermissionType> FidlPermissionTypeToContentPermissionType(
 void HandleMediaPermissionsRequestResult(
     const content::MediaStreamRequest& request,
     content::MediaResponseCallback callback,
-    const std::vector<blink::mojom::PermissionStatus>& result) {
+    const std::vector<content::PermissionResult>& result) {
   // TODO(crbug.com/40216442): Generalize to multiple streams.
   blink::mojom::StreamDevicesPtr devices = blink::mojom::StreamDevices::New();
 
@@ -232,7 +233,7 @@ void HandleMediaPermissionsRequestResult(
 
   if (request.audio_type ==
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
+    if (result[result_pos].status == blink::mojom::PermissionStatus::GRANTED) {
       devices->audio_device = blink::MediaStreamDevice(
           request.audio_type,
           request.requested_audio_device_ids.empty()
@@ -245,7 +246,7 @@ void HandleMediaPermissionsRequestResult(
 
   if (request.video_type ==
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    if (result[result_pos] == blink::mojom::PermissionStatus::GRANTED) {
+    if (result[result_pos].status == blink::mojom::PermissionStatus::GRANTED) {
       devices->video_device = blink::MediaStreamDevice(
           request.video_type,
           request.requested_video_device_ids.empty()
@@ -270,13 +271,14 @@ void HandleMediaPermissionsRequestResult(
 std::optional<url::Origin> ParseAndValidateWebOrigin(
     const std::string& origin_str) {
   GURL origin_url(origin_str);
-  if (!origin_url.username().empty() || !origin_url.password().empty() ||
-      !origin_url.query().empty() || !origin_url.ref().empty()) {
+  if (!origin_url.GetUsername().empty() || !origin_url.GetPassword().empty() ||
+      !origin_url.GetQuery().empty() || !origin_url.GetRef().empty()) {
     return std::nullopt;
   }
 
-  if (!origin_url.path().empty() && origin_url.path() != "/")
+  if (!origin_url.GetPath().empty() && origin_url.GetPath() != "/") {
     return std::nullopt;
+  }
 
   auto origin = url::Origin::Create(origin_url);
   if (origin.opaque())
@@ -324,6 +326,7 @@ class AudioStreamBrokerFactory final
       int render_frame_id,
       const std::string& device_id,
       const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
       uint32_t shared_memory_count,
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
@@ -331,7 +334,7 @@ class AudioStreamBrokerFactory final
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client) final {
     return base_factory_->CreateAudioInputStreamBroker(
-        render_process_id, render_frame_id, device_id, params,
+        render_process_id, render_frame_id, device_id, params, group_id,
         shared_memory_count, enable_agc, std::move(processing_config),
         std::move(deleter), std::move(renderer_factory_client));
   }
@@ -1018,9 +1021,9 @@ void FrameImpl::PostMessage(std::string origin,
     return;
   }
 
-  std::optional<std::u16string> origin_utf16;
+  std::optional<url::Origin> target_origin;
   if (origin != kWildcardOrigin)
-    origin_utf16 = base::UTF8ToUTF16(origin);
+    target_origin = url::Origin::Create(GURL(origin));
 
   std::optional<std::u16string> data_utf16 =
       base::ReadUTF8FromVMOAsUTF16(message.data());
@@ -1053,7 +1056,8 @@ void FrameImpl::PostMessage(std::string origin,
   }
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents_->GetPrimaryPage(), std::u16string(), origin_utf16,
+      web_contents_->GetPrimaryPage(), nullptr,
+      target_origin.has_value() ? &(*target_origin) : nullptr,
       std::move(*data_utf16), std::move(message_ports));
   callback(fpromise::ok());
 }

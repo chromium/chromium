@@ -27,7 +27,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//chromeos/ash/services/orca/public/cpp",
     "//chromeos/ash/services/orca/public/mojom",
-    "//mojo/public/cpp/bindings:bindings",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]

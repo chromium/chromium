@@ -11,6 +11,7 @@
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
+#include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/invalidation/profile_invalidation_provider.h"
@@ -31,11 +32,7 @@ namespace policy {
 UserCloudPolicyInvalidator::UserCloudPolicyInvalidator(
     Profile* profile,
     CloudPolicyManager* policy_manager)
-    : CloudPolicyInvalidator(PolicyInvalidationScope::kUser,
-                             policy_manager->core(),
-                             base::SingleThreadTaskRunner::GetCurrentDefault(),
-                             base::DefaultClock::GetInstance(),
-                             0 /* highest_handled_invalidation_version */) {
+    : policy_manager_(policy_manager) {
   DCHECK(profile);
 
   // Register for notification that profile creation is complete. The
@@ -53,7 +50,7 @@ UserCloudPolicyInvalidator::~UserCloudPolicyInvalidator() = default;
 
 void UserCloudPolicyInvalidator::Shutdown() {
   profile_observation_.Reset();
-  CloudPolicyInvalidator::Shutdown();
+  invalidator_.reset();
 }
 
 void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
@@ -69,8 +66,13 @@ void UserCloudPolicyInvalidator::OnProfileInitializationComplete(
     return;
   }
 
-  Initialize(invalidation_provider->GetInvalidationListener(
-      policy::kPolicyInvalidationProjectNumber));
+  invalidator_ = std::make_unique<CloudPolicyInvalidator>(
+      PolicyInvalidationScope::kUser,
+      invalidation_provider->GetInvalidationListener(
+          policy::kPolicyInvalidationProjectNumber),
+      policy_manager_->core(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::DefaultClock::GetInstance());
 }
 
 }  // namespace policy

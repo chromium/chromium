@@ -37,6 +37,14 @@
   white-space: nowrap;
 }
 
+:host([updated-feedback-enabled]) #feedbackToast {
+  bottom: 95px;
+  max-width: calc(100% - 60px);
+  min-width: 312px;
+  width: 100%;
+  z-index: 3;
+}
+
 :host([dark-mode]) #feedbackToast {
   --color-toast-background: #303134;
   --color-toast-button: #99C3FF6;

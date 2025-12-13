@@ -9,8 +9,10 @@
 
 #include <iosfwd>
 #include <memory>
+#include <optional>
 
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 
@@ -35,6 +37,10 @@ struct DisplayGeometry {
   DisplayGeometry& operator=(const DisplayGeometry&);
   ~DisplayGeometry();
 
+  // Returns whether `global_absolute_coordinate` is within the boundaries of
+  // the desktop geometry.
+  bool Contains(const webrtc::DesktopVector& global_absolute_coordinate) const;
+
   webrtc::ScreenId id;
   int32_t x, y;
   uint32_t width, height;
@@ -46,6 +52,15 @@ struct DisplayGeometry {
 
 class DesktopDisplayInfo {
  public:
+  enum class PixelType {
+    // Measurements are in physical screen pixels.
+    PHYSICAL,
+
+    // Measurements are in logical pixels, aka. density-independent pixels
+    // (DIPs).
+    LOGICAL,
+  };
+
   DesktopDisplayInfo();
   DesktopDisplayInfo(DesktopDisplayInfo&&);
   DesktopDisplayInfo& operator=(DesktopDisplayInfo&&);
@@ -73,10 +88,22 @@ class DesktopDisplayInfo {
 
   const std::vector<DisplayGeometry>& displays() const { return displays_; }
 
+  void set_pixel_type(std::optional<PixelType> pixel_type) {
+    pixel_type_ = pixel_type;
+  }
+
+  const std::optional<PixelType>& pixel_type() const { return pixel_type_; }
+
+  // Converts a global absolute coordinate to a fractional coordinate. Returns
+  // nullopt if the absolute coordinate is not within any display.
+  std::optional<protocol::FractionalCoordinate> ToFractionalCoordinate(
+      const webrtc::DesktopVector& global_absolute_coordinate) const;
+
   std::unique_ptr<protocol::VideoLayout> GetVideoLayoutProto() const;
 
  private:
   std::vector<DisplayGeometry> displays_;
+  std::optional<PixelType> pixel_type_;
 };
 
 // The output format is:

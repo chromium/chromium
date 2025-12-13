@@ -26,11 +26,14 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::APIPermissionID;
 
@@ -91,8 +94,8 @@ class ExtensionInstallStatusTest : public testing::Test {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings);
     SetPolicy(pref_names::kExtensionManagement,
               base::Value::ToUniquePtrValue(std::move(*settings)));

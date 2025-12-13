@@ -12,11 +12,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/data_type_sync_bridge.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
+
+namespace base {
+class Clock;
+}  // namespace base
 
 namespace syncer {
 struct EntityData;
@@ -34,6 +41,9 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   PasskeySyncBridge(const PasskeySyncBridge&) = delete;
   PasskeySyncBridge& operator=(const PasskeySyncBridge&) = delete;
   ~PasskeySyncBridge() override;
+
+  // Override the clock for testing.
+  void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
 
   // syncer::DataTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -63,16 +73,21 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
   bool IsReady() const override;
   bool IsEmpty() const override;
   base::flat_set<std::string> GetAllSyncIds() const override;
-  std::vector<sync_pb::WebauthnCredentialSpecifics> GetAllPasskeys()
-      const override;
-  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByCredentialId(
+  std::vector<sync_pb::WebauthnCredentialSpecifics> GetPasskeys(
+      std::variant<AnyRp, std::string_view> rp_id,
+      ShadowedCredentials shadowed_credentials) const override;
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskey(
+      std::variant<AnyRp, std::string_view> rp_id,
+      std::string_view credential_id,
+      ShadowedCredentials shadowed_credentials) const override;
+  std::optional<sync_pb::WebauthnCredentialSpecifics> GetPasskeyByUserId(
       const std::string& rp_id,
-      const std::string& credential_id) const override;
-  std::vector<sync_pb::WebauthnCredentialSpecifics>
-  GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
+      const std::string& user_id) const override;
   bool DeletePasskey(const std::string& credential_id,
                      const base::Location& location) override;
-  bool SetPasskeyHidden(const std::string& credential_id, bool hidden) override;
+  bool HidePasskey(const std::string& credential_id,
+                   base::Time hidden_time) override;
+  bool UnhidePasskey(const std::string& credential_id) override;
   void DeleteAllPasskeys() override;
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyUpdate change,
@@ -114,6 +129,10 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
       base::OnceCallback<bool(sync_pb::WebauthnCredentialSpecifics*)>
           mutate_callback);
 
+  // Triggers the deletion of passkeys that were hidden more than
+  // `kHiddenPasskeyLifetime` days ago.
+  void DeleteOldHiddenPasskeys();
+
   // Local view of the stored data. Indexes specifics protos by storage key.
   std::map<std::string, sync_pb::WebauthnCredentialSpecifics> data_;
 
@@ -124,6 +143,12 @@ class PasskeySyncBridge : public syncer::DataTypeSyncBridge,
 
   // Set to true once `data_` has been loaded and the model is ready to sync.
   bool ready_ = false;
+
+  // Tracks when it's time to delete old hidden passkeys again.
+  base::RepeatingTimer delete_old_hidden_passkeys_timer_;
+
+  // `clock_` lets clients override the clock for testing.
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
 
   base::WeakPtrFactory<PasskeySyncBridge> weak_ptr_factory_{this};
 };

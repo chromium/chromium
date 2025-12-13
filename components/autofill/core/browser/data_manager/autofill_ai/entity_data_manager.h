@@ -11,22 +11,32 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
-#include "base/uuid.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace history {
 class DeletionInfo;
 }  // namespace history
 
+namespace strike_database {
+class StrikeDatabaseBase;
+}  // namespace strike_database
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace autofill {
 
 class AutofillAiSaveStrikeDatabaseByHost;
-class StrikeDatabaseBase;
 
 // Loads, adds, updates, and removes EntityInstances. Deletes data from
 // AutofillAI strike databases on history deletion.
@@ -38,17 +48,44 @@ class StrikeDatabaseBase;
 // their own EntityDataManager instance, they use the same underlying database.
 // Therefore, it is the responsibility of the callers to ensure that no data
 // from an incognito session is persisted unintentionally.
-class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
+class EntityDataManager : public KeyedService,
+                          public AutofillWebDataServiceObserverOnUISequence,
+                          history::HistoryServiceObserver {
  public:
+  // Autofill AI enabled pref migration status.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(AutofillAiPrefMigrationStatus)
+  enum class AutofillAiPrefMigrationStatus {
+    // This means the `kAutofillAiEnabled` pref was set to true due to
+    // the account keyed pref being enabled.
+    kPrefMigratedEnabled = 0,
+    // This means the `kAutofillAiEnabled` pref was set to false due to
+    // the account keyed pref being enabled.
+    kPrefMigratedDisabled = 1,
+    // This means the `kAutofillAiEnabled` pref was previously enabled or
+    // disabled.
+    kPrefNotMigratedAlreadySet = 2,
+    // This means that the original account keyed pref was never set, therefore
+    // no migration happened.
+    kPrefNotMigratedAccountPrefNeverSet = 3,
+    kMaxValue = kPrefNotMigratedAccountPrefNeverSet
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiPrefMigrationStatus)
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnEntityInstancesChanged() {}
   };
 
   explicit EntityDataManager(
+      PrefService* pref_service,
+      const signin::IdentityManager* identity_manager,
+      syncer::SyncService* sync_service,
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
-      StrikeDatabaseBase* strike_database);
+      strike_database::StrikeDatabaseBase* strike_database);
   EntityDataManager(const EntityDataManager&) = delete;
   EntityDataManager& operator=(const EntityDataManager&) = delete;
   ~EntityDataManager() override;
@@ -58,7 +95,7 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void AddOrUpdateEntityInstance(EntityInstance entity);
 
   // Removes an entity if it exists in the database; otherwise it's a no-op.
-  void RemoveEntityInstance(base::Uuid guid);
+  void RemoveEntityInstance(EntityInstance::EntityId guid);
 
   // Removes all entities in the database whose EntityInstance::date_modified()
   // is in the range.
@@ -80,7 +117,13 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
 
   // Equivalent to looking up `guid` in `GetEntityInstances()`.
   base::optional_ref<const EntityInstance> GetEntityInstance(
-      const base::Uuid& guid) const LIFETIME_BOUND;
+      const EntityInstance::EntityId& guid) const LIFETIME_BOUND;
+
+  // Returns if there are any pending queries to the web database.
+  bool HasPendingQueries() const;
+
+  // AutofillWebDataServiceObserver:
+  void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
   // history::HistoryServiceObserver:
   void OnHistoryDeletions(history::HistoryService*,
@@ -88,7 +131,8 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
 
   // Records the date an entity was used and also increments the number of times
   // it was used.
-  void RecordEntityUsed(const base::Uuid& guid, base::Time use_date);
+  void RecordEntityUsed(const EntityInstance::EntityId& guid,
+                        base::Time use_date);
 
   // Notifies the observers that the entity instances have changed.
   void NotifyEntityInstancesChanged();
@@ -103,7 +147,11 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   void LoadEntities();
 
   base::optional_ref<EntityInstance> GetMutableEntityInstance(
-      const base::Uuid& guid);
+      const EntityInstance::EntityId& guid);
+
+  // Boolean that allows the EntityDataManager to differentiate between initial
+  // data loads and data updates.
+  bool entity_data_loaded_ = false;
 
   // Non-null except perhaps in TestEntityDataManager, which overrides all
   // functions that access it.
@@ -116,12 +164,18 @@ class EntityDataManager : public KeyedService, history::HistoryServiceObserver {
   // All entries are identifiable by their EntityInstance::guid().
   base::flat_set<EntityInstance, EntityInstance::CompareByGuid> entities_;
 
+  base::ScopedObservation<AutofillWebDataService,
+                          AutofillWebDataServiceObserverOnUISequence>
+      webdata_service_observation_{this};
+
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 
   std::unique_ptr<AutofillAiSaveStrikeDatabaseByHost> save_strike_db_by_host_;
 
   base::ObserverList<Observer> observers_;
+
+  EntityInstanceCleaner entity_instance_cleaner_;
 
   base::WeakPtrFactory<EntityDataManager> weak_ptr_factory_{this};
 };

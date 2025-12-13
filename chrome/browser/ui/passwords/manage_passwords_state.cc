@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -174,8 +175,11 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
             *form, form_manager_->GetPendingCredentials());
       });
   if (it == local_credentials_forms_.end()) {
-    local_credentials_forms_.push_back(
-        std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials()));
+    auto generated_password_form =
+        std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials());
+    generated_password_form->in_store =
+        form_manager_->GetPasswordStoreForSaving(*generated_password_form);
+    local_credentials_forms_.push_back(std::move(generated_password_form));
   }
 
   origin_ = url::Origin::Create(form_manager_->GetURL());
@@ -316,12 +320,6 @@ void ManagePasswordsState::ProcessLoginsChanged(
   }
 }
 
-void ManagePasswordsState::ProcessUnsyncedCredentialsWillBeDeleted(
-    std::vector<password_manager::PasswordForm> unsynced_credentials) {
-  unsynced_credentials_ = std::move(unsynced_credentials);
-  SetState(password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
-}
-
 void ManagePasswordsState::ChooseCredential(const PasswordForm* form) {
   DCHECK_EQ(password_manager::ui::CREDENTIAL_REQUEST_STATE, state());
   DCHECK(!credentials_callback_.is_null());
@@ -348,7 +346,6 @@ void ManagePasswordsState::ClearData() {
   clear_selected_password();
   local_credentials_forms_.clear();
   credentials_callback_.Reset();
-  unsynced_credentials_.clear();
   single_credential_mode_credential_.reset();
   gpm_pin_created_during_recent_passkey_creation_ = false;
   passkey_rp_id_.clear();

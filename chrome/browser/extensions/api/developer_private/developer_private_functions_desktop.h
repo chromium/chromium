@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_DESKTOP_H_
 #define CHROME_BROWSER_EXTENSIONS_API_DEVELOPER_PRIVATE_DEVELOPER_PRIVATE_FUNCTIONS_DESKTOP_H_
 
-#include <map>
 #include <optional>
 #include <set>
 
@@ -94,44 +93,6 @@ class DeveloperPrivateLoadDirectoryFunction : public ExtensionFunction {
   std::string error_;
 };
 
-class DeveloperPrivateRemoveMultipleExtensionsFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeMultipleExtensions",
-                             DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS)
-  DeveloperPrivateRemoveMultipleExtensionsFunction();
-
-  DeveloperPrivateRemoveMultipleExtensionsFunction(
-      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
-  DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
-      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
-
-  void accept_bubble_for_testing(bool accept_bubble) {
-    accept_bubble_for_testing_ = accept_bubble;
-  }
-
- private:
-  ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  // A callback function to run when the user accepts the action dialog.
-  void OnDialogAccepted();
-
-  // A callback function to run when the user cancels the action dialog.
-  void OnDialogCancelled();
-
-  // The IDs of the extensions to be uninstalled.
-  std::vector<ExtensionId> extension_ids_;
-
-  raw_ptr<Profile> profile_;
-
-  // If true, immediately accept the blocked action dialog by running the
-  // callback.
-  std::optional<bool> accept_bubble_for_testing_;
-};
-
 class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -167,46 +128,6 @@ class DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction
 
   // The ID of the extension to be dismissed.
   ExtensionId extension_id_;
-
-  // If true, immediately accepts the keep dialog by running the callback.
-  std::optional<bool> accept_bubble_for_testing_;
-};
-
-class DeveloperPrivateUploadExtensionToAccountFunction
-    : public DeveloperPrivateAPIFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("developerPrivate.uploadExtensionToAccount",
-                             DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT)
-  DeveloperPrivateUploadExtensionToAccountFunction();
-
-  DeveloperPrivateUploadExtensionToAccountFunction(
-      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
-  DeveloperPrivateUploadExtensionToAccountFunction& operator=(
-      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
-
-  void accept_bubble_for_testing(bool accept_bubble) {
-    accept_bubble_for_testing_ = accept_bubble;
-  }
-
- private:
-  ~DeveloperPrivateUploadExtensionToAccountFunction() override;
-
-  ResponseAction Run() override;
-
-  // Verify that the extension to be uploaded exists and that there's a signed
-  // in user. Returns the extension if successful, otherwise returns an error.
-  base::expected<const Extension*, std::string> VerifyExtensionAndSigninState();
-
-  // A callback function to run when the user accepts the action dialog.
-  void OnDialogAccepted();
-
-  // A callback function to run when the user cancels the action dialog.
-  void OnDialogCancelled();
-
-  // The ID of the extension to be uploaded.
-  ExtensionId extension_id_;
-
-  raw_ptr<Profile> profile_;
 
   // If true, immediately accepts the keep dialog by running the callback.
   std::optional<bool> accept_bubble_for_testing_;

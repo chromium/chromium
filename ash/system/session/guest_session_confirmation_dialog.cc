@@ -73,8 +73,6 @@ void GuestSessionConfirmationDialog::Show() {
                                                 /*parent=*/nullptr);
   widget->Show();
 
-  // TODO(crbug.com/1016828): Remove/update this after the dialog behavior on
-  // Chrome OS is defined.
   WindowBackdrop::Get(widget->GetNativeWindow())
       ->SetBackdropType(WindowBackdrop::BackdropType::kSemiOpaque);
 }

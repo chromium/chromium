@@ -7,7 +7,7 @@
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace gfx {
 class Size;
@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManagerDelegate {
   virtual void CommitCursorColor(SkColor color) = 0;
   virtual void CommitMouseEventsEnabled(bool enabled) = 0;
   virtual void CommitSystemCursorSize(const gfx::Size& cursor_size) = 0;
+  virtual void CommitSystemCursorVisibility(bool visible) = 0;
 };
 
 }  // namespace wm

@@ -13,6 +13,7 @@
 
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -71,6 +72,7 @@ class FakeFactory : public CrxDownloaderFactory {
       : dest_(dest), result_(result), metrics_(metrics) {}
 
   scoped_refptr<CrxDownloader> MakeCrxDownloader(
+      const std::string& prod_id,
       bool background_download_enabled) const override {
     return base::MakeRefCounted<FakeDownloader>(dest_, result_, metrics_);
   }

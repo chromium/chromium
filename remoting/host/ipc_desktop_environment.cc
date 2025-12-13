@@ -40,9 +40,8 @@
 #include "remoting/host/mojom/desktop_session.mojom.h"
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
-#include "remoting/protocol/desktop_capturer.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
 
 namespace remoting {
 
@@ -87,7 +86,7 @@ DesktopDisplayInfoMonitor* IpcDesktopEnvironment::GetDisplayInfoMonitor() {
   return nullptr;
 }
 
-std::unique_ptr<webrtc::MouseCursorMonitor>
+std::unique_ptr<protocol::MouseCursorMonitor>
 IpcDesktopEnvironment::CreateMouseCursorMonitor() {
   return desktop_session_proxy_->CreateMouseCursorMonitor();
 }

@@ -23,7 +23,7 @@ bool ConvertURL(const base::Value* value, GURL* url) {
 bool ConvertOrigin(const base::Value* value, url::Origin* origin) {
   GURL url;
   if (ConvertURL(value, &url) && !url.has_username() && !url.has_password() &&
-      url.SchemeIs(url::kHttpsScheme) && url.path_piece() == "/" &&
+      url.SchemeIs(url::kHttpsScheme) && url.path() == "/" &&
       !url.has_query() && !url.has_ref()) {
     *origin = url::Origin::Create(url);
     return true;
@@ -49,7 +49,8 @@ DomainReliabilityConfig::~DomainReliabilityConfig() = default;
 // static
 std::unique_ptr<const DomainReliabilityConfig>
 DomainReliabilityConfig::FromJSON(std::string_view json) {
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value)
     return nullptr;
 

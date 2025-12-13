@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/json_pref_store.h"
@@ -480,4 +481,30 @@ TEST_F(PrefServiceSetValueTest, SetListValue) {
   observer_.Expect(kName, &empty);
   prefs_.Set(kName, empty);
   Mock::VerifyAndClearExpectations(&observer_);
+}
+
+// TODO(crbug.com/441781730): Failing on CrOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GetValueWithTypeConversion DISABLED_GetValueWithTypeConversion
+#else
+#define MAYBE_GetValueWithTypeConversion GetValueWithTypeConversion
+#endif
+TEST(PrefServiceTest, MAYBE_GetValueWithTypeConversion) {
+  TestingPrefServiceSimple prefs;
+  const char kTimePref[] = "time_pref";
+  const char kInt64Pref[] = "int64_pref";
+  prefs.registry()->RegisterTimePref(kTimePref, base::Time());
+  prefs.registry()->RegisterInt64Pref(kInt64Pref, 0);
+
+  // Good cases:
+  prefs.SetTime(kTimePref, base::Time::Now());
+  base::IgnoreResult(prefs.GetTime(kTimePref));
+  prefs.SetInt64(kInt64Pref, 123);
+  base::IgnoreResult(prefs.GetInt64(kInt64Pref));
+
+  // Bad cases:
+  EXPECT_CHECK_DEATH(prefs.SetInt64(kTimePref, 123));
+  EXPECT_CHECK_DEATH(prefs.GetInt64(kTimePref));
+  EXPECT_CHECK_DEATH(prefs.SetTime(kInt64Pref, base::Time::Now()));
+  EXPECT_CHECK_DEATH(prefs.GetTime(kInt64Pref));
 }

@@ -11,7 +11,12 @@ import './sections/permissions.js';
 import './sections/file.js';
 import './sections/action.js';
 import './sections/apc.js';
+import './sections/autofill_dialog.js';
 import './sections/multi_tab.js';
+import './sections/page_metadata.js';
+import './sections/view.js';
+import './sections/additional_context.js';
+import './sections/interaction.js';
 
 import type {OpenSettingsOptions} from '/glic/glic_api/glic_api.js';
 import {SettingsPageField, WebClientMode} from '/glic/glic_api/glic_api.js';
@@ -20,6 +25,7 @@ import {createGlicHostRegistryOnLoad} from '../api_boot.js';
 
 import {client, getBrowser, logMessage} from './client.js';
 import {$} from './page_element_types.js';
+import {initCaptureRegion} from './sections/capture_region.js';
 
 createGlicHostRegistryOnLoad().then((registry) => {
   logMessage('registering web client');
@@ -198,6 +204,7 @@ $.maybeRefreshUserStatusBn.addEventListener('click', async () => {
 });
 
 window.addEventListener('load', () => {
+  initCaptureRegion();
   $.desktopScreenshot.addEventListener('click', async () => {
     logMessage('Requesting desktop screenshot...');
     try {

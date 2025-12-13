@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOMAIN_RELIABILITY_UPLOADER_H_
 #define COMPONENTS_DOMAIN_RELIABILITY_UPLOADER_H_
 
-#include <map>
 #include <memory>
 
 #include "base/functional/callback_forward.h"

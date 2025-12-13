@@ -28,7 +28,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
@@ -44,8 +43,6 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
 
@@ -81,7 +78,7 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
   if (form.scheme == PasswordForm::Scheme::kHtml &&
       !affiliations::IsValidAndroidFacetURI(form.signon_realm)) {
     // Check federated matches and matches for exact signon realm.
-    return form.url.host();
+    return form.url.GetHost();
   }
   // Check matches for exact signon realm.
   return form.signon_realm;
@@ -292,15 +289,6 @@ void RecordCancelledRetryMetrics(PasswordStoreOperation operation,
       base::StrCat({kRetryHistogramBase, ".CancelledAtAttempt"}), attempt,
       kMaxReportedRetryAttempts);
 }
-enum class ActionOnApiError {
-  // See password_manager_upm_eviction::EvictCurrentUser().
-  kEvict,
-  // See prefs::kSavePasswordsSuspendedByError.
-  kDisableSaving,
-  // See PasswordStoreAndroidBackend::TryFixPassphraseErrorCb.
-  kDisableSavingAndTryFixPassphraseError,
-  kRetry,
-};
 
 bool ShouldRetryOperationOnError(PasswordStoreOperation operation,
                                  AndroidBackendAPIErrorCode api_error_code,
@@ -367,13 +355,10 @@ PasswordStoreBackendErrorType APIErrorCodeToErrorType(
 
 PasswordStoreAndroidBackend::PasswordStoreAndroidBackend(
     std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
-    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-    PrefService* prefs)
+    std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper)
     : lifecycle_helper_(std::move(lifecycle_helper)),
-      bridge_helper_(std::move(bridge_helper)),
-      prefs_(prefs) {
+      bridge_helper_(std::move(bridge_helper)) {
   DCHECK(bridge_helper_);
-  DCHECK(prefs_);
   bridge_helper_->SetConsumer(weak_ptr_factory_.GetWeakPtr());
 }
 
@@ -801,16 +786,11 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 
   PasswordStoreOperation operation = reply->GetOperation();
 
-  // The error to report is computed before potential eviction. This is because
-  // eviction resets state which might be used to infer the recovery type of
-  // the error.
   base::TimeDelta delay = reply->GetDelay();
   PasswordStoreBackendError reported_error(
       PasswordStoreBackendErrorType::kUncategorized);
 
   if (error.api_error_code.has_value()) {
-    // TODO(crbug.com/40839365): DCHECK_EQ(api_error_code,
-    // AndroidBackendAPIErrorCode::kDeveloperError) to catch dev errors.
     DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
     int api_error = error.api_error_code.value();
     reported_error.android_backend_api_error = api_error;
@@ -832,8 +812,6 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   }
 
   reply->RecordMetrics(std::move(error));
-  // The decision whether to show an error UI depends on the re-enrollment pref
-  // and as such the consumers should be called last.
   if (reply->Holds<LoginsOrErrorReply>()) {
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(*reply).Get<LoginsOrErrorReply>(),

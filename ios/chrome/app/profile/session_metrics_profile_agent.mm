@@ -6,11 +6,14 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/puma_histogram_functions.h"
 #import "base/time/time.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_session_durations_service_factory.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_service.h"
+#import "ios/chrome/browser/metrics/model/tab_usage_recorder_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 
@@ -111,9 +114,20 @@
   base::UmaHistogramCustomTimes("Session.TotalDurationMax1Day", duration,
                                 base::Milliseconds(1), base::Days(1), 50);
 
+  // Records true each time Session.TotalDuration is supposed to be recorded
+  // in a PUMA histogram. Allowing for the count to be collected.
+  base::PumaHistogramBoolean(
+      base::PumaType::kRc,
+      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
+
   _sessionStartTimestamp = base::TimeTicks();
   IOSProfileSessionDurationsServiceFactory::GetForProfile(profile)
       ->OnSessionEnded(duration);
+
+  // TabUsageRecorderServiceFactory may return null during tests.
+  if (auto* service = TabUsageRecorderServiceFactory::GetForProfile(profile)) {
+    service->RecordSessionMetrics();
+  }
 }
 
 @end

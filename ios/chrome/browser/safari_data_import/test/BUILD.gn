@@ -1,0 +1,66 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "safari_data_import_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/model:bookmark_storage_type",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/passwords/model:eg_test_support+eg2",
+    "//ios/chrome/browser/settings/ui_bundled:constants",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:launch_configuration",
+    "//ui/base",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safari_data_import_app_interface.h",
+    "safari_data_import_app_interface_stub.mm",
+    "safari_data_import_earl_grey_ui.h",
+    "safari_data_import_earl_grey_ui.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "safari_data_import_app_interface.h",
+    "safari_data_import_app_interface.mm",
+  ]
+  deps = [
+    "//components/user_data_importer/utility:test_archive_bundle_data",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+}

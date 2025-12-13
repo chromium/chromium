@@ -221,6 +221,15 @@
       <message name="IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
         Use precise location
       </message>
+      <message name="IDS_PERMISSION_REQUEST_USING_LOCATION" desc="Label for a permission element when location is being used">
+        Using location...
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_INSTALL" desc="Label for a permission element that will trigger an installation request for the page the user is currently viewing.">
+          Install
+      </message>
+      <message name="IDS_PERMISSION_REQUEST_INSTALL_WITH_HOST" desc="Label for a permission element that will trigger an installation request for an application whose host is specified">
+          Install <ph name="HOSTNAME">$1<ex>www.example.com</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

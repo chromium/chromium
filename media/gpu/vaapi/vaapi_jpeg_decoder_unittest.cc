@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <va/va.h>
@@ -11,8 +13,7 @@
 #include <string>
 #include <vector>
 
-// This has to be included first.
-// See http://code.google.com/p/googletest/issues/detail?id=371
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,11 +21,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/test_utils.h"
 #include "media/gpu/vaapi/vaapi_image_decoder.h"
 #include "media/gpu/vaapi/vaapi_image_decoder_test_common.h"
-#include "media/gpu/vaapi/vaapi_jpeg_decoder.h"
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/parsers/jpeg_parser.h"
@@ -34,7 +35,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/rect.h"
@@ -156,12 +156,12 @@ std::vector<unsigned char> GenerateJpegImage(
     for (int x = 0; x < base::checked_cast<int>(stride); x += 4) {
       const bool x_bit = (((x / kCheckerRectSize.width()) & 0x1) == 0);
       const SkColor color = (x_bit != y_bit) ? SK_ColorBLUE : SK_ColorMAGENTA;
-      data[x + 0] = SkColorGetR(color);
-      data[x + 1] = SkColorGetG(color);
-      data[x + 2] = SkColorGetB(color);
-      data[x + 3] = SkColorGetA(color);
+      UNSAFE_TODO(data[x + 0]) = SkColorGetR(color);
+      UNSAFE_TODO(data[x + 1]) = SkColorGetG(color);
+      UNSAFE_TODO(data[x + 2]) = SkColorGetB(color);
+      UNSAFE_TODO(data[x + 3]) = SkColorGetA(color);
     }
-    data += stride;
+    UNSAFE_TODO(data += stride);
   }
 
   // Now, encode it as a JPEG.
@@ -528,23 +528,25 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
   EXPECT_EQ(VaapiImageDecodeStatus::kInvalidState, image_status);
 
   // Workaround: in order to import and map the pixmap using minigbm when the
-  // format is gfx::BufferFormat::YVU_420, we need to reorder the planes so that
-  // the offsets are in increasing order as assumed in https://bit.ly/2NLubNN.
-  // Otherwise, we get a validation error. In essence, we're making minigbm
-  // think that it is mapping a YVU_420, but it's actually mapping a YUV_420.
+  // format is kYV12, we need to reorder the planes so that the offsets are in
+  // increasing order as assumed in https://bit.ly/2NLubNN.  Otherwise, we get
+  // a validation error. In essence, we're making minigbm think that it is
+  // mapping a kYV12, but it's actually mapping a kNV12.
   //
   // TODO(andrescj): revisit this once crrev.com/c/1573718 lands.
   gfx::NativePixmapHandle handle = exported_pixmap->pixmap->ExportHandle();
-  ASSERT_EQ(gfx::NumberOfPlanesForLinearBufferFormat(
-                exported_pixmap->pixmap->GetBufferFormat()),
-            handle.planes.size());
-  if (exported_pixmap->pixmap->GetBufferFormat() == gfx::BufferFormat::YVU_420)
+  viz::SharedImageFormat si_format =
+      exported_pixmap->pixmap->GetSharedImageFormat();
+  ASSERT_EQ(si_format.NumberOfPlanes(), static_cast<int>(handle.planes.size()));
+  if (si_format == viz::MultiPlaneFormat::kYV12) {
     std::swap(handle.planes[1], handle.planes[2]);
+  } else {
+    ASSERT_EQ(si_format, viz::MultiPlaneFormat::kNV12);
+  }
 
   std::unique_ptr<vaapi_test_utils::DecodedImage> decoded_image =
       vaapi_test_utils::NativePixmapToDecodedImage(
-          handle, exported_pixmap->pixmap->GetBufferSize(),
-          exported_pixmap->pixmap->GetBufferFormat());
+          handle, exported_pixmap->pixmap->GetBufferSize(), si_format);
   ASSERT_TRUE(decoded_image);
 
   // Decode the image using libyuv. Using |temp_*| for resource management.

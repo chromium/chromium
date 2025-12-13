@@ -31,6 +31,7 @@ import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 
 import java.util.ArrayList;
@@ -360,4 +361,9 @@ public class ChosenObjectSettings extends BaseSiteSettingsFragment
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what entries need to be created and added under
+    // #updateDynamicPreferences.
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(ChosenObjectSettings.class.getName(), 0);
 }

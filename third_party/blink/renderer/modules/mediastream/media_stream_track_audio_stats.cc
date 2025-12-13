@@ -105,8 +105,8 @@ void MediaStreamTrackAudioStats::MaybeUpdateStats(ScriptState* script_state) {
   // Queue a microtask to let us know when we are on a new task again, ensuring
   // that we get fresh stats in the next task execution cycle.
   ToEventLoop(script_state)
-      .EnqueueMicrotask(WTF::BindOnce(&MediaStreamTrackAudioStats::OnMicrotask,
-                                      WrapWeakPersistent(this)));
+      .EnqueueMicrotask(BindOnce(&MediaStreamTrackAudioStats::OnMicrotask,
+                                 WrapWeakPersistent(this)));
 }
 
 void MediaStreamTrackAudioStats::OnMicrotask() {

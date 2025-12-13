@@ -7,7 +7,8 @@
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
 #include "base/base64url.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -18,7 +19,8 @@
 #include "crypto/signature_verifier.h"
 
 using BPKUR = enterprise_management::BrowserPublicKeyUploadRequest;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/common/channel_info.h"
@@ -39,7 +41,8 @@ namespace enterprise_connectors::utils {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
 
 connectors_internals::mojom::KeyTrustLevel ParseTrustLevel(
     BPKUR::KeyTrustLevel trust_level) {
@@ -102,7 +105,8 @@ connectors_internals::mojom::Int32ValuePtr ToMojomValue(
                        : nullptr;
 }
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
@@ -119,6 +123,8 @@ connectors_internals::mojom::KeyTrustLevel ConvertPrivateKeySource(
       return connectors_internals::mojom::KeyTrustLevel::OS;
     case client_certificates::PrivateKeySource::kOsSoftwareKey:
       return connectors_internals::mojom::KeyTrustLevel::OS_SOFTWARE;
+    case client_certificates::PrivateKeySource::kAndroidKey:
+      return connectors_internals::mojom::KeyTrustLevel::HW;
   }
 }
 
@@ -159,10 +165,8 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
   }
 
   return connectors_internals::mojom::CertificateMetadata::New(
-      base::ToLowerASCII(base::HexEncode(certificate->serial_number().data(),
-                                         certificate->serial_number().size())),
-      base::ToLowerASCII(
-          base::HexEncode(certificate->CalculateChainFingerprint256())),
+      base::HexEncodeLower(certificate->serial_number()),
+      base::HexEncodeLower(certificate->CalculateChainFingerprint256()),
       base::UnlocalizedTimeFormatWithPattern(certificate->valid_start(),
                                              "MMM d, yyyy"),
       base::UnlocalizedTimeFormatWithPattern(certificate->valid_expiry(),
@@ -176,7 +180,8 @@ connectors_internals::mojom::CertificateMetadataPtr ConvertCertificate(
 }  // namespace
 
 connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_ANDROID)
   auto* key_manager = g_browser_process->browser_policy_connector()
                           ->chrome_browser_cloud_management_controller()
                           ->GetDeviceTrustKeyManager();
@@ -208,7 +213,8 @@ connectors_internals::mojom::KeyInfoPtr GetKeyInfo() {
         nullptr,
         connectors_internals::mojom::KeyManagerPermanentFailure::UNSPECIFIED);
   }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_ANDROID)
   return connectors_internals::mojom::KeyInfo::New(
       connectors_internals::mojom::KeyManagerInitializedValue::UNSUPPORTED,
       nullptr,

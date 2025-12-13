@@ -112,15 +112,13 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
 
     mock_model_ = new FakePartialTranslateBubbleModel(
         PartialTranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
-
-    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
   }
 
   void CreateAndShowBubble() {
     std::unique_ptr<PartialTranslateBubbleModel> model(mock_model_);
-    bubble_ = new PartialTranslateBubbleView(
-        action_item_->GetAsWeakPtr(), anchor_widget_->GetContentsView(),
-        std::move(model), nullptr, base::DoNothing());
+    bubble_ = new PartialTranslateBubbleView(anchor_widget_->GetContentsView(),
+                                             std::move(model), nullptr,
+                                             base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 
@@ -144,7 +142,6 @@ class PartialTranslateBubbleViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<FakePartialTranslateBubbleModel, DanglingUntriaged> mock_model_;
   raw_ptr<PartialTranslateBubbleView, DanglingUntriaged> bubble_;
-  std::unique_ptr<actions::ActionItem> action_item_;
 };
 
 TEST_F(PartialTranslateBubbleViewTest,
@@ -218,11 +215,12 @@ TEST_F(PartialTranslateBubbleViewTest, TranslateFullPageButton) {
   EXPECT_TRUE(mock_model_->full_page_translate_called_);
 }
 
-TEST_F(PartialTranslateBubbleViewTest, ActionItemUpdatesWithBubbleLifetime) {
-  EXPECT_FALSE(action_item_->GetIsShowingBubble());
+TEST_F(PartialTranslateBubbleViewTest, TranslatedTextIsSelectable) {
   CreateAndShowBubble();
-  EXPECT_TRUE(action_item_->GetIsShowingBubble());
-  bubble_->GetWidget()->CloseNow();
-  EXPECT_FALSE(action_item_->GetIsShowingBubble());
-  bubble_ = nullptr;
+  // Switch to the translated view.
+  bubble_->SwitchView(PartialTranslateBubbleModel::VIEW_STATE_AFTER_TRANSLATE);
+
+  // Verify the translated text is selectable for copying.
+  ASSERT_NE(bubble_->partial_text_label_, nullptr);
+  EXPECT_TRUE(bubble_->partial_text_label_->GetSelectable());
 }

@@ -19,7 +19,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/StaticTabSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -62,14 +61,13 @@ SkColor StaticTabSceneLayer::GetBackgroundColor() {
   return background_color_;
 }
 
-void StaticTabSceneLayer::UpdateTabLayer(
-    JNIEnv* env,
-    jint id,
-    jboolean can_use_live_layer,
-    jint default_background_color,
-    jfloat x,
-    jfloat y,
-    const JavaParamRef<jobject>& joffset_tag) {
+void StaticTabSceneLayer::UpdateTabLayer(JNIEnv* env,
+                                         jint id,
+                                         jboolean can_use_live_layer,
+                                         jint default_background_color,
+                                         jfloat x,
+                                         jfloat y,
+                                         const JavaRef<jobject>& joffset_tag) {
   DCHECK(tab_content_manager_)
       << "TabContentManager must be set before updating the layer";
 
@@ -107,7 +105,7 @@ void StaticTabSceneLayer::UpdateTabLayer(
 
 void StaticTabSceneLayer::SetTabContentManager(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jtab_content_manager) {
+    const base::android::JavaRef<jobject>& jtab_content_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =
         TabContentManager::FromJavaObject(jtab_content_manager);
@@ -115,10 +113,12 @@ void StaticTabSceneLayer::SetTabContentManager(
 }
 
 static jlong JNI_StaticTabSceneLayer_Init(JNIEnv* env,
-                                          const JavaParamRef<jobject>& jobj) {
+                                          const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   StaticTabSceneLayer* scene_layer = new StaticTabSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);
 }
 
 }  // namespace android
+
+DEFINE_JNI(StaticTabSceneLayer)

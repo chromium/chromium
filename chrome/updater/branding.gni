@@ -34,6 +34,8 @@ if (is_chrome_branded) {
   updater_appid = "{6e8ffa8f-e7e2-4000-9884-589283c27015}"
   browser_appid = "{5d8d08af-2df9-4da2-86c1-eac353a0ca32}"
   qualification_appid = "{43f3a046-04b3-4443-a770-d67dae90e440}"
+  platform_experience_helper_appid = "{b84ca560-bb0c-4ec9-a288-df67e15354c7}"
+  crx_pkhash = ""
   legacy_service_name_prefix = "cupdate"
   prefs_access_mutex = "{A6B9ECD5-772A-4D3F-BFEB-CF9340534A3E}"
   setup_mutex_prefix = "{25569F82-3B67-4185-8127-88E4CF803680}"

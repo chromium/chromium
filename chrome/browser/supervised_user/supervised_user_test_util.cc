@@ -92,17 +92,20 @@ void SetSupervisedUserGeolocationEnabledContentSetting(Profile* profile,
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-void PopulateAccountInfoWithName(AccountInfo& info,
-                                 const std::string& given_name) {
-  info.given_name = given_name;
-  info.full_name = "fullname";
-  info.hosted_domain = "example.com";
-  info.locale = "en";
-  info.picture_url = "https://example.com";
-  AccountCapabilitiesTestMutator(&info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+AccountInfo PopulateAccountInfoWithName(const AccountInfo& info,
+                                        const std::string& given_name) {
+  AccountInfo populated_info = AccountInfo::Builder(info)
+                                   .SetFullName("fullname")
+                                   .SetGivenName(given_name)
+                                   .SetHostedDomain("example.com")
+                                   .SetAvatarUrl("https://example.com")
+                                   .SetLocale("en")
+                                   .Build();
+  AccountCapabilitiesTestMutator(&populated_info.capabilities)
+      .set_is_subject_to_enterprise_features(true);
 
-  CHECK(info.IsValid());
+  CHECK(populated_info.IsValid());
+  return populated_info;
 }
 
 void SetManualFilterForHost(Profile* profile,

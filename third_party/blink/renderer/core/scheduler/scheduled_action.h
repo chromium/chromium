@@ -83,7 +83,7 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
   Member<V8Function> function_;
   HeapVector<ScriptValue> arguments_;
   String code_;
-  Member<scheduler::TaskAttributionInfo> code_task_state_;
+  Member<scheduler::TaskAttributionInfo> task_state_;
 };
 
 }  // namespace blink

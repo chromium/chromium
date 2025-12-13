@@ -33,7 +33,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace ash {

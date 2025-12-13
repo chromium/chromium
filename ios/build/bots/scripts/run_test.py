@@ -4,12 +4,17 @@
 # found in the LICENSE file.
 """Unittests for run.py."""
 
+import contextlib
+import datetime
+import io
 import json
 import mock
 import os
 import re
 import sys
 import unittest
+
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 import constants
 import iossim_util
@@ -29,8 +34,40 @@ sys.path.extend([
 ])
 import exception_recorder
 
-class UnitTest(unittest.TestCase):
 
+@mock.patch(
+    'os.path.getmtime', return_value=datetime.datetime(2025, 1, 1).timestamp())
+class RotateOutDirTest(TestCase):
+
+  def setUp(self):
+    super().setUp()
+    self.setUpPyfakefs()
+
+  def test_rotate_with_clobber(self, _):
+    self.fs.create_dir('out/Release/test-results')
+    self.fs.create_file(
+        'out/Release/test-results_2024-01-01-000000/output.json')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release/test-results', archive_limit=1)
+    self.assertFalse(os.path.exists('out/Release/test-results'))
+    self.assertTrue(os.path.isdir('out/Release/test-results_2025-01-01-000000'))
+    self.assertFalse(
+        os.path.isdir('out/Release/test-results_2024-01-01-000000'))
+
+  def test_does_not_exist(self, mock_getmtime):
+    mock_getmtime.side_effect = FileNotFoundError('not found')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release/test-results')
+    self.assertFalse(os.path.exists('out/Release/test-results'))
+
+  def test_skip_build_dir(self, _):
+    self.fs.create_file('out/Release/args.gn')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release')
+    self.assertTrue(os.path.isdir('out/Release'))
+
+
+class ParseArgsUnitTest(unittest.TestCase):
   def test_parse_args_ok(self):
     cmd = [
         '--app',
@@ -83,11 +120,10 @@ class UnitTest(unittest.TestCase):
     runner.parse_args(cmd)
     self.assertTrue(runner.args.repeat == 2)
 
-  def test_parse_args_iossim_platform_version(self):
-    """
-    iossim, platforma and version should all be set.
-    missing iossim
-    """
+  # Don't try to set any defaults.
+  @mock.patch('xcode_util.is_local_run', return_value=False)
+  def test_parse_args_iossim_platform_version(self, _):
+    """iossim, platform and version should all be set together."""
     test_cases = [
         {
             'error':
@@ -141,10 +177,99 @@ class UnitTest(unittest.TestCase):
 
     runner = run.Runner()
     for test_case in test_cases:
-      with self.assertRaises(SystemExit) as ctx:
-        runner.parse_args(test_case['cmd'])
-        self.assertTrue(re.match('must specify all or none of *', ctx.message))
-        self.assertEqual(ctx.exception.code, test_case['error'])
+      stderr_buf = io.StringIO()
+      with contextlib.redirect_stderr(stderr_buf):
+        with self.assertRaises(SystemExit) as ctx:
+          runner.parse_args(test_case['cmd'])
+      self.assertEqual(ctx.exception.code, test_case['error'])
+      self.assertRegex(stderr_buf.getvalue(), 'must specify all or none of .*')
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  def test_parse_args_default_xcode_build_version(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('123abc', runner.args.xcode_build_version)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  def test_parse_args_default_xcode_build_version_override(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        'efefef',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('efefef', runner.args.xcode_build_version)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch(
+      'iossim_util.get_simulator_list',
+      return_value={
+          'runtimes': [{
+              'version':
+                  '20.0',
+              'supportedDeviceTypes': [{
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 20',
+              }, {
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 20 Pro',
+              }, {
+                  'productFamily': 'iPad',
+                  'name': 'iPad 10',
+              }],
+          }],
+      })
+  def test_parse_args_default_simulator_params(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        '123abc',
+        '--iossim',
+        'path/to/iossim',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('20.0', runner.args.version)
+    self.assertEqual('iPhone 20 Pro', runner.args.platform)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch(
+      'iossim_util.get_simulator_list',
+      return_value={
+          'runtimes': [{
+              'version':
+                  '19.0',
+              'supportedDeviceTypes': [{
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 19',
+              }],
+          }],
+      })
+  def test_parse_args_default_simulator_params_override(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        '123abc',
+        '--xcodebuild-sim-runner',
+        '--version',
+        '20.0',
+        '--platform',
+        'iPad 20',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('20.0', runner.args.version)
+    self.assertEqual('iPad 20', runner.args.platform)
 
   def test_parse_args_xcode_parallelization_requirements(self):
     """

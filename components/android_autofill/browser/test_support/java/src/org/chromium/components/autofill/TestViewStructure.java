@@ -99,17 +99,17 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public CharSequence getText() {
-        return null;
+        return mText;
     }
 
     @Override
     public int getTextSelectionStart() {
-        return 0;
+        return mTextSelectionStart;
     }
 
     @Override
     public int getTextSelectionEnd() {
-        return 0;
+        return mTextSelectionEnd;
     }
 
     @Override
@@ -129,19 +129,24 @@ public class TestViewStructure extends ViewStructure {
     }
 
     @Override
-    public void setChildCount(int num) {}
+    public void setChildCount(int num) {
+        mChildCount = num;
+        mIsChildCountSet = true;
+        mChildren.ensureCapacity(num);
+    }
 
     @Override
     public int addChildCount(int num) {
         int index = mChildCount;
         mChildCount += num;
+        mIsChildCountSet = true;
         mChildren.ensureCapacity(mChildCount);
         return index;
     }
 
     @Override
     public int getChildCount() {
-        return mChildren.size();
+        return mChildCount;
     }
 
     @Override
@@ -164,7 +169,7 @@ public class TestViewStructure extends ViewStructure {
 
     @Override
     public ViewStructure asyncNewChild(int index) {
-        return null;
+        return newChild(index);
     }
 
     @Override
@@ -348,16 +353,28 @@ public class TestViewStructure extends ViewStructure {
     }
 
     @Override
-    public void setSelected(boolean state) {}
+    public void setSelected(boolean state) {
+        mSelected = state;
+    }
 
     @Override
-    public void setText(CharSequence text) {}
+    public void setText(CharSequence text) {
+        mText = text;
+    }
 
     @Override
-    public void setText(CharSequence text, int selectionStart, int selectionEnd) {}
+    public void setText(CharSequence text, int selectionStart, int selectionEnd) {
+        mText = text;
+        mTextSelectionStart = selectionStart;
+        mTextSelectionEnd = selectionEnd;
+    }
 
     @Override
-    public void setTextStyle(float size, int fgColor, int bgColor, int style) {}
+    public void setTextStyle(float size, int fgColor, int bgColor, int style) {
+        mTextSize = size;
+        mTextFgColor = fgColor;
+        mTextStyleFlags = style;
+    }
 
     @Override
     public void setTextLines(int[] charOffsets, int[] baselines) {}
@@ -371,20 +388,48 @@ public class TestViewStructure extends ViewStructure {
         return mWebDomain;
     }
 
+    public float getTextSize() {
+        return mTextSize;
+    }
+
+    public int getTextFgColor() {
+        return mTextFgColor;
+    }
+
+    public int getTextStyleFlags() {
+        return mTextStyleFlags;
+    }
+
+    public boolean isSelected() {
+        return mSelected;
+    }
+
+    public boolean isChildCountSet() {
+        return mIsChildCountSet;
+    }
+
     private int mAutofillType;
     private CharSequence mHint;
+    private CharSequence mText;
+    private int mTextSelectionStart;
+    private int mTextSelectionEnd;
+    private float mTextSize;
+    private int mTextFgColor;
+    private int mTextStyleFlags;
     private String[] mAutofillHints;
     private int mId;
     private boolean mFocused;
     private String mClassName;
     private String mWebDomain;
     private int mChildCount;
+    private boolean mIsChildCountSet;
     private final ArrayList<TestViewStructure> mChildren;
     private CharSequence[] mAutofillOptions;
     private AutofillValue mAutofillValue;
     private boolean mDataIsSensitive;
     private TestHtmlInfo mHtmlInfo;
     private boolean mChecked;
+    private boolean mSelected;
     private Rect mDimensRect;
     private int mDimensScrollX;
     private int mDimensScrollY;

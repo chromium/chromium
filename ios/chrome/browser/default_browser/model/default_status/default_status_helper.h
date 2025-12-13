@@ -63,10 +63,9 @@ void AssignNewCohortIfNeeded(PrefService* local_state);
 
 // Converts the system's default status enum value to the one used by this
 // helper.
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+
 DefaultStatusAPIResult SystemToLocalEnum(
     UIApplicationCategoryDefaultStatus system_enum) API_AVAILABLE(ios(18.4));
-#endif
 
 // Returns the retention type based on the previous and current default status
 // result.
@@ -79,11 +78,10 @@ void QueryDefaultStatusIfReadyAndLogResults(PrefService* local_state);
 
 // Use in tests only. The specified callback will be invoked instead of making a
 // real call to the default status API.
-#if defined(__IPHONE_18_2) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_2
+
 void OverrideSystemCallForTesting(
     base::OnceCallback<UIApplicationCategoryDefaultStatus(NSError**)> cb)
     API_AVAILABLE(ios(18.4));
-#endif
 
 }  // namespace internal
 

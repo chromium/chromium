@@ -5,21 +5,21 @@
 #ifndef CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_
 
-#include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
-#include "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 
-namespace base {
-class FilePath;
+namespace storage {
+class FileSystemURL;
 }
 
 namespace cloud_identifier {
 
 // Ash-chrome specific implementation that retrieves the cloud identifiers for a
 // given file from DriveFS or provided file systems.
-void GetCloudIdentifier(const base::FilePath& url,
-                        crosapi::mojom::HandleType handle_type,
-                        crosapi::FileSystemAccessCloudIdentifierProviderAsh::
-                            GetCloudIdentifierCallback callback);
+void GetCloudIdentifier(
+    const storage::FileSystemURL& url,
+    content::FileSystemAccessPermissionContext::HandleType handle_type,
+    content::ContentBrowserClient::GetCloudIdentifiersCallback callback);
 }  // namespace cloud_identifier
 
 #endif  // CHROME_BROWSER_FILE_SYSTEM_ACCESS_CLOUD_IDENTIFIER_CLOUD_IDENTIFIER_UTIL_ASH_H_

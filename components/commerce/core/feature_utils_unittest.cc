@@ -142,10 +142,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoMSBB) {
 }
 
 TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoSync) {
-  test_features_.InitWithFeatures(
-      {kProductSpecifications,
-       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
-      {});
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off sync.
@@ -160,10 +157,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_NoSync) {
 }
 
 TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_SyncInactive) {
-  test_features_.InitWithFeatures(
-      {kProductSpecifications,
-       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
-      {});
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off sync.
@@ -178,9 +172,7 @@ TEST_F(FeatureUtilsTest, CanFetchProductSpecificationsData_SyncInactive) {
 
 TEST_F(FeatureUtilsTest,
        CanFetchProductSpecificationsData_NoEnterpriseNoSettings) {
-  test_features_.InitWithFeatures(
-      {kProductSpecifications},
-      {optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi});
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off enterprise.
@@ -199,10 +191,7 @@ TEST_F(FeatureUtilsTest,
 
 TEST_F(FeatureUtilsTest,
        CanFetchProductSpecificationsData_NoEnterpriseWithSettings) {
-  test_features_.InitWithFeatures(
-      {kProductSpecifications,
-       optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi},
-      {});
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
   SetupProductSpecificationsEnabled();
 
   // We should be able to fetch data before turning off enterprise.

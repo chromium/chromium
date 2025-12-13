@@ -64,8 +64,8 @@
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -478,7 +478,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
  protected:
   AccessibilityManagerTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   AccessibilityManagerTest(const AccessibilityManagerTest&) = delete;
   AccessibilityManagerTest& operator=(const AccessibilityManagerTest&) = delete;
@@ -500,8 +500,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kOnDeviceSpeechRecognition,
          ::features::kAccessibilityReducedAnimations,
-         ::features::kAccessibilityMouseKeys,
-         ::features::kAccessibilityFaceGaze},
+         ::features::kAccessibilityMouseKeys},
         {});
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
@@ -559,7 +558,7 @@ class AccessibilityManagerTest : public MixinBasedInProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Test that a new user's application locale is mapped to a supported Dictation
@@ -1034,19 +1033,13 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
  public:
   AccessibilityManagerDlcTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~AccessibilityManagerDlcTest() override = default;
   AccessibilityManagerDlcTest(const AccessibilityManagerDlcTest&) = delete;
   AccessibilityManagerDlcTest& operator=(const AccessibilityManagerDlcTest&) =
       delete;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    AccessibilityManagerTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityFaceGaze);
-  }
-
   void SetUpOnMainThread() override {
     AccessibilityManagerTest::SetUpOnMainThread();
     UninstallSodaForTesting();
@@ -1116,8 +1109,7 @@ class AccessibilityManagerDlcTest : public AccessibilityManagerTest {
   }
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 // Tests that SODA download is initiated when Dictation is enabled.
@@ -1650,7 +1642,7 @@ class AccessibilityManagerDictationDialogTest
  protected:
   AccessibilityManagerDictationDialogTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~AccessibilityManagerDictationDialogTest() override = default;
   AccessibilityManagerDictationDialogTest(
       const AccessibilityManagerDictationDialogTest&) = delete;
@@ -1702,7 +1694,7 @@ class AccessibilityManagerDictationDialogTest
 
  private:
   std::string locale_;
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1795,7 +1787,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
  protected:
   AccessibilityManagerLoginTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     scoped_feature_list_.InitWithFeatures(
         {::features::kAccessibilityReducedAnimations,
          ::features::kAccessibilityMouseKeys},
@@ -1861,7 +1853,7 @@ class AccessibilityManagerLoginTest : public OobeBaseTest {
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
 
  private:
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -2124,82 +2116,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
       1);
 }
 
-class AccessibilityManagerWithAccessibilityServiceTest
-    : public AccessibilityManagerTest {
- public:
-  AccessibilityManagerWithAccessibilityServiceTest() = default;
-  AccessibilityManagerWithAccessibilityServiceTest(
-      const AccessibilityManagerWithAccessibilityServiceTest&) = delete;
-  AccessibilityManagerWithAccessibilityServiceTest& operator=(
-      const AccessibilityManagerWithAccessibilityServiceTest&) = delete;
-  ~AccessibilityManagerWithAccessibilityServiceTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityService);
-    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceTest,
-                       Constructs) {
-  // The service will be constructed and start receiving accessibility events
-  // when a subset of features are enabled. This simple test ensures that there
-  // are no crashes when setting up the service and toggling features.
-  SetSpokenFeedbackEnabled(true);
-  SetSelectToSpeakEnabled(true);
-  SetSwitchAccessEnabled(true);
-  SetAutoclickEnabled(true);
-  SetDictationEnabled(true);
-  SetMagnifierEnabled(true);
-
-  SetSpokenFeedbackEnabled(false);
-  SetSelectToSpeakEnabled(false);
-  SetSwitchAccessEnabled(false);
-  SetAutoclickEnabled(false);
-  SetDictationEnabled(false);
-  SetMagnifierEnabled(false);
-}
-
-class AccessibilityManagerWithAccessibilityServiceOOBETest
-    : public AccessibilityManagerWithAccessibilityServiceTest {
- public:
-  AccessibilityManagerWithAccessibilityServiceOOBETest() = default;
-  AccessibilityManagerWithAccessibilityServiceOOBETest(
-      const AccessibilityManagerWithAccessibilityServiceOOBETest&) = delete;
-  AccessibilityManagerWithAccessibilityServiceOOBETest& operator=(
-      const AccessibilityManagerWithAccessibilityServiceOOBETest&) = delete;
-  ~AccessibilityManagerWithAccessibilityServiceOOBETest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kLoginProfile, "user");
-    command_line->AppendSwitch(switches::kLoginManager);
-    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
-    AccessibilityManagerWithAccessibilityServiceTest::SetUpCommandLine(
-        command_line);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AccessibilityManagerWithAccessibilityServiceOOBETest,
-                       Constructs) {
-  // The service will be constructed and start receiving accessibility events
-  // when a subset of features are enabled. This simple test ensures that there
-  // are no crashes when setting up the service and toggling features
-  // in the login profile.
-  SetSpokenFeedbackEnabled(true);
-  SetSelectToSpeakEnabled(true);
-  SetSwitchAccessEnabled(true);
-  SetAutoclickEnabled(true);
-  SetDictationEnabled(true);
-  SetMagnifierEnabled(true);
-
-  SetSpokenFeedbackEnabled(false);
-  SetSelectToSpeakEnabled(false);
-  SetSwitchAccessEnabled(false);
-  SetAutoclickEnabled(false);
-  SetDictationEnabled(false);
-  SetMagnifierEnabled(false);
-}
 
 class AccessibilityManagerWithManifestV3Test : public AccessibilityManagerTest {
  public:

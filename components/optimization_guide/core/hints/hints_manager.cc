@@ -852,12 +852,12 @@ void HintsManager::FetchHintsForActiveTabs() {
       base::flat_set<std::string>(top_hosts.begin(), top_hosts.end());
   for (const auto& url : active_tab_urls_to_refresh) {
     if (!url.has_host() ||
-        top_hosts_set.find(url.host()) == top_hosts_set.end()) {
+        top_hosts_set.find(url.GetHost()) == top_hosts_set.end()) {
       continue;
     }
-    if (!hint_cache_->HasHint(url.host())) {
-      top_hosts_set.insert(url.host());
-      top_hosts.insert(top_hosts.begin(), url.host());
+    if (!hint_cache_->HasHint(url.GetHost())) {
+      top_hosts_set.insert(url.GetHost());
+      top_hosts.insert(top_hosts.begin(), url.GetHost());
     }
   }
   MaybeLogGetHintRequestInfo(
@@ -874,10 +874,9 @@ void HintsManager::FetchHintsForActiveTabs() {
       weak_ptr_factory_.GetWeakPtr(), top_hosts, active_tab_urls_to_refresh,
       proto::CONTEXT_BATCH_UPDATE_ACTIVE_TABS,
       std::move(hints_fetched_callback));
-  HandleTokenRequestFlow(
-      HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
-      std::move(do_fetch_callback));
+  HandleTokenRequestFlow(HasPersonalizableTypesRegistered(), identity_manager_,
+                         signin::OAuthConsumerId::kOptimizationGuideGetHints,
+                         std::move(do_fetch_callback));
 }
 
 void HintsManager::FetchHintsForActiveTabsInternal(
@@ -1023,7 +1022,7 @@ void HintsManager::LoadHintForURL(const GURL& url, base::OnceClosure callback) {
     return;
   }
 
-  LoadHintForHost(url.host(), std::move(callback));
+  LoadHintForHost(url.GetHost(), std::move(callback));
 }
 
 void HintsManager::LoadHintForHost(const std::string& host,
@@ -1043,7 +1042,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
   InsertionOrderedSet<GURL> target_urls;
   InsertionOrderedSet<std::string> target_hosts;
   for (const auto& url : urls) {
-    target_hosts.insert(url.host());
+    target_hosts.insert(url.GetHost());
     target_urls.insert(url);
   }
 
@@ -1060,7 +1059,7 @@ void HintsManager::FetchHintsForURLs(const std::vector<GURL>& urls,
       target_hosts, target_urls, request_context);
   HandleTokenRequestFlow(
       HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchHintsForURLsInternal,
                      weak_ptr_factory_.GetWeakPtr(), target_hosts, target_urls,
                      request_context));
@@ -1240,7 +1239,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
   InsertionOrderedSet<std::string> hosts_to_fetch;
   for (const auto& url : urls) {
     urls_to_fetch.insert(url);
-    hosts_to_fetch.insert(url.host());
+    hosts_to_fetch.insert(url.GetHost());
   }
 
   MaybeLogGetHintRequestInfo(request_context, optimization_types,
@@ -1255,8 +1254,7 @@ void HintsManager::CanApplyOptimizationOnDemand(
   }
   HandleTokenRequestFlow(
       allowed_contexts_for_personalized_metadata_.Has(request_context),
-      identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      identity_manager_, signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::FetchOptimizationGuideServiceBatchHints,
                      weak_ptr_factory_.GetWeakPtr(), hosts_to_fetch,
                      urls_to_fetch, optimization_types, request_context,
@@ -1357,7 +1355,7 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
       OptimizationMetadata metadata;
       OptimizationTypeDecision type_decision = CanApplyOptimization(
           /*is_on_demand_request=*/true, url, optimization_type,
-          url_mapped_hints[url.spec()], host_mapped_hints[url.host()],
+          url_mapped_hints[url.spec()], host_mapped_hints[url.GetHost()],
           /*skip_cache=*/true, &metadata);
       OptimizationGuideDecision decision =
           GetOptimizationGuideDecisionFromOptimizationTypeDecision(
@@ -1446,7 +1444,7 @@ void HintsManager::OnBatchUpdateHintsStored(
     // Load the hint for host if we have a host-keyed hint before invoking the
     // callbacks so we have all the necessary information to make the decision.
     LoadHintForHost(
-        url.host(),
+        url.GetHost(),
         base::BindOnce(&HintsManager::InvokeOnDemandHintsCallbackForURL,
                        weak_ptr_factory_.GetWeakPtr(), url, optimization_types,
                        callback));
@@ -1519,7 +1517,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
   return CanApplyOptimization(
       /*is_on_demand_request=*/false, navigation_url, optimization_type,
       hint_cache_->GetURLKeyedHint(navigation_url),
-      hint_cache_->GetHostKeyedHintIfLoaded(navigation_url.host()), false,
+      hint_cache_->GetHostKeyedHintIfLoaded(navigation_url.GetHost()), false,
       optimization_metadata);
 }
 
@@ -1562,7 +1560,7 @@ OptimizationTypeDecision HintsManager::CanApplyOptimization(
     scoped_logger.set_type_decision(OptimizationTypeDecision::kInvalidURL);
     return OptimizationTypeDecision::kInvalidURL;
   }
-  const auto& host = url.host();
+  const auto& host = url.GetHost();
 
   // Check if the URL should be filtered out if we have an optimization filter
   // for the type.
@@ -1692,7 +1690,7 @@ void HintsManager::PrepareToInvokeRegisteredCallbacks(
   }
 
   LoadHintForHost(
-      navigation_url.host(),
+      navigation_url.GetHost(),
       base::BindOnce(&HintsManager::OnReadyToInvokeRegisteredCallbacks,
                      weak_ptr_factory_.GetWeakPtr(), navigation_url));
 }
@@ -1777,7 +1775,7 @@ void HintsManager::OnNavigationStartOrRedirect(
 
   HandleTokenRequestFlow(
       HasPersonalizableTypesRegistered(), identity_manager_,
-      {GaiaConstants::kOptimizationGuideServiceGetHintsOAuth2Scope},
+      signin::OAuthConsumerId::kOptimizationGuideGetHints,
       base::BindOnce(&HintsManager::MaybeFetchHintsForNavigation,
                      weak_ptr_factory_.GetWeakPtr(),
                      navigation_data->GetWeakPtr()));
@@ -1816,8 +1814,8 @@ void HintsManager::MaybeFetchHintsForNavigation(
 
   std::vector<std::string> hosts;
   std::vector<GURL> urls;
-  if (!hint_cache_->HasHint(url.host())) {
-    hosts.push_back(url.host());
+  if (!hint_cache_->HasHint(url.GetHost())) {
+    hosts.push_back(url.GetHost());
     race_navigation_recorder.set_race_attempt_status(
         RaceNavigationFetchAttemptStatus::kRaceNavigationFetchHost);
   }
@@ -1915,9 +1913,9 @@ bool HintsManager::HasAllInformationForDecisionAvailable(
     return true;
   }
 
-  bool has_host_keyed_hint = hint_cache_->HasHint(navigation_url.host());
+  bool has_host_keyed_hint = hint_cache_->HasHint(navigation_url.GetHost());
   const auto* host_keyed_hint =
-      hint_cache_->GetHostKeyedHintIfLoaded(navigation_url.host());
+      hint_cache_->GetHostKeyedHintIfLoaded(navigation_url.GetHost());
   if (has_host_keyed_hint && host_keyed_hint == nullptr) {
     // If we have a host-keyed hint in the cache and it is not loaded, we do not
     // have all information available, regardless of whether we can fetch hints
@@ -1985,6 +1983,23 @@ void HintsManager::AddHintForTesting(
   PrepareToInvokeRegisteredCallbacks(url);
 }
 
+void HintsManager::AddHintWithMultipleOptimizationsForTesting(
+    const GURL& url,
+    const std::vector<optimization_guide::proto::OptimizationType>&
+        optimization_types) {
+  std::unique_ptr<proto::Hint> hint = std::make_unique<proto::Hint>();
+  hint->set_key(url.spec());
+  proto::PageHint* page_hint = hint->add_page_hints();
+  page_hint->set_page_pattern("*");
+  for (proto::OptimizationType optimization_type : optimization_types) {
+    proto::Optimization* optimization =
+        page_hint->add_allowlisted_optimizations();
+    optimization->set_optimization_type(optimization_type);
+  }
+  hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
+  PrepareToInvokeRegisteredCallbacks(url);
+}
+
 void HintsManager::AddOnDemandHintForTesting(
     const GURL& url,
     proto::OptimizationType optimization_type,
@@ -2020,7 +2035,7 @@ void HintsManager::RemoveFetchedEntriesByHintKeys(
       if (!gurl.is_valid()) {
         continue;
       }
-      hosts_to_remove.insert(gurl.host());
+      hosts_to_remove.insert(gurl.GetHost());
       urls_to_remove.insert(gurl);
     }
 

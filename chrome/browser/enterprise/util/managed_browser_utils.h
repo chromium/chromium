@@ -46,6 +46,12 @@ enum class BrowserManagementNoticeState {
   kNotApplicable,
 };
 
+// Represents the management scope for which the enterprise logo applies.
+enum class EnterpriseLogoUrlScope {
+  kBrowser,
+  kProfile
+};
+
 // Determines whether the browser with `profile` as its primary profile is
 // managed. This is determined by looking it there are any policies applied or
 // if `profile` is an enterprise profile.
@@ -125,6 +131,7 @@ bool IsKnownConsumerDomain(const std::string& email_domain);
 // image.
 void GetManagementIcon(const GURL& url,
                        Profile* profile,
+                       EnterpriseLogoUrlScope url_scope,
                        base::OnceCallback<void(const gfx::Image&)> callback);
 
 // Returns the default enterprise label "Work"/"School" or the
@@ -135,6 +142,9 @@ std::u16string GetEnterpriseLabel(Profile* profile, bool truncated = false);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::ScopedClosureRunner DisableAutomaticManagementDisclaimerUntilReset(
     Profile* profile);
+
+base::ScopedClosureRunner
+EnabledAutomaticManagementDisclaimerAcceptanceUntilReset(Profile* profile);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace enterprise_util

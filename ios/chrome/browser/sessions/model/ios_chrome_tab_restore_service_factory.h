@@ -33,9 +33,9 @@ class IOSChromeTabRestoreServiceFactory : public ProfileKeyedServiceFactoryIOS {
   IOSChromeTabRestoreServiceFactory();
   ~IOSChromeTabRestoreServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_MODEL_IOS_CHROME_TAB_RESTORE_SERVICE_FACTORY_H_

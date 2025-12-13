@@ -9,14 +9,6 @@
 
 namespace blink {
 
-template <>
-struct CrossThreadCopier<ExceptionContext> {
-  STATIC_ONLY(CrossThreadCopier);
-  static ExceptionContext Copy(ExceptionContext exception_context) {
-    return exception_context;
-  }
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CROSS_THREAD_COPIER_H_

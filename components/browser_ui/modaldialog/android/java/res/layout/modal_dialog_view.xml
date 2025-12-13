@@ -37,17 +37,23 @@ found in the LICENSE file.
                 android:id="@+id/scrollable_title_container"
                 android:visibility="gone" />
 
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/message_paragraph_1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-                app:leading="@dimen/text_size_medium_leading"
-                style="@style/AlertDialogContent" />
-
             <LinearLayout
                 android:id="@+id/message_paragraphs_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+            <Space
+                android:id="@+id/message_paragraphs_bottom_spacer"
+                android:layout_width="match_parent"
+                android:layout_height="16dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/menu_items_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="gone" />
 

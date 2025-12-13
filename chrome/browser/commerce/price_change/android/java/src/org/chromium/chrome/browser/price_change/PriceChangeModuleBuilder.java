@@ -43,7 +43,8 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
     @Override
     public boolean build(
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!mProfileProviderSupplier.hasValue()) return false;
+        var profileProvider = mProfileProviderSupplier.get();
+        if (profileProvider == null) return false;
 
         Profile profile = getRegularProfile();
         if (!PriceTrackingUtilities.isTrackPricesOnTabsEnabled(profile)) {
@@ -76,14 +77,15 @@ public class PriceChangeModuleBuilder implements ModuleProviderBuilder, ModuleCo
     public boolean isEligible() {
         // This function may be called by MainSettings when a profile hasn't been initialized yet.
         // See b/324138242.
-        if (!mProfileProviderSupplier.hasValue()) return false;
+        var profileProvider = mProfileProviderSupplier.get();
+        if (profileProvider == null) return false;
 
         return PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getRegularProfile());
     }
 
     /** Gets the regular profile if exists. */
     private Profile getRegularProfile() {
-        assert mProfileProviderSupplier.hasValue();
+        assert mProfileProviderSupplier.get() != null;
 
         return mProfileProviderSupplier.get().getOriginalProfile();
     }

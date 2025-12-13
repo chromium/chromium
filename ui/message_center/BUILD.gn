@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//testing/test.gni")
@@ -156,6 +155,8 @@ if (enable_message_center) {
       "fake_message_center.h",
       "lock_screen/fake_lock_screen_controller.cc",
       "lock_screen/fake_lock_screen_controller.h",
+      "test/message_center_waiter.cc",
+      "test/message_center_waiter.h",
     ]
 
     deps = [
@@ -238,6 +239,7 @@ if (enable_message_center) {
       deps += [
         "//ui/color",
         "//ui/display",
+        "//ui/native_theme:test_support",
         "//ui/strings",
         "//ui/views",
         "//ui/views:test_support",

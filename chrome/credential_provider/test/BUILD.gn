@@ -50,9 +50,9 @@ test("gcp_unittests") {
     "../gaiacp:version",
     "../setup:common",
     "//base",
+    "//chrome/browser/ui/startup:credential_provider_test_utils",
     "//chrome/common:non_code_constants",
     "//chrome/common:version_header",
-    "//chrome/test:credential_provider_test_utils",
     "//content/public/browser",
     "//extensions/common",
     "//google_apis",
@@ -73,4 +73,8 @@ test("gcp_unittests") {
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

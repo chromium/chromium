@@ -13,8 +13,8 @@ found in the LICENSE file.
     <item name="tsr_folio_tab_inactive_hover_alpha" format="float" type="dimen">0.08</item>
 
     <!-- Tab strip multi-selected alpha values -->
-    <item name="multi_selected_tab_alpha" format="float" type="dimen">0.6</item>
-    <item name="multi_selected_tab_hovered_alpha" format="float" type="dimen">0.8</item>
+    <item name="multi_selected_tab_alpha" format="float" type="dimen">0.5</item>
+    <item name="multi_selected_tab_hover_overlay_alpha" format="float" type="dimen">0.16</item>
 
     <!-- Tab strip group drag shadow alpha values -->
     <item name="mini_thumbnail_placeholder_overlay_alpha" format="float" type="dimen">0.16</item>

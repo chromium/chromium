@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Aplikazio-ikuspegia: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Luzapen honek "<ph name="KEY_PATH" />" karaktere-fitxategia du. Ziur aski ez duzu hori egin nahi.</translation>
 <translation id="5486326529110362464">Gako pribatua idatzi behar da.</translation>
+<translation id="5707185214361380026">Ezin izan da kargatu hemengo luzapena:</translation>
 <translation id="5972529113578162692">Gailuaren administratzaileak <ph name="EXTENSION_NAME" /> instalatzea eskatzen du. Ezin da desinstalatu.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna (<ph name="SERIAL_NUMBER" /> serie-zenbakia)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> saltzailearen <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Errore bat gertatu da luzapena kargatzean</translation>
 <translation id="6322279351188361895">Ezin izan da irakurri gako pribatua.</translation>
 <translation id="6391538222494443604">Sarrerako direktorioa falta da.</translation>
 <translation id="641087317769093025">Ezin izan da luzapena deskonprimatu</translation>

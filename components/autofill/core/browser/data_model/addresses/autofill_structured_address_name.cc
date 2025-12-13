@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
@@ -121,14 +122,15 @@ std::vector<const re2::RE2*> NameLast::GetParseRegularExpressionsByRelevance()
   auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
   DCHECK(pattern_provider);
 
-  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
-    return {pattern_provider->GetRegEx(RegEx::kParseLastName)};
-  }
-
   // Check if the name has the characteristics of an Hispanic/Latinx name.
   if (HasHispanicLatinxNameCharacteristics(base::UTF16ToUTF8(GetValue()))) {
     return {pattern_provider->GetRegEx(RegEx::kParseHispanicLastName)};
   }
+
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportLastNamePrefix)) {
+    return {pattern_provider->GetRegEx(RegEx::kParseLastName)};
+  }
+
   return {pattern_provider->GetRegEx(RegEx::kParseLastNameIntoSecondLastName)};
 }
 
@@ -309,7 +311,7 @@ std::u16string AlternativeNameAddressComponent::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
   return TransliterateAlternativeName(
-      AddressComponent::GetValueForComparison(GetValue(), common_country_code));
+      normalization::NormalizeForComparison(GetValue()));
 }
 
 AlternativeGivenName::AlternativeGivenName()

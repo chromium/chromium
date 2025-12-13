@@ -21,6 +21,7 @@ import androidx.activity.ComponentDialog;
 import androidx.annotation.IntDef;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwSettings.HyperlinkContextMenuItems;
 import org.chromium.android_webview.R;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -73,7 +74,8 @@ public class AwContextMenuCoordinator {
             WebContents webContents,
             ContextMenuParams params,
             boolean isDragDropEnabled,
-            boolean usePopupWindow) {
+            boolean usePopupWindow,
+            @HyperlinkContextMenuItems int menuItems) {
         mWindowAndroid = windowAndroid;
         mContext = windowAndroid.getContext().get();
         mWebContents = webContents;
@@ -87,10 +89,9 @@ public class AwContextMenuCoordinator {
                         windowAndroid.getActivity().get(),
                         mWebContents,
                         mParams,
-                        mUsePopupWindow);
+                        mUsePopupWindow,
+                        menuItems);
 
-        // TODO(crbug.com/323344356) make 'Open in browser' disabled by default and only show for
-        // HTTP and HTTPS urls
         mItems = mCurrentPopulator.buildContextMenu();
         mHeaderCoordinator = new AwContextMenuHeaderCoordinator(mParams, mContext);
     }
@@ -310,6 +311,10 @@ public class AwContextMenuCoordinator {
 
     public ComponentDialog getDialogForTesting() {
         return mDialog;
+    }
+
+    public ListView getListViewForTest() {
+        return mListView;
     }
 
     public AwContextMenuHeaderCoordinator getHeaderCoordinatorForTesting() {

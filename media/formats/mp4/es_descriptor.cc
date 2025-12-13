@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp4/es_descriptor.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
 
@@ -44,7 +41,7 @@ namespace {
 // 4 bytes to make inline construction simple. The lowest 7 bits encode
 // the actual value, an MSB==1 indicates there's another byte to decode,
 // and an MSB==0 indicates there are no more bytes to decode.
-void EncodeDescriptorSize(size_t size, uint8_t* output) {
+void EncodeDescriptorSize(size_t size, base::span<uint8_t> output) {
   DCHECK_LT(size, (1u << (4u * 7u)));
   for (int i = 3; i > 0; i--) {
     output[3 - i] = (size >> (7 * i)) | 0x80;
@@ -83,7 +80,7 @@ std::vector<uint8_t> ESDescriptor::CreateEsds(
 #pragma pack(pop)
 
   std::vector<uint8_t> esds_data(sizeof(EsDescriptor) + aac_extra_data.size());
-  auto* esds = reinterpret_cast<EsDescriptor*>(esds_data.data());
+  auto* esds = UNSAFE_TODO(reinterpret_cast<EsDescriptor*>(esds_data.data()));
 
   esds->tag = kESDescrTag;
   EncodeDescriptorSize(

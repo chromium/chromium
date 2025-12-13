@@ -30,12 +30,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -69,8 +67,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
 
     @Mock private View mMockDecorView;
 
-    @Mock private Supplier<Tab> mMockTabProvider;
-
     @Mock private MerchantTrustMetrics mMockMetrics;
 
     @Mock private GURL mMockGurl;
@@ -103,7 +99,6 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                                     sActivity,
                                     mWindowAndroid,
                                     mMockBottomSheetController,
-                                    mMockTabProvider,
                                     mMockDecorView,
                                     mMockMetrics,
                                     IntentRequestTracker.createFromActivity(sActivity),

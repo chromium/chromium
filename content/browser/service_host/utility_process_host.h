@@ -22,7 +22,6 @@
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
 #if BUILDFLAG(USE_ZYGOTE)
@@ -54,7 +53,7 @@ typedef base::Thread* (*UtilityMainThreadFactoryFunction)(
 // mojo service. This class lives solely on the UI thread. If you need to bind
 // a Mojo interface, specify it via `WithBoundServiceInterfaceOnChildProcess` on
 // the `Options` passed in.
-class CONTENT_EXPORT UtilityProcessHost
+class CONTENT_EXPORT UtilityProcessHost final
     : public BrowserChildProcessHostDelegate {
  public:
   static void RegisterUtilityMainThreadFactory(

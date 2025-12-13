@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -22,8 +23,6 @@
 #include "base/command_line.h"
 #include "base/containers/extend.h"
 #include "base/functional/bind.h"
-#include "base/hash/hash.h"
-#include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -50,7 +49,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -65,6 +63,7 @@
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "crypto/obsolete/sha1.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -73,6 +72,12 @@ using file_manager::VolumeManager;
 using session_manager::SessionManager;
 using wallpaper_handlers::BackdropSurpriseMeImageFetcher;
 
+namespace wallpaper {
+std::string GetHexForWallpaperFilesId(
+    const base::span<const uint8_t> files_id_unhashed) {
+  return base::HexEncodeLower(crypto::obsolete::Sha1::Hash(files_id_unhashed));
+}
+}  // namespace wallpaper
 namespace {
 
 // Known user keys.
@@ -124,7 +129,7 @@ std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
   // presumably meant to lowercase the input string before hashing, but it did
   // not.
   base::Extend(data, base::as_byte_span(files_id_unhashed));
-  return base::ToLowerASCII(base::HexEncode(base::SHA1Hash(data)));
+  return wallpaper::GetHexForWallpaperFilesId(data);
 }
 
 // Returns true if wallpaper files id can be returned successfully.
@@ -217,12 +222,6 @@ WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
 }
 
 void WallpaperControllerClientImpl::Init() {
-  pref_registrar_.Init(&local_state_.get());
-  pref_registrar_.Add(
-      prefs::kDeviceWallpaperImageFilePath,
-      base::BindRepeating(
-          &WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged,
-          weak_factory_.GetWeakPtr()));
   wallpaper_controller_ = ash::WallpaperController::Get();
 
   InitController();
@@ -455,26 +454,10 @@ void WallpaperControllerClientImpl::OnUserLoggedIn(
   ShowUserWallpaper(user.GetAccountId());
 }
 
-void WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged() {
-  wallpaper_controller_->SetDevicePolicyWallpaperPath(
-      GetDeviceWallpaperImageFilePath());
-}
-
 void WallpaperControllerClientImpl::InitController() {
   wallpaper_controller_->SetClient(this);
   wallpaper_controller_->SetDriveFsDelegate(
       std::make_unique<ash::WallpaperDriveFsDelegateImpl>());
-
-  base::FilePath user_data;
-  CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data));
-  base::FilePath wallpapers;
-  CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_WALLPAPERS, &wallpapers));
-  base::FilePath custom_wallpapers;
-  CHECK(base::PathService::Get(chrome::DIR_CHROMEOS_CUSTOM_WALLPAPERS,
-                               &custom_wallpapers));
-  base::FilePath device_policy_wallpaper = GetDeviceWallpaperImageFilePath();
-  wallpaper_controller_->Init(user_data, wallpapers, custom_wallpapers,
-                              device_policy_wallpaper);
 }
 
 void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
@@ -593,12 +576,6 @@ bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {
   ash::CrosSettings::Get()->GetBoolean(ash::kAccountsPrefShowUserNamesOnSignIn,
                                        &show_user_names);
   return show_user_names;
-}
-
-base::FilePath
-WallpaperControllerClientImpl::GetDeviceWallpaperImageFilePath() {
-  return base::FilePath(
-      local_state_->GetString(prefs::kDeviceWallpaperImageFilePath));
 }
 
 void WallpaperControllerClientImpl::OnDailyImageInfoFetched(

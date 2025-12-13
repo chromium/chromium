@@ -27,11 +27,16 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
   UIImage* voiceSearchIcon =
       [[UIImage imageNamed:@"keyboard_accessory_voice_search"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-  UIBarButtonItem* voiceSearchItem = [[UIBarButtonItem alloc]
-      initWithImage:voiceSearchIcon
-              style:UIBarButtonItemStylePlain
-             target:delegate
-             action:@selector(keyboardAccessoryVoiceSearchTapped:)];
+
+  UIButton* voiceSearchButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [voiceSearchButton setImage:voiceSearchIcon forState:UIControlStateNormal];
+  [voiceSearchButton addTarget:delegate
+                        action:@selector(keyboardAccessoryVoiceSearchTapped:)
+              forControlEvents:UIControlEventTouchUpInside];
+  voiceSearchButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIBarButtonItem* voiceSearchItem =
+      [[UIBarButtonItem alloc] initWithCustomView:voiceSearchButton];
   voiceSearchItem.enabled = ios::provider::IsVoiceSearchEnabled();
   NSString* accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
@@ -41,11 +46,16 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
 
   UIImage* cameraIcon = [[UIImage imageNamed:@"keyboard_accessory_qr_scanner"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-  UIBarButtonItem* cameraItem = [[UIBarButtonItem alloc]
-      initWithImage:cameraIcon
-              style:UIBarButtonItemStylePlain
-             target:delegate
-             action:@selector(keyboardAccessoryCameraSearchTapped)];
+
+  UIButton* cameraButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [cameraButton setImage:cameraIcon forState:UIControlStateNormal];
+  [cameraButton addTarget:delegate
+                   action:@selector(keyboardAccessoryCameraSearchTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+  cameraButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIBarButtonItem* cameraItem =
+      [[UIBarButtonItem alloc] initWithCustomView:cameraButton];
   SetA11yLabelAndUiAutomationName(
       cameraItem, IDS_IOS_KEYBOARD_ACCESSORY_VIEW_QR_CODE_SEARCH,
       @"QR code Search");
@@ -58,11 +68,16 @@ NSArray<UIBarButtonItemGroup*>* OmniboxAssistiveKeyboardLeadingBarButtonGroups(
                              scale:UIImageSymbolScaleMedium];
     UIImage* debuggerIcon =
         DefaultSymbolWithConfiguration(kSettingsSymbol, configuration);
-    UIBarButtonItem* debuggerItem = [[UIBarButtonItem alloc]
-        initWithImage:debuggerIcon
-                style:UIBarButtonItemStylePlain
-               target:delegate
-               action:@selector(keyboardAccessoryDebuggerTapped)];
+
+    UIButton* debuggerButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [debuggerButton setImage:debuggerIcon forState:UIControlStateNormal];
+    [debuggerButton addTarget:delegate
+                       action:@selector(keyboardAccessoryDebuggerTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    debuggerButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+    UIBarButtonItem* debuggerItem =
+        [[UIBarButtonItem alloc] initWithCustomView:debuggerButton];
     [items addObject:debuggerItem];
   }
 

@@ -49,7 +49,7 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                       ForgetIdentityCallback callback) final {
     NOTREACHED();
   }
-  bool IdentityRemovedByUser(NSString* gaia_id) final { NOTREACHED(); }
+  bool IdentityRemovedByUser(const GaiaId& gaia_id) final { NOTREACHED(); }
   void GetAccessToken(id<SystemIdentity> identity,
                       const std::set<std::string>& scopes,
                       AccessTokenCallback callback) final {
@@ -84,6 +84,9 @@ class TestSystemIdentityManager : public SystemIdentityManager {
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final {
+    NOTREACHED();
+  }
+  bool IsScopeLimitedError(id<RefreshAccessTokenError> error) final {
     NOTREACHED();
   }
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final {

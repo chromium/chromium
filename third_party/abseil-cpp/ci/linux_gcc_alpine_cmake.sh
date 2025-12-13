@@ -22,6 +22,12 @@ fi
 
 source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
+# Avoid depending on GitHub by looking for a cached copy of GoogleTest.
+if [[ -r "${KOKORO_GFILE_DIR:-}/distdir/googletest-${ABSL_GOOGLETEST_VERSION}.tar.gz" ]]; then
+  ABSL_GOOGLETEST_DOWNLOAD_URL="file:///distdir/googletest-${ABSL_GOOGLETEST_VERSION}.tar.gz"
+  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly ${DOCKER_EXTRA_ARGS:-}"
+fi
+
 if [[ -z ${ABSL_CMAKE_CXX_STANDARDS:-} ]]; then
   ABSL_CMAKE_CXX_STANDARDS="17"
 fi

@@ -29,8 +29,8 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -129,8 +129,7 @@ class TabLifecycleUnitFreezeWaiter
   // resource_coordinator::LifecycleUnitObserver:
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState last_state,
-      ::mojom::LifecycleUnitStateChangeReason reason) override {
+      ::mojom::LifecycleUnitState last_state) override {
     if (lifecycle_unit->GetState() == ::mojom::LifecycleUnitState::FROZEN) {
       run_loop_.Quit();
     }
@@ -140,8 +139,9 @@ class TabLifecycleUnitFreezeWaiter
 };
 
 // Ensures that `browser` has `num_tabs` tabs.
-void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
-  EXPECT_EQ(1, browser->tab_strip_model()->count());
+void EnsureTabsInBrowser(BrowserWindowInterface* browser, int num_tabs) {
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  EXPECT_EQ(1, tab_strip_model->count());
 
   for (int i = 0; i < num_tabs; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
@@ -151,17 +151,18 @@ void EnsureTabsInBrowser(Browser* browser, int num_tabs) {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  EXPECT_EQ(num_tabs, browser->tab_strip_model()->count());
+  EXPECT_EQ(num_tabs, tab_strip_model->count());
 }
 
 // Creates a browser with `num_tabs` tabs.
-Browser* CreateBrowserWithTabs(int num_tabs) {
-  Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
-  ui_test_utils::BrowserChangeObserver new_browser_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+BrowserWindowInterface* CreateBrowserWithTabs(int num_tabs) {
+  BrowserWindowInterface* const current_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   chrome::NewWindow(current_browser);
-  ui_test_utils::WaitForBrowserSetLastActive(new_browser_observer.Wait());
-  Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
+  ui_test_utils::WaitForBrowserSetLastActive(browser_created_observer.Wait());
+  BrowserWindowInterface* const new_browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   EXPECT_NE(new_browser, current_browser);
 
   EnsureTabsInBrowser(new_browser, num_tabs);
@@ -306,7 +307,9 @@ class PageDiscardingHelperBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
+// TODO(crbug.com/438908221): Crashes/flaky on Linux dbg bots.
+IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
+                       DISABLED_DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
@@ -522,8 +525,16 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 
 // Regression test for crbug.com/386801193. Ensure discarded tabs remain
 // eligible for successive discard operations following a reactivation / reload.
+// TODO(crbug.com/436300896): Re-enable on MSAN/ASAN.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER)
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards \
+  DISABLED_DiscardedTabEligibleForSuccessiveDiscards
+#else
+#define MAYBE_DiscardedTabEligibleForSuccessiveDiscards \
+  DiscardedTabEligibleForSuccessiveDiscards
+#endif
 IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
-                       DiscardedTabEligibleForSuccessiveDiscards) {
+                       MAYBE_DiscardedTabEligibleForSuccessiveDiscards) {
   // Add a new background tab.
   OpenNewBackgroundPage();
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
@@ -545,10 +556,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                                              base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    std::optional<base::TimeTicks> first_discarded_at =
+    PageDiscardingHelper::DiscardResult result =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 
-    EXPECT_TRUE(first_discarded_at.has_value());
+    EXPECT_TRUE(result.first_discard_time.has_value());
   };
   attempt_discard();
 
@@ -614,10 +625,10 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
                                              base::TimeDelta()));
     auto* helper = PageDiscardingHelper::GetFromGraph(graph);
     ASSERT_TRUE(helper);
-    std::optional<base::TimeTicks> first_discarded_at =
+    PageDiscardingHelper::DiscardResult result =
         helper->DiscardAPage(DiscardReason::URGENT, base::TimeDelta());
 
-    EXPECT_TRUE(first_discarded_at.has_value());
+    EXPECT_TRUE(result.first_discard_time.has_value());
   };
   attempt_discard();
 
@@ -662,9 +673,9 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
   EnsureTabsInBrowser(browser(), 2);
   browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
   // Create another browser which occludes the previous browser.
-  Browser* other_browser = CreateBrowserWithTabs(1);
+  BrowserWindowInterface* const other_browser = CreateBrowserWithTabs(1);
   EXPECT_NE(other_browser, browser());
-  other_browser->window()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  other_browser->GetWindow()->SetBounds(gfx::Rect(0, 0, 100, 100));
 
   // Request to discard pages a few times.
   auto* helper =

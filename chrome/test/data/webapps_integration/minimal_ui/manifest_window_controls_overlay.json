@@ -12,7 +12,8 @@
         "type": "image/png"
       }
     ],
-    "start_url": "/webapps_integration/minimal_ui/basic.html",
+    "id": "/webapps_integration/minimal_ui/basic.html",
+    "start_url": "/webapps_integration/minimal_ui/basic.html?manifest=manifest_window_controls_overlay.json",
     "scope": "/webapps_integration/minimal_ui/",
     "display": "standalone",
     "display_override": [

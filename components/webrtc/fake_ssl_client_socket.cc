@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webrtc/fake_ssl_client_socket.h"
 
 #include <stddef.h>
@@ -22,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
+#include "base/strings/string_view_util.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -90,13 +86,11 @@ scoped_refptr<net::DrainableIOBuffer> NewDrainableIOBufferWithSize(int size) {
 }  // namespace
 
 std::string_view FakeSSLClientSocket::GetSslClientHello() {
-  return std::string_view(reinterpret_cast<const char*>(kSslClientHello),
-                          std::size(kSslClientHello));
+  return base::as_string_view(kSslClientHello);
 }
 
 std::string_view FakeSSLClientSocket::GetSslServerHello() {
-  return std::string_view(reinterpret_cast<const char*>(kSslServerHello.data()),
-                          std::size(kSslServerHello));
+  return base::as_string_view(kSslServerHello);
 }
 
 FakeSSLClientSocket::FakeSSLClientSocket(
@@ -107,7 +101,8 @@ FakeSSLClientSocket::FakeSSLClientSocket(
       write_buf_(NewDrainableIOBufferWithSize(std::size(kSslClientHello))),
       read_buf_(NewDrainableIOBufferWithSize(std::size(kSslServerHello))) {
   CHECK(transport_socket_.get());
-  std::memcpy(write_buf_->data(), kSslClientHello, std::size(kSslClientHello));
+  UNSAFE_TODO(std::memcpy(write_buf_->data(), kSslClientHello,
+                          std::size(kSslClientHello)));
 }
 
 FakeSSLClientSocket::~FakeSSLClientSocket() = default;
@@ -313,7 +308,8 @@ net::Error FakeSSLClientSocket::ProcessVerifyServerHelloDone(size_t read) {
   const uint8_t* expected_data_start =
       &kSslServerHello[std::size(kSslServerHello) -
                        read_buf_->BytesRemaining()];
-  if (std::memcmp(expected_data_start, read_buf_->data(), read) != 0) {
+  if (UNSAFE_TODO(std::memcmp(expected_data_start, read_buf_->data(), read)) !=
+      0) {
     return net::ERR_UNEXPECTED;
   }
   if (read < static_cast<size_t>(read_buf_->BytesRemaining())) {

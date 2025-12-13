@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.branding;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -262,7 +264,7 @@ public class BrandingCheckerUnitTest {
 
     private HistogramWatcher newHistogramWatcher() {
         return HistogramWatcher.newBuilder()
-                .expectAnyRecord("CustomTabs.Branding.BrandingCheckDuration")
+                .expectAnyRecord("CustomTabs.Branding.AppIdType")
                 .build();
     }
 
@@ -275,7 +277,7 @@ public class BrandingCheckerUnitTest {
         }
 
         public @BrandingDecision int getBrandingDecision() {
-            assert getCallCount() > 0;
+            assertThat(getCallCount()).isGreaterThan(0);
             return mBrandingInfo.getDecision();
         }
 

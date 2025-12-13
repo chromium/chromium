@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -14,13 +17,17 @@ namespace ash {
 namespace input_method {
 
 TEST(InputMethodConfigurationTest, TestInitialize) {
-  session_manager::SessionManager session_manager;
+  session_manager::SessionManager session_manager{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   ScopedTestingCrosSettings cros_settings;
 
   InputMethodManager* manager = InputMethodManager::Get();
   EXPECT_FALSE(manager);
 
-  Initialize();
+  Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
+             TestingBrowserProcess::GetGlobal()
+                 ->GetFeatures()
+                 ->application_locale_storage());
   manager = InputMethodManager::Get();
   EXPECT_TRUE(manager);
   Shutdown();

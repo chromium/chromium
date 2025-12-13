@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/counter_expand_button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

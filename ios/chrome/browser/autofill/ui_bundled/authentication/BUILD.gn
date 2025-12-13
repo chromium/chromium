@@ -80,6 +80,7 @@ source_set("card_unmask_authentication_coordinator") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
   ]
 }
 
@@ -164,6 +165,7 @@ source_set("card_unmask_authentication_selection_view_controller") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
   ]

@@ -56,7 +56,6 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/mhtml_generation_params.h"
 #include "content/public/common/referrer_type_converters.h"
@@ -89,11 +88,13 @@ const char kDefaultSaveName[] = "saved_resource";
 // name-conflict files which has same base file name.
 const int32_t kMaxFileOrdinalNumber = 9999;
 
+#if BUILDFLAG(IS_WIN)
 // Maximum length for file path. Since Windows have MAX_PATH limitation for
 // file path, we need to make sure length of file path of every saved file
-// is less than MAX_PATH
-#if BUILDFLAG(IS_WIN)
+// is less than MAX_PATH.
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
+// Maximum component length for NTFS/FAT32 compatibility.
+const uint32_t kMaxComponentLength = 255;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
 #endif
@@ -405,18 +406,45 @@ void SavePackage::OnMHTMLGenerated(int64_t size) {
   }
 }
 
-// On POSIX, the length of |base_name| + |file_name_ext| is further
-// restricted by NAME_MAX. The maximum allowed path looks like:
-// '/path/to/save_dir' + '/' + NAME_MAX.
-uint32_t SavePackage::GetMaxPathLengthForDirectory(
+// static
+uint32_t SavePackage::ComputeMaxPathLengthForDirectory(
     const base::FilePath& base_dir) {
+  // Query runtime filesystem constraints.
+  int runtime_max = base::GetMaximumPathComponentLength(base_dir);
+  uint32_t max_component_length;
+
+  if (runtime_max > 0) {
+    max_component_length = static_cast<uint32_t>(runtime_max);
+  } else {
+    // Fall back to platform defaults if query fails.
 #if BUILDFLAG(IS_WIN)
-  return kMaxFilePathLength;
+    // NTFS/FAT32 compatible.
+    max_component_length = kMaxComponentLength;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+    // Standard POSIX limit.
+    max_component_length = NAME_MAX;
+#endif
+  }
+
+  return std::min(kMaxFilePathLength,
+                  static_cast<uint32_t>(base_dir.value().length() + 1 +
+                                        max_component_length));
+}
+
+uint32_t SavePackage::GetMaxPathLengthForDirectory() const {
+  // Use platform defaults to avoid blocking I/O during save operations.
+  uint32_t max_component_length;
+
+#if BUILDFLAG(IS_WIN)
+  max_component_length = kMaxComponentLength;
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  max_component_length = NAME_MAX;
+#endif
+
   return std::min(
       kMaxFilePathLength,
-      static_cast<uint32_t>(base_dir.value().length()) + NAME_MAX + 1);
-#endif
+      static_cast<uint32_t>(saved_main_directory_path_.value().length() + 1 +
+                            max_component_length));
 }
 
 // static
@@ -437,9 +465,33 @@ bool SavePackage::TruncateBaseNameToFitPathConstraints(
   if (static_cast<int>(base_name->length()) <= available_length)
     return true;
 
-  // Limited room. Truncate |base_name| to fit.
+  // Limited room. Truncate |base_name| to fit, respecting character boundaries.
   if (available_length > 0) {
-    *base_name = base_name->substr(0, available_length);
+#if BUILDFLAG(IS_WIN)
+    // On Windows, FilePath uses UTF-16, so truncate at UTF-16 code unit
+    // boundaries.
+    if (static_cast<size_t>(available_length) < base_name->length()) {
+      *base_name = base_name->substr(0, available_length);
+    }
+#else
+    // On POSIX, FilePath uses native encoding (usually UTF-8)
+    // Convert to UTF-8, truncate safely, then convert back.
+    std::string utf8_name = base::FilePath(*base_name).AsUTF8Unsafe();
+    std::string truncated_utf8;
+    base::TruncateUTF8ToByteSize(utf8_name, available_length, &truncated_utf8);
+
+    // Convert back to native string, but handle potential encoding issues.
+    base::FilePath temp_path = base::FilePath::FromUTF8Unsafe(truncated_utf8);
+    *base_name = temp_path.value();
+
+    // Double-check that the result fits - if conversion caused expansion,
+    // retry.
+    if (static_cast<int>(base_name->length()) > available_length) {
+      // If UTF-8 conversion caused size increase, use simple byte truncation
+      // as a last resort (this should be rare).
+      *base_name = base_name->substr(0, available_length);
+    }
+#endif
     return true;
   }
 
@@ -477,8 +529,8 @@ bool SavePackage::GenerateFileName(const std::string& disposition,
       file_path.RemoveExtension().BaseName().value();
   base::FilePath::StringType file_name_ext = file_path.Extension();
 
-  // Need to make sure the suggested file name is not too long.
-  uint32_t max_path = GetMaxPathLengthForDirectory(saved_main_directory_path_);
+  // Get path length constraints for truncation.
+  uint32_t max_path = GetMaxPathLengthForDirectory();
 
   // Get safe pure file name.
   if (!TruncateBaseNameToFitPathConstraints(
@@ -1458,8 +1510,8 @@ base::FilePath SavePackage::CreateDirectoryOnFileThread(
       suggested_filename.RemoveExtension().BaseName().value();
   base::FilePath::StringType file_name_ext = suggested_filename.Extension();
 
-  // Need to make sure the suggested file name is not too long.
-  uint32_t max_path = GetMaxPathLengthForDirectory(save_dir);
+  // Get path length constraints for truncation.
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
 
   if (TruncateBaseNameToFitPathConstraints(save_dir, file_name_ext, max_path,
                                            &base_name)) {

@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
@@ -18,14 +19,24 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/views/accessibility/tree/widget_ax_manager_observer.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/webview_export.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 
+class GURL;
+
+namespace content {
+class BrowserContext;
+class WebContents;
+}  // namespace content
+
 namespace views {
+
+class WidgetAXManager;
 
 // Provides a view of a WebContents instance.  WebView can be used standalone,
 // creating and displaying an internally-owned WebContents; or within a full
@@ -44,7 +55,8 @@ namespace views {
 class WEBVIEW_EXPORT WebView : public View,
                                public content::WebContentsDelegate,
                                public content::WebContentsObserver,
-                               public ui::AXModeObserver {
+                               public ui::AXModeObserver,
+                               public WidgetAXManagerObserver {
   METADATA_HEADER(WebView, View)
 
  public:
@@ -73,8 +85,11 @@ class WEBVIEW_EXPORT WebView : public View,
 
   // This creates a WebContents if |browser_context_| has been set and there is
   // not yet a WebContents associated with this WebView, otherwise it will
-  // return a nullptr.
+  // return the existing web contents. `url` is used to create a `SiteInstance`
+  // for the `WebContents`. If `url` is empty, a default `SiteInstance` will be
+  // used.
   content::WebContents* GetWebContents(
+      const GURL& url = GURL(),
       base::Location creator_location = base::Location::Current());
 
   // WebView does not assume ownership of WebContents set via this method, only
@@ -103,6 +118,7 @@ class WEBVIEW_EXPORT WebView : public View,
   //         a continuous size operation completes. This allows for smoother
   //         resizing performance during interactive resizes and animations.
   void SetFastResize(bool fast_resize);
+  bool GetFastResize() const;
 
   // If enabled, this will make the WebView's preferred size dependent on the
   // WebContents' size.
@@ -206,13 +222,19 @@ class WEBVIEW_EXPORT WebView : public View,
   // Override from ui::AXModeObserver
   void OnAXModeAdded(ui::AXMode mode) override;
 
+  // WidgetAXManagerObserver:
+  void OnWidgetAXManagerEnabled() override;
+
  private:
   friend class WebViewUnitTest;
+  bool IsObservingAXModeForTesting();
+  bool IsObservingWidgetAXManagerForTesting();
 
   void AttachWebContentsNativeView();
   void DetachWebContentsNativeView();
   void UpdateCrashedOverlayView();
   void NotifyAccessibilityWebContentsChanged();
+  void HandleWidgetAXManagerEnablement();
 
   // Called when the main frame in the renderer becomes present.
   void SetUpNewMainFrame(content::RenderFrameHost* frame_host);
@@ -224,17 +246,22 @@ class WEBVIEW_EXPORT WebView : public View,
   // EnableSizingFromWebContents() has been called. This should only be called
   // for main frames; other frames can not have auto resize set.
   void MaybeEnableAutoResize(content::RenderFrameHost* frame_host);
+  void EnsureHostNodeReplacementRegistration();
+  void ClearHostNodeReplacementRegistration();
 
   // Create a regular or test web contents (based on whether we're running
   // in a unit test or not).
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::BrowserContext* browser_context,
-      base::Location creator_location = base::Location::Current());
+      const GURL& url,
+      base::Location creator_location);
 
   const raw_ptr<NativeViewHost> holder_ =
       AddChildView(std::make_unique<NativeViewHost>());
   base::ScopedObservation<ui::AXPlatform, ui::AXModeObserver>
       ax_mode_observation_{this};
+  base::ScopedObservation<WidgetAXManager, WidgetAXManagerObserver>
+      widget_ax_manager_observation_{this};
   // Non-NULL if |web_contents()| was created and is owned by this WebView.
   std::unique_ptr<content::WebContents> wc_owner_;
   // Set to true when |holder_| is letterboxed (scaled to be smaller than this
@@ -246,6 +273,7 @@ class WEBVIEW_EXPORT WebView : public View,
   bool is_primary_web_contents_for_window_ = false;
 
   bool lock_child_ax_tree_id_override_ = false;
+  std::string host_node_replacement_id_;
 
   // Minimum and maximum sizes to determine WebView bounds for auto-resizing.
   // Empty if auto resize is not enabled.

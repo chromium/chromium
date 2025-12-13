@@ -16,7 +16,6 @@ import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.PopupWindow;
@@ -41,8 +40,6 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.dragdrop.DragEventDispatchHelper.DragEventDispatchDestination;
 import org.chromium.ui.widget.UiWidgetFactory;
@@ -61,12 +58,12 @@ public class ContextMenuDialogUnitTest {
     ContextMenuDialog mDialog;
 
     Activity mActivity;
-    FrameLayout mMenuContentView;
     View mRootView;
     TestDragDispatchingDestinationView mSpyDragDispatchingDestinationView;
 
     @Mock UiWidgetFactory mMockUiWidgetFactory;
     @Spy PopupWindow mSpyPopupWindow;
+    @Spy FrameLayout mMenuContentView;
 
     @Before
     public void setup() {
@@ -74,8 +71,12 @@ public class ContextMenuDialogUnitTest {
         mRootView = new FrameLayout(mActivity);
         TextView textView = new TextView(mActivity);
         textView.setText("Test String");
-        mMenuContentView = new FrameLayout(mActivity);
+
+        mMenuContentView = Mockito.spy(new FrameLayout(mActivity));
         mMenuContentView.addView(textView);
+        Mockito.when(mMenuContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
+        Mockito.when(mMenuContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
+
         mActivity.setContentView(
                 mRootView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
@@ -88,11 +89,6 @@ public class ContextMenuDialogUnitTest {
                 .when(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
         Mockito.doNothing().when(mSpyPopupWindow).dismiss();
-
-        View mockContentView = Mockito.mock(ViewGroup.class);
-        Mockito.when(mockContentView.getMeasuredHeight()).thenReturn(DIALOG_SIZE_DIP);
-        Mockito.when(mockContentView.getMeasuredWidth()).thenReturn(DIALOG_SIZE_DIP);
-        Mockito.doReturn(mockContentView).when(mSpyPopupWindow).getContentView();
     }
 
     @After
@@ -140,25 +136,7 @@ public class ContextMenuDialogUnitTest {
                 window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
     }
 
-    @Test
-    public void testCreateDialog_dontMatchSysUi() {
-        mDialog =
-                createContextMenuDialog(
-                        /* isPopup= */ false,
-                        /* shouldRemoveScrim= */ false,
-                        /* shouldSysUiMatchActivity */ false);
-        mDialog.show();
 
-        // Only checks the flag is unset to make sure the setup for |shouldSysUiMatchActivity| is
-        // not ran.
-        ShadowPhoneWindow window = (ShadowPhoneWindow) Shadows.shadowOf(mDialog.getWindow());
-        Assert.assertFalse(
-                "FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS is in window flags.",
-                window.getFlag(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS));
-        Assert.assertFalse(
-                "FLAG_NOT_TOUCH_MODAL is in window flags.",
-                window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
-    }
 
     @Test
     public void testShowPopupWindow() {
@@ -291,51 +269,7 @@ public class ContextMenuDialogUnitTest {
                 .onDragEventWithOffset(eq(mockDragEvent2), anyInt(), anyInt());
     }
 
-    @Test
-    public void testFullscreenDialog() {
-        mActivity.getTheme().applyStyle(R.style.Theme_Material3_Light, true);
-        mDialog =
-                new ContextMenuDialog(
-                        mActivity,
-                        R.style.ThemeOverlay_BrowserUI_Fullscreen,
-                        ContextMenuDialog.NO_CUSTOM_MARGIN,
-                        ContextMenuDialog.NO_CUSTOM_MARGIN,
-                        mRootView,
-                        mMenuContentView,
-                        /* isPopup*/ false,
-                        /* shouldRemoveScrim */ false,
-                        /* shouldSysUiMatchActivity */ true,
-                        0,
-                        0,
-                        mSpyDragDispatchingDestinationView,
-                        new Rect(0, 0, 0, 0),
-                        /* shouldPadForWindowInsets= */ true);
-        mDialog.setContentView(new View(mActivity));
-        EdgeToEdgeLayoutCoordinator edgeToEdgeLayoutCoordinator =
-                mDialog.getEdgeToEdgeLayoutCoordinatorForTesting();
-
-        Assert.assertNotNull(
-                "EdgeToEdgeCoordinator should not be null", edgeToEdgeLayoutCoordinator);
-        Assert.assertEquals(
-                "System bar colors is incorrect",
-                SemanticColorUtils.getDefaultBgColor(mActivity),
-                edgeToEdgeLayoutCoordinator.getStatusBarColor());
-        Assert.assertEquals(
-                "System bar colors is incorrect",
-                SemanticColorUtils.getDefaultBgColor(mActivity),
-                edgeToEdgeLayoutCoordinator.getNavigationBarColor());
-        Assert.assertEquals(
-                "System bar colors is incorrect",
-                SemanticColorUtils.getDefaultBgColor(mActivity),
-                edgeToEdgeLayoutCoordinator.getNavigationBarDividerColor());
-    }
-
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
-        return createContextMenuDialog(isPopup, shouldRemoveScrim, true);
-    }
-
-    private ContextMenuDialog createContextMenuDialog(
-            boolean isPopup, boolean shouldRemoveScrim, boolean shouldSysUiMatchActivity) {
         return new ContextMenuDialog(
                 mActivity,
                 0,
@@ -344,13 +278,14 @@ public class ContextMenuDialogUnitTest {
                 mRootView,
                 mMenuContentView,
                 isPopup,
+                /* isFlyout= */ false,
                 shouldRemoveScrim,
-                shouldSysUiMatchActivity,
                 0,
                 0,
                 mSpyDragDispatchingDestinationView,
                 new Rect(0, 0, 0, 0),
-                /* shouldPadForWindowInsets= */ true);
+                /* shouldPadForWindowInsets= */ true,
+                /* onDismissCallback */ null);
     }
 
     private void requestLayoutForRootView() {
@@ -368,7 +303,7 @@ public class ContextMenuDialogUnitTest {
 
     static class TestDragDispatchingDestinationView extends View
             implements DragEventDispatchDestination {
-        public TestDragDispatchingDestinationView(Context context) {
+        TestDragDispatchingDestinationView(Context context) {
             super(context);
         }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/media/capture/frame_test_util.h"
 
 #include <stdint.h>
@@ -14,6 +9,9 @@
 #include <array>
 #include <cmath>
 
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -39,18 +37,17 @@ using TriStim = gfx::ColorTransform::TriStim;
 void LoadStimsFromYUV(const uint8_t y_src[],
                       const uint8_t u_src[],
                       const uint8_t v_src[],
-                      int width,
-                      TriStim stims[]) {
-  for (int i = 0; i < width; ++i) {
-    stims[i].SetPoint(y_src[i] / 255.0f, u_src[i / 2] / 255.0f,
-                      v_src[i / 2] / 255.0f);
+                      base::span<TriStim> stims) {
+  for (size_t i = 0; i < stims.size(); ++i) {
+    stims[i].SetPoint(UNSAFE_TODO(y_src[i]) / 255.0f,
+                      UNSAFE_TODO(u_src[i / 2]) / 255.0f,
+                      UNSAFE_TODO(v_src[i / 2]) / 255.0f);
   }
 }
 
 void LoadStimsFromYUV(const uint8_t y_src[],
                       const uint16_t uv_src[],
-                      int width,
-                      TriStim stims[]) {
+                      base::span<TriStim> stims) {
 // https://docs.microsoft.com/en-us/windows/win32/medfound/recommended-8-bit-yuv-formats-for-video-rendering#nv12
 // "All of the Y samples appear first in memory as an array of unsigned char
 // values with an even number of lines. The Y plane is followed immediately by
@@ -59,18 +56,18 @@ void LoadStimsFromYUV(const uint8_t y_src[],
 // little-endian WORD values, the LSBs contain the U values, and the MSBs
 // contain the V values."
 #if defined(SK_CPU_BENDIAN)
-  for (int i = 0; i < width; ++i) {
+  for (size_t i = 0; i < stims.size(); ++i) {
     stims[i].SetPoint(
         y_src[i] / 255.0f,
         (uv_src[i / 2] >> 8) / 255.0f,  // MSB contains U values on LE
         (uv_src[i / 2] & 0xFF) / 255.0f);
   }
 #else
-  for (int i = 0; i < width; ++i) {
-    stims[i].SetPoint(
-        y_src[i] / 255.0f,
-        (uv_src[i / 2] & 0xFF) / 255.0f,  // LSB contains U values on LE
-        (uv_src[i / 2] >> 8) / 255.0f);
+  for (size_t i = 0; i < stims.size(); ++i) {
+    stims[i].SetPoint(UNSAFE_TODO(y_src[i]) / 255.0f,
+                      (UNSAFE_TODO(uv_src[i / 2]) & 0xFF) /
+                          255.0f,  // LSB contains U values on LE
+                      (UNSAFE_TODO(uv_src[i / 2]) >> 8) / 255.0f);
   }
 #endif
 }
@@ -83,8 +80,9 @@ uint8_t QuantizeAndClamp(float value) {
 
 // Copies the array of TriStims to the BGRA/RGBA output, mapping
 // [0.0,1.0]⇒[0,255].
-void StimsToN32Row(const TriStim row[], int width, uint8_t bgra_out[]) {
-  for (int i = 0; i < width; ++i) {
+void StimsToN32Row(base::span<const TriStim> row,
+                   base::span<uint8_t> bgra_out) {
+  for (size_t i = 0; i < row.size(); ++i) {
     bgra_out[(i * 4) + (SK_R32_SHIFT / 8)] = QuantizeAndClamp(row[i].x());
     bgra_out[(i * 4) + (SK_G32_SHIFT / 8)] = QuantizeAndClamp(row[i].y());
     bgra_out[(i * 4) + (SK_B32_SHIFT / 8)] = QuantizeAndClamp(row[i].z());
@@ -121,26 +119,26 @@ SkBitmap FrameTestUtil::ConvertToBitmap(const media::VideoFrame& frame) {
   for (int row = 0; row < bitmap.height(); ++row) {
     if (frame.format() == media::VideoPixelFormat::PIXEL_FORMAT_I420) {
       LoadStimsFromYUV(
-          frame.visible_data(media::VideoFrame::Plane::kY) +
-              row * frame.stride(media::VideoFrame::Plane::kY),
-          frame.visible_data(media::VideoFrame::Plane::kU) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kU),
-          frame.visible_data(media::VideoFrame::Plane::kV) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kV),
-          bitmap.width(), stims.data());
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kY) +
+                      row * frame.stride(media::VideoFrame::Plane::kY)),
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kU) +
+                      (row / 2) * frame.stride(media::VideoFrame::Plane::kU)),
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kV) +
+                      (row / 2) * frame.stride(media::VideoFrame::Plane::kV)),
+          stims);
     } else {
       CHECK_EQ(frame.format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
       LoadStimsFromYUV(
-          frame.visible_data(media::VideoFrame::Plane::kY) +
-              row * frame.stride(media::VideoFrame::Plane::kY),
-          reinterpret_cast<const uint16_t*>(
+          UNSAFE_TODO(frame.visible_data(media::VideoFrame::Plane::kY) +
+                      row * frame.stride(media::VideoFrame::Plane::kY)),
+          reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
               frame.visible_data(media::VideoFrame::Plane::kUV) +
-              (row / 2) * frame.stride(media::VideoFrame::Plane::kUV)),
-          bitmap.width(), stims.data());
+              (row / 2) * frame.stride(media::VideoFrame::Plane::kUV))),
+          stims);
     }
     transform->Transform(stims.data(), stims.size());
-    StimsToN32Row(stims.data(), bitmap.width(),
-                  reinterpret_cast<uint8_t*>(bitmap.getAddr32(0, row)));
+    StimsToN32Row(stims, base::as_writable_byte_span(
+                             UNSAFE_SKBITMAP_GETADDR32(bitmap, 0, row)));
   }
 
   return bitmap;

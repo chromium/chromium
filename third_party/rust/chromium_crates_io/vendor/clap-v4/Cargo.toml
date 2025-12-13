@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.41"
+version = "4.5.53"
 build = false
 include = [
     "build.rs",
@@ -43,11 +43,7 @@ repository = "https://github.com/clap-rs/clap"
 
 [package.metadata.docs.rs]
 features = ["unstable-doc"]
-rustdoc-args = [
-    "--cfg",
-    "docsrs",
-    "--generate-link-to-definition",
-]
+rustdoc-args = ["--generate-link-to-definition"]
 
 [package.metadata.playground]
 features = ["unstable-doc"]
@@ -58,54 +54,54 @@ tag-name = "v{{version}}"
 
 [[package.metadata.release.pre-release-replacements]]
 file = "CHANGELOG.md"
-min = 1
-replace = "{{version}}"
 search = "Unreleased"
-
-[[package.metadata.release.pre-release-replacements]]
-exactly = 1
-file = "CHANGELOG.md"
-replace = "...{{tag_name}}"
-search = '\.\.\.HEAD'
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CHANGELOG.md"
+replace = "{{version}}"
 min = 1
-replace = "{{date}}"
-search = "ReleaseDate"
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = '\.\.\.HEAD'
+replace = "...{{tag_name}}"
+exactly = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "ReleaseDate"
+replace = "{{date}}"
+min = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CHANGELOG.md"
+search = "<!-- next-header -->"
 replace = """
 <!-- next-header -->
 ## [Unreleased] - ReleaseDate
 """
-search = "<!-- next-header -->"
+exactly = 1
 
 [[package.metadata.release.pre-release-replacements]]
-exactly = 1
 file = "CHANGELOG.md"
+search = "<!-- next-url -->"
 replace = """
 <!-- next-url -->
 [Unreleased]: https://github.com/clap-rs/clap/compare/{{tag_name}}...HEAD"""
-search = "<!-- next-url -->"
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CITATION.cff"
-replace = "date-released: {{date}}"
-search = "^date-released: ....-..-.."
-
-[[package.metadata.release.pre-release-replacements]]
-file = "CITATION.cff"
-replace = "version: {{version}}"
-search = '^version: .+\..+\..+'
-
-[[package.metadata.release.pre-release-replacements]]
 exactly = 1
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+search = "^date-released: ....-..-.."
+replace = "date-released: {{date}}"
+
+[[package.metadata.release.pre-release-replacements]]
+file = "CITATION.cff"
+search = '^version: .+\..+\..+'
+replace = "version: {{version}}"
+
+[[package.metadata.release.pre-release-replacements]]
 file = "src/lib.rs"
-replace = "blob/v{{version}}/CHANGELOG.md"
 search = 'blob/v.+\..+\..+/CHANGELOG.md'
+replace = "blob/v{{version}}/CHANGELOG.md"
+exactly = 1
 
 [features]
 cargo = ["clap_builder/cargo"]
@@ -504,16 +500,16 @@ required-features = ["derive"]
 
 [[example]]
 name = "typed-derive"
-path = "examples/typed-derive.rs"
+path = "examples/typed-derive/main.rs"
 doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.41"
+version = "=4.5.53"
 default-features = false
 
 [dependencies.clap_derive]
-version = "=4.5.41"
+version = "=4.5.49"
 optional = true
 
 [dev-dependencies.automod]
@@ -528,6 +524,9 @@ version = "0.2.3"
 
 [dev-dependencies.rustversion]
 version = "1.0.15"
+
+[dev-dependencies.semver]
+version = "1.0.26"
 
 [dev-dependencies.shlex]
 version = "1.3.0"

@@ -24,6 +24,9 @@
 
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 
+#include <optional>
+
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/common/view_source/rendering_preferences.h"
 #include "third_party/blink/public/mojom/persistent_renderer_prefs.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -199,14 +202,12 @@ void HTMLViewSourceDocument::AddSource(
 
 void HTMLViewSourceDocument::ProcessDoctypeToken(const String& source,
                                                  HTMLToken&) {
-  current_ = AddSpanWithClassName(class_doctype_);
   AddText(source, class_doctype_);
   current_ = td_;
 }
 
 void HTMLViewSourceDocument::ProcessEndOfFileToken(const String& source,
                                                    HTMLToken&) {
-  current_ = AddSpanWithClassName(class_end_of_file_);
   AddText(source, class_end_of_file_);
   current_ = td_;
 }
@@ -217,6 +218,9 @@ void HTMLViewSourceDocument::ProcessTagToken(
     const HTMLAttributesRanges& attributes_ranges,
     int token_start) {
   current_ = AddSpanWithClassName(class_tag_);
+  // Set processing_tag_token_ after AddSpanWithClassName in case
+  // AddSpanWithClassName needs to call AddLine.
+  processing_tag_token_ = true;
 
   AtomicString tag_name = token.GetName().AsAtomicString();
 
@@ -256,22 +260,23 @@ void HTMLViewSourceDocument::ProcessTagToken(
       index = AddSrcset(source, index,
                         attribute_range.value_range.end - token_start);
     } else {
-      bool is_link =
-          name == html_names::kSrcAttr || name == html_names::kHrefAttr;
+      std::optional<Link> link;
+      if (name == html_names::kSrcAttr || name == html_names::kHrefAttr) {
+        link.emplace(Link{tag_name == html_names::kATag, value});
+      }
       index =
           AddRange(source, index, attribute_range.value_range.end - token_start,
-                   class_attribute_value_, is_link,
-                   tag_name == html_names::kATag, value);
+                   class_attribute_value_, base::OptionalToPtr(link));
     }
 
     ++attribute_index;
   }
   current_ = td_;
+  processing_tag_token_ = false;
 }
 
 void HTMLViewSourceDocument::ProcessCommentToken(const String& source,
                                                  HTMLToken&) {
-  current_ = AddSpanWithClassName(class_comment_);
   AddText(source, class_comment_);
   current_ = td_;
 }
@@ -284,8 +289,7 @@ void HTMLViewSourceDocument::ProcessCharacterToken(const String& source,
 Element* HTMLViewSourceDocument::AddSpanWithClassName(
     const AtomicString& class_name) {
   if (current_ == tbody_) {
-    AddLine(class_name);
-    return current_.Get();
+    AddLine();
   }
 
   auto* span = MakeGarbageCollected<HTMLSpanElement>(*this);
@@ -294,7 +298,7 @@ Element* HTMLViewSourceDocument::AddSpanWithClassName(
   return span;
 }
 
-void HTMLViewSourceDocument::AddLine(const AtomicString& class_name) {
+void HTMLViewSourceDocument::AddLine() {
   // Create a table row.
   auto* trow = MakeGarbageCollected<HTMLTableRowElement>(*this);
   tbody_->ParserAppendChild(trow);
@@ -313,12 +317,10 @@ void HTMLViewSourceDocument::AddLine(const AtomicString& class_name) {
   trow->ParserAppendChild(td);
   current_ = td_ = td;
 
-  // Open up the needed spans.
-  if (!class_name.empty()) {
-    if (class_name == "html-attribute-name" ||
-        class_name == "html-attribute-value")
-      current_ = AddSpanWithClassName(class_tag_);
-    current_ = AddSpanWithClassName(class_name);
+  // If a newline occurs within a tag, re-apply the html-tag span to ensure
+  // the rest of the tag is highlighted correctly.
+  if (processing_tag_token_) {
+    current_ = AddSpanWithClassName(class_tag_);
   }
 }
 
@@ -331,7 +333,8 @@ void HTMLViewSourceDocument::FinishLine() {
 }
 
 void HTMLViewSourceDocument::AddText(const String& text,
-                                     const AtomicString& class_name) {
+                                     const AtomicString& class_name,
+                                     const Link* link) {
   if (text.empty())
     return;
 
@@ -363,17 +366,17 @@ void HTMLViewSourceDocument::AddText(const String& text,
   unsigned size = lines.size();
   for (unsigned i = 0; i < size; i++) {
     String substring = lines[i];
-    if (current_ == tbody_)
-      AddLine(class_name);
-    if (substring.empty()) {
-      if (i == size - 1)
-        break;
-      FinishLine();
-      continue;
+    if (current_ == tbody_) {
+      AddLine();
     }
-    Element* old_element = current_;
-    current_->ParserAppendChild(Text::Create(*this, substring));
-    current_ = old_element;
+    if (!substring.empty()) {
+      if (link) {
+        current_ = AddLink(*link);
+      } else if (!class_name.empty()) {
+        current_ = AddSpanWithClassName(class_name);
+      }
+      current_->ParserAppendChild(Text::Create(*this, substring));
+    }
     if (i < size - 1)
       FinishLine();
   }
@@ -383,21 +386,13 @@ int HTMLViewSourceDocument::AddRange(const String& source,
                                      int start,
                                      int end,
                                      const AtomicString& class_name,
-                                     bool is_link,
-                                     bool is_anchor,
-                                     const AtomicString& link) {
+                                     const Link* link) {
   DCHECK_LE(start, end);
   if (start == end)
     return start;
 
   String text = source.Substring(start, end - start);
-  if (!class_name.empty()) {
-    if (is_link)
-      current_ = AddLink(link, is_anchor);
-    else
-      current_ = AddSpanWithClassName(class_name);
-  }
-  AddText(text, class_name);
+  AddText(text, class_name, link);
   if (!class_name.empty() && current_ != tbody_)
     current_ = To<Element>(current_->parentNode());
   return end;
@@ -410,21 +405,22 @@ Element* HTMLViewSourceDocument::AddBase(const AtomicString& href) {
   return base;
 }
 
-Element* HTMLViewSourceDocument::AddLink(const AtomicString& url,
-                                         bool is_anchor) {
-  if (current_ == tbody_)
-    AddLine(class_tag_);
+Element* HTMLViewSourceDocument::AddLink(const Link& link) {
+  if (current_ == tbody_) {
+    AddLine();
+  }
 
   // Now create a link for the attribute value instead of a span.
   auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(*this);
   const char* class_value;
-  if (is_anchor)
+  if (link.is_anchor) {
     class_value = "html-attribute-value html-external-link";
-  else
+  } else {
     class_value = "html-attribute-value html-resource-link";
+  }
   anchor->setAttribute(html_names::kClassAttr, AtomicString(class_value));
   anchor->setAttribute(html_names::kTargetAttr, AtomicString("_blank"));
-  anchor->setAttribute(html_names::kHrefAttr, url);
+  anchor->setAttribute(html_names::kHrefAttr, link.url);
   anchor->setAttribute(html_names::kRelAttr,
                        AtomicString("noreferrer noopener"));
   // Disallow JavaScript hrefs. https://crbug.com/808407
@@ -441,19 +437,26 @@ int HTMLViewSourceDocument::AddSrcset(const String& source,
   Vector<String> srclist;
   srcset.Split(',', true, srclist);
   unsigned size = srclist.size();
+  Element* container = current_;
   for (unsigned i = 0; i < size; i++) {
     Vector<String> tmp;
     srclist[i].Split(' ', tmp);
     if (tmp.size() > 0) {
-      AtomicString link(tmp[0]);
-      current_ = AddLink(link, false);
-      AddText(srclist[i], class_attribute_value_);
-      current_ = To<Element>(current_->parentNode());
+      AtomicString url(tmp[0]);
+      Link link{false, url};
+      AddText(srclist[i], class_attribute_value_, &link);
+      current_ = container;
+      if (i + 1 < size) {
+        AddText(",", class_attribute_value_);
+      }
     } else {
-      AddText(srclist[i], class_attribute_value_);
+      if (i + 1 < size) {
+        AddText(StrCat({srclist[i], ","}), class_attribute_value_);
+      } else {
+        AddText(srclist[i], class_attribute_value_);
+      }
     }
-    if (i + 1 < size)
-      AddText(",", class_attribute_value_);
+    current_ = container;
   }
   return end;
 }

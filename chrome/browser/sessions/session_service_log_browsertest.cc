@@ -21,6 +21,7 @@
 #include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(SessionServiceLogTest, PRE_RestoreEvent) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   Browser* new_browser = chrome::OpenEmptyWindow(profile_);
-  ASSERT_EQ(2u, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
   ui_test_utils::NavigateToURLWithDisposition(
       new_browser, GURL(url::kAboutBlankURL),
       WindowOpenDisposition::CURRENT_TAB,

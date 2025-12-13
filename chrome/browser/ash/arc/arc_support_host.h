@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/display/display_observer.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 class Profile;

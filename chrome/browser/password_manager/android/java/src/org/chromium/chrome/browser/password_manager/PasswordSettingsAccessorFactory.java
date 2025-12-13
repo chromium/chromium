@@ -8,7 +8,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
  * This factory returns an implementation for the password settings accessor. The factory itself is
@@ -43,19 +42,6 @@ public abstract class PasswordSettingsAccessorFactory {
      */
     public @Nullable PasswordSettingsAccessor createAccessor() {
         return null;
-    }
-
-    /**
-     * Creates and returns new instance of the downstream implementation provided by subclasses.
-     *
-     * <p>Downstream should override this method with actual implementation.
-     *
-     * @return An implementation of the {@link PasswordSettingsAccessor} if one exists.
-     */
-    protected PasswordSettingsAccessor doCreateAccessor() throws BackendException {
-        throw new BackendException(
-                "Downstream implementation is not present.",
-                AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
     public static void setupFactoryForTesting(PasswordSettingsAccessorFactory accessorFactory) {

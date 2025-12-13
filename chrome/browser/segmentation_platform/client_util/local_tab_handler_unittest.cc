@@ -60,8 +60,8 @@ class LocalTabHandlerTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     Browser::CreateParams params(profile_.get(), true);
     params.type = Browser::TYPE_NORMAL;
-    test_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = test_window_.get();
+    auto test_window = std::make_unique<TestBrowserWindow>();
+    params.window = test_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     handler_ = std::make_unique<LocalTabHandler>(&session_sync_service_,
                                                  profile_.get());
@@ -117,7 +117,6 @@ class LocalTabHandlerTest : public testing::Test {
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<BrowserWindow> test_window_;
   std::unique_ptr<LocalTabHandler> handler_;
   std::unique_ptr<LocalTabSource> source_;
 

@@ -176,11 +176,10 @@ void QsBatteryInfoViewBase::UpdateIconAndText(bool bsm_active) {
   // Change to icon type if battery saver mode is enabled with
   // QsBatteryLabelView.
   SetPillButtonType(Type::kPrimaryWithIconLeading);
-  SetButtonTextColorId(bsm_active
-                           ? cros_tokens::kCrosSysSystemOnWarningContainer
-                           : cros_tokens::kCrosSysOnPositiveContainer);
-  SetBackgroundColorId(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
-                                  : cros_tokens::kCrosSysPositiveContainer);
+  SetButtonTextColor(bsm_active ? cros_tokens::kCrosSysSystemOnWarningContainer
+                                : cros_tokens::kCrosSysOnPositiveContainer);
+  SetBackgroundColor(bsm_active ? cros_tokens::kCrosSysSystemWarningContainer
+                                : cros_tokens::kCrosSysPositiveContainer);
 
   const std::u16string percentage_text =
       PowerStatus::Get()->GetStatusStrings().first;
@@ -200,7 +199,7 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
                  : cros_tokens::kCrosSysOnPositiveContainer);
   const std::optional<SkColor> battery_badge_color =
       bsm_active ? std::optional<SkColor>(GetColorProvider()->GetColor(
-                       cros_tokens::kCrosSysSystemWarningContainer))
+                       cros_tokens::kCrosSysSystemOnWarningContainer))
                  : std::nullopt;
 
   PowerStatus::BatteryImageInfo info =
@@ -234,7 +233,7 @@ void QsBatteryLabelView::Update() {
   if (PowerStatus::Get()->IsBatterySaverActive()) {
     UpdateIconAndText(true);
   } else {
-    SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+    SetButtonTextColor(cros_tokens::kCrosSysOnSurface);
 
     const std::u16string status_string =
         PowerStatus::Get()->GetInlinedStatusString();

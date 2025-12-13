@@ -12,7 +12,6 @@
 #include "media/capture/video/video_capture_system_impl.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace video_capture {

@@ -67,7 +67,8 @@ const CGFloat kNavigationIconImageViewWidth = 16;
   self = [super initWithFrame:frame];
   if (self) {
     // Configure `contentView`, representing the overall container.
-    self.contentView.backgroundColor = [UIColor colorNamed:kGrey100Color];
+    self.contentView.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     self.contentView.layer.cornerRadius = kContainerBorderRadius;
     self.contentView.layoutMargins = UIEdgeInsetsMake(
         kVerticalMargin, kHorizontalMargin, kVerticalMargin, kHorizontalMargin);

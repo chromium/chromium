@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/network/onc/onc_translation_tables.h"
 
 #include <cstddef>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -516,7 +512,7 @@ const FieldTranslationEntry kIPsecIKEv2Table[] = {
 const FieldTranslationEntry* GetFieldTranslationTable(
     const chromeos::onc::OncValueSignature& onc_signature) {
   for (const OncValueTranslationEntry* it = onc_value_translation_table;
-       it->onc_signature != nullptr; ++it) {
+       it->onc_signature != nullptr; UNSAFE_TODO(++it)) {
     if (it->onc_signature == &onc_signature) {
       return it->field_translation_table;
     }
@@ -552,10 +548,10 @@ std::vector<std::string> GetPathToNestedShillDictionary(
     const chromeos::onc::OncValueSignature& onc_signature) {
   std::vector<std::string> shill_property_path;
   for (const NestedShillDictionaryEntry* it = nested_shill_dictionaries;
-       it->onc_signature != nullptr; ++it) {
+       it->onc_signature != nullptr; UNSAFE_TODO(++it)) {
     if (it->onc_signature == &onc_signature) {
       for (const char* const* key = it->shill_property_path; *key != nullptr;
-           ++key) {
+           UNSAFE_TODO(++key)) {
         shill_property_path.push_back(std::string(*key));
       }
       break;
@@ -568,7 +564,7 @@ bool GetShillPropertyName(const std::string& onc_field_name,
                           const FieldTranslationEntry table[],
                           std::string* shill_property_name) {
   for (const FieldTranslationEntry* it = table; it->onc_field_name != nullptr;
-       ++it) {
+       UNSAFE_TODO(++it)) {
     if (it->onc_field_name != onc_field_name) {
       continue;
     }
@@ -581,11 +577,11 @@ bool GetShillPropertyName(const std::string& onc_field_name,
 bool TranslateStringToShill(const StringTranslationEntry table[],
                             const std::string& onc_value,
                             std::string* shill_value) {
-  for (int i = 0; table[i].onc_value != nullptr; ++i) {
-    if (onc_value != table[i].onc_value) {
+  for (int i = 0; UNSAFE_TODO(table[i]).onc_value != nullptr; ++i) {
+    if (onc_value != UNSAFE_TODO(table[i]).onc_value) {
       continue;
     }
-    *shill_value = table[i].shill_value;
+    *shill_value = UNSAFE_TODO(table[i]).shill_value;
     return true;
   }
   LOG(ERROR) << "Value '" << onc_value << "' cannot be translated to Shill"
@@ -597,11 +593,11 @@ bool TranslateStringToShill(const StringTranslationEntry table[],
 bool TranslateStringToONC(const StringTranslationEntry table[],
                           const std::string& shill_value,
                           std::string* onc_value) {
-  for (int i = 0; table[i].shill_value != nullptr; ++i) {
-    if (shill_value != table[i].shill_value) {
+  for (int i = 0; UNSAFE_TODO(table[i]).shill_value != nullptr; ++i) {
+    if (shill_value != UNSAFE_TODO(table[i]).shill_value) {
       continue;
     }
-    *onc_value = table[i].onc_value;
+    *onc_value = UNSAFE_TODO(table[i]).onc_value;
     return true;
   }
   LOG(ERROR) << "Value '" << shill_value << "' cannot be translated to ONC"

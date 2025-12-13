@@ -12,13 +12,16 @@ import android.view.VelocityTracker;
 import androidx.core.view.MotionEventCompat;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabBottomSheetStrategy.HeightStatus;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** Handling touch events for resizing the Window. */
+@NullMarked
 class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureListener
         implements CustomTabToolbar.HandleStrategy {
     /**
@@ -36,7 +39,7 @@ class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureList
     private float mDeltaY;
     private boolean mSeenFirstMoveOrDown;
     private final VelocityTracker mVelocityTracker;
-    private Runnable mCloseHandler;
+    private Runnable mCloseHandler = () -> {};
 
     private final BooleanSupplier mIsFullHeight;
     private final Supplier<Integer> mStatus;
@@ -66,7 +69,7 @@ class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureList
     }
 
     public PartialCustomTabHandleStrategy(
-            Context context,
+            @Nullable Context context,
             BooleanSupplier isFullHeight,
             Supplier<Integer> status,
             DragEventCallback dragEventCallback) {
@@ -134,7 +137,8 @@ class PartialCustomTabHandleStrategy extends GestureDetector.SimpleOnGestureList
     }
 
     @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    public boolean onScroll(
+            @Nullable MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         // Always intercept scroll events.
         return true;
     }

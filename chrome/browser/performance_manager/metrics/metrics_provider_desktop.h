@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
+#include "base/byte_count.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
@@ -84,14 +85,18 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 #endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
   struct DiskMetrics {
-    int64_t free_bytes;
-    int64_t total_bytes;
+    base::ByteCount free_bytes;
+    base::ByteCount total_bytes;
   };
 
   class DiskMetricsThreadPoolGetter {
    public:
     DiskMetrics ComputeDiskMetrics(const base::FilePath& user_data_dir);
   };
+
+  // Sets the value to be returned by ComputeDiskMetrics in tests. To stop
+  // overriding the return value, pass std::nullopt.
+  void SetDiskMetricsForTesting(std::optional<DiskMetrics> metrics);
 
   void RecordDiskMetrics();
   void PostDiskMetricsTask();
@@ -110,6 +115,8 @@ class MetricsProviderDesktop : public ::metrics::MetricsProvider,
 
   std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
   std::unique_ptr<ScopedTimeInModeTracker> memory_saver_mode_tracker_;
+
+  std::optional<DiskMetrics> disk_metrics_for_testing_;
 };
 
 }  // namespace performance_manager

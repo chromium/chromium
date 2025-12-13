@@ -182,11 +182,11 @@ template <typename T>
 bool MapHasValueFresherThan(const CachedParsedMetadataMap<T>& metadata_map,
                             std::string_view key,
                             base::Time expiration) {
-  if (!metadata_map.contains(key)) {
-    return false;
+  if (auto it = metadata_map.find(key); it != metadata_map.end()) {
+    const auto& value = it->second;
+    return value.time_of_parse > expiration;
   }
-  const auto& value = metadata_map.at(key);
-  return value.time_of_parse > expiration;
+  return false;
 }
 
 // Calculates the shard number of |key| inside sharded metadata.
@@ -568,23 +568,25 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
         PpdMetadataPathSpecifier::Type::kManufacturers, channel_);
     const std::string manufacturers_metadata_name =
         manufacturers_path.AsString();
-    if (!cached_manufacturers_.contains(manufacturers_metadata_name)) {
+    auto cached_manufacturers_it =
+        cached_manufacturers_.find(manufacturers_metadata_name);
+    if (cached_manufacturers_it == cached_manufacturers_.end()) {
       // This is likely a bug: we don't have the expected manufacturers
       // metadata.
       return std::nullopt;
     }
 
     const ParsedMetadataWithTimestamp<ParsedManufacturers>& manufacturers =
-        cached_manufacturers_.at(manufacturers_metadata_name);
-    if (!manufacturers.value.contains(manufacturer)) {
+        cached_manufacturers_it->second;
+    auto manufacturers_it = manufacturers.value.find(manufacturer);
+    if (manufacturers_it == manufacturers.value.end()) {
       // This is likely a bug: we don't know about this manufacturer.
       return std::nullopt;
     }
 
     PpdMetadataPathSpecifier printers_path(
         PpdMetadataPathSpecifier::Type::kPrinters, channel_);
-    printers_path.SetPrintersBasename(
-        manufacturers.value.at(manufacturer).c_str());
+    printers_path.SetPrintersBasename(manufacturers_it->second.c_str());
     return printers_path.AsString();
   }
 
@@ -859,7 +861,8 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
 
     // We expect this reverse index shard to contain the decomposition
     // for |effective_make_and_model|.
-    if (!parsed_reverse_index.value.contains(effective_make_and_model)) {
+    auto it = parsed_reverse_index.value.find(effective_make_and_model);
+    if (it == parsed_reverse_index.value.end()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(std::move(cb),
@@ -867,8 +870,7 @@ class PpdMetadataManagerImpl : public PpdMetadataManager {
       return;
     }
 
-    const ReverseIndexLeaf& leaf =
-        parsed_reverse_index.value.at(effective_make_and_model);
+    const ReverseIndexLeaf& leaf = it->second;
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,

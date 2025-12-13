@@ -97,26 +97,12 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromCore(
   const em::PolicyData* policy = store->policy();
   base::Value::Dict dict = GetStatusFromPolicyData(policy);
 
-  base::TimeDelta refresh_interval = base::Milliseconds(
-      refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
-                        : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
-
-  const bool is_push_available =
-      refresh_scheduler && refresh_scheduler->invalidations_available();
+  SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->last_dm_status() == DM_STATUS_SUCCESS;
   dict.Set("error", !no_error);
-  dict.Set("policiesPushAvailable", is_push_available);
   dict.Set("status", status);
-  // If push is on, policy update will be done via push. Hide policy fetch
-  // interval label to prevent users from misunderstanding.
-  if (!is_push_available) {
-    dict.Set(
-        "refreshInterval",
-        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
-  }
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
           ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
@@ -162,6 +148,28 @@ base::Value::Dict PolicyStatusProvider::GetStatusFromPolicyData(
   }
 
   return dict;
+}
+
+// static
+void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
+    base::Value::Dict& status,
+    const CloudPolicyRefreshScheduler* refresh_scheduler) {
+  const base::TimeDelta refresh_interval = base::Milliseconds(
+      refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
+                        : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
+
+  const bool is_push_available =
+      refresh_scheduler && refresh_scheduler->invalidations_available();
+
+  status.Set("policiesPushAvailable", is_push_available);
+  // If push is on, policy update will be done via push. Hide policy fetch
+  // interval label to prevent users from misunderstanding.
+  if (!is_push_available) {
+    status.Set(
+        "refreshInterval",
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  }
 }
 
 // static

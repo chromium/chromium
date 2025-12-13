@@ -183,6 +183,10 @@ source_set("url_test_support") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("url_unittests") {
@@ -243,6 +247,10 @@ test("url_unittests") {
       "//url/mojom:test_url_mojom_gurl",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("url_perftests") {

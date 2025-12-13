@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '/strings.m.js';
+import './log_list.js';
+import './log_details.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {PageCallbackRouter, PageHandler} from './autofill_ml_internals.mojom-webui.js';
-import type {MLPredictionLog, PageHandlerRemote} from './autofill_ml_internals.mojom-webui.js';
+import type {MlPredictionLog} from './autofill_ml_internals.mojom-webui.js';
+import {AutofillMlInternalsBrowserProxy} from './browser_proxy.js';
 
 
-export class AutofillMlInternalsAppElement extends CrLitElement {
+export class AppElement extends CrLitElement {
   static get is() {
     return 'autofill-ml-internals-app';
   }
@@ -27,38 +28,48 @@ export class AutofillMlInternalsAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      logs_: {type: Array},
+      logEntries_: {type: Array},
+      selectedLog_: {type: Object},
     };
   }
 
-  protected accessor logs_: MLPredictionLog[] = [];
+  protected accessor logEntries_: MlPredictionLog[] = [];
+  protected accessor selectedLog_: MlPredictionLog|null = null;
 
-  private pageHandler_: PageHandlerRemote;
-  private callbackRouter_: PageCallbackRouter;
+  private browserProxy_: AutofillMlInternalsBrowserProxy =
+      AutofillMlInternalsBrowserProxy.getInstance();
+  private onLogAddedListenerId_: number|null = null;
 
-  constructor() {
-    super();
-
-    this.pageHandler_ = PageHandler.getRemote();
-    this.callbackRouter_ = new PageCallbackRouter();
-
-    this.pageHandler_.setPage(
-        this.callbackRouter_.$.bindNewPipeAndPassRemote());
-
-    this.callbackRouter_.onLogAdded.addListener(
-        (log: MLPredictionLog) => this.onLogAdded_(log));
+  override connectedCallback() {
+    super.connectedCallback();
+    this.browserProxy_.handler.setPage(
+        this.browserProxy_.callbackRouter.$.bindNewPipeAndPassRemote());
+    this.onLogAddedListenerId_ =
+        this.browserProxy_.callbackRouter.onLogAdded.addListener(
+            (log: MlPredictionLog) => {
+              this.logEntries_ = [log, ...this.logEntries_];
+              this.selectedLog_ = log;
+            });
   }
 
-  private onLogAdded_(log: MLPredictionLog) {
-    this.logs_ = [log, ...this.logs_];
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this.onLogAddedListenerId_ !== null) {
+      this.browserProxy_.callbackRouter.removeListener(
+          this.onLogAddedListenerId_);
+      this.onLogAddedListenerId_ = null;
+    }
+  }
+
+  protected onLogSelected_(e: CustomEvent<MlPredictionLog>) {
+    this.selectedLog_ = e.detail;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'autofill-ml-internals-app': AutofillMlInternalsAppElement;
+    'autofill-ml-internals-app': AppElement;
   }
 }
 
-customElements.define(
-    AutofillMlInternalsAppElement.is, AutofillMlInternalsAppElement);
+customElements.define(AppElement.is, AppElement);

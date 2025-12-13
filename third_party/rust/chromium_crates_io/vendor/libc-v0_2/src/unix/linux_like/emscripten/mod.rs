@@ -41,13 +41,8 @@ pub type statfs64 = crate::statfs;
 pub type statvfs64 = crate::statvfs;
 pub type dirent64 = crate::dirent;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum fpos64_t {} // FIXME(emscripten): fill this out with a struct
-impl Copy for fpos64_t {}
-impl Clone for fpos64_t {
-    fn clone(&self) -> fpos64_t {
-        *self
-    }
+extern_ty! {
+    pub enum fpos64_t {} // FIXME(emscripten): fill this out with a struct
 }
 
 s! {
@@ -57,11 +52,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct passwd {
@@ -120,11 +115,11 @@ s! {
         pub ssi_stime: u64,
         pub ssi_addr: u64,
         pub ssi_addr_lsb: u16,
-        _pad2: u16,
+        _pad2: Padding<u16>,
         pub ssi_syscall: i32,
         pub ssi_call_addr: u64,
         pub ssi_arch: u32,
-        _pad: [u8; 28],
+        _pad: Padding<[u8; 28]>,
     }
 
     pub struct fsid_t {
@@ -175,8 +170,8 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: mode_t,
         pub __seq: c_int,
-        __unused1: c_long,
-        __unused2: c_long,
+        __unused1: Padding<c_long>,
+        __unused2: Padding<c_long>,
     }
 
     pub struct termios {
@@ -265,8 +260,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
@@ -279,8 +274,8 @@ s! {
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct statfs {
@@ -315,7 +310,6 @@ s! {
         pub ha: [c_uchar; crate::MAX_ADDR_LEN],
     }
 
-    #[allow(missing_debug_implementations)]
     #[repr(align(4))]
     pub struct pthread_mutex_t {
         size: [u8; crate::__SIZEOF_PTHREAD_MUTEX_T],
@@ -340,9 +334,7 @@ s! {
     pub struct pthread_condattr_t {
         size: [u8; crate::__SIZEOF_PTHREAD_CONDATTR_T],
     }
-}
 
-s_no_extra_traits! {
     pub struct dirent {
         pub d_ino: crate::ino_t,
         pub d_off: off_t,
@@ -381,111 +373,12 @@ s_no_extra_traits! {
     pub struct pthread_cond_t {
         size: [u8; crate::__SIZEOF_PTHREAD_COND_T],
     }
+}
 
-    #[allow(missing_debug_implementations)]
+s_no_extra_traits! {
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: [f64; 3],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for sysinfo {
-            fn eq(&self, other: &sysinfo) -> bool {
-                self.uptime == other.uptime
-                    && self.loads == other.loads
-                    && self.totalram == other.totalram
-                    && self.freeram == other.freeram
-                    && self.sharedram == other.sharedram
-                    && self.bufferram == other.bufferram
-                    && self.totalswap == other.totalswap
-                    && self.freeswap == other.freeswap
-                    && self.procs == other.procs
-                    && self.pad == other.pad
-                    && self.totalhigh == other.totalhigh
-                    && self.freehigh == other.freehigh
-                    && self.mem_unit == other.mem_unit
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sysinfo {}
-        impl hash::Hash for sysinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uptime.hash(state);
-                self.loads.hash(state);
-                self.totalram.hash(state);
-                self.freeram.hash(state);
-                self.sharedram.hash(state);
-                self.bufferram.hash(state);
-                self.totalswap.hash(state);
-                self.freeswap.hash(state);
-                self.procs.hash(state);
-                self.pad.hash(state);
-                self.totalhigh.hash(state);
-                self.freehigh.hash(state);
-                self.mem_unit.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for mq_attr {
-            fn eq(&self, other: &mq_attr) -> bool {
-                self.mq_flags == other.mq_flags
-                    && self.mq_maxmsg == other.mq_maxmsg
-                    && self.mq_msgsize == other.mq_msgsize
-                    && self.mq_curmsgs == other.mq_curmsgs
-            }
-        }
-        impl Eq for mq_attr {}
-        impl hash::Hash for mq_attr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.mq_flags.hash(state);
-                self.mq_maxmsg.hash(state);
-                self.mq_msgsize.hash(state);
-                self.mq_curmsgs.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_cond_t {
-            fn eq(&self, other: &pthread_cond_t) -> bool {
-                self.size.iter().zip(other.size.iter()).all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_cond_t {}
-        impl hash::Hash for pthread_cond_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.size.hash(state);
-            }
-        }
     }
 }
 
@@ -774,7 +667,7 @@ pub const ST_NOATIME: c_ulong = 1024;
 pub const ST_NODIRATIME: c_ulong = 2048;
 
 pub const RTLD_NEXT: *mut c_void = -1i64 as *mut c_void;
-pub const RTLD_DEFAULT: *mut c_void = 0i64 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 pub const RTLD_NODELETE: c_int = 0x1000;
 pub const RTLD_NOW: c_int = 0x2;
 
@@ -844,7 +737,7 @@ pub const SHM_NORESERVE: c_int = 0o10000;
 
 pub const LOG_NFACILITIES: c_int = 24;
 
-pub const SEM_FAILED: *mut crate::sem_t = 0 as *mut sem_t;
+pub const SEM_FAILED: *mut crate::sem_t = ptr::null_mut();
 
 pub const AI_PASSIVE: c_int = 0x0001;
 pub const AI_CANONNAME: c_int = 0x0002;
@@ -1365,7 +1258,7 @@ pub const SOMAXCONN: c_int = 128;
 
 f! {
     pub fn CMSG_NXTHDR(mhdr: *const msghdr, cmsg: *const cmsghdr) -> *mut cmsghdr {
-        if ((*cmsg).cmsg_len as usize) < mem::size_of::<cmsghdr>() {
+        if ((*cmsg).cmsg_len as usize) < size_of::<cmsghdr>() {
             return core::ptr::null_mut::<cmsghdr>();
         }
         let next = (cmsg as usize + super::CMSG_ALIGN((*cmsg).cmsg_len as usize)) as *mut cmsghdr;
@@ -1384,21 +1277,21 @@ f! {
     }
 
     pub fn CPU_SET(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] |= 1 << offset;
         ()
     }
 
     pub fn CPU_CLR(cpu: usize, cpuset: &mut cpu_set_t) -> () {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]); // 32, 64 etc
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]); // 32, 64 etc
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         cpuset.bits[idx] &= !(1 << offset);
         ()
     }
 
     pub fn CPU_ISSET(cpu: usize, cpuset: &cpu_set_t) -> bool {
-        let size_in_bits = 8 * mem::size_of_val(&cpuset.bits[0]);
+        let size_in_bits = 8 * size_of_val(&cpuset.bits[0]);
         let (idx, offset) = (cpu / size_in_bits, cpu % size_in_bits);
         0 != (cpuset.bits[idx] & (1 << offset))
     }
@@ -1409,7 +1302,7 @@ f! {
 }
 
 safe_f! {
-    pub {const} fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
+    pub const fn makedev(major: c_uint, minor: c_uint) -> crate::dev_t {
         let major = major as crate::dev_t;
         let minor = minor as crate::dev_t;
         let mut dev = 0;
@@ -1420,7 +1313,7 @@ safe_f! {
         dev
     }
 
-    pub {const} fn major(dev: crate::dev_t) -> c_uint {
+    pub const fn major(dev: crate::dev_t) -> c_uint {
         // see
         // https://github.com/emscripten-core/emscripten/blob/
         // main/system/lib/libc/musl/include/sys/sysmacros.h
@@ -1430,7 +1323,7 @@ safe_f! {
         major as c_uint
     }
 
-    pub {const} fn minor(dev: crate::dev_t) -> c_uint {
+    pub const fn minor(dev: crate::dev_t) -> c_uint {
         // see
         // https://github.com/emscripten-core/emscripten/blob/
         // main/system/lib/libc/musl/include/sys/sysmacros.h
@@ -1543,12 +1436,6 @@ extern "C" {
     pub fn ioctl(fd: c_int, request: c_int, ...) -> c_int;
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
     pub fn setpriority(which: c_int, who: crate::id_t, prio: c_int) -> c_int;
-    pub fn pthread_create(
-        native: *mut crate::pthread_t,
-        attr: *const crate::pthread_attr_t,
-        f: extern "C" fn(*mut c_void) -> *mut c_void,
-        value: *mut c_void,
-    ) -> c_int;
 
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
 

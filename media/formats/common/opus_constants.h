@@ -35,7 +35,7 @@ namespace media {
 //         - else
 //            - stream = byte-M
 
-enum {
+enum : uint8_t {
   // Default audio output channel layout. Used to initialize |stream_map| in
   // OpusExtraData, and passed to opus_multistream_decoder_create() when the
   // extra data does not contain mapping information. The values are valid only

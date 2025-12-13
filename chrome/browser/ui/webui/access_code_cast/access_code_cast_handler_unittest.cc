@@ -38,7 +38,6 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,9 +97,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
                                              discovery_network_monitor_.get(),
                                              &dial_media_sink_service_)) {
     mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
-    // `identity_test_environment_` starts signed-out while `sync_service_`
-    // starts signed-in, make them consistent.
-    sync_service_.SetSignedOut();
   }
 
   void SetUp() override {
@@ -196,8 +192,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
     return identity_test_env_.identity_manager();
   }
 
-  syncer::SyncService& sync_service() { return sync_service_; }
-
   void set_expected_cast_result(mojom::RouteRequestResultCode code) {
     result_code_ = code;
   }
@@ -269,12 +263,17 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
-    CoreAccountInfo account_info =
-        identity_test_env_.SetPrimaryAccount(kEmail, consent_level);
-    sync_service_.SetSignedIn(consent_level, account_info);
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail, consent_level);
   }
 
-  void SetPausedSynServiceState() { sync_service_.SetPersistentAuthError(); }
+  void SetAccountInPersistentErrorState() {
+    CoreAccountId account_id =
+        identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+    identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+        account_id,
+        GoogleServiceAuthError(
+            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  }
 
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }
   const MediaSinkInternal& cast_sink_2() { return cast_sink_2_; }
@@ -329,10 +328,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
 
   raw_ptr<MockMediaRouter, AcrossTasksDanglingUntriaged> router_;
   std::unique_ptr<LoggerImpl> logger_;
-  // `identity_test_env_` and `sync_service_` must stay private, so they are
-  // always controlled together by SignIn().
+  // `identity_test_env_` must stay private.
   signin::IdentityTestEnvironment identity_test_env_;
-  syncer::TestSyncService sync_service_;
 
   static std::vector<DiscoveryNetworkInfo> GetFakeNetworkInfo() {
     return {
@@ -532,31 +529,13 @@ TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
   handler()->CastToSink(mock_callback.Get());
 }
 
-// Test that demonstrates profile sync error being called if sync is not enabled
-// for the profile.
-TEST_F(AccessCodeCastHandlerTest, ProfileSyncError) {
+// Test that demonstrates profile sync error being called if the account is in a
+// persistent error state.
+TEST_F(AccessCodeCastHandlerTest, ProfileAccountError) {
   MockAddSinkCallback mock_callback_failure;
   handler()->SetIdentityManagerForTesting(identity_manager());
-  handler()->SetSyncServiceForTesting(&sync_service());
-
   SignIn(signin::ConsentLevel::kSignin);
-
-  EXPECT_CALL(mock_callback_failure,
-              Run(AddSinkResultCode::PROFILE_SYNC_ERROR));
-  handler()->AddSink(
-      "foo_code",
-      access_code_cast::mojom::CastDiscoveryMethod::INPUT_ACCESS_CODE,
-      mock_callback_failure.Get());
-}
-
-// Test that demonstrates profile sync error being called if sync is paused
-// for the profile.
-TEST_F(AccessCodeCastHandlerTest, ProfileSyncPaused) {
-  MockAddSinkCallback mock_callback_failure;
-  handler()->SetIdentityManagerForTesting(identity_manager());
-  handler()->SetSyncServiceForTesting(&sync_service());
-  SignIn(signin::ConsentLevel::kSync);
-  SetPausedSynServiceState();
+  SetAccountInPersistentErrorState();
 
   EXPECT_CALL(mock_callback_failure,
               Run(AddSinkResultCode::PROFILE_SYNC_ERROR));
@@ -568,12 +547,11 @@ TEST_F(AccessCodeCastHandlerTest, ProfileSyncPaused) {
 
 // Test that demonstrates profile sync error is not called if sync is enabled
 // for the profile.
-TEST_F(AccessCodeCastHandlerTest, ProfileSyncSuccess) {
+TEST_F(AccessCodeCastHandlerTest, ProfileSigninSuccess) {
   MockAddSinkCallback mock_callback_success;
   handler()->SetIdentityManagerForTesting(identity_manager());
-  handler()->SetSyncServiceForTesting(&sync_service());
 
-  SignIn(signin::ConsentLevel::kSync);
+  SignIn(signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(mock_callback_success, Run(AddSinkResultCode::UNKNOWN_ERROR))
       .Times(1);

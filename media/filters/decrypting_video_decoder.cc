@@ -16,6 +16,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -237,9 +238,9 @@ void DecryptingVideoDecoder::DecodePendingBuffer() {
   const bool is_encrypted = !is_end_of_stream && buffer->decrypt_config();
   const auto timestamp_us =
       is_end_of_stream ? 0 : buffer->timestamp().InMicroseconds();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
-      "media", "DecryptingVideoDecoder::DecodePendingBuffer", this,
-      "is_encrypted", is_encrypted, "timestamp_us", timestamp_us);
+  TRACE_EVENT_BEGIN("media", "DecryptingVideoDecoder::DecodePendingBuffer",
+                    perfetto::Track::FromPointer(this), "is_encrypted",
+                    is_encrypted, "timestamp_us", timestamp_us);
 
   if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
     MEDIA_LOG(ERROR, media_log_)
@@ -307,8 +308,9 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
       return;
     }
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "media", "DecryptingVideoDecoder::WaitingForDecryptionKey", this);
+    TRACE_EVENT_BEGIN("media",
+                      "DecryptingVideoDecoder::WaitingForDecryptionKey",
+                      perfetto::Track::FromPointer(this));
     state_ = kWaitingForKey;
     waiting_cb_.Run(WaitingReason::kNoDecryptionKey);
     return;
@@ -336,7 +338,7 @@ void DecryptingVideoDecoder::DeliverFrame(Decryptor::Status status,
   }
 
   // Attach the HDR metadata from the `config_` if it's not set on the `frame`.
-  if (!frame->hdr_metadata() && config_.hdr_metadata()) {
+  if (frame->hdr_metadata().IsEmpty() && !config_.hdr_metadata().IsEmpty()) {
     frame->set_hdr_metadata(config_.hdr_metadata());
   }
 
@@ -384,15 +386,13 @@ void DecryptingVideoDecoder::DoReset() {
 
 void DecryptingVideoDecoder::CompletePendingDecode(Decryptor::Status status) {
   DCHECK_EQ(state_, kPendingDecode);
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "media", "DecryptingVideoDecoder::DecodePendingBuffer", this, "status",
-      Decryptor::GetStatusName(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  Decryptor::GetStatusName(status));
 }
 
 void DecryptingVideoDecoder::CompleteWaitingForDecryptionKey() {
   DCHECK_EQ(state_, kWaitingForKey);
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "media", "DecryptingVideoDecoder::WaitingForDecryptionKey", this);
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this));
 }
 
 }  // namespace media

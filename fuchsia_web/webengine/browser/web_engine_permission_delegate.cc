@@ -11,7 +11,9 @@
 #include "base/notimplemented.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "fuchsia_web/webengine/browser/frame_impl.h"
+#include "fuchsia_web/webengine/browser/web_engine_config.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "url/origin.h"
 
@@ -21,7 +23,7 @@ WebEnginePermissionDelegate::~WebEnginePermissionDelegate() = default;
 void WebEnginePermissionDelegate::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
@@ -44,7 +46,7 @@ void WebEnginePermissionDelegate::ResetPermission(
 void WebEnginePermissionDelegate::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
@@ -71,47 +73,67 @@ WebEnginePermissionDelegate::GetPermissionResultForOriginWithoutContext(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
-                          embedding_origin.GetURL());
-
   return content::PermissionResult(
-      status, content::PermissionStatusSource::UNSPECIFIED);
+      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
+                          embedding_origin.GetURL()));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForCurrentDocument(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
+  // See the comment in GetPermissionResultForWorker.
+  if (blink::PermissionDescriptorToPermissionType(permission_descriptor) ==
+      blink::PermissionType::NOTIFICATIONS) {
+    return content::PermissionResult(
+        AllowNotifications(render_frame_host->GetLastCommittedURL())
+            ? blink::mojom::PermissionStatus::GRANTED
+            : blink::mojom::PermissionStatus::DENIED);
+  }
+
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
-  return frame->permission_controller()->GetPermissionState(
-      blink::PermissionDescriptorToPermissionType(permission_descriptor),
-      render_frame_host->GetLastCommittedOrigin());
+  return content::PermissionResult(
+      frame->permission_controller()->GetPermissionState(
+          blink::PermissionDescriptorToPermissionType(permission_descriptor),
+          render_frame_host->GetLastCommittedOrigin()));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForWorker(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
+  // Most of the push messaging API users would expect the permission of
+  // notifications, or the service worker has no way to notify users. Though
+  // WebEngine does not support platform notifications, to make the behavior as
+  // close as a full Chrome browser, the notification permissions should be
+  // granted to the same set of origins allowing using PushMessagingServiceImpl.
+  if (blink::PermissionDescriptorToPermissionType(permission_descriptor) ==
+      blink::PermissionType::NOTIFICATIONS) {
+    return content::PermissionResult(
+        AllowNotifications(worker_origin)
+            ? blink::mojom::PermissionStatus::GRANTED
+            : blink::mojom::PermissionStatus::DENIED);
+  }
   // Use |worker_origin| for requesting_origin and embedding_origin because
   // workers don't have embedders.
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  return content::PermissionResult(
+      GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
 }
 
-blink::mojom::PermissionStatus
-WebEnginePermissionDelegate::GetPermissionStatusForEmbeddedRequester(
+content::PermissionResult
+WebEnginePermissionDelegate::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
   FrameImpl* frame = FrameImpl::FromRenderFrameHost(render_frame_host);
   DCHECK(frame);
-  return frame->permission_controller()->GetPermissionState(
-      blink::PermissionDescriptorToPermissionType(permission_descriptor),
-      overridden_origin);
+  return content::PermissionResult(
+      frame->permission_controller()->GetPermissionState(
+          blink::PermissionDescriptorToPermissionType(permission_descriptor),
+          overridden_origin));
 }
 
 void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
@@ -121,7 +143,7 @@ void WebEnginePermissionDelegate::OnPermissionStatusChangeSubscriptionAdded(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-void WebEnginePermissionDelegate::UnsubscribeFromPermissionStatusChange(
+void WebEnginePermissionDelegate::UnsubscribeFromPermissionResultChange(
     content::PermissionController::SubscriptionId subscription_id) {
   // TODO(crbug.com/40680523): Implement permission status subscription. It's
   // used in blink to emit PermissionStatus.onchange notifications.

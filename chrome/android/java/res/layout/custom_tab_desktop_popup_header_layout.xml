@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+Height, visibility, and background color of this node are set programmatically
+by DesktopPopupHeaderViewBinder.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/desktop_popup_header"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:orientation="vertical" >
+
+    <!--
+    Text contents, text appearance, visibility, and horizontal margins of this
+    node are set programmatically by DesktopPopupHeaderViewBinder.
+    -->
+    <TextView
+        android:id="@+id/desktop_popup_header_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="start"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+    <ImageView
+        android:id="@+id/desktop_popup_header_hairline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/toolbar_hairline"
+        android:scaleType="fitXY"
+        android:importantForAccessibility="no" />
+
+</LinearLayout>

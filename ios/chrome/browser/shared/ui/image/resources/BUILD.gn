@@ -1,0 +1,69 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/rules.gni")
+
+bundle_data_xcassets("resources") {
+  catalog = "Assets.xcassets"
+  sources = [
+    "Assets.xcassets/Contents.json",
+    "Assets.xcassets/enterprise_signin_banner.imageset/Contents.json",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner.pdf",
+    "Assets.xcassets/enterprise_signin_banner.imageset/enterprise_signin_banner_dark.pdf",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/Contents.json",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/password_manager_trusted_vault_widget_promo.pdf",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo.imageset/password_manager_trusted_vault_widget_promo_dark.pdf",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo_disabled.imageset/Contents.json",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo_disabled.imageset/password_manager_trusted_vault_widget_promo_disabled.pdf",
+    "Assets.xcassets/password_manager_trusted_vault_widget_promo_disabled.imageset/password_manager_trusted_vault_widget_promo_disabled_dark.pdf",
+  ]
+}
+
+bundle_data_xcassets("branded_assets") {
+  catalog = "Chromium.xcassets"
+  sources = [
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@2x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner@3x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_default_browser_screen_banner.imageset/chromium_default_browser_screen_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_guided_tour_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_guided_tour_banner.imageset/chromium_guided_tour_banner@3x.png",
+    "Chromium.xcassets/chromium_guided_tour_banner.imageset/chromium_guided_tour_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_guided_tour_banner.imageset/chromium_guided_tour_banner_dark_ipad@2x.png",
+    "Chromium.xcassets/chromium_guided_tour_banner.imageset/chromium_guided_tour_banner_ipad@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner@3x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_dark_ipad@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner.imageset/chromium_notifications_opt_in_banner_ipad@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/Contents.json",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/chromium_notifications_opt_in_banner_landscape@2x.png",
+    "Chromium.xcassets/chromium_notifications_opt_in_banner_landscape.imageset/chromium_notifications_opt_in_banner_landscape_dark@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/Contents.json",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/chromium_password_manager_widget_promo@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo.imageset/chromium_password_manager_widget_promo@3x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/Contents.json",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/chromium_password_manager_widget_promo_disabled@2x.png",
+    "Chromium.xcassets/chromium_password_manager_widget_promo_disabled.imageset/chromium_password_manager_widget_promo_disabled@3x.png",
+    "Chromium.xcassets/chromium_search_engine_choice_icon.imageset/Contents.json",
+    "Chromium.xcassets/chromium_search_engine_choice_icon.imageset/chromium_search_engine_choice_icon@2x.png",
+    "Chromium.xcassets/chromium_search_engine_choice_icon.imageset/chromium_search_engine_choice_icon@3x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner@2x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner@3x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_settings_passwords_in_other_apps_banner.imageset/chromium_settings_passwords_in_other_apps_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/Contents.json",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner@2x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner@3x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner_dark@2x.png",
+    "Chromium.xcassets/chromium_signin_banner.imageset/chromium_signin_banner_dark@3x.png",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/Contents.json",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/chromium_signin_promo_logo@2x.png",
+    "Chromium.xcassets/chromium_signin_promo_logo.imageset/chromium_signin_promo_logo@3x.png",
+  ]
+}

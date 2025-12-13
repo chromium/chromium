@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/gpu/vaapi/test/fake_libva_driver/scoped_bo_mapping_factory.h"
 
 #include <linux/dma-buf.h>
@@ -14,6 +9,7 @@
 #include <sys/mman.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -22,8 +18,7 @@ namespace media::internal {
 ScopedBOMapping::ScopedAccess::ScopedAccess(const ScopedBOMapping& mapping)
     : mapping_(mapping) {
   for (const auto& plane : mapping_->planes_) {
-    struct dma_buf_sync sync_start;
-    memset(&sync_start, 0, sizeof(sync_start));
+    struct dma_buf_sync sync_start = {};
     sync_start.flags = DMA_BUF_SYNC_START | DMA_BUF_SYNC_RW;
 
     // This will fail for the fake GBM backend, so ignore the return result. We
@@ -35,8 +30,7 @@ ScopedBOMapping::ScopedAccess::ScopedAccess(const ScopedBOMapping& mapping)
 
 ScopedBOMapping::ScopedAccess::~ScopedAccess() {
   for (const auto& plane : mapping_->planes_) {
-    struct dma_buf_sync sync_end;
-    memset(&sync_end, 0, sizeof(sync_end));
+    struct dma_buf_sync sync_end = {};
     sync_end.flags = DMA_BUF_SYNC_END | DMA_BUF_SYNC_RW;
     HANDLE_EINTR(ioctl(plane.prime_fd.get(), DMA_BUF_IOCTL_SYNC, &sync_end));
   }

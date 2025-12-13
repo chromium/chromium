@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gtk/gtk_util.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ui/gtk/x/gtk_event_loop_x11.h"
 
 #include <xcb/xcb.h>
 #include <xcb/xproto.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gtk/gtk_compat.h"
-#include "ui/gtk/x/gtk_event_loop_x11.h"
+#include "ui/gtk/gtk_util.h"
 
 namespace gtk {
 
@@ -58,8 +55,8 @@ x11::Event ConvertGdkEventToKeyEvent(GdkEvent* gdk_event) {
   GdkKeymapKey keymap_key{0, 0, 0};
   if (keys) {
     for (gint i = 0; i < n_entries; i++) {
-      if (keyvals[i] == keyval) {
-        keymap_key = keys[i];
+      if (UNSAFE_TODO(keyvals[i]) == keyval) {
+        keymap_key = UNSAFE_TODO(keys[i]);
         break;
       }
     }

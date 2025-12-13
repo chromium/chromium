@@ -91,7 +91,9 @@ bool SelectionController::OnMousePressed(
     delegate_->OnBeforePointerAction();
     const bool selection_changed =
         render_text->MoveCursorToPoint(event.location(), false);
-    const bool text_changed = delegate_->PasteSelectionClipboard();
+    const bool text_changed = ui::Clipboard::IsMiddleClickPasteEnabled()
+                                  ? delegate_->PasteSelectionClipboard()
+                                  : false;
     delegate_->OnAfterPointerAction(text_changed,
                                     selection_changed | text_changed);
   }
@@ -172,8 +174,7 @@ void SelectionController::OffsetDoubleClickWord(size_t offset) {
 void SelectionController::TrackMouseClicks(const ui::MouseEvent& event) {
   if (event.IsOnlyLeftMouseButton()) {
     base::TimeDelta time_delta = event.time_stamp() - last_click_time_;
-    if (!last_click_time_.is_null() &&
-        time_delta.InMilliseconds() <= GetDoubleClickInterval() &&
+    if (!last_click_time_.is_null() && time_delta <= GetDoubleClickInterval() &&
         !View::ExceededDragThreshold(event.root_location() -
                                      last_click_root_location_)) {
       // Upon clicking after a triple click, the count should go back to

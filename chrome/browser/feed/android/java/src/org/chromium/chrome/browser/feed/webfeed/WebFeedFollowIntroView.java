@@ -83,7 +83,7 @@ class WebFeedFollowIntroView {
                         R.string.menu_follow,
                         R.string.menu_follow,
                         createRectProvider(),
-                        R.drawable.ic_add,
+                        R.drawable.ic_add_24dp,
                         ChromeAccessibilityUtil.get().isAccessibilityEnabled(),
                         onTouchListener,
                         /* inverseColor= */ false);

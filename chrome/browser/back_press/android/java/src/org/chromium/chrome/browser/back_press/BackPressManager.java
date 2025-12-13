@@ -21,14 +21,16 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
+
+import java.util.function.Supplier;
 
 /**
  * A central manager class to handle the back gesture. Every component/feature which is going to
@@ -44,13 +46,13 @@ import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObser
  * </ol>
  */
 @NullMarked
-public class BackPressManager implements Destroyable {
+public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
 
     static {
-        // Max value is 23 - 1 obsolete value +1 for 0 indexing = 22 elements.
-        SparseIntArray map = new SparseIntArray(20);
+        // Max value is 26 - 1 obsolete value +1 for 0 indexing = 26 elements.
+        SparseIntArray map = new SparseIntArray(26);
         map.put(Type.TEXT_BUBBLE, 0);
         // map.put(Type.VR_DELEGATE, 1);
         // map.put(Type.AR_DELEGATE, 2);
@@ -73,9 +75,12 @@ public class BackPressManager implements Destroyable {
         map.put(Type.BOTTOM_CONTROLS, 20);
         map.put(Type.HUB, 21);
         map.put(Type.ARCHIVED_TABS_DIALOG, 22);
+        map.put(Type.NATIVE_PAGE, 23);
+        map.put(Type.CANCEL_TAB_STRIP_DRAG, 24);
+        map.put(Type.CANCEL_TAB_SWITCHER_DRAG, 25);
 
         // Add new one here and update array size.
-        sMetricsMaxValue = 23;
+        sMetricsMaxValue = 26;
         sMetricsMap = map;
     }
 
@@ -258,9 +263,11 @@ public class BackPressManager implements Destroyable {
 
     /**
      * Register the handler to intercept the back gesture.
+     *
      * @param handler Implementer of {@link BackPressHandler}.
      * @param type The {@link Type} of the handler.
      */
+    @Override
     public void addHandler(BackPressHandler handler, @Type int type) {
         assert mHandlers[type] == null : "Each type can have at most one handler";
         mHandlers[type] = handler;
@@ -275,6 +282,7 @@ public class BackPressManager implements Destroyable {
      *
      * @param handler {@link BackPressHandler} to be removed.
      */
+    @Override
     public void removeHandler(BackPressHandler handler) {
         for (int i = 0; i < mHandlers.length; i++) {
             if (mHandlers[i] == handler) {
@@ -340,7 +348,6 @@ public class BackPressManager implements Destroyable {
     /**
      * Set a callback fired when a back press is triggered. This is introduced to investigate data
      * inconsistency between experimental groups. and is not intended to be re-used.
-     * TODO(crbug.com/40944523): remove after sufficient data is collected.
      */
     public void setOnBackPressedListener(Runnable callback) {
         mOnBackPressed = callback;

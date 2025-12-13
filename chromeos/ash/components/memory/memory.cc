@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/memory/memory.h"
 
 #include <link.h>
 #include <sys/mman.h>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/chromeos_buildflags.h"
@@ -19,9 +15,7 @@
 
 namespace ash {
 
-BASE_FEATURE(kCrOSLockMainProgramText,
-             "CrOSLockMainProgramText",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCrOSLockMainProgramText, base::FEATURE_ENABLED_BY_DEFAULT);
 // The maximum number of bytes that the browser will attempt to lock.
 const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize{
     &kCrOSLockMainProgramText, "CrOSLockMainProgramTextMaxSize",
@@ -56,11 +50,11 @@ int ParseElfHeaderAndMlockBinaryText(struct dl_phdr_info* info,
   // empty string." Hence, no "is this the Chrome we're looking for?" checks are
   // necessary.
   for (int i = 0; i < info->dlpi_phnum; i++) {
-    if (info->dlpi_phdr[i].p_type == PT_LOAD &&
-        info->dlpi_phdr[i].p_flags == (PF_R | PF_X)) {
-      uintptr_t vaddr = reinterpret_cast<uintptr_t>(info->dlpi_addr +
-                                                    info->dlpi_phdr[i].p_vaddr);
-      size_t segsize = info->dlpi_phdr[i].p_filesz;
+    if (UNSAFE_TODO(info->dlpi_phdr[i]).p_type == PT_LOAD &&
+        UNSAFE_TODO(info->dlpi_phdr[i]).p_flags == (PF_R | PF_X)) {
+      uintptr_t vaddr = reinterpret_cast<uintptr_t>(
+          info->dlpi_addr + UNSAFE_TODO(info->dlpi_phdr[i]).p_vaddr);
+      size_t segsize = UNSAFE_TODO(info->dlpi_phdr[i]).p_filesz;
 
       ssize_t max_lockable_size = kCrOSLockMainProgramTextMaxSize.Get();
       if (max_lockable_size > -1) {

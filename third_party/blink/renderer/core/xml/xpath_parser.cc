@@ -264,7 +264,7 @@ bool Parser::LexQName(String& name) {
   if (!LexNCName(n2))
     return false;
 
-  name = n1 + ":" + n2;
+  name = StrCat({n1, ":", n2});
   return true;
 }
 
@@ -391,7 +391,7 @@ Token Parser::NextTokenInternal() {
     SkipWS();
     if (PeekCurHelper() == '*') {
       next_pos_++;
-      return Token(TokenType::kNameTest, name + ":*");
+      return Token(TokenType::kNameTest, StrCat({name, ":*"}));
     }
 
     // Make a full qname.
@@ -399,7 +399,7 @@ Token Parser::NextTokenInternal() {
     if (!LexNCName(n2))
       return Token(TokenType::kXPathError);
 
-    name = name + ":" + n2;
+    name = StrCat({name, ":", n2});
   }
 
   SkipWS();
@@ -510,14 +510,17 @@ Expression* Parser::ParseStatement(const String& statement,
   if (parse_error) {
     top_expr_ = nullptr;
 
-    if (got_namespace_error_)
+    if (got_namespace_error_) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNamespaceError,
-          "The string '" + statement + "' contains unresolvable namespaces.");
-    else
+          StrCat({"The string '", statement,
+                  "' contains unresolvable namespaces."}));
+    } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "The string '" + statement + "' is not a valid XPath expression.");
+          StrCat({"The string '", statement,
+                  "' is not a valid XPath expression."}));
+    }
     return nullptr;
   }
   Expression* result = top_expr_;

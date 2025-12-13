@@ -15,7 +15,7 @@
 #include "content/public/android/content_jni_headers/Page_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -34,3 +34,5 @@ void PageProxy::WillDeletePage(bool is_prerendering) {
 }
 
 }  // namespace content
+
+DEFINE_JNI(Page)

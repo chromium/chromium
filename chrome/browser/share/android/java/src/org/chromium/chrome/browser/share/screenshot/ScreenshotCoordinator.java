@@ -8,14 +8,17 @@ import android.app.Activity;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Handles the screenshot action in the Sharing Hub and launches the screenshot editor. */
+@NullMarked
 public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
-    private final WindowAndroid mWindowAndroid;
+    private final @Nullable WindowAndroid mWindowAndroid;
     private final ScreenshotShareSheetDialog mDialog;
 
     /**
@@ -29,7 +32,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      */
     public ScreenshotCoordinator(
             Activity activity,
-            WindowAndroid windowAndroid,
+            @Nullable WindowAndroid windowAndroid,
             String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {

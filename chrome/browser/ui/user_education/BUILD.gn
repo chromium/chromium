@@ -21,6 +21,7 @@ source_set("user_education") {
     "//base",
     "//chrome/browser/user_education",
     "//components/user_education/common",
+    "//ui/base:types",
     "//ui/base/idle",
     "//ui/base/unowned_user_data",
     "//url",
@@ -44,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/interaction",
     "//chrome/browser/ui/tabs:tabs_public",
     "//components/user_education/webui",
     "//ui/base/unowned_user_data",
@@ -87,6 +89,10 @@ source_set("browser_tests") {
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_chromeos_device) {
@@ -110,5 +116,9 @@ if (!is_chromeos_device) {
       "//ui/base",
       "//url",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

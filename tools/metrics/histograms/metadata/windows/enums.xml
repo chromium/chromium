@@ -33,6 +33,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Valid">Display ID was not empty and unique</int>
 </enum>
 
+<!-- LINT.IfChange(InstallerDownloaderFailureReason) -->
+
+<enum name="InstallerDownloaderFailureReason">
+  <int value="0" label="Interrupted">The download was interrupted.</int>
+  <int value="1" label="Cancelled">The download was cancelled.</int>
+  <int value="2" label="Destroyed">
+    The download item was destroyed before completion.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/win/installer_downloader/installer_downloader_model_impl.cc:InstallerDownloaderFailureReason) -->
+
 <enum name="IsPinnedToTaskbarResult">
   <int value="0" label="Not pinned"/>
   <int value="1" label="Pinned"/>
@@ -179,6 +191,8 @@ and the result of attempting to pin to taskbar when user requests it.
   <int value="1" label="File not found"/>
   <int value="2" label="Access denied"/>
   <int value="3" label="Other failure"/>
+  <int value="4" label="Invalid parameter"/>
+  <int value="5" label="Elevation required"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/platform_experience/installer/installer_win.cc:UserInstallerLaunchStatus) -->
@@ -1401,7 +1415,9 @@ and the result of attempting to pin to taskbar when user requests it.
   <int value="998" label="NOACCESS"/>
   <int value="999" label="SWAPERROR"/>
   <int value="1011" label="ERROR_CANTOPEN"/>
+  <int value="1060" label="ERROR_SERVICE_DOES_NOT_EXIST"/>
   <int value="1114" label="ERROR_DLL_INIT_FAILED"/>
+  <int value="1115" label="ERROR_SHUTDOWN_IN_PROGRESS"/>
   <int value="1117" label="ERROR_IO_DEVICE"/>
   <int value="1127" label="DISK_OPERATION_FAILED"/>
   <int value="1175" label="UNABLE_TO_REMOVE_REPLACED"/>
@@ -1421,6 +1437,7 @@ and the result of attempting to pin to taskbar when user requests it.
   <int value="1722" label="RPC_S_SERVER_UNAVAILABLE"/>
   <int value="1723" label="RPC_S_SERVER_TOO_BUSY"/>
   <int value="1726" label="RPC_S_CALL_FAILED"/>
+  <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
   <int value="1784" label="INVALID_USER_BUFFER"/>
   <int value="1816" label="NOT_ENOUGH_QUOTA"/>
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>

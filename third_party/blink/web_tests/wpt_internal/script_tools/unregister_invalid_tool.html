@@ -8,11 +8,11 @@
 
 <script>
 promise_test(async () => {
-  const automationDelegate = window.automationDelegate;
+  const modelContext = navigator.modelContext;
   assert_throws_dom(
     'InvalidStateError',
     () => {
-      automationDelegate.unregisterTool("empty");
+      modelContext.unregisterTool("empty");
     },
     "unregisterTool which doesn't exist"
   );

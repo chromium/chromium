@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "build/build_config.h"
@@ -50,7 +51,7 @@ void CreditCardCvcAuthenticator::Authenticate(
     DCHECK_EQ(selected_challenge_option->type,
               CardUnmaskChallengeOptionType::kCvc);
 
-    const GURL& last_committed_primary_main_frame_origin =
+    GURL last_committed_primary_main_frame_origin =
         client_->GetLastCommittedPrimaryMainFrameURL()
             .DeprecatedGetOriginAsURL();
 
@@ -66,14 +67,14 @@ void CreditCardCvcAuthenticator::Authenticate(
     return full_card_request_->GetFullVirtualCardViaCVC(
         card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
         weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-        last_committed_primary_main_frame_origin, *context_token,
-        *selected_challenge_option);
+        std::move(last_committed_primary_main_frame_origin),
+        *std::move(context_token), *std::move(selected_challenge_option));
   }
 
   full_card_request_->GetFullCard(
       card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
       weak_ptr_factory_.GetWeakPtr(), weak_ptr_factory_.GetWeakPtr(),
-      context_token);
+      std::move(context_token));
 }
 
 void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
@@ -86,14 +87,14 @@ void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  payments::UnmaskResponseDetails response =
+  const payments::UnmaskResponseDetails& response =
       full_card_request.unmask_response_details();
   requester_->OnCvcAuthenticationComplete(
       CvcAuthenticationResponse()
           .with_did_succeed(true)
           .with_card(&card)
           .with_cvc(cvc)
-          .with_request_options(std::move(response.fido_request_options))
+          .with_request_options(response.fido_request_options.Clone())
           .with_card_authorization_token(response.card_authorization_token));
 }
 

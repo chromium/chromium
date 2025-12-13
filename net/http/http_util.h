@@ -69,7 +69,7 @@ class NET_EXPORT HttpUtil {
   // Parses the value of a "Range" header as defined in RFC 7233 Section 2.1.
   // https://tools.ietf.org/html/rfc7233#section-2.1
   // Returns false on failure.
-  static bool ParseRangeHeader(const std::string& range_specifier,
+  static bool ParseRangeHeader(std::string_view range_specifier,
                                std::vector<HttpByteRange>* ranges);
 
   // Extracts the values in a Content-Range header and returns true if all three

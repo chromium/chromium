@@ -9,6 +9,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content::shell::protocol {
 

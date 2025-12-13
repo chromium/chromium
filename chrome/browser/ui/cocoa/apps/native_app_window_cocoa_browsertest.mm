@@ -11,9 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -22,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/extensions/launch.h"
 #include "chrome/common/chrome_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -42,7 +40,6 @@ using extensions::AppWindow;
 using extensions::PlatformAppBrowserTest;
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace {
@@ -68,14 +65,12 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
 
     for (int i = 0; i < num_windows; ++i) {
       content::CreateAndLoadWebContentsObserver app_loaded_observer;
-      apps::AppServiceProxyFactory::GetForProfile(profile())
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(
-              apps::AppLaunchParams(app->id(),
-                                    apps::LaunchContainer::kLaunchContainerNone,
-                                    WindowOpenDisposition::NEW_WINDOW,
-                                    apps::LaunchSource::kFromTest),
-              base::DoNothing());
+      web_app::LaunchExtensionOrWebApp(
+          profile(),
+          apps::AppLaunchParams(
+              app->id(), apps::LaunchContainer::kLaunchContainerNone,
+              WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest),
+          base::DoNothing());
       app_loaded_observer.Wait();
     }
   }

@@ -30,6 +30,8 @@ constexpr CGFloat kCornerRadius = 12.;
 
 @implementation AccountPickerScreenNavigationController
 
+#pragma mark - Public
+
 - (CGSize)layoutFittingSizeForWidth:(CGFloat)width {
   UINavigationController* navigationController =
       self.childViewControllers.lastObject;
@@ -56,6 +58,8 @@ constexpr CGFloat kCornerRadius = 12.;
 - (void)didUpdateControllerViewFrame {
   self.backgroundView.frame = self.view.bounds;
 }
+
+#pragma mark - UIContentContainer
 
 - (void)preferredContentSizeDidChangeForChildContentContainer:
     (id<UIContentContainer>)container {

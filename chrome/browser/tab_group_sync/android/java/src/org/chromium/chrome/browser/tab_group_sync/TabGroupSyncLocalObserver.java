@@ -12,6 +12,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
@@ -103,7 +105,10 @@ public final class TabGroupSyncLocalObserver {
         return new TabModelObserver() {
             @Override
             public void didAddTab(
-                    Tab tab, int type, int creationState, boolean markedForSelection) {
+                    Tab tab,
+                    @TabLaunchType int type,
+                    @TabCreationState int creationState,
+                    boolean markedForSelection) {
                 LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
                 if (!mIsObserving || localTabGroupId == null) return;
                 LogUtils.log(TAG, "didAddTab");
@@ -215,7 +220,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didMergeTabToGroup(Tab movedTab) {
+            public void didMergeTabToGroup(Tab movedTab, boolean isDestinationTab) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didMergeTabToGroup, rootId = " + movedTab.getRootId());
 

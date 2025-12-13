@@ -14,6 +14,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -239,11 +241,13 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
 }
 
 void ContentPasswordManagerDriver::FillField(
+    autofill::FieldRendererId triggering_field_id,
     const std::u16string& value,
-    autofill::AutofillSuggestionTriggerSource suggestion_source) {
+    autofill::FieldPropertiesFlags field_flags,
+    base::OnceCallback<void(bool)> success_callback) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
-    agent->FillField(last_triggering_field_id_, value, suggestion_source);
+    agent->FillField(triggering_field_id, value, field_flags,
+                     std::move(success_callback));
   }
 }
 
@@ -270,7 +274,6 @@ void ContentPasswordManagerDriver::FillChangePasswordForm(
     base::OnceCallback<void(const std::optional<autofill::FormData>&)>
         form_data_callback) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
     agent->FillChangePasswordForm(
         password_element_id, new_password_element_id,
         confirm_password_element_id, old_password, new_password,
@@ -280,19 +283,10 @@ void ContentPasswordManagerDriver::FillChangePasswordForm(
   }
 }
 
-void ContentPasswordManagerDriver::SubmitFormWithEnter(
-    autofill::FieldRendererId field,
-    base::OnceCallback<void(bool)> success_callback) {
-  if (const auto& agent = GetPasswordAutofillAgent()) {
-    agent->SubmitFormWithEnter(field, std::move(success_callback));
-  }
-}
-
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password,
     base::OnceCallback<void(bool)> success_callback) {
-  LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestion(
       username, password, std::move(success_callback));
 }
@@ -303,7 +297,6 @@ void ContentPasswordManagerDriver::FillSuggestionById(
     const std::u16string& username,
     const std::u16string& password,
     autofill::AutofillSuggestionTriggerSource suggestion_source) {
-  LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestionById(
       username_element_id, password_element_id, username, password,
       suggestion_source);
@@ -313,7 +306,6 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
     bool is_password,
     const std::u16string& credential) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
-    LogFilledFieldType();
     agent->FillIntoFocusedField(is_password, credential);
   }
 }
@@ -388,6 +380,18 @@ bool ContentPasswordManagerDriver::IsInPrimaryMainFrame() const {
   return render_frame_host_->IsInPrimaryMainFrame();
 }
 
+bool ContentPasswordManagerDriver::IsNestedWithinFencedFrame() const {
+  return render_frame_host_->IsNestedWithinFencedFrame();
+}
+
+bool ContentPasswordManagerDriver::IsDirectChildOfPrimaryMainFrame() const {
+  // If it has no parent, returns `false` by default.
+  if (!render_frame_host_->GetParent()) {
+    return false;
+  }
+  return render_frame_host_->GetParent()->IsInPrimaryMainFrame();
+}
+
 bool ContentPasswordManagerDriver::CanShowAutofillUi() const {
   // Don't show AutofillUi for inactive RenderFrameHost.
   return render_frame_host_->IsActive();
@@ -395,6 +399,25 @@ bool ContentPasswordManagerDriver::CanShowAutofillUi() const {
 
 const GURL& ContentPasswordManagerDriver::GetLastCommittedURL() const {
   return render_frame_host_->GetLastCommittedURL();
+}
+
+const url::Origin& ContentPasswordManagerDriver::GetLastCommittedOrigin()
+    const {
+  return render_frame_host_->GetLastCommittedOrigin();
+}
+
+void ContentPasswordManagerDriver::CheckViewAreaVisible(
+    autofill::FieldRendererId field_id,
+    base::OnceCallback<void(bool)> callback) {
+  if (const auto& agent = GetPasswordAutofillAgent()) {
+    agent->CheckViewAreaVisible(field_id, std::move(callback));
+  }
+}
+
+autofill::AutofillDriver* ContentPasswordManagerDriver::GetAutofillDriver()
+    const {
+  return autofill::ContentAutofillDriver::GetForRenderFrameHost(
+      render_frame_host());
 }
 
 void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
@@ -605,8 +628,6 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
         "form.fields.size()!");
   }
 
-  last_triggering_field_id_ = request.field.element_id;
-
 #if !BUILDFLAG(IS_ANDROID)
   GetPasswordAutofillManager()->ShowSuggestions(request.field);
 #else
@@ -643,14 +664,6 @@ void ContentPasswordManagerDriver::LogFirstFillingResult(
           render_frame_host_))
     return;
   GetPasswordManager()->LogFirstFillingResult(this, form_renderer_id, result);
-}
-
-void ContentPasswordManagerDriver::LogFilledFieldType() {
-  bool field_classified_as_target_filling_password =
-      GetPasswordManager()->GetPasswordFormCache()->GetPasswordForm(
-          this, last_triggering_field_id_);
-  base::UmaHistogramBoolean("Autofill.FilledFieldType.Password",
-                            field_classified_as_target_filling_password);
 }
 
 const mojo::AssociatedRemote<autofill::mojom::AutofillAgent>&

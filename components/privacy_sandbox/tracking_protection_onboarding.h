@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 #define COMPONENTS_PRIVACY_SANDBOX_TRACKING_PROTECTION_ONBOARDING_H_
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -27,15 +26,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  // Enum value interfacing with the TrackingProtectionOnboarding service
-  // callers, to indicate the status the silent onboarding is at.
-  enum class SilentOnboardingStatus {
-    kIneligible = 0,
-    kEligible = 1,
-    kOnboarded = 2,
-    kMaxValue = kOnboarded,
-  };
-
   explicit TrackingProtectionOnboarding(PrefService* pref_service);
   ~TrackingProtectionOnboarding() override;
 
@@ -45,10 +35,6 @@ class TrackingProtectionOnboarding : public KeyedService {
   // Indicates the onboarding status for the user. Return value is the enum
   // defined above.
   OnboardingStatus GetOnboardingStatus() const;
-
-  // Indicates the silent onboarding status for the user. Return value is the
-  // enum defined above.
-  SilentOnboardingStatus GetSilentOnboardingStatus() const;
 
  private:
   raw_ptr<PrefService> pref_service_;

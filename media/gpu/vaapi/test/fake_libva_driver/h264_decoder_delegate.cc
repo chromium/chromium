@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/fake_libva_driver/h264_decoder_delegate.h"
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -447,7 +443,7 @@ void BuildPackedH264PPS(
   LOG_ASSERT(!slice_param_buffers.empty());
   const VASliceParameterBufferH264* first_sp =
       reinterpret_cast<VASliceParameterBufferH264*>(
-          slice_param_buffers[0]->GetData());
+          slice_param_buffers[0]->GetData().data());
 
   // TODO(b/328430784): we don't have access to the
   // num_ref_idx_l0_default_active_minus1 and
@@ -536,7 +532,7 @@ void H264DecoderDelegate::EnqueueWork(
         break;
       default:
         break;
-    };
+    }
   }
 }
 
@@ -546,28 +542,24 @@ void H264DecoderDelegate::Run() {
   CHECK(pic_param_buffer_);
   const VAPictureParameterBufferH264* pic_param_buffer =
       reinterpret_cast<VAPictureParameterBufferH264*>(
-          pic_param_buffer_->GetData());
+          pic_param_buffer_->GetData().data());
 
   BuildPackedH264SPS(pic_param_buffer, profile_, bitstream_builder);
   BuildPackedH264PPS(pic_param_buffer, slice_param_buffers_, profile_,
                      bitstream_builder);
 
-  for (const auto& slice_data_buffer : slice_data_buffers_) {
+  for (const FakeBuffer* slice_data_buffer : slice_data_buffers_) {
     // Add the H264 start code for each slice.
     bitstream_builder.AppendBits(32, 0x00000001);
-    const base::span<const uint8_t> data(
-        reinterpret_cast<uint8_t*>(slice_data_buffer->GetData()),
-        slice_data_buffer->GetDataSize());
-    for (size_t i = 0; i < slice_data_buffer->GetDataSize(); i++) {
-      bitstream_builder.AppendBits<uint8_t>(8, data[i]);
+    for (uint8_t data_byte : slice_data_buffer->GetData()) {
+      bitstream_builder.AppendBits<uint8_t>(8, data_byte);
     }
   }
 
   bitstream_builder.Flush();
 
   unsigned char* pData[3];
-  SBufferInfo sDstBufInfo;
-  memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+  SBufferInfo sDstBufInfo = {};
   sDstBufInfo.uiInBsTimeStamp = current_ts_++;
   CHECK_EQ(svc_decoder_->DecodeFrameNoDelay(bitstream_builder.data(),
                                             bitstream_builder.BytesInBuffer(),
@@ -582,7 +574,7 @@ void H264DecoderDelegate::Run() {
   svc_decoder_->GetOption(DECODER_OPTION_NUM_OF_FRAMES_REMAINING_IN_BUFFER,
                           &num_of_frames_in_buffer);
   for (int32_t i = 0; i < num_of_frames_in_buffer; i++) {
-    memset(&sDstBufInfo, 0, sizeof(SBufferInfo));
+    sDstBufInfo = {};
     svc_decoder_->FlushFrame(pData, &sDstBufInfo);
     OnFrameReady(pData, &sDstBufInfo);
   }
@@ -591,7 +583,7 @@ void H264DecoderDelegate::Run() {
   slice_param_buffers_.clear();
 }
 
-void H264DecoderDelegate::OnFrameReady(unsigned char* pData[3],
+void H264DecoderDelegate::OnFrameReady(base::span<uint8_t*, 3> pData,
                                        SBufferInfo* pDstInfo) {
   const uint32_t ts = pDstInfo->uiOutYuvTimeStamp;
   auto render_target_it = ts_to_render_target_.Peek(ts);
@@ -604,13 +596,13 @@ void H264DecoderDelegate::OnFrameReady(unsigned char* pData[3],
   const ScopedBOMapping::ScopedAccess mapped_bo = bo_mapping.BeginAccess();
 
   const int convert_result = libyuv::I420ToNV12(
-      /*src_y=*/static_cast<uint8_t*>(pData[0]),
+      /*src_y=*/pData[0],
       /*src_stride_y=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[0]),
-      /*src_u=*/static_cast<uint8_t*>(pData[1]),
+      /*src_u=*/pData[1],
       /*src_stride_u=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[1]),
-      /*src_v=*/static_cast<uint8_t*>(pData[2]),
+      /*src_v=*/pData[2],
       /*src_stride_v=*/
       base::checked_cast<int>(pDstInfo->UsrData.sSystemBuffer.iStride[1]),
       /*dst_y=*/mapped_bo.GetData(0),

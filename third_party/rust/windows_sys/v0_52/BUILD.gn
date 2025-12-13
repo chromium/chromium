@@ -258,6 +258,7 @@ cargo_crate("lib") {
   cargo_pkg_authors = "Microsoft"
   cargo_pkg_name = "windows-sys"
   cargo_pkg_description = "Rust for Windows"
+  cargo_pkg_repository = "https://github.com/microsoft/windows-rs"
   cargo_pkg_version = "0.52.0"
 
   allow_unsafe = false

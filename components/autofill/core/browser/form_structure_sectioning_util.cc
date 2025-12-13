@@ -16,16 +16,17 @@ namespace autofill {
 
 namespace {
 
-bool HaveSeenSimilarType(FieldType type, const FieldTypeSet& seen_types) {
+bool HaveSeenSimilarType(const FieldTypeSet& types,
+                         const FieldTypeSet& seen_types) {
   // Forms sometimes have a different format of inputting names in
   // different sections. If we believe a new name is being entered, assume
   // it is a new section.
-  FieldTypeSet first_last_name = {NAME_FIRST, NAME_LAST};
-  if ((type == NAME_FULL && seen_types.contains_any(first_last_name)) ||
-      (first_last_name.contains(type) && seen_types.contains(NAME_FULL))) {
+  static constexpr FieldTypeSet kFirstLastName = {NAME_FIRST, NAME_LAST};
+  if ((types.contains(NAME_FULL) && seen_types.contains_any(kFirstLastName)) ||
+      (types.contains_any(kFirstLastName) && seen_types.contains(NAME_FULL))) {
     return true;
   }
-  return seen_types.count(type) > 0;
+  return seen_types.contains_any(types);
 }
 
 // Some forms have adjacent fields of the same or very similar type. These
@@ -38,19 +39,24 @@ bool HaveSeenSimilarType(FieldType type, const FieldTypeSet& seen_types) {
 //  * In Japan, forms commonly have separate inputs for phonetic names. In
 //    practice this means consecutive name field types (e.g. first name and last
 //    name).
-bool ConsecutiveSimilarFieldType(FieldType current_type,
-                                 FieldType previous_type) {
-  if (previous_type == current_type)
-    return true;
-  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kName &&
-      GroupTypeOfFieldType(previous_type) == FieldTypeGroup::kName) {
+bool ConsecutiveSimilarFieldType(const AutofillType& current_type,
+                                 const AutofillType& previous_type) {
+  const FieldTypeSet common_types =
+      Intersection(current_type.GetTypes(), previous_type.GetTypes());
+  if (!common_types.empty()) {
     return true;
   }
-  if (FieldTypeSet({ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_PREFIX,
-                    ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_DEPENDENT_LOCALITY,
-                    ADDRESS_HOME_CITY, ADDRESS_HOME_ADMIN_LEVEL2,
-                    ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY})
-          .contains_all({previous_type, current_type})) {
+  if (current_type.GetGroups().contains(FieldTypeGroup::kName) &&
+      previous_type.GetGroups().contains(FieldTypeGroup::kName)) {
+    return true;
+  }
+  static constexpr FieldTypeSet kSimilar = {
+      ADDRESS_HOME_ZIP,        ADDRESS_HOME_ZIP_PREFIX,
+      ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,       ADDRESS_HOME_ADMIN_LEVEL2,
+      ADDRESS_HOME_STATE,      ADDRESS_HOME_COUNTRY};
+  if (kSimilar.contains_any(previous_type.GetTypes()) &&
+      kSimilar.contains_any(current_type.GetTypes())) {
     return true;
   }
   return false;
@@ -73,7 +79,8 @@ void AssignCreditCardSections(
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
   auto first_cc_field = std::ranges::find_if(
       fields, [](const std::unique_ptr<AutofillField>& field) {
-        return field->Type().group() == FieldTypeGroup::kCreditCard &&
+        return field->Type().GetGroups().contains(
+                   FieldTypeGroup::kCreditCard) &&
                !field->section();
       });
   if (first_cc_field == fields.end())
@@ -81,7 +88,7 @@ void AssignCreditCardSections(
   Section cc_section =
       Section::FromFieldIdentifier(**first_cc_field, frame_token_ids);
   for (const auto& field : fields) {
-    if (field->Type().group() == FieldTypeGroup::kCreditCard &&
+    if (field->Type().GetGroups().contains(FieldTypeGroup::kCreditCard) &&
         !field->section()) {
       field->set_section(cc_section);
     }
@@ -121,25 +128,25 @@ bool BelongsToCurrentSection(const FieldTypeSet& seen_types,
     return true;
   }
 
-  const FieldType current_type = current_field.Type().GetStorableType();
-  if (current_type == UNKNOWN_TYPE)
+  const AutofillType current_type = current_field.Type();
+  if (current_type.GetTypes().contains(UNKNOWN_TYPE)) {
     return true;
+  }
 
   // Generally, adjacent fields of the same or very similar type belong in the
   // same logical section.
-  if (ConsecutiveSimilarFieldType(current_type,
-                                  previous_field.Type().GetStorableType())) {
+  if (ConsecutiveSimilarFieldType(current_type, previous_field.Type())) {
     return true;
   }
 
   // There are many phone number field types and their classification is
   // generally a little bit off. Furthermore, forms often ask for multiple phone
   // numbers, e.g. both a daytime and evening phone number.
-  if (GroupTypeOfFieldType(current_type) == FieldTypeGroup::kPhone) {
+  if (current_type.GetGroups().contains(FieldTypeGroup::kPhone)) {
     return true;
   }
 
-  return !HaveSeenSimilarType(current_type, seen_types);
+  return !HaveSeenSimilarType(current_type.GetTypes(), seen_types);
 }
 
 // Finds the first focusable field that doesn't have a section assigned.
@@ -178,7 +185,7 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
       return it;
     }
     if (!field.section()) {
-      seen_types.insert(field.Type().GetStorableType());
+      seen_types.insert_all(field.Type().GetTypes());
       prev_field = &field;
     }
   }
@@ -188,6 +195,9 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
 }  // namespace
 
 void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
+  // It is important to reset the sections before running sectioning again for
+  // consistent cache updates (see AutofillManager::UpdateFormCache() for more
+  // details).
   for (const auto& field : fields)
     field->set_section(Section());
 

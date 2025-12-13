@@ -22,9 +22,8 @@ SYNC_TEST_F(
       // Prepare the mockTtsApi to respond with audio data that corresponds to a
       // 0.2135s playback containing "Hello world".
       const mockTtsApi = MockTtsApi;
-      mockTtsApi.enqueueAudioData(
-          generateTestBufferData(), generateTestTimeInfoData(),
-          true /* lastData */);
+      const testAudio = generateTestAudioBuffer();
+      mockTtsApi.enqueueAudioData(testAudio, true /* lastData */);
       chrome.mojoPrivate.registerMockedModuleForTesting(
           'ash.enhanced_network_tts', mockTtsApi);
 
@@ -35,7 +34,7 @@ SYNC_TEST_F(
       const audioStreamOptions = {bufferSize, sampleRate};
       const decodedAudioData =
           await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
-              generateTestBufferData(), sampleRate);
+              testAudio, sampleRate);
       // Each buffer corresponds to 0.04s.
       const expectedBuffers = [
         // The first 0.04s is empty.
@@ -133,28 +132,39 @@ SYNC_TEST_F(
 SYNC_TEST_F(
     'Mv3EnhancedNetworkTtsUnitTest', 'DecodeAudioDataAtSampleRate',
     async function() {
-      const testAudioLength = 0.2135;
-      let sampleRate = 4000;
+      const testAudioLengthInSeconds = 0.2135;
+      const testAudio = generateTestAudioBuffer();
 
+      // Helper method for determining that the buffer is a correct length.
+      const assertBufferIsCorrectLength = (audioBuffer, sampleRate) => {
+        // The legacy AudioFileReader incorrectly includes the preskip samples.
+        // TODO(crbug.com/440616500): remove legacy path when experiment ready.
+        let lengthWithPreskip =
+            Math.floor(testAudioLengthInSeconds * sampleRate);
+        let lengthWithoutPreskip =
+            lengthWithPreskip - getPreskipSampleCount(testAudio, sampleRate);
+        assertTrue(
+            audioBuffer.length == lengthWithPreskip ||
+            audioBuffer.length == lengthWithoutPreskip);
+      };
+
+      let sampleRate = 4000;
       let audioBuffer =
           await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
-              generateTestBufferData(), sampleRate);
-      assertEquals(
-          audioBuffer.length, Math.floor(testAudioLength * sampleRate));
+              testAudio, sampleRate);
+      assertBufferIsCorrectLength(audioBuffer, sampleRate);
 
       sampleRate = 6000;
       audioBuffer =
           await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
-              generateTestBufferData(), sampleRate);
-      assertEquals(
-          audioBuffer.length, Math.floor(testAudioLength * sampleRate));
+              testAudio, sampleRate);
+      assertBufferIsCorrectLength(audioBuffer, sampleRate);
 
       sampleRate = 10000;
       audioBuffer =
           await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
-              generateTestBufferData(), sampleRate);
-      assertEquals(
-          audioBuffer.length, Math.floor(testAudioLength * sampleRate));
+              testAudio, sampleRate);
+      assertBufferIsCorrectLength(audioBuffer, sampleRate);
     });
 
 SYNC_TEST_F('Mv3EnhancedNetworkTtsUnitTest', 'SubarrayFrom', async function() {
@@ -183,13 +193,21 @@ SYNC_TEST_F(
     async function() {
       // Prepare the decodedAudioData for testing. The data corresponds to a
       // 0.2135s playback.
-      const testAudioLength = 0.2135;
+      const testAudioLengthInSeconds = 0.2135;
       const sampleRate = 10000;
-      const decodedAudioDataLength = testAudioLength * sampleRate;  // 2135
+      const testAudio = generateTestAudioBuffer();
+
+      // The legacy AudioFileReader incorrectly includes the preskip samples.
+      // TODO(crbug.com/440616500): remove legacy path when experiment ready.
+      const lengthWithPreskip = testAudioLengthInSeconds * sampleRate;
+      const lengthWithoutPreskip =
+          lengthWithPreskip - getPreskipSampleCount(testAudio, sampleRate);
       const decodedAudioData =
           await enhancedNetworkTts.decodeAudioDataAtSampleRateForTesting(
-              generateTestBufferData(), sampleRate);
-      assertEquals(decodedAudioData.length, decodedAudioDataLength);
+              testAudio, sampleRate);
+      assertTrue(
+          decodedAudioData.length == lengthWithPreskip ||
+          decodedAudioData.length == lengthWithoutPreskip);
 
       const timeInfo = generateTestTimeInfoData();
       // The |decodedAudioData| will be sent through 6 buffers. The first five
@@ -267,11 +285,13 @@ SYNC_TEST_F(
 
 /**
  * Generates audio data for testing. The audio data contains a clip of silent
- * audio originally in ogg format. The audio lasts 0.2135 seconds.
- * @return {!Array<number>}
+ * audio encoded as opus audio in an ogg container. The audio lasts 0.2135
+ * seconds, and has an opus pre-skip value of 312 at the Opus native sample rate
+ * of 48 kHz.
+ * @returns {!Array<number>} audio data encoded as a numerical array.
  */
-function generateTestBufferData() {
-  const testData = [
+function generateTestAudioBuffer() {
+  const testAudio = [
     79,  103, 103, 83,  0,   2,   0,   0,   0,   0,   0,   0,   0,   0,   138,
     1,   148, 99,  0,   0,   0,   0,   19,  72,  225, 168, 1,   19,  79,  112,
     117, 115, 72,  101, 97,  100, 1,   1,   56,  1,   192, 93,  0,   0,   0,
@@ -296,7 +316,33 @@ function generateTestBufferData() {
     74,  40,  33,  234, 158, 16,  44,  104, 9,   73,  154, 65,  180, 184, 46,
     212, 58,  33,  41,  158, 252, 16,  100, 140, 106, 65,  21,  168, 221,
   ];
-  return testData;
+  return testAudio;
+}
+
+/**
+ * Returns the number of preskip samples in the given `testAudio`, scaled to
+ * match the given `sampleRate`.
+ * @returns {number} the number of skip samples at the stream beginning.
+ */
+function getPreskipSampleCount(testAudio, sampleRate) {
+  // Opus uses a default sample rate of 48kHz. If a different sample rate is
+  // requested, the preskip count must be scaled by the ratio between the two
+  // sample rates.
+  const opusSampleRate = 48000;
+
+  // The preskip value is located 10 bytes into the Opus header. The `testAudio`
+  // file starts with a 28-byte Ogg page header. Combined, we get a total offset
+  // of 10 + 28 = 38 bytes.
+  const preskipOffset = 38;
+
+  // The testAudio preskip count is stored as a 16-bit little endian integer
+  // in the testAudio itself.
+  const preskipCount =
+      testAudio[preskipOffset] + 256 * testAudio[preskipOffset + 1];
+
+  // Return the raw count scaled to the ratio between the given `sampleRate` and
+  // the standard opus sample rate.
+  return preskipCount * sampleRate / opusSampleRate;
 }
 
 /**
@@ -304,7 +350,7 @@ function generateTestBufferData() {
  * playback is empty. "Hello" is spoken during 0.05 - 0.15s, "world" is spoken
  * during 0.15 - 0.21s. The last 0.0035s is empty, assuming the audio lasts
  * 0.2135 seconds.
- * @return {!Array<!ash.enhancedNetworkTts.mojom.TimingInfo>}
+ * @returns {!Array<!ash.enhancedNetworkTts.mojom.TimingInfo>} timestamp data.
  */
 function generateTestTimeInfoData() {
   return [

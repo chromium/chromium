@@ -44,13 +44,6 @@ namespace ash {
 //
 // This class doesn't track preferences, package installation or audio status at
 // all; it is told to start/stop by the classes that actually do so.
-//
-// For the moment, this is prototype logic only: it processes the input device
-// stream (c.f. a not-yet-existing "non-web only" loopback) and processes the
-// stream even when no audio is being produced.
-//
-// TODO(b/253114860): Until these issues are addressed, this class can't be used
-//                    in production.
 class SystemLiveCaptionService
     : public KeyedService,
       public SpeechRecognizerDelegate,

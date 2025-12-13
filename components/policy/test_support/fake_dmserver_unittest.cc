@@ -5,6 +5,7 @@
 #include "components/policy/test_support/fake_dmserver.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -19,7 +20,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
@@ -118,8 +118,8 @@ class FakeDMServerTest : public testing::Test {
   // TODO(b/240445061): Check response content to verify the returned policy.
   int SendRequest(const GURL& server_url, const std::string& request_path) {
     std::string request_url =
-        base::StringPrintf("http://%s:%s%s", server_url.host().c_str(),
-                           server_url.port().c_str(), request_path.c_str());
+        base::StringPrintf("http://%s:%s%s", server_url.GetHost().c_str(),
+                           server_url.GetPort().c_str(), request_path.c_str());
     std::unique_ptr<network::ResourceRequest> resource_request =
         std::make_unique<network::ResourceRequest>();
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
@@ -133,10 +133,10 @@ class FakeDMServerTest : public testing::Test {
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
 
-    base::test::TestFuture<std::unique_ptr<std::string>> test_future;
+    base::test::TestFuture<std::optional<std::string>> test_future;
     url_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
         url_loader_factory.get(), test_future.GetCallback());
-    const std::unique_ptr<std::string> response_body = test_future.Take();
+    const std::optional<std::string> response_body = test_future.Take();
     if (response_body) {
       LOG(INFO) << "Response body: " << *response_body;
     }
@@ -205,7 +205,7 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   EXPECT_EQ(clients[0].username.value(), "tast-user@managedchrome.com");
   ASSERT_EQ(clients[0].allowed_policy_types.size(), 1u);
   EXPECT_EQ(*clients[0].allowed_policy_types.begin(),
-            policy::dm_protocol::kChromeUserPolicyType);
+            policy::dm_protocol::GetChromeUserPolicyType());
   EXPECT_TRUE(clients[0].state_keys.empty());
 
   JSONFileValueDeserializer deserializer(client_state_path_);
@@ -237,7 +237,7 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   ASSERT_TRUE(allowed_policy_types);
   ASSERT_EQ(allowed_policy_types->size(), 1u);
   EXPECT_EQ((*allowed_policy_types)[0].GetString(),
-            policy::dm_protocol::kChromeUserPolicyType);
+            policy::dm_protocol::GetChromeUserPolicyType());
 
   const base::Value::List* state_keys = client_dict->FindList("state_keys");
   ASSERT_TRUE(state_keys);
@@ -360,6 +360,29 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringStateKeysFails) {
             net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
+TEST_F(FakeDMServerTest, GetClientFromValueNoUsernameSucceeds) {
+  FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
+  client_state_path_.MaybeAsASCII(),
+                             grpc_unix_socket_uri_);
+  EXPECT_TRUE(fake_dmserver.Start());
+
+  ASSERT_TRUE(base::WriteFile(client_state_path_, R"(
+    {
+      "fake_device_id" : {
+        "device_id" : "fake_device_id",
+        "device_token" : "fake_device_token",
+        "machine_name" : "fake_machine_name",
+        "state_keys" : [ "fake_state_key" ],
+        "allowed_policy_types" : [ "google/chromeos/user" ]
+      }
+    }
+  )"));
+  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
+                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
+                        "oauth_token=fake_policy_token&request=policy"),
+            net::HTTP_OK);
+}
+
 TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
   FakeDMServer fake_dmserver(policy_blob_path_.MaybeAsASCII(),
                              client_state_path_.MaybeAsASCII(),
@@ -378,10 +401,6 @@ TEST_F(FakeDMServerTest, GetClientFromValueWithNonStringPolicyTypesFails) {
       }
     }
   )"));
-  EXPECT_EQ(SendRequest(fake_dmserver.GetServiceURL(),
-                        "/?apptype=Chrome&deviceid=fake_device_id&devicetype=2&"
-                        "oauth_token=fake_policy_token&request=register"),
-            net::HTTP_INTERNAL_SERVER_ERROR);
 }
 
 TEST_F(FakeDMServerTest, HandlePolicyRequestSucceeds) {

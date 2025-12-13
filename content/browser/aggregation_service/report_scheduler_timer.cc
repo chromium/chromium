@@ -32,6 +32,7 @@ ReportSchedulerTimer::ReportSchedulerTimer(std::unique_ptr<Delegate> delegate)
       &connection_type,
       base::BindOnce(&ReportSchedulerTimer::OnConnectionChanged,
                      weak_ptr_factory_.GetWeakPtr()));
+
   if (synchronous_return) {
     OnConnectionChanged(connection_type);
   }
@@ -82,6 +83,11 @@ void ReportSchedulerTimer::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  UpdateState(connection_type);
+}
+
+void ReportSchedulerTimer::UpdateState(
+    network::mojom::ConnectionType connection_type) {
   bool was_offline = IsOffline();
   connection_type_ = connection_type;
 

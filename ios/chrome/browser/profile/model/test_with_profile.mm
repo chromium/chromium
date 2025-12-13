@@ -10,7 +10,7 @@
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
 #import "base/test/test_file_util.h"
-#import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -69,9 +69,9 @@ TestWithProfile::TestWithProfile(
   application_context->SetProfileManagerAndAccountProfileMapper(
       &profile_manager_, account_profile_mapper_.get());
 
-  // Initialize the prediction model store (required by some KeyedServices).
-  optimization_guide::IOSChromePredictionModelStore::GetInstance()->Initialize(
-      base::CreateUniqueTempDirectoryScopedToTest());
+  application_context->GetOptimizationGuideGlobalState()
+      ->prediction_model_store()
+      .Initialize(base::CreateUniqueTempDirectoryScopedToTest());
 
   // Start the IO thread.
   web_task_environment_.StartIOThread();
@@ -95,10 +95,6 @@ TestWithProfile::TestWithProfile(
 TestWithProfile::~TestWithProfile() {
   TestingApplicationContext* application_context =
       TestingApplicationContext::GetGlobal();
-
-  // Cleanup the prediction model store (since it is a singleton).
-  optimization_guide::IOSChromePredictionModelStore::GetInstance()
-      ->ResetForTesting();
 
   // The profiles must have been unloaded by this point. This is because
   // their KeyedService may depends on the AccountProfileMapper when the

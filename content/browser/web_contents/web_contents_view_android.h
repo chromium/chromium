@@ -74,6 +74,8 @@ class WebContentsViewAndroid : public WebContentsView,
   void FocusThroughTabTraversal(bool reverse) override;
   DropData* GetDropData() const override;
   gfx::Rect GetViewBounds() const override;
+  void Resize(const gfx::Rect& new_bounds) override;
+  gfx::Size GetSize() const override;
   void CreateView(gfx::NativeView context) override;
   RenderWidgetHostViewBase* CreateViewForWidget(
       RenderWidgetHost* render_widget_host) override;
@@ -140,7 +142,6 @@ class WebContentsViewAndroid : public WebContentsView,
   void OnControlsResizeViewChanged() override;
   void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) override;
-  void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
   void ShowInterestInElement(int nodeID) override;
 
   void SetFocus(bool focused);

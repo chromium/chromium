@@ -11,14 +11,11 @@ generate_jni("jni") {
   sources = [
     "java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/Credential.java",
   ]
 }
 
 android_library("internal_java") {
   deps = [
-    ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
     "//components/favicon/android:java",
@@ -31,11 +28,14 @@ android_library("internal_java") {
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java_resources",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/edge_to_edge:factory_java",
     "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/favicon:java",
     "//chrome/browser/util:java",
@@ -43,6 +43,7 @@ android_library("internal_java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
@@ -54,12 +55,15 @@ android_library("internal_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_viewpager_viewpager_java",
     "//ui/android:ui_java",
     "//ui/android:ui_utils_java",
     "//ui/base/ime/mojom:mojom_java",
+    "//ui/edge_to_edge:java",
     "//url:gurl_java",
   ]
   srcjar_deps = [ ":jni" ]
@@ -68,42 +72,8 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMetricsRecorder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingProperties.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingState.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingStateCache.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetCoordinator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetProperties.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewHolder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/Credential.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/CredentialFillRequest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryCoordinator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryIphUtils.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryMetricsRecorder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryProperties.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryRecyclerViewMcp.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupCoordinator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupProperties.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/CachedProviderAdapter.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/data/ConditionalProviderAdapter.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessoryPagerAdapter.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetCoordinator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetMediator.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetMetricsRecorder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetProperties.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetViewBinder.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/NoSwipeViewPager.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabCoordinator.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabItemsModel.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AccessorySheetTabMediator.java",
@@ -125,46 +95,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PlusAddressInfoView.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PromoCodeAccessoryInfoView.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/utils/InsecureFillingDialogUtils.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
-}
-
-android_resources("java_resources") {
-  sources = [
-    "java/res/layout/accessory_sheet_header.xml",
-    "java/res/layout/address_accessory_sheet.xml",
-    "java/res/layout/all_passwords_bottom_sheet.xml",
-    "java/res/layout/credit_card_accessory_sheet.xml",
-    "java/res/layout/keyboard_accessory.xml",
-    "java/res/layout/keyboard_accessory_action.xml",
-    "java/res/layout/keyboard_accessory_buttons.xml",
-    "java/res/layout/keyboard_accessory_sheet.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_address_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_credit_card_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_iban_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_loyalty_card_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_option_toggle.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_password_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_plus_address_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_promo_code_info.xml",
-    "java/res/layout/keyboard_accessory_sheet_tab_title.xml",
-    "java/res/layout/password_accessory_passkey_chip.xml",
-    "java/res/layout/password_accessory_sheet.xml",
-    "java/res/layout/password_accessory_sheet_option.xml",
-    "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
-  ]
-  deps = [
-    ":java_strings_grd",
-    "//chrome/android:chrome_app_java_resources",
-    "//components/browser_ui/strings/android:browser_ui_strings_grd",
-    "//components/browser_ui/widget/android/shared_with_webview:java_resources",
-  ]
-}
-
-java_strings_grd("java_strings_grd") {
-  defines = chrome_grit_defines
-  grd_file = "java/strings/android_keyboard_accessory_strings.grd"
 }

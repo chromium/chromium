@@ -58,10 +58,14 @@ message VerifySessionTokenResponse {
   string shared_secret = 2;
 
   // A token opaque to the host. The host should call ReauthorizeHost
-  // with this token after |session_reauth_token_lifetime|.
+  // with this token after |session_reauth_token_lifetime|. May be an empty
+  // string if session reauthorization is not required. In that case,
+  // |session_reauth_token_lifetime| will be 0.
   string session_reauth_token = 3;
 
-  // A duration specifying when |session_reauth_token| will expire.
+  // A duration specifying when |session_reauth_token| will expire. May be 0 if
+  // session reauthorization is not required. In that case,
+  // |session_reauth_token| will be empty.
   Duration session_reauth_token_lifetime = 4;
 
   // Policies to be applied to the host.

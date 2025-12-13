@@ -15,5 +15,5 @@
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 tf_version_major = 2
-tf_version_minor = 20
+tf_version_minor = 21
 tf_version_patch = 0

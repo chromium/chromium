@@ -21,7 +21,7 @@ public class CustomTabsFeatureUsage {
     public static final String CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM = "CustomTabs.FeatureUsage";
 
     // NOTE: This must be kept in sync with the definition |CustomTabsFeatureUsed|
-    // in tools/metrics/histograms/enums.xml.
+    // in tools/metrics/histograms/metadata/custom_tabs/enums.xml.
     // LINT.IfChange(CustomTabsFeature)
     @IntDef({
         CustomTabsFeature.CTF_SESSIONS,
@@ -88,6 +88,7 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_OPEN_IN_BROWSER_STATE,
         CustomTabsFeature.EXTRA_LAUNCH_HANDLER,
         CustomTabsFeature.EXTRA_FILE_HANDLERS,
+        CustomTabsFeature.EXTRA_CUSTOM_CONTENT_ACTIONS,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -159,9 +160,10 @@ public class CustomTabsFeatureUsage {
         int EXTRA_OPEN_IN_BROWSER_STATE = 63;
         int EXTRA_LAUNCH_HANDLER = 64;
         int EXTRA_FILE_HANDLERS = 65;
+        int EXTRA_CUSTOM_CONTENT_ACTIONS = 66;
 
         /** Total count of entries. */
-        int COUNT = 66;
+        int COUNT = 67;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/custom_tabs/enums.xml:CustomTabsFeatureUsed)

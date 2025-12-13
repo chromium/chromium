@@ -18,6 +18,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

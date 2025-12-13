@@ -12,7 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -49,16 +49,11 @@ class CC_EXPORT ImageController {
   // vector under certain conditions.
   // |tasks| is an output, which are the built tile tasks.
   // |has_at_raster_images| is an output parameter.
-  // |has_hardware_accelerated_jpeg_candidates| and
-  // |has_hardware_accelerated_webp_candidates| are output parameters that
-  // indicate if there are images in |sync_decoded_images| that could be decoded
-  // using hardware decode acceleration.
+
   // |tracing_info| is used in tracing or UMA only.
   void ConvertImagesToTasks(std::vector<DrawImage>* sync_decoded_images,
                             std::vector<scoped_refptr<TileTask>>* tasks,
                             bool* has_at_raster_images,
-                            bool* has_hardware_accelerated_jpeg_candidates,
-                            bool* has_hardware_accelerated_webp_candidates,
                             const ImageDecodeCache::TracingInfo& tracing_info);
   void UnrefImages(const std::vector<DrawImage>& images);
   void ReduceMemoryUsage();

@@ -143,13 +143,14 @@ const char kRootPath[] = "/";
 void GetSizeStatsAsync(const base::FilePath& mount_path,
                        uint64_t* total_size,
                        uint64_t* remaining_size) {
-  int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
-  if (size >= 0) {
-    *total_size = size;
+  std::optional<int64_t> size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_path);
+  if (size) {
+    *total_size = *size;
   }
   size = base::SysInfo::AmountOfFreeDiskSpace(mount_path);
-  if (size >= 0) {
-    *remaining_size = size;
+  if (size) {
+    *remaining_size = *size;
   }
 }
 
@@ -1292,8 +1293,7 @@ FileManagerPrivateInternalSearchFilesFunction::Run() {
     root_path = url.path();
   }
 
-  size_t max_results =
-      base::internal::checked_cast<size_t>(search_params.max_results);
+  size_t max_results = base::checked_cast<size_t>(search_params.max_results);
   base::Time modified_time = base::Time::FromMillisecondsSinceUnixEpoch(
       search_params.modified_timestamp);
 

@@ -86,8 +86,14 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
         ->LoadForTesting({});
 
     Browser::CreateParams params(profile(), true);
-    params.window = &browser_window_;
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
+  }
+
+  void TearDown() override {
+    browser_->GetWindow()->Close();
+    ChromeViewsTestBase::TearDown();
   }
 
   virtual BookmarkBarView* bookmark_bar_view() = 0;
@@ -187,7 +193,6 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingProfile> profile_;
-  TestBrowserWindow browser_window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<BookmarkBarViewTestHelper> test_helper_;
 };
@@ -753,6 +758,40 @@ TEST_F(BookmarkBarViewTest, ButtonSeparatorViewAccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kSplitter);
   EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
             l10n_util::GetStringUTF8(IDS_ACCNAME_SEPARATOR));
+}
+
+TEST_F(BookmarkBarViewTest, AllBookmarksButtonVisibilityWithExtensiveChanges) {
+  // Initially no "All bookmarks" button should be visible
+  EXPECT_FALSE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
+
+  model()->BeginExtensiveChanges();
+
+  // Add bookmarks to the bookmark bar and other bookmarks folder
+  model()->AddFolder(model()->bookmark_bar_node(), 0, u"f1");
+  model()->AddURL(model()->other_node(), 0, u"other_bookmark",
+                  GURL("https://www.example.com"));
+
+  model()->EndExtensiveChanges();
+
+  // After extensive changes end, the "All bookmarks" button should be visible
+  // since there are bookmarks in the "Other Bookmarks" folder
+  EXPECT_TRUE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
+
+  // Now test removing all bookmarks from "Other Bookmarks" folder during
+  // extensive changes
+  model()->BeginExtensiveChanges();
+
+  // Remove all bookmarks from the "Other Bookmarks" folder
+  while (model()->other_node()->children().size() > 0) {
+    model()->Remove(model()->other_node()->children()[0].get(),
+                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
+  }
+
+  model()->EndExtensiveChanges();
+
+  // After extensive changes end, the "All bookmarks" button should no longer be
+  // visible since there are no bookmarks in the "Other Bookmarks" folder
+  EXPECT_FALSE(bookmark_bar_view()->all_bookmarks_button()->GetVisible());
 }
 
 TEST_F(BookmarkBarViewInWidgetTest, UpdateTooltipText) {

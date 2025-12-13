@@ -34,6 +34,7 @@
 namespace blink {
 
 class ImageResourceObserver;
+class StyleResolverState;
 
 namespace cssvalue {
 
@@ -58,9 +59,16 @@ class CORE_EXPORT CSSCrossfadeValue final : public CSSImageGeneratorValue {
   bool HasFailedOrCanceledSubresources() const;
   bool Equals(const CSSCrossfadeValue&) const;
 
+  const CSSCrossfadeValue& ResolveValuesIfNeeded(
+      const StyleResolverState&) const;
+  CSSCrossfadeValue& ResolveValuesIfNeeded(const StyleResolverState&);
+
   void TraceAfterDispatch(Visitor*) const;
 
  private:
+  CSSCrossfadeValue* ResolveValuesAndCreateCopyIfNeeded(
+      const StyleResolverState&) const;
+
   class ObserverProxy;
 
   bool is_prefixed_variant_;  // -webkit-cross-fade() instead of cross-fade()

@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+robolectric_binary("media_session_junit_tests") {
+  testonly = true
+  sources =
+      [ "src/org/chromium/services/media_session/MediaPositionUnitTest.java" ]
+  resources_package = "org.chromium.services.media_session"
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//services/media_session/public/cpp/android:media_session_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

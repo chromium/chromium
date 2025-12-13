@@ -93,9 +93,6 @@ struct WordBox {
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
 
-  // This word is separated from next word by space.
-  bool has_space_after;
-
   // Word bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
 
@@ -105,6 +102,14 @@ struct WordBox {
 
   // The direction of the script contained in the word.
   Direction direction;
+
+  // Bounding box of the whitespace after the word relative to the original
+  // image. The rect would be empty if there is no whitespace after the word.
+  gfx.mojom.Rect whitespace_bounding_box;
+
+  // Rotation angle of the whitespace bounding box (in degrees, clockwise) about
+  // its top-left corner.
+  float whitespace_bounding_box_angle;
 
   // Confidence as computed by the OCR engine. The value is in range [0, 1].
   float confidence;

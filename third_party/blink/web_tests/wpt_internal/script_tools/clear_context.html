@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: clearContext functionality</title>
+<link rel="author" href="mailto:brwalder@microsoft.com">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo(obj) {
+    return obj.text;
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // Register tools via both methods
+  modelContext.registerTool({
+    execute: echo,
+    name: "individual_tool",
+    description: "Individual tool"
+  });
+
+  modelContext.provideContext({
+    tools: [
+      {
+        execute: echo,
+        name: "batch_tool1",
+        description: "Batch tool 1"
+      },
+      {
+        execute: echo,
+        name: "batch_tool2",
+        description: "Batch tool 2"
+      }
+    ]
+  });
+
+  // Clear all tools
+  modelContext.clearContext();
+
+  // Verify all tools are gone
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.unregisterTool("individual_tool");
+    },
+    "individual tool should be cleared"
+  );
+
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.unregisterTool("batch_tool1");
+    },
+    "batch tool 1 should be cleared"
+  );
+
+  assert_throws_dom(
+    'InvalidStateError',
+    () => {
+      modelContext.unregisterTool("batch_tool2");
+    },
+    "batch tool 2 should be cleared"
+  );
+}, "clearContext removes all tools regardless of registration method");
+
+promise_test(async () => {
+  const modelContext = navigator.modelContext;
+
+  // clearContext on empty state should not throw
+  modelContext.clearContext();
+
+  // Multiple clearContext calls should not throw
+  modelContext.clearContext();
+  modelContext.clearContext();
+}, "clearContext works when no tools are registered");
+
+promise_test(async () => {
+  async function tool() {
+    return "test";
+  }
+
+  const modelContext = navigator.modelContext;
+
+  // Register, clear, register again
+  modelContext.registerTool({
+    execute: tool,
+    name: "test_tool",
+    description: "Test tool"
+  });
+
+  modelContext.clearContext();
+
+  // Should be able to register again with same name after clearing
+  modelContext.registerTool({
+    execute: tool,
+    name: "test_tool",
+    description: "Test tool again"
+  });
+
+  // Clean up
+  modelContext.unregisterTool("test_tool");
+}, "can register same tool name after clearContext");
+</script>

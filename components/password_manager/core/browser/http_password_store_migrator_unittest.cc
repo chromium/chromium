@@ -21,7 +21,6 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::Pointee;
 using testing::Return;
@@ -231,7 +230,7 @@ void HttpPasswordStoreMigratorTest::TestMigratorDeletionByConsumer(
       &mock_network_context(), &consumer());
 
   EXPECT_CALL(consumer(), ProcessMigratedForms(_))
-      .WillOnce(Invoke([&migrator](Unused) { migrator.reset(); }));
+      .WillOnce([&migrator](Unused) { migrator.reset(); });
 
   migrator->OnGetPasswordStoreResults(
       std::vector<std::unique_ptr<PasswordForm>>());

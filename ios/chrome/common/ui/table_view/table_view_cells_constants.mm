@@ -7,7 +7,7 @@
 #import "ios/chrome/common/ui/util/device_util.h"
 
 const CGFloat kTableViewHeaderFooterViewHeight = 48.0;
-const CGFloat kChromeTableViewCellHeight = 48.0;
+const CGFloat kChromeTableViewCellHeight = 52.0;
 const CGFloat kTableViewHorizontalSpacing = 16.0;
 const CGFloat kTableViewOneLabelCellVerticalSpacing = 14.0;
 const CGFloat kTableViewTwoLabelsCellVerticalSpacing = 11.0;
@@ -26,14 +26,6 @@ const CGFloat kTopLargePadding = 60.;
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =
     @"kTableViewCellInfoButtonViewId";
-NSString* const kTableViewTabsSearchSuggestedHistoryItemId =
-    @"kTableViewTabsSearchSuggestedHistoryItemId";
-
-NSString* const kTableViewURLCellFaviconBadgeViewID =
-    @"TableViewURLCellFaviconBadgeView";
-
-NSString* const kTableViewURLCellMetadataImageID =
-    @"TableViewURLCellMetadataImageID";
 
 NSString* const kImproveChromeItemAccessibilityIdentifier =
     @"ImproveChromeItemAccessibilityIdentifier";

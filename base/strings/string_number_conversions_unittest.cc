@@ -932,6 +932,23 @@ TEST(StringNumberConversionsTest, DoubleToString) {
   EXPECT_EQ("1.33489033216e+12", NumberToString(input));
 }
 
+TEST(StringNumberConversionsTest, DoubleToStringFixedPrecision) {
+  static const struct {
+    double input;
+    int digits;
+    const char* expected;
+  } cases[] = {
+      {0.0, 0, "0"},      {0.0, 3, "0.000"},     {0.5, 3, "0.500"},
+      {1.25, 3, "1.250"}, {1.33518, 3, "1.335"}, {1.33578, 3, "1.336"},
+  };
+
+  for (const auto& i : cases) {
+    EXPECT_EQ(i.expected, NumberToStringWithFixedPrecision(i.input, i.digits));
+    EXPECT_EQ(i.expected, UTF16ToUTF8(NumberToString16WithFixedPrecision(
+                              i.input, i.digits)));
+  }
+}
+
 TEST(StringNumberConversionsTest, AppendHexEncodedByte) {
   std::string hex;
   AppendHexEncodedByte(0, hex);
@@ -953,6 +970,8 @@ TEST(StringNumberConversionsTest, HexEncode) {
   EXPECT_EQ(HexEncode(nullptr, 0), "");
   EXPECT_EQ(HexEncode(base::span<uint8_t>()), "");
   EXPECT_EQ(HexEncode(std::string()), "");
+  EXPECT_EQ(HexEncodeLower(base::span<uint8_t>()), "");
+  EXPECT_EQ(HexEncodeLower(std::string()), "");
 
   const auto kBytes = std::to_array<uint8_t>({
       0x01,
@@ -964,12 +983,15 @@ TEST(StringNumberConversionsTest, HexEncode) {
       0x81,
   });
   EXPECT_EQ(HexEncode(kBytes.data(), sizeof(kBytes)), "01FF02FE038081");
-  EXPECT_EQ(HexEncode(kBytes), "01FF02FE038081");  // Implicit span conversion.
+  // Implicit span conversion:
+  EXPECT_EQ(HexEncode(kBytes), "01FF02FE038081");
+  EXPECT_EQ(HexEncodeLower(kBytes), "01ff02fe038081");
 
   const std::string kString = "\x01\xff";
   EXPECT_EQ(HexEncode(kString.c_str(), kString.size()), "01FF");
-  EXPECT_EQ(HexEncode(kString),
-            "01FF");  // Implicit std::string_view conversion.
+  // Implicit std::string_view conversion:
+  EXPECT_EQ(HexEncode(kString), "01FF");
+  EXPECT_EQ(HexEncodeLower(kString), "01ff");
 }
 
 // Test cases of known-bad strtod conversions that motivated the use of dmg_fp.

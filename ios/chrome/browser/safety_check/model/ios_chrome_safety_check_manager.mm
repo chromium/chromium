@@ -6,6 +6,7 @@
 
 #import <vector>
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/location.h"
 #import "base/metrics/histogram_functions.h"
@@ -16,6 +17,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
@@ -29,21 +32,36 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
 
+namespace {
+
+// Feature flag to enable/disable clearing password-related state in Safety
+// Check upon user sign-out.
+BASE_FEATURE(kSafetyCheckClearPasswordOnSignOut,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
 IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
     PrefService* pref_service,
     PrefService* local_pref_service,
     scoped_refptr<IOSChromePasswordCheckManager> password_check_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : pref_service_(pref_service),
       local_pref_service_(local_pref_service),
       password_check_manager_(password_check_manager),
+      identity_manager_(identity_manager),
       task_runner_(task_runner) {
   CHECK(pref_service_);
   CHECK(local_pref_service_);
   CHECK(password_check_manager_);
+  CHECK(identity_manager_);
   CHECK(task_runner_);
 
   password_check_manager_->AddObserver(this);
+  if (base::FeatureList::IsEnabled(kSafetyCheckClearPasswordOnSignOut)) {
+    identity_manager_observation_.Observe(identity_manager_);
+  }
 
   if (IsOmahaServiceRefactorEnabled()) {
     OmahaService::AddObserver(this);
@@ -106,6 +124,9 @@ void IOSChromeSafetyCheckManager::Shutdown() {
   }
 
   DCHECK(observers_.empty());
+
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
 
   pref_change_registrar_.RemoveAll();
   pref_service_ = nullptr;
@@ -314,6 +335,36 @@ void IOSChromeSafetyCheckManager::ServiceWillShutdown(
   omaha_service->RemoveObserver(this);
 }
 
+#pragma mark - signin::IdentityManager::Observer implementation.
+
+void IOSChromeSafetyCheckManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(base::FeatureList::IsEnabled(kSafetyCheckClearPasswordOnSignOut));
+
+  // Check if the primary account was cleared (signed out) at the `kSignin`
+  // level.
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    return;
+  }
+
+  // User has signed out. The password state stored in this manager is now stale
+  // as it pertains to the previous account. It must be reset.
+
+  StopPasswordCheck();
+
+  SetInsecurePasswordCounts({/* compromised */ 0, /* dismissed */ 0,
+                             /* reused */ 0, /* weak */ 0});
+
+  // Set the password check state to `kSignedOut`. This updates the prefs and
+  // notifies observers (e.g., `SafetyCheckNotificationClient`) of the change.
+  SetPasswordCheckState(PasswordSafetyCheckState::kSignedOut);
+
+  previous_insecure_password_counts_ = insecure_password_counts_;
+  previous_password_check_state_ = password_check_state_;
+}
+
 SafeBrowsingSafetyCheckState
 IOSChromeSafetyCheckManager::GetSafeBrowsingCheckState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -443,24 +494,6 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     return;
   }
 
-  // Only log that there was a freshness signal if the new state has a different
-  // end result (a password issue, safe).
-  bool should_log_freshness =
-      state != PasswordSafetyCheckState::kDefault &&
-      state != previous_password_check_state_ &&
-      (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
-       state == PasswordSafetyCheckState::kReusedPasswords ||
-       state == PasswordSafetyCheckState::kWeakPasswords ||
-       state == PasswordSafetyCheckState::kSafe);
-
-  if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
-                                pref_service_);
-    base::UmaHistogramEnumeration(
-        "IOS.SafetyCheck.FreshnessTrigger",
-        IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
-  }
-
   password_check_state_ = state;
 
   pref_service_->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
@@ -504,22 +537,6 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   if (update_chrome_check_state_ == state || ignore_omaha_changes_) {
     return;
-  }
-
-  // Only log that there was a freshness signal if the new state has a different
-  // end result (out of date, up to date).
-  bool should_log_freshness =
-      state != UpdateChromeSafetyCheckState::kDefault &&
-      state != previous_update_chrome_check_state_ &&
-      (state == UpdateChromeSafetyCheckState::kOutOfDate ||
-       state == UpdateChromeSafetyCheckState::kUpToDate);
-
-  if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
-                                pref_service_);
-    base::UmaHistogramEnumeration(
-        "IOS.SafetyCheck.FreshnessTrigger",
-        IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);
   }
 
   update_chrome_check_state_ = state;
@@ -709,6 +726,16 @@ RunningSafetyCheckState
 IOSChromeSafetyCheckManager::GetRunningCheckStateForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return running_safety_check_state_;
+}
+
+void IOSChromeSafetyCheckManager::SetUpdateChromeCheckStateForTesting(
+    UpdateChromeSafetyCheckState state) {
+  SetUpdateChromeCheckState(state);
+}
+
+void IOSChromeSafetyCheckManager::SetSafeBrowsingCheckStateForTesting(
+    SafeBrowsingSafetyCheckState state) {
+  SetSafeBrowsingCheckState(state);
 }
 
 void IOSChromeSafetyCheckManager::SetPasswordCheckStateForTesting(

@@ -30,6 +30,10 @@ source_set("sync") {
     "local_or_syncable_bookmark_sync_service_factory.h",
     "prefs/chrome_syncable_prefs_database.cc",
     "prefs/chrome_syncable_prefs_database.h",
+    "prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.cc",
+    "prefs/cross_device_pref_tracker/chrome_cross_device_pref_provider.h",
+    "prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.cc",
+    "prefs/cross_device_pref_tracker/cross_device_pref_tracker_factory.h",
     "send_tab_to_self_sync_service_factory.cc",
     "send_tab_to_self_sync_service_factory.h",
     "session_sync_service_factory.cc",
@@ -51,12 +55,12 @@ source_set("sync") {
     "user_event_service_factory.cc",
     "user_event_service_factory.h",
   ]
-
   public_deps = [
     ":factories",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/translate",
     "//components/browser_sync",
     "//components/collaboration/public",
@@ -82,11 +86,16 @@ source_set("sync") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/consent_auditor",
+    "//chrome/browser/history",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/signin",
+    "//chrome/browser/subscription_eligibility",
+    "//chrome/browser/ui/sync",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/webauthn",
+    "//chrome/browser/webdata_services",
 
     # TODO(crbug.com/374910357): Investigate for a better dependency injection.
     "//chrome/browser/autofill",
@@ -105,6 +114,7 @@ source_set("sync") {
     "//components/autofill/core/browser",
     "//components/consent_auditor",
     "//components/data_sharing/public",
+    "//components/desktop_to_mobile_promos",
     "//components/dom_distiller/core",
     "//components/favicon/content",
     "//components/history/core/browser",
@@ -117,8 +127,8 @@ source_set("sync") {
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/sharing",
     "//components/performance_manager",
-    "//components/plus_addresses/settings",
-    "//components/plus_addresses/webdata",
+    "//components/plus_addresses/core/browser/settings",
+    "//components/plus_addresses/core/browser/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/saved_tab_groups/public",
@@ -128,6 +138,8 @@ source_set("sync") {
     "//components/spellcheck/browser",
     "//components/strings:components_strings_grit",
     "//components/sync_bookmarks",
+    "//components/sync_preferences:features",
+    "//components/sync_preferences/cross_device_pref_tracker",
     "//components/sync_user_events",
     "//components/user_manager",
     "//components/variations/service",
@@ -138,6 +150,8 @@ source_set("sync") {
     "//chrome/browser/android/webapk/proto",
     "//components/webapps/browser",
   ]
+
+  allow_circular_includes_from = []
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/web_applications" ]
@@ -163,6 +177,7 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/sync/android:jni_headers",
+      "//chrome/browser/tab",
       "//chrome/browser/ui/android/tab_model",
     ]
   } else {
@@ -177,6 +192,7 @@ source_set("sync") {
     deps += [
       "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/saved_tab_groups",
     ]
   }
   if (enable_extensions_core) {
@@ -229,12 +245,14 @@ source_set("sync") {
       "//components/desks_storage",
       "//ui/events/ash",
     ]
-    allow_circular_includes_from = [
+    allow_circular_includes_from += [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/ash/login/session",
     ]
   }
+
+  allow_circular_includes_from += [ "//chrome/browser/consent_auditor" ]
 
   if (enable_glic) {
     deps += [ "//chrome/browser/glic" ]

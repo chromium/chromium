@@ -56,7 +56,7 @@ var customElementCallbacks = {
 
 // Registers the guestview as a custom element.
 // |containerElementType| is a GuestViewContainerElement (e.g. WebViewElement)
-function registerElement(elementName, containerElementType) {
+function registerElement(elementName, className, containerElementType) {
   GuestViewInternalNatives.AllowGuestViewElementDefinition(() => {
     // We set the lifecycle callbacks so that they're available during
     // registration. Once that's done, we'll delete them so developers cannot
@@ -71,7 +71,7 @@ function registerElement(elementName, containerElementType) {
     $CustomElementRegistry.define(
         window.customElements, $String.toLowerCase(elementName),
         containerElementType);
-    $Object.defineProperty(window, elementName, {
+    $Object.defineProperty(window, className, {
       value: containerElementType,
     });
 

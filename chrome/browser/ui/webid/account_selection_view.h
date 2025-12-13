@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using Account = content::IdentityRequestAccount;
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
@@ -116,7 +116,7 @@ class AccountSelectionView {
   // browser in the auto re-authentication flow. Returns true if it was possible
   // to show UI.
   virtual bool ShowVerifyingDialog(const content::RelyingPartyData& rp_data,
-                                   const IdentityProviderDataPtr& idp_list,
+                                   const IdentityProviderDataPtr& idp_data,
                                    const IdentityRequestAccountPtr& account,
                                    Account::SignInMode sign_in_mode,
                                    blink::mojom::RpMode rp_mode) = 0;

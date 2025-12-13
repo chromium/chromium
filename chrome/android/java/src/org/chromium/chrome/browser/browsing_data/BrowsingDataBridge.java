@@ -10,36 +10,19 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
-import org.chromium.chrome.browser.tab.CurrentTabObserver;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.components.browsing_data.content.BrowsingDataModel;
-import org.chromium.content_public.browser.WebContents;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Communicates between ClearBrowsingData, HatsService, ImportantSitesUtils (C++) and
- * ClearBrowsingDataFragment (Java UI).
+ * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and ClearBrowsingDataFragment
+ * (Java UI).
  */
 @NullMarked
-public final class BrowsingDataBridge implements Destroyable {
+public final class BrowsingDataBridge {
     private static @Nullable ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
-
-    /**
-     * List of observers to track the active tab in each {@link TabModelSelector}. This is used to
-     * trigger the HaTS survey on the next page load.
-     */
-    private final List<CurrentTabObserver> mCurrentTabObservers = new ArrayList<>();
 
     private final Profile mProfile;
 
@@ -93,9 +76,7 @@ public final class BrowsingDataBridge implements Destroyable {
     public static BrowsingDataBridge getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
         if (sProfileMap == null) {
-            sProfileMap =
-                    ProfileKeyedMap.createMapOfDestroyables(
-                            ProfileKeyedMap.ProfileSelection.OWN_INSTANCE);
+            sProfileMap = new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
         }
         return sProfileMap.getForProfile(profile, BrowsingDataBridge::new);
     }
@@ -144,9 +125,9 @@ public final class BrowsingDataBridge implements Destroyable {
             int[] dataTypes,
             @TimePeriod int timePeriod,
             String[] excludedDomains,
-            int[] excludedDomainReasons,
-            String[] ignoredDomains,
-            int[] ignoredDomainReasons) {
+            int @Nullable [] excludedDomainReasons,
+            String @Nullable [] ignoredDomains,
+            int @Nullable [] ignoredDomainReasons) {
         BrowsingDataBridgeJni.get()
                 .clearBrowsingData(
                         mProfile,
@@ -273,49 +254,6 @@ public final class BrowsingDataBridge implements Destroyable {
         callback.onResult(new BrowsingDataModel(nativeBrowsingDataModel));
     }
 
-    /**
-     * Attempt to trigger the HaTS survey 5 seconds after the next page load on any {@link
-     * TabModelSelector}.
-     *
-     * @param quickDelete True if the survey was requested for Quick Delete.
-     */
-    public void requestHatsSurvey(boolean quickDelete) {
-        removeTabModelObservers();
-
-        TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
-        for (TabModelSelector selector : tabWindowManager.getAllTabModelSelectors()) {
-            mCurrentTabObservers.add(
-                    new CurrentTabObserver(
-                            selector.getCurrentTabSupplier(),
-                            new EmptyTabObserver() {
-                                @Override
-                                public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                                    WebContents webContents = tab.getWebContents();
-                                    if (!tab.isOffTheRecord() && webContents != null) {
-                                        BrowsingDataBridgeJni.get()
-                                                .triggerHatsSurvey(
-                                                        mProfile, webContents, quickDelete);
-                                        removeTabModelObservers();
-                                    }
-                                }
-                            },
-                            /* swapCallback= */ null));
-        }
-    }
-
-    private void removeTabModelObservers() {
-        for (CurrentTabObserver observer : mCurrentTabObservers) {
-            observer.destroy();
-        }
-
-        mCurrentTabObservers.clear();
-    }
-
-    @Override
-    public void destroy() {
-        removeTabModelObservers();
-    }
-
     @NativeMethods
     public interface Natives {
         void clearBrowsingData(
@@ -324,9 +262,9 @@ public final class BrowsingDataBridge implements Destroyable {
                 @JniType("std::vector<int32_t>") int[] dataTypes,
                 int timePeriod,
                 @JniType("std::vector<std::string>") String[] excludedDomains,
-                @JniType("std::vector<int32_t>") int[] excludedDomainReasons,
-                @JniType("std::vector<std::string>") String[] ignoredDomains,
-                @JniType("std::vector<int32_t>") int[] ignoredDomainReasons);
+                @JniType("std::vector<int32_t>") int @Nullable [] excludedDomainReasons,
+                @JniType("std::vector<std::string>") String @Nullable [] ignoredDomains,
+                @JniType("std::vector<int32_t>") int @Nullable [] ignoredDomainReasons);
 
         void requestInfoAboutOtherFormsOfBrowsingHistory(
                 @JniType("Profile*") Profile profile, OtherFormsOfBrowsingHistoryListener listener);
@@ -352,10 +290,5 @@ public final class BrowsingDataBridge implements Destroyable {
 
         void buildBrowsingDataModelFromDisk(
                 @JniType("Profile*") Profile profile, Callback<BrowsingDataModel> callback);
-
-        void triggerHatsSurvey(
-                @JniType("Profile*") Profile profile,
-                @JniType("content::WebContents*") WebContents webContents,
-                boolean quickDelete);
     }
 }

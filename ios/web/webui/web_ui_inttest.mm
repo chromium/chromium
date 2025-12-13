@@ -73,11 +73,13 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
     if (!url.SchemeIs(kTestWebUIScheme)) {
       return nullptr;
     }
-    if (url.host() == kTestWebUIURLHost) {
-      return std::make_unique<TestUI>(web_ui, url.host(), IDR_WEBUI_TEST_HTML);
+    if (url.GetHost() == kTestWebUIURLHost) {
+      return std::make_unique<TestUI>(web_ui, url.GetHost(),
+                                      IDR_WEBUI_TEST_HTML);
     }
-    DCHECK_EQ(url.host(), kTestWebUIURLHost2);
-    return std::make_unique<TestUI>(web_ui, url.host(), IDR_WEBUI_TEST_HTML_2);
+    DCHECK_EQ(url.GetHost(), kTestWebUIURLHost2);
+    return std::make_unique<TestUI>(web_ui, url.GetHost(),
+                                    IDR_WEBUI_TEST_HTML_2);
   }
 
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {

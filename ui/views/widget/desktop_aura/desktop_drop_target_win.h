@@ -72,6 +72,11 @@ class DesktopDropTargetWin : public ui::DropTargetWin,
   // The root window associated with this drop target.
   raw_ptr<aura::Window> root_window_;
 
+  // Observe the root window so we can clear |root_window_| if it is destroyed
+  // and avoid dereferencing a dangling pointer.
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      root_window_observation_{this};
+
   // The Aura window that is currently under the cursor. We need to manually
   // keep track of this because Windows will only call our drag enter method
   // once when the user enters the associated HWND. But inside that HWND there

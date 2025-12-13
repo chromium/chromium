@@ -210,7 +210,7 @@ TEST_F(CameraRollDownloadManagerImplTest,
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
   int64_t free_disk_space_bytes =
-      base::SysInfo::AmountOfFreeDiskSpace(GetDownloadPath());
+      base::SysInfo::AmountOfFreeDiskSpace(GetDownloadPath()).value_or(-1);
   item_metadata.set_file_size_bytes(free_disk_space_bytes + 1);
 
   CreatePayloadFilesResult error =

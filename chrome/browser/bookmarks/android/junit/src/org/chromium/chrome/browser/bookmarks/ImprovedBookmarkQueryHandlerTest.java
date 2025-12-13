@@ -44,7 +44,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -68,7 +67,6 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private Tracker mTracker;
-    @Mock private Profile mProfile;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private ShoppingService mShoppingService;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
@@ -396,7 +394,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         fakeBookmarkModel.getDesktopFolderId(),
@@ -422,7 +420,7 @@ public class ImprovedBookmarkQueryHandlerTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,
@@ -451,7 +449,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
         doReturn(BookmarkRowSortOrder.MANUAL).when(mBookmarkUiPrefs).getBookmarkRowSortOrder();
         List<BookmarkListEntry> result =
-                mHandler.buildBookmarkListForFolderSelect(mBookmarkModel.getRootFolderId());
+                mHandler.buildBookmarkListForFolderSelect(ROOT_BOOKMARK_ID);
         List<BookmarkId> expected =
                 Arrays.asList(
                         null,

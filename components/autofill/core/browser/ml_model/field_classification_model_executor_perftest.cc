@@ -65,7 +65,9 @@ void FieldClassificationModelExecutorPerfTest::RunTestInternal(
       /*model_inference_timeout=*/std::nullopt,
       optimization_guide::proto::
           OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION,
-      runner, base::SequencedTaskRunner::GetCurrentDefault());
+      /*model_loading_task_runner=*/runner,
+      /*execution_task_runner=*/runner,
+      base::SequencedTaskRunner::GetCurrentDefault());
   runner->PostTask(
     FROM_HERE,
     base::BindOnce(&ModelExecutor::UpdateModelFile,

@@ -42,9 +42,6 @@ AwClientHintsControllerDelegate::~AwClientHintsControllerDelegate() = default;
 blink::UserAgentMetadata
 AwClientHintsControllerDelegate::GetUserAgentMetadataOverrideBrand(
     bool only_low_entropy_ch) {
-  // embedder_support::GetUserAgentMetadata() can accept a browser local_state
-  // PrefService argument, but doesn't need one. Either way, it shouldn't be the
-  // context_pref_service_ that this class holds.
   auto metadata = embedder_support::GetUserAgentMetadata(only_low_entropy_ch);
   std::string major_version = version_info::GetMajorVersionNumber();
 

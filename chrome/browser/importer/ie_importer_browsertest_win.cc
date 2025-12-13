@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <objbase.h>
 
 #include <unknwn.h>
@@ -144,11 +139,12 @@ bool CreateOrderBlob(const base::FilePath& favorites_folder,
 
     blob.resize(blob.size() + 8);
     uint32_t total_size = id_list_size + 8;
-    memcpy(&blob[blob.size() - 8], &total_size, 4);
+    UNSAFE_TODO(memcpy(&blob[blob.size() - 8], &total_size, 4));
     uint32_t sort_index = i;
-    memcpy(&blob[blob.size() - 4], &sort_index, 4);
+    UNSAFE_TODO(memcpy(&blob[blob.size() - 4], &sort_index, 4));
     blob.resize(blob.size() + id_list_size);
-    memcpy(&blob[blob.size() - id_list_size], id_list, id_list_size);
+    UNSAFE_TODO(
+        memcpy(&blob[blob.size() - id_list_size], id_list, id_list_size));
     ILFree(id_list_full);
   }
 
@@ -292,9 +288,9 @@ class TestObserver : public ProfileWriter,
     // Importer should import the IE Favorites folder the same as the list,
     // in the same order.
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      EXPECT_NO_FATAL_FAILURE(
-          TestEqualBookmarkEntry(bookmarks[i],
-                                 kIEBookmarks[bookmark_count_])) << i;
+      EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
+          bookmarks[i], UNSAFE_TODO(kIEBookmarks[bookmark_count_])))
+          << i;
       ++bookmark_count_;
     }
   }
@@ -302,10 +298,12 @@ class TestObserver : public ProfileWriter,
   void AddFavicons(const favicon_base::FaviconUsageDataList& usage) override {
     // Importer should group the favicon information for each favicon URL.
     for (size_t i = 0; i < std::size(kIEFaviconGroup); ++i) {
-      GURL favicon_url(kIEFaviconGroup[i].favicon_url);
+      GURL favicon_url(UNSAFE_TODO(kIEFaviconGroup[i]).favicon_url);
       std::set<GURL> urls;
-      for (size_t j = 0; j < std::size(kIEFaviconGroup[i].site_url); ++j)
-        urls.insert(GURL(kIEFaviconGroup[i].site_url[j]));
+      for (size_t j = 0;
+           j < std::size(UNSAFE_TODO(kIEFaviconGroup[i]).site_url); ++j) {
+        urls.insert(GURL(UNSAFE_TODO(kIEFaviconGroup[i].site_url[j])));
+      }
 
       SCOPED_TRACE(testing::Message() << "Expected Favicon: " << favicon_url);
 
@@ -372,9 +370,9 @@ class MalformedFavoritesRegistryTestObserver
     ASSERT_LE(bookmark_count_ + bookmarks.size(),
               std::size(kIESortedBookmarks));
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      EXPECT_NO_FATAL_FAILURE(
-          TestEqualBookmarkEntry(bookmarks[i],
-                                 kIESortedBookmarks[bookmark_count_])) << i;
+      EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
+          bookmarks[i], UNSAFE_TODO(kIESortedBookmarks[bookmark_count_])))
+          << i;
       ++bookmark_count_;
     }
   }
@@ -543,8 +541,8 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(L"Order", kBadBinary[i].data, kBadBinary[i].length,
-                             REG_BINARY));
+              key.WriteValue(L"Order", UNSAFE_TODO(kBadBinary[i]).data,
+                             UNSAFE_TODO(kBadBinary[i]).length, REG_BINARY));
 
     // Starts to import the above settings.
     // Deletes itself.

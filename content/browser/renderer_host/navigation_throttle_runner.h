@@ -10,21 +10,24 @@
 #include <optional>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/safety_checks.h"
+#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/browser/renderer_host/navigation_throttle_registry_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
 
-// This class collaborates with NavigationThrottleRegistry that owns the set of
-// NavigationThrottles added to an underlying navigation, and is responsible for
-// calling the various sets of events on its NavigationThrottles, and notifying
-// its delegate of the results of said events.
-class CONTENT_EXPORT NavigationThrottleRunner {
+// This is the original implementation of the NavigationThrottleRunner, and now
+// the essential interfaces are defined in the NavigationThrottleRunnerBase to
+// introduce an alternative runner, called NavigationThrottleRunner2, which will
+// eventually replace this class. See https://crbug.com/422003056 for more
+// information.
+class CONTENT_EXPORT NavigationThrottleRunner
+    : public NavigationThrottleRunnerBase {
   // Do not remove this macro!
   // The macro is maintained by the memory safety team.
   ADVANCED_MEMORY_SAFETY_CHECKS();
@@ -38,18 +41,12 @@ class CONTENT_EXPORT NavigationThrottleRunner {
   NavigationThrottleRunner(const NavigationThrottleRunner&) = delete;
   NavigationThrottleRunner& operator=(const NavigationThrottleRunner&) = delete;
 
-  ~NavigationThrottleRunner();
+  ~NavigationThrottleRunner() override;
 
-  // Will call the appropriate NavigationThrottle function based on |event| on
-  // all NavigationThrottles owned by this NavigationThrottleRunner.
-  void ProcessNavigationEvent(NavigationThrottleEvent event);
-
-  // Resumes calling the appropriate NavigationThrottle functions for |event_|
-  // on all NavigationThrottles that have not yet been notified.
-  // |resuming_throttle| is the NavigationThrottle that asks for navigation
-  // event processing to be resumed; it should be the one currently deferring
-  // the navigation.
-  void ResumeProcessingNavigationEvent(NavigationThrottle* resuming_throttle);
+  // Implements NavigationThrottleRunnerBase:
+  void ProcessNavigationEvent(NavigationThrottleEvent event) override;
+  void ResumeProcessingNavigationEvent(
+      NavigationThrottle* resuming_throttle) override;
 
  private:
   void ProcessInternal();
@@ -57,6 +54,8 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   // Records UKM about the deferring throttle when the navigation is resumed.
   void RecordDeferTimeUKM();
+
+  void ReportStuckThrottle();
 
   const raw_ref<NavigationThrottleRegistryBase> registry_;
 
@@ -91,6 +90,9 @@ class CONTENT_EXPORT NavigationThrottleRunner {
 
   // Whether the navigation is in the primary main frame.
   bool is_primary_main_frame_ = false;
+
+  // A timer to detect throttles blocking the navigation for extra long time.
+  std::unique_ptr<base::OneShotTimer> report_stuck_throttle_timer_;
 
   base::WeakPtrFactory<NavigationThrottleRunner> weak_factory_{this};
 };

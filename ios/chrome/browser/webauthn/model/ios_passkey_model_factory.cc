@@ -13,7 +13,6 @@
 #include "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
-#include "ios/web/public/browser_state.h"
 
 // static
 webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
@@ -38,8 +37,7 @@ IOSPasskeyModelFactory::IOSPasskeyModelFactory()
 IOSPasskeyModelFactory::~IOSPasskeyModelFactory() {}
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   auto sync_bridge = std::make_unique<webauthn::PasskeySyncBridge>(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 

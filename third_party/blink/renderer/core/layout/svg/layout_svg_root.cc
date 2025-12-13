@@ -24,6 +24,8 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/frame/frame_owner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -262,14 +264,18 @@ bool LayoutSVGRoot::StyleChangeAffectsIntrinsicSize(
   // If the writing mode changed from a horizontal mode to a vertical
   // mode, or vice versa, then our intrinsic dimensions will have
   // changed.
-  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode())
+  if (old_style.IsHorizontalWritingMode() != style.IsHorizontalWritingMode()) {
     return true;
+  }
   // If our intrinsic dimensions depend on font metrics (by using 'em', 'ex' or
   // any other font-relative unit), any changes to the font may change said
   // dimensions.
   if (IntrinsicSizeIsFontMetricsDependent() &&
-      old_style.GetFont() != style.GetFont())
+      (base::FeatureList::IsEnabled(blink::features::kCSSFontComparisonFix)
+           ? !base::ValuesEquivalent(old_style.GetFont(), style.GetFont())
+           : old_style.GetFont() != style.GetFont())) {
     return true;
+  }
   return false;
 }
 
@@ -286,10 +292,12 @@ void LayoutSVGRoot::IntrinsicSizingInfoChanged() {
   GetFrame()->Owner()->NaturalSizingInfoChanged();
 }
 
-void LayoutSVGRoot::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutSVGRoot::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutReplaced::StyleDidChange(diff, old_style);
+  LayoutReplaced::StyleDidChange(diff, old_style, style_change_context);
 
   if (old_style && StyleChangeAffectsIntrinsicSize(*old_style))
     IntrinsicSizingInfoChanged();

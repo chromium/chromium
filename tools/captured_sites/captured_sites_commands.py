@@ -70,9 +70,8 @@ _DEFAULT_LOG_DATA_DIR = os.path.join(_HOME_DIR, 'data/local_test_results')
 _EXTRA_BROWSER_AUTOFILL = ('autofill_download_manager=1,form_cache=1,'
                            'autofill_agent=1,autofill_handler=1,'
                            'form_structure=1,cache_replayer=2')
-_WPR_INJECT_SCRIPTS = ('--inject_scripts=third_party/catapult/web_page_replay_g'
-                       'o/deterministic.js,chrome/test/data/web_page_replay_go_'
-                       'helper_scripts/automation_helper.js')
+_WPR_INJECT_SCRIPTS = ('--inject_scripts=chrome/test/data/web_page_replay_go_h'
+                       'elper_scripts/automation_helper.js')
 _NORMAL_BROWSER_AUTOFILL = 'cache_replayer=1'
 _RUN_BACKGROUND = 'testing/xvfb.py'
 _RUN_DISABLED_TESTS = '--gtest_also_run_disabled_tests'
@@ -361,7 +360,7 @@ class ChromeCommand(Command):
       return
     with open(archive_path, 'r') as read_file:
       data = json.load(read_file)
-    if not 'startingURL' in data:
+    if 'startingURL' not in data:
       print('No startingURL found in file for "%s"' % url, file=sys.stderr)
       return
     print('%s test starts at:' % url, file=sys.stderr)
@@ -440,10 +439,11 @@ class TestCommand(Command):
 
     if self.options.store_log:
       if not os.path.isdir(self.log_data_dir_path):
-        print('Required LOG_DATA_DIR "%s" cannot be found' %
+        print('Required CAPTURED_SITES_LOG_DATA_DIR "%s" cannot be found' %
               self.log_data_dir_path)
-        raise ValueError('Must set environment variable $LOG_DATA_DIR or '
-                         'ensure default _DEFAULT_LOG_DATA_DIR exists')
+        raise ValueError('Must set environment variable '
+                         '$CAPTURED_SITES_LOG_DATA_DIR or ensure default '
+                         '_DEFAULT_LOG_DATA_DIR exists')
       logging_scenario_site_param = self.gtest_parameter.replace('*', 'all')
       self.command_args.append(
           '--test-launcher-summary-output={}/{}_output.json'.format(
@@ -555,6 +555,12 @@ class WprCommand(Command):
     ]
 
     self.command_args.append(_WPR_INJECT_SCRIPTS)
+
+    # If the WPR key file ever changes, it'll become incompatible with
+    # certificates stored in the archive, causing errors. So don't
+    # read/write archive certificates. Instead, mint new certificates at
+    # runtime using the root certificate and key files.
+    self.command_args.append('--no_archive_certificates')
 
     if self.options.subhead == 'replay':
       self.command_args.append('--serve_response_in_chronological_sequence')

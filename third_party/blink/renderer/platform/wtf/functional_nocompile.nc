@@ -75,17 +75,17 @@ void GCImplWithMixinCannotBeUnretained() {
 
 void GarbageCollectedCannotBeBoundAsRawPointer(UnretainableObject* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);               // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  blink::BindOnce([] (UnretainableObject* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (UnretainableObject* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GCMixinCannotBeBoundAsRawPointer(UnretainableMixin* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);  // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  blink::BindOnce([] (void* ptr) {}, ptr);   // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (void* ptr) {}, ptr);   // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GCImplWithmixinCannotBeBoundAsRawPointer(UnretainableImpl* ptr) {
   base::BindOnce([] (void* ptr) {}, ptr);             // expected-error@*:* {{Argument requires unretained storage, but type does not support `Unretained()`.}}
-  blink::BindOnce([] (UnretainableImpl* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind into WTF::Function.}}
+  blink::BindOnce([] (UnretainableImpl* ptr) {}, ptr);  // expected-error@*:* {{Raw pointers are not allowed to bind.}}
 }
 
 void GarbageCollectedCannotBeBoundByCref() {

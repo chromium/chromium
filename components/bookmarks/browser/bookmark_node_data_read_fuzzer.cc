@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/at_exit.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
@@ -29,7 +25,8 @@ class Environment {
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
 
-  base::Pickle pickle = base::Pickle::WithUnownedBuffer(base::span(data, size));
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(UNSAFE_TODO(base::span(data, size)));
   bookmarks::BookmarkNodeData bookmark_node_data;
   bookmark_node_data.ReadFromPickle(&pickle);
   return 0;

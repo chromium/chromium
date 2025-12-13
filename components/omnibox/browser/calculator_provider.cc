@@ -145,10 +145,11 @@ void CalculatorProvider::AddMatches() {
   // Use copies instead of references to avoid dangling pointers. This provider
   // might be deleted before the cache (i.e. the window this provider belongs to
   // might be closed).
-  for (auto [match, _] : Cache()) {
+  for (const auto& [immutable_match, _] : Cache()) {
+    auto match = immutable_match;
     match.relevance = relevance++;
     match.provider = this;
-    matches_.push_back(match);
+    matches_.push_back(std::move(match));
   }
 }
 

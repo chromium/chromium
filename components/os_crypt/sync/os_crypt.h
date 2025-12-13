@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
@@ -18,8 +19,12 @@
 #include "crypto/subtle_passkey.h"
 
 #if BUILDFLAG(IS_APPLE)
-namespace crypto {
-class AppleKeychain;
+#include "crypto/apple/mock_keychain.h"
+#endif
+
+#if BUILDFLAG(IS_APPLE)
+namespace crypto::apple {
+class Keychain;
 }
 #endif
 
@@ -71,9 +76,11 @@ COMPONENT_EXPORT(OS_CRYPT)
 InitResult InitWithExistingKey(PrefService* local_state);
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_APPLE)
-COMPONENT_EXPORT(OS_CRYPT) void UseMockKeychainForTesting(bool use_mock);
+enum MockLockedKeychain {};
 COMPONENT_EXPORT(OS_CRYPT)
-void UseLockedMockKeychainForTesting(bool use_locked);
+void SetKeychainForTesting(
+    std::variant<std::unique_ptr<crypto::apple::Keychain>, MockLockedKeychain>
+        test_keychain);
 #endif  // BUILDFLAG(IS_APPLE)
 COMPONENT_EXPORT(OS_CRYPT)
 std::string GetRawEncryptionKey();
@@ -174,15 +181,11 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  // For unit testing purposes we instruct the Encryptor to use a mock Keychain
-  // on the Mac. The default is to use the real Keychain. Use OSCryptMocker,
-  // instead of calling this method directly.
-  void UseMockKeychainForTesting(bool use_mock);
-
-  // When Keychain is locked, it's not possible to get the encryption key. This
-  // is used only for testing purposes. Enabling locked Keychain also enables
-  // mock Keychain. Use OSCryptMocker, instead of calling this method directly.
-  void UseLockedMockKeychainForTesting(bool use_locked);
+  // This is used for testing purposes only. It allows a test to inject a mock
+  // keychain or specify that the keychain should be locked.
+  void SetKeychainForTesting(
+      std::variant<std::unique_ptr<crypto::apple::Keychain>,
+                   OSCrypt::MockLockedKeychain> test_keychain);
 #endif
 
   // Get the raw encryption key to be used for all AES encryption. The result
@@ -234,7 +237,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
  private:
 #if BUILDFLAG(IS_APPLE)
   // Return the keychain to use for accessing the encryption key.
-  std::unique_ptr<crypto::AppleKeychain> GetKeychain() const;
+  std::unique_ptr<crypto::apple::Keychain> GetKeychain();
 
   // Derives an encryption key from data stored in the keychain if necessary.
   // Returns true if there is an encryption key available and false otherwise.
@@ -302,11 +305,9 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 
   static constexpr size_t kDerivedKeySize = 16;
   std::optional<std::array<uint8_t, kDerivedKeySize>> key_;
-  // TODO(crbug.com/389737048): Refactor to allow dependency injection of Keychain.
-  bool use_mock_keychain_ = false;
-  // This flag is used to make the GetEncryptionKey method return NULL if used
-  // along with mock Keychain.
-  bool use_locked_mock_keychain_ = false;
+
+  // Mock keychain only used for testing.
+  std::unique_ptr<crypto::apple::Keychain> test_keychain_;
 #endif
 };
 

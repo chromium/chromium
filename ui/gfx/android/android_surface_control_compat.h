@@ -166,8 +166,8 @@ class COMPONENT_EXPORT(GFX) SurfaceControl {
     void SetOpaque(const Surface& surface, bool opaque);
     void SetDamageRect(const Surface& surface, const gfx::Rect& rect);
     void SetColorSpace(const Surface& surface,
-                       const gfx::ColorSpace& color_space,
-                       const std::optional<HDRMetadata>& metadata);
+                       const ColorSpace& color_space,
+                       const HDRMetadata& metadata);
     void SetFrameRate(const Surface& surface,
                       SurfaceControlFrameRate frame_rate);
     void SetParent(const Surface& surface, Surface* new_parent);

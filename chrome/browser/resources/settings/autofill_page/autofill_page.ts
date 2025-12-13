@@ -27,6 +27,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import {AutofillSettingsReferrer, type MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
@@ -65,11 +66,16 @@ export class SettingsAutofillPageElement extends
   }
 
   declare private autofillAiAvailable_: boolean;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   /**
    * Shows the manage addresses sub page.
    */
   private onAddressesClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.AddressesSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE);
     Router.getInstance().navigateTo(routes.ADDRESSES);
   }
 
@@ -77,6 +83,9 @@ export class SettingsAutofillPageElement extends
    * Shows the manage payment methods sub page.
    */
   private onPaymentsClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.PaymentMethodsSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE);
     Router.getInstance().navigateTo(routes.PAYMENTS);
   }
 
@@ -93,6 +102,9 @@ export class SettingsAutofillPageElement extends
    * Shows the Autofill AI settings sub page.
    */
   private onAutofillAiClick_() {
+    this.metricsBrowserProxy_.recordAutofillSettingsReferrer(
+        'Autofill.FormsAiSettingsPage.VisitReferrer',
+        AutofillSettingsReferrer.AUTOFILL_AND_PASSWORDS_PAGE);
     Router.getInstance().navigateTo(routes.AUTOFILL_AI);
   }
 
@@ -146,6 +158,8 @@ export class SettingsAutofillPageElement extends
       // </if>
       case 'payments':
         triggerId = 'paymentManagerButton';
+        break;
+      default:
         break;
     }
 

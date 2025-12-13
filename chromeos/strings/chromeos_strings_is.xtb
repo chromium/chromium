@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">appelsínur</translation>
 <translation id="1275718070701477396">Valið</translation>
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
+<translation id="1292474106138697109">Skjár hjálpargagna bekkjar</translation>
 <translation id="1300115153046603471">Aðgangsstaður er af gerðinni „sjálfgefið“ og „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Umbreyta</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
 <translation id="4300272766492248925">Opna forrit</translation>
 <translation id="430786093962686457">siffoni</translation>
+<translation id="4309762678330556039">Búðu sjálfkrafa til textauppskriftir og leitaðu að hljóði. Þú getur búið til upptökur, jafnvel þótt nettenging sé ekki til staðar.</translation>
 <translation id="4310735698903592804">Nýleg veggfóður knúin af gervigreind Google</translation>
 <translation id="4320904097188876154">neonbleikur</translation>
 <translation id="432961742358282111">Hægrismelltu eða haltu inni til að sjá skilgreiningar, þýðingar eða umreiknaðar mælieiningar. Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5600027863942488546">Lykillinn <ph name="KEY_NAME" /> var prófaðu</translation>
 <translation id="5606865426897221650">Dálkalykill</translation>
+<translation id="5612205513582918357">Hjálpargögn bekkjar deila skjánum þínum með <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Þú hefur verið skráð(ur) út</translation>
 <translation id="5620281292257375798">Aðeins innanhúss</translation>
 <translation id="5628106863521633649">Tiltæk tungumál</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Skýjaflæði</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Enginn skanni í boði</translation>
-<translation id="6231648282154119906">Örugg vefskoðun Google skannar grunsamlegar skrár sjálfkrafa sem hluti af auknu vörninni sem þú valdir</translation>
 <translation id="6232017090690406397">Rafhlaða</translation>
 <translation id="6234024205316847054">Sýna yfirlit</translation>
 <translation id="6243280677745499710">Valið núna</translation>
@@ -1404,7 +1406,7 @@
 <translation id="7162487448488904999">Gallerí</translation>
 <translation id="7170236477717446850">Prófílmynd</translation>
 <translation id="7171919371520438592">Festa glugga á minni hliðinni til <ph name="DIRECTION" /> á skjánum</translation>
-<translation id="7172721935181587524">1 mynd</translation>
+<translation id="7172721935181587524">Ein mynd</translation>
 <translation id="7177485034254901881"><ph name="MANAGER" /> hefur umsjón með þessu <ph name="DEVICE_TYPE" />. Kerfisstjórar geta stillt tækið í gegnum fjartengingu.</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
 <translation id="7180865173735832675">Sérsníða</translation>

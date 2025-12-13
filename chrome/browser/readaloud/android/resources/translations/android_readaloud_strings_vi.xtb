@@ -37,7 +37,7 @@
 <translation id="5234971936051226002">Trình phát "Đọc trang này" đã thu nhỏ.</translation>
 <translation id="5251803541071282808">Đám mây</translation>
 <translation id="5528503854289436485">Phát bằng AI</translation>
-<translation id="5596627076506792578">Tùy chọn khác</translation>
+<translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="565342223183747919">Nhấn để chuyển chế độ phát</translation>
 <translation id="5694491020339060116">Trình đơn tốc độ phát</translation>
 <translation id="5961164658295696940">Nhấn để mở rộng trình phát và xem các lựa chọn khác</translation>
@@ -57,6 +57,7 @@
 <translation id="7221920857098237570">Dịu dàng</translation>
 <translation id="7237590978482584900">Nhẹ nhàng</translation>
 <translation id="7282547042039404307">Mượt mà</translation>
+<translation id="7514257690823355037">Chuyển sang bài viết tiếp theo</translation>
 <translation id="8004767876552422827">Cánh đồng</translation>
 <translation id="8136852699834914183">Không thể phát trang này.</translation>
 <translation id="8198036737896977997">Không khí</translation>
@@ -68,5 +69,6 @@
 <translation id="8756370108715456837">Không đúng sự thật</translation>
 <translation id="8953618380150219653">Trình phát "Đọc trang này" đã mở trên toàn màn hình.</translation>
 <translation id="9087782179025630211">Thanh điều khiển dịch chuyển. Đã phát <ph name="ELAPSED" /> trong tổng cộng <ph name="TOTAL" />.</translation>
+<translation id="9193673272519126093">Chuyển về bài viết trước</translation>
 <translation id="978117257931832348">Âm vực thấp</translation>
 </translationbundle>

@@ -4,6 +4,8 @@
 
 package org.chromium.components.variations;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -68,7 +70,8 @@ public final class VariationsAssociatedData {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         String getVariationParamValue(String trialName, String paramName);
 
         String getFeedbackVariations();

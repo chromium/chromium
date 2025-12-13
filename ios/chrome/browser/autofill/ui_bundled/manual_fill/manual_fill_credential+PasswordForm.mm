@@ -14,7 +14,7 @@
 - (instancetype)initWithPasswordForm:
                     (const password_manager::PasswordForm&)passwordForm
                             isBackup:(BOOL)isBackup {
-  std::string host = passwordForm.url.host();
+  std::string host = passwordForm.url.GetHost();
   std::string site_name =
       net::registry_controlled_domains::GetDomainAndRegistry(
           host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);

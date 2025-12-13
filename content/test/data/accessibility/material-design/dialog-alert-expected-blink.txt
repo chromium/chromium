@@ -1,0 +1,34 @@
+rootWebArea htmlTag='#document' name='Material Web Alert Dialog'
+++genericContainer ignored invisible
+++++genericContainer ignored invisible
+++++alertDialog className='has-headline has-actions scrollable show-top-divider show-bottom-divider' htmlTag='dialog' name='Alert Dialog'
+++++++genericContainer className='container' htmlTag='div'
+++++++++genericContainer className='headline' htmlTag='div'
+++++++++++heading htmlTag='h2' name='Alert Dialog'
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Alert Dialog'
+++++++++++++++++++inlineTextBox name='Alert Dialog'
+++++++++++none ignored
+++++++++genericContainer ignored
+++++++++++genericContainer className='content' htmlTag='div'
+++++++++++++genericContainer className='top anchor' htmlTag='div'
+++++++++++++sectionWithoutName htmlTag='form'
+++++++++++++++paragraph htmlTag='p'
+++++++++++++++++staticText name='Alert Ready'
+++++++++++++++++++inlineTextBox name='Alert Ready'
+++++++++++++genericContainer className='bottom anchor' htmlTag='div'
+++++++++genericContainer className='actions' htmlTag='div'
+++++++++++none ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-text-button'
+++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++none ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++button className='button' htmlTag='button' name='OK'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++staticText name='OK'
+++++++++++++++++++++++inlineTextBox name='OK'

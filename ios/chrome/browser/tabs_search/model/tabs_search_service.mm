@@ -179,6 +179,7 @@ void TabsSearchService::SearchHistory(
   history_search_callback_ = std::move(completion);
 
   history::QueryOptions options;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::REMOVE_ALL_DUPLICATES;
   options.matching_algorithm =
       query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH;

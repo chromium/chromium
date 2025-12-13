@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 
 #include <pthread.h>
@@ -371,7 +366,8 @@ void StreamMixer::CreatePostProcessors(CastMediaShlib::ResultCallback callback,
   mixer_pipeline_.reset();
 
   if (!override_config.empty()) {
-    auto value = base::JSONReader::Read(override_config);
+    auto value = base::JSONReader::Read(override_config,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(value) << "Invalid JSON";
     PostProcessingPipelineParser parser(std::move(*value));
     mixer_pipeline_ = MixerPipeline::CreateMixerPipeline(
@@ -925,7 +921,8 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
   // Hard limit to [1.0, -1.0]
   for (int i = 0; i < frames * loopback_channel_count; ++i) {
     // TODO(bshaya): Warn about clipping here.
-    loopback_data[i] = std::clamp(loopback_data[i], -1.0f, 1.0f);
+    UNSAFE_TODO(loopback_data[i]) =
+        std::clamp(UNSAFE_TODO(loopback_data[i]), -1.0f, 1.0f);
   }
 
   loopback_handler_->SendData(expected_playback_time,
@@ -937,7 +934,8 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
 
   // Hard limit to [1.0, -1.0].
   for (int i = 0; i < frames * num_output_channels_; ++i) {
-    linearized_data[i] = std::clamp(linearized_data[i], -1.0f, 1.0f);
+    UNSAFE_TODO(linearized_data[i]) =
+        std::clamp(UNSAFE_TODO(linearized_data[i]), -1.0f, 1.0f);
   }
 
   bool playback_interrupted = false;

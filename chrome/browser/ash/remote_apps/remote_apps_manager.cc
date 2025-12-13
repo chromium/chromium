@@ -318,12 +318,6 @@ void RemoteAppsManager::BindFactoryInterface(
   factory_receivers_.Add(this, std::move(pending_remote_apps_factory));
 }
 
-void RemoteAppsManager::BindLacrosBridgeInterface(
-    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>
-        pending_remote_apps_lacros_bridge) {
-  bridge_receivers_.Add(this, std::move(pending_remote_apps_lacros_bridge));
-}
-
 void RemoteAppsManager::Shutdown() {}
 
 void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserver(
@@ -334,16 +328,6 @@ void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserver(
         pending_observer) {
   remote_apps_impl_.BindRemoteAppsAndAppLaunchObserver(
       source_id, std::move(pending_remote_apps), std::move(pending_observer));
-}
-
-void RemoteAppsManager::BindRemoteAppsAndAppLaunchObserverForLacros(
-    mojo::PendingReceiver<chromeos::remote_apps::mojom::RemoteApps>
-        pending_remote_apps,
-    mojo::PendingRemote<chromeos::remote_apps::mojom::RemoteAppLaunchObserver>
-        pending_observer) {
-  remote_apps_impl_.BindRemoteAppsAndAppLaunchObserver(
-      std::nullopt, std::move(pending_remote_apps),
-      std::move(pending_observer));
 }
 
 const std::map<std::string, RemoteAppsModel::AppInfo>&

@@ -107,6 +107,9 @@
 #include "base/types/expected.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/linux/ei_input_injector.h"
+#include "remoting/host/linux/ei_keyboard_layout_monitor.h"
+#include "remoting/host/linux/ei_keymap.h"
 #include "remoting/proto/event.pb.h"
 #include "third_party/libei/cipd/include/libei-1.0/libei.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -114,6 +117,8 @@
 namespace remoting {
 
 namespace {
+
+constexpr int kPixelsPerTick = 120;
 
 // This functionality is copied from fractional_input_filter.cc to maintain
 // an equivalent functionality for now.
@@ -154,6 +159,24 @@ EiSenderSession::~EiSenderSession() {
   ProcessEvents(true);
 }
 
+base::WeakPtr<EiSenderSession> EiSenderSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void EiSenderSession::SetKeyboardLayoutMonitor(
+    base::WeakPtr<EiKeyboardLayoutMonitor> monitor) {
+  keyboard_layout_monitor_ = monitor;
+  keyboard_layout_monitor_->OnKeymapChanged(
+      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
+}
+
+void EiSenderSession::SetInputInjector(
+    base::WeakPtr<EiInputInjector> input_injector) {
+  input_injector_ = input_injector;
+  input_injector_->SetKeymap(
+      keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back())->GetWeakPtr());
+}
+
 void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -163,7 +186,7 @@ void EiSenderSession::InjectKeyEvent(std::uint32_t usb_keycode, bool is_press) {
   }
 
   // Assume the most-recently-received keyboard is the one we should use.
-  auto& keyboard = keyboards_.back();
+  auto& [keyboard, _] = keyboards_.back();
 
   ei_device_keyboard_key(
       keyboard.get(),
@@ -261,15 +284,45 @@ void EiSenderSession::InjectScrollDelta(double delta_x, double delta_y) {
     return;
   }
 
+  // Don't use ei_device_scroll_delta because Chrome overscrolls by about 16x.
+  // Instead accumulate pixels until there's enough for one "tick", which is
+  // what we do on X11.
+
+  // Discard any accumulated pixels if the scroll direction changes.
+  if (delta_x != 0) {
+    if ((delta_x > 0) != (subtick_pixels_x_ > 0)) {
+      subtick_pixels_x_ = 0;
+    }
+  }
+  if (delta_y != 0) {
+    if ((delta_y > 0) != (subtick_pixels_y_ > 0)) {
+      subtick_pixels_y_ = 0;
+    }
+  }
+
+  subtick_pixels_x_ += delta_x;
+  subtick_pixels_y_ += delta_y;
+  int ticks_x = subtick_pixels_x_ / kPixelsPerTick;
+  int ticks_y = subtick_pixels_y_ / kPixelsPerTick;
+  subtick_pixels_x_ %= kPixelsPerTick;
+  subtick_pixels_y_ %= kPixelsPerTick;
+
+  if (ticks_x == 0 && ticks_y == 0) {
+    return;
+  }
+
   // The scroll capability might appear on multiple pointer devices, or on a
   // separate device altogether. Since each seat only has one logical pointer,
   // it should be fine to inject scroll events on any device that supports them,
   // so just use the most recent one like with other devices.
   auto& scroll_device = button_devices_.back();
 
-  // libei interprets positive values as scrolling down or to the right (the
-  // opposite of the Chromoting protocol), so we need to flip the sign.
-  ei_device_scroll_delta(scroll_device.get(), -delta_x, -delta_y);
+  // This function takes values representing 120ths of a tick, so 120 would be
+  // one wheel tick, 240 would be two ticks, and 60 would be half of a tick.
+  // Additionally, positive value as scroll down or to the right (the opposite
+  // of the Chromoting protocol), so we need to flip the sign.
+  ei_device_scroll_discrete(scroll_device.get(), -ticks_x * 120,
+                            -ticks_y * 120);
   ei_device_frame(scroll_device.get(), ei_now(ei_.get()));
 }
 
@@ -280,6 +333,9 @@ void EiSenderSession::InjectScrollDiscrete(float ticks_x, float ticks_y) {
     LOG(ERROR) << "Received scroll event but there's no scroll device";
     return;
   }
+
+  subtick_pixels_x_ = 0;
+  subtick_pixels_y_ = 0;
 
   // The scroll capability might appear on multiple pointer devices, or on a
   // separate device altogether. Since each seat only has one logical pointer,
@@ -403,7 +459,11 @@ void EiSenderSession::OnDeviceAdded(EiDevicePtr device) {
   // The compositor might provide a device with multiple capabilities, in which
   // case it will be inserted in multiple lists.
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
-    keyboards_.push_back({device});
+    keyboards_.push_back(
+        std::make_tuple(device, std::make_unique<EiKeymap>(device)));
+    std::get<1>(keyboards_.back())
+        ->Load(base::BindOnce(&EiSenderSession::OnKeymapLoaded, GetWeakPtr(),
+                              device));
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
     relative_pointers_.push_back({device});
@@ -424,8 +484,15 @@ void EiSenderSession::OnDeviceAdded(EiDevicePtr device) {
 
 void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
-    std::erase_if(relative_pointers_,
-                  [&device](auto& item) { return item == device; });
+    bool is_current =
+        (!keyboards_.empty() && std::get<0>(keyboards_.back()) == device);
+    std::erase_if(keyboards_, [&device](auto& item) {
+      return std::get<0>(item) == device;
+    });
+    if (is_current && keyboard_layout_monitor_) {
+      keyboard_layout_monitor_->OnKeymapChanged(
+          keyboards_.empty() ? nullptr : std::get<1>(keyboards_.back()).get());
+    }
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
     std::erase_if(relative_pointers_,
@@ -464,6 +531,22 @@ void EiSenderSession::OnDeviceResumed(EiDevicePtr device) {
   // we should probably call stop_emulating on disconnect and start_emulating on
   // connection.
   ei_device_start_emulating(device.get(), ++start_emulating_sequence_);
+}
+
+void EiSenderSession::OnKeymapLoaded(EiDevicePtr keyboard) {
+  // If the load corresponds to the most recently-added keyboard, notify the
+  // client.
+  if (!keyboards_.empty()) {
+    auto& [most_recent_keyboard, keymap] = keyboards_.back();
+    if (keyboard == most_recent_keyboard) {
+      if (keyboard_layout_monitor_) {
+        keyboard_layout_monitor_->OnKeymapChanged(keymap.get());
+      }
+      if (input_injector_) {
+        input_injector_->SetKeymap(keymap->GetWeakPtr());
+      }
+    }
+  }
 }
 
 void EiSenderSession::ProcessEvents(bool shutting_down) {
@@ -519,12 +602,16 @@ void EiSenderSession::AddDeviceRegions(
     EiDevicePtr device) {
   for (size_t i = 0; ei_region* region = ei_device_get_region(device.get(), i);
        ++i) {
-    if (const char* mapping_id = ei_region_get_mapping_id(region)) {
-      map.emplace(std::piecewise_construct, std::tuple(mapping_id),
-                  std::forward_as_tuple(EiRegionPtr::Ref(region), device));
-    } else {
-      LOG(WARNING) << "Region found without mapping id";
+    const char* mapping_id = ei_region_get_mapping_id(region);
+    // Some DEs do not support mapping IDs, and will pass an empty string to
+    // InjectAbsolutePointerMove().
+    std::string_view mapping_id_view =
+        mapping_id ? mapping_id : std::string_view{};
+    if (mapping_id_view.empty()) {
+      HOST_LOG << "Region found without mapping id";
     }
+    map.emplace(std::piecewise_construct, std::tuple(mapping_id_view),
+                std::forward_as_tuple(EiRegionPtr::Ref(region), device));
   }
 }
 

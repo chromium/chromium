@@ -48,16 +48,6 @@ bool GetUintFromSwitch(const base::CommandLine* command_line,
 
 namespace content {
 
-bool ShouldEnableAndroidSurfaceControl(const base::CommandLine& cmd_line) {
-#if !BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  if (viz::PreferRGB565ResourcesForDisplay())
-    return false;
-  return features::IsAndroidSurfaceControlEnabled();
-#endif
-}
-
 const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
   DCHECK(base::CommandLine::InitializedForCurrentProcess());
   const base::CommandLine* command_line =
@@ -78,7 +68,8 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 #endif
   gpu_preferences.disable_software_rasterizer =
       command_line->HasSwitch(switches::kDisableSoftwareRasterizer) ||
-      !features::IsSwiftShaderAllowed(command_line);
+      (!features::IsSwiftShaderAllowed(command_line) &&
+       !features::IsWARPAllowed(command_line));
   gpu_preferences.log_gpu_control_list_decisions =
       command_line->HasSwitch(switches::kLogGpuControlListDecisions);
   gpu_preferences.gpu_startup_dialog =
@@ -98,9 +89,6 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
 
   gpu_preferences.enable_gpu_benchmarking_extension =
       command_line->HasSwitch(switches::kEnableGpuBenchmarking);
-
-  gpu_preferences.enable_android_surface_control =
-      ShouldEnableAndroidSurfaceControl(*command_line);
 
   gpu_preferences.enable_native_gpu_memory_buffers =
       command_line->HasSwitch(switches::kEnableNativeGpuMemoryBuffers);

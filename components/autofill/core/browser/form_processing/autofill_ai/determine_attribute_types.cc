@@ -16,6 +16,8 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -34,23 +36,8 @@ bool IsRelevant(const AutofillField& field) {
 
 // The set of all FieldTypes that have **more** than one associated
 // AttributeType.
-static constexpr FieldTypeSet kNonInjectiveFieldTypes = [] {
-  DenseSet<FieldType> hit;
-  DenseSet<FieldType> hit_once;
-  for (AttributeType a : DenseSet<AttributeType>::all()) {
-    for (FieldType ft : a.field_subtypes()) {
-      if (hit.contains(ft)) {
-        hit_once.erase(ft);
-      } else {
-        hit_once.insert(ft);
-      }
-      hit.insert(ft);
-    }
-  }
-  DenseSet<FieldType> hit_multiple = hit;
-  hit_multiple.erase_all(hit_once);
-  return hit_multiple;
-}();
+static constexpr FieldTypeSet kNonInjectiveFieldTypes =
+    FieldTypesOfGroup(FieldTypeGroup::kName);
 
 // Some plausibility checks.
 static_assert(kNonInjectiveFieldTypes.contains_all({NAME_FULL, NAME_FIRST,
@@ -60,81 +47,51 @@ static_assert(!kNonInjectiveFieldTypes.contains_any(
 static_assert(!kNonInjectiveFieldTypes.contains_any(
     {DRIVERS_LICENSE_EXPIRATION_DATE, PASSPORT_NUMBER, VEHICLE_MODEL}));
 
-// If kAutofillAiNoTagTypes is disabled:
-// AttributeType::field_type() must be injective: distinct AttributeTypes must
-// be mapped to distinct FieldTypes.
-static_assert(
-    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
-      return std::ranges::all_of(
-          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b || a.field_type_with_tag_types() !=
-                                 b.field_type_with_tag_types();
-          });
-    }));
+// Checks that AttributeType::field_type() is mostly injective:
+// distinct AttributeTypes other than those having field_type() in
+// `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
+consteval bool IsMostlyInjective() {
+  FieldTypeSet field_types;
 
-// If kAutofillAiNoTagTypes is enabled:
-// AttributeType::field_type() must be mostly injective: distinct AttributeTypes
-// other than `kNonInjectiveFieldTypes` must be mapped to distinct FieldTypes.
-static_assert(
-    std::ranges::all_of(DenseSet<AttributeType>::all(), [](AttributeType a) {
-      return std::ranges::all_of(
-          DenseSet<AttributeType>::all(), [&a](AttributeType b) {
-            return a == b ||
-                   a.field_type_without_tag_types() !=
-                       b.field_type_without_tag_types() ||
-                   kNonInjectiveFieldTypes.contains(
-                       a.field_type_without_tag_types()) ||
-                   kNonInjectiveFieldTypes.contains(
-                       b.field_type_without_tag_types());
-          });
-    }));
-
-// A field's static AttributeType is the unique AttributeType whose
-// AttributeType::field_type() is the field's FieldType.
-std::optional<AttributeType> GetStaticAttributeType(
-    const AutofillField& field) {
-  std::optional<FieldType> ft = field.GetAutofillAiServerTypePredictions();
-  if (!ft) {
-    return std::nullopt;
+  for (AttributeType at : DenseSet<AttributeType>::all()) {
+    auto [_, inserted] = field_types.insert(at.field_type());
+    if (!inserted && !kNonInjectiveFieldTypes.contains(at.field_type())) {
+      return false;
+    }
   }
 
+  return true;
+}
+
+// AttributeType::field_type() must be mostly injective.
+static_assert(IsMostlyInjective(),
+              "AttributeType::field_type() is not mostly injective.");
+
+// A FieldType's static AttributeType is the unique AttributeType whose
+// AttributeType::field_type() is the field's FieldType.
+std::optional<AttributeType> GetStaticAttributeType(FieldType ft) {
   // Returns `at` if its entity is enabled and std::nullopt otherwise.
   auto if_enabled = [](std::optional<AttributeType> at) {
     return at && at->entity_type().enabled() ? at : std::nullopt;
   };
-
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    static constexpr auto kTable = []() {
-      std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
-      for (AttributeType at : DenseSet<AttributeType>::all()) {
-        arr[at.field_type_with_tag_types()] = at;
-      }
-      return arr;
-    }();
-    return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
-                                           : std::nullopt;
-  }
 
   // This lookup table is the inverse of AttributeType::field_type(), except
   // for the `kNonInjectiveFieldTypes`.
   static auto kTable = []() {
     std::array<std::optional<AttributeType>, MAX_VALID_FIELD_TYPE> arr{};
     for (AttributeType at : DenseSet<AttributeType>::all()) {
-      if (!kNonInjectiveFieldTypes.contains(
-              at.field_type_without_tag_types())) {
-        arr[at.field_type_without_tag_types()] = at;
+      if (!kNonInjectiveFieldTypes.contains(at.field_type())) {
+        arr[at.field_type()] = at;
       }
     }
     return arr;
   }();
-  return 0 <= *ft && *ft < kTable.size() ? if_enabled(kTable[*ft])
-                                         : std::nullopt;
+  return 0 <= ft && ft < kTable.size() ? if_enabled(kTable[ft]) : std::nullopt;
 }
 
-// A field is assignable a dynamic AttributeType if there are more than one
-// AttributeTypes whose AttributeType::field_type() is the field's FieldType.
-bool IsAssignableDynamicAttributeType(FieldType ft) {
-  return kNonInjectiveFieldTypes.contains(ft);
+// A field is assignable a dynamic AttributeType iff it is a name field.
+bool IsAssignableDynamicAttributeType(const FieldTypeSet& fts) {
+  return kNonInjectiveFieldTypes.contains_any(fts);
 }
 
 std::optional<AttributeType> GetAttributeType(EntityType entity,
@@ -147,37 +104,36 @@ std::optional<AttributeType> GetAttributeType(EntityType entity,
   return std::nullopt;
 }
 
-// Adds to `attributes_by_field[i]` the static types of `fields[i]`. Returns
-// whether at least one relevant field has a static attribute type.
-bool AddStaticAttributeTypes(
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    base::span<DenseSet<AttributeType>> attributes_by_field) {
-  DCHECK_EQ(fields.size(), attributes_by_field.size());
-  bool found_type = false;
-  for (auto [field, attributes] : base::zip(fields, attributes_by_field)) {
-    if (!IsRelevant(*field)) {
+// Returns the static AttributeTypes.
+// The `i`th value in the returned vector is the static type of `fields[i]`,
+// except if there is none, in which case the vector is empty.
+std::vector<DenseSet<AttributeType>> GetStaticAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields) {
+  std::vector<DenseSet<AttributeType>> attributes_by_field;
+  for (size_t i = 0; i < fields.size(); ++i) {
+    const AutofillField& field = *fields[i];
+    if (!IsRelevant(field)) {
       continue;
     }
-    std::optional<AttributeType> at = GetStaticAttributeType(*field);
-    if (!at) {
-      continue;
+    for (FieldType ft : field.Type().GetStaticAutofillAiTypes()) {
+      std::optional<AttributeType> at = GetStaticAttributeType(ft);
+      if (!at) {
+        continue;
+      }
+      attributes_by_field.resize(fields.size());
+      attributes_by_field[i].insert(*at);
     }
-    attributes.insert(*at);
-    found_type = true;
   }
-  return found_type;
+  return attributes_by_field;
 }
 
-// Adds to `attributes_by_field[i]` the dynamic types of `fields[i]`.
+// Adds the dynamic types of `fields[i]` to `attributes_by_field[i]`.
 void AddDynamicAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<DenseSet<AttributeType>> attributes_by_field) {
   DCHECK_EQ(fields.size(), attributes_by_field.size());
   DCHECK(!std::ranges::all_of(attributes_by_field,
                               &DenseSet<AttributeType>::empty));
-  if (!base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
-    return;
-  }
 
   // Propagates the applicable EntityTypes in `last_seen` to the `attributes` of
   // `field`.
@@ -193,17 +149,19 @@ void AddDynamicAttributeTypes(
       return;
     }
     ++offset;
-    const FieldType field_type = field.Type().GetStorableType();
-    if (IsAssignableDynamicAttributeType(field_type)) {
+    const FieldTypeSet field_types = field.Type().GetTypes();
+    if (IsAssignableDynamicAttributeType(field_types)) {
       for (const auto& [p, entity_offset] : last_seen) {
         const auto& [entity_section, entity] = p;
         if (std::abs(entity_offset - offset) > kMaxPropagationDistance ||
             entity_section != field.section()) {
           continue;
         }
-        if (const std::optional<AttributeType> attribute =
-                GetAttributeType(entity, field_type)) {
-          attributes.insert(*attribute);
+        for (const FieldType field_type : field_types) {
+          if (const std::optional<AttributeType> attribute =
+                  GetAttributeType(entity, field_type)) {
+            attributes.insert(*attribute);
+          }
         }
       }
     }
@@ -231,13 +189,12 @@ void AddDynamicAttributeTypes(
 }
 
 // Returns the static and dynamic AttributeTypes.
-// The `i`th value in the returned vector is the dynamic type of `fields[i]`.
+// The `i`th value in the returned vector is the type of `fields[i]`.
 std::vector<DenseSet<AttributeType>> GetAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields) {
-  std::vector<DenseSet<AttributeType>> attributes_by_field;
-  attributes_by_field.resize(fields.size());
-  // Dynamic attributes exist only if there is at least one static attribute.
-  if (AddStaticAttributeTypes(fields, attributes_by_field)) {
+  std::vector<DenseSet<AttributeType>> attributes_by_field =
+      GetStaticAttributeTypes(fields);
+  if (!attributes_by_field.empty()) {
     AddDynamicAttributeTypes(fields, attributes_by_field);
   }
   return attributes_by_field;
@@ -248,7 +205,8 @@ std::vector<DenseSet<AttributeType>> GetAttributeTypes(
 std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
     const Section& section_of_interest,
-    EntityType entity_of_interest) {
+    EntityType entity_of_interest,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   std::vector<AutofillFieldWithAttributeType> r;
@@ -261,6 +219,7 @@ std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
       }
     }
   }
+
   return r;
 }
 
@@ -269,7 +228,8 @@ using EntityMap =
 
 EntityMap DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
-    const Section& section_of_interest) {
+    const Section& section_of_interest,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   EntityMap r;
@@ -286,7 +246,8 @@ EntityMap DetermineAttributeTypes(
 using SectionMap = base::flat_map<Section, EntityMap>;
 
 SectionMap DetermineAttributeTypes(
-    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND) {
+    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   SectionMap r;
@@ -297,12 +258,6 @@ SectionMap DetermineAttributeTypes(
     }
   }
   return r;
-}
-
-bool AreFieldsRelevantForAutofillAi(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
-  return !std::ranges::all_of(GetAttributeTypes(fields),
-                              &DenseSet<AttributeType>::empty);
 }
 
 }  // namespace autofill

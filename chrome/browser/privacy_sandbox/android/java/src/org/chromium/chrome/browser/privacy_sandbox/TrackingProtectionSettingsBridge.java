@@ -12,19 +12,12 @@ import org.chromium.chrome.browser.profiles.Profile;
 /** Bridge, providing access to the native-side TrackingProtectionSettings API. */
 @NullMarked
 public class TrackingProtectionSettingsBridge {
-    private final Profile mProfile;
-
-    public TrackingProtectionSettingsBridge(Profile profile) {
-        mProfile = profile;
-    }
-
-    public boolean isIpProtectionDisabledForEnterprise() {
-        return TrackingProtectionSettingsBridgeJni.get()
-                .isIpProtectionDisabledForEnterprise(mProfile);
+    public static void maybeSetRollbackPrefsModeB(Profile profile) {
+        TrackingProtectionSettingsBridgeJni.get().maybeSetRollbackPrefsModeB(profile);
     }
 
     @NativeMethods
     public interface Natives {
-        boolean isIpProtectionDisabledForEnterprise(Profile profile);
+        void maybeSetRollbackPrefsModeB(Profile profile);
     }
 }

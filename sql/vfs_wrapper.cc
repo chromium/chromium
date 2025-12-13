@@ -15,7 +15,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "sql/sql_features.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -57,15 +56,8 @@ sqlite3_file* GetWrappedFile(sqlite3_file* wrapper_file) {
 }
 
 int Close(sqlite3_file* sqlite_file) {
-#if BUILDFLAG(IS_FUCHSIA)
-  // Other platforms automatically unlock when the file descriptor is closed,
-  // but the fuchsia virtual implementation doesn't have that so it needs an
-  // explicit unlock on close.
-  Unlock(sqlite_file, SQLITE_LOCK_NONE);
-#endif
-
   // On Windows, the file lock is taken with a call to LockFileEx using the
-  // flags 'LOCKFILE_FAIL_IMMEDIATELY'. The documentation state the fhe lock
+  // flags 'LOCKFILE_FAIL_IMMEDIATELY'. The documentation states the fhe lock
   // will be released but it is also stating that it will "eventually" released
   // and it's better that the application release it on exit.
   //
@@ -75,9 +67,7 @@ int Close(sqlite3_file* sqlite_file) {
   // A side effect of not releasing the lock is that the next startup may get
   // a database open error (kBusy). This will cause the next launch to not use
   // the database.
-  if (base::FeatureList::IsEnabled(sql::features::kUnlockDatabaseOnClose)) {
-    Unlock(sqlite_file, SQLITE_LOCK_NONE);
-  }
+  Unlock(sqlite_file, SQLITE_LOCK_NONE);
 
   VfsFile* file = AsVfsFile(sqlite_file);
   int r = file->wrapped_file->pMethods->xClose(file->wrapped_file);

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">સંતરા</translation>
 <translation id="1275718070701477396">પસંદ કરેલ</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
+<translation id="1292474106138697109">Class Toolsનું ડિસ્પ્લે</translation>
 <translation id="1300115153046603471">APNનો પ્રકાર ડિફૉલ્ટ અને <ph name="ATTACH" /> છે.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">રૂપાંતરણ કરો</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> છબી</translation>
 <translation id="4300272766492248925">ઍપ્લિકેશન ખોલો</translation>
 <translation id="430786093962686457">શિફૉન</translation>
+<translation id="4309762678330556039">ઑટોમૅટિક રીતે ટ્રાન્સક્રિપ્શન બનાવો અને ઑડિયો શોધો. તમે ઇન્ટરનેટ સાથે કનેક્ટ ન કર્યું હોય, ત્યારે પણ રેકોર્ડિંગ બનાવી શકો છો.</translation>
 <translation id="4310735698903592804">Google AI દ્વારા સંચાલિત તાજેતરના વૉલપેપર</translation>
 <translation id="4320904097188876154">નિઓન ગુલાબી</translation>
 <translation id="432961742358282111">વ્યાખ્યાઓ, અનુવાદો અને એકમના રૂપાંતરણો મેળવવા માટે, રાઇટ ક્લિક કરો અથવા દબાવી રાખો. આ સુવિધા મેનેજ કરવા માટે ડાબી કે જમણી ઍરો કીનો ઉપયોગ કરો.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> કીનું પરીક્ષણ કર્યું</translation>
 <translation id="5606865426897221650">ટૅબ</translation>
+<translation id="5612205513582918357">Class Tools <ph name="RECEIVER_NAME" /> સાથે તમારી સ્ક્રીન શેર કરી રહ્યું છે</translation>
 <translation id="5613201299517339763">તમને સાઇન આઉટ કરવામાં આવ્યા છે</translation>
 <translation id="5620281292257375798">માત્ર આંતરિક</translation>
 <translation id="5628106863521633649">ઉપલબ્ધ ભાષાઓ</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ક્લાઉડ ફ્લો</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">કોઈ સ્કૅનર ઉપલબ્ધ નથી</translation>
-<translation id="6231648282154119906">તમે પસંદ કરેલા વધારેલા સંરક્ષણના ભાગ તરીકે, શંકાસ્પદ ફાઇલોને Google Safe Browsing દ્વારા ઑટોમૅટિક રીતે સ્કૅન કરવામાં આવશે</translation>
 <translation id="6232017090690406397">બૅટરી</translation>
 <translation id="6234024205316847054">આઉટલાઇન બતાવો</translation>
 <translation id="6243280677745499710">હાલમાં સેટ કરેલ</translation>

@@ -4,8 +4,6 @@
 
 source_set("page_image_service") {
   sources = [
-    "features.cc",
-    "features.h",
     "image_service.h",
     "image_service_consent_helper.cc",
     "image_service_consent_helper.h",

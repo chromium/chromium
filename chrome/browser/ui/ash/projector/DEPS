@@ -6,8 +6,6 @@ include_rules = [
   "+chrome/browser/apps/link_capturing",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
-  "+chrome/browser/ash/login/login_manager_test.h",
-  "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
@@ -21,24 +19,26 @@ include_rules = [
   "+chrome/browser/speech",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_list_observer.h",
-  "+chrome/browser/ui/browser_navigator.h",
-  "+chrome/browser/ui/browser_navigator_params.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/tabs",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/services/media_gallery_util/public/cpp",
   "+chrome/services/media_gallery_util/public/mojom",
-  "+chrome/test"
 ]
 
 specific_include_rules = {
-  ".*(browser|unit)test\.cc": [
+  ".*(browser|unit)test\\.cc": [
+    "+chrome/browser/ash/login/login_manager_test.h",
+    "+chrome/browser/ash/login/test",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/ui/browser_finder.h",
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_list_observer.h",
+    "+chrome/browser/ui/browser_navigator.h",
+    "+chrome/browser/ui/browser_navigator_params.h",
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
+    "+chrome/test"
   ],
 }

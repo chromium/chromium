@@ -104,7 +104,7 @@ class AndroidAutofillProviderBridge {
   virtual void OnFormSubmitted(mojom::SubmissionSource submission_source) = 0;
 
   // Informs the Java side that the form was autofilled.
-  virtual void OnDidFillAutofillFormData() = 0;
+  virtual void OnDidAutofillForm() = 0;
 
   // Cancels the current autofill session with clearing the cache if needed.
   virtual void CancelSession() = 0;

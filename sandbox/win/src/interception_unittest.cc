@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file contains unit tests for InterceptionManager.
 // The tests require private information so the whole interception.cc file is
 // included from this file.
@@ -21,6 +16,7 @@
 #include <bit>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
@@ -60,7 +56,7 @@ void WalkBuffer(base::span<BYTE> buffer,
     ASSERT_NE(0u, dll->num_functions);
 
     FunctionInfo* function = reinterpret_cast<FunctionInfo*>(
-        reinterpret_cast<char*>(dll) + dll->offset_to_functions);
+        UNSAFE_TODO(reinterpret_cast<char*>(dll) + dll->offset_to_functions));
 
     for (size_t j = 0; j < dll->num_functions; j++) {
       ASSERT_EQ(0u, function->record_bytes % sizeof(size_t));
@@ -68,11 +64,12 @@ void WalkBuffer(base::span<BYTE> buffer,
       char* name = function->function;
       size_t length = strlen(name);
       ASSERT_NE(0u, length);
-      name += length + 1;
+      UNSAFE_TODO(name += length + 1);
 
       // look for overflows
-      ASSERT_GT(reinterpret_cast<char*>(buffer.data()) + buffer.size(),
-                name + strlen(name));
+      ASSERT_GT(
+          UNSAFE_TODO(reinterpret_cast<char*>(buffer.data()) + buffer.size()),
+          UNSAFE_TODO(name + strlen(name)));
 
       // look for a named interceptor
       if (strlen(name)) {
@@ -83,13 +80,13 @@ void WalkBuffer(base::span<BYTE> buffer,
       }
 
       (*num_functions)++;
-      function = reinterpret_cast<FunctionInfo*>(
-          reinterpret_cast<char*>(function) + function->record_bytes);
+      function = reinterpret_cast<FunctionInfo*>(UNSAFE_TODO(
+          reinterpret_cast<char*>(function) + function->record_bytes));
     }
 
     (*num_dlls)++;
-    dll = reinterpret_cast<DllPatchInfo*>(reinterpret_cast<char*>(dll) +
-                                          dll->record_bytes);
+    dll = reinterpret_cast<DllPatchInfo*>(
+        UNSAFE_TODO(reinterpret_cast<char*>(dll) + dll->record_bytes));
   }
 }
 

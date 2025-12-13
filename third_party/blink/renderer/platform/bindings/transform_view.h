@@ -58,9 +58,6 @@ class TransformedView {
     bool operator==(const TransformingIterator& r) const {
       return it_ == r.it_;
     }
-    bool operator!=(const TransformingIterator& r) const {
-      return it_ != r.it_;
-    }
     TransformingIterator& operator++() {
       UNSAFE_TODO(++it_);
       return *this;

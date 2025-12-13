@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
@@ -91,6 +92,9 @@ class HttpStreamPool::Group {
   const NetLogWithSource& net_log() { return net_log_; }
 
   bool force_quic() const { return force_quic_; }
+
+  const perfetto::Track& track() const { return track_; }
+  const perfetto::Flow& flow() const { return flow_; }
 
   // Creates a Job to attempt connection(s). We have separate methods for
   // creating and starting a Job to ensure that the owner of the Job can
@@ -173,7 +177,7 @@ class HttpStreamPool::Group {
   void CloseIdleStreams(std::string_view net_log_close_reason_utf8);
 
   // Cancels all on-going jobs.
-  void CancelJobs(int error);
+  void CancelJobs(int error, StreamSocketCloseReason cancel_reason);
 
   // Returns an active AttemptManager for `job`.
   AttemptManager* GetAttemptManagerForJob(Job* job);
@@ -234,6 +238,8 @@ class HttpStreamPool::Group {
   const QuicSessionAliasKey quic_session_alias_key_;
   const NetLogWithSource net_log_;
   const bool force_quic_;
+  const perfetto::NamedTrack track_;
+  const perfetto::Flow flow_;
 
   size_t handed_out_stream_count_ = 0;
   int64_t generation_ = 0;

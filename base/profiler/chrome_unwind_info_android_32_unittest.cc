@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and use spans.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/chrome_unwind_info_android_32.h"
 
 #include <tuple>
 
+#include "base/compiler_specific.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -65,15 +61,18 @@ TEST(ChromeUnwindInfoAndroid32Test, CreateUnwindInfo) {
   const uint8_t unwind_instruction_table[] = {4, 4, 4, 4};
 
   ASSERT_LT(sizeof(ChromeUnwindInfoAndroid32Header), 64ul);
-  memcpy(&data[0], &header, sizeof(ChromeUnwindInfoAndroid32Header));
+  UNSAFE_TODO(
+      memcpy(&data[0], &header, sizeof(ChromeUnwindInfoAndroid32Header)));
 
-  memcpy(&data[header.page_table_byte_offset], page_table, sizeof(page_table));
-  memcpy(&data[header.function_table_byte_offset], function_table,
-         sizeof(function_table));
-  memcpy(&data[header.function_offset_table_byte_offset], function_offset_table,
-         sizeof(function_offset_table));
-  memcpy(&data[header.unwind_instruction_table_byte_offset],
-         unwind_instruction_table, sizeof(unwind_instruction_table));
+  UNSAFE_TODO(memcpy(&data[header.page_table_byte_offset], page_table,
+                     sizeof(page_table)));
+  UNSAFE_TODO(memcpy(&data[header.function_table_byte_offset], function_table,
+                     sizeof(function_table)));
+  UNSAFE_TODO(memcpy(&data[header.function_offset_table_byte_offset],
+                     function_offset_table, sizeof(function_offset_table)));
+  UNSAFE_TODO(memcpy(&data[header.unwind_instruction_table_byte_offset],
+                     unwind_instruction_table,
+                     sizeof(unwind_instruction_table)));
 
   ChromeUnwindInfoAndroid32 unwind_info = CreateChromeUnwindInfoAndroid32(data);
 

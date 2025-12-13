@@ -207,6 +207,10 @@ String DOMSelection::direction() const {
       DocumentUpdateReason::kSelection);
 
   if (!Selection().IsDirectional() ||
+      (RuntimeEnabledFeatures::SelectionCollapsedDirectionNoneEnabled() &&
+       // Use IsCaret() instead of isCollapsed() so that directionality is still
+       // reported for selections that cross shadow boundaries.
+       Selection().GetSelectionInDOMTree().IsCaret()) ||
       Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
     return "none";
   }
@@ -370,14 +374,31 @@ void DOMSelection::setBaseAndExtent(Node* base_node,
 
   // TODO(editing-dev): Behavior on where base or extent is null is still
   // under discussion: https://github.com/w3c/selection-api/issues/72
-  if (!base_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    Selection().Clear();
-    return;
-  }
-  if (!extent_node) {
-    UseCounter::Count(DomWindow(), WebFeature::kSelectionSetBaseAndExtentNull);
-    extent_offset = 0;
+  if (RuntimeEnabledFeatures::SelectionSetBaseAndExtentNonNullNodeEnabled()) {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("anchorNode is null");
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      exception_state.ThrowTypeError("focusNode is null");
+      return;
+    }
+  } else {
+    if (!base_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      Selection().Clear();
+      return;
+    }
+    if (!extent_node) {
+      UseCounter::Count(DomWindow(),
+                        WebFeature::kSelectionSetBaseAndExtentNull);
+      extent_offset = 0;
+    }
   }
 
   // 1. If anchorOffset is longer than anchorNode's length or if focusOffset is
@@ -701,11 +722,18 @@ void DOMSelection::ClearCachedRangeIfSelectionOfDocument() {
     Selection().ClearDocumentCachedRange();
 }
 
-void DOMSelection::removeRange(Range* range) {
+void DOMSelection::removeRange(Range* range, ExceptionState& exception_state) {
   DCHECK(range);
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (IsAvailable() && range == temp_range.GetRange()) {
     Selection().Clear();
+  } else {
+    UseCounter::Count(DomWindow(),
+                      WebFeature::kSelectionRemoveRangeNotFoundWouldThrow);
+    if (RuntimeEnabledFeatures::SelectionRemoveRangeNotFoundErrorEnabled()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
+                                        "Range not found.");
+    }
   }
 }
 
@@ -761,24 +789,12 @@ void DOMSelection::deleteFromDocument() {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  if (!RuntimeEnabledFeatures::
-          SelectionDeleteFromDocumentUaShadowFixEnabled()) {
-    // The following code is necessary for
-    // editing/selection/deleteFromDocument-crash.html, which assumes
-    // deleteFromDocument() for text selection in a TEXTAREA deletes the
-    // TEXTAREA value.
-    if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
-      return;
-    }
-  }
-
   Range* selected_range = CreateRange(Selection()
                                           .ComputeVisibleSelectionInDOMTree()
                                           .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
-  if (RuntimeEnabledFeatures::SelectionDeleteFromDocumentUaShadowFixEnabled() &&
-      selected_range->startContainer()->IsInUserAgentShadowRoot()) {
+  if (selected_range->startContainer()->IsInUserAgentShadowRoot()) {
     return;
   }
 
@@ -869,9 +885,15 @@ String DOMSelection::toString() {
   const EphemeralRange range = Selection()
                                    .ComputeVisibleSelectionInDOMTree()
                                    .ToNormalizedEphemeralRange();
-  return PlainText(
-      range,
-      TextIteratorBehavior::Builder().SetForSelectionToString(true).Build());
+
+  TextIteratorBehavior::Builder behavior_builder;
+  behavior_builder.SetForSelectionToString(true);
+
+  if (RuntimeEnabledFeatures::SelectionToStringSkipsUserSelectNoneEnabled()) {
+    behavior_builder.SetSkipsUnselectableContent(true);
+  }
+
+  return PlainText(range, behavior_builder.Build());
 }
 
 Node* DOMSelection::ShadowAdjustedNode(const Position& position) const {

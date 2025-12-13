@@ -90,6 +90,7 @@ function emitExpectedResult(path, expected)
     case 'navigator.connection.downlinkMax':
     case 'navigator.connection.effectiveType':
     case 'navigator.connection.rtt':
+    case 'navigator.cpuPerformance':
     case "navigator.deviceMemory":
     case "navigator.devicePosture.type":
     case "navigator.gpu.wgslLanguageFeatures.size":

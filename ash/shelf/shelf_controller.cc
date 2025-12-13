@@ -54,7 +54,7 @@ void SetShelfAutoHideFromPrefs() {
   if (!prefs || !session_controller->IsActiveUserSessionStarted())
     return;
 
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     auto value = GetShelfAutoHideBehaviorPref(prefs, display.id());
     // Don't show the shelf in app mode.
     if (session_controller->IsRunningInAppMode())
@@ -77,11 +77,11 @@ void SetShelfAlignmentFromPrefs() {
 
   // Tablet mode uses bottom aligned shelf, don't override it if the shelf
   // prefs change.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id()))
       shelf->SetAlignment(GetShelfAlignmentPref(prefs, display.id()));
   }
@@ -89,7 +89,7 @@ void SetShelfAlignmentFromPrefs() {
 
 // Re-layouts the shelf on every display.
 void LayoutShelves() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
       shelf->shelf_layout_manager()->LayoutShelf(true);
     }
@@ -97,7 +97,7 @@ void LayoutShelves() {
 }
 
 void UpdateShelfVisibility() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id()))
       shelf->UpdateVisibilityState();
   }
@@ -109,7 +109,7 @@ void SetShelfBehaviorsFromPrefs() {
 
   // The shelf should always be bottom-aligned in tablet mode; alignment is
   // assigned from prefs when tablet mode is exited.
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -235,8 +235,7 @@ void ShelfController::OnDisplayTabletStateChanged(display::TabletState state) {
 
       // Force the shelf to be bottom aligned in tablet mode; the prefs are
       // restored on exit.
-      for (const auto& display :
-           display::Screen::GetScreen()->GetAllDisplays()) {
+      for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
         if (Shelf* shelf = GetShelfForDisplay(display.id())) {
           shelf->SetAlignment(ShelfAlignment::kBottom);
         }

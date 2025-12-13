@@ -13,8 +13,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +28,7 @@ import java.util.Map;
  * attaching the notification to the job life cycle. Starting and stopping of jobs is
  * handled in AutoResumptionHandler in native. Only active for Android versions >= U.
  */
+@NullMarked
 public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadUitm";
 
@@ -38,6 +43,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
         NotificationAttachEvent.NEVER_ATTACHED_BEFORE_JOB_COMPLETE,
         NotificationAttachEvent.RESUMPTION_JOB_STARTED,
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface NotificationAttachEvent {
         int ATTACHED_ON_JOB_START = 0;
         int ATTACHED_AFTER_JOB_START = 1;
@@ -84,7 +90,7 @@ public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager 
      * @param taskNotificationCallback The callback to be invoked to attach notification.
      */
     public void setTaskNotificationCallback(
-            int taskId, TaskFinishedCallback taskNotificationCallback) {
+            int taskId, @Nullable TaskFinishedCallback taskNotificationCallback) {
         if (taskNotificationCallback == null) {
             mTaskNotificationCallbacks.remove(taskId);
             if (mHasUnseenCallbacks) {

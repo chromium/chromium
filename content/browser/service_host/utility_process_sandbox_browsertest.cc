@@ -25,10 +25,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -122,6 +118,8 @@ class UtilityProcessSandboxBrowserTest
 
       case Sandbox::kAudio:
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      case Sandbox::kShapeDetection:
+      case Sandbox::kOnDeviceTranslation:
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
       case Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -133,15 +131,7 @@ class UtilityProcessSandboxBrowserTest
       case Sandbox::kIme:
       case Sandbox::kTts:
       case Sandbox::kNearby:
-      case Sandbox::kShapeDetection:
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      case Sandbox::kLibassistant:
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_LINUX)
-      case Sandbox::kVideoEffects:
-      case Sandbox::kOnDeviceTranslation:
-#endif
       case Sandbox::kNetwork:
       case Sandbox::kPrintBackend:
       case Sandbox::kScreenAI:

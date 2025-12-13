@@ -170,24 +170,37 @@ Time MemEntryImpl::GetLastUsed() const {
   return last_used_;
 }
 
-int32_t MemEntryImpl::GetDataSize(int index) const {
+int64_t MemEntryImpl::GetDataSize(int index) const {
   if (index < 0 || index >= kNumStreams)
     return 0;
   return data_[index].size();
 }
 
 int MemEntryImpl::ReadData(int index,
-                           int offset,
+                           int64_t offset,
                            IOBuffer* buf,
                            int buf_len,
                            CompletionOnceCallback callback) {
+  // TODO(crbug.com/391398191): Update the maximum to size_t max when it's
+  // supported. `offset` must be within size_t range anyway so that the data
+  // will be in-mmory.
+  if (offset > std::numeric_limits<int32_t>::max()) {
+    if (net_log_.IsCapturing()) {
+      NetLogReadWriteComplete(net_log_, net::NetLogEventType::ENTRY_READ_DATA,
+                              net::NetLogEventPhase::NONE,
+                              net::ERR_INVALID_ARGUMENT);
+    }
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (net_log_.IsCapturing()) {
     NetLogReadWriteData(net_log_, net::NetLogEventType::ENTRY_READ_DATA,
                         net::NetLogEventPhase::BEGIN, index, offset, buf_len,
                         false);
   }
 
-  int result = InternalReadData(index, offset, buf, buf_len);
+  int result = InternalReadData(index, base::checked_cast<int32_t>(offset), buf,
+                                buf_len);
 
   if (net_log_.IsCapturing()) {
     NetLogReadWriteComplete(net_log_, net::NetLogEventType::ENTRY_READ_DATA,
@@ -197,18 +210,31 @@ int MemEntryImpl::ReadData(int index,
 }
 
 int MemEntryImpl::WriteData(int index,
-                            int offset,
+                            int64_t offset,
                             IOBuffer* buf,
                             int buf_len,
                             CompletionOnceCallback callback,
                             bool truncate) {
+  // TODO(crbug.com/391398191): Update the maximum to size_t max when it's
+  // supported. `offset` must be within size_t range anyway so that the data
+  // will be in-mmory.
+  if (offset > std::numeric_limits<int32_t>::max()) {
+    if (net_log_.IsCapturing()) {
+      NetLogReadWriteComplete(net_log_, net::NetLogEventType::ENTRY_READ_DATA,
+                              net::NetLogEventPhase::NONE,
+                              net::ERR_INVALID_ARGUMENT);
+    }
+    return net::ERR_INVALID_ARGUMENT;
+  }
+
   if (net_log_.IsCapturing()) {
     NetLogReadWriteData(net_log_, net::NetLogEventType::ENTRY_WRITE_DATA,
                         net::NetLogEventPhase::BEGIN, index, offset, buf_len,
                         truncate);
   }
 
-  int result = InternalWriteData(index, offset, buf, buf_len, truncate);
+  int result = InternalWriteData(index, base::checked_cast<int32_t>(offset),
+                                 buf, buf_len, truncate);
 
   if (net_log_.IsCapturing()) {
     NetLogReadWriteComplete(net_log_, net::NetLogEventType::ENTRY_WRITE_DATA,

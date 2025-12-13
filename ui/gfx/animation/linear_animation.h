@@ -17,6 +17,7 @@ class AnimationDelegate;
 class ANIMATION_EXPORT LinearAnimation : public Animation {
  public:
   // Default frame rate (hz).
+  // TODO(crbug.com/464123001): Remove or move this to DefaultAnimationRunner.
   static const int kDefaultFrameRate;
 
   // Initializes everything except the duration.
@@ -71,7 +72,7 @@ class ANIMATION_EXPORT LinearAnimation : public Animation {
   // Overriden to return true if state is not 1.
   bool ShouldSendCanceledFromStop() override;
 
-  base::TimeDelta duration() const { return duration_; }
+  base::TimeDelta GetDuration() const;
 
  private:
   base::TimeDelta duration_;

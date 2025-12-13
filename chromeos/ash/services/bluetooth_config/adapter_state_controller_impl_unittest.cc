@@ -51,22 +51,20 @@ class AdapterStateControllerImplTest
   void SetUp() override {
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
-    ON_CALL(*mock_adapter_, IsPresent())
-        .WillByDefault(
-            testing::Invoke([this]() { return is_adapter_present_; }));
-    ON_CALL(*mock_adapter_, IsPowered())
-        .WillByDefault(
-            testing::Invoke([this]() { return is_adapter_powered_; }));
+    ON_CALL(*mock_adapter_, IsPresent()).WillByDefault([this]() {
+      return is_adapter_present_;
+    });
+    ON_CALL(*mock_adapter_, IsPowered()).WillByDefault([this]() {
+      return is_adapter_powered_;
+    });
     ON_CALL(*mock_adapter_, SetPowered(testing::_, testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
-            [this](bool powered, base::OnceClosure success_callback,
-                   base::OnceClosure error_callback) {
-              EXPECT_FALSE(pending_power_state_.has_value());
-              pending_power_state_ = powered;
-              set_powered_success_callbacks_.emplace(
-                  std::move(success_callback));
-              set_powered_error_callbacks_.emplace(std::move(error_callback));
-            }));
+        .WillByDefault([this](bool powered, base::OnceClosure success_callback,
+                              base::OnceClosure error_callback) {
+          EXPECT_FALSE(pending_power_state_.has_value());
+          pending_power_state_ = powered;
+          set_powered_success_callbacks_.emplace(std::move(success_callback));
+          set_powered_error_callbacks_.emplace(std::move(error_callback));
+        });
 
     adapter_state_controller_ =
         std::make_unique<AdapterStateControllerImpl>(mock_adapter_);

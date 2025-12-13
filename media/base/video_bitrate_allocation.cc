@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "video_bitrate_allocation.h"
 
 #include <array>
@@ -173,12 +168,7 @@ std::string VideoBitrateAllocation::ToString() const {
 
 bool VideoBitrateAllocation::operator==(
     const VideoBitrateAllocation& other) const {
-  if (sum_bitrate_ != other.sum_bitrate_) {
-    return false;
-  }
-  return memcmp(bitrates_.data(), other.bitrates_.data(),
-                (bitrates_.size() * sizeof(decltype(bitrates_)::value_type))) ==
-         0;
+  return sum_bitrate_ == other.sum_bitrate_ && bitrates_ == other.bitrates_;
 }
 
 }  // namespace media

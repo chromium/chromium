@@ -2425,6 +2425,11 @@ EGL_FUNCTIONS = [
   'names': ['eglPostSubBufferNV'],
   'arguments': 'EGLDisplay dpy, EGLSurface surface, '
     'EGLint x, EGLint y, EGLint width, EGLint height', },
+{ 'return_type': 'EGLBoolean',
+  'versions': [{'name': 'eglPresentationTimeANDROID',
+                'extensions': ['EGL_ANDROID_presentation_time']}],
+  'arguments': 'EGLDisplay dpy, EGLSurface surface, EGLnsecsANDROID time',
+},
 { 'return_type': 'EGLenum',
   'names': ['eglQueryAPI'],
   'arguments': 'void', },

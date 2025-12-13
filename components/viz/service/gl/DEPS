@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/ash/experiences/arc/video_accelerator",
   "+components/chromeos_camera",
   "+components/crash/core/common/crash_key.h",
+  "+components/persistent_cache/pending_backend.h",
   "+components/version_info/version_info.h",
   "+components/viz/service/service_jni_headers",
   "+components/viz/common",

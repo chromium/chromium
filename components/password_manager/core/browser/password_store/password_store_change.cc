@@ -41,6 +41,7 @@ bool PasswordStoreChange::operator==(const PasswordStoreChange& other) const {
          form().new_password_element == other.form().new_password_element &&
          form().new_password_value == other.form().new_password_value &&
          form().date_last_used == other.form().date_last_used &&
+         form().date_last_filled == other.form().date_last_filled &&
          form().date_created == other.form().date_created &&
          form().blocked_by_user == other.form().blocked_by_user &&
          form().password_issues == other.form().password_issues;

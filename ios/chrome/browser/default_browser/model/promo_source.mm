@@ -23,6 +23,8 @@ std::string_view DefaultBrowserSettingsPageSourceToString(
       return "TipsNotification";
     case DefaultBrowserSettingsPageSource::kBannerPromo:
       return "BannerPromo";
+    case DefaultBrowserSettingsPageSource::kMagicStackCard:
+      return "MagicStackCard";
   }
 
   NOTREACHED();

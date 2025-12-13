@@ -72,7 +72,7 @@ use crate::hir::{self, Hir};
 /// The main downside of literal extraction is that it can wind up causing a
 /// search to be slower overall. For example, if there are many matches or if
 /// there are many candidates that don't ultimately lead to a match, then a
-/// lot of overhead will be spent in shuffing back-and-forth between substring
+/// lot of overhead will be spent in shuffling back-and-forth between substring
 /// search and the regex engine. This is the fundamental reason why literal
 /// optimizations for regex patterns is sometimes considered a "black art."
 ///
@@ -588,7 +588,7 @@ impl Extractor {
             // leakage. Downstream, the literals may wind up getting fed to
             // the Teddy algorithm, which supports searching literals up to
             // length 4. So that's why we pick that number here. Arguably this
-            // should be a tuneable parameter, but it seems a little tricky to
+            // should be a tunable parameter, but it seems a little tricky to
             // describe. And I'm still unsure if this is the right way to go
             // about culling literal sequences.
             match self.kind {

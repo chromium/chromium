@@ -13,6 +13,8 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'incrementMetricCount',
+      'recordEmptyState',
+      'recordExtensionState',
       'recordHighlightOff',
       'recordHighlightOn',
       'recordHighlightGranularity',
@@ -32,6 +34,10 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   incrementMetricCount(umaName: string) {
     this.methodCalled('incrementMetricCount', umaName);
+  }
+
+  recordEmptyState() {
+    this.methodCalled('recordEmptyState');
   }
 
   recordNewPage() {
@@ -88,5 +94,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSpeechPlaybackLength(time: number) {
     this.methodCalled('recordSpeechPlaybackLength', time);
+  }
+
+  recordExtensionState() {
+    this.methodCalled('recordExtensionState');
   }
 }

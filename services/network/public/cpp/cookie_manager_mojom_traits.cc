@@ -550,6 +550,9 @@ EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::ToMojom(
       return network::mojom::CookieChangeCause::EXPIRED_OVERWRITE;
     case net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       return network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE;
+    case net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+      return network::mojom::CookieChangeCause::
+          INSERTED_NO_VALUE_CHANGE_OVERWRITE;
     default:
       break;
   }
@@ -583,6 +586,9 @@ bool EnumTraits<network::mojom::CookieChangeCause, net::CookieChangeCause>::
       return true;
     case network::mojom::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       *output = net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE;
+      return true;
+    case network::mojom::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+      *output = net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE;
       return true;
     default:
       break;
@@ -796,7 +802,8 @@ bool StructTraits<
       std::move(creation_time), std::move(expiry_time),
       std::move(last_access_time), std::move(last_update_time), cookie.secure(),
       cookie.httponly(), site_restrictions, priority, partition_key,
-      source_scheme, cookie.source_port(), source_type);
+      source_scheme, cookie.source_port(), source_type,
+      net::CanonicalCookieFromStorageCallSite::kCookieManagerMojomTraits);
   if (!cc)
     return false;
   *out = *cc;

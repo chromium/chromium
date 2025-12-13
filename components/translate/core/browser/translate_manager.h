@@ -5,15 +5,12 @@
 #ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MANAGER_H_
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
 
 #include "base/callback_list.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/language_detection/core/constants.h"
@@ -126,10 +123,12 @@ class TranslateManager {
   // Starts the translation process for the page in the |page_lang| language.
   void InitiateTranslation(const std::string& page_lang);
 
-  // Show the translation UI with the target language enforced to |target_lang|.
-  // If |auto_translate| is true the page gets translated to the target
-  // language.
-  void ShowTranslateUI(const std::string& target_lang,
+  // Show the translation UI with the target code enforced to |target_code|
+  // and the source code |source_code|. If these language codes are not
+  // provided, defaults to last known language settings. If |auto_translate| is
+  // true the page gets translated to the target language.
+  void ShowTranslateUI(std::optional<std::string> source_code,
+                       std::optional<std::string> target_code,
                        bool auto_translate = false,
                        bool triggered_from_menu = false);
 
@@ -354,7 +353,7 @@ class TranslateManager {
 
   raw_ptr<TranslateClient> translate_client_;        // Weak.
   raw_ptr<TranslateDriver> translate_driver_;        // Weak.
-  raw_ptr<TranslateRanker> translate_ranker_;        // Weak.
+  raw_ptr<TranslateRanker, DanglingUntriaged> translate_ranker_;  // Weak.
   raw_ptr<language::LanguageModel> language_model_;  // Weak.
 
   base::WeakPtr<TranslateMetricsLogger> active_translate_metrics_logger_;

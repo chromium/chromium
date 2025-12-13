@@ -11,12 +11,13 @@
 
 #include "base/time/time.h"
 #include "components/lens/lens_overlay_invocation_source.h"
-#include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
+
+class LensOverlayClusterInfo;
+class LensOverlayRequestId;
 
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
@@ -61,11 +62,11 @@ GURL BuildLensSearchURL(
 
 // Returns the value of the text query parameter value from the provided search
 // URL if any. Empty string otherwise.
-const std::string GetTextQueryParameterValue(const GURL& url);
+const std::string ExtractTextQueryParameterValue(const GURL& url);
 
 // Returns the value of the lens mode parameter value from the provided search
 // URL if any. Empty string otherwise.
-const std::string GetLensModeParameterValue(const GURL& url);
+const std::string ExtractLensModeParameterValue(const GURL& url);
 
 // Returns true if the two URLs have the same base url, and the same query
 // parameters. This differs from comparing two GURLs using == since this method
@@ -83,10 +84,16 @@ bool HasCommonSearchQueryParameters(const GURL& url);
 // finch configured flag.
 bool IsValidSearchResultsUrl(const GURL& url);
 
+// Returns whether the given |url| is an AIM URL.
+bool IsAimQuery(const GURL& url);
+
 // Returns whether the `url` is a valid lens overlay search URL but contains
 // parameters known not to be supported in the side panel and thus should be
-// opened in a new tab.
-bool ShouldOpenSearchURLInNewTab(const GURL& url);
+// opened in a new tab. `is_aim_feature_enabled` indicates whether the AIM M3
+// feature is enabled, and should be passed in via the lens::IsAimM3Enabled from
+// lens_search_feature_flag_utils. This function keeps a bool to keep
+// dependencies light and testing easy
+bool ShouldOpenSearchURLInNewTab(const GURL& url, bool is_aim_feature_enabled);
 
 // Returns whether the given |url| is a valid lens overlay search redirect URL.
 // This could differ from values in common APIs since the search URL is set via
@@ -99,10 +106,6 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 // or when the SRP redirects to append parameters unrelated to the search
 // results.
 GURL RemoveIgnoredSearchURLParameters(const GURL& url);
-
-// Remove parameters that cause the SRP to be rendered for the side panel. Used
-// when opening the SRP in a new tab.
-GURL RemoveSidePanelURLParameters(const GURL& url);
 
 // Returns the URL to open in a new tab by adding a unique vsrid to the side
 // panel new tab URL. If the given URL is empty, or is a URL for a contextual
@@ -133,10 +136,12 @@ GURL AddPDFScrollToParametersToUrl(
     const std::vector<std::string>& text_fragments,
     int pdf_page_number);
 
-// Returns a key-value map of all parameters in `url` except the query
-// parameter.
-std::map<std::string, std::string> GetParametersMapWithoutQuery(
-    const GURL& url);
+// Return the time from a `t=` parameter if it exists.
+std::optional<base::TimeDelta> ExtractTimeInSecondsFromQueryIfExists(
+    const GURL& target);
+
+// Return the video ID if it's set in `url`.
+std::optional<std::string> ExtractVideoNameIfExists(const GURL& url);
 
 }  // namespace lens
 

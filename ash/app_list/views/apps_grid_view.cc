@@ -30,7 +30,6 @@
 #include "ash/app_list/views/apps_grid_view_folder_delegate.h"
 #include "ash/app_list/views/ghost_image_view.h"
 #include "ash/app_list/views/pulsing_block_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -2647,10 +2646,6 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
 
 void AppsGridView::MaybeDuplicatePromiseAppForRemoval(
     AppListItemView* promise_app_view) {
-  if (!ash::features::ArePromiseIconsEnabled()) {
-    return;
-  }
-
   if (!promise_app_view || !promise_app_view->is_promise_app()) {
     return;
   }

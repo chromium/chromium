@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chrome/test/chromedriver/net/pipe_writer_posix.h"
 
 #include <cmath>
 #include <string>
@@ -14,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -26,7 +22,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
-#include "chrome/test/chromedriver/net/pipe_writer_posix.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
@@ -43,12 +38,13 @@ std::pair<std::string, int> ReadAll(base::File read_pipe) {
       base::MakeRefCounted<net::IOBufferWithSize>(4096);
   int rv = 0;
   while (true) {
-    rv = read_pipe.ReadAtCurrentPos(buffer->data(), buffer->size());
+    rv =
+        UNSAFE_TODO(read_pipe.ReadAtCurrentPos(buffer->data(), buffer->size()));
     if (rv <= 0) {
       break;
     }
     received_message.insert(received_message.end(), buffer->data(),
-                            buffer->data() + rv);
+                            UNSAFE_TODO(buffer->data() + rv));
   }
   return std::make_pair(std::move(received_message), rv);
 }

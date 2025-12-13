@@ -42,7 +42,7 @@ class FakeMediaStreamVideoSink : public MediaStreamVideoSink {
         track,
         ConvertToBaseRepeatingCallback(
             CrossThreadBindRepeating(&FakeMediaStreamVideoSink::OnVideoFrame,
-                                     WTF::CrossThreadUnretained(this))),
+                                     CrossThreadUnretained(this))),
         MediaStreamVideoSink::IsSecure::kYes,
         MediaStreamVideoSink::UsesAlpha::kDefault);
   }

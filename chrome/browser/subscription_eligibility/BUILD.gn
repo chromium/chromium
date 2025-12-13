@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("subscription_eligibility") {
+  sources = [
+    "subscription_eligibility_metrics_provider.cc",
+    "subscription_eligibility_metrics_provider.h",
+    "subscription_eligibility_prefs.cc",
+    "subscription_eligibility_prefs.h",
+    "subscription_eligibility_service.cc",
+    "subscription_eligibility_service.h",
+    "subscription_eligibility_service_factory.cc",
+    "subscription_eligibility_service_factory.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//components/metrics",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//third_party/metrics_proto:metrics_proto_gen",
+  ]
+}

@@ -5,15 +5,18 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<androidx.constraintlayout.widget.ConstraintLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/ntp_customization_feed_bottom_sheet"
     android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom"
-    tools:ignore="UnusedResources">
+    android:paddingBottom="@dimen/ntp_customization_bottom_sheet_layout_padding_bottom">
 
     <include layout="@layout/ntp_customization_drag_handle_bar" />
 
@@ -58,4 +61,7 @@ found in the LICENSE file.
         android:background="@drawable/ntp_customization_bottom_sheet_list_item_background_single"
         tools:baselinealigned="false"
         android:text="@string/text_on" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

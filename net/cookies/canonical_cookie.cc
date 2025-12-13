@@ -50,6 +50,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
@@ -85,6 +86,46 @@ namespace {
 
 static constexpr int kMinutesInTwelveHours = 12 * 60;
 static constexpr int kMinutesInTwentyFourHours = 24 * 60;
+
+std::string_view CanonicalCookieFromStorageCallSiteToString(
+    CanonicalCookieFromStorageCallSite call_site) {
+  switch (call_site) {
+    case CanonicalCookieFromStorageCallSite::kAndroidCookiesFetcherRestoreUtil:
+      return "AndroidCookiesFetcherRestoreUtil";
+    case CanonicalCookieFromStorageCallSite::kChromeOsCookieSyncConversions:
+      return "ChromeOsCookieSyncConversions";
+    case CanonicalCookieFromStorageCallSite::kOauthMultiloginResult:
+      return "OauthMultiloginResult";
+    case CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil:
+      NOTREACHED();
+    case CanonicalCookieFromStorageCallSite::kSqlitePersistentCookieStore:
+      return "SqlitePersistentCookieStore";
+    case CanonicalCookieFromStorageCallSite::kCookieManager:
+      return "CookieManager";
+    case CanonicalCookieFromStorageCallSite::kCookieManagerMojomTraits:
+      return "CookieManagerMojomTraits";
+    case CanonicalCookieFromStorageCallSite::kRestrictedCookieManager:
+      return "RestrictedCookieManager";
+    case CanonicalCookieFromStorageCallSite::kTests:
+      return "Tests";
+  }
+}
+
+void MaybeRecordFromStorageWithValidLengthHistogram(
+    CanonicalCookieFromStorageCallSite call_site,
+    bool valid) {
+  if (!base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
+    return;
+  }
+  if (call_site == CanonicalCookieFromStorageCallSite::kTests) {
+    CHECK_IS_TEST();
+  }
+  base::UmaHistogramBoolean(
+      base::StrCat({"Cookie.FromStorageWithValidLength.",
+                    CanonicalCookieFromStorageCallSiteToString(call_site),
+                    ".Subsampled"}),
+      valid);
+}
 
 void AppendCookieLineEntry(const CanonicalCookie& cookie,
                            std::string* cookie_line) {
@@ -416,8 +457,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (!status->IsInclude())
     return nullptr;
 
-  CookieSameSiteString samesite_string = CookieSameSiteString::kUnspecified;
-  CookieSameSite samesite = parsed_cookie.SameSite(&samesite_string);
+  auto [samesite, samesite_string] = parsed_cookie.SameSite();
 
   // The next two sections set the source_scheme_ and source_port_. Normally
   // these are taken directly from the url's scheme and port but if the url
@@ -586,7 +626,7 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
   std::optional<std::string> cookie_domain;
   // This validation step must happen before GetCookieDomainWithString, so it
   // doesn't fail DCHECKs.
-  if (!cookie_util::DomainIsHostOnly(url.host())) {
+  if (!cookie_util::DomainIsHostOnly(url.GetHost())) {
     status->AddExclusionReason(
         net::CookieInclusionStatus::ExclusionReason::EXCLUDE_INVALID_DOMAIN);
   } else if (cookie_domain = cookie_util::GetCookieDomainWithString(
@@ -728,7 +768,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     std::optional<CookiePartitionKey> partition_key,
     CookieSourceScheme source_scheme,
     int source_port,
-    CookieSourceType source_type) {
+    CookieSourceType source_type,
+    CanonicalCookieFromStorageCallSite call_site) {
   // We check source_port here because it could have concievably been
   // corrupted and changed to out of range. Eventually this would be caught by
   // IsCanonical*() but since the source_port is only used by metrics so far
@@ -748,8 +789,19 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::FromStorage(
     // not have a valid name+value size length
     bool valid_cookie_name_value_pair =
         ParsedCookie::IsValidCookieNameValuePair(cc->Name(), cc->Value());
-    UMA_HISTOGRAM_BOOLEAN("Cookie.FromStorageWithValidLength",
-                          valid_cookie_name_value_pair);
+    // For this iOS code path, previous metrics have shown that
+    // `ParsedCookie::IsValidCookieNameValuePair` always returns true, so no
+    // need to record metrics for this code path (and we can begin enforcing the
+    // behavior we want which is to incorporate the new check into the
+    // "is canonical" check).
+    if (call_site == CanonicalCookieFromStorageCallSite::kIosSystemCookieUtil) {
+      if (valid_cookie_name_value_pair) {
+        return cc;
+      }
+      return nullptr;
+    }
+    MaybeRecordFromStorageWithValidLengthHistogram(
+        call_site, valid_cookie_name_value_pair);
   } else {
     return nullptr;
   }

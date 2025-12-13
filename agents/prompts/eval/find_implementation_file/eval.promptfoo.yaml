@@ -1,0 +1,17 @@
+description: Find the implementation of a header file.
+owner: dmurph@
+prompts:
+  - Can you find the implementation of chrome/browser/ui/views/tabs/tab.h?
+    Output the implementation file's path, relative to the same root as the
+    header file.
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+tests:
+  - assert:
+    - type: contains
+      value: chrome/browser/ui/views/tabs/tab.cc
+    metadata:
+      tags:
+      - stable

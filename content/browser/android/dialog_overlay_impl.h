@@ -30,7 +30,7 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
  public:
   // This may not call back into |obj| directly, but must post.  This is because
   // |obj| is still being initialized.
-  DialogOverlayImpl(const base::android::JavaParamRef<jobject>& obj,
+  DialogOverlayImpl(const base::android::JavaRef<jobject>& obj,
                     RenderFrameHostImpl* rfhi,
                     WebContents* web_contents,
                     bool power_efficient,
@@ -48,7 +48,7 @@ class DialogOverlayImpl : public ui::ViewAndroidObserver,
   // Calls ReceiveCompositorOffset() (java) with the compositor screen offset
   // before returning, in physical pixels.  We send |rect| as a convenience.
   void GetCompositorOffset(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& rect);
+                           const base::android::JavaRef<jobject>& rect);
 
   // ui::ViewAndroidObserver
   void OnAttachedToWindow() override;

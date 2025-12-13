@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_
 
@@ -48,7 +43,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 // This class is designed to store and manage large amounts of data that may be
 // split into multiple segments.
@@ -88,7 +83,6 @@ class WTF_EXPORT SegmentedBuffer {
     bool operator==(const Iterator& that) const {
       return std::ranges::equal(value_, that.value_) && buffer_ == that.buffer_;
     }
-    bool operator!=(const Iterator& that) const { return !(*this == that); }
     const base::span<const char>& operator*() const {
       DCHECK(!IsEnd());
       return value_;
@@ -141,7 +135,7 @@ class WTF_EXPORT SegmentedBuffer {
 
   // Copies the segmented data into a contiguous buffer.  Use GetSomeData() or
   // iterators if a copy is not required, as they are cheaper.
-  // Supported Ts: WTF::Vector<char>, std::vector<char>.
+  // Supported Ts: blink::Vector<char>, std::vector<char>.
   template <typename T>
   T CopyAs() const;
 
@@ -230,9 +224,9 @@ inline std::vector<char> SegmentedBuffer::CopyAs() const {
   std::vector<char> buffer;
   buffer.reserve(size_);
 
-  for (const auto& span : *this)
-    buffer.insert(buffer.end(), span.data(), span.data() + span.size());
-
+  for (const auto& span : *this) {
+    buffer.insert(buffer.end(), span.begin(), span.end());
+  }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
 }
@@ -243,8 +237,8 @@ inline std::vector<uint8_t> SegmentedBuffer::CopyAs() const {
   buffer.reserve(size_);
 
   for (const auto& span : *this) {
-    buffer.insert(buffer.end(), reinterpret_cast<const uint8_t*>(span.data()),
-                  reinterpret_cast<const uint8_t*>(span.data() + span.size()));
+    auto byte_span = base::as_bytes(span);
+    buffer.insert(buffer.end(), byte_span.begin(), byte_span.end());
   }
   DCHECK_EQ(buffer.size(), size_);
   return buffer;
@@ -284,6 +278,6 @@ class WTF_EXPORT SharedBuffer : public SegmentedBuffer,
   explicit SharedBuffer(SegmentedBuffer&&);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SHARED_BUFFER_H_

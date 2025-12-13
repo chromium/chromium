@@ -37,6 +37,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -62,17 +63,6 @@ const int64_t kTestReceivedBytes = 0;
 const base::FilePath::CharType kTestSuggestedFileName[] =
     FILE_PATH_LITERAL("file.zip");
 
-// Returns formatted size string.
-NSString* GetSizeString(int64_t size_in_bytes) {
-  NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
-  formatter.countStyle = NSByteCountFormatterCountStyleFile;
-  formatter.zeroPadsFractionDigits = YES;
-  NSString* result = [formatter stringFromByteCount:size_in_bytes];
-  // Replace spaces with non-breaking spaces.
-  result = [result stringByReplacingOccurrencesOfString:@" "
-                                             withString:@"\u00A0"];
-  return result;
-}
 
 }  // namespace
 
@@ -417,10 +407,10 @@ TEST_F(DownloadManagerCoordinatorTest, Close) {
   }
 
   // Verify that child view controller is removed, download task is set to null
-  // and download task is cancelled.
+  // and download task remains in its original state (cleanup doesn't cancel).
   EXPECT_EQ(0U, base_view_controller_.childViewControllers.count);
   EXPECT_FALSE(coordinator_.downloadTask);
-  EXPECT_EQ(web::DownloadTask::State::kCancelled, task->GetState());
+  EXPECT_EQ(web::DownloadTask::State::kNotStarted, task->GetState());
   histogram_tester_.ExpectUniqueSample(
       "Download.IOSDownloadFileResult",
       static_cast<base::HistogramBase::Sample32>(
@@ -456,17 +446,16 @@ TEST_F(DownloadManagerCoordinatorTest, OpenIn) {
   task_ptr->Start(path.Append(task_ptr->GenerateFileName()));
 
   // Stub UIActivityViewController.
-  OCMStub([download_view_controller_mock presentViewController:[OCMArg any]
-                                                      animated:YES
-                                                    completion:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        __unsafe_unretained id object;
-        [invocation getArgument:&object atIndex:2];
+  OCMStub([download_view_controller_mock
+      presentViewController:[OCMArg checkWithBlock:^(id object) {
         EXPECT_EQ([UIActivityViewController class], [object class]);
         UIActivityViewController* open_in_controller =
             base::apple::ObjCCastStrict<UIActivityViewController>(object);
         EXPECT_EQ(open_in_controller.excludedActivityTypes.count, 2.0);
-      });
+        return YES;
+      }]
+                   animated:YES
+                 completion:[OCMArg any]]);
 
   ASSERT_EQ(0, user_action_tester_.GetActionCount("IOSDownloadOpenIn"));
 

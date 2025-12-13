@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "components/dbus/utils/variant.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +19,7 @@ namespace {
 // Helper to get a signature as a std::string.
 template <typename T>
 std::string GetSignature() {
-  return internal::GetDBusTypeSignature<T>();
+  return GetDBusTypeSignature<T>();
 }
 
 TEST(DBusSignatureTest, GetSignature) {
@@ -38,6 +39,7 @@ TEST(DBusSignatureTest, GetSignature) {
   EXPECT_EQ(GetSignature<uint8_t>(), "y");
   EXPECT_EQ(GetSignature<std::string>(), "s");
   EXPECT_EQ(GetSignature<dbus::ObjectPath>(), "o");
+  EXPECT_EQ(GetSignature<Variant>(), "v");
   EXPECT_EQ(GetSignature<base::ScopedFD>(), "h");
 
   EXPECT_EQ(GetSignature<std::vector<int32_t>>(), "ai");
@@ -55,6 +57,51 @@ TEST(DBusSignatureTest, GetSignature) {
   EXPECT_EQ((GetSignature<std::vector<TestTuple>>()), "a(isay)");
   EXPECT_EQ((GetSignature<std::map<std::string, TestTuple>>()), "a{s(isay)}");
   EXPECT_EQ((GetSignature<std::map<TestTuple, int32_t>>()), "a{(isay)i}");
+}
+
+TEST(DBusSignatureTest, ParseDBusSignature) {
+  using internal::ParseDBusSignature;
+
+  static_assert(std::is_same_v<ParseDBusSignature<"b">, bool>);
+  static_assert(std::is_same_v<ParseDBusSignature<"y">, uint8_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"n">, int16_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"q">, uint16_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"i">, int32_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"u">, uint32_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"x">, int64_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"t">, uint64_t>);
+  static_assert(std::is_same_v<ParseDBusSignature<"d">, double>);
+  static_assert(std::is_same_v<ParseDBusSignature<"s">, std::string>);
+  static_assert(std::is_same_v<ParseDBusSignature<"o">, dbus::ObjectPath>);
+  static_assert(std::is_same_v<ParseDBusSignature<"h">, base::ScopedFD>);
+  static_assert(std::is_same_v<ParseDBusSignature<"v">, Variant>);
+
+  static_assert(std::is_same_v<ParseDBusSignature<"ai">, std::vector<int32_t>>);
+  static_assert(std::is_same_v<ParseDBusSignature<"aai">,
+                               std::vector<std::vector<int32_t>>>);
+
+  static_assert(std::is_same_v<ParseDBusSignature<"(is)">,
+                               std::tuple<int32_t, std::string>>);
+  static_assert(std::is_same_v<ParseDBusSignature<"a(is)">,
+                               std::vector<std::tuple<int32_t, std::string>>>);
+  static_assert(
+      std::is_same_v<ParseDBusSignature<"(sa{sv}(iv))">,
+                     std::tuple<std::string, std::map<std::string, Variant>,
+                                std::tuple<int32_t, Variant>>>);
+
+  static_assert(std::is_same_v<ParseDBusSignature<"a{si}">,
+                               std::map<std::string, int32_t>>);
+  static_assert(
+      std::is_same_v<ParseDBusSignature<"a{s(iv)}">,
+                     std::map<std::string, std::tuple<int32_t, Variant>>>);
+
+  static_assert(
+      std::is_same_v<ParseDBusSignature<"(ia{sv})">,
+                     std::tuple<int32_t, std::map<std::string, Variant>>>);
+  static_assert(
+      std::is_same_v<
+          ParseDBusSignature<"a(ia{sv})">,
+          std::vector<std::tuple<int32_t, std::map<std::string, Variant>>>>);
 }
 
 }  // namespace

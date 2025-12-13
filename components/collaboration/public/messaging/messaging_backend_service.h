@@ -19,6 +19,24 @@
 
 namespace collaboration::messaging {
 
+// The central service for managing and dispatching collaboration messages.
+//
+// This service acts as a bridge between various data sources (like
+// `TabGroupSyncService` and `DataSharingService`) and the UI, translating
+// backend events into user-facing messages. It is responsible for:
+// - Processing events from different collaboration-related services.
+// - Storing and managing the lifecycle of persistent and instant messages.
+// - Providing APIs for the UI to query for messages and activity logs.
+// - Notifying observers of changes in message states.
+//
+// The service distinguishes between two main types of messages:
+// - `PersistentMessage`: For ongoing UI affordances (e.g., a "dirty" state on a
+//   tab). These are managed via `PersistentMessageObserver`.
+// - `InstantMessage`: For one-off, immediate notifications (e.g., a toast when
+//   a user joins a collaboration). These are handled by the
+//   `InstantMessageDelegate`.
+//
+// This service is a `KeyedService` and is tied to a user's profile.
 class MessagingBackendService : public KeyedService,
                                 public base::SupportsUserData {
  public:
@@ -87,12 +105,12 @@ class MessagingBackendService : public KeyedService,
   // of PersistentMessageObserver::OnMessagingBackendServiceInitialized().
   virtual std::vector<PersistentMessage> GetMessagesForTab(
       tab_groups::EitherTabID tab_id,
-      std::optional<PersistentNotificationType> type) = 0;
+      PersistentNotificationType type) = 0;
   virtual std::vector<PersistentMessage> GetMessagesForGroup(
       tab_groups::EitherGroupID group_id,
-      std::optional<PersistentNotificationType> type) = 0;
+      PersistentNotificationType type) = 0;
   virtual std::vector<PersistentMessage> GetMessages(
-      std::optional<PersistentNotificationType> type) = 0;
+      PersistentNotificationType type) = 0;
 
   // Central method to query the list of rows to be shown in the activity log
   // UI. Will return an empty list if the service has not been initialized.
@@ -106,11 +124,11 @@ class MessagingBackendService : public KeyedService,
       const data_sharing::GroupId& collaboration_group_id) = 0;
 
   // Invoked to clear a given persistent message. This will clear the specified
-  // dirty bit on the message entry of the database. If std::nullopt is passed,
-  // all dirty bits of that message will be cleared.
-  virtual void ClearPersistentMessage(
-      const base::Uuid& message_id,
-      std::optional<PersistentNotificationType> type) = 0;
+  // dirty bit on the message entry of the database. If
+  // PersistentNotificationType::UNDEFINED is passed, all dirty bits of that
+  // message will be cleared.
+  virtual void ClearPersistentMessage(const base::Uuid& message_id,
+                                      PersistentNotificationType type) = 0;
 
   // Deprecated. Do not use. Use ClearPersistentMessage instead.
   // Invoked to remove a list of given messages from the backend storage.

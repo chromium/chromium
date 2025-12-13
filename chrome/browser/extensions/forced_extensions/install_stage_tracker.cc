@@ -10,6 +10,7 @@
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -18,6 +19,8 @@
 #include "components/user_manager/user_manager.h"  // nogncheck
 #include "components/user_manager/user_type.h"     // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

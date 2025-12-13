@@ -100,29 +100,6 @@ void ConsentAuditorImpl::RecordSyncConsent(
   consent_sync_bridge_->RecordConsent(std::move(specifics));
 }
 
-void ConsentAuditorImpl::RecordAssistantActivityControlConsent(
-    const GaiaId& gaia_id,
-    const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent) {
-  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
-  sync_pb::UserConsentTypes::AssistantActivityControlConsent*
-      assistant_consent =
-          specifics->mutable_assistant_activity_control_consent();
-  assistant_consent->CopyFrom(consent);
-
-  consent_sync_bridge_->RecordConsent(std::move(specifics));
-}
-
-void ConsentAuditorImpl::RecordAccountPasswordsConsent(
-    const GaiaId& gaia_id,
-    const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) {
-  std::unique_ptr<sync_pb::UserConsentSpecifics> specifics =
-      CreateUserConsentSpecifics(gaia_id, app_locale_, clock_);
-  specifics->mutable_account_passwords_consent()->CopyFrom(consent);
-
-  consent_sync_bridge_->RecordConsent(std::move(specifics));
-}
-
 void ConsentAuditorImpl::RecordRecorderSpeakerLabelConsent(
     const GaiaId& gaia_id,
     const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent) {

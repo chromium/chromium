@@ -41,6 +41,28 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="SuggestionUiEvent">
+  <summary>
+    Events related to the group suggestion service UI. See
+    TabSwitcherGroupSuggestionService.SuggestionUiEvent for the Java equivalent.
+  </summary>
+  <int value="0" label="Unknown"/>
+  <int value="1" label="TabSwitcherOpened"/>
+  <int value="2" label="RequestStarted"/>
+  <int value="3" label="RequestNoResult"/>
+  <int value="4" label="RequestHasSuggestion"/>
+  <int value="5" label="RequestHasMultipleSuggestions"/>
+  <int value="6" label="InvalidatedDueToGap"/>
+  <int value="7" label="InvalidatedDueToNoSelectedTab"/>
+  <int value="8" label="InvalidatedDueToTabState"/>
+  <int value="9" label="InvalidatedDueToEmptySuggestion"/>
+  <int value="10" label="InvalidatedDueToPinnedTab"/>
+  <int value="11" label="Shown"/>
+  <int value="12" label="Ignored"/>
+  <int value="13" label="Rejected"/>
+  <int value="14" label="Accepted"/>
+</enum>
+
 <enum name="TabGroupSuggestionThrottleReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="OverlappingTabs"/>

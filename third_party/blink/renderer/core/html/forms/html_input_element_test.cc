@@ -257,8 +257,8 @@ TEST_F(HTMLInputElementTest, StepDownOverflow) {
   input->setAttribute(html_names::kMinAttr, AtomicString("2010-02-10"));
   input->setAttribute(html_names::kStepAttr,
                       AtomicString("9223372036854775556"));
-  // InputType::applyStep() should not pass an out-of-range value to
-  // setValueAsDecimal, and WTF::msToYear() should not cause a DCHECK failure.
+  // InputType::ApplyStep() should not pass an out-of-range value to
+  // SetValueAsDecimal, and blink::MsToYear() should not cause a DCHECK failure.
   input->stepDown(1, ASSERT_NO_EXCEPTION);
 }
 

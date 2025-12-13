@@ -60,6 +60,11 @@ fi
 # Check for dirty files, mimicking what depot tools does.
 # https://source.chromium.org/chromium/chromium/src/+/main:third_party/depot_tools/git_common.py;l=963;drc=4c050c6f1a34c7b1aaf503d97b871afb8540e54f
 git update-index --refresh -q
+if [[ "$?" -ne 0 ]]; then
+  echo 'Failed to update index, aborting.'
+  exit 1
+fi
+
 git diff-index --ignore-submodules --name-status HEAD --
 if [[ "$?" -ne 0 ]]; then
   echo 'Working directory has pending changes, aborting. Clean up first.'
@@ -76,8 +81,6 @@ fi
 
 echo 'Cherry-picking template CL'
 git cl patch 6382102 &>/dev/null
-# Avoid people uploading to the template CL.
-git cl issue 0 &>/dev/null
 if [[ "$?" -ne 0 ]]; then
   echo 'Cherry-picking template CL (https://crrev.com/c/6382102) failed,
   aborting. If the CL is healthy, rebase-update your checkout. Otherwise, ask
@@ -88,6 +91,9 @@ if [[ "$?" -ne 0 ]]; then
   git branch --quiet -d "$BRANCH_NAME"
   exit 1
 fi
+
+# Avoid people uploading to the template CL.
+git cl issue 0 &>/dev/null
 
 echo 'Replacing template values with arguments'
 upper_snake_case="$1"
@@ -105,8 +111,16 @@ git show HEAD --name-only --pretty='' | while read file; do
 done
 git mv components/sync/protocol/foo_bar_specifics.proto \
   "components/sync/protocol/${lower_snake_case}_specifics.proto"
+if [[ "$?" -ne 0 ]]; then
+  echo 'Failed to move to ${lower_snake_case}_specifics.proto, aborting.'
+  exit 1
+fi
 
 echo 'Amending'
 git commit --quiet -a --amend --no-edit
+if [[ "$?" -ne 0 ]]; then
+  echo 'Failed to amend.'
+  exit 1
+fi
 
 echo 'Success!'

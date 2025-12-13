@@ -297,6 +297,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Stability"/>
   <int value="9" label="Independent"/>
   <int value="10" label="Out Of Band"/>
+  <int value="11" label="Flush"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/metrics/metrics_logs_event_manager.h:CreateReason) -->

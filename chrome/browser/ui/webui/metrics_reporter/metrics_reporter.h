@@ -29,9 +29,13 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
   using HasMarkCallback = base::OnceCallback<void(bool)>;
 
   virtual void Mark(const std::string& name);
+  virtual void Mark(const std::string& name, base::TimeTicks time);
   virtual void Measure(const std::string& start_mark, MeasureCallback callback);
   virtual void Measure(const std::string& start_mark,
                        const std::string& end_mark,
+                       MeasureCallback callback);
+  virtual void Measure(const std::string& start_mark,
+                       base::TimeTicks end_time,
                        MeasureCallback callback);
   virtual void HasMark(const std::string& name, HasMarkCallback callback);
   virtual bool HasLocalMark(const std::string& name);
@@ -54,6 +58,9 @@ class MetricsReporter : public metrics_reporter::mojom::PageMetricsHost {
 
   void MeasureInternal(const std::string& start_mark,
                        std::optional<std::string> end_mark,
+                       MeasureCallback callback);
+  void MeasureInternal(const std::string& start_mark,
+                       base::TimeTicks end_time,
                        MeasureCallback callback);
 
   std::map<std::string, base::TimeTicks> marks_;

@@ -162,20 +162,16 @@ public final class DisplayCompat {
     /**
      * Gets the physical size of the given display in pixels. The size is collected in the
      * following order:
-     * 1) sys.display-size if API < 28 (P) and the system-property is set
-     * 2) vendor.display-size if API >= 28 (P) and the system-property is set
-     * 3) physical width and height from display.getMode() for API >= 23
-     * 4) display.getRealSize() for API >= 17
-     * 5) display.getSize()
+     * 1) the system-property is set
+     * 2) physical width and height from display.getMode()
+     * 3) display.getRealSize()
+     * 4) display.getSize()
      *
      * @return the physical display size, in pixels
      */
     private static Point getPhysicalDisplaySize(Context context, Display display) {
         Point displaySize =
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                        ? parsePhysicalDisplaySizeFromSystemProperties("sys.display-size", display)
-                        : parsePhysicalDisplaySizeFromSystemProperties(
-                                "vendor.display-size", display);
+                parsePhysicalDisplaySizeFromSystemProperties("vendor.display-size", display);
         if (displaySize != null) {
             return displaySize;
         } else if (isSonyBravia4kTv(context)) {

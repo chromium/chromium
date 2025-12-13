@@ -26,7 +26,7 @@ from typing import (
 )
 
 from blinkpy.common import path_finder
-from blinkpy.common.checkout.git import CommitRange, FileStatusType
+from blinkpy.common.checkout.git import CommitRange, FileStatusType, Git
 from blinkpy.common.memoized import memoized
 from blinkpy.common.net.git_cl import CLRevisionID
 from blinkpy.common.system.executive import ScriptError
@@ -57,7 +57,9 @@ from blinkpy.w3c.wpt_manifest import TestType
 _log = logging.getLogger(__name__)
 
 GITHUB_COMMIT_PREFIX = WPT_GH_URL + 'commit/'
-CHECKS_URL_TEMPLATE = 'https://chromium-review.googlesource.com/c/chromium/src/+/{}/{}?checksPatchset=1&tab=checks'
+CHECKS_URL_TEMPLATE = (
+    'https://chromium-review.googlesource.com/c/chromium/src/+/'
+    '{issue}/{patchset}?checksResultsFilter={test_filter}&tab=checks')
 BUGANIZER_WPT_COMPONENT = '1456176'
 
 IssuesByDir = Mapping[str, BuganizerIssue]
@@ -77,7 +79,7 @@ class ImportNotifier:
         self.git = chromium_git
         self.local_wpt = local_wpt
         self._gerrit_api = gerrit_api
-        self._buganizer_client = buganizer_client or BuganizerClient()
+        self.buganizer_client = buganizer_client or BuganizerClient()
 
         self.finder = path_finder.PathFinder(host.filesystem)
         self.default_port = host.port_factory.get()
@@ -102,14 +104,14 @@ class ImportNotifier:
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
-        wpt_end_rev, import_rev = self.latest_wpt_import()
+        wpt_end_rev, import_rev = self.latest_wpt_import(self.git)
         cl = self._cl_for_wpt_revision(wpt_end_rev)
         repo = self.host.project_config.gerrit_project
         _log.info(f'Identifying failures for {repo}@{import_rev} ({cl.url})')
         if self._bugs_already_filed(cl):
             _log.info(f'Bugs have already been filed.')
             return {}, cl
-        wpt_start_rev, _ = self.latest_wpt_import(f'{import_rev}~1')
+        wpt_start_rev, _ = self.latest_wpt_import(self.git, f'{import_rev}~1')
 
         self.examine_baseline_changes(import_rev, cl.current_revision_id)
         self.examine_new_test_expectations(import_rev)
@@ -123,13 +125,16 @@ class ImportNotifier:
                 ', '.join(sorted(bug.link for bug in filed_bugs.values())))
         return filed_bugs, cl
 
+    @classmethod
     @memoized
     def latest_wpt_import(
-            self,
+            cls,
+            chromium_git: Git,
             commits: Union[None, str, CommitRange] = None) -> Tuple[str, str]:
         """Get commit hashes for the last WPT import.
 
         Arguments:
+            chromium_git: Git checkout of `chromium/src`.
             commits: The range to search. See `Git.most_recent_log_matching()`
                 docstring for usage.
 
@@ -140,12 +145,12 @@ class ImportNotifier:
               * The corresponding `chromium/src` commit where those changes
                 were rolled.
         """
-        raw_log = self.git.most_recent_log_matching(
-            f'^{self.IMPORT_SUBJECT_PREFIX}',
+        raw_log = chromium_git.most_recent_log_matching(
+            f'^{cls.IMPORT_SUBJECT_PREFIX}',
             commits=commits,
             format_pattern='%s:%H').strip()
-        if raw_log.startswith(self.IMPORT_SUBJECT_PREFIX):
-            revisions = raw_log[len(self.IMPORT_SUBJECT_PREFIX):]
+        if raw_log.startswith(cls.IMPORT_SUBJECT_PREFIX):
+            revisions = raw_log[len(cls.IMPORT_SUBJECT_PREFIX):]
             wpt_rev, _, chromium_rev = revisions.partition(':')
             assert len(wpt_rev) == 40, wpt_rev
             assert len(chromium_rev) == 40, chromium_rev
@@ -286,7 +291,6 @@ class ImportNotifier:
         """
         assert cl_revision.patchset, cl_revision
         cl_revision_no_ps = CLRevisionID(cl_revision.issue)
-        checks_url = CHECKS_URL_TEMPLATE.format(cl_revision.issue, '1')
         imported_commits = self.local_wpt.commits_in_range(*wpt_range)
         bugs = {}
         for directory, failures in self.new_failures_by_directory.items():
@@ -314,6 +318,9 @@ class ImportNotifier:
                         'List of new failures:\n'.format(
                             cl_revision_no_ps, directory))
             failure_list = failures.format_for_description(cl_revision)
+            checks_url = CHECKS_URL_TEMPLATE.format(issue=cl_revision.issue,
+                                                    patchset=1,
+                                                    test_filter=directory)
             checks = '\nSee {} for details.\n'.format(checks_url)
 
             expectations_statement = (
@@ -425,7 +432,7 @@ class ImportNotifier:
         filed_bugs = {}
         for index, (directory, bug) in enumerate(bugs.items(), start=1):
             try:
-                bug = self._buganizer_client.NewIssue(bug)
+                bug = self.buganizer_client.NewIssue(bug)
                 _log.info(f'[{index}] Filed bug: {bug.link}')
                 filed_bugs[directory] = bug
             except BuganizerError as error:

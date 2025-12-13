@@ -16,7 +16,7 @@ namespace enterprise::test {
 class ManagementContextMixinAsh : public ManagementContextMixin {
  public:
   ManagementContextMixinAsh(InProcessBrowserTestMixinHost* host,
-                            InProcessBrowserTest* test_base,
+                            PlatformBrowserTest* test_base,
                             ManagementContext management_context);
 
   ManagementContextMixinAsh(const ManagementContextMixinAsh&) = delete;

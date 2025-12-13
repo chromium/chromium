@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/debug/stack_trace.h"
 #include "base/immediate_crash.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "build/build_config.h"
@@ -48,6 +49,10 @@ void EchoService::Quit() {
 }
 
 void EchoService::Crash() {
+#if BUILDFLAG(IS_WIN)
+  // Avoid symbolizing a stack we won't use.
+  base::debug::DisableInProcessStackDumpingForTesting();
+#endif
   base::ImmediateCrash();
 }
 

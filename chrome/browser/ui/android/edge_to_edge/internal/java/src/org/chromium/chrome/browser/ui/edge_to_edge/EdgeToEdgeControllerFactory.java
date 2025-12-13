@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
@@ -18,12 +19,11 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.EdgeToEdgeDebuggingInfo;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 
 /**
@@ -54,12 +54,11 @@ public class EdgeToEdgeControllerFactory {
     public static @Nullable EdgeToEdgeController create(
             Activity activity,
             WindowAndroid windowAndroid,
-            ObservableSupplier<Tab> tabObservableSupplier,
+            NullableObservableSupplier<Tab> tabObservableSupplier,
             EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
-            FullscreenManager fullscreenManager,
-            EdgeToEdgeDebuggingInfo edgeToEdgeDebuggingInfo) {
+            FullscreenManager fullscreenManager) {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) return null;
         assert EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(activity);
         return new EdgeToEdgeControllerImpl(
@@ -70,8 +69,7 @@ public class EdgeToEdgeControllerFactory {
                 edgeToEdgeManager,
                 browserControlsStateProvider,
                 layoutManagerSupplier,
-                fullscreenManager,
-                edgeToEdgeDebuggingInfo);
+                fullscreenManager);
     }
 
     /**
@@ -120,8 +118,21 @@ public class EdgeToEdgeControllerFactory {
      * @param view The view to be adjusted.
      */
     public static EdgeToEdgePadAdjuster createForView(View view) {
+        return new SimpleEdgeToEdgePadAdjuster(view, /* enableClipToPadding= */ true);
+    }
+
+    /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge, relying on the
+     * EdgeToEdgeController for the bottom inset.
+     *
+     * @param view The view to be adjusted.
+     * @param edgeToEdgeController The {@link EdgeToEdgeController} for providing the appropriate
+     *     bottom inset.
+     */
+    public static EdgeToEdgePadAdjuster createForView(
+            View view, EdgeToEdgeController edgeToEdgeController) {
         return new SimpleEdgeToEdgePadAdjuster(
-                view, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+                view, edgeToEdgeController, /* enableClipToPadding= */ true);
     }
 
     /**
@@ -135,8 +146,6 @@ public class EdgeToEdgeControllerFactory {
             View view,
             @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
         return new SimpleEdgeToEdgePadAdjuster(
-                view,
-                edgeToEdgeControllerSupplier,
-                EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+                view, edgeToEdgeControllerSupplier, /* enableClipToPadding= */ true);
     }
 }

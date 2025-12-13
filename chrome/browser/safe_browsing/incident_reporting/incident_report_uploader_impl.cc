@@ -5,6 +5,8 @@
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader_impl.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -108,19 +110,15 @@ GURL IncidentReportUploaderImpl::GetIncidentReportUrl() {
 }
 
 void IncidentReportUploaderImpl::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   // Take ownership of the loader in this scope.
   std::unique_ptr<network::SimpleURLLoader> url_loader(std::move(url_loader_));
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
-  std::string response_body_str;
-  if (response_body.get())
-    response_body_str = std::move(*response_body.get());
-
-  OnURLLoaderCompleteInternal(response_body_str, response_code,
-                              url_loader->NetError());
+  OnURLLoaderCompleteInternal(std::move(response_body).value_or(""),
+                              response_code, url_loader->NetError());
 }
 
 void IncidentReportUploaderImpl::OnURLLoaderCompleteInternal(

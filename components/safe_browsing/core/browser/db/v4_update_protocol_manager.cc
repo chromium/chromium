@@ -4,6 +4,8 @@
 
 #include "components/safe_browsing/core/browser/db/v4_update_protocol_manager.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -332,17 +334,14 @@ void V4UpdateProtocolManager::HandleTimeout() {
 
 // SafeBrowsing request responses are handled here.
 void V4UpdateProtocolManager::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = 0;
   if (request_->ResponseInfo() && request_->ResponseInfo()->headers)
     response_code = request_->ResponseInfo()->headers->response_code();
 
-  std::string data;
-  if (response_body)
-    data = *response_body;
-
-  OnURLLoaderCompleteInternal(request_->NetError(), response_code, data);
+  OnURLLoaderCompleteInternal(request_->NetError(), response_code,
+                              std::move(response_body).value_or(""));
 }
 
 void V4UpdateProtocolManager::OnURLLoaderCompleteInternal(

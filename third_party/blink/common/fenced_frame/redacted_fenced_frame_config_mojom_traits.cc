@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_mojom_traits.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"

@@ -13,11 +13,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
@@ -45,7 +47,8 @@ public class ContextMenuManager {
         ContextMenuItemId.OPEN_IN_NEW_TAB,
         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP,
         ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
-        ContextMenuItemId.OPEN_IN_NEW_WINDOW,
+        ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW,
+        ContextMenuItemId.OPEN_IN_OTHER_WINDOW,
         ContextMenuItemId.OPEN_ALL,
         ContextMenuItemId.SAVE_FOR_OFFLINE,
         ContextMenuItemId.ADD_TO_MY_APPS,
@@ -54,6 +57,8 @@ public class ContextMenuManager {
         ContextMenuItemId.PIN_THIS_SHORTCUT,
         ContextMenuItemId.EDIT_SHORTCUT,
         ContextMenuItemId.UNPIN,
+        ContextMenuItemId.MOVE_UP,
+        ContextMenuItemId.MOVE_DOWN,
         ContextMenuItemId.HIDE_ALL,
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -65,18 +70,21 @@ public class ContextMenuManager {
         int OPEN_IN_NEW_TAB = 1;
         int OPEN_IN_NEW_TAB_IN_GROUP = 2;
         int OPEN_IN_INCOGNITO_TAB = 3;
-        int OPEN_IN_NEW_WINDOW = 4;
-        int OPEN_ALL = 5;
-        int SAVE_FOR_OFFLINE = 6;
-        int ADD_TO_MY_APPS = 7;
-        int REMOVE = 8;
-        int REMOVE_ALL = 9;
-        int PIN_THIS_SHORTCUT = 10;
-        int EDIT_SHORTCUT = 11;
-        int UNPIN = 12;
-        int HIDE_ALL = 13;
+        int OPEN_IN_INCOGNITO_WINDOW = 4;
+        int OPEN_IN_OTHER_WINDOW = 5;
+        int OPEN_ALL = 6;
+        int SAVE_FOR_OFFLINE = 7;
+        int ADD_TO_MY_APPS = 8;
+        int REMOVE = 9;
+        int REMOVE_ALL = 10;
+        int PIN_THIS_SHORTCUT = 11;
+        int EDIT_SHORTCUT = 12;
+        int UNPIN = 13;
+        int MOVE_UP = 14;
+        int MOVE_DOWN = 15;
+        int HIDE_ALL = 16;
 
-        int NUM_ENTRIES = 14;
+        int NUM_ENTRIES = 17;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -113,6 +121,12 @@ public class ContextMenuManager {
 
         /** Edits the current item. */
         void editItem();
+
+        /** Moves the current item up. */
+        void moveItemUp();
+
+        /** Moves the current item down. */
+        void moveItemDown();
 
         /**
          * @return the URL of the current item for saving offline, or null if the item can't be
@@ -171,6 +185,12 @@ public class ContextMenuManager {
 
         @Override
         public void editItem() {}
+
+        @Override
+        public void moveItemUp() {}
+
+        @Override
+        public void moveItemDown() {}
 
         @Override
         public @Nullable GURL getUrl() {
@@ -247,7 +267,7 @@ public class ContextMenuManager {
                 BrowserUiListMenuUtils.getBasicListMenu(
                         mAnchorView.getContext(),
                         menuModel,
-                        model ->
+                        (model, view) ->
                                 handleMenuItemClick(
                                         model.get(ListMenuItemProperties.MENU_ITEM_ID), delegate));
         mListContextMenu = new ListMenuHost(mAnchorView, null);
@@ -327,9 +347,13 @@ public class ContextMenuManager {
             case ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP:
                 return mNavigationDelegate.isOpenInNewTabInGroupEnabled();
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
-                return mNavigationDelegate.isOpenInIncognitoEnabled();
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
-                return mNavigationDelegate.isOpenInNewWindowEnabled();
+                return mNavigationDelegate.isOpenInIncognitoEnabled()
+                        && !IncognitoUtils.shouldOpenIncognitoAsWindow();
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                return mNavigationDelegate.isOpenInIncognitoEnabled()
+                        && IncognitoUtils.shouldOpenIncognitoAsWindow();
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
+                return mNavigationDelegate.isOpenInAnotherWindowEnabled();
             case ContextMenuItemId.OPEN_ALL:
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
@@ -349,6 +373,9 @@ public class ContextMenuManager {
             case ContextMenuItemId.EDIT_SHORTCUT: // Fall through.
             case ContextMenuItemId.UNPIN:
                 return true;
+            case ContextMenuItemId.MOVE_UP: // Fall through.
+            case ContextMenuItemId.MOVE_DOWN:
+                return AccessibilityState.isAnyAccessibilityServiceEnabled();
             case ContextMenuItemId.ADD_TO_MY_APPS:
                 return false;
             case ContextMenuItemId.HIDE_ALL:
@@ -370,7 +397,9 @@ public class ContextMenuManager {
                 return R.string.contextmenu_open_in_new_tab_group;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                 return R.string.contextmenu_open_in_incognito_tab;
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                return R.string.contextmenu_open_in_incognito_window;
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
                 return R.string.contextmenu_open_in_other_window;
             case ContextMenuItemId.OPEN_ALL:
                 return R.string.recent_tabs_open_all_menu_option;
@@ -386,6 +415,10 @@ public class ContextMenuManager {
                 return R.string.contextmenu_edit_shortcut;
             case ContextMenuItemId.UNPIN:
                 return R.string.contextmenu_unpin;
+            case ContextMenuItemId.MOVE_UP:
+                return R.string.menu_item_move_up;
+            case ContextMenuItemId.MOVE_DOWN:
+                return R.string.menu_item_move_down;
             case ContextMenuItemId.HIDE_ALL:
                 return R.string.recent_tabs_hide_menu_option;
         }
@@ -414,9 +447,16 @@ public class ContextMenuManager {
                 delegate.openItem(WindowOpenDisposition.OFF_THE_RECORD);
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoTab");
                 return true;
-            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+            case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
+                delegate.openItem(WindowOpenDisposition.OFF_THE_RECORD);
+                RecordUserAction.record(
+                        mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoWindow");
+                return true;
+            case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
+                // TODO(crbug.com/450631766): Update WindowOpenDisposition to handle
+                // OPEN_IN_OTHER_WINDOW
                 delegate.openItem(WindowOpenDisposition.NEW_WINDOW);
-                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInNewWindow");
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInOtherWindow");
                 return true;
             case ContextMenuItemId.OPEN_ALL:
                 delegate.openAllItems();
@@ -445,6 +485,14 @@ public class ContextMenuManager {
             case ContextMenuItemId.UNPIN:
                 delegate.unpinItem();
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.UnpinItem");
+                return true;
+            case ContextMenuItemId.MOVE_UP:
+                delegate.moveItemUp();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.MoveItemUp");
+                return true;
+            case ContextMenuItemId.MOVE_DOWN:
+                delegate.moveItemDown();
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.MoveItemDown");
                 return true;
             case ContextMenuItemId.HIDE_ALL:
                 delegate.hideAllItems();

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
+#include "base/byte_count.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
@@ -66,17 +66,17 @@ class UserPerformanceTuningManager {
       : public content::WebContentsUserData<PreDiscardResourceUsage> {
    public:
     PreDiscardResourceUsage(content::WebContents* contents,
-                            uint64_t memory_footprint_estimate,
+                            base::ByteCount memory_footprint_estimate,
                             ::mojom::LifecycleUnitDiscardReason discard_reason);
     ~PreDiscardResourceUsage() override;
 
     void UpdateDiscardInfo(
-        uint64_t memory_footprint_estimate_kb,
+        base::ByteCount memory_footprint_estimate,
         ::mojom::LifecycleUnitDiscardReason discard_reason,
         base::LiveTicks discard_live_ticks = base::LiveTicks::Now());
 
-    // Returns the resource usage estimate in kilobytes.
-    uint64_t memory_footprint_estimate_kb() const {
+    // Returns the resource usage estimate.
+    base::ByteCount memory_footprint_estimate() const {
       return memory_footprint_estimate_;
     }
 
@@ -90,7 +90,7 @@ class UserPerformanceTuningManager {
     friend WebContentsUserData;
     WEB_CONTENTS_USER_DATA_KEY_DECL();
 
-    uint64_t memory_footprint_estimate_ = 0;
+    base::ByteCount memory_footprint_estimate_;
     ::mojom::LifecycleUnitDiscardReason discard_reason_;
     base::LiveTicks discard_live_ticks_;
   };

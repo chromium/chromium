@@ -21,11 +21,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/managed_toolbar_pin_mode.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -89,6 +90,34 @@ void ToolbarActionsModel::OnExtensionActionUpdated(
   NotifyToolbarActionUpdated(extension_action->extension_id());
 }
 
+void ToolbarActionsModel::OnExtensionInstalled(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    bool is_update) {
+  // We want to pin the extension to the toolbar if the `default_pinned` policy
+  // is set, but only during installation, not updates.
+  if (is_update) {
+    return;
+  }
+
+  // Skip pinning for incognito and guest profiles.
+  if (profile_->IsOffTheRecord()) {
+    return;
+  }
+
+  // We can only pin extensions that have a toolbar action.
+  if (!ShouldAddExtension(extension)) {
+    return;
+  }
+
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+  if (extension_management->GetToolbarPinMode(extension->id()) ==
+      extensions::ManagedToolbarPinMode::kDefaultPinned) {
+    SetActionVisibility(extension->id(), true);
+  }
+}
+
 void ToolbarActionsModel::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
@@ -122,7 +151,54 @@ void ToolbarActionsModel::OnExtensionUninstalled(
 }
 
 void ToolbarActionsModel::OnExtensionManagementSettingsChanged() {
+  // First, update the force-pinned actions. This can notify observers.
   UpdatePinnedActionIds();
+
+  // After that, check for any newly-applied `default_pinned` settings.
+  // This can happen if policies are loaded after an extension is installed,
+  // which is common for extensions installed via the registry.
+  if (profile_->IsOffTheRecord()) {
+    return;
+  }
+
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
+
+  // To avoid multiple preference writes and notifications, calculate all
+  // changes and then commit them once.
+  extensions::ExtensionIdList new_pinned_list =
+      extension_prefs_->GetPinnedExtensions();
+  std::vector<ActionId> actions_to_notify;
+
+  // action_ids() is a sorted flat_set, so iteration order is deterministic.
+  for (const auto& action_id : action_ids_) {
+    // Force-pinned actions are handled by `UpdatePinnedActionIds()` and are not
+    // stored in the user-facing pref.
+    if (IsActionForcePinned(action_id)) {
+      continue;
+    }
+
+    const bool is_pinned = base::Contains(new_pinned_list, action_id);
+    const extensions::ManagedToolbarPinMode pin_mode =
+        extension_management->GetToolbarPinMode(action_id);
+
+    if (pin_mode == extensions::ManagedToolbarPinMode::kDefaultPinned &&
+        !is_pinned) {
+      // Pinning adds the extension to the end of the list.
+      new_pinned_list.push_back(action_id);
+      actions_to_notify.push_back(action_id);
+    }
+  }
+
+  if (!actions_to_notify.empty()) {
+    // This will trigger a single pref change notification, which in turn will
+    // call UpdatePinnedActionIds() and notify observers once.
+    extension_prefs_->SetPinnedExtensions(new_pinned_list);
+
+    for (const auto& action_id : actions_to_notify) {
+      extension_action_dispatcher_->OnActionPinnedStateChanged(action_id, true);
+    }
+  }
 }
 
 void ToolbarActionsModel::OnExtensionPermissionsUpdated(
@@ -224,12 +300,18 @@ bool ToolbarActionsModel::HasAction(const ActionId& action_id) const {
   return base::Contains(action_ids_, action_id);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-bool ToolbarActionsModel::CanShowActionsInToolbar(const Browser& browser) {
+bool ToolbarActionsModel::CanShowActionsInToolbar(
+    const BrowserWindowInterface& browser) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Desktop Android, we show actions in the toolbar as long as the rest of
+  // the extensions UI is enabled in the browser.
+  // TODO(crbug.com/460554584): Make sure this is the intended behavior.
+  return true;
+#else   // BUILDFLAG(IS_ANDROID)
   // Pinning extensions is not available in PWAs.
   return !web_app::AppBrowserController::IsWebApp(&browser);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
-#endif
 
 bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
   // We consider a site to be restricted if it's restricted for every

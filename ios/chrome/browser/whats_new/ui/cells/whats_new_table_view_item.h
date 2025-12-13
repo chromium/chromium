@@ -26,9 +26,9 @@
 
 @end
 
-// WhatsNewTableViewCell implements an TableViewCell subclass containing a
+// WhatsNewTableViewCell implements an LegacyTableViewCell subclass containing a
 // leading icon and two text labels (text and detail text) laid out vertically.
-@interface WhatsNewTableViewCell : TableViewCell
+@interface WhatsNewTableViewCell : LegacyTableViewCell
 
 // UILabels corresponding to `title` from the item.
 @property(nonatomic, strong) UILabel* textLabel;

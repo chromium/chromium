@@ -95,6 +95,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/policy/proto:",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//crypto",
     "//net",

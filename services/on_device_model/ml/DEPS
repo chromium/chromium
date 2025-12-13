@@ -1,5 +1,6 @@
 include_rules = [
   "+components/language_detection/core",
+  "+components/optimization_guide/machine_learning_tflite_buildflags.h",
   "+components/translate/core/language_detection",
   "+third_party/rust/chromium_crates_io/vendor/llguidance-v1/llguidance.h",
 ]

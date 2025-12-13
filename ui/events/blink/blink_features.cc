@@ -6,8 +6,6 @@
 
 namespace features {
 
-BASE_FEATURE(kDontSendKeyEventsToJavascript,
-             "DontSendKeyEventsToJavascript",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDontSendKeyEventsToJavascript, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

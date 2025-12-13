@@ -23,11 +23,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_SHEET_CONTENTS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/mixin_map.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
-#include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
-#include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -43,12 +42,16 @@
 namespace blink {
 
 class CSSStyleSheet;
+class CSSStyleSheetResource;
 class Document;
+class MediaQueryEvaluator;
 class Node;
 class StyleRuleBase;
 class StyleRuleFontFace;
+class RuleSet;
 class RuleSetDiff;
 class StyleRuleImport;
+class StyleRuleLayerStatement;
 class StyleRuleNamespace;
 enum class ParseSheetResult;
 
@@ -152,6 +155,7 @@ class CORE_EXPORT StyleSheetContents final
     if (rule_set_diff_) {
       rule_set_diff_->MarkUnrepresentable();
     }
+    has_cached_mixins_ = false;
   }
 
   // Get/clear the diff between last time we did StartMutation()
@@ -245,18 +249,28 @@ class CORE_EXPORT StyleSheetContents final
 
   bool DidLoadErrorOccur() const { return did_load_error_occur_; }
 
+  // NOTE: “medium” must be the same as is later used for EnsureRuleSet(),
+  // or the set of mixins and the rule set may be inconsistent.
+  //
+  // If mixins were not already cached, and there is or previously was
+  // at least one mixin, the generation counter will be increased.
+  MixinMap& ExtractMixins(const MediaQueryEvaluator& medium,
+                          uint64_t& mixin_generation);
+
   RuleSet& GetRuleSet() {
     DCHECK(rule_set_);
     return *rule_set_.Get();
   }
 
   bool HasRuleSet() { return rule_set_.Get(); }
-  RuleSet& EnsureRuleSet(const MediaQueryEvaluator&);
+  RuleSet& EnsureRuleSet(const MediaQueryEvaluator& medium,
+                         const MixinMap& mixins);
   void ClearRuleSet();
   // Create a RuleSet which is not associated (i.e. not owned)
   // by this StyleSheetContents. This is useful for matching rules
   // in  an "alternate reality", which is the case for InspectorGhostRules.
-  RuleSet* CreateUnconnectedRuleSet(const MediaQueryEvaluator&) const;
+  RuleSet* CreateUnconnectedRuleSet(const MediaQueryEvaluator& medium,
+                                    const MixinMap& mixins) const;
 
   String SourceMapURL() const { return source_map_url_; }
 
@@ -302,6 +316,20 @@ class CORE_EXPORT StyleSheetContents final
 
   HeapHashSet<WeakMember<CSSStyleSheet>> loading_clients_;
   HeapHashSet<WeakMember<CSSStyleSheet>> completed_clients_;
+
+  // Mixins extracted from this stylesheet. We cache this not because
+  // it is expensive to compute (it isn't), but to have better control
+  // over when we need to invalidate based on mixins changing.
+  // Generally cleared whenever rule_set_ is; this isn't strictly
+  // required (if this style sheet only exports mixins that it doesn't
+  // use itself), but it simplifies things a bit as long as we don't
+  // have precise mixin invalidation.
+  //
+  // Note that if has_cached_mixins_ = false, mixins_ will contain the
+  // _previous_ mixin map, which helps us to know if we have any mixins
+  // that may have been removed.
+  MixinMap mixins_;
+  bool has_cached_mixins_ = false;
 
   Member<RuleSet> rule_set_;
   // If we have modified the style sheet since last creating

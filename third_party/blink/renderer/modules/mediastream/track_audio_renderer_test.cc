@@ -12,6 +12,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/channel_layout.h"
 #include "media/base/fake_audio_renderer_sink.h"

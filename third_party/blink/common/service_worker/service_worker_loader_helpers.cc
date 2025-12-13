@@ -12,6 +12,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/redirect_util.h"
@@ -74,14 +75,18 @@ void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
   // headers.
   if (out_head->charset.empty()) {
     std::string charset;
-    if (out_head->headers->GetCharset(&charset))
+    if (out_head->headers->GetCharset(&charset)) {
       out_head->charset = charset;
+    }
   }
 
   // Populate |out_head|'s content length with the value from the HTTP response
   // headers.
-  if (out_head->content_length == -1)
-    out_head->content_length = out_head->headers->GetContentLength();
+  if (out_head->content_length == -1) {
+    std::optional<base::ByteCount> content_length =
+        out_head->headers->GetContentLength();
+    out_head->content_length = content_length ? content_length->InBytes() : -1;
+  }
 
   // Populate |out_head|'s encoded data length by checking the response source.
   // If the response is not from network, we store 0 since no data is
@@ -93,11 +98,15 @@ void SaveResponseHeaders(const mojom::FetchAPIResponse& response,
   // amount of data received from network after SSL decoding and proxy handling,
   // and returns 0 when no data is received from network.
   if (out_head->encoded_data_length == -1) {
-    out_head->encoded_data_length =
-        response.response_source ==
-                network::mojom::FetchResponseSource::kNetwork
-            ? out_head->headers->GetContentLength()
-            : 0;
+    if (response.response_source ==
+        network::mojom::FetchResponseSource::kNetwork) {
+      std::optional<base::ByteCount> content_length =
+          out_head->headers->GetContentLength();
+      out_head->encoded_data_length =
+          content_length ? content_length->InBytes() : -1;
+    } else {
+      out_head->encoded_data_length = 0;
+    }
   }
 }
 

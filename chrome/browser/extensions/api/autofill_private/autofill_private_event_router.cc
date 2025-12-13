@@ -117,6 +117,11 @@ void AutofillPrivateEventRouter::OnStateChanged(syncer::SyncService*) {
   BroadcastCurrentData();
 }
 
+void AutofillPrivateEventRouter::OnSyncShutdown(syncer::SyncService*) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 void AutofillPrivateEventRouter::BroadcastCurrentData() {
   // Ignore any updates before data is loaded. This can happen in tests.
   if (!(personal_data_ && personal_data_->IsDataLoaded()))

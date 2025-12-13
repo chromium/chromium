@@ -49,32 +49,19 @@
     [self.trackLayer addSublayer:self.progressLayer];
     [self updateProgressLayer];
 
-    if (@available(iOS 17, *)) {
-      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-        UITraitUserInterfaceLevel.class
-      ]);
-      __weak __typeof(self) weakSelf = self;
-      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                       UITraitCollection* previousCollection) {
-        [weakSelf updateStrokeColorOnTraitChange:previousCollection];
-      };
-      [self registerForTraitChanges:traits withHandler:handler];
-    }
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+      UITraitUserInterfaceLevel.class
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateStrokeColorOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateStrokeColorOnTraitChange:previousTraitCollection];
-}
-#endif
 
 #pragma mark - Public
 

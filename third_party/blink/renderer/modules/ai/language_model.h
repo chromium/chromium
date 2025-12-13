@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_role.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_prompt_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_languagemodelmessagecontentsequence_string.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -68,10 +69,11 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       ScriptState* script_state,
       ExceptionState& exception_state);
 
-  ScriptPromise<IDLString> prompt(ScriptState* script_state,
-                                  const V8LanguageModelPrompt* input,
-                                  const LanguageModelPromptOptions* options,
-                                  ExceptionState& exception_state);
+  ScriptPromise<V8LanguageModelPromptResult> prompt(
+      ScriptState* script_state,
+      const V8LanguageModelPrompt* input,
+      const LanguageModelPromptOptions* options,
+      ExceptionState& exception_state);
   ReadableStream* promptStreaming(ScriptState* script_state,
                                   const V8LanguageModelPrompt* input,
                                   const LanguageModelPromptOptions* options,
@@ -106,6 +108,10 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner();
 
  private:
+  void ResolvePromiseOnComplete(
+      ScriptPromiseResolver<V8LanguageModelPromptResult>* resolver,
+      const String& response,
+      mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnResponseComplete(
       mojom::blink::ModelExecutionContextInfoPtr context_info);
   void OnQuotaOverflow();
@@ -120,14 +126,14 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
       on_device_model::mojom::blink::ResponseConstraintPtr constraint,
       mojo::PendingRemote<mojom::blink::ModelStreamingResponder>
           pending_responder,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
+      Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
   // Helper to make AILanguageModelProxy::MeasureInputUsage compatible with
   // ConvertPromptInputsToMojo callback.
   void ExecuteMeasureInputUsage(
       ScriptPromiseResolver<IDLDouble>* resolver,
       AbortSignal* signal,
-      WTF::Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
+      Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
   // Validates and processed prompt input and returns the processed constraints.
   // Returns std::nullopt on failure.
@@ -142,7 +148,7 @@ class LanguageModel final : public EventTarget, public ExecutionContextClient {
   uint32_t top_k_ = 0;
   float temperature_ = 0.0;
   // Prompt types supported by the language model in this session.
-  WTF::HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
+  HashSet<mojom::blink::AILanguageModelPromptType> input_types_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AILanguageModel> language_model_remote_;

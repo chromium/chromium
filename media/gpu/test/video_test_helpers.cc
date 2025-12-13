@@ -23,6 +23,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
+#include "base/types/to_address.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -286,8 +287,7 @@ EncodedDataHelperH265::EncodedDataHelperH265(base::span<const uint8_t> stream,
                                              VideoCodec codec)
     : EncodedDataHelper(std::move(stream), codec),
       h265_parser_(std::make_unique<H265Parser>()) {
-  h265_parser_->SetStream(reinterpret_cast<uint8_t*>(data_.data()),
-                          data_.size());
+  h265_parser_->SetStream(base::as_byte_span(data_));
 }
 
 EncodedDataHelperH265::~EncodedDataHelperH265() = default;
@@ -329,17 +329,18 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperH265::GetNextBuffer() {
       }
       CHECK_EQ(result, H265Parser::kOk);
     }
-    CHECK_LE(nalu.data,
+    CHECK_LE(nalu.data.data(),
              reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
-    CHECK_LE(nalu.data + nalu.size,
+    CHECK_LE(nalu.data.data() + nalu.data.size(),
              reinterpret_cast<uint8_t*>(data_.data()) + data_.size());
 
     struct NALUMetadata nalu_metadata;
     nalu_metadata.start_pointer =
         reinterpret_cast<uint8_t*>(data_.data()) + next_pos_to_parse_;
     nalu_metadata.start_index = next_pos_to_parse_;
-    nalu_metadata.header_size = nalu.data - nalu_metadata.start_pointer;
-    nalu_metadata.size_with_header = nalu_metadata.header_size + nalu.size;
+    nalu_metadata.header_size = nalu.data.data() - nalu_metadata.start_pointer;
+    nalu_metadata.size_with_header =
+        nalu_metadata.header_size + nalu.data.size();
     VLOG(2) << "NALU (" << nalu.nal_unit_type << ") found " << nalu_metadata
             << " next_pos_to_parse_=" << next_pos_to_parse_;
 
@@ -439,8 +440,7 @@ bool EncodedDataHelperH265::ReachEndOfStream() const {
 
 void EncodedDataHelperH265::Rewind() {
   h265_parser_->Reset();
-  h265_parser_->SetStream(reinterpret_cast<uint8_t*>(data_.data()),
-                          data_.size());
+  h265_parser_->SetStream(base::as_byte_span(data_));
   previous_nalus_.clear();
   EncodedDataHelper::Rewind();
 }
@@ -619,7 +619,7 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
   // Otherwise timestamps will be generated when GetNextFrame() is called
   UpdateFrameRate(frame_rate);
 
-  if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type_ == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     layout_ = GetPlatformVideoFrameLayout(
@@ -698,7 +698,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
 scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     const VideoFrameData& video_frame_data,
     base::TimeDelta frame_timestamp) const {
-  if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type_ == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     const auto& gmb_handle = video_frame_data.gmb_handle;
     auto dup_handle = gmb_handle.Clone();
     if (dup_handle.is_null()) {
@@ -706,9 +706,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    std::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(layout_->format());
-    if (!buffer_format) {
+    std::optional<viz::SharedImageFormat> si_format =
+        media::VideoPixelFormatToSharedImageFormat(layout_->format());
+    if (!si_format) {
       LOG(ERROR) << "Unexpected format: " << layout_->format();
       return nullptr;
     }
@@ -716,9 +716,8 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     auto shared_image = test_sii_->CreateSharedImage(
-        {viz::GetSharedImageFormat(*buffer_format), layout_->coded_size(),
-         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
-         "AlignedDataHelper"},
+        {*si_format, layout_->coded_size(), gfx::ColorSpace(),
+         gpu::SharedImageUsageSet(si_usage), "AlignedDataHelper"},
         gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
         std::move(dup_handle));
@@ -738,10 +737,12 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     }
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
-    std::array<uint8_t*, 3> data = {};
-    for (size_t i = 0; i < layout_->planes().size(); i++)
-      data[i] = buf + layout_->planes()[i].offset;
-
+    std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> data = {};
+    for (size_t i = 0; i < layout_->planes().size(); i++) {
+      // TODO(crbug.com/40285824): spanify this usage.
+      data[i] = UNSAFE_TODO(base::span(buf + layout_->planes()[i].offset,
+                                       layout_->planes()[i].size));
+    }
     auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
         *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
         frame_timestamp);
@@ -764,7 +765,7 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
          "source buffer resolution";
   const VideoPixelFormat pixel_format = src_layout.format();
   const gfx::Size& resolution = src_layout.coded_size();
-  if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     // First write into on-memory frame.
@@ -779,10 +780,10 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
           VideoFrame::RowBytes(i, pixel_format, resolution.width()),
           VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
-    // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
+    // Create MappableSI-backed VideoFrame from the on-memory VideoFrame.
     auto frame =
         CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
-                        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE,
                         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
 
@@ -824,13 +825,16 @@ RawDataHelper::~RawDataHelper() = default;
 scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   uint32_t read_frame_index =
       GetReadFrameIndex(index, reverse_, video_->NumFrames());
-  std::array<uint8_t*, VideoFrame::kMaxPlanes> frame_data = {};
+  std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> frame_data = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
   RawVideo::FrameData src_frame = video_->GetFrame(read_frame_index);
   for (size_t i = 0; i < num_planes; ++i) {
     // The data is never modified but WrapExternalYuvDataWithLayout() only
-    // accepts non-const pointer.
-    frame_data[i] = const_cast<uint8_t*>(src_frame.plane_addrs[i]);
+    // accepts non-const span.
+    // TODO(crbug.com/40285824): spanify this usage.
+    frame_data[i] =
+        UNSAFE_TODO(base::span(const_cast<uint8_t*>(src_frame.plane_addrs[i]),
+                               video_->FrameLayout().planes()[i].size));
   }
 
   scoped_refptr<VideoFrame> video_frame =

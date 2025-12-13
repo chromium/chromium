@@ -102,6 +102,7 @@
       </template>
       <template is="dom-if" if="[[searchLabel]]">
         <cr-search-field label="[[searchLabel]]"
+            icon-override="[[searchIcon]]"
             on-search-changed="onSearchChanged_"
             clear-label="$i18n{clearSearch}">
         </cr-search-field>

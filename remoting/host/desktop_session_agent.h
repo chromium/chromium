@@ -29,10 +29,11 @@
 #include "remoting/host/mojom/remoting_mojom_traits.h"
 #include "remoting/host/mouse_shape_pump.h"
 #include "remoting/proto/control.pb.h"
+#include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
-#include "third_party/webrtc/modules/desktop_capture/mouse_cursor_monitor.h"
+#include "remoting/protocol/mouse_cursor_monitor.h"
 #include "ui/events/types/event_type.h"
 
 namespace base {
@@ -68,7 +69,7 @@ class InputEventTracker;
 class DesktopSessionAgent
     : public base::RefCountedThreadSafe<DesktopSessionAgent>,
       public IPC::Listener,
-      public webrtc::MouseCursorMonitor::Callback,
+      public protocol::MouseCursorMonitor::Callback,
       public ClientSessionControl,
       public mojom::DesktopSessionAgent,
       public mojom::DesktopSessionControl {
@@ -107,9 +108,11 @@ class DesktopSessionAgent
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
-  // webrtc::MouseCursorMonitor::Callback implementation.
-  void OnMouseCursor(webrtc::MouseCursor* cursor) override;
+  // MouseCursorMonitor::Callback implementation.
+  void OnMouseCursor(std::unique_ptr<webrtc::MouseCursor> cursor) override;
   void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
+  void OnMouseCursorFractionalPosition(
+      const protocol::FractionalCoordinate& position) override;
 
   // Forwards a local clipboard event to the network process over IPC.
   void OnClipboardEvent(const protocol::ClipboardEvent& event);
@@ -139,6 +142,7 @@ class DesktopSessionAgent
   void BeginFileRead(BeginFileReadCallback callback) override;
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
+  void SetHostCursorRenderedByClient() override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
@@ -255,6 +259,11 @@ class DesktopSessionAgent
 
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
       webauthn_state_change_notifier_;
+
+  // Whether the host cursor is rendered by the client.
+  // TODO: crbug.com/455622961 - Remove this once the clientRenderedHostCursor
+  // experiment is fully rolled out, where this is always set to true.
+  bool host_cursor_rendered_by_client_ = false;
 
   // Used to disable callbacks to |this|.
   base::WeakPtrFactory<DesktopSessionAgent> weak_factory_{this};

@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_utils.h"

@@ -41,8 +41,7 @@ void ChunkedUploadDataStream::AppendData(base::span<const uint8_t> data,
   DCHECK(!all_data_appended_);
   DCHECK(!data.empty() || is_done);
   if (!data.empty()) {
-    upload_data_.push_back(
-        std::make_unique<std::vector<uint8_t>>(data.begin(), data.end()));
+    upload_data_.emplace_back(data.begin(), data.end());
   }
   all_data_appended_ = is_done;
 
@@ -89,7 +88,7 @@ int ChunkedUploadDataStream::ReadChunk(IOBuffer* buf, int buf_len) {
   size_t bytes_read = 0;
   const auto buf_len_s = base::checked_cast<size_t>(buf_len);
   while (read_index_ < upload_data_.size() && bytes_read < buf_len_s) {
-    base::span<const uint8_t> data(*upload_data_[read_index_].get());
+    base::span<const uint8_t> data(upload_data_[read_index_]);
     base::span<const uint8_t> bytes_to_read = data.subspan(
         read_offset_,
         std::min(buf_len_s - bytes_read, data.size() - read_offset_));

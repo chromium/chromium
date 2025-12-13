@@ -2,7 +2,7 @@
 # See also https://rust-lang.github.io/rustfmt
 
 # Rust language edition to be used by the parser.
-edition = "2021"
+edition = "2024"
 
 # Version of the formatting rules to use.
 style_edition = "2021"

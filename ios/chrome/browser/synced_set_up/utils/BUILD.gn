@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("utils") {
+  sources = [
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:pref_names",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/prefs",
+    "//components/safety_check:pref_names",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
+    "//components/sync_preferences/synced_set_up:utils",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "utils_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/profile:test_utils",
+    "//ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

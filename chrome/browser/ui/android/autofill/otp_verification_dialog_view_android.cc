@@ -86,9 +86,8 @@ void OtpVerificationDialogViewAndroid::OnDialogDismissed(JNIEnv* env) {
   delete this;
 }
 
-void OtpVerificationDialogViewAndroid::OnConfirm(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& otp) {
+void OtpVerificationDialogViewAndroid::OnConfirm(JNIEnv* env,
+                                                 const JavaRef<jstring>& otp) {
   if (controller_) {
     controller_->OnOkButtonClicked(ConvertJavaStringToUTF16(env, otp));
   }
@@ -142,3 +141,5 @@ base::WeakPtr<CardUnmaskOtpInputDialogView> CreateAndShowOtpInputDialog(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(OtpVerificationDialogBridge)

@@ -15,6 +15,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 
 namespace bookmarks {
@@ -65,8 +66,7 @@ class BookmarkCodec {
               std::string* sync_metadata_str);
 
   // The required-recovery bit represents whether the on-disk state was corrupt
-  // and had to be recovered. Scenarios include ID or UUID collisions and
-  // checksum mismatches.
+  // and had to be recovered. Scenarios include ID or UUID collisions.
   bool required_recovery() const;
 
   // Returns whether the IDs were reassigned during decoding. Always returns
@@ -83,7 +83,10 @@ class BookmarkCodec {
   const std::string& ComputedChecksumForTest() const {
     return computed_checksum_;
   }
-  const std::string& StoredChecksumForTest() const { return stored_checksum_; }
+
+  const std::string& ComputedSha256ChecksumForTest() const {
+    return computed_sha256_checksum_;
+  }
 
   std::set<int64_t> release_assigned_ids() { return std::move(ids_); }
 
@@ -94,6 +97,7 @@ class BookmarkCodec {
   static const char kMobileBookmarkFolderNameKey[];
   static const char kVersionKey[];
   static const char kChecksumKey[];
+  static const char kChecksumSHA256Key[];
   static const char kIdKey[];
   static const char kTypeKey[];
   static const char kNameKey[];
@@ -127,23 +131,18 @@ class BookmarkCodec {
                     const base::Value::Dict& value,
                     std::string* sync_metadata_str);
 
-  // Decodes the children of the specified node. Returns true on success.
-  bool DecodeChildren(const base::Value::List& child_value_list,
+  // Decodes the children of the specified node.
+  void DecodeChildren(const base::Value::List& child_value_list,
                       BookmarkNode* parent);
 
-  // Reassigns bookmark IDs for all nodes.
-  void ReassignIDs(BookmarkNode* bb_node,
-                   BookmarkNode* other_node,
-                   BookmarkNode* mobile_node);
-
-  // Helper to recursively reassign IDs.
-  void ReassignIDsHelper(BookmarkNode* node);
+  // Reassigns bookmark IDs for those that require doing so (if any).
+  void ReassignIDsIfRequired();
 
   // Decodes the supplied node from the supplied value, which needs to be a
   // dictionary value. Child nodes are created appropriately by way of
   // DecodeChildren. If node is NULL a new node is created and added to parent
   // (parent must then be non-NULL), otherwise node is used.
-  bool DecodeNode(const base::Value::Dict& value,
+  void DecodeNode(const base::Value::Dict& value,
                   BookmarkNode* parent,
                   BookmarkNode* node);
 
@@ -182,16 +181,15 @@ class BookmarkCodec {
   // Whether or not IDs were reassigned by the codec.
   bool ids_reassigned_{false};
 
+  // Nodes with an invalid ID, which require reassignment.
+  std::vector<raw_ptr<BookmarkNode>> nodes_requiring_id_reassignment_;
+
   // Mapping from old ID to new IDs if IDs were reassigned. Note that old IDs
   // may contain duplicates, and therefore the mapping could be ambiguous.
   std::multimap<int64_t, int64_t> reassigned_ids_per_old_id_;
 
   // Whether or not UUIDs were reassigned by the codec.
   bool uuids_reassigned_{false};
-
-  // Whether or not IDs are valid. This is initially true, but set to false
-  // if an id is missing or not unique.
-  bool ids_valid_{true};
 
   // Contains the id of each of the nodes found in the file. Used to determine
   // if we have duplicates.
@@ -204,15 +202,15 @@ class BookmarkCodec {
   // MD5 context used to compute MD5 hash of all bookmark data.
   crypto::obsolete::Md5 md5_hasher_;
 
-  // Checksum computed during last encoding/decoding call.
+  // SHA context used to compute SHA256 hash of all bookmark data.
+  // Intended to replace MD5 hasher (crbug.com/426243026)
+  crypto::hash::Hasher sha256_hasher_{crypto::hash::kSha256};
+
+  // MD5 checksum computed during last encoding call.
   std::string computed_checksum_;
 
-  // The checksum that's stored in the file. After a call to Encode, the
-  // computed and stored checksums are the same since the computed checksum is
-  // stored to the file. After a call to decode, the computed checksum can
-  // differ from the stored checksum if the file contents were changed by the
-  // user.
-  std::string stored_checksum_;
+  // SHA256 checksum computed during last encoding call.
+  std::string computed_sha256_checksum_;
 
   // Maximum ID assigned when decoding data.
   int64_t maximum_id_{0};

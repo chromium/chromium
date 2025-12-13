@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 
@@ -75,15 +76,15 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   bool Initialize(int fd, const base::FilePath& path);
 
   // Manual initialization.
-  void SetEventTypes(const unsigned long* ev_bits, size_t len);
-  void SetKeyEvents(const unsigned long* key_bits, size_t len);
-  void SetRelEvents(const unsigned long* rel_bits, size_t len);
-  void SetAbsEvents(const unsigned long* abs_bits, size_t len);
-  void SetMscEvents(const unsigned long* msc_bits, size_t len);
-  void SetSwEvents(const unsigned long* sw_bits, size_t len);
-  void SetLedEvents(const unsigned long* led_bits, size_t len);
-  void SetFfEvents(const unsigned long* ff_bits, size_t len);
-  void SetProps(const unsigned long* prop_bits, size_t len);
+  void SetEventTypes(base::span<const unsigned long> ev_bits);
+  void SetKeyEvents(base::span<const unsigned long> key_bits);
+  void SetRelEvents(base::span<const unsigned long> rel_bits);
+  void SetAbsEvents(base::span<const unsigned long> abs_bits);
+  void SetMscEvents(base::span<const unsigned long> msc_bits);
+  void SetSwEvents(base::span<const unsigned long> sw_bits);
+  void SetLedEvents(base::span<const unsigned long> led_bits);
+  void SetFfEvents(base::span<const unsigned long> ff_bits);
+  void SetProps(base::span<const unsigned long> prop_bits);
   void SetAbsInfo(unsigned int code, const input_absinfo& absinfo);
   void SetAbsMtSlots(unsigned int code, const std::vector<int32_t>& values);
   void SetAbsMtSlot(unsigned int code, unsigned int slot, uint32_t value);

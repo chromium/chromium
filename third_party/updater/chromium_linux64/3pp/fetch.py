@@ -56,7 +56,7 @@ def find(platform, minimum, maximum):
     """
     Returns a version from GCS closest to `minimum` but not more than `maximum`
     for `platform`. May return maximum even if it does not exist in GCS.
-  """
+    """
     found_min = maximum
     pivot = str(minimum)
     while pivot < str(maximum):
@@ -72,7 +72,8 @@ def lastDatum(platform):
     latest = int(
         urllib.request.urlopen(
             'https://storage.googleapis.com/storage/v1/b/'
-            'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' % platform).read())
+            'chromium-browser-snapshots/o/%s%%2FLAST_CHANGE?alt=media' %
+            platform).read()) - 5000
     return max(MIN_VERSION,
                find(platform, latest - latest % 1000, latest))
 

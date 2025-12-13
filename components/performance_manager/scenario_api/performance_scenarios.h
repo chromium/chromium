@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_SCENARIO_API_PERFORMANCE_SCENARIOS_H_
 
 #include <atomic>
+#include <compare>
 #include <utility>
 
 #include "base/component_export.h"
@@ -94,6 +95,16 @@ struct COMPONENT_EXPORT(SCENARIO_API) ScenarioPattern {
   // Set of InputScenarios that match the pattern. If this is empty, any
   // InputScenario matches.
   InputScenarios input;
+
+  // Comparators and hashers.
+
+  friend bool operator==(ScenarioPattern a, ScenarioPattern b) = default;
+  friend auto operator<=>(ScenarioPattern a, ScenarioPattern b) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, ScenarioPattern s) {
+    return H::combine(std::move(h), s.loading, s.input);
+  }
 };
 
 // A ScenarioPattern for a scope that's considered "idle": only background pages

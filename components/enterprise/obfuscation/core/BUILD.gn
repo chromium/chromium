@@ -16,6 +16,13 @@ component("enterprise_obfuscation") {
     "//base",
     "//crypto",
   ]
+
+  if (!is_android) {
+    sources += [
+      "obfuscated_file_reader.cc",
+      "obfuscated_file_reader.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -25,6 +32,10 @@ source_set("unit_tests") {
     "download_obfuscator_unittest.cc",
     "utils_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [ "obfuscated_file_reader_unittest.cc" ]
+  }
 
   deps = [
     ":enterprise_obfuscation",

@@ -142,7 +142,7 @@ class MODULES_EXPORT RTCDataChannel final
   // narrower than the |webrtc_channel_|, the observer is reference counted to
   // make sure all callbacks have a valid pointer but won't do anything if the
   // |blink_channel_| has gone away.
-  class Observer : public WTF::ThreadSafeRefCounted<RTCDataChannel::Observer>,
+  class Observer : public ThreadSafeRefCounted<RTCDataChannel::Observer>,
                    public webrtc::DataChannelObserver {
    public:
     Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,

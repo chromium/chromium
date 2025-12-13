@@ -126,6 +126,17 @@ chrome.runtime.onMessageExternal.addListener(function(
 // A port for continuously reporting relevant CPU usage information to the page.
 function onProcessCpu(port) {
   let tabPid = port.sender.guestProcessId || undefined;
+
+  // Listen for a message from the client that explicitly provides the PID.
+  const messageListener = function(message) {
+    if (message && message.pid !== undefined) {
+      tabPid = message.pid;
+      // Once the PID is received, remove the listener.
+      port.onMessage.removeListener(messageListener);
+    }
+  };
+  port.onMessage.addListener(messageListener);
+
   function processListener(processes) {
     if (tabPid === undefined) {
       // getProcessIdForTab sometimes fails, and does not call the callback.
@@ -167,6 +178,7 @@ function onProcessCpu(port) {
   chrome.processes.onUpdated.addListener(processListener);
   port.onDisconnect.addListener(function() {
     chrome.processes.onUpdated.removeListener(processListener);
+    port.onMessage.removeListener(messageListener);
   });
 }
 

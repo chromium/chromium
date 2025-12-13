@@ -24,7 +24,6 @@
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/download/download_item_model.h"
@@ -78,6 +77,10 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#endif
+
 using content::BrowserThread;
 
 namespace {
@@ -122,6 +125,9 @@ bool CanLogWarningMetrics(download::DownloadItem* file) {
 
 void PromptForScanningInBubble(content::WebContents* web_contents,
                                download::DownloadItem* download) {
+  // ChromeOS does not have the download bubble and does not support local
+  // password prompts for deep scans.
+#if !BUILDFLAG(IS_CHROMEOS)
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
@@ -131,6 +137,7 @@ void PromptForScanningInBubble(content::WebContents* web_contents,
       ->GetDownloadDisplayController()
       ->OpenSecuritySubpage(
           OfflineItemUtils::GetContentIdForDownload(download));
+#endif
 }
 
 // Records DownloadItemWarningData and maybe sends the Safe Browsing report.
@@ -273,7 +280,7 @@ void DownloadsDOMHandler::Drag(const std::string& id) {
   if (file->GetState() != download::DownloadItem::COMPLETE) {
     return;
   }
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   gfx::NativeView view = web_contents->GetNativeView();
   gfx::Image* icon = g_browser_process->icon_manager()->LookupIconFromFilepath(
       file->GetTargetFilePath(), IconLoader::NORMAL,

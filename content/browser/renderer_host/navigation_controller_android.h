@@ -59,66 +59,66 @@ class CONTENT_EXPORT NavigationControllerAndroid {
                            jint index);
   base::android::ScopedJavaLocalRef<jobject> LoadUrl(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& url,
+      const base::android::JavaRef<jstring>& url,
       jint load_url_type,
       jint transition_type,
-      const base::android::JavaParamRef<jstring>& j_referrer_url,
+      const base::android::JavaRef<jstring>& j_referrer_url,
       jint referrer_policy,
       jint ua_override_option,
-      const base::android::JavaParamRef<jstring>& extra_headers,
-      const base::android::JavaParamRef<jobject>& j_post_data,
-      const base::android::JavaParamRef<jstring>& base_url_for_data_url,
-      const base::android::JavaParamRef<jstring>& virtual_url_for_special_cases,
-      const base::android::JavaParamRef<jstring>& data_url_as_string,
+      const base::android::JavaRef<jstring>& extra_headers,
+      const base::android::JavaRef<jobject>& j_post_data,
+      const base::android::JavaRef<jstring>& base_url_for_data_url,
+      const base::android::JavaRef<jstring>& virtual_url_for_special_cases,
+      const base::android::JavaRef<jstring>& data_url_as_string,
       jboolean can_load_local_resources,
       jboolean is_renderer_initiated,
       jboolean should_replace_current_entry,
-      const base::android::JavaParamRef<jobject>& j_initiator_origin,
+      const base::android::JavaRef<jobject>& j_initiator_origin,
       jboolean has_user_gesture,
       jboolean should_clear_history_list,
-      const base::android::JavaParamRef<jobject>&
-          j_additional_navigation_params,
+      const base::android::JavaRef<jobject>& j_additional_navigation_params,
       jlong input_start,
       jlong navigation_ui_data_ptr,
       jboolean is_pdf);
   void ClearSslPreferences(JNIEnv* env);
   bool GetUseDesktopUserAgent(JNIEnv* env);
-  void SetUseDesktopUserAgent(
-      JNIEnv* env,
-      jboolean state,
-      jboolean reload_on_state_change,
-      jint source);
+  void SetUseDesktopUserAgent(JNIEnv* env,
+                              jboolean state,
+                              jboolean reload_on_state_change,
+                              jboolean skip_on_initial_navigation);
   base::android::ScopedJavaLocalRef<jobject> GetEntryAtIndex(JNIEnv* env,
                                                              int index);
   base::android::ScopedJavaLocalRef<jobject> GetVisibleEntry(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetPendingEntry(JNIEnv* env);
   int GetNavigationHistory(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& history);
+                           const base::android::JavaRef<jobject>& history);
   void GetDirectedNavigationHistory(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& history,
+      const base::android::JavaRef<jobject>& history,
       jboolean is_forward,
       jint max_entries);
   void ClearHistory(JNIEnv* env);
   int GetLastCommittedEntryIndex(JNIEnv* env);
+  jboolean CanViewSource(JNIEnv* env);
   jboolean RemoveEntryAtIndex(JNIEnv* env,
                               jint index);
   void PruneForwardEntries(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jstring> GetEntryExtraData(
       JNIEnv* env,
       jint index,
-      const base::android::JavaParamRef<jstring>& jkey);
+      const base::android::JavaRef<jstring>& jkey);
   void SetEntryExtraData(JNIEnv* env,
                          jint index,
-                         const base::android::JavaParamRef<jstring>& jkey,
-                         const base::android::JavaParamRef<jstring>& jvalue);
+                         const base::android::JavaRef<jstring>& jkey,
+                         const base::android::JavaRef<jstring>& jvalue);
   void CopyStateFrom(JNIEnv* env,
                      jlong source_navigation_controller_ptr,
                      jboolean needs_reload);
 
  private:
   void SetUseDesktopUserAgentInternal(bool enabled,
-                                      bool reload_on_state_change);
+                                      bool reload_on_state_change,
+                                      bool skip_on_initial_navigation);
 
   raw_ptr<NavigationControllerImpl> navigation_controller_;
   base::android::ScopedJavaGlobalRef<jobject> obj_;

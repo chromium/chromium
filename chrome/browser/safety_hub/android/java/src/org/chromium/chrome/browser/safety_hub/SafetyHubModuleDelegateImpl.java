@@ -4,17 +4,13 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge.usesSplitStoresAndUPMForLocal;
-
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -29,9 +25,10 @@ import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** An implementation of {@link SafetyHubModuleDelegate} */
 @NullMarked
@@ -96,23 +93,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
-                return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
-            }
-            return INVALID_PASSWORD_COUNT;
-        }
-
-        PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(mProfile);
-        if (!passwordManagerHelper.canUseUpm()) {
-            return INVALID_PASSWORD_COUNT;
-        }
-
-        if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile))) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForAccountStore();
         }
-        // If using split stores is disabled, all passwords reside in the profile store.
-        return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
+        return INVALID_PASSWORD_COUNT;
     }
 
     @Override
@@ -121,27 +105,10 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
             return INVALID_PASSWORD_COUNT;
         }
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID)) {
-            if (PasswordManagerUtilBridge.isPasswordManagerAvailable(UserPrefs.get(mProfile))) {
-                return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
-            }
-            return INVALID_PASSWORD_COUNT;
-        }
-
-        // There are two cases where a user has local passwords in the profile store:
-        //    1. If split stores are in use for local passwords, then profile store stores local
-        // passwords.
-        //    2. If they're not in use, but the user is not syncing, then profile store stores
-        // local passwords.
-        SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
-        boolean isSyncingPasswords = PasswordManagerHelper.hasChosenToSyncPasswords(syncService);
-        if (usesSplitStoresAndUPMForLocal(UserPrefs.get(mProfile)) || !isSyncingPasswords) {
+        if (PasswordManagerUtilBridge.isPasswordManagerAvailable()) {
             return passwordStoreBridge.getPasswordStoreCredentialsCountForProfileStore();
         }
-
-        // If split stores for local passwords are not in use and the user is syncing, then the
-        // profile store doesn't store local passwords.
-        return 0;
+        return INVALID_PASSWORD_COUNT;
     }
 
     @Override
@@ -149,15 +116,19 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
         assert !SafetyHubUtils.isSignedIn(mProfile);
         AccountPickerBottomSheetStrings strings =
                 new AccountPickerBottomSheetStrings.Builder(
-                                R.string.signin_account_picker_bottom_sheet_title)
-                        .setSubtitleStringId(R.string.safety_check_passwords_error_signed_out)
+                                context.getString(
+                                        R.string.signin_account_picker_bottom_sheet_title))
+                        .setSubtitleString(
+                                context.getString(R.string.safety_check_passwords_error_signed_out))
                         .build();
         BottomSheetSigninAndHistorySyncConfig config =
                 new BottomSheetSigninAndHistorySyncConfig.Builder(
                                 strings,
                                 NoAccountSigninMode.BOTTOM_SHEET,
                                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                                HistorySyncConfig.OptInMode.NONE)
+                                HistorySyncConfig.OptInMode.NONE,
+                                context.getString(R.string.history_sync_title),
+                                context.getString(R.string.history_sync_subtitle))
                         .build();
         // Open the sign-in page.
 

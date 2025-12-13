@@ -20,11 +20,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,7 +44,7 @@ import java.util.List;
 /** Test suite for the bookmarks sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.PER_CLASS)
+@DoNotBatch(reason = "Manages sign-in state, which is global.")
 public class BookmarksTest {
     @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 

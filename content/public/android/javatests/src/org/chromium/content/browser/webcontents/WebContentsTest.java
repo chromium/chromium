@@ -16,6 +16,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ChildBindingState;
+import org.chromium.base.TerminationStatus;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.task.PostTask;
@@ -23,13 +25,16 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.WebContentsStatics;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_shell.Shell;
 import org.chromium.content_shell_apk.ChildProcessLauncherTestUtils;
 import org.chromium.content_shell_apk.ContentShellActivity;
@@ -37,6 +42,7 @@ import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Test various Java WebContents specific features.
@@ -427,14 +433,18 @@ public class WebContentsTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                            () -> !connection.isVisibleBindingBound());
+                            () -> connection.bindingStateCurrent() < ChildBindingState.VISIBLE);
                 },
                 "Failed to remove moderate binding");
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> webContents.setPrimaryMainFrameImportance(ChildProcessImportance.MODERATE));
+                () ->
+                        webContents.setPrimaryPageImportance(
+                                ChildProcessImportance.MODERATE, ChildProcessImportance.NORMAL));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isVisibleBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.VISIBLE, connection.bindingStateCurrent()));
     }
 
     @Test
@@ -454,20 +464,66 @@ public class WebContentsTest {
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isStrongBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.STRONG, connection.bindingStateCurrent()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.updateWebContentsVisibility(Visibility.HIDDEN));
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                                () -> !connection.isStrongBindingBound()),
+                                () -> connection.bindingStateCurrent() < ChildBindingState.STRONG),
                 "Failed to remove strong binding");
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> webContents.updateWebContentsVisibility(Visibility.VISIBLE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
-                () -> Assert.assertTrue(connection.isStrongBindingBound()));
+                () ->
+                        Assert.assertEquals(
+                                ChildBindingState.STRONG, connection.bindingStateCurrent()));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ContentFeatures.WEB_CONTENTS_DISCARD})
+    public void testWebContentsDiscard() {
+        final ContentShellActivity activity =
+                mActivityTestRule.launchContentShellWithUrl(TEST_URL_1);
+        mActivityTestRule.waitForActiveShellToBeDoneLoading();
+        final WebContents webContents = activity.getActiveWebContents();
+        Assert.assertFalse(isWebContentsDestroyed(webContents));
+
+        final AtomicBoolean onDiscardedCalled = new AtomicBoolean(false);
+        final AtomicBoolean onRenderProcessGone = new AtomicBoolean(false);
+        final AtomicBoolean wasDiscarded = new AtomicBoolean(false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebContentsObserver observer =
+                            new WebContentsObserver(webContents) {
+                                @Override
+                                public void primaryMainFrameRenderProcessGone(
+                                        @TerminationStatus int terminationStatus) {
+                                    onRenderProcessGone.set(true);
+                                }
+
+                                @Override
+                                public void wasDiscarded() {
+                                    wasDiscarded.set(true);
+                                }
+                            };
+                    webContents.discard(() -> onDiscardedCalled.set(true));
+                });
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> onDiscardedCalled.get(), "onDiscarded not called.");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> onRenderProcessGone.get(), "primaryMainFrameRenderProcessGone not called.");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> wasDiscarded.get(), "wasDiscarded not called.");
+
+        Assert.assertFalse(isWebContentsDestroyed(webContents));
     }
 
     private boolean isWebContentsDestroyed(final WebContents webContents) {

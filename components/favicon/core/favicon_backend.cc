@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/favicon/core/favicon_backend_delegate.h"
 #include "components/favicon/core/favicon_database.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_util.h"
 #include "components/favicon_base/select_favicon_frames.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -25,6 +27,9 @@
 #include "url/origin.h"
 
 namespace favicon {
+
+BASE_FEATURE(kUseLastVisitedFallbackURLFavicon,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using RedirectList = std::vector<GURL>;
 
@@ -684,12 +689,30 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
   if (icon_mappings.empty() && fallback_to_host &&
       page_url.SchemeIsHTTPOrHTTPS()) {
     fallback_to_host_attempted = true;
-    // We didn't find any matches, and the caller requested falling back to the
-    // host of `page_url` for fuzzy matching. Query the database for a page_url
-    // that is known to exist and matches the host of `page_url`. Do this only
-    // if we have a HTTP/HTTPS url.
-    std::optional<GURL> fallback_page_url =
+    std::optional<GURL> fallback_page_url;
+
+    // We didn't find any matches, and the caller passed `fallback_to_host` to
+    // request to fall back to the host of `page_url` for fuzzy matching. Query
+    // the database for a page_url that is known to exist and matches the host
+    // of `page_url`. Do this only if we have a HTTP/HTTPS url.
+    std::optional<std::pair<GURL, PageUrlType>> fallback_for_host =
         db_->FindBestPageURLForHost(page_url, icon_types);
+
+    if (fallback_for_host.has_value()) {
+      // If the fallback URL is for a redirect, then use the last visited URL
+      // as a final fallback.
+      // FindBestPageURLForHost() prioritizes page URLs that are not redirects.
+      // Therefore, if the fallback it returns is a redirect, then all page
+      // visits to the host are redirects.
+      if (fallback_for_host->second == PageUrlType::kRedirect &&
+          base::FeatureList::IsEnabled(kUseLastVisitedFallbackURLFavicon)) {
+        url::Origin page_origin = url::Origin::Create(page_url);
+        fallback_page_url =
+            delegate_->GetMostRecentlyVisitedURLForOrigin(page_origin);
+      } else {
+        fallback_page_url = fallback_for_host->first;
+      }
+    }
 
     if (fallback_page_url) {
       db_->GetIconMappingsForPageURL(fallback_page_url.value(), icon_types,

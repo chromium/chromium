@@ -50,6 +50,21 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
 
   class NET_EXPORT_PRIVATE EdeOpt : public Opt {
    public:
+    // Metadata for Filtering Details (ro/inc) are defined in Version 1 of
+    // https://datatracker.ietf.org/doc/draft-nottingham-public-resolver-errors/01/
+    struct NET_EXPORT_PRIVATE FilteringDetails {
+      FilteringDetails();
+      ~FilteringDetails();
+
+      FilteringDetails(const FilteringDetails&);
+      FilteringDetails& operator=(const FilteringDetails&);
+      FilteringDetails(FilteringDetails&&) noexcept;
+      FilteringDetails& operator=(FilteringDetails&&) noexcept;
+
+      std::string resolver_operator_id;   // "ro"
+      std::string filtering_incident_id;  // "inc"
+    };
+
     static const uint16_t kOptCode = dns_protocol::kEdnsExtendedDnsError;
 
     // The following errors are defined by in the IANA registry.
@@ -99,6 +114,10 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     // Attempts to parse an EDE option from `data`. Returns nullptr on failure.
     static std::unique_ptr<EdeOpt> Create(base::span<const uint8_t> data);
 
+    // Allocates an EDE option suitable for a DNS query that indicates support
+    // for EDE with Structured DNS Errors.
+    static std::unique_ptr<EdeOpt> CreateStructuredErrorsRequest();
+
     uint16_t GetCode() const override;
     uint16_t info_code() const { return info_code_; }
     std::string_view extra_text() const { return extra_text_; }
@@ -108,11 +127,16 @@ class NET_EXPORT_PRIVATE OptRecordRdata : public RecordRdata {
     // Convert a uint16_t to an EdeInfoCode enum.
     static EdeInfoCode GetEnumFromInfoCode(uint16_t info_code);
 
+    const std::vector<FilteringDetails>& filtering_details() const {
+      return filtering_details_;
+    }
+
    private:
     EdeOpt();
 
     uint16_t info_code_;
     std::string extra_text_;
+    std::vector<FilteringDetails> filtering_details_;
   };
 
   class NET_EXPORT_PRIVATE PaddingOpt : public Opt {

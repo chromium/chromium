@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/shell.h"
 
 #include <algorithm>
@@ -43,7 +38,6 @@
 #include "ash/api/tasks/tasks_delegate.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/auth/active_session_auth_controller_impl.h"
 #include "ash/birch/birch_model.h"
 #include "ash/booting/booting_animation_controller.h"
@@ -91,8 +85,8 @@
 #include "ash/focus/ash_focus_rules.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/focus/shutdown_focus_rules.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/frame/multitask_menu_nudge_delegate_ash.h"
-#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/frame/snap_controller_impl.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
@@ -114,12 +108,13 @@
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/metrics/unlock_throughput_recorder.h"
 #include "ash/metrics/user_metrics_recorder.h"
-#include "ash/multi_capture/multi_capture_service.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/coral_delegate.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/login/local_authentication_request_controller.h"
@@ -250,6 +245,7 @@
 #include "ash/wm/workspace_controller.h"
 #include "ash/wm_mode/wm_mode_controller.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
@@ -264,7 +260,6 @@
 #include "chromeos/ash/components/dbus/usb/usbguard_client.h"
 #include "chromeos/ash/components/fwupd/firmware_update_manager.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/init/initialize_dbus_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -421,14 +416,14 @@ aura::Window* Shell::GetPrimaryRootWindow() {
 
 // static
 void Shell::SetRootWindowForNewWindows(aura::Window* root) {
-  display::Screen::GetScreen()->SetDisplayForNewWindows(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root).id());
+  display::Screen::Get()->SetDisplayForNewWindows(
+      display::Screen::Get()->GetDisplayNearestWindow(root).id());
 }
 
 // static
 aura::Window* Shell::GetRootWindowForNewWindows() {
   return GetRootWindowForDisplayId(
-      display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+      display::Screen::Get()->GetDisplayForNewWindows().id());
 }
 
 // static
@@ -506,10 +501,10 @@ void Shell::UntrackTrackInputMethodBounds(
       ->RemoveInputMethodBoundsTrackerObserver(tracker);
 }
 
-std::unique_ptr<views::NonClientFrameView>
-Shell::CreateDefaultNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> Shell::CreateDefaultFrameView(
+    views::Widget* widget) {
   // Use translucent-style window frames for dialogs.
-  return std::make_unique<NonClientFrameViewAsh>(widget);
+  return std::make_unique<FrameViewAsh>(widget);
 }
 
 void Shell::OnCastingSessionStartedOrStopped(bool started) {
@@ -544,10 +539,6 @@ void Shell::OnDictationEnded() {
   for (auto& observer : shell_observers_) {
     observer.OnDictationEnded();
   }
-}
-
-bool Shell::IsInTabletMode() const {
-  return display::Screen::GetScreen()->InTabletMode();
 }
 
 bool Shell::ShouldSaveDisplaySettings() {
@@ -681,9 +672,16 @@ void Shell::AddAccessibilityEventHandler(
   accessibility_event_handler_manager_->AddAccessibilityEventHandler(handler,
                                                                      type);
 }
+
 void Shell::RemoveAccessibilityEventHandler(ui::EventHandler* handler) {
   accessibility_event_handler_manager_->RemoveAccessibilityEventHandler(
       handler);
+}
+
+void Shell::RecreateMultiUserWindowManagerForTesting() {
+  // Destroy the object before instantiating the next one explicitly.
+  multi_user_window_manager_.reset();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManager>();
 }
 
 WebAuthNDialogController* Shell::webauthn_dialog_controller() {
@@ -880,13 +878,7 @@ Shell::~Shell() {
   // Accelerometer file reader stops listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StopListenToTabletModeController();
 
-  // Destroy |ambient_controller_| before |assistant_controller_|.
   ambient_controller_.reset();
-
-  // Destroy |assistant_controller_| earlier than |tablet_mode_controller_| so
-  // that the former will destroy the Assistant view hierarchy which has a
-  // dependency on the latter.
-  assistant_controller_.reset();
 
   // Because this function will call |TabletModeController::RemoveObserver|, do
   // it before destroying |tablet_mode_controller_|.
@@ -1022,6 +1014,9 @@ Shell::~Shell() {
   // path. (crbug.com/485438).
   mru_window_tracker_.reset();
 
+  // This must be destroyed before session_controller is destroyed.
+  multi_user_window_manager_.reset();
+
   // These need a valid Shell instance to clean up properly, so explicitly
   // delete them before invalidating the instance.
   // Alphabetical. TODO(oshima): sort.
@@ -1121,6 +1116,7 @@ Shell::~Shell() {
   // Depends on shelf owned by RootWindowController so destroy this before the
   // |window_tree_host_manager_|.
   clipboard_history_controller_.reset();
+  clipboard_image_model_factory_.reset();
 
   // Should be destroyed after `clipboard_history_controller_` and
   // `autozoom_controller_` since they will destruct `SystemNudgeController`.
@@ -1211,8 +1207,6 @@ Shell::~Shell() {
   audio_effects_controller_.reset();
 
   shell_delegate_.reset();
-
-  multi_capture_service_.reset();
 
   // Observes `SessionController` and must be destroyed before it.
   brightness_control_delegate_.reset();
@@ -1345,6 +1339,7 @@ void Shell::Init(
   peripheral_battery_notifier_ = std::make_unique<PeripheralBatteryNotifier>(
       peripheral_battery_listener_.get());
   power_event_observer_ = std::make_unique<PowerEventObserver>();
+  multi_user_window_manager_ = std::make_unique<MultiUserWindowManager>();
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
@@ -1392,7 +1387,7 @@ void Shell::Init(
   // `ScheduledFeature` ctor will access `geolocation_controller_` from
   // `Shell`.
   geolocation_controller_ = std::make_unique<GeolocationController>(
-      SimpleGeolocationProvider::GetInstance());
+      SystemLocationProvider::GetInstance());
 
   // Night Light depends on the display manager, the display color manager,
   // aura::Env, and geolocation controller, so initialize it after all have
@@ -1512,6 +1507,11 @@ void Shell::Init(
   accelerator_controller_ = std::make_unique<AcceleratorControllerImpl>(
       ash_accelerator_configuration_.get());
 
+  clipboard_image_model_factory_ =
+      shell_delegate_->CreateClipboardImageModelFactory();
+  if (!clipboard_image_model_factory_) {
+    CHECK_IS_TEST();
+  }
   clipboard_history_controller_ =
       std::make_unique<ClipboardHistoryControllerImpl>(
           shell_delegate_->CreateClipboardHistoryControllerDelegate());
@@ -1604,7 +1604,6 @@ void Shell::Init(
   fullscreen_magnifier_controller_ =
       std::make_unique<FullscreenMagnifierController>();
   mru_window_tracker_ = std::make_unique<MruWindowTracker>();
-  assistant_controller_ = std::make_unique<AssistantControllerImpl>();
 
   // MultiDisplayMetricsController has a dependency on `mru_window_tracker_`.
   multi_display_metrics_controller_ =
@@ -1616,8 +1615,6 @@ void Shell::Init(
   ambient_controller_ =
       std::make_unique<AmbientController>(std::move(ambient_fingerprint));
 
-  multi_capture_service_ = std::make_unique<MultiCaptureService>();
-
   // Depends on `session_controller_` (instantiated in the constructor).
   // Must be instantiated before `capture_mode_controller_`,
   // `scanner_controller_` and `app_list_controller_` (controllers which may use
@@ -1627,8 +1624,8 @@ void Shell::Init(
       std::make_unique<SunfishScannerFeatureWatcher>(*session_controller_,
                                                      *this);
 
-  // |tablet_mode_controller_| |mru_window_tracker_|, and
-  // |assistant_controller_| are put before |app_list_controller_| as they are
+  // |tablet_mode_controller_| |mru_window_tracker_|
+  // are put before |app_list_controller_| as they are
   // used in its constructor.
   app_list_controller_ = std::make_unique<AppListControllerImpl>();
 
@@ -1744,8 +1741,7 @@ void Shell::Init(
   // since root window controller is created in
   // `WindowTreeHostManager::InitHosts()` and
   // `CursorWindowManager::SetDisplay` depends on it.
-  cursor_manager_->SetDisplay(
-      display::Screen::GetScreen()->GetPrimaryDisplay());
+  cursor_manager_->SetDisplay(display::Screen::Get()->GetPrimaryDisplay());
 
   if (ash::features::IsBootAnimationEnabled()) {
     booting_animation_controller_ =

@@ -21,7 +21,7 @@ namespace blink {
 // static
 PresentationAvailability* PresentationAvailability::Take(
     ExecutionContext* context,
-    const WTF::Vector<KURL>& urls,
+    const Vector<KURL>& urls,
     bool value) {
   PresentationAvailability* presentation_availability =
       MakeGarbageCollected<PresentationAvailability>(context, urls, value);
@@ -31,7 +31,7 @@ PresentationAvailability* PresentationAvailability::Take(
 
 PresentationAvailability::PresentationAvailability(
     ExecutionContext* execution_context,
-    const WTF::Vector<KURL>& urls,
+    const Vector<KURL>& urls,
     bool value)
     : ActiveScriptWrappable<PresentationAvailability>({}),
       ExecutionContextLifecycleStateObserver(execution_context),

@@ -12,7 +12,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/bind.h"
@@ -606,8 +605,7 @@ TEST_F(BabelOrcaProducerTest,
   // this object to the caption controller.
   media::mojom::LanguageIdentificationEventPtr language_id_event =
       media::mojom::LanguageIdentificationEvent::New(
-          kTranslationTargetLocale,
-          media::mojom::ConfidenceLevel::kDefaultValue);
+          kTranslationTargetLocale, media::mojom::ConfidenceLevel::kUnknown);
   language_id_event->asr_switch_result =
       media::mojom::AsrSwitchResult::kSwitchSucceeded;
 

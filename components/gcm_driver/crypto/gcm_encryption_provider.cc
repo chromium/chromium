@@ -100,7 +100,8 @@ void GCMEncryptionProvider::DidGetEncryptionInfo(
     return;
   }
 
-  std::string uncompressed(base::as_string_view(key->ToUncompressedForm()));
+  std::string uncompressed(
+      base::as_string_view(key->ToUncompressedX962Point()));
   std::move(callback).Run(std::move(uncompressed), auth_secret);
 }
 
@@ -280,7 +281,8 @@ void GCMEncryptionProvider::DidCreateEncryptionInfo(
     return;
   }
 
-  std::string uncompressed(base::as_string_view(key->ToUncompressedForm()));
+  std::string uncompressed(
+      base::as_string_view(key->ToUncompressedX962Point()));
   std::move(callback).Run(std::move(uncompressed), auth_secret);
 }
 
@@ -316,7 +318,7 @@ void GCMEncryptionProvider::DecryptMessageWithKey(
   GCMMessageCryptographer cryptographer(version);
 
   std::string exported_public_key(
-      base::as_string_view(key->ToUncompressedForm()));
+      base::as_string_view(key->ToUncompressedX962Point()));
   if (!cryptographer.Decrypt(exported_public_key, public_key, shared_secret,
                              auth_secret, salt, ciphertext, record_size,
                              &plaintext)) {
@@ -378,7 +380,7 @@ void GCMEncryptionProvider::EncryptMessageWithKey(
       GCMMessageCryptographer::Version::DRAFT_08);
 
   std::string sender_public_key(
-      base::as_string_view(key->ToUncompressedForm()));
+      base::as_string_view(key->ToUncompressedX962Point()));
   if (!cryptographer.Encrypt(p256dh, sender_public_key, shared_secret,
                              auth_secret, salt, message, &record_size,
                              &ciphertext)) {

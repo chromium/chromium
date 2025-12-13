@@ -437,7 +437,7 @@ void ReadAnythingAppModel::SetTreeInfoUrlInformation(
   tree_info.is_docs = url.SchemeIsHTTPOrHTTPS() &&
                       (url.DomainIs("docs.google.com") ||
                        url.DomainIs("docs.sandbox.google.com")) &&
-                      url.path().starts_with("/document") &&
+                      url.GetPath().starts_with("/document") &&
                       !url.ExtractFileName().empty();
 
   tree_info.is_url_information_set = true;
@@ -582,7 +582,15 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
       // If read aloud is searching for a child tree to distill and this tree id
       // matches one of the possible child ids, set the active tree to this tree
       // so that it can be distilled.
+      VLOG(1) << "Using child to set active tree id to " << tree_id;
       SetActiveTreeId(tree_id);
+
+      // Ensure that requires_distillation_ is set to true whenever there's a
+      // match for a child id. Otherwise, depending on how accessibility events
+      // for the child tree are received, the content won't be distilled
+      // because ReadAnythingAppController doesn't receive a signal that
+      // distillation should be attempted again.
+      requires_distillation_ = true;
     }
   }
 
@@ -821,6 +829,9 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
   // generated. The consumer should not process the same event here and for
   // generated events.
   for (auto& event : events) {
+#if BUILDFLAG(IS_MAC)
+    VLOG(2) << "Non-generated event type: " << event.event_type;
+#endif
     switch (event.event_type) {
       case ax::mojom::Event::kLoadComplete:
         requires_distillation_ = true;
@@ -900,11 +911,26 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
       case ax::mojom::Event::kTreeChanged:
           break;
       case ax::mojom::Event::kValueChanged:
+#if BUILDFLAG(IS_MAC)
+        // VLOG to assess if this is a reliable location to detect text field
+        // changes on Mac to avoid introducing unnecessary redraws.
+        if (ui::AXNode* node = GetAXNode(event.id);
+            node && ui::IsTextField(node->GetRole())) {
+          VLOG(1) << "kValueChanged on a text field";
+        }
+#endif
         // After the user finishes typing something we wait for a timer and
         // redraw to capture the input.
         if (event.event_from == ax::mojom::EventFrom::kUser &&
             event.event_intents.size() > 0) {
           reset_draw_timer_ = true;
+#if BUILDFLAG(IS_MAC)
+          VLOG(1) << "kValueChanged on a user event triggering redraw timer";
+#endif
+        } else {
+#if BUILDFLAG(IS_MAC)
+          VLOG(1) << "kValueChanged without a redraw timer trigger";
+#endif
         }
         break;
       case ax::mojom::Event::kAriaAttributeChangedDeprecated:
@@ -937,6 +963,9 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
   // Note that this list of events may overlap with non-generated events in the
   // It's up to the consumer to pick but its generally good to prefer generated.
   for (const auto& event : event_generator) {
+#if BUILDFLAG(IS_MAC)
+    VLOG(2) << "Generated event type: " << event.event_params->event;
+#endif
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         requires_post_process_selection_ = true;
@@ -1004,6 +1033,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       case ui::AXEventGenerator::Event::CHECKED_STATE_DESCRIPTION_CHANGED:
       case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
       case ui::AXEventGenerator::Event::CONTROLS_CHANGED:
+      case ui::AXEventGenerator::Event::DEFAULT_ACTION_VERB_CHANGED:
       case ui::AXEventGenerator::Event::DETAILS_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIBED_BY_CHANGED:
       case ui::AXEventGenerator::Event::DESCRIPTION_CHANGED:
@@ -1150,14 +1180,27 @@ void ReadAnythingAppModel::AllowChildTreeForActiveTree(bool use_child_tree) {
 
   ui::AXSerializableTree* active_tree = GetTreeFromId(active_tree_id_);
   if (!active_tree) {
+    VLOG(1) << "Not allowing child tree for active tree because active tree is "
+               "null";
     return;
   }
   std::set<ui::AXTreeID> child_ids = active_tree->GetAllChildTreeIds();
   if (!child_ids.size()) {
+    VLOG(1) << "Not allowing child tree for active tree because active tree "
+               "has no child trees";
     return;
   }
+
+  VLOG(1) << "Allow child tree for active tree";
 
   // Store all the possible child tree ids that could be used as the active
   // tree if they have distillable content.
   child_tree_ids_.insert(child_ids.begin(), child_ids.end());
+}
+
+bool ReadAnythingAppModel::SelectionNodesContainedInDistilledContent() const {
+  std::vector<ui::AXNodeID> sorted_content_ids = content_node_ids_;
+  std::sort(sorted_content_ids.begin(), sorted_content_ids.end());
+  return std::includes(sorted_content_ids.begin(), sorted_content_ids.end(),
+                       selection_node_ids_.begin(), selection_node_ids_.end());
 }

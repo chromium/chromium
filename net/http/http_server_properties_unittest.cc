@@ -24,10 +24,13 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_network_session.h"
+#include "net/quic/quic_context.h"
 #include "net/test/test_with_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -50,7 +53,7 @@ class HttpServerPropertiesPeer {
           NetworkAnonymizationKey()) {
     BrokenAlternativeService broken_alternative_service(
         alternative_service, network_anonymization_key,
-        true /* use_network_anonymization_key */);
+        /*use_network_anonymization_key=*/true);
     BrokenAlternativeServiceList::iterator unused_it;
     impl->broken_alternative_services_.AddToBrokenListAndMap(
         broken_alternative_service, when, &unused_it);
@@ -79,7 +82,7 @@ HttpServerProperties::ServerInfoMapKey CreateSimpleKey(
     const url::SchemeHostPort& server) {
   return HttpServerProperties::ServerInfoMapKey(
       server, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
 }
 
 class HttpServerPropertiesTest : public TestWithTaskEnvironment {
@@ -90,8 +93,8 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
         // Many tests assume partitioning is disabled by default.
         feature_list_(CreateFeatureListWithPartitioningDisabled()),
         test_tick_clock_(GetMockTickClock()),
-        impl_(nullptr /* pref_delegate */,
-              nullptr /* net_log */,
+        impl_(/*pref_delegate=*/nullptr,
+              /*net_log=*/nullptr,
               test_tick_clock_,
               &test_clock_) {
     // Set |test_clock_| to some random time.
@@ -137,9 +140,36 @@ class HttpServerPropertiesTest : public TestWithTaskEnvironment {
     }
   }
 
-  void MarkBrokenAndLetExpireAlternativeServiceNTimes(
-      const AlternativeService& alternative_service,
-      int num_times) {}
+  // Test that HTTP/1.1 is required for the provided server, and that
+  // MaybeForceHTTP11() modifies the `alpn_protos` of a passed in SSLConfig as
+  // expected.
+  static void ExpectHttp11Required(HttpServerProperties& properties,
+                                   const url::SchemeHostPort& server,
+                                   const NetworkAnonymizationKey& nak) {
+    EXPECT_TRUE(properties.RequiresHTTP11(server, nak));
+
+    SSLConfig ssl_config;
+    ssl_config.alpn_protos = {NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+    properties.MaybeForceHTTP11(server, nak, &ssl_config);
+    EXPECT_THAT(ssl_config.alpn_protos,
+                testing::ElementsAre(NextProto::kProtoHTTP11));
+  }
+
+  // Test that HTTP/1.1 is not required for the provided server, and that
+  // MaybeForceHTTP11() does not affect the `alpn_protos` of a passed in
+  // SSLConfig.
+  static void ExpectHttp11NotRequired(HttpServerProperties& properties,
+                                      const url::SchemeHostPort& server,
+                                      const NetworkAnonymizationKey& nak) {
+    EXPECT_FALSE(properties.RequiresHTTP11(server, nak));
+
+    SSLConfig ssl_config;
+    ssl_config.alpn_protos = {NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+    properties.MaybeForceHTTP11(server, nak, &ssl_config);
+    EXPECT_THAT(
+        ssl_config.alpn_protos,
+        testing::ElementsAre(NextProto::kProtoHTTP2, NextProto::kProtoHTTP11));
+  }
 
   std::unique_ptr<base::test::ScopedFeatureList> feature_list_;
 
@@ -246,8 +276,8 @@ TEST_F(HttpServerPropertiesTest, SetSupportsSpdyWithNetworkIsolationKey) {
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   EXPECT_FALSE(
@@ -788,7 +818,7 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
   const AlternativeServiceInfoVector kAlternativeServices(
       {AlternativeServiceInfo::CreateHttp2AlternativeServiceInfo(
           AlternativeService(NextProto::kProtoHTTP2, "foo", 443),
-          base::Time::Now() + base::Days(1) /* expiration */)});
+          /*expiration=*/base::Time::Now() + base::Days(1))});
 
   EXPECT_TRUE(
       impl_.GetAlternativeServiceInfos(kServer, network_anonymization_key1_)
@@ -826,8 +856,8 @@ TEST_F(AlternateProtocolServerPropertiesTest, SetWithNetworkIsolationKey) {
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetAlternativeServices(kServer, network_anonymization_key1_,
@@ -1422,8 +1452,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
@@ -1558,8 +1588,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
@@ -1695,8 +1725,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
@@ -1833,8 +1863,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   const base::Time expiration = test_clock_.Now() + base::Days(1);
@@ -1945,8 +1975,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   url::SchemeHostPort test_server("https", "foo.c.youtube.com", 443);
@@ -2135,8 +2165,8 @@ TEST_F(AlternateProtocolServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetHttp2AlternativeService(server, network_anonymization_key1_,
@@ -2682,7 +2712,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId google_quic_server_id("www.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey google_key(
       google_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
 
   const int kMaxQuicServerEntries = 10;
   impl_.SetMaxServerConfigsStoredInProperties(kMaxQuicServerEntries);
@@ -2720,7 +2750,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId docs_quic_server_id("docs.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey docs_key(
       docs_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string docs_server_info("docs_quic_server_info");
   impl_.SetQuicServerInfo(docs_quic_server_id, PRIVACY_MODE_ENABLED,
                           NetworkAnonymizationKey(), docs_server_info);
@@ -2749,7 +2779,7 @@ TEST_F(HttpServerPropertiesTest, OnQuicServerInfoMapLoaded) {
   quic::QuicServerId mail_quic_server_id("mail.google.com", 443);
   HttpServerProperties::QuicServerInfoMapKey mail_key(
       mail_quic_server_id, PRIVACY_MODE_ENABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string mail_server_info("mail_quic_server_info");
   quic_server_info_map->Put(mail_key, mail_server_info);
   impl_.OnQuicServerInfoMapLoadedForTesting(std::move(quic_server_info_map));
@@ -2856,8 +2886,8 @@ TEST_F(HttpServerPropertiesTest, SetQuicServerInfo) {
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   properties.SetQuicServerInfo(server1, PRIVACY_MODE_DISABLED,
@@ -2952,8 +2982,8 @@ TEST_F(HttpServerPropertiesTest,
       features::kPartitionConnectionsByNetworkIsolationKey);
   // Since HttpServerProperties caches the feature value, have to create a new
   // one.
-  HttpServerProperties properties(nullptr /* pref_delegate */,
-                                  nullptr /* net_log */, test_tick_clock_,
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
                                   &test_clock_);
 
   // Set QuicServerInfo for one canononical suffix and
@@ -3064,7 +3094,7 @@ TEST_F(HttpServerPropertiesTest,
   quic::QuicServerId h1_server_id("h1.googlevideo.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h1_key(
       h1_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string h1_server_info("h1_server_info");
   impl_.SetQuicServerInfo(h1_server_id, PRIVACY_MODE_DISABLED,
                           NetworkAnonymizationKey(), h1_server_info);
@@ -3073,7 +3103,7 @@ TEST_F(HttpServerPropertiesTest,
   quic::QuicServerId h2_server_id("h2.video.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
       h2_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string h2_server_info("h2_server_info");
   impl_.SetQuicServerInfo(h2_server_id, PRIVACY_MODE_DISABLED,
                           NetworkAnonymizationKey(), h2_server_info);
@@ -3118,13 +3148,13 @@ TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatchSetInfoMap) {
   quic::QuicServerId h2_server_id("h2.googlevideo.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h2_key(
       h2_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string h2_server_info("h2_server_info_from_disk");
 
   quic::QuicServerId h3_server_id("h3.ggpht.com", 443);
   HttpServerProperties::QuicServerInfoMapKey h3_key(
       h3_server_id, PRIVACY_MODE_DISABLED, NetworkAnonymizationKey(),
-      false /* use_network_anonymization_key */);
+      /*use_network_anonymization_key=*/false);
   std::string h3_server_info("h3_server_info_from_disk");
 
   const int kMaxQuicServerEntries = 10;
@@ -3154,6 +3184,324 @@ TEST_F(HttpServerPropertiesTest, QuicServerInfoCanonicalSuffixMatchSetInfoMap) {
                                         NetworkAnonymizationKey());
   ASSERT_TRUE(server_info != nullptr);
   EXPECT_EQ(h3_server_info, *server_info);
+}
+
+static constexpr char kTestQuicHints[] =
+    "www.example.test,443,443,"
+    "www.example.com,443,8443,"
+    ".example.test,443,443,"
+    "www.example.org,www.example.org,443,"
+    "www.example.net,443,www.example.net,"
+    "www.broken-example.test,443,443";
+
+static constexpr char kTestWildcardQuicHints[] =
+    ".example1.test,443,443,"
+    ".example2.test,443,8443,"
+    "www.example3.test,443,443,"
+    ".broken-example1.test,443,443";
+
+class HttpServerPropertiesQuicHintsTest
+    : public HttpServerPropertiesTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  HttpServerPropertiesQuicHintsTest()
+      : scoped_feature_list_(CreateFeatureList()),
+        properties_(/*pref_delegate=*/nullptr,
+                    /*net_log=*/nullptr,
+                    /*tick_clock=*/nullptr,
+                    /*clock=*/nullptr) {}
+
+ protected:
+  bool Enabled() const { return GetParam(); }
+
+  // Create the feature list before constructing the HttpServerProperties.
+  static std::unique_ptr<base::test::ScopedFeatureList> CreateFeatureList() {
+    std::unique_ptr<base::test::ScopedFeatureList> feature_list =
+        std::make_unique<base::test::ScopedFeatureList>();
+    if (GetParam()) {
+      feature_list->InitAndEnableFeatureWithParameters(
+          features::kConfigureQuicHints,
+          {{"quic_hints", kTestQuicHints},
+           {"wildcard_quic_hints", kTestWildcardQuicHints}});
+    } else {
+      feature_list->InitAndDisableFeature(features::kConfigureQuicHints);
+    }
+    return feature_list;
+  }
+
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  HttpServerProperties properties_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         HttpServerPropertiesQuicHintsTest,
+                         testing::Bool());
+
+TEST_P(HttpServerPropertiesQuicHintsTest, SamePort) {
+  const url::SchemeHostPort test_server("https", "www.example.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, DifferentPort) {
+  const url::SchemeHostPort test_server("https", "www.example.com", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example.com");
+    ASSERT_EQ(first_hint.alternative_service().port, 8443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, InvalidHost) {
+  const url::SchemeHostPort test_server("https", ".example.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, InvalidPort) {
+  const url::SchemeHostPort test_server("https", "www.example.org", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, InvalidAlternatePort) {
+  const url::SchemeHostPort test_server("https", "www.example.net", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, BrokenAlternativeService) {
+  const url::SchemeHostPort test_server("https", "www.broken-example.test",
+                                        443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+
+  // Mark the alternative service broken and validate that it is no longer
+  // found.
+  net::AlternativeService alternative_service(
+      net::NextProto::kProtoQUIC, test_server.host(), test_server.port());
+  properties_.MarkAlternativeServiceBroken(alternative_service,
+                                           net::NetworkAnonymizationKey());
+
+  alternative_services = properties_.GetAlternativeServiceInfos(
+      test_server, net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardSamePort) {
+  const url::SchemeHostPort test_server("https", "www.example1.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example1.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardDifferentPort) {
+  const url::SchemeHostPort test_server("https", "www.example2.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host, "www.example2.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 8443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardMissingDotPrefix) {
+  const url::SchemeHostPort test_server("https", "www.example3.test", 443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  // Wildcard QUIC hints need to start with "." to be considered valid.
+  ASSERT_TRUE(alternative_services.empty());
+}
+
+TEST_P(HttpServerPropertiesQuicHintsTest, WildcardBrokenAlternativeService) {
+  const url::SchemeHostPort test_server("https", "www.broken-example1.test",
+                                        443);
+  AlternativeServiceInfoVector alternative_services =
+      properties_.GetAlternativeServiceInfos(test_server,
+                                             net::NetworkAnonymizationKey());
+
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+
+  // Mark the alternative service broken and validate that it is no longer
+  // found.
+  net::AlternativeService alternative_service(
+      net::NextProto::kProtoQUIC, test_server.host(), test_server.port());
+  properties_.MarkAlternativeServiceBroken(alternative_service,
+                                           net::NetworkAnonymizationKey());
+
+  alternative_services = properties_.GetAlternativeServiceInfos(
+      test_server, net::NetworkAnonymizationKey());
+
+  ASSERT_TRUE(alternative_services.empty());
+
+  // Other wildcard matches should be unaffected by the broken service.
+  const url::SchemeHostPort test_server2("https", "test.broken-example1.test",
+                                         443);
+  alternative_services = properties_.GetAlternativeServiceInfos(
+      test_server2, net::NetworkAnonymizationKey());
+  if (Enabled()) {
+    ASSERT_EQ(1u, alternative_services.size());
+
+    // Validate that the alternative service matches the corresponding hint.
+    AlternativeServiceInfo first_hint = alternative_services[0];
+    ASSERT_EQ(first_hint.alternative_service().host,
+              "test.broken-example1.test");
+    ASSERT_EQ(first_hint.alternative_service().port, 443);
+    ASSERT_EQ(first_hint.expiration(), base::Time::Max());
+    ASSERT_EQ(first_hint.advertised_versions(), DefaultSupportedQuicVersions());
+  } else {
+    ASSERT_TRUE(alternative_services.empty());
+  }
+}
+
+// Check the behavior for RequiresHTTP11 and related function.
+TEST_F(HttpServerPropertiesTest, RequiresHTTP11) {
+  // Only check the partitioned case, to make sure NAK is respected. The
+  // unpartitioned case is strictly less interesting, and if values are
+  // incorrectly being partitioned here, it's not really a big deal, since this
+  // is just an optimization.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
+
+  // Since HttpServerProperties caches the feature value, have to create a new
+  // one.
+  HttpServerProperties properties(/*pref_delegate=*/nullptr,
+                                  /*net_log=*/nullptr, test_tick_clock_,
+                                  &test_clock_);
+
+  // Since HTTP/2 is never used for HTTP, only test with https/wss.
+  const url::SchemeHostPort kServer1("https", "foo.test", 443);
+  const url::SchemeHostPort kServer2("https", "bar.test", 443);
+  // "wss" SchemeHostPorts should be treated like they are "https" ones.
+  const url::SchemeHostPort kServer1Wss("wss", "foo.test", 443);
+  const url::SchemeHostPort kServer2Wss("wss", "bar.test", 443);
+
+  ExpectHttp11NotRequired(properties, kServer1, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer1, network_anonymization_key2_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key2_);
+  ExpectHttp11NotRequired(properties, kServer1Wss, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2Wss, network_anonymization_key1_);
+
+  properties.SetHTTP11Required(kServer1, network_anonymization_key1_);
+  ExpectHttp11Required(properties, kServer1, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer1, network_anonymization_key2_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer1Wss, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2Wss, network_anonymization_key1_);
+
+  properties.SetHTTP11Required(kServer2Wss, network_anonymization_key1_);
+  ExpectHttp11Required(properties, kServer1, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer1, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer2, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer1Wss, network_anonymization_key1_);
+  ExpectHttp11Required(properties, kServer2Wss, network_anonymization_key1_);
+
+  properties.SetHTTP11Required(kServer1, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer1, network_anonymization_key1_);
+  ExpectHttp11Required(properties, kServer1, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer2, network_anonymization_key1_);
+  ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key2_);
+  ExpectHttp11Required(properties, kServer1Wss, network_anonymization_key1_);
+  ExpectHttp11Required(properties, kServer2Wss, network_anonymization_key1_);
+
+  // Test eviction. Add `kMaxServersRequiringHttp11Entries` entries, checking
+  // the first three that were added after each one is added. The 3 least
+  // recently used entries should be evicted. Since the entries that were added
+  // above are constantly being re-checked, the least recently used entries will
+  // actually be the first three entries the loop below adds.
+  for (int i = 0; i < HttpServerProperties::kMaxServersRequiringHttp11Entries;
+       ++i) {
+    url::SchemeHostPort server("https", "foo.test", i + 1);
+    properties.SetHTTP11Required(server, network_anonymization_key1_);
+    ExpectHttp11Required(properties, server, network_anonymization_key1_);
+
+    ExpectHttp11Required(properties, kServer1, network_anonymization_key1_);
+    ExpectHttp11Required(properties, kServer1, network_anonymization_key2_);
+    ExpectHttp11Required(properties, kServer2, network_anonymization_key1_);
+    ExpectHttp11NotRequired(properties, kServer2, network_anonymization_key2_);
+  }
+
+  // Check that the 3 least recently used entries were evicted as expected.
+  for (int i = 0; i < HttpServerProperties::kMaxServersRequiringHttp11Entries;
+       ++i) {
+    url::SchemeHostPort server("https", "foo.test", i + 1);
+    if (i < 3) {
+      ExpectHttp11NotRequired(properties, server, network_anonymization_key1_);
+    } else {
+      ExpectHttp11Required(properties, server, network_anonymization_key1_);
+    }
+  }
 }
 
 }  // namespace

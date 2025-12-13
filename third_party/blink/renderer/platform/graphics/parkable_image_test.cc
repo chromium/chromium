@@ -112,7 +112,7 @@ class ParkableImageBaseTest : public ::testing::Test {
       base::span<const uint8_t> buffer) {
     auto pi = ParkableImage::Create();
 
-    pi->Append(WTF::SharedBuffer::Create(buffer).get(), 0);
+    pi->Append(SharedBuffer::Create(buffer).get(), 0);
 
     return pi;
   }
@@ -275,7 +275,7 @@ TEST_F(ParkableImageTest, Append) {
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // Should be empty when created.
 
-  pi->Append(WTF::SharedBuffer::Create(data).get(), 0);
+  pi->Append(SharedBuffer::Create(data).get(), 0);
 
   EXPECT_TRUE(IsSameContent(pi, data));
 }
@@ -289,7 +289,7 @@ TEST_F(ParkableImageTest, AppendMultiple) {
   auto pi = ParkableImage::Create();
   ASSERT_EQ(pi->size(), 0u);  // Should be empty when created.
 
-  auto sb = WTF::SharedBuffer::Create(data);
+  auto sb = SharedBuffer::Create(data);
   ASSERT_EQ(sb->size(), kDataSize);
 
   pi->Append(sb.get(), 0);

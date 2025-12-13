@@ -172,13 +172,12 @@ blink_platform_sources("scheduler") {
   deps = [
     "//base",
     "//cc",
-    "//components/miracle_parameter/common",
     "//components/performance_manager/scenario_api",
     "//device/base/synchronization",
     "//services/metrics/public/mojom",
     "//third_party/blink/renderer/platform:allow_discouraged_type",
     "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/heap:heap",
+    "//third_party/blink/renderer/platform/heap",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/wtf",
     "//v8",
@@ -194,9 +193,7 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/fake_agent_group_scheduler_scheduler.h",
     "test/fake_frame_scheduler.h",
-    "test/fake_page_scheduler.h",
     "test/fake_task_runner.cc",
     "test/fake_task_runner.h",
     "test/fake_widget_scheduler.cc",
@@ -204,7 +201,6 @@ source_set("test_support") {
     "test/recording_task_time_observer.cc",
     "test/recording_task_time_observer.h",
     "test/renderer_scheduler_test_support.cc",
-    "test/web_fake_thread_scheduler.cc",
     "test/web_scheduling_test_helper.cc",
     "test/web_scheduling_test_helper.h",
   ]
@@ -217,7 +213,7 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
-    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -262,6 +258,8 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/performance_manager/scenario_api",
+    "//components/performance_manager/scenario_api:test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public:test_support",
@@ -299,7 +297,7 @@ source_set("scheduler_fuzzer_tests") {
 
     deps += [
       ":sequence_manager_test_description_proto",
-      "//third_party/blink/renderer/platform:platform",
+      "//third_party/blink/renderer/platform",
       "//third_party/libprotobuf-mutator",
     ]
   }
@@ -324,8 +322,8 @@ fuzzer_test("sequence_manager_fuzzer") {
   deps = [
     ":sequence_manager_test_description_proto",
     "//base/test:test_support",
+    "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/libprotobuf-mutator",
   ]

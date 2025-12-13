@@ -24,7 +24,6 @@
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
-#include "ipc/ipc_test_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -108,10 +107,6 @@ class TextInputClientMacTest : public content::RenderViewHostTestHarness {
 
   RenderWidgetHost* widget() { return widget_; }
   TextInputClientLocalFrame* local_frame() { return local_frame_.get(); }
-
-  IPC::TestSink& ipc_sink() {
-    return static_cast<MockRenderProcessHost*>(widget()->GetProcess())->sink();
-  }
 
  private:
   friend class ScopedTestingThread;

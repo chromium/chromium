@@ -54,9 +54,9 @@ std::unique_ptr<FilesRequestHandler> FakeFilesRequestHandler::Create(
 }
 
 void FakeFilesRequestHandler::UploadFileForDeepScanning(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   fake_file_upload_callback_.Run(
       result, path, std::move(request),
       base::BindOnce(&FakeFilesRequestHandler::FileRequestCallbackForTesting,

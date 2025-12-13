@@ -17,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/execution_fence.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
@@ -165,7 +166,7 @@ class ThreadPoolPerfTest : public testing::Test {
   void OnCompletePostingTasks() { complete_posting_tasks_.Signal(); }
 
   void Benchmark(const std::string& story_name, ExecutionMode execution_mode) {
-    std::optional<ThreadPoolInstance::ScopedExecutionFence> execution_fence;
+    std::optional<ScopedThreadPoolExecutionFence> execution_fence;
     if (execution_mode == ExecutionMode::kPostThenRun) {
       execution_fence.emplace();
     }

@@ -17,8 +17,8 @@ source_set("tailored_security") {
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:mediators",
     "//ios/chrome/browser/safe_browsing/model/tailored_security:infobar_delegates",
+    "//ios/chrome/browser/shared/ui:buildflags",
     "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:buildflags",
   ]
 }
 

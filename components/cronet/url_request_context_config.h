@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/cronet/cronet_context.h"

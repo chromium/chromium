@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/login/screens/user_selection_screen.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
@@ -81,7 +80,6 @@ class SigninPrepareUserListTest : public testing::Test {
   FakeChromeUserManager* user_manager() { return fake_user_manager_; }
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;

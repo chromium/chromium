@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -57,8 +58,8 @@ struct ExtraRequestCompleteInfo {
       const net::IPEndPoint& remote_endpoint,
       content::FrameTreeNodeId frame_tree_node_id,
       bool was_cached,
-      int64_t raw_body_bytes,
-      int64_t original_network_content_length,
+      base::ByteCount raw_body_bytes,
+      base::ByteCount original_network_content_length,
       network::mojom::RequestDestination request_destination,
       int net_error,
       std::unique_ptr<net::LoadTimingInfo> load_timing_info);
@@ -84,11 +85,11 @@ struct ExtraRequestCompleteInfo {
   const bool was_cached;
 
   // The number of body (not header) prefilter bytes.
-  const int64_t raw_body_bytes;
+  const base::ByteCount raw_body_bytes;
 
   // The number of body (not header) bytes that the data reduction proxy saw
   // before it compressed the requests.
-  const int64_t original_network_content_length;
+  const base::ByteCount original_network_content_length;
 
   // The type of the request as gleaned from the mime type.  This may
   // be more accurate than the type in the ExtraRequestStartInfo since we can
@@ -122,13 +123,6 @@ struct FailedProvisionalLoadInfo {
   content::NavigationDiscardReason discard_reason;
 };
 
-// Struct for storing per-frame memory update data.
-struct MemoryUpdate {
-  content::GlobalRenderFrameHostId routing_id;
-  int64_t delta_bytes;
-  MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta);
-};
-
 // Interface for PageLoadMetrics observers. Only PageLoadMetricsForwardObserver
 // should inherit this interface directly, and others should do
 // PageLoadMetricsObserver class.
@@ -145,7 +139,7 @@ class PageLoadMetricsObserverInterface {
   // FORWARD_OBSERVING may be deleted. If the observer in the parent page
   // receives forward metrics via FORWARD_OBSERVING, and returns STOP_OBSERVING,
   // It just stop observing forward metrics, and still see other callbacks for
-  // the orinally bound page.
+  // the originally bound page.
   // Most events requiring preprocesses, such as lifecycle events, are forwarded
   // to the outer page at the PageLoadTracker layer, and only events that are
   // directly delivered to the observers need FORWARD_OBSERVING. See
@@ -309,7 +303,7 @@ class PageLoadMetricsObserverInterface {
   // back-forward cache can be evicted at any moment, and in this case
   // OnComplete will be called.
   //
-  // At the moment, the default implementtion of OnEnterBackForwardCache()
+  // At the moment, the default implementation of OnEnterBackForwardCache()
   // invokes OnComplete and returns STOP_OBSERVING, so the page will not be
   // tracked after it is stored in the back-forward cache and after it is
   // restored. Return CONTINUE_OBSERVING explicitly to ensure that you cover the
@@ -417,6 +411,10 @@ class PageLoadMetricsObserverInterface {
   virtual void OnFirstImagePaintInPage(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnFirstContentfulPaintInPage(
       const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnMonotonicFirstPaintInPage(
+      const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnMonotonicFirstContentfulPaintInPage(
+      const mojom::PageLoadTiming& timing) = 0;
 
   // These are called once every time when the page is restored from the
   // back-forward cache. |index| indicates |index|-th restore.
@@ -513,10 +511,11 @@ class PageLoadMetricsObserverInterface {
   virtual void OnMainFrameViewportRectChanged(
       const gfx::Rect& main_frame_viewport_rect) = 0;
 
-  // Called when an image ad rectangle changed. An empty `image_ad_rect` is used
-  // to signal the removal of the rectangle. Only invoked on the main frame.
-  virtual void OnMainFrameImageAdRectsChanged(
-      const base::flat_map<int, gfx::Rect>& main_frame_image_ad_rects) = 0;
+  // Called when the geometry of ad elements changed. The key of
+  // `main_frame_ad_rects` is the element's node ID. Only invoked on the main
+  // frame.
+  virtual void OnMainFrameAdRectsChanged(
+      const base::flat_map<int, gfx::Rect>& main_frame_ad_rects) = 0;
 
   // Invoked when the UMA metrics subsystem is persisting metrics as the
   // application goes into the background, on platforms where the browser
@@ -537,9 +536,9 @@ class PageLoadMetricsObserverInterface {
   // A destructor of observer is invoked in the following mutually exclusive
   // paths:
   //
-  // - (If an ovserver doesn't override OnEnterBackForwardCache) When
+  // - (If an observer doesn't override OnEnterBackForwardCache) When
   //   OnEnterBackForwardCache is invoked, it calls OnComplete and returns
-  //   STOP_OBSERVING, then the ovserver is pruned.
+  //   STOP_OBSERVING, then the observer is pruned.
   // - When some callback returned STOP_OBSERVING, the observer is pruned with
   //   no more callback.
   // - When PageLoadTracker destructed, OnComplete is invoked just before
@@ -628,12 +627,6 @@ class PageLoadMetricsObserverInterface {
 
   // Called when the previewed page is activated for the tab promotion.
   virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) = 0;
-
-  // Called when V8 per-frame memory usage updates are available. Each
-  // MemoryUpdate consists of a GlobalRenderFrameHostId and a nonzero int64_t
-  // change in bytes used.
-  virtual void OnV8MemoryChanged(
-      const std::vector<MemoryUpdate>& memory_updates) = 0;
 
   // Called when a `SharedStorageWorkletHost` is created.
   virtual void OnSharedStorageWorkletHostCreated() = 0;

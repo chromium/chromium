@@ -48,11 +48,10 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   gfx::RectF rect(gfx::ScaleToEnclosedRect(view.GetLocalBounds(), dsf));
   rect.Inset(gfx::InsetsF(kStrokeWidth / 2.0f));
 
-  SkPath path;
   flags.setAntiAlias(true);
   float corner_radius_px = corner_radius_ * dsf;
-  path.addRoundRect(gfx::RectFToSkRect(rect), corner_radius_px,
-                    corner_radius_px);
+  const SkPath path = SkPath::RRect(gfx::RectFToSkRect(rect), corner_radius_px,
+                                    corner_radius_px);
 
   canvas->DrawPath(path, flags);
 }

@@ -25,13 +25,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -49,7 +46,6 @@ import java.util.HashSet;
 @RunWith(BaseJUnit4ClassRunner.class)
 // Batch this per class since the test is setting global feature state.
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)
 public class OptimizationGuidePushNotificationManagerUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
 
@@ -147,29 +143,6 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS)
-    public void testFeatureDisabled() {
-        OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
-
-        OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
-        Assert.assertEquals(
-                new ArrayList<>(),
-                OptimizationGuidePushNotificationManager
-                        .getOptTypesThatOverflowedPushNotifications());
-
-        HintNotificationPayload[] cached =
-                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
-                        OptimizationType.PERFORMANCE_HINTS);
-        Assert.assertNotNull(cached);
-        Assert.assertEquals(0, cached.length);
-
-        Assert.assertEquals(
-                new ArrayList<>(),
-                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
-    }
-
-    @Test
-    @SmallTest
     public void testClearAllOnFeatureOff() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
@@ -196,38 +169,17 @@ public class OptimizationGuidePushNotificationManagerUnitTest {
         Assert.assertEquals(
                 Arrays.asList(OptimizationType.LITE_PAGE, OptimizationType.LITE_VIDEO),
                 OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
-
-        // Flag state cannot change within the same process instance, so this behavior does not
-        // actually get triggered in real usage.
-        FeatureOverrides.disable(ChromeFeatureList.OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS);
-
-        // Push another notification to trigger the clear.
-        OptimizationGuidePushNotificationManager.onPushNotification(NOTIFICATION_WITH_PAYLOAD);
-
-        Assert.assertEquals(
-                0,
-                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
-                                OptimizationType.LITE_PAGE)
-                        .length);
-        Assert.assertEquals(
-                0,
-                OptimizationGuidePushNotificationManager.getNotificationCacheForOptimizationType(
-                                OptimizationType.LITE_VIDEO)
-                        .length);
-
-        Assert.assertEquals(
-                new ArrayList<>(),
-                OptimizationGuidePushNotificationManager.getOptTypesWithPushNotifications());
     }
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/458450979")
     public void testOverflow() {
         OptimizationGuidePushNotificationManager.setNativeIsInitializedForTesting(false);
 
-        final int overflowSize = 5;
-        ChromeFeatureList.sOptimizationGuidePushNotificationsMaxCacheSize.setForTesting(
-                overflowSize);
+        final int overflowSize =
+                OptimizationGuidePushNotificationManager
+                        .OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS_MAX_CACHE_SIZE;
 
         for (int i = 1; i <= overflowSize; i++) {
             Assert.assertEquals(

@@ -156,4 +156,18 @@ TEST(SignalingAddressTest, GetFtlInfo_NotFtlInfo) {
   EXPECT_TRUE(registration_id.empty());
 }
 
+TEST(SignalingAddressTest, CorpAddress) {
+  const char kCorpToken[] = "this_is_a_corp_token_without_at_or_slash";
+  SignalingAddress addr(kCorpToken);
+  EXPECT_EQ(SignalingAddress::Channel::CORP, addr.channel());
+  EXPECT_EQ(kCorpToken, addr.id());
+}
+
+TEST(SignalingAddressTest, JidWithoutResourceIsXmpp) {
+  const char kJid[] = "user@domain.com";
+  SignalingAddress addr(kJid);
+  EXPECT_EQ(SignalingAddress::Channel::XMPP, addr.channel());
+  EXPECT_EQ(kJid, addr.id());
+}
+
 }  // namespace remoting

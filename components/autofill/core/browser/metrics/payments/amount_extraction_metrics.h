@@ -5,11 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AMOUNT_EXTRACTION_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_AMOUNT_EXTRACTION_METRICS_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AmountExtractionComponentInstallationResult {
   // The component installation was successful.
   kSuccessful = 0,
@@ -26,6 +31,8 @@ enum class AmountExtractionComponentInstallationResult {
   kMaxValue = kEmptyGenericDetails,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class AmountExtractionResult {
   // The amount extraction was successful.
   kSuccessful = 0,
@@ -39,12 +46,13 @@ enum class AmountExtractionResult {
 void LogAmountExtractionComponentInstallationResult(
     AmountExtractionComponentInstallationResult result);
 
-// Logs the latency from the `AmountExtractionManager`, from the point of amount
-// extraction initiation to when it finishes. Logged once a response from amount
-// extraction is received.
-void LogAmountExtractionLatency(base::TimeDelta latency, bool is_successful);
-
-void LogAmountExtractionResult(AmountExtractionResult result);
+// Logs the result of the amount extraction process. Its latency is measured
+// from when the browser process initiates the search to the timepoint when the
+// response is received. If the extraction process times out, latency will be
+// nullopt.
+void LogAmountExtractionResult(std::optional<base::TimeDelta> latency,
+                               AmountExtractionResult result,
+                               ukm::SourceId ukm_source_id);
 
 }  // namespace autofill::autofill_metrics
 

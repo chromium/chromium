@@ -26,7 +26,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace display {

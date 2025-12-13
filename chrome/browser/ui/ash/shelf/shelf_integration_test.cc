@@ -21,8 +21,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/find_window.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -38,14 +38,14 @@ class ShelfIntegrationTest : public AshIntegrationTest {
  public:
   ShelfIntegrationTest()
       : zero_duration_scoped_animation_scale_mode_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
 
   ~ShelfIntegrationTest() override = default;
 
  private:
   // Ensure shelf icon positions are stable. This needs to be created before the
   // test starts for the shelf view's bounds animator.
-  ui::ScopedAnimationDurationScaleMode
+  gfx::ScopedAnimationDurationScaleMode
       zero_duration_scoped_animation_scale_mode_;
 };
 

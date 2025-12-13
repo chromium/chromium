@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(AndroidMetricsHelperTest, CpuAbiBitnessSupport) {
   std::unique_ptr<AndroidMetricsHelper> helper(
@@ -110,4 +111,5 @@ TEST_F(AndroidMetricsHelperHistTest, EmitHistograms_BadData) {
                                       CpuAbiBitnessSupport::k32bitOnly, 1);
 }
 
+}  // namespace
 }  // namespace metrics

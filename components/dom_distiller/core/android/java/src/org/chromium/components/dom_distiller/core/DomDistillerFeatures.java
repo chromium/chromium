@@ -9,6 +9,8 @@ import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.concurrent.TimeUnit;
+
 /** Utility class for ongoing reader mode features. */
 @NullMarked
 public class DomDistillerFeatures {
@@ -36,9 +38,15 @@ public class DomDistillerFeatures {
                 && sReaderModeUseReadabilityUseHeuristic.getValue();
     }
 
+    /** Returns whether to provide new accessible font options in the bottom sheet. */
+    public static boolean shouldShowNewAccessibleFontOptions() {
+        return sReaderModeDistillInApp.isEnabled() && sReaderModeSupportNewFonts.isEnabled();
+    }
+
     // Feature names -- alphabetical ordering.
     public static final String READER_MODE_DISTILL_IN_APP = "ReaderModeDistillInApp";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
+    public static final String READER_MODE_SUPPORT_NEW_FONTS = "ReaderModeSupportNewFonts";
     public static final String READER_MODE_USE_READABILITY = "ReaderModeUseReadability";
 
     // Feature flags -- alphabetical ordering.
@@ -46,10 +54,42 @@ public class DomDistillerFeatures {
             newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
+    public static final MutableFlagWithSafeDefault sReaderModeSupportNewFonts =
+            newMutableFlagWithSafeDefault(READER_MODE_SUPPORT_NEW_FONTS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeUseReadability =
             newMutableFlagWithSafeDefault(READER_MODE_USE_READABILITY, /* defaultValue= */ false);
 
     // Feature params -- alphabetical ordering.
+
+    /** Whether the CPA should be shown. */
+    public static final MutableBooleanParamWithSafeDefault sReaderModeDistillInAppShowCpa =
+            sReaderModeDistillInApp.newBooleanParam("show_cpa", true);
+
+    /** The number of times the CPA can be shown without interaction before being suppressed. */
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppCpaShowLimit =
+            sReaderModeDistillInApp.newIntParam("cpa_show_limit", 3);
+
+    /** The window of time to track the CPA being shown. */
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppTrackingWindowMs =
+            sReaderModeDistillInApp.newIntParam(
+                    "tracking_window_ms", (int) TimeUnit.DAYS.toMillis(1));
+
+    /**
+     * The number of times that the CPA can be temporarily suppressed before being permanently
+     * suppressed..
+     */
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppSuppressionLimit =
+            sReaderModeDistillInApp.newIntParam("suppression_limit", 3);
+
+    /** The window of time to suppress the CPA after it's been shown without interaction. */
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppSuppressionWindowMs =
+            sReaderModeDistillInApp.newIntParam(
+                    "suppression_window_ms", (int) TimeUnit.DAYS.toMillis(3));
+
+    public static final MutableIntParamWithSafeDefault sReaderModeDistillInAppHideCpaDelayMs =
+            sReaderModeDistillInApp.newIntParam(
+                    "hide_cpa_delay_ms", (int) TimeUnit.SECONDS.toMillis(5));
+
     public static final MutableBooleanParamWithSafeDefault
             sReaderModeImprovementsTriggerOnMobileFriendlyPages =
                     sReaderModeImprovements.newBooleanParam(

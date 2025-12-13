@@ -2,6 +2,9 @@
 <script src="../../resources/js-test.js"></script>
 <body>
 <script>
+if (window.internals) {
+  internals.runtimeFlags.selectionSetBaseAndExtentNonNullNodeEnabled = false;
+}
 window.selection = getSelection();
 
 shouldNotThrow('selection.collapse(document.body, 0)');

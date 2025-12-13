@@ -131,7 +131,7 @@ mojo_base::BigBuffer StructTraits<blink::mojom::DragItemBinaryDataView,
                                   blink::WebDragData::BinaryDataItem>::
     data(const blink::WebDragData::BinaryDataItem& item) {
   mojo_base::BigBuffer buffer(item.data.size());
-  const SharedBuffer& item_buffer = item.data;
+  const blink::SharedBuffer& item_buffer = item.data;
   CHECK(item_buffer.GetBytes(base::span(buffer)));
   return buffer;
 }

@@ -28,18 +28,6 @@ logging.getLogger("urllib3").setLevel(logging.WARNING)
 _log = logging.getLogger(__name__)
 
 
-# A map from the enum values of typ.ResultType to luci.resultdb.v1.WebTest.Status.
-# See valid values at
-# https://source.chromium.org/chromium/infra/infra_superproject/+/main:infra/go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto?q=WebTest
-_result_type_to_web_test_status = {
-    ResultType.Pass: 'PASS',
-    ResultType.Failure: 'FAIL',
-    ResultType.Timeout: 'TIMEOUT',
-    ResultType.Crash: 'CRASH',
-    ResultType.Skip: 'SKIP',
-}
-
-
 class TestResultSinkClosed(Exception):
     """Raises if sink() is called over a closed TestResultSink instance."""
 
@@ -93,20 +81,6 @@ class TestResultSink:
     def _send(self, data):
         self._session.post(self._url, data=json.dumps(data)).raise_for_status()
 
-    def _web_test_status(self, result):
-        """Returns the luci.resultdb.v1.WebTest.Status enum value corresponding to the result type.
-
-        Args:
-            result: The TestResult object to find the web test status of.
-        Returns:
-            The luci.resultdb.v1.WebTest.Status enum value.
-        """
-        status = _result_type_to_web_test_status.get(
-            ResultType.Timeout if result.device_failed else result.type)
-
-        assert status is not None, 'unsupported result.type %r' % result.type
-        return status
-
     def _tags(self, result):
         """Returns a list of tags that should be added into a given test result.
 
@@ -130,7 +104,6 @@ class TestResultSink:
 
         tags = [
             pair('test_name', result.test_name),
-            pair('web_tests_device_failed', str(result.device_failed)),
             # Used by `//third_party/blink/tools/run_slow_test_analyzer.py`.
             pair('web_tests_base_timeout',
                  str(int(self._port.timeout_ms() / 1000))),
@@ -262,10 +235,8 @@ class TestResultSink:
             },
             'frameworkExtensions': {
                 'webTest': {
-                    # device failures are never expected.
-                    'isExpected': not result.device_failed
-                    and result.is_expected,
-                    'status': self._web_test_status(result),
+                    'isExpected': result.is_expected,
+                    'status': result.type,
                 },
             },
         }
@@ -283,12 +254,7 @@ class TestResultSink:
             }
             r['testIdStructured'] = struct_test_dict
 
-        if result.device_failed:
-            r['statusV2'] = 'FAILED'
-            r['failureReason'] = {
-                'kind': 'TIMEOUT',
-            }
-        elif result.is_expected:
+        if result.is_expected:
             if result.type == ResultType.Skip:
                 r['statusV2'] = 'SKIPPED'
                 # ResultDB requires a skipped reason message to be uploaded for all skipped tests.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
 
 #include <atomic>
@@ -19,11 +14,13 @@
 #include <vector>
 
 #include "ash/test/ash_test_base.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -638,7 +635,7 @@ TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
        .session_type = FatalCrashTelemetry::SESSION_TYPE_GUEST}};
 
   for (size_t i = 0; i < std::size(kSessionTypes); ++i) {
-    SimulateUserLogin(kUserEmail, kSessionTypes[i].user_type,
+    SimulateUserLogin(kUserEmail, UNSAFE_TODO(kSessionTypes[i]).user_type,
                       is_user_affiliated());
     auto crash_event_info = NewCrashEventInfo(is_uploaded());
     if (is_uploaded()) {
@@ -652,8 +649,8 @@ TEST_P(FatalCrashEventsObserverWithUserAffiliationParamTest,
     const auto fatal_crash_telemetry =
         WaitForFatalCrashTelemetry(std::move(crash_event_info));
     ASSERT_TRUE(fatal_crash_telemetry.has_session_type());
-    EXPECT_EQ(fatal_crash_telemetry.session_type(),
-              kSessionTypes[i].session_type);
+    UNSAFE_TODO(EXPECT_EQ(fatal_crash_telemetry.session_type(),
+                          kSessionTypes[i].session_type));
     ClearLogin();
   }
 }

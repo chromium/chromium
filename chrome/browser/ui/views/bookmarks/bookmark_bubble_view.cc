@@ -20,11 +20,14 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_email_dialog_view.h"
@@ -66,6 +69,8 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
+#include "components/sync/base/features.h"
 #endif
 
 using base::UserMetricsAction;
@@ -200,13 +205,54 @@ bool ShouldShowShoppingCollectionFootnote(Profile* profile,
   return true;
 }
 
+actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
+  CHECK(bwi);
+  actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(
+      kActionBookmarkThisTab, bwi->GetActions()->root_action_item());
+  CHECK(action_item);
+  return *action_item;
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void MaybeShowSignInPromo(bool already_bookmarked,
+                          Profile* profile,
+                          views::View* anchor_view,
+                          content::WebContents* web_contents,
+                          const bookmarks::BookmarkNode* bookmark) {
+  if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+    return;
+  }
+
+  if (!anchor_view) {
+    return;
+  }
+
+  if (!signin::ShouldShowBookmarkSignInPromo(*profile)) {
+    return;
+  }
+
+  if (!bookmark || already_bookmarked) {
+    return;
+  }
+
+  BookmarkSigninPromoBubbleView* bubble =
+      new BookmarkSigninPromoBubbleView(anchor_view, web_contents, bookmark);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
+}
+#endif
+
 }  // namespace
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
     : public ui::DialogModelDelegate {
  public:
   BookmarkBubbleDelegate(Browser* browser, const GURL& url)
-      : browser_(browser), url_(url) {}
+      : browser_(browser),
+        url_(url),
+        action_item_(GetBookmarkActionItem(browser)) {
+    action_item_->SetIsShowingBubble(true);
+  }
 
   // Handles presses on the secondary (usually cancel) button and returns
   // whether the dialog should close as a result of the button press. In this
@@ -236,6 +282,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     if (should_apply_edits_) {
       ApplyEdits();
     }
+    action_item_->SetIsShowingBubble(false);
     bookmark_bubble_ = nullptr;
 
     if (close_callback_) {
@@ -326,6 +373,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   base::OnceCallback<void()> close_callback_;
 
   bool should_apply_edits_ = true;
+  const raw_ref<actions::ActionItem> action_item_;
 };
 
 // static
@@ -338,7 +386,11 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   // The only point where the star view can properly observe the bubble dialog
   // delegate's widget is in this function, that's why star view is observing
   // the widget from here after its creation.
-  auto* star_view = static_cast<StarView*>(highlighted_button);
+  // This is only neceessary for the legacy page action framework.
+  StarView* star_view = nullptr;
+  if (!IsPageActionMigrated(PageActionIconType::kBookmarkStar)) {
+    star_view = static_cast<StarView*>(highlighted_button);
+  }
   if (bookmark_bubble_) {
     if (star_view) {
       star_view->OnBubbleWidgetChanged(bookmark_bubble_->GetWidget());
@@ -346,6 +398,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
     return;
   }
   Profile* profile = browser->profile();
+  CHECK(profile);
+  CHECK(web_contents);
+
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   const bookmarks::BookmarkNode* bookmark_node =
@@ -395,7 +450,13 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
           base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
-                                  base::Unretained(bubble_delegate)),
+                                  base::Unretained(bubble_delegate))
+#if !BUILDFLAG(IS_CHROMEOS)
+                       .Then(base::BindOnce(
+                           MaybeShowSignInPromo, already_bookmarked, profile,
+                           anchor_view, web_contents, bookmark_node))
+#endif
+                       ,
                    ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
                        .SetId(kBookmarkBubbleOkButtonId))
@@ -460,22 +521,21 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
                                            bookmark_node)) {
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
-  } else if (signin::ShouldShowBookmarkSignInPromo(*profile) ||
-             (signin::ShouldShowSyncPromo(*profile) &&
-              !base::FeatureList::IsEnabled(
-                  switches::kSyncEnableBookmarksInTransportMode))) {
+  } else if (signin::ShouldShowBookmarkSignInPromo(*profile)) {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(pbos): Consider adding model support for footnotes so that this does
-    // not need to be tied to views.
-    // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
-    // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
-        web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
-        syncer::LocalDataItemModel::DataId(bookmark_node->id()),
-        ui::ButtonStyle::kDefault));
+    if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+      // TODO(pbos): Consider adding model support for footnotes so that this
+      // does not need to be tied to views.
+      // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize
+      // the widget to account for it.
+      bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
+          web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
+          syncer::LocalDataItemModel::DataId(bookmark_node->id()),
+          ui::ButtonStyle::kDefault));
 
-    ChromeSigninClient::
-        MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
+      ChromeSigninClient::
+          MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
+    }
 #endif
   }
 

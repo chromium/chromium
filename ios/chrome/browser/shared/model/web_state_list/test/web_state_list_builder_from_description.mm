@@ -402,7 +402,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kDetach: {
       const WebStateListChangeDetach& detach_change =
           change.As<WebStateListChangeDetach>();
-      const auto web_state = detach_change.detached_web_state();
+      web::WebState* web_state = detach_change.detached_web_state();
       const char identifier = GetWebStateIdentifier(web_state);
       if (identifier != '_') {
         web_state_for_identifier_.erase(identifier);
@@ -419,7 +419,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kReplace: {
       const WebStateListChangeReplace& replace_change =
           change.As<WebStateListChangeReplace>();
-      const auto replaced_web_state = replace_change.replaced_web_state();
+      web::WebState* replaced_web_state = replace_change.replaced_web_state();
       const char identifier = GetWebStateIdentifier(replaced_web_state);
       // Remove the replaced WebState.
       if (identifier != '_') {
@@ -430,7 +430,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
         identifier_for_web_state_.erase(replaced_web_state);
       }
       // Add the inserted WebState.
-      const auto inserted_web_state = replace_change.inserted_web_state();
+      web::WebState* inserted_web_state = replace_change.inserted_web_state();
       SetWebStateIdentifier(inserted_web_state, identifier);
       break;
     }
@@ -449,7 +449,7 @@ void WebStateListBuilderFromDescription::WebStateListDidChange(
     case WebStateListChange::Type::kGroupDelete: {
       const WebStateListChangeGroupDelete& group_delete_change =
           change.As<WebStateListChangeGroupDelete>();
-      const auto group = group_delete_change.deleted_group();
+      const TabGroup* group = group_delete_change.deleted_group();
       const char identifier = GetTabGroupIdentifier(group);
       if (identifier != '_') {
         tab_group_for_identifier_.erase(identifier);

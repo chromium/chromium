@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list_threadsafe.h"
+#include "base/observer_list.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source.h"
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
@@ -43,16 +43,22 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   void RequestSystemPermission();
   // Opens appropriate system preferences/setting page.
   void OpenSystemPermissionSetting();
+  // Notifies observers that the manager is about to shutdown.
+  void Shutdown();
 
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   class PermissionObserver : public base::CheckedObserver {
    public:
     virtual void OnSystemPermissionUpdated(
         LocationSystemPermissionStatus new_status) = 0;
-  };
 
-  using PermissionObserverList =
-      base::ObserverListThreadSafe<PermissionObserver>;
+    // Called right before the GeolocationSystemPermissionManager shuts down.
+    //
+    // Note: Existing observers should override this function in order to
+    // unsubscribe from the manager. Otherwise, usage of the manager after this
+    // is called will cause a use-after-free bug. See crbug.com/426429657.
+    virtual void OnPermissionManagerShuttingDown() {}
+  };
 
   explicit GeolocationSystemPermissionManager(
       std::unique_ptr<SystemGeolocationSource> system_geolocation_source);
@@ -66,8 +72,6 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
   void AddObserver(PermissionObserver* observer);
   // Removes a permission observer.
   void RemoveObserver(PermissionObserver* observer);
-  // Returns the list of permission observers.
-  scoped_refptr<PermissionObserverList> GetObserverList() const;
 
 #if BUILDFLAG(IS_APPLE)
   // On macOS, the same CLLocationManager object needs to be shared across
@@ -95,10 +99,7 @@ class COMPONENT_EXPORT(GEOLOCATION) GeolocationSystemPermissionManager {
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   std::unique_ptr<SystemGeolocationSource> system_geolocation_source_;
 
-  // Using scoped_refptr so objects can hold a reference and ensure this list
-  // is not destroyed on shutdown before it had a chance to remove itself from
-  // the list
-  scoped_refptr<PermissionObserverList> observers_;
+  base::ObserverList<PermissionObserver> observers_;
 
   base::WeakPtrFactory<GeolocationSystemPermissionManager> weak_factory_{this};
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)

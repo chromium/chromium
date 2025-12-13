@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "shortcuts_mediator.h",
+    "shortcuts_mediator.mm",
+    "shortcuts_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/reading_list/core",
+    "//components/reading_list/ios",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/whats_new/coordinator:util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "shortcuts_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/feature_engagement/test:test_support",
+    "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/ui",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

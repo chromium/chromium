@@ -254,7 +254,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/login/users/avatar",
     "//chrome/browser/ash/login/users/avatar:test_support",
     "//chrome/browser/ash/login/users/default_user_image",
-    "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",

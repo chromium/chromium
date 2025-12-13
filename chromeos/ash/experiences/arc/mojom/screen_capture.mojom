@@ -68,6 +68,10 @@ interface ScreenCaptureSession {
   // buffer_format_modifier is an additional buffer format modifier value
   //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
   // stride is the stride in pixels for each row of the buffer
+  // NOTE: As this interface is used by ARC, we cannot easily update it to use
+  // SharedImageFormat. Instead, we will scope down the BufferFormat type that
+  // it uses to be ARC-specific once we are at or near the point of otherwise
+  // eliminating BufferFormat. See crbug.com/457323824 for details.
   [MinVersion=2] SetOutputBuffer@1(handle graphics_buffer,
                                    gfx.mojom.BufferFormat buffer_format,
                                    uint64 buffer_format_modifier,

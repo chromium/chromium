@@ -55,6 +55,7 @@ TEST_F(CrossOriginNavigationObserverTest, NoNavigationAfterwards) {
   CrossOriginNavigationObserver observer(
       web_contents(), &affiliation_service(),
       on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(CrossOriginNavigationObserverTest, NavigationInTheSameDomain) {
@@ -68,6 +69,8 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationInTheSameDomain) {
   CrossOriginNavigationObserver observer(
       web_contents(), &affiliation_service(),
       on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
+
   NavigateAndCommit(GURL("https://www.foo.com/settings/"));
   NavigateAndCommit(GURL("https://www.foo.com/settings/password"));
 }
@@ -83,6 +86,8 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationToSubdomain) {
   CrossOriginNavigationObserver observer(
       web_contents(), &affiliation_service(),
       on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
+
   NavigateAndCommit(GURL("https://account.foo.com/settings/"));
   NavigateAndCommit(GURL("https://account.foo.com/settings/password"));
 }
@@ -98,6 +103,8 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationToDifferentDomain) {
   CrossOriginNavigationObserver observer(
       web_contents(), &affiliation_service(),
       on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
+
   NavigateAndCommit(GURL("https://www.bar.com/settings/"));
 }
 
@@ -117,5 +124,24 @@ TEST_F(CrossOriginNavigationObserverTest, NavigationToAffiliatedDomain) {
   CrossOriginNavigationObserver observer(
       web_contents(), &affiliation_service(),
       on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
+
   NavigateAndCommit(GURL("https://www.bar.com/settings/"));
+}
+
+TEST_F(CrossOriginNavigationObserverTest, DomainIsPartOfPSLExtensionList) {
+  base::MockRepeatingClosure on_navigated_to_different_origin;
+
+  EXPECT_CALL(affiliation_service(), GetPSLExtensions)
+      .WillOnce(RunOnceCallback<0>(std::vector<std::string>{"foo.com"}));
+  EXPECT_CALL(affiliation_service(), GetAffiliationsAndBranding)
+      .WillOnce(RunOnceCallback<1>(affiliations::AffiliatedFacets(), true));
+  EXPECT_CALL(on_navigated_to_different_origin, Run).Times(0);
+
+  CrossOriginNavigationObserver observer(
+      web_contents(), &affiliation_service(),
+      on_navigated_to_different_origin.Get());
+  task_environment()->RunUntilIdle();
+
+  NavigateAndCommit(GURL("https://www.foo.com/settings/"));
 }

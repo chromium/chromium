@@ -31,7 +31,16 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
       base::OnceCallback<void(const std::optional<std::string>& error)>;
 
   struct PathAndLocaleInfo {
+    PathAndLocaleInfo(
+        base::FilePath file_path,
+        base::Version version,
+        std::string default_locale,
+        extension_l10n_util::GzippedMessagesPermission gzip_permission);
+    PathAndLocaleInfo(const PathAndLocaleInfo& other);
+    ~PathAndLocaleInfo();
+
     base::FilePath file_path;
+    base::Version version;
     std::string default_locale;
     extension_l10n_util::GzippedMessagesPermission gzip_permission;
   };

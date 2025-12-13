@@ -48,6 +48,7 @@ class FileSystemAccessMetadata : public DeepScanningMetadata {
                          DownloadCheckResult deep_scan_result) override;
   google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls()
       const override;
+  content::WebContents* web_contents() const override;
   base::WeakPtr<FileSystemAccessMetadata> GetWeakPtr();
 
  private:

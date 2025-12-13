@@ -15,7 +15,7 @@ class RenderBlockingElementLinkMapTest : public PageTestBase {
  public:
   RenderBlockingElementLinkMapTest()
       : element_link_map_(MakeGarbageCollected<
-                          RenderBlockingElementLinkMap>(WTF::BindRepeating(
+                          RenderBlockingElementLinkMap>(BindRepeating(
             &RenderBlockingElementLinkMapTest::OnRenderBlockingElementSetEmpty,
             base::Unretained(this)))) {}
 
@@ -30,7 +30,7 @@ class RenderBlockingElementLinkMapTest : public PageTestBase {
 
   AllLinksLevelMap& GetAllLinksInMap() {
     AllLinksLevelMap* elements = MakeGarbageCollected<AllLinksLevelMap>();
-    element_link_map_->ForEach(WTF::BindRepeating(
+    element_link_map_->ForEach(BindRepeating(
         [](AllLinksLevelMap* elements, RenderBlockingLevel level,
            const HTMLLinkElement& element) {
           elements->insert(&element, level);

@@ -98,7 +98,7 @@ SearchResultPageView::SearchResultPageView() {
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   SetBackground(views::CreateSolidBackground(background_color_id));
 
   if (chromeos::features::IsSystemBlurEnabled()) {
@@ -426,10 +426,7 @@ void SearchResultPageView::OnAnimationStarted(AppListState from_state,
 }
 
 gfx::Size SearchResultPageView::GetPreferredSearchBoxSize() const {
-  auto* iph_view = search_view_->search_box_view()->GetIphView();
-  const int iph_height = iph_view ? iph_view->GetPreferredSize().height() : 0;
-
-  return gfx::Size(kWidth, kActiveSearchBoxHeight + iph_height);
+  return gfx::Size(kWidth, kActiveSearchBoxHeight);
 }
 
 BEGIN_METADATA(SearchResultPageView)

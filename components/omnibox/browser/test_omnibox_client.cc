@@ -10,8 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
-#include "components/omnibox/browser/mock_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/mock_unscoped_extension_provider_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +25,9 @@ TestOmniboxClient::TestOmniboxClient()
       autocomplete_classifier_(
           std::make_unique<AutocompleteController>(
               CreateAutocompleteProviderClient(),
-              AutocompleteClassifier::DefaultOmniboxProviders()),
+              AutocompleteControllerConfig{
+                  .provider_types =
+                      AutocompleteClassifier::DefaultOmniboxProviders()}),
           std::make_unique<TestSchemeClassifier>()),
       last_log_disposition_(WindowOpenDisposition::UNKNOWN) {}
 
@@ -34,16 +37,13 @@ TestOmniboxClient::~TestOmniboxClient() {
 
 std::unique_ptr<AutocompleteProviderClient>
 TestOmniboxClient::CreateAutocompleteProviderClient() {
-  auto provider_client = std::make_unique<MockAutocompleteProviderClient>();
+  auto provider_client = std::make_unique<FakeAutocompleteProviderClient>();
   EXPECT_CALL(*provider_client, GetBuiltinURLs())
       .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(scheme_classifier_));
   EXPECT_CALL(*provider_client, GetApplicationLocale())
       .WillRepeatedly(testing::Return("en-US"));
-
-  provider_client->set_template_url_service(
-      search_engines_test_environment_.template_url_service());
 
   // The `UnscopedExtensionProviderDelegate` should be set. It will be called
   // when `AutocompleteController::Stop()` is called on destruction.

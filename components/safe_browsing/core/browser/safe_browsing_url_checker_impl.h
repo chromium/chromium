@@ -16,12 +16,12 @@
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
-#include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
+#include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "components/sessions/core/session_id.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
@@ -30,8 +30,6 @@ class WebContents;
 }
 
 namespace safe_browsing {
-
-class UrlCheckerDelegate;
 
 class RealTimeUrlLookupServiceBase;
 
@@ -140,7 +138,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
  protected:
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate() {
-    return url_checker_delegate_.get();
+    return url_checker_delegate_;
   }
 
   base::WeakPtr<web::WebState> web_state() { return weak_web_state_; }

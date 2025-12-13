@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.coverage",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -53,7 +52,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-code-coverage-java/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/android-cronet-code-coverage-java/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/code_coverage": {

@@ -22,6 +22,9 @@
 // Sets the increase font size button status to `enabled`.
 - (void)setIncreaseFontSizeButtonEnabled:(BOOL)enabled;
 
+// Announces the given `multiplier` for the font size.
+- (void)announceFontSizeMultiplier:(CGFloat)multiplier;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_OPTIONS_CONSUMER_H_

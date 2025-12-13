@@ -70,7 +70,7 @@ class CORE_EXPORT WorkletAnimationController
   HeapHashSet<Member<WorkletAnimationBase>> pending_animations_;
   HeapHashMap<int, Member<WorkletAnimationBase>> animations_;
 
-  WTF::HashSet<String> animator_names_;
+  HashSet<String> animator_names_;
 
   // TODO(crbug.com/1090515): The following proxy is needed for platform/ to
   // access this class. We should bypass it eventually.

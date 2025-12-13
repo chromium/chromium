@@ -14,17 +14,16 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 
 namespace web_app {
 
@@ -32,7 +31,7 @@ using SessionType = IwaCacheClient::SessionType;
 
 bool IsIwaBundleCacheEnabledInCurrentSession() {
   return IsIwaBundleCacheFeatureEnabled() &&
-         (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession());
+         (chromeos::IsManagedGuestSession() || chromeos::IsIwaKioskSession());
 }
 
 bool IsIwaBundleCacheFeatureEnabled() {
@@ -78,7 +77,7 @@ base::FilePath IwaCacheClient::GetCacheDirectoryForBundle(
 base::FilePath IwaCacheClient::GetCacheDirectoryForBundleWithVersion(
     const base::FilePath& cache_base_dir,
     const web_package::SignedWebBundleId& web_bundle_id,
-    const base::Version& version) {
+    const IwaVersion& version) {
   return IwaCacheClient::GetCacheDirectoryForBundle(cache_base_dir,
                                                     web_bundle_id)
       .AppendASCII(version.GetString());

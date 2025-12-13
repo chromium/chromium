@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/memory/singleton.h"
+#include "base/synchronization/lock.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/browser/global_routing_id.h"
 

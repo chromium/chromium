@@ -1,0 +1,79 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+
+assert(is_chromeos, "Boca Receiver App is ChromeOS only")
+
+static_library("boca_receiver_app_ui") {
+  sources = [
+    "audio_packet_converter.cc",
+    "audio_packet_converter.h",
+    "boca_receiver_ui.cc",
+    "boca_receiver_ui.h",
+    "boca_receiver_untrusted_page_handler.cc",
+    "boca_receiver_untrusted_page_handler.h",
+    "boca_receiver_untrusted_ui.cc",
+    "boca_receiver_untrusted_ui.h",
+    "url_constants.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/webui/boca_receiver_app_ui/mojom",
+    "//ash/webui/boca_receiver_app_ui/resources/trusted:resources",
+    "//ash/webui/boca_receiver_app_ui/resources/untrusted:resources",
+    "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/resources:boca_receiver_app_bundle_resources",
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:invalidation_delegate",
+    "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight_lib",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/receiver",
+    "//chromeos/ash/components/channel",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_config/public/mojom",
+    "//chromeos/strings",
+    "//content/public/browser",
+    "//content/public/common",
+    "//google_apis/common",
+    "//net/traffic_annotation",
+    "//remoting/proto",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "audio_packet_converter_unittest.cc",
+    "boca_receiver_untrusted_page_handler_unittest.cc",
+  ]
+
+  deps = [
+    ":boca_receiver_app_ui",
+    "//ash/webui/boca_receiver_app_ui/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:invalidation_delegate",
+    "//chromeos/ash/components/boca:invalidations",
+    "//chromeos/ash/components/boca:spotlight_lib",
+    "//chromeos/ash/components/boca/receiver",
+    "//chromeos/ash/services/network_config/public/cpp:test_support",
+    "//google_apis/common",
+    "//google_apis/common:test_support",
+    "//mojo/public/cpp/bindings",
+    "//net/traffic_annotation",
+    "//remoting/proto",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -7,7 +7,7 @@
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace WTF {
+namespace blink {
 
 class AtomicOperationsTest : public ::testing::Test {};
 
@@ -169,4 +169,4 @@ TEST_F(AtomicOperationsTest, AtomicMemzero_127Bytes) {
   TestAtomicMemzero<127, sizeof(uintptr_t)>();
 }
 
-}  // namespace WTF
+}  // namespace blink

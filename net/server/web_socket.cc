@@ -21,6 +21,7 @@
 #include "net/server/web_socket_encoder.h"
 #include "net/websockets/websocket_deflate_parameters.h"
 #include "net/websockets/websocket_extension.h"
+#include "net/websockets/websocket_handshake_challenge.h"
 #include "net/websockets/websocket_handshake_constants.h"
 
 namespace net {
@@ -75,8 +76,7 @@ void WebSocket::Accept(const HttpServerRequestInfo& request,
         traffic_annotation);
     return;
   }
-  std::string encoded_hash = base::Base64Encode(
-      base::SHA1HashString(key + websockets::kWebSocketGuid));
+  std::string encoded_hash = ComputeSecWebSocketAccept(key);
 
   std::vector<WebSocketExtension> response_extensions;
   auto i = request.headers.find("sec-websocket-extensions");

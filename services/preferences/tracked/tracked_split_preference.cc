@@ -7,8 +7,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
+#include "services/preferences/public/cpp/tracked/pref_names.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/pref_hash_store_transaction.h"
 
@@ -32,6 +35,10 @@ TrackedSplitPreference::TrackedSplitPreference(
 
 TrackedPreferenceType TrackedSplitPreference::GetType() const {
   return TrackedPreferenceType::SPLIT;
+}
+
+size_t TrackedSplitPreference::GetReportingId() const {
+  return helper_.GetReportingId();
 }
 
 void TrackedSplitPreference::OnNewValue(
@@ -101,16 +108,34 @@ bool TrackedSplitPreference::EnforceAndReport(
   if (reset_action == TrackedPreferenceHelper::DO_RESET ||
       reset_action == TrackedPreferenceHelper::DO_RESET_LEGACY ||
       reset_action == TrackedPreferenceHelper::DO_RESET_ENCRYPTED) {
+    base::Value::List* reset_prefs_list =
+        pref_store_contents.EnsureList(user_prefs::kTrackedPreferencesReset);
     if (value_state == ValueState::CHANGED ||
         value_state == ValueState::CHANGED_VIA_HMAC_FALLBACK ||
         value_state == ValueState::CHANGED_ENCRYPTED) {
       DCHECK(!invalid_keys.empty());
 
-      for (std::vector<std::string>::const_iterator it = invalid_keys.begin();
-           it != invalid_keys.end(); ++it) {
-        dict_value->Remove(*it);
+      // `dict_value` can be null here. This happens when the entire preference
+      // dictionary is missing from the pref store, but a hash for it still
+      // exists in the hash store. As a result of the inconsistency, the
+      // function reports this as `CHANGED`. This check prevents a crash when
+      // attempting to reset keys on a non-existent dictionary.
+      if (dict_value) {
+        for (const std::string& key : invalid_keys) {
+          base::Value new_path(pref_path_ + "." + key);
+          if (!base::Contains(*reset_prefs_list, new_path)) {
+            reset_prefs_list->Append(std::move(new_path));
+          }
+          dict_value->Remove(key);
+        }
       }
     } else {
+      if (value) {
+        base::Value new_path(pref_path_);
+        if (!base::Contains(*reset_prefs_list, new_path)) {
+          reset_prefs_list->Append(std::move(new_path));
+        }
+      }
       pref_store_contents.RemoveByDottedPath(pref_path_);
     }
     was_reset = true;

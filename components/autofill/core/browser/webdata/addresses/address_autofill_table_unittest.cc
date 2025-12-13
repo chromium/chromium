@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -57,8 +56,9 @@ class AddressAutofillTableProfileTest
   AutofillProfile::RecordType record_type() const { return GetParam(); }
 
   // Creates an `AutofillProfile` of `record_type()`.
-  AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(record_type(), AddressCountryCode("ES"));
+  AutofillProfile CreateAutofillProfile(
+      AddressCountryCode country_code = AddressCountryCode("ES")) const {
+    return AutofillProfile(record_type(), country_code);
   }
 };
 
@@ -279,32 +279,6 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
                            ProfileTokenQualityTestApi::FormSignatureHash(21)));
 }
 
-// Tests that last use dates are persisted, if present.
-TEST_P(AddressAutofillTableProfileTest, UseDates) {
-  AutofillProfile profile = CreateAutofillProfile();
-  // Since the table stores time_ts, microseconds get lost in conversion.
-  const base::Time initial_use_date =
-      base::Time::FromTimeT(profile.usage_history().use_date().ToTimeT());
-  ASSERT_FALSE(profile.usage_history().use_date(2).has_value());
-  ASSERT_FALSE(profile.usage_history().use_date(3).has_value());
-
-  table_.AddAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.usage_history().use_date(1), initial_use_date);
-  EXPECT_FALSE(profile.usage_history().use_date(2).has_value());
-  EXPECT_FALSE(profile.usage_history().use_date(3).has_value());
-
-  profile.usage_history().RecordUseDate(initial_use_date + base::Days(1));
-  profile.usage_history().RecordUseDate(initial_use_date + base::Days(2));
-  table_.UpdateAutofillProfile(profile);
-  profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.usage_history().use_date(1),
-            initial_use_date + base::Days(2));
-  EXPECT_EQ(profile.usage_history().use_date(2),
-            initial_use_date + base::Days(1));
-  EXPECT_EQ(profile.usage_history().use_date(3), initial_use_date);
-}
-
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures({features::kAutofillSupportPhoneticNameForJP,
@@ -359,7 +333,7 @@ TEST_P(AddressAutofillTableProfileTest,
        AutofillJpProfileWithAlternativeNameConversion) {
   base::test::ScopedFeatureList features{
       features::kAutofillSupportPhoneticNameForJP};
-  AutofillProfile profile = CreateAutofillProfile();
+  AutofillProfile profile = CreateAutofillProfile(AddressCountryCode("JP"));
 
   // Phonetic names in Katakana. They should be saved and later returned in
   // Hiragana.

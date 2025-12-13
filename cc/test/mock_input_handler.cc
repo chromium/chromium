@@ -4,19 +4,22 @@
 
 #include "cc/test/mock_input_handler.h"
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 
 namespace cc {
 
 namespace {
 
-base::LazyInstance<FakeCompositorDelegateForInput>::Leaky
-    g_fake_compositor_delegate = LAZY_INSTANCE_INITIALIZER;
+FakeCompositorDelegateForInput& GetFakeCompositorDelegate() {
+  static base::NoDestructor<FakeCompositorDelegateForInput>
+      fake_compositor_delegate;
+  return *fake_compositor_delegate;
+}
 
 }  // namespace
 
 MockInputHandler::MockInputHandler()
-    : InputHandler(g_fake_compositor_delegate.Get()) {}
+    : InputHandler(GetFakeCompositorDelegate()) {}
 
 MockInputHandler::~MockInputHandler() = default;
 

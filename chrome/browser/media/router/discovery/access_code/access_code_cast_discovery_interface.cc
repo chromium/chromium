@@ -29,6 +29,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -185,8 +186,6 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
   }
 }
 
-// TODO(b/206997996): Add an enum to the EndpointResponse struct so that we can
-// check the enum instead of the string
 AddSinkResultCode AccessCodeCastDiscoveryInterface::IsResponseValid(
     const std::optional<base::Value::Dict>& response) {
   if (!response) {
@@ -246,9 +245,6 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
     const std::string& access_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  std::vector<std::string> discovery_scopes;
-  discovery_scopes.push_back(kDiscoveryOAuth2Scope);
-
   // TODO(crbug.com/40067771): ConsentLevel::kSync is deprecated and should be
   //     removed. See ConsentLevel::kSync documentation for details.
   const signin::ConsentLevel consent_level =
@@ -258,10 +254,17 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      kDiscoveryOAuthConsumerName,
-      GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
-      kContentType, discovery_scopes, kTimeout, kEmptyPostData,
-      kTrafficAnnotation, identity_manager_, consent_level);
+      identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
+          .SetAuthType(endpoint_fetcher::OAUTH)
+          .SetOAuthConsumerId(signin::OAuthConsumerId::kAccessCodeCastDiscovery)
+          .SetConsentLevel(consent_level)
+          .SetContentType(kContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})))
+          .SetPostData(kEmptyPostData)
+          .Build());
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(
@@ -294,8 +297,8 @@ void AccessCodeCastDiscoveryInterface::HandleServerResponse(
     return;
   }
 
-  std::optional<base::Value::Dict> response_value =
-      base::JSONReader::ReadDict(response->response);
+  std::optional<base::Value::Dict> response_value = base::JSONReader::ReadDict(
+      response->response, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   AddSinkResultCode result_code = IsResponseValid(response_value);
   if (result_code != AddSinkResultCode::OK) {

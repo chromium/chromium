@@ -17,12 +17,11 @@ WebPrintingPermissionContext::WebPrintingPermissionContext(
 WebPrintingPermissionContext::~WebPrintingPermissionContext() = default;
 
 void WebPrintingPermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_frame,
+    const permissions::PermissionRequestData& request_data,
     bool allowed) {
   if (auto* content_settings =
           content_settings::PageSpecificContentSettings::GetForFrame(
-              id.global_render_frame_host_id())) {
+              request_data.id.global_render_frame_host_id())) {
     if (allowed) {
       content_settings->OnContentAllowed(ContentSettingsType::WEB_PRINTING);
     } else {

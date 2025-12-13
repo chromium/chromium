@@ -3,6 +3,7 @@
   <div slot="dialog-title">
     <iron-icon
       hidden="[[!pendingPrinter_.isManaged]]"
+      aria-label="$i18n{viewPrinterDialogManagedLabel}"
       icon="cr20:domain">
     </iron-icon>
     [[getDialogTitle_(pendingPrinter_.isManaged)]]
@@ -94,7 +95,7 @@
       </cr-input>
     </div>
     <div class="settings-box two-line">
-      <cr-input label="$i18n{printerURI}" readonly
+      <cr-input label="$i18n{printerURI}"
           aria-label="$i18n{printerURI}"
           value="[[getPrinterUri_(pendingPrinter_)]]"
           disabled="[[!isInputFieldEnabled_(networkProtocolActive_,
@@ -104,7 +105,10 @@
     </div>
     <template id="makeAndModelSection" is="dom-if"
         if="[[!isAutoconfPrinter_(pendingPrinter_.*)]]">
-      <div class="settings-box two-line">
+      <div class="settings-box two-line"
+          hidden="[[shouldHideMakeAndModel_(pendingPrinter_,
+                pendingPrinter_.isManaged, pendingPrinter_.ppdManufacturer,
+                pendingPrinter_.ppdModel)]]">
         <cr-searchable-drop-down items="[[manufacturerList]]"
             id="printerPPDManufacturer"
             label="$i18n{printerManufacturer}"
@@ -115,7 +119,10 @@
             invalid="{{isManufacturerInvalid_}}">
         </cr-searchable-drop-down>
       </div>
-      <div class="settings-box two-line">
+      <div class="settings-box two-line"
+          hidden="[[shouldHideMakeAndModel_(pendingPrinter_,
+                pendingPrinter_.isManaged, pendingPrinter_.ppdManufacturer,
+                pendingPrinter_.ppdModel)]]">
         <cr-searchable-drop-down items="[[modelList]]"
             id="printerPPDModel"
             label="$i18n{printerModel}"
@@ -149,7 +156,7 @@
         <cr-input class="browse-file-input" readonly input-tabindex="-1"
             value="[[userPPD_]]" aria-labelledby="ppdLabel"
             error-message="$i18n{selectDriverErrorMessage}"
-            invalid="[[invalidPPD_]]">
+            invalid="[[invalidPPD_]]" id="printerPPD">
         </cr-input>
         <cr-button class="browse-button" on-click="onBrowseFile_"
             disabled="[[!isOnline_]]"

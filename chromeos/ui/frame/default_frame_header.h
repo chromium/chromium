@@ -13,8 +13,7 @@
 
 namespace ash {
 FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, FrameColors);
-FORWARD_DECLARE_TEST(NonClientFrameViewAshFrameColorTest,
-                     WideFrameInitialColor);
+FORWARD_DECLARE_TEST(FrameViewAshFrameColorTest, WideFrameInitialColor);
 }  // namespace ash
 
 namespace chromeos {
@@ -49,7 +48,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, FrameColors);
-  FRIEND_TEST_ALL_PREFIXES(ash::NonClientFrameViewAshFrameColorTest,
+  FRIEND_TEST_ALL_PREFIXES(ash::FrameViewAshFrameColorTest,
                            WideFrameInitialColor);
 
   // Returns the window of the target widget.

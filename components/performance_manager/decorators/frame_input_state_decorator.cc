@@ -34,6 +34,46 @@ std::string GetInputScenarioSuffix(InputScenario scenario) {
 
 }  // namespace
 
+// InputObserver receives input events from content::RenderWidgetHost and
+// determines the current InputScenario for a frame.
+class FrameInputStateDecorator::InputObserver
+    : public content::RenderWidgetHost::InputEventObserver,
+      public content::RenderWidgetHostObserver {
+ public:
+  InputObserver(FrameInputStateDecorator* decorator,
+                const FrameNode* frame_node,
+                RenderFrameHostProxy proxy);
+  ~InputObserver() override;
+
+  // content::RenderWidgetHost::InputEventObserver:
+  void OnInputEvent(const content::RenderWidgetHost& rwh,
+                    const blink::WebInputEvent& event) override;
+
+  // content::RenderWidgetHostObserver:
+  void RenderWidgetHostDestroyed(content::RenderWidgetHost* rwh) override;
+
+ private:
+  void OnInputInactiveTimer();
+  void OnKeyEvent(const blink::WebInputEvent& event);
+  void OnScrollEvent(const blink::WebInputEvent& event);
+  void OnTapEvent(const blink::WebInputEvent& event);
+
+  raw_ptr<FrameInputStateDecorator> decorator_;
+  raw_ptr<const FrameNode> frame_node_;
+  base::OneShotTimer timer_;
+
+  // Input detection.
+  base::TimeTicks last_key_event_time_;
+  InputScenario input_scenario_ = InputScenario::kNoInput;
+
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHost::InputEventObserver>
+      input_observation_{this};
+  base::ScopedObservation<content::RenderWidgetHost,
+                          content::RenderWidgetHostObserver>
+      rwh_observation_{this};
+};
+
 FrameInputStateDecorator::Data::Data(const FrameNode* frame_node) {
   input_observer_ = std::make_unique<InputObserver>(
       FrameInputStateDecorator::GetFromGraph(frame_node->GetGraph()),
@@ -95,46 +135,6 @@ void FrameInputStateDecorator::RemoveObserver(
     FrameInputStateObserver* observer) {
   observers_.RemoveObserver(observer);
 }
-
-// InputObserver receives input events from content::RenderWidgetHost and
-// determines the current InputScenario for a frame.
-class FrameInputStateDecorator::InputObserver
-    : public content::RenderWidgetHost::InputEventObserver,
-      public content::RenderWidgetHostObserver {
- public:
-  InputObserver(FrameInputStateDecorator* decorator,
-                const FrameNode* frame_node,
-                RenderFrameHostProxy proxy);
-  ~InputObserver() override;
-
-  // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(const content::RenderWidgetHost& rwh,
-                    const blink::WebInputEvent& event) override;
-
-  // content::RenderWidgetHostObserver:
-  void RenderWidgetHostDestroyed(content::RenderWidgetHost* rwh) override;
-
- private:
-  void OnInputInactiveTimer();
-  void OnKeyEvent(const blink::WebInputEvent& event);
-  void OnScrollEvent(const blink::WebInputEvent& event);
-  void OnTapEvent(const blink::WebInputEvent& event);
-
-  raw_ptr<FrameInputStateDecorator> decorator_;
-  raw_ptr<const FrameNode> frame_node_;
-  base::OneShotTimer timer_;
-
-  // Input detection.
-  base::TimeTicks last_key_event_time_;
-  InputScenario input_scenario_ = InputScenario::kNoInput;
-
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHost::InputEventObserver>
-      input_observation_{this};
-  base::ScopedObservation<content::RenderWidgetHost,
-                          content::RenderWidgetHostObserver>
-      rwh_observation_{this};
-};
 
 FrameInputStateDecorator::InputObserver::InputObserver(
     FrameInputStateDecorator* decorator,

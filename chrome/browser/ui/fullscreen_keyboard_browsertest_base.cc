@@ -13,8 +13,10 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -79,31 +81,33 @@ bool FullscreenKeyboardBrowserTestBase::IsInBrowserFullscreen() const {
 
 content::WebContents* FullscreenKeyboardBrowserTestBase::GetActiveWebContents()
     const {
-  return GetActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+  return GetActiveBrowser()->GetTabStripModel()->GetActiveWebContents();
 }
 
 int FullscreenKeyboardBrowserTestBase::GetActiveTabIndex() const {
-  return GetActiveBrowser()->tab_strip_model()->active_index();
+  return GetActiveBrowser()->GetTabStripModel()->active_index();
 }
 
 int FullscreenKeyboardBrowserTestBase::GetTabCount() const {
-  return GetActiveBrowser()->tab_strip_model()->count();
+  return GetActiveBrowser()->GetTabStripModel()->count();
 }
 
 size_t FullscreenKeyboardBrowserTestBase::GetBrowserCount() const {
-  return BrowserList::GetInstance()->size();
+  return chrome::GetTotalBrowserCount();
 }
 
-Browser* FullscreenKeyboardBrowserTestBase::GetActiveBrowser() const {
-  return BrowserList::GetInstance()->GetLastActive();
+BrowserWindowInterface* FullscreenKeyboardBrowserTestBase::GetActiveBrowser()
+    const {
+  return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 }
 
-Browser* FullscreenKeyboardBrowserTestBase::CreateNewBrowserInstance() {
-  Browser* first_instance = GetActiveBrowser();
+BrowserWindowInterface*
+FullscreenKeyboardBrowserTestBase::CreateNewBrowserInstance() {
+  BrowserWindowInterface* const first_instance = GetActiveBrowser();
   const size_t initial_browser_count = GetBrowserCount();
   EXPECT_NO_FATAL_FAILURE(SendShortcut(ui::VKEY_N));
   WaitForBrowserCount(initial_browser_count + 1);
-  Browser* second_instance = GetActiveBrowser();
+  BrowserWindowInterface* const second_instance = GetActiveBrowser();
   EXPECT_NE(first_instance, second_instance);
 
   return second_instance;

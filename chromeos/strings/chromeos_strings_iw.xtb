@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">תפוזים</translation>
 <translation id="1275718070701477396">נבחר</translation>
 <translation id="1290331692326790741">אות חלש</translation>
+<translation id="1292474106138697109">מסך כלי העזר להוראה</translation>
 <translation id="1300115153046603471">‏ה-APN הוא מסוג ברירת מחדל ו<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">המרה</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
 <translation id="430786093962686457">בד שיפון</translation>
+<translation id="4309762678330556039">אפשר ליצור תמלילים באופן אוטומטי ולחפש אודיו. אפשר ליצור הקלטות גם כשאין חיבור לאינטרנט.</translation>
 <translation id="4310735698903592804">‏הטפטים האחרונים שנוצרו על ידי AI מבית Google</translation>
 <translation id="4320904097188876154">ורוד ניאון</translation>
 <translation id="432961742358282111">בלחיצה ימנית או בלחיצה ארוכה על טקסט, יוצגו הגדרות, תרגומים או המרת יחידות. כדי לשנות את ההגדרות של התכונה הזו אפשר ללחוץ על מקש החץ הימני או השמאלי.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5600027863942488546">בוצעה בדיקה של המקש <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">‏מקש Tab</translation>
+<translation id="5612205513582918357">אפליקציית כלי העזר להוראה משתפת את המסך שלך עם <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">התנתקת מהחשבון</translation>
 <translation id="5620281292257375798">פנימי בלבד</translation>
 <translation id="5628106863521633649">השפות הזמינות</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">זרימה בענן</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">אין סורקים זמינים</translation>
-<translation id="6231648282154119906">‏קבצים חשודים ייסרקו באופן אוטומטי במסגרת הגלישה הבטוחה של Google, כחלק מההגנה המשופרת שבחרת</translation>
 <translation id="6232017090690406397">סוללה</translation>
 <translation id="6234024205316847054">הצגה בקווים כלליים</translation>
 <translation id="6243280677745499710">מוגדר עכשיו</translation>

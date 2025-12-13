@@ -25,7 +25,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -182,9 +181,7 @@ std::string InternetConfigDialog::GetDialogArgs() const {
             *prefilled_wifi_config_);
     args.Set("prefilledProperties", std::move(prefilled_properties));
   }
-  std::string json;
-  base::JSONWriter::Write(args, &json);
-  return json;
+  return base::WriteJson(args).value_or("");
 }
 
 // InternetConfigDialogUI
@@ -212,12 +209,6 @@ void InternetConfigDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>
         receiver) {
   GetNetworkConfigService(std::move(receiver));
-}
-
-void InternetConfigDialogUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_change_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(InternetConfigDialogUI)

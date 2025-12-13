@@ -56,7 +56,7 @@ NET_EXPORT_PRIVATE bool GetX509SignedEntry(const CRYPTO_BUFFER* leaf,
 // |*sct_list| can then be further decoded with ct::DecodeSCTList.
 NET_EXPORT_PRIVATE bool ExtractSCTListFromOCSPResponse(
     const CRYPTO_BUFFER* issuer,
-    const std::string& cert_serial_number,
+    base::span<const uint8_t> cert_serial_number,
     std::string_view ocsp_response,
     std::string* sct_list);
 

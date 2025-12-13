@@ -12,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -20,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -115,57 +118,90 @@ std::u16string CancelButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_SUB_APPS_INSTALL_DIALOG_CANCEL_BUTTON);
 }
 
-std::unique_ptr<views::ScrollView> CreateSubAppsListView(
-    const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps) {
-  // Create vertically scrollable area to contain the list of sub apps.
-  auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  const auto* const layout_provider = views::LayoutProvider::Get();
-  scroll_view->ClipHeightTo(
-      0, layout_provider->GetDistanceMetric(
-             views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-
-  // Set the content for the scrollable area to a sensibly layout view.
-  auto* sub_app_list =
-      scroll_view->SetContents(std::make_unique<views::BoxLayoutView>());
-
-  sub_app_list->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  sub_app_list->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
-      views::DISTANCE_CONTROL_LIST_VERTICAL));
-  sub_app_list->SetInsideBorderInsets(
-      gfx::Insets().set_left(layout_provider->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
-
-  // Add a box view for each sub app containing the app's icon and title.
-  for (const std::unique_ptr<WebAppInstallInfo>& sub_app : sub_apps) {
-    auto* box =
-        sub_app_list->AddChildView(std::make_unique<views::BoxLayoutView>());
-    box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    box->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
-        views::DISTANCE_RELATED_LABEL_HORIZONTAL));
-
-    auto* sub_app_icon =
-        box->AddChildView(std::make_unique<views::ImageView>());
-    sub_app_icon->SetImage(ui::ImageModel::FromImageSkia(
-        gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
-                           kSubAppIconSize, sub_app->icon_bitmaps.any),
-                       gfx::Size(kSubAppIconSize, kSubAppIconSize))));
-    sub_app_icon->SetGroup(
-        base::to_underlying(SubAppsInstallDialogController::
-                                SubAppsInstallDialogViewID::SUB_APP_ICON));
-
-    auto* sub_app_label =
-        box->AddChildView(std::make_unique<views::Label>(sub_app->title));
-    sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    sub_app_label->SetMultiLine(true);
-    sub_app_label->SetGroup(
-        base::to_underlying(SubAppsInstallDialogController::
-                                SubAppsInstallDialogViewID::SUB_APP_LABEL));
+// Helper class that creates the sub app list view in the dialog and keeps track
+// of maskable images that are asynchronously updated.
+class SubAppsListView : public views::ScrollView {
+ public:
+  static std::unique_ptr<SubAppsListView> Create(
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps) {
+    return base::WrapUnique(new SubAppsListView(sub_apps));
   }
 
-  return scroll_view;
-}
+  explicit SubAppsListView(
+      const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps) {
+    SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled);
+    const auto* const layout_provider = views::LayoutProvider::Get();
+    ClipHeightTo(0, layout_provider->GetDistanceMetric(
+                        views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
+
+    // Set the content for the scrollable area to a sensibly layout view.
+    auto* sub_app_list = SetContents(std::make_unique<views::BoxLayoutView>());
+
+    sub_app_list->SetOrientation(views::BoxLayout::Orientation::kVertical);
+    sub_app_list->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+        views::DISTANCE_CONTROL_LIST_VERTICAL));
+    sub_app_list->SetInsideBorderInsets(
+        gfx::Insets().set_left(layout_provider->GetDistanceMetric(
+            views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL)));
+
+    // Add a box view for each sub app containing the app's icon and title.
+    for (const std::unique_ptr<WebAppInstallInfo>& sub_app : sub_apps) {
+      size_t icon_index = 0;
+      auto* box =
+          sub_app_list->AddChildView(std::make_unique<views::BoxLayoutView>());
+      box->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+      box->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+          views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+
+      DialogImageInfo image_info = sub_app->GetIconBitmapsForSecureSurfaces();
+
+      auto* sub_app_icon =
+          box->AddChildView(std::make_unique<views::ImageView>());
+      sub_app_icon->SetImage(ui::ImageModel::FromImageSkia(
+          gfx::ImageSkia(std::make_unique<WebAppInfoImageSource>(
+                             kSubAppIconSize, image_info.bitmaps),
+                         gfx::Size(kSubAppIconSize, kSubAppIconSize))));
+      sub_app_icon->SetGroup(
+          base::to_underlying(SubAppsInstallDialogController::
+                                  SubAppsInstallDialogViewID::SUB_APP_ICON));
+      icon_views_.push_back(sub_app_icon);
+
+      // If any masking needs to happen, do it and update the image in the view
+      // asynchronously. On production, `image_info.bitmaps` is guaranteed to
+      // have an icon of size 32 (AKA kSubAppIconSize) as per the behavior of
+      // `PopulateTrustedIconBitmaps()`.
+      if (image_info.is_maskable) {
+        CHECK(base::Contains(image_info.bitmaps, kSubAppIconSize));
+        web_app::MaskIconOnOs(
+            image_info.bitmaps[kSubAppIconSize],
+            base::BindOnce(&SubAppsListView::OnIconMaskedUpdateDialog,
+                           weak_ptr_factory_.GetWeakPtr(), icon_index));
+      }
+
+      auto* sub_app_label = box->AddChildView(
+          std::make_unique<views::Label>(sub_app->title.value()));
+      sub_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      sub_app_label->SetMultiLine(true);
+      sub_app_label->SetGroup(
+          base::to_underlying(SubAppsInstallDialogController::
+                                  SubAppsInstallDialogViewID::SUB_APP_LABEL));
+
+      icon_index++;
+    }
+  }
+
+  void OnIconMaskedUpdateDialog(size_t icon_index, SkBitmap masked_bitmap) {
+    CHECK(icon_views_.size() > icon_index);
+    CHECK(!icon_views_.empty());
+    CHECK(!masked_bitmap.drawsNothing());
+    icon_views_[icon_index]->SetImage(ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(masked_bitmap)));
+  }
+
+ private:
+  std::vector<raw_ptr<views::ImageView>> icon_views_;
+  base::WeakPtrFactory<SubAppsListView> weak_ptr_factory_{this};
+};
 
 }  // namespace
 
@@ -230,7 +266,7 @@ views::Widget* SubAppsInstallDialogController::CreateWidget(
           .AddParagraph(DialogDescription(num_sub_apps, parent_app_name))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  CreateSubAppsListView(sub_apps),
+                  SubAppsListView::Create(sub_apps),
                   views::BubbleDialogModelHost::FieldType::kMenuItem))
           .AddCustomField(
               PermissionsExplanation(sub_apps.size(), parent_app_name,

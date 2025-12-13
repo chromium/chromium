@@ -39,7 +39,6 @@ namespace content {
 
 struct AttributionInfo;
 class AttributionResolverDelegate;
-class AttributionTrigger;
 class CommonSourceInfo;
 class StorableSource;
 
@@ -139,12 +138,6 @@ class CONTENT_EXPORT RateLimitTable {
       Scope scope);
 
   // Returns a negative value on failure.
-  int64_t CountUniqueReportingOriginsPerSiteForAttribution(
-      sql::Database* db,
-      const AttributionTrigger&,
-      base::Time trigger_time);
-
-  // Returns a negative value on failure.
   int64_t CountUniqueDailyReportingOriginsPerReportingSiteForSource(
       sql::Database* db,
       const net::SchemefulSite& reporting_site,
@@ -212,8 +205,6 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   [[nodiscard]] bool DeleteExpiredRateLimits(sql::Database* db)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  const bool rate_limit_check_source_time_enabled_;
 
   raw_ref<const AttributionResolverDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);

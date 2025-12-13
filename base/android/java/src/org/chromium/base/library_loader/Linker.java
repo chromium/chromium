@@ -92,7 +92,7 @@ class Linker {
     // along with |mRelro{Start,Size}|. This object is serialized for use in other processes if the
     // process is a "RELRO producer".
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected @Nullable LibInfo mLocalLibInfo;
 
     // The library info that was transferred from another process. Only useful if it contains RELRO
@@ -105,7 +105,7 @@ class Linker {
     // value is used in tests, it is set to true so that the Linker does not have to wait for RELRO
     // to arrive from another process.
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean mRelroProducer = true;
 
     /**
@@ -184,7 +184,7 @@ class Linker {
     }
 
     // Exposed to be able to mock out an assertion.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isNonZeroLoadAddress(LibInfo libInfo) {
         return libInfo != null && libInfo.mLoadAddress != 0;
     }
@@ -600,7 +600,7 @@ class Linker {
     /** Loads the Linker JNI library. Throws UnsatisfiedLinkError on error. */
     @SuppressLint({"UnsafeDynamicallyLoadedCode"})
     @GuardedBy("mLock")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void loadLinkerJniLibraryLocked() {
         assert mState == State.UNINITIALIZED;
 
@@ -782,7 +782,7 @@ class Linker {
         sLinkerForAssert = null; // Also allow to create Linker multiple times in tests.
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static Linker.Natives getLinkerJni() {
         if (sNativesInstance != null) return sNativesInstance;
         return new LinkerJni(); // R8 optimizes away all construction except the initial one.

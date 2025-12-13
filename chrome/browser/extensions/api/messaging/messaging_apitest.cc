@@ -23,10 +23,12 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/embedder_support/switches.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -34,11 +36,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/test/test_api.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
@@ -47,6 +51,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -62,9 +67,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -161,8 +167,6 @@ class MessagingApiWithoutBackForwardCacheTest : public MessagingApiTest {
       : MessagingApiTest(/*enable_back_forward_cache=*/false) {}
 };
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect", {.custom_arg = "bfcache"}))
       << message_;
@@ -172,20 +176,23 @@ IN_PROC_BROWSER_TEST_F(MessagingApiWithoutBackForwardCacheTest, Messaging) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect")) << message_;
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingCrash) {
   ExtensionTestMessageListener ready_to_crash("ready_to_crash");
   ASSERT_TRUE(LoadExtension(
           test_data_dir_.AppendASCII("messaging/connect_crash")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* tab = GetActiveWebContents();
   EXPECT_TRUE(ready_to_crash.WaitUntilSatisfied());
 
   ResultCatcher catcher;
   CrashTab(tab);
   EXPECT_TRUE(catcher.GetNextResult());
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests sendMessage cases where the listener gets disconnected before it is
 // able to reply with a message it said it would send. This is achieved by
@@ -256,8 +263,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, SendMessageDisconnect) {
   ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), {}, {}));
 }
 
-#endif
-
 // Tests that message passing from one extension to another works.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
   ASSERT_TRUE(LoadExtension(
@@ -268,8 +273,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingExternal) {
       << message_;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests that a content script can exchange messages with a tab even if there is
 // no background page.
 IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
@@ -277,8 +280,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingNoBackground) {
                                {.extension_url = "page_in_main_frame.html"}))
       << message_;
 }
-
-#endif
 
 // Tests that messages with event_urls are only passed to extensions with
 // appropriate permissions.
@@ -531,10 +532,8 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
   // Open a new tab to example.com. Since we'll be closing it later, we need
   // to make sure there's still a tab around to extend the life of the
   // browser.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("example.com", "/empty.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(
+      embedded_test_server()->GetURL("example.com", "/empty.html"));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   ExtensionHost* background_host =
       ProcessManager::Get(profile())->GetBackgroundHostForExtension(
@@ -546,13 +545,15 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessagingOnPagehide) {
   EXPECT_EQ(0, content::EvalJs(background_contents, "window.messageCount;"));
 
   content::WebContentsDestroyedWatcher destroyed_watcher(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      GetActiveWebContents());
   chrome::CloseTab(browser());
   destroyed_watcher.Wait();
   base::RunLoop().RunUntilIdle();
   // The extension should have sent a message from its pagehide handler.
   EXPECT_EQ(1, content::EvalJs(background_contents, "window.messageCount;"));
 }
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that messages over a certain size are not sent.
 // https://crbug.com/766713.
@@ -611,23 +612,154 @@ IN_PROC_BROWSER_TEST_F(MessagingApiTest, MessageChannelName) {
 
   ResultCatcher result_catcher;
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->GetResourceURL("connectee.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), extension->GetResourceURL("connector.html"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLInNewTab(extension->GetResourceURL("connectee.html"));
+  NavigateToURLInNewTab(extension->GetResourceURL("connector.html"));
 
   ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
-class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
+class MessagingApiTestWithPageUrlLoad
+    : public MessagingApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  MessagingApiTestWithPageUrlLoad() = default;
+
+  void SetUpOnMainThread() override {
+    MessagingApiTest::SetUpOnMainThread();
+    url_ = embedded_test_server()->GetURL("/extensions/test_file.html");
+  }
+
+ protected:
+  // Runs the extension test located at `extension_name` but first loads a tab
+  // to //chrome/test/data/extensions/test_file.html.
+  testing::AssertionResult RunMessagingTest(const char* extension_name) {
+    return RunExtensionTest(extension_name, {.page_url = url_.spec().c_str(),
+                                             .use_extensions_root_dir = true})
+               ? testing::AssertionSuccess()
+               : testing::AssertionFailure();
+  }
+
+ private:
+  GURL url_;
+};
+
+class MessagingSerializationApiTest : public base::test::WithFeatureOverride,
+                                      public MessagingApiTestWithPageUrlLoad {
+ public:
+  MessagingSerializationApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kStructuredCloningForMessaging) {
+    // This feature treats some messaging response failures differently so let's
+    // force it on to have consistent response behavior.
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that various objects can be JSON and Structure Clone serialized to/from
+// v8 for one-time and long-lived messaging APIs. It tests both the `runtime`
+// and `tabs` APIs by sending messages from a content script to the extension
+// background and then vice versa.
+IN_PROC_BROWSER_TEST_P(MessagingSerializationApiTest, MessageSerialization) {
+  // Sets the feature state in the JS tests.
+  SetCustomArg(IsParamFeatureEnabled() ? "true" : "false");
+
+  // Waiters that confirm the background test can run.
+  // `content_script_ready_for_background_tests` confirms the message listeners
+  // are ready to receive messages from the background test.
+  // `worker_background_ready_to_run_tests` is used to pause the background
+  // tests from running until we can provide the tab's (content script's) ID to
+  // the backgrounds tests so that they have a tab target to send messages to.
+  ExtensionTestMessageListener content_script_ready_for_background_tests(
+      "content-message-handlers-registered");
+  ExtensionTestMessageListener worker_background_waiting_to_run_tests(
+      "background-script-evaluated", ReplyBehavior::kWillReply);
+
+  // This first runs the `runtime` API tests sending messages from a content
+  // script to the extension's background.
+  EXPECT_TRUE(RunMessagingTest("messaging/serialization")) << message_;
+
+  // After the above tests have finished the below runs the `tab` API tests
+  // sending messages from the extension's background to the content script in a
+  // tab (opened during `RunMessagingTest()`).
+  ASSERT_TRUE(content_script_ready_for_background_tests.WaitUntilSatisfied());
+  content::WebContents* tab = GetActiveWebContents();
+  ASSERT_TRUE(tab);
+  int tab_id = ExtensionTabUtil::GetTabId(tab);
+  ASSERT_TRUE(worker_background_waiting_to_run_tests.WaitUntilSatisfied());
+  ResultCatcher result_catcher;
+  // Begins the background tests.
+  worker_background_waiting_to_run_tests.Reply(tab_id);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MessagingSerializationApiTest);
+
+class StructuredCloneMessageSerializationApiTest : public MessagingApiTest {
+ public:
+  StructuredCloneMessageSerializationApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kStructuredCloningForMessaging);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that the structured clone serialization format enforces the maximum
+// message size limit.
+// The JSON serialization version of this test is in
+// MessagingUtilTest.TestMaximumMessageSize. This test is a browser test
+// because structured cloning requires a full Blink setup which is not
+// available in non-Blink unit tests.
+IN_PROC_BROWSER_TEST_F(StructuredCloneMessageSerializationApiTest,
+                       TestMaximumStructuredMessageSize) {
+  static constexpr char kManifest[] = R"(
+      {
+        "name": "TestMaximumStructuredMessageSize",
+        "version": "1.0",
+        "manifest_version": 3,
+        "background": {
+          "service_worker": "background.js",
+          "type": "module"
+        }
+      })";
+  static constexpr char kScript[] = R"(
+    chrome.test.runTests([
+      function testMaximumMessageSize() {
+        // 64 MiB limit, so 65 goes over the limit.
+        const messageSize = 65 * 1024 * 1024;
+        const tooLargeMessage = 'a'.repeat(messageSize);
+        try {
+          chrome.runtime.sendMessage(tooLargeMessage, () => {});
+          chrome.test.fail('Too large message unexpectedly succeeded');
+        } catch (e) {
+          chrome.test.assertTrue(
+              e.message.includes(
+                  'Message exceeded maximum allowed size of 64MiB.'));
+          chrome.test.succeed();
+        }
+      }
+    ]);
+  )";
+
+  TestExtensionDir dir;
+  dir.WriteManifest(kManifest);
+  dir.WriteFile(FILE_PATH_LITERAL("background.js"), kScript);
+
+  ASSERT_TRUE(RunExtensionTest(dir.UnpackedPath(), /*run_options=*/{},
+                               /*load_options=*/{}));
+}
+
+class OnMessagePromiseReturnMessagingApiTest
+    : public MessagingApiTestWithPageUrlLoad {
  public:
   OnMessagePromiseReturnMessagingApiTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRuntimeOnMessagePromiseReturnSupport);
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
   }
 
  private:
@@ -636,142 +768,398 @@ class OnMessagePromiseReturnMessagingApiTest : public MessagingApiTest {
 
 // Runs multiple test scenarios for runtime.OnMessage() listeners returning
 // promises.
-// TODO(crbug.com/40753031): Create a test case that handles promise returns
-// from listeners that reject too.
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnResolvesBehavior) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_promise_resolve")));
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_promise_resolve"))
+      << message_;
+}
 
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+// Tests that when multiple listeners return promises, the sender receives a
+// response from the first promise to resolve if the faster promise is
+// registered first.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_FasterPromiseRegisteredFirst) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_multi_promise_faster_first"))
+      << message_;
+}
 
-  // Confirm content script sender gets response with the expected value.
+// Tests that when multiple listeners return promises, the sender receives a
+// response from the first promise to resolve if the faster promise is
+// registered second.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_SlowerPromiseRegisteredFirst) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_multi_promise_slower_first"))
+      << message_;
+}
+
+// Tests that when the first listener returns true and the second returns a
+// promise, the faster sendResponse response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromise) {
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_return_true_then_promise"))
+      << message_;
+}
+
+// Tests that when the first listener returns true and the second returns a
+// promise, the faster promise response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnTrueThenPromiseFaster) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/on_message_return_true_then_promise_faster"))
+      << message_;
+}
+
+// Tests that when the first listener returns a promise and the second returns
+// true, the faster promise response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnPromiseThenTrue) {
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_return_promise_then_true"))
+      << message_;
+}
+
+// Tests that when the first listener returns a promise and the second returns
+// true, the faster sendResponse response is used to send the response.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_ReturnPromiseThenTrueFaster) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_then_true_faster",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+}
+
+// Tests that when there are multiple listener functions that are registered as
+// `async functions` the faster function (promise) to resolve is used as the
+// response to the sender.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_MultipleAsyncFunctionsRace) {
+  ExtensionTestMessageListener faster_async_function_called(
+      "faster async function called");
+  ExtensionTestMessageListener slower_async_function_called(
+      "slower async function called");
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_as_multiple_async_functions",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+
+  // Confirm that all async functions are called and can respond to the message.
   {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+    SCOPED_TRACE("waiting to confirm that both async functions were called");
+    EXPECT_TRUE(faster_async_function_called.WaitUntilSatisfied());
+    EXPECT_TRUE(slower_async_function_called.WaitUntilSatisfied());
+  }
+}
+
+// Tests that when there are multiple listener functions that are registered as
+// `async functions` the faster function (promise) to resolve (even if it's not
+// the first registered function) is used as the response to the sender.
+IN_PROC_BROWSER_TEST_F(
+    OnMessagePromiseReturnMessagingApiTest,
+    OnMessageMultiPromiseReturnResolvesBehavior_LaterRegisteredAsyncFunctionsCanRespond) {
+  ExtensionTestMessageListener faster_async_function_called(
+      "faster async function called");
+  ExtensionTestMessageListener slower_async_function_called(
+      "slower async function called");
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunExtensionTest(
+      "messaging/on_message_return_promise_as_later_registered_async_function",
+      {.page_url = url.spec().c_str(), .use_extensions_root_dir = true}))
+      << message_;
+
+  // Confirm that all async functions are called and can respond to the message.
+  {
+    SCOPED_TRACE("waiting to confirm that both async functions were called");
+    EXPECT_TRUE(faster_async_function_called.WaitUntilSatisfied());
+    EXPECT_TRUE(slower_async_function_called.WaitUntilSatisfied());
   }
 }
 
 IN_PROC_BROWSER_TEST_F(OnMessagePromiseReturnMessagingApiTest,
                        OnMessagePromiseReturnRejectsBehavior) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_promise_reject")));
-
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
-}
-using PolyfillSupportMessagingApiTest = MessagingApiTest;
-
-// Tests that runtime.sendMessage() promise version behavior matches the
-// mozilla/webextension-polyfill
-// (https://github.com/mozilla/webextension-polyfill). The polyfill doesn't
-// support callbacks so we do not test the sendMessage() callback version
-// (https://github.com/mozilla/webextension-polyfill/issues/102). The test is
-// split into sync and async versions due to needing to stop the worker to
-// elicit the response for some test cases.
-IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
-                       SendMessageListenerBehavior_Synchronous) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/send_message_promise_polyfill_sync")));
-
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  ASSERT_TRUE(RunMessagingTest("messaging/on_message_promise_reject"))
+      << message_;
 }
 
-// See above.
-IN_PROC_BROWSER_TEST_F(PolyfillSupportMessagingApiTest,
-                       SendMessageListenerBehavior_Asynchronous) {
-  const Extension* extension = LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/send_message_promise_polyfill_async"));
-  ASSERT_TRUE(extension);
+// TODO(crbug.com/439644930): PolyfillSupportMessagingApiTest and its test case
+// becomes unnecessary when the feature becomes the default (there are plenty of
+// other tests that test synchronous responses).
+// Helps test messaging behavior when
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// enabled or disabled.
+class PolyfillSupportMessagingApiTest : public base::test::WithFeatureOverride,
+                                        public MessagingApiTestWithPageUrlLoad {
+ public:
+ public:
+  PolyfillSupportMessagingApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
+  }
+};
 
-  ExtensionTestMessageListener message_processed_listener(
-      "listener_processed_message");
-  ExtensionTestMessageListener worker_shutdown_listener(
-      "shutdown_worker", ReplyBehavior::kWillReply);
+// The PolyfillSupport* tests are testing various runtime.sendMessage()
+// behaviors compared to mozilla/webextension-polyfill
+// (https://github.com/mozilla/webextension-polyfill) when
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` is
+// enabled or disabled. The polyfill doesn't support callbacks so we do not test
+// the sendMessage() callback version
+// (https://github.com/mozilla/webextension-polyfill/issues/102).
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingApiTest,
+                       SendMessageListenerBehavior) {
+  ASSERT_TRUE(RunMessagingTest("messaging/send_message_polyfill_sync"))
+      << message_;
+}
 
-  auto OnShutdownMessage = [&](const std::string& message) {
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingApiTest);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+
+// TODO(crbug.com/439644930):PolyfillSupportWithWorkerShutdownMessagingApiTest
+// and its test case becomes unnecessary when the feature becomes the default
+// (the polyfill feature makes it so the errors tested here are handled without
+// worker shutdown).
+// Helps with testing messaging scenarios where the worker background must be
+// stopped in order to elicit a response to message. The polyfill feature
+// handles these scenarios without worker shutdown so we keep it disabled.
+class PolyfillSupportWithWorkerShutdownMessagingApiTest
+    : public MessagingApiTestWithPageUrlLoad {
+ public:
+  // Wait until the message listener finishes running and then stop the worker.
+  // Then inform the message sender that the worker shutdown.
+  void OnShutdownMessage(const ExtensionId& extension_id,
+                         const std::string& message) {
     // Wait for the worker listener to process the message so we don't shutdown
     // the worker so quickly that the sender's message never gets to the
     // listener.
-    ASSERT_TRUE(message_processed_listener.WaitUntilSatisfied(
+    ASSERT_TRUE(message_processed_listener_.WaitUntilSatisfied(
         base::RunLoop::Type::kNestableTasksAllowed));
-    message_processed_listener.Reset();
+    message_processed_listener_.Reset();
     // Shut down the worker to start garbage collection of the sendResponse in
     // the listener context. This elicits the browser to respond on behalf of
     // the listener.
     browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-        browser()->profile(), extension->id(),
-        base::RunLoop::Type::kNestableTasksAllowed);
+        profile(), extension_id, base::RunLoop::Type::kNestableTasksAllowed);
     // Notify the test cases to proceed.
-    worker_shutdown_listener.Reply("");
-    worker_shutdown_listener.Reset();
-  };
-  worker_shutdown_listener.SetOnRepeatedlySatisfied(
-      base::BindLambdaForTesting(OnShutdownMessage));
-
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script sender gets response with the expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender to receive response from "
-        "background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+    worker_shutdown_listener_.Reply("");
+    worker_shutdown_listener_.Reset();
   }
+
+ protected:
+  PolyfillSupportWithWorkerShutdownMessagingApiTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+  }
+
+  void SetUpOnMainThread() override {
+    MessagingApiTestWithPageUrlLoad::SetUpOnMainThread();
+    worker_shutdown_listener_.SetOnRepeatedlySatisfied(base::BindRepeating(
+        &PolyfillSupportWithWorkerShutdownMessagingApiTest::OnShutdownMessage,
+        base::Unretained(this), extension_id_));
+  }
+
+ private:
+  // Waits for the message listener to finish processing the message it
+  // received.
+  ExtensionTestMessageListener message_processed_listener_ =
+      ExtensionTestMessageListener("listener_processed_message");
+  // Waits for message sender to indicate that it would like for the worker to
+  // shutdown so it can receive a reply.
+  ExtensionTestMessageListener worker_shutdown_listener_ =
+      ExtensionTestMessageListener("shutdown_worker",
+                                   ReplyBehavior::kWillReply);
+  ExtensionId extension_id_ = ExtensionId("iegclhlplifhodhkoafiokenjoapiobj");
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test how does messaging handle when the listener never responds but also
+// never releases its reference to the v8 reply function (when the polyfill
+// feature is disabled). Also see PolyfillSupportMessagingApiTest.
+IN_PROC_BROWSER_TEST_F(PolyfillSupportWithWorkerShutdownMessagingApiTest,
+                       SendMessageListenerBehavior_Asynchronous) {
+  ASSERT_TRUE(RunMessagingTest("messaging/send_message_polyfill_async"))
+      << message_;
+}
+
+// Test class that sets `chrome.test.getConfig()`'s 'customArg' key to the
+// `extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport` state so
+// the extension test can adjust its expectations at test runtime.
+class PolyfillSupportMessagingErrorsApiTest
+    : public PolyfillSupportMessagingApiTest {
+ public:
+
+  void SetUpOnMainThread() override {
+    PolyfillSupportMessagingApiTest::SetUpOnMainThread();
+    // Set "customArg" to be whether the feature is enabled in
+    // chrome.test.getConfig().
+    js_test_config_.Set(
+        "customArg", base::Value(IsParamFeatureEnabled() ? "true" : "false"));
+    extensions::TestGetConfigFunction::set_test_config_state(&js_test_config_);
+  }
+
+  void TearDownOnMainThread() override {
+    PolyfillSupportMessagingApiTest::TearDownOnMainThread();
+    extensions::TestGetConfigFunction::set_test_config_state(nullptr);
+  }
+
+ private:
+  base::Value::Dict js_test_config_;
+};
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered throws a synchronous error
+// 2) the second registered responds to the message
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenErrorIsFirst) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/one_time_message_handler_error_first"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered responds to the message
+// 2) the second registered throws a synchronous error
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenResponseIsFirst) {
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_response_first"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there is one listener that replies
+// and then throws an error immediately afterward.
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenOneListenerResponseIsFirst) {
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_response_first_same_listener"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there is one listener that throws an
+// error immediately.
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenOneListenerErrorFirst) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_error_first_same_listener"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered responds asynchronously (with `return true`)
+// 2) the second registered throws a synchronous error
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenAsyncResponseIsFirst) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_send_async_response_first"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered throws an error synchronously
+// 2) the second registered also throws an error synchronously
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingWhenMultipleSyncErrorsThrown) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/one_time_message_handler_sync_errors"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there is a single listener that
+// throws a variety of error types.
+IN_PROC_BROWSER_TEST_P(PolyfillSupportMessagingErrorsApiTest,
+                       ListenerErrorHandlingForManySyncErrorTypesThrown) {
+  const GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_many_error_types_same_listener"))
+      << message_;
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PolyfillSupportMessagingErrorsApiTest);
+
+class PolyfillFeatureEnabledMessagingApiTest
+    : public MessagingApiTestWithPageUrlLoad {
+ public:
+  PolyfillFeatureEnabledMessagingApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered responds by returning a promise that resolves
+// 2) the second registered throws a synchronous error
+IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
+                       ListenerErrorHandlingWhenPromiseResolveIsFirst) {
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_promise_resolve_first"))
+      << message_;
+}
+
+// Test the sender's promise behavior when there are two listeners and:
+// 1) the first registered responds by returning a promise that rejects
+// 2) the second registered throws a synchronous error
+IN_PROC_BROWSER_TEST_F(PolyfillFeatureEnabledMessagingApiTest,
+                       ListenerErrorHandlingWhenPromiseRejectIsFirst) {
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/one_time_message_handler_promise_reject_first"))
+      << message_;
+}
+
+using PolyfillUnserializableMessageResponseShutdownTest =
+    PolyfillSupportWithWorkerShutdownMessagingApiTest;
+
+// Tests messaging behavior when a listener sends a response that is not JSON
+// serializable and the polyfill feature is not enabled.
+IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseShutdownTest,
+                       UnserializableResponse) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/send_message_non_polyfill_unserializable"))
+      << message_;
+}
+
+// The tests for when the feature is disabled are in
+// PolyfillUnserializableMessageResponseShutdownTest.UnserializableResponse
+// since they require extra logic to test.
+using PolyfillUnserializableMessageResponseTest =
+    PolyfillFeatureEnabledMessagingApiTest;
+
+// Tests similar behavior to PolyfillSupportMessagingApiTest, but specifically
+// when the message listener attempts to send unserializable data back to the
+// sender. In this case we close the channel and return an error. It is closer
+// to the behavior of mozilla/webextension-polyfill
+// (https://github.com/mozilla/webextension-polyfill), but different in that an
+// error is returned.
+IN_PROC_BROWSER_TEST_F(PolyfillUnserializableMessageResponseTest,
+                       UnserializableResponseClosesChannel) {
+  ASSERT_TRUE(
+      RunMessagingTest("messaging/send_message_polyfill_unserializable"))
+      << message_;
 }
 
 // Helps in testing that
-// extensions_features::kRuntimeOnMessagePromiseReturnSupport doesn't regress
-// asynchronous listener behavior when multiple listeners can return for a
-// single message.
+// extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport doesn't
+// regress asynchronous listener behavior when multiple listeners can return for
+// a single message.
 class OnMessageMultiListenerMessagingApiTest
-    : public MessagingApiTest,
-      public testing::WithParamInterface<bool> {
+    : public MessagingApiTestWithPageUrlLoad,
+      public base::test::WithFeatureOverride {
  public:
-  OnMessageMultiListenerMessagingApiTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{extensions_features::
-                                    kRuntimeOnMessagePromiseReturnSupport},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              extensions_features::kRuntimeOnMessagePromiseReturnSupport});
-    }
+  OnMessageMultiListenerMessagingApiTest()
+      : base::test::WithFeatureOverride(
+            extensions_features::kRuntimeOnMessageWebExtensionPolyfillSupport) {
   }
 
  private:
@@ -784,23 +1172,9 @@ class OnMessageMultiListenerMessagingApiTest
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageSyncListenerReturnsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_multi_listener/sync_listener_called_first")));
-
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script response callback function is called with the
-  // expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender response callback to "
-        "receive response from background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/on_message_multi_listener/sync_listener_called_first"))
+      << message_;
 }
 
 // Tests that, when a asynchronous onMessage listener is registered first (it's
@@ -809,29 +1183,14 @@ IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
 // from getting to the message sender. Regression test for crbug.com/424560420.
 IN_PROC_BROWSER_TEST_P(OnMessageMultiListenerMessagingApiTest,
                        OnMessageAsyncListenerReturnsFirst) {
-  ASSERT_TRUE(LoadExtension(shared_test_data_dir().AppendASCII(
-      "messaging/on_message_multi_listener/async_listener_called_first")));
-
-  // Open example.com where content script is injected and runtime.sendMessage()
-  // is called.
-  ResultCatcher result_catcher;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
-
-  // Confirm content script response callback function is called with the
-  // expected value.
-  {
-    SCOPED_TRACE(
-        "waiting for content script message sender response callback to "
-        "receive response from background message listener");
-    EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
-  }
+  ASSERT_TRUE(RunMessagingTest(
+      "messaging/on_message_multi_listener/async_listener_called_first"))
+      << message_;
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         OnMessageMultiListenerMessagingApiTest,
-                         // extensions_features::kUserScriptUserExtensionToggle
-                         testing::Bool());
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(OnMessageMultiListenerMessagingApiTest);
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class ServiceWorkerMessagingApiTest : public MessagingApiTest {
  protected:
@@ -839,10 +1198,7 @@ class ServiceWorkerMessagingApiTest : public MessagingApiTest {
 
   size_t GetWorkerRefCount(const blink::StorageKey& key) {
     content::ServiceWorkerContext* sw_context =
-        browser()
-            ->profile()
-            ->GetDefaultStoragePartition()
-            ->GetServiceWorkerContext();
+        profile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
     return sw_context->CountExternalRequestsForTest(key);
   }
 };
@@ -908,8 +1264,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingApiTest,
   ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher.GetNextResult());
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_EQ(extension->origin(),
             web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
@@ -947,8 +1302,6 @@ IN_PROC_BROWSER_TEST_F(MessagingApiFencedFrameTest, Load) {
   ASSERT_TRUE(RunExtensionTest("messaging/connect_fenced_frames", {}))
       << message_;
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 

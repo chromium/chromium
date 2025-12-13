@@ -47,7 +47,7 @@ base::UnguessableToken GetSessionIdForWebRtcAudioRenderer(
              : base::UnguessableToken();
 }
 
-void SendLogMessage(const WTF::String& message) {
+void SendLogMessage(const String& message) {
   WebRtcLogMessage("MSRF::" + message.Utf8());
 }
 

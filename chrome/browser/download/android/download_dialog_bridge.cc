@@ -32,8 +32,7 @@ DownloadDialogResult::~DownloadDialogResult() = default;
 DownloadDialogBridge::DownloadDialogBridge() : is_dialog_showing_(false) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_DownloadDialogBridge_create(
-                           env, reinterpret_cast<intptr_t>(this))
-                           .obj());
+                           env, reinterpret_cast<intptr_t>(this)));
   DCHECK(!java_obj_.is_null());
 }
 
@@ -117,9 +116,9 @@ void DownloadDialogBridge::CompleteSelection(DownloadDialogResult result) {
 }
 
 // static
-void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
+static void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jpref_service,
+    const base::android::JavaRef<jobject>& jpref_service,
     std::string& directory) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(jpref_service);
@@ -128,3 +127,5 @@ void JNI_DownloadDialogBridge_SetDownloadAndSaveFileDefaultDirectory(
   pref_service->SetFilePath(prefs::kDownloadDefaultDirectory, path);
   pref_service->SetFilePath(prefs::kSaveFileDefaultDirectory, path);
 }
+
+DEFINE_JNI(DownloadDialogBridge)

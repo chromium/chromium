@@ -5,6 +5,4 @@
 #       If it requires updating, you should get a presubmit error with
 #       instructions on how to regenerate. Otherwise, do not edit.
 data/quota_database/version_10.sql
-data/quota_database/version_7.sql
-data/quota_database/version_8.sql
-data/quota_database/version_9.sql
+data/quota_database/version_11.sql

@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">కళా ప్రక్రియ</translation>
 <translation id="1254593899333212300">ప్రత్యక్ష ఇంటర్నెట్ కనెక్షన్</translation>
 <translation id="1272293450992660632">పిన్ విలువలు సరిపోలలేదు.</translation>
+<translation id="1279040297980392566">స్కాన్ పూర్తయ్యే వరకు వేచి ఉంది, తర్వాత రీట్రై చేయండి</translation>
 <translation id="1280820357415527819">మొబైల్ నెట్‌వర్క్‌ల కోసం వెతుకుతోంది</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google Drive ప్రస్తుతం అందుబాటులో లేదు. Google Drive అందుబాటులోకి వచ్చిన తర్వాత అప్‌లోడ్ ఆటోమేటిక్‌గా మళ్లీ ప్రారంభమవుతుంది.</translation>
@@ -106,7 +107,7 @@
 <translation id="1807938677607439181">అన్ని ఫైళ్లు</translation>
 <translation id="1810764548349082891">ప్రివ్యూ అందుబాటులో లేదు</translation>
 <translation id="1812302367230252929">అమ్హారిక్ ట్రాన్స్‌లిటరేషన్</translation>
-<translation id="1813278315230285598">సేవలు</translation>
+<translation id="1813278315230285598">సర్వీసులు</translation>
 <translation id="181434555916624618">ప్రస్తుతానికి, వ్యక్తులకు సంబంధించిన ఫలితాలు చూపబడవు. మరొక ప్రాంప్ట్‌ను ట్రై చేయండి.</translation>
 <translation id="1829129547161959350">పెంగ్విన్</translation>
 <translation id="183183971458492120">సమాచారాన్ని లోడ్ చేస్తోంది...</translation>
@@ -134,7 +135,7 @@
 <translation id="2046702855113914483">రామెన్</translation>
 <translation id="2070909990982335904">డాట్‌తో ప్రారంభమయ్యే పేర్లు సిస్టమ్ కోసం ప్రత్యేకించబడినవి. దయచేసి మరొక పేరును ఎంచుకోండి.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
-<translation id="2084108471225856927">పరికర సెట్టింగ్‌లు</translation>
+<translation id="2084108471225856927">డివైజ్ సెట్టింగ్స్</translation>
 <translation id="2084809735218147718">సంజ్ఞ ద్వారా థ్యాంక్ యు చెబుతున్న వ్యక్తి</translation>
 <translation id="2088690981887365033">VPN నెట్‌వర్క్</translation>
 <translation id="209653272837065803">ఫైళ్లను సింక్ చేయడాన్ని కొనసాగించడానికి తగినంత స్టోరేజ్ స్పేస్ లేదు</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 ఫైల్ ఎంచుకోబడింది</translation>
 <translation id="3817579325494460411">అందించబడలేదు</translation>
 <translation id="3819448694985509187">పిన్ తప్పు. మీకు 1 ప్రయత్నం మిగిలి ఉంది.</translation>
-<translation id="3822559385185038546">ఈ ప్రాక్సీని మీ నిర్వాహకులు అమలు చేశారు</translation>
 <translation id="3830674330436234648">ప్లేబ్యాక్ అందుబాటులో లేదు</translation>
 <translation id="383652340667548381">సెర్బియన్</translation>
 <translation id="3839045880592694915">మీ మోడెమ్, మీ క్యారియర్ ద్వారా కనెక్ట్ చేయడానికి అనుమతించబడదు. మరిన్ని వివరాల కోసం మీ క్యారియర్‌ను సంప్రదించండి.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5602622065581044566">ఫోనెటిక్ కీబోర్డ్‌తో బల్గేరియన్</translation>
 <translation id="5605830556594064952">యుఎస్ డ్వోరక్</translation>
+<translation id="560739212255190568">కింది ప్రాక్సీని అమలు చేయడంతో పాటు మీ అడ్మిన్ ప్రాక్సీ ఓవర్‌రైడ్ నియమాలను సెట్ చేశారు</translation>
 <translation id="5618330573454123917">ఈ ఫైల్ Macintosh సాఫ్ట్‌వేర్‌ను ఉపయోగించే కంప్యూటర్ కోసం రూపొందించబడింది. ఇది ChromeOSను రన్ చేసే మీ పరికరంతో అనుకూలంగా లేదు. ChromeOSలో ఫైల్స్‌ను తెరవడం గురించి <ph name="BEGIN_LINK_HELP" />మరింత తెలుసుకోండి<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">తమిళ్99 కీబోర్డ్‌తో తమిళం</translation>
 <translation id="5633226425545095130">ఈ ఐటెమ్‌ను తరలిస్తే అది షేర్ చేయబడిన ఫోల్డర్ '<ph name="DESTINATION_NAME" />'ను చూడగలిగే ప్రతి ఒక్కరితో షేర్ చేయబడుతుంది.</translation>
@@ -883,7 +884,7 @@
 <translation id="7794058097940213561">ఈ పరికరాన్ని ఫార్మాట్ చేయి</translation>
 <translation id="7799329977874311193">HTML డాక్యుమెంట్‌</translation>
 <translation id="7801354353640549019">Chromebookలు</translation>
-<translation id="7805768142964895445">స్థితి</translation>
+<translation id="7805768142964895445">స్టేటస్</translation>
 <translation id="7806708061868529807">హిబ్రూ</translation>
 <translation id="78104721049218340">కెడ్మానీ కీబోర్డ్‌తో థాయ్</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="8545476925160229291">ఇంగ్లీష్ (US)</translation>
 <translation id="854655314928502177">వెబ్ ప్రాక్సీ స్వీయ శోధన URL:</translation>
+<translation id="8547747809824590510">మీ అడ్మిన్ ప్రాక్సీ ఓవర్‌రైడ్ నియమాలను సెట్ చేశారు</translation>
 <translation id="8549186985808798022">ఇటాలియన్</translation>
 <translation id="8551494947769799688">లాత్వియన్</translation>
 <translation id="8560515948038859357">కాంటోనీస్</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే ఉంది. దయచేసి వేరొక పేరును ఎంచుకోండి.</translation>
 <translation id="9046895021617826162">కనెక్ట్ విఫలమైంది</translation>
 <translation id="9065512565307033593">మీరు వెరిఫై చేయలేకపోతే, మీ నెట్‌వర్క్ యాక్సెస్ డిజేబుల్ చేయబడుతుంది.</translation>
+<translation id="9079844694307518094">మీ అడ్మిన్ కింది ప్రాక్సీని అమలు చేస్తున్నారు</translation>
 <translation id="908378762078012445">ఫోనెటిక్ AATSEEL కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9099674669267916096">పేజీ గణన</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">ఇన్‌స్టాలేషన్ విజయవంతంగా ప్రారంభించబడింది.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
 <translation id="9219908252191632183">లూనార్</translation>
+<translation id="931652069802536959">నెట్‌వర్క్‌ను పాలసీ బ్లాక్ చేసింది</translation>
 <translation id="938470336146445890">దయచేసి వినియోగదారు సర్టిఫికెట్‌ను ఇన్‌స్టాల్ చేయండి.</translation>
 <translation id="939736085109172342">కొత్త  ఫోల్డర్</translation>
 <translation id="943972244133411984">వీరు ఎడిట్ చేశారు</translation>

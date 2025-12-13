@@ -1,0 +1,81 @@
+<!--
+@WAIT-FOR:Ready
+@EVENTS-TREE-DUMP
+@AURALINUX-ALLOW:enabled
+@AURALINUX-ALLOW:sensitive
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Button Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner, waitForStable } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-filled-button",
+            "md-outlined-button",
+            "md-text-button"
+        ];
+
+        setupEventTestRunner();
+        window.waitForStable = waitForStable;
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+
+            const filledButton = document.createElement("md-filled-button");
+            filledButton.id = "test-filled-button";
+            filledButton.textContent = "Filled Button";
+            filledButton.setAttribute("aria-label", "Filled Button");
+
+            const outlinedButton = document.createElement("md-outlined-button");
+            outlinedButton.id = "test-outlined-button";
+            outlinedButton.textContent = "Outlined Button";
+            outlinedButton.setAttribute("aria-label", "Outlined Button");
+            outlinedButton.disabled = true;
+
+            statusDiv.appendChild(filledButton);
+            statusDiv.appendChild(outlinedButton);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        async () => {
+            const button = document.getElementById("test-filled-button");
+            if (button) {
+                button.click();
+                await waitForStable(button);
+            }
+        },
+
+        async () => {
+            const button = document.getElementById("test-filled-button");
+            if (button) {
+                button.disabled = true;
+                await waitForStable(button);
+            }
+        },
+
+        async () => {
+            const button = document.getElementById("test-outlined-button");
+            if (button) {
+                button.disabled = false;
+                await waitForStable(button);
+            }
+        }
+    ];
+</script>
+</html>

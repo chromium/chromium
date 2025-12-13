@@ -1,10 +1,10 @@
     <style include="cr-shared-style settings-shared">
-      #empty-list-message {
+      #emptyListMessage {
         padding: 0 var(--cr-section-padding);
         padding-top: 30px;
       }
 
-      #exception-list {
+      #exceptionList {
         padding-top: 0;
       }
 
@@ -27,7 +27,7 @@
       </div>
     </cr-dialog>
 
-    <div id="empty-list-message"
+    <div id="emptyListMessage"
         hidden$="[[hasExceptions_(chooserExceptions.*)]]">
       <div class="secondary">[[emptyListMessage_]]</div>
     </div>
@@ -39,7 +39,7 @@
       </cr-button>
     </div>
 
-    <template id="exception-list" is="dom-repeat" items="[[chooserExceptions]]">
+    <template id="exceptionList" is="dom-repeat" items="[[chooserExceptions]]">
       <chooser-exception-list-entry exception="[[item]]"
           on-show-tooltip="onShowTooltip_">
       </chooser-exception-list-entry>

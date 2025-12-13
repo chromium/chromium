@@ -203,3 +203,32 @@ index ee70d3c14b0c2..265940bf4c6c8 100644
  
  /**
   * Sets `useAdoptedStyleSheetsWithBuiltCSS` globally.
+
+diff --git a/components-chromium/polymer/lib/elements/dom-if.js b/components-chromium/polymer/lib/elements/dom-if.js
+index 729833a32cc42..87b863a5cf342 100644
+--- a/components-chromium/polymer/lib/elements/dom-if.js
++++ b/components-chromium/polymer/lib/elements/dom-if.js
+@@ -53,6 +53,14 @@ class DomIfBase extends PolymerElement {
+         observer: '__debounceRender'
+       },
+ 
++      /**
++       * When true, elements are updated when they are hidden due to the "if"
++       * condition being false.
++       */
++      updateWhenFalse: {
++        type: Boolean
++      },
++
+       /**
+        * When true, elements will be removed from DOM and discarded when `if`
+        * becomes false and re-created and added back to the DOM when `if`
+@@ -551,7 +559,7 @@ class DomIfLegacy extends DomIfBase {
+              */
+             forwardHostProp: function(prop, value) {
+               if (this.__instance) {
+-                if (this.if) {
++                if (this.if || this.updateWhenFalse) {
+                   this.__instance.forwardHostProp(prop, value);
+                 } else {
+                   // If we have an instance but are squelching host property

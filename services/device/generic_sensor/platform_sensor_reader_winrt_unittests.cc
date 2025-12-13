@@ -788,11 +788,11 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(reading.als.timestamp, 0.0);
           EXPECT_EQ(reading.als.value, 0.0f);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -806,11 +806,11 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorTimestampConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(reading.als.timestamp, expectedTimestampDeltaSecs);
           EXPECT_EQ(reading.als.value, 0.0f);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -998,10 +998,10 @@ TEST_F(PlatformSensorReaderTestWinrt, SensorClientNotification) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_lux, reading.als.value);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -1041,12 +1041,12 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckAccelerometerReadingConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(-expected_x * base::kMeanGravityDouble, reading.accel.x);
           EXPECT_EQ(-expected_y * base::kMeanGravityDouble, reading.accel.y);
           EXPECT_EQ(-expected_z * base::kMeanGravityDouble, reading.accel.z);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -1133,12 +1133,12 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckGyrometerReadingConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(base::DegToRad(expected_x), reading.gyro.x);
           EXPECT_EQ(base::DegToRad(expected_y), reading.gyro.y);
           EXPECT_EQ(base::DegToRad(expected_z), reading.gyro.z);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -1224,12 +1224,12 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckMagnetometerReadingConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_x, reading.magn.x);
           EXPECT_EQ(expected_y, reading.magn.y);
           EXPECT_EQ(expected_z, reading.magn.z);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -1315,12 +1315,12 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckInclinometerReadingConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_x, reading.orientation_euler.x);
           EXPECT_EQ(expected_y, reading.orientation_euler.y);
           EXPECT_EQ(expected_z, reading.orientation_euler.z);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }
@@ -1408,13 +1408,13 @@ TEST_F(PlatformSensorReaderTestWinrt, CheckOrientationSensorReadingConversion) {
   {
     base::RunLoop run_loop;
     EXPECT_CALL(*mock_client, OnReadingUpdated(::testing::_))
-        .WillOnce(testing::Invoke([&](const SensorReading& reading) {
+        .WillOnce([&](const SensorReading& reading) {
           EXPECT_EQ(expected_w, reading.orientation_quat.w);
           EXPECT_EQ(expected_x, reading.orientation_quat.x);
           EXPECT_EQ(expected_y, reading.orientation_quat.y);
           EXPECT_EQ(expected_z, reading.orientation_quat.z);
           run_loop.Quit();
-        }));
+        });
     fake_sensor->TriggerFakeSensorReading(reading);
     run_loop.Run();
   }

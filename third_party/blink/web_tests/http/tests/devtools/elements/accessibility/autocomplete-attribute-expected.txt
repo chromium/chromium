@@ -1,9 +1,0 @@
-Tests that autocompletions are computed correctly when editing the ARIA pane.
-
-
-Running: testCheckedEmptyValue
-
-Running: testCheckedFirstCharacter
-
-Running: testRoleFirstCharacter
-

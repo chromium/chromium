@@ -71,7 +71,14 @@ class PLATFORM_EXPORT ExceptionState {
 
   ExceptionState(const ExceptionState&) = delete;
   ExceptionState& operator=(const ExceptionState&) = delete;
+
+#if DCHECK_IS_ON()
+  ~ExceptionState() {
+    DCHECK(!had_exception_ || !isolate_ || isolate_->HasPendingException());
+  }
+#else
   ~ExceptionState() = default;
+#endif
 
   // Throws a DOMException due to the given exception code.
   NOINLINE void ThrowDOMException(DOMExceptionCode, const String& message);
@@ -156,7 +163,7 @@ class PLATFORM_EXPORT ExceptionState {
   // responsible for ensuring `context_` outlives this object.
   ExceptionContext context_;
 
-  v8::Isolate* isolate_;
+  v8::Isolate* const isolate_;
 
   bool had_exception_ = false;
   bool swallow_all_exceptions_ = false;
@@ -230,9 +237,18 @@ class PLATFORM_EXPORT TryRethrowScope {
     }
   }
 
-  bool HasCaught() { return try_catch_.HasCaught(); }
-  v8::Local<v8::Value> GetException() { return try_catch_.Exception(); }
+  bool HasCaught() const { return try_catch_.HasCaught(); }
+  v8::Local<v8::Value> GetException() const { return try_catch_.Exception(); }
 
+  static v8::Local<v8::Value> TakeException(v8::TryCatch& try_catch) {
+    v8::Local<v8::Value> result = try_catch.Exception();
+    try_catch.Reset();
+    return result;
+  }
+
+  v8::Local<v8::Value> TakeException() { return TakeException(try_catch_); }
+
+ private:
   v8::TryCatch try_catch_;
   ExceptionState& exception_state_;
 };

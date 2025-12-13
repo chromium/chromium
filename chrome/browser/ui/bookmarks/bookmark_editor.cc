@@ -39,7 +39,8 @@ const BookmarkNode* CreateNewNode(BookmarkModel* model,
     case BookmarkEditor::EditDetails::NEW_URL:
       node = model->AddNewURL(parent, insert_index, new_title, new_url);
       break;
-    case BookmarkEditor::EditDetails::NEW_FOLDER: {
+    case BookmarkEditor::EditDetails::NEW_FOLDER:
+    case BookmarkEditor::EditDetails::CONVERT_TAB_GROUP_TO_FOLDER: {
       node = model->AddFolder(parent, insert_index, new_title);
       for (const auto& bookmark_data : details.bookmark_data.children) {
         if (bookmark_data.url.has_value()) {
@@ -119,6 +120,7 @@ bool BookmarkEditor::EditDetails::CanChangeUrl() const {
     case NEW_URL:
       return true;
     case NEW_FOLDER:
+    case CONVERT_TAB_GROUP_TO_FOLDER:
     case MOVE:
       return false;
   }
@@ -138,6 +140,9 @@ int BookmarkEditor::EditDetails::GetWindowTitleId() const {
       dialog_title = bookmark_data.children.empty()
                          ? IDS_BOOKMARK_FOLDER_EDITOR_WINDOW_TITLE_NEW
                          : IDS_BOOKMARK_ALL_TABS_DIALOG_TITLE;
+      break;
+    case EditDetails::CONVERT_TAB_GROUP_TO_FOLDER:
+      dialog_title = IDS_TAB_GROUP_TO_BOOKMARK_FOLDER_TITLE;
       break;
     case EditDetails::MOVE:
       dialog_title = IDS_BOOKMARK_MOVE_DIALOG_TITLE;
@@ -180,6 +185,17 @@ BookmarkEditor::EditDetails BookmarkEditor::EditDetails::AddFolder(
   return details;
 }
 
+BookmarkEditor::EditDetails BookmarkEditor::EditDetails::TabGroupToFolder(
+    const BookmarkNode* parent_node,
+    size_t index,
+    const std::u16string& title) {
+  EditDetails details(CONVERT_TAB_GROUP_TO_FOLDER);
+  details.parent_node = parent_node;
+  details.index = index;
+  details.bookmark_data.title = title;
+  return details;
+}
+
 BookmarkEditor::EditDetails BookmarkEditor::EditDetails::MoveNodes(
     bookmarks::BookmarkModel* model,
     const std::vector<
@@ -205,7 +221,8 @@ void BookmarkEditor::ApplyEdits(BookmarkModel* model,
                                 const std::u16string& new_title,
                                 const GURL& new_url) {
   if (details.type == EditDetails::NEW_URL ||
-      details.type == EditDetails::NEW_FOLDER) {
+      details.type == EditDetails::NEW_FOLDER ||
+      details.type == EditDetails::CONVERT_TAB_GROUP_TO_FOLDER) {
     CreateNewNode(model, new_parent, details, new_title, new_url);
     return;
   }

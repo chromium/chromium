@@ -30,6 +30,9 @@ GURL GetUkmServerUrl();
 // The DWA server's URL.
 GURL GetDwaServerUrl();
 
+// The Private Metrics server's URL.
+GURL GetPrivateMetricsServerUrl();
+
 }  // namespace metrics
 
 #endif  // COMPONENTS_METRICS_SERVER_URLS_H_

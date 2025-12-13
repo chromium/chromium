@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
 
@@ -15,8 +16,7 @@ namespace blink {
 
 // IceTransportAdapter implementation backed by the WebRTC PortAllocator /
 // P2PTransportChannel.
-class IceTransportAdapterImpl final : public IceTransportAdapter,
-                                      public sigslot::has_slots<> {
+class IceTransportAdapterImpl final : public IceTransportAdapter {
  public:
   // Create an IceTransportAdapter for an existing |ice_transport_channel|
   // object.
@@ -56,6 +56,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
 
   const raw_ptr<Delegate> delegate_;
   webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;
+  base::WeakPtrFactory<IceTransportAdapterImpl> weak_factory_{this};
 };
 
 }  // namespace blink

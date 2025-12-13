@@ -6,10 +6,12 @@
 
 #include <string_view>
 
+#include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "content/public/browser/browser_thread.h"
 #include "crypto/random.h"
 #include "crypto/sha2.h"
 
@@ -79,6 +81,18 @@ std::string GetOrCreateSerialNumber(PrefService* local_state,
 }
 
 std::optional<std::string> ReadSaltOnDisk(const base::FilePath& salt_path) {
+  // TODO(crbug.com/450307883): This blocking call from the UI thread causes a
+  // browser crash on Reven when logging in before the ARCVM image is installed
+  // from DLC. Returning an empty string for DCHECK builds is a temporary fix to
+  // prevent the crash.
+  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    LOG(ERROR) << "The blocking IO thread can not be processed in the main "
+                  "thread UI";
+#if DCHECK_IS_ON()
+    return std::string();
+#endif
+  }
+
   if (!base::PathExists(salt_path)) {
     VLOG(2) << "ARC salt file doesn't exist: " << salt_path;
     return std::string();

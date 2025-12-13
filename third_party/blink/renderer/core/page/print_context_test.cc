@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/viz/test/test_context_provider.h"
-#include "components/viz/test/test_gles2_interface.h"
 #include "components/viz/test/test_raster_interface.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,7 +67,7 @@ class MockPageContextCanvas : public SkCanvas {
     }
 
     if (rect.width() == 0 && rect.height() == 0) {
-      SkPoint point = getTotalMatrix().mapXY(rect.x(), rect.y());
+      SkPoint point = getTotalMatrix().mapPoint(rect.TL());
       Operation operation = {kDrawPoint,
                              SkRect::MakeXYWH(point.x(), point.y(), 0, 0)};
       recorded_operations_.push_back(operation);
@@ -673,7 +672,6 @@ TEST_P(PrintContextTest, LinkedTargetSecondPage) {
 }
 
 TEST_P(PrintContextTest, LinkedTargetRootMargin) {
-  ScopedLayoutBoxVisualLocationForTest scoped_feature(true);
   SetBodyInnerHTML(R"HTML(
     <style>
       html { margin-top: 50px; }
@@ -692,6 +690,65 @@ TEST_P(PrintContextTest, LinkedTargetRootMargin) {
 
   EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[1].type);
   EXPECT_SKRECT_EQ(0, 183, 0, 0, (*operations)[1].rect);
+}
+
+TEST_P(PrintContextTest, LinkedTargetInAbsPos) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#target">link</a>
+    <div style="break-before:page; position:relative;">
+      <div id="target" style="position:absolute; top:100px; width:20px; height:20px;"></div>
+    </div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  // The destination is on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 100, 0, 0, (*operations)[0].rect);
+}
+
+TEST_P(PrintContextTest, LinkedTargetInAbsPosNextPage) {
+  SetBodyInnerHTML(R"HTML(
+    <a style="display:block; width:33px; height:33px;" href="#target">link</a>
+    <div style="break-before:page; position:relative;">
+      <div style="height:10px;"></div>
+      <div style="break-before:page;">
+        <div id="target" style="position:absolute; width:20px; height:20px;"></div>
+      </div>
+    </div>
+  )HTML");
+
+  // The link is on the first page.
+  testing::NiceMock<MockPageContextCanvas> first_canvas;
+  PrintSinglePage(first_canvas, 0);
+  const Vector<MockPageContextCanvas::Operation>* operations =
+      &first_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  // Nothing interesting on the second page.
+  testing::NiceMock<MockPageContextCanvas> second_canvas;
+  PrintSinglePage(second_canvas, 1);
+  operations = &second_canvas.RecordedOperations();
+  ASSERT_EQ(0u, operations->size());
+
+  // The destination is on the third page.
+  testing::NiceMock<MockPageContextCanvas> third_canvas;
+  PrintSinglePage(third_canvas, 2);
+  operations = &third_canvas.RecordedOperations();
+  ASSERT_EQ(1u, operations->size());
+
+  EXPECT_EQ(MockPageContextCanvas::kDrawPoint, (*operations)[0].type);
+  EXPECT_SKRECT_EQ(0, 0, 0, 0, (*operations)[0].rect);
 }
 
 // Here are a few tests to check that shrink to fit doesn't mess up page count.
@@ -1015,57 +1072,6 @@ TEST_P(PrintContextTest, Canvas2DAutoFlushingSuppressed) {
   PrintSinglePage(canvas);
 }
 
-// For testing printing behavior when 2d canvases are gpu-accelerated.
-class PrintContextAcceleratedCanvasTest : public PrintContextTest {
- public:
-  void SetUp() override {
-    accelerated_canvas_scope_ =
-        std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
-    test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
-
-    PrintContextTest::SetUp();
-
-    GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
-  }
-
-  void TearDown() override {
-    // Call base class TeardDown first to ensure Canvas2DLayerBridge is
-    // destroyed before the TestContextProvider.
-    PrintContextTest::TearDown();
-
-    SharedGpuContext::Reset();
-    test_context_provider_ = nullptr;
-    accelerated_canvas_scope_ = nullptr;
-  }
-
- private:
-  scoped_refptr<viz::TestContextProvider> test_context_provider_;
-  std::unique_ptr<ScopedAccelerated2dCanvasForTest> accelerated_canvas_scope_;
-};
-
-INSTANTIATE_PAINT_TEST_SUITE_P(PrintContextAcceleratedCanvasTest);
-
-TEST_P(PrintContextAcceleratedCanvasTest, Canvas2DBeforePrint) {
-  MockPageContextCanvas canvas;
-  SetBodyInnerHTML("<canvas id='c' width=100 height=100></canvas>");
-  GetDocument().GetSettings()->SetScriptEnabled(true);
-  Element* const script_element =
-      GetDocument().CreateRawElement(html_names::kScriptTag);
-  script_element->setTextContent(
-      "window.addEventListener('beforeprint', (ev) => {"
-      "const ctx = document.getElementById('c').getContext('2d');"
-      "ctx.fillRect(0, 0, 10, 10);"
-      "ctx.fillRect(50, 50, 10, 10);"
-      "});");
-  GetDocument().body()->AppendChild(script_element);
-
-  // 2 fillRects.
-  EXPECT_CALL(canvas, onDrawRect(_, _)).Times(testing::Exactly(2));
-
-  PrintSinglePage(canvas);
-}
-
 namespace {
 
 class AcceleratedCompositingTestPlatform
@@ -1082,20 +1088,9 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
   void SetUp() override {
     accelerated_canvas_scope_ =
         std::make_unique<ScopedAccelerated2dCanvasForTest>(true);
-    std::unique_ptr<viz::TestGLES2Interface> gl_context =
-        std::make_unique<viz::TestGLES2Interface>();
-    gl_context->set_gpu_rasterization(true);
-    std::unique_ptr<viz::TestContextSupport> context_support =
-        std::make_unique<viz::TestContextSupport>();
-    std::unique_ptr<viz::TestRasterInterface> raster_interface =
-        std::make_unique<viz::TestRasterInterface>();
-    test_context_provider_ = base::MakeRefCounted<viz::TestContextProvider>(
-        std::move(context_support), std::move(gl_context),
-        std::move(raster_interface),
-        /*shared_image_interface=*/nullptr,
-        /*support_locking=*/false);
 
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
 
     PrintContextTest::SetUp();
     accelerated_compositing_scope_ = std::make_unique<
@@ -1105,8 +1100,6 @@ class PrintContextOOPRCanvasTest : public PrintContextTest {
   }
 
   void TearDown() override {
-    // Call base class TeardDown first to ensure Canvas2DLayerBridge is
-    // destroyed before the TestContextProvider.
     accelerated_compositing_scope_ = nullptr;
     test_context_provider_ = nullptr;
     SharedGpuContext::Reset();

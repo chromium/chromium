@@ -91,6 +91,8 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   bool clonable() const { return clonable_; }
   void setClonable(bool clonable) { clonable_ = clonable; }
 
+  void ProcessAdoptedStylesheetAttribute(AtomicString value);
+
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
@@ -135,6 +137,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
 
   void SetDelegatesFocus(bool flag) { delegates_focus_ = flag; }
@@ -180,15 +183,15 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return has_focusgroup_attribute_on_descendant_;
   }
 
-  void SetRegistry(CustomElementRegistry*);
-  CustomElementRegistry* registry() const { return registry_.Get(); }
-
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   void Trace(Visitor*) const override;
 
  private:
   friend class ReferenceTargetIdObserver;
+
+  HeapVector<Member<CSSStyleSheet>> GetFetchedStyleSheetsFromModuleMap(
+      const AtomicString& shadowrootadoptedstylesheets_attribute_value);
 
   void ChildrenChanged(const ChildrenChange&) override;
 
@@ -203,7 +206,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void ReferenceTargetChanged();
 
   Member<SlotAssignment> slot_assignment_;
-  Member<CustomElementRegistry> registry_;
   Member<ReferenceTargetIdObserver> reference_target_id_observer_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;

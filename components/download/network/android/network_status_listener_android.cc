@@ -41,8 +41,7 @@ void NetworkStatusListenerAndroid::Start(
   NetworkStatusListener::Start(observer);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_NetworkStatusListenerAndroid_create(
-                           env, reinterpret_cast<intptr_t>(this))
-                           .obj());
+                           env, reinterpret_cast<intptr_t>(this)));
 }
 
 void NetworkStatusListenerAndroid::Stop() {
@@ -60,3 +59,5 @@ NetworkStatusListenerAndroid::GetConnectionType() {
 }
 
 }  // namespace download
+
+DEFINE_JNI(NetworkStatusListenerAndroid)

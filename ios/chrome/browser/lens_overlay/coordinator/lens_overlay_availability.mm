@@ -33,8 +33,7 @@ bool IsLensOverlayAvailable(const PrefService* prefs) {
 
 bool IsLensOverlaySameTabNavigationEnabled(const PrefService* prefs) {
   bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-  return isIPhone && IsLensOverlayAvailable(prefs) &&
-         base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
+  return isIPhone && IsLensOverlayAvailable(prefs);
 }
 
 bool IsLVFUnifiedExperienceEnabled(const PrefService* prefs) {
@@ -52,6 +51,9 @@ bool IsLVFEscapeHatchEnabled(const PrefService* prefs) {
   if (isTablet) {
     return NO;
   }
-  return IsLensOverlayAvailable(prefs) &&
-         base::FeatureList::IsEnabled(kLensOverlayEnableLVFEscapeHatch);
+  return IsLensOverlayAvailable(prefs);
+}
+
+bool UseCustomLensOverlayBottomSheet() {
+  return base::FeatureList::IsEnabled(kLensOverlayCustomBottomSheet);
 }

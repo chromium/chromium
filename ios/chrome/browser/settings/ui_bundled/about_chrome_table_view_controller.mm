@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/about_chrome_table_view_controller.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/apple/foundation_util.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
@@ -21,11 +19,11 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/channel_info.h"
@@ -77,7 +75,6 @@ const CGFloat kDefaultHeight = 70;
   self.tableView.estimatedRowHeight = kDefaultHeight;
   self.tableView.sectionFooterHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionFooterHeight = kDefaultHeight;
-  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
 }
 
 #pragma mark - SettingsRootTableViewController
@@ -165,8 +162,8 @@ const CGFloat kDefaultHeight = 70;
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* messageText = l10n_util::GetNSString(IDS_IOS_VERSION_COPIED);
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.category = @"version copied";
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 

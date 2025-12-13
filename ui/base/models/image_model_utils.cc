@@ -9,13 +9,15 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
 namespace ui {
 
 // TODO(dpenning) consider parameterizing color choices for disabled defaults.
-ImageModel GetDefaultDisabledIconFromImageModel(ImageModel icon_model,
-                                                ColorProvider* color_provider) {
+ImageModel GetDefaultDisabledIconFromImageModel(
+    ImageModel icon_model,
+    const ColorProvider* color_provider) {
   if (icon_model.IsEmpty()) {
     return icon_model;
   }

@@ -7,8 +7,8 @@
 #include <array>
 
 #include "components/cbor/values.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/hmac.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"

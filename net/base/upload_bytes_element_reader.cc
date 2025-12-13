@@ -17,11 +17,6 @@ UploadBytesElementReader::UploadBytesElementReader(
 
 UploadBytesElementReader::~UploadBytesElementReader() = default;
 
-const UploadBytesElementReader*
-UploadBytesElementReader::AsBytesReader() const {
-  return this;
-}
-
 int UploadBytesElementReader::Init(CompletionOnceCallback callback) {
   offset_ = 0;
   return OK;

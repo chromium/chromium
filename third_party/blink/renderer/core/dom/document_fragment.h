@@ -44,6 +44,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
 
   void ParseHTML(const String&,
                  Element* context_element,
+                 CustomElementRegistry*,
                  ParserContentPolicy = kAllowScriptingContent);
   bool ParseXML(const String&,
                 Element* context_element,
@@ -83,6 +84,7 @@ class CORE_EXPORT DocumentFragment : public ContainerNode {
   Node* Clone(Document& factory,
               NodeCloningData& data,
               ContainerNode* append_to,
+              CustomElementRegistry* fallback_registry,
               ExceptionState& append_exception_state) const override;
   bool ChildTypeAllowed(NodeType) const override;
 

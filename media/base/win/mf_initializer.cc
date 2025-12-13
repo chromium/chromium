@@ -6,7 +6,6 @@
 
 #include <windows.h>
 
-#include <delayimp.h>
 #include <mfapi.h>
 #include <synchapi.h>
 
@@ -15,8 +14,13 @@
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/win/delayload_helpers.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/win/media_foundation_package_runtime_locator.h"
+
+class ScopedAllowBlockingForMediaFoundation : public base::ScopedAllowBlocking {
+};
 
 namespace {
 
@@ -33,6 +37,7 @@ static const char kMediaFoundationLoadFailedMessage[] =
 // sandbox initialization or it will always fail.
 bool LoadMediaFoundationLibraries() {
   static const bool kDidLoadSucceed = []() {
+    ScopedAllowBlockingForMediaFoundation allow_io_to_load_library;
     for (const wchar_t* mfdll : {L"mf.dll", L"mfplat.dll"}) {
       base::NativeLibraryLoadError error;
       if (!base::LoadSystemLibrary(mfdll, &error)) {
@@ -89,8 +94,9 @@ class MediaFoundationSession {
   ~MediaFoundationSession() {
     // The public documentation stating that it needs to have a corresponding
     // shutdown for all startups (even failed ones) is wrong.
-    if (has_media_foundation_)
+    if (has_media_foundation_) {
       MFShutdown();
+    }
   }
 
   bool has_media_foundation() const { return has_media_foundation_; }
@@ -99,62 +105,42 @@ class MediaFoundationSession {
   friend struct base::StaticMemorySingletonTraits<MediaFoundationSession>;
 
   MediaFoundationSession() {
-    auto hr = ResolveMediaFoundationDelayloads();
-    if (SUCCEEDED(hr)) {
+    HRESULT hr = E_FAIL;
+    if (ResolveMediaFoundationDelayloads()) {
       hr = MFStartup(MF_VERSION, MFSTARTUP_LITE);
+      has_media_foundation_ = hr == S_OK;
     }
-    has_media_foundation_ = hr == S_OK;
 
     LOG_IF(ERROR, !has_media_foundation_)
         << kMediaFoundationLoadFailedMessage
         << logging::SystemErrorCodeToString(hr);
   }
 
-  HRESULT ResolveMediaFoundationDelayloads() {
+  bool ResolveMediaFoundationDelayloads() {
     // Mitigate the issues caused by loading DLLs on a background thread; see
     // https://crbug.com/41464781. The DLLs should already be loaded on account
     // of `LoadMediaFoundationLibraries()`, but it is possible that resolving
     // the imports could lead to hard faults to page in the DLLs.
     SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-    // __HrLoadAllImportsForDll makes a case-sensitive comparison to the module
-    // names in the dll.
+    // LoadAllImportsForDll() makes a case-sensitive comparison to the module
+    // names in the dll's delayloaded dependent module list.
     // LINT.IfChange
-    for (const char* mfdll : {"MF.dll", "MFPlat.DLL"}) {
-      // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
-      HRESULT hr = E_FAIL;
-      __try {
-        hr = __HrLoadAllImportsForDll(mfdll);
-        if (hr == HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND)) {
-          // __HrLoadAllImportsForDll returns this exact value (FACILITY_WIN32)
-          // if the module is not found in the calling module's list of delay
-          // imports. This may be the case in the component build or in tests,
-          // where MF.dll may be delayloaded by some module other than
-          // chrome.dll or the test binary.
-          continue;
-        }
-      } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
-                      ? EXCEPTION_EXECUTE_HANDLER
-                      : EXCEPTION_CONTINUE_SEARCH) {
-        // Resolution of all imports failed; possibly because the module failed
-        // to load or because one or more imports was not found.
-        hr = ::GetExceptionCode();
-      }
-      // FACILITY_VISUALCPP is used for the exceptions raised by
-      // __delayLoadHelper2.
-      if (FAILED(hr)) {
-        if (HRESULT_FACILITY(hr) == FACILITY_VISUALCPP ||
-            HRESULT_FACILITY(hr) == FACILITY_WIN32) {
-          // Set the last-error code so that `PLOG` emits a human-readable
-          // string for it.
-          ::SetLastError(HRESULT_CODE(hr));
-        }
+    static constexpr base::cstring_view kDlls[] = {"MF.dll", "MFPlat.DLL"};
+    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+    for (const auto& mfdll : kDlls) {
+      // In tests the DLLs might not be direct deps of this module, so only
+      // report errors encountered when the DLLs are found but not loaded.
+      auto loaded = base::win::LoadAllImportsForDll(mfdll);
+      if (!loaded.has_value()) {
+        // Set error for PLOG.
+        ::SetLastError(HRESULT_CODE(loaded.error()));
         PLOG(ERROR) << kMediaFoundationLoadFailedMessage
                     << "Could not resolve imports for " << mfdll;
-        return hr;
+        return false;
       }
     }
-    return S_OK;
+    return true;
   }
 
   bool has_media_foundation_ = false;

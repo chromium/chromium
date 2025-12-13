@@ -16,7 +16,8 @@ namespace content {
 class FrameTreeNode;
 
 // PrerenderSubframeNavigationThrottle defers cross-origin subframe loading
-// during the main frame is in a prerendered state.
+// during the main frame is in a prerendered state unless the main frame
+// has `Supports-Loading-Mode: prerender-cross-origin-frames` header.
 class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
                                             public PrerenderHost::Observer,
                                             public WebContentsObserver {
@@ -45,11 +46,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
 
   ThrottleCheckResult WillStartOrRedirectRequest();
 
-  // Called when this throttle defers a navigation. Observes the PrerenderHost
-  // so that the throttle can resume the navigation upon activation, and returns
-  // ThrottleCheckResult::DEFER. If it's not feasible to defer it, returns
-  // Throttlecheckresult::CANCEL.
-  ThrottleCheckResult DeferOrCancelCrossOriginSubframeNavigation(
+  ThrottleCheckResult DecidePolicyForCrossOriginSubframeNavigation(
       const FrameTreeNode& frame_tree_node);
 
   bool is_deferred_ = false;

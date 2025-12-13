@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "device/base/features.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 #include "services/device/public/cpp/device_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -23,11 +23,11 @@ namespace {
 // services/device/public/cpp/device_features.h or in other locations in the
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &device::kWebAuthnAndroidPasskeyCacheMigration,
+    &device::kWebAuthnAndroidSignal,
+    &device::kWebAuthnImmediateGet,
     &device::kWebAuthnPasskeyUpgrade,
     &kGenericSensorExtraClasses,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
-    &device::features::kBluetoothRfcommAndroid,
     &device::features::kGmsCoreLocationRequestParamOverride};
 
 // static
@@ -44,3 +44,5 @@ static jlong JNI_DeviceFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace features
+
+DEFINE_JNI(DeviceFeatureMap)

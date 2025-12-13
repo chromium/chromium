@@ -15,8 +15,6 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -24,11 +22,20 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::WebContents;
 using content::WebContentsObserver;
@@ -48,12 +55,15 @@ WebAuthFlow::WebAuthFlow(
       profile_(profile),
       provider_url_(provider_url),
       mode_(mode),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       user_gesture_(user_gesture),
+#endif
       abort_on_load_for_non_interactive_(abort_on_load_for_non_interactive),
       timeout_for_non_interactive_(timeout_for_non_interactive),
       non_interactive_timeout_timer_(std::make_unique<base::OneShotTimer>()),
       popup_bounds_(popup_bounds) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("identity", "WebAuthFlow", this);
+  TRACE_EVENT_BEGIN("identity", "WebAuthFlow",
+                    perfetto::Track::FromPointer(this));
   if (timeout_for_non_interactive_) {
     DCHECK_GE(*timeout_for_non_interactive_, base::TimeDelta());
     DCHECK_LE(*timeout_for_non_interactive_, base::Minutes(1));
@@ -78,7 +88,7 @@ WebAuthFlow::~WebAuthFlow() {
   // below may generate notifications.
   WebContentsObserver::Observe(nullptr);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("identity", "WebAuthFlow", this);
+  TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this));
 }
 
 void WebAuthFlow::SetClockForTesting(
@@ -139,6 +149,7 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   if (Browser::GetCreationStatusForProfile(profile_) !=
       Browser::CreationStatus::kOk) {
@@ -162,6 +173,11 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   browser->window()->Show();
   return true;
 }
+#else
+bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
+  return false;
+}
+#endif
 
 void WebAuthFlow::BeforeUrlLoaded(const GURL& url) {
   if (delegate_) {
@@ -308,15 +324,16 @@ void WebAuthFlow::DidFinishNavigation(
       // response headers.
     } else {
       failed = true;
-      TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-          "identity", "DidFinishNavigationFailure", this, "error_code",
-          navigation_handle->GetNetErrorCode());
+      TRACE_EVENT_INSTANT("identity", "DidFinishNavigationFailure",
+                          perfetto::Track::FromPointer(this), "error_code",
+                          navigation_handle->GetNetErrorCode());
     }
   } else if (navigation_handle->GetResponseHeaders() &&
              navigation_handle->GetResponseHeaders()->response_code() >= 400) {
     failed = true;
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
-        "identity", "DidFinishNavigationFailure", this, "response_code",
+    TRACE_EVENT_INSTANT(
+        "identity", "DidFinishNavigationFailure",
+        perfetto::Track::FromPointer(this), "response_code",
         navigation_handle->GetResponseHeaders()->response_code());
   }
 

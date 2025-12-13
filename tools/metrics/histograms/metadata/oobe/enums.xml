@@ -181,6 +181,12 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Unknown"/>
 </enum>
 
+<enum name="OobeNotCompletedErrorTrigger">
+  <int value="0" label="PerformOOBECompletedAction"/>
+  <int value="1" label="GaiaScreen"/>
+  <int value="2" label="ExistingUserController"/>
+</enum>
+
 <enum name="OobeWebViewLoadResult">
   <int value="0" label="Success"/>
   <int value="1" label="Load timeout"/>

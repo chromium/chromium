@@ -1,0 +1,6 @@
+include_rules = [
+  # go/keep-sorted start
+  "+components/wallet/content/browser",
+  "+components/wallet/core/browser",
+  # go/keep-sorted end
+]

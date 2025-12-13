@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 #import <UIKit/UIKit.h>
 #import <stddef.h>
+
+#import <array>
 
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -23,21 +20,24 @@ TEST_F(UIUtilTest, AlignToPixel) {
   // Pick a few interesting values: already aligned, aligned on retina, and
   // some unaligned values that would round differently. Ensure that all are
   // "integer" values within <1 of the original value in the scaled space.
-  CGFloat test_values[] = {10.0, 55.5, 3.14159, 2.71828};
-  const CGFloat kMaxAlignDelta = 0.9999;
-  size_t value_count = std::size(test_values);
-  for (unsigned int i = 0; i < value_count; ++i) {
-    CGFloat aligned = AlignValueToPixel(test_values[i]);
-    EXPECT_FLOAT_EQ(aligned * scale, floor(aligned * scale));
-    EXPECT_NEAR(aligned * scale, test_values[i] * scale, kMaxAlignDelta);
+  static constexpr auto kTestValues = std::to_array<CGPoint>({
+      {10.0, 55.5},
+      {55.5, 3.14159},
+      {3.14159, 2.71828},
+      {2.71828, 10.0},
+  });
 
-    CGFloat x = test_values[i];
-    CGFloat y = test_values[(i + 1) % value_count];
-    CGPoint alignedPoint = AlignPointToPixel(CGPointMake(x, y));
+  const CGFloat kMaxAlignDelta = 0.9999;
+  for (const CGPoint point : kTestValues) {
+    const CGFloat alignedX = AlignValueToPixel(point.x);
+    EXPECT_FLOAT_EQ(alignedX * scale, floor(alignedX * scale));
+    EXPECT_NEAR(alignedX * scale, point.x * scale, kMaxAlignDelta);
+
+    const CGPoint alignedPoint = AlignPointToPixel(point);
     EXPECT_FLOAT_EQ(floor(alignedPoint.x * scale), alignedPoint.x * scale);
     EXPECT_FLOAT_EQ(floor(alignedPoint.y * scale), alignedPoint.y * scale);
-    EXPECT_NEAR(x * scale, alignedPoint.x * scale, kMaxAlignDelta);
-    EXPECT_NEAR(y * scale, alignedPoint.y * scale, kMaxAlignDelta);
+    EXPECT_NEAR(point.x * scale, alignedPoint.x * scale, kMaxAlignDelta);
+    EXPECT_NEAR(point.y * scale, alignedPoint.y * scale, kMaxAlignDelta);
   }
 }
 

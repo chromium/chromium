@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 

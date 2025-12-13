@@ -6,11 +6,13 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/chrome_coordinator+fullscreen_disabling.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
 #import "ios/chrome/browser/sad_tab/ui_bundled/sad_tab_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/browser/web/model/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
 
 @interface SadTabCoordinator () <SadTabViewControllerDelegate,
@@ -37,8 +40,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _dependencyInstallerBridge.StartObserving(
-        self, browser->GetWebStateList(),
-        TabsDependencyInstaller::Policy::kOnlyRealized);
+        self, browser, TabsDependencyInstaller::Policy::kOnlyRealized);
   }
   return self;
 }
@@ -123,6 +125,28 @@
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
       openURLInNewTab:command];
+}
+
+- (UIMenu*)sadTabViewController:(SadTabViewController*)sadTabViewController
+    contextMenuConfigurationForURL:(const GURL&)URL {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return nil;
+  }
+
+  web::ContextMenuParams params;
+  params.link_url = URL;
+  params.view = sadTabViewController.view;
+
+  UIMenu* menu = [self.contextMenuProvider
+      contextMenuForWebState:webState
+                      params:params
+                    scenario:kMenuScenarioHistogramSadTab];
+  if (menu) {
+    [self.contextMenuProvider recordMenuShown:kMenuScenarioHistogramSadTab];
+  }
+  return menu;
 }
 
 - (void)sadTabViewControllerReload:(SadTabViewController*)sadTabViewController {

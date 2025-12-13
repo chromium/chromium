@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -41,12 +42,14 @@ int AFunctionForTest() {
 class IsolatedModule : public ModuleCache::Module {
  public:
   explicit IsolatedModule(bool is_native = true)
-      : is_native_(is_native), memory_region_(new char[kRegionSize]) {}
+      : is_native_(is_native),
+        memory_region_(base::HeapArray<char>::Uninit(kRegionSize)) {}
 
   // ModuleCache::Module
   uintptr_t GetBaseAddress() const override {
     // Place the module in the middle of the region.
-    return reinterpret_cast<uintptr_t>(&memory_region_[kRegionSize / 4]);
+    return reinterpret_cast<uintptr_t>(
+        memory_region_.subspan(kRegionSize / 4).data());
   }
 
   std::string GetId() const override { return ""; }
@@ -58,7 +61,7 @@ class IsolatedModule : public ModuleCache::Module {
   static const int kRegionSize = 100;
 
   bool is_native_;
-  std::unique_ptr<char[]> memory_region_;
+  base::HeapArray<char> memory_region_;
 };
 
 // Provides a fake module with configurable base address and size.

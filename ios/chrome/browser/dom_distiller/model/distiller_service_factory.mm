@@ -29,12 +29,11 @@ DistillerServiceFactory::DistillerServiceFactory()
 DistillerServiceFactory::~DistillerServiceFactory() {}
 
 std::unique_ptr<KeyedService> DistillerServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   auto distiller_url_fetcher_factory =
       std::make_unique<dom_distiller::DistillerURLFetcherFactory>(
-          context->GetSharedURLLoaderFactory());
+          profile->GetSharedURLLoaderFactory());
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   dom_distiller::proto::DomDistillerOptions options;
   return std::make_unique<DistillerService>(
       std::make_unique<dom_distiller::DistillerFactoryImpl>(

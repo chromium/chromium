@@ -13,7 +13,10 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/launch_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -46,13 +49,13 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
     // app's menu on the NTP provides a UI to set this preference.
     LaunchType prefs_launch_type = GetLaunchType(prefs, extension);
 
-    if (prefs_launch_type == LAUNCH_TYPE_WINDOW) {
+    if (prefs_launch_type == LaunchType::kWindow) {
       // If the pref is set to launch a window (or no pref is set, and
       // window opening is the default), make the container a window.
       result = apps::LaunchContainer::kLaunchContainerWindow;
 #if BUILDFLAG(IS_CHROMEOS)
-    } else if (prefs_launch_type == LAUNCH_TYPE_FULLSCREEN) {
-      // LAUNCH_TYPE_FULLSCREEN launches in a maximized app window in ash.
+    } else if (prefs_launch_type == LaunchType::kFullscreen) {
+      // LaunchType::kFullscreen launches in a maximized app window in ash.
       // For desktop chrome AURA on all platforms we should open the
       // application in full screen mode in the current tab, on the same
       // lines as non AURA chrome.

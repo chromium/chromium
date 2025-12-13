@@ -13,8 +13,11 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/performance_controls/test_support/battery_saver_browser_test_mixin.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -29,7 +32,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_utils.h"
@@ -50,7 +52,7 @@ class BatterySaverHelpPromoTest
 
   user_education::FeaturePromoControllerCommon* GetFeaturePromoController() {
     return static_cast<user_education::FeaturePromoControllerCommon*>(
-        BrowserUserEducationInterface::From(browser())
+        UserEducationServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetFeaturePromoControllerForTesting());
   }
 };
@@ -69,11 +71,10 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
   EXPECT_TRUE(promo_active);
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
-  views::View* const battery_saver_button_view =
-      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kToolbarBatterySaverButtonElementId,
-          browser()->window()->GetElementContext());
-  PressButton(static_cast<views::Button*>(battery_saver_button_view));
+  auto* const battery_saver_button =
+      BrowserElementsViews::From(browser())->GetViewAs<views::Button>(
+          kToolbarBatterySaverButtonElementId);
+  PressButton(battery_saver_button);
   destroyed_waiter.Wait();
 }
 
@@ -111,11 +112,9 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, PromoCustomActionClicked) {
 
   content::TestNavigationObserver navigation_observer(
       browser()->tab_strip_model()->GetWebContentsAt(0));
-  auto* const button = views::ElementTrackerViews::GetInstance()
-                           ->GetFirstMatchingViewAs<views::Button>(
-                               user_education::HelpBubbleView::
-                                   kFirstNonDefaultButtonIdForTesting,
-                               browser()->window()->GetElementContext());
+  auto* const button =
+      BrowserElementsViews::From(browser())->GetViewAs<views::Button>(
+          user_education::HelpBubbleView::kFirstNonDefaultButtonIdForTesting);
   PressButton(button);
   navigation_observer.Wait();
 

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 
 #include <ostream>
 #include <queue>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -252,7 +248,8 @@ void SkeletonGenerator::AddSkeletonMapping(const icu::UnicodeString& host,
   icu::UnicodeString host_alt(host);
   size_t length = host_alt.length();
   char16_t* buffer = host_alt.getBuffer(-1);
-  for (char16_t* uc = buffer + src_pos; uc < buffer + length; ++uc) {
+  for (char16_t* uc = UNSAFE_TODO(buffer + src_pos);
+       uc < UNSAFE_TODO(buffer + length); UNSAFE_TODO(++uc)) {
     if (*uc == src_char) {
       *uc = mapped_char;
     }
@@ -290,7 +287,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
   // bail out early to avoid running the skeleton generation for too long.
   size_t characters_with_multiple_skeletons = 0;
   for (size_t i = 0; i < input_length; i++) {
-    char16_t c = input_buffer[i];
+    char16_t c = UNSAFE_TODO(input_buffer[i]);
     const auto it = mapping.find(c);
     if (it != mapping.end()) {
       characters_with_multiple_skeletons++;
@@ -323,7 +320,7 @@ base::flat_set<std::u16string> SkeletonGenerator::GenerateSupplementalHostnames(
     }
 
     // First, add the original character from input.
-    char16_t c = input_buffer[current.size()];
+    char16_t c = UNSAFE_TODO(input_buffer[current.size()]);
     QueueItem new_item1 = current;
     new_item1.emplace_back(1, c);
     q.push(new_item1);

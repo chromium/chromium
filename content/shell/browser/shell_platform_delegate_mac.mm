@@ -21,7 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 // Receives notification that the window is closing so that it can start the
@@ -82,7 +82,7 @@
 
 namespace {
 
-NSString* kWindowTitle = @"Content Shell";
+NSString* const kWindowTitle = @"Content Shell";
 
 // Layout constants (in view coordinates)
 const CGFloat kButtonWidth = 72;
@@ -295,7 +295,8 @@ void ShellPlatformDelegate::SetTitle(Shell* shell,
   shell_data.delegate.window.title = base::SysUTF16ToNSString(title);
 }
 
-void ShellPlatformDelegate::MainFrameCreated(Shell* shell) {}
+void ShellPlatformDelegate::MainFrameCreated(Shell* shell,
+                                             RenderFrameHost* main_frame) {}
 
 bool ShellPlatformDelegate::DestroyShell(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));

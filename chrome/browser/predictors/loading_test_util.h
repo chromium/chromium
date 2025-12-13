@@ -4,7 +4,6 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LOADING_TEST_UTIL_H_
 #define CHROME_BROWSER_PREDICTORS_LOADING_TEST_UTIL_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>

@@ -26,7 +26,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::Return;
 
 namespace segmentation_platform {
@@ -256,7 +255,7 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   service_proxy_impl_->SetExecutionService(&execution_);
   EXPECT_CALL(*mock_executor, ExecuteModel(_))
       .Times(1)
-      .WillOnce(Invoke([this](std::unique_ptr<ExecutionRequest> req) {
+      .WillOnce([this](std::unique_ptr<ExecutionRequest> req) {
         configs_.at(0)->segments.insert(
             {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
              std::make_unique<Config::SegmentMetadata>("UmaName")});
@@ -271,7 +270,7 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
         std::move(req->callback)
             .Run(std::make_unique<ModelExecutionResult>(
                 ModelExecutionStatus::kExecutionError));
-      }));
+      });
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 

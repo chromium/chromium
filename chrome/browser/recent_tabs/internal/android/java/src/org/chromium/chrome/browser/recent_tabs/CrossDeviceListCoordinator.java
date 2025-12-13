@@ -11,12 +11,10 @@ import android.widget.ListView;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.recent_tabs.ui.CrossDevicePaneView;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -27,7 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class CrossDeviceListCoordinator {
     private final CrossDevicePaneView mView;
     private final CrossDeviceListMediator mCrossDeviceListMediator;
-    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     /**
      * @param context Used to load resources and views.
@@ -49,11 +47,9 @@ public class CrossDeviceListCoordinator {
         PropertyModelChangeProcessor.create(model, mView, CrossDeviceListViewBinder::bind);
 
         mCrossDeviceListMediator = new CrossDeviceListMediator(listItems, model);
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mEdgeToEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            listView, edgeToEdgeSupplier);
-        }
+        mEdgeToEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        listView, edgeToEdgeSupplier);
     }
 
     /** Returns the root view of this component. */

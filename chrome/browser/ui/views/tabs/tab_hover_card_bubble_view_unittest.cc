@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/tabs/filename_elider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -178,7 +179,9 @@ const ElideImplTestParams kElideImplTestParams[]{
 
 class TabHoverCardBubbleViewFilenameEliderElideImplTest
     : public TabHoverCardBubbleViewFilenameEliderTest,
-      public testing::TestWithParam<ElideImplTestParams> {};
+      public testing::TestWithParam<ElideImplTestParams> {
+  void SetUp() override { skia::InitializeFontRendering(); }
+};
 
 INSTANTIATE_TEST_SUITE_P(,
                          TabHoverCardBubbleViewFilenameEliderElideImplTest,
@@ -281,7 +284,9 @@ const ElideTestParams kElideTestParams[]{
 
 class TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest
     : public TabHoverCardBubbleViewFilenameEliderTest,
-      public testing::TestWithParam<ElideTestParams> {};
+      public testing::TestWithParam<ElideTestParams> {
+  void SetUp() override { skia::InitializeFontRendering(); }
+};
 
 INSTANTIATE_TEST_SUITE_P(,
                          TabHoverCardBubbleViewFilenameEliderGetLineLengthsTest,
@@ -354,7 +359,9 @@ const FindImageDimensionsTestParams kFindImageDimensionsTestParams[]{
 
 class TabHoverCardBubbleViewFilenameEliderFindImageDimensionsTest
     : public TabHoverCardBubbleViewFilenameEliderTest,
-      public testing::TestWithParam<FindImageDimensionsTestParams> {};
+      public testing::TestWithParam<FindImageDimensionsTestParams> {
+  void SetUp() override { skia::InitializeFontRendering(); }
+};
 
 INSTANTIATE_TEST_SUITE_P(
     ,

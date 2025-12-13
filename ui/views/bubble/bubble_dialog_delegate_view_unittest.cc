@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -35,6 +36,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
@@ -63,7 +65,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
 
  public:
-  explicit TestBubbleDialogDelegateView(View* anchor_view)
+  explicit TestBubbleDialogDelegateView(BubbleAnchor anchor_view)
       : BubbleDialogDelegateView(anchor_view,
                                  BubbleBorder::TOP_LEFT,
                                  BubbleBorder::NO_SHADOW,
@@ -175,7 +177,10 @@ class WidgetWithNonNullThemeProvider : public Widget {
 
 class BubbleDialogDelegateViewTest : public ViewsTestBase {
  public:
-  BubbleDialogDelegateViewTest() = default;
+  BubbleDialogDelegateViewTest() {
+    feature_list_.InitAndEnableFeature(features::kBubbleMetricsApi);
+  }
+
   BubbleDialogDelegateViewTest(const BubbleDialogDelegateViewTest&) = delete;
   BubbleDialogDelegateViewTest& operator=(const BubbleDialogDelegateViewTest&) =
       delete;
@@ -198,7 +203,10 @@ class BubbleDialogDelegateViewTest : public ViewsTestBase {
 
 class BubbleUmaLoggerTest : public ViewsTestBase {
  public:
-  BubbleUmaLoggerTest() = default;
+  BubbleUmaLoggerTest() {
+    feature_list_.InitAndEnableFeature(features::kBubbleMetricsApi);
+  }
+
   BubbleUmaLoggerTest(const BubbleUmaLoggerTest&) = delete;
   BubbleUmaLoggerTest& operator=(const BubbleUmaLoggerTest&) = delete;
 
@@ -879,17 +887,14 @@ const int kScreenHeight = 768;
 struct ArrowTestParameters {
   views::BubbleBorder::Arrow arrow;
   bool adjust_if_offscreen;
-  gfx::Rect anchor_rect;
+  gfx::Rect anchor_rect_in_window;
   views::BubbleBorder::Arrow expected_arrow;
 
-  gfx::Size ExpectedSpace() const {
-    gfx::Rect adjusted_anchor_rect = anchor_rect;
-    adjusted_anchor_rect.Offset(
-        0, ViewsTestBase::GetSystemReservedHeightAtTopOfScreen());
+  gfx::Size ExpectedSpace(gfx::Rect anchor_rect_in_screen) const {
     gfx::Rect screen_rect = gfx::Rect(0, 0, kScreenWidth, kScreenHeight);
 
     return BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
-        expected_arrow, adjusted_anchor_rect, screen_rect);
+        expected_arrow, anchor_rect_in_screen, screen_rect);
   }
 };
 
@@ -947,14 +952,30 @@ TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
   bubble_delegate->SetArrow(kParam.arrow);
   bubble_delegate->set_adjust_if_offscreen(kParam.adjust_if_offscreen);
   anchor_widget->GetContentsView()->SetBounds(
-      kParam.anchor_rect.x(), kParam.anchor_rect.y(),
-      kParam.anchor_rect.width(), kParam.anchor_rect.height());
+      kParam.anchor_rect_in_window.x(),
+      kParam.anchor_rect_in_window.y(),
+      kParam.anchor_rect_in_window.width(),
+      kParam.anchor_rect_in_window.height());
+  gfx::Rect anchor_rect_in_screen =
+      bubble_delegate->GetAnchorView()->GetBoundsInScreen();
   gfx::Size available_space =
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
           bubble_delegate->GetAnchorView(), bubble_delegate->arrow(),
           bubble_delegate->adjust_if_offscreen(),
           BubbleFrameView::PreferredArrowAdjustment::kMirror);
-  EXPECT_EQ(available_space, kParam.ExpectedSpace());
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
+
+  // Repeat via TrackedElement.
+  ui::TrackedElement* as_tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(
+          bubble_delegate->GetAnchorView(),
+          /*assign_temporary_id=*/true);
+  available_space =
+      BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
+          as_tracked_element, bubble_delegate->arrow(),
+          bubble_delegate->adjust_if_offscreen(),
+          BubbleFrameView::PreferredArrowAdjustment::kMirror);
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
 }
 
 const int kAnchorFarRightX = 840;
@@ -1058,6 +1079,48 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
       BubbleDialogDelegateView::CreateBubble(std::move(alert_bubble_delegate));
   alert_bubble_widget->Show();
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
+}
+
+// Tests that GetAnchorRect() properly updates from a TrackedElement's
+// GetScreenBounds() when the element is set as the anchor.
+TEST_F(BubbleDialogDelegateViewTest, TrackedElementAnchorUpdates) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
+
+  // Create an anchor widget with a tracked view.
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  View* anchor_view = anchor_widget->GetContentsView();
+  anchor_view->SetProperty(kElementIdentifierKey, kTestElementId);
+
+  // Set initial bounds for the anchor view.
+  const gfx::Rect initial_bounds(100, 150, 50, 60);
+  anchor_view->SetBoundsRect(initial_bounds);
+  anchor_widget->Show();
+
+  // Get the TrackedElement for the view.
+  ui::TrackedElement* tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(anchor_view);
+  ASSERT_TRUE(tracked_element);
+
+  // Create a bubble anchored to the tracked element.
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(tracked_element);
+  bubble_delegate->set_close_on_deactivate(false);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  // Verify the anchor rect matches the tracked element's screen bounds.
+  const gfx::Rect initial_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(initial_screen_bounds, bubble_delegate->GetAnchorRect());
+
+  // Update the anchor view's bounds.
+  const gfx::Rect updated_bounds(200, 250, 70, 80);
+  anchor_view->SetBoundsRect(updated_bounds);
+
+  // Verify GetAnchorRect() returns the updated bounds.
+  const gfx::Rect updated_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(updated_screen_bounds, bubble_delegate->GetAnchorRect());
 }
 
 // Anchoring Tests -------------------------------------------------------------

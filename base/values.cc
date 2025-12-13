@@ -378,6 +378,10 @@ size_t DictValue::size() const {
   return storage_.size();
 }
 
+void DictValue::reserve(size_t capacity) {
+  return storage_.reserve(capacity);
+}
+
 DictValue::iterator DictValue::begin() {
   return iterator(storage_.begin());
 }
@@ -543,6 +547,11 @@ ListValue* DictValue::EnsureList(std::string_view key) {
 }
 
 Value* DictValue::Set(std::string_view key, Value&& value) & {
+  // These methods should typically be modified together:
+  // Value* DictValue::Set(std::string_view key, Value&& value) &
+  // DictValue::Set_HintAtEnd(std::string_view key, Value&& value) &
+  // DictValue&& DictValue::Set(std::string_view key, Value&& value) &&
+
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
 
   auto wrapped_value = std::make_unique<Value>(std::move(value));
@@ -595,7 +604,26 @@ Value* DictValue::Set(std::string_view key, ListValue&& value) & {
   return Set(key, Value(std::move(value)));
 }
 
+Value* DictValue::Set_HintAtEnd(std::string_view key, Value&& value) & {
+  // These methods should typically be modified together:
+  // Value* DictValue::Set(std::string_view key, Value&& value) &
+  // DictValue::Set_HintAtEnd(std::string_view key, Value&& value) &
+  // DictValue&& DictValue::Set(std::string_view key, Value&& value) &&
+
+  DCHECK(IsStringUTF8AllowingNoncharacters(key));
+
+  auto wrapped_value = std::make_unique<Value>(std::move(value));
+  auto* raw_value = wrapped_value.get();
+  storage_.insert_or_assign(storage_.end(), key, std::move(wrapped_value));
+  return raw_value;
+}
+
 DictValue&& DictValue::Set(std::string_view key, Value&& value) && {
+  // These methods should typically be modified together:
+  // Value* DictValue::Set(std::string_view key, Value&& value) &
+  // DictValue::Set_HintAtEnd(std::string_view key, Value&& value) &
+  // DictValue&& DictValue::Set(std::string_view key, Value&& value) &&
+
   DCHECK(IsStringUTF8AllowingNoncharacters(key));
   storage_.insert_or_assign(key, std::make_unique<Value>(std::move(value)));
   return std::move(*this);

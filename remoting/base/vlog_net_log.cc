@@ -44,9 +44,7 @@ VlogNetLogObserver::~VlogNetLogObserver() = default;
 
 void VlogNetLogObserver::OnAddEntry(const net::NetLogEntry& entry) {
   base::Value::Dict value = entry.ToDict();
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  VLOG(4) << json;
+  VLOG(4) << base::WriteJson(value).value_or("");
 }
 
 }  // namespace

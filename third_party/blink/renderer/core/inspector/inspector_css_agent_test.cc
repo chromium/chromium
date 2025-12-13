@@ -12,7 +12,13 @@
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/inspector/inspected_frames.h"
+#include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
+#include "third_party/blink/renderer/core/inspector/inspector_resource_container.h"
+#include "third_party/blink/renderer/core/inspector/inspector_resource_content_loader.h"
 #include "third_party/blink/renderer/core/inspector/inspector_style_resolver.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -41,13 +47,51 @@ class InspectorCSSAgentTest : public PageTestBase {
                                              ASSERT_NO_EXCEPTION);
     CHECK(e);
     InspectorStyleResolver resolver(e, kPseudoIdNone,
-                                    /*view_transition_name=*/g_null_atom);
+                                    /*pseudo_argument=*/g_null_atom);
 
     HeapHashMap<Member<const ScopedCSSName>, Member<CSSFunctionRule>>
         function_rules;
     InspectorCSSAgent::CollectReferencedFunctionRules(
         sheets, *resolver.MatchedRules(), function_rules);
     return function_rules;
+  }
+
+  InspectorCSSAgent* CreateInspectorCSSAgent() {
+    LocalFrame* frame = GetDocument().GetFrame();
+    InspectedFrames* inspected_frames =
+        MakeGarbageCollected<InspectedFrames>(frame);
+    InspectorCSSAgent* agent = MakeGarbageCollected<InspectorCSSAgent>(
+        MakeGarbageCollected<InspectorDOMAgent>(
+            GetDocument().GetExecutionContext()->GetIsolate(), inspected_frames,
+            nullptr),
+        inspected_frames,
+        MakeGarbageCollected<InspectorNetworkAgent>(inspected_frames, nullptr,
+                                                    nullptr),
+        MakeGarbageCollected<InspectorResourceContentLoader>(
+            GetDocument().GetFrame()),
+        MakeGarbageCollected<InspectorResourceContainer>(inspected_frames));
+    agent->UpdateActiveStyleSheets(&GetDocument());
+    return agent;
+  }
+
+  using FontAtRules =
+      std::unique_ptr<protocol::Array<protocol::CSS::CSSAtRule>>;
+  FontAtRules CollectFontAtRules(const char* selector,
+                                 std::vector<PseudoId> pseudo_ids) {
+    Element* e = GetDocument().querySelector(AtomicString(selector),
+                                             ASSERT_NO_EXCEPTION);
+    CHECK(e);
+    HeapVector<Member<Element>> elements = {e};
+    for (PseudoId pseudo_id : pseudo_ids) {
+      Element* pseudo_element = e->GetPseudoElement(pseudo_id);
+      CHECK(pseudo_element);
+      elements.push_back(pseudo_element);
+    }
+    return CreateInspectorCSSAgent()->FontAtRulesForNodes(elements);
+  }
+
+  FontAtRules CollectFontAtRules(const char* selector) {
+    return CollectFontAtRules(selector, {});
   }
 
   CSSFunctionRule* FindFunctionRule(
@@ -403,6 +447,501 @@ TEST_F(InspectorCSSAgentTest, SameFunctionNamesAcrossShadows) {
   EXPECT_FALSE(FindFunctionRule(
       function_rules, MakeGarbageCollected<ScopedCSSName>(AtomicString("--b"),
                                                           document_scope)));
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFaceRule) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-face {
+        font-family: Bixa;
+        src: local(Bixa);
+      }
+      #e {
+        font-family: Bixa;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFace);
+  EXPECT_FALSE(rules->at(0)->getSubsection());
+  EXPECT_FALSE(rules->at(0)->getName());
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "font-family");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
+            "Bixa");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
+            "src");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
+            "local(Bixa)");
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFaceRuleNoMatch) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-face {
+        font-family: Bixa;
+        src: local(Bixa);
+      }
+      #e {
+        font-family: Papyrus;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(0u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFaceRuleFromPseudoElement) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-face {
+        font-family: Bixa;
+        src: local(Bixa);
+      }
+      #e {
+        font-family: Papyrus;
+      }
+      #e::before {
+        content: "before";
+        font-family: Bixa;
+      }
+      #e::after {
+        content: "after";
+        font-family: Bixa;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules(
+      "#e", {PseudoId::kPseudoIdBefore, PseudoId::kPseudoIdAfter});
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFace);
+  EXPECT_FALSE(rules->at(0)->getSubsection());
+  EXPECT_FALSE(rules->at(0)->getName());
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "font-family");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
+            "Bixa");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
+            "src");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
+            "local(Bixa)");
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRule) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-palette-values --palette {
+        font-family: Bixa;
+        override-colors: 0 red;
+      }
+      #e {
+        font-family: Bixa;
+        font-palette: --palette;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontPaletteValues);
+  EXPECT_FALSE(rules->at(0)->getSubsection());
+  EXPECT_TRUE(rules->at(0)->getName());
+  EXPECT_EQ(rules->at(0)->getName()->getText(), "--palette");
+  // The backend currently reports these twice, once with source info and once
+  // without.
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "font-family");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
+            "Bixa");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
+            "override-colors");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
+            "0 red");
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRuleNoMatchPalette) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-palette-values --palette {
+        font-family: Bixa;
+        override-colors: 0 red;
+      }
+      #e {
+        font-family: Bixa;
+        font-palette: --other-palette;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(0u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRuleNoMatchFont) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-palette-values --palette {
+        font-family: Bixa;
+        override-colors: 0 red;
+      }
+      #e {
+        font-family: Papyrus;
+        font-palette: --palette;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(0u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontPaletteValuesRuleFromPseudoElement) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-palette-values --palette {
+        font-family: Bixa;
+        override-colors: 0 red;
+      }
+      #e {
+        font-family: Bixa;
+      }
+      #e::before {
+        content: "before";
+        font-palette: --palette;
+      }
+      #e::after {
+        content: "after";
+        font-palette: --palette;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules(
+      "#e", {PseudoId::kPseudoIdBefore, PseudoId::kPseudoIdAfter});
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontPaletteValues);
+  EXPECT_FALSE(rules->at(0)->getSubsection());
+  EXPECT_TRUE(rules->at(0)->getName());
+  EXPECT_EQ(rules->at(0)->getName()->getText(), "--palette");
+  // The backend currently reports these twice, once with source info and once
+  // without.
+  EXPECT_GE(rules->at(0)->getStyle()->getCssProperties()->size(), 2u);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "font-family");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
+            "Bixa");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getName(),
+            "override-colors");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(1)->getValue(),
+            "0 red");
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleSwash) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @swash {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: swash(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Swash);
+  EXPECT_TRUE(rules->at(0)->getName());
+  EXPECT_EQ(rules->at(0)->getName()->getText(), "Bixa");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "fancy");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getValue(),
+            "1");
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleNoMatchFont) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @swash {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Papyrus;
+        font-variant-alternates: swash(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(0u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleNoMatchFeature) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @swash {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: styleset(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(0u, rules->size());
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleAnnotation) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @annotation {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: annotation(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Annotation);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleOrnaments) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @ornaments {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: ornaments(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Ornaments);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleStylistic) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @stylistic {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: stylistic(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Stylistic);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleStyleset) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @styleset {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: styleset(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Styleset);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleCharacterVariant) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @character-variant {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: character-variant(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::CharacterVariant);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleMultipleFamilies) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa, Papyrus {
+        @character-variant {
+          fancy: 1;
+        }
+      }
+      #e {
+        font-family: Papyrus;
+        font-variant-alternates: character-variant(fancy);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(1u, rules->size());
+  EXPECT_EQ(rules->at(0)->getType(),
+            protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::CharacterVariant);
+  EXPECT_TRUE(rules->at(0)->getName());
+  EXPECT_EQ(rules->at(0)->getName()->getText(), "Bixa, Papyrus");
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->size(), 1u);
+}
+
+TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleMultipleFeatures) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <style>
+      @font-feature-values Bixa {
+        @swash {
+          fancy: 1;
+        }
+        @ornaments {
+          nope: 3;
+        }
+      }
+      @font-feature-values Bixa {
+        @swash {
+          swishy: 4;
+        }
+        @annotation {
+          extra: 5;
+        }
+      }
+      #e {
+        font-family: Bixa;
+        font-variant-alternates: swash(swishy) historical-forms annotation(extra) character-variant(oops);
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  FontAtRules rules = CollectFontAtRules("#e");
+  EXPECT_TRUE(rules);
+  EXPECT_EQ(3u, rules->size());
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(rules->at(i)->getType(),
+              protocol::CSS::CSSAtRule::TypeEnum::FontFeatureValues);
+    EXPECT_TRUE(rules->at(i)->getName());
+    EXPECT_EQ(rules->at(i)->getName()->getText(), "Bixa");
+    EXPECT_EQ(rules->at(i)->getStyle()->getCssProperties()->size(), 1u);
+  }
+  EXPECT_EQ(rules->at(0)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Swash);
+  EXPECT_EQ(rules->at(0)->getStyle()->getCssProperties()->at(0)->getName(),
+            "fancy");
+  EXPECT_EQ(rules->at(1)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Swash);
+  EXPECT_EQ(rules->at(1)->getStyle()->getCssProperties()->at(0)->getName(),
+            "swishy");
+  EXPECT_EQ(rules->at(2)->getSubsection(),
+            protocol::CSS::CSSAtRule::SubsectionEnum::Annotation);
+  EXPECT_EQ(rules->at(2)->getStyle()->getCssProperties()->at(0)->getName(),
+            "extra");
 }
 
 const CSSPropertyID DirectionAwareConverterTestData[] = {

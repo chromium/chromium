@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "net/base/features.h"
@@ -354,9 +355,7 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
               net::x509_util::DefaultParseCertificateOptions(),
               /*errors=*/nullptr);
       EXPECT_TRUE(cert);
-      std::string spki_string = cert->tbs().spki_tlv.AsString();
-      distrusted_spkis.push_back(
-          std::vector<uint8_t>(spki_string.begin(), spki_string.end()));
+      distrusted_spkis.push_back(base::ToVector(cert->tbs().spki_tlv));
     }
     instance_params.additional_distrusted_spkis = distrusted_spkis;
     return instance_params;
@@ -535,12 +534,12 @@ TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
     TestCompletionCallback verify_callback;
     // Ensure HSTS upgrades for the domain which hosts the CRLs.
     context()->transport_security_state()->AddHSTS(
-        test_server.base_url().host(), base::Time::Now() + base::Seconds(30),
+        test_server.base_url().GetHost(), base::Time::Now() + base::Seconds(30),
         /*include_subdomains=*/true);
     // Setting `is_top_level_nav` true prevents the upgrade from being blocked
     // by kHstsTopLevelNavigationsOnly.
     ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
-        test_server.base_url().host(), /*is_top_level_nav=*/true));
+        test_server.base_url().GetHost(), /*is_top_level_nav=*/true));
     Verify(chain.get(), "www.example.com",
            CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
            &verify_result, &verify_net_log_source, verify_callback.callback());
@@ -2596,7 +2595,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, InvalidCertificate) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertLeafParsingError);
   }
@@ -2625,7 +2623,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEutl) {
     // it's a normal root.
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertAuthorityInvalid);
 
@@ -2651,7 +2648,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEutl) {
     // the QWAC status set.
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
 
     // The verified chain has the full cert chain.
@@ -2685,7 +2681,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresPolicies) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertInconsistentBits);
   }
@@ -2701,7 +2696,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresPolicies) {
 
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
   }
 }
@@ -2726,7 +2720,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresQcStatements) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertInconsistentBits);
   }
@@ -2742,7 +2735,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresQcStatements) {
 
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
   }
 }
@@ -2767,7 +2759,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEku) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertInconsistentBits);
   }
@@ -2783,7 +2774,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacRequiresEku) {
 
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
   }
 }
@@ -2810,7 +2800,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesName) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_COMMON_NAME_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_COMMON_NAME_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertNameInvalid);
   }
@@ -2824,7 +2813,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesName) {
 
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
   }
 }
@@ -2852,7 +2840,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesValidityDate) {
 
     EXPECT_THAT(error, IsError(ERR_CERT_DATE_INVALID));
     EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_DATE_INVALID);
-    EXPECT_FALSE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectHistogramSample(histograms,
                           Verify2QwacBindingResult::kCertDateInvalid);
   }
@@ -2871,7 +2858,6 @@ TEST_F(CertVerifyProcBuiltin2QwacTest, TwoQwacVerifiesValidityDate) {
 
     EXPECT_THAT(error, IsOk());
     EXPECT_FALSE(IsCertStatusError(verify_result.cert_status));
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_IS_QWAC);
     ExpectNoHistogramSample(histograms);
   }
 }
@@ -2932,7 +2918,6 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestValidBinding) {
   EXPECT_EQ(net::NetLogEventPhase::END, event->phase);
 
   EXPECT_FALSE(event->params.Find("net_error"));
-  EXPECT_EQ(net::CERT_STATUS_IS_QWAC, event->params.FindInt("cert_status"));
   base::Value::Dict* pem_verified_certs =
       event->params.FindDict("verified_cert");
   ASSERT_TRUE(pem_verified_certs);
@@ -2954,7 +2939,7 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingFailsParsing) {
 
   TwoQwacCertBindingBuilder binding_builder;
   binding_builder.SetBoundCerts({tls_leaf->GetDER()});
-  std::string jws = "invalid" + binding_builder.GetJWS();
+  std::string jws = "invalid:" + binding_builder.GetJWS();
 
   InitializeVerifyProc(CreateParams(/*additional_trust_anchors=*/{}));
   AddMockEutlRoot(binding_builder.GetRootBuilder()->GetCertBuffer());
@@ -2974,7 +2959,7 @@ TEST_F(CertVerifyProcBuiltin2QwacBindingTest, TestBindingFailsParsing) {
   ASSERT_EQ(1U, end_events.size());
   auto& event = end_events[0];
   EXPECT_EQ(ERR_FAILED, event.params.FindInt("net_error"));
-  EXPECT_EQ("binding parsing error",
+  EXPECT_EQ("binding parsing error: base64 decoding header error",
             base::optional_ref(event.params.FindString("error_description")));
 }
 

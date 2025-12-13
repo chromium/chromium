@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_ACCESS_GLOBAL_STORAGE_ACCESS_HANDLE_H_
 
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-blink.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom-blink.h"

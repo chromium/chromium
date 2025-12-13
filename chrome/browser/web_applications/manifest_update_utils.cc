@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/gfx/skia_util.h"
 
@@ -170,15 +171,17 @@ bool CanWebAppSilentlyUpdateIdentity(const WebApp& web_app) {
           features::kWebAppManifestPolicyAppIdentityUpdate)) {
     return true;
   }
+  if (web_app.scope().SchemeIs(content::kChromeUIScheme)) {
+    return true;
+  }
 
-  // WebAppChromeOsData::oem_installed is not included in this statement as
-  // we would like to keep WebAppManagement::kOem and
-  // WebAppChromeOsData::oem_installed separate.
-  // WebAppChromeOsData::oem_installed will be migrated to
-  // WebAppManagement::kOem eventually.
-  return web_app.IsPreinstalledApp() || web_app.IsKioskInstalledApp() ||
-         web_app.GetSources().HasAny(
-             {WebAppManagement::kOem, WebAppManagement::kApsDefault});
+  // The `!web_app.IsPolicyInstalledApp()` hack is to ensure that the "existing"
+  // manifest update process only works for policy installed apps if
+  // `kWebAppManifestPolicyAppIdentityUpdate` is enabled, for browser tests.
+  // Once predictable app updating lands, this code will be removed (since that
+  // feature flag is enabled by default anyway).
+  return !web_app.IsPolicyInstalledApp() &&
+         web_app.WasInstalledByTrustedSources();
 }
 
 bool CanShowIdentityUpdateConfirmationDialog(const WebAppRegistrar& registrar,
@@ -215,7 +218,7 @@ ManifestDataChanges GetManifestDataChanges(
 
   // TODO(crbug.com/40201597): Check whether translations have been updated.
   result.app_name_changed =
-      new_install_info.title !=
+      new_install_info.title.value() !=
       base::UTF8ToUTF16(existing_web_app.untranslated_name());
 
   // TODO(crbug.com/40254036): Run these bitmap comparisons off the UI thread.
@@ -269,9 +272,6 @@ ManifestDataChanges GetManifestDataChanges(
     }
     if (existing_web_app.note_taking_new_note_url() !=
         new_install_info.note_taking_new_note_url) {
-      return true;
-    }
-    if (existing_web_app.capture_links() != new_install_info.capture_links) {
       return true;
     }
     if (existing_web_app.file_handlers() != new_install_info.file_handlers) {

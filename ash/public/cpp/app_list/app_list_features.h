@@ -15,10 +15,6 @@ namespace app_list_features {
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
 
-// Enables the feature to include a single reinstallation candidate in
-// zero-state.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppReinstallZeroState);
-
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppListLaunchRecording);
 
@@ -50,7 +46,6 @@ const base::FeatureParam<bool> kAppsCollectionsEnabledCounterfactually{
 const base::FeatureParam<bool> kAppsCollectionsEnabledWithModifiedOrder{
     &kAppsCollections, "is-modified-order", false};
 
-ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();

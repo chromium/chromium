@@ -27,15 +27,15 @@ void CompositorRenderPassDrawQuad::SetNew(
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
-    const gfx::Vector2dF& filters_scale,
-    const gfx::PointF& filters_origin,
     const gfx::RectF& tex_coord_rect,
-    bool force_anti_aliasing_off,
-    float backdrop_filter_quality) {
+    bool force_anti_aliasing_off) {
   DCHECK(render_pass);
 
   bool needs_blending = true;
   bool intersects_damage_under = true;
+  gfx::Vector2dF filters_scale = gfx::Vector2dF(1.0f, 1.0f);
+  gfx::PointF filters_origin = gfx::PointF();
+  float backdrop_filter_quality = 1.0f;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,

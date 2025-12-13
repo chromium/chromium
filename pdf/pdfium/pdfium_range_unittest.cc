@@ -16,6 +16,8 @@ namespace chrome_pdf {
 
 class PDFiumRangeTest : public PDFiumTestBase {
  public:
+  PDFiumRangeTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
   void SetUp() override {
     PDFiumTestBase::SetUp();
     engine_ = InitializeEngine(&client_, FILE_PATH_LITERAL("hello_world2.pdf"));
@@ -86,28 +88,54 @@ TEST_P(PDFiumRangeTest, Backward) {
   PDFiumPage page(engine(), 0);
   page.MarkAvailable();
   {
-    PDFiumRange range(&page, /*char_index=*/1, /*char_count=*/-2);
-    EXPECT_EQ(1, range.char_index());
+    PDFiumRange range(&page, /*char_index=*/2, /*char_count=*/-2);
+    EXPECT_EQ(2, range.char_index());
     EXPECT_EQ(-2, range.char_count());
     EXPECT_EQ(u"He", range.GetText());
   }
   {
-    PDFiumRange range(&page, /*char_index=*/17, /*char_count=*/-3);
-    EXPECT_EQ(17, range.char_index());
+    PDFiumRange range(&page, /*char_index=*/18, /*char_count=*/-3);
+    EXPECT_EQ(18, range.char_index());
     EXPECT_EQ(-3, range.char_count());
     EXPECT_EQ(u"Goo", range.GetText());
   }
   {
-    PDFiumRange range(&page, /*char_index=*/29, /*char_count=*/-2);
-    EXPECT_EQ(29, range.char_index());
+    PDFiumRange range(&page, /*char_index=*/30, /*char_count=*/-2);
+    EXPECT_EQ(30, range.char_index());
     EXPECT_EQ(-2, range.char_count());
     EXPECT_EQ(u"d!", range.GetText());
   }
   {
-    PDFiumRange range(&page, /*char_index=*/29, /*char_count=*/-1);
-    EXPECT_EQ(29, range.char_index());
+    PDFiumRange range(&page, /*char_index=*/30, /*char_count=*/-1);
+    EXPECT_EQ(30, range.char_index());
     EXPECT_EQ(-1, range.char_count());
     EXPECT_EQ(u"!", range.GetText());
+  }
+}
+
+TEST_P(PDFiumRangeTest, CreateBackwards) {
+  PDFiumPage page(engine(), 0);
+  page.MarkAvailable();
+  {
+    auto range =
+        PDFiumRange::CreateBackwards(&page, /*char_index=*/1, /*char_count=*/0);
+    EXPECT_EQ(1, range.char_index());
+    EXPECT_EQ(0, range.char_count());
+    EXPECT_EQ(u"", range.GetText());
+  }
+  {
+    auto range =
+        PDFiumRange::CreateBackwards(&page, /*char_index=*/0, /*char_count=*/2);
+    EXPECT_EQ(2, range.char_index());
+    EXPECT_EQ(-2, range.char_count());
+    EXPECT_EQ(u"He", range.GetText());
+  }
+  {
+    auto range = PDFiumRange::CreateBackwards(&page, /*char_index=*/15,
+                                              /*char_count=*/3);
+    EXPECT_EQ(18, range.char_index());
+    EXPECT_EQ(-3, range.char_count());
+    EXPECT_EQ(u"Goo", range.GetText());
   }
 }
 

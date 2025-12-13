@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import os
+
 
 def Run(os_path=None, args=None):
   try:
@@ -24,7 +25,7 @@ def Run(os_path=None, args=None):
   # navigate parent directories via '../'. We must set the repository's root as
   # the cwd.
   os.chdir(_SRC_PATH)
-  return node.RunNode([
+  return node.RunNodeRaw([
       node_modules.PathToEsLint(),
       '--quiet',
       '--config',

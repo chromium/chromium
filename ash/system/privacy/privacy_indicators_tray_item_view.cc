@@ -38,6 +38,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
@@ -49,6 +50,8 @@ namespace {
 constexpr auto kPrivacyIndicatorsViewPadding = gfx::Insets::VH(4, 8);
 const int kPrivacyIndicatorsViewSpacing = 2;
 const int kPrivacyIndicatorsIconSize = 16;
+const ui::ColorId kPrivacyIndicatorsIconColor =
+    cros_tokens::kCrosSysInverseOnSurface;
 const int kPrivacyIndicatorsViewExpandedShorterSideSize = 24;
 const int kPrivacyIndicatorsViewExpandedLongerSideSize = 50;
 const int kPrivacyIndicatorsViewExpandedWithScreenShareSize = 68;
@@ -130,7 +133,7 @@ bool IsInPrimaryDisplay(views::Widget* widget) {
     return false;
   }
 
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   return screen->GetDisplayNearestWindow(widget->GetNativeWindow()) ==
          screen->GetPrimaryDisplay();
 }
@@ -165,25 +168,26 @@ PrivacyIndicatorsTrayItemView::PrivacyIndicatorsTrayItemView(Shelf* shelf)
   // Set up a solid color layer to paint the background color, then add a layer
   // to each child so that they are visible and can perform layer animation.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2});
-  layer()->SetIsFastRoundedCorner(true);
+  SetBackground(views::CreateLayerBasedRoundedBackground(
+      ui::kColorAshPrivacyIndicatorsBackground,
+      gfx::RoundedCornersF{kPrivacyIndicatorsViewExpandedShorterSideSize / 2}));
 
-  auto add_icon_to_container = [&container_view]() {
+  auto add_icon_to_container = [&container_view](
+                                   const gfx::VectorIcon& vector_icon) {
     auto icon = std::make_unique<views::ImageView>();
     icon->SetPaintToLayer();
     icon->layer()->SetFillsBoundsOpaquely(false);
     icon->SetVisible(false);
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icon, kPrivacyIndicatorsIconColor, kPrivacyIndicatorsIconSize));
     return container_view->AddChildView(std::move(icon));
   };
 
-  camera_icon_ = add_icon_to_container();
-  microphone_icon_ = add_icon_to_container();
-  screen_share_icon_ = add_icon_to_container();
+  camera_icon_ = add_icon_to_container(kPrivacyIndicatorsCameraIcon);
+  microphone_icon_ = add_icon_to_container(kPrivacyIndicatorsMicrophoneIcon);
+  screen_share_icon_ = add_icon_to_container(kPrivacyIndicatorsCameraIcon);
 
   AddChildView(std::move(container_view));
-
-  UpdateIcons();
 
   UpdateVisibility();
 
@@ -336,14 +340,6 @@ gfx::Size PrivacyIndicatorsTrayItemView::CalculatePreferredSize(
                                  gfx::Size(shorter_side, longer_side));
 }
 
-void PrivacyIndicatorsTrayItemView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  UpdateIcons();
-
-  layer()->SetColor(
-      GetColorProvider()->GetColor(ui::kColorAshPrivacyIndicatorsBackground));
-}
-
 void PrivacyIndicatorsTrayItemView::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
   UpdateBoundsInset();
@@ -460,19 +456,6 @@ void PrivacyIndicatorsTrayItemView::OnSessionStateChanged(
   base::UmaHistogramCounts100("Ash.PrivacyIndicators.NumberOfShowsPerSession",
                               count_visible_per_session_);
   count_visible_per_session_ = 0;
-}
-
-void PrivacyIndicatorsTrayItemView::UpdateIcons() {
-  const ui::ColorId icon_color_id = cros_tokens::kCrosSysInverseOnSurface;
-
-  camera_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kPrivacyIndicatorsCameraIcon, icon_color_id, kPrivacyIndicatorsIconSize));
-  microphone_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kPrivacyIndicatorsMicrophoneIcon, icon_color_id,
-      kPrivacyIndicatorsIconSize));
-  screen_share_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kPrivacyIndicatorsScreenShareIcon, icon_color_id,
-      kPrivacyIndicatorsIconSize));
 }
 
 void PrivacyIndicatorsTrayItemView::UpdateBoundsInset() {

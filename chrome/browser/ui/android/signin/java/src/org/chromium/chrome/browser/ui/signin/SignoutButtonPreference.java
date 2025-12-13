@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
@@ -21,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -28,7 +30,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /** A dedicated preference for the account settings signout button. */
 @NullMarked
-public class SignoutButtonPreference extends Preference {
+public class SignoutButtonPreference extends Preference implements ContainmentItem {
     private Context mContext;
     private Profile mProfile;
     private FragmentManager mFragmentManager;
@@ -37,7 +39,6 @@ public class SignoutButtonPreference extends Preference {
 
     public SignoutButtonPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
         setLayoutResource(R.layout.signout_button_view);
     }
 
@@ -80,10 +81,15 @@ public class SignoutButtonPreference extends Preference {
                             mProfile,
                             mFragmentManager,
                             mDialogManager,
-                            mSnackbarManagerSupplier.get(),
+                            assertNonNull(mSnackbarManagerSupplier.get()),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             /* showConfirmDialog= */ false,
                             () -> {});
                 });
+    }
+
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return BackgroundStyle.NONE;
     }
 }

@@ -139,4 +139,17 @@ void LogCrowdStrikeParsingError(SignalsParsingError error) {
   base::UmaHistogramEnumeration(kCrowdStrikeErrorHistogram, error);
 }
 
+void LogSystemSignalCollectionDisconnect(size_t pending_requests) {
+  static constexpr char kSystemSignalsServiceDisconnectCountHistogram[] =
+      "Enterprise.DeviceSignals.SystemSignalsService.Disconnect.ItemsCount";
+  base::UmaHistogramCounts100(kSystemSignalsServiceDisconnectCountHistogram,
+                              pending_requests);
+}
+
+void LogSystemSignalCollectionMissingPendingCallback() {
+  static constexpr char kSystemSignalsServiceMissingPendingCallback[] =
+      "Enterprise.DeviceSignals.SystemSignalsService.MissingPendingCallback";
+  base::UmaHistogramBoolean(kSystemSignalsServiceMissingPendingCallback, true);
+}
+
 }  // namespace device_signals

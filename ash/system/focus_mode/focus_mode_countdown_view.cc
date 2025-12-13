@@ -84,7 +84,6 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
       CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
                        cros_tokens::kCrosSysOnSurface));
 
-  // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
       timer_container->AddChildView(std::make_unique<views::ProgressBar>());
   progress_bar_->SetPreferredHeight(kBarHeight);

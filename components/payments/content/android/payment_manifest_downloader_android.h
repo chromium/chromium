@@ -6,10 +6,11 @@
 #define COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_MANIFEST_DOWNLOADER_ANDROID_H_
 
 #include <jni.h>
+
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
@@ -39,16 +40,15 @@ class PaymentManifestDownloaderAndroid {
 
   void DownloadPaymentMethodManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jmerchant_origin,
-      const base::android::JavaParamRef<jobject>& jurl,
-      const base::android::JavaParamRef<jobject>& jcallback);
+      const base::android::JavaRef<jobject>& jmerchant_origin,
+      const base::android::JavaRef<jobject>& jurl,
+      const base::android::JavaRef<jobject>& jcallback);
 
   void DownloadWebAppManifest(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&
-          jpayment_method_manifest_origin,
-      const base::android::JavaParamRef<jobject>& jurl,
-      const base::android::JavaParamRef<jobject>& jcallback);
+      const base::android::JavaRef<jobject>& jpayment_method_manifest_origin,
+      const base::android::JavaRef<jobject>& jurl,
+      const base::android::JavaRef<jobject>& jcallback);
 
   // Deletes this object.
   void Destroy(JNIEnv* env);

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
-#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
@@ -126,13 +125,11 @@ MutableCSSPropertyValueSet* CanvasFontCache::ParseFont(
 
 void CanvasFontCache::DidProcessTask(const base::PendingTask& pending_task) {
   DCHECK(pruning_scheduled_);
-  DCHECK(main_cache_purge_preventer_);
   while (fetched_fonts_.size() > std::min(MaxFonts(), HardMaxFonts())) {
     fetched_fonts_.erase(font_lru_list_.back());
     fonts_resolved_using_default_style_.erase(font_lru_list_.back());
     font_lru_list_.pop_back();
   }
-  main_cache_purge_preventer_.reset();
   Thread::Current()->RemoveTaskObserver(this);
   pruning_scheduled_ = false;
 }
@@ -140,8 +137,6 @@ void CanvasFontCache::DidProcessTask(const base::PendingTask& pending_task) {
 void CanvasFontCache::SchedulePruningIfNeeded() {
   if (pruning_scheduled_)
     return;
-  DCHECK(!main_cache_purge_preventer_);
-  main_cache_purge_preventer_ = std::make_unique<FontCachePurgePreventer>();
   Thread::Current()->AddTaskObserver(this);
   pruning_scheduled_ = true;
 }
@@ -168,7 +163,6 @@ void CanvasFontCache::Trace(Visitor* visitor) const {
 }
 
 void CanvasFontCache::Dispose() {
-  main_cache_purge_preventer_.reset();
   if (pruning_scheduled_) {
     Thread::Current()->RemoveTaskObserver(this);
   }

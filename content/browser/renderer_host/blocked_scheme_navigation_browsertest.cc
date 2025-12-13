@@ -137,22 +137,20 @@ void RegisterFakePlugin() {
   plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
                                       std::string());
   auto* plugin_service = PluginService::GetInstance();
-  plugin_service->RegisterInternalPlugin(plugin_info, false);
-  plugin_service->RefreshPlugins();
+  plugin_service->RegisterInternalPlugin(plugin_info);
+  plugin_service->GetPlugins();
 }
 
 void UnregisterFakePlugin() {
   auto* plugin_service = PluginService::GetInstance();
-  std::vector<WebPluginInfo> plugins;
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_EQ(1u, plugins.size());
+  const std::vector<WebPluginInfo> plugins =
+      plugin_service->GetInternalPluginsForTesting();
+  ASSERT_EQ(1u, plugins.size());
 
   plugin_service->UnregisterInternalPlugin(plugins[0].path);
-  plugin_service->RefreshPlugins();
+  plugin_service->GetPlugins();
 
-  plugins.clear();
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_TRUE(plugins.empty());
+  EXPECT_TRUE(plugin_service->GetInternalPluginsForTesting().empty());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 

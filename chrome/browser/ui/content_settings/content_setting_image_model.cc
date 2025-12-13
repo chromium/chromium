@@ -24,6 +24,7 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
@@ -46,6 +47,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
+#include "media/base/media_switches.h"
 #include "net/base/schemeful_site.h"
 #include "services/device/public/cpp/device_features.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -54,6 +56,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -291,6 +294,21 @@ class ContentSettingStorageAccessImageModel
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
 };
 
+#if BUILDFLAG(IS_WIN)
+class ContentSettingProtectedMediaIdentifierImageModel
+    : public ContentSettingSimpleImageModel {
+ public:
+  ContentSettingProtectedMediaIdentifierImageModel();
+
+  ContentSettingProtectedMediaIdentifierImageModel(
+      const ContentSettingProtectedMediaIdentifierImageModel&) = delete;
+  ContentSettingProtectedMediaIdentifierImageModel& operator=(
+      const ContentSettingProtectedMediaIdentifierImageModel&) = delete;
+
+  bool UpdateAndGetVisibility(WebContents* web_contents) override;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 namespace {
 
 struct ContentSettingsImageDetails {
@@ -400,6 +418,12 @@ void GetIconChromeRefresh(ContentSettingsType type,
       *icon = &vector_icons::kSmartCardReaderIcon;
       return;
 #endif
+#if BUILDFLAG(IS_WIN)
+    case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
+      *icon = blocked ? &vector_icons::kSyncSavedLocallyOffIcon
+                      : &vector_icons::kSyncSavedLocallyIcon;
+      return;
+#endif  // BUILDFLAG(IS_WIN)
     default:
       NOTREACHED();
   }
@@ -486,6 +510,11 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
     case ImageType::SMART_CARD:
       return std::make_unique<ContentSettingSmartCardImageModel>();
 #endif
+#if BUILDFLAG(IS_WIN)
+    case ImageType::PROTECTED_MEDIA_IDENTIFIER:
+      return std::make_unique<
+          ContentSettingProtectedMediaIdentifierImageModel>();
+#endif  // BUILDFLAG(IS_WIN)
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
@@ -1248,6 +1277,43 @@ ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+// Protected media identifiers
+// -------------------------------------------------------------------
+
+ContentSettingProtectedMediaIdentifierImageModel::
+    ContentSettingProtectedMediaIdentifierImageModel()
+    : ContentSettingSimpleImageModel(
+          ImageType::PROTECTED_MEDIA_IDENTIFIER,
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+          /*image_type_should_notify_accessibility=*/true) {}
+
+bool ContentSettingProtectedMediaIdentifierImageModel::UpdateAndGetVisibility(
+    WebContents* web_contents) {
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents->GetPrimaryMainFrame());
+  if (!content_settings) {
+    return false;
+  }
+  ContentSettingsType content_type =
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER;
+  bool blocked = content_settings->IsContentBlocked(content_type);
+  bool allowed = content_settings->IsContentAllowed(content_type);
+  if (!blocked && !allowed) {
+    return false;
+  }
+
+  SetIcon(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
+          /*blocked=*/!allowed);
+  auto message_id = allowed ? IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE
+                            : IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE;
+  set_tooltip(l10n_util::GetStringUTF16(message_id));
+  set_accessibility_string_id(message_id);
+  return true;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 // Base class ------------------------------------------------------------------
 
 gfx::Image ContentSettingImageModel::GetIcon(SkColor icon_color) const {
@@ -1311,10 +1377,20 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
 #if BUILDFLAG(IS_CHROMEOS)
       ImageType::SMART_CARD,
 #endif
+#if BUILDFLAG(IS_WIN)
+      ImageType::PROTECTED_MEDIA_IDENTIFIER,
+#endif
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
   for (auto type : kContentSettingImageOrder) {
+#if BUILDFLAG(IS_WIN)
+    if (type == ImageType::PROTECTED_MEDIA_IDENTIFIER &&
+        !base::FeatureList::IsEnabled(
+            media::kProtectedMediaIdentifierIndicator)) {
+      continue;
+    }
+#endif
     result.push_back(CreateForContentType(type));
   }
 

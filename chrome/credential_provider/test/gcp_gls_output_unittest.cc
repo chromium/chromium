@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -186,7 +182,7 @@ std::string GcpUsingChromeTest::RunProcessAndExtractOutput(
         break;
       }
 
-      buffer[length] = 0;
+      UNSAFE_TODO(buffer[length]) = 0;
       output_from_process += buffer;
     } else if (ret != WAIT_IO_COMPLETION) {
       break;
@@ -252,7 +248,7 @@ GcpUsingChromeTest::GaiaHtmlResponseHandler(
   // When the "/embedded/setup/chrome" is requested on the gaia web site
   // (accounts.google.com) then the embedded server can send a page with scripts
   // that can force immediate signin.
-  if (request.GetURL().path().find("/embedded/setup/chrome") == 0) {
+  if (request.GetURL().GetPath().find("/embedded/setup/chrome") == 0) {
     // This is the  header that is sent by Gaia that the inline sign in page
     // listens to in order to fill the information abou the email and Gaia ID.
     http_response->AddCustomHeader("google-accounts-signin",
@@ -301,14 +297,14 @@ GcpUsingChromeTest::GoogleApisHtmlResponseHandler(
   // All other Google API requests will be ignored with a 404 error.
 
   TestGoogleApiResponse* api_response = nullptr;
-  if (request.GetURL().path().find("/oauth2/v2/tokeninfo") == 0) {
+  if (request.GetURL().GetPath().find("/oauth2/v2/tokeninfo") == 0) {
     api_response = &token_info_response_;
-  } else if (request.GetURL().path().find("/oauth2/v1/userinfo") == 0) {
+  } else if (request.GetURL().GetPath().find("/oauth2/v1/userinfo") == 0) {
     // User info should never be requested before the mdm id token request is
     // made.
     EXPECT_TRUE(mdm_token_response_.response_given_);
     api_response = &user_info_response_;
-  } else if (request.GetURL().path().find("/oauth2/v4/token") == 0) {
+  } else if (request.GetURL().GetPath().find("/oauth2/v4/token") == 0) {
     // Does the request want an auth_code for signin or is it the second request
     // made to get the id token.
     if (request.content.find("grant_type=authorization_code") ==
@@ -441,9 +437,8 @@ TEST_F(GcpUsingChromeTest, DISABLED_VerifySuccessOutput) {
 
   std::string output_from_chrome = RunChromeAndExtractOutput();
 
-  std::string expected_result;
-  base::JSONWriter::Write(test_data_storage_.expected_full_result(),
-                          &expected_result);
+  std::string expected_result =
+      base::WriteJson(test_data_storage_.expected_full_result()).value_or("");
 
   EXPECT_EQ(output_from_chrome, expected_result);
   EXPECT_TRUE(signin_token_response_.response_given_);

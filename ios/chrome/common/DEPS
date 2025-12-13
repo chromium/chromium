@@ -3,8 +3,7 @@ include_rules = [
   "+components/version_info",
   "+net",
   "-ios/chrome",
+  "-ios/chrome/browser",
   "+ios/chrome/common",
-  "+ios/chrome/grit",
-  "+ios/chrome/browser/shared",
 ]
 

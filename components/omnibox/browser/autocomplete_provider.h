@@ -183,6 +183,7 @@ class AutocompleteProvider
     TYPE_RECENTLY_CLOSED_TABS = 1 << 24,
     TYPE_CONTEXTUAL_SEARCH = 1 << 25,
     TYPE_TAB_GROUP = 1 << 26,
+
     // When adding a value here, also update:
     // - omnibox_event.proto
     // - `AutocompleteProvider::AsOmniboxEventProviderType`
@@ -307,6 +308,11 @@ class AutocompleteProvider
     return provider_max_matches_in_keyword_mode_;
   }
 
+  // Get the smart compose completion;
+  const std::string& get_smart_compose_inline_hint() const {
+    return smart_compose_inline_hint_;
+  }
+
   // Returns the set of matches for the current query.
   const ACMatches& matches() const { return matches_; }
 
@@ -386,6 +392,12 @@ class AutocompleteProvider
   const size_t provider_max_matches_in_keyword_mode_{7};
 
   ACMatches matches_;
+  // The smart compose inline hint. This hint is currently only provided in the
+  // composebox when a user is typing. The user must explicitly press tab to
+  // accept and have this hint fill in the input. Pressing enter with the hint
+  // present does not accept the hint during navigation. Inline autocomplete
+  // is not available for all composebox inputs.
+  std::string smart_compose_inline_hint_;
   // A map of suggestion group IDs to suggestion group information.
   // `omnibox::BuildDefaultGroupsForInput(AutocompleteInput)` will generate
   // static groups. Providers can set this to create dynamic groups; e.g. the

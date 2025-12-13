@@ -34,7 +34,6 @@
 
 #include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -44,10 +43,8 @@
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
-#include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
-#include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -204,23 +201,8 @@ String ConvertToPrintableCharacters(const String& text) {
 MHTMLArchive::MHTMLArchive() : load_result_(MHTMLLoadResult::kInvalidArchive) {}
 
 // static
-void MHTMLArchive::ReportLoadResult(MHTMLLoadResult result) {
-  UMA_HISTOGRAM_ENUMERATION("PageSerialization.MhtmlLoading.LoadResult",
-                            result);
-}
-
-// static
 MHTMLArchive* MHTMLArchive::Create(const KURL& url,
                                    scoped_refptr<const SharedBuffer> data) {
-  MHTMLArchive* archive = CreateArchive(url, data);
-  ReportLoadResult(archive->LoadResult());
-  return archive;
-}
-
-// static
-MHTMLArchive* MHTMLArchive::CreateArchive(
-    const KURL& url,
-    scoped_refptr<const SharedBuffer> data) {
   MHTMLArchive* archive = MakeGarbageCollected<MHTMLArchive>();
   archive->archive_url_ = url;
 
@@ -410,11 +392,10 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
 
       auto encoded_data_span = base::span(encoded_data);
       do {
-        auto [encoded_data_line, rest] = encoded_data_span.split_at(
+        auto encoded_data_line = encoded_data_span.take_first(
             std::min(encoded_data_span.size(), kMaximumLineLength));
         output_buffer.AppendSpan(encoded_data_line);
         output_buffer.AppendSpan(base::span_from_cstring("\r\n"));
-        encoded_data_span = rest;
       } while (!encoded_data_span.empty());
     }
   }

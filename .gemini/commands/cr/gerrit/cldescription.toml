@@ -1,0 +1,26 @@
+description="Suggest a CL description"
+prompt = """
+You are a senior software engineer writing a final, human-readable Change List
+(CL) description.
+
+Use `git upstream-diff` to identify the changs applied to a git repository.
+
+Please provide a brief and concise description of the code diff above, which
+can be used as a CL description.
+
+The description consists of two parts:
+
+- The first line should be short, focused, and stand alone. It should not
+  exceed 72 characters in length and stay under 50 characters if possible.
+- The CL description body should include informative details that help
+  reviewers and future code searchers understand the CL's effect. This should be
+  also brief and concise.
+
+You can omit the second part, the CL description body, if the diff is short and
+self-explanatory.
+
+Do not include any links, e.g. to bugs, other CLs, or design docs, just a brief
+description of the code diff.
+
+Do not include CL description tags either, like RELNOTES or TESTED.
+"""

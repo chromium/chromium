@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"
+#include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -68,29 +69,37 @@ class LongScreenshotsTabService
   // clip_width: How wide of a capture relative to clip_x.
   // clip_height: How wide of a capture relative to clip_y.
   // in_memory: Use in memory capture mode.
-  void CaptureTab(int tab_id,
-                  const GURL& url,
-                  content::WebContents* contents,
-                  int clip_x,
-                  int clip_y,
-                  int clip_width,
-                  int clip_height,
-                  bool in_memory);
+  // clip_x_coord_override: How to override the clip_x coordinate in the
+  // renderer, if at all.
+  // clip_y_coord_override: How to override the clip_y coordinate in the
+  // renderer, if at all.
+  void CaptureTab(
+      int tab_id,
+      const GURL& url,
+      content::WebContents* contents,
+      int clip_x,
+      int clip_y,
+      int clip_width,
+      int clip_height,
+      bool in_memory,
+      paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
+      paint_preview::mojom::ClipCoordOverride clip_y_coord_override);
 
   // Delete all old long screenshot files.
   void DeleteAllLongScreenshotFiles();
 
   // JNI wrapped versions of the above methods
-  void CaptureTabAndroid(
-      JNIEnv* env,
-      jint j_tab_id,
-      const base::android::JavaParamRef<jobject>& j_gurl,
-      const base::android::JavaParamRef<jobject>& j_web_contents,
-      jint clip_x,
-      jint clip_y,
-      jint clip_width,
-      jint clip_height,
-      jboolean in_memory);
+  void CaptureTabAndroid(JNIEnv* env,
+                         jint j_tab_id,
+                         const base::android::JavaRef<jobject>& j_gurl,
+                         const base::android::JavaRef<jobject>& j_web_contents,
+                         jint clip_x,
+                         jint clip_y,
+                         jint clip_width,
+                         jint clip_height,
+                         jboolean in_memory,
+                         jint override_x_coordinate,
+                         jint override_y_coordinate);
   void LongScreenshotsClosedAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
@@ -101,15 +110,18 @@ class LongScreenshotsTabService
   // Retrieves the content::WebContents from the |frame_tree_node_id|
   // (confirming that the contents are alive using the |frame_routing_id|).
   // Calls PaintPreviewBaseService to retrieve the bitmap and write it to file.
-  void CaptureTabInternal(int tab_id,
-                          content::FrameTreeNodeId frame_tree_node_id,
-                          content::GlobalRenderFrameHostId frame_routing_id,
-                          int clip_x,
-                          int clip_y,
-                          int clip_width,
-                          int clip_height,
-                          bool in_memory,
-                          const std::optional<base::FilePath>& file_path);
+  void CaptureTabInternal(
+      int tab_id,
+      content::FrameTreeNodeId frame_tree_node_id,
+      content::GlobalRenderFrameHostId frame_routing_id,
+      int clip_x,
+      int clip_y,
+      int clip_width,
+      int clip_height,
+      bool in_memory,
+      paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
+      paint_preview::mojom::ClipCoordOverride clip_y_coord_override,
+      const std::optional<base::FilePath>& file_path);
 
   void OnCaptured(paint_preview::PaintPreviewBaseService::CaptureStatus status,
                   std::unique_ptr<paint_preview::CaptureResult> result);

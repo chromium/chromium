@@ -18,7 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

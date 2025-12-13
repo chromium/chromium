@@ -11,28 +11,21 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/enterprise_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "crypto/hash.h"
 #include "crypto/hmac.h"
-#include "crypto/sha2.h"
+#include "crypto/secure_util.h"
 
 namespace {
-
-// Calculates an HMAC of |message| using |key|, encoded as a hexadecimal string.
-std::string GetDigestString(const std::string& key,
-                            const std::string& message) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  std::vector<uint8_t> digest(hmac.DigestLength());
-  if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
-    NOTREACHED();
-  }
-  return base::HexEncode(digest);
-}
 
 void RemoveEmptyValueDictEntries(base::Value::Dict& dict);
 void RemoveEmptyValueListEntries(base::Value::List& list);
@@ -89,17 +82,6 @@ void RemoveEmptyValueListEntries(base::Value::List& list) {
   }
 }
 
-// Verifies that |digest_string| is a valid HMAC of |message| using |key|.
-// |digest_string| must be encoded as a hexadecimal string.
-bool VerifyDigestString(const std::string& key,
-                        const std::string& message,
-                        const std::string& digest_string) {
-  crypto::HMAC hmac(crypto::HMAC::SHA256);
-  std::string digest;
-  return base::HexStringToString(digest_string, &digest) && hmac.Init(key) &&
-         hmac.Verify(message, digest);
-}
-
 // Renders |value| as a string. |value| may be NULL, in which case the result
 // is an empty string. This method can be expensive and its result should be
 // re-used rather than recomputed where possible.
@@ -123,27 +105,6 @@ std::string ValueAsString(const base::Value* value) {
   return base::WriteJson(*value).value_or(std::string());
 }
 
-// Concatenates |device_id|, |path|, and |value_as_string| to give the hash
-// input.
-std::string GetMessage(const std::string& device_id,
-                       const std::string& path,
-                       const std::string& value_as_string) {
-  std::string message;
-  message.reserve(device_id.size() + path.size() + value_as_string.size());
-  message.append(device_id);
-  message.append(path);
-  message.append(value_as_string);
-  return message;
-}
-
-// Concatenates |seed|, |path|, and |value_as_string| to give the SHA256 input
-// for the encrypted hash scheme.
-std::string GetEncryptedHashMessage(const std::string& seed,
-                                    const std::string& path,
-                                    const std::string& value_as_string) {
-  return base::StrCat({seed, path, value_as_string});
-}
-
 }  // namespace
 
 PrefHashCalculator::PrefHashCalculator(const std::string& seed,
@@ -154,14 +115,12 @@ PrefHashCalculator::~PrefHashCalculator() {}
 
 std::string PrefHashCalculator::Calculate(const std::string& path,
                                           const base::Value* value) const {
-  return GetDigestString(seed_,
-                         GetMessage(device_id_, path, ValueAsString(value)));
+  return HmacSign(path, ValueAsString(value));
 }
 
 std::string PrefHashCalculator::Calculate(const std::string& path,
                                           const base::Value::Dict* dict) const {
-  return GetDigestString(seed_,
-                         GetMessage(device_id_, path, ValueAsString(dict)));
+  return HmacSign(path, ValueAsString(dict));
 }
 
 PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
@@ -182,11 +141,16 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::Validate(
     const std::string& path,
     const std::string& value_as_string,
     const std::string& digest_string) const {
-  if (VerifyDigestString(seed_, GetMessage(device_id_, path, value_as_string),
-                         digest_string)) {
+#if BUILDFLAG(IS_WIN)
+  // On enterprise-managed devices, bypass legacy HMAC validation. This is to
+  // support roaming user profiles, where the device-specific HMAC would fail
+  // upon roaming. Preference integrity on these devices is maintained by the
+  // encrypted hash.
+  if (base::IsEnterpriseDevice()) {
     return VALID;
   }
-  return INVALID;
+#endif
+  return HmacVerify(path, value_as_string, digest_string) ? VALID : INVALID;
 }
 
 std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
@@ -195,19 +159,13 @@ std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
     const os_crypt_async::Encryptor* encryptor) const {
   DCHECK(encryptor);
 
-  std::string value_as_string = ValueAsString(value);
-  std::string message = GetEncryptedHashMessage(seed_, path, value_as_string);
-  std::string sha256_hash = crypto::SHA256HashString(message);
-
-  // EncryptString returns raw bytes
   std::optional<std::vector<uint8_t>> encrypted_bytes =
-      encryptor->EncryptString(sha256_hash);
+      encryptor->EncryptString(Hash(path, ValueAsString(value)));
 
   if (!encrypted_bytes) {
     return std::nullopt;
   }
 
-  // Use Base64Encode version that returns a string.
   return base::Base64Encode(*encrypted_bytes);
 }
 
@@ -216,19 +174,14 @@ std::optional<std::string> PrefHashCalculator::CalculateEncryptedHash(
     const base::Value::Dict* dict,
     const os_crypt_async::Encryptor* encryptor) const {
   DCHECK(encryptor);
-  std::string value_as_string = ValueAsString(dict);
-  std::string message = GetEncryptedHashMessage(seed_, path, value_as_string);
-  std::string sha256_hash = crypto::SHA256HashString(message);
 
-  // EncryptString returns raw bytes
   std::optional<std::vector<uint8_t>> encrypted_bytes =
-      encryptor->EncryptString(sha256_hash);
+      encryptor->EncryptString(Hash(path, ValueAsString(dict)));
 
   if (!encrypted_bytes) {
     return std::nullopt;
   }
 
-  // Use Base64Encode version that returns a string.
   return base::Base64Encode(*encrypted_bytes);
 }
 
@@ -239,27 +192,61 @@ PrefHashCalculator::ValidationResult PrefHashCalculator::ValidateEncrypted(
     const os_crypt_async::Encryptor* encryptor) const {
   DCHECK(encryptor);
 
-  // Base64 decode the stored string back into raw bytes
-  std::string encrypted_hash_bytes;
-  if (!base::Base64Decode(stored_encrypted_hash_base64,
-                          &encrypted_hash_bytes)) {
+  std::optional<std::vector<uint8_t>> encrypted_hash =
+      base::Base64Decode(stored_encrypted_hash_base64);
+  if (!encrypted_hash) {
     return INVALID_ENCRYPTED;
   }
 
-  // Now decrypt the raw bytes
-  std::string decrypted_hash_string;
-  if (!encryptor->DecryptString(encrypted_hash_bytes, &decrypted_hash_string)) {
+  std::optional<std::string> decrypted_hash =
+      encryptor->DecryptData(*encrypted_hash);
+  if (!decrypted_hash) {
     return INVALID_ENCRYPTED;
   }
 
-  // Decryption succeeded, now compare the result.
-  std::string value_as_string = ValueAsString(value);
-  std::string message = GetEncryptedHashMessage(seed_, path, value_as_string);
-  std::string expected_sha256_hash = crypto::SHA256HashString(message);
+  std::string expected_hash = Hash(path, ValueAsString(value));
+  return crypto::SecureMemEqual(base::as_byte_span(*decrypted_hash),
+                                base::as_byte_span(expected_hash))
+             ? VALID_ENCRYPTED
+             : INVALID_ENCRYPTED;
+}
 
-  if (decrypted_hash_string == expected_sha256_hash) {
-    return VALID_ENCRYPTED;
-  } else {
-    return INVALID_ENCRYPTED;
+std::string PrefHashCalculator::HmacSign(std::string_view path,
+                                         std::string_view value) const {
+  crypto::hmac::HmacSigner signer(crypto::hash::kSha256,
+                                  base::as_byte_span(seed_));
+  signer.Update(base::as_byte_span(device_id_));
+  signer.Update(base::as_byte_span(path));
+  signer.Update(base::as_byte_span(value));
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  signer.Finish(result);
+  return base::HexEncode(result);
+}
+
+[[nodiscard]] bool PrefHashCalculator::HmacVerify(
+    std::string_view path,
+    std::string_view value,
+    std::string_view sig_hex) const {
+  std::array<uint8_t, crypto::hash::kSha256Size> sig;
+  if (!base::HexStringToSpan(sig_hex, sig)) {
+    return false;
   }
+  crypto::hmac::HmacVerifier verifier(crypto::hash::kSha256,
+                                      base::as_byte_span(seed_));
+  verifier.Update(base::as_byte_span(device_id_));
+  verifier.Update(base::as_byte_span(path));
+  verifier.Update(base::as_byte_span(value));
+  return verifier.Finish(sig);
+}
+
+std::string PrefHashCalculator::Hash(std::string_view path,
+                                     std::string_view value) const {
+  crypto::hash::Hasher hasher(crypto::hash::kSha256);
+  hasher.Update(base::as_byte_span(seed_));
+  hasher.Update(base::as_byte_span(path));
+  hasher.Update(base::as_byte_span(value));
+
+  std::array<uint8_t, crypto::hash::kSha256Size> result;
+  hasher.Finish(result);
+  return std::string(base::as_string_view(result));
 }

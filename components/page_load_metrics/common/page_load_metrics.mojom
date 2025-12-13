@@ -4,13 +4,14 @@
 
 module page_load_metrics.mojom;
 
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/byte_count.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import
-  "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "services/network/public/mojom/request_priority.mojom";
+import "third_party/blink/public/mojom/loader/javascript_framework_detection.mojom";
 import "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // TimeDeltas below relative to navigation start.
 struct DocumentTiming {
@@ -96,6 +97,22 @@ struct PaintTiming {
   mojo_base.mojom.TimeDelta? first_input_or_scroll_notified_timestamp;
 };
 
+// `MonotonicPaintTiming` contains the full-resolution `TimeTicks` versions of a
+// subset of `PaintTiming` fields.
+// It is used when the browser needs to calculate a duration between a paint
+// event and another event timestamped in the browser, e.g. application launch.
+// The `TimeDelta` versions in `PaintTiming` are relative to navigation start,
+// and both of them are converted in a way that reconstructing the original
+// `TimeTicks` from them can be lossy. These raw `TimeTicks` values allow for
+// more accurate duration calculations.
+struct MonotonicPaintTiming {
+  // Time when the first paint is performed.
+  mojo_base.mojom.TimeTicks? first_paint;
+
+  // Time when the first contentful thing (image, text, etc.) is painted.
+  mojo_base.mojom.TimeTicks? first_contentful_paint;
+};
+
 // TimeDeltas below represent durations of time during the page load.
 struct ParseTiming {
   // Time that the document's parser started and stopped parsing main resource
@@ -115,8 +132,8 @@ struct ParseTiming {
   // equal to parse_blocked_on_script_load_duration. Note that this value may be
   // updated multiple times during the period between parse_start and
   // parse_stop. Note that some uncommon cases where scripts are loaded via
-  // document.write are not currently covered by this field. See crbug/600711
-  // for details.
+  // document.write are not currently covered by this field. See
+  // crbug.com/41247575 for details.
   mojo_base.mojom.TimeDelta? parse_blocked_on_script_load_from_document_write_duration;
 
   // Sum of times when the parser is executing a script.  This duration takes
@@ -130,7 +147,7 @@ struct ParseTiming {
   // parse_blocked_on_script_load_duration. Note that this value may be updated
   // multiple times during the period between parse_start and parse_stop. Note
   // that some uncommon cases where scripts are loaded via document.write are
-  // not currently covered by this field. See crbug/600711 for details.
+  // not currently covered by this field. See crbug.com/41247575 for details.
   mojo_base.mojom.TimeDelta? parse_blocked_on_script_execution_from_document_write_duration;
 };
 
@@ -215,6 +232,10 @@ struct PageLoadTiming {
   // Time when the standard UserTiming mark `mark_interactive` occurs.
   mojo_base.mojom.TimeDelta? user_timing_mark_interactive;
 
+  // The full-resolution monotonic times of the selected subset of
+  // `paint_timing`.
+  MonotonicPaintTiming? monotonic_paint_timing;
+
   // If you add additional members, also be sure to update page_load_timing.h.
 };
 
@@ -237,11 +258,11 @@ struct FrameMetadata {
   // hasn't changed).
   gfx.mojom.Rect? main_frame_viewport_rect;
 
-  // The image ad rectangles within the main frame. Empty rectangles are used to
-  // signal the removal of the rectangle. The map keys are the element ids. This
-  // is only populated for the main frame, for the first time
-  // each rectangle is initially computed and for any subsequent changes.
-  map<int32, gfx.mojom.Rect> main_frame_image_ad_rects;
+  // A map of ad element node IDs to their bounding rectangles in the main
+  // frame's coordinate system. Empty rectangles are used to signal the removal
+  // of the element. This is only populated for the main frame, for the first
+  // time each rectangle is initially computed and for any subsequent changes.
+  map<int32, gfx.mojom.Rect> main_frame_ad_rects;
 
   // Detected versions of JavaScript frameworks in the page.
   blink.mojom.JavaScriptFrameworkDetectionResult framework_detection_result;
@@ -474,19 +495,19 @@ struct ResourceDataUpdate {
 
   // Network bytes received for the resource since the last timing update
   // from renderer to browser.
-  int64 delta_bytes = 0;
+  mojo_base.mojom.ByteCount delta_bytes;
 
   // Total network bytes received for the resource across timing updates. This
   // is the aggregate of the |delta_bytes| from each timing update.
-  int64 received_data_length = 0;
+  mojo_base.mojom.ByteCount received_data_length;
 
   // The length of the response body for the resource before removing any
   // content encodings. Only set for complete resources.
-  int64 encoded_body_length = 0;
+  mojo_base.mojom.ByteCount encoded_body_length;
 
   // The length of the response body in bytes for the resource after decoding.
   // Only set for complete resources.
-  int64 decoded_body_length = 0;
+  mojo_base.mojom.ByteCount decoded_body_length;
 
   // Whether this resource load has completed.
   bool is_complete;
@@ -542,19 +563,8 @@ struct CpuTiming {
   mojo_base.mojom.TimeDelta task_time;
 };
 
-// Metrics about general input delay.
+// Data for user interaction latencies.
 struct InputTiming {
-
-  // The number of user interactions, including click, tap and key press.
-  uint64 num_interactions = 0;
-
-  // List of user interactions since last update.
-  // TODO(crbug.com/382949422): Remove the needless union wrapper.
-  UserInteractionLatencies max_event_durations;
-};
-
-// Data for user interaction latencies which can be meausred in different ways.
-union UserInteractionLatencies {
   array<UserInteractionLatency> user_interaction_latencies;
 };
 
@@ -638,6 +648,12 @@ struct SoftNavigationMetrics {
   // The renderer side navigation id that increments when a soft navigation
   // happens.
   uint32 navigation_id;
+
+  // Identifies the same document navigation for the initial URL change.
+  // This allows us to map to the UKM Source ID in the browser side,
+  // and therefore attribute the metrics to the correct URL
+  // when any corresponding soft navigation completes.
+  mojo_base.mojom.UnguessableToken? same_document_metrics_token;
 
   // The LargestContentfulPaint of a soft navigation, that is, the largest
   // contentful paint that happened after a soft navigation is detected and

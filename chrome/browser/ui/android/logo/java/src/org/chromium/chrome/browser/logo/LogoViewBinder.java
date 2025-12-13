@@ -44,6 +44,9 @@ class LogoViewBinder
             logoView.updateLogo(model.get(LogoProperties.LOGO));
         } else if (LogoProperties.DEFAULT_GOOGLE_LOGO == propertyKey) {
             logoView.setDefaultGoogleLogo(model.get(LogoProperties.DEFAULT_GOOGLE_LOGO));
+        } else if (LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE == propertyKey) {
+            logoView.setDefaultGoogleLogoDrawable(
+                    model.get(LogoProperties.DEFAULT_GOOGLE_LOGO_DRAWABLE));
         } else if (LogoProperties.SHOW_LOADING_VIEW == propertyKey) {
             logoView.showLoadingView();
         } else if (LogoProperties.ANIMATED_LOGO == propertyKey) {
@@ -52,6 +55,8 @@ class LogoViewBinder
             logoView.setLogoAvailableCallback(model.get(LogoProperties.LOGO_AVAILABLE_CALLBACK));
         } else if (LogoProperties.DOODLE_SIZE == propertyKey) {
             logoView.setDoodleSize(model.get(LogoProperties.DOODLE_SIZE));
+        } else if (LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO == propertyKey) {
+            logoView.maybeShowDefaultLogoDrawable();
         } else {
             assert false : "Unhandled property detected in LogoViewBinder!";
         }

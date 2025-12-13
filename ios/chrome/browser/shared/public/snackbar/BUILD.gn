@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("snackbar") {
+  sources = [
+    "snackbar_message.h",
+    "snackbar_message.mm",
+    "snackbar_message_action.h",
+    "snackbar_message_action.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:tests_hook",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "snackbar_constants.h",
+    "snackbar_constants.mm",
+  ]
+  deps = [ "//base" ]
+}

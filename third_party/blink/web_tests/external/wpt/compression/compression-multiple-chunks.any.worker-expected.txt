@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] compressing 2 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 3 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 4 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 5 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 6 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 7 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 8 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 9 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 10 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 11 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 12 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 13 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 14 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 15 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] compressing 16 chunks with brotli should work
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+Harness: the test ran to completion.
+

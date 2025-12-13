@@ -13,7 +13,9 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
@@ -41,6 +43,7 @@ public class BottomSheetUnitTest {
     private static final int SHEET_PEEK_HEIGHT = 60;
 
     @Mock private ViewGroup mSheetContainer;
+    @Mock private View mSheetBackground;
     @Mock private MarginLayoutParams mSheetLayoutParams;
     @Mock private BottomSheetContent mSheetContent;
     @Mock private TouchRestrictingFrameLayout mToolbarHolder;
@@ -61,6 +64,7 @@ public class BottomSheetUnitTest {
         when(mSheetContainer.getHeight()).thenReturn(SHEET_CONTAINER_HEIGHT);
         mBottomSheet.setSheetContainerForTesting(mSheetContainer);
         mBottomSheet.setToolbarHolderForTesting(mToolbarHolder);
+        mBottomSheet.setSheetBackgroundForTesting(mSheetBackground);
     }
 
     @After
@@ -202,6 +206,32 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Half-height state sheet bg is different.",
                 expectedColor,
+                mBottomSheet.getSheetBackgroundColor());
+    }
+
+    @Test
+    public void testBackgroundColorOverride() {
+        final int overrideColor = Color.CYAN;
+        doReturn(true).when(mSheetContent).hasSolidBackgroundColor();
+        doReturn(overrideColor).when(mSheetContent).getSheetBackgroundColorOverride();
+
+        mBottomSheet.showContent(mSheetContent);
+        assertEquals(
+                "Sheet bg color should be the override color.",
+                overrideColor,
+                mBottomSheet.getSheetBackgroundColor());
+    }
+
+    @Test
+    public void testBackgroundColorOverride_Transparent() {
+        doReturn(true).when(mSheetContent).hasSolidBackgroundColor();
+        doReturn(Color.TRANSPARENT).when(mSheetContent).getSheetBackgroundColorOverride();
+
+        mBottomSheet.showContent(mSheetContent);
+
+        assertEquals(
+                "Sheet bg color should be the override color.",
+                SemanticColorUtils.getSheetBgColor(mActivity),
                 mBottomSheet.getSheetBackgroundColor());
     }
 }

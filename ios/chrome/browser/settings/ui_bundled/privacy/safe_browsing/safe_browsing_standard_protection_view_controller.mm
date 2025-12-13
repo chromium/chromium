@@ -13,9 +13,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/cells/safe_browsing_header_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/privacy/safe_browsing/safe_browsing_standard_protection_view_controller_delegate.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -93,43 +90,9 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 
 #pragma mark - Private
 
-// Called when switch is toggled.
-- (void)switchAction:(UISwitch*)sender {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:sender.tag];
-  DCHECK(indexPath);
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.modelDelegate toggleSwitchItem:item withValue:sender.isOn];
-}
-
 // Removes the view as a result of pressing "Done" button.
 - (void)dismiss {
   [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - UITableViewDataSource
-
-- (UITableViewCell*)tableView:(UITableView*)tableView
-        cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
-    TableViewSwitchCell* switchCell =
-        base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-    [switchCell.switchView addTarget:self
-                              action:@selector(switchAction:)
-                    forControlEvents:UIControlEventValueChanged];
-    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-    switchCell.switchView.tag = item.type;
-  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
-    TableViewInfoButtonCell* infoCell =
-        base::apple::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-    [infoCell.trailingButton addTarget:self
-                                action:@selector(didTapManagedUIInfoButton:)
-                      forControlEvents:UIControlEventTouchUpInside];
-  }
-
-  return cell;
 }
 
 #pragma mark - UIResponder
@@ -214,6 +177,10 @@ const CGFloat kSafeBrowsingStandardProtectionContentInset = 16;
 
 - (void)setMetricIconHeader:(SafeBrowsingHeaderItem*)metricIconHeader {
   _metricIconHeader = metricIconHeader;
+}
+
+- (void)showManagedUIInfoForButton:(UIButton*)button {
+  [self didTapManagedUIInfoButton:button];
 }
 
 #pragma mark - CollectionViewController

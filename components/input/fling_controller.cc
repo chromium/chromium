@@ -7,7 +7,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/input/features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gestures/blink/web_gesture_curve_impl.h"
 
@@ -161,19 +161,21 @@ void FlingController::ProcessGestureFlingStart(
   if (!UpdateCurrentFlingState(gesture_event.event))
     return;
 
-  TRACE_EVENT_ASYNC_BEGIN2("input", kFlingTraceName, this, "vx",
-                           current_fling_parameters_.velocity.x(), "vy",
-                           current_fling_parameters_.velocity.y());
+  TRACE_EVENT_BEGIN("input", perfetto::StaticString(kFlingTraceName),
+                    perfetto::Track::FromPointer(this), "vx",
+                    current_fling_parameters_.velocity.x(), "vy",
+                    current_fling_parameters_.velocity.y());
 
   last_progress_time_ = base::TimeTicks();
 
   // Wait for BeginFrame to call ProgressFling when
   // SetNeedsBeginFrameForFlingProgress is used to progress flings instead of
   // compositor animation observer (happens on Android WebView).
-  if (scheduler_client_->NeedsBeginFrameForFlingProgress())
-    ScheduleFlingProgress();
-  else
+  if (scheduler_client_->ProgressFlingOnFlingStart()) {
     ProgressFling(clock_->NowTicks());
+  } else {
+    ScheduleFlingProgress();
+  }
 }
 
 void FlingController::ScheduleFlingProgress() {
@@ -197,7 +199,8 @@ void FlingController::ProgressFling(
   if (!fling_curve_)
     return;
 
-  TRACE_EVENT_ASYNC_STEP_INTO0("input", kFlingTraceName, this, "ProgressFling");
+  TRACE_EVENT_INSTANT("input", "ProgressFling",
+                      perfetto::Track::FromPointer(this));
 
   if (!first_fling_update_sent()) {
     // Guard against invalid as there are no guarantees fling event and progress
@@ -246,10 +249,7 @@ void FlingController::ProgressFling(
   if (std::abs(delta_to_scroll.x()) > kMinInertialScrollDelta ||
       std::abs(delta_to_scroll.y()) > kMinInertialScrollDelta) {
     base::TimeTicks event_generation_time =
-        base::FeatureList::IsEnabled(
-            features::kUseFirstCoalescedFrameAsFlingGenerationTimestamp)
-            ? first_coalesced_frame_begin_time.value_or(current_time)
-            : current_time;
+        first_coalesced_frame_begin_time.value_or(current_time);
     GenerateAndSendFlingProgressEvents(event_generation_time, delta_to_scroll);
     last_progress_time_ = current_time;
   }
@@ -373,7 +373,8 @@ void FlingController::EndCurrentFling(base::TimeTicks current_time) {
 
   if (fling_curve_) {
     scheduler_client_->DidStopFlingingOnBrowser(weak_ptr_factory_.GetWeakPtr());
-    TRACE_EVENT_ASYNC_END0("input", kFlingTraceName, this);
+    TRACE_EVENT_END("input",
+                    /* kFlingTraceName */ perfetto::Track::FromPointer(this));
   }
 
   fling_curve_.reset();

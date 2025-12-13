@@ -9,6 +9,7 @@ import mojom.generate.module as module
 _COMMON_ATTRIBUTES = {
     'EnableIf',
     'EnableIfNot',
+    'VendorSpecified',
 }
 
 # For struct, union & parameter lists.
@@ -35,6 +36,7 @@ _ENUMVAL_ATTRIBUTES = _COMMON_ATTRIBUTES | {
 
 _INTERFACE_ATTRIBUTES = _COMMON_ATTRIBUTES | {
     'DispatchDebugAlias',
+    'DirectReceiver',
     'RenamedFrom',
     'RequireContext',
     'RuntimeFeature',
@@ -112,7 +114,6 @@ _NATIVE_ALLOWLIST = {
     'content.mojom.PageTransition',
     'content.mojom.ScrollbarButtonsPlacement',
     'content.mojom.ScrollerStyle',
-    'content.mojom.SystemThemeColor',
     'content.mojom.WebPluginInfo',
     'gpu.mojom.Capabilities',
     'gpu.mojom.ContextLostReason',

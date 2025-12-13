@@ -30,7 +30,7 @@ const char kWebUIResourcesHost[] = "resources";
 
 // Maps a path name (i.e. "/js/path.js") to a resource map entry. Returns
 // nullptr if not found.
-const webui::ResourcePath* PathToResource(const std::string& path) {
+const webui::ResourcePath* PathToResource(std::string_view path) {
   for (const auto& resource : kWebuiResources) {
     if (path == resource.path) {
       return &resource;
@@ -61,7 +61,7 @@ std::string SharedResourcesDataSourceIOS::GetSource() const {
 }
 
 void SharedResourcesDataSourceIOS::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     URLDataSourceIOS::GotDataCallback callback) {
   const webui::ResourcePath* resource = PathToResource(path);
   DCHECK(resource) << " path: " << path;
@@ -81,7 +81,7 @@ void SharedResourcesDataSourceIOS::StartDataRequest(
 }
 
 std::string SharedResourcesDataSourceIOS::GetMimeType(
-    const std::string& path) const {
+    std::string_view path) const {
   std::string mime_type;
   net::GetMimeTypeFromFile(base::FilePath().AppendASCII(path), &mime_type);
   return mime_type;

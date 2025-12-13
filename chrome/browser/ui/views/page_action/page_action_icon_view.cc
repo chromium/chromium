@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -36,6 +37,7 @@
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 
 float PageActionIconView::Delegate::GetPageActionInkDropVisibleOpacity() const {
@@ -56,7 +58,7 @@ bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
 }
 
 bool PageActionIconView::Delegate::ShouldHidePageActionIcon(
-    PageActionIconView* icon_view) const {
+    const PageActionIconView* icon_view) const {
   return false;
 }
 
@@ -233,7 +235,7 @@ void PageActionIconView::SetIconColor(SkColor icon_color) {
   }
   icon_color_ = icon_color;
   UpdateIconImage();
-  OnPropertyChanged(&icon_color_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&icon_color_, views::PropertyEffects::kNone);
 }
 
 SkColor PageActionIconView::GetIconColor() const {
@@ -246,7 +248,7 @@ void PageActionIconView::SetActive(bool active) {
   }
   active_ = active;
   UpdateIconImage();
-  OnPropertyChanged(&active_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&active_, views::PropertyEffects::kNone);
   // For StarView
   UpdateTooltipText();
 }
@@ -256,9 +258,13 @@ bool PageActionIconView::GetActive() const {
 }
 
 void PageActionIconView::Update() {
-  // Currently no page action icon should be visible during user input.
-  // A future subclass may need a hook here if that changes.
-  if (delegate_->ShouldHidePageActionIcons()) {
+  // In general, no page action icon should be visible during user input.
+  // However, the AIM page action is an exception to this rule since it has
+  // special visibility criteria.
+  // TODO(crbug.com/432744091): Roll the AIM button edge-case logic into the
+  // implementation of `ShouldHidePageActionIcons()`.
+  if (delegate_->ShouldHidePageActionIcons() &&
+      this->action_id_ != kActionAiMode) {
     ResetSlideAnimation(/*show=*/false);
     SetVisible(false);
   } else {

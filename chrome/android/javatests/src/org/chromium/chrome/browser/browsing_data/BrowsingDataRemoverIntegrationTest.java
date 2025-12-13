@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeVerificationResultStore;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
@@ -27,6 +28,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -164,6 +166,7 @@ public class BrowsingDataRemoverIntegrationTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
     public void testClearingTabs() throws TimeoutException {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         String testUrl = testServer.getURL(TEST_PATH);
@@ -191,14 +194,16 @@ public class BrowsingDataRemoverIntegrationTest {
 
         Assert.assertTrue(
                 UrlUtilities.isNtpUrl(mActivityTestRule.getWebContents().getVisibleUrl()));
-        Assert.assertEquals(
-                new GURL(testUrl),
-                mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelectorSupplier()
-                        .get()
-                        .getModel(/* incognito= */ true)
-                        .getTabAt(0)
-                        .getUrl());
+        GURL url =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()
+                                        .getModel(/* incognito= */ true)
+                                        .getTabAt(0)
+                                        .getUrl());
+        Assert.assertEquals(new GURL(testUrl), url);
     }
 }

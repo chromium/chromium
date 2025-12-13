@@ -34,14 +34,9 @@ extern const int kMaxCardsInFeed;
 // Stores the time when the user visits an article on the feed.
 extern const char kArticleVisitTimestampKey[];
 // Stores the time elapsed on the feed when the user leaves.
-extern const char kLongFeedVisitTimeAggregateKey[];
-extern const char kLongFollowingFeedVisitTimeAggregateKey[];
 extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
-extern const char kLastUsedFeedForGoodVisitsKey[];
 // Stores the last interaction time for Good Visits (NSDate).
-extern const char kLastInteractionTimeForGoodVisits[];
 extern const char kLastInteractionTimeForDiscoverGoodVisits[];
-extern const char kLastInteractionTimeForFollowingGoodVisits[];
 // Stores the last day the Time in Feed was reported on UMA. It stores the
 // midnight (beginning of the day) of the last interaction.
 extern const char kLastDayTimeInFeedReportedKey[];
@@ -90,51 +85,6 @@ enum class FeedRefreshTrigger {
 
   // Change this to match max value.
   kMaxValue = kBackgroundWarmStartAppClose,
-};
-
-// Enum class contains values indicating the type of follow request. Ex.
-// kFollowRequestFollow means the user has sent a request to follow a website.
-enum class FollowRequestType {
-  kFollowRequestFollow = 0,
-  kFollowRequestUnfollow = 1,
-
-  // Change this to match max value.
-  kMaxValue = kFollowRequestUnfollow,
-};
-
-// Enum class contains values indicating the type of follow confirmation type.
-// Ex. kFollowSucceedSnackbarShown means a confirmation is shown after the user
-// has successfully followed a website.
-enum class FollowConfirmationType {
-  kFollowSucceedSnackbarShown = 0,
-  kFollowErrorSnackbarShown = 1,
-  kUnfollowSucceedSnackbarShown = 2,
-  kUnfollowErrorSnackbarShown = 3,
-
-  // Change this to match max value.
-  kMaxValue = kUnfollowErrorSnackbarShown,
-};
-
-// Enum class contains values indicating the type of snackbar action button.
-enum class FollowSnackbarActionType {
-  kSnackbarActionGoToFeed = 0,
-  kSnackbarActionUndo = 1,
-  kSnackbarActionRetryFollow = 2,
-  kSnackbarActionRetryUnfollow = 3,
-
-  // Change this to match max value.
-  kMaxValue = kSnackbarActionRetryUnfollow,
-};
-
-// Enum class for the times when we log the user's follow count.
-// To be kept in sync with the ContentSuggestions.Feed.WebFeed.FollowCount
-// variants.
-typedef NS_ENUM(NSInteger, FollowCountLogReason) {
-  FollowCountLogReasonContentShown = 0,
-  FollowCountLogReasonNoContentShown,
-  FollowCountLogReasonAfterFollow,
-  FollowCountLogReasonAfterUnfollow,
-  FollowCountLogReasonEngaged
 };
 
 // Values for the UMA ContentSuggestions.Feed.LoadStreamStatus.LoadMore
@@ -196,22 +146,6 @@ enum class UserSettingsOnStart {
   kMaxValue = kSignedInNoRecentData,
 };
 
-// Values for UMA ContentSuggestions.Feed.WebFeed.SortType* histograms.
-// This enum is a copy of FollowingFeedSortType in feed_constants.h, used
-// exclusively for metrics recording. This should always be kept in sync with
-// that enum and FollowingFeedSortType in enums.xml.
-enum class FeedSortType {
-  // The sort type is unspecified. With the Following feed selected, this log
-  // indicates a problem.
-  kUnspecifiedSortType = 0,
-  // The feed is grouped by publisher.
-  kGroupedByPublisher = 1,
-  // The feed is sorted in reverse-chronological order.
-  kSortedByLatest = 2,
-  // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = kSortedByLatest,
-};
-
 // The values for the Feed Activity Buckets metric.
 enum class FeedActivityBucket {
   // No activity bucket for users active 0/28 days.
@@ -236,19 +170,14 @@ extern const char kDiscoverFeedUserActionHistogram[];
 // Histogram name for the Discover feed user actions commands.
 extern const char kDiscoverFeedUserActionCommandHistogram[];
 
-// Histogram name for the feed engagement types.
+// Histogram name for the feed engagement.
 extern const char kDiscoverFeedEngagementTypeHistogram[];
-extern const char kFollowingFeedEngagementTypeHistogram[];
-extern const char kAllFeedsEngagementTypeHistogram[];
 
 // Histogram name for the feed activity bucket metric.
 extern const char kAllFeedsActivityBucketsHistogram[];
 
 // Histogram name for a Discover feed card shown at index.
 extern const char kDiscoverFeedCardShownAtIndex[];
-
-// Histogram name for a Following feed card shown at index.
-extern const char kFollowingFeedCardShownAtIndex[];
 
 // Histogram name to capture Feed Notice card impressions.
 extern const char kDiscoverFeedNoticeCardFulfilled[];
@@ -284,9 +213,6 @@ extern const char kDiscoverFeedNetworkDuration[];
 // Histogram name to track opened articles from the Discover feed.
 extern const char kDiscoverFeedURLOpened[];
 
-// Histogram name to track opened articles from the Following feed.
-extern const char kFollowingFeedURLOpened[];
-
 // Histogram name to capture if the last Feed fetch had logging enabled.
 extern const char kDiscoverFeedActivityLoggingEnabled[];
 
@@ -302,30 +228,6 @@ extern const char kDiscoverUniformityFlag[];
 
 // Histogram name for the Feed settings when the App is being start.
 extern const char kFeedUserSettingsOnStart[];
-
-// Histogram name for selecting Following feed sort types.
-extern const char kFollowingFeedSortType[];
-
-// Histogram name for the selected sort type when engaging with the Following
-// feed.
-extern const char kFollowingFeedSortTypeWhenEngaged[];
-
-// Histogram names for logging followed publisher count after certain events.
-// After showing Following feed with content.
-extern const char kFollowCountFollowingContentShown[];
-// After showing Following feed without content.
-extern const char kFollowCountFollowingNoContentShown[];
-// After following a channel.
-extern const char kFollowCountAfterFollow[];
-// After unfollowing a channel.
-extern const char kFollowCountAfterUnfollow[];
-
-// Histogram name for last visible card when switching from Discover to
-// Following feed.
-extern const char kDiscoverIndexWhenSwitchingFeed[];
-// Histogram name for last visible card when switching from Following to
-// Discover feed.
-extern const char kFollowingIndexWhenSwitchingFeed[];
 
 // Histogram name for sign-in related UI triggered by Feed entry points.
 extern const char kFeedSignInUI[];
@@ -360,50 +262,16 @@ extern const char kDiscoverFeedUserActionReportContentOpened[];
 extern const char kDiscoverFeedUserActionReportContentClosed[];
 extern const char kDiscoverFeedUserActionPreviewTapped[];
 
-// User action names for following operations.
-extern const char kFollowRequested[];
-extern const char kUnfollowRequested[];
-extern const char kSnackbarGoToFeedButtonTapped[];
-extern const char kSnackbarUndoButtonTapped[];
-extern const char kSnackbarRetryFollowButtonTapped[];
-extern const char kSnackbarRetryUnfollowButtonTapped[];
-
-// User action names for management surface.
-extern const char kDiscoverFeedUserActionManagementTappedUnfollow[];
-extern const char
-    kDiscoverFeedUserActionManagementTappedRefollowAfterUnfollowOnSnackbar[];
-extern const char
-    kDiscoverFeedUserActionManagementTappedUnfollowTryAgainOnSnackbar[];
-
-// User action names for first follow surface.
-extern const char kFirstFollowGoToFeedButtonTapped[];
-extern const char kFirstFollowGotItButtonTapped[];
-
 // User action name for engaging with feed.
 extern const char kDiscoverFeedUserActionEngaged[];
 
 // User action indicating that the feed will refresh.
 extern const char kFeedWillRefresh[];
 
-// User action indicating that the Discover feed was selected.
-extern const char kDiscoverFeedSelected[];
-
-// User action indicating that the Following feed was selected.
-extern const char kFollowingFeedSelected[];
-
 // User action triggered when the NTP view hierarchy was fixed after being
 // detected as broken.
 // TODO(crbug.com/40799579): Remove this when issue is fixed.
 extern const char kNTPViewHierarchyFixed[];
-
-// User actions for following and unfollowing publishers from the overflow menu.
-extern const char kFollowFromMenu[];
-extern const char kUnfollowFromMenu[];
-
-// User action triggered when a Following feed sort type selected from the sort
-// menu.
-extern const char kFollowingFeedGroupByPublisher[];
-extern const char kFollowingFeedSortByLatest[];
 
 #pragma mark - User Actions for Feed Sign-in Promo
 

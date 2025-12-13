@@ -19,6 +19,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -85,7 +86,7 @@ void PaymentRequestRowView::SetClickable(bool clickable) {
   }
   clickable_ = clickable;
   UpdateButtonState();
-  OnPropertyChanged(&clickable_, views::PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&clickable_, views::PropertyEffects::kPaint);
 }
 
 base::WeakPtr<PaymentRequestRowView> PaymentRequestRowView::AsWeakPtr() {
@@ -102,8 +103,7 @@ void PaymentRequestRowView::SetRowInsets(const gfx::Insets& row_insets) {
   }
   row_insets_ = row_insets;
   UpdateBottomSeparatorVisualState();
-  OnPropertyChanged(&row_insets_,
-                    views::PropertyEffects::kPropertyEffectsPaint);
+  OnPropertyChanged(&row_insets_, views::PropertyEffects::kPaint);
 }
 
 void PaymentRequestRowView::SetBottomSeparatorVisible(bool visible) {

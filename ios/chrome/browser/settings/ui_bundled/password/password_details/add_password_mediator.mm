@@ -61,8 +61,6 @@ bool CheckForDuplicates(
 @interface AddPasswordMediator () <AddPasswordViewControllerDelegate> {
   // Password Check manager.
   raw_ptr<IOSChromePasswordCheckManager> _manager;
-  // Pref service.
-  raw_ptr<PrefService> _prefService;
   // Sync service.
   raw_ptr<syncer::SyncService> _syncService;
   // Used to create and run validation tasks.
@@ -89,20 +87,17 @@ bool CheckForDuplicates(
 
 - (instancetype)initWithDelegate:(id<AddPasswordMediatorDelegate>)delegate
             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                     prefService:(PrefService*)prefService
                      syncService:(syncer::SyncService*)syncService
      passwordRequirementsService:
          (password_manager::PasswordRequirementsService*)
              passwordRequirementsService {
   DCHECK(delegate);
   DCHECK(manager);
-  DCHECK(prefService);
   DCHECK(syncService);
   self = [super init];
   if (self) {
     _delegate = delegate;
     _manager = manager;
-    _prefService = prefService;
     _syncService = syncService;
     _passwordRequirementsService = passwordRequirementsService;
     _sequencedTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -118,8 +113,7 @@ bool CheckForDuplicates(
   }
   _consumer = consumer;
   std::optional<std::string> account =
-      password_manager::sync_util::GetAccountForSaving(_prefService,
-                                                       _syncService);
+      password_manager::sync_util::GetAccountForSaving(_syncService);
   if (account) {
     CHECK(!account->empty());
     [_consumer setAccountSavingPasswords:SysUTF8ToNSString(*account)];
@@ -161,8 +155,7 @@ bool CheckForDuplicates(
 
   credential.note = SysNSStringToUTF16(note);
   credential.stored_in = {
-      password_manager::features_util::IsAccountStorageEnabled(_prefService,
-                                                               _syncService)
+      password_manager::features_util::IsAccountStorageEnabled(_syncService)
           ? password_manager::PasswordForm::Store::kAccountStore
           : password_manager::PasswordForm::Store::kProfileStore};
 
@@ -226,15 +219,14 @@ bool CheckForDuplicates(
 }
 
 - (BOOL)isTLDMissing {
-  std::string hostname = self.URL.host();
+  std::string hostname = self.URL.GetHost();
   return !base::Contains(hostname, '.');
 }
 
 - (BOOL)shouldShowSuggestPasswordItem {
   // Only show the field `suggestPasswordItem` to user who are signed in and
   // syncing password to their Google Account.
-  return password_manager::features_util::IsAccountStorageEnabled(_prefService,
-                                                                  _syncService);
+  return password_manager::features_util::IsAccountStorageEnabled(_syncService);
 }
 
 // Requests a generated password and calls the completion block with the result.

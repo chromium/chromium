@@ -11,8 +11,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
@@ -24,8 +26,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -37,13 +41,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.jank_tracker.JankScenario;
-import org.chromium.base.jank_tracker.JankTracker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -60,14 +60,18 @@ import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinatorFactory;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpBackgroundImageCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
@@ -81,7 +85,6 @@ import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -89,6 +92,7 @@ import org.chromium.third_party.android.swiperefresh.SwipeRefreshLayout;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -97,6 +101,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Provides a surface that displays an interest feed rendered list of content suggestions. */
 @NullMarked
@@ -107,9 +112,11 @@ public class FeedSurfaceCoordinator
                 SurfaceCoordinator,
                 HasContentListener,
                 FeedContentFirstLoadWatcher {
+    @Nullable ImageView getRecyclerViewSnapshotOverlayForTesting() {
+        return mRecyclerViewSnapshotOverlay;
+    }
 
     protected final Activity mActivity;
-    private final JankTracker mJankTracker;
     private final SnackbarManager mSnackbarManager;
     private final @Nullable View mNtpHeader;
     private final boolean mShowDarkBackground;
@@ -128,7 +135,7 @@ public class FeedSurfaceCoordinator
     private final long mEmbeddingSurfaceCreatedTimeNs;
 
     private FeedSurfaceMediator mMediator;
-
+    private final boolean mIsNtpCustomizationV2Enabled;
     private final UiConfig mUiConfig;
     private final FrameLayout mRootView;
     private boolean mIsActive;
@@ -152,6 +159,7 @@ public class FeedSurfaceCoordinator
     // Feed RecyclerView/xSurface fields.
     private FeedListContentManager mContentManager;
     private final RecyclerView mRecyclerView;
+    private @Nullable ImageView mRecyclerViewSnapshotOverlay;
     private @Nullable FeedSurfaceScope mSurfaceScope;
     private @Nullable FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private HybridListRenderer mHybridListRenderer;
@@ -176,10 +184,12 @@ public class FeedSurfaceCoordinator
     private final Callback<Integer> mTabStripHeightChangeCallback;
 
     // Used to handle padding adjustment when edge to edge is enabled.
-    private @Nullable EdgeToEdgePadAdjuster mEdgePadAdjuster;
+    private final EdgeToEdgePadAdjuster mEdgePadAdjuster;
     private final boolean mIsNewTabPageCustomizationEnabled;
+    private final boolean mIsNewTabPageCustomizationV2Enabled;
     private @Nullable ImageButton mNtpCustomizationButton;
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
+    private @Nullable NtpBackgroundImageCoordinator mNtpBackgroundImageCoordinator;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
 
     /** Provides the additional capabilities needed for the container view. */
@@ -187,7 +197,7 @@ public class FeedSurfaceCoordinator
         /**
          * @param context The context of the application.
          */
-        public RootView(Context context) {
+        RootView(Context context) {
             super(context);
         }
 
@@ -200,6 +210,12 @@ public class FeedSurfaceCoordinator
         @Override
         protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
             super.onSizeChanged(width, height, oldWidth, oldHeight);
+            if (oldWidth != 0 && oldHeight != 0 && mRecyclerViewSnapshotOverlay != null) {
+                // TODO(crbug.com/451422517): This is a temporary solution to make resizing on
+                // large screen devices smoother. Remove this once the long term solution is
+                // implemented.
+                handleResize(width, height);
+            }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)) {
                 mRecyclerView.post(mRecyclerView::invalidateItemDecorations);
                 updateNtpHeaderMargins();
@@ -283,7 +299,7 @@ public class FeedSurfaceCoordinator
     // TracingAndPerfScrollListener is explicitly not a ScrollListener due to the fact that the
     // ScrollableContainerDelegate could be null if we are tracking scrolling. However for looking
     // at performance metrics of scrolling we always want to know when feed is scrolling.
-    class TracingAndPerfScrollListener extends RecyclerView.OnScrollListener {
+    static class TracingAndPerfScrollListener extends RecyclerView.OnScrollListener {
         @Override
         public void onScrollStateChanged(RecyclerView view, int newState) {
             switch (mPrevState) {
@@ -311,8 +327,6 @@ public class FeedSurfaceCoordinator
                         endScroll();
                         if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                             startFling();
-                        } else {
-                            finishJankTracking();
                         }
                         break;
                     }
@@ -321,8 +335,6 @@ public class FeedSurfaceCoordinator
                         endFling();
                         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                             startScroll();
-                        } else {
-                            finishJankTracking();
                         }
                         break;
                     }
@@ -338,12 +350,6 @@ public class FeedSurfaceCoordinator
         @Override
         public void onScrolled(RecyclerView view, int dx, int dy) {}
 
-        private void finishJankTracking() {
-            mJankTracker.finishTrackingScenario(
-                    JankScenario.FEED_SCROLLING,
-                    TimeUtils.uptimeMillis() * TimeUtils.NANOSECONDS_PER_MILLISECOND);
-        }
-
         private void startScroll() {
             // TODO(nuskos): These next two are just a "hack" to get a nice track name
             // in the UI (it uses the first event it hits). Eventually with the Perfetto
@@ -351,7 +357,6 @@ public class FeedSurfaceCoordinator
             TraceEvent.startAsync("Feed.ScrollState", hashCode());
             TraceEvent.finishAsync("Feed.ScrollState", hashCode());
             TraceEvent.startAsync("Feed.TouchScrollStarted", hashCode());
-            mJankTracker.startTrackingScenario(JankScenario.FEED_SCROLLING);
         }
 
         private void endScroll() {
@@ -394,7 +399,6 @@ public class FeedSurfaceCoordinator
      * @param activity The containing {@link Activity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param windowAndroid The window of the page.
-     * @param jankTracker tracks the jank during feed scrolling.
      * @param snapScrollHelper The {@link SnapScrollHelper} for the New Tab Page.
      * @param ntpHeader The extra header on top of the feeds for the New Tab Page.
      * @param toolbarHeight The height of the toolbar which overlaps Feed content at the top of the
@@ -420,7 +424,6 @@ public class FeedSurfaceCoordinator
             Activity activity,
             SnackbarManager snackbarManager,
             WindowAndroid windowAndroid,
-            JankTracker jankTracker,
             @Nullable SnapScrollHelper snapScrollHelper,
             @Nullable View ntpHeader,
             @Px int toolbarHeight,
@@ -448,7 +451,6 @@ public class FeedSurfaceCoordinator
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mWindowAndroid = windowAndroid;
-        mJankTracker = jankTracker;
         mShareSupplier = shareDelegateSupplier;
         mScrollableContainerDelegate = externalScrollableContainerDelegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
@@ -463,6 +465,9 @@ public class FeedSurfaceCoordinator
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mIsNewTabPageCustomizationEnabled = ChromeFeatureList.sNewTabPageCustomization.isEnabled();
+        mIsNewTabPageCustomizationV2Enabled =
+                mIsNewTabPageCustomizationEnabled
+                        && ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
         mDefaultBackgroundColor =
                 ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
 
@@ -482,12 +487,28 @@ public class FeedSurfaceCoordinator
         mRecyclerView = setUpView();
         FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
+        mIsNtpCustomizationV2Enabled = ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled();
+        if (mIsNewTabPageCustomizationV2Enabled) {
+            mNtpBackgroundImageCoordinator =
+                    new NtpBackgroundImageCoordinator(
+                            mActivity, mRootView, mUiConfig, mDefaultBackgroundColor);
+        }
+
         // Pull-to-refresh set up.
         if (mSwipeRefreshLayout != null && mSwipeRefreshLayout.getParent() == null) {
             mSwipeRefreshLayout.addView(mRecyclerView);
             mRootView.addView(mSwipeRefreshLayout);
         } else {
             mRootView.addView(mRecyclerView);
+        }
+        // TODO(crbug.com/451422517): This is a temporary solution to prevent NTP flashing.
+        // The snapshot overlay is added to the RootView to cover the RecyclerView during resize.
+        if (ChromeFeatureList.sFluidResize.isEnabled()
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
+            mRecyclerViewSnapshotOverlay = new ImageView(mActivity);
+            mRecyclerViewSnapshotOverlay.setVisibility(View.GONE);
+            mRecyclerViewSnapshotOverlay.setScaleType(ImageView.ScaleType.FIT_START);
+            mRootView.addView(mRecyclerViewSnapshotOverlay);
         }
         if (mSwipeRefreshLayout != null) {
             mSwipeRefreshLayout.addOnRefreshListener(this);
@@ -519,22 +540,40 @@ public class FeedSurfaceCoordinator
                     v -> {
                         showNtpCustomizationBottomSheet();
                     });
+            mNtpCustomizationButton.setContentDescription(
+                    mActivity.getString(R.string.ntp_customization_title));
             mRootView.addView(mNtpCustomizationButton);
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
+        if (mIsNtpCustomizationV2Enabled) {
             mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
             mHomepageStateListener =
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
-                        public void onBackgroundChanged(@Nullable Drawable backgroundDrawable) {
-                            setBackground(backgroundDrawable);
+                        public void onBackgroundImageChanged(
+                                Bitmap originalBitmap,
+                                @Nullable BackgroundImageInfo backgroundImageInfo,
+                                boolean fromInitialization,
+                                @NtpBackgroundImageType int oldType,
+                                @NtpBackgroundImageType int newType) {
+                            setBackground(originalBitmap, backgroundImageInfo, newType);
+                        }
+
+                        @Override
+                        public void onBackgroundColorChanged(
+                                @Nullable NtpThemeColorInfo ntpThemeColorInfo,
+                                @ColorInt int backgroundColor,
+                                boolean fromInitialization,
+                                @NtpBackgroundImageType int oldType,
+                                @NtpBackgroundImageType int newType) {
+                            setBackgroundColor(backgroundColor);
                         }
                     };
 
-            mNtpCustomizationConfigManager.addListener(mHomepageStateListener);
+            mNtpCustomizationConfigManager.addListener(
+                    mHomepageStateListener, activity, /* skipNotify= */ false);
         } else {
-            setBackground(null);
+            setBackgroundColor(mDefaultBackgroundColor);
         }
 
         mHandler = new Handler(Looper.getMainLooper());
@@ -548,7 +587,7 @@ public class FeedSurfaceCoordinator
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.new_tab_page_feed_header, null, false);
             mHeaderView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
-            if (treatment.equals("none")) {
+            if (!treatment.equals("label")) {
                 mHeaderView.setVisibility(View.GONE);
             }
         } else {
@@ -619,29 +658,97 @@ public class FeedSurfaceCoordinator
         FeedSurfaceTracker.getInstance().trackSurface(this);
 
         // Set up edge to edge
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            mRecyclerView, edgeToEdgeControllerSupplier);
-        }
+        mEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        mRecyclerView, edgeToEdgeControllerSupplier);
 
         // Creates streams, initiates content changes.
         mMediator.updateContent();
     }
 
-    // Sets the background image for the embedder NTP.
-    private void setBackground(@Nullable Drawable backgroundDrawable) {
-        if (backgroundDrawable == null) {
-            mRecyclerView.setBackgroundColor(mDefaultBackgroundColor);
-            if (mNtpHeader != null) {
-                mNtpHeader.setBackgroundColor(mDefaultBackgroundColor);
-            }
-            return;
-        }
+    private void handleResize(int newWidth, int newHeight) {
+        if (mRecyclerViewSnapshotOverlay == null) return;
+        Bitmap snapshot = takeRecyclerViewSnapshot(newWidth, newHeight);
+        if (snapshot == null) return;
 
-        mRecyclerView.setBackground(backgroundDrawable);
+        mRecyclerViewSnapshotOverlay.setImageBitmap(snapshot);
+
+        mRecyclerViewSnapshotOverlay.setVisibility(View.VISIBLE);
+        mRecyclerView.setVisibility(View.INVISIBLE);
+
+        mHandler.post(
+                () -> {
+                    if (mRecyclerViewSnapshotOverlay == null) return;
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    mRecyclerViewSnapshotOverlay.setVisibility(View.GONE);
+                    // Recycle the bitmap to free up memory immediately.
+                    Drawable drawable = mRecyclerViewSnapshotOverlay.getDrawable();
+                    if (drawable instanceof BitmapDrawable bitmapDrawable) {
+                        Bitmap bitmap = bitmapDrawable.getBitmap();
+                        if (bitmap != null) {
+                            bitmap.recycle();
+                        }
+                    }
+                    mRecyclerViewSnapshotOverlay.setImageDrawable(null);
+                });
+    }
+
+    private @Nullable Bitmap takeRecyclerViewSnapshot(int newWidth, int newHeight) {
+        int recyclerWidth = newWidth;
+        // The recycler view is padded at the top by the tab strip height.
+        int recyclerHeight = newHeight - mRootView.getPaddingTop();
+
+        if (recyclerWidth <= 0 || recyclerHeight <= 0) {
+            return null;
+        }
+        try {
+            // Manually measure and layout the RecyclerView to the new size.
+            mRecyclerView.measure(
+                    View.MeasureSpec.makeMeasureSpec(recyclerWidth, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(recyclerHeight, View.MeasureSpec.EXACTLY));
+            mRecyclerView.layout(0, 0, recyclerWidth, recyclerHeight);
+
+            Bitmap bitmap =
+                    Bitmap.createBitmap(recyclerWidth, recyclerHeight, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
+            ViewUtils.captureBitmap(mRecyclerView, canvas);
+            return bitmap;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    // Sets the background image for the embedder NTP.
+    private void setBackground(
+            Bitmap originalBitmap,
+            @Nullable BackgroundImageInfo backgroundImageInfo,
+            @NtpBackgroundImageType int backgroundType) {
         if (mNtpHeader != null) {
             mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        mRecyclerView.setBackgroundColor(Color.TRANSPARENT);
+        assumeNonNull(mNtpBackgroundImageCoordinator)
+                .setBackground(originalBitmap, backgroundImageInfo, backgroundType);
+    }
+
+    /**
+     * Sets the background color for the embedder NTP.
+     *
+     * @param backgroundColor The customized background color.
+     */
+    private void setBackgroundColor(@ColorInt int backgroundColor) {
+        mRecyclerView.setBackgroundColor(backgroundColor);
+        if (mNtpBackgroundImageCoordinator != null) {
+            mNtpBackgroundImageCoordinator.clearBackground();
+        }
+
+        if (mNtpHeader != null) {
+            if (backgroundColor != mDefaultBackgroundColor) {
+                mNtpHeader.setBackgroundColor(Color.TRANSPARENT);
+            } else {
+                mNtpHeader.setBackgroundColor(mDefaultBackgroundColor);
+            }
         }
     }
 
@@ -675,7 +782,8 @@ public class FeedSurfaceCoordinator
     }
 
     void showNtpCustomizationBottomSheet() {
-        new NtpCustomizationCoordinator(
+        NtpCustomizationCoordinatorFactory.getInstance()
+                .create(
                         mActivity,
                         mBottomSheetController,
                         () -> mProfile,
@@ -763,6 +871,9 @@ public class FeedSurfaceCoordinator
         if (mNtpCustomizationConfigManager != null) {
             mNtpCustomizationConfigManager.removeListener(mHomepageStateListener);
             mHomepageStateListener = null;
+        }
+        if (mNtpBackgroundImageCoordinator != null) {
+            mNtpBackgroundImageCoordinator.destroy();
         }
     }
 
@@ -1373,6 +1484,11 @@ public class FeedSurfaceCoordinator
         return mMediator.getRestoringStateSupplier();
     }
 
+    @Override
+    public List<String> getFeedUrls() {
+        return mMediator.getFeedUrls();
+    }
+
     private int getLateralPaddingsPx() {
         return mActivity
                 .getResources()
@@ -1400,5 +1516,10 @@ public class FeedSurfaceCoordinator
 
     FrameLayout getRootViewForTesting() {
         return mRootView;
+    }
+
+    public void setBackgroundImageCoordinatorForTesting(
+            NtpBackgroundImageCoordinator backgroundImageCoordinator) {
+        mNtpBackgroundImageCoordinator = backgroundImageCoordinator;
     }
 }

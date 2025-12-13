@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/mojo/common/mojo_data_pipe_read_write.h"
 
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -24,7 +20,7 @@ namespace media {
 
 namespace {
 
-uint32_t kDefaultDataPipeCapacityBytes = 512;
+constexpr uint32_t kDefaultDataPipeCapacityBytes = 512;
 
 class MojoDataPipeReadWrite {
  public:
@@ -59,8 +55,8 @@ class MojoDataPipeReadWrite {
       read_buffer_.resize(buffer.size());
       reader_->Read(read_buffer_.data(), buffer.size(), mock_read_cb.Get());
       run_loop.RunUntilIdle();
-      EXPECT_EQ(0,
-                std::memcmp(buffer.data(), read_buffer_.data(), buffer.size()));
+      UNSAFE_TODO(EXPECT_EQ(
+          0, std::memcmp(buffer.data(), read_buffer_.data(), buffer.size())));
       read_buffer_.clear();
     }
   }

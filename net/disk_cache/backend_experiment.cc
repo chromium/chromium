@@ -25,4 +25,11 @@ bool InBlockfileBackendExperimentGroup() {
              net::features::DiskCacheBackend::kBlockfile;
 }
 
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+bool InSqlBackendExperimentGroup() {
+  return InBackendExperiment() && net::features::kDiskCacheBackendParam.Get() ==
+                                      net::features::DiskCacheBackend::kSql;
+}
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+
 }  // namespace disk_cache

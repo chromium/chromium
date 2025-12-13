@@ -1,0 +1,39 @@
+[document web] name='Material Web Dialogs'
+++[dialog] name='Basic Dialog' labelled-by=[heading]
+++++[section]
+++++++[section]
+++++++++[heading] name='Basic Dialog' label-for=[dialog]
+++++++++++[static] name='Basic Dialog'
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 1 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 2 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 3 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 4 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 5 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 6 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 7 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 8 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 9 to ensure overflow.'
+++++++++++++[paragraph]
+++++++++++++++[static] name='This is line 10 to ensure overflow.'
+++++++++++++[static] name='Dialog Ready'
+++++++++++[section]
+++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[push button] name='Cancel'
+++++++++[section]
+++++++++++[section]
+++++++++++[push button] name='OK'

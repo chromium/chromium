@@ -86,7 +86,9 @@ TEST_F(MessageEventTest, AccountForArrayBufferMemory) {
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());
 
   GCedMessagePortArray* ports = MakeGarbageCollected<GCedMessagePortArray>(0);
-  MessageEvent::Create(ports, serialized_script_value);
+  MessageEvent::Create(ports, serialized_script_value, /* origin=*/nullptr,
+                       MessageEvent::kMessageIsSameOrigin,
+                       /* last_event_id=*/{}, /* source=*/nullptr);
 
   int64_t size_with_event = V8ExternalMemoryAccounterBase::
       GetTotalAmountOfExternalAllocatedMemoryForTesting(scope.GetIsolate());

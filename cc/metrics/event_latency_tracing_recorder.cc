@@ -61,7 +61,9 @@ constexpr perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
     CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
     CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
     CASE(kMouseMoved, MOUSE_MOVED_EVENT);
+    CASE(kInertialGestureScrollEnd, INERTIAL_GESTURE_SCROLL_END);
   }
+#undef CASE
 }
 
 const char* GetVizBreakdownToPresentationName(
@@ -157,6 +159,12 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
         case CompositorFrameReporter::StageType::
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererCompositorFinishedToSubmitCompositorFrame";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitUpdateDisplayTree:
+          return "RendererCompositorFinishedToSubmitUpdateDisplayTree";
+        case CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          return "RendererCompositorFinishedToPresentationCompositorFrame";
         default:
           NOTREACHED() << "Invalid CC stage after compositor thread: "
                        << static_cast<int>(compositor_stage);
@@ -180,6 +188,12 @@ const char* EventLatencyTracingRecorder::GetDispatchToCompositorBreakdownName(
         case CompositorFrameReporter::StageType::
             kSubmitCompositorFrameToPresentationCompositorFrame:
           return "RendererMainFinishedToSubmitCompositorFrame";
+        case CompositorFrameReporter::StageType::
+            kEndActivateToSubmitUpdateDisplayTree:
+          return "RendererMainFinishedToSubmitUpdateDisplayTree";
+        case CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+          return "RendererMainFinishedToPresentationCompositorFrame";
         default:
           NOTREACHED() << "Invalid CC stage after main thread: "
                        << static_cast<int>(compositor_stage);
@@ -204,7 +218,8 @@ const char* EventLatencyTracingRecorder::GetDispatchToTerminationBreakdownName(
     case EventMetrics::DispatchStage::kRendererMainFinished:
       return "RendererMainFinishedToTermination";
     default:
-      NOTREACHED();
+      NOTREACHED() << "Invalid CC stage before termination: "
+                   << static_cast<int>(dispatch_stage);
   }
 }
 
@@ -260,15 +275,10 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
 
         const ScrollUpdateEventMetrics* scroll_update =
             event_metrics->AsScrollUpdate();
-        if (scroll_update) {
-          if (scroll_update->is_janky_scrolled_frame().has_value()) {
-            event_latency->set_is_janky_scrolled_frame(
-                scroll_update->is_janky_scrolled_frame().value());
-          }
-          if (scroll_update->is_janky_scrolled_frame_v3().has_value()) {
-            event_latency->set_is_janky_scrolled_frame_v3(
-                scroll_update->is_janky_scrolled_frame_v3().value());
-          }
+        if (scroll_update &&
+            scroll_update->is_janky_scrolled_frame().has_value()) {
+          event_latency->set_is_janky_scrolled_frame(
+              scroll_update->is_janky_scrolled_frame().value());
         }
         if (args) {
           event_latency->set_vsync_interval_ms(
@@ -352,9 +362,12 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         TRACE_EVENT_BEGIN(kTracingCategory, perfetto::StaticString{stage_name},
                           trace_track, stage_it->start_time);
 
-        if (stage_it->stage_type ==
-            CompositorFrameReporter::StageType::
-                kSubmitCompositorFrameToPresentationCompositorFrame) {
+        if ((stage_it->stage_type ==
+             CompositorFrameReporter::StageType::
+                 kSubmitCompositorFrameToPresentationCompositorFrame) ||
+            (stage_it->stage_type ==
+             CompositorFrameReporter::StageType::
+                 kSubmitUpdateDisplayTreeToPresentationCompositorFrame)) {
           DCHECK(viz_breakdown);
           for (auto it = viz_breakdown->CreateIterator(true); it.IsValid();
                it.Advance()) {

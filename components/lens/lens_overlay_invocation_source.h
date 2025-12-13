@@ -62,7 +62,15 @@ enum class LensOverlayInvocationSource {
   // Experience.
   kFREPromo = 13,
 
-  kMaxValue = kFREPromo
+  // The content area context menu entry that is available when the user
+  // right-clicks on selected text. Only used on Desktop.
+  kContentAreaContextMenuText = 14,
+
+  // The content area context menu entry that is available when the user
+  // right-clicks on a video frame. Only used on Desktop.
+  kContentAreaContextMenuVideo = 15,
+
+  kMaxValue = kContentAreaContextMenuVideo
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayInvocationSource)
 // When adding a value here, also update:

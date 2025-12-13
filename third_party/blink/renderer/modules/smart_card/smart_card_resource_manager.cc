@@ -93,8 +93,8 @@ ScriptPromise<SmartCardContext> SmartCardResourceManager::establishContext(
   EnsureServiceConnection();
 
   service_->CreateContext(
-      WTF::BindOnce(&SmartCardResourceManager::OnCreateContextDone,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      BindOnce(&SmartCardResourceManager::OnCreateContextDone,
+               WrapPersistent(this), WrapPersistent(resolver)));
   return resolver->Promise();
 }
 
@@ -110,8 +110,8 @@ void SmartCardResourceManager::EnsureServiceConnection() {
   GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
-      WTF::BindOnce(&SmartCardResourceManager::CloseServiceConnection,
-                    WrapWeakPersistent(this)));
+      BindOnce(&SmartCardResourceManager::CloseServiceConnection,
+               WrapWeakPersistent(this)));
 }
 
 void SmartCardResourceManager::OnCreateContextDone(

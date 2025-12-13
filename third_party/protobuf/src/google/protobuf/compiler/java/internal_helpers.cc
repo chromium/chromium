@@ -22,6 +22,7 @@
 #include "absl/strings/str_format.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
+#include "google/protobuf/compiler/code_generator_lite.h"
 #include "google/protobuf/compiler/java/context.h"
 #include "google/protobuf/compiler/java/doc_comment.h"
 #include "google/protobuf/compiler/java/helpers.h"
@@ -141,7 +142,7 @@ void GenerateLarge(
                                 : "com.google.protobuf.ProtocolMessageEnum"},
        {"proto_non_null_annotation",
         [&] {
-          if (!context->options().opensource_runtime) {
+          if (!google::protobuf::internal::IsOss()) {
             printer->Emit(R"(
               @com.google.protobuf.Internal.ProtoNonnullApi
             )");
@@ -149,7 +150,7 @@ void GenerateLarge(
         }},
        {"method_return_null_annotation",
         [&] {
-          if (!context->options().opensource_runtime) {
+          if (!google::protobuf::internal::IsOss()) {
             printer->Emit(R"(
               @com.google.protobuf.Internal.ProtoMethodMayReturnNull
             )");
@@ -170,14 +171,13 @@ void GenerateLarge(
        {"gen_code_version_validator",
         [&] {
           if (!context->EnforceLite()) {
-            PrintGencodeVersionValidator(printer,
-                                         context->options().opensource_runtime,
+            PrintGencodeVersionValidator(printer, google::protobuf::internal::IsOss(),
                                          descriptor->name());
           }
         }},
        {"aliases",
         [&] {
-          for (int i = 0; i < aliases.size(); i++) {
+          for (size_t i = 0; i < aliases.size(); i++) {
             WriteEnumValueDocComment(printer, aliases[i].first,
                                      context->options());
             printer->Emit({{"name", aliases[i].first->name()},
@@ -204,7 +204,7 @@ void GenerateLarge(
         }},
        {"deprecated_value_of_func",
         [&] {
-          if (context->options().opensource_runtime) {
+          if (google::protobuf::internal::IsOss()) {
             printer->Emit(R"(
               /**
                * @param value The numeric wire value of the corresponding enum entry.
@@ -306,7 +306,7 @@ void GenerateLarge(
                   "  }\n");
             }
             printer->Print(
-                "  return getDescriptor().getValues().get(index());\n"
+                "  return getDescriptor().getValue(index());\n"
                 "}\n"
                 "public final com.google.protobuf.Descriptors.EnumDescriptor\n"
                 "    getDescriptorForType() {\n"
@@ -328,7 +328,7 @@ void GenerateLarge(
               // immutable outer class).
               printer->Print(
                   "  return "
-                  "$file$.getDescriptor().getEnumTypes().get($index$);\n",
+                  "$file$.getDescriptor().getEnumType($index$);\n",
                   "file",
                   name_resolver->GetClassName(descriptor->file(),
                                               immutable_api),
@@ -336,7 +336,7 @@ void GenerateLarge(
             } else {
               printer->Print(
                   "  return "
-                  "$parent$.$descriptor$.getEnumTypes().get($index$);\n",
+                  "$parent$.$descriptor$.getEnumType($index$);\n",
                   "parent",
                   name_resolver->GetClassName(descriptor->containing_type(),
                                               immutable_api),
@@ -472,7 +472,7 @@ void GenerateLarge(
          {"count", absl::StrCat(count)},
          {"method_return_null_annotation",
           [&] {
-            if (!context->options().opensource_runtime) {
+            if (!google::protobuf::internal::IsOss()) {
               printer->Emit(R"(
                           @com.google.protobuf.Internal.ProtoMethodMayReturnNull
                         )");

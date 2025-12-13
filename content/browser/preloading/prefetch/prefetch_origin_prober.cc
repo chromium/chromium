@@ -4,9 +4,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_util.h"
 #include "content/browser/preloading/prefetch/prefetch_canary_checker.h"
 #include "content/browser/preloading/prefetch/prefetch_dns_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
@@ -23,7 +21,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -241,9 +238,8 @@ void PrefetchOriginProber::OnDNSResolved(
     OnProbeResultCallback callback,
     bool also_do_tls_connect,
     int net_error,
-    const std::optional<net::AddressList>& resolved_addresses) {
-  bool successful = net_error == net::OK && resolved_addresses &&
-                    !resolved_addresses->empty();
+    const net::AddressList& resolved_addresses) {
+  bool successful = net_error == net::OK && !resolved_addresses.empty();
 
   // A TLS connection needs the resolved addresses, so it also fails here.
   if (!successful) {
@@ -256,7 +252,7 @@ void PrefetchOriginProber::OnDNSResolved(
     return;
   }
 
-  DoTLSProbeAfterDNSResolution(url, std::move(callback), *resolved_addresses);
+  DoTLSProbeAfterDNSResolution(url, std::move(callback), resolved_addresses);
 }
 
 void PrefetchOriginProber::DoTLSProbeAfterDNSResolution(

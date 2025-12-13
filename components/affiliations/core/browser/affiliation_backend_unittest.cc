@@ -249,7 +249,7 @@ class AffiliationBackendTest : public testing::Test {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   scoped_refptr<base::TestSimpleTaskRunner> consumer_task_runner_ =
       base::MakeRefCounted<base::TestSimpleTaskRunner>();
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   base::FilePath db_path_;

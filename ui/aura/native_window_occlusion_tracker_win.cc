@@ -315,8 +315,6 @@ NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     : task_runner_(task_runner),
       ui_thread_task_runner_(ui_thread_task_runner),
       update_occlusion_state_callback_(update_occlusion_state_callback) {
-  ::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr, CLSCTX_ALL,
-                     IID_PPV_ARGS(&virtual_desktop_manager_));
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -826,13 +824,18 @@ bool NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 
 std::optional<bool> NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     IsWindowOnCurrentVirtualDesktop(HWND hwnd) {
-  if (!virtual_desktop_manager_)
-    return true;
 
   // If the window is not cloaked, it is not on another desktop.
   if (!gfx::IsWindowCloaked(hwnd))
     return true;
 
+  if (!virtual_desktop_manager_) {
+    if (FAILED(::CoCreateInstance(__uuidof(VirtualDesktopManager), nullptr,
+                                  CLSCTX_ALL,
+                                  IID_PPV_ARGS(&virtual_desktop_manager_)))) {
+      return std::nullopt;
+    }
+  }
   return gfx::IsWindowOnCurrentVirtualDesktop(hwnd, virtual_desktop_manager_);
 }
 

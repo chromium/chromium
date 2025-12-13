@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/win/msg_util.h"
 
 namespace gfx {

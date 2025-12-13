@@ -15,8 +15,9 @@
 namespace ash {
 
 LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
-    : BaseLockDialog(GURL(captive_portal::CaptivePortalDetector::kDefaultURL),
-                     CalculateOobeDialogSizeForPrimaryDisplay()) {}
+    : BaseLockDialog(
+          GURL(captive_portal::CaptivePortalDetector::GetDefaultUrl()),
+          CalculateOobeDialogSizeForPrimaryDisplay()) {}
 
 LockScreenCaptivePortalDialog::~LockScreenCaptivePortalDialog() = default;
 

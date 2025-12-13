@@ -86,7 +86,7 @@ if (!history.state || !history.state.route || !history.state.step) {
             step: computeStep(Routes.PROFILE_SWITCH),
             isFirst: true,
           },
-          '', path);
+          '');
       break;
     default:
       history.replaceState(

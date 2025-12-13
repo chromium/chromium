@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/structured_headers.h"
 #include "services/data_decoder/public/cpp/service_provider.h"
@@ -26,6 +25,11 @@ class BigBuffer;
 
 namespace data_decoder {
 
+// IMPORTANT: Before adding something, please consider if there is a viable
+// memory-safe implementation; the data decoder is already a grab bag of random
+// stuff and process startup time can be a major performance tax, especially on
+// mobile.
+//
 // Encapsulates an exclusive connection to an isolated instance of the Data
 // Decoder service, allowing an owner to perform a series of related decoding
 // operations using the same isolated instance. The application must provide
@@ -35,10 +39,6 @@ namespace data_decoder {
 // In general, instance reuse should only be considered after weighing the cost
 // of new service processes vs the security and privacy value of increased
 // isolation.
-//
-// Note that on some platforms, some operations (like JSON parsing on Android)
-// use a safe in-process mechanism in lieu of delegating to the Data Decoder
-// service. This detail is intentionally hidden behind the DataDecoder API.
 //
 // Finally, there is no guarantee that a single DataDecoder instance will
 // perform all out-of-process operations within the same service process; if
@@ -72,7 +72,8 @@ class DataDecoder {
       ResultCallback<net::structured_headers::Dictionary>;
   using ValueParseCallback = ResultCallback<base::Value>;
   using GzipperCallback = ResultCallback<mojo_base::BigBuffer>;
-  using ValidationCallback = ResultCallback<bool>;
+  using ValidationCallback =
+      ResultCallback<payments::facilitated::mojom::PixQrCodeType>;
   using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance
@@ -206,12 +207,6 @@ class DataDecoder {
   // Note that |callback| will only be called if the parsing operation succeeds
   // or fails before this DataDecoder is destroyed.
   void ParseCbor(base::span<const uint8_t> cbor, ValueParseCallback callback);
-
-  // Parses the potentially unsafe CBOR bytes in |cbor|. This static helper
-  // uses a dedicated instance of the Data Decoder service on applicable
-  // platforms.
-  static void ParseCborIsolated(base::span<const uint8_t> cbor,
-                                ValueParseCallback callback);
 
   // Validates the format of the potentially unsafe `pix_code`.
   void ValidatePixCode(const std::string& pix_code,

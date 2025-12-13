@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

@@ -393,6 +393,10 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
     CalculateAndAdjustAutoDirectionality();
   }
 
+  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
+    CommitFormControlRangeEdit();
+  }
+
   if (!IsFocused())
     return;
 
@@ -524,6 +528,8 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
   if (normalized_value == Value())
     return;
 
+  const String old_value = Value();
+
   // selectionStart and selectionEnd values can be changed by
   // SetInnerEditorValue(). We need to get them before SetInnerEditorValue() to
   // clamp them later in a case of kClamp.
@@ -535,6 +541,17 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
     SetValueBeforeFirstUserEditIfNotSet();
   value_ = normalized_value;
   SetInnerEditorValue(value_);
+
+  // Programmatic value changes trigger a full-replace update so
+  // FormControlRange offsets are recomputed against the new text. Callers that
+  // perform a targeted update (e.g., setRangeText) set the skip flag to
+  // suppress this pass and prevent redundant notifications or offset
+  // adjustments.
+  if (RuntimeEnabledFeatures::FormControlRangeEnabled() &&
+      !ShouldSkipNextSetValueAutoDiff()) {
+    CommitProgrammaticFormControlRangeEdit(old_value, /*old_sel_start=*/0u,
+                                           /*old_sel_end=*/old_value.length());
+  }
   if (event_behavior == TextFieldEventBehavior::kDispatchNoEvent)
     SetLastChangeWasNotUserEdit();
   else
@@ -602,12 +619,28 @@ void HTMLTextAreaElement::setDefaultValue(const String& default_value) {
 }
 
 void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
-  SetAutofillState(!value.empty() ? WebAutofillState::kPreviewed
-                                  : WebAutofillState::kNotFilled);
-  TextControlElement::SetSuggestedValue(value);
+  String sanitized_value = value;
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    sanitized_value = String();
+  }
+  SetAutofillState(!sanitized_value.empty() ? WebAutofillState::kPreviewed
+                                            : WebAutofillState::kNotFilled);
+  TextControlElement::SetSuggestedValue(sanitized_value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
+}
+
+void HTMLTextAreaElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
+      IsInCanvasSubtree()) {
+    // Hide suggested values when under canvas, to prevent leaking this
+    // information to javascript.
+    SetSuggestedValue(String());
+  }
 }
 
 String HTMLTextAreaElement::validationMessage() const {

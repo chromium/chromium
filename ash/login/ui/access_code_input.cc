@@ -20,6 +20,7 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -41,6 +42,42 @@ constexpr int kObscuredGlyphSpacingDp = 6;
 
 constexpr int kAccessCodeInputFieldWidthDp = 24;
 constexpr int kAccessCodeBetweenInputFieldsGapDp = 8;
+
+// A border impl that draw the underline for pin field. This uses Border as
+// ash::SystemTextfield does not allow custom background.
+class PinCodeUnderline : public views::Border {
+ public:
+  PinCodeUnderline(int thickness_dp, const ui::ColorId color_id)
+      : thickness_dp_(thickness_dp) {
+    SetColor(color_id);
+  }
+  PinCodeUnderline(const PinCodeUnderline&) = delete;
+  PinCodeUnderline& operator=(const PinCodeUnderline&) = delete;
+  ~PinCodeUnderline() override = default;
+
+  // views::Border:
+  void Paint(const views::View& view, gfx::Canvas* canvas) override {
+    gfx::Rect bounds = view.GetLocalBounds();
+    bounds.set_y(bounds.height() - thickness_dp_);
+    bounds.set_height(thickness_dp_);
+    auto bg_color = color().ResolveToSkColor(view.GetColorProvider());
+    canvas->FillRect(bounds, bg_color);
+  }
+
+  gfx::Insets GetInsets() const override {
+    return gfx::Insets::TLBR(0, 0, thickness_dp_, 0);
+  }
+  gfx::Size GetMinimumSize() const override { return gfx::Size(); }
+
+ private:
+  int thickness_dp_;
+};
+
+std::unique_ptr<views::Border> CreatePinCodeBorder(int thickness_dp,
+                                                   const ui::ColorId color_id) {
+  return std::make_unique<PinCodeUnderline>(thickness_dp, color_id);
+}
+
 }  // namespace
 
 BEGIN_METADATA(AccessCodeInput)
@@ -80,7 +117,7 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
     code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
     code_field_->SetObscuredGlyphSpacing(kObscuredGlyphSpacingDp);
   } else {
-    code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_NUMBER);
+    code_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
   }
 }
 
@@ -260,9 +297,8 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
     field->SetFontList(views::Textfield::GetDefaultFontList().Derive(
         kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
         gfx::Font::Weight::NORMAL));
-    field->SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-        text_color_id));
+    field->SetBorder(CreatePinCodeBorder(
+        kAccessCodeInputFieldUnderlineThicknessDp, text_color_id));
     field->SetGroup(kFixedLengthInputGroup);
 
     // Ignores the a11y focus of |field| because the a11y needs to focus to the
@@ -345,9 +381,8 @@ void FixedLengthCodeInput::SetInputColorId(ui::ColorId color_id) {
     field->SetTextColorId(color_id);
     // We don't update the underline color to red.
     if (color_id != error_color_id) {
-      field->SetBorder(views::CreateSolidSidedBorder(
-          gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-          color_id));
+      field->SetBorder(CreatePinCodeBorder(
+          kAccessCodeInputFieldUnderlineThicknessDp, error_color_id));
     }
   }
 }
@@ -532,9 +567,8 @@ void FixedLengthCodeInput::SetReadOnly(bool read_only) {
   for (ash::AccessibleInputField* field : input_fields_) {
     field->SetReadOnly(read_only);
     field->SetBackground(nullptr);
-    field->SetBorder(views::CreateSolidSidedBorder(
-        gfx::Insets::TLBR(0, 0, kAccessCodeInputFieldUnderlineThicknessDp, 0),
-        underline_color_id));
+    field->SetBorder(CreatePinCodeBorder(
+        kAccessCodeInputFieldUnderlineThicknessDp, underline_color_id));
     field->SetCursorEnabled(!read_only);
   }
 }

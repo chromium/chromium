@@ -65,7 +65,7 @@ SimpleEntryOperation SimpleEntryOperation::CloseOperation(
 SimpleEntryOperation SimpleEntryOperation::ReadOperation(
     SimpleEntryImpl* entry,
     int index,
-    int offset,
+    int64_t offset,
     int length,
     net::IOBuffer* buf,
     CompletionOnceCallback callback) {
@@ -78,7 +78,7 @@ SimpleEntryOperation SimpleEntryOperation::ReadOperation(
 SimpleEntryOperation SimpleEntryOperation::WriteOperation(
     SimpleEntryImpl* entry,
     int index,
-    int offset,
+    int64_t offset,
     int length,
     net::IOBuffer* buf,
     bool truncate,
@@ -147,7 +147,7 @@ SimpleEntryOperation SimpleEntryOperation::DoomOperation(
 SimpleEntryOperation::SimpleEntryOperation(SimpleEntryImpl* entry,
                                            net::IOBuffer* buf,
                                            net::CompletionOnceCallback callback,
-                                           int offset,
+                                           int64_t offset,
                                            uint64_t sparse_offset,
                                            int length,
                                            size_t sparse_length,

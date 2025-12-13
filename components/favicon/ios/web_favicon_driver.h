@@ -32,6 +32,9 @@ class WebFaviconDriver : public web::WebStateObserver,
 
   ~WebFaviconDriver() override;
 
+  // Returns a pointer to the owning `WebState`.
+  web::WebState* web_state() { return web_state_; }
+
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
   bool FaviconIsValid() const override;

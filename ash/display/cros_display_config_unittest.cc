@@ -95,7 +95,7 @@ class CrosDisplayConfigTest : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFirstDisplayAsInternal);
     AshTestBase::SetUp();
-    CHECK(display::Screen::GetScreen());
+    CHECK(display::Screen::Get());
     cros_display_config_ = Shell::Get()->cros_display_config();
   }
 
@@ -259,7 +259,7 @@ TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
 TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {
   UpdateDisplay("500x400,500x400,500x400");
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   ASSERT_EQ(3u, displays.size());
 
   crosapi::mojom::DisplayLayoutInfoPtr display_layout_info =
@@ -344,7 +344,7 @@ TEST_F(CrosDisplayConfigTest, SetLayoutUnifiedWithZoomFactors) {
   auto zoom_factors =
       display_unit_info_ptr_list[0]->available_display_zoom_factors;
 
-  auto primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  auto primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
 
   for (auto zoom_factor : zoom_factors) {
     auto properties = crosapi::mojom::DisplayConfigProperties::New();
@@ -401,7 +401,7 @@ TEST_F(CrosDisplayConfigTest, FailToSetLayoutMirroredMixedWithOneDisplay) {
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
 
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   ASSERT_EQ(1u, displays.size());
 
   // Enable mixed mirror mode and expect to fail due to not enough connected
@@ -426,7 +426,7 @@ TEST_F(CrosDisplayConfigTest, SetLayoutMirroredMixed) {
   UpdateDisplay("500x400,500x400,500x400,500x400");
 
   std::vector<display::Display> displays =
-      display::Screen::GetScreen()->GetAllDisplays();
+      display::Screen::Get()->GetAllDisplays();
   ASSERT_EQ(4u, displays.size());
 
   auto properties = crosapi::mojom::DisplayLayoutInfo::New();
@@ -510,7 +510,7 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListZoomFactor) {
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesPrimary) {
   UpdateDisplay("1200x600,600x1000");
-  int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   int64_t secondary_id = display::test::DisplayManagerTestApi(display_manager())
                              .GetSecondaryDisplay()
                              .id();
@@ -523,7 +523,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesPrimary) {
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
 
   // secondary display should now be primary.
-  primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   EXPECT_EQ(primary_id, secondary_id);
 }
 
@@ -581,8 +581,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(crosapi::mojom::DisplayConfigResult::kSuccess, result);
-  const display::Display& primary =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
   EXPECT_EQ(secondary.id(), primary.id());
   EXPECT_EQ(gfx::Rect(0, 0, 300, 500), primary.bounds());
   EXPECT_EQ(display::Display::ROTATE_180, primary.rotation());
@@ -712,7 +711,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayMode) {
 
 TEST_F(CrosDisplayConfigTest, OverscanCalibration) {
   UpdateDisplay("1200x600");
-  int64_t id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  int64_t id = display::Screen::Get()->GetPrimaryDisplay().id();
   ASSERT_NE(display::kInvalidDisplayId, id);
 
   // Test that kAdjust succeeds after kComplete call.
@@ -866,7 +865,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotationInternalOnly) {
   tablet_mode_controller_test_api.EnterTabletMode();
   EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
   EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   std::vector<crosapi::mojom::DisplayUnitInfoPtr> result =
       GetDisplayUnitInfoList();
@@ -919,7 +918,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   tablet_mode_controller_test_api.EnterTabletMode();
   EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
   EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
-  EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   // Clear out any pending observer calls.
   base::RunLoop().RunUntilIdle();
@@ -945,7 +944,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   tablet_mode_controller_test_api.AttachExternalMouse();
   EXPECT_TRUE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
   EXPECT_TRUE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
 
   // Clear out any pending observer calls.
   base::RunLoop().RunUntilIdle();
@@ -971,7 +970,7 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   tablet_mode_controller_test_api.LeaveTabletMode();
   EXPECT_FALSE(tablet_mode_controller_test_api.IsInPhysicalTabletState());
   EXPECT_FALSE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
-  EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
 }
 

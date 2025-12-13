@@ -237,7 +237,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   void RequestDecode(const cc::DrawImage&,
                      base::OnceCallback<void(bool)>,
                      bool speculative) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
   int GetLayerTreeId() final;
   const cc::LayerTreeSettings* GetLayerTreeSettings() final;
   void UpdateBrowserControlsState(
@@ -314,6 +313,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   gfx::PointF DIPsToBlinkSpace(const gfx::PointF& point) override;
   gfx::Point DIPsToRoundedBlinkSpace(const gfx::Point& point) override;
   float DIPsToBlinkSpace(float scalar) override;
+  gfx::RectF DIPsToBlinkSpace(const gfx::RectF& rect) override;
   void MouseCaptureLost() override;
   bool CanComposeInline() override;
   bool ShouldDispatchImeEventsToPlugin() override;
@@ -391,7 +391,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   FrameWidgetTestHelper* GetFrameWidgetTestHelperForTesting() override;
   void PrepareForFinalLifecyclUpdateForTesting() override;
   void ApplyLocalSurfaceIdUpdate(const viz::LocalSurfaceId& id) override;
-  bool InsertVisualStateRequest(base::OnceClosure callback) override;
 
   // Called when a drag-n-drop operation should begin.
   virtual void StartDragging(LocalFrame* source_frame,
@@ -440,7 +439,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool HasFocus() override;
   void SetFocus(bool focus) override;
   void FlushInputProcessedCallback() override;
-  void CancelCompositionForPepper() override;
+  void CancelComposition() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   bool PinchGestureActiveInMainFrame() override;
@@ -564,6 +563,10 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SetShouldThrottleFrameRate(bool flag);
 
+  void RequestMainFrameOnCompositorAnimation(
+      cc::PropertyChangeForcesCommitCriteria criteria,
+      bool force_propagation);
+
   // Pause all rendering (main and compositor thread) in the compositor.
   [[nodiscard]] std::unique_ptr<cc::ScopedPauseRendering> PauseRendering();
 
@@ -675,7 +678,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SetScreenMetricsEmulationParameters(
       bool enabled,
-      const blink::DeviceEmulationParams& params);
+      const blink::DeviceEmulationParams& params,
+      const mojom::blink::DeviceEmulationCacheBehavior& cache_behavior =
+          mojom::blink::DeviceEmulationCacheBehavior::kClearCache);
   void SetScreenInfoAndSize(const display::ScreenInfos& screen_infos,
                             const gfx::Size& widget_size_in_dips,
                             const gfx::Size& visible_viewport_size_in_dips);
@@ -752,6 +757,8 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void OnDevToolsSessionConnectionChanged(bool attached);
 
+  void OnFirstContentfulPaint(const base::TimeTicks& first_paint_time) override;
+
  protected:
   // WidgetBaseClient overrides:
   void ScheduleAnimation(bool urgent) override;
@@ -775,6 +782,7 @@ class CORE_EXPORT WebFrameWidgetImpl
  private:
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;
+  friend class WebFrameWidgetScrollContainerHitTest;
 
   void NotifySwapAndPresentationTime(PromiseCallbacks callbacks);
 
@@ -865,7 +873,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void UpdateRenderThrottlingStatusForSubFrame(bool is_throttled,
                                                bool subtree_throttled,
                                                bool display_locked) override;
-  void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;
+  void EnableDeviceEmulation(
+      const DeviceEmulationParams& parameters,
+      const mojom::blink::DeviceEmulationCacheBehavior cache_behavior) override;
   void DisableDeviceEmulation() override;
   // Sets the inert bit on an out-of-process iframe, causing it to ignore
   // input.
@@ -957,13 +967,6 @@ class CORE_EXPORT WebFrameWidgetImpl
       base::FunctionRef<void(RemoteFrame*)> callback);
 
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
-                                       cc::ElementId scroll_latched_element_id);
-  // TODO(crbug.com/372627916): This function is not used when
-  // MultipleImplOnlyScrollAnimations is enabled. It should be considered
-  // deprecated and should be deleted when the MultipleImplOnlyScrollAnimations
-  // code path is the only existing code path.
-  void SendEndOfScrollEventsDeprecated(bool affects_outer_viewport,
-                                       bool affects_inner_viewport,
                                        cc::ElementId scroll_latched_element_id);
   void SendEndOfScrollEvents(const cc::CompositorCommitData& commit_data);
   void SendScrollSnapChangingEventIfNeeded(

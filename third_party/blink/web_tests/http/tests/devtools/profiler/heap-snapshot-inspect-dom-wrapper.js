@@ -47,7 +47,8 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
 
     var remoteObjects = [];
     for (var i = 0; i < bodyWrapperIds.length; i++) {
-      var object = await TestRunner.HeapProfilerAgent.getObjectByHeapObjectId('' + bodyWrapperIds[i]);
+      var object =
+          (await TestRunner.HeapProfilerAgent.invoke_getObjectByHeapObjectId({objectId: '' + bodyWrapperIds[i]})).result;
       if (object)
         remoteObjects.push(TestRunner.runtimeModel.createRemoteObject(object));
     }

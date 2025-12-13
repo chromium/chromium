@@ -68,13 +68,13 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/message_center/message_center.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -1077,7 +1077,7 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetBounds) {
   // and `kFullscreen` capture source.
   const auto* capture_mode_session = controller->capture_mode_session();
   const gfx::Rect work_area =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(capture_mode_session->current_root())
           .work_area();
   VerifyPreviewAlignment(work_area);
@@ -1178,10 +1178,9 @@ TEST_F(CaptureModeCameraTest, MultiDisplayCameraPreviewWidgetBounds) {
   // Start the window recording inside the second display, the camera preview
   // should be inside the window that is being recorded inside the second
   // display.
-  window()->SetBoundsInScreen(
-      gfx::Rect(900, 0, 600, 500),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1]));
+  window()->SetBoundsInScreen(gfx::Rect(900, 0, 600, 500),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[1]));
   StartRecordingFromSource(CaptureModeSource::kWindow);
   const auto* window_being_recorded =
       controller->video_recording_watcher_for_testing()
@@ -2335,9 +2334,9 @@ TEST_F(CaptureModeCameraTest, RecordingStartsWithCameraHistogramTest) {
   for (const auto test_case : kTestCases) {
     if (test_case.tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name =
@@ -2380,9 +2379,9 @@ TEST_F(CaptureModeCameraTest,
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
@@ -2458,9 +2457,9 @@ TEST_F(CaptureModeCameraTest,
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     AddAndRemoveCameraAndTriggerGracePeriod();
@@ -2489,9 +2488,9 @@ TEST_F(CaptureModeCameraTest, RecordingCameraSizeOnStartHistogramTest) {
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name =
@@ -2556,9 +2555,9 @@ TEST_F(CaptureModeCameraTest, RecordingCameraPositionOnStartHistogramTest) {
   for (const bool tablet_enabled : {false, true}) {
     if (tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(
@@ -2867,18 +2866,16 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
   const gfx::Rect second_display_bounds(801, 0, 800, 700);
 
   // Set the window's bounds small enough to not fit the camera preview.
-  window()->SetBoundsInScreen(
-      gfx::Rect(600, 500, 100, 100),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[0]));
+  window()->SetBoundsInScreen(gfx::Rect(600, 500, 100, 100),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[0]));
 
   // Create a window in the second display and set its bounds small enough to
   // not fit the camera preview.
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
-  window1->SetBoundsInScreen(
-      gfx::Rect(1400, 500, 100, 100),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[1]));
+  window1->SetBoundsInScreen(gfx::Rect(1400, 500, 100, 100),
+                             display::Screen::Get()->GetDisplayNearestWindow(
+                                 Shell::GetAllRootWindows()[1]));
 
   // Start the capture session.
   auto* controller =
@@ -2924,10 +2921,9 @@ TEST_F(CaptureModeCameraTest, ToastVisibilityChangeOnMultiDisplays) {
   EXPECT_FALSE(capture_toast_widget->IsVisible());
 
   // Update the bounds of `window` big enough to fit the camera preview.
-  window()->SetBoundsInScreen(
-      gfx::Rect(100, 200, 300, 300),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          Shell::GetAllRootWindows()[0]));
+  window()->SetBoundsInScreen(gfx::Rect(100, 200, 300, 300),
+                              display::Screen::Get()->GetDisplayNearestWindow(
+                                  Shell::GetAllRootWindows()[0]));
 
   // Now move the mouse to the top of `window` again, verify that preview toast
   // is not shown, since the window is big enough to show the camera preview.
@@ -3044,7 +3040,7 @@ class CaptureModeCameraPreviewTest
 
     switch (GetParam()) {
       case CaptureModeSource::kFullscreen:
-        return display::Screen::GetScreen()
+        return display::Screen::Get()
             ->GetDisplayNearestWindow(root)
             .work_area();
 
@@ -4103,7 +4099,7 @@ TEST_P(CaptureModeCameraPreviewTest,
   UpdateDisplay("1366x768");
 
   SwitchToTabletMode();
-  EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+  EXPECT_TRUE(display::Screen::Get()->InTabletMode());
 
   CaptureModeCameraController* camera_controller = GetCameraController();
   AddDefaultCamera();
@@ -4464,9 +4460,9 @@ TEST_F(ProjectorCaptureModeCameraTest,
   for (const auto test_case : kTestCases) {
     if (test_case.tablet_enabled) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(
@@ -4602,7 +4598,7 @@ void WaitForAndVerifyRenderedVideoFrame() {
   // raster to copy the video frame to a bitmap.
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          viz::TestContextType::kGpuRaster, /*support_locking=*/false);
+          viz::TestContextType::kRaster, /*support_locking=*/false);
   auto result = context_provider->BindToCurrentSequence();
   CHECK_EQ(result, gpu::ContextResult::kSuccess);
 
@@ -4745,8 +4741,8 @@ TEST_F(NoSessionCaptureModeCameraTest, RequestCameraInfoAfterUserLogsIn) {
 }
 
 TEST_F(CaptureModeCameraTest, CameraPrivacyIndicators) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   auto* message_center = message_center::MessageCenter::Get();
   auto capture_mode_privacy_notification_id =
@@ -4796,8 +4792,8 @@ TEST_F(CaptureModeCameraTest, CameraPrivacyIndicators) {
 }
 
 TEST_F(CaptureModeCameraTest, DuringRecordingPrivacyIndicators) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   auto* message_center = message_center::MessageCenter::Get();
   auto capture_mode_privacy_notification_id =

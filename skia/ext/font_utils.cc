@@ -6,15 +6,19 @@
 
 #include "base/check.h"
 #include "build/build_config.h"
+#include "skia/ext/codec_utils.h"
 #include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <android/api-level.h>
+
+#include "base/feature_list.h"
 #include "third_party/skia/include/ports/SkFontMgr_android.h"
+#include "third_party/skia/include/ports/SkFontMgr_android_ndk.h"
 #include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
-#include "third_party/skia/include/ports/SkFontScanner_FreeType.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -25,14 +29,15 @@
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 #include "third_party/skia/include/ports/SkFontMgr_FontConfigInterface.h"
 #include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
-#include "third_party/skia/include/ports/SkFontScanner_FreeType.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+
 #include "base/fuchsia/process_context.h"
 #include "third_party/skia/include/ports/SkFontMgr_fuchsia.h"
+#include "third_party/skia/include/ports/SkFontScanner_Fontations.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -52,6 +57,11 @@ bool g_factory_called = false;
 // This is a purposefully leaky pointer that has ownership of the FontMgr.
 SkFontMgr* g_fontmgr_override = nullptr;
 
+#if BUILDFLAG(IS_ANDROID)
+// https://crbug.com/461659286 Failure to create any font causes crash.
+BASE_FEATURE(kUseAndroidNDKFontAPI, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace
 
 namespace skia {
@@ -60,7 +70,16 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
   if (g_fontmgr_override) {
     return sk_ref_sp(g_fontmgr_override);
   }
+
 #if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kUseAndroidNDKFontAPI) &&
+      android_get_device_api_level() > __ANDROID_API_V__) {
+    sk_sp<SkFontMgr> ndk_fontmgr =
+        SkFontMgr_New_AndroidNDK(false, SkFontScanner_Make_Fontations());
+    if (ndk_fontmgr && ndk_fontmgr->countFamilies()) {
+      return ndk_fontmgr;
+    }
+  }
   return SkFontMgr_New_Android(nullptr, SkFontScanner_Make_Fontations());
 #elif BUILDFLAG(IS_APPLE)
   return SkFontMgr_New_CoreText(nullptr);
@@ -72,7 +91,8 @@ static sk_sp<SkFontMgr> fontmgr_factory() {
 #elif BUILDFLAG(IS_FUCHSIA)
   fuchsia::fonts::ProviderSyncPtr provider;
   base::ComponentContextForProcess()->svc()->Connect(provider.NewRequest());
-  return SkFontMgr_New_Fuchsia(std::move(provider));
+  return SkFontMgr_New_Fuchsia(std::move(provider),
+                               SkFontScanner_Make_Fontations());
 #elif BUILDFLAG(IS_WIN)
   return SkFontMgr_New_DirectWrite();
 #elif defined(SK_FONTMGR_FREETYPE_EMPTY_AVAILABLE)
@@ -121,6 +141,11 @@ sk_sp<SkTypeface> DefaultTypeface() {
 
 SkFont DefaultFont() {
   return SkFont(DefaultTypeface());
+}
+
+void InitializeFontRendering() {
+  // for Fontations and DirectWrite to process emojis
+  skia::EnsurePNGDecoderRegistered();
 }
 
 }  // namespace skia

@@ -28,7 +28,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "printing/printing_jni_headers/PrintingContext_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -249,3 +248,5 @@ printing::NativeDrawingContext PrintingContextAndroid::context() const {
 }
 
 }  // namespace printing
+
+DEFINE_JNI(PrintingContext)

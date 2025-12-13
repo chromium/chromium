@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package tabs_pb;
+option java_package = "org.chromium.chrome.browser.tabs.proto";
+
+import "chrome/browser/tab/protocol/token.proto";
+
+message Children {
+  // Used to serialize a list of ids into a single db blob cell. The storage id
+  // is created by the storage system and used to map in memory objects to rows
+  // in the database. Note that before this system is authoritative for reads,
+  // this mapping cannot be recreated on start up, and will require rebuilding
+  // (and deletion of the whole db) to fix.
+  repeated Token storage_id = 1;
+}

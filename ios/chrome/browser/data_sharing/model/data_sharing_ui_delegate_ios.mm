@@ -39,7 +39,7 @@ void DataSharingUIDelegateIOS::HandleShareURLIntercepted(
   }
   IOSShareURLInterceptionContext* ios_context =
       static_cast<IOSShareURLInterceptionContext*>(context.get());
-  Browser* browser = ios_context->browser;
+  Browser* browser = ios_context->weak_browser.get();
   if (!browser) {
     return;
   }
@@ -51,11 +51,18 @@ void DataSharingUIDelegateIOS::HandleShareURLIntercepted(
       dismissModalDialogsWithCompletion:
           base::CallbackToBlock(base::BindOnce(
               &DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented,
-              weak_ptr_factory_.GetWeakPtr(), url, browser))];
+              weak_ptr_factory_.GetWeakPtr(), url,
+              std::move(ios_context->weak_browser)))];
 }
 
-void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(GURL url,
-                                                            Browser* browser) {
+void DataSharingUIDelegateIOS::OnJoinFlowReadyToBePresented(
+    GURL url,
+    base::WeakPtr<Browser> weak_browser) {
+  Browser* browser = weak_browser.get();
+  if (!browser) {
+    return;
+  }
+
   UIViewController* base_view_controller =
       browser->GetSceneState().window.rootViewController;
 

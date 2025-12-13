@@ -3,6 +3,21 @@
 // found in the LICENSE file.
 
 /**
+ * Reprents a message in the router's message queue that is ready for dispatch
+ * to an endpoint. This is needed because there are times when the router
+ * is not able to dispatch a message (e.g. if an interface client has not been
+ * bound yet). In those cases, the router must hold onto the message in its own
+ * message queue until dispatch is possible.
+ *
+ * @typedef {{
+ *   header: !mojo.internal.MessageHeader,
+ *   buffer: !ArrayBuffer,
+ *   handles: !Array<MojoHandle>,
+ * }}
+ */
+mojo.internal.interfaceSupport.RouterMessage;
+
+/**
  * Owns a single message pipe handle and facilitates message sending and routing
  * on behalf of all the pipe's local Endpoints.
  */
@@ -15,6 +30,18 @@ mojo.internal.interfaceSupport.Router = class {
   constructor(pipe, setNamespaceBit) {
     /** @const {!MojoHandle} */
     this.pipe_ = pipe;
+
+    /** @const {!Array<mojo.internal.interfaceSupport.RouterMessage>}*/
+    this.messages_ = [];
+    /**
+     * Flag used to keep track of message dispatch. This is necessary because
+     * it is possible that a message dispatch could trigger additional message
+     * dispatch. The dispatch logic should check that this flag is not set
+     * before attempting to dispatch messages.
+     *
+     * @type {boolean}
+     */
+    this.dispatchInProgress_ = false;
 
     /** @const {!mojo.internal.interfaceSupport.HandleReader} */
     this.reader_ = new mojo.internal.interfaceSupport.HandleReader(pipe);
@@ -58,6 +85,7 @@ mojo.internal.interfaceSupport.Router = class {
     console.assert(
         this.isReading(), 'adding a secondary endpoint with no primary');
     this.endpoints_.set(interfaceId, endpoint);
+    this.dispatchMessages_();
   }
 
   /** @param {number} interfaceId */
@@ -100,9 +128,7 @@ mojo.internal.interfaceSupport.Router = class {
    * @param {!Array<MojoHandle>} handles
    */
   onMessageReceived_(buffer, handles) {
-    if (buffer.byteLength < mojo.internal.kMessageV0HeaderSize) {
-      console.error('Rejecting undersized message');
-      this.onError_();
+    if (!this.checkSize_(buffer)) {
       return;
     }
 
@@ -111,15 +137,83 @@ mojo.internal.interfaceSupport.Router = class {
       return;
     }
 
-    const endpoint = this.endpoints_.get(header.interfaceId);
-    if (!endpoint) {
-      console.error(
-          `Received message for unknown endpoint ${header.interfaceId}`);
+    this.messages_.push({
+      header: header,
+      buffer: buffer,
+      handles: handles,
+    });
+
+    this.dispatchMessages_();
+  }
+
+  /**
+   * Does a preliminary check to see if the buffer is a well formed mojo
+   * message.
+   *
+   * @param {ArrayBuffer} buffer
+   * @returns true if size is big enough to be a potential mojo message,
+   * false otherwise
+   */
+  checkSize_(buffer) {
+    if (buffer.byteLength < mojo.internal.kMessageV0HeaderSize) {
+      console.error('Rejecting undersized message');
+      this.onError_();
+      return false;
+    }
+
+    return true
+  }
+
+  /**
+   * Dispatch all the messages currently in the router's message queue.
+   */
+  dispatchMessages_() {
+    if (this.dispatchInProgress_) {
       return;
     }
 
-    endpoint.onMessageReceived(header, buffer, handles);
+    this.dispatchInProgress_ = true;
+
+    while (this.messages_.length > 0) {
+      const msg = this.messages_[0];
+      const successfullyDispatched = this.dispatch_(msg);
+      if (successfullyDispatched) {
+        this.messages_.shift();
+      } else {
+        // Dispatch was unsuccessful, stop message dispatch and wait for
+        // another router event before re-attempting dispatch.
+        break;
+      }
+    }
+
+    this.dispatchInProgress_ = false;
   }
+
+  /**
+   * Dispatches a single message to the endpoint.
+   *
+   * @param {mojo.internal.interfaceSupport.RouterMessage} msg
+   * @returns true if the message was successfully dispatched, false otherwise.
+   */
+  dispatch_(msg) {
+    const endpoint = this.endpoints_.get(msg.header.interfaceId);
+    if (!endpoint) {
+      console.error(
+          `Received message for unknown endpoint ${msg.header.interfaceId}`);
+
+      return false;
+    }
+    if (!endpoint.isStarted) {
+      // Not client bound for endpoint. This can happen for associated
+      // interface endpoint, where the client has not been bound yet.
+      return false;
+    }
+
+    // Dispatch to the endpoint client.
+    endpoint.onMessageReceived(msg.header, msg.buffer, msg.handles);
+    return true;
+  }
+
 
   onError_() {
     for (const endpoint of this.endpoints_.values()) {

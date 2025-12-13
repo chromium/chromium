@@ -37,16 +37,13 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsService);
+      HandleSecurityPageHatsRequest_PassesArgumentsToHatsService);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNotEnoughTime);
+      HandleSecurityPageHatsRequest_NoSurveyIfSurveysDisabled);
   FRIEND_TEST_ALL_PREFIXES(
       HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesArgumentsToHatsServiceNotLaunchSurveyNoInteraction);
-  FRIEND_TEST_ALL_PREFIXES(
-      HatsHandlerTest,
-      HandleSecurityPageHatsRequestPassesFriendlierSafeBrowsingSettingsStateToHatsService);
+      HandleSecurityPageHatsRequest_NoSurveyIfInsufficientTimeOnPage);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, TrustSafetySentimentInteractions);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
@@ -71,27 +68,15 @@ class HatsHandler : public SettingsPageUIHandler {
 
   /**
    * All interactions from the security settings page which may result in a HaTS
-   * survey. Must be kept in sync with the enum of the same name in
-   * hats_browser_proxy.js
+   * survey. Must be kept in sync with the enum of the same name located in:
+   * chrome/browser/resources/settings/hats_browser_proxy.ts
    */
-  enum class SecurityPageInteraction {
-    RADIO_BUTTON_ENHANCED_CLICK = 0,
-    RADIO_BUTTON_STANDARD_CLICK = 1,
-    RADIO_BUTTON_DISABLE_CLICK = 2,
-    EXPAND_BUTTON_ENHANCED_CLICK = 3,
-    EXPAND_BUTTON_STANDARD_CLICK = 4,
-    NO_INTERACTION = 5,
-  };
-
-  /**
-   * Enumeration of all safe browsing modes. Must be kept in sync with the enum
-   * of the same name located in:
-   * chrome/browser/safe_browsing/generated_safe_browsing_pref.h
-   */
-  enum class SafeBrowsingSetting {
-    ENHANCED = 0,
-    STANDARD = 1,
-    DISABLED = 2,
+  enum class SecurityPageV2Interaction {
+    STANDARD_BUNDLE_RADIO_BUTTON_CLICK = 0,
+    ENHANCED_BUNDLE_RADIO_BUTTON_CLICK = 1,
+    SAFE_BROWSING_ROW_EXPANDED = 2,
+    STANDARD_SAFE_BROWSING_RADIO_BUTTON_CLICK = 3,
+    ENHANCED_SAFE_BROWSING_RADIO_BUTTON_CLICK = 4,
   };
 
   // Requests the appropriate HaTS survey, which may be none, for |interaction|.
@@ -107,8 +92,9 @@ class HatsHandler : public SettingsPageUIHandler {
   /**
    * Generate the Product Specific string data from |profile| and |args| for
    * chrome://settings/security page HaTS.
-   * - First arg in the list indicates the SecurityPageInteraction.
-   * - Second arg in the list indicates the SafeBrowsingSetting.
+   * - First arg in the list is a set of SecurityPageV2Interactions.
+   * - Second arg in the list indicates the SafeBrowsingState.
+   * - Third arg in the list indicates the SecuritySettingsBundleSetting.
    */
   SurveyStringData GetSecurityPageProductSpecificStringData(
       Profile* profile,

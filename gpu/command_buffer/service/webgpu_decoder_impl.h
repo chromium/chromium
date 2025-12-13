@@ -28,7 +28,7 @@ namespace webgpu {
 struct DawnCacheOptions;
 class WebGPUDecoder;
 
-GPU_GLES2_EXPORT WebGPUDecoder* CreateWebGPUDecoderImpl(
+GPU_GLES2_EXPORT std::unique_ptr<WebGPUDecoder> CreateWebGPUDecoderImpl(
     DecoderClient* client,
     CommandBufferServiceBase* command_buffer_service,
     SharedImageManager* shared_image_manager,

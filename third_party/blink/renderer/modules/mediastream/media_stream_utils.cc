@@ -30,7 +30,6 @@ namespace blink {
 // Makes getDisplayMedia take into account the device's scale factor
 // to compute screen sizes in calls without size constraints.
 BASE_FEATURE(kGetDisplayMediaScreenScaleFactor,
-             "GetDisplayMediaScreenScaleFactor",
 #if BUILDFLAG(IS_CHROMEOS)
              // Causes crash/timeouts on some ChromeOS devices.
              // See https://issuetracker.google.com/issues/284804471

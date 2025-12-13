@@ -12,13 +12,16 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/sync/android:sync_java",
+    "//components/sync_preferences/cross_device_pref_tracker/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
-  sources =
-      [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/sync/prefs/CrossDevicePrefTrackerFactory.java",
+  ]
 }
 
 android_library("ui_java") {
@@ -72,7 +75,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
@@ -86,6 +89,8 @@ generate_jni("jni_headers") {
     "//chrome/browser",
     "//chrome/browser/sync",
   ]
-  sources =
-      [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/sync/prefs/CrossDevicePrefTrackerFactory.java",
+  ]
 }

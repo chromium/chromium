@@ -2,42 +2,53 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace gpu {
 namespace {
 
+size_t RowByteAlignmentForSharedImageFormatFirstPlane(
+    viz::SharedImageFormat format) {
+  CHECK(viz::HasEquivalentBufferFormat(format));
+  if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return 8;
+  }
+  if (format.is_single_plane()) {
+    return 4;
+  }
+  return format.MultiplanarStorageBytesPerChannel();
+}
+
 // Validate that |stride| will work for pixels with |size| and |format|.
 bool ValidateStride(const gfx::Size size,
-                    gfx::BufferFormat format,
+                    viz::SharedImageFormat format,
                     uint32_t stride) {
   if (!base::IsValueInRangeForNumericType<size_t>(stride))
     return false;
 
-  // Use plane index 0 since we can't handle different plane strides anyway.
-  size_t alignment = gfx::RowByteAlignmentForBufferFormat(format, /*plane=*/0);
+  // Check for first plane index since we can't handle different plane strides
+  // anyway.
+  size_t alignment = RowByteAlignmentForSharedImageFormatFirstPlane(format);
   if (stride % alignment != 0)
     return false;
 
-  size_t min_width_in_bytes = 0;
-  if (!gfx::RowSizeForBufferFormatChecked(size.width(), format, /*plane=*/0,
-                                          &min_width_in_bytes)) {
+  std::optional<size_t> min_width_in_bytes =
+      viz::SharedMemoryRowSizeForSharedImageFormat(format, /*plane=*/0,
+                                                   size.width());
+  if (!min_width_in_bytes) {
     return false;
   }
 
-  if (stride < min_width_in_bytes)
+  if (stride < min_width_in_bytes.value()) {
     return false;
+  }
 
   return true;
 }
@@ -54,8 +65,9 @@ SharedMemoryRegionWrapper::~SharedMemoryRegionWrapper() = default;
 bool SharedMemoryRegionWrapper::Initialize(
     const gfx::GpuMemoryBufferHandle& handle,
     const gfx::Size& size,
-    gfx::BufferFormat format) {
+    viz::SharedImageFormat format) {
   DCHECK(!mapping_.IsValid());
+  CHECK(viz::HasEquivalentBufferFormat(format));
 
   if (!handle.region().IsValid()) {
     DLOG(ERROR) << "Invalid GMB shared memory region.";
@@ -67,8 +79,9 @@ bool SharedMemoryRegionWrapper::Initialize(
     return false;
   }
 
-  size_t buffer_size;
-  if (!gfx::BufferSizeForBufferFormatChecked(size, format, &buffer_size)) {
+  std::optional<size_t> buffer_size =
+      viz::SharedMemorySizeForSharedImageFormat(format, size);
+  if (!buffer_size) {
     DLOG(ERROR) << "Invalid GMB size.";
     return false;
   }
@@ -82,7 +95,7 @@ bool SharedMemoryRegionWrapper::Initialize(
   const size_t map_offset =
       allocation_granularity * (handle.offset / allocation_granularity);
 
-  base::CheckedNumeric<size_t> checked_size = buffer_size;
+  base::CheckedNumeric<size_t> checked_size = buffer_size.value();
   checked_size += memory_offset;
   if (!checked_size.IsValid()) {
     DLOG(ERROR) << "Invalid shared memory region map size.";
@@ -96,23 +109,26 @@ bool SharedMemoryRegionWrapper::Initialize(
     return false;
   }
 
-  size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+  int num_planes = format.NumberOfPlanes();
   planes_.resize(num_planes);
 
   // The offset/stride only make sense when GpuMemoryBufferHandle is for a
   // single plane. Stride should be set as the expected stride for first plane
   // and offset should always be zero.
   DCHECK_EQ(static_cast<size_t>(handle.stride),
-            gfx::RowSizeForBufferFormat(size.width(), format, /*plane=*/0));
+            viz::SharedMemoryRowSizeForSharedImageFormat(format, /*plane=*/0,
+                                                         size.width())
+                .value());
   DCHECK_EQ(handle.offset, 0u);
 
-  for (size_t plane_index = 0; plane_index < num_planes; ++plane_index) {
+  for (int plane_index = 0; plane_index < num_planes; ++plane_index) {
     const size_t plane_offset =
-        gfx::BufferOffsetForBufferFormat(size, format, plane_index);
+        viz::SharedMemoryOffsetForSharedImageFormat(format, plane_index, size);
 
     planes_[plane_index].offset = memory_offset + plane_offset;
-    planes_[plane_index].stride =
-        gfx::RowSizeForBufferFormat(size.width(), format, plane_index);
+    planes_[plane_index].stride = viz::SharedMemoryRowSizeForSharedImageFormat(
+                                      format, plane_index, size.width())
+                                      .value();
   }
 
   return true;
@@ -124,7 +140,8 @@ bool SharedMemoryRegionWrapper::IsValid() const {
 
 const uint8_t* SharedMemoryRegionWrapper::GetMemory(int plane_index) const {
   DCHECK(IsValid());
-  return mapping_.GetMemoryAs<const uint8_t>() + planes_[plane_index].offset;
+  return UNSAFE_TODO(mapping_.GetMemoryAs<const uint8_t>() +
+                     planes_[plane_index].offset);
 }
 
 size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
@@ -134,8 +151,8 @@ size_t SharedMemoryRegionWrapper::GetStride(int plane_index) const {
 
 base::span<const uint8_t> SharedMemoryRegionWrapper::GetMemoryPlanes() const {
   DCHECK(IsValid());
-  auto full_mapped_span =
-      base::span(mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size());
+  auto full_mapped_span = UNSAFE_TODO(base::span(
+      mapping_.GetMemoryAs<const uint8_t>(), mapping_.mapped_size()));
   // It is possible that the first plane starts at a non-zero offset. So we
   // subspan at this offset.
   return full_mapped_span.subspan(planes_[0].offset);

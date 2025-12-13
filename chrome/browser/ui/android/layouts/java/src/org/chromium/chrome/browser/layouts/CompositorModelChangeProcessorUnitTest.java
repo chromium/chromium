@@ -19,6 +19,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Features;
@@ -28,7 +30,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,23 +50,26 @@ public class CompositorModelChangeProcessorUnitTest {
     @Mock private SceneLayer mView;
     @Mock private PropertyModelChangeProcessor.ViewBinder mViewBinder;
 
-    private CompositorModelChangeProcessor.FrameRequestSupplier mFrameSupplier;
+    private final SettableNonNullObservableSupplier<Long> mFrameRequestSupplier =
+            ObservableSuppliers.createNonNull(0L);
     private CompositorModelChangeProcessor mCompositorMCP;
     private PropertyModel mModel;
     private final AtomicBoolean mPropertyChangedValue = new AtomicBoolean(false);
 
     @Before
     public void setUp() {
-        mFrameSupplier =
-                new CompositorModelChangeProcessor.FrameRequestSupplier(
-                        mRequestRenderCallbackHelper::notifyCalled);
         mModel = new PropertyModel(PROPERTY_CHANGED, PROPERTY_EXCLUDED);
 
-        Set<PropertyKey> exclusions = new HashSet();
-        exclusions.add(PROPERTY_EXCLUDED);
+        Set<PropertyKey> exclusions = Set.of(PROPERTY_EXCLUDED);
         mCompositorMCP =
                 CompositorModelChangeProcessor.create(
-                        mModel, mView, mViewBinder, mFrameSupplier, false, exclusions);
+                        mModel,
+                        mView,
+                        mViewBinder,
+                        mFrameRequestSupplier,
+                        mRequestRenderCallbackHelper::notifyCalled,
+                        false,
+                        exclusions);
     }
 
     @Test
@@ -74,7 +78,7 @@ public class CompositorModelChangeProcessorUnitTest {
         mModel.set(PROPERTY_CHANGED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
         mRequestRenderCallbackHelper.waitForCallback(callCount, 1);
 
-        mFrameSupplier.set(System.currentTimeMillis());
+        mFrameRequestSupplier.set(System.currentTimeMillis());
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
     }
 
@@ -82,7 +86,7 @@ public class CompositorModelChangeProcessorUnitTest {
     @Features.DisableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
     public void testBindAndNoRequestFrame() {
         int callCount = mRequestRenderCallbackHelper.getCallCount();
-        mFrameSupplier.set(System.currentTimeMillis());
+        mFrameRequestSupplier.set(System.currentTimeMillis());
 
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
         Assert.assertEquals(
@@ -95,7 +99,7 @@ public class CompositorModelChangeProcessorUnitTest {
     @Features.EnableFeatures({ChromeFeatureList.MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED})
     public void testNoBindAndNoRequestFrameOnModelUnchanged() throws TimeoutException {
         int callCount = mRequestRenderCallbackHelper.getCallCount();
-        mFrameSupplier.set(System.currentTimeMillis());
+        mFrameRequestSupplier.set(System.currentTimeMillis());
         verify(mViewBinder, never()).bind(any(), any(), any());
 
         Assert.assertEquals(
@@ -120,7 +124,7 @@ public class CompositorModelChangeProcessorUnitTest {
         mModel.set(
                 PROPERTY_EXCLUDED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
 
-        mFrameSupplier.set(System.currentTimeMillis());
+        mFrameRequestSupplier.set(System.currentTimeMillis());
         verify(mViewBinder).bind(eq(mModel), eq(mView), eq(null));
         Assert.assertEquals(
                 "A render should not have been requested!",
@@ -135,7 +139,7 @@ public class CompositorModelChangeProcessorUnitTest {
         mModel.set(
                 PROPERTY_EXCLUDED, mPropertyChangedValue.getAndSet(!mPropertyChangedValue.get()));
 
-        mFrameSupplier.set(System.currentTimeMillis());
+        mFrameRequestSupplier.set(System.currentTimeMillis());
         verify(mViewBinder, never()).bind(any(), any(), any());
         Assert.assertEquals(
                 "A render should not have been requested!",

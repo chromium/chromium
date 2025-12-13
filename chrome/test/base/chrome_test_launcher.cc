@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -230,6 +229,10 @@ void ChromeTestChromeMainDelegate::CreateThreadPool(std::string_view name) {
   // pool has been created.
   sampling_profiler_ = std::make_unique<MainThreadStackSamplingProfiler>();
 #endif
+}
+
+bool ChromeTestChromeMainDelegate::IsInitFeatureListEarly() {
+  return false;
 }
 
 #if !BUILDFLAG(IS_ANDROID)

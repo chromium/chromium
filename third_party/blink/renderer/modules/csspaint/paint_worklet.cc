@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet.h"
 
+#include <utility>
+
 #include "base/rand_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/cssom/prepopulated_computed_style_property_map.h"
@@ -161,8 +163,8 @@ void PaintWorklet::RegisterCSSPaintDefinition(const String& name,
       document_definition_map_.Set(name, nullptr);
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "A class with name:'" + name +
-              "' was registered with a different definition.");
+          StrCat({"A class with name:'", name,
+                  "' was registered with a different definition."}));
       return;
     }
     // Notify the generator ready only when register paint is called the
@@ -192,7 +194,7 @@ void PaintWorklet::RegisterCSSPaintDefinition(const String& name,
 void PaintWorklet::RegisterMainThreadDocumentPaintDefinition(
     const String& name,
     Vector<CSSPropertyID> native_properties,
-    Vector<String> custom_properties,
+    Vector<AtomicString> custom_properties,
     Vector<CSSSyntaxDefinition> input_argument_types,
     double alpha) {
   if (document_definition_map_.Contains(name)) {
@@ -207,15 +209,8 @@ void PaintWorklet::RegisterMainThreadDocumentPaintDefinition(
       return;
     }
   } else {
-    // Because this method is called cross-thread, |custom_properties| cannot be
-    // an AtomicString. Instead, convert to AtomicString now that we are on the
-    // main thread.
-    Vector<AtomicString> new_custom_properties;
-    new_custom_properties.ReserveInitialCapacity(custom_properties.size());
-    for (const String& property : custom_properties)
-      new_custom_properties.push_back(AtomicString(property));
     auto document_definition = std::make_unique<DocumentPaintDefinition>(
-        std::move(native_properties), std::move(new_custom_properties),
+        std::move(native_properties), std::move(custom_properties),
         std::move(input_argument_types), alpha);
     document_definition_map_.insert(name, std::move(document_definition));
   }

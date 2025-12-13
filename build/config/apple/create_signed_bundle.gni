@@ -94,7 +94,7 @@ apple_mobile_xcode_xcuitest_bundle_id =
 #       test target.
 #
 #   xcode_product_bundle_id:
-#       (optional) string, the bundle ID that will be added in the XCode
+#       (optional) string, the bundle ID that will be added in the Xcode
 #       attributes to enable some features when debugging (e.g. MetricKit).
 #
 #   primary_info_plist:
@@ -111,6 +111,10 @@ apple_mobile_xcode_xcuitest_bundle_id =
 #       not package the "bundle_data" deps but forward them to all targets
 #       the depend on it (unless the "bundle_data" target sets "product_type"
 #       to the same value as the "create_signed_bundle" target).
+#
+#   verify_as_first_framework
+#       (optional) string, if defined, verify that the named framework is the
+#       first loaded dylib in the bundle binary.
 #
 template("apple_mobile_create_signed_bundle") {
   assert(defined(invoker.product_type),
@@ -271,6 +275,7 @@ template("apple_mobile_create_signed_bundle") {
     }
 
     post_processing_script = "//build/config/apple/codesign.py"
+    post_processing_manifest = "$target_out_dir/$_target_name.manifest"
     post_processing_sources = [ _bundle_binary_path ]
     if (_enable_entitlements) {
       if (defined(invoker.entitlements_target)) {
@@ -294,15 +299,6 @@ template("apple_mobile_create_signed_bundle") {
           "$bundle_root_dir/Versions/Current",
           "$bundle_root_dir/$_output_name",
         ]
-
-        if (defined(invoker.has_public_headers) && invoker.has_public_headers) {
-          post_processing_outputs += [
-            "$bundle_root_dir/Headers",
-            "$bundle_root_dir/Modules",
-          ]
-        }
-      } else {
-        not_needed(invoker, [ "has_public_headers" ])
       }
     }
 
@@ -318,12 +314,11 @@ template("apple_mobile_create_signed_bundle") {
       "-t=" + invoker.platform_sdk_name,
       "-i=" + ios_code_signing_identity,
       "-b=" + rebase_path(_bundle_binary_path, root_build_dir),
+      "-M=" + rebase_path(ios_mobileprovision_files_filelist, root_build_dir),
+      "-L=" + rebase_path(post_processing_manifest, root_build_dir),
     ]
-    foreach(mobileprovision, ios_mobileprovision_files) {
-      post_processing_args +=
-          [ "-m=" + rebase_path(mobileprovision, root_build_dir) ]
-    }
     post_processing_sources += ios_mobileprovision_files
+    post_processing_sources += [ ios_mobileprovision_files_filelist ]
     if (_enable_entitlements) {
       post_processing_args +=
           [ "-e=" + rebase_path(_entitlements_path, root_build_dir) ]
@@ -349,6 +344,14 @@ template("apple_mobile_create_signed_bundle") {
         post_processing_args += [ "-F=$_framework_path" ]
       }
     }
+
+    if (defined(invoker.verify_as_first_framework)) {
+      post_processing_args += [
+        "--verify-load-order-first",
+        invoker.verify_as_first_framework,
+      ]
+    }
+
     if (defined(invoker.partial_info_plist)) {
       _partial_info_plists = [
         invoker.primary_info_plist,

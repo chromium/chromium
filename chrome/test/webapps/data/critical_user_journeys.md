@@ -21,11 +21,33 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | install_by_user(Standalone) |  launch(Standalone) | check_app_title(Standalone, StandaloneOriginal) |
-| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated, AcceptUpdate) | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
-| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated, CancelUninstallAndAcceptUpdate) | await_manifest_update | launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
-| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated, CancelDialogAndUninstall) | await_manifest_update | check_app_not_in_list | check_platform_shortcut_not_exists |
-| WMLC | install_by_user(Standalone) | manifest_update_icon(Standalone, AcceptUpdate) | await_manifest_update | check_app_icon(Standalone, Red) |
-| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | manifest_update_title(Standalone, StandaloneUpdated, SkipDialog) | await_manifest_update | launch_from_platform_shortcut(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_by_user(Standalone) |  launch(Standalone) | check_menu_button_pending_update(NotExpanded) |
+
+# Accept update (title)
+| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  check_app_title(Standalone, StandaloneUpdated) |
+# Cancel update and uninstall (title)
+| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) |  check_app_not_in_list | check_platform_shortcut_not_exists |
+# Ignore update first, then update from menu. (title)
+| WMLC | install_by_user(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(IgnoreDialog) |  check_menu_button_pending_update(NotExpanded) | launch(Standalone) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  launch(Standalone) | check_app_title(Standalone, StandaloneUpdated) |
+
+# Accept update (icon)
+| WMLC | install_by_user(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, Red) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  check_app_icon(Standalone, Red) |
+# Cancel update and uninstall (icon)
+| WMLC | install_by_user(Standalone) |check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, Red) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(CancelDialogAndUninstall) |  check_app_not_in_list | check_platform_shortcut_not_exists |
+# Ignore update first, then update from menu. (icon)
+| WMLC | install_by_user(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, Red) | check_menu_button_pending_update(ExpandedUpdateAvailable) | trigger_update_dialog_and_handle_response(IgnoreDialog) |  check_menu_button_pending_update(NotExpanded) | launch(Standalone) | trigger_update_dialog_and_handle_response(AcceptUpdate) |  launch(Standalone) | check_app_icon(Standalone, Red) |
+
+# Verify app title and icons are updated silently for trusted apps.
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(NotExpanded) |  check_app_title(Standalone, StandaloneUpdated) |
+| WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, Red) | check_menu_button_pending_update(NotExpanded) |  check_app_icon(Standalone, Red) |
+
+# Verify icon diff updates of <10% image diffs.
+| WMLC | install_by_user(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, GreenSmallDiff) | check_menu_button_pending_update(NotExpanded) | check_app_icon(Standalone, GreenSmallDiff) |
+
+# Verify that manifest updates also work for apps that are open in a browser tab (both security sensitive and non-security sensitive ones).
+| WMLC | install_by_user(StandaloneNestedA) | maybe_close_pwa | navigate_browser(Standalone) | check_launch_icon_not_shown | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(Standalone) | check_launch_icon_shown
+| WMLC | install_by_user(Standalone) | maybe_close_pwa | navigate_browser(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | launch | check_menu_button_pending_update(ExpandedUpdateAvailable) |
+| WMLC | install_by_user(Standalone) | maybe_close_pwa | navigate_browser(Standalone) | manifest_update_icon(Standalone, Red) | launch | check_menu_button_pending_update(ExpandedUpdateAvailable) |
 
 ## Run on OS Login
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -198,17 +220,17 @@ check_create_shortcut_shown |
 | C | create_shortcut_windowed | install_policy_app(Standalone, ShortcutOptions::All, WindowOptions::All, WebApp) | uninstall_policy_app | check_platform_shortcut_and_icon |
 | C | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | create_shortcut_windowed | uninstall_policy_app | check_app_in_list_windowed |
 | C | install_policy_app(Standalone, ShortcutOptions::All, Browser, WebApp) | create_shortcut_windowed | uninstall_policy_app | check_platform_shortcut_and_icon |
-| C | create_shortcut_windowed | manifest_update_colors | await_manifest_update | launch | check_window_color_correct |
-| C  | create_shortcut_windowed | manifest_update_display(Standalone, Browser) | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
-| C  | create_shortcut_windowed | manifest_update_display(Standalone, MinimalUi) | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(Standalone) | check_install_icon_not_shown |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(Standalone) | check_launch_icon_shown |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | launch(StandaloneNestedA) | navigate_pwa(StandaloneNestedA, StandaloneNestedB) | check_no_toolbar |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_install_icon_not_shown |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_launch_icon_shown |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
-| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
-| C  | create_shortcut_windowed | manifest_update_display(Standalone, Tabbed) | maybe_close_pwa | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_tabbed |
+| C | create_shortcut_windowed | manifest_update_colors | check_menu_button_pending_update(NotExpanded) |  launch | check_window_color_correct |
+| C  | create_shortcut_windowed | manifest_update_display(Standalone, Browser) | check_menu_button_pending_update(NotExpanded) | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| C  | create_shortcut_windowed | manifest_update_display(Standalone, MinimalUi) | check_menu_button_pending_update(NotExpanded) | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded)| navigate_browser(Standalone) | check_install_icon_not_shown |
+| C | create_shortcut_windowed(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded)| navigate_browser(Standalone) | check_launch_icon_shown |
+| C | create_shortcut_windowed(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded)| launch(StandaloneNestedA) | navigate_pwa(StandaloneNestedA, StandaloneNestedB) | check_no_toolbar |
+| C | create_shortcut_windowed(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedB) | check_install_icon_not_shown |
+| C | create_shortcut_windowed(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedB) | check_launch_icon_shown |
+| C | create_shortcut_windowed(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
+| C | create_shortcut_windowed(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
+| C  | create_shortcut_windowed | manifest_update_display(Standalone, Tabbed) | check_menu_button_pending_update(NotExpanded) |  maybe_close_pwa | launch | check_window_created | check_tab_not_created | check_window_display_tabbed |
 | C | create_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_install_icon_shown |
 | C | create_shortcut_windowed(StandaloneNestedA) | navigate_browser(NotInstalled) | check_launch_icon_not_shown |
 | C | create_shortcut(Standalone, Windowed) | navigate_browser(StandaloneNestedA) | check_install_icon_shown |
@@ -227,13 +249,13 @@ check_create_shortcut_shown |
 | C | create_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
 | C | create_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay(Wco, Off) |
 | C | create_shortcut_windowed(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
-| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, On) |
-| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| C | create_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) |
-| C | create_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay(Wco, Off) |
+| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, On) |
+| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| C | create_shortcut_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| C | create_shortcut_windowed(Wco)| manifest_update_display(Wco, Standalone) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) |
+| C | create_shortcut_windowed(Wco) | manifest_update_display(Wco, Standalone) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay(Wco, Off) |
 | C | create_shortcut_windowed(Wco) |  check_window_controls_overlay_toggle_icon(Shown) |
 | C | create_shortcut_windowed(Wco) |  enter_full_screen_app | check_window_controls_overlay_toggle_icon(NotShown) |
 | C | create_shortcut_windowed(Wco) |  enter_full_screen_app | exit_full_screen_app | check_window_controls_overlay_toggle_icon(Shown) |
@@ -401,29 +423,29 @@ Note: Updating display to "browser" means the default windowed experience is now
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WLC | install_windowed_with_shortcut | manifest_update_colors | await_manifest_update | launch | check_window_color_correct |
-| WLC  | install_windowed_with_shortcut | manifest_update_display(Standalone, Browser) | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
-| WLC  | install_windowed_with_shortcut | manifest_update_display(Standalone, MinimalUi) | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(Standalone) | check_install_icon_not_shown |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(Standalone) | check_launch_icon_shown |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | launch(StandaloneNestedA) | navigate_pwa(StandaloneNestedA, StandaloneNestedB) | check_no_toolbar |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_install_icon_not_shown |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedB) | check_launch_icon_shown |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
-| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | await_manifest_update(StandaloneNestedA) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
+| WLC | install_windowed_with_shortcut | launch | manifest_update_colors | check_menu_button_pending_update(NotExpanded) |  launch | check_window_color_correct |
+| WLC  | install_windowed_with_shortcut | maybe_close_pwa | launch | manifest_update_display(Standalone, Browser) | check_menu_button_pending_update(NotExpanded) |  launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| WLC  | install_windowed_with_shortcut | maybe_close_pwa | launch | manifest_update_display(Standalone, MinimalUi) | check_menu_button_pending_update(NotExpanded) |  launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(Standalone) | check_install_icon_not_shown |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(Standalone) | check_launch_icon_shown |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | launch(StandaloneNestedA) | navigate_pwa(StandaloneNestedA, StandaloneNestedB) | check_no_toolbar |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedB) | check_install_icon_not_shown |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedB) | check_launch_icon_shown |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedA) | check_install_icon_not_shown |
+| WMLC | install_windowed_with_shortcut(StandaloneNestedA) | launch(StandaloneNestedA) | manifest_update_scope_to(StandaloneNestedA, Standalone) | check_menu_button_pending_update(NotExpanded) | navigate_browser(StandaloneNestedA) | check_launch_icon_shown |
 
 The following specialization is required here since in tabbed mode, launching may add a tab to the existing window instead of making a new one.
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| WMLC  | install_windowed_with_shortcut | manifest_update_display(Standalone, Tabbed) | maybe_close_pwa | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_tabbed |
+| WMLC  | install_windowed_with_shortcut | maybe_close_pwa | launch | manifest_update_display(Standalone, Tabbed) | check_menu_button_pending_update(NotExpanded) |  maybe_close_pwa | launch | check_window_created | check_tab_not_created | check_window_display_tabbed |
 
 These mac specializations are required due to launching from platform shortcut actually focusing the window, instead of creating a new one.
 
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| M    | install_windowed_with_shortcut | manifest_update_display(Standalone, Browser) | maybe_close_pwa | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
-| M    | install_windowed_with_shortcut | manifest_update_display(Standalone, MinimalUi) | maybe_close_pwa | await_manifest_update | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| M    | install_windowed_with_shortcut | maybe_close_pwa | launch | manifest_update_display(Standalone, Browser) | check_menu_button_pending_update(NotExpanded) |  maybe_close_pwa | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
+| M    | install_windowed_with_shortcut | maybe_close_pwa | launch | manifest_update_display(Standalone, MinimalUi) | check_menu_button_pending_update(NotExpanded) |  maybe_close_pwa | launch | check_window_created | check_tab_not_created | check_window_display_minimal |
 
 ## Browser UX with edge cases
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |
@@ -476,13 +498,11 @@ These mac specializations are required due to launching from platform shortcut a
 | WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | disable_window_controls_overlay(Wco) | check_window_controls_overlay_toggle(Wco, Shown) |
 | WMLC | install_by_user(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
 | WMLC | install_policy_app(Wco, ShortcutOptions::All, Windowed, WebApp) | launch(Wco) | enable_window_controls_overlay(Wco) | launch(Wco) | check_window_controls_overlay(Wco, On) |
-| WMLC | install_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| WMLC | install_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| WMLC | install_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, On) |
-| WMLC | install_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| WMLC | install_windowed(MinimalUi) | manifest_update_display(MinimalUi, Wco) | await_manifest_update(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
-| WMLC | install_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) |
-| WMLC | install_windowed(Wco) | manifest_update_display(Wco, Standalone) | await_manifest_update(Wco) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay(Wco, Off) |
+| WMLC | install_windowed(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| WMLC | install_windowed(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay(MinimalUi, On) |
+| WMLC | install_windowed(MinimalUi) | maybe_close_pwa | launch(MinimalUi) | manifest_update_display(MinimalUi, Wco) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(MinimalUi) | enable_window_controls_overlay(MinimalUi) | check_window_controls_overlay_toggle(MinimalUi, Shown) |
+| WMLC | install_windowed(Wco) | maybe_close_pwa | launch(Wco) | manifest_update_display(Wco, Standalone) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay_toggle(Wco, NotShown) |
+| WMLC | install_windowed(Wco) | maybe_close_pwa | launch(Wco) | manifest_update_display(Wco, Standalone) | check_menu_button_pending_update(NotExpanded) | maybe_close_pwa | launch(Wco) | check_window_controls_overlay(Wco, Off) |
 | WMLC | install_by_user(Wco) |  check_window_controls_overlay_toggle_icon(Shown) |
 | WMLC | install_by_user(Wco) |  enter_full_screen_app | check_window_controls_overlay_toggle_icon(NotShown) |
 | WMLC | install_by_user(Wco) |  enter_full_screen_app | exit_full_screen_app | check_window_controls_overlay_toggle_icon(Shown) |

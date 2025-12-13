@@ -13,6 +13,7 @@ struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let isPreview: Bool
   let avatar: Image?
   let gaiaID: String?
+  let email: String?
   let deleted: Bool
 }
 
@@ -20,7 +21,7 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
     ConfigureQuickActionsWidgetEntry(
       date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true, avatar: nil,
-      gaiaID: nil, deleted: false)
+      gaiaID: nil, email: nil, deleted: false)
   }
 
   func getSnapshot(
@@ -30,10 +31,11 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      useColorLensAndVoiceIcons: shouldUseLens(),
       isPreview: context.isPreview,
       avatar: nil,
       gaiaID: nil,
+      email: nil,
       deleted: false
     )
     completion(entry)
@@ -46,10 +48,11 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
       useLens: shouldUseLens(),
-      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+      useColorLensAndVoiceIcons: shouldUseLens(),
       isPreview: context.isPreview,
       avatar: nil,
       gaiaID: nil,
+      email: nil,
       deleted: false
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
@@ -76,13 +79,12 @@ struct QuickActionsWidget: Widget {
     .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
     .supportedFamilies([.systemMedium])
     .crDisfavoredLocations()
-    .crContentMarginsDisabled()
-    .crContainerBackgroundRemovable(false)
+    .contentMarginsDisabled()
+    .containerBackgroundRemovable(false)
   }
 }
 
 #if IOS_ENABLE_WIDGETS_FOR_MIM
-  @available(iOS 17, *)
   struct QuickActionsWidgetConfigurable: Widget {
     // Changing 'kind' or deleting this widget will cause all installed instances of this widget to
     // stop updating and show the placeholder state.
@@ -102,19 +104,18 @@ struct QuickActionsWidget: Widget {
       .description(Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_DESCRIPTION"))
       .supportedFamilies([.systemMedium])
       .crDisfavoredLocations()
-      .crContentMarginsDisabled()
-      .crContainerBackgroundRemovable(false)
+      .contentMarginsDisabled()
+      .containerBackgroundRemovable(false)
     }
   }
 
   // Advises WidgetKit when to update a widget’s display.
-  @available(iOS 17, *)
   struct ConfigurableQuickActionsWidgetEntryProvider: AppIntentTimelineProvider {
 
     func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
       ConfigureQuickActionsWidgetEntry(
         date: Date(), useLens: false, useColorLensAndVoiceIcons: false, isPreview: true,
-        avatar: nil, gaiaID: nil, deleted: false)
+        avatar: nil, gaiaID: nil, email: nil, deleted: false)
     }
 
     func snapshot(for configuration: SelectAccountIntent, in context: Context) async
@@ -122,15 +123,17 @@ struct QuickActionsWidget: Widget {
     {
       let avatar: Image? = configuration.avatar()
       let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
       let deleted: Bool = configuration.deleted()
 
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        useColorLensAndVoiceIcons: shouldUseLens(),
         isPreview: context.isPreview,
         avatar: avatar,
         gaiaID: gaiaID,
+        email: email,
         deleted: deleted
       )
       return entry
@@ -141,15 +144,17 @@ struct QuickActionsWidget: Widget {
     > {
       let avatar: Image? = configuration.avatar()
       let gaiaID: String? = configuration.gaia()
+      let email: String? = configuration.email()
       let deleted: Bool = configuration.deleted()
 
       let entry = ConfigureQuickActionsWidgetEntry(
         date: Date(),
         useLens: shouldUseLens(),
-        useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons(),
+        useColorLensAndVoiceIcons: shouldUseLens(),
         isPreview: context.isPreview,
         avatar: avatar,
         gaiaID: gaiaID,
+        email: email,
         deleted: deleted
       )
       let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
@@ -167,17 +172,6 @@ func shouldUseLens() -> Bool {
     && sharedDefaults.bool(
       forKey: WidgetConstants.QuickActionsWidget.enableLensInWidgetKey)
   return useLens
-}
-
-func shouldUseColorLensAndVoiceIcons() -> Bool {
-  // On iOS 15, color icons are not supported in widget, always return false
-  // as no icon would be displayed.
-  // On iOS 16, color icons are displayed in monochrome, so still present
-  // the monochrome icon as it may be better adapted.
-  if #available(iOS 17, *) {
-    return shouldUseLens()
-  }
-  return false
 }
 
 struct QuickActionsWidgetEntryView: View {
@@ -212,40 +206,39 @@ struct QuickActionsWidgetEntryView: View {
         ZStack {
           VStack {
             Spacer()
-            Link(
-              destination: destinationURL(
-                url: WidgetConstants.QuickActionsWidget.searchUrl, gaia: entry.gaiaID)
-            ) {
-              ZStack {
-                RoundedRectangle(cornerRadius: 26)
-                  .frame(height: 52)
-                  .foregroundColor(Color("widget_search_bar_color"))
-                HStack(spacing: 12) {
-                  Image("widget_chrome_logo")
-                    .clipShape(Circle())
-                    // Without .clipShape(Circle()), in the redacted/placeholder
-                    // state the Widget shows an rectangle placeholder instead of
-                    // a circular one.
-                    .padding(.leading, 8)
-                    .unredacted()
-                  Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE")
-                    .font(.subheadline)
-                    .foregroundColor(Color("widget_text_color"))
-                  Spacer()
-                  #if IOS_ENABLE_WIDGETS_FOR_MIM
-                    Avatar(entry: entry)
-                  #endif
-                }
-              }
-              .frame(minWidth: 0, maxWidth: .infinity)
-              .padding([.leading, .trailing], 11)
-            }
-            .accessibility(
-              label:
-                Text(
-                  "IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL"
+            ZStack {
+              RoundedRectangle(cornerRadius: 26)
+                .frame(height: 52)
+                .foregroundColor(Color("widget_search_bar_color"))
+                // This is needed so that the voice over will see the widget as a button and not as
+                // an image.
+                .accessibilityAddTraits(.isButton)
+                .accessibilityLabel(
+                  Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_SEARCH_A11Y_LABEL")
                 )
-            )
+              HStack(spacing: 12) {
+                Image("widget_chrome_logo")
+                  .clipShape(Circle())
+                  // Without .clipShape(Circle()), in the redacted/placeholder
+                  // state the Widget shows an rectangle placeholder instead of
+                  // a circular one.
+                  .padding(.leading, 8)
+                  .unredacted()
+                  .accessibilityHidden(true)
+                Text("IDS_IOS_WIDGET_KIT_EXTENSION_QUICK_ACTIONS_TITLE")
+                  .font(.subheadline)
+                  .foregroundColor(Color("widget_text_color"))
+                  .accessibilityHidden(true)
+                Spacer()
+                #if IOS_ENABLE_WIDGETS_FOR_MIM
+                  Avatar(entry: entry)
+                #endif
+              }
+            }
+            .frame(minWidth: 0, maxWidth: .infinity)
+            .padding([.leading, .trailing], 11)
+            .widgetURL(
+              destinationURL(url: WidgetConstants.QuickActionsWidget.searchUrl, gaia: entry.gaiaID))
             Spacer()
           }
           .frame(height: searchAreaHeight)
@@ -265,7 +258,7 @@ struct QuickActionsWidgetEntryView: View {
                 symbolWithName(symbolName: "widget_incognito_icon", system: false)
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
-              .accessibility(label: Text(incognitoA11yLabel))
+              .accessibilityLabel(Text(incognitoA11yLabel))
               Separator(height: separatorHeight)
               Link(
                 destination: destinationURL(
@@ -278,7 +271,7 @@ struct QuickActionsWidgetEntryView: View {
                   )
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
-              .accessibility(label: Text(voiceSearchA11yLabel))
+              .accessibilityLabel(Text(voiceSearchA11yLabel))
               Separator(height: separatorHeight)
               if entry.useLens {
                 Link(
@@ -292,7 +285,7 @@ struct QuickActionsWidgetEntryView: View {
                     )
                     .frame(minWidth: 0, maxWidth: .infinity)
                 }
-                .accessibility(label: Text(lensA11yLabel))
+                .accessibilityLabel(Text(lensA11yLabel))
               } else {
                 Link(
                   destination: destinationURL(
@@ -301,7 +294,7 @@ struct QuickActionsWidgetEntryView: View {
                   symbolWithName(symbolName: "qrcode", system: true)
                     .frame(minWidth: 0, maxWidth: .infinity)
                 }
-                .accessibility(label: Text(qrA11yLabel))
+                .accessibilityLabel(Text(qrA11yLabel))
               }
             } else {
               ButtonPlaceholder()
@@ -315,7 +308,9 @@ struct QuickActionsWidgetEntryView: View {
           .padding([.leading, .trailing], 11)
         }
       }
-      .crContainerBackground(Color("widget_background_color").unredacted())
+      .containerBackground(for: .widget) {
+        Color("widget_background_color").unredacted()
+      }
     }
   }
 }
@@ -350,10 +345,15 @@ struct Avatar: View {
         .opacity(0.2)
         .frame(width: 35, height: 35)
         .padding(.trailing, 8)
-    } else if let avatar = entry.avatar {
+    } else if let avatar = entry.avatar,
+      let email = entry.email
+    {
       avatar
         .resizable()
         .clipShape(Circle())
+        .accessibilityLabel(
+          String(localized: "IDS_IOS_WIDGET_KIT_EXTENSION_AVATAR_A11Y_LABEL") + email
+        )
         .unredacted()
         .scaledToFill()
         .frame(width: 35, height: 35)

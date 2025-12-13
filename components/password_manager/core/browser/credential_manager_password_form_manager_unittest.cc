@@ -18,13 +18,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
-
 using base::ASCIIToUTF16;
 using testing::_;
-using testing::Invoke;
 
 namespace password_manager {
 
@@ -55,6 +50,7 @@ class MockFormSaver : public StubFormSaver {
            const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
                matches,
            const std::u16string& old_password));
+  MOCK_METHOD1(UpdateWithoutPostProcessing, void(PasswordForm pending));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(PasswordFormManager* form_manager) {
@@ -82,10 +78,6 @@ class CredentialManagerPasswordFormManagerTest : public testing::Test {
     form_to_save_.scheme = PasswordForm::Scheme::kHtml;
     form_to_save_.type = PasswordForm::Type::kApi;
     form_to_save_.in_store = PasswordForm::Store::kProfileStore;
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
-#endif
   }
   CredentialManagerPasswordFormManagerTest(
       const CredentialManagerPasswordFormManagerTest&) = delete;

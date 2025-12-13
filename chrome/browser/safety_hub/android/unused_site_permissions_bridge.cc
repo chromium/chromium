@@ -172,3 +172,6 @@ JNI_UnusedSitePermissionsBridge_ContentSettingsTypeToString(
     std::vector<std::int32_t>& content_settings_type_list) {
   return ContentSettingsTypeToString(content_settings_type_list);
 }
+
+DEFINE_JNI(PermissionsData)
+DEFINE_JNI(UnusedSitePermissionsBridge)

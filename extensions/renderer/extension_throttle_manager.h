@@ -8,10 +8,12 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 
-#include "base/observer_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "extensions/renderer/extension_throttle_entry.h"
+#include "extensions/renderer/extension_throttle_manager_access.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -81,27 +83,11 @@ class ExtensionThrottleManager {
   void OverrideEntryForTests(const GURL& url,
                              std::unique_ptr<ExtensionThrottleEntry> entry);
 
+  scoped_refptr<ExtensionThrottleManagerAccess> GetAccess() const {
+    return access_;
+  }
+
   int GetNumberOfEntriesForTests() const { return url_entries_.size(); }
-
-  // Observe extension throttle manager.
-  class ExtensionThrottleManagerObserver : public base::CheckedObserver {
-   public:
-    ExtensionThrottleManagerObserver() = default;
-
-    virtual void OnExtensionThrottleManagerDestruct(
-        ExtensionThrottleManager* manager) {}
-
-   protected:
-    ~ExtensionThrottleManagerObserver() override = default;
-  };
-
-  void AddObserver(ExtensionThrottleManagerObserver* observer) {
-    observers_.AddObserver(observer);
-  }
-
-  void RemoveObserver(ExtensionThrottleManagerObserver* observer) {
-    observers_.RemoveObserver(observer);
-  }
 
  protected:
   // Method that allows us to transform a URL into an ID that can be used in our
@@ -157,8 +143,9 @@ class ExtensionThrottleManager {
   // Used to synchronize all public methods.
   base::Lock lock_;
 
-  // Observers of `ExtensionThrottleManager`.
-  base::ObserverList<ExtensionThrottleManagerObserver> observers_;
+  // Shared access helper for throttles that depend on this manager.
+  scoped_refptr<ExtensionThrottleManagerAccess> access_ =
+      base::MakeRefCounted<ExtensionThrottleManagerAccess>(this);
 };
 
 }  // namespace extensions

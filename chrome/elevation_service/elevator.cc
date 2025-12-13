@@ -13,8 +13,10 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -215,7 +217,7 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   }
   bool should_reencrypt = false;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  InternalFlags flags;
+  InternalFlags flags{.use_latest_encryption = true};
   auto post_process_result = PostProcessData(plaintext_str, &flags);
   if (!post_process_result.has_value()) {
     return post_process_result.error();
@@ -239,6 +241,18 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
   return should_reencrypt ? kSuccessShouldReencrypt : S_OK;
 }
 
+HRESULT Elevator::RunIsolatedChrome(DWORD flags,
+                                    const WCHAR* command_line,
+                                    BSTR* log,
+                                    ULONG_PTR* proc_handle,
+                                    DWORD* last_error) {
+  return E_NOTIMPL;
+}
+
+HRESULT Elevator::AcceptInvitation(const wchar_t* server_name) {
+  return E_NOTIMPL;
+}
+
 // static
 void Elevator::AppendStringWithLength(const std::string& to_append,
                                       std::string& base) {
@@ -254,7 +268,8 @@ std::string Elevator::PopFromStringFront(std::string& str) {
     return std::string();
   auto it = str.begin();
   // Obtain the size.
-  UNSAFE_TODO(memcpy(&size, str.c_str(), sizeof(size)));
+  size =
+      base::U32FromLittleEndian(base::as_byte_span(str).first<sizeof(size)>());
   // Skip over the size field.
   std::string value;
   if (size) {

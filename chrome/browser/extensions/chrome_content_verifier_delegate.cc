@@ -24,7 +24,6 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/disable_reason.h"
@@ -32,8 +31,10 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pref_types.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
@@ -45,6 +46,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

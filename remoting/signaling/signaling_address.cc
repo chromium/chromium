@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/signaling/signaling_address.h"
 
 #include <string.h>
@@ -44,6 +39,11 @@ SignalingAddress::Channel GetChannelType(std::string address) {
     if (resource.find(kFtlResourcePrefix) == 0) {
       return SignalingAddress::Channel::FTL;
     }
+    return SignalingAddress::Channel::XMPP;
+  }
+  // No resource. It can be an XMPP JID (user@domain.com) or a corp token.
+  if (address.find('@') == std::string::npos) {
+    return SignalingAddress::Channel::CORP;
   }
   return SignalingAddress::Channel::XMPP;
 }
@@ -61,13 +61,26 @@ SignalingAddress::SignalingAddress(const std::string& address) {
       id_ = NormalizeSignalingId(address);
       DCHECK(!id_.empty()) << "Missing signaling ID.";
       break;
+    case Channel::CORP:
+      id_ = address;
+      DCHECK(!id_.empty()) << "Missing signaling ID.";
+      break;
     default:
       NOTREACHED();
   }
 }
 
+// static
+SignalingAddress SignalingAddress::CreateSystemAddress(const std::string& id) {
+  SignalingAddress address;
+  address.is_system_ = true;
+  address.id_ = id;
+  return address;
+}
+
 bool SignalingAddress::operator==(const SignalingAddress& other) const {
-  return (other.id_ == id_) && (other.channel_ == channel_);
+  return (other.id_ == id_) && (other.channel_ == channel_) &&
+         (other.is_system_ == is_system_);
 }
 
 bool SignalingAddress::operator!=(const SignalingAddress& other) const {
@@ -100,18 +113,23 @@ void SignalingAddress::SetInMessage(jingle_xmpp::XmlElement* iq,
   iq->SetAttr(GetIdQName(direction), id_);
 }
 
-bool SignalingAddress::GetFtlInfo(std::string* username,
+bool SignalingAddress::GetFtlInfo(std::string* email,
                                   std::string* registration_id) const {
   if (channel_ != Channel::FTL) {
     return false;
   }
   std::string resource;
-  bool has_resource = SplitSignalingIdResource(id_, username, &resource);
+  bool has_resource = SplitSignalingIdResource(id_, email, &resource);
   DCHECK(has_resource);
   size_t ftl_resource_prefix_length = strlen(kFtlResourcePrefix);
-  DCHECK_LT(ftl_resource_prefix_length, resource.length());
+  DCHECK_GE(resource.length(), ftl_resource_prefix_length);
   *registration_id = resource.substr(ftl_resource_prefix_length);
   return true;
+}
+
+bool SignalingAddress::GetFtlSenderEmail(std::string* email) const {
+  std::string unused_registration_id;
+  return GetFtlInfo(email, &unused_registration_id);
 }
 
 }  // namespace remoting

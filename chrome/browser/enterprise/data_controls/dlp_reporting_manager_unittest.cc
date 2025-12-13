@@ -32,7 +32,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -211,7 +210,6 @@ TEST_F(DlpReportingManagerTest, MetricsReported) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DlpReportingManagerTest, UserType) {
-  ScopedTestingLocalState local_state{TestingBrowserProcess::GetGlobal()};
   auto* user_manager = new ash::FakeChromeUserManager();
   user_manager::ScopedUserManager enabler(base::WrapUnique(user_manager));
 

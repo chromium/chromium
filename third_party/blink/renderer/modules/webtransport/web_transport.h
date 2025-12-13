@@ -85,6 +85,7 @@ class MODULES_EXPORT WebTransport final
   ScriptPromise<WebTransportCloseInfo> closed(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromise<WebTransportConnectionStats> getStats(ScriptState*);
+  const String& protocol();
 
   // WebTransportHandshakeClient implementation
   void OnBeforeConnect(const net::IPEndPoint& server_address) override;
@@ -92,6 +93,7 @@ class MODULES_EXPORT WebTransport final
       mojo::PendingRemote<network::mojom::blink::WebTransport>,
       mojo::PendingReceiver<network::mojom::blink::WebTransportClient>,
       network::mojom::blink::HttpResponseHeadersPtr response_headers,
+      const String& selected_application_protocol,
       network::mojom::blink::WebTransportStatsPtr initial_stats) override;
   void OnHandshakeFailed(network::mojom::blink::WebTransportErrorPtr) override;
 
@@ -182,6 +184,8 @@ class MODULES_EXPORT WebTransport final
   const Member<ScriptState> script_state_;
 
   const KURL url_;
+
+  String selected_application_protocol_ = "";
 
   // Map from stream_id to IncomingStream.
   // Intentionally keeps streams reachable by GC as long as they are open.

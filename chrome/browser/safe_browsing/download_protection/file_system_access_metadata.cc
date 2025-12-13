@@ -95,6 +95,7 @@ bool FileSystemAccessMetadata::HasUserGesture() const {
 
 bool FileSystemAccessMetadata::IsObfuscated() const {
   // No support for enterprise obfuscation for filesystem access API.
+  // TODO(crbug.com/378490429): Add support for obfuscated files.
   return false;
 }
 
@@ -130,7 +131,7 @@ std::unique_ptr<DownloadRequestMaker>
 FileSystemAccessMetadata::CreateDownloadRequestFromMetadata(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor) const {
   return DownloadRequestMaker::CreateFromFileSystemAccess(
-      binary_feature_extractor, *item_);
+      binary_feature_extractor, *item_, IsObfuscated());
 }
 
 std::unique_ptr<DeepScanningMetadata::DownloadScopedObservation>
@@ -162,6 +163,10 @@ FileSystemAccessMetadata::CollectFrameUrls() const {
   return enterprise_connectors::CollectFrameUrls(
       item_->web_contents.get(),
       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
+}
+
+content::WebContents* FileSystemAccessMetadata::web_contents() const {
+  return item_->web_contents.get();
 }
 
 base::WeakPtr<FileSystemAccessMetadata> FileSystemAccessMetadata::GetWeakPtr() {

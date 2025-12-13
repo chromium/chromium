@@ -34,7 +34,8 @@
 
 namespace blink {
 
-ANGLEInstancedArrays::ANGLEInstancedArrays(WebGLRenderingContextBase* context)
+ANGLEInstancedArrays::ANGLEInstancedArrays(WebGLRenderingContextBase* context,
+                                           ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_instanced_arrays");

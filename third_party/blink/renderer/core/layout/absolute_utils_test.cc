@@ -106,9 +106,9 @@ class AbsoluteUtilsTest : public RenderingTest {
             static_position, container_writing_direction,
             node.Style().GetWritingDirection());
     ComputeOofInlineDimensions(
-        node, node.Style(), space, imcb, LogicalAnchorCenterPosition(),
-        LogicalAlignment(), border_padding, std::nullopt, BoxStrut(),
-        container_writing_direction, dimensions);
+        node, /*break_token=*/nullptr, node.Style(), space, imcb,
+        LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
+        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -133,10 +133,10 @@ class AbsoluteUtilsTest : public RenderingTest {
             node, space.AvailableSize(), LogicalAlignment(), insets,
             static_position, container_writing_direction,
             node.Style().GetWritingDirection());
-    ComputeOofBlockDimensions(node, node.Style(), space, imcb,
-                              LogicalAnchorCenterPosition(), LogicalAlignment(),
-                              border_padding, std::nullopt, BoxStrut(),
-                              container_writing_direction, dimensions);
+    ComputeOofBlockDimensions(
+        node, /*break_token=*/nullptr, node.Style(), space, imcb,
+        LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
+        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -168,14 +168,10 @@ TEST_F(AbsoluteUtilsTest, Horizontal) {
   BoxStrut vrl_border_padding =
       ComputeBorders(vrl_space, node) + ComputePadding(vrl_space, node.Style());
 
-  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
-                                           LogicalStaticPosition::kInlineStart,
-                                           LogicalStaticPosition::kBlockStart};
+  LogicalStaticPosition static_position;
   // Same as regular static position, but with the inline-end edge.
-  LogicalStaticPosition static_position_inline_end = {
-      {LayoutUnit(), LayoutUnit()},
-      LogicalStaticPosition::kInlineEnd,
-      LogicalStaticPosition::kBlockStart};
+  LogicalStaticPosition static_position_inline_end;
+  static_position_inline_end.inline_edge = LogicalStaticPosition::kInlineEnd;
 
   LogicalOofDimensions dimensions;
 
@@ -334,13 +330,9 @@ TEST_F(AbsoluteUtilsTest, Vertical) {
   BoxStrut vrl_border_padding =
       ComputeBorders(vrl_space, node) + ComputePadding(vrl_space, node.Style());
 
-  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
-                                           LogicalStaticPosition::kInlineStart,
-                                           LogicalStaticPosition::kBlockStart};
-  LogicalStaticPosition static_position_block_end = {
-      {LayoutUnit(), LayoutUnit()},
-      LogicalStaticPosition::kInlineStart,
-      LogicalStaticPosition::kBlockEnd};
+  LogicalStaticPosition static_position;
+  LogicalStaticPosition static_position_block_end;
+  static_position_block_end.block_edge = LogicalStaticPosition::kBlockEnd;
 
   LogicalOofDimensions dimensions;
 
@@ -443,9 +435,10 @@ TEST_F(AbsoluteUtilsTest, CenterStaticPosition) {
       CreateConstraintSpace({WritingMode::kHorizontalTb, TextDirection::kLtr});
 
   BlockNode node(element_->GetLayoutBox());
-  LogicalStaticPosition static_position = {{LayoutUnit(150), LayoutUnit(200)},
-                                           LogicalStaticPosition::kInlineCenter,
-                                           LogicalStaticPosition::kBlockCenter};
+  LogicalStaticPosition static_position(
+      LogicalOffset(LayoutUnit(150), LayoutUnit(200)));
+  static_position.inline_edge = LogicalStaticPosition::kInlineCenter;
+  static_position.block_edge = LogicalStaticPosition::kBlockCenter;
 
   SetHorizontalStyle("auto", "auto", "auto", "auto", "auto");
   SetVerticalStyle("auto", "auto", "auto", "auto", "auto");
@@ -490,10 +483,7 @@ TEST_F(AbsoluteUtilsTest, MinMax) {
   BoxStrut ltr_border_padding =
       ComputeBorders(ltr_space, node) + ComputePadding(ltr_space, node.Style());
 
-  LogicalStaticPosition static_position = {{LayoutUnit(), LayoutUnit()},
-                                           LogicalStaticPosition::kInlineStart,
-                                           LogicalStaticPosition::kBlockStart};
-
+  LogicalStaticPosition static_position;
   LogicalOofDimensions dimensions;
 
   // WIDTH TESTS

@@ -24,6 +24,11 @@ public final class ChildProcessLauncherHelper {
         ChildProcessLauncherHelperImpl.warmUpOnAnyThread(context);
     }
 
+    /** Initializes the ChildProcessLauncher. */
+    public static void initialize() {
+        ChildProcessLauncherHelperImpl.initialize();
+    }
+
     /**
      * Starts the binding management that adjust a process priority in response to various signals
      * (app sent to background/foreground for example). Note: WebAPKs and non WebAPKs share the same

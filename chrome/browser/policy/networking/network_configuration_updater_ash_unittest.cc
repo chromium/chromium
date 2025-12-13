@@ -128,19 +128,6 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
     return count;
   }
 
-  void ImportAllCertificatesUserInitiated(
-      const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      DoneCallback done_callback) override {
-    // As policy-provided server and authority certificates are not permanently
-    // imported, only ImportClientCertificaates should be called.
-    // ImportAllCertificatesUserInitiated should never be called from
-    // UserNetworkConfigurationUpdater.
-    NOTREACHED();
-  }
-
   void ImportClientCertificates(
       const std::vector<OncParsedCertificates::ClientCertificate>&
           client_certificates,

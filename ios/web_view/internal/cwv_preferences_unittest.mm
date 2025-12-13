@@ -23,6 +23,7 @@
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -56,6 +57,12 @@ class CWVPreferencesTest : public PlatformTest {
 
     pref_registry->RegisterBooleanPref(
         ios_web_view::kCWVAutofillAddressSyncEnabled, false);
+    pref_registry->RegisterBooleanPref(
+        ios_web_view::kCWVPasswordAffiliationEnabled, false);
+    pref_registry->RegisterBooleanPref(
+        ios_web_view::kCWVAutofillVCNUsageEnabled, false);
+    pref_registry->RegisterBooleanPref(ios_web_view::kUseImageFetcherEnabled,
+                                       false);
 
     base::FilePath temp_dir_path;
     EXPECT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir_path));
@@ -134,6 +141,26 @@ TEST_F(CWVPreferencesTest, AutofillAddressSyncEnabled) {
   EXPECT_FALSE(preferences.autofillAddressSyncEnabled);
   preferences.autofillAddressSyncEnabled = YES;
   EXPECT_TRUE(preferences.autofillAddressSyncEnabled);
+}
+
+// Tests CWVPreferences `useImageFetcherEnabled`.
+TEST_F(CWVPreferencesTest, UseImageFetcherEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.useImageFetcherEnabled);
+  preferences.useImageFetcherEnabled = YES;
+  EXPECT_TRUE(preferences.useImageFetcherEnabled);
+}
+
+// Tests CWVPreferences `passwordAffiliationEnabled`.
+TEST_F(CWVPreferencesTest, PasswordAffiliationEnabled) {
+  std::unique_ptr<PrefService> pref_service = CreateTestPrefService();
+  CWVPreferences* preferences =
+      [[CWVPreferences alloc] initWithPrefService:pref_service.get()];
+  EXPECT_FALSE(preferences.passwordAffiliationEnabled);
+  preferences.passwordAffiliationEnabled = YES;
+  EXPECT_TRUE(preferences.passwordAffiliationEnabled);
 }
 
 // Tests safe browsing setting.

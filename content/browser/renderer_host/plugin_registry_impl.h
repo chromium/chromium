@@ -5,15 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PLUGIN_REGISTRY_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PLUGIN_REGISTRY_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
 
 namespace content {
-
-struct WebPluginInfo;
 
 class PluginRegistryImpl : public blink::mojom::PluginRegistry {
  public:
@@ -23,16 +19,11 @@ class PluginRegistryImpl : public blink::mojom::PluginRegistry {
   void Bind(mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver);
 
   // blink::mojom::PluginRegistry
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override;
+  void GetPlugins(GetPluginsCallback callback) override;
 
  private:
-  void GetPluginsComplete(GetPluginsCallback callback,
-                          const std::vector<WebPluginInfo>& all_plugins);
-
-  int render_process_id_;
+  const int render_process_id_;
   mojo::ReceiverSet<PluginRegistry> receivers_;
-  base::TimeTicks last_plugin_refresh_time_;
-  base::WeakPtrFactory<PluginRegistryImpl> weak_factory_{this};
 };
 
 }  // namespace content

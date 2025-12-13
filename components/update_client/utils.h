@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/update_client/update_client.h"
 
 class GURL;
@@ -89,18 +92,40 @@ std::optional<base::Value::Dict> ReadManifest(
 // `base::SysInfo().OperatingSystemArchitecture`.
 std::string GetArchitecture();
 
-// Retries recursively deleting the given path five times using
-// `base::DeletePathRecursively`, sleeping for a second between successive
-// tries. Returns true if successful, false otherwise. This function is used
-// when there is a likelihood that the files in `path` can be locked
-// temporarily, such as by antivirus software.
-bool RetryDeletePathRecursively(const base::FilePath& path);
+// Retries the given `file_operation` on the given path `tries` times, sleeping
+// for `time_between_tries` between successive tries. Returns true if
+// successful, false otherwise. This function is used with file delete
+// operations when there is a likelihood that the file(s) in `path` can be
+// locked temporarily, such as by antivirus software.
+bool RetryFileOperation(
+    base::FunctionRef<bool(const base::FilePath&)> file_operation,
+    const base::FilePath& path,
+    size_t tries = 5,
+    base::TimeDelta time_between_tries = base::Seconds(1));
 
-// Similar to `RetryDeletePathRecursively`above, but allows specifying the
-// number of `tries` and the `seconds_between_tries`.
-bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
-                                      size_t tries,
-                                      base::TimeDelta seconds_between_tries);
+// Creates a temporary directory, with platform specific overrides
+// for ChromeOS where `/tmp` can have insufficient space.
+bool CreateTempDirectory(const base::FilePath::StringType& prefix,
+                         base::FilePath* new_temp_path);
+
+// Creates a temporary directory with a ScopedTempDir, with platform specific
+// overrides for ChromeOS where `/tmp` can have insufficient space.
+bool CreateScopedTempDirectory(base::ScopedTempDir& dir);
+
+// UTF8 conversions between `std::string` and the `StringType` type found in
+// the `base::FilePath` and `base::CommandLine` classes.
+#if BUILDFLAG(IS_WIN)
+base::FilePath::StringType UTF8ToStringType(const std::string& utf8);
+std::string StringTypeToUTF8(const base::FilePath::StringType& stringtype);
+#else   // BUILDFLAG(IS_WIN)
+constexpr base::FilePath::StringType UTF8ToStringType(const std::string& utf8) {
+  return utf8;
+}
+constexpr std::string StringTypeToUTF8(
+    const base::FilePath::StringType& stringtype) {
+  return stringtype;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace update_client
 

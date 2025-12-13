@@ -1,0 +1,4 @@
+Used slow mode for cross-origin message with data accessed after origin: false
+Used slow mode for cross-origin message with data accessed before origin (long message): true
+Used slow mode for cross-origin message with data accessed before origin (short message): false
+Used slow mode for same-origin message with data accessed before origin: false

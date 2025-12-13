@@ -2,8 +2,7 @@
   "gn_args": {
     "android_static_analysis": "off",
     "debuggable_apks": false,
-    "enable_rust_mojo": true,
-    "enable_rust_mojom_bindings": true,
+    "enable_r8_tracerefs": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": true,
     "is_debug": true,

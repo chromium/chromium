@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
   WaitForDialogToLoad();
 
   EXPECT_TRUE(web_view_->GetDialogContentURL().has_query());
-  std::string query_parameters = web_view_->GetDialogContentURL().query();
+  std::string query_parameters = web_view_->GetDialogContentURL().GetQuery();
   EXPECT_TRUE(query_parameters.find("show_tos=1") != std::string::npos);
 
   web_view_->GetWidget()->CloseWithReason(

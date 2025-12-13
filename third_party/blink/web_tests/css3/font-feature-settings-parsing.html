@@ -180,11 +180,11 @@ shouldBeEqualToString('parseResultOf("valid_value_2")', '"swsh" 2');
 shouldBeEqualToString('parseResultOf("valid_value_on")', '"smcp"');
 shouldBeEqualToString('parseResultOf("valid_value_off")', '"liga" 0');
 shouldBeEqualToString('parseResultOf("valid_value_omit")', '"c2sc"');
-shouldBeEqualToString('parseResultOf("valid_valuelist")', '"tnum", "hist"');
+shouldBeEqualToString('parseResultOf("valid_valuelist")', '"hist", "tnum"');
 shouldBeEqualToString('parseResultOf("valid_singlequote")', '"PKRN"');
 shouldBeEqualToString('parseResultOf("valid_unusual_tag")', '"!@#$"');
 shouldBeEqualToString('parseResultOf("valid_tag_space")', '"a bc"');
-shouldBeEqualToString('parseResultOf("valid_composite")', '"dlig", "smcp", "lig " 0');
+shouldBeEqualToString('parseResultOf("valid_composite")', '"dlig", "lig " 0, "smcp"');
 
 debug('- Tests invalid inputs.  Results should be "normal".');
 shouldBe('parseResultOf("invalid_ident")', '"normal"');

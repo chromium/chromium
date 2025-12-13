@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/delay_policy.h"

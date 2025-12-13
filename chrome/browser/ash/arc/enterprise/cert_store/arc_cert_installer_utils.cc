@@ -8,7 +8,7 @@
 
 #include "base/base64.h"
 #include "base/logging.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
@@ -50,16 +50,6 @@ std::string CreatePkcs12ForKey(const std::string& name, EVP_PKEY* key) {
   bssl::UniquePtr<uint8_t> free_pkcs12_key(pkcs12_key);
   return base::Base64Encode(
       std::string_view((char*)pkcs12_key, pkcs12_key_len));
-}
-
-std::string ExportSpki(crypto::RSAPrivateKey* rsa) {
-  DCHECK(rsa);
-  std::vector<uint8_t> spki;
-  if (!rsa->ExportPublicKey(&spki)) {
-    LOG(ERROR) << "Key export has failed.";
-    return "";
-  }
-  return base::Base64Encode(spki);
 }
 
 }  // namespace arc

@@ -264,6 +264,7 @@ void FrameCaret::SetVisibleIfActive(bool visible) {
       effect_->CompositorSimpleValuesUpdated();
       return;
     }
+    display_item_client_->SetNeedsNonCompositedPaintInvalidation();
   }
   // Fallback to full update if direct update is not available.
   frame_->View()->SetPaintArtifactCompositorNeedsUpdate();

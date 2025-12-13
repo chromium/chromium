@@ -11,19 +11,20 @@ namespace glic {
 
 // The GlicOcclusionNotifier notifies the PictureInPictureOcclusionTracker when
 // to track the Glic window for occlusion of important security dialogs.
-class GlicOcclusionNotifier : public GlicWindowController::StateObserver {
+class GlicOcclusionNotifier : public PanelStateObserver {
  public:
-  explicit GlicOcclusionNotifier(GlicWindowController& window_controller);
+  explicit GlicOcclusionNotifier(GlicInstance& instance);
   GlicOcclusionNotifier(const GlicOcclusionNotifier&) = delete;
   GlicOcclusionNotifier& operator=(const GlicOcclusionNotifier&) = delete;
   ~GlicOcclusionNotifier() override;
 
-  // GlicWindowController::StateObserver:
-  void PanelStateChanged(const mojom::PanelState& panel_state,
-                         Browser*) override;
+  // PanelStateObserver:
+  void PanelStateChanged(
+      const mojom::PanelState& panel_state,
+      const GlicWindowController::PanelStateContext& context) override;
 
  private:
-  raw_ref<GlicWindowController> window_controller_;
+  raw_ref<GlicInstance> glic_instance_;
 };
 
 }  // namespace glic

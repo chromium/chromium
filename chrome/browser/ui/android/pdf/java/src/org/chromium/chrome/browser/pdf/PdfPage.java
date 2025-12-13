@@ -20,7 +20,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 /** Native page that displays pdf file. */
 @NullMarked
 public class PdfPage extends BasicNativePage {
-    @VisibleForTesting final PdfCoordinator mPdfCoordinator;
+    @VisibleForTesting public final PdfCoordinator mPdfCoordinator;
     private String mTitle;
     private final String mUrl;
     private final boolean mIsIncognito;

@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NFC_NFC_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NFC_NFC_PROXY_H_
 
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/nfc.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"

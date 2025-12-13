@@ -1074,9 +1074,19 @@ class ParserTest(unittest.TestCase):
     # Note: We use structs because they have (optional) attribute lists.
 
     # Empty attribute list.
-    source1 = "[] struct MyStruct {};"
-    expected1 = ast.Mojom(None, ast.ImportList(), [
+    source0 = "[] struct MyStruct {};"
+    expected0 = ast.Mojom(None, ast.ImportList(), [
         ast.Struct(ast.Name('MyStruct'), ast.AttributeList(), ast.StructBody())
+    ])
+    self.assertEqual(parser.Parse(source0, "my_file.mojom"), expected0)
+
+    # One-element attribute list, with a valueless attribute.
+    source1 = "[MyAttribute] struct MyStruct {};"
+    expected1 = ast.Mojom(None, ast.ImportList(), [
+        ast.Struct(
+            ast.Name('MyStruct'),
+            ast.AttributeList(ast.Attribute(ast.Name("MyAttribute"), True)),
+            ast.StructBody())
     ])
     self.assertEqual(parser.Parse(source1, "my_file.mojom"), expected1)
 

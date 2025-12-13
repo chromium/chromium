@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] word-spacing percentage(%) / values
-  assert_not_equals: initial and target values may not match got disallowed value "0px"
-[FAIL] word-spacing percentage(%) / events
-  assert_equals: Expected TransitionEnd events triggered on .transition expected "word-spacing:2s" but got ""
-Harness: the test ran to completion.
-

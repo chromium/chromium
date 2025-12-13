@@ -43,6 +43,15 @@ void EnableTerminationOnOutOfMemory() {
   _set_new_mode(kCallNewHandlerOnAllocationFailure);
 }
 
+bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  *result = allocator_shim::UncheckedCalloc(num_items, size);
+#else
+  *result = calloc(num_items, size);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  return *result != nullptr;
+}
+
 bool UncheckedMalloc(size_t size, void** result) {
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator_shim::UncheckedAlloc(size);
@@ -60,6 +69,26 @@ void UncheckedFree(void* ptr) {
   allocator_shim::UncheckedFree(ptr);
 #else
   free(ptr);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+}
+
+bool UncheckedAlignedAlloc(size_t size, size_t alignment, void** result) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  // Reach PartitionAlloc's allocator_shim::internal::AlignedAllocUnchecked by
+  // way of the shims when available.
+  *result = allocator_shim::UncheckedAlignedAlloc(size, alignment);
+#else
+  // Fall-back to the UCRT's _aligned_malloc otherwise.
+  *result = _aligned_malloc(size, alignment);
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  return *result != NULL;
+}
+
+void UncheckedAlignedFree(void* ptr) {
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+  allocator_shim::UncheckedAlignedFree(ptr);
+#else
+  _aligned_free(ptr);
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 

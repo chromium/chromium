@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -232,6 +231,20 @@ TEST_F(CorsURLLoaderFactoryTest, CleanupWithSharedCacheObjectInUse) {
   ResetFactory();
 }
 
+TEST_F(CorsURLLoaderFactoryTest, DisallowedLoadFlagToUntrustedLoader) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.load_flags = net::LOAD_DISABLE_CERT_NETWORK_FETCHES;
+  request.request_initiator = url::Origin::Create(request.url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ("CorsURLLoaderFactory: Untrusted caller using restricted load flag",
+            bad_message_observer.WaitForBadMessage());
+}
+
 TEST_F(CorsURLLoaderFactoryTest,
        NavigationFromRendererWithBadRequestURLOrigin) {
   ResourceRequest request;
@@ -345,6 +358,39 @@ TEST_F(CorsURLLoaderFactoryTest,
       bad_message_observer.WaitForBadMessage());
 }
 
+TEST_F(CorsURLLoaderFactoryTest, DisallowedDestinationFromRendererWebIdentity) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.destination = network::mojom::RequestDestination::kWebIdentity;
+  request.request_initiator = url::Origin::Create(request.url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: attempt to use forbidden destination from "
+      "renderer",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(CorsURLLoaderFactoryTest,
+       DisallowedDestinationFromRendererEmailVerification) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.destination = network::mojom::RequestDestination::kEmailVerification;
+  request.request_initiator = url::Origin::Create(request.url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: attempt to use forbidden destination from "
+      "renderer",
+      bad_message_observer.WaitForBadMessage());
+}
+
 class RequireCrossSiteRequestForCookiesCorsURLLoaderFactoryTest
     : public CorsURLLoaderFactoryTest {
   void SetUp() override {
@@ -433,6 +479,29 @@ TEST_F(NetworkBoundCorsURLLoaderFactoryTest, CorsPreflightRequestAreAllowed) {
                     "supported only on "
                     "Android, see URLRequestContextBuilder::BindToNetwork";
   }
+}
+
+class TrustedURLLoaderFactoryTest : public CorsURLLoaderFactoryTest {
+  void SetUp() override {
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    factory_params->is_trusted = true;
+    auto context_params = mojom::NetworkContextParams::New();
+    BaseSetup(std::move(factory_params), std::move(context_params));
+  }
+};
+
+TEST_F(TrustedURLLoaderFactoryTest, DisallowedLoadFlagToTrustedLoader) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.load_flags = net::LOAD_CAN_USE_SHARED_DICTIONARY;
+  request.request_initiator = url::Origin::Create(request.url);
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ("CorsURLLoaderFactory: Internal load flag received",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace network::cors

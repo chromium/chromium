@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_NETWORK_TIME_NETWORK_TIME_TEST_UTILS_H_
 #define COMPONENTS_NETWORK_TIME_NETWORK_TIME_TEST_UTILS_H_
 
-#include <map>
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"

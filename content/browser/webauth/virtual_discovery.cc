@@ -15,7 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_device_discovery.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
 
 namespace content {

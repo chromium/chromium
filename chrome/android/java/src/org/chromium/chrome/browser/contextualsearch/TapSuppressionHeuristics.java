@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * A set of {@link ContextualSearchHeuristic}s that support experimentation and logging
- * and can be used as signals to drive an ML tap suppression model.
+ * A set of {@link ContextualSearchHeuristic}s that support experimentation and logging and can be
+ * used as signals to drive an ML tap suppression model.
  */
+@NullMarked
 public class TapSuppressionHeuristics extends ContextualSearchHeuristics {
     /**
      * Gets all the heuristics needed for Tap suppression.
+     *
      * @param selectionController The {@link ContextualSearchSelectionController}.
      * @param previousTapState The state of the previous tap, or {@code null}.
      * @param x The x position of the Tap.

@@ -15,6 +15,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_handle_impl.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -114,6 +115,21 @@ std::string BuildScriptElementSpeculationRules(
              : base::ReplaceStringPlaceholders(kAddSpeculationRuleScript,
                                                {ss.str()}, nullptr);
 }
+
+// TODO(crbug.com/428500219): Move these patterns to preloading_test_util.cc,
+// and merge them to BuildScriptElementSpeculationRules.
+constexpr char kAddSpeculationRulePrerenderUntilScriptScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "prerender_until_script": [{
+        "source": "list",
+        "urls": [$1],
+        "eagerness": $2
+      }]
+    }`;
+    document.head.appendChild(script);
+  })";
 
 constexpr char kAddSpeculationRulePrefetchScript[] = R"({
     const script = document.createElement('script');
@@ -369,6 +385,10 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
   bool was_activated() const { return was_activated_; }
 
+  bool WasHostReused() const {
+    return last_status_ == PrerenderFinalStatus::kPrerenderHostReused;
+  }
+
  private:
   void OnTrigger(WebContents& web_contents, const GURL& url) {
     PrerenderHost* host =
@@ -428,6 +448,10 @@ bool PrerenderHostObserver::was_activated() const {
   return impl_->was_activated();
 }
 
+bool PrerenderHostObserver::WasHostReused() const {
+  return impl_->WasHostReused();
+}
+
 PrerenderHostCreationWaiter::PrerenderHostCreationWaiter() {
   PrerenderHost::SetHostCreationCallbackForTesting(
       base::BindLambdaForTesting([&](FrameTreeNodeId host_id) {
@@ -444,20 +468,12 @@ FrameTreeNodeId PrerenderHostCreationWaiter::Wait() {
 }
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList()
-    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true,
-                                 /*force_enable_prerender2_in_new_tab=*/true) {}
+    : ScopedPrerenderFeatureList(/*force_disable_prerender2_fallback=*/true) {}
 
 ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
-    bool force_disable_prerender2_fallback,
-    bool force_enable_prerender2_in_new_tab) {
+    bool force_disable_prerender2_fallback) {
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-
-  // Explicitly enables blink::features::kPrerender2InNewTab to override
-  // SpeculationRulesTargetHint.
-  if (force_enable_prerender2_in_new_tab) {
-    enabled_features.push_back(blink::features::kPrerender2InNewTab);
-  }
 
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
@@ -476,17 +492,13 @@ ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
     : feature_list_(ScopedPrerenderFeatureList(
-          /*force_disable_prerender2_fallback=*/true,
-          /*force_enable_prerender2_in_new_tab*/ true)),
+          /*force_disable_prerender2_fallback=*/true)),
       get_web_contents_fn_(fn) {}
 
-PrerenderTestHelper::PrerenderTestHelper(
-    const WebContents::Getter& fn,
-    bool force_disable_prerender2_fallback,
-    bool force_enable_prerender2_in_new_tab)
+PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn,
+                                         bool force_disable_prerender2_fallback)
     : feature_list_(
-          ScopedPrerenderFeatureList(force_disable_prerender2_fallback,
-                                     force_enable_prerender2_in_new_tab)),
+          ScopedPrerenderFeatureList(force_disable_prerender2_fallback)),
       get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
@@ -626,7 +638,8 @@ FrameTreeNodeId PrerenderTestHelper::AddPrerender(
 
 void PrerenderTestHelper::AddPrerenderAsync(const GURL& prerendering_url,
                                             int32_t world_id) {
-  AddPrerendersAsync({prerendering_url}, std::nullopt, std::string(), world_id);
+  AddPrerendersAsync({prerendering_url}, /*eagerness=*/std::nullopt,
+                     /*target_hint=*/std::string(), world_id);
 }
 
 void PrerenderTestHelper::AddPrerendersAsync(
@@ -669,6 +682,21 @@ void PrerenderTestHelper::AddPrerendersAsync(
     GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptInIsolatedWorld(
         base::UTF8ToUTF16(script), base::NullCallback(), world_id);
   }
+}
+
+void PrerenderTestHelper::AddPrerenderUntilScriptAsync(
+    const GURL& url,
+    blink::mojom::SpeculationEagerness eagerness) {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+  std::string script = JsReplace(kAddSpeculationRulePrerenderUntilScriptScript,
+                                 url, ConvertEagernessToString(eagerness));
+
+  // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,
+  // because some test pages have ContentSecurityPolicy and EvalJs cannot work
+  // with it. See the quick migration guide for EvalJs for more information.
+  GetWebContents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+      base::UTF8ToUTF16(script), base::NullCallback(),
+      ISOLATED_WORLD_ID_GLOBAL);
 }
 
 void PrerenderTestHelper::AddPrefetchAsync(const GURL& prefetch_url) {

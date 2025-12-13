@@ -11,8 +11,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/smhasher/src/src/MurmurHash3.h"
 
-namespace variations {
-namespace internal {
+namespace variations::internal {
+namespace {
 
 TEST(VariationsMurmurHashTest, StringToLE32) {
   EXPECT_EQ(std::vector<uint32_t>(),
@@ -78,5 +78,5 @@ TEST(VariationsMurmurHashTest, Hash16) {
 
 #endif  // defined(ARCH_CPU_LITTLE_ENDIAN)
 
-}  // namespace internal
-}  // namespace variations
+}  // namespace
+}  // namespace variations::internal

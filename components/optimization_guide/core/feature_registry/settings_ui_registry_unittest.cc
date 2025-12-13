@@ -19,7 +19,13 @@ class SettingsUiRegistryTest : public testing::Test {
   }
 };
 
-TEST_F(SettingsUiRegistryTest, Register) {
+// TODO(crbug.com/446833197): Re-enable this test.
+#if BUILDFLAG(IS_IOS)
+#define MAYBE_Register DISABLED_Register
+#else
+#define MAYBE_Register Register
+#endif
+TEST_F(SettingsUiRegistryTest, MAYBE_Register) {
   EnterprisePolicyPref enterprise_policy("policy_name");
   auto metadata = std::make_unique<SettingsUiMetadata>(
       "Test", UserVisibleFeatureKey::kCompose, enterprise_policy);

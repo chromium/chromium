@@ -28,7 +28,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/feed/android/jni_headers/FeedSurfaceRendererBridge_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -50,7 +49,7 @@ SurfaceId FromJavaSurfaceId(jint surface_id) {
 
 static jlong JNI_FeedSurfaceRendererBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_this,
+    const JavaRef<jobject>& j_this,
     Profile* profile,
     jint stream_kind,
     jlong native_feed_reliability_logging_bridge) {
@@ -63,9 +62,9 @@ static jlong JNI_FeedSurfaceRendererBridge_Init(
 
 static jlong JNI_FeedSurfaceRendererBridge_InitWebFeed(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_this,
+    const JavaRef<jobject>& j_this,
     Profile* profile,
-    const JavaParamRef<jbyteArray>& j_web_feed_id,
+    const JavaRef<jbyteArray>& j_web_feed_id,
     jlong native_feed_reliability_logging_bridge,
     jint j_entry_point) {
   std::string web_feed_id;
@@ -146,9 +145,8 @@ void FeedSurfaceRendererBridge::RemoveDataStoreEntry(std::string_view key) {
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key));
 }
 
-void FeedSurfaceRendererBridge::LoadMore(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& callback_obj) {
+void FeedSurfaceRendererBridge::LoadMore(JNIEnv* env,
+                                         const JavaRef<jobject>& callback_obj) {
   if (!feed_stream_api_) {
     return;
   }
@@ -159,7 +157,7 @@ void FeedSurfaceRendererBridge::LoadMore(
 
 void FeedSurfaceRendererBridge::ManualRefresh(
     JNIEnv* env,
-    const JavaParamRef<jobject>& callback_obj) {
+    const JavaRef<jobject>& callback_obj) {
   if (!feed_stream_api_) {
     return;
   }
@@ -171,8 +169,8 @@ void FeedSurfaceRendererBridge::ManualRefresh(
 static void JNI_FeedSurfaceRendererBridge_ProcessThereAndBackAgain(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jbyteArray>& data,
-    const JavaParamRef<jbyteArray>& logging_parameters) {
+    const JavaRef<jbyteArray>& data,
+    const JavaRef<jbyteArray>& logging_parameters) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;
@@ -187,7 +185,7 @@ static int JNI_FeedSurfaceRendererBridge_ExecuteEphemeralChange(
     JNIEnv* env,
     Profile* profile,
     jint surface_id,
-    const JavaParamRef<jbyteArray>& data) {
+    const JavaRef<jbyteArray>& data) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return 0;
@@ -244,7 +242,7 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenAction(
     JNIEnv* env,
     Profile* profile,
     jint surface_id,
-    const JavaParamRef<jobject>& j_url,
+    const JavaRef<jobject>& j_url,
     std::string& slice_id,
     int action_type) {
   FeedApi* feed_api = GetFeedApi(profile);
@@ -272,8 +270,8 @@ static void JNI_FeedSurfaceRendererBridge_ReportOpenVisitComplete(
 static void JNI_FeedSurfaceRendererBridge_UpdateUserProfileOnLinkClick(
     JNIEnv* env,
     Profile* profile,
-    const base::android::JavaParamRef<jobject>& j_url,
-    const base::android::JavaParamRef<jlongArray>& entity_mids) {
+    const base::android::JavaRef<jobject>& j_url,
+    const base::android::JavaRef<jlongArray>& entity_mids) {
   FeedApi* feed_api = GetFeedApi(profile);
   if (!feed_api) {
     return;
@@ -368,6 +366,17 @@ static jlong JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(JNIEnv* env,
   }
   return feed_api->GetLastFetchTime(FromJavaSurfaceId(surface_id))
       .InMillisecondsFSinceUnixEpoch();
+}
+
+static std::vector<std::string> JNI_FeedSurfaceRendererBridge_GetFeedUrls(
+    JNIEnv* env,
+    Profile* profile,
+    jint surface_id) {
+  FeedApi* feed_api = GetFeedApi(profile);
+  if (!feed_api) {
+    return {};
+  }
+  return feed_api->GetFeedUrls(FromJavaSurfaceId(surface_id));
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportInfoCardTrackViewStarted(
@@ -472,3 +481,5 @@ JNI_FeedSurfaceRendererBridge_ReportContentSliceVisibleTimeForGoodVisits(
 }
 
 }  // namespace feed::android
+
+DEFINE_JNI(FeedSurfaceRendererBridge)

@@ -46,7 +46,6 @@ class LaunchWebAppCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  void FirstRunServiceCompleted(bool success);
   void OnOsIntegrationSynchronized();
   void DoLaunch();
   void OnAppLaunched(base::WeakPtr<Browser> browser,

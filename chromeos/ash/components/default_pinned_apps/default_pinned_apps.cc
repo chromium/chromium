@@ -7,19 +7,13 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
-
-bool ShouldAddHelpApp(content::BrowserContext* browser_context) {
-  scalable_iph::ScalableIph* scalable_iph =
-      ScalableIphFactory::GetForBrowserContext(browser_context);
-  return scalable_iph && scalable_iph->ShouldPinHelpAppToShelf();
-}
 
 std::vector<StaticAppId> GetDefaultPinnedApps(
     content::BrowserContext* browser_context) {
@@ -36,9 +30,7 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Pin Mall after AI offerings.
-  if (chromeos::features::IsCrosMallSwaEnabled()) {
-    app_ids.push_back(ash::kMallSystemAppId);
-  }
+  app_ids.push_back(ash::kMallSystemAppId);
 
   app_ids.insert(app_ids.end(), {
                                     ash::kGmailAppId,
@@ -53,10 +45,6 @@ std::vector<StaticAppId> GetDefaultPinnedApps(
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
     app_ids.push_back(ash::kNvidiaGeForceNowAppId);
-  }
-
-  if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(ash::kHelpAppId);
   }
 
   return app_ids;
@@ -75,10 +63,6 @@ std::vector<StaticAppId> GetTabletFormFactorDefaultPinnedApps(
 
       arc::kGooglePhotosAppId,
   };
-
-  if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(ash::kHelpAppId);
-  }
 
   return app_ids;
 }

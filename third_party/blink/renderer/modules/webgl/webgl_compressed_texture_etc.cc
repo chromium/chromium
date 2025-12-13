@@ -9,7 +9,8 @@
 namespace blink {
 
 WebGLCompressedTextureETC::WebGLCompressedTextureETC(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_compressed_texture_etc");

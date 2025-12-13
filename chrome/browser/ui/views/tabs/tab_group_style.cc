@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/browser/ui/views/tabs/tab_group_views.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -72,11 +74,10 @@ bool TabGroupStyle::TabGroupUnderlineShouldBeHidden(
 
 // The path is a rounded rect.
 SkPath TabGroupStyle::GetUnderlinePath(const gfx::Rect local_bounds) const {
-  SkPath path;
-  path.addRoundRect(gfx::RectToSkRect(local_bounds),
-                    TabGroupUnderline::kStrokeThickness / 2,
-                    TabGroupUnderline::kStrokeThickness / 2);
-  return path;
+  return SkPath::RRect(
+      SkRRect::MakeRectXY(gfx::RectToSkRect(local_bounds),
+                          TabGroupUnderline::kStrokeThickness / 2,
+                          TabGroupUnderline::kStrokeThickness / 2));
 }
 
 gfx::Rect TabGroupStyle::GetEmptyTitleChipBounds(

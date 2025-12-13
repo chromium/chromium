@@ -158,12 +158,6 @@ class PasswordStoreSync {
   // them (because Sync was turned off permanently).
   virtual void NotifyDeletionsHaveSynced(bool success) = 0;
 
-  // Notifies the UI that some unsynced credentials will be deleted on sign-out
-  // in order to offer the user the option of saving them in the profile store.
-  // Should only be called for the account store.
-  virtual void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<PasswordForm> unsynced_credentials) = 0;
-
   // The methods below adds transaction support to the password store that's
   // required by sync to guarantee atomic writes of data and sync metadata.
   // TODO(crbug.com/40601175): The introduction of the three functions below

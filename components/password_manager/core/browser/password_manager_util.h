@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -117,8 +116,9 @@ const password_manager::PasswordForm* FindFormByUsername(
 
 // Returns a form from |submitted_manager|'s best matches with
 // `kChangeSubmission` type that matches |submitted_manager|'s pending
-// credentials on username. Returns nullptr is such form is not found.
-const password_manager::PasswordForm* FindLoginWithChangedPassword(
+// credentials on username, and has a backup password. Returns nullptr if such
+// form is not found.
+const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
     const password_manager::PasswordFormManagerForUI& submitted_manager);
 
 // If the user submits a form, they may have used existing credentials, new

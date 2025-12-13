@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.video;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -13,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -44,6 +47,9 @@ public class VideoTest {
     @Test
     @Feature({"Media", "Media-Video", "Main"})
     @LargeTest
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.Q,
+            message = "crbug.com/447426928, crashing emulator with --disable-field-trial-config")
     public void testLoadMediaUrl() throws TimeoutException {
         Tab tab = mPage.getTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, "ready_to_play");

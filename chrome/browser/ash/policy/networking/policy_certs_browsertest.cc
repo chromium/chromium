@@ -41,7 +41,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -474,15 +476,13 @@ IN_PROC_BROWSER_TEST_F(PolicyProvidedCertsPublicSessionTest,
   StartLogin();
   ash::test::WaitForPrimaryUserSessionStart();
 
-  BrowserList* browser_list = BrowserList::GetInstance();
-  EXPECT_EQ(1U, browser_list->size());
-  Browser* browser = browser_list->get(0);
-  ASSERT_TRUE(browser);
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
+  ASSERT_TRUE(browser());
 
-  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser->profile(),
+  user_policy_certs_helper_.SetRootCertONCUserPolicy(browser()->GetProfile(),
                                                      &user_policy_provider_);
   EXPECT_EQ(net::OK,
-            VerifyTestServerCert(browser->profile(),
+            VerifyTestServerCert(browser()->GetProfile(),
                                  user_policy_certs_helper_.server_cert()));
 }
 

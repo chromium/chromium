@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+#include <optional>
 #include <ranges>
 
 #include "base/compiler_specific.h"
@@ -20,6 +21,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
+#include "third_party/icu/source/i18n/unicode/dtptngen.h"
 
 namespace autofill::data_util {
 
@@ -237,13 +239,20 @@ std::u16string FormatDate(Date date, std::u16string_view format) {
   return result;
 }
 
-bool IsValidAffixFormat(std::u16string_view format) {
+bool IsValidAffixFormat(std::u16string_view format, bool exclude_full_value) {
   int i;
   return base::StringToInt(format, &i) &&
-         (i == 0 || (std::abs(i) >= base::checked_cast<int>(
-                                        kMinAffixLengthForFormatString) &&
-                     std::abs(i) <= base::checked_cast<int>(
-                                        kMaxAffixLengthForFormatString)));
+         ((i == 0 && !exclude_full_value) ||
+          (std::abs(i) >=
+               base::checked_cast<int>(kMinAffixLengthForFormatString) &&
+           std::abs(i) <=
+               base::checked_cast<int>(kMaxAffixLengthForFormatString)));
+}
+
+bool IsValidFlightNumberFormat(std::u16string_view format,
+                               bool exclude_full_value) {
+  return format == u"A" || format == u"N" ||
+         (format == u"F" && !exclude_full_value);
 }
 
 std::u16string Expiration2DigitMonthAsString(int expiration_month) {
@@ -264,27 +273,25 @@ std::u16string Expiration4DigitYearAsString(int expiration_year) {
   return FormatDate({.year = expiration_year}, u"YYYY");
 }
 
-bool ParseExpirationMonth(const std::u16string& text,
-                          const std::string& app_locale,
-                          int* expiration_month) {
-  std::u16string trimmed;
-  base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
+std::optional<int> ParseMonthFromString(std::u16string_view text,
+                                        std::string_view app_locale) {
+  std::u16string_view trimmed = base::TrimWhitespace(text, base::TRIM_ALL);
 
   if (trimmed.empty())
-    return false;
+    return std::nullopt;
 
   int month = 0;
-  // Try parsing the |trimmed| as a number (this doesn't require |app_locale|).
+  // Try parsing the `trimmed` as a number (this doesn't require `app_locale`).
   if (base::StringToInt(trimmed, &month))
-    return SetExpirationMonth(month, expiration_month);
+    return GetExpirationMonth(month);
 
   if (app_locale.empty())
-    return false;
+    return std::nullopt;
 
-  // Otherwise, try parsing the |trimmed| as a named month, e.g. "January" or
+  // Otherwise, try parsing the `trimmed` as a named month, e.g. "January" or
   // "Jan" in the user's locale.
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale locale(app_locale.c_str());
+  icu::Locale locale(std::string(app_locale).c_str());
   icu::DateFormatSymbols date_format_symbols(locale, status);
   DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
          status == U_USING_DEFAULT_WARNING);
@@ -301,11 +308,11 @@ bool ParseExpirationMonth(const std::u16string& text,
   for (size_t i = 0; i < months.size(); ++i) {
     const std::u16string icu_month(
         base::i18n::UnicodeStringToString16(months[i]));
-    // We look for the ICU-defined month in |trimmed|.
+    // We look for the ICU-defined month in `trimmed`.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
                                                        nullptr, nullptr)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
-      return SetExpirationMonth(month, expiration_month);
+      return GetExpirationMonth(month);
     }
   }
   // Abbreviated months (jan., janv., fév.) Some abbreviations have . at the end
@@ -319,47 +326,46 @@ bool ParseExpirationMonth(const std::u16string& text,
     return UNSAFE_BUFFERS(
         base::span(months, base::checked_cast<size_t>(num_months)));
   }();
-  base::TrimString(trimmed, u".", &trimmed);
+  trimmed = base::TrimString(trimmed, u".", base::TRIM_ALL);
   for (size_t i = 0; i < short_months.size(); ++i) {
     std::u16string icu_month(
         base::i18n::UnicodeStringToString16(short_months[i]));
     base::TrimString(icu_month, u".", &icu_month);
-    // We look for the ICU-defined month in |trimmed_month|.
+    // We look for the ICU-defined month in `trimmed_month`.
     if (base::i18n::StringSearchIgnoringCaseAndAccents(icu_month, trimmed,
                                                        nullptr, nullptr)) {
       month = i + 1;  // Adjust from 0-indexed to 1-indexed.
-      return SetExpirationMonth(month, expiration_month);
+      return GetExpirationMonth(month);
     }
   }
 
-  return false;
+  return std::nullopt;
 }
 
-bool ParseExpirationYear(const std::u16string& text, int* expiration_year) {
+std::optional<int> ParseYearFromString(std::u16string_view text) {
   std::u16string trimmed;
   base::TrimWhitespace(text, base::TRIM_ALL, &trimmed);
 
   int year = 0;
   if (!trimmed.empty() && !base::StringToInt(trimmed, &year))
-    return false;
+    return std::nullopt;
 
-  return SetExpirationYear(year, expiration_year);
+  return GetExpirationYear(year);
 }
 
-bool SetExpirationMonth(int value, int* expiration_month) {
+std::optional<int> GetExpirationMonth(int value) {
   if (value < 0 || value > 12)
-    return false;
+    return std::nullopt;
 
-  *expiration_month = value;
-  return true;
+  return value;
 }
 
-bool SetExpirationYear(int value, int* expiration_year) {
-  // If |value| is beyond this millennium, or more than 2 digits but
+std::optional<int> GetExpirationYear(int value) {
+  // If `value` is beyond this millennium, or more than 2 digits but
   // before the current millennium (e.g. "545", "1995"), return. What is left
   // are values like "45" or "2018".
   if (value > 2999 || (value > 99 && value < 2000))
-    return false;
+    return std::nullopt;
 
   // Will normalize 2-digit years to the 4-digit version.
   if (value > 0 && value < 100) {
@@ -367,8 +373,7 @@ bool SetExpirationYear(int value, int* expiration_year) {
     AutofillClock::Now().LocalExplode(&now_exploded);
     value += (now_exploded.year / 100) * 100;
   }
-  *expiration_year = value;
-  return true;
+  return value;
 }
 
 std::u16string FindPossiblePhoneCountryCode(std::u16string_view text) {
@@ -381,6 +386,26 @@ std::u16string FindPossiblePhoneCountryCode(std::u16string_view text) {
   }
 
   return std::u16string();
+}
+
+std::optional<std::u16string> LocalizePattern(std::u16string_view pattern,
+                                              std::string_view locale) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::Locale icu_locale(std::string(locale).c_str());
+  if (icu_locale.isBogus()) {
+    return std::nullopt;
+  }
+  std::unique_ptr<icu::DateTimePatternGenerator> generator(
+      icu::DateTimePatternGenerator::createInstance(icu_locale, status));
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  icu::UnicodeString generated_pattern =
+      generator->getBestPattern(pattern, status);
+  if (U_FAILURE(status)) {
+    return std::nullopt;
+  }
+  return base::i18n::UnicodeStringToString16(generated_pattern);
 }
 
 }  // namespace autofill::data_util

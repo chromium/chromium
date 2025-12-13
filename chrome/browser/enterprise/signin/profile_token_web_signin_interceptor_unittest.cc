@@ -23,7 +23,6 @@
 #include "url/gurl.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArgs;
 
 namespace {
@@ -56,6 +55,10 @@ class MockDelegate : public ProfileTokenWebSigninInterceptor::Delegate {
               (Browser*,
                const CoreAccountId&,
                WebSigninInterceptor::SigninInterceptionType),
+              (override));
+  MOCK_METHOD(void,
+              ShowSigninError,
+              (content::WebContents*, const SigninUIError&),
               (override));
 };
 
@@ -158,13 +161,13 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [](content::WebContents*,
              const WebSigninInterceptor::Delegate::BubbleParameters&,
              base::OnceCallback<void(SigninInterceptionResult)> callback) {
             std::move(callback).Run(SigninInterceptionResult::kDeclined);
             return nullptr;
-          }));
+          });
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id", "token");
 
   base::RunLoop().RunUntilIdle();
@@ -195,13 +198,13 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [](content::WebContents*,
              const WebSigninInterceptor::Delegate::BubbleParameters&,
              base::OnceCallback<void(SigninInterceptionResult)> callback) {
             std::move(callback).Run(SigninInterceptionResult::kAccepted);
             return nullptr;
-          }));
+          });
   interceptor_->MaybeInterceptSigninProfile(web_contents(), "id", "token");
 
   base::RunLoop().RunUntilIdle();
@@ -232,13 +235,13 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [](content::WebContents*,
              const WebSigninInterceptor::Delegate::BubbleParameters&,
              base::OnceCallback<void(SigninInterceptionResult)> callback) {
             std::move(callback).Run(SigninInterceptionResult::kAccepted);
             return nullptr;
-          }));
+          });
   interceptor_->MaybeInterceptSigninProfile(web_contents(), std::string(),
                                             "token");
 
@@ -269,13 +272,13 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [](content::WebContents*,
              const WebSigninInterceptor::Delegate::BubbleParameters&,
              base::OnceCallback<void(SigninInterceptionResult)> callback) {
             std::move(callback).Run(SigninInterceptionResult::kAccepted);
             return nullptr;
-          }));
+          });
 
   const int num_profiles_before = TestingBrowserProcess::GetGlobal()
                                       ->profile_manager()

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 
 #include <stdint.h>
@@ -18,6 +13,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -35,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
+#include "chrome/browser/ash/input_method/input_method_persistence.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -45,6 +44,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
@@ -784,15 +784,15 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefaultFromVPD(
       input_method_id, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   manager_->GetMigratedInputMethodIDs(&input_method_ids);
 
-  PrefService* prefs = g_browser_process->local_state();
-  prefs->SetString(prefs::kHardwareKeyboardLayout,
-                   base::JoinString(input_method_ids, ","));
+  PrefService* local_state = &manager_->local_state_.get();
+  local_state->SetString(prefs::kHardwareKeyboardLayout,
+                         base::JoinString(input_method_ids, ","));
 
   // This asks the file thread to save the prefs (i.e. doesn't block).
   // The latest values of Local State reside in memory so we can safely
   // get the value of kHardwareKeyboardLayout even if the data is not
   // yet saved to disk.
-  prefs->CommitPendingWrite();
+  local_state->CommitPendingWrite();
 
   manager_->util_.UpdateHardwareLayoutCache();
 
@@ -805,33 +805,33 @@ void InputMethodManagerImpl::StateImpl::SetInputMethodLoginDefault(
     bool is_in_oobe_context) {
   // Set up keyboards. For example, when |locale| is "en-US", enable US qwerty
   // and US dvorak keyboard layouts.
-  if (g_browser_process && g_browser_process->local_state()) {
-    const std::string locale = g_browser_process->GetApplicationLocale();
-    std::vector<std::string> input_method_ids_to_be_enabled;
-    if (!GetAllowedInputMethodIds().empty()) {
-      // Prefer policy-set input methods.
-      input_method_ids_to_be_enabled = GetAllowedInputMethodIds();
+  const std::string locale = manager_->application_locale_storage_->Get();
+  std::vector<std::string> input_method_ids_to_be_enabled;
+  if (!GetAllowedInputMethodIds().empty()) {
+    // Prefer policy-set input methods.
+    input_method_ids_to_be_enabled = GetAllowedInputMethodIds();
+  } else {
+    PrefService* local_state = &manager_->local_state_.get();
+    CHECK(local_state);
+
+    // If the preferred keyboard for the login screen has been saved, use it.
+    std::string initial_input_method_id =
+        local_state->GetString(language_prefs::kPreferredKeyboardLayout);
+    if (initial_input_method_id.empty()) {
+      // If kPreferredKeyboardLayout is not specified, use the hardware
+      // layout.
+      input_method_ids_to_be_enabled =
+          manager_->util_.GetHardwareLoginInputMethodIds();
     } else {
-      // If the preferred keyboard for the login screen has been saved, use it.
-      PrefService* prefs = g_browser_process->local_state();
-      std::string initial_input_method_id =
-          prefs->GetString(language_prefs::kPreferredKeyboardLayout);
-      if (initial_input_method_id.empty()) {
-        // If kPreferredKeyboardLayout is not specified, use the hardware
-        // layout.
-        input_method_ids_to_be_enabled =
-            manager_->util_.GetHardwareLoginInputMethodIds();
-      } else {
-        input_method_ids_to_be_enabled.push_back(initial_input_method_id);
-      }
+      input_method_ids_to_be_enabled.push_back(initial_input_method_id);
     }
-    if (is_in_oobe_context) {
-      EnableOobeInputMethods(locale, input_method_ids_to_be_enabled);
-    } else {
-      EnableLoginLayouts(locale, input_method_ids_to_be_enabled);
-    }
-    LoadNecessaryComponentExtensions();
   }
+  if (is_in_oobe_context) {
+    EnableOobeInputMethods(locale, input_method_ids_to_be_enabled);
+  } else {
+    EnableLoginLayouts(locale, input_method_ids_to_be_enabled);
+  }
+  LoadNecessaryComponentExtensions();
 }
 
 void InputMethodManagerImpl::StateImpl::SwitchToNextInputMethod() {
@@ -1061,12 +1061,17 @@ InputMethodManagerImpl::GetActiveIMEState() {
 }
 
 InputMethodManagerImpl::InputMethodManagerImpl(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage,
     std::unique_ptr<InputMethodDelegate> delegate,
     std::unique_ptr<ComponentExtensionIMEManagerDelegate>
         component_extension_ime_manager_delegate,
     bool enable_extension_loading,
     std::unique_ptr<ImeKeyboard> ime_keyboard)
-    : delegate_(std::move(delegate)),
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      delegate_(std::move(delegate)),
+      persistence_(std::make_unique<InputMethodPersistence>(local_state, this)),
       util_(delegate_.get()),
       keyboard_(std::move(ime_keyboard)),
       enable_extension_loading_(enable_extension_loading),
@@ -1075,7 +1080,7 @@ InputMethodManagerImpl::InputMethodManagerImpl(
     // Create a set of layouts that do not use positional shortcuts.
     non_positional_layouts_.reserve(kNonPositionalLayoutsLength);
     for (size_t i = 0; i < kNonPositionalLayoutsLength; i++) {
-      non_positional_layouts_.emplace(kNonPositionalLayouts[i]);
+      non_positional_layouts_.emplace(UNSAFE_TODO(kNonPositionalLayouts[i]));
     }
   }
 
@@ -1220,6 +1225,8 @@ void InputMethodManagerImpl::NotifyInputMethodChanged(bool show_message,
                << state_->GetCurrentInputMethod().keyboard_layout();
   }
 
+  persistence_->PersistInputMethod(state_->GetProfile());
+
   // Update input method indicators (e.g. "US", "DV") in Chrome windows.
   for (auto& observer : observers_) {
     observer.InputMethodChanged(this, state_->GetProfile(), show_message);
@@ -1308,7 +1315,6 @@ InputMethodManagerImpl::GetComponentExtensionIMEManager() {
 scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
     Profile* profile) {
   // Enabled and current (active) IM should be set to owner/user's default.
-  PrefService* prefs = g_browser_process->local_state();
   PrefService* user_prefs = profile ? profile->GetPrefs() : nullptr;
   std::string initial_input_method_id;
   if (user_prefs) {
@@ -1317,7 +1323,7 @@ scoped_refptr<InputMethodManager::State> InputMethodManagerImpl::CreateNewState(
   }
   if (initial_input_method_id.empty()) {
     initial_input_method_id =
-        prefs->GetString(language_prefs::kPreferredKeyboardLayout);
+        local_state_->GetString(language_prefs::kPreferredKeyboardLayout);
   }
 
   const InputMethodDescriptor* descriptor =
@@ -1458,7 +1464,7 @@ void InputMethodManagerImpl::OverrideKeyboardKeyset(ImeKeyset keyset) {
   if (!url.has_ref()) {
     return;
   }
-  std::string overridden_ref = url.ref();
+  std::string overridden_ref = url.GetRef();
 
   auto id_start = overridden_ref.find("id=");
   if (id_start == std::string::npos) {

@@ -2,6 +2,7 @@
 // META: script=/resources/testdriver-vendor.js
 // META: script=/bluetooth/resources/bluetooth-test.js
 // META: script=/bluetooth/resources/bluetooth-fake-devices.js
+// META: timeout=long
 'use strict';
 const test_desc = 'Request for services. Should return right number of ' +
     'services.';

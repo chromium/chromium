@@ -10,5 +10,6 @@ export function getHtml(this: CrTooltipElement) {
   return html`
     <div id="tooltip" hidden part="tooltip">
       <slot></slot>
-    </div>`;
+    </div>
+    <div id="tooltipOffsetFiller"></div>`;
 }

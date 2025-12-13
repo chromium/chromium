@@ -7,9 +7,11 @@
 #include <optional>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -37,7 +39,8 @@ RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
 
 uint32_t RTCEncodedAudioFrameDelegate::RtpTimestamp() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ ? webrtc_frame_->GetTimestamp() : 0;
+  return webrtc_frame_ ? webrtc_frame_->GetTimestamp()
+                       : post_neuter_metadata_.rtp_timestamp;
 }
 
 DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer(
@@ -164,19 +167,19 @@ RTCEncodedAudioFrameDelegate::SetWebRtcFrameMetadata(
 std::optional<uint32_t> RTCEncodedAudioFrameDelegate::Ssrc() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? std::make_optional(webrtc_frame_->GetSsrc())
-                       : std::nullopt;
+                       : post_neuter_metadata_.ssrc;
 }
 
 std::optional<uint8_t> RTCEncodedAudioFrameDelegate::PayloadType() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? std::make_optional(webrtc_frame_->GetPayloadType())
-                       : std::nullopt;
+                       : post_neuter_metadata_.payload_type;
 }
 
 std::optional<std::string> RTCEncodedAudioFrameDelegate::MimeType() const {
   base::AutoLock lock(lock_);
   return webrtc_frame_ ? std::make_optional(webrtc_frame_->GetMimeType())
-                       : std::nullopt;
+                       : post_neuter_metadata_.mime_type;
 }
 
 std::optional<uint16_t> RTCEncodedAudioFrameDelegate::SequenceNumber() const {
@@ -187,19 +190,21 @@ Vector<uint32_t> RTCEncodedAudioFrameDelegate::ContributingSources() const {
   return contributing_sources_;
 }
 
-std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::ReceiveTime()
-    const {
-  base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
-    return std::nullopt;
-  }
+std::optional<base::TimeTicks>
+RTCEncodedAudioFrameDelegate::ComputeReceiveTime() const {
   return ConvertToOptionalTimeTicks(webrtc_frame_->ReceiveTime());
 }
 
-std::optional<CaptureTimeInfo> RTCEncodedAudioFrameDelegate::CaptureTime()
+std::optional<base::TimeTicks> RTCEncodedAudioFrameDelegate::ReceiveTime()
     const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_ || !webrtc_frame_->CaptureTime()) {
+  return webrtc_frame_ ? ComputeReceiveTime()
+                       : post_neuter_metadata_.receive_time;
+}
+
+std::optional<CaptureTimeInfo>
+RTCEncodedAudioFrameDelegate::ComputeCaptureTime() const {
+  if (!webrtc_frame_->CaptureTime()) {
     return std::nullopt;
   }
   CaptureTimeInfo::ClockType clock_type;
@@ -218,26 +223,52 @@ std::optional<CaptureTimeInfo> RTCEncodedAudioFrameDelegate::CaptureTime()
        .clock_type = clock_type});
 }
 
+std::optional<CaptureTimeInfo> RTCEncodedAudioFrameDelegate::CaptureTime()
+    const {
+  base::AutoLock lock(lock_);
+  return webrtc_frame_ ? ComputeCaptureTime()
+                       : post_neuter_metadata_.capture_time_info;
+}
+
+std::optional<base::TimeDelta>
+RTCEncodedAudioFrameDelegate::ComputeSenderCaptureTimeOffset() const {
+  return ConvertToOptionalTimeDelta(webrtc_frame_->SenderCaptureTimeOffset());
+}
+
 std::optional<base::TimeDelta>
 RTCEncodedAudioFrameDelegate::SenderCaptureTimeOffset() const {
   base::AutoLock lock(lock_);
-  if (!webrtc_frame_) {
-    return std::nullopt;
-  }
-  return ConvertToOptionalTimeDelta(webrtc_frame_->SenderCaptureTimeOffset());
+  return webrtc_frame_ ? ComputeSenderCaptureTimeOffset()
+                       : post_neuter_metadata_.sender_capture_time_offset;
+}
+
+std::optional<double> RTCEncodedAudioFrameDelegate::ComputeAudioLevel() const {
+  return webrtc_frame_->AudioLevel() ? std::make_optional(ToLinearAudioLevel(
+                                           *webrtc_frame_->AudioLevel()))
+                                     : std::nullopt;
 }
 
 std::optional<double> RTCEncodedAudioFrameDelegate::AudioLevel() const {
   base::AutoLock lock(lock_);
-  return webrtc_frame_ && webrtc_frame_->AudioLevel()
-             ? std::make_optional(
-                   ToLinearAudioLevel(*webrtc_frame_->AudioLevel()))
-             : std::nullopt;
+  return webrtc_frame_ ? ComputeAudioLevel()
+                       : post_neuter_metadata_.audio_level;
 }
 
 std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);
+  if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformRememberMetadata) &&
+      webrtc_frame_) {
+    post_neuter_metadata_.ssrc = webrtc_frame_->GetSsrc();
+    post_neuter_metadata_.payload_type = webrtc_frame_->GetPayloadType();
+    post_neuter_metadata_.mime_type = webrtc_frame_->GetMimeType();
+    post_neuter_metadata_.receive_time = ComputeReceiveTime();
+    post_neuter_metadata_.capture_time_info = ComputeCaptureTime();
+    post_neuter_metadata_.sender_capture_time_offset =
+        ComputeSenderCaptureTimeOffset();
+    post_neuter_metadata_.audio_level = ComputeAudioLevel();
+    post_neuter_metadata_.rtp_timestamp = webrtc_frame_->GetTimestamp();
+  }
   return std::move(webrtc_frame_);
 }
 

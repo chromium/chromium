@@ -41,7 +41,7 @@ namespace {
 
 // Returns the amount of physical memory in GB, rounded to the nearest GB.
 int GetPhysicalMemoryGB() {
-  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemoryMB() / 1024.0f);
+  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemory().InGiBF());
 }
 
 std::string GetOSVersion() {
@@ -55,11 +55,7 @@ std::string GetOSVersion() {
 }
 
 std::string GetServicePack() {
-#if BUILDFLAG(IS_WIN)
-  return base::win::OSInfo::GetInstance()->service_pack_str();
-#else
   return {};
-#endif
 }
 
 // Returns brand code in the expected format, or an empty string otherwise.

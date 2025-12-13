@@ -127,11 +127,14 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuModelBrowserTest, HasPendingUpdate) {
     EXPECT_FALSE(found);
   }
 
+  // Set the `was_ignored` field to true deliberately to ensure that the menu
+  // model still works correctly even if the user has ignored an update.
   {
     web_app::ScopedRegistryUpdate update =
         provider().sync_bridge_unsafe().BeginUpdate();
     web_app::proto::PendingUpdateInfo update_info;
     update_info.set_name("Updated app name");
+    update_info.set_was_ignored(true);
     update->UpdateApp(app_id)->SetPendingUpdateInfo(std::move(update_info));
   }
 

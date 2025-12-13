@@ -1,0 +1,200 @@
+rootWebArea htmlTag='#document' name='Material Web Sliders'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='50' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='50' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='25' value='25' valueForRange=25.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='30' value='30' valueForRange=30.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++slider horizontal className=' end ' htmlTag='input' name='60' value='60' restriction=disabled valueForRange=60.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++genericContainer className='track' htmlTag='div'
+++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++genericContainer className='handle  end ' htmlTag='div'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='75' value='75' valueForRange=75.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='80' value='80' valueForRange=80.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='tickmarks' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container  ranged ' htmlTag='div'
+++++++++++++slider horizontal className=' start ' htmlTag='input' name='33' value='33' valueForRange=33.00 minValueForRange=0.00 maxValueForRange=67.00
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='67' value='67' valueForRange=67.00 minValueForRange=33.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer className='handle end onTop' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Sliders'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='25' value='25' valueForRange=25.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='50' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='25' value='25' valueForRange=25.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='30' value='30' valueForRange=30.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++slider horizontal className=' end ' htmlTag='input' name='60' value='60' restriction=disabled valueForRange=60.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++genericContainer className='track' htmlTag='div'
+++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++genericContainer className='handle  end ' htmlTag='div'
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='75' value='75' valueForRange=75.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='80' value='80' valueForRange=80.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='tickmarks' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container  ranged ' htmlTag='div'
+++++++++++++slider horizontal className=' start ' htmlTag='input' name='33' value='33' valueForRange=33.00 minValueForRange=0.00 maxValueForRange=67.00
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='67' value='67' valueForRange=67.00 minValueForRange=33.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer className='handle end onTop' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Slider Set to 25'
+++++++++++++inlineTextBox name='Slider Set to 25'

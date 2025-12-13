@@ -188,9 +188,10 @@ class WebSocketChannel::ConnectDelegate
     creator_->OnCreateURLRequest(request);
   }
 
-  void OnURLRequestConnected(URLRequest* request,
-                             const TransportInfo& info) override {
-    creator_->OnURLRequestConnected(request, info);
+  int OnURLRequestConnected(URLRequest* request,
+                            const TransportInfo& info,
+                            CompletionOnceCallback callback) override {
+    return creator_->OnURLRequestConnected(request, info, std::move(callback));
   }
 
   void OnSuccess(
@@ -443,9 +444,11 @@ void WebSocketChannel::OnCreateURLRequest(URLRequest* request) {
   event_interface_->OnCreateURLRequest(request);
 }
 
-void WebSocketChannel::OnURLRequestConnected(URLRequest* request,
-                                             const TransportInfo& info) {
-  event_interface_->OnURLRequestConnected(request, info);
+int WebSocketChannel::OnURLRequestConnected(URLRequest* request,
+                                            const TransportInfo& info,
+                                            CompletionOnceCallback callback) {
+  return event_interface_->OnURLRequestConnected(request, info,
+                                                 std::move(callback));
 }
 
 void WebSocketChannel::OnConnectSuccess(

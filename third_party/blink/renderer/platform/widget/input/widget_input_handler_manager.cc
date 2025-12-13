@@ -40,6 +40,7 @@
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/compositor_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
@@ -73,6 +74,10 @@ const base::TimeDelta kEventCountsTimerDelay = base::Milliseconds(500);
 // 1.5x to avoid false positives on slow devices.
 const base::TimeDelta kFirstPaintMaxAcceptableDelay = base::Seconds(15);
 
+// If enabled, restrict continuous events from setting input event as pending to
+// the compositor.
+BASE_FEATURE(kRestrictPendingInputEventType, base::FEATURE_DISABLED_BY_DEFAULT);
+
 mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
     const InputHandlerProxy::DidOverscrollParams* overscroll_params) {
   if (!overscroll_params)
@@ -82,7 +87,7 @@ mojom::blink::DidOverscrollParamsPtr ToDidOverscrollParams(
       overscroll_params->latest_overscroll_delta,
       overscroll_params->current_fling_velocity,
       overscroll_params->causal_event_viewport_point,
-      overscroll_params->overscroll_behavior);
+      overscroll_params->overscroll_behavior, overscroll_params->source_device);
 }
 
 void CallCallback(
@@ -216,12 +221,6 @@ class SynchronousCompositorProxyRegistry
         renderer_threads.push_back(
             viz::Thread{io_thread_id_, viz::Thread::Type::kIO});
       }
-      if (main_thread_id_ != base::kInvalidThreadId &&
-          base::FeatureList::IsEnabled(
-              ::features::kWebViewEnableADPFRendererMain)) {
-        renderer_threads.push_back(
-            viz::Thread{main_thread_id_, viz::Thread::Type::kMain});
-      }
       proxy_->SetThreads(renderer_threads);
     }
 
@@ -338,7 +337,7 @@ WidgetInputHandlerManager::WidgetInputHandlerManager(
 #endif
 }
 
-void WidgetInputHandlerManager::DidFirstVisuallyNonEmptyPaint(
+void WidgetInputHandlerManager::OnFirstContentfulPaint(
     const base::TimeTicks& first_paint_time) {
   suppressing_input_events_state_ &=
       ~static_cast<uint16_t>(SuppressingInputEventsBits::kHasNotPainted);
@@ -456,8 +455,15 @@ bool WidgetInputHandlerManager::HandleInputEvent(
     // `widget_`.
     return true;
   }
-  // TODO(szager): Should this be limited to discrete input events by
-  // conditioning on (!scheduler::PendingUserInput::IsContinuousEventType())?
+
+  if (base::FeatureList::IsEnabled(kRestrictPendingInputEventType) &&
+      scheduler::PendingUserInput::IsContinuousEventType(
+          event.Event().GetType())) {
+    // Restrict continuous events from setting input event as pending, since
+    // this blocks the main thread in `ProxyMain::BeginMainFrame()`.
+    return true;
+  }
+
   widget_->LayerTreeHost()->proxy()->SetInputResponsePending();
 
   return true;
@@ -1210,6 +1216,11 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
 
   mojom::blink::InputEventResultState ack_state =
       InputEventDispositionToAck(event_disposition);
+  if (event->Event().IsGestureScroll()) {
+    input_event_queue_->OnGestureScrollEventAck(event->Event().GetType(),
+                                                ack_state);
+  }
+
   if (ack_state == mojom::blink::InputEventResultState::kConsumed) {
     widget_scheduler_->DidHandleInputEventOnCompositorThread(
         event->Event(), scheduler::WidgetScheduler::InputEventState::
@@ -1329,8 +1340,11 @@ void WidgetInputHandlerManager::ObserveGestureEventOnInputHandlingThread(
   // observe the event.
   if (!input_handler_proxy_->elastic_overscroll_controller())
     return;
+  const cc::ElementId latched_element_id =
+      input_handler_proxy_->LatchedScrollerElementId();
   input_handler_proxy_->elastic_overscroll_controller()
-      ->ObserveGestureEventAndResult(gesture_event, scroll_result);
+      ->ObserveGestureEventAndResult(latched_element_id, gesture_event,
+                                     scroll_result);
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&

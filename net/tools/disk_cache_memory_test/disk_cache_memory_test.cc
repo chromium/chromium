@@ -94,6 +94,7 @@ std::unique_ptr<Backend> CreateAndInitBackend(const CacheSpec& spec) {
   result = CreateCacheBackend(
       spec.cache_type, spec.backend_type, /*file_operations=*/nullptr,
       spec.path, 0, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
+      /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(
           [](BackendResult* out, base::RunLoop* run_loop,
              BackendResult async_result) {

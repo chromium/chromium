@@ -125,7 +125,7 @@ Ecdsa::RequestParameters Ecdsa::SignRequest(std::string_view request_body) {
 
   // Return the query string for the user to send with the request.
   return {.query_cup2key = request_query_cup2key_,
-          .hash_hex = base::ToLowerASCII(base::HexEncode(request_hash_))};
+          .hash_hex = base::HexEncodeLower(request_hash_)};
 }
 
 bool Ecdsa::ValidateResponse(std::string_view response_body,

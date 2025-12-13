@@ -5,18 +5,16 @@
 #include "services/on_device_model/fake/on_device_model_fake.h"
 
 #include "base/no_destructor.h"
-#include "base/strings/string_number_conversions.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/ml/chrome_ml.h"
-#include "services/on_device_model/ml/on_device_model_internal.h"
 
 namespace fake_ml {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
 const ml::ChromeML* GetFakeChromeML() {
-  static const base::NoDestructor<ml::ChromeML> fake{fake_ml::GetFakeMlApi()};
-  return fake.get();
+  static const base::NoDestructor<std::unique_ptr<ml::ChromeML>> fake{
+      ml::ChromeML::CreateForTesting(fake_ml::GetFakeMlApi())};
+  return fake->get();
 }
 
-}  // namespace on_device_model
+}  // namespace fake_ml

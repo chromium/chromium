@@ -52,9 +52,7 @@ void CreateAndInitializeLocalCache() {
 #endif
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   EXPECT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile)
                   ->BrowserAppLauncher()
@@ -64,7 +62,7 @@ Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
                       WindowOpenDisposition::CURRENT_TAB,
                       apps::LaunchSource::kFromTest)));
 
-  Browser* const browser = browser_change_observer.Wait();
+  Browser* const browser = browser_created_observer.Wait();
   DCHECK(browser);
   EXPECT_EQ(web_app::GetAppIdFromApplicationName(browser->app_name()),
             extension_app->id());

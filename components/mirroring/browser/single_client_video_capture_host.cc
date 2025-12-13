@@ -12,11 +12,6 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/capture/video/video_capture_buffer_pool.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
-#endif
 
 using media::VideoFrameConsumerFeedbackObserver;
 
@@ -108,11 +103,7 @@ void SingleClientVideoCaptureHost::Start(
       base::BindOnce([](std::unique_ptr<content::VideoCaptureDeviceLauncher>,
                         std::unique_ptr<DeviceLauncherCallbacks>) {},
                      std::move(device_launcher),
-                     std::move(device_launcher_callbacks)),
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>{},
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>{});
+                     std::move(device_launcher_callbacks)));
 }
 
 void SingleClientVideoCaptureHost::Stop(
@@ -202,8 +193,8 @@ void SingleClientVideoCaptureHost::OnCaptureConfigurationChanged() {
   // Ignore this call.
 }
 
-void SingleClientVideoCaptureHost::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void SingleClientVideoCaptureHost::OnNewCaptureVersion(
+    media::CaptureVersion capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Ignore this call.
 }

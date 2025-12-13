@@ -10,13 +10,17 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -34,10 +38,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/os_crypt/sync/os_crypt_mocker.h"
-#endif
 
 using base::TestMockTimeTaskRunner;
 using testing::_;
@@ -74,6 +74,14 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const, override));
   MOCK_METHOD(void, PromptUserToSaveOrUpdatePasswordPtr, (), ());
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(bool,
+              IsReauthBeforeFillingRequired,
+              (device_reauth::DeviceAuthenticator*),
+              (override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (),
+              (override));
 
   // Workaround for std::unique_ptr<> lacking a copy constructor.
   bool PromptUserToSaveOrUpdatePassword(
@@ -127,7 +135,6 @@ class HttpAuthManagerTest : public testing::Test,
     }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    OSCryptMocker::SetUp();
     pref_service_.registry()->RegisterIntegerPref(
         password_manager::prefs::kRelaunchChromeBubbleDismissedCounter, 0);
 #endif
@@ -143,10 +150,6 @@ class HttpAuthManagerTest : public testing::Test,
     httpauth_manager_ = std::make_unique<HttpAuthManagerImpl>(&client_);
 
     EXPECT_CALL(*store_, IsAbleToSavePasswords()).WillRepeatedly(Return(true));
-
-    ON_CALL(client_, AutofillHttpAuth(_, _))
-        .WillByDefault(
-            Invoke(httpauth_manager_.get(), &HttpAuthManagerImpl::Autofill));
   }
 
   HttpAuthManagerImpl* httpauth_manager() { return httpauth_manager_.get(); }
@@ -160,8 +163,18 @@ class HttpAuthManagerTest : public testing::Test,
   std::unique_ptr<HttpAuthManagerImpl> httpauth_manager_;
 };
 
-TEST_P(HttpAuthManagerTest, HttpAuthFilling) {
-  EXPECT_CALL(client_, IsFillingEnabled(_)).WillRepeatedly(Return(true));
+TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthNotRequired) {
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .WillRepeatedly(Return(false));
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(client_, AutofillHttpAuth)
+      .WillRepeatedly(
+          [&](const password_manager::PasswordForm& preferred_match,
+              const password_manager::PasswordFormManagerForUI* form_manager) {
+            httpauth_manager()->Autofill(preferred_match, form_manager,
+                                         future.GetCallback());
+          });
 
   PasswordForm observed_form;
   observed_form.scheme = PasswordForm::Scheme::kBasic;
@@ -175,17 +188,119 @@ TEST_P(HttpAuthManagerTest, HttpAuthFilling) {
   MockHttpAuthObserver observer;
 
   base::WeakPtr<PasswordStoreConsumer> consumer;
-  EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&consumer));
+  EXPECT_CALL(*store_, GetLogins).WillOnce(SaveArg<1>(&consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+  EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string_view(u"user"),
+                                                std::u16string_view(u"1234")))
+      .Times(2);
+  ASSERT_TRUE(consumer);
+  std::vector<PasswordForm> result;
+  result.push_back(stored_form);
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                 std::move(result));
+  ASSERT_TRUE(future.Wait());
+
+  testing::Mock::VerifyAndClearExpectations(&store_);
+  httpauth_manager()->DetachObserver(&observer);
+}
+
+// Test autofill when biometric re-auth is required and successful.
+TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthSuccess) {
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .WillRepeatedly(Return(true));
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(client_, AutofillHttpAuth)
+      .WillOnce(
+          [&](const password_manager::PasswordForm& preferred_match,
+              const password_manager::PasswordFormManagerForUI* form_manager) {
+            httpauth_manager()->Autofill(preferred_match, form_manager,
+                                         mock_callback.Get());
+          });
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(true));
+  EXPECT_CALL(client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
+
+  PasswordForm stored_form = observed_form;
+  stored_form.username_value = u"user";
+  stored_form.password_value = u"1234";
+
+  MockHttpAuthObserver observer;
+
+  base::WeakPtr<PasswordStoreConsumer> consumer;
+  EXPECT_CALL(*store_, GetLogins).WillOnce(SaveArg<1>(&consumer));
   httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
                                                        observed_form);
   EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string_view(u"user"),
                                                 std::u16string_view(u"1234")));
+  EXPECT_CALL(mock_callback, Run);
   ASSERT_TRUE(consumer);
   std::vector<PasswordForm> result;
   result.push_back(stored_form);
   consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
                                                  std::move(result));
   testing::Mock::VerifyAndClearExpectations(&store_);
+
+  httpauth_manager()->DetachObserver(&observer);
+}
+
+// Test autofill when biometric re-auth is required and successful.
+TEST_P(HttpAuthManagerTest, HttpAuthFillingReauthFailure) {
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsReauthBeforeFillingRequired)
+      .WillRepeatedly(Return(true));
+  base::MockOnceClosure mock_callback;
+  EXPECT_CALL(client_, AutofillHttpAuth)
+      .WillOnce(
+          [&](const password_manager::PasswordForm& preferred_match,
+              const password_manager::PasswordFormManagerForUI* form_manager) {
+            httpauth_manager()->Autofill(preferred_match, form_manager,
+                                         mock_callback.Get());
+          });
+
+  auto mock_authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*mock_authenticator, AuthenticateWithMessage)
+      .WillOnce(base::test::RunOnceCallback<1>(false));
+
+  EXPECT_CALL(client_, GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))));
+
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
+
+  PasswordForm stored_form = observed_form;
+  stored_form.username_value = u"user";
+  stored_form.password_value = u"1234";
+
+  MockHttpAuthObserver observer;
+
+  base::WeakPtr<PasswordStoreConsumer> consumer;
+  EXPECT_CALL(*store_, GetLogins).WillOnce(SaveArg<1>(&consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+  EXPECT_CALL(observer, OnAutofillDataAvailable).Times(0);
+  EXPECT_CALL(mock_callback, Run).Times(0);
+
+  ASSERT_TRUE(consumer);
+  std::vector<PasswordForm> result;
+  result.push_back(stored_form);
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                 std::move(result));
+  testing::Mock::VerifyAndClearExpectations(&store_);
+
   httpauth_manager()->DetachObserver(&observer);
 }
 

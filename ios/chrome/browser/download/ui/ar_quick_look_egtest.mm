@@ -29,7 +29,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
 
-  if (request.GetURL().path() == "/") {
+  if (request.GetURL().GetPath() == "/") {
     result->set_content(
         "<html><head><script>"
         "document.addEventListener('visibilitychange', "
@@ -48,15 +48,15 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     return result;
   }
 
-  if (request.GetURL().path() == "/forbidden") {
+  if (request.GetURL().GetPath() == "/forbidden") {
     result->set_code(net::HTTP_FORBIDDEN);
-  } else if (request.GetURL().path() == "/unauthorized") {
+  } else if (request.GetURL().GetPath() == "/unauthorized") {
     result->set_code(net::HTTP_UNAUTHORIZED);
-  } else if (request.GetURL().path() == "/changing-mime-type") {
+  } else if (request.GetURL().GetPath() == "/changing-mime-type") {
     result->set_code(net::HTTP_OK);
     result->AddCustomHeader("Content-Type", "unknown");
     result->set_content(testing::GetTestFileContents(testing::kUsdzFilePath));
-  } else if (request.GetURL().path() == "/good") {
+  } else if (request.GetURL().GetPath() == "/good") {
     result->set_code(net::HTTP_OK);
     result->AddCustomHeader("Content-Type", kUsdzMimeType);
     result->set_content(testing::GetTestFileContents(testing::kUsdzFilePath));

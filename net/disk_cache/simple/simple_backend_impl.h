@@ -26,6 +26,7 @@
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/cache_encryption_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/simple/post_operation_waiter.h"
 #include "net/disk_cache/simple/simple_entry_impl.h"
@@ -70,7 +71,8 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
       SimpleFileTracker* file_tracker,
       int64_t max_bytes,
       net::CacheType cache_type,
-      net::NetLog* net_log);
+      net::NetLog* net_log,
+      net::CacheEncryptionDelegate* cache_encryption_delegate);
 
   ~SimpleBackendImpl() override;
 
@@ -127,7 +129,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   void GetStats(base::StringPairs* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
   uint8_t GetEntryInMemoryData(const std::string& key) override;
-  void SetEntryInMemoryData(const std::string& key, uint8_t data) override;
 
   net::PrioritizedTaskRunner* prioritized_task_runner() const {
     return prioritized_task_runner_.get();
@@ -289,7 +290,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl final : public Backend,
   scoped_refptr<SimplePostOperationWaiterTable> post_open_by_hash_waiting_;
 
   const raw_ptr<net::NetLog> net_log_;
-
+  const raw_ptr<net::CacheEncryptionDelegate> cache_encryption_delegate_;
   uint32_t entry_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)

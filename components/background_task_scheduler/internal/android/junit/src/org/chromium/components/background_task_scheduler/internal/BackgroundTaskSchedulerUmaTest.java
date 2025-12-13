@@ -153,7 +153,11 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.BACKGROUND_AUXILIARY_SEARCH_DONATE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 34);
+        assertEquals(
+                BackgroundTaskSchedulerUma.BACKGROUND_CHROME_SIGNALS_REPORTING,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 35);
     }
 
     @Test

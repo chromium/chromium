@@ -152,7 +152,8 @@ void DirectRenderer::Reshape(
 }
 
 void DirectRenderer::DecideRenderPassAllocationsForFrame(
-    const AggregatedRenderPassList& render_passes_in_draw_order) {
+    const AggregatedRenderPassList& render_passes_in_draw_order,
+    bool skip_root_render_pass_allocation) {
   DCHECK(render_pass_bypass_quads_.empty());
 
   auto& root_render_pass = render_passes_in_draw_order.back();
@@ -162,26 +163,9 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
   for (const auto& pass : render_passes_in_draw_order) {
     const bool is_root = pass == root_render_pass;
 
-#if BUILDFLAG(IS_WIN)
-    // For delegated compositing the root pass is preserved, but not rendered.
-    // If a previous frame fell out of delegated compositing we want to make
-    // sure that we deallocate its backing when switching back to delegated
-    // compositing.
-    if (is_root && output_surface_->capabilities().renderer_allocates_images &&
-        !current_frame()->output_surface_plane) {
-      // We expect to be in delegated compositing mode, which means the root
-      // damage rect has been cleared.
-      CHECK(current_frame()->root_damage_rect.IsEmpty());
+    if (is_root && skip_root_render_pass_allocation) {
       continue;
     }
-#else
-    // TODO(crbug.com/40224327): Consider deallocating the primary plane in this
-    // case.
-    // Non-Windows platforms use BufferQueue, which are not owned by the render
-    // pass backing. ChromeOS must hold on to the root surface buffers to ensure
-    // overlay-ability and macOS wants to just discard the underlying surfaces
-    // for performance.
-#endif
 
     const RenderPassRequirements requirements =
         CalculateRenderPassRequirements(pass.get());
@@ -243,6 +227,31 @@ void DirectRenderer::DrawFrame(
   current_frame()->device_viewport_size = device_viewport_size;
   current_frame()->display_color_spaces = display_color_spaces;
 
+  gfx::Size surface_resource_size =
+      CalculateSizeForOutputSurface(device_viewport_size);
+
+#if BUILDFLAG(IS_WIN)
+  if (output_surface_->capabilities().clear_drawn_areas_outside_viewport &&
+      device_viewport_size != surface_resource_size) {
+    // On Windows with DirectComposition, we cannot synchronize the swap chain
+    // |Present| and the DComp |Commit| calls to take effect at the same time.
+    // (Both take effect asynchronously.) Hence, presenting a frame and changing
+    // the DComp layer clip rect can happen at different times. This can lead to
+    // ugly visual artifacts while resizing the window because it can reveal
+    // areas of the surface that are outside the viewport (crbug.com/457463689).
+    // To prevent those artifacts, we clear areas outside of the viewport with a
+    // transparent color. Transparency is expensive, so we use it only while
+    // resizing.
+    // This line gives us a transparent image format and triggers the background
+    // to be cleared in |SkiaRenderer::ClearFramebuffer|.
+    root_render_pass->has_transparent_background = true;
+    // Redraw and swap the whole surface.
+    root_render_pass->output_rect = gfx::Rect(surface_resource_size);
+    current_frame()->root_damage_rect = gfx::Rect(surface_resource_size);
+    current_frame()->device_viewport_size = surface_resource_size;
+  }
+#endif
+
   output_surface_->SetNeedsMeasureNextDrawLatency();
   BeginDrawingFrame();
 
@@ -266,16 +275,15 @@ void DirectRenderer::DrawFrame(
     }
   }
 
-  bool frame_has_alpha =
-      current_frame()->root_render_pass->has_transparent_background;
   gfx::ColorSpace frame_color_space =
       RenderPassColorSpace(current_frame()->root_render_pass);
-  SharedImageFormat frame_si_format = GetSharedImageFormat(
-      current_frame()->display_color_spaces.GetOutputBufferFormat(
+  SharedImageFormat frame_si_format =
+      current_frame()->display_color_spaces.GetOutputFormat(
           current_frame()->root_render_pass->content_color_usage,
-          frame_has_alpha));
-  gfx::Size surface_resource_size =
-      CalculateSizeForOutputSurface(device_viewport_size);
+          current_frame()->root_render_pass->has_transparent_background);
+#if BUILDFLAG(IS_WIN)
+  bool has_primary_plane = false;
+#endif
   if (overlay_processor_) {
     // Display transform and viewport size are needed for overlay validator on
     // Android SurfaceControl, and viewport size is need on Windows. These need
@@ -284,21 +292,6 @@ void DirectRenderer::DrawFrame(
         output_surface_->GetDisplayTransform());
     overlay_processor_->SetViewportSize(device_viewport_size);
 
-    // Before ProcessForOverlay calls into the hardware to ask about whether the
-    // overlay setup can be handled, we need to set up the primary plane.
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane =
-        nullptr;
-    if (output_surface_->capabilities().renderer_allocates_images) {
-      // TODO(crbug.com/40224327): `output_surface_plane` can be changed to an
-      // OverlayCandidate now.
-      current_frame()->output_surface_plane =
-          overlay_processor_->ProcessOutputSurfaceAsOverlay(
-              device_viewport_size, surface_resource_size, frame_si_format,
-              frame_color_space, frame_has_alpha, 1.0f /*opacity*/,
-              GetPrimaryPlaneOverlayTestingMailbox());
-      primary_plane = &(current_frame()->output_surface_plane.value());
-    }
-
     // Attempt to replace some or all of the quads of the root render pass with
     // overlays.
     base::ElapsedTimer overlay_processing_timer;
@@ -306,8 +299,25 @@ void DirectRenderer::DrawFrame(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
         render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
-        primary_plane, &current_frame()->overlay_list,
-        &current_frame()->root_damage_rect,
+        OverlayProcessorInterface::PrimaryPlaneParams{
+            .viewport_size = device_viewport_size,
+            .resource_size_in_pixels = surface_resource_size,
+            .supports_hdr =
+                current_frame()->display_color_spaces.SupportsHDR() &&
+                render_passes_in_draw_order->back()->content_color_usage ==
+                    gfx::ContentColorUsage::kHDR,
+            .is_opaque = !render_passes_in_draw_order->back()
+                              ->has_transparent_background,
+#if BUILDFLAG(IS_OZONE)
+            .si_format = frame_si_format,
+            .color_space = frame_color_space,
+            .overlay_testing_mailbox =
+                output_surface_->capabilities().renderer_allocates_images
+                    ? GetPrimaryPlaneOverlayTestingMailbox()
+                    : gpu::Mailbox(),
+#endif
+        },
+        &current_frame()->overlay_list, &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
 
@@ -318,17 +328,11 @@ void DirectRenderer::DrawFrame(
         "Compositing.DirectRenderer.OverlayProcessingUs",
         overlay_processing_time, kMinTime, kMaxTime, kTimeBuckets);
 
-    // If we promote any quad to an underlay then the main plane must support
-    // alpha.
-    // TODO(ccameron): We should update |frame_color_space|, and
-    // |frame_si_format| based on the change in |frame_has_alpha|.
-    if (current_frame()->output_surface_plane) {
-      frame_has_alpha |= current_frame()->output_surface_plane->enable_blending;
-      root_render_pass->has_transparent_background = frame_has_alpha;
-    }
-
-    overlay_processor_->AdjustOutputSurfaceOverlay(
-        &(current_frame()->output_surface_plane));
+#if BUILDFLAG(IS_WIN)
+    has_primary_plane = std::ranges::any_of(
+        current_frame()->overlay_list,
+        [](const auto& candidate) { return candidate.is_root_render_pass; });
+#endif
   }
 
   // Only reshape when we know we are going to draw. Otherwise, the reshape
@@ -342,8 +346,9 @@ void DirectRenderer::DrawFrame(
   reshape_params.device_scale_factor = device_scale_factor;
   reshape_params.color_space = frame_color_space;
   reshape_params.format = frame_si_format;
-  reshape_params.alpha_type = frame_has_alpha ? RenderPassAlphaType::kPremul
-                                              : RenderPassAlphaType::kOpaque;
+  reshape_params.alpha_type = root_render_pass->has_transparent_background
+                                  ? RenderPassAlphaType::kPremul
+                                  : RenderPassAlphaType::kOpaque;
   if (next_frame_needs_full_frame_redraw_ ||
       reshape_params != reshape_params_ ||
       display_transform != reshape_display_transform_) {
@@ -361,7 +366,7 @@ void DirectRenderer::DrawFrame(
     // If compositing is delegated, then there will be no output_surface_plane,
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
-    if (current_frame()->output_surface_plane ||
+    if (has_primary_plane ||
         !output_surface_->capabilities().renderer_allocates_images) {
       needs_full_frame_redraw = true;
     }
@@ -371,12 +376,30 @@ void DirectRenderer::DrawFrame(
 #endif
   }
 
-  // DecideRenderPassAllocationsForFrame needs
-  // current_frame()->display_color_spaces to decide the color space
-  // of each render pass. Overlay processing is also allowed to modify the
-  // render pass backing requirements due to e.g. a underlay promotion. On
-  // Windows, the root render pass' size is based on the |reshape_params_|.
-  DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order);
+#if BUILDFLAG(IS_WIN)
+  // For delegated compositing the root pass is preserved, but not rendered.
+  // If a previous frame fell out of delegated compositing we want to make
+  // sure that we deallocate its backing when switching back to delegated
+  // compositing.
+  const bool skip_root_render_pass_allocation =
+      output_surface_->capabilities().renderer_allocates_images &&
+      !has_primary_plane;
+  if (skip_root_render_pass_allocation) {
+    // We expect to be in delegated compositing mode, which means the root
+    // damage rect has been cleared.
+    CHECK(current_frame()->root_damage_rect.IsEmpty());
+  }
+#else
+  // TODO(crbug.com/40224327): Consider deallocating the primary plane in this
+  // case.
+  // Non-Windows platforms use BufferQueue, which are not owned by the render
+  // pass backing. ChromeOS must hold on to the root surface buffers to ensure
+  // overlay-ability and macOS wants to just discard the underlying surfaces
+  // for performance.
+  const bool skip_root_render_pass_allocation = false;
+#endif
+  DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order,
+                                      skip_root_render_pass_allocation);
 
   // Draw all non-root render passes except for the root render pass.
   total_pixels_rendered_this_frame_ = 0;
@@ -397,8 +420,10 @@ void DirectRenderer::DrawFrame(
 
   // If we need to redraw the frame, the whole output should be considered
   // damaged.
-  if (needs_full_frame_redraw)
-    current_frame()->root_damage_rect = gfx::Rect(device_viewport_size);
+  if (needs_full_frame_redraw) {
+    current_frame()->root_damage_rect =
+        gfx::Rect(current_frame()->device_viewport_size);
+  }
 
   if (!skip_drawing_root_render_pass) {
     DrawRenderPassAndExecuteCopyRequests(root_render_pass);
@@ -874,13 +899,9 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
     requirements.format = reshape_si_format();
-    if (is_root) {
-      requirements.alpha_type = reshape_alpha_type();
-    } else {
-      requirements.alpha_type = render_pass->has_transparent_background
-                                    ? RenderPassAlphaType::kPremul
-                                    : RenderPassAlphaType::kOpaque;
-    }
+    requirements.alpha_type = render_pass->has_transparent_background
+                                  ? RenderPassAlphaType::kPremul
+                                  : RenderPassAlphaType::kOpaque;
   } else {
     requirements.generate_mipmap = render_pass->generate_mipmap;
     requirements.color_space = RenderPassColorSpace(render_pass);
@@ -906,9 +927,8 @@ gfx::ColorSpace DirectRenderer::RenderPassColorSpace(
              ? ColorSpaceUtils::OutputColorSpace(display_color_spaces,
                                                  content_color_usage,
                                                  has_transparent_background)
-             : ColorSpaceUtils::CompositingColorSpace(
-                   display_color_spaces, content_color_usage,
-                   has_transparent_background);
+             : display_color_spaces.GetRasterAndCompositeColorSpace(
+                   content_color_usage);
 }
 
 void DirectRenderer::EnsureRenderPassAllocated(
@@ -1082,10 +1102,13 @@ gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
 // buffer area and number of reallocations to quantify the trade-off.
 gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
     const gfx::Size& requested_viewport_size) {
+  const gfx::Size surface_size = surface_size_for_swap_buffers();
+
   // We're not able to clip back buffers if output surface does not support
-  // clipping.
-  if (requested_viewport_size == surface_size_for_swap_buffers() ||
+  // clipping. We don't round on the initial frame when a window is first shown.
+  if (requested_viewport_size == surface_size ||
       !output_surface_->capabilities().supports_viewporter ||
+      surface_size.IsZero() ||
       settings_->dont_round_texture_sizes_for_pixel_tests) {
     device_viewport_size_ = requested_viewport_size;
     return requested_viewport_size;
@@ -1103,8 +1126,8 @@ gfx::Size DirectRenderer::CalculateSizeForOutputSurface(
   // allows backings to be more easily reused during a resize operation.
   const int request_width = requested_viewport_size.width();
   const int request_height = requested_viewport_size.height();
-  int surface_width = surface_size_for_swap_buffers().width();
-  int surface_height = surface_size_for_swap_buffers().height();
+  int surface_width = surface_size.width();
+  int surface_height = surface_size.height();
   constexpr int multiple = 256;
 
   // If |request_width| or |request_height| is already a multiple of |multiple|,
@@ -1199,8 +1222,10 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
   return gfx::Rect();
 }
 
+#if BUILDFLAG(IS_OZONE)
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   NOTREACHED();
 }
+#endif
 
 }  // namespace viz

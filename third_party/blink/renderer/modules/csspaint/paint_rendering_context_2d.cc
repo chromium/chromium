@@ -12,6 +12,8 @@
 
 namespace blink {
 
+class MemoryManagedPaintCanvas;
+
 PaintRenderingContext2D::PaintRenderingContext2D(
     const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
@@ -56,7 +58,8 @@ Color PaintRenderingContext2D::GetCurrentColor() const {
   return Color::kBlack;
 }
 
-const cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
+const MemoryManagedPaintCanvas* PaintRenderingContext2D::GetPaintCanvas()
+    const {
   return &paint_recorder_.getRecordingCanvas();
 }
 

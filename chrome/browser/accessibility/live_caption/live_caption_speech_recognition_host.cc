@@ -12,7 +12,6 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -48,7 +47,11 @@ static constexpr int kWaitKValue = 1;
 
 // The number of consecutive highly confident language identification events
 // required to trigger an automatic download of the missing language pack.
-static constexpr int kLanguageIdentificationEventCountThreshold = 3;
+static constexpr int kLangIdEventCountThresholdForDownload = 3;
+
+// The number of consecutive highly confident language identification events
+// required to extend the uninstallation of the language pack.
+static constexpr int kLangIdEventCountThresholdForUninstallationExtension = 10;
 
 std::string RemoveLastKWords(const std::string& input) {
   int words_to_remove = kWaitKValue;
@@ -77,7 +80,7 @@ std::string RemoveLastKWords(const std::string& input) {
 
 // Returns a boolean indicating whether the language is both enabled and not
 // already installed.
-bool IsLanguageInstallable(const std::string& language_code) {
+bool IsLanguageInstallable(std::string_view language_code) {
   for (const auto& language : g_browser_process->local_state()->GetList(
            prefs::kSodaRegisteredLanguagePacks)) {
     if (language.GetString() == language_code) {
@@ -212,30 +215,37 @@ void LiveCaptionSpeechRecognitionHost::OnLanguageIdentificationEvent(
   if (event->asr_switch_result ==
       media::mojom::AsrSwitchResult::kSwitchSucceeded) {
     source_language_ = event->language;
+    language_auto_switched_ = true;
   }
 
-  if (base::FeatureList::IsEnabled(
-          media::kLiveCaptionAutomaticLanguageDownload)) {
-    if (auto_detected_language_ != event->language) {
-      language_identification_event_count_ = 0;
-      auto_detected_language_ = event->language;
-    }
+  if (auto_detected_language_ != event->language) {
+    language_identification_event_count_ = 0;
+    auto_detected_language_ = event->language;
+  }
 
-    if (event->confidence_level ==
-        media::mojom::ConfidenceLevel::kHighlyConfident) {
-      language_identification_event_count_++;
-    } else {
-      language_identification_event_count_ = 0;
-    }
+  if (event->confidence_level ==
+      media::mojom::ConfidenceLevel::kHighlyConfident) {
+    language_identification_event_count_++;
+  } else {
+    language_identification_event_count_ = 0;
+  }
 
+  std::optional<speech::SodaLanguagePackComponentConfig> language_config =
+      speech::GetLanguageComponentConfigMatchingLanguageSubtag(event->language);
+  if (language_config.has_value()) {
     if (language_identification_event_count_ ==
-        kLanguageIdentificationEventCountThreshold) {
-      std::optional<speech::SodaLanguagePackComponentConfig> language_config =
-          speech::GetLanguageComponentConfigMatchingLanguageSubtag(
-              event->language);
+            kLangIdEventCountThresholdForUninstallationExtension &&
+        language_auto_switched_) {
+      speech::SodaInstaller::GetInstance()->SetUninstallTimer(
+          g_browser_process->local_state(),
+          language_config.value().language_name);
+    }
 
-      if (language_config.has_value() &&
-          IsLanguageInstallable(language_config.value().language_name)) {
+    if (base::FeatureList::IsEnabled(
+            media::kLiveCaptionAutomaticLanguageDownload) &&
+        language_identification_event_count_ ==
+            kLangIdEventCountThresholdForDownload) {
+      if (IsLanguageInstallable(language_config.value().language_name)) {
         // InstallLanguage will only install languages that are not already
         // installed.
         speech::SodaInstaller::GetInstance()->InstallLanguage(

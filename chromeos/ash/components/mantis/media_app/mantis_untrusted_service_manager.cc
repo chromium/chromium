@@ -13,7 +13,6 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service.h"
@@ -107,10 +106,6 @@ void MantisUntrustedServiceManager::OnQueryDone(
 void MantisUntrustedServiceManager::IsAvailable(
     PrefService* pref_service,
     base::OnceCallback<void(bool)> callback) {
-  if (switches::IsMantisSecretKeyMatched()) {
-    std::move(callback).Run(true);
-    return;
-  }
   if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantisModel)) {
     std::move(callback).Run(false);
     return;

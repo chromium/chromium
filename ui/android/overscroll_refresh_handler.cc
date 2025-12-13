@@ -19,7 +19,7 @@ namespace ui {
 OverscrollRefreshHandler::OverscrollRefreshHandler(
     const base::android::JavaRef<jobject>& j_overscroll_refresh_handler) {
   j_overscroll_refresh_handler_.Reset(AttachCurrentThread(),
-                                      j_overscroll_refresh_handler.obj());
+                                      j_overscroll_refresh_handler);
 }
 
 OverscrollRefreshHandler::~OverscrollRefreshHandler() {}
@@ -51,3 +51,5 @@ void OverscrollRefreshHandler::PullReset() {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(OverscrollRefreshHandler)

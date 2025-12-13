@@ -4,11 +4,10 @@
 
 # List of .proto files used when defining Chromium extensions for typed events.
 # New files should be added to this list.
-#
-# DO NOT EDIT THIS AT THE MOMENT. This file has to be supported in Perfetto
-# first in order to be useful.
-# TODO(b/181318121): Implement the support in Perfetto and remove the warning.
-chrome_track_event_sources = [ "chrome_track_event.proto" ]
+chrome_track_event_sources = [
+  "chrome_enums.proto",
+  "chrome_track_event.proto",
+]
 
 # protoc can generate a descriptor file from a single .proto file. If
 # `chrome_track_event_sources` contains multiple files, add a single wrapper

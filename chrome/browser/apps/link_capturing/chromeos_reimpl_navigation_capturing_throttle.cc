@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/values_equivalent.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
@@ -44,6 +45,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/url_constants.h"
@@ -91,8 +93,8 @@ GURL RedirectUrlIfProjectorApp(Profile* profile,
 
   // Handle projector app redirection.
   std::string override_url = ash::kChromeUIUntrustedProjectorUrl;
-  if (url.path().length() > 1) {
-    override_url += url.path().substr(1);
+  if (url.GetPath().length() > 1) {
+    override_url += url.GetPath().substr(1);
   }
   std::stringstream ss;
   // Since ChromeOS doesn't reload an app if the URL doesn't change, the line
@@ -102,7 +104,7 @@ GURL RedirectUrlIfProjectorApp(Profile* profile,
   ss << override_url << "?timestamp=" << GetTickClock()->NowTicks();
 
   if (url.has_query()) {
-    ss << '&' << url.query();
+    ss << '&' << url.GetQuery();
   }
 
   GURL result(ss.str());
@@ -213,7 +215,7 @@ bool IsGoogleRedirectorUrl(const GURL& url) {
     return false;
   }
 
-  return url.path_piece() == "/url" && url.has_query();
+  return url.path() == "/url" && url.has_query();
 }
 
 // If the previous url and current url are not the same (AKA a redirection),
@@ -296,10 +298,10 @@ bool ShouldThrottleCaptureNavigation(
       web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
           launch_app_id);
   debug_dict->Set("is_for_cros_experiment_app", is_for_cros_experiment_app);
-  if (app_type == AppType::kWeb) {
+  if (app_type == AppType::kWeb && !is_for_projector_swa) {
     if (!base::FeatureList::IsEnabled(
             features::kNavigationCapturingOnExistingFrames) &&
-        !is_for_cros_experiment_app && !is_for_projector_swa) {
+        !is_for_cros_experiment_app) {
       debug_dict->Set("!result", "existing frame disabled");
       return false;
     }

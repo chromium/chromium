@@ -17,6 +17,7 @@ using HandleMDMNotificationCallback =
 @interface FakeRefreshAccessTokenError : NSObject <RefreshAccessTokenError>
 
 - (instancetype)initWithIdentity:(id<SystemIdentity>)identity
+             isScopeLimitedError:(BOOL)isScopeLimitedError
                         callback:(HandleMDMNotificationCallback)callback
     NS_DESIGNATED_INITIALIZER;
 
@@ -24,6 +25,8 @@ using HandleMDMNotificationCallback =
 
 // Identity for which the error was produced.
 @property(nonatomic, readonly) id<SystemIdentity> identity;
+
+@property(nonatomic, readonly) BOOL isScopeLimitedError;
 
 // Callback passed to the initializer.
 @property(nonatomic, readonly) HandleMDMNotificationCallback callback;

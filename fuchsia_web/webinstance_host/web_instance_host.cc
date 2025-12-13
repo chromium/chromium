@@ -212,10 +212,9 @@ class InstanceBuilder {
   // particular configurations (e.g., CDM data storage), to the instance. Most
   // common read-only directories (e.g., "root-ssl-certificates") should instead
   // be offered statically to the `web_instances` collection.
-  void ServeOptionalDirectory(
-      OptionalDirectory directory,
-      std::unique_ptr<vfs::Node> fs_directory,
-      fuchsia::io::Operations rights);
+  void ServeOptionalDirectory(OptionalDirectory directory,
+                              std::unique_ptr<vfs::Node> fs_directory,
+                              fuchsia::io::Rights rights);
 
   // Offers the directory `directory` from `void`.
   void OfferOptionalDirectoryFromVoid(OptionalDirectory directory);
@@ -224,7 +223,7 @@ class InstanceBuilder {
   // read-only or a read-write (if `writeable`) directory.
   void ServeDirectory(std::string_view name,
                       std::unique_ptr<vfs::Node> fs_directory,
-                      fuchsia::io::Operations rights);
+                      fuchsia::io::Rights rights);
 
   const raw_ref<sys::OutgoingDirectory> outgoing_directory_;
   const raw_ref<fuchsia::component::Realm> realm_;
@@ -305,9 +304,9 @@ void InstanceBuilder::AppendOffersForServices(
 void InstanceBuilder::ServeServiceDirectory(
     fidl::InterfaceHandle<fuchsia::io::Directory> service_directory) {
   DCHECK(instance_dir_);
-  ServeDirectory("svc",
-                 std::make_unique<vfs::RemoteDir>(std::move(service_directory)),
-                 fuchsia::io::R_STAR_DIR);
+  ServeDirectory(
+      "svc", std::make_unique<vfs::RemoteDir>(service_directory.TakeChannel()),
+      fuchsia::io::R_STAR_DIR);
 }
 
 void InstanceBuilder::ServeDataDirectory(
@@ -315,7 +314,7 @@ void InstanceBuilder::ServeDataDirectory(
   DCHECK(instance_dir_);
   ServeOptionalDirectory(
       OptionalDirectory::kData,
-      std::make_unique<vfs::RemoteDir>(std::move(data_directory)),
+      std::make_unique<vfs::RemoteDir>(data_directory.TakeChannel()),
       fuchsia::io::RW_STAR_DIR);
 }
 
@@ -327,8 +326,9 @@ zx_status_t InstanceBuilder::ServeContentDirectories(
 
   for (auto& provider : providers) {
     zx_status_t status = content_dirs->AddEntry(
-        provider.name(), std::make_unique<vfs::RemoteDir>(
-                             std::move(*provider.mutable_directory())));
+        provider.name(),
+        std::make_unique<vfs::RemoteDir>(
+            std::move(*provider.mutable_directory()).TakeChannel()));
     if (status != ZX_OK) {
       ZX_LOG(ERROR, status)
           << "Conflicting content directory name \"" << provider.name() << "\"";
@@ -346,14 +346,15 @@ void InstanceBuilder::ServeCdmDataDirectory(
   DCHECK(instance_dir_);
   ServeOptionalDirectory(
       OptionalDirectory::kCdmData,
-      std::make_unique<vfs::RemoteDir>(std::move(cdm_data_directory)),
+      std::make_unique<vfs::RemoteDir>(cdm_data_directory.TakeChannel()),
       fuchsia::io::RW_STAR_DIR);
 }
 
 void InstanceBuilder::ServeTmpDirectory(fuchsia::io::DirectoryHandle tmp_dir) {
-  ServeOptionalDirectory(OptionalDirectory::kTmp,
-                         std::make_unique<vfs::RemoteDir>(std::move(tmp_dir)),
-                         fuchsia::io::RW_STAR_DIR);
+  ServeOptionalDirectory(
+      OptionalDirectory::kTmp,
+      std::make_unique<vfs::RemoteDir>(tmp_dir.TakeChannel()),
+      fuchsia::io::RW_STAR_DIR);
 }
 
 void InstanceBuilder::SetDebugRequest(
@@ -466,7 +467,7 @@ std::string_view InstanceBuilder::GetDirectoryName(
 void InstanceBuilder::ServeOptionalDirectory(
     OptionalDirectory directory,
     std::unique_ptr<vfs::Node> fs_directory,
-    fuchsia::io::Operations rights) {
+    fuchsia::io::Rights rights) {
   DCHECK(instance_dir_);
   DCHECK(!is_directory_served(directory));
 
@@ -488,10 +489,9 @@ void InstanceBuilder::OfferOptionalDirectoryFromVoid(
                     .set_availability(fcdecl::Availability::OPTIONAL))));
 }
 
-void InstanceBuilder::ServeDirectory(
-    std::string_view name,
-    std::unique_ptr<vfs::Node> fs_directory,
-    fuchsia::io::Operations rights) {
+void InstanceBuilder::ServeDirectory(std::string_view name,
+                                     std::unique_ptr<vfs::Node> fs_directory,
+                                     fuchsia::io::Rights rights) {
   DCHECK(instance_dir_);
   zx_status_t status =
       instance_dir_->AddEntry(std::string(name), std::move(fs_directory));

@@ -6,6 +6,7 @@ import '/strings.m.js';
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
@@ -76,6 +77,11 @@ export class UserEducationInternalsElement extends
         type: Boolean,
         value: false,
       },
+
+      ntpPromoPreferencesExpanded_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -85,6 +91,9 @@ export class UserEducationInternalsElement extends
   protected newBadges_: FeaturePromoDemoPageInfo[] = [];
   protected whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
   protected whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
+  protected ntpPromos_: FeaturePromoDemoPageInfo[] = [];
+  protected ntpPromoPreferences_: FeaturePromoDemoPageData[] = [];
+  protected accessor ntpPromoPreferencesExpanded_: boolean = false;
   protected accessor featurePromoErrorMessage_: string = '';
   protected accessor narrow_: boolean = false;
   protected accessor sessionExpanded_: boolean = false;
@@ -141,6 +150,14 @@ export class UserEducationInternalsElement extends
 
     this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
       this.whatsNewEditions_ = whatsNewEditions;
+    });
+
+    this.handler_.getNtpPromos().then(({ntpPromos}) => {
+      this.ntpPromos_ = ntpPromos;
+    });
+
+    this.handler_.getNtpPromoPreferences().then(({ntpPromoPreferences}) => {
+      this.ntpPromoPreferences_ = ntpPromoPreferences;
     });
   }
 
@@ -279,6 +296,36 @@ export class UserEducationInternalsElement extends
     });
   }
 
+  protected clearNtpPromoData_(e: CustomEvent) {
+    const id = e.detail;
+    this.featurePromoErrorMessage_ = '';
+    this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getNtpPromos().then(({ntpPromos}) => {
+          this.ntpPromos_ = ntpPromos;
+          this.requestUpdate();
+        });
+      }
+    });
+  }
+
+  protected clearNtpPromoPreferences_() {
+    this.handler_.clearNtpPromoPreferences().then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getNtpPromoPreferences().then(({ntpPromoPreferences}) => {
+          this.ntpPromoPreferences_ = ntpPromoPreferences;
+          this.requestUpdate();
+        });
+      }
+    });
+  }
+
   protected promoFilter_(promo: FeaturePromoDemoPageInfo) {
     return this.filter === '' ||
         promo.displayTitle.toLowerCase().includes(this.filter) ||
@@ -317,6 +364,11 @@ export class UserEducationInternalsElement extends
 
   protected onSessionExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.sessionExpanded_ = e.detail.value;
+  }
+
+  protected onNtpPromoPreferencesExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.ntpPromoPreferencesExpanded_ = e.detail.value;
   }
 
   protected launchWhatsNewStaging_() {

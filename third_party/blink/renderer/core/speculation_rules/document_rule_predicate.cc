@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -185,7 +186,7 @@ class URLPatternPredicate : public DocumentRulePredicate {
     // For each pattern of predicate’s patterns:
     for (const auto& pattern : patterns_) {
       // Match given pattern and href. If the result is not null, return true.
-      if (pattern->test(ToScriptStateForMainWorld(execution_context_),
+      if (pattern->test(execution_context_->GetIsolate(),
                         MakeGarbageCollected<V8URLPatternInput>(href),
                         ASSERT_NO_EXCEPTION)) {
         return true;
@@ -297,71 +298,12 @@ URLPattern* ParseRawPattern(v8::Isolate* isolate,
                             const KURL& base_url,
                             ExceptionState& exception_state,
                             String* out_error) {
-  // If rawPattern is a string, then:
-  if (String raw_string; raw_pattern->AsString(&raw_string)) {
-    // Set pattern to the result of constructing a URLPattern using the
-    // URLPattern(input, baseURL) constructor steps given rawPattern and
-    // serializedBaseURL.
-    V8URLPatternInput* url_pattern_input =
-        MakeGarbageCollected<V8URLPatternInput>(raw_string);
-    return URLPattern::Create(isolate, url_pattern_input, base_url,
-                              exception_state);
+  auto result =
+      ParseURLPatternFromJSON(isolate, *raw_pattern, base_url, exception_state);
+  if (result.has_value()) {
+    return result.value();
   }
-  // Otherwise, if rawPattern is a map
-  if (JSONObject* pattern_object = JSONObject::Cast(raw_pattern)) {
-    // Let init be «[ "baseURL" → serializedBaseURL ]», representing a
-    // dictionary of type URLPatternInit.
-    URLPatternInit* init = URLPatternInit::Create();
-    init->setBaseURL(base_url);
-
-    // For each key -> value of rawPattern:
-    for (wtf_size_t i = 0; i < pattern_object->size(); i++) {
-      JSONObject::Entry entry = pattern_object->at(i);
-      String key = entry.first;
-      String value;
-      // If value is not a string
-      if (!entry.second->AsString(&value)) {
-        SetParseErrorMessage(
-            out_error, "Values for a URL pattern object must be strings.");
-        return nullptr;
-      }
-
-      // Set init[key] to value.
-      if (key == "protocol") {
-        init->setProtocol(value);
-      } else if (key == "username") {
-        init->setUsername(value);
-      } else if (key == "password") {
-        init->setPassword(value);
-      } else if (key == "hostname") {
-        init->setHostname(value);
-      } else if (key == "port") {
-        init->setPort(value);
-      } else if (key == "pathname") {
-        init->setPathname(value);
-      } else if (key == "search") {
-        init->setSearch(value);
-      } else if (key == "hash") {
-        init->setHash(value);
-      } else if (key == "baseURL") {
-        init->setBaseURL(value);
-      } else {
-        SetParseErrorMessage(out_error,
-                             StrCat({"Invalid key \"", key,
-                                     "\" for a URL pattern object found."}));
-        return nullptr;
-      }
-    }
-
-    // Set pattern to the result of constructing a URLPattern using the
-    // URLPattern(input, baseURL) constructor steps given init.
-    V8URLPatternInput* url_pattern_input =
-        MakeGarbageCollected<V8URLPatternInput>(init);
-    return URLPattern::Create(isolate, url_pattern_input, exception_state);
-  }
-  SetParseErrorMessage(out_error,
-                       "Value for \"href_matches\" should either be a "
-                       "string, an object, or a list of strings and objects.");
+  SetParseErrorMessage(out_error, result.error());
   return nullptr;
 }
 

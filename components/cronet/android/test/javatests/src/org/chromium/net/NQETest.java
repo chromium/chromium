@@ -26,7 +26,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
 

@@ -150,15 +150,18 @@ struct ProductMessagingData {
 };
 
 // Data pertaining to a single NTP promo.
-struct KeyedNtpPromoData {
-  KeyedNtpPromoData();
-  KeyedNtpPromoData(const KeyedNtpPromoData&);
-  KeyedNtpPromoData(KeyedNtpPromoData&&) noexcept;
-  KeyedNtpPromoData& operator=(const KeyedNtpPromoData&);
-  KeyedNtpPromoData& operator=(KeyedNtpPromoData&&) noexcept;
-  ~KeyedNtpPromoData();
+struct NtpPromoData {
+  NtpPromoData();
+  NtpPromoData(const NtpPromoData&);
+  NtpPromoData(NtpPromoData&&) noexcept;
+  NtpPromoData& operator=(const NtpPromoData&);
+  NtpPromoData& operator=(NtpPromoData&&) noexcept;
+  ~NtpPromoData();
 
-  bool operator<=>(const KeyedNtpPromoData& other) const = default;
+  bool operator<=>(const NtpPromoData& other) const = default;
+
+  // Time at which the promo was most recently clicked.
+  base::Time last_clicked;
 
   // Time at which the promo was first seen to be complete.
   base::Time completed;
@@ -172,19 +175,24 @@ struct KeyedNtpPromoData {
   int top_spot_session_count = 0;
 };
 
-using KeyedNtpPromoDataMap = std::map<std::string, KeyedNtpPromoData>;
+using KeyedNtpPromoDataMap = std::map<std::string, NtpPromoData>;
 
-// Data pertaining to the complete NTP promo system.
-struct NtpPromoData {
-  NtpPromoData();
-  NtpPromoData(const NtpPromoData&);
-  NtpPromoData(NtpPromoData&&) noexcept;
-  NtpPromoData& operator=(const NtpPromoData&);
-  NtpPromoData& operator=(NtpPromoData&&) noexcept;
-  ~NtpPromoData();
+// Data pertaining to the NTP promo system as a whole.
+struct NtpPromoPreferences {
+  NtpPromoPreferences();
+  NtpPromoPreferences(const NtpPromoPreferences&);
+  NtpPromoPreferences(NtpPromoPreferences&&) noexcept;
+  NtpPromoPreferences& operator=(const NtpPromoPreferences&);
+  NtpPromoPreferences& operator=(NtpPromoPreferences&&) noexcept;
+  ~NtpPromoPreferences();
 
-  // Per-promo data.
-  KeyedNtpPromoDataMap promos;
+  bool operator<=>(const NtpPromoPreferences& other) const = default;
+
+  // Snooze timer.
+  base::Time last_snoozed;
+
+  // Whether all promos are disabled.
+  bool disabled = false;
 };
 
 }  // namespace user_education

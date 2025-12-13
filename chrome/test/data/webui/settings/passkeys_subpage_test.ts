@@ -65,7 +65,7 @@ class TestPasskeysBrowserProxy extends TestBrowserProxy implements
 function getUsernamesFromList(list: HTMLElement): string[] {
   const inputs = Array.from(list.shadowRoot!.querySelectorAll<HTMLElement>(
       '.list-item .username-column'));
-  return inputs.slice(1).map(input => input.textContent!.trim());
+  return inputs.slice(1).map(input => input.textContent.trim());
 }
 
 /**

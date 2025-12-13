@@ -28,7 +28,7 @@ OfflineEnabledInfo::~OfflineEnabledInfo() = default;
 bool OfflineEnabledInfo::IsOfflineEnabled(const Extension* extension) {
   OfflineEnabledInfo* info = static_cast<OfflineEnabledInfo*>(
       extension->GetManifestData(keys::kOfflineEnabled));
-  return info ? info->offline_enabled : false;
+  return info && info->offline_enabled;
 }
 
 OfflineEnabledHandler::OfflineEnabledHandler() = default;
@@ -65,7 +65,7 @@ bool OfflineEnabledHandler::Parse(Extension* extension, std::u16string* error) {
 }
 
 bool OfflineEnabledHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_PLATFORM_APP;
+  return type == Manifest::Type::kPlatformApp;
 }
 
 base::span<const char* const> OfflineEnabledHandler::Keys() const {

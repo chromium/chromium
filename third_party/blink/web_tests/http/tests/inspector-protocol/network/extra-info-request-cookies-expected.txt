@@ -1,6 +1,6 @@
 Verifies that Network.RequestWillBeSentExtraInfo events report structured request cookies.
 
-requestWillBeSentExtraInfo request cookies on same domain:[
+requestWillBeSentExtraInfo request cookies on same domain: [
     [0] : {
         blockedReasons : [
         ]
@@ -43,7 +43,7 @@ requestWillBeSentExtraInfo request cookies on same domain:[
         exemptionReason : None
     }
 ]
-requestWillBeSentExtraInfo request cookies on subdomain[
+requestWillBeSentExtraInfo request cookies on subdomain [
     [0] : {
         blockedReasons : [
             [0] : DomainMismatch

@@ -19,8 +19,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
@@ -30,7 +28,6 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
-class Message;
 class SyncChannel;
 }  // namespace IPC
 
@@ -92,7 +89,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
  private:
   // IPC::Listener:
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;

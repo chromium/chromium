@@ -11,22 +11,21 @@ source_set("extensions") {
   sources = [
     "background_application_list_model.h",
     "background_mode_manager.h",
-    "background_mode_optimizer.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/background",
-    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile_util",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/status_icons",
     "//chrome/browser/ui:browser_list",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//extensions/browser",
   ]
 
   if (!is_android) {
-    deps += [ "//components/keep_alive_registry:keep_alive_registry" ]
+    deps += [ "//components/keep_alive_registry" ]
   }
 }
 
@@ -34,7 +33,6 @@ source_set("impl") {
   sources = [
     "background_application_list_model.cc",
     "background_mode_manager.cc",
-    "background_mode_optimizer.cc",
   ]
   if (is_win) {
     sources += [ "background_mode_manager_win.cc" ]
@@ -55,17 +53,18 @@ source_set("impl") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/apps/app_service:app_service",
+    "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/background",
-    "//chrome/browser/extensions:extensions",
+    "//chrome/browser/extensions",
     "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/profiles/keep_alive",
-    "//chrome/browser/status_icons:status_icons",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/ui",
     "//chrome/browser/ui/extensions",
     "//chrome/browser/ui/profiles",
-    "//components/crx_file:crx_file",
-    "//components/prefs:prefs",
+    "//components/crx_file",
+    "//components/prefs",
     "//components/startup_metric_utils",
     "//content/public/browser",
     "//extensions/browser",
@@ -73,11 +72,15 @@ source_set("impl") {
   ]
 
   if (!is_android) {
-    deps += [ "//components/keep_alive_registry:keep_alive_registry" ]
+    deps += [ "//components/keep_alive_registry" ]
   }
 
   if (enable_glic) {
-    deps += [ "//chrome/browser/glic:glic" ]
+    deps += [ "//chrome/browser/glic" ]
+  }
+
+  if (!is_chromeos) {
+    deps += [ "//chrome/browser/web_applications/extensions" ]
   }
 }
 
@@ -86,7 +89,6 @@ source_set("unit_tests") {
   sources = [
     "background_application_list_model_unittest.cc",
     "background_mode_manager_unittest.cc",
-    "background_mode_optimizer_unittest.cc",
   ]
 
   deps = [
@@ -94,15 +96,16 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/background",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
     "//chrome/test:test_support",
     "//components/policy/core/common:test_support",
-    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences",
     "//content/public/browser",
     "//content/test:test_support",
     "//extensions:test_support",
     "//testing/gmock",
-    "//testing/gtest:gtest",
-    "//ui/message_center/public/cpp:cpp",
+    "//testing/gtest",
+    "//ui/message_center/public/cpp",
   ]
 }

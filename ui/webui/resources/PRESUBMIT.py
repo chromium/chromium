@@ -121,4 +121,5 @@ def CheckNoNewPolymer(input_api, output_api):
 
 def CheckPatchFormatted(input_api, output_api):
   return input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                     check_js=True)
+                                                     check_js=True,
+                                                     check_python=False)

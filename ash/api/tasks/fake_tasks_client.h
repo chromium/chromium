@@ -13,6 +13,7 @@
 #include "ash/ash_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "google_apis/common/api_error_codes.h"
 #include "ui/base/models/list_model.h"
 

@@ -55,6 +55,9 @@ class DOMEditor::RemoveChildAction final : public InspectorHistory::Action {
   RemoveChildAction& operator=(const RemoveChildAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
+    if (!parent_node_) {
+      return false;
+    }
     anchor_node_ = node_->nextSibling();
     return Redo(exception_state);
   }
@@ -288,6 +291,9 @@ class DOMEditor::ReplaceChildNodeAction final
   ReplaceChildNodeAction& operator=(const ReplaceChildNodeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
+    if (!parent_node_) {
+      return false;
+    }
     return Redo(exception_state);
   }
 

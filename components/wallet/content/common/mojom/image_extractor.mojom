@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module wallet.mojom;
+
+import "skia/public/mojom/bitmap.mojom"; // For SkBitmap serialization
+
+// Render-side handler for walletable pass image extractor.
+//
+// The renderer-side implementation of this interface is the
+// wallet::ImageExtractor class. It is a RenderFrameObserver, so it is tied
+// with a RenderFrame. And this is only created for the main RenderFrame.
+interface ImageExtractor {
+    // Extracts the images on a web page and returns SkBitmap objects
+    // containing the images.
+    //
+    // Currently supports extracting images in <img> tags.
+    ExtractImages() => (array<skia.mojom.BitmapWithArbitraryBpp> images);
+};

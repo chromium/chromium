@@ -50,6 +50,7 @@ var TestRunner = class {
       'guid',
       'requestId',
       'openerFrameId',
+      'parentFrameId',
       'issueId',
       'initiatingFrameId',
       'pipelineId'
@@ -101,13 +102,19 @@ var TestRunner = class {
         else
           dumpProperties(value, prefix, prefixWithName);
       } else {
-        lines.push(prefixWithName + String(value).replace(/\n/g, ' '));
+        const valueStr = String(value).replace(/\n/g, ' ');
+        if (valueStr.length)
+          prefixWithName += ' ';
+        lines.push(prefixWithName + valueStr);
       }
     }
 
     function dumpProperties(object, prefix, firstLinePrefix) {
       prefix = prefix || '';
       firstLinePrefix = firstLinePrefix || prefix;
+      if (/\S$/.test(firstLinePrefix)) {
+        firstLinePrefix += ' ';
+      }
       lines.push(firstLinePrefix + '{');
 
       var propertyNames = Object.keys(object);
@@ -116,7 +123,7 @@ var TestRunner = class {
         var name = propertyNames[i];
         if (!object.hasOwnProperty(name))
           continue;
-        var prefixWithName = '    ' + prefix + name + ' : ';
+        var prefixWithName = '    ' + prefix + name + ' :';
         var value = object[name];
         if (stabilizeValues && stabilizeValues.includes(name)) {
           if (!stableValues.has(value)) {
@@ -134,9 +141,12 @@ var TestRunner = class {
     function dumpItems(object, prefix, firstLinePrefix) {
       prefix = prefix || '';
       firstLinePrefix = firstLinePrefix || prefix;
+      if (/\S$/.test(firstLinePrefix)) {
+        firstLinePrefix += ' ';
+      }
       lines.push(firstLinePrefix + '[');
       for (var i = 0; i < object.length; ++i)
-        dumpValue(object[i], '    ' + prefix, '    ' + prefix + '[' + i + '] : ');
+        dumpValue(object[i], '    ' + prefix, '    ' + prefix + '[' + i + '] :');
       lines.push(prefix + ']');
     }
 
@@ -714,9 +724,11 @@ DevToolsAPI._fetch = function(url) {
   });
 };
 
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
-testRunner.setPopupBlockingEnabled(false);
+if (window["testRunner"]) {
+  testRunner.dumpAsText();
+  testRunner.waitUntilDone();
+  testRunner.setPopupBlockingEnabled(false);
+}
 
 window.addEventListener('load', () => {
   var params = new URLSearchParams(window.location.search);
@@ -784,4 +796,6 @@ TestRunner.wrapPromiseWithTimeout = (promise, timeout, label) => {
   ]);
 };
 
-exports.TestRunner = TestRunner;
+if (self.exports !== undefined) {
+  exports.TestRunner = TestRunner;
+}

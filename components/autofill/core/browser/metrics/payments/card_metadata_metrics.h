@@ -40,6 +40,9 @@ constexpr std::string_view kProductNameAndArtImageNotShownSuffix =
     "MetadataNotShown";
 
 // Enum for different types of form events. Used for metrics logging.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardMetadataLoggingEvent {
   // Suggestions were shown.
   kShown = 0,
@@ -57,8 +60,10 @@ enum class CardMetadataLoggingEvent {
 // LINT.IfChange(CardBenefitFormEvent)
 
 // All server cards with card benefit available Form Events are logged once per
-// page load. These values are persisted to logs. Entries should not be
-// renumbered and numeric values should never be reused.
+// page load.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class CardBenefitFormEvent {
   // Suggestions containing cards with a benefit available were shown.
   kSuggestionWithBenefitShown = 0,

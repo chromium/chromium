@@ -39,7 +39,7 @@ DriveServiceFactory::DriveServiceFactory()
 DriveServiceFactory::~DriveServiceFactory() = default;
 
 std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   std::unique_ptr<DriveService> overridden_drive_service =
       tests_hook::GetOverriddenDriveService();
   if (overridden_drive_service) {
@@ -48,7 +48,6 @@ std::unique_ptr<KeyedService> DriveServiceFactory::BuildServiceInstanceFor(
 
   drive::DriveServiceConfiguration configuration{};
   configuration.sso_service = GetApplicationContext()->GetSingleSignOnService();
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   configuration.pref_service = profile->GetPrefs();
   configuration.identity_manager =
       IdentityManagerFactory::GetForProfile(profile);

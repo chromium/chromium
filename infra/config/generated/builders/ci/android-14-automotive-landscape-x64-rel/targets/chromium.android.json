@@ -18,6 +18,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_smoke_test",
+        "module_scheme": "junit",
         "name": "chrome_public_smoke_test",
         "resultdb": {
           "enable": true,
@@ -53,6 +55,7 @@
           "--git-revision=${got_revision}",
           "--force-main-user",
           "--avd-config=../../tools/android/avd/proto/android_34_automotive_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_automotive_landscape.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -66,6 +69,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -107,6 +112,7 @@
           "--git-revision=${got_revision}",
           "--force-main-user",
           "--avd-config=../../tools/android/avd/proto/android_34_automotive_x64.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_automotive_landscape.chrome_public_unit_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -120,6 +126,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -173,6 +181,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:trichrome_chrome_bundle_smoke_test",
+        "module_scheme": "junit",
         "name": "trichrome_chrome_bundle_smoke_test",
         "resultdb": {
           "enable": true,

@@ -5,8 +5,9 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_saver.h"
 
 #import "base/functional/bind.h"
-#import "base/hash/md5.h"
 #import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/threading/scoped_blocking_call.h"
@@ -14,6 +15,8 @@
 #import "components/ntp_tiles/ntp_tile.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "crypto/obsolete/md5.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -101,8 +104,12 @@ void UpdateTileList(const ntp_tiles::NTPTilesVector& most_visited_data,
   WriteSavedMostVisited(tiles, account_manager_service);
 }
 
+std::string Md5AsHexForFaviconUrl(std::string_view url) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(url));
+}
+
 NSString* GetFaviconFileName(const GURL& url) {
-  return [base::SysUTF8ToNSString(base::MD5String(url.spec()))
+  return [base::SysUTF8ToNSString(Md5AsHexForFaviconUrl(url.spec()))
       stringByAppendingString:@".png"];
 }
 
@@ -260,19 +267,25 @@ void WriteSavedMostVisited(
                                         ->GetPersonalProfileName();
 
   if (profileName == personalProfileName) {
-    // If we are in personal profile, data is saved also to "Default". This will
-    // be used to retrieve data for a widget with no signed-in account.
-    [suggested_items setObject:data forKey:app_group::kDefaultAccount];
+    // If we are in personal profile, data is saved also to "No account". This
+    // will be used to retrieve data for a widget with no signed-in account.
+    [suggested_items setObject:data forKey:app_group::kNoAccount];
     [last_modification_dates setObject:last_modification_date
-                                forKey:app_group::kDefaultAccount];
+                                forKey:app_group::kNoAccount];
   }
+
+  // Always update last modification date for "Default" scenario.
+  [suggested_items setObject:data forKey:app_group::kDefault];
+  [last_modification_dates setObject:last_modification_date
+                              forKey:app_group::kDefault];
 
   // Update stored info for all identities in the current profile.
   for (id<SystemIdentity> identity in account_manager_service
            ->GetAllIdentities()) {
-    NSString* gaia_id = identity.gaiaID;
-    [suggested_items setObject:data forKey:gaia_id];
-    [last_modification_dates setObject:last_modification_date forKey:gaia_id];
+    NSString* gaia_id_string = identity.gaiaId.ToNSString();
+    [suggested_items setObject:data forKey:gaia_id_string];
+    [last_modification_dates setObject:last_modification_date
+                                forKey:gaia_id_string];
   }
 
   // Update NSUserDefaults keys.

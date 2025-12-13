@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dbus/menu/menu_property_list.h"
-#include "components/dbus/properties/types.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"

@@ -72,7 +72,7 @@ class PermissionBlockedMessageDelegateAndroidTest
   }
 
   void TriggerPrimaryAction() {
-    controller_->HandlePrimaryActionClick();
+    controller_->HandleQuietPrimaryActionClick();
     TriggerDismiss(messages::DismissReason::PRIMARY_ACTION);
   }
 
@@ -122,6 +122,8 @@ void PermissionBlockedMessageDelegateAndroidTest::TearDown() {
 TEST_F(PermissionBlockedMessageDelegateAndroidTest, DismissByTimeout) {
   auto delegate = GetMockDelegate();
 
+  EXPECT_CALL(*delegate, ShouldUseQuietUI)
+      .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*delegate, Accept).Times(0);
   EXPECT_CALL(*delegate, Deny).Times(0);
   EXPECT_CALL(*delegate, GetContentSettingsType)

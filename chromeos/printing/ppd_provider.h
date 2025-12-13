@@ -14,6 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"

@@ -15,7 +15,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 

@@ -9,9 +9,9 @@
 # marked as such in gnrt_config.toml.
 
 [package]
+edition = "2021"
 name = "chromium"
 version = "0.1.0"
-edition = "2021"
 
 [workspace]
 
@@ -22,8 +22,9 @@ bitflags = "2"
 bytes = "1"
 cxx = "1"
 fend-core = "1"
-font-types = "0.9"
+font-types = "0.10"
 hex = "0.4"
+jxl = "0.1.4"
 lazy_static = "1"
 libc = "0.2"
 png = "=0.18.0-rc"
@@ -31,12 +32,13 @@ proc-macro2 = "1"
 prost = "0.14.1"
 qr_code = "2"
 quote = "1"
-read-fonts = "0.30.1"
+read-fonts = "0.36.0"
 rustc-demangle-capi = "0.1"
 serde = "1.0.219"
-skrifa = "0.32"
+skrifa = "0.39.0"
 small_ctor = "0.1"
 static_assertions = "1"
+xml = "1.2.0"
 
 [dependencies.bytemuck]
 version = "1"
@@ -55,31 +57,31 @@ version = "1"
 artifact = "bin"
 
 [dependencies.icu_casemap]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_experimental]
-version = "0.3.0"
+version = "0.4.0"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 
 [dependencies.icu_normalizer]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_properties]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 features = ["compiled_data"]
 
 [dependencies.icu_provider]
-version = "2.0.0"
+version = "2.1.1"
 default-features = false
 
 [dependencies.llguidance]
@@ -121,10 +123,17 @@ version = "2"
 features = ["full"]
 
 [dependencies.temporal_capi]
-version = "0.0.10"
-features = ["compiled_data"]
+version = "0.1.2"
+features = ["zoneinfo64"]
+
+[dependencies.temporal_rs]
+version = "0.1.2"
+default-features = false
+# This is necessary to enable a spec-compliance quirk
+features = ["float64_representable_durations"]
 
 [dependencies.zip]
-version = "4.1.0"
+version = "6.0.0"
 default-features = false
 features = ["deflate-flate2"]
+

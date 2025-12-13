@@ -59,7 +59,7 @@ void OnGotCategories(WebUIDataSource::GotDataCallback callback,
   }
 
   auto res = base::MakeRefCounted<base::RefCountedString>();
-  base::JSONWriter::Write(category_list, &res->as_string());
+  res->as_string() = base::WriteJson(category_list).value_or("");
   std::move(callback).Run(res);
 }
 
@@ -258,7 +258,8 @@ bool TracingUI::GetTracingOptions(const std::string& data64,
     return false;
   }
 
-  std::optional<base::Value> options = base::JSONReader::Read(data);
+  std::optional<base::Value> options =
+      base::JSONReader::Read(data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!options) {
     LOG(ERROR) << "Options were not valid JSON";
     return false;

@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -20,15 +19,12 @@ namespace scheduler {
 
 enum class MainThreadTaskLoadState;
 class MainThreadTaskQueue;
-class MainThreadSchedulerImpl;
 
 // Helper class to take care of metrics on behalf of MainThreadScheduler.
 // This class should be used only on the main thread.
 class PLATFORM_EXPORT MainThreadMetricsHelper {
  public:
-  MainThreadMetricsHelper(MainThreadSchedulerImpl* main_thread_scheduler,
-                          base::TimeTicks now,
-                          bool in_background);
+  MainThreadMetricsHelper(base::TimeTicks now, bool in_background);
   MainThreadMetricsHelper(const MainThreadMetricsHelper&) = delete;
   MainThreadMetricsHelper& operator=(const MainThreadMetricsHelper&) = delete;
   ~MainThreadMetricsHelper();
@@ -48,8 +44,6 @@ class PLATFORM_EXPORT MainThreadMetricsHelper {
 
  private:
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
-
-  raw_ptr<MainThreadSchedulerImpl> main_thread_scheduler_;  // NOT OWNED
 
   // Set to true when OnRendererShutdown is called. Used to ensure that metrics
   // that need to cross IPC boundaries aren't sent, as they cause additional

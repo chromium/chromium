@@ -24,7 +24,7 @@ export function getHtml(this: BookmarksListElement) {
     no-restore-focus
     aria-label="$i18n{listAxLabel}"
     aria-multiselectable="true"
-    .template=${(id: string, index: number) => html`
+    .template="${(id: string, index: number) => html`
     <bookmarks-item data-index="${index}"
         id="bookmark_${index}"
         item-id="${id}"
@@ -36,7 +36,7 @@ export function getHtml(this: BookmarksListElement) {
         @focus="${this.onItemFocus_}"
         aria-rowindex="${this.getAriaRowindex_(index)}"
         aria-selected="${this.getAriaSelected_(id)}">
-    </bookmarks-item>`}>
+    </bookmarks-item>`}">
 </cr-lazy-list>
 <div id="message" class="centered-message" ?hidden="${!this.isEmptyList_()}">
   ${this.emptyListMessage_()}

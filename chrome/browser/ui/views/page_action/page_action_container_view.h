@@ -48,12 +48,21 @@ class PageActionContainerView : public views::View {
   // Otherwise, the page action is placed in its initial insertion position.
   void OnPageActionSuggestionChipStateChanged(PageActionView* view);
 
+  // Ensure the chip (if any) is at index 0 and all other actions are in
+  // the correct relative order (after the chip).
+  void NormalizePageActionViewOrder();
+
   std::map<actions::ActionId, raw_ptr<PageActionView>> page_action_views_;
-  std::map<actions::ActionId, int> page_action_view_initial_indices_;
+  std::map<actions::ActionId, size_t> page_action_view_initial_indices_;
 
   // Callbacks used to handle page action view chip state changes. Used to
   // ensure that the container reorders the page actions accordingly.
   std::vector<base::CallbackListSubscription> chip_state_changed_callbacks_;
+
+  // Subscriptions to page action view visibility changes, used to ensure that
+  // the chips/non-chips page action view are correctly ordered.
+  std::vector<base::CallbackListSubscription>
+      page_action_view_visible_changed_callbacks_;
 };
 
 }  // namespace page_actions

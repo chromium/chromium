@@ -238,18 +238,14 @@ export class UserCreation extends UserCreationScreenElementBase {
     super.ready();
     this.initializeLoginScreen('UserCreationScreen');
 
-    if (loadTimeData.getBoolean('isOobeLazyLoadingEnabled')) {
-      // The UserCreation screen is a priority screen, so it becomes visible
-      // before the remaining of the OOBE flow is fully loaded. 'Back' and
-      // 'Next' buttons are initially disabled, and enabled upon receiving the
-      //|oobe-screens-loaded| event.
-      this.isOobeLoaded_ = false;
-      document.addEventListener('oobe-screens-loaded', () => {
-        this.isOobeLoaded_ = true;
-      }, {once: true});
-    } else {
+    // The UserCreation screen is a priority screen, so it becomes visible
+    // before the remaining of the OOBE flow is fully loaded. 'Back' and
+    // 'Next' buttons are initially disabled, and enabled upon receiving the
+    //|oobe-screens-loaded| event.
+    this.isOobeLoaded_ = false;
+    document.addEventListener('oobe-screens-loaded', () => {
       this.isOobeLoaded_ = true;
-    }
+    }, {once: true});
   }
 
   override getOobeUIInitialState(): OobeUiState {

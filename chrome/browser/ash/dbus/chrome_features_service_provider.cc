@@ -15,6 +15,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -105,6 +107,13 @@ void ChromeFeaturesServiceProvider::Start(
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
       chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsBruschettaEnabledMethod,
+      base::BindRepeating(&ChromeFeaturesServiceProvider::IsBruschettaEnabled,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      chromeos::kChromeFeaturesServiceInterface,
       chromeos::kChromeFeaturesServiceIsCrostiniEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsCrostiniEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -189,12 +198,11 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
     dbus::ExportedObject::ResponseSender response_sender) {
   static const base::Feature constexpr* kFeatureLookup[] = {
       &arc::kBootCompletedBroadcastFeature,
-      &arc::kCustomTabsExperimentFeature,
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,
       &features::kBorealisProvision,
-      &features::kDeferConciergeStartup,
+
   };
 
   dbus::MessageReader reader(method_call);
@@ -359,6 +367,18 @@ void ChromeFeaturesServiceProvider::GetFeatureParams(
   }
   writer.CloseContainer(&array_writer);
   std::move(response_sender).Run(std::move(response));
+}
+
+void ChromeFeaturesServiceProvider::IsBruschettaEnabled(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  Profile* profile = GetSenderProfile(method_call, &response_sender);
+  if (!profile) {
+    return;
+  }
+
+  bool answer = !bruschetta::GetInstallableConfigs(profile).empty();
+  SendResponse(method_call, std::move(response_sender), answer);
 }
 
 void ChromeFeaturesServiceProvider::IsCrostiniEnabled(

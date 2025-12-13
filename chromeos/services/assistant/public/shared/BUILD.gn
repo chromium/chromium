@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//chromeos/ash/components/assistant/assistant.gni")
 
 # C++ headers and sources that can be shared by assistant internal and
 # external directories.
@@ -12,10 +11,7 @@ component("shared") {
 
   defines = [ "IS_ASSISTANT_SERVICE_SHARED_IMPL" ]
 
-  sources = [
-    "constants.h",
-    "utils.h",
-  ]
+  sources = [ "constants.h" ]
 
   # Some Quick Answers code depend on constants.
   # TODO(crbug.com/406795923): move them out to a better place.
@@ -25,5 +21,5 @@ component("shared") {
     sources += [ "constants.cc" ]
   }
 
-  deps = [ "//base:base" ]
+  deps = [ "//base" ]
 }

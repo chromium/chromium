@@ -4,14 +4,13 @@
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_earl_grey_app_interface.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/common/ui/confirmation_alert/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -143,6 +142,9 @@ id<GREYMatcher> SharePasswordsTitle() {
       [self isRunningTest:@selector(testBestFeatures_variantECPEEnabled)]) {
     feature_param = "5";
   }
+  if ([self isRunningTest:@selector(testBestFeatures_variantDShopper)]) {
+    config.additional_args.push_back("--mock-shopping-service=is-eligible");
+  }
 
   config.additional_args.push_back(
       "--enable-features=BestFeaturesScreenInFirstRunExperience:"
@@ -157,8 +159,7 @@ id<GREYMatcher> SharePasswordsTitle() {
 #pragma mark - Helpers
 
 // Taps a promo button.
-- (void)tapPromoButton:(NSString*)buttonID {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonID);
+- (void)tapPromoButton:(id<GREYMatcher>)buttonMatcher {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not
@@ -181,12 +182,12 @@ id<GREYMatcher> SharePasswordsTitle() {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign in.
-  [self tapPromoButton:kPromoStylePrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   // Skip history/tab sync.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
           grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
-  [self tapPromoButton:kPromoStyleSecondaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackSecondaryButton()];
 }
 
 // Skips the Default Browser Promo.
@@ -198,7 +199,7 @@ id<GREYMatcher> SharePasswordsTitle() {
   [[EarlGrey selectElementWithMatcher:DefaultBrowserPromoTitle()]
       assertWithMatcher:grey_sufficientlyVisible()];
   // Skip the Default Browser Promo to avoid leaving the app.
-  [self tapPromoButton:kPromoStyleSecondaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackSecondaryButton()];
 
   // Wait for the Best Features Screen to appear.
   [ChromeEarlGrey
@@ -211,8 +212,9 @@ id<GREYMatcher> SharePasswordsTitle() {
   NSString* title = l10n_util::GetNSString(title_id);
 
   // Click on the item.
-  [self tapPromoButton:[kBestFeaturesCellAccessibilityPrefix
-                           stringByAppendingString:title]];
+  [self
+      tapPromoButton:grey_accessibilityID([kBestFeaturesCellAccessibilityPrefix
+                         stringByAppendingString:title])];
 
   // Ensure the Feature Highlight Screenshot view appears.
   [[EarlGrey selectElementWithMatcher:grey_text(title)]
@@ -220,7 +222,7 @@ id<GREYMatcher> SharePasswordsTitle() {
 
   // Click the primary action button and ensure the Instructions Half Sheet View
   // Controller comes up.
-  [self tapPromoButton:kConfirmationAlertPrimaryActionAccessibilityIdentifier];
+  [self tapPromoButton:chrome_test_util::ButtonStackPrimaryButton()];
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetNSString(step_id))]
       assertWithMatcher:grey_sufficientlyVisible()];
@@ -300,7 +302,6 @@ id<GREYMatcher> SharePasswordsTitle() {
 // shopping users see the correct items, and that the
 // FeatureHighlightScreenshotVC and InstructionsHalfSheetVC appear correctly.
 - (void)testBestFeatures_variantDShopper {
-  [NotificationsEarlGreyAppInterface setUpMockShoppingService];
   // Ensure the Default Browser Promo appears before the Best Features Screen.
   [self skipDefaultBrowserPromo];
 

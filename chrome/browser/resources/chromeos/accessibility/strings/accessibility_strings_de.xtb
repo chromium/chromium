@@ -661,7 +661,7 @@
 <translation id="5142101052131610456">Alle Lektionen</translation>
 <translation id="514387318601895731">Nach unten blicken</translation>
 <translation id="5158275234811857234">Titelseite</translation>
-<translation id="516076699907426116">Nutze „Tippen &amp; Entdecken“, um die Schaltfläche „Nächste Lektion“ zu finden. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
+<translation id="516076699907426116">Nutze „Bei Berühren vorlesen“, um die Schaltfläche „Nächste Lektion“ zu finden. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
 <translation id="5170206230005240598">Braille-Untertitel aktiviert</translation>
 <translation id="5183440668879371625">Braille – vorherige Zeile</translation>
 <translation id="5189244881767082992">Zeile</translation>
@@ -940,7 +940,7 @@
 <translation id="7140168702531682811">Hochgestellt</translation>
 <translation id="7141256465543825898">.input {$$COUNT :number} .match $$COUNT 1{{Tab}} *{{{$$COUNT} Tabs}}</translation>
 <translation id="7143034430156387447">Zwischen 6- und 8-Punkt-Braille wechseln</translation>
-<translation id="7143207342074048698">Verbindung...</translation>
+<translation id="7143207342074048698">Verbinden...</translation>
 <translation id="7153618581592392745">Lavendel</translation>
 <translation id="7157306005867877619">Zusammenfassung</translation>
 <translation id="7161771961008409533">Pop-up-Schaltfläche</translation>
@@ -973,7 +973,7 @@
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">Hilfe</translation>
 <translation id="7317017974771324508">teilweise ausgewählt</translation>
-<translation id="7322442671176251901">Tippen &amp; Entdecken</translation>
+<translation id="7322442671176251901">Bei Berühren vorlesen</translation>
 <translation id="7344012264516629579">Weitere Sprungbefehle ermöglichen das Springen zwischen Links, Schaltflächen und Kästchen, um nur einige zu nennen. Eine vollständige Liste der Sprungbefehle findest du in den ChromeVox-Menüs, die du durch Drücken von „Suchtaste + Punkt“ öffnen kannst.</translation>
 <translation id="7356165926712028380">Zu 8-Punkt-Braille wechseln</translation>
 <translation id="7356610683936413584">Beschreibungslistendetail</translation>

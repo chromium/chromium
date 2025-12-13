@@ -5,9 +5,9 @@
 #include "sandbox/policy/win/sandbox_win.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <stddef.h>
-#include <winternl.h>
 
 #include <map>
 #include <optional>
@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
@@ -78,19 +79,23 @@ BrokerServices* g_broker_services = NULL;
 // For more information about how this list is generated, and how to get off
 // of it, see:
 // https://sites.google.com/a/chromium.org/dev/Home/third-party-developers
+//
+// If modifying this list, be sure to update WinTroublesomeDllName enum in
+// tools/metrics/histograms/metadata/others/enums.xml.
 const wchar_t* const kTroublesomeDlls[] = {
-    L"btkeyind.dll",               // Widcomm Bluetooth.
-    L"dockshellhook.dll",          // Stardock Objectdock.
-    L"easyhook32.dll",             // GDIPP and others.
-    L"easyhook64.dll",             // Symantec BlueCoat and others.
-    L"guard64.dll",                // Comodo Internet Security x64.
-    L"mdnsnsp.dll",                // Bonjour.
-    L"n64hooks.dll",               // Neilsen//NetRatings NetSight.
-    L"pmls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"prochook.dll",               // Unknown (GBill-Tools?) (crbug.com/974722).
-    L"rlls.dll",                   // PremierOpinion and Relevant-Knowledge.
-    L"rlls64.dll",                 // PremierOpinion and Relevant-Knowledge.
-    L"rpchromebrowserrecordhelper.dll",    // RealPlayer.
+    L"btkeyind.dll",       // Widcomm Bluetooth.
+    L"dockshellhook.dll",  // Stardock Objectdock.
+    L"easyhook32.dll",     // GDIPP and others.
+    L"easyhook64.dll",     // Symantec BlueCoat and others.
+    L"guard64.dll",        // Comodo Internet Security x64.
+    L"kwsui64.dll",        // Kingsoft Antivirus (crbug.com/426094102).
+    L"mdnsnsp.dll",        // Bonjour.
+    L"n64hooks.dll",       // Neilsen//NetRatings NetSight.
+    L"pmls64.dll",         // PremierOpinion and Relevant-Knowledge.
+    L"prochook.dll",       // Unknown (GBill-Tools?) (crbug.com/974722).
+    L"rlls.dll",           // PremierOpinion and Relevant-Knowledge.
+    L"rlls64.dll",         // PremierOpinion and Relevant-Knowledge.
+    L"rpchromebrowserrecordhelper.dll",  // RealPlayer.
 };
 
 // Return a mapping between the long and short names for all loaded modules in
@@ -346,7 +351,7 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kPrintCompositor:
       sandbox_base_name = std::string("cr.sb.prnc");
       break;
-    case Sandbox::kWindowsSystemProxyResolver:
+    case Sandbox::kProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
     default:
@@ -382,7 +387,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       !(sandbox_type == Sandbox::kPrintCompositor &&
         base::FeatureList::IsEnabled(
             sandbox::policy::features::kPrintCompositorLPAC)) &&
-      sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
+      sandbox_type != Sandbox::kProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
 
@@ -442,7 +447,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
-  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
+  if (sandbox_type == Sandbox::kProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
@@ -455,66 +460,76 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
                                              SandboxDelegate* delegate,
                                              TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
-
-  // Pre-startup mitigations.
-  MitigationFlags mitigations =
-      MITIGATION_HEAP_TERMINATE | MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DEP |
-      MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
-      MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
-      MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
-      MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
-      MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
-
-  // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
-  // disabled for processes we know are not compatible.
-  if (!delegate->CetCompatible())
-    mitigations |= MITIGATION_CET_DISABLED;
-
   const Sandbox sandbox_type = delegate->GetSandboxType();
 
-  if (sandbox_type == Sandbox::kRenderer &&
-      base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxRestrictCoreSharingOnRenderer)) {
-    mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+  DCHECK(!config->IsConfigured());
+
+  {
+    // Pre-startup mitigations.
+    MitigationFlags mitigations =
+        MITIGATION_HEAP_TERMINATE | MITIGATION_BOTTOM_UP_ASLR | MITIGATION_DEP |
+        MITIGATION_DEP_NO_ATL_THUNK | MITIGATION_EXTENSION_POINT_DISABLE |
+        MITIGATION_SEHOP | MITIGATION_NONSYSTEM_FONT_DISABLE |
+        MITIGATION_IMAGE_LOAD_NO_REMOTE | MITIGATION_IMAGE_LOAD_NO_LOW_LABEL |
+        MITIGATION_RESTRICT_INDIRECT_BRANCH_PREDICTION |
+        MITIGATION_KTM_COMPONENT | MITIGATION_FSCTL_DISABLED;
+
+    // CET is enabled with the CETCOMPAT bit on chrome.exe so must be
+    // disabled for processes we know are not compatible.
+    if (!delegate->CetCompatible()) {
+      mitigations |= MITIGATION_CET_DISABLED;
+    }
+
+    if (delegate->RestrictCoreSharing()) {
+      mitigations |= MITIGATION_RESTRICT_CORE_SHARING;
+    }
+
+    if (const auto result = config->SetProcessMitigations(mitigations);
+        result != SBOX_ALL_OK) {
+      return result;
+    }
   }
 
-  ResultCode result = config->SetProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
+  {
+    // Post-startup mitigations.
+    MitigationFlags mitigations = MITIGATION_DLL_SEARCH_ORDER;
+    if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
+        sandbox_type != Sandbox::kScreenAI &&
+        sandbox_type != Sandbox::kSpeechRecognition &&
+        sandbox_type != Sandbox::kMediaFoundationCdm) {
+      mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
+    }
 
-  // Post-startup mitigations.
-  mitigations = MITIGATION_DLL_SEARCH_ORDER;
-  if (!cmd_line.HasSwitch(switches::kAllowThirdPartyModules) &&
-      sandbox_type != Sandbox::kScreenAI &&
-      sandbox_type != Sandbox::kSpeechRecognition &&
-      sandbox_type != Sandbox::kMediaFoundationCdm) {
-    mitigations |= MITIGATION_FORCE_MS_SIGNED_BINS;
+    if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
+        sandbox_type == Sandbox::kIconReader) {
+      mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
+    }
+
+    if (base::FeatureList::IsEnabled(features::kWinSboxStrictHandleChecks)) {
+      mitigations |= MITIGATION_STRICT_HANDLE_CHECKS;
+    }
+
+    if (const auto result = config->SetDelayedProcessMitigations(mitigations);
+        result != SBOX_ALL_OK) {
+      return result;
+    }
   }
-
-  if (sandbox_type == Sandbox::kNetwork || sandbox_type == Sandbox::kAudio ||
-      sandbox_type == Sandbox::kIconReader) {
-    mitigations |= MITIGATION_DYNAMIC_CODE_DISABLE;
-  }
-
-  result = config->SetDelayedProcessMitigations(mitigations);
-  if (result != SBOX_ALL_OK)
-    return result;
 
   if (sandbox_type == Sandbox::kRenderer) {
     // TODO(crbug.com/40088338) Remove if we can reliably not load
     // cryptbase.dll.
     config->AddKernelObjectToClose(HandleToClose::kKsecDD);
-    result = SandboxWin::AddWin32kLockdownPolicy(config);
-    if (result != SBOX_ALL_OK) {
+    if (const auto result = SandboxWin::AddWin32kLockdownPolicy(config);
+        result != SBOX_ALL_OK) {
       return result;
     }
   }
 
   if (!delegate->DisableDefaultPolicy()) {
-    result = AddDefaultConfigForSandboxedProcess(config);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = AddDefaultConfigForSandboxedProcess(config);
+        result != SBOX_ALL_OK) {
       return result;
+    }
   }
 
   // Disable apphelp for tightly sandboxed processes that are not running
@@ -528,38 +543,38 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     }
   }
 
-  result =
-      SandboxWin::SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, config);
-  if (result != SBOX_ALL_OK)
+  if (const auto result =
+          SandboxWin::SetJobLevel(sandbox_type, JobLevel::kLockdown, 0, config);
+      result != SBOX_ALL_OK) {
     return result;
+  }
 
   if (sandbox_type == Sandbox::kGpu) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
   }
 
-  result = AddGenericConfig(config);
-  if (result != SBOX_ALL_OK) {
-    NOTREACHED();
-  }
+  CHECK_EQ(AddGenericConfig(config), SBOX_ALL_OK);
 
   std::string appcontainer_id;
   if (SandboxWin::IsAppContainerEnabledForSandbox(cmd_line, sandbox_type) &&
       delegate->GetAppContainerId(&appcontainer_id)) {
-    result = SandboxWin::AddAppContainerProfileToConfig(
-        cmd_line, sandbox_type, appcontainer_id, config);
-    DCHECK_EQ(result, SBOX_ALL_OK);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = SandboxWin::AddAppContainerProfileToConfig(
+            cmd_line, sandbox_type, appcontainer_id, config);
+        result != SBOX_ALL_OK) {
+      DCHECK(false);
       return result;
+    }
   }
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
     // Set a policy that would normally allow for process creation. This allows
     // the mf cdm process to launch the protected media pipeline process
     // (mfpmp.exe) without process interception.
-    result = config->SetJobLevel(JobLevel::kInteractive, 0);
-    if (result != SBOX_ALL_OK)
+    if (const auto result = config->SetJobLevel(JobLevel::kInteractive, 0);
+        result != SBOX_ALL_OK) {
       return result;
+    }
   }
 
   if (!delegate->InitializeConfig(config)) {
@@ -753,15 +768,17 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
 
   DWORD granted_access;
   BOOL granted_access_status;
+  const base::FilePath program = command_line.GetProgram();
   bool access_check =
       config->GetAppContainer()->AccessCheck(
-          command_line.GetProgram().value().c_str(),
-          base::win::SecurityObjectType::kFile, GENERIC_READ | GENERIC_EXECUTE,
-          &granted_access, &granted_access_status) &&
+          program.value().c_str(), base::win::SecurityObjectType::kFile,
+          GENERIC_READ | GENERIC_EXECUTE, &granted_access,
+          &granted_access_status) &&
       granted_access_status;
   if (!access_check) {
-    PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "
-                   "permissions are valid. See https://bit.ly/31yqMJR.";
+    PLOG(ERROR) << "Sandbox cannot access executable " << program
+                << ". Check filesystem permissions are valid. See "
+                   "https://bit.ly/31yqMJR.";
     return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;
   }
 
@@ -791,18 +808,15 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
         sandbox::policy::features::kPrintCompositorLPAC);
   }
 
-  if (sandbox_type == Sandbox::kWindowsSystemProxyResolver)
+  if (sandbox_type == Sandbox::kProxyResolver) {
     return true;
+  }
 
   return false;
 }
 
 class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
  public:
-  bool ParallelLaunchEnabled() override {
-    return features::IsParallelLaunchEnabled();
-  }
-
   void ParallelLaunchPostTaskAndReplyWithResult(
       const base::Location& from_here,
       base::OnceCallback<CreateTargetResult()> task,
@@ -816,17 +830,12 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
 
   void BeforeTargetProcessCreateOnCreationThread(
       const void* trace_id) override {
-    int active_threads = ++creation_threads_in_use_;
-    base::UmaHistogramCounts100("MPArch.ChildProcessLaunchActivelyInParallel",
-                                active_threads);
-
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "TargetProcess::Create",
                                       trace_id);
   }
 
   void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
                                                 DWORD process_id) override {
-    creation_threads_in_use_--;
     TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
                                     trace_id, "pid", process_id);
   }
@@ -840,12 +849,6 @@ class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
     UMA_HISTOGRAM_SPARSE("Process.Sandbox.IPC.ThreadDuplicateHandleErrorCode",
                          last_error);
   }
-
- private:
-  // When parallel launching is enabled, target creation will happen on the
-  // thread pool. This is atomic to keep track of the number of threads that are
-  // currently creating processes.
-  std::atomic<int> creation_threads_in_use_ = 0;
 };
 
 // static
@@ -1074,8 +1077,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(
       return "Service With Jit";
     case Sandbox::kIconReader:
       return "Icon Reader";
-    case Sandbox::kWindowsSystemProxyResolver:
-      return "Windows System Proxy Resolver";
+    case Sandbox::kProxyResolver:
+      return "Proxy Resolver";
   }
   NOTREACHED();
 }
@@ -1098,16 +1101,15 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
 
   if (sandbox_type == Sandbox::kGpu ||
       sandbox_type == Sandbox::kOnDeviceModelExecution) {
-    // Allow the GPU process's sandbox to access more physical memory if it's
-    // available on the system.
-    //
-    // GPU processes are allowed to access up to 64 GB.
-    uint64_t physical_memory = base::SysInfo::AmountOfPhysicalMemory();
-    if (sandbox_type == Sandbox::kGpu && physical_memory > 64 * GB) {
+    // Allow the GPU and ODML process sandboxes to access more physical memory
+    // if it's available on the system, up to 64GB.
+    const base::ByteCount physical_memory =
+        base::SysInfo::AmountOfPhysicalMemory();
+    if (physical_memory > base::GiB(64)) {
       memory_limit = 64 * GB;
-    } else if (sandbox_type == Sandbox::kGpu && physical_memory > 32 * GB) {
+    } else if (physical_memory > base::GiB(32)) {
       memory_limit = 32 * GB;
-    } else if (physical_memory > 16 * GB) {
+    } else if (physical_memory > base::GiB(16)) {
       memory_limit = 16 * GB;
     } else {
       memory_limit = 8 * GB;

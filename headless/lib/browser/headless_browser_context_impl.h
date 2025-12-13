@@ -20,7 +20,6 @@
 #include "headless/lib/browser/headless_request_context_manager.h"
 #include "headless/public/headless_browser_context.h"
 #include "headless/public/headless_export.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class WebContents;
@@ -58,7 +57,7 @@ class HEADLESS_EXPORT HeadlessBrowserContextImpl final
   // BrowserContext implementation:
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-  base::FilePath GetPath() override;
+  base::FilePath GetPath() const override;
   bool IsOffTheRecord() override;
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;

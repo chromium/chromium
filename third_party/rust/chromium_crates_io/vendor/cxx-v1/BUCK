@@ -1,3 +1,7 @@
+load(":Cargo.toml", cargo_toml = "value")
+
+CARGO_PKG_VERSION_PATCH = cargo_toml["package"]["version"].split(".")[2]
+
 rust_library(
     name = "cxx",
     srcs = glob(["src/**/*.rs"]),
@@ -25,11 +29,17 @@ alias(
 
 rust_binary(
     name = "cxxbridge",
-    srcs = glob(["gen/cmd/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/cmd/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/cmd/src/gen",
         "gen/cmd/src/syntax",
     ],
     edition = "2021",
+    env = {
+        "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
+    },
     deps = [
         "//third-party:clap",
         "//third-party:codespan-reporting",
@@ -56,6 +66,9 @@ rust_library(
     srcs = glob(["macro/src/**/*.rs"]) + ["macro/src/syntax"],
     doctests = False,
     edition = "2021",
+    env = {
+        "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
+    },
     proc_macro = True,
     deps = [
         "//third-party:indexmap",
@@ -68,12 +81,18 @@ rust_library(
 
 rust_library(
     name = "cxx-build",
-    srcs = glob(["gen/build/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/build/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/build/src/gen",
         "gen/build/src/syntax",
     ],
     doctests = False,
     edition = "2021",
+    env = {
+        "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
+    },
     deps = [
         "//third-party:cc",
         "//third-party:codespan-reporting",
@@ -87,11 +106,17 @@ rust_library(
 
 rust_library(
     name = "cxx-gen",
-    srcs = glob(["gen/lib/src/**/*.rs"]) + [
+    srcs = glob([
+        "gen/lib/src/**/*.rs",
+        "gen/src/builtin/*.h",
+    ]) + [
         "gen/lib/src/gen",
         "gen/lib/src/syntax",
     ],
     edition = "2021",
+    env = {
+        "CARGO_PKG_VERSION_PATCH": CARGO_PKG_VERSION_PATCH,
+    },
     visibility = ["PUBLIC"],
     deps = [
         "//third-party:cc",

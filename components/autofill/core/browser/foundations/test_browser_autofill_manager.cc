@@ -35,13 +35,7 @@ TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
 
 testing::NiceMock<MockBnplManager>*
 TestBrowserAutofillManager::GetPaymentsBnplManager() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
   return &mock_bnpl_manager_;
-#else
-  return nullptr;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 }
 
 void TestBrowserAutofillManager::OnLanguageDetermined(
@@ -73,6 +67,11 @@ void TestBrowserAutofillManager::OnTextFieldValueChanged(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
+void TestBrowserAutofillManager::OnDidEndTextFieldEditing() {
+  AutofillManager::OnDidEndTextFieldEditing();
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
 void TestBrowserAutofillManager::OnTextFieldDidScroll(
     const FormData& form,
     const FieldGlobalId& field_id) {
@@ -84,6 +83,13 @@ void TestBrowserAutofillManager::OnSelectControlSelectionChanged(
     const FormData& form,
     const FieldGlobalId& field_id) {
   AutofillManager::OnSelectControlSelectionChanged(form, field_id);
+  ASSERT_TRUE(waiter_.Wait(0));
+}
+
+void TestBrowserAutofillManager::OnSelectFieldOptionsDidChange(
+    const FormData& form,
+    const FieldGlobalId& field_id) {
+  AutofillManager::OnSelectFieldOptionsDidChange(form, field_id);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -106,10 +112,8 @@ void TestBrowserAutofillManager::OnFocusOnFormField(
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
-void TestBrowserAutofillManager::OnDidFillAutofillFormData(
-    const FormData& form,
-    const base::TimeTicks timestamp) {
-  AutofillManager::OnDidFillAutofillFormData(form, timestamp);
+void TestBrowserAutofillManager::OnDidAutofillForm(const FormData& form) {
+  AutofillManager::OnDidAutofillForm(form);
   ASSERT_TRUE(waiter_.Wait(0));
 }
 
@@ -137,28 +141,24 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<FieldType>& heuristic_types,
-    const std::vector<FieldType>& server_types,
-    bool preserve_values_in_form_structure) {
+    const std::vector<FieldType>& server_types) {
   std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>
       all_heuristic_types;
   for (FieldType type : heuristic_types) {
     all_heuristic_types.push_back({{GetActiveHeuristicSource(), type}});
   }
-  AddSeenForm(form, all_heuristic_types, server_types,
-              preserve_values_in_form_structure);
+  AddSeenForm(form, all_heuristic_types, server_types);
 }
 
 void TestBrowserAutofillManager::AddSeenForm(
     const FormData& form,
     const std::vector<std::vector<std::pair<HeuristicSource, FieldType>>>&
         heuristic_types,
-    const std::vector<FieldType>& server_types,
-    bool preserve_values_in_form_structure) {
-  auto form_structure = std::make_unique<FormStructure>(
-      preserve_values_in_form_structure ? form : test::WithoutValues(form));
+    const std::vector<FieldType>& server_types) {
+  auto form_structure = std::make_unique<FormStructure>(form);
   test_api(*form_structure).SetFieldTypes(heuristic_types, server_types);
   test_api(*form_structure).AssignSections();
-  AddSeenFormStructure(std::move(form_structure));
+  test_api(*this).AddSeenFormStructure(std::move(form_structure));
   test_api(*this).OnFormsParsed({form});
   // Awaits the CrowdsourcingManager's response if OnFormsParsed() started a
   // request. This is necessary because TestAutofillManagerWaiter fails if there
@@ -167,16 +167,6 @@ void TestBrowserAutofillManager::AddSeenForm(
   // This response, i.e., AutofillManager::OnLoadedServerPredictions(), is
   // asynchronous even if crowdsourcing is disabled.
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-void TestBrowserAutofillManager::AddSeenFormStructure(
-    std::unique_ptr<FormStructure> form_structure) {
-  const auto id = form_structure->global_id();
-  (*mutable_form_structures())[id] = std::move(form_structure);
-}
-
-void TestBrowserAutofillManager::ClearFormStructures() {
-  mutable_form_structures()->clear();
 }
 
 void TestBrowserAutofillManager::OnAskForValuesToFillTest(

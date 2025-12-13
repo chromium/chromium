@@ -1,0 +1,83 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=0.000000 minimum=0.000000 maximum=100.000000
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===
+VALUE-CHANGED:25 role=ROLE_SLIDER name='Test Slider' ENABLED,FOCUSABLE,HORIZONTAL,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=25.000000 minimum=0.000000 maximum=100.000000 <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=25.000000 minimum=0.000000 maximum=100.000000
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===
+VALUE-CHANGED:75 role=ROLE_SLIDER name='Test Slider' ENABLED,FOCUSABLE,HORIZONTAL,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=75.000000 minimum=0.000000 maximum=100.000000 <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=75.000000 minimum=0.000000 maximum=100.000000
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===
+VALUE-CHANGED:50 role=ROLE_SLIDER name='Test Slider' ENABLED,FOCUSABLE,HORIZONTAL,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Slider Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[slider] name='Test Slider' horizontal current=50.000000 minimum=0.000000 maximum=100.000000 <<<<<< CHANGED
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[section]
+=== End accessibility tree ===

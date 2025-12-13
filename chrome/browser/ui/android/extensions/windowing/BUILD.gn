@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+# Public Java interfaces
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridge.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+  ]
+}
+
+# Public Java factory
+android_library_factory("factory_java") {
+  sources = [ "internal/java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeFactory.java" ]
+  deps = [
+    ":java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+  ]
+}

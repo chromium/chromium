@@ -18,7 +18,15 @@
 
 static constexpr char kShouldPinResultMetric[] =
     "Windows.ShouldPinToTaskbarResult";
+static constexpr char kInfobarShouldPinResultMetric[] =
+    "Windows.ShouldPinToTaskbarResult.PinToTaskbarInfoBar";
+static constexpr char kSettingsShouldPinResultMetric[] =
+    "Windows.ShouldPinToTaskbarResult.SettingsPage";
 static constexpr char kPinResultMetric[] = "Windows.TaskbarPinResult";
+static constexpr char kInfobarPinResultMetric[] =
+    "Windows.TaskbarPinResult.PinToTaskbarInfoBar";
+static constexpr char kSettingsPinResultMetric[] =
+    "Windows.TaskbarPinResult.SettingsPage";
 
 class TaskbarManagerTest : public testing::Test {
  public:
@@ -37,6 +45,7 @@ class TaskbarManagerTest : public testing::Test {
 TEST_F(TaskbarManagerTest, ShouldOfferToPin) {
   browser_util::ShouldOfferToPin(
       ShellUtil::GetBrowserModelId(/*is_per_user_install=*/true),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
       base::BindOnce(&TaskbarManagerTest::OnCanPinToTaskbarResult,
                      base::Unretained(this)));
 
@@ -45,16 +54,29 @@ TEST_F(TaskbarManagerTest, ShouldOfferToPin) {
   histogram_tester_.ExpectBucketCount(
       kShouldPinResultMetric,
       browser_util::PinResultMetric::kFeatureNotAvailable, 1);
+  histogram_tester_.ExpectBucketCount(
+      kInfobarShouldPinResultMetric,
+      browser_util::PinResultMetric::kFeatureNotAvailable, 1);
+  histogram_tester_.ExpectBucketCount(
+      kSettingsShouldPinResultMetric,
+      browser_util::PinResultMetric::kFeatureNotAvailable, 0);
 }
 
 TEST_F(TaskbarManagerTest, PinToTaskbar) {
   browser_util::PinAppToTaskbar(
       ShellUtil::GetBrowserModelId(/*is_per_user_install=*/true),
+      browser_util::PinAppToTaskbarChannel::kSettingsPage,
       base::BindOnce(&TaskbarManagerTest::OnCanPinToTaskbarResult,
                      base::Unretained(this)));
 
   got_result_.Run();
   histogram_tester_.ExpectBucketCount(
       kPinResultMetric, browser_util::PinResultMetric::kFeatureNotAvailable, 1);
+  histogram_tester_.ExpectBucketCount(
+      kInfobarPinResultMetric,
+      browser_util::PinResultMetric::kFeatureNotAvailable, 0);
+  histogram_tester_.ExpectBucketCount(
+      kSettingsPinResultMetric,
+      browser_util::PinResultMetric::kFeatureNotAvailable, 1);
   EXPECT_FALSE(result_);
 }

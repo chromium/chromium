@@ -13,6 +13,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/common/feature_promo/feature_promo_session_policy.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "components/user_education/test/mock_user_education_context.h"
 #include "components/user_education/test/test_help_bubble.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -28,12 +29,17 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(FeaturePromoControllerTestBase,
                                       kAnchorElementId);
 
 // static
-const ui::ElementContext FeaturePromoControllerTestBase::kAnchorElementContext(
-    1);
+const ui::ElementContext FeaturePromoControllerTestBase::kAnchorElementContext =
+    ui::ElementContext::CreateFakeContextForTesting(1);
 
 // static
 constexpr char
     FeaturePromoControllerTestBase::kTestFocusHelpBubbleAcceleratorPromoRead[];
+
+FeaturePromoControllerTestBase::TestPromoControllerBase::
+    TestPromoControllerBase() = default;
+FeaturePromoControllerTestBase::TestPromoControllerBase::
+    ~TestPromoControllerBase() = default;
 
 FeaturePromoControllerTestBase::TestTutorialService::~TestTutorialService() =
     default;
@@ -44,26 +50,15 @@ FeaturePromoControllerTestBase::TestTutorialService::GetBodyIconAltText(
   return u"Body Icon Alt Text";
 }
 
-FeaturePromoControllerTestBase::FeaturePromoControllerTestBase() {
+FeaturePromoControllerTestBase::FeaturePromoControllerTestBase()
+    : test_promo_context_(base::MakeRefCounted<MockUserEducationContext>()) {
   storage_service_.set_clock_for_testing(task_environment_.GetMockClock());
+  EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*promo_context(), GetElementContext)
+      .WillRepeatedly(testing::Return(kAnchorElementContext));
 }
 
 FeaturePromoControllerTestBase::~FeaturePromoControllerTestBase() = default;
-
-void FeaturePromoControllerTestBase::SetTrackerResult(bool success) {
-  EXPECT_CALL(tracker_, IsInitialized).WillRepeatedly(testing::Return(success));
-  EXPECT_CALL(tracker_, AddOnInitializedCallback)
-      .WillRepeatedly([success](
-                          feature_engagement::Tracker::OnInitializedCallback
-                              callback) {
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](feature_engagement::Tracker::OnInitializedCallback callback,
-                   bool success) { std::move(callback).Run(success); },
-                std::move(callback), success));
-      });
-}
 
 TestHelpBubble* FeaturePromoControllerTestBase::GetHelpBubble(
     std::optional<ui::ElementContext> context) const {
@@ -100,7 +95,47 @@ void FeaturePromoControllerTestBase::SetUp() {
           testing::Return(feature_engagement::Tracker::EventList()));
 #endif
   EXPECT_CALL(tracker_, Dismissed).Times(testing::AnyNumber());
-  SetTrackerResult(true);
+  const auto tracker_success = GetTrackerResult();
+  EXPECT_CALL(tracker_, IsInitialized)
+      .WillRepeatedly(testing::Return(tracker_success.value_or(false)));
+  if (tracker_success) {
+    EXPECT_CALL(tracker_, AddOnInitializedCallback)
+        .WillRepeatedly(
+            [tracker_success](
+                feature_engagement::Tracker::OnInitializedCallback callback) {
+              base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      [](feature_engagement::Tracker::OnInitializedCallback
+                             callback,
+                         bool success) { std::move(callback).Run(success); },
+                      std::move(callback), *tracker_success));
+            });
+  } else {
+    EXPECT_CALL(tracker_, AddOnInitializedCallback)
+        .WillRepeatedly(
+            [this](
+                feature_engagement::Tracker::OnInitializedCallback callback) {
+              on_initialized_callbacks_.push_back(std::move(callback));
+            });
+  }
+
+  // This gets called as a matter of course while retrieving certain strings,
+  // but the result is not used in these tests.
+  EXPECT_CALL(*promo_context(), GetAcceleratorProvider)
+      .WillRepeatedly(testing::Return(nullptr));
+}
+
+std::optional<bool> FeaturePromoControllerTestBase::GetTrackerResult() const {
+  return true;
+}
+
+void FeaturePromoControllerTestBase::SendTrackerResult(bool result) {
+  EXPECT_CALL(tracker_, IsInitialized).WillRepeatedly(testing::Return(result));
+  for (auto& callback : on_initialized_callbacks_) {
+    std::move(callback).Run(result);
+  }
+  on_initialized_callbacks_.clear();
 }
 
 void FeaturePromoControllerTestBase::TearDown() {

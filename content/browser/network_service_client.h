@@ -38,7 +38,8 @@ class NetworkServiceClient
       public net::NetworkChangeNotifier::MaxBandwidthObserver,
       public net::NetworkChangeNotifier::IPAddressObserver,
 #endif
-      public net::CertDatabase::Observer {
+      public net::CertDatabase::Observer,
+      public base::MemoryPressureListener {
  public:
   NetworkServiceClient();
 
@@ -58,7 +59,7 @@ class NetworkServiceClient
   void OnClientCertStoreChanged() override;
 
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_presure_level);
+      base::MemoryPressureLevel memory_presure_level) override;
 
   // Called when there is a change in the count of media connections that
   // require low network latency.
@@ -79,7 +80,8 @@ class NetworkServiceClient
       net::NetworkChangeNotifier::ConnectionType type) override;
 
   // net::NetworkChangeNotifier::IPAddressObserver implementation:
-  void OnIPAddressChanged() override;
+  void OnIPAddressChanged(
+      net::NetworkChangeNotifier::IPAddressChangeType change_type) override;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN)
@@ -108,13 +110,8 @@ class NetworkServiceClient
       const scoped_refptr<net::HttpResponseHeaders>& head_headers,
       mojo::PendingRemote<network::mojom::AuthChallengeResponder>
           auth_challenge_responder) override;
-  void OnPrivateNetworkAccessPermissionRequired(
-      const GURL& url,
-      const net::IPAddress& ip_address,
-      const std::optional<std::string>& private_network_device_id,
-      const std::optional<std::string>& private_network_device_name,
-      OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
   void OnLocalNetworkAccessPermissionRequired(
+      network::mojom::TransportType type,
       OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
@@ -141,6 +138,7 @@ class NetworkServiceClient
       mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
+      const GURL& request_url,
       network::mojom::IPAddressSpace ip_address_space) override;
   void OnUrlLoaderConnectedToPrivateNetwork(
       const GURL& request_url,
@@ -148,7 +146,8 @@ class NetworkServiceClient
       network::mojom::IPAddressSpace client_address_space,
       network::mojom::IPAddressSpace target_address_space) override;
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  std::unique_ptr<base::MemoryPressureListenerRegistration>
+      memory_pressure_listener_registration_;
 
   std::unique_ptr<WebRtcConnectionsObserver> webrtc_connections_observer_;
 

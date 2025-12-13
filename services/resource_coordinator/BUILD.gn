@@ -62,7 +62,7 @@ source_set("tests") {
     "//components/ukm:test_support",
     "//mojo/public/cpp/bindings",
     "//services/resource_coordinator/public/cpp:resource_coordinator_cpp",
-    "//services/resource_coordinator/public/cpp/memory_instrumentation:memory_instrumentation",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//services/tracing:test_utils",
     "//testing/gmock",
     "//testing/gtest",

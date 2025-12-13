@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use crate::{off64_t, off_t};
+use crate::{
+    off64_t,
+    off_t,
+};
 
 pub type wchar_t = i32;
 
@@ -54,7 +57,7 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         __seq: u32,
-        __pad1: u32,
+        __pad1: Padding<u32>,
         __glibc_reserved1: u64,
         __glibc_reserved2: u64,
     }
@@ -62,7 +65,7 @@ s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
         #[cfg(not(gnu_file_offset_bits64))]
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
@@ -70,7 +73,7 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
@@ -101,7 +104,7 @@ s! {
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,

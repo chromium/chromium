@@ -5,12 +5,18 @@
 #include "ash/metrics/ui_metrics_recorder.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_widget_builder.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "cc/metrics/event_metrics.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/mock_ime_engine_handler.h"
 #include "ui/compositor/compositor.h"
@@ -19,9 +25,54 @@
 #include "ui/events/test/test_event_handler.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/test/test_widget_builder.h"
 
 namespace ash {
 namespace {
+
+using FpsBucket = UiMetricsRecorder::FpsBucket;
+using CoreEventType = UiMetricsRecorder::CoreEventType;
+constexpr int kMaxFpsBucketIndex = UiMetricsRecorder::kMaxFpsBucketIndex;
+constexpr int kMaxCoreEventTypeIndex =
+    UiMetricsRecorder::kMaxCoreEventTypeIndex;
+
+std::string_view CoreEventTypeToString(CoreEventType type) {
+  switch (type) {
+    case CoreEventType::kKeyPressed:
+      return "KeyPressed";
+    case CoreEventType::kKeyReleased:
+      return "KeyReleased";
+    case CoreEventType::kMousePressed:
+      return "MousePressed";
+    case CoreEventType::kMouseReleased:
+      return "MouseReleased";
+    case CoreEventType::kMouseDragged:
+      return "MouseDragged";
+  }
+  NOTREACHED();
+}
+
+std::string_view FpsBucketToString(FpsBucket bucket) {
+  switch (bucket) {
+    case FpsBucket::k30Fps:
+      return "30Fps";
+    case FpsBucket::k60Fps:
+      return "60Fps";
+    case FpsBucket::k120Fps:
+      return "120Fps";
+    case FpsBucket::kOtherFps:
+      return "OtherFps";
+    case FpsBucket::kUnset:
+      return "UnsetFps";
+  }
+  NOTREACHED();
+}
+
+int GetHistogramIndex(CoreEventType core_event_type, FpsBucket fps_bucket) {
+  return static_cast<int>(fps_bucket) * kMaxCoreEventTypeIndex +
+         static_cast<int>(core_event_type);
+}
+
 // TestIMEEngineHandler invokes the callback synchronously for ProcessKeyEvent.
 class TestIMEEngineHandler : public MockIMEEngineHandler {
  public:
@@ -119,7 +170,7 @@ class UiMetricsRecorderTest : public AshTestBase {
   ~UiMetricsRecorderTest() override = default;
 
   std::unique_ptr<views::Widget> CreateTestWindowWidget() {
-    return TestWidgetBuilder()
+    return views::test::TestWidgetBuilder()
         .SetDelegate(nullptr)
         .SetBounds(gfx::Rect(0, 0, 100, 100))
         .SetShow(true)
@@ -295,6 +346,101 @@ TEST_F(UiMetricsRecorderTest, NoDamageNoLatency) {
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
 
   histogram_tester.ExpectTotalCount("Ash.EventLatency.TotalLatency", 0);
+}
+
+// Verifies that the fixed table of event latency histogram names matches the
+// cc::EventMetrics::EventType enum.
+TEST_F(UiMetricsRecorderTest, EventLatencyHistogramNameTable) {
+  auto histogram_names =
+      UiMetricsRecorder::GetEventLatencyHistogramNamesForTest();
+  ASSERT_EQ(histogram_names.size(),
+            static_cast<size_t>(cc::EventMetrics::EventType::kMaxValue) + 1);
+  for (size_t i = 0; i < histogram_names.size(); ++i) {
+    auto event_type = static_cast<cc::EventMetrics::EventType>(i);
+    const char* type_name = cc::EventMetrics::GetTypeName(event_type);
+    std::string expected_name =
+        base::StrCat({"Ash.EventLatency.", type_name, ".TotalLatency"});
+    EXPECT_EQ(expected_name, histogram_names[i]);
+  }
+}
+
+// Verifies that the fixed table of core event latency + fps histogram names
+// matches the CoreEventType and FpsBucket enums.
+TEST_F(UiMetricsRecorderTest, CoreEventLatencyFpsHistogramNameTable) {
+  auto histogram_names =
+      UiMetricsRecorder::GetCoreEventLatencyHistogramNamesForTest();
+  ASSERT_EQ(histogram_names.size(),
+            static_cast<size_t>(kMaxCoreEventTypeIndex * kMaxFpsBucketIndex));
+
+  for (int i = 0; i <= static_cast<int>(FpsBucket::kMaxValue); ++i) {
+    for (int j = 0; j <= static_cast<int>(CoreEventType::kMaxValue); ++j) {
+      const auto fps_bucket = static_cast<FpsBucket>(i);
+      const auto core_event_type = static_cast<CoreEventType>(j);
+      const int index = GetHistogramIndex(core_event_type, fps_bucket);
+
+      std::string expected_name = base::StrCat(
+          {"Ash.EventLatency.Core.", CoreEventTypeToString(core_event_type),
+           ".", FpsBucketToString(fps_bucket), ".TotalLatency"});
+      EXPECT_EQ(expected_name, histogram_names[index]);
+    }
+  }
+}
+
+class UiMetricsRecorderFpsBucketTest : public UiMetricsRecorderTest,
+                                       public testing::WithParamInterface<int> {
+ protected:
+  void SetUp() override {
+    UiMetricsRecorderTest::SetUp();
+    GetContextFactory()->SetRefreshRateForTests(GetParam());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         UiMetricsRecorderFpsBucketTest,
+                         testing::Values(200, 120, 60, 30, 20),
+                         [](const testing::TestParamInfo<int>& params) {
+                           return base::StringPrintf("%dFps", params.param);
+                         });
+
+TEST_P(UiMetricsRecorderFpsBucketTest, KeyEvent) {
+  const int refresh_rate = GetParam();
+  std::string expected_fps_bucket;
+  if (refresh_rate == 200 || refresh_rate == 20) {
+    // 200 and 20fps are not assigned a bucket.
+    expected_fps_bucket = "OtherFps";
+  } else {
+    expected_fps_bucket = base::StringPrintf("%dFps", refresh_rate);
+  }
+
+  std::unique_ptr<views::Widget> widget = CreateTestWindowWidget();
+  FakeTextField* view =
+      widget->SetContentsView(std::make_unique<FakeTextField>());
+  widget->GetFocusManager()->SetFocusedView(view);
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(view->GetReceivedKeyEvent(), 0);
+  PressAndReleaseKey(ui::VKEY_A);
+  // Expect to receive two key events: KeyPressed and KeyRelease.
+  EXPECT_EQ(view->GetReceivedKeyEvent(), 2);
+  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(widget->GetCompositor()));
+
+  histogram_tester.ExpectTotalCount("Ash.EventLatency.KeyPressed.TotalLatency",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.EventLatency.Core.KeyPressed.", expected_fps_bucket,
+                    ".TotalLatency"}),
+      1);
+
+  histogram_tester.ExpectTotalCount("Ash.EventLatency.KeyReleased.TotalLatency",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"Ash.EventLatency.Core.KeyReleased.", expected_fps_bucket,
+                    ".TotalLatency"}),
+      1);
+
+  histogram_tester.ExpectTotalCount("Ash.EventLatency.TotalLatency", 2);
+  histogram_tester.ExpectTotalCount("Ash.EventLatency.Core.TotalLatency", 2);
 }
 
 }  // namespace

@@ -38,7 +38,8 @@ class WaylandConnection;
 class OrgGnomeMutterIdleMonitor;
 #endif
 
-// A PlatformScreen implementation for Wayland.
+// A PlatformScreen implementation for Wayland. Note that this object outlives
+// WaylandConnection.
 class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
  public:
   explicit WaylandScreen(WaylandConnection* connection);
@@ -92,6 +93,8 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   // the screen.
   bool VerifyOutputStateConsistentForTesting() const;
 
+  void ResetConnection();
+
  protected:
   // Suspends or un-suspends the platform-specific screensaver, and returns
   // whether the operation was successful. Can be called more than once with the
@@ -125,16 +128,15 @@ class WaylandScreen : public PlatformScreen, public DeviceScaleFactorObserver {
   base::flat_map<WaylandOutput::Id, int64_t> display_id_map_;
   display::DisplayList display_list_;
 
-  std::optional<gfx::BufferFormat> image_format_alpha_;
-  std::optional<gfx::BufferFormat> image_format_no_alpha_;
-  std::optional<gfx::BufferFormat> image_format_hdr_;
+  std::optional<viz::SharedImageFormat> image_format_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_no_alpha_;
+  std::optional<viz::SharedImageFormat> image_format_hdr_;
 
 #if BUILDFLAG(USE_DBUS)
   mutable std::unique_ptr<OrgGnomeMutterIdleMonitor>
       org_gnome_mutter_idle_monitor_;
 #endif
 
-  wl::Object<zwp_idle_inhibitor_v1> idle_inhibitor_;
   uint32_t screen_saver_suspension_count_ = 0;
 
   base::ScopedObservation<ui::LinuxUi, DeviceScaleFactorObserver>

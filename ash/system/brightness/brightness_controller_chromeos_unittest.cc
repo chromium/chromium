@@ -1701,8 +1701,7 @@ TEST_F(BrightnessControllerChromeosTest,
   SetBatteryPower();
 
   // Simulate reboot, and log in.
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOGIN_PRIMARY);
+  ClearLogin();
   SimulateUserLogin({kUserEmail});
 
   // Expect the brightness is not restored to 10%.

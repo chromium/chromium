@@ -4,10 +4,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
-# This script is part of the @@PACKAGE@@ package.
+# This script is part of the @@PACKAGE package.
 #
 # It creates the repository configuration file for package updates, since
-# we cannot do this during the @@PACKAGE@@ installation since the repository
+# we cannot do this during the @@PACKAGE installation since the repository
 # is locked.
 #
 # This functionality can be controlled by creating the $DEFAULTS_FILE and

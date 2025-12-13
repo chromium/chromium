@@ -60,6 +60,10 @@ class CORE_EXPORT ImageResourceContent final
   // Creates ImageResourceContent from an already loaded image.
   static ImageResourceContent* CreateLoaded(scoped_refptr<blink::Image>);
 
+  // Creates a partially loaded `ImageResourceContent` from an existing image.
+  static ImageResourceContent* CreatePendingForTest(
+      scoped_refptr<blink::Image>);
+
   static ImageResourceContent* Fetch(FetchParameters&, ResourceFetcher*);
 
   explicit ImageResourceContent(scoped_refptr<blink::Image> = nullptr);
@@ -123,7 +127,6 @@ class CORE_EXPORT ImageResourceContent final
   bool IsBroken() const override;
   bool IsAnimatedImage() const override;
   bool IsPaintedFirstFrame() const override;
-  bool TimingAllowPassed() const override;
   base::TimeTicks GetFirstVideoFrameTime() const override {
     // This returns a null time, which is currently used to signal that this is
     // an animated image, rather than a video, and we should use the
@@ -147,8 +150,6 @@ class CORE_EXPORT ImageResourceContent final
   std::optional<ResourceError> GetResourceError() const;
 
   // For FrameSerializer.
-  bool HasCacheControlNoStoreHeader() const;
-
   void EmulateLoadStartedForInspector(ResourceFetcher*,
                                       const AtomicString& initiator_name);
 
@@ -198,7 +199,8 @@ class CORE_EXPORT ImageResourceContent final
 
   // Returns priority information to be used for setting the Resource's
   // priority. This is NOT the current Resource's priority.
-  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() const;
+  std::pair<std::optional<ResourcePriority>, std::optional<ResourcePriority>>
+  PriorityFromObservers() const;
   // Returns the current Resource's priority used by MediaTiming.
   std::optional<WebURLRequest::Priority> RequestPriority() const override;
   scoped_refptr<const SharedBuffer> ResourceBuffer() const;
@@ -275,10 +277,10 @@ class CORE_EXPORT ImageResourceContent final
   // This is updated during ResourceFetcher::UpdateResourceInfoFromObservers
   // when layout is clean and cached for use when layout may not be clean.
   struct {
-    ResourcePriority priority_;
-    ResourcePriority priority_excluding_image_loader_;
+    std::optional<ResourcePriority> priority_;
+    std::optional<ResourcePriority> priority_excluding_image_loader_;
     gfx::Size max_size_;
-    InterpolationQuality max_interpolation_quality_ = kInterpolationNone;
+    InterpolationQuality max_interpolation_quality_;
   } cached_info_;
 
   // Keep one-byte members together to avoid wasting space on padding.

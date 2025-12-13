@@ -12,6 +12,7 @@ rust_library(
     proc_macro_deps = [
         ":cxxbridge-macro",
     ],
+    version = module_version(),
     visibility = ["//visibility:public"],
     deps = [
         ":core-lib",
@@ -28,8 +29,9 @@ alias(
 rust_binary(
     name = "cxxbridge",
     srcs = glob(["gen/cmd/src/**/*.rs"]),
-    compile_data = ["gen/cmd/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/cmd/src/gen/**/*.h"]),
     edition = "2021",
+    version = module_version(),
     deps = [
         "@crates.io//:clap",
         "@crates.io//:codespan-reporting",
@@ -62,6 +64,7 @@ rust_proc_macro(
     proc_macro_deps = [
         "@crates.io//:rustversion",
     ],
+    version = module_version(),
     deps = [
         "@crates.io//:indexmap",
         "@crates.io//:proc-macro2",
@@ -73,8 +76,9 @@ rust_proc_macro(
 rust_library(
     name = "cxx-build",
     srcs = glob(["gen/build/src/**/*.rs"]),
-    compile_data = ["gen/build/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/build/src/gen/**/*.h"]),
     edition = "2021",
+    version = module_version(),
     deps = [
         "@crates.io//:cc",
         "@crates.io//:codespan-reporting",
@@ -89,8 +93,9 @@ rust_library(
 rust_library(
     name = "cxx-gen",
     srcs = glob(["gen/lib/src/**/*.rs"]),
-    compile_data = ["gen/lib/src/gen/include/cxx.h"],
+    compile_data = glob(["gen/lib/src/gen/**/*.h"]),
     edition = "2021",
+    version = module_version(),
     visibility = ["//visibility:public"],
     deps = [
         "@crates.io//:cc",

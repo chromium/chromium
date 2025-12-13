@@ -22,7 +22,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
@@ -48,19 +47,31 @@
 namespace golden {
 OptionalPrimitives::OptionalPrimitives()
     : int(),
+      long(),
       uints(),
       boolarray(),
-      bitmap() {}
+      bitmap(),
+      int_with_default(1),
+      long_with_default(2),
+      bool_with_default(true) {}
 
 OptionalPrimitives::OptionalPrimitives(
     std::optional<int32_t> int_in,
+    std::optional<int64_t> long_in,
     std::vector<std::optional<uint32_t>> uints_in,
     std::vector<std::optional<bool>> boolarray_in,
-    const base::flat_map<bool, std::optional<bool>>& bitmap_in)
+    const base::flat_map<bool, std::optional<bool>>& bitmap_in,
+    std::optional<int32_t> int_with_default_in,
+    std::optional<int64_t> long_with_default_in,
+    std::optional<bool> bool_with_default_in)
     : int(std::move(int_in)),
+      long(std::move(long_in)),
       uints(std::move(uints_in)),
       boolarray(std::move(boolarray_in)),
-      bitmap(std::move(bitmap_in)) {}
+      bitmap(std::move(bitmap_in)),
+      int_with_default(std::move(int_with_default_in)),
+      long_with_default(std::move(long_with_default_in)),
+      bool_with_default(std::move(bool_with_default_in)) {}
 
 OptionalPrimitives::~OptionalPrimitives() = default;
 
@@ -72,6 +83,15 @@ void OptionalPrimitives::WriteIntoTrace(
       "int"), this->int,
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
       "<value of type std::optional<int32_t>>"
+#else
+      "<value>"
+#endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
+    );
+  perfetto::WriteIntoTracedValueWithFallback(
+    dict.AddItem(
+      "long"), this->long,
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+      "<value of type std::optional<int64_t>>"
 #else
       "<value>"
 #endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
@@ -103,6 +123,33 @@ void OptionalPrimitives::WriteIntoTrace(
       "<value>"
 #endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
     );
+  perfetto::WriteIntoTracedValueWithFallback(
+    dict.AddItem(
+      "int_with_default"), this->int_with_default,
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+      "<value of type std::optional<int32_t>>"
+#else
+      "<value>"
+#endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
+    );
+  perfetto::WriteIntoTracedValueWithFallback(
+    dict.AddItem(
+      "long_with_default"), this->long_with_default,
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+      "<value of type std::optional<int64_t>>"
+#else
+      "<value>"
+#endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
+    );
+  perfetto::WriteIntoTracedValueWithFallback(
+    dict.AddItem(
+      "bool_with_default"), this->bool_with_default,
+#if BUILDFLAG(MOJO_TRACE_ENABLED)
+      "<value of type std::optional<bool>>"
+#else
+      "<value>"
+#endif  // BUILDFLAG(MOJO_TRACE_ENABLED)
+    );
 }
 
 bool OptionalPrimitives::Validate(
@@ -128,12 +175,24 @@ bool StructTraits<::golden::OptionalPrimitives::DataView, ::golden::OptionalPrim
       if (success) {
         result->int = input.int();
       }
+      if (success) {
+        result->long = input.long();
+      }
       if (success && !input.ReadUints(&result->uints))
         success = false;
       if (success && !input.ReadBoolarray(&result->boolarray))
         success = false;
       if (success && !input.ReadBitmap(&result->bitmap))
         success = false;
+      if (success) {
+        result->int_with_default = input.int_with_default();
+      }
+      if (success) {
+        result->long_with_default = input.long_with_default();
+      }
+      if (success) {
+        result->bool_with_default = input.bool_with_default();
+      }
   *output = std::move(result);
   return success;
 }

@@ -1,0 +1,9 @@
+description="Resolves git conflicts. Files should show in \"git status\" and contain conflict markers (<<<<)."
+prompt = """
+Please fix my merge conflicts.
+
+Do not compile or validate your changes using any tools.
+
+Run "git add" upon successful resolution, but do not run any other git commands
+(do not run `git rebase --continue`).
+"""

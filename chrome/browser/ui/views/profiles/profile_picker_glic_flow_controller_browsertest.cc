@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
@@ -81,7 +80,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
   ProfilePickerGlicFlowController controller(
       host(), ClearHostClosure(clear_host_callback.Get()),
       picked_profile_callback.Get());
-  controller.PickProfile(new_profile_path, ProfilePicker::ProfilePickingArgs());
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+  controller.PickProfile(new_profile_path, ProfilePicker::ProfilePickingArgs(),
+                         mock_callback.Get());
 
   Profile* loaded_profile = profile_waiter.WaitForProfileAdded();
   signin::WaitForRefreshTokensLoaded(
@@ -108,8 +110,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
   ProfilePickerGlicFlowController controller(
       host(), ClearHostClosure(clear_host_callback.Get()),
       picked_profile_callback.Get());
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
   controller.PickProfile(browser()->profile()->GetPath(),
-                         ProfilePicker::ProfilePickingArgs());
+                         ProfilePicker::ProfilePickingArgs(),
+                         mock_callback.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
@@ -129,8 +134,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,
   // as it was not created yet.
   base::FilePath non_profile_file_path =
       g_browser_process->profile_manager()->GenerateNextProfileDirectoryPath();
+  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(false));
   controller.PickProfile(non_profile_file_path,
-                         ProfilePicker::ProfilePickingArgs());
+                         ProfilePicker::ProfilePickingArgs(),
+                         mock_callback.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerGlicFlowControllerBrowserTest,

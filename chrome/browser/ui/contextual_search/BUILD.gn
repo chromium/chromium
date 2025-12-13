@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("contextual_search") {
+  sources = [
+    "searchbox_context_data.cc",
+    "searchbox_context_data.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/omnibox/browser:mojo_bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "searchbox_context_data_unittest.cc" ]
+  deps = [
+    ":contextual_search",
+    "//base",
+    "//base/test:test_support",
+    "//components/omnibox/browser:mojo_bindings",
+    "//testing/gtest",
+    "//url",
+  ]
+}

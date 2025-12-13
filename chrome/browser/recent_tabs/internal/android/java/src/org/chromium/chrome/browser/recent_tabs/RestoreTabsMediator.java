@@ -46,19 +46,29 @@ public class RestoreTabsMediator {
     private PropertyModel mModel;
     private Profile mProfile;
     private TabCreatorManager mTabCreatorManager;
-    private BottomSheetController mBottomSheetController;
+    private @Nullable BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetDismissedObserver;
 
     private @Nullable RestoreTabsControllerDelegate mDelegate;
     private @Nullable ForeignSessionHelper mForeignSessionHelper;
     private @Nullable ForeignSession mDefaultSelectedSession;
 
+    /**
+     * Initialize mediator with required dependencies.
+     *
+     * @param model A {@link PropertyModel} that holds the {@RestoreTabsProperties}.
+     * @param profile The {@link Profile} for the current user.
+     * @param tabCreatorManager A {@link TabCreatorManager} instance to restore tabs.
+     * @param bottomSheetController The {@link BottomSheetController} used to show/hide the sheet.
+     *     Optional, as this class can be used as a base class for the {@link
+     *     RestoreTabsDialogMediator} that does not provide it.
+     */
     @Initializer
     public void initialize(
             PropertyModel model,
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            BottomSheetController bottomSheetController) {
+            @Nullable BottomSheetController bottomSheetController) {
         mModel = model;
         mProfile = profile;
         mTabCreatorManager = tabCreatorManager;
@@ -79,7 +89,8 @@ public class RestoreTabsMediator {
                     public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
                         super.onSheetClosed(reason);
                         dismiss();
-                        mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+                        assumeNonNull(mBottomSheetController)
+                                .removeObserver(mBottomSheetDismissedObserver);
 
                         switch (reason) {
                             case BottomSheetController.StateChangeReason.SWIPE:
@@ -108,7 +119,7 @@ public class RestoreTabsMediator {
     }
 
     /** Returns an implementation the RestoreTabsPromoScreen.Delegate interface. */
-    private RestoreTabsPromoScreenCoordinator.Delegate createHomeScreenDelegate() {
+    RestoreTabsPromoScreenCoordinator.Delegate createHomeScreenDelegate() {
         return new RestoreTabsPromoScreenCoordinator.Delegate() {
             @Override
             public void onShowDeviceList() {
@@ -155,11 +166,13 @@ public class RestoreTabsMediator {
 
     /**
      * If set to true, requests to show the bottom sheet. Otherwise, requests to hide the sheet.
+     *
      * @param isVisible A boolean indicating whether to show or hide the sheet.
      * @param content The bottom sheet content to show/hide.
      * @return True if the request was successful, false otherwise.
      */
     public boolean setVisible(boolean isVisible, BottomSheetContent content) {
+        assert mBottomSheetController != null;
         if (isVisible) {
             mBottomSheetController.addObserver(mBottomSheetDismissedObserver);
             if (!mBottomSheetController.requestShowContent(content, true)) {
@@ -395,7 +408,7 @@ public class RestoreTabsMediator {
         assumeNonNull(mDelegate);
         int currentGTSTabListModelSize = mDelegate.getGTSTabListModelSize();
 
-        // TODO(crbug.com/40261552): Consider adding a spinner if restoring the tabs becomes
+        // TODO(crbug.com/464253696): Consider adding a spinner if restoring the tabs becomes
         // a batched process.
         assert tabs.size() > 0 && mForeignSessionHelper != null;
         mForeignSessionHelper.openForeignSessionTabsAsBackgroundTabs(

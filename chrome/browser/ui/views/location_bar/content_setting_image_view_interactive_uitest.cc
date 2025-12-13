@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
@@ -89,7 +90,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
   }
 
   ui::ElementContext GetAppWindowElementContext() {
-    return helper()->app_browser()->window()->GetElementContext();
+    return BrowserElements::From(helper()->app_browser())->GetContext();
   }
 
   GURL GetURL() {
@@ -101,7 +102,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
   void SetCannedUiDecision() {
     test_api_->manager()->set_permission_ui_selector_for_testing(
         std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(
+            permissions::PermissionUiSelector::Decision::UseQuietUi(
                 permissions::PermissionUiSelector::QuietUiReason::
                     kEnabledInPrefs,
                 std::nullopt)));

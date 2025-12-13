@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/program_manager.h"
 
 #include <stddef.h>
@@ -22,6 +17,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -1430,11 +1426,12 @@ bool Program::SetSamplers(
   count = std::min(info->size - static_cast<GLsizei>(element_index), count);
   if (info->IsSampler() && count > 0) {
     for (GLsizei ii = 0; ii < count; ++ii) {
-      if (value[ii] < 0 || value[ii] >= num_texture_units) {
+      if (UNSAFE_TODO(value[ii]) < 0 ||
+          UNSAFE_TODO(value[ii]) >= num_texture_units) {
         return false;
       }
     }
-    std::copy(value, value + count,
+    std::copy(value, UNSAFE_TODO(value + count),
               info->texture_units.begin() + element_index);
     return true;
   }
@@ -1865,10 +1862,10 @@ void Program::GetProgramInfo(
     inputs->location_offset = ComputeOffset(header, locations);
     inputs->name_offset = ComputeOffset(header, strings);
     inputs->name_length = info.name.size();
-    *locations++ = info.location;
-    memcpy(strings, info.name.c_str(), info.name.size());
-    strings += info.name.size();
-    ++inputs;
+    *UNSAFE_TODO(locations++) = info.location;
+    UNSAFE_TODO(memcpy(strings, info.name.c_str(), info.name.size()));
+    UNSAFE_TODO(strings += info.name.size());
+    UNSAFE_TODO(++inputs);
   }
 
   for (const UniformInfo& info : uniform_infos_) {
@@ -1880,14 +1877,14 @@ void Program::GetProgramInfo(
     DCHECK(static_cast<size_t>(info.size) == info.element_locations.size());
     for (size_t jj = 0; jj < info.element_locations.size(); ++jj) {
       if (info.element_locations[jj] == -1)
-        *locations++ = -1;
+        *UNSAFE_TODO(locations++) = -1;
       else
-        *locations++ =
+        *UNSAFE_TODO(locations++) =
             ProgramManager::MakeFakeLocation(info.fake_location_base, jj);
     }
-    memcpy(strings, info.name.c_str(), info.name.size());
-    strings += info.name.size();
-    ++inputs;
+    UNSAFE_TODO(memcpy(strings, info.name.c_str(), info.name.size()));
+    UNSAFE_TODO(strings += info.name.size());
+    UNSAFE_TODO(++inputs);
   }
   // NOTE: currently we do not pass inactive uniform binding locations
   // through the program info call.
@@ -1953,7 +1950,7 @@ bool Program::GetUniformBlocks(CommonDecoder::Bucket* bucket) const {
     glGetActiveUniformBlockiv(
         program, ii, GL_UNIFORM_BLOCK_NAME_LENGTH, &param);
     DCHECK_GE(max_name_length, param);
-    memset(&buffer[0], 0, param);
+    UNSAFE_TODO(memset(&buffer[0], 0, param));
     length = 0;
     glGetActiveUniformBlockName(
         program, ii, static_cast<GLsizei>(param), &length, &buffer[0]);
@@ -2012,26 +2009,26 @@ bool Program::GetUniformBlocks(CommonDecoder::Bucket* bucket) const {
 
   // Copy over data for the header and entries.
   header->num_uniform_blocks = num_uniform_blocks;
-  memcpy(entries, &blocks[0], entry_size);
+  UNSAFE_TODO(memcpy(entries, &blocks[0], entry_size));
 
   std::vector<GLint> params;
   for (uint32_t ii = 0; ii < num_uniform_blocks; ++ii) {
     // Get active uniform name.
-    memcpy(data, names[ii].c_str(), names[ii].length() + 1);
-    data += names[ii].length() + 1;
+    UNSAFE_TODO(memcpy(data, names[ii].c_str(), names[ii].length() + 1));
+    UNSAFE_TODO(data += names[ii].length() + 1);
 
     // Get active uniform indices.
     if (params.size() < blocks[ii].active_uniforms)
       params.resize(blocks[ii].active_uniforms);
     uint32_t num_bytes = blocks[ii].active_uniforms * sizeof(GLint);
-    memset(&params[0], 0, num_bytes);
+    UNSAFE_TODO(memset(&params[0], 0, num_bytes));
     glGetActiveUniformBlockiv(
         program, ii, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, &params[0]);
     uint32_t* indices = reinterpret_cast<uint32_t*>(data);
     for (uint32_t uu = 0; uu < blocks[ii].active_uniforms; ++uu) {
-      indices[uu] = static_cast<uint32_t>(params[uu]);
+      UNSAFE_TODO(indices[uu]) = static_cast<uint32_t>(params[uu]);
     }
-    data += num_bytes;
+    UNSAFE_TODO(data += num_bytes);
   }
   DCHECK_EQ(ComputeOffset(header, data), total_size);
   return true;
@@ -2125,11 +2122,11 @@ bool Program::GetTransformFeedbackVaryings(
   // Copy over data for the header and entries.
   header->transform_feedback_buffer_mode = transform_feedback_buffer_mode;
   header->num_transform_feedback_varyings = num_transform_feedback_varyings;
-  memcpy(entries, &varyings[0], entry_size);
+  UNSAFE_TODO(memcpy(entries, &varyings[0], entry_size));
 
   for (uint32_t ii = 0; ii < num_transform_feedback_varyings; ++ii) {
-    memcpy(data, names[ii].c_str(), names[ii].length() + 1);
-    data += names[ii].length() + 1;
+    UNSAFE_TODO(memcpy(data, names[ii].c_str(), names[ii].length() + 1));
+    UNSAFE_TODO(data += names[ii].length() + 1);
   }
   DCHECK_EQ(ComputeOffset(header, data), total_size);
   return true;
@@ -2203,7 +2200,7 @@ bool Program::GetUniformsES3(CommonDecoder::Bucket* bucket) const {
     glGetActiveUniformsiv(
         program, count, &indices[0], kPname[pname_index], &params[0]);
     for (GLsizei ii = 0; ii < count; ++ii) {
-      entries[kStride * ii + pname_index] = params[ii];
+      UNSAFE_TODO(entries[kStride * ii + pname_index]) = params[ii];
     }
   }
   return true;
@@ -2244,7 +2241,8 @@ void Program::TransformFeedbackVaryings(GLsizei count,
                                         GLenum buffer_mode) {
   transform_feedback_varyings_.clear();
   for (GLsizei i = 0; i < count; ++i) {
-    transform_feedback_varyings_.push_back(std::string(varyings[i]));
+    transform_feedback_varyings_.push_back(
+        std::string(UNSAFE_TODO(varyings[i])));
   }
   transform_feedback_buffer_mode_ = buffer_mode;
 }

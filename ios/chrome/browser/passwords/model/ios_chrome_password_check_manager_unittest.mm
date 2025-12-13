@@ -83,7 +83,7 @@ struct MockPasswordCheckManagerObserver
 };
 
 std::unique_ptr<KeyedService> MakeMockPasswordCheckManagerObserver(
-    web::BrowserState*) {
+    ProfileIOS* profile) {
   return std::make_unique<MockBulkLeakCheckService>();
 }
 
@@ -124,15 +124,14 @@ class IOSChromePasswordCheckManagerTest : public PlatformTest {
         base::BindRepeating(&MakeMockPasswordCheckManagerObserver));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<web::BrowserState,
+        base::BindOnce(
+            &password_manager::BuildPasswordStore<ProfileIOS,
                                                   TestPasswordStore>));
     builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
-        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
-          return std::unique_ptr<KeyedService>(
-              std::make_unique<affiliations::FakeAffiliationService>());
-        })));
+        base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+          return std::make_unique<affiliations::FakeAffiliationService>();
+        }));
 
     profile_ = std::move(builder).Build();
     bulk_leak_check_service_ = static_cast<MockBulkLeakCheckService*>(

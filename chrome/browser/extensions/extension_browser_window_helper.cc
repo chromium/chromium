@@ -9,9 +9,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/url_constants.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/unloaded_extension_reason.h"
@@ -62,9 +63,9 @@ void UnmuteIfMutedByExtension(content::WebContents* contents,
   LastMuteMetadata::CreateForWebContents(contents);  // Ensures metadata exists.
   LastMuteMetadata* const metadata =
       LastMuteMetadata::FromWebContents(contents);
-  if (metadata->reason == TabMutedReason::EXTENSION &&
+  if (metadata->reason == TabMutedReason::kExtension &&
       metadata->extension_id == extension_id) {
-    SetTabAudioMuted(contents, false, TabMutedReason::EXTENSION, extension_id);
+    SetTabAudioMuted(contents, false, TabMutedReason::kExtension, extension_id);
   }
 }
 

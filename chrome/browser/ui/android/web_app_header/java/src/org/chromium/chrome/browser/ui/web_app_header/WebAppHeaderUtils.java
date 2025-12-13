@@ -13,6 +13,7 @@ import androidx.annotation.LayoutRes;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
@@ -92,12 +93,11 @@ public class WebAppHeaderUtils {
     private WebAppHeaderUtils() {}
 
     /**
-     * Checks whether minimal ui for large screens is enabled. This includes checking feature flag
-     * and type of web app that's running right now.
+     * Checks whether minimal ui for large screens is enabled. This checks the type of web app
+     * that's running right now.
      *
      * @param intentDataProvider contains intent data related to the current browser service.
-     * @return true when minimal ui flag is enabled and currently running a web app, otherwise
-     *     false.
+     * @return true when currently running a web app, otherwise false.
      */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static boolean isMinimalUiEnabled(BrowserServicesIntentDataProvider intentDataProvider) {
@@ -105,18 +105,68 @@ public class WebAppHeaderUtils {
 
         boolean isTrustedWebApp =
                 intentDataProvider.isWebApkActivity() || intentDataProvider.isTrustedWebActivity();
-        return isTrustedWebApp && displayMode == DisplayMode.MINIMAL_UI && isMinimalUiFlagEnabled();
+        return isTrustedWebApp && displayMode == DisplayMode.MINIMAL_UI && isMinimalUiEnabled();
     }
 
     /**
-     * Checks whether minimal ui feature flag is enabled on Android 15+ SDK.
+     * Checks whether standalone display mode is enabled. This includes checking that the the
+     * standalone feature flag is enabled, as well as the type of web app of the intent.
      *
-     * @return true if flag is enabled and running on SDK >= 35, false otherwise.
+     * @param intentDataProvider contains intent data related to the current browser service.
+     * @return true when currently running a trusted web app in standalone mode, else return false.
      */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    public static boolean isMinimalUiFlagEnabled() {
+    public static boolean isStandaloneEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        @DisplayMode.EnumType int displayMode = intentDataProvider.getResolvedDisplayMode();
+
+        return intentDataProvider.isTrustedWebActivity()
+                && displayMode == DisplayMode.STANDALONE
+                && ChromeFeatureList.sAndroidWebAppHeaderForStandaloneMode.isEnabled();
+    }
+
+    /**
+     * Checks whether minimal ui is enabled for Android 15+ SDK.
+     *
+     * @return true if running on SDK >= 35, false otherwise.
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isMinimalUiEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
+    }
+
+    /**
+     * Checks whether window controls overlay is enabled. This includes checking feature flag and
+     * type of web app that's running right now.
+     *
+     * @param intentDataProvider contains intent data related to the current browser service.
+     * @return true when window controls overla flag is enabled and currently running a TWA,
+     *     otherwise false.
+     */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWindowControlsOverlayEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        @DisplayMode.EnumType int displayMode = intentDataProvider.getResolvedDisplayMode();
+
+        return intentDataProvider.isTrustedWebActivity()
+                && displayMode == DisplayMode.WINDOW_CONTROLS_OVERLAY
+                && isWindowControlsOverlayFlagEnabled();
+    }
+
+    /** Checks whether the window controls overlay feature flag is enabled. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWindowControlsOverlayFlagEnabled() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.sAndroidMinimalUiLargeScreen.isEnabled();
+                && ChromeFeatureList.sAndroidWindowControlsOverlay.isEnabled();
+    }
+
+    /** Checks whether a display mode that requires the custom web app header is enabled. */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public static boolean isWebAppHeaderEnabled(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        return isMinimalUiEnabled(intentDataProvider)
+                || isStandaloneEnabled(intentDataProvider)
+                || isWindowControlsOverlayEnabled(intentDataProvider);
     }
 
     /**
@@ -129,6 +179,24 @@ public class WebAppHeaderUtils {
     }
 
     /**
+     * Provides layout id of the webapp content.
+     *
+     * @return webapp content resource id.
+     */
+    public static int getWebAppHeaderContentId() {
+        return R.id.web_app_content;
+    }
+
+    /**
+     * Provides layout id of the webapp find toolbar tablet stub.
+     *
+     * @return webapp find toolbar tablet stub id.
+     */
+    public static int getWebAppHeaderFindToolbarTabletId() {
+        return R.id.web_app_header_find_toolbar_tablet_stub;
+    }
+
+    /**
      * Checks whether minimal ui is visible based on the desktop window state and feature flag
      * state.
      *
@@ -138,7 +206,7 @@ public class WebAppHeaderUtils {
      */
     public static boolean isMinimalUiVisible(
             BrowserServicesIntentDataProvider intentDataProvider,
-            DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return isMinimalUiEnabled(intentDataProvider)
                 && AppHeaderUtils.isAppInDesktopWindow(desktopWindowStateManager);
     }

@@ -23,15 +23,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_BLOOM_FILTER_H_
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -64,7 +60,8 @@ class BloomFilter {
 
   friend bool operator==(const BloomFilter<keyBits>& a,
                          const BloomFilter<keyBits>& b) {
-    return memcmp(a.bit_array_, b.bit_array_, a.kBitArrayMemorySize) == 0;
+    return UNSAFE_TODO(
+               memcmp(a.bit_array_, b.bit_array_, a.kBitArrayMemorySize)) == 0;
   }
 
   base::span<unsigned> GetRawData() { return base::span(bit_array_); }
@@ -108,13 +105,13 @@ inline void BloomFilter<keyBits>::Add(unsigned hash) {
 
 template <unsigned keyBits>
 inline void BloomFilter<keyBits>::Clear() {
-  memset(bit_array_, 0, kBitArrayMemorySize);
+  UNSAFE_TODO(memset(bit_array_, 0, kBitArrayMemorySize));
 }
 
 template <unsigned keyBits>
 inline void BloomFilter<keyBits>::Merge(const BloomFilter<keyBits>& other) {
   for (size_t i = 0; i < kBitArraySize; ++i) {
-    bit_array_[i] |= other.bit_array_[i];
+    UNSAFE_TODO(bit_array_[i] |= other.bit_array_[i]);
   }
 }
 
@@ -131,13 +128,13 @@ inline unsigned BloomFilter<keyBits>::BitMask(unsigned key) {
 template <unsigned keyBits>
 bool BloomFilter<keyBits>::IsBitSet(unsigned key) const {
   DCHECK_LT(BitArrayIndex(key), kBitArraySize);
-  return bit_array_[BitArrayIndex(key)] & BitMask(key);
+  return UNSAFE_TODO(bit_array_[BitArrayIndex(key)]) & BitMask(key);
 }
 
 template <unsigned keyBits>
 void BloomFilter<keyBits>::SetBit(unsigned key) {
   DCHECK_LT(BitArrayIndex(key), kBitArraySize);
-  bit_array_[BitArrayIndex(key)] |= BitMask(key);
+  UNSAFE_TODO(bit_array_[BitArrayIndex(key)]) |= BitMask(key);
 }
 
 }  // namespace blink

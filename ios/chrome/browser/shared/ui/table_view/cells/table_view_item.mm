@@ -12,20 +12,22 @@
 - (instancetype)initWithType:(NSInteger)type {
   if ((self = [super initWithType:type])) {
     _useCustomSeparator = NO;
+    _selectionStyle = UITableViewCellSelectionStyleDefault;
 
-    self.cellClass = [TableViewCell class];
+    self.cellClass = [LegacyTableViewCell class];
   }
   return self;
 }
 
-- (void)configureCell:(TableViewCell*)cell
+- (void)configureCell:(LegacyTableViewCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   DCHECK(styler);
   DCHECK([cell class] == self.cellClass);
-  DCHECK([cell isKindOfClass:[TableViewCell class]]);
+  DCHECK([cell isKindOfClass:[LegacyTableViewCell class]]);
   cell.accessoryType = self.accessoryType;
   cell.editingAccessoryType = self.editingAccessoryType;
   cell.accessoryView = self.accessoryView;
+  cell.selectionStyle = self.selectionStyle;
   cell.useCustomSeparator = self.useCustomSeparator;
   cell.accessibilityTraits = self.accessibilityTraits;
   cell.accessibilityIdentifier = self.accessibilityIdentifier;
@@ -46,6 +48,10 @@
     selectedBackgroundView.backgroundColor = styler.cellHighlightColor;
     cell.selectedBackgroundView = selectedBackgroundView;
   }
+}
+
+- (LegacyTableViewCell*)cellForTableView:(UITableView*)tableView {
+  return nil;
 }
 
 @end

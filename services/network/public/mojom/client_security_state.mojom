@@ -8,9 +8,9 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/document_isolation_policy.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 
-// How to treat private network requests.
+// How to treat local network requests.
 //
-// Private network requests are requests from a less-private IP address space
+// Local network requests are requests from a less-private IP address space
 // to a more-private IP address space. Concretely:
 //
 //  - unknown to private
@@ -19,13 +19,14 @@ import "services/network/public/mojom/ip_address_space.mojom";
 //  - public to local
 //  - private to local
 //
-// See the definition in the Private Network Access(PNA) specification:
-// https://wicg.github.io/private-network-access/#ip-address-space
+// See the Local Network Access (LNA) Spec at
+// https://wicg.github.io/local-network-access/
+// for more information.
 //
-// Note: work is being done to move from the PNA specification to LNA.
+// The naming of this is a vestige of the old Private Network Access (PNA) spec
+// which predated LNA but is no longer relevant.
 //
-// Explainer:
-// https://github.com/explainers-by-googlers/local-network-access
+// TODO(crbug.com/394636065): rename enum to LocalNetworkRequestPolicy
 enum PrivateNetworkRequestPolicy {
   // Allow the requests.
   kAllow,
@@ -35,15 +36,6 @@ enum PrivateNetworkRequestPolicy {
 
   // Block the requests with a CORS error.
   kBlock,
-
-  // Send a preflight ahead of the actual request, and display a warning in
-  // DevTools if the preflight request fails.
-  kPreflightWarn,
-
-  // Send a preflight ahead of the actual request, and block the request if
-  // the preflight request fails.
-  kPreflightBlock,
-
 
   // Display a warning in devtools when a request will require user permission
   // in the future when LNA launches.

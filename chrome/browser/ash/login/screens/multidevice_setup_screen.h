@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/device_sync/group_private_key_and_better_together_metadata_status.h"
 
 namespace ash {
@@ -24,10 +25,6 @@ class MultiDeviceSetupClient;
 
 namespace device_sync {
 class DeviceSyncClient;
-}
-
-namespace quick_start {
-class QuickStartMetrics;
 }
 
 class MultiDeviceSetupScreen : public BaseScreen {

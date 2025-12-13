@@ -80,7 +80,7 @@ bool HostFilterToPatternFilter(
   // against its host.
   GURL url = GURL(primary_pattern.ToString());
   DCHECK(url.is_valid());
-  return std::move(host_filter).Run(url.host());
+  return std::move(host_filter).Run(url.GetHost());
 }
 
 }  // namespace

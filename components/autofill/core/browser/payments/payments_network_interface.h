@@ -14,9 +14,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
@@ -122,8 +120,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       GetCardUploadDetailsCallback callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
-      UploadCardSource upload_card_source =
-          UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
+      UploadCardSource upload_card_source = UploadCardSource::kUnknown);
 
   // The user has indicated that they would like to upload a card with the given
   // cvc. This request will fail server-side if a successful call to

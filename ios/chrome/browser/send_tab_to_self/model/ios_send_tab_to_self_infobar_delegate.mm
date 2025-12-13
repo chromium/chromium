@@ -20,7 +20,7 @@
 
 namespace {
 
-NSString* kSendTabToSendConclusionNotification =
+NSString* const kSendTabToSendConclusionNotification =
     @"SendTabToSendConclusionNotification";
 
 }  // namespace

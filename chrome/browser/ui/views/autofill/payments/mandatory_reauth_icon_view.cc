@@ -44,7 +44,8 @@ views::BubbleDialogDelegate* MandatoryReauthIconView::GetBubble() const {
     return nullptr;
   }
 
-  if (controller->GetBubbleType() == MandatoryReauthBubbleType::kConfirmation) {
+  if (controller->GetMandatoryReauthBubbleType() ==
+      MandatoryReauthBubbleType::kConfirmation) {
     return static_cast<autofill::MandatoryReauthConfirmationBubbleView*>(
         controller->GetBubbleView());
   } else {

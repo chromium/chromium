@@ -17,7 +17,6 @@
 #include "components/enterprise/connectors/core/connectors_service_base.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 
 namespace base {
@@ -35,7 +34,7 @@ namespace enterprise_connectors {
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
   ConnectorsService(content::BrowserContext* context,
-                    std::unique_ptr<ConnectorsManager> manager);
+                    std::unique_ptr<ConnectorsManagerBase> manager);
   ~ConnectorsService() override;
 
   // Accessors that call the corresponding method in ConnectorsManager.
@@ -50,30 +49,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
       AnalysisConnector connector);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  bool DelayUntilVerdict(AnalysisConnector connector);
-
-  // Gets custom message if set by the admin.
-  std::optional<std::u16string> GetCustomMessage(AnalysisConnector connector,
-                                                 const std::string& tag);
-
-  // Gets custom learn more URL if provided by the admin.
-  std::optional<GURL> GetLearnMoreUrl(AnalysisConnector connector,
-                                      const std::string& tag);
-
-  // Returns true if the admin enabled Bypass Justification.
-  bool GetBypassJustificationRequired(AnalysisConnector connector,
-                                      const std::string& tag);
-
-  // Returns true if the admin has opted into custom message, learn more URL or
-  // letting the user provide bypass justifications in an input dialog.
-  bool HasExtraUiToDisplay(AnalysisConnector connector, const std::string& tag);
-
-  std::vector<std::string> GetAnalysisServiceProviderNames(
-      AnalysisConnector connector);
-
-  std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
-      AnalysisConnector connector);
-
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
   // unset.
@@ -84,14 +59,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   // precedence.
   std::string GetManagementDomain();
 
-  // Testing functions.
-  ConnectorsManager* ConnectorsManagerForTesting();
-
-  // Observe if reporting policies have changed to include telemetry event.
-  void ObserveTelemetryReporting(base::RepeatingCallback<void()> callback);
-
   // ConnectorsServiceBase:
-  bool IsConnectorEnabled(AnalysisConnector connector) const override;
   std::optional<std::string> GetBrowserDmToken() const override;
   std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
@@ -111,8 +79,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   bool ConnectorsEnabled() const override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
-  ConnectorsManagerBase* GetConnectorsManagerBase() override;
-  const ConnectorsManagerBase* GetConnectorsManagerBase() const override;
   policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
@@ -122,7 +88,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::unique_ptr<ClientMetadata> GetBasicClientMetadata(Profile* profile);
 
   raw_ptr<content::BrowserContext> context_;
-  std::unique_ptr<ConnectorsManager> connectors_manager_;
 };
 
 class ConnectorsServiceFactory : public BrowserContextKeyedServiceFactory {

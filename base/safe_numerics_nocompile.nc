@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/numerics/safe_math.h"
 
 namespace base {
 
@@ -34,4 +35,31 @@ void StrictNumericConstruction() {
       std::integral_constant<float, 1.0f>()};  // expected-error@*:* {{no matching function for call to 'strict_cast'}}
 }
 
+void IsValidAndWithBadPredicate() {
+  base::CheckedNumeric<int> value;
+
+  // No argument.
+  value.IsValidAnd([] { return true; });  // expected-error {{no matching member function for call to 'IsValidAnd'}}
+  // Too many arguments.
+  value.IsValidAnd([] (int, float) { return true; });  // expected-error {{no matching member function for call to 'IsValidAnd'}}
+  // Non-arithmetic argument.
+  value.IsValidAnd([] (const void*) { return true; });  // expected-error {{no matching member function for call to 'IsValidAnd'}}
+  // Non-bool return type.
+  value.IsValidAnd([] {});  // expected-error {{no matching member function for call to 'IsValidAnd'}}
+  value.IsValidAnd([] { return 2; });  // expected-error {{no matching member function for call to 'IsValidAnd'}}
+}
+
+void IsInvalidOrWithBadPredicate() {
+  base::CheckedNumeric<int> value;
+
+  // No argument.
+  value.IsInvalidOr([] { return true; });  // expected-error {{no matching member function for call to 'IsInvalidOr'}}
+  // Too many arguments.
+  value.IsInvalidOr([] (int, float) { return true; });  // expected-error {{no matching member function for call to 'IsInvalidOr'}}
+  // Non-arithmetic argument.
+  value.IsInvalidOr([] (const void*) { return true; });  // expected-error {{no matching member function for call to 'IsInvalidOr'}}
+  // Non-bool return type.
+  value.IsInvalidOr([] {});  // expected-error {{no matching member function for call to 'IsInvalidOr'}}
+  value.IsInvalidOr([] { return 2; });  // expected-error {{no matching member function for call to 'IsInvalidOr'}}
+}
 }  // namespace base

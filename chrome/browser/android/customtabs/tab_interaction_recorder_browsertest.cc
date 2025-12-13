@@ -16,7 +16,6 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -45,9 +44,6 @@ class TabInteractionRecorderAndroidBrowserTest : public AndroidBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // For using an HTTPS server.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kIgnoreCertificateErrors);
     scoped_feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());

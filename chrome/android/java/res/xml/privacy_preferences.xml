@@ -30,15 +30,8 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
         app:isPreferenceVisible="false" />
     <Preference
-        android:key="incognito_tracking_protections"
-        android:title="@string/incognito_tracking_protections_page_title"
-        android:summary="@string/incognito_tracking_protections_page_entrypoint_description"
-        android:fragment="org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment"
-        app:isPreferenceVisible="false" />
-    <Preference
         android:key="privacy_sandbox"
         android:title="@string/ad_privacy_link_row_label"
-        android:summary="@string/ad_privacy_link_row_sub_label"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment" />
     <Preference
         android:key="do_not_track"
@@ -75,8 +68,7 @@ found in the LICENSE file.
          TODO(crbug.com/349860796): Remove once new settings are fully rolled out. -->
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="https_first_mode_legacy"
-        android:title="@string/settings_https_first_mode_title"
-        android:summary="@string/settings_https_first_mode_summary" />
+        android:title="@string/settings_https_first_mode_title" />
     <!-- New HTTPS-First Mode settings sub-page. Hidden if HttpsFirstBalancedMode flag is disabled. -->
     <Preference
         android:key="https_first_mode"

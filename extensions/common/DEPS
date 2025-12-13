@@ -17,7 +17,6 @@ include_rules = [
   "+third_party/blink/public/common",
   "+third_party/blink/public/mojom",
   "+third_party/blink/public/common/custom_handlers",
-  "+third_party/blink/public/common/privacy_budget",
   "+third_party/blink/public/common/security",
   "+third_party/blink/public/mojom/blob",
   "+third_party/re2",

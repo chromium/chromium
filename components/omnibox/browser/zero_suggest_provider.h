@@ -10,6 +10,7 @@
 #define COMPONENTS_OMNIBOX_BROWSER_ZERO_SUGGEST_PROVIDER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -119,7 +120,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                          const ResultType result_type,
                          const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body);
+                         std::optional<std::string> response_body);
   // Called when the prefetch network request has completed.
   // `input` and `result_type` are bound to this callback. The former is the
   // input for which the request was made and the latter indicates the result
@@ -128,7 +129,7 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                  const ResultType result_type,
                                  const network::SimpleURLLoader* source,
                                  const int response_code,
-                                 std::unique_ptr<std::string> response_body);
+                                 std::optional<std::string> response_body);
 
   // Called by `debouncer_`.
   void RunZeroSuggestPrefetch(const AutocompleteInput& input,

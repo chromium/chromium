@@ -15,7 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/cronet/cronet_url_request.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
@@ -47,7 +47,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   CronetURLRequestAdapter(
       CronetContextAdapter* context,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jurl_request,
+      const base::android::JavaRef<jobject>& jurl_request,
       const GURL& url,
       net::RequestPriority priority,
       jboolean jdisable_cache,
@@ -69,12 +69,12 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
 
   // Sets the request method GET, POST etc.
   jboolean SetHttpMethod(JNIEnv* env,
-                         const base::android::JavaParamRef<jstring>& jmethod);
+                         const base::android::JavaRef<jstring>& jmethod);
 
   // Adds a header to the request before it starts.
   jboolean AddRequestHeader(JNIEnv* env,
-                            const base::android::JavaParamRef<jstring>& jname,
-                            const base::android::JavaParamRef<jstring>& jvalue);
+                            const base::android::JavaRef<jstring>& jname,
+                            const base::android::JavaRef<jstring>& jvalue);
 
   // Adds a request body to the request before it starts.
   void SetUpload(std::unique_ptr<net::UploadDataStream> upload);
@@ -83,14 +83,14 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
   void Start(JNIEnv* env);
 
   void GetStatus(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jstatus_listener);
+                 const base::android::JavaRef<jobject>& jstatus_listener);
 
   // Follows redirect.
   void FollowDeferredRedirect(JNIEnv* env);
 
   // Reads more data.
   jboolean ReadData(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jbyte_buffer,
+                    const base::android::JavaRef<jobject>& jbyte_buffer,
                     jint jposition,
                     jint jcapacity);
 

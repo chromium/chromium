@@ -25,6 +25,11 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   // Enables/disables the AutofillAcrossIframes feature in `frame`.
   void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
 
+  // Enables/disables whether field labels must not exclusively contain em
+  // dashes, minuses, fullwidth hyphens and other special characters in `frame`.
+  void SetAutofillDisallowMoreHyphenLikeLabels(web::WebFrame* frame,
+                                               bool enabled);
+
   // Enables/disables whether field labels must not exclusively contain slashes
   // and dots and other special characters in `frame`.
   void SetAutofillDisallowSlashDotLabels(web::WebFrame* frame, bool enabled);

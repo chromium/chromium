@@ -130,6 +130,26 @@ class CrostiniExportImport : public KeyedService,
                        base::FilePath path,
                        CrostiniManager::CrostiniResultCallback callback);
 
+  // Export |container_id|'s disk image using FileDialog.
+  void ExportDiskImageFlow(guest_os::GuestId container_id,
+                           content::WebContents* web_contents);
+
+  // Import |container_id|'s disk image using FileDialog.
+  void ImportDiskImageFlow(guest_os::GuestId container_id,
+                           content::WebContents* web_contents);
+
+  // Export |container_id| to |path| and invoke |callback| when complete.
+  void ExportDiskImageWithCallback(
+      guest_os::GuestId container_id,
+      base::FilePath path,
+      CrostiniManager::CrostiniResultCallback callback);
+
+  // Import |container_id| from |path| and invoke |callback| when complete.
+  void ImportDiskImageWithCallback(
+      guest_os::GuestId container_id,
+      base::FilePath path,
+      CrostiniManager::CrostiniResultCallback callback);
+
   // Create a new container with |container_id| from |path| and invoke
   // |callback| when complete.
   void CreateContainerFromImport(
@@ -167,6 +187,8 @@ class CrostiniExportImport : public KeyedService,
 
   // Returns the default location to export the container to.
   base::FilePath GetDefaultBackupPath() const;
+  // Returns the default location to export the disk image to.
+  base::FilePath GetDefaultImageBackupPath() const;
 
   base::WeakPtr<CrostiniExportImportNotificationController>
   GetNotificationControllerForTesting(guest_os::GuestId container_id);
@@ -182,6 +204,7 @@ class CrostiniExportImport : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestExportDoneBeforeCancelled);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportSuccess);
+  FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportZstdFileSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest,
                            TestImportCustomVmContainerSuccess);
   FRIEND_TEST_ALL_PREFIXES(CrostiniExportImportTest, TestImportFail);

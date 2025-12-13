@@ -12,8 +12,9 @@ thakis@chromium.org
 per-file add_header*.py=dcheng@chromium.org
 per-file add_header*.py=xhwang@chromium.org
 
-per-file autotest.py=mthiesse@chromium.org
-per-file autotest.py=agrieve@chromium.org
+per-file autotest*.py=mthiesse@chromium.org
+per-file autotest*.py=agrieve@chromium.org
+per-file autotest*.py=jthiesen@chromium.org
 per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
@@ -41,6 +42,10 @@ per-file roll_webrtc.py=mbonadei@chromium.org
 per-file download_optimization_profile.py=gbiv@chromium.org
 
 per-file update_pgo_profiles.py=jeffyoon@google.com
+per-file update_pgo_profiles.py=wnwen@chromium.org
 
 per-file sample_clang_tidy_results.py=dsinclair@chromium.org
 per-file sample_clang_tidy_results.py=gbiv@chromium.org
+
+per-file lldb/chromium_visualizers.py=leese@chromium.org
+

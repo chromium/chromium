@@ -32,13 +32,12 @@ using UserFeedbackCallback =
 class MqlsFeatureMetadata {
  public:
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-  MqlsFeatureMetadata(
-      std::string name,
-      proto::LogAiDataRequest::FeatureCase logging_feature_case,
-      // TODO(b/354705998): add network annotation.
-      EnterprisePolicyPref enterprise_policy,
-      const base::Feature* field_trial_feature,
-      UserFeedbackCallback get_user_feedback_callback);
+  MqlsFeatureMetadata(std::string name,
+                      proto::LogAiDataRequest::FeatureCase logging_feature_case,
+                      // TODO(crbug.com/354705998): add network annotation.
+                      std::optional<EnterprisePolicyPref> enterprise_policy,
+                      const base::Feature* field_trial_feature,
+                      UserFeedbackCallback get_user_feedback_callback);
 
   COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
   ~MqlsFeatureMetadata();
@@ -51,7 +50,9 @@ class MqlsFeatureMetadata {
 
   std::string name() const { return name_; }
 
-  EnterprisePolicyPref enterprise_policy() const { return enterprise_policy_; }
+  std::optional<EnterprisePolicyPref> enterprise_policy() const {
+    return enterprise_policy_;
+  }
 
   proto::LogAiDataRequest::FeatureCase logging_feature_case() const {
     return logging_feature_case_;
@@ -74,7 +75,9 @@ class MqlsFeatureMetadata {
   proto::LogAiDataRequest::FeatureCase logging_feature_case_;
 
   // The pref to control the enterprise policy setting of the feature.
-  EnterprisePolicyPref enterprise_policy_;
+  // `std::nullopt` indicates the policy is unset, which disables logging
+  // by default for enterprise users.
+  std::optional<EnterprisePolicyPref> enterprise_policy_;
 
   // The base::Feature that controls whether logging is currently enabled for
   // this feature. This must always be non-null: all features using MQLS

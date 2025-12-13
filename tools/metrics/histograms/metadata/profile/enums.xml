@@ -91,11 +91,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="ForceSignin"/>
 </enum>
 
-<enum name="GuestProfileCreatedType">
-  <int value="0" label="ParentGuest"/>
-  <int value="1" label="FirstChildGuest"/>
-</enum>
-
 <enum name="NukeProfileResult">
   <int value="0" label="Success (1st attempt)"/>
   <int value="1" label="Success (2nd attempt)"/>
@@ -408,6 +403,7 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="kHeadlessCommand"/>
   <int value="40" label="kGlicView"/>
   <int value="41" label="kWaitingForGlicView"/>
+  <int value="42" label="kWaitingForBookmarksImportOnFirstRun"/>
 </enum>
 
 <!-- LINT.IfChange(ProfileManagementFlowStep) -->
@@ -459,8 +455,16 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Chrome Profile management link"/>
   <int value="21" label="Reauth button (Verify it's you)"/>
   <int value="22" label="Autofill settings button"/>
-  <int value="23" label="History sync opt-in button"/>
+  <int value="23" label="(DEPRECATED): History sync opt-in button"/>
   <int value="24" label="Batch upload button"/>
+  <int value="25" label="Account settings button"/>
+  <int value="26" label="Google services settings button"/>
+  <int value="27" label="History sync button"/>
+  <int value="28" label="Batch Upload with bookmarks as primary button"/>
+  <int value="29" label="Batch Upload as primary button"/>
+  <int value="30"
+      label="Batch Upload for Windows Deprecation as primary button"/>
+  <int value="31" label="Passkey unlock button"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/profiles/profile_menu_view_base.h:ActionableItem) -->
@@ -507,6 +511,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/profiles/profile_picker.h:EntryPoint) -->
 
+<!-- LINT.IfChange(ProfilePickerOpenAllProfilesButtonAction) -->
+
+<enum name="ProfilePickerOpenAllProfilesButtonAction">
+  <int value="0" label="Open All Profiles button was shown"/>
+  <int value="1" label="Open All Profiles button was clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerOpenAllProfilesButtonAction) -->
+
 <enum name="ProfilePickerPages">
   <int value="0" label="mainView"/>
   <int value="1" label="profileTypeChoice"/>
@@ -526,36 +539,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Timeout: Sign in error"/>
 </enum>
 
-<enum name="ProfilePickerStartupProfileMode">
-  <int value="0" label="kBrowserWindow"/>
-  <int value="1" label="kProfilePicker"/>
-  <int value="2" label="kError"/>
-</enum>
-
-<enum name="ProfilePickerStartupProfileReason">
-  <int value="0" label="kError"/>
-  <int value="1" label="kMultipleProfiles"/>
-  <int value="2" label="kPickerForcedByPolicy"/>
-  <int value="10" label="kGuestModeRequested"/>
-  <int value="11" label="kGuestSessionLacros"/>
-  <int value="12" label="kProfileDirSwitch"/>
-  <int value="13" label="kProfileEmailSwitch"/>
-  <int value="14" label="kIgnoreProfilePicker"/>
-  <int value="15" label="kCommandLineTabs"/>
-  <int value="16" label="kPickerNotSupported"/>
-  <int value="17" label="kWasRestarted"/>
-  <int value="18" label="kIncognitoModeRequested"/>
-  <int value="19" label="kAppRequested"/>
-  <int value="20" label="kUninstallApp"/>
-  <int value="21" label="kGcpwSignin"/>
-  <int value="22" label="kLaunchWithoutWindow"/>
-  <int value="23" label="kNotificationLaunchIdWin1"/>
-  <int value="24" label="kNotificationLaunchIdWin2"/>
-  <int value="25" label="kPickerDisabledByPolicy"/>
-  <int value="26" label="kProfilesDisabledLacros"/>
-  <int value="27" label="kSingleProfile"/>
-  <int value="28" label="kInactiveProfiles"/>
-  <int value="29" label="kUserOptedOut"/>
+<enum name="ProfilePickerSignInProviderStep">
+  <int value="0" label="Switch to signin screen"/>
+  <int value="1" label="Navigation to the Gaia blank page"/>
+  <int value="2" label="Finish flow: SAML"/>
+  <int value="3" label="Finish flow: Sync conformation"/>
+  <int value="4" label="Finish flow: History optin"/>
 </enum>
 
 <enum name="ProfileSignedInFlowOutcome">

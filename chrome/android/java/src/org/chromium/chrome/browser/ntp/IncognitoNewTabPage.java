@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.view.LayoutInflater;
@@ -18,20 +16,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPageView.IncognitoNewTabPageManager;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
-import org.chromium.components.content_settings.CookieControlsEnforcement;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /** Provides functionality when the user interacts with the Incognito NTP. */
 @NullMarked
@@ -49,9 +44,7 @@ public class IncognitoNewTabPage extends BasicNativePage
     private boolean mIsLoaded;
 
     private final IncognitoNewTabPageManager mIncognitoNewTabPageManager;
-    private @Nullable IncognitoCookieControlsManager mCookieControlsManager;
-    private IncognitoCookieControlsManager.@Nullable Observer mCookieControlsObserver;
-    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
 
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -101,11 +94,9 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         initWithView(mIncognitoNewTabPageView);
 
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mEdgeToEdgePadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
-        }
+        mEdgeToEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        mIncognitoNewTabPageView.getScrollView(), edgeToEdgeControllerSupplier);
     }
 
     /**
@@ -122,7 +113,6 @@ public class IncognitoNewTabPage extends BasicNativePage
     public void destroy() {
         assert !ViewCompat.isAttachedToWindow(getView())
                 : "Destroy called before removed from window";
-        mIncognitoNewTabPageManager.destroy();
 
         if (mEdgeToEdgePadAdjuster != null) {
             mEdgeToEdgePadAdjuster.destroy();
@@ -134,7 +124,9 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public String getUrl() {
-        return UrlConstants.NTP_URL;
+        UrlConstantResolver urlConstantResolver =
+                UrlConstantResolverFactory.getForProfile(mProfile);
+        return urlConstantResolver.getNtpUrl();
     }
 
     @Override
@@ -184,56 +176,6 @@ public class IncognitoNewTabPage extends BasicNativePage
             @Override
             public void loadIncognitoLearnMore() {
                 showIncognitoLearnMore();
-            }
-
-            @Override
-            public void initCookieControlsManager() {
-                mCookieControlsManager = new IncognitoCookieControlsManager();
-                mCookieControlsManager.initialize(mProfile);
-                mCookieControlsObserver =
-                        new IncognitoCookieControlsManager.Observer() {
-                            @Override
-                            public void onUpdate(
-                                    boolean checked, @CookieControlsEnforcement int enforcement) {
-                                mIncognitoNewTabPageView
-                                        .setIncognitoCookieControlsToggleEnforcement(enforcement);
-                                mIncognitoNewTabPageView.setIncognitoCookieControlsToggleChecked(
-                                        checked);
-                            }
-                        };
-                mCookieControlsManager.addObserver(mCookieControlsObserver);
-                mIncognitoNewTabPageView.setIncognitoCookieControlsToggleCheckedListener(
-                        mCookieControlsManager);
-                mIncognitoNewTabPageView.setIncognitoCookieControlsIconOnclickListener(
-                        mCookieControlsManager);
-                mCookieControlsManager.updateIfNecessary();
-            }
-
-            @Override
-            public boolean shouldCaptureThumbnail() {
-                assumeNonNull(mCookieControlsManager);
-                return mCookieControlsManager.shouldCaptureThumbnail();
-            }
-
-            @Override
-            public boolean shouldShowTrackingProtectionNtp() {
-                return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX)
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
-            }
-
-            @Override
-            public void destroy() {
-                if (mCookieControlsManager != null) {
-                    if (mCookieControlsObserver != null) {
-                        mCookieControlsManager.removeObserver(mCookieControlsObserver);
-                    }
-                    mCookieControlsManager.destroy();
-                }
             }
 
             @Override

@@ -7,9 +7,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +21,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -289,8 +292,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   // This test assumes cross-site navigation staying in the same
   // BrowsingInstance to use a different SiteInstance. Otherwise, it will
   // timeout at step 2).
-  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
     return;
+  }
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -1406,6 +1410,98 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheStillNavigatingBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kSubframeIsNavigating}, {}, {}, {}, {},
                     FROM_HERE);
+}
+
+class BackForwardCacheDelayedRfhDeletion : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Effectively never run the RFHs cleanup.
+    EnableFeatureAndSetParams(features::kDelayRfhDestructionsOnUnloadAndDetach,
+                              "task_delay", "1h");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Check that a frame with a subframe that is pending deletion isn't stored
+// in the cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheDelayedRfhDeletion,
+                       DoesNotRestoreSubframeReadyToBeDeleted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImplWrapper main_rfh(current_frame_host());
+  RenderFrameHostImplWrapper child_rfh(
+      main_rfh->child_at(0)->current_frame_host());
+
+  // 1) Detach subframe RFH, but prevent its deletion, due to artificially long
+  // delay for kDelayRfhDestructionsOnUnloadAndDetach.
+  EXPECT_TRUE(ExecJs(main_rfh.get(),
+                     "var f = document.querySelector('iframe');"
+                     "f.parentNode.removeChild(f);"));
+  EXPECT_EQ(child_rfh->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted);
+
+  // 2) Navigate away.
+  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The page should be added to cache even with a subframe that was pending
+  // deletion at the time it was navigated away from.
+  EXPECT_TRUE(main_rfh->IsInBackForwardCache());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  EXPECT_TRUE(main_rfh->IsActive());
+  // The subframe remains ready to be deleted.
+  EXPECT_EQ(child_rfh->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted);
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoesNotRestoreSubframeRunningUnloadHandlers) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // This test requires OOPIFs, so that the subframe can be detached in the
+  // browser process before issuing the main frame navigation.
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"b.com"});
+
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImplWrapper main_rfh(current_frame_host());
+  RenderFrameHostImplWrapper child_rfh(
+      main_rfh->child_at(0)->current_frame_host());
+
+  // 1) Detach subframe RFH, but act as as if there was an infinite unload
+  // handler in the OOPIF.
+  child_rfh->DoNotDeleteForTesting();
+  child_rfh->SetSubframeUnloadTimeoutForTesting(base::Hours(1));
+  EXPECT_TRUE(ExecJs(main_rfh.get(),
+                     "var f = document.querySelector('iframe');"
+                     "f.parentNode.removeChild(f);"));
+  EXPECT_EQ(child_rfh->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+
+  // 2) Navigate away.
+  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  // The page should be added to cache even with a subframe that was pending
+  // deletion at the time it was navigated away from.
+  EXPECT_TRUE(main_rfh->IsInBackForwardCache());
+
+  // 3) Go back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  EXPECT_TRUE(main_rfh->IsActive());
+  EXPECT_EQ(child_rfh->lifecycle_state(),
+            RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
 }
 
 // Check that a frame with an invalid url doesn't affect the back-forward cache

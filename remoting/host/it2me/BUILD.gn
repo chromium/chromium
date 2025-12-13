@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//remoting/remoting_locales.gni")
 import("//remoting/remoting_options.gni")
@@ -88,26 +87,26 @@ source_set("common") {
     "//components/policy:policy_code_generate",
     "//components/webrtc:thread_wrapper",
     "//extensions/browser/api/messaging:native_messaging",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
     "//remoting/host:common",
     "//remoting/host/base",
-    "//remoting/host/native_messaging:native_messaging",
+    "//remoting/host/native_messaging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/protocol",
     "//remoting/resources",
     "//remoting/signaling",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
   ]
 
   if (is_linux) {
     deps += [
       "//build/config/linux/gtk",
       "//remoting/host/linux:platform_impls",
-      "//ui/base:base",
+      "//ui/base",
 
       # GTK pulls pangoft2, which requires HarfBuzz symbols. When linking
       # our own HarfBuzz avoid mixing symbols from system HarfBuzz and
@@ -126,7 +125,7 @@ source_set("common") {
     ]
   }
   if (is_mac) {
-    deps += [ "//ui/base:base" ]
+    deps += [ "//ui/base" ]
   }
   if (is_win) {
     deps += [
@@ -149,12 +148,12 @@ if (is_chromeos) {
     deps = [
       ":common",
       "//extensions/browser/api/messaging:native_messaging",
-      "//remoting/base:base",
+      "//remoting/base",
       "//remoting/host:common",
       "//remoting/host:enterprise_params",
       "//remoting/host/chromeos:browser_interop",
       "//remoting/host/chromeos:features",
-      "//remoting/host/mojom:mojom",
+      "//remoting/host/mojom",
       "//remoting/host/native_messaging",
       "//skia",
     ]

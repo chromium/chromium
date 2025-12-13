@@ -68,10 +68,12 @@ LayoutSVGPath::LayoutSVGPath(SVGGeometryElement* node) : LayoutSVGShape(node) {
 
 LayoutSVGPath::~LayoutSVGPath() = default;
 
-void LayoutSVGPath::StyleDidChange(StyleDifference diff,
-                                   const ComputedStyle* old_style) {
+void LayoutSVGPath::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGShape::StyleDidChange(diff, old_style);
+  LayoutSVGShape::StyleDidChange(diff, old_style, style_change_context);
   SVGResources::UpdateMarkers(*this, old_style);
   if (old_style) {
     const ComputedStyle& style = StyleRef();

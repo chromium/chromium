@@ -40,7 +40,8 @@
     testRunner.log(
         (await dp.Runtime.evaluate({
           returnByValue: true,
-          expression: `Array.from(document.querySelectorAll(':popover-open')).map(e => e.getAttribute('id'))`
+          expression:
+              `Array.from(document.querySelectorAll(':popover-open')).map(e => e.getAttribute('id'))`
         })).result.result,
         'Currently open popovers: ');
   }
@@ -48,19 +49,35 @@
   async function htmlElementShowPopover(id = 'popover') {
     testRunner.log(
         (await dp.Runtime.evaluate({
-          expression:
-              `document.getElementById('${id}').showPopover(); document.querySelector(':popover-open')`
+          expression: `document.getElementById('${
+              id}').showPopover(); JSON.stringify(Array.from(document.querySelectorAll(':popover-open')).map(e => e.id).sort())`
         })).result.result,
-        'element.showPopover(): ');
+        `Open popovers after #${id}.showPopover(): `);
   }
   async function htmlElementHidePopover(id = 'popover') {
     testRunner.log(
         (await dp.Runtime.evaluate({
-          expression:
-              `document.getElementById('${id}').hidePopover(); document.querySelector(':popover-open')`
+          expression: `document.getElementById('${
+              id}').hidePopover(); JSON.stringify(Array.from(document.querySelectorAll(':popover-open')).map(e => e.id).sort())`
         })).result.result,
-        `#${id}.hidePopover(): `);
+        `Open popovers after #${id}.hidePopover(): `);
   }
+
+  testRunner.log('Compare force/unforce orders with hint and auto stacks');
+  await forceShowPopover(nodeIds[1]);
+  await forceShowPopover(nodeIds[3]);
+  await forceHidePopover(nodeIds[1]);
+  await forceHidePopover(nodeIds[3]);
+  await checkOpenPopovers();
+
+  await forceShowPopover(nodeIds[3]);
+  await htmlElementShowPopover('p1');
+  await htmlElementHidePopover('p1');
+  await checkOpenPopovers();
+  await forceHidePopover(nodeIds[3]);
+  await htmlElementHidePopover('p1');
+  await checkOpenPopovers();
+
 
   testRunner.log(
       'First, check interleaving forceShowPopover calls with showPopover()/hidePopover()');

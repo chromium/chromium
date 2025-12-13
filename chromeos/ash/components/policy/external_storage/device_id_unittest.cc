@@ -30,7 +30,8 @@ TEST(DeviceIdTest, FromDict) {
   // clang-format on
 
   for (const auto& t : kTestData) {
-    std::optional<base::Value> value = base::JSONReader::Read(t.json_str);
+    std::optional<base::Value> value = base::JSONReader::Read(
+        t.json_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(value.has_value());
     std::optional<DeviceId> device_id = DeviceId::FromDict(value.value());
     SCOPED_TRACE(testing::Message() << "value: " << t.json_str);

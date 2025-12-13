@@ -16,7 +16,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

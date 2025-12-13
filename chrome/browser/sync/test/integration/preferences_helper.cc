@@ -154,10 +154,7 @@ std::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
 }
 
 std::string ConvertPrefValueToValueInSpecifics(const base::Value& value) {
-  std::string result;
-  bool success = base::JSONWriter::Write(value, &result);
-  DCHECK(success);
-  return result;
+  return base::WriteJson(value).value();
 }
 
 }  // namespace preferences_helper

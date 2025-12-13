@@ -18,6 +18,7 @@
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace gfx {
 class FontList;

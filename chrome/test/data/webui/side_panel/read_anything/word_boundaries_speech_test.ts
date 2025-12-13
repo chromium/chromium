@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement, WordBoundaryState} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController, WordBoundaries} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createApp, createSpeechSynthesisVoice, emitEvent, setupBasicSpeech} from './common.js';
@@ -68,11 +68,13 @@ suite('WordBoundariesUsedForSpeech', () => {
     SpeechBrowserProxyImpl.setInstance(speech);
     voiceLanguageController = new VoiceLanguageController();
     VoiceLanguageController.setInstance(voiceLanguageController);
+    wordBoundaries = new WordBoundaries();
+    WordBoundaries.setInstance(wordBoundaries);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = await createApp();
-    wordBoundaries = WordBoundaries.getInstance();
     setupBasicSpeech(speech);
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
   });
@@ -161,27 +163,41 @@ suite('WordBoundariesUsedForSpeech', () => {
         assertEquals(0, state.speechUtteranceStartIndex);
       });
 
-  test('after voice change resets to unsupported boundary mode', () => {
-    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    wordBoundaries.updateBoundary(10);
-    assertTrue(wordBoundaries.hasBoundaries());
+  test(
+      'after voice change resets to unsupported boundary mode but keeps boundary indices',
+      () => {
+        emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+        wordBoundaries.updateBoundary(10);
+        assertTrue(wordBoundaries.hasBoundaries());
 
-    const selectedVoice =
-        createSpeechSynthesisVoice({lang: 'es', name: 'Lauren'});
-    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
+        const selectedVoice =
+            createSpeechSynthesisVoice({lang: 'es', name: 'Lauren'});
+        emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice}});
 
-    // After a voice change, the word boundary state has been reset.
-    const state: WordBoundaryState = wordBoundaries.state;
-    assertTrue(wordBoundaries.notSupported());
-    assertEquals(0, state.previouslySpokenIndex);
-    assertEquals(0, state.speechUtteranceLength);
-    assertEquals(0, state.speechUtteranceStartIndex);
+        // When the voice changes, we don't know yet whether word boundaries
+        // are supported, but we send to the engine the sentence starting from
+        // the word we were reading, so previously spoken index should reset,
+        // and we should be starting in the middle of the utterance.
+        const state: WordBoundaryState = wordBoundaries.state;
+        assertTrue(wordBoundaries.notSupported());
+        assertEquals(0, state.previouslySpokenIndex);
+        assertEquals(0, state.speechUtteranceLength);
+        assertEquals(10, state.speechUtteranceStartIndex);
 
-    // After another boundary event, the boundary mode is set to
-    // BOUNDARY_DETECTED again.
-    wordBoundaries.updateBoundary(15);
-    assertTrue(wordBoundaries.hasBoundaries());
-  });
+        // After another boundary event, the boundary mode is set to
+        // BOUNDARY_DETECTED again, and we know the new word boundaries relative
+        // to the substring we had sent to the engine.
+        wordBoundaries.updateBoundary(0, 4);
+        assertTrue(wordBoundaries.hasBoundaries());
+        assertEquals(0, wordBoundaries.state.previouslySpokenIndex);
+        assertEquals(4, wordBoundaries.state.speechUtteranceLength);
+        assertEquals(10, wordBoundaries.state.speechUtteranceStartIndex);
+        wordBoundaries.updateBoundary(5, 12);
+        assertTrue(wordBoundaries.hasBoundaries());
+        assertEquals(5, wordBoundaries.state.previouslySpokenIndex);
+        assertEquals(12, wordBoundaries.state.speechUtteranceLength);
+        assertEquals(10, wordBoundaries.state.speechUtteranceStartIndex);
+      });
 
   test(
       'after voice change to same language does not reset word boundary mode',

@@ -67,15 +67,15 @@ class InstallEventLoggerBase {
   static std::unique_ptr<Event> AddDiskSpaceInfoToEvent(
       std::unique_ptr<Event> event,
       const base::FilePath& stateful_path) {
-    const int64_t stateful_total =
+    const std::optional<int64_t> stateful_total =
         base::SysInfo::AmountOfTotalDiskSpace(stateful_path);
-    if (stateful_total >= 0) {
-      event->set_stateful_total(stateful_total);
+    if (stateful_total.has_value()) {
+      event->set_stateful_total(*stateful_total);
     }
-    const int64_t stateful_free =
+    const std::optional<int64_t> stateful_free =
         base::SysInfo::AmountOfFreeDiskSpace(stateful_path);
-    if (stateful_free >= 0) {
-      event->set_stateful_free(stateful_free);
+    if (stateful_free.has_value()) {
+      event->set_stateful_free(*stateful_free);
     }
     return event;
   }

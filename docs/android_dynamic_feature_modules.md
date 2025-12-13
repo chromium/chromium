@@ -194,15 +194,15 @@ to it.
 ### Building and installing modules
 
 Before we are going to jump into adding content to Foo, let's take a look on how
-to build and deploy the Monochrome bundle with the Foo DFM. The remainder of
+to build and deploy the Chrome bundle with the Foo DFM. The remainder of
 this guide assumes the environment variable `OUTDIR` is set to a properly
 configured GN build directory (e.g. `out/Debug`).
 
-To build and install the Monochrome bundle to your connected device, run:
+To build and install the Chrome bundle to your connected device, run:
 
 ```shell
-$ autoninja -C $OUTDIR monochrome_public_bundle
-$ $OUTDIR/bin/monochrome_public_bundle install -m foo
+$ autoninja -C $OUTDIR chrome_public_bundle
+$ $OUTDIR/bin/chrome_public_bundle install -m foo
 ```
 
 This will install the `Foo` module, the `base` module, and all modules with an
@@ -224,11 +224,11 @@ $ adb shell dumpsys package org.chromium.chrome | grep splits
 >   splits=[base, config.en, foo]
 ```
 
-Then try installing the Monochrome bundle without your module and print the
+Then try installing the Chrome bundle without your module and print the
 installed modules:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install
+$ $OUTDIR/bin/chrome_public_bundle install
 $ adb shell dumpsys package org.chromium.chrome | grep splits
 >   splits=[base, config.en]
 ```
@@ -379,7 +379,7 @@ left with an empty tag like so:
 ...
 ```
 
-Rebuild and install `monochrome_public_bundle`. Start Chrome and run through a
+Rebuild and install `chrome_public_bundle`. Start Chrome and run through a
 flow that tries to executes `bar()`. Depending on whether you installed your
 module (`-m foo`) "`bar in module`" or "`module not installed`" is printed to
 logcat. Yay!
@@ -448,7 +448,7 @@ Libraries](android_native_libraries.md#partitioned-libraries).
 First, build a module native interface. Supply a JNI method named
 `JNI_OnLoad_foo` for the module framework to call, in
 `//chrome/android/modules/foo/internal/entrypoints.cc`. This method is invoked
-on all Chrome build variants, including Monochrome (unlike base module JNI).
+on all Chrome build variants, including Trichrome (unlike base module JNI).
 
 ```c++
 #include "third_party/jni_zero/jni_zero_helper.h"
@@ -847,8 +847,8 @@ core's `--local-testing` [mode][play-core-local-testing].
 Fake-install and launch Chrome with the following command:
 
 ```shell
-$ $OUTDIR/bin/monochrome_public_bundle install -f foo
-$ $OUTDIR/bin/monochrome_public_bundle launch
+$ $OUTDIR/bin/chrome_public_bundle install -f foo
+$ $OUTDIR/bin/chrome_public_bundle launch
 ```
 
 When running the install code, the Foo DFM module will be emulated.

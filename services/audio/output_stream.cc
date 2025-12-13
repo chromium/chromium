@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace audio {
 
@@ -197,10 +198,11 @@ OutputStream::OutputStream(
   DCHECK(created_callback);
   DCHECK(delete_callback_);
   DCHECK(coordinator_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "audio::OutputStream", this);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("audio", "OutputStream", this, "device id",
-                                    output_device_id, "params",
-                                    params.AsHumanReadableString());
+  TRACE_EVENT_BEGIN("audio", "audio::OutputStream",
+                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN("audio", "OutputStream", perfetto::Track::FromPointer(this),
+                    "device id", output_device_id, "params",
+                    params.AsHumanReadableString());
   SendLogMessage(
       "%s", GetCtorLogString(audio_manager, output_device_id, params).c_str());
 
@@ -219,7 +221,7 @@ OutputStream::OutputStream(
   if (log_)
     log_->OnCreated(params, output_device_id);
 
-  coordinator_->RegisterMember(loopback_group_id_, &controller_);
+  coordinator_->AddMember(loopback_group_id_, &controller_);
   if (!reader_.IsValid() || !controller_.CreateStream()) {
     // Either SyncReader initialization failed or the controller failed to
     // create the stream. In the latter case, the controller will have called
@@ -246,18 +248,20 @@ OutputStream::~OutputStream() {
   }
 
   controller_.Close();
-  coordinator_->UnregisterMember(loopback_group_id_, &controller_);
+  coordinator_->RemoveMember(&controller_);
 
   if (audibility_helper_->IsAudible()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audible", this);
+    TRACE_EVENT_END("audio", /* Audible */ perfetto::Track::FromPointer(this));
   }
 
   if (playing_) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Playing", this);
+    TRACE_EVENT_END("audio", /* Playing */ perfetto::Track::FromPointer(this));
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "OutputStream", this);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "audio::OutputStream", this);
+  TRACE_EVENT_END("audio",
+                  /* OutputStream */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("audio",
+                  /* audio::OutputStream */ perfetto::Track::FromPointer(this));
 }
 
 void OutputStream::Play() {
@@ -287,8 +291,8 @@ void OutputStream::Flush() {
 
 void OutputStream::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "SetVolume", this, "volume",
-                                      volume);
+  TRACE_EVENT_INSTANT("audio", "SetVolume", perfetto::Track::FromPointer(this),
+                      "volume", volume);
 
   if (volume < 0 || volume > 1) {
     receiver_.ReportBadMessage("Invalid volume");
@@ -304,8 +308,9 @@ void OutputStream::SetVolume(double volume) {
 void OutputStream::SwitchAudioOutputDeviceId(
     const std::string& output_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "SwitchAudioOutputDeviceId",
-                                      this, "device_id", output_device_id);
+  TRACE_EVENT_INSTANT("audio", "SwitchAudioOutputDeviceId",
+                      perfetto::Track::FromPointer(this), "device_id",
+                      output_device_id);
 
   controller_.SwitchAudioOutputDeviceId(output_device_id);
 }
@@ -313,7 +318,8 @@ void OutputStream::SwitchAudioOutputDeviceId(
 void OutputStream::CreateAudioPipe(CreatedCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(reader_.IsValid());
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "CreateAudioPipe", this);
+  TRACE_EVENT_INSTANT("audio", "CreateAudioPipe",
+                      perfetto::Track::FromPointer(this));
   SendLogMessage("%s()", __func__);
 
   base::UnsafeSharedMemoryRegion shared_memory_region =
@@ -336,11 +342,11 @@ void OutputStream::OnControllerPlaying() {
   if (playing_)
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "Playing", this);
+  TRACE_EVENT_BEGIN("audio", "Playing", perfetto::Track::FromPointer(this));
   playing_ = true;
   if (observer_)
     observer_->DidStartPlaying();
-  if (OutputController::will_monitor_audio_levels()) {
+  if (controller_.will_monitor_audio_levels()) {
     const auto get_power_level = [](OutputStream* self) {
       return self->controller_.ReadCurrentPowerAndClip().first;
     };
@@ -365,17 +371,18 @@ void OutputStream::OnControllerPaused() {
     return;
 
   playing_ = false;
-  if (OutputController::will_monitor_audio_levels()) {
+  if (controller_.will_monitor_audio_levels()) {
     audibility_helper_->StopPolling();
   }
   if (observer_)
     observer_->DidStopPlaying();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Playing", this);
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
 }
 
 void OutputStream::OnControllerError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "OnControllerError", this);
+  TRACE_EVENT_INSTANT("audio", "OnControllerError",
+                      perfetto::Track::FromPointer(this));
   SendLogMessage("%s()", __func__);
 
   // Stop checking the audio level to avoid using this object while it's being
@@ -404,7 +411,7 @@ void OutputStream::OnLog(std::string_view message) {
 
 void OutputStream::OnError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "OnError", this);
+  TRACE_EVENT_INSTANT("audio", "OnError", perfetto::Track::FromPointer(this));
 
   // Defer callback so we're not destructed while in the constructor.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -427,9 +434,9 @@ void OutputStream::OnAudibleStateChanged(bool is_audible) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
 
   if (is_audible) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "Audible", this);
+    TRACE_EVENT_BEGIN("audio", "Audible", perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audible", this);
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this));
   }
 
   if (observer_) {

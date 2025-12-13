@@ -42,6 +42,11 @@ NET_EXPORT_PRIVATE const char* NextProtoToString(NextProto next_proto);
 NET_EXPORT_PRIVATE const std::string_view NegotiatedProtocolToHistogramSuffix(
     NextProto next_proto);
 
+// Similar to NegotiatedProtocolToHistogramSuffix, but `kProtoUnknown` is
+// treated as HTTP/1.1.
+NET_EXPORT_PRIVATE const std::string_view
+NegotiatedProtocolToHistogramSuffixCoalesced(NextProto next_proto);
+
 }  // namespace net
 
 #endif  // NET_SOCKET_NEXT_PROTO_H_

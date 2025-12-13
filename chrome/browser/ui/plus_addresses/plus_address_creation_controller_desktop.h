@@ -7,9 +7,9 @@
 
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/autofill/core/common/plus_address_survey_type.h"
-#include "components/plus_addresses/metrics/plus_address_metrics.h"
-#include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/settings/plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"

@@ -165,7 +165,8 @@ class UpdateUserPrefActionPerformerTest : public testing::Test {
 TEST_F(UpdateUserPrefActionPerformerTest, TestValidSetPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kStringPref, 0, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(VerifyPrefsValueEqual(kDefaultValue));
   action().Run(
@@ -181,7 +182,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestValidSetPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestSetNonExistPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kInvalidPref, 0, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -195,7 +197,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestSetNonExistPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestSetWrongTypePref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kListPref, 0, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -209,7 +212,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestSetWrongTypePref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestSetPrefMissingValue) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kClearUserPrefTemplate, kListPref, 0);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -223,7 +227,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestSetPrefMissingValue) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestValidClearStringPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kClearUserPrefTemplate, kStringPref, 1);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(VerifyPrefsValueEqual(kDefaultValue));
   action().Run(
@@ -239,7 +244,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestValidClearStringPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestValidClearListPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kClearUserPrefTemplate, kListPref, 1);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(VerifyListPrefsEmpty());
   action().Run(
@@ -255,7 +261,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestValidClearListPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestClearNonExistPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kClearUserPrefTemplate, kInvalidPref, 1);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -268,7 +275,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestClearNonExistPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kListPref, 2, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_FALSE(VerifyListPrefsContainsValue(kTestValue));
   action().Run(
@@ -284,7 +292,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToNonListPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kStringPref, 2, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(VerifyPrefsValueEqual(kDefaultValue));
   action().Run(
@@ -300,7 +309,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToNonListPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToNonExistPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kInvalidPref, 2, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -314,7 +324,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestAppendToNonExistPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestRemoveFromPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kListPref, 3, kRemoveValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(VerifyListPrefsContainsValue(kRemoveValue));
   action().Run(
@@ -330,7 +341,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestRemoveFromPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestRemoveFromNonListPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kStringPref, 3, kRemoveValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(VerifyPrefsValueEqual(kDefaultValue));
   action().Run(
@@ -346,7 +358,8 @@ TEST_F(UpdateUserPrefActionPerformerTest, TestRemoveFromNonListPref) {
 TEST_F(UpdateUserPrefActionPerformerTest, TestRemoveFromNonExistPref) {
   const auto validUpdateUserPrefParam =
       base::StringPrintf(kUpdateUserPrefTemplate, kInvalidPref, 3, kTestValue);
-  auto value = base::JSONReader::Read(validUpdateUserPrefParam);
+  auto value = base::JSONReader::Read(validUpdateUserPrefParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),

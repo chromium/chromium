@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_FILE_SYSTEM_SIGNALS_COLLECTOR_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_FILE_SYSTEM_SIGNALS_COLLECTOR_H_
 
-#include <map>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
@@ -42,15 +41,14 @@ class FileSystemSignalsCollector : public BaseSignalsCollector {
 
   // Invoked when the SystemSignalsService returns the collected File System
   // items' signals as `file_system_items`. Will update `response` with the
-  // signal collection outcome, and invoke `done_closure` to asynchronously
-  // notify the caller of the completion of this request.
+  // signal collection outcome, and uses the `callback_id` to invoke a
+  // done_closure to asynchronously notify the caller of the completion of this
+  // request.
   void OnFileSystemSignalCollected(
       SignalsAggregationResponse& response,
+      int callback_id,
       base::OnceClosure done_closure,
       const std::vector<FileSystemItem>& file_system_items);
-
-  // Instance used to retrieve a pointer to a SystemSignalsService instance.
-  raw_ptr<SystemSignalsServiceHost> system_service_host_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSystemSignalsCollector> weak_factory_{this};

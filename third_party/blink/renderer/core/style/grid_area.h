@@ -83,6 +83,13 @@ struct GridSpan {
     return *this < o || *this == o;
   }
 
+  GridSpan& operator++() {
+    DCHECK(IsTranslatedDefinite());
+    ++start_line_;
+    ++end_line_;
+    return *this;
+  }
+
   bool Contains(wtf_size_t line) const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GE(start_line_, 0);
@@ -247,8 +254,6 @@ struct GridArea {
   bool operator==(const GridArea& o) const {
     return columns == o.columns && rows == o.rows;
   }
-
-  bool operator!=(const GridArea& o) const { return !(*this == o); }
 
   GridSpan columns;
   GridSpan rows;

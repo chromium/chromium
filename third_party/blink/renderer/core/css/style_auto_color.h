@@ -35,10 +35,6 @@ inline bool operator==(const StyleAutoColor& a, const StyleAutoColor& b) {
   return a.ToStyleColor() == b.ToStyleColor();
 }
 
-inline bool operator!=(const StyleAutoColor& a, const StyleAutoColor& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_AUTO_COLOR_H_

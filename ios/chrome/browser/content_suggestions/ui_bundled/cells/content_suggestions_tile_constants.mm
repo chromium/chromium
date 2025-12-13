@@ -30,8 +30,6 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_HISTORY);
     case NTPCollectionShortcutTypeWhatsNew:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_WHATS_NEW);
-    case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
   }
 }
 
@@ -52,8 +50,6 @@ UIImage* SymbolForCollectionShortcutType(NTPCollectionShortcutType type) {
     case NTPCollectionShortcutTypeWhatsNew:
       return DefaultSymbolTemplateWithPointSize(
           kCheckmarkSealSymbol, kSymbolContentSuggestionsPointSize);
-    case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
   }
 }
 
@@ -69,4 +65,13 @@ NSString* AccessibilityLabelForReadingListCellWithCount(int count) {
   } else {
     return l10n_util::GetNSString(messageID);
   }
+}
+
+NSString* TitleForMostVisitedTilePlusButton() {
+  return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_ADD_PINNED_SITE);
+}
+
+UIImage* SymbolForMostVisitedTilePlusButton() {
+  return DefaultSymbolTemplateWithPointSize(kPlusSymbol,
+                                            kSymbolContentSuggestionsPointSize);
 }

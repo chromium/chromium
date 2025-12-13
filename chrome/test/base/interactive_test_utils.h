@@ -16,8 +16,10 @@
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget_observer.h"
+
+class BrowserWindowInterface;
 
 namespace display {
 class Screen;
@@ -39,7 +41,7 @@ namespace ui_test_utils {
 // directly and wait for it to actually get activated.
 class BrowserActivationWaiter : public views::WidgetObserver {
  public:
-  explicit BrowserActivationWaiter(const Browser* browser);
+  explicit BrowserActivationWaiter(const BrowserWindowInterface* browser);
   BrowserActivationWaiter(const BrowserActivationWaiter&) = delete;
   BrowserActivationWaiter& operator=(const BrowserActivationWaiter&) = delete;
   ~BrowserActivationWaiter() override;
@@ -84,7 +86,8 @@ class BrowserDeactivationWaiter : public BrowserListObserver {
 
 // Brings the native window for |browser| to the foreground and waits until the
 // browser is active.
-[[nodiscard]] bool BringBrowserWindowToFront(const Browser* browser);
+[[nodiscard]] bool BringBrowserWindowToFront(
+    const BrowserWindowInterface* browser);
 
 // Returns true if the View is focused.
 bool IsViewFocused(const Browser* browser, ViewID vid);
@@ -115,7 +118,7 @@ void HideNativeWindow(gfx::NativeWindow window);
 // on a deleted target. This uses `ui_controls::SendKeyPress`, see it for
 // details. Returns true if the event was successfully dispatched.
 [[nodiscard]] bool SendKeyPressSync(
-    const Browser* browser,
+    const BrowserWindowInterface* browser,
     ui::KeyboardCode key,
     bool control,
     bool shift,

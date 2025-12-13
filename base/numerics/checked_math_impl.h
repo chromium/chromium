@@ -18,7 +18,54 @@
 #include "base/numerics/safe_math_shared_impl.h"  // IWYU pragma: export
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
+
+template <typename Callable>
+struct ExtractCallableParamType {
+  using Type = void;
+};
+
+template <typename Callable, typename Param>
+struct ExtractCallableParamType<bool (Callable::*)(Param)> {
+  using Type = Param;
+};
+template <typename Callable, typename Param>
+struct ExtractCallableParamType<bool (Callable::*)(Param) const> {
+  using Type = Param;
+};
+template <typename Callable, typename Param>
+struct ExtractCallableParamType<bool (Callable::*)(Param) noexcept> {
+  using Type = Param;
+};
+template <typename Callable, typename Param>
+struct ExtractCallableParamType<bool (Callable::*)(Param) const noexcept> {
+  using Type = Param;
+};
+
+template <typename Predicate>
+struct ExtractPredicateParamTypeImpl {
+  using Type = void;
+};
+
+template <typename Predicate>
+  requires requires { &Predicate::operator(); }
+struct ExtractPredicateParamTypeImpl<Predicate> {
+  using Type =
+      typename ExtractCallableParamType<decltype(&Predicate::operator())>::Type;
+};
+
+template <typename Param>
+struct ExtractPredicateParamTypeImpl<bool (&)(Param)> {
+  using Type = Param;
+};
+template <typename Param>
+struct ExtractPredicateParamTypeImpl<bool (*)(Param)> {
+  using Type = Param;
+};
+
+template <typename Predicate>
+using ExtractPredicateParamType =
+    typename ExtractPredicateParamTypeImpl<Predicate>::Type;
 
 template <typename T>
 constexpr bool CheckedAddImpl(T x, T y, T* result) {
@@ -567,7 +614,7 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
   T value_;
 };
 
-}  // namespace internal
+}  // namespace numerics_internal
 }  // namespace base
 
 #endif  // BASE_NUMERICS_CHECKED_MATH_IMPL_H_

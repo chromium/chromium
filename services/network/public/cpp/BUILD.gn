@@ -69,6 +69,8 @@ component("cpp") {
     "content_decoding_interceptor.h",
     "content_language_parser.cc",
     "content_language_parser.h",
+    "cookie_encryption_provider_impl.cc",
+    "cookie_encryption_provider_impl.h",
     "cors/cors.cc",
     "cors/cors.h",
     "cors/origin_access_list.cc",
@@ -154,6 +156,8 @@ component("cpp") {
     "timing_allow_origin_parser.h",
     "trust_token_http_headers.cc",
     "trust_token_http_headers.h",
+    "unencoded_digests.cc",
+    "unencoded_digests.h",
     "url_loader_factory_builder.cc",
     "url_loader_factory_builder.h",
     "url_util.cc",
@@ -183,7 +187,8 @@ component("cpp") {
   deps = [
     "//base",
     "//components/link_header_util",
-    "//components/miracle_parameter/common",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
     "//components/prefs",
     "//ipc",
     "//net",
@@ -236,6 +241,20 @@ component("host_resolver_mojom_support") {
   defines = [ "IS_NETWORK_CPP_HOST_RESOLVER_IMPL" ]
 }
 
+component("integrity_metadata_mojom_support") {
+  sources = [
+    "integrity_metadata.cc",
+    "integrity_metadata.h",
+    "integrity_metadata_mojom_traits.cc",
+    "integrity_metadata_mojom_traits.h",
+  ]
+  deps = [
+    "//services/network/public/mojom:mojom_integrity_algorithm",
+    "//services/network/public/mojom:mojom_integrity_metadata_shared",
+  ]
+  defines = [ "IS_NETWORK_CPP_INTEGRITY_METADATA_IMPL" ]
+}
+
 component("integrity_policy") {
   sources = [
     "integrity_policy.cc",
@@ -251,6 +270,24 @@ component("integrity_policy") {
     "//services/network/public/mojom:mojom_integrity_policy_shared",
   ]
   defines = [ "IS_NETWORK_CPP_INTEGRITY_POLICY_IMPL" ]
+}
+
+component("connection_allowlist") {
+  sources = [
+    "connection_allowlist.cc",
+    "connection_allowlist.h",
+    "connection_allowlist_mojom_traits.cc",
+    "connection_allowlist_mojom_traits.h",
+    "connection_allowlist_parser.cc",
+    "connection_allowlist_parser.h",
+  ]
+  deps = [
+    ":flags_and_switches",
+    "//net",
+    "//services/network/public/mojom:mojom_connection_allowlist_shared",
+  ]
+  public_deps = [ "//base" ]
+  defines = [ "IS_NETWORK_CPP_CONNECTION_ALLOWLIST_IMPL" ]
 }
 
 component("fetch_retry_options") {
@@ -314,6 +351,7 @@ component("proxy_config_mojom_support") {
     "//mojo/public/mojom/base",
     "//net",
     "//services/network/public/mojom:mojom_proxy_config_shared",
+    "//url/mojom:mojom_traits",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_NETWORK_CPP_PROXY_CONFIG_IMPL" ]
@@ -633,11 +671,13 @@ component("cpp_base") {
 
   public_deps = [
     ":ad_auction_support",
+    ":connection_allowlist",
     ":cookies_mojom_support",
     ":crash_keys",
     ":cross_origin_embedder_policy",
     ":document_isolation_policy",
     ":fetch_retry_options",
+    ":integrity_metadata_mojom_support",
     ":integrity_policy",
     ":ip_address_mojom_support",
     ":network_param_mojom_support",
@@ -729,6 +769,7 @@ source_set("tests") {
     "avail_language_header_parser_unittest.cc",
     "browsing_topics_parser_unittest.cc",
     "client_hints_unittest.cc",
+    "connection_allowlist_unittest.cc",
     "content_decoding_interceptor_unittest.cc",
     "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",
@@ -748,6 +789,7 @@ source_set("tests") {
     "cross_thread_pending_shared_url_loader_factory_unittest.cc",
     "data_pipe_to_source_stream_unittest.cc",
     "default_credentials_mojom_traits_unittest.cc",
+    "device_bound_sessions_mojom_traits_unittest.cc",
     "devtools_observer_unittest.cc",
     "digitally_signed_mojom_traits_unittest.cc",
     "document_isolation_policy_parser_unittest.cc",
@@ -801,6 +843,7 @@ source_set("tests") {
     "timing_allow_origin_parser_unittest.cc",
     "transferable_directory_unittest.cc",
     "transferable_socket_unittest.cc",
+    "unencoded_digests_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_loader_factory_builder_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
@@ -851,7 +894,7 @@ source_set("perftests") {
     "//mojo/public/cpp/test_support:test_utils",
     "//net",
     "//testing/gtest",
-    "//testing/perf:perf",
+    "//testing/perf",
     "//third_party/google_benchmark",
   ]
 }

@@ -16,13 +16,17 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/incognito_allowed_url.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace windows_util {
 
@@ -95,9 +99,6 @@ bool CanOperateOnWindow(const ExtensionFunction* function,
              controller->profile();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371432155): Support on Android, specifically the call to
-// IsURLAllowedInIncognito() which is part of browser_navigator.h.
 IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
                                           std::optional<bool> incognito,
                                           std::vector<GURL>* urls,
@@ -147,6 +148,5 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
   return incognito_result ? IncognitoResult::kIncognito
                           : IncognitoResult::kRegular;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace windows_util

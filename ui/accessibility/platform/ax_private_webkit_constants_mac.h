@@ -51,51 +51,75 @@ enum AXTextEditType {
   AXTextEditTypeAttributesChange
 };
 
-// Native mac notifications fired.
-NSString* const CrNSAccessibilityAutocorrectionOccurredNotification =
-#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
-    @"AXAutocorrectionOccurred";
-#else
-    // This is public as of the macOS 26 SDK. When macOS 26 is the minimum,
-    // eliminate the compatibility Cr* name and transition use sites directly to
-    // the NS* name.
-    NSAccessibilityAutocorrectionOccurredNotification;
-#endif
-NSString* const NSAccessibilityLoadCompleteNotification = @"AXLoadComplete";
-NSString* const NSAccessibilityInvalidStatusChangedNotification =
-    @"AXInvalidStatusChanged";
-NSString* const NSAccessibilityLiveRegionCreatedNotification =
-    @"AXLiveRegionCreated";
-NSString* const NSAccessibilityLiveRegionChangedNotification =
-    @"AXLiveRegionChanged";
-NSString* const NSAccessibilityExpandedChanged = @"AXExpandedChanged";
-NSString* const NSAccessibilityMenuItemSelectedNotification =
-    @"AXMenuItemSelected";
-NSString* const NSAccessibilityElementBusyChangedNotification =
-    @"AXElementBusyChanged";
+// Native macOS notifications fired.
 
-// The following native mac notifications are not fired:
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+#define NSAccessibilityAutocorrectionOccurredNotification \
+  @"AXAutocorrectionOccurred"
+#endif
+
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityElementBusyChangedNotification =
+    @"AXElementBusyChanged";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityExpandedChanged = @"AXExpandedChanged";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityInvalidStatusChangedNotification =
+    @"AXInvalidStatusChanged";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityLiveRegionChangedNotification =
+    @"AXLiveRegionChanged";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityLiveRegionCreatedNotification =
+    @"AXLiveRegionCreated";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityLoadCompleteNotification =
+    @"AXLoadComplete";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityMenuItemSelectedNotification =
+    @"AXMenuItemSelected";
+
+// The following native macOS notifications are not fired:
 // AXLayoutComplete: Voiceover does not use this, it is considered too spammy.
 
 // Attributes used for NSAccessibilitySelectedTextChangedNotification and
 // NSAccessibilityValueChangedNotification.
-NSString* const NSAccessibilityTextStateChangeTypeKey =
-    @"AXTextStateChangeType";
-NSString* const NSAccessibilityTextStateSyncKey = @"AXTextStateSync";
-NSString* const NSAccessibilityTextSelectionDirection =
-    @"AXTextSelectionDirection";
-NSString* const NSAccessibilityTextSelectionGranularity =
-    @"AXTextSelectionGranularity";
-NSString* const NSAccessibilityTextSelectionChangedFocus =
-    @"AXTextSelectionChangedFocus";
-NSString* const NSAccessibilityTextChangeElement = @"AXTextChangeElement";
-NSString* const NSAccessibilityTextEditType = @"AXTextEditType";
-NSString* const NSAccessibilityTextChangeValue = @"AXTextChangeValue";
-NSString* const NSAccessibilityChangeValueStartMarker =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityChangeValueStartMarker =
     @"AXTextChangeValueStartMarker";
-NSString* const NSAccessibilityTextChangeValueLength =
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextChangeElement =
+    @"AXTextChangeElement";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextChangeValue = @"AXTextChangeValue";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextChangeValueLength =
     @"AXTextChangeValueLength";
-NSString* const NSAccessibilityTextChangeValues = @"AXTextChangeValues";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextChangeValues =
+    @"AXTextChangeValues";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextEditType = @"AXTextEditType";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextSelectionChangedFocus =
+    @"AXTextSelectionChangedFocus";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextSelectionDirection =
+    @"AXTextSelectionDirection";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextSelectionGranularity =
+    @"AXTextSelectionGranularity";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextStateChangeTypeKey =
+    @"AXTextStateChangeType";
+COMPONENT_EXPORT(AX_PLATFORM)
+constexpr NSString* const NSAccessibilityTextStateSyncKey = @"AXTextStateSync";
+
+// Actions.
+
+#if !defined(__MAC_26_0) || __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_26_0
+#define NSAccessibilityScrollToVisibleAction @"AXScrollToVisible"
+#endif
 
 COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextStateChangeType);
 COMPONENT_EXPORT(AX_PLATFORM) const char* ToString(AXTextSelectionDirection);

@@ -14,6 +14,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -21,7 +22,7 @@ import org.chromium.url.GURL;
 
 /** This implementation always creates tabs as frozen/pending, never with web contents. */
 @NullMarked
-public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
+public class HeadlessTabCreator implements TabCreator, NeedsTabModel {
     private final Profile mProfile;
     private TabModel mTabModel;
 
@@ -69,7 +70,7 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         Tab tab =
                 TabBuilder.createFromFrozenState(mProfile)
                         .setId(id)
@@ -105,5 +106,10 @@ public class HeadlessTabCreator extends TabCreator implements NeedsTabModel {
     @Override
     public @Nullable Tab createTabWithHistory(@Nullable Tab parent, int type) {
         throw new RuntimeException("Headless does not support live web contents.");
+    }
+
+    @Override
+    public void launchNtp(@TabLaunchType int type) {
+        TabCreatorUtil.launchNtp(this, mProfile, type);
     }
 }

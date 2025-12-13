@@ -10,7 +10,10 @@ source_set("ui_bundled") {
     "menu_builder.h",
     "menu_builder.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
 }
 
 source_set("unit_tests") {
@@ -34,8 +37,8 @@ source_set("eg2_tests") {
   sources = [ "keyboard_commands_egtest.mm" ]
   deps = [
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bookmarks/ui_bundled:constants",
-    "//ios/chrome/browser/bookmarks/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/bookmarks/test:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/ui/table_view:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

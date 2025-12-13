@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/media_router/common/providers/cast/certificate/cast_crl.h"
 
 #include <memory>
@@ -14,9 +9,11 @@
 #include <unordered_set>
 
 #include "base/build_time.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_fallback_crl.h"
 #include "crypto/evp.h"
@@ -367,7 +364,8 @@ bool CastCRLImpl::CheckRevocation(
     const bssl::der::Input& spki_tlv = trusted_chain[i]->tbs().spki_tlv;
 
     // Calculate the public key's hash to check for revocation.
-    std::string spki_hash = crypto::SHA256HashString(spki_tlv.AsString());
+    std::string spki_hash =
+        crypto::SHA256HashString(base::as_string_view(spki_tlv));
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
     // Revocation data (if any) was saved in the constructor using this fake
     // hash code.
@@ -458,8 +456,9 @@ std::unique_ptr<CastCRL> ParseAndVerifyFallbackCRLUsingCustomTrustStore(
     const base::Time& time,
     bssl::TrustStore* trust_store) {
   std::string fallback_serialized_crl(
-      kCastFallbackCRLs, kCastFallbackCRLs + sizeof kCastFallbackCRLs /
-                                                 sizeof kCastFallbackCRLs[0]);
+      kCastFallbackCRLs,
+      UNSAFE_TODO(kCastFallbackCRLs +
+                  sizeof kCastFallbackCRLs / sizeof kCastFallbackCRLs[0]));
   return ParseAndVerifyCRLUsingCustomTrustStore(
       fallback_serialized_crl, time, trust_store, true /* is_fallback_crl */);
 }

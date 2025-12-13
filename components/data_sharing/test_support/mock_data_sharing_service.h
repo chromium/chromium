@@ -92,6 +92,7 @@ class MockDataSharingService : public DataSharingService {
                base::OnceCallback<void(const gfx::Image&)>,
                image_fetcher::ImageFetcher*));
   MOCK_METHOD1(SetSDKDelegate, void(std::unique_ptr<DataSharingSDKDelegate>));
+  MOCK_METHOD0(GetSDKDelegate, DataSharingSDKDelegate*());
   MOCK_METHOD1(SetUIDelegate, void(std::unique_ptr<DataSharingUIDelegate>));
   MOCK_METHOD0(GetUiDelegate, DataSharingUIDelegate*());
   MOCK_METHOD0(GetLogger, Logger*());
@@ -100,6 +101,7 @@ class MockDataSharingService : public DataSharingService {
                void(std::unique_ptr<PreviewServerProxy>));
   MOCK_METHOD0(GetPreviewServerProxyForTesting, PreviewServerProxy*());
   MOCK_METHOD1(OnCollaborationGroupRemoved, void(const GroupId&));
+  MOCK_METHOD1(IsContextIdShared, bool(const ContextId&));
 };
 
 }  // namespace data_sharing

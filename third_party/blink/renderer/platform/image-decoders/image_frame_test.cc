@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/image_frame.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
 #include "third_party/skia/modules/skcms/skcms.h"
@@ -82,8 +78,9 @@ TEST_F(ImageFrameTest, BlendRGBARawF16Buffer) {
   ConvertF16ToF32(f32_from_blended_f16, blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                color_compoenent_tolerance);
+    UNSAFE_TODO(
+        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                    color_compoenent_tolerance));
   }
 }
 
@@ -102,8 +99,9 @@ TEST_F(ImageFrameTest, BlendRGBAPremultipliedF16Buffer) {
   ConvertF16ToF32(f32_from_blended_f16, blended_f16);
 
   for (int i = 0; i < 4; i++) {
-    ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
-                color_compoenent_tolerance);
+    UNSAFE_TODO(
+        ASSERT_TRUE(fabs(f32_from_blended_8888[i] - f32_from_blended_f16[i]) <
+                    color_compoenent_tolerance));
   }
 }
 

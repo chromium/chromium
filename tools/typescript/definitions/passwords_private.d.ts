@@ -154,6 +154,7 @@ declare global {
         changePasswordUrl?: string;
         compromisedInfo?: CompromisedInfo;
         creationTime?: number;
+        hidden: boolean;
       }
 
       export interface CredentialGroup {

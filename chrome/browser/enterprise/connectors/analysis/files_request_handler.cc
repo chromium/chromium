@@ -15,14 +15,14 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 
 namespace enterprise_connectors {
 
@@ -59,13 +59,13 @@ AnalysisConnector AccessPointToEnterpriseConnector(
 std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
   switch (access_point) {
     case DeepScanAccessPoint::FILE_TRANSFER:
-      return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer;
+      return kFileTransferDataTransferEventTrigger;
     case DeepScanAccessPoint::UPLOAD:
     case DeepScanAccessPoint::DRAG_AND_DROP:
     case DeepScanAccessPoint::PASTE:
       // A file can be uploaded to a website by either a normal file picker, a
       // dragNdrop event or using copy+paste.
-      return extensions::SafeBrowsingPrivateEventRouter::kTriggerFileUpload;
+      return kFileUploadDataTransferEventTrigger;
     case DeepScanAccessPoint::DOWNLOAD:
     case DeepScanAccessPoint::PRINT:
       NOTREACHED();
@@ -151,7 +151,7 @@ void FilesRequestHandler::ReportWarningBypass(
     size_t index = warning.first;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, source_, destination_,
+        profile_, *content_analysis_info_, source_, destination_,
         paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
         file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
         content_transfer_method_, file_info_[index].size,
@@ -162,7 +162,7 @@ void FilesRequestHandler::ReportWarningBypass(
 
 void FilesRequestHandler::FileRequestCallbackForTesting(
     base::FilePath path,
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
   auto it = std::ranges::find(paths_, path);
   CHECK(it != paths_.end());
@@ -236,10 +236,10 @@ safe_browsing::FileAnalysisRequest* FilesRequestHandler::PrepareFileRequest(
 }
 
 void FilesRequestHandler::OnGotFileInfo(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+    std::unique_ptr<BinaryUploadRequest> request,
     size_t index,
-    safe_browsing::BinaryUploadService::Result result,
-    safe_browsing::BinaryUploadService::Request::Data data) {
+    ScanRequestUploadResult result,
+    BinaryUploadRequest::Data data) {
   DCHECK_LT(index, paths_.size());
   DCHECK_EQ(paths_.size(), file_info_.size());
 
@@ -263,17 +263,15 @@ void FilesRequestHandler::OnGotFileInfo(
 
   // Don't bother sending empty files for deep scanning.
   if (data.size == 0) {
-    FinishRequestEarly(std::move(request),
-                       safe_browsing::BinaryUploadService::Result::SUCCESS);
+    FinishRequestEarly(std::move(request), ScanRequestUploadResult::kSuccess);
     return;
   }
 
   // If |throttled_| is true, then the file shouldn't be upload since the server
   // is receiving too many requests.
   if (throttled_) {
-    FinishRequestEarly(
-        std::move(request),
-        safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS);
+    FinishRequestEarly(std::move(request),
+                       ScanRequestUploadResult::kTooManyRequests);
     return;
   }
 
@@ -281,25 +279,28 @@ void FilesRequestHandler::OnGotFileInfo(
 }
 
 void FilesRequestHandler::FinishRequestEarly(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-    safe_browsing::BinaryUploadService::Result result) {
+    std::unique_ptr<BinaryUploadRequest> request,
+    ScanRequestUploadResult result) {
   // We add the request here in case we never actually uploaded anything, so it
   // wasn't added in OnGetRequestData
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "", /*upload_info*/ "",
-      /*upload_url=*/"", request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"", safe_browsing::BinaryUploadService::ResultToString(result),
-      enterprise_connectors::ContentAnalysisResponse());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanRequests(request->per_profile_request(),
+                              /*access_token*/ "", /*upload_info*/ "",
+                              /*upload_url=*/"",
+                              request->content_analysis_request());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanResponses(
+          /*token=*/"", ScanRequestUploadResultToString(result),
+          enterprise_connectors::ContentAnalysisResponse());
 
   request->FinishRequest(result,
                          enterprise_connectors::ContentAnalysisResponse());
 }
 
 void FilesRequestHandler::UploadFileForDeepScanning(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     const base::FilePath& path,
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   safe_browsing::BinaryUploadService* upload_service = GetBinaryUploadService();
   if (upload_service)
     upload_service->MaybeUploadForDeepScanning(std::move(request));
@@ -307,27 +308,26 @@ void FilesRequestHandler::UploadFileForDeepScanning(
 
 void FilesRequestHandler::FileRequestStartCallback(
     size_t index,
-    const safe_browsing::BinaryUploadService::Request& request) {
+    const BinaryUploadRequest& request) {
   start_times_[index] = base::TimeTicks::Now();
 }
 
 void FilesRequestHandler::FileRequestCallback(
     size_t index,
-    safe_browsing::BinaryUploadService::Result upload_result,
+    ScanRequestUploadResult upload_result,
     enterprise_connectors::ContentAnalysisResponse response) {
   // Remember to send an ack for this response.  It's possible for the response
   // to be empty and have no request token.  This may happen if Chrome decides
   // to allow the file without uploading with the binary upload service.  For
   // example, zero length files.
-  if (upload_result == safe_browsing::BinaryUploadService::Result::SUCCESS &&
+  if (upload_result == ScanRequestUploadResult::kSuccess &&
       response.has_request_token()) {
     request_tokens_to_ack_final_actions_[response.request_token()] =
         GetAckFinalAction(response);
   }
 
   DCHECK_EQ(results_.size(), paths_.size());
-  if (upload_result ==
-      safe_browsing::BinaryUploadService::Result::TOO_MANY_REQUESTS) {
+  if (upload_result == ScanRequestUploadResult::kTooManyRequests) {
     throttled_ = true;
   }
 
@@ -340,7 +340,7 @@ void FilesRequestHandler::FileRequestCallback(
                                    : upload_start_time_;
 
   const auto& analysis_settings = content_analysis_info_->settings();
-  RecordDeepScanMetrics(
+  safe_browsing::RecordDeepScanMetrics(
       analysis_settings.cloud_or_local_settings.is_cloud_analysis(),
       access_point_, base::TimeTicks::Now() - start_timestamp,
       file_info_[index].size, upload_result, response);
@@ -357,9 +357,10 @@ void FilesRequestHandler::FileRequestCallback(
   }
 
   MaybeReportDeepScanningVerdict(
-      profile_, url_, url_, source_, destination_, path.AsUTF8Unsafe(),
-      file_info_[index].sha256, file_info_[index].mime_type,
-      AccessPointToTriggerString(access_point_), content_transfer_method_,
+      profile_, content_analysis_info_.get(), source_, destination_,
+      path.AsUTF8Unsafe(), file_info_[index].sha256,
+      file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
+      content_transfer_method_,
       content_analysis_info_->GetContentAreaAccountEmail(),
       file_info_[index].size, content_analysis_info_->referrer_chain(),
       upload_result, response,

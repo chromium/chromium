@@ -16,13 +16,14 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_settings_base.h"
 #include "components/subresource_filter/content/browser/ad_tagging_utils.h"
+#include "components/subresource_filter/content/browser/child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
-#include "components/subresource_filter/content/shared/browser/child_frame_navigation_filtering_throttle.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "url/gurl.h"
@@ -44,7 +45,6 @@ namespace features {
 // Enables or disables performing SubresourceFilter checks from the Browser
 // against any aliases for the requested URL found from DNS CNAME records.
 BASE_FEATURE(kSendCnameAliasesToSubresourceFilterFromBrowser,
-             "SendCnameAliasesToSubresourceFilterFromBrowser",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

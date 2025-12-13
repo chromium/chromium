@@ -72,7 +72,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
     assert(component);
     let actionComponent =
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
-    assertEquals('', actionComponent.textContent!.trim());
+    assertEquals('', actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kSkippedAssembleDevice);
@@ -80,7 +80,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableReassembleNowText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
@@ -88,7 +88,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableReassembleNowText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen);
@@ -96,12 +96,12 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableLeaveDisassembledText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(WriteProtectDisableCompleteAction.kCompleteNoOp);
     actionComponent =
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
-    assertEquals('', actionComponent.textContent!.trim());
+    assertEquals('', actionComponent.textContent.trim());
   });
 
   // Verify clicking the next button confirms the wp disable is complete.

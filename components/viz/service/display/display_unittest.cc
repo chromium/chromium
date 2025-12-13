@@ -181,7 +181,8 @@ class DisplayTest : public testing::Test {
   }
 
   void SetUpGpuDisplay(const RendererSettings& settings) {
-    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
+    scoped_refptr<TestContextProvider> provider =
+        TestContextProvider::CreateGLES();
     provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));
@@ -1013,6 +1014,8 @@ TEST_F(DisplayTest, CompositorFrameWithPresentationToken) {
 }
 
 TEST_F(DisplayTest, BeginFrameThrottling) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kNoCompositorFrameAcks);
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
   display_->Initialize(client_.get(), manager_.surface_manager());
@@ -1088,6 +1091,8 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
 }
 
 TEST_F(DisplayTest, BeginFrameThrottlingMultipleSurfaces) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndDisableFeature(features::kNoCompositorFrameAcks);
   id_allocator_.GenerateId();
   SetUpGpuDisplay(RendererSettings());
   display_->Initialize(client_.get(), manager_.surface_manager());
@@ -1609,7 +1614,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   void StoreAlreadyCreatedDelegatedInkPoints() {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     StoreAlreadyCreatedDelegatedInkPoints(ink_points_.begin()->first);
   }
 
@@ -1629,7 +1634,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
       float diameter,
       SkColor4f color,
       const gfx::RectF& presentation_area) {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return MakeAndSendMetadataFromStoredInkPoint(
         ink_points_.begin()->first, index, diameter, color, presentation_area);
   }
@@ -1694,7 +1699,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   const gfx::DelegatedInkPoint& ink_point(int index) {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return ink_point(ink_points_.begin()->first, index);
   }
 
@@ -1711,7 +1716,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   }
 
   int ink_points_size() {
-    DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+    DCHECK_EQ(ink_points_.size(), 1u);
     return ink_points_.begin()->second.size();
   }
 
@@ -2183,7 +2188,8 @@ class DelegatedInkDisplayTest
       public testing::WithParamInterface<DelegatedInkType> {
  public:
   void SetUpGpuDisplaySkiaWithPlatformInk(const RendererSettings& settings) {
-    scoped_refptr<TestContextProvider> provider = TestContextProvider::Create();
+    scoped_refptr<TestContextProvider> provider =
+        TestContextProvider::CreateGLES();
     provider->BindToCurrentSequence();
     std::unique_ptr<FakeSkiaOutputSurface> skia_output_surface =
         FakeSkiaOutputSurface::Create3d(std::move(provider));

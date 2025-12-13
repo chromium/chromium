@@ -47,11 +47,6 @@ public class PartialCustomTabTabObserver extends EmptyTabObserver {
         }
     }
 
-    @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updateImmWrapper(tab);
-    }
-
     // Suppress NullAway since |mImmWrapper| might be null, but it's unclear what to do in this case
     // and it wouldn't immediately crash.
     @SuppressWarnings("NullAway")

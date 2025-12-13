@@ -109,6 +109,9 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   void InitCache();
   void SimulateCrash();
   void SetTestMode();
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  void LoadInMemoryIndex();
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
   void SetBackendToTest(BackendToTest backend_to_test) {
     backend_to_test_ = backend_to_test;

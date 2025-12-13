@@ -28,7 +28,7 @@ using ::base::android::AttachCurrentThread;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF16ToJavaString;
 using ::base::android::ConvertUTF8ToJavaString;
-using ::base::android::JavaParamRef;
+using ::base::android::JavaRef;
 using ::base::android::ScopedJavaLocalRef;
 using ::base::android::ToJavaArrayOfStrings;
 
@@ -68,8 +68,8 @@ ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
 // used.
 bool JniPaymentApp::IsValidForPaymentMethodData(
     JNIEnv* env,
-    const JavaParamRef<jstring>& jmethod,
-    const JavaParamRef<jobject>& jdata_byte_buffer) {
+    const JavaRef<jstring>& jmethod,
+    const JavaRef<jobject>& jdata_byte_buffer) {
   if (!jdata_byte_buffer) {
     bool is_valid = false;
     payment_app_->IsValidForPaymentMethodIdentifier(
@@ -114,14 +114,13 @@ bool JniPaymentApp::CanPreselect(JNIEnv* env) {
 }
 
 void JniPaymentApp::InvokePaymentApp(JNIEnv* env,
-                                     const JavaParamRef<jobject>& jcallback) {
+                                     const JavaRef<jobject>& jcallback) {
   invoke_callback_ = jcallback;
   payment_app_->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
 }
 
-void JniPaymentApp::UpdateWith(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jresponse_byte_buffer) {
+void JniPaymentApp::UpdateWith(JNIEnv* env,
+                               const JavaRef<jobject>& jresponse_byte_buffer) {
   mojom::PaymentRequestDetailsUpdatePtr response;
   bool success = android::DeserializeFromJavaByteBuffer(
       env, jresponse_byte_buffer, &response);
@@ -138,7 +137,7 @@ bool JniPaymentApp::IsWaitingForPaymentDetailsUpdate(JNIEnv* env) {
 }
 
 void JniPaymentApp::AbortPaymentApp(JNIEnv* env,
-                                    const JavaParamRef<jobject>& jcallback) {
+                                    const JavaRef<jobject>& jcallback) {
   payment_app_->AbortPaymentApp(base::BindOnce(
       &OnAbortResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
@@ -164,7 +163,7 @@ jlong JniPaymentApp::GetUkmSourceId(JNIEnv* env) {
 
 void JniPaymentApp::SetPaymentHandlerHost(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jpayment_handler_host) {
+    const JavaRef<jobject>& jpayment_handler_host) {
   payment_app_->SetPaymentHandlerHost(
       android::PaymentHandlerHost::FromJavaPaymentHandlerHost(
           env, jpayment_handler_host));
@@ -173,7 +172,7 @@ void JniPaymentApp::SetPaymentHandlerHost(
 base::android::ScopedJavaLocalRef<jbyteArray>
 JniPaymentApp::SetAppSpecificResponseFields(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jpayment_response) {
+    const JavaRef<jobject>& jpayment_response) {
   mojom::PaymentResponsePtr response;
   bool success =
       android::DeserializeFromJavaByteBuffer(env, jpayment_response, &response);
@@ -249,3 +248,5 @@ jni_zero::ScopedJavaLocalRef<jobject> ConvertPaymentEntityLogoToJavaObject(
 }
 
 }  // namespace payments
+
+DEFINE_JNI(JniPaymentApp)

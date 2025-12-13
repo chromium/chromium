@@ -6,12 +6,12 @@
 
 syntax = "proto2";
 
-option optimize_for = LITE_RUNTIME;
-
 package autofill;
 
 import "password_requirements.proto";
 import "server.proto";
+
+option optimize_for = LITE_RUNTIME;
 
 // Request to retrieve field suggestions from Autofill API for forms in a page
 // that can be used as a resource ID in a RESTful interface.
@@ -20,20 +20,24 @@ message AutofillPageResourceQueryRequest {
   // "bytes" because this is not supported by the API. The serialized_request is
   // also a distinct signature that can be used for caching.
   optional string serialized_request = 1;
-};
+}
 
 // Request to retrieve field suggestions for multiple forms in a page. You can
 // see this as batched form requests.
 // Next ID: 4
 message AutofillPageQueryRequest {
-  // Next ID: 5
+  // Next ID: 7
   message Form {
-    // Next ID: 5
+    // Next ID: 6
     message Field {
       // Signature made of the field |name| and |control_type|.
       optional fixed32 signature = 1;
       reserved 2, 3, 4;
-    };
+
+      // Low precision hashes for field-level metadata associated with this
+      // field.
+      optional ThreeBitHashedFieldMetadata three_bit_hashed_field_metadata = 5;
+    }
     // Signature of the form that is made of:
     //  - URL scheme (e.g., "http")
     //  - URL domain page (e.g., "google.com")
@@ -50,14 +54,23 @@ message AutofillPageQueryRequest {
     //  - For forms with 1-2 fields, one of the following non-empty elements
     //  ordered by preference: path, reference, or query.
     optional fixed64 alternative_signature = 4;
-  };
+
+    // Structural signature of the form that is made of:
+    //  - URL scheme (e.g., "http")
+    //  - URL domain page (e.g., "google.com")
+    //  - Concatenated fields' form control types (e.g., "text", "password")
+    optional fixed64 structural_signature = 5;
+
+    // Low precision hashes for form-level metadata observed by the client.
+    optional ThreeBitHashedFormMetadata three_bit_hashed_form_metadata = 6;
+  }
   // Version of the client. Do not use, deprecated.
   optional string client_version = 1 [deprecated = true];
   // Forms in the same page for which we want fields suggestions.
   repeated Form forms = 2;
   // The collection of server-side experiments to use.
   repeated int64 experiments = 3;
-};
+}
 
 // Response containing field suggestions from Autofill API for
 // AutofillPageQueryRequest request. Form and fields are in the exact same order
@@ -100,6 +113,9 @@ message AutofillQueryResponse {
           // The prediction is a crowdsourced Autofill AI prediction based on
           // client type votes.
           SOURCE_AUTOFILL_AI_CROWDSOURCING = 9;
+
+          // Experiments with signatures.
+          reserved 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20;
         }
 
         // The predicted field type.
@@ -126,16 +142,16 @@ message AutofillQueryResponse {
       reserved 6;  // optional bool primary_type_prediction_is_override
       reserved 7;  // optional string format_string = 7;
       optional FormatString format_string = 8;
-    };
+    }
     // Suggestions on the fields in the same form.
     repeated FieldSuggestion field_suggestions = 1;
 
     // Indicates whether the client may run the AutofillAI model on this form.
     optional bool run_autofill_ai_model = 2;
-  };
+  }
   // Suggestions for forms in the same page.
   repeated FormSuggestion form_suggestions = 1;
-};
+}
 
 // Next ID: 2
 message AutofillUploadRequest {

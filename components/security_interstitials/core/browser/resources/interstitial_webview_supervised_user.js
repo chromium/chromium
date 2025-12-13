@@ -10,6 +10,12 @@ function initPage() {
     learnMoreLink.addEventListener('click', function() {
       sendCommand(SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER);
     });
+    learnMoreLink.addEventListener('auxclick', function(event) {
+      if (event.button === 1) {  // Middle click
+        sendCommand(
+            SecurityInterstitialCommandId.CMD_OPEN_HELP_CENTER_IN_NEW_TAB);
+      }
+    });
   }
 }
 

@@ -17,8 +17,8 @@ class BrowserContext;
 
 namespace policy {
 
-// Base class for DLP files testing. Sets `profile_` on both Ash and Lacros and
-// sets `rules_manager_` as DlpRulesManager instance for `profile_`.
+// Base class for DLP files testing. Sets `profile_` and sets `rules_manager_`
+// as DlpRulesManager instance for `profile_`.
 class DlpFilesTestBase : public testing::Test {
  public:
   DlpFilesTestBase(const DlpFilesTestBase&) = delete;

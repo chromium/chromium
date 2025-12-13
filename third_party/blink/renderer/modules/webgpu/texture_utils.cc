@@ -32,6 +32,8 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
         case wgpu::TextureFormat::R16Uint:
         case wgpu::TextureFormat::R16Sint:
         case wgpu::TextureFormat::R16Float:
+        case wgpu::TextureFormat::R16Snorm:
+        case wgpu::TextureFormat::R16Unorm:
         case wgpu::TextureFormat::RG8Unorm:
         case wgpu::TextureFormat::RG8Snorm:
         case wgpu::TextureFormat::RG8Uint:
@@ -44,6 +46,8 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
         case wgpu::TextureFormat::RG16Uint:
         case wgpu::TextureFormat::RG16Sint:
         case wgpu::TextureFormat::RG16Float:
+        case wgpu::TextureFormat::RG16Snorm:
+        case wgpu::TextureFormat::RG16Unorm:
         case wgpu::TextureFormat::RGBA8Unorm:
         case wgpu::TextureFormat::RGBA8UnormSrgb:
         case wgpu::TextureFormat::RGBA8Snorm:
@@ -63,6 +67,8 @@ TexelBlockInfo GetTexelBlockInfoForCopy(wgpu::TextureFormat format,
         case wgpu::TextureFormat::RGBA16Uint:
         case wgpu::TextureFormat::RGBA16Sint:
         case wgpu::TextureFormat::RGBA16Float:
+        case wgpu::TextureFormat::RGBA16Snorm:
+        case wgpu::TextureFormat::RGBA16Unorm:
           return {8u, 1u, 1u};
 
         case wgpu::TextureFormat::RGBA32Float:

@@ -4,16 +4,16 @@
 
 module network.mojom;
 
+import "services/network/public/mojom/hash_value.mojom";
+
 // Structure used to hold information about a specific pinset.
 struct PinSet {
   // Name of the pinset.
   string name;
   // Set of allowed SPKIs hashes.
-  array<array<uint8>> static_spki_hashes;
+  array<SHA256HashValue> static_spki_hashes;
   // Optional set of forbidden SPKIs hashes
-  array<array<uint8>> bad_static_spki_hashes;
-  // Optional URI to send bad pin reports to.
-  string report_uri;
+  array<SHA256HashValue> bad_static_spki_hashes;
 };
 
 struct PinSetInfo {

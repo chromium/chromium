@@ -54,7 +54,7 @@ MerkleIntegritySourceStream::MerkleIntegritySourceStream(
       next_proof.size() != SHA256_DIGEST_LENGTH) {
     failed_ = true;
   } else {
-    UNSAFE_TODO(memcpy(next_proof_, next_proof.data(), SHA256_DIGEST_LENGTH));
+    base::span(next_proof_).copy_from(base::as_byte_span(next_proof));
   }
 }
 
@@ -221,9 +221,9 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
   // The fuzzer will have a hard time fixing up chains of hashes, so, if
   // building in fuzzer mode, everything hashes to the same garbage value.
-  UNSAFE_TODO(memset(sha256, 0x42, SHA256_DIGEST_LENGTH));
+  std::ranges::fill(sha256, 0x42);
 #endif
-  if (UNSAFE_TODO(memcmp(sha256, next_proof_, SHA256_DIGEST_LENGTH)) != 0) {
+  if (base::span(sha256) != base::span(next_proof_)) {
     return false;
   }
 
@@ -234,7 +234,7 @@ bool MerkleIntegritySourceStream::ProcessRecord(base::span<const char> record,
 
     // Save the next proof.
     CHECK_EQ(static_cast<size_t>(SHA256_DIGEST_LENGTH), hash.size());
-    UNSAFE_TODO(memcpy(next_proof_, hash.data(), SHA256_DIGEST_LENGTH));
+    base::span(next_proof_).copy_from(base::as_bytes(hash));
   }
 
   // Copy whatever output there is room for.

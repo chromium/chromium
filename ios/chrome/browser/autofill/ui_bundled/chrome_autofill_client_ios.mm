@@ -20,6 +20,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/autofill_server_prediction.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
@@ -39,11 +40,10 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/optimization_guide/machine_learning_tflite_buildflags.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -65,7 +65,6 @@
 #import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -85,12 +84,11 @@
 namespace autofill {
 
 ChromeAutofillClientIOS::ChromeAutofillClientIOS(
-    FromWebStateImpl from_web_state_impl,
     ProfileIOS* profile,
     web::WebState* web_state,
     infobars::InfoBarManager* infobar_manager,
     id<AutofillClientIOSBridge, AutofillDriverIOSBridge> bridge)
-    : AutofillClientIOS(from_web_state_impl, web_state, bridge),
+    : AutofillClientIOS(web_state, bridge),
       pref_service_(profile->GetPrefs()),
       sync_service_(SyncServiceFactory::GetForProfile(profile)),
       personal_data_manager_(PersonalDataManagerFactory::GetForProfile(
@@ -103,7 +101,26 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
           IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile())),
       infobar_manager_(infobar_manager),
       log_router_(AutofillLogRouterFactory::GetForProfile(profile_)),
-      ablation_study_(GetApplicationContext()->GetLocalState()) {}
+      ablation_study_(GetApplicationContext()->GetLocalState()) {
+  // TODO(crbug.com/449708427): Remove once `AccountInfo` supports full_name on
+  // IOS.
+  if (personal_data_manager_) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForProfile(profile);
+    if (authenticationService) {
+      id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+      // Tries to create kAccountNameEmail profile using the current primary
+      // account data.
+      if (identity) {
+        personal_data_manager_->address_data_manager()
+            .MaybeCreateAccountNameEmailProfile(
+                base::SysNSStringToUTF8(identity.userFullName),
+                base::SysNSStringToUTF8(identity.userEmail));
+      }
+    }
+  }
+}
 
 ChromeAutofillClientIOS::~ChromeAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
@@ -176,13 +193,11 @@ ChromeAutofillClientIOS::GetAutofillFieldClassificationModelHandler() {
 FieldClassificationModelHandler*
 ChromeAutofillClientIOS::GetPasswordManagerFieldClassificationModelHandler() {
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordFormClientsideClassifier)) {
-    return IOSPasswordFieldClassificationModelHandlerFactory::GetForProfile(
-        profile_);
-  }
-#endif
+  return IOSPasswordFieldClassificationModelHandlerFactory::GetForProfile(
+      profile_);
+#else
   return nullptr;
+#endif
 }
 
 SingleFieldFillRouter& ChromeAutofillClientIOS::GetSingleFieldFillRouter() {
@@ -231,7 +246,7 @@ ChromeAutofillClientIOS::GetPaymentsAutofillClient() {
   return &payments_autofill_client_;
 }
 
-StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
+strike_database::StrikeDatabase* ChromeAutofillClientIOS::GetStrikeDatabase() {
   return StrikeDatabaseFactory::GetForProfile(profile_->GetOriginalProfile());
 }
 
@@ -299,7 +314,7 @@ void ChromeAutofillClientIOS::ShowAutofillSettings(
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   for (infobars::InfoBar* infobar : infobar_manager_->infobars()) {
     AutofillSaveUpdateAddressProfileDelegateIOS* existing_delegate =
@@ -329,7 +344,8 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
       profile, original_profile, GetUserEmail(), GetAppLocale(),
-      is_migration_to_account, std::move(callback));
+      save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
+      std::move(callback));
 
   infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
@@ -355,15 +371,6 @@ AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
   return PlusAddressServiceFactory::GetForProfile(profile_);
 }
 
-void ChromeAutofillClientIOS::OfferPlusAddressCreation(
-    const url::Origin& main_frame_origin,
-    bool is_manual_fallback,
-    PlusAddressCallback callback) {
-  AutofillBottomSheetTabHelper* bottomSheetTabHelper =
-      AutofillBottomSheetTabHelper::FromWebState(web_state());
-  bottomSheetTabHelper->ShowPlusAddressesBottomSheet(std::move(callback));
-}
-
 void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
     base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
@@ -375,15 +382,17 @@ void ChromeAutofillClientIOS::HideAutofillSuggestions(
 }
 
 bool ChromeAutofillClientIOS::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+  return IsAutofillProfileEnabled() ||
+         AutofillClient::GetPaymentsAutofillClient()
+             ->IsAutofillPaymentMethodsEnabled();
 }
 
 bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(GetPrefs());
 }
 
-bool ChromeAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
-  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
+bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {
+  return false;
 }
 
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {
@@ -395,11 +404,9 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() const {
       password_manager::prefs::kCredentialsEnableService);
 }
 
-void ChromeAutofillClientIOS::DidFillForm(AutofillTriggerSource trigger_source,
-                                          bool is_refill) {}
-
 bool ChromeAutofillClientIOS::IsContextSecure() const {
-  return IsContextSecureForWebState(web_state());
+  return consider_as_secure_for_testing_ ||
+         IsContextSecureForWebState(web_state());
 }
 
 FormInteractionsFlowId
@@ -433,7 +440,7 @@ bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
 }
 
 bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
-  return IsKeyboardAccessoryUpgradeEnabled();
+  return YES;
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
@@ -464,7 +471,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
     AutofillManager& manager,
     FormGlobalId form_id,
     FieldGlobalId field_id) const {
-  FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  const FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure) {
     return {};
   }

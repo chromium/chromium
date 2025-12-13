@@ -431,10 +431,10 @@ suite('<settings-nearby-share-subpage>', () => {
 
     const profileName = subpage.shadowRoot!.querySelector('#profileName');
     assertTrue(!!profileName);
-    assertEquals('Primary Account', profileName.textContent!.trim());
+    assertEquals('Primary Account', profileName.textContent.trim());
     const profileLabel = subpage.shadowRoot!.querySelector('#profileLabel');
     assertTrue(!!profileLabel);
-    assertEquals('primary@gmail.com', profileLabel.textContent!.trim());
+    assertEquals('primary@gmail.com', profileLabel.textContent.trim());
   });
 
   test('show receive dialog', () => {

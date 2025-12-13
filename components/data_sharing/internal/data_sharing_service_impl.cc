@@ -8,10 +8,9 @@
 
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions_internal_overloads.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -675,9 +674,22 @@ void DataSharingServiceImpl::SetSDKDelegate(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!sdk_delegate || (sdk_delegate && !sdk_delegate_));
 
-  sdk_delegate_ = std::move(sdk_delegate);
+  // As GroupDataModel keeps a raw_ptr<DataSharingSDKDelegate> it needs to
+  // be deleted before the DataSharingSDKDelegate. The deletion happens in
+  // OnSDKDelegateUpdated(), so swap the parameter and the member variable
+  // to avoid having a dangling pointer.
+  //
+  // See https://crbug.com/445761354 for an example of crash caused by the
+  // wrong destruction order of the variables when the client code sets the
+  // delegate to null.
+  std::swap(sdk_delegate, sdk_delegate_);
 
   OnSDKDelegateUpdated();
+}
+
+DataSharingSDKDelegate* DataSharingServiceImpl::GetSDKDelegate() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return sdk_delegate_.get();
 }
 
 void DataSharingServiceImpl::SetUIDelegate(
@@ -721,6 +733,12 @@ void DataSharingServiceImpl::OnCollaborationGroupRemoved(
   if (collaboration_group_sync_bridge_) {
     collaboration_group_sync_bridge_->RemoveGroupLocally(group_id);
   }
+}
+
+bool DataSharingServiceImpl::IsContextIdShared(const ContextId& context_id) {
+  // TODO(crbug.com/446976556): Implement this.
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void DataSharingServiceImpl::OnAccessTokenAdded(

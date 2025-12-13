@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/apple/foundation_util.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"

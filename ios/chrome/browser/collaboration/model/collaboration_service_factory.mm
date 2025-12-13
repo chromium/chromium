@@ -43,9 +43,7 @@ CollaborationServiceFactory::~CollaborationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 CollaborationServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+    ProfileIOS* profile) const {
   if (!data_sharing::features::IsDataSharingFunctionalityEnabled() ||
       profile->IsOffTheRecord()) {
     return std::make_unique<EmptyCollaborationService>();

@@ -33,6 +33,10 @@
 #include <sys/ioctl.h>
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_APPLE)
+#include "net/socket/socket_apple.h"
+#endif  // BUILDFLAG(IS_APPLE)
+
 namespace net {
 
 namespace {
@@ -517,27 +521,25 @@ void SocketPosix::ReadCompleted() {
 }
 
 int SocketPosix::DoWrite(IOBuffer* buf, int buf_len) {
-  const char* data = buf->data();
-  const int flags = MSG_NOSIGNAL;
-
-  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-  char debug3[128];
-  snprintf(debug3, sizeof(debug3),
-           "socket_fd_=%d,data=%p,buf_len=%d,flags=0x%x", socket_fd_, data,
-           buf_len, flags);
-  base::debug::Alias(debug3);
-
-  int rv = HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, flags));
-
-  // TODO(crbug.com/40064248): Remove this once the crash is resolved.
-  char debug4[64];
-  snprintf(debug4, sizeof(debug4), "rv=%d,errno=%d", rv, rv < 0 ? errno : 0);
-  base::debug::Alias(debug4);
-
-  if (rv >= 0) {
-    CHECK_LE(rv, buf_len);
+#if defined(WORK_AROUND_CRBUG_40064248)
+  ssize_t send_rv = HANDLE_EINTR(SendAndDetectBogusReturnValue(
+      socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
+  if (send_rv == kSendBogusReturnValueDetected) {
+    // https://crbug.com/40064248 is known to occur as a result of certain
+    // network configuration changes.
+    return ERR_NETWORK_CHANGED;
   }
-  return rv >= 0 ? rv : MapSystemError(errno);
+#else   // WORK_AROUND_CRBUG_40064248
+  ssize_t send_rv =
+      HANDLE_EINTR(send(socket_fd_, buf->data(), buf_len, MSG_NOSIGNAL));
+#endif  // WORK_AROUND_CRBUG_40064248
+
+  if (send_rv < 0) {
+    return MapSystemError(errno);
+  }
+
+  CHECK_LE(send_rv, buf_len);
+  return send_rv;
 }
 
 void SocketPosix::WriteCompleted() {

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -29,9 +30,15 @@ TEST(XMLDocumentParserTest, NodeNamespaceWithParseError) {
 
   // The first child of <html> is <parseerror>, not <body>.
   auto* foo = To<Element>(doc.documentElement()->lastChild()->firstChild());
-  EXPECT_TRUE(foo->namespaceURI().IsNull()) << foo->namespaceURI();
-  EXPECT_TRUE(foo->prefix().IsNull()) << foo->prefix();
-  EXPECT_EQ(foo->localName(), "d:foo");
+  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
+    // The Rust xml parser does not generate an element for the unbound d:foo
+    // prefix.
+    EXPECT_FALSE(foo);
+  } else {
+    EXPECT_TRUE(foo->namespaceURI().IsNull()) << foo->namespaceURI();
+    EXPECT_TRUE(foo->prefix().IsNull()) << foo->prefix();
+    EXPECT_EQ(foo->localName(), "d:foo");
+  }
 }
 
 // https://crbug.com/1239288

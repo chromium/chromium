@@ -4,12 +4,14 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/sync/account_extension_tracker.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/contact_info_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
+#include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -36,6 +38,9 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/sync_bookmarks/switches.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +53,7 @@ namespace {
 using autofill::AutofillProfile;
 using bookmarks::BookmarkNode;
 using contact_info_helper::AddressDataManagerProfileChecker;
+using extensions::AccountExtensionTracker;
 using passwords_helper::CreateTestPasswordForm;
 using testing::UnorderedElementsAre;
 
@@ -63,11 +69,15 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
  public:
   SelectTypeAndMigrateLocalDataItemsWhenActiveTest()
       : SyncTest(SINGLE_CLIENT),
-        password_(CreateTestPasswordForm(0)) {
+        password_(
+            CreateTestPasswordForm(0, PasswordForm::Store::kProfileStore)) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {switches::kSyncEnableBookmarksInTransportMode,
-         autofill::features::kAutofillSupportLastNamePrefix},
+         autofill::features::kAutofillSupportLastNamePrefix,
+         autofill::features::kAutofillSupportSplitZipCode,
+         syncer::kReplaceSyncPromosWithSignInPromos,
+         syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{
             syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers});
 
@@ -75,6 +85,11 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
     // their effectiveness within the profile's constructor.
     address_ =
         std::make_unique<AutofillProfile>(autofill::test::GetFullProfile());
+  }
+
+  // This feature is specific to sync transport mode.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTransportOnly;
   }
 
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
@@ -107,6 +122,12 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
     return bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(),
                                     /*index=*/0, u"Local",
                                     GURL("http://local.com/"));
+  }
+
+  extensions::ExtensionId SaveLocalExtension() {
+    return SyncExtensionHelper::GetInstance()->InstallExtension(
+        GetProfile(0), "simple_with_file",
+        extensions::Manifest::TYPE_EXTENSION);
   }
 
   std::vector<const AutofillProfile*> GetLocalAddresses() {
@@ -143,12 +164,15 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
       syncer::UserSelectableType::kAutofill, false);
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kBookmarks, false);
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kExtensions, false);
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
   ASSERT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::BOOKMARKS));
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::EXTENSIONS));
 
   // This should turn on account storage for the respective types.
   GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
@@ -157,12 +181,15 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
       syncer::CONTACT_INFO, {});
   GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
       syncer::BOOKMARKS, {});
+  GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
+      syncer::EXTENSIONS, {});
 
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::BOOKMARKS));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::EXTENSIONS));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
@@ -226,11 +253,34 @@ IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
+                       ShouldUploadExtension) {
+  ASSERT_TRUE(SetupClients());
+
+  const extensions::ExtensionId extension_id = SaveLocalExtension();
+
+  SignIn();
+  ASSERT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            AccountExtensionTracker::Get(GetProfile(0))
+                ->GetAccountExtensionType(extension_id));
+
+  // This should migrate the extension.
+  GetSyncService(0)->SelectTypeAndMigrateLocalDataItemsWhenActive(
+      syncer::EXTENSIONS, {extension_id});
+
+  EXPECT_TRUE(ServerCountMatchStatusChecker(syncer::EXTENSIONS, 1).Wait());
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      AccountExtensionTracker::Get(GetProfile(0))
+          ->GetAccountExtensionType(extension_id));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectTypeAndMigrateLocalDataItemsWhenActiveTest,
                        ShouldUploadMultiplePasswords) {
   ASSERT_TRUE(SetupClients());
 
   // Set up two locally saved passwords.
-  PasswordForm second_password = CreateTestPasswordForm(1);
+  PasswordForm second_password =
+      CreateTestPasswordForm(1, PasswordForm::Store::kProfileStore);
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(password());
   passwords_helper::GetProfilePasswordStoreInterface(0)->AddLogin(
       second_password);

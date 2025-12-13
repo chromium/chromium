@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 
 #include <algorithm>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
 
@@ -27,8 +23,10 @@ bool FieldClassificationModelExecutor::Preprocess(
   // tokens_per_field) where the batch size is set to 1. The second and third
   // dimensions hold the values of the vectorized field labels.
   CHECK_EQ(input_tensors[0]->dims->size, 3);
-  const size_t maximum_number_of_fields = input_tensors[0]->dims->data[1];
-  const size_t output_sequence_length = input_tensors[0]->dims->data[2];
+  const size_t maximum_number_of_fields =
+      UNSAFE_TODO(input_tensors[0]->dims->data[1]);
+  const size_t output_sequence_length =
+      UNSAFE_TODO(input_tensors[0]->dims->data[2]);
 
   CHECK_EQ(2u, input_tensors.size());
   CHECK_EQ(kTfLiteFloat32, input_tensors[0]->type);
@@ -50,9 +48,10 @@ bool FieldClassificationModelExecutor::Preprocess(
     }
     // Populate tensors with the vectorized field labels.
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
-      std::ranges::copy(encoded_input[i],
-                        tflite::GetTensorData<float>(input_tensors[0]) +
-                            i * output_sequence_length);
+      std::ranges::copy(
+          encoded_input[i],
+          UNSAFE_TODO(tflite::GetTensorData<float>(input_tensors[0]) +
+                      i * output_sequence_length));
     }
   }
   // `input_tensors[1]` is a boolean mask of shape
@@ -64,7 +63,8 @@ bool FieldClassificationModelExecutor::Preprocess(
   {
     CHECK_EQ(input_tensors[1]->dims->size, 2);
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
-      tflite::GetTensorData<bool>(input_tensors[1])[i] = i < fields_count;
+      UNSAFE_TODO(tflite::GetTensorData<bool>(input_tensors[1])[i]) =
+          i < fields_count;
     }
   }
   return true;
@@ -79,15 +79,16 @@ FieldClassificationModelExecutor::Postprocess(
   // the model, for all `kModelExecutorMaxNumberOfFields`.
   CHECK_EQ(1u, output_tensors.size());
   CHECK_EQ(kTfLiteFloat32, output_tensors[0]->type);
-  const size_t maximum_number_of_fields = output_tensors[0]->dims->data[1];
-  const size_t num_outputs = output_tensors[0]->dims->data[2];
+  const size_t maximum_number_of_fields =
+      UNSAFE_TODO(output_tensors[0]->dims->data[1]);
+  const size_t num_outputs = UNSAFE_TODO(output_tensors[0]->dims->data[2]);
   FieldClassificationModelEncoder::ModelOutput model_predictions(
       maximum_number_of_fields);
   for (size_t i = 0; i < maximum_number_of_fields; ++i) {
     model_predictions[i].resize(num_outputs);
-    const float* data_bgn =
-        tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs;
-    std::ranges::copy(data_bgn, data_bgn + num_outputs,
+    const float* data_bgn = UNSAFE_TODO(
+        tflite::GetTensorData<float>(output_tensors[0]) + i * num_outputs);
+    std::ranges::copy(data_bgn, UNSAFE_TODO(data_bgn + num_outputs),
                       model_predictions[i].begin());
   }
   return model_predictions;

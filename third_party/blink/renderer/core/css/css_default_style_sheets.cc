@@ -41,13 +41,16 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
+#include "third_party/blink/renderer/core/html/html_geolocation_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
+#include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_audio_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -143,6 +146,7 @@ void CSSDefaultStyleSheets::Reset() {
   marker_style_sheet_.Clear();
   scroll_button_style_sheet_.Clear();
   scroll_marker_style_sheet_.Clear();
+  overscroll_style_sheet_.Clear();
   permission_element_style_sheet_.Clear();
   view_source_style_sheet_.Clear();
   json_style_sheet_.Clear();
@@ -226,10 +230,12 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_pseudo_element_style_.Clear();
   default_forced_colors_media_controls_style_.Clear();
 
-  default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval());
+  default_html_style_->AddRulesFromSheet(DefaultStyleSheet(), ScreenEval(),
+                                         /*mixins=*/{});
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
-                                                ScreenEval());
-  default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
+                                                ScreenEval(), /*mixins=*/{});
+  default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval(),
+                                          /*mixins=*/{});
 
   default_html_style_->CompactRulesIfNeeded();
   default_html_quirks_style_->CompactRulesIfNeeded();
@@ -247,7 +253,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
     view_source_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_VIEW_SOURCE_CSS));
     default_view_source_style_->AddRulesFromSheet(view_source_style_sheet_,
-                                                  ScreenEval());
+                                                  ScreenEval(), /*mixins=*/{});
     default_view_source_style_->CompactRulesIfNeeded();
   }
   return default_view_source_style_.Get();
@@ -258,8 +264,8 @@ RuleSet* CSSDefaultStyleSheets::DefaultJSONDocumentStyle() {
     json_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_JSON_DOCUMENT_CSS));
     default_json_document_style_ = MakeGarbageCollected<RuleSet>();
-    default_json_document_style_->AddRulesFromSheet(json_style_sheet_,
-                                                    ScreenEval());
+    default_json_document_style_->AddRulesFromSheet(
+        json_style_sheet_, ScreenEval(), /*mixins=*/{});
     default_json_document_style_->CompactRulesIfNeeded();
   }
   return default_json_document_style_.Get();
@@ -279,24 +285,27 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
     NamespaceType type) {
   switch (type) {
     case NamespaceType::kHTML:
-      default_html_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_html_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                             /*mixins=*/{});
       default_html_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kSVG:
-      default_svg_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_svg_style_->AddRulesFromSheet(rules, ScreenEval(), /*mixins=*/{});
       default_svg_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMathML:
-      default_mathml_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_mathml_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                               /*mixins=*/{});
       default_mathml_style_->CompactRulesIfNeeded();
       break;
     case NamespaceType::kMediaControls:
-      default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval());
+      default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval(),
+                                                       /*mixins=*/{});
       default_media_controls_style_->CompactRulesIfNeeded();
       break;
   }
   // Add to print and forced color for all namespaces.
-  default_print_style_->AddRulesFromSheet(rules, PrintEval());
+  default_print_style_->AddRulesFromSheet(rules, PrintEval(), /*mixins=*/{});
   default_print_style_->CompactRulesIfNeeded();
   if (default_forced_color_style_) {
     switch (type) {
@@ -306,12 +315,12 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
               MakeGarbageCollected<RuleSet>();
         }
         default_forced_colors_media_controls_style_->AddRulesFromSheet(
-            rules, ForcedColorsEval());
+            rules, ForcedColorsEval(), /*mixins=*/{});
         default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
         break;
       default:
-        default_forced_color_style_->AddRulesFromSheet(rules,
-                                                       ForcedColorsEval());
+        default_forced_color_style_->AddRulesFromSheet(
+            rules, ForcedColorsEval(), /*mixins=*/{});
         default_forced_color_style_->CompactRulesIfNeeded();
         break;
     }
@@ -351,7 +360,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
 
   if (!permission_element_style_sheet_ && IsA<HTMLPermissionElement>(element)) {
     CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
-        element.GetExecutionContext()));
+              element.GetExecutionContext()) ||
+          (RuntimeEnabledFeatures::UserMediaElementEnabled(
+               element.GetExecutionContext()) &&
+           IsA<HTMLUserMediaElement>(element)) ||
+          (RuntimeEnabledFeatures::GeolocationElementEnabled(
+               element.GetExecutionContext()) &&
+           IsA<HTMLGeolocationElement>(element)));
     permission_element_style_sheet_ = ParseUASheet(
         UncompressResourceAsASCIIString(IDR_UASTYLE_PERMISSION_ELEMENT_CSS));
     AddRulesToDefaultStyleSheets(permission_element_style_sheet_,
@@ -430,8 +445,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(ScrollButtonStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          ScrollButtonStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       // We just added a new :focus-visible rule to the UA stylesheet, and
       // RuleSetGroup caches whether we have any such rules or not, so we need
@@ -448,13 +463,27 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(ScrollMarkerStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          ScrollMarkerStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       // We just added a new :focus-visible rule to the UA stylesheet, and
       // RuleSetGroup caches whether we have any such rules or not, so we need
       // to clear the cache.
       rule_set_group_cache_.clear();
+      return true;
+    }
+    case kPseudoIdOverscrollAreaParent: {
+      if (overscroll_style_sheet_) {
+        return false;
+      }
+      overscroll_style_sheet_ = ParseUASheet(
+          UncompressResourceAsASCIIString(IDR_UASTYLE_OVERSCROLL_CSS));
+      if (!default_pseudo_element_style_) {
+        default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
+      }
+      default_pseudo_element_style_->AddRulesFromSheet(
+          OverscrollStyleSheet(), ScreenEval(), /*mixins=*/{});
+      default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
     case kPseudoIdMarker: {
@@ -466,8 +495,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForPseudoElement(
       if (!default_pseudo_element_style_) {
         default_pseudo_element_style_ = MakeGarbageCollected<RuleSet>();
       }
-      default_pseudo_element_style_->AddRulesFromSheet(MarkerStyleSheet(),
-                                                       ScreenEval());
+      default_pseudo_element_style_->AddRulesFromSheet(
+          MarkerStyleSheet(), ScreenEval(), /*mixins=*/{});
       default_pseudo_element_style_->CompactRulesIfNeeded();
       return true;
     }
@@ -496,7 +525,7 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen(
 
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
-      MediaQueryEvaluator(element.GetDocument().GetFrame()));
+      MediaQueryEvaluator(element.GetDocument().GetFrame()), /*mixins=*/{});
   default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
 }
@@ -515,7 +544,7 @@ void CSSDefaultStyleSheets::RebuildFullscreenRuleSetIfMediaQueriesChanged(
   default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_fullscreen_style_->AddRulesFromSheet(
       fullscreen_style_sheet_,
-      MediaQueryEvaluator(element.GetDocument().GetFrame()));
+      MediaQueryEvaluator(element.GetDocument().GetFrame()), /*mixins=*/{});
   default_fullscreen_style_->CompactRulesIfNeeded();
   VerifyUniversalRuleCount();
   rule_set_group_cache_.clear();
@@ -537,13 +566,13 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
   if (!default_forced_color_style_) {
     default_forced_color_style_ = MakeGarbageCollected<RuleSet>();
   }
-  default_forced_color_style_->AddRulesFromSheet(DefaultStyleSheet(),
-                                                 ForcedColorsEval());
-  default_forced_color_style_->AddRulesFromSheet(ForcedColorsStyleSheet(),
-                                                 ForcedColorsEval());
+  default_forced_color_style_->AddRulesFromSheet(
+      DefaultStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
+  default_forced_color_style_->AddRulesFromSheet(
+      ForcedColorsStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
   if (svg_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(SvgStyleSheet(),
-                                                   ForcedColorsEval());
+    default_forced_color_style_->AddRulesFromSheet(
+        SvgStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
   }
   default_forced_color_style_->CompactRulesIfNeeded();
 
@@ -552,7 +581,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
     default_forced_colors_media_controls_style_ =
         MakeGarbageCollected<RuleSet>();
     default_forced_colors_media_controls_style_->AddRulesFromSheet(
-        MediaControlsStyleSheet(), ForcedColorsEval());
+        MediaControlsStyleSheet(), ForcedColorsEval(), /*mixins=*/{});
     default_forced_colors_media_controls_style_->CompactRulesIfNeeded();
   }
 
@@ -562,7 +591,7 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
 void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
                                               RuleFeatureSet& features) {
   ForEachRuleFeatureSet(document, /*call_for_each_stylesheet=*/false,
-                        WTF::BindRepeating(
+                        BindRepeating(
                             [](RuleFeatureSet& target_features,
                                const RuleFeatureSet& default_style_features,
                                StyleSheetContents* contents) {
@@ -634,6 +663,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(scroll_button_style_sheet_);
   visitor->Trace(scroll_marker_style_sheet_);
+  visitor->Trace(overscroll_style_sheet_);
   visitor->Trace(view_source_style_sheet_);
   visitor->Trace(json_style_sheet_);
 

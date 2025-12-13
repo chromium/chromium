@@ -98,7 +98,6 @@ public class TrackingProtectionSettingsTest {
     @SmallTest
     public void launchTrackingProtectionPage() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 
@@ -110,7 +109,6 @@ public class TrackingProtectionSettingsTest {
     @SmallTest
     public void changeToggleValues_propagatedToBackend() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 
@@ -122,7 +120,6 @@ public class TrackingProtectionSettingsTest {
     @SmallTest
     public void clickOnLearnMore_cctIsOpened() {
         when(mDelegate.isBlockAll3pcEnabled()).thenReturn(true);
-        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
 
         launchTrackingProtectionSettings();
 

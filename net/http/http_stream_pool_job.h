@@ -6,11 +6,13 @@
 #define NET_HTTP_HTTP_STREAM_POOL_JOB_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -50,7 +52,7 @@ class HttpStreamPool::Job {
         const = 0;
 
     // True when IP-based pooling is enabled.
-    virtual bool enable_ip_based_pooling() const = 0;
+    virtual bool enable_ip_based_pooling_for_h2() const = 0;
 
     // True when alternative services is enabled.
     virtual bool enable_alternative_services() const = 0;
@@ -63,11 +65,14 @@ class HttpStreamPool::Job {
 
     virtual const NetLogWithSource& net_log() const = 0;
 
+    virtual const perfetto::Flow& flow() const = 0;
+
     // Callback methods: Only one of these methods will be called.
     // Called when a stream is ready.
     virtual void OnStreamReady(Job* job,
                                std::unique_ptr<HttpStream> stream,
-                               NextProto negotiated_protocol) = 0;
+                               NextProto negotiated_protocol,
+                               std::optional<SessionSource> session_source) = 0;
     // Called when stream attempts failed.
     virtual void OnStreamFailed(Job* job,
                                 int status,
@@ -85,7 +90,10 @@ class HttpStreamPool::Job {
   };
 
   // `delegate` must outlive `this`. For a stream request, `num_streams` must
-  // not be specified. For a preconnect, `num_streams` must be specified.
+  // not be specified. `group` must not be destroyed until either it has
+  // notified the Job of completion, or `this` has informed the Group's
+  // AttemptManager of cancellation. For a preconnect, `num_streams` must be
+  // specified.
   Job(Delegate* delegate,
       JobType type,
       Group* group,
@@ -112,7 +120,8 @@ class HttpStreamPool::Job {
 
   // Called by the associated AttemptManager when a stream is ready.
   void OnStreamReady(std::unique_ptr<HttpStream> stream,
-                     NextProto negotiated_protocol);
+                     NextProto negotiated_protocol,
+                     std::optional<SessionSource> session_source);
 
   // Called by the associated AttemptManager when stream attempts failed.
   void OnStreamFailed(int rv,
@@ -139,12 +148,8 @@ class HttpStreamPool::Job {
 
   RespectLimits respect_limits() const { return delegate_->respect_limits(); }
 
-  bool enable_ip_based_pooling() const {
-    return delegate_->enable_ip_based_pooling();
-  }
-
-  bool enable_alternative_services() const {
-    return delegate_->enable_alternative_services();
+  bool enable_ip_based_pooling_for_h2() const {
+    return delegate_->enable_ip_based_pooling_for_h2();
   }
 
   const ProxyInfo& proxy_info() const { return delegate_->proxy_info(); }
@@ -157,9 +162,16 @@ class HttpStreamPool::Job {
     return delegate_->net_log();
   }
 
+  // TODO(crbug.com/455891789): Remove this once the bug is fixed.
+  bool enable_alternative_services() const {
+    return delegate_->enable_alternative_services();
+  }
+
   const NetLogWithSource& net_log() const { return job_net_log_; }
 
   const NetLogWithSource& request_net_log() const { return request_net_log_; }
+
+  const perfetto::Flow& flow() const { return delegate_->flow(); }
 
   quic::ParsedQuicVersion quic_version() const { return quic_version_; }
 
@@ -169,6 +181,8 @@ class HttpStreamPool::Job {
 
   JobType type() const { return type_; }
 
+  bool is_preconnect() const { return type_ != JobType::kRequest; }
+
   const ConnectionAttempts& connection_attempts() const {
     return connection_attempts_;
   }
@@ -176,8 +190,17 @@ class HttpStreamPool::Job {
   base::TimeTicks create_time() const { return create_time_; }
 
  private:
+  // Called when job is cancelled or completes. Sets `result_` (which is
+  // currently nullopt on cancelletation - should it be ERR_ABORTED instead?).
+  // Clears `attempt_manager_`. On cancellation, The AttemptManager must already
+  // have been notified of cancellation.
+  void OnDone(std::optional<int> result);
+
   const raw_ptr<Delegate> delegate_;
   const JobType type_;
+
+  // The AttemptManager associated with `this`. Once `this` has been notified of
+  // success or failure, replaced with nullptr.
   raw_ptr<AttemptManager> attempt_manager_;
 
   const quic::ParsedQuicVersion quic_version_;

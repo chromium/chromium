@@ -9,33 +9,34 @@
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
-#include "content/browser/webid/federated_auth_request_page_data.h"
+#include "content/browser/webid/request_page_data.h"
+#include "content/browser/webid/request_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 
 namespace content {
 namespace {
-namespace FedCm = content::protocol::FedCm;
+namespace FedCm = protocol::FedCm;
 
-FedCm::DialogType ConvertDialogType(
-    content::FederatedAuthRequestImpl::DialogType type) {
+using DialogType = webid::RequestService::DialogType;
+
+FedCm::DialogType ConvertDialogType(DialogType type) {
   switch (type) {
-    case content::FederatedAuthRequestImpl::kNone:
+    case DialogType::kNone:
       NOTREACHED() << "This should only be called if there is a dialog";
-    case content::FederatedAuthRequestImpl::kLoginToIdpPopup:
-    case content::FederatedAuthRequestImpl::kContinueOnPopup:
-    case content::FederatedAuthRequestImpl::kErrorUrlPopup:
+    case DialogType::kLoginToIdpPopup:
+    case DialogType::kContinueOnPopup:
+    case DialogType::kErrorUrlPopup:
       NOTREACHED()
           << "These dialog types are not currently exposed to automation";
-    case content::FederatedAuthRequestImpl::kSelectAccount:
+    case DialogType::kSelectAccount:
       return FedCm::DialogTypeEnum::AccountChooser;
-    case content::FederatedAuthRequestImpl::kAutoReauth:
+    case DialogType::kAutoReauth:
       return FedCm::DialogTypeEnum::AutoReauthn;
-    case content::FederatedAuthRequestImpl::kConfirmIdpLogin:
+    case DialogType::kConfirmIdpLogin:
       return FedCm::DialogTypeEnum::ConfirmIdpLogin;
-    case content::FederatedAuthRequestImpl::kError:
+    case DialogType::kError:
       return FedCm::DialogTypeEnum::Error;
   }
 }
@@ -76,7 +77,7 @@ DispatchResponse FedCmHandler::Enable(
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
   if (!was_enabled && auth_request &&
-      auth_request->GetDialogType() != FederatedAuthRequestImpl::kNone) {
+      auth_request->GetDialogType() != DialogType::kNone) {
     DidShowDialog();
   }
 
@@ -244,13 +245,13 @@ DispatchResponse FedCmHandler::ClickDialogButton(
         "clickDialogButton called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
+  DialogType type = auth_request->GetDialogType();
   if (in_dialogButton == FedCm::DialogButtonEnum::ConfirmIdpLoginContinue) {
     switch (type) {
-      case FederatedAuthRequestImpl::kConfirmIdpLogin:
+      case DialogType::kConfirmIdpLogin:
         auth_request->AcceptConfirmIdpLoginDialogForDevtools();
         return DispatchResponse::Success();
-      case FederatedAuthRequestImpl::kSelectAccount: {
+      case DialogType::kSelectAccount: {
         const auto* idp_data = GetIdentityProviderData(auth_request);
         CHECK(idp_data) << "kSelectAccount should always have IDP data";
         CHECK(!idp_data->empty());
@@ -271,7 +272,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
             "confirm IDP login dialog is shown");
     }
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorGotIt) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorGotIt while no error dialog is "
           "shown");
@@ -279,7 +280,7 @@ DispatchResponse FedCmHandler::ClickDialogButton(
     auth_request->ClickErrorDialogGotItForDevtools();
     return DispatchResponse::Success();
   } else if (in_dialogButton == FedCm::DialogButtonEnum::ErrorMoreDetails) {
-    if (type != FederatedAuthRequestImpl::kError) {
+    if (type != DialogType::kError) {
       return DispatchResponse::ServerError(
           "clickDialogButton called with ErrorMoreDetails while no error "
           "dialog is shown");
@@ -308,12 +309,12 @@ DispatchResponse FedCmHandler::DismissDialog(
         "dismissDialog called while no FedCm dialog is shown");
   }
 
-  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
-  if (type == FederatedAuthRequestImpl::kConfirmIdpLogin) {
+  DialogType type = auth_request->GetDialogType();
+  if (type == DialogType::kConfirmIdpLogin) {
     auth_request->DismissConfirmIdpLoginDialogForDevtools();
     return DispatchResponse::Success();
   }
-  if (type == FederatedAuthRequestImpl::kError) {
+  if (type == DialogType::kError) {
     auth_request->DismissErrorDialogForDevtools();
     return DispatchResponse::Success();
   }
@@ -343,16 +344,16 @@ url::Origin FedCmHandler::GetEmbeddingOrigin() {
   return frame_host_->GetMainFrame()->GetLastCommittedOrigin();
 }
 
-FederatedAuthRequestPageData* FedCmHandler::GetPageData() {
+webid::RequestPageData* FedCmHandler::GetPageData() {
   if (!frame_host_) {
     return nullptr;
   }
   Page& page = frame_host_->GetPage();
-  return PageUserData<FederatedAuthRequestPageData>::GetOrCreateForPage(page);
+  return PageUserData<webid::RequestPageData>::GetOrCreateForPage(page);
 }
 
-FederatedAuthRequestImpl* FedCmHandler::GetFederatedAuthRequest() {
-  FederatedAuthRequestPageData* page_data = GetPageData();
+webid::RequestService* FedCmHandler::GetFederatedAuthRequest() {
+  webid::RequestPageData* page_data = GetPageData();
   if (!page_data) {
     return nullptr;
   }
@@ -360,7 +361,7 @@ FederatedAuthRequestImpl* FedCmHandler::GetFederatedAuthRequest() {
 }
 
 const std::vector<IdentityProviderDataPtr>*
-FedCmHandler::GetIdentityProviderData(FederatedAuthRequestImpl* auth_request) {
+FedCmHandler::GetIdentityProviderData(webid::RequestService* auth_request) {
   if (!auth_request) {
     return nullptr;
   }
@@ -373,7 +374,7 @@ FedCmHandler::GetIdentityProviderData(FederatedAuthRequestImpl* auth_request) {
 }
 
 const std::vector<IdentityRequestAccountPtr>* FedCmHandler::GetAccounts(
-    FederatedAuthRequestImpl* auth_request) {
+    webid::RequestService* auth_request) {
   if (!auth_request) {
     return nullptr;
   }

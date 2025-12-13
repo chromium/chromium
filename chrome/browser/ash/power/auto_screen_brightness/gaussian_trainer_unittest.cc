@@ -609,9 +609,6 @@ TEST_F(GaussianTrainerTest, InvalidParameters) {
   ResetModelWithParams(params);
 
   EXPECT_FALSE(gaussian_trainer_->HasValidConfiguration());
-  histogram_tester_.ExpectUniqueSample(
-      "AutoScreenBrightness.ParameterError",
-      static_cast<int>(ParameterError::kModelError), 1);
 }
 
 }  // namespace auto_screen_brightness

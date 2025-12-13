@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_type_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type_util.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 
@@ -32,6 +32,8 @@ SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
   if (IsUpdateModal()) {
     StoreProfileDiff(delegate->GetProfileDiff());
     update_modal_description_ = delegate->GetSubtitle();
+    is_profile_a_home_profile_ = delegate->IsOriginalProfileHomeProfile();
+    is_profile_a_work_profile_ = delegate->IsOriginalProfileWorkProfile();
   }
 
   current_address_profile_saved_ = infobar->accepted();

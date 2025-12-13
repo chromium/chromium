@@ -63,7 +63,6 @@ class MockDaemonListener : public IPC::Listener,
 
   ~MockDaemonListener() override = default;
 
-  bool OnMessageReceived(const IPC::Message& message) override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
@@ -93,18 +92,11 @@ class MockNetworkListener : public IPC::Listener {
 
   ~MockNetworkListener() override = default;
 
-  bool OnMessageReceived(const IPC::Message& message) override;
-
   MOCK_METHOD(void, OnChannelConnected, (std::int32_t), (override));
   MOCK_METHOD(void, OnChannelError, (), (override));
 
   MOCK_METHOD0(OnDesktopEnvironmentCreated, void());
 };
-
-bool MockDaemonListener::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
-}
 
 void MockDaemonListener::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
@@ -117,11 +109,6 @@ void MockDaemonListener::OnAssociatedInterfaceRequest(
 
 void MockDaemonListener::Disconnect() {
   desktop_session_request_handler_.reset();
-}
-
-bool MockNetworkListener::OnMessageReceived(const IPC::Message& message) {
-  ADD_FAILURE() << "Unexpected call to OnMessageReceived()";
-  return false;
 }
 
 }  // namespace

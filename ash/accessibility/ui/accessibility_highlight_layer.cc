@@ -44,8 +44,7 @@ void AccessibilityHighlightLayer::Set(const std::vector<gfx::Rect>& rects,
   int inset = kLayerMargin;
   bounds.Inset(-inset);
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   aura::Window* container = Shell::GetContainer(
       root_window, kShellWindowId_AccessibilityPanelContainer);

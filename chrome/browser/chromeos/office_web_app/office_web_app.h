@@ -17,6 +17,7 @@ namespace chromeos {
 
 // The URL to install the Microsoft365 app.
 extern const char kMicrosoft365WebAppUrl[];
+extern const int kMicrosoft365WebAppIconSize;
 
 void InstallMicrosoft365(
     Profile* profile,

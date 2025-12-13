@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/snooper_node.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -216,8 +212,8 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     // Assign invalid sample values to the AudioBus. Then, after the Render()
     // call, confirm that every sample was overwritten in the output AudioBus.
     const auto bus = media::AudioBus::Create(output_params());
-    for (int ch = 0; ch < bus->channels(); ++ch) {
-      std::fill_n(bus->channel(ch), bus->frames(), kInvalidAudioSample);
+    for (auto channel : bus->AllChannels()) {
+      std::ranges::fill(channel, kInvalidAudioSample);
     }
 
     // If the SnooperNode provides a suggestion, check that |output_time| is
@@ -236,9 +232,8 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
     node_->Render(output_time, bus.get());
 
     for (int ch = 0; ch < bus->channels(); ++ch) {
-      EXPECT_FALSE(
-          std::any_of(bus->channel(ch), bus->channel(ch) + bus->frames(),
-                      [](float x) { return x == kInvalidAudioSample; }))
+      EXPECT_FALSE(std::ranges::any_of(
+          bus->channel(ch), [](float x) { return x == kInvalidAudioSample; }))
           << " at output_time=" << output_time << ", ch=" << ch;
     }
     consumer_->Consume(*bus);

@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/account_checker.h"
 
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -186,10 +187,9 @@ void AccountChecker::FetchPriceEmailPref() {
           }
         })");
   auto endpoint_fetcher = CreateEndpointFetcher(
-      kOAuthName, GURL(kNotificationsPrefUrl),
-      endpoint_fetcher::HttpMethod::kGet, kContentType,
-      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-      kTimeout, kEmptyPostData, traffic_annotation);
+      signin::OAuthConsumerId::kChromeMemex, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kGet, kContentType, kTimeout,
+      kEmptyPostData, traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleFetchPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
@@ -198,20 +198,15 @@ void AccountChecker::FetchPriceEmailPref() {
 void AccountChecker::HandleFetchPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&AccountChecker::OnFetchPriceEmailPrefJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
 
-void AccountChecker::OnFetchPriceEmailPrefJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
   // Only update the pref if we're still waiting for the pref fetch completion.
   // If users update the pref faster than we hear back from the server fetch,
   // the fetched result should be discarded.
   if (pref_service_ && is_waiting_for_pref_fetch_completion_ &&
-      result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
+      result.has_value()) {
+    if (auto* preferences_map = result->FindDict(kPreferencesKey)) {
       if (std::optional<bool> price_email_pref =
               preferences_map->FindBool(kPriceTrackEmailPref)) {
         // Only set the pref value when necessary since it could affect
@@ -247,8 +242,7 @@ void AccountChecker::OnPriceEmailPrefChanged() {
       base::Value::Dict().Set(
           kPriceTrackEmailPref,
           pref_service_->GetBoolean(kPriceEmailNotificationsEnabled)));
-  std::string post_data;
-  base::JSONWriter::Write(post_json, &post_data);
+  std::string post_data = base::WriteJson(post_json).value_or("");
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -281,10 +275,9 @@ void AccountChecker::OnPriceEmailPrefChanged() {
           }
         })");
   auto endpoint_fetcher = CreateEndpointFetcher(
-      kOAuthName, GURL(kNotificationsPrefUrl),
-      endpoint_fetcher::HttpMethod::kPost, kContentType,
-      std::vector<std::string>{GaiaConstants::kChromeMemexOAuth2Scope},
-      kTimeout, post_data, traffic_annotation);
+      signin::OAuthConsumerId::kChromeMemex, GURL(kNotificationsPrefUrl),
+      endpoint_fetcher::HttpMethod::kPost, kContentType, kTimeout, post_data,
+      traffic_annotation);
   endpoint_fetcher.get()->Fetch(base::BindOnce(
       &AccountChecker::HandleSendPriceEmailPrefResponse,
       weak_ptr_factory_.GetWeakPtr(), std::move(endpoint_fetcher)));
@@ -293,16 +286,10 @@ void AccountChecker::OnPriceEmailPrefChanged() {
 void AccountChecker::HandleSendPriceEmailPrefResponse(
     std::unique_ptr<EndpointFetcher> endpoint_fetcher,
     std::unique_ptr<EndpointResponse> responses) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      responses->response,
-      base::BindOnce(&AccountChecker::OnSendPriceEmailPrefJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void AccountChecker::OnSendPriceEmailPrefJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (pref_service_ && result.has_value() && result->is_dict()) {
-    if (auto* preferences_map = result->GetDict().FindDict(kPreferencesKey)) {
+  std::optional<base::Value::Dict> result =
+      base::JSONReader::ReadDict(responses->response, base::JSON_PARSE_RFC);
+  if (pref_service_ && result.has_value()) {
+    if (auto* preferences_map = result->FindDict(kPreferencesKey)) {
       if (auto price_email_pref =
               preferences_map->FindBool(kPriceTrackEmailPref)) {
         if (pref_service_->GetBoolean(kPriceEmailNotificationsEnabled) !=
@@ -315,11 +302,10 @@ void AccountChecker::OnSendPriceEmailPrefJsonParsed(
 }
 
 std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
-    const std::string& oauth_consumer_name,
+    signin::OAuthConsumerId oauth_consumer_id,
     const GURL& url,
     const endpoint_fetcher::HttpMethod http_method,
     const std::string& content_type,
-    const std::vector<std::string>& scopes,
     const base::TimeDelta& timeout,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag) {
@@ -335,10 +321,9 @@ std::unique_ptr<EndpointFetcher> AccountChecker::CreateEndpointFetcher(
   request_params.SetUrl(url)
       .SetContentType(content_type)
       .SetAuthType(endpoint_fetcher::OAUTH)
-      .SetOauthScopes(scopes)
+      .SetOAuthConsumerId(oauth_consumer_id)
       .SetConsentLevel(consent_level)
       .SetTimeout(timeout)
-      .SetOauthConsumerName(oauth_consumer_name)
       .SetPostData(post_data);
   MaybeUseAlternateShoppingServer(request_params);
   return std::make_unique<EndpointFetcher>(

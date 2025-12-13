@@ -16,7 +16,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/menus/cocoa/menu_controller.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"

@@ -7,10 +7,12 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,6 +26,19 @@ constexpr const char* kIsFileURLHistogram =
     "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
 }
 #endif
+
+PermissionOption PermissionUtil::ToPermissionOption(
+    blink::mojom::PermissionStatus permission_status) {
+  switch (permission_status) {
+    case blink::mojom::PermissionStatus::GRANTED:
+      return PermissionOption::kAllowed;
+    case blink::mojom::PermissionStatus::DENIED:
+      return PermissionOption::kDenied;
+    case blink::mojom::PermissionStatus::ASK:
+      return PermissionOption::kAsk;
+  }
+  NOTREACHED();
+}
 
 // Due to dependency issues, this method is duplicated from
 // components/permissions/permission_util.cc.
@@ -102,6 +117,14 @@ bool PermissionUtil::IsDevicePermission(
   return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||
          descriptor->name == blink::mojom::PermissionName::AUDIO_CAPTURE ||
          descriptor->name == blink::mojom::PermissionName::GEOLOCATION;
+}
+
+bool PermissionUtil::IsEmbeddablePermission(
+    const blink::mojom::PermissionDescriptorPtr& descriptor) {
+  return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::AUDIO_CAPTURE ||
+         descriptor->name == blink::mojom::PermissionName::GEOLOCATION ||
+         descriptor->name == blink::mojom::PermissionName::WEB_APP_INSTALLATION;
 }
 
 }  // namespace content

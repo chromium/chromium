@@ -11,13 +11,13 @@
 #include <stddef.h>
 
 #include <map>
-#include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/web_cache/public/mojom/web_cache.mojom.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -43,7 +43,7 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
 
   // Instantly clears renderer cache for a process.
   // Must be called between Add(process_id) and Remove(process_id).
-  void ClearCacheForProcess(int process_id);
+  void ClearCacheForProcess(content::ChildProcessId process_id);
 
   // Clears all in-memory caches when a tab is reloaded or the user navigates
   // to a different website.
@@ -54,14 +54,18 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
       content::RenderProcessHost* process_host) override;
 
   // content::RenderProcessHostObserver:
+  void RenderProcessReady(content::RenderProcessHost* process_host) override;
   void RenderProcessExited(
-      content::RenderProcessHost* host,
+      content::RenderProcessHost* process_host,
       const content::ChildProcessTerminationInfo& info) override;
-  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+  void RenderProcessHostDestroyed(
+      content::RenderProcessHost* process_host) override;
 
  private:
   friend class base::NoDestructor<WebCacheManager>;
   FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, AddRemoveRendererTest);
+  FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, OnlyClearCacheWhenProcessReady);
+  FRIEND_TEST_ALL_PREFIXES(WebCacheManagerTest, PreExistingRenderProcessHost);
 
   // This class is a singleton.  Do not instantiate directly. Call GetInstance()
   // instead.
@@ -71,10 +75,10 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
   // When a render process is created, it registers itself with the cache
   // manager host. The renderer will populate its cache, which may need to get
   // cleared later.
-  void Add(int renderer_id);
+  void Add(content::RenderProcessHost* process_host);
 
   // Unregister the renderer when it gets destroyed.
-  void Remove(int renderer_id);
+  void Remove(content::RenderProcessHost* process_host);
 
   enum ClearCacheOccasion {
     // Instructs to clear the cache instantly.
@@ -84,15 +88,14 @@ class WebCacheManager : public content::RenderProcessHostCreationObserver,
     ON_NAVIGATION
   };
 
-  // Inform all |renderers| to clear their cache.
-  void ClearRendererCache(const std::set<int>& renderers,
-                          ClearCacheOccasion occation);
+  // Inform all renderers to clear their cache.
+  void ClearRendererCache(ClearCacheOccasion occasion);
 
-  std::set<int> renderers_;
   // Maps every renderer_id with its corresponding
   // mojo::Remote<mojom::WebCache>. The key is the unique id of every render
   // process host.
-  std::map<int, mojo::Remote<mojom::WebCache>> web_cache_services_;
+  std::map<content::ChildProcessId, mojo::Remote<mojom::WebCache>>
+      web_cache_services_;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

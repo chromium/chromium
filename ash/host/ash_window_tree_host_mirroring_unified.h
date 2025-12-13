@@ -36,7 +36,7 @@ class AshWindowTreeHostMirroringUnified : public AshWindowTreeHostPlatform {
   void PrepareForShutdown() override;
 
   // ui::PlatformWindowDelegate:
-  void OnMouseEnter() override;
+  void OnCursorUpdate() override;
 
  private:
   int64_t mirroring_display_id_;

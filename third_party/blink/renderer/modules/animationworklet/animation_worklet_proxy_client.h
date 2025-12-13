@@ -87,7 +87,7 @@ class MODULES_EXPORT AnimationWorkletProxyClient
         : mutator_dispatcher(std::move(mutator_dispatcher)),
           mutator_runner(std::move(mutator_runner)) {}
   };
-  WTF::Vector<MutatorItem> mutator_items_;
+  Vector<MutatorItem> mutator_items_;
 
   Vector<CrossThreadPersistent<AnimationWorkletGlobalScope>> global_scopes_;
   HashMap<String, int8_t> registered_animators_;

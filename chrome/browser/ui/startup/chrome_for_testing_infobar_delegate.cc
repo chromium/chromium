@@ -28,6 +28,11 @@ ChromeForTestingInfoBarDelegate::GetIdentifier() const {
   return CHROME_FOR_TESTING_INFOBAR_DELEGATE;
 }
 
+infobars::InfoBarDelegate::InfobarPriority
+ChromeForTestingInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kLow;
+}
+
 std::u16string ChromeForTestingInfoBarDelegate::GetMessageText() const {
   return l10n_util::GetStringFUTF16(
       IDS_CHROME_FOR_TESTING_DISCLAIMER,

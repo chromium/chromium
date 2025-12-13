@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <map>
 #include <optional>
 #include <string>
 #include <variant>
@@ -55,6 +56,22 @@ class BLINK_COMMON_EXPORT Manifest {
     std::vector<mojom::ManifestImageResource_Purpose> purpose;
   };
 
+  // Structure representing a localized text object as per the Manifest
+  // specification, see:
+  // https://www.w3.org/TR/appmanifest/#localizing-text-values
+  struct BLINK_COMMON_EXPORT ManifestLocalizedTextObject {
+    ManifestLocalizedTextObject() = default;
+    ~ManifestLocalizedTextObject() = default;
+
+    bool operator==(const ManifestLocalizedTextObject& other) const {
+      return value == other.value && lang == other.lang && dir == other.dir;
+    }
+
+    std::optional<std::u16string> value;
+    std::optional<std::u16string> lang;
+    std::optional<blink::mojom::Manifest_TextDirection> dir;
+  };
+
   // Structure representing a shortcut as per the Manifest specification, see:
   // https://w3c.github.io/manifest/#shortcuts-member
   struct BLINK_COMMON_EXPORT ShortcutItem {
@@ -68,6 +85,10 @@ class BLINK_COMMON_EXPORT Manifest {
     std::optional<std::u16string> description;
     GURL url;
     std::vector<ImageResource> icons;
+    std::map<std::u16string, std::vector<ImageResource>> icons_localized;
+    std::map<std::u16string, ManifestLocalizedTextObject> name_localized;
+    std::map<std::u16string, ManifestLocalizedTextObject> short_name_localized;
+    std::map<std::u16string, ManifestLocalizedTextObject> description_localized;
   };
 
   struct BLINK_COMMON_EXPORT FileFilter {
@@ -151,7 +172,6 @@ class BLINK_COMMON_EXPORT Manifest {
     bool client_mode_valid_and_specified() const;
 
     bool operator==(const LaunchHandler& other) const;
-    bool operator!=(const LaunchHandler& other) const;
 
     bool TargetsExistingClients() const;
     bool NeverNavigateExistingClients() const;

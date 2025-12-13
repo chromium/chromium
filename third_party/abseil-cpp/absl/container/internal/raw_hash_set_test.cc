@@ -276,28 +276,53 @@ TEST(Util, NormalizeCapacity) {
   EXPECT_EQ(15 * 2 + 1, NormalizeCapacity(15 + 2));
 }
 
-TEST(Util, GrowthAndCapacity) {
-  // Verify that GrowthToCapacity gives the minimum capacity that has enough
-  // growth.
+TEST(Util, SizeToCapacitySmallValues) {
   EXPECT_EQ(SizeToCapacity(0), 0);
   EXPECT_EQ(SizeToCapacity(1), 1);
   EXPECT_EQ(SizeToCapacity(2), 3);
   EXPECT_EQ(SizeToCapacity(3), 3);
+  EXPECT_EQ(SizeToCapacity(4), 7);
+  EXPECT_EQ(SizeToCapacity(5), 7);
+  EXPECT_EQ(SizeToCapacity(6), 7);
+  if (Group::kWidth == 16) {
+    EXPECT_EQ(SizeToCapacity(7), 7);
+    EXPECT_EQ(SizeToCapacity(14), 15);
+  } else {
+    EXPECT_EQ(SizeToCapacity(7), 15);
+  }
+}
+
+TEST(Util, CapacityToGrowthSmallValues) {
+  EXPECT_EQ(CapacityToGrowth(1), 1);
+  EXPECT_EQ(CapacityToGrowth(3), 3);
+  if (Group::kWidth == 16) {
+    EXPECT_EQ(CapacityToGrowth(7), 7);
+  } else {
+    EXPECT_EQ(CapacityToGrowth(7), 6);
+  }
+  EXPECT_EQ(CapacityToGrowth(15), 14);
+  EXPECT_EQ(CapacityToGrowth(31), 28);
+  EXPECT_EQ(CapacityToGrowth(63), 56);
+}
+
+TEST(Util, GrowthAndCapacity) {
+  // Verify that GrowthToCapacity gives the minimum capacity that has enough
+  // growth.
   for (size_t growth = 1; growth < 10000; ++growth) {
     SCOPED_TRACE(growth);
     size_t capacity = SizeToCapacity(growth);
     ASSERT_TRUE(IsValidCapacity(capacity));
     // The capacity is large enough for `growth`.
-    EXPECT_THAT(CapacityToGrowth(capacity), Ge(growth));
+    ASSERT_THAT(CapacityToGrowth(capacity), Ge(growth));
     // For (capacity+1) < kWidth, growth should equal capacity.
     if (capacity + 1 < Group::kWidth) {
-      EXPECT_THAT(CapacityToGrowth(capacity), Eq(capacity));
+      ASSERT_THAT(CapacityToGrowth(capacity), Eq(capacity));
     } else {
-      EXPECT_THAT(CapacityToGrowth(capacity), Lt(capacity));
+      ASSERT_THAT(CapacityToGrowth(capacity), Lt(capacity));
     }
     if (growth != 0 && capacity > 1) {
       // There is no smaller capacity that works.
-      EXPECT_THAT(CapacityToGrowth(capacity / 2), Lt(growth));
+      ASSERT_THAT(CapacityToGrowth(capacity / 2), Lt(growth)) << capacity;
     }
   }
 
@@ -305,9 +330,9 @@ TEST(Util, GrowthAndCapacity) {
        capacity = 2 * capacity + 1) {
     SCOPED_TRACE(capacity);
     size_t growth = CapacityToGrowth(capacity);
-    EXPECT_THAT(growth, Lt(capacity));
-    EXPECT_EQ(SizeToCapacity(growth), capacity);
-    EXPECT_EQ(NormalizeCapacity(SizeToCapacity(growth)), capacity);
+    ASSERT_THAT(growth, Lt(capacity));
+    ASSERT_EQ(SizeToCapacity(growth), capacity);
+    ASSERT_EQ(NormalizeCapacity(SizeToCapacity(growth)), capacity);
   }
 }
 
@@ -2247,12 +2272,10 @@ TEST(Table, NoThrowMoveAssign) {
 }
 
 TEST(Table, NoThrowSwappable) {
-  ASSERT_TRUE(
-      container_internal::IsNoThrowSwappable<absl::Hash<absl::string_view>>());
-  ASSERT_TRUE(container_internal::IsNoThrowSwappable<
-              std::equal_to<absl::string_view>>());
-  ASSERT_TRUE(container_internal::IsNoThrowSwappable<std::allocator<int>>());
-  EXPECT_TRUE(container_internal::IsNoThrowSwappable<StringTable>());
+  ASSERT_TRUE(std::is_nothrow_swappable<absl::Hash<absl::string_view>>());
+  ASSERT_TRUE(std::is_nothrow_swappable<std::equal_to<absl::string_view>>());
+  ASSERT_TRUE(std::is_nothrow_swappable<std::allocator<int>>());
+  EXPECT_TRUE(std::is_nothrow_swappable<StringTable>());
 }
 
 TEST(Table, HeterogeneousLookup) {
@@ -2537,7 +2560,7 @@ std::vector<int> OrderOfIteration(const T& t) {
 // in seed.
 void GenerateIrrelevantSeeds(int cnt) {
   for (int i = cnt % 17; i > 0; --i) {
-    NextSeed();
+    HashtableSize::NextSeed();
   }
 }
 
@@ -2767,6 +2790,7 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   absl::flat_hash_set<const HashtablezInfo*> preexisting_info(10);
   absl::flat_hash_map<size_t, int> observed_checksums(10);
   absl::flat_hash_map<ssize_t, int> reservations(10);
+  absl::flat_hash_map<std::pair<size_t, size_t>, int> hit_misses(10);
 
   start_size += sampler.Iterate([&](const HashtablezInfo& info) {
     preexisting_info.insert(&info);
@@ -2779,6 +2803,8 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
 
     const bool do_reserve = (i % 10 > 5);
     const bool do_rehash = !do_reserve && (i % 10 > 0);
+    const bool do_first_insert_hit = i % 2 == 0;
+    const bool do_second_insert_hit = i % 4 == 0;
 
     if (do_reserve) {
       // Don't reserve on all tables.
@@ -2786,7 +2812,14 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
     }
 
     tables.back().insert(1);
+    if (do_first_insert_hit) {
+      tables.back().insert(1);
+      tables.back().insert(1);
+    }
     tables.back().insert(i % 5);
+    if (do_second_insert_hit) {
+      tables.back().insert(i % 5);
+    }
 
     if (do_rehash) {
       // Rehash some other tables.
@@ -2797,9 +2830,11 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   end_size += sampler.Iterate([&](const HashtablezInfo& info) {
     ++end_size;
     if (preexisting_info.contains(&info)) return;
-    observed_checksums[info.hashes_bitwise_xor.load(
-        std::memory_order_relaxed)]++;
     reservations[info.max_reserve.load(std::memory_order_relaxed)]++;
+    hit_misses[std::make_pair(
+        info.num_insert_hits.load(std::memory_order_relaxed),
+        info.size.load(std::memory_order_relaxed))]++;
+
     EXPECT_EQ(info.inline_element_size, sizeof(typename TypeParam::value_type));
     EXPECT_EQ(info.key_size, sizeof(typename TypeParam::key_type));
     EXPECT_EQ(info.value_size, sizeof(typename TypeParam::value_type));
@@ -2814,10 +2849,6 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
   // Expect that we sampled at the requested sampling rate of ~1%.
   EXPECT_NEAR((end_size - start_size) / static_cast<double>(tables.size()),
               0.01, 0.005);
-  ASSERT_EQ(observed_checksums.size(), 5);
-  for (const auto& [_, count] : observed_checksums) {
-    EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.2, 0.05);
-  }
 
   ASSERT_EQ(reservations.size(), 10);
   for (const auto& [reservation, count] : reservations) {
@@ -2827,6 +2858,21 @@ TYPED_TEST(RawHashSamplerTest, Sample) {
     EXPECT_NEAR((100 * count) / static_cast<double>(tables.size()), 0.1, 0.05)
         << reservation;
   }
+
+  EXPECT_THAT(hit_misses, testing::SizeIs(6));
+  const double sampled_tables = end_size - start_size;
+  // i % 20: { 1, 11 }
+  EXPECT_NEAR((hit_misses[{1, 1}] / sampled_tables), 0.10, 0.02);
+  // i % 20: { 6 }
+  EXPECT_NEAR((hit_misses[{3, 1}] / sampled_tables), 0.05, 0.02);
+  // i % 20: { 0, 4, 8, 12 }
+  EXPECT_NEAR((hit_misses[{3, 2}] / sampled_tables), 0.20, 0.02);
+  // i % 20: { 2, 10, 14, 18 }
+  EXPECT_NEAR((hit_misses[{2, 2}] / sampled_tables), 0.20, 0.02);
+  // i % 20: { 16 }
+  EXPECT_NEAR((hit_misses[{4, 1}] / sampled_tables), 0.05, 0.02);
+  // i % 20: { 3, 5, 7, 9, 13, 15, 17, 19 }
+  EXPECT_NEAR((hit_misses[{0, 2}] / sampled_tables), 0.40, 0.02);
 }
 
 std::vector<const HashtablezInfo*> SampleSooMutation(

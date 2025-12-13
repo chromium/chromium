@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -41,13 +42,13 @@ bool ComputedStylePropertyMap::ComparePropertyNames(
   AtomicString a = name_a.ToAtomicString();
   AtomicString b = name_b.ToAtomicString();
   if (a.StartsWith("--")) {
-    return b.StartsWith("--") && WTF::CodeUnitCompareLessThan(a, b);
+    return b.StartsWith("--") && CodeUnitCompareLessThan(a, b);
   }
   if (a.StartsWith("-")) {
     return b.StartsWith("--") ||
-           (b.StartsWith("-") && WTF::CodeUnitCompareLessThan(a, b));
+           (b.StartsWith("-") && CodeUnitCompareLessThan(a, b));
   }
-  return b.StartsWith("-") || WTF::CodeUnitCompareLessThan(a, b);
+  return b.StartsWith("-") || CodeUnitCompareLessThan(a, b);
 }
 
 Element* ComputedStylePropertyMap::StyledElement() const {
@@ -92,6 +93,24 @@ const CSSValue* ComputedStylePropertyMap::GetProperty(
   const ComputedStyle* style = UpdateStyle();
   if (!style) {
     return nullptr;
+  }
+
+  // Following the CSS resolution on issue 11494, the computed value for
+  // border-*-width, column-rule-width, and outline-width properties should
+  // not be influenced by the corresponding style property being set to
+  // "none" or "hidden". To assess web compatibility risks, we want to
+  // land use counters that trigger when there's an observable behavior
+  // change.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  static const CSSPropertyID kWidthProperties[] = {
+      CSSPropertyID::kBorderLeftWidth, CSSPropertyID::kBorderRightWidth,
+      CSSPropertyID::kBorderTopWidth,  CSSPropertyID::kBorderBottomWidth,
+      CSSPropertyID::kColumnRuleWidth, CSSPropertyID::kOutlineWidth,
+  };
+
+  if (base::Contains(kWidthProperties, property_id)) {
+    RecordUseCounterForWidthStyleValues(property_id, *style);
   }
 
   return ComputedStyleUtils::ComputedPropertyValue(
@@ -158,6 +177,17 @@ String ComputedStylePropertyMap::SerializationForShorthand(
     return "";
   }
 
+  // Following the CSS resolution on issue 11494, the computed value for
+  // the border-width property should not be influenced by the corresponding
+  // style property being set to "none" or "hidden". To assess web
+  // compatibility risks, we want to land use counters that trigger when
+  // there's an observable behavior change.
+  //
+  // https://github.com/w3c/csswg-drafts/issues/11494#issuecomment-2675800489
+  if (property.PropertyID() == CSSPropertyID::kBorderWidth) {
+    RecordUseCounterForWidthStyleValues(property.PropertyID(), *style);
+  }
+
   if (const CSSValue* value = property.CSSValueFromComputedStyle(
           *style, nullptr /* layout_object */, false,
           CSSValuePhase::kComputedValue)) {
@@ -165,6 +195,115 @@ String ComputedStylePropertyMap::SerializationForShorthand(
   }
 
   return "";
+}
+
+void ComputedStylePropertyMap::RecordUseCounterForWidthStyleValues(
+    CSSPropertyID property_id,
+    const ComputedStyle& style) const {
+  auto RecordUseCounter = [&](CSSPropertyID width_property) {
+    switch (width_property) {
+      case CSSPropertyID::kBorderLeftWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedBorderLeftWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kBorderRightWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedBorderRightWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kBorderTopWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedBorderTopWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kBorderBottomWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedBorderBottomWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kBorderWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedBorderWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kColumnRuleWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedColumnRuleWidthWithNoneOrHiddenStyle);
+        break;
+      case CSSPropertyID::kOutlineWidth:
+        StyledElement()->GetDocument().CountUse(
+            WebFeature::kComputedOutlineWidthWithNoneOrHiddenStyle);
+        break;
+      default:
+        NOTREACHED();
+    }
+  };
+
+  auto GetWidthAndStyle = [&](CSSPropertyID property_id, int& out_width_value,
+                              EBorderStyle& out_style_value) {
+    switch (property_id) {
+      case CSSPropertyID::kBorderLeftWidth:
+        out_width_value = style.BorderLeftWidthInternal();
+        out_style_value = style.BorderLeftStyle();
+        break;
+      case CSSPropertyID::kBorderRightWidth:
+        out_width_value = style.BorderRightWidthInternal();
+        out_style_value = style.BorderRightStyle();
+        break;
+      case CSSPropertyID::kBorderTopWidth:
+        out_width_value = style.BorderTopWidthInternal();
+        out_style_value = style.BorderTopStyle();
+        break;
+      case CSSPropertyID::kBorderBottomWidth:
+        out_width_value = style.BorderBottomWidthInternal();
+        out_style_value = style.BorderBottomStyle();
+        break;
+      case CSSPropertyID::kOutlineWidth:
+        out_width_value = style.OutlineWidthInternal();
+        out_style_value = style.OutlineStyle();
+        break;
+      case CSSPropertyID::kColumnRuleWidth:
+        if (!style.ColumnRuleWidthInternal().HasSingleValue()) {
+          break;
+        }
+        out_width_value = style.ColumnRuleWidthInternal().GetLegacyValue();
+        out_style_value = style.ColumnRuleStyle().GetLegacyValue();
+        break;
+      default:
+        // Not a width/style longhand property, so return false.
+        NOTREACHED();
+    }
+  };
+
+  auto ShouldRecordUseCounter = [](int width_value, EBorderStyle style_value) {
+    return width_value != 0 && (style_value == EBorderStyle::kNone ||
+                                style_value == EBorderStyle::kHidden);
+  };
+
+  int width_value = 0;
+  EBorderStyle style_value = EBorderStyle::kNone;
+
+  if (property_id == CSSPropertyID::kBorderWidth) {
+    constexpr CSSPropertyID BorderWidthLonghands[] = {
+        CSSPropertyID::kBorderLeftWidth,
+        CSSPropertyID::kBorderRightWidth,
+        CSSPropertyID::kBorderTopWidth,
+        CSSPropertyID::kBorderBottomWidth,
+    };
+
+    for (CSSPropertyID longhand : BorderWidthLonghands) {
+      GetWidthAndStyle(longhand, width_value, style_value);
+      if (ShouldRecordUseCounter(width_value, style_value)) {
+        // Record use counter for the border-width shorthand if any longhand's
+        // computed value is non-zero and the corresponding style is "none" or
+        // "hidden".
+        RecordUseCounter(property_id);
+        break;
+      }
+    }
+    return;
+  }
+
+  GetWidthAndStyle(property_id, width_value, style_value);
+  if (ShouldRecordUseCounter(width_value, style_value)) {
+    RecordUseCounter(property_id);
+  }
 }
 
 }  // namespace blink

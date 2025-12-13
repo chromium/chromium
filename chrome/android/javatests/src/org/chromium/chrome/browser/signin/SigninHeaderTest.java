@@ -34,6 +34,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
@@ -76,7 +77,7 @@ public class SigninHeaderTest {
         CommandLine.getInstance()
                 .appendSwitchWithValue("gaia-url", mEmbeddedTestServerRule.getServer().getURL("/"));
         mInitialPage = mChromeActivityTestRule.startOnBlankPage();
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         mGAIAUrl = mEmbeddedTestServerRule.getServer().getURL("/echoheader?X-Chrome-Connected");
     }
@@ -87,7 +88,7 @@ public class SigninHeaderTest {
             throws TimeoutException {
         Intent intent = createTrustedWebActivityIntent(mGAIAUrl);
         launchTrustedWebActivity(intent);
-        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mCustomTabActivityTestRule.getActivityTab();
         String output =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.innerText");
@@ -102,7 +103,7 @@ public class SigninHeaderTest {
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ContextUtils.getApplicationContext(), mGAIAUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
-        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mCustomTabActivityTestRule.getActivityTab();
         String output =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.innerText");
@@ -114,7 +115,7 @@ public class SigninHeaderTest {
     public void testXChromeConnectedHeader_InNonCct_ReturnsModeWithIncognitoOn()
             throws TimeoutException {
         mChromeActivityTestRule.loadUrl(mGAIAUrl);
-        Tab tab = mChromeActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mChromeActivityTestRule.getActivityTab();
         String output =
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.innerText");

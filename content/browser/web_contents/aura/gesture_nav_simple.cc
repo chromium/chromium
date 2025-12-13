@@ -454,7 +454,7 @@ void GestureNavSimple::OnAffordanceAnimationEnded() {
 }
 
 gfx::Size GestureNavSimple::GetDisplaySize() const {
-  return display::Screen::GetScreen()
+  return display::Screen::Get()
       ->GetDisplayNearestView(web_contents_->GetNativeView())
       .size();
 }

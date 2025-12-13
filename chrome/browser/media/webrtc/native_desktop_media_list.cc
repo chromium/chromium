@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <algorithm>
@@ -13,6 +9,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -36,7 +33,7 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/snapshot/snapshot.h"
 
 #if defined(USE_AURA)
@@ -86,7 +83,7 @@ std::optional<size_t> GetFrameHash(webrtc::DesktopFrame* frame) {
     return std::nullopt;
   }
 
-  return base::FastHash(base::span(frame->data(), data_size));
+  return base::FastHash(UNSAFE_TODO(base::span(frame->data(), data_size)));
 }
 
 gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
@@ -98,6 +95,8 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   SkBitmap result;
   result.allocN32Pixels(scaled_rect.width(), scaled_rect.height(), true);
 
+  // TODO(crbug.com/352187279): Support other pixel formats.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   uint8_t* pixels_data = reinterpret_cast<uint8_t*>(result.getPixels());
   libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(),
                     frame->size().height(), pixels_data, result.rowBytes(),
@@ -111,7 +110,8 @@ gfx::ImageSkia ScaleDesktopFrame(std::unique_ptr<webrtc::DesktopFrame> frame,
   // crbug.com/264424
   for (int y = 0; y < result.height(); ++y) {
     for (int x = 0; x < result.width(); ++x) {
-      pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3] =
+      UNSAFE_TODO(
+          pixels_data[result.rowBytes() * y + x * result.bytesPerPixel() + 3]) =
           0xff;
     }
   }
@@ -771,9 +771,8 @@ NativeDesktopMediaList::NativeDesktopMediaList(
          !add_current_process_windows_);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // webrtc::DesktopCapturer implementations on Windows, MacOS and Fuchsia
-  // expect to run on a thread with a UI message pump. Under Fuchsia the
-  // capturer needs an async loop to support FIDL I/O.
+  // webrtc::DesktopCapturer implementations on Windows and MacOS expect to
+  // run on a thread with a UI message pump.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
 #else
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
@@ -954,6 +953,7 @@ void NativeDesktopMediaList::RefreshForVizFrameSinkWindows(
       // Resize the string (in the case the title has shortened), and remove the
       // trailing null character.
       source_it->name.resize(title_length);
+      source_it->is_chromium_window = true;
     }
 #endif  // BUILDFLAG(IS_WIN)
 

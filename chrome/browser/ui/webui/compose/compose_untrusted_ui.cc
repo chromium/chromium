@@ -13,17 +13,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
@@ -57,6 +60,7 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       {"firstRunTitle", IDS_COMPOSE_FRE_TITLE},
       {"firstRunMainTop", IDS_COMPOSE_FRE_MAIN_TOP},
       {"firstRunMainMid", IDS_COMPOSE_FRE_MAIN_MID},
+      {"firstRunMainMidEnterprise", IDS_COMPOSE_FRE_MAIN_MID_ENTERPRISE},
       {"firstRunMainBottom", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
       {"firstRunOkButton", IDS_COMPOSE_FRE_OK_BUTTON},
       {"dialogTitle", IDS_COMPOSE_DIALOG_TITLE},
@@ -68,6 +72,7 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
       {"inputModeChipElaborate", IDS_COMPOSE_INPUT_MODE_ELABORATE},
       {"inputModeChipFormalize", IDS_COMPOSE_INPUT_MODE_FORMALIZE},
       {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
+      {"inputFooterEnterprise", IDS_COMPOSE_INPUT_FOOTER_ENTERPRISE},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
       {"resultFooter", IDS_COMPOSE_EXPERIMENTAL_DISCLAIMER_FOOTER},
@@ -139,16 +144,19 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
   raw_ptr<Profile> profile = Profile::FromWebUI(web_ui);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(
                                            profile, /*serve_untrusted=*/true));
+
+  PrefService* pref_service = profile->GetPrefs();
+  bool is_enterprise_without_logging =
+      pref_service->GetInteger(
+          optimization_guide::prefs::kComposeEnterprisePolicyAllowed) ==
+      static_cast<int>(
+          optimization_guide::model_execution::prefs::
+              ModelExecutionEnterprisePolicyValue::kAllowWithoutLogging);
+  source->AddBoolean("useEnterpriseWithoutLoggingPolicy",
+                     is_enterprise_without_logging);
 }
 
 ComposeUntrustedUI::~ComposeUntrustedUI() = default;
-
-void ComposeUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void ComposeUntrustedUI::BindInterface(
     mojo::PendingReceiver<

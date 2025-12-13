@@ -5,7 +5,8 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.util.List;
@@ -67,13 +68,17 @@ public class SiteDataCleaner {
             site.setContentSetting(
                     browserContextHandle,
                     exception.getContentSettingType(),
-                    ContentSettingValues.DEFAULT);
+                    ContentSetting.DEFAULT);
         }
         for (PermissionInfo info : site.getPermissionInfos()) {
-            site.setContentSetting(
-                    browserContextHandle,
-                    info.getContentSettingsType(),
-                    ContentSettingValues.DEFAULT);
+            if (info.getContentSettingsType() == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                info.setGeolocationSetting(browserContextHandle, null);
+            } else {
+                site.setContentSetting(
+                        browserContextHandle,
+                        info.getContentSettingsType(),
+                        ContentSetting.DEFAULT);
+            }
         }
 
         for (ChosenObjectInfo info : site.getChosenObjectInfo()) {
@@ -82,7 +87,7 @@ public class SiteDataCleaner {
 
         for (var exceptions : site.getEmbeddedPermissions().values()) {
             for (var exception : exceptions) {
-                exception.setContentSetting(browserContextHandle, ContentSettingValues.DEFAULT);
+                exception.setContentSetting(browserContextHandle, ContentSetting.DEFAULT);
             }
         }
     }

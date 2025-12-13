@@ -11,15 +11,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/extensions/extension_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/extensions/extension_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
@@ -78,10 +78,10 @@ bool ExtensionsMenuTestUtil::HasAction(const extensions::ExtensionId& id) {
 }
 
 void ExtensionsMenuTestUtil::InspectPopup(const extensions::ExtensionId& id) {
-  auto* view_controller = static_cast<ExtensionActionViewController*>(
+  auto* view_model = static_cast<ExtensionActionViewModel*>(
       extensions_container_->GetActionForId(id));
-  DCHECK(view_controller);
-  view_controller->InspectPopup();
+  DCHECK(view_model);
+  view_model->InspectPopup();
 }
 
 gfx::Image ExtensionsMenuTestUtil::GetIcon(const extensions::ExtensionId& id) {
@@ -98,13 +98,11 @@ void ExtensionsMenuTestUtil::Press(const extensions::ExtensionId& id) {
   ExtensionsMenuButton* primary_button =
       view->primary_action_button_for_testing();
 
-  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), 0, 0);
-  views::test::ButtonTestApi(primary_button).NotifyClick(event);
+  views::test::ButtonTestApi(primary_button).NotifyDefaultMouseClick();
 }
 
 gfx::NativeView ExtensionsMenuTestUtil::GetPopupNativeView() {
-  ToolbarActionViewController* popup_owner =
+  ToolbarActionViewModel* popup_owner =
       extensions_container_->popup_owner_for_testing();
   return popup_owner ? popup_owner->GetPopupNativeView() : gfx::NativeView();
 }
@@ -142,12 +140,8 @@ gfx::Size ExtensionsMenuTestUtil::GetMaxAvailableSizeToFitBubbleOnScreen(
     return ExtensionPopup::kMaxSize;
   }
 #endif
-  auto* view_delegate = static_cast<ToolbarActionViewDelegateViews*>(
-      static_cast<ExtensionActionViewController*>(
-          extensions_container_->GetActionForId(id))
-          ->view_delegate());
   return views::BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
-      view_delegate->GetReferenceButtonForPopup(),
+      extensions_container_->GetReferenceButtonForPopup(id),
       views::BubbleBorder::TOP_RIGHT,
       views::PlatformStyle::kAdjustBubbleIfOffscreen,
       views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
@@ -194,7 +188,7 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
           extensions_features::kExtensionsMenuAccessControl)) {
     ExtensionsMenuMainPageView* main_page =
         extensions_container_->GetExtensionsMenuCoordinatorForTesting()
-            ->GetControllerForTesting()
+            ->GetDelegateForTesting()
             ->GetMainPageViewForTesting();
     DCHECK(main_page);
     auto items = main_page->GetMenuItems();
@@ -204,10 +198,9 @@ ExtensionMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewForId(
     menu_items = menu_view_->extensions_menu_items_for_testing();
   }
 
-  auto iter =
-      std::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
-        return view->view_controller()->GetId();
-      });
+  auto iter = std::ranges::find(
+      menu_items, id,
+      [](ExtensionMenuItemView* view) { return view->view_model()->GetId(); });
   return (iter == menu_items.end()) ? nullptr : *iter;
 }
 

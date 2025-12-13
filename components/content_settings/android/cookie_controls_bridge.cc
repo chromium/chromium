@@ -18,14 +18,14 @@
 
 namespace content_settings {
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 CookieControlsBridge::CookieControlsBridge(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
     bool is_incognito_branded)
     : jobject_(obj) {
   UpdateWebContents(env, jweb_contents_android,
@@ -34,8 +34,8 @@ CookieControlsBridge::CookieControlsBridge(
 
 void CookieControlsBridge::UpdateWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
     bool is_incognito_branded) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents_android);
@@ -106,10 +106,6 @@ void CookieControlsBridge::SetThirdPartyCookieBlockingEnabledForSite(
   controller_->OnCookieBlockingEnabledForSite(block_cookies);
 }
 
-void CookieControlsBridge::OnTrackingProtectionsChangedForSite(JNIEnv* env) {
-  controller_->OnTrackingProtectionsChangedForSite();
-}
-
 void CookieControlsBridge::OnUiClosing(JNIEnv* env) {
   controller_->OnUiClosing();
 }
@@ -124,9 +120,9 @@ void CookieControlsBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
+static jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle) {
+    const JavaRef<jobject>& jbrowser_context_handle) {
   content::BrowserContext* context =
       content::BrowserContextFromJavaHandle(jbrowser_context_handle);
   return permissions::PermissionsClient::Get()
@@ -136,9 +132,9 @@ jboolean JNI_CookieControlsBridge_IsCookieControlsEnabled(
 
 static jlong JNI_CookieControlsBridge_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents_android,
-    const JavaParamRef<jobject>& joriginal_browser_context_handle,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents_android,
+    const JavaRef<jobject>& joriginal_browser_context_handle,
     jboolean is_incognito_branded) {
   return reinterpret_cast<intptr_t>(new CookieControlsBridge(
       env, obj, jweb_contents_android, joriginal_browser_context_handle,
@@ -146,3 +142,5 @@ static jlong JNI_CookieControlsBridge_Init(
 }
 
 }  // namespace content_settings
+
+DEFINE_JNI(CookieControlsBridge)

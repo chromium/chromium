@@ -37,8 +37,10 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 using testing::_;
 
@@ -107,8 +109,9 @@ class MediaStreamTrackProcessorTest : public testing::Test {
   void RunIOUntilIdle() const {
     // Make sure that tasks on IO thread are completed before moving on.
     base::RunLoop run_loop;
-    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
-        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    PostCrossThreadTaskAndReply(*Platform::Current()->GetIOTaskRunner(),
+                                FROM_HERE, CrossThreadBindOnce([] {}),
+                                CrossThreadOnceClosure(run_loop.QuitClosure()));
     run_loop.Run();
     base::RunLoop().RunUntilIdle();
   }

@@ -585,8 +585,7 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
       use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      cros_tokens::kIconColorPrimary));
   image_view->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   image_view->SetID(newIconId);
   connection_warning_icon_ = image_view.get();
@@ -1039,8 +1038,7 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
       base::WrapUnique(TrayPopupUtils::CreateDefaultLabel());
   label->SetText(GenerateLabelText());
   label->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
+  label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   label->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label);
   label->SetID(static_cast<int>(

@@ -7,13 +7,12 @@
 
 #include "chrome/browser/lens/core/mojom/overlay_object.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
-#include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
-#include "third_party/lens_server_proto/lens_overlay_geometry.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
-#include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 
 namespace lens {
+
+class LensOverlayInteractionResponse;
+class LensOverlayServerResponse;
+class ZoomedCrop;
 
 // Returns a list of overlay object mojom pointers created from the lens overlay
 // server response.

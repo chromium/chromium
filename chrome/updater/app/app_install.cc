@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
@@ -23,6 +24,7 @@
 #include "chrome/updater/activity.h"
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/lock.h"
 #include "chrome/updater/persisted_data.h"
@@ -58,7 +60,7 @@ class AppInstallControllerImpl : public AppInstallController {
     // TODO(crbug.com/40282228): Factor out common code from app_install_win.cc.
     RegistrationRequest request;
     request.app_id = app_id;
-    request.version = base::Version(kNullVersion);
+    request.version = kNullVersion;
     std::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
     std::optional<tagging::TagArgs> tag_args = GetTagArgs().tag_args;
     if (app_args) {
@@ -125,7 +127,7 @@ void AppInstall::SendPing(int exit_code, base::OnceClosure callback) {
           base::BindOnce(
               [](base::OnceClosure callback, UpdaterScope scope,
                  int exit_code) {
-                if (exit_code == kErrorOk || !AnyAppEnablesUsageStats(scope)) {
+                if (exit_code == kErrorOk) {
                   std::move(callback).Run();
                   return;
                 }
@@ -260,6 +262,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
               [](UpdaterScope scope) {
                 scoped_refptr<GlobalPrefs> prefs = CreateGlobalPrefs(scope);
                 if (prefs) {
+                  ActivateEndEvent event =
+                      ActivateStartEvent().WriteAsyncAndReturnEndEvent();
                   prefs->SetActiveVersion(kUpdaterVersion);
                   prefs->SetSwapping(true);
                   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -269,6 +273,7 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
                         ->SetEulaRequired(true);
                   }
                   PrefsCommitPendingWrites(prefs->GetPrefService());
+                  event.SetActivated(true).WriteAsync();
                 }
               },
               updater_scope()),
@@ -290,7 +295,7 @@ void AppInstall::RegisterUpdater() {
 
   RegistrationRequest request;
   request.app_id = kUpdaterAppId;
-  request.version = base::Version(kUpdaterVersion);
+  request.version = kUpdaterVersion;
   update_service_->RegisterApp(
       request, base::BindOnce(
                    [](scoped_refptr<AppInstall> app_install, int result) {

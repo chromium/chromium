@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.vr;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.CompositorView;
@@ -17,14 +17,17 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.components.webxr.ArCompositorDelegate;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.function.Supplier;
+
 /** Concrete, Chrome-specific implementation of ArCompositorDelegate interface. */
+@NullMarked
 public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     private final ChromeActivity mActivity;
     private final CompositorViewHolder mCompositorViewHolder;
     private final CompositorView mCompositorView;
 
     ArCompositorDelegateImpl(WebContents webContents) {
-        mActivity = ChromeActivity.fromWebContents(webContents);
+        mActivity = assumeNonNull(ChromeActivity.fromWebContents(webContents));
 
         Supplier<CompositorViewHolder> compositorViewHolderSupplier =
                 mActivity.getCompositorViewHolderSupplier();
@@ -43,7 +46,7 @@ public class ArCompositorDelegateImpl implements ArCompositorDelegate {
     }
 
     @Override
-    public @NonNull ViewGroup getArSurfaceParent() {
+    public ViewGroup getArSurfaceParent() {
         // the ar_view_holder is a FrameLayout, up-cast to a ViewGroup.
         return mActivity.findViewById(R.id.ar_view_holder);
     }

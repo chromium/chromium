@@ -140,9 +140,6 @@ using base::UserMetricsAction;
                                                      WindowActivityToolsOrigin,
                                                      GURL(kChromeUINewTabURL))];
       break;
-    case PopupMenuActionFollow:
-      [self.delegate toggleFollowed];
-      break;
     case PopupMenuActionBookmarks:
       RecordAction(UserMetricsAction("MobileMenuAllBookmarks"));
       [self.browserCoordinatorCommandsHandler showBookmarksManager];

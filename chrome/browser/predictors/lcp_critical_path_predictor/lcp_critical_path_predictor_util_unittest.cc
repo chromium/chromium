@@ -2512,12 +2512,12 @@ TEST_F(LcppInitiatorOriginTest, CanonicalizeBrokenDataOnStartUp) {
               MakeLcppStatWithLCPElementLocator("/#lcp2"));
 
     LcppOrigin lcpp_origin;
-    OriginMap()->TryGetData(url.host(), &lcpp_origin);
+    OriginMap()->TryGetData(url.GetHost(), &lcpp_origin);
     EXPECT_TRUE(!lcpp_origin.origin_data_map().empty());
     EXPECT_TRUE(IsCanonicalFrequencyData(lcpp_origin));
     lcpp_origin.mutable_origin_data_map()->erase(origin2.host());
     EXPECT_FALSE(IsCanonicalFrequencyData(lcpp_origin));
-    OriginMap()->UpdateData(url.host(), lcpp_origin);
+    OriginMap()->UpdateData(url.GetHost(), lcpp_origin);
     TearDownDB();
   }
 

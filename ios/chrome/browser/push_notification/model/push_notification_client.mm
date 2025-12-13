@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
@@ -211,6 +213,7 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
       case PushNotificationClientId::kSendTab:
       case PushNotificationClientId::kSafetyCheck:
       case PushNotificationClientId::kReminders:
+      case PushNotificationClientId::kCrossPlatformPromos:
         // Features do not support feedback.
         NOTREACHED();
     }

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_allocator.h"
 #include "media/cdm/cdm_auxiliary_helper.h"

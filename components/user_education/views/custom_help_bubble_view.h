@@ -34,8 +34,7 @@ template <typename T>
   requires IsCustomHelpBubbleView<T>
 using CustomHelpBubbleViewFactoryCallback =
     base::RepeatingCallback<std::unique_ptr<T>(
-        ui::ElementContext from_context,
-        HelpBubbleArrow arrow,
+        const UserEducationContextPtr& from_context,
         FeaturePromoSpecification::BuildHelpBubbleParams build_params)>;
 
 // Convenience method that creates the callback to feed to
@@ -64,11 +63,12 @@ CreateCustomHelpBubbleViewFactoryCallback(
       [](const CustomHelpBubbleViewFactoryCallback<T>& bubble_factory_callback,
          std::optional<CustomHelpBubbleUi::UserAction> accept_button_action,
          std::optional<CustomHelpBubbleUi::UserAction> cancel_button_action,
-         ui::ElementContext from_context, HelpBubbleArrow arrow,
+         const UserEducationContextPtr& from_context,
          FeaturePromoSpecification::BuildHelpBubbleParams build_params) {
         auto* const anchor_element = build_params.anchor_element.get();
-        auto bubble = bubble_factory_callback.Run(from_context, arrow,
-                                                  std::move(build_params));
+        const auto arrow = build_params.arrow;
+        auto bubble =
+            bubble_factory_callback.Run(from_context, std::move(build_params));
         T* const bubble_ptr = bubble.get();
 
         // Specific shadow types are required for help bubbles in order to

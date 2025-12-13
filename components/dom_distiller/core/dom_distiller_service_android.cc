@@ -15,7 +15,7 @@
 #include "components/dom_distiller/core/android/jni_headers/DomDistillerService_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace dom_distiller {
@@ -27,7 +27,7 @@ DomDistillerServiceAndroid::DomDistillerServiceAndroid(
   JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
       Java_DomDistillerService_create(env, reinterpret_cast<intptr_t>(this));
-  java_ref_.Reset(env, local_java_ref.obj());
+  java_ref_.Reset(env, local_java_ref);
 }
 
 DomDistillerServiceAndroid::~DomDistillerServiceAndroid() = default;
@@ -38,3 +38,5 @@ jlong DomDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace dom_distiller
+
+DEFINE_JNI(DomDistillerService)

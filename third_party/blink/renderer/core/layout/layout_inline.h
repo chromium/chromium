@@ -156,7 +156,8 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   // Returns the bounding box of all quads returned by `LocalQuadsForSelf`.
   gfx::RectF LocalBoundingBoxRectF() const;
 
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const final;
 
   PhysicalRect PhysicalLinesBoundingBox() const;
   PhysicalRect LinesVisualOverflowBoundingBox() const;
@@ -227,7 +228,9 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   void InLayoutNGInlineFormattingContextWillChange(bool) final;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   void InvalidateDisplayItemClients(PaintInvalidationReason) const override;
 
@@ -236,11 +239,21 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
                                MapCoordinatesFlags) const override;
 
  private:
-  bool AbsoluteTransformDependsOnPoint(const LayoutObject& object) const;
   void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                             const LayoutBoxModelObject* ancestor,
                             MapCoordinatesFlags mode,
                             bool map_to_ancestor) const;
+
+  // Collects rectangles that the outline of this object would be drawing along
+  // the outside of, even if the object isn't styled with a outline for now.
+  // If include_descendants is true, then descendant rects are aggregated,
+  // causing visible overflow to be included (note that visible overflow is hit
+  // testable).
+  void AddOutlineRectsInternal(OutlineRectCollector&,
+                               OutlineInfo*,
+                               const PhysicalOffset& additional_offset,
+                               OutlineType,
+                               IncludeDescendants include_descendants) const;
 
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();
@@ -284,7 +297,7 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
   LayoutBox* CreateAnonymousBoxToSplit(
       const LayoutBox* box_to_split) const final;
 
-  void MarkMayHaveAnchorQuery() final;
+  void MarkMayContainAnchor() final;
 
   void Paint(const PaintInfo&) const override;
 
@@ -297,8 +310,6 @@ class CORE_EXPORT LayoutInline : public LayoutBoxModelObject {
 
   LayoutUnit OffsetLeft(const Element*) const final;
   LayoutUnit OffsetTop(const Element*) const final;
-  LayoutUnit OffsetWidth() const final;
-  LayoutUnit OffsetHeight() const final;
 
   PhysicalRect BoundingBoxRelativeToFirstFragment() const final;
 

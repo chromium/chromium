@@ -39,10 +39,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -63,7 +62,6 @@ public class TabGroupMenuActionHandlerUnitTest {
     @Mock private Tab mTab;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
     private TabGroupMenuActionHandler mHandler;
@@ -79,7 +77,6 @@ public class TabGroupMenuActionHandlerUnitTest {
         CollaborationServiceFactory.setForTesting(mock());
         DataSharingServiceFactory.setForTesting(mock());
         TrackerFactory.setTrackerForTests(mock());
-        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -121,6 +118,7 @@ public class TabGroupMenuActionHandlerUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testOnTabGroupCreation_withCoordinator() {
         when(mFilter.getTabGroupCount()).thenReturn(1);
         mHandler.handleAddToGroupAction(mTab);

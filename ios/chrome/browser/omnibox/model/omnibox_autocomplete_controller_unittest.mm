@@ -11,12 +11,14 @@
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_controller_config.h"
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/autocomplete_match_test_util.h"
 #import "components/omnibox/browser/autocomplete_result.h"
 #import "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_popup_selection.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/omnibox/browser/search_provider.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
@@ -51,7 +53,9 @@ class MockAutocompleteController : public AutocompleteController {
   MockAutocompleteController()
       : AutocompleteController(
             std::make_unique<FakeAutocompleteProviderClient>(),
-            AutocompleteClassifier::DefaultOmniboxProviders()) {}
+            AutocompleteControllerConfig{
+                .provider_types =
+                    AutocompleteClassifier::DefaultOmniboxProviders()}) {}
   MockAutocompleteController(const MockAutocompleteController&) = delete;
   MockAutocompleteController& operator=(const MockAutocompleteController&) =
       delete;
@@ -110,8 +114,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
 
-    auto autocomplete = std::make_unique<MockAutocompleteController>();
-    autocomplete_controller_ = autocomplete.get();
+    autocomplete_controller_ = std::make_unique<MockAutocompleteController>();
 
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
@@ -120,10 +123,11 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
         OCMProtocolMock(@protocol(OmniboxAutocompleteControllerDelegate));
 
     controller_ = [[TestOmniboxAutocompleteController alloc]
-        initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()];
+         initWithOmniboxClient:omnibox_client_.get()
+        autocompleteController:autocomplete_controller_.get()
+              omniboxTextModel:omnibox_text_model_.get()
+           presentationContext:OmniboxPresentationContext::kLocationBar];
     controller_.delegate = controller_delegate_;
-    [controller_ setAutocompleteController:std::move(autocomplete)];
 
     omnibox_metrics_recorder_ = [[OmniboxMetricsRecorder alloc]
         initWithClient:omnibox_client_.get()
@@ -187,7 +191,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   TestOmniboxAutocompleteController* controller_;
-  raw_ptr<MockAutocompleteController> autocomplete_controller_;
+  std::unique_ptr<MockAutocompleteController> autocomplete_controller_;
   std::unique_ptr<TestOmniboxClient> omnibox_client_;
   raw_ptr<FakeClipboardRecentContent> clipboard_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
@@ -290,11 +294,11 @@ TEST_F(OmniboxAutocompleteControllerTest, RequestResultPartVisible) {
 
 // Tests that omnibox position update is forwarded to autocompleteController.
 TEST_F(OmniboxAutocompleteControllerTest, OmniboxPositionUpdates) {
-  local_state_->SetBoolean(prefs::kBottomOmnibox, true);
+  local_state_->SetBoolean(omnibox::kIsOmniboxInBottomPosition, true);
   EXPECT_EQ(autocomplete_controller_->omnibox_position,
             metrics::OmniboxEventProto::BOTTOM_POSITION);
 
-  local_state_->SetBoolean(prefs::kBottomOmnibox, false);
+  local_state_->SetBoolean(omnibox::kIsOmniboxInBottomPosition, false);
   EXPECT_EQ(autocomplete_controller_->omnibox_position,
             metrics::OmniboxEventProto::TOP_POSITION);
 }

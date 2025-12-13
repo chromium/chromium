@@ -61,7 +61,7 @@ namespace {
 // ASSERT_* macros can only be used in functions returning void.
 void AssertResultIsString(const content::EvalJsResult& result) {
   // Verify no error.
-  ASSERT_EQ("", result.error);
+  ASSERT_TRUE(result.is_ok());
   // We could use result.value.is_string(), but this logs the actual type in
   // case of mismatch.
   std::ignore = result.ExtractString();
@@ -117,9 +117,9 @@ GURL CreateFilesystemURL(content::RenderFrameHost* rfh) {
 
 GURL CreateFileURL(const base::FilePath::CharType file_name[] =
                        FILE_PATH_LITERAL("title1.html")) {
-  GURL file_url =
-      ui_test_utils::GetTestUrl(base::FilePath(), base::FilePath(file_name));
-  EXPECT_EQ(url::kFileScheme, file_url.scheme());
+  GURL file_url = chrome_test_utils::GetTestUrl(base::FilePath(),
+                                                base::FilePath(file_name));
+  EXPECT_EQ(url::kFileScheme, file_url.GetScheme());
 
   return file_url;
 }
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   ASSERT_TRUE(popup_iframe);
 
   // Not allowed to navigate top frame to filesystem URL.
-  EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
+  EXPECT_EQ("", popup_iframe->GetLastCommittedURL().GetScheme());
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
@@ -730,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
       OpenPopup(browser(), fs_url);
   ASSERT_TRUE(popup_iframe_web_contents);
 
-  EXPECT_EQ("", popup_iframe_web_contents->GetLastCommittedURL().scheme());
+  EXPECT_EQ("", popup_iframe_web_contents->GetLastCommittedURL().GetScheme());
 
   content::RenderFrameHost* popup_rfh =
       ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -870,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
   content::EvalJsResult result = content::EvalJs(
       embedder_contents, "history.pushState({}, {}, 'https://chromium.org');");
-  EXPECT_EQ(std::string(), result.error);
+  EXPECT_TRUE(result.is_ok());
   EXPECT_EQ("https://chromium.org/", main_rfh->GetLastCommittedURL().spec());
   EXPECT_TRUE(main_rfh->GetLastCommittedOrigin().GetURL().SchemeIsFile());
 
@@ -915,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
 
   content::EvalJsResult result = content::EvalJs(
       embedder_contents, "history.pushState({}, {}, 'about:blank');");
-  EXPECT_EQ(std::string(), result.error);
+  EXPECT_TRUE(result.is_ok());
   EXPECT_EQ("about:blank", main_rfh->GetLastCommittedURL().spec());
   EXPECT_TRUE(main_rfh->GetLastCommittedURL().IsAboutBlank());
 
@@ -1211,23 +1211,23 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelHTTPS,
       main_rfh->GetBrowserContext()->GetPermissionController();
   url::Origin origin = url::Origin::Create(GetMainFrameURL());
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::GEOLOCATION,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::GEOLOCATION,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/false);
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::VIDEO_CAPTURE,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::VIDEO_CAPTURE,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/false,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);
 
-  SetPermissionControllerOverrideForDevTools(
-      permission_controller, origin, blink::PermissionType::NOTIFICATIONS,
-      blink::mojom::PermissionStatus::GRANTED);
+  SetPermissionControllerOverride(permission_controller, origin, origin,
+                                  blink::PermissionType::NOTIFICATIONS,
+                                  blink::mojom::PermissionStatus::GRANTED);
 
   CheckPermissionState(main_rfh, /*notifications_allowed=*/true,
                        /*geolocation_allowed=*/true, /*camera_allowed=*/true);
@@ -1615,7 +1615,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
   content::EvalJsResult results =
       content::EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
-  base::Value::List results_list = results.ExtractList();
+  const base::Value::List& results_list = results.ExtractList();
   for (const auto& result : results_list) {
     eventsSeen.push_back(result.GetString());
   }

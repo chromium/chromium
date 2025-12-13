@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ChildBindingState;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
@@ -33,7 +34,7 @@ public class ChildProcessRankingTest {
                         /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         return connection;
     }
 
@@ -443,6 +444,7 @@ public class ChildProcessRankingTest {
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
+        c2.removeVisibleBinding();
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
@@ -450,6 +452,7 @@ public class ChildProcessRankingTest {
                 /* intersectsViewport= */ false,
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -480,9 +483,9 @@ public class ChildProcessRankingTest {
     @Test
     @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithoutConflict() {
-        ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
         ranking.enableServiceGroupImportance();
+        ranking.onWindowFocusChanged(true);
 
         TestChildProcessConnection c1 = createConnection();
         TestChildProcessConnection c2 = createConnection();
@@ -497,6 +500,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         c2.addNotPerceptibleBinding();
+        c2.removeVisibleBinding();
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
@@ -505,6 +509,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         c3.addNotPerceptibleBinding();
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -534,6 +539,7 @@ public class ChildProcessRankingTest {
         // is no conflict.
         TestChildProcessConnection c4 = createConnection();
         c4.addNotPerceptibleBinding();
+        c4.removeVisibleBinding();
         ranking.addConnection(
                 c4,
                 /* visible= */ true,
@@ -579,6 +585,7 @@ public class ChildProcessRankingTest {
         // in background.
         TestChildProcessConnection c5 = createConnection();
         c5.addNotPerceptibleBinding();
+        c5.removeVisibleBinding();
         ranking.addConnection(
                 c5,
                 /* visible= */ true,
@@ -650,9 +657,9 @@ public class ChildProcessRankingTest {
     @Test
     @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
     public void testRebindHighRankConnectionStrictWithConflict() {
-        ChildProcessConnection.setSupportNotPerceptibleBindingForTesting(true);
         ChildProcessRanking ranking = new ChildProcessRanking();
         ranking.enableServiceGroupImportance();
+        ranking.onWindowFocusChanged(true);
 
         TestChildProcessConnection c1 = createConnection();
         TestChildProcessConnection c2 = createConnection();
@@ -676,6 +683,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.MODERATE);
         c3.addNotPerceptibleBinding();
+        c3.removeVisibleBinding();
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
@@ -684,6 +692,7 @@ public class ChildProcessRankingTest {
                 /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         c4.addNotPerceptibleBinding();
+        c4.removeVisibleBinding();
         ranking.addConnection(
                 c4,
                 /* visible= */ true,
@@ -715,6 +724,7 @@ public class ChildProcessRankingTest {
 
         // Adding a new low rank connection causes rebind on high rank connections.
         TestChildProcessConnection c6 = createConnection();
+        c6.removeVisibleBinding();
         ranking.addConnection(
                 c6,
                 /* visible= */ true,
@@ -778,6 +788,98 @@ public class ChildProcessRankingTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertFalse(c1.getAndResetRebindCalled());
         Assert.assertTrue(c2.getAndResetRebindCalled());
+    }
+
+    @Test
+    @EnableFeatures({ContentInternalFeatures.STRICT_HIGH_RANK_PROCESS_LRU})
+    public void testRebindHighRankConnectionStrictNotFocused() {
+        ChildProcessRanking ranking = new ChildProcessRanking();
+        ranking.enableServiceGroupImportance();
+        ranking.onWindowFocusChanged(true);
+
+        TestChildProcessConnection c1 = createConnection();
+        TestChildProcessConnection c2 = createConnection();
+        TestChildProcessConnection c3 = createConnection();
+        TestChildProcessConnection c4 = createConnection();
+
+        c1.addStrongBinding();
+        ranking.addConnection(
+                c1,
+                /* visible= */ true,
+                /* frameDepth= */ 0,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.IMPORTANT);
+        c2.addVisibleBinding();
+        ranking.addConnection(
+                c2,
+                /* visible= */ true,
+                /* frameDepth= */ 0,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.MODERATE);
+        c3.addNotPerceptibleBinding();
+        c3.removeVisibleBinding();
+        ranking.addConnection(
+                c3,
+                /* visible= */ true,
+                /* frameDepth= */ 3,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+        c4.addNotPerceptibleBinding();
+        c4.removeVisibleBinding();
+        ranking.addConnection(
+                c4,
+                /* visible= */ true,
+                /* frameDepth= */ 3,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNotInGroup(new ChildProcessConnection[] {c1, c2});
+        c1.getAndResetRebindCalled();
+        c2.getAndResetRebindCalled();
+
+        // With immediate window focus lost, no rebind is called.
+        ranking.onWindowFocusChanged(false);
+        ranking.onWindowFocusChanged(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertFalse(c1.getAndResetRebindCalled());
+        Assert.assertFalse(c2.getAndResetRebindCalled());
+
+        // When the app is not focused, it causes rebind on high rank connections.
+        ranking.onWindowFocusChanged(false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue(c1.getAndResetRebindCalled());
+        Assert.assertTrue(c2.getAndResetRebindCalled());
+
+        // While the app is not focused, any binding change causes rebind on high rank connections.
+        ranking.updateConnection(
+                c3,
+                /* visible= */ true,
+                /* frameDepth= */ 1,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                /* importance= */ ChildProcessImportance.NORMAL);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue(c1.getAndResetRebindCalled());
+        Assert.assertTrue(c2.getAndResetRebindCalled());
+
+        // When the app is focused, it does not cause rebind on high rank connections if there is no
+        // conflict.
+        ranking.onWindowFocusChanged(true);
+        ranking.updateConnection(
+                c4,
+                /* visible= */ true,
+                /* frameDepth= */ 1,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                /* importance= */ ChildProcessImportance.NORMAL);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertFalse(c1.getAndResetRebindCalled());
+        Assert.assertFalse(c2.getAndResetRebindCalled());
     }
 
     @Test

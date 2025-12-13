@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
@@ -39,7 +40,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using blink::DragOperationsMask;
 using remote_cocoa::mojom::DraggingInfoPtr;
@@ -64,8 +65,7 @@ namespace {
 // stream.
 void PromiseWriterHelper(const DropData& drop_data, base::File file) {
   DCHECK(file.IsValid());
-  UNSAFE_TODO(file.WriteAtCurrentPos(drop_data.file_contents.data(),
-                                     drop_data.file_contents.length()));
+  file.WriteAtCurrentPos(base::as_bytes(base::span(drop_data.file_contents)));
 }
 
 WebContentsViewMac::RenderWidgetHostViewCreateFunction
@@ -357,6 +357,23 @@ gfx::Rect WebContentsViewMac::GetViewBounds() const {
   window_bounds.origin =
       [GetInProcessNSView().window convertPointToScreen:window_bounds.origin];
   return gfx::ScreenRectFromNSRect(window_bounds);
+}
+
+void WebContentsViewMac::Resize(const gfx::Rect& new_bounds) {
+  NSView* view = GetNativeView().GetNativeNSView();
+  NSRect old_wcv_frame = view.frame;
+  CGFloat new_x = old_wcv_frame.origin.x;
+  CGFloat new_y = old_wcv_frame.origin.y +
+                  (old_wcv_frame.size.height - new_bounds.size().height());
+  NSRect new_wcv_frame = NSMakeRect(new_x, new_y, new_bounds.size().width(),
+                                    new_bounds.size().height());
+  view.frame = new_wcv_frame;
+}
+
+gfx::Size WebContentsViewMac::GetSize() const {
+  NSView* view = GetNativeView().GetNativeNSView();
+  NSRect frame = view.frame;
+  return gfx::Size(NSWidth(frame), NSHeight(frame));
 }
 
 void WebContentsViewMac::CreateView(gfx::NativeView context) {
@@ -751,11 +768,11 @@ void WebContentsViewMac::ViewsHostableDetach() {
 }
 
 void WebContentsViewMac::ViewsHostableSetBounds(
-    const gfx::Rect& bounds_in_window) {
+    const gfx::Rect& bounds_in_superview) {
   // Update both the in-process and out-of-process NSViews' bounds.
-  in_process_ns_view_bridge_->SetBounds(bounds_in_window);
+  in_process_ns_view_bridge_->SetBounds(bounds_in_superview);
   if (remote_ns_view_)
-    remote_ns_view_->SetBounds(bounds_in_window);
+    remote_ns_view_->SetBounds(bounds_in_superview);
 }
 
 void WebContentsViewMac::ViewsHostableSetVisible(bool visible) {

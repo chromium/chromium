@@ -41,6 +41,17 @@ constexpr char kProjectorToolbarHistogramName[] =
 
 }  // namespace
 
+class MockAnnotatorObserver : public AnnotatorController::AnnotatorObserver {
+ public:
+  MockAnnotatorObserver() = default;
+  MockAnnotatorObserver(const MockAnnotatorObserver&) = delete;
+  MockAnnotatorObserver& operator=(const MockAnnotatorObserver&) = delete;
+  ~MockAnnotatorObserver() override {}
+
+  // AnnotatorObserver:
+  MOCK_METHOD1(OnAnnotatorStateChanged, void(bool));
+};
+
 class AnnotatorControllerTest : public AshTestBase {
  public:
   AnnotatorControllerTest() = default;
@@ -54,14 +65,24 @@ class AnnotatorControllerTest : public AshTestBase {
 
     auto* annotator_controller = Shell::Get()->annotator_controller();
     annotator_controller->SetToolClient(&client_);
+    annotator_controller->AddObserver(&observer_);
+  }
+
+  // AshTestBase:
+  void TearDown() override {
+    Shell::Get()->annotator_controller()->RemoveObserver(&observer_);
+    AshTestBase::TearDown();
   }
 
   AnnotatorController* annotator_controller() {
     return Shell::Get()->annotator_controller();
   }
 
+  MockAnnotatorObserver& observer() { return observer_; }
+
  protected:
   MockAnnotatorClient client_;
+  MockAnnotatorObserver observer_;
 };
 
 TEST_F(AnnotatorControllerTest, SetAnnotatorTool) {
@@ -122,6 +143,7 @@ TEST_F(AnnotatorControllerTest, UnregisterViewWhenAnnotatorIsEnabled) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(annotation_tray->visible_preferred());
 
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(true));
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
@@ -139,6 +161,7 @@ TEST_F(AnnotatorControllerTest, EnableAnnotator) {
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
 
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(true));
   // Enables the annotator after creating the view for annotating.
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
@@ -155,11 +178,13 @@ TEST_F(AnnotatorControllerTest, DisableAnnotator) {
   annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
   EXPECT_TRUE(annotation_tray->visible_preferred());
 
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(true));
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(false));
   annotator_controller()->DisableAnnotator();
   EXPECT_FALSE(annotation_tray->visible_preferred());
   EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
@@ -170,13 +195,15 @@ TEST_F(AnnotatorControllerTest, EnablingDisablingMarker) {
   base::HistogramTester histogram_tester;
 
   // Enable marker.
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(true));
   annotator_controller()->CreateAnnotationOverlayForWindow(
       Shell::GetPrimaryRootWindow(), std::nullopt);
   annotator_controller()->EnableAnnotatorTool();
   EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
 
+  EXPECT_CALL(observer(), OnAnnotatorStateChanged(false));
   EXPECT_CALL(client_, Clear());
-  annotator_controller()->ResetTools();
+  annotator_controller()->DisableAnnotator();
   EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
 
   histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
@@ -274,6 +301,15 @@ TEST_F(AnnotatorControllerTest, LongPressShowsBubble) {
   event_generator->ReleaseTouch();
 
   EXPECT_TRUE(annotation_tray->GetBubbleWidget());
+
+  {
+    ui::AXNodeData node_data;
+    annotation_tray->GetBubbleView()
+        ->GetViewAccessibility()
+        .GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              annotation_tray->GetAccessibleNameForBubble());
+  }
 }
 
 // Tests that tapping the AnnotationTray enables annotation.
@@ -423,6 +459,51 @@ TEST_F(AnnotatorControllerTest, AnnotatorTrayAccessibleName) {
             l10n_util::GetStringUTF16(
                 IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE)));
   }
+}
+
+TEST_F(AnnotatorControllerTest, AnnotatorNotEnabledWhenNoView) {
+  // Does nothing as there is no view for annotating.
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
+
+  // Register view and create annotation overlay.
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForMarkerMode(
+      Shell::GetPrimaryRootWindow());
+  EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
+  EXPECT_FALSE(annotation_tray->GetEnabled());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
+
+  // Annotator not enabled when canvas is not initialized.
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
+  EXPECT_FALSE(annotation_tray->GetEnabled());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
+}
+
+TEST_F(AnnotatorControllerTest, VerifyMarkerMode) {
+  // Register view and create annotation overlay.
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForMarkerMode(
+      Shell::GetPrimaryRootWindow());
+  EXPECT_FALSE(annotation_tray->GetEnabled());
+  EXPECT_TRUE(annotation_tray->visible_preferred());
+
+  // Activating marker mode when canvas is initialized.
+  annotator_controller()->OnCanvasInitialized(true);
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
+  EXPECT_TRUE(annotation_tray->GetEnabled());
+
+  annotator_controller()->DisableAnnotator();
+  EXPECT_FALSE(annotation_tray->GetEnabled());
+  EXPECT_FALSE(annotation_tray->visible_preferred());
 }
 
 }  // namespace ash

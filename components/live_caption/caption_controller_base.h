@@ -123,6 +123,10 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
     return caption_bubble_controller();
   }
 
+  void remove_listener_for_testing(Listener* listener) {
+    RemoveListener(listener);
+  }
+
  protected:
   CaptionControllerBase(PrefService* profile_prefs,
                         const std::string& application_locale,
@@ -138,6 +142,11 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
 
   virtual std::unique_ptr<TranslationViewWrapperBase>
   CreateTranslationViewWrapper();
+
+  // Called when the size of the listener set goes to or from zero.  This allows
+  // subclasses to handle SODA installation as needed on a per-platform basis.
+  virtual void OnFirstListenerAdded() {}
+  virtual void OnLastListenerRemoved() {}
 
  private:
   virtual CaptionBubbleSettings* caption_bubble_settings() = 0;
@@ -155,11 +164,6 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   const std::string application_locale_;
   const std::unique_ptr<Delegate> delegate_;
 
-  // The controller is also a `Listener`, and is owned by `listeners_` when we
-  // create it.  While it exists, `caption_bubble_controller_` aliases it.  This
-  // alias is cleared when it's destroyed.
-  raw_ptr<CaptionBubbleController> caption_bubble_controller_ = nullptr;
-
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether the UI has been created. The UI is created asynchronously from the
@@ -171,6 +175,11 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // All the listeners we own.  One of them will be `caption_bubble_controller_`
   // if we have one.
   std::list<std::unique_ptr<Listener>> listeners_;
+
+  // The controller is also a `Listener`, and is owned by `listeners_` when we
+  // create it.  While it exists, `caption_bubble_controller_` aliases it.  This
+  // alias is cleared when it's destroyed.
+  raw_ptr<CaptionBubbleController> caption_bubble_controller_ = nullptr;
 };
 
 }  // namespace captions

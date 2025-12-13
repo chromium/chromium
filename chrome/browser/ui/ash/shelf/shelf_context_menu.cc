@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/metrics/user_metrics.h"
@@ -74,8 +73,7 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
   DCHECK(item);
   DCHECK(!item->id.IsNull());
 
-  if (ash::features::ArePromiseIconsEnabled() &&
-      apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+  if (apps::AppServiceProxyFactory::GetForProfile(controller->profile())
           ->PromiseAppRegistryCache()
           ->GetPromiseAppForStringPackageId(item->id.app_id)) {
     return std::make_unique<AppServicePromiseAppShelfContextMenu>(
@@ -181,7 +179,7 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
         controller_->Close(item_.id);
       }
       base::RecordAction(base::UserMetricsAction("CloseFromContextMenu"));
-      if (display::Screen::GetScreen()->InTabletMode()) {
+      if (display::Screen::Get()->InTabletMode()) {
         base::RecordAction(
             base::UserMetricsAction("Tablet_WindowCloseFromContextMenu"));
       }

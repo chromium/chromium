@@ -24,6 +24,7 @@
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using blink::WebURL;
 
@@ -193,10 +194,10 @@ void WebServiceWorkerProviderImpl::OnRegistered(
     blink::mojom::ServiceWorkerErrorType error,
     const std::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
-      error_msg ? *error_msg : "Success");
+  // End "WebServiceWorkerProviderImpl::RegisterServiceWorker" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+                  MojoEnumToString(error), "Message",
+                  error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
     DCHECK(!registration);
@@ -219,10 +220,10 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     blink::mojom::ServiceWorkerErrorType error,
     const std::optional<std::string>& error_msg,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
-      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
-      error_msg ? *error_msg : "Success");
+  // End "WebServiceWorkerProviderImpl::GetRegistration" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+                  MojoEnumToString(error), "Message",
+                  error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
     DCHECK(!registration);
@@ -249,10 +250,10 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
     std::optional<
         std::vector<blink::mojom::ServiceWorkerRegistrationObjectInfoPtr>>
         infos) {
-  TRACE_EVENT_NESTABLE_ASYNC_END2(
-      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
-      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
-      error_msg ? *error_msg : "Success");
+  // End "WebServiceWorkerProviderImpl::GetRegistrations" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this), "Error",
+                  MojoEnumToString(error), "Message",
+                  error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
     DCHECK(!infos);
@@ -272,9 +273,8 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
 void WebServiceWorkerProviderImpl::OnDidGetRegistrationForReady(
     GetRegistrationForReadyCallback callback,
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrationForReady",
-      TRACE_ID_LOCAL(this));
+  // End "WebServiceWorkerProviderImpl::GetRegistrationForReady" trace event.
+  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this));
   // TODO(leonhsl): Currently the only reason that we allow nullable
   // |registration| is: impl of the mojo method
   // GetRegistrationForReady() needs to respond some non-sense params even if it

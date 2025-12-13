@@ -13,6 +13,8 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -21,9 +23,11 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
+#include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
@@ -43,18 +47,23 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "v8-microtask-queue.h"
 
 namespace blink {
 
+// static
+int ViewTransition::next_id_ = 0;
+
 ViewTransition::ScopedPauseRendering::ScopedPauseRendering(
-    const Element& element) {
+    const Element& element,
+    bool has_document_scope) {
   const Document& document = element.GetDocument();
   if (!document.GetFrame() || !document.GetFrame()->IsLocalRoot()) {
     return;
   }
 
-  if (!element.IsDocumentElement()) {
+  if (!has_document_scope) {
     return;
   }
 
@@ -253,17 +262,6 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (IsTerminalState(state_))
     return;
 
-  // TODO(khushalsagar): Figure out the promise handling when this is on the
-  // old Document for a cross-document navigation.
-
-  // Cleanup logic which is tied to ViewTransition objects created using the
-  // script API. script_delegate_ is cleared when the Document is being torn
-  // down and script specific callbacks don't need to be dispatched in that
-  // case.
-  if (script_delegate_) {
-    script_delegate_->DidSkipTransition(response);
-  }
-
   // If we already started processing the transition (i.e. we're beyond capture
   // tag discovery), then send a release directive. We don't do this, if we're
   // capturing this for a snapshot. The only way that transition is skipped is
@@ -272,7 +270,9 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
           static_cast<int>(State::kCaptureTagDiscovery) &&
       creation_type_ != CreationType::kForSnapshot) {
     delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-        transition_token_, MaybeCrossFrameSink()));
+        transition_token_, MaybeCrossFrameSink(),
+        base::FeatureList::IsEnabled(
+            features::kDelayLayerTreeViewDeletionOnLocalSwap)));
   }
 
   // We always need to call the transition state callback (mojo seems to require
@@ -294,6 +294,17 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
     delegate_->OnTransitionFinished(this);
   }
 
+  // TODO(khushalsagar): Figure out the promise handling when this is on the
+  // old Document for a cross-document navigation.
+
+  // Cleanup logic which is tied to ViewTransition objects created using the
+  // script API. script_delegate_ is cleared when the Document is being torn
+  // down and script specific callbacks don't need to be dispatched in that
+  // case.
+  if (script_delegate_) {
+    script_delegate_->DidSkipTransition(response);
+  }
+
   // This should be the last call in this function to avoid erroneously checking
   // the `state_` against the wrong state.
   AdvanceTo(State::kAborted);
@@ -309,6 +320,12 @@ bool ViewTransition::AdvanceTo(State state) {
       << "from " << StateToString(state_) << " to " << StateToString(state);
   DCHECK(CanAdvanceTo(state)) << "Current state " << static_cast<int>(state_)
                               << " new state " << static_cast<int>(state);
+
+  if (state == State::kCapturing || state_ == State::kCapturing) {
+    DCHECK(style_tracker_);
+    style_tracker_->InvalidateBackdropFilterCompositingProperties();
+  }
+
   bool was_initial = state_ == State::kInitial;
   state_ = state;
   if (!was_initial && IsTerminalState(state_)) {
@@ -464,6 +481,12 @@ void ViewTransition::ProcessCurrentState() {
         DCHECK(in_main_lifecycle_update_);
         DCHECK_GE(document_->Lifecycle().GetState(),
                   DocumentLifecycle::kCompositingInputsClean);
+
+        if (UnsupportedCapture()) {
+          SkipTransition(PromiseResponse::kRejectInvalidState);
+          break;
+        }
+
         style_tracker_->AddTransitionElementsFromCSS();
         process_next_state = AdvanceTo(State::kCaptureRequestPending);
         DCHECK(process_next_state);
@@ -487,9 +510,11 @@ void ViewTransition::ProcessCurrentState() {
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateCapture(
             transition_token_, MaybeCrossFrameSink(),
             style_tracker_->TakeCaptureResourceIds(),
-            ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                &ViewTransition::NotifyCaptureFinished,
-                MakeUnwrappingCrossThreadWeakHandle(this)))));
+            ConvertToBaseOnceCallback(
+                CrossThreadBindOnce(&ViewTransition::NotifyCaptureFinished,
+                                    MakeUnwrappingCrossThreadWeakHandle(this))),
+            base::FeatureList::IsEnabled(
+                features::kDelayLayerTreeViewDeletionOnLocalSwap)));
 
         if (document_->GetFrame()->IsLocalRoot()) {
           // We need to ensure commits aren't deferred since we rely on commits
@@ -512,7 +537,6 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kCaptured: {
         style_tracker_->CaptureResolved();
-
         if (creation_type_ == CreationType::kForSnapshot) {
           DCHECK(transition_state_callback_);
           ViewTransitionState view_transition_state =
@@ -600,7 +624,7 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       case State::kAnimateRequestPending:
-        if (!style_tracker_->Start()) {
+        if (UnsupportedCapture() || !style_tracker_->Start()) {
           SkipTransition(PromiseResponse::kRejectInvalidState);
           break;
         }
@@ -614,7 +638,9 @@ void ViewTransition::ProcessCurrentState() {
 
         delegate_->AddPendingRequest(
             ViewTransitionRequest::CreateAnimateRenderer(
-                transition_token_, MaybeCrossFrameSink()));
+                transition_token_, MaybeCrossFrameSink(),
+                base::FeatureList::IsEnabled(
+                    features::kDelayLayerTreeViewDeletionOnLocalSwap)));
         process_next_state = AdvanceTo(State::kAnimating);
         DCHECK(!process_next_state);
 
@@ -634,19 +660,16 @@ void ViewTransition::ProcessCurrentState() {
           break;
         }
 
-        if (style_tracker_->HasActiveAnimations())
+        if (style_tracker_->HasActiveAnimations() ||
+            wait_until_pending_promise_count_ > 0) {
           break;
-
-        CHECK_NE(creation_type_, CreationType::kForSnapshot);
-        CHECK(script_delegate_);
-        script_delegate_->DidFinishAnimating();
+        }
 
         // Post a task to run the next state (cleanup) outside of the current
         // lifecycle update.
         document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
-            ->PostTask(FROM_HERE,
-                       WTF::BindOnce(&ViewTransition::ProcessCurrentState,
-                                     WrapWeakPersistent(this)));
+            ->PostTask(FROM_HERE, BindOnce(&ViewTransition::ProcessCurrentState,
+                                           WrapWeakPersistent(this)));
 
         // Advance to the pending state. This will stop processing for the
         // current lifecycle update since WaitsForNotification(kPendingDone)
@@ -662,11 +685,18 @@ void ViewTransition::ProcessCurrentState() {
         style_tracker_->StartFinished();
 
         delegate_->AddPendingRequest(ViewTransitionRequest::CreateRelease(
-            transition_token_, MaybeCrossFrameSink()));
+            transition_token_, MaybeCrossFrameSink(),
+            base::FeatureList::IsEnabled(
+                features::kDelayLayerTreeViewDeletionOnLocalSwap)));
         delegate_->OnTransitionFinished(this);
         LogIfDocumentElementChanged();
 
         style_tracker_ = nullptr;
+
+        CHECK_NE(creation_type_, CreationType::kForSnapshot);
+        CHECK(script_delegate_);
+        script_delegate_->DidFinishAnimating();
+
         process_next_state = AdvanceTo(State::kFinished);
         DCHECK(IsTerminalState(state_));
         break;
@@ -700,7 +730,7 @@ void ViewTransition::InitTypes(const Vector<String>& types) {
   // checks that it is in a current view transition. Because InitTypes is
   // called during ctor, the supplement does not yet know that this will become
   // a current view transition, so we need to invalidate explicitly.
-  if (auto* originating_element = document_->documentElement()) {
+  if (auto* originating_element = Scope()) {
     originating_element->ActiveViewTransitionStateChanged();
     if (!types_->IsEmpty()) {
       originating_element->ActiveViewTransitionTypeStateChanged();
@@ -765,12 +795,24 @@ void ViewTransition::ContextDestroyed() {
 void ViewTransition::NotifyCaptureFinished(
     const std::unordered_map<viz::ViewTransitionElementResourceId, gfx::RectF>&
         capture_rects) {
+  if (state_ == State::kCapturing) {
+    style_tracker_->SetCaptureRectsFromCompositor(capture_rects);
+  } else {
+    DCHECK(IsTerminalState(state_));
+  }
+
+  // Inform the delegate that the transition has been captured. Once all
+  // flight transitions have been captured, processing the next step will resume
+  // in creation order ensure deterministic behavior with DOM callbacks. The
+  // onus is on the developer in the case of asynchronous callbacks.
+  delegate_->OnTransitionCaptured(this);
+}
+
+void ViewTransition::OnCapturePhaseComplete() {
   if (state_ != State::kCapturing) {
     DCHECK(IsTerminalState(state_));
     return;
   }
-
-  style_tracker_->SetCaptureRectsFromCompositor(capture_rects);
   bool process_next_state = AdvanceTo(State::kCaptured);
   DCHECK(process_next_state);
   ProcessCurrentState();
@@ -974,13 +1016,18 @@ gfx::Vector2d ViewTransition::GetFrameToSnapshotRootOffset() const {
   return style_tracker_->GetFrameToSnapshotRootOffset();
 }
 
+bool ViewTransition::HasActiveAnimations() const {
+  return (state_ == State::kAnimating) && style_tracker_ &&
+         style_tracker_->HasActiveAnimations();
+}
+
 void ViewTransition::PauseRendering() {
   DCHECK(!rendering_paused_scope_);
 
   if (!document_->GetPage() || !document_->View())
     return;
 
-  rendering_paused_scope_.emplace(*scope_);
+  rendering_paused_scope_.emplace(*scope_, has_document_scope_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
 
   if (has_document_scope_ &&
@@ -989,8 +1036,8 @@ void ViewTransition::PauseRendering() {
   }
   style_tracker_->PauseRendering();
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink", "ViewTransition::PauseRendering",
-                                    this);
+  TRACE_EVENT_BEGIN("blink", "ViewTransition::PauseRendering",
+                    perfetto::Track::FromPointer(this));
   static const base::TimeDelta timeout_delay =
       RuntimeEnabledFeatures::
               ViewTransitionLongCallbackTimeoutForTestingEnabled()
@@ -998,8 +1045,8 @@ void ViewTransition::PauseRendering() {
           : base::Seconds(4);
   document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
       ->PostDelayedTask(FROM_HERE,
-                        WTF::BindOnce(&ViewTransition::OnRenderingPausedTimeout,
-                                      WrapWeakPersistent(this)),
+                        BindOnce(&ViewTransition::OnRenderingPausedTimeout,
+                                 WrapWeakPersistent(this)),
                         timeout_delay);
 }
 
@@ -1012,12 +1059,62 @@ void ViewTransition::OnRenderingPausedTimeout() {
   AdvanceTo(State::kTimedOut);
 }
 
+bool ViewTransition::UnsupportedCapture() {
+  if (scope_ && scope_ != scope_->GetDocument().documentElement() &&
+      scope_->GetComputedStyle()) {
+    // TODO(crbug.com/429763389): image masks are not currently supported on the
+    // scoped element. This restriction may be resolved by making the
+    // view-transition's layout object a sibling of the scoped element's
+    // layout object.For now, skip the transition.
+    const ComputedStyle* style = scope_->GetComputedStyle();
+    if (style->HasMask()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support mask-image.");
+      return true;
+    }
+    // TODO(crbug.com/434891109): Various inline display types are not supported
+    // for scoped view transitions. The display type inline-block is an
+    // exception since having block characteristics in addition to inline.
+    // Depending on spec resolution, we may need to revisit the handling of
+    // inline elements.
+    if (style->IsDisplayInlineType() && !style->IsDisplayBlockContainer()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support inline display "
+          "types.");
+      return true;
+    }
+
+    // TODO(crbug.com/436804019): These elements do not create a layout box.
+    if (style->InlinifiesChildren()) {
+      LogMessageToConsole(
+          "Scoped view-transitions do not currently support elements that "
+          "inline their children.");
+    }
+  }
+
+  return false;
+}
+
+void ViewTransition::LogMessageToConsole(const String& message) {
+  if (!scope_) {
+    return;
+  }
+
+  LocalFrame* frame = scope_->GetDocument().GetFrame();
+  if (!frame) {
+    return;
+  }
+
+  frame->Console().AddMessage(MakeGarbageCollected<ConsoleMessage>(
+      ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kWarning,
+      message));
+}
+
 void ViewTransition::ResumeRendering() {
   if (!rendering_paused_scope_)
     return;
 
-  TRACE_EVENT_NESTABLE_ASYNC_END0("blink", "ViewTransition::PauseRendering",
-                                  this);
+  TRACE_EVENT_END("blink", perfetto::Track::FromPointer(this));
   if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
     document_->View()->SetThrottledForViewTransition(false);
   }
@@ -1026,6 +1123,7 @@ void ViewTransition::ResumeRendering() {
 
 void ViewTransition::ActivateFromSnapshot() {
   CHECK(IsForNavigationOnNewDocument());
+  TRACE_EVENT0("blink", "ViewTransition::ActivateFromSnapshot");
 
   if (state_ != State::kWaitForRenderBlock)
     return;
@@ -1095,40 +1193,6 @@ bool ViewTransition::PendingDomCallback() {
   return pending_dom_callback_;
 }
 
-void ViewTransition::RecalcTransitionPseudoTreeStyle() const {
-  Element* scope = Scope();
-  if (!scope) {
-    scope = document_->documentElement();
-  }
-  if (!scope || !scope->InActiveDocument()) {
-    return;
-  }
-
-  if (style_tracker_) {
-    scope->RecalcTransitionPseudoTreeStyle(
-        style_tracker_->GetViewTransitionNames());
-  } else {
-    scope->RecalcTransitionPseudoTreeStyle({});
-  }
-}
-
-void ViewTransition::RebuildTransitionPseudoLayoutTree() const {
-  Element* scope = Scope();
-  if (!scope) {
-    scope = document_->documentElement();
-  }
-  if (!scope || !scope->InActiveDocument()) {
-    return;
-  }
-
-  if (style_tracker_) {
-    scope->RebuildTransitionPseudoLayoutTree(
-        style_tracker_->GetViewTransitionNames());
-  } else {
-    scope->RebuildTransitionPseudoLayoutTree({});
-  }
-}
-
 void ViewTransition::WillEnterGetComputedStyleScope() {
   if (style_tracker_) {
     style_tracker_->WillEnterGetComputedStyleScope();
@@ -1143,6 +1207,18 @@ void ViewTransition::WillExitGetComputedStyleScope() {
 void ViewTransition::InvalidateInternalPseudoStyle() {
   if (style_tracker_) {
     style_tracker_->InvalidateInternalPseudoStyle();
+  }
+}
+
+void ViewTransition::IncrementWaitUntilPromises() {
+  ++wait_until_pending_promise_count_;
+}
+
+void ViewTransition::DecrementWaitUntilPromises() {
+  CHECK_GT(wait_until_pending_promise_count_, 0);
+  // If we reach 0, then schedule an animation so that we process the animation.
+  if (--wait_until_pending_promise_count_ == 0) {
+    document_->View()->ScheduleAnimation();
   }
 }
 

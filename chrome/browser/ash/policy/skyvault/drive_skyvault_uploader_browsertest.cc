@@ -24,7 +24,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -416,6 +418,36 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, CancelAfterCopyStarts) {
     EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
     CheckPathNotFoundOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
+  }
+}
+
+// Test that Drive is disabled for the profile fails the upload.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailsWhenDriveDisabled) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file =
+      SetUpSourceFile(test_file_name, my_files_dir());
+
+  // Disable drive.
+  browser()->profile()->GetPrefs()->SetBoolean(drive::prefs::kDisableDrive,
+                                               true);
+
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
+  auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      future.GetCallback());
+  drive_upload_handler->Run();
+
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
+
+  // Check that the source file has not been removed.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
   }
 }
 

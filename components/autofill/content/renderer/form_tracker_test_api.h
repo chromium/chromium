@@ -23,7 +23,12 @@ class FormTrackerTestApi {
 
   void FireProbablyFormSubmitted() {
     form_tracker_->FireFormSubmission(
-        mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED, std::nullopt);
+        mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED, std::nullopt,
+        /*reset_last_interacted_elements=*/false);
+  }
+
+  std::optional<FormData> provisionally_saved_form() {
+    return form_tracker_->provisionally_saved_form();
   }
 
  private:

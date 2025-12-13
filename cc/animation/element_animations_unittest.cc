@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"
@@ -18,6 +19,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "cc/base/features.h"
 #include "cc/test/animation_test_common.h"
 #include "cc/test/animation_timelines_test_common.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -41,7 +43,24 @@ const TimeTicks kInitialTickTime = TicksFromSecondsF(1.0);
 
 class ElementAnimationsTest : public AnimationTimelinesTest {
  public:
-  ElementAnimationsTest() = default;
+  ElementAnimationsTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {
+            features::kProgrammaticScrollAnimationOverride,
+            {
+                {"cubic_bezier_x1", "0.4"},          //
+                {"cubic_bezier_y1", "0.0"},          //
+                {"cubic_bezier_x2", "0.0"},          //
+                {"cubic_bezier_y2", "1.0"},          //
+                {"max_animation_duration", "1.5s"},  //
+            }  //
+        }  //
+    };
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        std::move(enabled_features),
+        /*disabled_features=*/{});
+  }
   ~ElementAnimationsTest() override = default;
 
   void SetUp() override { AnimationTimelinesTest::SetUp(); }
@@ -55,6 +74,9 @@ class ElementAnimationsTest : public AnimationTimelinesTest {
     return base::WrapUnique(
         static_cast<AnimationEvents*>(mutator_events.release()));
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // See animation_unittest.cc for integration with Animation.
@@ -935,15 +957,16 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   animation_->Tick(kInitialTickTime + duration / 2);
   animation_->UpdateState(true, nullptr);
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_POINTF_EQ(
-      gfx::PointF(200.f, 250.f),
-      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_POINTF_NEAR(
+      gfx::PointF(272.304f, 213.848f),
+      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration / 2);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(
-      gfx::PointF(200.f, 250.f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_POINTF_NEAR(
+      gfx::PointF(272.304f, 213.848f),
+      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
+      0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());
@@ -990,9 +1013,10 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionOnImplOnly) {
 
   animation_impl_->Tick(kInitialTickTime + duration / 2);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(
-      gfx::PointF(200.f, 250.f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_POINTF_NEAR(
+      gfx::PointF(272.304f, 213.848f),
+      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
+      0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());
@@ -1113,15 +1137,16 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   animation_->Tick(kInitialTickTime + duration / 2);
   animation_->UpdateState(true, nullptr);
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_POINTF_EQ(
-      gfx::PointF(400.f, 150.f),
-      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_POINTF_NEAR(
+      gfx::PointF(327.696f, 186.152f),
+      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration / 2);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(
-      gfx::PointF(400.f, 150.f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::PENDING));
+  EXPECT_POINTF_NEAR(
+      gfx::PointF(327.696f, 186.152f),
+      client_impl_.GetScrollOffset(element_id_, ElementListType::PENDING),
+      0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());

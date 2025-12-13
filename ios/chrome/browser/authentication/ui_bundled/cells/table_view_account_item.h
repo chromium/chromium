@@ -48,7 +48,7 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 // imageView. The imageView is vertical-centered and leading aligned.
 // If item/cell is disabled the image and text alpha will be set to 0.5 and
 // user interaction will be disabled.
-@interface TableViewAccountCell : TableViewCell
+@interface TableViewAccountCell : LegacyTableViewCell
 
 // Rounded image used for the account user picture. On the leading side of the
 // cell.

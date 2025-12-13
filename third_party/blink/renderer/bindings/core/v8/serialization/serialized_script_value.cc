@@ -63,7 +63,7 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -249,7 +249,7 @@ SerializedScriptValue::DataBufferPtr SerializedScriptValue::AllocateBuffer(
   // SAFETY: BufferMalloc() always returns a pointer to at least
   // `buffer_size` bytes.
   return UNSAFE_BUFFERS(DataBufferPtr::FromOwningPointer(
-      static_cast<uint8_t*>(WTF::Partitions::BufferMalloc(
+      static_cast<uint8_t*>(Partitions::BufferMalloc(
           buffer_size, "SerializedScriptValue buffer")),
       buffer_size));
 }
@@ -316,10 +316,10 @@ SerializedScriptValue::TransferImageBitmapContents(
 
   for (wtf_size_t i = 0; i < image_bitmaps.size(); ++i) {
     if (image_bitmaps[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ImageBitmap at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ImageBitmap at index ", String::Number(i),
+                  " is already detached."}));
       return contents;
     }
   }
@@ -354,17 +354,17 @@ void SerializedScriptValue::TransferOffscreenCanvas(
     if (visited.Contains(offscreen_canvases[i].Get()))
       continue;
     if (offscreen_canvases[i]->IsNeutered()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " is already detached."}));
       return;
     }
     if (offscreen_canvases[i]->RenderingContext()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "OffscreenCanvas at index " +
-                                            String::Number(i) +
-                                            " has an associated context.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          StrCat({"OffscreenCanvas at index ", String::Number(i),
+                  " has an associated context."}));
       return;
     }
     visited.insert(offscreen_canvases[i].Get());
@@ -527,10 +527,10 @@ bool SerializedScriptValue::ExtractTransferables(
   for (const auto& script_object : object_sequence) {
     // Validation of non-null objects, per HTML5 spec 10.3.3.
     if (script_object.IsNull()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "Value at index " + String::Number(i) +
-                                            " is an untransferable " +
-                                            "'null' value.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"Value at index ", String::Number(i),
+                  " is an untransferable 'null' value."}));
       return false;
     }
     if (!factory.ExtractTransferable(isolate, script_object.V8Object(), i,
@@ -538,8 +538,8 @@ bool SerializedScriptValue::ExtractTransferables(
       if (!exception_state.HadException()) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kDataCloneError,
-            "Value at index " + String::Number(i) +
-                " does not have a transferable type.");
+            StrCat({"Value at index ", String::Number(i),
+                    " does not have a transferable type."}));
       }
       return false;
     }
@@ -580,10 +580,10 @@ SerializedScriptValue::TransferArrayBufferContents(
 
   for (wtf_size_t i = 0; const auto& array_buffer : array_buffers) {
     if (array_buffer->IsDetached()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "ArrayBuffer at index " +
-                                            String::Number(i) +
-                                            " is already detached.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"ArrayBuffer at index ", String::Number(i),
+                  " is already detached."}));
       return ArrayBufferContentsArray();
     }
     i++;
@@ -608,10 +608,10 @@ SerializedScriptValue::TransferArrayBufferContents(
     visited.insert(array_buffer_base);
 
     if (array_buffer_base->IsShared()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                        "SharedArrayBuffer at index " +
-                                            String::Number(index) +
-                                            " is not transferable.");
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          StrCat({"SharedArrayBuffer at index ", String::Number(index),
+                  " is not transferable."}));
       return ArrayBufferContentsArray();
     } else {
       DOMArrayBuffer* array_buffer =
@@ -619,14 +619,14 @@ SerializedScriptValue::TransferArrayBufferContents(
 
       if (!array_buffer->IsDetachable(isolate)) {
         exception_state.ThrowTypeError(
-            "ArrayBuffer at index " + String::Number(index) +
-            " is not detachable and could not be transferred.");
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " is not detachable and could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (array_buffer->IsDetached()) {
-        exception_state.ThrowDOMException(DOMExceptionCode::kDataCloneError,
-                                          "ArrayBuffer at index " +
-                                              String::Number(index) +
-                                              " could not be transferred.");
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kDataCloneError,
+            StrCat({"ArrayBuffer at index ", String::Number(index),
+                    " could not be transferred."}));
         return ArrayBufferContentsArray();
       } else if (!array_buffer->Transfer(isolate, contents.at(index),
                                          exception_state)) {
@@ -653,9 +653,7 @@ void SerializedScriptValue::RegisterMemoryAllocatedWithCurrentScriptContext() {
   DCHECK_NE(v8::Isolate::GetCurrent(), nullptr);
   has_registered_external_allocation_ = true;
   isolate_ = v8::Isolate::GetCurrent();
-  int64_t diff = static_cast<int64_t>(DataLengthInBytes());
-  DCHECK_GE(diff, 0);
-  external_memory_accounter_.Increase(isolate_.get(), diff);
+  external_memory_accounter_.Increase(isolate_.get(), DataLengthInBytes());
 }
 
 const v8::SharedValueConveyor*

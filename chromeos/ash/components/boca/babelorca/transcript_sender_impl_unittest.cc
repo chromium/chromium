@@ -74,9 +74,9 @@ TEST(TranscriptSenderImplTest, SendOneMessageLongerThanMaxAllowed) {
                                             /*is_final=*/false);
   sender.SendTranscriptionUpdate(transcript, kLanguage);
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(TachyonResponse(
-      net::OK, net::HttpStatusCode::HTTP_OK,
-      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      InboxSendResponse().SerializeAsString()));
 
   EXPECT_FALSE(failure_future.IsReady());
   InboxSendRequest sent_request;
@@ -139,18 +139,18 @@ TEST(TranscriptSenderImplTest, SendNewTranscript) {
   sender.SendTranscriptionUpdate(transcript1, kLanguage);
   authed_client.WaitForRequest();
   request_string1 = authed_client.GetRequestString();
-  authed_client.ExecuteResponseCallback(TachyonResponse(
-      net::OK, net::HttpStatusCode::HTTP_OK,
-      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      InboxSendResponse().SerializeAsString()));
 
   media::SpeechRecognitionResult transcript2(kTranscriptText,
                                              /*is_final=*/false);
   sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
   request_string2 = authed_client.GetRequestString();
-  authed_client.ExecuteResponseCallback(TachyonResponse(
-      net::OK, net::HttpStatusCode::HTTP_OK,
-      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      InboxSendResponse().SerializeAsString()));
 
   EXPECT_FALSE(failure_future.IsReady());
   InboxSendRequest sent_request1;
@@ -239,9 +239,9 @@ TEST(TranscriptSenderImplTest, ResetErrorCountOnSuccess) {
                                              /*is_final=*/false);
   sender.SendTranscriptionUpdate(transcript2, kLanguage);
   authed_client.WaitForRequest();
-  authed_client.ExecuteResponseCallback(TachyonResponse(
-      net::OK, net::HttpStatusCode::HTTP_OK,
-      std::make_unique<std::string>(InboxSendResponse().SerializeAsString())));
+  authed_client.ExecuteResponseCallback(
+      TachyonResponse(net::OK, net::HttpStatusCode::HTTP_OK,
+                      InboxSendResponse().SerializeAsString()));
 
   // Failed request, should not trigger failure callback since the error count
   // was reset.

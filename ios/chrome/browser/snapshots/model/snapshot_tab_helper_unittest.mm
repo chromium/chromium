@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_kind.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -98,12 +99,13 @@ class SnapshotTabHelperTest : public PlatformTest {
     // Create the SnapshotTabHelper with a fake delegate.
     delegate_ = [[TabHelperSnapshotGeneratorDelegate alloc] init];
     SnapshotTabHelper::CreateForWebState(&web_state_);
+    SnapshotSourceTabHelper::CreateForWebState(&web_state_);
     SnapshotTabHelper::FromWebState(&web_state_)->SetDelegate(delegate_);
 
     // Set custom snapshot storage.
     EXPECT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
     base::FilePath directory_name = scoped_temp_directory_.GetPath();
-    snapshot_storage_ = CreateSnapshotStorage(directory_name, base::FilePath());
+    snapshot_storage_ = CreateSnapshotStorage(directory_name);
     SnapshotTabHelper::FromWebState(&web_state_)
         ->SetSnapshotStorage(snapshot_storage_);
 
@@ -113,12 +115,23 @@ class SnapshotTabHelperTest : public PlatformTest {
     UIView* view = [[UIView alloc] initWithFrame:frame];
     view.backgroundColor = [UIColor redColor];
     delegate_.view = view;
+
+    UIWindow* window = GetAnyKeyWindow();
+    [window addSubview:delegate_.view];
+    [window makeKeyAndVisible];
+
+    // Hack to forcefully render the view to successfully capture a snapshot.
+    [NSRunLoop.currentRunLoop
+        runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
+    [window layoutIfNeeded];
   }
 
   SnapshotTabHelperTest(const SnapshotTabHelperTest&) = delete;
   SnapshotTabHelperTest& operator=(const SnapshotTabHelperTest&) = delete;
 
   ~SnapshotTabHelperTest() override { [snapshot_storage_ shutdown]; }
+
+  void TearDown() override { [delegate_.view removeFromSuperview]; }
 
   void SetCachedSnapshot(UIImage* image) {
     const SnapshotID snapshot_id(web_state_.GetUniqueIdentifier());

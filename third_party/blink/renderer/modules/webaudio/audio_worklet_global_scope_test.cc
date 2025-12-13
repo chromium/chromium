@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"

@@ -28,6 +28,7 @@ class PolicyData;
 namespace policy {
 class CloudPolicyClient;
 class CloudPolicyCore;
+class CloudPolicyRefreshScheduler;
 class CloudPolicyStore;
 
 inline constexpr char kPolicyDescriptionKey[] = "policyDescriptionKey";
@@ -80,6 +81,12 @@ class POLICY_EXPORT PolicyStatusProvider {
   static std::u16string GetPolicyStatusFromStore(const CloudPolicyStore*,
                                                  const CloudPolicyClient*);
   static std::u16string GetTimeSinceLastActionString(base::Time);
+
+  // Add policy push information along with conditional refresh interval into
+  // policy `status` dictionary.
+  static void SetPolicyPushAndRefreshStatus(
+      base::Value::Dict& status,
+      const CloudPolicyRefreshScheduler* refresh_scheduler);
 
   // Add last report uploaded timestamp into policy `status` dictionary from
   // `prefs`.

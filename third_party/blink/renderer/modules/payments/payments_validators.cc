@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "url/gurl.h"
 
 namespace blink {
 

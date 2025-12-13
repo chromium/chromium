@@ -39,6 +39,7 @@ public class LogoUtilsUnitTest {
         mResources = Robolectric.buildActivity(Activity.class).setup().get().getResources();
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     @SmallTest
     public void testSetLogoViewLayoutParamsForDoodle() {

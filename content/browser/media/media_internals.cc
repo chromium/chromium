@@ -13,7 +13,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -43,7 +42,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/media_log_record.h"
 #include "media/base/media_switches.h"
-#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -393,7 +391,7 @@ static bool ConvertEventToUpdate(int render_process_id,
 
   base::Value::Dict dict;
   dict.Set("renderer", render_process_id);
-  dict.Set("player", event.id);
+  dict.Set("player", static_cast<int>(event.id.value()));
 
   // TODO(dalecurtis): This is technically not correct.  TimeTicks "can't" be
   // converted to to a human readable time format.  See base/time/time.h.
@@ -642,8 +640,8 @@ MediaInternals::CreateAudioLogImpl(
     int render_frame_id) {
   base::AutoLock auto_lock(lock_);
   return std::make_unique<AudioLogImpl>(
-      UNSAFE_TODO(owner_ids_[base::to_underlying(component)]++), component,
-      this, component_id, render_process_id, render_frame_id);
+      owner_ids_[base::to_underlying(component)]++, component, this,
+      component_id, render_process_id, render_frame_id);
 }
 
 void MediaInternals::SendUpdate(const std::u16string& update) {
@@ -667,7 +665,7 @@ void MediaInternals::SaveEvent(int process_id,
   if (saved_events.size() > media::MediaLog::kLogLimit) {
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
-    const int id_to_remove = saved_events.front().id;
+    const media::MediaPlayerLoggingID id_to_remove = saved_events.front().id;
     std::erase_if(saved_events, [&](const media::MediaLogRecord& event) {
       return event.id == id_to_remove;
     });

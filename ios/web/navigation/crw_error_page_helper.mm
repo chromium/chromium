@@ -115,7 +115,7 @@ NSString* InjectedErrorPageFilePath() {
   }
 
   if (URL.SchemeIsFile() &&
-      URL.path() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {
+      URL.GetPath() == base::SysNSStringToUTF8(LoadedErrorPageFilePath())) {
     std::string value;
     if (net::GetValueForKeyInQuery(URL, kOriginalUrlKey, &value)) {
       // The URL was escaped when it was added to the error URL, unescape it

@@ -30,7 +30,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -55,7 +54,7 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
     // float and PIP windows for example. See crbug.com/402617739 for more
     // details.
     display::Display display =
-        display::Screen::GetScreen()->GetDisplayMatching(caret_bounds);
+        display::Screen::Get()->GetDisplayMatching(caret_bounds);
     aura::Window* root_window =
         ash::Shell::GetRootWindowForDisplayId(display.id());
     CHECK(root_window);
@@ -144,7 +143,7 @@ bool EmojiUI::ShouldShow(const ui::TextInputClient* input_client,
 void EmojiUI::Show(ui::EmojiPickerCategory category,
                    ui::EmojiPickerFocusBehavior focus_behavior,
                    const std::string& initial_query) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     ui::ShowTabletModeEmojiPanel();
     return;
   }
@@ -212,12 +211,6 @@ void EmojiUI::Show(ui::EmojiPickerCategory category,
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(EmojiUI)
-
-void EmojiUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
 
 void EmojiUI::BindInterface(
     mojo::PendingReceiver<emoji_search::mojom::EmojiSearch> receiver) {

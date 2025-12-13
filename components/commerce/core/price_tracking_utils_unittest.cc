@@ -20,6 +20,7 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/prefs.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
@@ -42,7 +43,7 @@ class PriceTrackingUtilsTest : public testing::Test {
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    RegisterPrefs(pref_service_->registry());
+    RegisterProfilePrefs(pref_service_->registry());
   }
 
   base::test::ScopedFeatureList test_features_;
@@ -693,6 +694,33 @@ TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions) {
                                     run_loop->Quit();
                                   },
                                   &run_loop));
+  run_loop.Run();
+}
+
+// Ensure cleanup is not executed until the model is loaded.
+TEST_F(PriceTrackingUtilsTest, RemoveDanglingSubscriptions_WaitsForModelLoad) {
+  // Use a separate bookmark model so we can control the loading state.
+  std::unique_ptr<bookmarks::BookmarkModel> model{
+      std::make_unique<bookmarks::BookmarkModel>(
+          std::make_unique<bookmarks::TestBookmarkClient>())};
+  ASSERT_FALSE(model->loaded());
+
+  std::vector<CommerceSubscription> subs;
+  subs.push_back(BuildUserSubscriptionForClusterId(12345L));
+  shopping_service_->SetGetAllSubscriptionsCallbackValue(std::move(subs));
+  shopping_service_->SetUnsubscribeCallbackValue(true);
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  RemoveDanglingSubscriptions(
+      shopping_service_.get(), model.get(),
+      base::BindOnce([](size_t count) {}).Then(run_loop.QuitClosure()));
+
+  EXPECT_CALL(*shopping_service_, Unsubscribe(testing::_, testing::_)).Times(1);
+
+  model->LoadEmptyForTest();
+  ASSERT_TRUE(model->loaded());
   run_loop.Run();
 }
 

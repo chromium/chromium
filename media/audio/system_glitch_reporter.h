@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -15,10 +16,10 @@ namespace media {
 // Stats are aggregated and reported to UMA periodically every 1000th call to
 // UpdateStats(), and longer-term (manually reset) stats are available via
 // GetLongTermStatsAndReset().
-class SystemGlitchReporter {
+class MEDIA_EXPORT SystemGlitchReporter {
  public:
   // Used to determine which UMA metrics to log.
-  enum class StreamType { kCapture, kRender };
+  enum class StreamType { kCapture, kRender, kLoopback, kLoopbackReference };
 
   struct Stats {
     int glitches_detected = 0;

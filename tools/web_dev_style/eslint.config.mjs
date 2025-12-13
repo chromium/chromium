@@ -2,10 +2,66 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import eslintPluginLit from '../../third_party/node/node_modules/eslint-plugin-lit/lib/index.js';
 import stylistic from '../../third_party/node/node_modules/@stylistic/eslint-plugin/dist/index.js';
 import typescriptEslint from '../../third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
 import tsParser from '../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
 import webUiEslint from '../../ui/webui/resources/tools/webui_eslint_plugin.js';
+
+const noRestricetdSyntaxCases = [
+  {
+    selector:
+        'CallExpression[callee.object.name=JSON][callee.property.name=parse] > CallExpression[callee.object.name=JSON][callee.property.name=stringify]',
+    message:
+        'Don\'t use JSON.parse(JSON.stringify(...)) to clone objects. Use structuredClone() instead.',
+  },
+  {
+    // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+    selector:
+        'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
+    message:
+        'Don\'t use \'querySelector(...) as Type\'. Use the type parameter, \'querySelector<Type>(...)\' instead',
+  },
+  {
+    // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+    selector:
+        'TSAsExpression > TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
+    message:
+        'Don\'t use \'querySelector(...)! as Type\'. Use the type parameter, \'querySelector<Type>(...)\', followed by an assertion instead',
+  },
+  {
+    // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
+    selector:
+        'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
+    message:
+        'Don\'t use \'querySelectorAll(...) as Type\'. Use the type parameter, \'querySelectorAll<Type>(...)\' instead',
+  },
+  {
+    // Prevent a common misuse of "!" operator.
+    selector:
+        'TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
+    message:
+        'Remove unnecessary "!" non-null operator after querySelectorAll(). It always returns a non-null result',
+  },
+  {
+    // Prevent unnecessary usage of dispatchEvent(new Event('click'))
+    'selector': 'NewExpression[callee.name=Event][arguments.0.type=Literal][arguments.0.value=click]',
+    'message': 'Don\'t use dispatchEvent(new Event(\'click\')) for click events. Use the click() method instead.',
+  },
+  {
+    // https://google.github.io/styleguide/jsguide.html#es-module-imports
+    //  1) Matching only import URLs that have at least one '/' slash,
+    //  to avoid false positives for NodeJS imports like `import fs from
+    //  'fs';`. Using '\u002F' instead of '/' as the suggested
+    //  workaround for https://github.com/eslint/eslint/issues/16555
+    //  2) Allowing extensions that have a length between 2-4 characters
+    //  (for example js, css, json)
+    selector:
+        'ImportDeclaration[source.value=/^.*\\u002F.*(?<!\\.[a-z]{2}|\\.[a-z]{3}|\\.[a-z]{4})$/]',
+    message:
+        'Disallowed extensionless import. Explicitly specify the extension suffix.',
+  },
+];
 
 export default [
   {
@@ -44,7 +100,7 @@ export default [
   },
   {
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 'latest',
       sourceType: 'module',
     },
 
@@ -55,6 +111,11 @@ export default [
       // https://google.github.io/styleguide/jsguide.html#features-arrays-trailing-comma
       // https://google.github.io/styleguide/jsguide.html#features-objects-use-trailing-comma
       'comma-dangle': ['error', 'always-multiline'],
+
+      // https://google.github.io/styleguide/jsguide.html#features-switch-statements
+      // https://google.github.io/styleguide/tsguide.html#switch-statements
+      'default-case': 'error',
+      'default-case-last': 'error',
 
       curly: ['error', 'multi-line', 'consistent'],
       'new-parens': 'error',
@@ -114,61 +175,7 @@ export default [
         },
       ],
 
-      'no-restricted-syntax': [
-        'error', {
-          selector:
-              'CallExpression[callee.object.name=JSON][callee.property.name=parse] > CallExpression[callee.object.name=JSON][callee.property.name=stringify]',
-          message:
-              'Don\'t use JSON.parse(JSON.stringify(...)) to clone objects. Use structuredClone() instead.',
-        },
-        {
-          // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
-          selector:
-              'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
-          message:
-              'Don\'t use \'querySelector(...) as Type\'. Use the type parameter, \'querySelector<Type>(...)\' instead',
-        },
-        {
-          // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
-          selector:
-              'TSAsExpression > TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelector$/]',
-          message:
-              'Don\'t use \'querySelector(...)! as Type\'. Use the type parameter, \'querySelector<Type>(...)\', followed by an assertion instead',
-        },
-        {
-          // https://google.github.io/styleguide/tsguide.html#return-type-only-generics
-          selector:
-              'TSAsExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
-          message:
-              'Don\'t use \'querySelectorAll(...) as Type\'. Use the type parameter, \'querySelectorAll<Type>(...)\' instead',
-        },
-        {
-          // Prevent a common misuse of "!" operator.
-          selector:
-              'TSNonNullExpression > CallExpression > MemberExpression[property.name=/^querySelectorAll$/]',
-          message:
-              'Remove unnecessary "!" non-null operator after querySelectorAll(). It always returns a non-null result',
-        },
-        {
-          // Prevent unnecessary usage of dispatchEvent(new Event('click'))
-          'selector': 'NewExpression[callee.name=Event][arguments.0.type=Literal][arguments.0.value=click]',
-          'message': 'Don\'t use dispatchEvent(new Event(\'click\')) for click events. Use the click() method instead.',
-        },
-        {
-          // https://google.github.io/styleguide/jsguide.html#es-module-imports
-          //  1) Matching only import URLs that have at least one '/' slash,
-          //  to avoid false positives for NodeJS imports like `import fs from
-          //  'fs';`. Using '\u002F' instead of '/' as the suggested
-          //  workaround for https://github.com/eslint/eslint/issues/16555
-          //  2) Allowing extensions that have a length between 2-4 characters
-          //  (for example js, css, json)
-          selector:
-              'ImportDeclaration[source.value=/^.*\\u002F.*(?<!\\.[a-z]{2}|\\.[a-z]{3}|\\.[a-z]{4})$/]',
-          message:
-              'Disallowed extensionless import. Explicitly specify the extension suffix.',
-        }
-      ],
-
+      'no-restricted-syntax': ['error', ...noRestricetdSyntaxCases],
       'no-throw-literal': 'error',
       'no-trailing-spaces': 'error',
       'no-var': 'error',
@@ -417,9 +424,43 @@ export default [
       // https://google.github.io/styleguide/tsguide.html#ts-ignore
       '@typescript-eslint/ban-ts-comment': [
         'error', {
+          'ts-expect-error': true,
           'ts-ignore': true,
+          'ts-nocheck': true,
         }
       ],
+    },
+  },
+  {
+    'files': ['**/*.html.ts'],
+    'plugins': {
+      'eslint-plugin-lit': eslintPluginLit,
+    },
+    'rules': {
+      'eslint-plugin-lit/quoted-expressions': ['error', 'always'],
+    },
+  },
+  {
+    // The following files are served from chrome://resources/ and the rules
+    // below enforce restrictions documented in
+    // ui/webui/resources/cr_elements/README.md and
+    // ui/webui/resources/cr_components/README.md.
+    // These checks are not overriding default style configuration, instead they
+    // are performing correctness checks and therefore custom ESLint rules are
+    // justified.
+    files: [
+      'ui/webui/resources/cr_components/**/*.html.ts',
+      'ui/webui/resources/cr_elements/**/*.html.ts',
+    ],
+    rules: {
+      'no-restricted-syntax': ['error', ...noRestricetdSyntaxCases, {
+        'selector': 'Literal[value=/\\$i18n{.*}/]',
+        'message': 'Can\'t use $i18n{...} placeholders in ui/webui/resources/ HTML templates. Use I18nMixinLit instead.'
+      },
+      {
+        'selector': 'TemplateElement[value.raw=/\\$i18n{.*}/]',
+        'message': 'Can\'t use $i18n{...} placeholders in ui/webui/resources/ HTML templates. Use I18nMixinLit instead.'
+      }],
     },
   },
   {
@@ -444,5 +485,36 @@ export default [
         },
       ]
     }
+  },
+  {
+    files: ['chrome/test/data/webui/settings/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error', {
+          paths: [
+            {
+              name: 'chrome://resources/js/load_time_data.js',
+              importNames: ['loadTimeData'],
+              message: 'Import from chrome://settings/settings.js instead.',
+            },
+          ],
+        }
+      ],
+    }
+  },
+  {
+    // See b/266455078. Don't add new files to this list.
+    files: [
+      'chrome/browser/resources/ash/settings/internet_page/internet_subpage.ts',
+      'chrome/browser/resources/ash/settings/multidevice_page/multidevice_permissions_setup_dialog.ts',
+    ],
+    rules: {
+      '@typescript-eslint/ban-ts-comment': [
+        'error', {
+          'ts-ignore': true,
+          'ts-nocheck': true,
+        }
+      ],
+    },
   },
 ];

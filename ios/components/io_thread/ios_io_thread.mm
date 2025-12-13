@@ -186,7 +186,7 @@ IOSIOThread::~IOSIOThread() {
 
 IOSIOThread::Globals* IOSIOThread::globals() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  return globals_;
+  return globals_.get();
 }
 
 void IOSIOThread::InitOnIO() {
@@ -194,12 +194,6 @@ void IOSIOThread::InitOnIO() {
   // Allow blocking calls while initializing the IO thread.
   base::ScopedAllowBlocking allow_blocking_for_init;
   Init();
-}
-
-void IOSIOThread::SetGlobalsForTesting(Globals* globals) {
-  DCHECK_CURRENTLY_ON(web::WebThread::IO);
-  DCHECK(!globals || !globals_);
-  globals_ = globals;
 }
 
 net::NetLog* IOSIOThread::net_log() {
@@ -231,7 +225,7 @@ void IOSIOThread::Init() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);
 
   DCHECK(!globals_);
-  globals_ = new Globals;
+  globals_ = std::make_unique<Globals>();
 
   // Add an observer that will emit network change events to the NetLog.
   // Assuming NetworkChangeNotifier dispatches in FIFO order, we should be
@@ -264,8 +258,7 @@ void IOSIOThread::CleanUp() {
 
   system_proxy_config_service_.reset();
 
-  delete globals_;
-  globals_ = nullptr;
+  globals_.reset();
 
   LeakTracker<SystemURLRequestContextGetter>::CheckForLeaks();
 }

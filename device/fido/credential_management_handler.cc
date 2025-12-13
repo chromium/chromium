@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 
 namespace device {
 

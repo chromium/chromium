@@ -228,15 +228,15 @@ void OmniboxResult::SetGenericIcon() {
   // the generic bookmark or another generic icon as appropriate.
   if (search_result_->omnibox_type ==
       CrosApiSearchResult::OmniboxType::kBookmark) {
-    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(omnibox::kBookmarkIcon,
-                                                    GetGenericIconColor(),
-                                                    kSystemIconDimension),
+    SetIcon(IconInfo(
+        ui::ImageModel::FromVectorIcon(
+            omnibox::kBookmarkIcon, kGenericIconColorId, kSystemIconDimension),
 
-                     kSystemIconDimension));
+        kSystemIconDimension));
   } else {
     SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(
                          TypeToVectorIcon(search_result_->omnibox_type),
-                         GetGenericIconColor(), kSystemIconDimension),
+                         kGenericIconColorId, kSystemIconDimension),
                      kSystemIconDimension));
   }
 }

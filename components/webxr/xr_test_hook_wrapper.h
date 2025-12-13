@@ -6,7 +6,7 @@
 #define COMPONENTS_WEBXR_XR_TEST_HOOK_WRAPPER_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "device/vr/test/test_hook.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -26,18 +26,19 @@ class XRTestHookWrapper : public device::VRTestHook {
       mojo::PendingRemote<device_test::mojom::XRTestHook> hook_info);
   virtual ~XRTestHookWrapper();
 
+  // VRTestHook
   void OnFrameSubmitted(const std::vector<device::ViewData>& views) override;
   device::DeviceConfig WaitGetDeviceConfig() override;
-  device::PoseFrameData WaitGetPresentingPose() override;
-  device::PoseFrameData WaitGetMagicWindowPose() override;
+  std::optional<gfx::Transform> WaitGetPresentingPose() override;
+  std::optional<gfx::Transform> WaitGetMagicWindowPose() override;
   device::ControllerRole WaitGetControllerRoleForTrackedDeviceIndex(
-      unsigned int index) override;
-  device::TrackedDeviceClass WaitGetTrackedDeviceClass(
-      unsigned int index) override;
-  device::ControllerFrameData WaitGetControllerData(
-      unsigned int index) override;
+      uint32_t index) override;
+  device::ControllerFrameData WaitGetControllerData(uint32_t index) override;
   device_test::mojom::EventData WaitGetEventData() override;
   bool WaitGetCanCreateSession() override;
+  std::optional<device::VisibilityMaskData> WaitGetVisibilityMask(
+      uint32_t view_index) override;
+
   void AttachCurrentThread() override;
   void DetachCurrentThread() override;
 

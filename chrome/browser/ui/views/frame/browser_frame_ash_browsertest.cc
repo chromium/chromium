@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_ash.h"
-
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/frame/browser_native_widget_ash.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -72,7 +71,7 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
   gfx::Rect expectation = original_bounds;
   if (!is_test_app) {
     expectation =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestPoint(browser->window()->GetBounds().origin())
             .work_area();
     expectation.ClampToCenteredSize(original_bounds.size());

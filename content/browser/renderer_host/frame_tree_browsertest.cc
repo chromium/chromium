@@ -728,7 +728,7 @@ IN_PROC_BROWSER_TEST_P(DedicatedWorkerFrameTreeBrowserTest,
                                               ->GetStoragePartition()
                                               ->GetDedicatedWorkerService());
   EXPECT_TRUE(EvalJs(shell(), "const worker = new Worker('/workers/empty.js');")
-                  .error.empty());
+                  .is_ok());
   worker_observer.WaitForCreated();
 
   // Discard the rfh, the associated worker should be cleared.
@@ -740,7 +740,7 @@ IN_PROC_BROWSER_TEST_P(DedicatedWorkerFrameTreeBrowserTest,
 
   if (KeepAliveDiscardedProcess()) {
     // Trigger GC to cleanup the worker in the renderer if persisted.
-    EXPECT_TRUE(EvalJs(shell(), "window.gc();").error.empty());
+    EXPECT_TRUE(EvalJs(shell(), "window.gc();").is_ok());
   }
 
   worker_observer.WaitForDestroyed();
@@ -767,7 +767,7 @@ IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
 
   // Assert the opened window is able to script its opener.
   EXPECT_EQ("foo", EvalJs(new_shell, "window.name;"));
-  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar';").error.empty());
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar';").is_ok());
   EXPECT_EQ("bar", EvalJs(shell(), "window.name;"));
 
   frame_tree.Discard();
@@ -775,13 +775,13 @@ IN_PROC_BROWSER_TEST_P(FrameTreeBrowserWithDiscardTest,
 
   // After a discard operation the opened window should should still be able to
   // script its opener.
-  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar2';").error.empty());
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar2';").is_ok());
   EXPECT_EQ("bar2", EvalJs(shell(), "window.name;"));
 
   // After a reload the opened window should still be able to script its opener.
   wc->GetController().LoadIfNecessary();
   EXPECT_TRUE(WaitForLoadStop(wc));
-  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar3';").error.empty());
+  EXPECT_TRUE(EvalJs(new_shell, "window.opener.name = 'bar3';").is_ok());
   EXPECT_EQ("bar3", EvalJs(shell(), "window.name;"));
 }
 
@@ -1044,7 +1044,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateGrandchildToBlob) {
   if (AreAllSitesIsolatedForTesting())
     deleted_observer.WaitUntilDeleted();
   EXPECT_EQ(GURL(blob_url_string), target->current_url());
-  EXPECT_EQ(url::kBlobScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kBlobScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -1089,7 +1089,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest, NavigateChildToAboutBlank) {
       "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("b.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());
@@ -1137,7 +1137,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeBrowserTest,
              "});");
   EXPECT_EQ(target->current_origin(), about_blank_origin);
   EXPECT_EQ(GURL(url::kAboutBlankURL), target->current_url());
-  EXPECT_EQ(url::kAboutScheme, target->current_url().scheme());
+  EXPECT_EQ(url::kAboutScheme, target->current_url().GetScheme());
   EXPECT_FALSE(target->current_origin().opaque());
   EXPECT_EQ("a.com", target->current_origin().host());
   EXPECT_EQ(url::kHttpScheme, target->current_origin().scheme());

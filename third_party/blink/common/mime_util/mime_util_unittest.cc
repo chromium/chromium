@@ -13,18 +13,8 @@
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
-class JsonMimeTypeParamTest : public testing::TestWithParam<bool> {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kSpecCompliantJsonMimeTypes, GetParam());
-  }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(JsonMimeTypeParamTest, IsJSON) {
+TEST(MimeUtilJsonMimeTypeTest, IsJSON) {
   EXPECT_TRUE(IsJSONMimeType("application/json"));
   EXPECT_TRUE(IsJSONMimeType("text/json"));
   EXPECT_TRUE(IsJSONMimeType("application/blah+json"));
@@ -49,15 +39,23 @@ TEST_P(JsonMimeTypeParamTest, IsJSON) {
   EXPECT_FALSE(IsJSONMimeType("text/html+json+xml"));
   EXPECT_FALSE(IsJSONMimeType("text/json/json"));
 
-  if (GetParam()) {
-    EXPECT_TRUE(IsJSONMimeType("text/blah+json;x=1"));
-    EXPECT_TRUE(IsJSONMimeType("text/html+json"));
-    EXPECT_TRUE(IsJSONMimeType("image/svg+json"));
-  } else {
-    EXPECT_FALSE(IsJSONMimeType("text/blah+json;x=1"));
-    EXPECT_FALSE(IsJSONMimeType("text/html+json"));
-    EXPECT_FALSE(IsJSONMimeType("image/svg+json"));
-  }
+  EXPECT_TRUE(IsJSONMimeType("text/blah+json;x=1"));
+  EXPECT_TRUE(IsJSONMimeType("text/html+json"));
+  EXPECT_TRUE(IsJSONMimeType("image/svg+json"));
+}
+
+TEST(MimeUtilJsonMimeTypeTest, IsJSONStrictTokenValidation) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(
+      blink::features::kStrictJsonMimeTypeTokenValidation, true);
+
+  EXPECT_TRUE(IsJSONMimeType("application/json"));
+  EXPECT_TRUE(IsJSONMimeType("text/json"));
+  EXPECT_TRUE(IsJSONMimeType("text/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("te xt/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("text/ha l+json"));
+  EXPECT_FALSE(IsJSONMimeType("aplicación/hal+json"));
+  EXPECT_FALSE(IsJSONMimeType("text/halé+json"));
 }
 
 TEST(MimeUtilTest, LookupTypes) {
@@ -104,7 +102,5 @@ TEST(MimeUtilTest, LookupTypes) {
   EXPECT_FALSE(IsSupportedNonImageMimeType("application/vnd.doc;x=y+json"));
   EXPECT_FALSE(IsSupportedNonImageMimeType("Application/VND.DOC;X=Y+JSON"));
 }
-
-INSTANTIATE_TEST_SUITE_P(All, JsonMimeTypeParamTest, ::testing::Bool());
 
 }  // namespace blink

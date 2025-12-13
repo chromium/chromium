@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.payments.ui.PaymentRequestSection.EDIT_BUTTON_GONE;
 
 import android.animation.Animator;
@@ -30,10 +31,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
@@ -45,6 +48,7 @@ import org.chromium.chrome.browser.payments.ui.PaymentRequestSection.SectionSepa
 import org.chromium.chrome.browser.payments.ui.PaymentUiService.PaymentUisShowStateReconciler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.browser_ui.widget.animation.FocusAnimator;
@@ -65,6 +69,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** The PaymentRequest UI. */
+@NullMarked
 public class PaymentRequestUi
         implements DimmingDialog.OnDismissListener,
                 View.OnClickListener,
@@ -146,7 +151,7 @@ public class PaymentRequestUi
         int onSectionOptionSelected(
                 @DataType int optionType,
                 EditableOption option,
-                Callback<PaymentInformation> checkedCallback);
+                @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks edit icon (pencil icon) on the payment option in a section.
@@ -168,7 +173,7 @@ public class PaymentRequestUi
         int onSectionEditOption(
                 @DataType int optionType,
                 EditableOption option,
-                Callback<PaymentInformation> checkedCallback);
+                @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks on the "Add" button for a section.
@@ -187,16 +192,16 @@ public class PaymentRequestUi
          */
         @SelectionResult
         int onSectionAddOption(
-                @DataType int optionType, Callback<PaymentInformation> checkedCallback);
+                @DataType int optionType, @Nullable Callback<PaymentInformation> checkedCallback);
 
         /**
          * Called when the user clicks on the “Pay” button. If this method returns true, the UI is
          * disabled and is showing a spinner. Otherwise, the UI is hidden.
          */
         boolean onPayClicked(
-                EditableOption selectedShippingAddress,
-                EditableOption selectedShippingOption,
-                EditableOption selectedPaymentMethod);
+                @Nullable EditableOption selectedShippingAddress,
+                @Nullable EditableOption selectedShippingOption,
+                @Nullable EditableOption selectedPaymentMethod);
 
         /**
          * Called when the user dismisses the UI via the “back” button on their phone or the “X”
@@ -277,8 +282,8 @@ public class PaymentRequestUi
      */
     private static final int DIALOG_ENTER_ANIMATION_MS = 225;
 
-    private static PaymentRequestObserverForTest sPaymentRequestObserverForTest;
-    private static EditorObserverForTest sEditorObserverForTest;
+    private static @Nullable PaymentRequestObserverForTest sPaymentRequestObserverForTest;
+    private static @Nullable EditorObserverForTest sEditorObserverForTest;
 
     /** Notifies tests that the [PAY] button can be clicked. */
     private final NotifierForTest mReadyToPayNotifierForTest;
@@ -318,7 +323,7 @@ public class PaymentRequestUi
     private OptionSection mPaymentMethodSection;
     private List<SectionSeparator> mSectionSeparators;
 
-    private PaymentRequestSection mSelectedSection;
+    private @Nullable PaymentRequestSection mSelectedSection;
     private boolean mIsExpandedToFullHeight;
     private boolean mIsProcessingPayClicked;
     private boolean mIsClientClosing;
@@ -327,13 +332,13 @@ public class PaymentRequestUi
     private boolean mIsEditingPaymentItem;
     private boolean mIsClosing;
 
-    private SectionInformation mPaymentMethodSectionInformation;
-    private SectionInformation mShippingAddressSectionInformation;
-    private SectionInformation mShippingOptionsSectionInformation;
-    private SectionInformation mContactDetailsSectionInformation;
+    private @MonotonicNonNull SectionInformation mPaymentMethodSectionInformation;
+    private @MonotonicNonNull SectionInformation mShippingAddressSectionInformation;
+    private @MonotonicNonNull SectionInformation mShippingOptionsSectionInformation;
+    private @MonotonicNonNull SectionInformation mContactDetailsSectionInformation;
 
-    private Animator mSheetAnimator;
-    private FocusAnimator mSectionAnimator;
+    private @Nullable Animator mSheetAnimator;
+    private @Nullable FocusAnimator mSectionAnimator;
 
     private InputProtector mInputProtector = new InputProtector();
 
@@ -419,7 +424,7 @@ public class PaymentRequestUi
         prepareRequestView(mContext, title, origin, securityLevel, profile);
 
         mEditorDialog = new EditorDialogView(activity, profile);
-        DimmingDialog.setVisibleStatusBarIconColor(mEditorDialog.getWindow());
+        DimmingDialog.setVisibleStatusBarIconColor(assumeNonNull(mEditorDialog.getWindow()));
 
         mDialog = new DimmingDialog(activity, this);
         mPaymentUisShowStateReconciler = paymentUisShowStateReconciler;
@@ -432,7 +437,8 @@ public class PaymentRequestUi
      */
     public void show(boolean waitForUpdatedDetails) {
         mInputProtector.markShowTime();
-        mDialog.addBottomSheetView(mRequestView);
+        mDialog.addBottomSheetView(
+                mRequestView, ChromeSemanticColorUtils.getPaymentRequestBg(mContext));
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
         mClient.getDefaultPaymentInformation(
                 waitForUpdatedDetails,
@@ -638,7 +644,7 @@ public class PaymentRequestUi
      *
      * @param error The error message to display on the header.
      */
-    public void setRetryErrorMessage(String error) {
+    public void setRetryErrorMessage(@Nullable String error) {
         if (mRetryErrorView == null) return;
 
         mRetryErrorView.setText(error);
@@ -707,7 +713,7 @@ public class PaymentRequestUi
     // Only add shipping option section once there are shipping options.
     private void addShippingOptionSectionIfNecessary() {
         if (!mClient.shouldShowShippingSection()
-                || mShippingOptionsSectionInformation.isEmpty()
+                || assumeNonNull(mShippingOptionsSectionInformation).isEmpty()
                 || mPaymentContainerLayout.indexOfChild(mShippingOptionSection) != -1) {
             return;
         }
@@ -795,24 +801,24 @@ public class PaymentRequestUi
             final PaymentRequestSection section, EditableOption option) {
         @SelectionResult int result = SelectionResult.NONE;
         if (section == mShippingAddressSection
-                && mShippingAddressSectionInformation.getSelectedItem() != option) {
+                && assumeNonNull(mShippingAddressSectionInformation).getSelectedItem() != option) {
             mShippingAddressSectionInformation.setSelectedItem(option);
             result =
                     mClient.onSectionOptionSelected(
                             DataType.SHIPPING_ADDRESSES, option, mUpdateSectionsCallback);
         } else if (section == mShippingOptionSection
-                && mShippingOptionsSectionInformation.getSelectedItem() != option) {
+                && assumeNonNull(mShippingOptionsSectionInformation).getSelectedItem() != option) {
             mShippingOptionsSectionInformation.setSelectedItem(option);
             result =
                     mClient.onSectionOptionSelected(
                             DataType.SHIPPING_OPTIONS, option, mUpdateSectionsCallback);
         } else if (section == mContactDetailsSection) {
-            mContactDetailsSectionInformation.setSelectedItem(option);
+            assumeNonNull(mContactDetailsSectionInformation).setSelectedItem(option);
             result =
                     mClient.onSectionOptionSelected(
                             DataType.CONTACT_DETAILS, option, mUpdateSectionsCallback);
         } else if (section == mPaymentMethodSection) {
-            mPaymentMethodSectionInformation.setSelectedItem(option);
+            assumeNonNull(mPaymentMethodSectionInformation).setSelectedItem(option);
             result = mClient.onSectionOptionSelected(DataType.PAYMENT_METHODS, option, null);
         }
 
@@ -826,19 +832,19 @@ public class PaymentRequestUi
         assert section != mOrderSummarySection;
         assert section != mShippingOptionSection;
         if (section == mShippingAddressSection) {
-            assert mShippingAddressSectionInformation.getSelectedItem() == option;
+            assert assumeNonNull(mShippingAddressSectionInformation).getSelectedItem() == option;
             result =
                     mClient.onSectionEditOption(
                             DataType.SHIPPING_ADDRESSES, option, mUpdateSectionsCallback);
         }
 
         if (section == mContactDetailsSection) {
-            assert mContactDetailsSectionInformation.getSelectedItem() == option;
+            assert assumeNonNull(mContactDetailsSectionInformation).getSelectedItem() == option;
             result = mClient.onSectionEditOption(DataType.CONTACT_DETAILS, option, null);
         }
 
         if (section == mPaymentMethodSection) {
-            assert mPaymentMethodSectionInformation.getSelectedItem() == option;
+            assert assumeNonNull(mPaymentMethodSectionInformation).getSelectedItem() == option;
             result = mClient.onSectionEditOption(DataType.PAYMENT_METHODS, option, null);
         }
 
@@ -956,7 +962,7 @@ public class PaymentRequestUi
                         mShippingOptionsSectionInformation == null
                                 ? null
                                 : mShippingOptionsSectionInformation.getSelectedItem(),
-                        mPaymentMethodSectionInformation.getSelectedItem());
+                        assumeNonNull(mPaymentMethodSectionInformation).getSelectedItem());
 
         if (shouldShowSpinner) {
             changeSpinnerVisibility(true);
@@ -1086,7 +1092,7 @@ public class PaymentRequestUi
         mShippingAddressSection.setOptionSectionFocusChangedObserver(observer);
     }
 
-    private void expand(PaymentRequestSection section) {
+    private void expand(@Nullable PaymentRequestSection section) {
         if (!mIsExpandedToFullHeight) {
             // Container now takes the full height of the screen, animating towards it.
             mRequestView.getLayoutParams().height = LayoutParams.MATCH_PARENT;
@@ -1269,9 +1275,10 @@ public class PaymentRequestUi
     }
 
     @Override
-    public String getAdditionalText(PaymentRequestSection section) {
+    public @Nullable String getAdditionalText(PaymentRequestSection section) {
         if (section == mShippingAddressSection) {
-            int selectedItemIndex = mShippingAddressSectionInformation.getSelectedItemIndex();
+            int selectedItemIndex =
+                    assumeNonNull(mShippingAddressSectionInformation).getSelectedItemIndex();
             if (selectedItemIndex != SectionInformation.NO_SELECTION
                     && selectedItemIndex != SectionInformation.INVALID_SELECTION) {
                 return null;
@@ -1288,7 +1295,7 @@ public class PaymentRequestUi
                             ? mShippingStrings.getSelectPrompt()
                             : mShippingStrings.getUnsupported());
         } else if (section == mPaymentMethodSection) {
-            return mPaymentMethodSectionInformation.getAdditionalText();
+            return assumeNonNull(mPaymentMethodSectionInformation).getAdditionalText();
         } else {
             return null;
         }

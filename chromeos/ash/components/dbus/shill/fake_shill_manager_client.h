@@ -177,6 +177,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
       bool wifi_services_visible_by_default) override;
   int GetRecentlyDestroyedP2PGroupId() override;
   int GetRecentlyDisconnectedP2PGroupId() override;
+  void SetAutoCompleteScan(bool auto_complete_scan) override;
+  void TriggerScanCompleted(const std::string& device_path) override;
 
   // Constants used for testing.
   static const char kFakeEthernetNetworkGuid[];
@@ -202,7 +204,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void NotifyObserversPropertyChanged(const std::string& property);
   base::Value::List& GetListProperty(const std::string& property);
   bool TechnologyEnabled(const std::string& type) const;
-  void ScanCompleted(const std::string& device_path);
 
   // Parses the command line for Shill stub switches and sets initial states.
   // Uses comma-separated name-value pairs (see SplitStringIntoKeyValuePairs):
@@ -286,6 +287,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   // For testing dynamic WEP networks (uses wifi2).
   bool dynamic_wep_ = false;
+
+  // Automatically complete a scan after RequestScan().
+  bool auto_complete_scan_ = true;
 
   // Caches the last-passed callbacks for ScanAndConnectToBestServices.
   std::optional<ConnectToBestServicesCallbacks>

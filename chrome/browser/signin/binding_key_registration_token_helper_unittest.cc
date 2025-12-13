@@ -21,8 +21,9 @@
 #include "crypto/unexportable_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::NiceMock;
-using testing::Return;
+using ::testing::AtLeast;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 namespace {
 constexpr crypto::SignatureVerifier::SignatureAlgorithm
@@ -39,9 +40,6 @@ constexpr std::string_view kSessionBindingResultHistogram =
 
 class BindingKeyRegistrationTokenHelperTest : public testing::Test {
  public:
-  BindingKeyRegistrationTokenHelperTest()
-      : unexportable_key_service_(task_manager_) {}
-
   unexportable_keys::UnexportableKeyService& unexportable_key_service() {
     return unexportable_key_service_;
   }
@@ -76,7 +74,7 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
   }
 
   std::vector<uint8_t> GetWrappedKey(
-      const unexportable_keys::UnexportableKeyId& key_id) {
+      unexportable_keys::UnexportableKeyId key_id) {
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
         unexportable_key_service().GetWrappedKey(key_id);
     CHECK(wrapped_key.has_value());
@@ -87,12 +85,11 @@ class BindingKeyRegistrationTokenHelperTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::
-          QUEUED};  // QUEUED - tasks don't run until `RunUntilIdle()` is
-                    // called.
-  unexportable_keys::UnexportableKeyTaskManager task_manager_{
-      crypto::UnexportableKeyProvider::Config()};
-  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_;
+      // QUEUED - tasks don't run until `RunUntilIdle()` is called.
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
+  unexportable_keys::UnexportableKeyTaskManager task_manager_;
+  unexportable_keys::UnexportableKeyServiceImpl unexportable_key_service_{
+      task_manager_, crypto::UnexportableKeyProvider::Config()};
   base::HistogramTester histogram_tester_;
 };
 
@@ -249,7 +246,9 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{0, 0, 1}));
-  EXPECT_CALL(*key_to_generate, SignSlowly).WillOnce(Return(std::nullopt));
+  EXPECT_CALL(*key_to_generate, SignSlowly)
+      .Times(AtLeast(1))
+      .WillRepeatedly(Return(std::nullopt));
   unexportable_keys::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
   scoped_mock_key_provider.AddNextGeneratedKey(std::move(key_to_generate));
 

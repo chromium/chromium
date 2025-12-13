@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -121,7 +122,7 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
         *document_,
-        WTF::BindRepeating(
+        BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
@@ -147,12 +148,12 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     if (context->HadAnyViewportIntersectionNotifications()) {
       if (entry->isIntersecting()) {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::BindOnce(&DisplayLockContext::NotifyIsIntersectingViewport,
-                          WrapWeakPersistent(context)));
+            BindOnce(&DisplayLockContext::NotifyIsIntersectingViewport,
+                     WrapWeakPersistent(context)));
       } else {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::BindOnce(&DisplayLockContext::NotifyIsNotIntersectingViewport,
-                          WrapWeakPersistent(context)));
+            BindOnce(&DisplayLockContext::NotifyIsNotIntersectingViewport,
+                     WrapWeakPersistent(context)));
       }
       had_asynchronous_notifications = true;
     } else {
@@ -172,8 +173,8 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     // lifecycle).
     document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&DisplayLockDocumentState::ScheduleAnimation,
-                                 WrapWeakPersistent(this)));
+                   BindOnce(&DisplayLockDocumentState::ScheduleAnimation,
+                            WrapWeakPersistent(this)));
   }
 }
 

@@ -7,6 +7,9 @@
 CustomizationSection* const kCustomizationSectionBackground =
     @"kCustomizationSectionBackground";
 
+CustomizationSection* const kCustomizationSectionEnterprise =
+    @"kCustomizationSectionEnterprise";
+
 CustomizationSection* const kCustomizationSectionMainToggles =
     @"kCustomizationSectionMainToggles";
 
@@ -17,6 +20,9 @@ CustomizationSection* const kCustomizationSectionMagicStackToggles =
     @"kCustomizationSectionMagicStackToggles";
 
 NSString* const kBottomSheetDetentIdentifier = @"kBottomSheetDetentIdentifier";
+
+NSString* const kBottomSheetExpandedDetentIdentifier =
+    @"kBottomSheetExpandedDetentIdentifier";
 
 NSString* const kNavigationBarDismissButtonIdentifier =
     @"kNavigationBarDismissButtonIdentifier";
@@ -31,14 +37,10 @@ NSString* const kCustomizationToggleMagicStackIdentifier =
 NSString* const kCustomizationToggleDiscoverIdentifier =
     @"kCustomizationToggleDiscoverIdentifier";
 
-NSString* const kCustomizationToggleSetUpListIdentifier =
-    @"kCustomizationToggleSetUpListIdentifier";
 NSString* const kCustomizationToggleSafetyCheckIdentifier =
     @"kCustomizationToggleSafetyCheckIdentifier";
 NSString* const kCustomizationToggleTabResumptionIdentifier =
     @"kCustomizationToggleTabResumptionIdentifier";
-NSString* const kCustomizationToggleParcelTrackingIdentifier =
-    @"kCustomizationToggleParcelTrackingIdentifier";
 NSString* const kCustomizationToggleShopCardPriceTrackingIdentifier =
     @"kCustomizationToggleShopCardPriceTrackingIdentifier";
 NSString* const kCustomizationToggleShopCardReviewsIdentifier =
@@ -73,6 +75,8 @@ NSString* const kBackgroundCellIdentifier = @"kBackgroundCellIdentifier";
 
 NSString* const kBackgroundPickerCellIdentifier =
     @"kBackgroundPickerCellIdentifier";
+
+NSString* const kEnterpriseCellIdentifier = @"kEnterpriseCellIdentifier";
 
 const char kDiscoverFollowingURL[] =
     "https://google.com/preferences/interests/yourinterests";

@@ -19,11 +19,9 @@ namespace chrome_pdf {
 
 namespace {
 
-AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(
-    PDFiumPage* page,
-    uint32_t text_run_count) {
+AccessibilityFormFieldInfo GetAccessibilityFormFieldInfo(PDFiumPage* page) {
   AccessibilityFormFieldInfo form_field_info;
-  form_field_info.text_fields = page->GetTextFieldInfo(text_run_count);
+  form_field_info.text_fields = page->GetTextFieldInfo();
   return form_field_info;
 }
 
@@ -38,25 +36,23 @@ void GetAccessibilityInfo(PDFiumEngine* engine,
   PDFiumPage* page = engine->GetPage(page_index);
   CHECK(page);
 
-  const int raw_char_count = page->GetCharCount();
-  // Treat a char count of -1 (error) as 0 (an empty page), since
-  // other pages might have valid content.
-  const uint32_t char_count = std::max<uint32_t>(raw_char_count, 0);
+  page->PopulateTextRunTypeAndImageAltText();
+  text_runs = page->GetTextRunInfo();
+  chars = page->GetCharInfo();
 
   page_info.page_index = page_index;
   page_info.bounds = page->rect();
-  page_info.char_count = char_count;
+  page_info.char_count = chars.size();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   page_info.is_searchified = page->IsPageSearchified();
 #else
   page_info.is_searchified = false;
 #endif
-  page->GetTextAndImageInfo(text_runs, chars, page_objects.images);
+  page_objects.images = page->GetImageInfo();
   page_info.text_run_count = text_runs.size();
-  page_objects.links = page->GetLinkInfo(text_runs);
-  page_objects.highlights = page->GetHighlightInfo(text_runs);
-  page_objects.form_fields =
-      GetAccessibilityFormFieldInfo(page, page_info.text_run_count);
+  page_objects.links = page->GetLinkInfo();
+  page_objects.highlights = page->GetHighlightInfo();
+  page_objects.form_fields = GetAccessibilityFormFieldInfo(page);
 }
 
 }  // namespace chrome_pdf

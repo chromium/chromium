@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "media/base/capture_version.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
 #include "media/gpu/buildflags.h"
@@ -81,12 +82,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // https://crbug.com/1327560.
   std::optional<gfx::Rect> region_capture_rect;
 
-  // Whenever cropTo() or restrictTo() are called, Blink increments the
-  // sub_capture_target_version and records a Promise as associated with that
-  // sub_capture_target_version. When Blink observes a frame with this new
-  // version or a later one, Blink resolves the Promise. Frames associated with
-  // a source which cannot be cropped will always have this value set to zero.
-  uint32_t sub_capture_target_version = 0;
+  // Represents the version of the capture according to which this frame
+  // was produced. For an explanation of how that versioning works, see
+  // the documentation of `media::CaptureVersion`.
+  media::CaptureVersion capture_version;
 
   // Indicates that mailbox created in one context, is also being used in a
   // different context belonging to another share group and video frames are

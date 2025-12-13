@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/new_tab_prototype_view_controller.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -26,16 +27,30 @@ bool IsInIncognito(bool from_tab_grid,
     return incognito_grid;
   }
   id<BrowserProviderInterface> browser_provider =
-      regular_browser->GetSceneState().controller.browserProviderInterface;
+      regular_browser->GetSceneState().browserProviderInterface;
   return (browser_provider.currentBrowserProvider ==
           browser_provider.incognitoBrowserProvider);
 }
 
 }  // namespace
 
-const CGFloat kChromeAppBarPrototypeHeight = 58;
+const CGFloat kChromeAppBarPrototypeHeight = 49;
+const CGFloat kChromeAppBarPrototypeSymbolSize = 23;
 
-const CGFloat kDiamondBrowserCornerRadius = 18;
+const CGFloat kDiamondBrowserCornerRadius = 22;
+
+const CGFloat kDiamondToolbarHeight = 62;
+const CGFloat kDiamondCollapsedToolbarHeight = 41;
+const CGFloat kDiamondLocationBarHeight = 46;
+
+NSString* kDiamondEnterTabGridNotification =
+    @"kDiamondEnterTabGridNotification";
+NSString* kDiamondLeaveTabGridNotification =
+    @"kDiamondLeaveTabGridNotification";
+NSString* kDiamondLongPressButton = @"kDiamondLongPressButton";
+
+NSString* const kAppSymbol = @"app";
+NSString* const kAppFillSymbol = @"app.fill";
 
 void DiamondPrototypeStartGemini(bool from_tab_grid,
                                  bool incognito_grid,
@@ -71,7 +86,7 @@ void DiamondPrototypeStartGemini(bool from_tab_grid,
   } else {
     id<BWGCommands> BWGCommandsHandler =
         HandlerForProtocol(browser->GetCommandDispatcher(), BWGCommands);
-    [BWGCommandsHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::Diamond];
+    [BWGCommandsHandler startGeminiFlowWithEntryPoint:bwg::EntryPoint::Diamond];
   }
 }
 
@@ -94,4 +109,26 @@ void DiamondPrototypeStartNewTab(bool from_tab_grid,
   [base_view_controller presentViewController:new_tab_view_controller
                                      animated:YES
                                    completion:nil];
+}
+
+namespace {
+
+// Returns the symbol configuration for the app bar.
+UIImageSymbolConfiguration* GetAppBarSymbolConfiguration() {
+  return [UIImageSymbolConfiguration
+      configurationWithPointSize:kChromeAppBarPrototypeSymbolSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+}
+
+}  // namespace
+
+UIImage* GetDefaultAppBarSymbol(NSString* symbol_name) {
+  return DefaultSymbolWithConfiguration(symbol_name,
+                                        GetAppBarSymbolConfiguration());
+}
+
+UIImage* GetCustomAppBarSymbol(NSString* symbol_name) {
+  return CustomSymbolWithConfiguration(symbol_name,
+                                       GetAppBarSymbolConfiguration());
 }

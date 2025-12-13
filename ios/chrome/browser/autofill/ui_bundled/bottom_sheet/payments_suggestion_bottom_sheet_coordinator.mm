@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_exit_reason.h"

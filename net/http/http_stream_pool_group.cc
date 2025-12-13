@@ -5,6 +5,7 @@
 #include "net/http/http_stream_pool_group.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_timing_info.h"
@@ -91,7 +92,12 @@ HttpStreamPool::Group::Group(
       force_quic_(
           http_network_session()->ShouldForceQuic(stream_key_.destination(),
                                                   ProxyInfo::Direct(),
-                                                  /*is_websocket=*/false)) {
+                                                  /*is_websocket=*/false)),
+      track_("HttpStreamPool::Group"),
+      flow_(perfetto::Flow::ProcessScoped(
+          base::trace_event::GetNextGlobalTraceId())) {
+  TRACE_EVENT_INSTANT("net.stream", "Group::Group", track_, flow_,
+                      "destination", stream_key_.destination().Serialize());
   net_log_.BeginEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE, [&] {
     base::Value::Dict dict;
     dict.Set("stream_key", stream_key_.ToValue());
@@ -104,6 +110,7 @@ HttpStreamPool::Group::~Group() {
   // TODO(crbug.com/346835898): Ensure `pool_`'s total active stream counts
   // are consistent.
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_ALIVE);
+  TRACE_EVENT_INSTANT("net.stream", "Group::~Group", track_, flow_);
 }
 
 std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
@@ -115,15 +122,6 @@ std::unique_ptr<HttpStreamPool::Job> HttpStreamPool::Group::CreateJob(
                                expected_protocol, request_net_log);
 }
 
-void HttpStreamPool::Group::OnJobComplete(Job* job) {
-  if (attempt_manager_) {
-    attempt_manager_->OnJobComplete(job);
-    // `this` may be deleted.
-  } else {
-    MaybeComplete();
-  }
-}
-
 std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
     std::unique_ptr<StreamSocket> socket,
     StreamSocketHandle::SocketReuseType reuse_type,
@@ -131,6 +129,9 @@ std::unique_ptr<HttpStreamPoolHandle> HttpStreamPool::Group::CreateHandle(
   ++handed_out_stream_count_;
   pool_->IncrementTotalHandedOutStreamCount();
 
+  TRACE_EVENT_INSTANT("net.stream", "Group::CreateHandle", track_, flow_,
+                      "negotiated_protocol", socket->GetNegotiatedProtocol(),
+                      "handed_out_stream_count", handed_out_stream_count_);
   net_log_.AddEvent(NetLogEventType::HTTP_STREAM_POOL_GROUP_HANDLE_CREATED,
                     [&] {
                       base::Value::Dict dict;
@@ -178,6 +179,10 @@ void HttpStreamPool::Group::ReleaseStreamSocket(
     reusable = true;
   }
 
+  TRACE_EVENT_INSTANT("net.stream", "Group::ReleaseStreamSocket", track_, flow_,
+                      "reusable", reusable, "handed_out_stream_count",
+                      handed_out_stream_count_);
+
   if (reusable) {
     AddIdleStreamSocket(std::move(socket));
   } else {
@@ -197,6 +202,10 @@ void HttpStreamPool::Group::AddIdleStreamSocket(
   idle_stream_sockets_.emplace_back(std::move(socket), base::TimeTicks::Now());
   pool_->IncrementTotalIdleStreamCount();
   CleanupIdleStreamSockets(CleanupMode::kTimeoutOnly, kIdleTimeLimitExpired);
+
+  TRACE_EVENT_INSTANT("net.stream", "Group::AddIdleStreamSocket", track_, flow_,
+                      "idle_stream_count", idle_stream_sockets_.size());
+
   ProcessPendingRequest();
 }
 
@@ -237,6 +246,9 @@ std::unique_ptr<StreamSocket> HttpStreamPool::Group::GetIdleStreamSocket() {
   idle_stream_sockets_.erase(idle_it);
   pool_->DecrementTotalIdleStreamCount();
 
+  TRACE_EVENT_INSTANT("net.stream", "Group::GetIdleStreamSocket", track_, flow_,
+                      "idle_stream_count", idle_stream_sockets_.size());
+
   return stream_socket;
 }
 
@@ -264,7 +276,7 @@ bool HttpStreamPool::Group::CloseOneIdleStreamSocket() {
 }
 
 size_t HttpStreamPool::Group::ConnectingStreamSocketCount() const {
-  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptCount() : 0;
+  return attempt_manager_ ? attempt_manager_->TcpBasedAttemptSlotCount() : 0;
 }
 
 size_t HttpStreamPool::Group::ActiveStreamSocketCount() const {
@@ -292,11 +304,14 @@ void HttpStreamPool::Group::FlushWithError(
     StreamSocketCloseReason attempt_cancel_reason,
     std::string_view net_log_close_reason_utf8) {
   Refresh(net_log_close_reason_utf8, attempt_cancel_reason);
-  CancelJobs(error);
+  CancelJobs(error, attempt_cancel_reason);
 }
 
 void HttpStreamPool::Group::Refresh(std::string_view net_log_close_reason_utf8,
                                     StreamSocketCloseReason cancel_reason) {
+  TRACE_EVENT_INSTANT("net.stream", "Group::Refresh", track_, flow_,
+                      "cancel_reason", static_cast<int>(cancel_reason));
+
   ++generation_;
   if (attempt_manager_) {
     attempt_manager_->CancelTcpBasedAttempts(cancel_reason);
@@ -309,9 +324,12 @@ void HttpStreamPool::Group::CloseIdleStreams(
   CleanupIdleStreamSockets(CleanupMode::kForce, net_log_close_reason_utf8);
 }
 
-void HttpStreamPool::Group::CancelJobs(int error) {
+void HttpStreamPool::Group::CancelJobs(int error,
+                                       StreamSocketCloseReason cancel_reason) {
+  TRACE_EVENT_INSTANT("net.stream", "Group::CancelJobs", track_, flow_,
+                      "cancel_reason", static_cast<int>(cancel_reason));
   if (attempt_manager_) {
-    attempt_manager_->CancelJobs(error);
+    attempt_manager_->CancelJobs(error, cancel_reason);
   }
 }
 
@@ -434,7 +452,8 @@ void HttpStreamPool::Group::MaybeComplete() {
 
 void HttpStreamPool::Group::MaybeCompleteLater() {
   if (CanComplete()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+    // Use IDLE priority since completing group is not urgent.
+    TaskRunner(IDLE)->PostTask(
         FROM_HERE,
         base::BindOnce(&Group::MaybeComplete, weak_ptr_factory_.GetWeakPtr()));
   }

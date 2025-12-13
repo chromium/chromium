@@ -14,6 +14,10 @@
 #include "components/viz/common/viz_common_export.h"
 #include "ui/gfx/display_color_spaces.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace viz {
 
 // This is a transition directive that can be associated with a compositor
@@ -52,6 +56,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     friend bool operator==(const SharedElement&,
                            const SharedElement&) = default;
 
+    void AsValueInto(base::trace_event::TracedValue* value) const;
+
     // The render pass corresponding to a DOM element. The id is scoped to the
     // same frame that the directive corresponds to.
     CompositorRenderPassId render_pass_id;
@@ -69,21 +75,26 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
       bool maybe_cross_frame_sink,
       uint32_t sequence_id,
       std::vector<SharedElement> shared_elements,
-      const gfx::DisplayColorSpaces& display_color_spaces);
+      const gfx::DisplayColorSpaces& display_color_spaces,
+      bool delay_layer_tree_view_deletion);
   static CompositorFrameTransitionDirective CreateAnimate(
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
-      uint32_t sequence_id);
+      uint32_t sequence_id,
+      bool delay_layer_tree_view_deletion);
   static CompositorFrameTransitionDirective CreateRelease(
       const blink::ViewTransitionToken& transition_token,
       bool maybe_cross_frame_sink,
-      uint32_t sequence_id);
+      uint32_t sequence_id,
+      bool delay_layer_tree_view_deletion);
 
   CompositorFrameTransitionDirective(const CompositorFrameTransitionDirective&);
   ~CompositorFrameTransitionDirective();
 
   CompositorFrameTransitionDirective& operator=(
       const CompositorFrameTransitionDirective&);
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // A monotonically increasing sequence_id for a given communication channel
   // (i.e. surface). This is used to distinguish new directives from directives
@@ -107,6 +118,9 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   const gfx::DisplayColorSpaces& display_color_spaces() const {
     return display_color_spaces_;
   }
+  bool delay_layer_tree_view_deletion() const {
+    return delay_layer_tree_view_deletion_;
+  }
 
  private:
   CompositorFrameTransitionDirective(
@@ -115,7 +129,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
       uint32_t sequence_id,
       Type type,
       std::vector<SharedElement> shared_elements = {},
-      const gfx::DisplayColorSpaces& display_color_spaces = {});
+      const gfx::DisplayColorSpaces& display_color_spaces = {},
+      bool delay_layer_tree_view_deletion = false);
 
   blink::ViewTransitionToken transition_token_;
   bool maybe_cross_frame_sink_ = false;
@@ -127,6 +142,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   std::vector<SharedElement> shared_elements_;
 
   gfx::DisplayColorSpaces display_color_spaces_;
+  bool delay_layer_tree_view_deletion_ = false;
 };
 
 }  // namespace viz

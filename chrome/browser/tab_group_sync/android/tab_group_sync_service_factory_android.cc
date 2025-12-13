@@ -19,3 +19,5 @@ JNI_TabGroupSyncServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   CHECK(service);
   return tab_groups::TabGroupSyncService::GetJavaObject(service);
 }
+
+DEFINE_JNI(TabGroupSyncServiceFactory)

@@ -54,8 +54,8 @@ constexpr uint8_t kLightestAlpha = 0;
 
 static jlong JNI_MagnifierSurfaceControl_Create(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
-    const base::android::JavaParamRef<jobject>& j_surface_control,
+    const base::android::JavaRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_surface_control,
     jfloat device_scale,
     jint width,
     jint height,
@@ -67,8 +67,7 @@ static jlong JNI_MagnifierSurfaceControl_Create(
   WebContentsImpl* web_contents = static_cast<WebContentsImpl*>(
       WebContents::FromJavaWebContents(j_web_contents));
 
-  // Java MagnifierSurfaceControl calls release.
-  bool release_on_destroy = false;
+  bool release_on_destroy = true;
   gl::ScopedJavaSurfaceControl scoped_java_surface_control(j_surface_control,
                                                            release_on_destroy);
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
@@ -185,10 +184,14 @@ MagnifierSurfaceControl::MagnifierSurfaceControl(
 
 MagnifierSurfaceControl::~MagnifierSurfaceControl() {
   display_private_.reset();
-  if (frame_sink_id_.is_valid()) {
-    GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
-  }
-  gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle_);
+  CHECK(frame_sink_id_.is_valid());
+  GetHostFrameSinkManager()->InvalidateFrameSinkId(
+      frame_sink_id_, this,
+      base::BindOnce(
+          [](gpu::SurfaceHandle surface_handle) {
+            gpu::GpuSurfaceTracker::Get()->RemoveSurface(surface_handle);
+          },
+          surface_handle_));
 }
 
 void MagnifierSurfaceControl::SetReadbackOrigin(JNIEnv* env,
@@ -265,7 +268,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   root_params->display_client = GetBoundRemote(task_runner);
 
   gfx::DisplayColorSpaces display_color_spaces =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(window_android)
           .GetColorSpaces();
 
@@ -274,9 +277,6 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   renderer_settings.allow_antialiasing = false;
   renderer_settings.highp_threshold_min = 2048;
   renderer_settings.requires_alpha_channel = true;
-  renderer_settings.initial_screen_size = surface_size_;
-  renderer_settings.color_space = display_color_spaces.GetOutputColorSpace(
-      gfx::ContentColorUsage::kHDR, renderer_settings.requires_alpha_channel);
 
   root_params->frame_sink_id = frame_sink_id_;
   root_params->widget = surface_handle_;
@@ -285,7 +285,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
   root_params->refresh_rate = window_android->GetRefreshRate();
 
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
-      std::move(root_params));
+      std::move(root_params), /*maybe_wait_on_destruction=*/false);
 
   display_private_->SetDisplayVisible(true);
   display_private_->Resize(surface_size_);
@@ -301,3 +301,5 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(MagnifierSurfaceControl)

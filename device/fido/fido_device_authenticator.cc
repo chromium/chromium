@@ -24,15 +24,15 @@
 #include "device/fido/ctap_authenticator_selection_request.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/make_credential_task.h"
 #include "device/fido/pin.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "device/fido/u2f_command_constructor.h"
 
 namespace device {
@@ -870,7 +870,9 @@ void FidoDeviceAuthenticator::RunOperation(
       base::BindOnce(&FidoDeviceAuthenticator::OperationClearProxy<
                          CtapDeviceResponseCode, std::optional<Response>>,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(parser), string_fixup_predicate);
+      std::move(parser), string_fixup_predicate,
+      /*cbor_response_redacter=*/
+      base::BindOnce([](const cbor::Value& cbor) { return cbor.Clone(); }));
   operation_->Start();
 }
 

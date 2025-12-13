@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">কমলা</translation>
 <translation id="1275718070701477396">বাছনি কৰা আছে</translation>
 <translation id="1290331692326790741">দুৰ্বল সংকেত</translation>
+<translation id="1292474106138697109">ক্লাছৰ সঁজুলিৰ ডিছপ্লে’</translation>
 <translation id="1300115153046603471">এপিএন ডিফ’ল্ট প্ৰকাৰৰ আৰু <ph name="ATTACH" />।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">ৰূপান্তৰ কৰক</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
 <translation id="4300272766492248925">এপ্ খোলক</translation>
 <translation id="430786093962686457">চিফ’ন</translation>
+<translation id="4309762678330556039">স্বয়ংক্ৰিয়ভাৱে ট্ৰেন্সক্ৰিপশ্বন সৃষ্টি কৰক আৰু অডিঅ’ সন্ধান কৰক। আপুনি ইণ্টাৰনেটৰ সৈতে সংযুক্ত হৈ নাথাকিলেও ৰেকৰ্ডিং সৃষ্টি কৰিব পাৰে।</translation>
 <translation id="4310735698903592804">Google AIএ সঞ্চালন কৰা শেহতীয়া ৱালপেপাৰ</translation>
 <translation id="4320904097188876154">নিয়ন গুলপীয়া</translation>
 <translation id="432961742358282111">সংজ্ঞা, অনুবাদ বা এককৰ ৰূপান্তৰণ পাবলৈ ৰাইট-ক্লিক কৰক বা টিপি হেঁচি ৰাখক। এই সুবিধাটো পৰিচালনা কৰিবলৈ বাওঁমুৱা বা সোঁমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> কী পৰীক্ষা কৰা হৈছে</translation>
 <translation id="5606865426897221650">টেব</translation>
+<translation id="5612205513582918357">Class Toolsএ আপোনাৰ স্ক্ৰীন <ph name="RECEIVER_NAME" />ৰ সৈতে শ্বেয়াৰ কৰি আছে</translation>
 <translation id="5613201299517339763">আপোনাক ছাইন আউট কৰোৱা হৈছে</translation>
 <translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5628106863521633649">উপলব্ধ ভাষা</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ডাৱৰৰ প্ৰবাহ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">কোনো স্কেনাৰ নাই</translation>
-<translation id="6231648282154119906">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে আপুনি বাছনি কৰা বৰ্ধিত সুৰক্ষাৰ অংশ হিচাপে সন্দেহজনক ফাইলসমূহ স্বয়ংক্ৰিয়ভাৱে স্কেন কৰিব</translation>
 <translation id="6232017090690406397">বেটাৰী</translation>
 <translation id="6234024205316847054">ৰূপৰেখা দেখুৱাওক</translation>
 <translation id="6243280677745499710">বর্তমান ছেট কৰা ৱালপেপাৰ</translation>
@@ -1362,7 +1364,7 @@
 <translation id="7005833343836210400">ডিভাইচটো অফলাইন হৈ আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
 <translation id="7035168792582749309">আলু</translation>
-<translation id="7040230719604914234">অপাৰেটৰ</translation>
+<translation id="7040230719604914234">অ'পাৰেটৰ</translation>
 <translation id="7040729769968826896">বক্তাৰ চিনাক্তকৰণৰ অনুমতি দিয়ক</translation>
 <translation id="7041549558901442110">ডিভাইচটো সংযোগ কৰা হোৱা নাই।</translation>
 <translation id="704183341263526038">বৃহস্পতি গ্ৰহ</translation>

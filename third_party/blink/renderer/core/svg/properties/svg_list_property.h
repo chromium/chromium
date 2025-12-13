@@ -72,7 +72,7 @@ class SVGListPropertyBase : public SVGPropertyBase {
   void Replace(uint32_t index, SVGListablePropertyBase* new_item);
 
  public:
-  WTF::String ValueAsString() const final;
+  String ValueAsString() const final;
 
   void Trace(Visitor* visitor) const final {
     visitor->Trace(values_);

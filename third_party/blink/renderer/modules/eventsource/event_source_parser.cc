@@ -78,7 +78,7 @@ void EventSourceParser::ParseLine() {
   }
   wtf_size_t field_name_end = line_.Find(':');
   wtf_size_t field_value_start;
-  if (field_name_end == WTF::kNotFound) {
+  if (field_name_end == kNotFound) {
     field_name_end = line_.size();
     field_value_start = field_name_end;
   } else {

@@ -136,14 +136,19 @@ class GeolocationPermissionContextAndroid
       const GURL& embedding_origin,
       bool persist,
       PermissionDecision decision,
+      std::optional<PromptOptions> prompt_options,
       LocationSettingsDialogOutcome prompt_outcome);
 
-  void FinishNotifyPermissionSet(const PermissionRequestID& id,
-                                 const GURL& requesting_origin,
-                                 const GURL& embedding_origin,
-                                 BrowserPermissionCallback callback,
-                                 bool persist,
-                                 PermissionDecision decision);
+  void FinishNotifyPermissionSet(
+      const PermissionRequestID& id,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin,
+      BrowserPermissionCallback callback,
+      bool persist,
+      PermissionDecision decision,
+      std::optional<PromptOptions> prompt_options,
+      blink::mojom::EmbeddedPermissionRequestDescriptorPtr
+          embedded_permission_request_descriptor = nullptr);
 
   std::unique_ptr<LocationSettings> location_settings_;
 

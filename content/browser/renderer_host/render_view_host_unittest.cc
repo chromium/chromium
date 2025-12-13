@@ -52,7 +52,7 @@ class RenderViewHostTestBrowserClient : public TestContentBrowserClient {
   ~RenderViewHostTestBrowserClient() override {}
 
   bool IsHandledURL(const GURL& url) override {
-    return url.scheme() == url::kFileScheme;
+    return url.GetScheme() == url::kFileScheme;
   }
 };
 
@@ -92,7 +92,7 @@ class MockDraggingRenderViewHostDelegateView
                      const gfx::Rect& drag_obj_rect,
                      const blink::mojom::DragEventSourceInfo& event_info,
                      RenderWidgetHostImpl* source_rwh) override {
-    drag_url_ = drop_data.url;
+    drag_url_ = drop_data.url_infos.front().url;
     html_base_url_ = drop_data.html_base_url;
   }
 
@@ -121,29 +121,29 @@ TEST_F(RenderViewHostTest, StartDragging) {
 
   GURL blocked_url = GURL(kBlockedURL);
   GURL file_url = GURL("file:///home/user/secrets.txt");
-  drop_data.url = file_url;
   drop_data.html_base_url = file_url;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{file_url, u""}};
   test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(blocked_url, delegate_view.drag_url());
   EXPECT_EQ(blocked_url, delegate_view.html_base_url());
 
   GURL http_url = GURL("http://www.domain.com/index.html");
-  drop_data.url = http_url;
   drop_data.html_base_url = http_url;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{http_url, u""}};
   test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(http_url, delegate_view.drag_url());
   EXPECT_EQ(http_url, delegate_view.html_base_url());
 
   GURL https_url = GURL("https://www.domain.com/index.html");
-  drop_data.url = https_url;
   drop_data.html_base_url = https_url;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{https_url, u""}};
   test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(https_url, delegate_view.drag_url());
   EXPECT_EQ(https_url, delegate_view.html_base_url());
 
   GURL javascript_url = GURL("javascript:alert('I am a bookmarklet')");
-  drop_data.url = javascript_url;
   drop_data.html_base_url = http_url;
+  drop_data.url_infos = {ui::ClipboardUrlInfo{javascript_url, u""}};
   test_rvh()->TestStartDragging(drop_data);
   EXPECT_EQ(javascript_url, delegate_view.drag_url());
   EXPECT_EQ(http_url, delegate_view.html_base_url());
@@ -161,9 +161,8 @@ TEST_F(RenderViewHostTest, DragEnteredFileURLsStillBlocked) {
   GURL highlighted_file_url = net::FilePathToFileURL(highlighted_file_path);
   GURL dragged_file_url = net::FilePathToFileURL(dragged_file_path);
   GURL sensitive_file_url = net::FilePathToFileURL(sensitive_file_path);
-  dropped_data.url = highlighted_file_url;
-  dropped_data.filenames.push_back(
-      ui::FileInfo(dragged_file_path, base::FilePath()));
+  dropped_data.url_infos = {ui::ClipboardUrlInfo{highlighted_file_url, u""}};
+  dropped_data.filenames.emplace_back(dragged_file_path, base::FilePath());
 
   // TODO(paulmeyer): These will need to target the correct specific
   // RenderWidgetHost to work with OOPIFs. See crbug.com/647249.

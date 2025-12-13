@@ -4,46 +4,32 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import android.text.TextUtils;
+
 import androidx.annotation.DrawableRes;
-import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.signin.R;
 
 import java.util.Objects;
 
-/* Class containing IDs of resources for the fullscreen sign-in view. */
+/** Class containing resources for the fullscreen sign-in view. */
 @NullMarked
 public final class FullscreenSigninConfig {
-    public final @StringRes int titleId;
-    public final @StringRes int subtitleId;
-    public final @StringRes int dismissTextId;
+    public final String title;
+    public final String subtitle;
+    public final String dismissText;
     public final @DrawableRes int logoId;
     public final boolean shouldDisableSignin;
 
-    /**
-     * Constructor of FullscreenSigninConfig using default values.
-     *
-     * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
-     *     started by the caller. The sign-in screen will show a generic title and a continue
-     *     button.
-     */
-    public FullscreenSigninConfig(boolean shouldDisableSignin) {
-        this(
-                /* titleId= */ R.string.signin_fre_title,
-                /* subtitleId= */ R.string.signin_fre_subtitle,
-                /* dismissTextId= */ R.string.signin_fre_dismiss_button,
-                /* logoId= */ 0,
-                /* shouldDisableSignin= */ shouldDisableSignin);
-    }
+    public static final String DISMISS_TEXT_NOT_INITIALIZED = "";
 
     /**
      * Constructor of FullscreenSigninConfig.
      *
-     * @param titleId the resource ID of the title string.
-     * @param subtitleId the resource ID of the subtitle string.
-     * @param dismissTextId the resource ID of the dismiss button string.
+     * @param title The title string.
+     * @param subtitle The subtitle string.
+     * @param dismissText The dismiss button string.
      * @param logoId the resource ID of the logo drawable. Can be set to 0 to use the default
      *     sign-in logo.
      * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
@@ -51,14 +37,18 @@ public final class FullscreenSigninConfig {
      *     button.
      */
     public FullscreenSigninConfig(
-            @StringRes int titleId,
-            @StringRes int subtitleId,
-            @StringRes int dismissTextId,
+            String title,
+            String subtitle,
+            String dismissText,
             @DrawableRes int logoId,
             boolean shouldDisableSignin) {
-        this.titleId = titleId;
-        this.subtitleId = subtitleId;
-        this.dismissTextId = dismissTextId;
+        assert !TextUtils.isEmpty(title);
+        assert !TextUtils.isEmpty(subtitle);
+        // TODO(crbug.com/464416507): Restore the assert that dismissText is not empty once
+        // the FRE_SIGN_IN_ALTERNATIVE_SECONDARY_BUTTON_TEXT flag is cleaned up.
+        this.title = title;
+        this.subtitle = subtitle;
+        this.dismissText = dismissText;
         this.logoId = logoId;
         this.shouldDisableSignin = shouldDisableSignin;
     }
@@ -70,15 +60,15 @@ public final class FullscreenSigninConfig {
         }
 
         FullscreenSigninConfig other = (FullscreenSigninConfig) object;
-        return titleId == other.titleId
-                && subtitleId == other.subtitleId
-                && dismissTextId == other.dismissTextId
+        return Objects.equals(title, other.title)
+                && Objects.equals(subtitle, other.subtitle)
+                && Objects.equals(dismissText, other.dismissText)
                 && logoId == other.logoId
                 && shouldDisableSignin == other.shouldDisableSignin;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(titleId, subtitleId, dismissTextId, logoId, shouldDisableSignin);
+        return Objects.hash(title, subtitle, dismissText, logoId, shouldDisableSignin);
     }
 }

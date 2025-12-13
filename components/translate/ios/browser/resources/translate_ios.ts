@@ -8,7 +8,7 @@
  *
  */
 
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // The implementation of the cr module is located in
@@ -60,8 +60,10 @@ function revertTranslation() {
 }
 
 // Mark: Public API
-gCrWebLegacy.translate = {
-  installCallbacks,
-  startTranslation,
-  revertTranslation,
-};
+const translateApi = new CrWebApi();
+
+translateApi.addFunction('installCallbacks', installCallbacks);
+translateApi.addFunction('startTranslation', startTranslation);
+translateApi.addFunction('revertTranslation', revertTranslation);
+
+gCrWeb.registerApi('translate', translateApi);

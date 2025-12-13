@@ -386,6 +386,51 @@ impl Command {
         self
     }
 
+    /// Allows one to mutate all [`Command`]s after they've been added as subcommands.
+    ///
+    /// This does not affect the built-in `--help` or `--version` arguments.
+    ///
+    /// # Examples
+    ///
+    #[cfg_attr(feature = "string", doc = "```")]
+    #[cfg_attr(not(feature = "string"), doc = "```ignore")]
+    /// # use clap_builder as clap;
+    /// # use clap::{Command, Arg, ArgAction};
+    ///
+    /// let mut cmd = Command::new("foo")
+    ///     .subcommands([
+    ///         Command::new("fetch"),
+    ///         Command::new("push"),
+    ///     ])
+    ///     // Allow title-case subcommands
+    ///     .mut_subcommands(|sub| {
+    ///         let name = sub.get_name();
+    ///         let alias = name.chars().enumerate().map(|(i, c)| {
+    ///             if i == 0 {
+    ///                 c.to_ascii_uppercase()
+    ///             } else {
+    ///                 c
+    ///             }
+    ///         }).collect::<String>();
+    ///         sub.alias(alias)
+    ///     });
+    ///
+    /// let res = cmd.try_get_matches_from_mut(vec!["foo", "fetch"]);
+    /// assert!(res.is_ok());
+    ///
+    /// let res = cmd.try_get_matches_from_mut(vec!["foo", "Fetch"]);
+    /// assert!(res.is_ok());
+    /// ```
+    #[must_use]
+    #[cfg_attr(debug_assertions, track_caller)]
+    pub fn mut_subcommands<F>(mut self, f: F) -> Self
+    where
+        F: FnMut(Command) -> Command,
+    {
+        self.subcommands = self.subcommands.into_iter().map(f).collect();
+        self
+    }
+
     /// Adds an [`ArgGroup`] to the application.
     ///
     /// [`ArgGroup`]s are a family of related arguments.
@@ -578,6 +623,13 @@ impl Command {
     }
 
     /// Custom error message for post-parsing validation
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build] for any
+    /// relevant context, including usage.
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// # Examples
     ///
@@ -861,6 +913,12 @@ impl Command {
     ///
     /// See also [`Command::print_long_help`].
     ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -885,6 +943,12 @@ impl Command {
     /// Prints the long help message (`--help`) to [`io::stdout()`].
     ///
     /// See also [`Command::print_help`].
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// # Examples
     ///
@@ -914,6 +978,12 @@ impl Command {
     ///
     /// See also [`Command::render_long_help`].
     ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
+    ///
     /// # Examples
     ///
     /// ```rust
@@ -940,6 +1010,12 @@ impl Command {
     /// Render the long help message (`--help`) to a [`StyledStr`].
     ///
     /// See also [`Command::render_help`].
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// # Examples
     ///
@@ -1045,6 +1121,12 @@ impl Command {
     }
 
     /// Usage statement
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+    ///
+    /// If contradictory arguments or settings exist (debug builds).
     ///
     /// ### Examples
     ///
@@ -1169,7 +1251,7 @@ impl Command {
         }
     }
 
-    /// Disables the automatic delimiting of values after `--` or when [`Arg::trailing_var_arg`]
+    /// Disables the automatic [delimiting of values][Arg::value_delimiter] after `--` or when [`Arg::trailing_var_arg`]
     /// was used.
     ///
     /// <div class="warning">

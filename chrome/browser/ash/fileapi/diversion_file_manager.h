@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_operation.h"

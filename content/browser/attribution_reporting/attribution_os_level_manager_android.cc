@@ -324,3 +324,5 @@ void AttributionOsLevelManagerAndroid::OnDataDeletionCompleted(
 }
 
 }  // namespace content
+
+DEFINE_JNI(AttributionOsLevelManager)

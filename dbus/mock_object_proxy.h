@@ -29,61 +29,24 @@ class MockObjectProxy : public ObjectProxy {
       base::expected<std::unique_ptr<Response>, Error>(MethodCall* method_call,
                                                        int timeout_ms));
 
-  // This method is not mockable because it takes a move-only argument. To work
-  // around this, CallMethod() implementation here calls DoCallMethod() which is
-  // mockable.
-  void CallMethod(MethodCall* method_call,
-                  int timeout_ms,
-                  ResponseCallback callback) override;
-  MOCK_METHOD3(DoCallMethod,
+  MOCK_METHOD3(CallMethod,
                void(MethodCall* method_call,
                     int timeout_ms,
-                    ResponseCallback* callback));
+                    ResponseCallback callback));
 
-  // This method is not mockable because it takes a move-only argument. To work
-  // around this, CallMethodWithErrorResponse() implementation here calls
-  // DoCallMethodWithErrorResponse() which is mockable.
-  void CallMethodWithErrorResponse(MethodCall* method_call,
-                                   int timeout_ms,
-                                   ResponseOrErrorCallback callback) override;
-  MOCK_METHOD3(DoCallMethodWithErrorResponse,
+  MOCK_METHOD3(CallMethodWithErrorResponse,
                void(MethodCall* method_call,
                     int timeout_ms,
-                    ResponseOrErrorCallback* callback));
+                    ResponseOrErrorCallback callback));
 
-  // This method is not mockable because it takes a move-only argument. To work
-  // around this, CallMethodWithErrorCallback() implementation here calls
-  // DoCallMethodWithErrorCallback() which is mockable.
-  void CallMethodWithErrorCallback(MethodCall* method_call,
-                                   int timeout_ms,
-                                   ResponseCallback callback,
-                                   ErrorCallback error_callback) override;
-  MOCK_METHOD4(DoCallMethodWithErrorCallback,
-               void(MethodCall* method_call,
-                    int timeout_ms,
-                    ResponseCallback* callback,
-                    ErrorCallback* error_callback));
+  MOCK_METHOD1(WaitForServiceToBeAvailable,
+               void(WaitForServiceToBeAvailableCallback callback));
 
-  // This method is not mockable because it takes a move-only argument. To work
-  // around this, WaitForServiceToBeAvailable() implementation here calls
-  // DoWaitForServiceToBeAvailable() which is mockable.
-  void WaitForServiceToBeAvailable(
-      WaitForServiceToBeAvailableCallback callback) override;
-  MOCK_METHOD1(DoWaitForServiceToBeAvailable,
-               void(WaitForServiceToBeAvailableCallback* callback));
-
-  // This method is not mockable because it takes a move-only argument. To work
-  // around this, ConnectToSignal() implementation here calls
-  // DoConnectToSignal() which is mockable.
-  void ConnectToSignal(const std::string& interface_name,
-                       const std::string& signal_name,
-                       SignalCallback signal_callback,
-                       OnConnectedCallback on_connected_callback) override;
-  MOCK_METHOD4(DoConnectToSignal,
+  MOCK_METHOD4(ConnectToSignal,
                void(const std::string& interface_name,
                     const std::string& signal_name,
                     SignalCallback signal_callback,
-                    OnConnectedCallback* on_connected_callback));
+                    OnConnectedCallback on_connected_callback));
   MOCK_METHOD1(SetNameOwnerChangedCallback,
                void(NameOwnerChangedCallback callback));
   MOCK_METHOD0(Detach, void());

@@ -27,5 +27,10 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 struct ViewTransitionElementResourceId {
   blink.mojom.ViewTransitionToken? transition_token;
   uint32 local_id;
-  bool for_subframe_snapshot;
+
+  // A special "scope snapshot" is used for non-document transitions as well as
+  // same-site iframe document transitions in order to pause rendering during
+  // the callback. These need to be treated as distinct from the shared elements
+  // that render the transition's participants.
+  bool for_scope_snapshot;
 };

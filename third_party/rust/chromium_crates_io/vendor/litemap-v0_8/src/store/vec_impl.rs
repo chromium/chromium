@@ -127,7 +127,7 @@ impl<K: Ord, V> StoreBulkMut<K, V> for Vec<(K, V)> {
         self.extend(iter);
         // `sorted_len` is the length of the sorted run before extension
         // window slice `w` is guaranteed to have a length of 2.
-        #[allow(clippy::indexing_slicing)]
+        #[expect(clippy::indexing_slicing)]
         {
             // Count new elements that are sorted and non-duplicated.
             // Starting from the end of the existing sorted run, if any.
@@ -166,7 +166,7 @@ impl<K: Ord, V> StoreBulkMut<K, V> for Vec<(K, V)> {
 /// This is based on std::slice::partition_dedup_by (currently unstable) but retains the
 /// _last_ element of the duplicate run in the first slice (instead of first).
 #[inline]
-#[allow(clippy::type_complexity)]
+#[expect(clippy::type_complexity)]
 fn partition_dedup_by<K: Eq, V>(v: &mut [(K, V)]) -> (&mut [(K, V)], &mut [(K, V)]) {
     // Although we have a mutable reference to `self`, we cannot make
     // *arbitrary* changes. The comparison could panic, so we
@@ -237,7 +237,7 @@ fn partition_dedup_by<K: Eq, V>(v: &mut [(K, V)]) -> (&mut [(K, V)], &mut [(K, V
         // whereas `write_idx` is only incremented when a distinct element is found.
         // Second, before_read is always at least 1 length due to read_idx being initialized to 1.
         // Thus it is safe to index before_read with `write_idx - 1`.
-        #[allow(clippy::indexing_slicing)]
+        #[expect(clippy::indexing_slicing)]
         let prev_write = &mut before_read[write_idx - 1];
         if read.0 == prev_write.0 {
             core::mem::swap(read, prev_write);

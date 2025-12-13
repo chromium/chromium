@@ -171,6 +171,13 @@ void FakeServiceWorker::DispatchPushEvent(
   std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED);
 }
 
+void FakeServiceWorker::DispatchPushEventRecordingNetworkRequests(
+    const std::optional<std::string>& payload,
+    DispatchPushEventRecordingNetworkRequestsCallback callback) {
+  std::move(callback).Run(blink::mojom::ServiceWorkerEventStatus::COMPLETED,
+                          std::nullopt);
+}
+
 void FakeServiceWorker::DispatchPushSubscriptionChangeEvent(
     blink::mojom::PushSubscriptionPtr old_subscription,
     blink::mojom::PushSubscriptionPtr new_subscription,

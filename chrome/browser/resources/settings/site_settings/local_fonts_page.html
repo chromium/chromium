@@ -1,0 +1,22 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{fonts}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsFontsDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
+      allow-option-label="$i18n{siteSettingsFontsAllowed}"
+      allow-option-icon="privacy:font-download"
+      block-option-label="$i18n{siteSettingsFontsBlocked}"
+      block-option-icon="privacy:font-download-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
+      block-header="$i18n{siteSettingsFontsBlockedExceptions}"
+      allow-header="$i18n{siteSettingsFontsAllowedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

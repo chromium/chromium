@@ -424,11 +424,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuInfoDataView,
     return input.jpeg_decode_accelerator_supported;
   }
 
-  static std::vector<gpu::ImageDecodeAcceleratorSupportedProfile>
-  image_decode_accelerator_supported_profiles(const gpu::GPUInfo& input) {
-    return input.image_decode_accelerator_supported_profiles;
-  }
-
   static bool subpixel_font_rendering(const gpu::GPUInfo& input) {
     return input.subpixel_font_rendering;
   }

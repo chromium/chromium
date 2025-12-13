@@ -36,7 +36,7 @@ class ByteSlice {
   ByteSlice Slice(size_t at, size_t size) {
     if (!RangeCheck(at, size))
       return ByteSlice();
-    return ByteSlice(data_ + at, size);
+    return ByteSlice(UNSAFE_TODO(data_ + at), size);
   }
 
   // Casts an offset to a specific type.
@@ -44,7 +44,7 @@ class ByteSlice {
   const T* GetPointerAt(size_t at) {
     if (!RangeCheck(at, sizeof(T)))
       return nullptr;
-    return reinterpret_cast<const T*>((data_ + at).get());
+    return UNSAFE_TODO(reinterpret_cast<const T*>((data_ + at).get()));
   }
 
   // Copies data from an offset to a buffer.

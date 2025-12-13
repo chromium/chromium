@@ -33,8 +33,7 @@ namespace {
 constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_CPU_UPLOAD |
-    SHARED_IMAGE_USAGE_MIPMAP;
+    SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_MIPMAP;
 
 SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
 #if BUILDFLAG(SKIA_USE_DAWN) && !BUILDFLAG(IS_ANDROID)
@@ -43,10 +42,7 @@ SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
   // for interop with WebGL and WebGPU.
   constexpr SharedImageUsageSet kGraphiteDawnFallbackUsage =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-      SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
       SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-      // NOTE: In this case, it is also possible to support raster-over-GLES2.
-      SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
       SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE;
 

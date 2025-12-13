@@ -34,6 +34,7 @@
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/audio_bus.h"
 
 #define POST_TO_CMA_WRAPPER(method, ...)                                      \
   do {                                                                        \

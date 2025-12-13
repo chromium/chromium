@@ -48,7 +48,7 @@ For more information, try '--help'.
 ```console
 $ interop_augment_subcommands
 ? failed
-error: A subcommand is required but one was not provided.
+error: a subcommand is required but one was not provided
 ```
 
 ```console

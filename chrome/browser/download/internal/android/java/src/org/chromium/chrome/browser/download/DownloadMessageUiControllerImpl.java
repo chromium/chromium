@@ -458,11 +458,12 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
 
     /**
      * Returns true if the given download information matches an interstitial download.
+     *
      * @param originalUrl The URL of the download.
      * @param guid Unique GUID of the download.
      */
     @Override
-    public boolean isDownloadInterstitialItem(GURL originalUrl, String guid) {
+    public boolean isDownloadInterstitialItem(GURL originalUrl, @Nullable String guid) {
         if (mDownloadInterstitialSources != null
                 && mDownloadInterstitialSources.contains(originalUrl)) {
             return true;
@@ -497,7 +498,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     }
 
     @Override
-    public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
+    public void onItemUpdated(OfflineItem item, @Nullable UpdateDelta updateDelta) {
         if (mDownloadInterstitialSources.contains(item.originalUrl)) {
             mDownloadInterstitialSources.remove(item.originalUrl);
             mInterstitialItems.add(item.id);
@@ -568,7 +569,9 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
             }
         }
 
-        return !MimeUtils.canAutoOpenMimeType(offlineItem.mimeType) || !offlineItem.hasUserGesture;
+        return !MimeUtils.canAutoOpenMimeType(offlineItem.mimeType)
+                || !offlineItem.hasUserGesture
+                || !offlineItem.allowAutoOpenAfterCompletion;
     }
 
     private void computeNextStepForUpdate(OfflineItem updatedItem) {

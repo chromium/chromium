@@ -125,6 +125,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     ash::kGoogleMeetAppId,
 
     ash::kGoogleChatAppId,
+    ash::kOldGoogleChatAppId,
 
     extension_misc::kGoogleDocsAppId,
     ash::kGoogleDocsAppId,
@@ -148,6 +149,8 @@ void GetDefault(std::vector<std::string>* app_ids) {
     ash::kMessagesAppId,
 
     ash::kNotebookLmAppId,
+
+    ash::kVidsAppId,
 
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,

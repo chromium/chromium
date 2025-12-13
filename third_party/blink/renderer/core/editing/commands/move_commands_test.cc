@@ -337,4 +337,26 @@ TEST_F(MoveCommandsTest, CaretBrowsingSelectionUpdate) {
   EXPECT_EQ("<div>a<a href=\"foo\">b|</a></div>", GetSelectionTextFromBody());
 }
 
+// This test verifies that while caret browsing mode is overridden, selection
+// does not update.
+TEST_F(MoveCommandsTest, CaretBrowsingOverrideDoesNotMoveSelection) {
+  GetDocument().GetFrame()->SetIsCaretBrowsingOverridden(true);
+
+  VerifyCaretBrowsingPositionAndFocusUpdate(
+      "<div><a href=\"foo\">a</a>|b</div>", "a",
+      MoveCommands::ExecuteMoveBackward, "<div><a href=\"foo\">a</a>|b</div>",
+      "a");
+}
+
+// This test verifies that while caret browsing mode is overridden, the focused
+// element does not update.
+TEST_F(MoveCommandsTest, CaretBrowsingOverrideDoesNotUpdateFocus) {
+  GetDocument().GetFrame()->SetIsCaretBrowsingOverridden(true);
+
+  VerifyCaretBrowsingPositionAndFocusUpdate(
+      "<div><a href=\"foo\">a</a>|b</div>", "body",
+      MoveCommands::ExecuteMoveBackward, "<div><a href=\"foo\">a</a>|b</div>",
+      "body");
+}
+
 }  // namespace blink

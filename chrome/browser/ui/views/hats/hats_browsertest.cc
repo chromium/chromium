@@ -6,14 +6,15 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "base/version.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -61,7 +62,7 @@ const uint64_t kTestUkmHatsId = 0xbaadf00d;
 
 class MockHatsNextWebDialog : public HatsNextWebDialog {
  public:
-  MockHatsNextWebDialog(Browser* browser,
+  MockHatsNextWebDialog(BrowserWindowInterface* browser,
                         const std::string& trigger_id,
                         const std::optional<std::string>& hats_histogram_name,
                         const std::optional<uint64_t> hats_survey_ukm_id,
@@ -111,7 +112,7 @@ class HatsNextWebDialogBrowserTest : public InProcessBrowserTest {
 
   // Open a blank tab in the main browser, inspect it, and return the devtools
   // Browser for the undocked devtools window.
-  Browser* OpenUndockedDevToolsWindow() {
+  BrowserWindowInterface* OpenUndockedDevToolsWindow() {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
     const bool is_docked = false;
@@ -172,11 +173,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey has been loaded.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget)
-      .WillOnce(testing::Invoke([dialog, &run_loop]() {
-        EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([dialog, &run_loop]() {
+    EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
+    run_loop.Quit();
+  });
   run_loop.Run();
 
   EXPECT_EQ(1, success_count);
@@ -231,11 +231,10 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey has been loaded.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget)
-      .WillOnce(testing::Invoke([dialog, &run_loop]() {
-        EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
-        run_loop.Quit();
-      }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([dialog, &run_loop]() {
+    EXPECT_FALSE(dialog->IsWaitingForSurveyForTesting());
+    run_loop.Quit();
+  });
   run_loop.Run();
 
   EXPECT_EQ(1, success_count);
@@ -375,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest,
                        NewWebContentsForDevtoolsBrowser) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  Browser* devtools_browser = OpenUndockedDevToolsWindow();
+  BrowserWindowInterface* devtools_browser = OpenUndockedDevToolsWindow();
 
   auto* dialog = new MockHatsNextWebDialog(
       devtools_browser, "open_new_web_contents_for_testing", std::nullopt,
@@ -446,9 +445,7 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, ZoomLevel) {
 
   // Allow the dialog to open before checking the zoom level of the contents.
   base::RunLoop run_loop;
-  EXPECT_CALL(*dialog, ShowWidget).WillOnce(testing::Invoke([&run_loop]() {
-    run_loop.Quit();
-  }));
+  EXPECT_CALL(*dialog, ShowWidget).WillOnce([&run_loop]() { run_loop.Quit(); });
   run_loop.Run();
 
   EXPECT_TRUE(blink::ZoomValuesEqual(

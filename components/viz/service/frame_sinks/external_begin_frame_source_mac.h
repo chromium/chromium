@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"

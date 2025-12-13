@@ -22,6 +22,24 @@ using endpoint_fetcher::HttpMethod;
 
 namespace lens {
 
+MockLensOverlayQueryController::MockLensOverlayQueryController(
+    lens::LensOverlayGen204Controller* gen204_controller)
+    : LensOverlayQueryController(
+          /*full_image_callback=*/base::DoNothing(),
+          /*url_callback=*/base::DoNothing(),
+          /*interaction_callback=*/base::DoNothing(),
+          /*suggest_inputs_callback=*/base::DoNothing(),
+          /*thumbnail_created_callback=*/base::DoNothing(),
+          /*page_content_upload_progress_callback=*/base::DoNothing(),
+          /*variations_client=*/nullptr,
+          /*identity_manager=*/nullptr,
+          /*profile=*/nullptr,
+          lens::LensOverlayInvocationSource::kAppMenu,
+          /*use_dark_mode=*/false,
+          gen204_controller) {}
+
+MockLensOverlayQueryController::~MockLensOverlayQueryController() = default;
+
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPlainTextMimeType[] = "text/plain";
 constexpr char kHtmlMimeType[] = "text/html";
@@ -201,7 +219,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
       GURL(lens::features::GetLensOverlayUploadChunkEndpointURL());
   bool is_chunk_request =
       chunk_endpoint_url.GetWithEmptyPath() == fetch_url.GetWithEmptyPath() &&
-      chunk_endpoint_url.path() == fetch_url.path();
+      chunk_endpoint_url.GetPath() == fetch_url.GetPath();
   bool is_cluster_info_request =
       fetch_url == GURL(lens::features::GetLensOverlayClusterInfoEndpointUrl());
 
@@ -241,6 +259,39 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
           request.objects_request().payload().content().content_data(0).data());
       last_sent_partial_content_.CopyFrom(partial_pdf_document);
     }
+  } else if (request.has_objects_request() &&
+             next_page_content_objects_request_should_return_metadata_error_ &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload()) {
+    // Page content upload request to receive missing metadata error.
+    num_page_content_update_requests_sent_++;
+    sent_page_content_objects_request_.CopyFrom(request.objects_request());
+    fake_server_response.mutable_error()->set_error_type(
+        lens::LensOverlayServerError_ErrorType::
+            LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->set_has_chunk_metadata(false);
+    fake_server_response_string = fake_server_response.SerializeAsString();
+    next_page_content_objects_request_should_return_metadata_error_ = false;
+  } else if (request.has_objects_request() &&
+             next_page_content_objects_request_should_return_chunks_error_ &&
+             !request.objects_request().has_image_data() &&
+             request.objects_request().has_payload()) {
+    // Page content upload request to receive missing chunks error.
+    num_page_content_update_requests_sent_++;
+    sent_page_content_objects_request_.CopyFrom(request.objects_request());
+    fake_server_response.mutable_error()->set_error_type(
+        lens::LensOverlayServerError_ErrorType::
+            LensOverlayServerError_ErrorType_MISSING_CHUNKS);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->set_has_chunk_metadata(true);
+    fake_server_response.mutable_error()
+        ->mutable_missing_chunks_metadata()
+        ->add_missing_chunk_ids(0);
+    fake_server_response_string = fake_server_response.SerializeAsString();
+    next_page_content_objects_request_should_return_chunks_error_ = false;
   } else if (request.has_objects_request() &&
              !request.objects_request().has_image_data() &&
              request.objects_request().has_payload()) {
@@ -313,7 +364,7 @@ TestLensOverlayQueryController::CreateEndpointFetcher(
   if (!disable_page_upload_response_callback &&
       !last_upload_progress_callback_.is_null()) {
     // Simulate the upload progress callback completing the upload.
-    std::move(last_upload_progress_callback_).Run(1, 1);
+    std::move(last_upload_progress_callback_).Run(10, 10);
   }
 
   auto response = std::make_unique<FakeEndpointFetcher>(fake_endpoint_response);
@@ -328,10 +379,7 @@ void TestLensOverlayQueryController::SendLatencyGen204IfEnabled(
     std::optional<base::TimeDelta> cluster_info_latency,
     std::optional<std::string> encoded_analytics_id,
     std::optional<lens::LensOverlayRequestId> request_id) {
-  int counter = latency_gen_204_counter_.contains(latency_type)
-                    ? latency_gen_204_counter_.at(latency_type)
-                    : 0;
-  latency_gen_204_counter_[latency_type] = counter + 1;
+  ++latency_gen_204_counter_[latency_type];
   last_latency_gen204_analytics_id_ = encoded_analytics_id;
   last_latency_gen204_request_id_ = request_id;
 }
@@ -372,6 +420,13 @@ void TestLensOverlayQueryController::RunSuggestInputsCallback() {
   // Get the current request id from the request id generator.
   std::unique_ptr<lens::LensOverlayRequestId> current_request_id =
       request_id_generator_for_testing()->GetCurrentRequestIdForTesting();
+  // Set the time_usec field to 0 to ignore it in the comparison.
+  latest_request_id.set_time_usec(0);
+  current_request_id->set_time_usec(0);
+  // Since the media type is not stored in the current request id, manually
+  // set it here to compare the two request ids.
+  current_request_id->set_media_type(latest_request_id.media_type());
+
   // Verifies that the last request ids passed in the SuggestInputs callback are
   // the same as current request id in the request id generator.
   // This is to ensure the LensOverlayController is always updated with the

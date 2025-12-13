@@ -172,6 +172,8 @@ viz_component("service") {
     "display_embedder/skia_output_surface_impl_on_gpu.h",
     "display_embedder/skia_output_surface_impl_on_gpu_debug_capture.cc",
     "display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h",
+    "display_embedder/skia_output_surface_shared_image_interface.cc",
+    "display_embedder/skia_output_surface_shared_image_interface.h",
     "display_embedder/skia_render_copy_results.cc",
     "display_embedder/skia_render_copy_results.h",
     "display_embedder/software_output_surface.cc",
@@ -230,6 +232,8 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/input_on_viz_state_processing_result.cc",
+    "input/input_on_viz_state_processing_result.h",
     "input/peak_gpu_memory_tracker_impl.cc",
     "input/peak_gpu_memory_tracker_impl.h",
     "input/render_input_router_delegate_impl.cc",
@@ -291,25 +295,25 @@ viz_component("service") {
     "//components/input:mojom",
     "//components/startup_metric_utils",
 
-    # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
+    # Note that dependency on //gpu/ipc/client is for MappableBuffer. This
     # dependency should not be in public_deps.
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//components/viz/client",
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/config",
     "//gpu/ipc/client",
-    "//gpu/ipc/common:common",
+    "//gpu/ipc/common",
     "//gpu/ipc/common:surface_handle_type",
     "//gpu/ipc/service",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
     "//gpu/vulkan:buildflags",
     "//media",
     "//media:media_buildflags",
     "//media/capture:capture_lib",
     "//media/mojo/services",
     "//services/metrics/public/mojom",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
     "//services/viz/privileged/mojom",
     "//services/webnn:webnn_service",
     "//services/webnn/public/mojom",
@@ -360,7 +364,7 @@ viz_component("service") {
       "//media/mojo/services",
     ]
 
-    if (use_v4l2_codec || use_vaapi) {
+    if (use_linux_video_acceleration) {
       deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
@@ -441,6 +445,8 @@ viz_component("service") {
       "input/fling_scheduler_android.h",
       "input/render_input_router_support_android.cc",
       "input/render_input_router_support_android.h",
+      "input/viz_touch_state_handler.cc",
+      "input/viz_touch_state_handler.h",
     ]
 
     deps += [
@@ -664,7 +670,7 @@ viz_source_set("unit_tests") {
     "//components/viz/client",
     "//components/viz/common",
     "//components/viz/host",
-    "//components/viz/service/main:main",
+    "//components/viz/service/main",
     "//components/viz/test:test_suite",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/client",
@@ -682,7 +688,7 @@ viz_source_set("unit_tests") {
     "//third_party/libyuv",
     "//ui/display/types",
     "//ui/gfx:test_support",
-    "//ui/gfx/animation/keyframe:keyframe",
+    "//ui/gfx/animation/keyframe",
     "//ui/gl",
   ]
 
@@ -737,6 +743,7 @@ viz_source_set("unit_tests") {
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
       "frame_sinks/fling_scheduler_android_unittest.cc",
       "input/android_state_transfer_handler_unittest.cc",
+      "input/viz_touch_state_handler_unittest.cc",
     ]
     deps += [ "//ui/events:motionevent_jni_headers" ]
   }
@@ -767,7 +774,7 @@ viz_source_set("perf_tests") {
     "//cc",
     "//cc:test_support",
     "//cc/base",
-    "//components/viz/client:client",
+    "//components/viz/client",
     "//components/viz/test:test_support",
     "//testing/gtest",
     "//testing/perf",

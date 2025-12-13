@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -456,16 +458,15 @@ public class TrustedCdnPublisherUrlTest {
             expectedSecurityIcon = 0;
         }
 
+        int securityId = nestIcon ? R.id.security_icon : R.id.security_button;
         ImageView securityButton =
-                mCustomTabActivityTestRule
-                        .getActivity()
-                        .findViewById(nestIcon ? R.id.security_icon : R.id.security_button);
+                mCustomTabActivityTestRule.getActivity().findViewById(securityId);
         // Clean up -- end
 
         if (expectedSecurityIcon == 0) {
             Assert.assertEquals(View.INVISIBLE, securityButton.getVisibility());
         } else {
-            Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
+            onViewWaiting(withId(securityId)).check(matches(isDisplayed()));
 
             // VectorDrawables don't have a good means for comparison so just verify resource IDs.
             if (securityButton.getDrawable() instanceof VectorDrawable) {

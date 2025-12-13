@@ -65,6 +65,8 @@ interface NewTabFooterHandler {
   OpenUrlInCurrentTab(url.mojom.Url url);
   // Shows context menu.
   ShowContextMenu(gfx.mojom.Point point);
+  // Notifies that the customization button just got visible on the WebUI.
+  NotifyCustomizationButtonVisible();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -75,7 +77,7 @@ interface NewTabFooterDocument {
   SetManagementNotice(ManagementNotice? notice);
   // Sets information about the tab that is attached to the
   // NewTabFooterDocument.
-  AttachedTabStateUpdated(NewTabPageType ntp_type);
+  AttachedTabStateUpdated(NewTabPageType ntp_type, bool can_customize_chrome);
   // Sets the image name and url.
   SetBackgroundAttribution(
       BackgroundAttribution? background_image_attribution);

@@ -9,7 +9,7 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
-// Next version: 4
+// Next version: 5
 [Stable] struct RegistrationRequest {
   // Application ID of the app.
   string app_id;
@@ -58,10 +58,32 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
 
   // `lang` of the app.
   [MinVersion=3] string? lang;
+
+  // Date-last-active. The value is the number of America/Los_Angeles calendar
+  // days since Jan 1, 2007.
+  [MinVersion=4] int32? dla;
+
+  // Date-last-rollcall. The value is the number of America/Los_Angeles calendar
+  // days since Jan 1, 2007.
+  [MinVersion=4] int32? dlrc;
+
+  // Date of install. The value is the number of America/Los_Angeles calendar
+  // days since Jan 1, 2007.
+  [MinVersion=4] int32? install_date;
+
+  // Opaque cohort string meaningful to the server.
+  [MinVersion=4] string? cohort;
+
+  // Human-readable interpretation of the cohort.
+  [MinVersion=4] string? cohort_name;
+
+  // Server may use to move the app to a new cohort.
+  [MinVersion=4] string? cohort_hint;
 };
 
 // Struct containing details on the state of an update. It is passed
 // periodically from the server to the client via the StateChangeObserver.
+// Next version: 2
 [Stable] struct UpdateState {
   // Possible states for updating an app. Add new values at the end of
   // the definition, and do not mutate the existing values.
@@ -99,6 +121,12 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     // The engine encountered an error updating this product. The update has
     // halted and the state will not change.
     kUpdateError,
+
+    // The engine is decompressing an update.
+    [MinVersion=1] kDecompressing,
+
+    // The engine is applying a patch to a file.
+    [MinVersion=1] kPatching,
   };
 
   string app_id;
@@ -162,8 +190,9 @@ import "chrome/enterprise_companion/mojom/policy_fetch_reason.mojom";
     kAllowed,
   };
 
-  // Update the `UpdateService::Result` `enum` in `update_service.h` when adding
-  // new values.
+  // Values posted by the completion `callback` as a result of the
+  // non-blocking invocation of the service functions. These values are not
+  // present in the telemetry pings.
   // Next version: 2
   [Stable, Extensible]
   enum Result {

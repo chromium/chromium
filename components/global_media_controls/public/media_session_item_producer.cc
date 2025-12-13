@@ -364,7 +364,7 @@ void MediaSessionItemProducer::OnItemShown(const std::string& id,
 
 bool MediaSessionItemProducer::IsItemActivelyPlaying(const std::string& id) {
   const auto it = sessions_.find(id);
-  return it == sessions_.end() ? false : it->second.IsPlaying();
+  return it != sessions_.end() && it->second.IsPlaying();
 }
 
 void MediaSessionItemProducer::ActivateItem(const std::string& id) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "google_apis/gaia/fake_gaia.h"
 
 #include <algorithm>
@@ -29,6 +24,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
@@ -45,23 +41,27 @@
 
 #define REGISTER_RESPONSE_HANDLER(url, method) \
   request_handlers_.insert(std::make_pair(     \
-      url.path(),                              \
+      url.GetPath(),                           \
       base::BindRepeating(&FakeGaia::method, base::Unretained(this))))
 
 #define REGISTER_PATH_RESPONSE_HANDLER(path, method) \
   request_handlers_.insert(std::make_pair(           \
       path, base::BindRepeating(&FakeGaia::method, base::Unretained(this))))
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+
+using MultiloginAction = ::FakeGaia::MultiloginCall::Action;
 
 const char kTestAuthCode[] = "fake-auth-code";
 const char kTestAuthLoginAccessToken[] = "fake-access-token";
 const char kTestRefreshToken[] = "fake-refresh-token";
 const char kTestSessionSIDCookie[] = "fake-session-SID-cookie";
 const char kTestSessionLSIDCookie[] = "fake-session-LSID-cookie";
+const char kTestSession1PSIDTSCookie[] = "fake-session-1p-SIDTS-cookie";
+const char kTestSession3PSIDTSCookie[] = "fake-session-3p-SIDTS-cookie";
 const char kTestReauthProofToken[] = "fake-reauth-proof-token";
 // Add SameSite=None and Secure because these cookies are needed in a
 // cross-site context.
@@ -75,10 +75,17 @@ const base::FilePath::CharType kEmbeddedSetupChromeos[] =
 
 // OAuth2 Authentication header value prefix.
 const char kAuthHeaderBearer[] = "Bearer ";
+const char kAuthHeaderBoundOAuth[] = "BoundOAuth ";
+const char kAuthHeaderMultiOAuth[] = "MultiOAuth ";
 const char kAuthHeaderOAuth[] = "OAuth ";
 
 const char kFakeRemoveLocalAccountPath[] = "FakeRemoveLocalAccount";
 const char kFakeSAMLContinuePath[] = "FakeSAMLContinue";
+
+const char kFakeTokenBindingAssertionChallenge[] =
+    "fake-token-binding-assertion-challenge";
+
+const char kXSSIPrefix[] = ")]}'\n";
 
 typedef std::map<std::string, std::string> CookieMap;
 
@@ -110,20 +117,136 @@ void SetCookies(BasicHttpResponse* http_response,
                                        kTestCookieAttributes));
 }
 
-std::string FormatCookieForMultilogin(std::string name, std::string value) {
-  const char format[] = R"(
-    {
-      "name":"%s",
-      "value":"%s",
-      "domain":".google.fr",
-      "path":"/",
-      "isSecure":true,
-      "isHttpOnly":false,
-      "priority":"HIGH",
-      "maxAge":63070000
+base::Value::Dict GetCookieForMultilogin(const std::string& name,
+                                         const std::string& value) {
+  return base::Value::Dict()
+      .Set("name", name)
+      .Set("value", value)
+      .Set("domain", ".google.fr")
+      .Set("path", "/")
+      .Set("isSecure", true)
+      .Set("isHttpOnly", false)
+      .Set("priority", "HIGH")
+      .Set("maxAge", 63070000);
+}
+
+base::Value::List GetCookiesForMultilogin(
+    const FakeGaia::Configuration& configuration) {
+  CHECK(!configuration.session_sid_cookie.empty());
+  CHECK(!configuration.session_lsid_cookie.empty());
+
+  base::Value::List cookies;
+
+  cookies.Append(
+      GetCookieForMultilogin("SID", configuration.session_sid_cookie));
+  cookies.Append(
+      GetCookieForMultilogin("LSID", configuration.session_lsid_cookie));
+
+  if (!configuration.session_1p_sidts_cookie.empty()) {
+    cookies.Append(GetCookieForMultilogin(
+        "__Secure-1PSIDTS", configuration.session_1p_sidts_cookie));
+  }
+  if (!configuration.session_3p_sidts_cookie.empty()) {
+    cookies.Append(GetCookieForMultilogin(
+        "__Secure-3PSIDTS", configuration.session_3p_sidts_cookie));
+  }
+
+  return cookies;
+}
+
+base::Value::Dict GetFailedAccountForMultilogin(const std::string& gaia_id,
+                                                const std::string& status,
+                                                const std::string& challenge) {
+  return base::Value::Dict()
+      .Set("obfuscated_id", gaia_id)
+      .Set("status", status)
+      .Set("token_binding_retry_response",
+           base::Value::Dict().Set("challenge", challenge));
+}
+
+base::Value::List GetFailedAccountsForMultilogin(
+    const gaia::MultiOAuthHeader& multi_oauth_header) {
+  CHECK_GT(multi_oauth_header.account_requests().size(), 0);
+
+  base::Value::List failed_accounts;
+  failed_accounts.reserve(multi_oauth_header.account_requests().size());
+
+  for (const gaia::MultiOAuthHeader_AccountRequest& account_request :
+       multi_oauth_header.account_requests()) {
+    failed_accounts.Append(GetFailedAccountForMultilogin(
+        account_request.gaia_id(), /*status=*/"RECOVERABLE",
+        kFakeTokenBindingAssertionChallenge));
+  }
+
+  return failed_accounts;
+}
+
+base::Value::List GetDeviceBoundSessionInfoForMultilogin(
+    const FakeGaia::Configuration& configuration) {
+  auto device_bound_session_info = base::Value::Dict()
+                                       .Set("domain", "GOOGLE_COM")
+                                       .Set("is_device_bound", true);
+  if (!configuration.reuse_bound_session) {
+    base::Value::List credentials;
+    if (!configuration.session_1p_sidts_cookie.empty()) {
+      credentials.Append(base::Value::Dict()
+                             .Set("type", "cookie")
+                             .Set("name", "__Secure-1PSIDTS")
+                             .Set("scope", base::Value::Dict()
+                                               .Set("domain", ".google.com")
+                                               .Set("path", "/")));
     }
-  )";
-  return base::StringPrintf(format, name.c_str(), value.c_str());
+    if (!configuration.session_3p_sidts_cookie.empty()) {
+      credentials.Append(base::Value::Dict()
+                             .Set("type", "cookie")
+                             .Set("name", "__Secure-3PSIDTS")
+                             .Set("scope", base::Value::Dict()
+                                               .Set("domain", ".google.com")
+                                               .Set("path", "/")));
+    }
+    auto register_session_payload =
+        base::Value::Dict()
+            .Set("session_identifier", "sidts_session")
+            .Set("refresh_url", "/RotateBoundCookies");
+    if (configuration.spec_compliant_device_bound_session) {
+      register_session_payload.Set("scope",
+                                   base::Value::Dict()
+                                       .Set("origin", "https://google.com")
+                                       .Set("include_site", true));
+      register_session_payload.Set("allowed_refresh_initiators",
+                                   base::Value::List().Append("*"));
+      for (auto& credential : credentials) {
+        credential.GetDict().Set("attributes",
+                                 "Secure; HttpOnly; Domain=.google.com; "
+                                 "Path=/; SameSite=None");
+      }
+    }
+    register_session_payload.Set("credentials", std::move(credentials));
+    device_bound_session_info.Set("register_session_payload",
+                                  std::move(register_session_payload));
+  }
+  return base::Value::List().Append(std::move(device_bound_session_info));
+}
+
+MultiloginAction GetMultiloginAction(
+    const std::optional<gaia::MultiOAuthHeader>& header) {
+  if (!header.has_value()) {
+    return MultiloginAction::kReturnUnboundCookies;
+  }
+  CHECK_GT(header->account_requests().size(), 0);
+  // To simplify, look at the first account request only.
+  const gaia::MultiOAuthHeader::AccountRequest& account_request =
+      header->account_requests(0);
+  if (account_request.token_binding_assertion().empty()) {
+    return MultiloginAction::kReturnUnboundCookies;
+  }
+  if (account_request.token_binding_assertion() ==
+      GaiaConstants::kTokenBindingAssertionSentinel) {
+    return MultiloginAction::kReturnBindingChallenge;
+  }
+  // Assume that the client properly signed the challenge and is eligible to
+  // receive bound cookies.
+  return MultiloginAction::kReturnBoundCookies;
 }
 
 std::string FormatSyncTrustedRecoveryMethods(
@@ -163,6 +286,74 @@ std::string FormatSyncTrustedVaultKeysHeader(
           .c_str());
 }
 
+// It gets the bound access token from the authorization header of `request` and
+// returns `true`. If it fails at any step, it returns `false`.
+bool GetBoundAccessToken(const HttpRequest& request,
+                         std::string* access_token) {
+  std::string encoded_token;
+  if (!GetAccessToken(request, kAuthHeaderBoundOAuth, &encoded_token)) {
+    return false;
+  }
+  std::string decoded_token;
+  if (!base::Base64UrlDecode(encoded_token,
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &decoded_token)) {
+    return false;
+  }
+  gaia::BoundOAuthToken bound_oauth_token;
+  if (!bound_oauth_token.ParseFromString(decoded_token) ||
+      !bound_oauth_token.has_token()) {
+    return false;
+  }
+  *access_token = bound_oauth_token.token();
+  return true;
+}
+
+// It gets `gaia::MultiOAuthHeader` encoded in the authorization header of
+// `request`. If it fails at any step, it returns `std::nullopt`.
+std::optional<gaia::MultiOAuthHeader> GetMultiOAuthHeader(
+    const HttpRequest& request) {
+  auto it = request.headers.find("Authorization");
+  if (it == request.headers.end()) {
+    return std::nullopt;
+  }
+  std::optional<std::string_view> encoded_header =
+      base::RemovePrefix(it->second, kAuthHeaderMultiOAuth);
+  if (!encoded_header.has_value()) {
+    return std::nullopt;
+  }
+  std::string decoded_header;
+  if (!base::Base64UrlDecode(*encoded_header,
+                             base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                             &decoded_header)) {
+    return std::nullopt;
+  }
+  gaia::MultiOAuthHeader multi_oauth_header;
+  if (!multi_oauth_header.ParseFromString(decoded_header)) {
+    return std::nullopt;
+  }
+  return multi_oauth_header;
+}
+
+// Formats a JSON response with the data in |value|, setting the http status
+// to |status|.
+void FormatJSONResponse(const base::ValueView& value,
+                        net::HttpStatusCode status,
+                        BasicHttpResponse* http_response,
+                        const std::string& prefix = "") {
+  std::string response_json = base::WriteJson(value).value_or("");
+  http_response->set_content(base::StrCat({prefix, response_json}));
+  http_response->set_code(status);
+}
+
+// Formats a JSON response with the data in |value|, setting the http status
+// to net::HTTP_OK.
+void FormatOkJSONResponse(const base::ValueView& value,
+                          BasicHttpResponse* http_response,
+                          const std::string& prefix = "") {
+  FormatJSONResponse(value, net::HTTP_OK, http_response, prefix);
+}
+
 }  // namespace
 
 FakeGaia::AccessTokenInfo::AccessTokenInfo() = default;
@@ -176,10 +367,16 @@ FakeGaia::Configuration::Configuration() = default;
 
 FakeGaia::Configuration::~Configuration() = default;
 
+FakeGaia::MultiloginCall::MultiloginCall() = default;
+
+FakeGaia::MultiloginCall::~MultiloginCall() = default;
+
+FakeGaia::MultiloginCall::MultiloginCall(const MultiloginCall& other) = default;
+
 void FakeGaia::Configuration::Update(const Configuration& update) {
   // This lambda uses a pointer to data member to merge attributes.
   auto maybe_update_field = [this,
-                             &update](std::string Configuration::*field_ptr) {
+                             &update](std::string Configuration::* field_ptr) {
     if (!(update.*field_ptr).empty()) {
       this->*field_ptr = update.*field_ptr;
     }
@@ -228,6 +425,8 @@ void FakeGaia::SetConfigurationHelper(const std::string& email,
   params.access_token = kTestAuthLoginAccessToken;
   params.session_sid_cookie = kTestSessionSIDCookie;
   params.session_lsid_cookie = kTestSessionLSIDCookie;
+  params.session_1p_sidts_cookie = kTestSession1PSIDTSCookie;
+  params.session_3p_sidts_cookie = kTestSession3PSIDTSCookie;
   params.emails = {email};
   SetConfiguration(params);
 }
@@ -376,6 +575,12 @@ void FakeGaia::Initialize() {
   REGISTER_RESPONSE_HANDLER(
       gaia_urls->gaia_url().Resolve(kFakeRemoveLocalAccountPath),
       HandleFakeRemoveLocalAccount);
+
+  REGISTER_RESPONSE_HANDLER(gaia_urls->oauth2_revoke_url(),
+                            HandleOAuth2TokenRevoke);
+
+  REGISTER_RESPONSE_HANDLER(gaia_urls->rotate_bound_cookies_url(),
+                            HandleRotateBoundCookies);
 }
 
 FakeGaia::RequestHandlerMap::iterator FakeGaia::FindHandlerByPathPrefix(
@@ -393,7 +598,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
   // The scheme and host of the URL is actually not important but required to
   // get a valid GURL in order to parse |request.relative_url|.
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_path = request_url.path();
+  std::string request_path = request_url.GetPath();
   auto http_response = std::make_unique<BasicHttpResponse>();
 
   auto fixed_response = fixed_responses_.find(request_path);
@@ -425,6 +630,10 @@ std::unique_ptr<net::test_server::HttpResponse> FakeGaia::HandleRequest(
 void FakeGaia::IssueOAuthToken(const std::string& auth_token,
                                const AccessTokenInfo& token_info) {
   access_token_info_map_.insert(std::make_pair(auth_token, token_info));
+}
+
+bool FakeGaia::HasAccessTokenForAuthToken(const std::string& auth_token) const {
+  return access_token_info_map_.contains(auth_token);
 }
 
 void FakeGaia::RegisterSamlUser(const std::string& account_id,
@@ -468,11 +677,17 @@ void FakeGaia::SetFixedResponse(const GURL& gaia_url,
                                 net::HttpStatusCode http_status_code,
                                 const std::string& http_response_body) {
   if (http_status_code == net::HTTP_OK && http_response_body.empty()) {
-    fixed_responses_.erase(gaia_url.path());
+    fixed_responses_.erase(gaia_url.GetPath());
   } else {
-    fixed_responses_[gaia_url.path()] =
+    fixed_responses_[gaia_url.GetPath()] =
         std::make_pair(http_status_code, http_response_body);
   }
+}
+
+base::queue<FakeGaia::MultiloginCall> FakeGaia::GetAndResetMultiloginCalls() {
+  base::queue<MultiloginCall> result;
+  result.swap(multilogin_calls_);
+  return result;
 }
 
 GURL FakeGaia::GetFakeRemoveLocalAccountURL(const GaiaId& gaia_id) const {
@@ -484,20 +699,6 @@ GURL FakeGaia::GetFakeRemoveLocalAccountURL(const GaiaId& gaia_id) const {
 void FakeGaia::SetRefreshTokenToDeviceIdMap(
     const RefreshTokenToDeviceIdMap& refresh_token_to_device_id_map) {
   refresh_token_to_device_id_map_ = refresh_token_to_device_id_map;
-}
-
-void FakeGaia::FormatOkJSONResponse(const base::ValueView& value,
-                                    BasicHttpResponse* http_response) {
-  FormatJSONResponse(value, net::HTTP_OK, http_response);
-}
-
-void FakeGaia::FormatJSONResponse(const base::ValueView& value,
-                                  net::HttpStatusCode status,
-                                  BasicHttpResponse* http_response) {
-  std::string response_json;
-  base::JSONWriter::Write(value, &response_json);
-  http_response->set_content(response_json);
-  http_response->set_code(status);
 }
 
 const FakeGaia::AccessTokenInfo* FakeGaia::FindAccessTokenInfo(
@@ -539,16 +740,17 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
 
   std::string client_id;
-  if (!GetQueryParameter(request_url.query(), "client_id", &client_id) ||
+  if (!GetQueryParameter(request_url.GetQuery(), "client_id", &client_id) ||
       GaiaUrls::GetInstance()->oauth2_chrome_client_id() != client_id) {
     LOG(ERROR) << "Missing or invalid param 'client_id' in "
                   "/embedded/setup/chromeos call";
     return;
   }
 
-  GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
-  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
-  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
+  GetQueryParameter(request_url.GetQuery(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.GetQuery(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.GetQuery(), "pwl",
+                    &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -560,18 +762,20 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
 
   std::string client_id;
-  if (!GetQueryParameter(request_url.query(), "client_id", &client_id) ||
+  if (!GetQueryParameter(request_url.GetQuery(), "client_id", &client_id) ||
       GaiaUrls::GetInstance()->oauth2_chrome_client_id() != client_id) {
     LOG(ERROR) << "Missing or invalid param 'client_id' in "
                   "/embedded/reauth/chromeos call";
     return;
   }
 
-  GetQueryParameter(request_url.query(), "is_supervised", &is_supervised_);
-  GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
-  GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
-  GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
-  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
+  GetQueryParameter(request_url.GetQuery(), "is_supervised", &is_supervised_);
+  GetQueryParameter(request_url.GetQuery(), "is_device_owner",
+                    &is_device_owner_);
+  GetQueryParameter(request_url.GetQuery(), "Email", &prefilled_email_);
+  GetQueryParameter(request_url.GetQuery(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.GetQuery(), "pwl",
+                    &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -760,7 +964,8 @@ void FakeGaia::HandleIssueToken(const HttpRequest& request,
   std::string access_token;
   std::string scope;
   std::string client_id;
-  if (GetAccessToken(request, kAuthHeaderBearer, &access_token) &&
+  if ((GetAccessToken(request, kAuthHeaderBearer, &access_token) ||
+       GetBoundAccessToken(request, &access_token)) &&
       GetQueryParameter(request.content, "scope", &scope) &&
       GetQueryParameter(request.content, "client_id", &client_id)) {
     const AccessTokenInfo* token_info =
@@ -805,16 +1010,8 @@ void FakeGaia::HandleListAccounts(const HttpRequest& request,
                       .verified = true});
   }
 
-  std::string value;
-  bool uses_binary_format =
-      net::GetValueForKeyInQuery(request.GetURL(), "laf", &value) &&
-      value == "b64bin";
-  std::string content =
-      uses_binary_format
-          ? gaia::CreateListAccountsResponseInBinaryFormat(params)
-          : gaia::CreateListAccountsResponseInLegacyFormat(params);
-
-  http_response->set_content(content);
+  http_response->set_content(
+      gaia::CreateListAccountsResponseInBinaryFormat(params));
   http_response->set_code(net::HTTP_OK);
 }
 
@@ -916,7 +1113,25 @@ void FakeGaia::HandleGetReAuthProofToken(const HttpRequest& request,
 
 void FakeGaia::HandleMultilogin(const HttpRequest& request,
                                 BasicHttpResponse* http_response) {
-  http_response->set_code(net::HTTP_UNAUTHORIZED);
+  CHECK(http_response);
+
+  if (configuration_.oauth_multilogin_response_status.has_value()) {
+    switch (*configuration_.oauth_multilogin_response_status) {
+      case OAuthMultiloginResponseStatus::kInvalidInput:
+        FormatJSONResponse(base::Value::Dict().Set("status", "INVALID_INPUT"),
+                           net::HTTP_BAD_REQUEST, http_response);
+        return;
+      case OAuthMultiloginResponseStatus::kError:
+        FormatJSONResponse(base::Value::Dict().Set("status", "ERROR"),
+                           net::HTTP_INTERNAL_SERVER_ERROR, http_response);
+        return;
+      default:
+        // Overriding the status is currently supported for the above two only.
+        NOTREACHED() << "Unsupported OAutMultilogin status override: "
+                     << static_cast<int>(
+                            *configuration_.oauth_multilogin_response_status);
+    }
+  }
 
   if (configuration_.session_sid_cookie.empty() ||
       configuration_.session_lsid_cookie.empty()) {
@@ -924,8 +1139,10 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
     return;
   }
 
+  http_response->set_code(net::HTTP_UNAUTHORIZED);
+
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
-  std::string request_query = request_url.query();
+  std::string request_query = request_url.GetQuery();
 
   std::string source;
   if (!GetQueryParameter(request_query, "source", &source)) {
@@ -933,13 +1150,45 @@ void FakeGaia::HandleMultilogin(const HttpRequest& request,
     return;
   }
 
-  http_response->set_content(
-      ")]}'\n{\"status\":\"OK\",\"cookies\":[" +
-      FormatCookieForMultilogin("SID", configuration_.session_sid_cookie) +
-      "," +
-      FormatCookieForMultilogin("LSID", configuration_.session_lsid_cookie) +
-      "]}");
-  http_response->set_code(net::HTTP_OK);
+  const std::optional<gaia::MultiOAuthHeader> multi_oauth_header =
+      GetMultiOAuthHeader(request);
+  const MultiloginAction action = GetMultiloginAction(multi_oauth_header);
+  switch (action) {
+    case MultiloginAction::kReturnUnboundCookies: {
+      const base::Value::Dict response =
+          base::Value::Dict()
+              .Set("status", "OK")
+              .Set("cookies", GetCookiesForMultilogin(configuration_));
+      FormatOkJSONResponse(response, http_response, kXSSIPrefix);
+      break;
+    }
+    case MultiloginAction::kReturnBindingChallenge: {
+      CHECK(multi_oauth_header.has_value());
+      const base::Value::Dict response =
+          base::Value::Dict()
+              .Set("status", "RETRY")
+              .Set("failed_accounts",
+                   GetFailedAccountsForMultilogin(*multi_oauth_header));
+      FormatJSONResponse(response, net::HTTP_BAD_REQUEST, http_response,
+                         kXSSIPrefix);
+      break;
+    }
+    case MultiloginAction::kReturnBoundCookies: {
+      const base::Value::Dict response =
+          base::Value::Dict()
+              .Set("status", "OK")
+              .Set("cookies", GetCookiesForMultilogin(configuration_))
+              .Set("device_bound_session_info",
+                   GetDeviceBoundSessionInfoForMultilogin(configuration_));
+      FormatOkJSONResponse(response, http_response, kXSSIPrefix);
+      break;
+    }
+  }
+
+  MultiloginCall call;
+  call.header = multi_oauth_header;
+  call.action = action;
+  multilogin_calls_.push(std::move(call));
 }
 
 void FakeGaia::HandleFakeRemoveLocalAccount(
@@ -948,7 +1197,7 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
   DCHECK(http_response);
 
   std::string gaia_id_str;
-  GetQueryParameter(request.GetURL().query(), "gaia_id", &gaia_id_str);
+  GetQueryParameter(request.GetURL().GetQuery(), "gaia_id", &gaia_id_str);
   GaiaId gaia_id(gaia_id_str);
 
   if (!std::erase(configuration_.signed_out_gaia_ids, gaia_id)) {
@@ -960,6 +1209,53 @@ void FakeGaia::HandleFakeRemoveLocalAccount(
       "Google-Accounts-RemoveLocalAccount",
       base::StringPrintf("obfuscatedid=\"%s\"", gaia_id.ToString().c_str()));
   http_response->set_content("");
+  http_response->set_code(net::HTTP_OK);
+}
+
+void FakeGaia::HandleOAuth2TokenRevoke(
+    const net::test_server::HttpRequest& request,
+    net::test_server::BasicHttpResponse* http_response) {
+  CHECK(http_response);
+
+  static constexpr std::string_view kTokenPrefix = "token=";
+
+  if (!request.content.starts_with(kTokenPrefix)) {
+    http_response->set_code(net::HTTP_BAD_REQUEST);
+    return;
+  }
+
+  const std::string token = request.content.substr(kTokenPrefix.size());
+  if (access_token_info_map_.erase(token) == 0) {
+    FormatJSONResponse(base::Value::Dict().Set("error", "invalid_token"),
+                       net::HTTP_NOT_FOUND, http_response);
+    return;
+  }
+
+  http_response->set_code(net::HTTP_OK);
+}
+
+void FakeGaia::HandleRotateBoundCookies(
+    const net::test_server::HttpRequest& request,
+    net::test_server::BasicHttpResponse* http_response) {
+  CHECK(http_response);
+  if (configuration_.rotated_cookies.empty()) {
+    http_response->set_code(net::HTTP_BAD_REQUEST);
+    return;
+  }
+  const GURL url("https://google.com");
+  for (const std::string& cookie_name : configuration_.rotated_cookies) {
+    const std::unique_ptr<net::CanonicalCookie> cookie =
+        net::CanonicalCookie::CreateSanitizedCookie(
+            url, cookie_name, "dummy_value", url.GetHost(), url.GetPath(),
+            /*creation_time=*/base::Time::Now(),
+            /*expiration_time=*/base::Time::Now() + base::Hours(2),
+            /*last_access_time=*/base::Time::Now(),
+            /*secure=*/true, /*http_only=*/true,
+            net::CookieSameSite::UNSPECIFIED, net::COOKIE_PRIORITY_HIGH,
+            /*partition_key=*/std::nullopt, /*status=*/nullptr);
+    http_response->AddCustomHeader(
+        "Set-Cookie", net::CanonicalCookie::BuildCookieAttributesLine(*cookie));
+  }
   http_response->set_code(net::HTTP_OK);
 }
 
@@ -985,7 +1281,7 @@ std::optional<GURL> FakeGaia::GetSamlRedirectUrl(
 
   // First check sso profile.
   std::string sso_profile;
-  GetQueryParameter(request_url.query(), "sso_profile", &sso_profile);
+  GetQueryParameter(request_url.GetQuery(), "sso_profile", &sso_profile);
   auto itr_sso = saml_sso_profile_url_map_.find(sso_profile);
   if (itr_sso != saml_sso_profile_url_map_.end()) {
     return itr_sso->second;
@@ -993,7 +1289,7 @@ std::optional<GURL> FakeGaia::GetSamlRedirectUrl(
 
   // If we failed to find redirect url based on sso profile, try with domain.
   std::string domain;
-  GetQueryParameter(request_url.query(), "domain", &domain);
+  GetQueryParameter(request_url.GetQuery(), "domain", &domain);
   auto itr_domain = saml_domain_url_map_.find(domain);
   if (itr_domain != saml_domain_url_map_.end()) {
     return itr_domain->second;

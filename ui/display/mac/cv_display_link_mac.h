@@ -14,7 +14,8 @@
 
 #include "base/apple/scoped_typeref.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -38,7 +39,7 @@ class CVDisplayLinkMac : public DisplayLinkMac {
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) override;
 
-  double GetRefreshRate() const override;
+  base::TimeDelta GetRefreshInterval() const override;
   void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                base::TimeDelta& max_interval,
                                base::TimeDelta& granularity) const override;

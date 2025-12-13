@@ -16,11 +16,18 @@ save_hash() {
   fi
 }
 
-case "$1" in
-  "install" | "upgrade")
-    rm -f "$HASHES_FILE"
-    save_hash /opt/google/chrome-remote-desktop
-    ;;
-esac
+if [[ "$1" == "install" || "$1" == "upgrade" ]]; then
+  rm -f "$HASHES_FILE"
+  save_hash /opt/google/chrome-remote-desktop
+
+  if [[ "$1" == "install" ]]; then
+    # Create defaults file.
+    DEFAULTS_FILE="/etc/default/chrome-remote-desktop"
+    if [ ! -e "$DEFAULTS_FILE" ]; then
+      echo 'repo_add_once="true"' > "$DEFAULTS_FILE"
+      echo 'repo_reenable_on_distupgrade="true"' >> "$DEFAULTS_FILE"
+    fi
+  fi
+fi
 
 #DEBHELPER#

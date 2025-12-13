@@ -70,8 +70,10 @@ source_set("impl") {
       "//chrome/browser/profiles:profile_util",
       "//chrome/browser/sync",
       "//chrome/browser/sync:factories",
+      "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/webauthn",
       "//components/autofill/content/browser",
       "//components/autofill/core/browser",
@@ -101,6 +103,7 @@ source_set("impl") {
       "//ui/gfx/geometry",
       "//url",
     ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
@@ -122,6 +125,7 @@ if (!is_android) {
       "//chrome/app:generated_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser/ui:test_support",
+      "//chrome/browser/ui/passwords:test_support_ui",
       "//chrome/test:test_support",
       "//components/autofill/content/browser",
       "//components/autofill/content/browser:test_support",

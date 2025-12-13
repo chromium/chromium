@@ -1,0 +1,14 @@
+# TODO(crbug.com/431824306): These tests are failing on tvOS. Remove lines if
+# more tests are supported on the platform.
+-FormAutofillUtilsTest.InferLabelForElementTest
+-InnerTextBrowserTest.Basic
+-RenderProcessHostProxyTest.RPHDeletionInvalidatesProxy
+-ResourceAttrMemoryMeasurementProviderBrowserTest.TwoFramesSeparateProcesses
+-InputBrowserTest.RenderInputRouterNotCreatedOnNonAndroid
+-PerformanceManagerBrowserTest.UsesWebRTC
+-FormAutofillUtilsTest.ExtractFormData_FormControlTypes
+
+# TODO(crbug.com/436306678): The test has been failing on tvOS due to its
+# single-process mode, which leads to a NOTREACHED() assertion.
+# (Refer https://crrev.com/c/6801248)
+-BadMessageBrowserTest.CheckFrameNotPrerendering_Prerendering

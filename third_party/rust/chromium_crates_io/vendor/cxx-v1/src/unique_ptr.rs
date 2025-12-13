@@ -1,8 +1,8 @@
 use crate::cxx_vector::{CxxVector, VectorElement};
+use crate::extern_type::ExternType;
 use crate::fmt::display;
 use crate::kind::Trivial;
 use crate::string::CxxString;
-use crate::ExternType;
 #[cfg(feature = "std")]
 use alloc::string::String;
 #[cfg(feature = "std")]
@@ -305,8 +305,6 @@ where
         self.pin_mut().stream_position()
     }
 
-    #[cfg(seek_relative)]
-    #[allow(clippy::incompatible_msrv)]
     #[inline]
     fn seek_relative(&mut self, offset: i64) -> io::Result<()> {
         self.pin_mut().seek_relative(offset)
@@ -424,23 +422,23 @@ unsafe impl UniquePtrTarget for CxxString {
     fn __null() -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
         unsafe {
-            unique_ptr_std_string_null(&mut repr);
+            unique_ptr_std_string_null(&raw mut repr);
         }
         repr
     }
     unsafe fn __raw(raw: *mut Self) -> MaybeUninit<*mut c_void> {
         let mut repr = MaybeUninit::uninit();
-        unsafe { unique_ptr_std_string_raw(&mut repr, raw) }
+        unsafe { unique_ptr_std_string_raw(&raw mut repr, raw) }
         repr
     }
     unsafe fn __get(repr: MaybeUninit<*mut c_void>) -> *const Self {
-        unsafe { unique_ptr_std_string_get(&repr) }
+        unsafe { unique_ptr_std_string_get(&raw const repr) }
     }
     unsafe fn __release(mut repr: MaybeUninit<*mut c_void>) -> *mut Self {
-        unsafe { unique_ptr_std_string_release(&mut repr) }
+        unsafe { unique_ptr_std_string_release(&raw mut repr) }
     }
     unsafe fn __drop(mut repr: MaybeUninit<*mut c_void>) {
-        unsafe { unique_ptr_std_string_drop(&mut repr) }
+        unsafe { unique_ptr_std_string_drop(&raw mut repr) }
     }
 }
 

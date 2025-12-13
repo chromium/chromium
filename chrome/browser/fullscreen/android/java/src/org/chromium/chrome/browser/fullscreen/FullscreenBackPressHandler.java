@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.fullscreen;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
@@ -31,7 +31,7 @@ public class FullscreenBackPressHandler implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mFullscreenManager.getPersistentFullscreenModeSupplier();
     }
 }

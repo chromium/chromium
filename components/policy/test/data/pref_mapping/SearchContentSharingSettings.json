@@ -1,0 +1,20 @@
+[
+    {
+      "os": [
+        "android",
+        "win",
+        "linux",
+        "mac",
+        "chromeos"
+      ],
+      "simple_policy_pref_mapping_test": {
+        "pref_name": "contextual_search.search_content_sharing_settings",
+        "default_value": 0,
+        "default_for_enterprise_users": 0,
+        "values_to_test": [
+          1,
+          0
+        ]
+      }
+    }
+]

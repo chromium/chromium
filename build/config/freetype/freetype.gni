@@ -2,18 +2,27 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
+
 declare_args() {
-  # Blink needs a recent and properly build-configured FreeType version to
-  # support OpenType variations, color emoji and avoid security bugs. By default
-  # we ship and link such a version as part of Chrome. For distributions that
-  # prefer to keep linking to the version the system, FreeType must be newer
-  # than version 2.7.1 and have color bitmap support compiled in. WARNING:
+  # Blink no longer needs FreeType. PDFium needs a recent and properly
+  # build-configured FreeType version to work and avoid security bugs.
+  # By default we ship and link such a version as part of the Chrome build
+  # where needed for PDFium.
+  # For distributions that prefer to keep linking to the version the system,
+  # FreeType must be newer than version 2.7.1.
+  # SECURITY WARNING:
   # System FreeType configurations other than as described WILL INTRODUCE TEXT
-  # RENDERING AND SECURITY REGRESSIONS.
+  # RENDERING AND SECURITY REGRESSIONS. For concrete CVE examples, see
+  # https://developer.chrome.com/blog/memory-safety-fonts
   use_system_freetype = false
 
-  # Use FreeType for font rendering. If this is set to false, FreeType is
-  # replaced with the Rust-based Fontations set of libraries plus Skia
-  # path rendering.
-  enable_freetype = true
+  # Use FreeType for PDF font rendering on Desktop. If this is set to false,
+  # FreeType is completely replaced with the Rust-based Fontations set of
+  # libraries plus Skia path rendering.
+  #
+  # This should be kept in sync with the value of `enable_pdf` in
+  # //pdf/features.gni, but for layering reasons,
+  # we can't import pdf's features.gni here.
+  enable_freetype = !is_android && !is_ios && !is_castos && !is_fuchsia
 }

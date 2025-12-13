@@ -22,9 +22,10 @@
 
 // Constraint for the top of the location bar.
 @property(nonatomic, strong) NSLayoutConstraint* locationBarTopConstraint;
-// Constraint for the bottom of the location bar. Used to move the location bar
-// above the keyboard.
-@property(nonatomic, strong) NSLayoutConstraint* locationBarKeyboardConstraint;
+
+// Whether this toolbar is used and positioned like the primary toolbar.
+// TODO(crbug.com/429955447): Remove when diamond prototype is cleaned.
+@property(nonatomic, assign) BOOL usedAsPrimaryToolbar;
 
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory

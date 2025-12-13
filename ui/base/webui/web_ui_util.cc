@@ -143,7 +143,7 @@ void ParsePathAndImageSpec(const GURL& url,
                            std::string* path,
                            float* scale_factor,
                            int* frame_index) {
-  *path = base::UnescapeBinaryURLComponent(url.path_piece().substr(1));
+  *path = base::UnescapeBinaryURLComponent(url.path().substr(1));
   if (scale_factor)
     *scale_factor = 1.0f;
   if (frame_index)

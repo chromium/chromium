@@ -1,1 +1,1 @@
-mixins: "//content/browser/webid/digital_credentials/COMMON_METADATA"
+mixins: "//content/browser/digital_credentials/COMMON_METADATA"

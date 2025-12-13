@@ -16,13 +16,11 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/synchronization/lock.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"

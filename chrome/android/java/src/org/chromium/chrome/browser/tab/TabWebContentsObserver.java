@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.app.usb.UsbNotificationService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutTabHelper;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
 import org.chromium.chrome.browser.pdf.PdfUtils;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
@@ -130,6 +129,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
     }
 
+    public @Nullable WebContentsObserver getWebContentsObserverForTesting() {
+        return mObserver;
+    }
+
     private void showSadTab(SadTab sadTab) {
         sadTab.show(
                 mTab.getThemedApplicationContext(),
@@ -163,6 +166,10 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void primaryMainFrameRenderProcessGone(@TerminationStatus int terminationStatus) {
+            // If the renderer process was destroyed due to the tab being destroyed, don't try to
+            // handle this or treat it as a tab crash.
+            if (mTab.isDestroyed()) return;
+
             Log.i(
                     TAG,
                     "primaryMainFrameRenderProcessGone() for tab id: "
@@ -356,10 +363,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void onBackgroundColorChanged() {
-            if (ChromeFeatureList.sNavBarColorMatchesTabBackground.isEnabled()) {
-                mTab.changeWebContentBackgroundColor(
-                        assumeNonNull(mTab.getWebContents()).getBackgroundColor());
-            }
+            mTab.changeWebContentBackgroundColor(
+                    assumeNonNull(mTab.getWebContents()).getBackgroundColor());
         }
 
         @Override
@@ -370,17 +375,12 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         @Override
         public void viewportFitChanged(@WebContentsObserver.ViewportFitType int value) {
             DisplayCutoutTabHelper.from(mTab).setViewportFit(value);
-            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
-                DisplayCutoutTabHelper.from(mTab)
-                        .setSafeAreaConstraint(value == ViewportFit.CONTAIN);
-            }
+            DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(value == ViewportFit.CONTAIN);
         }
 
         @Override
         public void safeAreaConstraintChanged(boolean hasConstraint) {
-            if (ChromeFeatureList.sEdgeToEdgeSafeAreaConstraint.isEnabled()) {
-                DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(hasConstraint);
-            }
+            DisplayCutoutTabHelper.from(mTab).setSafeAreaConstraint(hasConstraint);
         }
 
         @Override

@@ -12,7 +12,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

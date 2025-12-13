@@ -4,5 +4,6 @@ tov@chromium.org
 olesiamarukhno@google.com
 fsenra@google.com
 
+per-file abusive_notification_permissions_manager*=skrakowi@chromium.org
 per-file disruptive_notification_permissions_manager*=antoniosartori@chromium.org
 per-file notification_wrapper_android*=antoniosartori@chromium.org

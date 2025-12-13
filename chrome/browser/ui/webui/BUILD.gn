@@ -18,6 +18,14 @@ generate_allowlist_from_histograms_file("webui_url_hashes") {
   allow_list_name = "WebUIUrlHashes"
 }
 
+generate_allowlist_from_histograms_file("webui_hosts") {
+  namespace = "webui_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/page/histograms.xml"
+  output_file = "webui_hosts.h"
+  tag = "variant"
+  allow_list_name = "WebUIHost"
+}
+
 source_set("configs") {
   sources = [
     "chrome_untrusted_web_ui_configs.cc",
@@ -37,17 +45,18 @@ source_set("configs") {
 
   deps = [
     ":webui",
-    "//chrome/browser/optimization_guide:optimization_guide",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/about",
     "//chrome/browser/ui/webui/accessibility",
     "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
+    "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
     "//content/public/browser",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
@@ -56,19 +65,26 @@ source_set("configs") {
   if (!is_android) {
     deps += [
       "//chrome/browser/actor/ui",
+      "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/ui/webui/access_code_cast",
       "//chrome/browser/ui/webui/actor_internals",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
       "//chrome/browser/ui/webui/color_pipeline_internals",
       "//chrome/browser/ui/webui/infobar_internals",
+      "//chrome/browser/ui/webui/legion_internals",
       "//chrome/browser/ui/webui/new_tab_footer",
-      "//chrome/browser/ui/webui/privacy_sandbox",
+      "//chrome/browser/ui/webui/privacy_sandbox:mojo_bindings",
+      "//chrome/browser/ui/webui/reload_button",
+      "//chrome/browser/ui/webui_browser",
     ]
 
     if (!is_chromeos) {
       deps += [ "//chrome/browser/ui/webui/app_home" ]
     }
+  } else {
+    #is_android
+    deps += [ "//chrome/browser/ui/webui/notifications_internals" ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -106,7 +122,7 @@ source_set("configs") {
   }
 
   if (enable_dice_support) {
-    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
+    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation" ]
   }
 
   if (enable_glic) {
@@ -126,11 +142,13 @@ source_set("webui") {
     "current_channel_logo.h",
   ]
 
+  sources += get_target_outputs(":webui_hosts")
   sources += get_target_outputs(":webui_url_hashes")
 
   public_deps = [ "//content/public/browser" ]
 
   deps = [
+    ":webui_hosts",
     ":webui_url_hashes",
     "//chrome/common",
     "//extensions/buildflags",
@@ -151,7 +169,7 @@ if (!is_android) {
     ]
 
     deps = [
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tabs_public",
     ]
   }

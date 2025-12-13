@@ -326,8 +326,8 @@ TEST_F(ImageFrameGeneratorTest,
                                       .SetThreadNameForTest("DecodeThread"));
   PostCrossThreadTask(
       *thread->GetTaskRunner(), FROM_HERE,
-      CrossThreadBindOnce(&DecodeThreadMain, WTF::RetainedRef(generator_),
-                          WTF::RetainedRef(segment_reader_)));
+      CrossThreadBindOnce(&DecodeThreadMain, blink::RetainedRef(generator_),
+                          blink::RetainedRef(segment_reader_)));
   thread.reset();
   EXPECT_EQ(2, decode_request_count_);
   EXPECT_EQ(1, decoders_destroyed_);

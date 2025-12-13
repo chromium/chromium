@@ -22,7 +22,7 @@ static_library("performance") {
     "//base",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/profiles",
-    "//chromeos/ash/components/dbus/concierge:concierge",
+    "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",

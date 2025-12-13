@@ -10,28 +10,32 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   TestRunner.addResult(
       `Ensures the icon is properly displayed when network request blocking setting is enabled/disabled.\n`);
 
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(false);
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = false;
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.clear();
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = true;
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([{url: '*', enabled: true}]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.add(
+    SDK.NetworkManager.RequestCondition.createFromSetting({url: '*://*:*', enabled: true})
+  );
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(false);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = false;
   dumpIconResult();
 
   TestRunner.addResult('Loading Network Module');
   await import('devtools/panels/network/network.js');
   TestRunner.addResult('Network Module Loaded');
 
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(false);
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = false;
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.clear();
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = true;
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([{url: '*', enabled: true}]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.add(
+    SDK.NetworkManager.RequestCondition.createFromSetting({url: '*://*:*', enabled: true})
+  );
   dumpIconResult();
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(false);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = false;
   dumpIconResult();
   TestRunner.completeTest();
 

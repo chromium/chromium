@@ -4,9 +4,9 @@
 
 source_set("android_lib") {
   public_deps = [
-    "//ash/public/cpp:cpp",
+    "//ash/public/cpp",
     "//chrome/app:generated_resources_grit",
-    "//extensions/browser/api/automation_internal:automation_internal",
+    "//extensions/browser/api/automation_internal",
     "//services/accessibility/android/public/mojom",
   ]
 

@@ -7,6 +7,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/attribution-reporting/resources/helpers.js"></script>
+<script src="resources/initiator-type-test.js"></script>
 <script>
 const uuidPattern = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
 
@@ -57,4 +58,6 @@ attribution_reporting_promise_test(async t => {
 
   validateReportHeaders(payload.reports[0].headers);
 }, 'Ensure attribution report is received.');
+
+initiator_type_test('reporting_origin.py?pipe=header', 'other', "attributionsrc resource");
 </script>

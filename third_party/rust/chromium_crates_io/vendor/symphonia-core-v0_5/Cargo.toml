@@ -13,8 +13,14 @@
 edition = "2018"
 rust-version = "1.53"
 name = "symphonia-core"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Project Symphonia shared structs, traits, and features."
 homepage = "https://github.com/pdeljanov/Symphonia"
 readme = "README.md"
@@ -32,6 +38,21 @@ categories = [
 ]
 license = "MPL-2.0"
 repository = "https://github.com/pdeljanov/Symphonia"
+
+[features]
+default = []
+opt-simd = [
+    "opt-simd-sse",
+    "opt-simd-avx",
+    "opt-simd-neon",
+]
+opt-simd-avx = ["rustfft/avx"]
+opt-simd-neon = ["rustfft/neon"]
+opt-simd-sse = ["rustfft/sse"]
+
+[lib]
+name = "symphonia_core"
+path = "src/lib.rs"
 
 [dependencies.arrayvec]
 version = "0.7.1"
@@ -52,14 +73,3 @@ version = "0.4"
 version = "6.1.0"
 optional = true
 default-features = false
-
-[features]
-default = []
-opt-simd = [
-    "opt-simd-sse",
-    "opt-simd-avx",
-    "opt-simd-neon",
-]
-opt-simd-avx = ["rustfft/avx"]
-opt-simd-neon = ["rustfft/neon"]
-opt-simd-sse = ["rustfft/sse"]

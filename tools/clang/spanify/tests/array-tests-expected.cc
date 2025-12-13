@@ -87,6 +87,13 @@ void fct() {
   static auto buf10 = std::to_array<const volatile char*>({"1", "2", "3"});
   buf10[UnsafeIndex()] = nullptr;
 
+  int buf11[] = {1, 2, 3};
+  int* ptr11_type;
+  // Expected rewrite:
+  // base::span<int> ptr11 = buf11;
+  base::span<int> ptr11 = buf11;
+  ptr11[UnsafeIndex()] = 11;
+
   std::ignore = kPropertyVisitedIDs[UnsafeIndex()];
 }
 
@@ -191,8 +198,13 @@ void test_for_loop_with_c_array() {
   for (base::span<int> it = base::SpanificationArrayBegin(arr);
        it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
   }
-  // TODO(yukishiino): Support `auto` + `cbegin/cend`.
-  for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  // Expected rewrite:
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
@@ -249,8 +261,13 @@ void test_for_loop_with_std_array() {
   for (base::span<int> it = base::SpanificationArrayBegin(arr);
        it != base::SpanificationArrayEnd(arr); base::PreIncrementSpan(it)) {
   }
-  // TODO(yukishiino): Support `auto` + `cbegin/cend`.
-  for (auto it = std::cbegin(arr); it != std::cend(arr); ++it) {
+  // Expected rewrite:
+  // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+  //      it != base::SpanificationArrayCEnd(arr);
+  //      base::PreIncrementSpan(it)) {
+  // }
+  for (base::span<const int> it = base::SpanificationArrayCBegin(arr);
+       it != base::SpanificationArrayCEnd(arr); base::PreIncrementSpan(it)) {
   }
   // Expected rewrite:
   // for (base::span<const int> it = base::SpanificationArrayCBegin(arr);

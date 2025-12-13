@@ -75,9 +75,8 @@ class CORE_EXPORT V8Initializer {
   CodeGenerationCheckCallbackInMainThread(v8::Local<v8::Context> context,
                                           v8::Local<v8::Value> source,
                                           bool is_code_like);
-  static bool WasmCodeGenerationCheckCallbackInMainThread(
-      v8::Local<v8::Context> context,
-      v8::Local<v8::String> source);
+  static bool WasmCodeGenerationCheckCallback(v8::Local<v8::Context> context,
+                                              v8::Local<v8::String> source);
   static void FailedAccessCheckCallbackInMainThread(
       v8::Local<v8::Object> holder,
       v8::AccessType type,

@@ -24,7 +24,7 @@
 @end
 
 // Cell class associated to BYOTextFieldItem.
-@interface BYOTextFieldCell : TableViewCell
+@interface BYOTextFieldCell : LegacyTableViewCell
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CELLS_BYO_TEXTFIELD_ITEM_H_

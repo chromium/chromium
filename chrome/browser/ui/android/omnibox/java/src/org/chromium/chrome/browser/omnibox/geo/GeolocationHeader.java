@@ -24,6 +24,7 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -31,13 +32,17 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.components.permissions.PermissionsAndroidFeatureMap;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 
@@ -91,10 +96,19 @@ public class GeolocationHeader {
 
     private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpate;
     private static boolean sGeolocationPrimed;
-    private static boolean sAppPermissionGrantedForTesting;
-    private static boolean sUseAppPermissionGrantedForTesting;
+    private static boolean sHasCoarsePermissionForTesting;
+    private static boolean sHasFinePermissionForTesting;
+    private static boolean sUseFakePermissionForTesting;
     private static boolean sCurrentLocationRequested;
     private static @Nullable Location sFusedLocation;
+    private static @Nullable Runnable sPrimeLocationForGeoHeaderIfEnabledForTesting;
+    private static @Nullable Runnable sStopListeningForLocationUpdatesForTesting;
+
+    public static void setPrimeLocationForGeoHeaderIfEnabledForTesting(
+            @Nullable Runnable runnable) {
+        sPrimeLocationForGeoHeaderIfEnabledForTesting = runnable;
+        ResettersForTesting.register(() -> sPrimeLocationForGeoHeaderIfEnabledForTesting = null);
+    }
 
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
@@ -105,15 +119,22 @@ public class GeolocationHeader {
      */
     public static void primeLocationForGeoHeaderIfEnabled(
             Profile profile, TemplateUrlService templateService) {
+        if (sPrimeLocationForGeoHeaderIfEnabledForTesting != null) {
+            sPrimeLocationForGeoHeaderIfEnabledForTesting.run();
+            return;
+        }
         if (profile == null) return;
-        if (!hasGeolocationPermission()) return;
+        if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) return;
         if (!isGeoHeaderEnabledForDse(profile, templateService)) return;
 
         sGeolocationPrimed = true;
 
+        String dseUrl = templateService.getUrlForSearchQuery(DUMMY_URL_QUERY);
+        boolean useFine = canUseFineLocation(profile, Uri.parse(dseUrl));
+
         boolean listeningForFusedLocationProviderUpdates =
                 OmniboxFeatures.sUseFusedLocationProvider.isEnabled()
-                        && startListeningForLocationUpdates();
+                        && startListeningForLocationUpdates(useFine);
         if (!listeningForFusedLocationProviderUpdates) {
             GeolocationTracker.refreshLastKnownLocation(
                     ContextUtils.getApplicationContext(), REFRESH_LOCATION_AGE);
@@ -126,7 +147,7 @@ public class GeolocationHeader {
      * <p>Locations are requested to be less than REFRESH_LOCATION_AGE minutes old and have a
      * granularity matching the app's permission level.
      */
-    private static boolean startListeningForLocationUpdates() {
+    private static boolean startListeningForLocationUpdates(boolean requestFineLocation) {
         if (sCurrentLocationRequested) return true;
         try (TraceEvent e =
                 TraceEvent.scoped("GeolocationHeader.startListeningForLocationUpdates")) {
@@ -143,6 +164,17 @@ public class GeolocationHeader {
                         sCurrentLocationRequested = false;
                     },
                     updateDuration);
+
+            int granularity = Granularity.GRANULARITY_PERMISSION_LEVEL;
+            if (PermissionsAndroidFeatureMap.isEnabled(
+                    PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
+                if (requestFineLocation) {
+                    granularity = Granularity.GRANULARITY_FINE;
+                } else {
+                    granularity = Granularity.GRANULARITY_COARSE;
+                }
+            }
+
             var locationRequest =
                     new LocationRequest.Builder(
                                     OmniboxFeatures.sGeolocationRequestUpdateInterval.getValue())
@@ -150,7 +182,7 @@ public class GeolocationHeader {
                             .setMaxUpdateAgeMillis(
                                     OmniboxFeatures.sGeolocationRequestMaxLocationAge.getValue())
                             .setPriority(OmniboxFeatures.sGeolocationRequestPriority.getValue())
-                            .setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+                            .setGranularity(granularity)
                             .build();
             fusedLocationClient.requestLocationUpdates(locationRequest, sLocationListener, null);
             sCurrentLocationRequested = true;
@@ -162,8 +194,17 @@ public class GeolocationHeader {
         return sCurrentLocationRequested;
     }
 
+    public static void setStopListeningForLocationUpdatesForTesting(@Nullable Runnable runnable) {
+        sStopListeningForLocationUpdatesForTesting = runnable;
+        ResettersForTesting.register(() -> sStopListeningForLocationUpdatesForTesting = null);
+    }
+
     /** Stop requesting and listening for location updates from FusedLocationProvider. */
     public static void stopListeningForLocationUpdates() {
+        if (sStopListeningForLocationUpdatesForTesting != null) {
+            sStopListeningForLocationUpdatesForTesting.run();
+            return;
+        }
         if (!sCurrentLocationRequested) return;
         FusedLocationProviderClient fusedLocationClient =
                 LocationServices.getFusedLocationProviderClient(
@@ -204,7 +245,7 @@ public class GeolocationHeader {
             Uri uri = Uri.parse(url);
             if (!UrlConstants.HTTPS_SCHEME.equals(uri.getScheme())) return HeaderState.NOT_HTTPS;
 
-            if (!hasGeolocationPermission()) {
+            if (!hasAppGeolocationPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
                 return HeaderState.LOCATION_PERMISSION_BLOCKED;
             }
 
@@ -248,7 +289,8 @@ public class GeolocationHeader {
             long locationAge = Long.MAX_VALUE;
             @HeaderState int headerState = geoHeaderStateForUrl(profile, service, url);
             if (headerState == HeaderState.HEADER_ENABLED) {
-                locationToAttach = getLastKnownLocation();
+                boolean useFine = canUseFineLocation(profile, Uri.parse(url));
+                locationToAttach = getLastKnownLocation(useFine);
                 if (locationToAttach != null) {
                     locationAge = GeolocationTracker.getLocationAge(locationToAttach);
                     if (locationAge > MAX_LOCATION_AGE) {
@@ -273,20 +315,27 @@ public class GeolocationHeader {
         }
     }
 
-    @CalledByNative
-    private static boolean hasGeolocationPermission() {
-        if (sUseAppPermissionGrantedForTesting) return sAppPermissionGrantedForTesting;
+    /**
+     * Checks whether the app has been granted a specific geolocation permission.
+     *
+     * <p>This can be overridden for testing purposes.
+     *
+     * @param permission The permission to check, e.g., {@link
+     *     Manifest.permission#ACCESS_COARSE_LOCATION}.
+     * @return True if the app has the permission, false otherwise.
+     */
+    static boolean hasAppGeolocationPermission(String permission) {
+        if (sUseFakePermissionForTesting) {
+            return permission.equals(Manifest.permission.ACCESS_FINE_LOCATION)
+                    ? sHasFinePermissionForTesting
+                    : sHasCoarsePermissionForTesting;
+        }
+
         int pid = Process.myPid();
         int uid = Process.myUid();
-        if (ApiCompatibilityUtils.checkPermission(
-                        ContextUtils.getApplicationContext(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        pid,
-                        uid)
-                != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
+        return ApiCompatibilityUtils.checkPermission(
+                        ContextUtils.getApplicationContext(), permission, pid, uid)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -297,27 +346,60 @@ public class GeolocationHeader {
         // TODO(raymes): The call to isDseOrigin is only needed if this could be called for
         // an origin that isn't the default search engine. Otherwise remove this line.
         boolean isDseOrigin = WebsitePreferenceBridge.isDSEOrigin(profile, uri.toString());
-        @ContentSettingValues
-        @Nullable Integer settingValue = locationContentSettingForUrl(profile, uri);
+        if (!isDseOrigin) return true;
 
-        boolean enabled =
-                isDseOrigin && settingValue != null && settingValue == ContentSettingValues.ALLOW;
-        return !enabled;
+        final GeolocationSetting setting = getGeolocationSettingForUrl(profile, uri);
+        return setting == null
+                || (setting.mPrecise != ContentSetting.ALLOW
+                        && setting.mApproximate != ContentSetting.ALLOW);
     }
 
     /**
-     * Returns the location permission for sharing their location with url (e.g. via the geolocation
-     * infobar).
+     * Returns the {@link GeolocationSetting} for the given URL, which specifies the level of
+     * location access (precise and/or approximate) granted to the origin. Returns {@code null} if
+     * the setting cannot be determined.
      */
-    private static @ContentSettingValues @Nullable Integer locationContentSettingForUrl(
+    private static @Nullable GeolocationSetting getGeolocationSettingForUrl(
             Profile profile, Uri uri) {
-        return PermissionInfo.getContentSetting(
-                profile, ContentSettingsType.GEOLOCATION, uri.toString(), null);
+        if (PermissionsAndroidFeatureMap.isEnabled(
+                PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION)) {
+            return WebsitePreferenceBridgeJni.get()
+                    .getGeolocationSettingForOrigin(
+                            profile,
+                            ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                            uri.toString(),
+                            uri.toString());
+        } else {
+            @ContentSetting
+            final Integer setting =
+                    PermissionInfo.getContentSetting(
+                            profile, ContentSettingsType.GEOLOCATION, uri.toString(), null);
+            if (setting == null) return null;
+            // When the approximate location feature is disabled, there's only one geolocation
+            // permission. We treat it as the 'precise' setting and duplicate it for
+            // 'approximate' to maintain a consistent GeolocationSetting object.
+            return new GeolocationSetting(setting, setting);
+        }
     }
 
-    static void setAppPermissionGrantedForTesting(boolean appPermissionGrantedForTesting) {
-        sAppPermissionGrantedForTesting = appPermissionGrantedForTesting;
-        sUseAppPermissionGrantedForTesting = true;
+    /**
+     * Returns true if fine-grained (precise) location can be used for the given URL. This requires
+     * both the app to have the ACCESS_FINE_LOCATION permission and the user to have granted the
+     * site permission for precise location.
+     */
+    private static boolean canUseFineLocation(Profile profile, Uri uri) {
+        final GeolocationSetting setting = getGeolocationSettingForUrl(profile, uri);
+        final boolean hasAppPermission =
+                hasAppGeolocationPermission(Manifest.permission.ACCESS_FINE_LOCATION);
+        final boolean hasSitePermission =
+                setting != null && setting.mPrecise == ContentSetting.ALLOW;
+        return hasAppPermission && hasSitePermission;
+    }
+
+    static void setAppPermissionsForTesting(boolean hasCoarse, boolean hasFine) {
+        sHasCoarsePermissionForTesting = hasCoarse;
+        sHasFinePermissionForTesting = hasFine;
+        sUseFakePermissionForTesting = true;
     }
 
     static boolean isGeolocationPrimedForTesting() {
@@ -325,11 +407,13 @@ public class GeolocationHeader {
     }
 
     @VisibleForTesting
-    static @Nullable Location getLastKnownLocation() {
+    static @Nullable Location getLastKnownLocation(boolean useFine) {
         if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled() && sFusedLocation != null) {
             return sFusedLocation;
         }
-        return GeolocationTracker.getLastKnownLocation(ContextUtils.getApplicationContext());
+
+        return GeolocationTracker.getLastKnownLocation(
+                ContextUtils.getApplicationContext(), useFine);
     }
 
     /** Encodes location into proto encoding. */

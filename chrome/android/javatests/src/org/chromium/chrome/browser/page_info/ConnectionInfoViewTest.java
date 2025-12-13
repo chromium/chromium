@@ -38,7 +38,7 @@ public class ConnectionInfoViewTest {
     @Feature({"ConnectionInfoView"})
     public void testShow() throws InterruptedException {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
-        WebContents webContents = page.webContentsElement.get();
+        WebContents webContents = page.webContentsElement.value();
         ChromeTabbedActivity activity = page.getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () ->

@@ -8,14 +8,14 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 
 namespace ash {
 
 using BirchBarContextMenuModelTest = AshTestBase;
 
 TEST_F(BirchBarContextMenuModelTest, WeatherDisabledWhenGeolocationDisabled) {
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kDisallowed);
 
   BirchBarContextMenuModel model(
@@ -35,7 +35,7 @@ TEST_F(BirchBarContextMenuModelTest, WeatherDisabledWhenGeolocationDisabled) {
 }
 
 TEST_F(BirchBarContextMenuModelTest, WeatherEnabledWhenGeolocationEnabled) {
-  SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+  SystemLocationProvider::GetInstance()->SetGeolocationAccessLevel(
       GeolocationAccessLevel::kAllowed);
 
   BirchBarContextMenuModel model(

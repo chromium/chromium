@@ -7,6 +7,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/tab_interface.h"
 
 // static
 std::unique_ptr<AutoPictureInPictureTabObserverHelperBase>
@@ -108,8 +110,15 @@ void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
       return;
     }
 
+    // When an inactive tab is in a Split View with the active tab, treat it as
+    // active.
+    const tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
+    const tabs::TabInterface* observed_tab =
+        tabs::TabInterface::GetFromContents(GetObservedWebContents());
     is_tab_activated_ =
-        tab_strip_model->GetActiveWebContents() == GetObservedWebContents();
+        (tab_strip_model->GetActiveWebContents() == GetObservedWebContents()) ||
+        (active_tab->IsSplit() &&
+         active_tab->GetSplit() == observed_tab->GetSplit());
   }
 }
 

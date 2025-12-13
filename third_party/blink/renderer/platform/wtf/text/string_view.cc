@@ -113,9 +113,7 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
           DCHECK_LE(characters[result.consumed], 0xDFFF);
           // There should be room left, since one UChar hasn't been
           // converted.
-          auto [replacement_buffer, rest] = buffer.split_at<3u>();
-          PutUTF8Triple(replacement_buffer, uchar::kReplacementCharacter);
-          buffer = rest;
+          PutUTF8Triple(buffer.take_first<3u>(), uchar::kReplacementCharacter);
           result.consumed++;
         }
         characters = characters.subspan(result.consumed);
@@ -299,6 +297,15 @@ StringView StringView::LowerASCIIMaybeUsingBuffer(
     StackBackingStore& buffer) const {
   return ConvertAsciiCase(*this, LowerConverter(),
                           StackStringViewAllocator(buffer));
+}
+
+int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b) {
+  if (a.Is8Bit()) {
+    return b.Is8Bit() ? CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span8())
+                      : CodeUnitCompareIgnoringAsciiCase(a.Span8(), b.Span16());
+  }
+  return b.Is8Bit() ? CodeUnitCompareIgnoringAsciiCase(a.Span16(), b.Span8())
+                    : CodeUnitCompareIgnoringAsciiCase(a.Span16(), b.Span16());
 }
 
 UChar32 StringView::CodepointAt(unsigned i) const {

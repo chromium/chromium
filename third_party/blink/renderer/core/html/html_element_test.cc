@@ -253,7 +253,7 @@ TEST_F(HTMLElementTest,
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
+TEST_F(HTMLElementTest, MayBeImplicitAnchor) {
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -266,23 +266,23 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
   target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor2"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
   target->removeAttribute(html_names::kAnchorAttr);
 
   EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
+TEST_F(HTMLElementTest, MayBeImplicitAnchorViaElementAttr) {
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -295,26 +295,26 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
   target->setAnchorElementForBinding(anchor2);
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
   target->setAnchorElementForBinding(nullptr);
 
   EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
   target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
@@ -330,42 +330,15 @@ TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
   anchor1->setAttribute(html_names::kIdAttr, AtomicString("anchor2"));
   anchor2->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
-}
-
-TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
-  SetBodyInnerHTML(R"HTML(
-    <div id="anchor"></div>
-    <div id="target1" anchor="anchor"></div>
-    <div id="target2"></div>
-  )HTML");
-
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("target1")));
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("target2")));
-
-  target2->setAnchorElementForBinding(anchor);
-
-  EXPECT_EQ(target1->anchorElement(), anchor);
-  EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
-
-  target1->remove();
-  target2->remove();
-
-  EXPECT_FALSE(target1->anchorElement());
-  EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
@@ -383,14 +356,14 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 
   EXPECT_FALSE(target1->anchorElement());
   EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_FALSE(anchor->MayBeImplicitAnchor());
 
   GetDocument().body()->appendChild(target1);
   GetDocument().body()->appendChild(target2);
 
   EXPECT_EQ(target1->anchorElement(), anchor);
   EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {

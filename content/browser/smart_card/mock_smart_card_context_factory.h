@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 #define CONTENT_BROWSER_SMART_CARD_MOCK_SMART_CARD_CONTEXT_FACTORY_H_
 
-#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,7 +21,7 @@ class MockSmartCardContextFactory
   mojo::PendingRemote<device::mojom::SmartCardContextFactory> GetRemote();
 
   // `device::mojom::SmartCardContextFactory` overrides:
-  void CreateContext(CreateContextCallback) override;
+  MOCK_METHOD(void, CreateContext, (CreateContextCallback), (override));
 
   // `device::mojom::SmartCardContext` overrides:
   MOCK_METHOD(void, ListReaders, (ListReadersCallback callback), (override));
@@ -55,6 +54,8 @@ class MockSmartCardContextFactory
   // Expect a ListReaders() call. Will return `readers`.
   void ExpectListReaders(std::vector<std::string> readers);
   void ExpectListReadersError(device::mojom::SmartCardError error);
+
+  void ExpectCreateContextError(device::mojom::SmartCardError error);
 
   void ClearContextReceivers();
 

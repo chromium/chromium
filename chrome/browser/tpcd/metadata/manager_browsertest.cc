@@ -9,6 +9,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -18,9 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service.h"
-#include "chrome/browser/tpcd/support/top_level_trial_service_factory.h"
-#include "chrome/browser/tpcd/support/validity_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_waiter.h"
@@ -78,11 +76,6 @@ Profile* CreateRegularProfile() {
   return profile_manager->GetProfile(new_path);
 }
 #endif
-
-const char kThirdPartyCookieAllowMechanismHistogram[] =
-    "PageLoad.Clients.TPCD.CookieAccess.ThirdPartyCookieAllowMechanism3";
-using ThirdPartyCookieAllowMechanism =
-    content_settings::CookieSettingsBase::ThirdPartyCookieAllowMechanism;
 }  // namespace
 
 class ManagerBrowserTest : public InProcessBrowserTest {
@@ -93,13 +86,8 @@ class ManagerBrowserTest : public InProcessBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {content_settings::features::kTrackingProtection3pcd,
          net::features::kTpcdMetadataGrants,
-         net::features::kTpcdMetadataStageControl,
-         net::features::kTopLevelTpcdTrialSettings},
+         net::features::kTpcdMetadataStageControl},
         {});
-
-    // Disable the validity service so it doesn't remove manually created
-    // trial settings.
-    tpcd::trial::ValidityService::DisableForTesting();
   }
   ~ManagerBrowserTest() override = default;
 
@@ -321,112 +309,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest, SuccessfullyUpdated) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
-                       TpcdDtGracePeriodEnforced_ValidDtToken) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  const GURL first_party_url = https_server()->GetURL(kFirstPartyHost, "/");
-  const GURL third_party_url_1 = https_server()->GetURL(kThirdPartyHost1, "/");
-  const GURL third_party_url_2 = https_server()->GetURL(kThirdPartyHost2, "/");
-  const GURL third_party_url_3 = https_server()->GetURL(kThirdPartyHost3, "/");
-
-  const std::string secondary_pattern_spec =
-      ContentSettingsPattern::FromURLNoWildcard(first_party_url).ToString();
-  const std::string primary_pattern_spec_1 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_1).ToString();
-  const std::string primary_pattern_spec_2 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_2).ToString();
-  const std::string primary_pattern_spec_3 =
-      ContentSettingsPattern::FromURLNoWildcard(third_party_url_3).ToString();
-
-  Metadata metadata;
-
-  const uint32_t dtrp_guarantees_grace_period_forced_on = 0;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec_1, secondary_pattern_spec,
-      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_on);
-
-  const uint32_t dtrp_guarantees_grace_period_forced_off = 100;
-  tpcd::metadata::helpers::AddEntryToMetadata(
-      metadata, primary_pattern_spec_2, secondary_pattern_spec,
-      Parser::kSource1pDt, dtrp_guarantees_grace_period_forced_off);
-
-  tpcd::metadata::helpers::AddEntryToMetadata(metadata, primary_pattern_spec_3,
-                                              secondary_pattern_spec,
-                                              Parser::kSourceCriticalSector);
-
-  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 0u);
-  MockComponentInstallation(metadata);
-  EXPECT_EQ(GetCookieSettings()->GetTpcdMetadataGrants().size(), 3u);
-
-  auto* service = tpcd::trial::TopLevelTrialServiceFactory::GetForProfile(
-      browser()->profile());
-  auto embedder_origin = url::Origin::Create(first_party_url);
-  net::CookiePartitionKey cookie_partition_key =
-      net::CookiePartitionKey::FromURLForTesting(embedder_origin.GetURL());
-  service->UpdateTopLevelTrialSettingsForTesting(
-      embedder_origin, /*match_subdomains=*/true, /*enabled=*/true);
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_1, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
-  }
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_2, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowByTopLevel3PCD, 2);
-  }
-
-  EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
-      third_party_url_3, net::SiteForCookies(), embedder_origin, {},
-      cookie_partition_key));
-  {
-    base::HistogramTester histogram_tester;
-    content::CookieChangeObserver observer(GetWebContents(),
-                                           /*num_expected_calls=*/2);
-    NavigateToPageWithFrame(kFirstPartyHost);
-    NavigateFrameTo(kThirdPartyHost3, "/browsing_data/site_data.html");
-    ExpectCookie(GetFrame(), /*expected=*/true);
-    observer.Wait();
-    EXPECT_TRUE(
-        ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::
-            kAllowBy3PCDMetadataSourceCriticalSector,
-        2);
-  }
-}
-
 // This test coverage ensures more specific patterns precede on others.
 IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
                        TpcdDtGracePeriodEnforced_EntryPrecedence_1) {
@@ -475,8 +357,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -485,27 +365,17 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1Sub, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 }
 
@@ -557,25 +427,17 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost1, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_1_sub, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
-
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -584,10 +446,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 }
 
@@ -637,7 +495,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
       third_party_url_1, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -646,33 +503,23 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDMetadataSource1pDt, 2);
   }
 
   EXPECT_FALSE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_2, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     NavigateToPageWithFrame(kFirstPartyHost);
     NavigateFrameTo(kThirdPartyHost2, "/browsing_data/site_data.html");
     ExpectCookie(GetFrame(), /*expected=*/false);
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    EXPECT_EQ(
-        histogram_tester.GetTotalSum(kThirdPartyCookieAllowMechanismHistogram),
-        0);
   }
 
   EXPECT_TRUE(GetCookieSettings()->IsFullCookieAccessAllowed(
       third_party_url_3, net::SiteForCookies(), embedder_origin, {},
       cookie_partition_key));
   {
-    base::HistogramTester histogram_tester;
     content::CookieChangeObserver observer(GetWebContents(),
                                            /*num_expected_calls=*/2);
     NavigateToPageWithFrame(kFirstPartyHost);
@@ -681,12 +528,6 @@ IN_PROC_BROWSER_TEST_F(ManagerBrowserTest,
     observer.Wait();
     EXPECT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-    histogram_tester.ExpectUniqueSample(
-        kThirdPartyCookieAllowMechanismHistogram,
-        ThirdPartyCookieAllowMechanism::
-            kAllowBy3PCDMetadataSourceCriticalSector,
-        2);
   }
 }
 
@@ -708,16 +549,10 @@ class ManagerPrefsBrowserTest
   bool BlockAll3pcToggleEnabled() { return std::get<1>(GetParam()); }
 
   void SimulateTrackingProtectionSettings(Profile* profile = nullptr) {
-    GetPrefs(profile)->SetDefaultPrefValue(
-        prefs::kTrackingProtection3pcdEnabled, base::Value(true));
     EXPECT_TRUE(GetCookieSettings()->ShouldBlockThirdPartyCookies());
 
     GetPrefs(profile)->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
                                   BlockAll3pcToggleEnabled());
-  }
-
-  bool GetTrackingProtection3pcdEnabledPref(Profile* profile = nullptr) {
-    return GetPrefs(profile)->GetBoolean(prefs::kTrackingProtection3pcdEnabled);
   }
 
   bool GetBlockAll3pcToggleEnabledPref(Profile* profile = nullptr) {
@@ -989,7 +824,6 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
         browser()->profile()->GetPrimaryOTRProfile(true);
     EXPECT_TRUE(incognito_profile->IsIncognitoProfile());
     EXPECT_TRUE(incognito_profile->IsOffTheRecord());
-    EXPECT_EQ(GetTrackingProtection3pcdEnabledPref(incognito_profile), true);
     EXPECT_EQ(GetBlockAll3pcToggleEnabledPref(incognito_profile),
               BlockAll3pcToggleEnabled());
     Browser* browser = CreateBrowser(incognito_profile);
@@ -1069,7 +903,6 @@ IN_PROC_BROWSER_TEST_P(ManagerPrefsBrowserTest,
     EXPECT_FALSE(guest_profile->IsIncognitoProfile());
     EXPECT_TRUE(guest_profile->IsOffTheRecord());
     EXPECT_TRUE(guest_profile->IsGuestSession());
-    EXPECT_EQ(GetTrackingProtection3pcdEnabledPref(guest_profile), true);
     EXPECT_EQ(GetBlockAll3pcToggleEnabledPref(guest_profile),
               BlockAll3pcToggleEnabled());
     Browser* browser = CreateBrowser(guest_profile);

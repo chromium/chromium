@@ -250,7 +250,7 @@ class HeadlessBrowserUAHeaderTest : public HeadlessBrowserTest {
   }
 
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
-    auto path = request.GetURL().path();
+    auto path = request.GetURL().GetPath();
     if (path == capture_headers_for_path_) {
       got_headers_ = request.headers;
     }

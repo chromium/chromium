@@ -11,6 +11,7 @@
 #include "base/check_deref.h"
 #include "base/lazy_instance.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/browser_process.h"
@@ -170,7 +171,7 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
       std::make_unique<content::ScopedWebUIControllerFactoryRegistration>(
           webui_controller_factory_.get(),
           ChromeWebUIControllerFactory::GetInstance());
-  webui_controller_factory_->AddFactoryOverride(TestResourceUrl().host(),
+  webui_controller_factory_->AddFactoryOverride(TestResourceUrl().GetHost(),
                                                 test_webui_provider_.Pointer());
   Profile* profile = browser()->profile();
   file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile);
@@ -184,7 +185,7 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
       // Only connect to the DevToolsAgentHost backing the test, others are
       // spawned during the test that are not relevant and cause crashes when
       // attached.
-      return host->GetURL().host() == "webui-test";
+      return host->GetURL().GetHost() == "webui-test";
     });
     coverage_handler_ = std::make_unique<DevToolsAgentCoverageObserver>(
         devtools_code_coverage_dir, std::move(callback));
@@ -194,5 +195,5 @@ void FileManagerJsTestBase::SetUpOnMainThread() {
 void FileManagerJsTestBase::TearDownOnMainThread() {
   InProcessBrowserTest::TearDownOnMainThread();
 
-  webui_controller_factory_->RemoveFactoryOverride(TestResourceUrl().host());
+  webui_controller_factory_->RemoveFactoryOverride(TestResourceUrl().GetHost());
 }

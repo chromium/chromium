@@ -59,16 +59,16 @@ void FlingScheduler::DidStopFlingingOnBrowser(
   host_->GetRenderInputRouter()->DidStopFlinging();
 }
 
-bool FlingScheduler::NeedsBeginFrameForFlingProgress() {
-  return !GetCompositor();
+bool FlingScheduler::ProgressFlingOnFlingStart() {
+  return GetCompositor();
 }
 
 bool FlingScheduler::ShouldUseMobileFlingCurve() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return true;
 #elif BUILDFLAG(IS_CHROMEOS)
-  CHECK(display::Screen::GetScreen());
-  return display::Screen::GetScreen()->InTabletMode();
+  CHECK(display::Screen::Get());
+  return display::Screen::Get()->InTabletMode();
 #else
   return false;
 #endif

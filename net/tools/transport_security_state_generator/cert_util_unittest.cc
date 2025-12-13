@@ -126,6 +126,18 @@ static const char kUnknownPEMHeaders[] =
     "+wIDAQAB\n"
     "-----END OF SOMETHING-----\n";
 
+// A certificate with a P-256 public key in compressed coordinates.
+static const char kCompressedCoordCertPEM[] = R"(-----BEGIN CERTIFICATE-----
+MIIBOjCB4aADAgECAgEBMAoGCCqGSM49BAMCMBwxGjAYBgNVBAMTEUJhc2ljIENv
+bnN0cmFpbnRzMCAXDTAwMDEwMTAwMDAwMFoYDzIxMDAwMTAxMDAwMDAwWjAcMRow
+GAYDVQQDExFCYXNpYyBDb25zdHJhaW50czA5MBMGByqGSM49AgEGCCqGSM49AwEH
+AyIAA5Eq2LxVbZGSZr4q32NCQw2K2UKzSXnDy7dJLCbsdlESozIwMDAPBgNVHRMB
+Af8EBTADAQH/MB0GA1UdDgQWBBSVJnTJEo2ZtBk89CL5Gtu7Yyz74DAKBggqhkjO
+PQQDAgNIADBFAiEA1XIfpXKo6VX4fPYU+vxWQ6YxVPQ6/UjdfDnWePaHdDUCIGkn
+5fQacQUwxxZMqfsFTG0czaflanLgMXTJPKvzzdQW
+-----END CERTIFICATE-----
+)";
+
 TEST(CertUtilTest, GetX509CertificateFromPEM) {
   EXPECT_NE(nullptr, GetX509CertificateFromPEM(kSelfSignedWithCommonNamePEM));
   EXPECT_NE(nullptr, GetX509CertificateFromPEM(kSelfSignedWithoutSubject));
@@ -139,9 +151,8 @@ TEST(CertUtilTest, CalculateSPKIHashFromCertificate) {
   bssl::UniquePtr<X509> cert1 =
       GetX509CertificateFromPEM(kSelfSignedWithCommonNamePEM);
   EXPECT_TRUE(CalculateSPKIHashFromCertificate(cert1.get(), &hash1));
-  std::vector<uint8_t> hash_vector(hash1.span().begin(), hash1.span().end());
   EXPECT_THAT(
-      hash_vector,
+      hash1.span(),
       testing::ElementsAreArray(
           {0xAC, 0xFB, 0x2B, 0xF3, 0x6A, 0x90, 0x47, 0xF1, 0x74, 0xAE, 0xF1,
            0xCE, 0x63, 0x3D, 0xA9, 0x45, 0xCB, 0xA,  0xA7, 0x3F, 0x16, 0x2A,
@@ -151,13 +162,23 @@ TEST(CertUtilTest, CalculateSPKIHashFromCertificate) {
   bssl::UniquePtr<X509> cert2 =
       GetX509CertificateFromPEM(kSelfSignedWithoutCommonNamePEM);
   EXPECT_TRUE(CalculateSPKIHashFromCertificate(cert2.get(), &hash2));
-  std::vector<uint8_t> hash_vector2(hash2.span().begin(), hash2.span().end());
   EXPECT_THAT(
-      hash_vector2,
+      hash2.span(),
       testing::ElementsAreArray(
           {0x40, 0xBC, 0xD6, 0xE4, 0x10, 0x70, 0x37, 0x3C, 0xF7, 0x21, 0x51,
            0xD7, 0x27, 0x64, 0xFD, 0xF1, 0xA,  0x89, 0x0,  0xAD, 0x75, 0xDF,
            0xB3, 0xEA, 0x21, 0xFC, 0x6E, 0x67, 0xD5, 0xAE, 0xA4, 0x94}));
+
+  SPKIHash hash3;
+  bssl::UniquePtr<X509> cert3 =
+      GetX509CertificateFromPEM(kCompressedCoordCertPEM);
+  EXPECT_TRUE(CalculateSPKIHashFromCertificate(cert3.get(), &hash3));
+  EXPECT_THAT(
+      hash3.span(),
+      testing::ElementsAreArray(
+          {0x10, 0x31, 0x07, 0x96, 0xC1, 0x2D, 0x52, 0x13, 0xDD, 0x45, 0xDB,
+           0x6E, 0xA8, 0x69, 0x89, 0xFD, 0x98, 0xFC, 0xAD, 0x96, 0x2E, 0xD8,
+           0x6E, 0xEA, 0x4A, 0xD6, 0x2E, 0xE4, 0x3C, 0x62, 0xDA, 0x6B}));
 }
 
 // Test that the SPKI digest for public key's are calculated correctly.

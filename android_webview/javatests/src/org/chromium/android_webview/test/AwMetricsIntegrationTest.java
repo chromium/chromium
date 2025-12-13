@@ -30,11 +30,10 @@ import org.chromium.android_webview.AwWindowCoverageTracker;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
 import org.chromium.android_webview.metrics.AndroidMetricsLogUploader;
-import org.chromium.android_webview.metrics.AndroidMetricsServiceClient;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.InstallerPackageType;
 import org.chromium.android_webview.metrics.MetricsFilteringDecorator;
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -418,7 +417,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
 
         Assume.assumeTrue(
                 "Build type is userdebug in the test environment, so we expect this to pass.",
-                BuildInfo.isDebugAndroidOrApp());
+                ApkInfo.isDebugAndroidOrApp());
 
         assertEquals(
                 0,
@@ -445,7 +444,7 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AwBrowserProcess.setWebViewPackageName(appPackageName);
-                    AndroidMetricsServiceClient.setInstallerPackageTypeForTesting(
+                    AwMetricsServiceClient.setInstallerPackageTypeForTesting(
                             InstallerPackageType.GOOGLE_PLAY_STORE);
                 });
 

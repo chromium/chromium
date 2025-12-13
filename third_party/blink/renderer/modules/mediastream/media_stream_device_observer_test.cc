@@ -44,11 +44,11 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
   }
 
   void AddStreams(
-      const WTF::String& streams_label,
+      const String& streams_label,
       WebMediaStreamDeviceObserver::OnDeviceStoppedCb device_stopped_callback,
       WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
           request_state_change_callback) {
-    WTF::wtf_size_t previous_stream_size = observer_->label_stream_map_.size();
+    wtf_size_t previous_stream_size = observer_->label_stream_map_.size();
     blink::mojom::blink::StreamDevicesSet stream_devices_set;
     stream_devices_set.stream_devices.push_back(
         blink::mojom::blink::StreamDevices::New(
@@ -79,31 +79,30 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
   }
 
   void CheckStreamDeviceIds(
-      const WTF::Vector<MediaStreamDeviceObserver::Stream>& streams,
+      const Vector<MediaStreamDeviceObserver::Stream>& streams,
       const std::vector<std::string>& expected_labels) const {
     EXPECT_EQ(streams.size(), expected_labels.size());
     for (size_t stream_index = 0; stream_index < streams.size();
          ++stream_index) {
-      EXPECT_EQ(streams[static_cast<WTF::wtf_size_t>(stream_index)]
-                    .video_devices.size(),
-                1u);
-      EXPECT_EQ(streams[static_cast<WTF::wtf_size_t>(stream_index)]
-                    .video_devices[0]
-                    .id,
-                expected_labels[stream_index]);
+      EXPECT_EQ(
+          streams[static_cast<wtf_size_t>(stream_index)].video_devices.size(),
+          1u);
+      EXPECT_EQ(
+          streams[static_cast<wtf_size_t>(stream_index)].video_devices[0].id,
+          expected_labels[stream_index]);
     }
   }
 
-  const WTF::Vector<MediaStreamDeviceObserver::Stream>& GetStreams(
-      const WTF::String& label) const {
+  const Vector<MediaStreamDeviceObserver::Stream>& GetStreams(
+      const String& label) const {
     auto streams_iterator = observer_->label_stream_map_.find(label);
     EXPECT_NE(streams_iterator, observer_->label_stream_map_.end());
     return streams_iterator->value;
   }
 
   const MediaStreamDeviceObserver::Stream& GetStream(
-      const WTF::String& label,
-      WTF::wtf_size_t stream_index) const {
+      const String& label,
+      wtf_size_t stream_index) const {
     return GetStreams(label)[stream_index];
   }
 
@@ -111,10 +110,10 @@ class MediaStreamDeviceObserverTest : public ::testing::Test {
       WebMediaStreamDeviceObserver::OnDeviceStoppedCb device_stopped_callback,
       WebMediaStreamDeviceObserver::OnDeviceRequestStateChangeCb
           request_state_change_callback) {
-    const WTF::String streams_0_label = "label_0";
+    const String streams_0_label = "label_0";
     AddStreams(streams_0_label, std::move(device_stopped_callback),
                std::move(request_state_change_callback));
-    const WTF::Vector<MediaStreamDeviceObserver::Stream>& streams_0 =
+    const Vector<MediaStreamDeviceObserver::Stream>& streams_0 =
         GetStreams(streams_0_label);
     CheckStreamDeviceIds(streams_0, {"device_0_id", "device_1_id"});
   }
@@ -138,8 +137,8 @@ TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId1, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                    WTF::Unretained(this), run_loop1.QuitClosure()));
+      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                      Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
   String stream_label1 = stream_label_;
 
@@ -148,8 +147,8 @@ TEST_F(MediaStreamDeviceObserverTest, GetNonScreenCaptureDevices) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId2, "screen_capture",
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                    WTF::Unretained(this), run_loop2.QuitClosure()));
+      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                      Unretained(this), run_loop2.QuitClosure()));
   run_loop2.Run();
   String stream_label2 = stream_label_;
 
@@ -185,8 +184,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceStopped) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                    WTF::Unretained(this), run_loop1.QuitClosure()));
+      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                      Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -210,8 +209,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceChanged) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId1, example_video_id1,
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                    WTF::Unretained(this), run_loop1.QuitClosure()));
+      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                      Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -297,8 +296,8 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
   mock_dispatcher_host_.OpenDevice(
       kRequestId, "device_path",
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
-      WTF::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
-                    WTF::Unretained(this), run_loop1.QuitClosure()));
+      blink::BindOnce(&MediaStreamDeviceObserverTest::OnDeviceOpened,
+                      Unretained(this), run_loop1.QuitClosure()));
   run_loop1.Run();
 
   EXPECT_EQ(observer_->label_stream_map_.size(), 1u);
@@ -319,7 +318,7 @@ TEST_F(MediaStreamDeviceObserverTest, OnDeviceRequestStateChange) {
 TEST_F(MediaStreamDeviceObserverTest, MultiCaptureAddAndRemoveStreams) {
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  const WTF::String streams_label = "label_0";
+  const String streams_label = "label_0";
   std::string latest_stopped_device_id;
   SetupMultiStreams(
       /*device_stopped_callback=*/base::BindLambdaForTesting(
@@ -332,7 +331,7 @@ TEST_F(MediaStreamDeviceObserverTest, MultiCaptureAddAndRemoveStreams) {
       blink::mojom::blink::MediaStreamType::DISPLAY_VIDEO_CAPTURE_SET,
       "device_0_id", "device_0_name");
   observer_->OnDeviceStopped(streams_label, stopped_device_0);
-  const WTF::Vector<MediaStreamDeviceObserver::Stream>& streams =
+  const Vector<MediaStreamDeviceObserver::Stream>& streams =
       GetStreams(streams_label);
   CheckStreamDeviceIds(streams, {"device_1_id"});
   EXPECT_EQ(latest_stopped_device_id, "device_0_id");
@@ -348,7 +347,7 @@ TEST_F(MediaStreamDeviceObserverTest, MultiCaptureAddAndRemoveStreams) {
 TEST_F(MediaStreamDeviceObserverTest, MultiCaptureChangeDeviceRequestState) {
   EXPECT_EQ(observer_->label_stream_map_.size(), 0u);
 
-  const WTF::String streams_label = "label_0";
+  const String streams_label = "label_0";
   std::string latest_changed_device_id;
   blink::mojom::blink::MediaStreamStateChange latest_device_state =
       blink::mojom::blink::MediaStreamStateChange::PAUSE;
@@ -384,10 +383,10 @@ TEST_F(MediaStreamDeviceObserverTest, MultiCaptureRemoveStreamDevice) {
   SetupMultiStreams(/*device_stopped_callback=*/base::DoNothing(),
                     /*request_state_change_callback=*/base::DoNothing());
 
-  const WTF::String streams_1_label = "label_1";
+  const String streams_1_label = "label_1";
   AddStreams(streams_1_label, /*device_stopped_callback=*/base::DoNothing(),
              /*request_state_change_callback=*/base::DoNothing());
-  const WTF::Vector<MediaStreamDeviceObserver::Stream>& streams_1 =
+  const Vector<MediaStreamDeviceObserver::Stream>& streams_1 =
       GetStreams(streams_1_label);
   CheckStreamDeviceIds(streams_1, {"device_0_id", "device_1_id"});
 

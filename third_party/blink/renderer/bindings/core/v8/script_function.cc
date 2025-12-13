@@ -23,8 +23,10 @@ const WrapperTypeInfo function_holder_info = {
     nullptr,
     "ScriptFunctionHolder",
     nullptr,
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kScriptFunctionHolderTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kScriptFunctionHolderTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kCustomWrappableId,
     WrapperTypeInfo::kIdlOtherType,

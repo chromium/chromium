@@ -36,17 +36,6 @@ include_rules = [
   # web::TestBrowserState in ios/chrome.
   "-ios/web/public/test/fakes/test_browser_state.h",
 
-  # Disallow direct uses of libraries that compose MaterialComponents.
-  "+ios/third_party/material_components_ios",
-  "-ios/third_party/material_font_disk_loader_ios",
-  "-ios/third_party/material_internationalization_ios",
-  "-ios/third_party/material_roboto_font_loader_ios",
-  "-ios/third_party/material_sprited_animation_view_ios",
-  "-ios/third_party/material_text_accessibility_ios",
-  "-ios/third_party/motion_animator_objc",
-  "-ios/third_party/motion_interchange_objc",
-  "-ios/third_party/motion_transitioning_objc",
-
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # See crbug.com/891834.
   "-ios/web/public/test/http_server",

@@ -15,7 +15,7 @@ namespace {
 
 // These names are exposed to the proxy extension API. They must be in sync
 // with the constants of ProxyPrefs.
-auto kProxyModeNames = std::to_array<const char*>({
+constexpr auto kProxyModeNames = std::to_array<const char*>({
     kDirectProxyModeName,
     kAutoDetectProxyModeName,
     kPacScriptProxyModeName,
@@ -69,6 +69,8 @@ std::string ConfigStateToDebugString(ConfigState state) {
       return "config_fallback";
     case CONFIG_UNSET:
       return "config_unset";
+    case CONFIG_POLICY_OVERRIDE:
+      return "config_policy_override";
   }
   NOTREACHED();
 }

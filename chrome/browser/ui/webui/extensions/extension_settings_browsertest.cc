@@ -14,21 +14,14 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/extensions/extension_settings_test_base.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
-#include "components/guest_view/browser/guest_view_base.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -36,9 +29,28 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"  // nogncheck
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"  // nogncheck
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"  // nogncheck
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
  public:
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
@@ -48,8 +60,10 @@ class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 };
 
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 // Tests that viewing a source of the options page works fine.
 // This is a regression test for https://crbug.com/796080.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
@@ -105,12 +119,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
       base::RemoveChars(expected_source_text, "\n", &expected_source_text));
   EXPECT_EQ(expected_source_text, actual_source_text);
 }
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 // Verify that listeners for the developer private API are only registered
 // when there is a chrome://extensions page open. This is important, since some
 // of the event construction can be expensive.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ListenerRegistration) {
-  Profile* profile = browser()->profile();
+  Profile* profile = GetProfile();
   extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
   extensions::DeveloperPrivateAPI* dev_private_api =
       extensions::DeveloperPrivateAPI::Get(profile);
@@ -129,21 +144,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ListenerRegistration) {
     expect_has_listeners(false);
   }
 
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("chrome://extensions"),
-      WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* tab = chrome_test_utils::GetActiveTab(this);
+  ASSERT_TRUE(tab);
+
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(tab->GetContents(),
+                                               GURL("chrome://extensions")));
 
   {
     SCOPED_TRACE("With page loaded");
     expect_has_listeners(true);
   }
 
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  tab_strip->CloseWebContentsAt(tab_strip->active_index(),
-                                TabCloseTypes::CLOSE_NONE);
-  base::RunLoop().RunUntilIdle();
-  content::RunAllTasksUntilIdle();
+  tab->Close();
 
   {
     SCOPED_TRACE("After page unload");
@@ -153,13 +165,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ListenerRegistration) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        ActivityLogInactiveWithoutSwitch) {
+  content::WebContents* page_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(page_contents);
+
   // Navigate to chrome://extensions which is a allowlisted URL for the
   // chrome.activityLogPrivate API.
   GURL extensions_url("chrome://extensions");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extensions_url));
-  content::WebContents* page_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(page_contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(page_contents, extensions_url));
 
   // Attempt to add an event listener for the
   // activityLogPrivate.onExtensionActivity event.
@@ -172,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   // Activity log will be inactive as the command line switch is not present and
   // no allowlisted extensions for activityLogPrivate are enabled.
   extensions::ActivityLog* activity_log =
-      extensions::ActivityLog::GetInstance(browser()->profile());
+      extensions::ActivityLog::GetInstance(GetProfile());
   ASSERT_FALSE(activity_log->is_active());
 }
 
@@ -185,10 +198,14 @@ class ExtensionsActivityLogTest : public ExtensionSettingsUIBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
+  content::WebContents* page_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(page_contents);
+
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   test_data_dir = test_data_dir.AppendASCII("extensions");
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(GetProfile());
 
   ExtensionTestMessageListener listener("ready");
   scoped_refptr<const extensions::Extension> extension = loader.LoadExtension(
@@ -196,18 +213,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
   GURL activity_log_url("chrome://extensions/?activity=" + extension->id());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), activity_log_url));
+  ASSERT_TRUE(
+      chrome_test_utils::NavigateToURL(page_contents, activity_log_url));
   content::WebContents* activity_log_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(activity_log_contents);
   EXPECT_EQ(activity_log_url, activity_log_contents->GetLastCommittedURL());
 
   // We are looking for the 'test.sendMessage' entry in the activity log as
   // that is the only API call the simple_call.crx extension does.
   // The querySelectors and shadowRoots are used here in order to penetrate
-  // multiple nested shadow DOMs created by Polymer components
-  // in the chrome://extensions page.
-  // See chrome/browser/resources/extensions for the Polymer code.
+  // multiple nested shadow DOMs in the chrome://extensions page.
   // This test only serves as an end to end test, and most of the functionality
   // is covered in the JS unit tests.
   EXPECT_EQ(true,
@@ -218,22 +234,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
              manager.shadowRoot.querySelector('extensions-activity-log');
          let activityLogHistory =
              activityLog.shadowRoot.querySelector('activity-log-history');
-         const polymerPath =
-             'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-         Promise.all([
-           activityLogHistory.whenDataFetched(),
-           import(polymerPath),
-         ]).then((results) => {
-             const polymerModule = results[1];
-             polymerModule.flush();
-             let item = activityLogHistory.shadowRoot.querySelector(
-                 'activity-log-history-item');
-             let activityKey = item.shadowRoot.getElementById('activity-key');
-             return activityKey.innerText === 'test.sendMessage';
-         });
+         activityLogHistory.whenDataFetched()
+             .then(() => activityLogHistory.updateComplete)
+             .then(() => {
+               let item = activityLogHistory.shadowRoot.querySelector(
+                   'activity-log-history-item');
+               let activityKey = item.shadowRoot.getElementById('activity-key');
+               return activityKey.innerText === 'test.sendMessage';
+             });
       )"));
 }
 
+// Safety hub is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
   Profile* profile = browser()->profile();
@@ -279,3 +292,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   notification = notification_service->GetNotificationToShow();
   ASSERT_FALSE(notification.has_value());
 }
+#endif  // BUILDFLAG(IS_ANDROID)

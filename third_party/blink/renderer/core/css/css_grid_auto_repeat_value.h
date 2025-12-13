@@ -33,7 +33,7 @@ class CSSGridAutoRepeatValue : public CSSValueList {
     DCHECK(id == CSSValueID::kAutoFill || id == CSSValueID::kAutoFit);
   }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
   bool Equals(const CSSGridAutoRepeatValue&) const;
 
   CSSValueID AutoRepeatID() const { return auto_repeat_id_; }

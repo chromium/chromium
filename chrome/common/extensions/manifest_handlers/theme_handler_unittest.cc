@@ -10,10 +10,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -23,6 +26,9 @@ namespace errors = manifest_errors;
 class ThemeHandlerTest : public testing::Test {
  protected:
   // Creates a dummy extension for the given theme dictionary.
+  // TODO(crbug.com/41317803): Continue removing std::string error and
+  // replacing with std::u16string. Once this is done, consider changing the
+  // return type to base::expected<scoped_refptr<Extension>, std::u16string>.
   scoped_refptr<Extension> CreateExtension(base::Value::Dict&& theme_dict,
                                            std::string& error) {
     base::Value::Dict manifest;
@@ -31,9 +37,12 @@ class ThemeHandlerTest : public testing::Test {
     manifest.Set(keys::kVersion, "1.0");
     manifest.Set(keys::kTheme, std::move(theme_dict));
 
-    return Extension::Create(base::FilePath(),
-                             mojom::ManifestLocation::kInternal, manifest,
-                             Extension::NO_FLAGS, &error);
+    std::u16string utf16_error;
+    scoped_refptr<Extension> extension =
+        Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                          manifest, Extension::NO_FLAGS, &utf16_error);
+    error = base::UTF16ToUTF8(utf16_error);
+    return extension;
   }
 };
 

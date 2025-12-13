@@ -34,9 +34,8 @@ public class AutofillProviderUMA {
     // Records whether the Autofill service is enabled or not.
     public static final String UMA_AUTOFILL_ENABLED = "Autofill.WebView.Enabled";
 
-    // Records whether the Autofill provider is created by activity context or not.
-    public static final String UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT =
-            "Autofill.WebView.CreatedByActivityContext";
+    public static final String UMA_AUTOFILL_CREATION_CONTEXT =
+            "Autofill.ThirdPartyMode.AutofillManager.CreationContext";
 
     // Records what happened in an autofill session.
     public static final String UMA_AUTOFILL_AUTOFILL_SESSION = "Autofill.WebView.AutofillSession";
@@ -121,6 +120,10 @@ public class AutofillProviderUMA {
     private static final String ONE_PASSWORD_PACKAGE_NAME = "com.onepassword.android";
     private static final String BITWARDEN_PACKAGE_NAME = "com.x8bit.bitwarden";
 
+    /**
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. They should be kept in sync with the enum values in enums.xml.
+     */
     @IntDef({
         Provider.UNKNOWN,
         Provider.AWG,
@@ -143,6 +146,10 @@ public class AutofillProviderUMA {
         int MAX_VALUE = 7;
     }
 
+    /**
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. They should be kept in sync with the enum values in enums.xml.
+     */
     @IntDef({
         AutofillManagerMethod.CANCEL,
         AutofillManagerMethod.COMMIT,
@@ -177,6 +184,26 @@ public class AutofillProviderUMA {
         int SHOW_AUTOFILL_DIALOG = 13;
         int UNREGISTER_CALLBACK = 14;
         int MAX_VALUE = 15;
+    }
+
+    /**
+     * These values are persisted to logs. Entries should not be renumbered and numeric values
+     * should never be reused. They should be kept in sync with the enum values in enums.xml.
+     */
+    @IntDef({
+        AutofillManagerCreationContext.UNKNOWN,
+        AutofillManagerCreationContext.NULL,
+        AutofillManagerCreationContext.APPLICATION_CONTEXT,
+        AutofillManagerCreationContext.ACTIVITY_CONTEXT,
+        AutofillManagerCreationContext.MAX_VALUE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AutofillManagerCreationContext {
+        int UNKNOWN = 0;
+        int NULL = 1;
+        int APPLICATION_CONTEXT = 2;
+        int ACTIVITY_CONTEXT = 3;
+        int MAX_VALUE = 4;
     }
 
     private static void recordTimesHistogram(String name, long durationMillis) {
@@ -391,9 +418,7 @@ public class AutofillProviderUMA {
     public AutofillProviderUMA(
             Context context, boolean isAwGCurrentAutofillService, String packageName) {
         mCurrentProvider = getCurrentProvider(packageName);
-        RecordHistogram.recordBooleanHistogram(
-                UMA_AUTOFILL_CREATED_BY_ACTIVITY_CONTEXT,
-                ContextUtils.activityFromContext(context) != null);
+        recordUmaCreationContext(context);
         mIsAwGCurrentAutofillService = isAwGCurrentAutofillService;
     }
 
@@ -560,5 +585,31 @@ public class AutofillProviderUMA {
             default:
                 return SUBMISSION_SOURCE_HISTOGRAM_COUNT;
         }
+    }
+
+    /**
+     * Although Android Autofill should always be constructed with an activity context, it could
+     * happen that no context or an application context was passed instead. Record these cases.
+     *
+     * @param creationContext The {@link Context} the {@link AutofillProvider} was created with.
+     */
+    static void recordUmaCreationContext(@Nullable Context creationContext) {
+        RecordHistogram.recordEnumeratedHistogram(
+                UMA_AUTOFILL_CREATION_CONTEXT,
+                toCreationContext(creationContext),
+                AutofillManagerCreationContext.MAX_VALUE);
+    }
+
+    static @AutofillManagerCreationContext int toCreationContext(@Nullable Context context) {
+        if (context == null) {
+            return AutofillManagerCreationContext.NULL;
+        }
+        if (context == ContextUtils.getApplicationContext()) {
+            return AutofillManagerCreationContext.APPLICATION_CONTEXT;
+        }
+        if (ContextUtils.activityFromContext(context) != null) {
+            return AutofillManagerCreationContext.ACTIVITY_CONTEXT;
+        }
+        return AutofillManagerCreationContext.UNKNOWN;
     }
 }

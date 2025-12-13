@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -264,7 +265,6 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
       maximize_cue_widget_window);
 
   // The cue has one view and a child label.
-  auto* color_provider = AshColorProvider::Get();
   views::View* maximize_cue_view = maximize_cue_widget->SetContentsView(
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
@@ -279,8 +279,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
               views::Builder<views::Label>()
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_SPLIT_VIEW_HOLD_TO_MAXIMIZE))
-                  .SetEnabledColor(color_provider->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kTextColorPrimary))
+                  .SetEnabledColor(cros_tokens::kTextColorPrimary)
                   .SetAutoColorReadabilityEnabled(false)
                   .SetFontList(views::Label::GetDefaultFontList().Derive(
                       2, gfx::Font::FontStyle::NORMAL,
@@ -288,7 +287,7 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreateMaximizeCue(
           .Build());
 
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_window);
+      display::Screen::Get()->GetDisplayNearestWindow(root_window);
   const gfx::Rect work_area = display.work_area();
   const int maximize_cue_width = maximize_cue_view->GetPreferredSize().width();
   const int maximize_cue_y = work_area.y() + kMaximizeCueTopMargin;

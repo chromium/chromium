@@ -91,9 +91,8 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int NEW_INCOGNITO_TAB_ID = R.id.new_incognito_tab_menu_id;
     public static final @IdRes int NEW_TAB_GROUP_ID = R.id.new_tab_group_menu_id;
     public static final @IdRes int ADD_TO_GROUP_ID = R.id.add_to_group_menu_id;
-    public static final @IdRes int PIN_TAB = R.id.pin_tab_menu_id;
-    public static final @IdRes int UNPIN_TAB = R.id.unpin_tab_menu_id;
     public static final @IdRes int NEW_WINDOW_ID = R.id.new_window_menu_id;
+    public static final @IdRes int NEW_INCOGNITO_WINDOW_ID = R.id.new_incognito_window_menu_id;
     public static final @IdRes int HISTORY_ID = R.id.open_history_menu_id;
     public static final @IdRes int DELETE_BROWSING_DATA_ID = R.id.quick_delete_menu_id;
     public static final @IdRes int DOWNLOADS_ID = R.id.downloads_menu_id;
@@ -102,6 +101,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int SHARE_ID = R.id.share_menu_id;
     public static final @IdRes int FIND_IN_PAGE_ID = R.id.find_in_page_id;
     public static final @IdRes int TRANSLATE_ID = R.id.translate_id;
+    public static final @IdRes int READER_MODE_ID = R.id.reader_mode_menu_id;
     public static final @IdRes int ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID = R.id.universal_install;
     public static final @IdRes int OPEN_WEBAPK_ID = R.id.open_webapk_id;
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
@@ -114,13 +114,18 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     }
 
     /** Default behavior for "Open new Incognito tab". */
-    protected IncognitoNewTabPageStation createIncognitoNewTabPageStation() {
+    protected IncognitoNewTabPageStation createNewIncognitoTabPageStation() {
         return IncognitoNewTabPageStation.newBuilder().initOpeningNewTab().build();
     }
 
     /** Default behavior for "Open new window". */
     protected RegularNewTabPageStation createNewWindowStation() {
         return RegularNewTabPageStation.newBuilder().withEntryPoint().build();
+    }
+
+    /** Default behavior for "Open new incognito window". */
+    protected IncognitoNewTabPageStation createNewIncognitoWindowStation() {
+        return IncognitoNewTabPageStation.newBuilder().withEntryPoint().build();
     }
 
     /** Default behavior for "Delete browsing data". */

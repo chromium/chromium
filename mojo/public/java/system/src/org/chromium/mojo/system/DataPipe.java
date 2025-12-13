@@ -17,7 +17,7 @@ import java.nio.ByteBuffer;
 public interface DataPipe {
 
     /** Flags for the data pipe creation operation. */
-    public static class CreateFlags extends Flags<CreateFlags> {
+    class CreateFlags extends Flags<CreateFlags> {
         private static final int FLAG_NONE = 0;
 
         /** Immutable flag with not bit set. */
@@ -41,7 +41,7 @@ public interface DataPipe {
     }
 
     /** Used to specify creation parameters for a data pipe to |Core.createDataPipe()|. */
-    public static class CreateOptions {
+    class CreateOptions {
 
         /** Used to specify different modes of operation, see |DataPipe.CreateFlags|. */
         private final CreateFlags mFlags = CreateFlags.none();
@@ -97,7 +97,7 @@ public interface DataPipe {
     }
 
     /** Flags for the write operations on MessagePipeHandle . */
-    public static class WriteFlags extends Flags<WriteFlags> {
+    class WriteFlags extends Flags<WriteFlags> {
         private static final int FLAG_NONE = 0;
         private static final int FLAG_ALL_OR_NONE = 1 << 0;
 
@@ -133,7 +133,7 @@ public interface DataPipe {
     }
 
     /** Flags for the read operations on MessagePipeHandle. */
-    public static class ReadFlags extends Flags<ReadFlags> {
+    class ReadFlags extends Flags<ReadFlags> {
         private static final int FLAG_NONE = 0;
         private static final int FLAG_ALL_OR_NONE = 1 << 0;
         private static final int FLAG_QUERY = 1 << 2;
@@ -194,22 +194,22 @@ public interface DataPipe {
     }
 
     /** Handle for the producer part of a data pipe. */
-    public static interface ProducerHandle extends Handle {
+    interface ProducerHandle extends Handle {
 
         /**
          * @see org.chromium.mojo.system.Handle#pass()
          */
         @Override
-        public ProducerHandle pass();
+        ProducerHandle pass();
 
         /**
          * Writes the given data to the data pipe producer. |elements| points to data; the buffer
          * must be a direct ByteBuffer and the limit should be a multiple of the data pipe's element
          * size. If |allOrNone| is set in |flags|, either all the data will be written or none is.
-         * <p>
-         * On success, returns the amount of data that was actually written.
-         * <p>
-         * Note: If the data pipe has the "may discard" option flag (specified on creation), this
+         *
+         * <p>On success, returns the amount of data that was actually written.
+         *
+         * <p>Note: If the data pipe has the "may discard" option flag (specified on creation), this
          * will discard as much data as required to write the given data, starting with the earliest
          * written data that has not been consumed. However, even with "may discard", if the buffer
          * limit is greater than the data pipe's capacity (and |allOrNone| is not set), this will
@@ -218,7 +218,7 @@ public interface DataPipe {
          *
          * @return number of written bytes.
          */
-        public ResultAnd<Integer> writeData(ByteBuffer elements, WriteFlags flags);
+        ResultAnd<Integer> writeData(ByteBuffer elements, WriteFlags flags);
 
         /**
          * Begins a two-phase write to the data pipe producer . On success, returns a |ByteBuffer|
@@ -226,20 +226,20 @@ public interface DataPipe {
          * will be at least as large as |numBytes|, which must also be a multiple of the element
          * size (if |allOrNone| is not set, |numBytes| is ignored and the caller must check the
          * capacity of the buffer).
-         * <p>
-         * During a two-phase write, this handle is *not* writable. E.g., if another thread tries to
-         * write to it, it will throw a |MojoException| with code |MojoResult.BUSY|; that thread can
-         * then wait for this handle to become writable again.
-         * <p>
-         * Once the caller has finished writing data to the buffer, it should call |endWriteData()|
-         * to specify the amount written and to complete the two-phase write.
-         * <p>
-         * Note: If the data pipe has the "may discard" option flag (specified on creation) and
+         *
+         * <p>During a two-phase write, this handle is *not* writable. E.g., if another thread tries
+         * to write to it, it will throw a |MojoException| with code |MojoResult.BUSY|; that thread
+         * can then wait for this handle to become writable again.
+         *
+         * <p>Once the caller has finished writing data to the buffer, it should call
+         * |endWriteData()| to specify the amount written and to complete the two-phase write.
+         *
+         * <p>Note: If the data pipe has the "may discard" option flag (specified on creation) and
          * |flags| has |allOrNone| set, this may discard some data.
          *
          * @return The buffer to write to.
          */
-        public ByteBuffer beginWriteData(int numBytes, WriteFlags flags);
+        ByteBuffer beginWriteData(int numBytes, WriteFlags flags);
 
         /**
          * Ends a two-phase write to the data pipe producer that was begun by a call to
@@ -248,21 +248,21 @@ public interface DataPipe {
          * returned by |beginWriteData()| and must be a multiple of the element size. The buffer
          * returned from |beginWriteData()| must have been filled with exactly |numBytesWritten|
          * bytes of data.
-         * <p>
-         * On failure, the two-phase write (if any) is ended (so the handle may become writable
+         *
+         * <p>On failure, the two-phase write (if any) is ended (so the handle may become writable
          * again, if there's space available) but no data written to the buffer is "put into" the
          * data pipe.
          */
-        public void endWriteData(int numBytesWritten);
+        void endWriteData(int numBytesWritten);
     }
 
     /** Handle for the consumer part of a data pipe. */
-    public static interface ConsumerHandle extends Handle {
+    interface ConsumerHandle extends Handle {
         /**
          * @see org.chromium.mojo.system.Handle#pass()
          */
         @Override
-        public ConsumerHandle pass();
+        ConsumerHandle pass();
 
         /**
          * Discards data on the data pie consumer. This method discards up to |numBytes| (which
@@ -270,7 +270,7 @@ public interface DataPipe {
          * discarded. if |flags| has |allOrNone|, it will either discard exactly |numBytes| bytes of
          * data or none. In this case, |query| must not be set.
          */
-        public int discardData(int numBytes, ReadFlags flags);
+        int discardData(int numBytes, ReadFlags flags);
 
         /**
          * Reads data from the data pipe consumer. May also be used to query the amount of data
@@ -279,11 +279,11 @@ public interface DataPipe {
          * and returns the amount actually read. |elements| must be a direct ByteBuffer. If flags
          * has |allOrNone| set, it will either read exactly |elements| capacity bytes of data or
          * none.
-         * <p>
-         * If flags has |query| set, it queries the amount of data available, returning the number
-         * of bytes available. In this case |allOrNone| is ignored, as are |elements|.
+         *
+         * <p>If flags has |query| set, it queries the amount of data available, returning the
+         * number of bytes available. In this case |allOrNone| is ignored, as are |elements|.
          */
-        public ResultAnd<Integer> readData(ByteBuffer elements, ReadFlags flags);
+        ResultAnd<Integer> readData(ByteBuffer elements, ReadFlags flags);
 
         /**
          * Begins a two-phase read from the data pipe consumer. On success, returns a |ByteBuffer|
@@ -291,25 +291,25 @@ public interface DataPipe {
          * set, then the limit will be at least as large as |numBytes|, which must also be a
          * multiple of the element size (if |allOrNone| is not set, |numBytes| is ignored). |flags|
          * must not have |query| set.
-         * <p>
-         * During a two-phase read, this handle is *not* readable. E.g., if another thread tries to
-         * read from it, it will throw a |MojoException| with code |MojoResult.BUSY|; that thread
+         *
+         * <p>During a two-phase read, this handle is *not* readable. E.g., if another thread tries
+         * to read from it, it will throw a |MojoException| with code |MojoResult.BUSY|; that thread
          * can then wait for this handle to become readable again.
-         * <p>
-         * Once the caller has finished reading data from the buffer, it should call |endReadData()|
-         * to specify the amount read and to complete the two-phase read.
+         *
+         * <p>Once the caller has finished reading data from the buffer, it should call
+         * |endReadData()| to specify the amount read and to complete the two-phase read.
          */
-        public ByteBuffer beginReadData(int numBytes, ReadFlags flags);
+        ByteBuffer beginReadData(int numBytes, ReadFlags flags);
 
         /**
          * Ends a two-phase read from the data pipe consumer that was begun by a call to
          * |beginReadData()| on the same handle. |numBytesRead| should indicate the amount of data
          * actually read; it must be less than or equal to the limit of the buffer returned by
          * |beginReadData()| and must be a multiple of the element size.
-         * <p>
-         * On failure, the two-phase read (if any) is ended (so the handle may become readable
+         *
+         * <p>On failure, the two-phase read (if any) is ended (so the handle may become readable
          * again) but no data is "removed" from the data pipe.
          */
-        public void endReadData(int numBytesRead);
+        void endReadData(int numBytesRead);
     }
 }

@@ -14,7 +14,6 @@ import androidx.window.extensions.core.util.function.Consumer;
 import androidx.window.extensions.layout.WindowLayoutInfo;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
@@ -27,9 +26,9 @@ import org.chromium.window.WindowUtil;
  * posture service with the values.
  */
 @NullMarked
-public class WindowLayoutInfoListener implements UnownedUserData {
+public class WindowLayoutInfoListener {
     private static final UnownedUserDataKey<WindowLayoutInfoListener> KEY =
-            new UnownedUserDataKey<>(WindowLayoutInfoListener.class);
+            new UnownedUserDataKey<>(WindowLayoutInfoListener::onDetachedFromHost);
     private final Consumer<WindowLayoutInfo> mWindowLayoutInfoChangedCallback;
     private @Nullable WindowAndroid mWindowAndroid;
     private final ObserverList<DevicePosturePlatformProviderAndroid> mObservers =
@@ -49,10 +48,10 @@ public class WindowLayoutInfoListener implements UnownedUserData {
         }
     }
 
-    @Override
-    public void onDetachedFromHost(UnownedUserDataHost host) {
-        mWindowAndroid = null;
-        WindowUtil.removeWindowLayoutInfoListener(mWindowLayoutInfoChangedCallback);
+    private static void onDetachedFromHost(
+            WindowLayoutInfoListener self, UnownedUserDataHost host) {
+        self.mWindowAndroid = null;
+        WindowUtil.removeWindowLayoutInfoListener(self.mWindowLayoutInfoChangedCallback);
     }
 
     public void addObserver(DevicePosturePlatformProviderAndroid observer) {

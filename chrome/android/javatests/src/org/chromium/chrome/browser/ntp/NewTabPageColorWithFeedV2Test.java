@@ -71,7 +71,7 @@ public class NewTabPageColorWithFeedV2Test {
         mFeedServer = new TestFeedServer();
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 
         Assert.assertTrue(tab.getNativePage() instanceof NewTabPage);

@@ -168,7 +168,7 @@ HTMLDetailsElement* HTMLSummaryElement::DetailsElement() const {
 
 bool HTMLSummaryElement::IsMainSummary() const {
   if (HTMLDetailsElement* details = DetailsElement())
-    return details->FindMainSummary() == this;
+    return &details->MainSummary() == this;
 
   return false;
 }
@@ -188,7 +188,7 @@ int HTMLSummaryElement::DefaultTabIndex() const {
 void HTMLSummaryElement::DefaultEventHandler(Event& event) {
   if (IsMainSummary()) {
     if (event.type() == event_type_names::kDOMActivate &&
-        !IsClickableControl(event.target()->ToNode())) {
+        !IsClickableControl(event.RawTarget()->ToNode())) {
       if (HTMLDetailsElement* details = DetailsElement())
         details->ToggleOpen();
       event.SetDefaultHandled();

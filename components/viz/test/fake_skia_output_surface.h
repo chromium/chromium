@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/gpu/buildflags.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 
 namespace viz {
 
@@ -32,7 +33,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
  public:
   static std::unique_ptr<FakeSkiaOutputSurface> Create3d() {
-    auto provider = TestContextProvider::Create();
+    auto provider = TestContextProvider::CreateGLES();
     provider->BindToCurrentSequence();
     return base::WrapUnique(new FakeSkiaOutputSurface(std::move(provider)));
   }
@@ -69,7 +70,7 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
                                  RenderPassAlphaType alpha_type,
                                  skgpu::Mipmapped mipmap,
                                  bool scanout_dcomp_surface,
-                                 sk_sp<SkColorSpace> color_space,
+                                 const gfx::ColorSpace& color_space,
                                  bool is_overlay,
                                  const gpu::Mailbox& mailbox) override;
   SkCanvas* RecordOverdrawForCurrentPaint() override;
@@ -79,14 +80,13 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
       const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
-                          const gfx::ColorSpace& yuv_color_space,
                           bool force_rgbx) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
       SharedImageFormat format,
       bool mipmap,
-      sk_sp<SkColorSpace> color_space,
+      const gfx::ColorSpace& color_space,
       const gpu::Mailbox& mailbox) override;
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;
@@ -175,7 +175,12 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
 
  private:
   ContextProvider* context_provider() { return context_provider_.get(); }
-  GrDirectContext* gr_context() { return context_provider()->GrContext(); }
+  GrDirectContext* gr_context() {
+    if (!gr_context_) {
+      gr_context_ = GrDirectContext::MakeMock(nullptr);
+    }
+    return gr_context_.get();
+  }
 
   gpu::SyncToken GenerateSyncToken();
 
@@ -214,6 +219,8 @@ class FakeSkiaOutputSurface : public SkiaOutputSurface {
   SharedImagePurgeableCallback set_purgeable_callback_;
 
   THREAD_CHECKER(thread_checker_);
+
+  sk_sp<GrDirectContext> gr_context_;
 
   base::WeakPtrFactory<FakeSkiaOutputSurface> weak_ptr_factory_{this};
 };

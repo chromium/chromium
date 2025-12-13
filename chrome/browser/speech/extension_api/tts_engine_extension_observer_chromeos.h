@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
 #define CHROME_BROWSER_SPEECH_EXTENSION_API_TTS_ENGINE_EXTENSION_OBSERVER_CHROMEOS_H_
 
+#include <map>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -67,6 +70,22 @@ class TtsEngineExtensionObserverChromeOS
   }
 
  private:
+  // Methods used to update the keep alive count for the Google TTS extension
+  // background page or service worker.
+  void UpdateGoogleSpeechSynthesisKeepAliveCountHelper(
+      content::BrowserContext* context,
+      bool increment);
+  void UpdateGoogleSpeechSynthesisKeepAliveCount(
+      content::BrowserContext* context,
+      bool increment);
+  void UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(
+      content::BrowserContext* browser_context);
+  void UpdateGoogleSpeechSynthesisKeepAliveCountManifestV2(
+      content::BrowserContext* context,
+      bool increment);
+  void UpdateGoogleSpeechSynthesisKeepAliveCountManifestV3(
+      content::BrowserContext* context,
+      bool increment);
   bool IsLoadedTtsEngine(const std::string& extension_id);
 
   void OnAccessibilityStatusChanged(
@@ -81,6 +100,11 @@ class TtsEngineExtensionObserverChromeOS
   raw_ptr<Profile> profile_;
 
   std::set<std::string> engine_extension_ids_;
+
+  // TODO(crbug.com/40936639): Change this to a single vector of Uuids.
+  // IDs that are used to decrement the keep alive count of the Google TTS
+  // service workers.
+  std::map<extensions::WorkerId, std::vector<base::Uuid>> keepalive_uuids_;
 
   base::CallbackListSubscription accessibility_status_subscription_;
 

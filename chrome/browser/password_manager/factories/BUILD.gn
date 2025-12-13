@@ -16,7 +16,7 @@ source_set("password_factory_headers") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//content/public/browser",
   ]
@@ -24,8 +24,6 @@ source_set("password_factory_headers") {
 
 source_set("factories") {
   sources = [
-    "bulk_leak_check_service_factory.cc",
-    "bulk_leak_check_service_factory.h",
     "credentials_cleaner_runner_factory.cc",
     "credentials_cleaner_runner_factory.h",
     "field_info_manager_factory.cc",
@@ -35,6 +33,14 @@ source_set("factories") {
     "password_sender_service_factory.cc",
     "password_sender_service_factory.h",
   ]
+  if (!is_android) {
+    sources += [
+      "bulk_leak_check_service_factory.cc",
+      "bulk_leak_check_service_factory.h",
+      "password_counter_factory.cc",
+      "password_counter_factory.h",
+    ]
+  }
 
   public_deps = [ ":password_factory_headers" ]
 
@@ -83,7 +89,7 @@ source_set("backend_factory") {
     "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/common:common",
+    "//components/password_manager/core/common",
     "//components/prefs",
   ]
   if (is_android) {

@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/create_navigation_item_title_view.h"
 
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
+#import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 
 namespace {
 
@@ -27,8 +28,7 @@ UIView* CreateNavigationItemTitleView(UIFont* font) {
   BrandedNavigationItemTitleView* titleView =
       [[BrandedNavigationItemTitleView alloc] initWithFont:font];
 
-  NSString* titleString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_BRANDED_TITLE", @"Password Manager");
+  NSString* titleString = CredentialProviderBrandedTitleString();
   titleView.title = titleString;
   titleView.accessibilityLabel = titleString;
 

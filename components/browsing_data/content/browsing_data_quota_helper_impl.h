@@ -13,10 +13,10 @@
 #include <utility>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace blink {
 class StorageKey;

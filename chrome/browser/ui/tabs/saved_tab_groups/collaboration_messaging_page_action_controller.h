@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_PAGE_ACTION_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_PAGE_ACTION_CONTROLLER_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
-#include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "components/tabs/public/tab_interface.h"
-#include "string.h"
-#include "ui/gfx/image/image.h"
-#include "url/gurl.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace page_actions {
 class PageActionController;
@@ -28,10 +26,16 @@ class CollaborationMessagingTabData;
 
 class CollaborationMessagingPageActionController {
  public:
+  DECLARE_USER_DATA(CollaborationMessagingPageActionController);
+
   CollaborationMessagingPageActionController(
+      tabs::TabInterface& tab,
       page_actions::PageActionController& page_action_controller,
       tab_groups::CollaborationMessagingTabData&
           collaboration_messaging_tab_data);
+
+  static CollaborationMessagingPageActionController* From(
+      tabs::TabInterface* tab);
 
   ~CollaborationMessagingPageActionController();
 
@@ -41,13 +45,10 @@ class CollaborationMessagingPageActionController {
   CollaborationMessagingPageActionController& operator=(
       const CollaborationMessagingPageActionController&) = delete;
 
-  // TODO(crbug.com/430536113): Move this to private.
-  // Handle update callback from TabInterface. Need this to
-  // be public for passing unit tests. Will be moved to private once receiving
-  // callback from TabInterface.
+ private:
+  // Handle update callback from TabInterface.
   void HandleUpdate(tabs::TabInterface* tab);
 
- private:
   // Show the page action with label and avatar from collaboration message.
   void Show(const std::u16string& label_text, const ui::ImageModel& avatar);
 
@@ -57,6 +58,15 @@ class CollaborationMessagingPageActionController {
   const raw_ref<page_actions::PageActionController> page_actions_controller_;
   const raw_ref<tab_groups::CollaborationMessagingTabData>
       collaboration_messaging_tab_data_;
+  ui::ScopedUnownedUserData<CollaborationMessagingPageActionController>
+      scoped_unowned_user_data_;
+
+  // Tab activation subscription is to used show page action on activating a
+  // tab.
+  base::CallbackListSubscription tab_activated_subscription_;
+
+  // Tab data updated subscription is used to show page action on an active tab.
+  base::CallbackListSubscription tab_data_updated_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_COLLABORATION_MESSAGING_PAGE_ACTION_CONTROLLER_H_

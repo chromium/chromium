@@ -33,6 +33,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
@@ -67,10 +69,20 @@ class BookmarkEditorViewTest : public testing::Test,
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(model());
     AddTestData();
+
+    // OS clipboard is a global resource, which causes flakiness when unit tests
+    // run in parallel. So, use a per-instance test clipboard.
+    ui::Clipboard::SetClipboardForCurrentThread(
+        std::make_unique<ui::TestClipboard>());
+
     if (SyncEnableBookmarksInTransportModeEnabled()) {
       model()->CreateAccountPermanentFolders();
       AddAccountTestData();
     }
+  }
+
+  void TearDown() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
  protected:
@@ -200,6 +212,7 @@ class BookmarkEditorViewTest : public testing::Test,
 
   bookmarks::BookmarkModel* model() { return model_; }
 
+  views::Textfield* url_textfield() const { return editor_->url_tf_; }
   views::TreeView* tree_view() const { return editor_->tree_view_; }
   BookmarkEditorView* editor() const { return editor_.get(); }
 
@@ -367,7 +380,6 @@ TEST_P(BookmarkEditorViewTest, ModelsMatchWithAccountFolders) {
   // F1 should have one child, F11
   const BookmarkEditorView::EditorNode* F1 =
       local_bookmark_bar->children()[0].get();
-  account_bookmark_bar_editor_node()->children()[0].get();
   ASSERT_EQ(1u, F1->children().size());
   EXPECT_EQ(u"F11", F1->children()[0]->GetTitle());
   // Local other node should have one child (OF1).
@@ -958,6 +970,49 @@ TEST_P(BookmarkEditorViewTest,
   ExpandAndSelect();
   EXPECT_TRUE(GetNode("acc_oa")->IsVisible());
   EXPECT_FALSE(tree_view()->IsExpanded(account_bookmark_bar_editor_node()));
+}
+
+// The URL field should truncate to 500KB.
+TEST_P(BookmarkEditorViewTest, UrlTextfiledPasteTruncates) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::AddNodeInFolder(
+                   bookmark_bar_node, 0, GURL(), std::u16string()),
+               BookmarkEditorView::SHOW_TREE);
+
+  // Prepare a clipboard text larger than 500KB.
+  std::u16string text =
+      u"https://example.com/" + std::u16string(600 * 1024, u'a');
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
+
+  // Paste via the standard command path.
+  url_textfield()->ExecuteCommand(views::Textfield::kPaste, /*event_flags=*/0);
+
+  // Verify the text was truncated.
+  EXPECT_EQ(size_t(500 * 1024), url_textfield()->GetText().size());
+}
+
+// Pasting a typical URL should not be truncated.
+TEST_P(BookmarkEditorViewTest, UrlTextfiledPasteNotTruncated) {
+  const BookmarkNode* bookmark_bar_node = model()->bookmark_bar_node();
+  CreateEditor(profile_.get(),
+               BookmarkEditor::EditDetails::AddNodeInFolder(
+                   bookmark_bar_node, 0, GURL(), std::u16string()),
+               BookmarkEditorView::SHOW_TREE);
+
+  // Clipboard text: a normal URL far below the 500KB limit.
+  std::u16string text = u"https://example.com/";
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
+
+  // Start from empty, then paste via the standard command path.
+  url_textfield()->SetText(std::u16string());
+  url_textfield()->ExecuteCommand(views::Textfield::kPaste, /*event_flags=*/0);
+
+  ApplyEdits(local_bookmark_bar_editor_node());
+
+  // Verify no truncation and exact equality with the clipboard text.
+  const BookmarkNode* new_node = bookmark_bar_node->children().front().get();
+  EXPECT_EQ(base::UTF16ToUTF8(text), new_node->url().spec());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BookmarkEditorViewTest);

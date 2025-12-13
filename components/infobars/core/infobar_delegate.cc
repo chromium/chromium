@@ -21,6 +21,10 @@ const int InfoBarDelegate::kNoIconID = 0;
 
 InfoBarDelegate::~InfoBarDelegate() = default;
 
+InfoBarDelegate::InfobarPriority InfoBarDelegate::GetPriority() const {
+  return InfobarPriority::kDefault;
+}
+
 int InfoBarDelegate::GetIconId() const {
   return kNoIconID;
 }
@@ -93,6 +97,12 @@ bool InfoBarDelegate::ShouldHideInFullscreen() const {
 }
 
 ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate() {
+  return const_cast<ConfirmInfoBarDelegate*>(
+      static_cast<const InfoBarDelegate*>(this)->AsConfirmInfoBarDelegate());
+}
+
+const ConfirmInfoBarDelegate* InfoBarDelegate::AsConfirmInfoBarDelegate()
+    const {
   return nullptr;
 }
 

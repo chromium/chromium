@@ -121,7 +121,7 @@
 <translation id="4729257764711776855">电话号码</translation>
 <translation id="4746179598275229723">已取消固定该扩展程序</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{还有 1 个月的时间}other{还有 # 个月的时间}}</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{根据贵单位的要求，您必须安装一个扩展程序才能使用无痕模式}other{根据贵单位的要求，您必须安装一些扩展程序才能使用无痕模式}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{若想使用无痕模式，您所在的组织要求您安装一个扩展程序}other{若想使用无痕模式，您所在的组织要求您安装一些扩展程序}}</translation>
 <translation id="482932175346970750">在浏览器中输入 <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4888938634149558681">致电</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
@@ -149,7 +149,7 @@
 <translation id="5768079895599174203">{DAYS,plural, =1{1 天 }other{# 天 }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">图片。</translation>
-<translation id="5860491529813859533">启用</translation>
+<translation id="5860491529813859533">开启</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 年后}other{# 年后}}</translation>
 <translation id="588258955323874662">全屏</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{还剩 1 秒}other{还剩 # 秒}}</translation>
@@ -245,7 +245,7 @@
 <translation id="9170848237812810038">撤消(&amp;U)</translation>
 <translation id="9195990613383871904">明天</translation>
 <translation id="928628199082367701">Super</translation>
-<translation id="932327136139879170">首页</translation>
+<translation id="932327136139879170">家</translation>
 <translation id="944069440740578670">未读通知</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>
 </translationbundle>

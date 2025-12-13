@@ -131,6 +131,12 @@
       { start: "2020-01-14", domain: "microsoft.com" },
     ]
   },
+  "schenney@chromium.org": {
+    affiliations: [
+      { start: "2023-04-11", domain: "igalia.com" },
+      { start: "2011-02-14", domain: "google.com" },
+    ]
+  },
   "seokho@chromium.org": {
     affiliations: [
       { start: "2020-07-25", domain: "seokho.dev" },
@@ -138,8 +144,8 @@
   },
   "slightlyoff@chromium.org": {
     affiliations: [
-      { start: "2008-12-01", domain: "google.com" },
       { start: "2021-06-21", domain: "microsoft.com" },
+      { start: "2008-12-01", domain: "google.com" },
     ]
   },
   "sohanjg@chromium.org": {
@@ -179,6 +185,7 @@
   },
   "weidongliu@chromium.org": {
     affiliations: [
+      { start: "2025-10-21", domain: "citrolabs.ai" },
       { start: "2020-07-10", domain: "tencent.com" },
     ]
   },

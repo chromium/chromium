@@ -5,7 +5,10 @@
 #include "ash/wm/window_restore/window_restore_util.h"
 
 #include <algorithm>
+#include <string>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/window_properties.h"
@@ -15,8 +18,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/window_properties.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -50,6 +57,44 @@ gfx::Rect GetBoundsIgnoringTransforms(const aura::Window* window,
 }
 
 }  // namespace
+
+void RegisterProfilePrefsFullRestore(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      prefs::kRestoreAppsAndPagesPrefName,
+      static_cast<int>(full_restore::RestoreOption::kAskEveryTime),
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
+  registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, true);
+  registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
+  registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
+                             base::Time());
+  registry->RegisterStringPref(prefs::kInformedRestoreLastVersion,
+                               std::string());
+}
+
+bool HasRestorePref(PrefService* prefs) {
+  return prefs->HasPrefPath(prefs::kRestoreAppsAndPagesPrefName);
+}
+
+bool CanPerformRestore(PrefService* prefs) {
+  if (!HasRestorePref(prefs)) {
+    return true;
+  }
+
+  return static_cast<full_restore::RestoreOption>(
+             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName)) !=
+         full_restore::RestoreOption::kDoNotRestore;
+}
+
+bool IsAskEveryTime(PrefService* prefs) {
+  if (!HasRestorePref(prefs)) {
+    return false;
+  }
+
+  return static_cast<full_restore::RestoreOption>(
+             prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName)) ==
+         full_restore::RestoreOption::kAskEveryTime;
+}
 
 std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
     aura::Window* window,
@@ -134,7 +179,7 @@ std::unique_ptr<app_restore::WindowInfo> BuildWindowInfo(
   }
 
   window_info->display_id =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+      display::Screen::Get()->GetDisplayNearestWindow(window).id();
 
   // For saved desks, store the readable app name so that we can have a nice
   // error message if the user tries to used the saved desk on a device that

@@ -8,12 +8,15 @@
 #include <string>
 #include <utility>
 
+#include "audio_capture_permission_checker_mac.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
@@ -32,6 +35,7 @@
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/media_picker_utils.h"
+#include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -47,6 +51,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "media/audio/audio_features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -56,9 +61,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
@@ -66,14 +72,12 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
-
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
-#endif
+BASE_FEATURE(kDesktopMediaPickerMultiLineTitle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::blink::mojom::MediaStreamRequestResult;
 using ::content::DesktopMediaID;
@@ -195,8 +199,10 @@ void RecordUmaSelection(content::GlobalRenderFrameHostId capturer_global_id,
       // Whether the current tab was selected. Note that this can happen
       // through a non-explicit selection of the current tab through the
       // list of all available tabs.
+
+      // TODO(crbug.com/379869738) Remove GetUnsafeValue.
       const bool current_tab_selected =
-          capturer_global_id.child_id ==
+          capturer_global_id.child_id.GetUnsafeValue() ==
               selected_media.web_contents_id.render_process_id &&
           capturer_global_id.frame_routing_id ==
               selected_media.web_contents_id.main_render_frame_id;
@@ -308,7 +314,7 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   return scroll_view;
 }
 
-int getHintId(bool is_system_audio_offered, bool is_window_audio_offered) {
+int GetHintId(bool is_system_audio_offered, bool is_window_audio_offered) {
   // We can never call this function if both screen and window audio are
   // offered.
   CHECK(!is_system_audio_offered || !is_window_audio_offered);
@@ -344,6 +350,37 @@ int GetLabelForShareSystemAudioToggle(bool suppress_local_audio_playback,
 #endif
 }
 
+// Returns the audio type for the window capture by taking into consideration
+// the `window_audio_type_requested_` and the system's capabilities.
+// Find more information at:
+// https://w3c.github.io/mediacapture-screen-share/#windowaudiopreferenceenum
+DesktopMediaID::AudioType GetWindowCaptureAudioType(
+    const DesktopMediaPicker::Params& params) {
+  if (!params.request_audio) {
+    return DesktopMediaID::AudioType::kNone;
+  }
+
+  if (params.window_audio_preference ==
+      blink::mojom::WindowAudioPreference::kExclude) {
+    return DesktopMediaID::AudioType::kNone;
+  }
+
+  if (params.window_audio_preference ==
+          blink::mojom::WindowAudioPreference::kWindow &&
+      media::IsApplicationAudioCaptureSupported()) {
+    return DesktopMediaID::AudioType::kApplication;
+  }
+
+  if (params.window_audio_preference ==
+          blink::mojom::WindowAudioPreference::kSystem &&
+      DesktopMediaPickerController::IsSystemAudioCaptureSupported(
+          params.request_source)) {
+    return DesktopMediaID::AudioType::kSystem;
+  }
+
+  return DesktopMediaID::AudioType::kNone;
+}
+
 }  // namespace
 
 bool DesktopMediaPickerDialogView::AudioSupported(
@@ -354,7 +391,8 @@ bool DesktopMediaPickerDialogView::AudioSupported(
           request_source_);
     case DesktopMediaList::Type::kWindow:
       return DesktopMediaPickerController::IsSystemAudioCaptureSupported(
-          request_source_);
+                 request_source_) ||
+             media::IsApplicationAudioCaptureSupported();
     case DesktopMediaList::Type::kWebContents:
       return true;
     case DesktopMediaList::Type::kNone:
@@ -370,9 +408,10 @@ bool DesktopMediaPickerDialogView::AudioRequestedForType(
   // over the `categories_`, find the one with the relevant `type` and
   // return `category.audio_offered`.
   if (type == DesktopMediaList::Type::kScreen) {
-    return audio_requested_ && !exclude_system_audio_requested_;
+    return audio_requested_ && !screen_exclude_system_audio_requested_;
   } else if (type == DesktopMediaList::Type::kWindow) {
-    return audio_requested_ && !exclude_window_audio_requested_;
+    return audio_requested_ && (window_audio_type_requested_ !=
+                                blink::mojom::WindowAudioPreference::kExclude);
   } else {
     return audio_requested_;
   }
@@ -410,18 +449,12 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       request_source_(params.request_source),
       app_name_(params.app_name),
       audio_requested_(params.request_audio),
-      exclude_system_audio_requested_(params.exclude_system_audio),
-      exclude_window_audio_requested_(
-          params.window_audio_preference ==
-          blink::mojom::WindowAudioPreference::kExclude),
-      is_system_audio_offered_(audio_requested_ &&
+      screen_exclude_system_audio_requested_(params.exclude_system_audio),
+      is_screen_audio_offered_(audio_requested_ &&
                                !params.exclude_system_audio &&
                                AudioSupported(DesktopMediaList::Type::kScreen)),
-      is_window_audio_offered_(
-          audio_requested_ &&
-          params.window_audio_preference !=
-              blink::mojom::WindowAudioPreference::kExclude &&
-          AudioSupported(DesktopMediaList::Type::kWindow)),
+      window_audio_type_requested_(params.window_audio_preference),
+      window_audio_type_offered_(GetWindowCaptureAudioType(params)),
       // Only restrict_own_audio is used if both suppress_local_audio_playback
       // and restrict_own_audio are true. We need to make this choice since
       // there is no implementation for using both at the same time.
@@ -443,6 +476,14 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
       ScreenCapturePermissionChecker::MaybeCreate(
           base::BindRepeating(&DesktopMediaPickerDialogView::OnPermissionUpdate,
                               weak_factory_.GetWeakPtr()));
+  audio_capture_permission_checker_ =
+      AudioCapturePermissionChecker::MaybeCreate(base::BindRepeating(
+          &DesktopMediaPickerDialogView::OnAudioPermissionUpdate,
+          weak_factory_.GetWeakPtr()));
+  RecordUmaAudioCapturePermissionCheckerInteractions(
+      audio_capture_permission_checker_
+          ? AudioCapturePermissionCheckerInteractions::kEnabled
+          : AudioCapturePermissionCheckerInteractions::kDisabled);
 #endif
 
   SetModalType(params.modality);
@@ -522,7 +563,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
 
         std::unique_ptr<views::View> pane = SetupPane(
             DesktopMediaList::Type::kScreen, std::move(list_controller),
-            /*audio_offered=*/is_system_audio_offered_,
+            /*audio_offered=*/is_screen_audio_offered_,
             /*audio_checked=*/
             params.force_audio_checkboxes_to_default_checked ||
                 system_audio_capture_default_checked,
@@ -557,10 +598,13 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
             views::ScrollView::ScrollBarMode::kDisabled);
         std::unique_ptr<views::View> pane = SetupPane(
             DesktopMediaList::Type::kWindow, std::move(list_controller),
-            /*audio_offered=*/is_window_audio_offered_,
+            /*audio_offered=*/IsWindowAudioOffered(),
             /*audio_checked=*/
-            params.force_audio_checkboxes_to_default_checked ||
-                system_audio_capture_default_checked,
+            window_audio_type_offered_ ==
+                    DesktopMediaID::AudioType::kApplication
+                ? true
+                : params.force_audio_checkboxes_to_default_checked ||
+                      system_audio_capture_default_checked,
             supports_reselect_button, std::move(window_scroll_view));
         panes.emplace_back(window_title_text, std::move(pane));
         break;
@@ -771,11 +815,30 @@ void DesktopMediaPickerDialogView::MaybeCreateReselectButtonForPane(
   reselect_button_ = SetExtraView(std::move(reselect_button));
 }
 
+int DesktopMediaPickerDialogView::GetLabelForWindowPaneAudioToggle() const {
+  switch (window_audio_type_offered_) {
+    case DesktopMediaID::AudioType::kNone:
+      return GetHintId(is_screen_audio_offered_,
+                       /*is_window_audio_offered=*/false);
+    case DesktopMediaID::AudioType::kApplication:
+      return IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_APPLICATION_AUDIO;
+    case DesktopMediaID::AudioType::kSystem:
+      return GetLabelForShareSystemAudioToggle(suppress_local_audio_playback_,
+                                               restrict_own_audio_);
+  }
+  NOTREACHED();
+}
+
+bool DesktopMediaPickerDialogView::IsWindowAudioOffered() const {
+  return window_audio_type_offered_ !=
+         content::DesktopMediaID::AudioType::kNone;
+}
+
 std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
     const DisplaySurfaceCategory& category) const {
   if (!category.audio_offered) {
     return l10n_util::GetStringUTF16(
-        getHintId(is_system_audio_offered_, is_window_audio_offered_));
+        GetHintId(is_screen_audio_offered_, IsWindowAudioOffered()));
   }
 
   switch (category.type) {
@@ -784,8 +847,9 @@ std::u16string DesktopMediaPickerDialogView::GetLabelForAudioToggle(
           suppress_local_audio_playback_, restrict_own_audio_));
     }
     case DesktopMediaList::Type::kWindow:
-      return l10n_util::GetStringUTF16(GetLabelForShareSystemAudioToggle(
-          suppress_local_audio_playback_, restrict_own_audio_));
+      // Check windowAudio preference, as we can select either window or system
+      // audio
+      return l10n_util::GetStringUTF16(GetLabelForWindowPaneAudioToggle());
     case DesktopMediaList::Type::kWebContents:
       return l10n_util::GetStringUTF16(
           IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_TAB_AUDIO);
@@ -806,11 +870,25 @@ std::unique_ptr<views::View> DesktopMediaPickerDialogView::SetupPane(
   DisplaySurfaceCategory& category =
       categories_.emplace_back(type, std::move(controller), audio_offered,
                                audio_checked, supports_reselect_button);
+
+  base::RepeatingCallback<void(void)> trigger_audio_permission_check;
+#if BUILDFLAG(IS_MAC)
+  if (audio_capture_permission_checker_ &&
+      (type == DesktopMediaList::Type::kScreen ||
+       type == DesktopMediaList::Type::kWindow)) {
+    trigger_audio_permission_check = base::BindRepeating(
+        &DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate,
+        weak_factory_.GetWeakPtr());
+  }
+#endif
+
   auto share_audio_view =
       audio_requested_
           ? std::make_unique<ShareAudioView>(GetLabelForAudioToggle(category),
-                                             category.audio_offered)
+                                             category.audio_offered,
+                                             trigger_audio_permission_check)
           : nullptr;
+
   auto pane = std::make_unique<DesktopMediaPaneView>(
       category.type, std::move(content_view), std::move(share_audio_view));
   if (audio_requested_ && audio_offered) {
@@ -848,6 +926,14 @@ bool DesktopMediaPickerDialogView::IsAudioSharingApprovedByUser() const {
   CHECK_LT(static_cast<size_t>(index), categories_.size());
   return categories_[index].pane &&
          categories_[index].pane->IsAudioSharingApprovedByUser();
+}
+
+bool DesktopMediaPickerDialogView::IsAudioSharingControlEnabled() const {
+  const int index = GetSelectedTabIndex();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), categories_.size());
+  return categories_[index].pane &&
+         categories_[index].pane->IsAudioSharingControlEnabled();
 }
 
 void DesktopMediaPickerDialogView::RecordSourceCountsUma() {
@@ -918,6 +1004,13 @@ void DesktopMediaPickerDialogView::RecordAudioToggleUma(
   }
 
   base::UmaHistogramEnumeration(name, status);
+
+  if (source.type == DesktopMediaID::Type::TYPE_WINDOW &&
+      window_audio_type_offered_ == DesktopMediaID::AudioType::kApplication) {
+    base::UmaHistogramEnumeration(
+        "Media.Ui.GetDisplayMedia.BasicFlow.AudioToggleState.WindowsAppAudio",
+        status);
+  }
 }
 
 void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
@@ -945,6 +1038,39 @@ void DesktopMediaPickerDialogView::RecordTabDiscardedStatusUma(
   base::UmaHistogramEnumeration(
       "Media.Ui.GetDisplayMedia.BasicFlow.SelectedTabDiscardStatus", status);
 }
+
+#if BUILDFLAG(IS_MAC)
+void DesktopMediaPickerDialogView::RecordUserActionOnDeniedAudioPermissionUma(
+    std::optional<content::DesktopMediaID> source) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (request_source_ != RequestSource::kGetDisplayMedia) {
+    return;
+  }
+
+  if (!audio_capture_permission_checker_ ||
+      audio_capture_permission_checker_->GetState() !=
+          AudioCapturePermissionChecker::State::kDenied) {
+    return;
+  }
+
+  AudioCapturePermissionCheckerInteractions action;
+  if (!source) {
+    action =
+        AudioCapturePermissionCheckerInteractions::kCancelSharingAfterDenial;
+  } else if (source->type == DesktopMediaID::Type::TYPE_WEB_CONTENTS) {
+    action = AudioCapturePermissionCheckerInteractions::kShareTabAfterDenial;
+  } else {
+    action = source->audio_share
+                 ? AudioCapturePermissionCheckerInteractions::
+                       kShareWindowOrScreenWithAudioAfterDenial
+                 : AudioCapturePermissionCheckerInteractions::
+                       kShareWindowOrScreenWithoutAudioAfterDenial;
+  }
+
+  RecordUmaAudioCapturePermissionCheckerInteractions(action);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 std::optional<int> DesktopMediaPickerDialogView::CountSourcesOfType(
     DesktopMediaList::Type type) {
@@ -974,6 +1100,22 @@ gfx::Size DesktopMediaPickerDialogView::CalculatePreferredSize(
   return gfx::Size(
       kDialogViewWidth,
       GetLayoutManager()->GetPreferredHeightForWidth(this, kDialogViewWidth));
+}
+
+void DesktopMediaPickerDialogView::AddedToWidget() {
+  // Allow breaking the title over multiple lines if
+  // DesktopMediaPickerDialogView has a BubbleFrameView in order to handle long
+  // domain names. DesktopMediaPickerDialogView is not guaranteed to have a
+  // BubbleFrameView so this check is needed, but in practice it uses one on all
+  // desktop platforms.
+  //
+  // TODO(420734141): Make DesktopMediaPickerDialogView always have a
+  // BubbleFrameView.
+  views::BubbleFrameView* bubble_frame_view = GetBubbleFrameView();
+  if (base::FeatureList::IsEnabled(kDesktopMediaPickerMultiLineTitle) &&
+      bubble_frame_view) {
+    bubble_frame_view->SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
+  }
 }
 
 std::u16string DesktopMediaPickerDialogView::GetWindowTitle() const {
@@ -1029,6 +1171,10 @@ bool DesktopMediaPickerDialogView::Accept() {
                               : GetSelectedController()->GetSelection().value();
   source.audio_share = IsAudioSharingApprovedByUser();
 
+  if (source.type == DesktopMediaID::Type::TYPE_WINDOW) {
+    source.window_audio_type = window_audio_type_offered_;
+  }
+
   if (request_source_ == RequestSource::kGetDisplayMedia) {
     RecordUmaSelection(capturer_global_id_, source, GetSelectedSourceListType(),
                        dialog_open_time_);
@@ -1036,6 +1182,9 @@ bool DesktopMediaPickerDialogView::Accept() {
   RecordSourceCountsUma();
   RecordAudioToggleUma(source);
   RecordTabDiscardedStatusUma(source);
+#if BUILDFLAG(IS_MAC)
+  RecordUserActionOnDeniedAudioPermissionUma(source);
+#endif
 
   if (parent_) {
     parent_->NotifyDialogResult(source);
@@ -1050,6 +1199,9 @@ bool DesktopMediaPickerDialogView::Cancel() {
     RecordUmaCancellation(dialog_open_time_);
   }
   RecordSourceCountsUma();
+#if BUILDFLAG(IS_MAC)
+  RecordUserActionOnDeniedAudioPermissionUma(std::nullopt);
+#endif
 
   return views::DialogDelegateView::Cancel();
 }
@@ -1062,7 +1214,47 @@ void DesktopMediaPickerDialogView::OnWidgetInitialized() {
   views::DialogDelegateView::OnWidgetInitialized();
 }
 
+void DesktopMediaPickerDialogView::
+    MaybeUpdateAudioSharingControlStateForApplicationAudioCapture() {
+  CHECK_EQ(GetSelectedSourceListType(), DesktopMediaList::Type::kWindow);
+  CHECK_EQ(window_audio_type_offered_, DesktopMediaID::AudioType::kApplication);
+
+  DisplaySurfaceCategory& window_category = categories_[GetSelectedTabIndex()];
+  const bool has_audio_control =
+      window_category.pane && window_category.pane->AudioOffered();
+  if (!has_audio_control || !window_category.audio_offered) {
+    return;
+  }
+
+  if (GetSelectedController()->HasSelectedChromiumWindow() &&
+      !is_chromium_window_selected_) {
+    // Disable the audio-checkbox if the selected window is a Chromium
+    // window, since we cannot capture audio from Chromium windows for privacy
+    // reasons.
+    if (window_category.pane) {
+      window_category.audio_checked =
+          window_category.pane->IsAudioSharingApprovedByUser();
+      window_category.pane->SetAudioSharingApprovedByUser(false);
+      window_category.pane->SetAudioSharingControlEnabled(false);
+    }
+    is_chromium_window_selected_ = true;
+  } else if (!GetSelectedController()->HasSelectedChromiumWindow() &&
+             is_chromium_window_selected_) {
+    // Restore the audio-checkbox state.
+    if (window_category.pane) {
+      window_category.pane->SetAudioSharingApprovedByUser(
+          window_category.audio_checked);
+      window_category.pane->SetAudioSharingControlEnabled(true);
+    }
+    is_chromium_window_selected_ = false;
+  }
+}
+
 void DesktopMediaPickerDialogView::OnSelectionChanged() {
+  if (GetSelectedSourceListType() == DesktopMediaList::Type::kWindow &&
+      window_audio_type_offered_ == DesktopMediaID::AudioType::kApplication) {
+    MaybeUpdateAudioSharingControlStateForApplicationAudioCapture();
+  }
   DialogModelChanged();
 }
 
@@ -1183,6 +1375,51 @@ void DesktopMediaPickerDialogView::RecordPermissionInteractionUma() const {
 
   RecordUma(permission_interaction);
 }
+
+void DesktopMediaPickerDialogView::OnAudioSharingApprovedByUserUpdate() {
+  const int index = GetSelectedTabIndex();
+  CHECK_GE(index, 0);
+  CHECK_LT(static_cast<size_t>(index), categories_.size());
+  if (!categories_[index].pane) {
+    return;
+  }
+
+  if (categories_[index].pane->IsAudioSharingApprovedByUser()) {
+    switch (audio_capture_permission_checker_->GetState()) {
+      case AudioCapturePermissionChecker::State::kUnknown:
+        audio_capture_permission_checker_->RunCheck();
+        break;
+      case AudioCapturePermissionChecker::State::kDenied:
+        categories_[index].pane->SetAudioWarningVisible(true);
+        break;
+      case AudioCapturePermissionChecker::State::kGranted:
+      case AudioCapturePermissionChecker::State::kChecking:
+        // Do nothing.
+        break;
+    }
+  } else {
+    categories_[index].pane->SetAudioWarningVisible(false);
+  }
+}
+
+void DesktopMediaPickerDialogView::OnAudioPermissionUpdate() {
+  if (audio_capture_permission_checker_->GetState() !=
+      AudioCapturePermissionChecker::State::kDenied) {
+    return;
+  }
+
+  for (auto& category : categories_) {
+    if (!category.pane || (category.type != DesktopMediaList::Type::kScreen &&
+                           category.type != DesktopMediaList::Type::kWindow)) {
+      continue;
+    }
+
+    if (category.pane->IsAudioSharingApprovedByUser()) {
+      category.pane->SetAudioWarningVisible(true);
+    }
+  }
+}
+
 #endif
 
 BEGIN_METADATA(DesktopMediaPickerDialogView)

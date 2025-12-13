@@ -7,7 +7,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -58,8 +57,8 @@ class AppInstallAlmanacEndpointTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 };
 

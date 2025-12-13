@@ -52,7 +52,6 @@ IOSAddToReadingListInfobarDelegate::GetIdentifier() const {
 }
 
 std::u16string IOSAddToReadingListInfobarDelegate::GetMessageText() const {
-  // TODO(crbug.com/40176250): Add message title text.
   return std::u16string();
 }
 
@@ -81,7 +80,8 @@ void IOSAddToReadingListInfobarDelegate::InfoBarDismissed() {
 bool IOSAddToReadingListInfobarDelegate::Accept() {
   model_->AddOrReplaceEntry(url_, base::UTF16ToUTF8(title_.get()),
                             reading_list::ADDED_VIA_CURRENT_APP,
-                            base::Minutes(estimated_read_time_));
+                            base::Minutes(estimated_read_time_),
+                            /*creation_time=*/std::nullopt);
   ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(web_state_);
   if (sourceID != ukm::kInvalidSourceId) {
     ukm::builders::IOS_PageAddedToReadingList(sourceID)

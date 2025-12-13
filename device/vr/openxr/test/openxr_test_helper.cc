@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/vr/openxr/test/openxr_test_helper.h"
 
 #include <cmath>
@@ -14,10 +9,12 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "device/vr/openxr/openxr_interaction_profile_paths.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -57,6 +54,33 @@ device::Color GetFirstColor(base::span<char> pixels) {
 
 }  // namespace
 
+// static
+const std::vector<const char*>& OpenXrTestHelper::GetSupportedExtensions() {
+  static const base::NoDestructor<std::vector<const char*>> kExtensions({
+      XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
+      XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+      XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
+      XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
+      XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME,
+      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+      XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
+      XR_EXT_HAND_TRACKING_EXTENSION_NAME,
+      XR_KHR_VISIBILITY_MASK_EXTENSION_NAME,
+#if BUILDFLAG(IS_WIN)
+      XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+      XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+#elif BUILDFLAG(IS_ANDROID)
+      XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME,
+      XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
+      // For layers.
+      XR_KHR_COMPOSITION_LAYER_CYLINDER_EXTENSION_NAME,
+      XR_KHR_COMPOSITION_LAYER_EQUIRECT2_EXTENSION_NAME,
+      XR_KHR_COMPOSITION_LAYER_CUBE_EXTENSION_NAME,
+#endif
+  });
+  return *kExtensions;
+}
+
 OpenXrTestHelper::ActionProperties::ActionProperties()
     : type(XR_ACTION_TYPE_MAX_ENUM) {}
 
@@ -74,7 +98,6 @@ OpenXrTestHelper::OpenXrTestHelper()
     // test_hook_;
     : system_id_(0),
       session_(XR_NULL_HANDLE),
-      swapchain_(XR_NULL_HANDLE),
       frame_count_(0),
       session_state_(XR_SESSION_STATE_UNKNOWN),
       frame_begin_(false),
@@ -109,7 +132,7 @@ OpenXrTestHelper::~OpenXrTestHelper() = default;
 
 void OpenXrTestHelper::Reset() {
   session_ = XR_NULL_HANDLE;
-  swapchain_ = XR_NULL_HANDLE;
+  swapchains_.clear();
   session_state_ = XR_SESSION_STATE_UNKNOWN;
 
   system_id_ = 0;
@@ -234,7 +257,17 @@ void OpenXrTestHelper::CopyTextureDataIntoFrameData(uint32_t x_start,
   // along with the raw data.
   device::Color* color = static_cast<device::Color*>(map_data.pData);
   data.color = color[0];
-  memcpy(&data.raw_buffer, map_data.pData, buffer_size);
+  base::span<char> data_buffer(data.raw_buffer);
+  // SAFETY: Required by `Map` call above, texture_destination (which populates
+  // the map_data), was created to be `buffer_size_pixels` in width, which is
+  // calculated from `buffer_size.
+  static_assert(buffer_size >= buffer_size_pixels * sizeof(device::Color));
+  auto mapped_data_span = UNSAFE_BUFFERS(base::span<const char>(
+      static_cast<const char*>(map_data.pData), buffer_size));
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  data_buffer.copy_from_nonoverlapping(mapped_data_span);
 
   context->Unmap(texture_destination.Get(), 0);
 #elif BUILDFLAG(IS_ANDROID)
@@ -301,17 +334,13 @@ XrResult OpenXrTestHelper::DestroySession(XrSession session) {
 }
 
 XrSwapchain OpenXrTestHelper::CreateSwapchain() {
-  // Our OpenXR backend currently only creates one swapchain at a time, so any
-  // previously created swapchain must have been destroyed.
-  DCHECK_EQ(swapchain_, static_cast<XrSwapchain>(XR_NULL_HANDLE));
-  swapchain_ = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
-  return swapchain_;
+  auto swapchain = TreatIntegerAsHandle<XrSwapchain>(++next_handle_);
+  swapchains_.insert(swapchain);
+  return swapchain;
 }
 
 XrResult OpenXrTestHelper::DestroySwapchain(XrSwapchain swapchain) {
-  RETURN_IF_XR_FAILED(ValidateSwapchain(swapchain));
-  swapchain_ = XR_NULL_HANDLE;
-  return XR_SUCCESS;
+  return swapchains_.erase(swapchain) ? XR_SUCCESS : XR_ERROR_HANDLE_INVALID;
 }
 
 XrInstance OpenXrTestHelper::CreateInstance() {
@@ -549,7 +578,7 @@ std::vector<XrViewConfigurationType> OpenXrTestHelper::SupportedViewConfigs()
 
 XrResult OpenXrTestHelper::GetSecondaryConfigStates(
     uint32_t count,
-    XrSecondaryViewConfigurationStateMSFT* states) const {
+    XrSecondaryViewConfigurationStateMSFT* raw_states) const {
   // The number of secondary view configurations is the number of total views
   // minus the primary view configuration (there is always exactly one primary
   // config)
@@ -557,6 +586,11 @@ XrResult OpenXrTestHelper::GetSecondaryConfigStates(
             XR_ERROR_SIZE_INSUFFICIENT,
             "XrSecondaryViewConfigurationFrameStateMSFT "
             "viewConfigurationCount insufficient");
+
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto states = UNSAFE_BUFFERS(base::span(raw_states, count));
 
   // Start at 1, since the primary view is always added first in BeginSession.
   for (uint32_t i = 1; i < view_configs_enabled_.size(); i++) {
@@ -794,8 +828,13 @@ XrResult OpenXrTestHelper::AttachActionSets(
     return XR_ERROR_ACTIONSETS_ALREADY_ATTACHED;
   }
 
-  for (uint32_t i = 0; i < attach_info.countActionSets; i++) {
-    XrActionSet action_set = attach_info.actionSets[i];
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto action_sets = UNSAFE_BUFFERS(
+      base::span(attach_info.actionSets, attach_info.countActionSets));
+
+  for (XrActionSet action_set : action_sets) {
     RETURN_IF_XR_FAILED(ValidateActionSet(action_set));
     attached_action_sets_[action_set] = action_sets_[action_set];
   }
@@ -1041,10 +1080,7 @@ void OpenXrTestHelper::UpdateEventQueue() {
 std::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
   base::AutoLock lock(lock_);
   if (test_hook_) {
-    device::PoseFrameData pose_data = test_hook_->WaitGetPresentingPose();
-    if (pose_data.is_valid) {
-      return PoseFrameDataToTransform(pose_data);
-    }
+    return test_hook_->WaitGetPresentingPose();
   }
   return std::nullopt;
 }
@@ -1081,9 +1117,9 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
         << path_string;
   }
   device::ControllerFrameData data;
-  for (uint32_t i = 0; i < data_arr_.size(); i++) {
-    if (data_arr_[i].role == role) {
-      data = data_arr_[i];
+  for (const auto& controller : controllers_) {
+    if (controller.role == role) {
+      data = controller;
     }
   }
   return data;
@@ -1154,14 +1190,17 @@ void OpenXrTestHelper::LocateJoints(
     return;
   }
 
-  base::span<XrHandJointLocationEXT> out_locations{locations->jointLocations,
-                                                   locations->jointCount};
-  if (controller.pose_data.is_valid) {
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto out_locations = UNSAFE_BUFFERS(base::span<XrHandJointLocationEXT>(
+      locations->jointLocations, locations->jointCount));
+  if (controller.pose_data) {
     auto& palm_location = out_locations[0];
     palm_location.locationFlags = kValidTrackedPoseFlags;
     palm_location.radius = 1.0f;
-    palm_location.pose = device::GfxTransformToXrPose(
-        PoseFrameDataToTransform(controller.pose_data));
+    palm_location.pose =
+        device::GfxTransformToXrPose(controller.pose_data.value());
   }
   for (const auto& data : controller.hand_data) {
     if (!data.mojo_from_joint) {
@@ -1177,6 +1216,65 @@ void OpenXrTestHelper::LocateJoints(
   }
 
   locations->isActive = true;
+}
+
+XrResult OpenXrTestHelper::GetVisibilityMask(
+    XrViewConfigurationType view_configuration_type,
+    uint32_t view_index,
+    XrVisibilityMaskTypeKHR visibility_mask_type,
+    XrVisibilityMaskKHR* visibility_mask) {
+  RETURN_IF(
+      view_configuration_type != XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+      XR_ERROR_VALIDATION_FAILURE,
+      "xrGetVisibilityMaskKHR only supports primary stereo for testing");
+  RETURN_IF(
+      visibility_mask_type != XR_VISIBILITY_MASK_TYPE_VISIBLE_TRIANGLE_MESH_KHR,
+      XR_ERROR_VALIDATION_FAILURE,
+      "xrGetVisibilityMaskKHR visibility_mask_type must be "
+      "VISIBLE_TRIANGLE_MESH");
+
+  std::optional<device::VisibilityMaskData> mask;
+  {
+    base::AutoLock auto_lock(lock_);
+    mask = test_hook_->WaitGetVisibilityMask(view_index);
+  }
+
+  if (!mask) {
+    visibility_mask->vertexCountOutput = 0;
+    visibility_mask->indexCountOutput = 0;
+    return XR_SUCCESS;
+  }
+
+  visibility_mask->vertexCountOutput = mask->vertices.size() / 2;
+  visibility_mask->indexCountOutput = mask->indices.size();
+
+  if (visibility_mask->vertexCapacityInput > 0) {
+    // SAFETY: Test-only implementation of a C-Style API that thus has to
+    // provide arrays as a pointer and a size. The sole callers are our own
+    // product/test code.
+    auto vertices = UNSAFE_BUFFERS(base::span(
+        visibility_mask->vertices, visibility_mask->vertexCapacityInput));
+    RETURN_IF(vertices.size() < visibility_mask->vertexCountOutput,
+              XR_ERROR_SIZE_INSUFFICIENT,
+              "xrGetVisibilityMaskKHR vertex buffer too small");
+    for (size_t i = 0; i < visibility_mask->vertexCountOutput; i++) {
+      vertices[i] = {mask->vertices[i * 2], mask->vertices[i * 2 + 1]};
+    }
+  }
+
+  if (visibility_mask->indexCapacityInput > 0) {
+    // SAFETY: Test-only implementation of a C-Style API that thus has to
+    // provide arrays as a pointer and a size. The sole callers are our own
+    // product/test code.
+    auto indices = UNSAFE_BUFFERS(base::span(
+        visibility_mask->indices, visibility_mask->indexCapacityInput));
+    RETURN_IF(indices.size() < visibility_mask->indexCountOutput,
+              XR_ERROR_SIZE_INSUFFICIENT,
+              "xrGetVisibilityMaskKHR index buffer too small");
+    indices.copy_from_nonoverlapping(mask->indices);
+  }
+
+  return XR_SUCCESS;
 }
 
 std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
@@ -1204,8 +1302,8 @@ std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
                          .profile_binding_map[GetPath(interaction_profile_)]);
     device::ControllerFrameData data =
         GetControllerDataFromPath(std::move(path_string));
-    if (data.pose_data.is_valid) {
-      transform = PoseFrameDataToTransform(data.pose_data);
+    if (data.pose_data) {
+      transform = data.pose_data;
     }
   } else {
     NOTREACHED() << "Locate Space only supports reference space or action "
@@ -1231,8 +1329,8 @@ std::string OpenXrTestHelper::PathToString(XrPath path) const {
 bool OpenXrTestHelper::UpdateData() {
   base::AutoLock auto_lock(lock_);
   if (test_hook_) {
-    for (uint32_t i = 0; i < device::kMaxTrackedDevices; i++) {
-      data_arr_[i] = test_hook_->WaitGetControllerData(i);
+    for (uint32_t i = 0; i < controllers_.size(); i++) {
+      controllers_[i] = test_hook_->WaitGetControllerData(i);
     }
     return true;
   }
@@ -1256,9 +1354,15 @@ bool OpenXrTestHelper::UpdateViews(XrViewConfigurationType view_config_type,
     return true;
   }
 
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto view_span = UNSAFE_BUFFERS(base::span(views, size));
+
   for (uint32_t i = 0; i < size; i++) {
+    auto& view = view_span[i];
     if (pose.has_value()) {
-      views[i].pose = device::GfxTransformToXrPose(*pose);
+      view.pose = device::GfxTransformToXrPose(*pose);
     }
     if (config.has_value()) {
       // For view configurations with 2 views, assume they are the left and
@@ -1266,7 +1370,7 @@ bool OpenXrTestHelper::UpdateViews(XrViewConfigurationType view_config_type,
       // View configurations with 1 view are not necessarily always at zero, so
       // just also use half the IPD as an arbitrary offset to avoid adding
       // additional logic to set to zero.
-      views[i].pose.position.x =
+      view.pose.position.x =
           config->interpupillary_distance / 2 * GetOffsetMultiplierForIndex(i);
     }
   }
@@ -1401,9 +1505,9 @@ XrResult OpenXrTestHelper::ValidateSession(XrSession session) const {
 }
 
 XrResult OpenXrTestHelper::ValidateSwapchain(XrSwapchain swapchain) const {
-  RETURN_IF(swapchain_ == XR_NULL_HANDLE, XR_ERROR_HANDLE_INVALID,
+  RETURN_IF(swapchains_.empty(), XR_ERROR_HANDLE_INVALID,
             "XrSwapchain has not been queried");
-  RETURN_IF(swapchain != swapchain_, XR_ERROR_HANDLE_INVALID,
+  RETURN_IF(!swapchains_.contains(swapchain), XR_ERROR_HANDLE_INVALID,
             "XrSwapchain invalid");
 
   return XR_SUCCESS;
@@ -1442,8 +1546,6 @@ XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
             "XrCompositionLayerProjection type invalid");
   RETURN_IF(projection_layer.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection next is not nullptr");
-  RETURN_IF(projection_layer.layerFlags != 0, XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerProjection layerflag is not 0");
   RETURN_IF(reference_spaces_.count(projection_layer.space) != 1,
             XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection space is not reference space");
@@ -1461,27 +1563,22 @@ XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjection(
             XR_ERROR_VALIDATION_FAILURE,
             "XrCompositionLayerProjection viewCount invalid");
 
-  for (uint32_t j = 0; j < projection_layer.viewCount; j++) {
-    const XrCompositionLayerProjectionView& projection_view =
-        projection_layer.views[j];
-    RETURN_IF_XR_FAILED(ValidateXrCompositionLayerProjectionView(
-        projection_view, projection_layer.viewCount, j));
+  RETURN_IF(projection_layer.viewCount > 2, XR_ERROR_VALIDATION_FAILURE,
+            "XrCompositionLayerProjection viewCount invalid");
+
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto views = UNSAFE_BUFFERS(
+      base::span(projection_layer.views, projection_layer.viewCount));
+
+  for (const auto& view : views) {
+    RETURN_IF(view.type != XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW,
+              XR_ERROR_VALIDATION_FAILURE,
+              "XrCompositionLayerProjectionView type invalid");
+    RETURN_IF(view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
+              "XrCompositionLayerProjectionView next is not nullptr");
   }
-
-  return XR_SUCCESS;
-}
-
-XrResult OpenXrTestHelper::ValidateXrCompositionLayerProjectionView(
-    const XrCompositionLayerProjectionView& view,
-    uint32_t view_count,
-    uint32_t index) {
-  DCHECK_LE(view_count, 2u);
-  DCHECK_LE(index, 2u);
-  RETURN_IF(view.type != XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW,
-            XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerProjectionView type invalid");
-  RETURN_IF(view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,
-            "XrCompositionLayerProjectionView next is not nullptr");
 
   return XR_SUCCESS;
 }
@@ -1506,8 +1603,11 @@ XrResult OpenXrTestHelper::ValidateXrPosefIsIdentity(
 XrResult OpenXrTestHelper::ValidateViews(uint32_t view_capacity_input,
                                          XrView* views) const {
   RETURN_IF(views == nullptr, XR_ERROR_VALIDATION_FAILURE, "XrView is nullptr");
-  for (uint32_t i = 0; i < view_capacity_input; i++) {
-    XrView view = views[i];
+  // SAFETY: Test-only implementation of a C-Style API that thus has to provide
+  // arrays as a pointer and a size. The sole callers are our own product/test
+  // code.
+  auto views_span = UNSAFE_BUFFERS(base::span(views, view_capacity_input));
+  for (const auto& view : views_span) {
     RETURN_IF_FALSE(view.type == XR_TYPE_VIEW, XR_ERROR_VALIDATION_FAILURE,
                     "XrView type invalid");
     RETURN_IF(view.next != nullptr, XR_ERROR_VALIDATION_FAILURE,

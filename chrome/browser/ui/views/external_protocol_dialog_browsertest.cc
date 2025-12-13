@@ -190,8 +190,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest,
 
   ui::KeyEvent press_enter_delayed(
       ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
-      ui::EventTimeForNow() +
-          base::Milliseconds(views::GetDoubleClickInterval()));
+      ui::EventTimeForNow() + views::GetDoubleClickInterval());
   views::test::ButtonTestApi(dialog_->GetOkButton())
       .NotifyClick(press_enter_delayed);
   EXPECT_TRUE(url_did_launch_);

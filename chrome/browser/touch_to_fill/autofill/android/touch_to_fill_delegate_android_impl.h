@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <optional>
 #include <variant>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
@@ -41,8 +44,9 @@ enum class TouchToFillPaymentMethodTriggerOutcome {
   // The sheet was not shown because either the client or the form was not
   // secure.
   kFormOrClientNotSecure = 3,
-  // The sheet was not shown because it has already been shown before.
-  kShownBefore = 4,
+  // The sheet was not shown because it has already been shown before and should
+  // not be shown again.
+  kShownBeforeAndShouldNotBeShownAgain = 4,
   // The sheet was not shown because Autofill UI cannot be shown.
   kCannotShowAutofillUi = 5,
   // There was a try to display the bottom sheet, but it failed due to unknown
@@ -131,12 +135,20 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void ShowPaymentMethodSettings() override;
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
+  void BnplSuggestionSelected(std::optional<int64_t> extracted_amount) override;
+  void OnBnplTosAccepted() override;
   void IbanSuggestionSelected(
       std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
   void LoyaltyCardSuggestionSelected(const LoyaltyCard& loyalty_card) override;
-  void OnDismissed(bool dismissed_by_user) override;
+  void OnDismissed(bool dismissed_by_user, bool should_reshow) override;
+  void OnBnplIssuerSuggestionSelected(const std::string& issuer_id) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
+
+  void SetCancelCallback(base::OnceClosure cancel_callback) override;
+  void SetSelectedIssuerCallback(
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback) override;
+  void SetBnplTosAcceptCallback(base::OnceClosure accept_tos_callback) override;
 
   base::WeakPtr<TouchToFillDelegateAndroidImpl> GetWeakPtr();
 
@@ -144,7 +156,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   enum class TouchToFillState {
     kShouldShow,
     kIsShowing,
-    kWasShown,
+    kShownAndShouldBeShownAgain,
+    kShownAndShouldNotBeShownAgain
   };
 
   using TriggerOutcome = TouchToFillPaymentMethodTriggerOutcome;
@@ -163,6 +176,28 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
                  std::vector<Iban>,
                  std::vector<LoyaltyCard>>
         items_to_suggest;
+  };
+
+  // This groups the callbacks needed to handle user actions in the BNPL flow.
+  // When a bottom sheet is shown for the Issuer Selection, Terms of Service,
+  // or Progress screen, these callbacks are set here and are then triggered
+  // when the user interacts with that screen.
+  struct BnplCallbacks {
+    BnplCallbacks();
+    BnplCallbacks(BnplCallbacks&&);
+    BnplCallbacks& operator=(BnplCallbacks&&);
+    ~BnplCallbacks();
+
+    // This callback is set when the issuer selection screen is shown,
+    // and it runs when the user selects a BNPL issuer.
+    base::OnceCallback<void(BnplIssuer)> selected_issuer_callback;
+    // This callback is set when the issuer ToS screen is shown, and it runs
+    // when the user accepts the ToS.
+    base::OnceClosure accept_tos_callback;
+    // This callback runs when the user dismisses the bottom sheet. It is set
+    // for multiple screens, including the Issuer Selection, Terms of Service,
+    // and Progress screens.
+    base::OnceClosure cancel_callback;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling
@@ -202,6 +237,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   FormData query_form_;
   FormFieldData query_field_;
   bool dismissed_by_user_ = false;
+
+  BnplCallbacks bnpl_callbacks_;
 
   base::WeakPtrFactory<TouchToFillDelegateAndroidImpl> weak_ptr_factory_{this};
 };

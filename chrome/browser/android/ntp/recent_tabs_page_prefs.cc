@@ -17,7 +17,7 @@
 #include "chrome/android/chrome_jni_headers/RecentTabsPagePrefs_jni.h"
 
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 static jlong JNI_RecentTabsPagePrefs_Init(JNIEnv* env, Profile* profile) {
   RecentTabsPagePrefs* recent_tabs_page_prefs =
@@ -97,3 +97,5 @@ void RecentTabsPagePrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kNtpCollapsedSyncPromo, false);
   registry->RegisterDictionaryPref(prefs::kNtpCollapsedForeignSessions);
 }
+
+DEFINE_JNI(RecentTabsPagePrefs)

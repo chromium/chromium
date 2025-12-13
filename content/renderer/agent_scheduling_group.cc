@@ -22,7 +22,7 @@
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_navigation_metrics_manager.h"
-#include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_factory.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sync_channel.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -39,7 +39,7 @@
 
 namespace content {
 
-using ::IPC::ChannelMojo;
+using ::IPC::ChannelFactory;
 using ::IPC::Listener;
 using ::IPC::SyncChannel;
 using ::mojo::AssociatedReceiver;
@@ -135,11 +135,10 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   // TODO(crbug.com/40142495): Add necessary filters.
   // Currently, the renderer process has these filters:
   // 1. `UnfreezableMessageFilter` - in the process of being removed,
-  // 2. `PnaclTranslationResourceHost` - NaCl is going away, and
-  // 3. `AutomationMessageFilter` - needs to be handled somehow.
+  // 2. `AutomationMessageFilter` - needs to be handled somehow.
 
   channel_->Init(
-      ChannelMojo::CreateClientFactory(
+      ChannelFactory::CreateClientFactory(
           bootstrap.PassPipe(),
           /*ipc_task_runner=*/render_thread_->GetIOTaskRunner(),
           /*proxy_task_runner=*/agent_group_scheduler_->DefaultTaskRunner()),
@@ -162,10 +161,10 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 
-void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
+void AgentSchedulingGroup::OnBadMessageReceived() {
   // Not strictly required, since we don't currently do anything with bad
   // messages in the renderer, but if we ever do then this will "just work".
-  return ToImpl(*render_thread_).OnBadMessageReceived(message);
+  return ToImpl(*render_thread_).OnBadMessageReceived();
 }
 
 void AgentSchedulingGroup::OnAssociatedInterfaceRequest(
@@ -251,8 +250,7 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       std::move(params->blink_page_broadcast), agent_group_scheduler(),
       params->session_storage_namespace_id, params->base_background_color,
       params->browsing_context_group_token, &params->color_provider_colors,
-      std::move(params->partitioned_popin_params), params->history_index,
-      params->history_length);
+      params->history_index, params->history_length);
 
   web_view->SetRendererPreferences(params->renderer_preferences);
   web_view->SetWebPreferences(params->web_preferences);
@@ -340,12 +338,6 @@ blink::WebView* AgentSchedulingGroup::CreateWebView(
       auto& provisional_local_params =
           params->main_frame->get_provisional_local_params();
       auto& local_params = provisional_local_params->local_params;
-
-      // It does not make swense to reuse the compositor if there is no previous
-      // RenderFrame to take it from.
-      if (local_params->widget_params->reuse_compositor) {
-        DCHECK(provisional_local_params->previous_frame_token);
-      }
 
       // Create the provisional main LocalFrame.
       // TODO(dcheng): RenderFrameImpl::CreateFrame() should probably be split

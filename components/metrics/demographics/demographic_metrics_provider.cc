@@ -132,6 +132,9 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
     case MetricsLogUploader::MetricServiceType::DWA:
       // DWA doesn't have demographic metrics.
       return;
+    case MetricsLogUploader::MetricServiceType::PRIVATE_METRICS:
+      // Private Metrics doesn't have demographic metrics.
+      return;
   }
   NOTREACHED();
 }

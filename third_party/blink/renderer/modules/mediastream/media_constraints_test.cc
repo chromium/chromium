@@ -113,10 +113,11 @@ TEST(MediaTrackConstraintsTest, SetToString) {
   MediaTrackConstraintSetPlatform the_set;
   EXPECT_EQ("", the_set.ToString());
   the_set.width.SetMax(240);
-  EXPECT_EQ("width: {max: 240}", the_set.ToString().Utf8());
+  EXPECT_EQ("\"width\": {\"max\": 240}", the_set.ToString().Utf8());
   the_set.echo_cancellation.SetIdealBoolean(true);
-  EXPECT_EQ("width: {max: 240}, echoCancellation: {ideal: true}",
-            the_set.ToString().Utf8());
+  EXPECT_EQ(
+      "\"width\": {\"max\": 240}, \"echoCancellation\": {\"ideal\": true}",
+      the_set.ToString().Utf8());
 }
 
 TEST(MediaTrackConstraintsTest, ConstraintsToString) {
@@ -128,7 +129,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
   advanced[0].echo_cancellation.SetExactBoolean(true);
   the_constraints.Initialize(basic, advanced);
   EXPECT_EQ(
-      "{width: {max: 240}, advanced: [{echoCancellation: {exact: true}}]}",
+      "{\"width\": {\"max\": 240}, \"advanced\": [{\"echoCancellation\": "
+      "{\"exact\": true}}]}",
       the_constraints.ToString().Utf8());
 
   MediaConstraints null_constraints;
@@ -140,7 +142,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
   pan_basic.pan.SetIsPresent(false);
   pan_advanced[0].pan.SetIsPresent(true);
   pan_constraints.Initialize(pan_basic, pan_advanced);
-  EXPECT_EQ("{advanced: [{pan: {}}]}", pan_constraints.ToString().Utf8());
+  EXPECT_EQ("{\"advanced\": [{\"pan\": {}}]}",
+            pan_constraints.ToString().Utf8());
 
   MediaConstraints tilt_constraints;
   MediaTrackConstraintSetPlatform tilt_basic;
@@ -148,7 +151,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
   tilt_basic.tilt.SetIsPresent(false);
   tilt_advanced[0].tilt.SetIsPresent(true);
   tilt_constraints.Initialize(tilt_basic, tilt_advanced);
-  EXPECT_EQ("{advanced: [{tilt: {}}]}", tilt_constraints.ToString().Utf8());
+  EXPECT_EQ("{\"advanced\": [{\"tilt\": {}}]}",
+            tilt_constraints.ToString().Utf8());
 
   MediaConstraints zoom_constraints;
   MediaTrackConstraintSetPlatform zoom_basic;
@@ -156,7 +160,8 @@ TEST(MediaTrackConstraintsTest, ConstraintsToString) {
   zoom_basic.zoom.SetIsPresent(false);
   zoom_advanced[0].zoom.SetIsPresent(true);
   zoom_constraints.Initialize(zoom_basic, zoom_advanced);
-  EXPECT_EQ("{advanced: [{zoom: {}}]}", zoom_constraints.ToString().Utf8());
+  EXPECT_EQ("{\"advanced\": [{\"zoom\": {}}]}",
+            zoom_constraints.ToString().Utf8());
 
   // TODO(crbug.com/1086338): Test other constraints with IsPresent.
 }

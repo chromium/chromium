@@ -42,7 +42,8 @@ v8::MaybeLocal<v8::Object> V8ObjectConstructor::NewInstance(
   DCHECK(!function.IsEmpty());
   TRACE_EVENT0("v8", "v8.newInstance");
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
-  ConstructorMode constructor_mode(isolate);
+  auto* isolate_data = V8PerIsolateData::From(isolate);
+  isolate_data->EnterWrapperConstructor();
   v8::MicrotasksScope microtasks_scope(
       isolate, isolate->GetCurrentContext()->GetMicrotaskQueue(),
       v8::MicrotasksScope::kDoNotRunMicrotasks);
@@ -53,6 +54,7 @@ v8::MaybeLocal<v8::Object> V8ObjectConstructor::NewInstance(
       isolate->GetCurrentContext(), argc, argv,
       v8::SideEffectType::kHasNoSideEffect);
   CHECK(!isolate->IsDead());
+  isolate_data->LeaveWrapperConstructor();
   return result;
 }
 
@@ -60,8 +62,7 @@ void V8ObjectConstructor::IsValidConstructorMode(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(info.GetIsolate(),
                                                "Blink_IsValidConstructorMode");
-  if (ConstructorMode::Current(info.GetIsolate()) ==
-      ConstructorMode::kCreateNewObject) {
+  if (!V8PerIsolateData::From(info.GetIsolate())->InWrapperConstructor()) {
     V8ThrowException::ThrowTypeError(info.GetIsolate(), "Illegal constructor");
     return;
   }

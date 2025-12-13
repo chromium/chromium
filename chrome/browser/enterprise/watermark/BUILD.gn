@@ -21,7 +21,7 @@ source_set("watermark_view_lib") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/strings:components_strings_grit",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//ui/views",
   ]
 }
@@ -40,18 +40,14 @@ executable("watermark_app") {
     "//base",
     "//base/test:test_support",
     "//build/win:default_exe_manifest",
-    "//ui/base/metadata:metadata",
+    "//ui/base/metadata",
     "//ui/color:mixers",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
     "//ui/resources:ui_test_pak",
-    "//ui/views:views",
+    "//ui/views",
     "//ui/views/examples:views_examples_lib",
     "//ui/views/examples:views_examples_proc",
   ]
-
-  if (is_win) {
-    deps += [ "//ui/native_theme:native_theme_browser" ]
-  }
 
   defines = [ "VIEWS_EXAMPLES_IMPLEMENTATION" ]
 }

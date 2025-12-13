@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("native_unit_test_support_java") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeNativeUnitTestSupport.java" ]
+  deps = [
+    "//build/android:build_java",
+    "//chrome/browser/ui/android/extensions/windowing/internal:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//chrome/browser/ui/browser_window/test:junit_test_support",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":native_unit_test_support_jni" ]
+}
+
+generate_jni("native_unit_test_support_jni") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeNativeUnitTestSupport.java" ]
+}

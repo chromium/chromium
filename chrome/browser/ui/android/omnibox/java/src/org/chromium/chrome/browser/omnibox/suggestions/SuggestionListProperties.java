@@ -18,81 +18,85 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties controlling the state of the list of suggestion items. */
 @NullMarked
 @interface SuggestionListProperties {
-    static final WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
+    WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
 
-    static final WritableFloatPropertyKey CHILD_TRANSLATION_Y = new WritableFloatPropertyKey();
+    WritableFloatPropertyKey CHILD_TRANSLATION_Y = new WritableFloatPropertyKey();
 
     /** Whether the Omnibox session is active and Suggestions may be shown. */
-    static final WritableBooleanPropertyKey OMNIBOX_SESSION_ACTIVE =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey OMNIBOX_SESSION_ACTIVE = new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
-    static final ReadableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
+    ReadableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
             new ReadableObjectPropertyKey<>();
 
     /** The list of models controlling the state of the suggestion items. */
-    static final ReadableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
-            new ReadableObjectPropertyKey<>();
+    ReadableObjectPropertyKey<ModelList> SUGGESTION_MODELS = new ReadableObjectPropertyKey<>();
 
     /** Whether the list encompasses the final set of suggestions for the current user query. */
-    static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
 
     /**
      * Specifies the color scheme. It can be light or dark because of a publisher defined color,
      * incognito, or the default theme that follows dynamic colors.
      */
-    static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
+    WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
     /**
      * The observer that will receive notifications that the user is interacting with an item on the
      * Suggestions list.
      */
-    static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver>
-            GESTURE_OBSERVER = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver> GESTURE_OBSERVER =
+            new WritableObjectPropertyKey<>();
 
     /** The listener that will receive the new height of the suggestion list in pixels. */
-    static final WritableObjectPropertyKey<Callback<Integer>> DROPDOWN_HEIGHT_CHANGE_LISTENER =
+    WritableObjectPropertyKey<Callback<Integer>> DROPDOWN_HEIGHT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** The listener that will be invoked whenever the User scrolls the list. */
-    static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_LISTENER =
+    WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** The listener that will be invoked whenever the User scrolls the list to the top. */
-    static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
+    WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
             new WritableObjectPropertyKey<>();
 
     /** Whether the dropdown should draw over top of the anchor view. */
-    static final ReadableBooleanPropertyKey DRAW_OVER_ANCHOR = new ReadableBooleanPropertyKey();
+    ReadableBooleanPropertyKey DRAW_OVER_ANCHOR = new ReadableBooleanPropertyKey();
+
+    /** On-screen placement of the Toolbar. */
+    WritableIntPropertyKey TOOLBAR_POSITION = new WritableIntPropertyKey();
 
     /**
      * Whether the dropdown container should always be visible, even if there's no suggestions to
      * show.
      */
-    static final WritableBooleanPropertyKey CONTAINER_ALWAYS_VISIBLE =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey CONTAINER_ALWAYS_VISIBLE = new WritableBooleanPropertyKey();
 
     /**
      * Whether the activity window is focused. See {@link Activity#onWindowFocusChanged(boolean)}.
      */
-    static final WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey ACTIVITY_WINDOW_FOCUSED = new WritableBooleanPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS =
+    /** Whether the suggestions are being rendered on a large screen. */
+    WritableBooleanPropertyKey IS_LARGE_SCREEN = new WritableBooleanPropertyKey();
+
+    PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ACTIVITY_WINDOW_FOCUSED,
                 ALPHA,
                 CHILD_TRANSLATION_Y,
-                OMNIBOX_SESSION_ACTIVE,
-                EMBEDDER,
-                SUGGESTION_MODELS,
                 COLOR_SCHEME,
-                GESTURE_OBSERVER,
+                CONTAINER_ALWAYS_VISIBLE,
+                DRAW_OVER_ANCHOR,
                 DROPDOWN_HEIGHT_CHANGE_LISTENER,
                 DROPDOWN_SCROLL_LISTENER,
                 DROPDOWN_SCROLL_TO_TOP_LISTENER,
+                EMBEDDER,
+                GESTURE_OBSERVER,
+                IS_LARGE_SCREEN,
                 LIST_IS_FINAL,
-                DRAW_OVER_ANCHOR,
-                CONTAINER_ALWAYS_VISIBLE,
-                ACTIVITY_WINDOW_FOCUSED
+                OMNIBOX_SESSION_ACTIVE,
+                SUGGESTION_MODELS,
+                TOOLBAR_POSITION,
             };
 }

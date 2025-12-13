@@ -213,8 +213,7 @@
         </template>
         <template is="dom-if"
             if="[[hasOptionsPageInSettings_(item.id)]]">
-          <div class="internal-wrapper"
-              hidden="[[!item.hasOptionsPage]]">
+          <div class="internal-wrapper">
             <cr-icon-button class="subpage-arrow"
                 aria-label$="[[getOpenOptionsPageLabel_(
                 item.displayName)]]"
@@ -353,21 +352,6 @@
     </div>
   </iron-collapse>
 </div>
-
-<template is="dom-if" if="[[allowSuggestionSection_]]">
-  <div id="suggestionsSection" class="hr bottom-margin">
-    <h2>$i18n{suggestionsTitle}</h2>
-    <div class="subsection">
-      <settings-toggle-button id="emojiSuggestionToggle"
-          pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"
-          label="$i18n{emojiSuggestionTitle}"
-          sub-label="$i18n{emojiSuggestionDescription}"
-          aria-label="$i18n{emojiSuggestionTitle}"
-          deep-link-focus-id$="[[Setting.kShowEmojiSuggestions]]">
-      </settings-toggle-button>
-    </div>
-  </div>
-</template>
 
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"

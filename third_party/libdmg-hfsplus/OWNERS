@@ -1,0 +1,6 @@
+# Primary owners.
+norberg@google.com    # Chromium Updater team
+waffles@chromium.org  # Chromium Updater team
+
+# The entire Chromium Updater team can approve CLs when needed.
+file://chrome/updater/OWNERS

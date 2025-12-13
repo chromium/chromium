@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -1136,20 +1137,74 @@ class CaptureControllerScrollParametersValidationTest
   static constexpr int kDivWidth = 100;
   static constexpr int kDivHeight = 200;
 
+  static constexpr gfx::Point kDivAtOrigin = gfx::Point(0, 0);
+  static constexpr gfx::Point kDivAtOffset = gfx::Point(40, 80);
+
   static constexpr gfx::Point kTopLeft = gfx::Point(0, 0);
-  static constexpr gfx::Point kTopRight = gfx::Point(0, kDivWidth - 1);
-  static constexpr gfx::Point kBottomLeft = gfx::Point(kDivHeight - 1, 0);
+  static constexpr gfx::Point kTopRight = gfx::Point(kDivWidth - 1, 0);
+  static constexpr gfx::Point kBottomLeft = gfx::Point(0, kDivHeight - 1);
   static constexpr gfx::Point kBottomRight =
-      gfx::Point(kDivHeight - 1, kDivWidth - 1);
+      gfx::Point(kDivWidth - 1, kDivHeight - 1);
   static constexpr gfx::Point kCenter =
       gfx::Point((kDivWidth - 1) / 2, (kDivHeight - 1) / 2);
 
   CaptureControllerScrollParametersValidationTest()
-      : div_origin_(std::get<1>(GetParam())),
+      : div_origin_(std::get<0>(GetParam())),
         gesture_coordinates_(std::get<1>(GetParam())),
         horizontal_scroll_direction_(std::get<2>(GetParam())),
         vertical_scroll_direction_(std::get<3>(GetParam())) {}
   ~CaptureControllerScrollParametersValidationTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ScrollTestParams>& info) {
+    std::string result;
+
+    // div_origin
+    for (const auto& named_param :
+         {std::make_pair(kDivAtOrigin, "DivAtOrigin"),
+          std::make_pair(kDivAtOffset, "DivAtOffset")}) {
+      if (std::get<0>(info.param) == named_param.first) {
+        result += named_param.second;
+        break;
+      }
+    }
+
+    // gesture_coordinates
+    for (const auto& named_param : {std::make_pair(kTopLeft, "TopLeft"),
+                                    std::make_pair(kTopRight, "TopRight"),
+                                    std::make_pair(kBottomLeft, "BottomLeft"),
+                                    std::make_pair(kBottomRight, "BottomRight"),
+                                    std::make_pair(kCenter, "Center")}) {
+      if (std::get<1>(info.param) == named_param.first) {
+        result += std::string("GestureAt") + named_param.second;
+        break;
+      }
+    }
+
+    // horizontal_scroll_direction
+    for (const auto& named_param :
+         {std::make_pair(ScrollDirection::kNone, "None"),
+          std::make_pair(ScrollDirection::kForwards, "Forwards"),
+          std::make_pair(ScrollDirection::kBackwards, "Backwards")}) {
+      if (std::get<2>(info.param) == named_param.first) {
+        result += std::string("HorizontalScroll") + named_param.second;
+        break;
+      }
+    }
+
+    // vertical_scroll_direction
+    for (const auto& named_param :
+         {std::make_pair(ScrollDirection::kNone, "None"),
+          std::make_pair(ScrollDirection::kForwards, "Forwards"),
+          std::make_pair(ScrollDirection::kBackwards, "Backwards")}) {
+      if (std::get<3>(info.param) == named_param.first) {
+        result += std::string("VerticalScroll") + named_param.second;
+        break;
+      }
+    }
+
+    return result;
+  }
 
  protected:
   gfx::Point div_origin() const { return div_origin_; }
@@ -1187,7 +1242,8 @@ INSTANTIATE_TEST_SUITE_P(
     CaptureControllerScrollParametersValidationTest,
     Combine(
         // div_origin_
-        Values(gfx::Point(0, 0), gfx::Point(40, 80)),
+        Values(CaptureControllerScrollParametersValidationTest::kDivAtOrigin,
+               CaptureControllerScrollParametersValidationTest::kDivAtOffset),
         // gesture_coordinates_
         Values(CaptureControllerScrollParametersValidationTest::kTopLeft,
                CaptureControllerScrollParametersValidationTest::kTopRight,
@@ -1201,7 +1257,8 @@ INSTANTIATE_TEST_SUITE_P(
         // vertical_scroll_direction_
         Values(ScrollDirection::kNone,
                ScrollDirection::kForwards,
-               ScrollDirection::kBackwards)));
+               ScrollDirection::kBackwards)),
+    CaptureControllerScrollParametersValidationTest::DescribeParams);
 
 TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
   SetHtmlInnerHTML(base::StringPrintf(

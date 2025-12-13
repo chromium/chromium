@@ -69,8 +69,6 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
       base::BindRepeating(&SplitTabsToolbarButton::ButtonPressed,
                           base::Unretained(this)),
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(this)));
-  GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS));
   pin_state_.Init(
       prefs::kPinSplitTabButton, browser_->profile()->GetPrefs(),
       base::BindRepeating(&SplitTabsToolbarButton::UpdateButtonVisibility,
@@ -82,7 +80,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
                                 kColorToolbarButtonIconInactive);
   UpdateButtonVisibility();
   split_tab_menu_ = std::make_unique<SplitTabMenuModel>(
-      browser->tab_strip_model(),
+      browser_->tab_strip_model(),
       SplitTabMenuModel::MenuSource::kToolbarButton);
   browser->tab_strip_model()->AddObserver(this);
 }
@@ -172,6 +170,7 @@ void SplitTabsToolbarButton::UpdateButtonVisibility() {
   UpdateStatusIndicator(is_active_tab_in_split);
   SetVisible(pin_state_.GetValue() || is_active_tab_in_split);
   UpdateAccessibilityRole(is_active_tab_in_split);
+  UpdateAccessibilityLabel(is_active_tab_in_split);
 }
 
 void SplitTabsToolbarButton::UpdateButtonIcon() {
@@ -214,6 +213,14 @@ void SplitTabsToolbarButton::UpdateAccessibilityRole(bool has_menu) {
   GetViewAccessibility().SetRole(role);
   GetViewAccessibility().SetHasPopup(has_menu ? ax::mojom::HasPopup::kMenu
                                               : ax::mojom::HasPopup::kFalse);
+}
+
+void SplitTabsToolbarButton::UpdateAccessibilityLabel(bool is_enabled) {
+  auto string_id = is_enabled ? IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_ENABLED
+                              : IDS_ACCNAME_SPLIT_TABS_TOOLBAR_BUTTON_PINNED;
+
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(string_id));
+  SetTooltipText(l10n_util::GetStringUTF16(string_id));
 }
 
 BEGIN_METADATA(SplitTabsToolbarButton)

@@ -32,7 +32,7 @@ import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.content_settings.CookieControlsBridge;
@@ -69,9 +69,7 @@ public class CookieControlsBridgeTest {
                 @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
             mCookieControlsVisible = controlsState != CookieControlsState.HIDDEN;
-            mThirdPartyCookiesBlocked =
-                    controlsState == CookieControlsState.BLOCKED3PC
-                            || controlsState == CookieControlsState.ACTIVE_TP;
+            mThirdPartyCookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;
             mEnforcement = enforcement;
             mExpiration = expiration;
             mHelper.notifyCalled();
@@ -120,7 +118,7 @@ public class CookieControlsBridgeTest {
                     Profile profile = ProfileManager.getLastUsedRegularProfile();
                     UserPrefs.get(profile).clearPref(PrefNames.COOKIE_CONTROLS_MODE);
                     WebsitePreferenceBridge.setDefaultContentSetting(
-                            profile, ContentSettingsType.COOKIES, ContentSettingValues.DEFAULT);
+                            profile, ContentSettingsType.COOKIES, ContentSetting.DEFAULT);
                     BrowsingDataBridge.getForProfile(profile)
                             .clearBrowsingData(
                                     helper::notifyCalled,
@@ -311,9 +309,11 @@ public class CookieControlsBridgeTest {
         assertEquals(CookieControlsEnforcement.NO_ENFORCEMENT, mEnforcement);
 
         // Make new incognito page now
-        Tab incognitoTab = mActivityTestRule.loadUrlInNewTab(url, true);
+        WebPageStation webPage =
+                mInitialPage.openNewIncognitoTabOrWindowFast().loadWebPageProgrammatically(url);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    Tab incognitoTab = webPage.getActivity().getActivityTab();
                     mCookieControlsBridge =
                             new CookieControlsBridge(
                                     mCallbackHandler,

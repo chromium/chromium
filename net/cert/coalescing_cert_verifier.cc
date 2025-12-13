@@ -77,11 +77,12 @@ base::Value::Dict CertVerifierParams(
   dict.Set("certificates",
            NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {
-    dict.Set("ocsp_response",
+    dict.Set("stapled_ocsp_response",
              bssl::PEMEncode(params.ocsp_response(), "NETLOG OCSP RESPONSE"));
   }
   if (!params.sct_list().empty()) {
-    dict.Set("sct_list", bssl::PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
+    dict.Set("tls_sct_list",
+             bssl::PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
   }
   dict.Set("host", NetLogStringValue(params.hostname()));
   dict.Set("verifier_flags", params.flags());

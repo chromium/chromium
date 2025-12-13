@@ -15,7 +15,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,6 +48,31 @@ std::string SerializeGoogleGroupsFilter(const Study::Filter& filter) {
     result.append(base::NumberToString(group_id));
   }
   return result;
+}
+
+// Converts `seconds` to a base::Time relative to the Unix epoch, or returns
+// `default_value` if `seconds` is non-positive.
+base::Time FromSecondsSinceUnixEpoch(int64_t seconds,
+                                     base::Time default_value) {
+  return (seconds <= 0) ? default_value
+                        : base::Time::FromSecondsSinceUnixEpoch(seconds);
+}
+
+// Returns the time window during which the study may, upon becoming active, be
+// visible to Google web properties. Note that the start and end proto fields
+// default to 0, which are converted to base::Time::Min() and base::Time::Max()
+// respectively, which is the desired default behavior for studies having no
+// explicit start or end visibility dates.
+TimeWindow GetWebVisibilityTimeWindow(const Study& study) {
+  const base::Time start_time =
+      FromSecondsSinceUnixEpoch(study.google_web_visibility_start_date(),
+                                /*default_value=*/base::Time::Min());
+  const base::Time end_time =
+      FromSecondsSinceUnixEpoch(study.google_web_visibility_end_date(),
+                                /*default_value=*/base::Time::Max());
+  // TimeWindow gracefully maps invalid time windows (e.g. start >= end)
+  // as empty (zero-duration) time spans.
+  return {start_time, std::max(start_time, end_time)};
 }
 
 // Associates the variations params of `experiment`, if present.
@@ -100,25 +124,27 @@ std::optional<IDCollectionKey> GetKeyForWebExperiment(
              : GOOGLE_WEB_PROPERTIES_ANY_CONTEXT;
 }
 
-// If there are VariationIDs associated with |experiment|, register the
-// VariationIDs. When `is_trial_overridden` is true, this does not register
-// `google_web_experiment_id` as it would have no effect, and would impact
-// collected metrics.
-void RegisterVariationIds(const Study::Experiment& experiment,
-                          const std::string& trial_name,
+// If there are VariationIDs associated with the |experiment| arm of |study|,
+// register said VariationIDs unless `is_trial_overridden` is true.
+void RegisterVariationIds(base::PassKey<VariationsSeedProcessor> pass_key,
+                          const Study::Experiment& experiment,
+                          const Study& study,
                           bool is_trial_overridden) {
   if (is_trial_overridden && experiment.has_google_web_experiment_id()) {
     Study::Experiment updated_experiment = experiment;
     updated_experiment.clear_google_web_experiment_id();
-    RegisterVariationIds(updated_experiment, trial_name, false);
+    RegisterVariationIds(pass_key, updated_experiment, study, false);
     return;
   }
 
+  const std::string& trial_name = study.name();
+  const auto web_visibility_time_window = GetWebVisibilityTimeWindow(study);
   if (experiment.has_google_app_experiment_id()) {
     const VariationID variation_id =
         static_cast<VariationID>(experiment.google_app_experiment_id());
-    AssociateGoogleVariationIDForce(GOOGLE_APP, trial_name, experiment.name(),
-                                    variation_id);
+    AssociateGoogleVariationID(pass_key, GOOGLE_APP,
+                               MakeActiveGroupId(trial_name, experiment.name()),
+                               variation_id, web_visibility_time_window);
   }
 
   std::optional<IDCollectionKey> key = GetKeyForWebExperiment(experiment);
@@ -136,8 +162,9 @@ void RegisterVariationIds(const Study::Experiment& experiment,
                 experiment.google_web_trigger_experiment_id())
           : static_cast<VariationID>(experiment.google_web_experiment_id());
 
-  AssociateGoogleVariationIDForce(key.value(), trial_name, experiment.name(),
-                                  variation_id);
+  AssociateGoogleVariationID(pass_key, key.value(),
+                             MakeActiveGroupId(trial_name, experiment.name()),
+                             variation_id, web_visibility_time_window);
 }
 
 // Executes |callback| on every override defined by |experiment|.
@@ -151,20 +178,44 @@ void ApplyUIStringOverrides(
   }
 }
 
+// Whether the given study should be activated on startup.
+bool ShouldActivate(const Study& study,
+                    const std::string group_name,
+                    StickyActivationManager& sticky_activation_manager) {
+  switch (study.activation_type()) {
+    case Study::ACTIVATE_ON_STARTUP:
+      return true;
+    case Study::ACTIVATE_ON_QUERY:
+      return false;
+    case Study::STICKY_AFTER_QUERY:
+      return sticky_activation_manager.ShouldActivate(study.name(), group_name);
+    case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      // Part of the enum but won't be seen in practice. See processed_study.cc.
+      return false;
+  }
+}
+
 // Forces the specified |experiment| to be enabled in |study|.
 void ForceExperimentState(
+    base::PassKey<VariationsSeedProcessor> pass_key,
     const Study& study,
     const Study::Experiment& experiment,
     const VariationsSeedProcessor::UIStringOverrideCallback& override_callback,
-    base::FieldTrial* trial) {
+    StickyActivationManager& sticky_activation_manager,
+    base::FieldTrial& trial) {
   RegisterExperimentParams(study, experiment);
-  RegisterVariationIds(experiment, study.name(), trial->IsOverridden());
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
+  RegisterVariationIds(pass_key, experiment, study, trial.IsOverridden());
+
+  if (ShouldActivate(study, experiment.name(), sticky_activation_manager)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
-    trial->Activate();
-    // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+    trial.Activate();
+  }
+
+  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
     ApplyUIStringOverrides(experiment, override_callback);
   }
 }
@@ -176,8 +227,20 @@ void AssociateDefaultFeatures(const Study& study,
   // Note: We only compute feature associations for ACTIVATE_ON_QUERY studies,
   // since these associations are only used to determine that the trial has
   // been queried when the feature is queried.
-  if (study.activation_type() != Study_ActivationType_ACTIVATE_ON_QUERY) {
-    return;
+  // Note: We only compute feature associations for ACTIVATE_ON_QUERY and
+  // STICKY_AFTER_QUERY studies, since these associations are only used to
+  // ensure that the trial is activated when the feature is queried
+  switch (study.activation_type()) {
+    case Study::ACTIVATE_ON_STARTUP:
+      return;
+    case Study::ACTIVATE_ON_QUERY:
+      // fall-through:
+    case Study::STICKY_AFTER_QUERY:
+      break;
+    case Study_ActivationType_Study_ActivationType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case Study_ActivationType_Study_ActivationType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      // Part of the enum but won't be seen in practice. See processed_study.cc.
+      return;
   }
 
   std::set<std::string> features_to_associate;
@@ -280,7 +343,9 @@ bool VariationsSeedProcessor::HasGoogleWebExperimentId(
          experiment.has_google_web_trigger_experiment_id();
 }
 
-VariationsSeedProcessor::VariationsSeedProcessor() = default;
+VariationsSeedProcessor::VariationsSeedProcessor(
+    StickyActivationManager& sticky_activation_manager)
+    : sticky_activation_manager_(sticky_activation_manager) {}
 
 VariationsSeedProcessor::~VariationsSeedProcessor() = default;
 
@@ -384,7 +449,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
             experiment.feature_association().forcing_feature_off(),
             base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial);
       }
-      ForceExperimentState(study, experiment, override_callback, trial);
+      ForceExperimentState(base::PassKey<VariationsSeedProcessor>(), study,
+                           experiment, override_callback,
+                           *sticky_activation_manager_, *trial);
       return;
     }
   }
@@ -424,9 +491,9 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
       trial->AppendGroup(experiment.name(), experiment.probability_weight());
     }
 
-    RegisterVariationIds(experiment, study.name(),
-                         /*is_trial_overridden=*/existing_trial &&
-                             existing_trial->IsOverridden());
+    bool is_trial_overridden = existing_trial && existing_trial->IsOverridden();
+    RegisterVariationIds(base::PassKey<VariationsSeedProcessor>(), experiment,
+                         study, is_trial_overridden);
 
     has_overrides = has_overrides || experiment.override_ui_string_size() > 0;
     if (experiment.feature_association().enable_feature_size() != 0 ||
@@ -437,41 +504,34 @@ void VariationsSeedProcessor::CreateTrialFromStudy(
 
   trial->SetForced();
 
+  const std::string& group_name = trial->GetGroupNameWithoutActivation();
+  std::optional<Study::Experiment> experiment;
   {
-    const std::string& group_name = trial->GetGroupNameWithoutActivation();
     int experiment_index = processed_study.GetExperimentIndexByName(group_name);
     // If the trial was forced on the command line, we may not be able to find
     // the experiment.
     if (experiment_index != -1) {
-      const Study::Experiment& experiment = study.experiment(experiment_index);
-      RegisterExperimentParams(study, experiment);
+      experiment = study.experiment(experiment_index);
+      RegisterExperimentParams(study, *experiment);
       if (enables_or_disables_features) {
-        RegisterFeatureOverrides(study, experiment, trial.get(), feature_list);
+        RegisterFeatureOverrides(study, *experiment, trial.get(), feature_list);
       }
     }
   }
 
-  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP) {
+  if (ShouldActivate(study, group_name, *sticky_activation_manager_)) {
     // This call must happen after all params have been registered for the
     // trial. Otherwise, since we look up params by trial and group name, the
     // params won't be registered under the correct key.
-    const std::string& group_name = trial->group_name();
+    trial->Activate();
+  }
 
-    // Don't try to apply overrides if none of the experiments in this study had
-    // any.
-    if (!has_overrides) {
-      return;
-    }
-
-    // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
-    int experiment_index = processed_study.GetExperimentIndexByName(group_name);
-    // If the chosen experiment was not found in the study, simply return.
-    // Although not normally expected, but could happen if the trial was forced
-    // on the command line.
-    if (experiment_index != -1) {
-      ApplyUIStringOverrides(study.experiment(experiment_index),
-                             override_callback);
-    }
+  // UI Strings can only be overridden from ACTIVATE_ON_STARTUP experiments.
+  // Only do this if the chosen experiment was found in the study. Not found can
+  // happen if the trial was forced on the command line.
+  if (study.activation_type() == Study::ACTIVATE_ON_STARTUP && has_overrides &&
+      experiment.has_value()) {
+    ApplyUIStringOverrides(*experiment, override_callback);
   }
 }
 

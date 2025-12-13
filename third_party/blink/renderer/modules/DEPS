@@ -1,6 +1,7 @@
 include_rules = [
     "+base/atomic_sequence_num.h",
     "+base/memory/scoped_refptr.h",
+    "+base/memory/values_equivalent.h",
     "+base/containers/heap_array.h",
     "+base/containers/span.h",
     "+mojo/public/cpp/base",
@@ -25,6 +26,7 @@ include_rules = [
     "+third_party/blink/renderer/modules",
     "+ui/accessibility/accessibility_features.h",
     "+ui/accessibility/ax_mode.h",
+    "+ui/accessibility/ax_action_data.h",
     "+ui/display/screen_info.h",
     "+ui/display/screen_infos.h",
     "+ui/display/mojom",
@@ -64,7 +66,6 @@ specific_include_rules = {
     "web_ax_object.cc": [
         "+ui/accessibility/ax_action_data.h",
     ],
-
     "tcp_writable_stream_wrapper.h": [
         "+partition_alloc/partition_root.h",
     ],
@@ -76,8 +77,15 @@ specific_include_rules = {
     ],
     ".*socket.cc": [
         "+base/functional/identity.h",
+        "+net/base/ip_endpoint.h",
     ],
     "web_printing_manager.cc": [
       "+printing/buildflags/buildflags.h",
-    ]
+    ],
+    "multicast_controller.*": [
+        "+net/base/ip_address.h",
+    ],
+    "ai_page_content_agent.cc": [
+        "+third_party/blink/renderer/core/exported/web_view_impl.h",
+    ],
 }

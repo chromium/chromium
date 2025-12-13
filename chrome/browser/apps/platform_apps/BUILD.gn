@@ -81,7 +81,7 @@ source_set("platform_apps") {
     "//extensions/common",
     "//extensions/common/api",
     "//net",
-    "//services/preferences/public/cpp:cpp",
+    "//services/preferences/public/cpp",
     "//ui/gfx",
   ]
 

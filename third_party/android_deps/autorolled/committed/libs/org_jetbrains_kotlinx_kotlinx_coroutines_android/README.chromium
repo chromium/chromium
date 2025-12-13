@@ -1,7 +1,7 @@
 Name: kotlinx-coroutines-android
 Short Name: kotlinx-coroutines-android
-URL: https://github.com/Kotlin/kotlinx.coroutines
-Version: 1.8.1
+URL: https://repo.maven.apache.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-android/1.10.2/kotlinx-coroutines-android-1.10.2.jar
+Version: 1.10.2
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -11,6 +11,9 @@ Shipped: yes
 
 Description:
 Coroutines support libraries for Kotlin
+
+See also: https://github.com/Kotlin/kotlinx.coroutines
+
 
 Local Modifications:
 No modifications.

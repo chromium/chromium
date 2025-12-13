@@ -58,3 +58,7 @@ reading-list-item:first-of-type:last-of-type {
 sp-footer {
   height: var(--sp-footer-height);
 }
+
+:host(.in-webui-browser) .sp-card {
+  flex: 1;
+}

@@ -190,7 +190,6 @@ message GetUpdatesMessage {
 
   // This value is an updated version of the GetUpdatesCallerInfo's
   // GetUpdatesSource.  It describes the reason for the GetUpdate request.
-  // Introduced in M29.
   optional SyncEnums.GetUpdatesOrigin get_updates_origin = 9;
 
   // Whether this GU also serves as a retry GU. Any GU that happens after
@@ -349,7 +348,11 @@ message CommitResponse {
     reserved 5;
     reserved "position_in_parent";
 
-    // The item's current version.
+    // The version of this item -- a monotonically increasing value that is
+    // maintained by the server. See equivalent field in SyncEntity.
+    // If the returned version is smaller than the version the client already
+    // knew, the client will ignore the response, which means the item will
+    // still be considered to require a commit.
     optional int64 version = 6;
 
     reserved 7;

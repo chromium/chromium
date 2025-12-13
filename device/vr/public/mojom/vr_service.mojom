@@ -119,6 +119,7 @@ struct XRSessionDeviceConfig {
 // process before being handed off to the renderer process.
 struct XRSession {
   pending_remote<XRFrameDataProvider> data_provider;
+  pending_remote<XRLayerManager>? layer_manager;
   // TODO(http://crbug.com/842025) Move where the client_receiver gets set to the
   // device process then mark this as non-optional.
   pending_receiver<XRSessionClient>? client_receiver;
@@ -274,6 +275,23 @@ struct Pose {
   gfx.mojom.Point3F position;
 };
 
+struct AnchorId {
+  uint64 id_value;
+};
+
+struct HitTestSubscriptionId {
+  uint64 id_value;
+};
+
+struct PlaneId {
+  uint64 id_value;
+};
+
+struct XrVisibilityMaskId {
+  uint64 id_value;
+};
+
+
 struct XRRay {
   gfx.mojom.Point3F origin;
   gfx.mojom.Vector3dF direction;
@@ -281,10 +299,9 @@ struct XRRay {
 
 struct XRHitResult {
   Pose mojo_from_result;  // Pose of the result (aka intersection point).
-  uint64 plane_id;  // If the hit test result was computed based off of a plane,
-                    // the plane ID will be stored here. 0 signifies no plane.
-                    // TODO(crbug.com/40489779) - make it optional once
-                    // mojo supports optional numeric types.
+  PlaneId? plane_id;  // If the hit test result was computed based off of a
+                      // plane, the plane ID will be stored here. Null signifies
+                      // no plane was hit.
 };
 
 // Describes the eye that a view is associated with. kNone represents views that
@@ -320,6 +337,27 @@ struct XRViewGeometry {
   gfx.mojom.Transform mojo_from_view;
 };
 
+// The VisibilityMask is used to describe the visible region of the view. It may
+// be omitted if the entire view is visible. The area described by the mesh
+// represented by this struct is the array that IS visible to the user and
+// therefore SHOULD BE drawn to by the page. This is retrieved from the device
+// runtime and then passed up to the renderer process.
+// This is a standard mesh representation with an array of vertices that are
+// indexed into by an array of indices used to describe the series of triangles
+// that make up the mesh, e.g. a square would be represented as:
+// vertices: {(0, 0), (1, 0), (1, 1), (0, 1)}
+// indices: { 0, 1, 2, 1, 2, 3 }
+// Which represents two triangles. One with vertices of 0, 1, 2 and one 1, 2, 3.
+struct XRVisibilityMask {
+  // Vertices are a list of X, Y coordinates that are referenced by the page to
+  // build the visibility mask.
+  array<gfx.mojom.PointF> vertices;
+  // This is the list of indices in the vertices list that the page should
+  // access in order to describe the region that SHOULD be drawn.
+  // Note that these are not checked for validity before being sent across.
+  array<uint32> unvalidated_indices;
+};
+
 // Information about a view for a given XR frame. A frame contains the state of
 // the XR device for a particular timestamp. A view represents the display or
 // a portion of the display, and contains all the information required to render
@@ -343,6 +381,17 @@ struct XRView {
   // capturing from the camera of an AR device.
   // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
   bool is_first_person_observer = false;
+
+  // The visibility mask for the view. This is a mesh that indicates the
+  // portion of the view that is visible to the user. If it is missing, the
+  // entire view should be assumed to be visible to the user.
+  XRVisibilityMask? visibility_mask;
+
+  // This is used to indicate to the page when the visibility mask changes, so
+  // that pages can avoid potentially costly comparisons of the underlying
+  // arrays. This is sent from a trusted process to an untrusted one, so there's
+  // no risk here.
+  XrVisibilityMaskId visibility_mask_id;
 };
 
 struct VRStageParameters {
@@ -406,8 +455,8 @@ enum XRReferenceSpaceType {
 // & joint, or by input source id & input source space type.
 union XRNativeOriginInformation {
   XRInputSourceSpaceInfo input_source_space_info;
-  uint64 plane_id;
-  uint64 anchor_id;
+  PlaneId plane_id;
+  AnchorId anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
   uint32 image_index;
@@ -447,11 +496,19 @@ struct XRPlanePointData {
   float z;
 };
 
+enum XRSemanticLabel {
+  kOther = 0,
+  kFloor = 1,
+  kWall = 2,
+  kCeiling = 3,
+  kTable = 4,
+};
+
 // Struct containing plane-related information. A plane describes a flat surface
 // detected in the real world by the underlying system.
 struct XRPlaneData {
   // Unique (within a session) identifier of the plane.
-  uint64 id;
+  PlaneId id;
 
   // Plane orientation relative to gravity.
   XRPlaneOrientation orientation;
@@ -463,6 +520,11 @@ struct XRPlaneData {
   // space (tracking loss), but the tracking can still be recovered.
   Pose? mojo_from_plane;
 
+  // A description of what the runtime has determined the plane may actually
+  // represent. Null if the runtime does not support this, or does not know what
+  // the given plane may represent.
+  XRSemanticLabel? semantic_label;
+
   // Vertices of 2D convex polygon approximating the plane.
   array<XRPlanePointData> polygon;
 };
@@ -473,7 +535,7 @@ struct XRPlaneData {
 // present in updated_planes_data.
 struct XRPlaneDetectionData {
   // Array with ids of all tracked planes.
-  array<uint64> all_planes_ids;
+  array<PlaneId> all_planes_ids;
 
   // Array with plane data for all updated planes. Plane is considered updated
   // if its position or polygon has changed. Updated planes are always a subset
@@ -488,7 +550,7 @@ struct XRPlaneDetectionData {
 // evolves.
 struct XRAnchorData {
   // Unique (within a session) identifier of the anchor.
-  uint64 id;
+  AnchorId id;
 
   // Pose of the anchor. Null if the device does not know where the anchor is
   // located in the world space (tracking loss), but the tracking can still be
@@ -502,7 +564,7 @@ struct XRAnchorData {
 // will not be present in updated_anchors_data.
 struct XRAnchorsData {
   // Array with ids of all tracked anchors.
-  array<uint64> all_anchors_ids;
+  array<AnchorId> all_anchors_ids;
 
   // Array with anchor data for all updated anchors. Updated anchors are always
   // a subset of all anchors (i.e. for each anchor found in
@@ -514,7 +576,7 @@ struct XRAnchorsData {
 // This struct is relevant for subscriptions to hit test for persistent input
 // sources.
 struct XRHitTestSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   array<XRHitResult> hit_test_results;
 };
 
@@ -522,7 +584,7 @@ struct XRHitTestSubscriptionResultData {
 // This struct is relevant for subscriptions to hit test for transient input
 // sources.
 struct XRHitTestTransientInputSubscriptionResultData {
-  uint64 subscription_id;
+  HitTestSubscriptionId subscription_id;
   // Map from input source id to array of hit test results obtained using that
   // input source. Required since there might be multiple input sources that
   // match input source profile name passed in at subscription creation (see
@@ -673,6 +735,95 @@ struct XRTrackedImagesData {
   array<bool>? image_trackable_scores;
 };
 
+struct LayerId {
+  uint64 id_value;
+};
+
+// Specific mutable layer data per type.
+struct XRProjectionLayerData {
+  // There is nothing here yet.
+};
+struct XRQuadLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float width;
+  float height;
+};
+struct XRCylinderLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float radius;
+  float central_angle;
+  float aspect_ratio;
+};
+struct XREquirectLayerData {
+  gfx.mojom.Transform native_origin_from_layer;
+  float radius;
+  float central_horizontal_angle;
+  float upper_vertical_angle;
+  float lower_vertical_angle;
+};
+struct XRCubeLayerData {
+  gfx.mojom.Quaternion orientation;
+};
+
+// A union of layer specific mutable data.
+union XRLayerSpecificData {
+  XRProjectionLayerData projection;
+  XRQuadLayerData quad;
+  XRCylinderLayerData cylinder;
+  XREquirectLayerData equirect;
+  XRCubeLayerData cube;
+};
+
+enum XRLayerLayout {
+  kDefault = 0,
+  kMono = 1,
+  kStereo = 2,
+  kStereoLeftRight = 3,
+  kStereoTopBottom = 4,
+};
+
+// Read-only data is only used to create a layer,
+// and cannot be modified after.
+struct XRLayerReadOnlyData {
+  // Unique id of the client-created layer, which is provided by the client.
+  LayerId layer_id;
+  XRLayerLayout layout;
+  uint32 texture_width;
+  uint32 texture_height;
+  bool is_static;
+};
+
+// Mutable layer data. It is used to created a layer,
+// and can also be modified later.
+struct XRLayerMutableData {
+  bool blend_texture_source_alpha;
+  float opacity;
+  XRNativeOriginInformation native_origin_information;
+  XRLayerSpecificData layer_data;
+};
+
+// The struct used to create a layer.
+struct XRCompositionLayerData {
+  XRLayerReadOnlyData read_only_data;
+  XRLayerMutableData mutable_data;
+};
+
+// Frame data for a layer created by client.
+struct XRLayerFrameData {
+  // Unique id of a client-created layer.
+  LayerId layer_id;
+  // The buffer_shared_image is used for sending imagery data back and forth
+  // across the process boundary.
+  gpu.mojom.ExportedSharedImage buffer_shared_image;
+  gpu.mojom.SyncToken buffer_sync_token;
+};
+
+// The result of XRLayerManager's CreateCompositionLayer method.
+enum CreateCompositionLayerResult {
+  SUCCESS = 0,
+  FAILURE = 1,
+};
+
 // Information required for rendering, used by ImmersiveOverlay.
 struct XRRenderInfo
 {
@@ -749,6 +900,11 @@ struct XRFrameData {
 
   // Tracked anchors information. Only present if anchors are enabled.
   XRAnchorsData? anchors_data;
+
+  // Frame data for every compostion layer that are enabled by
+  // SetEnabledCompositionLayers.
+  // Only present if layers are enabled.
+  array<XRLayerFrameData>? composition_layers_data;
 
   // Lighting estimation data. Only present if lighting estimation is enabled.
   XRLightEstimationData? light_estimation_data;
@@ -855,16 +1011,6 @@ interface VRServiceClient {
   OnDeviceChanged();
 };
 
-enum CreateAnchorResult {
-  SUCCESS = 0,
-  FAILURE = 1,
-};
-
-enum SubscribeToHitTestResult {
-  SUCCESS = 0,
-  FAILURE_GENERIC = 1,
-};
-
 enum EntityTypeForHitTest {
   POINT = 1,
   PLANE = 2,
@@ -895,7 +1041,7 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTest(
     XRNativeOriginInformation native_origin_information,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Establishes a hit test subscription on the device. The subscription results
   // will be computed taking into account latest state of the input sources that
@@ -917,48 +1063,36 @@ interface XREnvironmentIntegrationProvider {
   SubscribeToHitTestForTransientInput(
     string profile_name,
     array<EntityTypeForHitTest> entity_types,
-    XRRay ray) => (SubscribeToHitTestResult result, uint64 subscription_id);
+    XRRay ray) => (HitTestSubscriptionId? subscription_id);
 
   // Notifies the device that subscription with the passed in |subscription_id|
   // is no longer needed and should be removed. The |subscription_id| must be a
   // valid id of a subscription returned by one of the SubscribeToHitTest/
   // SubscribeToHitTestForTransientInput calls, otherwise the call will be
   // ignored.
-  UnsubscribeFromHitTest(uint64 subscription_id);
+  UnsubscribeFromHitTest(HitTestSubscriptionId subscription_id);
 
-  // Issues a request to create a free-floating anchor (not attached to any
-  // particular real world entity).
+  // Issues a request to create an anchor. This anchor is free-floating (not
+  // attached to any particular real world entity), unless |plane_id| is set.
   // |native_origin_information| specifies native origin relative to which the
   // anchor is supposed to be created. |native_origin_from_anchor| describes the
   // desired pose of the newly created anchor.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
+  // If set, |plane_id| identifies which plane the anchor will be attached to.
+  // This allows specifying a "stationary" pose for the anchor separate from the
+  // notion of the plane who should ultimately be its parent, as the center
+  // point of a plane may shift from frame to frame.
+  // On success, |anchor_id| will contain the id of the newly created anchor.
+  // On failure, |anchor_id| will be null.
   CreateAnchor(
     XRNativeOriginInformation native_origin_information,
-    Pose native_origin_from_anchor)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Switch anchor_id to nullable integer once
-  // that's available. This will allow us to remove CreateAnchorResult if we're
-  // not interested in obtaining detailed error information from the device.
-
-  // Issues a request to create an anchor attached to a plane.
-  // |native_origin_information| specifies native origin relative to which the
-  // anchor is supposed to be created. |native_origin_from_anchor| describes the
-  // desired pose of the newly created anchor. |plane_id| identifies which plane
-  // the anchor will be attached to.
-  // |result| will contain status code of the request. |anchor_id| will be valid
-  // only if the |result| is SUCCESS.
-  CreatePlaneAnchor(
-    XRNativeOriginInformation native_origin_information,
     Pose native_origin_from_anchor,
-    uint64 plane_id)
-      => (CreateAnchorResult result, uint64 anchor_id);
-  // TODO(crbug.com/40489779): Ditto - make anchor_id a nullable integer.
+    PlaneId? plane_id)
+      => (AnchorId? anchor_id);
 
   // Detaches an existing anchor. The |anchor_id| must be a valid id of an
   // anchor created by one of the CreateAnchor calls, otherwise the call will be
   // ignored.
-  DetachAnchor(uint64 anchor_id);
+  DetachAnchor(AnchorId anchor_id);
 };
 
 struct XRFrameDataRequestOptions {
@@ -1022,11 +1156,17 @@ interface XRPresentationProvider {
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE
   // |texture| should only be used after |sync_token| has passed.
   [EnableIf=is_win]
-  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture,
+  SubmitFrameWithTextureHandle(int16 frame_id, handle<platform> texture,
                                gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
-  SubmitFrameDrawnIntoTexture(int16 frameId, gpu.mojom.SyncToken sync_token,
+  // If layer_ids is empty, the base layer will be used.
+  // Only when WebXR Layers feature is enabled, layer_ids can be
+  // non-empty. In such a case, the Open XR textures of the specified
+  // layers will be updated.
+  SubmitFrameDrawnIntoTexture(int16 frame_id,
+                              array<LayerId> layer_ids,
+                              gpu.mojom.SyncToken sync_token,
                               mojo_base.mojom.TimeDelta time_waited);
 };
 
@@ -1077,6 +1217,31 @@ interface XRSessionClient {
   OnExitPresent();
   // Indicates a change in the visibility of the WebXR content.
   OnVisibilityStateChanged(XRVisibilityState visibility_state);
+};
+
+// The interface provided by device/ to allow client to create and update
+// composition layers. This is needed to support WebXR layers. Currently,
+// it is only implemented with OpenXR/OpenGLES, and only enabled when the
+// device has the required extensions.
+interface XRLayerManager {
+  // Create a composition layer (projection layer, quad layer, e.g.).
+  // The caller must provide a unique LayerId.
+  CreateCompositionLayer(XRCompositionLayerData create_data)
+                         => (CreateCompositionLayerResult code);
+
+  // Destroy a composition layer specified by layer_id.
+  DestroyCompositionLayer(LayerId layer_id);
+
+  // Update the mutable data of a client-created XR composition layer.
+  // The layer id must be valid, and the data must have the same type
+  // used to create the layer.
+  UpdateCompositionLayer(LayerId layer_id, XRLayerMutableData update_data);
+
+  // Set the layers that will have shared images available and will be rendered.
+  // Layers not included in this list will be disabled. The layers will be composed
+  // in the same order as the order of layer_ids. This method can be called
+  // multiple times in the same session.
+  SetEnabledCompositionLayers(array<LayerId> layer_ids);
 };
 
 // Functions for pushing frame data to the sessions.

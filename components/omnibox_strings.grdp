@@ -81,16 +81,16 @@
   </message>
 
   <message name="IDS_STARTER_PACK_AI_MODE_ACTION_HINT" desc="The button label for an omnibox action that invokes the AI mode keyword.">
-    Ask Google AI Mode
+    Ask AI Mode in Google Search
   </message>
   <message name="IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS" desc="The button hover tooltip text to describe omnibox action that invokes the AI mode keyword.">
-    Ask Google AI Mode
+    Ask AI Mode in Google Search
   </message>
   <message name="IDS_ACC_STARTER_PACK_AI_MODE_ACTION_SUFFIX" desc="Suffix for spoken suggestion description with omnibox action button, to explain keystroke used to invoke AI mode.">
-    <ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask Google AI Mode
+    <ph name="STARTER_PACK_AI_MODE_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Enter to ask AI Mode in Google Search
   </message>
   <message name="IDS_ACC_STARTER_PACK_AI_MODE_ACTION" desc="Announcement when AI Mode action button is focused">
-    AI Mode button, activate to ask Google AI Mode
+    AI Mode button, activate to ask AI Mode in Google Search
   </message>
 
   <message name="IDS_EMPTY_KEYWORD_VALUE" desc="Shown in the location bar drop down when the user enters a string that matches a chrome keyword, but they haven't entered any text following the chrome keyword">
@@ -154,6 +154,35 @@
     <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
       Search <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> or type URL
     </message>
+    <if expr="is_android or enable_vr">
+      <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME_FOR_AI_MODE" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
+        Ask <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> anything
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_GALLERY" desc="The text displayed in the omnibox attachments popup. When clicked - opens image gallery." formatter_data="android_java">
+        Gallery
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_FILES" desc="The text displayed in the omnibox attachments popup. When clicked - opens file picker." formatter_data="android_java">
+        Files
+      </message>
+      <message name="IDS_OMNIBOX_NAVATTACH_TABS" desc="The text displayed in the omnibox attachments popup. When clicked - opens tabs picker." formatter_data="android_java">
+        Tabs
+      </message>
+      <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
+        Add current tab
+      </message>
+      <message name="IDS_FUSEBOX_MAX_ATTACHMENTS" desc="The text displayed in a snackbar when the max number of omnibox attachments is reached" formatter_data="android_java">
+        Add up to 10 files, tabs, or images
+      </message>
+      <message name="IDS_FUSEBOX_UPLOAD_FAILED" desc="The text displayed in a snackbar when an attachment fails to upload" formatter_data="android_java">
+        Unable to add attachments
+      </message>
+      <message name="IDS_OMNIBOX_CREATE_IMAGE" desc="The text displayed in the omnibox attachments popup. When clicked - enables image creation." formatter_data="android_java">
+        Create image
+      </message>
+      <message name="IDS_OMNIBOX_EMPTY_HINT_FOR_IMAGE_GENERATION" desc="The text displayed in the omnibox when it is empty and image generation is selected." formatter_data="android_java">
+        Describe your image
+      </message>
+    </if>
   </if>
   <if expr="is_android">
     <message name="IDS_OMNIBOX_ON_CCT_EMPTY_HINT" desc="Hint text shown in the Omnibox on a Custom Tab." formatter_data="android_java">
@@ -350,6 +379,18 @@
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS" desc="The button hover tooltip text to describe action.">
     Read customer evaluations of products, services, or experiences to help inform your decisions with reviews.
   </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT" desc="Label for Omnibox Action button that opens the AIM webpage" meaning="Length: 12em">
+    AI Mode
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Open AI Mode with this suggestion.
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_HINT" desc="Label for Omnibox Action button that switches to another tab" meaning="Length: 12em">
+    Switch to this tab
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Switch to this tab.
+  </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT" desc="Label for Omnibox Action button that opens the POI website." meaning="Length: 12em">
     Website
   </message>
@@ -359,6 +400,20 @@
 
   <message name="IDS_ACC_OMNIBOX_ACTION_IN_EXTENSION_SUGGEST_SUFFIX" desc="Suffix for spoken suggestion description with actions in suggest button(s) explaining that additional actions are available.">
     <ph name="OMNIBOX_ACTION_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Call</ex></ph>, press Tab to browse available actions, then Enter to execute selected action.
+  </message>
+
+  <!-- Fusebox -->
+  <message name="IDS_AI_MODE_ENTRYPOINT_HINT" desc="Label for the Omnibox entrypoint that encourages the user to toggle AIMode on" formatter_data="android_java">
+    Try AI Mode
+  </message>
+  <message name="IDS_ACC_SEND_BUTTON_SEARCH_OR_NAVIGATE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the search/open URL context" formatter_data="android_java">
+    Navigate
+  </message>
+  <message name="IDS_ACC_SEND_BUTTON_SEND_TO_AI" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the AI Mode context" formatter_data="android_java">
+    Send to assistant
+  </message>
+  <message name="IDS_ACC_SEND_BUTTON_CREATE_IMAGE" desc="Accessibility text for the Omnibox `Send` button, announced when the user is in the Create Image context" formatter_data="android_java">
+    Create image
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
@@ -455,6 +510,13 @@
   </message>
   <message name="IDS_ACC_REMOVE_SUGGESTION_BUTTON" desc="Announcement when remove suggestion button is focused.">
     Remove Suggestion button, press Enter to remove this suggestion
+  </message>
+  <!-- Accessibility labels for the omnibox AI Mode button. -->
+  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="Announcement when omnibox text field is empty and AI Mode is available.">
+    Press tab then enter to ask AI Mode
+  </message>
+  <message name="IDS_ACC_AI_MODE_BUTTON_FOCUSED" desc="Announcement when AI Mode button is focused.">
+    AI Mode button, press Enter to ask AI Mode
   </message>
 
   <!-- Accessibility announcements made for the Chrome tip IPH suggestions sometimes shown at the bottom of the Omnibox -->
@@ -612,6 +674,7 @@
   <message name="IDS_OMNIBOX_HUB_HISTORY_HEADER" desc="The header for the history suggestions section.">
     History
   </message>
-
-
+  <message name="IDS_OMNIBOX_HUB_TYPED_MATCH_HEADER" desc="The header for the typed match suggestions section.">
+    Tabs and tab groups
+  </message>
 </grit-part>

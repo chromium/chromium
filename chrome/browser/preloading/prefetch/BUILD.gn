@@ -3,20 +3,139 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//extensions/buildflags/buildflags.gni")
 
-source_set("browser_tests") {
+source_set("test_support") {
   testonly = true
 
-  sources = [ "prefetch_browsertest.cc" ]
+  sources = [
+    "search_prefetch/search_preload_test_response_utils.cc",
+    "search_prefetch/search_preload_test_response_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//net:test_support",
+  ]
+
+  deps = [
+    "//components/omnibox/browser",
+    "//content/public/browser",
+  ]
+
+  if (enable_extensions) {
+    sources += [
+      "no_state_prefetch/no_state_prefetch_test_utils.cc",
+      "no_state_prefetch/no_state_prefetch_test_utils.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/no_state_prefetch/browser",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+    ]
+
+    # TODO(crbug.com/353332589): Revisit this when external_protocol_handler.h
+    # gets modularized.
+    public_deps += [ "//chrome/browser" ]
+  }
+}
+
+source_set("platform_browser_tests") {
+  testonly = true
+
+  sources = [
+    "prefetch_browsertest.cc",
+    "search_prefetch/search_preload_unified_browsertest.cc",
+  ]
+
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
-    "//base/test:test_support",
+    ":test_support",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/preloading:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/omnibox:test_support",
     "//chrome/test:test_support",
+    "//components/omnibox/browser",
   ]
+
   if (use_blink) {
     deps += [ "//third_party/blink/public/common:preloading_headers" ]
   }
 
   data = [ "//chrome/test/data/" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "no_state_prefetch/no_state_prefetch_unit_test_utils.cc",
+    "no_state_prefetch/no_state_prefetch_unit_test_utils.h",
+    "no_state_prefetch/no_state_prefetch_unittest.cc",
+    "prefetch_service/chrome_prefetch_service_delegate_unittest.cc",
+    "prefetch_service/prefetch_origin_decider_unittest.cc",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/no_state_prefetch/browser",
+    "//components/no_state_prefetch/common",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    sources = [
+      "no_state_prefetch/prerender_nostate_prefetch_browsertest.cc",
+      "search_prefetch/search_prefetch_browser_test_base.cc",
+      "search_prefetch/search_prefetch_browser_test_base.h",
+      "search_prefetch/search_prefetch_service_browsertest.cc",
+      "zero_suggest_prefetch/zero_suggest_prefetch_tab_helper_browsertest.cc",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":test_support",
+      "//base/test:test_support",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/devtools",
+      "//chrome/browser/devtools:test_support",
+      "//chrome/browser/history",
+      "//chrome/browser/preloading:prefs",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/search_engines",
+      "//chrome/test:test_support",
+      "//components/embedder_support",
+      "//components/no_state_prefetch/browser",
+      "//components/privacy_sandbox:features",
+      "//components/security_state/content",
+      "//components/ukm:test_support",
+    ]
+
+    # TODO(crbug.com/408146612): Revisit this when preloading_features.h moves
+    # into this file.
+    deps += [ "//chrome/browser" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
 }

@@ -5,17 +5,17 @@
 if (!is_android) {
   source_set("test_support") {
     testonly = true
-    sources = [
-      "live_caption/live_caption_test_util.cc",
-      "live_caption/live_caption_test_util.h",
-    ]
+    public = [ "live_caption/live_caption_test_util.h" ]
+    sources = [ "live_caption/live_caption_test_util.cc" ]
 
-    deps = [
+    public_deps = [
       "//base",
-      "//chrome/browser:browser_process",
       "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
+    ]
+    deps = [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui",
       "//components/live_caption:constants",
       "//components/soda",
       "//components/soda:constants",
@@ -25,6 +25,17 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [ "//ash/constants" ]
+    }
+
+    if (is_win) {
+      public += [ "browser_test_with_ax_client.h" ]
+      sources += [ "browser_test_with_ax_client.cc" ]
+      public_deps += [
+        "//chrome/test/accessibility/ax_client:launcher",
+        "//chrome/test/accessibility/ax_client:mojom",
+        "//mojo/public/cpp/bindings",
+        "//ui/accessibility",
+      ]
     }
   }
 }

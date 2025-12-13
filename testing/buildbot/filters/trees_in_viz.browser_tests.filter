@@ -3,3 +3,8 @@
 
 # crbug.com/422172608
 -WebRtcDesktopCaptureBrowserTest.RunP2PScreenshareWhileSharingTab
+
+# crbug.com/421933182
+# This test should pass when we turn on TreesInViz in field_trials
+# and stop passing --enable-features to the test.
+-TabStripServiceImplBrowserTest.PreventsReentrancy

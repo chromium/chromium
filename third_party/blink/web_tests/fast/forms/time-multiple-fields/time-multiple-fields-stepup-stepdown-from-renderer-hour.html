@@ -119,8 +119,8 @@ test(() => {
   // Don't update am/pm if hours is initially blank
   assert_input_value_with_limits_after_up('', 60, '', '', '', '01:-- --');
   assert_input_value_with_limits_after_down('', 60, '', '', '', '12:-- --');
-  assert_input_value_with_limits_after_up('', 43200, '', '', '', '12:00 --');
-  assert_input_value_with_limits_after_down('', 43200, '', '', '', '12:00 --');
+  assert_input_value_with_limits_after_up('', 43200, '', '', '', '12:-- --');
+  assert_input_value_with_limits_after_down('', 43200, '', '', '', '12:-- --');
   // Check rollover for different steps
   assert_input_value_with_limits_after_up('12:00', 3600, '', '', '13:00');
   assert_input_value_with_limits_after_down('00:00', 3600, '', '', '23:00');
@@ -174,8 +174,8 @@ test(() => {
   // Don't update am/pm if hours is initially blank
   assert_input_value_with_limits_after_up('', 60, '', '', '', '00:-- --');
   assert_input_value_with_limits_after_down('', 60, '', '', '', '11:-- --');
-  assert_input_value_with_limits_after_up('', 43200, '', '', '', '00:00 --');
-  assert_input_value_with_limits_after_down('', 43200, '', '', '', '00:00 --');
+  assert_input_value_with_limits_after_up('', 43200, '', '', '', '00:-- --');
+  assert_input_value_with_limits_after_down('', 43200, '', '', '', '00:-- --');
 }, 'Hours, 0-11');
 
 // Hours, 0-23

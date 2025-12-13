@@ -17,6 +17,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/blink/renderer/platform/heap:blink_heap_unittests",
+        "module_scheme": "gtest",
         "name": "blink_heap_unittests",
         "swarming": {
           "dimensions": {
@@ -55,11 +57,13 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
-            "webkit_unit_tests"
+            "blink_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
-        "name": "webkit_unit_tests",
+        "module_name": "//third_party/blink/renderer/controller:blink_unittests",
+        "module_scheme": "gtest",
+        "name": "blink_unittests",
         "swarming": {
           "dimensions": {
             "cores": "8",

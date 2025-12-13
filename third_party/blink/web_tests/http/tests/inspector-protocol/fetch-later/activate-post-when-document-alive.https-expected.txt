@@ -1,5 +1,5 @@
 Tests that appropriate Network domain events are dispatched for a fetchLater POST request when its Document is alive.
-Network.requestWillBeSent{
+Network.requestWillBeSent {
     documentURL : <string>
     frameId : <string>
     hasUserGesture : false
@@ -38,17 +38,17 @@ Network.requestWillBeSent{
     type : Fetch
     wallTime : <number>
 }
-Network.responseReceived{
+Network.responseReceived {
     frameId : <string>
     hasExtraInfo : false
     loaderId : <string>
     requestId : <string>
     response : {
         alternateProtocolUsage : unspecifiedReason
-        charset : 
+        charset :
         connectionId : <number>
         connectionReused : true
-        encodedDataLength : 334
+        encodedDataLength : <number>
         fromDiskCache : false
         fromPrefetchCache : false
         fromServiceWorker : false
@@ -99,12 +99,12 @@ Network.responseReceived{
     timestamp : <number>
     type : Fetch
 }
-Network.loadingFinished{
-    encodedDataLength : 345
+Network.loadingFinished {
+    encodedDataLength : <number>
     requestId : <string>
     timestamp : <number>
 }
-Unable to get fetchLater response body{
+Unable to get fetchLater response body {
     code : -32000
     message : No resource with given identifier found
 }

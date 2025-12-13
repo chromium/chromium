@@ -1,0 +1,45 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "credential_export_consumer.h",
+    "credential_export_favicon_provider.h",
+    "credential_export_view_controller.h",
+    "credential_export_view_controller.mm",
+    "credential_export_view_controller_presentation_delegate.h",
+    "credential_group_identifier.h",
+    "credential_group_identifier.mm",
+    "credential_import_consumer.h",
+    "credential_import_view_controller.h",
+    "credential_import_view_controller.mm",
+  ]
+  deps = [
+    ":constants",
+    "//components/password_manager/core/browser/ui",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/public",
+    "//ios/chrome/browser/data_import/ui",
+    "//ios/chrome/browser/settings/ui_bundled/password:ui",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "credential_export_constants.h",
+    "credential_export_constants.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}

@@ -1,6 +1,6 @@
 Name: Objenesis
 Short Name: objenesis
-URL: http://objenesis.org/index.html
+URL: https://repo.maven.apache.org/maven2/org/objenesis/objenesis/3.3/objenesis-3.3.jar
 Version: 3.3
 Update Mechanism: Manual
 License: Apache-2.0

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">संतरे</translation>
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1290331692326790741">कमज़ोर सिग्नल</translation>
+<translation id="1292474106138697109">क्लास टूल का डिसप्ले</translation>
 <translation id="1300115153046603471">एपीएन का टाइप डिफ़ॉल्ट और <ph name="ATTACH" /> पर सेट है.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">बदलें</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">सबसे ज़्यादा उपयोगी सहायता कॉन्टेंट</translation>
 <translation id="2277631741861284101">आसानी से ऑडियो रिकॉर्ड और शेयर करें</translation>
 <translation id="2279051792571591988">डिफ़ॉल्ट बटन लेबल पहले जैसा करें</translation>
-<translation id="2286454467119466181">आसान</translation>
+<translation id="2286454467119466181">सरल</translation>
 <translation id="2287186687001756809">कोई इमेज उपलब्ध नहीं है. फ़ोटो जोड़ने के लिए, <ph name="LINK" /> पर जाएं</translation>
 <translation id="2294577623958216786">मौजूदा शेड्यूल को <ph name="SUNRISE" /> से <ph name="SUNSET" /> पर सेट किया गया है. सूर्योदय और सूर्यास्त का शेड्यूल अपने-आप अपडेट होने की सुविधा चालू करने के लिए, सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें.</translation>
 <translation id="2305172810646967500">ब्लैक</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
 <translation id="4300272766492248925">ऐप्लिकेशन खोलें</translation>
 <translation id="430786093962686457">शिफ़ॉन</translation>
+<translation id="4309762678330556039">बोले जा रहे शब्दों को अपने-आप टेक्स्ट में बदलने की सुविधा का इस्तेमाल करें और ऑडियो खोजें. इंटरनेट से कनेक्ट न होने पर भी ऑडियो रिकॉर्ड किया जा सकता है.</translation>
 <translation id="4310735698903592804">Google के एआई की मदद से हाल ही में बनाए गए वॉलपेपर</translation>
 <translation id="4320904097188876154">नियॉन पिंक</translation>
 <translation id="432961742358282111">परिभाषाएं, अनुवाद या यूनिट कन्वर्ज़न पाने के लिए, टेक्स्ट पर राइट क्लिक करें या उसे दबाकर रखें. इस सुविधा को मैनेज करने के लिए, लेफ़्ट या राइट ऐरो बटन का इस्तेमाल करें.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की जांच की गई</translation>
 <translation id="5606865426897221650">टैब</translation>
+<translation id="5612205513582918357">क्लास टूल, <ph name="RECEIVER_NAME" /> के साथ आपकी स्क्रीन शेयर कर रहा है</translation>
 <translation id="5613201299517339763">आपको साइन आउट कर दिया गया है</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5628106863521633649">उपलब्ध भाषाएं</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">क्लाउड फ़्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कोई भी स्कैनर उपलब्ध नहीं है</translation>
-<translation id="6231648282154119906">बेहतर सुरक्षा मोड को चुनने की वजह से Google सुरक्षित ब्राउज़िंग, संदिग्ध फ़ाइलों को अपने-आप स्कैन करेगा</translation>
 <translation id="6232017090690406397">बैटरी</translation>
 <translation id="6234024205316847054">आउटलाइन दिखाएं</translation>
 <translation id="6243280677745499710">इस समय सेट है</translation>

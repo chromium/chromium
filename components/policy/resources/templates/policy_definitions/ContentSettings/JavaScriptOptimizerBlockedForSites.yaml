@@ -7,7 +7,7 @@ desc: |-
   $1<ex>Google Chrome</ex></ph> may render web content more slowly.
 
   For detailed information on valid url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+  https://chromeenterprise.google/policies/url-patterns.
   Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
 
   JavaScript optimization policy exceptions will only be enforced at a site

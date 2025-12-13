@@ -6,11 +6,9 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoStartup.java",
     "android/java/src/org/chromium/chrome/browser/incognito/IncognitoTabPersistence.java",
-    "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/FullScreenIncognitoReauthCoordinator.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthController.java",
     "android/java/src/org/chromium/chrome/browser/incognito/reauth/IncognitoReauthControllerImpl.java",
@@ -62,6 +60,7 @@ android_library("java") {
     "//ui/android:ui_full_java",
     "//url:gurl_java",
   ]
+  public_deps = [ ":incognito_utils_java" ]
 
   resources_package = "org.chromium.chrome.browser.incognito"
 }
@@ -96,6 +95,7 @@ android_library("incognito_java_tests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/browser/android/lifecycle:java",
@@ -128,7 +128,7 @@ android_library("incognito_java_tests") {
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_core_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
@@ -174,9 +174,22 @@ robolectric_library("incognito_junit_tests") {
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("incognito_utils_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java" ]
+  srcjar_deps = [ ":jni_headers" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_full_java",
   ]
 }

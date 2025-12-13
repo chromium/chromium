@@ -16,6 +16,7 @@ found in the LICENSE file.
   <release seq="1">
     <includes>
       <include name="IDR_GLIC_ATTACH_BUTTON_VECTOR_ICON" file="glic_attach_button.icon" type="BINDATA" compress="brotli" />
+      <include name="IDR_GLIC_SHARE_IMAGE_ICON" file="glic_button_alt_icon.png" type="BINDATA" />
       <include name="IDR_GLIC_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PARAMETERIZED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_SIMPLIFIED_BORDER_SHADER" file="border.sksl" type="BINDATA" compress="brotli" />
@@ -25,6 +26,7 @@ found in the LICENSE file.
       <include name="IDR_GLIC_LOGO" file="logo.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_STATUS_ICON_DARK" file="glic_status_icon_dark.png" type="BINDATA" />
       <include name="IDR_GLIC_STATUS_ICON_LIGHT" file="glic_status_icon_light.png" type="BINDATA" />
+      <include name="IDR_GLIC_BUTTON_ALT_ICON" file="glic_button_alt_icon.png" type="BINDATA" />
       <include name="IDR_GLIC_PROFILE_LOGO" file="glic_profile_logo.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_BOTTOM_LEFT" file="glic_profile_banner_bottom_left.svg" type="BINDATA" compress="brotli" />
       <include name="IDR_GLIC_PROFILE_BANNER_TOP_RIGHT" file="glic_profile_banner_top_right.svg" type="BINDATA" compress="brotli" />

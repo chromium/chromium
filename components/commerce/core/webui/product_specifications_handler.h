@@ -6,15 +6,19 @@
 #define COMPONENTS_COMMERCE_CORE_WEBUI_PRODUCT_SPECIFICATIONS_HANDLER_H_
 
 #include "base/scoped_observation.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/commerce/core/mojom/product_specifications.mojom.h"
-#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class PrefService;
+
+namespace history {
+class HistoryService;
+}  // namespace history
 
 namespace syncer {
 class SyncService;
@@ -110,6 +114,7 @@ class ProductSpecificationsHandler
 
   // syncer::SyncServiceObserver impl:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
  private:
   mojo::Remote<product_specifications::mojom::Page> remote_page_;

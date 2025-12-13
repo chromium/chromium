@@ -210,3 +210,5 @@ void PlatformSensorProviderAndroid::CreateRelativeOrientationEulerAnglesSensor(
 }
 
 }  // namespace device
+
+DEFINE_JNI(PlatformSensorProvider)

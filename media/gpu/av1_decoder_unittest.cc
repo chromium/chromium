@@ -198,7 +198,7 @@ void AV1DecoderTest::SetUp() {
 std::vector<AcceleratedVideoDecoder::DecodeResult> AV1DecoderTest::Decode(
     scoped_refptr<DecoderBuffer> buffer) {
   if (buffer)
-    decoder_->SetStream(bitstream_id_++, *buffer);
+    decoder_->SetStream(bitstream_id_++, buffer);
 
   std::vector<DecodeResult> results;
   DecodeResult res;
@@ -229,7 +229,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_NE(decoder_->stream_id_, 0);
-  EXPECT_FALSE(decoder_->stream_.empty());
+  EXPECT_FALSE(decoder_->decoder_buffer_->empty());
 
   decoder_->Reset();
   EXPECT_EQ(decoder_->state_->current_frame_id, -1);
@@ -241,7 +241,7 @@ void AV1DecoderTest::Reset() {
   EXPECT_FALSE(decoder_->current_frame_header_);
   EXPECT_FALSE(decoder_->current_frame_);
   EXPECT_EQ(decoder_->stream_id_, 0);
-  EXPECT_TRUE(decoder_->stream_.empty());
+  EXPECT_FALSE(!!decoder_->decoder_buffer_);
 }
 
 scoped_refptr<DecoderBuffer> AV1DecoderTest::ReadDecoderBuffer(
@@ -1044,11 +1044,9 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
   EXPECT_EQ(results, expected);
-  const std::optional<gfx::HDRMetadata> hdr_metadata =
-      decoder_->GetHDRMetadata();
-  ASSERT_TRUE(hdr_metadata.has_value());
-  ASSERT_TRUE(hdr_metadata->agtm.has_value());
-  EXPECT_EQ(hdr_metadata->agtm->payload->size(), 99u);
+  const gfx::HDRMetadata hdr_metadata = decoder_->GetHDRMetadata();
+  ASSERT_TRUE(hdr_metadata.getSerializedAgtm());
+  EXPECT_EQ(hdr_metadata.getSerializedAgtm()->size(), 101u);
 }
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,

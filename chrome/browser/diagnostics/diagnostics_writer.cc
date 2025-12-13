@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/diagnostics/diagnostics_writer.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -182,7 +178,7 @@ class PosixConsole : public SimpleConsole {
       default:
         NOTREACHED();
     }
-    printf("%s", code);
+    UNSAFE_TODO(printf("%s", code));
     return true;
   }
 

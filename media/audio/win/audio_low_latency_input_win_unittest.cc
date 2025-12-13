@@ -18,6 +18,7 @@
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -38,6 +39,7 @@
 #include "media/audio/win/core_audio_util_win.h"
 #include "media/audio/win/test_support/fake_win_wasapi_environment.h"
 #include "media/audio/win/test_support/wasapi_test_error_code.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
 #include "media/base/media_switches.h"
 #include "media/base/seekable_buffer.h"
@@ -84,12 +86,14 @@ void FlushTaskRunner(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
 
 class MockAudioInputCallback : public AudioInputStream::AudioInputCallback {
  public:
-  MOCK_METHOD4(OnData,
-               void(const AudioBus* src,
-                    base::TimeTicks capture_time,
-                    double volume,
-                    const AudioGlitchInfo& glitch_info));
-  MOCK_METHOD0(OnError, void());
+  MOCK_METHOD(void,
+              OnData,
+              (const AudioBus* src,
+               base::TimeTicks capture_time,
+               double volume,
+               const AudioGlitchInfo& glitch_info),
+              (override));
+  MOCK_METHOD(void, OnError, (), (override));
 };
 
 class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
@@ -98,6 +102,8 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
       : num_received_audio_frames_(0),
         data_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
+        error_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                     base::WaitableEvent::InitialState::NOT_SIGNALED),
         error_(false) {}
 
   FakeAudioInputCallback(const FakeAudioInputCallback&) = delete;
@@ -109,6 +115,9 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
 
   // Waits until OnData() is called on another thread.
   void WaitForData() { data_event_.Wait(); }
+
+  // Waits until OnError() is called on another thread.
+  void WaitForError() { error_event_.Wait(); }
 
   // Waits for OnData() to be called on another thread.
   // Returns true if the event is signaled, false if it times out.
@@ -126,12 +135,18 @@ class FakeAudioInputCallback : public AudioInputStream::AudioInputCallback {
     data_event_.Signal();
   }
 
-  void OnError() override { error_ = true; }
+  void OnError() override {
+    error_ = true;
+    if (!error_event_.IsSignaled()) {
+      error_event_.Signal();
+    }
+  }
 
  private:
   int num_callbacks_ = 0;
   int num_received_audio_frames_;
   base::WaitableEvent data_event_;
+  base::WaitableEvent error_event_;
   bool error_;
 };
 
@@ -670,6 +685,81 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamMiscCallingSequences) {
   ais.Close();
 }
 
+class WinAudioInputStreamErrorTest : public WinAudioInputTest {
+ public:
+  WinAudioInputStreamErrorTest() : device_info_accessor_(audio_manager_.get()) {
+    // Defer stream creation and parameter fetching to SetUp.
+  }
+
+ protected:
+  void SetUp() override {
+    WinAudioInputTest::SetUp();
+    // Abort early if requirements are not met.
+    bool prerequisites_met = device_info_accessor_.HasAudioInputDevices() &&
+                             CoreAudioUtil::IsSupported();
+    if (!prerequisites_met) {
+      GTEST_SKIP() << "Missing audio input devices or CoreAudio support";
+    }
+
+    CreateStream();
+  }
+
+  void CreateStream() {
+    stream_.Reset(CreateDefaultAudioInputStream(audio_manager_.get()));
+    ASSERT_THAT(stream_.get(), NotNull());
+    ASSERT_THAT(stream_->Open(), Eq(AudioInputStream::OpenOutcome::kSuccess));
+  }
+
+  void TearDown() override {
+    if (stream_.get()) {
+      stream_->Stop();
+      stream_.Close();
+    }
+    WinAudioInputTest::TearDown();
+  }
+
+  // Helper method to call SimulateErrorForTesting on the underlying stream.
+  void SimulateErrorOnStream() {
+    ASSERT_TRUE(stream_.get());
+    // The stream is expected to be an AudioInputStreamDataInterceptor
+    // wrapping a WASAPIAudioInputStream.
+    AudioInputStreamDataInterceptor* interceptor =
+        static_cast<AudioInputStreamDataInterceptor*>(stream_.get());
+    ASSERT_TRUE(interceptor);
+    WASAPIAudioInputStream* wasapi_stream =
+        static_cast<WASAPIAudioInputStream*>(
+            interceptor->GetUnderlyingStreamForTesting());
+    ASSERT_TRUE(wasapi_stream);
+    wasapi_stream->SimulateErrorForTesting();
+  }
+
+  AudioDeviceInfoAccessorForTests device_info_accessor_;
+  ScopedAudioInputStream stream_;
+};
+
+TEST_F(WinAudioInputStreamErrorTest, WASAPIAudioInputStreamOnError) {
+  FakeAudioInputCallback sink;
+  stream_->Start(&sink);
+
+  // Wait for the first OnData call to ensure the stream is active.
+  sink.WaitForData();
+  EXPECT_GT(sink.num_callbacks(), 0);
+  EXPECT_FALSE(sink.error());
+
+  // Now that the stream is active, use the helper method from the fixture
+  // to simulate an error.
+  SimulateErrorOnStream();
+
+  // Wait for the OnError call.
+  sink.WaitForError();
+  EXPECT_TRUE(sink.error());
+
+  // In this state, the inner audio-thread loop should be cancelled due to the
+  // previous error. Verify it by waiting for data callbacks and ensure that
+  // we time out.
+  EXPECT_FALSE(sink.WaitForDataWithTimeout(base::Milliseconds(100)));
+}
+
 TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
@@ -686,9 +776,9 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamTestPacketSizes) {
   MockAudioInputCallback sink;
 
   {
-    // We use 10ms packets and will run the test until ten packets are received.
-    // All should contain valid packets of the same size and a valid delay
-    // estimate.
+    // We use 10ms packets and will run the test until ten packets are
+    // received. All should contain valid packets of the same size and a valid
+    // delay estimate.
     base::RunLoop run_loop;
     EXPECT_CALL(sink, OnData(NotNull(), _, _, _))
         .Times(AtLeast(10))
@@ -907,8 +997,8 @@ TEST_P(WinAudioProcessLoopbackTest,
        OpenInputStreamActivateAudioInterfaceAsyncOperationTimedOut) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationTimeout);
-  // Override the default timeout so that this test can run quickly. The default
-  // timeout is 10 seconds.
+  // Override the default timeout so that this test can run quickly. The
+  // default timeout is 10 seconds.
   OverrideAsyncActivationTimeout(kShortAsyncActivationTimeoutMs);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
   histogram_tester_.ExpectTotalCount(
@@ -921,8 +1011,8 @@ TEST_P(WinAudioProcessLoopbackTest,
        OpenStreamAudioClientActivationAsyncOperationFailed) {
   fake_wasapi_environment_.SimulateError(
       WASAPITestErrorCode::kAudioClientActivationAsyncOperationFailed);
-  // Override the default timeout so that this test can run quickly. The default
-  // timeout is 10 seconds.
+  // Override the default timeout so that this test can run quickly. The
+  // default timeout is 10 seconds.
   OverrideAsyncActivationTimeout(kShortAsyncActivationTimeoutMs);
   EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kFailed);
   histogram_tester_.ExpectTotalCount(
@@ -980,8 +1070,9 @@ INSTANTIATE_TEST_SUITE_P(
 // when it is required to store the captured data on a local file.
 // By default, GTest will print out YOU HAVE 1 DISABLED TEST.
 // To include disabled tests in test execution, just invoke the test program
-// with --gtest_also_run_disabled_tests or set the GTEST_ALSO_RUN_DISABLED_TESTS
-// environment variable to a value greater than 0.
+// with --gtest_also_run_disabled_tests or set the
+// GTEST_ALSO_RUN_DISABLED_TESTS environment variable to a value greater than
+// 0.
 TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamRecordToFile) {
   ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
 
@@ -1035,7 +1126,8 @@ TEST_F(WinAudioInputTest, DISABLED_WASAPIAudioInputStreamResampleToFile) {
   // except it forces use of a different sample rate than is preferred by
   // the hardware.  This functionality is offered while we still have code
   // that doesn't ask the lower levels for what the preferred audio parameters
-  // are (and previously depended on the old Wave API to do this automatically).
+  // are (and previously depended on the old Wave API to do this
+  // automatically).
 
   struct TestData {
     const int rate;

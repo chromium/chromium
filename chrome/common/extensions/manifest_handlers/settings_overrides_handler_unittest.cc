@@ -15,11 +15,14 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace {
 
@@ -113,18 +116,23 @@ using extensions::SettingsOverrides;
 using extensions::api::manifest_types::ChromeSettingsOverrides;
 namespace manifest_keys = extensions::manifest_keys;
 
+// TODO(crbug.com/41317803): Continue removing std::string error and
+// replacing with std::u16string.
 scoped_refptr<Extension> CreateExtension(const base::Value::Dict& manifest,
                                          std::string* error) {
+  std::u16string utf16_error;
   scoped_refptr<Extension> extension =
       Extension::Create(base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
                         extensions::mojom::ManifestLocation::kInvalidLocation,
-                        manifest, Extension::NO_FLAGS, error);
+                        manifest, Extension::NO_FLAGS, &utf16_error);
+  *error = base::UTF16ToUTF8(utf16_error);
   return extension;
 }
 
 scoped_refptr<Extension> CreateExtension(std::string_view manifest,
                                          std::string* error) {
-  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(manifest);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      manifest, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     ADD_FAILURE() << "Manifest isn't a Dictionary";
     return nullptr;

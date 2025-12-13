@@ -11,11 +11,13 @@
 #import "base/logging.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/web/annotations/annotations_java_script_feature.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/features.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
+#import "ios/web/js_features/clipboard/clipboard_java_script_feature.h"
 #import "ios/web/js_features/context_menu/context_menu_java_script_feature.h"
 #import "ios/web/js_features/error_page/error_page_java_script_feature.h"
 #import "ios/web/js_features/fullscreen/fullscreen_java_script_feature.h"
@@ -34,7 +36,6 @@ namespace {
 
 const char kBaseScriptName[] = "gcrweb";
 const char kCommonScriptName[] = "common";
-const char kMessageScriptName[] = "message";
 
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
@@ -83,7 +84,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
   std::vector<JavaScriptFeature*> features = {
       GetBaseJavaScriptFeature(),
       GetCommonJavaScriptFeature(),
-      GetMessageJavaScriptFeature(),
       ContextMenuJavaScriptFeature::FromBrowserState(browser_state),
       ErrorPageJavaScriptFeature::GetInstance(),
       FindInPageJavaScriptFeature::GetInstance(),
@@ -95,6 +95,11 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
       NavigationJavaScriptFeature::GetInstance(),
       WebUIMessagingJavaScriptFeature::GetInstance(),
       AnnotationsJavaScriptFeature::GetInstance()};
+
+  if (base::FeatureList::IsEnabled(
+          data_controls::kEnableClipboardDataControlsIOS)) {
+    features.push_back(ClipboardJavaScriptFeature::GetInstance());
+  }
 
   auto frames_manager_features = WebFramesManagerJavaScriptFeature::
       AllContentWorldFeaturesFromBrowserState(browser_state);
@@ -134,19 +139,6 @@ JavaScriptFeature* GetCommonJavaScriptFeature() {
               JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
       std::vector<const JavaScriptFeature*>({GetBaseJavaScriptFeature()}));
   return common_feature.get();
-}
-
-JavaScriptFeature* GetMessageJavaScriptFeature() {
-  // Static storage is ok for `message_feature` as it holds no state.
-  static base::NoDestructor<JavaScriptFeature> message_feature(
-      ContentWorld::kAllContentWorlds,
-      std::vector<JavaScriptFeature::FeatureScript>(
-          {JavaScriptFeature::FeatureScript::CreateWithFilename(
-              kMessageScriptName,
-              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
-      std::vector<const JavaScriptFeature*>({GetCommonJavaScriptFeature()}));
-  return message_feature.get();
 }
 
 }  // namespace java_script_features

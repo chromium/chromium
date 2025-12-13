@@ -22,10 +22,9 @@ DiscardMetricsLifecycleUnitObserver::~DiscardMetricsLifecycleUnitObserver() =
 
 void DiscardMetricsLifecycleUnitObserver::OnLifecycleUnitStateChanged(
     LifecycleUnit* lifecycle_unit,
-    LifecycleUnitState last_state,
-    LifecycleUnitStateChangeReason reason) {
+    LifecycleUnitState last_state) {
   if (lifecycle_unit->GetState() == LifecycleUnitState::DISCARDED)
-    OnDiscard(lifecycle_unit, reason);
+    OnDiscard(lifecycle_unit);
   else if (last_state == LifecycleUnitState::DISCARDED)
     OnReload();
 }
@@ -50,10 +49,8 @@ void DiscardMetricsLifecycleUnitObserver::OnLifecycleUnitDestroyed(
 }
 
 void DiscardMetricsLifecycleUnitObserver::OnDiscard(
-    LifecycleUnit* lifecycle_unit,
-    LifecycleUnitStateChangeReason reason) {
+    LifecycleUnit* lifecycle_unit) {
   discard_time_ = NowTicks();
-  discard_reason_ = reason;
   last_focused_time_before_discard_ = lifecycle_unit->GetLastFocusedTimeTicks();
 
   static int discard_count = 0;
@@ -77,15 +74,6 @@ void DiscardMetricsLifecycleUnitObserver::OnReload() {
   UMA_HISTOGRAM_CUSTOM_TIMES("TabManager.Discarding.InactiveToReloadTime",
                              inactive_to_reload_time, base::Seconds(1),
                              base::Days(1), 100);
-
-  if (discard_reason_ == LifecycleUnitStateChangeReason::BROWSER_INITIATED) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "TabManager.Discarding.DiscardToReloadTime.Proactive",
-        discard_to_reload_time, base::Seconds(1), base::Days(1), 100);
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "TabManager.Discarding.InactiveToReloadTime.Proactive",
-        inactive_to_reload_time, base::Seconds(1), base::Days(1), 100);
-  }
 }
 
 }  // namespace resource_coordinator

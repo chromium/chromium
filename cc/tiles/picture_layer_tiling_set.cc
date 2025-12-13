@@ -237,33 +237,7 @@ void PictureLayerTilingSet::VerifyTilings(
 #endif
 }
 
-void PictureLayerTilingSet::CleanUpTilings(
-    float min_acceptable_high_res_scale_key,
-    float max_acceptable_high_res_scale_key,
-    const std::vector<raw_ptr<PictureLayerTiling, VectorExperimental>>&
-        needed_tilings,
-    PictureLayerTilingSet* twin_set) {
-  std::vector<PictureLayerTiling*> to_remove;
-  for (const auto& tiling : tilings_) {
-    // Keep all tilings within the min/max scales.
-    if (tiling->contents_scale_key() >= min_acceptable_high_res_scale_key &&
-        tiling->contents_scale_key() <= max_acceptable_high_res_scale_key) {
-      continue;
-    }
 
-    // Don't remove tilings that are required.
-    if (base::Contains(needed_tilings, tiling.get())) {
-      continue;
-    }
-
-    to_remove.push_back(tiling.get());
-  }
-
-  for (auto* tiling : to_remove) {
-    DCHECK_NE(HIGH_RESOLUTION, tiling->resolution());
-    Remove(tiling);
-  }
-}
 
 void PictureLayerTilingSet::RemoveNonIdealTilings() {
   std::erase_if(tilings_, [](const std::unique_ptr<PictureLayerTiling>& t) {

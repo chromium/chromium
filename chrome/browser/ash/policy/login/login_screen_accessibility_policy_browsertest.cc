@@ -479,19 +479,10 @@ IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
             GetPrefValue(ash::prefs::kAccessibilityVirtualKeyboardEnabled));
 }
 
-class LoginScreenTouchVirtualKeyboardPolicyBrowsertest
-    : public LoginScreenAccessibilityPolicyBrowsertest {
- private:
-  // DeviceLoginScreenTouchVirtualKeyboardEnabled requires this killswitch flag
-  // to work.
-  base::test::ScopedFeatureList feature_list{
-      ash::features::kTouchVirtualKeyboardPolicyListenPrefsAtLogin};
-};
-
-// TODO(b/307433336): Move DeviceLoginScreenDefaultVirtualKeyboardEnabled tests
+// TODO(b/448267171): Move LoginScreenAccessibilityPolicyBrowsertest tests
 // to a separate file since this is not accessibility related.
 
-IN_PROC_BROWSER_TEST_F(LoginScreenTouchVirtualKeyboardPolicyBrowsertest,
+IN_PROC_BROWSER_TEST_F(LoginScreenAccessibilityPolicyBrowsertest,
                        DeviceLoginScreenTouchVirtualKeyboardEnabledDefault) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);
@@ -507,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(LoginScreenTouchVirtualKeyboardPolicyBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LoginScreenTouchVirtualKeyboardPolicyBrowsertest,
+    LoginScreenAccessibilityPolicyBrowsertest,
     DeviceLoginScreenTouchVirtualKeyboardEnabledTrueEnablesVirtualKeyboard) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);
@@ -523,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    LoginScreenTouchVirtualKeyboardPolicyBrowsertest,
+    LoginScreenAccessibilityPolicyBrowsertest,
     DeviceLoginScreenTouchVirtualKeyboardEnabledFalseDisablesVirtualKeyboard) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   ASSERT_TRUE(keyboard_client);

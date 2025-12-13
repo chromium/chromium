@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/simple_message_box_internal.h"
 #include "chrome/common/chrome_result_codes.h"
@@ -28,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "sandbox/policy/switches.h"
 

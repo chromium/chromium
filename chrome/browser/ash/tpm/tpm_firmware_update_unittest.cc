@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -70,13 +70,13 @@ class TPMFirmwareUpdateTest : public testing::Test {
     base::FilePath update_location_path =
         temp_dir_.GetPath().AppendASCII("tpm_firmware_update_location");
     path_override_location_ = std::make_unique<base::ScopedPathOverride>(
-        chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,
-        update_location_path, update_location_path.IsAbsolute(), false);
+        ash::FILE_TPM_FIRMWARE_UPDATE_LOCATION, update_location_path,
+        update_location_path.IsAbsolute(), false);
     base::FilePath srk_vulnerable_roca_path = temp_dir_.GetPath().AppendASCII(
         "tpm_firmware_update_srk_vulnerable_roca");
     path_override_srk_vulnerable_roca_ =
         std::make_unique<base::ScopedPathOverride>(
-            chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
+            ash::FILE_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
             srk_vulnerable_roca_path, srk_vulnerable_roca_path.IsAbsolute(),
             false);
     cros_settings_test_helper_.ReplaceDeviceSettingsProviderWithStub();
@@ -86,7 +86,7 @@ class TPMFirmwareUpdateTest : public testing::Test {
   void SetUpdateAvailability(Availability availability) {
     base::FilePath srk_vulnerable_roca_path;
     ASSERT_TRUE(base::PathService::Get(
-        chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
+        ash::FILE_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
         &srk_vulnerable_roca_path));
     switch (availability) {
       case Availability::kPending:
@@ -101,9 +101,8 @@ class TPMFirmwareUpdateTest : public testing::Test {
     }
 
     base::FilePath update_location_path;
-    ASSERT_TRUE(base::PathService::Get(
-        chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,
-        &update_location_path));
+    ASSERT_TRUE(base::PathService::Get(ash::FILE_TPM_FIRMWARE_UPDATE_LOCATION,
+                                       &update_location_path));
     switch (availability) {
       case Availability::kPending:
         base::DeleteFile(update_location_path);

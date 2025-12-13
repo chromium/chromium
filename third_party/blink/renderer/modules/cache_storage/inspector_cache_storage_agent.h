@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/types/expected.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/cache_storage.h"

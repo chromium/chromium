@@ -26,8 +26,11 @@
 
 // Initiates a CreateTabGroupViewController in `editMode`. If NO, then the view
 // controller is in creation mode. `tabSynced` represents whether the tabs are
-// synced across devices.
-- (instancetype)initWithEditMode:(BOOL)editMode tabSynced:(BOOL)tabSynced;
+// synced across devices. `createNewTabForGroup` indicates whether a new tab
+// should be inserted into the new group.
+- (instancetype)initWithEditMode:(BOOL)editMode
+                       tabSynced:(BOOL)tabSynced
+            createNewTabForGroup:(BOOL)createNewTabForGroup;
 
 @end
 

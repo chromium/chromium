@@ -26,7 +26,6 @@
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/rsa_private_key.h"
 
 namespace em = enterprise_management;
 
@@ -146,6 +145,12 @@ const char* DeviceSettingsService::StatusToString(Status status) {
       return "INVALID_POLICY";
     case STORE_VALIDATION_ERROR:
       return "VALIDATION_ERROR";
+    case STORE_KEY_UNAVAILABLE_NOT_INITIALIZED:
+      return "KEY_UNAVAILABLE_NOT_INITIALIZED";
+    case STORE_KEY_UNAVAILABLE_NOT_LOCKED:
+      return "KEY_UNAVAILABLE_NOT_LOCKED";
+    case STORE_KEY_UNAVAILABLE_MANAGED:
+      return "KEY_UNAVAILABLE_MANAGED";
   }
   return "UNKNOWN";
 }

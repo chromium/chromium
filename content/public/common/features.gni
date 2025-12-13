@@ -6,11 +6,14 @@ import("//build/config/cast.gni")
 import("//build/config/features.gni")
 
 declare_args() {
+  # Whether or not to use external popup menu.
+  use_external_popup_menu = is_android || (is_apple && use_blink)
+
   # Enables basic plugin support. This enables support for registering and
   # looking up plugins.
   #
-  # In particular, the PDF viewer (enable_pdf) requires plugin support.
-  enable_plugins = !is_android && !is_ios && !is_castos
+  # In particular, the Desktop PDF viewer (enable_pdf) requires plugin support.
+  enable_plugins = !is_android && !is_ios && !is_castos && !is_fuchsia
 }
 
 # Screen capture is enabled on most platforms. Currently, screen capture

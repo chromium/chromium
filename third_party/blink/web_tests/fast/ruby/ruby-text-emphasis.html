@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Test: text-emphasis and ruby</title>
+<link rel="author" title="Minseong Kim" href="mailto:jja08111@gmail.com">
+<link rel="help" href="https://drafts.csswg.org/css-text-decor-3/#text-emphasis-position-property">
+<meta name="assert" content="emphasis marks are drawn outside the ruby">
+<style>
+  .ruby-over {
+    writing-mode: horizontal-tb;
+    ruby-position: over;
+    text-emphasis-position: over;
+  }
+  .ruby-under {
+    writing-mode: horizontal-tb;
+    ruby-position: under;
+    text-emphasis-position: under;
+  }
+  .ruby-vertical-rl {
+    writing-mode: vertical-rl;
+    ruby-position: over;
+    text-emphasis-position: over right;
+  }
+  .ruby-vertical-lr {
+    writing-mode: vertical-lr;
+    ruby-position: under;
+    text-emphasis-position: under left;
+  }
+  em {
+    text-emphasis: circle;
+    font-style: normal;
+  }
+  hr {
+    margin: 0px;
+  }
+</style>
+<p>The emphasis marks should be outside the ruby:</p>
+<div lang="ja" style="font-size: 24px">
+  <div>
+    <span class="ruby-over">ルビ<em>と<ruby>圏<rt><ruby>けん<rt style="font-size: 16px">nested</rt></ruby></rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under;">を<rt>けん</rt>同<rt>てん</rt></ruby></em>時</span>
+    &nbsp;
+    <span class="ruby-under">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby>を</em>同時</span>
+  </div>
+  <hr>
+  <div style="column-count: 2; column-rule: 1px solid gray; column-gap: 0px;">
+    <div>
+      <span><ruby><ruby>[base]<rt><em>[inner rt]</em></rt></ruby><rt>[outer rt]<ruby>[nested base]<rt>[rt]</rt></ruby></rt></ruby></span>
+    </div>
+    <hr>
+    <div>
+      <em><ruby><ruby>圏点<rt>けんてん</ruby><rt style="font-size:24px">ケンテン</ruby></em>
+      &nbsp;
+      <em><ruby><ruby>圏点<rt style="font-size:24px">けんてん</ruby><rt>ケンテン</ruby></em>
+    </div>
+    <hr>
+    <div>
+      <em><ruby><ruby style="ruby-position:under">圏点<rt>けんてん</ruby><rt style="font-size:24px">ケンテン</ruby></em>
+      &nbsp;
+      <em><ruby><ruby style="ruby-position:under">圏点<rt style="font-size:24px">けんてん</ruby><rt>ケンテン</ruby></em>
+    </div>
+    <div>
+      <span class="ruby-vertical-rl">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under">を<rt>けんてん</rt></ruby>同</em>時</span>
+      &nbsp;
+      <span class="ruby-vertical-lr">ルビ<em>と<ruby>圏<rt>けん</rt>点<rt>てん</rt></ruby><ruby style="ruby-position: under; text-emphasis-position: over right">を<rt>けんてん</rt></ruby></ruby>同</em>時</span>
+    </div>
+  </div>
+</div>

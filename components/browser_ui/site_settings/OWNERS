@@ -1,4 +1,3 @@
-hkamila@chromium.org
 andypaicu@chromium.org
 dullweber@chromium.org
 tommasin@chromium.org
@@ -7,3 +6,6 @@ lyf@chromium.org
 per-file *AutoDarkMetrics.java=file://chrome/browser/ui/android/night_mode/OWNERS
 per-file ...*cookie_settings*=file://components/privacy_sandbox/OWNERS
 per-file ...*Cookie*=file://components/privacy_sandbox/OWNERS
+
+# emeritus:
+# hkamila@chromium.org

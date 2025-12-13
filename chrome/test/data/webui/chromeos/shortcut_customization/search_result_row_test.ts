@@ -6,7 +6,6 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
@@ -119,7 +118,7 @@ suite('searchResultRowTest', function() {
     assertEquals(2, keys1.length);
     assertEquals(
         'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'show windows',
         keys1[1]!.shadowRoot!.querySelector('#keyIcon')!.getAttribute(
@@ -182,8 +181,8 @@ suite('searchResultRowTest', function() {
     flush();
     assertEquals(
         getBoldedDescription(
-            mojoString16ToString(searchResultRowElement.searchResult
-                                     .acceleratorLayoutInfo.description),
+            searchResultRowElement.searchResult.acceleratorLayoutInfo
+                .description,
             query)
             .toString(),
         strictQuery(

@@ -1,0 +1,21 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  # Stub target to replace
+  # "//chrome/browser/ui/browser_window/internal:java" when the
+  # "internal" target isn't compiled into the build.
+  #
+  # TODO(crbug.com/434123514): see if we can remove this stub target.
+  android_library("java") {
+    visibility = [ "//chrome/android:chrome_all_java" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java" ]
+    deps = [
+      "//build/android:build_java",
+      "//chrome/browser/ui/browser_window/public/android:java",
+    ]
+  }
+}

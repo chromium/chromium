@@ -42,8 +42,10 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/url/dom_origin_utils.h"
 #include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -55,55 +57,76 @@ class CORE_EXPORT MessageEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  enum MessageOriginKind {
+    kMessageIsSameOrigin,
+    kMessageIsCrossOrigin,
+  };
+
   static MessageEvent* Create() { return MakeGarbageCollected<MessageEvent>(); }
   static MessageEvent* Create(GCedMessagePortArray* ports,
-                              const String& origin = String(),
-                              const String& last_event_id = String(),
-                              EventTarget* source = nullptr) {
-    return MakeGarbageCollected<MessageEvent>(origin, last_event_id, source,
-                                              ports);
+                              scoped_refptr<const SecurityOrigin> origin,
+                              const String& last_event_id,
+                              EventTarget* source) {
+    return MakeGarbageCollected<MessageEvent>(std::move(origin), last_event_id,
+                                              source, ports);
   }
   static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
-                              const String& origin = String(),
-                              const String& last_event_id = String(),
-                              EventTarget* source = nullptr) {
+                              scoped_refptr<const SecurityOrigin> origin,
+                              MessageOriginKind message_origin_kind,
+                              const String& last_event_id,
+                              EventTarget* source) {
     return MakeGarbageCollected<MessageEvent>(
-        std::move(data), origin, last_event_id, source, ports, nullptr);
+        std::move(data), std::move(origin), message_origin_kind, last_event_id,
+        source, ports, nullptr);
   }
   static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
                               UserActivation* user_activation) {
     return MakeGarbageCollected<MessageEvent>(
-        std::move(data), String(), String(), nullptr, ports, user_activation);
+        std::move(data), /*origin=*/nullptr, kMessageIsSameOrigin, String(),
+        nullptr, ports, user_activation);
   }
   static MessageEvent* Create(
       Vector<MessagePortChannel> channels,
       scoped_refptr<SerializedScriptValue> data,
-      const String& origin = String(),
-      const String& last_event_id = String(),
-      EventTarget* source = nullptr,
-      UserActivation* user_activation = nullptr,
-      mojom::blink::DelegatedCapability delegated_capability =
-          mojom::blink::DelegatedCapability::kNone) {
+      scoped_refptr<const SecurityOrigin> origin,
+      MessageOriginKind message_origin_kind,
+      const String& last_event_id,
+      EventTarget* source,
+      UserActivation* user_activation,
+      mojom::blink::DelegatedCapability delegated_capability) {
     return MakeGarbageCollected<MessageEvent>(
-        std::move(data), origin, last_event_id, source, std::move(channels),
-        user_activation, delegated_capability);
+        std::move(data), std::move(origin), message_origin_kind, last_event_id,
+        source, std::move(channels), user_activation, delegated_capability);
   }
-  static MessageEvent* CreateError(const String& origin = String(),
+  static MessageEvent* CreateError() {
+    scoped_refptr<const SecurityOrigin> nullptr_origin;
+    return MakeGarbageCollected<MessageEvent>(std::move(nullptr_origin),
+                                              nullptr);
+  }
+  static MessageEvent* CreateError(const MessageEvent* event) {
+    return MakeGarbageCollected<MessageEvent>(event->GetSecurityOrigin(),
+                                              event->source());
+  }
+  static MessageEvent* CreateError(const SecurityOrigin* origin,
                                    EventTarget* source = nullptr) {
     return MakeGarbageCollected<MessageEvent>(origin, source);
   }
-  static MessageEvent* Create(const String& data,
-                              const String& origin = String()) {
-    return MakeGarbageCollected<MessageEvent>(data, origin);
+  static MessageEvent* Create(
+      const String& data,
+      scoped_refptr<const SecurityOrigin> origin = nullptr) {
+    return MakeGarbageCollected<MessageEvent>(data, std::move(origin));
   }
-  static MessageEvent* Create(Blob* data, const String& origin = String()) {
-    return MakeGarbageCollected<MessageEvent>(data, origin);
+  static MessageEvent* Create(
+      Blob* data,
+      scoped_refptr<const SecurityOrigin> origin = nullptr) {
+    return MakeGarbageCollected<MessageEvent>(data, std::move(origin));
   }
-  static MessageEvent* Create(DOMArrayBuffer* data,
-                              const String& origin = String()) {
-    return MakeGarbageCollected<MessageEvent>(data, origin);
+  static MessageEvent* Create(
+      DOMArrayBuffer* data,
+      scoped_refptr<const SecurityOrigin> origin = nullptr) {
+    return MakeGarbageCollected<MessageEvent>(data, std::move(origin));
   }
   static MessageEvent* Create(const AtomicString& type,
                               const MessageEventInit* initializer,
@@ -111,30 +134,38 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   MessageEvent();
   MessageEvent(const AtomicString&, const MessageEventInit*);
-  MessageEvent(const String& origin,
+  MessageEvent(scoped_refptr<const SecurityOrigin> origin,
                const String& last_event_id,
                EventTarget* source,
                GCedMessagePortArray*);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
-               const String& origin,
+               scoped_refptr<const SecurityOrigin> origin,
+               MessageOriginKind message_origin_kind,
                const String& last_event_id,
                EventTarget* source,
                GCedMessagePortArray*,
                UserActivation* user_activation);
   MessageEvent(scoped_refptr<SerializedScriptValue> data,
-               const String& origin,
+               scoped_refptr<const SecurityOrigin> origin,
+               MessageOriginKind message_origin_kind,
                const String& last_event_id,
                EventTarget* source,
                Vector<MessagePortChannel>,
                UserActivation* user_activation,
                mojom::blink::DelegatedCapability delegated_capability);
   // Creates a "messageerror" event.
-  MessageEvent(const String& origin, EventTarget* source);
-  MessageEvent(const String& data, const String& origin);
-  MessageEvent(Blob* data, const String& origin);
-  MessageEvent(DOMArrayBuffer* data, const String& origin);
+  MessageEvent(scoped_refptr<const SecurityOrigin> origin, EventTarget* source);
+  MessageEvent(const String& data, scoped_refptr<const SecurityOrigin> origin);
+  MessageEvent(Blob* data, scoped_refptr<const SecurityOrigin> origin);
+  MessageEvent(DOMArrayBuffer* data,
+               scoped_refptr<const SecurityOrigin> origin);
   ~MessageEvent() override;
 
+  // DOMOriginUtils overrides:
+  DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const override;
+
+  // This is exposed to JavaScript, and so accepts a serialized |origin| rather
+  // than a `SecurityOrigin`.
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
                         bool cancelable,
@@ -143,11 +174,15 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& last_event_id,
                         EventTarget* source,
                         MessagePortArray ports);
+
+  // These `initMessageEvent` overrides are not actually implementations of the
+  // bindings-exposed `initMessageEvent` method, and should be renamed.
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
                         bool cancelable,
                         scoped_refptr<SerializedScriptValue> data,
-                        const String& origin,
+                        scoped_refptr<const SecurityOrigin> origin,
+                        MessageOriginKind message_origin_kind,
                         const String& last_event_id,
                         EventTarget* source,
                         GCedMessagePortArray*,
@@ -157,14 +192,24 @@ class CORE_EXPORT MessageEvent final : public Event {
                         bool bubbles,
                         bool cancelable,
                         const String& data,
-                        const String& origin,
+                        scoped_refptr<const SecurityOrigin> origin,
                         const String& last_event_id,
                         EventTarget* source,
                         GCedMessagePortArray*);
 
+  // To evaluate the viability of shipping anything remotely resembling
+  // https://github.com/mikewest/incentivize-origin-checks/, this method should
+  // be called when `MessageEvent` objects are sent to `Window` via
+  // `postMessage()`.
+  void SetShouldMeasureDataAccessBeforeOrigin() {
+    should_measure_data_access_before_origin_ = true;
+  }
+
   ScriptValue data(ScriptState*);
   bool IsDataDirty() const { return is_data_dirty_; }
-  const String& origin() const { return origin_; }
+  // This returns a serialized origin string (which might be "null") to support
+  // JavaScript bindings. Prefer `GetSecurityOrigin()` below for other uses.
+  String originForBindings();
   const String& lastEventId() const { return last_event_id_; }
   EventTarget* source() const { return source_.Get(); }
   MessagePortArray ports();
@@ -206,6 +251,10 @@ class CORE_EXPORT MessageEvent final : public Event {
 
   void LockToAgentCluster();
 
+  scoped_refptr<const SecurityOrigin> GetSecurityOrigin() const {
+    return origin_;
+  }
+
  private:
   enum DataType {
     kDataTypeNull,  // For "messageerror" events.
@@ -221,12 +270,26 @@ class CORE_EXPORT MessageEvent final : public Event {
   DataType data_type_;
   WorldSafeV8Reference<v8::Value> data_as_v8_value_;
   Member<UnpackedSerializedScriptValue> data_as_serialized_script_value_;
+  // Most data are, but in this particular case this refers to data coming
+  // from a cross-origin source being accessed without caller having previously
+  // accessed the origin property.
+  bool data_is_from_untrusted_source_ = true;
   V8ExternalMemoryAccounter serialized_data_memory_accounter_;
   String data_as_string_;
   Member<Blob> data_as_blob_;
   Member<DOMArrayBuffer> data_as_array_buffer_;
   bool is_data_dirty_ = true;
-  String origin_;
+
+  // We hold a `SecurityOrigin` in `origin_` which we'll use for any and all
+  // security checks. We also potentially have to hold a string representing
+  // the serialized origin that was handed to us if the `MessageEvent` was
+  // constructed from JavaScript, as the object is specced to return that
+  // string even if it's not a valid origin serialization. See
+  // https://github.com/whatwg/html/issues/11759 for discussion.
+  scoped_refptr<const SecurityOrigin> origin_;
+  String potentially_invalid_origin_serialization_;
+
+  bool should_measure_data_access_before_origin_ = false;
   String last_event_id_;
   Member<EventTarget> source_;
   // ports_ are the MessagePorts in an entangled state, and channels_ are

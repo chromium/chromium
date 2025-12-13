@@ -8,14 +8,18 @@
 
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/update_client/network.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
@@ -26,9 +30,11 @@ namespace update_client {
 
 UrlFetcherDownloader::UrlFetcherDownloader(
     scoped_refptr<CrxDownloader> successor,
-    scoped_refptr<NetworkFetcherFactory> network_fetcher_factory)
+    scoped_refptr<NetworkFetcherFactory> network_fetcher_factory,
+    const std::string& prod_id)
     : CrxDownloader(std::move(successor)),
-      network_fetcher_factory_(network_fetcher_factory) {}
+      network_fetcher_factory_(network_fetcher_factory),
+      prod_id_(update_client::UTF8ToStringType(prod_id)) {}
 
 UrlFetcherDownloader::~UrlFetcherDownloader() = default;
 
@@ -42,8 +48,9 @@ base::OnceClosure UrlFetcherDownloader::DoStartDownload(const GURL& url) {
 }
 
 void UrlFetcherDownloader::CreateDownloadDir() {
-  base::CreateNewTempDirectory(FILE_PATH_LITERAL("chrome_url_fetcher_"),
-                               &download_dir_);
+  CreateTempDirectory(
+      base::StrCat({prod_id_, FILE_PATH_LITERAL("_chrome_url_fetcher_")}),
+      &download_dir_);
 }
 
 void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
@@ -139,8 +146,11 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   if (error && !download_dir_.empty()) {
     base::ThreadPool::PostTask(
         FROM_HERE, kTaskTraits,
-        base::BindOnce(IgnoreResult(&RetryDeletePathRecursively),
-                       download_dir_));
+        base::BindOnce(
+            [](const base::FilePath& download_dir) {
+              RetryFileOperation(&base::DeletePathRecursively, download_dir);
+            },
+            download_dir_));
   }
 
   main_task_runner()->PostTask(

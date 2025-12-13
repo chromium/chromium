@@ -1,9 +1,6 @@
-abhijithnair@chromium.org
+aakallam@chromium.org
 awillia@chromium.org
-edechamps@google.com
-abhipatel@chromium.org
-
-per-file common/masked_domain_list*=aakallam@chromium.org
-per-file common/url_matcher_with_bypass*=aakallam@chromium.org
+ortuno@chromium.org
+rizvis@google.com
 
 file://net/OWNERS

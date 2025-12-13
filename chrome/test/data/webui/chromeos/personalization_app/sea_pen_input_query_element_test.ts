@@ -60,7 +60,7 @@ suite('SeaPenInputQueryElementTest', function() {
         seaPenSuggestions.shadowRoot!.querySelector<CrButtonElement>(
             '.suggestion');
     assertTrue(!!seaPenSuggestionButton, 'suggestion buttons should exist');
-    const suggestionButtonText = seaPenSuggestionButton.textContent!.trim();
+    const suggestionButtonText = seaPenSuggestionButton.textContent.trim();
 
     seaPenSuggestionButton.click();
     await waitAfterNextRender(seaPenInputQueryElement as HTMLElement);

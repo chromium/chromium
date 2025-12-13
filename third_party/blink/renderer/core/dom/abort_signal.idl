@@ -29,7 +29,7 @@
     [
         CallWith=Isolate,
         MeasureAs=AbortSignalThrowIfAborted
-    ] void throwIfAborted();
+    ] undefined throwIfAborted();
 
     attribute EventHandler onabort;
 };

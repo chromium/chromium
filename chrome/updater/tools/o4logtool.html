@@ -1,11 +1,18 @@
 <html>
   <head>
     <script>
+      let g_lines = null;
+
       function loadFromClipboard(hideCrashHandlers) {
         for (let b of document.querySelectorAll("button")) b.style.display = "none";
         navigator.clipboard.readText().then(text => {
-          makeRows(computeGrid(tagWithFPID(parseLines(text)), hideCrashHandlers));
+          let lines = parseLines(text);
+          makeRows(computeGrid(tagWithFPID(lines), hideCrashHandlers));
           document.querySelector("#controls").style.display = "block";
+
+          let analyses = runAnalyses(lines);
+          document.querySelector("#findings > div").textContent = analyses.join("\n");
+          if (analyses.length > 0) document.querySelector("#findings").style.display = "block";
         });
       }
 
@@ -39,7 +46,7 @@
         }
         lines = lines2;
         lines.sort((a, b) => a.time.localeCompare(b.time));
-
+        g_lines = lines;
         return lines;
       }
 
@@ -226,6 +233,20 @@
         }
       }
 
+      function runAnalyses(lines) {
+        let findings = [];
+        { // Look for abnormal process exits.
+          let last_line_by_pid = {};
+          for (let l of lines) last_line_by_pid[l.process] = l.location;
+          for (let pid in last_line_by_pid) {
+            if (!last_line_by_pid[pid].indexOf("updater.cc") == -1) {
+              findings.push("Process " + pid + " missing exit log line.");
+            }
+          }
+        }
+        return findings;
+      }
+
       function makeDiv(line) {
         let div = document.createElement("div");
 
@@ -302,6 +323,16 @@
       #controls label {
         display: block;
       }
+      #findings {
+        display: none;
+        margin-bottom: 1em;
+      }
+      #findings > div {
+        white-space: pre-wrap;
+      }
+      h1 {
+        margin-top: 0.2em;
+      }
     </style>
   </head>
   <body>
@@ -314,6 +345,10 @@
     </div>
     <button onclick="loadFromClipboard(false)">Load from clipboard</button>
     <button onclick="loadFromClipboard(true)">Load from clipboard (hide crash handlers)</button>
+    <div id="findings">
+      <h1>Automated findings:</h1>
+      <div></div>
+    </div>
     <table></table>
   </body>
 </html>

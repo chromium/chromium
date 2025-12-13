@@ -93,7 +93,7 @@ RedirectInfo RedirectInfo::ComputeRedirectInfo(
     GURL::Replacements replacements;
     // Reference the |ref| directly out of the original URL to avoid a
     // malloc.
-    replacements.SetRefStr(original_url.ref_piece());
+    replacements.SetRefStr(original_url.ref());
     redirect_info.new_url = new_location.ReplaceComponents(replacements);
   } else {
     redirect_info.new_url = new_location;

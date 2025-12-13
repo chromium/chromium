@@ -15,7 +15,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/menus/simple_menu_model.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionContextMenuBrowserTest;
 

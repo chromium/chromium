@@ -13,12 +13,13 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
@@ -105,8 +106,10 @@ bool MaybeAddDevicesAndShowPicker(
     bool stay_in_chrome,
     bool show_remember_selection,
     IntentPickerResponseWithDevices callback) {
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
+  ash::BrowserDelegate* browser =
+      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                         web_contents)
+                   : nullptr;
   if (!browser) {
     return false;
   }
@@ -136,7 +139,7 @@ bool MaybeAddDevicesAndShowPicker(
   IntentPickerTabHelper::ShowOrHideIcon(
       web_contents,
       bubble_type == apps::IntentPickerBubbleType::kExternalProtocol);
-  browser->window()->ShowIntentPickerBubble(
+  browser->GetBrowser().window()->ShowIntentPickerBubble(
       std::move(app_info), stay_in_chrome, show_remember_selection, bubble_type,
       initiating_origin,
       base::BindOnce(std::move(callback), std::move(devices), bubble_type));
@@ -493,10 +496,7 @@ void OnIntentPickerClosed(
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
 
   if (web_contents) {
-    if (intent_picker_type == apps::IntentPickerBubbleType::kClickToCall) {
-      ClickToCallUiController::GetOrCreateFromWebContents(web_contents.get())
-          ->OnIntentPickerClosed();
-    } else {
+    if (intent_picker_type != apps::IntentPickerBubbleType::kClickToCall) {
       IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
                                             /*should_show_icon=*/false);
     }
@@ -601,9 +601,10 @@ void OnAppIconsReceived(
                           handler.package_name, handler.name);
   }
 
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents.get()) : nullptr;
-
+  ash::BrowserDelegate* browser =
+      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                         web_contents.get())
+                   : nullptr;
   if (!browser) {
     return std::move(handled_cb).Run(false);
   }

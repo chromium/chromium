@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/base/typed_buffer.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,10 +45,10 @@ TEST(TypedBufferTest, Basic) {
   EXPECT_EQ(buffer.length(), sizeof(int) * 10);
 
   // Make sure that operator*() syntax works.
-  (*buffer).data[9] = 0x12345678;
+  UNSAFE_TODO((*buffer).data[9]) = 0x12345678;
 
   // Make sure that operator->() syntax works.
-  EXPECT_EQ(buffer->data[9], 0x12345678);
+  UNSAFE_TODO(EXPECT_EQ(buffer->data[9], 0x12345678));
 }
 
 // Test creating a const (reference to) buffer. (This is something of a

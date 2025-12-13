@@ -19,18 +19,18 @@ class RTCEncodedAudioUnderlyingSource;
 class MODULES_EXPORT RtcEncodedAudioReceiverSourceOptimizer
     : public ReadableStreamTransferringOptimizer {
  public:
-  using UnderlyingSourceSetter = WTF::CrossThreadFunction<void(
-      RTCEncodedAudioUnderlyingSource*,
-      scoped_refptr<base::SingleThreadTaskRunner>)>;
+  using UnderlyingSourceSetter =
+      CrossThreadFunction<void(RTCEncodedAudioUnderlyingSource*,
+                               scoped_refptr<base::SingleThreadTaskRunner>)>;
   RtcEncodedAudioReceiverSourceOptimizer(
       UnderlyingSourceSetter,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      CrossThreadOnceClosure disconnect_callback);
   UnderlyingSourceBase* PerformInProcessOptimization(
       ScriptState* script_state) override;
 
  private:
   UnderlyingSourceSetter set_underlying_source_;
-  WTF::CrossThreadOnceClosure disconnect_callback_;
+  CrossThreadOnceClosure disconnect_callback_;
 };
 
 }  // namespace blink

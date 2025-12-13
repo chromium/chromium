@@ -384,12 +384,10 @@ size_t DoPermissiveGetHostRegistryLength(T host,
     mapping.is_canonical = true;
 
     // Try to append the canonicalized version of this component.
-    int current_len = static_cast<int>(current - begin);
-    if (!url::CanonicalizeHostSubstring(
-            host.data(), url::Component(static_cast<int>(begin), current_len),
-            &canon_output)) {
+    T host_view = host.substr(begin, current - begin);
+    if (!url::CanonicalizeHostSubstring(host_view, &canon_output)) {
       // Failed to canonicalize this component; append as-is.
-      AppendInvalidString(host.substr(begin, current_len), &canon_output);
+      AppendInvalidString(host_view, &canon_output);
       mapping.is_canonical = false;
     }
 
@@ -460,10 +458,7 @@ size_t DoPermissiveGetHostRegistryLength(T host,
       url::StdStringCanonOutput try_output(&try_string);
 
       if (!url::CanonicalizeHostSubstring(
-              host.data(),
-              url::Component(
-                  current_try,
-                  static_cast<int>(mapping.original_end) - current_try),
+              host.substr(current_try, mapping.original_end - current_try),
               &try_output)) {
         continue;  // Invalid substring, skip.
       }
@@ -505,8 +500,7 @@ bool SameDomainOrHost(std::string_view host1,
 
 std::string GetDomainAndRegistry(const GURL& gurl,
                                  PrivateRegistryFilter filter) {
-  return std::string(
-      GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter));
+  return std::string(GetDomainAndRegistryAsStringPiece(gurl.host(), filter));
 }
 
 std::string GetDomainAndRegistry(const url::Origin& origin,
@@ -533,7 +527,7 @@ std::string_view GetDomainAndRegistryAsStringPiece(
 bool SameDomainOrHost(const GURL& gurl1,
                       const GURL& gurl2,
                       PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl1.host_piece(), gurl2.host_piece(), filter);
+  return SameDomainOrHost(gurl1.host(), gurl2.host(), filter);
 }
 
 bool SameDomainOrHost(const url::Origin& origin1,
@@ -552,14 +546,13 @@ bool SameDomainOrHost(const url::Origin& origin1,
 bool SameDomainOrHost(const GURL& gurl,
                       const url::Origin& origin,
                       PrivateRegistryFilter filter) {
-  return SameDomainOrHost(gurl.host_piece(), origin.host(), filter);
+  return SameDomainOrHost(gurl.host(), origin.host(), filter);
 }
 
 size_t GetRegistryLength(const GURL& gurl,
                          UnknownRegistryFilter unknown_filter,
                          PrivateRegistryFilter private_filter) {
-  return GetRegistryLengthImpl(gurl.host_piece(), unknown_filter,
-                               private_filter)
+  return GetRegistryLengthImpl(gurl.host(), unknown_filter, private_filter)
       .registry_length;
 }
 

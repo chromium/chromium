@@ -4,14 +4,14 @@
 
 #include "base/android/android_input_receiver_compat.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
 TEST(AndroidInputReceiverCompatTest, CanFindMethodsOnAndroidVPlus) {
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SdkVersion::SDK_VERSION_V) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_V) {
     EXPECT_EQ(AndroidInputReceiverCompat::IsSupportAvailable(), false);
     return;
   }
@@ -27,6 +27,7 @@ TEST(AndroidInputReceiverCompatTest, CanFindMethodsOnAndroidVPlus) {
   EXPECT_NE(instance.AInputReceiverCallbacks_createFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_releaseFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_setMotionEventCallbackFn, nullptr);
+  EXPECT_NE(instance.AInputReceiverCallbacks_setKeyEventCallbackFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_createBatchedInputReceiverFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_createUnbatchedInputReceiverFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_getInputTransferTokenFn, nullptr);

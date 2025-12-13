@@ -8,7 +8,6 @@
 #include "base/types/pass_key.h"
 #include "content/public/browser/navigation_handle.h"
 #include "extensions/common/extension.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {

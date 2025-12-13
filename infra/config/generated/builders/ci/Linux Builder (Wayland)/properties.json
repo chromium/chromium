@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -41,7 +40,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -73,7 +71,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -130,7 +127,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Builder (Wayland)/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Linux Builder (Wayland)/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

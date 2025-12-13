@@ -163,9 +163,11 @@ class SyncServiceCryptoTest : public testing::Test {
            testing::Mock::VerifyAndClearExpectations(&engine_);
   }
 
-  void MimicKeyRetrievalByUser() {
+  void MimicKeyRetrievalByUser(
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger = std::nullopt) {
     trusted_vault_client_.server()->MimicKeyRetrievalByUser(
-        kSyncingAccount.gaia, &trusted_vault_client_);
+        kSyncingAccount.gaia, &trusted_vault_client_, trigger);
   }
 
   std::optional<PassphraseType> passphrase_type_;
@@ -526,6 +528,7 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
 
   // Verify that GetExplicitPassphraseDecryptionNigoriKey() result equals to
   // `expected_nigori`.
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   std::unique_ptr<Nigori> stored_nigori =
       crypto_.GetExplicitPassphraseDecryptionNigoriKey();
   ASSERT_THAT(stored_nigori, NotNull());
@@ -540,6 +543,7 @@ TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
 TEST_F(SyncServiceCryptoTest,
        ShouldGetNullDecryptionKeyFromEmptyBootstrapToken) {
   // GetEncryptionBootstrapToken() returns empty string by default.
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 
@@ -548,6 +552,7 @@ TEST_F(SyncServiceCryptoTest,
   // Mimic corrupted bootstrap token being stored.
   ON_CALL(delegate_, GetEncryptionBootstrapToken)
       .WillByDefault(Return("corrupted_token"));
+  crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }
 
@@ -593,6 +598,56 @@ TEST_F(SyncServiceCryptoTest,
   EXPECT_THAT(trusted_vault_client_.fetch_count(), Eq(1));
   EXPECT_THAT(trusted_vault_client_.keys_marked_as_stale_count(), Eq(0));
   EXPECT_THAT(trusted_vault_client_.server_request_count(), Eq(0));
+}
+
+TEST_F(SyncServiceCryptoTest,
+       ShouldRecordTrustedVaultAddKeysSuccessfullyHistogram) {
+  const std::vector<std::vector<uint8_t>> kNewKeys = {{2, 3, 4, 5}};
+  base::HistogramTester histogram_tester;
+
+  // Cache `kInitialTrustedVaultKeys` into `trusted_vault_client_` prior to
+  // engine initialization. In this test, `kInitialTrustedVaultKeys` does not
+  // match the Nigori keys (i.e. the engine continues to think trusted vault
+  // keys are required until `kNewKeys` are provided).
+  MimicKeyRetrievalByUser();
+
+  // The engine replies with OnTrustedVaultKeyAccepted() only if `kNewKeys` are
+  // provided.
+  ON_CALL(engine_, AddTrustedVaultDecryptionKeys)
+      .WillByDefault([&](const std::vector<std::vector<uint8_t>>& keys,
+                         base::OnceClosure done_cb) {
+        if (keys == kNewKeys) {
+          crypto_.OnTrustedVaultKeyAccepted();
+        }
+        std::move(done_cb).Run();
+      });
+
+  // Mimic initialization of the engine where trusted vault keys are needed and
+  // `kInitialTrustedVaultKeys` are fetched, which are insufficient, and hence
+  // IsTrustedVaultKeyRequired() is exposed.
+  crypto_.SetSyncEngine(kSyncingAccount, &engine_);
+  crypto_.OnTrustedVaultKeyRequired();
+  // Note that this initial attempt involves two fetches, where both return
+  // `kInitialTrustedVaultKeys`.
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+  ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequired());
+
+  // Mimic server-side key reset and a new retrieval with a user action trigger.
+  trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                    kNewKeys);
+  MimicKeyRetrievalByUser(
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings);
+
+  EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
+
+  // Now, the relevant histogram for the specified trigger should have been
+  // emitted.
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TrustedVaultAddKeysSuccessfully",
+      /*sample=*/
+      trusted_vault::TrustedVaultUserActionTriggerForUMA::kSettings,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SyncServiceCryptoTest,

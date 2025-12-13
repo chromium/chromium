@@ -22,8 +22,11 @@ pub fn enum_variant_names_inner(ast: &DeriveInput) -> syn::Result<TokenStream> {
         .iter()
         .map(|v| {
             let props = v.get_variant_properties()?;
-            Ok(props
-                .get_preferred_name(type_properties.case_style, type_properties.prefix.as_ref()))
+            Ok(props.get_preferred_name(
+                type_properties.case_style,
+                type_properties.prefix.as_ref(),
+                type_properties.suffix.as_ref(),
+            ))
         })
         .collect::<syn::Result<Vec<LitStr>>>()?;
 

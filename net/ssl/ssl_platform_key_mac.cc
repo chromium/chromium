@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ssl/ssl_platform_key_mac.h"
 
 #include <CoreFoundation/CoreFoundation.h>
@@ -23,6 +18,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
@@ -127,7 +123,8 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
                            md, nullptr)) {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
-    base::span<const uint8_t> digest = base::span(digest_buf, digest_len);
+    base::span<const uint8_t> digest =
+        UNSAFE_TODO(base::span(digest_buf, digest_len));
 
     std::optional<std::vector<uint8_t>> pss_storage;
     if (pss_fallback) {

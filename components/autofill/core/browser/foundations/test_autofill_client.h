@@ -30,14 +30,16 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/mock_autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
-#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/integrators/password_manager/otp_suggestion_delegate.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -59,9 +61,12 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
+#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
@@ -77,16 +82,16 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
+#include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
+
+class TestAutofillClient;
 
 // This class is for easier writing of tests. There are two instances of the
 // template:
@@ -145,6 +150,7 @@ class TestAutofillClientTemplate : public T {
   TestPersonalDataManager& GetPersonalDataManager() override {
     if (!test_personal_data_manager_) {
       test_personal_data_manager_ = std::make_unique<TestPersonalDataManager>();
+      test_personal_data_manager_->SetPrefService(GetPrefs());
     }
     return *test_personal_data_manager_.get();
   }
@@ -162,12 +168,13 @@ class TestAutofillClientTemplate : public T {
                : entity_data_manager_.get();
   }
 
-  MockAutofillOptimizationGuide* GetAutofillOptimizationGuide() const override {
-    return mock_autofill_optimization_guide_.get();
+  MockAutofillOptimizationGuideDecider* GetAutofillOptimizationGuideDecider()
+      const override {
+    return mock_autofill_optimization_guide_decider_.get();
   }
 
-  void ResetAutofillOptimizationGuide() {
-    mock_autofill_optimization_guide_.reset();
+  void ResetAutofillOptimizationGuideDecider() {
+    mock_autofill_optimization_guide_decider_.reset();
   }
 
   MockAutofillAiManager* GetAutofillAiManager() override {
@@ -199,10 +206,6 @@ class TestAutofillClientTemplate : public T {
   PasswordManagerDelegate* GetPasswordManagerDelegate(
       const autofill::FieldGlobalId& field_id) override {
     return password_manager_delegate_.get();
-  }
-
-  OtpSuggestionDelegate* GetOtpSuggestionDelegate() override {
-    return otp_suggestion_delegate_.get();
   }
 
   test::AutofillTestingPrefService* GetPrefs() override {
@@ -287,7 +290,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   url::Origin GetLastCommittedPrimaryMainFrameOrigin() const override {
-    return url::Origin::Create(last_committed_primary_main_frame_url_);
+    return last_committed_primary_main_frame_origin_;
   }
 
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override {
@@ -311,7 +314,7 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveAddressProfile(
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
-      bool is_migration_to_account,
+      AutofillClient::SaveAddressBubbleType save_address_bubble_type,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
   AutofillClient::SuggestionUiSessionId ShowAutofillSuggestions(
@@ -372,26 +375,33 @@ class TestAutofillClientTemplate : public T {
   }
 
   bool IsAutofillEnabled() const override {
-    return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+    return IsAutofillProfileEnabled() ||
+           AutofillClient::GetPaymentsAutofillClient()
+               ->IsAutofillPaymentMethodsEnabled();
   }
 
   bool IsAutofillProfileEnabled() const override {
     return autofill_profile_enabled_;
   }
 
-  bool IsAutofillPaymentMethodsEnabled() const override {
-    return autofill_payment_methods_enabled_;
+  bool IsWalletStorageEnabled() const override {
+    return wallet_storage_enabled_;
   }
 
   bool IsAutocompleteEnabled() const override { return true; }
 
   bool IsPasswordManagerEnabled() const override { return true; }
 
-  void DidFillForm(AutofillTriggerSource trigger_source,
-                   bool is_refill) override {}
-
   bool IsContextSecure() const override {
     return last_committed_primary_main_frame_url_.SchemeIs("https");
+  }
+
+  bool IsCvcSavingSupported() const override {
+    return is_cvc_saving_supported_;
+  }
+
+  bool IsCreditCardUploadEnabled() const override {
+    return is_credit_card_upload_enabled_;
   }
 
   LogManager* GetCurrentLogManager() override { return log_manager_.get(); }
@@ -445,8 +455,20 @@ class TestAutofillClientTemplate : public T {
   bool IsLastQueriedField(FieldGlobalId field_id) override { return true; }
 #endif
 
+  OtpPhishGuardDelegate* GetOtpPhishGuardDelegate() override {
+    return otp_phish_guard_delegate_.get();
+  }
+
+  void set_otp_phish_guard_delegate(
+      std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate) {
+    otp_phish_guard_delegate_ = std::move(otp_phish_guard_delegate);
+  }
+
   void set_test_addresses(
       std::vector<AutofillProfile> test_addresses) override {
+    for (AutofillProfile& profile : test_addresses) {
+      profile.set_is_devtools_testing_profile(true);
+    }
     test_addresses_ = std::move(test_addresses);
   }
 
@@ -470,16 +492,8 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
-  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
-    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
-    if (PrefService* prefs = GetPrefs()) {
-      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
-                        autofill_payment_methods_enabled);
-    }
-    if (!autofill_payment_methods_enabled) {
-      // Credit card data is refreshed when this pref is changed.
-      GetPersonalDataManager().test_payments_data_manager().ClearCreditCards();
-    }
+  void SetWalletStorageEnabled(bool wallet_storage_enabled) {
+    wallet_storage_enabled_ = wallet_storage_enabled;
   }
 
   // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
@@ -553,6 +567,7 @@ class TestAutofillClientTemplate : public T {
 
   void set_last_committed_primary_main_frame_url(const GURL& url) {
     last_committed_primary_main_frame_url_ = url;
+    last_committed_primary_main_frame_origin_ = url::Origin::Create(url);
   }
 
   void SetVariationConfigCountryCode(
@@ -584,6 +599,14 @@ class TestAutofillClientTemplate : public T {
     is_off_the_record_ = is_off_the_record;
   }
 
+  void set_is_cvc_saving_supported(bool is_cvc_saving_supported) {
+    is_cvc_saving_supported_ = is_cvc_saving_supported;
+  }
+
+  void set_is_credit_card_upload_enabled(bool is_credit_card_upload_enabled) {
+    is_credit_card_upload_enabled_ = is_credit_card_upload_enabled;
+  }
+
   void set_crowdsourcing_manager(
       std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
     crowdsourcing_manager_ = std::move(crowdsourcing_manager);
@@ -610,11 +633,6 @@ class TestAutofillClientTemplate : public T {
     password_manager_delegate_ = std::move(password_manager_delegate);
   }
 
-  void set_otp_suggestion_delegate(
-      std::unique_ptr<OtpSuggestionDelegate> otp_suggestion_delegate) {
-    otp_suggestion_delegate_ = std::move(otp_suggestion_delegate);
-  }
-
   void set_suggestion_ui_session_id(
       std::optional<AutofillClient::SuggestionUiSessionId> session_id) {
     suggestion_ui_session_id_ = session_id;
@@ -629,18 +647,43 @@ class TestAutofillClientTemplate : public T {
     return identity_test_env_;
   }
 
+  // Allows to return an injected SMS OTP backend which can be set using the
+  // `set_sms_otp_backend`. If no backend is injected, it'll return null.
+  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const {
+    return injected_sms_otp_backend_ ? injected_sms_otp_backend_.get()
+                                     : nullptr;
+  }
+
+  void set_sms_otp_backend(
+      std::unique_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend) {
+    injected_sms_otp_backend_ = std::move(sms_otp_backend);
+  }
+
+  one_time_tokens::OneTimeTokenService* GetOneTimeTokenService()
+      const override {
+    return injected_one_time_token_service_
+               ? injected_one_time_token_service_.get()
+               : T::GetOneTimeTokenService();
+  }
+
+  void set_one_time_token_service(
+      std::unique_ptr<one_time_tokens::OneTimeTokenService>
+          one_time_token_service) {
+    injected_one_time_token_service_ = std::move(one_time_token_service);
+  }
+
  private:
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
   signin::IdentityTestEnvironment identity_test_env_;
   raw_ptr<syncer::SyncService> test_sync_service_ = nullptr;
+  std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<AutofillPlusAddressDelegate> plus_address_delegate_;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
-  std::unique_ptr<OtpSuggestionDelegate> otp_suggestion_delegate_;
   TestAddressNormalizer test_address_normalizer_;
-  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
-      mock_autofill_optimization_guide_ =
-          std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
+  std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuideDecider>>
+      mock_autofill_optimization_guide_decider_ = std::make_unique<
+          testing::NiceMock<MockAutofillOptimizationGuideDecider>>();
   std::unique_ptr<::testing::NiceMock<MockAutofillAiManager>>
       mock_autofill_ai_delegate_ =
           std::make_unique<testing::NiceMock<MockAutofillAiManager>>(
@@ -651,6 +694,9 @@ class TestAutofillClientTemplate : public T {
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       device_authenticator_ = nullptr;
+  std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;
+  std::unique_ptr<one_time_tokens::OneTimeTokenService>
+      injected_one_time_token_service_;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::unique_ptr<FieldClassificationModelHandler>
@@ -660,7 +706,7 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   bool autofill_profile_enabled_ = true;
-  bool autofill_payment_methods_enabled_ = true;
+  bool wallet_storage_enabled_ = true;
 
   // NULL by default.
   std::unique_ptr<test::AutofillTestingPrefService> prefs_;
@@ -694,6 +740,10 @@ class TestAutofillClientTemplate : public T {
 
   bool is_showing_popup_ = false;
 
+  bool is_cvc_saving_supported_ = true;
+
+  bool is_credit_card_upload_enabled_ = true;
+
   SuggestionHidingReason popup_hidden_reason_;
 
   std::optional<AutofillClient::IphFeature> autofill_iph_showing_;
@@ -714,6 +764,8 @@ class TestAutofillClientTemplate : public T {
   // The last URL submitted in the primary main frame by the user. Set in the
   // constructor.
   GURL last_committed_primary_main_frame_url_{"https://example.test"};
+  url::Origin last_committed_primary_main_frame_origin_ =
+      url::Origin::Create(last_committed_primary_main_frame_url_);
 
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;
@@ -725,7 +777,7 @@ class TestAutofillClientTemplate : public T {
   struct LogToTerminal {
     explicit LogToTerminal(LogRouter& log_router) {
       if (base::FeatureList::IsEnabled(
-              features::test::kAutofillLogToTerminal)) {
+              features::debug::kAutofillLogToTerminal)) {
         log_router.LogToTerminal();
       }
     }
@@ -741,27 +793,42 @@ class TestAutofillClientTemplate : public T {
   base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
-// Base class for TestAutofillClientTemplate to derive from so that the
-// AutofillDriverFactory is initialized before the members of
-// TestAutofillClientTemplate. This initialization order mimics that of
-// ContentAutofillClient and AndroidAutofillClient / ChromeAutofillClient.
+// Base class of TestAutofillClient. Its sole purpose is to initialize the
+// TestAutofillDriverFactory before the other members of a TestAutofillClient.
+//
+// We want that because that's how it works for ContentAutofillClient and
+// AutofillClientIOS.
+//
+// We achieve this by subclassing as follows:
+// 1. TestAutofillClient         derives from
+// 2. TestAutofillClientTemplate derives from
+// 3. TestAutofillClientBase     derives from
+// 4. AutofillClient
 class TestAutofillClientBase : public AutofillClient {
  public:
-  AutofillDriverFactory& GetAutofillDriverFactory() override;
+  TestAutofillDriverFactory& GetAutofillDriverFactory() override;
 
  protected:
-  // Instantiation should only happen through TestAutofillClient.
-  TestAutofillClientBase();
+  explicit TestAutofillClientBase(base::PassKey<TestAutofillClient>);
+  ~TestAutofillClientBase() override;
 
  private:
-  AutofillDriverFactory autofill_driver_factory_;
+  TestAutofillDriverFactory autofill_driver_factory_;
 };
 
-// A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as
-// an alternative for tests where the content layer is visible.
+// A simple `AutofillClient` for tests. Consider using
+// `TestContentAutofillClient` and `TestAutofillClientIOS` where possible.
 //
 // Consider using TestAutofillClientInjector, especially in browser tests.
-using TestAutofillClient = TestAutofillClientTemplate<TestAutofillClientBase>;
+//
+// On destruction, it destroys all TestAutofillDrivers of its
+// TestAutofillDriverFactory.
+class TestAutofillClient
+    : public TestAutofillClientTemplate<TestAutofillClientBase> {
+ public:
+  TestAutofillClient();
+  ~TestAutofillClient() override;
+};
 
 }  // namespace autofill
 

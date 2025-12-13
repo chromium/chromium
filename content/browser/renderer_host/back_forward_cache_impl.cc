@@ -18,7 +18,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -39,6 +41,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
@@ -69,9 +72,7 @@ class RenderProcessHostInternalObserver;
 // Enables BackForwardCache size for
 //  - desktop: https://crbug.com/1291435.
 //  - android: https://crbug.com/1395281.
-BASE_FEATURE(kBackForwardCacheSize,
-             "BackForwardCacheSize",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kBackForwardCacheSize, base::FEATURE_ENABLED_BY_DEFAULT);
 // Sets BackForwardCache cache_size=6.
 const base::FeatureParam<int> kBackForwardCacheSizeCacheSize{
     &kBackForwardCacheSize, "cache_size", 6};
@@ -93,8 +94,9 @@ static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 600;
 bool IsProcessBindingEnabled() {
   // Avoid activating BackForwardCache trial for checking the parameters
   // associated with it.
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return false;
+  }
   const std::string process_binding_param =
       base::GetFieldTrialParamValueByFeature(features::kBackForwardCache,
                                              "process_binding_strength");
@@ -121,8 +123,9 @@ const base::FeatureParam<ChildProcessImportance> kChildProcessImportanceParam{
 
 WebSchedulerTrackedFeatures SupportedFeaturesImpl() {
   WebSchedulerTrackedFeatures features;
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return features;
+  }
 
   static constexpr base::FeatureParam<std::string> supported_features(
       &features::kBackForwardCache, "supported_features", "");
@@ -148,8 +151,9 @@ WebSchedulerTrackedFeatures SupportedFeatures() {
 }
 
 bool IgnoresOutstandingNetworkRequestForTesting() {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return false;
+  }
   static constexpr base::FeatureParam<bool>
       outstanding_network_request_supported(
           &features::kBackForwardCache,
@@ -161,8 +165,9 @@ bool IgnoresOutstandingNetworkRequestForTesting() {
 // calls and force all pages to be cached. Should be used only for local testing
 // and debugging -- things will break when this param is used.
 bool ShouldIgnoreBlocklists() {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return false;
+  }
   static constexpr base::FeatureParam<bool> should_ignore_blocklists(
       &features::kBackForwardCache, "should_ignore_blocklists", false);
   return should_ignore_blocklists.Get();
@@ -294,7 +299,7 @@ base::flat_map<std::string, std::vector<std::string>> ParseCommaSeparatedURLs(
        base::SplitString(comma_separated_urls, ",", base::TRIM_WHITESPACE,
                          base::SPLIT_WANT_ALL)) {
     GURL url = GURL(it);
-    urls[url.host()].push_back(url.path());
+    urls[url.GetHost()].push_back(url.GetPath());
   }
   return urls;
 }
@@ -576,8 +581,9 @@ BackForwardCacheImpl::MessageHandlingPolicyWhenCached
 BackForwardCacheImpl::GetChannelAssociatedMessageHandlingPolicy() {
   // Avoid activating BackForwardCache trial for checking the parameters
   // associated with it.
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return kMessagePolicyNone;
+  }
 
   static constexpr char kFieldTrialParam[] = "message_handling_when_cached";
   auto param = base::GetFieldTrialParamValueByFeature(
@@ -690,8 +696,9 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
 }
 
 size_t BackForwardCacheImpl::GetCacheSize() {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return 0;
+  }
 
   if (embedder_supplied_cache_size_.has_value()) {
     return embedder_supplied_cache_size_.value();
@@ -705,8 +712,9 @@ size_t BackForwardCacheImpl::GetCacheSize() {
 }
 
 size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return 0;
+  }
 
   if (embedder_supplied_cache_size_.has_value()) {
     // If the embedder supplied a limit (which should affect `GetCacheSize()`),
@@ -757,12 +765,34 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
           features::kDeviceBoundSessionTerminationEvictBackForwardCache)) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreDeviceBoundSessionTerminated);
-  } else if (render_frame_host->GetCookieChangeInfo()
-                 .http_only_cookie_modification_count_ > 0) {
+    return;
+  }
+
+  const RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo&
+      cookie_change_info = render_frame_host->GetCookieChangeInfo();
+  const std::string kCookieCHangeInfoMetricName =
+      "BackForwardCache.CCNS.CookieChangeInfo.";
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName, "AllCookies"}),
+      cookie_change_info.cookie_modification_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat(
+          {kCookieCHangeInfoMetricName, "AllCookiesFromMainFrameNavigation"}),
+      cookie_change_info.cookie_modification_removing_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName, "HttpOnlyCookies"}),
+      cookie_change_info.http_only_cookie_modification_count);
+  base::UmaHistogramCounts1000(
+      base::StrCat({kCookieCHangeInfoMetricName,
+                    "HttpOnlyCookiesFromMainFrameNavigation"}),
+      cookie_change_info.http_only_cookie_modification_removing_count);
+
+  if (cookie_change_info.http_only_cookie_modification_count >
+      cookie_change_info.http_only_cookie_modification_removing_count) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (render_frame_host->GetCookieChangeInfo()
-                 .cookie_modification_count_ > 0) {
+  } else if (cookie_change_info.cookie_modification_count >
+             cookie_change_info.cookie_modification_removing_count) {
     // JavaScript cookies are modified but not HTTP cookies. Only restore based
     // on the experiment level.
     if (GetCacheControlNoStoreLevel() <=
@@ -952,26 +982,30 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   if (rfh->GetSiteInstance()->GetRelatedActiveContentsCount() >
       expected_related_active_contents_count) {
     std::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result;
-    if (auto* metrics = rfh->GetBackForwardCacheMetrics())
+    if (auto* metrics = rfh->GetBackForwardCacheMetrics()) {
       browsing_instance_swap_result = metrics->browsing_instance_swap_result();
+    }
     result.NoDueToRelatedActiveContents(browsing_instance_swap_result);
   }
 
   // Only store documents that have successful http status code.
   // Note that for error pages, |last_http_status_code| is equal to 0.
-  if (rfh->last_http_status_code() != net::HTTP_OK)
+  if (rfh->last_http_status_code() != net::HTTP_OK) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK);
+  }
 
   // Interstitials and other internal error pages should set an error status
   // code but there's no guarantee, e.g. https://crbug/1274308,
   // https://crbug/1287996. This catches those cases. It might also make the
   // kHTTPStatusNotOK check redundant.
-  if (rfh->IsErrorDocument())
+  if (rfh->IsErrorDocument()) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kErrorDocument);
+  }
 
   // Only store documents that were fetched via HTTP GET method.
-  if (rfh->last_http_method() != net::HttpRequestHeaders::kGetMethod)
+  if (rfh->last_http_method() != net::HttpRequestHeaders::kGetMethod) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPMethodNotGET);
+  }
 
   // Do not store main document with non HTTP/HTTPS URL scheme. Among other
   // things, this excludes the new tab page and all WebUI pages.
@@ -1010,8 +1044,9 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   }
 
   // Only store documents that have URLs allowed through experiment.
-  if (!IsAllowed(rfh->GetLastCommittedURL()))
+  if (!IsAllowed(rfh->GetLastCommittedURL())) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::kDomainNotAllowed);
+  }
 }
 
 void BackForwardCacheImpl::NotRestoredReasonBuilder::
@@ -1139,6 +1174,25 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
         rfh->frame_tree_node()->HasPendingCommitNavigation()) {
       result.No(
           BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating);
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kBFCacheWithSharedWorker)) {
+    // If this frame is a client of a Shared Worker and all other clients are in
+    // this frame's frame-tree, block this frame from entering BFCache. Also,
+    // other clients of the same worker that are already in BFCache will be
+    // evicted.
+    // TODO(crbug.com/406420935): Freeze the worker instead of blocking BFCache.
+
+    // If rfh is already in BFCache then we are evicting it and there is no need
+    // to check if it's the last active client.
+    if (!rfh->IsInBackForwardCache()) {
+      SharedWorkerServiceImpl* service = static_cast<SharedWorkerServiceImpl*>(
+          rfh->GetStoragePartition()->GetSharedWorkerService());
+      if (service && service->EvictBFCachedClientsIfLastActive(rfh)) {
+        result.No(BackForwardCacheMetrics::NotRestoredReason::
+                      kSharedWorkerWithNoActiveClient);
+      }
     }
   }
 }
@@ -1273,8 +1327,9 @@ void BackForwardCacheImpl::StoreEntry(
 }
 
 void BackForwardCacheImpl::EnforceCacheSizeLimit() {
-  if (!IsBackForwardCacheEnabled())
+  if (!IsBackForwardCacheEnabled()) {
     return;
+  }
 
   if (UsingForegroundBackgroundCacheSizeLimit()) {
     // First enforce the foregrounded limit. The idea is that we need to
@@ -1290,8 +1345,8 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
       GetCacheSize(), BackForwardCacheMetrics::NotRestoredReason::kCacheLimit);
 }
 
-void BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
-  EnforceCacheSizeLimitInternal(limit, reason);
+size_t BackForwardCacheImpl::Prune(size_t limit, NotRestoredReason reason) {
+  return EnforceCacheSizeLimitInternal(limit, reason);
 }
 
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
@@ -1412,14 +1467,16 @@ std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
       });
 
   // Not found.
-  if (matching_entry == entries_.end())
+  if (matching_entry == entries_.end()) {
     return nullptr;
+  }
 
   // Don't restore an evicted frame.
   if ((*matching_entry)
           ->render_frame_host()
-          ->is_evicted_from_back_forward_cache())
+          ->is_evicted_from_back_forward_cache()) {
     return nullptr;
+  }
 
   std::unique_ptr<Entry> entry = std::move(*matching_entry);
   TRACE_EVENT_INSTANT("navigation",
@@ -1483,8 +1540,9 @@ void BackForwardCacheImpl::FlushCacheControlNoStoreEntries(
 
 void BackForwardCacheImpl::Shutdown() {
   if (UsingForegroundBackgroundCacheSizeLimit()) {
-    for (auto& entry : entries_)
+    for (auto& entry : entries_) {
       RemoveProcessesForEntry(*entry.get());
+    }
   }
   entries_.clear();
 }
@@ -1527,11 +1585,13 @@ void BackForwardCache::DisableForRenderFrameHost(
     DisabledReason reason,
     std::optional<ukm::SourceId> source_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (g_bfcache_disabled_test_observer)
+  if (g_bfcache_disabled_test_observer) {
     g_bfcache_disabled_test_observer->OnDisabledForFrameWithReason(id, reason);
+  }
 
-  if (auto* rfh = RenderFrameHostImpl::FromID(id))
+  if (auto* rfh = RenderFrameHostImpl::FromID(id)) {
     rfh->DisableBackForwardCache(reason, source_id);
+  }
 }
 
 // static
@@ -1647,8 +1707,9 @@ void BackForwardCacheImpl::RenderViewHostNoLongerStored(
   // `AddProcessesForEntry` are gated on
   // `UsingForegroundBackgroundCacheSizeLimit` in adding entries to the
   // `observed_processes_` list so we have the same conditional here.
-  if (!UsingForegroundBackgroundCacheSizeLimit())
+  if (!UsingForegroundBackgroundCacheSizeLimit()) {
     return;
+  }
   RenderViewHostNoLongerStoredInternal(rvh);
 }
 
@@ -1658,25 +1719,29 @@ void BackForwardCacheImpl::RenderViewHostNoLongerStoredInternal(
       static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
   // Remove 1 instance of this process from the multiset.
   observed_processes_.erase(observed_processes_.find(process));
-  if (observed_processes_.find(process) == observed_processes_.end())
+  if (observed_processes_.find(process) == observed_processes_.end()) {
     process->RemoveInternalObserver(this);
+  }
 }
 
 void BackForwardCacheImpl::AddProcessesForEntry(Entry& entry) {
-  if (!UsingForegroundBackgroundCacheSizeLimit())
+  if (!UsingForegroundBackgroundCacheSizeLimit()) {
     return;
+  }
   for (const auto& rvh : entry.render_view_hosts()) {
     RenderProcessHostImpl* process =
         static_cast<RenderProcessHostImpl*>(rvh->GetProcess());
-    if (observed_processes_.find(process) == observed_processes_.end())
+    if (observed_processes_.find(process) == observed_processes_.end()) {
       process->AddInternalObserver(this);
+    }
     observed_processes_.insert(process);
   }
 }
 
 void BackForwardCacheImpl::RemoveProcessesForEntry(Entry& entry) {
-  if (!UsingForegroundBackgroundCacheSizeLimit())
+  if (!UsingForegroundBackgroundCacheSizeLimit()) {
     return;
+  }
   for (const auto& rvh : entry.render_view_hosts()) {
     RenderViewHostNoLongerStoredInternal(&*rvh);
   }
@@ -1684,8 +1749,9 @@ void BackForwardCacheImpl::RemoveProcessesForEntry(Entry& entry) {
 
 void BackForwardCacheImpl::DestroyEvictedFrames() {
   TRACE_EVENT0("navigation", "BackForwardCache::DestroyEvictedFrames");
-  if (entries_.empty())
+  if (entries_.empty()) {
     return;
+  }
 
   std::erase_if(entries_, [this](std::unique_ptr<Entry>& entry) {
     if (entry->render_frame_host()->is_evicted_from_back_forward_cache()) {
@@ -1706,28 +1772,31 @@ bool BackForwardCacheImpl::IsAllowed(const GURL& current_url) {
 bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
   // If the current_url matches the blocked host and path, current_url is
   // not allowed to be cached.
-  const auto& it = blocked_urls_.find(current_url.host());
+  const auto& it = blocked_urls_.find(current_url.GetHost());
   if (it != blocked_urls_.end()) {
     for (const std::string& blocked_path : it->second) {
-      if (base::StartsWith(current_url.path_piece(), blocked_path))
+      if (base::StartsWith(current_url.path(), blocked_path)) {
         return false;
+      }
     }
   }
 
   // By convention, when |allowed_urls_| is empty, it means there are no
   // restrictions about what RenderFrameHost can enter the BackForwardCache.
-  if (allowed_urls_.empty())
+  if (allowed_urls_.empty()) {
     return true;
+  }
 
   // Checking for each url in the |allowed_urls_|, if the current_url matches
   // the corresponding host and path is the prefix of the allowed url path. We
   // only check for host and path and not any other components including url
   // scheme here.
-  const auto& entry = allowed_urls_.find(current_url.host());
+  const auto& entry = allowed_urls_.find(current_url.GetHost());
   if (entry != allowed_urls_.end()) {
     for (const std::string& allowed_path : entry->second) {
-      if (base::StartsWith(current_url.path_piece(), allowed_path))
+      if (base::StartsWith(current_url.path(), allowed_path)) {
         return true;
+      }
     }
   }
   return false;
@@ -1735,11 +1804,12 @@ bool BackForwardCacheImpl::IsHostPathAllowed(const GURL& current_url) {
 
 bool BackForwardCacheImpl::IsQueryAllowed(const GURL& current_url) {
   std::vector<std::string> cgi_params =
-      base::SplitString(current_url.query_piece(), "&", base::TRIM_WHITESPACE,
+      base::SplitString(current_url.query(), "&", base::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY);
   for (const std::string& cgi_param : cgi_params) {
-    if (base::Contains(blocked_cgi_params_, cgi_param))
+    if (base::Contains(blocked_cgi_params_, cgi_param)) {
       return false;
+    }
   }
   return true;
 }
@@ -1882,8 +1952,7 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     bool is_same_origin,
     const GURL& url)
-    : document_result_(BackForwardCacheCanStoreDocumentResult()),
-      is_same_origin_(is_same_origin),
+    : is_same_origin_(is_same_origin),
       is_root_outermost_main_frame_(true),
       id_(""),
       name_(""),
@@ -2076,8 +2145,9 @@ uint32_t
 BackForwardCacheCanStoreTreeResult::GetCrossOriginReachableFrameCount() {
   // If the document is cross-origin, we cannot reach any further. Only count
   // the one we have reached and return.
-  if (!IsSameOrigin())
+  if (!IsSameOrigin()) {
     return 1;
+  }
   uint32_t count = 0;
   for (const auto& subtree : GetChildren()) {
     count += subtree->GetCrossOriginReachableFrameCount();

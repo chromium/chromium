@@ -35,7 +35,7 @@
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -116,9 +116,10 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   ComponentCloudPolicyServiceTest()
       : cache_(nullptr),
         client_(nullptr),
-        core_(dm_protocol::kChromeUserPolicyType,
+        core_(dm_protocol::GetChromeUserPolicyType(),
               std::string(),
               &store_,
+              /*extension_install_store=*/nullptr,
               base::SingleThreadTaskRunner::GetCurrentDefault(),
               network::TestNetworkConnectionTracker::CreateGetter()) {
     builder_.SetDefaultSigningKey();
@@ -703,9 +704,9 @@ TEST_F(ComponentCloudPolicyServiceTest, KeyRotation) {
 
   // Send back a fake policy fetch response with the new signing key.
   const int kNewPublicKeyVersion = PolicyBuilder::kFakePublicKeyVersion + 1;
-  std::unique_ptr<crypto::RSAPrivateKey> new_signing_key =
+  crypto::keypair::PrivateKey new_signing_key =
       PolicyBuilder::CreateTestOtherSigningKey();
-  builder_.SetSigningKey(*new_signing_key);
+  builder_.SetSigningKey(new_signing_key);
   builder_.policy_data().set_public_key_version(kNewPublicKeyVersion);
   client_->SetPolicy(dm_protocol::kChromeExtensionPolicyType, kTestExtension,
                      *CreateResponse());

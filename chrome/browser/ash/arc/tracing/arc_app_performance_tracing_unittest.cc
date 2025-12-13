@@ -34,7 +34,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/display/test/test_screen.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -126,9 +126,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
       ForgetAppMetrics(app.name);
     }
 
+    arc_app_test_.PreProfileSetUp();
+
     BrowserWithTestWindowTest::SetUp();
 
-    arc_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
     tracing_helper_.SetUp(profile());
 
     ArcAppPerformanceTracing::SetFocusAppForTesting(
@@ -141,9 +143,11 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
     shell_root_surface_.reset();
 
     tracing_helper_.TearDown();
-    arc_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
 
     BrowserWithTestWindowTest::TearDown();
+
+    arc_app_test_.PostProfileTearDown();
   }
 
   TestingProfile* CreateProfile(const std::string& profile_name) override {
@@ -229,7 +233,7 @@ class ArcAppPerformanceTracingTest : public BrowserWithTestWindowTest {
 
  private:
   ArcAppPerformanceTracingTestHelper tracing_helper_;
-  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
+  ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
 };
 
 TEST_F(ArcAppPerformanceTracingTest, TracingScheduled) {
@@ -558,9 +562,8 @@ TEST_F(ArcAppPerformanceTracingTest, DetachDisplayDuringTrace) {
 }
 
 TEST_F(ArcAppPerformanceTracingTest, NoTracingForArcGhostWindow) {
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          ash::Shell::GetPrimaryRootWindow());
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      ash::Shell::GetPrimaryRootWindow());
   std::unique_ptr<ash::full_restore::ArcGhostWindowHandler>
       ghost_window_handler =
           std::make_unique<ash::full_restore::ArcGhostWindowHandler>();

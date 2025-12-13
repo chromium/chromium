@@ -24,6 +24,8 @@ desc: |-
 
   '<ph name="RELOAD_PAGES_ACTION">reload_pages</ph>': reload all webpages. For some pages, the user may be prompted for confirmation first. Not supported on iOS.
 
+  The user will stay signed into their Google account when deleting cookies using '<ph name="CLEAR_COOKIES_AND_OTHER_SITE_DATA_ACTION">clear_cookies_and_other_site_data</ph>'.
+
   Setting '<ph name="CLEAR_BROWSING_HISTORY_ACTION">clear_browsing_history</ph>', '<ph name="CLEAR_PASSWORD_SIGNIN_ACTION">clear_password_signing</ph>', '<ph name="CLEAR_AUTOFILL_ACTION">clear_autofill</ph>', and '<ph name="CLEAR_SITE_SETTINGS_ACTION">clear_site_settings</ph>' will disable sync for the respective data types if neither `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>` is disabled by setting the <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy nor <ph name="BROWSER_SIGNIN_POLICY_NAME">BrowserSignin</ph> is disabled.
 example_value:
 - close_browsers

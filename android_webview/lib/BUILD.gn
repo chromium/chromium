@@ -27,7 +27,7 @@ source_set("lib") {
     "//cc/base",
     "//components/autofill/core/common",
     "//components/crash/core/common",
-    "//components/embedder_support:embedder_support",
+    "//components/embedder_support",
     "//components/gwp_asan/common:crash_keys",
     "//components/memory_system",
     "//components/metrics",
@@ -35,7 +35,7 @@ source_set("lib") {
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",
-    "//components/stylus_handwriting/android:android",
+    "//components/stylus_handwriting/android",
     "//components/variations",
     "//components/variations:variations_associated_data",
     "//components/version_info",
@@ -45,7 +45,7 @@ source_set("lib") {
     "//content/public/browser",
     "//content/public/common",
     "//content/public/common:content_descriptor_keys",
-    "//device/base:base",
+    "//device/base",
     "//gin",
     "//gpu/command_buffer/service",
     "//gpu/config",
@@ -68,5 +68,8 @@ source_set("webview_entry_point") {
     "//base",
     "//base:jni_onload",
   ]
+  if (enable_javaless_renderers) {
+    deps += [ "//content/app:javaless_renderer" ]
+  }
   sources = [ "webview_entry_point.cc" ]
 }

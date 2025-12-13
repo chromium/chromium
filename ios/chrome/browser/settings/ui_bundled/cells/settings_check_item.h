@@ -16,7 +16,7 @@ enum class WarningState {
   kSevereWarning,  // There is a high priority warning (red icon).
 };
 
-// SettingsCheckItem is a model class that uses SettingsCheckCell.
+// SettingsCheckItem is a model class to configure a cell doing a check.
 @interface SettingsCheckItem : TableViewItem
 
 // The text to display.
@@ -36,9 +36,6 @@ enum class WarningState {
 // The background color of the icon.
 @property(nonatomic, strong) UIColor* leadingIconBackgroundColor;
 
-// The corner radius of the UIImage view.
-@property(nonatomic, assign) CGFloat leadingIconCornerRadius;
-
 // The image to display on the trailing side of `text` (required). If this image
 // should be tinted to match the text color (e.g. in dark mode), the provided
 // image should have rendering mode UIImageRenderingModeAlwaysTemplate. Don't
@@ -51,15 +48,20 @@ enum class WarningState {
 
 // Controls visibility of `activityIndicator`, if set false `trailingImage` or
 // `infoButton` will be hidden and `activityIndicator` will be shown. This
-// property has the highest priority.
+// property has the highest priority. Default is NO.
 @property(nonatomic, assign, getter=isIndicatorHidden) BOOL indicatorHidden;
 
 // Controls visibility of `infoButton`. This property has no effect in case
-// `trailingImage` is provided or `indicatorHidden` is false.
+// `trailingImage` is provided or `indicatorHidden` is false. Default is NO.
 @property(nonatomic, assign, getter=isInfoButtonHidden) BOOL infoButtonHidden;
 
+// The properties to configure the infoButton action.
+@property(nonatomic, strong) id infoButtonTarget;
+@property(nonatomic, assign) SEL infoButtonSelector;
+@property(nonatomic, assign) NSInteger infoButtonTag;
+
 // Disabled cell are automatically drawn with dimmed text and without
-// `trailingImage` or `activityIndicator`.
+// `trailingImage` or `activityIndicator`. Default is NO.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;
 
 // The WarningState of the item.

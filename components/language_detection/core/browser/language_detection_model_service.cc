@@ -17,7 +17,7 @@ LanguageDetectionModelService::LanguageDetectionModelService(
       opt_guide_(opt_guide) {
   opt_guide_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
-      /*model_metadata=*/std::nullopt, this);
+      /*model_metadata=*/std::nullopt, background_task_runner, this);
 }
 
 LanguageDetectionModelService::~LanguageDetectionModelService() {

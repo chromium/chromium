@@ -225,11 +225,15 @@ void ManualFillingViewAndroid::SwapSheetWithKeyboard() {
   }
 }
 
-void ManualFillingViewAndroid::Show(WaitForKeyboard wait_for_keyboard) {
+void ManualFillingViewAndroid::Show(
+    WaitForKeyboard wait_for_keyboard,
+    IsCredentialFieldOrHasAutofillSuggestions
+        is_credential_field_or_has_autofill_suggestions) {
   TRACE_EVENT0("passwords", "ManualFillingViewAndroid::Show");
   if (auto obj = GetOrCreateJavaObject()) {
-    Java_ManualFillingComponentBridge_show(base::android::AttachCurrentThread(),
-                                           obj, wait_for_keyboard.value());
+    Java_ManualFillingComponentBridge_show(
+        base::android::AttachCurrentThread(), obj, wait_for_keyboard.value(),
+        is_credential_field_or_has_autofill_suggestions.value());
   }
 }
 
@@ -263,7 +267,7 @@ void ManualFillingViewAndroid::OnAccessoryActionAvailabilityChanged(
 void ManualFillingViewAndroid::OnFillingTriggered(
     JNIEnv* env,
     jint tab_type,
-    const base::android::JavaParamRef<jobject>& j_user_info_field) {
+    const base::android::JavaRef<jobject>& j_user_info_field) {
   controller_->OnFillingTriggered(
       static_cast<autofill::AccessoryTabType>(tab_type),
       ConvertJavaUserInfoField(env, j_user_info_field));
@@ -321,9 +325,9 @@ ManualFillingViewAndroid::GetOrCreateJavaObject() {
 }
 
 // static
-void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
+static void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     std::vector<std::string>& usernames,
     std::vector<std::string>& passwords,
     jboolean j_blocklisted) {
@@ -349,9 +353,9 @@ void JNI_ManualFillingComponentBridge_CachePasswordSheetDataForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
+static void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jlong j_focused_field_id,
     jint j_available) {
   ManualFillingControllerImpl::GetOrCreate(
@@ -362,9 +366,10 @@ void JNI_ManualFillingComponentBridge_NotifyFocusedFieldTypeForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
+static void
+JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jboolean j_available) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
@@ -378,7 +383,7 @@ void JNI_ManualFillingComponentBridge_SignalAutoGenerationStatusForTesting(
 }
 
 // static
-void JNI_ManualFillingComponentBridge_DisableServerPredictionsForTesting(
+static void JNI_ManualFillingComponentBridge_DisableServerPredictionsForTesting(
     JNIEnv* env) {
   password_manager::PasswordFormManager::
       DisableFillingServerPredictionsForTesting();
@@ -390,3 +395,6 @@ std::unique_ptr<ManualFillingViewInterface> ManualFillingViewInterface::Create(
     content::WebContents* web_contents) {
   return std::make_unique<ManualFillingViewAndroid>(controller, web_contents);
 }
+
+DEFINE_JNI(ManualFillingComponentBridge)
+DEFINE_JNI(UserInfoField)

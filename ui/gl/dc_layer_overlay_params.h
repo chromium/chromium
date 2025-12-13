@@ -7,11 +7,8 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_space.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -95,6 +92,10 @@ struct GL_EXPORT DCLayerOverlayParams {
     // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for
     // the details.
     bool possible_video_fullscreen_letterboxing = false;
+
+    // This overlay represents a full screen, letterboxed, or pillarboxed video.
+    // This means all pixels behind the video can be assumed to be solid black.
+    bool is_full_screen_video = false;
   };
 
   VideoParams video_params;

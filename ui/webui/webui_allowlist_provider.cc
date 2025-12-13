@@ -17,10 +17,8 @@ WebUIAllowlistProvider::WebUIAllowlistProvider(
 WebUIAllowlistProvider::~WebUIAllowlistProvider() = default;
 
 std::unique_ptr<content_settings::RuleIterator>
-WebUIAllowlistProvider::GetRuleIterator(
-    ContentSettingsType content_type,
-    bool incognito,
-    const content_settings::PartitionKey& partition_key) const {
+WebUIAllowlistProvider::GetRuleIterator(ContentSettingsType content_type,
+                                        bool incognito) const {
   return allowlist_->GetRuleIterator(content_type);
 }
 
@@ -28,8 +26,7 @@ std::unique_ptr<content_settings::Rule> WebUIAllowlistProvider::GetRule(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    bool off_the_record,
-    const content_settings::PartitionKey& partition_key) const {
+    bool off_the_record) const {
   return allowlist_->GetRule(primary_url, secondary_url, content_type);
 }
 
@@ -37,8 +34,7 @@ void WebUIAllowlistProvider::NotifyContentSettingChange(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  NotifyObservers(primary_pattern, secondary_pattern, content_type,
-                  /*partition_key=*/nullptr);
+  NotifyObservers(primary_pattern, secondary_pattern, content_type);
 }
 
 bool WebUIAllowlistProvider::SetWebsiteSetting(
@@ -46,15 +42,13 @@ bool WebUIAllowlistProvider::SetWebsiteSetting(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     base::Value&& value,
-    const content_settings::ContentSettingConstraints& constraints,
-    const content_settings::PartitionKey& partition_key) {
+    const content_settings::ContentSettingConstraints& constraints) {
   // WebUIAllowlistProvider doesn't support settings Website settings.
   return false;
 }
 
 void WebUIAllowlistProvider::ClearAllContentSettingsRules(
-    ContentSettingsType content_type,
-    const content_settings::PartitionKey& partition_key) {
+    ContentSettingsType content_type) {
   // WebUIAllowlistProvider doesn't support changing content settings directly.
 }
 

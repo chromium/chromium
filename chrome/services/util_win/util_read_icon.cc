@@ -15,8 +15,8 @@
 #include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/win/icon_util.h"
 
 using chrome::mojom::IconSize;
 

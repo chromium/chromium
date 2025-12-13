@@ -18,9 +18,7 @@ namespace internal {
 
 // Used to deliver the allowlist via a feature param. If disabled, the
 // allowlist is treated as empty (nothing allowed).
-BASE_FEATURE(kExternalExperimentAllowlist,
-             "ExternalExperimentAllowlist",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kExternalExperimentAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace internal
 
@@ -40,6 +38,27 @@ void SyntheticTrialRegistry::RemoveObserver(SyntheticTrialObserver* observer) {
 }
 
 void SyntheticTrialRegistry::RegisterExternalExperiments(
+    base::PassKey<UmaSessionStatsExternalExperimentRegistrar> pass_key,
+    const std::vector<int>& experiment_ids,
+    SyntheticTrialRegistry::OverrideMode mode) {
+  RegisterExternalExperimentsInternal(experiment_ids, mode);
+}
+
+void SyntheticTrialRegistry::RegisterExternalExperimentsForTesting(
+    const std::vector<int>& experiment_ids,
+    SyntheticTrialRegistry::OverrideMode mode) {
+  RegisterExternalExperimentsInternal(experiment_ids, mode);
+}
+
+std::vector<ActiveGroupId>
+SyntheticTrialRegistry::GetCurrentSyntheticFieldTrialsForTest() const {
+  CHECK_IS_TEST();
+  std::vector<ActiveGroupId> synthetic_trials;
+  GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(), &synthetic_trials);
+  return synthetic_trials;
+}
+
+void SyntheticTrialRegistry::RegisterExternalExperimentsInternal(
     const std::vector<int>& experiment_ids,
     SyntheticTrialRegistry::OverrideMode mode) {
   base::FieldTrialParams params;
@@ -72,8 +91,9 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
     const std::string experiment_id_str = base::NumberToString(experiment_id);
     const std::string_view study_name =
         GetStudyNameForExpId(params, experiment_id_str);
-    if (study_name.empty())
+    if (study_name.empty()) {
       continue;
+    }
 
     const uint32_t trial_hash = HashName(study_name);
     // If existing ids shouldn't be overridden, skip entries whose study names
@@ -89,12 +109,14 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
 
     const uint32_t group_hash = HashName(experiment_id_str);
 
-    // Since external experiments are not based on Chrome's low entropy source,
-    // they are only sent to Google web properties for signed-in users to make
-    // sure they couldn't be used to identify a user that's not signed-in.
-    AssociateGoogleVariationIDForceHashes(
+    // Since external experiments are not based on Chrome's low or limited
+    // entropy sources, they are sent to Google web properties only for
+    // signed-in users to make sure they couldn't be used to identify a user
+    // that's not signed-in.
+    AssociateGoogleVariationID(
+        base::PassKey<SyntheticTrialRegistry>(),
         GOOGLE_WEB_PROPERTIES_SIGNED_IN, {trial_hash, group_hash},
-        static_cast<VariationID>(experiment_id));
+        static_cast<VariationID>(experiment_id), variations::TimeWindow());
     SyntheticTrialGroup entry(
         study_name, experiment_id_str,
         variations::SyntheticTrialAnnotationMode::kNextLog);
@@ -110,14 +132,6 @@ void SyntheticTrialRegistry::RegisterExternalExperiments(
   if (!trials_updated.empty() || !trials_removed.empty()) {
     NotifySyntheticTrialObservers(trials_updated, trials_removed);
   }
-}
-
-std::vector<ActiveGroupId>
-SyntheticTrialRegistry::GetCurrentSyntheticFieldTrialsForTest() const {
-  CHECK_IS_TEST();
-  std::vector<ActiveGroupId> synthetic_trials;
-  GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(), &synthetic_trials);
-  return synthetic_trials;
 }
 
 void SyntheticTrialRegistry::RegisterSyntheticFieldTrial(
@@ -178,8 +192,9 @@ void SyntheticTrialRegistry::GetSyntheticFieldTrialsOlderThan(
   base::FieldTrial::ActiveGroups active_groups;
   for (const auto& entry : synthetic_trial_groups_) {
     if (entry.start_time() <= time ||
-        entry.annotation_mode() == SyntheticTrialAnnotationMode::kCurrentLog)
+        entry.annotation_mode() == SyntheticTrialAnnotationMode::kCurrentLog) {
       active_groups.push_back(entry.active_group());
+    }
   }
 
   GetFieldTrialActiveGroupIdsForActiveGroups(suffix, active_groups,

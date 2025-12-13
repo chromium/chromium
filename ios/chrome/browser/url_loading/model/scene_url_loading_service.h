@@ -50,10 +50,6 @@ class UrlLoadingBrowserAgent;
                      focusOmnibox:(BOOL)focusOmnibox
                     inheritOpener:(BOOL)inheritOpener;
 
-// Informs the BVC that a new foreground tab is about to be opened in given
-// `targetMode`.
-- (void)expectNewForegroundTabForMode:(ApplicationMode)targetMode;
-
 // Returns the URL Loading browser agent to load a tab in `incognito` or not.
 - (UrlLoadingBrowserAgent*)browserAgentForIncognito:(BOOL)incognito;
 

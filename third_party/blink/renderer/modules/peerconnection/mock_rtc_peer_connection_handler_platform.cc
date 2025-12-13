@@ -38,7 +38,7 @@ webrtc::PeerConnectionInterface::RTCConfiguration DefaultConfiguration() {
 // Having a refcounted helper class allows multiple DummyRTCRtpSenderPlatform to
 // share the same internal states.
 class DummyRtpSenderInternal
-    : public WTF::ThreadSafeRefCounted<DummyRtpSenderInternal> {
+    : public ThreadSafeRefCounted<DummyRtpSenderInternal> {
  private:
   static uintptr_t last_id_;
 
@@ -219,7 +219,7 @@ uintptr_t DummyRTCRtpReceiverPlatform::last_id_ = 0;
 // Having a refcounted helper class allows multiple
 // DummyRTCRtpTransceiverPlatforms to share the same internal states.
 class DummyTransceiverInternal
-    : public WTF::ThreadSafeRefCounted<DummyTransceiverInternal> {
+    : public ThreadSafeRefCounted<DummyTransceiverInternal> {
  private:
   static uintptr_t last_id_;
 
@@ -331,8 +331,7 @@ bool MockRTCPeerConnectionHandlerPlatform::Initialize(
     ExecutionContext*,
     const webrtc::PeerConnectionInterface::RTCConfiguration&,
     WebLocalFrame*,
-    ExceptionState&,
-    RTCRtpTransport*) {
+    ExceptionState&) {
   return true;
 }
 

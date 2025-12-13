@@ -15,6 +15,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
@@ -28,22 +29,24 @@ import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /** Fragment that allows the user to configure toolbar shortcut preferences. */
 @NullMarked
 public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment {
     /** The key for the switch taggle on the setting page. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PREF_TOOLBAR_SHORTCUT_SWITCH = "toolbar_shortcut_switch";
 
     /** The key for the radio button group on the setting page. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PREF_ADAPTIVE_RADIO_GROUP = "adaptive_toolbar_radio_group";
 
     /** Bundle arguments to pass {@link UiState} to this settings fragment. */
     public static final String ARG_UI_STATE_CAN_SHOW_UI = "can_show_ui";
 
-    public static final String ARG_UI_STATE_TOOLBAR_BUTTON_STATE = "toolbar_button_state";
+    public static final String ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES =
+            "ranked_toolbar_button_states";
     public static final String ARG_UI_STATE_PREFERENCE_SELECTION = "preference_selection";
     public static final String ARG_UI_STATE_AUTO_BUTTON_CAPTION = "auto_button_caption";
 
@@ -95,10 +98,16 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
 
         boolean defaultCanShow = AdaptiveToolbarFeatures.isCustomizationEnabled();
         int defaultVariant = AdaptiveToolbarButtonVariant.UNKNOWN;
+        @Nullable ArrayList<Integer> rankedToolbarButtonStates =
+                args.getIntegerArrayList(ARG_UI_STATE_RANKED_TOOLBAR_BUTTON_STATES);
+        if (rankedToolbarButtonStates == null) {
+            rankedToolbarButtonStates = new ArrayList<>();
+            rankedToolbarButtonStates.add(AdaptiveToolbarButtonVariant.UNKNOWN);
+        }
         mRadioButtonGroup.initButtonsFromUiState(
                 new UiState(
                         args.getBoolean(ARG_UI_STATE_CAN_SHOW_UI, defaultCanShow),
-                        args.getInt(ARG_UI_STATE_TOOLBAR_BUTTON_STATE, defaultVariant),
+                        rankedToolbarButtonStates,
                         args.getInt(ARG_UI_STATE_PREFERENCE_SELECTION, defaultVariant),
                         args.getInt(ARG_UI_STATE_AUTO_BUTTON_CAPTION, defaultVariant)));
     }
@@ -135,4 +144,14 @@ public class AdaptiveToolbarSettingsFragment extends ChromeBaseSettingsFragment 
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "toolbar_shortcut";
+    }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    AdaptiveToolbarSettingsFragment.class.getName(),
+                    R.xml.adaptive_toolbar_preference);
 }

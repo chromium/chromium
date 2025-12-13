@@ -12,7 +12,9 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/segmentation_platform/public/result.h"
 
-enum class IOSPromoType;
+namespace desktop_to_mobile_promos {
+enum class PromoType;
+}  // namespace desktop_to_mobile_promos
 
 class PrefService;
 class Profile;
@@ -27,7 +29,7 @@ namespace promos_utils {
 // including the feature, the impressions counter and opt out.
 struct IOSPromoPrefsConfig {
   IOSPromoPrefsConfig();
-  explicit IOSPromoPrefsConfig(IOSPromoType promo_type);
+  explicit IOSPromoPrefsConfig(desktop_to_mobile_promos::PromoType promo_type);
   IOSPromoPrefsConfig(const IOSPromoPrefsConfig& promo_config);
   ~IOSPromoPrefsConfig();
 
@@ -68,7 +70,7 @@ inline constexpr int kiOSDesktopPromoLookbackWindow = 60;
 // GetIOSDesktopPromoFeatureEngagement gets the correct "Feature Engagement
 // Tracker" feature for the given promo type.
 const base::Feature& GetIOSDesktopPromoFeatureEngagement(
-    IOSPromoType promo_type);
+    desktop_to_mobile_promos::PromoType promo_type);
 
 // RegisterProfilePrefs is a helper to register the synced profile prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -77,7 +79,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // by the user on the iOS promo depending on the promo type and which
 // impression being shown.
 void RecordIOSDesktopPromoUserInteractionHistogram(
-    IOSPromoType promo_type,
+    desktop_to_mobile_promos::PromoType promo_type,
     int impression_count,
     DesktopIOSPromoAction action);
 
@@ -86,7 +88,7 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
 // true if so.
 bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
-                               IOSPromoType promo_type);
+                               desktop_to_mobile_promos::PromoType promo_type);
 
 // Checks if the user should be shown the Desktop NTP promo based on the current
 // criteria.
@@ -103,7 +105,8 @@ bool UserNotClassifiedAsMobileDeviceSwitcher(
 // IOSDesktopPromoShown sets the updated last impression timestamp,
 // increments the impression counter for the given iOS promo type and records
 // the necessary histogram.
-void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type);
+void IOSDesktopPromoShown(Profile* profile,
+                          desktop_to_mobile_promos::PromoType promo_type);
 
 // Updates any necessary prefs for when the promo is shown.
 void IOSDesktopNtpPromoShown(PrefService* pref_service);

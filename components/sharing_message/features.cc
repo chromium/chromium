@@ -4,6 +4,8 @@
 
 #include "components/sharing_message/features.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
+#include "components/sync_preferences/features.h"
 
-BASE_FEATURE(kClickToCall, "ClickToCall", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClickToCall, base::FEATURE_DISABLED_BY_DEFAULT);

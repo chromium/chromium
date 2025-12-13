@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_disabled_ui.h"
-
 #include <memory>
 #include <string>
 
@@ -16,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/extensions/extension_disabled_ui.h"
 #include "chrome/browser/extensions/extension_install_error_menu_item_id_provider.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -25,7 +24,6 @@
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_registrar.h"
@@ -174,8 +172,6 @@ ExtensionDisabledGlobalError::GetBubbleViewMessages() {
       messages.push_back(
           l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WILL_HAVE_ACCESS_TO));
   } else {
-    // TODO(crbug.com/40406971): If NeedCustodianApprovalForPermissionIncrease,
-    // add an extra message for supervised users.
     messages.push_back(
         l10n_util::GetStringUTF16(IDS_EXTENSION_DISABLED_ERROR_LABEL));
   }
@@ -262,8 +258,9 @@ void ExtensionDisabledGlobalError::OnExtensionUninstallDialogClosed(
 void ExtensionDisabledGlobalError::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (extension != extension_)
+  if (extension->id() != extension_->id()) {
     return;
+  }
   RemoveGlobalError();
 }
 
@@ -271,8 +268,9 @@ void ExtensionDisabledGlobalError::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UninstallReason reason) {
-  if (extension != extension_)
+  if (extension->id() != extension_->id()) {
     return;
+  }
   RemoveGlobalError();
 }
 

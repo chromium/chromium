@@ -10,7 +10,6 @@ import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.EitherId.EitherTabId;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -86,11 +85,10 @@ public interface MessagingBackendService {
      * PersistentMessageObserver#onMessagingBackendServiceInitialized}.
      *
      * @param tabId The ID of the tab to scope messages to.
-     * @param type The type of message to query to. Pass Optional.empty() to return all message
-     *     types.
+     * @param type The type of message to query to. Pass UNDEFINED to return all message types.
      */
     List<PersistentMessage> getMessagesForTab(
-            EitherTabId tabId, Optional</* @PersistentNotificationType */ Integer> type);
+            EitherTabId tabId, @PersistentNotificationType int type);
 
     /**
      * Queries for all {@link PersistentMessage}s associated with a group ID. Will return an empty
@@ -101,10 +99,10 @@ public interface MessagingBackendService {
      * PersistentMessageObserver#onMessagingBackendServiceInitialized}.
      *
      * @param groupId The ID of the group to scope messages to.
-     * @param type The message type to query for. Pass Optional.empty() to return all message types.
+     * @param type The message type to query for. Pass UNDEFINED to return all message types.
      */
     List<PersistentMessage> getMessagesForGroup(
-            EitherGroupId groupId, Optional</* @PersistentNotificationType */ Integer> type);
+            EitherGroupId groupId, @PersistentNotificationType int type);
 
     /**
      * Queries for all {@link PersistentMessage}s.
@@ -113,9 +111,9 @@ public interface MessagingBackendService {
      * #isInitialized()} to check initialization state, or listen for broadcasts of {@link
      * PersistentMessageObserver#onMessagingBackendServiceInitialized}.
      *
-     * @param type The message type to query for. Pass Optional.empty() to return all message types.
+     * @param type The message type to query for. Pass UNDEFINED to return all message types.
      */
-    List<PersistentMessage> getMessages(Optional</* @PersistentNotificationType */ Integer> type);
+    List<PersistentMessage> getMessages(@PersistentNotificationType int type);
 
     /**
      * Queries for all {@link ActivityLogItem}s.
@@ -139,8 +137,7 @@ public interface MessagingBackendService {
      * for the message.
      *
      * @param messageId The ID of the messasge.
-     * @param type The message type to clear. Pass Optional.empty() to clear out all message types.
+     * @param type The message type to clear. Pass UNDEFINED to clear all message types.
      */
-    void clearPersistentMessage(
-            String messageId, Optional</* @PersistentNotificationType */ Integer> type);
+    void clearPersistentMessage(String messageId, @PersistentNotificationType int type);
 }

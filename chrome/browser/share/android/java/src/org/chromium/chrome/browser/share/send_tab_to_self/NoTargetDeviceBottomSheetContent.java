@@ -9,15 +9,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
+@NullMarked
 class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     private final ViewGroup mContentView;
 
@@ -38,7 +40,7 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -70,7 +72,7 @@ class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public @NonNull String getSheetContentDescription(Context context) {
+    public String getSheetContentDescription(Context context) {
         return context.getString(R.string.send_tab_to_self_content_description);
     }
 

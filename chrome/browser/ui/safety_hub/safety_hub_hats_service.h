@@ -25,9 +25,6 @@ class SafetyHubHatsService : public KeyedService {
   SafetyHubHatsService(const SafetyHubHatsService&) = delete;
   SafetyHubHatsService& operator=(const SafetyHubHatsService&) = delete;
 
-  // Called when the user clicks on the app menu.
-  void TriggerControlSurvey();
-
   // Called when the user interacts with a module of Safety Hub.
   void SafetyHubModuleInteracted();
 
@@ -59,10 +56,6 @@ class SafetyHubHatsService : public KeyedService {
   // tracking.
   void TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea area);
-
-  // Triggers a Safety Hub survey for the long-term Trust & Safety sentiment
-  // tracking.
-  void TriggerOneOffSurvey(const std::string& trigger);
 
   const raw_ref<Profile> profile_;
   const raw_ptr<TrustSafetySentimentService> tss_service_;

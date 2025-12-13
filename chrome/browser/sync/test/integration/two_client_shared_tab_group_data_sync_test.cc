@@ -27,16 +27,24 @@ namespace {
 using testing::ElementsAre;
 using testing::SizeIs;
 
-class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
+class TwoClientSharedTabGroupDataSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientSharedTabGroupDataSyncTest() : SyncTest(TWO_CLIENT) {
-    feature_overrides_.InitWithFeatures(
-        {data_sharing::features::kDataSharingFeature,
-         tab_groups::kTabGroupSyncServiceDesktopMigration},
-        {});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        data_sharing::features::kDataSharingFeature};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    feature_overrides_.InitWithFeatures(enabled_features, {});
   }
 
   ~TwoClientSharedTabGroupDataSyncTest() override = default;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
   TabGroupSyncService* GetTabGroupSyncService(int profile_index) const {
     return TabGroupSyncServiceFactory::GetForProfile(GetProfile(profile_index));
@@ -96,7 +104,12 @@ class TwoClientSharedTabGroupDataSyncTest : public SyncTest {
   base::test::ScopedFeatureList feature_overrides_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientSharedTabGroupDataSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncGroupWithTabs) {
   const syncer::CollaborationId kCollaborationId("collaboration");
 
@@ -129,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
                           HasTabMetadata("tab 2", "http://google.com/2")));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSharedTabGroupDataSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientSharedTabGroupDataSyncTest,
                        ShouldSyncTabPositions) {
   const syncer::CollaborationId kCollaborationId("collaboration");
 

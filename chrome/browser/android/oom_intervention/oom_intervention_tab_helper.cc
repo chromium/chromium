@@ -14,7 +14,9 @@
 #include "components/messages/android/messages_feature.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -75,7 +77,7 @@ void OomInterventionTabHelper::DeclineIntervention() {
 
   if (decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     decider_->OnInterventionDeclined(host);
   }
 }
@@ -182,7 +184,7 @@ void OomInterventionTabHelper::OnCrashDumpProcessed(
 
   if (decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     decider_->OnOomDetected(host);
   }
 }
@@ -226,7 +228,7 @@ void OomInterventionTabHelper::StartDetectionInRenderer() {
        purge_v8_memory_enabled) &&
       decider_) {
     DCHECK(!web_contents()->GetBrowserContext()->IsOffTheRecord());
-    const std::string& host = web_contents()->GetVisibleURL().host();
+    const std::string& host = web_contents()->GetVisibleURL().GetHost();
     if (!decider_->CanTriggerIntervention(host)) {
       return;
     }

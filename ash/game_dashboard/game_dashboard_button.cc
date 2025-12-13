@@ -30,6 +30,7 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -190,7 +191,7 @@ void GameDashboardButton::UpdateViews() {
         IDS_ASH_GAME_DASHBOARD_GAME_DASHBOARD_BUTTON_TITLE));
   }
 
-  views::InkDrop::Get(this)->SetBaseColorId(
+  views::InkDrop::Get(this)->SetBaseColor(
       is_recording_ ? cros_tokens::kCrosSysRippleNeutralOnProminent
                     : cros_tokens::kCrosSysRipplePrimary);
 

@@ -8,7 +8,6 @@ mod ffi {
         fn s(s: &mut CxxString);
         fn v(v: &mut CxxVector<u8>);
     }
-
 }
 
 fn main() {}

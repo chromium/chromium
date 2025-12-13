@@ -10,7 +10,6 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
@@ -97,7 +96,8 @@ class MODULES_EXPORT IDBValueWrapper {
       v8::Isolate*,
       v8::Local<v8::Value>,
       SerializedScriptValue::SerializeOptions::WasmSerializationPolicy,
-      ExceptionState&);
+      ExceptionState&,
+      bool backend_uses_sqlite);
   ~IDBValueWrapper();
 
   // Creates a clone of the serialized value.
@@ -153,6 +153,8 @@ class MODULES_EXPORT IDBValueWrapper {
 
   // Stores `wire_bytes_` in a Blob if it is over the size threshold.
   void MaybeStoreInBlob();
+
+  bool backend_uses_sqlite_;
 
   // V8 value serialization state.
   scoped_refptr<SerializedScriptValue> serialized_value_;
@@ -243,28 +245,11 @@ class MODULES_EXPORT IDBValueUnwrapper {
   base::span<const uint8_t> parse_span_;
 
   // The size of the Blob holding the data for the last unwrapped IDBValue.
-  unsigned blob_size_;
+  unsigned blob_size_ = 0;
 
   // Handle to the Blob holding the data for the last unwrapped IDBValue.
   scoped_refptr<BlobDataHandle> blob_handle_;
 };
-
-// This flag controls behavior that decompresses
-// `IDBValue::data_` directly into a buffer that's passed by ownership to
-// `SerializedScriptValue`.
-//
-//  * For values that are not compressed, this flag has no effect: `data_` is
-//  always copied on conversion to a script value.
-//  * For values that are compressed,
-//    * Normally `data_` will be decompressed the first time it's serialized,
-//    overwriting `data_`, and *copied* into `SerializedScriptValue` the first
-//    time and every subsequent time one is created.
-//    * When this flag is enabled, `data_` will be decompressed *directly into*
-//    a buffer that's passed off to `SerializedScriptValue`, which avoids a copy
-//    and the memory overhead that entails. However this will happen every time
-//    the value is deserialized, so if that happens more than once, the
-//    decompression routine must run more than once.
-MODULES_EXPORT BASE_DECLARE_FEATURE(kIdbDecompressValuesInPlace);
 
 }  // namespace blink
 

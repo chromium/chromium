@@ -8,14 +8,17 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/zoom_bubble_coordinator.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
@@ -33,9 +36,12 @@ namespace {
 class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ZoomViewInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageActionsMigration,
-        {{features::kPageActionsMigrationZoom.name, "true"}});
+    // TODO(crbug.com/441102004): Update ShowAndHideZoomBubbleByClickWithMouse
+    //   to support kAiModeOmniboxEntryPoint.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPageActionsMigration,
+          {{features::kPageActionsMigrationZoom.name, "true"}}}},
+        {omnibox::kAiModeOmniboxEntryPoint});
   }
 
   ZoomViewInteractiveUiTest(const ZoomViewInteractiveUiTest&) = delete;
@@ -76,14 +82,16 @@ class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
     DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                         kZoomBubbleVisible);
 
-    return Steps(PollState(kZoomBubbleVisible,
-                           [&, visible]() {
-                             bool is_visible =
-                                 ZoomBubbleView::GetZoomBubble() != nullptr;
-                             return is_visible == visible;
-                           }),
-                 WaitForState(kZoomBubbleVisible, true),
-                 StopObservingState(kZoomBubbleVisible));
+    return Steps(
+        PollState(kZoomBubbleVisible,
+                  [&, visible]() {
+                    const bool is_visible =
+                        ZoomBubbleCoordinator::From(browser())->bubble() !=
+                        nullptr;
+                    return is_visible == visible;
+                  }),
+        WaitForState(kZoomBubbleVisible, true),
+        StopObservingState(kZoomBubbleVisible));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -450,8 +450,8 @@ void MainThreadDebugger::QuerySelectorCallback(
       AtomicString(selector), PassThroughException(info.GetIsolate()));
   if (try_catch.HasCaught()) {
     ApplyContextToException(script_state, try_catch.Exception(),
-                            ExceptionContext(v8::ExceptionContext::kOperation,
-                                             "CommandLineAPI", "$"));
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$");
     try_catch.ReThrow();
     return;
   }
@@ -482,8 +482,8 @@ void MainThreadDebugger::QuerySelectorAllCallback(
       AtomicString(selector), PassThroughException(info.GetIsolate()));
   if (try_catch.HasCaught()) {
     ApplyContextToException(script_state, try_catch.Exception(),
-                            ExceptionContext(v8::ExceptionContext::kOperation,
-                                             "CommandLineAPI", "$$"));
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$$");
     try_catch.ReThrow();
     return;
   }
@@ -525,8 +525,8 @@ void MainThreadDebugger::XpathSelectorCallback(
       PassThroughException(isolate));
   if (try_catch.HasCaught()) {
     ApplyContextToException(script_state, try_catch.Exception(),
-                            ExceptionContext(v8::ExceptionContext::kOperation,
-                                             "CommandLineAPI", "$x"));
+                            v8::ExceptionContext::kOperation, "CommandLineAPI",
+                            "$x");
     try_catch.ReThrow();
     return;
   }
@@ -559,8 +559,8 @@ void MainThreadDebugger::XpathSelectorCallback(
     }
     if (try_catch.HasCaught()) {
       ApplyContextToException(script_state, try_catch.Exception(),
-                              ExceptionContext(v8::ExceptionContext::kOperation,
-                                               "CommandLineAPI", "$x"));
+                              v8::ExceptionContext::kOperation,
+                              "CommandLineAPI", "$x");
       try_catch.ReThrow();
       return;
     }

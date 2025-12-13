@@ -89,8 +89,7 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
 
   auto frame = fast_ink_internal::CreateCompositorFrame(
       begin_frame_ack, GetContentRect(), GetTotalDamage(), auto_update,
-      *host_window(), buffer_size_, &resource_manager, client_shared_image_,
-      sync_token_);
+      *host_window(), &resource_manager, client_shared_image_, sync_token_);
 
   ResetDamage();
 
@@ -239,9 +238,7 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
 
 void FastInkHost::ResetGpuBuffer() {
   if (client_shared_image_) {
-    CHECK(context_provider_);
-    context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token_, std::move(client_shared_image_));
+    client_shared_image_->UpdateDestructionSyncToken(sync_token_);
     client_shared_image_.reset();
     sync_token_.Clear();
   }

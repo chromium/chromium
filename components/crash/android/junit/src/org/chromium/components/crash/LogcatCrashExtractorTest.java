@@ -17,8 +17,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /** junit tests for {@link LogcatCrashExtractor}. */
@@ -35,7 +35,7 @@ public class LogcatCrashExtractorTest {
 
     @Test
     public void testLogcatEmpty() {
-        final List<String> original = new LinkedList<>();
+        final List<String> original = new ArrayList<>();
         assertLogcatLists(original, original);
     }
 
@@ -184,7 +184,7 @@ public class LogcatCrashExtractorTest {
 
     private void assertLogcatLists(List<String> expected, List<String> original) {
         // trimLogcat() expects a modifiable list as input.
-        LinkedList<String> rawLogcat = new LinkedList<String>(original);
+        List<String> rawLogcat = new ArrayList<String>(original);
         List<String> actualLogcat = LogcatCrashExtractor.trimLogcat(rawLogcat, MAX_LINES);
         assertArrayEquals(expected.toArray(), actualLogcat.toArray());
     }

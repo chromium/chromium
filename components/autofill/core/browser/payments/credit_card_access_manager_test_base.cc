@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager_test_api.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync/test/test_sync_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "components/autofill/core/browser/payments/test_credit_card_fido_authenticator.h"
@@ -35,6 +37,11 @@
 
 namespace autofill {
 namespace {
+
+using ::testing::InSequence;
+using ::testing::Pointee;
+using ::testing::Ref;
+
 using PaymentsRpcCardType =
     payments::PaymentsAutofillClient::PaymentsRpcCardType;
 using PaymentsRpcResult =
@@ -75,41 +82,39 @@ CreditCardAccessManagerTestBase::CreditCardAccessManagerTestBase()
 CreditCardAccessManagerTestBase::~CreditCardAccessManagerTestBase() = default;
 
 void CreditCardAccessManagerTestBase::SetUp() {
-  autofill_client_.SetPrefs(test::PrefServiceForTesting());
-  personal_data().SetPrefService(autofill_client_.GetPrefs());
+  InitAutofillClient();
   personal_data().SetSyncServiceForTest(&sync_service_);
 #if BUILDFLAG(IS_IOS)
   // On iOS mandatory reauth is by default enabled. Disable it explicitly
   // to not interfere with tests that do not test reauth functionalities.
-  autofill_client_.GetPrefs()->SetBoolean(
+  autofill_client().GetPrefs()->SetBoolean(
       prefs::kAutofillPaymentMethodsMandatoryReauth, false);
 #endif
-  accessor_ = std::make_unique<TestAccessor>();
-  autofill_driver_ = std::make_unique<TestAutofillDriver>(&autofill_client_);
 
   payments_autofill_client().set_payments_network_interface(
       std::make_unique<payments::TestPaymentsNetworkInterface>(
-          autofill_client_.GetURLLoaderFactory(),
-          autofill_client_.GetIdentityManager(), &personal_data()));
-  autofill_client_.set_test_strike_database(
+          autofill_client().GetURLLoaderFactory(),
+          autofill_client().GetIdentityManager(), &personal_data()));
+  autofill_client().set_test_strike_database(
       std::make_unique<TestStrikeDatabase>());
-  autofill_driver_->set_autofill_manager(
-      std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
+
+  CreateAutofillDriver();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());
+  autofill_driver().SetAuthenticator(new TestInternalAuthenticator());
   test_api(credit_card_access_manager())
       .set_fido_authenticator(std::make_unique<TestCreditCardFidoAuthenticator>(
-          autofill_driver_.get(), &autofill_client_));
+          &autofill_driver(), &autofill_client()));
 #endif
-  auto otp_authenticator =
-      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client_);
-  otp_authenticator_ = otp_authenticator.get();
   payments_autofill_client().set_otp_authenticator(
-      std::move(otp_authenticator));
+      std::make_unique<TestCreditCardOtpAuthenticator>(&autofill_client()));
 
   // Force creation of the CreditCardAccessManager.
   std::ignore = credit_card_access_manager();
+}
+
+void CreditCardAccessManagerTestBase::TearDown() {
+  DestroyAutofillClient();
 }
 
 bool CreditCardAccessManagerTestBase::IsAuthenticationInProgress() {
@@ -334,11 +339,11 @@ void CreditCardAccessManagerTestBase::WaitForCallbacks() {
 
 void CreditCardAccessManagerTestBase::SetCreditCardFIDOAuthEnabled(
     bool enabled) {
-  prefs::SetCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs(), enabled);
+  prefs::SetCreditCardFIDOAuthEnabled(autofill_client().GetPrefs(), enabled);
 }
 
 bool CreditCardAccessManagerTestBase::IsCreditCardFIDOAuthEnabled() {
-  return prefs::IsCreditCardFIDOAuthEnabled(autofill_client_.GetPrefs());
+  return prefs::IsCreditCardFIDOAuthEnabled(autofill_client().GetPrefs());
 }
 
 UnmaskAuthFlowType CreditCardAccessManagerTestBase::GetUnmaskAuthFlowType() {
@@ -370,7 +375,7 @@ void CreditCardAccessManagerTestBase::
       .set_is_user_verifiable(is_user_verifiable);
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -454,20 +459,20 @@ void CreditCardAccessManagerTestBase::
     }
     case CardUnmaskChallengeOptionType::kSmsOtp:
       VerifyOnSelectChallengeOptionInvoked();
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().id.value(),
                 "123");
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().type,
                 CardUnmaskChallengeOptionType::kSmsOtp);
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().challenge_info,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().challenge_info,
                 u"xxx-xxx-3547");
       break;
     case CardUnmaskChallengeOptionType::kEmailOtp:
       VerifyOnSelectChallengeOptionInvoked();
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().id.value(),
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().id.value(),
                 "345");
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().type,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().type,
                 CardUnmaskChallengeOptionType::kEmailOtp);
-      EXPECT_EQ(otp_authenticator_->selected_challenge_option().challenge_info,
+      EXPECT_EQ(otp_authenticator().selected_challenge_option().challenge_info,
                 u"a******b@google.com");
       break;
     case CardUnmaskChallengeOptionType::kThreeDomainSecure:
@@ -483,18 +488,10 @@ void CreditCardAccessManagerTestBase::
 }
 
 void CreditCardAccessManagerTestBase::VerifyOnSelectChallengeOptionInvoked() {
-  DCHECK(otp_authenticator_);
-  EXPECT_TRUE(otp_authenticator_->on_challenge_option_selected_invoked());
-  EXPECT_EQ(otp_authenticator_->card().number(),
+  EXPECT_TRUE(otp_authenticator().on_challenge_option_selected_invoked());
+  EXPECT_EQ(otp_authenticator().card().number(),
             base::UTF8ToUTF16(std::string(kTestNumber)));
-  EXPECT_EQ(otp_authenticator_->context_token(), "fake_context_token");
-}
-
-CreditCardAccessManager&
-CreditCardAccessManagerTestBase::credit_card_access_manager() {
-  return static_cast<BrowserAutofillManager&>(
-             autofill_driver_->GetAutofillManager())
-      .GetCreditCardAccessManager();
+  EXPECT_EQ(otp_authenticator().context_token(), "fake_context_token");
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -512,7 +509,7 @@ CreditCardAccessManagerTestBase::payments_network_interface() {
 }
 
 TestPersonalDataManager& CreditCardAccessManagerTestBase::personal_data() {
-  return autofill_client_.GetPersonalDataManager();
+  return autofill_client().GetPersonalDataManager();
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -536,7 +533,31 @@ void CreditCardAccessManagerTestBase::
 void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
   credit_card_access_manager().FetchCreditCard(
       card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor_->GetWeakPtr()));
+                           accessor().GetWeakPtr()));
+}
+
+void CreditCardAccessManagerTestBase::ExpectCardRetrievalFailure(
+    CreditCard card_to_fetch,
+    MockCreditCardAccessManagerObserver& observer) {
+  InSequence s;
+  EXPECT_CALL(observer, OnCreditCardFetchStarted(
+                            Ref(credit_card_access_manager()), card_to_fetch));
+  EXPECT_CALL(observer, OnCreditCardFetchSucceeded).Times(0);
+  EXPECT_CALL(observer,
+              OnCreditCardFetchFailed(Ref(credit_card_access_manager()),
+                                      Pointee(card_to_fetch)));
+}
+
+void CreditCardAccessManagerTestBase::ExpectCardRetrievalSuccess(
+    CreditCard card_to_fetch,
+    CreditCard retrieved_card,
+    MockCreditCardAccessManagerObserver& observer) {
+  InSequence s;
+  EXPECT_CALL(observer, OnCreditCardFetchStarted(
+                            Ref(credit_card_access_manager()), card_to_fetch));
+  EXPECT_CALL(observer, OnCreditCardFetchSucceeded(
+                            Ref(credit_card_access_manager()), retrieved_card));
+  EXPECT_CALL(observer, OnCreditCardFetchFailed).Times(0);
 }
 
 }  // namespace autofill

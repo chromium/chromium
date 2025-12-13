@@ -100,6 +100,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/messages/android:java",
@@ -177,6 +178,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionMediatorTest.java",
     "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerAndroidBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentUnitTest.java",
   ]
   deps = [
     ":java",
@@ -186,6 +188,9 @@ robolectric_library("junit") {
     "//base:service_loader_java",
     "//base:unowned_user_data_java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/messages/android:factory_java",
     "//components/messages/android:java",
     "//components/messages/android:manager_java",
@@ -193,9 +198,16 @@ robolectric_library("junit") {
     "//components/permissions/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 

@@ -66,7 +66,7 @@ fuchsia::media::FormatDetails GetClearFormatDetails() {
 
 fuchsia::media::FormatDetails GetEncryptedFormatDetails(
     const DecryptConfig* config) {
-  CHECK(config, base::NotFatalUntil::M140);
+  CHECK(config);
 
   fuchsia::media::EncryptedFormat encrypted_format;
   encrypted_format.set_scheme(GetEncryptionScheme(config->encryption_scheme()))
@@ -76,7 +76,7 @@ fuchsia::media::FormatDetails GetEncryptedFormatDetails(
           std::vector<uint8_t>(config->iv().begin(), config->iv().end()))
       .set_subsamples(GetSubsamples(config->subsamples()));
   if (config->encryption_scheme() == EncryptionScheme::kCbcs) {
-    CHECK(config->encryption_pattern().has_value(), base::NotFatalUntil::M140);
+    CHECK(config->encryption_pattern().has_value());
     encrypted_format.set_pattern(
         GetEncryptionPattern(config->encryption_pattern().value()));
   }
@@ -189,7 +189,7 @@ void FuchsiaStreamDecryptor::OnStreamProcessorOutputPacket(
 
 void FuchsiaStreamDecryptor::OnStreamProcessorNoKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!waiting_for_key_, base::NotFatalUntil::M140);
+  CHECK(!waiting_for_key_);
 
   // Reset stream position, but keep all pending buffers. They will be
   // resubmitted later, when we have a new key.
@@ -277,7 +277,7 @@ void FuchsiaStreamDecryptor::OnNewKey() {
     return;
   }
 
-  CHECK(!retry_on_no_key_event_, base::NotFatalUntil::M140);
+  CHECK(!retry_on_no_key_event_);
   waiting_for_key_ = false;
   input_writer_queue_.Unpause();
 }

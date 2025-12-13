@@ -26,7 +26,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ConnectivityChecker_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace chrome {
 namespace android {
@@ -51,7 +51,7 @@ void ExecuteCallback(const base::android::JavaRef<jobject>& callback,
                                            callback, result);
 }
 
-void JNI_ConnectivityChecker_PostCallback(
+static void JNI_ConnectivityChecker_PostCallback(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_callback,
     ConnectivityCheckResult result) {
@@ -169,12 +169,12 @@ void ConnectivityChecker::OnTimeout() {
 
 }  // namespace
 
-void JNI_ConnectivityChecker_CheckConnectivity(
+static void JNI_ConnectivityChecker_CheckConnectivity(
     JNIEnv* env,
     Profile* profile,
     std::string& j_url,
     jlong j_timeout_ms,
-    const JavaParamRef<jobject>& j_callback,
+    const JavaRef<jobject>& j_callback,
     jint j_network_annotation_hash_code) {
   if (!profile) {
     JNI_ConnectivityChecker_PostCallback(env, j_callback,
@@ -196,10 +196,13 @@ void JNI_ConnectivityChecker_CheckConnectivity(
   connectivity_checker->StartAsyncCheck();
 }
 
-jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env, std::string& j_url) {
+static jboolean JNI_ConnectivityChecker_IsUrlValid(JNIEnv* env,
+                                                   std::string& j_url) {
   GURL url(j_url);
   return url.is_valid();
 }
 
 }  // namespace android
 }  // namespace chrome
+
+DEFINE_JNI(ConnectivityChecker)

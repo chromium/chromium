@@ -15,17 +15,19 @@ import org.chromium.chrome.browser.ui.android.whats_new.features.WhatsNewFeature
 @NullMarked
 public interface WhatsNewFeature {
     /** Get the {@link WhatsNewType} for this feature. */
-    public @WhatsNewType int getType();
+    @WhatsNewType
+    int getType();
 
     /** Get a string representing the name of this feature. */
-    public String getName();
+    String getName();
 
     /** Get the title of the feature to be displayed in the What's New feature list. */
-    public String getTitle(Context context);
+    String getTitle(Context context);
 
     /** Get the short description of the feature to be displayed in the What's New feature list. */
-    public String getDescription(Context context);
+    String getDescription(Context context);
 
     /** Get the icon resource id of the feature to be displayed in the What's New feature list. */
-    public @DrawableRes int getIconResId();
+    @DrawableRes
+    int getIconResId();
 }

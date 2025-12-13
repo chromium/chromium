@@ -36,7 +36,8 @@ class MockFacilitatedPaymentsController : public FacilitatedPaymentsController {
       (base::span<const autofill::Ewallet> ewallet_suggestions,
        std::unique_ptr<payments::facilitated::FacilitatedPaymentsAppInfoList>
            app_suggestions,
-       base::OnceCallback<void(int64_t)> on_payment_account_selected),
+       base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+           on_fop_selected),
       (override));
   MOCK_METHOD(void, ShowProgressScreen, (), (override));
   MOCK_METHOD(void, ShowErrorScreen, (), (override));

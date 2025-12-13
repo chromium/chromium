@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/fake_tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
@@ -53,9 +52,9 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
         &tab_strip_model_delegate_, tab_strip_->controller()->GetProfile());
 
     browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
-    ON_CALL(*browser_window_interface_, GetTabStripModel)
+    ON_CALL(*browser_window_interface_, GetTabStripModel())
         .WillByDefault(::testing::Return(tab_strip_model_.get()));
-    ON_CALL(*browser_window_interface_, GetProfile)
+    ON_CALL(*browser_window_interface_, GetProfile())
         .WillByDefault(
             ::testing::Return(tab_strip_->controller()->GetProfile()));
 

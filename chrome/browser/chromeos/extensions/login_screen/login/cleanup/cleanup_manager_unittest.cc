@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -19,7 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 namespace chromeos {
@@ -67,11 +65,11 @@ TEST_F(CleanupManagerUnittest, Cleanup) {
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
-      .WillOnce(WithArg<0>(Invoke(no_error_callback)));
+      .WillOnce(WithArg<0>(no_error_callback));
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler2 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
-      .WillOnce(WithArg<0>(Invoke(no_error_callback)));
+      .WillOnce(WithArg<0>(no_error_callback));
 
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});
@@ -97,10 +95,10 @@ TEST_F(CleanupManagerUnittest, CleanupInProgress) {
       std::make_unique<MockCleanupHandler>();
   CleanupHandler::CleanupHandlerCallback callback;
   EXPECT_CALL(*mock_cleanup_handler, Cleanup(_))
-      .WillOnce(WithArg<0>(Invoke(
+      .WillOnce(WithArg<0>(
           ([&callback](CleanupHandler::CleanupHandlerCallback callback_arg) {
             callback = std::move(callback_arg);
-          }))));
+          })));
 
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler)});
@@ -132,17 +130,15 @@ TEST_F(CleanupManagerUnittest, CleanupErrors) {
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler1 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler1, Cleanup(_))
-      .WillOnce(WithArg<0>(
-          Invoke([](CleanupHandler::CleanupHandlerCallback callback) {
-            std::move(callback).Run("Error 1");
-          })));
+      .WillOnce(WithArg<0>([](CleanupHandler::CleanupHandlerCallback callback) {
+        std::move(callback).Run("Error 1");
+      }));
   std::unique_ptr<MockCleanupHandler> mock_cleanup_handler2 =
       std::make_unique<MockCleanupHandler>();
   EXPECT_CALL(*mock_cleanup_handler2, Cleanup(_))
-      .WillOnce(WithArg<0>(
-          Invoke([](CleanupHandler::CleanupHandlerCallback callback) {
-            std::move(callback).Run("Error 2");
-          })));
+      .WillOnce(WithArg<0>([](CleanupHandler::CleanupHandlerCallback callback) {
+        std::move(callback).Run("Error 2");
+      }));
 
   std::map<std::string, std::unique_ptr<CleanupHandler>> cleanup_handlers;
   cleanup_handlers.insert({kHandler1Name, std::move(mock_cleanup_handler1)});

@@ -7,12 +7,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 void AnnounceInActiveBrowser(const std::u16string& message) {
-  Browser* const browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser || !browser->is_type_normal() || !browser->IsActive()) {
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+  const bool is_type_normal =
+      browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL;
+  if (!browser || !is_type_normal || !browser->IsActive()) {
     return;
   }
 

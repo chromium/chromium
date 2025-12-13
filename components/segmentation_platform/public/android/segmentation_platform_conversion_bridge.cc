@@ -40,3 +40,5 @@ SegmentationPlatformConversionBridge::CreateJavaClassificationResult(
 }
 
 }  // namespace segmentation_platform
+
+DEFINE_JNI(SegmentationPlatformConversionBridge)

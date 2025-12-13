@@ -21,7 +21,9 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
@@ -179,6 +181,8 @@ class ProfilePickerInteractiveUiTest
     // Change the country to belgium because the search engine choice screen
     // is only displayed for EEA countries.
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "BE");
     command_line->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }

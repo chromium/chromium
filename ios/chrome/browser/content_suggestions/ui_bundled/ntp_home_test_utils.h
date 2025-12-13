@@ -11,6 +11,7 @@
 
 @protocol GREYMatcher;
 @class SetUpListItemView;
+@class NewTabPageColorPalette;
 
 namespace ntp_home {
 // Returns the parent view containing all NTP content. Returns nil if it is not
@@ -37,6 +38,12 @@ UILabel* DiscoverHeaderLabel();
 // `accessibility_id`.
 SetUpListItemView* SetUpListItemViewInMagicStackWithAccessibilityId(
     NSString* accessibility_id);
+
+// Returns the current color palette for the NTP.
+NewTabPageColorPalette* CurrentBackgroundColor();
+
+// Returns whether the NTP currently has a custom background image.
+BOOL HasBackgroundImage();
 
 }  // namespace ntp_home
 

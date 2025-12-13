@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/mock_callback.h"
+#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 
 #include <linux/input.h>
 #include <wayland-server.h>
@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -31,12 +32,11 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_data_drag_controller.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -315,6 +315,23 @@ TEST_P(WaylandDataDragControllerTest, StartDragWithWrongMimeType) {
   ReadAndCheckData(kMimeTypePlainText, {});
 }
 
+TEST_P(WaylandDataDragControllerTest, StartDragWithLink) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // The client starts dragging offering link data
+  OSExchangeData os_exchange_data;
+  os_exchange_data.SetURL(GURL("www.abc.com"), u"ABC");
+  int operations = DragDropTypes::DRAG_LINK;
+  drag_controller()->StartSession(os_exchange_data, operations,
+                                  DragEventSource::kMouse);
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    auto* data_source = server->data_device_manager()->data_source();
+    EXPECT_TRUE(data_source->actions() &
+                WL_DATA_DEVICE_MANAGER_DND_ACTION_COPY);
+  });
+}
+
 // Ensures data drag controller properly offers dragged data with custom
 // formats. Regression test for a bunch of bugs, such as:
 //  - https://crbug.com/1236708
@@ -478,6 +495,36 @@ TEST_P(WaylandDataDragControllerTest, CancelIncomingDrag) {
 
 MATCHER_P(PointFNear, n, "") {
   return arg.IsWithinDistance(n, 0.01f);
+}
+
+// Tests that if the compositor sends wl_data_source.dnd_drop_performed with
+// DND_ACTION_NONE, the drag controller treats it as a cancelled operation by
+// calling OnDragLeave, and can still handle a subsequent
+// wl_data_source.cancelled event gracefully. Regression test for
+// https://crbug.com/447037092.
+TEST_P(WaylandDataDragControllerTest,
+       DndDropPerformedWithNoneActionThenCancelled) {
+  FocusAndPressLeftPointerButton(window_.get(), &delegate_);
+
+  // Post test task to be performed asynchronously once the dnd-related protocol
+  // objects are ready.
+  ScheduleTestTask(base::BindLambdaForTesting([&]() {
+    // Now the server can read the data and give it to our callback.
+    ReadAndCheckData(kMimeTypeUtf8PlainText, kSampleTextForDragAndDrop);
+
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(1);
+    SendDndDropPerformed();
+
+    // Emulate server sending an wl_data_source::cancelled event so the drag
+    // loop is finished.
+    EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(0);
+    SendDndCancelled();
+  }));
+
+  RunMouseDragWithSampleData(window_.get(), DragDropTypes::DRAG_NONE);
+
+  // Ensure drag delegate it properly reset when the drag loop quits.
+  EXPECT_FALSE(data_device()->drag_delegate_);
 }
 
 TEST_P(WaylandDataDragControllerTest, ReceiveDrag) {
@@ -700,11 +747,11 @@ TEST_P(WaylandDataDragControllerTest, ValidateDroppedXMozUrl) {
       EXPECT_FALSE(dropped_data->HasURL(kFilenameToURLPolicy));
     } else {
       EXPECT_TRUE(dropped_data->HasURL(kFilenameToURLPolicy));
-      std::optional<ui::OSExchangeData::UrlInfo> url_info =
-          dropped_data->GetURLAndTitle(kFilenameToURLPolicy);
-      EXPECT_TRUE(url_info.has_value());
-      EXPECT_EQ(url_info->url.spec(), kCase.expected_url);
-      EXPECT_EQ(url_info->title, kCase.expected_title);
+      const std::vector<ui::ClipboardUrlInfo> url_infos =
+          dropped_data->GetURLsAndTitles(kFilenameToURLPolicy);
+      EXPECT_FALSE(url_infos.empty());
+      EXPECT_EQ(url_infos.front().url.spec(), kCase.expected_url);
+      EXPECT_EQ(url_infos.front().title, kCase.expected_title);
     }
 
     EXPECT_CALL(*drop_handler_, OnDragLeave()).Times(AtMost(1));
@@ -1394,8 +1441,10 @@ TEST_P(WaylandDataDragControllerTest,
     // Send a drag motion and see if cursor position is updated.
     SendDndMotion(gfx::Point(10, 11));
     WaitForDragDropTasks();
-    // Cursor position should be updated.
+    // Cursor and pointer positions should be updated.
+    auto* pointer_delegate = drag_controller()->pointer_delegate();
     EXPECT_EQ(gfx::Point(10, 11), cursor_position->GetCursorSurfacePoint());
+    EXPECT_EQ(gfx::PointF(10, 11), pointer_delegate->GetPointerLocation());
 
     SendDndLeave();
     SendDndCancelled();
@@ -1494,7 +1543,6 @@ class PerSurfaceScaleWaylandDataDragControllerTest
 
 TEST_P(PerSurfaceScaleWaylandDataDragControllerTest,
        ScaleEnterAndMotionEventsLocation) {
-  base::test::ScopedFeatureList enable_ui_scaling(features::kWaylandUiScale);
   ASSERT_TRUE(connection_->IsUiScaleEnabled());
 
   // Set font scale to 1.25.

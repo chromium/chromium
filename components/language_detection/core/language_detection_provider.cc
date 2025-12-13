@@ -20,7 +20,6 @@ namespace language_detection {
 // TODO(https://crbug.com/354069716): Move this to the model service in the
 // browser.
 BASE_FEATURE(kLanguageDetectionModelForTesting,
-             "LanguageDetectionModelForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kLanguageDetectionModelForTestingPath{
     &kLanguageDetectionModelForTesting, "path",

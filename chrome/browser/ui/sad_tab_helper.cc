@@ -6,7 +6,9 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/sad_tab.h"
+#include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -23,6 +25,7 @@ SadTabKind SadTabKindFromTerminationStatus(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
       return SAD_TAB_KIND_KILLED;
     case base::TERMINATION_STATUS_OOM:
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       return SAD_TAB_KIND_OOM;
     default:
       return SAD_TAB_KIND_CRASHED;
@@ -78,6 +81,26 @@ void SadTabHelper::PrimaryMainFrameRenderProcessGone(
     return;
   }
 
+  if (status == base::TERMINATION_STATUS_EVICTED_FOR_MEMORY) {
+    // If the renderer was terminated to prevent an browser OOM crash, discard
+    // the tab instead of showing a sad tab, unless the tab is visible. The tab
+    // will then be reloaded upon reactivation, which is the same user
+    // experience as if the tab had been proactively discarded in response to
+    // memory pressure. The discard is performed here because the termination
+    // point (in PartitionAlloc) cannot allocate memory to perform the discard
+    // itself.
+    if (web_contents()->GetVisibility() != content::Visibility::VISIBLE) {
+      auto* tab_lifecycle_unit_external =
+          resource_coordinator::TabLifecycleUnitExternal::FromWebContents(
+              web_contents());
+      CHECK(tab_lifecycle_unit_external);
+      if (tab_lifecycle_unit_external->DiscardTab(
+              ::mojom::LifecycleUnitDiscardReason::URGENT)) {
+        return;
+      }
+    }
+  }
+
   if (sad_tab_) {
     return;
   }
@@ -88,8 +111,8 @@ void SadTabHelper::PrimaryMainFrameRenderProcessGone(
 }
 
 void SadTabHelper::InstallSadTab(base::TerminationStatus status) {
-  sad_tab_.reset(
-      SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status)));
+  sad_tab_ =
+      SadTab::Create(web_contents(), SadTabKindFromTerminationStatus(status));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SadTabHelper);

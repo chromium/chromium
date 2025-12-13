@@ -44,7 +44,7 @@ class BookmarkSyncService : public KeyedService {
   ~BookmarkSyncService() override;
 
   // Analgous to Encode/Decode methods in BookmarkClient.
-  std::string EncodeBookmarkSyncMetadata();
+  std::string EncodeBookmarkSyncMetadata() const;
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure,
@@ -73,7 +73,7 @@ class BookmarkSyncService : public KeyedService {
   // It returns null until bookmarks are loaded, i.e. until
   // DecodeBookmarkSyncMetadata() is invoked. It must not be invoked after
   // Shutdown(), i.e. during profile destruction.
-  sync_bookmarks::BookmarkModelView* bookmark_model_view();
+  sync_bookmarks::BookmarkModelView* bookmark_model_view() const;
 
   // For integration tests.
   void SetIsTrackingMetadataForTesting();

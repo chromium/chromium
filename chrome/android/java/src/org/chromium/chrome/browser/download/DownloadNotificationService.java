@@ -24,6 +24,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -57,6 +59,7 @@ import java.util.List;
  *  - Create notifications for downloads using DownloadNotificationFactory.
  *  - Update DownloadForegroundServiceManager about downloads, allowing it to start/stop service.
  */
+@NullMarked
 public class DownloadNotificationService {
     @IntDef({
         DownloadStatus.IN_PROGRESS,
@@ -105,10 +108,10 @@ public class DownloadNotificationService {
     /** Notification Id starting value, to avoid conflicts from IDs used in prior versions. */
     private static final int STARTING_NOTIFICATION_ID = 1000000;
 
-    private static DownloadNotificationService sInstanceForTesting;
+    private static @Nullable DownloadNotificationService sInstanceForTesting;
 
     private final BaseNotificationManagerProxy mNotificationManager;
-    private Bitmap mDownloadSuccessLargeIcon;
+    private @Nullable Bitmap mDownloadSuccessLargeIcon;
     private final DownloadSharedPreferenceHelper mDownloadSharedPreferenceHelper;
     private DownloadForegroundServiceManager mDownloadForegroundServiceManager;
     private final DownloadUserInitiatedTaskManager mDownloadUserInitiatedTaskManager;
@@ -147,7 +150,7 @@ public class DownloadNotificationService {
      *     notification.
      */
     public void setBackgroundTaskNotificationCallback(
-            int taskId, TaskFinishedCallback backgroundTaskNotificationCallback) {
+            int taskId, @Nullable TaskFinishedCallback backgroundTaskNotificationCallback) {
         mDownloadUserInitiatedTaskManager.setTaskNotificationCallback(
                 taskId, backgroundTaskNotificationCallback);
     }
@@ -178,14 +181,14 @@ public class DownloadNotificationService {
     public void notifyDownloadProgress(
             ContentId id,
             String fileName,
-            Progress progress,
+            @Nullable Progress progress,
             long bytesReceived,
             long timeRemainingInMillis,
             long startTime,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             GURL originalUrl,
             boolean shouldPromoteOrigin) {
         updateActiveDownloadNotification(
@@ -216,14 +219,14 @@ public class DownloadNotificationService {
      * @param shouldPromoteOrigin Whether the origin should be displayed in the notification.
      * @param pendingState Reason download is pending.
      */
-    void notifyDownloadPending(
+    public void notifyDownloadPending(
             ContentId id,
             String fileName,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
-            Bitmap icon,
-            GURL originalUrl,
+            @Nullable Bitmap icon,
+            @Nullable GURL originalUrl,
             boolean shouldPromoteOrigin,
             boolean hasUserGesture,
             @PendingState int pendingState) {
@@ -262,14 +265,14 @@ public class DownloadNotificationService {
     private void updateActiveDownloadNotification(
             ContentId id,
             String fileName,
-            Progress progress,
+            @Nullable Progress progress,
             long timeRemainingInMillis,
             long startTime,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
-            Bitmap icon,
-            GURL originalUrl,
+            @Nullable Bitmap icon,
+            @Nullable GURL originalUrl,
             boolean shouldPromoteOrigin,
             @PendingState int pendingState) {
         int notificationId = getNotificationId(id);
@@ -386,10 +389,10 @@ public class DownloadNotificationService {
             String fileName,
             boolean isResumable,
             boolean isAutoResumable,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean isTransient,
-            Bitmap icon,
-            GURL originalUrl,
+            @Nullable Bitmap icon,
+            @Nullable GURL originalUrl,
             boolean shouldPromoteOrigin,
             boolean hasUserGesture,
             boolean forceRebuild,
@@ -487,10 +490,10 @@ public class DownloadNotificationService {
             String filePath,
             String fileName,
             long systemDownloadId,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean isSupportedMimeType,
             boolean isOpenable,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             GURL originalUrl,
             boolean shouldPromoteOrigin,
             GURL referrer,
@@ -546,11 +549,11 @@ public class DownloadNotificationService {
     @VisibleForTesting
     public void notifyDownloadFailed(
             ContentId id,
-            String fileName,
-            Bitmap icon,
-            GURL originalUrl,
+            @Nullable String fileName,
+            @Nullable Bitmap icon,
+            @Nullable GURL originalUrl,
             boolean shouldPromoteOrigin,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             @FailState int failState) {
         // If the download is not in history db, fileName could be empty. Get it from
         // SharedPreferences.
@@ -603,7 +606,7 @@ public class DownloadNotificationService {
             String fileName,
             GURL originalUrl,
             boolean shouldPromoteOrigin,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             boolean isTransient,
             @DownloadDangerType int dangerType) {
@@ -674,7 +677,7 @@ public class DownloadNotificationService {
     }
 
     @VisibleForTesting
-    void updateNotification(int id, Notification notification) {
+    void updateNotification(int id, @Nullable Notification notification) {
         // TODO(b/65052774): Add back NOTIFICATION_NAMESPACE when able to.
         mNotificationManager.notify(
                 new NotificationWrapper(
@@ -687,9 +690,9 @@ public class DownloadNotificationService {
 
     private void updateNotification(
             int notificationId,
-            Notification notification,
+            @Nullable Notification notification,
             ContentId id,
-            DownloadSharedPreferenceEntry entry) {
+            @Nullable DownloadSharedPreferenceEntry entry) {
         updateNotification(notificationId, notification);
         trackNotificationUma(id, notification);
 
@@ -700,7 +703,7 @@ public class DownloadNotificationService {
         }
     }
 
-    private void trackNotificationUma(ContentId id, Notification notification) {
+    private void trackNotificationUma(ContentId id, @Nullable Notification notification) {
         // Check if we already have an entry in the DownloadSharedPreferenceHelper.  This is a
         // reasonable indicator for whether or not a notification is already showing (or at least if
         // we had built one for this download before.

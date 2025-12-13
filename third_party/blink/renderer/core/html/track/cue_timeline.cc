@@ -78,6 +78,7 @@ void CueTimeline::AddCue(TextTrack* track, TextTrackCue* cue) {
 }
 
 void CueTimeline::AddCueInternal(TextTrackCue* cue) {
+  newly_introduced_cues_.insert(cue);
   CueInterval interval = CreateCueInterval(cue);
   if (!cue_tree_.Contains(interval))
     cue_tree_.Add(interval);
@@ -99,6 +100,7 @@ void CueTimeline::RemoveCue(TextTrack*, TextTrackCue* cue) {
 }
 
 void CueTimeline::RemoveCueInternal(TextTrackCue* cue) {
+  newly_introduced_cues_.erase(cue);
   CueInterval interval = CreateCueInterval(cue);
   cue_tree_.Remove(interval);
 
@@ -221,12 +223,18 @@ void CueTimeline::TimeMarchesOn() {
     missed_cues.ReserveInitialCapacity(potentially_skipped_cues.size());
 
     for (CueInterval cue : potentially_skipped_cues) {
-      // Consider cues that may have been missed since the last seek time.
+      // Consider cues that may have been missed since the last seek time. Do
+      // not add cues into `missed_cues` that are also in
+      // `newly_introduced_cues_`, as stated in
+      // https://html.spec.whatwg.org/multipage/media.html#time-marches-on
       if (cue.Low() > std::max(last_seek_time, last_time) &&
-          cue.High() < movie_time)
+          cue.High() < movie_time &&
+          !newly_introduced_cues_.Contains(cue.Data())) {
         missed_cues.push_back(cue);
+      }
     }
   }
+  newly_introduced_cues_.clear();
 
   last_update_time_ = movie_time;
 
@@ -551,6 +559,7 @@ void CueTimeline::DidMoveToNewDocument(Document& /*old_document*/) {
 
 void CueTimeline::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
+  visitor->Trace(newly_introduced_cues_);
   visitor->Trace(cue_event_timer_);
   visitor->Trace(cue_timestamp_event_timer_);
 }

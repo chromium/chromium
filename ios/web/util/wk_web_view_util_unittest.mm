@@ -21,13 +21,15 @@ TEST_F(WKWebViewUtilTest, EnsureCallbackIsCalledWithData) {
   // Mock the web_view and make sure createPDFWithConfiguration's
   // completionHandler is invoked with NSData and no errors.
   id web_view_mock = OCMClassMock([WKWebView class]);
-  OCMStub([web_view_mock createPDFWithConfiguration:[OCMArg any]
-                                  completionHandler:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        void (^completion_block)(NSData* pdf_document_data, NSError* error);
-        [invocation getArgument:&completion_block atIndex:3];
-        completion_block([[NSData alloc] init], nil);
-      });
+  OCMStub([web_view_mock
+      createPDFWithConfiguration:[OCMArg any]
+               completionHandler:[OCMArg checkWithBlock:^BOOL(
+                                             void (^completion_block)(
+                                                 NSData* pdf_document_data,
+                                                 NSError* error)) {
+                 completion_block([[NSData alloc] init], nil);
+                 return YES;
+               }]]);
 
   __block bool callback_called = false;
   __block NSData* callback_data = nil;
@@ -55,13 +57,15 @@ TEST_F(WKWebViewUtilTest, EnsureCallbackIsCalledWithNil) {
       [NSError errorWithDomain:NSURLErrorDomain
                           code:NSURLErrorServerCertificateHasUnknownRoot
                       userInfo:nil];
-  OCMStub([web_view_mock createPDFWithConfiguration:[OCMArg any]
-                                  completionHandler:[OCMArg any]])
-      .andDo(^(NSInvocation* invocation) {
-        void (^completion_block)(NSData* pdf_document_data, NSError* error);
-        [invocation getArgument:&completion_block atIndex:3];
-        completion_block(nil, error);
-      });
+  OCMStub([web_view_mock
+      createPDFWithConfiguration:[OCMArg any]
+               completionHandler:[OCMArg checkWithBlock:^BOOL(
+                                             void (^completion_block)(
+                                                 NSData* pdf_document_data,
+                                                 NSError* error)) {
+                 completion_block(nil, error);
+                 return YES;
+               }]]);
 
   __block bool callback_called = false;
   __block NSData* callback_data = nil;

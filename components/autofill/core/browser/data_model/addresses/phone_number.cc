@@ -7,6 +7,7 @@
 #include <limits.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -28,11 +29,11 @@ namespace autofill {
 namespace {
 
 // Returns the region code for this phone number, which is an ISO 3166 2-letter
-// country code.  The returned value is based on the |profile|; if the |profile|
+// country code.  The returned value is based on the `profile`; if the `profile`
 // does not have a country code associated with it, falls back to the country
-// code corresponding to the |app_locale|.
+// code corresponding to the `app_locale`.
 std::string GetRegion(const AutofillProfile& profile,
-                      const std::string& app_locale) {
+                      std::string_view app_locale) {
   std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
   if (!country_code.empty())
     return base::UTF16ToASCII(country_code);
@@ -93,7 +94,7 @@ std::u16string PhoneNumber::GetRawInfo(FieldType type) const {
 }
 
 void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
-                                                   const std::u16string& value,
+                                                   std::u16string_view value,
                                                    VerificationStatus status) {
   DCHECK_EQ(FieldTypeGroup::kPhone, GroupTypeOfFieldType(type));
   if (type != PHONE_HOME_WHOLE_NUMBER) {
@@ -109,22 +110,22 @@ void PhoneNumber::SetRawInfoWithVerificationStatus(FieldType type,
   cached_parsed_phone_ = i18n::PhoneObject();
 }
 
-void PhoneNumber::GetMatchingTypes(const std::u16string& text,
-                                   const std::string& app_locale,
+void PhoneNumber::GetMatchingTypes(std::u16string_view text,
+                                   std::string_view app_locale,
                                    FieldTypeSet* matching_types) const {
   // Strip the common phone number non numerical characters before calling the
-  // base matching type function. For example, the |text| "(514) 121-1523"
+  // base matching type function. For example, the `text` "(514) 121-1523"
   // would become the stripped text "5141211523". Since the base matching
   // function only does simple canonicalization to match against the stored
   // data, some domain specific cases will be covered below.
-  std::u16string stripped_text = text;
-  base::RemoveChars(stripped_text, u" .()-", &stripped_text);
+  std::u16string stripped_text;
+  base::RemoveChars(text, u" .()-", &stripped_text);
   FormGroup::GetMatchingTypes(stripped_text, app_locale, matching_types);
 
   // TODO(crbug.com/41236729): Investigate the use of PhoneNumberUtil when
   // matching phone numbers for upload.
   // If there is not already a match for PHONE_HOME_WHOLE_NUMBER, normalize the
-  // |text| based on the app_locale before comparing it to the whole number. For
+  // `text` based on the app_locale before comparing it to the whole number. For
   // example, the France number "33 2 49 19 70 70" would be normalized to
   // "+33249197070" whereas the US number "+1 (234) 567-8901" would be
   // normalized to "12345678901".
@@ -168,13 +169,13 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   }
 }
 
-// Normalize phones if |type| is a whole number:
+// Normalize phones if `type` is a whole number:
 //   (650)2345678 -> 6502345678
 //   1-800-FLOWERS -> 18003569377
 // If the phone cannot be normalized, returns the stored value verbatim.
 std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
-                                    const std::string& app_locale) const {
-  FieldType type = autofill_type.GetStorableType();
+                                    std::string_view app_locale) const {
+  FieldType type = autofill_type.GetAddressType();
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
@@ -196,8 +197,25 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
   };
 
   switch (type) {
-    case PHONE_HOME_WHOLE_NUMBER:
-      return cached_parsed_phone_.GetWholeNumber();
+    case PHONE_HOME_WHOLE_NUMBER: {
+      std::u16string whole_number_ = cached_parsed_phone_.GetWholeNumber();
+
+      // Drop the leading '+' for US/CA numbers as some sites can't handle the
+      // "+", and in these regions dialing "+1..." is the same as dialing
+      // "1...".
+      // TODO(crbug.com/40311205): Investigate whether the leading "+" is
+      // desirable in other regions. Closed bug crbug.com/98911 contains
+      // additional context.
+      std::string country_code = *profile_->GetAddressCountryCode();
+      if (country_code == "US" || country_code == "CA"){
+        std::string region_code = cached_parsed_phone_.GetRegionCode();
+        if ((region_code == "US" || region_code == "CA") &&
+            whole_number_[0] == u'+') {
+          whole_number_ = whole_number_.substr(1);
+        }
+      }
+      return whole_number_;
+    }
 
     case PHONE_HOME_NUMBER:
       return cached_parsed_phone_.number();
@@ -270,10 +288,10 @@ std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
 }
 
 bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,
-                                                const std::u16string& value,
-                                                const std::string& app_locale,
+                                                std::u16string_view value,
+                                                std::string_view app_locale,
                                                 VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
 
   if (number_.empty()) {
     return true;
@@ -297,7 +315,7 @@ VerificationStatus PhoneNumber::GetVerificationStatus(FieldType type) const {
   return VerificationStatus::kNoStatus;
 }
 
-void PhoneNumber::UpdateCacheIfNeeded(const std::string& app_locale) const {
+void PhoneNumber::UpdateCacheIfNeeded(std::string_view app_locale) const {
   std::string region = GetRegion(*profile_, app_locale);
   if (!number_.empty() && cached_parsed_phone_.region() != region) {
     // To enable filling of country calling codes for nationally formatted
@@ -314,7 +332,7 @@ PhoneNumber::PhoneCombineHelper::PhoneCombineHelper() = default;
 PhoneNumber::PhoneCombineHelper::~PhoneCombineHelper() = default;
 
 void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
-                                              const std::u16string& value) {
+                                              std::u16string_view value) {
   CHECK_EQ(GroupTypeOfFieldType(field_type), FieldTypeGroup::kPhone);
   switch (field_type) {
     case PHONE_HOME_COUNTRY_CODE:
@@ -349,7 +367,7 @@ void PhoneNumber::PhoneCombineHelper::SetInfo(FieldType field_type,
 
 bool PhoneNumber::PhoneCombineHelper::ParseNumber(
     const AutofillProfile& profile,
-    const std::string& app_locale,
+    std::string_view app_locale,
     std::u16string* value) const {
   if (IsEmpty())
     return false;
@@ -366,7 +384,7 @@ bool PhoneNumber::PhoneCombineHelper::ParseNumber(
 // static
 bool PhoneNumber::ImportPhoneNumberToProfile(
     const PhoneNumber::PhoneCombineHelper& combined_phone,
-    const std::string& app_locale,
+    std::string_view app_locale,
     AutofillProfile& profile) {
   std::u16string constructed_number;
   // If the phone number only consists of a single component, the

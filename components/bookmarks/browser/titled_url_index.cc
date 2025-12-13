@@ -188,8 +188,8 @@ std::optional<TitledUrlMatch> TitledUrlIndex::MatchTitledUrlNodeWithQuery(
   const std::u16string lower_title =
       base::i18n::ToLower(Normalize(node->GetTitledUrlNodeTitle()));
   base::OffsetAdjuster::Adjustments adjustments;
-  const std::u16string clean_url = string_cleaning::CleanUpUrlForMatching(
-      node->GetTitledUrlNodeUrl(), &adjustments);
+  const std::u16string clean_url =
+      omnibox::CleanUpUrlForMatching(node->GetTitledUrlNodeUrl(), &adjustments);
   std::vector<std::u16string> lower_ancestor_titles;
   std::ranges::transform(
       node->GetTitledUrlNodeAncestorTitles(),
@@ -425,7 +425,7 @@ std::vector<std::u16string> TitledUrlIndex::ExtractIndexTerms(
   }
 
   for (const std::u16string& term :
-       ExtractQueryWords(string_cleaning::CleanUpUrlForMatching(
+       ExtractQueryWords(omnibox::CleanUpUrlForMatching(
            node->GetTitledUrlNodeUrl(), /*adjustments=*/nullptr))) {
     terms.push_back(term);
   }

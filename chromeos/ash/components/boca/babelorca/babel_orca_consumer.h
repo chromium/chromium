@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_BABEL_ORCA_CONSUMER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -136,6 +137,7 @@ class BabelOrcaConsumer : public BabelOrcaController {
   bool local_captions_enabled_ = false;
   bool session_captions_enabled_ = false;
   bool in_session_ = false;
+  std::optional<std::string> transcript_lang_;
 
   base::WeakPtrFactory<BabelOrcaConsumer> weak_ptr_factory_{this};
 };

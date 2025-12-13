@@ -6,14 +6,16 @@
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/learn_more_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_learn_more_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/string_util.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -22,7 +24,6 @@
 
 namespace {
 CGFloat constexpr kTableViewCornerRadius = 10;
-CGFloat constexpr kTableViewSeparatorInsetHide = 10000;
 
 // Section identifiers in the browsing data page table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -102,12 +103,12 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   // If _multiProfileForceMigration is YES, the user cannot refuse the
   // migration, and the secondary button is hidden.
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       _multiProfileForceMigration
           ? l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_GOTIT)
           : l10n_util::GetNSString(
                 IDS_IOS_ENTERPRISE_PROFILE_CREATION_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       _multiProfileForceMigration
           ? nil
           : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_CANCEL);
@@ -161,21 +162,23 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 #pragma mark - Private
 
 // Creates the Cell that allows the user to select how to handle browsing data.
-- (TableViewMultiDetailTextCell*)createBrowsingDataMigrationCellItem {
-  TableViewMultiDetailTextCell* cell =
-      DequeueTableViewCell<TableViewMultiDetailTextCell>(_tableView);
-  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  cell.textLabel.text = l10n_util::GetNSString(
+- (UITableViewCell*)createBrowsingDataMigrationCellItem {
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+  configuration.title = l10n_util::GetNSString(
       IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_LABEL);
-  cell.trailingDetailTextLabel.text = l10n_util::GetNSString(
+  configuration.trailingText = l10n_util::GetNSString(
       _keepBrowsinDataSeparate
           ? IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_YES
           : IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_NO);
 
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:_tableView];
+
+  cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  cell.separatorInset =
-      UIEdgeInsetsMake(0.f, kTableViewSeparatorInsetHide, 0.f, 0.f);
+  cell.contentConfiguration = configuration;
   return cell;
 }
 
@@ -184,6 +187,8 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   UITableView* tableView =
       [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStylePlain];
+  tableView.tableFooterView =
+      [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
   tableView.estimatedRowHeight = UITableViewAutomaticDimension;
   tableView.layer.cornerRadius = kTableViewCornerRadius;
   tableView.scrollEnabled = NO;
@@ -191,7 +196,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   tableView.delegate = self;
   tableView.userInteractionEnabled = YES;
   tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  tableView.separatorInset = UIEdgeInsetsZero;
   _tableViewHeightConstraint =
       [tableView.heightAnchor constraintEqualToConstant:0];
   _tableViewHeightConstraint.active = YES;
@@ -213,7 +217,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewMultiDetailTextCell>(_tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:_tableView];
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];

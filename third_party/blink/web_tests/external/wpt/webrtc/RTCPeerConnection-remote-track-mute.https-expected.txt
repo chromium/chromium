@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] transceiver.stop() on one side (without renegotiation) causes mute events on the other
+  assert_true: Timed out waiting for mute expected true got false
+[FAIL] pc.close() on one side causes mute events on the other
+  assert_true: Timed out waiting for mute expected true got false
+Harness: the test ran to completion.
+

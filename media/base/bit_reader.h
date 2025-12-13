@@ -11,6 +11,7 @@
 #include <string>
 #include <type_traits>
 
+#include "base/bits.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -51,8 +52,8 @@ class MEDIA_EXPORT BitReader {
   // return false unless `num_bits` is 0. The type `T` has to be a primitive
   // integer type.
   template <typename T>
-    requires std::integral<T>
-  bool ReadBits(size_t num_bits, T* out) {
+    requires base::bits::UnsignedInteger<T>
+  [[nodiscard]] bool ReadBits(size_t num_bits, T* out) {
     DCHECK_LE(num_bits, sizeof(T) * 8);
     uint64_t temp = 0;
     bool ret = ReadBitsInternal(num_bits, &temp);
@@ -66,23 +67,23 @@ class MEDIA_EXPORT BitReader {
   // Remark: we do not use the template version for reading a bool
   // since it generates some optimization warnings during compilation
   // on Windows platforms.
-  bool ReadBits(size_t num_bits, bool* out) {
+  [[nodiscard]] bool ReadBits(size_t num_bits, bool* out) {
     DCHECK_EQ(num_bits, 1u);
     return ReadFlag(out);
   }
 
   // Read one bit from the stream and return it as a boolean in `*flag`.
-  bool ReadFlag(bool* flag);
+  [[nodiscard]] bool ReadFlag(bool* flag);
 
   // Read `num_bits` of binary data into `str`. `num_bits` must be a positive
   // multiple of 8. This is not efficient for extracting large strings.
   // If false is returned, `str` may not be valid.
-  bool ReadString(size_t num_bits, std::string* str);
+  [[nodiscard]] bool ReadString(size_t num_bits, std::string* str);
 
   // Read binary data into `out`. This is not efficient for extracting large
   // data.
   // If false is returned, `out` may not be valid.
-  bool ReadSpan(base::span<uint8_t> out);
+  [[nodiscard]] bool ReadSpan(base::span<uint8_t> out);
 
   // Skip `num_bits` next bits from stream. Return false if the given number of
   // bits cannot be skipped (not enough bits in the stream), true otherwise.

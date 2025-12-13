@@ -17,31 +17,34 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/lifetime/termination_notification.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/extensions/chrome_manifest_url_handlers.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "components/crx_file/id_util.h"
+#include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/declarative_net_request/install_index_helper.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/path_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/policy_check.h"
 #include "extensions/browser/preload_check_group.h"
 #include "extensions/browser/requirements_checker.h"
 #include "extensions/browser/ruleset_parse_result.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -50,9 +53,12 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 using extensions::Extension;
@@ -70,7 +76,40 @@ const char kImportMinVersionNewer[] =
 const char kImportMissing[] = "'import' extension is not installed.";
 const char kImportNotSharedModule[] = "'import' is not a shared module.";
 
+class BrowserContextShutdownNotifierFactory
+    : public BrowserContextKeyedServiceShutdownNotifierFactory {
+ public:
+  static BrowserContextShutdownNotifierFactory* GetInstance() {
+    static base::NoDestructor<BrowserContextShutdownNotifierFactory> s_factory;
+    return s_factory.get();
+  }
+
+  // No copying.
+  BrowserContextShutdownNotifierFactory(
+      const BrowserContextShutdownNotifierFactory&) = delete;
+  BrowserContextShutdownNotifierFactory& operator=(
+      const BrowserContextShutdownNotifierFactory&) = delete;
+
+ private:
+  friend class base::NoDestructor<BrowserContextShutdownNotifierFactory>;
+  BrowserContextShutdownNotifierFactory()
+      : BrowserContextKeyedServiceShutdownNotifierFactory("UnpackedInstaller") {
+    DependsOn(ExtensionRegistryFactory::GetInstance());
+    DependsOn(EventRouterFactory::GetInstance());
+  }
+
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override {
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
+  }
+};
+
 }  // namespace
+
+// static
+void UnpackedInstaller::EnsureShutdownNotifierFactoryBuilt() {
+  BrowserContextShutdownNotifierFactory::GetInstance();
+}
 
 // static
 scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
@@ -80,17 +119,18 @@ scoped_refptr<UnpackedInstaller> UnpackedInstaller::Create(
 }
 
 UnpackedInstaller::UnpackedInstaller(content::BrowserContext* context)
-    : profile_(Profile::FromBrowserContext(context)),
+    : browser_context_(context),
       require_modern_manifest_version_(true),
       be_noisy_on_failure_(true) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  profile_observation_.Observe(profile_);
 
-  // Observe for browser shutdown. Unretained is safe because the callback
-  // subscription is owned by this object.
-  on_browser_terminating_subscription_ =
-      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
-          &UnpackedInstaller::OnBrowserTerminating, base::Unretained(this)));
+  // Observe for BrowserContext shutdown. Unretained is safe because the
+  // callback subscription is owned by this object.
+  browser_context_shutdown_subscription_ =
+      BrowserContextShutdownNotifierFactory::GetInstance()
+          ->Get(browser_context_)
+          ->Subscribe(base::BindRepeating(&UnpackedInstaller::Shutdown,
+                                          base::Unretained(this)));
 }
 
 UnpackedInstaller::~UnpackedInstaller() {
@@ -100,7 +140,7 @@ UnpackedInstaller::~UnpackedInstaller() {
 void UnpackedInstaller::Load(const base::FilePath& path_in) {
   DCHECK(extension_path_.empty());
   extension_path_ = path_in;
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return;
   }
   GetExtensionFileTaskRunner()->PostTask(
@@ -114,7 +154,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(extension_path_.empty());
 
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return false;
   }
   // Load extensions from the command line synchronously to avoid a race
@@ -129,10 +169,10 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
     return false;
   }
 
-  std::string error;
+  std::u16string error;
   if (!LoadExtension(mojom::ManifestLocation::kCommandLine, GetFlags(),
                      &error)) {
-    ReportExtensionLoadError(error);
+    ReportExtensionLoadError(base::UTF16ToUTF8(error));
     return false;
   }
 
@@ -151,7 +191,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
   }
 
   extension()->permissions_data()->BindToCurrentThread();
-  PermissionsUpdater(profile_, PermissionsUpdater::INIT_FLAG_TRANSIENT)
+  PermissionsUpdater(browser_context_, PermissionsUpdater::INIT_FLAG_TRANSIENT)
       .InitializePermissions(extension());
   StartInstallChecks();
 
@@ -161,7 +201,7 @@ bool UnpackedInstaller::LoadFromCommandLine(const base::FilePath& path_in,
 
 void UnpackedInstaller::StartInstallChecks() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return;
   }
 
@@ -177,7 +217,7 @@ void UnpackedInstaller::StartInstallChecks() {
       const std::vector<SharedModuleInfo::ImportInfo>& imports =
           SharedModuleInfo::GetImports(extension());
       std::vector<SharedModuleInfo::ImportInfo>::const_iterator i;
-      ExtensionRegistry* registry = ExtensionRegistry::Get(profile_);
+      ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
       for (i = imports.begin(); i != imports.end(); ++i) {
         base::Version version_required(i->minimum_version);
         const Extension* imported_module = registry->GetExtensionById(
@@ -199,7 +239,7 @@ void UnpackedInstaller::StartInstallChecks() {
     }
   }
 
-  policy_check_ = std::make_unique<PolicyCheck>(profile_, extension_);
+  policy_check_ = std::make_unique<PolicyCheck>(browser_context_, extension_);
   requirements_check_ = std::make_unique<RequirementsChecker>(extension_);
 
   check_group_ = std::make_unique<PreloadCheckGroup>();
@@ -214,7 +254,7 @@ void UnpackedInstaller::StartInstallChecks() {
 void UnpackedInstaller::OnInstallChecksComplete(
     const PreloadCheck::Errors& errors) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return;
   }
 
@@ -238,7 +278,7 @@ int UnpackedInstaller::GetFlags() {
   std::string id = crx_file::id_util::GenerateIdForPath(extension_path_);
   bool allow_file_access =
       Manifest::ShouldAlwaysAllowFileAccess(mojom::ManifestLocation::kUnpacked);
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   if (allow_file_access_.has_value()) {
     allow_file_access = *allow_file_access_;
   } else if (prefs->HasAllowFileAccessSetting(id)) {
@@ -262,7 +302,7 @@ int UnpackedInstaller::GetFlags() {
 
 bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
                                       int flags,
-                                      std::string* error) {
+                                      std::u16string* error) {
   // Clean up the kMetadataFolder if necessary. This prevents spurious
   // warnings/errors and ensures we don't treat a user provided file as one by
   // the Extension system.
@@ -285,7 +325,7 @@ bool UnpackedInstaller::LoadExtension(mojom::ManifestLocation location,
          IndexAndPersistRulesIfNeeded(error);
 }
 
-bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
+bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::u16string* error) {
   DCHECK(extension());
 
   base::expected<base::Value::Dict, std::string> index_result =
@@ -293,7 +333,7 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
           IndexAndPersistRulesOnInstall(*extension_);
 
   if (!index_result.has_value()) {
-    *error = std::move(index_result.error());
+    *error = base::UTF8ToUTF16(index_result.error());
     return false;
   }
 
@@ -302,13 +342,13 @@ bool UnpackedInstaller::IndexAndPersistRulesIfNeeded(std::string* error) {
 }
 
 bool UnpackedInstaller::IsLoadingUnpackedAllowed() const {
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return true;
   }
   // If there is a "*" in the extension blocklist, then no extensions should be
   // allowed at all except packed extensions that are explicitly listed in the
   // allowlist.
-  return !ExtensionManagementFactory::GetForBrowserContext(profile_)
+  return !ExtensionManagementFactory::GetForBrowserContext(browser_context_)
               ->BlocklistedByDefault();
 }
 
@@ -324,7 +364,7 @@ void UnpackedInstaller::GetAbsolutePathOnFileThread() {
 
 void UnpackedInstaller::CheckExtensionFileAccess() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     return;
   }
 
@@ -340,13 +380,13 @@ void UnpackedInstaller::CheckExtensionFileAccess() {
 }
 
 void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
-  std::string error;
+  std::u16string error;
   if (!LoadExtension(mojom::ManifestLocation::kUnpacked, flags, &error)) {
     // Set priority explicitly to avoid unwanted task priority inheritance.
     content::GetUIThreadTaskRunner({base::TaskPriority::USER_BLOCKING})
         ->PostTask(FROM_HERE,
                    base::BindOnce(&UnpackedInstaller::ReportExtensionLoadError,
-                                  this, error));
+                                  this, base::UTF16ToUTF8(error)));
     return;
   }
 
@@ -356,29 +396,33 @@ void UnpackedInstaller::LoadWithFileAccessOnFileThread(int flags) {
                  base::BindOnce(&UnpackedInstaller::StartInstallChecks, this));
 }
 
+// TODO(crbug.com/41317803): Continue removing std::string error and
+// replacing with std::u16string.
 void UnpackedInstaller::ReportExtensionLoadError(const std::string &error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (profile_) {
+  if (browser_context_) {
     LoadErrorReporter::GetInstance()->ReportLoadError(
-        extension_path_, error, profile_, be_noisy_on_failure_);
+        extension_path_, base::UTF8ToUTF16(error), browser_context_,
+        be_noisy_on_failure_);
   }
 
   if (!callback_.is_null())
-    std::move(callback_).Run(nullptr, extension_path_, error);
+    std::move(callback_).Run(nullptr, extension_path_,
+                             base::UTF8ToUTF16(error));
 }
 
 void UnpackedInstaller::InstallExtension() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!profile_ || browser_terminating_) {
+  if (!browser_context_) {
     callback_.Reset();
     return;
   }
 
   // Force file access and/or incognito state and set install param if
   // requested.
-  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context_);
   if (allow_file_access_.has_value()) {
     prefs->SetAllowFileAccess(extension()->id(), *allow_file_access_);
   }
@@ -389,19 +433,20 @@ void UnpackedInstaller::InstallExtension() {
     SetInstallParam(prefs, extension()->id(), *install_param_);
   }
 
-  PermissionsUpdater perms_updater(profile_);
+  PermissionsUpdater perms_updater(browser_context_);
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
-  ExtensionRegistrar::Get(profile_)->OnExtensionInstalled(
-      extension(), syncer::StringOrdinal(), kInstallFlagInstallImmediately,
-      std::move(ruleset_install_prefs_));
+  ExtensionRegistrar::Get(browser_context_)
+      ->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
+                             kInstallFlagInstallImmediately,
+                             std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
   RecordCommandLineMetrics();
 
   if (!callback_.is_null())
-    std::move(callback_).Run(extension(), extension_path_, std::string());
+    std::move(callback_).Run(extension(), extension_path_, std::u16string());
 }
 
 void UnpackedInstaller::RecordCommandLineMetrics() {
@@ -410,7 +455,8 @@ void UnpackedInstaller::RecordCommandLineMetrics() {
     return;
   }
 
-  ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(browser_context_);
   if (!extension_registry->GetInstalledExtension(extension()->id())) {
     return;
   }
@@ -445,7 +491,7 @@ void UnpackedInstaller::RecordCommandLineMetrics() {
 
   // Developer mode metrics.
   bool dev_mode_enabled =
-      GetCurrentDeveloperMode(util::GetBrowserContextId(profile_));
+      GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_));
 
   if (extension_registry->enabled_extensions().Contains(extension()->id())) {
     if (dev_mode_enabled) {
@@ -468,13 +514,8 @@ void UnpackedInstaller::RecordCommandLineMetrics() {
   }
 }
 
-void UnpackedInstaller::OnProfileWillBeDestroyed(Profile* profile) {
-  profile_observation_.Reset();
-  profile_ = nullptr;
-}
-
-void UnpackedInstaller::OnBrowserTerminating() {
-  browser_terminating_ = true;
+void UnpackedInstaller::Shutdown() {
+  browser_context_ = nullptr;
 }
 
 }  // namespace extensions

@@ -33,6 +33,9 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -89,7 +92,6 @@ Scrollbar::Scrollbar(ScrollableArea* scrollable_area,
       scroll_timer_(scrollable_area->GetTimerTaskRunner(),
                     this,
                     &Scrollbar::AutoscrollTimerFired),
-      elastic_overscroll_(0),
       injected_gesture_scroll_begin_(false),
       scrollbar_manipulation_in_progress_on_cc_thread_(false),
       style_source_(style_source) {
@@ -149,6 +151,27 @@ int Scrollbar::Maximum() const {
   gfx::Vector2d max_offset = scrollable_area_->MaximumScrollOffsetInt() -
                              scrollable_area_->MinimumScrollOffsetInt();
   return orientation_ == kHorizontalScrollbar ? max_offset.x() : max_offset.y();
+}
+
+WebThemeEngine::State Scrollbar::GetStateForPart(ScrollbarPart part) const {
+  if (!enabled_) {
+    return WebThemeEngine::kStateDisabled;
+  }
+  if (part == pressed_part_) {
+    return WebThemeEngine::kStatePressed;
+  }
+  if (part == hovered_part_) {
+    // Don't draw a hovered state when the device does not have hover available.
+    if (const Settings* const settings =
+            style_source_ ? style_source_->GetDocument().GetSettings()
+                          : nullptr;
+        !settings ||
+        (settings->GetAvailableHoverTypes() &
+         static_cast<int>(mojom::blink::HoverType::kHoverHoverType))) {
+      return WebThemeEngine::kStateHover;
+    }
+  }
+  return WebThemeEngine::kStateNormal;
 }
 
 void Scrollbar::OffsetDidChange(mojom::blink::ScrollType scroll_type) {
@@ -988,17 +1011,20 @@ bool Scrollbar::LastKnownMousePositionInFrameRect() const {
 
 const ui::ColorProvider* Scrollbar::GetColorProvider(
     mojom::blink::ColorScheme color_scheme) const {
-  if (const auto* box = GetLayoutBox()) {
-    return box->GetDocument().GetColorProviderForPainting(color_scheme);
-  }
-  return nullptr;
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetColorProviderForPainting(color_scheme)
+             : nullptr;
+}
+
+mojom::blink::PreferredContrast Scrollbar::GetPreferredContrast() const {
+  const auto* const box = GetLayoutBox();
+  return box ? box->GetDocument().GetPreferredContrast()
+             : mojom::blink::PreferredContrast::kNoPreference;
 }
 
 bool Scrollbar::InForcedColorsMode() const {
-  if (const auto* box = GetLayoutBox()) {
-    return box->GetDocument().InForcedColorsMode();
-  }
-  return false;
+  const auto* const box = GetLayoutBox();
+  return box && box->GetDocument().InForcedColorsMode();
 }
 
 }  // namespace blink

@@ -177,23 +177,6 @@ TEST_P(PrivacySandboxTestUtilBoolTest, VerifyM1TopicsEnabledStateKeySetsPref) {
       state);
 }
 
-TEST_P(PrivacySandboxTestUtilBoolTest,
-       VerifykBlockAll3pcToggleEnabledStateKeySetsPref) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kBlockAll3pcToggleEnabledUserPrefValue, state);
-  EXPECT_EQ(prefs()->GetUserPref(prefs::kBlockAll3pcToggleEnabled)->GetBool(),
-            state);
-}
-
-TEST_P(PrivacySandboxTestUtilBoolTest,
-       VerifykTrackingProtection3pcdEnabledStateKeySetsPref) {
-  bool state = GetParam();
-  ApplyTestState(StateKey::kTrackingProtection3pcdEnabledUserPrefValue, state);
-  EXPECT_EQ(
-      prefs()->GetUserPref(prefs::kTrackingProtection3pcdEnabled)->GetBool(),
-      state);
-}
-
 TEST_P(PrivacySandboxTestUtilBoolTest, VerifyM1FledgeEnabledStateKeySetsPref) {
   bool state = GetParam();
   ApplyTestState(StateKey::kM1FledgeEnabledUserPrefValue, state);
@@ -301,10 +284,9 @@ TEST_P(PrivacySandboxTestUtilContentSettingTest,
   ApplyTestState(StateKey::kSiteDataUserDefault, state);
 
   // The state should have ended up in the user provider we gave to the util.
-  auto user_rule_iterator = user_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto user_rule_iterator =
+      user_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                       /*off_the_record=*/false);
 
   EXPECT_TRUE(user_rule_iterator->HasNext());
   auto rule = user_rule_iterator->Next();
@@ -314,10 +296,9 @@ TEST_P(PrivacySandboxTestUtilContentSettingTest,
 
   // Nothing should have ended up in the managed provider, which will present
   // as a null iterator.
-  auto managed_rule_iterator = managed_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto managed_rule_iterator =
+      managed_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                          /*off_the_record=*/false);
   EXPECT_EQ(managed_rule_iterator, nullptr);
 }
 
@@ -334,10 +315,9 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifySiteDataUserExceptionStateKey) {
                  SiteDataExceptions{{kException, CONTENT_SETTING_BLOCK}});
 
   // The state should have ended up in the user provider we gave to the util.
-  auto user_rule_iterator = user_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto user_rule_iterator =
+      user_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                       /*off_the_record=*/false);
 
   EXPECT_TRUE(user_rule_iterator->HasNext());
   auto rule = user_rule_iterator->Next();
@@ -347,10 +327,9 @@ TEST_F(PrivacySandboxBaseTestUtilTest, VerifySiteDataUserExceptionStateKey) {
 
   // Nothing should have ended up in the managed provider, which will present
   // as a null iterator.
-  auto managed_rule_iterator = managed_provider()->GetRuleIterator(
-      ContentSettingsType::COOKIES,
-      /*off_the_record=*/false,
-      content_settings::PartitionKey::GetDefaultForTesting());
+  auto managed_rule_iterator =
+      managed_provider()->GetRuleIterator(ContentSettingsType::COOKIES,
+                                          /*off_the_record=*/false);
   EXPECT_EQ(managed_rule_iterator, nullptr);
 }
 

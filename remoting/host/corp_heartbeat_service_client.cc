@@ -8,8 +8,8 @@
 #include <string_view>
 
 #include "base/strings/stringize_macros.h"
+#include "remoting/base/environment_details.h"
 #include "remoting/base/protobuf_http_client.h"
-#include "remoting/host/host_details.h"
 #include "remoting/host/version.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -103,8 +103,8 @@ void CorpHeartbeatServiceClient::MakeUpdateRemoteAccessHostCall(
     CorpServiceClient::UpdateRemoteAccessHostCallback callback) {
   constexpr char kHostVersion[] = STRINGIZE(VERSION);
   client_.UpdateRemoteAccessHost(directory_id_, kHostVersion, signaling_id,
-                                 offline_reason, GetHostOperatingSystemName(),
-                                 GetHostOperatingSystemVersion(),
+                                 offline_reason, GetOperatingSystemName(),
+                                 GetOperatingSystemVersion(),
                                  std::move(callback));
 }
 

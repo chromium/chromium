@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_task_environment.h"

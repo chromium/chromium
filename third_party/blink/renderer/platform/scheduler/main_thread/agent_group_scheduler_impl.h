@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -98,7 +97,7 @@ class PLATFORM_EXPORT AgentGroupSchedulerImpl : public AgentGroupScheduler {
   std::map<base::UnguessableToken, int> num_visible_frames_per_agent_
       ALLOW_DISCOURAGED_TYPE(
           "There is no compelling reason to make base::UnguessableToken "
-          "compatible with WTF::HashMap");
+          "compatible with blink::HashMap");
   bool is_updating_policy_ = false;
 };
 

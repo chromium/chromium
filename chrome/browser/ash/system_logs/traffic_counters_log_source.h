@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_LOGS_TRAFFIC_COUNTERS_LOG_SOURCE_H_
 #define CHROME_BROWSER_ASH_SYSTEM_LOGS_TRAFFIC_COUNTERS_LOG_SOURCE_H_
 
-#include <map>
 #include <optional>
 #include <string>
 

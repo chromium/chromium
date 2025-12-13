@@ -247,7 +247,18 @@ void HandleMouseDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
                                 scoped_refptr<base::TaskRunner> reply_runner,
                                 InputDeviceCallback callback) {
   std::vector<InputDevice> devices;
+  const DeviceInfo* virtual_pointer = nullptr;
+  bool found_physical_pointer = false;
+
   for (const DeviceInfo& device_info : device_infos) {
+    if (device_info.use == x11::Input::DeviceType::SlavePointer ||
+        device_info.use == x11::Input::DeviceType::FloatingSlave) {
+      found_physical_pointer = true;
+    }
+    if (device_info.use == x11::Input::DeviceType::MasterPointer &&
+        device_info.name == "Virtual core pointer") {
+      virtual_pointer = &device_info;
+    }
     if (device_info.type != DEVICE_TYPE_MOUSE ||
         device_info.use != x11::Input::DeviceType::SlavePointer) {
       continue;
@@ -256,6 +267,12 @@ void HandleMouseDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
     InputDeviceType type = GetInputDeviceTypeFromPath(device_info.path);
     devices.emplace_back(static_cast<uint16_t>(device_info.id), type,
                          device_info.name);
+  }
+
+  if (!found_physical_pointer && virtual_pointer) {
+    InputDeviceType type = GetInputDeviceTypeFromPath(virtual_pointer->path);
+    devices.emplace_back(static_cast<uint16_t>(virtual_pointer->id), type,
+                         virtual_pointer->name);
   }
 
   reply_runner->PostTask(FROM_HERE,

@@ -125,7 +125,11 @@ void DigitalIdentityProviderAndroid::OnReceive(
   std::move(callback_).Run(
       (status_for_metrics == RequestStatusForMetrics::kSuccess)
           ? base::expected<DigitalCredential, RequestStatusForMetrics>(
-                DigitalCredential(std::move(protocol),
-                                  base::JSONReader::Read(result)))
+                DigitalCredential(
+                    std::move(protocol),
+                    base::JSONReader::Read(
+                        result, base::JSON_PARSE_CHROMIUM_EXTENSIONS)))
           : base::unexpected(status_for_metrics));
 }
+
+DEFINE_JNI(DigitalIdentityProvider)

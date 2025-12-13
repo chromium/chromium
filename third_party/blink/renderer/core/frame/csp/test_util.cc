@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/frame/csp/test_util.h"
 
 #include "base/containers/to_vector.h"
-#include "services/network/public/mojom/integrity_metadata.mojom-blink.h"
 
 namespace blink {
 
@@ -20,19 +19,13 @@ WebCSPSource ConvertSource(const network::mojom::blink::CSPSourcePtr& source) {
           source->is_port_wildcard};
 }
 
-WebIntegrityMetadata ConvertIntegrityMetadata(
-    const network::mojom::blink::IntegrityMetadataPtr& integrity_metadata) {
-  return {integrity_metadata->algorithm,
-          base::ToVector(integrity_metadata->value)};
-}
-
 WebCSPSourceList ConvertSourceList(
     const network::mojom::blink::CSPSourceListPtr& source_list) {
   return {base::ToVector(source_list->sources, ConvertSource),
           base::ToVector(source_list->nonces, ToWebString),
-          base::ToVector(source_list->hashes, ConvertIntegrityMetadata),
-          base::ToVector(source_list->url_hashes, ConvertIntegrityMetadata),
-          base::ToVector(source_list->eval_hashes, ConvertIntegrityMetadata),
+          base::ToVector(source_list->hashes),
+          base::ToVector(source_list->url_hashes),
+          base::ToVector(source_list->eval_hashes),
           source_list->allow_self,
           source_list->allow_star,
           source_list->allow_inline,

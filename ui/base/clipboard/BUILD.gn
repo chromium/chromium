@@ -16,14 +16,17 @@ component("clipboard_types") {
   sources = [
     "clipboard_buffer.h",
     "clipboard_constants.h",
+    "clipboard_url_info.h",
   ]
+
+  public_deps = [ "//url" ]
 
   if (use_blink) {
     sources += [ "clipboard_format_type.h" ]
+  }
 
-    if (is_ios) {
-      sources += [ "clipboard_format_type_ios.mm" ]
-    }
+  if (is_ios) {
+    sources += [ "clipboard_format_type_ios.mm" ]
   }
 
   if (is_android) {
@@ -94,6 +97,7 @@ component("clipboard") {
     "clipboard.h",
     "clipboard_change_notifier.cc",
     "clipboard_change_notifier.h",
+    "clipboard_metadata.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",
     "clipboard_monitor.cc",
@@ -188,6 +192,10 @@ component("clipboard") {
     deps += [ "//ui/base:clipboard_jni_headers" ]
   }
 
+  if (is_linux) {
+    deps += [ "//ui/linux:linux_ui" ]
+  }
+
   if (is_mac) {
     deps += [ ":url_file_parser" ]
     frameworks = [
@@ -276,7 +284,7 @@ source_set("clipboard_test") {
     "//ui/base:features",
     "//ui/events/platform",
     "//ui/gfx:test_support",
-    "//url:url",
+    "//url",
   ]
 
   if (is_mac) {

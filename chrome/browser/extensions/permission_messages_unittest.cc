@@ -10,8 +10,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -19,6 +17,8 @@
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"

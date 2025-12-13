@@ -84,7 +84,7 @@ unsafe impl ULE for CharULE {
         // Validate the bytes
         for chunk in bytes.chunks_exact(3) {
             // TODO: Use slice::as_chunks() when stabilized
-            #[allow(clippy::indexing_slicing)]
+            #[expect(clippy::indexing_slicing)]
             // Won't panic because the chunks are always 3 bytes long
             let u = u32::from_le_bytes([chunk[0], chunk[1], chunk[2], 0]);
             char::try_from(u).map_err(|_| UleError::parse::<Self>())?;

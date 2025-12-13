@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/functional/callback_forward.h"
 #include "chromeos/ash/components/mantis/mojom/mantis_processor.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

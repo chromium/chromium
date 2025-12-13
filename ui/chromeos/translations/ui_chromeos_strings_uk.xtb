@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Жанр</translation>
 <translation id="1254593899333212300">Пряме з'єднання з Інтернетом</translation>
 <translation id="1272293450992660632">Значення PIN-кодів не збігаються.</translation>
+<translation id="1279040297980392566">Очікується завершення сканування. Повторіть спробу пізніше.</translation>
 <translation id="1280820357415527819">Пошук мобільних мереж</translation>
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1297922636971898492">Диск Google зараз недоступний. Завантаження автоматично відновиться після повторного під’єднання до Google Диска.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Вибрано 1 файл</translation>
 <translation id="3817579325494460411">Не вказано</translation>
 <translation id="3819448694985509187">Неправильний PIN-код. Залишилась 1 спроба.</translation>
-<translation id="3822559385185038546">Ваш адміністратор застосував цей проксі-сервер</translation>
 <translation id="3830674330436234648">Немає даних для відтворення</translation>
 <translation id="383652340667548381">Сербська</translation>
 <translation id="3839045880592694915">Ваш оператор не дозволяє підключатися до модема. Щоб дізнатися більше, зв’яжіться зі своїм оператором.</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5602622065581044566">Болгарська, фонетична розкладка</translation>
 <translation id="5605830556594064952">Розкладка Дворака (США)</translation>
+<translation id="560739212255190568">Ваш адміністратор налаштував правила перевизначення проксі-сервера й примусове застосування наведеного нижче проксі-сервера</translation>
 <translation id="5618330573454123917">Цей файл створено для комп’ютерів із програмним забезпеченням Macintosh. Він несумісний із вашим пристроєм, на якому встановлено ОС Chrome. <ph name="BEGIN_LINK_HELP" />Докладніше<ph name="END_LINK_HELP" /> про те, як відкривати файли в ОС Chrome.</translation>
 <translation id="5625294776298156701">Тамільська, розкладка Tamil99</translation>
 <translation id="5633226425545095130">Якщо перемістити цей файл, до нього отримають доступ усі користувачі, які можуть переглядати спільну папку "<ph name="DESTINATION_NAME" />".</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Тайська, розкладка TIS 820–2531</translation>
 <translation id="708278670402572152">Від’єднайте пристрій, щоб увімкнути сканування</translation>
 <translation id="7086590977277044826">Тамільська, розкладка InScript</translation>
-<translation id="7088615885725309056">Давніше</translation>
+<translation id="7088615885725309056">Старіша</translation>
 <translation id="7103992300314999525">Македонська</translation>
 <translation id="7104338189998813914">Не вдалось отримати доступ до облікового запису OneDrive</translation>
 <translation id="7106346894903675391">Придбати більше місця...</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="8545476925160229291">Англійська (США)</translation>
 <translation id="854655314928502177">URL-адреса автоматичного виявлення веб-проксі:</translation>
+<translation id="8547747809824590510">Ваш адміністратор налаштував правила перевизначення проксі-сервера</translation>
 <translation id="8549186985808798022">Італійська</translation>
 <translation id="8551494947769799688">Латвійська</translation>
 <translation id="8560515948038859357">Кантонський діалект</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
 <translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9065512565307033593">Якщо ви не пройдете цю перевірку, вам буде закрито доступ до мережі.</translation>
+<translation id="9079844694307518094">Ваш адміністратор налаштував примусове застосування наведеного нижче проксі-сервера</translation>
 <translation id="908378762078012445">Російська, фонетична розкладка AATSEEL</translation>
 <translation id="9086302186042011942">Синхронізація</translation>
 <translation id="9099674669267916096">Кількість сторінок</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Встановлення розпочато.</translation>
 <translation id="9219103736887031265">Зображення</translation>
 <translation id="9219908252191632183">Місячний ландшафт</translation>
+<translation id="931652069802536959">Мережу заблоковано відповідно до правил</translation>
 <translation id="938470336146445890">Установіть сертифікат користувача.</translation>
 <translation id="939736085109172342">Нова папка</translation>
 <translation id="943972244133411984">Змінено користувачем</translation>

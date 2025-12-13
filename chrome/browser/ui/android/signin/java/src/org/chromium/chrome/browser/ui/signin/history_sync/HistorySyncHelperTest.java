@@ -68,26 +68,26 @@ public class HistorySyncHelperTest {
     @Test
     @SmallTest
     public void testDidAlreadyOptIn() {
-        Assert.assertFalse(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertTrue(mHistorySyncHelper.shouldDisplayHistorySync());
         Assert.assertFalse(mHistorySyncHelper.didAlreadyOptIn());
 
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
 
         Assert.assertTrue(mHistorySyncHelper.didAlreadyOptIn());
-        Assert.assertTrue(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertFalse(mHistorySyncHelper.shouldDisplayHistorySync());
     }
 
     @Test
     @SmallTest
     public void testIsHistorySyncDisabledByPolicy_syncDisabledByPolicy() {
-        Assert.assertFalse(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertTrue(mHistorySyncHelper.shouldDisplayHistorySync());
         Assert.assertFalse(mHistorySyncHelper.isHistorySyncDisabledByPolicy());
 
         when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(true);
 
         Assert.assertTrue(mHistorySyncHelper.isHistorySyncDisabledByPolicy());
-        Assert.assertTrue(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertFalse(mHistorySyncHelper.shouldDisplayHistorySync());
     }
 
     @Test
@@ -98,7 +98,7 @@ public class HistorySyncHelperTest {
         when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(true);
 
         Assert.assertTrue(mHistorySyncHelper.isHistorySyncDisabledByPolicy());
-        Assert.assertTrue(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertFalse(mHistorySyncHelper.shouldDisplayHistorySync());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class HistorySyncHelperTest {
         when(mSyncServiceMock.isTypeManagedByCustodian(anyInt())).thenReturn(true);
 
         Assert.assertTrue(mHistorySyncHelper.isHistorySyncDisabledByCustodian());
-        Assert.assertTrue(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertFalse(mHistorySyncHelper.shouldDisplayHistorySync());
     }
 
     @Test
@@ -143,17 +143,18 @@ public class HistorySyncHelperTest {
 
     @Test
     @SmallTest
-    public void testShouldSuppressHistorySync() {
+    public void testShouldDisplayHistorySync() {
         when(mSyncServiceMock.getSelectedTypes()).thenReturn(Set.of());
         when(mSyncServiceMock.isTypeManagedByCustodian(anyInt())).thenReturn(false);
         when(mSyncServiceMock.isTypeManagedByPolicy(anyInt())).thenReturn(false);
         when(mSyncServiceMock.isSyncDisabledByEnterprisePolicy()).thenReturn(false);
 
-        Assert.assertFalse(mHistorySyncHelper.shouldSuppressHistorySync());
+        Assert.assertTrue(mHistorySyncHelper.shouldDisplayHistorySync());
     }
 
     @Test
     @SmallTest
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testRecordHistorySyncDeclinedPrefs() {
         final int someIntegerValue =
                 mPrefServiceMock.getInteger(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
@@ -173,6 +174,24 @@ public class HistorySyncHelperTest {
 
         verify(mPrefServiceMock).clearPref(Pref.HISTORY_SYNC_LAST_DECLINED_TIMESTAMP);
         verify(mPrefServiceMock).clearPref(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
+    }
+
+    @Test
+    @SmallTest
+    public void testEnablingHistoryAndTabsSync() {
+        mHistorySyncHelper.setHistoryAndTabsSync(true);
+
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, true);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, true);
+    }
+
+    @Test
+    @SmallTest
+    public void testClearingHistoryAndTabsSync() {
+        mHistorySyncHelper.setHistoryAndTabsSync(false);
+
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.HISTORY, false);
+        verify(mSyncServiceMock).setSelectedType(UserSelectableType.TABS, false);
     }
 
     @Test

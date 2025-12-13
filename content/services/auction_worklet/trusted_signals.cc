@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -568,7 +570,7 @@ void TrustedSignals::AdoptDownload(
 }
 
 void TrustedSignals::OnDownloadComplete(
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error_msg) {
   // The downloader's job is done, so clean it up.
@@ -596,7 +598,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     std::optional<std::set<std::string>> bidding_signals_keys,
     std::optional<std::set<CreativeInfo>> ads,
     std::optional<std::set<CreativeInfo>> ad_components,
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error_msg,
     scoped_refptr<base::SequencedTaskRunner> user_thread_task_runner,

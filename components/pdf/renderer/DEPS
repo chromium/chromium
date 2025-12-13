@@ -10,6 +10,7 @@ include_rules = [
   "+pdf/mojom/pdf.mojom.h",
   "+pdf/page_character_index.h",
   "+pdf/pdf_accessibility_action_handler.h",
+  "+pdf/pdf_accessibility_constants_helper.h",
   "+pdf/pdf_accessibility_data_handler.h",
   "+pdf/pdf_accessibility_image_fetcher.h",
   "+pdf/pdf_features.h",

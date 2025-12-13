@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "mojo/core/message_pipe_dispatcher.h"
 
 #include <limits>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
@@ -325,7 +321,7 @@ bool MessagePipeDispatcher::EndSerialize(void* destination,
   SerializedState* state = static_cast<SerializedState*>(destination);
   state->pipe_id = pipe_id_;
   state->endpoint = static_cast<int8_t>(endpoint_);
-  memset(state->padding, 0, sizeof(state->padding));
+  UNSAFE_TODO(memset(state->padding, 0, sizeof(state->padding)));
   ports[0] = port_.name();
   return true;
 }

@@ -20,6 +20,7 @@ def GetIosDir():
 sys.path.append(os.path.join(GetIosDir(), 'build', 'bots', 'scripts'))
 
 import constants
+import exception_utils
 import iossim_util
 import test_apps
 import xcodebuild_runner
@@ -29,6 +30,11 @@ def GetDefaultBuildDir():
 
 parser=argparse.ArgumentParser(
     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('--platform-type',
+                    choices=[platform_type.name for platform_type in
+                             constants.IOSPlatformType],
+                    default='IPHONEOS',
+                    help='The iOS-based platform being targeted.')
 parser.add_argument('--port', default='9999',
     help='The port to listen on for WebDriver commands')
 parser.add_argument('--build-dir', default=GetDefaultBuildDir(),
@@ -70,18 +76,22 @@ if args.asan_build:
   inserted_libs = [os.path.join(args.build_dir,
       'libclang_rt.asan_iossim_dynamic.dylib')]
 
+platform_type = constants.IOSPlatformType[args.platform_type]
 egtests_app = test_apps.EgtestsApp(
-    egtests_app=test_app, all_eg_test_names=[],
+    egtests_app=test_app, platform_type=platform_type, all_eg_test_names=[],
     test_args=['--port %s' % args.port],
     host_app_path=host_app, inserted_libs=inserted_libs)
 
 if iossim_util.is_device_with_udid_simulator(destination):
     xcodebuild_runner.shutdown_all_simulators()
     xcodebuild_runner.erase_all_simulators()
+cert_path = os.path.join(GetChromiumSrcDir(), 'third_party',
+                         'wpt_tools', 'wpt', 'tools', 'certs', 'cacert.pem')
 launch_command = xcodebuild_runner.LaunchCommand(egtests_app, destination,
     clones=1, retries=1, readline_timeout=constants.READLINE_TIMEOUT,
+    exception_checker=exception_utils.ExceptionChecker(),
     out_dir=output_directory,
-    cert_path='../../wpt_tools/wpt/tools/certs/cacert.pem',
+    cert_path=cert_path,
     erase_simulators=False)
 
 launch_command.launch()

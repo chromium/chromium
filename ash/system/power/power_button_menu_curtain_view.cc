@@ -30,7 +30,7 @@
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -85,7 +85,7 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   const ui::ColorId background_color_id =
       chromeos::features::IsSystemBlurEnabled()
           ? static_cast<ui::ColorId>(kPowerButtonMenuBackgroundColorId)
-          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+          : cros_tokens::kCrosSysSystemOnBaseOpaque;
   SetBackground(views::CreateSolidBackground(background_color_id));
 
   layer()->SetRoundedCornerRadius(

@@ -65,7 +65,6 @@ class CORE_EXPORT DOMTokenList : public ScriptWrappable,
   bool supports(const AtomicString&, ExceptionState&);
   AtomicString value() const;
   void setValue(const AtomicString&);
-  AtomicString toString() const { return value(); }
 
   // This function should be called when the associated attribute value was
   // updated.

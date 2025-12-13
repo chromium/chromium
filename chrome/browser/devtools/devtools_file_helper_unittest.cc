@@ -14,8 +14,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
+#include "base/test/android/content_uri_test_utils.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -44,7 +47,7 @@ namespace {
 
 #if BUILDFLAG(IS_WIN)
 static const char kDownloadPath[] = "c:\\\\path\\to\\download";
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX)
 static const char kDownloadPath[] = "/path/to/download";
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -77,20 +80,6 @@ class MockStorage : public DevToolsFileHelper::Storage {
               (override));
 };
 
-// testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
-// gmock action template to invoke base::OnceCallback. `k` is the k-th argument
-// and `T` is the callback's type.
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
-                AND_0_VALUE_PARAMS()) {
-  std::move(const_cast<T&>(std::get<k>(args))).Run();
-}
-ACTION_TEMPLATE(InvokeCallbackArgument,
-                HAS_2_TEMPLATE_PARAMS(int, k, typename, T),
-                AND_1_VALUE_PARAMS(p0)) {
-  std::move(const_cast<T&>(std::get<k>(args))).Run(p0);
-}
-
 }  // namespace
 
 class DevToolsFileHelperTest : public Test {
@@ -101,11 +90,12 @@ class DevToolsFileHelperTest : public Test {
   StrictMock<MockStorage>& storage() const { return *storage_; }
 
   DevToolsFileHelper::SelectFileCallback FakeSelectFileCallback(
-      base::FilePath path) {
+      ui::SelectedFileInfo file_info) {
     return base::BindLambdaForTesting(
-        [path](DevToolsFileHelper::SelectedCallback selected_callback,
-               DevToolsFileHelper::CanceledCallback, const base::FilePath&) {
-          std::move(selected_callback).Run(path);
+        [file_info](DevToolsFileHelper::SelectedCallback selected_callback,
+                    DevToolsFileHelper::CanceledCallback,
+                    const base::FilePath&) {
+          std::move(selected_callback).Run(file_info);
         });
   }
 
@@ -150,7 +140,8 @@ TEST_F(DevToolsFileHelperTest, SaveToFileBase64) {
   base::RunLoop run_loop;
   file_helper()->Save(
       "https://example.com/test.wasm", "AGFzbQEAAAA=", /* save_as */ true,
-      /* is_base64 */ true, FakeSelectFileCallback(tf.path()),
+      /* is_base64 */ true,
+      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
       base::BindLambdaForTesting([&](const std::string&) { run_loop.Quit(); }),
       base::DoNothing());
   run_loop.Run();
@@ -166,7 +157,8 @@ TEST_F(DevToolsFileHelperTest, SaveToFileInvalidBase64) {
   file_helper()->Save(
       "https://example.com/test.wasm", "~~~~",
       /* save_as */ true,
-      /* is_base64 */ true, FakeSelectFileCallback(tf.path()),
+      /* is_base64 */ true,
+      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
       base::BindLambdaForTesting([&](const std::string&) { run_loop.Quit(); }),
       base::DoNothing());
   run_loop.Run();
@@ -183,7 +175,8 @@ TEST_F(DevToolsFileHelperTest, SaveToFileText) {
   file_helper()->Save(
       "https://example.com/test.txt", "some text",
       /* save_as */ true,
-      /* is_base64 */ false, FakeSelectFileCallback(tf.path()),
+      /* is_base64 */ false,
+      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
       base::BindLambdaForTesting([&](const std::string&) { run_loop.Quit(); }),
       base::DoNothing());
   run_loop.Run();
@@ -191,8 +184,80 @@ TEST_F(DevToolsFileHelperTest, SaveToFileText) {
   EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
 }
 
+TEST_F(DevToolsFileHelperTest, Append) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::vector<uint8_t> data{'s', 'o', 'm', 'e', ' ', 't', 'e', 'x', 't'};
+
+  base::test::TestFuture<const std::string&> future1;
+  file_helper()->Save("https://example.com/test.txt", "some",
+                      /* save_as */ true,
+                      /* is_base64 */ false,
+                      FakeSelectFileCallback(ui::SelectedFileInfo(tf.path())),
+                      future1.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(future1.Wait());
+
+  base::test::TestFuture<void> future2;
+  file_helper()->Append("https://example.com/test.txt", " text",
+                        future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
+
+  EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DevToolsFileHelperTest, SaveToFileContentUri) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::vector<uint8_t> data{'s', 'o', 'm', 'e', ' ', 't', 'e', 'x', 't'};
+
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(tf.path());
+
+  ui::SelectedFileInfo file_info(content_uri);
+  file_info.display_name = "test.txt";
+
+  base::RunLoop run_loop;
+  file_helper()->Save(
+      "https://example.com/test.txt", "some text",
+      /* save_as */ true,
+      /* is_base64 */ false, FakeSelectFileCallback(file_info),
+      base::BindLambdaForTesting([&](const std::string&) { run_loop.Quit(); }),
+      base::DoNothing());
+  run_loop.Run();
+
+  EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
+}
+
+TEST_F(DevToolsFileHelperTest, AppendContentUri) {
+  base::ScopedTempFile tf;
+  ASSERT_TRUE(tf.Create());
+  const std::vector<uint8_t> data{'s', 'o', 'm', 'e', ' ', 't', 'e', 'x', 't'};
+
+  base::FilePath content_uri =
+      *base::test::android::GetContentUriFromCacheDirFilePath(tf.path());
+
+  ui::SelectedFileInfo file_info(content_uri);
+  file_info.display_name = "test.txt";
+
+  base::test::TestFuture<const std::string&> future1;
+  file_helper()->Save("https://example.com/test.txt", "some",
+                      /* save_as */ true,
+                      /* is_base64 */ false, FakeSelectFileCallback(file_info),
+                      future1.GetCallback(), base::DoNothing());
+  EXPECT_TRUE(future1.Wait());
+
+  base::test::TestFuture<void> future2;
+  file_helper()->Append("https://example.com/test.txt", " text",
+                        future2.GetCallback());
+  EXPECT_TRUE(future2.Wait());
+
+  EXPECT_EQ(base::ReadFileToBytes(tf.path()), data);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeAutomatic) {
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull())).Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull()));
 
   file_helper()->AddFileSystem("automatic", base::DoNothing(),
                                base::DoNothing());
@@ -202,7 +267,7 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeAutomatic) {
 }
 
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeUUID) {
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull())).Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal type>", IsNull()));
 
   file_helper()->AddFileSystem(
       base::Uuid::GenerateRandomV4().AsLowercaseString(), base::DoNothing(),
@@ -214,10 +279,8 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithIllegalTypeUUID) {
 
 TEST_F(DevToolsFileHelperTest, AddFileSystemWithSelectionCanceled) {
   base::MockCallback<DevToolsFileHelper::SelectFileCallback> select_file_cb;
-  EXPECT_CALL(select_file_cb, Run)
-      .WillOnce(InvokeCallbackArgument<1, base::OnceCallback<void(void)>>());
-  EXPECT_CALL(delegate(), FileSystemAdded("<selection cancelled>", IsNull()))
-      .Times(1);
+  EXPECT_CALL(select_file_cb, Run).WillOnce(base::test::RunOnceClosure<1>());
+  EXPECT_CALL(delegate(), FileSystemAdded("<selection cancelled>", IsNull()));
 
   file_helper()->AddFileSystem("", select_file_cb.Get(), base::DoNothing());
 
@@ -227,8 +290,8 @@ TEST_F(DevToolsFileHelperTest, AddFileSystemWithSelectionCanceled) {
 
 TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithRelativePath) {
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull())).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
 
   file_helper()->ConnectAutomaticFileSystem(
       "path/to/folder", base::Uuid::GenerateRandomV4(),
@@ -243,8 +306,8 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemWithNonExistentPath) {
   ASSERT_TRUE(td.CreateUniqueTempDir());
   base::FilePath path = td.GetPath().AppendASCII("NonExistent");
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull())).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<illegal path>", IsNull()));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -262,7 +325,7 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemButNotAddingMissing) {
   ASSERT_TRUE(td.CreateUniqueTempDir());
   base::FilePath path = td.GetPath();
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
 
   file_helper()->ConnectAutomaticFileSystem(
       path.AsUTF8Unsafe(), base::Uuid::GenerateRandomV4(),
@@ -279,12 +342,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemInfoBarDenied) {
   base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run)
-      .WillOnce(
-          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(false));
+      .WillOnce(base::test::RunOnceCallback<2>(false));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(false)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()))
-      .Times(1);
+  EXPECT_CALL(connect_cb, Run(false));
+  EXPECT_CALL(delegate(), FileSystemAdded("<permission denied>", IsNull()));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -315,11 +376,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemAlreadyKnown) {
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -347,14 +407,12 @@ TEST_F(DevToolsFileHelperTest, ConnectAutomaticFileSystemNewlyAdded) {
   base::MockCallback<DevToolsFileHelper::HandlePermissionsCallback>
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run)
-      .WillOnce(
-          InvokeCallbackArgument<2, base::OnceCallback<void(bool)>>(true));
+      .WillOnce(base::test::RunOnceCallback<2>(true));
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   base::RunLoop run_loop;
   ON_CALL(delegate(), FileSystemAdded).WillByDefault([&] { run_loop.Quit(); });
@@ -388,11 +446,10 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
       handle_permissions_callback;
   EXPECT_CALL(handle_permissions_callback, Run).Times(0);
   base::MockCallback<DevToolsFileHelper::ConnectCallback> connect_cb;
-  EXPECT_CALL(connect_cb, Run(true)).Times(1);
+  EXPECT_CALL(connect_cb, Run(true));
   EXPECT_CALL(storage(), RegisterFileSystem(path, "automatic"))
       .WillOnce(Return(file_system));
-  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)))
-      .Times(1);
+  EXPECT_CALL(delegate(), FileSystemAdded(IsEmpty(), Pointee(file_system)));
 
   {
     // Connect the known automatic file system.
@@ -409,8 +466,8 @@ TEST_F(DevToolsFileHelperTest, ConnectAndDisconnectKnownAutomaticFileSystem) {
     EXPECT_TRUE(file_helper()->IsFileSystemAdded(path.AsUTF8Unsafe()));
   }
 
-  EXPECT_CALL(storage(), UnregisterFileSystem(path)).Times(1);
-  EXPECT_CALL(delegate(), FileSystemRemoved(path.AsUTF8Unsafe())).Times(1);
+  EXPECT_CALL(storage(), UnregisterFileSystem(path));
+  EXPECT_CALL(delegate(), FileSystemRemoved(path.AsUTF8Unsafe()));
 
   {
     // Disconnect the previously connected automatic file system.

@@ -59,14 +59,74 @@ void VerifyQuadsAreOccluded(const viz::QuadList& quads,
                             const gfx::Rect& occluded,
                             size_t* partially_occluded_count);
 
-// For parameterized test suites testing with both CommitToActiveTree (with
-// the bool parameter being true) and !CommitToActiveTree settings.
-#define INSTANTIATE_COMMIT_TO_TREE_TEST_P(name)                           \
-  INSTANTIATE_TEST_SUITE_P(                                               \
-      , name, ::testing::Bool(),                                          \
-      [](const ::testing::TestParamInfo<name::ParamType>& info) {         \
-        return info.param ? "CommitToActiveTree" : "CommitToPendingTree"; \
+enum LayerTreeImplTestMode {
+  CommitToActiveTree,
+  CommitToPendingTree,
+  CommitToActiveTreeTreesInVizClient,
+  CommitToPendingTreeTreesInVizClient,
+  CommitToActiveTreeTreesInVizService,
+  CommitToActiveTreeAnimationsInVizService,
+};
+
+#define INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(name, ...)         \
+  INSTANTIATE_TEST_SUITE_P(                                       \
+      , name, ::testing::Values(__VA_ARGS__),                     \
+      [](const ::testing::TestParamInfo<name::ParamType>& info) { \
+        switch (info.param) {                                     \
+          case CommitToActiveTree:                                \
+            return "CommitToActiveTree";                          \
+          case CommitToPendingTree:                               \
+            return "CommitToPendingTree";                         \
+          case CommitToActiveTreeTreesInVizClient:                \
+            return "CommitToActiveTreeTreesInVizClient";          \
+          case CommitToPendingTreeTreesInVizClient:               \
+            return "CommitToPendingTreeTreesInVizClient";         \
+          case CommitToActiveTreeTreesInVizService:               \
+            return "CommitToActiveTreeTreesInVizService";         \
+          case CommitToActiveTreeAnimationsInVizService:          \
+            return "CommitToActiveTreeAnimationsInVizService";    \
+          default:                                                \
+            NOTREACHED();                                         \
+        }                                                         \
       })
+
+// For parameterized test suites testing all tree modes including
+// CommitToActiveTree / CommitToPendingTree, for all valid TreesInViz
+// Client / Service combinations.
+#define INSTANTIATE_COMMIT_TO_TREE_TEST_P(name)                                \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(                                      \
+      name, CommitToActiveTree, CommitToPendingTree,                           \
+      CommitToActiveTreeTreesInVizClient, CommitToPendingTreeTreesInVizClient, \
+      CommitToActiveTreeTreesInVizService)
+
+#define INSTANTIATE_ANIMATIONS_TREE_TEST_P(name)                               \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(                                      \
+      name, CommitToActiveTree, CommitToPendingTree,                           \
+      CommitToActiveTreeTreesInVizClient, CommitToPendingTreeTreesInVizClient, \
+      CommitToActiveTreeAnimationsInVizService)
+
+// For parameterized test suites testing all tree modes including
+// CommitToActiveTree / CommitToPendingTree, excluding TreesInViz
+// Client mode.
+#define INSTANTIATE_COMPOSITOR_FRAME_PRODUCING_TREE_TEST_P(name)   \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(name, CommitToActiveTree, \
+                                         CommitToPendingTree,      \
+                                         CommitToActiveTreeTreesInVizService)
+
+// For parameterized test suites testing all tree modes including
+// CommitToActiveTree / CommitToPendingTree, excluding TreesInViz
+// Service mode.
+#define INSTANTIATE_CLIENT_MODE_TREE_TEST_P(name)    \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(            \
+      name, CommitToActiveTree, CommitToPendingTree, \
+      CommitToActiveTreeTreesInVizClient, CommitToPendingTreeTreesInVizClient)
+
+// For parameterized test suites testing commits to Pending
+// tree modes only. This excludes TreesInViz Service mode by, since
+// it does not have a Pending tree.
+#define INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(name)             \
+  INSTANTIATE_COMMIT_TO_TREE_BASE_TEST_P(name, CommitToPendingTree, \
+                                         CommitToPendingTreeTreesInVizClient)
 
 }  // namespace cc
 

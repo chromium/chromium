@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/print_spooler/arc_print_spooler_util.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -49,9 +45,10 @@ base::FilePath SavePrintDocument(mojo::ScopedHandle scoped_handle) {
   base::File temp(temp_path, base::File::FLAG_OPEN | base::File::FLAG_WRITE);
   char buf[4096];
   int bytes;
-  while ((bytes = src_file.ReadAtCurrentPos(buf, sizeof(buf))) > 0) {
-    if (!temp.WriteAtCurrentPosAndCheck(
-            base::as_bytes(base::span(buf, static_cast<size_t>(bytes))))) {
+  while ((bytes = UNSAFE_TODO(src_file.ReadAtCurrentPos(buf, sizeof(buf)))) >
+         0) {
+    if (!temp.WriteAtCurrentPosAndCheck(base::as_bytes(
+            UNSAFE_TODO(base::span(buf, static_cast<size_t>(bytes)))))) {
       PLOG(ERROR) << "Error while saving PDF to disk.";
       return base::FilePath();
     }

@@ -43,7 +43,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
  public:
   AudioTrackMojoEncoder(
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
-      AudioTrackRecorder::CodecId codec,
+      media::AudioCodec codec,
       OnEncodedAudioCB on_encoded_audio_cb,
       OnEncodedAudioErrorCB on_encoded_audio_error_cb,
       uint32_t bits_per_second = 0);
@@ -89,7 +89,7 @@ class MODULES_EXPORT AudioTrackMojoEncoder : public AudioTrackEncoder {
 
   const scoped_refptr<base::SequencedTaskRunner> encoder_task_runner_;
 
-  AudioTrackRecorder::CodecId codec_;
+  media::AudioCodec codec_;
 
   // Target bitrate. An optional parameter for the `mojo_encoder_`;
   const uint32_t bits_per_second_;

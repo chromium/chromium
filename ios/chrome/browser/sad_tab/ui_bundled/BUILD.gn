@@ -38,6 +38,7 @@ source_set("coordinator") {
   deps = [
     ":ui_bundled",
     "//components/ui_metrics",
+    "//ios/chrome/browser/context_menu/ui_bundled:coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled:coordinators",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -51,6 +52,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/web/model:tab_helper_delegates",
     "//ios/chrome/common/ui/util",
     "//ios/web",
+    "//ios/web/public/ui",
   ]
 }
 
@@ -70,6 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/toolbar/ui_bundled/fullscreen",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/common/ui/util",
     "//ios/web/public/test",

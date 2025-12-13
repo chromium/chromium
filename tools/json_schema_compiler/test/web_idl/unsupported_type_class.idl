@@ -6,7 +6,7 @@
 // support in the schema compiler yet.
 interface TestWebIdl {
   static boolean supportedType();
-  static any unsupportedType();
+  static FrozenArray<boolean> unsupportedType();
 };
 
 partial interface Browser {

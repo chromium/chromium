@@ -12,14 +12,16 @@
 #include "components/autofill/core/browser/ui/payments/select_bnpl_issuer_dialog_controller.h"
 
 namespace autofill::payments {
-
+struct BnplIssuerContext;
+class PaymentsAutofillClient;
 class SelectBnplIssuerView;
+struct TextWithLink;
 
 // Implementation for the SelectBnplIssuerDialogController.
 class SelectBnplIssuerDialogControllerImpl
     : public SelectBnplIssuerDialogController {
  public:
-  SelectBnplIssuerDialogControllerImpl();
+  explicit SelectBnplIssuerDialogControllerImpl(PaymentsAutofillClient* client);
   SelectBnplIssuerDialogControllerImpl(
       const SelectBnplIssuerDialogControllerImpl&) = delete;
   SelectBnplIssuerDialogControllerImpl& operator=(
@@ -38,7 +40,8 @@ class SelectBnplIssuerDialogControllerImpl
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  // SelectBnplIssuerDialogController:
+  void UpdateDialogWithIssuers(
+      std::vector<BnplIssuerContext> issuer_contexts) override;
   void OnIssuerSelected(BnplIssuer issuer) override;
   void OnUserCancelled() override;
   void Dismiss() override;
@@ -60,10 +63,15 @@ class SelectBnplIssuerDialogControllerImpl
   std::string app_locale_;
 
   // Callback invoked when the user confirmed an issuer to use.
+  // TODO(crbug.com/444684247): Make this a base::RepeatingCallback for the case
+  // where the user selects an issuer that is not available after amount
+  // extraction runs, so the user must select a different issuer.
   base::OnceCallback<void(BnplIssuer)> selected_issuer_callback_;
 
   // Callback invoked when the user cancelled the dialog.
   base::OnceClosure cancel_callback_;
+
+  const raw_ref<PaymentsAutofillClient> client_;
 
   base::WeakPtrFactory<SelectBnplIssuerDialogControllerImpl> weak_ptr_factory_{
       this};

@@ -5,7 +5,6 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
 import static com.google.common.truth.TruthJUnit.assume;
 
 import static org.junit.Assert.assertThrows;
@@ -34,7 +33,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -222,7 +221,7 @@ public class CronetUrlRequestTest {
         // Default method is 'GET'.
         assertThat(callback.mResponseAsString).isEqualTo("GET");
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         UrlResponseInfo urlResponseInfo =
                 createUrlResponseInfo(
                         new String[] {url},
@@ -530,7 +529,7 @@ public class CronetUrlRequestTest {
                         "<!DOCTYPE html>\n<html>\n<head>\n<title>Not found</title>\n"
                                 + "<p>Test page loaded.</p>\n</head>\n</html>\n");
         assertThat(callback.mRedirectCount).isEqualTo(0);
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
     }
 
     // Checks that UrlRequest.Callback.onFailed is only called once in the case
@@ -840,29 +839,6 @@ public class CronetUrlRequestTest {
 
     @Test
     @SmallTest
-    public void testDefaultUserAgent() throws Exception {
-        TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        String headerName = "User-Agent";
-        UrlRequest.Builder builder =
-                mTestRule
-                        .getTestFramework()
-                        .getEngine()
-                        .newUrlRequestBuilder(
-                                mNativeTestServer.getEchoHeaderURL(headerName),
-                                callback,
-                                callback.getExecutor());
-        builder.build().start();
-        callback.blockForDone();
-        assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
-        assertWithMessage(
-                        "Default User-Agent should contain Cronet/n.n.n.n but is "
-                                + callback.mResponseAsString)
-                .that(callback.mResponseAsString)
-                .matches(Pattern.compile(".+Cronet/\\d+\\.\\d+\\.\\d+\\.\\d+.+"));
-    }
-
-    @Test
-    @SmallTest
     @IgnoreFor(
             implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
             reason = "crbug.com/1495309: Enable once we drop MockUrlRequestJobFactory")
@@ -874,7 +850,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mRedirectResponseInfoList).isEmpty();
         assertThat(callback.mHttpResponseDataLength).isNotEqualTo(0);
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         Map<String, List<String>> responseHeaders =
                 callback.getResponseInfoWithChecks().getAllHeaders();
         assertThat(responseHeaders).containsEntry("header-name", Arrays.asList("header-value"));
@@ -958,7 +934,7 @@ public class CronetUrlRequestTest {
         mTestRule.assertResponseEquals(secondExpectedResponseInfo, mResponseInfo);
         assertThat(callback.mHttpResponseDataLength).isNotEqualTo(0);
         assertThat(callback.mRedirectCount).isEqualTo(2);
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
     }
 
     @Test
@@ -978,7 +954,7 @@ public class CronetUrlRequestTest {
         assertThat(callback.mHttpResponseDataLength).isNotEqualTo(0);
         assertThat(callback.mRedirectCount).isEqualTo(0);
         assertThat(callback.mOnErrorCalled).isFalse();
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
     }
 
     @Test
@@ -1295,13 +1271,13 @@ public class CronetUrlRequestTest {
         callback.getExecutor().submit(startAndRead).get();
         callback.waitForNextStep();
 
-        assertThat(ResponseStep.ON_RECEIVED_REDIRECT).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RECEIVED_REDIRECT);
         // Try to read after the redirect.
         assertThrows(IllegalStateException.class, () -> callback.startNextRead(urlRequest));
         urlRequest.followRedirect();
         callback.waitForNextStep();
 
-        assertThat(ResponseStep.ON_RESPONSE_STARTED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
 
         while (!callback.isDone()) {
@@ -1320,7 +1296,7 @@ public class CronetUrlRequestTest {
             callback.waitForNextStep();
         }
 
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to read after request is complete.
@@ -1358,7 +1334,7 @@ public class CronetUrlRequestTest {
         callback.getExecutor().execute(startAndRead);
         callback.waitForNextStep();
 
-        assertThat(ResponseStep.ON_RECEIVED_REDIRECT).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RECEIVED_REDIRECT);
         // Try to follow the redirect twice. Second attempt should fail.
         Runnable followRedirectTwice =
                 new Runnable() {
@@ -1371,7 +1347,7 @@ public class CronetUrlRequestTest {
         callback.getExecutor().execute(followRedirectTwice);
         callback.waitForNextStep();
 
-        assertThat(ResponseStep.ON_RESPONSE_STARTED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_RESPONSE_STARTED);
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
 
         while (!callback.isDone()) {
@@ -1380,7 +1356,7 @@ public class CronetUrlRequestTest {
             callback.waitForNextStep();
         }
 
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         assertThat(callback.mResponseAsString).isEqualTo(NativeTestServer.SUCCESS_BODY);
 
         // Try to follow redirect after request is complete.

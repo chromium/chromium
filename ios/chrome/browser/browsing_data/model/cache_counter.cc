@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/web/public/browser_state.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/completion_repeating_callback.h"

@@ -42,7 +42,7 @@ class MandatoryReauthBubbleController {
   virtual bool IsIconVisible() = 0;
 
   // The type of bubble currently displayed to the user.
-  virtual MandatoryReauthBubbleType GetBubbleType() const = 0;
+  virtual MandatoryReauthBubbleType GetMandatoryReauthBubbleType() const = 0;
 
 #if BUILDFLAG(IS_ANDROID)
   virtual base::android::ScopedJavaLocalRef<jobject>

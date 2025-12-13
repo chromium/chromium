@@ -37,12 +37,12 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
   ~SharedWebContentsWithAppLockDescription();
 };
 
-// Holding this lock means that the user has exclusive access to the app id/s
-// and the background web contents in use by the WebAppProvider system. This
-// does not ensure that the app/s are installed when the lock is granted. Checks
-// for that will need to be handled by the user of the lock.
-// The web contents will be prepared for use via
-// WebAppUrlLoader::PrepareForLoad() prior to being granted access.
+// Holding this lock means that the holder has exclusive access to the given app
+// id(s) and the background web contents used by the WebAppProvider system. This
+// does not ensure that the app(s) are installed when the lock is granted.
+// Checks for that will need to be handled by the user of the lock. The web
+// contents will be prepared for use via WebAppUrlLoader::PrepareForLoad() prior
+// to the lock being granted.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
@@ -56,7 +56,7 @@ class SharedWebContentsWithAppLock : public Lock,
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
   SharedWebContentsWithAppLock();
-  ~SharedWebContentsWithAppLock();
+  ~SharedWebContentsWithAppLock() override;
 
   base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

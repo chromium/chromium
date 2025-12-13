@@ -16,6 +16,13 @@ enum class SyncConfirmationStyle {
   kWindow = 2
 };
 
+// Launch modes supported by the history sync optin screen.
+// Their choice also affects the style of the screen.
+enum class HistorySyncOptinLaunchContext : int {
+  kWindow = 0,
+  kModal = 1,
+};
+
 // Returns which style the sync confirmation page is using, as a default modal
 // dialog, the signin intercept modal dialog version or as a window.
 SyncConfirmationStyle GetSyncConfirmationStyle(const GURL& url);

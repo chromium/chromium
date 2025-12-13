@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_interface_in_process_base.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
@@ -69,13 +71,23 @@ SharedImageInterfaceInProcess::Create(
     gpu::SharedContextState* context_state,
     SharedImageManager* shared_image_manager,
     bool is_for_display_compositor,
-    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) {
+    scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
+    bool always_create_native_gmb_handles /*=false*/) {
   // ensure Initialize() is called before pointer returned to caller
   auto sii = base::WrapRefCounted(new SharedImageInterfaceInProcess{
       task_sequence, shared_image_manager, std::move(gpu_task_runner)});
   sii->Initialize(std::make_unique<SetUpOnGpuParams>(
       gpu_preferences, gpu_workarounds, gpu_feature_info, context_state,
       shared_image_manager, is_for_display_compositor));
+
+  if (always_create_native_gmb_handles) {
+    // Creation with this option can be done only on the GPU thread, since we
+    // must construct the SharedImageFactory eagerly to ensure that it is
+    // immediately available to create GMB handles on the IO thread.
+    CHECK(sii->gpu_task_runner_->BelongsToCurrentThread());
+    sii->GetSharedImageFactoryOnGpuThread();
+    sii->always_create_native_gmb_handles_ = true;
+  }
   return sii;
 }
 
@@ -124,35 +136,6 @@ SharedImageInterfaceInProcess::~SharedImageInterfaceInProcess() {
   completion.Wait();
 }
 
-const SharedImageCapabilities&
-SharedImageInterfaceInProcess::GetCapabilities() {
-  base::WaitableEvent completion(
-      base::WaitableEvent::ResetPolicy::MANUAL,
-      base::WaitableEvent::InitialState::NOT_SIGNALED);
-
-  if (!shared_image_capabilities_) {
-    shared_image_capabilities_ = std::make_unique<SharedImageCapabilities>();
-    task_sequence_->ScheduleTask(
-        base::BindOnce(&SharedImageInterfaceInProcess::GetCapabilitiesOnGpu,
-                       this, &completion, shared_image_capabilities_.get()),
-        /*sync_token_fences=*/{}, SyncToken());
-    completion.Wait();
-  }
-  return *shared_image_capabilities_;
-}
-
-void SharedImageInterfaceInProcess::GetCapabilitiesOnGpu(
-    base::WaitableEvent* completion,
-    SharedImageCapabilities* out_capabilities) {
-  if (!GetSharedImageFactory()) {
-    return;
-  }
-
-  DCHECK(shared_image_factory_);
-  *out_capabilities = shared_image_factory_->MakeCapabilities();
-  completion->Signal();
-}
-
 void SharedImageInterfaceInProcess::SetUpOnGpu(
     std::unique_ptr<SetUpOnGpuParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
@@ -181,7 +164,8 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
 
 void SharedImageInterfaceInProcess::DestroyOnGpu(
     base::WaitableEvent* completion) {
-  bool have_context = MakeContextCurrent();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
+  bool have_context = MakeContextCurrentOnGpuThread();
   if (shared_image_factory_) {
     shared_image_factory_->DestroyAllSharedImages(have_context);
     shared_image_factory_ = nullptr;
@@ -193,14 +177,55 @@ void SharedImageInterfaceInProcess::DestroyOnGpu(
   completion->Signal();
 }
 
-SharedImageFactory* SharedImageInterfaceInProcess::GetSharedImageFactory() {
+scoped_refptr<ClientSharedImage>
+SharedImageInterfaceInProcess::CreateSharedImage(
+    const SharedImageInfo& si_info,
+    SurfaceHandle surface_handle,
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
+  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
+
+  if (always_create_native_gmb_handles_) {
+#if BUILDFLAG(IS_ANDROID)
+    // Creation of native buffer handles is not supported on Android (the
+    // only way that a non-null GpuMemoryBufferHandle can be created on
+    // Android is by importing an external AHB).
+    return nullptr;
+#else
+    // The below method doesn't (yet?) take in pool IDs.
+    CHECK(!pool_id);
+
+    // The SIFactory may be null if it was not possible for it to be created in
+    // the constructor (because the context was lost). In this case, there is
+    // nothing possible to do (context loss is sticky and will eventually be
+    // resolved by recreating the SII in one way or another).
+    if (!shared_image_factory_) {
+      return nullptr;
+    }
+    auto gmb_handle = shared_image_factory_->CreateNativeGpuMemoryBufferHandle(
+        si_info.meta.size, si_info.meta.format, buffer_usage);
+    if (gmb_handle.is_null()) {
+      return nullptr;
+    }
+    return SharedImageInterfaceInProcessBase::CreateSharedImage(
+        si_info, surface_handle, buffer_usage, std::move(gmb_handle));
+#endif
+  }
+
+  return SharedImageInterfaceInProcessBase::CreateSharedImage(
+      si_info, surface_handle, buffer_usage, pool_id);
+}
+
+SharedImageFactory*
+SharedImageInterfaceInProcess::GetSharedImageFactoryOnGpuThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (shared_image_factory_) {
     return shared_image_factory_.get();
   }
 
   // Some shared image backing factories will use GL in ctor, so we need GL even
   // if chrome is using non-GL backing.
-  if (!MakeContextCurrent(/*needs_gl=*/true)) {
+  if (!MakeContextCurrentOnGpuThread(/*needs_gl=*/true)) {
     return nullptr;
   }
 
@@ -208,7 +233,9 @@ SharedImageFactory* SharedImageInterfaceInProcess::GetSharedImageFactory() {
   return shared_image_factory_.get();
 }
 
-bool SharedImageInterfaceInProcess::MakeContextCurrent(bool needs_gl) {
+bool SharedImageInterfaceInProcess::MakeContextCurrentOnGpuThread(
+    bool needs_gl) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   if (gl::GetGLImplementation() == gl::kGLImplementationDisabled) {
     return true;
   }
@@ -227,7 +254,8 @@ bool SharedImageInterfaceInProcess::MakeContextCurrent(bool needs_gl) {
   return context_state_->MakeCurrent(/*surface=*/nullptr, needs_gl);
 }
 
-void SharedImageInterfaceInProcess::MarkContextLost() {
+void SharedImageInterfaceInProcess::MarkContextLostOnGpuThread() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   context_state_->MarkContextLost();
 }
 

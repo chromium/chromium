@@ -4,10 +4,10 @@
 <translation id="1000436330784933699">Lens-ის გახსნა შეგიძლიათ აქ.</translation>
 <translation id="1042296835509784301">გახსნის პაროლების მმართველს Chromium-ში.</translation>
 <translation id="1047130070405668746">აირჩიეთ Chromium</translation>
-<translation id="1086486568852410168">ძიება Google Lens-ით</translation>
 <translation id="1091252999271033193">ეს იმას ნიშნავს, რომ Chromium ყოველ ჯერზე მოითხოვს მობილურ საიტს.</translation>
 <translation id="1115463765356382667">Chromium-ის შესაძლებლობებით მაქსიმალურად რომ ისარგებლოთ, შეასრულეთ ქვემოთ შემოთავაზებული მოქმედებები.</translation>
 <translation id="1185134272377778587">Chromium-ის შესახებ</translation>
+<translation id="1211450393895337634">გახსენით Chromium უფრო სწრაფად, როცა მზად იქნებით iPad-ში ვების დასათვალიერებლად.</translation>
 <translation id="1229234641991056119">გამოიყენეთ Safari-ს პაროლები, ისტორია, სანიშნეები და საკრედიტო ბარათები Chromium-ში</translation>
 <translation id="1257458525759135959">სურათების შესანახად შეეხეთ „პარამეტრებს“ და მიეცით საშუალება Chromium-ს, დაამატოს თქვენი ფოტოები</translation>
 <translation id="1260702988262336471">გახსენით Chromium-ის მენიუ</translation>
@@ -22,12 +22,15 @@
 <translation id="1472013873724362412">თქვენი ანგარიში არ მუშაობს Chromium-ში. გთხოვთ, დაუკავშირდეთ თქვენი დომენის ადმინისტრატორს, ან სისტემაში შესასვლელად, ჩვეულებრივი Google ანგარიში გამოიყენოთ.</translation>
 <translation id="148576268809812097">შეინახეთ პაროლები Chromium-ში</translation>
 <translation id="1501302548410882220">გამოიყენეთ Chromium ყველგან</translation>
+<translation id="1502360822835740515">დააყენეთ Chromium თქვენს ნაგულისხმევ ბრაუზერად</translation>
 <translation id="1503199973012840174">Chromium მოძველდა. განაახლეთ ის, უსაფრთხოდ რომ იყოთ.</translation>
 <translation id="1515748263297244785">iPad-ისთვის Chromium-ის ნაგულისხმევად გამოყენება</translation>
+<translation id="1530961174488670696">Chromium-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
 <translation id="1531155317299575425">გამოაჩენს Chromium-ში შესვლის მოთხოვნებს.</translation>
 <translation id="1553657876656159572">თქვენთვის მომზადებული არხი. მათ შორის, ახალი ამბები, სპორტი და ამინდი.</translation>
 <translation id="1561849081734670621">Chromium-ში ჩაკეტვის რეჟიმის გასათიშად გამორთეთ ის თქვენს iPhone-ზე.</translation>
 <translation id="1569258826720962327">გამოიყენეთ „მოქმედებები Chromium-ში“ iOS-ზე</translation>
+<translation id="1573441572176948907">გადაიტანეთ Chromium თქვენს სამაგრში</translation>
 <translation id="159029779861043703">Chromium უზრუნველყოფს თქვენი სენსიტიური მონაცემების უსაფრთხოებას Face ID-ს მეშვეობით.</translation>
 <translation id="1591119736686995611">გახსნის Chromium-ის ჩანართების ბადეს.</translation>
 <translation id="16001233025397167">უსაფრთხოების შემოწმება დაგიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისა და სხვა უსიამოვნებისგან. მიიღეთ გაფრთხილება კონფიდენციალურობის და უსაფრთხოების დარღვევის ნებისმიერი შემთხვევის თაობაზე, რომელსაც Chromium გამოავლენს.</translation>
@@ -43,6 +46,7 @@
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="1847960401032164406">რუკები Chromium-ში</translation>
 <translation id="1867772173333403444">4. აირჩიეთ Chromium</translation>
+<translation id="1965068424387304464">Chromium მინიშნება: პაროლების შენახვა</translation>
 <translation id="2006345422933397527">Chromium-მა ვერ შეამოწმა განახლებები. შეამოწმეთ კავშირი ინტერნეტთან.</translation>
 <translation id="2042889939382983733">Chromium-ში თქვენი ისტორიის ნახვა</translation>
 <translation id="2052320862053429062">Chromium პერიოდულად შეამოწმებს თქვენს პაროლებს ვებში გამოქვეყნებულ სიებში. აღნიშნული ქმედებისას თქვენი პაროლები და მომხმარებლის სახელები დაშიფრული იქნება, რაც ნიშნავს, რომ მათ ვერავინ (მათ შორის, ვერც Google) წაიკითხავს.</translation>
@@ -53,6 +57,7 @@
 <translation id="2195025571279539885">გსურთ, Chromium-მა შემდგომში ამ საიტის <ph name="LANGUAGE_NAME" /> გვერდების თარგმნა შემოგთავაზოთ?</translation>
 <translation id="22313767259766852">ეს მისამართი ამჟამად შენახულია Chromium-ში. სხვადასხვა Google პროდუქტში მის გამოსაყენებლად შეინახეთ ის თქვენს Google ანგარიშში (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">ეს იმას ნიშნავს, რომ Chromium ყოველ ჯერზე მოითხოვს დესკტოპის საიტს.</translation>
+<translation id="2245694534483711162">Gemini-მ, შესაძლოა, გამოიყენოს თქვენი ზუსტი მისამართი Chromium-ისთვის უკვე მინიჭებული ნებართვის მიხედვით</translation>
 <translation id="2270466829363945454">ყიდვა</translation>
 <translation id="2313870531055795960">შეამოწმებს URL-ების თანხვედრას Chromium-ში შენახულ არაუსაფრთხო საიტების სიასთან. საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chromium-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი.</translation>
 <translation id="2314220608288760290">Chromium ავტომატურად გახსნის YouTube-ის ინკოგნიტო ბმულებს ინკოგნიტო რეჟიმში.</translation>
@@ -64,6 +69,7 @@
 <translation id="2340423701577464731">საკითხავი სიის ერთეულის დამატება Chromium-ში</translation>
 <translation id="2374627437126809292">Chromium იყენებს Google Maps-ს, რომ შემოგთავაზოთ მიმართულებები და ადგილობრივი ინფორმაცია ამოცნობილი მისამართების შესახებ.</translation>
 <translation id="2386292341327187942">ძიების ვიჯეტის ველში შეიყვანეთ Chromium</translation>
+<translation id="2389827884654658221">მიიღეთ უფრო სწრაფი წვდომა Chromium-ზე iPad-ის მთავარი ეკრანიდან.</translation>
 <translation id="2426113998523353159">თქვენი ორგანიზაცია მოითხოვს, რომ Chromium-ის გამოსაყენებლად სისტემაში შეხვიდეთ.</translation>
 <translation id="2450140762465183767">ამიერიდან შეგიძლიათ გამოიყენოთ Chromium, როცა შეტყობინებებში, დოკუმენტებში ან სხვა აპებში ბმულებს ეხებით.</translation>
 <translation id="2459183986985456602">ჩემი ყველაზე ბოლო ჩანართის გახსნა Chromium-ში.</translation>
@@ -72,11 +78,15 @@
 <translation id="2485774047568879945">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ მარტივად გააზიაროთ და გახსნათ ბმულები</translation>
 <translation id="2512597191798760956">ხანგრძლივად შეეხეთ Chromium-ის ხატულას და დააწკაპუნეთ „მთავარი ეკრანის რედაქტირებაზე“</translation>
 <translation id="2517624234762908348">თქვენი Chromium მონაცემების სინქრონიზაცია</translation>
+<translation id="2575968074225731646">მიიღეთ უფრო სწრაფი წვდომა Chromium-ზე iPhone-ის სამაგრიდან.</translation>
 <translation id="2592940277904433508">Chromium-ის გამოყენების გაგრძელება</translation>
 <translation id="2607609479243848905">საიდუმლო ფრაზის დავიწყების ან ამ პარამეტრის შეცვლის სურვილის შემთხვევაში, <ph name="BEGIN_LINK" />წაშალეთ Chromium მონაცემები თქვენს ანგარიშში<ph name="END_LINK" />.</translation>
+<translation id="2640367368802736659">რჩევა Chromium-ისთვის: მოიძიეთ, რასაც ხედავთ, Google Lens-ის მეშვეობით</translation>
 <translation id="2650312721222849884">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, ჩართეთ სინქრონიზაცია</translation>
 <translation id="2684230048001240293">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად, რომ თქვენი ჩანართები, პაროლები და საგადახდო ინფორმაცია სინქრონიზებული გქონდეთ თქვენს ყველა მოწყობილობას შორის</translation>
+<translation id="2729836253097154631">გაიარეთ ავტორიზაცია Chromium-ში თქვენი კონტენტის მისაღებად</translation>
 <translation id="2730884209570016437">Chromium ვერ ისარგებლებს თქვენი კამერით, რადგან მას სხვა აპლიკაცია იყენებს</translation>
+<translation id="2742952311155593352">Chromium-ის დაყენება თითქმის დასრულებულია!</translation>
 <translation id="2798503587425057129">გახსნის Chromium-ის საკითხავ სიას.</translation>
 <translation id="28276745681323897">თქვენს Google ანგარიშში შეგიძლიათ <ph name="BEGIN_LINK" />მართოთ, Chromium-ის რომელი მონაცემები ინახება<ph name="END_LINK" />.
 
@@ -88,7 +98,6 @@
 <translation id="2977470724722393594">Chromium განახლებულია</translation>
 <translation id="3044857325852340337">Chromium-ის მონაცემების წაშლა</translation>
 <translation id="3054480780637153380">iOS-ში გახსენით Chromium-ის პარამეტრები, შემდეგ შეეხეთ „ბრაუზერის ნაგულისხმევ აპს“ და აირჩიეთ Chromium.</translation>
-<translation id="3102849287235003384">თქვენი Google ანგარიშიდან ყველა ვებსაიტზე რომ გამოხვიდეთ, <ph name="BEGIN_LINK" />გადით Chromium-იდან<ph name="END_LINK" />.</translation>
 <translation id="3115956258722352278">გსურთ, დააყენოთ Chromium თქვენს ნაგულისხმევ ბრაუზერად?</translation>
 <translation id="3180939591219927904">ჩართეთ „Chromium-ის დახურვისას ინკოგნიტო ჩანართების ჩაკეტვა“</translation>
 <translation id="328933489847748230">{count,plural, =1{ახლა ნაჩვენებია Chromium-ის 1 ფანჯარა}other{ახლა ნაჩვენებია Chromium-ის {count} ფანჯარა}}</translation>
@@ -97,6 +106,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში. აღნიშნული, შესაძლოა, მოიცავდეს ისტორიასა და ავტომატურ შევსებას.}other{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში. აღნიშნული, შესაძლოა, მოიცავდეს ისტორიასა და ავტომატურ შევსებას.}}</translation>
 <translation id="3410395242749598859">თქვენი Chromium-ის ზოგიერთი მონაცემი ჯერ არ შენახულა <ph name="EMAIL" />-ში.
 ანგარიშების გადართვამდე მოითმინეთ რამდენიმე წუთი. თუ ანგარიშებს ახლა გადართავთ, ეს მონაცემები წაიშლება.</translation>
+<translation id="3420586870838853527">რჩევა Chromium-ისთვის: გაძლიერებული Safe Browsing უზრუნველყოფს თქვენს უსაფრთხოებას</translation>
 <translation id="3440830787838130530">მარტივად და დაცულად გაუზიარეთ თქვენი პაროლის ასლი ოჯახის წევრებს Google პაროლების მმართველში</translation>
 <translation id="3472200483164753384">მხარდაუჭერელია Chromium Canary-ში</translation>
 <translation id="347967311580159871">გადადით <ph name="BEGIN_LINK" />Google სერვისებზე<ph name="END_LINK" />, რომ გაეცნოთ მეტ პარამეტრს, რომლებიც იყენებს მონაცემებს Chromium-ში ფუნქციების თქვენზე მოსარგებად.</translation>
@@ -107,6 +117,8 @@
 <translation id="3581385059720151202">ვიზუალური მასალის ძიება Chromium-ში</translation>
 <translation id="3582640969619785896">Chromium შემოგთავაზებთ თქვენი პაროლის შენახვას</translation>
 <translation id="3594315078412605236">გადახდის მეთოდების მართვა Chromium-ში</translation>
+<translation id="3600428265489994557">Chromium-ში შესვლა</translation>
+<translation id="3617143087229977194">გახსენით ნაგულისხმევი აპების პარამეტრები iOS-ში, შემდეგ შეეხეთ „ბრაუზერის აპს“ და აირჩიეთ Chromium.</translation>
 <translation id="3634039384458740619">გახსენით Chromium-ის პარამეტრები</translation>
 <translation id="3639997914391704523">პაროლების Chromium-ის მეშვეობით შესამოწმებლად შედით სისტემაში თქვენი Google ანგარიშით.</translation>
 <translation id="372658070733623520">თქვენს Google ანგარიშში Chromium მონაცემები რომ შეინახოთ და გამოიყენოთ ისინი, დაადასტურეთ ვინაობა.</translation>
@@ -117,6 +129,8 @@
 <translation id="3816686541346279443">Chromium შემოგთავაზებთ თქვენი პაროლის შენახვას.</translation>
 <translation id="3827545470516145620">ამ მოწყობილობაზე სარგებლობთ უსაფრთხოების სტანდარტული საშუალებებით</translation>
 <translation id="3833326979834193417">Chromium ავტომატურად ასრულებს უსაფრთხოების შემოწმებას ყოველდღიურად, რაც გიცავთ პერსონალურ მონაცემთა გაჟონვის შემთხვევებისგან, არაუსაფრთხო ვებსაიტებისგან და ა.შ. უსაფრთხოების შემოწმების შესახებ დამატებითი ინფორმაცია ხელმისაწვდომია პარამეტრებში.</translation>
+<translation id="3837584850181228767">Chromium მინიშნება: გაძლიერებული Safe Browsing</translation>
+<translation id="3845223911364528001">თქვენი ფაილის ასატვირთად დაბრუნდით Chromium-ში</translation>
 <translation id="3855938650519180865">სიახლეები Chromium-ში</translation>
 <translation id="3886689467633467988">შედით ამ საიტსა და Chromium-ში, თქვენი სანიშნეებითა და სხვა კონტენტით თქვენს ყველა მოწყობილობაზე რომ ისარგებლოთ.</translation>
 <translation id="3949514465204582407">მინიშნება Chromium-ისთვის: გამოიყენეთ თქვენი პაროლები ნებისმიერი აპში</translation>
@@ -133,6 +147,7 @@
 <translation id="420541179527342563">Chromium-ში ჩაკეტვის რეჟიმის გასათიშად გამორთეთ ის თქვენს iPad-ზე.</translation>
 <translation id="4272892696084633551">შეუწყვეთ ხელი Chromium-ის ფუნქციებისა და წარმადობის გაუმჯობესებას</translation>
 <translation id="4302397443352897529">Chromium-ის პარამეტრები</translation>
+<translation id="4304713468139749426">პაროლების მმართველი</translation>
 <translation id="4408912345039114853">უსაფრთხოების შემოწმების გაშვება Chromium-ში</translation>
 <translation id="4432744876818348753">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში.</translation>
 <translation id="4445228361214254027">თქვენმა ორგანიზაციამ გამორთო Chromium-ის მონაცემების თქვენი Google ანგარიშით გამოყენებისა და შენახვის შესაძლებლობა. ახალი სანიშნეები, პაროლები და სხვა კონტენტი შეინახება მხოლოდ ამ მოწყობილობაზე.</translation>
@@ -169,6 +184,7 @@
 <translation id="5131565040785979529">თქვენი ორგანიზაცია, <ph name="DOMAIN" />, მართავს როგორც ანგარიშს, რომელშიც შესული ხართ, ისე Chromium-ის გამოყენების პროცესს.</translation>
 <translation id="5134464247000681876">გახსენით Gmail, Maps, YouTube და სხვა აპები Chromium-ში</translation>
 <translation id="5203244847421322551">პაროლების შენახვა და ავტომატური შევსება Chromium-ში</translation>
+<translation id="5218806323985098884">გაეცანით Chromium-ის სიახლეებს</translation>
 <translation id="5224391634244552924">შენახული პაროლები არ არის. პაროლების შემოწმებას Chromium შეძლებს მათი შენახვის შემდეგ.</translation>
 <translation id="5259423875997548710">ვიზუალური მასალის ძიება Chromium-ში.</translation>
 <translation id="5284913972719948193">დააიმპორტეთ თქვენი მონაცემები, რომ Chromium-ში გამოიყენოთ თქვენი პაროლები, ისტორია, სანიშნეები და საკრედიტო ბარათები</translation>
@@ -177,6 +193,7 @@
 <translation id="5383251701169024761">შენახული პაროლებით სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chromium ავტომატური შევსებისთვის.</translation>
 <translation id="538767207339317086">Chromium-ში შესვლის დაშვება</translation>
 <translation id="5389058611415066188">იყავით უსაფრთხოდ Chromium-თან ერთად</translation>
+<translation id="5414059596208264343">Chromium მინიშნება: მიიღეთ თქვენს პაროლებზე წვდომა</translation>
 <translation id="5415273218238091735">Chromium-ის მინიშნება</translation>
 <translation id="5427571867875391349">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად</translation>
 <translation id="5434562575369834882">Chromium-ის ინკოგნიტო რეჟიმში გახსნა</translation>
@@ -189,12 +206,16 @@
 <translation id="5521125884468363740">იმისთვის, რომ იხილოთ თქვენი ჩანართები ნებისმიერი მოწყობილობიდან, საიდანაც Chromium-ს იყენებთ, შედით სისტემაში და ჩართეთ სინქრონიზაცია</translation>
 <translation id="5534584691915394889">ამის მეშვეობით შესაძლებელი გახდება, Chromium-ისა და Google Lens-ის მეშვეობით შექმნათ მოვლენები თქვენს Apple Calendar-ში.</translation>
 <translation id="5571094606370987472">გახსნის Chromium-ის ბოლოდროინდელ ჩანართებს.</translation>
+<translation id="5596644122344097310">შეეხეთ აქ, რომ მაქსიმალურად გამოიყენოთ Chromium თქვენს iPhone-ში.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5657280937522795751">Chromium-ის გადართვა</translation>
 <translation id="5664395081284292058">ჩემი ყველაზე ბოლო ჩანართის გახსნა Chromium-ში</translation>
 <translation id="5671188105328420281">მინიშნებები Chromium-ისთვის</translation>
 <translation id="5688047395118852662">ამ ბარათზე მოცემულია რეკომენდაციები Chromium-ის შესაძლებლობების მაქსიმალურად გამოყენებასთან დაკავშირებით.</translation>
 <translation id="5700709190537129682">Chromium ვერ ახერხებს თქვენი პაროლების შემოწმებას</translation>
+<translation id="5731004036450828399">წვდომის გასაღებების უსაფრთხოდ შესანახად საჭიროა აღდგენის PIN-კოდის შექმნა.
+
+        წვდომის გასაღებები შეინახება პაროლების მმართველში, რომლის საშუალებითაც მათ გამოიყენებთ Chromium-ში ნებისმიერ მოწყობილობაზე.</translation>
 <translation id="584550191241316896">შესული ხართ Chromium-ში</translation>
 <translation id="5862307444128926510">მოგესალმებათ Chromium!</translation>
 <translation id="5889847953983052353">როდესაც ჩართულია:
@@ -218,7 +239,7 @@
 <translation id="6154098560469640583">გამოიყენეთ Chromium შეტყობინებებში, დოკუმენტებსა და სხვა აპებში არსებულ ბმულებზე ყოველი შეხებისას.</translation>
 <translation id="6157162508956739031">სწრაფად შედით აპებსა და საიტებში პაროლებისა და წვდომის გასაღებების Chromium-იდან ავტომატური შევსებით</translation>
 <translation id="6170619162539716595">მიეცით საშუალება Chromium-ს, გამოიყენოს Google Maps, რომ შემოგთავაზოთ მიმართულებები და ადგილობრივი ინფორმაცია ამოცნობილი მისამართების შესახებ.</translation>
-<translation id="6247557882553405851">Google პაროლების მმართველი</translation>
+<translation id="6244277266078678766">თქვენი მონაცემები შეინახება პაროლების მმართველში ანგარიშისთვის: <ph name="USER_EMAIL" />.</translation>
 <translation id="6268381023930128611">გსურთ Chromium-იდან გამოსვლა?</translation>
 <translation id="6301717043141881464">თქვენი შენახული პაროლებით თქვენს სხვა აპებში მარტივად რომ ისარგებლოთ, გამოიყენეთ Chromium ავტომატური შევსებისთვის</translation>
 <translation id="6324041800010509197">ჩანართების ბადეზე გადასვლა Chromium-ში</translation>
@@ -227,11 +248,15 @@
 <translation id="6424492062988593837">Chromium გაუმჯობესდა! ხელმისაწვდომია ახალი ვერსია.</translation>
 <translation id="6433172051771630690">მითითებები Chromium-ის ყველა შესაძლებლობის გამოყენებასთან დაკავშირებით.</translation>
 <translation id="65045991564554105">Chromium-ის სანიშნეების ნახვა</translation>
+<translation id="6519797228806907665">იქონიეთ უფრო სწრაფი წვდომა Chromium-ზე iPhone-ის მთავარი ეკრანიდან.</translation>
 <translation id="6538713818758208754">გახსნის გადახდის მეთოდების პარამეტრების გვერდს Chromium-ში.</translation>
 <translation id="6540186279384079894">ახალი ჩანართის გახსნა Chromium-ში</translation>
 <translation id="6563921047760808519">შეიტყვეთ მეტი იმის შესახებ, თუ <ph name="BEGIN_LINK" />როგორ ინარჩუნებს Chromium თქვენი მონაცემების კონფიდენციალურობას<ph name="END_LINK" /></translation>
+<translation id="6564769014061914792">შეეხეთ აქ, რომ მაქსიმალურად გამოიყენოთ Chromium თქვენს iPad-ში.</translation>
+<translation id="6566303693324540692">რჩევა Chromium-ისთვის: გადაიტანეთ Chromium თქვენს მთავარ ეკრანზე</translation>
 <translation id="6574750762636192517">პაროლების მართვა Chromium-ში</translation>
 <translation id="6590232959690355435">გახსნის თქვენი ისტორიის გვერდს Chromium-ში.</translation>
+<translation id="6649269674808477353">გახსენით Chromium უფრო სწრაფად, როცა მზად იქნებით iPhone-ში ვების დასათვალიერებლად.</translation>
 <translation id="6674470628873622334">გახსნის ახალ ინკოგნიტო ჩანართს Chromium-ში.</translation>
 <translation id="6680609900732453726">დატოვეთ დათვალიერება კონფიდენციალურად მოწყობილობის ავტორიზაციით, როცა Chromium-ს დახურავთ</translation>
 <translation id="6752854822223394465">თქვენი ორგანიზაცია აყენებს Chromium-ს...</translation>
@@ -260,13 +285,14 @@
 <translation id="7269362888766543920">ზოგიერთი დანამატი Chromium-ის ავარიულად გათიშვას იწვევს. გთხოვთ, მოახდინოთ მათი დეინსტალაცია.</translation>
 <translation id="7285031092584344905">იქონიეთ წვდომა თქვენს Chromium პაროლებსა და სხვა კონტენტზე სხვა აპებიდან.</translation>
 <translation id="7337881442233988129">Chromium</translation>
-<translation id="7357211569052832586">არჩეული მონაცემები ამოიშალა Chromium-იდან და სინქრონიზებული მოწყობილობებიდან. თქვენს Google ანგარიშში შეიძლება სხვა ტიპის დათვალიერების ისტორია იყოს შენახული (მაგალითად, ძიებები და Google-ის სხვა სერვისებზე აქტივობა), რომელიც ხელმისაწვდომია მისამართზე: history.google.com.</translation>
 <translation id="7395825497086981028">თქვენი პაროლი შეინახება პაროლების მმართველში <ph name="EMAIL" />-ისთვის.</translation>
+<translation id="7434848749522628428">აღნიშნული წვდომის გასაღები შეინახება პაროლების მმართველში ანგარიშისთვის: <ph name="USER_EMAIL" />.</translation>
 <translation id="7504829997542308412">გახსენით Chromium</translation>
 <translation id="7531461704633548377">Chromium-იდან</translation>
 <translation id="7554983317097061001">მინიშნება Chromium-ისთვის: გადაიტანეთ Chromium სამაგრში</translation>
 <translation id="7576863740961052505">Chromium-ის პარამეტრების მართვა</translation>
 <translation id="7674213385180944843">გახსენით: პარამეტრები &gt; კონფიდენციალურობა &gt; კამერა &gt; Chromium და ჩართეთ კამერა.</translation>
+<translation id="7685160423563372998">სურათის შექმნა Gemini-ს მეშვეობით Chromium-ში</translation>
 <translation id="7733418656985455268">მინიშნება Chromium-ისთვის: Lens-ით ძიება</translation>
 <translation id="7747820849741499258">Chromium-ში ძიება</translation>
 <translation id="7753923083404296545">გაიხსნა Chromium-ის ინკოგნიტო ჩანართში</translation>
@@ -281,6 +307,7 @@
 <translation id="7934404985878918282">Chromium-ის საკითხავი სიის ნახვა</translation>
 <translation id="7935734571048689933">Chromium იმართება</translation>
 <translation id="7951793218148208717">გახსნის ახალ ჩანართს Chromium-ში.</translation>
+<translation id="7957726318578167662">მარტივად გამოიყენეთ Chromium, როდესაც შეტყობინებებში ან სხვა აპებში ბმულებს შეეხებით.</translation>
 <translation id="7980860476903281594">Chromium უზიარებს თქვენს მდებარეობას თქვენ მიერ დაშვებულ საიტებს.</translation>
 <translation id="7994322153108931467">მიიღეთ სასარგებლო მითითებები Chromium-თან დაკავშირებით — ჩართეთ შეტყობინებების მიღება iOS-ის პარამეტრებიდან.</translation>
 <translation id="7997159823054171568">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად</translation>
@@ -291,10 +318,11 @@
 <translation id="8119542592987737574">იქონიეთ უფრო სწრაფი წვდომა Chromium-ზე iPhone-ის მთავარ ეკრანის სამაგრიდან.</translation>
 <translation id="8164086860209325020">Chromium-ის პარამეტრებზე გადასვლა</translation>
 <translation id="8197822717502700527">ამიერიდან თქვენს მოწყობილობაზე Chromium-ის შესაძლებლობებს მაქსიმალურად გამოიყენებთ.</translation>
-<translation id="8240981428553046115">Chromium-მა ვერ შეამოწმა განახლებები. ცადეთ მოგვიანებით.</translation>
+<translation id="8236210361418193126">პაროლების მმართველში იმპორტი</translation>
 <translation id="8254729934443216898">აღმოაჩინეთ ახალი ფუნქციები, რომლებიც დაგეხმარებათ, მიიღოთ მაქსიმუმი Chromium-ისგან.</translation>
 <translation id="8293572045658095405">თქვენ ხართ Chromium-ის ინკოგნიტო რეჟიმში</translation>
 <translation id="830951810931292870">მითითებულ URL-ებს Chromium-ის ინკოგნიტო რეჟიმში გახსნის.</translation>
+<translation id="8385503371191508165">დაიწყეთ წვდომის გასაღებების შენახვა პაროლების მმართველში</translation>
 <translation id="8390323835464055390">შედით თქვენი შენახული პაროლებითა და წვდომის გასაღებებით ნებისმიერი აპიდან Chromium-ის ავტომატური შევსების გამოყენებით</translation>
 <translation id="8409374867500149834">თქვენ სარგებლობთ Chromium-ის ყველაზე ძლიერი დაცვით სახიფათო ვებსაიტებისგან</translation>
 <translation id="8543509361021925846">{THRESHOLD,plural, =1{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში. წაიშლება ამ მოწყობილობაში შენახული მონაცემები მხოლოდ იმ პერიოდისთვის, როცა შესული იყავით. ეს შეიძლება მოიცავდეს ისტორიას და პაროლებს.}other{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში. წაიშლება ამ მოწყობილობაში შენახული მონაცემები მხოლოდ იმ პერიოდისთვის, როცა შესული იყავით. ეს შეიძლება მოიცავდეს ისტორიას და პაროლებს.}}</translation>
@@ -307,6 +335,7 @@
 <translation id="8730503818204408000">გახსნის Chromium-ის პარამეტრებს, Chromium ნაგულისხმევ ბრაუზერად რომ დაყენდეს.</translation>
 <translation id="8754966941001340678">Chromium გირჩევთ გაძლიერებულ დაცვას</translation>
 <translation id="8759037115129007407">თქვენს ოჯახის წევრს ამჟამად არ შეუძლია პაროლების მიღება. სთხოვეთ მას, განაახლოს Chromium და შეასრულოს თავისი პაროლების სინქრონიზაცია. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
+<translation id="8769418653786388149">თან იქონიეთ Chromium</translation>
 <translation id="8776843108004031667">ეს ანგარიში და შეუნახავი მონაცემები ამოიშლება Chromium-იდან.</translation>
 <translation id="8793333988063379360">Chromium-ის პარამეტრებისა და სხვა კონტენტის ნახვა შეგიძლიათ აქ</translation>
 <translation id="8805148242934787134">დააყენეთ Chromium ნაგულისხმევ ბრაუზერად</translation>
@@ -315,6 +344,7 @@
 <translation id="8860548555286245440">URL-ების Chromium-ში ინკოგნიტო რეჟიმში გახსნა</translation>
 <translation id="8880024619507699923">თქვენი ორგანიზაცია მოითხოვს, რომ Chromium-ის გამოსაყენებლად სისტემაში შეხვიდეთ. <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8900052431807804054">ისარგებლეთ Chromium-ის უსაფრთხოების ყველაზე ძლიერი ფუნქციებით</translation>
+<translation id="8908791447256515663">მიიღეთ უფრო სწრაფი წვდომა Chromium-ზე iPad-ის სამაგრიდან.</translation>
 <translation id="8925569192291721236">მიიღეთ ფასების შესახებ განახლებები და Chromium-ის რჩევები.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში}other{ასე ხდება, როცა Chromium არ გამოიყენება {THRESHOLD} წუთის განმავლობაში}}</translation>
 <translation id="8963279154877372067">ფასის კლების შესახებ რომ შეიტყოთ, საჭიროა Chromium-ისგან შეტყობინებების მიღების დაშვება</translation>
@@ -322,7 +352,6 @@
 <translation id="900560297598578021">შესული ხართ, როგორც <ph name="EMAIL" />.
 
 თქვენი მონაცემები დაიშიფრა თქვენი საიდუმლო ფრაზით <ph name="TIME" />-ს. შეიყვანეთ ის, რომ გამოიყენოთ და შეინახოთ Chromium მონაცემები თქვენს Google ანგარიშში.</translation>
-<translation id="9022552996538154597">შედით Chromium-ში</translation>
 <translation id="9031260906956926157">თქვენი Chromium-ის ზოგიერთი მონაცემი ჯერ არ შენახულა თქვენს Google ანგარიშში.
 სისტემიდან გასვლამდე მოითმინეთ რამდენიმე წუთი. ახლა გასვლის შემთხვევაში, აღნიშნული მონაცემები წაიშლება.</translation>
 <translation id="9050790730841755540">გამოიყენეთ Chromium სხვა აპებში არსებულ ბმულებზე ყოველი შეხებისას.</translation>

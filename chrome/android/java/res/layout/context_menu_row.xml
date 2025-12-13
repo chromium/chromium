@@ -9,7 +9,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:descendantFocusability="afterDescendants">
 
     <!-- The menu_row_item LinearLayout includes an optional start icon and
         mandatory text title. The start icon is decorative and is part of the
@@ -56,12 +57,11 @@ found in the LICENSE file.
          chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewBinder.java). -->
     <ImageView
         android:id="@+id/menu_row_share_icon"
-        android:layout_width="@dimen/list_item_end_icon_width"
+        android:layout_width="?attr/minInteractTargetSize"
         android:layout_height="match_parent"
+        android:layout_marginEnd="4dp"
         android:scaleType="fitCenter"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:paddingHorizontal="@dimen/context_menu_list_lateral_padding"
+        android:paddingHorizontal="?attr/listItemIconPadding"
         android:background="?attr/listChoiceBackgroundIndicator"
         android:visibility="gone"
         android:focusable="true"

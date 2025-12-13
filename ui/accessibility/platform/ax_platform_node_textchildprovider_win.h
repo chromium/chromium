@@ -14,10 +14,12 @@
 namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextChildProviderWin
     : public SequenceAffineComObjectRoot,
-      public ITextChildProvider {
+      public ITextChildProvider,
+      public IFastRundown {
  public:
   BEGIN_COM_MAP(AXPlatformNodeTextChildProviderWin)
   COM_INTERFACE_ENTRY(ITextChildProvider)
+  COM_INTERFACE_ENTRY(IFastRundown)
   END_COM_MAP()
 
   AXPlatformNodeTextChildProviderWin();

@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/hash/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
@@ -53,13 +52,23 @@ class TracingScenario::TraceReader
                         base::WeakPtr<TracingScenario> scenario,
                         scoped_refptr<base::SequencedTaskRunner> task_runner,
                         const BackgroundTracingRule* triggered_rule) {
+    base::TimeTicks read_start_time = base::TimeTicks::Now();
+    TRACE_EVENT_BEGIN(
+        "tracing.background", "ReadTrace",
+        perfetto::NamedTrack::FromPointer("Scenario.ReadTrace", reader.get()));
     reader->tracing_session->ReadTrace(
-        [task_runner, scenario, reader, triggered_rule](
+        [task_runner, scenario, reader, triggered_rule, read_start_time](
             perfetto::TracingSession::ReadTraceCallbackArgs args) mutable {
           if (args.size) {
             reader->serialized_trace.append(args.data, args.size);
           }
           if (!args.has_more) {
+            TRACE_EVENT_END("tracing.background",
+                            perfetto::NamedTrack::FromPointer(
+                                "Scenario.ReadTrace", reader.get()));
+            base::UmaHistogramMediumTimes(
+                "Tracing.Background.ReadTraceDuration",
+                base::TimeTicks::Now() - read_start_time);
             task_runner->PostTask(
                 FROM_HERE, base::BindOnce(&TracingScenario::OnFinalizingDone,
                                           scenario, reader->trace_uuid,
@@ -142,16 +151,6 @@ void NestedTracingScenario::Enable() {
   CHECK_EQ(current_state_, State::kDisabled);
   SetState(State::kEnabled);
   TracingScenarioBase::Enable();
-}
-
-void NestedTracingScenario::Stop() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(current_state_ == State::kActive || current_state_ == State::kStopping)
-      << static_cast<int>(current_state_);
-  for (auto& rule : stop_rules_) {
-    rule->Uninstall();
-  }
-  SetState(State::kStopping);
 }
 
 bool NestedTracingScenario::Initialize(
@@ -526,7 +525,8 @@ bool TracingScenario::OnStopTrigger(
   }
   if (active_scenario_) {
     on_nested_stopped_.Cancel();
-    active_scenario_->Stop();
+    active_scenario_->Disable();
+    active_scenario_ = nullptr;
   } else {
     for (auto& nested_scenario : nested_scenarios_) {
       nested_scenario->Disable();

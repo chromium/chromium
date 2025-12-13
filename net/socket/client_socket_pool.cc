@@ -164,10 +164,16 @@ void ClientSocketPool::set_used_idle_socket_timeout(base::TimeDelta timeout) {
 }
 
 ClientSocketPool::ClientSocketPool(
+    size_t socket_soft_cap,
+    SocketPoolAdditionalCapacity additional_capacity,
+    const ProxyChain& proxy_chain,
     bool is_for_websockets,
     const CommonConnectJobParams* common_connect_job_params,
     std::unique_ptr<ConnectJobFactory> connect_job_factory)
-    : is_for_websockets_(is_for_websockets),
+    : socket_soft_cap_(socket_soft_cap),
+      additional_capacity_(additional_capacity),
+      proxy_chain_(proxy_chain),
+      is_for_websockets_(is_for_websockets),
       common_connect_job_params_(common_connect_job_params),
       connect_job_factory_(std::move(connect_job_factory)) {}
 
@@ -187,7 +193,6 @@ base::Value::Dict ClientSocketPool::NetLogGroupIdParams(
 std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
     GroupId group_id,
     scoped_refptr<SocketParams> socket_params,
-    const ProxyChain& proxy_chain,
     const std::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
     RequestPriority request_priority,
     SocketTag socket_tag,
@@ -198,12 +203,12 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
   // opportunities. We don't perform H2 IP pooling to or through proxy servers,
   // so ignore those cases.
   OnHostResolutionCallback resolution_callback;
-  if (using_ssl && proxy_chain.is_direct()) {
+  if (using_ssl && GetProxyChain().is_direct()) {
     resolution_callback = base::BindRepeating(
         &OnHostResolution, common_connect_job_params_->spdy_session_pool,
         // TODO(crbug.com/40181080): Pass along as SchemeHostPort.
         SpdySessionKey(HostPortPair::FromSchemeHostPort(group_id.destination()),
-                       group_id.privacy_mode(), proxy_chain,
+                       group_id.privacy_mode(), GetProxyChain(),
                        SessionUsage::kDestination, socket_tag,
                        group_id.network_anonymization_key(),
                        group_id.secure_dns_policy(),
@@ -229,12 +234,22 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
                          : ConnectJobFactory::AlpnMode::kHttpAll;
 
   return connect_job_factory_->CreateConnectJob(
-      group_id.destination(), proxy_chain, proxy_annotation_tag,
+      group_id.destination(), GetProxyChain(), proxy_annotation_tag,
       socket_params->allowed_bad_certs(), alpn_mode, force_tunnel,
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),
       common_connect_job_params_, delegate);
+}
+
+void ClientSocketPool::UpdateStateBeforeAllocation() {
+  state_ = additional_capacity_.NextStateBeforeAllocation(
+      State(), SocketsInUse(), SocketSoftCap());
+}
+
+void ClientSocketPool::UpdateStateAfterRelease() {
+  state_ = additional_capacity_.NextStateAfterRelease(State(), SocketsInUse(),
+                                                      SocketSoftCap());
 }
 
 }  // namespace net

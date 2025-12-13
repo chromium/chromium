@@ -81,6 +81,17 @@
 
   promise_test(async t => {
     let messages = await script_messages_for(_ => {
+      let script = document.createElement("script");
+      window.log_message("SET");
+      Object.getOwnPropertyDescriptor(Node.prototype, "textContent").set.call(script, LOG_RUN_MESSAGE);
+      window.log_message("APPEND");
+      container.appendChild(script);
+    });
+    assert_array_equals(messages, ["SET", "APPEND", "CREATE_SCRIPT", "HTMLScriptElement text", "RUN_TRUSTED_SCRIPT"]);
+  }, "Verify when the default policy is called for script set source via Node.textContent.");
+
+  promise_test(async t => {
+    let messages = await script_messages_for(_ => {
       let script = document.createElementNS(NSURI_SVG, "script");
       window.log_message("SET");
       script.innerHTML = LOG_RUN_MESSAGE;
@@ -330,7 +341,13 @@
     let messages = await script_messages_for(_ => {
       let script = create_svg_script_with_trusted_source_text(";");
       window.log_message("SET");
-      script.moveBefore(document.createTextNode(LOG_RUN_MESSAGE), script.firstChild);
+      // Per https://dom.spec.whatwg.org/#move, step 1, moveBefore requires
+      // the two nodes to have the same shadow-including root.
+      let text = document.createTextNode(LOG_RUN_MESSAGE);
+      let root = document.createElement("div");
+      root.appendChild(text);
+      root.appendChild(script);
+      script.moveBefore(text, script.firstChild);
       window.log_message("APPEND");
       container.appendChild(script);
     });

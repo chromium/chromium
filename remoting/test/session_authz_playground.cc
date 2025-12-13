@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/test/session_authz_playground.h"
 
 #include <cstdio>
@@ -17,12 +11,14 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "remoting/base/certificate_helpers.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter_impl.h"
@@ -39,10 +35,10 @@ constexpr char kOAuthScope[] =
     "https://www.googleapis.com/auth/chromoting.me2me.host";
 
 void PrintErrorAndExit(const std::string& api_name, const HttpStatus& status) {
-  fprintf(stderr, "Failed to call API: %s, error code: %d\n", api_name.data(),
-          static_cast<int>(status.error_code()));
-  fprintf(stderr, "%s\n", status.error_message().data());
-  fprintf(stderr, "%s\n", status.response_body().data());
+  UNSAFE_TODO(fprintf(stderr, "Failed to call API: %s, error code: %d\n",
+                      api_name.data(), static_cast<int>(status.error_code())));
+  UNSAFE_TODO(fprintf(stderr, "%s\n", status.error_message().data()));
+  UNSAFE_TODO(fprintf(stderr, "%s\n", status.response_body().data()));
   std::exit(1);
 }
 
@@ -96,8 +92,10 @@ void SessionAuthzPlayground::GenerateHostToken() {
             if (!response) {
               fprintf(stderr, "No response was received.\n");
             }
-            printf("Host token: %s\n", response->host_token.data());
-            printf("Session ID: %s\n", response->session_id.data());
+            UNSAFE_TODO(
+                printf("Host token: %s\n", response->host_token.data()));
+            UNSAFE_TODO(
+                printf("Session ID: %s\n", response->session_id.data()));
             return response->session_id;
           })
           .Then(base::BindPostTaskToCurrentDefault(
@@ -120,14 +118,18 @@ void SessionAuthzPlayground::VerifySessionToken(const std::string& session_id) {
             if (!response) {
               fprintf(stderr, "No response was received.\n");
             }
-            printf("Reauth token: %s\n", response->session_reauth_token.data());
+            UNSAFE_TODO(printf("Reauth token: %s\n",
+                               response->session_reauth_token.data()));
             printf("Reauth token expires in: %fs\n",
                    response->session_reauth_token_lifetime.InSecondsF());
-            printf("Session ID: %s\n", response->session_id.data());
-            printf("Shared secret: %s\n", response->shared_secret.data());
+            UNSAFE_TODO(
+                printf("Session ID: %s\n", response->session_id.data()));
+            UNSAFE_TODO(
+                printf("Shared secret: %s\n", response->shared_secret.data()));
             if (session_id != response->session_id) {
-              fprintf(stderr, "Unexpected session ID. Expected: %s\n",
-                      session_id.data());
+              UNSAFE_TODO(fprintf(stderr,
+                                  "Unexpected session ID. Expected: %s\n",
+                                  session_id.data()));
               std::exit(1);
             }
             return response->session_reauth_token;
@@ -157,7 +159,8 @@ void SessionAuthzPlayground::ReauthorizeHost(const std::string& session_id,
         if (!response) {
           fprintf(stderr, "No response was received.\n");
         }
-        printf("Reauth token: %s\n", response->session_reauth_token.data());
+        UNSAFE_TODO(printf("Reauth token: %s\n",
+                           response->session_reauth_token.data()));
         printf("Reauth token expires in: %fs\n",
                response->session_reauth_token_lifetime.InSecondsF());
         return response->session_reauth_token;
@@ -172,8 +175,8 @@ SessionAuthzPlayground::CreateOAuthTokenGetter(
     const base::FilePath& host_config_file_path) {
   auto host_config_dict = HostConfigFromJsonFile(host_config_file_path);
   if (!host_config_dict.has_value()) {
-    fprintf(stderr, "Cannot read host config file: %s\n",
-            host_config_file_path.MaybeAsASCII().data());
+    UNSAFE_TODO(fprintf(stderr, "Cannot read host config file: %s\n",
+                        host_config_file_path.MaybeAsASCII().data()));
     std::exit(1);
   }
   const std::string* refresh_token =

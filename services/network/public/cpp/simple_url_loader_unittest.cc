@@ -23,7 +23,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
@@ -38,7 +37,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -63,6 +64,7 @@
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -338,9 +340,9 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   // this is just the value passed to the callback. For DownloadType::TO_FILE,
   // it is nullptr if an empty FilePath was passed to the callback, or the
   // contents of the file, otherwise.
-  const std::string* response_body() const {
+  base::optional_ref<const std::string> response_body() const {
     EXPECT_TRUE(done_);
-    return response_body_.get();
+    return response_body_;
   }
 
   // Returns true if the callback has been invoked.
@@ -381,7 +383,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   }
 
  private:
-  void DownloadedToString(std::unique_ptr<std::string> response_body) {
+  void DownloadedToString(std::optional<std::string> response_body) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     EXPECT_FALSE(done_);
     EXPECT_EQ(DownloadType::TO_STRING, download_type_);
@@ -411,8 +413,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 
     if (!file_path.empty()) {
       EXPECT_TRUE(base::PathExists(file_path));
-      response_body_ = std::make_unique<std::string>();
-      EXPECT_TRUE(base::ReadFileToString(file_path, response_body_.get()));
+      response_body_ = std::make_optional<std::string>();
+      EXPECT_TRUE(base::ReadFileToString(file_path, &*response_body_));
     }
 
     // Can do some additional checks in the TO_FILE case. Unfortunately, in the
@@ -504,7 +506,7 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
     if (success ||
         (allow_http_error_results_ && simple_url_loader_->ResponseInfo())) {
       response_body_ =
-          std::make_unique<std::string>(download_as_stream_response_body_);
+          std::make_optional<std::string>(download_as_stream_response_body_);
     }
 
     if (destroy_loader_on_complete_)
@@ -547,8 +549,8 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
   base::RunLoop run_loop_;
 
   // Response body, regardless of DownloadType. Only populated on completion.
-  // Null on error.
-  std::unique_ptr<std::string> response_body_;
+  // Empty on error.
+  std::optional<std::string> response_body_;
 
   base::OnceClosure on_destruction_callback_;
 
@@ -577,14 +579,15 @@ class SimpleLoaderTestHelper : public SimpleURLLoaderStreamConsumer {
 // with the length indicated by the query string.
 std::unique_ptr<net::test_server::HttpResponse> HandleResponseSize(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path_piece() != kResponseSizePath)
+  if (request.GetURL().path() != kResponseSizePath) {
     return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response =
       std::make_unique<net::test_server::BasicHttpResponse>();
 
   uint32_t length;
-  if (!base::StringToUint(request.GetURL().query(), &length)) {
+  if (!base::StringToUint(request.GetURL().GetQuery(), &length)) {
     ADD_FAILURE() << "Invalid length: " << request.GetURL();
   } else {
     response->set_content(std::string(length, 'a'));
@@ -597,8 +600,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleResponseSize(
 // response body. No body bytes will be read successfully.
 std::unique_ptr<net::test_server::HttpResponse> HandleInvalidGzip(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path_piece() != kInvalidGzipPath)
+  if (request.GetURL().path() != kInvalidGzipPath) {
     return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> response =
       std::make_unique<net::test_server::BasicHttpResponse>();
@@ -612,8 +616,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInvalidGzip(
 // truncated body. Consumer should see an error after reading some data.
 std::unique_ptr<net::test_server::HttpResponse> HandleTruncatedBody(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path_piece() != kTruncatedBodyPath)
+  if (request.GetURL().path() != kTruncatedBodyPath) {
     return nullptr;
+  }
 
   std::unique_ptr<net::test_server::RawHttpResponse> response =
       std::make_unique<net::test_server::RawHttpResponse>(
@@ -630,8 +635,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleTruncatedBody(
 std::unique_ptr<net::test_server::HttpResponse> FailOnceThenEchoBody(
     bool* has_failed_request,
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path_piece() != kFailOnceThenEchoBody)
+  if (request.GetURL().path() != kFailOnceThenEchoBody) {
     return nullptr;
+  }
 
   if (!*has_failed_request) {
     EXPECT_FALSE(request.content.empty());

@@ -129,8 +129,8 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
     // <spec step="2.1">Let completion be Completion { [[Type]]: throw,
     // [[Value]]: a new TypeError, [[Target]]: empty }.</spec>
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
-        isolate,
-        "Failed to fetch dynamically imported module: " + url_.GetString());
+        isolate, StrCat({"Failed to fetch dynamically imported module: ",
+                         url_.GetString()}));
 
     // <spec step="2.2">Perform FinishDynamicImport(referencingScriptOrModule,
     // specifier, promiseCapability, completion).</spec>
@@ -143,7 +143,8 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
   if (import_phase_ == v8::ModuleImportPhase::kSource) {
     if (!module_script->IsWasmModuleRecord()) {
       v8::Local<v8::Value> error = V8ThrowException::CreateSyntaxError(
-          isolate, url_.GetString() + kNonWasmImportInSourcePhaseError);
+          isolate,
+          StrCat({url_.GetString(), kNonWasmImportInSourcePhaseError}));
       promise_resolver_->Reject(error);
       return;
     }
@@ -211,7 +212,12 @@ void DynamicModuleResolver::ResolveDynamically(
     const ModuleRequest& module_request,
     const ReferrerScriptInfo& referrer_info,
     ScriptPromiseResolver<IDLAny>* promise_resolver) {
-  DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext())
+  // CSS Module Scripts can be imported declaratively, so this DCHECK doesn't
+  // apply in that context.
+  const ModuleType module_type =
+      modulator_->ModuleTypeFromRequest(module_request);
+  DCHECK(modulator_->GetScriptState()->GetIsolate()->InContext() ||
+         (module_type == ModuleType::kCSS))
       << "ResolveDynamically should be called from V8 callback, within a valid "
          "context.";
 
@@ -247,7 +253,6 @@ void DynamicModuleResolver::ResolveDynamically(
   KURL url = modulator_->ResolveModuleSpecifier(
       module_request.specifier, base_url, /*failure_reason=*/nullptr);
 
-  ModuleType module_type = modulator_->ModuleTypeFromRequest(module_request);
 
   // <spec label="fetch-an-import()-module-script-graph" step="2">If url is
   // failure, then asynchronously complete this algorithm with null, and abort
@@ -256,19 +261,19 @@ void DynamicModuleResolver::ResolveDynamically(
     // <spec step="6">If result is null, then:</spec>
     String error_message;
     if (!url.IsValid()) {
-      error_message = "Failed to resolve module specifier '" +
-                      module_request.specifier + "'";
+      error_message = StrCat({"Failed to resolve module specifier '",
+                              module_request.specifier, "'"});
       if (referrer_info.BaseURL().IsAboutBlankURL() &&
           base_url.IsAboutBlankURL()) {
         error_message =
-            error_message +
-            ". The base URL is about:blank because import() is called from a "
-            "CORS-cross-origin script.";
+            StrCat({error_message,
+                    ". The base URL is about:blank because import() is called "
+                    "from a CORS-cross-origin script."});
       }
 
     } else {
-      error_message = "\"" + module_request.GetModuleTypeString() +
-                      "\" is not a valid module type.";
+      error_message = StrCat({"\"", module_request.GetModuleTypeString(),
+                              "\" is not a valid module type."});
     }
 
     // <spec step="6.1">Let completion be Completion { [[Type]]: throw,

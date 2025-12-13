@@ -165,7 +165,9 @@ std::string WrapKeyCommitmentsForIssuers(
     // serialization
     CHECK_NE(issuer.Serialize(), "null");
 
-    to_serialize.Set(issuer.Serialize(), *base::JSONReader::Read(commitment));
+    to_serialize.Set(issuer.Serialize(),
+                     *base::JSONReader::Read(
+                         commitment, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
   return *base::WriteJson(to_serialize);
 }

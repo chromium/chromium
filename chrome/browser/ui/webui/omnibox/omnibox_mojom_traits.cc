@@ -167,10 +167,7 @@ StructTraits<mojom::AutocompleteMatchDataView,
 std::string StructTraits<
     mojom::AutocompleteMatchDataView,
     ::AutocompleteMatchWrapper>::associated_keyword(const CppType& in) {
-  if (in.wrapped_match().associated_keyword) {
-    return base::UTF16ToUTF8(in.wrapped_match().associated_keyword->keyword);
-  }
-  return std::string();
+  return base::UTF16ToUTF8(in.wrapped_match().associated_keyword);
 }
 
 std::string

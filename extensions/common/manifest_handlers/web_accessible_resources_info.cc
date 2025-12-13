@@ -191,7 +191,7 @@ bool IsResourceWebAccessibleImpl(
   }
 
   GURL initiator_url = GetInitiatorUrl(initiator_origin);
-  std::string relative_path = target_url.path();
+  std::string relative_path = target_url.GetPath();
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
@@ -210,12 +210,12 @@ bool IsResourceWebAccessibleImpl(
       // `upstream_url` or the `target_url` because the goal of this feature is
       // to ensure that the dynamic url was used for fetching the resource.
       if (entry.use_dynamic_url) {
-        bool is_guid_target_url = extension.guid() == target_url.host_piece();
+        bool is_guid_target_url = extension.guid() == target_url.host();
         if (upstream_url.is_empty()) {
           result = is_guid_target_url;
         } else {
-          result = extension.guid() == upstream_url.host_piece() ||
-                   is_guid_target_url;
+          result =
+              extension.guid() == upstream_url.host() || is_guid_target_url;
         }
         if (!result) {
           continue;
@@ -238,8 +238,8 @@ bool IsResourceWebAccessibleImpl(
       // extension, or if the initiator host matches an entry extension id.
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
-           extension.id() == initiator_url.host() ||
-           base::Contains(entry.extension_ids, initiator_url.host()))) {
+           extension.id() == initiator_url.GetHost() ||
+           base::Contains(entry.extension_ids, initiator_url.GetHost()))) {
         return result;
       }
     }

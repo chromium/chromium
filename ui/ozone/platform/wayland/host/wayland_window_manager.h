@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 

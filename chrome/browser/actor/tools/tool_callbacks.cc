@@ -12,7 +12,7 @@
 
 namespace actor {
 
-void PostResponseTask(base::OnceCallback<void(mojom::ActionResultPtr)> task,
+void PostResponseTask(ToolCallback task,
                       mojom::ActionResultPtr result,
                       base::TimeDelta delay) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

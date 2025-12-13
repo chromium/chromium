@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"

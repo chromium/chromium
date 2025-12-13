@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <utility>
 
@@ -28,7 +29,6 @@
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
-#include "components/sync_sessions/session_sync_prefs.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -79,21 +79,6 @@ std::unique_ptr<syncer::EntityData> MoveToEntityData(
   }
   entity_data->specifics.mutable_session()->Swap(specifics);
   return entity_data;
-}
-
-std::string GetSessionTagWithPrefs(const std::string& cache_guid,
-                                   SessionSyncPrefs* sync_prefs) {
-  DCHECK(sync_prefs);
-
-  // If a legacy GUID exists, keep honoring it.
-  const std::string persisted_guid = sync_prefs->GetLegacySyncSessionsGUID();
-  if (!persisted_guid.empty()) {
-    DVLOG(1) << "Restoring persisted session sync guid: " << persisted_guid;
-    return persisted_guid;
-  }
-
-  DVLOG(1) << "Using sync cache guid as session sync guid: " << cache_guid;
-  return cache_guid;
 }
 
 void ForwardError(syncer::OnceModelErrorHandler error_handler,
@@ -156,8 +141,7 @@ void SessionStore::Open(const std::string& cache_guid,
   builder->local_session_info.device_type = syncer::GetLocalDeviceType();
   builder->local_session_info.device_form_factor =
       syncer::GetLocalDeviceFormFactor();
-  builder->local_session_info.session_tag = GetSessionTagWithPrefs(
-      cache_guid, sessions_client->GetSessionSyncPrefs());
+  builder->local_session_info.session_tag = cache_guid;
 
   sessions_client->GetStoreFactory().Run(
       syncer::SESSIONS, base::BindOnce(&OnStoreCreated, std::move(builder)));
@@ -255,14 +239,35 @@ void SessionStore::WriteBatch::Commit(std::unique_ptr<WriteBatch> batch) {
 }
 
 // static
-bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
+std::optional<SessionStore::SpecificsInvalidReason>
+SessionStore::GetSpecificsInvalidReason(
+    const sync_pb::SessionSpecifics& specifics) {
+  // A session tag is always required.
   if (specifics.session_tag().empty()) {
-    return false;
+    return SpecificsInvalidReason::kMissingSessionTag;
   }
+
+  // Only one of header or tab may be set.
+  if (specifics.has_header() && specifics.has_tab()) {
+    return SpecificsInvalidReason::kBothHeaderAndTab;
+  }
+
+  // Tabs must have both a valid tab ID and tab node ID.
   if (specifics.has_tab()) {
-    return specifics.tab_node_id() >= 0 && specifics.tab().tab_id() > 0;
+    if (specifics.tab_node_id() < 0) {
+      return SpecificsInvalidReason::kTabBadTabNodeId;
+    }
+    if (specifics.tab().tab_id() <= 0) {
+      return SpecificsInvalidReason::kTabBadTabId;
+    }
+    return std::nullopt;
   }
+
   if (specifics.has_header()) {
+    // A header entity must not have a tab node ID.
+    if (specifics.tab_node_id() != TabNodePool::kInvalidTabNodeID) {
+      return SpecificsInvalidReason::kHeaderWithTabNodeId;
+    }
     // Verify that tab IDs appear only once within a header. Intended to prevent
     // http://crbug.com/360822.
     std::set<int> session_tab_ids;
@@ -270,14 +275,20 @@ bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
       for (int tab_id : window.tab()) {
         bool success = session_tab_ids.insert(tab_id).second;
         if (!success) {
-          return false;
+          return SpecificsInvalidReason::kHeaderWithDuplicateTabIds;
         }
       }
     }
-    return !specifics.has_tab() &&
-           specifics.tab_node_id() == TabNodePool::kInvalidTabNodeID;
+    return std::nullopt;
   }
-  return false;
+
+  // Neither header nor tab is set.
+  return SpecificsInvalidReason::kNeitherHeaderNorTab;
+}
+
+// static
+bool SessionStore::AreValidSpecifics(const SessionSpecifics& specifics) {
+  return !GetSpecificsInvalidReason(specifics).has_value();
 }
 
 // static
@@ -413,8 +424,7 @@ std::unique_ptr<SessionStore> SessionStore::RecreateEmptyStore(
     std::unique_ptr<syncer::DataTypeStore> underlying_store,
     const std::string& cache_guid,
     SyncSessionsClient* sessions_client) {
-  local_session_info_without_session_tag.session_tag = GetSessionTagWithPrefs(
-      cache_guid, sessions_client->GetSessionSyncPrefs());
+  local_session_info_without_session_tag.session_tag = cache_guid;
   // WrapUnique() used because constructor is private.
   return base::WrapUnique(new SessionStore(
       local_session_info_without_session_tag, std::move(underlying_store),
@@ -565,8 +575,6 @@ SessionStore::RecreateEmptyStoreCallback SessionStore::DeleteAllDataAndMetadata(
   // Clear the store and related info.
   session_store->session_tracker_.Clear();
   session_store->store_->DeleteAllDataAndMetadata(base::DoNothing());
-  session_store->sessions_client_->GetSessionSyncPrefs()
-      ->ClearLegacySyncSessionsGUID();
 
   // Grab the necessary stuff for (synchronously) recreating a store later.
   SessionInfo local_session_info = session_store->local_session_info_;

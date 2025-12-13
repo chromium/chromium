@@ -93,11 +93,6 @@ class UnsentLogStore : public LogStore {
   struct LogInfo {
     LogInfo();
 
-    LogInfo(const LogInfo&) = delete;
-    LogInfo& operator=(const LogInfo&) = delete;
-
-    ~LogInfo();
-
     // Initializes the members based on uncompressed |log_data|,
     // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
     // serialized log protobuf. A hash and a signature are computed from
@@ -105,18 +100,21 @@ class UnsentLogStore : public LogStore {
     // will be compressed and stored in |compressed_log_data|. |log_timestamp|
     // is stored as is. |log_metadata| is any optional metadata that will be
     // attached to the log.
-    // TODO(crbug.com/40119012): Make this a ctor instead.
-    void Init(const std::string& log_data,
-              const std::string& log_timestamp,
-              const std::string& signing_key,
-              const LogMetadata& log_metadata);
+    LogInfo(const std::string& log_data,
+            const std::string& log_timestamp,
+            const std::string& signing_key,
+            const LogMetadata& log_metadata);
 
     // Same as above, but the |timestamp| field will be filled with the current
     // time.
-    // TODO(crbug.com/40119012): Make this a ctor instead.
-    void Init(const std::string& log_data,
-              const std::string& signing_key,
-              const LogMetadata& log_metadata);
+    LogInfo(const std::string& log_data,
+            const std::string& signing_key,
+            const LogMetadata& log_metadata);
+
+    LogInfo(const LogInfo&) = delete;
+    LogInfo& operator=(const LogInfo&) = delete;
+
+    ~LogInfo();
 
     // Compressed log data - a serialized protobuf that's been gzipped.
     std::string compressed_log_data;
@@ -151,20 +149,18 @@ class UnsentLogStore : public LogStore {
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
-  // Adds a log to the list. |log_metadata| refers to metadata associated with
-  // the log. Before being stored, the data will be compressed, and a hash and
-  // signature will be computed.
-  // TODO(crbug.com/40119012): Remove this function, and use StoreLogInfo()
-  // everywhere instead.
+  // Creates a LogInfo from the passed `log_data` (by compressing, hashing, and
+  // signing it) and stores it (see StoreLogInfo() below). `log_metadata` refers
+  // to metadata associated with the log.
   void StoreLog(const std::string& log_data,
                 const LogMetadata& log_metadata,
                 MetricsLogsEventManager::CreateReason reason);
 
-  // Adds a log to the list, represented by a LogInfo object. This is useful
-  // if the LogInfo instance needs to be created outside the main thread
-  // (since creating a LogInfo from log data requires heavy work). Note that we
-  // also pass the size of the log data before being compressed. This is simply
-  // for calculating and emitting some metrics, and is otherwise unused.
+  // Adds a log to the store, represented by a LogInfo object. Calling this
+  // directly is particularly useful if the LogInfo instance needs to be created
+  // outside the main thread (since creating a LogInfo from log data requires
+  // heavy work). Note that `uncompressed_log_size` is only used for metrics
+  // purposes.
   void StoreLogInfo(std::unique_ptr<LogInfo> log_info,
                     size_t uncompressed_log_size,
                     MetricsLogsEventManager::CreateReason reason);

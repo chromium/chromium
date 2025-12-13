@@ -16,10 +16,10 @@ import type {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_element
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import type {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction} from 'chrome://resources/cr_components/app_management/constants.js';
 import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

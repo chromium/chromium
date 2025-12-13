@@ -65,8 +65,8 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
 
    public:
     using ConstIterator = UndoStepStack::const_reverse_iterator;
-    ConstIterator begin() { return step_stack_.rbegin(); }
-    ConstIterator end() { return step_stack_.rend(); }
+    ConstIterator begin() const { return step_stack_.rbegin(); }
+    ConstIterator end() const { return step_stack_.rend(); }
 
     explicit UndoStepRange(const UndoStepStack&);
 

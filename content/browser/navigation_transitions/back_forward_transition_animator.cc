@@ -14,6 +14,7 @@
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
+#include "cc/slim/texture_layer.h"
 #include "cc/slim/ui_resource_layer.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animation_manager_android.h"
 #include "content/browser/navigation_transitions/progress_bar.h"
@@ -32,6 +33,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/url_constants.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/android/window_android.h"
 #include "ui/base/prediction/linear_resampling.h"
@@ -56,8 +58,6 @@ using IgnoringInputReason = BackForwardTransitionAnimator::IgnoringInputReason;
 using AnimationAbortReason =
     BackForwardTransitionAnimator::AnimationAbortReason;
 
-static constexpr char kAnimationAbortedReason[] =
-    "Navigation.GestureTransition.AnimationAbortReason";
 static constexpr char kNewCommitInPrimaryMainFrame[] =
     "Navigation.GestureTransition.NewCommitInPrimaryMainFrame";
 static constexpr char kNewCommitWhileDisplayingCanceledAnimation[] =
@@ -114,16 +114,19 @@ bool ShouldUseFallbackScreenshot(
     gfx::Size screen_size = animation_manager->web_contents_view_android()
                                 ->GetNativeView()
                                 ->GetPhysicalBackingSize();
-    use_fallback_screenshot = screenshot_size != screen_size;
     if (screenshot_size != screen_size) {
       cache_hit_or_miss_reason = NavigationTransitionData::
           CacheHitOrMissReason::kCacheMissScreenshotOrientation;
+    } else if (!screenshot->IsValid()) {
+      cache_hit_or_miss_reason = NavigationTransitionData::
+          CacheHitOrMissReason::kCacheMissFailedReadBack;
     } else {
       // TODO(crbug.com/377566662): Identify why the cache hit or miss reason is
       // not set correctly at this point. This is to avoid the crashes addressed
       // in crbug.com/377338996.
       cache_hit_or_miss_reason =
           NavigationTransitionData::CacheHitOrMissReason::kCacheHit;
+      use_fallback_screenshot = false;
     }
   }
 
@@ -413,11 +416,6 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
 
   CHECK(IsTerminalState()) << StateToString(state_);
 
-  if (state_ == State::kAnimationFinished) {
-    base::UmaHistogramEnumeration(kAnimationAbortedReason,
-                                  AnimationAbortReason::kAnimationFinished);
-  }
-
   switch (ignoring_input_reason_) {
     case IgnoringInputReason::kAnimationInvokedOccurred: {
       base::UmaHistogramCounts100(
@@ -461,8 +459,9 @@ BackForwardTransitionAnimator::~BackForwardTransitionAnimator() {
   ResetLiveOverlayLayer();
 
   if (!fallback_ux_) {
-    CHECK_NE(ui_resource_id_, cc::UIResourceClient::kUninitializedUIResourceId);
-    DeleteUIResource(ui_resource_id_);
+    if (ui_resource_id_) {
+      DeleteUIResource(ui_resource_id_);
+    }
 
     if (navigation_state_ != NavigationState::kCommitted) {
       CHECK(screenshot_);
@@ -1252,10 +1251,6 @@ void BackForwardTransitionAnimator::OnBeforeUnloadDialogShown(
 
 void BackForwardTransitionAnimator::AbortAnimation(
     AnimationAbortReason abort_reason) {
-  TRACE_EVENT("browser,navigation",
-              "BackForwardTransitionAnimator::AbortAnimation", "abort_reason",
-              AnimationAbortReasonToString(abort_reason));
-  base::UmaHistogramEnumeration(kAnimationAbortedReason, abort_reason);
   abort_reason_ = abort_reason;
   AdvanceAndProcessState(State::kAnimationAborted);
 }
@@ -1702,10 +1697,14 @@ void BackForwardTransitionAnimator::SetupForScreenshotPreview(
     auto* cache = nav_controller->GetNavigationEntryScreenshotCache();
     screenshot_ = cache->RemoveScreenshot(destination_entry);
 
-    ui_resource_id_ = CreateUIResource(screenshot_.get());
-    auto screenshot_layer = cc::slim::UIResourceLayer::Create();
-    screenshot_layer->SetUIResourceId(ui_resource_id_);
-    screenshot_layer_ = std::move(screenshot_layer);
+    if (screenshot_->IsBitmapReady()) {
+      ui_resource_id_ = CreateUIResource(screenshot_.get());
+      auto screenshot_layer = cc::slim::UIResourceLayer::Create();
+      screenshot_layer->SetUIResourceId(ui_resource_id_);
+      screenshot_layer_ = std::move(screenshot_layer);
+    } else {
+      screenshot_layer_ = screenshot_->CreateTextureLayer();
+    }
   }
   screenshot_layer_->SetIsDrawable(true);
   screenshot_layer_->SetPosition(gfx::PointF(0.f, 0.f));

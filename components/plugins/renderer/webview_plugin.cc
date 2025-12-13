@@ -25,7 +25,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
@@ -280,7 +279,6 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
       /*page_base_background_color=*/std::nullopt,
       /*browsing_context_group_token=*/base::UnguessableToken(),
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr,
       /*history_index=*/-1,
       /*history_length=*/0);
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a

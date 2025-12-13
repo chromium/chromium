@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/fake_desktop_capturer.h"
 
 #include <stdint.h>
@@ -14,6 +9,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
@@ -74,10 +70,11 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
     int buffer_size = kWidth * kHeight * kBytesPerPixel;
     frame = std::make_unique<webrtc::SharedMemoryDesktopFrame>(
         webrtc::DesktopSize(kWidth, kHeight), kWidth * kBytesPerPixel,
-        shared_memory_factory->CreateSharedMemory(buffer_size).release());
+        webrtc::FOURCC_ARGB,
+        shared_memory_factory->CreateSharedMemory(buffer_size));
   } else {
     frame = std::make_unique<webrtc::BasicDesktopFrame>(
-        webrtc::DesktopSize(kWidth, kHeight));
+        webrtc::DesktopSize(kWidth, kHeight), webrtc::FOURCC_ARGB);
   }
 
   // Move the box.
@@ -93,25 +90,26 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
     box_speed_y_ = -box_speed_y_;
   }
 
-  memset(frame->data(), 0xff, kHeight * frame->stride());
+  UNSAFE_TODO(memset(frame->data(), 0xff, kHeight * frame->stride()));
 
   // Draw rectangle with the following colors in its corners:
   //     cyan....yellow
   //     ..............
   //     blue.......red
-  uint8_t* row = frame->data() +
-                 (box_pos_y_ * size_.width() + box_pos_x_) * kBytesPerPixel;
+  uint8_t* row =
+      UNSAFE_TODO(frame->data() +
+                  (box_pos_y_ * size_.width() + box_pos_x_) * kBytesPerPixel);
   for (int y = 0; y < kBoxHeight; ++y) {
     for (int x = 0; x < kBoxWidth; ++x) {
       int r = x * 255 / kBoxWidth;
       int g = y * 255 / kBoxHeight;
       int b = 255 - (x * 255 / kBoxWidth);
-      row[x * kBytesPerPixel] = r;
-      row[x * kBytesPerPixel + 1] = g;
-      row[x * kBytesPerPixel + 2] = b;
-      row[x * kBytesPerPixel + 3] = 0xff;
+      UNSAFE_TODO(row[x * kBytesPerPixel]) = r;
+      UNSAFE_TODO(row[x * kBytesPerPixel + 1]) = g;
+      UNSAFE_TODO(row[x * kBytesPerPixel + 2]) = b;
+      UNSAFE_TODO(row[x * kBytesPerPixel + 3]) = 0xff;
     }
-    row += frame->stride();
+    UNSAFE_TODO(row += frame->stride());
   }
 
   if (first_frame_) {

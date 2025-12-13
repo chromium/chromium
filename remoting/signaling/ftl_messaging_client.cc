@@ -17,16 +17,18 @@
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/protobuf_http_stream_request.h"
-#include "remoting/signaling/ftl_message_reception_channel.h"
+#include "remoting/signaling/ftl_message_channel_strategy.h"
 #include "remoting/signaling/ftl_services_context.h"
+#include "remoting/signaling/message_channel.h"
 #include "remoting/signaling/registration_manager.h"
+#include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
 
 namespace {
 
-constexpr char kBatchAckMessagesPath[] = "/v1/message:batchAckMessages";
+constexpr char kBatchAckMessagesPath[] = "/v1/messages:batchAckMessages";
 constexpr char kReceiveMessagesPath[] = "/v1/messages:receive";
 constexpr char kSendMessagePath[] = "/v1/message:send";
 
@@ -175,31 +177,28 @@ FtlMessagingClient::FtlMessagingClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     RegistrationManager* registration_manager,
     SignalingTracker* signaling_tracker)
-    : FtlMessagingClient(
-          std::make_unique<ProtobufHttpClient>(
-              FtlServicesContext::GetServerEndpoint(),
-              token_getter,
-              url_loader_factory),
-          registration_manager,
-          std::make_unique<FtlMessageReceptionChannel>(signaling_tracker)) {}
+    : FtlMessagingClient(std::make_unique<ProtobufHttpClient>(
+                             FtlServicesContext::GetServerEndpoint(),
+                             token_getter,
+                             url_loader_factory),
+                         registration_manager,
+                         signaling_tracker,
+                         std::make_unique<FtlMessageChannelStrategy>()) {}
 
 FtlMessagingClient::FtlMessagingClient(
     std::unique_ptr<ProtobufHttpClient> client,
     RegistrationManager* registration_manager,
-    std::unique_ptr<MessageReceptionChannel> channel) {
-  DCHECK(client);
-  DCHECK(registration_manager);
-  DCHECK(channel);
-  client_ = std::move(client);
-  registration_manager_ = registration_manager;
-  reception_channel_ = std::move(channel);
-  reception_channel_->Initialize(
+    SignalingTracker* signaling_tracker,
+    std::unique_ptr<FtlMessageChannelStrategy> channel_strategy)
+    : client_(std::move(client)), registration_manager_(registration_manager) {
+  channel_strategy->Initialize(
       base::BindRepeating(&FtlMessagingClient::OpenReceiveMessagesStream,
                           base::Unretained(this)),
       base::BindRepeating(&FtlMessagingClient::OnMessageReceived,
                           base::Unretained(this)));
+  message_channel_ = std::make_unique<MessageChannel>(
+      std::move(channel_strategy), signaling_tracker);
 }
-
 FtlMessagingClient::~FtlMessagingClient() = default;
 
 base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
@@ -208,19 +207,28 @@ base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
 }
 
 void FtlMessagingClient::SendMessage(
-    const std::string& destination,
-    const std::string& destination_registration_id,
-    const ftl::ChromotingMessage& message,
+    const SignalingAddress& destination_address,
+    SignalingMessage&& message,
     DoneCallback on_done) {
+  std::string user_email;
+  std::string registration_id;
+  if (!destination_address.GetFtlInfo(&user_email, &registration_id)) {
+    LOG(DFATAL) << "Can't get FTL info from signaling address: "
+                << destination_address.id();
+    return;
+  }
+  CHECK(std::holds_alternative<ftl::ChromotingMessage>(message));
+  auto chromoting_message = std::get<ftl::ChromotingMessage>(message);
+
   auto request = std::make_unique<ftl::InboxSendRequest>();
   *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
       registration_manager_->GetFtlAuthToken());
   request->set_time_to_live(kInboxMessageTtl.InMicroseconds());
   *request->mutable_dest_id() =
-      FtlServicesContext::CreateIdFromString(destination);
+      FtlServicesContext::CreateIdFromString(user_email);
 
   std::string serialized_message;
-  bool succeeded = message.SerializeToString(&serialized_message);
+  bool succeeded = chromoting_message.SerializeToString(&serialized_message);
   DCHECK(succeeded);
 
   request->mutable_message()->set_message(serialized_message);
@@ -230,8 +238,8 @@ void FtlMessagingClient::SendMessage(
       ftl::InboxMessage_MessageType_CHROMOTING_MESSAGE);
   request->mutable_message()->set_message_class(
       ftl::InboxMessage_MessageClass_STATUS);
-  if (!destination_registration_id.empty()) {
-    request->add_dest_registration_ids(destination_registration_id);
+  if (!registration_id.empty()) {
+    request->add_dest_registration_ids(registration_id);
   }
 
   // SendMessage is non-idempotent (potentially duplicate messages will be
@@ -244,16 +252,16 @@ void FtlMessagingClient::SendMessage(
 
 void FtlMessagingClient::StartReceivingMessages(base::OnceClosure on_ready,
                                                 DoneCallback on_closed) {
-  reception_channel_->StartReceivingMessages(std::move(on_ready),
-                                             std::move(on_closed));
+  message_channel_->StartReceivingMessages(std::move(on_ready),
+                                           std::move(on_closed));
 }
 
 void FtlMessagingClient::StopReceivingMessages() {
-  reception_channel_->StopReceivingMessages();
+  message_channel_->StopReceivingMessages();
 }
 
 bool FtlMessagingClient::IsReceivingMessages() const {
-  return reception_channel_->IsReceivingMessages();
+  return message_channel_->IsReceivingMessages();
 }
 
 template <typename CallbackFunctor>
@@ -302,7 +310,8 @@ void FtlMessagingClient::OnBatchAckMessagesResponse(
     DoneCallback on_done,
     const HttpStatus& status,
     std::unique_ptr<ftl::BatchAckMessagesResponse> response) {
-  // TODO(yuweih): Handle failure.
+  LOG_IF(WARNING, !status.ok())
+      << "Failed to ACK signaling message: " << status.error_message();
   std::move(on_done).Run(status);
 }
 
@@ -355,8 +364,10 @@ void FtlMessagingClient::RunMessageCallbacks(const ftl::InboxMessage& message) {
 
   ftl::ChromotingMessage chromoting_message;
   chromoting_message.ParseFromString(message.message());
-  callback_list_.Notify(message.sender_id(), message.sender_registration_id(),
-                        chromoting_message);
+  callback_list_.Notify(
+      SignalingAddress::CreateFtlSignalingAddress(
+          message.sender_id().id(), message.sender_registration_id()),
+      chromoting_message);
 }
 
 void FtlMessagingClient::OnMessageReceived(const ftl::InboxMessage& message) {

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -52,6 +53,24 @@ MATCHER_P(IsError, expected_error, "") {
 }
 
 namespace extensions {
+
+namespace {
+enum ConnectorPublicKey { kStable, kBeta };
+constexpr std::string_view kStablePublicKey =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2nI64+TVbJNYUfte1hEwrWpjgiH3uc"
+    "fKZ12NC6IT/Pm2pQdjR/3alrdW+rCkYbs0KmfUymb0GOE7fwZ0Gs+EqfxoKmwJaaZiv86GXEkP"
+    "JctDvjqrJRUrKvM6aXZEkTQeaFLQVY9NDk3grSZzvC365l3c4zRN3A2i8KMWzB9HRQzKnN49zj"
+    "gcTTu5DERYTzbJZBd0m9Ln1b3x3UVkVgoTUq7DexGMcOq1KYz0VHrFRo/LN1yJvECFmBb2pdl4"
+    "0g4UHq3UqrWDDInZZJ3sr01EePxYYwimMFsGnvH6sz8wHC09rXZ+w1YFYjsQ3P/3Bih1q/NdZ0"
+    "aop3MEOCbHb4gipQIDAQAB";
+constexpr std::string_view kBetaPublicKey =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3AwkxTaPQ9WR6TpEaJJjgR5xehAwjk"
+    "Bfva4t60yGDKJKJWhUM6Jj9GwrhGdFF7mjPZCWVFVgQqRSSuQFQTE6cJzTdALG7cJi7WxmxLxr"
+    "saljVURyiFdL7VS5CEMDSGv3N8NASsh03r/G59qwfjeliEJdSz6a1NMqB8BJ96OXFX+irv5nsW"
+    "uEitRk4EhXv9zCjXIv8L5smZHyMJk0q6PQfFni22HODAUHpcu701F3CP3pCO7+gp0iPDqlH7G7"
+    "7xnEiIckOOKvfSoDcycDWY7dgNgVHH5E+JVXs9XPQsvfqDqG6ZGrHhjcXeTmZ0FUgts/ed6GHM"
+    "tzD0rPlFvYZvPKJwIDAQAB";
+}  // namespace
 
 class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
  public:
@@ -150,17 +169,20 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
         a.every((v, i) => v === b[i]);
     )";
 
+  template <ConnectorPublicKey PublicKey = ConnectorPublicKey::kStable>
   void LoadFakeProviderExtension(const std::string& background_js) {
     TestExtensionDir test_dir;
-    constexpr char kManifest[] =
+    const auto kManifest = base::StringPrintf(
         R"({
-             "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2nI64+TVbJNYUfte1hEwrWpjgiH3ucfKZ12NC6IT/Pm2pQdjR/3alrdW+rCkYbs0KmfUymb0GOE7fwZ0Gs+EqfxoKmwJaaZiv86GXEkPJctDvjqrJRUrKvM6aXZEkTQeaFLQVY9NDk3grSZzvC365l3c4zRN3A2i8KMWzB9HRQzKnN49zjgcTTu5DERYTzbJZBd0m9Ln1b3x3UVkVgoTUq7DexGMcOq1KYz0VHrFRo/LN1yJvECFmBb2pdl40g4UHq3UqrWDDInZZJ3sr01EePxYYwimMFsGnvH6sz8wHC09rXZ+w1YFYjsQ3P/3Bih1q/NdZ0aop3MEOCbHb4gipQIDAQAB",
+             "key": "%s",
              "name": "Fake Smart Card Provider",
              "version": "0.1",
              "manifest_version": 2,
              "background": { "scripts": ["background.js"] },
              "permissions": [ "smartCardProviderPrivate" ]
-           })";
+           })",
+        PublicKey == ConnectorPublicKey::kStable ? kStablePublicKey
+                                                 : kBetaPublicKey);
     test_dir.WriteManifest(kManifest);
     test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), background_js);
     extension_ = LoadExtension(test_dir.UnpackedPath());
@@ -369,6 +391,35 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       EstablishContextManyProviders) {
+  const std::string kExtensionCode = R"(
+      chrome.smartCardProviderPrivate.onEstablishContextRequested.addListener(
+          (requestId) => {
+        // The error returned here doesn't matter as long as it's different than
+        // NO_SERVICE, as this should never be called
+        chrome.smartCardProviderPrivate.reportEstablishContextResult(
+            requestId, 0, "INTERNAL_ERROR");
+      });
+    )";
+  // Explicitly load two extension versions with two different keys...
+  LoadFakeProviderExtension<ConnectorPublicKey::kStable>(kExtensionCode);
+  LoadFakeProviderExtension<ConnectorPublicKey::kBeta>(kExtensionCode);
+
+  // ...and verify that both listeners were registered.
+  ASSERT_EQ(EventRouterFactory::GetForBrowserContext(profile())
+                ->listeners()
+                .GetEventListenersByName(
+                    extensions::api::smart_card_provider_private::
+                        OnEstablishContextRequested::kEventName)
+                .size(),
+            2ul);
+
+  // This should return no service despite there being too many services, as
+  // this is not a valid state and hence no service here is valid.
+  EXPECT_THAT(CreateContext(), IsError(SmartCardError::kNoService));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        EstablishContextResponseTimeout) {
   ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
@@ -399,19 +450,96 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CreateContext) {
   EXPECT_TRUE(context_result->is_context());
 }
 
-IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CreateContextFails) {
-  LoadFakeProviderExtension(R"(
+namespace {
+struct ErrorTestParams {
+  const char* result_string;
+  device::mojom::SmartCardError expected_error;
+};
+}  // namespace
+
+class SmartCardProviderPrivateApiErrorTest
+    : public SmartCardProviderPrivateApiTest,
+      public ::testing::WithParamInterface<ErrorTestParams> {};
+
+// It is not probable that establishContext could return all of those errors.
+// However conversion logic is generic and this is the easiest/fastest way to
+// test it.
+IN_PROC_BROWSER_TEST_P(SmartCardProviderPrivateApiErrorTest,
+                       CreateContextFails) {
+  const auto& [result_string, expected_error] = GetParam();
+
+  LoadFakeProviderExtension(base::StringPrintf(R"(
       chrome.smartCardProviderPrivate.onEstablishContextRequested.addListener(
-          establishContext);
-
-      function establishContext(requestId) {
+          (requestId) => {
         chrome.smartCardProviderPrivate.reportEstablishContextResult(
-            requestId, 0, "INTERNAL_ERROR");
-      }
-    )");
+            requestId, 0, "%s");
+      });
+    )",
+                                               result_string));
 
-  EXPECT_THAT(CreateContext(), IsError(SmartCardError::kInternalError));
+  EXPECT_THAT(CreateContext(), IsError(expected_error));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SmartCardProviderPrivateApiErrorTest,
+    ::testing::Values(
+        ErrorTestParams{"REMOVED_CARD",
+                        device::mojom::SmartCardError::kRemovedCard},
+        ErrorTestParams{"RESET_CARD",
+                        device::mojom::SmartCardError::kResetCard},
+        ErrorTestParams{"UNPOWERED_CARD",
+                        device::mojom::SmartCardError::kUnpoweredCard},
+        ErrorTestParams{"UNRESPONSIVE_CARD",
+                        device::mojom::SmartCardError::kUnresponsiveCard},
+        ErrorTestParams{"UNSUPPORTED_CARD",
+                        device::mojom::SmartCardError::kUnsupportedCard},
+        ErrorTestParams{"READER_UNAVAILABLE",
+                        device::mojom::SmartCardError::kReaderUnavailable},
+        ErrorTestParams{"SHARING_VIOLATION",
+                        device::mojom::SmartCardError::kSharingViolation},
+        ErrorTestParams{"NOT_TRANSACTED",
+                        device::mojom::SmartCardError::kNotTransacted},
+        ErrorTestParams{"NO_SMARTCARD",
+                        device::mojom::SmartCardError::kNoSmartcard},
+        ErrorTestParams{"PROTO_MISMATCH",
+                        device::mojom::SmartCardError::kProtoMismatch},
+        ErrorTestParams{"SYSTEM_CANCELLED",
+                        device::mojom::SmartCardError::kSystemCancelled},
+        ErrorTestParams{"NOT_READY", device::mojom::SmartCardError::kNotReady},
+        ErrorTestParams{"CANCELLED", device::mojom::SmartCardError::kCancelled},
+        ErrorTestParams{"INSUFFICIENT_BUFFER",
+                        device::mojom::SmartCardError::kInsufficientBuffer},
+        ErrorTestParams{"INVALID_HANDLE",
+                        device::mojom::SmartCardError::kInvalidHandle},
+        ErrorTestParams{"INVALID_PARAMETER",
+                        device::mojom::SmartCardError::kInvalidParameter},
+        ErrorTestParams{"INVALID_VALUE",
+                        device::mojom::SmartCardError::kInvalidValue},
+        ErrorTestParams{"NO_MEMORY", device::mojom::SmartCardError::kNoMemory},
+        ErrorTestParams{"TIMEOUT", device::mojom::SmartCardError::kTimeout},
+        ErrorTestParams{"UNKNOWN_READER",
+                        device::mojom::SmartCardError::kUnknownReader},
+        ErrorTestParams{"UNSUPPORTED_FEATURE",
+                        device::mojom::SmartCardError::kUnsupportedFeature},
+        ErrorTestParams{"NO_READERS_AVAILABLE",
+                        device::mojom::SmartCardError::kNoReadersAvailable},
+        ErrorTestParams{"SERVICE_STOPPED",
+                        device::mojom::SmartCardError::kServiceStopped},
+        ErrorTestParams{"NO_SERVICE",
+                        device::mojom::SmartCardError::kNoService},
+        ErrorTestParams{"COMM_ERROR",
+                        device::mojom::SmartCardError::kCommError},
+        ErrorTestParams{"INTERNAL_ERROR",
+                        device::mojom::SmartCardError::kInternalError},
+        ErrorTestParams{"UNKNOWN_ERROR",
+                        device::mojom::SmartCardError::kUnknownError},
+        ErrorTestParams{"SERVER_TOO_BUSY",
+                        device::mojom::SmartCardError::kServerTooBusy},
+        ErrorTestParams{"UNEXPECTED",
+                        device::mojom::SmartCardError::kUnexpected},
+        ErrorTestParams{"SHUTDOWN", device::mojom::SmartCardError::kShutdown},
+        ErrorTestParams{"UNKNOWN", device::mojom::SmartCardError::kUnknown}));
 
 // Tests that smartCardProviderPrivate.onReleaseContextRequested is emitted
 // when a device::mojom::SmartCardContext is disconnected from its remote
@@ -689,9 +817,29 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   EXPECT_THAT(GetStatusChange(), IsError(SmartCardError::kNoService));
 }
 
-IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
-  LoadFakeProviderExtension({kEstablishContextJs,
-                             R"(
+namespace {
+struct ConnectionParams {
+  std::string share_mode;
+  device::mojom::SmartCardShareMode share_mode_enum;
+  std::string protocol;
+  device::mojom::SmartCardProtocol protocol_enum;
+  bool preferred_protocols_t0;
+  bool preferred_protocols_t1;
+  bool preferred_protocols_raw;
+};
+}  // namespace
+
+class SmartCardProviderPrivateApiConnectionTest
+    : public SmartCardProviderPrivateApiTest,
+      public ::testing::WithParamInterface<ConnectionParams> {};
+
+IN_PROC_BROWSER_TEST_P(SmartCardProviderPrivateApiConnectionTest, Connect) {
+  const auto& [share_mode, share_mode_enum, protocol, protocol_enum,
+               preferred_protocols_t0, preferred_protocols_t1,
+               preferred_protocols_raw] = GetParam();
+  LoadFakeProviderExtension(
+      {kEstablishContextJs,
+       base::StringPrintf(R"(
       chrome.smartCardProviderPrivate.onConnectRequested.addListener(
           connect);
 
@@ -699,19 +847,22 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
           shareMode, preferredProtocols) {
         if (scardContext != 123
             || reader !== "foo-reader"
-            || shareMode !== "SHARED"
-            || preferredProtocols.t0 !== false
-            || preferredProtocols.t1 !== true
-            || preferredProtocols.raw !== false) {
+            || shareMode !== "%s"
+            || preferredProtocols.t0 !== %v
+            || preferredProtocols.t1 !== %v
+            || preferredProtocols.raw !== %v) {
           chrome.smartCardProviderPrivate.reportGetStatusChangeResult(requestId,
               readerStates, "INVALID_PARAMETER");
           return;
         }
 
         chrome.smartCardProviderPrivate.reportConnectResult(requestId, 987,
-            "T1", "SUCCESS");
+            "%s", "SUCCESS");
       }
-    )"});
+    )",
+                          share_mode, preferred_protocols_t0,
+                          preferred_protocols_t1, preferred_protocols_raw,
+                          protocol)});
 
   auto context_result = CreateContext();
   ASSERT_TRUE(context_result->is_context());
@@ -722,15 +873,14 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
       result_future;
 
   auto preferred_protocols = device::mojom::SmartCardProtocols::New();
-  preferred_protocols->t0 = false;
-  preferred_protocols->t1 = true;
-  preferred_protocols->raw = false;
+  preferred_protocols->t0 = preferred_protocols_t0;
+  preferred_protocols->t1 = preferred_protocols_t1;
+  preferred_protocols->raw = preferred_protocols_raw;
 
   uint32_t usages_before_connection = connections_watcher_.GetTimesUsed();
-  context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
-                   std::move(preferred_protocols),
-                   connections_watcher_.GetNewPipe(),
-                   result_future.GetCallback());
+  context->Connect(
+      "foo-reader", share_mode_enum, std::move(preferred_protocols),
+      connections_watcher_.GetNewPipe(), result_future.GetCallback());
 
   device::mojom::SmartCardConnectResultPtr result = result_future.Take();
   ASSERT_TRUE(result->is_success());
@@ -738,12 +888,49 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Connect) {
 
   device::mojom::SmartCardConnectSuccessPtr success =
       std::move(result->get_success());
-  EXPECT_EQ(success->active_protocol, device::mojom::SmartCardProtocol::kT1);
+  EXPECT_EQ(success->active_protocol, protocol_enum);
 
   mojo::Remote<device::mojom::SmartCardConnection> connection(
       std::move(success->connection));
   EXPECT_TRUE(connection.is_connected());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SmartCardProviderPrivateApiConnectionTest,
+    ::testing::Values(
+        ConnectionParams{"SHARED", device::mojom::SmartCardShareMode::kShared,
+                         "T0", device::mojom::SmartCardProtocol::kT0,
+                         /*preferred_protocols_t0=*/true,
+                         /*preferred_protocols_t1=*/false,
+                         /*preferred_protocols_raw=*/false},
+        ConnectionParams{"SHARED", device::mojom::SmartCardShareMode::kShared,
+                         "T1", device::mojom::SmartCardProtocol::kT1,
+                         /*preferred_protocols_t0=*/false,
+                         /*preferred_protocols_t1=*/true,
+                         /*preferred_protocols_raw=*/false},
+        ConnectionParams{"SHARED", device::mojom::SmartCardShareMode::kShared,
+                         "RAW", device::mojom::SmartCardProtocol::kRaw,
+                         /*preferred_protocols_t0=*/false,
+                         /*preferred_protocols_t1=*/false,
+                         /*preferred_protocols_raw=*/true},
+        ConnectionParams{"EXCLUSIVE",
+                         device::mojom::SmartCardShareMode::kExclusive, "T1",
+                         device::mojom::SmartCardProtocol::kT1,
+                         /*preferred_protocols_t0=*/false,
+                         /*preferred_protocols_t1=*/true,
+                         /*preferred_protocols_raw=*/false},
+        ConnectionParams{"DIRECT", device::mojom::SmartCardShareMode::kDirect,
+                         "UNDEFINED",
+                         device::mojom::SmartCardProtocol::kUndefined,
+                         /*preferred_protocols_t0=*/false,
+                         /*preferred_protocols_t1=*/false,
+                         /*preferred_protocols_raw=*/false},
+        ConnectionParams{"SHARED", device::mojom::SmartCardShareMode::kShared,
+                         "T1", device::mojom::SmartCardProtocol::kT1,
+                         /*preferred_protocols_t0=*/true,
+                         /*preferred_protocols_t1=*/true,
+                         /*preferred_protocols_raw=*/false}));
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectNoProvider) {
   LoadFakeProviderExtension(kEstablishContextJs);
@@ -795,14 +982,96 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kNoService));
 }
 
-IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
-  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
-                             R"(
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectInvalidHandle) {
+  LoadFakeProviderExtension({kEstablishContextJs, R"(
+      chrome.smartCardProviderPrivate.onConnectRequested.addListener(
+          connect);
+
+      function connect(requestId, scardContext, reader,
+          shareMode, preferredProtocols) {
+        if (scardContext != 123
+            || reader !== "foo-reader") {
+          chrome.smartCardProviderPrivate.reportConnectResult(requestId,
+              0, "T1", "INVALID_PARAMETER");
+          return;
+        }
+
+        // Report a null handle
+        chrome.smartCardProviderPrivate.reportConnectResult(requestId, 0,
+            "T1", "SUCCESS");
+      }
+    )"});
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  base::test::TestFuture<device::mojom::SmartCardConnectResultPtr>
+      result_future;
+
+  auto preferred_protocols = device::mojom::SmartCardProtocols::New();
+  preferred_protocols->t1 = true;
+
+  context->Connect("foo-reader", device::mojom::SmartCardShareMode::kShared,
+                   std::move(preferred_protocols), mojo::NullRemote(),
+                   result_future.GetCallback());
+
+  EXPECT_THAT(result_future.Take(), IsError(SmartCardError::kInternalError));
+}
+
+// If we receive an scard_handle from an unknown request, we should disconnect
+// it automatically to avoid "leaking" it in the provider side.
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectUnknown) {
+  LoadFakeProviderExtension(R"(
+      let unwantedScardHandle = 333;
+
       chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
           disconnect);
 
       function disconnect(requestId, scardHandle, disposition) {
-        if (scardHandle !== validHandle || disposition != "UNPOWER_CARD") {
+        if (scardHandle !== unwantedScardHandle) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+        chrome.test.notifyPass();
+      }
+
+      function reportUnknownConnect() {
+        // Some arbitrary request id that SmartCardProviderPrivateAPI did
+        // not generate.
+        let unknownRequestId = 222;
+        chrome.smartCardProviderPrivate.reportConnectResult(
+          unknownRequestId, unwantedScardHandle, "T1", "SUCCESS");
+      };
+    )");
+  ResultCatcher result_catcher;
+  BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension()->id(),
+                                               "reportUnknownConnect();");
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+namespace {
+struct DisconnectTestParams {
+  std::string disposition_string;
+  device::mojom::SmartCardDisposition disposition_enum;
+};
+}  // namespace
+
+class SmartCardProviderPrivateApiDisconnectTest
+    : public SmartCardProviderPrivateApiTest,
+      public ::testing::WithParamInterface<DisconnectTestParams> {};
+
+IN_PROC_BROWSER_TEST_P(SmartCardProviderPrivateApiDisconnectTest, Disconnect) {
+  const auto& [disposition_string, disposition_enum] = GetParam();
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+                             base::StringPrintf(R"(
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle || disposition != "%s") {
           chrome.smartCardProviderPrivate.reportPlainResult(requestId,
             "INVALID_PARAMETER");
           return;
@@ -811,7 +1080,8 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
         chrome.smartCardProviderPrivate.reportPlainResult(requestId,
           "SUCCESS");
       }
-    )"});
+    )",
+                                                disposition_string)});
 
   auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
@@ -819,13 +1089,25 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Disconnect) {
   base::test::TestFuture<SmartCardResultPtr> result_future;
 
   uint32_t usages_before = connections_watcher_.GetTimesUsed();
-  connection->Disconnect(device::mojom::SmartCardDisposition::kUnpower,
-                         result_future.GetCallback());
+  connection->Disconnect(disposition_enum, result_future.GetCallback());
 
   SmartCardResultPtr result = result_future.Take();
   EXPECT_TRUE(result->is_success());
   EXPECT_EQ(usages_before + 1, connections_watcher_.GetTimesUsed());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SmartCardProviderPrivateApiDisconnectTest,
+    ::testing::Values(
+        DisconnectTestParams{"LEAVE_CARD",
+                             device::mojom::SmartCardDisposition::kLeave},
+        DisconnectTestParams{"RESET_CARD",
+                             device::mojom::SmartCardDisposition::kReset},
+        DisconnectTestParams{"UNPOWER_CARD",
+                             device::mojom::SmartCardDisposition::kUnpower},
+        DisconnectTestParams{"EJECT_CARD",
+                             device::mojom::SmartCardDisposition::kEject}));
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        DisconnectConnectionDisconnectsWatcher) {
@@ -1533,9 +1815,25 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, SetAttribTimeout) {
   EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
 }
 
-IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
-  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
-                             R"(
+namespace {
+struct StatusTestParams {
+  std::string state_string;
+  device::mojom::SmartCardConnectionState state_enum;
+  std::string protocol_string;
+  device::mojom::SmartCardProtocol protocol_enum;
+};
+}  // namespace
+
+class SmartCardProviderPrivateApiStatusTest
+    : public SmartCardProviderPrivateApiTest,
+      public ::testing::WithParamInterface<StatusTestParams> {};
+
+IN_PROC_BROWSER_TEST_P(SmartCardProviderPrivateApiStatusTest, Status) {
+  const auto& [state_string, state_enum, protocol_string, protocol_enum] =
+      GetParam();
+  LoadFakeProviderExtension(
+      {kEstablishContextJs, kConnectJs,
+       base::StringPrintf(R"(
       chrome.smartCardProviderPrivate.onStatusRequested.addListener(
           status);
 
@@ -1547,10 +1845,11 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
         }
 
         chrome.smartCardProviderPrivate.reportStatusResult(requestId,
-          "FooReader", "SPECIFIC", "T1", new Uint8Array([3, 2, 1]),
+          "FooReader", "%s", "%s", new Uint8Array([3, 2, 1]),
           "SUCCESS");
       }
-      )"});
+      )",
+                          state_string, protocol_string)});
 
   auto [context, connection] = CreateContextAndConnection();
   ASSERT_TRUE(connection.is_bound());
@@ -1566,10 +1865,33 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
 
   device::mojom::SmartCardStatusPtr& status = result->get_status();
   EXPECT_EQ(status->reader_name, "FooReader");
-  EXPECT_EQ(status->state, device::mojom::SmartCardConnectionState::kSpecific);
-  EXPECT_EQ(status->protocol, device::mojom::SmartCardProtocol::kT1);
+  EXPECT_EQ(status->state, state_enum);
+  EXPECT_EQ(status->protocol, protocol_enum);
   EXPECT_EQ(status->answer_to_reset, std::vector<uint8_t>({3u, 2u, 1u}));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SmartCardProviderPrivateApiStatusTest,
+    ::testing::Values(
+        StatusTestParams{"ABSENT",
+                         device::mojom::SmartCardConnectionState::kAbsent, "T0",
+                         device::mojom::SmartCardProtocol::kT0},
+        StatusTestParams{"PRESENT",
+                         device::mojom::SmartCardConnectionState::kPresent,
+                         "T1", device::mojom::SmartCardProtocol::kT1},
+        StatusTestParams{"SWALLOWED",
+                         device::mojom::SmartCardConnectionState::kSwallowed,
+                         "RAW", device::mojom::SmartCardProtocol::kRaw},
+        StatusTestParams{
+            "POWERED", device::mojom::SmartCardConnectionState::kPowered,
+            "UNDEFINED", device::mojom::SmartCardProtocol::kUndefined},
+        StatusTestParams{"NEGOTIABLE",
+                         device::mojom::SmartCardConnectionState::kNegotiable,
+                         "T1", device::mojom::SmartCardProtocol::kT1},
+        StatusTestParams{"SPECIFIC",
+                         device::mojom::SmartCardConnectionState::kSpecific,
+                         "T1", device::mojom::SmartCardProtocol::kT1}));
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        BeginTransactionAndDropMojoRemote) {

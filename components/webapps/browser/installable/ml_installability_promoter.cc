@@ -9,7 +9,6 @@
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"

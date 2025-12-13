@@ -22,6 +22,7 @@
 #include "base/files/scoped_file.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/strcat.h"
 #include "base/types/expected.h"
@@ -119,7 +120,9 @@ GDBusFdList GDBusFdList::StealFromGUnixFDList(GUnixFDList* fd_list) {
   GDBusFdList result;
   // SAFETY: g_unix_fd_list_steal_fds() is guaranteed to return a non-null array
   // with |length| elements.
-  result.fds_.insert(result.fds_.end(), fds, UNSAFE_BUFFERS(fds + length));
+  base::span<gint> fds_span =
+      UNSAFE_BUFFERS(base::span(fds, base::checked_cast<size_t>(length)));
+  result.fds_.insert(result.fds_.end(), fds_span.begin(), fds_span.end());
   g_free(fds);
   return result;
 }

@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/web_state.h"
 
 namespace web {
@@ -35,6 +36,17 @@ class WebStateUserData : public base::SupportsUserData::Data {
   static void CreateForWebState(WebState* web_state, Args&&... args) {
     CHECK(web_state);
     CHECK(!web_state->IsBeingDestroyed());
+
+    // Fail if a tab helper is created for an unrealized WebState and
+    // the feature kCreateTabHelperOnlyForRealizedWebStates is enabled.
+    // If this CHECK(...) fails, the issue is in the code creating the
+    // tab helper, not in the WebStateUserData<T> implementation (i.e.
+    // look at the caller of this method to determine who should debug
+    // this crash).
+    if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+      CHECK(web_state->IsRealized(), base::NotFatalUntil::M160);
+    }
+
     if (!FromWebState(web_state)) {
       web_state->SetUserData(UserDataKey(),
                              T::Create(web_state, std::forward<Args>(args)...));

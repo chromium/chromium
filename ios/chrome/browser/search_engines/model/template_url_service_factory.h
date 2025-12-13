@@ -31,11 +31,11 @@ class TemplateURLServiceFactory : public ProfileKeyedServiceFactoryIOS {
   TemplateURLServiceFactory();
   ~TemplateURLServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
-  void RegisterBrowserStatePrefs(
+  // ProfileKeyedServiceFactoryIOS implementation.
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

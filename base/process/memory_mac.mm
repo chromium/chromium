@@ -70,18 +70,25 @@ bool UncheckedMalloc(size_t size, void** result) {
         // !PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
 
-// The standard version is defined in memory.cc in case of
-// USE_PARTITION_ALLOC_AS_MALLOC.
-#if !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
-#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  // See comment in UncheckedMalloc for an explanation.
+  if (!allocator_shim::IsDefaultAllocatorPartitionRootInitialized()) {
+    *result = calloc(num_items, size);
+    return *result != nullptr;
+  }
+
+  // Unlike use_partition_alloc_as_malloc=false, the default malloc zone is
+  // replaced with PartitionAlloc, so the allocator shim functions work best.
+  *result = allocator_shim::UncheckedCalloc(num_items, size);
+  return *result != nullptr;
+#elif PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
   return allocator_shim::UncheckedCallocMac(num_items, size, result);
 #else
   *result = calloc(num_items, size);
   return *result != nullptr;
 #endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 }
-#endif  // !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 void EnableTerminationOnOutOfMemory() {
   // Step 1: Enable OOM killer on C++ failures.

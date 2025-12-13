@@ -36,9 +36,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/ax_event_counter.h"
@@ -587,8 +587,8 @@ TEST_F(QuickInsertSearchResultsViewTest, ShowSkeletonLoaderHidesThrobber) {
 }
 
 TEST_F(QuickInsertSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   MockQuickInsertSearchResultsViewDelegate mock_delegate;
   MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;
@@ -609,8 +609,8 @@ TEST_F(QuickInsertSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
 
 TEST_F(QuickInsertSearchResultsViewTest,
        AppendResultsDuringLoadingStopsAnimation) {
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   MockQuickInsertSearchResultsViewDelegate mock_delegate;
   MockQuickInsertAssetFetcher asset_fetcher;
   QuickInsertSubmenuController submenu_controller;

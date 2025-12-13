@@ -9,11 +9,14 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
@@ -28,6 +31,8 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -456,6 +461,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, TestEventRegistration) {
       "idle.onStateChanged", script_context));
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 TEST_F(NativeExtensionBindingsSystemUnittest,
        TestPrefixedApiEventsAndAppBinding) {
   scoped_refptr<const Extension> app =
@@ -494,6 +500,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
   RunFunctionOnGlobal(use_app_runtime, context, 0, nullptr);
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 TEST_F(NativeExtensionBindingsSystemUnittest,
        TestPrefixedApiMethodsAndSystemBinding) {
@@ -852,8 +859,10 @@ TEST_F(NativeExtensionBindingsSystemUnittest, UnmanagedEvents) {
   ::testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that a context having access to an aliased API (like networking.onc)
 // does not allow for accessing the source API (networkingPrivate) directly.
+// Android does not support networking.onc, nor any other aliased API.
 TEST_F(NativeExtensionBindingsSystemUnittest,
        AccessToAliasSourceDoesntGiveAliasAccess) {
   const char kAllowlistedId[] = "jlgegmdnodfhciolbdjciihnlaljdbjo";
@@ -952,6 +961,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest, AliasedAPIsAreDifferentObjects) {
       &equal));
   EXPECT_FALSE(equal);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that script can overwrite the value of an API.
 TEST_F(NativeExtensionBindingsSystemUnittest, CanOverwriteAPIs) {
@@ -1384,5 +1394,67 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     FeatureAvailabilityNativeExtensionBindingsSystemUnittest,
     testing::Bool());
+
+class NativeExtensionBindingsSystemBrowserUnittest
+    : public NativeExtensionBindingsSystemUnittest {
+ protected:
+  void Verify(const scoped_refptr<const Extension>& extension) {
+    RegisterExtension(extension);
+
+    v8::HandleScope handle_scope(isolate());
+    v8::Local<v8::Context> context = MainContext();
+
+    ScriptContext* script_context = CreateScriptContext(
+        context, extension.get(), mojom::ContextType::kPrivilegedExtension);
+    script_context->set_url(extension->url());
+
+    // Set `window.browser` to a non-object (string).
+    v8::Local<v8::String> browser_str = gin::StringToV8(isolate(), "a string");
+    context->Global()
+        ->Set(context, gin::StringToSymbol(isolate(), "browser"), browser_str)
+        .Check();
+
+    // This should not crash.
+    bindings_system()->UpdateBindingsForContext(script_context);
+  }
+};
+
+// Tests that updating bindings does not crash if the global "browser" property
+// is defined but is not an object when the
+// `extensions_features::kExtensionBrowserNamespaceAlternative` feature is
+// enabled. Regression test for crbug.com/459049475.
+TEST_F(NativeExtensionBindingsSystemBrowserUnittest,
+       TestWindowBrowserCrashNonRestricted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionBrowserNamespaceAlternative);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").SetManifestVersion(3).Build();
+  Verify(extension);
+}
+
+// Same regression test as above but for restricted APIs.
+// Note: Although we set `window.browser` to a non-object here, this doesn't
+// actually test the restricted API setup logic. This is because the standard
+// API setup (used for APIs like `runtime`) runs first and aborts if
+// `window.browser` is invalid (before the restricted API setup can run). So
+// restricted API setup is currently unreachable if `window.browser` is invalid.
+// However, we still include this test to guard against future changes where the
+// order might flip or standard APIs (like `runtime`) might not be present.
+TEST_F(NativeExtensionBindingsSystemBrowserUnittest,
+       TestWindowBrowserCrashRestricted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {extensions_features::kExtensionBrowserNamespaceAlternative,
+       extensions_features::kDebuggerAPIRestrictedToDevMode},
+      {});
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(3)
+                                                 .AddAPIPermission("debugger")
+                                                 .Build();
+  Verify(extension);
+}
 
 }  // namespace extensions

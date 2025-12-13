@@ -35,9 +35,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cascade_layered.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -57,7 +59,6 @@ class MediaValues;
 class FontFaceDescriptors;
 class FontFeatureSettings;
 class FontVariationSettings;
-class StyleRuleFontFace;
 class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;
@@ -76,10 +77,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
       const V8UnionArrayBufferOrArrayBufferViewOrString* source,
       const FontFaceDescriptors* descriptors);
   static FontFace* Create(Document*,
-                          const StyleRuleFontFace*,
+                          const CascadeLayered<const StyleRuleFontFace>&,
                           bool is_user_style);
 
-  FontFace(ExecutionContext*, const StyleRuleFontFace*, bool is_user_style);
+  FontFace(ExecutionContext*,
+           const CascadeLayered<const StyleRuleFontFace>&,
+           bool is_user_style);
   FontFace(ExecutionContext*,
            const AtomicString& family,
            const FontFaceDescriptors*);
@@ -87,7 +90,16 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   FontFace& operator=(const FontFace&) = delete;
   ~FontFace() override;
 
-  const AtomicString& family() const { return family_; }
+  // Stores the authored family name exactly as provided (unquoted). We keep
+  // this raw form for internal matching and caching, where the exact family
+  // name must not change.
+  const AtomicString& familyNameUnquoted() const { return family_; }
+
+  // Returns the CSS-exposed family name. Serialization applies <family-name>
+  // rules and may require quoting names that are invalid. This is kept separate
+  // from the raw authored name so that serialization does not affect matching
+  // or caching behavior.
+  AtomicString family() const;
   String style() const;
   String weight() const;
   String stretch() const;
@@ -166,7 +178,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   Document* GetDocument() const;
 
-  const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
+  const StyleRuleFontFace* GetStyleRule() const {
+    return style_rule_.value.Get();
+  }
+  const CascadeLayered<const StyleRuleFontFace>& GetLayeredStyleRule() const {
+    return style_rule_;
+  }
   bool IsUserStyle() const { return is_user_style_; }
 
   const CSSLengthResolver& EnsureLengthResolver() const;
@@ -190,6 +207,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
   void SetFamilyValue(const CSSFontFamilyValue&);
+  void SetIsInvalidFontFamilyIfNeeded(const AtomicString&);
   ScriptPromise<FontFace> FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
@@ -197,6 +215,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;
+  bool is_invalid_font_family_;
   String ots_parse_message_;
   Member<const CSSValue> style_;
   Member<const CSSValue> weight_;
@@ -215,7 +234,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
 
   Member<LoadedProperty> loaded_property_;
   Member<CSSFontFace> css_font_face_;
-  Member<const StyleRuleFontFace> style_rule_;
+  CascadeLayered<const StyleRuleFontFace> style_rule_;
 
   LoadStatusType status_;
   // Note that we will also need to distinguish font faces in different tree

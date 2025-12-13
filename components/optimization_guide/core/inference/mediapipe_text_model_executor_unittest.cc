@@ -22,6 +22,7 @@ class MediapipeTextModelExecutorTest : public testing::Test {
         /*model_inference_timeout=*/std::nullopt,
         proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
         task_environment_.GetMainThreadTaskRunner(),
+        task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner());
 
     base::FilePath source_root_dir;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/inotify.h>
@@ -19,6 +14,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -956,7 +952,7 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
     // Open cpuinfo directly.
     int cpu_info_fd = HANDLE_EINTR(open(kFileCpuInfo, O_RDONLY));
     BPF_ASSERT_GE(cpu_info_fd, 0);
-    memset(cpuinfo_buf_, 1, sizeof(cpuinfo_buf_));
+    UNSAFE_TODO(memset(cpuinfo_buf_, 1, sizeof(cpuinfo_buf_)));
     read_len_unsandboxed_ =
         HANDLE_EINTR(read(cpu_info_fd, cpuinfo_buf_, sizeof(cpuinfo_buf_)));
     BPF_ASSERT_GT(read_len_unsandboxed_, 0);
@@ -986,7 +982,7 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
     base::ScopedFD cpuinfo_fd_closer(cpuinfo_fd);
     BPF_ASSERT_GE(cpuinfo_fd, 0);
     char buf[3];
-    memset(buf, 0, sizeof(buf));
+    UNSAFE_TODO(memset(buf, 0, sizeof(buf)));
     int read_len_sandboxed = HANDLE_EINTR(read(cpuinfo_fd, buf, sizeof(buf)));
     BPF_ASSERT_GT(read_len_sandboxed, 0);
 
@@ -994,7 +990,8 @@ class OpenCpuinfoDelegate final : public BrokerTestDelegate {
     BPF_ASSERT_EQ(read_len_sandboxed, read_len_unsandboxed_);
     // Compare the cpuinfo as returned by the broker with the one we opened
     // ourselves.
-    BPF_ASSERT_EQ(memcmp(buf, cpuinfo_buf_, read_len_sandboxed), 0);
+    UNSAFE_TODO(
+        BPF_ASSERT_EQ(memcmp(buf, cpuinfo_buf_, read_len_sandboxed), 0));
   }
 
  private:
@@ -1046,7 +1043,7 @@ class OpenFileRWDelegate final : public BrokerTestDelegate {
     len = HANDLE_EINTR(read(tempfile.fd(), buf, sizeof(buf)));
 
     BPF_ASSERT_EQ(len, static_cast<ssize_t>(sizeof(test_text)));
-    BPF_ASSERT_EQ(memcmp(test_text, buf, sizeof(test_text)), 0);
+    UNSAFE_TODO(BPF_ASSERT_EQ(memcmp(test_text, buf, sizeof(test_text)), 0));
 
     BPF_ASSERT_EQ(close(tempfile2), 0);
   }
@@ -1280,7 +1277,7 @@ class CreateFileDelegate final : public BrokerTestDelegate {
       char buf[1024];
       ssize_t len = HANDLE_EINTR(read(fd_check, buf, sizeof(buf)));
       BPF_ASSERT_EQ(len, static_cast<ssize_t>(sizeof(kTestText)));
-      BPF_ASSERT_EQ(memcmp(kTestText, buf, sizeof(kTestText)), 0);
+      UNSAFE_TODO(BPF_ASSERT_EQ(memcmp(kTestText, buf, sizeof(kTestText)), 0));
     }
   }
 
@@ -1309,7 +1306,7 @@ class StatFileDelegate : public BrokerTestDelegate {
  public:
   BrokerParams ChildSetUpPreSandbox() override {
     BPF_ASSERT_EQ(12, HANDLE_EINTR(write(tmp_file_.fd(), "blahblahblah", 12)));
-    memset(&sb_, 0, sizeof(sb_));
+    UNSAFE_TODO(memset(&sb_, 0, sizeof(sb_)));
     return BrokerParams();
   }
 
@@ -1868,7 +1865,8 @@ class ReadlinkFileWithPermissionsDelegate final : public ReadlinkTestDelegate {
     ssize_t retlen = syscaller->Readlink(newpath_.c_str(), readlink_buf_,
                                          sizeof(readlink_buf_));
     BPF_ASSERT(retlen == static_cast<ssize_t>(oldpath_.length()));
-    BPF_ASSERT_EQ(0, memcmp(oldpath_.c_str(), readlink_buf_, retlen));
+    UNSAFE_TODO(
+        BPF_ASSERT_EQ(0, memcmp(oldpath_.c_str(), readlink_buf_, retlen)));
   }
 };
 
@@ -2808,7 +2806,7 @@ class InotifyAddWatchSuccessDelegate final : public InotifyAddWatchDelegate {
     std::vector<char> buf(4096);
     BPF_ASSERT_GE(read(inotify_instance.get(), buf.data(), buf.size()), 0);
     struct inotify_event* event =
-        reinterpret_cast<struct inotify_event*>(buf.data());
+        UNSAFE_TODO(reinterpret_cast<struct inotify_event*>(buf.data()));
     BPF_ASSERT_EQ(event->wd, wd);
 
     // Removing the watch should succeed.
@@ -2864,7 +2862,8 @@ class BaseFilePathWatcherDelegate final : public InotifyAddWatchDelegate {
                                                     base::File::FLAG_READ |
                                                     base::File::FLAG_WRITE);
     char buf2[] = "a";
-    BPF_ASSERT_EQ(temp_file_again.Write(0, buf2, sizeof(buf2)), sizeof(buf2));
+    UNSAFE_TODO(BPF_ASSERT_EQ(temp_file_again.Write(0, buf2, sizeof(buf2)),
+                              sizeof(buf2)));
     temp_file_again.Flush();
     temp_file_again.Close();
     // Wait until we receive a notification about the file modification.

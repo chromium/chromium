@@ -10,6 +10,7 @@
 
 #import <optional>
 
+#include "base/sequence_checker.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 
@@ -105,6 +106,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // IOSReactivationNotifications feature is enabled.
   bool CanSendReactivation() const;
 
+  // Returns true if the given `type` of notification is still valid (meets the
+  // trigger criteria).
+  bool IsNotificationValid(TipsNotificationType type) const;
+
   // Updates the instance variable that stores whether provisional
   // notifications are allowed by policy.
   void UpdateProvisionalAllowed();
@@ -120,8 +125,8 @@ class TipsNotificationClient : public PushNotificationClient {
   // Classifies the user and sets the `user_type`, if possible.
   void ClassifyUser();
 
-  // Returns whether any identities/accounts exist on the device.
-  bool HasIdentitiesOnDevice(ProfileIOS* profile) const;
+  // Returns the profile for an active foreground Browser, if there is one.
+  ProfileIOS* GetActiveForegroundProfile() const;
 
   // Stores whether Tips notifications are permitted.
   bool permitted_ = false;
@@ -143,6 +148,11 @@ class TipsNotificationClient : public PushNotificationClient {
   // Stores the type of notification that is forced to be sent by experimental
   // settings.
   std::optional<TipsNotificationType> forced_type_;
+
+  // If set, previous notification request(s) will be cleared and the given
+  // type will be sent one time with a 24 hour trigger. This will be used in
+  // conjunction with the kIOSOneTimeDefaultBrowserNotification feature.
+  std::optional<TipsNotificationType> one_time_type_;
 
   // Observes changes to permitted pref.
   PrefChangeRegistrar pref_change_registrar_;

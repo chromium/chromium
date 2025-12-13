@@ -21,6 +21,12 @@ namespace media::hls {
 
 class TagItem;
 
+#define DECLARE_FAILURE_STATUS(tagname)                 \
+  static constexpr auto kMissingAttributeError =        \
+      ParseStatus::Codes::kMissing##tagname##Attribute; \
+  static constexpr auto kInvalidAttributeError =        \
+      ParseStatus::Codes::kInvalid##tagname##Attribute
+
 // All currently implemented HLS tag types.
 // For organization, these appear in the same order as in `tag_name.h`.
 
@@ -74,6 +80,7 @@ enum class MediaType {
 // Represents the contents of the #EXT-X-MEDIA tag
 struct MEDIA_EXPORT XMediaTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXMedia;
+  DECLARE_FAILURE_STATUS(Media);
   static ParseStatus::Or<XMediaTag> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
@@ -223,6 +230,12 @@ struct MEDIA_EXPORT XBitrateTag {
 struct MEDIA_EXPORT XByteRangeTag {
   static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
   static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+  explicit XByteRangeTag(types::parsing::ByteRangeExpression range)
+      : range(std::move(range)) {}
+  XByteRangeTag(const XByteRangeTag& other) = default;
+  XByteRangeTag(XByteRangeTag&& other) = default;
+  XByteRangeTag& operator=(const XByteRangeTag& other) = default;
+  XByteRangeTag& operator=(XByteRangeTag&& other) = default;
 
   types::parsing::ByteRangeExpression range;
 };
@@ -293,6 +306,7 @@ struct MEDIA_EXPORT XMediaSequenceTag {
 // Represents the contents of the #EXT-X-PART tag.
 struct MEDIA_EXPORT XPartTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPart;
+  DECLARE_FAILURE_STATUS(Part);
   static ParseStatus::Or<XPartTag> Parse(
       TagItem,
       const VariableDictionary& variable_dict,
@@ -459,6 +473,7 @@ enum class XPreloadHintType {
 // EXT-X-PRELOAD-HINT tag.
 struct MEDIA_EXPORT XPreloadHintTag {
   static constexpr auto kName = MediaPlaylistTagName::kXPreloadHint;
+  DECLARE_FAILURE_STATUS(PreloadHint);
   static ParseStatus::Or<XPreloadHintTag> Parse(
       TagItem,
       const VariableDictionary&,
@@ -513,6 +528,7 @@ struct MEDIA_EXPORT XKeyTag {
   using IVHex = types::parsing::HexRepr<128>;
 
   static constexpr auto kName = MediaPlaylistTagName::kXKey;
+  DECLARE_FAILURE_STATUS(Key);
   static constexpr bool kAllowEmptyMethod = true;
   static ParseStatus::Or<XKeyTag> Parse(
       TagItem,
@@ -616,6 +632,7 @@ struct MEDIA_EXPORT XDateRangeTag {
   enum class Cue { kPre, kPost, kOnce };
 
   static constexpr auto kName = MediaPlaylistTagName::kXDateRange;
+  DECLARE_FAILURE_STATUS(DateRange);
   static ParseStatus::Or<XDateRangeTag> Parse(
       TagItem,
       const VariableDictionary&,
@@ -650,6 +667,8 @@ struct MEDIA_EXPORT XDateRangeTag {
 // Multivariant Playlist.
 struct MEDIA_EXPORT XSessionDataTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXSessionData;
+  DECLARE_FAILURE_STATUS(SessionData);
+
   static ParseStatus::Or<XSessionDataTag> Parse(
       TagItem item,
       const VariableDictionary& variables,
@@ -675,6 +694,7 @@ struct MEDIA_EXPORT XSessionDataTag {
 // each regular VIDEO Rendition, with the same NAME and LANGUAGE attributes.
 struct MEDIA_EXPORT XIFrameStreamInfTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXIFrameStreamInf;
+  DECLARE_FAILURE_STATUS(IFrameStreamInf);
 
   static ParseStatus::Or<XIFrameStreamInfTag> Parse(
       TagItem item,
@@ -723,6 +743,7 @@ struct MEDIA_EXPORT XIFrameStreamInfTag {
 // beginning a playback session.
 struct MEDIA_EXPORT XStartTag {
   static constexpr auto kName = CommonTagName::kXStart;
+  DECLARE_FAILURE_STATUS(Start);
 
   static ParseStatus::Or<XStartTag> Parse(
       TagItem item,
@@ -738,6 +759,7 @@ struct MEDIA_EXPORT XStartTag {
 // Multivariant Playlist.
 struct MEDIA_EXPORT XContentSteeringTag {
   static constexpr auto kName = MultivariantPlaylistTagName::kXContentSteering;
+  DECLARE_FAILURE_STATUS(ContentSteering);
 
   static ParseStatus::Or<XContentSteeringTag> Parse(
       TagItem item,

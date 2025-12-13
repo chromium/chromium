@@ -48,7 +48,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "media/capture/video/android/video_capture_device_android.h"
 #include "media/capture/video/android/video_capture_device_factory_android.h"
@@ -138,7 +137,6 @@
 
 using base::test::RunClosure;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::SaveArg;
 using ::testing::WithArgs;
@@ -311,25 +309,25 @@ class VideoCaptureDeviceTest
 
   std::unique_ptr<MockVideoCaptureDeviceClient> CreateDeviceClient() {
     auto result = std::make_unique<NiceMockVideoCaptureDeviceClient>();
-    ON_CALL(*result, OnError).WillByDefault(Invoke(DumpError));
+    ON_CALL(*result, OnError).WillByDefault(DumpError);
     EXPECT_CALL(*result, ReserveOutputBuffer).Times(0);
     EXPECT_CALL(*result, DoOnIncomingCapturedBuffer).Times(0);
     EXPECT_CALL(*result, DoOnIncomingCapturedBufferExt).Times(0);
     ON_CALL(*result, OnIncomingCapturedData)
         .WillByDefault(WithArgs<0, 1, 2>(
-            Invoke([this](const uint8_t* data, int length,
-                          const media::VideoCaptureFormat& frame_format) {
+            [this](const uint8_t* data, int length,
+                   const media::VideoCaptureFormat& frame_format) {
               ASSERT_GT(length, 0);
               ASSERT_TRUE(data);
               main_thread_task_runner_->PostTask(
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            })));
+            }));
     ON_CALL(*result, OnIncomingCapturedImage)
         .WillByDefault(WithArgs<0, 1>(
-            Invoke([this](scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const media::VideoCaptureFormat& frame_format) {
+            [this](scoped_refptr<gpu::ClientSharedImage> shared_image,
+                   const media::VideoCaptureFormat& frame_format) {
               ASSERT_TRUE(shared_image);
               ASSERT_GT(
                   shared_image->size().width() * shared_image->size().height(),
@@ -338,7 +336,7 @@ class VideoCaptureDeviceTest
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
-            })));
+            }));
     return result;
   }
 
@@ -367,25 +365,9 @@ class VideoCaptureDeviceTest
       DLOG(WARNING) << "No camera found";
       return std::nullopt;
     }
-#if BUILDFLAG(IS_ANDROID)
-    for (const auto& device : devices_info_) {
-      // Android deprecated/legacy devices capture on a single thread, which is
-      // occupied by the tests, so nothing gets actually delivered.
-      // TODO(mcasas): use those devices' test mode to deliver frames in a
-      // background thread, https://crbug.com/626857
-      if (!VideoCaptureDeviceFactoryAndroid::IsLegacyOrDeprecatedDevice(
-              device.descriptor.device_id)) {
-        DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
-        return device;
-      }
-    }
-    DLOG(WARNING) << "No usable camera found";
-    return std::nullopt;
-#else
     auto device = devices_info_.front();
     DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
     return device;
-#endif
   }
 
   const VideoCaptureFormat& last_format() const { return last_format_; }

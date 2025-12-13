@@ -16,6 +16,15 @@ struct Config;
 // TODO(shaktisahu): Find signals for desktop users.
 class ResumeHeavyUserModel : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureMobileBookmarkManagerOpen,
+    kFeatureNewTabPageMostVisitedClicked,
+    kFeatureTabGroupCreatedOpenInNewTab,
+    kFeatureAndroidHistoryPageOpenItem,
+    kFeatureMobileMenuRecentTabs,
+    kFeatureCount
+  };
+
   ResumeHeavyUserModel();
   ~ResumeHeavyUserModel() override = default;
 

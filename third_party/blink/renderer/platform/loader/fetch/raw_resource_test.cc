@@ -132,8 +132,7 @@ class AddingClient final : public GarbageCollected<AddingClient>,
     // We do not expect a client to be called if the client is removed before
     // a callback invocation task queued inside addClient() is scheduled.
     platform->test_task_runner()->PostTask(
-        FROM_HERE,
-        WTF::BindOnce(&AddingClient::RemoveClient, WrapPersistent(this)));
+        FROM_HERE, BindOnce(&AddingClient::RemoveClient, WrapPersistent(this)));
     resource->AddClient(dummy_client_, platform->test_task_runner().get());
   }
   String DebugName() const override { return "AddingClient"; }

@@ -16,22 +16,17 @@ export class StatsTable {
    * Adds |report| to the stats table of |peerConnectionElement|.
    *
    * @param {!Element} peerConnectionElement The root element.
-   * @param {!Object} report The object containing stats, which is the object
-   *     containing timestamp and values, which is an array of strings, whose
-   *     even index entry is the name of the stat, and the odd index entry is
-   *     the value.
+   * @param {!Object} rtcStats The RTCStats object
    */
-  addStatsReport(peerConnectionElement, report) {
-    const statsTable = this.ensureStatsTable_(peerConnectionElement, report);
+  addRtcStats(peerConnectionElement, rtcStats) {
+    const statsTable = this.ensureStatsTable_(peerConnectionElement, rtcStats);
 
     // Update the label since information may have changed.
     statsTable.parentElement.firstElementChild.innerText =
-        generateStatsLabel(report);
+        generateStatsLabel(rtcStats);
 
-    if (report.stats) {
-      this.addStatsToTable_(
-          statsTable, report.stats.timestamp, report.stats.values);
-    }
+    this.addStatsToTable_(
+        statsTable, rtcStats.timestamp, rtcStats);
   }
 
   clearStatsLists(peerConnectionElement) {
@@ -85,15 +80,13 @@ export class StatsTable {
    * |peerConnectionElement| is created.
    *
    * @param {!Element} peerConnectionElement The root element.
-   * @param {!Object} report The object containing stats, which is the object
-   *     containing timestamp and values, which is an array of strings, whose
-   *     even index entry is the name of the stat, and the odd index entry is
-   *     the value.
+   * @param {!Object} rtcStats The RTCStats object.
    * @return {!Element} The stats table element.
    * @private
    */
-  ensureStatsTable_(peerConnectionElement, report) {
-    const tableId = peerConnectionElement.id + '-table-' + report.id;
+  ensureStatsTable_(peerConnectionElement, rtcStats) {
+    const detailsId = peerConnectionElement.id + '-details-' + rtcStats.id;
+    const tableId = peerConnectionElement.id + '-table-' + rtcStats.id;
     // Disable getElementById restriction here, since |tableId| is not
     // always a valid selector.
     // eslint-disable-next-line no-restricted-properties
@@ -101,11 +94,12 @@ export class StatsTable {
     if (!table) {
       const container = this.ensureStatsTableContainer_(peerConnectionElement);
       const details = document.createElement('details');
-      details.attributes['data-statsType'] = report.type;
+      details.id = detailsId;
+      details.attributes['data-statsType'] = rtcStats.type;
       container.appendChild(details);
 
       const summary = document.createElement('summary');
-      summary.textContent = generateStatsLabel(report);
+      summary.textContent = generateStatsLabel(rtcStats);
       details.appendChild(summary);
 
       table = document.createElement('table');
@@ -114,7 +108,7 @@ export class StatsTable {
       table.border = 1;
 
       table.appendChild($('trth-template').content.cloneNode(true));
-      table.rows[0].cells[0].textContent = 'Statistics ' + report.id;
+      table.rows[0].cells[0].textContent = 'Statistics ' + rtcStats.id;
       table['data-peerconnection-id'] = peerConnectionElement.id;
     }
     return table;
@@ -128,11 +122,8 @@ export class StatsTable {
    * @param {Array<string>} statsData An array of stats name and value pairs.
    * @private
    */
-  addStatsToTable_(statsTable, time, statsData) {
-    const definedMetrics = new Set();
-    for (let i = 0; i < statsData.length - 1; i = i + 2) {
-      definedMetrics.add(statsData[i]);
-    }
+  addStatsToTable_(statsTable, time, rtcStats) {
+    const definedMetrics = new Set(Object.keys(rtcStats));
     // For any previously reported metric that is no longer defined, replace its
     // now obsolete value with the magic string "(removed)".
     const metricsContainer = statsTable.firstChild;
@@ -156,9 +147,10 @@ export class StatsTable {
     // Add or update all "metric: value" that have a defined value.
     const date = new Date(time);
     this.updateStatsTableRow_(statsTable, 'timestamp', date.toLocaleString());
-    for (let i = 0; i < statsData.length - 1; i = i + 2) {
-      this.updateStatsTableRow_(statsTable, statsData[i], statsData[i + 1]);
-    }
+    Object.keys(rtcStats).forEach(property => {
+      if (['timestamp', 'id'].includes(property)) return;
+      this.updateStatsTableRow_(statsTable, property, rtcStats[property]);
+    });
   }
 
   /**

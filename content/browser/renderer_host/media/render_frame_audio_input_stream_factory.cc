@@ -35,6 +35,7 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"

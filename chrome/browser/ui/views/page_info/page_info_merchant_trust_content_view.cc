@@ -31,8 +31,6 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kElementIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
                                       kViewReviewsId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMerchantTrustContentView,
-                                      kHatsButtonId);
 
 PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
@@ -47,10 +45,6 @@ PageInfoMerchantTrustContentView::PageInfoMerchantTrustContentView() {
   view_reviews_button_ = AddChildView(CreateViewReviewsButton());
   view_reviews_button_->SetProperty(views::kMarginsKey,
                                     gfx::Insets().set_bottom(bottom_margin));
-  hats_button_ = AddChildView(CreateHatsButton());
-  // No bottom margin for the content view because the HaTS button acts as a
-  // footer.
-  SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 0));
 }
 
 PageInfoMerchantTrustContentView::~PageInfoMerchantTrustContentView() = default;
@@ -65,12 +59,6 @@ base::CallbackListSubscription
 PageInfoMerchantTrustContentView::RegisterViewReviewsButtonPressedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return view_reviews_button_callback_list_.Add(std::move(callback));
-}
-
-base::CallbackListSubscription
-PageInfoMerchantTrustContentView::RegisterHatsButtonPressedCallback(
-    base::RepeatingClosureList::CallbackType callback) {
-  return hats_button_callback_list_.Add(std::move(callback));
 }
 
 void PageInfoMerchantTrustContentView::SetReviewsSummary(
@@ -91,14 +79,6 @@ void PageInfoMerchantTrustContentView::SetRatingAndReviewCount(double rating,
           IDS_PAGE_INFO_MERCHANT_TRUST_STAR_RATING_AND_COUNT_A11Y_DESCRIPTION),
       count, rating);
   view_reviews_button_->GetViewAccessibility().SetName(a11y_description);
-}
-
-void PageInfoMerchantTrustContentView::SetHatsButtonVisibility(bool visible) {
-  hats_button_->SetVisible(visible);
-}
-
-void PageInfoMerchantTrustContentView::SetHatsButtonTitleId(int title_id) {
-  hats_button_->SetTitleText(l10n_util::GetStringUTF16(title_id));
 }
 
 std::unique_ptr<views::View>
@@ -172,25 +152,6 @@ PageInfoMerchantTrustContentView::CreateViewReviewsButton() {
   return merchant_trust_button;
 }
 
-std::unique_ptr<RichHoverButton>
-PageInfoMerchantTrustContentView::CreateHatsButton() {
-  auto hats_button = std::make_unique<RichHoverButton>(
-      base::BindRepeating(
-          &PageInfoMerchantTrustContentView::NotifyHatsButtonPressed,
-          base::Unretained(this)),
-      PageInfoViewFactory::GetImageModel(kSubmitFeedbackIcon),
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON),
-      std::u16string());
-  hats_button->SetBackground(
-      views::CreateSolidBackground(ui::kColorSysNeutralContainer));
-  hats_button->SetProperty(views::kElementIdentifierKey, kHatsButtonId);
-  hats_button->SetVisible(false);
-  hats_button->SetBorder(
-      views::CreateEmptyBorder(ChromeLayoutProvider::Get()->GetInsetsMetric(
-          INSETS_PAGE_INFO_FOOTER_BUTTON)));
-  return hats_button;
-}
-
 void PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed(
     const ui::Event& event) {
   learn_more_link_callback_list_.Notify(event);
@@ -198,10 +159,6 @@ void PageInfoMerchantTrustContentView::NotifyLearnMoreLinkPressed(
 
 void PageInfoMerchantTrustContentView::NotifyViewReviewsPressed() {
   view_reviews_button_callback_list_.Notify();
-}
-
-void PageInfoMerchantTrustContentView::NotifyHatsButtonPressed() {
-  hats_button_callback_list_.Notify();
 }
 
 gfx::Size PageInfoMerchantTrustContentView::CalculatePreferredSize(

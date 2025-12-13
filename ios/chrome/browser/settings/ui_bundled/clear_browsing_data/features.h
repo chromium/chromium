@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #import "base/feature_list.h"
 
-// Feature for the implementation of Quick Delete in iOS.
-BASE_DECLARE_FEATURE(kIOSQuickDelete);
+// Feature for the removal of passwords from the delete browsing data flow.
+BASE_DECLARE_FEATURE(kPasswordRemovalFromDeleteBrowsingData);
 
-// Whether the iOS Quick Delete feature is enabled.
-bool IsIosQuickDeleteEnabled();
+// Whether the password removal from delete browsing data feature is enabled.
+bool IsPasswordRemovalFromDeleteBrowsingDataEnabled();
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_FEATURES_H_

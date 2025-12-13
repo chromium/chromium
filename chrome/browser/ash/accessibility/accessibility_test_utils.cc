@@ -93,30 +93,6 @@ void ExtensionConsoleErrorObserver::AddAllowedError(
   allowed_errors_.insert(allowed);
 }
 
-HistogramWaiter::HistogramWaiter(std::string_view metric_name) {
-  histogram_observer_ =
-      std::make_unique<base::StatisticsRecorder::ScopedHistogramSampleObserver>(
-          metric_name,
-          base::BindRepeating(&HistogramWaiter::OnHistogramCallback,
-                              base::Unretained(this)));
-}
-
-HistogramWaiter::~HistogramWaiter() {
-  histogram_observer_.reset();
-}
-
-void HistogramWaiter::Wait() {
-  run_loop_.Run();
-}
-
-void HistogramWaiter::OnHistogramCallback(
-    std::string_view metric_name,
-    uint64_t name_hash,
-    base::HistogramBase::Sample32 sample) {
-  run_loop_.Quit();
-  histogram_observer_.reset();
-}
-
 MagnifierAnimationWaiter::MagnifierAnimationWaiter(
     FullscreenMagnifierController* controller)
     : controller_(controller) {}

@@ -73,7 +73,7 @@ action("embed_mobile_devices_in_cpp") {
 }
 
 minify_js("minify_bidimapper") {
-  deps = [ "//third_party/bidimapper:bidimapper" ]
+  deps = [ "//third_party/bidimapper" ]
   input_dir =
       get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
   in_folder = "$input_dir"
@@ -491,7 +491,7 @@ python_library("chromedriver_py_tests") {
   testonly = true
   deps = [
     ":chromedriver_server",
-    "//chrome:chrome",
+    "//chrome",
   ]
 
   pydeps_file = "test/run_py_tests.pydeps"
@@ -519,7 +519,7 @@ python_library("chromedriver_py_tests_headless_shell") {
   testonly = true
   deps = [
     ":chromedriver_server",
-    "//chrome:chrome",
+    "//chrome",
   ]
 
   pydeps_file = "test/run_py_tests.pydeps"
@@ -667,7 +667,7 @@ if (is_win || is_posix) {
       "test/web_view_impl_integrationtest.cc",
     ]
 
-    data_deps = [ "//chrome:chrome" ]
+    data_deps = [ "//chrome" ]
 
     deps = [
       ":automation_client_lib",

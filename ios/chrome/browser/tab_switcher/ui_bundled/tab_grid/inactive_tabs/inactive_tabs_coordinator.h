@@ -32,6 +32,7 @@
 @property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 // Init the inactive tabs coordinator, all parameters should *not* be nil.
+// `browser` should be the inactive browser
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   delegate:(id<InactiveTabsCoordinatorDelegate>)

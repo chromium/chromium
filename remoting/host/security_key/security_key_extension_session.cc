@@ -95,8 +95,8 @@ bool SecurityKeyExtensionSession::OnExtensionMessage(
     return false;
   }
 
-  std::optional<base::Value::Dict> value =
-      base::JSONReader::ReadDict(message.data());
+  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+      message.data(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(WARNING) << "Failed to retrieve data from gnubby-auth message.";
     return true;
@@ -206,14 +206,9 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   }
   request_dict.Set(kDataPayload, std::move(bytes));
 
-  base::Value request(std::move(request_dict));
-
-  std::string request_json;
-  CHECK(base::JSONWriter::Write(request, &request_json));
-
   protocol::ExtensionMessage message;
   message.set_type(kExtensionMessageType);
-  message.set_data(request_json);
+  message.set_data(base::WriteJson(request_dict).value());
 
   client_stub_->DeliverHostMessage(message);
 }

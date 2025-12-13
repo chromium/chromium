@@ -7,14 +7,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/features.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 
 namespace enterprise_connectors {
 
@@ -100,12 +101,10 @@ PagePrintRequestHandler::PagePrintRequestHandler(
 void PagePrintRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      profile_, GURL(content_analysis_info_->url()),
-      content_analysis_info_->tab_url(), /*source*/ "",
+      profile_, *content_analysis_info_, /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(),
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), response_,
       user_justification);
@@ -159,17 +158,17 @@ bool PagePrintRequestHandler::UploadDataImpl() {
 }
 
 void PagePrintRequestHandler::OnContentAnalysisResponse(
-    safe_browsing::BinaryUploadService::Result result,
+    ScanRequestUploadResult result,
     ContentAnalysisResponse response) {
   response_ = std::move(response);
   request_tokens_to_ack_final_actions_[response_.request_token()] =
       GetAckFinalAction(response_);
 
-  RecordDeepScanMetrics(content_analysis_info_->settings()
-                            .cloud_or_local_settings.is_cloud_analysis(),
-                        DeepScanAccessPoint::PRINT,
-                        base::TimeTicks::Now() - upload_start_time_,
-                        page_size_bytes_, result, response_);
+  safe_browsing::RecordDeepScanMetrics(
+      content_analysis_info_->settings()
+          .cloud_or_local_settings.is_cloud_analysis(),
+      DeepScanAccessPoint::PRINT, base::TimeTicks::Now() - upload_start_time_,
+      page_size_bytes_, result, response_);
 
   auto request_handler_result = CalculateRequestHandlerResult(
       content_analysis_info_->settings(), result, response_);
@@ -179,12 +178,11 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, GURL(content_analysis_info_->url()),
-      content_analysis_info_->tab_url(), /*source*/ "",
+      profile_, content_analysis_info_.get(),
+      /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
-      /*mime_type*/ std::string(),
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerPagePrint,
+      /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
       content_analysis_info_->GetContentAreaAccountEmail(),
       /*content_size*/ -1, content_analysis_info_->referrer_chain(), result,
@@ -196,22 +194,23 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
 }
 
 void PagePrintRequestHandler::FinishLargeDataRequestEarly(
-    std::unique_ptr<safe_browsing::BinaryUploadService::Request> request) {
+    std::unique_ptr<BinaryUploadRequest> request) {
   // We add the request here in case we never actually uploaded anything, so
   // it wasn't added in OnGetRequestData
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), /*access_token*/ "", /*upload_info*/
-      "Skipped - Large data blocked", /*upload_url*/ "",
-      request->content_analysis_request());
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToDeepScanResponses(
-      /*token=*/"",
-      safe_browsing::BinaryUploadService::ResultToString(
-          safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE),
-      enterprise_connectors::ContentAnalysisResponse());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanRequests(request->per_profile_request(),
+                              /*access_token*/ "", /*upload_info*/
+                              "Skipped - Large data blocked", /*upload_url*/ "",
+                              request->content_analysis_request());
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddToDeepScanResponses(
+          /*token=*/"",
+          ScanRequestUploadResultToString(
+              ScanRequestUploadResult::kFileTooLarge),
+          enterprise_connectors::ContentAnalysisResponse());
 
-  request->FinishRequest(
-      safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE,
-      enterprise_connectors::ContentAnalysisResponse());
+  request->FinishRequest(ScanRequestUploadResult::kFileTooLarge,
+                         enterprise_connectors::ContentAnalysisResponse());
 }
 
 }  // namespace enterprise_connectors

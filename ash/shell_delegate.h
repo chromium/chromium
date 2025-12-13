@@ -21,7 +21,7 @@
 #include "services/device/public/mojom/fingerprint.mojom-forward.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
 class AccountId;
@@ -47,6 +47,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class ClipboardHistoryControllerDelegate;
+class ClipboardImageModelFactory;
 class CoralDelegate;
 class FocusModeDelegate;
 class GameDashboardDelegate;
@@ -83,6 +84,11 @@ class ASH_EXPORT ShellDelegate {
   // Creates and returns the delegate of the clipboard history feature.
   virtual std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const = 0;
+
+  // Creates and returns the browser-implemented image model factory which
+  // renders html of a clipboard history item.
+  virtual std::unique_ptr<ClipboardImageModelFactory>
+  CreateClipboardImageModelFactory() const = 0;
 
   // Creates and returns the delegate of the Coral feature.
   virtual std::unique_ptr<CoralDelegate> CreateCoralDelegate() const = 0;

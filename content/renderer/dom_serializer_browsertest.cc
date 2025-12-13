@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
         // Each link is relative link.
         if (!value.IsNull()) {
           GURL link(value.Utf8());
-          ASSERT_TRUE(link.scheme().empty());
+          ASSERT_TRUE(link.GetScheme().empty());
         }
       }
     }
@@ -779,7 +779,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests,
         // Each link is absolute link.
         if (!value.IsNull()) {
           GURL link(std::string(value.Utf8()));
-          ASSERT_FALSE(link.scheme().empty());
+          ASSERT_FALSE(link.GetScheme().empty());
         }
       }
     }

@@ -52,7 +52,7 @@ Embedding DeterministicEmbedding(float value) {
 }  // namespace
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, Constructs) {
-  std::make_unique<VectorDatabaseInMemory>();
+  std::ignore = std::make_unique<VectorDatabaseInMemory>();
 }
 
 TEST(HistoryEmbeddingsVectorDatabaseTest, EraseNonAsciiCharacters) {

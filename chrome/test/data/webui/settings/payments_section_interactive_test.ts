@@ -620,15 +620,15 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new card, the nickname is unset.
-    assertTrue(characterCount.textContent!.includes('0/25'));
+    assertTrue(characterCount.textContent.includes('0/25'));
 
     // User types in one character. Ensure the character count is dynamically
     // updated.
     await typeInNickname(nicknameInput, 'a');
-    assertTrue(characterCount.textContent!.includes('1/25'));
+    assertTrue(characterCount.textContent.includes('1/25'));
     // User types in total 5 characters.
     await typeInNickname(nicknameInput, 'abcde');
-    assertTrue(characterCount.textContent!.includes('5/25'));
+    assertTrue(characterCount.textContent.includes('5/25'));
 
     // User click outside of nickname input, the character count isn't shown.
     nicknameInput.blur();
@@ -640,7 +640,7 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     await nicknameInput.updateComplete;
     // Character count is shown when nickname input field is re-focused.
     assertTrue(isVisible(characterCount));
-    assertTrue(characterCount.textContent!.includes('5/25'));
+    assertTrue(characterCount.textContent.includes('5/25'));
   });
 
   test('expired card', async function() {
@@ -728,12 +728,12 @@ suite('PaymentsSectionCreditCardEditDialogTest', function() {
     // Character count is shown when nickname input field is focused.
     assertTrue(isVisible(characterCount));
     // For new IBAN, the nickname is unset.
-    assertTrue(characterCount.textContent!.includes('0/25'));
+    assertTrue(characterCount.textContent.includes('0/25'));
 
     // Fill in IBAN value and nickname, and trigger the on-input handler.
     nicknameInput.value = 'My doctor\'s IBAN';
     await nicknameInput.updateComplete;
-    assertTrue(characterCount.textContent!.includes('16/25'));
+    assertTrue(characterCount.textContent.includes('16/25'));
 
     valueInput.value = 'IT60X0542811101000000123456';
 

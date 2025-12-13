@@ -38,6 +38,8 @@ class PartitionAllocFunctionsInternal {
 
   static void* Calloc(size_t n, size_t size, void* context);
 
+  static void* CallocUnchecked(size_t n, size_t size, void* context);
+
   static void* Memalign(size_t alignment, size_t size, void* context);
 
   static void* AlignedAlloc(size_t size, size_t alignment, void* context);
@@ -97,6 +99,7 @@ class PartitionAllocFunctionsInternal {
         &Malloc,                    // alloc_function
         &MallocUnchecked,           // alloc_unchecked_function
         &Calloc,                    // alloc_zero_initialized_function
+        &CallocUnchecked,           // alloc_zero_initialized_unchecked_function
         &Memalign,                  // alloc_aligned_function
         &Realloc,                   // realloc_function
         &ReallocUnchecked,          // realloc_unchecked_function
@@ -186,15 +189,23 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
       partition_alloc::internal::SchedulerLoopQuarantineConfig();
   auto scheduler_loop_quarantine_thread_local_config =
       partition_alloc::internal::SchedulerLoopQuarantineConfig();
+  auto scheduler_loop_quarantine_for_advanced_memory_safety_checks_config =
+      partition_alloc::internal::SchedulerLoopQuarantineConfig();
 
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
-  auto fewer_memory_regions = FewerMemoryRegions(false);
+  auto enable_free_with_size = allocator_shim::EnableFreeWithSize(
+      PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC));
+  auto enable_strict_free_size_check =
+      allocator_shim::EnableStrictFreeSizeCheck(true);
 
-  ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
-                      memory_tagging_reporting_mode, distribution,
-                      scheduler_loop_quarantine_global_config,
-                      scheduler_loop_quarantine_thread_local_config,
-                      eventually_zero_freed_memory, fewer_memory_regions);
+  ConfigurePartitions(
+      enable_brp, brp_extra_extras_size, enable_memory_tagging,
+      memory_tagging_reporting_mode, distribution,
+      scheduler_loop_quarantine_global_config,
+      scheduler_loop_quarantine_thread_local_config,
+      scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
+      eventually_zero_freed_memory, enable_free_with_size,
+      enable_strict_free_size_check);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

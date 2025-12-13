@@ -27,7 +27,6 @@
 #import "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/annotations/annotations_text_manager.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"

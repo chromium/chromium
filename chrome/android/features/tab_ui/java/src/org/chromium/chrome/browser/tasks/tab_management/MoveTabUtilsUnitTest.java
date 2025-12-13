@@ -39,6 +39,7 @@ public class MoveTabUtilsUnitTest {
     private int mTabCount;
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_NoOperation() {
         addTabs(1); // 0
         addTabGroup(3, new Token(1L, 2L)); // 1 2 3
@@ -72,6 +73,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_LowerIndex() {
         addTabs(3); // 0 1 2
         int index = 2;
@@ -82,6 +84,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_LowerIndex_TabGroupOf1() {
         addTabGroup(1, new Token(1L, 2L)); // 0
         addTabs(1); // 1
@@ -93,6 +96,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_LowerIndex_IndexOverlapsWithTabGroup() {
         addTabGroup(3, new Token(1L, 2L)); // 0 1 2
         addTab(); // 3
@@ -105,6 +109,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTabInsideTabGroup_LowerIndex() {
         addTabGroup(3, new Token(1L, 2L)); // 0 1 2
         int index = 2;
@@ -115,6 +120,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTabInsideTabGroup_LowerIndex_IndexOutOfTabGroup() {
         addTabs(2); // 0 1
         addTabGroup(3, new Token(1L, 2L)); // 2 3 4
@@ -126,6 +132,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_HigherIndex() {
         addTabs(3); // 0 1 2
         int index = 0;
@@ -136,6 +143,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_HigherIndex_TabGroupOf1() {
         addTabs(1); // 0
         addTabGroup(1, new Token(1L, 2L)); // 1
@@ -147,6 +155,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTab_HigherIndex_IndexOverlapsWithTabGroup() {
         addTabs(2); // 0 1
         addTabGroup(4, new Token(1L, 2L)); // 2 3 4 5
@@ -160,6 +169,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTabInsideTabGroup_HigherIndex() {
         addTabGroup(5, new Token(1L, 2L)); // 0 1 2 3 4
         int index = 1;
@@ -170,6 +180,7 @@ public class MoveTabUtilsUnitTest {
     }
 
     @Test
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testMoveSingleTabInsideTabGroup_HigherIndex_IndexOutOfTabGroup() {
         addTabGroup(3, new Token(1L, 2L)); // 0 1 2
         addTabs(2); // 3 4

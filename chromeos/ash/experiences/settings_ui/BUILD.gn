@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+component("settings_ui") {
+  defines = [ "IS_SETTINGS_UI_IMPL" ]
+
+  sources = [
+    "settings_app_manager.cc",
+    "settings_app_manager.h",
+  ]
+
+  deps = [
+    "//ash/webui/settings/public/constants",
+    "//base",
+    "//ui/display/types",
+  ]
+}

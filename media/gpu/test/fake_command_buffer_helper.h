@@ -43,8 +43,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // CommandBufferHelper implementation.
   gpu::SharedImageStub* GetSharedImageStub() override;
   gpu::MemoryTypeTracker* GetMemoryTypeTracker() override;
-  gpu::SharedImageManager* GetSharedImageManager() override;
 #endif
+
+  gpu::SharedImageManager* GetSharedImageManager() override;
 
  private:
   ~FakeCommandBufferHelper() override;

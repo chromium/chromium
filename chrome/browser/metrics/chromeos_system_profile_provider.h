@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chromeos/ash/experiences/arc/arc_features_parser.h"

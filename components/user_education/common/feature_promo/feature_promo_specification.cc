@@ -9,7 +9,6 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
@@ -39,6 +38,8 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
       base::MakeFixedFlatSet<std::string_view>({
           "IPH_DownloadEsbPromo",
           "IPH_HighEfficiencyMode",
+          "IPH_iOSEnhancedBrowsingDesktop",
+          "IPH_SignInBenefits",
           "IPH_SupervisedUserProfileSignin",
           "IPH_TabSearchToolbarButton",
       });
@@ -52,7 +53,6 @@ bool IsAllowedKeyedNotice(const base::Feature& promo_feature) {
           "IPH_DesktopPWAsLinkCapturingLaunch",
           "IPH_DesktopPWAsLinkCapturingLaunchAppInTab",
           "IPH_ExplicitBrowserSigninPreferenceRemembered",
-          "IPH_SignoutWebIntercept",
           "IPH_PwaQuietNotification",
       });
   return kAllowedPromoNames.contains(promo_feature.name);
@@ -83,7 +83,8 @@ bool IsAllowedCustomUiPromo(const base::Feature& promo_feature) {
   // Add the text names of allowlisted rotating promos here:
   static constexpr auto kAllowedPromoNames =
       base::MakeFixedFlatSet<std::string_view>(
-          {"IPH_ExtensionsZeroStatePromo"});
+          {"IPH_ExtensionsZeroStatePromo", "IPH_iOSEnhancedBrowsingDesktop",
+           "IPH_iOSLensPromoDesktop", "IPH_iOSPasswordPromoDesktop"});
   return kAllowedPromoNames.contains(promo_feature.name);
 }
 
@@ -467,8 +468,24 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
     HelpBubbleArrow bubble_arrow) {
+  CHECK(!bubble_arrow_callback_);
   bubble_arrow_ = bubble_arrow;
   return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrowCallback(
+    HelpBubbleArrowCallback bubble_arrow_callback) {
+  CHECK(!bubble_arrow_callback_);
+  bubble_arrow_callback_ = std::move(bubble_arrow_callback);
+  return *this;
+}
+
+HelpBubbleArrow FeaturePromoSpecification::GetBubbleArrow(
+    const ui::TrackedElement* anchor_element) const {
+  if (bubble_arrow_callback_) {
+    return bubble_arrow_callback_.Run(anchor_element);
+  }
+  return bubble_arrow_;
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::OverrideFocusOnShow(
@@ -498,7 +515,8 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetPromoSubtype(
       CHECK(IsAllowedLegalNotice(*feature_));
       break;
     case PromoSubtype::kActionableAlert:
-      CHECK_EQ(promo_type_, PromoType::kCustomAction);
+      CHECK(promo_type_ == PromoType::kCustomAction ||
+            promo_type_ == PromoType::kCustomUi);
       CHECK(feature_);
       CHECK(IsAllowedActionableAlert(*feature_));
       break;
@@ -557,7 +575,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetMetadata(
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
     bool custom_action_is_default) {
-  DCHECK(!custom_action_callback_.is_null());
+  DCHECK(custom_action_callback_);
   custom_action_is_default_ = custom_action_is_default;
   return *this;
 }
@@ -565,7 +583,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetCustomActionIsDefault(
 FeaturePromoSpecification&
 FeaturePromoSpecification::SetCustomActionDismissText(
     int custom_action_dismiss_string_id) {
-  DCHECK(promo_type_ == PromoType::kCustomAction);
+  DCHECK_EQ(promo_type_, PromoType::kCustomAction);
   custom_action_dismiss_string_id_ = custom_action_dismiss_string_id;
   return *this;
 }
@@ -582,11 +600,11 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
   if (index) {
     CHECK_EQ(PromoType::kRotating, promo_type_);
     return rotating_promos_.at(*index)->GetAnchorElement(context, std::nullopt);
-  } else {
-    // Should not be called directly on a rotating promo.
-    CHECK_NE(PromoType::kRotating, promo_type_);
-    return AnchorElementProviderCommon::GetAnchorElement(context, index);
   }
+
+  // Should not be called directly on a rotating promo.
+  CHECK_NE(PromoType::kRotating, promo_type_);
+  return AnchorElementProviderCommon::GetAnchorElement(context, std::nullopt);
 }
 
 int FeaturePromoSpecification::GetNextValidIndex(int starting_index) const {
@@ -615,12 +633,10 @@ FeaturePromoSpecification::CreateRotatingPromoForTesting(
 
 FeaturePromoSpecification::CustomHelpBubbleResult
 FeaturePromoSpecification::BuildCustomHelpBubble(
-    ui::ElementContext from_context,
-    HelpBubbleArrow arrow,
+    const UserEducationContextPtr& from_context,
     BuildHelpBubbleParams params) const {
   CHECK_EQ(PromoType::kCustomUi, promo_type_);
-  return custom_ui_factory_callback_.Run(from_context, arrow,
-                                         std::move(params));
+  return custom_ui_factory_callback_.Run(from_context, std::move(params));
 }
 
 std::ostream& operator<<(std::ostream& oss,

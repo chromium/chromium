@@ -33,6 +33,7 @@
 #include <string_view>
 #include <variant>
 
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -112,11 +113,12 @@ class MemoryCacheTest : public testing::Test {
     void DestroyDecodedDataIfPossible() override { SetDecodedSize(0u); }
   };
 
+  MemoryCacheTest()
+      : scoped_memory_cache_(
+            MakeGarbageCollected<MemoryCache>(platform_->test_task_runner())) {}
+
  protected:
   void SetUp() override {
-    // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ = ReplaceMemoryCacheForTesting(
-        MakeGarbageCollected<MemoryCache>(platform_->test_task_runner()));
     auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
     lifecycle_notifier_ = MakeGarbageCollected<MockContextLifecycleNotifier>();
     fetcher_ = MakeGarbageCollected<ResourceFetcher>(ResourceFetcherInit(
@@ -127,18 +129,15 @@ class MemoryCacheTest : public testing::Test {
         nullptr /* back_forward_cache_loader_helper */));
   }
 
-  void TearDown() override {
-    ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
-  }
-
-  Persistent<MemoryCache> global_memory_cache_;
+  base::test::TaskEnvironment task_environment_;
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   Persistent<ResourceFetcher> fetcher_;
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 
  private:
-  base::test::TaskEnvironment task_environment_;
 };
 
 
@@ -359,8 +358,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ResourceTimeout) {
 
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
   MemoryCache::Get()->strong_references_prune_duration_ = base::Milliseconds(1);
-  MemoryCache::Get()->SavePageResourceStrongReferences(
-      HeapVector<Member<Resource>>{resource});
+  MemoryCache::Get()->SaveStrongReference(resource);
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
 
   (*MemoryCache::Get()->strong_references_.begin())
@@ -391,6 +389,36 @@ TEST_F(MemoryCacheStrongReferenceTest, ClearStrongReferences) {
   MemoryCache::Get()->SaveStrongReference(resource);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
   MemoryCache::Get()->ClearStrongReferences();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+}
+
+TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSize) {
+  // Memory cache has a non-null max size, but is empty.
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
+
+  // Add a resource.
+  const KURL kURL("http://test/resource1");
+  Member<FakeResource> resource =
+      MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
+  MemoryCache::Get()->SaveStrongReference(resource);
+
+  EXPECT_NE(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // Change the memory limit. This will reduce the max size to zero, but not
+  // clear anything yet.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+      0, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
+  EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
+
+  // ReleaseMemory notification. This actually calls PruneStrongReferences();
+  test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+      task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+  EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, 0u);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 

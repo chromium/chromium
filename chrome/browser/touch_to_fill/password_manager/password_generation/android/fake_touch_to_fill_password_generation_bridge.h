@@ -26,7 +26,7 @@ class FakeTouchToFillPasswordGenerationBridge
   void OnDismissed(JNIEnv* env, bool generated_password_accepted) override;
   void OnGeneratedPasswordAccepted(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& password) override;
+      const base::android::JavaRef<jstring>& password) override;
   void OnGeneratedPasswordRejected(JNIEnv* env) override;
 
  private:

@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/platform_keys/extension_key_permissions_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -253,15 +252,17 @@ void KeyPermissionsManagerImpl::SetSystemTokenKeyPermissionsManagerForTesting(
   g_system_token_kpm_for_testing = system_token_kpm_for_testing;
 }
 
+// static
 std::unique_ptr<KeyPermissionsManager>
-KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager() {
+KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager(
+    PrefService* local_state) {
   DCHECK(!g_system_token_key_permissions_manager);
 
   auto system_token_key_permissions_manager =
       std::make_unique<KeyPermissionsManagerImpl>(
           TokenId::kSystem, std::make_unique<SystemTokenArcKpmDelegate>(),
           PlatformKeysServiceFactory::GetInstance()->GetDeviceWideService(),
-          g_browser_process->local_state());
+          local_state);
   g_system_token_key_permissions_manager =
       system_token_key_permissions_manager.get();
   return std::move(system_token_key_permissions_manager);

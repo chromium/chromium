@@ -4,7 +4,8 @@
       "win",
       "linux",
       "mac",
-      "chromeos"
+      "chromeos",
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.unpublished_availability",

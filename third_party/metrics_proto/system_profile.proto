@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 50
+// Next tag: 51
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -259,7 +259,7 @@ message SystemProfileProto {
   optional OS os = 5;
 
   // Information on the user's hardware.
-  // Next tag: 28
+  // Next tag: 29
   message Hardware {
     // OS CPU architecture. Common options are: x86, x86_64, arm64, armv7,
     // armv7l, armv8l and aarch64.
@@ -307,6 +307,14 @@ message SystemProfileProto {
     // device specifications including OEM information, schematics, hardware
     // qualification reports, test device tags, etc.
     optional string full_hardware_class = 18;
+
+    // This field is only sent on ChromeOS. The updated hardware class is
+    // similar to the full hardware class, but it is updated over the lifecycle
+    // of the device, whereas the full hardware class is set once at hardware
+    // manufacturing time. The updated hardware class can reflect the device's
+    // current hardware components, which can change due to repairs or component
+    // replacements.
+    optional string updated_hardware_class = 28;
 
     // This field is only sent on Chrome OS devices with cellular support.
     // This represents the variant of cellular modem present on the device.
@@ -707,6 +715,13 @@ message SystemProfileProto {
   // Seed version from variations_seed.proto used to instantiate FieldTrials
   // for this session.
   optional string variations_seed_version = 28;
+
+  // Denotes whether the variations seed applied by the client had any studies
+  // that (A) applied to the client's platform, channel, form factor, and
+  // version and (B) were constrained to a limited-entropy-mode layer.
+  //
+  // Unset when a seed is not applied.
+  optional bool seed_has_active_limited_layer = 50;
 
   // Whether the client_id in the log matches the client_id we used to assign
   // field trials.

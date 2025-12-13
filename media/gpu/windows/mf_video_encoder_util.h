@@ -52,6 +52,20 @@ static constexpr FramerateAndResolution kLegacy2KMaxFramerateAndResolution = {
 static constexpr FramerateAndResolution kLegacy4KMaxFramerateAndResolution = {
     64, gfx::Size(3840, 2160)};
 
+// Some Intel HMFTs report very high throughput via the encoder attribute
+// MF_VIDEO_MAX_MB_PER_SEC. When translated to FPS at common resolutions
+// (e.g., 1920x1080), this can imply >300 fps. However, empirical testing
+// shows an effective upper bound of ~180 fps where stability and correctness
+// are maintained. To avoid overcommitting the encoder and to keep behavior
+// predictable across devices and drivers, we cap the VP9 maximum framerate at
+// 180 fps for 2K/4K/8K.
+static constexpr FramerateAndResolution kVP9Modern2KMaxFramerateAndResolution =
+    {180, gfx::Size(1920, 1080)};
+static constexpr FramerateAndResolution kVP9Modern4KMaxFramerateAndResolution =
+    {180, gfx::Size(3840, 2160)};
+static constexpr FramerateAndResolution kVP9Modern8KMaxFramerateAndResolution =
+    {180, gfx::Size(7680, 4320)};
+
 // For H.265/AV1, some NVIDIA GPUs may report `MF_VIDEO_MAX_MB_PER_SEC` value
 // equals to `7255273`, resulting chromium think 2K & 880fps is supported. Since
 // the max level of H.265/AV1 (6.2/6.3) do not allow framerate >= 300fps, so we
@@ -108,13 +122,6 @@ static constexpr uint8_t kH264MaxQuantizer = 51;
 static constexpr uint8_t kH265MinQuantizer = 10;
 static constexpr uint8_t kH265MaxQuantizer = 42;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
-
-// Converts AV1/VP9 qindex (0-255) to the quantizer parameter input in MF
-// AVEncVideoEncodeQP.
-uint8_t QindextoAVEncQP(VideoCodec codec, uint8_t q_index);
-
-// Converts AV1/VP9 AVEncVideoEncodeQP values to qindex (0-255) range.
-uint8_t AVEncQPtoQindex(VideoCodec codec, uint8_t avenc_qp);
 
 // Returns true if |qp| is a valid quantizer parameter for |codec|.
 bool IsValidQp(VideoCodec codec, uint64_t qp);

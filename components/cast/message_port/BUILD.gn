@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/features.gni")
 import("//testing/test.gni")
 
 declare_args() {

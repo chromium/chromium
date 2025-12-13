@@ -28,8 +28,8 @@ import * as Console from 'devtools/panels/console/console.js';
     callback(message.stackTrace.callFrames[0].scriptId);
   }
   TestRunner.getScriptSource = async function(scriptId, callback) {
-    var source = await TestRunner.DebuggerAgent.getScriptSource(scriptId);
-    callback(source);
+    var {scriptSource} = await TestRunner.DebuggerAgent.invoke_getScriptSource({scriptId});
+    callback(scriptSource);
   }
 
   await ExtensionsTestRunner.runExtensionTests([

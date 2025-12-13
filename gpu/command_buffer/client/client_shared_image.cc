@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/client_shared_image.h"
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
 
 #include <optional>
+#include <utility>
 
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
@@ -23,206 +19,40 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/dawn/include/dawn/wire/client/webgpu_cpp.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/buffer_usage_util.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_io_surface.h"
+#if BUILDFLAG(IS_APPLE)
+#include "gpu/command_buffer/client/internal/mappable_buffer_io_surface.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_native_pixmap.h"
 #include "ui/ozone/public/client_native_pixmap_factory_ozone.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
+#include "gpu/command_buffer/client/internal/mappable_buffer_dxgi.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "gpu/command_buffer/client/internal/mappable_buffer_ahb.h"
 #endif
 
 namespace gpu {
 
 namespace {
-
-class ScopedMappingForTests : public ClientSharedImage::ScopedMapping {
- public:
-  ScopedMappingForTests(const gfx::Size& size, gfx::BufferFormat format)
-      : size_(size), format_(format) {
-    int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format_);
-    size_t allocation_size = 0;
-    for (int plane_index = 0; plane_index < num_planes; plane_index++) {
-      size_t height_in_pixels;
-      CHECK(gfx::PlaneHeightForBufferFormatChecked(
-          Size().height(), Format(), plane_index, &height_in_pixels));
-      allocation_size += Stride(plane_index) * height_in_pixels;
-    }
-
-    data_ = std::vector<uint8_t>(allocation_size);
-  }
-
-  ~ScopedMappingForTests() override = default;
-
-  // ClientSharedImage::ScopedMapping:
-  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    size_t height_in_pixels;
-    size_t row_size_in_bytes;
-
-    CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
-    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
-                                             plane_index, &row_size_in_bytes));
-    size_t span_length =
-        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
-
-    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(format_));
-    auto* data_ptr = data_.data();
-    data_ptr += gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index);
-
-    // SAFETY: `data_` has been allocated to have the necessary size.
-    return UNSAFE_BUFFERS(
-        base::span<uint8_t>(reinterpret_cast<uint8_t*>(data_ptr), span_length));
-  }
-  size_t Stride(const uint32_t plane_index) override {
-    DCHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
-    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
-  }
-  gfx::Size Size() override { return size_; }
-  gfx::BufferFormat Format() override { return format_; }
-  bool IsSharedMemory() override { return true; }
-
- private:
-  gfx::Size size_;
-  gfx::BufferFormat format_;
-  std::vector<uint8_t> data_;
-};
-
-class ScopedMappingSharedMemoryMapping
-    : public ClientSharedImage::ScopedMapping {
- public:
-  ScopedMappingSharedMemoryMapping(SharedImageMetadata metadata,
-                                   base::WritableSharedMemoryMapping* mapping)
-      : metadata_(metadata), mapping_(mapping) {}
-  ~ScopedMappingSharedMemoryMapping() override = default;
-
-  // ClientSharedImage::ScopedMapping:
-  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    CHECK(mapping_->IsValid());
-    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
-
-    size_t height_in_pixels;
-    CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
-    size_t span_length = Stride(plane_index) * height_in_pixels;
-
-    // SAFETY: The validity of the mapping combined with the construction of
-    // that mapping guarantee that it contains at least `span_length` bytes
-    // beyond the start of the plane.
-    return UNSAFE_BUFFERS(base::span<uint8_t>(
-        static_cast<uint8_t*>(mapping_->memory()) +
-            gfx::BufferOffsetForBufferFormat(Size(), Format(), plane_index),
-        span_length));
-  }
-  size_t Stride(const uint32_t plane_index) override {
-    CHECK_LT(plane_index, gfx::NumberOfPlanesForLinearBufferFormat(Format()));
-    return gfx::RowSizeForBufferFormat(Size().width(), Format(), plane_index);
-  }
-  gfx::Size Size() override { return metadata_.size; }
-  gfx::BufferFormat Format() override {
-    return viz::SinglePlaneSharedImageFormatToBufferFormat(metadata_.format);
-  }
-  bool IsSharedMemory() override { return true; }
-
- private:
-  SharedImageMetadata metadata_;
-  raw_ptr<base::WritableSharedMemoryMapping> mapping_;
-};
-
-class ScopedMappingGpuMemoryBuffer : public ClientSharedImage::ScopedMapping {
- public:
-  ScopedMappingGpuMemoryBuffer(const gfx::Size& size, gfx::BufferFormat format)
-      : size_(size), format_(format) {}
-  ~ScopedMappingGpuMemoryBuffer() override {
-    if (buffer_) {
-      buffer_->Unmap();
-    }
-  }
-
-  // ClientSharedImage::ScopedMapping:
-  base::span<uint8_t> GetMemoryForPlane(const uint32_t plane_index) override {
-    CHECK(buffer_);
-
-    size_t height_in_pixels;
-    size_t row_size_in_bytes;
-
-    CHECK(gfx::PlaneHeightForBufferFormatChecked(
-        Size().height(), Format(), plane_index, &height_in_pixels));
-    CHECK(gfx::RowSizeForBufferFormatChecked(Size().width(), Format(),
-                                             plane_index, &row_size_in_bytes));
-
-    // Note that the stride might be larger than the row size due to padding.
-    // For all rows other than the last, this is legal data for the client to
-    // access as it's part of the buffer.  However, the final row is not
-    // guaranteed to have padding (it's a system-dependent internal detail).
-    // Thus, the data that is legal for the client to access should *not*
-    // include any bytes beyond the actual end of the final row.
-    size_t span_length =
-        Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
-
-    // SAFETY: The underlying platform-specific buffer generation mechanisms
-    // guarantee that the buffer contains at least `span_length` bytes following
-    // the start of the plane, as that region is by definition the memory
-    // storing the data of the plane.
-    return UNSAFE_BUFFERS(base::span<uint8_t>(
-        reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
-  }
-  size_t Stride(const uint32_t plane_index) override {
-    CHECK(buffer_);
-    return buffer_->stride(plane_index);
-  }
-  gfx::Size Size() override { return size_; }
-  gfx::BufferFormat Format() override { return format_; }
-  bool IsSharedMemory() override {
-    CHECK(buffer_);
-    return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
-  }
-  bool Init(GpuMemoryBufferImpl* gpu_memory_buffer, bool is_already_mapped) {
-    if (!gpu_memory_buffer) {
-      LOG(ERROR) << "No GpuMemoryBuffer.";
-      return false;
-    }
-
-    if (!is_already_mapped && !gpu_memory_buffer->Map()) {
-      LOG(ERROR) << "Failed to map the buffer.";
-      return false;
-    }
-    buffer_ = gpu_memory_buffer;
-    return true;
-  }
-
- private:
-  // ScopedMappingGpuMemoryBuffer is essentially a wrapper around
-  // GpuMemoryBuffer for now for simplicity and will be removed later.
-  // TODO(crbug.com/40279377): Refactor/Rename GpuMemoryBuffer and its
-  // implementations  as the end goal after all clients using GMB are
-  // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
-  // removed.
-  // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of MotionMark).
-  RAW_PTR_EXCLUSION GpuMemoryBufferImpl* buffer_ = nullptr;
-  gfx::Size size_;
-  gfx::BufferFormat format_;
-};
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE)
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
@@ -235,7 +65,9 @@ bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
 // client (which will be gfx::EmptyBuffer if the client did not supply a
 // GMB/GMBHandle). Conceptually:
 // * On Mac the native buffer target is required if either (1) the client
-//   gave a native buffer or (2) the usages require a native buffer.
+//   gave a native buffer or (2) the usages require a native buffer. And this
+//   matters only when running on ANGLE OpenGL/CGL - in all other cases we use
+//   GL_TEXTURE_2D including with Graphite and on iOS (EAGL instead of CGL).
 // * On Ozone the native buffer target is required iff external sampling is
 //   being used, which is dictated by the format of the SharedImage. Note
 //   * Fuchsia does not support import of external images to GL for usage with
@@ -250,21 +82,22 @@ uint32_t ComputeTextureTargetForSharedImage(
     gfx::GpuMemoryBufferType client_gmb_type,
     scoped_refptr<SharedImageInterface> sii) {
   CHECK(sii);
-
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OZONE)
   return GL_TEXTURE_2D;
 #elif BUILDFLAG(IS_MAC)
-  // Check for IOSurfaces being used.
-  // NOTE: WebGPU usage on Mac results in SharedImages being backed by
-  // IOSurfaces.
-  gpu::SharedImageUsageSet usages_requiring_native_buffer =
+  // Check for IOSurfaces being used. We infer IOSurface based on scanout or
+  // WebGPU usage, but that's not strictly correct e.g. with Graphite, WebGL
+  // canvas back buffers will also use IOSurfaces always regardless of scanout.
+  // However, in those cases we would be using GL_TEXTURE_2D anyway due to ANGLE
+  // Metal (or Swiftshader for tests) being used.
+  // Note that iOS uses GL_TEXTURE_2D even though it uses IOSurfaces -
+  // GL_TEXTURE_RECTANGLE_ARB is in CGL which is Mac only.
+  constexpr gpu::SharedImageUsageSet kUsagesRequiringNativeBuffer =
       SHARED_IMAGE_USAGE_SCANOUT | SHARED_IMAGE_USAGE_WEBGPU_READ |
       SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-
-  bool uses_native_buffer =
+  const bool uses_native_buffer =
       GMBIsNative(client_gmb_type) ||
-      metadata.usage.HasAny(usages_requiring_native_buffer);
-
+      metadata.usage.HasAny(kUsagesRequiringNativeBuffer);
   return uses_native_buffer
              ? sii->GetCapabilities().texture_target_for_io_surfaces
              : GL_TEXTURE_2D;
@@ -273,11 +106,9 @@ uint32_t ComputeTextureTargetForSharedImage(
   if (!metadata.format.PrefersExternalSampler()) {
     return GL_TEXTURE_2D;
   }
-
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
   CHECK(GMBIsNative(client_gmb_type));
-
   // See the note at the top of this function wrt Fuchsia.
 #if BUILDFLAG(IS_FUCHSIA)
   return 0;
@@ -289,27 +120,112 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
+SharedImageExportResult::SharedImageExportResult(const SyncToken& sync_token)
+    : sync_token_(sync_token) {}
+
+ClientSharedImage::ScopedMapping::ScopedMapping(const gfx::Size& size,
+                                                viz::SharedImageFormat format)
+    : size_(size), format_(format) {}
+
+ClientSharedImage::ScopedMapping::~ScopedMapping() {
+  if (buffer_) {
+    buffer_->Unmap();
+  }
+}
+
+base::span<uint8_t> ClientSharedImage::ScopedMapping::GetMemoryForPlane(
+    const uint32_t plane_index) {
+  CHECK(buffer_);
+
+  size_t height_in_pixels = format_.GetPlaneSize(plane_index, Size()).height();
+  size_t row_size_in_bytes = viz::SharedMemoryRowSizeForSharedImageFormat(
+                                 format_, plane_index, Size().width())
+                                 .value();
+
+  CHECK(height_in_pixels);
+  CHECK(row_size_in_bytes);
+
+  // Note that the stride might be larger than the row size due to padding.
+  // For all rows other than the last, this is legal data for the client to
+  // access as it's part of the buffer.  However, the final row is not
+  // guaranteed to have padding (it's a system-dependent internal detail).
+  // Thus, the data that is legal for the client to access should *not*
+  // include any bytes beyond the actual end of the final row.
+  size_t span_length =
+      Stride(plane_index) * (height_in_pixels - 1) + row_size_in_bytes;
+#if BUILDFLAG(IS_OZONE)
+  // We are currently prevented from doing this tightening for
+  // NativePixmap-backed MappableBuffers by the fact that
+  // VideoFrame requires that the buffer returned from this method be of size
+  // that is equal to the size in its internal layout, which for NativePixmap is
+  // overridden to be the size of the plane stored in the GMB handle
+  // (https://source.chromium.org/chromium/chromium/src/+/main:media/base/video_frame.cc;drc=21e6d1583d1b5683f21556f6125b340d25a6b937;l=527).
+  // TODO(crbug.com/404905709): Eliminate that VideoFrame override and do
+  // tightening here for NativePixmap.
+  if (buffer_->GetType() == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+    span_length =
+        buffer_->CloneHandle().native_pixmap_handle().planes[plane_index].size;
+  }
+#endif
+
+  // SAFETY: The underlying platform-specific buffer generation mechanisms
+  // guarantee that the buffer contains at least `span_length` bytes following
+  // the start of the plane, as that region is by definition the memory
+  // storing the data of the plane.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(
+      reinterpret_cast<uint8_t*>(buffer_->memory(plane_index)), span_length));
+}
+
+size_t ClientSharedImage::ScopedMapping::Stride(const uint32_t plane_index) {
+  CHECK(buffer_);
+  return buffer_->stride(plane_index);
+}
+
+gfx::Size ClientSharedImage::ScopedMapping::Size() {
+  return size_;
+}
+
+bool ClientSharedImage::ScopedMapping::IsSharedMemory() {
+  CHECK(buffer_);
+  return buffer_->GetType() == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
+}
+
+bool ClientSharedImage::ScopedMapping::Init(MappableBuffer* mappable_buffer,
+                                            bool is_already_mapped) {
+  if (!mappable_buffer) {
+    LOG(ERROR) << "No MappableBuffer.";
+    return false;
+  }
+
+  if (!is_already_mapped && !mappable_buffer->Map()) {
+    LOG(ERROR) << "Failed to map the buffer.";
+    return false;
+  }
+  buffer_ = mappable_buffer;
+  return true;
+}
+
 // static
-std::unique_ptr<GpuMemoryBufferImpl>
-ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
+std::unique_ptr<MappableBuffer>
+ClientSharedImage::CreateMappableBufferFromHandle(
     gfx::GpuMemoryBufferHandle handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     gpu::SharedImageUsageSet si_usage,
-    GpuMemoryBufferImpl::CopyNativeBufferToShMemCallback
+    MappableBuffer::CopyNativeBufferToShMemCallback
         copy_native_buffer_to_shmem_callback,
     scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   switch (handle.type) {
     case gfx::SHARED_MEMORY_BUFFER:
-      return GpuMemoryBufferImplSharedMemory::CreateFromHandle(
-          std::move(handle), size, format, usage);
-#if BUILDFLAG(IS_MAC)
+      return MappableBufferSharedMemory::CreateFromHandle(std::move(handle),
+                                                          size, format);
+#if BUILDFLAG(IS_APPLE)
     case gfx::IO_SURFACE_BUFFER: {
       bool is_read_only_cpu_usage =
           si_usage.Has(SHARED_IMAGE_USAGE_CPU_READ) &&
           !si_usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY);
-      return GpuMemoryBufferImplIOSurface::CreateFromHandle(
+      return MappableBufferIOSurface::CreateFromHandle(
           std::move(handle), size, format, is_read_only_cpu_usage);
     }
 #endif
@@ -318,46 +234,38 @@ ClientSharedImage::CreateGpuMemoryBufferImplFromHandle(
       // NOTE: This is not used beyond the lifetime of CreateFromHandle().
       auto client_native_pixmap_factory =
           ui::CreateClientNativePixmapFactoryOzone();
-      return GpuMemoryBufferImplNativePixmap::CreateFromHandle(
+      return MappableBufferNativePixmap::CreateFromHandle(
           client_native_pixmap_factory.get(), std::move(handle), size, format,
           usage);
     }
 #endif
 #if BUILDFLAG(IS_WIN)
     case gfx::DXGI_SHARED_HANDLE:
-      return GpuMemoryBufferImplDXGI::CreateFromHandle(
+      return MappableBufferDXGI::CreateFromHandle(
           std::move(handle), size, format,
           std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
 #if BUILDFLAG(IS_ANDROID)
     case gfx::ANDROID_HARDWARE_BUFFER:
-      return nullptr;
+      return MappableBufferAHB::CreateFromHandle(
+          std::move(handle), size, format,
+          std::move(copy_native_buffer_to_shmem_callback), std::move(pool));
 #endif
     default:
       // TODO(dcheng): Remove default case (https://crbug.com/676224).
-      NOTREACHED() << gfx::BufferFormatToString(format) << ", "
+      NOTREACHED() << format.ToString() << ", "
                    << gfx::BufferUsageToString(usage);
   }
 }
 
 // static
 std::unique_ptr<ClientSharedImage::ScopedMapping>
-ClientSharedImage::ScopedMapping::Create(
-    SharedImageMetadata metadata,
-    base::WritableSharedMemoryMapping* mapping) {
-  return std::make_unique<ScopedMappingSharedMemoryMapping>(metadata, mapping);
-}
-
-// static
-std::unique_ptr<ClientSharedImage::ScopedMapping>
 ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
-                                         GpuMemoryBufferImpl* gpu_memory_buffer,
+                                         MappableBuffer* mappable_buffer,
                                          bool is_already_mapped) {
-  auto scoped_mapping = base::WrapUnique(new ScopedMappingGpuMemoryBuffer(
-      metadata.size,
-      viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-          metadata.format)));
-  if (!scoped_mapping->Init(gpu_memory_buffer, is_already_mapped)) {
+  auto scoped_mapping =
+      base::WrapUnique(new ScopedMapping(metadata.size, metadata.format));
+  if (!scoped_mapping->Init(mappable_buffer, is_already_mapped)) {
     LOG(ERROR) << "ScopedMapping init failed.";
     return nullptr;
   }
@@ -367,23 +275,23 @@ ClientSharedImage::ScopedMapping::Create(SharedImageMetadata metadata,
 // static
 void ClientSharedImage::ScopedMapping::StartCreateAsync(
     SharedImageMetadata metadata,
-    GpuMemoryBufferImpl* gpu_memory_buffer,
+    MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb) {
-  gpu_memory_buffer->MapAsync(
+  mappable_buffer->MapAsync(
       base::BindOnce(&ClientSharedImage::ScopedMapping::FinishCreateAsync,
-                     metadata, gpu_memory_buffer, std::move(result_cb)));
+                     metadata, mappable_buffer, std::move(result_cb)));
 }
 
 // static
 void ClientSharedImage::ScopedMapping::FinishCreateAsync(
     SharedImageMetadata metadata,
-    GpuMemoryBufferImpl* gpu_memory_buffer,
+    MappableBuffer* mappable_buffer,
     base::OnceCallback<void(std::unique_ptr<ScopedMapping>)> result_cb,
     bool success) {
   std::unique_ptr<ClientSharedImage::ScopedMapping> mapping;
   if (success) {
     mapping = ClientSharedImage::ScopedMapping::Create(
-        metadata, gpu_memory_buffer, /*is_already_mapped=*/true);
+        metadata, mappable_buffer, /*is_already_mapped=*/true);
   }
   std::move(result_cb).Run(std::move(mapping));
 }
@@ -423,7 +331,8 @@ ClientSharedImage::ClientSharedImage(
                         sync_token,
                         sii_holder,
                         gfx::SHARED_MEMORY_BUFFER) {
-  shared_memory_mapping_ = std::move(mapping);
+  mappable_buffer_ = MappableBufferSharedMemory::CreateFromMapping(
+      std::move(mapping), metadata_.size, metadata_.format);
   is_software_ = true;
 }
 
@@ -456,13 +365,12 @@ ClientSharedImage::ClientSharedImage(
       creation_sync_token_(exported_si.creation_sync_token_),
       buffer_usage_(exported_si.buffer_usage_),
       sii_holder_(std::move(sii_holder)),
-      texture_target_(exported_si.texture_target_) {
+      texture_target_(exported_si.texture_target_),
+      is_software_(exported_si.is_software_) {
   if (exported_si.buffer_handle_) {
-    gpu_memory_buffer_ = CreateGpuMemoryBufferImplFromHandle(
+    mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            metadata_.format),
-        exported_si.buffer_usage_.value(), metadata_.usage,
+        metadata_.format, exported_si.buffer_usage_.value(), metadata_.usage,
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -480,13 +388,12 @@ ClientSharedImage::ClientSharedImage(ExportedSharedImage exported_si)
       debug_label_(exported_si.debug_label_),
       creation_sync_token_(exported_si.creation_sync_token_),
       buffer_usage_(exported_si.buffer_usage_),
-      texture_target_(exported_si.texture_target_) {
+      texture_target_(exported_si.texture_target_),
+      is_software_(exported_si.is_software_) {
   if (exported_si.buffer_handle_) {
-    gpu_memory_buffer_ = CreateGpuMemoryBufferImplFromHandle(
+    mappable_buffer_ = CreateMappableBufferFromHandle(
         std::move(exported_si.buffer_handle_.value()), metadata_.size,
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            metadata_.format),
-        exported_si.buffer_usage_.value(), metadata_.usage,
+        metadata_.format, exported_si.buffer_usage_.value(), metadata_.usage,
         base::BindRepeating(
             &ClientSharedImage::CopyNativeGmbToSharedMemoryAsync,
             base::Unretained(this)));
@@ -508,11 +415,10 @@ ClientSharedImage::ClientSharedImage(
       metadata_(info.meta),
       debug_label_(info.debug_label),
       creation_sync_token_(sync_token),
-      gpu_memory_buffer_(CreateGpuMemoryBufferImplFromHandle(
+      mappable_buffer_(CreateMappableBufferFromHandle(
           std::move(handle_info.handle),
           metadata_.size,
-          viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-              metadata_.format),
+          metadata_.format,
           handle_info.buffer_usage,
           info.meta.usage,
           base::BindRepeating(
@@ -523,9 +429,9 @@ ClientSharedImage::ClientSharedImage(
       sii_holder_(std::move(sii_holder)) {
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
-  CHECK(gpu_memory_buffer_);
+  CHECK(mappable_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
-      metadata_, gpu_memory_buffer_->GetType(), sii_holder_->Get());
+      metadata_, mappable_buffer_->GetType(), sii_holder_->Get());
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
@@ -548,14 +454,12 @@ ClientSharedImage::~ClientSharedImage() {
 
 size_t ClientSharedImage::GetStrideForVideoFrame(uint32_t plane_index) const {
   if (async_map_invoked_callback_for_testing_) {
-    return gfx::RowSizeForBufferFormat(
-        size().width(),
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            format()),
-        plane_index);
+    return viz::SharedMemoryRowSizeForSharedImageFormat(format(), plane_index,
+                                                        size().width())
+        .value();
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->stride(plane_index);
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->stride(plane_index);
 }
 
 // Returns whether the underlying resource is shared memory without needing to
@@ -565,8 +469,8 @@ bool ClientSharedImage::IsSharedMemoryForVideoFrame() const {
   if (async_map_invoked_callback_for_testing_) {
     return true;
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->GetType() ==
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->GetType() ==
          gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER;
 }
 
@@ -574,19 +478,14 @@ bool ClientSharedImage::AsyncMappingIsNonBlocking() const {
   if (async_map_invoked_callback_for_testing_) {
     return true;
   }
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->AsyncMappingIsNonBlocking();
+  CHECK(mappable_buffer_);
+  return mappable_buffer_->AsyncMappingIsNonBlocking();
 }
 
 std::unique_ptr<ClientSharedImage::ScopedMapping> ClientSharedImage::Map() {
-  std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping;
-  if (shared_memory_mapping_.IsValid()) {
-    scoped_mapping = ScopedMapping::Create(metadata_, &shared_memory_mapping_);
-  } else {
-    scoped_mapping = ScopedMapping::Create(metadata_, gpu_memory_buffer_.get(),
-                                           /*is_already_mapped=*/false);
-  }
-
+  std::unique_ptr<ClientSharedImage::ScopedMapping> scoped_mapping =
+      ScopedMapping::Create(metadata_, mappable_buffer_.get(),
+                            /*is_already_mapped=*/false);
   if (!scoped_mapping) {
     LOG(ERROR) << "Unable to create ScopedMapping";
   }
@@ -598,10 +497,7 @@ void ClientSharedImage::FinishMapAsyncForTests(
     bool success) {
   std::unique_ptr<ScopedMapping> mapping;
   if (success) {
-    mapping = std::make_unique<ScopedMappingForTests>(
-        size(),
-        viz::SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-            format()));
+    mapping = Map();
   }
   std::move(result_cb).Run(std::move(mapping));
 }
@@ -619,14 +515,16 @@ void ClientSharedImage::MapAsync(
     return;
   }
 
-  ScopedMapping::StartCreateAsync(metadata_, gpu_memory_buffer_.get(),
+  ScopedMapping::StartCreateAsync(metadata_, mappable_buffer_.get(),
                                   std::move(result_cb));
 }
 
 gfx::GpuMemoryBufferHandle ClientSharedImage::CloneGpuMemoryBufferHandle()
     const {
-  CHECK(gpu_memory_buffer_);
-  return gpu_memory_buffer_->CloneHandle();
+  // Supported only if this ClientSI is backed by a MappableBuffer that is
+  // itself backed by a GMBHandle.
+  CHECK(mappable_buffer_ && !is_software_);
+  return mappable_buffer_->CloneHandle();
 }
 
 uint32_t ClientSharedImage::GetTextureTarget() {
@@ -650,17 +548,24 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::MakeUnowned() {
 ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
   if (creation_sync_token_.HasData() &&
       !creation_sync_token_.verified_flush()) {
-    sii_holder_->Get()->VerifySyncToken(creation_sync_token_);
+    auto sii = sii_holder_->Get();
+    // TODO(crbug.com/40286368): We should let ClientSharedImage hold a strong
+    // SharedImageInterface reference to ensure `sii` is always valid.
+    if (sii) {
+      sii->VerifySyncToken(creation_sync_token_);
+    } else {
+      creation_sync_token_ = gpu::SyncToken();
+    }
   }
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle;
   std::optional<gfx::BufferUsage> buffer_usage;
-  if (with_buffer_handle && gpu_memory_buffer_) {
-    buffer_handle = gpu_memory_buffer_->CloneHandle();
+  if (with_buffer_handle && mappable_buffer_) {
+    buffer_handle = mappable_buffer_->CloneHandle();
     buffer_usage = buffer_usage_.value();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
                              debug_label_, std::move(buffer_handle),
-                             buffer_usage, texture_target_);
+                             buffer_usage, texture_target_, is_software_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
@@ -717,10 +622,8 @@ void ClientSharedImage::EndAccess(bool readonly) {
 
 std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
     gles2::GLES2Interface* gl) {
-  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel", debug_label_);
-  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", metadata_.usage);
-  DUMP_WILL_BE_CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_READ) ||
-                     metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
+  CHECK(metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_READ) ||
+        metadata_.usage.Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
   return base::WrapUnique(new SharedImageTexture(gl, this));
 }
 
@@ -732,11 +635,7 @@ std::unique_ptr<RasterScopedAccess> ClientSharedImage::BeginRasterAccess(
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_WRITE) ||
       metadata_.usage.Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
-  if (!has_raster_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel", debug_label_);
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", metadata_.usage);
-    DUMP_WILL_BE_CHECK(has_raster_usage);
-  }
+  CHECK(has_raster_usage);
   return base::WrapUnique(
       new RasterScopedAccess(raster_interface, this, sync_token, readonly));
 }
@@ -750,8 +649,8 @@ ClientSharedImage::BeginGLAccessForCopySharedImage(InterfaceBase* gl_interface,
 
 #if BUILDFLAG(IS_WIN)
 void ClientSharedImage::SetUsePreMappedMemory(bool use_premapped_memory) {
-  CHECK(gpu_memory_buffer_);
-  gpu_memory_buffer_->SetUsePreMappedMemory(use_premapped_memory);
+  CHECK(mappable_buffer_);
+  mappable_buffer_->SetUsePreMappedMemory(use_premapped_memory);
 }
 #endif
 
@@ -805,25 +704,26 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     const SharedImageMetadata& metadata,
     uint32_t texture_target) {
-  return ImportUnowned(ExportedSharedImage(
-      Mailbox::Generate(), metadata, SyncToken(), "CSICreateForTesting",
-      std::nullopt, std::nullopt, texture_target));
+  return CreateForTesting(Mailbox::Generate(), metadata,  // IN-TEST
+                          SyncToken(), texture_target);
 }
 
 // static
-scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+scoped_refptr<ClientSharedImage>
+ClientSharedImage::CreateForTesting(  // IN-TEST
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
-    std::unique_ptr<GpuMemoryBufferImpl> gpu_memory_buffer,
-    gfx::BufferUsage buffer_usage,
-    scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
-  SharedImageInfo info(metadata, "CSICreateForTesting");
-  auto client_si = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, info, sync_token, sii_holder, gpu_memory_buffer->GetType());
-  client_si->gpu_memory_buffer_ = std::move(gpu_memory_buffer);
-  client_si->buffer_usage_ = buffer_usage;
-  return client_si;
+    uint32_t texture_target,
+    bool is_software) {
+  gpu::ExportedSharedImage exported_shared_image = gpu::ExportedSharedImage(
+      mailbox, metadata, sync_token, "CSICreateForTesting",
+      /*buffer_handle=*/std::nullopt, /*buffer_usage=*/std::nullopt,
+      texture_target, is_software);
+  auto shared_image =
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image));
+  shared_image->is_software_ = is_software;
+  return shared_image;
 }
 
 // static
@@ -837,8 +737,22 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
     scoped_refptr<SharedImageInterfaceHolder> sii_holder) {
   SharedImageInfo info(metadata, "CSICreateForTesting");
 
+  gfx::GpuMemoryBufferHandle handle;
+  MappableBufferSharedMemory::AllocateForTesting(
+      info.meta.size, info.meta.format, buffer_usage, &handle);
+  auto mappable_buffer = MappableBufferSharedMemory::CreateFromHandle(
+      std::move(handle), info.meta.size, info.meta.format);
+
+  // Since the |mappable_buffer| here is always a shared memory, clear the
+  // external sampler prefs if it is already set by client.
+  // https://issues.chromium.org/339546249.
+  if (info.meta.format.PrefersExternalSampler()) {
+    info.meta.format.ClearPrefersExternalSampler();
+  }
+
   auto client_si = base::MakeRefCounted<ClientSharedImage>(
       mailbox, info, sync_token, sii_holder, gfx::SHARED_MEMORY_BUFFER);
+  client_si->mappable_buffer_ = std::move(mappable_buffer);
   client_si->async_map_invoked_callback_for_testing_ = callback;
   client_si->premapped_for_testing_ = premapped;
   client_si->buffer_usage_ = buffer_usage;
@@ -903,14 +817,16 @@ ExportedSharedImage::ExportedSharedImage(
     std::string debug_label,
     std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
     std::optional<gfx::BufferUsage> buffer_usage,
-    uint32_t texture_target)
+    uint32_t texture_target,
+    bool is_software)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
       debug_label_(debug_label),
       buffer_handle_(std::move(buffer_handle)),
       buffer_usage_(buffer_usage),
-      texture_target_(texture_target) {}
+      texture_target_(texture_target),
+      is_software_(is_software) {}
 
 ExportedSharedImage ExportedSharedImage::Clone() const {
   std::optional<gfx::GpuMemoryBufferHandle> handle = std::nullopt;
@@ -919,7 +835,7 @@ ExportedSharedImage ExportedSharedImage::Clone() const {
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
                              debug_label_, std::move(handle), buffer_usage_,
-                             texture_target_);
+                             texture_target_, is_software_);
 }
 
 SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
@@ -972,15 +888,10 @@ SharedImageTexture::~SharedImageTexture() {
 std::unique_ptr<SharedImageTexture::ScopedAccess>
 SharedImageTexture::BeginAccess(const SyncToken& sync_token, bool readonly) {
   CHECK(!has_active_access_);
-  SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                            shared_image_->debug_label());
-  SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage", shared_image_->usage());
   if (readonly) {
-    DUMP_WILL_BE_CHECK(
-        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_READ));
+    CHECK(shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_READ));
   } else {
-    DUMP_WILL_BE_CHECK(
-        shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
+    CHECK(shared_image_->usage().Has(SHARED_IMAGE_USAGE_GLES2_WRITE));
   }
   has_active_access_ = true;
   shared_image_->BeginAccess(readonly);
@@ -1003,23 +914,15 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
   raster_interface_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-  bool has_read_usage =
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
-  bool has_write_usage =
-      shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_WRITE);
-  if (readonly && !has_read_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                              shared_image_->debug_label());
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage",
-                            shared_image_->usage());
-    DUMP_WILL_BE_CHECK(has_read_usage);
-  } else if (!readonly && !has_write_usage) {
-    SCOPED_CRASH_KEY_STRING32("ClientSharedImage", "DebugLabel",
-                              shared_image_->debug_label());
-    SCOPED_CRASH_KEY_NUMBER("ClientSharedImage", "Usage",
-                            shared_image_->usage());
-    DUMP_WILL_BE_CHECK(has_write_usage);
+  if (readonly) {
+    bool has_read_usage =
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE);
+    CHECK(has_read_usage);
+  } else {
+    bool has_write_usage =
+        shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_WRITE);
+    CHECK(has_write_usage);
   }
 }
 
@@ -1098,8 +1001,74 @@ const wgpu::dawn::wire::client::Texture& WebGPUTextureScopedAccess::texture() {
   return *texture_.get();
 }
 
+void WebGPUTextureScopedAccess::ClearContext() {
+  webgpu_ = nullptr;
+}
+
 void WebGPUTextureScopedAccess::SetNeedsPresent(bool needs_present) {
   needs_present_ = needs_present;
+}
+
+std::unique_ptr<WebGPUBufferScopedAccess>
+ClientSharedImage::BeginWebGPUBufferAccess(
+    webgpu::WebGPUInterface* webgpu,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::BufferDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags) {
+  return base::WrapUnique(new WebGPUBufferScopedAccess(
+      webgpu, this, sync_token, device, desc, usage, mailbox_flags));
+}
+
+WebGPUBufferScopedAccess::WebGPUBufferScopedAccess(
+    webgpu::WebGPUInterface* webgpu,
+    ClientSharedImage* shared_image,
+    const SyncToken& sync_token,
+    const wgpu::dawn::wire::client::Device& device,
+    const wgpu::dawn::wire::client::BufferDescriptor& desc,
+    uint64_t usage,
+    webgpu::MailboxFlags mailbox_flags)
+    : webgpu_(webgpu), shared_image_(shared_image) {
+  // Wait on any work using the buffer.
+  webgpu_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+
+  webgpu::ReservedBuffer reservation = webgpu_->ReserveBuffer(
+      device.Get(), &static_cast<const WGPUBufferDescriptor&>(desc));
+  DCHECK(reservation.buffer);
+
+  buffer_id_ = reservation.id;
+  buffer_generation_ = reservation.generation;
+
+  // We currently only use storage buffers. Which are always read-write.
+  shared_image_->BeginAccess(false);
+
+  buffer_ = base::WrapUnique(
+      new wgpu::Buffer(wgpu::Buffer::Acquire(reservation.buffer)));
+
+  webgpu_->AssociateMailboxForBuffer(
+      reservation.deviceId, reservation.deviceGeneration, buffer_id_,
+      buffer_generation_, static_cast<uint64_t>(desc.usage),
+      shared_image_->mailbox());
+}
+
+WebGPUBufferScopedAccess::~WebGPUBufferScopedAccess() = default;
+
+SyncToken WebGPUBufferScopedAccess::EndAccess(
+    std::unique_ptr<WebGPUBufferScopedAccess> scoped_access) {
+  webgpu::WebGPUInterface* webgpu = scoped_access->webgpu_;
+  SyncToken finished_access_token;
+  webgpu->DissociateMailboxForBuffer(scoped_access->buffer_id_,
+                                     scoped_access->buffer_generation_);
+  scoped_access->shared_image_->EndAccess(false);
+
+  // SyncToken must be verified to allow use from another pipe.
+  webgpu->GenSyncTokenCHROMIUM(finished_access_token.GetData());
+  return finished_access_token;
+}
+
+const wgpu::Buffer& WebGPUBufferScopedAccess::buffer() {
+  return *buffer_.get();
 }
 
 }  // namespace gpu

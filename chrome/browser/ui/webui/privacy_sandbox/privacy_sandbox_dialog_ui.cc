@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
@@ -291,7 +292,7 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
           kPrivacyPolicyFunc));
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
-  if (url.query().find("debug") != std::string::npos) {
+  if (url.GetQuery().find("debug") != std::string::npos) {
     // Not intended to be hooked to anything. The dialog will not initialize
     // it so we force it here.
     InitializeForDebug(source);

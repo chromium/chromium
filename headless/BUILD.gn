@@ -207,6 +207,8 @@ inspector_protocol_generate("protocol_sources") {
   outputs = [
     "lib/browser/protocol/browser.cc",
     "lib/browser/protocol/browser.h",
+    "lib/browser/protocol/emulation.cc",
+    "lib/browser/protocol/emulation.h",
     "lib/browser/protocol/headless_experimental.cc",
     "lib/browser/protocol/headless_experimental.h",
     "lib/browser/protocol/page.cc",
@@ -259,6 +261,7 @@ component("headless_non_renderer") {
     "lib/browser/headless_devtools_manager_delegate.h",
     "lib/browser/headless_permission_manager.cc",
     "lib/browser/headless_permission_manager.h",
+    "lib/browser/headless_platform_delegate.h",
     "lib/browser/headless_platform_event_source.cc",
     "lib/browser/headless_platform_event_source.h",
     "lib/browser/headless_request_context_manager.cc",
@@ -277,6 +280,8 @@ component("headless_non_renderer") {
     "lib/browser/protocol/browser_handler.cc",
     "lib/browser/protocol/browser_handler.h",
     "lib/browser/protocol/domain_handler.h",
+    "lib/browser/protocol/emulation_handler.cc",
+    "lib/browser/protocol/emulation_handler.h",
     "lib/browser/protocol/headless_devtools_session.cc",
     "lib/browser/protocol/headless_devtools_session.h",
     "lib/browser/protocol/headless_handler.cc",
@@ -300,8 +305,6 @@ component("headless_non_renderer") {
     "public/headless_export.h",
     "public/headless_web_contents.h",
     "public/headless_window_state.h",
-    "public/internal/message_dispatcher.h",
-    "public/internal/value_conversions.h",
     "public/switches.h",
   ]
 
@@ -309,7 +312,7 @@ component("headless_non_renderer") {
 
   if (is_mac) {
     sources += [
-      "lib/browser/headless_browser_impl_mac.mm",
+      "lib/browser/headless_platform_delegate_mac.mm",
       "lib/browser/headless_screen_mac.h",
       "lib/browser/headless_screen_mac.mm",
       "lib/browser/headless_shell_application_mac.h",
@@ -324,9 +327,9 @@ component("headless_non_renderer") {
 
   if (use_aura) {
     sources += [
-      "lib/browser/headless_browser_impl_aura.cc",
       "lib/browser/headless_focus_client.cc",
       "lib/browser/headless_focus_client.h",
+      "lib/browser/headless_platform_delegate_aura.cc",
       "lib/browser/headless_window_parenting_client.cc",
       "lib/browser/headless_window_parenting_client.h",
       "lib/browser/headless_window_tree_host.cc",
@@ -356,27 +359,31 @@ component("headless_non_renderer") {
     "//build:branding_buildflags",
     "//build/config/linux/dbus:buildflags",
     "//components/cookie_config",
-    "//components/crash/core/common:common",
+    "//components/crash/core/common",
     "//components/devtools/devtools_pipe",
     "//components/embedder_support",
     "//components/embedder_support:user_agent",
     "//components/embedder_support/origin_trials",
     "//components/headless/clipboard",
     "//components/headless/command_handler:switches",
+    "//components/headless/console_message_logger",
     "//components/headless/display_util",
     "//components/headless/screen_info",
     "//components/headless/select_file_dialog",
     "//components/keyed_service/content",
     "//components/origin_trials:browser",
     "//components/origin_trials:common",
+    "//components/os_crypt/async/browser",
     "//components/os_crypt/sync",
     "//components/policy:generated",
     "//components/policy/content",
+    "//components/policy/content:safe_sites_navigation_throttle",
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/security_state/core",
+    "//components/user_prefs",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",
@@ -404,6 +411,8 @@ component("headless_non_renderer") {
       "lib/browser/policy/headless_browser_policy_connector.h",
       "lib/browser/policy/headless_policies.cc",
       "lib/browser/policy/headless_policies.h",
+      "lib/browser/policy/headless_policy_blocklist_service_factory.cc",
+      "lib/browser/policy/headless_policy_blocklist_service_factory.h",
       "lib/browser/policy/headless_prefs.cc",
       "lib/browser/policy/headless_prefs.h",
     ]
@@ -433,7 +442,7 @@ component("headless_non_renderer") {
       "//components/printing/browser/headless",
       "//components/printing/browser/print_to_pdf",
       "//components/printing/common:mojo_interfaces",
-      "//components/printing/renderer:renderer",
+      "//components/printing/renderer",
       "//components/services/print_compositor",
       "//components/services/print_compositor/public/mojom",
       "//printing",
@@ -490,11 +499,29 @@ component("headless_non_renderer") {
   }
 
   if (is_win) {
-    deps += [ "//sandbox" ]
+    deps += [
+      "//components/os_crypt/async/browser:dpapi_key_provider",
+      "//sandbox",
+    ]
   }
 
   if (is_linux || is_chromeos) {
     data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+  }
+
+  if (is_linux && use_dbus) {
+    deps += [
+      "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+      "//components/password_manager/core/browser:password_switches",
+    ]
+  }
+
+  if (is_apple) {
+    deps += [ "//components/os_crypt/async/browser:keychain_key_provider" ]
+  }
+
+  if (is_posix && !is_apple) {
+    deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
   }
 
   # Normally set to false (see build/args/headless.gn), but we can optionally
@@ -540,7 +567,11 @@ component("headless_non_renderer") {
   }
 
   if (use_dbus) {
-    deps += [ "//device/bluetooth" ]
+    deps += [
+      "//components/dbus",
+      "//dbus",
+      "//device/bluetooth",
+    ]
   }
 
   configs += [ ":inside_headless_component" ]
@@ -575,7 +606,7 @@ test("headless_unittests") {
     "//components/embedder_support:user_agent",
     "//components/security_state/content",
     "//content/public/app",
-    "//content/public/child:child",
+    "//content/public/child",
     "//content/public/common",
     "//device/bluetooth/public/cpp",
     "//testing/gmock",
@@ -705,6 +736,7 @@ test("headless_browsertests") {
   deps = [
     ":headless_shell_lib",
     "//base",
+    "//build/config/linux/dbus:buildflags",
     "//cc:test_support",
     "//components/devtools/simple_devtools_protocol_client",
     "//components/embedder_support:user_agent",
@@ -714,6 +746,8 @@ test("headless_browsertests") {
     "//components/headless/test:shared_test",
     "//components/infobars/content",
     "//components/infobars/core",
+    "//components/os_crypt/common:switches",
+    "//components/password_manager/core/browser:password_switches",
     "//components/policy/core/browser",
     "//components/security_state/content",
     "//components/version_info",
@@ -770,6 +804,10 @@ test("headless_browsertests") {
   }
 
   configs += [ ":headless_defines_config" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_win) {
@@ -784,10 +822,11 @@ if (is_win) {
       ":headless_non_renderer",
       "//base/version_info",
       "//build:branding_buildflags",
-      "//components/crash/core/app:app",
+      "//components/crash/core/app",
       "//components/crash/core/app:run_as_crashpad_handler",
       "//components/devtools/simple_devtools_protocol_client",
       "//components/embedder_support",
+      "//components/os_crypt/common:switches",
       "//content:sandbox_helper_win",
       "//content/public/app",
       "//content/public/browser",
@@ -803,7 +842,7 @@ if (is_win) {
       ]
     }
     if (enable_printing) {
-      deps += [ "//components/printing/browser/headless:headless" ]
+      deps += [ "//components/printing/browser/headless" ]
     }
     if (headless_enable_commands) {
       deps += [ "//components/headless/command_handler" ]
@@ -837,12 +876,13 @@ static_library("headless_shell_lib") {
     "//build:branding_buildflags",
     "//components/devtools/simple_devtools_protocol_client",
     "//components/embedder_support",
+    "//components/os_crypt/common:switches",
     "//components/policy/content",
     "//components/security_state/content",
     "//content",
     "//content/public/app",
     "//content/public/browser",
-    "//content/public/child:child",
+    "//content/public/child",
     "//content/public/common",
     "//content/public/utility",
     "//printing/buildflags",
@@ -865,7 +905,7 @@ static_library("headless_shell_lib") {
   if (enable_printing) {
     deps += [
       "//components/printing/browser",
-      "//components/printing/browser/headless:headless",
+      "//components/printing/browser/headless",
       "//components/printing/renderer",
       "//components/services/print_compositor",
       "//components/services/print_compositor/public/mojom",
@@ -891,10 +931,6 @@ static_library("headless_shell_lib") {
       "//content:sandbox_helper_win",
       "//sandbox",
     ]
-  }
-
-  if (is_mac) {
-    deps += [ "//components/os_crypt/sync" ]
   }
 
   if (is_win || (is_posix && !is_mac)) {

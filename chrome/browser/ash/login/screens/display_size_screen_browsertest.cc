@@ -72,8 +72,7 @@ class DisplaySizeScreenTest : public OobeBaseTest {
   }
 
   std::vector<float> GetAvailableSizes() {
-    const auto display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const auto display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     const auto& info =
         ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
     auto factors = display::GetDisplayZoomFactors(info.display_modes()[0]);
@@ -81,8 +80,7 @@ class DisplaySizeScreenTest : public OobeBaseTest {
   }
 
   int GetCurrentSizeIndex() {
-    const auto display_id =
-        display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    const auto display_id = display::Screen::Get()->GetPrimaryDisplay().id();
     const auto& info =
         ash::Shell::Get()->display_manager()->GetDisplayInfo(display_id);
     float current_size = info.zoom_factor();

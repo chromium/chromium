@@ -69,7 +69,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
       const expectedOrigin = mockData[index]!.origin;
       const toastText = testElement.i18n(stringId, expectedOrigin);
       assertEquals(
-          toastText, testElement.$.undoNotification.textContent!.trim());
+          toastText, testElement.$.undoNotification.textContent.trim());
     }
   }
 
@@ -234,11 +234,11 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
       assertEquals(
           mockData[i]!.origin,
           entries[i]!.querySelector(
-                         '.site-representation')!.textContent!.trim());
+                         '.site-representation')!.textContent.trim());
 
       assertEquals(
           mockData[i]!.notificationInfoString,
-          entries[i]!.querySelector('.cr-secondary-text')!.textContent!.trim());
+          entries[i]!.querySelector('.cr-secondary-text')!.textContent.trim());
     }
   });
 

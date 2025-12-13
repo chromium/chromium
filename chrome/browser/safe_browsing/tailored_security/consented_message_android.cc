@@ -71,7 +71,8 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
     bool enable,
     base::OnceClosure dismiss_callback,
     bool is_requested_by_synced_esb)
-    : web_contents_(web_contents),
+    : content::WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       window_android_(web_contents->GetTopLevelNativeWindow()),
       dismiss_callback_(std::move(dismiss_callback)),
       is_enable_message_(enable),
@@ -167,6 +168,12 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
 TailoredSecurityConsentedModalAndroid::
     ~TailoredSecurityConsentedModalAndroid() {
   DismissMessageInternal(messages::DismissReason::UNKNOWN);
+}
+
+void TailoredSecurityConsentedModalAndroid::WebContentsDestroyed() {
+  // Prevents crash by clearing the pointer before the WebContents is fully
+  // destroyed.
+  web_contents_ = nullptr;
 }
 
 void TailoredSecurityConsentedModalAndroid::DismissMessageInternal(

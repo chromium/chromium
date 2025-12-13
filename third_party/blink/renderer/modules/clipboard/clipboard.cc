@@ -37,7 +37,7 @@ Clipboard::Clipboard(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
-    ClipboardUnsanitizedFormats* formats,
+    ClipboardReadOptions* options,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
   LocalFrame* local_frame = window ? window->GetFrame() : nullptr;
@@ -47,7 +47,7 @@ ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
   }
 
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         formats, exception_state);
+                                         options, exception_state);
 }
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,
@@ -68,7 +68,8 @@ void Clipboard::AddedEventListener(
     RegisteredEventListener& registered_listener) {
   EventTarget::AddedEventListener(event_type, registered_listener);
 
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
       event_type != event_type_names::kClipboardchange) {
     return;
   }
@@ -94,7 +95,8 @@ void Clipboard::RemovedEventListener(
     const RegisteredEventListener& registered_listener) {
   EventTarget::RemovedEventListener(event_type, registered_listener);
 
-  if (!base::FeatureList::IsEnabled(features::kClipboardChangeEvent) ||
+  if (!RuntimeEnabledFeatures::ClipboardChangeEventEnabled(
+          GetExecutionContext()) ||
       event_type != event_type_names::kClipboardchange) {
     return;
   }

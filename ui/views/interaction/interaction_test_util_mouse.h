@@ -17,7 +17,7 @@
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace views {
 
@@ -109,7 +109,7 @@ class InteractionTestUtilMouse {
   //    - Moves without a finger down affect the next tap input but do not send
   //      events.
   //
-  // To use this in an InteractiveViewsTest or InteractiveBrowserTest, use the
+  // To use this in an InteractiveViewsTest* or InteractiveBrowserTest*, use the
   // following syntax:
   //
   //   Check([this](){ return test_impl().mouse_util().SetTouchMode(true); })

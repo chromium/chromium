@@ -4,9 +4,15 @@
 
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+}
+
+source_set("pref_names") {
+  sources = [ "pref_names.h" ]
+  public_deps = [ "//build:branding_buildflags" ]
 }
 
 static_library("ntp_tiles") {
@@ -18,7 +24,10 @@ static_library("ntp_tiles") {
     "custom_links_manager_impl.h",
     "custom_links_store.cc",
     "custom_links_store.h",
-    "deleted_tile_type.h",
+    "custom_links_util.h",
+    "enterprise/enterprise_shortcut.cc",
+    "enterprise/enterprise_shortcut.h",
+    "enterprise/enterprise_shortcuts_manager.h",
     "features.cc",
     "features.h",
     "icon_cacher.h",
@@ -35,12 +44,12 @@ static_library("ntp_tiles") {
     "popular_sites.h",
     "popular_sites_impl.cc",
     "popular_sites_impl.h",
-    "pref_names.h",
     "section_type.h",
     "switches.cc",
     "switches.h",
     "tile_source.h",
     "tile_title_source.h",
+    "tile_type.h",
     "tile_visual_type.h",
     "webui/ntp_tiles_internals_message_handler.cc",
     "webui/ntp_tiles_internals_message_handler.h",
@@ -51,9 +60,11 @@ static_library("ntp_tiles") {
   public_deps = [
     "//base",
     "//components/history/core/browser",
-    "//components/ntp_tiles/webui/resources:resources",
+    "//components/ntp_tiles/webui/resources",
   ]
   deps = [
+    ":mojo_bindings",
+    ":pref_names",
     "//build:branding_buildflags",
     "//components/favicon/core",
     "//components/favicon_base",
@@ -69,7 +80,7 @@ static_library("ntp_tiles") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
-    "//components/webapps/common:common",
+    "//components/webapps/common",
     "//extensions/buildflags",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
@@ -91,6 +102,21 @@ static_library("ntp_tiles") {
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser" ]
   }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [
+      "enterprise/enterprise_shortcuts_manager_impl.cc",
+      "enterprise/enterprise_shortcuts_manager_impl.h",
+      "enterprise/enterprise_shortcuts_store.cc",
+      "enterprise/enterprise_shortcuts_store.h",
+      "enterprise/ntp_shortcuts_policy_handler.cc",
+      "enterprise/ntp_shortcuts_policy_handler.h",
+    ]
+    deps += [
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -106,6 +132,7 @@ source_set("unit_tests") {
 
   deps = [
     ":ntp_tiles",
+    ":pref_names",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//components/favicon/core",
@@ -114,11 +141,11 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync_preferences:test_support",
-    "//components/webapps/common:common",
+    "//components/webapps/common",
     "//extensions/buildflags",
     "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",
@@ -134,15 +161,38 @@ source_set("unit_tests") {
   if (enable_supervised_users) {
     deps += [ "//components/supervised_user/core/browser" ]
   }
+
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [
+      "enterprise/enterprise_shortcuts_manager_impl_unittest.cc",
+      "enterprise/enterprise_shortcuts_store_unittest.cc",
+      "enterprise/ntp_shortcuts_policy_handler_unittest.cc",
+    ]
+    deps += [ "//components/policy/core/browser:test_support" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
 }
 
 if (is_android) {
   java_cpp_enum("ntp_tiles_enums_java") {
     sources = [
       "section_type.h",
-      "tile_source.h",
       "tile_title_source.h",
       "tile_visual_type.h",
     ]
   }
+}
+
+mojom("mojo_bindings") {
+  if (is_android) {
+    generate_java = true
+  }
+  sources = [
+    "tile_source.mojom",
+    "tile_type.mojom",
+  ]
+  webui_module_path = "chrome://resources/mojo/components/ntp_tiles/"
 }

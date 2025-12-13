@@ -17,7 +17,7 @@ namespace web {
 struct FakeJavaScriptAlertDialog {
   FakeJavaScriptAlertDialog();
   ~FakeJavaScriptAlertDialog();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   url::Origin origin;
   NSString* message_text;
   base::OnceClosure callback;
@@ -26,7 +26,7 @@ struct FakeJavaScriptAlertDialog {
 struct FakeJavaScriptConfirmDialog {
   FakeJavaScriptConfirmDialog();
   ~FakeJavaScriptConfirmDialog();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   url::Origin origin;
   NSString* message_text;
   base::OnceCallback<void(bool success)> callback;
@@ -35,7 +35,7 @@ struct FakeJavaScriptConfirmDialog {
 struct FakeJavaScriptPromptDialog {
   FakeJavaScriptPromptDialog();
   ~FakeJavaScriptPromptDialog();
-  raw_ptr<WebState> web_state = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   url::Origin origin;
   NSString* message_text;
   NSString* default_prompt_text;

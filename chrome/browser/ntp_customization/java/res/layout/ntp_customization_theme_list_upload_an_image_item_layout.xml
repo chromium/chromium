@@ -11,14 +11,15 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="@dimen/ntp_customization_theme_list_item_padding_vertical"
+    android:layout_marginTop="@dimen/ntp_customization_theme_list_item_margin_top"
     android:gravity="center_vertical"
     android:focusable="true"
     android:orientation="horizontal">
 
   <ImageView
       android:id="@+id/leading_icon"
-      android:layout_width="@dimen/ntp_customization_theme_list_item_icon_size"
-      android:layout_height="@dimen/ntp_customization_theme_list_item_icon_size"
+      android:layout_width="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
+      android:layout_height="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
       android:scaleType="centerCrop"
       android:importantForAccessibility="no"
       android:src="@drawable/upload_an_image_icon_for_theme_bottom_sheet"/>

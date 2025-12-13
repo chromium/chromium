@@ -133,8 +133,7 @@ void TopContainerLoadingBar::UpdateLoadingProgress() {
 
   tabs::TabInterface* const tab_interface =
       tabs::TabInterface::GetFromContents(web_contents());
-  TabUIHelper* const tab_ui_helper =
-      tab_interface->GetTabFeatures()->tab_ui_helper();
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
   if (tab_ui_helper->ShouldHideThrobber()) {
     HideImmediately();
     return;

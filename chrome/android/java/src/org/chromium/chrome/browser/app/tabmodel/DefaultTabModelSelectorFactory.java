@@ -11,6 +11,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
@@ -33,7 +34,8 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier) {
+            NextTabPolicySupplier nextTabPolicySupplier,
+            MultiInstanceManager multiInstanceManager) {
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(
@@ -42,6 +44,7 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
                 profileProviderSupplier,
                 tabCreatorManager,
                 nextTabPolicySupplier,
+                multiInstanceManager,
                 asyncTabParamsManager,
                 true,
                 ActivityType.TABBED,

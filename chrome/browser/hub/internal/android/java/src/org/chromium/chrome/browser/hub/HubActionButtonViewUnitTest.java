@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -34,6 +35,7 @@ import org.robolectric.ParameterizedRobolectricTestRunner;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
 import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.Features;
@@ -41,7 +43,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.util.XrUtils;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +74,6 @@ public class HubActionButtonViewUnitTest {
     @Rule public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     @Mock Runnable mOnButton;
-    @Mock private Pane mPane;
 
     private Activity mActivity;
     private FrameLayout mActionButtonContainer;
@@ -84,7 +84,7 @@ public class HubActionButtonViewUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        XrUtils.setXrDeviceForTesting(mIsXrDevice);
+        DeviceInfo.setIsXrForTesting(mIsXrDevice);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
@@ -117,7 +117,7 @@ public class HubActionButtonViewUnitTest {
     private FullButtonData makeTestButtonData() {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
-                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add);
+                        R.string.button_new_tab, R.string.button_new_tab, R.drawable.ic_add_24dp);
         return new DelegateButtonData(displayButtonData, mOnButton);
     }
 
@@ -155,6 +155,28 @@ public class HubActionButtonViewUnitTest {
         // Click again should trigger the callback again
         mActionButton.callOnClick();
         verify(mOnButton, times(2)).run();
+    }
+
+    @Test
+    public void testActionButtonTooltipText() {
+        assertNull(mActionButton.getTooltipText());
+
+        // Set button data, tooltip should be set.
+        FullButtonData fullButtonData = makeTestButtonData();
+        mPropertyModel.set(ACTION_BUTTON_DATA, fullButtonData);
+        assertEquals("New tab", mActionButton.getTooltipText());
+
+        // Set ACTION_BUTTON_VISIBLE to false, button should be invisible and tooltip should be
+        // null.
+        mPropertyModel.set(ACTION_BUTTON_VISIBLE, false);
+        assertEquals(View.GONE, mActionButton.getVisibility());
+        assertNull(mActionButton.getTooltipText());
+
+        // Set ACTION_BUTTON_VISIBLE back to true, button should be visible and tooltip should be
+        // set.
+        mPropertyModel.set(ACTION_BUTTON_VISIBLE, true);
+        assertEquals(View.VISIBLE, mActionButton.getVisibility());
+        assertEquals("New tab", mActionButton.getTooltipText());
     }
 
     @Test

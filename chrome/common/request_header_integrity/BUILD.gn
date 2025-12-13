@@ -34,14 +34,9 @@ source_set("request_header_integrity") {
     "request_header_integrity_url_loader_throttle.h",
   ]
 
-  if (is_chrome_branded) {
-    sources += [ "internal/google_header_names.h" ]
-  }
-
   configs += [ ":header_name_defines" ]
 
   deps = [
-    ":build_derived_values",
     "//base",
     "//build:branding_buildflags",
     "//chrome/common:channel_info",
@@ -52,6 +47,14 @@ source_set("request_header_integrity") {
     "//services/network/public/mojom",
     "//third_party/blink/public/common:headers",
   ]
+
+  if (is_chrome_branded) {
+    sources += [ "internal/google_header_names.h" ]
+    deps += [
+      "internal:build_derived_values",
+      "internal:internal_header_integrity_seed",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -62,7 +65,9 @@ source_set("unit_tests") {
   deps = [
     ":request_header_integrity",
     "//build:branding_buildflags",
+    "//net",
     "//services/network/public/cpp",
+    "//testing/gmock",
     "//testing/gtest",
     "//url",
   ]
@@ -102,18 +107,4 @@ if (!is_android) {
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [ "ENABLE_REQUEST_HEADER_INTEGRITY=$enable_request_header_integrity" ]
-}
-
-process_version("build_derived_values") {
-  template_file = "build_derived_values.h.template"
-
-  # Needs to use the actual LASTCHANGE_YEAR instead of LASTCHANGE.dummy based
-  # values for header reporting, which should be fine for caching builds as it
-  # only changes once a year.
-  sources = [
-    "//build/util/LASTCHANGE",
-    branding_file_path,
-  ]
-
-  output = "$target_gen_dir/build_derived_values.h"
 }

@@ -10,6 +10,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics_action.h"
@@ -26,6 +27,8 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/browser/credential_exchange/model/credential_import_manager_swift.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/intents/model/intents_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -52,6 +55,7 @@
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/apple/url_conversions.h"
 #import "ui/base/page_transition_types.h"
 
@@ -127,6 +131,17 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     BOOL application_is_active) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSURL* webpage_url = user_activity.webpageURL;
+
+  // Credential exchange activity should only be handled in iOS 26 with the
+  // compile-time flag controlling the feature enabled.
+  BOOL isCredentialExchangeActivity = NO;
+  if (@available(iOS 26, *)) {
+    isCredentialExchangeActivity =
+        CredentialExchangeEnabled() &&
+        [user_activity.activityType
+            isEqualToString:[CredentialImportManager
+                                credentialExchangeActivity]];
+  }
 
   if ([user_activity.activityType
           isEqualToString:handoff::kChromeHandoffActivityType] ||
@@ -487,6 +502,24 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
     [connection_information_
         setStartupParameters:StartupParametersForOpeningNewTab(
                                  OPEN_CLEAR_BROWSING_DATA_DIALOG)];
+  } else if (isCredentialExchangeActivity) {
+    id UUID;
+    if (@available(iOS 26, *)) {
+      UUID = [user_activity.userInfo
+          objectForKey:[CredentialImportManager credentialImportToken]];
+    }
+    if (![UUID isKindOfClass:[NSUUID class]]) {
+      return NO;
+    }
+
+    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+         initWithExternalURL:GURL()
+                 completeURL:GURL()
+             applicationMode:ApplicationModeForTabOpening::NORMAL
+        forceApplicationMode:NO];
+    startup_params.postOpeningAction = CREDENTIAL_EXCHANGE_IMPORT;
+    startup_params.credentialExchangeImportUUID = (NSUUID*)UUID;
+    [connection_information_ setStartupParameters:startup_params];
   } else {
     // Do nothing for unknown activity type.
     return NO;
@@ -793,6 +826,14 @@ void UserActivityBrowserAgent::OverloadContinueUserActivityURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BOOL is_active = [[UIApplication sharedApplication] applicationState] ==
                    UIApplicationStateActive;
+  if (!connection_information_.startupParameters) {
+    AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+         initWithExternalURL:net::GURLWithNSURL(webpage_url)
+                 completeURL:net::GURLWithNSURL(webpage_url)
+             applicationMode:ApplicationModeForTabOpening::UNDETERMINED
+        forceApplicationMode:NO];
+    connection_information_.startupParameters = startup_params;
+  }
   ContinueUserActivityURL(webpage_url, is_active, open_existing_tab);
 }
 
@@ -831,6 +872,17 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
     params = UrlLoadParams::SwitchToTab(web_load_params);
   } else {
     params = UrlLoadParams::InNewTab(url, virtual_url);
+  }
+
+  // App scheme URLs are not generally allowed to be opened in new tabs.
+  // However, allow `chrome://dino` to be opened if the request originated
+  // from a widget in order to support the Dino Game widget. Setting the
+  // `transition_type` to `PAGE_TRANSITION_AUTO_BOOKMARK` instead of
+  // `PAGE_TRANSITION_LINK` allows this load to complete successfully.
+  if (connection_information_.startupParameters.openedViaWidgetScheme &&
+      url.GetScheme() == kChromeUIScheme &&
+      url.GetHost() == kChromeUIDinoHost) {
+    params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   }
 
   if (connection_information_.startupParameters.imageSearchData) {

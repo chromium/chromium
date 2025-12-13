@@ -10,10 +10,10 @@
 #import "base/no_destructor.h"
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/plus_address_http_client_impl.h"
-#import "components/plus_addresses/plus_address_service_impl.h"
+#import "components/plus_addresses/core/browser/affiliations/plus_address_affiliation_source_adapter.h"
+#import "components/plus_addresses/core/browser/plus_address_http_client_impl.h"
+#import "components/plus_addresses/core/browser/plus_address_service_impl.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -53,15 +53,13 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
 PlusAddressServiceFactory::~PlusAddressServiceFactory() {}
 
 std::unique_ptr<KeyedService>
-PlusAddressServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+PlusAddressServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   // If the feature is disabled, don't risk any side effects. Just bail.
   if (!base::FeatureList::IsEnabled(
           plus_addresses::features::kPlusAddressesEnabled)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =

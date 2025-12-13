@@ -38,7 +38,6 @@
 #include "components/search_provider_logos/fixed_logo_api.h"
 #include "components/search_provider_logos/google_logo_api.h"
 #include "components/search_provider_logos/logo_cache.h"
-#include "components/search_provider_logos/logo_observer.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -213,13 +212,12 @@ std::string MakeServerResponse(const SkBitmap& image,
       dict.SetByDottedPath("ddljson.dark_cta_data_uri", dark_data_uri);
   }
   dict.SetByDottedPath("ddljson.fingerprint", fingerprint);
-  if (time_to_live != base::TimeDelta())
+  if (time_to_live != base::TimeDelta()) {
     dict.SetByDottedPath("ddljson.time_to_live_ms",
                          static_cast<int>(time_to_live.InMilliseconds()));
+  }
 
-  std::string output;
-  base::JSONWriter::Write(dict, &output);
-  return output;
+  return base::WriteJson(dict).value_or("");
 }
 
 std::string MakeServerResponse(const Logo& logo, base::TimeDelta time_to_live) {
@@ -547,7 +545,7 @@ TEST_F(LogoServiceImplTest, CTARequestedBackgroundCanUpdate) {
     logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false);
     task_environment_.RunUntilIdle();
   }
-  EXPECT_EQ(latest_url_.query().find("graybg:1"), std::string::npos);
+  EXPECT_EQ(latest_url_.GetQuery().find("graybg:1"), std::string::npos);
 
   use_gray_background_ = true;
   test_url_loader_factory_.ClearResponses();
@@ -561,7 +559,7 @@ TEST_F(LogoServiceImplTest, CTARequestedBackgroundCanUpdate) {
     logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/false);
     task_environment_.RunUntilIdle();
   }
-  EXPECT_NE(latest_url_.query().find("graybg:1"), std::string::npos);
+  EXPECT_NE(latest_url_.GetQuery().find("graybg:1"), std::string::npos);
 }
 
 TEST_F(LogoServiceImplTest, DownloadAndCacheLogo) {

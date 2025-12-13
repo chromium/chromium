@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_void_request.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
 
@@ -88,8 +89,7 @@ class RTCRtpSenderImplTest : public ::testing::Test {
   }
 
   std::unique_ptr<RTCRtpSenderImpl> CreateSender(
-      MediaStreamComponent* component,
-      bool require_encoded_insertable_streams = false) {
+      MediaStreamComponent* component) {
     std::unique_ptr<blink::WebRtcMediaStreamTrackAdapterMap::AdapterRef>
         track_ref;
     if (component) {
@@ -100,9 +100,8 @@ class RTCRtpSenderImplTest : public ::testing::Test {
         main_thread_, dependency_factory_->GetWebRtcSignalingTaskRunner(),
         mock_webrtc_sender_, std::move(track_ref), std::vector<std::string>());
     sender_state.Initialize();
-    return std::make_unique<RTCRtpSenderImpl>(
-        peer_connection_, track_map_, std::move(sender_state),
-        require_encoded_insertable_streams);
+    return std::make_unique<RTCRtpSenderImpl>(peer_connection_, track_map_,
+                                              std::move(sender_state));
   }
 
   // Calls replaceTrack(), which is asynchronous, returning a callback that when
@@ -114,10 +113,10 @@ class RTCRtpSenderImplTest : public ::testing::Test {
     // On complete, |*result_holder| is set with the result of replaceTrack()
     // and the |run_loop| quit.
     sender_->ReplaceTrack(
-        component, WTF::BindOnce(&RTCRtpSenderImplTest::CallbackOnComplete,
-                                 WTF::Unretained(this),
-                                 WTF::Unretained(result_holder.get()),
-                                 WTF::Unretained(run_loop.get())));
+        component,
+        blink::BindOnce(&RTCRtpSenderImplTest::CallbackOnComplete,
+                        Unretained(this), Unretained(result_holder.get()),
+                        blink::Unretained(run_loop.get())));
     // When the resulting callback is invoked, waits for |run_loop| to complete
     // and returns |*result_holder|.
     return base::BindOnce(&RTCRtpSenderImplTest::RunLoopAndReturnResult,
@@ -162,6 +161,11 @@ TEST_F(RTCRtpSenderImplTest, CreateSender) {
   sender_ = CreateSender(component);
   EXPECT_TRUE(sender_->Track());
   EXPECT_EQ(component->UniqueId(), sender_->Track()->UniqueId());
+
+  // Encoded audio transformer should be created.
+  EXPECT_TRUE(sender_->GetEncodedAudioStreamTransformer());
+  // There should be no video transformer in audio senders.
+  EXPECT_FALSE(sender_->GetEncodedVideoStreamTransformer());
 }
 
 TEST_F(RTCRtpSenderImplTest, CreateSenderWithNullTrack) {
@@ -258,15 +262,6 @@ TEST_F(RTCRtpSenderImplTest, CopiedSenderSharesInternalStates) {
   // Both original and copy shows a modified state.
   EXPECT_FALSE(sender_->Track());
   EXPECT_FALSE(copy->Track());
-}
-
-TEST_F(RTCRtpSenderImplTest, CreateSenderWithInsertableStreams) {
-  auto* component = CreateTrack("track_id");
-  sender_ = CreateSender(component,
-                         /*require_encoded_insertable_streams=*/true);
-  EXPECT_TRUE(sender_->GetEncodedAudioStreamTransformer());
-  // There should be no video transformer in audio senders.
-  EXPECT_FALSE(sender_->GetEncodedVideoStreamTransformer());
 }
 
 }  // namespace blink

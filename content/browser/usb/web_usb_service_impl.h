@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_USB_WEB_USB_SERVICE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

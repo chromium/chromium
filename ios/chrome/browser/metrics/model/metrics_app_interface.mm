@@ -10,13 +10,16 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "components/country_codes/country_codes.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
 #import "components/metrics/dwa/dwa_entry_builder.h"
 #import "components/metrics/dwa/dwa_recorder.h"
 #import "components/metrics/dwa/dwa_service.h"
 #import "components/metrics/metrics_service.h"
+#import "components/metrics/private_metrics/puma_service.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/regional_capabilities/regional_capabilities_country_id.h"
 #import "components/ukm/ukm_service.h"
 #import "components/ukm/ukm_test_helper.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_service_accessor.h"
@@ -43,6 +46,10 @@ ukm::UkmService* GetUkmService() {
 
 metrics::dwa::DwaService* GetDwaService() {
   return GetApplicationContext()->GetMetricsServicesManager()->GetDwaService();
+}
+
+metrics::private_metrics::PumaService* GetPumaService() {
+  return GetApplicationContext()->GetMetricsServicesManager()->GetPumaService();
 }
 
 metrics::MetricsService* GetMetricsService() {
@@ -220,6 +227,13 @@ metrics::MetricsService* GetMetricsService() {
 
 + (void)clearDWARecorder {
   metrics::dwa::DwaRecorder::Get()->Purge();
+}
+
++ (NSString*)pumaCountryIdForTesting {
+  return base::SysUTF8ToNSString(GetPumaService()
+                                     ->GetCountryIdHolderForTesting()
+                                     .GetForTesting()
+                                     .CountryCode());
 }
 
 + (NSError*)setupHistogramTester {

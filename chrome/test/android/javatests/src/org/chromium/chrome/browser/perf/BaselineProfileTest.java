@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.perf;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule;
 import androidx.test.core.app.ApplicationProvider;
@@ -24,6 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.chrome.test.pagecontroller.utils.IUi2Locator;
@@ -86,7 +88,7 @@ public class BaselineProfileTest {
                     UiAutomatorUtils.getInstance().waitUntilAnyVisible(locatorChrome);
                     Log.i(TAG, "Waiting for Top Bar to show Host");
                     String origin = sEmbeddedTestServerRule.getOrigin();
-                    assert origin.startsWith("http://");
+                    assertThat(origin).startsWith("http://");
                     String host = origin.substring(7, origin.length() - 1);
                     IUi2Locator hostTextLocator = Ui2Locators.withText(host);
                     UiAutomatorUtils.getInstance().waitUntilAnyVisible(hostTextLocator);

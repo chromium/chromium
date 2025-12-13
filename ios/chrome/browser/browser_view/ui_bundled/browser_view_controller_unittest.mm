@@ -17,6 +17,7 @@
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/supervised_user/core/common/features.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
@@ -38,10 +39,12 @@
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_animation_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -73,14 +76,14 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
-#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_strip/coordinator/tab_strip_coordinator.h"
+#import "ios/chrome/browser/tab_switcher/tab_strip/coordinator/tab_strip_coordinator.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/tabs/ui_bundled/foreground_tab_animation_view.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/toolbar_coordinator.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
@@ -96,6 +99,21 @@
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
 
+// Scoped clipboard recent content so its destroyed after the profile. This
+// allows the autocomplete keyed service to cleanup before the clipboard
+// dependency is destroyed.
+class ScopedClipboardRecentContentInstaller {
+ public:
+  ScopedClipboardRecentContentInstaller(
+      std::unique_ptr<ClipboardRecentContent> instance) {
+    ClipboardRecentContent::SetInstance(std::move(instance));
+  }
+
+  ~ScopedClipboardRecentContentInstaller() {
+    ClipboardRecentContent::SetInstance(nullptr);
+  }
+};
+
 class BrowserViewControllerTest : public BlockCleanupTest {
  public:
  protected:
@@ -109,7 +127,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_profile_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
     test_profile_builder.AddTestingFactory(
@@ -148,6 +166,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_profile_builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         feature_engagement::TrackerFactory::GetDefaultFactory());
+    test_profile_builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        tab_groups::TabGroupSyncServiceFactory::GetDefaultFactory());
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
@@ -158,12 +179,16 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabUsageRecorderBrowserAgent::CreateForBrowser(browser_.get());
-    PagePlaceholderBrowserAgent::CreateForBrowser(browser_.get());
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
     OmniboxPositionBrowserAgent::CreateForBrowser(browser_.get());
+    AutocompleteBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
+    // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
+    // must be created first. Please maintain this order.
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
 
     WebUsageEnablerBrowserAgent::FromBrowser(browser_.get())
         ->SetWebUsageEnabled(true);
@@ -254,8 +279,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ios::TemplateURLServiceFactory::GetForProfile(GetProfile());
     template_url_service->Load();
 
-    ClipboardRecentContent::SetInstance(
-        std::make_unique<FakeClipboardRecentContent>());
+    clipboard_installer_ =
+        std::make_unique<ScopedClipboardRecentContentInstaller>(
+            std::make_unique<FakeClipboardRecentContent>());
 
     container_ = [[BrowserContainerViewController alloc] init];
     key_commands_provider_ =
@@ -284,8 +310,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
-    page_placeholder_browser_agent_ =
-        PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
     NTPCoordinator_ = [[NewTabPageCoordinator alloc]
          initWithBrowser:browser_.get()
         componentFactory:[[NewTabPageComponentFactory alloc] init]];
@@ -305,7 +329,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
-    dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mock_application_handler_;
     dependencies.ntpCoordinator = NTPCoordinator_;
 
@@ -314,6 +337,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                            keyCommandsProvider:key_commands_provider_
                                   dependencies:dependencies];
     bvc_.webUsageEnabled = YES;
+    bvc_.browserViewVisibilityStateChangedCallback =
+        BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
+            ->GetNotificationCallback();
 
     id mockReauthHandler = OCMProtocolMock(@protocol(IncognitoReauthCommands));
     bvc_.reauthHandler = mockReauthHandler;
@@ -340,6 +366,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   void TearDown() override {
     [tab_events_mediator_ disconnect];
+    window_.rootViewController = nil;
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
     [bookmarks_coordinator_ stop];
@@ -348,7 +375,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [popup_menu_coordinator_ stop];
     [NTPCoordinator_ stop];
     [side_swipe_coordinator_ stop];
-    ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
   }
@@ -375,7 +401,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
-        GetProfile()->CreateOffTheRecordBrowserStateWithTestingFactories(
+        GetProfile()->CreateOffTheRecordProfileWithTestingFactories(
             {TestProfileIOS::TestingFactory{
                 TipsManagerIOSFactory::GetInstance(),
                 TipsManagerIOSFactory::GetDefaultFactory()}}));
@@ -388,12 +414,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   void LoadNTP(web::WebState* web_state) {
     web::FakeWebState fake_web_state;
     fake_web_state.SetVisibleURL(GURL("chrome://newtab/"));
-    web::WebStateObserver* NTPHelper =
-        (web::WebStateObserver*)NewTabPageTabHelper::FromWebState(web_state);
     // Use the fake_web_state to fake the NTPHelper into believing that the NTP
     // has been loaded.
-    NTPHelper->PageLoaded(&fake_web_state,
-                          web::PageLoadCompletionStatus::SUCCESS);
+    NewTabPageTabHelper::FromWebState(web_state)->PageLoaded(
+        &fake_web_state, web::PageLoadCompletionStatus::SUCCESS);
   }
 
   void ExpectNewTabInsertionAnimation(bool animated, ProceduralBlock block) {
@@ -426,6 +450,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<ScopedClipboardRecentContentInstaller> clipboard_installer_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
@@ -445,7 +470,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   NewTabPageCoordinator* NTPCoordinator_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
-  raw_ptr<PagePlaceholderBrowserAgent> page_placeholder_browser_agent_;
   id mock_application_handler_;
 };
 
@@ -461,7 +485,8 @@ TEST_F(BrowserViewControllerTest, TestClearPresentedState) {
       clearPresentedStateWithCompletion:^{
         this->OnCompletionCalled();
       }
-                         dismissOmnibox:YES];
+                         dismissOmnibox:YES
+         dismissPresentedViewController:YES];
 }
 
 // Tests that WebState::WasShown() and WebState::WasHidden() is properly called
@@ -580,4 +605,12 @@ TEST_F(BrowserViewControllerTest, ViewOnInsert) {
                                 })];
   InsertWebState(std::move(ntp_web_state2));
   EXPECT_OCMOCK_VERIFY(container_view_mock);
+}
+
+// BrowserViewController needs to conform to
+// `<LogoAnimationControllerOwnerOwner>` to support VoiceOver. Related to
+// crbug.com/442767141.
+TEST_F(BrowserViewControllerTest, LogoAnimationControllerOwnerOwner) {
+  EXPECT_TRUE(
+      [bvc_ conformsToProtocol:@protocol(LogoAnimationControllerOwnerOwner)]);
 }

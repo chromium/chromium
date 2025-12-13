@@ -189,15 +189,19 @@ class PageContentAnnotationsServiceTest : public testing::Test {
                 history::VisitID visit_id,
                 std::optional<int64_t> local_navigation_id,
                 bool is_synced_visit = false,
-                base::Time timestamp = base::Time()) {
+                base::Time timestamp = base::Time(),
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     url_row.set_title(title);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
     new_visit.visit_time = timestamp;
     new_visit.originator_cache_guid = is_synced_visit ? "otherdevice" : "";
-    service_->OnURLVisitedWithNavigationId(history_service_.get(), url_row,
-                                           new_visit, local_navigation_id);
+    service_->OnURLVisitedWithNavigationId(
+        history_service_.get(),
+        std::move(history::VisitedURLInfo(
+            url_row, new_visit, response_code_category, local_navigation_id)));
   }
 
   FakeOptimizationGuideDecider* optimization_guide_decider() {
@@ -248,6 +252,24 @@ TEST_F(PageContentAnnotationsServiceTest, NonHTTPUrlIgnored) {
   VisitURL(GURL("data:,"), u"test", visit_id,
            /*local_navigation_id=*/1,
            /*is_synced_visit=*/false);
+
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
+TEST_F(PageContentAnnotationsServiceTest, VisitWith404ResponseIgnored) {
+  history::VisitID visit_id = 1;
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  EXPECT_CALL(*history_service_,
+              AddContentModelAnnotationsForVisit(_, visit_id))
+      .Times(0);
+#endif
+
+  VisitURL(GURL("https://example.com"), u"404test", visit_id,
+           /*local_navigation_id=*/1,
+           /*is_synced_visit=*/true,
+           /*timestamp=*/base::Time(),
+           history::VisitResponseCodeCategory::k404);
 
   task_environment_.FastForwardBy(base::Seconds(5));
 }
@@ -439,21 +461,7 @@ TEST_F(PageContentAnnotationsServiceRemotePageMetadataTest,
            /*local_navigation_id=*/1);
 }
 
-class PageContentAnnotationsServiceSalientImageMetadataTest
-    : public PageContentAnnotationsServiceTest {
- public:
-  PageContentAnnotationsServiceSalientImageMetadataTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotationsPersistSalientImageMetadata,
-      {{"supported_locales", "*"}, {"supported_countries", "*"}});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
-       RegistersTypeWhenFeatureEnabled) {
+TEST_F(PageContentAnnotationsServiceTest, RegistersType) {
   std::vector<optimization_guide::proto::OptimizationType>
       registered_optimization_types =
           optimization_guide_decider()->registered_optimization_types();
@@ -461,21 +469,20 @@ TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
                              optimization_guide::proto::SALIENT_IMAGE));
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
-       DoesNotPersistIfServerHasNoData) {
+TEST_F(PageContentAnnotationsServiceTest, DoesNotPersistIfServerHasNoData) {
   // Navigate.
   VisitURL(GURL("http://www.nohints.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+TEST_F(PageContentAnnotationsServiceTest,
        DoesNotPersistIfServerReturnsWrongMetadata) {
   // Navigate.
   VisitURL(GURL("http://wrongmetadata.com"), u"sometitle", 13,
            /*local_navigation_id=*/1);
 }
 
-TEST_F(PageContentAnnotationsServiceSalientImageMetadataTest,
+TEST_F(PageContentAnnotationsServiceTest,
        RequestsToPersistIfHasSalientImageMetadata) {
   EXPECT_CALL(*history_service_, SetHasUrlKeyedImageForVisit(true, 13));
 

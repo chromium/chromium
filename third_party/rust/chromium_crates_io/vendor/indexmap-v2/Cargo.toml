@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.63"
+rust-version = "1.82"
 name = "indexmap"
-version = "2.10.0"
+version = "2.12.1"
 build = false
 autolib = false
 autobins = false
@@ -34,6 +34,11 @@ categories = [
 license = "Apache-2.0 OR MIT"
 repository = "https://github.com/indexmap-rs/indexmap"
 
+[package.metadata.release]
+allow-branch = ["main"]
+sign-tag = true
+tag-name = "{{version}}"
+
 [package.metadata.docs.rs]
 features = [
     "arbitrary",
@@ -41,19 +46,19 @@ features = [
     "serde",
     "borsh",
     "rayon",
+    "sval",
 ]
 rustdoc-args = [
     "--cfg",
     "docsrs",
 ]
 
-[package.metadata.release]
-allow-branch = ["main"]
-sign-tag = true
-tag-name = "{{version}}"
-
 [features]
 default = ["std"]
+serde = [
+    "dep:serde_core",
+    "dep:serde",
+]
 std = []
 test_debug = []
 
@@ -101,7 +106,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.hashbrown]
-version = "0.15.0"
+version = "0.16.1"
 default-features = false
 
 [dependencies.quickcheck]
@@ -113,8 +118,13 @@ default-features = false
 version = "1.9"
 optional = true
 
-[dependencies.serde]
-version = "1.0"
+[dependencies.serde_core]
+version = "1.0.220"
+optional = true
+default-features = false
+
+[dependencies.sval]
+version = "2"
 optional = true
 default-features = false
 
@@ -132,11 +142,26 @@ version = "0.14"
 version = "1.0"
 default-features = false
 
-[dev-dependencies.serde_derive]
+[dev-dependencies.serde]
 version = "1.0"
+features = ["derive"]
+default-features = false
+
+[target."cfg(any())".dependencies.serde]
+version = "1.0.220"
+optional = true
+default-features = false
 
 [lints.clippy]
 style = "allow"
+
+[lints.rust]
+private-bounds = "deny"
+private-interfaces = "deny"
+rust-2018-idioms = "warn"
+unnameable-types = "deny"
+unreachable-pub = "deny"
+unsafe-code = "deny"
 
 [profile.bench]
 debug = 2

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/resource/resource_bundle.h"
 
 #include <stdint.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -20,6 +16,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file.h"
@@ -41,7 +38,7 @@
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/brotli/include/brotli/decode.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -64,7 +61,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #endif
 
@@ -122,26 +118,26 @@ SkBitmap CreateEmptyBitmap() {
 bool HasBrotliHeader(std::string_view data) {
   // Check that the data is brotli decoded by checking for kBrotliConst in
   // header. Header added during compression at tools/grit/grit/node/base.py.
-  const uint8_t* data_bytes = reinterpret_cast<const uint8_t*>(data.data());
+  base::span<const uint8_t> data_bytes = base::as_byte_span(data);
   static_assert(std::size(ResourceBundle::kBrotliConst) == 2,
                 "Magic number should be 2 bytes long");
   return data.size() >= ResourceBundle::kBrotliHeaderSize &&
-         *data_bytes == ResourceBundle::kBrotliConst[0] &&
-         *(data_bytes + 1) == ResourceBundle::kBrotliConst[1];
+         data_bytes[0] == ResourceBundle::kBrotliConst[0] &&
+         data_bytes[1] == ResourceBundle::kBrotliConst[1];
 }
 
 // Returns the uncompressed size of Brotli compressed |input| from header.
 size_t GetBrotliDecompressSize(std::string_view input) {
   CHECK(input.data());
   CHECK(HasBrotliHeader(input));
-  const uint8_t* raw_input = reinterpret_cast<const uint8_t*>(input.data());
-  raw_input = raw_input + std::size(ResourceBundle::kBrotliConst);
+  base::span<const uint8_t> raw_input = base::as_byte_span(input);
+  raw_input = raw_input.subspan(std::size(ResourceBundle::kBrotliConst));
   // Get size of uncompressed resource from header.
   uint64_t uncompress_size = 0;
-  int bytes_size = static_cast<int>(ResourceBundle::kBrotliHeaderSize -
-                                    std::size(ResourceBundle::kBrotliConst));
-  for (int i = 0; i < bytes_size; i++) {
-    uncompress_size |= static_cast<uint64_t>(*(raw_input + i)) << (i * 8);
+  size_t bytes_size = ResourceBundle::kBrotliHeaderSize -
+                      std::size(ResourceBundle::kBrotliConst);
+  for (size_t i = 0; i < bytes_size; i++) {
+    uncompress_size |= static_cast<uint64_t>(raw_input[i]) << (i * 8);
   }
   return static_cast<size_t>(uncompress_size);
 }
@@ -153,12 +149,13 @@ base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
   if (std::holds_alternative<std::string*>(out_buf)) {
     std::string* str = std::get<std::string*>(out_buf);
     str->resize(len);
-    return base::span<uint8_t>(reinterpret_cast<uint8_t*>(str->data()), len);
+    return UNSAFE_TODO(
+        base::span<uint8_t>(reinterpret_cast<uint8_t*>(str->data()), len));
   }
 
   std::vector<uint8_t>* vec = std::get<std::vector<uint8_t>*>(out_buf);
   vec->resize(len);
-  return base::span<uint8_t>(vec->data(), len);
+  return UNSAFE_TODO(base::span<uint8_t>(vec->data(), len));
 }
 
 // Decompresses data in |input| using brotli, storing
@@ -166,12 +163,11 @@ base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
 // success. To be used for grit compressed resources only.
 bool BrotliDecompress(std::string_view input, OutputBufferType output) {
   size_t decompress_size = GetBrotliDecompressSize(input);
-  const uint8_t* raw_input = reinterpret_cast<const uint8_t*>(input.data());
-  raw_input = raw_input + ResourceBundle::kBrotliHeaderSize;
+  base::span<const uint8_t> raw_input = base::as_byte_span(input);
+  raw_input = raw_input.subspan(ResourceBundle::kBrotliHeaderSize);
 
   return BrotliDecoderDecompress(
-             input.size() - ResourceBundle::kBrotliHeaderSize, raw_input,
-             &decompress_size,
+             raw_input.size(), raw_input.data(), &decompress_size,
              GetBufferForWriting(output, decompress_size).data()) ==
          BROTLI_DECODER_RESULT_SUCCESS;
 }
@@ -273,8 +269,12 @@ bool ResourceBundle::FontDetails::operator<(const FontDetails& rhs) const {
 }
 
 ResourceBundle::SharedInstanceSwapperForTesting::
-    SharedInstanceSwapperForTesting() {
-  instance_ = SwapSharedInstanceForTesting(nullptr  // IN-TEST
+    SharedInstanceSwapperForTesting()  // IN-TEST
+    : SharedInstanceSwapperForTesting(/*instance=*/nullptr) {}
+
+ResourceBundle::SharedInstanceSwapperForTesting::
+    SharedInstanceSwapperForTesting(ResourceBundle* instance) {
+  instance_ = SwapSharedInstanceForTesting(instance  // IN-TEST
 #if BUILDFLAG(IS_ANDROID)
                                            ,
                                            {}, &android_locale_packs_
@@ -406,40 +406,41 @@ bool ResourceBundle::LocaleDataPakExists(std::string_view locale,
 #if BUILDFLAG(IS_WIN)
   // https://crbug.com/40688225: Chrome sometimes fails to find standard .pak
   // files. One theory is that this happens shortly after an update because
-  // scanners (e.g., A/V) are busy checking Chrome's files. If this is
-  // happening, then `base::PathExists` is reporting `false` for files that
-  // exist but can't be opened.
+  // scanners (e.g., A/V) are busy checking Chrome's files. Record the last
+  // found and the last not found pak file in crash keys to reveal what was
+  // searched for and/or found when there is a failure to load resources.
   DWORD attributes;
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     attributes = ::GetFileAttributes(path.value().c_str());
   }
-  if (attributes == FILE_ATTRIBUTE_DIRECTORY) {
-    return false;  // A directory is not a .pak file.
-  }
   if (attributes != INVALID_FILE_ATTRIBUTES) {
-    return true;  // Attributes were read; the file must exist.
+    static auto* const found_path_key = base::debug::AllocateCrashKeyString(
+        "LocaleDataPakExists-found_path", base::debug::CrashKeySize::Size256);
+    base::debug::SetCrashKeyString(found_path_key, path.AsUTF8Unsafe());
+    static auto* const found_attrs_key = base::debug::AllocateCrashKeyString(
+        "LocaleDataPakExists-found_attrs", base::debug::CrashKeySize::Size32);
+    base::debug::SetCrashKeyString(found_attrs_key,
+                                   base::NumberToString(attributes));
+    // Report that the file exists as long as it isn't a directory.
+    return (attributes & FILE_ATTRIBUTE_DIRECTORY) == 0;
   }
+
+  // ERROR_FILE_NOT_FOUND means that path.BaseName() does not exist.
+  // PATH_NOT_FOUND means that path.DirName() does not exist.
+  // ERROR_ACCESS_DENIED could mean that the file has been marked for deletion.
+  // ERROR_FILE_CORRUPT has been known to happen, and is surely unrecoverable.
+  // Treat these and all other errors as if the file does not exist.
   const auto error = ::GetLastError();
-  if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
-    return false;  // `path` does not exist.
-  }
-  // The attributes could not be read yet `path` exists. This is likely a case
-  // of the file being locked by other software. Either the file will be
-  // readable by the time it's needed, or the failure to open it will be handled
-  // at that time.
-
-  // Include the path and the error in subsequent crashes (e.g., in Chrome's
-  // InitResourceBundleAndDetermineLocale).
-  static auto* const busy_path_key = base::debug::AllocateCrashKeyString(
-      "LocaleDataPakExists-busy_path", base::debug::CrashKeySize::Size256);
-  base::debug::SetCrashKeyString(busy_path_key, path.AsUTF8Unsafe());
-  static auto* const busy_error_key = base::debug::AllocateCrashKeyString(
-      "LocaleDataPakExists-busy_error", base::debug::CrashKeySize::Size32);
-  base::debug::SetCrashKeyString(busy_error_key, base::NumberToString(error));
-
-  return true;
+  static auto* const not_found_path_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-not_found_path", base::debug::CrashKeySize::Size256);
+  base::debug::SetCrashKeyString(not_found_path_key, path.AsUTF8Unsafe());
+  static auto* const not_found_error_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-not_found_error", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(not_found_error_key,
+                                 base::NumberToString(error));
+  return false;
 #else
   return base::PathExists(path);
 #endif
@@ -487,19 +488,10 @@ base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
     return base::FilePath();
 
   base::FilePath locale_file_path;
+
   if (base::PathService::Get(ui::DIR_LOCALES, &locale_file_path)) {
     locale_file_path = locale_file_path.AppendASCII(
         base::StrCat({app_locale, kPakFileExtension}));
-  }
-
-  // Note: The delegate GetPathForLocalePack() override is currently only used
-  // by CastResourceDelegate, which does not call this function prior to
-  // initializing the ResourceBundle. This called earlier than that by the
-  // variations code which also has a CHECK that an inconsistent value does not
-  // get returned via VariationsService::EnsureLocaleEquals().
-  if (HasSharedInstance() && GetSharedInstance().delegate_) {
-    locale_file_path = GetSharedInstance().delegate_->GetPathForLocalePack(
-        locale_file_path, app_locale);
   }
 
   // Don't try to load from paths that are not absolute.
@@ -1059,7 +1051,7 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 // Register Png Decoder for use by DataURIResourceProviderProxy for embedded
 // images.
 #if BUILDFLAG(IS_CHROMEOS)
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
 #endif
 }
 
@@ -1305,7 +1297,7 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    msg.assign(reinterpret_cast<const char16_t*>(data->data()),
+    msg.assign(UNSAFE_TODO(reinterpret_cast<const char16_t*>(data->data())),
                data->length() / 2);
   } else if (encoding == ResourceHandle::UTF8) {
     // Best-effort conversion.

@@ -9,7 +9,6 @@
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -32,8 +31,7 @@ namespace component_updater {
 
 class OriginTrialsComponentInstallerTest : public PlatformTest {
  public:
-  OriginTrialsComponentInstallerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  OriginTrialsComponentInstallerTest() = default;
 
   OriginTrialsComponentInstallerTest(
       const OriginTrialsComponentInstallerTest&) = delete;
@@ -62,7 +60,6 @@ class OriginTrialsComponentInstallerTest : public PlatformTest {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<ComponentInstallerPolicy> policy_;
 };
 

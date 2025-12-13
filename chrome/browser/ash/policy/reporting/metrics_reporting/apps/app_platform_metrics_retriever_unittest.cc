@@ -27,16 +27,16 @@ class AppPlatformMetricsRetrieverTest
     : public ::apps::AppPlatformMetricsServiceTestBase {
  protected:
   void SetUp() override {
-    // Set up test user and profile.
-    AddRegularUser(/*email=*/"test@test.com");
+    start_app_platform_metrics_service_on_init_ = false;
+    AppPlatformMetricsServiceTestBase::SetUp();
 
-    // Configure app service proxy for the test.
-    auto app_platform_metrics_service =
-        std::make_unique<::apps::AppPlatformMetricsService>(profile());
     app_service_proxy_ =
         ::apps::AppServiceProxyFactory::GetForProfile(profile());
+
     app_service_proxy_->SetAppPlatformMetricsServiceForTesting(
-        std::move(app_platform_metrics_service));
+        std::move(::apps::AppPlatformMetricsServiceTestBase::
+                      app_platform_metrics_service_));
+
     app_platform_metrics_service_ =
         app_service_proxy_->AppPlatformMetricsService();
 

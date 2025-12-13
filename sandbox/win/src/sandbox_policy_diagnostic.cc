@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/sandbox_policy_diagnostic.h"
 
 #include <windows.h>
@@ -21,6 +16,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -303,15 +299,16 @@ base::Value::List GetPolicyOpcodes(const PolicyGlobal* policy_rules,
                                    IpcTag service) {
   base::Value::List entry;
   PolicyBuffer* policy_buffer =
-      policy_rules->entry[static_cast<size_t>(service)];
+      UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(service)]);
   // Build up rules and emit when we hit an action.
   std::string cur_rule;
   for (size_t i = 0; i < policy_buffer->opcode_count; i++) {
-    const PolicyOpcode* opcode = &policy_buffer->opcodes[i];
+    const PolicyOpcode* opcode = &UNSAFE_TODO(policy_buffer->opcodes[i]);
     if (opcode->GetID() != OP_ACTION) {
       DCHECK(i + 1 < policy_buffer->opcode_count)
           << "Non-actions should not terminate rules";
-      bool peak = policy_buffer->opcodes[i + 1].GetID() != OP_ACTION;
+      bool peak =
+          UNSAFE_TODO(policy_buffer->opcodes[i + 1]).GetID() != OP_ACTION;
       cur_rule += GetPolicyOpcode(opcode, peak);
     } else {
       cur_rule += " -> ";
@@ -329,7 +326,8 @@ base::Value::Dict GetPolicyRules(const std::vector<IpcTag>& ipcs,
   base::Value::Dict results;
 
   for (auto ipc : ipcs) {
-    if (policy_rules && policy_rules->entry[static_cast<size_t>(ipc)]) {
+    if (policy_rules &&
+        UNSAFE_TODO(policy_rules->entry[static_cast<size_t>(ipc)])) {
       results.Set(GetIpcTagAsString(ipc), GetPolicyOpcodes(policy_rules, ipc));
     } else {
       results.Set(GetIpcTagAsString(ipc), base::Value::List());
@@ -407,16 +405,16 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
     size_t policy_mem_size = original_rules->data_size + sizeof(PolicyGlobal);
     policy_rules_.reset(
         static_cast<sandbox::PolicyGlobal*>(::operator new(policy_mem_size)));
-    memcpy(policy_rules_.get(), original_rules, policy_mem_size);
+    UNSAFE_TODO(memcpy(policy_rules_.get(), original_rules, policy_mem_size));
     // Fixup pointers (see |PolicyGlobal| in policy_low_level.h).
     PolicyBuffer** original_entries = original_rules->entry;
     PolicyBuffer** copy_base = policy_rules_->entry;
     for (size_t i = 0; i < kSandboxIpcCount; i++) {
-      if (policy_rules_->entry[i]) {
-        policy_rules_->entry[i] = reinterpret_cast<PolicyBuffer*>(
-            reinterpret_cast<char*>(copy_base) +
-            (reinterpret_cast<char*>(original_entries[i]) -
-             reinterpret_cast<char*>(original_entries)));
+      if (UNSAFE_TODO(policy_rules_->entry[i])) {
+        UNSAFE_TODO(policy_rules_->entry[i]) = reinterpret_cast<PolicyBuffer*>(
+            UNSAFE_TODO(reinterpret_cast<char*>(copy_base) +
+                        (reinterpret_cast<char*>(original_entries[i]) -
+                         reinterpret_cast<char*>(original_entries))));
       }
     }
   }

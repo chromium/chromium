@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_LAYER_TOOLBAR_LAYER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "ui/android/resources/resource_manager.h"
@@ -37,7 +37,8 @@ class ToolbarLayer : public Layer {
                     int toolbar_textbox_background_color,
                     int url_bar_background_resource_id,
                     float x_offset,
-                    float content_offset,
+                    float y_offset,
+                    float legacy_content_offset,
                     bool show_debug,
                     bool clip_shadow,
                     const viz::OffsetTag& offset_tag);
@@ -55,12 +56,10 @@ class ToolbarLayer : public Layer {
                          int progress_bar_static_background_x,
                          int progress_bar_static_background_width,
                          int progress_bar_static_background_color,
-                         int progress_bar_end_indicator_x,
-                         int progress_bar_end_indicator_y,
-                         int progress_bar_end_indicator_width,
-                         int progress_bar_end_indicator_height,
                          float corner_radius,
-                         bool progress_bar_visual_update_available);
+                         bool progress_bar_visual_update_available,
+                         bool visible,
+                         const viz::OffsetTag& offset_tag);
 
   void SetOpacity(float opacity);
 
@@ -69,19 +68,35 @@ class ToolbarLayer : public Layer {
   ~ToolbarLayer() override;
 
  private:
+  static constexpr int kInvalidResourceId = -1;
+
   int GetIndexOfLayer(scoped_refptr<cc::slim::Layer> layer);
 
-  raw_ptr<ui::ResourceManager, DanglingUntriaged> resource_manager_;
+  scoped_refptr<cc::slim::Layer> ToolbarParentLayer();
 
+  base::WeakPtr<ui::ResourceManager> resource_manager_;
+
+  // Root layer
   scoped_refptr<cc::slim::Layer> layer_;
+
+  // Layers which are tagged with the toolbar's OffsetTag. These layers only
+  // move vertically.
+  scoped_refptr<cc::slim::Layer> toolbar_layers_;
+
+  // Layers which are tagged with the progress bar's OffsetTag. These layers
+  // move with the same vertical movement as the toolbar_layers, but also move
+  // horizontally from load progress updates.
+  scoped_refptr<cc::slim::Layer> progress_bar_layers_;
+
   scoped_refptr<cc::slim::SolidColorLayer> toolbar_background_layer_;
   scoped_refptr<cc::slim::NinePatchLayer> url_bar_background_layer_;
   scoped_refptr<cc::slim::UIResourceLayer> bitmap_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> progress_bar_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> progress_bar_background_layer_;
-  scoped_refptr<cc::slim::SolidColorLayer> progress_bar_end_circle_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> progress_bar_static_background_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> debug_layer_;
+
+  int last_url_bar_background_resource_id_ = kInvalidResourceId;
 };
 
 }  //  namespace android

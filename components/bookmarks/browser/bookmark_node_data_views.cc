@@ -28,9 +28,9 @@ void BookmarkNodeData::Write(const base::FilePath& profile_path,
                              ui::OSExchangeData* data) const {
   DCHECK(data);
 
-  // If there is only one element and it is a URL, write the URL to the
-  // clipboard.
-  if (has_single_url()) {
+  // Dragging a folder can populate elements with both bookmark and
+  // folder entries; only the first entry is a URL.
+  if (elements.size() > 0 && elements[0].is_url) {
     if (elements[0].url.SchemeIs(url::kJavaScriptScheme)) {
       data->SetString(base::UTF8ToUTF16(elements[0].url.spec()));
     } else {
@@ -57,11 +57,10 @@ bool BookmarkNodeData::Read(const ui::OSExchangeData& data) {
         return false;
       }
     }
-  } else if (std::optional<ui::OSExchangeData::UrlInfo> result =
-                 data.GetURLAndTitle(
-                     ui::FilenameToURLPolicy::CONVERT_FILENAMES);
-             result.has_value()) {
-    ReadFromTuple(result->url, result->title);
+  } else if (std::vector<ui::ClipboardUrlInfo> result = data.GetURLsAndTitles(
+                 ui::FilenameToURLPolicy::CONVERT_FILENAMES);
+             !result.empty()) {
+    ReadFromTuple(result.front().url, result.front().title);
   }
 
   return is_valid();

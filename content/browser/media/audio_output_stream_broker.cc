@@ -86,7 +86,8 @@ AudioOutputStreamBroker::AudioOutputStreamBroker(
   DCHECK(client_);
   DCHECK(deleter_);
   DCHECK(group_id_);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "AudioOutputStreamBroker", this);
+  TRACE_EVENT_BEGIN("audio", "AudioOutputStreamBroker",
+                    perfetto::Track::FromPointer(this));
 
   MediaObserver* media_observer =
       GetContentClient()->browser()->GetMediaObserver();
@@ -114,8 +115,9 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
       GetDisconnectReason(disconnect_reason_, AwaitingCreated());
 
   if (AwaitingCreated()) {
-    TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                    "failed or cancelled");
+    // End "CreateStream" trace event.
+    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                    "failed or cancelled");
   }
 
   if (MediaStreamManager::GetPreferredOutputManagerInstance()) {
@@ -123,9 +125,9 @@ AudioOutputStreamBroker::~AudioOutputStreamBroker() {
         main_frame_token_, this);
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioOutputStreamBroker", this,
-                                  "disconnect reason",
-                                  static_cast<uint32_t>(reason));
+  // End "AudioOutputStreamBroker" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+                  "disconnect reason", static_cast<uint32_t>(reason));
 }
 
 void AudioOutputStreamBroker::CreateStream(
@@ -133,8 +135,8 @@ void AudioOutputStreamBroker::CreateStream(
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(!observer_receiver_.is_bound());
   DCHECK(!device_switch_interface_.is_bound());
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("audio", "CreateStream", this, "device id",
-                                    output_device_id_);
+  TRACE_EVENT_BEGIN("audio", "CreateStream", perfetto::Track::FromPointer(this),
+                    "device id", output_device_id_);
 
   stream_creation_start_time_ = base::TimeTicks::Now();
 
@@ -189,8 +191,9 @@ void AudioOutputStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
     media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
-                                  !!data_pipe);
+  // End "CreateStream" trace event.
+  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this), "success",
+                  !!data_pipe);
   stream_creation_start_time_ = base::TimeTicks();
 
   if (!data_pipe) {
@@ -208,8 +211,9 @@ void AudioOutputStreamBroker::ObserverBindingLost(
     uint32_t reason,
     const std::string& description) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "ObserverBindingLost", this,
-                                      "reset reason", reason);
+  TRACE_EVENT_INSTANT("audio", "ObserverBindingLost",
+                      perfetto::Track::FromPointer(this), "reset reason",
+                      reason);
   if (reason > static_cast<uint32_t>(DisconnectReason::kMaxValue)) {
     NOTREACHED() << "Invalid reason: " << reason;
   }

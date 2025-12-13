@@ -458,7 +458,7 @@ pub struct Metadata<'a> {
     revisions: &'a mut VecDeque<MetadataRevision>,
 }
 
-impl<'a> Metadata<'a> {
+impl Metadata<'_> {
     /// Returns `true` if the current metadata revision is the newest, `false` otherwise.
     pub fn is_latest(&self) -> bool {
         self.revisions.len() <= 1

@@ -77,7 +77,8 @@ std::unique_ptr<google::protobuf::MessageLite> DecodedMessageToProto(
 // static
 std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
     const std::string& message) {
-  std::optional<base::Value> json_value = base::JSONReader::Read(message);
+  std::optional<base::Value> json_value =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json_value) {
     return nullptr;
   }
@@ -166,9 +167,7 @@ std::string MessageWrapper::ToRawMessage() const {
   json_dictionary.Set(kJsonTypeKey, static_cast<int>(type_));
   json_dictionary.Set(kJsonDataKey, encoded_message);
 
-  std::string raw_message;
-  base::JSONWriter::Write(json_dictionary, &raw_message);
-  return raw_message;
+  return base::WriteJson(json_dictionary).value_or("");
 }
 
 }  // namespace tether

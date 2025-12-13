@@ -23,13 +23,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.Initializer;
@@ -46,6 +46,8 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.function.Supplier;
 
 /**
  * This class defines the bottom sheet that has multiple states and a persistently showing toolbar.
@@ -103,6 +105,9 @@ class BottomSheet extends FrameLayout
 
     /** The view that contains the sheet. */
     private ViewGroup mSheetContainer;
+
+    /** The view that contains the sheet background color. */
+    private View mSheetBackground;
 
     /** For detecting scroll and fling events on the bottom sheet. */
     private final BottomSheetSwipeDetector mGestureDetector;
@@ -221,7 +226,7 @@ class BottomSheet extends FrameLayout
         }
 
         float startX = mVisibleViewportRect.left;
-        float endX = getWidth() + mVisibleViewportRect.left;
+        float endX = mContainerWidth + mVisibleViewportRect.left;
         return currentEvent.getRawX() > startX && currentEvent.getRawX() < endX;
     }
 
@@ -324,6 +329,7 @@ class BottomSheet extends FrameLayout
             int bottomMargin) {
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mSheetContainer = (ViewGroup) getParent();
+        mSheetBackground = findViewById(R.id.background);
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -639,7 +645,7 @@ class BottomSheet extends FrameLayout
         // If the sheet contents are cleared out before #onSheetClosed is called, do not try to
         // retrieve the accessibility string.
         if (getCurrentSheetContent() != null) {
-            announceForAccessibility(
+            updateA11yPaneTitle(
                     getResources()
                             .getString(
                                     getCurrentSheetContent()
@@ -1028,10 +1034,12 @@ class BottomSheet extends FrameLayout
     /**
      * Set the current state of the bottom sheet. This is for internal use to notify observers of
      * state change events.
+     *
      * @param state The current state of the sheet.
      * @param reason The reason the state is changing if any.
      */
-    private void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
+    @VisibleForTesting
+    void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
         if (state == mCurrentState) return;
 
         // If we somehow got here with null content, force the sheet to close without animation.
@@ -1069,7 +1077,7 @@ class BottomSheet extends FrameLayout
                     mCurrentState == SheetState.FULL
                             ? getCurrentSheetContent().getSheetFullHeightAccessibilityStringId()
                             : getCurrentSheetContent().getSheetHalfHeightAccessibilityStringId();
-            announceForAccessibility(getResources().getString(resId));
+            updateA11yPaneTitle(getResources().getString(resId));
 
             // TalkBack will announce the content description if it has changed, so wait to set the
             // content description until after announcing full/half height.
@@ -1433,11 +1441,25 @@ class BottomSheet extends FrameLayout
         mSheetContainer.setLayoutParams(layoutParams);
     }
 
+    void onSheetBackgroundColorOverrideChanged() {
+        updateBackgroundColor();
+        for (BottomSheetObserver o : mObservers) {
+            o.onSheetBackgroundColorOverrideChanged();
+        }
+    }
+
     @VisibleForTesting
     void updateBackgroundColor() {
         if (mSheetContent == null) return;
 
-        View background = findViewById(R.id.background);
+        if (mSheetContent.hasSolidBackgroundColor()) {
+            int overrideColor = mSheetContent.getSheetBackgroundColorOverride();
+            if (overrideColor != Color.TRANSPARENT) {
+                udpateSheetBgColorTint(overrideColor);
+                return;
+            }
+        }
+
         int colorNoScrim = SemanticColorUtils.getSheetBgColor(getContext());
         int colorOnScrim = getSheetOnScrimBackgroundColor(getContext());
 
@@ -1448,10 +1470,7 @@ class BottomSheet extends FrameLayout
         boolean isResizableSheet = isHalfStateEnabled() || isPeekStateEnabled();
         if (!isResizableSheet || maxOffset <= minOffset || colorOnScrim == colorNoScrim) {
             int newColor = mSheetContent.hasCustomScrimLifecycle() ? colorNoScrim : colorOnScrim;
-            if (mSheetBgColor != newColor) {
-                mSheetBgColor = newColor;
-                background.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
-            }
+            udpateSheetBgColorTint(newColor);
             return;
         }
 
@@ -1462,10 +1481,13 @@ class BottomSheet extends FrameLayout
                         /* baseColor= */ colorNoScrim,
                         /* overlayColor= */ colorOnScrim,
                         colorRatio);
-        if (mSheetBgColor != newColor) {
-            mSheetBgColor = newColor;
-            background.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
-        }
+        udpateSheetBgColorTint(newColor);
+    }
+
+    private void udpateSheetBgColorTint(@ColorInt int newColor) {
+        if (mSheetBgColor == newColor) return;
+        mSheetBgColor = newColor;
+        mSheetBackground.setBackgroundTintList(ColorStateList.valueOf(mSheetBgColor));
     }
 
     private void ensureContentIsWrapped(boolean animate) {
@@ -1479,6 +1501,12 @@ class BottomSheet extends FrameLayout
 
     private void invalidateContentDesiredHeight() {
         mContentDesiredHeight = HEIGHT_UNSPECIFIED;
+    }
+
+    private void updateA11yPaneTitle(CharSequence msg) {
+        // Set the pane title for the container. The bottom sheet view is not always accessible
+        // e.g. when sheet is dismissed.
+        ViewCompat.setAccessibilityPaneTitle(mSheetContainer, msg);
     }
 
     /**
@@ -1502,6 +1530,10 @@ class BottomSheet extends FrameLayout
         mContainerHeight = sheetContainer.getHeight();
     }
 
+    void setSheetBackgroundForTesting(View sheetBackground) {
+        mSheetBackground = sheetBackground;
+    }
+
     void setToolbarHolderForTesting(TouchRestrictingFrameLayout toolbarHolder) {
         mToolbarHolder = toolbarHolder;
     }
@@ -1520,6 +1552,6 @@ class BottomSheet extends FrameLayout
      * @return The {@link ColorInt} for the background of a bottom sheet showing on a scrim
      */
     private static @ColorInt int getSheetOnScrimBackgroundColor(Context context) {
-        return ContextCompat.getColor(context, R.color.sheet_on_scrim_bg_color);
+        return ContextCompat.getColor(context, R.color.bottom_sheet_bg_color);
     }
 }

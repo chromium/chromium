@@ -49,20 +49,26 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/views/accessibility/view_accessibility.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #endif
 
 static const char kTargetsDataFile[] = "targets-data.json";
@@ -174,10 +180,11 @@ base::Value::Dict BuildTargetDescriptor(content::RenderViewHost* rvh) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-base::Value::Dict BuildTargetDescriptor(Browser* browser) {
+base::Value::Dict BuildTargetDescriptor(BrowserWindowInterface* browser) {
   base::Value::Dict target_data;
-  target_data.Set(kSessionIdField, browser->session_id().id());
-  target_data.Set(kNameField, browser->GetWindowTitleForCurrentTab(false));
+  target_data.Set(kSessionIdField, browser->GetSessionID().id());
+  target_data.Set(kNameField, browser->GetBrowserForMigrationOnly()
+                                  ->GetWindowTitleForCurrentTab(false));
   target_data.Set(kTypeField, kBrowser);
   return target_data;
 }
@@ -186,6 +193,28 @@ base::Value::Dict BuildTargetDescriptor(Browser* browser) {
 bool ShouldHandleAccessibilityRequestCallback(const std::string& path) {
   return path == kTargetsDataFile;
 }
+
+// Sets boolean values in `data` for each bit in `new_ax_mode` that differs from
+// that in `last_ax_mode`. Returns `true` if `data` was modified.
+void SetProcessModeBools(ui::AXMode ax_mode, base::Value::Dict& data) {
+  data.Set(kNative, ax_mode.has_mode(ui::AXMode::kNativeAPIs));
+  data.Set(kWeb, ax_mode.has_mode(ui::AXMode::kWebContents));
+  data.Set(kText, ax_mode.has_mode(ui::AXMode::kInlineTextBoxes));
+  data.Set(kExtendedProperties,
+           ax_mode.has_mode(ui::AXMode::kExtendedProperties));
+  data.Set(kHTML, ax_mode.has_mode(ui::AXMode::kHTML));
+  data.Set(kScreenReader, ax_mode.has_mode(ui::AXMode::kScreenReader));
+}
+
+#if BUILDFLAG(IS_WIN)
+// Sets values in `data` for the platform node counts in `counts`.
+void SetNodeCounts(const ui::AXPlatformNodeWin::Counts& counts,
+                   base::Value::Dict& data) {
+  data.Set("dormantCount", base::NumberToString(counts.dormant_nodes));
+  data.Set("liveCount", base::NumberToString(counts.live_nodes));
+  data.Set("ghostCount", base::NumberToString(counts.ghost_nodes));
+}
+#endif
 
 void HandleAccessibilityRequestCallback(
     content::BrowserContext* current_context,
@@ -327,14 +356,19 @@ void HandleAccessibilityRequestCallback(
 
   base::Value::List browser_list;
 #if !BUILDFLAG(IS_ANDROID)
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser_list.Append(BuildTargetDescriptor(browser));
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&browser_list](BrowserWindowInterface* browser) {
+        browser_list.Append(BuildTargetDescriptor(browser));
+        return true;
+      });
 #endif  // !BUILDFLAG(IS_ANDROID)
   data.Set(kBrowsersField, std::move(browser_list));
 
-  std::string json_string;
-  base::JSONWriter::Write(data, &json_string);
+#if BUILDFLAG(IS_WIN)
+  SetNodeCounts(ui::AXPlatformNodeWin::GetCounts(), data);
+#endif
+
+  std::string json_string = base::WriteJson(data).value_or("");
 
   std::move(callback).Run(
       base::MakeRefCounted<base::RefCountedString>(std::move(json_string)));
@@ -628,7 +662,13 @@ void AccessibilityUIObserver::AccessibilityEventReceived(
   }
 }
 
-AccessibilityUIMessageHandler::AccessibilityUIMessageHandler() = default;
+AccessibilityUIMessageHandler::AccessibilityUIMessageHandler()
+    : update_display_timer_(
+          FROM_HERE,
+          base::Seconds(1),
+          base::BindRepeating(
+              &AccessibilityUIMessageHandler::OnUpdateDisplayTimer,
+              base::Unretained(this))) {}
 
 AccessibilityUIMessageHandler::~AccessibilityUIMessageHandler() {
   if (!observer_) {
@@ -679,6 +719,10 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
       base::BindRepeating(
           &AccessibilityUIMessageHandler::RequestAccessibilityEvents,
           base::Unretained(this)));
+
+  auto* web_contents = web_ui()->GetWebContents();
+  Observe(web_contents);
+  OnVisibilityChanged(web_contents->GetVisibility());
 }
 
 void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
@@ -885,17 +929,25 @@ void AccessibilityUIMessageHandler::RequestNativeUITree(
                      AXPropertyFilter::ALLOW_EMPTY);
   AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id().id() == session_id) {
-      base::Value::Dict result = BuildTargetDescriptor(browser);
-      gfx::NativeWindow native_window = browser->window()->GetNativeWindow();
-      ui::AXPlatformNode* node =
-          ui::AXPlatformNode::FromNativeWindow(native_window);
-      result.Set(kTreeField, RecursiveDumpAXPlatformNodeAsString(
-                                 node, 0, property_filters));
-      FireWebUIListener(request_type, result);
-      return;
-    }
+  bool found = false;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, session_id, &property_filters, &request_type,
+       &found](BrowserWindowInterface* browser) {
+        if (browser->GetSessionID().id() == session_id) {
+          base::Value::Dict result = BuildTargetDescriptor(browser);
+          gfx::NativeWindow const native_window =
+              browser->GetWindow()->GetNativeWindow();
+          ui::AXPlatformNode* const node =
+              ui::AXPlatformNode::FromNativeWindow(native_window);
+          result.Set(kTreeField, RecursiveDumpAXPlatformNodeAsString(
+                                     node, 0, property_filters));
+          FireWebUIListener(request_type, result);
+          found = true;
+        }
+        return !found;
+      });
+  if (found) {
+    return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
   // No browser with the specified |session_id| was found.
@@ -1018,4 +1070,46 @@ void AccessibilityUIMessageHandler::RegisterProfilePrefs(
       std::string_view(ui::AXApiType::Type(ui::AXApiType::kBlink));
   registry->RegisterStringPref(prefs::kShownAccessibilityApiType,
                                std::string(default_api_type));
+}
+
+void AccessibilityUIMessageHandler::OnVisibilityChanged(
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::HIDDEN) {
+    update_display_timer_.Stop();
+  } else {
+    update_display_timer_.Reset();
+  }
+}
+
+void AccessibilityUIMessageHandler::OnUpdateDisplayTimer() {
+  // Collect the current state.
+  base::Value::Dict data;
+
+  SetProcessModeBools(
+      content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode(),
+      data);
+
+#if BUILDFLAG(IS_WIN)
+  SetNodeCounts(ui::AXPlatformNodeWin::GetCounts(), data);
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Compute the delta from the last transmission.
+  for (auto scan = data.begin(); scan != data.end();) {
+    const auto& [new_key, new_value] = *scan;
+    if (const auto* old_value = last_data_.Find(new_key);
+        !old_value || *old_value != new_value) {
+      // This is a new value; remember it for the future.
+      last_data_.Set(new_key, new_value.Clone());
+      ++scan;
+    } else {
+      // This is the same as the last value; forget about it.
+      scan = data.erase(scan);
+    }
+  }
+
+  // Transmit any new values to the UI.
+  if (!data.empty()) {
+    AllowJavascript();
+    FireWebUIListener("updateDisplay", data);
+  }
 }

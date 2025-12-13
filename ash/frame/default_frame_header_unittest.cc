@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
@@ -22,14 +22,14 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/window_util.h"
 
 using chromeos::DefaultFrameHeader;
@@ -38,7 +38,7 @@ using chromeos::FrameCaptionButtonContainerView;
 using chromeos::FrameHeader;
 using chromeos::kFrameActiveColorKey;
 using chromeos::kFrameInactiveColorKey;
-using views::NonClientFrameView;
+using views::FrameView;
 using views::Widget;
 
 namespace ash {
@@ -195,11 +195,11 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   // Waits until `FrameHeader` gets painted.
   EXPECT_TRUE(ui::WaitForNextFrameToBePresented(win0->GetHost()->compositor()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   wm::ActivateWindow(win0.get());
 
-  auto* frame_view = NonClientFrameViewAsh::Get(win0.get());
+  auto* frame_view = FrameViewAsh::Get(win0.get());
   auto* animating_layer_holding_view = frame_view->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view));
@@ -231,17 +231,17 @@ TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
   EXPECT_TRUE(
       ui::WaitForNextFrameToBePresented(win_0->GetHost()->compositor()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  auto* frame_view_0 = NonClientFrameViewAsh::Get(win_0.get());
+  auto* frame_view_0 = FrameViewAsh::Get(win_0.get());
   auto* animating_layer_holding_view_0 = frame_view_0->children()[0].get();
   EXPECT_TRUE(views::IsViewClass<chromeos::FrameHeader::FrameAnimatorView>(
       animating_layer_holding_view_0));
   size_t original_layers_count_0 =
       animating_layer_holding_view_0->layer()->parent()->children().size();
 
-  auto* frame_view_1 = NonClientFrameViewAsh::Get(win_1.get());
+  auto* frame_view_1 = FrameViewAsh::Get(win_1.get());
   auto* extra_view_1 =
       frame_view_1->AddChildView(std::make_unique<views::View>());
 
@@ -310,8 +310,8 @@ TEST_F(DefaultFrameHeaderTest, AnimateDuringAnimation) {
 
   EXPECT_TRUE(wm::IsActiveWindow(win_1.get()));
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto layer_bounds = win_0->layer()->bounds();
   lock.reset();

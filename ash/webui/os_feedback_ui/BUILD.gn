@@ -17,12 +17,12 @@ static_library("os_feedback_ui") {
   public_deps = [ ":url_constants" ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/os_feedback_ui/backend",
     "//ash/webui/os_feedback_ui/mojom",
-    "//ash/webui/os_feedback_ui/resources:resources",
+    "//ash/webui/os_feedback_ui/resources",
     "//ash/webui/os_feedback_ui/untrusted_resources:resources",
     "//chromeos/strings/",
     "//content/public/browser",

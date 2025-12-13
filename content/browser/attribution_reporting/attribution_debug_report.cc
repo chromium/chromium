@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -29,7 +28,6 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"

@@ -5,15 +5,19 @@
 #include "components/signin/public/webdata/token_service_table.h"
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace {
 
@@ -43,6 +47,24 @@ enum class SetTokenResult {
   kSqlFailure = 2,
   kMaxValue = kSqlFailure,
 };
+
+// Entries in the `Signin.TokenTable.GetAllWrappedBindingKeysResult` histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(GetAllWrappedBindingKeysResult)
+enum class GetAllWrappedBindingKeysResult {
+  kSuccess = 0,
+  kSqlInvalidStatement = 1,
+  kSqlFailure = 2,
+  kMaxValue = kSqlFailure,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:SigninTokenTableGetAllWrappedBindingKeysResult)
+
+void RecordRemoveOtherTokensHistogram(size_t remove_count) {
+  base::UmaHistogramCounts100("Signin.TokenTable.RemoveOtherTokensCount",
+                              remove_count);
+}
 
 }  // namespace
 
@@ -114,6 +136,34 @@ bool TokenServiceTable::RemoveTokenForService(const std::string& service) {
   return result;
 }
 
+bool TokenServiceTable::RemoveOtherTokens(
+    const std::vector<std::string>& services_to_keep) {
+  if (services_to_keep.empty()) {
+    bool result = RemoveAllTokens();
+    if (result) {
+      RecordRemoveOtherTokensHistogram(db()->GetLastChangeCount());
+    }
+    return result;
+  }
+
+  std::vector<std::string_view> placeholders(services_to_keep.size(), "?");
+  std::string query =
+      base::StrCat({"DELETE FROM token_service WHERE service NOT IN (",
+                    base::JoinString(placeholders, ","), ")"});
+
+  sql::Statement s(db()->GetUniqueStatement(query));
+  for (size_t i = 0; i < services_to_keep.size(); ++i) {
+    s.BindString(i, services_to_keep[i]);
+  }
+
+  bool result = s.Run();
+  LOG_IF(ERROR, !result) << "Failed to remove other tokens";
+  if (result) {
+    RecordRemoveOtherTokensHistogram(db()->GetLastChangeCount());
+  }
+  return result;
+}
+
 bool TokenServiceTable::SetTokenForService(
     const std::string& service,
     const std::string& token,
@@ -164,15 +214,11 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
   while (s.Step()) {
     ReadOneTokenResult read_token_result = READ_ONE_TOKEN_MAX_VALUE;
 
-    std::string encrypted_token;
     std::string decrypted_token;
-    std::string service;
-    std::vector<uint8_t> wrapped_binding_key;
-    service = s.ColumnString(0);
-    bool entry_ok = !service.empty() &&
-                    s.ColumnBlobAsString(1, &encrypted_token) &&
-                    s.ColumnBlobAsVector(2, &wrapped_binding_key);
-    if (entry_ok) {
+    std::string service = s.ColumnString(0);
+    if (!service.empty()) {
+      std::string encrypted_token = s.ColumnBlobAsString(1);
+      std::vector<uint8_t> wrapped_binding_key = s.ColumnBlobAsVector(2);
       os_crypt_async::Encryptor::DecryptFlags flags;
       if (encryptor()->DecryptString(encrypted_token, &decrypted_token,
                                      &flags)) {
@@ -202,6 +248,37 @@ TokenServiceTable::Result TokenServiceTable::GetAllTokens(
   VLOG(1) << "Loaded tokens: result = " << read_all_tokens_result
           << " ; number of tokens loaded = " << number_of_tokens_loaded;
   return read_all_tokens_result;
+}
+
+std::optional<absl::flat_hash_set<std::vector<uint8_t>>>
+TokenServiceTable::GetAllWrappedBindingKeys() {
+  GetAllWrappedBindingKeysResult result =
+      GetAllWrappedBindingKeysResult::kSuccess;
+
+  absl::Cleanup record_result = [&result] {
+    base::UmaHistogramEnumeration(
+        "Signin.TokenTable.GetAllWrappedBindingKeysResult", result);
+  };
+
+  sql::Statement s(
+      db()->GetUniqueStatement("SELECT binding_key FROM token_service"));
+
+  if (!s.is_valid()) {
+    result = GetAllWrappedBindingKeysResult::kSqlInvalidStatement;
+    return std::nullopt;
+  }
+
+  absl::flat_hash_set<std::vector<uint8_t>> wrapped_binding_keys;
+  while (s.Step()) {
+    wrapped_binding_keys.insert(s.ColumnBlobAsVector(0));
+  }
+
+  if (!s.Succeeded()) {
+    result = GetAllWrappedBindingKeysResult::kSqlFailure;
+    return std::nullopt;
+  }
+
+  return wrapped_binding_keys;
 }
 
 bool TokenServiceTable::MigrateToVersion130AddBindingKeyColumn() {

@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crostini/crostini_shared_devices_factory.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
@@ -87,6 +88,14 @@ void CrostiniHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "importCrostiniContainer",
       base::BindRepeating(&CrostiniHandler::HandleImportCrostiniContainer,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "exportDiskImage",
+      base::BindRepeating(&CrostiniHandler::HandleExportDiskImage,
+                          handler_weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "importDiskImage",
+      base::BindRepeating(&CrostiniHandler::HandleImportDiskImage,
                           handler_weak_ptr_factory_.GetWeakPtr()));
   web_ui()->RegisterMessageCallback(
       "requestCrostiniInstallerStatus",
@@ -342,6 +351,23 @@ void CrostiniHandler::HandleImportCrostiniContainer(
       ->ImportContainer(container_id, web_ui()->GetWebContents());
 }
 
+void CrostiniHandler::HandleExportDiskImage(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  guest_os::GuestId container_id(args[0]);
+  VLOG(1) << "Exporting  = " << container_id;
+
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+      ->ExportDiskImageFlow(container_id, web_ui()->GetWebContents());
+}
+
+void CrostiniHandler::HandleImportDiskImage(const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  guest_os::GuestId container_id(args[0]);
+  VLOG(1) << "Importing  = " << container_id;
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+      ->ImportDiskImageFlow(container_id, web_ui()->GetWebContents());
+}
+
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
     const base::Value::List& args) {
   AllowJavascript();
@@ -463,7 +489,7 @@ void CrostiniHandler::OnCanDisableArcAdbSideloading(
 
 void CrostiniHandler::LaunchTerminal(apps::IntentPtr intent) {
   guest_os::LaunchTerminalWithIntent(
-      profile_, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
+      profile_, display::Screen::Get()->GetPrimaryDisplay().id(),
       std::move(intent), base::DoNothing());
 }
 
@@ -822,11 +848,6 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
   }
-  if (!container_file.empty() &&
-      container_file.Extension() == FILE_PATH_LITERAL(".yaml")) {
-    options.ansible_playbook = container_file;
-    VLOG(1) << "ansible_playbook = " << container_file;
-  }
 
   crostini::CrostiniManager::GetForProfile(profile_)
       ->RestartCrostiniWithOptions(
@@ -891,8 +912,15 @@ void CrostiniHandler::HandleRequestContainerInfo(
 
   base::Value::List container_info_list;
 
-  for (const auto& container_id :
-       guest_os::GetContainers(profile_, guest_os::VmType::TERMINA)) {
+  // Realistically there should only be either a termina or baguette container.
+  std::vector<guest_os::GuestId> containers =
+      guest_os::GetContainers(profile_, guest_os::VmType::TERMINA);
+  std::vector<guest_os::GuestId> baguette_containers =
+      guest_os::GetContainers(profile_, guest_os::VmType::BAGUETTE);
+  containers.insert(containers.end(), baguette_containers.begin(),
+                    baguette_containers.end());
+
+  for (const auto& container_id : containers) {
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
     auto info = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">портокали</translation>
 <translation id="1275718070701477396">Избрано</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
+<translation id="1292474106138697109">Екран на „Инструменти за класната стая“</translation>
 <translation id="1300115153046603471">Името на точката за достъп (APN) е стандартно и за <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Преобразуване</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">Най-популярно помощно съдържание</translation>
 <translation id="2277631741861284101">Лесно записване и споделяне на аудио</translation>
 <translation id="2279051792571591988">Възстановяване на стандартните</translation>
-<translation id="2286454467119466181">Опростено</translation>
+<translation id="2286454467119466181">Обикновен</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
 <translation id="2294577623958216786">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ако искате графикът за залеза и изгрева да се актуализира автоматично, включете достъпа до местоположението на ниво система.</translation>
 <translation id="2305172810646967500">Черен</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> изображения</translation>
 <translation id="4300272766492248925">Отв. на приложението</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Създавайте преписи автоматично и търсете аудио. Можете да създавате записи дори когато нямате връзка с интернет.</translation>
 <translation id="4310735698903592804">Скорошни тапети, базирани на AI на Google</translation>
 <translation id="4320904097188876154">неоноворозов</translation>
 <translation id="432961742358282111">Кликнете с десния бутон или натиснете и задръжте, за да получите определения, преводи или преобразувани мерни единици. Използвайте клавишите със стрелки за наляво и надясно, за да управлявате тази функция.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5600027863942488546">Клавишът <ph name="KEY_NAME" /> е тестван</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">„Инструменти за класната стая“ споделя екрана ви с(ъс) <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Вече не сте в профила си</translation>
 <translation id="5620281292257375798">Само за вътрешно ползване</translation>
 <translation id="5628106863521633649">Налични езици</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Облаци</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Няма налични скенери</translation>
-<translation id="6231648282154119906">Подозрителните файлове ще бъдат сканирани автоматично от Google Безопасно сърфиране като част от избраната от вас подобрена защита</translation>
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6234024205316847054">Показване на опорните точки</translation>
 <translation id="6243280677745499710">Зададено понастоящем</translation>

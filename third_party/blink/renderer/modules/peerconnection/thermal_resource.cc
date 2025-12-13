@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace blink {
@@ -18,7 +20,6 @@ const int kReportIntervalSeconds = 10;
 }  // namespace
 
 BASE_FEATURE(kWebRtcThermalResource,
-             "WebRtcThermalResource",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -87,11 +88,11 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
   }
   // Repeat the reporting every 10 seconds until a new measurement is made or
   // the listener is unregistered.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ThermalResource::ReportMeasurement,
-                     webrtc::scoped_refptr<ThermalResource>(this),
-                     measurement_id),
+  PostDelayedCrossThreadTask(
+      *task_runner_, FROM_HERE,
+      CrossThreadBindOnce(&ThermalResource::ReportMeasurement,
+                          webrtc::scoped_refptr<ThermalResource>(this),
+                          measurement_id),
       base::Seconds(kReportIntervalSeconds));
 }
 

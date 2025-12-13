@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chromeos/ash/components/assistant/assistant.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -15,9 +14,6 @@ mojom("mojom") {
   ]
 
   enabled_features = []
-  if (enable_cros_libassistant) {
-    enabled_features += [ "enable_cros_libassistant" ]
-  }
   if (use_linux_video_acceleration) {
     enabled_features += [ "enable_oop_video_accelerators" ]
   }

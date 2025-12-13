@@ -70,8 +70,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void Init(const Widget::InitParams& params) override;
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnWidgetInitDone() override;
-  void OnWidgetThemeChanged(ui::ColorProviderKey::ColorMode color_mode,
-                            std::optional<SkColor> background_color) override;
   void OnActiveWindowChanged(bool active) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
@@ -119,13 +117,14 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       Widget::MoveLoopEscapeBehavior escape_behavior) override;
   void EndMoveLoop() override;
   void SetVisibilityChangedAnimationsEnabled(bool value) override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
+  std::unique_ptr<FrameView> CreateFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
   void SetFullscreen(bool fullscreen, int64_t display_id) override;
   bool IsFullscreen() const override;
   void SetOpacity(float opacity) override;
+  void SetBackgroundColor(SkColor background_color) override;
   void SetAspectRatio(const gfx::SizeF& aspect_ratio,
                       const gfx::Size& excluded_margin) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
@@ -148,6 +147,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void HideImpl() override;
   gfx::Rect CalculateRootWindowBounds() const override;
   gfx::Rect GetBoundsInDIP() const override;
+
+  void OnVideoCaptureLockCreated() override;
+  void OnVideoCaptureLockDestroyed() override;
 
   // CompositorObserver:
   void OnCompositorVisibilityChanging(ui::Compositor* compositor,
@@ -246,6 +248,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 
   bool is_active_ = false;
+
+  bool has_video_capture_ = false;
 
   std::u16string window_title_;
 

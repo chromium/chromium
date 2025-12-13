@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content_configuration") {
+  sources = [
+    "activity_indicator_content_configuration.h",
+    "activity_indicator_content_configuration.mm",
+    "activity_indicator_content_view.h",
+    "activity_indicator_content_view.mm",
+    "colorful_symbol_content_configuration.h",
+    "colorful_symbol_content_configuration.mm",
+    "colorful_symbol_content_view.h",
+    "colorful_symbol_content_view.mm",
+    "favicon_content_configuration.h",
+    "favicon_content_configuration.mm",
+    "favicon_content_view.h",
+    "favicon_content_view.mm",
+    "image_content_configuration.h",
+    "image_content_configuration.mm",
+    "image_content_view.h",
+    "image_content_view.mm",
+    "info_button_content_configuration.h",
+    "info_button_content_configuration.mm",
+    "info_button_content_view.h",
+    "info_button_content_view.mm",
+    "switch_content_configuration.h",
+    "switch_content_configuration.mm",
+    "switch_content_view.h",
+    "switch_content_view.mm",
+    "table_view_cell_content_configuration.h",
+    "table_view_cell_content_configuration.mm",
+    "table_view_cell_content_view.h",
+    "table_view_cell_content_view.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view/cells:generic_cells",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  public_deps = [ ":generic_content" ]
+}
+
+source_set("generic_content") {
+  sources = [
+    "chrome_content_configuration.h",
+    "chrome_content_view.h",
+    "chrome_main_content_configuration.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "activity_indicator_content_configuration_unittest.mm",
+    "colorful_symbol_content_configuration_unittest.mm",
+    "favicon_content_configuration_unittest.mm",
+    "image_content_configuration_unittest.mm",
+    "info_button_content_configuration_unittest.mm",
+    "switch_content_configuration_unittest.mm",
+  ]
+  deps = [
+    ":content_configuration",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//testing/gtest",
+  ]
+}

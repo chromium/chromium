@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/service_host/utility_process_host.h"
 
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -160,7 +156,8 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK(mojo::core::IsMojoIpczEnabled());
     auto region = base::WritableSharedMemoryRegion::Create(kTestMessage.size());
     auto mapping = region.Map();
-    memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size());
+    UNSAFE_TODO(
+        memcpy(mapping.memory(), kTestMessage.data(), kTestMessage.size()));
     service_->CloneSharedMemoryContents(
         base::WritableSharedMemoryRegion::ConvertToReadOnly(std::move(region)),
         base::BindOnce(&UtilityProcessHostBrowserTest::OnMemoryCloneReceived,
@@ -251,14 +248,7 @@ class UtilityProcessHostBrowserTest : public BrowserChildProcessObserver,
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
 #if BUILDFLAG(IS_WIN)
-// See crbug.com/40861868#comment17. There are two implementations of the
-// DoCrashImmediately mojo interface, which causes official build to return
-// a different exit_code.
-#if defined(OFFICIAL_BUILD)
-    EXPECT_EQ(STATUS_STACK_BUFFER_OVERRUN, static_cast<DWORD>(info.exit_code));
-#else
     EXPECT_EQ(EXCEPTION_BREAKPOINT, static_cast<DWORD>(info.exit_code));
-#endif  // defined(OFFICIAL_BUILD)
 #elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     EXPECT_TRUE(WIFSIGNALED(info.exit_code));
 #if defined(OFFICIAL_BUILD)
@@ -372,6 +362,13 @@ IN_PROC_BROWSER_TEST_F(UtilityProcessHostBrowserTest,
 // Disabled because it crashes on android-arm64-tests:
 // https://crbug.com/1358585.
 // TODO(crbug.com/41484083): Re-enable this test on ChromeOS.
+// ** READ THIS **
+// This is a critical test for crash reporting: if this starts to flake or fail
+// on any platform please raise a Pri-0 bug in the Internals>Core component to
+// track the investigation. Do not change the semantics of this test or the
+// `BrowserChildProcessCrashed` function above without raising a bug in
+// Internals>Core.
+// ** READ THIS **
 #if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
 #if (BUILDFLAG(IS_LINUX) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LaunchProcessAndCrash DISABLED_LaunchProcessAndCrash

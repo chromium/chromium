@@ -4,12 +4,37 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 
+#import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
+
 @implementation NewTabPageTrait
 
 #pragma mark - UIObjectTraitDefinition
 
-+ (id<NSObject>)defaultValue {
++ (NewTabPageColorPalette*)defaultValue {
   return nil;
+}
+
+@end
+
+@implementation CustomUITraitAccessor (NewTabPageTrait)
+
+- (void)setObjectForNewTabPageTrait:(NewTabPageColorPalette*)object {
+  [self.mutableTraits setObject:object forTrait:NewTabPageTrait.class];
+}
+
+- (NewTabPageColorPalette*)objectForNewTabPageTrait {
+  return base::apple::ObjCCastStrict<NewTabPageColorPalette>(
+      [self.mutableTraits objectForTrait:NewTabPageTrait.class]);
+}
+
+@end
+
+@implementation UITraitCollection (NewTabPageTrait)
+
+- (NewTabPageColorPalette*)objectForNewTabPageTrait {
+  return base::apple::ObjCCastStrict<NewTabPageColorPalette>(
+      [self objectForTrait:[NewTabPageTrait class]]);
 }
 
 @end

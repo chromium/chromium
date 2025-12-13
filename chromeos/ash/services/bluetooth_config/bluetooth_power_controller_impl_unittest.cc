@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/bluetooth_config/fake_adapter_state_controller.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -44,7 +45,8 @@ class BluetoothPowerControllerImplTest : public testing::Test {
     BluetoothPowerControllerImpl::RegisterProfilePrefs(
         active_user_prefs()->registry());
 
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
 
     user_manager::UserManagerImpl::RegisterPrefs(local_state()->registry());
     fake_user_manager_.Reset(

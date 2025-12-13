@@ -21,6 +21,7 @@ import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/network/public/mojom/shared_dictionary_error.mojom";
 import "services/network/public/mojom/sri_message_signature.mojom";
+import "services/network/public/mojom/unencoded_digest.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
@@ -39,6 +40,7 @@ struct URLRequestDevToolsInfo {
   TrustTokenParams? trust_token_params;
   bool has_user_gesture;
   uint32 resource_type;
+  bool is_ad_related;
 };
 
 // A struct with info about a URLResponseHead that is reported to DevTools.
@@ -86,7 +88,8 @@ interface DevToolsObserver {
     array<HttpRawHeaderPair> headers,
     mojo_base.mojom.TimeTicks timestamp,
     ClientSecurityState? client_security_state,
-    OtherPartitionInfo? other_partition_info);
+    OtherPartitionInfo? other_partition_info,
+    mojo_base.mojom.UnguessableToken? applied_network_conditions_id);
 
   // Called to send information about the cookies blocked from storage from a
   // received response. Only called when |devtool_request_id| is available to
@@ -172,32 +175,6 @@ interface DevToolsObserver {
     string? devtools_request_id,
     url.mojom.Url url);
 
-  // Called when parsing the .wbn file has succeeded. The event
-  // contains the information about the web bundle contents.
-  OnSubresourceWebBundleMetadata(
-    string devtool_request_id,
-    array<url.mojom.Url> urls);
-
-  // Called when parsing the .wbn file has failed.
-  OnSubresourceWebBundleMetadataError(
-    string devtool_request_id,
-    string error_message);
-
-  // Called when handling requests for resources within a .wbn file.
-  // Note: this will only be fired for resources that are requested by the
-  // webpage.
-  OnSubresourceWebBundleInnerResponse(
-    string inner_request_devtools_id,
-    url.mojom.Url url,
-    string? bundle_request_devtools_id);
-
-  // Called when an error occurs while handling a request within a .wbn file.
-  OnSubresourceWebBundleInnerResponseError(
-    string inner_request_devtools_id,
-    url.mojom.Url url,
-    string error_message,
-    string? bundle_request_devtools_id);
-
   // Called when an error occurs while handling a response with
   // "Use-As-Dictionary" header, or fetching request with a registered
   // dictionary.
@@ -212,6 +189,12 @@ interface DevToolsObserver {
     string devtool_request_id,
     url.mojom.Url url,
     array<SRIMessageSignatureIssue> issues);
+
+  // Called when an error occurs when parsing the `Unencoded-Digest` header.
+  OnUnencodedDigestError(
+    string devtool_request_id,
+    url.mojom.Url url,
+    UnencodedDigestIssue issue);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

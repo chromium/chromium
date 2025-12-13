@@ -5,14 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_UNINSTALL_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_UNINSTALL_DIALOG_VIEW_H_
 
-#include <map>
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -22,7 +20,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class Profile;
@@ -48,7 +46,7 @@ class WebAppUninstallDialogDelegateView
       Profile* profile,
       webapps::AppId app_id,
       webapps::WebappUninstallSource uninstall_source,
-      std::map<web_app::SquareSizePx, SkBitmap> icon_bitmaps,
+      web_app::IconMetadataFromDisk icon_metadata,
       web_app::UninstallDialogCallback uninstall_choice_callback);
   WebAppUninstallDialogDelegateView(const WebAppUninstallDialogDelegateView&) =
       delete;

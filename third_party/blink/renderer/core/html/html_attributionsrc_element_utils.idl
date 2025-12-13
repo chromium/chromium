@@ -4,5 +4,5 @@
 
 [RuntimeEnabled=AttributionReporting]
 interface mixin HTMLAttributionSrcElementUtils {
-    [CEReactions, Reflect, SecureContext] attribute USVString attributionSrc;
+    [CEReactions, Reflect, SecureContext, DeprecateAs=AttributionReportingAPIAll] attribute USVString attributionSrc;
 };

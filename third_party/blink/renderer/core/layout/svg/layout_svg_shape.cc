@@ -82,10 +82,12 @@ LayoutSVGShape::LayoutSVGShape(SVGGeometryElement* node)
 
 LayoutSVGShape::~LayoutSVGShape() = default;
 
-void LayoutSVGShape::StyleDidChange(StyleDifference diff,
-                                    const ComputedStyle* old_style) {
+void LayoutSVGShape::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGModelObject::StyleDidChange(diff, old_style);
+  LayoutSVGModelObject::StyleDidChange(diff, old_style, style_change_context);
 
   if (diff.NeedsFullLayout()) {
     SetNeedsBoundariesUpdate();
@@ -449,7 +451,8 @@ AffineTransform LayoutSVGShape::ComputeRootTransform() const {
       LocalToAncestorTransform(To<LayoutSVGRoot>(root)));
 }
 
-AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform() const {
+AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform(
+    NonScalingStrokeTransformMode mode) const {
   NOT_DESTROYED();
   // Compute the CTM to the SVG root. This should probably be the CTM all the
   // way to the "canvas" of the page ("host" coordinate system), but with our
@@ -460,10 +463,13 @@ AffineTransform LayoutSVGShape::ComputeNonScalingStrokeTransform() const {
   host_transform.Scale(1 / StyleRef().EffectiveZoom())
       .PreConcat(ComputeRootTransform());
 
-  // Width of non-scaling stroke is independent of translation, so zero it out
-  // here.
-  host_transform.SetE(0);
-  host_transform.SetF(0);
+  if (mode == NonScalingStrokeTransformMode::kClearTranslation) {
+    // Width of non-scaling stroke is independent of translation, so zero it out
+    // here.
+    host_transform.SetE(0);
+    host_transform.SetF(0);
+  }
+
   return host_transform;
 }
 
@@ -471,7 +477,12 @@ void LayoutSVGShape::UpdateNonScalingStrokeData() {
   NOT_DESTROYED();
   DCHECK(HasNonScalingStroke());
 
-  const AffineTransform transform = ComputeNonScalingStrokeTransform();
+  const NonScalingStrokeTransformMode mode =
+      RuntimeEnabledFeatures::SvgNonScalingStrokePrecisionFixEnabled()
+          ? NonScalingStrokeTransformMode::kPreserveTranslation
+          : NonScalingStrokeTransformMode::kClearTranslation;
+
+  const AffineTransform transform = ComputeNonScalingStrokeTransform(mode);
   auto& rare_data = EnsureRareData();
   if (rare_data.non_scaling_stroke_transform_ != transform) {
     SetShouldDoFullPaintInvalidation();

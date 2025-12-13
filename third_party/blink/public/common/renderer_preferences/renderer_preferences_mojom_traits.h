@@ -199,6 +199,13 @@ struct BLINK_COMMON_EXPORT
   }
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+  static const bool& middle_click_paste_allowed(
+      const ::blink::RendererPreferences& data) {
+    return data.middle_click_paste_allowed;
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN)
   static const std::u16string& caption_font_family_name(
       const ::blink::RendererPreferences& data) {
@@ -278,11 +285,6 @@ struct BLINK_COMMON_EXPORT
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;
-  }
-
-  static const uint64_t& canvas_noise_token(
-      const ::blink::RendererPreferences& data) {
-    return data.canvas_noise_token;
   }
 
   static bool view_source_line_wrap_enabled(

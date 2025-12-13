@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] the result of compressing [,Hello,Hello] with brotli should be 'HelloHello'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] the result of compressing [Hello,,Hello] with brotli should be 'HelloHello'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] the result of compressing [Hello,Hello,] with brotli should be 'HelloHello'
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CompressionStream': Unsupported compression format: 'brotli'"
+Harness: the test ran to completion.
+

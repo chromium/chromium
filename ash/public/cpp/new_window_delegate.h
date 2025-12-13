@@ -8,7 +8,9 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/functional/bind.h"
+#include "ui/display/types/display_constants.h"
 
 class GURL;
 
@@ -40,11 +42,6 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
 
   // Returns an instance connected to ash-chrome.
   static NewWindowDelegate* GetInstance();
-
-  // DEPRECATED: This method is no longer useful after Lacros deprecation. This
-  // now returns the same value as `GetInstance` but will be removed soon.
-  // TODO(b/367844818): Remove this.
-  static NewWindowDelegate* GetPrimary();
 
   // Invoked when the user uses Ctrl+T to open a new tab.
   virtual void NewTab() = 0;

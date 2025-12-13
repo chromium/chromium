@@ -40,8 +40,9 @@ std::unique_ptr<net::test_server::HttpResponse> CaptureHeaderHandlerWithContent(
     base::OnceClosure done_callback,
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path() != path)
+  if (request_url.GetPath() != path) {
     return nullptr;
+  }
 
   *header_map = request.headers;
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();

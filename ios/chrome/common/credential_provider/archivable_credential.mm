@@ -17,6 +17,7 @@ NSString* const kACRankKey = @"rank";
 NSString* const kACRecordIdentifierKey = @"recordIdentifier";
 NSString* const kACServiceIdentifierKey = @"serviceIdentifier";
 NSString* const kACServiceNameKey = @"serviceName";
+NSString* const kACRegistryControlledDomainKey = @"registryControlledDomain";
 NSString* const kACUserKey = @"user";
 NSString* const kACNoteKey = @"note";
 NSString* const kACSyncIdKey = @"syncId";
@@ -28,6 +29,9 @@ NSString* const kACPrivateKeyKey = @"privateKey";
 NSString* const kACEncryptedKey = @"encrypted";
 NSString* const kACCreationTimeKey = @"creationTime";
 NSString* const kACLastUsedTimeKey = @"lastUsedTime";
+NSString* const kACHiddenKey = @"hidden";
+NSString* const kACHiddenTimeKey = @"hiddenTime";
+NSString* const kACEditedByUserKey = @"editedByUser";
 
 // Returns whether the strings are the same (including if both are nil) or if
 // both strings have the same contents.
@@ -64,6 +68,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize recordIdentifier = _recordIdentifier;
 @synthesize serviceIdentifier = _serviceIdentifier;
 @synthesize serviceName = _serviceName;
+@synthesize registryControlledDomain = _registryControlledDomain;
 @synthesize username = _username;
 @synthesize note = _note;
 @synthesize syncId = _syncId;
@@ -75,6 +80,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize encrypted = _encrypted;
 @synthesize creationTime = _creationTime;
 @synthesize lastUsedTime = _lastUsedTime;
+@synthesize hidden = _hidden;
+@synthesize hiddenTime = _hiddenTime;
+@synthesize editedByUser = _editedByUser;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
                      credential:(id<Credential>)credential {
@@ -92,7 +100,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                       privateKey:credential.privateKey
                        encrypted:credential.encrypted
                     creationTime:credential.creationTime
-                    lastUsedTime:credential.lastUsedTime];
+                    lastUsedTime:credential.lastUsedTime
+                          hidden:credential.hidden
+                      hiddenTime:credential.hiddenTime
+                    editedByUser:credential.editedByUser];
   } else {
     // Use the password initializer
     self = [self initWithFavicon:credential.favicon
@@ -102,6 +113,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                 recordIdentifier:credential.recordIdentifier
                serviceIdentifier:credential.serviceIdentifier
                      serviceName:credential.serviceName
+        registryControlledDomain:credential.registryControlledDomain
                         username:credential.username
                             note:credential.note];
   }
@@ -115,6 +127,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                recordIdentifier:(NSString*)recordIdentifier
               serviceIdentifier:(NSString*)serviceIdentifier
                     serviceName:(NSString*)serviceName
+       registryControlledDomain:(NSString*)registryControlledDomain
                        username:(NSString*)username
                            note:(NSString*)note {
   self = [super init];
@@ -126,6 +139,7 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _recordIdentifier = recordIdentifier;
     _serviceIdentifier = serviceIdentifier;
     _serviceName = serviceName;
+    _registryControlledDomain = registryControlledDomain;
     _username = username;
     _note = note;
   }
@@ -144,7 +158,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
                    creationTime:(int64_t)creationTime
-                   lastUsedTime:(int64_t)lastUsedTime {
+                   lastUsedTime:(int64_t)lastUsedTime
+                         hidden:(BOOL)hidden
+                     hiddenTime:(int64_t)hiddenTime
+                   editedByUser:(BOOL)editedByUser {
   CHECK(credentialId.length > 0);
   self = [super init];
   if (self) {
@@ -161,6 +178,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _encrypted = encrypted;
     _creationTime = creationTime;
     _lastUsedTime = lastUsedTime;
+    _hidden = hidden;
+    _hiddenTime = hiddenTime;
+    _editedByUser = editedByUser;
   }
   return self;
 }
@@ -176,13 +196,13 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   return [NSDate dateWithTimeIntervalSince1970:timeInterval.InSeconds()];
 }
 
-// TODO(crbug.com/330355124): Convenience getter to have a valid URL for
+// TODO(crbug.com/458784353): Convenience getter to have a valid URL for
 // passkeys. Remove once all passkey related uses have been removed.
 - (NSString*)serviceName {
   return self.isPasskey ? _rpId : _serviceName;
 }
 
-// TODO(crbug.com/330355124): Convenience getter to have a valid URL for
+// TODO(crbug.com/458784353): Convenience getter to have a valid URL for
 // passkeys. Remove once all passkey related uses have been removed.
 - (NSString*)serviceIdentifier {
   return self.isPasskey ? _rpId : _serviceIdentifier;
@@ -207,6 +227,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            stringsAreEqual(self.serviceIdentifier,
                            otherCredential.serviceIdentifier) &&
            stringsAreEqual(self.serviceName, otherCredential.serviceName) &&
+           stringsAreEqual(self.registryControlledDomain,
+                           otherCredential.registryControlledDomain) &&
            stringsAreEqual(self.username, otherCredential.username) &&
            stringsAreEqual(self.note, otherCredential.note) &&
            dataAreEqual(self.syncId, otherCredential.syncId) &&
@@ -218,7 +240,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            dataAreEqual(self.privateKey, otherCredential.privateKey) &&
            dataAreEqual(self.encrypted, otherCredential.encrypted) &&
            self.creationTime == otherCredential.creationTime &&
-           self.lastUsedTime == otherCredential.lastUsedTime;
+           self.lastUsedTime == otherCredential.lastUsedTime &&
+           self.hidden == otherCredential.hidden &&
+           self.hiddenTime == otherCredential.hiddenTime &&
+           self.editedByUser == otherCredential.editedByUser;
   }
 }
 
@@ -249,11 +274,16 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeObject:self.encrypted forKey:kACEncryptedKey];
     [coder encodeInt64:self.creationTime forKey:kACCreationTimeKey];
     [coder encodeInt64:self.lastUsedTime forKey:kACLastUsedTimeKey];
+    [coder encodeBool:self.hidden forKey:kACHiddenKey];
+    [coder encodeInt64:self.hiddenTime forKey:kACHiddenTimeKey];
+    [coder encodeBool:self.editedByUser forKey:kACEditedByUserKey];
   } else {
     [coder encodeObject:self.password forKey:kACPasswordKey];
     [coder encodeInt64:self.rank forKey:kACRankKey];
     [coder encodeObject:self.serviceIdentifier forKey:kACServiceIdentifierKey];
     [coder encodeObject:self.serviceName forKey:kACServiceNameKey];
+    [coder encodeObject:self.registryControlledDomain
+                 forKey:kACRegistryControlledDomainKey];
     [coder encodeObject:self.note forKey:kACNoteKey];
   }
 }
@@ -276,20 +306,26 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
               privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
                encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
             creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]
-            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]];
+            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]
+                  hidden:[coder decodeBoolForKey:kACHiddenKey]
+              hiddenTime:[coder decodeInt64ForKey:kACHiddenTimeKey]
+            editedByUser:[coder decodeBoolForKey:kACEditedByUserKey]];
 
   } else {
     // Use the password initializer
-    return [self
-          initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
-                     gaia:[coder decodeNSStringForKey:kACGaiaKey]
-                 password:[coder decodeNSStringForKey:kACPasswordKey]
-                     rank:[coder decodeInt64ForKey:kACRankKey]
-         recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]
-        serviceIdentifier:[coder decodeNSStringForKey:kACServiceIdentifierKey]
-              serviceName:[coder decodeNSStringForKey:kACServiceNameKey]
-                 username:[coder decodeNSStringForKey:kACUserKey]
-                     note:[coder decodeNSStringForKey:kACNoteKey]];
+    return [self initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
+                            gaia:[coder decodeNSStringForKey:kACGaiaKey]
+                        password:[coder decodeNSStringForKey:kACPasswordKey]
+                            rank:[coder decodeInt64ForKey:kACRankKey]
+                recordIdentifier:
+                    [coder decodeNSStringForKey:kACRecordIdentifierKey]
+               serviceIdentifier:
+                   [coder decodeNSStringForKey:kACServiceIdentifierKey]
+                     serviceName:[coder decodeNSStringForKey:kACServiceNameKey]
+        registryControlledDomain:
+            [coder decodeNSStringForKey:kACRegistryControlledDomainKey]
+                        username:[coder decodeNSStringForKey:kACUserKey]
+                            note:[coder decodeNSStringForKey:kACNoteKey]];
   }
 }
 

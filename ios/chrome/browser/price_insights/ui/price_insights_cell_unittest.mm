@@ -20,8 +20,8 @@ namespace {
 
 const char kUrl[] = "https://www.merchant.com/price_drop_product";
 
-NSString* kTitle = @"Product title";
-NSString* kVariant = @"Product variant";
+NSString* const kTitle = @"Product title";
+NSString* const kVariant = @"Product variant";
 std::string kCurrency = "USD";
 std::string kCountryCode = "us";
 

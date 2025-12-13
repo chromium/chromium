@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.appmenu;
 
 import android.graphics.drawable.Drawable;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -27,6 +28,12 @@ public class AppMenuItemProperties {
     /** The title of the menu item. */
     public static final WritableObjectPropertyKey<CharSequence> TITLE =
             new WritableObjectPropertyKey<>("TITLE");
+
+    /**
+     * The unused title id of the menu item, to accomodate `HierarchicalMenuKeyProvider`.
+     * TODO(crbug.com/40738791): Remove this and use only {@link TITLE}.
+     */
+    public static final WritableIntPropertyKey TITLE_ID = new WritableIntPropertyKey("TITLE_ID");
 
     /**
      * The condensed title of the menu item. This is used for View#setContentDescription() for the
@@ -70,13 +77,21 @@ public class AppMenuItemProperties {
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
 
-    /** Whether the menu item support enter animation when menu just opened. */
-    public static final WritableBooleanPropertyKey SUPPORT_ENTER_ANIMATION =
-            new WritableBooleanPropertyKey("SUPPORT_ENTER_ANIMATION");
-
     /** The click handler for the menu item. */
     public static final WritableObjectPropertyKey<@Nullable AppMenuClickHandler> CLICK_HANDLER =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true, "CLICK_HANDLER");
+
+    /** The hover listener for menu items. */
+    public static final WritableObjectPropertyKey<View.@Nullable OnHoverListener> HOVER_LISTENER =
+            new WritableObjectPropertyKey<>("HOVER_LISTENER");
+
+    /** Whether the menu item has hover background. */
+    public static final WritableBooleanPropertyKey HAS_HOVER_BACKGROUND =
+            new WritableBooleanPropertyKey("HAS_HOVER_BACKGROUND");
+
+    /** The key listener for menu items. */
+    public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
+            new WritableObjectPropertyKey<>("KEY_LISTENER");
 
     /**
      * Whether the menu is shown from a menu icon positioned at start. This is used to determine the
@@ -110,6 +125,7 @@ public class AppMenuItemProperties {
             new PropertyKey[] {
                 MENU_ITEM_ID,
                 TITLE,
+                TITLE_ID,
                 TITLE_CONDENSED,
                 ENABLED,
                 HIGHLIGHTED,
@@ -120,8 +136,10 @@ public class AppMenuItemProperties {
                 ICON_COLOR_RES,
                 ICON_SHOW_BADGE,
                 POSITION,
-                SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,
+                HOVER_LISTENER,
+                HAS_HOVER_BACKGROUND,
+                KEY_LISTENER,
                 MENU_ICON_AT_START,
                 ADDITIONAL_ICONS
             };

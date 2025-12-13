@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
+import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -31,8 +32,8 @@ import {Router} from '../router.js';
 
 import {AllSitesAction2, SortMethod} from './constants.js';
 import {getTemplate} from './site_entry.html.js';
+import type {OriginInfo, SiteGroup} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {OriginInfo, SiteGroup} from './site_settings_prefs_browser_proxy.js';
 
 
 export interface SiteEntryElement {
@@ -90,12 +91,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
       rwsMembershipLabel_: {
         type: String,
         value: '',
-      },
-
-      isRelatedWebsiteSetsV2UiEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isRelatedWebsiteSetsV2UiEnabled'),
       },
 
       /**
@@ -170,7 +165,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
   declare private cookiesNum_: string[];
   declare sortMethod?: SortMethod;
   declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
-  declare private isRelatedWebsiteSetsV2UiEnabled_: boolean;
 
   private button_: Element|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -332,11 +326,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
     return !!this.siteGroup && this.siteGroup.rwsOwner !== undefined;
   }
 
-  private showRwsLabel_(): boolean {
-    return this.isRwsMember_() &&
-        !(this.isRelatedWebsiteSetsV2UiEnabled_ && this.isRwsFiltered);
-  }
-
   /**
    * Evaluates whether the three dot menu should be shown for the site entry.
    * @returns True if site group is a related website set member and filter by
@@ -364,8 +353,6 @@ export class SiteEntryElement extends SiteEntryElementBase {
   private updateRwsMembershipLabel_() {
     if (!this.siteGroup.rwsOwner) {
       this.rwsMembershipLabel_ = '';
-    } else if (this.isRelatedWebsiteSetsV2UiEnabled_) {
-      this.rwsMembershipLabel_ = this.i18n('allSitesRwsMembershipLabel');
     } else {
       this.browserProxy
           .getRwsMembershipLabel(

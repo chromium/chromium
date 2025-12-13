@@ -39,7 +39,7 @@ source_set("interactive_ui_tests") {
     "//chromeos/strings:strings_grit",
     "//content/test:test_support",
     "//dbus",
-    "//ui/base:base",
+    "//ui/base",
     "//ui/base:test_support",
     "//ui/chromeos/strings:strings_grit",
     "//ui/message_center",

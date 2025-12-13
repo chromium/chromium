@@ -1,0 +1,5 @@
+include_rules = [
+  # go/keep-sorted start
+  "+ios/chrome/browser/instructions_bottom_sheet/ui",
+  # go/keep-sorted end
+]

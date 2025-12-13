@@ -4,11 +4,8 @@
 
 package com.android.webview.chromium;
 
-import android.os.Build;
 import android.webkit.WebViewRenderProcess;
 import android.webkit.WebViewRenderProcessClient;
-
-import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwRenderProcess;
 
@@ -21,7 +18,6 @@ import java.util.concurrent.Executor;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@RequiresApi(Build.VERSION_CODES.Q)
 public final class GlueApiHelperForQ {
     private GlueApiHelperForQ() {}
 

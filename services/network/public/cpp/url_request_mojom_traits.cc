@@ -38,6 +38,23 @@
 
 namespace mojo {
 
+bool StructTraits<network::mojom::EnabledClientHintsDataView,
+                  network::ResourceRequest::TrustedParams::EnabledClientHints>::
+    Read(network::mojom::EnabledClientHintsDataView data,
+         network::ResourceRequest::TrustedParams::EnabledClientHints* out) {
+  if (!data.ReadOrigin(&out->origin)) {
+    return false;
+  }
+  out->is_outermost_main_frame = data.is_outermost_main_frame();
+  if (!data.ReadHints(&out->hints)) {
+    return false;
+  }
+  if (!data.ReadNotAllowedHints(&out->not_allowed_hints)) {
+    return false;
+  }
+  return true;
+}
+
 bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
                   network::ResourceRequest::TrustedParams>::
     Read(network::mojom::TrustedUrlRequestParamsDataView data,
@@ -183,7 +200,6 @@ bool StructTraits<
   out->is_fetch_later_api = data.is_fetch_later_api();
   out->is_favicon = data.is_favicon();
   out->original_destination = data.original_destination();
-  out->target_ip_address_space = data.target_ip_address_space();
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();

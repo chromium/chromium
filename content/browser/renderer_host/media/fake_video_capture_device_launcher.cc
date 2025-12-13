@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/token.h"
@@ -18,7 +17,6 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_frame_receiver_on_task_runner.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
@@ -91,13 +89,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::WeakPtr<media::VideoFrameReceiver> receiver,
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
-    base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {
+    base::OnceClosure done_cb) {
   auto device = system_->CreateDevice(device_id).ReleaseDevice();
 #if BUILDFLAG(IS_WIN)
   auto buffer_pool = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
@@ -119,7 +111,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   auto device_client = std::make_unique<media::VideoCaptureDeviceClient>(
       std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
           receiver, base::SingleThreadTaskRunner::GetCurrentDefault()),
-      std::move(buffer_pool), std::nullopt);
+      std::move(buffer_pool));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   device->AllocateAndStart(params, std::move(device_client));
   auto launched_device =

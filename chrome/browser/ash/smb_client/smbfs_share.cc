@@ -312,7 +312,7 @@ void SmbFsShare::SetMounterCreationCallbackForTest(
 
 std::string SmbFsShare::GenerateStableMountId() const {
   const auto input = GenerateStableMountIdInput();
-  return base::ToLowerASCII(base::HexEncode(crypto::hash::Sha256(input)));
+  return base::HexEncodeLower(crypto::hash::Sha256(input));
 }
 
 std::string SmbFsShare::GenerateStableMountIdInput() const {

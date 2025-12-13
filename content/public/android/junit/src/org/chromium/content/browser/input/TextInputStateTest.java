@@ -60,12 +60,15 @@ public class TextInputStateTest {
                 new TextInputState("hello", new Range(3, 3), new Range(-1, -1), false, true);
         for (int before = -1; before < 6; ++before) {
             for (int after = -1; after < 6; ++after) {
-                int beforeLength = before == 5 ? before : Integer.MAX_VALUE;
-                int afterLength = after == 5 ? after : Integer.MAX_VALUE;
+                int beforeLength = before == 5 ? Integer.MAX_VALUE : before;
+                int afterLength = after == 5 ? Integer.MAX_VALUE : after;
+                int offset = Math.max(0, stateEmptySelection.selection().start()
+                        - Math.max(0, beforeLength));
                 verifySurroundingText(
                         getSurroundingTextFrameworkDefaultVersion(
                                 stateEmptySelection, beforeLength, afterLength),
-                        stateEmptySelection.getSurroundingTextInternal(beforeLength, afterLength));
+                        stateEmptySelection.getSurroundingTextInternal(beforeLength, afterLength),
+                        offset);
             }
         }
 
@@ -73,23 +76,26 @@ public class TextInputStateTest {
                 new TextInputState("hello", new Range(3, 4), new Range(3, 4), false, true);
         for (int before = -1; before < 6; ++before) {
             for (int after = -1; after < 6; ++after) {
-                int beforeLength = before == 5 ? before : Integer.MAX_VALUE;
-                int afterLength = after == 5 ? after : Integer.MAX_VALUE;
+                int beforeLength = before == 5 ? Integer.MAX_VALUE : before;
+                int afterLength = after == 5 ? Integer.MAX_VALUE : after;
+                int offset = Math.max(0, stateNonEmptySelection.selection().start()
+                        - Math.max(0, beforeLength));
                 verifySurroundingText(
                         getSurroundingTextFrameworkDefaultVersion(
                                 stateNonEmptySelection, beforeLength, afterLength),
                         stateNonEmptySelection.getSurroundingTextInternal(
-                                beforeLength, afterLength));
+                                beforeLength, afterLength), offset);
             }
         }
     }
 
     void verifySurroundingText(
             TextInputState.SurroundingTextInternal expected,
-            TextInputState.SurroundingTextInternal value) {
+            TextInputState.SurroundingTextInternal value, int offset) {
         assertEquals(expected.mText, value.mText);
         assertEquals(expected.mSelectionStart, value.mSelectionStart);
         assertEquals(expected.mSelectionEnd, value.mSelectionEnd);
+        assertEquals(offset, value.mOffset);
     }
 
     // From Android framework code InputConnection#getSurroundingtext(int, int, int). Our

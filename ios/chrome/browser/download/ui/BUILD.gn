@@ -29,6 +29,7 @@ source_set("ui") {
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/fullscreen/ui_bundled:ui",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
@@ -42,6 +43,7 @@ source_set("ui") {
   frameworks = [
     "ContactsUI.framework",
     "Contacts.framework",
+    "QuickLook.framework",
     "SafariServices.framework",
     "ARKit.framework",
     "StoreKit.framework",

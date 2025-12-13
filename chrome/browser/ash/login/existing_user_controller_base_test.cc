@@ -11,8 +11,7 @@
 namespace ash {
 
 ExistingUserControllerBaseTest::ExistingUserControllerBaseTest()
-    : scoped_local_state_(TestingBrowserProcess::GetGlobal()),
-      fake_user_manager_(std::make_unique<FakeChromeUserManager>()),
+    : fake_user_manager_(std::make_unique<FakeChromeUserManager>()),
       auth_events_recorder_(ash::AuthEventsRecorder::CreateForTesting()) {}
 
 ExistingUserControllerBaseTest::~ExistingUserControllerBaseTest() = default;

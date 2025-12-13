@@ -53,30 +53,24 @@ const char kFedCmUserLoudLabel[] = "FedCmUserLoud";
 const char kFedCmUserQuietLabel[] = "FedCmUserQuiet";
 
 // Set UMA metrics to use as input.
-constexpr std::array<MetadataWriter::UMAFeature, 4> kFedCmUserUMAFeatures = {
+constexpr FeaturePair<FedCmUserModel::Feature> kFedCmUserUMAFeatures[] = {
     // Number of times accounts dialog is shown.
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Blink.FedCm.AccountsDialogShown",
-        28,
-        proto::Aggregation::COUNT),
+    {FedCmUserModel::kFeatureAccountsDialogShown,
+     features::UMACount("Blink.FedCm.AccountsDialogShown", 28)},
     // Number of successful token requests.
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Blink.FedCm.Status.RequestIdToken",
-        28,
-        kTokenResponsePositiveEnumValues.data(),
-        kTokenResponsePositiveEnumValues.size()),
+    {FedCmUserModel::kFeatureRequestIdToken,
+     features::UMAEnum("Blink.FedCm.Status.RequestIdToken",
+                       28,
+                       kTokenResponsePositiveEnumValues)},
     // Number of times user has intentionally closed FedCM UI. (Close
     // button/Swipe)
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Blink.FedCm.CancelReason",
-        28,
-        kCancelReasonNegativeEnumValues.data(),
-        kCancelReasonNegativeEnumValues.size()),
+    {FedCmUserModel::kFeatureCancelReason,
+     features::UMAEnum("Blink.FedCm.CancelReason",
+                       28,
+                       kCancelReasonNegativeEnumValues)},
     // Whether the user is signed in i.e. used FedCM previously.
-    MetadataWriter::UMAFeature::FromEnumHistogram("Blink.FedCm.IsSignInUser",
-                                                  28,
-                                                  kIsSignInUserValue.data(),
-                                                  kIsSignInUserValue.size()),
+    {FedCmUserModel::kFeatureIsSignInUser,
+     features::UMAEnum("Blink.FedCm.IsSignInUser", 28, kIsSignInUserValue)},
 };
 }  // namespace
 
@@ -114,8 +108,7 @@ FedCmUserModel::GetModelConfig() {
       /*default_ttl=*/kFedCmUserResultTTLDays, proto::TimeUnit::DAY);
 
   // Set features.
-  writer.AddUmaFeatures(kFedCmUserUMAFeatures.data(),
-                        kFedCmUserUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFedCmUserUMAFeatures);
 
   return std::make_unique<ModelConfig>(std::move(intentional_user_metadata),
                                        /*model_version=*/1);
@@ -124,23 +117,13 @@ FedCmUserModel::GetModelConfig() {
 void FedCmUserModel::ExecuteModelWithInput(const ModelProvider::Request& inputs,
                                            ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kFedCmUserUMAFeatures.size()) {
+  if (inputs.size() != kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
 
-  float result = 0;
-  const int accounts_dialog_shown_count = inputs[0];
-  const int successful_token_requests_count = inputs[1];
-  const int intentional_ui_dismissed_count = inputs[2];
-  const int signed_in_user_count = inputs[3];
-
-  if (accounts_dialog_shown_count == 0 ||
-      successful_token_requests_count >= 1 ||
-      intentional_ui_dismissed_count <= 2 || signed_in_user_count >= 1) {
-    result = 1;
-  }
+  float result = 1;
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

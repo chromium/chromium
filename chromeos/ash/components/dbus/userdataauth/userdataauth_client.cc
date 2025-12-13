@@ -312,6 +312,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
                     std::move(callback));
   }
 
+  void GenerateFreshRecoveryId(
+      const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+      GenerateFreshRecoveryIdCallback callback) override {
+    CallProtoMethod(::user_data_auth::kGenerateFreshRecoveryId,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
   void GetAuthSessionStatus(
       const ::user_data_auth::GetAuthSessionStatusRequest& request,
       GetAuthSessionStatusCallback callback) override {

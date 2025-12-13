@@ -419,13 +419,13 @@ void ScriptInjectionManager::TryToInject(
       run_location, scripts_run_info,
       base::BindOnce(&ScriptInjectionManager::OnInjectionStatusUpdated,
                      base::Unretained(this)))) {
-    case ScriptInjection::INJECTION_WAITING:
+    case ScriptInjection::InjectionResult::kWaiting:
       pending_injections_.push_back(std::move(injection));
       break;
-    case ScriptInjection::INJECTION_BLOCKED:
+    case ScriptInjection::InjectionResult::kBlocked:
       running_injections_.push_back(std::move(injection));
       break;
-    case ScriptInjection::INJECTION_FINISHED:
+    case ScriptInjection::InjectionResult::kFinished:
       break;
   }
 }
@@ -505,8 +505,9 @@ void ScriptInjectionManager::OnPermitScriptInjectionHandled(
                                   mojom::RunLocation::kRunDeferred);
   ScriptInjection::InjectionResult res =
       script_injection->OnPermissionGranted(&scripts_run_info);
-  if (res == ScriptInjection::INJECTION_BLOCKED)
+  if (res == ScriptInjection::InjectionResult::kBlocked) {
     running_injections_.push_back(std::move(script_injection));
+  }
   scripts_run_info.LogRun(activity_logging_enabled_);
 }
 

@@ -8,9 +8,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -38,10 +40,10 @@ ContentHashFetcher::ContentHashFetcher(ContentHash::FetchKey key)
       response_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 void ContentHashFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "URLFetchComplete for " << fetch_key_.extension_id
-          << " is_success:" << !!response_body << " "
+          << " is_success:" << response_body.has_value() << " "
           << fetch_key_.fetch_url.possibly_invalid_spec();
   DCHECK(hash_fetcher_callback_);
   DCHECK(simple_loader_);

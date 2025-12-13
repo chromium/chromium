@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_METRICS_UTIL_H_
 #define CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_APP_METRICS_UTIL_H_
 
-#include <map>
 #include <string>
 
 #include "base/time/time.h"

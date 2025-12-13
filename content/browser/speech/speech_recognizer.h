@@ -9,7 +9,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
-#include "media/mojo/mojom/speech_recognition_recognition_context.h"
+
+namespace media {
+struct SpeechRecognitionRecognitionContext;
+}
 
 namespace content {
 
@@ -19,10 +22,7 @@ class SpeechRecognitionEventListener;
 class CONTENT_EXPORT SpeechRecognizer
     : public base::RefCountedThreadSafe<SpeechRecognizer> {
  public:
-  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id)
-      : listener_(listener), session_id_(session_id) {
-    DCHECK(listener_);
-  }
+  SpeechRecognizer(SpeechRecognitionEventListener* listener, int session_id);
 
   SpeechRecognizer(const SpeechRecognizer&) = delete;
   SpeechRecognizer& operator=(const SpeechRecognizer&) = delete;

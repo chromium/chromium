@@ -1,0 +1,17 @@
+This is a wdspec test.
+[ERROR] test_simulate_characteristic[broadcast]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[read]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[writeWithoutResponse]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[write]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[notify]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[indicate]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+[ERROR] test_simulate_characteristic[authenticatedSignedWrites]
+  setup error: webdriver.bidi.error.UnknownErrorException: unknown error ('BluetoothEmulation.disable' wasn't found)
+Harness: the test ran to completion.
+

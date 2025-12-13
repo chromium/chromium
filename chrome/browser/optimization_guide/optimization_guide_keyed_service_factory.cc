@@ -58,8 +58,8 @@ OptimizationGuideKeyedServiceFactory::OptimizationGuideKeyedServiceFactory()
 OptimizationGuideKeyedServiceFactory::~OptimizationGuideKeyedServiceFactory() =
     default;
 
-std::unique_ptr<KeyedService> 
-  OptimizationGuideKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
+std::unique_ptr<KeyedService>
+OptimizationGuideKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return std::make_unique<OptimizationGuideKeyedService>(context);
 }
@@ -87,3 +87,7 @@ JNI_OptimizationGuideBridgeFactory_GetForProfile(JNIEnv* env,
   return service->GetJavaObject();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(OptimizationGuideBridgeFactory)
+#endif

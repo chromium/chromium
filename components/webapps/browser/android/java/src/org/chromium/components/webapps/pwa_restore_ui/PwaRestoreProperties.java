@@ -28,7 +28,6 @@ public class PwaRestoreProperties {
         private final String mAppId;
         private final String mAppName;
         private final Bitmap mAppIcon;
-        private final int mLastUsedDaysAgo;
 
         // Whether the app is selected or not.
         private boolean mSelected;
@@ -37,13 +36,11 @@ public class PwaRestoreProperties {
          * @param appId the ID of the app.
          * @param appName the name of the app.
          * @param appIcon the app icon.
-         * @param lastUsedDaysAgo when the app was last used (days ago).
          */
-        public AppInfo(String appId, String appName, Bitmap appIcon, int lastUsedDaysAgo) {
+        public AppInfo(String appId, String appName, Bitmap appIcon) {
             mAppId = appId;
             mAppName = appName;
             mAppIcon = appIcon;
-            mLastUsedDaysAgo = lastUsedDaysAgo;
 
             mSelected = true;
         }
@@ -58,10 +55,6 @@ public class PwaRestoreProperties {
 
         public Bitmap getIcon() {
             return mAppIcon;
-        }
-
-        public long getLastUsedDaysAgo() {
-            return mLastUsedDaysAgo;
         }
 
         public boolean isSelected() {

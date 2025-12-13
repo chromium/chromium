@@ -309,9 +309,6 @@
 
 
     <!-- Strings related to browser reporting section of the management page -->
-    <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page" formatter_data="android_java">
-      Browser
-    </message>
     <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining to users what browser information is being reported that admins can access" formatter_data="android_java">
       Your administrator may be able to view:
     </message>
@@ -345,29 +342,6 @@
     <message name="IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK" desc="Message explaining that browser will upload a report when a legacy technology is used for a webpage" formatter_data="android_java">
       A limited list of URLs of pages you visit where legacy technology events are occuring
     </message>
-
-    <!--Profile reporting management message-->
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">
-        Managed profile, browser, and some device information is accessible to your administrator. They can see information such as the following:
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile overview. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
-        Work profile overview
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_USERNAME" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile username." formatter_data="android_java">
-        Work profile information (such as your username)
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the device information that user's work profile belong to" formatter_data="android_java">
-        Browser and device OS information (such as the browser &amp; OS versions)
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view user's work profile extensions. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace.">
-        Installed apps &amp; extensions in your work profile
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile policies. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
-        Applied browser policies in your work profile
-      </message>
-      <message name="IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE" desc="Learn more link for profile reporting management information to provide additional informaiton">
-        <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=browser_profile_details" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
-      </message>
 
     <!-- Strings related to Chrome Enterprise Connectors -->
     <message name="IDS_MANAGEMENT_THREAT_PROTECTION_MORE" desc="Label of a button to view more details about Chrome Enterprise Connectors" formatter_data="android_java">
@@ -417,6 +391,62 @@
     </message>
   </if>
 
+  <!-- Strings related to browser reporting section of the management page -->
+  <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page" formatter_data="android_java">
+    Browser
+  </message>
+  <if expr="is_ios">
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining to users what browser information is being reported that admins can access">
+      Profile, browser, and device information is accessible to your administrator. They can see:
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's browser and work profile overview.">
+      Browser overview
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's device information.">
+      Device information
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_DEVICE_INFORMATION_CONTINUED" desc="Item in a list of information viewable by the enterprise admin, clarifying what 'device information' means.">
+      Such as device ID, name, OS version and OS username
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view browser and profile information.">
+      Browsers &amp; profiles information (including personal and work profiles)
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_BROWSER_AND_PROFILES_CONTINUED" desc="Item in a list of information viewable by the enterprise admin, clarifying what 'browser &amp; profiles information' means.">
+      Such as profile usernames &amp; browser versions
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's browser and work profile policies.">
+      Applied browser policies (machine and profile policies)
+    </message>
+    <message name="IDS_MANAGEMENT_BROWSER_REPORTING_LEARN_MORE" desc="Learn more link for profile reporting management information to provide additional informaiton">
+      <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/answer/9227157"&gt;</ph>More details<ph name="END_LINK">&lt;/a&gt;</ph>
+    </message>
+  </if>
+
+
+  <!-- Profile reporting management message-->
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">
+    Managed profile, browser, and some device information is accessible to your administrator. They can see information such as the following:
+  </message>
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_OVERVIEW" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile overview. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
+    Work profile overview
+  </message>
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_USERNAME" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile username." formatter_data="android_java">
+    Work profile information (such as your username)
+  </message>
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_BROWSER" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the device information that user's work profile belong to" formatter_data="android_java">
+    Browser and device OS information (such as the browser &amp; OS versions)
+  </message>
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_POLICY" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view the user's work profile policies. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace." formatter_data="android_java">
+    Applied browser policies in your work profile
+  </message>
+  <message name="IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE" desc="Learn more link for profile reporting management information to provide additional informaiton">
+    <ph name="BEGIN_LINK">&lt;a target="_blank" href="https://support.google.com/chrome/a/?p=browser_profile_details" &gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <if expr="not is_ios">
+    <message name="IDS_MANAGEMENT_PROFILE_REPORTING_EXTENSION" desc="Item in a list of information viewable by the enterprise admin, indicating that the admin can view user's work profile extensions. A work profile is a managed profile in an enterprise environment, such as a business, government organization, or other workplace.">
+      Installed apps &amp; extensions in your work profile
+    </message>
+  </if>
   <if expr="is_ios">
     <message name="IDS_IOS_MANAGEMENT_UI_DESC" desc="The descriptive text on chrome://management page when the browser is managed.">
       Your administrator can change your browser setup remotely. Activity on this device may also be managed outside of Chrome.
@@ -496,5 +526,14 @@
   </message>
   <message name="IDS_MANAGEMENT_BANNER_PROMOTION_BTN" desc="The text of the button to redirect to the guide page from the promotion banner on chrome://management page.">
     Try Chrome Enterprise Core
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_ARIA_LABEL" desc="The aria-label of the promotion banner on chrome://management page.">
+    Promotion banner
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_NEW_TAB_ARIA_DESCRIPTION" desc="The aria-label of the redirect button on the promotion banner on chrome://management page.">
+    Opens in new tab
+  </message>
+  <message name="IDS_MANAGEMENT_BANNER_DISMISS_ARIA_LABEL" desc="The aria-label of the dismiss/close button on the promotion banner on chrome://management page.">
+    Dismiss banner
   </message>
 </grit-part>

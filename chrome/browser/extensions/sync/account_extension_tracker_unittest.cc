@@ -10,14 +10,20 @@
 #include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -96,14 +102,11 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
             GetAccountExtensionType(external_extension->id()));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)
 // Same as the above test, except this uses transport mode (signed in but not
-// syncing) instead of sync, and an explicit user sign in.
+// syncing) instead of sync, and an explicit user sign in. Not run for ChromeOS
+// because the user should not be able to sign into transport mode in ChromeOS.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   // The extension's AccountExtensionType is `kLocal` because the user has not
   // explicitly signed in yet.
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
@@ -137,14 +140,8 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
             GetAccountExtensionType(external_extension->id()));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountExtensionTrackerUnitTest,
        AccountExtensionTypeResetWhenSignedOut) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
@@ -162,11 +159,6 @@ TEST_F(AccountExtensionTrackerUnitTest,
 }
 
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionsRemovedWhenSignedOut) {
-  // Enable extension syncing in transport mode.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      switches::kEnableExtensionsExplicitBrowserSignin);
-
   signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
 
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
@@ -198,6 +190,26 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionsRemovedWhenSignedOut) {
   // But `other_extension` is still installed.
   EXPECT_TRUE(registry()->GetInstalledExtension(other_extension_id));
 }
+
+// Test that if an extension is installed while the user is signed in but
+// extension sync is disabled, then it will be treated as a local extension.
+TEST_F(AccountExtensionTrackerUnitTest, ExtensionSyncDisabledWhileSignedIn) {
+  signin_test_util::SimulateExplicitSignIn(profile(), identity_test_env());
+
+  // Turn off syncing for extensions.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile());
+  sync_service->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kExtensions, false);
+
+  // `good_crx` should be treated as a local extension since it was installed
+  // when extension syncing was disabled.
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+}
+
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

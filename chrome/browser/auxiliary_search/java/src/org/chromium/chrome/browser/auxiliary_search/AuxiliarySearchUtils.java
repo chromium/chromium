@@ -31,20 +31,12 @@ public class AuxiliarySearchUtils {
     @VisibleForTesting static final int CURRENT_SCHEMA_VERSION = 1;
 
     @VisibleForTesting
-    static final BooleanCachedFeatureParam SKIP_DEVICE_CHECK =
-            ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipDeviceCheck;
-
-    @VisibleForTesting
     static final BooleanCachedFeatureParam FORCE_CARD_SHOWN =
             ChromeFeatureList.sAndroidAppIntegrationModuleForceCardShow;
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam SHOW_THIRD_PARTY_CARD =
             ChromeFeatureList.sAndroidAppIntegrationModuleShowThirdPartyCard;
-
-    @VisibleForTesting
-    static final BooleanCachedFeatureParam SKIP_SCHEMA_CHECK =
-            ChromeFeatureList.sAndroidAppIntegrationWithFaviconSkipSchemaCheck;
 
     @VisibleForTesting
     static final BooleanCachedFeatureParam MULTI_DATA_SOURCE_SKIP_SCHEMA_CHECK =
@@ -67,9 +59,7 @@ public class AuxiliarySearchUtils {
 
     @VisibleForTesting
     public static int getFaviconSize(Resources resources) {
-        return ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon.getValue()
-                ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
-                : resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size_small);
+        return resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size);
     }
 
     /** Returns the file to save the metadata for donating tabs. */
@@ -141,8 +131,7 @@ public class AuxiliarySearchUtils {
 
     /** Returns whether the sharing Tabs settings is enabled by default. */
     public static boolean isShareTabsWithOsDefaultEnabled() {
-        return (AuxiliarySearchUtils.SKIP_DEVICE_CHECK.getValue()
-                        || AuxiliarySearchUtils.MULTI_DATA_SOURCE_SKIP_DEVICE_CHECK.getValue())
+        return AuxiliarySearchUtils.MULTI_DATA_SOURCE_SKIP_DEVICE_CHECK.getValue()
                 ? !AuxiliarySearchUtils.SHOW_THIRD_PARTY_CARD.getValue()
                 : AuxiliarySearchControllerFactory.getInstance().isSettingDefaultEnabledByOs();
     }

@@ -12,7 +12,7 @@ desc: |-
 
   URL patterns must not conflict with <ph name="DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME">DirectSocketsPrivateNetworkAccessAllowedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
 
-  For detailed information on valid url patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+  For detailed information on valid url patterns, please see https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
 
   Note that this policy only applies if the origin is allowed to use the Direct Sockets API.
   Please consult <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POLICY_NAME">DefaultDirectSocketsSetting</ph>, <ph name="DIRECT_SOCKETS_ALLOWED_FOR_URLS_POLICY_NAME">DirectSocketsAllowedForUrls</ph> and <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME">DirectSocketsBlockedForUrls</ph> for more details.

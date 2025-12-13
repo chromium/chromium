@@ -87,7 +87,7 @@ public class ScrollCaptureCallbackRenderTest {
         mCallback =
                 new ScrollCaptureCallbackDelegate(
                         new ScrollCaptureCallbackDelegate.EntryManagerWrapper());
-        mTab = mInitialPage.loadedTabElement.get();
+        mTab = mInitialPage.loadedTabElement.value();
         mCallback.setCurrentTab(mTab);
         // Wait for the script to execute and for the renderer to actually paint everything.
         noopTo().waitFor(

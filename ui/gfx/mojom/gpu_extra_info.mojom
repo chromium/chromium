@@ -5,8 +5,6 @@
 // ui/gfx/gpu_extra_info.h
 module gfx.mojom;
 
-import "ui/gfx/mojom/buffer_types.mojom";
-
 // gfx::ANGLEFeature
 struct ANGLEFeature {
   string name;
@@ -18,7 +16,4 @@ struct ANGLEFeature {
 struct GpuExtraInfo {
   // List of features queried from ANGLE
   array<ANGLEFeature> angle_features;
-
-  [EnableIf=enable_x11_params]
-  array<gfx.mojom.BufferUsageAndFormat> gpu_memory_buffer_support_x11;
 };

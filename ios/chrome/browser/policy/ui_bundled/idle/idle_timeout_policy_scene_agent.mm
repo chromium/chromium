@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_scene_agent.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
@@ -13,6 +12,7 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_observer_bridge.h"
@@ -32,10 +32,9 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -67,7 +66,7 @@
 
   // Service handling IdleTimeout and IdleTimeoutActions policies.
   // IdleTimeoutPolicySceneAgents observe this service.
-  raw_ptr<enterprise_idle::IdleService> _idleService;
+  raw_ptr<enterprise_idle::IdleService, DanglingUntriaged> _idleService;
 
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout
@@ -246,8 +245,8 @@
   // crash is found. The crash is possibly related to BrowserSignin=2 also being
   // set, but it is not reproducible yet.
   if (!messageId) {
-    AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForProfile(_mainBrowser->GetProfile());
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(_mainBrowser->GetProfile());
     DUMP_WILL_BE_CHECK(messageId)
         << "The last IdleTimeout action set was empty. IdleTimeoutActions: "
         << _mainBrowser->GetProfile()
@@ -258,8 +257,7 @@
         << GetApplicationContext()->GetLocalState()->GetInteger(
                prefs::kBrowserSigninPolicy)
         << "Signin status: "
-        << authenticationService->HasPrimaryIdentity(
-               signin::ConsentLevel::kSignin);
+        << identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
     _idleService->OnIdleTimeoutSnackbarPresented();
     return;
   }
@@ -285,8 +283,9 @@
 }
 
 - (void)showSnackbar:(NSString*)messageText {
-  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
-  message.duration = kIdleTimeoutSnackbarDuration;
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:messageText];
+  message.duration = kIdleTimeoutSnackbarDuration.InSeconds();
   message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];
 }

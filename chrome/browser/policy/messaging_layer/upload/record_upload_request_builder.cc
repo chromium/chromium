@@ -23,14 +23,11 @@ namespace reporting {
 // Feature that controls if the configuration file should be requested
 // from the server.
 BASE_FEATURE(kShouldRequestConfigurationFile,
-             "ShouldRequestConfigurationFile",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature used in the tast tests to let the server know that the events are
 // coming from an automated client test. Only used in tast tests.
-BASE_FEATURE(kClientAutomatedTest,
-             "ClientAutomatedTest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kClientAutomatedTest, base::FEATURE_DISABLED_BY_DEFAULT);
 
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
     bool is_generation_guid_required,

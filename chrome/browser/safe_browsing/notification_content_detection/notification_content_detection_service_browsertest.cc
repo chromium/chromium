@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom.h"
 
 namespace safe_browsing {
@@ -88,15 +89,8 @@ IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
                          browser()->profile()));
 }
 
-// TODO(https://crbug.com/410751413): Deleting temporary directories using
-// test_file_util is flaky on Windows.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DisabledForIncognitoMode DISABLED_DisabledForIncognitoMode
-#else
-#define MAYBE_DisabledForIncognitoMode DisabledForIncognitoMode
-#endif
 IN_PROC_BROWSER_TEST_F(NotificationContentDetectionServiceFactoryBrowserTest,
-                       MAYBE_DisabledForIncognitoMode) {
+                       DisabledForIncognitoMode) {
   auto test_profile = TestingProfile::Builder().Build();
   TestingProfile* incognito =
       TestingProfile::Builder().BuildIncognito(test_profile.get());
@@ -144,7 +138,7 @@ class NotificationContentDetectionBrowserTest
 
     // Set up allowlisted and non-allowlisted URLs.
     SetNotificationsGlobalCacheListDomainsForTesting(
-        {GURL(kAllowlistedUrl).host()});
+        {GURL(kAllowlistedUrl).GetHost()});
     SetURLHighConfidenceAllowlistMatch(GURL(kAllowlistedUrl),
                                        /*match_allowlist=*/true);
     SetURLHighConfidenceAllowlistMatch(GURL(kNonAllowlistedUrl),
@@ -415,9 +409,10 @@ INSTANTIATE_TEST_SUITE_P(
                     std::make_tuple("100", "100", true),
                     std::make_tuple("100", "100", false)));
 
+// TODO(crbug.com/389745686): Re-enable
 IN_PROC_BROWSER_TEST_P(
     NotificationContentDetectionShowWarningsEnabledBrowserTest,
-    NonAllowlistedSiteNotificationGetsDisplayed) {
+    DISABLED_NonAllowlistedSiteNotificationGetsDisplayed) {
   UpdateNotificationContentDetectionModel();
   blink::PlatformNotificationData data =
       CreateNotificationData(u"Non-allowlisted title", u"Hello, world!", {});
@@ -431,7 +426,7 @@ IN_PROC_BROWSER_TEST_P(
       "NotificationContentDetection",
       1);
 
-  EXPECT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
+  ASSERT_EQ(GetDisplayedPersistentNotifications().size(), 1U);
   // When the suspicious threshold is 0, every non-allowlisted notification is
   // suspicious.
   if (GetSuspiciousNotificationThreshold() == "0") {
@@ -588,7 +583,8 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<NotificationHandler> handler =
       std::make_unique<PersistentNotificationHandler>();
   handler->DisableNotifications(browser()->profile(), GURL(kNonAllowlistedUrl),
-                                /*notification_id=*/std::nullopt);
+                                /*notification_id=*/std::nullopt,
+                                /*is_suspicious=*/false);
   NotificationPermissionContext::UpdatePermission(
       browser()->profile(), GURL(kNonAllowlistedUrl), CONTENT_SETTING_ALLOW);
 

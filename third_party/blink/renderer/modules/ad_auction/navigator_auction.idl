@@ -16,34 +16,34 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   RuntimeEnabled=AdInterestGroupAPI,
   SecureContext
 ] partial interface Navigator {
-  [CallWith=ScriptState, Measure, RaisesException]
+  [CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<undefined> joinAdInterestGroup(AuctionAdInterestGroup group, optional double durationSeconds);
 
-  [CallWith=ScriptState, Measure, RaisesException]
+  [CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<undefined> leaveAdInterestGroup(optional AuctionAdInterestGroupKey group);
 
-  [CallWith=ScriptState, Measure, RaisesException]
+  [CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<undefined> clearOriginJoinedAdInterestGroups(USVString owner, optional sequence<USVString> groupsToKeep);
 
-  [CallWith=ScriptState, Measure, RaisesException]
+  [CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   void updateAdInterestGroups();
 
-  [CallWith=ScriptState, Measure, RaisesException]
+  [CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<DOMString> createAuctionNonce();
 
-  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<UrnOrConfig?> runAdAuction(AuctionAdConfig config);
 
-  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);
 
-  [RuntimeEnabled=AllowURNsInIframes, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=AllowURNsInIframes, CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<USVString> deprecatedURNToURL(UrnOrConfig urn_or_config, optional boolean send_reports = false);
 
-  [RuntimeEnabled=AllowURNsInIframes, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=AllowURNsInIframes, CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<undefined> deprecatedReplaceInURN(UrnOrConfig urn_or_config, record<USVString, USVString> replacements);
 
-  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPI, CallWith=ScriptState, Measure, RaisesException]
+  [RuntimeEnabled=FledgeBiddingAndAuctionServerAPI, CallWith=ScriptState, Measure, RaisesException, DeprecateAs=Fledge]
   Promise<AdAuctionData> getInterestGroupAdAuctionData(AdAuctionDataConfig config);
 
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
@@ -53,11 +53,11 @@ typedef (USVString or FencedFrameConfig) UrnOrConfig;
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, PromiseIDLTypeMismatch, Measure, RaisesException]
   Promise<URL> finalizeAd(Ads ads, AuctionAdConfig config);
 
-  [RuntimeEnabled=FencedFrames, CallWith=ScriptState]
+  [RuntimeEnabled=FencedFrames, CallWith=ScriptState, DeprecateAs=Fledge]
   boolean canLoadAdAuctionFencedFrame();
 
-  [RuntimeEnabled=EnforceAnonymityExposure, CallWith=ScriptState]
+  [RuntimeEnabled=EnforceAnonymityExposure, CallWith=ScriptState, DeprecateAs=Fledge]
   readonly attribute boolean deprecatedRunAdAuctionEnforcesKAnonymity;
 
-  [SameObject, CallWith=ScriptState] readonly attribute ProtectedAudience protectedAudience;
+  [SameObject, CallWith=ScriptState, DeprecateAs=Fledge] readonly attribute ProtectedAudience protectedAudience;
 };

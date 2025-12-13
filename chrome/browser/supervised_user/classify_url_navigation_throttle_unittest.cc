@@ -11,16 +11,21 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
@@ -37,17 +42,6 @@ namespace {
 static const char* kExampleURL = "https://example.com/";
 static const char* kExample1URL = "https://example1.com/";
 static const char* kExample2URL = "https://example2.com/";
-
-void ExpectThrottleStatus(base::HistogramTester* tester,
-                          std::map<ClassifyUrlThrottleStatus, int> buckets) {
-  int total = 0;
-  for (const auto& [bucket, count] : buckets) {
-    total += count;
-    tester->ExpectBucketCount(kClassifyUrlThrottleStatusHistogramName, bucket,
-                              count);
-  }
-  tester->ExpectTotalCount(kClassifyUrlThrottleStatusHistogramName, total);
-}
 
 void ExpectNoLatencyRecorded(base::HistogramTester* tester) {
   tester->ExpectTotalCount(kClassifiedEarlierThanContentResponseHistogramName,
@@ -70,6 +64,43 @@ class MockSupervisedUserURLFilter : public SupervisedUserURLFilter {
               (const GURL& url, ResultCallback callback));
 };
 
+std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  std::unique_ptr<SupervisedUserServicePlatformDelegate> platform_delegate =
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess();
+  return std::make_unique<SupervisedUserService>(
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      *profile->GetPrefs(),
+      *SupervisedUserSettingsServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()),
+      SupervisedUserContentFiltersServiceFactory::GetInstance()->GetForKey(
+          profile->GetProfileKey()),
+      SyncServiceFactory::GetInstance()->GetForProfile(profile),
+      std::make_unique<MockSupervisedUserURLFilter>(
+          *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
+          std::make_unique<KidsChromeManagementURLCheckerClient>(
+              identity_manager, url_loader_factory, *profile->GetPrefs(),
+              platform_delegate->GetCountryCode(),
+              platform_delegate->GetChannel())),
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      std::make_unique<FakeContentFiltersObserverBridge>(
+          kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+      std::make_unique<FakeContentFiltersObserverBridge>(
+          kSearchContentFiltersSettingName, *profile->GetPrefs())
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
+}
+
 class ClassifyUrlNavigationThrottleTest
     : public ChromeRenderViewHostTestHarness {
  protected:
@@ -81,9 +112,7 @@ class ClassifyUrlNavigationThrottleTest
   TestingProfile::TestingFactories GetTestingFactories() const override {
     return {TestingProfile::TestingFactory{
         SupervisedUserServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &supervised_user_test_util::BuildSupervisedUserService<
-                MockSupervisedUserURLFilter>)}};
+        base::BindRepeating(&BuildTestSupervisedUserService)}};
   }
 
   std::unique_ptr<content::MockNavigationThrottleRegistry>
@@ -137,10 +166,14 @@ class ClassifyUrlNavigationThrottleTest
   }
 
   MockSupervisedUserURLFilter* GetSupervisedUserURLFilter() {
-    // Cast is safe, see this::GetTestingFactories() to see how the object was
-    // created.
+    // Cast is safe: MockSupervisedUserURLFilter is created with TestingProfile,
+    // as a component of TestSupervisedUserService.
     return static_cast<MockSupervisedUserURLFilter*>(
         SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
+  }
+
+  SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -171,7 +204,7 @@ TEST_F(ClassifyUrlNavigationThrottleUnsupervisedUserTest,
 TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   GURL allowed_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
-      profile(), allowed_url.host(), /*allowlist=*/true);
+      profile(), allowed_url.GetHost(), /*allowlist=*/true);
 
   std::unique_ptr<content::MockNavigationThrottleRegistry> registry =
       CreateNavigationThrottle(allowed_url);
@@ -186,18 +219,13 @@ TEST_F(ClassifyUrlNavigationThrottleTest, AllowedUrlsRecordedInAllowBucket) {
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count(grew by)*/ 1);
-
-  // This throttle continued on request, and proceeded on response.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
        BlocklistedUrlsRecordedInBlockManualBucket) {
   GURL blocked_url(kExampleURL);
   supervised_user_test_util::SetManualFilterForHost(
-      profile(), blocked_url.host(), /*allowlist=*/false);
+      profile(), blocked_url.GetHost(), /*allowlist=*/false);
   ASSERT_TRUE(GetSupervisedUserURLFilter()
                   ->GetFilteringBehavior(blocked_url)
                   .IsBlocked());
@@ -213,10 +241,6 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
 TEST_F(ClassifyUrlNavigationThrottleTest,
@@ -235,17 +259,15 @@ TEST_F(ClassifyUrlNavigationThrottleTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
 }
 
 enum class SupervisionMode {
   kSupervisedByFamilyLink,
+#if BUILDFLAG(IS_ANDROID)
   kLocalSupervision,
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 struct AsyncCheckerTestCase {
@@ -258,15 +280,28 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
       public ::testing::WithParamInterface<AsyncCheckerTestCase> {
  protected:
   void SetUp() override {
-    // Consciously bypasses direct superclass SetUp to avoid enabling parental
-    // controls.
+    // Consciously bypasses direct superclass SetUp to avoid enabling Family
+    // Link parental controls for all requested supervision modes.
     ChromeRenderViewHostTestHarness::SetUp();
-    if (GetParam().mode == SupervisionMode::kSupervisedByFamilyLink) {
-      EnableParentalControls(*profile()->GetPrefs());
-    } else {
-      EnableBrowserContentFilters(*profile()->GetPrefs());
+    switch (GetParam().mode) {
+      case SupervisionMode::kSupervisedByFamilyLink:
+        EnableParentalControls(*profile()->GetPrefs());
+        break;
+#if BUILDFLAG(IS_ANDROID)
+      case SupervisionMode::kLocalSupervision:
+        GetSupervisedUserService()
+            ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+            ->SetEnabledForTesting(true);
+        break;
+#endif  // BUILDFLAG(IS_ANDROID)
     }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kPropagateDeviceContentFiltersToSupervisedUser};
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
@@ -293,10 +328,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle immediately deferred and presented an interstitial.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
   // As a result, the navigation is not resumed
   EXPECT_FALSE(resume_called());
 }
@@ -347,12 +378,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request, and proceeded on response because the
-  // result was already there.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
@@ -401,13 +426,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request, and deferred on response because the
-  // result wasn't there. Then it resumed.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 1},
-                        {ClassifyUrlThrottleStatus::kDefer, 1},
-                        {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
 // Checks a scenario where the classification responses arrive in reverse order:
@@ -458,12 +476,6 @@ TEST_P(ClassifyUrlNavigationThrottleAsyncCheckerTest,
 
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on request and redirect, and deferred on response
-  // because the result wasn't there. It never recovered from defer state
-  // (interstitial was presented).
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 2},
-                        {ClassifyUrlThrottleStatus::kDefer, 1}});
   EXPECT_FALSE(resume_called());
 }
 
@@ -562,12 +574,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and proceeded because
-  // verdict was ready.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -632,12 +638,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedEarlierThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and then proceeded because
-  // verdict was ready.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kProceed, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -707,13 +707,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   histogram_tester()->ExpectTotalCount(
       kClassifiedLaterThanContentResponseHistogramName,
       /*expected_count=*/1);
-
-  // This throttle continued on request and redirects and then deferred because
-  // one check was outstanding. After it was completed, the throttle resumed.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kDefer, 1},
-                        {ClassifyUrlThrottleStatus::kResume, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -760,11 +753,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   EXPECT_FALSE(resume_called());
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on first request deferred on second one.
-  ExpectThrottleStatus(
-      histogram_tester(),
-      {{ClassifyUrlThrottleStatus::kContinue, 1},
-       {ClassifyUrlThrottleStatus::kDeferAndScheduleInterstitial, 1}});
 }
 
 TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
@@ -833,11 +821,6 @@ TEST_P(ClassifyUrlNavigationThrottleParallelizationTest,
   EXPECT_FALSE(resume_called());
   // Since this is not a success path, no latency metric is recorded.
   ExpectNoLatencyRecorded(histogram_tester());
-  // This throttle continued on request and redirects and deferred waiting for
-  // last classification.
-  ExpectThrottleStatus(histogram_tester(),
-                       {{ClassifyUrlThrottleStatus::kContinue, 3},
-                        {ClassifyUrlThrottleStatus::kDefer, 1}});
 }
 
 const TestCase kTestCases[] = {

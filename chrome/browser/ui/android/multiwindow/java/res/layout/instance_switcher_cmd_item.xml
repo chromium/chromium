@@ -22,7 +22,7 @@ found in the LICENSE file.
         android:visibility="gone">
         <ImageView
             android:id="@+id/favicon"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/ic_add_24dp"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginStart="40dp"

@@ -177,7 +177,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     gfx::ColorSpace target_color_space;
 
     // HDR metadata specified by the container.
-    std::optional<gfx::HDRMetadata> hdr_metadata;
+    gfx::HDRMetadata hdr_metadata;
   };
 
   // Interface for collaborating with picture interface to provide memory for

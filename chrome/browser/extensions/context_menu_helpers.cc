@@ -6,14 +6,20 @@
 
 #include <stddef.h>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/context_menu_matcher.h"
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "content/public/browser/context_menu_params.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using blink::mojom::ContextMenuDataMediaType;
 
@@ -250,12 +256,17 @@ std::u16string PrintableSelectionText(const std::u16string& selection_text) {
 void PopulateExtensionItems(content::BrowserContext* browser_context,
                             const content::ContextMenuParams& params,
                             ContextMenuMatcher& matcher) {
+  base::ElapsedTimer timer;
   matcher.Clear();
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   MenuManager* menu_manager = MenuManager::Get(browser_context);
 
   if (!menu_manager || !registry) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Extensions.ContextMenuHelpers.PopulateExtensionItems.Duration",
+        base::Microseconds(timer.Elapsed().InMicrosecondsF()),
+        base::Microseconds(1), base::Microseconds(2000), 100);
     return;
   }
 
@@ -282,6 +293,10 @@ void PopulateExtensionItems(content::BrowserContext* browser_context,
   }
 
   if (sorted_menu_titles.empty()) {
+    base::UmaHistogramCustomMicrosecondsTimes(
+        "Extensions.ContextMenuHelpers.PopulateExtensionItems.Duration",
+        base::Microseconds(timer.Elapsed().InMicrosecondsF()),
+        base::Microseconds(1), base::Microseconds(2000), 100);
     return;
   }
 
@@ -305,6 +320,10 @@ void PopulateExtensionItems(content::BrowserContext* browser_context,
                                    /*is_action_menu=*/false);
     }
   }
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Extensions.ContextMenuHelpers.PopulateExtensionItems.Duration",
+      base::Microseconds(timer.Elapsed().InMicrosecondsF()),
+      base::Microseconds(1), base::Microseconds(2000), 100);
 }
 
 }  // namespace context_menu_helpers

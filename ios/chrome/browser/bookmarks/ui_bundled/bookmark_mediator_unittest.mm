@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
 
-#import <MaterialComponents/MaterialSnackbar.h>
-
 #import "base/i18n/message_formatter.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -25,6 +23,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -246,7 +245,7 @@ TEST_P(BookmarkMediatorUnitTest, TestSnackBarMessage) {
 TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLs) {
   NSArray* URLs = @[ [[NSURL alloc] initWithString:@""] ];
 
-  MDCSnackbarMessage* const snackbarMessage =
+  SnackbarMessage* const snackbarMessage =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -255,7 +254,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(0U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"0 bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.title, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }
 
@@ -263,7 +262,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageNoValidURLs) {
 TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageOneValidURL) {
   NSArray* URLs = @[ [[NSURL alloc] initWithString:@"https://google.ca"] ];
 
-  MDCSnackbarMessage* const snackbarMessage =
+  SnackbarMessage* const snackbarMessage =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -272,7 +271,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageOneValidURL) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(1U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"Bookmark saved");
+  ASSERT_NSEQ(snackbarMessage.title, @"Bookmark saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 1, 1);
 }
 
@@ -283,7 +282,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLs) {
     [[NSURL alloc] initWithString:@"https://google.fr"]
   ];
 
-  MDCSnackbarMessage* const snackbarMessage =
+  SnackbarMessage* const snackbarMessage =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -292,7 +291,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageTwoValidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(2U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"2 bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.title, @"2 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 2, 1);
 }
 
@@ -305,7 +304,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageValidAndInvalidURLs) {
     [[NSURL alloc] initWithString:@"https://google.co.jp"]
   ];
 
-  MDCSnackbarMessage* const snackbarMessage =
+  SnackbarMessage* const snackbarMessage =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -314,7 +313,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageValidAndInvalidURLs) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"3 bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.title, @"3 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 }
 
@@ -327,7 +326,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
     [[NSURL alloc] initWithString:@"https://google.co.jp"]
   ];
 
-  MDCSnackbarMessage* const snackbarMessage =
+  SnackbarMessage* const snackbarMessage =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -336,11 +335,11 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks.size());
-  ASSERT_NSEQ(snackbarMessage.text, @"3 bookmarks saved");
+  ASSERT_NSEQ(snackbarMessage.title, @"3 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
 
   // Try bulk adding the same URLs again, none should be added.
-  MDCSnackbarMessage* const snackbarMessageDuplicates =
+  SnackbarMessage* const snackbarMessageDuplicates =
       [mediator_ bulkAddBookmarksWithURLs:URLs
                                viewAction:^{
                                }];
@@ -349,7 +348,7 @@ TEST_F(BookmarkMediatorUnitTest, TestBulkSnackbarMessageDuplicateBookmarks) {
       bookmark_model_->GetUniqueUrls();
 
   ASSERT_EQ(3U, bookmarks_dupes.size());
-  ASSERT_NSEQ(snackbarMessageDuplicates.text, @"0 bookmarks saved");
+  ASSERT_NSEQ(snackbarMessageDuplicates.title, @"0 bookmarks saved");
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 3, 1);
   histogram_tester_.ExpectBucketCount("IOS.Bookmarks.BulkAddURLsCount", 0, 1);
 }

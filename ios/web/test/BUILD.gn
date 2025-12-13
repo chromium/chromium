@@ -17,11 +17,13 @@ repack("packed_resources") {
   sources = [
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ios/web/test/test_resources.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
   deps = [
     ":resources",
     "//ios/web:resources",
+    "//ui/strings:app_locale_settings",
     "//ui/webui/resources",
   ]
   output = "$target_gen_dir/resources.pak"
@@ -65,6 +67,7 @@ source_set("test_support") {
     "//ios/web/public/test/http_server",
     "//ios/web/test/fakes",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state:web_view_internal_creation_util",
     "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net",

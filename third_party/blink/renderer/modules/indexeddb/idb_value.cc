@@ -23,31 +23,16 @@ namespace blink {
 IDBValue::IDBValue() = default;
 
 IDBValue::~IDBValue() {
-  if (decompression_count_ > 0) {
-    base::UmaHistogramCounts100("IndexedDB.ValueDecompressionCount",
-                                decompression_count_);
-  }
   if (isolate_) {
     external_memory_accounter_.Clear(isolate_.get());
   }
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
-  if (base::FeatureList::IsEnabled(kIdbDecompressValuesInPlace)) {
-    SerializedScriptValue::DataBufferPtr decompressed;
-    if (IDBValueUnwrapper::Decompress(Data(), /*out_buffer=*/nullptr,
-                                      /*out_buffer_in_place=*/&decompressed)) {
-      const_cast<IDBValue*>(this)->decompression_count_++;
-      return SerializedScriptValue::Create(std::move(decompressed));
-    }
-  } else {
-    Vector<char> decompressed;
-    if (IDBValueUnwrapper::Decompress(Data(),
-                                      /*out_buffer=*/&decompressed,
-                                      /*out_buffer_in_place=*/nullptr)) {
-      const_cast<IDBValue*>(this)->decompression_count_++;
-      const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
-    }
+  SerializedScriptValue::DataBufferPtr decompressed;
+  if (IDBValueUnwrapper::Decompress(Data(), /*out_buffer=*/nullptr,
+                                    /*out_buffer_in_place=*/&decompressed)) {
+    return SerializedScriptValue::Create(std::move(decompressed));
   }
 
   return SerializedScriptValue::Create(Data());
@@ -66,8 +51,11 @@ void IDBValue::SetIsolate(v8::Isolate* isolate) {
 }
 
 base::span<const uint8_t> IDBValue::Data() const {
-  if (!data_from_mojo_.empty()) {
-    return base::as_byte_span(data_from_mojo_);
+  if (data_from_mojo_.size() != 0) {
+    return data_from_mojo_;
+  }
+  if (!massaged_data_.empty()) {
+    return base::as_byte_span(massaged_data_);
   }
   return data_.as_span();
 }
@@ -76,20 +64,40 @@ void IDBValue::SetBlobInfo(Vector<WebBlobInfo> blob_info) {
   blob_info_ = std::move(blob_info);
 }
 
-void IDBValue::SetData(Vector<char> new_data) {
+void IDBValue::SetData(Vector<char> massaged_data) {
   if (isolate_) {
-    external_memory_accounter_.Set(isolate_.get(), new_data.size());
+    external_memory_accounter_.Set(isolate_.get(), massaged_data.size());
   }
 
-  data_from_mojo_ = std::move(new_data);
+  // This data (which has been [un]wrapped, [de]compressed, etc) may be
+  // replacing existing data.
+  massaged_data_ = std::move(massaged_data);
+  data_from_mojo_ = mojo_base::BigBuffer();
+  data_ = SerializedScriptValue::DataBufferPtr();
 }
 
 void IDBValue::SetData(SerializedScriptValue::DataBufferPtr new_data) {
+  CHECK_EQ(data_from_mojo_.size(), 0U);
+  CHECK(massaged_data_.empty());
+
   if (isolate_) {
     external_memory_accounter_.Set(isolate_.get(), new_data.size());
   }
 
   data_ = std::move(new_data);
+}
+
+void IDBValue::SetData(mojo_base::BigBuffer new_data) {
+  // This overload is only used when unpacking a Mojo message from the browser.
+  // The data may later be updated via unwrapping.
+  CHECK(data_.empty());
+  CHECK(massaged_data_.empty());
+
+  if (isolate_) {
+    external_memory_accounter_.Set(isolate_.get(), new_data.size());
+  }
+
+  data_from_mojo_ = std::move(new_data);
 }
 
 scoped_refptr<BlobDataHandle> IDBValue::TakeLastBlob() {

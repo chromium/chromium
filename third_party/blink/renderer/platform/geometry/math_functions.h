@@ -13,6 +13,8 @@
 #include <utility>
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/sin_cos_degrees.h"
 
 namespace blink {
@@ -146,6 +148,22 @@ ValueType EvaluateTrigonometricFunction(
   }
 }
 
+template <typename ValueType>
+  requires std::floating_point<ValueType>
+ValueType EvaluateRoundDownFunction(ValueType a, ValueType b) {
+  auto [lower, _] = GetNearestMultiples(a, b);
+  if (!std::isinf(a) && std::isinf(b)) {
+    if (!a) {
+      return a;
+    } else {
+      return std::signbit(a) ? -std::numeric_limits<ValueType>::infinity()
+                             : +0.0;
+    }
+  } else {
+    return lower;
+  }
+}
+
 template <class OperatorType, typename ValueType>
   requires std::is_enum_v<OperatorType> && std::floating_point<ValueType>
 ValueType EvaluateSteppedValueFunction(OperatorType op,
@@ -202,16 +220,7 @@ ValueType EvaluateSteppedValueFunction(OperatorType op,
       }
     }
     case OperatorType::kRoundDown: {
-      if (!std::isinf(a) && std::isinf(b)) {
-        if (!a) {
-          return a;
-        } else {
-          return std::signbit(a) ? -std::numeric_limits<ValueType>::infinity()
-                                 : +0.0;
-        }
-      } else {
-        return lower;
-      }
+      return EvaluateRoundDownFunction(a, b);
     }
     case OperatorType::kRoundToZero: {
       if (!std::isinf(a) && std::isinf(b)) {
@@ -274,6 +283,12 @@ template <typename ValueType>
 ValueType EvaluateSignFunction(ValueType v) {
   return (v == 0 || std::isnan(v)) ? v : ((v > 0) ? 1 : -1);
 }
+
+// https://drafts.csswg.org/css-values-5/#random-evaluation
+PLATFORM_EXPORT double ComputeCSSRandomValue(double random_base_value,
+                                             double min,
+                                             double max,
+                                             std::optional<double> step);
 
 }  // namespace blink
 

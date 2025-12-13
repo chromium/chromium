@@ -43,6 +43,24 @@ class POLICY_EXPORT ProxyPolicyProvider
     : public ConfigurationPolicyProvider,
       public ConfigurationPolicyProvider::Observer {
  public:
+  // Unspecified vs. nullptr:
+  // - Unspecified: The delegate has never been set since construction.
+  // - nullptr: The delegate has been set to nullptr explicitly via
+  //   SetOwnedDelegate/SetUnownedDelegate. This makes IsFirstPolicyLoadComplete
+  //   return true.
+  // Can transition from Unspecified to Owned/Unowned, but cannot transition
+  // back to Unspecified afterwards.
+  //
+  // State transition diagram:
+  //
+  //  ctor --> Unspecified
+  //               |
+  //               +--SetOwnedDelegate----> OwnedDelegate
+  //               |                              ^
+  //               |                              | SetOwned/UnownedDelegate
+  //               |                              v
+  //               +--SetUnownedDelegate-> UnownedDelegate
+  using Unspecified = std::monostate;
   using OwnedDelegate = std::unique_ptr<ConfigurationPolicyProvider>;
   using UnownedDelegate = raw_ptr<ConfigurationPolicyProvider>;
 
@@ -76,8 +94,8 @@ class POLICY_EXPORT ProxyPolicyProvider
   void ResetDelegate();
   void OnDelegateChanged();
 
-  std::variant<UnownedDelegate, OwnedDelegate> delegate_ =
-      UnownedDelegate(nullptr);
+  std::variant<Unspecified, UnownedDelegate, OwnedDelegate> delegate_ =
+      Unspecified();
   bool block_policy_updates_for_testing_ = false;
 };
 

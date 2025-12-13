@@ -16,7 +16,7 @@ static_library("webui") {
     "//base",
     "//components/history/core/browser",
     "//components/history_clusters/core",
-    "//components/history_clusters/history_clusters_internals/resources:resources",
+    "//components/history_clusters/history_clusters_internals/resources",
     "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
     "//content/public/browser",
     "//third_party/abseil-cpp:absl",

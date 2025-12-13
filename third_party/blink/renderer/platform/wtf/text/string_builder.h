@@ -29,6 +29,8 @@
 
 #include <unicode/utf16.h>
 
+#include <type_traits>
+
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
@@ -37,6 +39,25 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
+
+// A concept to check if a type is a character type supported by
+// StringBuilder::Append().
+template <typename CharType>
+concept IsAppendableCharType =
+    IsStringCharType<CharType> || std::is_same_v<char, CharType> ||
+    std::is_same_v<UChar32, CharType>;
+
+// A concept to check if a type is a string type supported by
+// StringBuilder::Append().
+template <typename T>
+concept IsAppendableStringType = std::is_convertible_v<T, StringView>;
+
+// A concept to check if a type is supported by StringBuilder::Append() or
+// StringBuilder::AppendNumber().
+template <typename T>
+concept IsAppendableType =
+    IsAppendableCharType<T> || IsAppendableStringType<T> ||
+    std::is_integral_v<T> || std::is_floating_point_v<T>;
 
 class WTF_EXPORT StringBuilder {
   USING_FAST_MALLOC(StringBuilder);
@@ -152,9 +173,61 @@ class WTF_EXPORT StringBuilder {
 
   void AppendNumber(double, unsigned precision = 6);
 
-  // Like WTF::String::Format, supports Latin-1 only.
+  // Like blink::String::Format, supports Latin-1 only.
   PRINTF_FORMAT(2, 3)
   void AppendFormat(const char* format, ...);
+
+  // Append each elements in a collection `range`, separated by `delimiter`.
+  // This adds nothing if `range` is empty.
+  //
+  // This supports collections of which element type is supported by
+  // StringBuilder::Append() or StringBuilder::AppendNumber().
+  template <typename R>
+    requires(std::ranges::range<R> &&
+             IsAppendableType<std::ranges::range_value_t<R>>)
+  StringBuilder& AppendRange(const R& range, StringView delimiter) {
+    StringView current_delimiter;
+    for (const auto& item : range) {
+      Append(current_delimiter);
+      current_delimiter = delimiter;
+      if constexpr (IsAppendableCharType<typename R::value_type>) {
+        Append(item);
+      } else if constexpr (std::is_integral_v<typename R::value_type> ||
+                           std::is_floating_point_v<typename R::value_type>) {
+        AppendNumber(item);
+      } else {
+        Append(item);
+      }
+    }
+    return *this;
+  }
+
+  // Append each elements in a collection `range`, separated by `delimiter`.
+  // This adds nothing if `range` is empty.  `stringifier` is a callable object,
+  // and it should convert an element to a string to be appended.
+  //
+  // Example:
+  //   HeapVector<Member<Foo>> list;
+  //   StringBuilder builder;
+  //   builder.AppendRange(
+  //       list, ", ", [](const auto& value) { return value->ToString(); });
+  template <typename R, typename F>
+    requires(std::ranges::range<R> &&
+             std::invocable<F, const std::ranges::range_value_t<R>&> &&
+             std::is_convertible_v<
+                 std::invoke_result_t<F, const std::ranges::range_value_t<R>&>,
+                 StringView>)
+  StringBuilder& AppendRange(const R& range,
+                             StringView delimiter,
+                             F stringifier) {
+    StringView current_delimiter;
+    for (const auto& item : range) {
+      Append(current_delimiter);
+      current_delimiter = delimiter;
+      Append(stringifier(item));
+    }
+    return *this;
+  }
 
   void erase(unsigned);
 
@@ -297,20 +370,11 @@ bool Equal(const StringBuilder& a, const StringType& b) {
 inline bool operator==(const StringBuilder& a, const StringBuilder& b) {
   return Equal(a, b);
 }
-inline bool operator!=(const StringBuilder& a, const StringBuilder& b) {
-  return !Equal(a, b);
-}
 inline bool operator==(const StringBuilder& a, const String& b) {
   return Equal(a, b);
 }
-inline bool operator!=(const StringBuilder& a, const String& b) {
-  return !Equal(a, b);
-}
 inline bool operator==(const String& a, const StringBuilder& b) {
   return Equal(b, a);
-}
-inline bool operator!=(const String& a, const StringBuilder& b) {
-  return !Equal(b, a);
 }
 
 }  // namespace blink

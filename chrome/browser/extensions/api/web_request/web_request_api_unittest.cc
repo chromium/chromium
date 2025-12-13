@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -32,7 +31,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
-#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -137,8 +135,7 @@ bool GenerateInfoSpec(content::BrowserContext* browser_context,
            values, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     list.Append(cur);
   }
-  return ExtraInfoSpec::InitFromValue(browser_context,
-                                      base::Value(std::move(list)), result);
+  return ExtraInfoSpec::InitFromValue(base::Value(std::move(list)), result);
 }
 
 }  // namespace
@@ -287,6 +284,15 @@ TEST_F(ExtensionWebRequestTest, InitFromValue) {
                     ExtraInfoSpec::ASYNC_BLOCKING);
   TestInitFromValue(&profile_, "requestBody", true,
                     ExtraInfoSpec::REQUEST_BODY);
+
+  TestInitFromValue(&profile_, "securityInfo", true,
+                    ExtraInfoSpec::SECURITY_INFO);
+  TestInitFromValue(
+      &profile_, "securityInfo,securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
+  TestInitFromValue(
+      &profile_, "securityInfoRawDer", true,
+      ExtraInfoSpec::SECURITY_INFO | ExtraInfoSpec::SECURITY_INFO_RAW_DER);
 
   // Multiple valid values are bitwise-or'ed.
   TestInitFromValue(&profile_, "requestHeaders,blocking", true,

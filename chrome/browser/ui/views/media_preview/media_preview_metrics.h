@@ -5,25 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_PREVIEW_METRICS_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_PREVIEW_METRICS_H_
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "media/capture/video_capture_types.h"
-
-namespace permissions {
-class PermissionRequest;
-}
 
 namespace media_preview_metrics {
 
 enum class UiLocation { kPermissionPrompt, kPageInfo };
 enum class PreviewType { kCamera, kMic, kCameraAndMic };
-enum class PromptType { kSingle, kCombined };
 
 struct Context {
-  Context(UiLocation ui_location,
-          PreviewType preview_type,
-          std::optional<PromptType> prompt_type,
-          base::WeakPtr<permissions::PermissionRequest>);
+  Context(UiLocation ui_location, PreviewType preview_type);
   ~Context();
 
   // This class is move- and copy-constructible:
@@ -35,8 +26,6 @@ struct Context {
 
   const UiLocation ui_location;
   const PreviewType preview_type;
-  const std::optional<PromptType> prompt_type;
-  const base::WeakPtr<permissions::PermissionRequest> request;
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -70,8 +59,6 @@ void RecordTimeToActionWithoutPreview(const Context& context,
                                       const base::TimeDelta& delta);
 void RecordPreviewDelayTime(const Context& context,
                             const base::TimeDelta& delta);
-
-void RecordOriginTrialAllowed(UiLocation location, bool allowed);
 
 void RecordVideoCaptureError(const Context& context,
                              media::VideoCaptureError received_error);

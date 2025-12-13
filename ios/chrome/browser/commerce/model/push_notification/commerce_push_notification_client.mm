@@ -31,23 +31,23 @@
 namespace {
 
 // Identifier for long press on notification and open menu categories.
-NSString* kCommerceCategoryIdentifier = @"PriceDropNotifications";
+NSString* const kCommerceCategoryIdentifier = @"PriceDropNotifications";
 // Identifier if user taps notification (doesn't long press and
 // choose from options).
-NSString* kDefaultActionIdentifier =
+NSString* const kDefaultActionIdentifier =
     @"com.apple.UNNotificationDefaultActionIdentifier";
 // Opaque payload key from notification service.
-NSString* kSerializedPayloadKey = @"op";
+NSString* const kSerializedPayloadKey = @"op";
 // Identifier for user pressing 'Visit site' option after long pressing
 // notification.
-NSString* kVisitSiteActionIdentifier = @"visit_site";
+NSString* const kVisitSiteActionIdentifier = @"visit_site";
 // Text for option for long press.
-NSString* kVisitSiteTitle = @"Visit site";
+NSString* const kVisitSiteTitle = @"Visit site";
 // Identifier for user pressing 'Untrack price' after long pressing
 // notification.
-NSString* kUntrackPriceIdentifier = @"untrack_price";
+NSString* const kUntrackPriceIdentifier = @"untrack_price";
 // Text for option 'Untrack price' when long pressing notification.
-NSString* kUntrackPriceTitle = @"Untrack price";
+NSString* const kUntrackPriceTitle = @"Untrack price";
 
 // Returns an arbitrary profile amongst the currently loaded profile. This
 // means that this API is not safe when there are multiple profiles. Instead
@@ -58,7 +58,12 @@ NSString* kUntrackPriceTitle = @"Untrack price";
 ProfileIOS* GetAnyProfile() {
   std::vector<ProfileIOS*> loaded_profiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-  CHECK(!loaded_profiles.empty());
+
+  // Even if there is only one Profile on disk, it may have not been loaded yet.
+  if (loaded_profiles.empty()) {
+    return nullptr;
+  }
+
   return loaded_profiles.back();
 }
 
@@ -128,21 +133,43 @@ bool CommercePushNotificationClient::HandleNotificationInteraction(
 std::optional<UIBackgroundFetchResult>
 CommercePushNotificationClient::HandleNotificationReception(
     NSDictionary<NSString*, id>* notification) {
+  ProfileIOS* profile = GetTargetProfile();
+
+  if (!profile) {
+    // Cannot process the notification without a Profile.
+    return std::nullopt;
+  }
+
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(GetTargetProfile());
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+
+  if (!optimization_guide_service ||
+      !optimization_guide_service->GetHintsManager()) {
+    return std::nullopt;
+  }
+
   std::unique_ptr<optimization_guide::proto::HintNotificationPayload>
       hint_notification_payload = ParseHintNotificationPayload(
           [notification objectForKey:kSerializedPayloadKey]);
+
   if (hint_notification_payload) {
     base::RecordAction(base::UserMetricsAction(
         "Commerce.PriceTracking.PushNotification.Received"));
+
     optimization_guide::PushNotificationManager* push_notification_manager =
         optimization_guide_service->GetHintsManager()
             ->push_notification_manager();
+
+    if (!push_notification_manager) {
+      return std::nullopt;
+    }
+
     push_notification_manager->OnNewPushNotification(
         *hint_notification_payload);
+
     return UIBackgroundFetchResultNoData;
   }
+
   return std::nullopt;
 }
 

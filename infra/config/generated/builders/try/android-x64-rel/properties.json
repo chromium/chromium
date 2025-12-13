@@ -17,7 +17,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -48,7 +47,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -79,7 +77,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -122,7 +119,8 @@
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/android-x64-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/android-x64-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/code_coverage": {

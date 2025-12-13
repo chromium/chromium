@@ -49,7 +49,7 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
     return _URC_NO_REASON;
   }
 
-  state->frames[state->frame_count++] = ip;
+  UNSAFE_TODO(state->frames[state->frame_count++] = ip);
   if (state->frame_count >= state->max_depth) {
     return _URC_END_OF_STACK;
   }
@@ -71,8 +71,7 @@ bool EnableInProcessStackDumping() {
   // to be ignored.  Therefore, when testing that same code, it should run
   // with SIGPIPE ignored as well.
   // TODO(phajdan.jr): De-duplicate this SIGPIPE code.
-  struct sigaction action;
-  UNSAFE_TODO(memset(&action, 0, sizeof(action)));
+  struct sigaction action = {};
   action.sa_handler = SIG_IGN;
   sigemptyset(&action.sa_mask);
   return (sigaction(SIGPIPE, &action, NULL) == 0);

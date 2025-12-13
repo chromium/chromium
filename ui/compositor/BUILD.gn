@@ -72,7 +72,6 @@ component("compositor") {
     "presentation_time_recorder.cc",
     "presentation_time_recorder.h",
     "property_change_reason.h",
-    "scoped_animation_duration_scale_mode.cc",
     "scoped_animation_duration_scale_mode.h",
     "scoped_layer_animation_settings.cc",
     "scoped_layer_animation_settings.h",
@@ -86,6 +85,8 @@ component("compositor") {
 
   if (is_mac) {
     sources += [
+      "display_link_mac_mojo.h",
+      "display_link_mac_mojo.mm",
       "recyclable_compositor_mac.cc",
       "recyclable_compositor_mac.h",
     ]
@@ -93,7 +94,10 @@ component("compositor") {
 
   defines = [ "COMPOSITOR_IMPLEMENTATION" ]
 
-  public_deps = [ "//cc" ]
+  public_deps = [
+    "//cc",
+    "//ui/gfx:animation_scale",
+  ]
   deps = [
     "//base",
     "//cc/animation",
@@ -205,7 +209,7 @@ static_library("test_support") {
 
   if (is_apple) {
     deps += [
-      "//gpu/ipc/service:service",
+      "//gpu/ipc/service",
       "//ui/accelerated_widget_mac",
     ]
   }

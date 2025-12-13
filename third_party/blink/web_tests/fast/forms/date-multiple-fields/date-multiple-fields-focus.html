@@ -1,29 +1,33 @@
 <!DOCTYPE html>
 <body>
-<script src="../../../resources/js-test.js"></script>
+<title>Focus navigation between sub-fields in input[type=date]</title>
+<link rel="help" href="https://issues.chromium.org/issues/442293382">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-description('Check if element.focus() does not focus on disabled sub-fields.');
-if (window.internals)
-    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
-else
-    debug('This test requires DRT/WRT.');
+test(() => {
+  assert_true(window.internals != null, 'This test requires internals object');
+  internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 
-var dateInput = document.createElement('input');
-dateInput.lang = 'ja-jp';
-dateInput.type = 'date';
-dateInput.min = '2013-02-01';
-dateInput.max = '2013-03-30';
-document.body.appendChild(dateInput);
-// Assume the date format is "yyyy/MM/dd"
+  const input = document.createElement('input');
+  input.lang = 'ja-jp';
+  input.type = 'date';
+  input.min = '2013-02-01';
+  input.max = '2013-03-30';
+  document.body.appendChild(input);
 
-dateInput.focus();
-// Because the year field is fixed, the first focusable element is the
-// month field.
-shouldBeEqualToString('internals.shadowPseudoId(internals.shadowRoot(dateInput).activeElement)', '-webkit-datetime-edit-month-field');
-dateInput.blur();
-dateInput.focus();
-shouldBeEqualToString('internals.shadowPseudoId(internals.shadowRoot(dateInput).activeElement)', '-webkit-datetime-edit-month-field');
-
-dateInput.remove();
+  input.focus();
+  assert_equals(
+    internals.shadowPseudoId(internals.shadowRoot(input).activeElement),
+    '-webkit-datetime-edit-year-field');
+  eventSender.keyDown('\t');
+  assert_equals(
+    internals.shadowPseudoId(internals.shadowRoot(input).activeElement),
+    '-webkit-datetime-edit-month-field');
+  eventSender.keyDown('\t');
+  assert_equals(
+    internals.shadowPseudoId(internals.shadowRoot(input).activeElement),
+    '-webkit-datetime-edit-day-field');
+});
 </script>
 </body>

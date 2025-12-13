@@ -33,7 +33,9 @@ void DisplaySchedulerWebView::ForceImmediateSwapIfPossible() {
   // We can't swap immediately
   NOTREACHED();
 }
-void DisplaySchedulerWebView::SetNeedsOneBeginFrame(bool needs_draw) {
+void DisplaySchedulerWebView::SetNeedsOneBeginFrame(
+    const viz::BeginFrameArgs& args,
+    bool needs_draw) {
   NOTREACHED();
 }
 void DisplaySchedulerWebView::DidSwapBuffers() {

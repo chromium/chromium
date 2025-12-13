@@ -20,9 +20,9 @@
 
 // https://html.spec.whatwg.org/C/#the-pre-element
 [
-    HTMLConstructor,
     Exposed=Window
 ] interface HTMLPreElement : HTMLElement {
+    [HTMLConstructor] constructor();
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLPreElement-partial
     [CEReactions, Reflect] attribute long width;

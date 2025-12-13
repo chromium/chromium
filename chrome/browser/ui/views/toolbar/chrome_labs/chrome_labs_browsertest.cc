@@ -79,9 +79,7 @@ class ChromeLabsTestHelper {
         BrowserView::GetBrowserViewForBrowser(browser)
             ->toolbar()
             ->GetChromeLabsButton();
-    views::test::ButtonTestApi(chrome_labs_button)
-        .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
+    views::test::ButtonTestApi(chrome_labs_button).NotifyDefaultMouseClick();
     EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
         kToolbarChromeLabsBubbleElementId));
   }

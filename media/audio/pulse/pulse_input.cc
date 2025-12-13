@@ -24,6 +24,8 @@ using pulse::WaitForOperationCompletion;
 // Number of blocks of buffers used in the |fifo_|.
 const int kNumberOfBlocksBufferInFifo = 2;
 
+constexpr SampleFormat kSampleFormat = pulse::kInputSampleFormat;
+
 PulseAudioInputStream::PulseAudioInputStream(
     AudioManagerPulse* audio_manager,
     const std::string& source_name,
@@ -360,7 +362,7 @@ void PulseAudioInputStream::ReadData() {
     UNSAFE_BUFFERS(base::span<const uint8_t> pa_stream(
         reinterpret_cast<const uint8_t*>(data), length));
     const size_t number_of_frames =
-        length / params_.GetBytesPerFrame(pulse::kInputSampleFormat);
+        length / params_.GetBytesPerFrame(kSampleFormat);
     if (number_of_frames >
         base::checked_cast<size_t>(fifo_.GetUnfilledFrames())) {
       // Dynamically increase capacity to the FIFO to handle larger buffer got
@@ -372,11 +374,8 @@ void PulseAudioInputStream::ReadData() {
       fifo_.IncreaseCapacity(increase_blocks_of_buffer);
     }
 
-    const size_t bytes_per_sample =
-        SampleFormatToBytesPerChannel(pulse::kInputSampleFormat);
-    peak_detector_.FindPeak(pa_stream, bytes_per_sample);
-
-    fifo_.Push(pa_stream, number_of_frames, bytes_per_sample);
+    peak_detector_.FindPeak(pa_stream, kSampleFormat);
+    fifo_.Push(pa_stream, number_of_frames, kSampleFormat);
 
     // Checks if we still have data.
     pa_stream_drop(handle_);

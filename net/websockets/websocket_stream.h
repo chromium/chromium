@@ -106,8 +106,9 @@ class NET_EXPORT_PRIVATE WebSocketStream {
     virtual void OnCreateRequest(URLRequest* url_request) = 0;
 
     // Called when the URLRequest::OnConnected() is called.
-    virtual void OnURLRequestConnected(URLRequest* request,
-                                       const TransportInfo& info) = 0;
+    virtual int OnURLRequestConnected(URLRequest* request,
+                                      const TransportInfo& info,
+                                      CompletionOnceCallback callback) = 0;
 
     // Called on successful connection. The parameter is an object derived from
     // WebSocketStream.

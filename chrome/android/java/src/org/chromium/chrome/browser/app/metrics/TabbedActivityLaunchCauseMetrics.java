@@ -10,6 +10,7 @@ import android.nfc.NfcAdapter;
 import android.speech.RecognizerResultsIntent;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ServiceTabLauncher;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.webapps.ShortcutSource;
 
 /** LaunchCauseMetrics for ChromeTabbedActivity. */
+@NullMarked
 public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
     private final Activity mActivity;
 

@@ -14,8 +14,10 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/test_history_backend_for_sync.h"
@@ -38,8 +40,8 @@
 
 namespace history {
 
-const std::string kTestAppId = "org.chromium.dino.stegosaurus";
-const std::string kTestAppId2 = "org.chromium.dino.velociraptor";
+constexpr char kTestAppId[] = "org.chromium.dino.stegosaurus";
+constexpr char kTestAppId2[] = "org.chromium.dino.velociraptor";
 
 namespace {
 
@@ -615,6 +617,52 @@ TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
   // Since all remote URLs were invalid, they should not have been added to the
   // backend.
   EXPECT_TRUE(backend()->GetURLs().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, DoesNotApply404sWhen404sNotEligibleForHistory) {
+  // Make 404s ineligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should not be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 0u);
+  EXPECT_EQ(backend()->GetVisits().size(), 0u);
+}
+
+TEST_F(HistorySyncBridgeTest, Applies404sWhen404sEligibleForHistory) {
+  // Make 404s eligible for history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  // Make a 404 visit.
+  const GURL remote_url("https://remote.com");
+  sync_pb::HistorySpecifics remote_entity =
+      CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
+                      remote_url, {}, kTestAppId);
+  remote_entity.set_http_response_code(404);
+  // Set a cluster ID. In practice, 404s shouldn't be in clusters, but we want
+  // to make sure that if a 404 visit gets into a foreign cluster, it doesn't
+  // get added to a local cluster.
+  remote_entity.set_originator_cluster_id(12345);
+
+  // Sync the 404 visit.
+  ApplyInitialSyncChanges({remote_entity});
+
+  // The visit should be saved locally.
+  EXPECT_EQ(backend()->GetURLs().size(), 1u);
+  EXPECT_EQ(backend()->GetVisits().size(), 1u);
+  // But the visit shouldn't get added to any local clusters.
+  EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 0);
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
@@ -1902,6 +1950,48 @@ TEST_F(HistorySyncBridgeTest, AddsCluster) {
 
   // Should be called once per visit.
   EXPECT_EQ(backend()->add_visit_to_synced_cluster_count(), 3);
+}
+
+TEST_F(HistorySyncBridgeTest, ActorInitiatedVisitsNotSynced) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL.
+  auto [url_row, visit_row] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row.visit_id,
+                                     VisitSource::SOURCE_ACTOR);
+
+  // Notify the bridge about the visit - it should be sent to the processor.
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row, visit_row);
+
+  // The data should *not* have been uploaded to Sync.
+  EXPECT_TRUE(processor()->GetEntities().empty());
+}
+
+TEST_F(HistorySyncBridgeTest, NonActorInitiatedVisitsAreSynced) {
+  // Start syncing (with no data yet).
+  ApplyInitialSyncChanges({});
+
+  // Visit a URL with SOURCE_BROWSED.
+  auto [url_row1, visit_row1] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row1.visit_id,
+                                     VisitSource::SOURCE_BROWSED);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row1, visit_row1);
+
+  // Visit a second URL, with SOURCE_EXTENSION.
+  auto [url_row2, visit_row2] = AddVisitToBackendAndAdvanceClock(
+      GURL("https://www.url.com"), ui::PAGE_TRANSITION_TYPED);
+  backend()->AddOrReplaceVisitSource(visit_row2.visit_id,
+                                     VisitSource::SOURCE_EXTENSION);
+  bridge()->OnURLVisited(
+      /*history_backend=*/nullptr, url_row2, visit_row2);
+
+  // The data should be uploaded to Sync.
+  EXPECT_EQ(processor()->GetEntities().size(), 2u);
 }
 
 }  // namespace

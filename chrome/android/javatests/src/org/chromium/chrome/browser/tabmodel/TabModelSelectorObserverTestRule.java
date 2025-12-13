@@ -10,7 +10,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -51,7 +50,6 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        CommandLine.init(null);
         return super.apply(
                 new Statement() {
                     @Override
@@ -147,6 +145,12 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                                 mSelector
                                         .getTabGroupModelFilterProvider()
                                         .getTabGroupModelFilter(/* isIncognito= */ false));
+        TabUngrouper normalTabUngrouper =
+                new PassthroughTabUngrouper(
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ false));
         mNormalTabModel =
                 new TabModelSelectorTestTabModel(
                         ProfileManager.getLastUsedRegularProfile(),
@@ -156,10 +160,17 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         asyncTabParamsManager,
                         NO_RESTORE_TYPE,
                         delegate,
-                        normalTabRemover);
+                        normalTabRemover,
+                        normalTabUngrouper);
 
         TabRemover incognitoTabRemover =
                 new PassthroughTabRemover(
+                        () ->
+                                mSelector
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(/* isIncognito= */ true));
+        TabUngrouper incognitoTabUngrouper =
+                new PassthroughTabUngrouper(
                         () ->
                                 mSelector
                                         .getTabGroupModelFilterProvider()
@@ -173,15 +184,16 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                         nextTabPolicySupplier,
                         asyncTabParamsManager,
                         delegate,
-                        incognitoTabRemover);
+                        incognitoTabRemover,
+                        incognitoTabUngrouper);
 
         mSelector.initialize(
-                TabModelHolderFactory.createTabModelHolderForTesting(mNormalTabModel),
-                TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
+                new TabModelHolder(mNormalTabModel, mNormalTabModel),
+                new IncognitoTabModelHolder(mIncognitoTabModel, mIncognitoTabModel));
     }
 
     /** Test TabModel that exposes the needed capabilities for testing. */
-    public static class TabModelSelectorTestTabModel extends TabModelImpl
+    public static class TabModelSelectorTestTabModel extends TabCollectionTabModelImpl
             implements IncognitoTabModelInternal {
         private final Set<TabModelObserver> mObserverSet = new HashSet<>();
 
@@ -193,20 +205,22 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 AsyncTabParamsManager asyncTabParamsManager,
                 @ActivityType int activityType,
                 TabModelDelegate modelDelegate,
-                TabRemover tabRemover) {
+                TabRemover tabRemover,
+                TabUngrouper tabUngrouper) {
             super(
                     profile,
                     activityType,
+                    /* isArchivedTabModel= */ false,
                     null,
                     null,
                     orderController,
                     tabContentManager,
                     nextTabPolicySupplier,
-                    asyncTabParamsManager,
                     modelDelegate,
+                    asyncTabParamsManager,
                     tabRemover,
-                    /* supportUndo= */ false,
-                    /* isArchivedTabModel= */ false);
+                    tabUngrouper,
+                    /* supportUndo= */ false);
         }
 
         @Override
@@ -244,7 +258,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
     }
 
     /** Test IncognitoTabModel that exposes the needed capabilities for testing. */
-    private static class TabModelSelectorTestIncognitoTabModel extends TabModelSelectorTestTabModel
+    public static class TabModelSelectorTestIncognitoTabModel extends TabModelSelectorTestTabModel
             implements IncognitoTabModel {
         public TabModelSelectorTestIncognitoTabModel(
                 Profile profile,
@@ -253,7 +267,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager,
                 TabModelDelegate modelDelegate,
-                TabRemover tabRemover) {
+                TabRemover tabRemover,
+                TabUngrouper tabUngrouper) {
             super(
                     ProfileManager.getLastUsedRegularProfile()
                             .getPrimaryOtrProfile(/* createIfNeeded= */ true),
@@ -263,7 +278,8 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                     asyncTabParamsManager,
                     NO_RESTORE_TYPE,
                     modelDelegate,
-                    tabRemover);
+                    tabRemover,
+                    tabUngrouper);
         }
 
         @Override

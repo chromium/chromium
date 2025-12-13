@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef MOJO_CORE_PORTS_PORT_LOCKER_H_
 #define MOJO_CORE_PORTS_PORT_LOCKER_H_
 
 #include <stdint.h>
 
 #include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/memory/stack_allocated.h"
 #include "mojo/core/ports/port_ref.h"
 
@@ -54,8 +50,9 @@ class PortLocker {
     // lock is held by this PortLocker.
     bool is_port_locked = false;
     for (size_t i = 0; i < num_ports_ && !is_port_locked; ++i)
-      if (port_refs_[i]->port() == port_ref.port())
+      if (UNSAFE_TODO(port_refs_[i])->port() == port_ref.port()) {
         is_port_locked = true;
+      }
     DCHECK(is_port_locked);
 #endif
     return port_ref.port();

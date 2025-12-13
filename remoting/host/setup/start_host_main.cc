@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/host/setup/start_host_main.h"
 
 #include <stddef.h>
@@ -14,7 +9,9 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -102,40 +99,43 @@ void PrintDefaultHelpMessage(const char* process_name) {
   // Optional args are shown first as the most common issue is needing to
   // generate the auth-code again and this ordering makes it easy to fix the
   // command line to rerun the tool.
-  fprintf(stderr,
-          "Please visit https://remotedesktop.google.com/headless for "
-          "instructions on running this tool and help generating the command "
-          "line arguments.\n"
-          "\n"
-          "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
-          "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
-          process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
-          kDisplayNameSwitchName, kPinSwitchName,
-          kDisableCrashReportingSwitchName);
+  UNSAFE_TODO(fprintf(
+      stderr,
+      "Please visit https://remotedesktop.google.com/headless for "
+      "instructions on running this tool and help generating the command "
+      "line arguments.\n"
+      "\n"
+      "Example usage:\n%s --%s=<auth code> --%s=<redirect url> "
+      "[--%s=<host display name>] [--%s=<6+ digit PIN>] [--%s]\n",
+      process_name, kAuthCodeSwitchName, kRedirectUrlSwitchName,
+      kDisplayNameSwitchName, kPinSwitchName,
+      kDisableCrashReportingSwitchName));
 }
 
 void PrintCorpUserHelpMessage(const char* process_name) {
-  fprintf(stdout,
-          "Setting up a machine for a corp user requires the username of that "
-          "user and an optional display name.\n\nExample usage:\n"
-          "%s --%s=<username> [--%s=corp-machine-name]\n",
-          process_name, kCorpUserSwitchName, kDisplayNameSwitchName);
+  UNSAFE_TODO(fprintf(
+      stdout,
+      "Setting up a machine for a corp user requires the username of that "
+      "user and an optional display name.\n\nExample usage:\n"
+      "%s --%s=<username> [--%s=corp-machine-name]\n",
+      process_name, kCorpUserSwitchName, kDisplayNameSwitchName));
 }
 
 void PrintCloudUserHelpMessage(const char* process_name) {
   // TODO: joedow - Add a link to public documentation and/or samples when they
   // are available.
-  fprintf(stdout,
-          "Setting up a Compute Engine Instance requires the email address of "
-          "the user.\n\nAn optional API_KEY, created for the project the "
-          "Compute Engine Instance is in, can be provided. Otherwise an access "
-          "token will be retrieved for the default service account.\n\nAn "
-          "optional display name can also be provided, otherwise the hostname, "
-          "or FQDN, of the instance will be used.\n\n"
-          "Example usage:\n%s --%s=<user_email_address> [--%s=<API_KEY>] "
-          "[--%s=cloud-instance-display-name] [--%s]\n",
-          process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
-          kDisplayNameSwitchName, kDisableCrashReportingSwitchName);
+  UNSAFE_TODO(fprintf(
+      stdout,
+      "Setting up a Compute Engine Instance requires the email address of "
+      "the user.\n\nAn optional API_KEY, created for the project the "
+      "Compute Engine Instance is in, can be provided. Otherwise an access "
+      "token will be retrieved for the default service account.\n\nAn "
+      "optional display name can also be provided, otherwise the hostname, "
+      "or FQDN, of the instance will be used.\n\n"
+      "Example usage:\n%s --%s=<user_email_address> [--%s=<API_KEY>] "
+      "[--%s=cloud-instance-display-name] [--%s]\n",
+      process_name, kCloudUserSwitchName, kCloudApiKeySwitchName,
+      kDisplayNameSwitchName, kDisableCrashReportingSwitchName));
 }
 
 // Lets us hide the PIN that a user types.
@@ -168,7 +168,7 @@ std::string ReadString(bool no_echo) {
   }
   const int kMaxLen = 1024;
   std::string str(kMaxLen, 0);
-  char* result = fgets(&str[0], kMaxLen, stdin);
+  char* result = UNSAFE_TODO(fgets(&str[0], kMaxLen, stdin));
   if (no_echo) {
     printf("\n");
     SetEcho(true);
@@ -256,7 +256,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
       fflush(stdout);
       params.pin = ReadString(true);
       if (!remoting::IsPinValid(params.pin)) {
-        fprintf(stdout, kInvalidPinErrorMessage);
+        UNSAFE_TODO(fprintf(stdout, kInvalidPinErrorMessage));
         fflush(stdout);
         continue;
       }
@@ -273,7 +273,7 @@ bool InitializeParamsForOAuthFlow(HostStarter::Params& params,
     }
   } else {
     if (!remoting::IsPinValid(params.pin)) {
-      fprintf(stderr, kInvalidPinErrorMessage);
+      UNSAFE_TODO(fprintf(stderr, kInvalidPinErrorMessage));
       return false;
     }
   }
@@ -412,7 +412,8 @@ int StartHostMain(int argc, char** argv) {
   // The tool must be run elevated on Windows so the host has access to the
   // directories used to store the configuration JSON files.
   if (!base::IsCurrentProcessElevated()) {
-    fprintf(stderr, "Error: %s must be run as an elevated process.", argv[0]);
+    UNSAFE_TODO(fprintf(stderr, "Error: %s must be run as an elevated process.",
+                        argv[0]));
     return 1;
   }
 #endif  // BUILDFLAG(IS_WIN)

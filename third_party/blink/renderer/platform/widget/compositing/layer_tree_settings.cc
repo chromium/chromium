@@ -30,8 +30,8 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/features/native_theme_features.h"
-#include "ui/native_theme/native_theme_utils.h"
-#include "ui/native_theme/overlay_scrollbar_constants_aura.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/overlay_scrollbar_constants.h"
 
 namespace blink {
 
@@ -40,9 +40,7 @@ namespace {
 // When enabled, scrollbar fade animations' delay and duration are scaled
 // according to `kFadeDelayScalingFactor` and `kFadeDurationScalingFactor`
 // below, respectively. For more context, please see https://crbug.com/1245964.
-BASE_FEATURE(kScaleScrollbarAnimationTiming,
-             "ScaleScrollbarAnimationTiming",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kScaleScrollbarAnimationTiming, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<double> kFadeDelayScalingFactor{
     &kScaleScrollbarAnimationTiming, "fade_delay_scaling_factor",
@@ -58,16 +56,10 @@ void InitializeScrollbarFadeAndDelay(cc::LayerTreeSettings& settings) {
   settings.scrollbar_fade_duration = base::Milliseconds(300);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (ui::IsOverlayScrollbarEnabled()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
     settings.idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
-    if (ui::IsFluentOverlayScrollbarEnabled()) {
-      settings.scrollbar_fade_delay = ui::kFluentOverlayScrollbarFadeDelay;
-      settings.scrollbar_fade_duration =
-          ui::kFluentOverlayScrollbarFadeDuration;
-    } else {
-      settings.scrollbar_fade_delay = ui::kOverlayScrollbarFadeDelay;
-      settings.scrollbar_fade_duration = ui::kOverlayScrollbarFadeDuration;
-    }
+    settings.scrollbar_fade_delay = ui::GetOverlayScrollbarFadeDelay();
+    settings.scrollbar_fade_duration = ui::GetOverlayScrollbarFadeDuration();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -117,9 +109,7 @@ std::pair<int, int> GetTilingInterestAreaSizes() {
 #if !BUILDFLAG(IS_ANDROID)
 // Adjusting tile memory size in case a lot more websites need more tile
 // memory than the current calculation.
-BASE_FEATURE(kAdjustTileGpuMemorySize,
-             "AdjustTileGpuMemorySize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAdjustTileGpuMemorySize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr size_t kLargeResolutionMemoryMB = 1152;
 constexpr size_t kDefaultMemoryMB = 512;
@@ -177,7 +167,7 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
 
 #if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::IsLowEndDevice() ||
-      base::SysInfo::AmountOfPhysicalMemoryMB() < 2000) {
+      base::SysInfo::AmountOfPhysicalMemory().InMiB() < 2000) {
     actual.bytes_limit_when_visible = 96 * 1024 * 1024;
   } else {
     actual.bytes_limit_when_visible = 256 * 1024 * 1024;
@@ -206,7 +196,7 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   // consume too much of the system memory. Still keep the minimum to the
   // default of 512MB.
   size_t default_memory_mb = GetDefaultMemoryMB();
-  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemoryMB() / 4;
+  size_t memory_cap_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB() / 4;
   if (mb_limit_when_visible > memory_cap_mb) {
     mb_limit_when_visible = memory_cap_mb;
   } else if (mb_limit_when_visible < default_memory_mb) {
@@ -245,11 +235,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       !cmd.HasSwitch(::switches::kDisableCheckerImaging) && is_threaded;
 
 #if BUILDFLAG(IS_ANDROID)
-  // WebView should always raster in the default color space.
-  // Synchronous compositing indicates WebView.
-  if (!platform->IsSynchronousCompositingEnabledForAndroidWebView())
-    settings.prefer_raster_in_srgb = ::features::IsDynamicColorGamutEnabled();
-
   // We can use a more aggressive limit on Android since decodes tend to take
   // longer on these devices.
   settings.min_image_bytes_to_checker = 512 * 1024;  // 512kB
@@ -419,8 +404,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
       cmd.HasSwitch(::switches::kShowSurfaceDamageRects);
   settings.initial_debug_state.show_screen_space_rects =
       cmd.HasSwitch(::switches::kShowScreenSpaceRects);
-  settings.initial_debug_state.highlight_non_lcd_text_layers =
-      cmd.HasSwitch(::switches::kHighlightNonLCDTextLayers);
 
   settings.initial_debug_state.SetRecordRenderingStats(
       cmd.HasSwitch(::switches::kEnableGpuBenchmarking));
@@ -492,21 +475,29 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
   settings.enable_fluent_overlay_scrollbar =
       ui::IsFluentOverlayScrollbarEnabled();
 
-  if (ui::IsOverlayScrollbarEnabled()) {
+  if (ui::NativeTheme::GetInstanceForWeb()->use_overlay_scrollbar()) {
     settings.scrollbar_animator = cc::LayerTreeSettings::AURA_OVERLAY;
     settings.scrollbar_thinning_duration =
-        ui::kOverlayScrollbarThinningDuration;
-    settings.scrollbar_flash_after_any_scroll_update =
-        !settings.enable_fluent_overlay_scrollbar;
+        settings.enable_fluent_overlay_scrollbar
+            ? base::Milliseconds(100)
+            // TODO(crbug.com/40487528): This value is still undetermined.
+            : base::Milliseconds(200);
+    if (!settings.enable_fluent_overlay_scrollbar) {
+      // Set scrollbar flash behavior based on feature flags
+      const bool flash_once_enabled = base::FeatureList::IsEnabled(
+          ::features::kOverlayScrollbarFlashOnlyOnceVisibleOnViewport);
+      settings.scrollbar_flash_once_after_scroll_update = flash_once_enabled;
+      settings.scrollbar_flash_after_any_scroll_update = !flash_once_enabled;
+      settings.scrollbar_flash_once_visible_on_viewport =
+          settings.scrollbar_flash_once_after_scroll_update;
+      settings.scrollbar_flash_when_mouse_enter = base::FeatureList::IsEnabled(
+          ::features::kOverlayScrollbarFlashWhenMouseEnter);
+    }
     // Avoid animating in web tests to improve reliability.
-    if (settings.enable_fluent_overlay_scrollbar) {
-      settings.scrollbar_thinning_duration =
-          ui::kFluentOverlayScrollbarThinningDuration;
-      if (WebTestSupport::IsRunningWebTest()) {
-        settings.scrollbar_thinning_duration = base::Milliseconds(0);
-        settings.scrollbar_fade_delay = base::TimeDelta::Max();
-        settings.scrollbar_fade_duration = base::Milliseconds(0);
-      }
+    if (WebTestSupport::IsRunningWebTest()) {
+      settings.scrollbar_thinning_duration = base::TimeDelta();
+      settings.scrollbar_fade_delay = base::TimeDelta::Max();
+      settings.scrollbar_fade_duration = base::TimeDelta();
     }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -533,7 +524,7 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
     // TODO(crbug.com/398868042): Instead of Graphite/Vulkan feature checks, add
     // appropriate shared image capability and check for its support.
     if (!cmd.HasSwitch(switches::kDisableRGBA4444Textures) &&
-        base::SysInfo::AmountOfPhysicalMemoryMB() <= 512 &&
+        base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512 &&
         !::features::IsUsingVulkan() &&
         !::features::IsSkiaGraphiteEnabled(
             base::CommandLine::ForCurrentProcess())) {
@@ -589,8 +580,6 @@ cc::LayerTreeSettings GenerateLayerTreeSettings(
            settings.skewport_extrapolation_limit_in_screen_pixels) =
       GetTilingInterestAreaSizes();
 
-  settings.dynamic_safe_area_insets_on_scroll_enabled =
-      RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled();
   return settings;
 }
 

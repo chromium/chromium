@@ -17,6 +17,7 @@
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -32,7 +33,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
@@ -40,7 +40,6 @@
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_pixmap.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/scoped_make_current_unsafe.h"
 
@@ -63,8 +62,8 @@ namespace gpu {
 namespace {
 
 size_t GetPixmapSizeInBytes(const gfx::NativePixmap& pixmap) {
-  return gfx::BufferSizeForBufferFormat(pixmap.GetBufferSize(),
-                                        pixmap.GetBufferFormat());
+  return pixmap.GetSharedImageFormat().EstimatedSizeInBytes(
+      pixmap.GetBufferSize());
 }
 
 bool IsExoTexture(std::string_view label) {
@@ -433,12 +432,15 @@ OzoneImageBacking::OzoneImageBacking(
   bool used_by_webgpu = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
                                      SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   write_streams_count_ = 0;
-  if (used_by_gl)
+  if (used_by_gl) {
     write_streams_count_++;  // gl can write
-  if (used_by_vulkan)
+  }
+  if (used_by_vulkan) {
     write_streams_count_++;  // vulkan can write
-  if (used_by_webgpu)
+  }
+  if (used_by_webgpu) {
     write_streams_count_++;  // webgpu can write
+  }
 
   if (write_streams_count_ == 1) {
     // Initialize last_write_stream_ if its a single stream for cases where
@@ -683,10 +685,11 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
     DCHECK(write_fence_.is_null());  // `write_fence_` should be null.
     // For write access we expect new `write_fence_` so we can move the
     // old fence here.
-    if (!readonly)
+    if (!readonly) {
       fences->emplace_back(std::move(external_write_fence_));
-    else
+    } else {
       fences->emplace_back(external_write_fence_.Clone());
+    }
   }
 
   // If current stream is different than `last_write_stream_` then wait on that
@@ -696,10 +699,11 @@ bool OzoneImageBacking::BeginAccess(bool readonly,
                .is_null());  // `external_write_fence_` should be null.
     // For write access we expect new `write_fence_` so we can move the old
     // fence here.
-    if (!readonly)
+    if (!readonly) {
       fences->emplace_back(std::move(write_fence_));
-    else
+    } else {
       fences->emplace_back(write_fence_.Clone());
+    }
   }
 
   if (readonly) {

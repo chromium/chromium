@@ -48,7 +48,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowPostTask.class)
@@ -212,7 +211,7 @@ public class SurveyClientUnitTest {
                         false,
                         new String[0],
                         new String[0],
-                        Optional.empty(),
+                        null,
                         SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
@@ -435,7 +434,7 @@ public class SurveyClientUnitTest {
                         false,
                         new String[] {"bitField"},
                         new String[] {"stringField"},
-                        Optional.empty(),
+                        null,
                         SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
@@ -513,7 +512,7 @@ public class SurveyClientUnitTest {
                 false,
                 new String[0],
                 new String[0],
-                Optional.empty(),
+                null,
                 requestedBrowserType);
     }
 }

@@ -291,7 +291,7 @@ OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerUrlInterception() {
   // from OIDC authentication will be decoded and parsed by data_decoder for
   // security reasons. Example URL:
   // https://chromeenterprise.google/enroll/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session_state>
-  std::string url_ref = url.ref();
+  std::string url_ref = url.GetRef();
   base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
   if (url_map.size() == 0) {
     VLOG_POLICY(1, OIDC_ENROLLMENT)

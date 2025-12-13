@@ -16,11 +16,13 @@
 #include "remoting/protocol/channel_socket_adapter.h"
 #include "remoting/protocol/port_allocator_factory.h"
 #include "remoting/protocol/transport_context.h"
+#include "third_party/webrtc/api/ice_transport_interface.h"
 #include "third_party/webrtc/p2p/base/p2p_constants.h"
 #include "third_party/webrtc/p2p/base/p2p_transport_channel.h"
 #include "third_party/webrtc/p2p/base/packet_transport_internal.h"
 #include "third_party/webrtc/p2p/base/port.h"
 #include "third_party/webrtc/rtc_base/crypto_random.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace remoting::protocol {
 
@@ -92,8 +94,10 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_ = std::make_unique<webrtc::P2PTransportChannel>(
-      name_, 0, port_allocator_.get());
+  webrtc::IceTransportInit ice_init(WebRtcEnvironment());
+  ice_init.set_port_allocator(port_allocator_.get());
+  channel_ = webrtc::P2PTransportChannel::Create(name_, /*component=*/0,
+                                                 std::move(ice_init));
   std::string ice_password = webrtc::CreateRandomString(webrtc::ICE_PWD_LENGTH);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
                            ? webrtc::ICEROLE_CONTROLLING
@@ -102,12 +106,21 @@ void IceTransportChannel::Connect(const std::string& name,
                                      ice_password);
   channel_->SetIceParameters(webrtc::IceParameters(
       ice_username_fragment_, ice_password, /*ice_renomination=*/false));
-  channel_->SignalCandidateGathered.connect(
-      this, &IceTransportChannel::OnCandidateGathered);
-  channel_->SignalRouteChange.connect(this,
-                                      &IceTransportChannel::OnRouteChange);
-  channel_->SignalWritableState.connect(this,
-                                        &IceTransportChannel::OnWritableState);
+  channel_->SubscribeCandidateGathered(
+      this, [this](webrtc::IceTransportInternal* transport,
+                   const webrtc::Candidate& candidate) {
+        OnCandidateGathered(transport, candidate);
+      });
+  channel_->SubscribeNetworkRouteChanged(
+      this, [this](std::optional<webrtc::NetworkRoute>) {
+        if (channel_->writable()) {
+          NotifyRouteChanged();
+        }
+      });
+  channel_->SubscribeWritableState(
+      this, [this](webrtc::PacketTransportInternal* channel) {
+        OnWritableState(channel);
+      });
   channel_->set_incoming_only(
       !(network_settings_.flags & NetworkSettings::NAT_TRAVERSAL_OUTGOING));
 
@@ -192,15 +205,6 @@ void IceTransportChannel::OnCandidateGathered(
     const webrtc::Candidate& candidate) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   delegate_->OnChannelCandidate(this, candidate);
-}
-
-void IceTransportChannel::OnRouteChange(
-    webrtc::IceTransportInternal* ice_transport,
-    const webrtc::Candidate& candidate) {
-  // Ignore notifications if the channel is not writable.
-  if (channel_->writable()) {
-    NotifyRouteChanged();
-  }
 }
 
 void IceTransportChannel::OnWritableState(

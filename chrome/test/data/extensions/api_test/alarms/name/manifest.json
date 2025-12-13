@@ -1,0 +1,12 @@
+{
+  "background": {
+    "service_worker": "background.js"
+  },
+  "description": "An extension that registers alarms with alarm names of different lengths to test a histogram.",
+  "manifest_version": 3,
+  "name": "Alarm Name Test Extension",
+  "version": "1.0",
+  "permissions": [
+    "alarms"
+  ]
+}

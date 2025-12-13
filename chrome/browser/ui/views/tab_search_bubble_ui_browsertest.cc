@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/compositor.h"
 #include "ui/views/widget/widget_observer.h"

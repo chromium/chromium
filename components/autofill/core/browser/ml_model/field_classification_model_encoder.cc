@@ -78,24 +78,27 @@ FieldClassificationModelEncoder::TokenToId(std::u16string_view token) const {
 }
 
 std::vector<std::vector<FieldClassificationModelEncoder::TokenId>>
-FieldClassificationModelEncoder::EncodeForm(const FormStructure& form) const {
+FieldClassificationModelEncoder::EncodeForm(const FormData& form) const {
+  size_t num_form_fields_to_encode = std::min(
+      form.fields().size(),
+      static_cast<size_t>(encoding_parameters_.maximum_number_of_fields()));
   // Form-level features are encoded in an additional field.
-  std::vector<std::vector<TokenId>> encoded_form(ShouldEncodeFormLevelFeatures()
-                                                     ? form.field_count() + 1
-                                                     : form.field_count());
+  std::vector<std::vector<TokenId>> encoded_form(
+      ShouldEncodeFormLevelFeatures() ? num_form_fields_to_encode + 1
+                                      : num_form_fields_to_encode);
 
-  for (size_t i = 0; i < form.field_count(); ++i) {
-    encoded_form[i] = EncodeField(*form.field(i));
+  for (size_t i = 0; i < num_form_fields_to_encode; ++i) {
+    encoded_form[i] = EncodeField(form.fields()[i]);
   }
 
   if (ShouldEncodeFormLevelFeatures()) {
-    encoded_form[form.field_count()] = EncodeFormFeatures(form);
+    encoded_form[num_form_fields_to_encode] = EncodeFormFeatures(form);
   }
   return encoded_form;
 }
 
 std::vector<FieldClassificationModelEncoder::TokenId>
-FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
+FieldClassificationModelEncoder::EncodeField(const FormFieldData& field) const {
   // Protobuf does not generate an `enum class`. Therefore, this points to the
   // wrapping container class.
   using FeaturesEnum =
@@ -142,7 +145,7 @@ FieldClassificationModelEncoder::EncodeField(const AutofillField& field) const {
 
 std::vector<FieldClassificationModelEncoder::TokenId>
 FieldClassificationModelEncoder::EncodeFormFeatures(
-    const FormStructure& form) const {
+    const FormData& form) const {
   // Protobuf does not generate an `enum class`. Therefore, this points to the
   // wrapping container class.
   using FeaturesEnum =
@@ -163,7 +166,7 @@ FieldClassificationModelEncoder::EncodeFormFeatures(
       case FeaturesEnum::FEATURE_FORM_NAME:
         return EncodeAttribute(form.name_attribute());
       case FeaturesEnum::FEATURE_FRAME_URL_PATH:
-        return EncodeAttribute(base::UTF8ToUTF16(form.source_url().path()));
+        return EncodeAttribute(base::UTF8ToUTF16(form.url().GetPath()));
     }
     return {};
   };

@@ -41,14 +41,14 @@
 namespace {
 
 // Returns the gaia id used for `profile`.
-NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
+GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
   const ProfileAttributesIOS attributes =
       GetApplicationContext()
           ->GetProfileManager()
           ->GetProfileAttributesStorage()
           ->GetAttributesForProfileWithName(profile->GetProfileName());
 
-  return attributes.GetGaiaId().ToNSString();
+  return attributes.GetGaiaId();
 }
 
 }  // namespace
@@ -85,7 +85,7 @@ NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
     prefService->SetBoolean(prefs::kPriceNotificationsHasBeenShown, true);
   }
 
-  NSString* gaiaID = GetGaiaIdForProfile(profile);
+  GaiaId gaiaID = GetGaiaIdForProfile(profile);
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
   commerce::ShoppingService* shoppingService =

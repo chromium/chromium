@@ -8,18 +8,43 @@ import("//build/config/ui.gni")
 import("//components/os_crypt/sync/features.gni")
 
 component("sync") {
+  # New code should use os_crypt async.
+  visibility = [
+    "//chrome/browser",
+    "//chrome/test:test_support",
+    "//components/os_crypt/async/browser:dpapi_key_provider",
+    "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+    "//components/os_crypt/async/browser:keychain_key_provider",
+    "//components/os_crypt/async/browser:secret_portal_key_provider",
+    "//components/os_crypt/async/browser:unit_tests",
+    "//components/os_crypt/async/common",
+    "//components/os_crypt/async/common:unit_tests",
+    "//components/os_crypt/sync:test_support",
+    "//components/os_crypt/sync:unit_tests",
+    "//components/signin/core/browser",
+    "//components/sync:unit_tests",
+    "//components/sync/nigori",
+    "//components/sync/service",
+    "//headless:headless_non_renderer",
+    "//ios/chrome/browser/web/model:web_internal",
+    "//services/network:network_service",
+    "//services/test/echo:lib",
+  ]
+  if (is_mac) {
+    visibility += [ "//headless:headless_shell_lib" ]
+  }
+
   sources = [
     "os_crypt.h",
     "os_crypt_metrics.cc",
     "os_crypt_metrics.h",
-    "os_crypt_switches.cc",
-    "os_crypt_switches.h",
   ]
 
   deps = [
     "//base",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
+    "//components/os_crypt/common:switches",
     "//components/prefs",
     "//crypto",
   ]
@@ -32,12 +57,11 @@ component("sync") {
   }
 
   if (is_apple) {
-    sources += [
-      "keychain_password_mac.h",
-      "keychain_password_mac.mm",
-      "os_crypt_mac.mm",
+    sources += [ "os_crypt_mac.mm" ]
+    deps += [
+      "//components/os_crypt/common:keychain_password_mac",
+      "//crypto:mock_apple_keychain",
     ]
-    deps += [ "//crypto:mock_apple_keychain" ]
   } else if (is_win) {
     sources += [ "os_crypt_win.cc" ]
     deps += [ "//components/version_info" ]
@@ -122,10 +146,7 @@ source_set("unit_tests") {
   ]
 
   if (is_apple) {
-    sources += [
-      "keychain_password_mac_unittest.mm",
-      "os_crypt_mac_unittest.cc",
-    ]
+    sources += [ "os_crypt_mac_unittest.cc" ]
     deps += [ "//crypto:mock_apple_keychain" ]
   } else if (is_linux && !is_castos) {
     sources += [

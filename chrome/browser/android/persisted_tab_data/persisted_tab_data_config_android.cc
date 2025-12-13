@@ -4,12 +4,16 @@
 
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_config_android.h"
 
+#include "chrome/browser/android/persisted_tab_data/language_persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android.h"
 #include "chrome/browser/android/persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace {
+const char kBarId[] = "bar";
+const char kFooId[] = "foo";
+const char kLanguageId[] = "language";
 const char kSensitivityId[] = "sensitivity";
 }  // namespace
 
@@ -29,6 +33,21 @@ PersistedTabDataConfigAndroid::Get(const void* user_data_key,
         LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
             ->GetForBrowserContext(profile),
         kSensitivityId);
+  } else if (user_data_key == LanguagePersistedTabDataAndroid::UserDataKey()) {
+    return std::make_unique<PersistedTabDataConfigAndroid>(
+        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+            ->GetForBrowserContext(profile),
+        kLanguageId);
+  } else if (*static_cast<const char*>(user_data_key) == 1) {
+    return std::make_unique<PersistedTabDataConfigAndroid>(
+        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+            ->GetForBrowserContext(profile),
+        kBarId);
+  } else if (*static_cast<const char*>(user_data_key) == 2) {
+    return std::make_unique<PersistedTabDataConfigAndroid>(
+        LevelDBPersistedTabDataStorageAndroidFactory::GetInstance()
+            ->GetForBrowserContext(profile),
+        kFooId);
   }
   NOTREACHED() << "Unknown UserDataKey";
 }

@@ -76,8 +76,8 @@ void ChromeOSFamilyLinkUserMetricsProvider::OnUserSessionStarted(
   DCHECK(!access_token_fetcher_);
   access_token_fetcher_ = std::make_unique<
       signin::PrimaryAccountAccessTokenFetcher>(
-      /*consumer_name=*/"ChromeOSFamilyLinkUserMetricsProvider",
-      identity_manager, signin::ScopeSet(),
+      signin::OAuthConsumerId::kChromeosFamilyLinkUserMetricsProvider,
+      identity_manager,
       base::BindOnce(
           &ChromeOSFamilyLinkUserMetricsProvider::OnAccessTokenRequestCompleted,
           // It is safe to use base::Unretained as |this| owns

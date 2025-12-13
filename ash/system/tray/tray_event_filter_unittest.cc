@@ -326,7 +326,7 @@ TEST_F(TrayEventFilterTest, ShowHotseatClosesBubble) {
 
   // Dragging up to show the hotseat.
   gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   const gfx::Point start = display_bounds.bottom_center();
   const gfx::Point end = start + gfx::Vector2d(0, -80);
   GetEventGenerator()->GestureScrollSequence(

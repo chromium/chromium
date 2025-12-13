@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"

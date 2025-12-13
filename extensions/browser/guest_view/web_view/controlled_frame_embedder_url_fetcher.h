@@ -6,11 +6,12 @@
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_CONTROLLED_FRAME_EMBEDDER_URL_FETCHER_H_
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "extensions/browser/url_fetcher.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -30,7 +31,7 @@ class ControlledFrameEmbedderURLFetcher : public extensions::URLFetcher {
   // - whether the request is success.
   // - If yes, the content of the file.
   using ControlledFrameEmbedderLoadFileCallback =
-      base::OnceCallback<void(bool, std::unique_ptr<std::string>)>;
+      base::OnceCallback<void(bool, std::string)>;
 
   ControlledFrameEmbedderURLFetcher(
       int render_process_id,
@@ -48,7 +49,7 @@ class ControlledFrameEmbedderURLFetcher : public extensions::URLFetcher {
   void Start() override;
 
  private:
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   int render_process_id_;
   int render_frame_id_;

@@ -17,6 +17,14 @@ interface ReportingResult {
   message: string;
   time: string;
 }
+interface RealtimeReportingResult {
+  message: string;
+  timeMillis: number;
+  event_type: string;
+  profile: boolean;
+  device: boolean;
+  success: boolean;
+}
 interface DeepScanResult {
   request: string;
   request_time: string;
@@ -34,17 +42,21 @@ interface DeepScanResult {
  */
 function initialize() {
   sendWithPromise('getExperiments', [])
-      .then((experiments) => addExperiments(experiments));
-  sendWithPromise('getPrefs', []).then((prefs) => addPrefs(prefs));
-  sendWithPromise('getPolicies', []).then((policies) => addPolicies(policies));
-  sendWithPromise('getCookie', []).then((cookie) => addCookie(cookie));
+      .then((experiments: string[]) => addExperiments(experiments));
+  sendWithPromise('getPrefs', []).then((prefs: string[]) => addPrefs(prefs));
+  sendWithPromise('getPolicies', [])
+      .then((policies: Array<string|boolean>) => addPolicies(policies));
+  sendWithPromise('getCookie', []).then((cookie: [
+                                          string, number
+                                        ]) => addCookie(cookie));
   sendWithPromise('getSavedPasswords', [])
-      .then((passwords) => addSavedPasswords(passwords));
-  sendWithPromise('getDatabaseManagerInfo', []).then(function(databaseState) {
-    const fullHashCacheState = databaseState.splice(-1, 1);
-    addDatabaseManagerInfo(databaseState);
-    addFullHashCacheInfo(fullHashCacheState);
-  });
+      .then((passwords: Array<string|boolean>) => addSavedPasswords(passwords));
+  sendWithPromise('getDatabaseManagerInfo', [])
+      .then(function(databaseState: Array<string|number|string[]>) {
+        const fullHashCacheState = databaseState.splice(-1, 1) as string[];
+        addDatabaseManagerInfo(databaseState);
+        addFullHashCacheInfo(fullHashCacheState);
+      });
 
   sendWithPromise('getDownloadUrlsChecked', [])
       .then((urlsChecked: string[]) => {
@@ -207,13 +219,14 @@ function initialize() {
   });
 
   sendWithPromise('getReportingEvents', [])
-      .then((reportingEvents: ReportingResult[]) => {
+      .then((reportingEvents: RealtimeReportingResult[]) => {
         reportingEvents.forEach(function(reportingEvent) {
           addReportingEvent(reportingEvent);
         });
       });
   addWebUiListener(
-      'reporting-events-update', function(reportingEvent: ReportingResult) {
+      'reporting-events-update',
+      function(reportingEvent: RealtimeReportingResult) {
         addReportingEvent(reportingEvent);
       });
 
@@ -268,71 +281,91 @@ function initialize() {
   }, true);
 }
 
-function addExperiments(result: string[]) {
-  addContentHelper(result, 'result-template', 'experiments-list', 'span');
+// Adds the currently running experimental Safe Browsing features, and
+// their statuses, to the DOM. `experiments` is an array of strings
+// where the even-indexed elements contain the feature's name and the
+// odd-indexed elements are the feature's status.
+function addExperiments(experiments: string[]) {
+  addContentHelper(experiments, 'result-template', 'experiments-list', 'span');
 }
 
-function addPrefs(result: string[]) {
-  addContentHelper(result, 'result-template', 'preferences-list', 'span');
+// Adds a list of preferences and their statuses to the DOM. `prefs` is
+// an array of strings where the even-indexed elements contain the
+// pref's name and the odd-indexed elements are the pref's status.
+function addPrefs(prefs: string[]) {
+  addContentHelper(prefs, 'result-template', 'preferences-list', 'span');
 }
 
-function addPolicies(result: string[]) {
-  addContentHelper(result, 'result-template', 'policies-list', 'span');
+// Adds a list of policies and their statuses to the DOM. `policies` is
+// an array where the even-indexed elements contain the policy's name
+// and the odd-indexed elements are the policy's status. The policy's
+// status can be represented either as a string or a boolean.
+function addPolicies(policies: Array<string|boolean>) {
+  addContentHelper(policies, 'result-template', 'policies-list', 'span');
 }
 
-function addCookie(result: string[]) {
+// Adds the value of the Safe Browsing Cookie and the time it was
+// created. `cookie` is a expected to be an array containing two
+// elements where the first element is Safe Browsing Cookie's
+// value and the second element is its creation time.
+function addCookie(cookie: [string, number]) {
   const cookiePanel = $('cookie-panel');
+  assert(cookiePanel);
   const cookieTemplate = $<HTMLTemplateElement>('cookie-template');
   assert(cookieTemplate);
+
   const cookieFormatted = cookieTemplate.content.cloneNode(true) as HTMLElement;
   const selectedElements = cookieFormatted.querySelectorAll('.result');
   assert(selectedElements);
-  const firstElement = selectedElements[0];
-  const secondElement = selectedElements[1];
-  const firstResult = result[0];
-  const secondResult = result[1];
 
-  assert(cookiePanel);
-  assert(firstElement);
-  assert(secondElement);
-  assert(firstResult);
-  assert(secondResult);
+  const cookieValueDOM = selectedElements[0];
+  assert(cookieValueDOM);
+  const creationDateDOM = selectedElements[1];
+  assert(creationDateDOM);
+  const cookieValue = cookie[0];
+  assert(cookieValue);
+  const creationDate = cookie[1];
+  assert(creationDate !== null && creationDate !== undefined);
 
-  firstElement.textContent = firstResult;
-  secondElement.textContent = (new Date(secondResult)).toLocaleString();
+  cookieValueDOM.textContent = cookieValue;
+  creationDateDOM.textContent = (new Date(creationDate)).toLocaleString();
   cookiePanel.appendChild(cookieFormatted);
 }
 
-function addSavedPasswords(result: string[]) {
-  const resLength = result.length;
-
-  for (let i = 0; i < resLength; i += 2) {
+// Adds saved passwords data to the DOM. `passwords` is an array where
+// the even-indexed elements contain the username and the odd-indexed
+// elements are boolean values indicating how the password is stored.
+function addSavedPasswords(passwords: Array<string|boolean>) {
+  for (let i = 0; i < passwords.length; i += 2) {
     const savedPasswordFormatted = document.createElement('div');
-    const suffix = result[i + 1] ? 'GAIA password' : 'Enterprise password';
-    savedPasswordFormatted.textContent = `${result[i]} (${suffix})`;
+    const suffix = passwords[i + 1] ? 'GAIA password' : 'Enterprise password';
+    savedPasswordFormatted.textContent = `${passwords[i]} (${suffix})`;
     const savedPasswordsList = $('saved-passwords');
     assert(savedPasswordsList);
     savedPasswordsList.appendChild(savedPasswordFormatted);
   }
 }
 
-function addDatabaseManagerInfo(result: string[]) {
-  const resLength = result.length;
-
-  for (let i = 0; i < resLength; i += 2) {
+// Adds the DatabaseManagerInfo proto to the DOM. Each even-indexed
+// element in `databaseManagerInfo` contains the proto's property name.
+// Each odd-indexed element contains the value stored the property.
+function addDatabaseManagerInfo(
+    databaseManagerInfo: Array<string|number|string[]>) {
+  for (let i = 0; i < databaseManagerInfo.length; i += 2) {
     const preferenceListTemplate = $<HTMLTemplateElement>('result-template');
     assert(preferenceListTemplate);
     const preferencesListFormatted =
         preferenceListTemplate.content.cloneNode(true) as HTMLElement;
     const selectedElements = preferencesListFormatted.querySelectorAll('span');
     assert(selectedElements);
-    const firstElement = selectedElements[0];
-    const secondElement = selectedElements[1];
-    assert(firstElement);
-    assert(secondElement);
 
-    firstElement.textContent = result[i] + ': ';
-    const value = result[i + 1];
+    const labelDOM = selectedElements[0];
+    assert(labelDOM);
+    const valueDOM = selectedElements[1];
+    assert(valueDOM);
+
+    labelDOM.textContent = databaseManagerInfo[i] + ': ';
+    const value = databaseManagerInfo[i + 1];
     assert(value);
     if (Array.isArray(value)) {
       const blockQuote = document.createElement('blockquote');
@@ -341,52 +374,55 @@ function addDatabaseManagerInfo(result: string[]) {
         div.textContent = item;
         blockQuote.appendChild(div);
       });
-      secondElement.appendChild(blockQuote);
+      valueDOM.appendChild(blockQuote);
     } else {
-      secondElement.textContent = value;
+      valueDOM.textContent = value.toString();
     }
+
     const databaseInfoList = $('database-info-list');
     assert(databaseInfoList);
     databaseInfoList.appendChild(preferencesListFormatted);
   }
 }
 
-// A helper function that formats and adds strings from `result` into the
-// template and then appends the template to the parent list.
+// A helper function that formats and adds the content's name and its
+// status into the template and then appends the template to the parent
+// list.
 function addContentHelper(
-    result: string[], templateName: string, parentListName: string,
-    elementSelector: string) {
-  const resLength = result.length;
+    content: Array<string|boolean>, templateName: string,
+    parentListName: string, elementSelector: string) {
+  const resLength = content.length;
 
   for (let i = 0; i < resLength; i += 2) {
     const listTemplate = $<HTMLTemplateElement>(templateName);
     assert(listTemplate);
     const formattedTemplate =
         listTemplate.content.cloneNode(true) as HTMLElement;
-    const firstResult = result[i];
-    const secondResult = result[i + 1];
+
+    const contentName = content[i];
+    const status = content[i + 1];
+    assert(contentName !== null && contentName !== undefined);
+    assert(status !== null && status !== undefined);
+
     const selectedElements =
         formattedTemplate.querySelectorAll(elementSelector);
-    const firstElement = selectedElements[0];
-    const secondElement = selectedElements[1];
+    const labelDOM = selectedElements[0];
+    const valueDOM = selectedElements[1];
+    assert(labelDOM);
+    assert(valueDOM);
     const parentList = $(parentListName);
-
-    assert(firstResult !== null && firstResult !== undefined);
-    assert(secondResult);
-    assert(firstElement);
-    assert(secondElement);
     assert(parentList);
 
-    firstElement.textContent = secondResult + ': ';
-    secondElement.textContent = firstResult;
+    labelDOM.textContent = status + ': ';
+    valueDOM.textContent = contentName.toString();
     parentList.appendChild(formattedTemplate);
   }
 }
 
-function addFullHashCacheInfo(result: string) {
+function addFullHashCacheInfo(result: string[]) {
   const cacheInfo = $('full-hash-cache-info');
   assert(cacheInfo);
-  cacheInfo.textContent = result;
+  cacheInfo.textContent = result.toString();
 }
 
 function addDownloadUrlChecked(urlAndResult: string) {
@@ -394,47 +430,47 @@ function addDownloadUrlChecked(urlAndResult: string) {
   appendChildWithInnerText(logDiv, urlAndResult);
 }
 
-function addSentClientDownloadRequestsInfo(result: string) {
+function addSentClientDownloadRequestsInfo(requestInfo: string) {
   const logDiv = $('sent-client-download-requests-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, requestInfo);
 }
 
-function addReceivedClientDownloadResponseInfo(result: string) {
+function addReceivedClientDownloadResponseInfo(responseInfo: string) {
   const logDiv = $('received-client-download-response-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, responseInfo);
 }
 
-function addSentClientPhishingRequestsInfo(result: string) {
+function addSentClientPhishingRequestsInfo(phishingRequestInfo: string) {
   const logDiv = $('sent-client-phishing-requests-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, phishingRequestInfo);
 }
 
-function addReceivedClientPhishingResponseInfo(result: string) {
+function addReceivedClientPhishingResponseInfo(phishingResponseInfo: string) {
   const logDiv = $('received-client-phishing-response-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, phishingResponseInfo);
 }
 
-function addSentCSBRRsInfo(result: string) {
+function addSentCSBRRsInfo(csbrrsInfo: string) {
   const logDiv = $('sent-csbrrs-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, csbrrsInfo);
 }
 
-function addSentHitReportsInfo(result: string) {
+function addSentHitReportsInfo(hitReportsInfo: string) {
   const logDiv = $('sent-hit-report-list');
-  appendChildWithInnerText(logDiv, result);
+  appendChildWithInnerText(logDiv, hitReportsInfo);
 }
 
-function addPGEvent(result: ReportingResult) {
+function addPGEvent(pgEvent: ReportingResult) {
   const logDiv = $('pg-event-log');
   const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+      '[' + (new Date(pgEvent.time)).toLocaleString() + '] ' + pgEvent.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
-function addSecurityEvent(result: ReportingResult) {
+function addSecurityEvent(securityEvent: ReportingResult) {
   const logDiv = $('security-event-log');
-  const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+  const eventFormatted = '[' + (new Date(securityEvent.time)).toLocaleString() +
+      '] ' + securityEvent.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
@@ -462,28 +498,28 @@ function addResultToTable(
   cell.innerText = result;
 }
 
-function addPGPing(result: string[]) {
-  addResultToTableHelper('pg-ping-list', result, 0);
+function addPGPing(pgPing: string[]) {
+  addResultToTableHelper('pg-ping-list', pgPing, 0);
 }
 
-function addPGResponse(result: string[]) {
-  addResultToTableHelper('pg-ping-list', result, 1);
+function addPGResponse(pgResponse: string[]) {
+  addResultToTableHelper('pg-ping-list', pgResponse, 1);
 }
 
-function addURTLookupPing(result: string[]) {
-  addResultToTableHelper('urt-lookup-ping-list', result, 0);
+function addURTLookupPing(urtPing: string[]) {
+  addResultToTableHelper('urt-lookup-ping-list', urtPing, 0);
 }
 
-function addURTLookupResponse(result: string[]) {
-  addResultToTableHelper('urt-lookup-ping-list', result, 1);
+function addURTLookupResponse(urtLookupResponse: string[]) {
+  addResultToTableHelper('urt-lookup-ping-list', urtLookupResponse, 1);
 }
 
-function addHPRTLookupPing(result: string[]) {
-  addResultToTableHelper('hprt-lookup-ping-list', result, 0);
+function addHPRTLookupPing(hprtPing: string[]) {
+  addResultToTableHelper('hprt-lookup-ping-list', hprtPing, 0);
 }
 
-function addHPRTLookupResponse(result: string[]) {
-  addResultToTableHelper('hprt-lookup-ping-list', result, 1);
+function addHPRTLookupResponse(hprtLookupResponse: string[]) {
+  addResultToTableHelper('hprt-lookup-ping-list', hprtLookupResponse, 1);
 }
 
 // A helper function that ensures there are elements within `results` before
@@ -524,17 +560,72 @@ function addDeepScan(result: DeepScanResult) {
   }
 }
 
-function addLogMessage(result: ReportingResult) {
+function addLogMessage(logMessage: ReportingResult) {
   const logDiv = $('log-messages');
-  const eventFormatted =
-      '[' + (new Date(result.time)).toLocaleString() + '] ' + result.message;
+  const eventFormatted = '[' + (new Date(logMessage.time)).toLocaleString() +
+      '] ' + logMessage.message;
   appendChildWithInnerText(logDiv, eventFormatted);
 }
 
-function addReportingEvent(result: ReportingResult) {
-  const logDiv = $('reporting-events');
-  const eventFormatted = result.message;
-  appendChildWithInnerText(logDiv, eventFormatted);
+function addReportingEvent(reportingEvent: RealtimeReportingResult) {
+  // If the event doesn't have a timestamp, fall back to the old display format.
+  if (!reportingEvent.timeMillis) {
+    const logDiv = $('reporting-events');
+    const eventFormatted = reportingEvent.message;
+    appendChildWithInnerText(logDiv, eventFormatted);
+    return;
+  }
+
+  const table = $<HTMLTableElement>('reporting-events-table')!;
+  // Unhide the table if it's the first event.
+  if (table.hidden) {
+    table.hidden = false;
+  }
+
+  const tableBody = table.querySelector('tbody')!;
+  const template = $<HTMLTemplateElement>('resultRowTemplate')!;
+
+  // Clone the new row and insert it into the table
+  const reportingEventRow =
+      template.content.cloneNode(true) as DocumentFragment;
+  const mainRow = reportingEventRow.querySelector('.main-row')!;
+  const detailsRow = reportingEventRow.querySelector('.details-row')!;
+
+  mainRow.querySelector('.time-cell')!.textContent =
+      new Date(reportingEvent.timeMillis).toLocaleString();
+  mainRow.querySelector('.event-type-cell')!.textContent =
+      reportingEvent.event_type;
+  mainRow.querySelector('.profile-cell')!.textContent =
+      reportingEvent.profile ? 'Yes' : 'No';
+  mainRow.querySelector('.device-cell')!.textContent =
+      reportingEvent.device ? 'Yes' : 'No';
+  mainRow.querySelector('.success-cell')!.textContent =
+      reportingEvent.success ? 'Yes' : 'No';
+  detailsRow.querySelector('.details-cell')!.textContent =
+      reportingEvent.message;
+
+  const expander = mainRow.querySelector('.expander')!;
+  const copyButton = mainRow.querySelector('.copy-button')!;
+
+  // Add click listener to copy the message.
+  copyButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(reportingEvent.message).then(() => {
+      const originalText = copyButton.textContent;
+      copyButton.textContent = 'Copied!';
+      setTimeout(() => {
+        copyButton.textContent = originalText;
+      }, 2000);
+    });
+  });
+
+  // Add click listener to toggle the details row.
+  expander.addEventListener('click', () => {
+    expander.classList.toggle('expanded');
+    detailsRow.classList.toggle('visible');
+  });
+
+  tableBody.appendChild(reportingEventRow);
 }
 
 function appendChildWithInnerText(logDiv: Element|null, text: string) {
@@ -553,7 +644,7 @@ function addReferrerChain(ev: Event) {
   const referrerChainURL = $<HTMLInputElement>('referrer-chain-url');
   assert(referrerChainURL);
   sendWithPromise('getReferrerChain', referrerChainURL.value)
-      .then((response) => {
+      .then((referrerChain: string) => {
         const referrerChainContent = $('referrer-chain-content');
         assert(referrerChainContent);
         // TrustedTypes is not supported on iOS
@@ -562,7 +653,7 @@ function addReferrerChain(ev: Event) {
         } else {
           referrerChainContent.innerHTML = '';
         }
-        referrerChainContent.textContent = response;
+        referrerChainContent.textContent = referrerChain;
       });
 }
 

@@ -26,7 +26,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
 /**
@@ -276,7 +276,7 @@ class AudioSinkAudioTrackImpl {
         mLastUnderrunCount = 0;
         mTotalFramesWritten = 0;
         if (isApkAudio) {
-            mPendingFramesWithoutTimestamp = new LinkedList<>();
+            mPendingFramesWithoutTimestamp = new ArrayDeque<>();
         }
         mTotalPlayedFramesWithoutTimestamp = 0;
         init(castContentType, channelCount, sampleRateInHz, bytesPerBuffer, sessionId, useHwAvSync);

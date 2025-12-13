@@ -192,7 +192,7 @@ impl<'a, T: ?Sized + VarULE, F: VarZeroVecFormat> From<VarZeroVec<'a, T, F>>
     }
 }
 
-impl<T: VarULE + ?Sized> Default for VarZeroVec<'_, T> {
+impl<T: VarULE + ?Sized, F: VarZeroVecFormat> Default for VarZeroVec<'_, T, F> {
     #[inline]
     fn default() -> Self {
         Self::new()
@@ -259,6 +259,7 @@ impl<'a, T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroVec<'a, T, F> {
 
     /// Convert this into a mutable vector of the owned `T` type, cloning if necessary.
     ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Example
     ///
@@ -294,6 +295,8 @@ impl<'a, T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroVec<'a, T, F> {
     }
 
     /// Converts a borrowed ZeroVec to an owned ZeroVec. No-op if already owned.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Example
     ///
@@ -332,6 +335,8 @@ impl<'a, T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroVec<'a, T, F> {
     ///
     /// To get a reference to the bytes without moving, see [`VarZeroSlice::as_bytes()`].
     ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
+    ///
     /// # Example
     ///
     /// ```rust
@@ -347,7 +352,6 @@ impl<'a, T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroVec<'a, T, F> {
     #[cfg(feature = "alloc")]
     pub fn into_bytes(self) -> alloc::vec::Vec<u8> {
         match self.0 {
-            #[cfg(feature = "alloc")]
             VarZeroVecInner::Owned(vec) => vec.into_bytes(),
             VarZeroVecInner::Borrowed(vec) => vec.as_bytes().to_vec(),
         }
@@ -395,7 +399,7 @@ where
         if elements.is_empty() {
             VarZeroSlice::new_empty().into()
         } else {
-            #[allow(clippy::unwrap_used)] // TODO(#1410) Better story for fallibility
+            #[expect(clippy::unwrap_used)] // TODO(#1410) Better story for fallibility
             VarZeroVecOwned::try_from_elements(elements).unwrap().into()
         }
     }

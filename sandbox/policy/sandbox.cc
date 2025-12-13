@@ -5,6 +5,7 @@
 #include "sandbox/policy/sandbox.h"
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"

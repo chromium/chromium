@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_OS_CRYPT_ASYNC_MIGRATOR_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"

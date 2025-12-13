@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/android_theme_resources.h"
@@ -172,78 +173,6 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       1);
 }
 
-// Tests that message properties (title, description, icon, button text) are
-// set correctly for "Update Google Play services" message.
-TEST_F(PasswordManagerErrorMessageDelegateTest,
-       MessagePropertyValuesUpdateGooglePlayServices) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
-      .WillOnce(Return(true));
-  ;
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
-  delegate()->MaybeDisplayErrorMessage(
-      web_contents(), pref_service(),
-      password_manager::ErrorMessageFlowType::kSaveFlow,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingPossible,
-      mock_dismissal_callback()->Get());
-
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS),
-            GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(
-      l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS_TO_ACCOUNT),
-      GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(
-                IDR_ANDROID_PASSWORD_MANAGER_LOGO_24DP),
-            GetMessageWrapper()->GetIconResourceId());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
-            GetMessageWrapper()->GetPrimaryButtonText());
-
-  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
-
-  histogram_tester.ExpectUniqueSample(
-      kErrorMessageDisplayReasonHistogramName,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingPossible,
-      1);
-}
-
-// Tests that message properties (title, description, icon, button text) are
-// set correctly for "Update to save passwords" message.
-TEST_F(PasswordManagerErrorMessageDelegateTest,
-       MessagePropertyValuesUpdateToSavePasswords) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
-      .WillOnce(Return(true));
-  ;
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
-  delegate()->MaybeDisplayErrorMessage(
-      web_contents(), pref_service(),
-      password_manager::ErrorMessageFlowType::kSaveFlow,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingDisabled,
-      mock_dismissal_callback()->Get());
-
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_TO_SAVE_PASSWORDS),
-            GetMessageWrapper()->GetTitle());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_TO_SAVE_PASSWORDS),
-            GetMessageWrapper()->GetDescription());
-  EXPECT_EQ(ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_IC_ERROR),
-            GetMessageWrapper()->GetIconResourceId());
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_UPDATE_GMS_BUTTON_TITLE),
-            GetMessageWrapper()->GetPrimaryButtonText());
-
-  DismissMessageAndExpectDismissed(messages::DismissReason::UNKNOWN);
-
-  histogram_tester.ExpectUniqueSample(
-      kErrorMessageDisplayReasonHistogramName,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingDisabled,
-      1);
-}
-
 // Tests that the sign in flow starts when the user clicks the "Sign in" button
 // and that the metrics are recorded correctly.
 TEST_F(PasswordManagerErrorMessageDelegateTest,
@@ -289,67 +218,6 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
           {kErrorMessageDismissalReasonHistogramName, "AuthErrorUnresolvable"}),
-      messages::DismissReason::PRIMARY_ACTION, 1);
-}
-
-// Tests that the Google Play page where GMSCore can be updated opens when the
-// user clicks the "Update" button on the error message that nudges to update
-// because account passwords can't be saved due to an outdated GMSCore version.
-TEST_F(PasswordManagerErrorMessageDelegateTest,
-       UpdateGMSCoreOnActionClickWhenSavingPossible) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
-      .WillOnce(Return(true));
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
-  delegate()->MaybeDisplayErrorMessage(
-      web_contents(), pref_service(),
-      password_manager::ErrorMessageFlowType::kSaveFlow,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingPossible,
-      mock_dismissal_callback()->Get());
-
-  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate(web_contents()));
-  // Trigger the click action on the "Update" button and dismiss the message.
-  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
-  // The message needs to be dismissed manually in tests. In production code
-  // this happens automatically, but on the java side.
-  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
-
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({kErrorMessageDismissalReasonHistogramName,
-                    "GMSCoreOutdatedSavingPossible"}),
-      messages::DismissReason::PRIMARY_ACTION, 1);
-}
-
-// Tests that the Google Play page where GMSCore can be updated opens when the
-// user clicks the "Update" button on the error message that nudges to update
-// because passwords can't be saved due to an outdated GMSCore version.
-TEST_F(PasswordManagerErrorMessageDelegateTest,
-       UpdateGMSCoreOnActionClickWhenSavingDisabled) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(*helper_bridge(), ShouldShowUpdateGMSCoreErrorUI)
-      .WillOnce(Return(true));
-  ;
-  EXPECT_CALL(*message_dispatcher_bridge(), EnqueueMessage);
-  delegate()->MaybeDisplayErrorMessage(
-      web_contents(), pref_service(),
-      password_manager::ErrorMessageFlowType::kSaveFlow,
-      password_manager::PasswordStoreBackendErrorType::
-          kGMSCoreOutdatedSavingDisabled,
-      mock_dismissal_callback()->Get());
-
-  EXPECT_CALL(*helper_bridge(), LaunchGmsUpdate(web_contents()));
-  // Trigger the click action on the "Update" button and dismiss the message.
-  GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
-  // The message needs to be dismissed manually in tests. In production code
-  // this happens automatically, but on the java side.
-  DismissMessageAndExpectDismissed(messages::DismissReason::PRIMARY_ACTION);
-
-  histogram_tester.ExpectUniqueSample(
-      base::StrCat({kErrorMessageDismissalReasonHistogramName,
-                    "GMSCoreOutdatedSavingDisabled"}),
       messages::DismissReason::PRIMARY_ACTION, 1);
 }
 
@@ -416,10 +284,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::PasswordStoreBackendErrorType::kKeyRetrievalRequired);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -442,10 +311,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
       password_manager::PasswordStoreBackendErrorType::kEmptySecurityDomain);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code
@@ -469,10 +339,11 @@ TEST_F(PasswordManagerErrorMessageDelegateTest,
           kIrretrievableSecurityDomain);
   EXPECT_NE(nullptr, GetMessageWrapper());
 
-  EXPECT_CALL(*helper_bridge(),
-              StartTrustedVaultKeyRetrievalFlow(
-                  web_contents(), syncer::TrustedVaultUserActionTriggerForUMA::
-                                      kPasswordManagerErrorMessage));
+  EXPECT_CALL(
+      *helper_bridge(),
+      StartTrustedVaultKeyRetrievalFlow(
+          web_contents(), trusted_vault::TrustedVaultUserActionTriggerForUMA::
+                              kPasswordManagerErrorMessage));
   GetMessageWrapper()->HandleActionClick(base::android::AttachCurrentThread());
 
   // The message needs to be dismissed manually in tests. In production code

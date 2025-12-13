@@ -49,7 +49,7 @@ std::optional<std::vector<url::Origin>> ParseEligibleOrigins(
   const auto it = dict.find("eligible-origins");
   if (it == dict.end()) {
     // "eligible-origins" is optional, so just return an empty list.
-    return {{}};
+    return std::optional<std::vector<url::Origin>>(std::in_place);
   }
   const net::structured_headers::ParameterizedMember& parameterized_member =
       it->second;

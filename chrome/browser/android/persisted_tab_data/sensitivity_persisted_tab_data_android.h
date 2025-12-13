@@ -28,16 +28,28 @@ class SensitivityPersistedTabDataAndroid
   // Integrates with PersistedTabDataAndroid::From
   static void From(TabAndroid* tab_android, FromCallback from_callback);
 
-  void set_is_sensitive(bool is_sensitive) {
-    is_sensitive_ = is_sensitive;
+  // TODO (crbug.com/468347707) : Required for TabAndroidUserData, this provides
+  // a unique key for the PersistedTabDataAndroid subclass. Without this
+  // explicit definition, PersistedTabDataAndroid::UserDataKey() would be used,
+  // which would lead to key collisions for all subclasses.
+  static const void* UserDataKey();
+
+  void set_sensitivity_score(float sensitivity_score) {
+    // Setting the cutoff value to 0.5 for binary classification of data
+    // sensitivity. This value ensures that we neither overclassify nor
+    // underclassify sensitive data
+    is_sensitive_ = sensitivity_score < 0.5;
+    sensitivity_score_ = sensitivity_score;
     Save();
   }
 
-  bool is_sensitive() { return is_sensitive_; }
+  bool is_sensitive() const { return is_sensitive_; }
+
+  float sensitivity_score() const { return sensitivity_score_; }
 
   // page_content_annotations::PageContentAnnotationsService::PageContentAnnotationsObserver
   void OnPageContentAnnotated(
-      const GURL& url,
+      const page_content_annotations::HistoryVisit& visit,
       const page_content_annotations::PageContentAnnotationsResult& result)
       override;
 
@@ -50,6 +62,7 @@ class SensitivityPersistedTabDataAndroid
   friend class SensitivityPersistedTabDataAndroidBrowserTest;
   // TODO(crbug.com/40273829) Consider making is_sensitive_ absl::option<bool>
   bool is_sensitive_ = false;
+  float sensitivity_score_ = -1.0;
   raw_ptr<TabAndroid> tab_;
 
   // Not owned. Register manually through RegisterPCAService

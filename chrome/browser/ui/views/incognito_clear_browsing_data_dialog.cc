@@ -20,6 +20,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -75,6 +76,7 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_EMPHASIZED))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
           .Build());
 
   AddChildView(
@@ -84,6 +86,7 @@ void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {
           .SetFontList(typography_provider.GetFont(
               views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+          .SetMultiLine(true)
           .Build());
 
   // Buttons

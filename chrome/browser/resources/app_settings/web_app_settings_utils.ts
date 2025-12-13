@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType, InstallReason, InstallSource, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason, InstallSource, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 
 export function createDummyApp(): App {
   return {

@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/test/fake_paint_image_generator.h"
 
+#include <array>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 
 namespace cc {
@@ -46,7 +41,7 @@ FakePaintImageGenerator::FakePaintImageGenerator(
 
 FakePaintImageGenerator::~FakePaintImageGenerator() = default;
 
-sk_sp<SkData> FakePaintImageGenerator::GetEncodedData() const {
+sk_sp<const SkData> FakePaintImageGenerator::GetEncodedData() const {
   return SkData::MakeEmpty();
 }
 
@@ -62,8 +57,9 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
 
   CHECK(!is_yuv_ || expect_fallback_to_rgb_);
   const SkImageInfo& dst_info = dst_pixmap.info();
-  if (image_backing_memory_.empty())
+  if (image_backing_memory_.empty()) {
     return false;
+  }
   if (expect_fallback_to_rgb_) {
     image_backing_memory_.resize(dst_info.computeMinByteSize(), 0);
     image_pixmap_ = SkPixmap(dst_info, image_backing_memory_.data(),
@@ -83,8 +79,9 @@ bool FakePaintImageGenerator::GetPixels(SkPixmap dst_pixmap,
 bool FakePaintImageGenerator::QueryYUVA(
     const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
     SkYUVAPixmapInfo* yuva_pixmap_info) const {
-  if (!is_yuv_)
+  if (!is_yuv_) {
     return false;
+  }
 
   *yuva_pixmap_info = yuva_pixmap_info_;
   return yuva_pixmap_info->isSupported(supported_data_types);
@@ -103,15 +100,17 @@ bool FakePaintImageGenerator::GetYUVAPlanes(
 
   CHECK(is_yuv_);
   CHECK(!expect_fallback_to_rgb_);
-  if (image_backing_memory_.empty())
+  if (image_backing_memory_.empty()) {
     return false;
+  }
   std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_sizes;
   yuva_pixmap_info_.computeTotalBytes(plane_sizes.data());
   uint8_t* src_plane_memory = image_backing_memory_.data();
   int num_planes = pixmaps.numPlanes();
   for (int i = 0; i < num_planes; ++i) {
-    memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory, plane_sizes[i]);
-    src_plane_memory += plane_sizes[i];
+    UNSAFE_TODO(memcpy(pixmaps.plane(i).writable_addr(), src_plane_memory,
+                       plane_sizes[i]));
+    UNSAFE_TODO(src_plane_memory += plane_sizes[i]);
   }
   if (!base::Contains(frames_decoded_count_, frame_index)) {
     frames_decoded_count_[frame_index] = 1;

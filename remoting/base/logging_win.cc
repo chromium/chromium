@@ -7,6 +7,7 @@
 #include <guiddef.h>
 
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/logging_win.h"
 #include "remoting/base/logging.h"
 

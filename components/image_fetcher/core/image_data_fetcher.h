@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
@@ -88,7 +88,7 @@ class ImageDataFetcher {
 
   void OnURLLoaderComplete(const network::SimpleURLLoader* source,
                            ImageFetcherParams params,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   void FinishRequest(const network::SimpleURLLoader* source,
                      const RequestMetadata& metadata,

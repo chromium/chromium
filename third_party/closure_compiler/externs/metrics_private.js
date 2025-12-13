@@ -55,6 +55,23 @@ chrome.metricsPrivate.HistogramBucket;
 chrome.metricsPrivate.Histogram;
 
 /**
+ * @enum {string}
+ *
+ * These actions are triggered by users interacting with the extension UI,
+ * located to the right of the address bar. Actions include pinning/unpinning
+ * extensions to the toolbar, enabling/disabling extensions, and interacting
+ * with the context menu or extensions directly.
+ */
+chrome.metricsPrivate.ExtensionUsageAction = {
+  PINNED: 'kPinned',
+  UNPINNED: 'kUnpinned',
+  CONTEXTMENUINIT: 'kContextMenuInit',
+  ACTIONCLICKED: 'kActionClicked',
+  ENABLED: 'kEnabled',
+  DISABLED: 'kDisabled',
+};
+
+/**
  * Get details about a histogram displayed at chrome://histogram.
  * @param {string} name Histogram name, e.g. 'Accessibility.CrosAutoclick'.
  * @param {function(!chrome.metricsPrivate.Histogram): void} callback Invoked
@@ -89,6 +106,14 @@ chrome.metricsPrivate.getVariationParams = function(name, callback) {};
  * @param {string} name
  */
 chrome.metricsPrivate.recordUserAction = function(name) {};
+
+/**
+ * Records an extension usage UKM event when `ExtensionUsageAction`s occur in
+ * extensions UI surfaces.
+ * @param {string} url
+ * @param {!chrome.metricsPrivate.ExtensionUsageAction} action
+ */
+chrome.metricsPrivate.recordExtensionUsageUkm = function(url, action) {};
 
 /**
  * Records a percentage value from 1 to 100.

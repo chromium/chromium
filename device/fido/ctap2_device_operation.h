@@ -24,8 +24,8 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -47,6 +47,9 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   // argument will be |nullopt|. The parser should return |nullopt| on error.
   using DeviceResponseParser = base::OnceCallback<std::optional<Response>(
       const std::optional<cbor::Value>&)>;
+  // CborRedacter returns a copy of the passed value with all the sensitive
+  // fields redacted for display on logs.
+  using CborRedacter = base::OnceCallback<cbor::Value(const cbor::Value&)>;
   // CBORPathPredicate takes a vector of CBOR |Value|s that are map keys and
   // returns true if the string at that location may validly be truncated.
   // For example, the path of the string "bar" in {"x": {"y": "foo",
@@ -62,12 +65,14 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
                        Request request,
                        DeviceResponseCallback callback,
                        DeviceResponseParser device_response_parser,
-                       CBORPathPredicate string_fixup_predicate)
+                       CBORPathPredicate string_fixup_predicate,
+                       CborRedacter cbor_response_redacter)
       : DeviceOperation<Request, Response>(device,
                                            std::move(request),
                                            std::move(callback)),
         device_response_parser_(std::move(device_response_parser)),
-        string_fixup_predicate_(string_fixup_predicate) {}
+        string_fixup_predicate_(string_fixup_predicate),
+        cbor_response_redacter_(std::move(cbor_response_redacter)) {}
 
   Ctap2DeviceOperation(const Ctap2DeviceOperation&) = delete;
   Ctap2DeviceOperation& operator=(const Ctap2DeviceOperation&) = delete;
@@ -178,11 +183,12 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
       }
 
       response = std::move(std::move(device_response_parser_).Run(cbor));
+      cbor::Value redacted = std::move(cbor_response_redacter_).Run(*cbor);
       if (response) {
-        FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(*cbor);
+        FIDO_LOG(DEBUG) << "-> " << cbor::DiagnosticWriter::Write(redacted);
       } else {
         FIDO_LOG(ERROR) << "-> (rejected CBOR structure) "
-                        << cbor::DiagnosticWriter::Write(*cbor);
+                        << cbor::DiagnosticWriter::Write(redacted);
       }
     } else {
       response =
@@ -203,6 +209,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
  private:
   DeviceResponseParser device_response_parser_;
   const CBORPathPredicate string_fixup_predicate_;
+  CborRedacter cbor_response_redacter_;
   base::WeakPtrFactory<Ctap2DeviceOperation> weak_factory_{this};
 };
 

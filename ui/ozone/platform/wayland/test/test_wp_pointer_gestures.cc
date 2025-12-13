@@ -54,7 +54,12 @@ void TestWpPointerGestures::GetPinchGesture(
   wl_resource* pinch_gesture_resource =
       CreateResourceWithImpl<TestPinchGesture>(
           client, &zwp_pointer_gesture_pinch_v1_interface, 1, &kTestPinchImpl,
-          id);
+          id,
+          base::BindOnce(
+              &TestWpPointerGestures::set_pinch,
+              GetUserDataAs<TestWpPointerGestures>(pointer_gestures_resource)
+                  ->GetWeakPtr(),
+              nullptr));
 
   GetUserDataAs<TestWpPointerGestures>(pointer_gestures_resource)->pinch_ =
       GetUserDataAs<TestPinchGesture>(pinch_gesture_resource);
@@ -67,7 +72,12 @@ void TestWpPointerGestures::GetHoldGesture(
     uint32_t id,
     struct wl_resource* pointer) {
   wl_resource* hold_gesture_resource = CreateResourceWithImpl<TestHoldGesture>(
-      client, &zwp_pointer_gesture_hold_v1_interface, 3, &kTestHoldImpl, id);
+      client, &zwp_pointer_gesture_hold_v1_interface, 3, &kTestHoldImpl, id,
+      base::BindOnce(
+          &TestWpPointerGestures::set_hold,
+          GetUserDataAs<TestWpPointerGestures>(pointer_gestures_resource)
+              ->GetWeakPtr(),
+          nullptr));
 
   GetUserDataAs<TestWpPointerGestures>(pointer_gestures_resource)->hold_ =
       GetUserDataAs<TestHoldGesture>(hold_gesture_resource);

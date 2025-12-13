@@ -11,9 +11,7 @@
 
 namespace ui {
 
-BASE_FEATURE(kCADisplayLink,
-             "CADisplayLink",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCADisplayLink, base::FEATURE_DISABLED_BY_DEFAULT);
 
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac
@@ -31,7 +29,7 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   if (base::FeatureList::IsEnabled(kCADisplayLink)) {
     if (@available(macos 14.0, *)) {
       // CADisplayLink is available only for MacOS 14.0+.
-      return CADisplayLinkMac::GetForDisplayOnCurrentThread(display_id);
+      return CADisplayLinkMac::GetForDisplay(display_id);
     }
   }
 
@@ -64,6 +62,10 @@ VSyncCallbackMac::VSyncCallbackMac(UnregisterCallback unregister_callback,
 
 VSyncCallbackMac::~VSyncCallbackMac() {
   std::move(unregister_callback_).Run(this);
+}
+
+base::WeakPtr<VSyncCallbackMac> VSyncCallbackMac::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace ui

@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
@@ -55,7 +56,6 @@ using EnabledSuggestions = AssistiveSuggesterSwitch::EnabledSuggestions;
 
 const char kUsEnglishEngineId[] = "xkb:us::eng";
 const char kSpainSpanishEngineId[] = "xkb:es::spa";
-const char kEmojiData[] = "arrow,←;↑;→";
 const TextInputMethod::InputContext empty_context(ui::TEXT_INPUT_TYPE_NONE);
 constexpr size_t kTakeLastNChars = 100;
 
@@ -147,11 +147,11 @@ class AssistiveSuggesterTest : public testing::Test {
             base::BindRepeating(&GetFocusedTabUrl),
             base::BindRepeating(&GetFocusedWindowProperties)));
 
-    histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.UserPref.Emoji",
-                                         true, 1);
     // Emoji is default to true now, so need to set emoji pref false to test
     // IsAssistiveFeatureEnabled correctly.
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
+
+    browser_controller_ = std::make_unique<BrowserControllerImpl>();
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -160,6 +160,7 @@ class AssistiveSuggesterTest : public testing::Test {
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
 };
 
 TEST_F(AssistiveSuggesterTest, EmojiSuggestion_UserPrefEnabledFalse) {
@@ -184,18 +185,6 @@ TEST_F(AssistiveSuggesterTest, EmojiSuggestion_EnterprisePrefEnabledFalse) {
   profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
 
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
-}
-
-TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledTrue) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAssistMultiWord});
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   true);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, true);
-
-  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
 TEST_F(AssistiveSuggesterTest, EmojiSuggestion_BothPrefsEnabledFalse) {
@@ -276,8 +265,8 @@ TEST_F(AssistiveSuggesterTest,
        AssistiveControlVLongpressPrefDisabled_AssistiveFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{}, /*disabled_features=*/{
-          features::kClipboardHistoryLongpress, features::kAssistMultiWord});
+      /*enabled_features=*/{},
+      /*disabled_features=*/{features::kAssistMultiWord});
   SetInputMethodOptions(*profile_, /*predictive_writing_enabled=*/false,
                         /*diacritics_on_longpress_enabled=*/false);
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
@@ -1107,8 +1096,6 @@ class AssistiveSuggesterEmojiTest : public testing::Test {
         std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
             .emoji_suggestions = true,
         }));
-    assistive_suggester_->get_emoji_suggester_for_testing()
-        ->LoadEmojiMapForTesting(kEmojiData);
 
     // Needed to ensure globals accessed by EmojiSuggester are available.
     chrome_keyboard_controller_client_ =
@@ -1144,20 +1131,6 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenEmojiDisabled) {
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
-TEST_F(AssistiveSuggesterEmojiTest, ShouldRecordDisabledWhenEmojiDisabled) {
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed,
-                                   false);
-  profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
-
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled", 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Disabled",
-                                       AssistiveType::kEmoji, 1);
-}
-
 TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
   // TODO(b/242472734): Allow enabled suggestions passed without replace.
   assistive_suggester_ = std::make_unique<AssistiveSuggester>(
@@ -1165,8 +1138,6 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
       std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
           .emoji_suggestions = false,
       }));
-  assistive_suggester_->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
   assistive_suggester_->OnActivate(kUsEnglishEngineId);
   assistive_suggester_->OnFocus(5, empty_context);
 
@@ -1175,222 +1146,4 @@ TEST_F(AssistiveSuggesterEmojiTest, ShouldNotSuggestWhenSwitchDisabled) {
   EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
 }
 
-TEST_F(AssistiveSuggesterEmojiTest, ShouldRecordNotAllowedWhenSwitchDisabled) {
-  // TODO(b/242472734): Allow enabled suggestions passed without replace.
-  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
-          .emoji_suggestions = false,
-      }));
-  assistive_suggester_->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.NotAllowed", 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.NotAllowed",
-                                       AssistiveType::kEmoji, 1);
-}
-
-TEST_F(AssistiveSuggesterEmojiTest,
-       ShouldRecordDisabledReasonWhenSwitchDisabled) {
-  // TODO(b/242472734): Allow enabled suggestions passed without replace.
-  assistive_suggester_ = std::make_unique<AssistiveSuggester>(
-      suggestion_handler_.get(), profile_.get(),
-      std::make_unique<FakeSuggesterSwitch>(EnabledSuggestions{
-          .emoji_suggestions = false,
-      }));
-  assistive_suggester_->get_emoji_suggester_for_testing()
-      ->LoadEmojiMapForTesting(kEmojiData);
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Disabled.Emoji", 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Disabled.Emoji",
-                                       DisabledReason::kUrlOrAppNotAllowed, 1);
-}
-
-TEST_F(AssistiveSuggesterEmojiTest, ShouldReturnPrefixBasedEmojiSuggestions) {
-  assistive_suggester_->OnActivate(kUsEnglishEngineId);
-  assistive_suggester_->OnFocus(5, empty_context);
-  assistive_suggester_->OnSurroundingTextChanged(u"arrow ", gfx::Range(6));
-
-  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"←;↑;→");
-}
-
-class AssistiveSuggesterControlVLongpressTest : public ChromeAshTestBase {
- protected:
-  AssistiveSuggesterControlVLongpressTest()
-      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-            std::make_unique<content::BrowserTaskEnvironment>(
-                base::test::TaskEnvironment::TimeSource::MOCK_TIME))),
-        assistive_suggester_(
-            &suggestion_handler_,
-            &profile_,
-            std::make_unique<AssistiveSuggesterClientFilter>(
-                base::BindRepeating(&GetFocusedTabUrl),
-                base::BindRepeating(&GetFocusedWindowProperties))) {
-    feature_list_.InitAndEnableFeature(features::kClipboardHistoryLongpress);
-  }
-
-  void SetUp() override {
-    ChromeAshTestBase::SetUp();
-
-    Shell::Get()
-        ->clipboard_history_controller()
-        ->set_confirmed_operation_callback_for_test(
-            operation_confirmed_future_.GetRepeatingCallback());
-
-    // Write content to the clipboard so that the clipboard history menu can
-    // appear.
-    SetClipboardText("B");
-    SetClipboardText("A");
-
-    // Create a textfield for the clipboard history controller to recognize as a
-    // paste target.
-    textfield_widget_ = CreateFramelessTestWidget();
-    textfield_widget_->SetBounds(gfx::Rect(100, 100, 100, 100));
-    textfield_ = textfield_widget_->SetContentsView(
-        std::make_unique<views::Textfield>());
-
-    // Set the textfield as the text input client so that its caret position can
-    // be queried.
-    IMEBridge::Get()
-        ->GetInputContextHandler()
-        ->GetInputMethod()
-        ->SetFocusedTextInputClient(textfield_);
-  }
-
-  void SetClipboardText(const std::string& text) {
-    ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
-        .WriteText(base::UTF8ToUTF16(text));
-
-    // Clipboard history will post a task to process clipboard data in order to
-    // debounce multiple clipboard writes occurring in sequence. Here we give
-    // clipboard history the chance to run its posted tasks before proceeding.
-    EXPECT_TRUE(operation_confirmed_future_.Take());
-  }
-
-  ui::KeyEvent CreateControlVEvent(int extra_flags = ui::EF_NONE) {
-    return ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_V,
-                        ui::EF_CONTROL_DOWN | extra_flags);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  TestingProfile profile_;
-  FakeSuggestionHandler suggestion_handler_;
-  AssistiveSuggester assistive_suggester_;
-  base::test::TestFuture<bool> operation_confirmed_future_;
-  std::unique_ptr<views::Widget> textfield_widget_;
-  raw_ptr<views::Textfield> textfield_;
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ClipboardHistoryTriggeredOnControlVLongpress) {
-  assistive_suggester_.OnFocus(5, empty_context);
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  auto* const controller = Shell::Get()->clipboard_history_controller();
-  EXPECT_TRUE(controller->IsMenuShowing());
-  // Precise anchoring logic may change as time goes on, so this test only
-  // assumes that the clipboard history menu should be left-aligned with the
-  // input field's caret.
-  EXPECT_EQ(controller->GetMenuBoundsInScreenForTest().x(),
-            textfield_->GetCaretBounds().x());
-  histogram_tester_.ExpectUniqueSample(
-      "Ash.ClipboardHistory.ContextMenu.ShowMenu",
-      crosapi::mojom::ClipboardHistoryControllerShowSource::kControlVLongpress,
-      1);
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ControlVLongpressPasteSuccessRecorded) {
-  assistive_suggester_.OnFocus(5, empty_context);
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-
-  // Paste an item from the clipboard history menu.
-  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
-  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Success", 1);
-  histogram_tester_.ExpectUniqueSample("InputMethod.Assistive.Success",
-                                       AssistiveType::kLongpressControlV, 1);
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ClipboardHistoryDismissedNoSuccessRecorded) {
-  assistive_suggester_.OnFocus(5, empty_context);
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  EXPECT_TRUE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-
-  // Dismiss the clipboard history menu without pasting.
-  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
-  GetEventGenerator()->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
-  histogram_tester_.ExpectTotalCount("InputMethod.Assistive.Success", 0);
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ClipboardHistoryNotTriggeredIfShiftDown) {
-  assistive_suggester_.OnFocus(5, empty_context);
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(
-                CreateControlVEvent(/*extra_flags=*/ui::EF_SHIFT_DOWN)),
-            AssistiveSuggesterKeyResult::kNotHandled);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ClipboardHistoryNotTriggeredIfNoContextForControlVLongpress) {
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandled);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(base::Seconds(1));
-
-  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       ClipboardHistoryNotTriggeredIfControlVLongpressInterrupted) {
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandled);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-  task_environment()->FastForwardBy(
-      base::Milliseconds(100));  // Not long enough to trigger longpress.
-
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(ui::KeyEvent(
-                ui::EventType::kKeyReleased, ui::VKEY_V, ui::EF_CONTROL_DOWN)),
-            AssistiveSuggesterKeyResult::kNotHandled);
-  EXPECT_FALSE(Shell::Get()->clipboard_history_controller()->IsMenuShowing());
-}
-
-TEST_F(AssistiveSuggesterControlVLongpressTest,
-       RepeatedControlVNotPropagatedIfControlVLongpressEnabled) {
-  assistive_suggester_.OnFocus(5, empty_context);
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(CreateControlVEvent()),
-            AssistiveSuggesterKeyResult::kNotHandledSuppressAutoRepeat);
-  assistive_suggester_.OnSurroundingTextChanged(u"A", gfx::Range(1));
-
-  EXPECT_EQ(assistive_suggester_.OnKeyEvent(
-                CreateControlVEvent(/*extra_flags=*/ui::EF_IS_REPEAT)),
-            AssistiveSuggesterKeyResult::kHandled);
-}
 }  // namespace ash::input_method

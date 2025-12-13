@@ -59,6 +59,13 @@ void XRWebGLSwapChain::ClearCurrentTexture() {
                                   0, i);
       gl->Clear(clear_bits);
     }
+  } else if (IsCube()) {
+    for (uint32_t i = 0; i < 6; ++i) {
+      gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment,
+                               GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                               texture->Object(), 0);
+      gl->Clear(clear_bits);
+    }
   } else {
     gl->FramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D,
                              texture->Object(), 0);
@@ -166,11 +173,12 @@ WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
     return nullptr;
   }
 
-  const XRLayerSharedImages& shared_images = layer()->GetSharedImages();
-  const XRSharedImageData& content_image_data =
-      shared_images.content_image_data;
+  const XRSharedImageData& content_image_data = layer()->SharedImage();
 
-  CHECK(content_image_data.shared_image);
+  if (!content_image_data.shared_image) {
+    return nullptr;
+  }
+
   CHECK(content_image_data.sync_token.HasData());
 
   // Create a texture backed by the shared image.

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -24,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -50,7 +48,6 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -68,10 +65,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
-import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -80,6 +75,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -117,7 +113,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
     @Mock private TabArchiveSettings mTabArchiveSettings;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private RecyclerView mRecyclerView;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private View mItemView1;
@@ -189,6 +184,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         recyclerView.setId(R.id.tab_list_recycler_view);
         ((ViewGroup) mCoordinator.getViewForTesting().findViewById(R.id.tab_list_editor_container))
                 .addView(recyclerView);
+        when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
     }
 
     private void setUpMocks() {
@@ -202,6 +198,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                     }
                 });
 
+        when(mArchivedTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
         when(mArchivedTabModelOrchestrator.getTabModelSelector())
                 .thenReturn(mArchivedTabModelSelector);
         when(mArchivedTabModelSelector.getModel(false)).thenReturn(mArchivedTabModel);
@@ -232,7 +229,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS)
     public void testShowWithSyncedTabGroups() {
         List<String> tabGroupSyncIds = new ArrayList<>(List.of(TAB_GROUP_ID_STRING));
         SavedTabGroup savedTabGroup = new SavedTabGroup();
@@ -297,7 +293,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdgePadAdjuster() {
         EdgeToEdgePadAdjuster padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
         assertNotNull("Pad adjuster should be created when feature enabled.", padAdjuster);
@@ -318,14 +313,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
-    public void testEdgeToEdgePadAdjuster_FeatureDisabled() {
-        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
-        var padAdjuster = mCoordinator.getEdgeToEdgePadAdjusterForTesting();
-        assertNull("Pad adjuster should be created when feature enabled.", padAdjuster);
-    }
-
-    @Test
     public void testGridCardOnClickProvider_restoreTabGroup() {
         SavedTabGroup savedTabGroupBefore = new SavedTabGroup();
         savedTabGroupBefore.syncId = TAB_GROUP_ID_STRING;
@@ -335,6 +322,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         savedTabGroupAfter.localId = new LocalTabGroupId(TAB_GROUP_ID);
 
         when(mPaneManager.getPaneForId(PaneId.TAB_SWITCHER)).thenReturn(mTabSwitcherPaneBase);
+        when(mPaneManager.getDefaultPane()).thenReturn(mTabSwitcherPaneBase);
         when(mTabGroupSyncService.getGroup(TAB_GROUP_ID_STRING))
                 .thenReturn(savedTabGroupBefore)
                 .thenReturn(savedTabGroupBefore)
@@ -372,16 +360,6 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
         assertEquals(
                 SemanticColorUtils.getColorSurface(mActivity),
-                ((ColorDrawable) buttonContainer.getBackground()).getColor());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
-    public void testCloseAllTabsButtonBackgroundColorUpdate() {
-        mCoordinator.show(mOnTabSelectingListener);
-        FrameLayout buttonContainer = mCoordinator.getCloseAllTabsButtonContainer();
-        assertEquals(
-                SemanticColorUtils.getColorSurfaceContainerHigh(mActivity),
                 ((ColorDrawable) buttonContainer.getBackground()).getColor());
     }
 }

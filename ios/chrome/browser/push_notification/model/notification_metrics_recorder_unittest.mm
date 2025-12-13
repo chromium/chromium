@@ -7,12 +7,15 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_run_loop_timeout.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using base::test::ScopedRunLoopTimeout;
 
 // A fake implementation of the NotificationClassifier protocol for use in
 // tests.
@@ -33,23 +36,12 @@ class NotificationMetricsRecorderTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    notification_center_ =
-        [OCMockObject mockForClass:[UNUserNotificationCenter class]];
+    CreateNotificationCenter();
     classifier_ = [[FakeNotificationClassifier alloc] init];
     classifier_.notificationType = NotificationType::kTipsEnhancedSafeBrowsing;
     metrics_recorder_ = [[NotificationMetricsRecorder alloc]
         initWithNotificationCenter:notification_center_];
     metrics_recorder_.classifier = classifier_;
-
-    delivered_notifications_ = [NSMutableArray array];
-    id block = ^(NSInvocation* invocation) {
-      void (^completionHandler)(NSArray<UNNotification*>*);
-      [invocation getArgument:&completionHandler atIndex:2];
-      completionHandler([this->delivered_notifications_ copy]);
-    };
-    OCMStub([notification_center_
-                getDeliveredNotificationsWithCompletionHandler:[OCMArg any]])
-        .andDo(block);
   }
 
   // Creates a stub UNNotification with the given `identifier`.
@@ -64,9 +56,25 @@ class NotificationMetricsRecorderTest : public PlatformTest {
     return notification;
   }
 
+  // Creates a mock UNUserNotificationCenter with a stubbed
+  // `getDeliveredNotificationsWithCompletionHandler` that returns a copy of
+  // `delivered_notifications_`.
+  void CreateNotificationCenter() {
+    notification_center_ = OCMClassMock([UNUserNotificationCenter class]);
+    delivered_notifications_ = [NSMutableArray array];
+    auto block = ^(void (^completionHandler)(NSArray<UNNotification*>*)) {
+      completionHandler([this->delivered_notifications_ copy]);
+      return YES;
+    };
+    OCMStub(
+        [notification_center_ getDeliveredNotificationsWithCompletionHandler:
+                                  [OCMArg checkWithBlock:block]]);
+  }
+
   // Calls the metric recorder's `handleDeliveredNotificationsWithClosure:` and
   // waits for the closure to be called.
   void HandleDeliveredNotifications() {
+    ScopedRunLoopTimeout scoped_timeout(FROM_HERE, base::Seconds(5));
     base::RunLoop run_loop;
     [metrics_recorder_
         handleDeliveredNotificationsWithClosure:run_loop.QuitClosure()];
@@ -85,7 +93,7 @@ class NotificationMetricsRecorderTest : public PlatformTest {
 // Tests that when handleDeliveredNotifications is called, new notifications are
 // recorded as delivered, and notifications that are no longer present are
 // recorded as dismissed.
-TEST_F(NotificationMetricsRecorderTest, TesthandleDeliveredNotifications) {
+TEST_F(NotificationMetricsRecorderTest, TestHandleDeliveredNotifications) {
   // Setup the notification center mock to return a notification.
   UNNotification* notification = StubNotification(@"id1");
   [delivered_notifications_ addObject:notification];

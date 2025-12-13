@@ -19,7 +19,7 @@ void DistilledPageObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
   if (!render_frame_host->GetParent() &&
-      validated_url.scheme() == kDomDistillerScheme) {
+      validated_url.GetScheme() == kDomDistillerScheme) {
     loaded_distiller_page_ = true;
     MaybeNotifyLoaded();
   }

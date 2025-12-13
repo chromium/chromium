@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_WRAPPER_ANDROID_H_
 #define CHROME_BROWSER_UI_SAFETY_HUB_NOTIFICATION_WRAPPER_ANDROID_H_
 
-#include "chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h"
+#include "chrome/browser/ui/safety_hub/revoked_permissions_os_notification_display_manager.h"
 
 class NotificationWrapperAndroid
-    : public DisruptiveNotificationPermissionsManager::
+    : public RevokedPermissionsOSNotificationDisplayManager::
           SafetyHubNotificationWrapper {
  public:
   ~NotificationWrapperAndroid() override;

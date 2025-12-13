@@ -28,6 +28,6 @@ source_set("impl") {
     ":status_icons",
     "//base",
     "//ui/base",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
   ]
 }

@@ -42,6 +42,24 @@ source_set("key_provider_interface") {
   ]
 }
 
+if (is_apple) {
+  source_set("keychain_key_provider") {
+    sources = [
+      "keychain_key_provider.h",
+      "keychain_key_provider.mm",
+    ]
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/common:keychain_password_mac",
+      "//components/os_crypt/common:switches",
+      "//crypto",
+      "//crypto:mock_apple_keychain",
+    ]
+  }
+}
+
 if (is_win) {
   source_set("dpapi_key_provider") {
     sources = [
@@ -58,6 +76,20 @@ if (is_win) {
     ]
 
     libs = [ "crypt32.lib" ]
+  }
+}
+
+if ((is_posix || is_fuchsia) && !is_apple) {
+  source_set("posix_key_provider") {
+    sources = [
+      "posix_key_provider.cc",
+      "posix_key_provider.h",
+    ]
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+    ]
   }
 }
 
@@ -82,8 +114,6 @@ if (is_linux && use_dbus) {
 
   source_set("freedesktop_secret_key_provider") {
     sources = [
-      "fallback_linux_key_provider.cc",
-      "fallback_linux_key_provider.h",
       "freedesktop_secret_key_provider.cc",
       "freedesktop_secret_key_provider.h",
     ]
@@ -136,6 +166,19 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_apple) {
+    sources += [
+      "keychain_key_provider_compat_unittest.mm",
+      "keychain_key_provider_unittest.mm",
+    ]
+    deps += [
+      ":keychain_key_provider",
+      "//components/os_crypt/sync:test_support",
+      "//components/os_crypt/sync:unit_tests",
+      "//crypto:mock_apple_keychain",
+    ]
+  }
+
   if (is_win) {
     sources += [ "dpapi_key_provider_unittest.cc" ]
     deps += [
@@ -152,6 +195,7 @@ source_set("unit_tests") {
     ]
     deps += [
       ":freedesktop_secret_key_provider",
+      ":posix_key_provider",
       ":secret_portal_key_provider",
       "//components/dbus",
       "//components/prefs:test_support",

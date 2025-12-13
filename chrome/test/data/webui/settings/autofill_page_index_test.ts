@@ -32,7 +32,10 @@ suite('AutofillPageIndex', function() {
   }
 
   setup(function() {
-    loadTimeData.overrideValues({showAutofillAiControl: false});
+    loadTimeData.overrideValues({
+      enableYourSavedInfoSettingsPage: false,
+      showAutofillAiControl: false,
+    });
     resetRouterForTesting();
     return createAutofillPageIndex();
   });

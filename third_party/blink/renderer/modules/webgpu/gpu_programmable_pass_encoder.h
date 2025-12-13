@@ -16,6 +16,15 @@ class GPUProgrammablePassEncoder {
       uint64_t dynamic_offsets_data_start,
       uint32_t dynamic_offsets_data_length,
       ExceptionState& exception_state);
+
+  static bool ValidateSetImmediatesAndSubSpan(
+      ExceptionState& exception_state,
+      base::span<const uint8_t>* out,
+      uint32_t range_byte_offset,
+      base::span<const uint8_t> data,
+      uint32_t data_bytes_per_element,
+      uint64_t data_element_offset,
+      std::optional<uint64_t> data_element_size = std::nullopt);
 };
 
 }  // namespace blink

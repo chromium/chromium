@@ -79,4 +79,9 @@ void AutofillWalletDataTypeController::OnStateChanged(
   sync_service_->DataTypePreconditionChanged(type());
 }
 
+void AutofillWalletDataTypeController::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Nothing to be done, `this` will be destructed imminently.
+}
+
 }  // namespace browser_sync

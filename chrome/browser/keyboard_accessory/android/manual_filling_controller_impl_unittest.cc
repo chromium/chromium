@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
@@ -21,9 +22,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/plus_addresses/fake_plus_address_service.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,6 +47,8 @@ using testing::SaveArg;
 using FillingSource = ManualFillingController::FillingSource;
 using IsFillingSourceAvailable = AccessoryController::IsFillingSourceAvailable;
 using WaitForKeyboard = ManualFillingViewInterface::WaitForKeyboard;
+using IsCredentialFieldOrHasAutofillSuggestions =
+    ManualFillingViewInterface::IsCredentialFieldOrHasAutofillSuggestions;
 
 AccessorySheetData filled_passwords_sheet() {
   return AccessorySheetData::Builder(AccessoryTabType::PASSWORDS, u"Pwds",
@@ -152,7 +155,8 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(ManualFillingControllerTest, ShowsAccessoryForAutofillOnSearchField) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableSearchField);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -186,7 +190,8 @@ TEST_F(ManualFillingControllerTest,
       .WillRepeatedly(Return(filled_passwords_sheet()));
   EXPECT_CALL(*view(), OnItemsAvailable(filled_passwords_sheet()))
       .Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
 
   NotifyPasswordSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableUsernameField);
@@ -217,7 +222,8 @@ TEST_F(ManualFillingControllerTest,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(kTestAddressSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestAddressSheet)).Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
 
   NotifyAddressSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -250,7 +256,8 @@ TEST_F(ManualFillingControllerTest,
       .WillRepeatedly(Return(kTestCreditCardSheet));
   EXPECT_CALL(*view(), OnItemsAvailable(kTestCreditCardSheet))
       .Times(AnyNumber());
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
 
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
@@ -262,7 +269,10 @@ TEST_F(ManualFillingControllerTest,
 TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
   FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true))).Times(2);
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -274,7 +284,9 @@ TEST_F(ManualFillingControllerTest, HidesAccessoryWithoutAvailableSources) {
 
   // Hiding just one of two active filling sources won't have any effect at all.
   EXPECT_CALL(*view(), Hide()).Times(0);
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true))).Times(0);
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)))
+      .Times(0);
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/false);
   testing::Mock::VerifyAndClearExpectations(view());
@@ -293,7 +305,8 @@ TEST_F(ManualFillingControllerTest, FetchesAffiliatedPlusProfilesWhenShown) {
       controller()->plus_profiles_cache()->GetAffiliatedPlusProfiles().size(),
       0u);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(true)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
   controller()->UpdateSourceAvailability(FillingSource::ADDRESS_FALLBACKS,
                                          /*has_suggestions=*/true);
   EXPECT_EQ(
@@ -328,7 +341,8 @@ TEST_F(ManualFillingControllerTest,
        ShowsAccessoryWhenAutofillSourceAvailableOnUnknownField) {
   FocusFieldAndClearExpectations(FocusedFieldType::kUnknown);
 
-  EXPECT_CALL(*view(), Show(WaitForKeyboard(false)));
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(false),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/true);
   // Noop duplicate call.
@@ -339,4 +353,153 @@ TEST_F(ManualFillingControllerTest,
   EXPECT_CALL(*view(), Hide());
   controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                          /*has_suggestions=*/false);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceNotAvailableOnCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceAvailableOnNonCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(true)));
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest,
+       ShowsAccessoryWhenAutofillSourceNotAvailableNonCredentialFields) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(*view(), Show(WaitForKeyboard(true),
+                            IsCredentialFieldOrHasAutofillSuggestions(false)));
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest, ForwardsFillingTriggeredToController) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  autofill::AccessorySheetField selected_field =
+      autofill::AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(u"4111111111111111")
+          .SetSelectable(true)
+          .Build();
+  EXPECT_CALL(*view(), SwapSheetWithKeyboard());
+  EXPECT_CALL(mock_payment_method_controller_,
+              OnFillingTriggered(controller()->GetLastFocusedFieldId(),
+                                 selected_field));
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+}
+
+TEST_F(ManualFillingControllerTest, LogsHistogramOnFillingTriggered) {
+  base::HistogramTester histogram_tester;
+  // User selects non credential field that does not have autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  autofill::AccessorySheetField selected_field =
+      autofill::AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(u"4111111111111111")
+          .SetSelectable(true)
+          .Build();
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      true, 1);
+
+  // User selects non credential field that has autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 1);
+
+  // User selects a credential field.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 2);
+}
+
+TEST_F(ManualFillingControllerTest, ForwardsOptionSelectedToController) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(mock_payment_method_controller_,
+              OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS));
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+}
+
+TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
+  base::HistogramTester histogram_tester;
+  // User selects non credential field that does not have autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected2",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 1);
+
+  // User selects non credential field that has autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 1);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected2",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 2);
+
+  // User selects a credential field.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 2);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected2",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 3);
 }

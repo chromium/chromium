@@ -11,13 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
-#include "content/browser/webid/federated_auth_request_impl.h"
+#include "content/browser/webid/request_service.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
-// Helper class for waiting for the FederatedAuthRequestImpl::RequestToken()
+// Helper class for waiting for the RequestService::RequestToken()
 // callback.
 class FederatedAuthRequestRequestTokenCallbackHelper {
  public:
@@ -35,7 +35,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   std::optional<GURL> selected_idp_config_url() const {
     return selected_idp_config_url_;
   }
-  std::optional<std::string> token() const { return token_; }
+  const std::optional<base::Value>& token() const { return token_; }
   bool is_auto_selected() const { return is_auto_selected_; }
 
   // Returns base::OnceClosure which quits base::RunLoop started by
@@ -46,7 +46,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   }
 
   // This can only be called once per lifetime of this object.
-  FederatedAuthRequestImpl::RequestTokenCallback callback() {
+  webid::RequestService::RequestTokenCallback callback() {
     return base::BindOnce(
         &FederatedAuthRequestRequestTokenCallbackHelper::ReceiverMethod,
         base::Unretained(this));
@@ -61,7 +61,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
  private:
   void ReceiverMethod(blink::mojom::RequestTokenStatus status,
                       const std::optional<GURL>& selected_idp_config_url,
-                      const std::optional<std::string>& token,
+                      std::optional<base::Value> token,
                       blink::mojom::TokenErrorPtr error,
                       bool is_auto_selected);
 
@@ -71,7 +71,7 @@ class FederatedAuthRequestRequestTokenCallbackHelper {
   base::RunLoop wait_for_callback_loop_;
   std::optional<blink::mojom::RequestTokenStatus> status_;
   std::optional<GURL> selected_idp_config_url_;
-  std::optional<std::string> token_;
+  std::optional<base::Value> token_;
   blink::mojom::TokenErrorPtr error_;
   bool is_auto_selected_{false};
 };

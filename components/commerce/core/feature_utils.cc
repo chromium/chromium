@@ -158,8 +158,6 @@ bool CanFetchProductSpecificationsData(AccountChecker* account_checker) {
 }
 
 bool IsProductSpecificationsSettingVisible(AccountChecker* account_checker) {
-  DCHECK(base::FeatureList::IsEnabled(
-      optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi));
   return CanFetchProductSpecificationsData(account_checker,
                                            /*skip_enterprise_check=*/true);
 }

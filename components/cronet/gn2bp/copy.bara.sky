@@ -19,7 +19,6 @@ origin_files = glob([
     "chrome/VERSION",
     "components/metrics/**",
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4896104
-    "components/miracle_parameter/**",
     "components/nacl/**",
     "components/prefs/**",
     "components/unexportable_keys/**",
@@ -29,6 +28,8 @@ origin_files = glob([
     "url/**",
     # https://crrev.com/c/5800287
     "components/network_time/**",
+    # https://crrev.com/c/7217451
+    "tools/metrics/**",
   ]) + glob(["base/**"]) - glob([
     # Exclude test files to reduce the number of gn2bp files
     "base/tracing/test/**",
@@ -69,7 +70,6 @@ origin_files = glob([
     # See https://chromium-review.googlesource.com/c/chromium/src/+/4885470
     # Note: Only used for tests.
     "third_party/anonymous_tokens/**",
-    "third_party/ashmem/**",
     # Note: Only used for tests.
     "third_party/apache-portable-runtime/**",
     "third_party/brotli/**",
@@ -112,6 +112,8 @@ origin_files = glob([
     "third_party/compiler-rt/src/test/**",
   ]) + glob([
     "third_party/libc++/**",
+  ]) + glob([
+    "components/cbor/**",
   ]) - glob([
     # This is not used, and contains a huge number of files (~10k) that slows
     # down imports and checkouts.
@@ -136,34 +138,98 @@ origin_files = glob([
     # This is not used and it doesn't have a README.chromium for us to generate
     # a license.
     "third_party/quic_trace/src/third_party/glew/**"
-  ]) + glob(["third_party/rust/**"]) - glob([
-    # Those crates are missing README.chromium and LICENSE files.
-    # See crbug.com/369505588 and crbug.com/369075726
-    "third_party/rust/chromium_crates_io/vendor/cc-*/**",
-    "third_party/rust/cc/**",
-    "third_party/rust/chromium_crates_io/vendor/codespan-reporting-*/**",
+  ]) + glob([
+    "third_party/rust/anstyle/**",
+    "third_party/rust/chromium_crates_io/vendor/anstyle-v*/**",
+
+    "third_party/rust/clap/**",
+    "third_party/rust/chromium_crates_io/vendor/clap-v*/**",
+
+    "third_party/rust/clap_builder/**",
+    "third_party/rust/chromium_crates_io/vendor/clap_builder-v*/**",
+
+    "third_party/rust/clap_lex/**",
+    "third_party/rust/chromium_crates_io/vendor/clap_lex-v*/**",
+
     "third_party/rust/codespan_reporting/**",
-    "third_party/rust/chromium_crates_io/vendor/link-cplusplus-*/**",
-    "third_party/rust/chromium_crates_io/vendor/minimal-lexical-*/**",
-    "third_party/rust/chromium_crates_io/vendor/rstest_macros-*/**",
-    "third_party/rust/rstest_macros/**",
-    "third_party/rust/chromium_crates_io/vendor/rstest-*/**",
-    "third_party/rust/rstest/**",
-    "third_party/rust/chromium_crates_io/vendor/rstest_reuse-*/**",
-    "third_party/rust/rstest_reuse/**",
-    "third_party/rust/chromium_crates_io/vendor/rustc-demangle-capi-*/**",
-    "third_party/rust/rustc_demangle_capi/**",
-    "third_party/rust/chromium_crates_io/vendor/wasi-*+wasi-snapshot-preview1/**",
-    "third_party/rust/chromium_crates_io/vendor/winapi-i686-pc-windows-gnu-*/**",
-    "third_party/rust/chromium_crates_io/vendor/winapi-x86_64-pc-windows-gnu-*/**",
-    "third_party/rust/chromium_crates_io/vendor/winapi-0.*/**",
-    "third_party/rust/winapi/**",
+    "third_party/rust/chromium_crates_io/vendor/codespan-reporting-v*/**",
+
+    "third_party/rust/cxx/**",
+    "third_party/rust/chromium_crates_io/vendor/cxx-v*/**",
+
+    "third_party/rust/cxxbridge_cmd/**",
+    "third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-v*/**",
+
+    "third_party/rust/cxxbridge_macro/**",
+    "third_party/rust/chromium_crates_io/vendor/cxxbridge-macro-v*/**",
+
+    "third_party/rust/equivalent/**",
+    "third_party/rust/chromium_crates_io/vendor/equivalent-v*/**",
+
+    "third_party/rust/foldhash/**",
+    "third_party/rust/chromium_crates_io/vendor/foldhash-v*/**",
+
+    "third_party/rust/hashbrown/**",
+    "third_party/rust/chromium_crates_io/vendor/hashbrown-v*/**",
+
+    "third_party/rust/indexmap/**",
+    "third_party/rust/chromium_crates_io/vendor/indexmap-v*/**",
+
+    "third_party/rust/itoa/**",
+    "third_party/rust/chromium_crates_io/vendor/itoa-v*/**",
+
+    "third_party/rust/log/**",
+    "third_party/rust/chromium_crates_io/vendor/log-v*/**",
+
+    "third_party/rust/memchr/**",
+    "third_party/rust/chromium_crates_io/vendor/memchr-v*/**",
+
+    "third_party/rust/proc_macro2/**",
+    "third_party/rust/chromium_crates_io/vendor/proc-macro2-v*/**",
+
+    "third_party/rust/quote/**",
+    "third_party/rust/chromium_crates_io/vendor/quote-v*/**",
+
+    "third_party/rust/rustversion/**",
+    "third_party/rust/chromium_crates_io/vendor/rustversion-v*/**",
+
+    "third_party/rust/ryu/**",
+    "third_party/rust/chromium_crates_io/vendor/ryu-v*/**",
+
+    "third_party/rust/serde/**",
+    "third_party/rust/chromium_crates_io/vendor/serde-v*/**",
+
+    "third_party/rust/serde_core/**",
+    "third_party/rust/chromium_crates_io/vendor/serde_core-v*/**",
+
+    "third_party/rust/serde_derive/**",
+    "third_party/rust/chromium_crates_io/vendor/serde_derive-v*/**",
+
+    "third_party/rust/serde_json_lenient/**",
+    "third_party/rust/chromium_crates_io/vendor/serde_json_lenient-v*/**",
+
+    "third_party/rust/strsim/**",
+    "third_party/rust/chromium_crates_io/vendor/strsim-v*/**",
+
+    "third_party/rust/syn/**",
+    "third_party/rust/chromium_crates_io/vendor/syn-v*/**",
+
+    "third_party/rust/termcolor/**",
+    "third_party/rust/chromium_crates_io/vendor/termcolor-v*/**",
+
+    "third_party/rust/unicode_ident/**",
+    "third_party/rust/chromium_crates_io/vendor/unicode-ident-v*/**",
+
+    "third_party/rust/unicode_width/**",
+    "third_party/rust/chromium_crates_io/vendor/unicode-width-v*/**",
   ]) + glob([
     # Top-level build files generated by gen_android_bp.py
     "Android.bp.gn2bp",
     "Android.extras.bp.gn2bp",
     # Top-level license file generated by create_android_metadata_license.py
-    "LICENSE",
+    "LICENSE.gn2bp",
+    # Top-level configuration file for tests, generated by gen_android_bp.py
+    "AndroidTest.xml"
   ]) - glob([
     # We only want to import the Android.bp.gn2bp build files that we generated
     # ourselves; get rid of any spurious Android build files that may also be
@@ -184,6 +250,21 @@ origin_files = glob([
     "**/BUILD.gn",
     "**/*.gni",
 
+    # Exclude aconfig files that may be present in some subprojects (e.g.
+    # Perfetto). These files are dead code as far as the import is concerned,
+    # and they can confuse linters on the AOSP file as they incorrectly assume
+    # they will be used.
+    "**/*.aconfig",
+
+    # Exclude TEST_MAPPING files that may be present in some subprojects (e.g.
+    # Perfetto). These files may accidentally be picked up by test
+    # infrastructure on the Android side, with surprising results.
+    "**/TEST_MAPPING",
+
+    # Exclude Typescript files. Realistically Cronet will never use Typescript,
+    # and they tend to create a lot of diff noise, especially from Perfetto.
+    "**/*.ts",
+
     # These files may be generated when running local Python scripts locally -
     # make sure we don't accidentally import them.
     "**/__pycache__/**",
@@ -203,6 +284,9 @@ origin_files = glob([
     # This way, //internal is available to the bot at runtime, but copybara will not
     # import it into Android.
     "internal/**",
+  ]) - glob([
+    # We only want to import the LICENSE.gn2bp file that we generated ourselves.
+    "LICENSE",
   ])
 
 def destination_files_for_channel(import_channel):
@@ -254,6 +338,7 @@ def workflow(name, destination, destination_files, mode, additional_transform, c
       transformations = [
         core.rename("Android.bp.gn2bp", "Android.bp"),
         core.rename("Android.extras.bp.gn2bp", "Android.extras.bp"),
+        core.rename("LICENSE.gn2bp", "LICENSE"),
         additional_transform,
       ],
       consistency_file_path = consistency_file_path,
@@ -282,9 +367,10 @@ per_channel_workflow(
       url = "https://googleplex-android.googlesource.com/platform/external/cronet",
       fetch = "main",
       push_to_refs_for = "main",
-      # TODO(crbug.com/372534509): Replace reviewer with team-based Gerrit
-      # account once it is set up.
-      labels = ["Presubmit-Ready+1"]
+      labels = [
+        "Presubmit-Ready+1",
+        "Autosubmit+1",
+      ]
   ),
   mode = "SQUASH",
 )

@@ -54,9 +54,7 @@ include_rules = [
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
   "+components/strings",
-  "+components/tpcd",
   "+components/tracing/common",
-  "+components/translate/core/common",
   "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_prefs",
@@ -73,6 +71,7 @@ include_rules = [
   "+content/public/browser",
   "+content/public/test",
 
+  "+media/audio/audio_features.h", # For audio command line switches.
   "+media/base/android",
   "+media/base/media_switches.h",  # For media command line switches.
   "+media/mojo/buildflags.h",

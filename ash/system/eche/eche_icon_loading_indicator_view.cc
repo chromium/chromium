@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
+
 #include <algorithm>
 
 #include "base/scoped_observation.h"
@@ -14,6 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/paint_throbber.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -45,7 +47,7 @@ void EcheIconLoadingIndicatorView::SetAnimating(bool animating) {
     throbber_start_time_.reset();
     animation_.Reset();
   }
-  OnPropertyChanged(&throbber_start_time_, views::kPropertyEffectsNone);
+  OnPropertyChanged(&throbber_start_time_, views::PropertyEffects::kNone);
 }
 
 bool EcheIconLoadingIndicatorView::GetAnimating() const {

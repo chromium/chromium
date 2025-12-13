@@ -1,0 +1,13 @@
+Verify that breakpoints are moved appropriately in case of binding removal.
+
+
+Running: addFileSystem
+
+Running: addNetworkFooJS
+
+Running: setBreakpointInFileSystemUISourceCode
+http://127.0.0.1:8000/devtools/persistence/resources/foo.js:3
+
+Running: removeBindingAndDumpBreakpoints
+file:///var/www/devtools/persistence/resources/foo.js:1
+

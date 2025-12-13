@@ -8,10 +8,8 @@ import android.content.Context;
 import android.view.View;
 import android.widget.LinearLayout;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RichRadioButtonData;
 import org.chromium.components.browser_ui.widget.RichRadioButtonList;
 
@@ -30,15 +28,6 @@ public class LocationPrecisionChooserController {
 
     private int mArm = ApproximateGeolocationPromptArm.NO_ARM_SELECTED;
 
-    @IntDef({
-        LocationAccuracy.PRECISE,
-        LocationAccuracy.APPROXIMATE,
-    })
-    public @interface LocationAccuracy {
-        int PRECISE = 0;
-        int APPROXIMATE = 1;
-    }
-
     private final Context mContext;
     private final LinearLayout mContainer;
     private final @LocationAccuracy int mInitialSelection;
@@ -51,11 +40,12 @@ public class LocationPrecisionChooserController {
     public LocationPrecisionChooserController(
             Context context,
             LinearLayout container,
+            @LocationAccuracy int initialSelection,
             @Nullable Consumer<Integer> selectionListener) {
 
         mContext = context;
         mContainer = container;
-        mInitialSelection = LocationAccuracy.PRECISE;
+        mInitialSelection = initialSelection;
         mSelectionListener = selectionListener;
 
         mArm =

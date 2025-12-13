@@ -33,16 +33,16 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
           a dad-ddewiswch "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Os na fydd hyn yn datrys y broblem, rydym yn argymell dewis yr opsiwn hwn
           eto ar gyfer perfformiad gwell.</translation>
-<translation id="6855094794438142393">Ewch i
+<translation id="6581867098636731226">Ewch i
           ddewislen Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Gosodiadau LAN
-          a dad-diciwch "Defnyddio dirprwy weinydd ar gyfer eich LAN".</translation>
+          Rhwydwaith a rhyngrwyd &gt; Dirprwy weinydd
+          a dad-ddewis "Canfod gosodiadau yn awtomatig".</translation>
 <translation id="7230956101631259640">Rydych yn edrych ar dudalen Chrome ddiogel</translation>
 <translation id="8232971017369963250">Mae Chrome yn bosib oherwydd y prosiect ffynhonnell agored <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Mae Chrome hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />feddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>

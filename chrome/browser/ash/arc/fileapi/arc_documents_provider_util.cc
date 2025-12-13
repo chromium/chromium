@@ -258,13 +258,13 @@ std::string FindArcMimeTypeFromExtension(const std::string& ext) {
   for (const auto& mapping : kAndroidMimeTypeMappings) {
     std::vector<std::string_view> extensions = base::SplitStringPiece(
         mapping.extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (base::Contains(extensions, ext))
+    if (base::Contains(extensions, ext)) {
       return mapping.mime_type;
+    }
   }
   return std::string();
 }
 
-// TODO(crbug.com/40498938): Consolidate with the similar logic for Drive.
 base::FilePath::StringType GetFileNameForDocument(
     const mojom::DocumentPtr& document) {
   base::FilePath::StringType filename = document->display_name;

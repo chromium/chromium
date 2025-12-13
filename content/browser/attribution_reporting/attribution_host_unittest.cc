@@ -210,7 +210,8 @@ TEST_F(AttributionHostTest, ValidAttributionSrc_ForwardedToManager) {
               Property(&AttributionSuitableContext::root_render_frame_id,
                        main_rfh()->GetGlobalId())),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id*/ _,
+          /*from_context_menu=*/false));
 
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -249,7 +250,8 @@ TEST_F(AttributionHostTest, ValidSourceRegistrations_ForwardedToManager) {
               Property(&AttributionSuitableContext::root_render_frame_id,
                        frame_id)),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -309,7 +311,8 @@ TEST_F(AttributionHostTest,
               Property(&AttributionSuitableContext::root_render_frame_id,
                        frame_id)),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id*/ _));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),
@@ -370,8 +373,6 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   EXPECT_CALL(*mock_data_host_manager(), NotifyNavigationRegistrationCompleted)
       .Times(1);
 
-  base::HistogramTester histograms;
-
   contents()->NavigateAndCommit(GURL("https://secure_impression.com"));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -380,9 +381,6 @@ TEST_F(AttributionHostTest, ImpressionNavigationWithDeadInitiator_Ignored) {
   navigation->SetInitiatorFrame(nullptr);
   navigation->set_impression(blink::Impression());
   navigation->Commit();
-
-  histograms.ExpectUniqueSample(
-      "Conversions.ImpressionNavigationHasDeadInitiator", true, 1);
 }
 
 TEST_F(AttributionHostTest,
@@ -898,7 +896,8 @@ TEST_F(AttributionHostTest, InsecureTaintTracking) {
                 Property(&AttributionSuitableContext::root_render_frame_id,
                          main_rfh()->GetGlobalId())),
           impression.attribution_src_token,
-          /*navigation_id=*/_, /*devtools_request_id=*/_));
+          /*navigation_id=*/_, /*devtools_request_id=*/_,
+          /*from_context_menu=*/false));
   EXPECT_CALL(*mock_data_host_manager(),
               NotifyNavigationRegistrationData(impression.attribution_src_token,
                                                redirect_headers.get(),

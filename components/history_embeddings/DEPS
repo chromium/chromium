@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service/core",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/optimization_guide/public",
   "+components/os_crypt/async",
   "+components/page_content_annotations/core",
   "+components/passage_embeddings",

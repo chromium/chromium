@@ -18,7 +18,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -244,19 +244,9 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.delegate changePasswordLinkWasTapped];
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   __weak __typeof(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf.delegate changePasswordLinkWasTapped];
@@ -357,7 +347,7 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   // Fetch the actual favicon.
   [self.imageDataSource
       faviconForPageURL:[[CrURL alloc] initWithGURL:_URL]
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                [faviconView configureWithAttributes:attributes];
              }];
 
@@ -692,11 +682,12 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
 
 // Helper for creating the done button.
 - (UIButton*)createDoneButton {
-  UIButton* doneButton = PrimaryActionButton(YES);
+  ChromeButton* doneButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
   [doneButton addTarget:self
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
-  SetConfigurationTitle(doneButton, l10n_util::GetNSString(IDS_DONE));
+  doneButton.title = l10n_util::GetNSString(IDS_DONE);
   doneButton.accessibilityIdentifier = kSharingStatusDoneButtonID;
   return doneButton;
 }

@@ -19,6 +19,7 @@ import org.robolectric.shadows.ShadowResources;
 
 /** Dummy Robolectric shadow for Android Resources for MediaNotification tests. */
 @Implements(Resources.class)
+@SuppressWarnings("DirectInvocationOnMock")
 public class MediaNotificationTestShadowResources extends ShadowResources {
     public static final Resources sResources;
 

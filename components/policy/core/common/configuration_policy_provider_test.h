@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"

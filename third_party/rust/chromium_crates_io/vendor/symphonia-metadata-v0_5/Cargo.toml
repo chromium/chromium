@@ -13,8 +13,14 @@
 edition = "2018"
 rust-version = "1.53"
 name = "symphonia-metadata"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Project Symphonia multimedia tag and metadata readers."
 homepage = "https://github.com/pdeljanov/Symphonia"
 readme = "README.md"
@@ -33,6 +39,10 @@ categories = [
 license = "MPL-2.0"
 repository = "https://github.com/pdeljanov/Symphonia"
 
+[lib]
+name = "symphonia_metadata"
+path = "src/lib.rs"
+
 [dependencies.encoding_rs]
 version = "0.8.17"
 
@@ -43,4 +53,4 @@ version = "1.4.0"
 version = "0.4"
 
 [dependencies.symphonia-core]
-version = "0.5.4"
+version = "0.5.5"

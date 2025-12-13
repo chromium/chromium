@@ -4,12 +4,15 @@
 
 #include "chrome/browser/extensions/install_verifier_factory.h"
 
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/install_verifier.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserContext;
 

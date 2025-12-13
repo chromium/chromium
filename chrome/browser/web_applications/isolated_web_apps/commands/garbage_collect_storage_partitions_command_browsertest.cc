@@ -22,8 +22,8 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/get_controlled_frame_partition_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
@@ -36,6 +36,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
@@ -128,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   // Install 2 IWAs.
   std::unique_ptr<ScopedBundledIsolatedWebApp> app1 =
       IsolatedWebAppBuilder(ManifestBuilder())
-          .BuildBundle(web_package::test::GetDefaultEcdsaP256KeyPair());
+          .BuildBundle(test::GetDefaultEcdsaP256KeyPair());
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info_1,
                        app1->Install(profile()));
 
@@ -146,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   // Install 2nd app - different Key Pair results in different Web Bundle Id
   std::unique_ptr<ScopedBundledIsolatedWebApp> app2 =
       IsolatedWebAppBuilder(ManifestBuilder())
-          .BuildBundle(web_package::test::GetDefaultEd25519KeyPair());
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info_2,
                        app2->Install(profile()));
   content::StoragePartitionConfig iwa_2_base_sp_config =
@@ -172,15 +173,13 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
   ASSERT_TRUE(profile()->GetPrefs()->GetBoolean(
       prefs::kShouldGarbageCollectStoragePartitions));
   // Both paths exist before garbage collection.
-  ASSERT_TRUE(
-      PathHasSubPath(storage_partition_path(),
-                     WebBundleIdToRelativeDomainPath(
-                         web_package::test::GetDefaultEcdsaP256WebBundleId())))
+  ASSERT_TRUE(PathHasSubPath(
+      storage_partition_path(),
+      WebBundleIdToRelativeDomainPath(test::GetDefaultEcdsaP256WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
-  ASSERT_TRUE(
-      PathHasSubPath(storage_partition_path(),
-                     WebBundleIdToRelativeDomainPath(
-                         web_package::test::GetDefaultEd25519WebBundleId())))
+  ASSERT_TRUE(PathHasSubPath(
+      storage_partition_path(),
+      WebBundleIdToRelativeDomainPath(test::GetDefaultEd25519WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
 }
 
@@ -197,15 +196,13 @@ IN_PROC_BROWSER_TEST_F(GarbageCollectStoragePartitionsCommandBrowserTest,
 
   ASSERT_TRUE(base::PathExists(storage_partition_path()));
   // Only IWA1's path still exists.
-  EXPECT_TRUE(
-      PathHasSubPath(storage_partition_path(),
-                     WebBundleIdToRelativeDomainPath(
-                         web_package::test::GetDefaultEcdsaP256WebBundleId())))
+  EXPECT_TRUE(PathHasSubPath(
+      storage_partition_path(),
+      WebBundleIdToRelativeDomainPath(test::GetDefaultEcdsaP256WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
-  EXPECT_FALSE(
-      PathHasSubPath(storage_partition_path(),
-                     WebBundleIdToRelativeDomainPath(
-                         web_package::test::GetDefaultEd25519WebBundleId())))
+  EXPECT_FALSE(PathHasSubPath(
+      storage_partition_path(),
+      WebBundleIdToRelativeDomainPath(test::GetDefaultEd25519WebBundleId())))
       << SubDirDebugValue(storage_partition_path());
 }
 

@@ -38,7 +38,7 @@ source_set("android") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/browser/profiles:profile",
     "//content/public/browser",
     "//net",
@@ -54,17 +54,17 @@ source_set("unittests") {
   sources = [ "http_client_unittest.cc" ]
   deps = [
     ":android",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//content/public/browser",
     "//content/test:test_support",
-    "//net:net",
+    "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -81,7 +81,7 @@ android_library("javatests") {
     "//net/android:net_java",
     "//net/android:net_java_test_support",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//url:gurl_java",
   ]
 }
@@ -98,7 +98,7 @@ java_library("junit_tests") {
     "//chrome/browser/profiles/android:java",
     "//net/android:net_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",

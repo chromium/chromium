@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,11 +15,13 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/object_template_builder.h"
+#include "gin/persistent.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
+#include "v8/include/cppgc/visitor.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-microtask-queue.h"
 
 void SupervisedUserErrorPageController::Install(
@@ -60,6 +63,11 @@ SupervisedUserErrorPageController::SupervisedUserErrorPageController(
 SupervisedUserErrorPageController::~SupervisedUserErrorPageController() =
     default;
 
+void SupervisedUserErrorPageController::Trace(cppgc::Visitor* visitor) const {
+  gin::Wrappable<SupervisedUserErrorPageController>::Trace(visitor);
+  visitor->Trace(weak_factory_);
+}
+
 void SupervisedUserErrorPageController::GoBack() {
   if (delegate_)
     delegate_->GoBack();
@@ -69,7 +77,8 @@ void SupervisedUserErrorPageController::RequestUrlAccessRemote() {
   if (delegate_) {
     delegate_->RequestUrlAccessRemote(base::BindOnce(
         &SupervisedUserErrorPageController::OnRequestUrlAccessRemote,
-        weak_factory_.GetWeakPtr()));
+        gin::WrapPersistent(weak_factory_.GetWeakCell(
+            v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle()))));
   }
 }
 
@@ -86,9 +95,10 @@ void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
 #if BUILDFLAG(IS_ANDROID)
 void SupervisedUserErrorPageController::LearnMore() {
   if (delegate_) {
-    delegate_->LearnMore(
-        base::BindOnce(&SupervisedUserErrorPageController::OnLearnMore,
-                       weak_factory_.GetWeakPtr()));
+    delegate_->LearnMore(base::BindOnce(
+        &SupervisedUserErrorPageController::OnLearnMore,
+        gin::WrapPersistent(weak_factory_.GetWeakCell(
+            v8::Isolate::GetCurrent()->GetCppHeap()->GetAllocationHandle()))));
   }
 }
 

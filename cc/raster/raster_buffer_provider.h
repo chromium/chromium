@@ -47,10 +47,7 @@ class CC_EXPORT RasterBufferProvider {
   virtual std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
-      uint64_t previous_content_id,
-      bool depends_on_at_raster_decodes,
-      bool depends_on_hardware_accelerated_jpeg_candidates,
-      bool depends_on_hardware_accelerated_webp_candidates) = 0;
+      uint64_t previous_content_id) = 0;
 
   // Determine if the RasterBufferProvider can handle partial raster into
   // the Resource provided in AcquireBufferForRaster.

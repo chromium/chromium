@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media_galleries/fileapi/supported_image_type_validator.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -49,7 +45,7 @@ std::unique_ptr<std::string> ReadOnFileThread(const base::FilePath& path) {
 
   result = std::make_unique<std::string>();
   result->resize(file_info.size);
-  if (file.Read(0, std::data(*result), file_info.size) != file_info.size) {
+  if (file.Read(0, base::as_writable_byte_span(*result)) != file_info.size) {
     result.reset();
   }
 
@@ -112,10 +108,19 @@ void SupportedImageTypeValidator::StartPreWriteValidation(
                      weak_factory_.GetWeakPtr()));
 }
 
+void SupportedImageTypeValidator::StartPostWriteValidation(
+    const base::FilePath& dest_platform_path,
+    ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // StartPostWriteValidation() implementation is required. So effectively do
+  // nothing here.
+  std::move(result_callback).Run(base::File::FILE_OK);
+}
+
 SupportedImageTypeValidator::SupportedImageTypeValidator(
-    const base::FilePath& path,
-    download::QuarantineConnectionCallback quarantine_connection_callback)
-    : AVScanningFileValidator(quarantine_connection_callback), path_(path) {}
+    const base::FilePath& path)
+    : path_(path) {}
 
 void SupportedImageTypeValidator::OnFileOpen(
     std::unique_ptr<std::string> data) {

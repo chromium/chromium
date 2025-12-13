@@ -5,7 +5,6 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_KVV2_SIGNALS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_KVV2_SIGNALS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>
@@ -105,7 +104,7 @@ class CONTENT_EXPORT TrustedKVv2Signals {
                          const GURL& full_signals_url,
                          std::string post_body);
 
-  void OnKVv2DownloadComplete(std::unique_ptr<std::string> body,
+  void OnKVv2DownloadComplete(std::optional<std::string> body,
                               scoped_refptr<net::HttpResponseHeaders> headers,
                               std::optional<std::string> error_msg);
 
@@ -118,7 +117,7 @@ class CONTENT_EXPORT TrustedKVv2Signals {
       std::optional<std::set<std::string>> bidding_signals_keys,
       std::optional<std::set<std::string>> render_urls,
       std::optional<std::set<std::string>> ad_component_render_urls,
-      std::unique_ptr<std::string> body,
+      std::optional<std::string> body,
       scoped_refptr<net::HttpResponseHeaders> headers,
       quiche::ObliviousHttpRequest::Context context,
       std::optional<std::string> error_msg,

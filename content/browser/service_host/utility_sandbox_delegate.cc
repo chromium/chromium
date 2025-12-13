@@ -24,10 +24,6 @@
 #include "sandbox/policy/sandbox_type.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/assistant/buildflags.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
@@ -64,7 +60,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kPdfConversion ||
       sandbox_type_ == sandbox::mojom::Sandbox::kIconReader ||
       sandbox_type_ == sandbox::mojom::Sandbox::kMediaFoundationCdm ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kWindowsSystemProxyResolver ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kProxyResolver ||
 #endif
 #if BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kMirroring ||
@@ -80,6 +76,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoCapture ||
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
       sandbox_type_ == sandbox::mojom::Sandbox::kHardwareVideoDecoding ||
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -91,20 +88,13 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
 #endif
-#if BUILDFLAG(IS_LINUX)
-      sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
-#endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
@@ -159,21 +149,19 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
       sandbox_type_ == sandbox::mojom::Sandbox::kIme ||
       sandbox_type_ == sandbox::mojom::Sandbox::kTts ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNearby ||
-      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-      sandbox_type_ == sandbox::mojom::Sandbox::kLibassistant ||
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 #endif  // BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+      sandbox_type_ == sandbox::mojom::Sandbox::kShapeDetection ||
+#endif
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
 #endif
-#if BUILDFLAG(IS_LINUX)
-      sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
-#endif  // BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     return GetUnsandboxedZygote();
   }

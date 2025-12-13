@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "base/strings/string_number_conversions.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/fake_audio_render_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -98,8 +99,8 @@ class AudioConverterTest
   // |index|..|frames| after |scale| is applied to the expected audio data.
   bool ValidateAudioData(int index, int frames, float scale) {
     for (int ch = 0; ch < audio_bus_->channels(); ++ch) {
-      auto channel_data = audio_bus_->channel_span(ch);
-      auto expected_channel_data = expected_audio_bus_->channel_span(ch);
+      auto channel_data = audio_bus_->channel(ch);
+      auto expected_channel_data = expected_audio_bus_->channel(ch);
       for (int j = index; j < frames; ++j) {
         double error = fabs(channel_data[j] - expected_channel_data[j] * scale);
         if (error > epsilon_) {
@@ -127,7 +128,7 @@ class AudioConverterTest
     // would during channel mixing.
     for (int i = input_parameters_.channels();
          i < output_parameters_.channels(); ++i) {
-      std::ranges::fill(expected_audio_bus_->channel_span(i), 0);
+      std::ranges::fill(expected_audio_bus_->channel(i), 0);
     }
 
     return ValidateAudioData(0, audio_bus_->frames(), scale);

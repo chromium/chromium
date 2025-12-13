@@ -198,17 +198,17 @@ class RecordLanguagesMetricsBrowserTest : public InProcessBrowserTest {
       return false;
 
     std::string path = "chrome/test/data/content_language";
-    path.append(static_cast<std::string>(params->url_request.url.path_piece()));
+    path.append(static_cast<std::string>(params->url_request.url.path()));
 
     // build response header and body for xml html lang tag value
-    if (params->url_request.url.path() == "/xml_html_language.html") {
+    if (params->url_request.url.GetPath() == "/xml_html_language.html") {
       URLLoaderInterceptor::WriteResponse(
           BuildXmlHtmlHeader(), BuildXmlHtmlBody(), params->client.get());
       return true;
     }
 
     std::string headers = "HTTP/1.1 200 OK\nContent-Type: text/html\n";
-    if (params->url_request.url.path() == "/simple.html") {
+    if (params->url_request.url.GetPath() == "/simple.html") {
       base::StrAppend(&headers, {BuildIframeResponseHeader()});
     } else {
       base::StrAppend(&headers, {BuildResponseHeader()});
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -526,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -561,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_F(RecordLanguagesMetricsBrowserTest,
   base::HistogramTester histograms;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            content_language_with_iframe_url()));
-  EXPECT_EQ(last_request_url().path(), "/simple.html");
+  EXPECT_EQ(last_request_url().GetPath(), "/simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   // Accept-Language vs Parent Content-Language: match top-most

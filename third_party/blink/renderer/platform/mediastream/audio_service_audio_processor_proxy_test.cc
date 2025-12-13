@@ -29,7 +29,6 @@ void VerifyStats(const media::AudioProcessingStats& expected,
             expected.echo_return_loss);
   EXPECT_EQ(received.apm_statistics.echo_return_loss_enhancement,
             expected.echo_return_loss_enhancement);
-  EXPECT_FALSE(received.apm_statistics.voice_detected);
   EXPECT_FALSE(received.apm_statistics.divergent_filter_fraction);
   EXPECT_FALSE(received.apm_statistics.delay_median_ms);
   EXPECT_FALSE(received.apm_statistics.delay_standard_deviation_ms);
@@ -177,6 +176,21 @@ TEST_F(AudioServiceAudioProcessorProxyTest, DoesNotSetNumChannelsIfDecreases) {
 
   MaybeSetNumChannelsOnAnotherThread(proxy, 3);
   MaybeSetNumChannelsOnAnotherThread(proxy, 2);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(AudioServiceAudioProcessorProxyTest,
+       DoesNotSetNumChannelsIfNegativeValue) {
+  scoped_refptr<AudioServiceAudioProcessorProxy> proxy =
+      new webrtc::RefCountedObject<AudioServiceAudioProcessorProxy>();
+  StrictMock<MockAudioProcessorControls> controls;
+  EXPECT_CALL(controls, SetPreferredNumCaptureChannelsCalled(2)).Times(1);
+
+  proxy->SetControls(&controls);
+
+  MaybeSetNumChannelsOnAnotherThread(proxy, -1);
+  MaybeSetNumChannelsOnAnotherThread(proxy, 2);
+  MaybeSetNumChannelsOnAnotherThread(proxy, -1);
   task_environment_.RunUntilIdle();
 }
 

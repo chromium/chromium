@@ -62,18 +62,6 @@ enum class UADefinedVariable {
   kTitlebarAreaWidth,
   kTitlebarAreaHeight,
 
-  // The context menu insets are four environment variables that define a
-  // rectangle by its top, right, bottom, and left insets from the edge of
-  // the viewport. These are used for the `interestfor` attribute on mobile
-  // devices that display context menus, to indicate the still-unoccluded area
-  // of the screen while a context menu is visible.
-  // Explainer:
-  // https://open-ui.org/components/interest-invokers.explainer/#touchscreen
-  kContextMenuInsetTop,
-  kContextMenuInsetLeft,
-  kContextMenuInsetBottom,
-  kContextMenuInsetRight,
-
   // The text scale as chosen by the user in the OS accessibility settings.
   kPreferredTextScale,
 
@@ -156,7 +144,7 @@ class CORE_EXPORT StyleEnvironmentVariables
   // Resolve the variable |name| by traversing the tree of
   // |StyleEnvironmentVariables|.
   virtual CSSVariableData* ResolveVariable(const AtomicString& name,
-                                           WTF::Vector<unsigned> indices);
+                                           Vector<unsigned> indices);
 
   // Detach |this| from |parent|.
   void DetachFromParent();

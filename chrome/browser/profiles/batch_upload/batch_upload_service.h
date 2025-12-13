@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_
 #define CHROME_BROWSER_PROFILES_BATCH_UPLOAD_BATCH_UPLOAD_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -26,6 +27,8 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+class PrefService;
+
 // Service that allows the management of the Batch Upload Dialog. Used to open
 // the dialog and manages its lifetime.
 // It communicates with the `syncer::SyncService` to get information of the
@@ -34,25 +37,31 @@ class BatchUploadService : public KeyedService {
  public:
   BatchUploadService(signin::IdentityManager* identity_manager,
                      syncer::SyncService* sync_service,
+                     PrefService* pref_service,
                      std::unique_ptr<BatchUploadDelegate> delegate);
   BatchUploadService(const BatchUploadService&) = delete;
   BatchUploadService& operator=(const BatchUploadService&) = delete;
   ~BatchUploadService() override;
 
   // Lists the different entry points to the Batch Upload Dialog.
-  // TODO(crbug.com/416219929): Currently all existing entry points are tied to
-  // a data type. In the future, neutral entry points may be added.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   //
   // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
     kPasswordManagerSettings = 0,
     kPasswordPromoCard = 1,
     kBookmarksManagerPromoCard = 2,
-    kProfileMenu = 3,
+    kProfileMenuRowButtonAction = 3,
+    kProfileMenuPrimaryButtonAction = 4,
+    kProfileMenuPrimaryButtonWithBookmarksAction = 5,
+    kProfileMenuPrimaryButtonWithWindows10DepreciationAction = 6,
+    kAccountSettingsPage = 7,
+    kProfileMenuPrimaryButtonActionFromAvatarPromo = 8,
+    kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo = 9,
+    kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo =
+        10,
 
-    kMaxValue = kProfileMenu,
+    kMaxValue =
+        kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
 
@@ -64,7 +73,8 @@ class BatchUploadService : public KeyedService {
   void OpenBatchUpload(
       Browser* browser,
       EntryPoint entry_point,
-      base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing());
+      base::OnceCallback<void(bool)> dialog_shown_callback = base::DoNothing(),
+      base::OnceCallback<void()> dialog_closed_callback = base::DoNothing());
 
   // Returns whether the dialog is currently showing on a browser.
   bool IsDialogOpened() const;
@@ -128,6 +138,8 @@ class BatchUploadService : public KeyedService {
       // Called when the decision about showing the dialog is made.
       // Returns whether it was shown or not.
       base::OnceCallback<void(bool)> dialog_shown_callback_;
+      // Called when the decision about closing the dialog is made.
+      base::OnceCallback<void()> dialog_closed_callback_;
 
       DialogState();
       ~DialogState();
@@ -150,6 +162,7 @@ class BatchUploadService : public KeyedService {
 
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<syncer::SyncService> sync_service_;
+  raw_ref<PrefService> prefs_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 
   // Full state of the flow from requesting opening the dialog to saving

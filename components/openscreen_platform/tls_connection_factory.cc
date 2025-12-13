@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/openscreen_platform/tls_connection_factory.h"
 
 #include <openssl/pool.h>
 
 #include <utility>
 
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
@@ -212,9 +209,8 @@ void TlsConnectionFactory::OnTlsUpgrade(
       std::move(request.tls_socket));
 
   CRYPTO_BUFFER* der_buffer = ssl_info.value().unverified_cert->cert_buffer();
-  const uint8_t* data = CRYPTO_BUFFER_data(der_buffer);
-  std::vector<uint8_t> der_x509_certificate(
-      data, data + CRYPTO_BUFFER_len(der_buffer));
+  base::span<const uint8_t> data = UNSAFE_CRYPTO_BUFFER_DATA(der_buffer);
+  std::vector<uint8_t> der_x509_certificate(data.begin(), data.end());
   client_->OnConnected(this, std::move(der_x509_certificate),
                        std::move(tls_connection));
 }

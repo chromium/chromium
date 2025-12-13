@@ -32,9 +32,9 @@ class AutocompleteClassifierFactory : public ProfileKeyedServiceFactoryIOS {
   AutocompleteClassifierFactory();
   ~AutocompleteClassifierFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

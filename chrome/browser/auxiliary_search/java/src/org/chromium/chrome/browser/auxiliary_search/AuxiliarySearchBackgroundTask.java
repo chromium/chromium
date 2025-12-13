@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.sAndroidAppIntegrationWithFaviconUseLargeFavicon;
-
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 
 import androidx.annotation.IntDef;
@@ -101,12 +98,9 @@ public class AuxiliarySearchBackgroundTask extends NativeBackgroundTask {
                                 .getLong(AuxiliarySearchProvider.TASK_CREATED_TIME);
         AuxiliarySearchMetrics.recordScheduledDelayTime(delayFromExpectedMs);
 
-        Resources resources = mContext.getResources();
         int faviconSize =
-                sAndroidAppIntegrationWithFaviconUseLargeFavicon.getValue()
-                        ? resources.getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size)
-                        : resources.getDimensionPixelSize(
-                                R.dimen.auxiliary_search_favicon_size_small);
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.auxiliary_search_favicon_size);
 
         mFaviconHelper = new FaviconHelper();
         if (mAuxiliarySearchController != null) {

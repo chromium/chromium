@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/anchor_element_utils.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -202,7 +203,8 @@ void ContextMenuController::DocumentDetached(Document* document) {
 
 void ContextMenuController::HandleContextMenuEvent(MouseEvent* mouse_event) {
   DCHECK(mouse_event->type() == event_type_names::kContextmenu);
-  LocalFrame* frame = mouse_event->target()->ToNode()->GetDocument().GetFrame();
+  LocalFrame* frame =
+      mouse_event->RawTarget()->ToNode()->GetDocument().GetFrame();
   PhysicalOffset location =
       PhysicalOffset::FromPointFRound(mouse_event->AbsoluteLocation());
 
@@ -431,6 +433,12 @@ bool ContextMenuController::ShouldShowContextMenuFromTouch(
 
 bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
                                             const PhysicalOffset& point,
+                                            WebMenuSourceType source_type) {
+  return ShowContextMenu(frame, point, source_type, nullptr);
+}
+
+bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
+                                            const PhysicalOffset& point,
                                             WebMenuSourceType source_type,
                                             const MouseEvent* mouse_event) {
   // Displaying the context menu in this function is a big hack as we don't
@@ -482,7 +490,7 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
           ->GetEditor());
 
   if (mouse_event && source_type == kMenuSourceKeyboard) {
-    Node* target_node = mouse_event->target()->ToNode();
+    Node* target_node = mouse_event->RawTarget()->ToNode();
     if (target_node && IsA<Element>(target_node)) {
       // Get the url from an explicitly set target, e.g. the focused element
       // when the context menu is evoked from the keyboard. Note: the innerNode
@@ -504,22 +512,17 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.alt_text = html_element->AltText().Utf8();
   }
 
-  if (source_type == kMenuSourceLongPress ||
-      source_type == kMenuSourceLongTap) {
+  const bool from_touch = source_type == kMenuSourceTouch ||
+                          source_type == kMenuSourceLongPress ||
+                          source_type == kMenuSourceLongTap;
+
+  if (from_touch) {
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
           element && element->InterestForElement()) {
-        auto* context = element->GetDocument().GetExecutionContext();
-        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(context));
+        CHECK(RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled());
         data.opened_from_interest_for = true;
-        if (RuntimeEnabledFeatures::HTMLInterestForContextMenuItemOnlyEnabled(
-                context)) {
-          data.interest_for_node_id = element->NodeID();
-        } else {
-          static_assert(kInvalidDOMNodeId == 0,
-                        "The Android Java code assumes 0 === invalid");
-          data.interest_for_node_id = kInvalidDOMNodeId;
-        }
+        data.interest_for_node_id = element->GetDomNodeId();
         break;
       }
     }
@@ -796,8 +799,10 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
     // If the anchor wants to suppress the referrer, update the referrerPolicy
     // accordingly.
-    if (anchor->HasRel(kRelationNoReferrer))
+    if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                   kRelationNoReferrer)) {
       data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    }
 
     data.link_text = anchor->innerText().Utf8();
   }
@@ -810,18 +815,28 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  if (RuntimeEnabledFeatures::SvgAnchorElementRelAttributesEnabled()) {
-    if (auto* anchor = DynamicTo<SVGAElement>(result.URLElement())) {
-      // TODO(dmangal): Add support for `download` attribute
-
-      // If the anchor wants to suppress the referrer, update the referrerPolicy
-      // accordingly.
-      if (anchor->HasRel(kRelationNoReferrer)) {
-        data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+  // TODO(crbug.com/40589293): Merge with the equivalent block in
+  // HTMLAnchorElement. The logic is nearly identical aside from runtime flag
+  // checks. Consider using a templated helper once the flag is removed.
+  if (auto* anchor = DynamicTo<SVGAElement>(result.URLElement())) {
+    if (RuntimeEnabledFeatures::SvgAnchorElementDownloadAttributeEnabled()) {
+      // Extract suggested filename for same-origin URLS for saving file.
+      const SecurityOrigin* origin =
+          selected_frame->GetSecurityContext()->GetSecurityOrigin();
+      const KURL& complete_url = anchor->LegacyHrefURL(anchor->GetDocument());
+      if (origin->CanReadContent(complete_url)) {
+        data.suggested_filename =
+            anchor->FastGetAttribute(svg_names::kDownloadAttr).Utf8();
       }
-
-      data.link_text = anchor->innerText().Utf8();
     }
+
+    // If the anchor wants to suppress the referrer, update the referrerPolicy
+    // accordingly.
+    if (AnchorElementUtils::HasRel(anchor->GetLinkRelations(),
+                                   kRelationNoReferrer)) {
+      data.referrer_policy = network::mojom::ReferrerPolicy::kNever;
+    }
+    data.link_text = anchor->innerText().Utf8();
   }
 
   data.selection_rect = ComputeSelectionRect(selected_frame);
@@ -829,9 +844,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
   SetAutofillData(result.InnerNode(), data);
 
-  const bool from_touch = source_type == kMenuSourceTouch ||
-                          source_type == kMenuSourceLongPress ||
-                          source_type == kMenuSourceLongTap;
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 

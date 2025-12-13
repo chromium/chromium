@@ -20,9 +20,9 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/safety_checks.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -46,7 +46,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_client_info.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -142,6 +141,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
       base::OnceCallback<void(blink::ServiceWorkerStatusCode)>;
   using SimpleEventCallback =
       base::OnceCallback<void(blink::mojom::ServiceWorkerEventStatus)>;
+  using PushEventCallback =
+      base::OnceCallback<void(blink::mojom::ServiceWorkerEventStatus,
+                              const std::optional<std::vector<GURL>>&)>;
   using FetchHandlerExistence = blink::mojom::FetchHandlerExistence;
   using FetchHandlerType = blink::mojom::ServiceWorkerFetchHandlerType;
   using FetchHandlerBypassOption =
@@ -404,6 +406,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Simple event means those events expecting a response with only a status
   // code and the dispatch time. See service_worker.mojom.
   SimpleEventCallback CreateSimpleEventCallback(int request_id);
+
+  // Creates a callback for handling the completion of push events dispatched
+  // through blink::mojom::ServiceWorker as finished for the |request_id|.
+  PushEventCallback CreatePushEventCallback(int request_id);
 
   // This must be called when is_endpoint_ready() returns true, which is after
   // InitializeGlobalScope() is called.
@@ -992,6 +998,13 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // create a callback for a given |request_id|.
   void OnSimpleEventFinished(int request_id,
                              blink::mojom::ServiceWorkerEventStatus status);
+
+  // Callback function for push events dispatched through mojo interface
+  // blink::mojom::ServiceWorker.
+  void OnPushEventFinished(
+      int request_id,
+      blink::mojom::ServiceWorkerEventStatus status,
+      const std::optional<std::vector<GURL>>& requested_urls);
 
   // The timeout timer periodically calls OnTimeoutTimer, which stops the worker
   // if it is excessively idle or unresponsive to ping.

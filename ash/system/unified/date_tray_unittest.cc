@@ -699,13 +699,13 @@ TEST_P(GlanceablesDateTrayTest,
 
   UpdateDisplay("1240x700");
   const auto old_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const auto old_view_bounds =
       GetGlanceableTrayBubble()->GetBubbleView()->GetBoundsInScreen();
 
   UpdateDisplay("800x480");
   const auto new_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const auto new_view_bounds =
       GetGlanceableTrayBubble()->GetBubbleView()->GetBoundsInScreen();
 

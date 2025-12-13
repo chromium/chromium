@@ -73,8 +73,7 @@ class OnDeviceLlmInternalsHandler : public web::WebUIIOSMessageHandler {
           result);
 
   // Retains the on-device session in memory.
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      on_device_session_;
+  std::unique_ptr<optimization_guide::OnDeviceSession> on_device_session_;
 #endif
 
   // Used to get `weak_ptr_` to self.
@@ -139,7 +138,7 @@ void OnDeviceLlmInternalsHandler::InitAndGenerateResponse(
   VLOG(1) << "Executing server query";
   service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kTest, request,
-      /*execution_timeout=*/std::nullopt,
+      /*options=*/{},
       base::BindOnce(&OnDeviceLlmInternalsHandler::OnServerModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 #endif  // Server inference

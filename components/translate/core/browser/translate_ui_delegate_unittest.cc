@@ -106,7 +106,7 @@ class TranslateUIDelegateTest : public ::testing::Test {
   }
   // Do not reorder. These are ordered for dependency on creation/destruction.
   MockTranslateDriver driver_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
   std::unique_ptr<MockTranslateClient> client_;

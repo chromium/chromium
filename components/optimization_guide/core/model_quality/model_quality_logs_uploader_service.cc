@@ -4,6 +4,9 @@
 
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -20,6 +23,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -31,6 +35,10 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+#include "components/optimization_guide/core/model_execution/performance_class.h"
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace optimization_guide {
 
@@ -78,10 +86,11 @@ void RecordUserFeedbackHistogram(proto::LogAiDataRequest* log_ai_data_request) {
 void OnURLLoadComplete(
     std::unique_ptr<network::SimpleURLLoader> active_url_loader,
     proto::LogAiDataRequest::FeatureCase feature,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   CHECK(active_url_loader) << "loader shouldn't be null\n";
-  TRACE_EVENT1("browser", "ModelQualityLogsUploaderService::OnURLLoadComplete",
-               "feature", feature);
+  TRACE_EVENT("optimization_guide",
+              "ModelQualityLogsUploaderService::OnURLLoadComplete", "feature",
+              feature);
 
   auto net_error = active_url_loader->NetError();
   int response_code = -1;
@@ -110,10 +119,8 @@ void OnURLLoadComplete(
 }
 
 proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
-  int value = local_state->GetInteger(
-      model_execution::prefs::localstate::kOnDevicePerformanceClass);
-  OnDeviceModelPerformanceClass performance_class =
-      static_cast<OnDeviceModelPerformanceClass>(value);
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  auto performance_class = PerformanceClassFromPref(*local_state);
   switch (performance_class) {
     case OnDeviceModelPerformanceClass::kVeryLow:
       return proto::PERFORMANCE_CLASS_VERY_LOW;
@@ -132,6 +139,7 @@ proto::PerformanceClass GetPerformanceClass(PrefService* local_state) {
     case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
       return proto::PERFORMANCE_CLASS_UNSPECIFIED;
   }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   return proto::PERFORMANCE_CLASS_UNSPECIFIED;
 }
 

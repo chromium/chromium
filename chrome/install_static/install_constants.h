@@ -99,6 +99,9 @@ struct InstallConstants {
   // Windows.
   const wchar_t* browser_prog_id_description;
 
+  // The URL scheme for direct launches.
+  const char* direct_launch_url_scheme;
+
   // The prefix for the browser pdf viewer's ProgID.  This prefix may be no more
   // than 11 characters long; see ShellUtil::GetBrowserProgId and
   // https://msdn.microsoft.com/library/windows/desktop/dd542719.aspx.

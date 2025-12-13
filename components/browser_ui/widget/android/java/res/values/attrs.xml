@@ -86,6 +86,10 @@ found in the LICENSE file.
 
     <declare-styleable name="ChipView">
         <attr name="allowMultipleLines" format="boolean"/>
+        <attr name="textArrangement" format="enum">
+            <enum name="horizontal" value="0"/>
+            <enum name="vertical" value="1"/>
+        </attr>
         <attr name="solidColorChip" format="boolean"/>
         <attr name="textAlignStart" format="boolean"/>
         <attr name="chipColor" format="color"/>
@@ -126,6 +130,19 @@ found in the LICENSE file.
             <enum name="fading" value="1" />
             <enum name="hard" value="2" />
         </attr>
+    </declare-styleable>
+
+    <declare-styleable name="ContainmentItem">
+        <!-- LINT.IfChange-->
+        <!-- The background style for the preference -->
+        <attr name="backgroundStyle" format="enum">
+            <enum name="standard" value="0" />
+            <enum name="card" value="1" />
+            <enum name="none" value="2" />
+        </attr>
+        <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItem.java) -->
+        <!-- The background color for the preference. -->
+        <attr name="backgroundColor" format="color|reference" />
     </declare-styleable>
 
 </resources>

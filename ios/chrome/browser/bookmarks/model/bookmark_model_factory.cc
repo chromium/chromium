@@ -20,9 +20,7 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+std::unique_ptr<KeyedService> BuildBookmarkModel(ProfileIOS* profile) {
   auto bookmark_model = std::make_unique<bookmarks::BookmarkModel>(
       std::make_unique<BookmarkClientImpl>(
           profile, ManagedBookmarkServiceFactory::GetForProfile(profile),
@@ -60,7 +58,7 @@ BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
 
 // static
 BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildBookmarkModel);
+  return base::BindOnce(&BuildBookmarkModel);
 }
 
 BookmarkModelFactory::BookmarkModelFactory()
@@ -75,14 +73,14 @@ BookmarkModelFactory::BookmarkModelFactory()
 
 BookmarkModelFactory::~BookmarkModelFactory() = default;
 
-void BookmarkModelFactory::RegisterBrowserStatePrefs(
+void BookmarkModelFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   bookmarks::RegisterProfilePrefs(registry);
 }
 
 std::unique_ptr<KeyedService> BookmarkModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildBookmarkModel(context);
+    ProfileIOS* profile) const {
+  return BuildBookmarkModel(profile);
 }
 
 }  // namespace ios

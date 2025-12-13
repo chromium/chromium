@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -123,11 +122,6 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "kerberosRememberPasswordEnabled",
       local_state->GetBoolean(::prefs::kKerberosRememberPasswordEnabled));
-
-  // Whether the 'Remember password' checkbox should be checked by default.
-  html_source->AddBoolean(
-      "kerberosRememberPasswordByDefault",
-      features::IsKerberosRememberPasswordByDefaultEnabled());
 
   // Prefilled domain if policy is enabled. Note that Kerberos
   // domains should be in all uppercase.

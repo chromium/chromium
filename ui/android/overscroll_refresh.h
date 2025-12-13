@@ -6,6 +6,7 @@
 #define UI_ANDROID_OVERSCROLL_REFRESH_H_
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -64,7 +65,8 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // overscroll_behavior on y axis is 'auto'.
   // This method is made virtual for mocking.
   virtual void OnOverscrolled(const cc::OverscrollBehavior& behavior,
-                              gfx::Vector2dF accumulated_overscroll);
+                              gfx::Vector2dF accumulated_overscroll,
+                              blink::WebGestureDevice source_device);
 
   // Disables scroll consumption if the activation shouldn't have happened.
   void MaybeDisableScrollConsumption(const gfx::Vector2dF& scroll_delta);
@@ -96,6 +98,8 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   // This method is made virtual for mocking.
   virtual bool IsAwaitingScrollUpdateAck() const;
 
+  void SetTouchpadOverscrollHistoryNavigation(bool enabled);
+
  protected:
   // This constructor is for mocking only.
   OverscrollRefresh();
@@ -125,6 +129,7 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
   float scroll_begin_y_;
   const float edge_width_;  // in px
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
+  bool touchpad_overscroll_history_navigation_enabled_ = false;
 };
 
 }  // namespace ui

@@ -631,8 +631,8 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   }
   summary_root.Set("test_locations", std::move(test_locations));
 
-  std::string json;
-  if (!JSONWriter::Write(summary_root, &json)) {
+  std::optional<std::string> json = WriteJson(summary_root);
+  if (!json.has_value()) {
     return false;
   }
 
@@ -640,7 +640,7 @@ bool TestResultsTracker::SaveSummaryAsJSON(
   if (!output.IsValid()) {
     return false;
   }
-  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json))) {
+  if (!output.WriteAtCurrentPosAndCheck(base::as_byte_span(json.value()))) {
     return false;
   }
 

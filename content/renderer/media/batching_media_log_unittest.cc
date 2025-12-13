@@ -143,6 +143,14 @@ TEST_F(BatchingMediaLogTest, EventSentWithoutDelayAfterIpcInterval) {
   EXPECT_EQ(2, message_count());
 }
 
+TEST_F(BatchingMediaLogTest, EventSentBeforeDestruction) {
+  AddEvent<media::MediaLogEvent::kPlay>();
+  log_.OnWebMediaPlayerDestroyed();
+
+  // Created, played, destroyed.
+  ASSERT_EQ(3u, GetMediaLogRecords().size());
+}
+
 TEST_F(BatchingMediaLogTest, DurationChanged) {
   AddEvent<media::MediaLogEvent::kPlay>();
   AddEvent<media::MediaLogEvent::kPause>();
@@ -189,7 +197,9 @@ TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
   AddEvent<media::MediaLogEvent::kPause>();
 
   // This event is handled separately and should always appear last regardless
-  // of how many times we see it.
+  // of how many times we see it. However, Audio buffering and Video buffering
+  // shouldn't get caught up in the Pipeline buffering cache, and have their
+  // own event cache.
   AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
       media::SerializableBufferingState<
           media::SerializableBufferingStateType::kPipeline>{
@@ -205,6 +215,26 @@ TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
           media::SerializableBufferingStateType::kPipeline>{
           media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
           false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kAudio>{
+          media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kAudio>{
+          media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kVideo>{
+          media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
+  AddEvent<media::MediaLogEvent::kBufferingStateChanged>(
+      media::SerializableBufferingState<
+          media::SerializableBufferingStateType::kVideo>{
+          media::BUFFERING_HAVE_ENOUGH, media::BUFFERING_CHANGE_REASON_UNKNOWN,
+          false});
 
   EXPECT_EQ(0, message_count());
   Advance(base::Milliseconds(1000));
@@ -213,10 +243,12 @@ TEST_F(BatchingMediaLogTest, BufferingStateChanged) {
   // Verify contents. There should only be a single buffered extents changed
   // event.
   std::vector<media::MediaLogRecord> events = GetMediaLogRecords();
-  ASSERT_EQ(4u, events.size());
+  ASSERT_EQ(6u, events.size());
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[0].type);
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[1].type);
   EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[2].type);
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[3].type);
+  EXPECT_EQ(media::MediaLogRecord::Type::kMediaEventTriggered, events[4].type);
 }
 
 TEST_F(BatchingMediaLogTest, OnlyKeepsFirstErrorStringMessage) {
@@ -224,7 +256,8 @@ TEST_F(BatchingMediaLogTest, OnlyKeepsFirstErrorStringMessage) {
   AddMessage(media::MediaLogMessageLevel::kERROR, "second error");
   log_.NotifyError(media::PipelineStatus(media::DEMUXER_ERROR_DETECTED_HLS));
 
-  ASSERT_EQ(log_.GetErrorMessage(), "DEMUXER_ERROR_DETECTED_HLS: first error");
+  ASSERT_EQ(log_.GetErrorMessage(),
+            "PipelineStatus::DEMUXER_ERROR_DETECTED_HLS: first error");
 }
 
 }  // namespace content

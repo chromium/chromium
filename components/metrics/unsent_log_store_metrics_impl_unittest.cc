@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace metrics {
+namespace {
 
 TEST(UnsentLogStoreMetricsImplTest, RecordDroppedLogSize) {
   UnsentLogStoreMetricsImpl impl;
@@ -91,4 +92,5 @@ TEST(UnsentLogStoreMetricsImplTest, ZeroSentSample) {
   histogram_tester.ExpectBucketCount("UMA.UnsentLogs.UnsentPercentage", 100, 1);
 }
 
+}  // namespace
 }  // namespace metrics

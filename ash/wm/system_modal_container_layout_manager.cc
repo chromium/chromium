@@ -204,7 +204,7 @@ bool SystemModalContainerLayoutManager::IsModalBackground(
 void SystemModalContainerLayoutManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(container_).id() !=
+  if (display::Screen::Get()->GetDisplayNearestWindow(container_).id() !=
       display.id()) {
     return;
   }
@@ -287,7 +287,7 @@ gfx::Rect SystemModalContainerLayoutManager::GetUsableDialogArea() const {
   // keyboard will not fill left to right, the background is still covered.
   gfx::Rect valid_bounds = container_->bounds();
   const auto& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(container_);
+      display::Screen::Get()->GetDisplayNearestWindow(container_);
   gfx::Rect work_area = display.work_area();
   // Convert work area in screen global coordinates to root local coordinates.
   wm::ConvertRectFromScreen(container_->GetRootWindow(), &work_area);

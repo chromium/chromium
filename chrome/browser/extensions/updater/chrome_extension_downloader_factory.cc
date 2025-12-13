@@ -19,8 +19,11 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/updater/extension_downloader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/verifier_formats.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::ExtensionDownloader;
 using extensions::ExtensionDownloaderDelegate;

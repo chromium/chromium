@@ -306,12 +306,12 @@ bool Process::Terminate(int exit_code, bool wait) const {
 
 #if !BUILDFLAG(IS_IOS) || (BUILDFLAG(USE_BLINK) && TARGET_OS_SIMULATOR)
 bool Process::TerminateInternal(int exit_code, bool wait) const {
-  // RESULT_CODE_KILLED_BAD_MESSAGE == 3, but layering prevents its use.
   // |wait| is always false when terminating badly-behaved processes.
-  const bool maybe_compromised = !wait && exit_code == 3;
+  const bool maybe_compromised =
+      !wait && exit_code == Process::kResultCodeKilledBadMessage;
   if (maybe_compromised) {
     // Forcibly terminate the process immediately.
-    const bool was_killed = kill(process_, SIGKILL) != 0;
+    const bool was_killed = kill(process_, SIGKILL) == 0;
 #if BUILDFLAG(IS_CHROMEOS)
     if (was_killed) {
       CleanUpProcessAsync();

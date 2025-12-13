@@ -221,7 +221,7 @@ TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
   EXPECT_EQ(resource.threat_type, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.rfh_locator.render_process_id,
-            main_rfh()->GetGlobalId().child_id);
+            main_rfh()->GetGlobalId().child_id.value());
   EXPECT_EQ(resource.rfh_locator.render_frame_token,
             main_rfh()->GetFrameToken().value());
 
@@ -248,7 +248,7 @@ TEST_F(AsyncCheckTrackerTest,
   EXPECT_EQ(resource.threat_type, SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   EXPECT_EQ(resource.url, url_);
   EXPECT_EQ(resource.rfh_locator.render_process_id,
-            main_rfh()->GetGlobalId().child_id);
+            main_rfh()->GetGlobalId().child_id.value());
   EXPECT_EQ(resource.rfh_locator.render_frame_token,
             main_rfh()->GetFrameToken().value());
 }

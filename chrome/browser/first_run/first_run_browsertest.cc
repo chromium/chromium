@@ -1,6 +1,7 @@
 // Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include "chrome/browser/first_run/first_run.h"
 
 #include <memory>
 #include <string>
@@ -10,31 +11,39 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/first_run/first_run_internal.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/importer/importer_list.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_node.h"
+#include "components/history/content/browser/history_database_helper.h"
+#include "components/history/core/browser/history_database_params.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/metrics.h"
@@ -53,6 +62,20 @@ namespace first_run {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 namespace {
+
+std::unique_ptr<KeyedService> BuildHistoryServiceAndRegisterCallback(
+    history::HistoryService::FaviconsChangedCallback callback,
+    base::CallbackListSubscription& favicon_changed_subscription,
+    content::BrowserContext* context) {
+  auto history_service = std::make_unique<history::HistoryService>();
+
+  history_service->Init(history::HistoryDatabaseParamsForPath(
+      context->GetPath(), version_info::Channel::UNKNOWN));
+
+  favicon_changed_subscription =
+      history_service->AddFaviconsChangedCallback(std::move(callback));
+  return history_service;
+}
 
 // A generic test class to be subclassed by test classes testing specific
 // master_preferences. All subclasses must call SetInitialPreferencesForTest()
@@ -335,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
       "Variations.SeedLoadResult", variations::StoreSeedResult::kSuccess, 1);
   histogram_tester_.ExpectUniqueSample(
       "Variations.LoadSeedSignature",
-      variations::VerifySignatureResult::VALID_SIGNATURE, 1);
+      variations::VerifySignatureResult::kValidSignature, 1);
 }
 
 // The following tests are only enabled on Windows, since it is the only
@@ -347,9 +370,9 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, Test) {
 
 // The trial and groups encoded in the above seed.
 constexpr char kTrialName[] = "UMA-Uniformity-Trial-10-Percent";
-const char* kTrialGroups[] = {"default",  "group_01", "group_02", "group_03",
-                              "group_04", "group_05", "group_06", "group_07",
-                              "group_08", "group_09"};
+constexpr const char* kTrialGroups[] = {
+    "default",  "group_01", "group_02", "group_03", "group_04",
+    "group_05", "group_06", "group_07", "group_08", "group_09"};
 
 IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, PRE_SecondRun) {
   // Check that the trial from the seed exists and is in one of the expected
@@ -378,6 +401,183 @@ IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsVariationsSeedTest, SecondRun) {
 INSTANTIATE_TEST_SUITE_P(FirstRunMasterPrefsVariationsSeedTests,
                          FirstRunMasterPrefsVariationsSeedTest,
                          testing::Bool());
+
+struct FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams {
+  const char* initial_prefs;
+  bool valid;
+  const char* test_name;
+};
+
+class FirstRunMasterPrefsImportBookmarkFaviconBrowserTest
+    : public FirstRunMasterPrefsBrowserTestBase,
+      public ::testing::WithParamInterface<
+          FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams> {
+ protected:
+  void SetUp() override {
+    SetInitialPreferencesForTest(GetParam().initial_prefs);
+    FirstRunMasterPrefsBrowserTestBase::SetUp();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+
+    history::HistoryService::FaviconsChangedCallback cb = base::BindRepeating(
+        &FirstRunMasterPrefsImportBookmarkFaviconBrowserTest::OnFaviconChanged,
+        base::Unretained(this));
+
+    HistoryServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildHistoryServiceAndRegisterCallback,
+                                     std::move(cb),
+                                     std::ref(favicon_changed_subscription_)));
+  }
+
+  void OnFaviconChanged(const std::set<GURL>& page_urls, const GURL& icon_url) {
+    if (page_urls.contains(page_url_)) {
+      favicon_updated_ = true;
+    }
+  }
+
+  bool favicon_updated_ = false;
+  const GURL page_url_ = GURL("https://www.abcd1234.com");
+  base::CallbackListSubscription favicon_changed_subscription_;
+};
+
+IN_PROC_BROWSER_TEST_P(FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
+                       ImportBookmarksDict) {
+  Profile* profile = browser()->profile();
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile);
+
+  const bookmarks::BookmarkNode* bar = bookmark_model->bookmark_bar_node();
+  ASSERT_EQ(1u, bar->children().size());
+
+  const bookmarks::BookmarkNode* node1 = bar->children()[0].get();
+
+  EXPECT_TRUE(node1->is_url());
+  EXPECT_EQ(u"ABCD1234", node1->GetTitle());
+  EXPECT_EQ(page_url_, node1->url());
+
+  if (GetParam().valid) {
+    EXPECT_TRUE(base::test::RunUntil([this]() { return favicon_updated_; }));
+  } else {
+    base::RunLoop().RunUntilIdle();
+    EXPECT_FALSE(favicon_updated_);
+  }
+}
+
+const char kImportBookmarksDictValidFaviconData[] = R"({
+  "bookmarks": {
+    "first_run_bookmarks": {
+      "children": [
+        {
+          "name": "ABCD1234",
+          "type": "url",
+          "url": "https://www.abcd1234.com",
+          "icon_data_url": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAA
+          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"
+        }
+      ]
+    }
+  }
+})";
+
+constexpr char kImportBookmarksDictNoFaviconData[] = R"({
+  "bookmarks": {
+    "first_run_bookmarks": {
+      "children": [
+        {
+          "name": "ABCD1234",
+          "type": "url",
+          "url": "https://www.abcd1234.com"
+        }
+      ]
+    }
+  }
+})";
+
+constexpr char kImportBookmarksDictMalformedFaviconData[] = R"({
+  "bookmarks": {
+    "first_run_bookmarks": {
+      "children": [
+        {
+          "name": "ABCD1234",
+          "type": "url",
+          "url": "https://www.abcd1234.com",
+          "icon_data_url": "data:image/png;base64,malformed"
+        }
+      ]
+    }
+  }
+})";
+
+constexpr char kImportBookmarksDictBadFaviconUrlScheme[] = R"({
+  "bookmarks": {
+    "first_run_bookmarks": {
+      "children": [
+        {
+          "name": "ABCD1234",
+          "type": "url",
+          "url": "https://www.abcd1234.com",
+          "icon_data_url": "badscheme;base64,empty"
+        }
+      ]
+    }
+  }
+})";
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FirstRunMasterPrefsImportBookmarkFaviconBrowserTest,
+    ::testing::Values(
+        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+            .initial_prefs = kImportBookmarksDictValidFaviconData,
+            .valid = true,
+            .test_name = "ValidFaviconData",
+        },
+        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+            .initial_prefs = kImportBookmarksDictNoFaviconData,
+            .valid = false,
+            .test_name = "NoFaviconData",
+        },
+        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+            .initial_prefs = kImportBookmarksDictMalformedFaviconData,
+            .valid = false,
+            .test_name = "MalformedFaviconData",
+        },
+        FirstRunMasterPrefsImportBookmarkFaviconBrowserTestParams{
+            .initial_prefs = kImportBookmarksDictBadFaviconUrlScheme,
+            .valid = false,
+            .test_name = "BadFaviconUrlScheme",
+        }),
+    [](const ::testing::TestParamInfo<
+        FirstRunMasterPrefsImportBookmarkFaviconBrowserTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

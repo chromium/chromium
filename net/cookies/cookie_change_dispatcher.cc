@@ -24,6 +24,8 @@ const char* CookieChangeCauseToString(CookieChangeCause cause) {
       return "expired_overwrite";
     case CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
       return "inserted_no_change_overwrite";
+    case CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+      return "inserted_no_value_change_overwrite";
   }
 }
 
@@ -46,6 +48,7 @@ bool CookieChangeCauseIsDeletion(CookieChangeCause cause) {
   switch (cause) {
     case CookieChangeCause::INSERTED:
     case CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
+    case CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE:
       return false;
     case CookieChangeCause::EXPIRED:
     case CookieChangeCause::EXPIRED_OVERWRITE:

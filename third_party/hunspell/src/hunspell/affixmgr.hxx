@@ -133,7 +133,7 @@ class AffixMgr {
   std::string keystring;
   std::string trystring;
   std::string encoding;
-  struct cs_info* csconv;
+  const struct cs_info* csconv;
   int utf8;
   int complexprefixes;
   FLAG compoundflag;

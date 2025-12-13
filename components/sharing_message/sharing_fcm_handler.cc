@@ -21,6 +21,7 @@
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
@@ -196,10 +197,9 @@ void SharingFCMHandler::SendAckMessage(
   }
 
   int trace_id = GenerateSharingTraceId();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "sharing", "Sharing.SendAckMessage", TRACE_ID_LOCAL(trace_id),
-      "original_message_type",
-      SharingMessageTypeToString(original_message_type));
+  TRACE_EVENT_BEGIN("sharing", "Sharing.SendAckMessage",
+                    perfetto::Track(trace_id), "original_message_type",
+                    SharingMessageTypeToString(original_message_type));
 
   components_sharing_message::SharingMessage sharing_message;
   components_sharing_message::AckMessage* ack_message =
@@ -239,7 +239,7 @@ void SharingFCMHandler::OnAckMessageSent(
     LOG(ERROR) << "Failed to send ack mesage for " << original_message_id;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1("sharing", "Sharing.SendAckMessage",
-                                  TRACE_ID_LOCAL(trace_id), "result",
-                                  SharingSendMessageResultToString(result));
+  TRACE_EVENT_END("sharing",
+                  /* Sharing.SendAckMessage */ perfetto::Track(trace_id),
+                  "result", SharingSendMessageResultToString(result));
 }

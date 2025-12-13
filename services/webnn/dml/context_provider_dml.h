@@ -8,16 +8,19 @@
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace gpu {
 class SharedContextState;
 struct GpuFeatureInfo;
 struct GPUInfo;
+class MemoryTracker;
+class SharedImageManager;
 }  // namespace gpu
 
 namespace webnn {
 
-class WebNNContextImpl;
+class ScopedGpuSequence;
 class WebNNContextProviderImpl;
 
 namespace dml {
@@ -27,13 +30,22 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options);
 // Create a WebNN context that satisfies the requested preferences in a
 // CreateContextOptions. This corresponds to the
 // ML.createContext(MLContextOptions) overload in the WebNN API.
-base::expected<std::unique_ptr<WebNNContextImpl>, mojom::ErrorPtr>
-CreateContextFromOptions(mojom::CreateContextOptionsPtr options,
-                         const gpu::GpuFeatureInfo& gpu_feature_info,
-                         const gpu::GPUInfo& gpu_info,
-                         const gpu::SharedContextState* shared_context_state,
-                         mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                         WebNNContextProviderImpl* context_provider);
+base::expected<std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>,
+               mojom::ErrorPtr>
+CreateContextFromOptions(
+    mojom::CreateContextOptionsPtr options,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::GPUInfo& gpu_info,
+    const gpu::SharedContextState* shared_context_state,
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
 }  // namespace dml
 

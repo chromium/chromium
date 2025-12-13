@@ -472,8 +472,8 @@ bool TestDriver::RunTest(const Options& options) {
     wait_for_ui_thread_.Wait();
   }
 
-  std::optional<base::Value::Dict> dump_json =
-      base::JSONReader::ReadDict(serialized_trace_);
+  std::optional<base::Value::Dict> dump_json = base::JSONReader::ReadDict(
+      serialized_trace_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!dump_json) {
     LOG(ERROR) << "Failed to deserialize trace.";
     return false;

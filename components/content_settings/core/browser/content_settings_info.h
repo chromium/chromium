@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
@@ -37,33 +37,48 @@ class ContentSettingsInfo {
     DONT_INHERIT_IN_INCOGNITO
   };
 
-  enum OriginRestriction {
-    // This flag indicates content types that only allow exceptions to be set
-    // on secure origins.
-    EXCEPTIONS_ON_SECURE_ORIGINS_ONLY,
-    // This flag indicates content types that allow exceptions to be set on
-    // secure and insecure origins.
-    EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS,
+  class Delegate : public PermissionSettingsInfo::Delegate {
+   public:
+    bool IsValid(const PermissionSetting& setting) const override;
+    bool IsDefaultSettingValid(const PermissionSetting& setting) const override;
+    PermissionSetting InheritInIncognito(
+        const PermissionSetting& setting) const override;
+    bool ShouldCoalesceEphemeralState() const override;
+    bool IsAnyPermissionAllowed(
+        const PermissionSetting& setting) const override;
+    bool IsUndecided(const PermissionSetting& setting) const override;
+    bool CanTrackLastVisit() const override;
+    base::Value ToValue(const PermissionSetting& setting) const override;
+    std::optional<PermissionSetting> FromValue(
+        const base::Value& value) const override;
+    PermissionSetting ApplyPermissionEmbargo(
+        const PermissionSetting& setting) const override;
+
+    void set_content_settings_info(const ContentSettingsInfo* info) {
+      info_ = info;
+    }
+
+   private:
+    raw_ptr<const ContentSettingsInfo> info_ = nullptr;
   };
 
   // This object does not take ownership of |website_settings_info|.
-  ContentSettingsInfo(
-      const WebsiteSettingsInfo* website_settings_info,
-      const std::vector<std::string>& allowlisted_primary_schemes,
-      const std::set<ContentSetting>& valid_settings,
-      IncognitoBehavior incognito_behavior,
-      OriginRestriction origin_restriction);
+  ContentSettingsInfo(const PermissionSettingsInfo* permission_settings_info,
+                      Delegate* delegate,
+                      const std::set<ContentSetting>& valid_settings,
+                      IncognitoBehavior incognito_behavior);
 
   ContentSettingsInfo(const ContentSettingsInfo&) = delete;
   ContentSettingsInfo& operator=(const ContentSettingsInfo&) = delete;
 
   ~ContentSettingsInfo();
 
-  const WebsiteSettingsInfo* website_settings_info() const {
-    return website_settings_info_;
+  const PermissionSettingsInfo* permission_settings_info() const {
+    return permission_settings_info_;
   }
-  const std::vector<std::string>& allowlisted_primary_schemes() const {
-    return allowlisted_primary_schemes_;
+
+  const WebsiteSettingsInfo* website_settings_info() const {
+    return permission_settings_info_->website_settings_info();
   }
 
   void set_third_party_cookie_allowed_secondary_schemes(
@@ -82,15 +97,13 @@ class ContentSettingsInfo {
   bool IsDefaultSettingValid(ContentSetting setting) const;
 
   IncognitoBehavior incognito_behavior() const { return incognito_behavior_; }
-  OriginRestriction origin_restriction() const { return origin_restriction_; }
 
  private:
-  raw_ptr<const WebsiteSettingsInfo> website_settings_info_;
-  const std::vector<std::string> allowlisted_primary_schemes_;
+  raw_ptr<const PermissionSettingsInfo> permission_settings_info_;
+  raw_ptr<Delegate> delegate_;
   std::vector<std::string> third_party_cookie_allowed_secondary_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;
-  const OriginRestriction origin_restriction_;
 };
 
 }  // namespace content_settings

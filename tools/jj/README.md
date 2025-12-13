@@ -24,7 +24,7 @@ This means whenever you see jj say "ignoring git submodule" (generally only
 when you switch between submitted commits), you will need to run `gclient sync`.
 
 ### Syncing code
-Currently manual and nontrivial
+`jj sync` (using the config in `tools/jj/config.md`)
 
 ### Uploading code
 Currently manual (`git cl upload`)
@@ -33,4 +33,4 @@ Currently manual (`git cl upload`)
 Currently manual (`git cl presubmit`)
 
 ### Running formatters
-Currently manual (`git cl format`)
+`jj fix` (using the config in `tools/jj/config.md`)

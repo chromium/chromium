@@ -215,4 +215,21 @@ TEST_F(MediaPositionTest, TestPosition_TimeHasGoneBackwards) {
   EXPECT_EQ(updated_position.InSeconds(), 300);
 }
 
+// Regression test for https://crbug.com/432850006.
+TEST_F(MediaPositionTest, InfiniteElapsedTime) {
+  // Negative infinity elapsed time.
+  MediaPosition media_position(
+      /*playback_rate=*/-100000000, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::TimeDelta::Max(), /*end_of_media=*/false);
+  EXPECT_EQ(base::Seconds(0),
+            media_position.GetPositionAtTime(base::TimeTicks::Max()));
+
+  // Positive infinity elapsed time.
+  MediaPosition media_position2(
+      /*playback_rate=*/100000000, /*duration=*/base::TimeDelta::Max(),
+      /*position=*/base::TimeDelta::Max(), /*end_of_media=*/false);
+  EXPECT_EQ(base::TimeDelta::Max(),
+            media_position2.GetPositionAtTime(base::TimeTicks::Max()));
+}
+
 }  // namespace media_session

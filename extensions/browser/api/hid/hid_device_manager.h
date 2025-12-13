@@ -19,7 +19,6 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/common/api/hid.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 

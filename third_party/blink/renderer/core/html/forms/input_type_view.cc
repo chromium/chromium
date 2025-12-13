@@ -187,11 +187,12 @@ void InputTypeView::MinOrMaxAttributeChanged() {}
 
 void InputTypeView::StepAttributeChanged() {}
 
-ClickHandlingState* InputTypeView::WillDispatchClick() {
+ClickHandlingState* InputTypeView::LegacyPreActivationBehavior() {
   return nullptr;
 }
 
-void InputTypeView::DidDispatchClick(Event&, const ClickHandlingState&) {}
+void InputTypeView::RunInputActivationBehavior(Event&,
+                                               const ClickHandlingState&) {}
 
 void InputTypeView::UpdateView() {}
 

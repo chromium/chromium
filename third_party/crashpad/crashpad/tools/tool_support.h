@@ -19,7 +19,6 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-
 #include "build/build_config.h"
 
 namespace crashpad {

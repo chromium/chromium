@@ -142,6 +142,8 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
       return 10;
     case DISTANCE_UNRELATED_CONTROL_HORIZONTAL:
       return 16;
+    case DISTANCE_UNRELATED_INFOBAR_CONTAINER_HORIZONTAL:
+      return 20;
     case DISTANCE_UNRELATED_CONTROL_VERTICAL:
       return 16;
     case DISTANCE_VECTOR_ICON_PADDING:
@@ -216,10 +218,11 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
           {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kOmniboxExpandedRadius, ShapeSysTokens::kMedium},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kToolbarHeightSidePanelContentRadius,
+           ShapeSysTokens::kSmall},
           {ShapeContextTokens::kSidePanelContentRadius,
            ShapeSysTokens::kMedium},
-          {ShapeContextTokens::kSidePanelPageContentRadius,
-           ShapeSysTokens::kSmall},
+          {ShapeContextTokens::kContentSeparatorRadius, ShapeSysTokens::kSmall},
       });
   const auto it = shape_token_map.find(id);
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;

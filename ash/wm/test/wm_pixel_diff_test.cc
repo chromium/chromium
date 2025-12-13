@@ -6,11 +6,14 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -39,18 +42,27 @@ namespace ash {
 // needed to determine the location of the test files, whether the tests should
 // cover more user journeys and whether we should parameterize for RTL,
 // dark/light mode, tablet mode, etc.
-class WmPixelDiffTest : public AshTestBase {
+class WmPixelDiffTest
+    : public AshTestBase,
+      public testing::WithParamInterface</*enable_system_blur=*/bool> {
  public:
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
       const override {
-    return pixel_test::InitParams();
+    pixel_test::InitParams init_params;
+    init_params.system_blur_enabled = GetParam();
+    return init_params;
   }
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WmPixelDiffTest,
+    testing::Bool());
+
 // A basic overview pixel test that shows three overview windows and the virtual
 // desks bar.
-TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
+TEST_P(WmPixelDiffTest, OverviewAndDesksBarBasic) {
   UpdateDisplay("1600x1000");
 
   // Create a second desk so the desks bar view shows up.
@@ -82,13 +94,13 @@ TEST_F(WmPixelDiffTest, OverviewAndDesksBarBasic) {
       GetOverviewItemForWindow(window3.get())->item_widget();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "overview_and_desks_bar_basic",
-      /*revision_number=*/20, desk_widget, overview_widget1, overview_widget2,
-      overview_widget3));
+      GenerateScreenshotName("overview_and_desks_bar_basic"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 21 : 1,
+      desk_widget, overview_widget1, overview_widget2, overview_widget3));
 }
 
 // TODO(crbug.com/40929874): Test is flaky.
-TEST_F(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
+TEST_P(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
   UpdateDisplay("1600x1000");
 
   ShellTestApi().SetTabletModeEnabledForTest(true);
@@ -120,14 +132,14 @@ TEST_F(WmPixelDiffTest, DISABLED_OverviewTabletSnap) {
       GetOverviewItemForWindow(window3.get())->item_widget();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "overview_tablet_snap",
-      /*revision_number=*/2, snapped_window_widget, overview_widget2,
-      overview_widget3));
+      GenerateScreenshotName("overview_tablet_snap"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 1,
+      snapped_window_widget, overview_widget2, overview_widget3));
 }
 
 // A basic window cycle pixel test that shows three windows and the window cycle
 // tab slider.
-TEST_F(WmPixelDiffTest, WindowCycleBasic) {
+TEST_P(WmPixelDiffTest, WindowCycleBasic) {
   UpdateDisplay("1600x1000");
 
   // Create a second desk so the window cycle tab slider shows up. This slider
@@ -161,11 +173,15 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
   views::Widget* widget = const_cast<views::Widget*>(cycle_view->GetWidget());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "window_cycle_basic",
-      /*revision_number=*/25, widget));
+      GenerateScreenshotName("window_cycle_basic"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 28 : 1,
+      widget));
 }
 
-TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
+TEST_P(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
+  ash::Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kShowInformedRestoreOnboarding, false);
+
   UpdateDisplay("1600x1000");
 
   // Chrome apps are unique as they show tab info additionally. Create one
@@ -197,8 +213,9 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
   ASSERT_TRUE(widget);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "informed_restore_no_screenshot",
-      /*revision_number=*/2, widget));
+      GenerateScreenshotName("informed_restore_no_screenshot"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 2 : 0,
+      widget));
 }
 
 }  // namespace ash

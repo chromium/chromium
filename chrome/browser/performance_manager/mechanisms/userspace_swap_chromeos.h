@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_USERSPACE_SWAP_CHROMEOS_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_USERSPACE_SWAP_CHROMEOS_H_
 
+#include "base/byte_count.h"
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -12,8 +13,7 @@ namespace performance_manager {
 
 class ProcessNode;
 
-namespace mechanism {
-namespace userspace_swap {
+namespace mechanism::userspace_swap {
 
 // NOTE: All of the following methods MUST be called from the PM sequence.
 
@@ -26,23 +26,22 @@ bool IsEligibleToSwap(const ProcessNode* process_node);
 // Swap a |process_node|.
 void SwapProcessNode(const ProcessNode* process_node);
 
-// Returns the number of bytes available on the device which is backing the swap
+// Returns the free space available on the device which is backing the swap
 // files.
-uint64_t GetSwapDeviceFreeSpaceBytes();
+base::ByteCount GetSwapDeviceFreeSpace();
 
-// Returns the number of bytes currently in use by the swap file for
-// |process_node|.
-uint64_t GetProcessNodeSwapFileUsageBytes(const ProcessNode* process_node);
+// Returns the amount currently in use by the swap file for |process_node|.
+base::ByteCount GetProcessNodeSwapFileUsage(const ProcessNode* process_node);
 
-// Returns the number of bytes that this process node has had reclaimed. Reclaim
-// refers to physical memory which were swapped.
-uint64_t GetProcessNodeReclaimedBytes(const ProcessNode* process_node);
+// Returns the size that this process node has had reclaimed. Reclaim refers to
+// physical memory which were swapped.
+base::ByteCount GetProcessNodeReclaimedSpace(const ProcessNode* process_node);
 
-// Returns the total number of bytes currently in use across all swap files.
-uint64_t GetTotalSwapFileUsageBytes();
+// Returns the amount currently in use across all swap files.
+base::ByteCount GetTotalSwapFileUsage();
 
-// Returns the total number of bytes which have been reclaimed.
-uint64_t GetTotalReclaimedBytes();
+// Returns the amount which have been reclaimed.
+base::ByteCount GetTotalReclaimedSpace();
 
 class UserspaceSwapInitializationImpl
     : public ::userspace_swap::mojom::UserspaceSwapInitialization {
@@ -76,8 +75,8 @@ class UserspaceSwapInitializationImpl
   bool received_transfer_cb_ = false;
 };
 
-}  // namespace userspace_swap
-}  // namespace mechanism
+}  // namespace mechanism::userspace_swap
+
 }  // namespace performance_manager
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_USERSPACE_SWAP_CHROMEOS_H_

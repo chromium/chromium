@@ -10,10 +10,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/optimization_guide/core/hints/optimization_metadata.h"
+#import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
-#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -35,7 +34,7 @@ const char kActiveTabMetricsString[] = "ActiveTab";
 const char kStaleTabMetricsString[] = "StaleTab";
 
 // Returns true if a cached price drop has gone stale and should be
-// re-fetched from OptimizationGuide.
+// re-fetched from ShoppingService.
 BOOL IsPriceDropStale(base::Time price_drop_timestamp) {
   return base::Time::Now() - price_drop_timestamp > kStaleDuration;
 }
@@ -76,10 +75,11 @@ ShoppingPersistedDataTabHelper::PriceDrop::PriceDrop()
 
 ShoppingPersistedDataTabHelper::PriceDrop::~PriceDrop() = default;
 
-const ShoppingPersistedDataTabHelper::PriceDrop*
-ShoppingPersistedDataTabHelper::GetPriceDrop() {
-  if (!IsPriceAlertsEligible(web_state_->GetBrowserState())) {
-    return nullptr;
+void ShoppingPersistedDataTabHelper::GetPriceDrop(
+    base::OnceCallback<void(std::optional<PriceDrop>)> callback) {
+  if (!IsPriceAlertsEligibleForWebState(web_state_)) {
+    std::move(callback).Run(std::nullopt);
+    return;
   }
   const GURL& url = web_state_->GetLastCommittedURL().is_valid()
                         ? web_state_->GetLastCommittedURL()
@@ -87,24 +87,35 @@ ShoppingPersistedDataTabHelper::GetPriceDrop() {
   if (!price_drop_ || price_drop_->url != url ||
       IsPriceDropStale(price_drop_->timestamp)) {
     ResetPriceDrop();
-    OptimizationGuideService* optimization_guide_service =
-        OptimizationGuideServiceFactory::GetForProfile(
+    commerce::ShoppingService* shopping_service =
+        commerce::ShoppingServiceFactory::GetForProfile(
             ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
-    if (!optimization_guide_service) {
-      return nullptr;
+    if (!shopping_service) {
+      std::move(callback).Run(std::nullopt);
+      return;
     }
-    optimization_guide::OptimizationMetadata metadata;
-    if (optimization_guide_service->CanApplyOptimization(
-            url, optimization_guide::proto::PRICE_TRACKING, &metadata) !=
-        optimization_guide::OptimizationGuideDecision::kTrue) {
-      return nullptr;
-    }
-    ParseProto(url, metadata.ParsedMetadata<commerce::PriceTrackingData>());
+    shopping_service->GetProductInfoForUrl(
+        url, base::BindOnce(&ShoppingPersistedDataTabHelper::OnFetchProductInfo,
+                            weak_factory_.GetWeakPtr(), std::move(callback)));
+  } else if (price_drop_) {
+    std::move(callback).Run(*price_drop_.get());
   }
-  if (price_drop_) {
-    return price_drop_.get();
+}
+
+void ShoppingPersistedDataTabHelper::OnFetchProductInfo(
+    base::OnceCallback<void(std::optional<PriceDrop>)> callback,
+    const GURL& url,
+    const std::optional<const commerce::ProductInfo>& info) {
+  if (!info.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
   }
-  return nullptr;
+  price_drop_ = CreatePriceDrop(
+      info.value(), url,
+      GetCurrencyFormatter(
+          info->currency_code,
+          GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
+  std::move(callback).Run(*price_drop_.get());
 }
 
 void ShoppingPersistedDataTabHelper::LogMetrics(PriceDropLogId log_id) {
@@ -128,17 +139,6 @@ ShoppingPersistedDataTabHelper::ShoppingPersistedDataTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {
   web_state_->AddObserver(this);
-
-  OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
-
-  if (!optimization_guide_service) {
-    return;
-  }
-
-  optimization_guide_service->RegisterOptimizationTypes(
-      {optimization_guide::proto::PRICE_TRACKING});
 }
 
 // static
@@ -169,10 +169,46 @@ std::u16string ShoppingPersistedDataTabHelper::FormatPrice(
   return result;
 }
 
+// static
+bool ShoppingPersistedDataTabHelper::HasQualifiedPriceDrop(
+    const std::optional<const commerce::ProductInfo>& info) {
+  if (!info->previous_amount_micros.has_value() ||
+      info.value().currency_code.empty()) {
+    return false;
+  }
+  if (!IsQualifyingPriceDrop(info.value().amount_micros,
+                             info.value().previous_amount_micros.value())) {
+    return false;
+  }
+  return true;
+}
+
+// static
+std::unique_ptr<ShoppingPersistedDataTabHelper::PriceDrop>
+ShoppingPersistedDataTabHelper::CreatePriceDrop(
+    const commerce::ProductInfo& info,
+    const GURL& url,
+    payments::CurrencyFormatter* currencyFormatter) {
+  std::unique_ptr<ShoppingPersistedDataTabHelper::PriceDrop> price_drop =
+      std::make_unique<ShoppingPersistedDataTabHelper::PriceDrop>();
+  if (HasQualifiedPriceDrop(info)) {
+    price_drop->current_price = base::SysUTF16ToNSString(
+        FormatPrice(currencyFormatter, info.amount_micros));
+    price_drop->previous_price = base::SysUTF16ToNSString(
+        FormatPrice(currencyFormatter, info.previous_amount_micros.value()));
+    price_drop->url = url;
+    price_drop->timestamp = base::Time::Now();
+  }
+  if (info.offer_id.has_value()) {
+    price_drop->offer_id = info.offer_id.value();
+  }
+  return price_drop;
+}
+
 void ShoppingPersistedDataTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!IsPriceAlertsEligible(web_state->GetBrowserState())) {
+  if (!IsPriceAlertsEligibleForWebState(web_state)) {
     return;
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -182,18 +218,16 @@ void ShoppingPersistedDataTabHelper::DidFinishNavigation(
   }
 
   ResetPriceDrop();
-  OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service) {
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
+  if (!shopping_service) {
     return;
   }
-
-  optimization_guide_service->CanApplyOptimization(
-      navigation_context->GetUrl(), optimization_guide::proto::PRICE_TRACKING,
-      base::BindOnce(
-          &ShoppingPersistedDataTabHelper::OnOptimizationGuideResultReceived,
-          weak_factory_.GetWeakPtr(), navigation_context->GetUrl()));
+  shopping_service->GetProductInfoForUrl(
+      navigation_context->GetUrl(),
+      base::BindOnce(&ShoppingPersistedDataTabHelper::OnProductInfoReceived,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ShoppingPersistedDataTabHelper::WebStateDestroyed(
@@ -202,18 +236,16 @@ void ShoppingPersistedDataTabHelper::WebStateDestroyed(
   web_state_ = nullptr;
 }
 
-void ShoppingPersistedDataTabHelper::OnOptimizationGuideResultReceived(
+void ShoppingPersistedDataTabHelper::OnProductInfoReceived(
     const GURL& url,
-    optimization_guide::OptimizationGuideDecision decision,
-    const optimization_guide::OptimizationMetadata& metadata) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
-    LogMetrics(NAVIGATION_COMPLETE);
-    return;
+    const std::optional<const commerce::ProductInfo>& info) {
+  if (info.has_value()) {
+    price_drop_ = CreatePriceDrop(
+        info.value(), url,
+        GetCurrencyFormatter(
+            info.value().currency_code,
+            GetApplicationContext()->GetApplicationLocaleStorage()->Get()));
   }
-
-  ParseProto(url, metadata.ParsedMetadata<commerce::PriceTrackingData>());
-  LogMetrics(NAVIGATION_COMPLETE);
 }
 
 payments::CurrencyFormatter*
@@ -227,53 +259,6 @@ ShoppingPersistedDataTabHelper::GetCurrencyFormatter(
           std::piecewise_construct, std::forward_as_tuple(currency_code),
           std::forward_as_tuple(currency_code, locale_name));
   return &(emplace_result.first->second);
-}
-
-void ShoppingPersistedDataTabHelper::ParseProto(
-    const GURL& url,
-    const std::optional<commerce::PriceTrackingData>& price_metadata) {
-  if (!price_metadata) {
-    return;
-  }
-  // TODO(crbug.com/40205382) Change PriceDrop to PriceData.
-  price_drop_ = std::make_unique<PriceDrop>();
-  if (price_metadata->has_buyable_product() &&
-      price_metadata->buyable_product().has_offer_id()) {
-    price_drop_->offer_id = price_metadata->buyable_product().offer_id();
-  }
-  if (!price_metadata->has_product_update()) {
-    return;
-  }
-
-  const auto& product_update = price_metadata->product_update();
-  if (!product_update.has_old_price() || !product_update.has_new_price()) {
-    return;
-  }
-
-  if (product_update.old_price().currency_code() !=
-      product_update.new_price().currency_code()) {
-    return;
-  }
-
-  if (!IsQualifyingPriceDrop(product_update.new_price().amount_micros(),
-                             product_update.old_price().amount_micros())) {
-    return;
-  }
-
-  // TODO(crbug.com/40794608) Filter out non-qualifying price drops (< 10% or
-  // < 2 units).
-  payments::CurrencyFormatter* currencyFormatter = GetCurrencyFormatter(
-      product_update.old_price().currency_code(),
-      GetApplicationContext()->GetApplicationLocaleStorage()->Get());
-  price_drop_->current_price = base::SysUTF16ToNSString(FormatPrice(
-      currencyFormatter, product_update.new_price().amount_micros()));
-  price_drop_->previous_price = base::SysUTF16ToNSString(FormatPrice(
-      currencyFormatter, product_update.old_price().amount_micros()));
-  price_drop_->url = url;
-  price_drop_->timestamp = base::Time::Now();
-  if (product_update.has_offer_id()) {
-    price_drop_->offer_id = product_update.offer_id();
-  }
 }
 
 void ShoppingPersistedDataTabHelper::ResetPriceDrop() {

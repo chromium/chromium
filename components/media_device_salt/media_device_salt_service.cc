@@ -21,9 +21,7 @@
 
 namespace media_device_salt {
 
-BASE_FEATURE(kMediaDeviceIdPartitioning,
-             "MediaDeviceIdPartitioning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMediaDeviceIdPartitioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 

@@ -111,8 +111,8 @@ TEST_F(HealthModuleTest, WriteAndReadData) {
 
   test::TestEvent<const ERPHealthData> read_event;
   EXPECT_CALL(*mock_delegate_, DoGetERPHealthData(_))
-      .WillOnce(Invoke(
-          [&ref_data](HealthCallback cb) { std::move(cb).Run(ref_data); }));
+      .WillOnce(
+          [&ref_data](HealthCallback cb) { std::move(cb).Run(ref_data); });
   module_->GetHealthData(read_event.cb());
   EXPECT_THAT(read_event.ref_result(), EqualsProto(ref_data));
 }

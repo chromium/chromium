@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "cc/test/skia_common.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <utility>
@@ -18,6 +14,7 @@
 
 #include "base/base_paths.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -92,12 +89,12 @@ bool AreDisplayListDrawingResultsSame(const gfx::Rect& layer_rect,
 
   auto pixels_a = base::HeapArray<unsigned char>::Uninit(pixel_size);
   auto pixels_b = base::HeapArray<unsigned char>::Uninit(pixel_size);
-  memset(pixels_a.data(), 0, pixel_size);
-  memset(pixels_b.data(), 0, pixel_size);
+  std::ranges::fill(pixels_a, 0);
+  std::ranges::fill(pixels_b, 0);
   DrawDisplayList(pixels_a.data(), layer_rect, list_a);
   DrawDisplayList(pixels_b.data(), layer_rect, list_b);
 
-  return !memcmp(pixels_a.data(), pixels_b.data(), pixel_size);
+  return pixels_a.as_span() == pixels_b.as_span();
 }
 
 Region ImageRectsToRegion(const DiscardableImageMap::Rects& rects) {

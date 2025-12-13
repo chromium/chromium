@@ -48,6 +48,10 @@ class CookieControlsObserver : public base::CheckedObserver {
   // Called when the number of recent page reloads exceeds the highlight
   // heuristic. Intended for use in Clank PWA logic.
   virtual void OnReloadThresholdExceeded() {}
+
+  // Called when the bubble should be closed (e.g. due to a successful page
+  // reload or another UI element being shown).
+  virtual void OnBubbleCloseTriggered() {}
 };
 
 }  // namespace content_settings

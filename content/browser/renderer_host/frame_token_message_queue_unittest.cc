@@ -33,6 +33,11 @@ class TestFrameTokenMessageQueueClient : public FrameTokenMessageQueue::Client {
   // FrameTokenMessageQueue::Client:
   void OnInvalidFrameToken(uint32_t frame_token) override;
 
+  // FrameTokenMessageQueue::Client:
+  std::string GetMainFrameLastCommittedURLSpec() override {
+    return std::string();
+  }
+
   bool invalid_frame_token_called() const {
     return invalid_frame_token_called_;
   }

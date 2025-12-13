@@ -32,7 +32,6 @@
 #include "media/video/video_encode_accelerator.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "media/gpu/android/android_video_encode_accelerator.h"
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -75,14 +74,8 @@ std::unique_ptr<VideoEncodeAccelerator> CreateVaapiVEA() {
 
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<VideoEncodeAccelerator> CreateAndroidVEA() {
-  if (__builtin_available(android NDK_MEDIA_CODEC_MIN_API, *)) {
-    return base::WrapUnique<VideoEncodeAccelerator>(
-        new NdkVideoEncodeAccelerator(
-            base::SequencedTaskRunner::GetCurrentDefault()));
-  } else {
-    return base::WrapUnique<VideoEncodeAccelerator>(
-        new AndroidVideoEncodeAccelerator());
-  }
+  return base::WrapUnique<VideoEncodeAccelerator>(new NdkVideoEncodeAccelerator(
+      base::SequencedTaskRunner::GetCurrentDefault()));
 }
 #endif
 
@@ -130,8 +123,13 @@ std::unique_ptr<VideoEncodeAccelerator> CreateD3D12VEA(
     LOG(ERROR) << "Failed to get an adapter by LUID";
     return nullptr;
   }
+  ComD3D12Device d3d12_device = CreateD3D12Device(adapter.Get());
+  if (!d3d12_device) {
+    LOG(ERROR) << "Failed to create D3D12 device";
+    return nullptr;
+  }
   return base::WrapUnique<VideoEncodeAccelerator>(
-      new D3D12VideoEncodeAccelerator(CreateD3D12Device(adapter.Get()),
+      new D3D12VideoEncodeAccelerator(std::move(d3d12_device),
                                       gpu_workarounds));
 }
 #endif
@@ -186,10 +184,12 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
   vea_factory_functions->push_back(base::BindRepeating(&CreateVTVEA));
 #endif
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator)) {
+  if (base::FeatureList::IsEnabled(kD3D12VideoEncodeAccelerator) &&
+      !gpu_workarounds.disable_d3d12_video_encoder) {
     vea_factory_functions->push_back(
         base::BindRepeating(&CreateD3D12VEA, gpu_workarounds, gpu_device));
-  } else {
+  }
+  if (base::FeatureList::IsEnabled(kMediaFoundationVideoEncodeAccelerator)) {
     vea_factory_functions->push_back(
         base::BindRepeating(&CreateMediaFoundationVEA, gpu_preferences,
                             gpu_workarounds, gpu_device));
@@ -242,11 +242,26 @@ GpuVideoEncodeAcceleratorFactory::CreateVEA(
 
   EncoderStatus initialization_err{
       EncoderStatus::Codes::kEncoderInitializationError};
-  for (const auto& create_vea :
-       GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device)) {
+  std::vector<VEAFactoryFunction> create_vea_functions =
+      GetVEAFactoryFunctions(gpu_preferences, gpu_workarounds, gpu_device);
+  for (const auto& create_vea : create_vea_functions) {
     std::unique_ptr<VideoEncodeAccelerator> vea = create_vea.Run();
     if (!vea)
       continue;
+
+    // If there are multiple VEA implementations, we need to ensure that the
+    // profile is supported before initializing VEA, otherwise it will lead to
+    // an unexpected initialization failure.
+    if (create_vea_functions.size() > 1) {
+      const auto profiles = vea->GetSupportedProfiles();
+      if (std::ranges::find(
+              profiles, config.output_profile,
+              &VideoEncodeAccelerator::SupportedProfile::profile) ==
+          profiles.end()) {
+        continue;
+      }
+    }
+
     if (!get_command_buffer_helper_cb.is_null()) {
       vea->SetCommandBufferHelperCB(get_command_buffer_helper_cb,
                                     gpu_task_runner);

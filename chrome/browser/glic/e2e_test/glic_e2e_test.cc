@@ -4,10 +4,12 @@
 
 #include "chrome/browser/glic/e2e_test/glic_e2e_test.h"
 
+#include <map>
 #include <optional>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -15,14 +17,16 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_dialog_view.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,13 +34,17 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/save_desktop_snapshot.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/identity_manager/test_accounts.h"
+#include "components/sync/base/features.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_devtools_protocol_client.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interactive_test.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 #if ENABLE_GLIC_INTERNAL_TESTS
 #include "chrome/browser/glic/e2e_test/internal/constants.h"
@@ -57,6 +65,8 @@ constexpr base::FilePath::StringViewType kRecordingDirectoryPath =
 const char kGlicE2ETestModeSwitch[] = "glic-e2e-test-mode";
 const char kHostResolverRulesValue[] =
     "MAP *:80 127.0.0.1:8080,MAP *:443 127.0.0.1:8081,EXCLUDE localhost";
+constexpr char kEnableActorTests[] = "enable-actor-tests";
+const char kEnableLowBandwidthTestsSwitch[] = "enable-low-bandwidth-tests";
 
 // The first 2 is from WPR code readme. The last one is from
 // |kWebPageReplayCertSPKI| in
@@ -69,21 +79,32 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
 }  // namespace
 
-GlicE2ETest::GlicE2ETest() = default;
-GlicE2ETest::~GlicE2ETest() = default;
-
-void GlicE2ETest::SetUp() {
+GlicE2ETest::GlicE2ETest() {
+  // TODO(crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
+  // due to the associated bug and should be removed here once fixed.
+  // TODO(crbug.com/453696965): Broken in multi-instance.
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                             features::kGlicKeyboardShortcutNewBadge,
                             features::kGlicRollout,
-                            contextual_cueing::kContextualCueing},
-      /*disabled_features=*/{});
+                            contextual_cueing::kContextualCueing,
+                            mojom::features::kZeroStateSuggestionsV2},
+      /*disabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                             features::kGlicMultiInstance});
+}
+
+GlicE2ETest::~GlicE2ETest() = default;
+
+void GlicE2ETest::SetUp() {
   const base::CommandLine* command_line_of_test =
       base::CommandLine::ForCurrentProcess();
 
   std::string test_mode_value =
       command_line_of_test->GetSwitchValueASCII(kGlicE2ETestModeSwitch);
+
+  running_actor_tests_ = command_line_of_test->HasSwitch(kEnableActorTests);
+  enable_low_bandwidth_tests_ =
+      command_line_of_test->HasSwitch(kEnableLowBandwidthTestsSwitch);
 
   if (test_mode_value.empty() || test_mode_value == "real_backend") {
     test_mode_ = kRealBackend;
@@ -95,15 +116,19 @@ void GlicE2ETest::SetUp() {
     FAIL() << "Incorrect test mode input: %s" << test_mode_value;
   }
 
-  if (test_mode_ == kRecord || test_mode_ == kReplay) {
+  // Initialize WPR if we are in record/replay mode, or if opted-in to use WPR
+  // for some requests in real_backend mode.
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     web_page_replay_server_wrapper_ =
-        std::make_unique<captured_sites_test_utils::WebPageReplayServerWrapper>(
-            test_mode_ == kReplay, 8080, 8081, kWprArguments);
+        std::make_unique<WebPageReplayServerWrapper>(
+            test_mode_ == kReplay || test_mode_ == kRealBackend, 8080, 8081,
+            kWprArguments);
   }
 
   // Always disable animation for stability.
-  ui::ScopedAnimationDurationScaleMode disable_animation(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode disable_animation(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   LiveTest::SetUp();
 }
 
@@ -114,6 +139,10 @@ void GlicE2ETest::SetUpCommandLine(base::CommandLine* command_line) {
     // The following arguments make browser work with WPR proxy.
     command_line->AppendSwitchASCII(network::switches::kHostResolverRules,
                                     kHostResolverRulesValue);
+  }
+
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     command_line->AppendSwitchASCII(
         network::switches::kIgnoreCertificateErrorsSPKIList,
         kIgnoreCertificateErrorsSPKIListValue);
@@ -139,7 +168,8 @@ void GlicE2ETest::PreRunTestOnMainThread() {
 void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
   if (test_mode_ == kRealBackend || test_mode_ == kRecord) {
     std::optional<signin::TestAccountSigninCredentials> test_account =
-        GetTestAccounts()->GetAccount(kTestAccountLabel);
+        GetTestAccounts()->GetAccount(
+            running_actor_tests_ ? kTestActorAccountLabel : kTestAccountLabel);
     signin::test::SignInFunctions sign_in_functions =
         signin::test::SignInFunctions(
             base::BindLambdaForTesting(
@@ -154,7 +184,7 @@ void GlicE2ETest::LoginTestAccountOrForceFakeSignin() {
     sign_in_functions.TurnOnSync(*test_account, 0);
   } else {
     SigninWithPrimaryAccount(browser()->profile());
-    SetModelExecutionCapability(browser()->profile(), true);
+    SetGlicCapability(browser()->profile(), true);
   }
 }
 
@@ -170,7 +200,18 @@ void GlicE2ETest::SetUpInProcessBrowserTestFixture() {
 }
 
 void GlicE2ETest::TearDownOnMainThread() {
-  if (test_mode_ == kRecord || test_mode_ == kReplay) {
+  if (HasFailure()) {
+    base::FilePath snapshot_path = SaveDesktopSnapshot();
+    if (!snapshot_path.empty()) {
+      LOG(WARNING) << "Saved desktop snapshot to: " << snapshot_path;
+    }
+  }
+  for (auto& client : devtools_clients_) {
+    client.second->DetachProtocolClient();
+  }
+  devtools_clients_.clear();
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     // Ensure enough time for WPR to write archive at recording mode
     // by putting this in main thread.
     EXPECT_TRUE(web_page_replay_server_wrapper_->Stop())
@@ -183,16 +224,16 @@ ui::test::InteractiveTestApi::MultiStep GlicE2ETest::WaitForAndInstrumentFre() {
   MultiStep steps(Steps(
       UninstrumentWebContents(kGlicFreContentsElementId, false),
       UninstrumentWebContents(kGlicFreHostElementId, false),
-      InAnyContext(ObserveState(kGlicFreShowingDialogState,
-                                window_controller().fre_controller()),
-                   WaitForState(kGlicFreShowingDialogState, true),
-                   Steps(InstrumentNonTabWebView(
-                             kGlicFreHostElementId,
-                             GlicFreDialogView::kWebViewElementIdForTesting),
-                         InstrumentInnerWebContents(kGlicFreContentsElementId,
-                                                    kGlicFreHostElementId, 0),
-                         WaitForWebContentsReady(kGlicFreContentsElementId)),
-                   StopObservingState(kGlicFreShowingDialogState))));
+      InAnyContext(
+          ObserveState(kGlicFreShowingDialogState, std::ref(fre_controller())),
+          WaitForState(kGlicFreShowingDialogState, true),
+          Steps(InstrumentNonTabWebView(
+                    kGlicFreHostElementId,
+                    GlicFreDialogView::kWebViewElementIdForTesting),
+                InstrumentInnerWebContents(kGlicFreContentsElementId,
+                                           kGlicFreHostElementId, 0),
+                WaitForWebContentsReady(kGlicFreContentsElementId)),
+          StopObservingState(kGlicFreShowingDialogState))));
 
   AddDescriptionPrefix(steps, "WaitForAndInstrumentFre");
   return steps;
@@ -220,7 +261,7 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
 
 void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
     const std::string recording_filename) {
-  if (test_mode_ == kRealBackend) {
+  if (test_mode_ == kRealBackend && !use_wpr_for_real_backend_) {
     return;
   }
   base::FilePath root_path;
@@ -229,7 +270,8 @@ void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
       base::MakeAbsoluteFilePath(root_path.Append(kRecordingDirectoryPath));
   base::FilePath recording_path = recording_dir_path.Append(
       base::FilePath::FromUTF8Unsafe(recording_filename));
-  if (test_mode_ == kReplay) {
+  if (test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     CHECK(base::PathExists(recording_path))
         << recording_filename << " does not exist.";
   }
@@ -244,8 +286,58 @@ GlicKeyedService* GlicE2ETest::glic_service() {
 GlicWindowController& GlicE2ETest::window_controller() {
   return glic_service()->window_controller();
 }
+GlicFreController& GlicE2ETest::fre_controller() {
+  return glic_service()->fre_controller();
+}
 WebPageReplayServerWrapper* GlicE2ETest::web_page_replay_server_wrapper() {
   return web_page_replay_server_wrapper_.get();
+}
+
+void GlicE2ETest::ThrottleCurrentTabNetwork() {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  CHECK(web_contents);
+  ThrottleWebContentsNetwork(web_contents);
+}
+
+void GlicE2ETest::ThrottleWebContentsNetwork(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+
+  auto& devtools_client_ptr = devtools_clients_[web_contents];
+  if (!devtools_client_ptr) {
+    devtools_client_ptr =
+        std::make_unique<content::TestDevToolsProtocolClient>();
+    devtools_client_ptr->AttachToWebContents(web_contents);
+    devtools_client_ptr->SendCommand("Network.enable", base::Value::Dict());
+  }
+
+  // Corresponds to the "Slow 3G" preset in
+  // third_party/devtools-frontend/src/front_end/core/sdk/NetworkManager.ts
+  base::Value::Dict params;
+  params.Set("offline", false);
+  // Latency in ms.
+  params.Set("latency", 2000.0);
+  // Throughput in Bps.
+  params.Set("downloadThroughput", 50000);
+  params.Set("uploadThroughput", 50000);
+
+  devtools_client_ptr->SendCommand("Network.emulateNetworkConditions",
+                                   std::move(params));
+}
+
+void GlicE2ETest::ThrottleGlicNetwork() {
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  for (auto* host : glic_service->host_manager().GetAllHosts()) {
+    auto* webui_contents = host->webui_contents();
+    if (webui_contents) {
+      content::WebContents* inner_contents =
+          webui_contents->GetInnerWebContents()[0];
+      CHECK(inner_contents);
+      ThrottleWebContentsNetwork(inner_contents);
+    }
+  }
 }
 
 }  // namespace glic::test

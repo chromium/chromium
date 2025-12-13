@@ -43,6 +43,7 @@ class InputRouter {
   // input events are dropped during the inactive state.
   bool IsActive() const { return active_; }
   void MakeActive() { active_ = true; }
+  void MakeInactiveForTesting() { active_ = false; }
 
   // Note: if the event is processed immediately, the supplied callback is run
   // *synchronously*. If |this| is destroyed while waiting on a result from

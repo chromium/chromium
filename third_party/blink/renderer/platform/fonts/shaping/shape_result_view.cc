@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+#include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -563,8 +564,15 @@ float ShapeResultView::ForEachGraphemeClusters(const StringView& text,
                          : part.GlyphAt(i + 1).character_index +
                                character_index_offset_for_glyph_data);
         }
-        graphemes_in_cluster = ShapeResult::CountGraphemesInCluster(
-            text.Span16(), cluster_start, cluster_end);
+        if (RuntimeEnabledFeatures::DeprecateCursorMovementIteratorEnabled()) {
+          graphemes_in_cluster = NumGraphemeClusters(
+              cluster_end >= cluster_start
+                  ? StringView(text, cluster_start, cluster_end - cluster_start)
+                  : StringView(text, cluster_end, cluster_start - cluster_end));
+        } else {
+          graphemes_in_cluster = ShapeResult::CountGraphemesInClusterDeprecated(
+              text.Span16(), cluster_start, cluster_end);
+        }
         if (!graphemes_in_cluster || !cluster_advance)
           continue;
 

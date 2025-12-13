@@ -12,7 +12,6 @@
 
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,24 +25,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
 
-class PrefService;
-
 namespace password_manager {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Update enums.xml whenever updating
-// this enum.
-enum class UnifiedPasswordManagerActiveStatus {
-  // UPM is active.
-  kActive = 0,
-  // UPM is inactive because passwords sync is off.
-  kInactiveSyncOff = 1,
-  // UPM is inactive because the client has been unenrolled due to unresolvable
-  // errors
-  kInactiveUnenrolledDueToErrors = 2,
-
-  kMaxValue = kInactiveUnenrolledDueToErrors
-};
 
 // This enum is used in the JobReturnHandler for tracking the store operation
 // that started the job so that the correct operation can be retried when the
@@ -99,8 +81,7 @@ class PasswordStoreAndroidBackend
  protected:
   PasswordStoreAndroidBackend(
       std::unique_ptr<PasswordStoreAndroidBackendBridgeHelper> bridge_helper,
-      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper,
-      PrefService* prefs);
+      std::unique_ptr<PasswordManagerLifecycleHelper> lifecycle_helper);
   ~PasswordStoreAndroidBackend() override;
 
   // Internal methods corresponding to PasswordStoreBackendInterface that take
@@ -160,8 +141,6 @@ class PasswordStoreAndroidBackend
   PasswordStoreAndroidBackendBridgeHelper* bridge_helper() {
     return bridge_helper_.get();
   }
-
-  PrefService* prefs() { return prefs_; }
 
   // Subclasses can override this method
   // to have a special handling for different errors.
@@ -382,8 +361,6 @@ class PasswordStoreAndroidBackend
   // The id of the latest scheduled retry. Incremented when a new retry is
   // scheduled.
   DelayedRetryId::Generator delayed_retry_id_generator_;
-
-  raw_ptr<PrefService> prefs_ = nullptr;
 
   base::Time initialized_at_ = base::Time::Now();
 

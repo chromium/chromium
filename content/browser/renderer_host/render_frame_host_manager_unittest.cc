@@ -125,7 +125,7 @@ class RenderFrameHostManagerTestWebUIControllerFactory
     // If WebUI creation is enabled for the test and this is a WebUI URL,
     // returns a mock WebUI type.
     if (HasWebUIScheme(url)) {
-      return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.host()));
+      return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.GetHost()));
     }
     return WebUI::kNoWebUI;
   }
@@ -255,11 +255,15 @@ class PluginFaviconMessageObserver : public WebContentsObserver {
 // This provides all the arguments that aren't tested in this file.
 void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
                       RenderFrameHostImpl* rfh) {
-  rfh_manager->DidNavigateFrame(rfh, true /* was_caused_by_user_gesture */,
-                                false /* is_same_document_navigation */,
-                                false /* clear_proxies_on_commit */,
-                                blink::FramePolicy(),
-                                true /* allow_paint_holding */);
+  const RenderFrameHostManager::ViewTransitionCommitInfo
+      view_transition_commit_info(nullptr,
+                                  /*delay_layer_tree_view_deletion=*/false);
+  rfh_manager->DidNavigateFrame(
+      rfh, true /* was_caused_by_user_gesture */,
+      false /* is_same_document_navigation */,
+      false /* clear_proxies_on_commit */, blink::FramePolicy(),
+      true /* allow_paint_holding */, view_transition_commit_info,
+      /*navigation_request_url=*/std::nullopt);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {
@@ -532,7 +536,6 @@ class RenderFrameHostManagerTest
             controller.GetLastCommittedEntryIndex(), controller.GetEntryCount(),
             frame_tree_node->current_replication_state().frame_policy,
             frame_tree_node->AncestorOrSelfHasCSPEE(),
-            blink::mojom::SystemEntropy::kNormal,
             /*soft_navigation_heuristics_task_id=*/std::nullopt);
     commit_params->post_content_type = post_content_type;
 
@@ -596,7 +599,14 @@ class RenderFrameHostManagerTest
 // then do that same thing in another tab, that the two resulting pages have
 // different SiteInstances, BrowsingInstances, and RenderProcessHosts. This is
 // a regression test for bug 9364.
-TEST_P(RenderFrameHostManagerTest, ChromeSchemeProcesses) {
+// Disabled on linux due to flakiness.
+// TODO(crbug.com/448610762): Fix and re-enable the test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ChromeSchemeProcesses DISABLED_ChromeSchemeProcesses
+#else
+#define MAYBE_ChromeSchemeProcesses ChromeSchemeProcesses
+#endif
+TEST_P(RenderFrameHostManagerTest, MAYBE_ChromeSchemeProcesses) {
   const GURL kChromeUrl(GetWebUIURL("foo"));
   const GURL kDestUrl("http://www.google.com/");
 
@@ -1877,7 +1887,7 @@ TEST_P(RenderFrameHostManagerTest,
 
 // Tests that the RenderFrameHost is properly deleted when the
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
-// (mojo::FrameNavigationControl::Unload and the corresponding
+// (mojo::Frame:Unload and the corresponding
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
 // commit.) Also tests that an early
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is properly ignored.
@@ -1929,7 +1939,7 @@ TEST_P(RenderFrameHostManagerTest, DeleteFrameAfterUnloadACK) {
 
 // Tests that the RenderFrameHost is properly unloaded when the
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame is received.
-// (mojo::FrameNavigationControl::Unload and the corresponding
+// (mojo::Frame::Unload and the corresponding
 // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame always occur after
 // commit.)
 TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
@@ -1976,10 +1986,9 @@ TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
 }
 
 // Test that a RenderFrameHost is properly deleted if a navigation in the new
-// renderer commits before sending the mojo::FrameNavigationControl::Unload
-// message to the old renderer. This simulates a cross-site navigation to a
-// synchronously committing URL (e.g., a data URL) and ensures it works
-// properly.
+// renderer commits before sending the mojo::Frame::Unload message to the old
+// renderer. This simulates a cross-site navigation to a synchronously
+// committing URL (e.g., a data URL) and ensures it works properly.
 TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
   // When a page enters the BackForwardCache, the RenderFrameHost is not
   // deleted.  Similarly, no
@@ -2932,9 +2941,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
   // processes.  The message to A should be sent through the main frame's
   // RenderViewHost, and the message to B and C should be send through proxies
   // that the main frame has for B and C.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
-  host1->GetProcess()->sink().ClearMessages();
-  host3->GetProcess()->sink().ClearMessages();
   main_test_rfh()->GetRenderWidgetHost()->Focus();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), true);
@@ -2943,9 +2949,6 @@ TEST_P(RenderFrameHostManagerTest, PageFocusPropagatesToSubframeProcesses) {
 
   // Similarly, simulate focus loss on main page, and verify that the focus
   // message was sent to all processes.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
-  host1->GetProcess()->sink().ClearMessages();
-  host3->GetProcess()->sink().ClearMessages();
   main_test_rfh()->GetRenderWidgetHost()->Blur();
   base::RunLoop().RunUntilIdle();
   VerifyPageFocusMessage(main_test_rfh()->GetRenderWidgetHost(), false);
@@ -3449,7 +3452,6 @@ TEST_P(RenderFrameHostManagerTest, NavigateFromDeadRendererToWebUI) {
           controller().GetEntryCount(),
           frame_tree_node->current_replication_state().frame_policy,
           frame_tree_node->AncestorOrSelfHasCSPEE(),
-          blink::mojom::SystemEntropy::kNormal,
           /*soft_navigation_heuristics_task_id=*/std::nullopt);
 
   std::unique_ptr<NavigationRequest> navigation_request =
@@ -3693,7 +3695,6 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 
   // Check that the flag for the parent's proxy to the child is reset
   // when the child navigates.
-  main_test_rfh()->GetProcess()->sink().ClearMessages();
   NavigationSimulator::NavigateAndCommitFromDocument(kUrl3, child_host);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(blink::mojom::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
@@ -4082,6 +4083,7 @@ TEST_P(RenderFrameHostManagerAdTaggingSignalTest,
       subframe_node->render_manager()->GetProxyToParent());
 
   EXPECT_TRUE(subframe_node->current_replication_state().is_ad_frame);
+  EXPECT_TRUE(subframe_node->current_frame_host()->IsAdFrame());
 }
 
 // A page with top frame A that has subframes B and A1. A1 is an ad iframe that

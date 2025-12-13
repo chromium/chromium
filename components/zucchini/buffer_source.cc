@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/buffer_source.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {
@@ -69,13 +65,13 @@ bool BufferSource::GetUleb128(uint32_t* ret) {
       static_cast<int>(std::min<size_type>(kMaxLeb128Size, size())) * 7;
   const_iterator cur = cbegin();
   uint32_t value = 0U;
-  for (int shift = 0; shift < shift_lim; shift += 7, ++cur) {
+  for (int shift = 0; shift < shift_lim; shift += 7, UNSAFE_TODO(++cur)) {
     uint32_t b = *cur;
     // When |shift == 28|, |(b & 0x7F) << shift| discards the "???" bits.
     value |= static_cast<uint32_t>(b & 0x7F) << shift;
     if (!(b & 0x80)) {
       *ret = value;
-      seek(cur + 1);
+      seek(UNSAFE_TODO(cur + 1));
       return true;
     }
   }
@@ -94,13 +90,13 @@ bool BufferSource::GetSleb128(int32_t* ret) {
       static_cast<int>(std::min<size_type>(kMaxLeb128Size, size())) * 7;
   const_iterator cur = cbegin();
   int32_t value = 0;
-  for (int shift = 0; shift < shift_lim; shift += 7, ++cur) {
+  for (int shift = 0; shift < shift_lim; shift += 7, UNSAFE_TODO(++cur)) {
     uint32_t b = *cur;
     // When |shift == 28|, |(b & 0x7F) << shift| discards the "???" bits.
     value |= static_cast<int32_t>(static_cast<uint32_t>(b & 0x7F) << shift);
     if (!(b & 0x80)) {
       *ret = (shift == 28) ? value : SignExtend(shift + 6, value);
-      seek(cur + 1);
+      seek(UNSAFE_TODO(cur + 1));
       return true;
     }
   }
@@ -110,9 +106,9 @@ bool BufferSource::GetSleb128(int32_t* ret) {
 bool BufferSource::SkipLeb128() {
   int lim = static_cast<int>(std::min<size_type>(kMaxLeb128Size, size()));
   const_iterator cur = cbegin();
-  for (int i = 0; i < lim; ++i, ++cur) {
+  for (int i = 0; i < lim; ++i, UNSAFE_TODO(++cur)) {
     if (!(*cur & 0x80)) {
-      seek(cur + 1);
+      seek(UNSAFE_TODO(cur + 1));
       return true;
     }
   }

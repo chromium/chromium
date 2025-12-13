@@ -58,6 +58,9 @@ class ExtensionInstallEventRouter
       const extensions::Extension* extension,
       const ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
           ExtensionAction extension_action);
+  static ::chrome::cros::reporting::proto::BrowserExtensionInstallEvent::
+      ExtensionSource
+      GetExtensionSource(const extensions::Extension* extension);
 };
 
 class ExtensionInstallEventRouterFactory

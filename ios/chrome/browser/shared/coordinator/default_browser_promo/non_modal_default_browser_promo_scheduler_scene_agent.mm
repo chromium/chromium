@@ -88,7 +88,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
 // Time when a promo was shown on screen, used for metrics only.
 @property(nonatomic) base::TimeTicks promoShownTime;
 
-// WebState that the triggering event occured in.
+// WebState that the triggering event occurred in.
 @property(nonatomic, assign) web::WebState* webStateToListenTo;
 
 // Whether or not the promo is currently showing.
@@ -146,7 +146,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   }
 
   // This assumes that the currently active webstate is the one that the paste
-  // occured in.
+  // occurred in.
   web::WebState* activeWebState = self.webStateList->GetActiveWebState();
   // There should always be an active web state when pasting in the omnibox.
   if (!activeWebState) {
@@ -275,10 +275,7 @@ NonModalPromoTriggerType MetricTypeForPromoReason(
   LogNonModalTimeOnScreen(promoShownTime);
   LogUserInteractionWithNonModalPromo(_userInteractionWithNonModalPromoCount);
 
-  NSURL* settingsURL = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-  [[UIApplication sharedApplication] openURL:settingsURL
-                                     options:@{}
-                           completionHandler:nil];
+  OpenIOSDefaultBrowserSettingsPage();
 }
 
 - (void)logPromoUserDismiss:

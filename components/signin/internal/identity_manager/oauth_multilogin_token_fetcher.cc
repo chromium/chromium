@@ -35,13 +35,15 @@ OAuthMultiloginTokenFetcher::OAuthMultiloginTokenFetcher(
     std::vector<AccountParams> account_params,
     std::string ephemeral_public_key,
     SuccessCallback success_callback,
-    FailureCallback failure_callback)
+    FailureCallback failure_callback,
+    bool retry_waits_on_connectivity)
     : signin_client_(signin_client),
       token_service_(token_service),
       account_params_(std::move(account_params)),
       ephemeral_public_key_(std::move(ephemeral_public_key)),
       success_callback_(std::move(success_callback)),
-      failure_callback_(std::move(failure_callback)) {
+      failure_callback_(std::move(failure_callback)),
+      retry_waits_on_connectivity_(retry_waits_on_connectivity) {
   DCHECK(signin_client_);
   DCHECK(token_service_);
   DCHECK(!account_params_.empty());
@@ -128,10 +130,16 @@ void OAuthMultiloginTokenFetcher::TokenRequestFailed(
     auto it = std::ranges::find(account_params_, account_id,
                                 &AccountParams::account_id);
     CHECK(it != account_params_.end());
-    // Fetching fresh access tokens requires network.
-    signin_client_->DelayNetworkCall(
+    auto callback =
         base::BindOnce(&OAuthMultiloginTokenFetcher::StartFetchingToken,
-                       weak_ptr_factory_.GetWeakPtr(), *it));
+                       weak_ptr_factory_.GetWeakPtr(), *it);
+    if (retry_waits_on_connectivity_) {
+      // Fetching fresh access tokens requires network.
+      signin_client_->DelayNetworkCall(std::move(callback));
+    } else {
+      // But chrome may not accurately know network connectivity.
+      std::move(callback).Run();
+    }
     return;
   }
   RecordGetAccessTokenFinished(error);

@@ -156,7 +156,7 @@ public class AreaMotionEventFilter extends MotionEventFilter {
         }
 
         // This filter is currently only interested in acting on mouse and trackpad events.
-        if (!MotionEventUtils.isMouseEvent(e) && !MotionEventUtils.isTrackpadEvent(e)) {
+        if (!MotionEventUtils.isPointerEvent(e)) {
             return false;
         }
 

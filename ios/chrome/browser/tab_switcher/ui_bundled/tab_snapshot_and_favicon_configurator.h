@@ -115,7 +115,8 @@ class TabSnapshotAndFaviconConfigurator {
       TabSnapshotAndFavicon* tab_snapshot_and_favicon);
 
   raw_ptr<FaviconLoader> favicon_loader_ = nullptr;
-  raw_ptr<SnapshotBrowserAgent> snapshot_browser_agent_ = nullptr;
+  raw_ptr<SnapshotBrowserAgent, DanglingUntriaged> snapshot_browser_agent_ =
+      nullptr;
 
   // Stores the TabGroupItemFetchInfo of in-progress TabGroupItem fetch
   // requests, keyed by the item's tabGroupIdentifier. This is used to cancel

@@ -34,6 +34,10 @@
 #include "content/browser/android/tracing_controller_android.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_IOS)
+#include "base/apple/foundation_util.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace content {
 
 // A helper class responsible for coordinating emergency trace finalisation
@@ -218,7 +222,7 @@ class StartupTracingController::BackgroundTracer {
     }
 
     std::vector<perfetto::TracePacket> packets = trace_packet_tokenizer_->Parse(
-        reinterpret_cast<const uint8_t*>(data), size);
+        UNSAFE_TODO(base::span(reinterpret_cast<const uint8_t*>(data), size)));
     for (const auto& packet : packets) {
       for (const auto& slice : packet.slices()) {
         UNSAFE_TODO(file_.WriteAtCurrentPos(
@@ -325,6 +329,9 @@ namespace {
 base::FilePath BasenameToPath(std::string basename) {
 #if BUILDFLAG(IS_ANDROID)
   return TracingControllerAndroid::GenerateTracingFilePath(basename);
+#elif BUILDFLAG(IS_IOS)
+  // On iOS blink, write to the documents directory associated with the app.
+  return base::apple::GetUserDocumentPath().AppendASCII(basename);
 #else
   // Default to saving the startup trace into the current dir.
   return base::FilePath().AppendASCII(basename);

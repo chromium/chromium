@@ -37,8 +37,6 @@ where
 }
 
 unsafe fn to_c_error(msg: String) -> Result {
-    let mut msg = msg;
-    unsafe { msg.as_mut_vec() }.push(b'\0');
     let ptr = msg.as_ptr();
     let len = msg.len();
 

@@ -57,3 +57,7 @@ LargeIconCache::CloneLargeIconResult(
   }
   return clone;
 }
+
+base::WeakPtr<LargeIconCache> LargeIconCache::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}

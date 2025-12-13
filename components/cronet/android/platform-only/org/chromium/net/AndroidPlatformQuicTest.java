@@ -35,8 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -105,7 +105,7 @@ public class AndroidPlatformQuicTest {
     @Flags(
             boolFlags = {
                 @BoolFlag(
-                        name = "ChromiumBaseFeature_kQuicRegisterConnectionClosePayload",
+                        name = "ChromiumBaseFeature_kQuicRegisterConnectionClosePayloadV2",
                         value = true)
             })
     // FIREWALL_CHAIN_BACKGROUND is supported on V+

@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_PREDICTION_MODEL_FETCHER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_DELIVERY_PREDICTION_MODEL_FETCHER_H_
 
-#include <optional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -18,8 +18,7 @@ namespace optimization_guide {
 // to pass back the fetched hints response from the remote Optimization Guide
 // Service.
 using ModelsFetchedCallback = base::OnceCallback<void(
-    std::optional<
-        std::unique_ptr<optimization_guide::proto::GetModelsResponse>>)>;
+    std::unique_ptr<optimization_guide::proto::GetModelsResponse>)>;
 
 // A class to handle requests for prediction models (and prediction data) from
 // a remote Optimization Guide Service.

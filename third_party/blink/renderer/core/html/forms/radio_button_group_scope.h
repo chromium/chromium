@@ -35,13 +35,16 @@ class RadioButtonGroupScope {
   DISALLOW_NEW();
 
  public:
-  RadioButtonGroupScope();
+  RadioButtonGroupScope() = default;
   void Trace(Visitor*) const;
   void AddButton(HTMLInputElement*);
   void UpdateCheckedState(HTMLInputElement*);
+  void UpdateLastFocusedState(HTMLInputElement*);
   void RequiredAttributeChanged(HTMLInputElement*);
   void RemoveButton(HTMLInputElement*);
   HTMLInputElement* CheckedButtonForGroup(const AtomicString& group_name) const;
+  HTMLInputElement* LastFocusedButtonForGroup(
+      const AtomicString& group_name) const;
   bool IsInRequiredGroup(HTMLInputElement*) const;
   unsigned GroupSizeFor(const HTMLInputElement*) const;
 

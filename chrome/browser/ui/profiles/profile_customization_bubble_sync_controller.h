@@ -7,12 +7,12 @@
 
 #include "third_party/skia/include/core/SkColor.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 // Implemented in
 // chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.cc
 void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     SkColor suggested_profile_color);
 
 // Returns whether the controller triggered by
@@ -21,6 +21,7 @@ void ApplyProfileColorAndShowCustomizationBubbleWhenNoValueSynced(
 // customization UI might be shown soon in `browser`.
 // Implemented in
 // chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.cc
-bool IsProfileCustomizationBubbleSyncControllerRunning(Browser* browser);
+bool IsProfileCustomizationBubbleSyncControllerRunning(
+    BrowserWindowInterface* bwi);
 
 #endif  // CHROME_BROWSER_UI_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_SYNC_CONTROLLER_H_

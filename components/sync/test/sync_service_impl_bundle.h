@@ -16,6 +16,10 @@
 #include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}  // namespace os_crypt_async
+
 namespace syncer {
 
 // Aggregate this class to get all necessary support for creating a
@@ -69,6 +73,7 @@ class SyncServiceImplBundle {
   FakeSyncEngineFactory engine_factory_;
   testing::NiceMock<MockSyncInvalidationsService> sync_invalidations_service_;
   trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 };
 
 }  // namespace syncer

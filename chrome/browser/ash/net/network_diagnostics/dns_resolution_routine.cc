@@ -109,11 +109,10 @@ void DnsResolutionRoutine::AttemptResolution() {
 void DnsResolutionRoutine::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults& alternative_endpoints) {
   if (result == net::OK) {
-    CHECK(resolved_addresses);
+    CHECK(!resolved_addresses.empty());
     resolved_address_received_ = true;
     AnalyzeResultsAndExecuteCallback();
     return;

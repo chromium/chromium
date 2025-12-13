@@ -8,7 +8,6 @@
 #include <jni.h>
 
 #include "base/base_export.h"
-#include "base/functional/callback.h"
 
 namespace base {
 namespace android {

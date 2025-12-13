@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_BINDING_H_
 
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/to_blink_string.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
@@ -58,7 +57,7 @@ namespace blink {
 // to core/ or bindings/core. For core-specific helper functions, see
 // bindings/core/v8/v8_binding_for_core.h.
 
-// Convert v8::String to a WTF::String. If the V8 string is not already
+// Convert v8::String to a blink::String. If the V8 string is not already
 // an external string then it is transformed into an external string at this
 // point to avoid repeated conversions.
 inline String ToCoreString(v8::Isolate* isolate, v8::Local<v8::String> value) {

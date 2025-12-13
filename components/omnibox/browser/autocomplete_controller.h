@@ -12,16 +12,17 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
+#include "components/omnibox/browser/autocomplete_controller_config.h"
 #include "components/omnibox/browser/autocomplete_controller_metrics.h"
 #include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -31,13 +32,10 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
-#include "components/omnibox/browser/bookmark_provider.h"
-#include "components/omnibox/browser/omnibox_log.h"
-#include "components/omnibox/browser/open_tab_provider.h"
-#include "components/omnibox/browser/tab_group_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "third_party/omnibox_proto/types.pb.h"
 
+class BookmarkProvider;
 class ClipboardProvider;
 class ContextualSearchProvider;
 class DocumentProvider;
@@ -48,18 +46,22 @@ class HistoryURLProvider;
 class KeywordProvider;
 class OmniboxTriggeredFeatureService;
 class OnDeviceHeadProvider;
+class OpenTabProvider;
 class SearchProvider;
+class TabGroupProvider;
 class TemplateURLService;
 class VoiceSuggestProvider;
 class ZeroSuggestProvider;
+struct OmniboxLog;
+
+namespace extensions {
+class UnscopedOmniboxApiTest;
+}  // namespace extensions
 
 // The header used to report whether a navigation to google.com is coming from
 // omnibox. Only set when the navigation is initiated from the Gemini
 // built-in keyword.
 inline constexpr char kOmniboxGeminiHeader[] = "X-Omnibox-Gemini";
-
-inline constexpr base::TimeDelta kAutocompleteDefaultStopTimerDuration =
-    base::Milliseconds(1500);
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -83,6 +85,9 @@ inline constexpr base::TimeDelta kAutocompleteDefaultStopTimerDuration =
 // matches from a series of providers into one AutocompleteResult.
 class AutocompleteController : public AutocompleteProviderListener,
                                public base::trace_event::MemoryDumpProvider {
+  // TODO(crbug.com/449894891): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Describes an autocomplete pass.
   enum class UpdateType {
@@ -114,7 +119,7 @@ class AutocompleteController : public AutocompleteProviderListener,
     kMatchDeletion,
   };
 
-  typedef std::vector<scoped_refptr<AutocompleteProvider>> Providers;
+  using Providers = std::vector<scoped_refptr<AutocompleteProvider>>;
 
   class Observer : public base::CheckedObserver {
    public:
@@ -161,23 +166,11 @@ class AutocompleteController : public AutocompleteProviderListener,
       double ml_score,
       std::vector<std::pair<double, int>> break_points);
 
-  // `provider_types` is a bitmap containing AutocompleteProvider::Type values
-  // that will (potentially, depending on platform, flags, etc.) be
-  // instantiated. `provider_client` is passed to all those providers, and
-  // is used to get access to the template URL service. `disable_ml` forces ML
-  // scoring off regardless of its feature state; this is useful for
-  // chrome://omnibox/ml.
+  // `provider_client` is passed to all providers.`config` customizes
+  // autocomplete behavior for its embedders.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types,
-      bool is_cros_launcher = false,
-      bool disable_ml = false);
-  AutocompleteController(
-      std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types,
-      base::TimeDelta stop_timer_duration,
-      bool is_cros_launcher = false,
-      bool disable_ml = false);
+      const AutocompleteControllerConfig& config);
   ~AutocompleteController() override;
   AutocompleteController(const AutocompleteController&) = delete;
   AutocompleteController& operator=(const AutocompleteController&) = delete;
@@ -300,9 +293,6 @@ class AutocompleteController : public AutocompleteProviderListener,
     return last_time_default_match_changed_;
   }
 
-  // Sets the provider timeout duration for future calls to |Start()|.
-  void SetStartStopTimerDurationForTesting(base::TimeDelta duration);
-
   // Returns the AutocompleteProviderClient owned by the controller.
   AutocompleteProviderClient* autocomplete_provider_client() const {
     return provider_client_.get();
@@ -312,16 +302,24 @@ class AutocompleteController : public AutocompleteProviderListener,
   // match into the result set, currently still needed only by iOS.
   size_t InjectAdHocMatch(AutocompleteMatch match);
 
+#if BUILDFLAG(IS_IOS)
   // Sets the position of the omnibox when it's in steady state (unfocused).
   // Only used on iOS for logging purposes.
   virtual void SetSteadyStateOmniboxPosition(
       metrics::OmniboxEventProto::OmniboxPosition position);
+#endif
 
  private:
   friend class FakeAutocompleteController;
   friend class AutocompleteProviderTest;
+  friend class OmniboxRowGroupedViewBrowserTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   friend class ZeroSuggestPrefetchTabHelperBrowserTest;
+  friend class OmniboxEditModelPopupTest;
+  friend class OmniboxMetricsTest;
+  friend class OmniboxSearchAggregatorTest;
+  friend class extensions::UnscopedOmniboxApiTest;
+  friend class SearchPreloadResponseController;
 #if BUILDFLAG(IS_IOS)
   friend class OmniboxInttestAutocompleteController;
 #endif
@@ -330,9 +328,18 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            NoActionsAttachedToLensSearchboxMatches);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           NoActionsAttachedToNtpComposeboxMatches);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           ContextualQueryAppendsSearchboxStats);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            ContextualSearchActionAttachedPageKeywordMode);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
                            ContextualSearchActionAttachedInZeroSuggest);
+  FRIEND_TEST_ALL_PREFIXES(AutocompleteControllerTest,
+                           AttachContextualSearchOpenLensActionToMatches);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutocompleteControllerTest,
+      ContextualSearchOpenLensActionAttachedPageKeywordMode);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateSearchboxStats);
@@ -358,47 +365,15 @@ class AutocompleteController : public AutocompleteProviderListener,
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
 #endif
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, SetSelectedLine);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           SetSelectedLineWithNoDefaultMatches);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, TestFocusFixing);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupPositionChanging);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest, PopupStepSelection);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupStepSelectionWithHiddenGroupIds);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupStepSelectionWithActions);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           PopupInlineAutocompleteAndTemporaryText);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            EmitSelectedChildrenChangedAccessibilityEvent);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           OpenActionSelectionLogsOmniboxEvent);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           OpenThumbsDownSelectionShowsFeedback);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleActivedescendantId);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest,
                            AccessibleSelectionOnResultSelection);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, AccessibleResultName);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           GetMatchIconForFeaturedEnterpriseSearchAggregator);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetMatchIconForFeaturedEnterpriseSearchAggregatorContentSuggestion);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithoutAssociatedKeyword);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupRichSuggestionBitmapForMatchWithAssociatedKeyword);
-  FRIEND_TEST_ALL_PREFIXES(OmniboxEditModelPopupTest,
-                           GetIconForExtensionWithImageURL);
   FRIEND_TEST_ALL_PREFIXES(RealboxHandlerTest, RealboxUpdatesEditModelInput);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewPopupTest, GetIcon_IconUrl);
-  FRIEND_TEST_ALL_PREFIXES(
-      OmniboxEditModelPopupTest,
-      GetPopupAccessibilityLabelForCurrentSelection_KeywordMode);
 
   // A minimal representation of the previous `AutocompleteResult`. Used by
   // `UpdateResult()`'s helper methods.
@@ -541,42 +516,26 @@ class AutocompleteController : public AutocompleteProviderListener,
   base::ObserverList<Observer> observers_;
 
   // The client passed to the providers.
-  std::unique_ptr<AutocompleteProviderClient> provider_client_;
+  const std::unique_ptr<AutocompleteProviderClient> provider_client_;
 
   // A list of all providers.
   Providers providers_;
-
-  raw_ptr<BookmarkProvider> bookmark_provider_;
-
-  raw_ptr<HistoryQuickProvider> history_quick_provider_;
-
-  raw_ptr<DocumentProvider> document_provider_;
-
-  raw_ptr<HistoryURLProvider> history_url_provider_;
-
-  raw_ptr<KeywordProvider> keyword_provider_;
-
-  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_;
-
-  raw_ptr<SearchProvider> search_provider_;
-
-  raw_ptr<ZeroSuggestProvider> zero_suggest_provider_;
-
-  raw_ptr<OnDeviceHeadProvider> on_device_head_provider_;
-
-  raw_ptr<ClipboardProvider> clipboard_provider_;
-
-  raw_ptr<VoiceSuggestProvider> voice_suggest_provider_;
-
-  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_;
-
-  raw_ptr<OpenTabProvider> open_tab_provider_;
-
-  raw_ptr<TabGroupProvider> tab_group_provider_;
-
-  raw_ptr<FeaturedSearchProvider> featured_search_provider_;
-
-  raw_ptr<ContextualSearchProvider> contextual_search_provider_;
+  raw_ptr<BookmarkProvider> bookmark_provider_ = nullptr;
+  raw_ptr<HistoryQuickProvider> history_quick_provider_ = nullptr;
+  raw_ptr<DocumentProvider> document_provider_ = nullptr;
+  raw_ptr<HistoryURLProvider> history_url_provider_ = nullptr;
+  raw_ptr<KeywordProvider> keyword_provider_ = nullptr;
+  raw_ptr<UnscopedExtensionProvider> unscoped_extension_provider_ = nullptr;
+  raw_ptr<SearchProvider> search_provider_ = nullptr;
+  raw_ptr<ZeroSuggestProvider> zero_suggest_provider_ = nullptr;
+  raw_ptr<OnDeviceHeadProvider> on_device_head_provider_ = nullptr;
+  raw_ptr<ClipboardProvider> clipboard_provider_ = nullptr;
+  raw_ptr<VoiceSuggestProvider> voice_suggest_provider_ = nullptr;
+  raw_ptr<HistoryFuzzyProvider> history_fuzzy_provider_ = nullptr;
+  raw_ptr<OpenTabProvider> open_tab_provider_ = nullptr;
+  raw_ptr<TabGroupProvider> tab_group_provider_ = nullptr;
+  raw_ptr<FeaturedSearchProvider> featured_search_provider_ = nullptr;
+  raw_ptr<ContextualSearchProvider> contextual_search_provider_ = nullptr;
 
   // A vector of scoring signals annotators for URL suggestions.
   // Unlike the other existing annotators (e.g., pedals and keywords), these
@@ -621,18 +580,12 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Timer used to tell the providers to Stop() searching for matches.
   base::OneShotTimer stop_timer_;
 
-  // Amount of time between when the user stops typing and when we send Stop()
-  // to every provider.  This is intended to avoid the disruptive effect of
-  // belated omnibox updates, updates that come after the user has had to time
-  // to read the whole dropdown and doesn't expect it to change.
-  base::TimeDelta stop_timer_duration_;
-
   // Debouncer to avoid invoking `NotifyChange()` after updating results in
   // quick succession. The last call, i.e. when all providers complete and
   // `done_` is set true; and the 1st call, i.e. the sync update, are immune to
   // this restriction. Calls not succeeding a result update (i.e. a call from
   // closing the popup) bypass the delay as well.
-  AutocompleteProviderDebouncer notify_changed_debouncer_;
+  AutocompleteProviderDebouncer notify_changed_debouncer_{false, 200};
 
   // Tracks if any delayed `RequestNotifyChanged()` call since the last
   // `NotifyChanged()` call changed the default match. Otherwise, if there have
@@ -643,28 +596,26 @@ class AutocompleteController : public AutocompleteProviderListener,
   // Represents the reason of the last `UpdateResult()` call.
   UpdateType last_update_type_ = UpdateType::kNone;
 
-  // True if this instance of AutocompleteController is owned by the CrOS
-  // launcher. This is currently used to determine whether to enable the Open
-  // Tab provider always (CrOS launcher) or just in keyword mode (!launcher).
-  bool is_cros_launcher_;
-
   // Logs stability and timing metrics for updates.
   AutocompleteControllerMetrics metrics_{*this};
 
   // True if the signal predicting a likely search has already been sent to the
   // service worker context during the current input session. False on
   // controller creation and after |ResetSession| is called.
-  bool search_service_worker_signal_sent_;
+  bool search_service_worker_signal_sent_ = false;
 
-  // Used for chrome://omnibox/ml to force disable the ML feature state.
-  bool disable_ml_ = true;
+  const raw_ptr<TemplateURLService> template_url_service_;
 
-  raw_ptr<TemplateURLService> template_url_service_;
-
-  raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
+  const raw_ptr<OmniboxTriggeredFeatureService> triggered_feature_service_;
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
+
+  // Configures autocomplete provider for different embedders.
+  // TODO(crbug.com/455133849 & crbug.com/455132352): Make `const` after
+  //   removing `OmniboxFieldTrial::GetDisabledProviderTypes()` &
+  //   `SetStartStopTimerDurationForTesting()`.
+  AutocompleteControllerConfig config_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_CONTROLLER_H_

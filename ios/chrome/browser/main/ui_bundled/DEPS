@@ -1,6 +1,6 @@
 include_rules = [
-  # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
-  "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+  # Use ios/chrome/browser/authentication/test/signin_earl_grey.h instead
+  "-ios/chrome/browser/authentication/test/signin_earl_grey_app_interface.h",
   # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
   "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
   "+ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h",
@@ -19,7 +19,5 @@ include_rules = [
   "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
   "+ios/chrome/browser/tabs/model/inactive_tabs",
   "+ios/chrome/browser/default_browser/model/features.h",
-  "+ios/chrome/browser/reader_mode/model/features.h",
-  "+ios/chrome/browser/reader_mode/model/reader_mode_prefs.h",
   "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
 ]

@@ -133,8 +133,6 @@ public final class CommandLineFlags {
         // If flags did not change, and no feature-related flags are present, then do not clobber
         // flag values so that a test can use FeatureList.setTestValues() in @BeforeClass.
         if (anyChanges || !overrides.isEmpty()) {
-            // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
-            //     native feature list has been initialized.
             overrides.applyNoResetForTesting();
         }
     }

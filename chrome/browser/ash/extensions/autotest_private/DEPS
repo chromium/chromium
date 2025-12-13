@@ -6,15 +6,12 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/app_list/search",
   "+chrome/browser/ash/arc",
-  "+chrome/browser/ash/assistant",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/bruschetta",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/fusebox",
@@ -35,20 +32,12 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/component_updater",
   "+chrome/browser/extensions/component_loader.h",
-  "+chrome/browser/extensions/extension_apitest.h",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/lifetime",
-  "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/signin",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/aura/accessibility",
-  "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
-  "+chrome/browser/ui/browser_tabstrip.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/toolbar",
   "+chrome/browser/ui/views/bruschetta",
   "+chrome/browser/ui/views/crostini",
@@ -62,7 +51,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "autotest_private_api\.cc": [
+  "autotest_private_api\\.cc": [
     "+ui/message_center",
+  ],
+  "autotest_private_apitest\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
   ],
 }

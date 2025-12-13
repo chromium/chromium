@@ -30,11 +30,4 @@ ColorPipelineInternalsUI::ColorPipelineInternalsUI(content::WebUI* web_ui)
 
 ColorPipelineInternalsUI::~ColorPipelineInternalsUI() = default;
 
-void ColorPipelineInternalsUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
-
 WEB_UI_CONTROLLER_TYPE_IMPL(ColorPipelineInternalsUI)

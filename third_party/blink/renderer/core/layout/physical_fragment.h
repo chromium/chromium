@@ -12,10 +12,12 @@
 
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/trigger_scoped_name.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
-#include "third_party/blink/renderer/core/layout/anchor_evaluator_impl.h"
+#include "third_party/blink/renderer/core/layout/anchor_map.h"
 #include "third_party/blink/renderer/core/layout/break_token.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/ink_overflow.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -113,19 +116,18 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     PropagatedData(
         const GCedHeapVector<Member<LayoutBoxModelObject>>* sticky_descendants,
         const GCedHeapVector<Member<Element>>* snap_areas,
-        const Member<const LayoutObject> scroll_initial_target)
+        const Member<const LayoutObject> scroll_initial_target,
+        const TriggerScopedNameMap* named_triggers)
         : sticky_descendants(sticky_descendants),
           snap_areas(snap_areas),
-          scroll_initial_target(scroll_initial_target) {}
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(sticky_descendants);
-      visitor->Trace(snap_areas);
-      visitor->Trace(scroll_initial_target);
-    }
+          scroll_initial_target(scroll_initial_target),
+          named_triggers(named_triggers) {}
+    void Trace(Visitor* visitor) const;
     Member<const GCedHeapVector<Member<LayoutBoxModelObject>>>
         sticky_descendants;
     Member<const GCedHeapVector<Member<Element>>> snap_areas;
     Member<const LayoutObject> scroll_initial_target;
+    Member<const TriggerScopedNameMap> named_triggers;
   };
 
   PhysicalFragment(FragmentBuilder* builder,
@@ -266,6 +268,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   }
 
   bool IsGrid() const { return layout_object_->IsLayoutGrid(); }
+  bool IsGridLanes() const { return layout_object_->IsLayoutGridLanes(); }
 
   bool IsTextControlContainer() const;
   bool IsTextControlPlaceholder() const;
@@ -445,7 +448,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // is concerned.
   bool IsMonolithic() const;
 
-  // Returns true this fragment is used as the implicit anchor for another
+  // Returns true this fragment might be used as the implicit anchor for another
   // element in CSS anchor positioning.
   // Should only be called during layout as it inspects DOM.
   bool IsImplicitAnchor() const;
@@ -512,6 +515,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     DumpNodeName = 0x100,
     DumpItems = 0x200,
     DumpLegacyDescendants = 0x400,
+    DumpBreakInfo = 0x800,
     DumpAll = -1
   };
   typedef int DumpFlags;
@@ -584,9 +588,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
       bool operator==(const ConstIterator& other) const {
         return current_ == other.current_;
       }
-      bool operator!=(const ConstIterator& other) const {
-        return current_ != other.current_;
-      }
 
      private:
       void SkipInvalidAndSetPostLayout() {
@@ -625,10 +626,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   const BreakToken* GetBreakToken() const { return break_token_.Get(); }
 
-  base::span<const PhysicalFragmentLink> Children() const;
-
-  PostLayoutChildLinkList PostLayoutChildren() const;
-
   // Returns true if we have any floating descendants which need to be
   // traversed during the float paint phase.
   bool HasFloatingDescendantsForPaint() const {
@@ -647,8 +644,12 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     return depends_on_percentage_block_size_;
   }
 
-  void SetChildrenInvalid() const;
-  bool ChildrenValid() const { return children_valid_; }
+  // Return true if there's an anchor-positioned element inside, where its
+  // anchor either has a transform, or is inside a subtree with a transform, AND
+  // this transform is currently being animated.
+  bool HasRunningAnchorTransformAnimation() const {
+    return has_running_anchor_transform_animation_;
+  }
 
   const GCedHeapVector<Member<LayoutBoxModelObject>>* StickyDescendants()
       const {
@@ -676,7 +677,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   bool HasPropagatedLayoutObjects() const {
     return PropagatedStickyDescendants() || PropagatedScrollInitialTarget() ||
-           PropagatedSnapAreas();
+           PropagatedSnapAreas() || NamedTriggers();
   }
 
   class OofData : public GarbageCollected<OofData> {
@@ -686,13 +687,13 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     HeapVector<PhysicalOofPositionedNode>& OofPositionedDescendants() {
       return oof_positioned_descendants_;
     }
-    void SetAnchorQuery(PhysicalAnchorQuery* query) { anchor_query_ = query; }
-    const PhysicalAnchorQuery* AnchorQuery() const { return anchor_query_; }
-    PhysicalAnchorQuery& EnsureAnchorQuery();
+    void SetAnchorMap(AnchorMap* anchor_map) { anchor_map_ = anchor_map; }
+    const AnchorMap* GetAnchorMap() const { return anchor_map_; }
+    AnchorMap& EnsureAnchorMap();
 
    private:
     HeapVector<PhysicalOofPositionedNode> oof_positioned_descendants_;
-    Member<PhysicalAnchorQuery> anchor_query_;
+    Member<AnchorMap> anchor_map_;
   };
 
   // Returns true if some child is OOF in the fragment tree. This happens if
@@ -706,6 +707,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // return true for all fragments in the chain from the OOF's CB to the
   // fragmentainer that the CB resides in.
   bool HasOutOfFlowInFragmentainerSubtree() const {
+    DCHECK(!has_out_of_flow_in_fragmentainer_subtree_ ||
+           !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     return has_out_of_flow_in_fragmentainer_subtree_;
   }
 
@@ -715,17 +718,20 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
 
   base::span<PhysicalOofPositionedNode> OutOfFlowPositionedDescendants() const;
 
-  bool HasAnchorQuery() const {
-    return oof_data_ && oof_data_->AnchorQuery() &&
-           !oof_data_->AnchorQuery()->IsEmpty();
+  bool HasChildAnchors() const {
+    return oof_data_ && oof_data_->GetAnchorMap() &&
+           !oof_data_->GetAnchorMap()->IsEmpty();
   }
-  bool HasAnchorQueryToPropagate() const {
-    return HasAnchorQuery() || IsAnchor();
-  }
-  const PhysicalAnchorQuery* AnchorQuery() const {
-    if (!HasAnchorQuery())
+  bool HasAnchorsToPropagate() const { return HasChildAnchors() || IsAnchor(); }
+  const AnchorMap* GetAnchorMap() const {
+    if (!HasChildAnchors()) {
       return nullptr;
-    return oof_data_->AnchorQuery();
+    }
+    return oof_data_->GetAnchorMap();
+  }
+
+  const TriggerScopedNameMap* NamedTriggers() const {
+    return propagated_data_ ? propagated_data_->named_triggers.Get() : nullptr;
   }
 
   const FragmentedOofData* GetFragmentedOofData() const;
@@ -742,23 +748,6 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   ~PhysicalFragment() = default;
 
   const ComputedStyle& SlowEffectiveStyle() const;
-
-  void AddOutlineRectsForNormalChildren(
-      OutlineRectCollector& collector,
-      const PhysicalOffset& additional_offset,
-      OutlineType outline_type,
-      const LayoutBoxModelObject* containing_block) const;
-  void AddOutlineRectsForCursor(OutlineRectCollector& collector,
-                                const PhysicalOffset& additional_offset,
-                                OutlineType outline_type,
-                                const LayoutBoxModelObject* containing_block,
-                                InlineCursor* cursor) const;
-  void AddOutlineRectsForDescendant(
-      const PhysicalFragmentLink& descendant,
-      OutlineRectCollector& collector,
-      const PhysicalOffset& additional_offset,
-      OutlineType outline_type,
-      const LayoutBoxModelObject* containing_block) const;
 
   static bool DependsOnPercentageBlockSize(const FragmentBuilder&);
 
@@ -782,6 +771,7 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   uint8_t has_floating_descendants_for_paint_ : 1;  // NOLINT
   uint8_t has_adjoining_object_descendants_ : 1;    // NOLINT
   uint8_t depends_on_percentage_block_size_ : 1;    // NOLINT
+  uint8_t has_running_anchor_transform_animation_ : 1;
   mutable uint8_t children_valid_ : 1;              // NOLINT
 
   // The following bitfields are only to be used by PhysicalLineBoxFragment

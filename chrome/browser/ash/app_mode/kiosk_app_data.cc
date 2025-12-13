@@ -25,7 +25,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
 #include "chrome/browser/extensions/webstore_install_helper.h"
@@ -53,6 +52,7 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/verifier_formats.h"
 #include "kiosk_app_data_base.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
@@ -73,9 +73,7 @@ bool IsValidKioskAppManifest(const extensions::Manifest& manifest) {
 }
 
 std::string ValueToString(base::ValueView value) {
-  std::string json;
-  base::JSONWriter::Write(value, &json);
-  return json;
+  return base::WriteJson(value).value_or("");
 }
 
 }  // namespace
@@ -267,14 +265,19 @@ class KioskAppData::WebstoreDataParser
 ////////////////////////////////////////////////////////////////////////////////
 // KioskAppData
 
-KioskAppData::KioskAppData(KioskAppDataDelegate& delegate,
-                           const std::string& app_id,
-                           const AccountId& account_id,
-                           const GURL& update_url,
-                           const base::FilePath& cached_crx)
-    : KioskAppDataBase(KioskChromeAppManager::kKioskDictionaryName,
+KioskAppData::KioskAppData(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    KioskAppDataDelegate& delegate,
+    const std::string& app_id,
+    const AccountId& account_id,
+    const GURL& update_url,
+    const base::FilePath& cached_crx)
+    : KioskAppDataBase(local_state,
+                       KioskChromeAppManager::kKioskDictionaryName,
                        app_id,
                        account_id),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       delegate_(delegate),
       status_(Status::kInit),
       update_url_(update_url),
@@ -340,13 +343,16 @@ void KioskAppData::SetStatusForTest(Status status) {
 
 // static
 std::unique_ptr<KioskAppData> KioskAppData::CreateForTest(
+    PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     KioskAppDataDelegate& delegate,
     const std::string& app_id,
     const AccountId& account_id,
     const GURL& update_url,
     const std::string& required_platform_version) {
   std::unique_ptr<KioskAppData> data(new KioskAppData(
-      delegate, app_id, account_id, update_url, base::FilePath()));
+      local_state, std::move(shared_url_loader_factory), delegate, app_id,
+      account_id, update_url, base::FilePath()));
   data->status_ = Status::kLoaded;
   data->required_platform_version_ = required_platform_version;
   return data;
@@ -371,14 +377,8 @@ void KioskAppData::SetStatus(Status status) {
   }
 }
 
-network::mojom::URLLoaderFactory* KioskAppData::GetURLLoaderFactory() {
-  return g_browser_process->system_network_context_manager()
-      ->GetURLLoaderFactory();
-}
-
 bool KioskAppData::LoadFromCache() {
-  PrefService* local_state = g_browser_process->local_state();
-  const base::Value::Dict& dict = local_state->GetDict(dictionary_name());
+  const base::Value::Dict& dict = local_state_->GetDict(dictionary_name());
 
   if (!LoadFromDictionary(dict)) {
     return false;
@@ -411,8 +411,7 @@ void KioskAppData::SetCache(const std::string& name,
 
   SaveIcon(icon, delegate_->GetKioskAppIconCacheDir());
 
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
   SaveToDictionary(dict_update);
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();
@@ -470,8 +469,7 @@ void KioskAppData::StartFetch() {
   webstore_fetcher_ =
       std::make_unique<extensions::WebstoreDataFetcher>(this, GURL(), app_id());
   webstore_fetcher_->set_max_auto_retries(3);
-  webstore_fetcher_->Start(g_browser_process->system_network_context_manager()
-                               ->GetURLLoaderFactory());
+  webstore_fetcher_->Start(shared_url_loader_factory_.get());
 }
 
 void KioskAppData::OnWebstoreRequestFailure(const std::string& extension_id) {
@@ -507,7 +505,7 @@ void KioskAppData::OnFetchItemSnippetParseSuccess(
   // WebstoreDataParser deletes itself when done.
   (new WebstoreDataParser(weak_factory_.GetWeakPtr()))
       ->Start(app_id(), item_snippet.manifest(), icon_url,
-              GetURLLoaderFactory());
+              shared_url_loader_factory_.get());
 }
 
 void KioskAppData::OnWebstoreResponseParseFailure(

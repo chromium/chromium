@@ -1,0 +1,733 @@
+// Copyright (c) the JPEG XL Project Authors. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+// Adapted from https://github.com/vpxyz/xorshift/blob/master/xorshift128plus/
+// (MIT-license)
+
+pub struct Xorshift128Plus {
+    s0: [u64; Self::N],
+    s1: [u64; Self::N],
+}
+
+impl Xorshift128Plus {
+    pub const N: usize = 8;
+
+    pub fn new_with_seed(seed: u64) -> Self {
+        let mut s0 = [0; Self::N];
+        let mut s1 = [0; Self::N];
+
+        s0[0] = Self::split_mix_64(seed + 0x9E3779B97F4A7C15);
+        s1[0] = Self::split_mix_64(s0[0]);
+
+        for i in 1..Self::N {
+            s0[i] = Self::split_mix_64(s1[i - 1]);
+            s1[i] = Self::split_mix_64(s0[i]);
+        }
+
+        Self { s0, s1 }
+    }
+
+    pub fn new_with_seeds(seed1: u32, seed2: u32, seed3: u32, seed4: u32) -> Self {
+        let mut s0 = [0; Self::N];
+        let mut s1 = [0; Self::N];
+
+        s0[0] = Self::split_mix_64(
+            (((seed1 as u64) << 32) + seed2 as u64).wrapping_add(0x9E3779B97F4A7C15),
+        );
+        s1[0] = Self::split_mix_64(
+            (((seed3 as u64) << 32) + seed4 as u64).wrapping_add(0x9E3779B97F4A7C15),
+        );
+        for i in 1..Self::N {
+            s0[i] = Self::split_mix_64(s0[i - 1]);
+            s1[i] = Self::split_mix_64(s1[i - 1]);
+        }
+
+        Self { s0, s1 }
+    }
+
+    pub fn fill(&mut self, random_bits: &mut [u64; Self::N]) {
+        for ((s0, s1), random_bits) in self
+            .s0
+            .iter_mut()
+            .zip(self.s1.iter_mut())
+            .zip(random_bits.iter_mut())
+        {
+            let mut new_s1 = *s0;
+            *s0 = *s1;
+            let bits = new_s1.wrapping_add(*s0); // b, c
+            new_s1 ^= new_s1 << 23;
+            *random_bits = bits;
+            new_s1 ^= *s0 ^ (new_s1 >> 18) ^ (*s0 >> 5);
+            *s1 = new_s1;
+        }
+    }
+
+    fn split_mix_64(mut z: u64) -> u64 {
+        z = (z ^ (z >> 30)).wrapping_mul(0xBF58476D1CE4E5B9);
+        z = (z ^ (z >> 27)).wrapping_mul(0x94D049BB133111EB);
+        z ^ (z >> 31)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::util::xorshift128plus::Xorshift128Plus;
+
+    #[test]
+    fn xorshift128plus_golden() {
+        const NUM_VECTORS: usize = 64;
+        const EXPECTED: [[u64; Xorshift128Plus::N]; NUM_VECTORS] = [
+            [
+                0x6E901576D477CBB1,
+                0xE9E53789195DA2A2,
+                0xB681F6DDA5E0AE99,
+                0x8EFD18CE21FD6896,
+                0xA898A80DF75CF532,
+                0x50CEB2C9E2DE7E32,
+                0x3CA7C2FEB25C0DD0,
+                0xA4D0866B80B4D836,
+            ],
+            [
+                0x8CD6A1E6233D3A26,
+                0x3D4603ADE98B112D,
+                0xDC427AF674019E36,
+                0xE28B4D230705AC53,
+                0x7297E9BBA88783DD,
+                0x34D3D23CFCD9B41A,
+                0x5A223615ADBE96B8,
+                0xE5EB529027CFBD01,
+            ],
+            [
+                0xC1894CF00DFAC6A2,
+                0x18EDF8AE9085E404,
+                0x8E936625296B4CCD,
+                0x31971EF3A14A899B,
+                0xBE87535FCE0BF26A,
+                0x576F7A752BC6649F,
+                0xA44CBADCE0C6B937,
+                0x3DBA819BB17A353A,
+            ],
+            [
+                0x27CE38DFCC1C5EB6,
+                0x920BEB5606340256,
+                0x3986CBC40C9AFC2C,
+                0xE22BCB3EEB1E191E,
+                0x6E1FCDD3602A8FBA,
+                0x052CB044E5415A29,
+                0x46266646EFB9ECD7,
+                0x8F44914618D29335,
+            ],
+            [
+                0xDD30AEDF72A362C5,
+                0xBC1D824E16BB98F4,
+                0x9EA6009C2AA3D2F1,
+                0xF65C0FBBE17AF081,
+                0x22424D06A8738991,
+                0x8A62763F2B7611D2,
+                0x2F3E89F722637939,
+                0x84D338BEF50AFD50,
+            ],
+            [
+                0x00F46494898E2B0B,
+                0x81239DC4FB8E8003,
+                0x414AD93EC5773FE7,
+                0x791473C450E4110F,
+                0x87F127BF68C959AC,
+                0x6429282D695EF67B,
+                0x661082E11546CBA8,
+                0x5815D53FA5436BFD,
+            ],
+            [
+                0xB3DEADAB9BE6E0F9,
+                0xAA1B7B8F7CED0202,
+                0x4C5ED437699D279E,
+                0xA4471727F1CB39D3,
+                0xE439DA193F802F70,
+                0xF89401BB04FA6493,
+                0x3B08045A4FE898BA,
+                0x32137BFE98227950,
+            ],
+            [
+                0xFBAE4A092897FEF3,
+                0x0639F6CE56E71C8E,
+                0xF0AD6465C07F0C1E,
+                0xFF8E28563361DCE5,
+                0xC2013DB7F86BC6B9,
+                0x8EFCC0503330102F,
+                0x3F6B767EA5C4DA40,
+                0xB9864B950B2232E1,
+            ],
+            [
+                0x76EB58DE8E5EC22A,
+                0x9BBBF49A18B32F4F,
+                0xC8405F02B2B2FAB9,
+                0xC3E122A5F146BC34,
+                0xC90BB046660F5765,
+                0xB933981310DBECCF,
+                0x5A2A7BFC9126FD1C,
+                0x8BB388C94DF87901,
+            ],
+            [
+                0x753EB89AD63EF3C3,
+                0xF24AAF40C89D65AD,
+                0x23F68931C1A6AA6D,
+                0xF47E79BF702C6DD0,
+                0xA3AD113244EE7EAE,
+                0xD42CBEA28F793DC3,
+                0xD896FCF1820F497C,
+                0x042B86D2818948C1,
+            ],
+            [
+                0x8F2A4FC5A4265763,
+                0xEC499E6F95EAA10C,
+                0xE3786D4ECCD0DEB5,
+                0xC725C53D3AC4CC43,
+                0x065A4ACBBF83610E,
+                0x35C61C9FEF167129,
+                0x7B720AEAA7D70048,
+                0x14206B841377D039,
+            ],
+            [
+                0xAD27D78BF96055F6,
+                0x5F43B20FF47ADCD4,
+                0xE184C2401E2BF71E,
+                0x30B263D78990045D,
+                0xC22F00EBFF9BA201,
+                0xAE7F86522B53A562,
+                0x2853312BC039F0A4,
+                0x868D619E6549C3C8,
+            ],
+            [
+                0xFD5493D8AE9A8371,
+                0x773D5E224DF61B3B,
+                0x5377C54FBB1A8280,
+                0xCAD4DE3B8265CAFA,
+                0xCDF3F19C91EBD5F6,
+                0xC8EA0F182D73BD78,
+                0x220502D593433FF1,
+                0xB81205E612DC31B1,
+            ],
+            [
+                0x8F32A39EAEDA4C70,
+                0x1D4B0914AA4DAC7F,
+                0x56EF1570F3A8B405,
+                0x29812CB17404A592,
+                0x97A2AAF69CAE90F2,
+                0x12BF5E02778BBFE5,
+                0x9D4B55AD42A05FD2,
+                0x06C2BAB5E6086620,
+            ],
+            [
+                0x8DB4B9648302B253,
+                0xD756AD9E3AEA12C7,
+                0x68709B7F11D4B188,
+                0x7CC299DDCD707A4B,
+                0x97B860C370A7661D,
+                0xCECD314FC20E64F5,
+                0x55F412CDFB4C7EC3,
+                0x55EE97591193B525,
+            ],
+            [
+                0xCF70F3ACA96E6254,
+                0x022FEDECA2E09F46,
+                0x686823DB60AE1ECF,
+                0xFD36190D3739830E,
+                0x74E1C09027F68120,
+                0xB5883A835C093842,
+                0x93E1EFB927E9E4E3,
+                0xB2721E249D7E5EBE,
+            ],
+            [
+                0x69B6E21C44188CB8,
+                0x5D6CFB853655A7AA,
+                0x3E001A0B425A66DC,
+                0x8C57451103A5138F,
+                0x7BF8B4BE18EAB402,
+                0x494102EB8761A365,
+                0xB33796A9F6A81F0E,
+                0x10005AB3BCCFD960,
+            ],
+            [
+                0xB2CF25740AE965DC,
+                0x6F7C1DF7EF53D670,
+                0x648DD6087AC2251E,
+                0x040955D9851D487D,
+                0xBD550FC7E21A7F66,
+                0x57408F484DEB3AB5,
+                0x481E24C150B506C1,
+                0x72C0C3EAF91A40D6,
+            ],
+            [
+                0x1997A481858A5D39,
+                0x539718F4BEF50DC1,
+                0x2EC4DC4787E7E368,
+                0xFF1CE78879419845,
+                0xE219A93DD6F6DD30,
+                0x85328618D02FEC1A,
+                0xC86E02D969181B20,
+                0xEBEC8CD8BBA34E6E,
+            ],
+            [
+                0x28B55088A16CE947,
+                0xDD25AC11E6350195,
+                0xBD1F176694257B1C,
+                0x09459CCF9FCC9402,
+                0xF8047341E386C4E4,
+                0x7E8E9A9AD984C6C0,
+                0xA4661E95062AA092,
+                0x70A9947005ED1152,
+            ],
+            [
+                0x4C01CF75DBE98CCD,
+                0x0BA076CDFC7373B9,
+                0x6C5E7A004B57FB59,
+                0x336B82297FD3BC56,
+                0x7990C0BE74E8D60F,
+                0xF0275CC00EC5C8C8,
+                0x6CF29E682DFAD2E9,
+                0xFA4361524BD95D72,
+            ],
+            [
+                0x631D2A19FF62F018,
+                0x41C43863B985B3FA,
+                0xE052B2267038EFD9,
+                0xE2A535FAC575F430,
+                0xE004EEA90B1FF5B8,
+                0x42DFE2CA692A1F26,
+                0x90FB0BFC9A189ECC,
+                0x4484102BD3536BD0,
+            ],
+            [
+                0xD027134E9ACCA5A5,
+                0xBBAB4F966D476A9B,
+                0x713794A96E03D693,
+                0x9F6335E6B94CD44A,
+                0xC5090C80E7471617,
+                0x6D9C1B0C87B58E33,
+                0x1969CE82E31185A5,
+                0x2099B97E87754EBE,
+            ],
+            [
+                0x60EBAF4ED934350F,
+                0xC26FBF0BA5E6ECFF,
+                0x9E54150F0312EC57,
+                0x0973B48364ED0041,
+                0x800A523241426CFC,
+                0x03AB5EC055F75989,
+                0x8CF315935DEEB40A,
+                0x83D3FC0190BD1409,
+            ],
+            [
+                0x26D35394CF720A51,
+                0xCE9EAA15243CBAFE,
+                0xE2B45FBAF21B29E0,
+                0xDB92E98EDE73F9E0,
+                0x79B16F5101C26387,
+                0x1AC15959DE88C86F,
+                0x387633AEC6D6A580,
+                0xA6FC05807BFC5EB8,
+            ],
+            [
+                0x2D26C8E47C6BADA9,
+                0x820E6EC832D52D73,
+                0xB8432C3E0ED0EE5B,
+                0x0F84B3C4063AAA87,
+                0xF393E4366854F651,
+                0x749E1B4D2366A567,
+                0x805EACA43480D004,
+                0x244EBF3AA54400A5,
+            ],
+            [
+                0xBFDC3763AA79F75A,
+                0x9E3A74CC751F41DB,
+                0xF401302A149DBC55,
+                0x6B25F7973D7BF7BC,
+                0x13371D34FDBC3DAE,
+                0xC5E1998C8F484DCD,
+                0x7031B8AE5C364464,
+                0x3847F0C4F3DA2C25,
+            ],
+            [
+                0x24C6387D2C0F1225,
+                0x77CCE960255C67A4,
+                0x21A0947E497B10EB,
+                0xBB5DB73A825A9D7E,
+                0x26294A41999E553D,
+                0x3953E0089F87D925,
+                0x3DAE6E5D4E5EAAFE,
+                0x74B545460341A7AA,
+            ],
+            [
+                0x710E5EB08A7DB820,
+                0x7E43C4E77CAEA025,
+                0xD4C91529C8B060C1,
+                0x09AE26D8A7B0CA29,
+                0xAB9F356BB360A772,
+                0xB68834A25F19F6E9,
+                0x79B8D9894C5734E2,
+                0xC6847E7C8FFD265F,
+            ],
+            [
+                0x10C4BCB06A5111E6,
+                0x57CB50955B6A2516,
+                0xEF53C87798B6995F,
+                0xAB38E15BBD8D0197,
+                0xA51C6106EFF73C93,
+                0x83D7F0E2270A7134,
+                0x0923FD330397FCE5,
+                0xF9DE54EDFE58FB45,
+            ],
+            [
+                0x07D44833ACCD1A94,
+                0xAAD3C9E945E2F9F3,
+                0xABF4C879B876AA37,
+                0xF29C69A21B301619,
+                0x2DDCE959111C788B,
+                0x7CEDB48F8AC1729B,
+                0x93F3BA9A02B659BE,
+                0xF20A87FF17933CBE,
+            ],
+            [
+                0x8E96EBE93180CFE6,
+                0x94CAA12873937079,
+                0x05F613D9380D4189,
+                0xBCAB40C1DC79F38A,
+                0x0AD8907B7C61D19E,
+                0x88534E189D103910,
+                0x2DB2FAABA160AB8F,
+                0xA070E7506B06F15C,
+            ],
+            [
+                0x6FB1FCDAFFEF87A9,
+                0xE735CF25337A090D,
+                0x172C6EDCEFEF1825,
+                0x76957EA49EF0542D,
+                0x819BF4CD250F7C49,
+                0xD6FF23E4AD00C4D4,
+                0xE79673C1EC358FF0,
+                0xAC9C048144337938,
+            ],
+            [
+                0x4C5387FF258B3AF4,
+                0xEDB68FAEC2CB1AA3,
+                0x02A624E67B4E1DA4,
+                0x5C44797A38E08AF2,
+                0x36546A70E9411B4B,
+                0x47C17B24D2FD9675,
+                0x101957AAA020CA26,
+                0x47A1619D4779F122,
+            ],
+            [
+                0xF84B8BCDC92D9A3C,
+                0x951D7D2C74B3066B,
+                0x7AC287C06EDDD9B2,
+                0x4C38FC476608D38F,
+                0x224D793B19CB4BCD,
+                0x835A255899BF1A41,
+                0x4AD250E9F62DB4AB,
+                0xD9B44F4B58781096,
+            ],
+            [
+                0xABBAF99A8EB5C6B8,
+                0xFB568E900D3A9F56,
+                0x11EDF63D23C5DF11,
+                0xA9C3011D3FA7C5A8,
+                0xAEDD3CF11AFFF725,
+                0xABCA472B5F1EDD6B,
+                0x0600B6BB5D879804,
+                0xDB4DE007F22191A0,
+            ],
+            [
+                0xD76CC9EFF0CE9392,
+                0xF5E0A772B59BA49A,
+                0x7D1AE1ED0C1261B5,
+                0x79224A33B5EA4F4A,
+                0x6DD825D80C40EA60,
+                0x47FC8E747E51C953,
+                0x695C05F72888BF98,
+                0x1A012428440B9015,
+            ],
+            [
+                0xD754DD61F9B772BF,
+                0xC4A2FCF4C0F9D4EB,
+                0x461167CDF67A24A2,
+                0x434748490EBCB9D4,
+                0x274DD9CDCA5781DE,
+                0x36BAC63BA9A85209,
+                0x30324DAFDA36B70F,
+                0x337570DB4FE6DAB3,
+            ],
+            [
+                0xF46CBDD57C551546,
+                0x8E02507E676DA3E3,
+                0xD826245A8C15406D,
+                0xDFB38A5B71113B72,
+                0x5EA38454C95B16B5,
+                0x28C054FB87ABF3E1,
+                0xAA2724C0BA1A8096,
+                0xECA83EC980304F2F,
+            ],
+            [
+                0x6AA76EC294EB3303,
+                0x42D4CDB2A8032E3B,
+                0x7999EDF75DCD8735,
+                0xB422BFFE696CCDCC,
+                0x8F721461FD7CCDFE,
+                0x148E1A5814FDE253,
+                0x4DC941F4375EF8FF,
+                0x27B2A9E0EB5B49CF,
+            ],
+            [
+                0xCEA592EF9343EBE1,
+                0xF7D38B5FA7698903,
+                0x6CCBF352203FEAB6,
+                0x830F3095FCCDA9C5,
+                0xDBEEF4B81B81C8F4,
+                0x6D7EB9BCEECA5CF9,
+                0xC58ABB0FBE436C69,
+                0xE4B97E6DB2041A4B,
+            ],
+            [
+                0x7E40FC772978AF14,
+                0xCDDA4BBAE28354A1,
+                0xE4F993B832C32613,
+                0xD3608093C68A4B35,
+                0x9A3B60E01BEE3699,
+                0x03BEF248F3288713,
+                0x70B9294318F3E9B4,
+                0x8D2ABB913B8610DE,
+            ],
+            [
+                0x37F209128E7D8B2C,
+                0x81D2AB375BD874BC,
+                0xA716A1B7373F7408,
+                0x0CEE97BEC4706540,
+                0xA40C5FD9CDBC1512,
+                0x73CAF6C8918409E7,
+                0x45E11BCEDF0BBAA1,
+                0x612C612BFF6E6605,
+            ],
+            [
+                0xF8ECB14A12D0F649,
+                0xDA683CD7C01BA1AC,
+                0xA2203F7510E124C1,
+                0x7F83E52E162F3C78,
+                0x77D2BB73456ACADB,
+                0x37FC34FC840BBA6F,
+                0x3076BC7D4C6EBC1F,
+                0x4F514123632B5FA9,
+            ],
+            [
+                0x44D789DED935E884,
+                0xF8291591E09FEC9F,
+                0xD9CED2CF32A2E4B7,
+                0x95F70E1EB604904A,
+                0xDE438FE43C14F6AB,
+                0x4C8D23E4FAFCF8D8,
+                0xC716910A3067EB86,
+                0x3D6B7915315095D3,
+            ],
+            [
+                0x3170FDBADAB92095,
+                0x8F1963933FC5650B,
+                0x72F94F00ABECFEAB,
+                0x6E3AE826C6AAB4CE,
+                0xA677A2BF31068258,
+                0x9660CDC4F363AF10,
+                0xD81A15A152379EF1,
+                0x5D7D285E1080A3F9,
+            ],
+            [
+                0xDAD5DDFF9A2249B3,
+                0x6F9721D926103FAE,
+                0x1418CBB83FFA349A,
+                0xE71A30AD48C012B2,
+                0xBE76376C63751132,
+                0x3496467ACA713AE6,
+                0x8D7EC01369F991A3,
+                0xD8C73A88B96B154E,
+            ],
+            [
+                0x8B5D9C74AEB4833A,
+                0xF914FB3F867B912F,
+                0xB894EA034936B1DC,
+                0x8A16D21BE51C4F5B,
+                0x31FF048ED582D98E,
+                0xB95AB2F4DC65B820,
+                0x04082B9170561AF7,
+                0xA215610A5DC836FA,
+            ],
+            [
+                0xB2ADE592C092FAAC,
+                0x7A1E683BCBF13294,
+                0xC7A4DBF86858C096,
+                0x3A49940F97BFF316,
+                0xCAE5C06B82C46703,
+                0xC7F413A0F951E2BD,
+                0x6665E7BB10EB5916,
+                0x86F84A5A94EDE319,
+            ],
+            [
+                0x4EA199D8FAA79CA3,
+                0xDFA26E5BF1981704,
+                0x0F5E081D37FA4E01,
+                0x9CB632F89CD675CD,
+                0x4A09DB89D48C0304,
+                0x88142742EA3C7672,
+                0xAC4F149E6D2E9BDB,
+                0x6D9E1C23F8B1C6C6,
+            ],
+            [
+                0xD58BE47B92DEC0E9,
+                0x8E57573645E34328,
+                0x4CC094CCB5FB5126,
+                0x5F1D66AF6FB40E3C,
+                0x2BA15509132D3B00,
+                0x0D6545646120E567,
+                0x3CF680C45C223666,
+                0x96B28E32930179DA,
+            ],
+            [
+                0x5900C45853AC7990,
+                0x61881E3E8B7FF169,
+                0x4DE5F835DF2230FF,
+                0x4427A9E7932F73FF,
+                0x9B641BAD379A8C8D,
+                0xDF271E5BF98F4E5C,
+                0xDFDA16DB830FF5EE,
+                0x371C7E7CFB89C0E9,
+            ],
+            [
+                0x4410A8576247A250,
+                0x6AD2DA12B45AC0D9,
+                0x18DFC72AAC85EECC,
+                0x06FC8BB2A0EF25C8,
+                0xEB287619C85E6118,
+                0x19553ECA67F25A2C,
+                0x3B9557F1DCEC5BAA,
+                0x7BAD9E8B710D1079,
+            ],
+            [
+                0x34F365D66BD22B28,
+                0xE6E124B9F10F835D,
+                0x0573C38ABF2B24DC,
+                0xD32E6AF10A0125AE,
+                0x383590ACEA979519,
+                0x8376ED7A39E28205,
+                0xF0B7F184DCBDA435,
+                0x062A203390E31794,
+            ],
+            [
+                0xA2AFFD7E41918760,
+                0x7F90FC1BD0819C86,
+                0x5033C08E5A969533,
+                0x2707AF5C6D039590,
+                0x57BBD5980F17DF9C,
+                0xD3FE6E61D763268A,
+                0x9E0A0AE40F335A3B,
+                0x43CF4EB0A99613C5,
+            ],
+            [
+                0xD4D2A397CE1A7C2E,
+                0x3DF7CE7CC3212DAD,
+                0x0880F0D5D356C75A,
+                0xA8AFC44DD03B1346,
+                0x79263B46C13A29E0,
+                0x11071B3C0ED58E7A,
+                0xED46DC9F538406BF,
+                0x2C94974F2B94843D,
+            ],
+            [
+                0xE246E13C39AB5D5E,
+                0xAC1018489D955B20,
+                0x8601B558771852B8,
+                0x110BD4C06DB40173,
+                0x738FC8A18CCA0EBB,
+                0x6673E09BE0EA76E5,
+                0x024BC7A0C7527877,
+                0x45E6B4652E2EC34E,
+            ],
+            [
+                0xD1ED26A1A375CDC8,
+                0xAABC4E896A617CB8,
+                0x0A9C9E8E57D753C6,
+                0xA3774A75FEB4C30E,
+                0x30B816C01C93E49E,
+                0xF405BABC06D2408C,
+                0xCC0CE6B4CE788ABC,
+                0x75E7922D0447956C,
+            ],
+            [
+                0xD07C1676A698BC95,
+                0x5F9AEA4840E2D860,
+                0xD5FC10D58BDF6F02,
+                0xF190A2AD4BC2EEA7,
+                0x0C24D11F51726931,
+                0xDB646899A16B6512,
+                0x7BC10670047B1DD8,
+                0x2413A5ABCD45F092,
+            ],
+            [
+                0x4E66892190CFD923,
+                0xF10162440365EC8E,
+                0x158ACA5A6A2280AE,
+                0x0D60ED11C0224166,
+                0x7CD2E9A71B9D7488,
+                0x450D7289706AB2A3,
+                0x88FAE34EC9A0D7DC,
+                0x96FF9103575A97DA,
+            ],
+            [
+                0x77990FAC6046C446,
+                0xB174B5FB30C76676,
+                0xE352CE3EB56CF82A,
+                0xC6039B6873A9A082,
+                0xE3F80F3AE333148A,
+                0xB853BA24BA3539B9,
+                0xE8863E52ECCB0C74,
+                0x309B4CC1092CC245,
+            ],
+            [
+                0xBC2B70BEE8388D9F,
+                0xE48D92AE22216DCE,
+                0xF15F3BF3E2C15D8F,
+                0x1DD964D4812D8B24,
+                0xD56AF02FB4665E4C,
+                0x98002200595BD9A3,
+                0x049246D50BB8FA12,
+                0x1B542DF485B579B9,
+            ],
+            [
+                0x2347409ADFA8E497,
+                0x36015C2211D62498,
+                0xE9F141F32EB82690,
+                0x1F839912D0449FB9,
+                0x4E4DCFFF2D02D97C,
+                0xF8A03AB4C0F625C9,
+                0x0605F575795DAC5C,
+                0x4746C9BEA0DDA6B1,
+            ],
+            [
+                0xCA5BB519ECE7481B,
+                0xFD496155E55CA945,
+                0xF753B9DBB1515F81,
+                0x50549E8BAC0F70E7,
+                0x8614FB0271E21C60,
+                0x60C72947EB0F0070,
+                0xA6511C10AEE742B6,
+                0x48FB48F2CACCB43E,
+            ],
+        ];
+
+        let mut rng = Xorshift128Plus::new_with_seed(12345);
+        for expected_row in EXPECTED.iter() {
+            let mut row = [0; Xorshift128Plus::N];
+            rng.fill(&mut row);
+            for (&actual, &expected) in row.iter().zip(expected_row) {
+                assert_eq!(actual, expected);
+            }
+        }
+    }
+}

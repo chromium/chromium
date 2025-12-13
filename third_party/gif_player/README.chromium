@@ -2,6 +2,7 @@ Name: GifPlayer Animated GIF Library
 Short Name: GifPlayer
 URL: This is the canonical public repository
 Version: r8
+Update Mechanism: Static (https://crbug.com/422306488)
 License: Apache-2.0
 License File: LICENSE
 Security Critical: yes

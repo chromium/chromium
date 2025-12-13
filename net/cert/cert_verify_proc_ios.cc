@@ -138,36 +138,15 @@ CertStatus CertStatusFromOSStatus(OSStatus status) {
   }
 }
 
-// Creates a series of SecPolicyRefs to be added to a SecTrustRef used to
-// validate a certificate for an SSL server. |hostname| contains the name of
-// the SSL server that the certificate should be verified against. If
-// successful, returns noErr, and stores the resultant array of SecPolicyRefs
-// in |policies|.
-OSStatus CreateTrustPolicies(ScopedCFTypeRef<CFArrayRef>* policies) {
-  ScopedCFTypeRef<CFMutableArrayRef> local_policies(
-      CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  if (!local_policies)
-    return errSecAllocate;
-
-  base::apple::ScopedCFTypeRef<SecPolicyRef> ssl_policy(
-      SecPolicyCreateBasicX509());
-  CFArrayAppendValue(local_policies.get(), ssl_policy.get());
-  ssl_policy.reset(SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
-  CFArrayAppendValue(local_policies.get(), ssl_policy.get());
-
-  *policies = std::move(local_policies);
-  return noErr;
-}
-
 // Builds and evaluates a SecTrustRef for the certificate chain contained
-// in |cert_array|, using the verification policies in |trust_policies|. On
+// in |cert_array|, using the verification policy in |trust_policy|. On
 // success, returns OK, and updates |trust_ref|, |is_trusted|, and
 // |trust_error|. On failure, no output parameters are modified.
 //
 // Note: An OK return does not mean that |cert_array| is trusted, merely that
 // verification was performed successfully.
 int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
-                                CFArrayRef trust_policies,
+                                SecPolicyRef trust_policy,
                                 CFDataRef ocsp_response_ref,
                                 CFArrayRef sct_array_ref,
                                 ScopedCFTypeRef<SecTrustRef>* trust_ref,
@@ -175,7 +154,7 @@ int BuildAndEvaluateSecTrustRef(CFArrayRef cert_array,
                                 bool* is_trusted,
                                 ScopedCFTypeRef<CFErrorRef>* trust_error) {
   ScopedCFTypeRef<SecTrustRef> tmp_trust;
-  OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policies,
+  OSStatus status = SecTrustCreateWithCertificates(cert_array, trust_policy,
                                                    tmp_trust.InitializeInto());
   if (status)
     return NetErrorFromOSStatus(status);
@@ -394,10 +373,11 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
                                       int flags,
                                       CertVerifyResult* verify_result,
                                       const NetLogWithSource& net_log) {
-  ScopedCFTypeRef<CFArrayRef> trust_policies;
-  OSStatus status = CreateTrustPolicies(&trust_policies);
-  if (status)
-    return NetErrorFromOSStatus(status);
+  ScopedCFTypeRef<SecPolicyRef> trust_policy(
+      SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
+  if (!trust_policy) {
+    return NetErrorFromOSStatus(errSecAllocate);
+  }
 
   ScopedCFTypeRef<CFMutableArrayRef> cert_array(
       x509_util::CreateSecCertificateArrayForX509Certificate(
@@ -445,7 +425,7 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
   ScopedCFTypeRef<CFErrorRef> trust_error;
 
   int err = BuildAndEvaluateSecTrustRef(
-      cert_array.get(), trust_policies.get(), ocsp_response_ref.get(),
+      cert_array.get(), trust_policy.get(), ocsp_response_ref.get(),
       sct_array_ref.get(), &trust_ref, &final_chain, &is_trusted, &trust_error);
   if (err)
     return err;
@@ -462,7 +442,7 @@ int CertVerifyProcIOS::VerifyInternal(X509Certificate* cert,
     } else {
 #if !defined(__IPHONE_12_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_12_0
       SecTrustResultType trust_result = kSecTrustResultInvalid;
-      status = SecTrustGetTrustResult(trust_ref.get(), &trust_result);
+      OSStatus status = SecTrustGetTrustResult(trust_ref.get(), &trust_result);
       if (status)
         return NetErrorFromOSStatus(status);
       switch (trust_result) {

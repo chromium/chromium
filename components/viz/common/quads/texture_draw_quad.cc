@@ -41,18 +41,19 @@ void TextureDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              SkColor4f background,
                              bool nearest,
                              bool secure_output,
-                             gfx::ProtectedVideoType video_type) {
+                             gfx::ProtectedVideoType video_type,
+                             bool is_tex_coords_normalized) {
   CHECK_NE(resource, kInvalidResourceId);
   this->needs_blending = needs_blending;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  uv_top_left = top_left;
-  uv_bottom_right = bottom_right;
+  tex_coord_rect_ = gfx::BoundingRect(top_left, bottom_right);
   background_color = background;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;
+  is_normalized_coords = is_tex_coords_normalized;
 }
 
 void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
@@ -65,17 +66,18 @@ void TextureDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              SkColor4f background,
                              bool nearest,
                              bool secure_output,
-                             gfx::ProtectedVideoType video_type) {
+                             gfx::ProtectedVideoType video_type,
+                             bool is_tex_coords_normalized) {
   CHECK_NE(resource, kInvalidResourceId);
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kTextureContent, rect,
                    visible_rect, needs_blending);
   resource_id = resource;
-  uv_top_left = top_left;
-  uv_bottom_right = bottom_right;
+  tex_coord_rect_ = gfx::BoundingRect(top_left, bottom_right);
   background_color = background;
   nearest_neighbor = nearest;
   secure_output_only = secure_output;
   protected_video_type = video_type;
+  is_normalized_coords = is_tex_coords_normalized;
 }
 
 const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
@@ -84,13 +86,22 @@ const TextureDrawQuad* TextureDrawQuad::MaterialCast(const DrawQuad* quad) {
 }
 
 void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
-  value->SetInteger("resource_id", resource_id.GetUnsafeValue());
-
-  cc::MathUtil::AddToTracedValue("uv_top_left", uv_top_left, value);
-  cc::MathUtil::AddToTracedValue("uv_bottom_right", uv_bottom_right, value);
-
+  cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect_, value);
   value->SetString("background_color",
                    color_utils::SkColor4fToRgbaString(background_color));
+  value->SetString("dynamic_range_limit", dynamic_range_limit.ToString());
+  value->SetBoolean("nearest_neighbor", nearest_neighbor);
+  value->SetBoolean("secure_output_only", secure_output_only);
+  value->SetBoolean("is_video_frame", is_video_frame);
+  value->SetBoolean("force_rgbx", force_rgbx);
+  value->SetBoolean("is_normalized_coords", is_normalized_coords);
+  value->SetInteger("protected_video_type",
+                    static_cast<int>(protected_video_type));
+  value->SetInteger("overlay_priority_hint",
+                    static_cast<int>(overlay_priority_hint));
+  if (damage_rect) {
+    cc::MathUtil::AddToTracedValue("damage_rect", *damage_rect, value);
+  }
 
   value->SetString(
       "rounded_display_masks_info",
@@ -102,11 +113,6 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
               .radii[RoundedDisplayMasksInfo::kOtherRoundedDisplayMaskIndex],
           static_cast<int>(
               rounded_display_masks_info.is_horizontally_positioned)));
-
-  value->SetBoolean("nearest_neighbor", nearest_neighbor);
-  value->SetBoolean("is_video_frame", is_video_frame);
-  value->SetInteger("protected_video_type",
-                    static_cast<int>(protected_video_type));
 }
 
 TextureDrawQuad::RoundedDisplayMasksInfo::RoundedDisplayMasksInfo() = default;

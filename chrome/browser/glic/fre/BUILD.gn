@@ -27,9 +27,12 @@ source_set("fre") {
     "//chrome/browser/background/glic",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/glic/shared",
+    "//chrome/browser/resources/glic:resources",
     "//chrome/browser/resources/glic/fre:resources_grit",
     "//chrome/browser/themes",
     "//components/language/core/common",
+    "//ui/base/interaction",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
@@ -54,7 +57,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -67,12 +70,12 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/glic",
-    "//chrome/browser/glic/test_support:test_support",
-    "//chrome/browser/ui:ui",
+    "//chrome/browser/glic/test_support",
+    "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -84,7 +87,7 @@ source_set("interactive_ui_tests") {
     ":fre",
     "//chrome/browser",
     "//chrome/browser/glic",
-    "//chrome/browser/glic/test_support:test_support",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/test:test_support_ui",
     "//content/test:test_support",

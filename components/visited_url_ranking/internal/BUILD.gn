@@ -46,8 +46,8 @@ static_library("internal") {
     "//base",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
-    "//components/segmentation_platform/embedder/default_model:default_model",
-    "//components/segmentation_platform/internal:internal",
+    "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/internal",
     "//components/segmentation_platform/public",
     "//components/sessions",
     "//components/strings",
@@ -81,12 +81,12 @@ static_library("internal_url_grouping") {
   ]
   deps = [
     "//base",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/segmentation_platform/public",
     "//components/visited_url_ranking/public",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   if (is_android) {
@@ -98,7 +98,7 @@ static_library("internal_url_grouping") {
     deps += [
       ":jni_headers",
       "//components/visited_url_ranking/public:jni_headers",
-      "//url:url",
+      "//url",
     ]
   }
 }

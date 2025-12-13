@@ -6,7 +6,9 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/cr_elements/cr_slider/cr_slider.js';
 
+import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {CrRouter} from '//resources/js/cr_router.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -14,7 +16,10 @@ import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer
 import type {Token} from '//resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
 import {TraceConfig, TraceConfig_BufferConfig_FillPolicy} from './perfetto_config.js';
-import type {TrackEventConfig} from './perfetto_config.js';
+import type {DataSourceConfig, TraceConfig_BufferConfig, TrackEventConfig} from './perfetto_config.js';
+// <if expr="is_win">
+import type {EtwConfig} from './perfetto_config.js';
+// </if>
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
 import {downloadTraceData} from './trace_util.js';
@@ -31,8 +36,14 @@ enum TracingState {
 export interface TraceRecorderElement {
   $: {
     toast: CrToastElement,
+    tickedSlider: CrSliderElement,
+    select: HTMLSelectElement,
   };
 }
+
+// <if expr="is_win">
+type EtwProviderType = 'scheduler'|'memory'|'file';
+// </if>
 
 export class TraceRecorderElement extends CrLitElement {
   static get is() {
@@ -50,15 +61,21 @@ export class TraceRecorderElement extends CrLitElement {
   static override get properties() {
     return {
       toastMessage: {type: String},
+      bufferSizeMb: {type: Number},
+      bufferFillPolicy: {type: Object},
       tracingState: {type: String},
       trackEventCategories: {type: Array},
       trackEventTags: {type: Array},
       privacyFilterEnabled_: {type: Boolean},
-      traceConfig: {type: Object},
-      trackEventConfig: {type: Object},
       enabledCategories: {type: Object},
       enabledTags: {type: Object},
+      // <if expr="is_win">
+      etwEvents: {type: Array},
+      enabledEtwEvents: {type: Object},
+      etwExpanded_: {type: Boolean},
+      // </if>
       disabledTags: {type: Object},
+      buffersExpanded_: {type: Boolean},
       categoriesExpanded_: {type: Boolean},
       tagsExpanded_: {type: Boolean},
       bufferUsage: {type: Number},
@@ -82,6 +99,7 @@ export class TraceRecorderElement extends CrLitElement {
   private encodedConfigString: string = '';
 
   protected accessor toastMessage: string = '';
+
   // Initialize the tracing state to IDLE.
   protected accessor tracingState: TracingState = TracingState.IDLE;
 
@@ -90,12 +108,35 @@ export class TraceRecorderElement extends CrLitElement {
 
   protected accessor privacyFilterEnabled_: boolean = false;
 
-  protected accessor traceConfig: TraceConfig|undefined;
-  protected accessor trackEventConfig: TrackEventConfig|undefined;
+  protected accessor bufferSizeMb: number = 200;
+  protected accessor bufferFillPolicy: TraceConfig_BufferConfig_FillPolicy =
+      TraceConfig_BufferConfig_FillPolicy.RING_BUFFER;
+
+  protected traceConfig: TraceConfig|undefined;
+  protected trackEventConfig: TrackEventConfig|undefined;
   protected accessor enabledCategories: Set<string> = new Set();
   protected accessor enabledTags: Set<string> = new Set();
   protected accessor disabledTags: Set<string> = new Set();
 
+  // <if expr="is_win">
+  protected etwConfig: EtwConfig|undefined;
+
+  protected accessor etwEvents: Array<{
+    name: string,
+    keyword: string,
+    provider: EtwProviderType,
+    description: string,
+  }> = [];
+  protected accessor enabledEtwEvents:
+      {[provider in EtwProviderType]: Set<string>} = {
+        'memory': new Set(),
+        'scheduler': new Set(),
+        'file': new Set(),
+      };
+  protected accessor etwExpanded_: boolean = false;
+  // </if>
+
+  protected accessor buffersExpanded_: boolean = false;
   protected accessor categoriesExpanded_: boolean = false;
   protected accessor tagsExpanded_: boolean = false;
 
@@ -130,6 +171,10 @@ export class TraceRecorderElement extends CrLitElement {
 
   protected get isRecording(): boolean {
     return this.tracingState === TracingState.RECORDING;
+  }
+
+  protected get fillPolicyEnum() {
+    return TraceConfig_BufferConfig_FillPolicy;
   }
 
   protected get statusClass(): string {
@@ -208,6 +253,10 @@ export class TraceRecorderElement extends CrLitElement {
     this.privacyFilterEnabled_ = event.detail;
   }
 
+  protected onBuffersExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.buffersExpanded_ = e.detail.value;
+  }
+
   protected onCategoriesExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.categoriesExpanded_ = e.detail.value;
   }
@@ -221,6 +270,15 @@ export class TraceRecorderElement extends CrLitElement {
       return true;
     }
     return this.isCategoryForced(category);
+  }
+
+  protected canonicalCategoryName(category: TraceCategory): string {
+    const disabledPrefix = 'disabled-by-default-';
+    if (category.name.startsWith(disabledPrefix)) {
+      const mainPart = category.name.substring(disabledPrefix.length);
+      return `${mainPart} (disabled-by-default)`;
+    }
+    return category.name;
   }
 
   protected isCategoryForced(category: TraceCategory): boolean {
@@ -243,6 +301,31 @@ export class TraceRecorderElement extends CrLitElement {
     return this.disabledTags.has(tagName);
   }
 
+  protected onBufferSizeChanged_(e: Event): void {
+    const slider = e.target as CrSliderElement;
+    this.bufferSizeMb = Math.floor(slider.value);
+    this.updateBufferConfigField_('sizeKb', this.bufferSizeMb * 1024);
+  }
+
+  protected onBufferFillPolicyChanged_(e: Event) {
+    const selectElement = e.target as HTMLSelectElement;
+    const policyValue =
+        Number(selectElement.value) as TraceConfig_BufferConfig_FillPolicy;
+
+    this.bufferFillPolicy = policyValue;
+
+    this.updateBufferConfigField_('fillPolicy', policyValue);
+  }
+
+  private updateBufferConfigField_<K extends keyof TraceConfig_BufferConfig>(
+      field: K, value: TraceConfig_BufferConfig[K]): void {
+    if (!this.traceConfig?.buffers?.[0]) {
+      return;
+    }
+    this.traceConfig.buffers[0][field] = value;
+    this.updateUrlFromConfig_();
+  }
+
   protected onCategoryChange_(event: Event, categoryName: string): void {
     if (!this.trackEventConfig) {
       return;
@@ -260,6 +343,57 @@ export class TraceRecorderElement extends CrLitElement {
 
     this.updateUrlFromConfig_();
   }
+
+  // <if expr="is_win">
+  protected onEtwExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.etwExpanded_ = e.detail.value;
+  }
+
+  protected isEtwEventEnabled(provider: EtwProviderType, keyword: string):
+      boolean {
+    return this.enabledEtwEvents[provider].has(keyword);
+  }
+
+  protected onEtwEVentChange_(
+      event: CustomEvent<boolean>, provider: EtwProviderType,
+      keyword: string): void {
+    if (!this.traceConfig) {
+      return;
+    }
+    const isChecked = event.detail;
+
+    if (isChecked) {
+      this.enabledEtwEvents[provider].add(keyword);
+    } else {
+      this.enabledEtwEvents[provider].delete(keyword);
+    }
+    if (Object.values(this.enabledEtwEvents)
+            .every((value) => value.size === 0)) {
+      this.enabledEtwEvents[provider] = new Set();
+      this.etwConfig = undefined;
+      this.traceConfig.dataSources = this.traceConfig.dataSources?.filter(
+          ds => ds.config?.etwConfig === undefined);
+    } else {
+      if (!this.etwConfig) {
+        this.etwConfig = {};
+        this.addDataSourceConfig_({
+          name: 'org.chromium.etw_system',
+          targetBuffer: 0,
+          etwConfig: this.etwConfig,
+        });
+      }
+      this.enabledEtwEvents[provider] =
+          new Set(this.enabledEtwEvents[provider]);
+      this.etwConfig.schedulerProviderEvents =
+          [...this.enabledEtwEvents['scheduler']];
+      this.etwConfig.memoryProviderEvents =
+          [...this.enabledEtwEvents['memory']];
+      this.etwConfig.fileProviderEvents = [...this.enabledEtwEvents['file']];
+    }
+
+    this.updateUrlFromConfig_();
+  }
+  // </if>
 
   protected onTagsChange_(event: Event, tagName: string, enabled: boolean):
       void {
@@ -324,6 +458,35 @@ export class TraceRecorderElement extends CrLitElement {
     // Extract unique tags using flatMap and a Set.
     this.trackEventTags =
         [...new Set(categories.map(category => category.tags).flat())];
+
+    // <if expr="is_win">
+    this.etwEvents = [
+      {
+        name: 'Context switch',
+        keyword: 'CONTEXT_SWITCH',
+        provider: 'scheduler',
+        description: 'Enables context switch events',
+      },
+      {
+        name: 'Ready Thread',
+        keyword: 'DISPATCHER',
+        provider: 'scheduler',
+        description: 'Enables ready thread events',
+      },
+      {
+        name: 'Memory Counters',
+        keyword: 'MEMINFO',
+        provider: 'memory',
+        description: 'Enables memory counters (free list, zero list, etc.)',
+      },
+      {
+        name: 'File I/O',
+        keyword: 'FILE_IO',
+        provider: 'file',
+        description: 'Enables file I/O events',
+      },
+    ];
+    // </if>
   }
 
   // Decodes a Base64 string into a Uint8Array.
@@ -393,8 +556,6 @@ export class TraceRecorderElement extends CrLitElement {
     }
 
     this.encodedConfigString = newConfig;
-    this.trackEventConfig = undefined;
-    this.traceConfig = undefined;
     const serializedConfig = this.base64ToUint8Array_(newConfig);
 
     if (serializedConfig.length === 0) {
@@ -403,22 +564,39 @@ export class TraceRecorderElement extends CrLitElement {
       try {
         this.traceConfig = TraceConfig.decode(serializedConfig);
 
+        // Fallback for the buffer config if the loaded one is missing it.
+        if (!this.traceConfig.buffers ||
+            this.traceConfig.buffers.length === 0) {
+          this.traceConfig.buffers = this.createDefaultBufferConfig_();
+        }
+
         const trackEventDataSource = this.traceConfig.dataSources?.find(
             ds => ds.config?.trackEventConfig !== undefined);
         if (trackEventDataSource) {
           this.trackEventConfig = trackEventDataSource.config?.trackEventConfig;
         } else {
           this.trackEventConfig = this.createDefaultTrackEventConfig_();
-          this.setDataSource_(this.traceConfig, this.trackEventConfig);
+          this.addDataSourceConfig_({
+            name: 'track_event',
+            targetBuffer: 0,
+            trackEventConfig: this.trackEventConfig,
+          });
         }
+
+        // <if expr="is_win">
+        const etwDataSource = this.traceConfig.dataSources?.find(
+            ds => ds.config?.etwConfig !== undefined);
+        if (etwDataSource) {
+          this.etwConfig = etwDataSource.config?.etwConfig;
+        }
+        // </if>
       } catch (e) {
         this.showToast_(`Could not parse trace config: ${e}`);
         this.initializeDefaultConfig_();
       }
     }
-    this.enabledCategories = new Set(this.trackEventConfig?.enabledCategories);
-    this.enabledTags = new Set(this.trackEventConfig?.enabledTags);
-    this.disabledTags = new Set(this.trackEventConfig?.disabledTags);
+    // Centralized calls to sync the UI and update the URL.
+    this.updatePropertiesFromConfig_();
   }
 
   private updateUrlFromConfig_(): void {
@@ -445,21 +623,40 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   private initializeDefaultConfig_(): void {
+    this.trackEventConfig = this.createDefaultTrackEventConfig_();
     this.traceConfig = {
-      buffers: [
+      buffers: this.createDefaultBufferConfig_(),
+      dataSources: [
+        // DataSource for track events
         {
-          sizeKb: 200 * 1024,
-          fillPolicy: TraceConfig_BufferConfig_FillPolicy.RING_BUFFER,
+          config: {
+            name: 'track_event',
+            targetBuffer: 0,
+            trackEventConfig: this.trackEventConfig,
+          },
         },
+        // DataSource for org.chromium.trace_metadata2
         {
-          sizeKb: 256,
-          fillPolicy: TraceConfig_BufferConfig_FillPolicy.DISCARD,
+          config: {
+            name: 'org.chromium.trace_metadata2',
+            targetBuffer: 1,
+          },
         },
       ],
-      dataSources: [],
     };
-    this.trackEventConfig = this.createDefaultTrackEventConfig_();
-    this.setDataSource_(this.traceConfig, this.trackEventConfig);
+  }
+
+  private createDefaultBufferConfig_(): TraceConfig_BufferConfig[] {
+    return [
+      {
+        sizeKb: 200 * 1024,
+        fillPolicy: TraceConfig_BufferConfig_FillPolicy.RING_BUFFER,
+      },
+      {
+        sizeKb: 256,
+        fillPolicy: TraceConfig_BufferConfig_FillPolicy.DISCARD,
+      },
+    ];
   }
 
   private createDefaultTrackEventConfig_(): TrackEventConfig {
@@ -471,28 +668,40 @@ export class TraceRecorderElement extends CrLitElement {
     };
   }
 
-  private setDataSource_(
-      config: TraceConfig, trackEventConfig: TrackEventConfig): void {
-    if (!config.dataSources) {
-      this.showToast_(`Could not get Data Source from Trace Config`);
+  private addDataSourceConfig_(config: DataSourceConfig) {
+    if (!this.traceConfig) {
       return;
     }
-    config.dataSources.push(
-        // DataSource for track events
-        {
-          config: {
-            name: 'track_event',
-            targetBuffer: 0,
-            trackEventConfig: trackEventConfig,
-          },
-        },
-        // DataSource for org.chromium.trace_metadata2
-        {
-          config: {
-            name: 'org.chromium.trace_metadata2',
-            targetBuffer: 1,
-          },
-        });
+    if (!this.traceConfig.dataSources) {
+      this.traceConfig.dataSources = [];
+    }
+    this.traceConfig.dataSources.push({config: config});
+  }
+
+  private updatePropertiesFromConfig_(): void {
+    const mainBuffer = this.traceConfig?.buffers?.[0];
+    if (mainBuffer) {
+      this.bufferSizeMb = Math.floor((mainBuffer.sizeKb ?? 0) / 1024);
+
+      this.bufferFillPolicy = mainBuffer.fillPolicy ??
+          TraceConfig_BufferConfig_FillPolicy.RING_BUFFER;
+    }
+
+    // Sync the tag and category UI state.
+    this.enabledCategories = new Set(this.trackEventConfig?.enabledCategories);
+    this.enabledTags = new Set(this.trackEventConfig?.enabledTags);
+    this.disabledTags = new Set(this.trackEventConfig?.disabledTags);
+
+    // <if expr="is_win">
+    if (this.etwConfig) {
+      this.enabledEtwEvents['scheduler'] =
+          new Set(this.etwConfig.schedulerProviderEvents);
+      this.enabledEtwEvents['memory'] =
+          new Set(this.etwConfig.memoryProviderEvents);
+      this.enabledEtwEvents['file'] =
+          new Set(this.etwConfig.fileProviderEvents);
+    }
+    // </if>
   }
 }
 

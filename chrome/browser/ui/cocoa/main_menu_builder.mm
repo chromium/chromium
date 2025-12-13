@@ -21,6 +21,18 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
+@interface NSImage (SPI)
+
+// Creates a system symbol image from SF Symbols with the specified name and
+// value. Differs from +imageWithSystemSymbolName:accessibilityDescription: in
+// that it allows instantiation of private symbols, those intended for
+// Apple-only usage (see the SFSymbols.framework's bundles CoreGlyphs vs
+// CoreGlyphsPrivate).
++ (instancetype)imageWithPrivateSystemSymbolName:(NSString*)name
+                        accessibilityDescription:(NSString*)description;
+
+@end
+
 namespace chrome {
 namespace {
 
@@ -182,9 +194,11 @@ NSMenuItem* BuildEditMenu(NSApplication* nsapp,
                   .action(@selector(paste:)),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .tag(IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE)
-                  .action(@selector(pasteAndMatchStyle:)),
+                  .action(@selector(pasteAndMatchStyle:))
+                  .sf_symbol(@"paintbrush.page.on.clipboard"),
               Item(IDS_PASTE_MATCH_STYLE_MAC)
                   .action(@selector(pasteAndMatchStyle:))
+                  .sf_symbol(@"paintbrush.page.on.clipboard")
                   .is_alternate()
                   .key_equivalent(@"V", NSEventModifierFlagCommand |
                                             NSEventModifierFlagOption),
@@ -283,6 +297,8 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_SHOW_FULL_URLS),
               Item(IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT)
                   .command_id(IDC_SHOW_GOOGLE_LENS_SHORTCUT),
+              Item(IDS_CONTEXT_MENU_SHOW_AI_MODE_OMNIBOX_BUTTON)
+                  .command_id(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON),
               Item(IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS)
                   .command_id(IDC_SHOW_SEARCH_TOOLS),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
@@ -371,6 +387,8 @@ NSMenuItem* BuildHistoryMenu(NSApplication* nsapp,
                   .remove_if(is_pwa),
               Item(IDS_HISTORY_SHOWFULLHISTORY_LINK)
                   .command_id(IDC_SHOW_HISTORY)
+                  .sf_symbol(
+                      @"clock.arrow.trianglehead.counterclockwise.rotate.90")
                   .remove_if(is_pwa),
           })
           .Build();
@@ -401,6 +419,31 @@ NSMenuItem* BuildBookmarksMenu(NSApplication* nsapp,
                   .command_id(IDC_BOOKMARK_ALL_TABS),
               Item().is_separator()
                   .tag(IDC_BOOKMARK_THIS_TAB),
+          })
+          .Build();
+  // clang-format on
+  return item;
+}
+
+NSMenuItem* BuildGroupsMenu(NSApplication* nsapp,
+                            id app_delegate,
+                            const std::u16string& product_name,
+                            bool is_pwa) {
+  if (!base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+    return nil;
+  }
+
+  if (is_pwa) {
+    return nil;
+  }
+
+  // clang-format off
+  NSMenuItem* item =
+      Item(IDS_SAVED_TAB_GROUPS_MENU)
+          .tag(IDC_SAVED_TAB_GROUPS_MENU)
+          .submenu({
+              Item(IDS_CREATE_NEW_TAB_GROUP)
+                  .command_id(IDC_CREATE_NEW_TAB_GROUP),
           })
           .Build();
   // clang-format on
@@ -568,6 +611,7 @@ NSMenu* BuildMainMenu(NSApplication* nsapp,
            &BuildViewMenu,
            &BuildHistoryMenu,
            &BuildBookmarksMenu,
+           &BuildGroupsMenu,
            &BuildPeopleMenu,
            &BuildTabMenu,
            &BuildWindowMenu,
@@ -666,6 +710,14 @@ NSMenuItem* MenuItemBuilder::Build() const {
   item.keyEquivalentModifierMask = key_equivalent_flags;
   item.alternate = is_alternate_;
   item.hidden = is_hidden_;
+  if (@available(macOS 26, *)) {
+    if (sf_symbol_name_) {
+      // Some action images that macOS uses by default are private and aren't
+      // accessible via normal lookup, so use SPI.
+      item.image = [NSImage imageWithPrivateSystemSymbolName:sf_symbol_name_
+                                    accessibilityDescription:nil];
+    }
+  }
 
   if (submenu_.has_value()) {
     NSMenu* menu = [[NSMenu alloc] initWithTitle:title];

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  </head>
+  <body>
+    <div><a id="download" aria-label="download" download href="download-test.gif">Download</a></div>
+    <script>
+      let download_clicked = false;
+      const download_link = document.getElementById('download');
+      download_link.addEventListener('click', (event) => {
+          download_clicked = true;
+      });
+    </script>
+  </body>
+</html>

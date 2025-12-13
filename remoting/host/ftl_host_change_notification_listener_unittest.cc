@@ -14,6 +14,7 @@
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
 #include "remoting/signaling/mock_signal_strategy.h"
+#include "remoting/signaling/signaling_address.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,6 +26,8 @@ namespace remoting {
 namespace {
 
 const char kTestJid[] = "user@gmail.com/chromoting_ftl_abc123";
+const char kSystemSenderId[] = "chromoting-backend-service";
+const char kPeerSenderId[] = "fake_peer@gmail.com";
 
 ACTION_P(AddListener, list) {
   list->insert(arg0);
@@ -35,11 +38,11 @@ ACTION_P(RemoveListener, list) {
   list->erase(arg0);
 }
 
-ftl::ChromotingMessage CreateMessageWithDirectoryState(
+SignalingMessage CreateMessageWithDirectoryState(
     ftl::HostStatusChangeMessage_DirectoryState state) {
   ftl::ChromotingMessage message;
   message.mutable_status()->set_directory_state(state);
-  return message;
+  return SignalingMessage{message};
 }
 
 }  // namespace
@@ -47,7 +50,12 @@ ftl::ChromotingMessage CreateMessageWithDirectoryState(
 class FtlHostChangeNotificationListenerTest : public testing::Test {
  protected:
   FtlHostChangeNotificationListenerTest()
-      : signal_strategy_(SignalingAddress(kTestJid)) {}
+      : signal_strategy_(SignalingAddress(kTestJid)),
+        system_sender_address_(
+            SignalingAddress::CreateSystemAddress(kSystemSenderId)),
+        peer_sender_address_(SignalingAddress::CreateFtlSignalingAddress(
+            kPeerSenderId,
+            "fake_registration_id")) {}
   class MockListener : public FtlHostChangeNotificationListener::Listener {
    public:
     MOCK_METHOD0(OnHostDeleted, void());
@@ -58,10 +66,6 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
         .WillRepeatedly(AddListener(&signal_strategy_listeners_));
     EXPECT_CALL(signal_strategy_, RemoveListener(NotNull()))
         .WillRepeatedly(RemoveListener(&signal_strategy_listeners_));
-
-    system_sender_id_.set_type(ftl::IdType_Type_SYSTEM);
-    peer_sender_id_.set_type(ftl::IdType_Type_EMAIL);
-    peer_sender_id_.set_id("fake_peer_id");
 
     ftl_host_change_notification_listener_ =
         std::make_unique<FtlHostChangeNotificationListener>(&mock_listener_,
@@ -74,13 +78,12 @@ class FtlHostChangeNotificationListenerTest : public testing::Test {
   }
 
  protected:
-  ftl::Id system_sender_id_;
-  ftl::Id peer_sender_id_;
-
   base::test::TaskEnvironment task_environment_;
 
   MockListener mock_listener_;
   MockSignalStrategy signal_strategy_;
+  SignalingAddress system_sender_address_;
+  SignalingAddress peer_sender_address_;
   std::set<raw_ptr<SignalStrategy::Listener, SetExperimental>>
       signal_strategy_listeners_;
   std::unique_ptr<FtlHostChangeNotificationListener>
@@ -94,7 +97,7 @@ TEST_F(FtlHostChangeNotificationListenerTest, ReceiveValidNotification) {
   });
   bool is_handled =
       ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_id_, {},
+          system_sender_address_,
           CreateMessageWithDirectoryState(
               ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_TRUE(is_handled);
@@ -106,7 +109,7 @@ TEST_F(FtlHostChangeNotificationListenerTest,
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
       ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_id_, {},
+          system_sender_address_,
           CreateMessageWithDirectoryState(
               ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_TRUE(is_handled);
@@ -122,7 +125,7 @@ TEST_F(FtlHostChangeNotificationListenerTest,
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
       ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          peer_sender_id_, "fake_registration_id",
+          peer_sender_address_,
           CreateMessageWithDirectoryState(
               ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_FALSE(is_handled);
@@ -137,8 +140,7 @@ TEST_F(FtlHostChangeNotificationListenerTest,
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
       ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_id_, /* registration_id */ {},
-          /* chromoting_message */ {});
+          system_sender_address_, SignalingMessage{ftl::ChromotingMessage()});
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -151,7 +153,7 @@ TEST_F(FtlHostChangeNotificationListenerTest,
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
       ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_id_, {},
+          system_sender_address_,
           CreateMessageWithDirectoryState(
               ftl::HostStatusChangeMessage_DirectoryState_NOT_SET));
   ASSERT_FALSE(is_handled);

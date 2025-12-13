@@ -4,11 +4,10 @@
 
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 
-#include <set>
-
 #include "content/public/browser/browsing_instance_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,7 +44,9 @@ TEST(ResourceAttrOriginInBrowsingInstanceContextTest,
   // OriginInBrowsingInstanceContexts with equivalent origin and browsing
   // instance should compare equal, even when they were created from different
   // (but equal) origins.
-  const std::set<OriginInBrowsingInstanceContext> origin_context_set{
+  //
+  // Put contexts in an absl set to make sure they can be hashed.
+  const absl::flat_hash_set<OriginInBrowsingInstanceContext> origin_context_set{
       origin_context1, origin_context2, other_origin_context1,
       other_origin_context2};
   EXPECT_THAT(origin_context_set,
@@ -82,13 +83,13 @@ TEST(ResourceAttrOriginInBrowsingInstanceContextTest,
   const auto kOpaqueOrigin1WithBase =
       url::Origin::Resolve(GURL("about:blank"), kOpaqueOrigin1);
 
-  const std::set<url::Origin> origin_set{kOpaqueOrigin1,
-                                         kOpaqueOrigin2,
-                                         kOrigin1,
-                                         kOrigin2,
-                                         kOrigin1WithBase,
-                                         kOrigin1WithOpaqueBase,
-                                         kOpaqueOrigin1WithBase};
+  const absl::flat_hash_set<url::Origin> origin_set{kOpaqueOrigin1,
+                                                    kOpaqueOrigin2,
+                                                    kOrigin1,
+                                                    kOrigin2,
+                                                    kOrigin1WithBase,
+                                                    kOrigin1WithOpaqueBase,
+                                                    kOpaqueOrigin1WithBase};
   ASSERT_THAT(origin_set, UnorderedElementsAre(kOpaqueOrigin1, kOpaqueOrigin2,
                                                kOrigin1, kOrigin2));
 
@@ -110,7 +111,9 @@ TEST(ResourceAttrOriginInBrowsingInstanceContextTest,
 
   // OriginInBrowsingInstanceContexts with equivalent origins should compare
   // equal.
-  std::set<OriginInBrowsingInstanceContext> origin_context_set{
+  //
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<OriginInBrowsingInstanceContext> origin_context_set{
       opaque_origin1_context,
       opaque_origin2_context,
       origin1_context,

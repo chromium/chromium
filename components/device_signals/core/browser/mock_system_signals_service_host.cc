@@ -9,7 +9,16 @@ namespace device_signals {
 MockSystemSignalsServiceHost::MockSystemSignalsServiceHost() = default;
 MockSystemSignalsServiceHost::~MockSystemSignalsServiceHost() = default;
 
-MockSystemSignalsService::MockSystemSignalsService() = default;
+MockSystemSignalsService::MockSystemSignalsService() : receiver_(this) {}
 MockSystemSignalsService::~MockSystemSignalsService() = default;
+
+mojo::PendingRemote<device_signals::mojom::SystemSignalsService>
+MockSystemSignalsService::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+void MockSystemSignalsService::SimulateDisconnect() {
+  receiver_.reset();
+}
 
 }  // namespace device_signals

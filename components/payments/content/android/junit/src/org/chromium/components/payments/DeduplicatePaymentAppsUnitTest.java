@@ -357,6 +357,12 @@ public class DeduplicatePaymentAppsUnitTest {
 
         // PaymentAppFactoryDelegate:
         @Override
+        public boolean prefsCanMakePayment() {
+            return true;
+        }
+
+        // PaymentAppFactoryDelegate:
+        @Override
         public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface factory) {
             mIsDoneCreatingPaymentApps = true;
         }

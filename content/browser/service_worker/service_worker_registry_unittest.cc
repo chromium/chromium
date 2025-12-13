@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "content/browser/service_worker/service_worker_registry.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -259,8 +255,9 @@ bool VerifyResponseMetadata(
   ReadResponseHeadResult out = ReadResponseHead(storage, id);
   if (!out.metadata.has_value())
     return false;
-  EXPECT_EQ(0, memcmp(expected_metadata.data(), out.metadata->data(),
-                      expected_metadata.length()));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(expected_metadata.data(), out.metadata->data(),
+                          expected_metadata.length())));
   return true;
 }
 

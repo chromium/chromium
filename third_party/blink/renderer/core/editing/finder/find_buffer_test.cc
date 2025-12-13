@@ -1152,4 +1152,25 @@ TEST_F(FindBufferTest, OrphanRubyTextCrash) {
   EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"textd"));
 }
 
+TEST_F(FindBufferTest, TextareaMultilines) {
+  SetBodyContent("<textarea>line1\nline2\n</textarea>");
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  EXPECT_EQ(0u, CaseInsensitiveMatchCount(buffer, u"ne1 li"));
+  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ne1\nli"));
+}
+
+// crbug.com/453125750
+TEST_F(FindBufferTest, IsInSameUninterruptedBlockNoCrash) {
+  SetBodyContent(
+      "<option id='target'>ABC</option>"
+      "<style>* { display:-webkit-box; }</style>");
+  GetDocument().documentElement()->insertBefore(GetElementById("target"),
+                                                GetDocument().body());
+  UpdateAllLifecyclePhasesForTest();
+  FindBuffer buffer(WholeDocumentRange(), RubySupport::kEnabledIfNecessary);
+  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"ABC"));
+  // The test confirms GetInlineFormattingContext() doesn't crash.
+  // The match count result isn't important.
+}
+
 }  // namespace blink

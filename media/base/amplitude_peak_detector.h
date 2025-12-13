@@ -5,11 +5,15 @@
 #ifndef MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 #define MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 
+#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
-#include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
+#include "media/base/sample_format.h"
 
 namespace media {
+
+class AudioBus;
+
 // Helper class which acts as a filter to detect jumps in audio signal
 // amplitude. When there is a large increase in amplitude, it will run its
 // provided callback.
@@ -41,7 +45,7 @@ class MEDIA_EXPORT AmplitudePeakDetector {
 
   // Detects increases in amplitude, and runs `peak_detected_cb_` when we cross
   // a threshold (but not when amplitude falls back below the threshold).
-  void FindPeak(base::span<const uint8_t> data, size_t bytes_per_sample);
+  void FindPeak(base::span<const uint8_t> data, SampleFormat sample_format);
   void FindPeak(const AudioBus* audio_bus);
 
   void SetIsTracingEnabledForTests(bool is_tracing_enabled);

@@ -50,7 +50,7 @@ if (is_android) {
       "//base",
       "//chrome/browser:browser_process",
       "//chrome/browser/android/metrics:test_jni_headers",
-      "//components/metrics_services_manager:metrics_services_manager",
+      "//components/metrics_services_manager",
       "//components/ukm",
     ]
   }
@@ -86,6 +86,7 @@ if (is_android) {
       "//chrome/browser/signin/services/android:java",
       "//chrome/browser/tab:java",
       "//chrome/test/android:chrome_java_integration_test_support",
+      "//chrome/test/android:chrome_java_transit",
       "//components/browsing_data/core:java",
       "//components/metrics:metrics_java",
       "//content/public/test/android:content_java_test_support",

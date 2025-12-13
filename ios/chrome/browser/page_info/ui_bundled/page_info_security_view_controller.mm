@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -91,8 +93,7 @@ enum ItemIdentifier {
                                                 itemIdentifier.integerValue)];
            }];
 
-  RegisterTableViewCell<TableViewDetailIconCell>(self.tableView);
-  RegisterTableViewCell<TableViewTextCell>(self.tableView);
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
 
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
@@ -159,31 +160,36 @@ enum ItemIdentifier {
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
   switch (itemIdentifier) {
     case ItemIdentifierSecurityHeader: {
-      TableViewDetailIconCell* securityHeaderCell =
-          DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      securityHeaderCell.textLabel.text =
-          _pageInfoSecurityDescription.securityStatus;
-      // 0 removes any maximum limit, and makes the detail text use as many
-      // lines as needed.
-      securityHeaderCell.detailTextNumberOfLines = 0;
-      securityHeaderCell.detailText = _pageInfoSecurityDescription.message;
-      [securityHeaderCell
-             setIconImage:_pageInfoSecurityDescription.iconImage
-                tintColor:UIColor.whiteColor
-          backgroundColor:_pageInfoSecurityDescription.iconBackgroundColor
-             cornerRadius:kColorfulBackgroundSymbolCornerRadius];
-      securityHeaderCell.iconCenteredVertically = NO;
-      securityHeaderCell.textLayoutConstraintAxis =
-          UILayoutConstraintAxisVertical;
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title = _pageInfoSecurityDescription.securityStatus;
+      configuration.subtitle = _pageInfoSecurityDescription.message;
+
+      ColorfulSymbolContentConfiguration* symbolConfiguration =
+          [[ColorfulSymbolContentConfiguration alloc] init];
+      symbolConfiguration.symbolImage = _pageInfoSecurityDescription.iconImage;
+      symbolConfiguration.symbolTintColor = UIColor.whiteColor;
+      symbolConfiguration.symbolBackgroundColor =
+          _pageInfoSecurityDescription.iconBackgroundColor;
+
+      configuration.leadingConfiguration = symbolConfiguration;
+
+      UITableViewCell* securityHeaderCell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      securityHeaderCell.contentConfiguration = configuration;
+
       return securityHeaderCell;
     }
     case ItemIdentifierLearnMoreRow: {
-      TableViewTextCell* learnMoreCell =
-          DequeueTableViewCell<TableViewTextCell>(tableView);
-      learnMoreCell.textLabel.text = l10n_util::GetNSString(IDS_LEARN_MORE);
-      learnMoreCell.textLabel.textColor = [UIColor colorNamed:kBlueColor];
+      TableViewCellContentConfiguration* configuration =
+          [[TableViewCellContentConfiguration alloc] init];
+      configuration.title = l10n_util::GetNSString(IDS_LEARN_MORE);
+      configuration.titleColor = [UIColor colorNamed:kBlueColor];
+
+      UITableViewCell* learnMoreCell =
+          [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
+      learnMoreCell.contentConfiguration = configuration;
       learnMoreCell.isAccessibilityElement = YES;
-      learnMoreCell.accessibilityLabel = learnMoreCell.textLabel.text;
       learnMoreCell.accessibilityTraits = UIAccessibilityTraitButton;
 
       return learnMoreCell;

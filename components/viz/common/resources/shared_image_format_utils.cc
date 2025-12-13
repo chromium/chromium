@@ -7,13 +7,30 @@
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 
+#include <array>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColorType.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace viz {
+namespace {
+
+constexpr auto kMappableSharedImageFormats = std::to_array<SharedImageFormat>(
+    {SinglePlaneFormat::kR_8, SinglePlaneFormat::kR_16,
+     SinglePlaneFormat::kRG_88, SinglePlaneFormat::kRG_1616,
+     SinglePlaneFormat::kBGR_565, SinglePlaneFormat::kRGBA_4444,
+     SinglePlaneFormat::kRGBX_8888, SinglePlaneFormat::kRGBA_8888,
+     SinglePlaneFormat::kBGRX_8888, SinglePlaneFormat::kBGRA_1010102,
+     SinglePlaneFormat::kRGBA_1010102, SinglePlaneFormat::kBGRA_8888,
+     SinglePlaneFormat::kRGBA_F16, MultiPlaneFormat::kNV12,
+     MultiPlaneFormat::kYV12, MultiPlaneFormat::kNV12A,
+     MultiPlaneFormat::kP010});
+
+}  // namespace
 
 SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
@@ -241,52 +258,122 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat buffer_format) {
   NOTREACHED();
 }
 
-// static
-unsigned int
-SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
-    SharedImageFormat format,
-    bool use_angle_rgbx_format) {
-  CHECK(format.is_single_plane());
-  if (format == SinglePlaneFormat::kRGBA_8888) {
-    return GL_RGBA8_OES;
-  } else if (format == SinglePlaneFormat::kBGRA_8888) {
-    return GL_BGRA8_EXT;
-  } else if (format == SinglePlaneFormat::kRGBA_F16) {
-    return GL_RGBA16F_EXT;
-  } else if (format == SinglePlaneFormat::kRGBA_4444) {
-    return GL_RGBA4;
-  } else if (format == SinglePlaneFormat::kALPHA_8) {
-    return GL_ALPHA8_EXT;
-  } else if (format == SinglePlaneFormat::kBGR_565) {
-    return GL_RGB565;
-  } else if (format == SinglePlaneFormat::kR_8) {
-    return GL_R8_EXT;
-  } else if (format == SinglePlaneFormat::kRG_88) {
-    return GL_RG8_EXT;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return GL_LUMINANCE16F_EXT;
-  } else if (format == SinglePlaneFormat::kR_F16) {
-    return GL_R16F_EXT;
-  } else if (format == SinglePlaneFormat::kR_16) {
-    return GL_R16_EXT;
-  } else if (format == SinglePlaneFormat::kRG_1616) {
-    return GL_RG16_EXT;
-  } else if (format == SinglePlaneFormat::kRGBX_8888 ||
-             format == SinglePlaneFormat::kBGRX_8888) {
-    return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
-  } else if (format == SinglePlaneFormat::kETC1) {
-    return GL_ETC1_RGB8_OES;
-  } else if (format == SinglePlaneFormat::kRGBA_1010102 ||
-             format == SinglePlaneFormat::kBGRA_1010102) {
-    return GL_RGB10_A2_EXT;
+size_t SharedMemoryOffsetForSharedImageFormat(SharedImageFormat format,
+                                              int plane_index,
+                                              const gfx::Size& size) {
+  if (format.is_single_plane()) {
+    return 0;
   }
-  NOTREACHED();
+
+  size_t offset = 0;
+  for (int plane = 0; plane < plane_index; ++plane) {
+    std::optional<size_t> plane_size =
+        format.MaybeEstimatedPlaneSizeInBytes(plane, size);
+    if (!plane_size) {
+      DLOG(ERROR) << "Could not calculate plane size for plane " << plane;
+      return 0;
+    }
+    offset += *plane_size;
+  }
+  return offset;
 }
 
-// static
-gfx::BufferFormat
-SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
-    SharedImageFormat format) {
+std::optional<size_t> SharedMemoryRowSizeForSharedImageFormat(
+    SharedImageFormat format,
+    int plane_index,
+    int width) {
+  if (!format.IsValidPlaneIndex(plane_index)) {
+    return std::nullopt;
+  }
+
+  if (format.is_single_plane()) {
+    CHECK_NE(format, SinglePlaneFormat::kETC1);
+    DCHECK_EQ(plane_index, 0);
+
+    base::CheckedNumeric<size_t> bytes_per_row = format.BytesPerPixel();
+    bytes_per_row *= width;
+
+    // Row size must be aligned to 4 bytes.
+    bytes_per_row += 3;
+    bytes_per_row -= bytes_per_row % 4;
+    if (!bytes_per_row.IsValid()) {
+      return std::nullopt;
+    }
+
+    return bytes_per_row.ValueOrDie();
+  }
+
+  int plane_width =
+      format.GetPlaneSize(plane_index, gfx::Size(width, 0)).width();
+  int num_channels = format.NumChannelsInPlane(plane_index);
+
+  base::CheckedNumeric<size_t> bytes_per_row =
+      format.MultiplanarStorageBytesPerChannel();
+  bytes_per_row *= num_channels;
+  bytes_per_row *= plane_width;
+
+  if (!bytes_per_row.IsValid()) {
+    return std::nullopt;
+  }
+
+  return bytes_per_row.ValueOrDie();
+}
+
+std::optional<size_t> SharedMemoryPlaneSizeForSharedImageFormat(
+    SharedImageFormat format,
+    int plane_index,
+    const gfx::Size& size) {
+  std::optional<size_t> row_size = SharedMemoryRowSizeForSharedImageFormat(
+      format, plane_index, base::checked_cast<size_t>(size.width()));
+  if (!row_size) {
+    return std::nullopt;
+  }
+  base::CheckedNumeric<size_t> plane_size = row_size.value();
+  plane_size *= format.GetPlaneSize(plane_index, size).height();
+  if (!plane_size.IsValid()) {
+    return std::nullopt;
+  }
+
+  return plane_size.ValueOrDie();
+}
+
+std::optional<size_t> SharedMemorySizeForSharedImageFormat(
+    SharedImageFormat format,
+    const gfx::Size& size) {
+  base::CheckedNumeric<size_t> buffer_size = 0;
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    auto plane_size =
+        SharedMemoryPlaneSizeForSharedImageFormat(format, plane, size);
+    if (!plane_size) {
+      return std::nullopt;
+    }
+    buffer_size += plane_size.value();
+    if (!buffer_size.IsValid()) {
+      return std::nullopt;
+    }
+  }
+
+  return buffer_size.ValueOrDie();
+}
+
+bool IsOddSizeMultiPlanarBuffersAllowed() {
+#if BUILDFLAG(IS_APPLE)
+  return true;
+#else
+  return false;
+#endif
+}
+
+base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting() {
+  return kMappableSharedImageFormats;
+}
+
+gfx::BufferFormat SharedImageFormatToBufferFormat(SharedImageFormat format) {
+  if (!HasEquivalentBufferFormat(format)) {
+    DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
+    return gfx::BufferFormat::RGBA_8888;
+  }
+
   if (format.is_single_plane()) {
     return SinglePlaneSharedImageFormatToBufferFormat(format);
   }

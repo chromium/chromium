@@ -38,7 +38,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -51,22 +50,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/presentation_time_recorder.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
@@ -200,10 +197,8 @@ bool IsViewVisibleOnScreen(views::View* view) {
   if (view->layer() && view->layer()->opacity() == 0.0f)
     return false;
 
-  return display::Screen::GetScreen()
-      ->GetPrimaryDisplay()
-      .work_area()
-      .Intersects(view->GetBoundsInScreen());
+  return display::Screen::Get()->GetPrimaryDisplay().work_area().Intersects(
+      view->GetBoundsInScreen());
 }
 
 class AppListViewTest : public views::ViewsTestBase {
@@ -216,8 +211,8 @@ class AppListViewTest : public views::ViewsTestBase {
   void SetUp() override {
     views::ViewsTestBase::SetUp();
     zero_duration_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
@@ -500,7 +495,7 @@ class AppListViewTest : public views::ViewsTestBase {
   }
 
   // Sets animation durations to zero.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
   // Needed by AppsContainerView::ContinueContainer.
   AshColorProvider ash_color_provider_;
@@ -517,10 +512,7 @@ class AppListViewTest : public views::ViewsTestBase {
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
  public:
-  AppListViewScalableLayoutTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kEnableBackgroundBlur}, {});
-  }
+  AppListViewScalableLayoutTest() = default;
   ~AppListViewScalableLayoutTest() override = default;
 
   void SetUp() override {
@@ -538,9 +530,6 @@ class AppListViewScalableLayoutTest : public AppListViewTest {
     delegate_->GetTestModel()->PopulateApps(kInitialItems);
     Show();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests of focus, optionally parameterized by RTL.
@@ -831,7 +820,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  protected:
   bool is_rtl_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   AshColorProvider ash_color_provider_;
@@ -866,7 +854,7 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFullscreenAllAppsState) {
     forward_view_list.push_back(entry.view);
   forward_view_list.push_back(search_box_view()->search_box());
   std::vector<views::View*> backward_view_list = forward_view_list;
-  std::reverse(backward_view_list.begin(), backward_view_list.end());
+  std::ranges::reverse(backward_view_list);
 
   // Test traversal triggered by tab.
   TestFocusTraversal(forward_view_list, ui::VKEY_TAB, false);
@@ -902,7 +890,7 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFolder) {
   forward_view_list.push_back(search_box_view()->search_box());
   forward_view_list.push_back(view_model->view_at(0));
   std::vector<views::View*> backward_view_list = forward_view_list;
-  std::reverse(backward_view_list.begin(), backward_view_list.end());
+  std::ranges::reverse(backward_view_list);
 
   // Test traversal triggered by tab.
   TestFocusTraversal(forward_view_list, ui::VKEY_TAB, false);
@@ -1568,8 +1556,8 @@ TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
   Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
 
-  ui::ScopedAnimationDurationScaleMode non_zero_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode non_zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   Show();
 
@@ -1754,72 +1742,6 @@ TEST_F(AppListViewTest, CloseFolderByClickingBackground) {
                        ui::EF_LEFT_MOUSE_BUTTON);
   apps_container_view->folder_background_view()->OnMouseEvent(&event);
   EXPECT_FALSE(apps_container_view->IsInFolderView());
-}
-
-// Tests selecting search result to show embedded Assistant UI.
-TEST_P(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
-  Show();
-
-  // Initially the search box is inactive, hitting Enter to activate it.
-  EXPECT_FALSE(search_box_view()->is_search_box_active());
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_TRUE(search_box_view()->is_search_box_active());
-
-  // Type something in search box to transition to search state and populate
-  // fake list results. Then hit Enter key.
-  search_box_view()->search_box()->InsertText(
-      u"test",
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  const int kListResults = 2;
-
-  SetUpSearchResults(kListResults);
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_EQ(1, GetOpenFirstSearchResultCount());
-  EXPECT_EQ(1, GetTotalOpenSearchResultCount());
-
-  // Type something in search box to transition to re-open search state and
-  // populate fake list results. Then hit Enter key.
-  search_box_view()->search_box()->InsertText(
-      u"test",
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-  SetUpSearchResults(kListResults);
-  SimulateKeyPress(ui::VKEY_DOWN, false);
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  EXPECT_EQ(1, GetOpenFirstSearchResultCount());
-  EXPECT_EQ(2, GetTotalOpenSearchResultCount());
-}
-
-// Tests that pressing escape in embedded Assistant UI returns to fullscreen
-// if the Assistant UI was launched from fullscreen app list.
-TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToAppList) {
-  Initialize(false /*is_tablet_mode*/);
-  Show();
-
-  // Enter search view by entering text
-  SetTextInSearchBox(u"search query");
-  // From there we launch the Assistant UI
-  contents_view()->ShowEmbeddedAssistantUI(true);
-
-  // We press escape to leave the Assistant UI
-  view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-
-  // And we should be back in the fullscreen app list
-  EXPECT_FALSE(contents_view()->IsShowingSearchResults());
-  EXPECT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
-}
-
-// Tests that search box is not visible when showing embedded Assistant UI.
-// ProductivityLauncher has tests for this in AppListBubbleViewTest.
-TEST_F(AppListViewTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
-  Initialize(/*is_tablet_mode=*/true);
-  Show();
-
-  EXPECT_TRUE(search_box_view()->GetVisible());
-
-  contents_view()->ShowEmbeddedAssistantUI(true);
-
-  EXPECT_TRUE(contents_view()->IsShowingEmbeddedAssistantUI());
-  EXPECT_FALSE(search_box_view()->GetVisible());
 }
 
 TEST_F(AppListViewScalableLayoutTest, RegularLandscapeScreen) {

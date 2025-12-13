@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>Sub-fields in input[type=datetime-local] should not be disabled</title>
+<link rel='help' href='https://issues.chromium.org/issues/442293382'>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src="../resources/common.js"></script>
+<script>
+function createStepDayInput(min, max, value) {
+  return createInput('datetime-local', min, max, '86400', value);
+}
+
+function createStepMinInput(min, max, value) {
+  return createInput('datetime-local', min, max, '60', value);
+}
+
+test(() => {
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:00', '', '')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T11:30')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T12:30')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T00:00', '', '2013-01-16T12:30')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:00', '2013-01-16T23:00', '')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T23:00', '2013-01-16T11:30')));
+  assert_false(isHourFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T11:59', '2013-01-16T11:30')));
+  assert_false(isHourFieldDisabled(createStepMinInput('2013-01-16T11:30', '2013-01-16T11:59', '')));
+}, 'The hour field should be non-disabled');
+
+test(() => {
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:00', '', '')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T11:30')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T12:30')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T00:00', '', '2013-01-16T12:30')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:00', '2013-01-16T23:00', '')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T23:00', '2013-01-16T11:30')));
+  assert_false(isMinuteFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T11:59', '2013-01-16T11:30')));
+  assert_false(isMinuteFieldDisabled(createStepMinInput('2013-01-16T11:30', '2013-01-16T11:59', '')));
+}, 'The minute field should be non-disabled');
+
+test(() => {
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:00', '', '')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T11:30')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:30', '', '2013-01-16T12:30')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T00:00', '', '2013-01-16T12:30')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:00', '2013-01-16T23:00', '')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T23:00', '2013-01-16T11:30')));
+  assert_false(isAMPMFieldDisabled(createStepDayInput('2013-01-16T11:30', '2013-01-16T11:59', '2013-01-16T11:30')));
+  assert_false(isAMPMFieldDisabled(createStepMinInput('2013-01-16T11:30', '2013-01-16T11:59', '')));
+  assert_false(isAMPMFieldDisabled(createStepMinInput('2013-01-16T08:00', '2013-01-16T11:00', '')));
+  assert_false(isAMPMFieldDisabled(createStepMinInput('2013-01-16T08:00', '2013-01-17T11:00', '')));
+}, 'The am/pm field should be non-disabled');
+</script>

@@ -1,0 +1,15 @@
+[document web]
+++[section]
+++++[push button]
+++++[menu bar] horizontal
+++++++[menu item] name='First item'
+++++++[menu item] name='No command item'
+++++++[menu item] name='Custom command item'
+++++[push button]
+++++[menu bar] horizontal
+++++++[menu item] name='First item'
+++++[menu bar] horizontal
+++++++[menu item] name='First item' expanded
+++++[panel]
+++++++[menu item] name='Submenu1 first item'
+++++++[menu item] name='Submenu1 second item'

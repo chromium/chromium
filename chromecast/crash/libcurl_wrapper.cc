@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chromecast/crash/libcurl_wrapper.h"
 
 #include <dlfcn.h>
 
 #include <iostream>
 #include <string>
+
+#include "base/compiler_specific.h"
 
 namespace chromecast {
 LibcurlWrapper::LibcurlWrapper()
@@ -196,8 +193,9 @@ bool LibcurlWrapper::SendRequestInner(const std::string& url,
 
 #ifndef NDEBUG
   if (err_code != CURLE_OK)
-    fprintf(stderr, "Failed to send http request to %s, error: %s\n",
-            url.c_str(), (*easy_strerror_)(err_code));
+    UNSAFE_TODO(fprintf(stderr,
+                        "Failed to send http request to %s, error: %s\n",
+                        url.c_str(), (*easy_strerror_)(err_code)));
 #endif
 
   Reset();

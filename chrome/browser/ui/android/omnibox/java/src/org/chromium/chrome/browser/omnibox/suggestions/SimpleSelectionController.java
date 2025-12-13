@@ -53,7 +53,8 @@ public class SimpleSelectionController extends SelectionController {
     public void setItemCount(int newItemCount) {
         mItemCount = newItemCount;
         // Reset position if out of range.
-        setPosition(getPosition().orElse(mDefaultPosition));
+        Integer position = getPosition();
+        setPosition(position == null ? mDefaultPosition : position);
     }
 
     @Override

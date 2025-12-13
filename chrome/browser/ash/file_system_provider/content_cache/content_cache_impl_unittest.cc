@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache_impl.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -20,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -95,7 +92,7 @@ class FileSystemProviderContentCacheImplTest : public testing::Test {
         base::MakeRefCounted<net::IOBufferWithSize>(size);
     std::vector<uint8_t> rand_bytes = base::RandBytesAsVector(size);
     for (int i = 0; i < size; i++) {
-      buffer->data()[i] = rand_bytes[i];
+      UNSAFE_TODO(buffer->data()[i]) = rand_bytes[i];
     }
     return buffer;
   }

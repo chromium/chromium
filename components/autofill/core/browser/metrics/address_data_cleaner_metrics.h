@@ -9,6 +9,8 @@
 
 namespace autofill::autofill_metrics {
 
+void LogNumberOfNamesMigratedDuringCleanup(size_t num_names);
+
 void LogNumberOfProfilesConsideredForDedupe(size_t num_considered);
 
 void LogNumberOfProfilesRemovedDuringDedupe(size_t num_removed);

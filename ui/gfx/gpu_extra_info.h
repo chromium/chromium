@@ -47,10 +47,6 @@ struct COMPONENT_EXPORT(GFX) GpuExtraInfo {
   // applicable.
   ANGLEFeatures angle_features;
 
-#if BUILDFLAG(IS_OZONE_X11)
-  std::vector<gfx::BufferUsageAndFormat> gpu_memory_buffer_support_x11;
-#endif  // BUILDFLAG(IS_OZONE_X11)
-
 #if BUILDFLAG(IS_LINUX)
   bool is_gmb_nv12_supported = false;
 #endif

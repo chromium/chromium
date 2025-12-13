@@ -197,8 +197,9 @@ int DOMTimer::setTimeout(ScriptState* script_state,
   // Spec: https://html.spec.whatwg.org/#timer-initialisation-steps, 9.6.1.4
   String handler = TrustedTypesCheckForScript(
       untrusted_handler, &context,
-      context.IsWorkerGlobalScope() ? "WorkerGlobalScope" : "Window",
-      "setTimeout", exception_state);
+      context.IsWorkerGlobalScope() ? trusted_types_names::kWorkerGlobalScope
+                                    : trusted_types_names::kWindow,
+      trusted_types_names::kSetTimeout, exception_state);
   if (exception_state.HadException()) {
     return 0;
   }
@@ -243,8 +244,9 @@ int DOMTimer::setInterval(ScriptState* script_state,
   // Spec: https://html.spec.whatwg.org/#timer-initialisation-steps, 9.6.1.4
   String handler = TrustedTypesCheckForScript(
       untrusted_handler, &context,
-      context.IsWorkerGlobalScope() ? "WorkerGlobalScope" : "Window",
-      "setInterval", exception_state);
+      context.IsWorkerGlobalScope() ? trusted_types_names::kWorkerGlobalScope
+                                    : trusted_types_names::kWindow,
+      trusted_types_names::kSetInterval, exception_state);
   if (exception_state.HadException()) {
     return 0;
   }

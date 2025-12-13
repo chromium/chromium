@@ -21,4 +21,4 @@ forwardApiMethods(
     AppViewElement, AppViewImpl, null, ['connect'],
     /*promiseApiDetails=*/[]);
 
-registerElement('AppView', AppViewElement);
+registerElement('AppView', 'AppView', AppViewElement);

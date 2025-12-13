@@ -17,4 +17,3 @@ const CGFloat kAuthenticationSeparatorHeight = 1;
 NSString* const kSigninSyncScreenAccessibilityIdentifier =
     @"kSigninSyncScreenAccessibilityIdentifier";
 
-NSString* const kSigninSnackbarUndo = @"SigninSnackbarUndo";

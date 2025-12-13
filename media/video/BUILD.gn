@@ -82,7 +82,7 @@ source_set("video") {
   }
 
   if (is_apple) {
-    deps += [ "//media/base/mac:mac" ]
+    deps += [ "//media/base/mac" ]
   }
 }
 
@@ -137,8 +137,8 @@ source_set("unit_tests") {
     "//media:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/libvpx:libvpx",
-    "//third_party/libyuv:libyuv",
+    "//third_party/libvpx",
+    "//third_party/libyuv",
     "//ui/gfx",
   ]
 }

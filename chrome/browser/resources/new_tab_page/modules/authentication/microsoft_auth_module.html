@@ -1,0 +1,23 @@
+<ntp-module-header
+    id="moduleHeaderElementV2"
+    .menuItems="${this.getMenuItems_()}"
+    more-actions-text="${this.i18nRecursive('',
+                              'modulesMoreActions',
+                              'modulesMicrosoftAuthName')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissButtonClick_}">
+</ntp-module-header>
+<div id="contents">
+  <img id="authImg"
+      src="modules/authentication/icons/microsoft_auth_light.svg">
+  <div id="headingsAndButton">
+    <div id="headings">
+      <h2 id="heading">$i18n{modulesMicrosoftAuthHeading}</h2>
+      <div id="subheading">$i18n{modulesMicrosoftAuthSubheading}</div>
+    </div>
+    <cr-button role="link" class="action-button" id="signInButton"
+        @click="${this.onSignInClick_}">
+      $i18n{modulesMicrosoftAuthSignIn}
+    </cr-button>
+  </div>
+</div>

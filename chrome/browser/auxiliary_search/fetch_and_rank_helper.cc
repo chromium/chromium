@@ -21,6 +21,7 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/android/gurl_android.h"
 #include "url/url_constants.h"
 
@@ -34,7 +35,6 @@ using visited_url_ranking::ResultStatus;
 using visited_url_ranking::URLVisitAggregate;
 using visited_url_ranking::URLVisitAggregatesTransformType;
 using visited_url_ranking::URLVisitsMetadata;
-using visited_url_ranking::URLVisitVariantHelper;
 using visited_url_ranking::VisitedURLRankingService;
 using visited_url_ranking::VisitedURLRankingServiceFactory;
 
@@ -183,7 +183,7 @@ void FetchAndRankHelper::OnFetched(ResultStatus status,
                                    std::vector<URLVisitAggregate> aggregates) {
   if (status != ResultStatus::kSuccess) {
     std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
-    std::move(entries_callback_).Run(std::move(entries));
+    std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
     return;
   }
 
@@ -199,7 +199,7 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
   JNIEnv* env = base::android::AttachCurrentThread();
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> entries;
   if (status != ResultStatus::kSuccess) {
-    std::move(entries_callback_).Run(std::move(entries));
+    std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
     return;
   }
 
@@ -211,7 +211,7 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
     // take the first one.
     const auto& fetcher_entry = *aggregate.fetcher_data_map.begin();
     std::visit(
-        URLVisitVariantHelper{
+        absl::Overload{
             [&](const URLVisitAggregate::TabData& tab_data) {
               bool is_local_tab =
                   (tab_data.last_active_tab.id != kInvalidTabId);
@@ -265,5 +265,7 @@ void FetchAndRankHelper::OnRanked(URLVisitsMetadata url_visits_metadata,
         fetcher_entry.second);
   }
 
-  std::move(entries_callback_).Run(std::move(entries));
+  std::move(entries_callback_).Run(std::move(entries), url_visits_metadata);
 }
+
+DEFINE_JNI(FetchAndRankHelper)

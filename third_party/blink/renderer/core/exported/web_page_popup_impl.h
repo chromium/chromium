@@ -108,6 +108,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   // WebPagePopup implementation.
   WebDocument GetDocument() override;
+  Handle GetHandle() const override;
 
   // PagePopup implementation.
   void PostMessageToPopup(const String& message) override;
@@ -133,6 +134,11 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       AgentGroupScheduler& agent_group_scheduler,
       const display::ScreenInfos& screen_infos,
       PagePopupClient*);
+
+  void ExecuteEditCommand(const String& command, const String& value);
+
+  // The element which created this popup.
+  Element& OwnerElement();
 
  private:
   // WidgetBaseClient overrides:
@@ -174,7 +180,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void SetFocus(bool) override;
   bool HasFocus() override;
-  WebHitTestResult HitTestResultAt(const gfx::PointF&) override { return {}; }
+  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   void InitializeCompositing(const display::ScreenInfos& screen_infos,
                              const cc::LayerTreeSettings* settings) override;
   void SetCursor(const ui::Cursor& cursor) override;
@@ -188,7 +194,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void UpdateSelectionBounds() override;
   void ShowVirtualKeyboard() override;
   void FlushInputProcessedCallback() override;
-  void CancelCompositionForPepper() override;
+  void CancelComposition() override;
   void ApplyVisualProperties(
       const VisualProperties& visual_properties) override;
   const display::ScreenInfo& GetScreenInfo() override;
@@ -299,6 +305,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // Only used for Scroll Unification.
   // Will be set in GestureScrollBegin
   WeakPersistent<Node> scrollable_node_;
+
+  Handle handle_;
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;

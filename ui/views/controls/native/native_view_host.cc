@@ -12,16 +12,13 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/native/native_view_host_wrapper.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
-
-// static
-const char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:

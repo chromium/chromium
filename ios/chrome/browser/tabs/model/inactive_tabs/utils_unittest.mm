@@ -12,6 +12,7 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
@@ -42,6 +44,7 @@ class InactiveTabsFakeWebStateListDelegate : public FakeWebStateListDelegate {
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override {
     SnapshotTabHelper::CreateForWebState(web_state);
+    SnapshotSourceTabHelper::CreateForWebState(web_state);
   }
 };
 
@@ -386,7 +389,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveNTPInInactive) {
   NewTabPageTabHelper* ntp_helper =
       NewTabPageTabHelper::FromWebState(fake_web_state.get());
   ntp_helper->SetDelegate(delegate);
-  ASSERT_TRUE(ntp_helper->IsActive());
+  ASSERT_TRUE(IsVisibleURLNewTabPage(fake_web_state.get()));
 
   WebStateList* active_web_state_list = browser_active_->GetWebStateList();
   WebStateList* inactive_web_state_list = browser_inactive_->GetWebStateList();

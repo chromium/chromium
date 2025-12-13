@@ -55,10 +55,6 @@ struct FeatureParameters {
   // Specifies the number of best matching items to take from the search.
   int search_result_item_count = 3;
 
-  // Specifies whether to accelerate keyword mode entry when @ is entered
-  // followed by the first letter of a starter pack keyword.
-  bool at_keyword_acceleration = false;
-
   // Specifies the content visibility threshold that can be shown to the user.
   // This is for safety filtering.
   double content_visibility_threshold = 0;
@@ -134,12 +130,6 @@ struct FeatureParameters {
   // table (keyed on url_id) will be queued for reprocessing by the embedder.
   bool delete_embeddings = false;
   bool rebuild_embeddings = true;
-
-  // When true (the default), passages and embeddings from the database are
-  // used as a perfect cache to avoid re-embedding any passages that already
-  // exist in a given url_id's stored data. This reduces embedding workload
-  // to the minimum necessary for new passages, with no redundant recomputes.
-  bool use_database_before_embedder = true;
 
   // Whether to enable the URL filter to skip blocked URLs to improve
   // performance.

@@ -10,6 +10,7 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -17,6 +18,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.BuildConfig;
 
@@ -24,6 +26,11 @@ import org.chromium.build.BuildConfig;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ThreadUtilsTest {
+    @Before
+    public void setUp() {
+        BaseRobolectricTestRule.uninstallPausedExecutorService();
+    }
+
     @Test
     @SmallTest
     public void testThreadChecker_uiThread() {

@@ -4,6 +4,7 @@ URL: https://github.com/mozilla/gecko-dev
 Version: N/A
 Date: 2010-07-02
 Revision: 3f397dafbaa9dbc7d740e440c7a5112e094588eb
+Update Mechanism: Manual
 License: MPL-1.1
 License File: LICENSE
 Security Critical: yes

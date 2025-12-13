@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -224,6 +225,15 @@ void OpticalCharacterRecognizer::PerformOCR(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 void OpticalCharacterRecognizer::SetOCRLightMode(bool enabled) {
+  // This should be executed in UI thread only. Re-post this request to UI
+  // thread if it's called from the other threads.
+  if (!::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&OpticalCharacterRecognizer::SetOCRLightMode,
+                                  weak_ptr_factory_.GetWeakPtr(), enabled));
+    return;
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_ready()) {
     return;
@@ -235,6 +245,16 @@ void OpticalCharacterRecognizer::SetOCRLightMode(bool enabled) {
 
 void OpticalCharacterRecognizer::IsOCRBusy(
     mojom::ScreenAIAnnotator::IsOCRBusyCallback callback) {
+  // This should be executed in UI thread only. Re-post this request to UI
+  // thread if it's called from the other threads.
+  if (!::content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+    content::GetUIThreadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&OpticalCharacterRecognizer::IsOCRBusy,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_ready()) {
     std::move(callback).Run(false);

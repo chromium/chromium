@@ -100,7 +100,6 @@ public abstract class PathUtils {
 
     // TODO(crbug.com/41484704): Merge the Chrome and WebView implementations
     // of isPathUnderAppDir into one.
-    @RequiresApi(Build.VERSION_CODES.N)
     public static boolean isPathUnderAppDir(String path, Context context) {
         File file = new File(path);
         File dataDir = context.getDataDir();
@@ -264,6 +263,26 @@ public abstract class PathUtils {
         return getDirectoryPath(THUMBNAIL_DIRECTORY);
     }
 
+    private static String sDownloadsDirectoryForTesting;
+    private static String[] sAllPrivateDownloadsDirectoriesForTesting;
+    private static String[] sExternalDownloadVolumesNamesForTesting;
+
+    public static void setDownloadsDirectoryForTesting(String downloadsDirectory) {
+        sDownloadsDirectoryForTesting = downloadsDirectory;
+        ResettersForTesting.register(() -> sDownloadsDirectoryForTesting = null);
+    }
+
+    public static void setAllPrivateDownloadsDirectoriesForTesting(
+            String[] allPrivateDownloadsDirectories) {
+        sAllPrivateDownloadsDirectoriesForTesting = allPrivateDownloadsDirectories;
+        ResettersForTesting.register(() -> sAllPrivateDownloadsDirectoriesForTesting = null);
+    }
+
+    public static void setExternalDownloadVolumesNamesForTesting(String[] externalDownloadVolumes) {
+        sExternalDownloadVolumesNamesForTesting = externalDownloadVolumes;
+        ResettersForTesting.register(() -> sExternalDownloadVolumesNamesForTesting = null);
+    }
+
     /**
      * Returns the downloads directory. Before Android Q, this returns the public download directory
      * for Chrome app. On Q+, this returns the first private download directory for the app, since Q
@@ -273,30 +292,26 @@ public abstract class PathUtils {
     @SuppressWarnings("unused")
     @CalledByNative
     public static @JniType("std::string") String getDownloadsDirectory() {
+        if (sDownloadsDirectoryForTesting != null) return sDownloadsDirectoryForTesting;
         // TODO(crbug.com/41187555): Move calls to getDownloadsDirectory() to background thread.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // https://developer.android.com/preview/privacy/scoped-storage
-                // In Q+, Android has begun sandboxing external storage. Chrome may not have
-                // permission to write to Environment.getExternalStoragePublicDirectory(). Instead
-                // using Context.getExternalFilesDir() will return a path to sandboxed external
-                // storage for which no additional permissions are required.
-                String[] dirs = getAllPrivateDownloadsDirectories();
-                assert dirs != null;
-                return dirs.length == 0 ? "" : dirs[0];
-            }
-            return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    .getPath();
+            // https://developer.android.com/preview/privacy/scoped-storage
+            String[] dirs = getAllPrivateDownloadsDirectories();
+            assert dirs != null;
+            return dirs.length == 0 ? "" : dirs[0];
         }
     }
 
     /**
      * @return Download directories including the default storage directory on SD card, and a
-     * private directory on external SD card.
+     *     private directory on external SD card.
      */
     @SuppressWarnings("unused")
     @CalledByNative
     public static String[] getAllPrivateDownloadsDirectories() {
+        if (sAllPrivateDownloadsDirectoriesForTesting != null) {
+            return sAllPrivateDownloadsDirectoriesForTesting;
+        }
         List<File> files = new ArrayList<>();
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             File[] externalDirs =
@@ -316,6 +331,9 @@ public abstract class PathUtils {
     @RequiresApi(Build.VERSION_CODES.R)
     @CalledByNative
     public static String[] getExternalDownloadVolumesNames() {
+        if (sExternalDownloadVolumesNamesForTesting != null) {
+            return sExternalDownloadVolumesNamesForTesting;
+        }
         ArrayList<File> files = new ArrayList<>();
         Set<String> volumes =
                 MediaStore.getExternalVolumeNames(ContextUtils.getApplicationContext());

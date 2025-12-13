@@ -213,6 +213,30 @@ std::vector<VideoCodecInfoAndMime> GetVideoCodecMimeValues() {
             .level = 9},
        .mime = R"-(video/mp4; codecs="dvhe.08.09")-"});
 
+  // AV1 main profile.
+  out.push_back(
+      {.codec_profile_level =
+           {.codec = ::media::VideoCodec::kAV1,
+            .profile = ::media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN,
+            .level = 0},
+       .mime = R"-(video/mp4; codecs="av01.0.00M.08")-"});
+
+  // AV1 high profile.
+  out.push_back(
+      {.codec_profile_level =
+           {.codec = ::media::VideoCodec::kAV1,
+            .profile = ::media::VideoCodecProfile::AV1PROFILE_PROFILE_HIGH,
+            .level = 4},
+       .mime = R"-(video/mp4; codecs="av01.1.04M.08")-"});
+
+  // AV1 pro profile.
+  out.push_back(
+      {.codec_profile_level =
+           {.codec = ::media::VideoCodec::kAV1,
+            .profile = ::media::VideoCodecProfile::AV1PROFILE_PROFILE_PRO,
+            .level = 30},
+       .mime = R"-(video/mp4; codecs="av01.2.30M.08")-"});
+
   // Unsupported cases should return an empty string for the MIME type.
   out.push_back(
       {.codec_profile_level =

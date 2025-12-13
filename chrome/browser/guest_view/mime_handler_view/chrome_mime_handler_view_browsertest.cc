@@ -103,6 +103,21 @@ class ChromeMimeHandlerViewTest : public extensions::ExtensionApiTest,
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
+  void PostRunTestOnMainThread() override {
+    // With RenderDocument, navigations involve a RFH swap. These newly created
+    // RFHs don't have their unload hang monitors disabled, which can result in
+    // the test hanging on cleanup. Wait for any navigations to finish (to
+    // guarantee we are past the RFH swap point), and disable the unload hang
+    // monitors for any potential new RFHs.
+    for (int i = 0; i < browser()->tab_strip_model()->count(); i++) {
+      EXPECT_TRUE(content::WaitForLoadStop(
+          browser()->tab_strip_model()->GetWebContentsAt(i)));
+      content::PrepContentsForBeforeUnloadTest(
+          browser()->tab_strip_model()->GetWebContentsAt(i));
+    }
+    extensions::ExtensionApiTest::PostRunTestOnMainThread();
+  }
+
  protected:
   TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(

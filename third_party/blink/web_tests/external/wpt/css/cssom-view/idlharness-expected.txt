@@ -1,6 +1,5 @@
 This is a testharness.js-based test.
-Found 71 FAIL, 0 TIMEOUT, 0 NOTRUN.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: Failed to execute 'scrollBy' on 'Element': Illegal invocation
+Found 58 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Screen interface: existence and properties of interface object
   assert_equals: prototype of self's property "Screen" is not Function.prototype expected function "function () { [native code] }" but got function "function EventTarget() { [native code] }"
 [FAIL] Screen interface: existence and properties of interface prototype object
@@ -45,18 +44,6 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
   assert_inherits: property "convertPointFromNode" not found in prototype chain
 [FAIL] Element interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document.createElement("img") with too few arguments must throw TypeError
   assert_inherits: property "convertPointFromNode" not found in prototype chain
-[FAIL] Window interface: operation scroll(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Window interface: operation scroll(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Window interface: operation scrollTo(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Window interface: operation scrollTo(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Window interface: operation scrollBy(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Window interface: operation scrollBy(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = {} didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
 [FAIL] Document interface: operation getBoxQuads(optional BoxQuadOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
 [FAIL] Document interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions)
@@ -81,20 +68,6 @@ Harness Error. harness_status.status = 1 , harness_status.message = Unhandled re
   assert_inherits: property "convertPointFromNode" not found in prototype chain
 [FAIL] Document interface: calling convertPointFromNode(DOMPointInit, GeometryNode, optional ConvertCoordinateOptions) on document with too few arguments must throw TypeError
   assert_inherits: property "convertPointFromNode" not found in prototype chain
-[FAIL] Element interface: operation scrollIntoView(optional (boolean or ScrollIntoViewOptions))
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scroll(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scroll(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scrollTo(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scrollTo(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scrollBy(optional ScrollToOptions)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
-[FAIL] Element interface: operation scrollBy(unrestricted double, unrestricted double)
-  assert_throws_js: calling operation with this = null didn't throw TypeError function "function() {\n            fn.apply(obj, args);\n        }" did not throw
 [FAIL] Element interface: operation getBoxQuads(optional BoxQuadOptions)
   assert_own_property: interface prototype object missing non-static operation expected property "getBoxQuads" missing
 [FAIL] Element interface: operation convertQuadFromNode(DOMQuadInit, GeometryNode, optional ConvertCoordinateOptions)

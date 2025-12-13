@@ -9,15 +9,18 @@
 #include "ash/shell.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/test/browser_test.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -64,8 +67,8 @@ class WindowSizerTest : public InProcessBrowserTest {
                                     "800x600,801+0-800x600");
   }
 
-  ui::ScopedAnimationDurationScaleMode zero_duration_{
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode zero_duration_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 // TODO(crbug.com/40113148): Test is flaky on sanitizers.
@@ -79,42 +82,48 @@ IN_PROC_BROWSER_TEST_F(WindowSizerTest, MAYBE_OpenBrowserUsingShelfItem) {
   ScopedKeepAlive test_keep_alive(KeepAliveOrigin::BROWSER_PROCESS_CHROMEOS,
                                   KeepAliveRestartOption::DISABLED);
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
-  BrowserList* browser_list = BrowserList::GetInstance();
   EnsureShelfInitialization();
 
-  EXPECT_EQ(1u, browser_list->size());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // Close the browser window so that clicking the icon creates a new window.
-  CloseBrowserSynchronously(browser_list->get(0));
-  EXPECT_EQ(0u, browser_list->size());
+  CloseBrowserSynchronously(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
 
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   OpenBrowserUsingShelfOnRootWindow(root_windows[1]);
+  BrowserWindowInterface* new_browser = browser_created_observer->Wait();
 
   // A new browser window should be opened on the 2nd display.
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   std::pair<display::Display, display::Display> displays =
       ui_test_utils::GetDisplays(screen);
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.second.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(
+      displays.second.id(),
+      screen
+          ->GetDisplayNearestWindow(new_browser->GetWindow()->GetNativeWindow())
+          .id());
   EXPECT_EQ(root_windows[1], ash::Shell::GetRootWindowForNewWindows());
 
   // Close the browser window so that clicking the icon creates a new window.
-  CloseBrowserSynchronously(browser_list->get(0));
-  EXPECT_EQ(0u, browser_list->size());
+  CloseBrowserSynchronously(new_browser);
+  new_browser = nullptr;
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
 
+  browser_created_observer.emplace();
   OpenBrowserUsingShelfOnRootWindow(root_windows[0]);
+  new_browser = browser_created_observer->Wait();
 
   // A new browser window should be opened on the 1st display.
-  EXPECT_EQ(1u, browser_list->size());
-  EXPECT_EQ(displays.first.id(),
-            screen
-                ->GetDisplayNearestWindow(
-                    browser_list->get(0)->window()->GetNativeWindow())
-                .id());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(
+      displays.first.id(),
+      screen
+          ->GetDisplayNearestWindow(new_browser->GetWindow()->GetNativeWindow())
+          .id());
   EXPECT_EQ(root_windows[0], ash::Shell::GetRootWindowForNewWindows());
 }
 

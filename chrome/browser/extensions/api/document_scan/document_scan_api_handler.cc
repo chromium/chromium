@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
@@ -126,8 +127,8 @@ void DocumentScanAPIHandler::SimpleScan(
     scoped_refptr<const Extension> extension,
     const std::vector<std::string>& mime_types,
     SimpleScanCallback callback) {
-  auto runner =
-      std::make_unique<SimpleScanRunner>(std::move(extension), document_scan_);
+  auto runner = std::make_unique<SimpleScanRunner>(
+      browser_context_, std::move(extension), document_scan_);
   SimpleScanRunner* raw_runner = runner.get();
   raw_runner->Start(
       std::move(mime_types),
@@ -154,11 +155,11 @@ void DocumentScanAPIHandler::GetScannerList(
   bool approved = state.discovery_approved && user_gesture;
 
   auto discovery_runner = std::make_unique<ScannerDiscoveryRunner>(
-      native_window, browser_context_, std::move(extension), document_scan_);
+      native_window, browser_context_, std::move(extension));
 
   ScannerDiscoveryRunner* raw_runner = discovery_runner.get();
   raw_runner->Start(
-      approved, crosapi::mojom::ScannerEnumFilter::From(filter),
+      approved, std::move(filter),
       base::BindOnce(&DocumentScanAPIHandler::OnScannerListReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(discovery_runner), std::move(callback)));
@@ -167,9 +168,7 @@ void DocumentScanAPIHandler::GetScannerList(
 void DocumentScanAPIHandler::OnScannerListReceived(
     std::unique_ptr<ScannerDiscoveryRunner> runner,
     GetScannerListCallback callback,
-    crosapi::mojom::GetScannerListResponsePtr mojo_response) {
-  auto api_response =
-      std::move(mojo_response).To<api::document_scan::GetScannerListResponse>();
+    api::document_scan::GetScannerListResponse response) {
   // Clear all the previously valid tokens and handles.  The backend has closed
   // any open handles and canceled any active jobs when this extension called
   // GetScannerList.
@@ -184,13 +183,13 @@ void DocumentScanAPIHandler::OnScannerListReceived(
   // denied the discovery dialog or the backend refused to do discovery.  Treat
   // both cases as not approved so the user will be prompted again.
   state.discovery_approved =
-      api_response.result != api::document_scan::OperationResult::kAccessDenied;
+      response.result != api::document_scan::OperationResult::kAccessDenied;
 
-  for (auto& scanner : api_response.scanners) {
+  for (auto& scanner : response.scanners) {
     state.active_scanner_ids[scanner.scanner_id] = {.name = scanner.name};
   }
 
-  std::move(callback).Run(std::move(api_response));
+  std::move(callback).Run(std::move(response));
 }
 
 void DocumentScanAPIHandler::OpenScanner(

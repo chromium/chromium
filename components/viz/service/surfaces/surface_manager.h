@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -17,24 +18,25 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation_traits.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "components/viz/service/frame_sinks/frame_sink_observer.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 
 #if DCHECK_IS_ON()
 #include <iosfwd>
-#include <string>
 #endif
 
 namespace base {
@@ -86,9 +88,10 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // destroyed when MarkSurfaceForDestruction is called, all of its destruction
   // dependencies are satisfied, and it is not reachable from the root surface.
   // A temporary reference will be added to the new Surface.
-  Surface* CreateSurface(base::WeakPtr<SurfaceClient> surface_client,
-                         const SurfaceInfo& surface_info,
-                         const SurfaceId& pending_copy_surface_id);
+  base::expected<Surface*, std::string> CreateSurface(
+      base::WeakPtr<SurfaceClient> surface_client,
+      const SurfaceInfo& surface_info,
+      const SurfaceId& pending_copy_surface_id);
 
   // Marks |surface_id| for destruction. The surface will get destroyed when
   // it's not reachable from the root or any other surface that is not marked
@@ -207,6 +210,14 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Indicates that the set of frame sinks being aggregated for display has
   // changed since the previous aggregation.
   void AggregatedFrameSinksChanged();
+
+  // Add and Remove FrameSinkObserver
+  void AddFrameSinkObserver(FrameSinkObserver* obs);
+  void RemoveFrameSinkObserver(FrameSinkObserver* obs);
+
+  // Checks whether FrameSinkManager has view `transition_token`.
+  bool FrameSinkManagerHasViewTransitionToken(
+      const blink::ViewTransitionToken& transition_token);
 
   using CommitPredicate =
       base::FunctionRef<bool(const SurfaceId&, const BeginFrameId&)>;
@@ -370,5 +381,21 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 };
 
 }  // namespace viz
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<viz::SurfaceManager, viz::FrameSinkObserver> {
+  static void AddObserver(viz::SurfaceManager* source,
+                          viz::FrameSinkObserver* observer) {
+    source->AddFrameSinkObserver(observer);
+  }
+  static void RemoveObserver(viz::SurfaceManager* source,
+                             viz::FrameSinkObserver* observer) {
+    source->RemoveFrameSinkObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // COMPONENTS_VIZ_SERVICE_SURFACES_SURFACE_MANAGER_H_

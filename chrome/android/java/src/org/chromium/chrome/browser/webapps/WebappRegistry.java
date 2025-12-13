@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -23,6 +23,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
@@ -58,6 +60,7 @@ import java.util.Set;
  * when the user removes a web app from the home screen. The WebappDataStorage.wasUsedRecently()
  * heuristic attempts to compensate for this.
  */
+@NullMarked
 public class WebappRegistry {
     static final String REGISTRY_FILE_NAME = "webapp_registry";
     static final String KEY_WEBAPP_SET = "webapp_set";
@@ -135,7 +138,7 @@ public class WebappRegistry {
     public void register(final String webappId, final FetchWebappDataStorageCallback callback) {
         new AsyncTask<WebappDataStorage>() {
             @Override
-            protected final WebappDataStorage doInBackground() {
+            protected WebappDataStorage doInBackground() {
                 // Create the WebappDataStorage on the background thread, as this must create and
                 // open a new SharedPreferences.
                 WebappDataStorage storage = WebappDataStorage.open(webappId);
@@ -147,7 +150,7 @@ public class WebappRegistry {
             }
 
             @Override
-            protected final void onPostExecute(WebappDataStorage storage) {
+            protected void onPostExecute(WebappDataStorage storage) {
                 // Update the last used time in order to prevent
                 // {@link WebappRegistry@unregisterOldWebapps()} from deleting the
                 // WebappDataStorage. Must be run on the main thread as
@@ -162,22 +165,24 @@ public class WebappRegistry {
 
     /**
      * Returns the WebappDataStorage object for webappId, or null if one cannot be found.
+     *
      * @param webappId The id of the web app.
      * @return The storage object for the web app, or null if webappId is not registered.
      */
-    public WebappDataStorage getWebappDataStorage(String webappId) {
+    public @Nullable WebappDataStorage getWebappDataStorage(@Nullable String webappId) {
         return mStorages.get(webappId);
     }
 
     /**
      * Returns the WebappDataStorage object whose scope most closely matches the provided URL, or
      * null if a matching web app cannot be found. The most closely matching scope is the longest
-     * scope which has the same prefix as the URL to open.
-     * Note: this function skips any storage object associated with WebAPKs.
+     * scope which has the same prefix as the URL to open. Note: this function skips any storage
+     * object associated with WebAPKs.
+     *
      * @param url The URL to search for.
      * @return The storage object for the web app, or null if one cannot be found.
      */
-    public WebappDataStorage getWebappDataStorageForUrl(final String url) {
+    public @Nullable WebappDataStorage getWebappDataStorageForUrl(final String url) {
         WebappDataStorage bestMatch = null;
         int largestOverlap = 0;
         for (WebappDataStorage storage : mStorages.values()) {
@@ -216,8 +221,9 @@ public class WebappRegistry {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
-            if (scope.startsWith(origin)
-                    && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
+            String webApkPackageName = storage.getWebApkPackageName();
+            assumeNonNull(webApkPackageName);
+            if (scope.startsWith(origin) && PackageUtils.isPackageInstalled(webApkPackageName)) {
                 return true;
             }
         }
@@ -231,7 +237,9 @@ public class WebappRegistry {
             String scope = getWebApkScopeFromStorage(storage);
             if (scope.isEmpty()) continue;
 
-            origins.add(Origin.create(scope).toString());
+            Origin origin = Origin.create(scope);
+            assumeNonNull(origin);
+            origins.add(origin.toString());
         }
         return origins;
     }
@@ -272,7 +280,7 @@ public class WebappRegistry {
      * Returns a List of |WebApkSpecifics| protos.
      */
     public List<WebApkSpecifics> getWebApkSpecificsImpl(
-            GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting) {
+            @Nullable GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting) {
         List<WebApkSpecifics> webApkSpecificsList = new ArrayList<>();
         for (WebappDataStorage storage : mStorages.values()) {
             String scope = getWebApkScopeFromStorage(storage);
@@ -344,10 +352,12 @@ public class WebappRegistry {
      */
     public List<String> findWebApksWithPendingUpdate() {
         List<String> webApkIdsWithPendingUpdate = new ArrayList<>();
-        for (HashMap.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
+        for (Map.Entry<String, WebappDataStorage> entry : mStorages.entrySet()) {
             WebappDataStorage storage = entry.getValue();
+            String webApkPackageName = storage.getWebApkPackageName();
+            assumeNonNull(webApkPackageName);
             if (!TextUtils.isEmpty(storage.getPendingUpdateRequestPath())
-                    && PackageUtils.isPackageInstalled(storage.getWebApkPackageName())) {
+                    && PackageUtils.isPackageInstalled(webApkPackageName)) {
                 webApkIdsWithPendingUpdate.add(entry.getKey());
             }
         }
@@ -361,7 +371,7 @@ public class WebappRegistry {
      * @param manifestId The manifestId to search for.
      * @return The package name for the WebAPK, or null if one cannot be found.
      */
-    public @Nullable String findWebApkWithManifestId(String manifestId) {
+    public @Nullable String findWebApkWithManifestId(@Nullable String manifestId) {
         WebappDataStorage storage = getWebappDataStorageForManifestId(manifestId);
         if (storage != null) {
             return storage.getWebApkPackageName();
@@ -370,12 +380,14 @@ public class WebappRegistry {
     }
 
     /**
-     * Returns the WebappDataStorage object whose manifestId matches the provided manifestId.
-     * Note: this function skips any storage object associated with WebAPKs.
+     * Returns the WebappDataStorage object whose manifestId matches the provided manifestId. Note:
+     * this function skips any storage object associated with WebAPKs.
+     *
      * @param manifestId The manifestId to search for.
      * @return The storage object for the WebAPK, or null if one cannot be found.
      */
-    WebappDataStorage getWebappDataStorageForManifestId(final String manifestId) {
+    @Nullable WebappDataStorage getWebappDataStorageForManifestId(
+            final @Nullable String manifestId) {
         if (TextUtils.isEmpty(manifestId)) return null;
 
         for (WebappDataStorage storage : mStorages.values()) {
@@ -396,7 +408,7 @@ public class WebappRegistry {
     }
 
     void clearForTesting() {
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
             it.next().getValue().delete();
             it.remove();
@@ -418,9 +430,9 @@ public class WebappRegistry {
             return;
         }
 
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, WebappDataStorage> entry = it.next();
+            Map.Entry<String, WebappDataStorage> entry = it.next();
             WebappDataStorage storage = entry.getValue();
             String webApkPackage = storage.getWebApkPackageName();
             if (webApkPackage != null) {
@@ -448,8 +460,7 @@ public class WebappRegistry {
      * Returns whether the {@link WebappDataStorage} should be deleted for the passed-in WebAPK
      * package.
      */
-    private static boolean shouldDeleteStorageForWebApk(
-            @NonNull String id, @NonNull String webApkPackageName) {
+    private static boolean shouldDeleteStorageForWebApk(String id, String webApkPackageName) {
         // Prefix check that the key matches the current scheme instead of an old deprecated naming
         // scheme. This is necessary as we migrate away from the old naming scheme and garbage
         // collect.
@@ -481,9 +492,9 @@ public class WebappRegistry {
      */
     @VisibleForTesting
     void unregisterWebappsForUrlsImpl(UrlFilter urlFilter) {
-        Iterator<HashMap.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
+        Iterator<Map.Entry<String, WebappDataStorage>> it = mStorages.entrySet().iterator();
         while (it.hasNext()) {
-            HashMap.Entry<String, WebappDataStorage> entry = it.next();
+            Map.Entry<String, WebappDataStorage> entry = it.next();
             WebappDataStorage storage = entry.getValue();
             if (urlFilter.matchesUrl(storage.getUrl())) {
                 storage.delete();
@@ -534,7 +545,7 @@ public class WebappRegistry {
         mStorages.clear();
     }
 
-    private void initStorages(String idToInitialize) {
+    private void initStorages(@Nullable String idToInitialize) {
         Set<String> webapps = mPreferences.getStringSet(KEY_WEBAPP_SET, Collections.emptySet());
         boolean initAll = (idToInitialize == null || idToInitialize.isEmpty());
         boolean initializing = initAll && !mIsInitialized;
@@ -556,6 +567,7 @@ public class WebappRegistry {
                 }
             }
         } else {
+            assumeNonNull(idToInitialize);
             if (webapps.contains(idToInitialize) && !mStorages.containsKey(idToInitialize)) {
                 initedStorages.add(
                         Pair.create(idToInitialize, WebappDataStorage.open(idToInitialize)));

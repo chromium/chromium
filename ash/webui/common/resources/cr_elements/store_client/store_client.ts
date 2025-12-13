@@ -31,7 +31,6 @@ export interface StoreClientInterface<S, A extends Action> {
 
   /**
    * Helper to dispatch an asynchronous action to the store.
-   * TODO(b/296440261) remove `dispatchAsync` in favor of promises.
    */
   dispatchAsync(action: DeferredAction<A>): void;
 
@@ -123,8 +122,6 @@ export function makeStoreClientMixin<S, A extends Action>(
       }
 
       updateFromStore(): void {
-        // TODO(b/296282541) assert that store is initialized instead of
-        // performing a runtime check.
         if (this.getStore().isInitialized()) {
           this.onStateChanged(this.getStore().data);
         }

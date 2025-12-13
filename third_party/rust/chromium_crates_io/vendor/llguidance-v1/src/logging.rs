@@ -120,11 +120,11 @@ impl Logger {
         std::mem::take(&mut self.buffer)
     }
 
-    pub fn info_logger(&mut self) -> InfoLogger {
+    pub fn info_logger(&mut self) -> InfoLogger<'_> {
         InfoLogger { logger: self }
     }
 
-    pub fn warning_logger(&mut self) -> WarningLogger {
+    pub fn warning_logger(&mut self) -> WarningLogger<'_> {
         WarningLogger { logger: self }
     }
 }

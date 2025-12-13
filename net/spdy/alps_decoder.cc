@@ -163,8 +163,7 @@ void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
         return;
       }
     }
-    accept_ch_.push_back(
-        spdy::AcceptChOriginValuePair{std::string(origin), std::string(value)});
+    accept_ch_.emplace_back(std::string(origin), std::string(value));
   }
 }
 

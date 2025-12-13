@@ -5,16 +5,18 @@
 #include "components/metrics/unsent_log_store.h"
 
 #include <stddef.h>
+
 #include <limits>
 
 #include "base/base64.h"
-#include "base/hash/sha1.h"
 #include "base/rand_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
+#include "crypto/obsolete/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
@@ -41,8 +43,9 @@ std::string GenerateLogWithMinCompressedSize(size_t min_compressed_size) {
   // Since the size check is done against a compressed log, generate enough
   // data that compresses to larger than |log_size|.
   std::string rand_bytes = base::RandBytesAsString(min_compressed_size);
-  while (Compress(rand_bytes).size() < min_compressed_size)
+  while (Compress(rand_bytes).size() < min_compressed_size) {
     rand_bytes.append(base::RandBytesAsString(min_compressed_size));
+  }
   SCOPED_TRACE(testing::Message()
                << "Using random data " << base::Base64Encode(rand_bytes));
   return rand_bytes;
@@ -183,9 +186,10 @@ TEST_F(UnsentLogStoreTest, LongButTinyLogList) {
   LogMetadata log_metadata;
 
   size_t log_count = kLogCountLimit * 5;
-  for (size_t i = 0; i < log_count; ++i)
+  for (size_t i = 0; i < log_count; ++i) {
     unsent_log_store.StoreLog("x", log_metadata,
                               MetricsLogsEventManager::CreateReason::kUnknown);
+  }
 
   EXPECT_EQ(log_count, unsent_log_store.size());
   unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
@@ -288,14 +292,15 @@ TEST_F(UnsentLogStoreTest, LongAndLargeLogList) {
   std::string log_data = GenerateLogWithMinCompressedSize(log_size);
   LogMetadata log_metadata;
   for (size_t i = 0; i < log_count; ++i) {
-    if (i == log_count - kLogCountLimit)
+    if (i == log_count - kLogCountLimit) {
       unsent_log_store.StoreLog(
           target_log, log_metadata,
           MetricsLogsEventManager::CreateReason::kUnknown);
-    else
+    } else {
       unsent_log_store.StoreLog(
           log_data, log_metadata,
           MetricsLogsEventManager::CreateReason::kUnknown);
+    }
   }
 
   unsent_log_store.TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
@@ -490,8 +495,9 @@ TEST_F(UnsentLogStoreTest, DiscardOrder) {
 }
 
 TEST_F(UnsentLogStoreTest, Hashes) {
-  const char kFooText[] = "foo";
-  const std::string foo_hash = base::SHA1HashString(kFooText);
+  const std::string kFooText = "foo";
+  const std::string foo_hash = Sha1ForUnsentLogStore(kFooText);
+
   LogMetadata log_metadata;
 
   TestUnsentLogStore unsent_log_store(&prefs_, kLogByteLimit);

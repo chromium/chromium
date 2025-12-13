@@ -24,7 +24,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -37,10 +37,10 @@ namespace android {
 namespace {
 const char kOfflineContentAggregatorBridgeUserDataKey[] = "aggregator_bridge";
 
-ContentId JNI_OfflineContentAggregatorBridge_CreateContentId(
+static ContentId JNI_OfflineContentAggregatorBridge_CreateContentId(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   return ContentId(ConvertJavaStringToUTF8(env, j_namespace),
                    ConvertJavaStringToUTF8(env, j_id));
 }
@@ -134,8 +134,8 @@ void OfflineContentAggregatorBridge::OpenItem(
     JNIEnv* env,
     jint launch_location,
     jboolean j_open_in_incognito,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   OpenParams open_params(static_cast<LaunchLocation>(launch_location));
   open_params.open_in_incognito = j_open_in_incognito;
   provider_->OpenItem(open_params,
@@ -145,40 +145,40 @@ void OfflineContentAggregatorBridge::OpenItem(
 
 void OfflineContentAggregatorBridge::RemoveItem(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   provider_->RemoveItem(JNI_OfflineContentAggregatorBridge_CreateContentId(
       env, j_namespace, j_id));
 }
 
 void OfflineContentAggregatorBridge::CancelDownload(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   provider_->CancelDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
       env, j_namespace, j_id));
 }
 
 void OfflineContentAggregatorBridge::PauseDownload(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_guid) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_guid) {
   provider_->PauseDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
       env, j_namespace, j_guid));
 }
 
 void OfflineContentAggregatorBridge::ResumeDownload(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   provider_->ResumeDownload(JNI_OfflineContentAggregatorBridge_CreateContentId(
       env, j_namespace, j_id));
 }
 
 void OfflineContentAggregatorBridge::ValidateDangerousDownload(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id) {
   provider_->ValidateDangerousDownload(
       JNI_OfflineContentAggregatorBridge_CreateContentId(env, j_namespace,
                                                          j_id));
@@ -186,9 +186,9 @@ void OfflineContentAggregatorBridge::ValidateDangerousDownload(
 
 void OfflineContentAggregatorBridge::GetItemById(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id,
+    const JavaRef<jobject>& jcallback) {
   OfflineContentProvider::SingleItemCallback callback =
       base::BindOnce(&RunGetItemByIdCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));
@@ -199,7 +199,7 @@ void OfflineContentAggregatorBridge::GetItemById(
 
 void OfflineContentAggregatorBridge::GetAllItems(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaRef<jobject>& jcallback) {
   OfflineContentProvider::MultipleItemCallback callback =
       base::BindOnce(&RunGetAllItemsCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(jcallback));
@@ -209,9 +209,9 @@ void OfflineContentAggregatorBridge::GetAllItems(
 
 void OfflineContentAggregatorBridge::GetVisualsForItem(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id,
+    const JavaRef<jobject>& j_callback) {
   provider_->GetVisualsForItem(
       JNI_OfflineContentAggregatorBridge_CreateContentId(env, j_namespace,
                                                          j_id),
@@ -222,9 +222,9 @@ void OfflineContentAggregatorBridge::GetVisualsForItem(
 
 void OfflineContentAggregatorBridge::GetShareInfoForItem(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id,
+    const JavaRef<jobject>& j_callback) {
   provider_->GetShareInfoForItem(
       JNI_OfflineContentAggregatorBridge_CreateContentId(env, j_namespace,
                                                          j_id),
@@ -234,10 +234,10 @@ void OfflineContentAggregatorBridge::GetShareInfoForItem(
 
 void OfflineContentAggregatorBridge::RenameItem(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_namespace,
-    const JavaParamRef<jstring>& j_id,
-    const JavaParamRef<jstring>& j_name,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jstring>& j_namespace,
+    const JavaRef<jstring>& j_id,
+    const JavaRef<jstring>& j_name,
+    const JavaRef<jobject>& j_callback) {
   base::OnceCallback<void(RenameResult)> callback = base::BindOnce(
       &RenameItemCallback,
       base::android::ScopedJavaGlobalRef<jobject>(env, j_callback));
@@ -289,3 +289,5 @@ void OfflineContentAggregatorBridge::OnContentProviderGoingDown() {
 
 }  // namespace android
 }  // namespace offline_items_collection
+
+DEFINE_JNI(OfflineContentAggregatorBridge)

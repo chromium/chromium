@@ -97,8 +97,6 @@ NetworkPredictionSetting SettingWithItemType(ItemType item_type) {
 
 - (void)loadModel {
   [super loadModel];
-  self.styler.cellTitleColor = [UIColor colorNamed:kTextPrimaryColor];
-
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierOptions];
 

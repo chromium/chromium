@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="20dp">
+
+    <ScrollView
+        android:id="@+id/opt_in_scrollview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:scrollbars="none"
+        tools:ignore="UselessParent,MergeRootFrame">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/opt_in_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:importantForAccessibility="no"
+                android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/tips_opt_in_logo"/>
+
+            <LinearLayout
+                android:accessibilityHeading="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/opt_in_title_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_title_padding"
+                    android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                    android:textAppearance="@style/TextAppearance.Headline"
+                    android:gravity="center_horizontal|top"
+                    android:text="@string/tips_opt_in_bottom_sheet_title"/>
+
+                <TextView
+                    android:id="@+id/opt_in_description_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="24dp"
+                    android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                    android:lineSpacingExtra="4dp"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    android:gravity="center_horizontal|top"
+                    android:text="@string/tips_opt_in_bottom_sheet_description"/>
+
+            </LinearLayout>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/opt_in_positive_button" style="@style/FilledButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
+                android:text="@string/tips_opt_in_bottom_sheet_positive_button_text"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/opt_in_negative_button" style="@style/TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"
+                android:text="@string/tips_opt_in_bottom_sheet_negative_button_text"/>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

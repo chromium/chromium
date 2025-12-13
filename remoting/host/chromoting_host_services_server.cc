@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/isolated_connection.h"

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 
 ScopedTempDirWithRetry::ScopedTempDirWithRetry() = default;
 

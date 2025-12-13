@@ -32,10 +32,14 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/node_cloning_data.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -48,10 +52,11 @@ HTMLTemplateElement::~HTMLTemplateElement() = default;
 
 DocumentFragment* HTMLTemplateElement::content() const {
   CHECK(!override_insertion_target_);
-  if (!content_ && GetExecutionContext())
+  if (!content_ && GetExecutionContext()) {
     content_ = MakeGarbageCollected<TemplateContentDocumentFragment>(
         GetDocument().EnsureTemplateDocument(),
         const_cast<HTMLTemplateElement*>(this));
+  }
 
   return content_.Get();
 }
@@ -64,14 +69,17 @@ void HTMLTemplateElement::CloneNonAttributePropertiesFrom(
     return;
   }
   auto& html_template_element = To<HTMLTemplateElement>(source);
-  if (html_template_element.content())
-    content()->CloneChildNodesFrom(*html_template_element.content(), data);
+  if (html_template_element.content()) {
+    content()->CloneChildNodesFrom(*html_template_element.content(), data,
+                                   /*fallback_registry*/ nullptr);
+  }
 }
 
 void HTMLTemplateElement::DidMoveToNewDocument(Document& old_document) {
   HTMLElement::DidMoveToNewDocument(old_document);
-  if (!content_ || !GetExecutionContext())
+  if (!content_ || !GetExecutionContext()) {
     return;
+  }
   GetDocument().EnsureTemplateDocument().AdoptIfNeeded(*content_);
 }
 

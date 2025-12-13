@@ -7,17 +7,18 @@ package org.chromium.chrome.browser.share.scroll_capture;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Delegate to handle Android S API calls for {@link ScrollCaptureManager}. */
 @NullMarked
 public interface ScrollCaptureManagerDelegate {
     /** Sets up scroll capture API for a {@link View}. */
-    public void addScrollCaptureBindings(View view);
+    void addScrollCaptureBindings(View view);
 
     /** Removes the scroll capture API bindings from a {@link View}. */
-    public void removeScrollCaptureBindings(View view);
+    void removeScrollCaptureBindings(View view);
 
     /** Updates the current tab. */
-    public void setCurrentTab(Tab tab);
+    void setCurrentTab(@Nullable Tab tab);
 }

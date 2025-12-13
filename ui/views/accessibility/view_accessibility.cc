@@ -25,6 +25,7 @@
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
+#include "ui/views/accessibility/tree/widget_ax_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
@@ -89,7 +90,7 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   // the `BrowserAccessibilityManager` owned by the `BrowserViewsAXManager`.
   // ViewAccessibility is only used to managed the current accessibility state
   // for a view.
-  if (::features::IsAccessibilityTreeForViewsEnabled()) {
+  if (IsViewsAccessibilityTreeEnabled()) {
     // Cannot use std::make_unique because constructor is protected.
     return base::WrapUnique(new ViewAccessibility(view));
   }
@@ -103,6 +104,17 @@ std::unique_ptr<ViewAccessibility> ViewAccessibility::Create(View* view) {
   return ViewAXPlatformNodeDelegateMac::CreatePlatformSpecific(view);
 #elif BUILDFLAG(IS_LINUX)
   return ViewAXPlatformNodeDelegateAuraLinux::CreatePlatformSpecific(view);
+#endif
+}
+
+// static
+bool ViewAccessibility::IsViewsAccessibilityTreeEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // ChromeOS never uses the Views accessibility tree, even if the feature is
+  // enabled elsewhere. Instead, it uses the Automation API.
+  return false;
+#else
+  return ::features::IsAccessibilityTreeForViewsEnabled();
 #endif
 }
 
@@ -142,6 +154,8 @@ void ViewAccessibility::AddVirtualChildViewAt(
 
   AXVirtualView* added_view = virtual_children_[index].get();
   added_view->OnViewHasNewAncestor(view_);
+
+  AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
@@ -160,6 +174,9 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_)) {
     OverrideFocus(nullptr);
   }
+
+  AXUpdateNotifier::Get()->NotifyChildRemoved(child.get(), this);
+
   return child;
 }
 
@@ -215,7 +232,7 @@ void ViewAccessibility::NotifyEvent(ax::mojom::Event event_type,
     return;
   }
 
-  Widget* const widget = view_->GetWidget();
+  Widget* const widget = GetWidget();
   // If it belongs to a widget but its native widget is already destructed, do
   // not send such accessibility event as it's unexpected to send such events
   // during destruction, and is likely to lead to crashes/problems.
@@ -968,11 +985,37 @@ void ViewAccessibility::OnTooltipTextChanged(
 }
 
 void ViewAccessibility::OnViewAddedToWidget() {
-  // Ideally, we would like to set the class name when the object is created,
-  // this would be done in the ctor, but due to inheritance and the
-  // implementation of `GetClassName`, it would not work. As such, we set it
-  // here, since at this point the view object is fully initialized.
-  SetClassName(std::string(view_->GetClassName()));
+  if (ViewAccessibility* parent = GetUnignoredParent()) {
+    AXUpdateNotifier::Get()->NotifyChildAdded(this, parent);
+  }
+
+  // The accessibility class name is set after the view has been attached
+  // to a widget, ensuring the object is fully constructed and its class
+  // name is stable.
+  std::string effective_class = std::string(view_->GetClassName());
+
+#if BUILDFLAG(IS_WIN)
+  // On Windows, Narrator restricts focus to web content in Scan Mode only when
+  // the root web area’s parent has class name "Chrome_WidgetWin_1". This is a
+  // hardcoded behavior. It worked before Chromium enabled UIA by default, since
+  // the MSAA Proxy added the root web area under a window with that class name.
+  // We’re collaborating with the Narrator team to update their tab detection
+  // logic, but rollout will take time. This is a temporary mitigation. See
+  // https://crbug.com/443225250 for details.
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
+      features::IsFixNarratorWebContentContainmentEnabled() &&
+      effective_class == "ContentsContainerView") {
+    effective_class = "Chrome_WidgetWin_1";
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  SetClassName(effective_class);
+}
+
+void ViewAccessibility::OnViewRemovedFromWidget() {
+  if (ViewAccessibility* parent = GetUnignoredParent()) {
+    AXUpdateNotifier::Get()->NotifyChildRemoved(this, parent);
+  }
 }
 
 void ViewAccessibility::SetPlaceholder(const std::string& placeholder) {
@@ -1378,8 +1421,8 @@ void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
   if (tree_id != ui::AXTreeIDUnknown()) {
     data_.AddChildTreeId(tree_id);
 
-    const views::Widget* widget = view_->GetWidget();
-    if (widget && widget->GetNativeView() && display::Screen::GetScreen()) {
+    const views::Widget* widget = GetWidget();
+    if (widget && widget->GetNativeView() && display::Screen::Get()) {
       // TODO(accessibility): There potentially could be an issue where the
       // device scale factor changes from the time the tree ID is set to the
       // time `GetAccessibleNodeData` is queried. If this ever pops up, a
@@ -1388,7 +1431,7 @@ void ViewAccessibility::SetChildTreeID(ui::AXTreeID tree_id) {
       // display changes, we can update the scale factor in the cache, probably
       // by implementing `OnDisplayMetricsChanged`.
       const float scale_factor =
-          display::Screen::GetScreen()
+          display::Screen::Get()
               ->GetDisplayNearestView(widget->GetNativeView())
               .device_scale_factor();
       SetChildTreeScaleFactor(scale_factor);
@@ -1422,12 +1465,24 @@ void ViewAccessibility::SetChildTreeScaleFactor(float scale_factor) {
 }
 
 gfx::NativeViewAccessible ViewAccessibility::GetNativeObject() const {
-  return gfx::NativeViewAccessible();
+  if (!IsViewsAccessibilityTreeEnabled()) {
+    return gfx::NativeViewAccessible();
+  }
+
+  // TODO(crbug.com/40672241): Investigate whether this function should
+  // be removed altogether. Does it still make sense to let Views
+  // access the native accessible object directly with ViewsAX, or should the
+  // Views and Accessibility layer be completely separate?
+  Widget* widget = GetWidget();
+  if (!widget || !widget->ax_manager()) {
+    return gfx::NativeViewAccessible();
+  }
+
+  return widget->ax_manager()->GetNativeViewAccessibleForId(GetUniqueId());
 }
 
 void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
-  CHECK(view_);
-  if (auto* const widget = view_->GetWidget()) {
+  if (auto* const widget = GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
       root_view->AnnounceTextAs(std::u16string(text),
@@ -1437,8 +1492,7 @@ void ViewAccessibility::AnnounceAlert(std::u16string_view text) {
 }
 
 void ViewAccessibility::AnnouncePolitely(std::u16string_view text) {
-  CHECK(view_);
-  if (auto* const widget = view_->GetWidget()) {
+  if (auto* const widget = GetWidget()) {
     if (auto* const root_view =
             static_cast<internal::RootView*>(widget->GetRootView())) {
       root_view->AnnounceTextAs(std::u16string(text),
@@ -1622,7 +1676,7 @@ void ViewAccessibility::OnWidgetDestroyed(Widget* widget) {
 
 void ViewAccessibility::OnWidgetUpdated(Widget* widget, Widget* old_widget) {
   CHECK(widget);
-  DCHECK_EQ(widget, view_->GetWidget());
+  DCHECK_EQ(widget, GetWidget());
   if (widget == old_widget) {
     return;
   }

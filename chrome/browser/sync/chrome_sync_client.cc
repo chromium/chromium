@@ -32,11 +32,6 @@
 #include "components/trusted_vault/trusted_vault_service.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace browser_sync {
 namespace {
 
@@ -156,36 +151,6 @@ bool ChromeSyncClient::IsCustomPassphraseAllowed() {
     return supervised_user_settings_service_->IsCustomPassphraseAllowed();
   }
   return true;
-}
-
-bool ChromeSyncClient::IsPasswordSyncAllowed() {
-#if BUILDFLAG(IS_ANDROID)
-  return pref_service_->GetInteger(
-             password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores) !=
-             static_cast<int>(
-                 password_manager::prefs::UseUpmLocalAndSeparateStoresState::
-                     kOffAndMigrationPending) ||
-         base::FeatureList::IsEnabled(
-             password_manager::features::kLoginDbDeprecationAndroid);
-#else
-  return true;
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
-void ChromeSyncClient::SetPasswordSyncAllowedChangeCb(
-    const base::RepeatingClosure& cb) {
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(!upm_pref_change_registrar_.prefs())
-      << "SetPasswordSyncAllowedChangeCb() must be called at most once";
-  upm_pref_change_registrar_.Init(pref_service_);
-  // This overfires: the kPasswordsUseUPMLocalAndSeparateStores pref might have
-  // changed value, but not IsPasswordSyncAllowed(). That's fine, `cb` should
-  // handle this case.
-  upm_pref_change_registrar_.Add(
-      password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, cb);
-#else
-  // IsPasswordSyncAllowed() doesn't change outside of Android.
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(

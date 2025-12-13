@@ -8,6 +8,9 @@
 <script src="/common/reftest-wait.js"></script>
 
 <style>
+:root {
+  scrollbar-width: none;
+}
 .target {
   width: 100px;
   height: 100px;
@@ -35,8 +38,8 @@
   animation-duration: 500s;
 }
 
-::view-transtion-group(*),
-::view-transtion-image-pair(*) {
+::view-transition-group(*),
+::view-transition-image-pair(*) {
   animation-play-state: paused;
 }
 

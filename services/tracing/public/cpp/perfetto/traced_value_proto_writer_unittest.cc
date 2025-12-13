@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/perfetto_proto_appender.h"
@@ -201,10 +197,11 @@ TEST_F(TracedValueProtoWriterTest, Hierarchy) {
 TEST_F(TracedValueProtoWriterTest, LongStrings) {
   std::string kLongString = "supercalifragilisticexpialidocious";
   std::string kLongString2 = "0123456789012345678901234567890123456789";
-  char kLongString3[4096];
-  for (size_t i = 0; i < sizeof(kLongString3); ++i)
+  std::array<char, 4096> kLongString3;
+  for (size_t i = 0; i < kLongString3.size(); ++i) {
     kLongString3[i] = 'a' + (i % 25);
-  kLongString3[sizeof(kLongString3) - 1] = '\0';
+  }
+  kLongString3[kLongString3.size() - 1] = '\0';
 
   std::unique_ptr<TracedValue> value(new TracedValue());
   value->SetString("a", "short");
@@ -213,7 +210,7 @@ TEST_F(TracedValueProtoWriterTest, LongStrings) {
   value->AppendString(kLongString2);
   value->AppendString("");
   value->BeginDictionary();
-  value->SetString("a", kLongString3);
+  value->SetString("a", kLongString3.data());
   value->EndDictionary();
   value->EndArray();
 
@@ -231,7 +228,7 @@ TEST_F(TracedValueProtoWriterTest, LongStrings) {
   EXPECT_TRUE(c_subdict);
   EXPECT_EQ(c_subdict->dict_values_size(), 1);
   EXPECT_EQ(c_subdict->nested_type(), NestedValue::DICT);
-  EXPECT_TRUE(IsValue(FindDictEntry(c_subdict, "a"), kLongString3));
+  EXPECT_TRUE(IsValue(FindDictEntry(c_subdict, "a"), kLongString3.data()));
 }
 
 // Test that the proto which results from the TracedValue is still

@@ -10,20 +10,22 @@
 
 #include <utility>
 
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/buffer_types.h"
 
 namespace gfx {
 
 class NativePixmapDmaBufTest
-    : public ::testing::TestWithParam<gfx::BufferFormat> {
+    : public ::testing::TestWithParam<viz::SharedImageFormat> {
  protected:
   gfx::NativePixmapHandle CreateMockNativePixmapHandle(
       gfx::Size image_size,
-      const gfx::BufferFormat format) {
+      viz::SharedImageFormat format) {
     gfx::NativePixmapHandle handle;
     handle.modifier = 1;
-    const int num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
+    const int num_planes = format.NumberOfPlanes();
     for (int i = 0; i < num_planes; ++i) {
       // These values are arbitrarily chosen to be different from each other.
       const int stride = (i + 1) * image_size.width();
@@ -41,12 +43,12 @@ class NativePixmapDmaBufTest
 
 INSTANTIATE_TEST_SUITE_P(ConvertTest,
                          NativePixmapDmaBufTest,
-                         ::testing::Values(gfx::BufferFormat::RGBX_8888,
-                                           gfx::BufferFormat::YVU_420));
+                         ::testing::Values(viz::SinglePlaneFormat::kRGBX_8888,
+                                           viz::MultiPlaneFormat::kYV12));
 
 // Verifies NativePixmapDmaBuf conversion from and to NativePixmapHandle.
 TEST_P(NativePixmapDmaBufTest, Convert) {
-  const gfx::BufferFormat format = GetParam();
+  viz::SharedImageFormat format = GetParam();
   const gfx::Size image_size(128, 64);
 
   gfx::NativePixmapHandle handle =
@@ -61,9 +63,8 @@ TEST_P(NativePixmapDmaBufTest, Convert) {
   EXPECT_EQ(native_pixmap_dmabuf->GetBufferFormatModifier(),
             handle_clone.modifier);
   // NativePixmap to NativePixmapHandle.
-  const size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(
-      native_pixmap_dmabuf->GetBufferFormat());
-  for (size_t i = 0; i < num_planes; ++i) {
+  const int num_planes = format.NumberOfPlanes();
+  for (int i = 0; i < num_planes; ++i) {
     EXPECT_EQ(native_pixmap_dmabuf->GetDmaBufPitch(i),
               handle_clone.planes[i].stride);
     EXPECT_EQ(native_pixmap_dmabuf->GetDmaBufOffset(i),

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -30,6 +32,9 @@ import androidx.fragment.app.DialogFragment;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -55,6 +60,7 @@ import java.util.Set;
  * We use proper bundle construction (through the {@link #newInstance(String[], int[], String[])}
  * method) and onActivityResult return conventions.
  */
+@NullMarked
 public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     private class ClearBrowsingDataAdapter extends ArrayAdapter<String>
             implements AdapterView.OnItemClickListener {
@@ -63,7 +69,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         private final RoundedIconGenerator mIconGenerator;
 
         private ClearBrowsingDataAdapter(
-                String[] domains, String[] faviconURLs, Resources resources) {
+                String[] domains, String @Nullable [] faviconURLs, Resources resources) {
             super(getActivity(), R.layout.confirm_important_sites_list_row, domains);
             mDomains = domains;
             mFaviconURLs = faviconURLs;
@@ -77,7 +83,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, @Nullable View convertView, ViewGroup parent) {
             View childView = convertView;
             if (childView == null) {
                 LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -96,8 +102,10 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
 
         private void configureChildView(int position, ViewAndFaviconHolder viewHolder) {
             String domain = mDomains[position];
-            viewHolder.checkboxView.setChecked(mCheckedState.get(domain));
+            assumeNonNull(viewHolder.checkboxView)
+                    .setChecked(Boolean.TRUE.equals(mCheckedState.get(domain)));
             viewHolder.checkboxView.setText(domain);
+            assert mFaviconURLs != null;
             loadFavicon(viewHolder, mFaviconURLs[position]);
         }
 
@@ -109,9 +117,9 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String domain = mDomains[position];
             ViewAndFaviconHolder viewHolder = (ViewAndFaviconHolder) view.getTag();
-            boolean isChecked = mCheckedState.get(domain);
+            boolean isChecked = Boolean.TRUE.equals(mCheckedState.get(domain));
             mCheckedState.put(domain, !isChecked);
-            viewHolder.checkboxView.setChecked(!isChecked);
+            assumeNonNull(viewHolder.checkboxView).setChecked(!isChecked);
         }
 
         private void loadFavicon(final ViewAndFaviconHolder viewHolder, final String url) {
@@ -119,7 +127,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                     new LargeIconCallback() {
                         @Override
                         public void onLargeIconAvailable(
-                                Bitmap icon,
+                                @Nullable Bitmap icon,
                                 int fallbackColor,
                                 boolean isFallbackColorDefault,
                                 @IconType int iconType) {
@@ -132,10 +140,11 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                                             mIconGenerator,
                                             getResources(),
                                             mFaviconSize);
-                            viewHolder.imageView.setImageDrawable(image);
+                            assumeNonNull(viewHolder.imageView).setImageDrawable(image);
                         }
                     };
-            mLargeIconBridge.getLargeIconForStringUrl(url, mFaviconSize, viewHolder.imageCallback);
+            assumeNonNull(mLargeIconBridge)
+                    .getLargeIconForStringUrl(url, mFaviconSize, viewHolder.imageCallback);
         }
     }
 
@@ -145,9 +154,9 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
      * the favicon image callback so that we can make sure we load the correct favicon.
      */
     private static class ViewAndFaviconHolder {
-        public CheckBox checkboxView;
-        public ImageView imageView;
-        public LargeIconCallback imageCallback;
+        public @Nullable CheckBox checkboxView;
+        public @Nullable ImageView imageView;
+        public @Nullable LargeIconCallback imageCallback;
     }
 
     /**
@@ -158,7 +167,9 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
      * @return An instance of ConfirmImportantSitesDialogFragment with the bundle arguments set.
      */
     public static ConfirmImportantSitesDialogFragment newInstance(
-            String[] importantDomains, int[] importantDomainReasons, String[] faviconURLs) {
+            String @Nullable [] importantDomains,
+            int @Nullable [] importantDomainReasons,
+            String @Nullable [] faviconURLs) {
         ConfirmImportantSitesDialogFragment dialogFragment =
                 new ConfirmImportantSitesDialogFragment();
         Bundle bundle = new Bundle();
@@ -206,36 +217,39 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     private final Map<String, Integer> mImportantDomainsReasons;
 
     /** Array of favicon urls to use for each important domain above. */
-    private String[] mFaviconURLs;
+    private String @Nullable [] mFaviconURLs;
 
     /** The map of domains to the checked state, where true is checked. */
     private final Map<String, Boolean> mCheckedState;
 
     /** The alert dialog shown to the user. */
-    private AlertDialog mDialog;
+    private @Nullable AlertDialog mDialog;
 
     /** Our adapter that we use with the list view in the dialog. */
-    private ClearBrowsingDataAdapter mAdapter;
+    private @Nullable ClearBrowsingDataAdapter mAdapter;
 
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
 
     /** We store the custom list view for testing */
-    private ListView mSitesListView;
+    private @Nullable ListView mSitesListView;
 
     public ConfirmImportantSitesDialogFragment() {
         mImportantDomainsReasons = new HashMap<>();
         mCheckedState = new HashMap<>();
     }
 
+    @Initializer
     @Override
-    public void setArguments(Bundle args) {
+    public void setArguments(@Nullable Bundle args) {
+        assumeNonNull(args);
         super.setArguments(args);
-        mImportantDomains = args.getStringArray(IMPORTANT_DOMAINS_TAG);
+        mImportantDomains = assumeNonNull(args.getStringArray(IMPORTANT_DOMAINS_TAG));
         mFaviconURLs = args.getStringArray(FAVICON_URLS_TAG);
         int[] importantDomainReasons = args.getIntArray(IMPORTANT_DOMAIN_REASONS_TAG);
         for (int i = 0; i < mImportantDomains.length; ++i) {
+            assert importantDomainReasons != null;
             mImportantDomainsReasons.put(mImportantDomains[i], importantDomainReasons[i]);
             mCheckedState.put(mImportantDomains[i], true);
         }
@@ -251,7 +265,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     }
 
     @VisibleForTesting
-    public ListView getSitesList() {
+    public @Nullable ListView getSitesList() {
         return mSitesListView;
     }
 
@@ -264,7 +278,7 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         // We check the domains and urls as well due to crbug.com/622879.
         if (savedInstanceState != null) {
             // The important domains and favicon URLs aren't currently saved, so if this dialog
@@ -326,11 +340,11 @@ public class ConfirmImportantSitesDialogFragment extends DialogFragment {
                                     IGNORED_DOMAIN_REASONS_TAG,
                                     CollectionUtil.integerCollectionToIntArray(
                                             ignoredDomainReasons));
-                            getTargetFragment()
+                            assumeNonNull(getTargetFragment())
                                     .onActivityResult(
                                             getTargetRequestCode(), Activity.RESULT_OK, data);
                         } else {
-                            getTargetFragment()
+                            assumeNonNull(getTargetFragment())
                                     .onActivityResult(
                                             getTargetRequestCode(),
                                             Activity.RESULT_CANCELED,

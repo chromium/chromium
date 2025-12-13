@@ -15,6 +15,8 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/file_access/scoped_file_access.h"
 
 namespace safe_browsing {
@@ -109,7 +111,7 @@ class FilesRequestHandler : public RequestHandlerBase {
 
   void FileRequestCallbackForTesting(
       base::FilePath path,
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
  private:
@@ -119,36 +121,33 @@ class FilesRequestHandler : public RequestHandlerBase {
 
   // Called when the file info for `path` has been fetched. Also begins the
   // upload process.
-  void OnGotFileInfo(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      size_t index,
-      safe_browsing::BinaryUploadService::Result result,
-      safe_browsing::BinaryUploadService::Request::Data data);
+  void OnGotFileInfo(std::unique_ptr<BinaryUploadRequest> request,
+                     size_t index,
+                     ScanRequestUploadResult result,
+                     BinaryUploadRequest::Data data);
 
   // Called when a request is finished early without uploading it.
   // This is, e.g., called for encrypted files and responsible for posting the
   // required data to safe-browsing ui.
-  void FinishRequestEarly(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
-      safe_browsing::BinaryUploadService::Result result);
+  void FinishRequestEarly(std::unique_ptr<BinaryUploadRequest> request,
+                          ScanRequestUploadResult result);
 
   // Upload the request for deep scanning using the binary upload service.
   // These methods exist so they can be overridden in tests as needed.
   // The `result` argument exists as an optimization to finish the request early
   // when the result is known in advance to avoid using the upload service.
   virtual void UploadFileForDeepScanning(
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+      std::unique_ptr<BinaryUploadRequest> request);
 
   void FileRequestCallback(
       size_t index,
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       enterprise_connectors::ContentAnalysisResponse response);
 
-  void FileRequestStartCallback(
-      size_t index,
-      const safe_browsing::BinaryUploadService::Request& request);
+  void FileRequestStartCallback(size_t index,
+                                const BinaryUploadRequest& request);
 
   void MaybeCompleteScanRequest();
 

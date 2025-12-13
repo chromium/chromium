@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -246,6 +247,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
   // Tracks observed transient windows.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       transient_windows_observations_{this};
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      divider_window_observation_{this};
 
   // True when the divider is being dragged (not during its snap animation).
   bool is_resizing_with_divider_ = false;

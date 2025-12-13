@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/display/types/display_color_management.h"
 
+#include <cmath>
+
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-
-#include <cmath>
 
 namespace display {
 
@@ -147,7 +143,7 @@ void GammaCurve::Evaluate(float x,
   out_b = static_cast<uint16_t>(std::round(65535.f * b));
 }
 
-void GammaCurve::Evaluate(float rgb[3]) const {
+void GammaCurve::Evaluate(base::span<float, 3> rgb) const {
   for (size_t c = 0; c < 3; ++c) {
     rgb[c] = Evaluate(rgb[c], c);
   }

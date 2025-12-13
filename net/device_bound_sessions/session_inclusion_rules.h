@@ -121,10 +121,11 @@ class NET_EXPORT SessionInclusionRules final {
   // wildcards, and will match paths that start with the same path
   // components.
   //
-  // Returns whether the specified rule was added.
-  bool AddUrlRuleIfValid(InclusionResult rule_type,
-                         const std::string& host_pattern,
-                         const std::string& path_prefix);
+  // If the specified rule was added, returns kSuccess. Otherwise, returns the
+  // error that prevented the rule from being added.
+  SessionError::ErrorType AddUrlRuleIfValid(InclusionResult rule_type,
+                                            const std::string& host_pattern,
+                                            const std::string& path_prefix);
 
   // The origin that created/set the session that this applies to. By default,
   // sessions are origin-scoped unless specified otherwise.

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/renderer/native_extension_bindings_system.h"
 
 #include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -69,8 +65,8 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "v8/include/cppgc/allocation.h"
-#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-primitive.h"
@@ -209,7 +205,8 @@ void AddConsoleError(v8::Local<v8::Context> context, const std::string& error) {
 const base::Value::Dict& GetAPISchema(const std::string& api_name) {
   const base::Value::Dict* schema =
       ExtensionAPI::GetSharedInstance()->GetSchema(api_name);
-  CHECK(schema) << api_name;
+  // Don't use CHECK() here so we capture the `api_name` in the logs.
+  LOG_IF(FATAL, !schema) << "Unknown API " << api_name;
   return *schema;
 }
 
@@ -255,7 +252,7 @@ v8::Local<v8::Object> CreateRootBinding(v8::Local<v8::Context> context,
   v8::Local<v8::Object> binding_object =
       bindings_system->CreateAPIInstance(name, context, &hooks);
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   auto* bridge = cppgc::MakeGarbageCollected<APIBindingBridge>(
       isolate->GetCppHeap()->GetAllocationHandle(), hooks, context,
       binding_object, script_context->GetExtensionID(),
@@ -424,7 +421,7 @@ bool CanWebpageContextConnectExternally(ScriptContext* context) {
 // to these APIs.
 // Note: `runtime` and `test` may also be available, but are handled specially
 // in UpdateBindingsForContext.
-const char* const kWebAvailableFeatures[] = {
+const std::string_view kWebAvailableFeatures[] = {
     "app",
     "webstorePrivate",
     "management",
@@ -594,6 +591,9 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
           if (!browser) {
             browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
           }
+          if (browser->IsEmpty()) {
+            return false;
+          }
           v8::Maybe<bool> browser_success = (*browser)->SetLazyDataProperty(
               v8_context, api_name, &BindingAccessor, api_name);
           if (!browser_success.IsJust() || !browser_success.FromJust()) {
@@ -620,6 +620,9 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       if (!browser) {
         browser = GetOrCreateGlobalObjectProperty(v8_context, "browser");
       }
+      if (browser->IsEmpty()) {
+        return false;
+      }
       v8::Maybe<bool> browser_success = (*browser)->SetLazyDataProperty(
           v8_context, api_name, &ThrowDeveloperModeRestrictedError, api_name);
       if (!browser_success.IsJust() || !browser_success.FromJust()) {
@@ -639,10 +642,10 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     // context types, especially on a given platform. Something to think about
     // for when we generate features.
     bool is_any_feature_available_to_page = false;
-    for (const char* feature_name : kWebAvailableFeatures) {
+    for (std::string_view feature_name : kWebAvailableFeatures) {
       if (context->GetAvailability(feature_name).is_available()) {
         // chrome.app is exposed to all webpages, we ignore it for this check.
-        if (strcmp(feature_name, "app") != 0) {
+        if (feature_name != "app") {
           is_any_feature_available_to_page = true;
         }
         if (!set_accessor(feature_name)) {
@@ -992,16 +995,7 @@ void NativeExtensionBindingsSystem::SendRequest(
       << script_context->GetDebugString();
 
   if (!params->extension_id.empty() && ShouldCollectJSStackTrace(*request)) {
-    auto start_time = base::TimeTicks::Now();
-    auto stack_trace = script_context->GetStackTrace(/*frame_limit=*/5);
-    auto end_time = base::TimeTicks::Now();
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "Extensions.Functions.ExtractJSCallStackElapsedTime",
-        end_time - start_time, base::Microseconds(1), base::Milliseconds(10),
-        50);
-    params->js_callstack = std::move(stack_trace);
-  } else {
-    params->js_callstack = std::nullopt;
+    params->js_callstack = script_context->GetStackTrace(/*frame_limit=*/5);
   }
 
   ipc_message_sender_->SendRequestIPC(script_context, std::move(params));

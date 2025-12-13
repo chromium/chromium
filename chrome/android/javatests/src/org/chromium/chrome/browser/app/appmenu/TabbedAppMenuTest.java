@@ -5,10 +5,7 @@
 package org.chromium.chrome.browser.app.appmenu;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType.DIVIDER;
 
 import android.view.KeyEvent;
@@ -26,18 +23,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -46,8 +42,6 @@ import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
-import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -68,14 +62,18 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
 /** Tests tabbed mode app menu popup. */
-@Batch(PER_CLASS)
+@DoNotBatch(reason = "Affects sign-in state, which is global.")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// Prevents the sync UI from exposing an error due to outdated GmsCore
+// (UserActionableError.NEEDS_UPM_BACKEND_UPGRADE).
+@Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 public class TabbedAppMenuTest {
     private static final int RENDER_TEST_REVISION = 2;
 
@@ -100,17 +98,10 @@ public class TabbedAppMenuTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
 
-    @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
-
     private AppMenuHandler mAppMenuHandler;
 
     @Before
     public void setUp() {
-        // Prevent "GmsCore outdated" error from being exposed in bots with old version.
-        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
-        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
-                .thenReturn(false);
-
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(true);
 
         // We need list selection; ensure we are not in touch mode.
@@ -247,7 +238,7 @@ public class TabbedAppMenuTest {
     @Feature({"Browser", "Main", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         boolean isRequestDesktopSite =
                 tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
         Assert.assertFalse("Default to request mobile site.", isRequestDesktopSite);
@@ -364,8 +355,8 @@ public class TabbedAppMenuTest {
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
-                    Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
                 });
+        CriteriaHelper.pollUiThread(() -> mAppMenuHandler.isAppMenuShowing());
 
         pressKey(KeyEvent.KEYCODE_DPAD_DOWN);
 

@@ -14,7 +14,7 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/process/process_handle.h"
 
 namespace base {
@@ -90,8 +90,16 @@ struct MemoryDumpArgs {
   uint64_t dump_guid;
 };
 
-using ProcessMemoryDumpCallback = OnceCallback<
-    void(bool success, uint64_t dump_guid, std::unique_ptr<ProcessMemoryDump>)>;
+// A memory dump always succeeds.
+// TODO(crbug.com/450929521): Consider removing this.
+enum class ProcessMemoryDumpOutcome {
+  kSuccess,
+};
+
+using ProcessMemoryDumpCallback =
+    OnceCallback<void(ProcessMemoryDumpOutcome outcome,
+                      uint64_t dump_guid,
+                      std::unique_ptr<ProcessMemoryDump>)>;
 
 BASE_EXPORT const char* MemoryDumpTypeToString(const MemoryDumpType& dump_type);
 

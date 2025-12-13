@@ -7,12 +7,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
-
-class NetworkPortalDetectorTestImpl;
 
 // DEPRECATED, DO NOT USE IN NEW TESTS. NetworkStateHandler should be used
 // to track portal state. This mixin is maintained for compatibility with
@@ -53,15 +50,12 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
 
   // InProcessBrowserTestMixin:
   void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
 
  private:
   void SetShillDefaultNetwork(const std::string& network_guid,
                               const std::string& network_type,
                               NetworkStatus status);
 
-  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged>
-      network_portal_detector_ = nullptr;
   std::string default_network_guid_;
 };
 

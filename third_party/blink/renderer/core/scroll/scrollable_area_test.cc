@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mock.h"
-#include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -71,7 +70,8 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
   scrollable_area->SetScrollOffset(ScrollOffset(0, 10000),
-                                   mojom::blink::ScrollType::kCompositor);
+                                   mojom::blink::ScrollType::kCompositor,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_EQ(100.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
 }
 
@@ -148,12 +148,14 @@ TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
 
   // A scroll in each direction should only invalidate one scrollbar.
   scrollable_area->SetScrollOffset(ScrollOffset(0, 50),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_FALSE(scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
   EXPECT_TRUE(scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
   scrollable_area->SetScrollOffset(ScrollOffset(50, 50),
-                                   mojom::blink::ScrollType::kProgrammatic);
+                                   mojom::blink::ScrollType::kProgrammatic,
+                                   cc::ScrollSourceType::kNone);
   EXPECT_TRUE(scrollable_area->HorizontalScrollbarNeedsPaintInvalidation());
   EXPECT_FALSE(scrollable_area->VerticalScrollbarNeedsPaintInvalidation());
   scrollable_area->ClearNeedsPaintInvalidationForScrollControls();
@@ -168,7 +170,8 @@ TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(100, 100));
-  scrollable_area->DidCompositorScroll(gfx::PointF(40, 51));
+  scrollable_area->DidCompositorScroll(gfx::PointF(40, 51),
+                                       cc::ScrollSourceType::kNone);
 
   EXPECT_EQ(40, scrollable_area->ScrollOffsetInt().x());
   EXPECT_EQ(51, scrollable_area->ScrollOffsetInt().y());
@@ -185,9 +188,9 @@ TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
     EXPECT_CALL(*scrollable_area, ScrollAnimatorEnabled())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*scrollable_area, ScheduleAnimation()).Times(0);
-    scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
-                                     mojom::blink::ScrollType::kProgrammatic,
-                                     mojom::blink::ScrollBehavior::kSmooth);
+    scrollable_area->SetScrollOffset(
+        ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth);
     EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
   Mock::VerifyAndClearExpectations(scrollable_area);
@@ -197,9 +200,9 @@ TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
     EXPECT_CALL(*scrollable_area, ScrollAnimatorEnabled())
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*scrollable_area, ScheduleAnimation()).WillOnce(Return(true));
-    scrollable_area->SetScrollOffset(ScrollOffset(0, 50),
-                                     mojom::blink::ScrollType::kProgrammatic,
-                                     mojom::blink::ScrollBehavior::kSmooth);
+    scrollable_area->SetScrollOffset(
+        ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
+        cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth);
     // Offset is unchanged.
     EXPECT_EQ(100, scrollable_area->GetScrollOffset().y());
   }
@@ -249,12 +252,12 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
   bool finished = false;
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->CancelProgrammaticScrollAnimation();
@@ -273,12 +276,12 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
   bool finished = false;
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kInstant,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kInstant,
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(100, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_TRUE(finished);
 }
@@ -294,12 +297,12 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
   bool finished = false;
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 9), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
+          Unretained(&finished))));
   EXPECT_EQ(0.0, scrollable_area->GetScrollAnimator().CurrentOffset().y());
   EXPECT_FALSE(finished);
   scrollable_area->UpdateCompositorScrollAnimations();
@@ -322,200 +325,20 @@ TEST_P(ScrollableAreaTest, ScrollBackToInitialPosition) {
   bool finished = false;
   scrollable_area->SetScrollOffset(
       ScrollOffset(0, 50), mojom::blink::ScrollType::kProgrammatic,
-      mojom::blink::ScrollBehavior::kSmooth,
-      ScrollableArea::ScrollCallback(WTF::BindOnce(
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth,
+      ScrollableArea::ScrollCallback(BindOnce(
           [](bool* finished, ScrollableArea::ScrollCompletionMode) {
             *finished = true;
           },
-          WTF::Unretained(&finished))));
-  scrollable_area->SetScrollOffset(ScrollOffset(0, 0),
-                                   mojom::blink::ScrollType::kProgrammatic,
-                                   mojom::blink::ScrollBehavior::kSmooth);
+          Unretained(&finished))));
+  scrollable_area->SetScrollOffset(
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone, mojom::blink::ScrollBehavior::kSmooth);
   scrollable_area->UpdateCompositorScrollAnimations();
   scrollable_area->ServiceScrollAnimations(1);
   scrollable_area->ServiceScrollAnimations(1000000);
   EXPECT_EQ(0, scrollable_area->GetScrollOffset().y());
   EXPECT_TRUE(finished);
-}
-
-void VerifyOffsetFromScrollStart(ScrollableArea* scrollable_area,
-                                 ScrollStartValueType y_type,
-                                 ScrollStartValueType x_type,
-                                 const Length& y_length,
-                                 const Length& x_length,
-                                 const ScrollOffset& offset) {
-  switch (y_type) {
-    case blink::ScrollStartValueType::kAuto:
-    case blink::ScrollStartValueType::kStart:
-    case blink::ScrollStartValueType::kTop:
-    case blink::ScrollStartValueType::kLeft: {
-      EXPECT_EQ(offset.y(), scrollable_area->MinimumScrollOffset().y());
-      break;
-    }
-    case blink::ScrollStartValueType::kCenter: {
-      EXPECT_EQ(offset.y(),
-                scrollable_area->MinimumScrollOffset().y() +
-                    0.5 * scrollable_area->ScrollSize(kVerticalScrollbar));
-      break;
-    }
-    case blink::ScrollStartValueType::kEnd:
-    case blink::ScrollStartValueType::kBottom: {
-      EXPECT_EQ(offset.y(), scrollable_area->MaximumScrollOffset().y());
-      break;
-    }
-    case blink::ScrollStartValueType::kRight: {
-      EXPECT_EQ(offset.y(), scrollable_area->MinimumScrollOffset().y());
-      break;
-    }
-    case blink::ScrollStartValueType::kLengthOrPercentage: {
-      float expected_offset =
-          scrollable_area->MinimumScrollOffset().y() +
-          FloatValueForLength(y_length,
-                              scrollable_area->ScrollSize(kVerticalScrollbar));
-      EXPECT_EQ(offset.y(), expected_offset);
-      break;
-    }
-  }
-
-  switch (x_type) {
-    case blink::ScrollStartValueType::kAuto:
-    case blink::ScrollStartValueType::kStart:
-    case blink::ScrollStartValueType::kTop:
-    case blink::ScrollStartValueType::kLeft: {
-      EXPECT_EQ(offset.x(), scrollable_area->MinimumScrollOffset().x());
-      break;
-    }
-    case blink::ScrollStartValueType::kCenter: {
-      EXPECT_EQ(offset.x(),
-                scrollable_area->MinimumScrollOffset().x() +
-                    0.5 * scrollable_area->ScrollSize(kHorizontalScrollbar));
-      break;
-    }
-    case blink::ScrollStartValueType::kEnd:
-    case blink::ScrollStartValueType::kRight: {
-      EXPECT_EQ(offset.x(), scrollable_area->MaximumScrollOffset().x());
-      break;
-    }
-    case blink::ScrollStartValueType::kBottom: {
-      EXPECT_EQ(offset.x(), scrollable_area->MinimumScrollOffset().x());
-      break;
-    }
-    case blink::ScrollStartValueType::kLengthOrPercentage: {
-      float expected_offset =
-          scrollable_area->MinimumScrollOffset().x() +
-          FloatValueForLength(
-              x_length, scrollable_area->ScrollSize(kHorizontalScrollbar));
-      EXPECT_EQ(offset.x(), expected_offset);
-      break;
-    }
-  }
-}
-
-void test_scroll_start_combination(ScrollableArea* scrollable_area,
-                                   ScrollStartValueType y_type,
-                                   ScrollStartValueType x_type,
-                                   const Length& y_length,
-                                   const Length& x_length) {
-  ScrollStartData y_data;
-  ScrollStartData x_data;
-
-  y_data.value_type = y_type;
-  y_data.value = y_length;
-  x_data.value_type = x_type;
-  x_data.value = x_length;
-
-  ScrollOffset offset =
-      scrollable_area->ScrollOffsetFromScrollStartData(y_data, x_data);
-  VerifyOffsetFromScrollStart(scrollable_area, y_type, x_type, y_length,
-                              x_length, offset);
-}
-
-TEST_P(ScrollableAreaTest, ScrollOffsetFromScrollStartDataAllCombinations) {
-  const Vector<ScrollStartValueType> scroll_start_values = {
-      ScrollStartValueType::kAuto,   ScrollStartValueType::kLengthOrPercentage,
-      ScrollStartValueType::kStart,  ScrollStartValueType::kCenter,
-      ScrollStartValueType::kEnd,    ScrollStartValueType::kTop,
-      ScrollStartValueType::kBottom, ScrollStartValueType::kLeft,
-      ScrollStartValueType::kRight};
-  const int max_horizontal_scroll_offset = 500;
-  const int max_vertical_scroll_offset = 500;
-  MockScrollableArea* scrollable_area = MockScrollableArea::Create(
-      ScrollOffset(max_horizontal_scroll_offset, max_vertical_scroll_offset));
-  ON_CALL(*scrollable_area, ScrollSize(kHorizontalScrollbar))
-      .WillByDefault(Return(max_horizontal_scroll_offset));
-  ON_CALL(*scrollable_area, ScrollSize(kVerticalScrollbar))
-      .WillByDefault(Return(max_vertical_scroll_offset));
-
-  for (auto y_type : scroll_start_values) {
-    Length y_length = y_type == ScrollStartValueType::kLengthOrPercentage
-                          ? Length(100, Length::Type::kFixed)
-                          : Length();
-    for (auto x_type : scroll_start_values) {
-      Length x_length = x_type == ScrollStartValueType::kLengthOrPercentage
-                            ? Length(100, Length::Type::kFixed)
-                            : Length();
-      test_scroll_start_combination(scrollable_area, y_type, x_type, y_length,
-                                    x_length);
-    }
-  }
-}
-
-TEST_P(ScrollableAreaTest, ScrollOffsetFromScrollStartDataNonZeroMin) {
-  const int max_horizontal_scroll_offset = 500;
-  const int min_horizontal_scroll_offset = -10;
-  const int max_vertical_scroll_offset = 500;
-  const int min_vertical_scroll_offset = -10;
-  const int horizontal_scroll_size =
-      max_horizontal_scroll_offset - min_horizontal_scroll_offset;
-  const int vertical_scroll_size =
-      max_vertical_scroll_offset - min_vertical_scroll_offset;
-  MockScrollableArea* scrollable_area = MockScrollableArea::Create(
-      ScrollOffset(max_horizontal_scroll_offset, max_vertical_scroll_offset),
-      ScrollOffset(min_horizontal_scroll_offset, min_vertical_scroll_offset));
-  ScrollOffset offset;
-  ScrollStartData y_data;
-  ScrollStartData x_data;
-
-  ON_CALL(*scrollable_area, ScrollSize(kHorizontalScrollbar))
-      .WillByDefault(Return(horizontal_scroll_size));
-  ON_CALL(*scrollable_area, ScrollSize(kVerticalScrollbar))
-      .WillByDefault(Return(vertical_scroll_size));
-
-  // Test that scroll-start greater than max scroll offset is clamped to max.
-  y_data.value = Length(600, Length::Type::kFixed);
-  y_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  x_data.value = Length(600, Length::Type::kFixed);
-  x_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  offset = scrollable_area->ScrollOffsetFromScrollStartData(y_data, x_data);
-  EXPECT_EQ(offset.y(), max_vertical_scroll_offset);
-  EXPECT_EQ(offset.x(), max_horizontal_scroll_offset);
-
-  // Test that scroll-start less than min scroll offset is clamped to min
-  y_data.value = Length(0, Length::Type::kFixed);
-  y_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  x_data.value = Length(0, Length::Type::kFixed);
-  x_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  offset = scrollable_area->ScrollOffsetFromScrollStartData(y_data, x_data);
-  EXPECT_EQ(offset.y(), min_vertical_scroll_offset);
-  EXPECT_EQ(offset.x(), min_horizontal_scroll_offset);
-
-  // Test that scroll-start: <percentage> is relative to ScrollSize().
-  y_data.value = Length(50, Length::Type::kPercent);
-  y_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  x_data.value = Length(50, Length::Type::kPercent);
-  x_data.value_type = ScrollStartValueType::kLengthOrPercentage;
-  offset = scrollable_area->ScrollOffsetFromScrollStartData(y_data, x_data);
-  EXPECT_EQ(offset.y(), scrollable_area->MinimumScrollOffset().y() +
-                            0.5 * vertical_scroll_size);
-  EXPECT_EQ(offset.x(), scrollable_area->MinimumScrollOffset().x() +
-                            0.5 * horizontal_scroll_size);
-
-  // Test that scroll-start: end scrolls to MaximumScrollOffset.
-  y_data.value_type = ScrollStartValueType::kEnd;
-  x_data.value_type = ScrollStartValueType::kEnd;
-  offset = scrollable_area->ScrollOffsetFromScrollStartData(y_data, x_data);
-  EXPECT_EQ(offset.y(), max_vertical_scroll_offset);
-  EXPECT_EQ(offset.x(), max_horizontal_scroll_offset);
 }
 
 TEST_P(ScrollableAreaTest, FilterIncomingScrollDuringSmoothUserScroll) {

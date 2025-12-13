@@ -10,9 +10,9 @@
 
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
-#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -44,7 +44,7 @@ class Buffer {
   static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
       gfx::GpuMemoryBufferHandle buffer_handle,
       const gfx::Size& buffer_size,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage buffer_usage,
       unsigned query_type,
       bool use_zero_copy,
@@ -53,7 +53,7 @@ class Buffer {
 
   static std::unique_ptr<Buffer> CreateBuffer(
       gfx::Size buffer_size,
-      gfx::BufferFormat buffer_format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage buffer_usage,
       std::string_view debug_label,
       gpu::SurfaceHandle surface_handle,
@@ -83,10 +83,7 @@ class Buffer {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      gpu::SyncToken prev_sync_token,
-      viz::TransferableResource::SynchronizationType prev_synchronization_type);
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query);
 
   // This should be called when the buffer is attached to a Surface.
   void OnAttach();
@@ -147,26 +144,6 @@ class Buffer {
          bool is_overlay_candidate,
          bool y_invert);
 
-  struct BufferRelease {
-    BufferRelease(
-        gfx::GpuFenceHandle release_fence,
-        std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
-        base::OnceClosure buffer_release_callback);
-    ~BufferRelease();
-
-    BufferRelease(const BufferRelease&) = delete;
-    BufferRelease& operator=(const BufferRelease&) = delete;
-
-    BufferRelease(BufferRelease&&);
-    BufferRelease& operator=(BufferRelease&&);
-
-    // |release_fence| must be kept above |controller| to keep the file
-    // descriptor valid during destruction.
-    gfx::GpuFenceHandle release_fence;
-    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller;
-    base::OnceClosure buffer_release_callback;
-  };
-
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   // For ARC protected content support this tracks the state of the
   // asynchronous query to determine if the GMB is using a protected buffer or
@@ -180,26 +157,17 @@ class Buffer {
 
   // This is used by ProduceTransferableResource() to produce a release callback
   // that releases a texture so it can be destroyed or reused.
-  void ReleaseTexture(std::unique_ptr<Texture> texture,
-                      gfx::GpuFenceHandle release_fence);
+  void ReleaseTexture(std::unique_ptr<Texture> texture);
 
   // This is used by ProduceTransferableResource() to produce a release callback
   // that releases the buffer contents referenced by a texture before the
   // texture is destroyed or reused.
   void ReleaseContentsTexture(std::unique_ptr<Texture> texture,
-                              base::OnceClosure callback,
-                              uint64_t commit_id,
-                              gfx::GpuFenceHandle release_fence);
+                              base::OnceClosure callback);
 
   // Notifies the client that buffer has been released if no longer attached to
   // a surface.
   void ReleaseContents();
-
-  void MaybeRunPerCommitRelease(uint64_t commit_id,
-                                gfx::GpuFenceHandle release_fence,
-                                base::OnceClosure buffer_release_callback);
-
-  void FenceSignalled(uint64_t commit_id);
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
   void OnIsProtectedNativePixmapHandle(bool is_protected);
@@ -245,20 +213,6 @@ class Buffer {
   // The amount of time to wait for buffer release.
   base::TimeDelta wait_for_release_delay_;
 
-  // Because viz can release buffers out of order, it's necessary to map
-  // releases to specific commits. Identify commits via a incrementing counter.
-  uint64_t next_commit_id_ = 0;
-
-  // Maps commit count to the callback to call when we receive a release from
-  // viz.
-  base::flat_map<uint64_t, PerCommitExplicitReleaseCallback>
-      pending_explicit_releases_;
-
-  // Maps commit count to information required to send regular buffer releases.
-  // Even if we send explicit synchronization release information, Wayland
-  // protocol requires us to send regular buffer release events.
-  base::flat_map<uint64_t, BufferRelease> buffer_releases_;
-
   bool legacy_release_skippable_ = false;
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -282,10 +236,7 @@ class SolidColorBuffer : public Buffer {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       gfx::ColorSpace color_space,
-      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
-      PerCommitExplicitReleaseCallback per_commit_explicit_release_callback,
-      gpu::SyncToken prev_sync_token,
-      viz::TransferableResource::SynchronizationType prev_synchronization_type)
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query)
       override;
 
   base::WeakPtr<Buffer> AsWeakPtr() override;

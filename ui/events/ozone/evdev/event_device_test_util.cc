@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ozone/evdev/event_device_test_util.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -29,7 +26,7 @@ const int kTestDataWordSize = 64;
 #define EVDEV_BITS_TO_GROUPS(x) \
   (((x) + kTestDataWordSize - 1) / kTestDataWordSize)
 
-std::string SerializeBitfield(unsigned long* bitmap, int max) {
+std::string SerializeBitfield(base::span<unsigned long> bitmap, int max) {
   std::string ret;
 
   for (int i = EVDEV_BITS_TO_GROUPS(max) - 1; i >= 0; i--) {
@@ -75,8 +72,9 @@ bool ParseBitfield(const std::string& bitfield,
   }
 
   // Require canonically formatted input.
-  if (bitfield != SerializeBitfield(out->data(), max_bits))
+  if (bitfield != SerializeBitfield(*out, max_bits)) {
     return false;
+  }
 
   return true;
 }
@@ -1577,50 +1575,50 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   std::vector<unsigned long> ev_bits;
   if (!ParseBitfield(capabilities.ev, EV_CNT, &ev_bits))
     return false;
-  devinfo->SetEventTypes(&ev_bits[0], ev_bits.size());
+  devinfo->SetEventTypes(ev_bits);
 
   std::vector<unsigned long> key_bits;
   if (!ParseBitfield(capabilities.key, KEY_CNT, &key_bits))
     return false;
-  devinfo->SetKeyEvents(&key_bits[0], key_bits.size());
+  devinfo->SetKeyEvents(key_bits);
 
   std::vector<unsigned long> rel_bits;
   if (!ParseBitfield(capabilities.rel, REL_CNT, &rel_bits))
     return false;
-  devinfo->SetRelEvents(&rel_bits[0], rel_bits.size());
+  devinfo->SetRelEvents(rel_bits);
 
   std::vector<unsigned long> abs_bits;
   if (!ParseBitfield(capabilities.abs, ABS_CNT, &abs_bits))
     return false;
-  devinfo->SetAbsEvents(&abs_bits[0], abs_bits.size());
+  devinfo->SetAbsEvents(abs_bits);
 
   std::vector<unsigned long> sw_bits;
   if (!ParseBitfield(capabilities.sw, SW_CNT, &sw_bits))
     return false;
-  devinfo->SetSwEvents(&sw_bits[0], sw_bits.size());
+  devinfo->SetSwEvents(sw_bits);
 
   std::vector<unsigned long> msc_bits;
   if (!ParseBitfield(capabilities.msc, MSC_CNT, &msc_bits))
     return false;
-  devinfo->SetMscEvents(&msc_bits[0], msc_bits.size());
+  devinfo->SetMscEvents(msc_bits);
 
   std::vector<unsigned long> led_bits;
   if (!ParseBitfield(capabilities.led, LED_CNT, &led_bits))
     return false;
-  devinfo->SetLedEvents(&led_bits[0], led_bits.size());
+  devinfo->SetLedEvents(led_bits);
 
   std::vector<unsigned long> ff_bits;
   if (!ParseBitfield(capabilities.ff, FF_CNT, &ff_bits))
     return false;
-  devinfo->SetFfEvents(&ff_bits[0], ff_bits.size());
+  devinfo->SetFfEvents(ff_bits);
 
   std::vector<unsigned long> prop_bits;
   if (!ParseBitfield(capabilities.prop, INPUT_PROP_CNT, &prop_bits))
     return false;
-  devinfo->SetProps(&prop_bits[0], prop_bits.size());
+  devinfo->SetProps(prop_bits);
 
   for (size_t i = 0; i < capabilities.abs_axis_count; ++i) {
-    const DeviceAbsoluteAxis& axis = capabilities.abs_axis[i];
+    const DeviceAbsoluteAxis& axis = UNSAFE_TODO(capabilities.abs_axis[i]);
     devinfo->SetAbsInfo(axis.code, axis.absinfo);
   }
 
@@ -1637,10 +1635,10 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   }
 
   input_id id = {};
-  sscanf(capabilities.vendor, "%" SCNx16, &id.vendor);
-  sscanf(capabilities.product, "%" SCNx16, &id.product);
-  sscanf(capabilities.bustype, "%" SCNx16, &id.bustype);
-  sscanf(capabilities.version, "%" SCNx16, &id.version);
+  UNSAFE_TODO(sscanf(capabilities.vendor, "%" SCNx16, &id.vendor));
+  UNSAFE_TODO(sscanf(capabilities.product, "%" SCNx16, &id.product));
+  UNSAFE_TODO(sscanf(capabilities.bustype, "%" SCNx16, &id.bustype));
+  UNSAFE_TODO(sscanf(capabilities.version, "%" SCNx16, &id.version));
   devinfo->SetId(id);
   devinfo->SetDeviceType(EventDeviceInfo::GetInputDeviceTypeFromId(id));
   devinfo->SetName(capabilities.name);

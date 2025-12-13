@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_education/common/menu/highlighting_simple_menu_model_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
@@ -22,7 +23,6 @@
 class AppMenuIconController;
 class BookmarkSubMenuModel;
 class Browser;
-class ChromeLabsModel;
 
 // Values should correspond to 'WrenchMenuAction' enum in enums.xml.
 //
@@ -115,6 +115,13 @@ enum AppMenuAction {
   MENU_ACTION_DECLUTTER_TABS = 93,
   MENU_ACTION_OPEN_GLIC = 94,
   MENU_ACTION_FIND_EXTENSIONS = 95,
+  MENU_SHOW_SIGNIN = 96,
+  MENU_ACTION_RECENT_TABS_SEE_DEVICE_TABS = 97,
+  MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG = 98,
+  MENU_ACTION_SHOW_IDENTITY_DOCS = 99,
+  MENU_ACTION_SHOW_TRAVEL = 100,
+  MENU_ACTION_SHOW_CONTACT_INFO = 101,
+  MENU_ACTION_SHOW_CONTEXTUAL_TASKS_SIDE_PANEL = 102,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ui/enums.xml:WrenchMenuAction)
@@ -145,8 +152,6 @@ class ToolsMenuModel : public ui::SimpleMenuModel {
 
  private:
   void Build(Browser* browser);
-
-  std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
 };
 
 class ExtensionsMenuModel : public ui::SimpleMenuModel {
@@ -168,9 +173,10 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
 
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
-                     public ui::SimpleMenuModel::Delegate,
+                     public user_education::HighlightingSimpleMenuModelDelegate,
                      public ui::ButtonMenuItemModel::Delegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateNewTabGroupTopLevel);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProfileMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProfileOpenGuestItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBookmarksMenuItem);
@@ -182,6 +188,9 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIncognitoMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordAndAutofillMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContactInfoMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIdentityDocsMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTravelMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowLensOverlay);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveAndShareMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCastTitleItem);
@@ -223,9 +232,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Runs Build() and registers observers.
   void Init();
 
-  void SetHighlightedIdentifier(
-      ui::ElementIdentifier highlighted_menu_identifier);
-
   // Overridden for ButtonMenuItemModel::Delegate:
   bool DoesCommandIdDismissMenu(int command_id) const override;
 
@@ -234,7 +240,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdAlerted(int command_id) const override;
-  bool IsElementIdAlerted(ui::ElementIdentifier element_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
@@ -320,8 +325,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
   const AlertMenuItem alert_item_;
-
-  ui::ElementIdentifier highlighted_menu_identifier_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_

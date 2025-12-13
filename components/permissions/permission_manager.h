@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_MANAGER_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_MANAGER_H_
 
-#include <map>
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
@@ -101,20 +100,21 @@ class PermissionManager : public KeyedService,
   void RequestPermissions(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
-      override;
+      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+          callback) override;
   void RequestPermissionsInternal(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
+      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+          callback);
   void ResetPermission(blink::PermissionType permission,
                        const GURL& requesting_origin,
                        const GURL& embedding_origin) override;
   void RequestPermissionsFromCurrentDocument(
       content::RenderFrameHost* render_frame_host,
       const content::PermissionRequestDescription& request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
-      override;
+      base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
+          callback) override;
   PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const GURL& requesting_origin,
@@ -123,28 +123,25 @@ class PermissionManager : public KeyedService,
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
-  PermissionStatus GetPermissionStatusForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      content::RenderFrameHost* render_frame_host,
-      bool should_include_device_status) override;
   content::PermissionResult GetPermissionResultForCurrentDocument(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
-  PermissionStatus GetPermissionStatusForWorker(
+  content::PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
-  PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  content::PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
   bool IsPermissionOverridable(
       blink::PermissionType permission,
-      const std::optional<url::Origin>& origin) override;
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin) override;
   void OnPermissionStatusChangeSubscriptionAdded(
       content::PermissionController::SubscriptionId subscription_id) override;
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       content::PermissionController::SubscriptionId subscription_id) override;
   std::optional<gfx::Rect> GetExclusionAreaBoundsInScreen(
       content::WebContents* web_contents) const override;
@@ -155,10 +152,10 @@ class PermissionManager : public KeyedService,
   // than one permission, it will wait for the remaining permissions to be
   // resolved. When all the permissions have been resolved, the PendingRequest's
   // callback is run.
-  void OnPermissionsRequestResponseStatus(
+  void OnPermissionsRequestResponse(
       PendingRequestLocalId request_local_id,
       int permission_id,
-      PermissionStatus status);
+      content::PermissionResult permission_result);
 
   // permissions::Observer:
   void OnPermissionChanged(const ContentSettingsPattern& primary_pattern,

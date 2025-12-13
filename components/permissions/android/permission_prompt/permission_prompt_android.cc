@@ -226,4 +226,14 @@ PermissionPromptAndroid::GetBoldRanges(JNIEnv* env) const {
   return base::android::ToJavaIntArray(env, bolded_ranges);
 }
 
+void PermissionPromptAndroid::SetPromptOptions(
+    PromptOptions prompt_options) {
+  delegate_->SetPromptOptions(std::move(prompt_options));
+}
+
+GeolocationAccuracy
+PermissionPromptAndroid::GetInitialGeolocationAccuracySelection() const {
+  return delegate_->GetInitialGeolocationAccuracySelection();
+}
+
 }  // namespace permissions

@@ -8,7 +8,6 @@
 #include <optional>
 #include <type_traits>
 
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
@@ -259,20 +258,6 @@ void V8SetReturnValue(const CallbackInfo& info,
 
 template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
 void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::NonNullable) {
-  if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  DCHECK(!string.IsNull());  // Null strings are empty.
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
                       const AtomicString& string,
                       v8::Isolate* isolate,
                       V8ReturnValue::Nullable) {
@@ -301,22 +286,6 @@ void V8SetReturnValue(const CallbackInfo& info,
   }
   V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
       info.GetReturnValue(), string.Impl());
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const WebString& string,
-                      v8::Isolate* isolate,
-                      V8ReturnValue::Nullable) {
-  if (string.IsNull()) {
-    info.GetReturnValue().SetNull();
-    return;
-  } else if (string.IsEmpty()) {
-    info.GetReturnValue().SetEmptyString();
-    return;
-  }
-  V8PerIsolateData::From(isolate)->GetStringCache()->SetReturnValueFromString(
-      info.GetReturnValue(), static_cast<String>(string).Impl());
 }
 
 // ScriptWrappable
@@ -400,36 +369,6 @@ void V8SetReturnValue(const CallbackInfo& info,
     return info.GetReturnValue().SetNull();
   }
   ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(value);
-  if (DOMDataStore::SetReturnValueFast(info.GetReturnValue(), wrappable,
-                                       V8ReturnValue::GetReceiver(info),
-                                       receiver)) {
-    return;
-  }
-  // Check whether the creation context is available, and if not, use the
-  // current context. When a cross-origin Window is associated with a
-  // v8::Context::NewRemoteContext(), there is no creation context in the usual
-  // sense. It's ok to use the current context in that case because:
-  // 1) The Window objects must have their own creation context and must never
-  //    need a creation context to be specified.
-  // 2) Even though a v8::Context is not necessary in case
-  //    of Window objects, v8::Isolate and DOMWrapperWorld are still necessary
-  //    to create an appropriate wrapper object, and the ScriptState associated
-  //    with the current context will still have the correct v8::Isolate and
-  //    DOMWrapperWorld.
-  v8::Local<v8::Context> context;
-  if (!V8ReturnValue::GetReceiver(info)->GetCreationContext().ToLocal(
-          &context)) {
-    context = info.GetIsolate()->GetCurrentContext();
-  }
-  V8ReturnValue::SetWrapper(info, wrappable, context);
-}
-
-template <FunctionCallbackInfoOrPropertyCallbackInfo CallbackInfo>
-void V8SetReturnValue(const CallbackInfo& info,
-                      const ScriptWrappable& value,
-                      const ScriptWrappable* receiver,
-                      V8ReturnValue::MaybeCrossOrigin) {
-  ScriptWrappable* wrappable = const_cast<ScriptWrappable*>(&value);
   if (DOMDataStore::SetReturnValueFast(info.GetReturnValue(), wrappable,
                                        V8ReturnValue::GetReceiver(info),
                                        receiver)) {

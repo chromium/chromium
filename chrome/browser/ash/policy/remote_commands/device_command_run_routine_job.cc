@@ -72,9 +72,7 @@ std::string CreatePayload(
           .Set(kIdFieldName, response->id)
           .Set(kStatusFieldName, static_cast<int>(response->status));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 }  // namespace
 
@@ -91,8 +89,8 @@ em::RemoteCommand_Type DeviceCommandRunRoutineJob::GetType() const {
 
 bool DeviceCommandRunRoutineJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value::Dict> root =
-      base::JSONReader::ReadDict(command_payload);
+  std::optional<base::Value::Dict> root = base::JSONReader::ReadDict(
+      command_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;
   }

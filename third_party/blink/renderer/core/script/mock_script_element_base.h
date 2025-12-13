@@ -46,9 +46,7 @@ class MockScriptElementBase : public GarbageCollected<MockScriptElementBase>,
   MOCK_CONST_METHOD0(InitiatorName, AtomicString());
   MOCK_CONST_METHOD0(IsPotentiallyRenderBlocking, bool());
   MOCK_METHOD3(AllowInlineScriptForCSP,
-               bool(const AtomicString&,
-                    const WTF::OrdinalNumber&,
-                    const String&));
+               bool(const AtomicString&, const OrdinalNumber&, const String&));
   MOCK_CONST_METHOD0(GetDocument, Document&());
   MOCK_CONST_METHOD0(GetExecutionContext, ExecutionContext*());
   MOCK_METHOD0(AsV8HTMLOrSVGScriptElement, V8HTMLOrSVGScriptElement*());

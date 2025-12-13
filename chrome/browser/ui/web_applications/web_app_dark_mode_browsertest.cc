@@ -8,6 +8,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace web_app {
@@ -31,17 +32,19 @@ class WebAppDarkModeBrowserTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppDarkModeBrowserTest, DarkColors) {
+  ui::MockOsSettingsProvider os_settings_provider;
+
   webapps::AppId app_id = InstallWebAppFromInfo();
 
   WebAppBrowserController* controller;
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   controller = app_browser->app_controller()->AsWebAppBrowserController();
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
   EXPECT_EQ(controller->GetThemeColor().value(), SK_ColorBLUE);
   EXPECT_EQ(controller->GetBackgroundColor().value(), SK_ColorBLUE);
 
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(controller->GetThemeColor().value(), SK_ColorRED);
   EXPECT_EQ(controller->GetBackgroundColor().value(), SK_ColorRED);
 }

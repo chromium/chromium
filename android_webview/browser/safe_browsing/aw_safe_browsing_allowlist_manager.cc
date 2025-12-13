@@ -96,11 +96,10 @@ void InsertRuleToTrie(const std::vector<std::string_view>& components,
 std::vector<std::string_view> SplitHost(const GURL& url) {
   std::vector<std::string_view> components;
   if (url.HostIsIPAddress()) {
-    components.push_back(url.host_piece());
+    components.push_back(url.host());
   } else {
-    components =
-        base::SplitStringPiece(url.host_piece(), ".", base::KEEP_WHITESPACE,
-                               base::SPLIT_WANT_NONEMPTY);
+    components = base::SplitStringPiece(url.host(), ".", base::KEEP_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
   }
   DCHECK_GT(components.size(), 0u);
   return components;
@@ -123,7 +122,7 @@ bool AddRuleToAllowlist(std::string_view rule, TrieNode* root) {
     return false;
   }
 
-  bool has_path = test_url.has_path() && test_url.path() != "/";
+  bool has_path = test_url.has_path() && test_url.GetPath() != "/";
   // Verify that it is a hostname.
   if (!test_url.has_host() || has_path || test_url.has_port() ||
       test_url.has_query() || test_url.has_password() ||

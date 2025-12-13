@@ -4,10 +4,17 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include "base/command_line.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/shell_integration.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,10 +28,11 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
+#include "base/strings/sys_string_conversions.h"
 #define CMD_ARG(x) L##x
 #else
 #define CMD_ARG(x) x
-#endif
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   std::vector<GURL> input = {GURL(u"https://new_tab_page"),
@@ -99,13 +107,13 @@ TEST(StartupTabProviderTest, GetPinnedTabsForState) {
       pref_default, pinned, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ("www.google.com", output[0].url.GetHost());
 
   output =
       StartupTabProviderImpl::GetPinnedTabsForState(pref_urls, pinned, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ("www.google.com", output[0].url.GetHost());
 }
 
 TEST(StartupTabProviderTest, GetPinnedTabsForState_Negative) {
@@ -139,14 +147,14 @@ TEST(StartupTabProviderTest, GetPreferencesTabsForState) {
       StartupTabProviderImpl::GetPreferencesTabsForState(pref_urls, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ("www.google.com", output[0].url.GetHost());
   EXPECT_EQ(StartupTab::Type::kNormal, output[0].type);
 
   output = StartupTabProviderImpl::GetPreferencesTabsForState(
       pref_last_and_urls, false);
 
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("www.google.com", output[0].url.host());
+  EXPECT_EQ("www.google.com", output[0].url.GetHost());
   EXPECT_EQ(StartupTab::Type::kFromLastAndUrlsStartupPref, output[0].type);
 }
 
@@ -203,6 +211,7 @@ TEST(StartupTabProviderTest, GetNewTabPageTabsForState_Negative) {
 }
 
 TEST(StartupTabProviderTest, GetCommandLineTabs) {
+  base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
   content::BrowserTaskEnvironment task_environment;
   TestingProfile profile;
   // Set up and inject a real instance for the profile.
@@ -327,6 +336,160 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
+
+#if !BUILDFLAG(CHROME_FOR_TESTING)
+namespace {
+
+// Helper to create a CommandLine object from a single argument, handling
+// platform differences for string types.
+static base::CommandLine MakeCommandLine(std::string_view argument) {
+#if BUILDFLAG(IS_WIN)
+  return base::CommandLine({L"", base::ASCIIToWide(argument)});
+#else
+  return base::CommandLine({"", std::string(argument)});
+#endif
+}
+
+}  // namespace
+
+TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
+  const std::string scheme_prefix =
+      base::StrCat({shell_integration::GetDirectLaunchUrlScheme(), "://"});
+  base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  // Set up and inject a real instance for the profile.
+  TemplateURLServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
+      &profile, base::BindOnce(&TemplateURLServiceFactory::BuildInstanceFor));
+
+  // Custom scheme case with valid external url.
+  {
+    const std::string arg_ascii =
+        base::StrCat({scheme_prefix, "https://www.google.com"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("https://www.google.com"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
+  // Custom scheme case with a file URL.
+  {
+    const std::string arg_ascii =
+        base::StrCat({scheme_prefix, "file:///tmp/test.html"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("file:///tmp/test.html"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
+  // Custom scheme case with a chrome:// URL. This is not allowed,
+  // except on ChromeOS where any settings page is allowed.
+  {
+    const std::string arg_ascii =
+        base::StrCat({scheme_prefix, "chrome://settings"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+#if BUILDFLAG(IS_CHROMEOS)
+    // On ChromeOS, the browser and OS are integrated. Allowing command-line
+    // access to any settings page is considered a safe and useful feature for
+    // administrators and power users. ValidateUrl() contains an explicit
+    // platform-specific check to allow this.
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("chrome://settings"), output[0].url);
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+#else
+    // On Windows, Mac, and Linux, Chrome is a guest application. To minimize
+    // the attack surface from other applications, command-line access to
+    // internal chrome:// pages is highly restricted. ValidateUrl() enforces
+    // a strict allowlist, which "chrome://settings" does not pass.
+    ASSERT_EQ(0u, output.size());
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+#endif
+  }
+
+  // Custom scheme case with no inner URL.
+  {
+    base::CommandLine command_line = MakeCommandLine(scheme_prefix);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(0u, output.size());
+
+    EXPECT_EQ(CommandLineTabsPresent::kNo,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
+  // search query.
+  {
+    const std::string arg_ascii = base::StrCat(
+        {scheme_prefix,
+         "https://www.google.com/search?q=Foo&sourceid=chrome&ie=UTF-8"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
+  // Custom scheme case with a URL with a fragment.
+  {
+    const std::string arg_ascii =
+        base::StrCat({scheme_prefix, "https://www.google.com#test"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+    EXPECT_EQ(GURL("https://www.google.com/#test"), output[0].url);
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+
+  // Custom scheme case with file: path fix up
+  {
+    const std::string arg_ascii = base::StrCat({scheme_prefix, "file:foo.txt"});
+    base::CommandLine command_line = MakeCommandLine(arg_ascii);
+    StartupTabProviderImpl instance;
+    StartupTabs output =
+        instance.GetCommandLineTabs(command_line, base::FilePath(), &profile);
+    ASSERT_EQ(1u, output.size());
+
+#if BUILDFLAG(IS_WIN)
+    // On Windows, the URL parser in FixupRelativeFile misinterprets a string
+    // like "file:foo.txt" due to ambiguity with UNC paths (e.g., \\server).
+    // It incorrectly parses "foo.txt" as the "host" part of the URL,
+    // resulting in "file://foo.txt/". TODO(crbug.com/40265634)
+    EXPECT_EQ(GURL("file://foo.txt/"), output[0].url);
+#else
+    // On POSIX systems, the colon is a valid filename character, and the
+    // string is correctly interpreted as a relative path, resulting in the
+    // expected canonical "file:///foo.txt".
+    EXPECT_EQ(GURL("file:///foo.txt"), output[0].url);
+#endif
+
+    EXPECT_EQ(CommandLineTabsPresent::kYes,
+              instance.HasCommandLineTabs(command_line, base::FilePath()));
+  }
+}
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 
 // This test fails on Windows. TODO(crbug.com/40265634): Investigate and
 // fix this test on Windows.

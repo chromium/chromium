@@ -3,8 +3,12 @@
 import errno
 import http
 import http.server
+import ipaddress
 import os
+import platform
+import selectors
 import socket
+import socketserver
 import ssl
 import sys
 import threading
@@ -179,6 +183,9 @@ class WebTestServer(http.server.ThreadingHTTPServer):
         :param latency: Delay in ms to wait before serving each response, or
                         callable that returns a delay in ms
         """
+        self._shutdown_event = threading.Event()
+        self._shutdown_write_sock = None
+
         self.router = router
         self.rewriter = rewriter
 
@@ -226,6 +233,70 @@ class WebTestServer(http.server.ThreadingHTTPServer):
                 self.socket = ssl_context.wrap_socket(self.socket,
                                                       do_handshake_on_connect=False,
                                                       server_side=True)
+
+    def server_bind(self):
+        if platform.system() != "Darwin":
+            super().server_bind()
+        else:
+            # We override this on macOS to workaround gethostbyaddr triggering the local
+            # network alert even when passed "localhost" (rdar://153097791); this should
+            # be the same as the superclass implementation except for the addition of
+            # our check.
+            socketserver.TCPServer.server_bind(self)
+            host, port = self.server_address[:2]
+            if (
+                ipaddress.ip_address(host).is_loopback and
+                ipaddress.ip_address(socket.gethostbyname("localhost")).is_loopback
+            ):
+                self.server_name = "localhost"
+            else:
+                self.server_name = socket.getfqdn(host)
+            self.server_port = port
+
+    def serve_forever(self, poll_interval=0.5):
+        """Handle one request at a time until shutdown.
+
+        This overrides the superclass implementation to use a socket pair to process
+        shutdown requests, avoiding waiting the poll_interval before shutting down.
+        It does, however, still call service_actions() every poll_interval.
+
+        """
+        shutdown_read_sock, self._shutdown_write_sock = socket.socketpair()
+        self._shutdown_event.clear()
+
+        try:
+            with selectors.DefaultSelector() as selector:
+                selector.register(self, selectors.EVENT_READ)
+                selector.register(shutdown_read_sock, selectors.EVENT_READ)
+
+                while True:
+                    events = selector.select(timeout=poll_interval)
+
+                    # Handle shutdown requests before any request
+                    if any(
+                        key.fileobj == shutdown_read_sock and mask == selectors.EVENT_READ
+                        for key, mask in events
+                    ):
+                        shutdown_read_sock.recv(1)
+                        break
+
+                    for key, mask in events:
+                        if key.fileobj == self and mask == selectors.EVENT_READ:
+                            super()._handle_request_noblock()
+                        else:
+                            assert False, "unreachable"
+                    else:
+                        self.service_actions()
+
+        finally:
+            shutdown_read_sock.close()
+            self._shutdown_write_sock.close()
+            self._shutdown_event.set()
+
+    def shutdown(self):
+        """Stops the serve_forever loop and waits for it to finish."""
+        self._shutdown_write_sock.send(b'x')
+        self._shutdown_event.wait()
 
     def finish_request(self, request, client_address):
         if isinstance(self.socket, ssl.SSLSocket):
@@ -377,10 +448,10 @@ class Http2WebTestRequestHandler(BaseWebTestRequestHandler):
 
     def handle_one_request(self):
         """
-        This is the main HTTP/2.0 Handler.
+        This is the main HTTP/2 Handler.
 
         When a browser opens a connection to the server
-        on the HTTP/2.0 port, the server enters this which will initiate the h2 connection
+        on the HTTP/2 port, the server enters this which will initiate the h2 connection
         and keep running throughout the duration of the interaction, and will read/write directly
         from the socket.
 

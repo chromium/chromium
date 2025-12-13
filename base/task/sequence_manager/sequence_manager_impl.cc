@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
@@ -30,6 +31,7 @@
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/rand_util.h"
+#include "base/task/execution_fence.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/task_time_observer.h"
@@ -53,7 +55,6 @@ namespace {
 // Whether SequenceManagerImpl records crash keys. Enable via Finch when needed
 // for an investigation. Disabled by default to avoid unnecessary overhead.
 BASE_FEATURE(kRecordSequenceManagerCrashKeys,
-             "RecordSequenceManagerCrashKeys",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constinit thread_local internal::SequenceManagerImpl*
@@ -66,9 +67,7 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
 
   void AppendAsTraceFormat(std::string* out) const override {
     if (!value_.is_none()) {
-      std::string tmp;
-      JSONWriter::Write(value_, &tmp);
-      *out += tmp;
+      *out += WriteJson(value_).value_or("");
     } else {
       *out += "{}";
     }
@@ -136,7 +135,7 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
 #if !BUILDFLAG(IS_ANDROID)
 char* PrependHexAddress(char* output, const void* address) {
   uintptr_t value = reinterpret_cast<uintptr_t>(address);
-  static const char kHexChars[] = "0123456789ABCDEF";
+  static const std::string_view kHexChars = "0123456789ABCDEF";
   do {
     *output-- = kHexChars[value % 16];
     value /= 16;
@@ -181,12 +180,20 @@ SequenceManagerImpl::SequenceManagerImpl(
       main_thread_clock()->NowTicks() + kReclaimMemoryInterval;
 
   controller_->SetSequencedTaskSource(this);
+
+  if (settings_.should_block_on_scoped_fences && GetBestEffortPriority()) {
+    ScopedBestEffortExecutionFence::AddSequenceManager(this);
+  }
 }
 
 SequenceManagerImpl::~SequenceManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(
       TRACE_DISABLED_BY_DEFAULT("sequence_manager"), "SequenceManager", this);
+
+  if (settings_.should_block_on_scoped_fences && GetBestEffortPriority()) {
+    ScopedBestEffortExecutionFence::RemoveSequenceManager(this);
+  }
 
 #if BUILDFLAG(IS_IOS)
   if (settings_.message_loop_type == MessagePumpType::UI &&
@@ -1077,6 +1084,25 @@ WeakPtr<SequenceManagerImpl> SequenceManagerImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+scoped_refptr<SingleThreadTaskRunner>
+SequenceManagerImpl::GetCurrentBestEffortTaskRunner(
+    PassKey<SingleThreadTaskRunner>) {
+  if (SequenceManagerImpl* current = GetCurrent()) {
+    if (std::optional<TaskQueue::QueuePriority> best_effort_priority =
+            current->GetBestEffortPriority()) {
+      // Return the first queue with the right priority.
+      for (internal::TaskQueueImpl* task_queue :
+           current->main_thread_only().active_queues) {
+        if (task_queue->GetQueuePriority() == *best_effort_priority) {
+          return task_queue->task_runner();
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
 void SequenceManagerImpl::SetDefaultTaskRunner(
     scoped_refptr<SingleThreadTaskRunner> task_runner) {
   controller_->SetDefaultTaskRunner(task_runner);
@@ -1142,9 +1168,7 @@ TaskQueue::Handle SequenceManagerImpl::CreateTaskQueue(
 std::string SequenceManagerImpl::DescribeAllPendingTasks() const {
   Value::Dict value =
       AsValueWithSelectorResult(nullptr, /* force_verbose */ true);
-  std::string result;
-  JSONWriter::Write(value, &result);
-  return result;
+  return WriteJson(value).value_or("");
 }
 
 void SequenceManagerImpl::AddDestructionObserver(
@@ -1241,6 +1265,34 @@ internal::TaskQueueImpl* SequenceManagerImpl::currently_executing_task_queue()
 
 TaskQueue::QueuePriority SequenceManagerImpl::GetPriorityCount() const {
   return settings().priority_settings.priority_count();
+}
+
+std::vector<TaskQueue*> SequenceManagerImpl::GetBestEffortTaskQueues() {
+  std::vector<TaskQueue*> queues;
+  if (std::optional<TaskQueue::QueuePriority> best_effort_priority =
+          GetBestEffortPriority()) {
+    for (internal::TaskQueueImpl* task_queue :
+         main_thread_only().active_queues) {
+      if (task_queue->GetQueuePriority() == *best_effort_priority) {
+        queues.push_back(task_queue);
+      }
+    }
+  }
+  return queues;
+}
+
+std::optional<TaskQueue::QueuePriority>
+SequenceManagerImpl::GetBestEffortPriority() const {
+  const PrioritySettings& priority_settings = settings().priority_settings;
+  const size_t priority_count =
+      static_cast<size_t>(priority_settings.priority_count());
+  CHECK_GT(priority_count, 0u);
+  auto lowest_priority =
+      static_cast<TaskQueue::QueuePriority>(priority_count - 1);
+  if (lowest_priority == priority_settings.default_priority()) {
+    return std::nullopt;
+  }
+  return lowest_priority;
 }
 
 constexpr TimeDelta SequenceManagerImpl::kReclaimMemoryInterval;

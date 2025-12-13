@@ -10,6 +10,7 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/menu_button_wrapper"
+    android:clipToPadding="false"
     android:layout_height="match_parent"
     android:layout_width="@dimen/toolbar_button_width">
 
@@ -23,16 +24,14 @@ found in the LICENSE file.
         android:contentDescription="@string/accessibility_toolbar_btn_menu"
         android:tooltipText="@string/accessibility_toolbar_btn_menu"
         android:background="@null"
+        android:paddingHorizontal="@dimen/custom_tabs_toolbar_button_horizontal_padding"
         app:tint="@color/default_icon_color_tint_list" />
     <ImageView
         android:id="@+id/menu_dot"
-        style="@style/ToolbarMenuButton"
+        android:layout_height="8dp"
+        android:layout_width="8dp"
         android:src="@drawable/menu_dot"
         android:importantForAccessibility="no"
-        android:paddingTop="6dp"
-        android:paddingBottom="34dp"
-        android:paddingStart="30dp"
-        android:paddingEnd="10dp"
         android:layout_gravity="top|end"
         android:background="@null"
         android:visibility="gone" />

@@ -4,6 +4,7 @@
 
 #include "extensions/common/features/complex_feature.h"
 
+#include "base/functional/callback.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 namespace extensions {
 

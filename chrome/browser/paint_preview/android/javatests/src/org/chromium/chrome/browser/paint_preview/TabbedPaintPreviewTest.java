@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -318,7 +318,7 @@ public class TabbedPaintPreviewTest {
         private int mLastToken = TokenHolder.INVALID_TOKEN;
 
         public TestControlsVisibilityDelegate() {
-            super(new ObservableSupplierImpl<>(false));
+            super(ObservableSuppliers.alwaysFalse());
         }
 
         public boolean isPersistent() {

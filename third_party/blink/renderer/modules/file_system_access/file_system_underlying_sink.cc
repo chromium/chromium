@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/file_system_access/file_system_underlying_sink.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "net/base/net_errors.h"
@@ -77,8 +78,8 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::close(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   auto result = pending_operation_->Promise();
-  writer_remote_->Close(WTF::BindOnce(&FileSystemUnderlyingSink::CloseComplete,
-                                      WrapPersistent(this)));
+  writer_remote_->Close(
+      BindOnce(&FileSystemUnderlyingSink::CloseComplete, WrapPersistent(this)));
 
   return result;
 }
@@ -100,28 +101,28 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
     const WriteParams& params,
     ExceptionState& exception_state) {
   if (params.type() == V8WriteCommandType::Enum::kTruncate) {
-    if (!params.hasSizeNonNull()) {
+    const std::optional<uint64_t> size = params.getSizeOr(std::nullopt);
+    if (!size) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. truncate requires a size argument");
       return EmptyPromise();
     }
-    return Truncate(script_state, params.sizeNonNull(), exception_state);
+    return Truncate(script_state, *size, exception_state);
   }
 
   if (params.type() == V8WriteCommandType::Enum::kSeek) {
-    if (!params.hasPositionNonNull()) {
+    const std::optional<uint64_t> position = params.getPositionOr(std::nullopt);
+    if (!position) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
           "Invalid params passed. seek requires a position argument");
       return EmptyPromise();
     }
-    return Seek(script_state, params.positionNonNull(), exception_state);
+    return Seek(script_state, *position, exception_state);
   }
 
   if (params.type() == V8WriteCommandType::Enum::kWrite) {
-    uint64_t position =
-        params.hasPositionNonNull() ? params.positionNonNull() : offset_;
     if (!params.hasData()) {
       ThrowDOMExceptionAndInvalidateSink(
           exception_state, DOMExceptionCode::kSyntaxError,
@@ -134,6 +135,7 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::HandleParams(
           "Invalid params passed. write requires a non-null data");
       return EmptyPromise();
     }
+    uint64_t position = params.getPositionOr(std::nullopt).value_or(offset_);
     return WriteData(script_state, position, params.data(), exception_state);
   }
 
@@ -273,7 +275,7 @@ class BlobWriterHelper final : public mojom::blink::BlobReaderClient,
       : WriterHelper(std::move(callback)),
         receiver_(this, std::move(receiver)) {
     receiver_.set_disconnect_handler(
-        WTF::BindOnce(&BlobWriterHelper::OnDisconnect, WTF::Unretained(this)));
+        BindOnce(&BlobWriterHelper::OnDisconnect, Unretained(this)));
   }
 
   // BlobReaderClient:
@@ -416,10 +418,10 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
   WriterHelper* helper;
   if (data->IsBlob()) {
     mojo::PendingRemote<mojom::blink::BlobReaderClient> reader_client;
-    helper = new BlobWriterHelper(
-        reader_client.InitWithNewPipeAndPassReceiver(),
-        WTF::BindOnce(&FileSystemUnderlyingSink::WriteComplete,
-                      WrapPersistent(this)));
+    helper =
+        new BlobWriterHelper(reader_client.InitWithNewPipeAndPassReceiver(),
+                             BindOnce(&FileSystemUnderlyingSink::WriteComplete,
+                                      WrapPersistent(this)));
     data->GetAsBlob()->GetBlobDataHandle()->ReadAll(std::move(producer_handle),
                                                     std::move(reader_client));
   } else {
@@ -427,20 +429,18 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::WriteData(
         std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     auto* producer_ptr = producer.get();
     helper = new StreamWriterHelper(
-        std::move(producer),
-        WTF::BindOnce(&FileSystemUnderlyingSink::WriteComplete,
-                      WrapPersistent(this)));
+        std::move(producer), BindOnce(&FileSystemUnderlyingSink::WriteComplete,
+                                      WrapPersistent(this)));
     // Unretained is safe because the producer is owned by `helper`.
     producer_ptr->Write(
         std::move(data_source),
-        WTF::BindOnce(
-            &StreamWriterHelper::DataProducerComplete,
-            WTF::Unretained(static_cast<StreamWriterHelper*>(helper))));
+        BindOnce(&StreamWriterHelper::DataProducerComplete,
+                 Unretained(static_cast<StreamWriterHelper*>(helper))));
   }
 
   writer_remote_->Write(
       position, std::move(consumer_handle),
-      WTF::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
+      blink::BindOnce(&WriterHelper::WriteComplete, helper->AsWeakPtr()));
 
   pending_operation_ =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
@@ -462,9 +462,9 @@ ScriptPromise<IDLUndefined> FileSystemUnderlyingSink::Truncate(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
           script_state, exception_state.GetContext());
   auto result = pending_operation_->Promise();
-  writer_remote_->Truncate(
-      size, WTF::BindOnce(&FileSystemUnderlyingSink::TruncateComplete,
-                          WrapPersistent(this), size));
+  writer_remote_->Truncate(size,
+                           BindOnce(&FileSystemUnderlyingSink::TruncateComplete,
+                                    WrapPersistent(this), size));
   return result;
 }
 

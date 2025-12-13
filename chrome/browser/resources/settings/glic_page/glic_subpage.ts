@@ -10,6 +10,7 @@ import '../controls/settings_toggle_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../icons.html.js';
+import '../settings_page/settings_subpage.js';
 // <if expr="_google_chrome">
 import '../internal/icons.html.js';
 
@@ -45,6 +46,10 @@ export enum SettingsGlicPageFeaturePrefName {
   TAB_CONTEXT_ENABLED = 'glic.tab_context_enabled',
   TABSTRIP_BUTTON_ENABLED = 'glic.pinned_to_tabstrip',
   USER_STATUS = 'glic.user_status',
+  DEFAULT_TAB_CONTEXT_ENABLED = 'glic.default_tab_context_enabled',
+  WEB_ACTUATION_ENABLED = 'glic.user_enabled_actuation_on_web',
+  KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED =
+      'glic.keep_sidepanel_open_on_new_tabs_enabled',
 }
 
 // browser_element_identifiers constants
@@ -110,10 +115,34 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         },
       },
 
+      glicExtensionsFeatureEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicExtensionsFeatureEnabled');
+        },
+      },
+
       glicUserStatusCheckFeatureEnabled_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('glicUserStatusCheckFeatureEnabled'),
+      },
+
+      showGlicDefaultTabContextSetting_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('showGlicDefaultTabContextSetting'),
+      },
+
+      showGlicPersonalContextLink_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
+      },
+
+      showGlicKeepSidepanelOpenOnNewTabsSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean(
+            'showGlicKeepSidepanelOpenOnNewTabsSetting'),
       },
 
       locationSubLabel_: {
@@ -146,9 +175,78 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
             SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
       },
 
+      defaultTabAccessToggleExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      defaultTabAccessSubLabel_: {
+        type: String,
+        computed: `computeDefaultTabAccessSubLabel_(prefs.${
+            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
+
+      defaultTabAccessLearnMoreUrl_: {
+        type: String,
+        computed: `computeDefaultTabAccessLearnMoreUrl_(prefs.${
+            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
+
       spark_: {
         type: String,
         computed: `computeSpark_()`,
+      },
+
+      isEnterpriseAccountDataProtected_: {
+        type: Boolean,
+        computed: `computeIsEnterpriseAccountDataProtected_(prefs.${
+            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
+
+      webActuationFeatureEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('glicWebActuationFeatureEnabled') &&
+              loadTimeData.getBoolean('glicActorEnabled');
+        },
+      },
+
+      isWebActuationDisabledForEnterprise_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isWebActuationDisabledForEnterprise');
+        },
+      },
+
+      // Mock pref to show disabled toggle with enterprise policy indicator.
+      webActuationDisabledForEnterprisePref_: {
+        type: Object,
+        value() {
+          return {
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+            controlledBy: chrome.settingsPrivate.ControlledBy.DEVICE_POLICY,
+          };
+        },
+      },
+
+      webActuationEnabledExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      webActuationSubLabel_: {
+        type: String,
+        computed: `computeWebActuationSubLabel_(prefs.${
+            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+      },
+
+      webActuationLearnMoreUrl_: {
+        type: String,
+        computed: `computeWebActuationLearnMoreUrl_(prefs.${
+            SettingsGlicPageFeaturePrefName.USER_STATUS}.value)`,
+
       },
     };
   }
@@ -157,6 +255,14 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     return [
       'onTabContextEnabledChanged_(' +
           `prefs.${SettingsGlicPageFeaturePrefName.TAB_CONTEXT_ENABLED}.value)`,
+      'onDefaultTabContextEnabledChanged_(' +
+          `prefs.${
+              SettingsGlicPageFeaturePrefName
+                  .DEFAULT_TAB_CONTEXT_ENABLED}.value)`,
+      'onWebActuationEnabledChanged_(' +
+          `prefs.${
+              SettingsGlicPageFeaturePrefName.WEB_ACTUATION_ENABLED}.value)`,
+
     ];
   }
 
@@ -171,14 +277,29 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   declare private tabAccessToggleExpanded_: boolean;
+  declare private defaultTabAccessToggleExpanded_: boolean;
   declare private closedCaptionsFeatureEnabled_: boolean;
+  declare private glicExtensionsFeatureEnabled_: boolean;
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
+  declare private showGlicDefaultTabContextSetting_: boolean;
+  declare private showGlicPersonalContextLink_: boolean;
+  declare private showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean;
   declare private locationSubLabel_: string;
   declare private locationLearnMoreUrl_: string;
   declare private microphoneSubLabel_: string;
   declare private tabAccessSubLabel_: string;
   declare private tabAccessLearnMoreUrl_: string;
+  declare private defaultTabAccessSubLabel_: string;
+  declare private defaultTabAccessLearnMoreUrl_: string;
   declare private spark_: string;
+  declare private isEnterpriseAccountDataProtected_: boolean;
+  declare private webActuationSubLabel_: string;
+  declare private webActuationLearnMoreUrl_: string;
+  declare private webActuationFeatureEnabled_: boolean;
+  declare private isWebActuationDisabledForEnterprise_: boolean;
+  declare private webActuationDisabledForEnterprisePref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private webActuationEnabledExpanded_: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -187,6 +308,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.addWebUiListener(
         'glic-disallowed-by-admin-changed',
         this.disallowedByAdminChanged_.bind(this));
+    this.addWebUiListener(
+        'glic-web-actuation-capability-changed',
+        (canActOnWeb: boolean) =>
+            this.onWebActuationCapabilityChanged_(canActOnWeb));
     this.registeredShortcut_ = await this.browserProxy_.getGlicShortcut();
     this.registeredFocusToggleShortcut_ =
         await this.browserProxy_.getGlicFocusToggleShortcut();
@@ -293,6 +418,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.tabAccessToggleExpanded_ = enabled;
   }
 
+  private onDefaultTabContextEnabledChanged_(enabled: boolean) {
+    this.defaultTabAccessToggleExpanded_ = enabled;
+  }
+
   private onTabAccessToggleChange_(event: CustomEvent) {
     const target = event.target as SettingsToggleButtonElement;
     const enabled = target.checked;
@@ -300,9 +429,48 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'Glic.Settings.TabContext' + (enabled ? '.Enabled' : '.Disabled'));
   }
 
+  private onTabAccessExpand_() {
+    this.tabAccessToggleExpanded_ = !this.tabAccessToggleExpanded_;
+  }
+
+  private onDefaultTabAccessExpand_() {
+    this.defaultTabAccessToggleExpanded_ =
+        !this.defaultTabAccessToggleExpanded_;
+  }
+
+  private onDefaultTabAccessToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    const enabled = target.checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.DefaultTabContext' +
+        (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onKeepSidepanelOpenOnNewTabsToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    const enabled = target.checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.KeepSidepanelOpenOnNewTabs' +
+        (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onWebActuationEnabledChanged_(enabled: boolean) {
+    if (this.isWebActuationDisabledForEnterprise_) {
+      this.webActuationEnabledExpanded_ = false;
+      return;
+    }
+    this.webActuationEnabledExpanded_ = enabled;
+  }
+
   private onActivityRowClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('glicActivityButtonUrl'));
+  }
+
+  private onExtensionsRowClick_() {
+    // TODO(crbug.com/434213151): Append url param when ready.
+    const url = new URL(this.i18n('glicExtensionsManagementUrl'));
+    OpenWindowProxyImpl.getInstance().openUrl(url.toString());
   }
 
   private onShortcutsLearnMoreClick_() {
@@ -325,6 +493,19 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
   }
 
+  private onDefaultTabAccessToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions
+            .GLIC_SHORTCUTS_DEFAULT_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
+    OpenWindowProxyImpl.getInstance().openUrl(
+        this.defaultTabAccessLearnMoreUrl_);
+  }
+
+  private onGeminiPersonalContextClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('geminiPersonalContextUrl'));
+  }
+
   private disallowedByAdminChanged_(disallowed: boolean) {
     this.disallowedByAdmin_ = disallowed;
   }
@@ -341,44 +522,63 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'Glic.Settings.TabstripButton.' + (enabled ? 'Enabled' : 'Disabled'));
   }
 
+  private computeIsEnterpriseAccountDataProtected_(
+      userStatus: GlicUserStatusPref|undefined): boolean {
+    return this.glicUserStatusCheckFeatureEnabled_ &&
+        !!userStatus?.isEnterpriseAccountDataProtected;
+  }
+
   private computeLocationSubLabel_(userStatus: GlicUserStatusPref|undefined):
       string {
-    return this.glicUserStatusCheckFeatureEnabled_ &&
-            userStatus?.isEnterpriseAccountDataProtected ?
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
         this.i18n('glicLocationToggleSublabelDataProtected') :
         this.i18n('glicLocationToggleSublabel');
   }
 
   private computeLocationLearnMoreUrl_(
       userStatus: GlicUserStatusPref|undefined): string {
-    return this.glicUserStatusCheckFeatureEnabled_ &&
-            userStatus?.isEnterpriseAccountDataProtected ?
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
         '' :
         this.i18n('glicLocationToggleLearnMoreUrl');
   }
 
   private computeMicrophoneSubLabel_(userStatus: GlicUserStatusPref|undefined):
       string {
-    return this.glicUserStatusCheckFeatureEnabled_ &&
-            userStatus?.isEnterpriseAccountDataProtected ?
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
         this.i18n('glicMicrophoneToggleSublabelDataProtected') :
         this.i18n('glicMicrophoneToggleSublabel');
   }
 
   private computeTabAccessSubLabel_(userStatus: GlicUserStatusPref|undefined):
       string {
-    return this.glicUserStatusCheckFeatureEnabled_ &&
-            userStatus?.isEnterpriseAccountDataProtected ?
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
         this.i18n('glicTabAccessToggleSublabelDataProtected') :
         this.i18n('glicTabAccessToggleSublabel');
   }
 
   private computeTabAccessLearnMoreUrl_(
       userStatus: GlicUserStatusPref|undefined): string {
-    return this.glicUserStatusCheckFeatureEnabled_ &&
-            userStatus?.isEnterpriseAccountDataProtected ?
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
         this.i18n('glicTabAccessToggleLearnMoreUrlDataProtected') :
         this.i18n('glicTabAccessToggleLearnMoreUrl');
+  }
+
+  // i18nAdvanced is needed to allow for translating strings containing HTML.
+  // The glicDefaultTabAccessToggleSublabel strings contain <ph> elements which
+  // are translated to <a> tags to provide a link in the label.
+  private computeDefaultTabAccessSubLabel_(
+      userStatus: GlicUserStatusPref|undefined): string {
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
+        this.i18nAdvanced('glicDefaultTabAccessToggleSublabelDataProtected')
+            .toString() :
+        this.i18nAdvanced('glicDefaultTabAccessToggleSublabel').toString();
+  }
+
+  private computeDefaultTabAccessLearnMoreUrl_(
+      userStatus: GlicUserStatusPref|undefined): string {
+    return this.computeIsEnterpriseAccountDataProtected_(userStatus) ?
+        this.i18n('glicDefaultTabAccessToggleLearnMoreUrlDataProtected') :
+        this.i18n('glicDefaultTabAccessToggleLearnMoreUrl');
   }
 
   private computeSpark_() {
@@ -390,6 +590,38 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   // SettingsViewMixin implementation.
   override focusBackButton() {
     this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+  }
+
+  private onWebActuationToggleChange_(event: CustomEvent) {
+    const target = event.target as SettingsToggleButtonElement;
+    const enabled = target.checked;
+    this.metricsBrowserProxy_.recordAction(
+        'Glic.Settings.WebActuation' + (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onWebActuationExpand_() {
+    this.webActuationEnabledExpanded_ = !this.webActuationEnabledExpanded_;
+  }
+
+  private onWebActuationToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_WEB_ACTUATION_TOGGLE_LEARN_MORE_CLICKED);
+    OpenWindowProxyImpl.getInstance().openUrl(this.webActuationLearnMoreUrl_);
+  }
+
+  private computeWebActuationSubLabel_(): string {
+    return this.i18nAdvanced('glicWebActuationToggleSublabel').toString();
+  }
+
+  private computeWebActuationLearnMoreUrl_(): string {
+    return loadTimeData.getString('glicWebActuationToggleLearnMoreUrl');
+  }
+
+  private onWebActuationCapabilityChanged_(canActOnWeb: boolean) {
+    this.isWebActuationDisabledForEnterprise_ = !canActOnWeb;
+    if (this.isWebActuationDisabledForEnterprise_) {
+      this.webActuationEnabledExpanded_ = false;
+    }
   }
 }
 

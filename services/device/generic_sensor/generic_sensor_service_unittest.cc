@@ -6,7 +6,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -32,7 +31,6 @@
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 
 namespace device {
 

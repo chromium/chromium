@@ -259,6 +259,99 @@ The script will create a new .gitmodules files and update all gitlinks. Please
 note that old gitlinks won't be deleted, and you will need to remove them
 manually (see section above for deleting dependencies).
 
+## Modularity and the `checkdeps` Tool
+
+While the root `DEPS` file manages external repositories, Chromium's internal
+modularity is enforced by a tool called `checkdeps`. This tool ensures that code
+in one component does not improperly include headers from another, helping to
+maintain a clean and layered architecture.
+
+If you see an error like this during a build, it's from `checkdeps`:
+
+```
+ERROR at //some/component/foo.cc:10:11: Include not allowed.
+#include "another/component/bar.h"
+^---------------------------------
+The include file is not allowed to be included from the current file.
+```
+
+This error is controlled by special `DEPS` files located within subdirectories
+of the source tree (e.g., `//components/component_a/DEPS`).
+
+### Understanding In-Tree `DEPS` Files
+
+These `DEPS` files are much simpler than the root `DEPS` file. Their primary
+purpose is to define header inclusion rules.
+
+*   **`include_rules`:** This is the most important variable. It's a list of
+    strings that define which directories are allowed to be included by files
+    within the current directory (and its subdirectories).
+    *   `"+//path/to/allowed/dir"`: **Allows** including headers from this
+        directory.
+    *   `"-//path/to/forbidden/dir"`: **Forbids** including headers from this
+        directory. This is useful for creating exceptions to a broader rule.
+    *   `"!"`: A special rule that stops the `checkdeps` tool from looking in
+        parent directories for more `DEPS` files to apply.
+
+*   **`specific_include_rules`:** This works like `include_rules` but applies
+    only to files directly within the directory containing the `DEPS` file, not
+    to its subdirectories.
+
+### How Rules are Evaluated
+
+When `checkdeps` runs on a file, it:
+1.  Looks for a `DEPS` file in the same directory.
+2.  If found, it checks the `include_rules`.
+3.  If no `DEPS` file is found, or if one is found but doesn't contain the `!`
+    rule, it walks up to the parent directory and repeats the process,
+    accumulating rules.
+4.  This continues until it reaches the source root.
+
+### Diagnosing and Fixing `checkdeps` Violations
+
+1.  **Analyze the Error Message:** The `checkdeps` error is highly informative.
+    It tells you the exact file, the problematic include, and often the
+    specific rule that caused the violation. Look for a "Because of..." clause:
+    ```
+    Error: //some/component/foo.cc:10:11: Include not allowed.
+    #include "another/component/bar.h"
+    ^---------------------------------
+    The include file is not allowed to be included from the current file.
+    It is not in any dependency of
+    //some/component:my_target
+    Because of "-another/component" in //some/component/DEPS:6
+    ```
+    This tells you everything you need to know:
+    *   `//some/component/foo.cc` is the file with the bad include.
+    *   `"another/component/bar.h"` is the problematic include.
+    *   The build target is `//some/component:my_target`.
+    *   The specific rule causing the failure is `"-another/component"` on line 6
+        of `//some/component/DEPS`.
+
+2.  **Identify the Source and Target:** The error message tells you which file
+    (`//some/component/foo.cc`) is trying to include which header
+    (`"another/component/bar.h"`).
+3.  **Find the Governing `DEPS` File:** If the error message doesn't specify
+    the file, start in the directory of the source file (`//some/component/`)
+    and look for a `DEPS` file. If you don't find one, look in its parent
+    directory, and so on.
+4.  **Analyze the Rules:** Read the `include_rules` in the `DEPS` file you
+    found. The header you are trying to include is likely not covered by an `+`
+    rule, or is explicitly forbidden by a `-` rule.
+5.  **Fix the Violation:**
+    *   **Best Fix:** Can you achieve your goal *without* adding this new
+        dependency? Reusing existing abstractions is always preferred.
+    *   **Good Fix:** If the dependency is necessary, you often need to add the
+        dependency to the `deps` list of the target that is trying to include
+        the header. In the example above, you would edit
+        `//some/component/BUILD.gn` and add `//another/component` to the `deps`
+        of the `:my_target` target.
+    *   **Architectural Fix:** In some cases, you may also need to add a new
+        `"+//another/component"` rule to the appropriate `DEPS` file if the
+        dependency is architecturally sound but not yet allowed. Ensure
+        this new dependency makes architectural sense and get approval from the
+        code owners of the `DEPS` file.
+
 ## Appendix: Symlinks to enable other projects' presubmits {#presubmit-symlinks}
 
 Creating the following symlinks (POSIX: `ln -s DEST SRC`, Windows:

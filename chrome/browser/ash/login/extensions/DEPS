@@ -24,4 +24,5 @@ include_rules = [
   "+chrome/browser/profiles",
   "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
+  "+chrome/browser/ash/extensions/authentication_screen_extensions_external_loader.h",
 ]

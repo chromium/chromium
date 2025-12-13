@@ -10,11 +10,13 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_util_win.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -48,7 +50,7 @@ gfx::Rect GetWindowBoundsForClientBounds(DWORD style,
 }  // namespace
 
 WinWindow::WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds)
-    : delegate_(delegate) {
+    : delegate_(delegate), input_method_(nullptr) {
   CHECK(delegate_);
   DWORD window_style = WS_OVERLAPPEDWINDOW;
   if (use_popup_as_root_window_for_test) {
@@ -61,12 +63,39 @@ WinWindow::WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds)
   SetWindowText(hwnd(), L"WinWindow");
 }
 
-WinWindow::~WinWindow() {}
+WinWindow::~WinWindow() {
+  SetInputMethod(nullptr);
+}
+
+void WinWindow::SetInputMethod(InputMethod* input_method) {
+  if (input_method_) {
+    input_method_->RemoveObserver(this);
+  }
+
+  input_method_ = input_method;
+  if (input_method_) {
+    input_method_->AddObserver(this);
+  }
+}
 
 void WinWindow::Destroy() {
-  if (IsWindow(hwnd()))
+  if (IsWindow(hwnd())) {
     DestroyWindow(hwnd());
+  }
 }
+
+void WinWindow::OnInputMethodDestroyed(const InputMethod* input_method) {
+  CHECK_EQ(input_method_, input_method);
+  input_method_ = nullptr;
+}
+
+void WinWindow::OnFocus() {}
+
+void WinWindow::OnBlur() {}
+
+void WinWindow::OnCaretBoundsChanged(const TextInputClient* client) {}
+
+void WinWindow::OnTextInputStateChanged(const TextInputClient* client) {}
 
 void WinWindow::Show(bool inactive) {
   ShowWindow(hwnd(), inactive ? SW_SHOWNOACTIVATE : SW_SHOWNORMAL);
@@ -92,8 +121,9 @@ void WinWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
       GetWindowLong(hwnd(), GWL_STYLE), GetWindowLong(hwnd(), GWL_EXSTYLE),
       bounds);
   unsigned int flags = SWP_NOREPOSITION;
-  if (!::IsWindowVisible(hwnd()))
+  if (!::IsWindowVisible(hwnd())) {
     flags |= SWP_NOACTIVATE;
+  }
   SetWindowPos(hwnd(), NULL, window_bounds.x(), window_bounds.y(),
                window_bounds.width(), window_bounds.height(), flags);
 }
@@ -118,13 +148,15 @@ void WinWindow::SetTitle(const std::u16string& title) {
 }
 
 void WinWindow::SetCapture() {
-  if (!HasCapture())
+  if (!HasCapture()) {
     ::SetCapture(hwnd());
+  }
 }
 
 void WinWindow::ReleaseCapture() {
-  if (HasCapture())
+  if (HasCapture()) {
     ::ReleaseCapture();
+  }
 }
 
 bool WinWindow::HasCapture() const {
@@ -244,17 +276,19 @@ bool WinWindow::IsFullscreen() const {
 }
 
 LRESULT WinWindow::OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param) {
-  CHROME_MSG msg = {hwnd(),
-                    message,
-                    w_param,
-                    l_param,
-                    static_cast<DWORD>(GetMessageTime()),
-                    {CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)}};
+  const CHROME_MSG msg = {hwnd(),
+                          message,
+                          w_param,
+                          l_param,
+                          static_cast<DWORD>(GetMessageTime()),
+                          {CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)}};
   std::unique_ptr<Event> event = EventFromNative(msg);
-  if (IsMouseEventFromTouch(message))
+  if (IsMouseEventFromTouch(message)) {
     event->SetFlags(event->flags() | EF_FROM_TOUCH);
-  if (!(event->flags() & ui::EF_IS_NON_CLIENT))
+  }
+  if (!(event->flags() & ui::EF_IS_NON_CLIENT)) {
     delegate_->DispatchEvent(event.get());
+  }
   SetMsgHandled(event->handled());
   return 0;
 }
@@ -267,16 +301,32 @@ LRESULT WinWindow::OnCaptureChanged(UINT message,
 }
 
 LRESULT WinWindow::OnKeyEvent(UINT message, WPARAM w_param, LPARAM l_param) {
-  CHROME_MSG msg = {hwnd(), message, w_param, l_param};
+  const CHROME_MSG msg = {hwnd(), message, w_param, l_param};
   KeyEvent event(msg);
   delegate_->DispatchEvent(&event);
   SetMsgHandled(event.handled());
   return 0;
 }
 
+LRESULT WinWindow::OnImeMessages(UINT message, WPARAM w_param, LPARAM l_param) {
+  if (input_method_) {
+    LRESULT result = 0;
+    base::WeakPtr<WinWindow> ref(msg_handler_weak_factory_.GetWeakPtr());
+    const CHROME_MSG msg = {hwnd(), message, w_param, l_param};
+    const bool msg_handled =
+        input_method_->OnUntranslatedIMEMessage(msg, &result);
+    if (ref.get()) {
+      SetMsgHandled(msg_handled);
+    }
+    return result;
+  }
+
+  return ::DefWindowProc(hwnd(), message, w_param, l_param);
+}
+
 LRESULT WinWindow::OnNCActivate(UINT message, WPARAM w_param, LPARAM l_param) {
   delegate_->OnActivationChanged(!!w_param);
-  return DefWindowProc(hwnd(), message, w_param, l_param);
+  return ::DefWindowProc(hwnd(), message, w_param, l_param);
 }
 
 void WinWindow::OnClose() {
@@ -295,8 +345,9 @@ void WinWindow::OnDestroy() {
 void WinWindow::OnPaint(HDC) {
   gfx::Rect damage_rect;
   RECT update_rect = {0};
-  if (GetUpdateRect(hwnd(), &update_rect, FALSE))
+  if (GetUpdateRect(hwnd(), &update_rect, FALSE)) {
     damage_rect = gfx::Rect(update_rect);
+  }
   delegate_->OnDamageRect(damage_rect);
   ValidateRect(hwnd(), NULL);
 }
@@ -307,6 +358,53 @@ void WinWindow::OnWindowPosChanged(WINDOWPOS* window_pos) {
     GetClientRect(hwnd(), &cr);
     delegate_->OnBoundsChanged({true});
   }
+}
+
+LRESULT WinWindow::OnSetCursor(UINT message, WPARAM w_param, LPARAM l_param) {
+  // `cursor_` must be a `ui::WinCursor`, so that custom image cursors are
+  // properly ref-counted. `cursor` below is only used for system cursors and
+  // doesn't replace the current cursor so an HCURSOR can be used directly.
+  wchar_t* cursor = IDC_ARROW;
+  // Reimplement the necessary default behavior here. Calling DefWindowProc can
+  // trigger weird non-client painting for non-glass windows with custom frames.
+  // Using a ScopedRedrawLock to prevent caption rendering artifacts may allow
+  // content behind this window to incorrectly paint in front of this window.
+  // Invalidating the window to paint over either set of artifacts is not ideal.
+  switch (LOWORD(l_param)) {
+    case HTSIZE:
+      cursor = IDC_SIZENWSE;
+      break;
+    case HTLEFT:
+    case HTRIGHT:
+      cursor = IDC_SIZEWE;
+      break;
+    case HTTOP:
+    case HTBOTTOM:
+      cursor = IDC_SIZENS;
+      break;
+    case HTTOPLEFT:
+    case HTBOTTOMRIGHT:
+      cursor = IDC_SIZENWSE;
+      break;
+    case HTTOPRIGHT:
+    case HTBOTTOMLEFT:
+      cursor = IDC_SIZENESW;
+      break;
+    case HTCLIENT:
+      if (cursor_) {
+        SetCursor(cursor_);
+        return 1;
+      }
+      break;
+    case LOWORD(HTERROR):  // Use HTERROR's LOWORD value for valid comparison.
+      SetMsgHandled(false);
+      break;
+    default:
+      // Use the default value, IDC_ARROW.
+      break;
+  }
+  ::SetCursor(::LoadCursor(nullptr, cursor));
+  return 1;
 }
 
 namespace test {

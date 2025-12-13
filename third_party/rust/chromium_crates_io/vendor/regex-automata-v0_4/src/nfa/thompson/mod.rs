@@ -32,7 +32,7 @@ It is perhaps worth expanding a bit more on what it means to go through the
 Crucially, the size and amount of work done in this step is proportional to the
 size of the original string. No optimization or Unicode handling is done at
 this point. This means that parsing into an `Ast` has very predictable costs.
-Moreover, an `Ast` can be roundtripped back to its original pattern string as
+Moreover, an `Ast` can be round-tripped back to its original pattern string as
 written.
 * Translating an `Ast` into an `Hir` is a process by which the structured
 representation is simplified down to its most fundamental components.

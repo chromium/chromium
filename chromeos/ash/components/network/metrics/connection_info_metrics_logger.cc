@@ -101,22 +101,25 @@ void ConnectionInfoMetricsLogger::NetworkConnectionStateChanged(
   UpdateConnectionInfo(network);
 }
 
-void ConnectionInfoMetricsLogger::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict
+ConnectionInfoMetricsLogger::ConnectToNetworkRequested(
     const std::string& service_path) {
   if (!network_state_handler_) {
-    return;
+    return ConnectToNetworkRequestVerdict::kProceed;
   }
 
   const NetworkState* network =
       network_state_handler_->GetNetworkState(service_path);
 
   if (!network) {
-    return;
+    return ConnectToNetworkRequestVerdict::kProceed;
   }
 
   guid_to_connection_info_.insert_or_assign(
       network->guid(), ConnectionInfo(network,
                                       /*is_user_initiated=*/true));
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void ConnectionInfoMetricsLogger::OnShuttingDown() {

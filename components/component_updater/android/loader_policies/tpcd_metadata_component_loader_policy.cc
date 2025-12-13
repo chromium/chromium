@@ -31,7 +31,7 @@ std::optional<std::string> LoadTpcdMetadataFromDisk(base::ScopedFD fd) {
                                &raw_tpcd_metadata)) {
     return raw_tpcd_metadata;
   }
-  return nullptr;
+  return std::nullopt;
 }
 
 }  // namespace

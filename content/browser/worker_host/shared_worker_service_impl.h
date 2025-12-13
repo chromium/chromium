@@ -21,7 +21,6 @@
 #include "content/public/browser/shared_worker_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/storage_access_api/status.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_connector.mojom.h"
@@ -81,7 +80,6 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
       blink::mojom::SharedWorkerCreationContextType creation_context_type,
       const blink::MessagePortChannel& port,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
-      ukm::SourceId client_ukm_source_id,
       const std::optional<blink::StorageKey>& storage_key_override);
 
   // Returns the SharedWorkerHost associated with this token. Clients should
@@ -104,6 +102,11 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
                            GlobalRenderFrameHostId render_frame_host_id);
 
   StoragePartitionImpl* storage_partition() { return storage_partition_; }
+
+  // For all connected workers with `render_frame_host`, evicts other BFCached
+  // clients and returns true if this frame is the last active client for any of
+  // them.
+  bool EvictBFCachedClientsIfLastActive(RenderFrameHostImpl* render_frame_host);
 
  private:
   friend class SharedWorkerHostTest;

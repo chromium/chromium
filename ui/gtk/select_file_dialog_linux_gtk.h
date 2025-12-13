@@ -22,7 +22,8 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
                                  public aura::WindowObserver {
  public:
   SelectFileDialogLinuxGtk(Listener* listener,
-                           std::unique_ptr<ui::SelectFilePolicy> policy);
+                           std::unique_ptr<ui::SelectFilePolicy> policy,
+                           GtkUiPlatform* platform);
 
   SelectFileDialogLinuxGtk(const SelectFileDialogLinuxGtk&) = delete;
   SelectFileDialogLinuxGtk& operator=(const SelectFileDialogLinuxGtk&) = delete;
@@ -34,7 +35,6 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
   bool IsRunning(gfx::NativeWindow parent_window) const override;
 
   // SelectFileDialog implementation.
-  // |params| is unused and must be nullptr.
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
@@ -132,6 +132,8 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
   // Only used on GTK3 since GTK4 provides its own preview.
   // The GtkImage widget for showing previews of selected images.
   raw_ptr<GtkWidget, DanglingUntriaged> preview_ = nullptr;
+
+  const raw_ptr<GtkUiPlatform> platform_;
 
   base::flat_map<GtkWidget*, DialogState> dialogs_;
 };

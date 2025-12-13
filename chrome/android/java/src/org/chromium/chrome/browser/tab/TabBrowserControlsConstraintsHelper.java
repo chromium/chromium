@@ -170,12 +170,6 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
                             updateEnabledState();
                         }
                     }
-
-                    @Override
-                    public void onWebContentsSwapped(
-                            Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-                        updateAfterRendererProcessSwitch(tab, true);
-                    }
                 });
         if (mTab.isInitialized() && !mTab.isDetached()) updateVisibilityDelegate();
     }
@@ -230,8 +224,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         while (observers.hasNext()) {
             observers
                     .next()
-                    .onBrowserControlsConstraintsChanged(
-                            mTab, mOffsetTagsInfo, newOffsetTags, constraints);
+                    .onOffsetTagsInfoChanged(mTab, mOffsetTagsInfo, newOffsetTags, constraints);
         }
 
         mOffsetTagsInfo = newOffsetTags;

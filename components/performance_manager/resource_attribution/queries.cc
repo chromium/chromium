@@ -10,6 +10,7 @@
 #include "base/containers/enum_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
 #include "components/performance_manager/resource_attribution/query_params.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
@@ -174,12 +175,20 @@ void ScopedResourceUsageQuery::RemoveObserver(QueryResultObserver* observer) {
   observer_list_->RemoveObserver(observer);
 }
 
-void ScopedResourceUsageQuery::Start(base::TimeDelta delay) {
+void ScopedResourceUsageQuery::Start(base::TimeDelta delay,
+                                     bool observe_other_queries) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (auto* scheduler = QueryScheduler::Get()) {
-    scheduler->StartRepeatingQuery(params_.get());
+    scheduler->StartRepeatingQuery(
+        params_.get(),
+        observe_other_queries
+            ? base::BindRepeating(&ScopedResourceUsageQuery::NotifyObservers,
+                                  observer_list_)
+            : base::NullCallback());
   }
-  throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
+  if (delay.is_positive()) {
+    throttled_timer_->StartTimer(delay, params_.get(), observer_list_);
+  }
 }
 
 void ScopedResourceUsageQuery::QueryOnce() {

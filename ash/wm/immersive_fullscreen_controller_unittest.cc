@@ -13,7 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +107,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   }
 
   views::View* top_container() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   views::Widget* widget() { return widget_; }
@@ -115,7 +115,7 @@ class ImmersiveFullscreenControllerTest : public AshTestBase {
   aura::Window* window() { return widget_->GetNativeWindow(); }
 
   chromeos::HeaderView* immersive_delegate() {
-    return NonClientFrameViewAsh::Get(window())->GetHeaderView();
+    return FrameViewAsh::Get(window())->GetHeaderView();
   }
 
   // Access to private data from the controller.
@@ -737,9 +737,9 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
 
   aura::test::TestWindowDelegate child_delegate;
   std::unique_ptr<aura::Window> child(
-      CreateTestWindowInShellWithDelegateAndType(
-          &child_delegate, aura::client::WINDOW_TYPE_CONTROL, 1234,
-          gfx::Rect()));
+      CreateTestWindowInShell({.delegate = &child_delegate,
+                               .window_type = aura::client::WINDOW_TYPE_CONTROL,
+                               .window_id = 1234}));
   content_view()->Attach(child.get());
   views::test::RunScheduledLayout(content_view());
 
@@ -763,8 +763,10 @@ TEST_F(ImmersiveFullscreenControllerTest, RevealViaGestureChildConsumesEvents) {
 TEST_F(ImmersiveFullscreenControllerTest, EventsDoNotLeakToWindowUnderneath) {
   gfx::Rect window_bounds = window()->GetBoundsInScreen();
   aura::test::TestWindowDelegate child_delegate;
-  std::unique_ptr<aura::Window> behind(CreateTestWindowInShellWithDelegate(
-      &child_delegate, 1234, window_bounds));
+  std::unique_ptr<aura::Window> behind(
+      CreateTestWindowInShell({.delegate = &child_delegate,
+                               .bounds = window_bounds,
+                               .window_id = 1234}));
   behind->Show();
   behind->SetBounds(window_bounds);
   widget()->StackAbove(behind.get());

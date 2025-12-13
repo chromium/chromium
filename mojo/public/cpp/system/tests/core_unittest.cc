@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This file tests the C++ Mojo system core wrappers.
 // TODO(vtl): Maybe rename "CoreCppTest" -> "CoreTest" if/when this gets
 // compiled into a different binary from the C API tests.
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <map>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -380,7 +377,7 @@ TEST(CoreCppTest, BasicSharedBuffer) {
   // Map everything.
   ScopedSharedBufferMapping mapping = h0->Map(100);
   ASSERT_TRUE(mapping);
-  static_cast<char*>(mapping.get())[50] = 'x';
+  UNSAFE_TODO(static_cast<char*>(mapping.get())[50]) = 'x';
 
   // Duplicate |h0| to |h1|.
   ScopedSharedBufferHandle h1 =
@@ -391,7 +388,7 @@ TEST(CoreCppTest, BasicSharedBuffer) {
   h0.reset();
 
   // The mapping should still be good.
-  static_cast<char*>(mapping.get())[51] = 'y';
+  UNSAFE_TODO(static_cast<char*>(mapping.get())[51]) = 'y';
 
   // Unmap it.
   mapping.reset();
@@ -402,7 +399,7 @@ TEST(CoreCppTest, BasicSharedBuffer) {
 
   // It should have what we wrote.
   EXPECT_EQ('x', static_cast<char*>(mapping.get())[0]);
-  EXPECT_EQ('y', static_cast<char*>(mapping.get())[1]);
+  UNSAFE_TODO(EXPECT_EQ('y', static_cast<char*>(mapping.get())[1]));
 
   // Unmap it.
   mapping.reset();

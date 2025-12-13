@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/byte_count.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
@@ -107,11 +108,11 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
     page_load_metrics::ExtraRequestCompleteInfo request_info(
         url::SchemeHostPort(GURL(resource.url)),
         net::IPEndPoint(address, resource.port), content::FrameTreeNodeId(),
-        !net_error /* was_cached */,
-        (net_error ? 1024 * 20 : 0) /* raw_body_bytes */,
-        0 /* original_network_content_length */,
+        /*was_cached=*/!net_error,
+        /*raw_body_bytes=*/net_error ? base::KiB(20) : base::KiB(0),
+        /*original_network_content_length=*/base::ByteCount(0),
         network::mojom::RequestDestination::kDocument, net_error,
-        {} /* load_timing_info */);
+        /*load_timing_info=*/{});
 
     tester()->SimulateLoadedResource(
         request_info, navigation_simulator_->GetGlobalRequestID());
@@ -551,10 +552,11 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // socket address for some reason.
   PageLoadMetricsObserverTestHarness::tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL(internal::kDiffSubnetRequest2.url)),
-       net::IPEndPoint(), content::FrameTreeNodeId(), true /* was_cached */,
-       1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       network::mojom::RequestDestination::kDocument, 0,
-       nullptr /* load_timing_info */},
+       net::IPEndPoint(), content::FrameTreeNodeId(), /*was_cached=*/true,
+       /*raw_body_bytes=*/base::KiB(20),
+       /*original_network_content_length=*/base::ByteCount(0),
+       network::mojom::RequestDestination::kDocument, /*net_error=*/0,
+       /*load_timing_info=*/nullptr},
       GetGlobalRequestID());
   DeleteContents();
 
@@ -573,10 +575,11 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // empty socket address (e.g., failed DNS resolution).
   PageLoadMetricsObserverTestHarness::tester()->SimulateLoadedResource(
       {url::SchemeHostPort(GURL(internal::kPrivatePage.url)), net::IPEndPoint(),
-       content::FrameTreeNodeId(), false /* was_cached */,
-       0 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       network::mojom::RequestDestination::kDocument, -20,
-       nullptr /* load_timing_info */},
+       content::FrameTreeNodeId(), /*was_cached=*/false,
+       /*raw_body_bytes=*/base::ByteCount(0),
+       /*original_network_content_length=*/base::ByteCount(0),
+       network::mojom::RequestDestination::kDocument, /*net_error=*/-20,
+       /*load_timing_info=*/nullptr},
       GetGlobalRequestID());
   DeleteContents();
 

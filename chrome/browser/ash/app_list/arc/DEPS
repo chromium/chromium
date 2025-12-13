@@ -36,7 +36,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "arc_app_list_prefs\.cc": [
+  "arc_app_list_prefs\\.cc": [
      "+ash",
+  ],
+  "arc_app_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
 }

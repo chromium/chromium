@@ -1,7 +1,6 @@
 include_rules = [
   "+ash/style",
   "+ash/system",
-  "+ash/test",
 
   "+services/device/public/mojom",
   "+services/network",

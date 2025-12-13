@@ -6,10 +6,9 @@
 
 namespace subresource_filter {
 
-BASE_FEATURE(kAdTagging, "AdTagging", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAdTagging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTPCDAdHeuristicSubframeRequestTagging,
-             "TPCDAdHeuristicSubframeRequestTagging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kCheckFor3pcException{

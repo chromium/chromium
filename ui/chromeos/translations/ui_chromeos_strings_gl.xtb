@@ -14,7 +14,7 @@
 <translation id="1120073797882051782">Romaja hangul</translation>
 <translation id="112387589102719461">Inglés (EUA) con teclado Dvorak para programadores</translation>
 <translation id="1134697384939541955">Inglés (EUA) con teclado ampliado</translation>
-<translation id="1138691154716715755">Máis cedo este mes</translation>
+<translation id="1138691154716715755">Este mes</translation>
 <translation id="1150565364351027703">Lentes de sol</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalán</translation>
@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Xénero</translation>
 <translation id="1254593899333212300">Conexión directa a Internet</translation>
 <translation id="1272293450992660632">Os valores dos PIN non coinciden.</translation>
+<translation id="1279040297980392566">Esperando a que remate a análise. Téntao de novo máis tarde</translation>
 <translation id="1280820357415527819">Buscando redes de telefonía móbil</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
 <translation id="1297922636971898492">Google Drive non está dispoñible nestes momentos. A carga reiniciarase automaticamente cando volva estar dispoñible.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">Seleccionouse 1 ficheiro</translation>
 <translation id="3817579325494460411">URL sen especificar</translation>
 <translation id="3819448694985509187">O PIN é incorrecto. Quédache 1 intento.</translation>
-<translation id="3822559385185038546">A configuración deste proxy aplícaa o teu administrador</translation>
 <translation id="3830674330436234648">Non hai reproducións dispoñibles</translation>
 <translation id="383652340667548381">Serbio</translation>
 <translation id="3839045880592694915">O teu operador non permite que o módem se conecte. Ponte en contacto con el para obter máis detalles.</translation>
@@ -417,7 +417,7 @@
 <translation id="4380245540200674032">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, xestionada polo teu administrador, detalles</translation>
 <translation id="4387004326333427325">Certificado de autenticación rexeitado de forma remota</translation>
 <translation id="4394214039309501350">Ligazón externa</translation>
-<translation id="4394980935660306080">Máis cedo esta semana</translation>
+<translation id="4394980935660306080">Esta semana</translation>
 <translation id="4397435965699247285">OneDrive non está dispoñible sen conexión</translation>
 <translation id="4398096759193130964">Restaura os elementos ou arrástraos a un cartafol novo, fóra da papeleira</translation>
 <translation id="4401287888955153199">Extraer todo</translation>
@@ -467,7 +467,7 @@
 <translation id="4711094779914110278">Turco</translation>
 <translation id="4712283082407695269">Abrindo <ph name="PATH" /></translation>
 <translation id="4720185134442950733">Rede de datos móbiles</translation>
-<translation id="4725096204469550614">Máis cedo este ano</translation>
+<translation id="4725096204469550614">Este ano</translation>
 <translation id="4725511304875193254">Corgi</translation>
 <translation id="4737050008115666127">Aterraxe</translation>
 <translation id="4747271164117300400">Macedonio</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5605830556594064952">Dvorak para EUA</translation>
+<translation id="560739212255190568">Ademais de aplicar o seguinte proxy, quen administra o teu dispositivo definiu normas de omisión de proxy</translation>
 <translation id="5618330573454123917">Este ficheiro está deseñado para un ordenador que utilice o software de Macintosh. Non é compatible co teu dispositivo, que ten Chrome OS. Obtén <ph name="BEGIN_LINK_HELP" />máis información<ph name="END_LINK_HELP" /> sobre como abrir ficheiros en Chrome OS.</translation>
 <translation id="5625294776298156701">Támil con teclado Tamil99</translation>
 <translation id="5633226425545095130">Ao mover este elemento, compartirase con todas as persoas que poidan ver o cartafol compartido <ph name="DESTINATION_NAME" />.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="8545476925160229291">Inglés (EUA)</translation>
 <translation id="854655314928502177">URL de Discovery automático de proxy web</translation>
+<translation id="8547747809824590510">Quen administra o teu dispositivo definiu normas de omisión de proxy</translation>
 <translation id="8549186985808798022">Italiano</translation>
 <translation id="8551494947769799688">Letón</translation>
 <translation id="8560515948038859357">Cantonés</translation>
@@ -1004,7 +1006,7 @@
 <translation id="8569764466147087991">Selecciona un ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
+<translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniaturas.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>
 <translation id="8630384863424041081">Introduce o PIN da túa tarxeta SIM ou o PIN predeterminado que che forneceu o operador. Contacta co operador se necesitas axuda.</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9065512565307033593">Se non levas a cabo a verificación correctamente, desactivaráseche o acceso á rede.</translation>
+<translation id="9079844694307518094">Quen administra o teu dispositivo está aplicando o seguinte proxy</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Iniciouse correctamente a instalación.</translation>
 <translation id="9219103736887031265">Imaxes</translation>
 <translation id="9219908252191632183">Paisaxe lunar</translation>
+<translation id="931652069802536959">Unha política bloqueou a rede</translation>
 <translation id="938470336146445890">Instala un certificado de usuario</translation>
 <translation id="939736085109172342">Cartafol novo</translation>
 <translation id="943972244133411984">Modificado por</translation>

@@ -29,7 +29,6 @@
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/navigation/navigation_initiator_activation_and_ad_status.mojom.h"
-#include "third_party/blink/public/mojom/navigation/system_entropy.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
@@ -305,11 +304,6 @@ class NavigationController {
     // Indicates the reload type of this navigation.
     ReloadType reload_type = ReloadType::NONE;
 
-    // Indicates the suggested system entropy captured when the navigation
-    // began.
-    blink::mojom::SystemEntropy suggested_system_entropy =
-        blink::mojom::SystemEntropy::kNormal;
-
     // Indicates a form submission created this navigation.
     bool is_form_submission = false;
 
@@ -515,6 +509,19 @@ class NavigationController {
   virtual bool CanGoForward() = 0;
   virtual bool CanGoToOffset(int offset) = 0;
 
+  // Whether the back and forward buttons should be enabled in the browser UI.
+  // These need to be decoupled from the corresponding `CanGo*` methods; if
+  // there are only skippable entries in the navigation history for a direction,
+  // we should enable that direction's button so that the user can long-press to
+  // select a skippable entry if they choose. However, in this situation
+  // `CanGo*` will be false, and a direct click on the button will do nothing,
+  // in order to prevent a poor user experience in the case of history
+  // manipulation. See
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/history_manipulation_intervention.md
+  // for more details.
+  virtual bool ShouldEnableBackButton() = 0;
+  virtual bool ShouldEnableForwardButton() = 0;
+
   // Returns a vector of weak pointers to the NavigationHandles created for this
   // navigation. There may be multiple NavigationHandles if more than one frame
   // needs to navigate, or there may be none if the navigation is immediately
@@ -629,6 +636,12 @@ class NavigationController {
 
   // Gets the BackForwardCache for this NavigationController.
   virtual BackForwardCache& GetBackForwardCache() = 0;
+
+  // Determines whether to override user agent in the next navigation. This
+  // decision depends on the last committed entry if the given `option` is
+  // `NavigationController::UserAgentOverrideOption::INHERIT`.
+  virtual bool ShouldOverrideUserAgentInNextNavigation(
+      NavigationController::UserAgentOverrideOption option) = 0;
 
  private:
   // This interface should only be implemented inside content.

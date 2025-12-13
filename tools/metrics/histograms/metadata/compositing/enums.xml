@@ -46,26 +46,17 @@ chromium-metrics-reviews@google.com.
 
 <!--LINT.ThenChange(//cc/scheduler/scheduler_state_machine.cc:BeginImplFrameDeadlineMode) -->
 
-<enum name="BufferFormat">
-  <summary>The possible format of buffers. See ui/gfx/buffer_types.h.</summary>
-  <int value="0" label="R_8"/>
-  <int value="1" label="R_16"/>
-  <int value="2" label="RG_88"/>
-  <int value="3" label="RG_1616"/>
-  <int value="4" label="BGR_565"/>
-  <int value="5" label="RGBA_4444"/>
-  <int value="6" label="RGBX_8888"/>
-  <int value="7" label="RGBA_8888"/>
-  <int value="8" label="BGRX_8888"/>
-  <int value="9" label="BGRA_1010102"/>
-  <int value="10" label="RGBA_1010102"/>
-  <int value="11" label="BGRA_8888"/>
-  <int value="12" label="RGBA_F16"/>
-  <int value="13" label="YVU_420"/>
-  <int value="14" label="YUV_420_BIPLANAR"/>
-  <int value="15" label="YUVA_420_TRIPLANAR"/>
-  <int value="16" label="P010"/>
+<!--LINT.IfChange(CommitEarlyOutReason) -->
+
+<enum name="BeginMainFrameMainResult">
+  <int value="0" label="AbortedNotVisible"/>
+  <int value="1" label="AbortedDeferredMainFrameUpdate"/>
+  <int value="2" label="AbortedDeferredCommit"/>
+  <int value="3" label="FinishedNoUpdates"/>
+  <int value="4" label="NoEarlyOut"/>
 </enum>
+
+<!--LINT.ThenChange(//cc/scheduler/commit_earlyout_reason.h:CommitEarlyOutReason) -->
 
 <enum name="CALayerResult">
   <int value="0" label="Success"/>
@@ -235,15 +226,10 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="ToggleFrameRateCase">
-  <int value="0" label="No video"/>
-  <int value="1" label="Frame rate toggling supported by the platfrom"/>
-  <int value="2"
-      label="Single video with perfect cadence that matches the display"/>
-  <int value="3"
-      label="Single video with perfect cadence that differs from the display"/>
-  <int value="4" label="Single video without perfect cadence"/>
-  <int value="5" label="Multiple videos"/>
+<enum name="SlimBeginFrameResult">
+  <int value="0" label="EarlyOutNoDraw"/>
+  <int value="1" label="EarlyOutProcessed"/>
+  <int value="2" label="FrameProduced"/>
 </enum>
 
 </enums>

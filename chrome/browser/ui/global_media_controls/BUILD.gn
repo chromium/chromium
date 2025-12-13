@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("global_media_controls") {
@@ -47,7 +49,7 @@ source_set("global_media_controls") {
   ]
 
   if (is_chromeos) {
-    deps = [ "//ash" ]
+    public_deps += [ "//ash" ]
   }
 }
 
@@ -61,6 +63,7 @@ source_set("impl") {
     "media_item_ui_metrics.cc",
     "media_notification_device_monitor.cc",
     "media_notification_device_provider_impl.cc",
+    "media_notification_service.cc",
     "media_notification_service_factory.cc",
     "media_toolbar_button_controller.cc",
     "media_toolbar_button_controller_delegate.cc",
@@ -73,6 +76,8 @@ source_set("impl") {
     "//chrome/browser/feature_engagement",
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/favicon/content",
     "//components/favicon/core",
     "//components/feature_engagement/public",
@@ -81,6 +86,9 @@ source_set("impl") {
     "//media/remoting:remoting_device_capability",
     "//services/metrics/public/cpp:ukm_builders",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 

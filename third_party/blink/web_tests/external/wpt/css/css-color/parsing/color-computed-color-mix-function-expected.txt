@@ -1,0 +1,82 @@
+This is a testharness.js-based test.
+Found 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3) 25%, oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3) 25%, oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(25% oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(25% oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3), 25% oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3), 25% oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7) 25%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 0.7) 25%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3) 25%, oklab(0.5 0.6 0.7) 75%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3) 25%, oklab(0.5 0.6 0.7) 75%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3) 30%, oklab(0.5 0.6 0.7) 90%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3) 30%, oklab(0.5 0.6 0.7) 90%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3) 12.5%, oklab(0.5 0.6 0.7) 37.5%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3) 12.5%, oklab(0.5 0.6 0.7) 37.5%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3) 0%, oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3) 0%, oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4) 25%, oklab(0.5 0.6 0.7 / .8))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4) 25%, oklab(0.5 0.6 0.7 / .8))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(25% oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8))'
+  assert_true: 'color-mix(25% oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4), 25% oklab(0.5 0.6 0.7 / .8))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4), 25% oklab(0.5 0.6 0.7 / .8))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8) 25%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4), oklab(0.5 0.6 0.7 / .8) 25%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4) 25%, oklab(0.5 0.6 0.7 / .8) 75%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4) 25%, oklab(0.5 0.6 0.7 / .8) 75%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4) 30%, oklab(0.5 0.6 0.7 / .8) 90%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4) 30%, oklab(0.5 0.6 0.7 / .8) 90%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4) 12.5%, oklab(0.5 0.6 0.7 / .8) 37.5%)'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4) 12.5%, oklab(0.5 0.6 0.7 / .8) 37.5%)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / .4) 0%, oklab(0.5 0.6 0.7 / .8))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / .4) 0%, oklab(0.5 0.6 0.7 / .8))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(transparent, oklab(0.3 0.4 0.5))'
+  assert_true: 'color-mix(transparent, oklab(0.3 0.4 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(transparent 10%, oklab(0.3 0.4 0.5))'
+  assert_true: 'color-mix(transparent 10%, oklab(0.3 0.4 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 0), oklab(0.3 0.4 0.5))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 0), oklab(0.3 0.4 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 0) 10%, oklab(0.3 0.4 0.5))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 0) 10%, oklab(0.3 0.4 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(white, blue)'
+  assert_true: 'color-mix(white, blue)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(white 10%, blue)'
+  assert_true: 'color-mix(white 10%, blue)' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(none none none), oklab(none none none))'
+  assert_true: 'color-mix(oklab(none none none), oklab(none none none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(none none none), oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(none none none), oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3), oklab(none none none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3), oklab(none none none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 none), oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 none), oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3), oklab(0.5 0.6 none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(none 0.2 0.3), oklab(0.5 none 0.7))'
+  assert_true: 'color-mix(oklab(none 0.2 0.3), oklab(0.5 none 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / 0.5))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / none), oklab(0.5 0.6 0.7 / none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none 0.5 none / none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none 0.5 none / none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none 0.5 / none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none 0.5 / none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 0.5 none / none))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 0.5 none / none))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none none / 0.5))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(none none none / 0.5))' is a supported value for color. expected true got false
+[FAIL] Property color value 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / 0.5))'
+  assert_true: 'color-mix(oklab(0.1 0.2 0.3 / 25%) 0%, oklab(0.5 none none / 0.5))' is a supported value for color. expected true got false
+Harness: the test ran to completion.
+

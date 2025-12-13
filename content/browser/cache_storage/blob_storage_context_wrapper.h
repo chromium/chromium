@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
 #define CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
 
+#include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

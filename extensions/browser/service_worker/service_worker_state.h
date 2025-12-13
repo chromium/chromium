@@ -33,6 +33,8 @@ class ServiceWorkerState
     kActive,
     // Worker has completed starting (i.e. has seen DidStartWorkerForScope and
     // DidStartServiceWorkerContext).
+    // TODO(crbug.com/447640764): Remove this once
+    // `OptimizeServiceWorkerStateRequests` is the default behavior.
     kReady,
   };
 
@@ -53,7 +55,8 @@ class ServiceWorkerState
 
   class Observer : public base::CheckedObserver {
    public:
-    // Called when an extension service worker has started.
+    // Called when an extension service worker is ready (both browser and
+    // renderer sides are active).
     virtual void OnWorkerStart(const SequencedContextId& context_id,
                                const WorkerId& worker_id) {}
     // Called when an extension service worker has failed to start.
@@ -87,7 +90,7 @@ class ServiceWorkerState
   // global JavaScript scope, and all its global event listeners have been
   // registered with the //extensions layer. It is considered the
   // "renderer-side" signal that the worker is ready.
-  // NOTE: this can be called before or after `RendererDidStartWorkerForScope`.
+  // NOTE: this can be called before or after `DidStartWorkerForScope`.
   void RendererDidStartServiceWorkerContext(
       const SequencedContextId& context_id,
       const WorkerId& worker_id);
@@ -95,7 +98,7 @@ class ServiceWorkerState
   // Called when the render worker thread is preparing to terminate. It is
   // considered the "renderer-side" signal that the worker is stopping.
   // NOTE: this can be called before or after `OnStoppingSync` and
-  // `OnStoppedSync`.
+  // `OnStoppedSync`, or not at all.
   void RendererDidStopServiceWorkerContext(const WorkerId& worker_id,
                                            const GURL& scope);
 

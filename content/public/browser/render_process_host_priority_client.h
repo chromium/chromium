@@ -24,8 +24,10 @@ class RenderProcessHostPriorityClient {
     bool is_hidden;
     unsigned int frame_depth;
     bool intersects_viewport;
+    bool is_discarding;
 #if BUILDFLAG(IS_ANDROID)
     ChildProcessImportance importance;
+    bool has_active_clients;
 #endif
   };
 

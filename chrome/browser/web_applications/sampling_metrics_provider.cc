@@ -10,6 +10,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -124,7 +125,7 @@ void MaybeEmitUkmMetricsForTab(tabs::TabInterface* tab, IdSet& emitted_ids) {
     case mojom::UserDisplayMode::kStandalone:
       // Emit metrics only if the app is configured to run in a standalone
       // window, and is running in a standalone window.
-      if (tab->GetBrowserWindowInterface()->GetAppBrowserController()) {
+      if (AppBrowserController::IsWebApp(tab->GetBrowserWindowInterface())) {
         emitted_ids.insert(*app_id);
         EmitUkmMetricsForTab(tab);
       }
@@ -195,7 +196,7 @@ void SamplingMetricsProvider::EmitMetrics() {
       continue;
     }
     // If this is a standalone app window.
-    if (browser->GetAppBrowserController()) {
+    if (AppBrowserController::IsWebApp(browser)) {
       // A browser may be being closed due to empty tabs. See
       // https://crbug.com/378020140.
       if (!browser->GetActiveTabInterface()) {

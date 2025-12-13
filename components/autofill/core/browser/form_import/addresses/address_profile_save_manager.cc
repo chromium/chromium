@@ -40,6 +40,32 @@ void AddMultiStepComplementCandidate(FormDataImporter* form_data_importer,
                                                   /*is_imported=*/true);
 }
 
+AutofillClient::SaveAddressBubbleType AutofillProfileImportTypeToBubbleType(
+    AutofillProfileImportType type) {
+  switch (type) {
+    case AutofillProfileImportType::kNewProfile:
+    case AutofillProfileImportType::kConfirmableMerge:
+    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kNameEmailSuperset:
+    case AutofillProfileImportType::kHomeAndWorkSuperset:
+      return AutofillClient::SaveAddressBubbleType::kSave;
+    case AutofillProfileImportType::kProfileMigration:
+    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
+      return AutofillClient::SaveAddressBubbleType::kMigrateToAccount;
+    case AutofillProfileImportType::kHomeWorkNameEmailMerge:
+      return AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge;
+    // Those import types do not cause save/update/migrate/merge bubble to be
+    // displayed.
+    case AutofillProfileImportType::kDuplicateImport:
+    case AutofillProfileImportType::kSilentUpdate:
+    case AutofillProfileImportType::kSuppressedNewProfile:
+    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
+    case AutofillProfileImportType::kSuppressedConfirmableMerge:
+    case AutofillProfileImportType::kImportTypeUnspecified:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
 
 using UserDecision = AutofillClient::AddressPromptUserDecision;
@@ -63,38 +89,16 @@ void AddressProfileSaveManager::ImportProfileFromForm(
 
 void AddressProfileSaveManager::MaybeOfferSavePrompt(
     std::unique_ptr<ProfileImportProcess> import_process) {
-  switch (import_process->import_type()) {
-    // If the import was a duplicate, only results in silent updates or if the
-    // import of a new profile or a profile update is blocked, finish the
-    // process without initiating a user prompt
-    case AutofillProfileImportType::kDuplicateImport:
-    case AutofillProfileImportType::kSilentUpdate:
-    case AutofillProfileImportType::kSuppressedNewProfile:
-    case AutofillProfileImportType::kSuppressedConfirmableMergeAndSilentUpdate:
-    case AutofillProfileImportType::kSuppressedConfirmableMerge:
-      import_process->AcceptWithoutPrompt();
+  if (import_process->requires_user_prompt()) {
+    if (address_data_manager().auto_accept_address_imports_for_testing()) {
+      import_process->AcceptWithoutEdits();
       FinalizeProfileImport(std::move(import_process));
       return;
-
-    // The import of a new profile, a merge with an existing profile that
-    // changes a settings-visible value of an existing profile, or a profile
-    // migration triggers a user prompt.
-    case AutofillProfileImportType::kNewProfile:
-    case AutofillProfileImportType::kConfirmableMerge:
-    case AutofillProfileImportType::kConfirmableMergeAndSilentUpdate:
-    case AutofillProfileImportType::kProfileMigration:
-    case AutofillProfileImportType::kProfileMigrationAndSilentUpdate:
-    case AutofillProfileImportType::kHomeAndWorkSuperset:
-      if (address_data_manager().auto_accept_address_imports_for_testing()) {
-        import_process->AcceptWithoutEdits();
-        FinalizeProfileImport(std::move(import_process));
-        return;
-      }
-      OfferSavePrompt(std::move(import_process));
-      return;
-
-    case AutofillProfileImportType::kImportTypeUnspecified:
-      NOTREACHED();
+    }
+    OfferSavePrompt(std::move(import_process));
+  } else {
+    import_process->AcceptWithoutPrompt();
+    FinalizeProfileImport(std::move(import_process));
   }
 }
 
@@ -111,7 +115,7 @@ void AddressProfileSaveManager::OfferSavePrompt(
   client_->ConfirmSaveAddressProfile(
       process_ptr->import_candidate().value(),
       base::OptionalToPtr(process_ptr->merge_candidate()),
-      process_ptr->is_migration(),
+      AutofillProfileImportTypeToBubbleType(process_ptr->import_type()),
       base::BindOnce(&AddressProfileSaveManager::OnUserDecision,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(import_process)));
@@ -172,7 +176,7 @@ void AddressProfileSaveManager::AdjustUpdateProfileStrikes(
     return;
   }
   CHECK(import_process.merge_candidate().has_value());
-  const std::string& candidate_guid = import_process.import_candidate()->guid();
+  const std::string& candidate_guid = import_process.merge_candidate()->guid();
   if (import_process.UserDeclined()) {
     address_data_manager().AddStrikeToBlockProfileUpdate(candidate_guid);
   } else if (import_process.UserAccepted()) {

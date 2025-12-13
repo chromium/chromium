@@ -188,7 +188,7 @@ bool ExpandClipForPixelMovingFilter(const PropertyTrees* property_trees,
   SkMatrix filter_draw_matrix =
       SkMatrix::Scale(filter_node->surface_contents_scale.x(),
                       filter_node->surface_contents_scale.y());
-  gfx::RectF mapped_clip_in_mapping_space(filter_node->filters.MapRect(
+  gfx::RectF mapped_clip_in_mapping_space(filter_node->filters.ExpandRect(
       ToEnclosingClipRect(clip_rect_in_mapping_space), filter_draw_matrix));
 
   // Put the expanded clip back into the original target space.
@@ -674,23 +674,20 @@ void SetSurfaceDrawTransform(const PropertyTrees* property_trees,
   ConcatInverseSurfaceContentsScale(effect_node, &render_surface_transform);
 
   gfx::Vector2dF pixel_alignment_offset;
-  if (base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment)) {
-    // Adjust render_surface_transform by applying the render target's pixel
-    // alignment before the transform, and de-applying this render surface's
-    // pixel alignment to align it to screen pixels.
-    render_surface_transform.PostTranslate(
-        render_surface->render_target()->pixel_alignment_offset());
-    if (effect_node->render_surface_reason !=
-            RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
-        (base::FeatureList::IsEnabled(
-             features::kViewTransitionFloorTransform) ||
-         !effect_node->view_transition_element_resource_id.IsValid())) {
-      if (auto offset = draw_property_utils::PixelAlignmentOffset(
-              render_surface->screen_space_transform(),
-              render_surface_transform)) {
-        pixel_alignment_offset = *offset;
-        render_surface_transform.Translate(-pixel_alignment_offset);
-      }
+  // Adjust render_surface_transform by applying the render target's pixel
+  // alignment before the transform, and de-applying this render surface's
+  // pixel alignment to align it to screen pixels.
+  render_surface_transform.PostTranslate(
+      render_surface->render_target()->pixel_alignment_offset());
+  if (effect_node->render_surface_reason !=
+          RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants &&
+      (base::FeatureList::IsEnabled(features::kViewTransitionFloorTransform) ||
+       !effect_node->view_transition_element_resource_id.IsValid())) {
+    if (auto offset = draw_property_utils::PixelAlignmentOffset(
+            render_surface->screen_space_transform(),
+            render_surface_transform)) {
+      pixel_alignment_offset = *offset;
+      render_surface_transform.Translate(-pixel_alignment_offset);
     }
   }
   render_surface->SetDrawTransform(render_surface_transform,
@@ -1142,8 +1139,6 @@ void AdjustLayerDrawPropertiesForPixelAlignmentOffset(
     return;
   }
 
-  DCHECK(base::FeatureList::IsEnabled(features::kRenderSurfacePixelAlignment));
-
   // Apply the pixel alignment offset to all draw properties that are relative
   // to the render target's space.
   layer->draw_properties().target_space_transform.PostTranslate(offset);
@@ -1473,75 +1468,6 @@ void RecordRenderSurfaceReasonsForTracing(
   }
 }
 
-void UpdateElasticOverscroll(
-    PropertyTrees* property_trees,
-    TransformNode* overscroll_elasticity_transform_node,
-    const gfx::Vector2dF& elastic_overscroll,
-    const ScrollNode* inner_viewport) {
-  if (!overscroll_elasticity_transform_node) {
-    DCHECK(elastic_overscroll.IsZero());
-    return;
-  }
-#if BUILDFLAG(IS_ANDROID)
-  if (inner_viewport && property_trees->scroll_tree()
-                            .container_bounds(inner_viewport->id)
-                            .IsEmpty()) {
-    // Avoid divide by 0. Animation should not be visible for an empty viewport
-    // anyway.
-    return;
-  }
-
-  // On android, elastic overscroll is implemented by stretching the content
-  // from the overscrolled edge by applying a stretch transform
-  overscroll_elasticity_transform_node->local.MakeIdentity();
-  overscroll_elasticity_transform_node->origin.SetPoint(0.f, 0.f, 0.f);
-  overscroll_elasticity_transform_node->has_potential_animation =
-      !elastic_overscroll.IsZero();
-
-  if (!elastic_overscroll.IsZero() && inner_viewport) {
-    // The inner viewport container size takes into account the size change as a
-    // result of the top controls, see ScrollTree::container_bounds.
-    gfx::Size scroller_size =
-        property_trees->scroll_tree().container_bounds(inner_viewport->id);
-
-    overscroll_elasticity_transform_node->local.Scale(
-        1.f + std::abs(elastic_overscroll.x()) / scroller_size.width(),
-        1.f + std::abs(elastic_overscroll.y()) / scroller_size.height());
-
-    // If overscrolling to the right, stretch from right.
-    if (elastic_overscroll.x() > 0.f) {
-      overscroll_elasticity_transform_node->origin.set_x(scroller_size.width());
-    }
-
-    // If overscrolling off the bottom, stretch from bottom.
-    if (elastic_overscroll.y() > 0.f) {
-      overscroll_elasticity_transform_node->origin.set_y(
-          scroller_size.height());
-    }
-  }
-  overscroll_elasticity_transform_node->needs_local_transform_update = true;
-  property_trees->transform_tree_mutable().set_needs_update(true);
-
-#else  // BUILDFLAG(IS_ANDROID)
-
-  // On other platforms, we modify the translation offset to match the
-  // overscroll amount.
-  gfx::PointF overscroll_offset =
-      gfx::PointAtOffsetFromOrigin(elastic_overscroll);
-  if (overscroll_elasticity_transform_node->scroll_offset() ==
-      overscroll_offset) {
-    return;
-  }
-
-  overscroll_elasticity_transform_node->SetScrollOffset(
-      overscroll_offset, DamageReason::kUntracked);
-
-  overscroll_elasticity_transform_node->needs_local_transform_update = true;
-  property_trees->transform_tree_mutable().set_needs_update(true);
-
-#endif  // BUILDFLAG(IS_ANDROID)
-}
-
 void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
                                           PropertyTrees* property_trees) {
   for (LayerImpl* layer : *layer_list) {
@@ -1782,10 +1708,6 @@ void CalculateDrawProperties(
   UpdatePageScaleFactor(property_trees,
                         layer_tree_impl->PageScaleTransformNode(),
                         layer_tree_impl->current_page_scale_factor());
-  UpdateElasticOverscroll(property_trees,
-                          layer_tree_impl->OverscrollElasticityTransformNode(),
-                          layer_tree_impl->current_elastic_overscroll(),
-                          layer_tree_impl->InnerViewportScrollNode());
   // Similarly, the device viewport and device transform are shared
   // by both trees.
   property_trees->clip_tree_mutable().SetViewportClip(

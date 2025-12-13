@@ -4,11 +4,9 @@
 
 #include "components/performance_manager/graph/system_node_impl.h"
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "components/memory_pressure/fake_memory_pressure_monitor.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -45,7 +43,6 @@ TEST_F(SystemNodeImplDeathTest, SafeDowncast) {
 
 namespace {
 
-using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using testing::_;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
@@ -101,65 +98,7 @@ TEST_F(SystemNodeImplTest, ObserverWorks) {
   SystemNodeImpl::FromNode(system_node)->OnProcessMemoryMetricsAvailable();
   EXPECT_EQ(system_node, obs.TakeNotifiedSystemNode());
 
-  EXPECT_CALL(obs, OnBeforeMemoryPressure(
-                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
-  EXPECT_CALL(obs, OnMemoryPressure(
-                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
-  SystemNodeImpl::FromNode(system_node)
-      ->OnMemoryPressureForTesting(
-          MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
-
-  // Re-entrant iteration should work.
-  EXPECT_CALL(obs, OnProcessMemoryMetricsAvailable(system_node))
-      .WillOnce(InvokeWithoutArgs([&] {
-        SystemNodeImpl::FromNode(system_node)
-            ->OnMemoryPressureForTesting(
-                MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
-      }));
-  EXPECT_CALL(obs, OnBeforeMemoryPressure(
-                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
-  EXPECT_CALL(obs, OnMemoryPressure(
-                       MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
-  SystemNodeImpl::FromNode(system_node)->OnProcessMemoryMetricsAvailable();
-
   graph()->RemoveSystemNodeObserver(&obs);
-}
-
-TEST_F(SystemNodeImplTest, MemoryPressureNotification) {
-  MockObserver obs(graph());
-  memory_pressure::test::FakeMemoryPressureMonitor mem_pressure_monitor;
-
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(obs, OnBeforeMemoryPressure(
-                         base::MemoryPressureListener::MemoryPressureLevel::
-                             MEMORY_PRESSURE_LEVEL_CRITICAL))
-        .WillOnce(InvokeWithoutArgs([&]() { std::move(quit_closure).Run(); }));
-    EXPECT_CALL(obs, OnMemoryPressure(
-                         base::MemoryPressureListener::MemoryPressureLevel::
-                             MEMORY_PRESSURE_LEVEL_CRITICAL));
-    mem_pressure_monitor.SetAndNotifyMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
-    run_loop.Run();
-  }
-
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(obs, OnBeforeMemoryPressure(
-                         base::MemoryPressureListener::MemoryPressureLevel::
-                             MEMORY_PRESSURE_LEVEL_MODERATE))
-        .WillOnce(InvokeWithoutArgs([&]() { std::move(quit_closure).Run(); }));
-    EXPECT_CALL(obs, OnMemoryPressure(
-                         base::MemoryPressureListener::MemoryPressureLevel::
-                             MEMORY_PRESSURE_LEVEL_MODERATE));
-    mem_pressure_monitor.SetAndNotifyMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_MODERATE);
-    run_loop.Run();
-  }
 }
 
 }  // namespace performance_manager

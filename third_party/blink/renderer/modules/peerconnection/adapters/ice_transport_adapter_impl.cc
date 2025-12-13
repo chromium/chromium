@@ -85,17 +85,41 @@ void IceTransportAdapterImpl::SetupIceTransportChannel() {
     return;
   }
   ice_transport_channel()->AddGatheringStateCallback(
-      this, [this](webrtc::IceTransportInternal* transport) {
-        OnGatheringStateChanged(transport);
+      this, [that = weak_factory_.GetWeakPtr()](
+                webrtc::IceTransportInternal* transport) {
+        if (that) {
+          that->OnGatheringStateChanged(transport);
+        }
       });
-  ice_transport_channel()->SignalCandidateGathered.connect(
-      this, &IceTransportAdapterImpl::OnCandidateGathered);
-  ice_transport_channel()->SignalIceTransportStateChanged.connect(
-      this, &IceTransportAdapterImpl::OnStateChanged);
-  ice_transport_channel()->SignalNetworkRouteChanged.connect(
-      this, &IceTransportAdapterImpl::OnNetworkRouteChanged);
-  ice_transport_channel()->SignalRoleConflict.connect(
-      this, &IceTransportAdapterImpl::OnRoleConflict);
+  ice_transport_channel()->SubscribeCandidateGathered(
+      [that = weak_factory_.GetWeakPtr()](
+          webrtc::IceTransportInternal* transport,
+          const webrtc::Candidate& candidate) {
+        if (that) {
+          that->OnCandidateGathered(transport, candidate);
+        }
+      });
+  ice_transport_channel()->SubscribeIceTransportStateChanged(
+      [that = weak_factory_.GetWeakPtr()](
+          webrtc::IceTransportInternal* transport) {
+        if (that) {
+          that->OnStateChanged(transport);
+        }
+      });
+  ice_transport_channel()->SubscribeNetworkRouteChanged(
+      this, [that = weak_factory_.GetWeakPtr()](
+                std::optional<webrtc::NetworkRoute> route) {
+        if (that) {
+          that->OnNetworkRouteChanged(route);
+        }
+      });
+  ice_transport_channel()->SubscribeRoleConflict(
+      [that = weak_factory_.GetWeakPtr()](
+          webrtc::IceTransportInternal* transport) {
+        if (that) {
+          that->OnRoleConflict(transport);
+        }
+      });
 }
 
 void IceTransportAdapterImpl::OnGatheringStateChanged(

@@ -19,7 +19,6 @@ include_rules = [
   "+components/browser_ui/bottomsheet/android",
   "+components/browser_ui/contacts_picker/android",
   "+components/browser_ui/display_cutout/android",
-  "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/media/android",
   "+components/browser_ui/modaldialog/android",
   "+components/browser_ui/photo_picker/android",
@@ -38,6 +37,7 @@ include_rules = [
   "+components/browser_ui/desktop_windowing/android",
   "+components/download",
   "+components/embedder_support/android",
+  "+components/enterprise/browser/reporting/android",
   "+components/external_intents/android",
   "+components/externalauth/android",
   "+components/favicon/android",
@@ -66,6 +66,7 @@ include_rules = [
   "+components/strictmode/android",
   "+components/subresource_filter/android",
   "+components/supervised_user/android",
+  "+components/tabs/public/android",
   "+components/tab_groups/android/java",
   "+components/translate/content/android",
   "+components/user_prefs/android",
@@ -80,6 +81,7 @@ include_rules = [
   "+services/device/public",
   "+services/media_session/public",
   "+ui/android",
+  "+ui/edge_to_edge",
 ]
 
 specific_include_rules = {

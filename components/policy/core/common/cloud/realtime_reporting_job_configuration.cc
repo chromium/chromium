@@ -22,7 +22,6 @@ namespace policy {
 const char kBinaryProtobufContentType[] = "application/x-protobuf";
 
 BASE_FEATURE(kUploadRealtimeReportingEventsUsingProto,
-             "UploadRealtimeReportingEventsUsingProto",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char RealtimeReportingJobConfiguration::kContextKey[] = "context";
@@ -221,7 +220,8 @@ std::string RealtimeReportingJobConfiguration::GetUmaString() const {
 std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(
     const std::string& response_body) const {
   std::set<std::string> failedIds;
-  std::optional<base::Value> response = base::JSONReader::Read(response_body);
+  std::optional<base::Value> response = base::JSONReader::Read(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!response || !response->is_dict()) {
     return failedIds;
   }

@@ -10,7 +10,6 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -73,11 +72,8 @@ constexpr FetcherConfig kTestGetConfig{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                                   // required.
-
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
 };
 
@@ -93,11 +89,8 @@ constexpr FetcherConfig kTestGetConfigWithoutMetrics{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                                   // required.
-
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
 };
 
@@ -114,11 +107,8 @@ constexpr FetcherConfig kTestPostConfig{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                                   // required.
-
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
 };
 
@@ -142,11 +132,8 @@ constexpr FetcherConfig kTestRetryConfig{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kStrict,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                                   // required.
-
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
 };
 
@@ -163,11 +150,8 @@ constexpr FetcherConfig kTestGetConfigBestEffortAccessToken{
             .credentials_requirement =
                 AccessTokenConfig::CredentialsRequirement::kBestEffort,
             .mode = signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-            // TODO(b/284523446): Refer to GaiaConstants rather than literal.
-            .oauth2_scope =
-                "https://www.googleapis.com/auth/kid.permission",  // Real scope
-                                                                   // required.
-
+            .oauth_consumer_id =
+                signin::OAuthConsumerId::kSupervisedUserClassifyUrl,
         },
 };
 

@@ -892,7 +892,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents->GetPrimaryMainFrame()->GetSiteInstance()->HasSite());
   auto process1_lock = process1->GetProcessLock();
   EXPECT_FALSE(process1_lock.is_invalid());
-  EXPECT_TRUE(process1_lock.allows_any_site());
+  EXPECT_TRUE(process1_lock.AllowsAnySite());
 
   // Now wait for second navigation to finish and ensure it also succeeds.
   ASSERT_TRUE(regular_manager.WaitForNavigationFinished());

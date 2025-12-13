@@ -17,8 +17,6 @@ import android.os.ResultReceiver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -29,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * ComponentLoader that is used in embedded WebViews/WebLayers. It implements a ServiceConnection to
- * connect to the provider service to fetch components files.
+ * ComponentLoader that is used in embedded WebViews. It implements a ServiceConnection to connect
+ * to the provider service to fetch components files.
  */
 @NullMarked
 public class EmbeddedComponentLoader implements ServiceConnection {
@@ -52,10 +50,6 @@ public class EmbeddedComponentLoader implements ServiceConnection {
     // are received.
     // Must be only accessed on the UI thread.
     private final Set<ComponentResultReceiver> mComponentsResultReceivers = new HashSet<>();
-
-    // Timer started in connect() to measure component receipt time.
-    // Must be only accessed on the UI thread.
-    private long mConnectTimeMillisForMetrics;
 
     public EmbeddedComponentLoader(Collection<ComponentLoaderPolicyBridge> componentLoaderPolicy) {
         ThreadUtils.assertOnUiThread();
@@ -85,9 +79,6 @@ public class EmbeddedComponentLoader implements ServiceConnection {
             // unbind the connection before getting all results back, the service might be
             // killed before sending all results.
             if (mComponentsResultReceivers.isEmpty()) {
-                RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.ComponentUpdater.ResultsReceived",
-                        TimeUtils.elapsedRealtimeMillis() - mConnectTimeMillisForMetrics);
                 ContextUtils.getApplicationContext().unbindService(EmbeddedComponentLoader.this);
             }
 
@@ -163,32 +154,20 @@ public class EmbeddedComponentLoader implements ServiceConnection {
             return;
         }
 
-        mConnectTimeMillisForMetrics = TimeUtils.elapsedRealtimeMillis();
-
-        final TimeUtils.ElapsedRealtimeNanosTimer timer = new TimeUtils.ElapsedRealtimeNanosTimer();
         if (background) {
             PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> doConnect(intent));
         } else {
             doConnect(intent);
         }
-        RecordHistogram.recordMicroTimesHistogram(
-                "Android.WebView.ComponentUpdater.ProviderConnectUiTime", timer.getElapsedMicros());
     }
 
     // May be called from any thread.
     private void doConnect(Intent intent) {
         final Context appContext = ContextUtils.getApplicationContext();
 
-        final TimeUtils.ElapsedRealtimeNanosTimer timer = new TimeUtils.ElapsedRealtimeNanosTimer();
         boolean success = appContext.bindService(intent, this, Context.BIND_AUTO_CREATE);
-        final long micros = timer.getElapsedMicros();
 
-        if (success) {
-            RecordHistogram.recordMicroTimesHistogram(
-                    "Android.WebView.ComponentUpdater.BindServiceTime.Success", micros);
-        } else {
-            RecordHistogram.recordMicroTimesHistogram(
-                    "Android.WebView.ComponentUpdater.BindServiceTime.Failure", micros);
+        if (!success) {
             Log.d(TAG, "Could not bind to " + intent);
             PostTask.runOrPostTask(
                     TaskTraits.UI_DEFAULT,

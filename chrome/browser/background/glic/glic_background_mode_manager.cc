@@ -7,26 +7,127 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/background/glic/glic_controller.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/background/glic/glic_status_icon.h"
-#include "chrome/browser/background/startup_launch_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/glic/glic_enabling.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/startup/startup_launch_manager.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/shell.h"
+#endif
+
 namespace glic {
+
+#if BUILDFLAG(IS_CHROMEOS)
+class GlicBackgroundModeManager::AcceleratorRegistrar
+    : public ui::AcceleratorTarget {
+ public:
+  AcceleratorRegistrar(GlicBackgroundModeManager* manager,
+                       ui::Accelerator accelerator)
+      : manager_(CHECK_DEREF(manager)) {
+    if (ash::Shell::HasInstance()) {
+      // TODO(crbug.com/461584318): Handle overwriting browser and system
+      // shortcuts.
+      auto* accel_controller = ash::Shell::Get()->accelerator_controller();
+      if (!accel_controller->IsReserved(accelerator) ||
+          !accel_controller->IsRegistered(accelerator)) {
+        accel_controller->Register({accelerator}, this);
+        manager->actual_registered_hotkey_ = accelerator;
+      }
+    }
+  }
+
+  ~AcceleratorRegistrar() override {
+    if (ash::Shell::HasInstance() &&
+        !manager_->actual_registered_hotkey_.IsEmpty()) {
+      auto* accel_controller = ash::Shell::Get()->accelerator_controller();
+      accel_controller->Unregister(manager_->actual_registered_hotkey_, this);
+    }
+    manager_->actual_registered_hotkey_ = ui::Accelerator();
+  }
+
+  // ui::AcceleratorTarget:
+  bool CanHandleAccelerators() const override { return true; }
+
+  // ui::AcceleratorTarget:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    if (accelerator == manager_->actual_registered_hotkey_) {
+      manager_->HandleHotkey(accelerator);
+      return true;
+    }
+    return false;
+  }
+
+ private:
+  const raw_ref<GlicBackgroundModeManager> manager_;
+};
+
+#else
+
+class GlicBackgroundModeManager::AcceleratorRegistrar
+    : public ui::GlobalAcceleratorListener::Observer {
+ public:
+  AcceleratorRegistrar(GlicBackgroundModeManager* manager,
+                       ui::Accelerator accelerator)
+      : manager_(CHECK_DEREF(manager)) {
+    auto* const global_accelerator_listener =
+        ui::GlobalAcceleratorListener::GetInstance();
+    if (global_accelerator_listener) {
+      const bool shortcut_handling_suspended =
+          global_accelerator_listener->IsShortcutHandlingSuspended();
+      // Re-enable shortcut handling to allow the global accelerator listener to
+      // register the hotkey.
+      global_accelerator_listener->SetShortcutHandlingSuspended(false);
+      if (global_accelerator_listener->RegisterAccelerator(accelerator, this)) {
+        manager_->actual_registered_hotkey_ = accelerator;
+      }
+      global_accelerator_listener->SetShortcutHandlingSuspended(
+          shortcut_handling_suspended);
+    }
+  }
+
+  ~AcceleratorRegistrar() override {
+    auto* const global_accelerator_listener =
+        ui::GlobalAcceleratorListener::GetInstance();
+    if (global_accelerator_listener &&
+        !manager_->actual_registered_hotkey_.IsEmpty()) {
+      global_accelerator_listener->UnregisterAccelerator(
+          manager_->actual_registered_hotkey_, this);
+    }
+    manager_->actual_registered_hotkey_ = ui::Accelerator();
+  }
+
+  // ui::GlobalAcceleratorListener::Observer
+  void OnKeyPressed(const ui::Accelerator& accelerator) override {
+    manager_->HandleHotkey(accelerator);
+  }
+
+  // ui::GlobalAcceleratorListener::Observer
+  void ExecuteCommand(const std::string& accelerator_group_id,
+                      const std::string& command_id) override {
+    // TODO(crbug.com/385194502): Handle Linux.
+  }
+
+ private:
+  const raw_ref<GlicBackgroundModeManager> manager_;
+};
+#endif
 
 GlicBackgroundModeManager::GlicBackgroundModeManager(StatusTray* status_tray)
     : configuration_(std::make_unique<GlicLauncherConfiguration>(this)),
@@ -72,7 +173,7 @@ void GlicBackgroundModeManager::OnGlobalHotkeyChanged(ui::Accelerator hotkey) {
   UpdateState();
 }
 
-void GlicBackgroundModeManager::OnKeyPressed(
+void GlicBackgroundModeManager::HandleHotkey(
     const ui::Accelerator& accelerator) {
   CHECK(accelerator == actual_registered_hotkey_);
   CHECK(actual_registered_hotkey_ == expected_registered_hotkey_);
@@ -84,12 +185,6 @@ void GlicBackgroundModeManager::OnKeyPressed(
                                 accelerator == default_hotkey
                                     ? glic::HotkeyUsage::kDefault
                                     : glic::HotkeyUsage::kCustom);
-}
-
-void GlicBackgroundModeManager::ExecuteCommand(
-    const std::string& accelerator_group_id,
-    const std::string& command_id) {
-  // TODO(crbug.com/385194502): Handle Linux.
 }
 
 void GlicBackgroundModeManager::OnProfileAdded(Profile* profile) {
@@ -158,11 +253,12 @@ void GlicBackgroundModeManager::ExitBackgroundMode() {
 
 void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 #if BUILDFLAG(IS_WIN)
+  StartupLaunchManager* startup_launch_manager =
+      StartupLaunchManager::From(g_browser_process);
   if (should_launch) {
-    StartupLaunchManager::GetInstance()->RegisterLaunchOnStartup(
-        StartupLaunchReason::kGlic);
+    startup_launch_manager->RegisterLaunchOnStartup(StartupLaunchReason::kGlic);
   } else {
-    StartupLaunchManager::GetInstance()->UnregisterLaunchOnStartup(
+    startup_launch_manager->UnregisterLaunchOnStartup(
         StartupLaunchReason::kGlic);
   }
 #endif
@@ -170,31 +266,13 @@ void GlicBackgroundModeManager::EnableLaunchOnStartup(bool should_launch) {
 
 void GlicBackgroundModeManager::RegisterHotkey(ui::Accelerator updated_hotkey) {
   CHECK(!updated_hotkey.IsEmpty());
-  auto* const global_accelerator_listener =
-      ui::GlobalAcceleratorListener::GetInstance();
-  if (global_accelerator_listener) {
-    const bool shortcut_handling_suspended =
-        global_accelerator_listener->IsShortcutHandlingSuspended();
-    // Re-enable shortcut handling to allow the global accelerator listener to
-    // register the hotkey.
-    global_accelerator_listener->SetShortcutHandlingSuspended(false);
-    if (global_accelerator_listener->RegisterAccelerator(updated_hotkey,
-                                                         this)) {
-      actual_registered_hotkey_ = updated_hotkey;
-    }
-    global_accelerator_listener->SetShortcutHandlingSuspended(
-        shortcut_handling_suspended);
-  }
+  CHECK(!accelerator_registrar_);
+  accelerator_registrar_ =
+      std::make_unique<AcceleratorRegistrar>(this, updated_hotkey);
 }
 
 void GlicBackgroundModeManager::UnregisterHotkey() {
-  auto* const global_accelerator_listener =
-      ui::GlobalAcceleratorListener::GetInstance();
-  if (global_accelerator_listener && !actual_registered_hotkey_.IsEmpty()) {
-    global_accelerator_listener->UnregisterAccelerator(
-        actual_registered_hotkey_, this);
-  }
-  actual_registered_hotkey_ = ui::Accelerator();
+  accelerator_registrar_.reset();
 }
 
 void GlicBackgroundModeManager::UpdateState() {

@@ -40,6 +40,9 @@ struct ManagementState;
                                       email:(NSString*)email
                       managementDescription:(NSString*)managementDescription;
 
+// Shows the managed UI info bubble for the `button`.
+- (void)showManagedUIInfoForButton:(UIButton*)button;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSUMER_H_

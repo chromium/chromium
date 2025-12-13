@@ -11,30 +11,15 @@
 
 namespace blink {
 
-namespace {
-
-const gfx::RectF GetExpandedRect() {
-  // Similar to InfiniteIntRect() but shifted by 4 bits to decrease floating
-  // point precision errors. This rect size is still large enough to encompass
-  // and reasonable paint area but not so large as to cause errors.
-  constexpr int kInfiniteXY = LayoutUnit::Min().ToInt() / 64;
-  constexpr int kInfiniteWH = LayoutUnit::Max().ToInt() / 32;
-  return gfx::RectF(kInfiniteXY, kInfiniteXY, kInfiniteWH, kInfiniteWH);
-}
-
-}  // namespace
-
 PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
     const State& other) const {
   if (local_transform_space != other.local_transform_space ||
       paint_clip_rect_ != other.paint_clip_rect_ ||
+      layout_clip_rect_excluding_overlay_scrollbars !=
+          other.layout_clip_rect_excluding_overlay_scrollbars ||
       !ClipPathEquals(other.clip_path) ||
       pixel_moving_filter != other.pixel_moving_filter) {
     return PaintPropertyChangeType::kChangedOnlyValues;
-  }
-  if (layout_clip_rect_excluding_overlay_scrollbars !=
-      other.layout_clip_rect_excluding_overlay_scrollbars) {
-    return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
   }
   return PaintPropertyChangeType::kUnchanged;
 }
@@ -92,18 +77,6 @@ void ClipPaintPropertyNodeOrAlias::ClearChangedToRoot(
   }
 }
 
-// static
-const FloatClipRect& ClipPaintPropertyNode::ExpandedLayoutClipRect() {
-  static FloatClipRect expanded_rect(GetExpandedRect());
-  return expanded_rect;
-}
-
-// static
-const FloatRoundedRect& ClipPaintPropertyNode::ExpandedPaintClipRect() {
-  static FloatRoundedRect expanded_rect(GetExpandedRect());
-  return expanded_rect;
-}
-
 std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   auto json = ClipPaintPropertyNodeOrAlias::ToJSON();
   if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
@@ -113,7 +86,7 @@ std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   json->SetString("rect", String(state_.paint_clip_rect_.Rect().ToString()));
   if (state_.layout_clip_rect_excluding_overlay_scrollbars &&
       *state_.layout_clip_rect_excluding_overlay_scrollbars !=
-          state_.layout_clip_rect_) {
+          state_.expanded_layout_clip_rect_) {
     json->SetString(
         "rectExcludingOverlayScrollbars",
         String(state_.layout_clip_rect_excluding_overlay_scrollbars->Rect()

@@ -37,9 +37,9 @@ class HeadlessSurfaceFactory : public SurfaceFactoryOzone {
       gfx::AcceleratedWidget widget,
       gpu::VulkanDeviceQueue* device_queue,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
-      std::optional<gfx::Size> framebuffer_size = std::nullopt) override;
+      std::optional<gfx::Size> framebuffer_size) override;
 
  private:
   void CheckBasePath() const;

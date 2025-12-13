@@ -11,8 +11,13 @@ import android.widget.ListView;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /** Utility methods for performing operations on the app menu needed for testing. */
 public class AppMenuTestSupport {
@@ -42,20 +47,56 @@ public class AppMenuTestSupport {
      */
     @Nullable
     public static PropertyModel getMenuItemPropertyModel(ModelList modelList, int itemId) {
-        for (int i = 0; i < modelList.size(); i++) {
-            PropertyModel model = modelList.get(i).model;
+        if (modelList == null) {
+            return null;
+        }
+
+        return findModelInListRecursive(modelList::get, modelList::size, itemId);
+    }
+
+    /**
+     * Recursively searches a list-like structure for a PropertyModel with the given ID.
+     *
+     * @param itemGetter A function to get an item by index (e.g., list::get).
+     * @param sizeGetter A supplier for the list's size (e.g., list::size).
+     * @param itemId The id of the menu item to find.
+     * @return The matching {@link PropertyModel}, or null if not found.
+     */
+    @Nullable
+    private static PropertyModel findModelInListRecursive(
+            Function<Integer, ListItem> itemGetter, Supplier<Integer> sizeGetter, int itemId) {
+        for (int i = 0; i < sizeGetter.get(); i++) {
+            PropertyModel model = itemGetter.apply(i).model;
+
             if (model.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
                 return model;
-            } else if (model.get(AppMenuItemProperties.ADDITIONAL_ICONS) != null) {
-                ModelList subList = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
-                for (int j = 0; j < subList.size(); j++) {
-                    PropertyModel subModel = subList.get(j).model;
-                    if (subModel.get(AppMenuItemProperties.MENU_ITEM_ID) == itemId) {
-                        return subModel;
+            }
+
+            if (model.containsKey(AppMenuItemProperties.ADDITIONAL_ICONS)) {
+                ModelList additionalIcons = model.get(AppMenuItemProperties.ADDITIONAL_ICONS);
+                if (additionalIcons != null) {
+                    PropertyModel foundModel =
+                            findModelInListRecursive(
+                                    additionalIcons::get, additionalIcons::size, itemId);
+                    if (foundModel != null) {
+                        return foundModel;
+                    }
+                }
+            }
+
+            if (model.containsKey(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS)) {
+                List<ListItem> submenuItems =
+                        model.get(AppMenuItemWithSubmenuProperties.SUBMENU_ITEMS);
+                if (submenuItems != null) {
+                    PropertyModel foundModel =
+                            findModelInListRecursive(submenuItems::get, submenuItems::size, itemId);
+                    if (foundModel != null) {
+                        return foundModel;
                     }
                 }
             }
         }
+
         return null;
     }
 
@@ -154,11 +195,24 @@ public class AppMenuTestSupport {
     }
 
     /**
+     * Finishes all pending animations for the app menu.
+     *
+     * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
+     */
+    public static void finishAnimationsForTests(AppMenuCoordinator coordinator) {
+        ((AppMenuCoordinatorImpl) coordinator)
+                .getAppMenuHandlerImplForTesting()
+                .getAppMenu()
+                .finishAnimationsForTests();
+    }
+
+    /**
      * Override the callback that's executed when an option in the menu is selected. Typically
      * handled by {@link AppMenuDelegate#onOptionsItemSelected(int, Bundle)}.
+     *
      * @param coordinator The {@link AppMenuCoordinator} associated with the app menu being tested.
      * @param onOptionsItemSelectedListener The callback to execute instead of the AppMenuDelegate
-     *         method.
+     *     method.
      */
     public static void overrideOnOptionItemSelectedListener(
             AppMenuCoordinator coordinator, Callback<Integer> onOptionsItemSelectedListener) {

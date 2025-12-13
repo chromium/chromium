@@ -221,6 +221,7 @@ void SetV8FlagsIfOverridden(const base::Feature& feature,
 }
 
 constexpr std::string_view kV8FlagFeaturePrefix = "V8Flag_";
+constexpr std::string_view kV8FlagParam = "V8FlagParam";
 
 }  // namespace
 
@@ -250,8 +251,15 @@ class V8FeatureVisitor : public base::FeatureVisitor {
         break;
 
       case base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE:
-        SetV8FlagsFormatted("--%s", flag_name.c_str());
-        for (const auto& [param_name, param_value] : params) {
+        auto it = params.begin();
+        if (it != params.end() && it->first == kV8FlagParam) {
+          SetV8FlagsFormatted("--%s=%s", flag_name.c_str(), it->second.c_str());
+          ++it;
+        } else {
+          SetV8FlagsFormatted("--%s", flag_name.c_str());
+        }
+        for (; it != params.end(); ++it) {
+          const auto& [param_name, param_value] = *it;
           SetV8FlagsFormatted("--%s=%s", param_name.c_str(),
                               param_value.c_str());
         }
@@ -317,6 +325,16 @@ void SetFeatureFlags() {
   // will be converted, on V8 initialization, to V8 flags:
   //
   //   --foo --bar --bar_param=20 --no-baz
+  //
+  // If an argument is needed for the main flag, a "V8FlagParam" param can be be
+  // used as the first parameter. Additional parameters can still be passed. For
+  // example, running Chromium with:
+  //
+  //   --enable-features=V8Flag_foo:V8FlagParam/bar/baz_param/20
+  //
+  // will be converted to these V8 flags:
+  //
+  //   --foo=bar --baz_param=20
   V8FeatureVisitor feature_visitor;
   base::FeatureList::VisitFeaturesAndParams(feature_visitor,
                                             kV8FlagFeaturePrefix);
@@ -395,12 +413,12 @@ void SetFeatureFlags() {
     SetV8FlagsFormatted("--high-end-android-physical-memory-threshold=%i",
                         features::kV8HighEndAndroidMemoryThreshold.Get());
   }
-  SetV8FlagsIfOverridden(features::kV8IncrementalMarkingStartUserVisible,
-                         "--incremental-marking-start-user-visible",
-                         "--no-incremental-marking-start-user-visible");
   SetV8FlagsIfOverridden(features::kV8IdleGcOnContextDisposal,
                          "--idle-gc-on-context-disposal",
                          "--no-idle-gc-on-context-disposal");
+  SetV8FlagsIfOverridden(features::kV8MemoryPoolReleaseOnMallocFailures,
+                         "--memory-pool-release-on-malloc-failures",
+                         "--no-memory-pool-release-on-malloc-failures");
   SetV8FlagsIfOverridden(features::kV8MinorMS, "--minor-ms", "--no-minor-ms");
   if (base::FeatureList::IsEnabled(features::kV8ScavengerHigherCapacity)) {
     SetV8FlagsFormatted("--scavenger-max-new-space-capacity-mb=%i",
@@ -442,9 +460,6 @@ void SetFeatureFlags() {
       features::kV8SingleThreadedGCInBackgroundNoIncrementalMarking,
       "--no-incremental-marking-for-gc-in-background",
       "--incremental-marking-for-gc-in-background");
-  SetV8FlagsIfOverridden(features::kV8DecommitPooledPages,
-                         "--decommit-pooled-pages",
-                         "--no-decommit-pooled-pages");
 
   if (base::FeatureList::IsEnabled(features::kV8ConcurrentSparkplug)) {
     if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
@@ -467,30 +482,11 @@ void SetFeatureFlags() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kV8EfficiencyModeTiering)) {
-    int delay = features::kV8EfficiencyModeTieringDelayTurbofan.Get();
-    if (delay == 0) {
-      SetV8FlagsFormatted(
-          "--efficiency-mode-for-tiering-heuristics "
-          "--efficiency-mode-disable-turbofan");
-    } else {
-      SetV8FlagsFormatted(
-          "--efficiency-mode-for-tiering-heuristics "
-          "--noefficiency-mode-disable-turbofan "
-          "--efficiency-mode-delay-turbofan=%i",
-          delay);
-    }
-  } else {
-    SetV8FlagsFormatted("--no-efficiency-mode-for-tiering-heuristics");
-  }
-
   // Make sure aliases of kV8SlowHistograms only enable the feature to
   // avoid contradicting settings between multiple finch experiments.
   bool any_slow_histograms_alias =
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsCodeMemoryWriteProtection) ||
-      base::FeatureList::IsEnabled(
-          features::kV8SlowHistogramsIntelJCCErratumMitigation) ||
       base::FeatureList::IsEnabled(features::kV8SlowHistogramsSparkplug) ||
       base::FeatureList::IsEnabled(
           features::kV8SlowHistogramsSparkplugAndroid) ||
@@ -505,10 +501,6 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kV8IgnitionElideRedundantTdzChecks,
                          "--ignition-elide-redundant-tdz-checks",
                          "--no-ignition-elide-redundant-tdz-checks");
-
-  SetV8FlagsIfOverridden(features::kV8IntelJCCErratumMitigation,
-                         "--intel-jcc-erratum-mitigation",
-                         "--no-intel-jcc-erratum-mitigation");
 
   SetV8FlagsIfOverridden(features::kV8UseLibmTrigFunctions,
                          "--use-libm-trig-functions",

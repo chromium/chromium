@@ -5,8 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_LOADER_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_FAVICON_LOADER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -15,8 +14,10 @@ class GURL;
 // A class that manages asynchronously loading favicons.
 class FaviconLoader : public KeyedService {
  public:
-  // Type for completion block for FaviconForURL().
-  using FaviconAttributesCompletionBlock = void (^)(FaviconAttributes*);
+  // Type for completion block for FaviconForURL(). `cached` will be true if
+  // this is called synchronously, from cache.
+  using FaviconAttributesCompletionBlock =
+      void (^)(FaviconAttributes* attributes, bool cached);
 
   FaviconLoader() = default;
 

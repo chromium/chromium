@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/token_handle_store.h"
-#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 
 #include <stddef.h>
@@ -16,9 +9,12 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/token_handle_store.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -245,12 +241,13 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
 
   for (size_t i = 0; i < std::size(table); ++i) {
     GoogleServiceAuthError error;
-    if (table[i] == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
+    if (UNSAFE_TODO(table[i]) ==
+        GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kInvalidGrantRaptError);
     } else {
-      error = GoogleServiceAuthError(table[i]);
+      error = GoogleServiceAuthError(UNSAFE_TODO(table[i]));
     }
     SetAuthError(account_id, error);
     std::optional<message_center::Notification> notification =

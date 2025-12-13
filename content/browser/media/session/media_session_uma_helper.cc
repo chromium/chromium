@@ -23,7 +23,7 @@ MediaSessionUmaHelper::~MediaSessionUmaHelper()
 
 void MediaSessionUmaHelper::RecordEnterPictureInPicture(
     EnterPictureInPictureType type) const {
-  base::UmaHistogramEnumeration("Media.Session.EnterPictureInPicture", type);
+  base::UmaHistogramEnumeration("Media.Session.EnterPictureInPictureV2", type);
 }
 
 void MediaSessionUmaHelper::OnSessionActive() {

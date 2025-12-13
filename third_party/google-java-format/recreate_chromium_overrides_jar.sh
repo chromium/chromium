@@ -12,8 +12,8 @@ mkdir tmp
     --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED \
     --add-exports=jdk.internal.opt/jdk.internal.opt=ALL-UNNAMED \
     -cp cipd/google-java-format.jar \
-    -source 11 \
-    -target 11 \
+    -source 17 \
+    -target 17 \
     local_modifications/java/com/google/googlejavaformat/java/*.java
 rm -f chromium-overrides.jar
 (cd tmp && zip -rD0 ../chromium-overrides.jar *)

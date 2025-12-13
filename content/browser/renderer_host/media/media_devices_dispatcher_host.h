@@ -19,6 +19,7 @@
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/select_audio_output_request.h"
+#include "content/public/common/buildflags.h"
 #include "media/base/scoped_async_trace.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -80,12 +81,13 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       override;
   void SetCaptureHandleConfig(
       blink::mojom::CaptureHandleConfigPtr config) override;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
   void ProduceSubCaptureTargetId(
       media::mojom::SubCaptureTargetType type,
       ProduceSubCaptureTargetIdCallback callback) override;
-#endif
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
   void SetPreferredSinkId(const std::string& hashed_sink_id,
                           SetPreferredSinkIdCallback callback) override;
@@ -180,19 +182,20 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       std::unique_ptr<ScopedMediaStreamTrace> scoped_trace,
       const std::optional<std::string>& raw_id);
 
-  void ReceivedBadMessage(int render_process_id,
+  void ReceivedBadMessage(ChildProcessId render_process_id,
                           bad_message::BadMessageReason reason);
 
   using AuthorizationHandlerCreateFactoryCallback = base::RepeatingCallback<
       std::unique_ptr<AudioOutputAuthorizationHandler>()>;
 
   void SetBadMessageCallbackForTesting(
-      base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
-          callback);
+      base::RepeatingCallback<void(ChildProcessId,
+                                   bad_message::BadMessageReason)> callback);
 
   void SetCaptureHandleConfigCallbackForTesting(
       base::RepeatingCallback<
-          void(int, int, blink::mojom::CaptureHandleConfigPtr)> callback);
+          void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
+          callback);
 
   void SetAuthorizationForTesting(
       AuthorizationHandlerCreateFactoryCallback authorization_handler);
@@ -218,10 +221,11 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
 
   std::vector<uint32_t> subscription_ids_;
 
-  base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+  base::RepeatingCallback<void(ChildProcessId, bad_message::BadMessageReason)>
       bad_message_callback_for_testing_;
 
-  base::RepeatingCallback<void(int, int, blink::mojom::CaptureHandleConfigPtr)>
+  base::RepeatingCallback<
+      void(ChildProcessId, int, blink::mojom::CaptureHandleConfigPtr)>
       capture_handle_config_callback_for_testing_;
 
   // The callback to create AudioOutputAuthorizationHandler.

@@ -32,7 +32,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"

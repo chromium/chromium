@@ -57,6 +57,8 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -665,6 +667,10 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   icon_background_ = AddChildView(std::make_unique<views::View>());
   icon_background_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
+  icon_background_->SetBackground(
+      views::CreateLayerBasedSolidBackground(GetBackgroundLayerColorId()));
+  icon_background_->background()->SetInternalName(
+      "AppListItemView/icon-background");
   icon_background_->SetCanProcessEventsWithinSubtree(false);
   icon_background_->SetVisible(is_folder_);
 
@@ -881,7 +887,7 @@ gfx::Size AppListItemView::GetIconSize() const {
   if (is_folder_) {
     return app_list_config_->folder_icon_size();
   }
-  if (is_promise_app_ && features::ArePromiseIconsEnabled() && item_weak_) {
+  if (is_promise_app_ && item_weak_) {
     // Placeholder icons do not change size between states.
     if (ImageModelHasPlaceholderIcon()) {
       return gfx::Size(kPlaceholderIconDimension, kPlaceholderIconDimension);
@@ -1662,10 +1668,6 @@ void AppListItemView::OnThemeChanged() {
         is_folder_ ? GetColorProvider()->GetColor(cros_tokens::kIconColorBlue)
                    : item_weak_->GetNotificationBadgeColor();
     notification_indicator_->SetColor(notification_indicator_color);
-    if (icon_background_) {
-      icon_background_->layer()->SetColor(
-          GetColorProvider()->GetColor(GetBackgroundLayerColorId()));
-    }
   }
 
   UpdateIconView(/*update_item_icon=*/true);
@@ -2073,8 +2075,7 @@ bool AppListItemView::ImageModelHasPlaceholderIcon() const {
 }
 
 void AppListItemView::UpdateProgressIndicatorState() {
-  if ((!is_promise_app_ && !forced_progress_indicator_value_) ||
-      !features::ArePromiseIconsEnabled()) {
+  if ((!is_promise_app_ && !forced_progress_indicator_value_)) {
     return;
   }
 

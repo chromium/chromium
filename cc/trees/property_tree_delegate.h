@@ -20,6 +20,7 @@ namespace cc {
 
 class LayerTreeHost;
 struct ViewportPropertyIds;
+enum class ScrollSourceType;
 
 // This is an interface that LayerTreeHosts and LayerTreeHostClients can
 // implement to control how the host's property trees are kept up to date.
@@ -47,6 +48,7 @@ class PropertyTreeDelegate {
   virtual void UpdateScrollOffsetFromImpl(
       const ElementId& id,
       const gfx::Vector2dF& delta,
+      ScrollSourceType type,
       const std::optional<TargetSnapAreaElementIds>& snap_target_ids) = 0;
 
   virtual void OnAnimateLayers() = 0;

@@ -34,6 +34,8 @@ component("slim") {
     "solid_color_layer.h",
     "surface_layer.cc",
     "surface_layer.h",
+    "texture_layer.cc",
+    "texture_layer.h",
     "ui_resource_layer.cc",
     "ui_resource_layer.h",
   ]
@@ -56,7 +58,7 @@ component("slim") {
   ]
 
   # Remove when no longer supports wrapping cc.
-  public_deps += [ "//cc:cc" ]
+  public_deps += [ "//cc" ]
   deps += [
     "//cc/animation",
     "//cc/mojo_embedder",

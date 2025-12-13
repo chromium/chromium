@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "extension_apps_chromeos\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
+    "+ash/shell.h",
+  ],
+}

@@ -24,10 +24,10 @@
     attribute [LegacyNullToEmptyString] DOMString data;
     readonly attribute unsigned long length;
     [RaisesException] DOMString substringData(unsigned long offset, unsigned long count);
-    void appendData(DOMString data);
-    [RaisesException] void insertData(unsigned long offset, DOMString data);
-    [RaisesException] void deleteData(unsigned long offset, unsigned long count);
-    [RaisesException] void replaceData(unsigned long offset, unsigned long count, DOMString data);
+    undefined appendData(DOMString data);
+    [RaisesException] undefined insertData(unsigned long offset, DOMString data);
+    [RaisesException] undefined deleteData(unsigned long offset, unsigned long count);
+    [RaisesException] undefined replaceData(unsigned long offset, unsigned long count, DOMString data);
 };
 
 CharacterData includes ChildNode;

@@ -29,7 +29,7 @@ class PushSubscriptionOptions final : public ScriptWrappable {
 
   explicit PushSubscriptionOptions(
       bool user_visible_only,
-      const WTF::Vector<uint8_t>& application_server_key);
+      const Vector<uint8_t>& application_server_key);
 
   bool userVisibleOnly() const { return user_visible_only_; }
 

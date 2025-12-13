@@ -37,6 +37,20 @@ class SlopBucket final {
  public:
   using PassKey = base::PassKey<SlopBucket>;
 
+  // Chunk allocation errors for UMA.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ChunkAllocationFailedReason)
+  enum ChunkAllocationFailedReason {
+    kOK = 0,
+    kDisabled = 1,
+    kMaxChunksPerRequest = 2,
+    kMaxChunksGlobal = 3,
+    kMaxValue = kMaxChunksGlobal
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:SlopBucketChunkAllocationFailedReason)
+
   // Returns a SlopBucket object for the request to use if it is eligible. The
   // returned SlopBucket object must be destroyed before `for_request`.
   static std::unique_ptr<SlopBucket> RequestSlopBucket(
@@ -105,6 +119,10 @@ class SlopBucket final {
 
   // The largest size reached by `chunks_`. For metrics.
   size_t peak_chunks_allocated_ = 0;
+
+  // The first Chunk allocation blocked reason if it has.
+  std::optional<ChunkAllocationFailedReason>
+      first_chunk_allocation_failed_reason_;
 
   // The URLRequest to which reads will be issued.
   const raw_ptr<net::URLRequest> request_;

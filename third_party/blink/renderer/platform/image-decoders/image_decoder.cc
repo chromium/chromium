@@ -18,17 +18,14 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -44,7 +41,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/ico/ico_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkExif.h"
@@ -134,32 +131,43 @@ gfx::Size ExtractDensityCorrectedSize(const SkExif::Metadata& metadata,
   return physical_size;
 }
 
-inline bool MatchesJPEGSignature(const char* contents) {
-  return !memcmp(contents, "\xFF\xD8\xFF", 3);
+inline bool MatchesJPEGSignature(base::span<const uint8_t> contents) {
+  const auto sig = base::byte_span_from_cstring("\xFF\xD8\xFF");
+  return sig == contents.first(3u);
 }
 
-inline bool MatchesPNGSignature(const char* contents) {
-  return !memcmp(contents, "\x89PNG\r\n\x1A\n", 8);
+inline bool MatchesPNGSignature(base::span<const uint8_t> contents) {
+  const auto sig = base::byte_span_from_cstring("\x89PNG\r\n\x1A\n");
+  return sig == contents.first(8u);
 }
 
-inline bool MatchesGIFSignature(const char* contents) {
-  return !memcmp(contents, "GIF87a", 6) || !memcmp(contents, "GIF89a", 6);
+inline bool MatchesGIFSignature(base::span<const uint8_t> contents) {
+  const auto sig_1 = base::byte_span_from_cstring("GIF87a");
+  const auto sig_2 = base::byte_span_from_cstring("GIF89a");
+  const auto span = contents.first(6u);
+  return sig_1 == span || sig_2 == span;
 }
 
-inline bool MatchesWebPSignature(const char* contents) {
-  return !memcmp(contents, "RIFF", 4) && !memcmp(contents + 8, "WEBPVP", 6);
+inline bool MatchesWebPSignature(base::span<const uint8_t> contents) {
+  const auto sig_1 = base::byte_span_from_cstring("RIFF");
+  const auto sig_2 = base::byte_span_from_cstring("WEBPVP");
+  return sig_1 == contents.first(4u) && sig_2 == contents.subspan(8u, 6u);
 }
 
-inline bool MatchesICOSignature(const char* contents) {
-  return !memcmp(contents, "\x00\x00\x01\x00", 4);
+inline bool MatchesICOSignature(base::span<const uint8_t> contents) {
+  const auto sig = base::byte_span_from_cstring("\x00\x00\x01\x00");
+  return sig == contents.first(4u);
 }
 
-inline bool MatchesCURSignature(const char* contents) {
-  return !memcmp(contents, "\x00\x00\x02\x00", 4);
+inline bool MatchesCURSignature(base::span<const uint8_t> contents) {
+  const auto sig = base::byte_span_from_cstring("\x00\x00\x02\x00");
+  return sig == contents.first(4u);
 }
 
-inline bool MatchesBMPSignature(const char* contents) {
-  return !memcmp(contents, "BM", 2) || !memcmp(contents, "BA", 2);
+inline bool MatchesBMPSignature(base::span<const uint8_t> contents) {
+  const auto sig_1 = base::byte_span_from_cstring("BM");
+  const auto sig_2 = base::byte_span_from_cstring("BA");
+  return sig_1 == contents.first(2u) || sig_2 == contents.first(2u);
 }
 
 constexpr wtf_size_t kLongestSignatureLength = sizeof("RIFF????WEBPVP") - 1;
@@ -173,9 +181,9 @@ String SniffMimeTypeInternal(scoped_refptr<SegmentReader> reader) {
 
   // Access the first kLongestSignatureLength chars to sniff the signature.
   // (note: FastSharedBufferReader only makes a copy if the bytes are segmented)
-  char buffer[kLongestSignatureLength];
+  std::array<uint8_t, kLongestSignatureLength> buffer;
   const FastSharedBufferReader fast_reader(reader);
-  const char* contents =
+  base::span<const uint8_t> contents =
       fast_reader.GetConsecutiveData(0, kLongestSignatureLength, buffer);
 
   if (MatchesJPEGSignature(contents)) {
@@ -289,9 +297,9 @@ std::unique_ptr<ImageDecoder> ImageDecoder::CreateByMimeType(
                                                  aux_image, max_decoded_bytes);
   } else if (mime_type == "image/png" || mime_type == "image/x-png" ||
              mime_type == "image/apng") {
-    decoder =
-        CreatePngImageDecoder(alpha_option, high_bit_depth_decoding_option,
-                              color_behavior, max_decoded_bytes);
+    decoder = std::make_unique<PngImageDecoder>(
+        alpha_option, color_behavior, max_decoded_bytes,
+        PngImageDecoder::kNoReadingOffset, high_bit_depth_decoding_option);
   } else if (mime_type == "image/gif") {
     decoder = std::make_unique<GIFImageDecoder>(alpha_option, color_behavior,
                                                 max_decoded_bytes);
@@ -391,27 +399,26 @@ ImageDecoder::CompressionFormat ImageDecoder::GetCompressionFormat(
     // (all but the extended format).
     const FastSharedBufferReader fast_reader(
         SegmentReader::CreateFromSharedBuffer(image_data));
-    char buffer[8];
-    const unsigned char* contents = reinterpret_cast<const unsigned char*>(
-        fast_reader.GetConsecutiveData(8, 8, buffer));
-    if (!memcmp(contents, "WEBPVP8 ", 8)) {
+    std::array<uint8_t, 8> buffer;
+    base::span<const uint8_t> contents =
+        fast_reader.GetConsecutiveData(8, 8, buffer);
+
+    if (base::byte_span_from_cstring("WEBPVP8 ") == contents) {
       // Simple lossy WebP format.
       return kLossyFormat;
     }
-    if (!memcmp(contents, "WEBPVP8L", 8)) {
+    if (base::byte_span_from_cstring("WEBPVP8L") == contents) {
       // Simple Lossless WebP format.
       return kLosslessFormat;
     }
-    if (!memcmp(contents, "WEBPVP8X", 8)) {
+    if (base::byte_span_from_cstring("WEBPVP8X") == contents) {
       // Extended WebP format; more content will need to be sniffed to make a
       // determination.
-      auto long_buffer = base::HeapArray<char>::Uninit(available_data);
-      contents =
-          reinterpret_cast<const unsigned char*>(fast_reader.GetConsecutiveData(
-              0, available_data, long_buffer.data()));
+      auto long_buffer = base::HeapArray<uint8_t>::Uninit(available_data);
+      contents = fast_reader.GetConsecutiveData(0, available_data, long_buffer);
       WebPBitstreamFeatures webp_features{};
       VP8StatusCode status =
-          WebPGetFeatures(contents, available_data, &webp_features);
+          WebPGetFeatures(contents.data(), contents.size(), &webp_features);
       // It is possible that there is not have enough image data available to
       // make a determination.
       if (status == VP8_STATUS_OK) {
@@ -518,10 +525,6 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
   return 8;
 }
 
-std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
-  return std::nullopt;
-}
-
 bool ImageDecoder::HasC2PAManifest() const {
   return false;
 }
@@ -536,7 +539,7 @@ cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
   cc::ImageHeaderMetadata image_metadata{};
   image_metadata.image_type = FileExtensionToImageType(FilenameExtension());
   image_metadata.yuv_subsampling = GetYUVSubsampling();
-  image_metadata.hdr_metadata = GetHDRMetadata();
+  image_metadata.hdr_metadata = hdr_metadata_;
   image_metadata.image_size = size_;
   image_metadata.has_embedded_color_profile = HasEmbeddedColorProfile();
   return image_metadata;
@@ -995,8 +998,9 @@ ImagePlanes::ImagePlanes() {
 ImagePlanes::ImagePlanes(
     base::span<void*, cc::kNumYUVPlanes> planes,
     base::span<const wtf_size_t, cc::kNumYUVPlanes> row_bytes,
-    SkColorType color_type)
-    : color_type_(color_type) {
+    SkColorType color_type,
+    HighBitDepthOutputType hbd_output_type)
+    : color_type_(color_type), hbd_output_type_(hbd_output_type) {
   base::span(planes_).copy_from(planes);
   base::span(row_bytes_).copy_from(row_bytes);
 }

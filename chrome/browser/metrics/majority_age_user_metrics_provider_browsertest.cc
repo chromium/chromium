@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -89,8 +88,9 @@ IN_PROC_BROWSER_TEST_P(MajorityAgeUserMetricsProviderTest,
   // TODO(crbug.com/40688248): Try to replace the below set-up code with
   // functions from SyncTest.
   std::unique_ptr<SyncServiceImplHarness> harness =
-      metrics::test::InitializeProfileForSync(browser()->profile(),
-                                              GetFakeServer()->AsWeakPtr());
+      SyncServiceImplHarness::Create(
+          browser()->profile(),
+          SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
   ASSERT_TRUE(harness->SetupSync());
 
   // Simulate calling ProvideCurrentSessionData() after logging in.

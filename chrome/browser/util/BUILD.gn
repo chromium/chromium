@@ -15,7 +15,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProvider.java",
     "android/java/src/org/chromium/chrome/browser/util/DefaultBrowserInfo.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtil.java",
-    "android/java/src/org/chromium/chrome/browser/util/KeyNavigationUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/PlatformUtil.java",
     "android/java/src/org/chromium/chrome/browser/util/WindowFeatures.java",
   ]
@@ -44,6 +43,7 @@ robolectric_library("junit_tests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/util/ChromeFileProviderTest.java",
     "android/java/src/org/chromium/chrome/browser/util/HashUtilTest.java",
+    "android/java/src/org/chromium/chrome/browser/util/PlatformUtilTest.java",
   ]
   deps = [
     ":java",
@@ -53,7 +53,9 @@ robolectric_library("junit_tests") {
     "//base/test:test_support_java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

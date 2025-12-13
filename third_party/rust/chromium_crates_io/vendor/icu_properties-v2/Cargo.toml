@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.82"
+rust-version = "1.83"
 name = "icu_properties"
-version = "2.0.1"
+version = "2.1.2"
 authors = ["The ICU4X Project Developers"]
 build = false
 include = [
@@ -42,10 +42,14 @@ repository = "https://github.com/unicode-org/icu4x"
 [package.metadata.docs.rs]
 all-features = true
 
+[package.metadata.cargo-semver-checks.lints]
+workspace = true
+
 [features]
 alloc = [
     "zerovec/alloc",
     "icu_collections/alloc",
+    "serde?/alloc",
 ]
 compiled_data = [
     "dep:icu_properties_data",
@@ -54,7 +58,6 @@ compiled_data = [
 datagen = [
     "serde",
     "dep:databake",
-    "potential_utf/databake",
     "zerovec/databake",
     "icu_collections/databake",
     "icu_locale_core/databake",
@@ -65,7 +68,6 @@ default = ["compiled_data"]
 serde = [
     "dep:serde",
     "icu_locale_core/serde",
-    "potential_utf/serde",
     "zerovec/serde",
     "icu_collections/serde",
     "icu_provider/serde",
@@ -83,39 +85,27 @@ features = ["derive"]
 optional = true
 default-features = false
 
-[dependencies.displaydoc]
-version = "0.2.3"
-default-features = false
-
 [dependencies.icu_collections]
-version = "~2.0.0"
+version = "~2.1.1"
 default-features = false
 
 [dependencies.icu_locale_core]
-version = "2.0.0"
+version = "2.1.1"
 features = ["zerovec"]
 default-features = false
 
 [dependencies.icu_properties_data]
-version = "~2.0.0"
+version = "~2.1.2"
 optional = true
 default-features = false
 
 [dependencies.icu_provider]
-version = "2.0.0"
-default-features = false
-
-[dependencies.potential_utf]
-version = "0.1.1"
-features = ["zerovec"]
+version = "2.1.1"
 default-features = false
 
 [dependencies.serde]
-version = "1.0.110"
-features = [
-    "derive",
-    "alloc",
-]
+version = "1.0.220"
+features = ["derive"]
 optional = true
 default-features = false
 
@@ -133,7 +123,7 @@ features = [
 default-features = false
 
 [dependencies.zerovec]
-version = "0.11.1"
+version = "0.11.3"
 features = [
     "derive",
     "yoke",

@@ -24,8 +24,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -204,7 +204,7 @@ public class SpeechRecognitionImpl {
     /** Returns null if there is no Google LLC provided RecognitionService available on device. */
     private static @Nullable ComponentName createRecognitionProvider() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                || BuildInfo.getInstance().isAutomotive) {
+                || DeviceInfo.isAutomotive()) {
             return getComponent(SSBG_PACKAGE_NAME, -1);
         } else {
             return getComponent(AGSA_PACKAGE_NAME, AGSA_MIN_VERSION);

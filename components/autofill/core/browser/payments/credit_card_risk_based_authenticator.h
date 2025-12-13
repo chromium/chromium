@@ -141,6 +141,11 @@ class CreditCardRiskBasedAuthenticator {
   // Reset the authenticator to its initial state.
   virtual void Reset();
 
+  payments::PaymentsNetworkInterface& GetPaymentsNetworkInterface() {
+    return *autofill_client_->GetPaymentsAutofillClient()
+                ->GetPaymentsNetworkInterface();
+  }
+
   // The associated autofill client.
   const raw_ref<AutofillClient> autofill_client_;
 

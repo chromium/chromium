@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Certificate Transparency policy preferences.
+// TODO(crbug.com/41392053): Move into //services/cert_verifier/public/mojom/
+// once this is no longer needed in the Network Service.
+[EnableIf=is_ct_supported]
+struct CTPolicy {
+  // See components/certificate_transparency/pref_names.h for details.
+  array<string> excluded_hosts;
+  array<string> excluded_spkis;
+};
+

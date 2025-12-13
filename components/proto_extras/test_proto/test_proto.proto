@@ -10,6 +10,12 @@ option optimize_for = LITE_RUNTIME;
 
 import "components/proto_extras/test_proto/test_proto_dependency.proto";
 
+message TestMessageAboveEmbeddedMessage {
+  EmptyEmbeddedMessage empty_embedded_message = 1;
+}
+
+message EmptyEmbeddedMessage {}
+
 message TestMessage {
   double double_field = 1;
 
@@ -48,4 +54,17 @@ message TestMessage {
 
   map<int32, string> primitive_map_field = 14;
   map<string, DependencyMessage> message_map_field = 15;
+  EmptyEmbeddedMessage empty_embedded_message = 16;
+
+  bytes cord_bytes_field = 17 [ctype = CORD];
+
+  repeated bytes repeated_byte_field = 18;
+  repeated bytes repeated_string_field = 19;
+  repeated EmptyEmbeddedMessage repeated_message_field = 20;
+
+  optional int32 optional_int_field = 21;
+  optional EmptyEmbeddedMessage optional_empty_embedded_message_field = 22;
+
+  optional int32 redacted_field = 23 [debug_redact = true];
+  optional string redacted_string_field = 24 [debug_redact = true];
 }

@@ -63,7 +63,6 @@ static_library("quick_unlock") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/osauth/public",
-    "//components/keep_alive_registry",
     "//components/user_manager",
     "//content/public/browser",
     "//crypto",

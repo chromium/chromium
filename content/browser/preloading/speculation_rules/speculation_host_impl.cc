@@ -30,10 +30,12 @@ bool CandidatesAreValid(
       return false;
     }
 
-    // Only "prerender" action supports `target_browsing_context_name_hint`.
-    // Invalid Speculation Rules are ignored and invalid candidates are not
-    // produced in Blink.
+    // Only "prerender" and "prerender-until-script" actions support
+    // `target_browsing_context_name_hint`. Invalid Speculation Rules are
+    // ignored and invalid candidates are not produced in Blink.
     if (candidate->action != blink::mojom::SpeculationAction::kPrerender &&
+        candidate->action !=
+            blink::mojom::SpeculationAction::kPrerenderUntilScript &&
         candidate->target_browsing_context_name_hint !=
             blink::mojom::SpeculationTargetHint::kNoHint) {
       mojo::ReportBadMessage("SH_TARGET_HINT_ON_PREFETCH");
@@ -90,7 +92,8 @@ SpeculationHostImpl::SpeculationHostImpl(
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
 void SpeculationHostImpl::UpdateSpeculationCandidates(
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates,
+    bool enable_cross_origin_prerender_iframes) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!CandidatesAreValid(candidates))
     return;
@@ -103,7 +106,8 @@ void SpeculationHostImpl::UpdateSpeculationCandidates(
 
   auto* preloading_decider =
       PreloadingDecider::GetOrCreateForCurrentDocument(&render_frame_host());
-  preloading_decider->UpdateSpeculationCandidates(candidates);
+  preloading_decider->UpdateSpeculationCandidates(
+      candidates, enable_cross_origin_prerender_iframes);
 }
 
 void SpeculationHostImpl::OnLCPPredicted() {

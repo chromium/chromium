@@ -11,17 +11,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/root_view.h"
 
+class BrowserView;
+class TabStrip;
 class ToolbarView;
 
 namespace ui {
 class OSExchangeData;
 }
 
-// RootView implementation used by BrowserFrame. This forwards drop events to
+// RootView implementation used by BrowserWidget. This forwards drop events to
 // the TabStrip. Visually the tabstrip extends to the top of the frame, but in
 // actually it doesn't. The tabstrip is only as high as a tab. To enable
 // dropping above the tabstrip BrowserRootView forwards drop events to the
@@ -137,8 +138,8 @@ class BrowserRootView : public views::internal::RootView {
   // `OnDragUpdated()` or calling the drop callback in tests.
   void SetOnFilteringCompleteClosureForTesting(base::OnceClosure closure);
 
-  TabStrip* tabstrip() { return browser_view_->tabstrip(); }
-  ToolbarView* toolbar() { return browser_view_->toolbar(); }
+  TabStrip* tabstrip();
+  ToolbarView* toolbar();
 
   // Returns a URL if |data| has string contents and the user can "paste and
   // go".

@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace views {
 class AnimationAbortHandle;

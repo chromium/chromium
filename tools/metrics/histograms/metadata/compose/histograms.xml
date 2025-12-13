@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Compose.ContextMenu.CTR" enum="ComposeContextMenuCtrEvent"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ContextMenu.OpenComposeDialogResult"
-    enum="OpenComposeDialogResult" expires_after="2025-11-16">
+    enum="OpenComposeDialogResult" expires_after="2026-01-18">
   <owner>carlosk@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ContextMenu.ShowStatus" enum="ComposeShowStatus"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>sophey@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.EntryPoint.SessionResume" enum="ComposeEntryPoint"
-    expires_after="2025-11-16">
+    expires_after="2026-01-18">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.EntryPoint.SessionStart" enum="ComposeEntryPoint"
-    expires_after="2025-11-16">
+    expires_after="2026-03-22">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ProactiveNudge.CTR" enum="ComposeNudgeCtrEvent"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.ProactiveNudge.ShowStatus" enum="ComposeShowStatus"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Duration.Ok" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -341,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Request.Status"
-    enum="ComposeRequestStatus" expires_after="2025-11-16">
+    enum="ComposeRequestStatus" expires_after="2026-05-24">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -373,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.CloseReason"
-    enum="ComposeSessionCloseReasonType" expires_after="2025-11-16">
+    enum="ComposeSessionCloseReasonType" expires_after="2026-05-24">
   <owner>petewil@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compose.{ComposeEvalLocation}Session.ComposeCount.{FinalStatus}"
-    units="count" expires_after="2025-11-16">
+    units="count" expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compose.{ComposeEvalLocation}Session.DialogShownCount.{FinalStatus}"
-    units="count" expires_after="2025-11-16">
+    units="count" expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -419,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.Duration.{SessionType}"
-    units="ms" expires_after="2025-09-14">
+    units="ms" expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -438,7 +438,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.EventCounts"
-    enum="ComposeSessionEventTypes" expires_after="2025-11-16">
+    enum="ComposeSessionEventTypes" expires_after="2026-05-24">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -473,7 +473,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.{ComposeEvalLocation}Session.UndoCount.{FinalStatus}"
-    units="count" expires_after="2025-11-16">
+    units="count" expires_after="2026-01-18">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

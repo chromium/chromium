@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -231,15 +227,18 @@ void VisibilityMetricsLogger::UpdateDurations() {
       delta * (client_visibility_.size() - all_clients_visible_count_);
 
   for (size_t i = 0; i < std::size(per_scheme_visible_counts_); i++) {
-    if (!per_scheme_visible_counts_[i])
+    if (!UNSAFE_TODO(per_scheme_visible_counts_[i])) {
       continue;
-    per_scheme_trackers_[i].any_webview_tracked_duration_ += delta;
-    per_scheme_trackers_[i].per_webview_duration_ +=
-        delta * per_scheme_visible_counts_[i];
+    }
+    UNSAFE_TODO(per_scheme_trackers_[i]).any_webview_tracked_duration_ += delta;
+    UNSAFE_TODO(per_scheme_trackers_[i]).per_webview_duration_ +=
+        delta * UNSAFE_TODO(per_scheme_visible_counts_[i]);
   }
 
   if (all_clients_visible_count_ > 0) {
-    global_coverage_percentage_durations_[global_coverage_percentage_] += delta;
+    UNSAFE_TODO(
+        global_coverage_percentage_durations_[global_coverage_percentage_]) +=
+        delta;
 
     for (auto& scheme_and_percentage : schemes_to_coverage_percentages_) {
       schemes_to_percentages_to_durations_[scheme_and_percentage.first]
@@ -301,9 +300,9 @@ void VisibilityMetricsLogger::ProcessClientUpdate(Client* client,
   }
 
   if (was_visible)
-    per_scheme_visible_counts_[static_cast<size_t>(old_scheme)]--;
+    UNSAFE_TODO(per_scheme_visible_counts_[static_cast<size_t>(old_scheme)])--;
   if (is_visible)
-    per_scheme_visible_counts_[static_cast<size_t>(new_scheme)]++;
+    UNSAFE_TODO(per_scheme_visible_counts_[static_cast<size_t>(new_scheme)])++;
 
   bool any_client_is_visible = all_clients_visible_count_ > 0;
   if (on_visibility_changed_callback_ &&
@@ -373,7 +372,7 @@ void VisibilityMetricsLogger::RecordVisibilityMetrics() {
 void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
   for (size_t i = 0; i < std::size(per_scheme_trackers_); i++) {
     Scheme scheme = static_cast<Scheme>(i);
-    auto& tracker = per_scheme_trackers_[i];
+    auto& tracker = UNSAFE_TODO(per_scheme_trackers_[i]);
 
     int32_t any_webview_seconds =
         tracker.any_webview_tracked_duration_.InSeconds();
@@ -394,11 +393,13 @@ void VisibilityMetricsLogger::RecordVisibleSchemeMetrics() {
 void VisibilityMetricsLogger::RecordScreenCoverageMetrics() {
   for (size_t i = 0; i < std::size(global_coverage_percentage_durations_);
        i++) {
-    int32_t seconds = global_coverage_percentage_durations_[i].InSeconds();
+    int32_t seconds =
+        UNSAFE_TODO(global_coverage_percentage_durations_[i]).InSeconds();
     if (seconds == 0)
       continue;
 
-    global_coverage_percentage_durations_[i] -= base::Seconds(seconds);
+    UNSAFE_TODO(global_coverage_percentage_durations_[i]) -=
+        base::Seconds(seconds);
     LogGlobalVisibleScreenCoverage(i, seconds);
   }
 

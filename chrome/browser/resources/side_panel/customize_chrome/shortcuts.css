@@ -35,6 +35,10 @@ cr-radio-group {
   padding-inline-start: 32px;
 }
 
+.sub-options .option {
+  padding-inline-start: 48px;
+}
+
 .option:hover {
   background-color: var(--cr-hover-background-color);
   cursor: pointer;
@@ -43,6 +47,10 @@ cr-radio-group {
 .option:focus {
   background-color: var(--cr-menu-background-focus-color);
   outline: none;
+}
+
+.option[hidden] {
+  display: none;
 }
 
 /**
@@ -61,6 +69,10 @@ customize-chrome-button-label {
 }
 
 cr-radio-button {
+  gap: 0;
+}
+
+cr-checkbox {
   gap: 0;
 }
 

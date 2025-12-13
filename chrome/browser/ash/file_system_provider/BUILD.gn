@@ -59,6 +59,8 @@ static_library("file_system_provider") {
     "service.h",
     "service_factory.cc",
     "service_factory.h",
+    "service_worker_lifetime_manager.cc",
+    "service_worker_lifetime_manager.h",
     "throttled_file_system.cc",
     "throttled_file_system.h",
     "watcher.cc",
@@ -83,7 +85,7 @@ static_library("file_system_provider") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/smb_client",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/chromeos/extensions/file_system_provider",
+    "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/multi_user",
@@ -129,7 +131,6 @@ static_library("test_support") {
     "//components/services/filesystem/public/mojom",
     "//extensions/browser",
     "//extensions/common",
-    "//extensions/common",
     "//net",
     "//storage/browser",
     "//testing/gtest",
@@ -153,6 +154,7 @@ source_set("unit_tests") {
     "registry_unittest.cc",
     "scoped_file_opener_unittest.cc",
     "service_unittest.cc",
+    "service_worker_lifetime_manager_unittest.cc",
     "throttled_file_system_unittest.cc",
   ]
 

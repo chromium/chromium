@@ -17,7 +17,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "third_party/microsoft_dxheaders/src/include/composition/dcomp-preview.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -385,7 +384,7 @@ void DCLayerTree::Initialize(
 
   hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
 
-  if (Microsoft::WRL::ComPtr<PREVIEW_IDCompositionDevice5> dcomp_device5;
+  if (Microsoft::WRL::ComPtr<IDCompositionDevice5> dcomp_device5;
       SUCCEEDED(dcomp_device_.As(&dcomp_device5))) {
     hr = dcomp_device5->CreateDynamicTexture(&primary_plane_surface_);
     if (FAILED(hr)) {
@@ -507,7 +506,7 @@ DCLayerTree::GetFrontMostVideoVisualSubtreeForTesting() const {
   // SwapChainPresenter::content() in `video_swap_chains`
   for (const auto& video_swap_chain : video_swap_chains_) {
     const auto& swap_chain_presenter = video_swap_chain.second;
-    if (swap_chain_presenter->content().Get() ==
+    if (swap_chain_presenter->content_for_testing().Get() ==  // IN-TEST
         front_sub_tree->dcomp_visual_content()) {
       return front_sub_tree;
     }
@@ -867,6 +866,10 @@ DCLayerTree::VisualTree::~VisualTree() = default;
 
 base::expected<void, CommitError> DCLayerTree::VisualTree::BuildTree(
     const std::vector<DCLayerOverlayParams>& overlays) {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  CHECK(std::ranges::is_sorted(overlays, {}, &DCLayerOverlayParams::z_order));
+#endif
+
   // Index into the subtree from the previous frame that is being reused in the
   // current frame for the given overlay index.
   // |overlay_index_to_reused_subtree| has an entry for every overlay in the
@@ -1240,10 +1243,6 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  // Sort layers by z-order.
-  std::ranges::sort(overlays, std::ranges::less(),
-                    &DCLayerOverlayParams::z_order);
-
   // Move unused video swap chains to `unused_video_swap_chains` for potential
   // reuse (when adjacent frames have a videos that have different layer IDs
   // which can sometimes happen when a video's src changes), then cleanup.
@@ -1274,6 +1273,7 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
   }
 
   bool did_update_primary_plane_damage = false;
+  bool need_background_layer = false;
 
   // Populate |overlays| with information required to build dcomp visual tree.
   for (auto it = overlays.begin(); it != overlays.end(); it++) {
@@ -1294,25 +1294,36 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
               this, d3d11_device_, dcomp_device_);
         }
       }
-      gfx::Transform transform;
-      gfx::Rect clip_rect;
-      if (!video_swap_chain->PresentToSwapChain(overlay, &transform,
-                                                &clip_rect)) {
+
+      std::optional<SwapChainPresenter::OverlayPositionAdjustment>
+          overlay_position_adjustment;
+      if (std::optional<DCLayerOverlayImage> video_image =
+              video_swap_chain->PresentToSwapChain(
+                  overlay, overlay_position_adjustment)) {
+        overlay.overlay_image = std::move(video_image);
+        overlay.content_rect = gfx::RectF(overlay.overlay_image->size());
+
+        if (overlay_position_adjustment) {
+          overlay.transform = overlay_position_adjustment->transform;
+          overlay.quad_rect = overlay_position_adjustment->quad_rect;
+          if (overlay.clip_rect) {
+            overlay.clip_rect = overlay_position_adjustment->clip_rect;
+          }
+        }
+
+        if (overlay.video_params.is_full_screen_video &&
+            !overlay_position_adjustment &&
+            base::FeatureList::IsEnabled(
+                features::kEarlyFullScreenVideoOptimization)) {
+          // If we failed to disable the desktop plane, we need to manually add
+          // a solid color layer to act as the video background mat.
+          need_background_layer = true;
+        }
+      } else {
         DLOG(ERROR) << "PresentToSwapChain failed";
         return base::unexpected(
             CommitError{CommitError::Reason::kPresentToSwapChain});
       }
-      // |SwapChainPresenter| may have changed the size of the overlay's quad
-      // rect, e.g. to present to a swap chain exactly the size of the display
-      // rect when the source video is larger.
-      overlay.transform = transform;
-      overlay.quad_rect.set_size(video_swap_chain->content_size());
-      if (overlay.clip_rect.has_value()) {
-        overlay.clip_rect = clip_rect;
-      }
-      overlay.overlay_image = DCLayerOverlayImage(
-          video_swap_chain->content_size(), video_swap_chain->content());
-      overlay.content_rect = gfx::RectF(video_swap_chain->content_size());
 
       if (tint_video_layer_) {
         SkColor4f tint_color;
@@ -1336,6 +1347,7 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
         tint_overlay.transform = it->transform;
         tint_overlay.clip_rect = it->clip_rect;
         tint_overlay.rounded_corner_bounds = it->rounded_corner_bounds;
+        tint_overlay.z_order = it->z_order;
         tint_overlay.opacity = 0.25;
         tint_overlay.background_color = tint_color;
         tint_overlay.layer_id =
@@ -1373,10 +1385,24 @@ base::expected<void, CommitError> DCLayerTree::CommitAndClearPendingOverlays(
     }
   }
 
-  if (primary_plane_surface_ && !did_update_primary_plane_damage) {
+  if (primary_plane_surface_ && primary_plane_surface_serial_ &&
+      !did_update_primary_plane_damage) {
+    // We need to commit the visual tree after `SetTexture`. We expect the
+    // primary plane overlay to be removed from the visual tree this frame,
+    // which will cause commit to happen.
     DVLOG(1) << "Reset primary_plane_surface_ damage.";
     primary_plane_surface_->SetTexture(nullptr);
     primary_plane_surface_serial_ = 0;
+  }
+
+  if (need_background_layer) {
+    DCLayerOverlayParams background_mat;
+    background_mat.quad_rect = gfx::Rect(GetMonitorSizeForWindow(window()));
+    background_mat.z_order = INT_MIN;
+    background_mat.background_color = SkColors::kBlack;
+    background_mat.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+        gfx::OverlayLayerId::VizInternalId::kBackgroundColorLayer);
+    overlays.insert(overlays.begin(), std::move(background_mat));
   }
 
   if (!visual_tree_) {

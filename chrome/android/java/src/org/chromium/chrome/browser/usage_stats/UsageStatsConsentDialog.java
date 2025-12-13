@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.res.Resources;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -22,14 +27,15 @@ import org.chromium.ui.modelutil.PropertyModel;
  * used(i.e. whether it's used from PrivacySettings or not) to ensure that the visual style is
  * consistent.
  */
+@NullMarked
 public class UsageStatsConsentDialog {
     private final Activity mActivity;
     private final Profile mProfile;
     private final boolean mIsRevocation;
     private final Callback<Boolean> mDidConfirmCallback;
 
-    private ModalDialogManager mManager;
-    private PropertyModel mDialogModel;
+    private @MonotonicNonNull ModalDialogManager mManager;
+    private @Nullable PropertyModel mDialogModel;
 
     public static UsageStatsConsentDialog create(
             Activity activity,
@@ -101,18 +107,18 @@ public class UsageStatsConsentDialog {
                 }
 
                 mDidConfirmCallback.onResult(didConfirm);
-                dismiss();
+                cleanup();
             }
 
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {
                 mDidConfirmCallback.onResult(false);
-                mManager.destroy();
+                cleanup();
             }
         };
     }
 
-    private void dismiss() {
-        mManager.destroy();
+    private void cleanup() {
+        assumeNonNull(mManager).destroy();
     }
 }

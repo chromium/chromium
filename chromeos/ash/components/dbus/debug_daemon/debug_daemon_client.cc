@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
 #include <fcntl.h>
@@ -20,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -96,7 +93,8 @@ class PipeReaderWrapper final {
       return;
     }
 
-    std::optional<base::Value::Dict> logs = base::JSONReader::ReadDict(*result);
+    std::optional<base::Value::Dict> logs = base::JSONReader::ReadDict(
+        *result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!logs.has_value()) {
       VLOG(1) << "Failed to deserialize the JSON logs.";
       RecordGetFeedbackLogsV2DbusResult(
@@ -988,19 +986,16 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   void OnRetrievedPrinterPpd(CupsRetrievePrinterPpdCallback callback,
                              base::OnceClosure error_callback,
                              dbus::Response* response) {
-    size_t length = 0;
-    const uint8_t* bytes = nullptr;
+    base::span<const uint8_t> bytes;
 
-    if (!(response &&
-          dbus::MessageReader(response).PopArrayOfBytes(&bytes, &length)) ||
-        length == 0 || bytes == nullptr) {
+    if (!(response && dbus::MessageReader(response).PopArrayOfBytes(&bytes)) ||
+        bytes.empty()) {
       LOG(ERROR) << "Failed to retrieve printer PPD";
       std::move(error_callback).Run();
       return;
     }
 
-    std::vector<uint8_t> data(bytes, bytes + length);
-    std::move(callback).Run(data);
+    std::move(callback).Run(base::ToVector(bytes));
   }
 
   void OnStartPluginVmDispatcher(PluginVmDispatcherCallback callback,

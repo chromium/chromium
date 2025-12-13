@@ -9,12 +9,23 @@
  * #include=cr-shared-style-lit
  * #css_wrapper_metadata_end */
 
-:host([drop-position='into']) cr-url-list-item {
+:host {
+  display: block;
+}
+
+:host([drop-position='into']) {
   background: var(--cr-hover-background-color);
 }
 
 cr-url-list-item[size=compact] {
-  --cr-url-list-item-padding: 6px 14px;
+  margin-inline-start: 10px;
+  --cr-url-list-item-padding: 6px;
+  width: inherit;
+}
+
+:host(:not([has-folders])) cr-url-list-item {
+  margin-inline-start: 0px;
+  padding-inline-start: 8px;
 }
 
 /* Visually hide the label but allow the screen reader to pick it up. */
@@ -45,11 +56,29 @@ cr-expand-button {
   display: flex;
   flex-direction: row-reverse;
   --cr-section-vertical-padding: 0px;
-  margin-left: calc(var(--depth) * var(--margin-per-depth));
+  margin-inline-start: calc(var(--depth) * var(--margin-per-depth));
+
+  --cr-expand-button-icon-size: 16px;
+  --cr-expand-button-size: 20px;
+}
+
+cr-expand-button[selected] {
+  background-color: var(--color-side-panel-bookmarks-active-folder-background);
+  color: var(--color-side-panel-bookmarks-active-folder-foreground);
+  --cr-primary-text-color:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
+  --cr-secondary-text-color:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
+  --color-list-item-folder-icon-foreground:
+      var(--color-side-panel-bookmarks-active-folder-foreground);
+}
+
+:host(:not([has-folders])) #bookmark {
+  margin-inline-start: 0;
 }
 
 #bookmark {
-  margin-left: calc(var(--depth) * var(--margin-per-depth) +
+  margin-inline-start: calc(var(--depth) * var(--margin-per-depth) +
       var(--base-margin));
 }
 

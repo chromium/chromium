@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/browser_context.h"
 
 namespace content {
@@ -34,7 +34,9 @@ class TestBrowserContext : public BrowserContext {
       BrowserContext* browser_context);
 
   // Takes ownership of the temporary directory so that it's not deleted when
-  // this object is destructed.
+  // this object is destructed. This also means that the TestBrowserContext
+  // destructor won't wait for message loops and threadpools to become idle,
+  // which it normally does to ensure that it can delete the temp dir.
   base::FilePath TakePath();
 
   void SetReduceAcceptLanguageControllerDelegate(
@@ -55,7 +57,7 @@ class TestBrowserContext : public BrowserContext {
   }
 
   // BrowserContext implementation.
-  base::FilePath GetPath() override;
+  base::FilePath GetPath() const override;
   std::unique_ptr<ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
   bool IsOffTheRecord() override;

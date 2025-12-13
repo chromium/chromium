@@ -34,7 +34,7 @@ class FilledCardInformationBubbleControllerImpl
       const FilledCardInformationBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const FilledCardInformationBubbleOptions& options);
+  void SetupAndShowBubble(const FilledCardInformationBubbleOptions& options);
 
   // Invoked when the omnibox icon is clicked.
   void ReshowBubble();
@@ -64,6 +64,11 @@ class FilledCardInformationBubbleControllerImpl
   GetCardImageForDescriptionView() const override;
   bool EducationalBodyHasLearnMoreLink() const override;
 
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override;
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
  protected:
   explicit FilledCardInformationBubbleControllerImpl(
       content::WebContents* web_contents);
@@ -71,13 +76,21 @@ class FilledCardInformationBubbleControllerImpl
   // AutofillBubbleControllerBase:
   void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldShowPageAction() override;
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<
       FilledCardInformationBubbleControllerImpl>;
   friend class FilledCardInformationBubbleViewsInteractiveUiTest;
+
+  // Initializes the state for the filled card information bubble. This includes
+  // setting the bubble's content options and resetting flags related to user
+  // interaction and visibility.
+  void SetupBubbleState(FilledCardInformationBubbleOptions options);
 
   // Updates the system clipboard with the |text|.
   void UpdateClipboard(const std::u16string& text) const;
@@ -86,6 +99,9 @@ class FilledCardInformationBubbleControllerImpl
   // fallback bubble.
   void LogFilledCardInformationBubbleFieldClicked(
       FilledCardInformationBubbleField field) const;
+
+  // Logs metrics when the bubble is closed.
+  void LogBubbleCloseMetrics(PaymentsUiClosedReason closed_reason);
 
   // Returns whether the webcontents related to the controller is active.
   bool IsWebContentsActive();

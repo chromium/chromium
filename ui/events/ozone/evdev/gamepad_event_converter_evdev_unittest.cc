@@ -16,7 +16,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/posix/eintr_wrapper.h"

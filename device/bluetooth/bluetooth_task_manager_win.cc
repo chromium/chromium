@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/bluetooth_task_manager_win.h"
 
 #include <winsock2.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -388,7 +384,7 @@ bool BluetoothTaskManagerWin::SearchClassicDevices(
     std::vector<std::unique_ptr<DeviceState>>* device_list) {
   // Issues a device inquiry and waits for |timeout_multiplier| * 1.28 seconds.
   BLUETOOTH_DEVICE_SEARCH_PARAMS device_search_params;
-  ZeroMemory(&device_search_params, sizeof(device_search_params));
+  UNSAFE_TODO(ZeroMemory(&device_search_params, sizeof(device_search_params)));
   device_search_params.dwSize = sizeof(BLUETOOTH_DEVICE_SEARCH_PARAMS);
   device_search_params.fReturnAuthenticated = 1;
   device_search_params.fReturnRemembered = 1;
@@ -398,7 +394,7 @@ bool BluetoothTaskManagerWin::SearchClassicDevices(
   device_search_params.cTimeoutMultiplier = timeout_multiplier;
 
   BLUETOOTH_DEVICE_INFO device_info;
-  ZeroMemory(&device_info, sizeof(device_info));
+  UNSAFE_TODO(ZeroMemory(&device_info, sizeof(device_info)));
   device_info.dwSize = sizeof(BLUETOOTH_DEVICE_INFO);
   HBLUETOOTH_DEVICE_FIND handle =
       classic_wrapper_->FindFirstDevice(&device_search_params, &device_info);
@@ -417,7 +413,7 @@ bool BluetoothTaskManagerWin::SearchClassicDevices(
     device_list->push_back(std::move(device_state));
 
     // Reset device info before next call (as a safety precaution).
-    ZeroMemory(&device_info, sizeof(device_info));
+    UNSAFE_TODO(ZeroMemory(&device_info, sizeof(device_info)));
     device_info.dwSize = sizeof(BLUETOOTH_DEVICE_INFO);
     if (!classic_wrapper_->FindNextDevice(handle, &device_info)) {
       int last_error = classic_wrapper_->LastError();
@@ -489,7 +485,7 @@ int BluetoothTaskManagerWin::DiscoverClassicDeviceServicesWorker(
 
   // Bluetooth and WSAQUERYSET for Service Inquiry. See http://goo.gl/2v9pyt.
   WSAQUERYSET sdp_query;
-  ZeroMemory(&sdp_query, sizeof(sdp_query));
+  UNSAFE_TODO(ZeroMemory(&sdp_query, sizeof(sdp_query)));
   sdp_query.dwSize = sizeof(sdp_query);
   GUID protocol = protocol_uuid;
   sdp_query.lpServiceClassId = &protocol;
@@ -497,7 +493,7 @@ int BluetoothTaskManagerWin::DiscoverClassicDeviceServicesWorker(
   wchar_t device_address_context[kMaxNumDeviceAddressChar];
   std::size_t length = base::SysUTF8ToWide("(" + device_address + ")").copy(
       device_address_context, kMaxNumDeviceAddressChar);
-  device_address_context[length] = NULL;
+  UNSAFE_TODO(device_address_context[length]) = NULL;
   sdp_query.lpszContext = device_address_context;
   DWORD control_flags = LUP_RETURN_ALL;
   // See http://goo.gl/t1Hulo: "Applications should generally specify
@@ -542,7 +538,7 @@ int BluetoothTaskManagerWin::DiscoverClassicDeviceServicesWorker(
         base::SysWideToUTF8(sdp_result_data->lpszServiceInstanceName);
     for (uint64_t i = 0; i < sdp_result_data->lpBlob->cbSize; i++) {
       service_record_state->sdp_bytes.push_back(
-          sdp_result_data->lpBlob->pBlobData[i]);
+          UNSAFE_TODO(sdp_result_data->lpBlob->pBlobData[i]));
     }
     service_record_states->push_back(std::move(service_record_state));
   }

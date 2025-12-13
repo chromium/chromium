@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(!is_android)
+
+source_set("legion_internals") {
+  sources = [
+    "legion_internals_page_handler.cc",
+    "legion_internals_page_handler.h",
+    "legion_internals_ui.cc",
+    "legion_internals_ui.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    "//chrome:extra_resources",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/legion",
+    "//components/legion:proto",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "legion_internals.mojom" ]
+  webui_module_path = "/"
+}

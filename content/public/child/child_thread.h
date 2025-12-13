@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"

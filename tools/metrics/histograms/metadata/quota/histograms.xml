@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace" units="MB"
-    expires_after="2025-12-07">
+    expires_after="2026-04-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.AvailableDiskSpace2" units="MB"
-    expires_after="2025-12-07">
+    expires_after="2026-04-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -65,7 +65,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseMigration{VersionUpgrades}"
-    enum="BooleanSuccess" expires_after="2025-12-07">
+    enum="BooleanSuccess" expires_after="2026-02-09">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -73,76 +73,24 @@ chromium-metrics-reviews@google.com.
     attempting to migrate the database.
   </summary>
   <token key="VersionUpgrades">
-    <variant name="FromV7ToV8"/>
-    <variant name="FromV8ToV9"/>
-    <variant name="FromV9ToV10"/>
+    <variant name="FromV10ToV11"/>
   </token>
 </histogram>
 
-<histogram name="Quota.DatabaseSpecificError.{Statement}"
-    enum="SqliteLoggedResultCode" expires_after="2025-12-07">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Records error codes returned by SQLite for operations on the quota database.
-    These are logged separately for each database operation to help isolate
-    issues the quota db might be facing. Warning: this histogram was expired in
-    2025/06; data may be missing.
-  </summary>
-  <token key="Statement">
-    <variant name="BootstrapDefaultBucket"/>
-    <variant name="Commit"/>
-    <variant name="CountBuckets"/>
-    <variant name="CreateBucket"/>
-    <variant name="CreateTable"/>
-    <variant name="DeleteBucket"/>
-    <variant name="GetBucket"/>
-    <variant name="GetBucketById"/>
-    <variant name="GetBucketsForEviction"/>
-    <variant name="GetBucketsForHost"/>
-    <variant name="GetBucketsForStorageKey"/>
-    <variant name="GetBucketsForType"/>
-    <variant name="GetBucketsModifiedBetween"/>
-    <variant name="GetExpired"/>
-    <variant name="GetExpiredAndOrphanAndStale"/>
-    <variant name="GetOrphan"/>
-    <variant name="GetStale"/>
-    <variant name="GetStorageKeys"/>
-    <variant name="Open"/>
-    <variant name="SetBucketLastAccessTime"/>
-    <variant name="SetBucketLastModifiedTime"/>
-    <variant name="SetStorageKeyLastAccessTime"/>
-    <variant name="UpdateBucketExpiration"/>
-    <variant name="UpdateBucketPersistence"/>
-  </token>
-</histogram>
-
-<histogram name="Quota.DaysSinceLastAccessed400DaysGT" units="days"
-    expires_after="2025-10-31">
+<histogram name="Quota.DaysSinceLastAccessed" units="days"
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Emitted when the browsing context loads a quota bucket for use and updates
     the last_accessed field in the database.
 
-    Number of days since a quota bucket was accessed (for values over 400 days).
+    Number of days since a quota bucket was accessed. Capped at 400 days as
+    buckets are not retained past that point.
   </summary>
 </histogram>
 
-<histogram name="Quota.DaysSinceLastAccessed400DaysLTE" units="days"
-    expires_after="2025-10-31">
-  <owner>arichiv@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Emitted when the browsing context loads a quota bucket for use and updates
-    the last_accessed field in the database.
-
-    Number of days since a quota bucket was accessed (for values under 400
-    days).
-  </summary>
-</histogram>
-
-<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2025-12-07">
+<histogram name="Quota.DiskspaceShortage" units="MB" expires_after="2026-04-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -239,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.OrphanBucketCount" units="areas"
-    expires_after="2026-01-04">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -264,7 +212,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.PercentDiskAvailable2" units="%"
-    expires_after="2025-12-21">
+    expires_after="2026-04-26">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -296,8 +244,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseDisabled"
-    enum="QuotaDatabaseDisabledReason" expires_after="2025-12-07">
-  <owner>estade@chromium.org</owner>
+    enum="QuotaDatabaseDisabledReason" expires_after="2026-12-07">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Records at which step the QuotaDatabase failed to bootstrap. Warning: this
@@ -306,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.QuotaDatabaseError" enum="SqliteLoggedResultCode"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>Errors reported by SQLite while using the quota database.</summary>
@@ -338,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.StaleBucketCount" units="areas"
-    expires_after="2026-01-04">
+    expires_after="2026-09-22">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -352,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TimeSpentToAEvictionRound" units="units"
-    expires_after="2025-12-07">
+    expires_after="2026-04-12">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -372,7 +321,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2025-11-16">
+<histogram name="Quota.TotalDiskSpace" units="MB" expires_after="2026-05-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -381,7 +330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.TotalDiskSpaceIsZero" enum="BooleanVolumeZero"
-    expires_after="2025-11-30">
+    expires_after="2026-06-07">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

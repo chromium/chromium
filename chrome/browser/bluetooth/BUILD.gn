@@ -1,0 +1,133 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("bluetooth") {
+  sources = [
+    "bluetooth_chooser_context_factory.h",
+    "chrome_bluetooth_delegate.h",
+    "chrome_bluetooth_delegate_impl_client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/permissions",
+    "//content/public/browser",
+  ]
+}
+
+# TODO(crbug.com/353332589): The `:impl` target below can be merged to
+# `:bluetooth` when the following headers get componentized:
+# - c/b/ui/webui/settings/site_settings_helper.cc
+# - c/b/ui/webui/settings/site_settings_handler.cc
+source_set("impl") {
+  sources = [
+    "bluetooth_chooser_context_factory.cc",
+    "chrome_bluetooth_delegate.cc",
+    "chrome_bluetooth_delegate_impl_client.cc",
+  ]
+  deps = [
+    ":bluetooth",
+    "//chrome/browser/chooser_controller",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/bluetooth",
+    "//components/guest_view/buildflags",
+    "//components/strings:components_strings",
+    "//components/strings:components_strings_grit",
+    "//url",
+  ]
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
+  if (is_android) {
+    sources += [ "android/bluetooth_bridge.cc" ]
+    deps += [ "//chrome/browser/bluetooth/android:jni_headers" ]
+  }
+}
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "web_bluetooth_test_utils.cc",
+      "web_bluetooth_test_utils.h",
+    ]
+
+    public_deps = [
+      ":bluetooth",
+      "//chrome/browser",
+      "//device/bluetooth",
+      "//device/bluetooth:mocks",
+      "//device/bluetooth/public/cpp",
+      "//testing/gtest",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "web_bluetooth_browsertest.cc" ]
+    deps = [
+      ":bluetooth",
+      ":test_support",
+      "//base/test:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/permissions",
+      "//components/variations",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//device/bluetooth",
+      "//device/bluetooth:mocks",
+      "//device/bluetooth/public/cpp",
+      "//net:test_support",
+      "//third_party/blink/public/common:headers",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "bluetooth_chooser_context_unittest.cc" ]
+  deps = [
+    ":bluetooth",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
+    "//components/permissions:test_support",
+    "//content/test:test_support",
+    "//device/bluetooth:mocks",
+    "//device/bluetooth/public/cpp",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+if (is_linux || is_mac || is_win) {
+  source_set("device_realtarget_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "chrome_bluetooth_realtarget_browsertest.cc" ]
+    deps = [
+      ":bluetooth",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//content/public/common",
+      "//content/test:test_support",
+    ]
+  }
+}

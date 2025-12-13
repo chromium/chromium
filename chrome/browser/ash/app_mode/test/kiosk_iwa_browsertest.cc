@@ -4,17 +4,15 @@
 
 #include <string_view>
 
-#include "ash/constants/ash_features.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/host_port_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,7 +47,7 @@ KioskMixin::Config GetKioskIwaConfig(const GURL& update_manifest_url) {
 class KioskIwaTest : public MixinBasedInProcessBrowserTest {
  public:
   KioskIwaTest() {
-    iwa_server_mixin_.AddBundle(
+    iwa_test_server_.AddBundle(
         web_app::IsolatedWebAppBuilder(
             web_app::ManifestBuilder().SetVersion("1.0.0"))
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
@@ -60,11 +58,9 @@ class KioskIwaTest : public MixinBasedInProcessBrowserTest {
   KioskIwaTest& operator=(const KioskIwaTest&) = delete;
 
  protected:
-  base::test::ScopedFeatureList feature_list_{
-      ash::features::kIsolatedWebAppKiosk};
-  web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
+  web_app::IsolatedWebAppTestUpdateServer iwa_test_server_;
   KioskMixin kiosk_{&mixin_host_,
-                    GetKioskIwaConfig(iwa_server_mixin_.GetUpdateManifestUrl(
+                    GetKioskIwaConfig(iwa_test_server_.GetUpdateManifestUrl(
                         kTestWebBundleId))};
 };
 
@@ -80,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(KioskIwaTest, OriginHasUnlimitedStorage) {
   ASSERT_NE(storage_policy, nullptr);
 
   const url::Origin kExpectedOrigin = url::Origin::CreateFromNormalizedTuple(
-      chrome::kIsolatedAppScheme, kTestWebBundleId.id(), /*port=*/0);
+      webapps::kIsolatedAppScheme, kTestWebBundleId.id(), /*port=*/0);
   EXPECT_TRUE(storage_policy->IsStorageUnlimited(kExpectedOrigin.GetURL()));
 }
 

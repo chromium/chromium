@@ -133,7 +133,7 @@ export function createOneGoogleBarApi(abp: boolean): OneGoogleBarApi {
         return;
       }
 
-      await callAsyncBarApi(queuedTask.fnName, queuedTask.args);
+      await callAsyncBarApi(queuedTask.fnName, ...queuedTask.args);
       queuedTask = null;
     },
   };

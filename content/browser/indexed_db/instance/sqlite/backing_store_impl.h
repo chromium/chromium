@@ -10,25 +10,21 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/common/content_export.h"
 
 namespace content::indexed_db {
-
-struct IndexedDBDataLossInfo;
 
 namespace sqlite {
 
 class DatabaseConnection;
 
-class BackingStoreImpl : public BackingStore {
+class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
  public:
-  static std::tuple<std::unique_ptr<BackingStore>,
-                    Status,
-                    IndexedDBDataLossInfo,
-                    bool /* is_disk_full */>
-  OpenAndVerify(base::FilePath directory,
-                storage::mojom::BlobStorageContext& blob_storage_context);
-
+  // The store itself does not have any footprint on disk except a directory
+  // where SQLite DBs will be located, so creation cannot fail. `directory` is
+  // assumed to already exist.
   BackingStoreImpl(base::FilePath directory,
                    storage::mojom::BlobStorageContext& blob_storage_context);
   BackingStoreImpl(const BackingStoreImpl&) = delete;
@@ -57,6 +53,8 @@ class BackingStoreImpl : public BackingStore {
   }
 
  private:
+  friend class DatabaseConnectionTest;
+
   bool in_memory() const { return directory_.empty(); }
 
   // The directory where all databases for this backing store will live. When

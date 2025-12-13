@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/sessions/model/test_session_restoration_service.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -19,10 +20,9 @@ TestSessionRestorationService::~TestSessionRestorationService() = default;
 // static
 TestSessionRestorationService::TestingFactory
 TestSessionRestorationService::GetTestingFactory() {
-  return base::BindRepeating(
-      [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-        return std::make_unique<TestSessionRestorationService>();
-      });
+  return base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+    return std::make_unique<TestSessionRestorationService>();
+  });
 }
 
 void TestSessionRestorationService::AddObserver(
@@ -36,10 +36,6 @@ void TestSessionRestorationService::RemoveObserver(
 }
 
 void TestSessionRestorationService::SaveSessions() {
-  // Nothing to do.
-}
-
-void TestSessionRestorationService::ScheduleSaveSessions() {
   // Nothing to do.
 }
 

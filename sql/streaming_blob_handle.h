@@ -35,10 +35,10 @@ class COMPONENT_EXPORT(SQL) StreamingBlobHandle {
       base::OnceCallback<void(SqliteResultCode, const char*)> done_callback);
   ~StreamingBlobHandle();
 
-  // Move ctor is allowed to facilitate use with optional.
+  // Move is allowed to facilitate use with optional.
   StreamingBlobHandle(StreamingBlobHandle&&);
+  StreamingBlobHandle& operator=(StreamingBlobHandle&&);
 
-  StreamingBlobHandle& operator=(StreamingBlobHandle&&) = delete;
   StreamingBlobHandle(const StreamingBlobHandle&) = delete;
   StreamingBlobHandle& operator=(const StreamingBlobHandle&) = delete;
 
@@ -47,7 +47,14 @@ class COMPONENT_EXPORT(SQL) StreamingBlobHandle {
   [[nodiscard]] bool Read(int offset, base::span<uint8_t> into);
   [[nodiscard]] bool Write(int offset, base::span<const uint8_t> from);
 
+  // Returns the size of the blob in bytes. This will never be non-positive.
+  // After Read() or Write() has failed, calling this will CHECK.
+  int GetSize();
+
  private:
+  // Closes `blob_handle_` if it's open, invoking `done_callback_`.
+  void Close();
+
   // This handle is owned.
   raw_ptr<sqlite3_blob> blob_handle_;
 

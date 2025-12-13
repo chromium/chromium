@@ -12,7 +12,7 @@
 
 #include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_file.h"
@@ -130,7 +130,7 @@ NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle);
 COMPONENT_EXPORT(GFX)
 bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
                                  const gfx::Size& size,
-                                 gfx::BufferFormat format,
+                                 viz::SharedImageFormat format,
                                  bool assume_single_memory_object);
 }  // namespace gfx
 

@@ -23,6 +23,7 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Handler;
 import android.text.InputType;
 import android.text.Spannable;
@@ -46,6 +47,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -70,7 +72,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 
 /** Helper methods that can be used across multiple Autofill UIs. */
 @NullMarked
@@ -280,7 +281,7 @@ public class AutofillUiUtils {
      *
      * @param context Context required to get resources.
      * @param popup {@PopupWindow} that shows tooltip UI.
-     * @param text  Text to be shown in tool tip UI.
+     * @param text Text to be shown in tool tip UI.
      * @param offsetProvider Interface to provide the X and Y offsets.
      * @param anchorView Anchor view under which tooltip popup has to be shown
      * @param dismissAction Tooltip dismissive action.
@@ -293,6 +294,7 @@ public class AutofillUiUtils {
             View anchorView,
             final Runnable dismissAction) {
         TextView textView = new TextView(context);
+        textView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
         textView.setText(text);
         textView.setTextAppearance(R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         Resources resources = context.getResources();
@@ -341,7 +343,6 @@ public class AutofillUiUtils {
                 anchorView,
                 offsetProvider.getXOffset(textView),
                 offsetProvider.getYOffset(textView));
-        textView.announceForAccessibility(textView.getText());
     }
 
     /**
@@ -493,13 +494,11 @@ public class AutofillUiUtils {
     public static void showErrorMessage(String message, TextView errorMessageTextView) {
         assert message != null;
 
+        errorMessageTextView.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_POLITE);
+
         // Set the message to display;
         errorMessageTextView.setText(message);
         errorMessageTextView.setVisibility(View.VISIBLE);
-
-        // A null message is passed in during card verification, which also makes an announcement.
-        // Announcing twice in a row may cancel the first announcement.
-        errorMessageTextView.announceForAccessibility(message);
     }
 
     /**
@@ -748,15 +747,15 @@ public class AutofillUiUtils {
             return AppCompatResources.getDrawable(context, R.drawable.capitalone_metadata_card);
         }
 
-        Optional<Bitmap> customIconBitmap =
+        Bitmap customIconBitmap =
                 imageFetcher.getImageIfAvailable(
                         cardArtUrl,
                         IconSpecs.create(context, ImageType.CREDIT_CARD_ART_IMAGE, cardIconSize));
-        if (!customIconBitmap.isPresent()) {
+        if (customIconBitmap == null) {
             return defaultIcon;
         }
 
-        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
+        return new BitmapDrawable(context.getResources(), customIconBitmap);
     }
 
     /**
@@ -778,9 +777,9 @@ public class AutofillUiUtils {
             @ImageSize int imageSize,
             String merchantName) {
         IconSpecs specs = IconSpecs.create(context, ImageType.VALUABLE_IMAGE, imageSize);
-        Optional<Bitmap> customIconBitmap = imageFetcher.getImageIfAvailable(imageUrl, specs);
+        Bitmap customIconBitmap = imageFetcher.getImageIfAvailable(imageUrl, specs);
 
-        if (!customIconBitmap.isPresent()) {
+        if (customIconBitmap == null) {
             RoundedIconGenerator generator =
                     new RoundedIconGenerator(
                             specs.getWidth(),
@@ -792,7 +791,20 @@ public class AutofillUiUtils {
             Bitmap icon = generator.generateIconForText(merchantName);
             return new BitmapDrawable(context.getResources(), icon);
         }
-        return new BitmapDrawable(context.getResources(), customIconBitmap.get());
+        return new BitmapDrawable(context.getResources(), customIconBitmap);
+    }
+
+    /**
+     * Open the url in a new custom tab.
+     *
+     * @param context Context required to get resources.
+     * @param url The URL link to be opened in the new tab.
+     */
+    public static void openLink(Context context, String url) {
+        new CustomTabsIntent.Builder()
+                .setShowTitle(true)
+                .build()
+                .launchUrl(context, Uri.parse(url));
     }
 
     /**

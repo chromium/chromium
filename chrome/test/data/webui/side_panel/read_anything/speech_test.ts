@@ -4,12 +4,12 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ContentController, NodeStore, playFromSelectionTimeout, SelectionController, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {createAndSetVoices, emitEvent, mockMetrics, setupBasicSpeech} from './common.js';
+import {createAndSetVoices, emitEvent, mockMetrics, setupBasicSpeech, stubAnimationFrame} from './common.js';
 import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('Speech', () => {
@@ -78,6 +78,11 @@ suite('Speech', () => {
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    if (chrome.readingMode.isTsTextSegmentationEnabled) {
+      stubAnimationFrame();
+    }
+    // Ensure the ReadAloudModel is not shared between tests.
+    setInstance(null);
     speech = new TestSpeechBrowserProxy();
     SpeechBrowserProxyImpl.setInstance(speech);
     chrome.readingMode.shouldShowUi = () => true;
@@ -90,6 +95,7 @@ suite('Speech', () => {
     VoiceLanguageController.setInstance(voiceLanguageController);
     speechController = new SpeechController();
     SpeechController.setInstance(speechController);
+    ContentController.setInstance(new ContentController());
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
@@ -194,6 +200,7 @@ suite('Speech', () => {
         baseTree: any, anchorId: number, anchorOffset: number, focusId: number,
         focusOffset: number, isBackward: boolean = false): void {
       mockTimer.install();
+      stubAnimationFrame();
       const selectedTree = Object.assign(
           {
             selection: {
@@ -206,7 +213,9 @@ suite('Speech', () => {
           },
           baseTree);
       chrome.readingMode.setContentForTesting(selectedTree, leafIds);
-      app.updateSelection();
+      const selectionController = SelectionController.getInstance();
+      selectionController.updateSelection(app.getSelection(), app.$.container);
+      selectionController.onSelectionChange(app.getSelection());
     }
 
     function playFromSelection() {
@@ -227,11 +236,14 @@ suite('Speech', () => {
 
     test('selection is cleared after play', () => {
       selectAndPlay(axTree, 5, 0, 5, 10);
-      assertEquals('None', app.getSelection().type);
+      const selection = app.getSelection();
+      assertTrue(!!selection);
+      assertEquals('None', selection.type);
     });
 
-    test('in middle of node, play from beginning of node', () => {
+    test('in middle of node, play from beginning of node', async () => {
       selectAndPlay(axTree, 5, 10, 5, 20);
+      await microtasksFinished();
       assertEquals(paragraph2[0], getSpokenText());
     });
 
@@ -247,7 +259,8 @@ suite('Speech', () => {
 
     test('after speech started, cancels and plays from selection', () => {
       select(axTree, 5, 0, 5, 10);
-      speechController.initializeSpeechTree(1);
+      const domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
       speechController.setHasSpeechBeenTriggered(true);
       speech.reset();
 
@@ -255,6 +268,30 @@ suite('Speech', () => {
 
       assertEquals(1, speech.getCallCount('cancel'));
       assertEquals(paragraph2[0], getSpokenText());
+    });
+
+    test('after two selections, plays from most recent selection', () => {
+      select(axTree, 5, 0, 5, 10);
+      let domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
+      speechController.setHasSpeechBeenTriggered(true);
+      speech.reset();
+
+      playFromSelection();
+
+      assertEquals(1, speech.getCallCount('cancel'));
+      assertEquals(paragraph2[0], getSpokenText());
+
+      select(axTree, 3, 10, 5, 10);
+      domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
+      speechController.setHasSpeechBeenTriggered(true);
+      speech.reset();
+
+      playFromSelection();
+
+      assertEquals(1, speech.getCallCount('cancel'));
+      assertEquals(paragraph1[0], getSpokenText());
     });
 
     test('play from selection when node split across sentences', () => {
@@ -306,7 +343,8 @@ suite('Speech', () => {
     });
   });
 
-  test('next granularity plays from there', () => {
+  test('next granularity plays from there', async () => {
+    await microtasksFinished();
     emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
     assertEquals(paragraph1[1], getSpokenText());
   });
@@ -323,7 +361,8 @@ suite('Speech', () => {
 
   suite('while playing', () => {
     setup(() => {
-      speechController.initializeSpeechTree(1);
+      const domNode = NodeStore.getInstance().getDomNode(1);
+      speechController.initializeSpeechTree(domNode);
       emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     });
 

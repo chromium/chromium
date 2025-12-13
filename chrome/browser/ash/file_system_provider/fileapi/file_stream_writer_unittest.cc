@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/fileapi/file_stream_writer.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -96,8 +92,8 @@ class FileSystemProviderFileStreamWriter : public testing::Test {
     const std::string mount_point_name =
         file_system_info.mount_path().BaseName().AsUTF8Unsafe();
 
-    file_url_ = CreateFileSystemURL(mount_point_name,
-                                    base::FilePath(kFakeFilePath + 1));
+    file_url_ = CreateFileSystemURL(
+        mount_point_name, base::FilePath(UNSAFE_TODO(kFakeFilePath + 1)));
     ASSERT_TRUE(file_url_.is_valid());
     wrong_file_url_ = CreateFileSystemURL(
         mount_point_name, base::FilePath(FILE_PATH_LITERAL("im-not-here.txt")));

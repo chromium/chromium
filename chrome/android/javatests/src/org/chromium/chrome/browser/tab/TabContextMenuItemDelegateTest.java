@@ -6,6 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import android.os.Build;
 
 import androidx.test.filters.SmallTest;
 
@@ -19,13 +22,18 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -33,9 +41,13 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.common.Referrer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** Integration tests for {@link TabContextMenuItemDelegate}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -51,6 +63,7 @@ public class TabContextMenuItemDelegateTest {
     @Mock private Runnable mContextMenuCopyLinkObserver;
     private WebPageStation mInitialPage;
     private ModalDialogManager mModalDialogManager;
+    private MultiInstanceManager mMultiInstanceManager;
     private TabContextMenuItemDelegate mContextMenuDelegate;
 
     @Before
@@ -60,6 +73,7 @@ public class TabContextMenuItemDelegateTest {
         CriteriaHelper.pollUiThread(cta.getTabModelSelectorSupplier().get()::isTabStateInitialized);
 
         mModalDialogManager = cta.getModalDialogManager();
+        mMultiInstanceManager = cta.getMultiInstanceMangerForTesting();
     }
 
     @After
@@ -98,6 +112,57 @@ public class TabContextMenuItemDelegateTest {
         assertFalse(mModalDialogManager.isShowing());
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void testOpenInOtherWindow_ShowDialog_incognitoWindowingEnabled() {
+        createContextMenuForCurrentTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContextMenuDelegate.openInOtherWindow(
+                            new GURL("about:blank"),
+                            new Referrer("about:blank", 0),
+                            /* isIncognito= */ false);
+                });
+        assertFalse(
+                "Window management dialog should not be visible with one window instance",
+                mModalDialogManager.isShowing());
+
+        MultiWindowUtils.setInstanceCountForTesting(/* instanceCount= */ 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContextMenuDelegate.openInOtherWindow(
+                            new GURL("about:blank"),
+                            new Referrer("about:blank", 0),
+                            /* isIncognito= */ false);
+                });
+        assertTrue("Window management dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.S)
+    @Features.DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void testOpenInOtherWindow_incognitoWindowingDisabled() {
+        createContextMenuForCurrentTab();
+
+        MultiWindowUtils.setInstanceCountForTesting(/* instanceCount= */ 2);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContextMenuDelegate.openInOtherWindow(
+                            new GURL("about:blank"),
+                            new Referrer("about:blank", 0),
+                            /* isIncognito= */ false);
+                });
+        assertFalse(
+                "Window management dialog should not be visible regardless of instance"
+                        + " count with flag disabled",
+                mModalDialogManager.isShowing());
+    }
+
     private void createContextMenuForCurrentTab() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -120,7 +185,8 @@ public class TabContextMenuItemDelegateTest {
                                     ephemeralTabCoordinatorSupplier,
                                     mContextMenuCopyLinkObserver,
                                     snackbarManagerSupplier,
-                                    bottomSheetControllerSupplier);
+                                    bottomSheetControllerSupplier,
+                                    mMultiInstanceManager);
                 });
         assertNotNull(mContextMenuDelegate);
     }

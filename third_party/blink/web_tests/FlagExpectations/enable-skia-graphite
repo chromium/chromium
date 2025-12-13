@@ -22,6 +22,7 @@ crbug.com/388081043 external/wpt/editing/other/paste-clipboard-change.tentative.
 # finder:enable-general
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/439622502 external/wpt/css/css-text-decor/text-emphasis-punctuation-2.html [ Failure ]
 crbug.com/431036874 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/new-content-is-inline.html [ Failure ]
 crbug.com/414691618 virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?cpu [ Crash ]
 crbug.com/414691618 virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/expand.https.any.html?cpu [ Crash ]

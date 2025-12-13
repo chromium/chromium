@@ -12,6 +12,10 @@
 #include "chrome/browser/ui/views/desktop_capture/share_audio_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/desktop_capture/audio_permission_warning_view.h"
+#endif  // BUILDFLAG(IS_MAC)
+
 class DesktopMediaContentPaneView : public views::View {
   METADATA_HEADER(DesktopMediaContentPaneView, views::View)
  public:
@@ -32,12 +36,25 @@ class DesktopMediaContentPaneView : public views::View {
   // be called if the class was created with a non-null share_audio_view.
   void SetAudioSharingApprovedByUser(bool is_on);
 
+  bool IsAudioSharingControlEnabled() const;
+  // Enables or disables the ShareAudioView audio control, meaning that while
+  // the control is disabled the user cannot interact with it. This method must
+  // only be called if the class was created with a non-null share_audio_view.
+  void SetAudioSharingControlEnabled(bool enabled);
   // Returns the text in the audio label if an audio label exists;
   // returns the empty string otherwise.
   std::u16string_view GetAudioLabelText() const;
+#if BUILDFLAG(IS_MAC)
+  void SetAudioWarningVisible(bool visible);
+  bool IsAudioWarningVisible() const;
+  void CancelAudioSharing();
+#endif  // BUILDFLAG(IS_MAC)
 
  private:
   raw_ptr<ShareAudioView> share_audio_view_ = nullptr;
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<AudioPermissionWarningView> audio_warning_view_ = nullptr;
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_CONTENT_PANE_VIEW_H_

@@ -71,7 +71,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   NotifyAccessibilityEventDeprecated(ax::mojom::Event::kShow, true);
 
   // Explicitly close the app list in clamshell mode.
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     Shell::Get()->app_list_controller()->DismissAppList();
   }
 }
@@ -99,7 +99,7 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
   if (bubble_view_) {
-    controller_->ShutDownDetailedViewController();
+    controller_->PrepareBubbleDestroy();
     bubble_view_->RemoveAllChildViews();
     quick_settings_view_ = nullptr;
     bubble_view_->ResetDelegate();
@@ -222,7 +222,7 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
 
-  controller_->ShutDownDetailedViewController();
+  controller_->PrepareBubbleDestroy();
   bubble_view_->RemoveAllChildViews();
   quick_settings_view_ = nullptr;
   bubble_view_->ResetDelegate();

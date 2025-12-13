@@ -253,7 +253,8 @@ void GinPort::DispatchEvent(v8::Local<v8::Context> context,
   gin::Converter<EventEmitter*>::FromV8(isolate, on_message, &emitter);
   CHECK(emitter);
   emitter->Fire(context, args, /*filter=*/nullptr,
-                /*callback=*/v8::Local<v8::Function>());
+                /*on_dispatched_callback=*/v8::Local<v8::Function>(),
+                /*listener_error_callback=*/v8::Local<v8::Function>());
 }
 
 void GinPort::OnContextInvalidated() {

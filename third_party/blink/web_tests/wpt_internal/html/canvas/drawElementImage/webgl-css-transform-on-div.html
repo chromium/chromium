@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+  <title>texElementImage2D ignores CSS transforms</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <link rel="match" href="css-transform-on-div-ref.html">
+  <meta name="assert" value="A div with a CSS transform paints without the transform.">
+  <style>
+    canvas {
+      background: black;
+      width: 100px;
+      height: 100px;
+    }
+    #child {
+      box-sizing: border-box;
+      width: 100px;
+      height: 100px;
+      background-color: green;
+      transform: rotate(45deg);
+    }
+  </style>
+</head>
+<body>
+  <canvas layoutsubtree>
+    <div id="child"></div>
+  </canvas>
+
+  <script type="module">
+import { resizeToPixelGrid, SimpleGLProgram } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
+const canvas = document.querySelector("canvas");
+await resizeToPixelGrid(canvas);
+const prog = new SimpleGLProgram(canvas.getContext("webgl2"));
+const target = canvas.firstElementChild;
+prog.render(target);
+takeScreenshot();
+  </script>
+</body>

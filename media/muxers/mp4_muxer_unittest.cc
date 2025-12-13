@@ -186,20 +186,18 @@ TEST_P(Mp4MuxerTest, DoesntFlushOnInsufficientlySpacedFrames) {
   muxer_->PutFrame(
       Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
-  task_environment_.AdvanceClock(base::Seconds(1));
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
   buffer->set_is_key_frame(false);
   muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, buffer},
-                   base::Milliseconds(0));
-  // Insert a frame just before the duration limit set initially in the test.
-  // Expect that Flush isn't invoked.
-  task_environment_.AdvanceClock(base::Seconds(1) - base::Milliseconds(1));
+                   base::Milliseconds(33));
   EXPECT_CALL(*delegate_ptr_, Flush).Times(0);
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
   buffer->set_is_key_frame(true);
+  // Insert a frame just before the duration limit set initially in the test.
+  // Expect that Flush isn't invoked.
   muxer_->PutFrame(
       Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
-      base::Milliseconds(0));
+      base::Seconds(2) - base::Milliseconds(1));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
 
@@ -217,20 +215,18 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForVideo) {
   muxer_->PutFrame(
       Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
-  task_environment_.AdvanceClock(base::Seconds(1));
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
   buffer->set_is_key_frame(false);
   muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, buffer},
-                   base::Milliseconds(0));
-  // Time will advance to the time for the next flush, so expect Flush called
-  // on the next keyframe.
-  task_environment_.AdvanceClock(base::Seconds(1));
+                   base::Seconds(0));
+  // Media time will advance to the time for the next flush, so expect Flush
+  // called on the next keyframe.
   EXPECT_CALL(*delegate_ptr_, FlushFragment);
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
   buffer->set_is_key_frame(true);
   muxer_->PutFrame(
       Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
-      base::Milliseconds(0));
+      base::Seconds(2));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
 
@@ -247,20 +243,18 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForAudioOnly) {
   muxer_->PutFrame(
       Muxer::EncodedFrame{audio_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
-  task_environment_.AdvanceClock(base::Seconds(1));
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("a2"));
   buffer->set_is_key_frame(false);
   muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, buffer},
-                   base::Milliseconds(0));
-  // Time will advance to the time for the next flush, so expect Flush called
-  // on the next keyframe.
-  task_environment_.AdvanceClock(base::Seconds(1));
+                   base::Seconds(0));
+  // Media time will advance to the time for the next flush, so expect Flush
+  // called on the next keyframe.
   EXPECT_CALL(*delegate_ptr_, FlushFragment);
   buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("a2"));
   buffer->set_is_key_frame(true);
   muxer_->PutFrame(
       Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(1), buffer},
-      base::Milliseconds(0));
+      base::Seconds(2));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
 

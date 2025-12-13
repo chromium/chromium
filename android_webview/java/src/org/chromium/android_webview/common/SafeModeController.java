@@ -58,7 +58,7 @@ public class SafeModeController {
         SafeModeExecutionResult.ACTION_UNKNOWN,
         SafeModeExecutionResult.COUNT
     })
-    public static @interface SafeModeExecutionResult {
+    public @interface SafeModeExecutionResult {
         int SUCCESS = 0;
         int UNKNOWN_ERROR = 1;
         int ACTION_FAILED = 2;
@@ -80,7 +80,7 @@ public class SafeModeController {
         SafeModeActionName.DISABLE_SUPERVISION_CHECKS,
         SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC
     })
-    private static @interface SafeModeActionName {
+    private @interface SafeModeActionName {
         int DELETE_VARIATIONS_SEED = 0;
         int FAST_VARIATIONS_SEED = 1;
         int NOOP = 2;

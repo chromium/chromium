@@ -14,11 +14,11 @@ source_set("cpp") {
     "dlc_utils.h",
   ]
   deps = [
-    "//ash:ash",
+    "//ash",
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/mojo_service_manager",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//ui/events/devices",
     "//ui/events/ozone/evdev:event_device_info",
   ]

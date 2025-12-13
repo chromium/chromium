@@ -34,12 +34,24 @@ struct ContextCounts {
   size_t destroyed_execution_context_count = 0;
 };
 
-class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
+// TODO(crbug.com/40931300): Re-enable on Mac and Android.
+// The whole theory behind this test suite is wrong, because it assumes that
+// navigating to a page has a precise effect on the number of contexts. But the
+// test doesn't control the environment enough to be sure of this -
+// platform-specific policies, such as preloading, can change the number. Still,
+// leaving it enabled on platforms that aren't currently flaking gives some
+// coverage.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_V8ContextTrackerTest DISABLED_V8ContextTrackerTest
+#else
+#define MAYBE_V8ContextTrackerTest V8ContextTrackerTest
+#endif
+class MAYBE_V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
  public:
   using Super = PerformanceManagerBrowserTestHarness;
 
-  V8ContextTrackerTest() = default;
-  ~V8ContextTrackerTest() override = default;
+  MAYBE_V8ContextTrackerTest() = default;
+  ~MAYBE_V8ContextTrackerTest() override = default;
 
   void SetUp() override {
     GetGraphFeatures().EnableV8ContextTracker();
@@ -114,18 +126,13 @@ class V8ContextTrackerTest : public PerformanceManagerBrowserTestHarness {
   ContextCounts current_counts_;
 };
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AboutBlank DISABLED_AboutBlank
-#else
-#define MAYBE_AboutBlank AboutBlank
-#endif
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_AboutBlank) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, AboutBlank) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
   ExpectCountIncrease({.v8_context_count = 1, .execution_context_count = 1});
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest,
+                       SameOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
   auto* contents = shell()->web_contents();
   ASSERT_TRUE(
@@ -149,15 +156,8 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   ASSERT_TRUE(ec_state->iframe_attribution_data);
 }
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossOriginIframeAttributionData \
-  DISABLED_CrossOriginIframeAttributionData
-#else
-#define MAYBE_CrossOriginIframeAttributionData CrossOriginIframeAttributionData
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
-                       MAYBE_CrossOriginIframeAttributionData) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest,
+                       CrossOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   auto* contents = shell()->web_contents();
   ASSERT_TRUE(
@@ -183,13 +183,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest,
       << frame_node->GetLifecycleState();
 }
 
-// TODO(crbug.com/40931300): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
-#else
-#define MAYBE_SameSiteNavigation SameSiteNavigation
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, SameSiteNavigation) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
   ASSERT_TRUE(
@@ -227,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, MAYBE_SameSiteNavigation) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
+IN_PROC_BROWSER_TEST_F(MAYBE_V8ContextTrackerTest, DetachedContext) {
   auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
   ASSERT_TRUE(
@@ -237,6 +231,9 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
   // Get pointers to the RFHs for each frame.
   content::RenderFrameHost* rfha = contents->GetPrimaryMainFrame();
 
+  content::RenderFrameHost* iframe = ChildFrameAt(rfha, 0);
+  content::RenderFrameDeletedObserver iframe_deleted_observer(iframe);
+
   // Keep a pointer to the window associated with the child iframe, but
   // unload it.
   ASSERT_TRUE(ExecJs(rfha,
@@ -244,6 +241,8 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
                      "document.body.leakyRef = iframe.contentWindow.window; "
                      "iframe.parentNode.removeChild(iframe); "
                      "console.log('detached and leaked iframe');"));
+
+  iframe_deleted_observer.WaitUntilDeleted();
 
   ExpectCountIncrease({
       .detached_v8_context_count = 1,

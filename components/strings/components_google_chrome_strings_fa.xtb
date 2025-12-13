@@ -33,16 +33,16 @@
           بروید و علامت «<ph name="NO_PREFETCH_DESCRIPTION" />» را بردارید.
           درصورتی‌که با این کار مشکل حل نشد، توصیه می‌کنیم برای عملکرد پیشرفته،
           این گزینه را دوباره انتخاب کنید.</translation>
-<translation id="6855094794438142393">‏به
-          منوی Chrome  &gt;
+<translation id="6581867098636731226">‏به
+          «منو Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          تنظیمات LAN
-          بروید و علامت انتخاب «استفاده از سرور پراکسی برای LAN» را بردارید.</translation>
+          شبکه و اینترنت &gt; پراکسی»
+          بروید و «Automatically detect settings» (تشخیص خودکار تنظیمات) را لغو انتخاب کنید.</translation>
 <translation id="7230956101631259640">‏درحال مشاهده یکی از صفحه‌های امن Chrome هستید</translation>
 <translation id="8232971017369963250">‏ارائه Chrome ازطریق پروژه متن‌باز <ph name="BEGIN_LINK_CHROMIUM" />Chromium <ph name="END_LINK_CHROMIUM" /> ممکن شده است.</translation>
 <translation id="8279509328145658601">‏ارائه Chrome ازطریق <ph name="BEGIN_LINK_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_OSS" /> دیگر نیز ممکن شده است.</translation>

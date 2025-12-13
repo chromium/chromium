@@ -14,7 +14,6 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -159,9 +158,6 @@ class ThumbnailCache : ThumbnailDelegate {
   void NotifyObserversOfThumbnailRead(TabId tab_id);
   void RemoveOnMatchedTimeStamp(TabId tab_id, const base::Time& time_stamp);
 
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel level);
-
   // Default priority as most of the time there is a placeholder available.
   const scoped_refptr<base::SequencedTaskRunner>
       etc1_file_sequenced_task_runner_;
@@ -192,7 +188,6 @@ class ThumbnailCache : ThumbnailDelegate {
   base::WeakPtr<ui::UIResourceProvider> ui_resource_provider_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_;
   base::WeakPtrFactory<ThumbnailCache> weak_factory_{this};
 };
 

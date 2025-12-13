@@ -55,7 +55,6 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private InsetObserver mInsetObserver;
-    @Mock private SurveyConfig mSurveyConfig;
 
     private Activity mActivity;
     private WindowAndroid mWindow;
@@ -146,6 +145,7 @@ public class SurveyUiDelegateBridgeUnitTest {
     }
 
     @Implements(MessageSurveyUiDelegate.class)
+    @SuppressWarnings("DirectInvocationOnMock")
     public static class ShadowMessageSurveyUiDelegate {
         private final SurveyUiDelegate mMockDelegate;
 

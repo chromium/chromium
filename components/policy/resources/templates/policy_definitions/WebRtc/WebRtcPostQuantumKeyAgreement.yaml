@@ -41,8 +41,8 @@ items:
   value: true
 - caption: Disable post-quantum key agreement for WebRTC
   value: false
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:140-
+- chrome_os:140-
 tags: []
 type: main

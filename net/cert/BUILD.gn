@@ -12,7 +12,7 @@ proto_library("root_store_proto_full") {
   # should not be linked into the browser. If a browser target needs this
   # protobuf, use the _lite target below.
   use_protobuf_full = true
-  visibility = [ "//net/tools/root_store_tool:root_store_tool" ]
+  visibility = [ "//net/tools/root_store_tool" ]
 }
 
 proto_library("root_store_proto_lite") {

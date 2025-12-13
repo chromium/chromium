@@ -12,7 +12,10 @@ import "services/shape_detection/public/mojom/textdetection.mojom";
 [EnableIf=has_shape_detection_utility]
 const sandbox.mojom.Sandbox kShapeDetectionSandbox
     = sandbox.mojom.Sandbox.kShapeDetection;
-[EnableIfNot=has_shape_detection_utility]
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kShapeDetectionSandbox =
+    sandbox.mojom.Sandbox.kUtility;
+[EnableIfNot=has_shape_detection_utility|is_win]
 const sandbox.mojom.Sandbox kShapeDetectionSandbox = sandbox.mojom.Sandbox.kGpu;
 
 // The main interface to the Shape Detection service. On ChromeOS Ash this is

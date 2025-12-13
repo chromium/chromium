@@ -35,11 +35,11 @@ enum class ActionType {
   NewTab,
   NewIncognitoTab,
   NewWindow,
-  Follow,
   Bookmark,
   ReadingList,
   ClearBrowsingData,
   Translate,
+  ReaderMode,
   DesktopSite,
   FindInPage,
   TextZoom,
@@ -50,9 +50,10 @@ enum class ActionType {
   LensOverlay,
   AIPrototype,
   SetTabReminder,
-  ReaderMode,
   // TODO(crbug.com/416002705): Rename reference to BWG.
   AskBWG,
+  HideToolbars,
+  TabGroup,
 };
 // LINT.ThenChange(overflow_menu_metrics.h:actionType)
 

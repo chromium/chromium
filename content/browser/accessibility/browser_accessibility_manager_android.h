@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_MANAGER_ANDROID_H_
 
+#include <optional>
 #include <utility>
 
 #include "content/common/content_export.h"
@@ -153,7 +154,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   std::u16string GenerateAccessibilityNodeInfoString(int32_t unique_id);
 
-  std::vector<std::string> GetMetadataForTree() const;
+  std::optional<std::vector<std::string>> GetMetadataForTree() const;
 
  protected:
   std::unique_ptr<ui::BrowserAccessibility> CreateBrowserAccessibility(

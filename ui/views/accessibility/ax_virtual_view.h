@@ -21,7 +21,7 @@
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/views_export.h"
 
@@ -156,6 +156,7 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool ShouldIgnoreHoveredStateForTesting() override;
   bool IsOffscreen() const override;
+  ui::AXPlatformNodeId GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
@@ -211,9 +212,6 @@ class VIEWS_EXPORT AXVirtualView : public ViewAccessibility,
   void NotifyDataChanged() override;
   void UpdateFocusableState() override;
   void UpdateInvisibleState() override;
-  void OnWidgetClosing(Widget* widget) override;
-  void OnWidgetDestroyed(Widget* widget) override;
-  void OnWidgetUpdated(Widget* widget, Widget* old_widget) override;
   void UpdateReadyToNotifyEvents() override;
   void UpdateIgnoredState() override;
   void SetIsEnabled(bool enabled) override;

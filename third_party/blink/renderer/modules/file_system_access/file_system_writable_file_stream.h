@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_WRITABLE_FILE_STREAM_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

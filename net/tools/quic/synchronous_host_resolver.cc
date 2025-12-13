@@ -83,7 +83,7 @@ void ResolverThread::Run() {
   }
 
   if (rv_ == OK) {
-    *addresses_ = *request->GetAddressResults();
+    *addresses_ = request->GetAddressResults();
   }
 }
 

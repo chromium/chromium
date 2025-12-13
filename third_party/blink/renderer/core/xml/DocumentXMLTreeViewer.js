@@ -5,6 +5,7 @@
 "use strict";
 
 var tree;
+var headerSpan;
 
 function prepareWebKitXMLViewer()
 {
@@ -31,7 +32,7 @@ function prepareWebKitXMLViewer()
   var header = createHTMLElement('div');
   body.appendChild(header);
   header.classList.add('header');
-  var headerSpan = createHTMLElement('span');
+  headerSpan = createHTMLElement('span');
   header.appendChild(headerSpan);
   headerSpan.textContent =
       'This XML file does not appear to have any style information ' +
@@ -143,10 +144,20 @@ function processCDATA(parentElement, node)
 
 function processProcessingInstruction(parentElement, node)
 {
+  const seenRootElement = parentElement.childNodes.length > 0;
   var line = createLine();
   line.appendChild(
       createComment('<?' + node.nodeName + ' ' + node.nodeValue + '?>'));
   parentElement.appendChild(line);
+  if (!seenRootElement && node.nodeName === 'xml-stylesheet') {
+    // This will only get hit if XSLT is disabled in the renderer.
+    headerSpan.innerHTML =
+        'This document cannot be formatted as intended. It uses XSLT, which ' +
+        'the browser does not support. You might be able to <a ' +
+        'target="_blank" rel="noopener noreferrer" ' +
+        'href="https://chromewebstore.google.com/search/XSLT%20Polyfill">install ' +
+        'a browser extension</a> that allows you to view it.';
+  }
 }
 
 function processText(parentElement, node)

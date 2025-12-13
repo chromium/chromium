@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
 
-#include <vector>
-
 #include "base/functional/callback.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/task/sequenced_task_runner.h"
@@ -20,9 +18,9 @@
 #include "media/mojo/mojom/watch_time_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/media/watch_time_component.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
@@ -129,6 +127,10 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   void OnUnderflow();
   void OnUnderflowComplete(base::TimeDelta elapsed);
 
+  // This method is used to ensure that watch time is reported relative to
+  // whether the media is the dominant content on screen or not.
+  void OnDominantVisibleContentChanged(bool is_dominant);
+
   // These methods are used to ensure that the watch time is reported relative
   // to whether the media is using native controls.
   void OnNativeControlsEnabled();
@@ -157,6 +159,9 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // Updates the duration maintained by the recorder. May be called any number
   // of times during playback.
   void OnDurationChanged(base::TimeDelta duration);
+
+  // Updates whether HDR is enabled for the video.
+  void OnHdrChanged(bool is_hdr);
 
  private:
   friend class WatchTimeReporterTest;
@@ -201,13 +206,17 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // and a conversion method to get the correct WatchTimeKey.
   std::unique_ptr<WatchTimeComponent<bool>> CreateBaseComponent();
   std::unique_ptr<WatchTimeComponent<bool>> CreatePowerComponent();
-  media::WatchTimeKey GetPowerKey(bool is_on_battery_power);
+  Vector<media::WatchTimeKey> GetPowerKeys(bool is_on_battery_power);
+  std::unique_ptr<WatchTimeComponent<bool>> CreateDominantComponent();
+  Vector<media::WatchTimeKey> GetDominantKey(bool is_dominant);
   std::unique_ptr<WatchTimeComponent<bool>> CreateControlsComponent();
-  media::WatchTimeKey GetControlsKey(bool has_native_controls);
+  Vector<media::WatchTimeKey> GetControlsKeys(bool has_native_controls);
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
   CreateDisplayTypeComponent();
-  media::WatchTimeKey GetDisplayTypeKey(
+  Vector<media::WatchTimeKey> GetDisplayTypeKeys(
       WebMediaPlayer::DisplayType display_type);
+  std::unique_ptr<WatchTimeComponent<bool>> CreateHdrComponent();
+  Vector<media::WatchTimeKey> GetHdrKeys(bool is_hdr);
 
   // Initialized during construction.
   const media::mojom::blink::PlaybackPropertiesPtr properties_;
@@ -244,8 +253,7 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
     base::TimeDelta timestamp = media::kNoTimestamp;
     base::TimeDelta duration = media::kNoTimestamp;
   };
-  std::vector<UnderflowEvent> pending_underflow_events_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651): Pending migration");
+  Vector<UnderflowEvent> pending_underflow_events_;
 
   media::PipelineStatistics initial_stats_;
   media::PipelineStatistics last_stats_;
@@ -259,9 +267,11 @@ class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // to add a new template class definition or you will get linking errors.
   std::unique_ptr<WatchTimeComponent<bool>> base_component_;
   std::unique_ptr<WatchTimeComponent<bool>> power_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> dominant_component_;
   std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
       display_type_component_;
   std::unique_ptr<WatchTimeComponent<bool>> controls_component_;
+  std::unique_ptr<WatchTimeComponent<bool>> hdr_component_;
 
   // Special case reporter for handling background video watch time. Configured
   // as an audio only WatchTimeReporter with |is_background_| set to true.

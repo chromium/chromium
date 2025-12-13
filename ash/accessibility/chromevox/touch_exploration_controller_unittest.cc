@@ -1159,15 +1159,14 @@ TEST_F(TouchExplorationTest, GestureSwipe) {
     for (int j = 0; j < num_fingers; j++) {
       start_points.push_back(gfx::Point(j * 10 + 100, j * 10 + 200));
     }
-    gfx::Point* start_points_array = &start_points[0];
 
     // A swipe is made when a fling starts
     float delta_time =
         distance / gesture_detector_config_.maximum_fling_velocity;
     // delta_time is in seconds, so we convert to ms.
     int delta_time_ms = floor(delta_time * 1000);
-    generator_->GestureMultiFingerScroll(num_fingers, start_points_array,
-                                         delta_time_ms, kSteps, move_x, move_y);
+    generator_->GestureMultiFingerScroll(start_points, delta_time_ms, kSteps,
+                                         move_x, move_y);
     EXPECT_EQ(expected_gesture, delegate_.GetLastGesture());
     EXPECT_TRUE(IsInNoFingersDownState());
     EXPECT_FALSE(IsInTouchToMouseMode());
@@ -1221,15 +1220,14 @@ TEST_F(TouchExplorationTest, GestureSwipePortrit) {
     for (int j = 0; j < num_fingers; j++) {
       start_points.push_back(gfx::Point(j * 10 + 100, j * 10 + 200));
     }
-    gfx::Point* start_points_array = &start_points[0];
 
     // A swipe is made when a fling starts
     float delta_time =
         distance / gesture_detector_config_.maximum_fling_velocity;
     // delta_time is in seconds, so we convert to ms.
     int delta_time_ms = floor(delta_time * 1000);
-    generator_->GestureMultiFingerScroll(num_fingers, start_points_array,
-                                         delta_time_ms, kSteps, move_x, move_y);
+    generator_->GestureMultiFingerScroll(start_points, delta_time_ms, kSteps,
+                                         move_x, move_y);
     EXPECT_EQ(expected_gesture, delegate_.GetLastGesture());
     EXPECT_TRUE(IsInNoFingersDownState());
     EXPECT_FALSE(IsInTouchToMouseMode());

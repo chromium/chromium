@@ -36,6 +36,8 @@ per-file chrome_content_browser_client_navigation_throttles.cc=*
 per-file chrome_content_browser_client_navigation_throttles.h=*
 per-file chrome_content_browser_client_unittest.cc=*
 
+# Used only when adding field trials for Chrome for Android experiments.
+per-file chrome_browser_field_trials.cc=file://chrome/android/OWNERS
 per-file chrome_browser_field_trials*=file://components/variations/OWNERS
 
 per-file chrome_navigation_browsertest.cc=file://content/OWNERS
@@ -64,7 +66,8 @@ per-file *_mac.h=file://ui/base/cocoa/OWNERS
 
 per-file shell_integration_win*=gab@chromium.org
 per-file shell_integration_win*=grt@chromium.org
-per-file shell_integration_linux*=thomasanderson@chromium.org
+
+per-file *linux*=thomasanderson@chromium.org
 
 per-file unload_browsertest.cc=file://content/OWNERS
 

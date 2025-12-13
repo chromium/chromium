@@ -60,6 +60,12 @@ bool UsingVideoDummyDriver() {
   return is_using_dummy_driver;
 }
 
+bool RunningUnderWayland() {
+  static bool is_running_under_wayland =
+      webrtc::DesktopCapturer::IsRunningUnderWayland();
+  return is_running_under_wayland;
+}
+
 #endif  // defined(REMOTING_USE_X11)
 
 }  // namespace
@@ -119,8 +125,12 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   capabilities += " ";
   capabilities += protocol::kDefaultResizeCapability;
 
-  // Client-controlled layout is only supported with Xorg+video-dummy.
-  if (UsingVideoDummyDriver()) {
+  if (RunningUnderWayland()) {
+    capabilities += " ";
+    capabilities += protocol::kClientControlledLayoutCapability;
+    capabilities += " ";
+    capabilities += protocol::kHighDpiCapability;
+  } else if (UsingVideoDummyDriver()) {
     capabilities += " ";
     capabilities += protocol::kClientControlledLayoutCapability;
 
@@ -247,6 +257,9 @@ void Me2MeDesktopEnvironmentFactory::Create(
          const DesktopEnvironmentOptions& options,
          std::unique_ptr<DesktopInteractionStrategy> interaction_strategy)
       -> std::unique_ptr<DesktopEnvironment> {
+    if (!interaction_strategy) {
+      return nullptr;
+    }
     auto desktop_environment = base::WrapUnique(new Me2MeDesktopEnvironment(
         std::move(caller_task_runner), std::move(ui_task_runner),
         std::move(interaction_strategy), client_session_control, options));

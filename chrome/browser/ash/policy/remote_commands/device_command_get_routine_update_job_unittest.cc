@@ -85,9 +85,7 @@ em::RemoteCommand GenerateCommandProto(
   if (include_output.has_value()) {
     root_dict.Set(kIncludeOutputFieldName, include_output.value());
   }
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  command_proto.set_payload(payload);
+  command_proto.set_payload(base::WriteJson(root_dict).value_or(""));
   return command_proto;
 }
 
@@ -103,10 +101,7 @@ std::string CreateInteractivePayload(
   auto interactive_dict = base::Value::Dict().Set(
       kUserMessageFieldName, static_cast<int>(user_message));
   root_dict.Set(kInteractiveUpdateFieldName, std::move(interactive_dict));
-
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 std::string CreateNonInteractivePayload(
@@ -125,9 +120,7 @@ std::string CreateNonInteractivePayload(
           .Set(kStatusMessageFieldName, status_message);
   root_dict.Set(kNonInteractiveUpdateFieldName, std::move(noninteractive_dict));
 
-  std::string payload;
-  base::JSONWriter::Write(root_dict, &payload);
-  return payload;
+  return base::WriteJson(root_dict).value_or("");
 }
 
 }  // namespace

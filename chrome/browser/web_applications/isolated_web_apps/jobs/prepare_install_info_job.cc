@@ -20,7 +20,7 @@ namespace web_app {
 std::unique_ptr<PrepareInstallInfoJob> PrepareInstallInfoJob::CreateAndStart(
     Profile& profile,
     IwaSourceWithMode source,
-    std::optional<base::Version> expected_version,
+    std::optional<IwaVersion> expected_version,
     content::WebContents& web_contents,
     IsolatedWebAppInstallCommandHelper& command_helper,
     std::unique_ptr<webapps::WebAppUrlLoader> loader,
@@ -37,7 +37,7 @@ PrepareInstallInfoJob::~PrepareInstallInfoJob() = default;
 PrepareInstallInfoJob::PrepareInstallInfoJob(
     Profile& profile,
     IwaSourceWithMode source,
-    std::optional<base::Version> expected_version,
+    std::optional<IwaVersion> expected_version,
     content::WebContents& web_contents,
     IsolatedWebAppInstallCommandHelper& command_helper)
     : profile_(profile),
@@ -92,19 +92,20 @@ void PrepareInstallInfoJob::CheckInstallabilityAndRetrieveManifest(
 }
 
 void PrepareInstallInfoJob::ValidateManifestAndGetVersion(
-    base::OnceCallback<void(base::Version)> next_step_callback,
+    base::OnceCallback<void(IwaVersion)> next_step_callback,
     blink::mojom::ManifestPtr manifest) {
-  base::expected<base::Version, std::string> version_validation_result =
+  base::expected<IwaVersion, std::string> version_validation_result =
       command_helper_->ValidateManifestAndGetVersion(expected_version_,
                                                      *manifest);
   manifest_ = std::move(manifest);
   RunNextStepOnSuccess(std::move(next_step_callback),
-                       Error::kCantValidateManifest, version_validation_result);
+                       Error::kCantValidateManifest,
+                       std::move(version_validation_result));
 }
 
 void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
     base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-    const base::Version parsed_version) {
+    const IwaVersion parsed_version) {
   command_helper_->RetrieveInstallInfoWithIconsFromManifest(
       *manifest_, *web_contents_, std::move(parsed_version),
       base::BindOnce(
@@ -115,7 +116,7 @@ void PrepareInstallInfoJob::ParseInstallInfoFromManifest(
 
 void PrepareInstallInfoJob::FinishJob(WebAppInstallInfo info) {
   CHECK(!expected_version_ ||
-        *expected_version_ == info.isolated_web_app_version);
+        *expected_version_ == info.isolated_web_app_version());
   url_loader_.reset();
   std::move(callback_).Run(std::move(info));
 }

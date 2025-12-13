@@ -5,6 +5,7 @@
 #include <initializer_list>
 
 #include "ash/constants/ash_features.h"
+#include "base/byte_count.h"
 #include "base/files/file_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -23,16 +24,22 @@
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
 #include "chromeos/ash/components/dbus/spaced/fake_spaced_client.h"
 #include "chromeos/ash/components/drivefs/fake_drivefs.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
 
 using base::test::RunOnceCallback;
 using testing::_;
+using testing::AllOf;
 using testing::DoAll;
+using testing::DoDefault;
+using testing::Field;
 using testing::InSequence;
+using testing::Pointee;
 using testing::Return;
 using testing::TestParamInfo;
 using testing::ValuesIn;
@@ -42,7 +49,7 @@ namespace ash::settings {
 namespace {
 
 const std::string FormatBytesToString(int64_t bytes) {
-  return base::UTF16ToUTF8(ui::FormatBytes(bytes));
+  return base::UTF16ToUTF8(ui::FormatBytes(base::ByteCount(bytes)));
 }
 
 // Provides a minimal interface to initialize a drive item with only the
@@ -128,9 +135,29 @@ class GoogleDriveHandlerBaseTest
   }
 
   void SetUpSearchResultExpectations() {
+    using drivefs::mojom::QueryParameters;
+
     // Ensure when a search query is made, it binds to the mock search query.
+    // The matcher checks for a drivefs::mojom::QueryParametersPtr sent from
+    // PinningManager::ListItems(), so that the mock won't bind to incidental
+    // searches from other sources like DriveRecentFileSuggestionProvider.
+    auto matcher =
+        Pointee(AllOf(Field("page_size", &QueryParameters::page_size, 1000),
+                      Field("my_drive_results_only",
+                            &QueryParameters::my_drive_results_only, true),
+                      Field("query_source", &QueryParameters::query_source,
+                            QueryParameters::QuerySource::kLocalAndCloud)));
+
     auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+
+    // Fall back to the default ON_CALL behaviour set in the FakeDriveFs
+    // constructor for most queries. Without this, once one EXPECT_CALL is
+    // installed any query that doesn't match it is an error,
     EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, _))
+        .WillRepeatedly(DoDefault());
+
+    // Override the default behaviour for queries matching `matcher`.
+    EXPECT_CALL(*fake_drivefs, StartSearchQuery(_, matcher))
         .WillOnce([&](mojo::PendingReceiver<drivefs::mojom::SearchQuery>
                           pending_receiver,
                       drivefs::mojom::QueryParametersPtr query_params) {

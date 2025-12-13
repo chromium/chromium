@@ -5,9 +5,9 @@
 #include "chrome/browser/search/instant_service.h"
 
 #include <stddef.h>
+
 #include <string>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -37,6 +37,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -57,7 +58,6 @@ InstantService::InstantService(Profile* profile)
     : profile_(profile),
       most_visited_info_(std::make_unique<InstantMostVisitedInfo>()),
       pref_service_(profile_->GetPrefs()),
-      native_theme_(ui::NativeTheme::GetInstanceForNativeUi()),
       background_updated_timestamp_(base::TimeTicks::Now()) {
   // The initialization below depends on a typical set of browser threads. Skip
   // it if we are running in a unit test without the full suite.
@@ -66,7 +66,9 @@ InstantService::InstantService(Profile* profile)
 
   most_visited_sites_ = ChromeMostVisitedSitesFactory::NewForProfile(profile_);
   if (most_visited_sites_) {
-    most_visited_sites_->EnableCustomLinks(false);
+    most_visited_sites_->EnableTileTypes(
+        ntp_tiles::MostVisitedSites::EnableTileTypesOptions().with_top_sites(
+            true));
     most_visited_sites_->AddMostVisitedURLsObserver(
         this, ntp_tiles::kMaxNumMostVisited);
   }
@@ -88,7 +90,7 @@ InstantService::InstantService(Profile* profile)
   content::URLDataSource::Add(profile_,
                               std::make_unique<MostVisitedIframeSource>());
 
-  theme_observation_.Observe(native_theme_.get());
+  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
 }
 
 InstantService::~InstantService() = default;
@@ -158,12 +160,6 @@ NtpTheme* InstantService::GetInitializedNtpTheme() {
   return theme_.get();
 }
 
-void InstantService::SetNativeThemeForTesting(ui::NativeTheme* theme) {
-  theme_observation_.Reset();
-  native_theme_ = theme;
-  theme_observation_.Observe(native_theme_.get());
-}
-
 void InstantService::Shutdown() {
   process_ids_.clear();
 
@@ -184,7 +180,6 @@ void InstantService::RenderProcessHostDestroyed(
 }
 
 void InstantService::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
-  DCHECK_EQ(observed_theme, native_theme_);
   // Force the theme information to rebuild so the correct using_dark_colors
   // value is sent to the renderer.
   BuildNtpTheme();

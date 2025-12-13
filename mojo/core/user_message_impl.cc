@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/user_message_impl.h"
 
 #include <algorithm>
 #include <atomic>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -127,7 +123,7 @@ MojoResult CreateOrExtendSerializedEventMessage(
   size_t num_new_handles = 0;
   std::vector<DispatcherInfo> new_dispatcher_info(num_new_dispatchers);
   for (size_t i = 0; i < num_new_dispatchers; ++i) {
-    Dispatcher* d = new_dispatchers[i].dispatcher.get();
+    Dispatcher* d = UNSAFE_TODO(new_dispatchers[i]).dispatcher.get();
     d->StartSerialize(&new_dispatcher_info[i].num_bytes,
                       &new_dispatcher_info[i].num_ports,
                       &new_dispatcher_info[i].num_handles);
@@ -149,8 +145,8 @@ MojoResult CreateOrExtendSerializedEventMessage(
   void* data;
   Channel::MessagePtr message = NodeChannel::CreateEventMessage(
       total_buffer_size, total_size, &data, num_handles);
-  auto* header = reinterpret_cast<MessageHeader*>(static_cast<uint8_t*>(data) +
-                                                  event_size);
+  auto* header = reinterpret_cast<MessageHeader*>(
+      UNSAFE_TODO(static_cast<uint8_t*>(data) + event_size));
 
   // Populate the message header with information about serialized dispatchers.
   // The front of the message is always a MessageHeader followed by a
@@ -163,40 +159,44 @@ MojoResult CreateOrExtendSerializedEventMessage(
     DCHECK(original_header);
     size_t original_dispatcher_headers_size =
         original_header->num_dispatchers * sizeof(DispatcherHeader);
-    memcpy(header, original_header,
-           original_dispatcher_headers_size + sizeof(MessageHeader));
+    UNSAFE_TODO(
+        memcpy(header, original_header,
+               original_dispatcher_headers_size + sizeof(MessageHeader)));
     new_dispatcher_headers = reinterpret_cast<DispatcherHeader*>(
-        reinterpret_cast<uint8_t*>(header + 1) +
-        original_dispatcher_headers_size);
+        UNSAFE_TODO(reinterpret_cast<uint8_t*>(header + 1) +
+                    original_dispatcher_headers_size));
     total_num_dispatchers += original_header->num_dispatchers;
     size_t total_dispatcher_headers_size =
         total_num_dispatchers * sizeof(DispatcherHeader);
     char* original_dispatcher_data =
-        reinterpret_cast<char*>(original_header + 1) +
-        original_dispatcher_headers_size;
-    char* dispatcher_data =
-        reinterpret_cast<char*>(header + 1) + total_dispatcher_headers_size;
+        UNSAFE_TODO(reinterpret_cast<char*>(original_header + 1) +
+                    original_dispatcher_headers_size);
+    char* dispatcher_data = UNSAFE_TODO(reinterpret_cast<char*>(header + 1) +
+                                        total_dispatcher_headers_size);
     size_t original_dispatcher_data_size = original_header_size -
                                            sizeof(MessageHeader) -
                                            original_dispatcher_headers_size;
-    memcpy(dispatcher_data, original_dispatcher_data,
-           original_dispatcher_data_size);
-    new_dispatcher_data = dispatcher_data + original_dispatcher_data_size;
+    UNSAFE_TODO(memcpy(dispatcher_data, original_dispatcher_data,
+                       original_dispatcher_data_size));
+    new_dispatcher_data =
+        UNSAFE_TODO(dispatcher_data + original_dispatcher_data_size);
     auto handles_in_transit = original_message->TakeHandles();
     if (!handles_in_transit.empty()) {
       handles.resize(num_handles);
       for (size_t i = 0; i < handles_in_transit.size(); ++i)
         handles[i] = handles_in_transit[i].TakeHandle();
     }
-    memcpy(reinterpret_cast<char*>(header) + header_size,
-           reinterpret_cast<char*>(original_header) + original_header_size,
-           original_payload_size);
+    UNSAFE_TODO(
+        memcpy(reinterpret_cast<char*>(header) + header_size,
+               reinterpret_cast<char*>(original_header) + original_header_size,
+               original_payload_size));
   } else {
-    new_dispatcher_headers = reinterpret_cast<DispatcherHeader*>(header + 1);
+    new_dispatcher_headers =
+        reinterpret_cast<DispatcherHeader*>(UNSAFE_TODO(header + 1));
     // Serialized dispatcher state immediately follows the series of
     // DispatcherHeaders.
-    new_dispatcher_data =
-        reinterpret_cast<char*>(new_dispatcher_headers + num_new_dispatchers);
+    new_dispatcher_data = reinterpret_cast<char*>(
+        UNSAFE_TODO(new_dispatcher_headers + num_new_dispatchers));
   }
 
   if (handles.empty() && num_new_handles)
@@ -217,8 +217,8 @@ MojoResult CreateOrExtendSerializedEventMessage(
     size_t handle_index = original_num_handles;
     bool fail = false;
     for (size_t i = 0; i < num_new_dispatchers; ++i) {
-      Dispatcher* d = new_dispatchers[i].dispatcher.get();
-      DispatcherHeader* dh = &new_dispatcher_headers[i];
+      Dispatcher* d = UNSAFE_TODO(new_dispatchers[i]).dispatcher.get();
+      DispatcherHeader* dh = UNSAFE_TODO(&new_dispatcher_headers[i]);
       const DispatcherInfo& info = new_dispatcher_info[i];
 
       // Fill in the header for this dispatcher.
@@ -230,15 +230,16 @@ MojoResult CreateOrExtendSerializedEventMessage(
       // Fill in serialized state, ports, and platform handles. We'll cancel
       // the send if the dispatcher implementation rejects for some reason.
       if (g_always_fail_handle_serialization ||
-          !d->EndSerialize(
-              static_cast<void*>(new_dispatcher_data),
-              event->ports() + port_index,
-              !handles.empty() ? handles.data() + handle_index : nullptr)) {
+          !d->EndSerialize(static_cast<void*>(new_dispatcher_data),
+                           event->ports().subspan(port_index).data(),
+                           !handles.empty()
+                               ? UNSAFE_TODO(handles.data() + handle_index)
+                               : nullptr)) {
         fail = true;
         break;
       }
 
-      new_dispatcher_data += info.num_bytes;
+      UNSAFE_TODO(new_dispatcher_data += info.num_bytes);
       port_index += info.num_ports;
       handle_index += info.num_handles;
     }
@@ -263,7 +264,8 @@ MojoResult CreateOrExtendSerializedEventMessage(
   *out_message = std::move(message);
   *out_header = header;
   *out_header_size = header_size;
-  *out_user_payload = reinterpret_cast<uint8_t*>(header) + header_size;
+  *out_user_payload =
+      UNSAFE_TODO(reinterpret_cast<uint8_t*>(header) + header_size);
   return MOJO_RESULT_OK;
 }
 
@@ -394,7 +396,8 @@ std::unique_ptr<UserMessageImpl> UserMessageImpl::CreateFromChannelMessage(
   if (header->num_dispatchers > kMaxMojoHandleAttachments)
     return nullptr;
 
-  void* user_payload = static_cast<uint8_t*>(payload) + header_size;
+  void* user_payload =
+      UNSAFE_TODO(static_cast<uint8_t*>(payload) + header_size);
   const size_t user_payload_size = payload_size - header_size;
   return base::WrapUnique(
       new UserMessageImpl(message_event, std::move(channel_message), header,
@@ -548,11 +551,12 @@ MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
       Channel::Message::ExtendPayload(
           channel_message_,
           user_payload_offset + user_payload_size_ + additional_payload_size);
-      header_ = static_cast<uint8_t*>(channel_message_->mutable_payload()) +
-                header_offset;
-      user_payload_ =
+      header_ = UNSAFE_TODO(
           static_cast<uint8_t*>(channel_message_->mutable_payload()) +
-          user_payload_offset;
+          header_offset);
+      user_payload_ = UNSAFE_TODO(
+          static_cast<uint8_t*>(channel_message_->mutable_payload()) +
+          user_payload_offset);
       user_payload_size_ += additional_payload_size;
     }
   }
@@ -623,7 +627,7 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
 
   const MessageHeader* header = static_cast<const MessageHeader*>(header_);
   const DispatcherHeader* dispatcher_headers =
-      reinterpret_cast<const DispatcherHeader*>(header + 1);
+      reinterpret_cast<const DispatcherHeader*>(UNSAFE_TODO(header + 1));
 
   if (header->num_dispatchers > std::numeric_limits<uint16_t>::max())
     return MOJO_RESULT_ABORTED;
@@ -642,7 +646,7 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
   if (data_payload_index > header->header_size)
     return MOJO_RESULT_ABORTED;
   const char* dispatcher_data = reinterpret_cast<const char*>(
-      dispatcher_headers + header->num_dispatchers);
+      UNSAFE_TODO(dispatcher_headers + header->num_dispatchers));
   size_t port_index = 0;
   size_t platform_handle_index = 0;
   std::vector<PlatformHandleInTransit> handles_in_transit =
@@ -653,7 +657,7 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
     msg_handles[i] = handles_in_transit[i].TakeHandle();
   }
   for (size_t i = 0; i < header->num_dispatchers; ++i) {
-    const DispatcherHeader& dh = dispatcher_headers[i];
+    const DispatcherHeader& dh = UNSAFE_TODO(dispatcher_headers[i]);
     auto type = static_cast<Dispatcher::Type>(dh.type);
 
     base::CheckedNumeric<size_t> next_payload_index = data_payload_index;
@@ -679,18 +683,19 @@ MojoResult UserMessageImpl::ExtractSerializedHandles(
     }
 
     PlatformHandle* out_handles =
-        !msg_handles.empty() ? msg_handles.data() + platform_handle_index
-                             : nullptr;
+        !msg_handles.empty()
+            ? UNSAFE_TODO(msg_handles.data() + platform_handle_index)
+            : nullptr;
     dispatchers[i].dispatcher = Dispatcher::Deserialize(
         type, dispatcher_data, dh.num_bytes,
-        message_event_->ports() + port_index, dh.num_ports, out_handles,
-        dh.num_platform_handles);
+        message_event_->ports().subspan(port_index).data(), dh.num_ports,
+        out_handles, dh.num_platform_handles);
     if (!dispatchers[i].dispatcher &&
         bad_handle_policy == ExtractBadHandlePolicy::kAbort) {
       return MOJO_RESULT_ABORTED;
     }
 
-    dispatcher_data += dh.num_bytes;
+    UNSAFE_TODO(dispatcher_data += dh.num_bytes);
     data_payload_index = next_payload_index.ValueOrDie();
     port_index = next_port_index.ValueOrDie();
     platform_handle_index = next_platform_handle_index.ValueOrDie();

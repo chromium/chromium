@@ -239,14 +239,6 @@ function assert_array_equals_exact(actual, expected, message) {
  * @param {!Array<number>} array The array to be checked.
  * @param {number} constantValue The constant value to compare against.
  * @param {string} message Description used for assertion failures.
- * Asserts that not all values in the given array are equal to the
- * specified constant. This is useful for verifying that an output
- * signal is not silent or uniform.
- *
- * @param {!Array<number>} array - The array of numbers to check.
- * @param {number} constantValue - The value that not all array elements
- * should match.
- * @param {string} message - Description used for assertion failure messages.
  */
 function assert_not_constant_value(array, constantValue, message) {
   const notAllSame = array.some(value => value !== constantValue);
@@ -265,26 +257,75 @@ function assert_strict_constant_value(array, constantValue, message) {
 }
 
 /**
- * Asserts that two arrays are approximately equal, element-wise, within a given
- * absolute threshold.
- * This is helpful when comparing floating-point buffers where exact equality is
- * not expected.
+ * Asserts that all elements of an array are (approximately) equal to a value.
  *
- * @param {!Array<number>} actual - The actual output array.
- * @param {!Array<number>} expected - The expected reference array.
- * @param {number} threshold - The maximum allowed absolute difference between
- * corresponding elements.
- * @param {string} message - Description used for assertion failure messages.
+ * @param {!Array<number>} array - The array to be checked.
+ * @param {number} constantValue - The expected constant value.
+ * @param {string} message - Description used for assertion failures.
+ * @param {number=} epsilon - Allowed tolerance for floating-point comparison.
+ * Default to 1e-7
  */
-function assert_array_approximately_equals(
-    actual, expected, threshold, message) {
-      assert_equals(
-          actual.length,
-          expected.length,
-          `${message} - buffer lengths must match`);
-      for (let i = 0; i < actual.length; ++i) {
+function assert_array_constant_value(
+    array, constantValue, message, epsilon = 1e-7) {
+      for (let i = 0; i < array.length; ++i) {
         assert_approx_equals(
-            actual[i], expected[i], threshold,
-            `${message} at index ${i}`);
+            array[i], constantValue, epsilon, `${message} sample[${i}]`);
       }
+}
+
+/**
+ * Asserts that two arrays are equal within a given tolerance for each element.
+ * The |threshold| can be:
+ *   - A number (absolute epsilon)
+ *   - An object with optional {absoluteThreshold, relativeThreshold}
+ *   - If omitted, compares with exact equality (epsilon = 0)
+ *
+ * For each element i, we require:
+ *   |actual[i] − expected[i]| ≤ max(absoluteThreshold,
+ *                                   |expected[i]|·relativeThreshold)
+ *
+ * @param {!Array<number>|!TypedArray<number>} actual
+ * @param {!Array<number>|!TypedArray<number>} expected
+ * @param {number|{ absoluteThreshold?:number, relativeThreshold?:number }}
+ *   [threshold=0]
+ * @param {string} desc
+ */
+function assert_array_equal_within_eps(
+    actual, expected, threshold = 0, desc) {
+  assert_equals(actual.length, expected.length, desc + ': length mismatch');
+
+  let abs = 0;
+  let rel = 0;
+
+  if (typeof threshold === 'number') {
+    abs = threshold;
+  } else if (threshold && typeof threshold === 'object') {
+    abs = threshold.absoluteThreshold ?? 0;
+    rel = threshold.relativeThreshold ?? 0;
+  }
+
+  for (let i = 0; i < actual.length; ++i) {
+    const epsilon = Math.max(abs, Math.abs(expected[i]) * rel);
+    const diff = Math.abs(actual[i] - expected[i]);
+    assert_approx_equals(
+        actual[i],
+        expected[i],
+        epsilon,
+        `${desc} sample[${i}] |${actual[i]} - ${expected[i]}|` +
+            ` = ${diff} > ${epsilon}`);
+  }
+}
+
+function assert_not_constant_value_of(array, value, description) {
+  assert_true(array && typeof array.length === 'number' && array.length > 0,
+      `${description}: input must be a non-empty array`);
+
+  const hasDifferentValues = array.some(element => element !== value);
+
+  // Pass if there's at least one element not strictly equal to `value`.
+  assert_true(
+      hasDifferentValues,
+      `${description}: ${array} should have contained at least `+
+          `one value different from ${value}.`
+  );
 }

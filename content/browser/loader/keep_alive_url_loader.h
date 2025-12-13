@@ -14,9 +14,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
@@ -24,9 +24,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -92,6 +90,10 @@ class WeakDocumentPtr;
 // The lifetime of an instance is roughly equal to the lifetime of a keepalive
 // request, which may surpass the initiator renderer's lifetime.
 //
+// TODO(crbug.com/447954811): Consider if connection allowlists feature
+// requires special handling in this class or is the check for subresource
+// fetch in the URLLoaderFactory sufficient.
+//
 // * Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 // * Mojo Connections:
@@ -109,6 +111,8 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // A callback type to return URLLoaderThrottles to be used by this loader.
   using URLLoaderThrottlesGetter = base::RepeatingCallback<
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>>(void)>;
+
+  static constexpr char kRetryAttemptsHeader[] = "Retry-Attempts";
 
   // Must only be constructed by a `KeepAliveURLLoaderService`.
   //

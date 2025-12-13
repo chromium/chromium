@@ -1411,8 +1411,8 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksClose) {
   test::ButtonTestApi(frame->close_)
       .NotifyClick(ui::MouseEvent(
           ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-          ui::EF_NONE, ui::EF_NONE));
+          ui::EventTimeForNow() + GetDoubleClickInterval(), ui::EF_NONE,
+          ui::EF_NONE));
   EXPECT_TRUE(bubble->IsClosed());
 }
 
@@ -1441,8 +1441,8 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksMinimize) {
   test::ButtonTestApi(frame->minimize_)
       .NotifyClick(ui::MouseEvent(
           ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-          ui::EF_NONE, ui::EF_NONE));
+          ui::EventTimeForNow() + GetDoubleClickInterval(), ui::EF_NONE,
+          ui::EF_NONE));
   EXPECT_TRUE(minimize_waiter.Wait());
   EXPECT_TRUE(bubble->IsMinimized());
 }
@@ -1471,8 +1471,7 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksAnchorBoundsChanged) {
   EXPECT_FALSE(bubble->IsMinimized());
   EXPECT_FALSE(widget->IsClosed());
 
-  task_environment()->FastForwardBy(
-      base::Milliseconds(GetDoubleClickInterval()));
+  task_environment()->FastForwardBy(GetDoubleClickInterval());
   anchor.widget().SetBounds(gfx::Rect(10, 10, 100, 100));
 
   ui::MouseEvent mouse_event_1(ui::EventType::kMousePressed, gfx::Point(),
@@ -1483,10 +1482,10 @@ TEST_F(BubbleFrameViewTest, IgnorePossiblyUnintendedClicksAnchorBoundsChanged) {
   EXPECT_FALSE(widget->IsClosed());
   EXPECT_FALSE(bubble->IsMinimized());
 
-  test::ButtonTestApi(ok_button).NotifyClick(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::EF_NONE, ui::EF_NONE));
+  test::ButtonTestApi(ok_button).NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow() + GetDoubleClickInterval(),
+                     ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget->IsClosed());
 }
 

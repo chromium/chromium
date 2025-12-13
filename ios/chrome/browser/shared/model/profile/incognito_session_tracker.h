@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 
 class ProfileIOS;
+class ProfileIncognitoSessionTracker;
 class ProfileManagerIOS;
 
 // Tracks whether there are any open off-the-record tabs open by any Profile in
@@ -52,10 +53,6 @@ class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
                                            ProfileIOS* profile) override;
 
  private:
-  // Forward-declaration of the observer used to track the state of
-  // an individual Profile.
-  class Observer;
-
   // Invoked when the state of invoked when the presence of off-the-record
   // tabs for a specific Profile has changed.
   void OnIncognitoSessionStateChanged(bool has_incognito_tabs);
@@ -64,9 +61,10 @@ class IncognitoSessionTracker final : public ProfileManagerObserverIOS {
   base::ScopedObservation<ProfileManagerIOS, ProfileManagerObserverIOS>
       scoped_manager_observation_{this};
 
-  // Map from Profile to the observer used to track whether it has any open
-  // off-the-record tabs.
-  base::flat_map<ProfileIOS*, std::unique_ptr<Observer>> observers_;
+  // Map from profile to the ProfileIncognitoSessionTracker used to track
+  // whether this profile has any open off-the-record tabs.
+  base::flat_map<ProfileIOS*, std::unique_ptr<ProfileIncognitoSessionTracker>>
+      trackers_;
 
   // List of registered callbacks.
   SessionStateChangedCallbackList callbacks_;

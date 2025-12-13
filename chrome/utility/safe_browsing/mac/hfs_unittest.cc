@@ -152,7 +152,7 @@ TEST_P(HFSFileReadTest, ReadReadme) {
   // Read the first four bytes.
   EXPECT_TRUE(stream->ReadExact(buffer));
   const uint8_t expected[] = { 'T', 'h', 'i', 's' };
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(expected, &buffer[0], sizeof(expected))));
+  EXPECT_EQ(base::span(expected), base::span(buffer));
   buffer.clear();
 
   // Rewind back to the start.

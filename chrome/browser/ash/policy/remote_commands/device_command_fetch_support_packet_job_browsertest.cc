@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
@@ -261,20 +260,15 @@ class DeviceCommandFetchSupportPacketBrowserTestParameterized
       bool is_affiliated) {
     login_manager_mixin_.LoginWithDefaultContext(user);
     login_manager_mixin_.WaitForActiveSession();
-    // UserManager is initialized as ash::FakeChromeUserManager by the included
-    // mixins so it's safe to cast.
-    ash::FakeChromeUserManager* fake_user_manager =
-        static_cast<ash::FakeChromeUserManager*>(
-            user_manager::UserManager::Get());
-    fake_user_manager->SetUserPolicyStatus(user.account_id, /*is_managed=*/true,
-                                           is_affiliated);
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
+        user.account_id, /*is_managed=*/true, is_affiliated);
   }
 
   void LaunchMGS() {
     // Set up MGS auto-launch mode.
     em::ChromeDeviceSettingsProto& proto(
         policy_helper()->device_policy()->payload());
-    ash::AppendAutoLaunchManagedGuestSessionAccount(&proto);
+    ash::test::AppendAutoLaunchManagedGuestSessionAccount(&proto);
 
     policy_helper()->RefreshDevicePolicy();
     ash::SessionStateWaiter(session_manager::SessionState::ACTIVE).Wait();

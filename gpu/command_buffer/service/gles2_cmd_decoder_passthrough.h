@@ -17,7 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -163,12 +163,11 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   base::WeakPtr<DecoderContext> AsWeakPtr() override;
 
-  gpu::ContextResult Initialize(
-      const scoped_refptr<gl::GLSurface>& surface,
-      const scoped_refptr<gl::GLContext>& context,
-      bool offscreen,
-      const DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) override;
+  gpu::ContextResult Initialize(const scoped_refptr<gl::GLSurface>& surface,
+                                const scoped_refptr<gl::GLContext>& context,
+                                bool offscreen,
+                                ContextType context_type,
+                                bool lose_context_when_out_of_memory) override;
 
   // Destroys the graphics context.
   void Destroy(bool have_context) override;
@@ -333,7 +332,7 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   bool CheckResetStatus() override;
 
   // Implement GpuSwitchingObserver.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
+  void OnGpuSwitched() override;
 
   Logger* GetLogger() override;
 
@@ -385,10 +384,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   const char* GetCommandName(unsigned int command_id) const;
 
   void SetOptionalExtensionsRequestedForTesting(bool request_extensions);
-
-  void InitializeFeatureInfo(ContextType context_type,
-                             const DisallowedFeatures& disallowed_features,
-                             bool force_reinitialize);
 
   template <typename T, typename GLGetFunction>
   error::Error GetNumericHelper(GLenum pname,
@@ -518,11 +513,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   // time. Can be disabled for testing with only specific extensions enabled.
   bool request_optional_extensions_ = true;
 
-  // Some objects may generate resources when they are bound even if they were
-  // not generated yet: texture, buffer, renderbuffer, framebuffer, transform
-  // feedback, vertex array
-  bool bind_generates_resource_;
-
   // Mappings from client side IDs to service side IDs for shared objects
   raw_ptr<PassthroughResources> resources_ = nullptr;
 
@@ -605,7 +595,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
     std::unique_ptr<gl::GLFence> commands_completed_fence;
     base::TimeDelta commands_issued_time;
-    base::TimeTicks commands_issued_timestamp;
 
     std::vector<base::OnceClosure> callbacks;
     std::unique_ptr<gl::GLFence> buffer_shadow_update_fence;

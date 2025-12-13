@@ -10,6 +10,10 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/overview_desk_bar_view.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "base/check_deref.h"
 #include "base/test/gtest_tags.h"
 #include "base/time/time.h"
@@ -23,18 +27,20 @@
 #include "chrome/browser/ash/app_mode/test/network_state_mixin.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 
@@ -84,6 +90,8 @@ void SimulateSwipeUpGesture() {
                              /*duration=*/base::Milliseconds(300), /*steps=*/4);
 }
 
+
+
 }  // namespace
 
 // Verifies generic Kiosk behavior.
@@ -119,28 +127,31 @@ IN_PROC_BROWSER_TEST_P(KioskTest, HidesShelf) {
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, CanOpenA11ySettings) {
-  Browser* settings = OpenA11ySettings(CurrentProfile());
+  Browser* settings = OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser()));
   ASSERT_NE(settings, nullptr);
   EXPECT_TRUE(settings->window()->IsActive());
   EXPECT_TRUE(settings->window()->IsVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, ExitsIfOnlySettingsWindowRemainsOpen) {
-  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
-  EXPECT_GT(BrowserList::GetInstance()->size(), 0u);
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
+  EXPECT_GT(chrome::GetTotalBrowserCount(), 0u);
 
   // Close the app window and verify the settings browser gets closed too.
   CloseAppWindow(AutoLaunchKioskApp());
   ASSERT_TRUE(TestBrowserClosedWaiter(&settings).WaitUntilClosed());
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 0u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 0u);
 
   auto& session = CHECK_DEREF(KioskController::Get().GetKioskSystemSession());
   EXPECT_TRUE(session.is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotExitWhenSettingsWindowCloses) {
-  Browser& settings = CHECK_DEREF(OpenA11ySettings(CurrentProfile()));
-  EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), &settings);
+  Browser& settings = CHECK_DEREF(OpenA11ySettings(
+      CHECK_DEREF(user_manager::UserManager::Get()->GetActiveUser())));
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), &settings);
 
   settings.window()->Close();
   ASSERT_TRUE(TestBrowserClosedWaiter(&settings).WaitUntilClosed());
@@ -152,6 +163,21 @@ IN_PROC_BROWSER_TEST_P(KioskTest, DoesNotSignInWithGaiaAccount) {
   const auto& manager =
       CHECK_DEREF(IdentityManagerFactory::GetForProfile(&CurrentProfile()));
   EXPECT_FALSE(manager.HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+IN_PROC_BROWSER_TEST_P(KioskTest, CannotCreateNewDesksDuringKioskSession) {
+  int initial_desks_count = DesksController::Get()->GetNumberOfDesks();
+  EXPECT_EQ(1, initial_desks_count);
+  ASSERT_FALSE(DesksController::Get()->CanCreateDesks());
+}
+
+IN_PROC_BROWSER_TEST_P(KioskTest, CannotEnterOverviewDuringKioskSession) {
+  auto* overview_controller = Shell::Get()->overview_controller();
+
+  overview_controller->StartOverview(OverviewStartAction::kTests,
+                                     OverviewEnterExitType::kImmediateEnter);
+
+  ASSERT_FALSE(overview_controller->InOverviewSession());
 }
 
 INSTANTIATE_TEST_SUITE_P(

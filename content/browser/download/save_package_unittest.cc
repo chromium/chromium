@@ -45,10 +45,8 @@ namespace {
 // This constant copied from save_package.cc.
 #if BUILDFLAG(IS_WIN)
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
-const uint32_t kMaxFileNameLength = MAX_PATH - 1;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
-const uint32_t kMaxFileNameLength = NAME_MAX;
 #endif
 
 bool HasOrdinalNumber(const base::FilePath::StringType& filename) {
@@ -263,11 +261,15 @@ TEST_F(SavePackageTest, MAYBE_TestLongSafePureFilename) {
   const base::FilePath::StringType ext(FPL_HTML_EXTENSION);
   base::FilePath::StringType filename = GetLongFileName();
 
-  // Test that the filename + extension doesn't exceed kMaxFileNameLength
-  uint32_t max_path = SavePackage::GetMaxPathLengthForDirectory(save_dir);
+  // Test filename truncation respects length constraints.
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
   ASSERT_TRUE(SavePackage::TruncateBaseNameToFitPathConstraints(
       save_dir, ext, max_path, &filename));
-  EXPECT_TRUE(filename.length() <= kMaxFileNameLength-ext.length());
+  // Verify truncation worked by checking the total path length fits
+  // constraints.
+  uint32_t total_path_length =
+      save_dir.value().length() + 1 + filename.length() + ext.length();
+  EXPECT_LE(total_path_length, max_path);
 }
 
 // GetUrlToBeSaved method should return correct url to be saved.
@@ -289,6 +291,165 @@ TEST_F(SavePackageTest, TestGetUrlToBeSavedViewSource) {
   NavigateAndCommit(view_source_url);
   EXPECT_EQ(actual_url, GetUrlToBeSaved());
   EXPECT_EQ(view_source_url, contents()->GetLastCommittedURL());
+}
+
+// Test ComputeMaxPathLengthForDirectory with various directory lengths.
+TEST_F(SavePackageTest, TestComputeMaxPathLengthForDirectory) {
+  // Test with short directory.
+  base::FilePath short_dir(FPL("dir"));
+  uint32_t max_path_short =
+      SavePackage::ComputeMaxPathLengthForDirectory(short_dir);
+  EXPECT_GT(max_path_short, short_dir.value().length());
+
+  // Test with longer directory.
+  base::FilePath long_dir(FPL("very/long/directory/path/structure"));
+  uint32_t max_path_long =
+      SavePackage::ComputeMaxPathLengthForDirectory(long_dir);
+  EXPECT_GT(max_path_long, long_dir.value().length());
+
+  // Verify that the function returns reasonable values.
+  // The max path should account for directory length + separator + component
+  // limit.
+  EXPECT_LE(short_dir.value().length() + 1, max_path_short);
+  EXPECT_LE(long_dir.value().length() + 1, max_path_long);
+
+  // Both should be positive and reasonable.
+  EXPECT_GT(max_path_short, 0u);
+  EXPECT_GT(max_path_long, 0u);
+}
+
+// Test TruncateBaseNameToFitPathConstraints edge cases.
+TEST_F(SavePackageTest, TestTruncateBaseNameEdgeCases) {
+  const base::FilePath save_dir(FPL("test"));
+  const base::FilePath::StringType ext(FPL(".html"));
+
+  // Test with filename that doesn't need truncation.
+  base::FilePath::StringType short_name(FPL("short"));
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
+  ASSERT_TRUE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      save_dir, ext, max_path, &short_name));
+  EXPECT_EQ(short_name, FPL("short"));
+
+  // Test with very small max_path_len that forces base_name to be cleared.
+  base::FilePath::StringType any_name(FPL("filename"));
+  uint32_t tiny_max =
+      save_dir.value().length() + ext.length();  // No room for base_name.
+  EXPECT_FALSE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      save_dir, ext, tiny_max, &any_name));
+  EXPECT_TRUE(any_name.empty());
+
+  // Test with max_path_len exactly fitting directory + separator + extension.
+  base::FilePath::StringType zero_name(FPL("test"));
+  uint32_t exact_max = save_dir.value().length() + 1 + ext.length();
+  EXPECT_FALSE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      save_dir, ext, exact_max, &zero_name));
+}
+
+// Test UTF-8 filename truncation on POSIX systems.
+TEST_F(SavePackageTest, TestUTF8FilenameTruncation) {
+  const base::FilePath save_dir(FPL("test"));
+  const base::FilePath::StringType ext(FPL(".html"));
+
+  // Create a filename with multibyte UTF-8 characters.
+  base::FilePath::StringType utf8_name;
+#if BUILDFLAG(IS_WIN)
+  // On Windows, use UTF-16.
+  utf8_name = L"файл测试テスト";
+#else
+  // On POSIX, use UTF-8.
+  utf8_name = "файл测试テスト";
+#endif
+
+  // Make the name very long to force truncation.
+  for (int i = 0; i < 20; ++i) {
+    utf8_name += utf8_name;
+  }
+
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
+  base::FilePath::StringType original_name = utf8_name;
+
+  ASSERT_TRUE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      save_dir, ext, max_path, &utf8_name));
+
+  // Verify truncation occurred.
+  EXPECT_LT(utf8_name.length(), original_name.length());
+
+  // Verify total path fits constraints.
+  uint32_t total_length =
+      save_dir.value().length() + 1 + utf8_name.length() + ext.length();
+  EXPECT_LE(total_length, max_path);
+
+#if !BUILDFLAG(IS_WIN)
+  // On POSIX, verify the truncated string is valid UTF-8.
+  std::string utf8_result = base::FilePath(utf8_name).AsUTF8Unsafe();
+  EXPECT_FALSE(utf8_result.empty());
+#endif
+}
+
+// Test directory with trailing separator.
+TEST_F(SavePackageTest, TestDirectoryWithTrailingSeparator) {
+  // Create directory with trailing separator using platform-specific separator.
+  base::FilePath::StringType dir_str = FPL("test");
+  dir_str += base::FilePath::kSeparators[0];
+  base::FilePath dir_with_sep(dir_str);
+  ASSERT_TRUE(dir_with_sep.EndsWithSeparator());
+
+  const base::FilePath::StringType ext(FPL(".html"));
+  base::FilePath::StringType filename(FPL("testfile"));
+
+  uint32_t max_path =
+      SavePackage::ComputeMaxPathLengthForDirectory(dir_with_sep);
+
+  ASSERT_TRUE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      dir_with_sep, ext, max_path, &filename));
+
+  // Should handle trailing separator correctly - no extra separator needed.
+  uint32_t total_length =
+      dir_with_sep.value().length() + filename.length() + ext.length();
+  EXPECT_LE(total_length, max_path);
+}
+
+// Test empty extension.
+TEST_F(SavePackageTest, TestEmptyExtension) {
+  const base::FilePath save_dir(FPL("test"));
+  const base::FilePath::StringType empty_ext;
+  base::FilePath::StringType filename = GetLongFileName();
+
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(save_dir);
+
+  ASSERT_TRUE(SavePackage::TruncateBaseNameToFitPathConstraints(
+      save_dir, empty_ext, max_path, &filename));
+
+  uint32_t total_length = save_dir.value().length() + 1 + filename.length();
+  EXPECT_LE(total_length, max_path);
+}
+
+// Test very long directory path.
+TEST_F(SavePackageTest, TestVeryLongDirectory) {
+  // Create a very long directory path.
+  base::FilePath::StringType long_path_str;
+  for (int i = 0; i < 50; ++i) {
+    long_path_str += FPL("very_long_directory_name/");
+  }
+  base::FilePath long_dir(long_path_str);
+
+  const base::FilePath::StringType ext(FPL(".html"));
+  base::FilePath::StringType filename(FPL("test"));
+
+  uint32_t max_path = SavePackage::ComputeMaxPathLengthForDirectory(long_dir);
+
+  bool result = SavePackage::TruncateBaseNameToFitPathConstraints(
+      long_dir, ext, max_path, &filename);
+
+  if (result) {
+    // If truncation succeeded, verify constraints are met.
+    uint32_t total_length =
+        long_dir.value().length() + 1 + filename.length() + ext.length();
+    EXPECT_LE(total_length, max_path);
+  } else {
+    // If truncation failed, filename should be empty.
+    EXPECT_TRUE(filename.empty());
+  }
 }
 
 class SavePackageFencedFrameTest : public SavePackageTest {

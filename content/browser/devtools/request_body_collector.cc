@@ -7,6 +7,7 @@
 #include "base/containers/extend.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/safe_conversions.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"

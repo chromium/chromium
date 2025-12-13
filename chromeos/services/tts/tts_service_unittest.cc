@@ -6,6 +6,7 @@
 
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
 #include "chromeos/services/tts/tts_test_utils.h"
+#include "media/base/audio_bus.h"
 
 namespace chromeos {
 namespace tts {

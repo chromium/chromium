@@ -17,6 +17,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -65,7 +66,7 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
             PropertyModel model,
             ClickWithMetaStateCallback onBackPressed,
             ThemeColorProvider themeColorProvider,
-            ObservableSupplier<@Nullable Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             ObservableSupplier<Boolean> enabledSupplier,
             Callback<Tab> showNavigationPopup,
             Resources resources,
@@ -93,7 +94,6 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                 });
 
         updateBackground(mThemeColorProvider.getBrandedColorScheme());
-        mThemeColorProvider.addTintObserver(this);
 
         mEnabledSupplier = enabledSupplier;
         mEnabledObserver = (isEnabled) -> updateButtonEnabledState();
@@ -169,6 +169,13 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
                         mInsets.right,
                         mInsets.bottom);
         mModel.set(BackButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+
+        // When setting the background of a view to an `InsetDrawable`, the padding of the view
+        // is automatically set to the insets of the `InsetDrawable`. However, a bug prevents the
+        // padding from being set if the insets are all 0. The workaround is to set the padding
+        // explicitly.
+        // https://crbug.com/442688217
+        mModel.set(BackButtonProperties.PADDING, mInsets);
     }
 
     public @DrawableRes int getBackgroundResForTesting() {
@@ -192,8 +199,17 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
      *
      * @param isVisible indicated whether view should be visible or gone.
      */
-    public void setVisibility(boolean isVisible) {
+    void setVisibility(boolean isVisible) {
         mModel.set(BackButtonProperties.IS_VISIBLE, isVisible);
+    }
+
+    /**
+     * Informs the button on whether there is enough space for it to be shown.
+     *
+     * @param hasSpaceToShow indicates whether the button view has space to show.
+     */
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mModel.set(BackButtonProperties.HAS_SPACE_TO_SHOW, hasSpaceToShow);
     }
 
     /**
@@ -235,7 +251,6 @@ class BackButtonMediator implements ThemeColorProvider.TintObserver {
     public void destroy() {
         mModel.set(BackButtonProperties.CLICK_LISTENER, null);
         mModel.set(BackButtonProperties.LONG_CLICK_LISTENER, null);
-        mThemeColorProvider.removeTintObserver(this);
         mTabObserver.destroy();
         mEnabledSupplier.removeObserver(mEnabledObserver);
     }

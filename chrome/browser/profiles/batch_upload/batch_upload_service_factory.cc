@@ -37,6 +37,6 @@ BatchUploadServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<BatchUploadService>(
       IdentityManagerFactory::GetForProfile(profile),
-      SyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile), profile->GetPrefs(),
       std::make_unique<BatchUploadUIDelegate>());
 }

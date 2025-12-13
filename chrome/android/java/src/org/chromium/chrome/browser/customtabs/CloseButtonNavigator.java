@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.customtabs;
 
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -38,8 +38,9 @@ import java.util.function.Predicate;
  * <p>Thread safety: Should only be called on UI thread. <br>
  * Native: Requires native.
  */
+@NullMarked
 public class CloseButtonNavigator {
-    @Nullable private Predicate<String> mLandingPagePredicate;
+    private @Nullable Predicate<String> mLandingPagePredicate;
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
@@ -124,6 +125,7 @@ public class CloseButtonNavigator {
         if (mLandingPagePredicate == null || controller == null) return false;
 
         NavigationHistory history = controller.getNavigationHistory();
+        assert history != null;
         for (int i = history.getCurrentEntryIndex() - 1; i >= 0; i--) {
             String url = history.getEntryAtIndex(i).getUrl().getSpec();
             if (!isLandingPage(url)) continue;

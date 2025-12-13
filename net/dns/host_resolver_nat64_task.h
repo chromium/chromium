@@ -20,7 +20,7 @@
 
 namespace net {
 
-class HostCache;
+class HostResolverInternalResult;
 
 // Representation of a single HostResolverImpl::Job task to convert an IPv4
 // address literal to an IPv4-Embedded IPv6 according to rfc6052.
@@ -29,6 +29,9 @@ class HostCache;
 // Destruction cancels the task and prevents any callbacks from being invoked.
 class HostResolverNat64Task {
  public:
+  using CallbackType =
+      base::OnceCallback<void(std::unique_ptr<HostResolverInternalResult>)>;
+
   HostResolverNat64Task(std::string_view hostname,
                         NetworkAnonymizationKey network_anonymization_key,
                         NetLogWithSource net_log,
@@ -41,17 +44,14 @@ class HostResolverNat64Task {
   ~HostResolverNat64Task();
 
   // Should only be called once.
-  void Start(base::OnceClosure completion_closure);
-
-  // Results only available after invocation of the completion closure.
-  HostCache::Entry GetResults() const;
+  void Start(CallbackType completion_callback);
 
  private:
   const std::string hostname_;
   const NetworkAnonymizationKey network_anonymization_key_;
   NetLogWithSource net_log_;
   const raw_ptr<ResolveContext> resolve_context_;
-  base::OnceClosure completion_closure_;
+  CallbackType completion_callback_;
   base::WeakPtr<HostResolverManager> resolver_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -73,9 +73,8 @@ class HostResolverNat64Task {
   State next_state_ = State::kStateNone;
 
   std::unique_ptr<HostResolver::ResolveHostRequest> request_ipv4onlyarpa_;
+  std::unique_ptr<HostResolverInternalResult> result_;
 
-  HostCache::Entry results_ =
-      HostCache::Entry(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
   base::WeakPtrFactory<HostResolverNat64Task> weak_ptr_factory_{this};
 };
 

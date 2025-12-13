@@ -29,11 +29,11 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
@@ -1699,8 +1699,8 @@ TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
 TEST_F(WidgetScrollViewTest,
        OverlayScrollBarsCannotProcessEventsWhenTransparent) {
   // Allow expectations to distinguish between fade outs and immediate changes.
-  ui::ScopedAnimationDurationScaleMode really_animate(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode really_animate(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   SetUseOverlayScrollers();
 
@@ -1725,8 +1725,8 @@ TEST_F(WidgetScrollViewTest,
 // Test overlay scrollbar behavior when just resting fingers on the trackpad.
 TEST_F(WidgetScrollViewTest, ScrollersOnRest) {
   // Allow expectations to distinguish between fade outs and immediate changes.
-  ui::ScopedAnimationDurationScaleMode really_animate(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode really_animate(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const float kMaxOpacity = 0.8f;  // Constant from cocoa_scroll_bar.mm.
 

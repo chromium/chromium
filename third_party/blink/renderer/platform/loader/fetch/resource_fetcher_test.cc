@@ -37,6 +37,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "services/network/public/cpp/features.h"
@@ -60,6 +61,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
@@ -261,6 +263,7 @@ TEST_P(ResourceFetcherTest, StartLoadAfterFrameDetach) {
 }
 
 TEST_P(ResourceFetcherTest, UseExistingResource) {
+  base::HistogramTester histogram_tester;
   auto* fetcher = CreateFetcher();
 
   KURL url("http://127.0.0.1:8000/foo.html");
@@ -282,9 +285,35 @@ TEST_P(ResourceFetcherTest, UseExistingResource) {
 
   Resource* new_resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
   EXPECT_EQ(resource, new_resource);
+
+  // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 2);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+
+  // Create a new fetcher and load the same resource.
+  auto* new_fetcher = CreateFetcher();
+  Resource* new_fetcher_resource =
+      MockResource::Fetch(fetch_params, new_fetcher, nullptr);
+  EXPECT_EQ(resource, new_fetcher_resource);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 3);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 2);
 }
 
 TEST_P(ResourceFetcherTest, MetricsPerTopFrameSite) {
+  base::HistogramTester histogram_tester;
+
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -320,7 +349,19 @@ TEST_P(ResourceFetcherTest, MetricsPerTopFrameSite) {
       MockResource::Fetch(fetch_params_2, fetcher_2, nullptr);
   EXPECT_EQ(resource_1, resource_2);
 
-  // Now load the same resource with origin_b as top-frame site.
+  // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 2);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+
+  // Now load the same resource with origin_b as top-frame site. The
+  // histograms should be incremented.
   auto* fetcher_3 = CreateFetcher();
   ResourceRequestHead request_head_3(url);
   scoped_refptr<const SecurityOrigin> foo_origin_b =
@@ -332,9 +373,16 @@ TEST_P(ResourceFetcherTest, MetricsPerTopFrameSite) {
   Resource* resource_3 =
       MockResource::Fetch(fetch_params_2, fetcher_3, nullptr);
   EXPECT_EQ(resource_1, resource_3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 3);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 2);
 }
 
 TEST_P(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
+  base::HistogramTester histogram_tester;
+
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
@@ -373,7 +421,19 @@ TEST_P(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
       MockResource::Fetch(fetch_params_2, fetcher_2, nullptr);
   EXPECT_EQ(resource_1, resource_2);
 
-  // Now load the same resource with opaque_origin1 as top-frame site.
+  // Test histograms.
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 2);
+
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      3 /* RevalidationPolicy::kLoad */, 1);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 1);
+
+  // Now load the same resource with opaque_origin1 as top-frame site. The
+  // histograms should be incremented.
   auto* fetcher_3 = CreateFetcher();
   ResourceRequestHead request_head_3(url);
   request_head_3.SetTopFrameOrigin(opaque_origin2);
@@ -383,6 +443,11 @@ TEST_P(ResourceFetcherTest, MetricsPerTopFrameSiteOpaqueOrigins) {
   Resource* resource_3 =
       MockResource::Fetch(fetch_params_2, fetcher_3, nullptr);
   EXPECT_EQ(resource_1, resource_3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock", 3);
+  histogram_tester.ExpectBucketCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Mock",
+      0 /* RevalidationPolicy::kUse */, 2);
 }
 
 TEST_P(ResourceFetcherTest, Vary) {
@@ -1215,8 +1280,6 @@ TEST_P(ResourceFetcherTest, DeprioritizeSubframe) {
 }
 
 TEST_P(ResourceFetcherTest, BoostImagePriority) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kBoostImagePriority);
   auto& properties = *MakeGarbageCollected<TestResourceFetcherProperties>();
   auto* fetcher = CreateFetcher(properties);
   ResourceRequest request(KURL("https://www.example.com/"));
@@ -1439,13 +1502,17 @@ TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
 }
 
 TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
-  // `kTestResourceFilename` has 103 bytes.
-  const int64_t kMockResourceSize = 103;
+  // Upper and lower bound for the size of a resource. The actual size is the
+  // sum of overhead (between 3700 and 4800 bytes, varies by platform) and
+  // encoded length (103 bytes for `kTestResourcefilename`)
+  constexpr size_t kMockResourceSizeLowerBound = 3700 + 103;
+  constexpr size_t kMockResourceSizeUpperBound = 4800 + 103;
 
   // Set up the strong reference feature so that the memory cache can keep
-  // strong references to `kTestResourcefilename` up to two resources.
-  const int64_t kTotalSizeThreshold = kMockResourceSize * 2;
-  const int64_t kResourceSizeThreshold = kMockResourceSize;
+  // strong references to 2 resources, but not 3.
+  constexpr size_t kTotalSizeThreshold = kMockResourceSizeUpperBound * 2;
+  constexpr size_t kResourceSizeThreshold = kMockResourceSizeUpperBound;
+  static_assert(3 * kMockResourceSizeLowerBound > kTotalSizeThreshold);
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
@@ -1455,7 +1522,6 @@ TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
              base::NumberToString(kTotalSizeThreshold)},
             {"memory_cache_strong_ref_resource_size_threshold",
              base::NumberToString(kResourceSizeThreshold)}}},
-          {features::kResourceFetcherStoresStrongReferences, {}},
       },
       /*disabled_features=*/{});
 
@@ -1474,12 +1540,30 @@ TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
         FetchParameters::CreateForTest(ResourceRequest(url));
     Resource* resource = MockResource::Fetch(fetch_params, fetcher, nullptr);
     platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
-    return fetcher->HasStrongReferenceForTesting(resource);
+
+    EXPECT_GE(resource->size(), kMockResourceSizeLowerBound);
+    EXPECT_LE(resource->size(), kMockResourceSizeUpperBound);
+
+    return resource;
   });
 
-  ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/foo.png")));
-  ASSERT_TRUE(perform_fetch.Run(KURL("http://127.0.0.1:8000/bar.png")));
-  ASSERT_FALSE(perform_fetch.Run(KURL("http://127.0.0.1:8000/baz.png")));
+  auto* r1 = perform_fetch.Run(KURL("http://127.0.0.1:8000/foo.png"));
+  EXPECT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(r1));
+
+  auto* r2 = perform_fetch.Run(KURL("http://127.0.0.1:8000/bar.png"));
+  EXPECT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(r1));
+  EXPECT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(r2));
+
+  auto* r3 = perform_fetch.Run(KURL("http://127.0.0.1:8000/baz.png"));
+  // `r3` kicks out `r1` out of the strong references list.
+  EXPECT_FALSE(MemoryCache::Get()->HasStrongReferenceForTesting(r1));
+  EXPECT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(r2));
+  EXPECT_TRUE(MemoryCache::Get()->HasStrongReferenceForTesting(r3));
+
+  // Evict resources before `scoped_feature_list` goes out of scope and strong
+  // references are disabled. CHECK fail when strong references exist and the
+  // feature is disabled.
+  MemoryCache::Get()->EvictResources();
 }
 
 TEST_F(ResourceFetcherTestBase, PopulateResourceRequestPermissionsPolicy) {

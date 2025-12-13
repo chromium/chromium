@@ -5,7 +5,6 @@
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
 
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"

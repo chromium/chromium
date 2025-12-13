@@ -7,8 +7,6 @@
 
 #include <deque>
 
-#include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/browser/installable/installable_task.h"

@@ -46,6 +46,15 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL) BackendSession {
   // Clones the current session. The cloned session will have the same context
   // as the current session.
   virtual std::unique_ptr<BackendSession> Clone() = 0;
+
+  // Start a new Automatic Speech Recognition transcription stream.
+  virtual void AsrStream(
+      on_device_model::mojom::AsrStreamOptionsPtr options,
+      mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
+          responder) = 0;
+
+  // Add a chunk of audio the ASR stream.
+  virtual void AsrAddAudioChunk(mojom::AudioDataPtr data) = 0;
 };
 
 }  // namespace on_device_model

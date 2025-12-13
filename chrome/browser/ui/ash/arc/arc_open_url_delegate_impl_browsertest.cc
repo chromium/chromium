@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -33,6 +32,7 @@
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -43,11 +43,12 @@ using arc::mojom::ChromePage;
 
 // Return the number of windows that hosts OS Settings.
 size_t GetNumberOfSettingsWindows() {
-  return std::ranges::count_if(*BrowserList::GetInstance(),
-                               [](Browser* browser) {
-                                 return ash::IsBrowserForSystemWebApp(
-                                     browser, ash::SystemWebAppType::SETTINGS);
-                               });
+  auto settings_browsers =
+      ui_test_utils::FindMatchingBrowsers([](BrowserWindowInterface* browser) {
+        return ash::IsBrowserForSystemWebApp(browser,
+                                             ash::SystemWebAppType::SETTINGS);
+      });
+  return settings_browsers.size();
 }
 
 // Give the underlying function a clearer name.
@@ -221,11 +222,10 @@ void TestOpenSettingFromArc(Browser* browser,
   ash::SystemWebAppManager::GetForTest(browser->profile())
       ->InstallSystemAppsForTesting();
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
   if (expected_setting_window) {
-    browser_opened.Wait();
+    browser_created_observer.Wait();
   }
 
   EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());
@@ -272,129 +272,91 @@ void TestOpenChromePage(ChromePage page, const GURL& expected_url) {
   EXPECT_EQ(expected_url, contents->GetVisibleURL());
 }
 
-class TestSettingsWindowManager : public chrome::SettingsWindowManager {
- public:
-  void ShowChromePageForProfile(Profile* profile,
-                                const GURL& gurl,
-                                int64_t display_id,
-                                apps::LaunchCallback callback) override {
-    last_navigation_url_ = gurl;
-    chrome::SettingsWindowManager::ShowChromePageForProfile(
-        profile, gurl, display_id, std::move(callback));
-  }
-  const GURL& last_navigation_url() { return last_navigation_url_; }
-
- private:
-  GURL last_navigation_url_;
-};
-
-void TestOpenOSSettingsChromePage(ChromePage page, const GURL& expected_url) {
-  TestSettingsWindowManager test_manager;
-  chrome::SettingsWindowManager::SetInstanceForTesting(&test_manager);
-
-  // Note: It is impossible currently to 'wait until done' for this method, as
-  // it doesn't guarantee a new browser, web contents, or even navigation.
-  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
-
-  EXPECT_EQ(expected_url, test_manager.last_navigation_url());
-
-  chrome::SettingsWindowManager::SetInstanceForTesting(nullptr);
-}
-
 void TestAllOSSettingPages(const GURL& base_url) {
-  TestOpenOSSettingsChromePage(ChromePage::MAIN, base_url);
-  TestOpenOSSettingsChromePage(
-      ChromePage::MULTIDEVICE,
-      base_url.Resolve(chromeos::settings::mojom::kMultiDeviceSectionPath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::WIFI,
-      base_url.Resolve(chromeos::settings::mojom::kWifiNetworksSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::POWER,
-      base_url.Resolve(chromeos::settings::mojom::kPowerSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::BLUETOOTH,
-      base_url.Resolve(
-          chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::DATETIME,
-      base_url.Resolve(
-          chromeos::settings::mojom::kSystemPreferencesSectionPath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::DISPLAY,
-      base_url.Resolve(chromeos::settings::mojom::kDisplaySubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::AUDIO,
-      base_url.Resolve(chromeos::settings::mojom::kAudioSubpagePath));
-  TestOpenOSSettingsChromePage(
+  // First request opens a new settings app.
+  content::CreateAndLoadWebContentsObserver app_loaded_observer;
+  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(
+      ChromePage::MAIN);
+  auto* web_contents = app_loaded_observer.Wait();
+  EXPECT_EQ(web_contents->GetURL(), base_url);
+
+  // Following requests just override the existing app.
+  auto verify = [&](ChromePage page, const GURL& expected_url) {
+    content::TestNavigationObserver observer(web_contents);
+    ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
+    observer.WaitForNavigationFinished();
+    EXPECT_EQ(expected_url, observer.last_navigation_url());
+  };
+
+  verify(ChromePage::MULTIDEVICE,
+         base_url.Resolve(chromeos::settings::mojom::kMultiDeviceSectionPath));
+  verify(ChromePage::WIFI,
+         base_url.Resolve(chromeos::settings::mojom::kWifiNetworksSubpagePath));
+  verify(ChromePage::POWER,
+         base_url.Resolve(chromeos::settings::mojom::kPowerSubpagePath));
+  verify(ChromePage::BLUETOOTH,
+         base_url.Resolve(
+             chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
+  verify(ChromePage::DATETIME,
+         base_url.Resolve(
+             chromeos::settings::mojom::kSystemPreferencesSectionPath));
+  verify(ChromePage::DISPLAY,
+         base_url.Resolve(chromeos::settings::mojom::kDisplaySubpagePath));
+  verify(ChromePage::AUDIO,
+         base_url.Resolve(chromeos::settings::mojom::kAudioSubpagePath));
+  verify(
       ChromePage::PERDEVICEMOUSE,
       base_url.Resolve(chromeos::settings::mojom::kPerDeviceMouseSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::PERDEVICETOUCHPAD,
-      base_url.Resolve(
-          chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::PERDEVICEPOINTINGSTICK,
-      base_url.Resolve(
-          chromeos::settings::mojom::kPerDevicePointingStickSubpagePath));
-  TestOpenOSSettingsChromePage(
+  verify(ChromePage::PERDEVICETOUCHPAD,
+         base_url.Resolve(
+             chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath));
+  verify(ChromePage::PERDEVICEPOINTINGSTICK,
+         base_url.Resolve(
+             chromeos::settings::mojom::kPerDevicePointingStickSubpagePath));
+  verify(
       ChromePage::HELP,
       base_url.Resolve(chromeos::settings::mojom::kAboutChromeOsSectionPath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::ACCOUNTS,
-      base_url.Resolve(
-          chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2));
-  TestOpenOSSettingsChromePage(
-      ChromePage::BLUETOOTHDEVICES,
-      base_url.Resolve(
-          chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
-  TestOpenOSSettingsChromePage(
+  verify(ChromePage::ACCOUNTS,
+         base_url.Resolve(
+             chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2));
+  verify(ChromePage::BLUETOOTHDEVICES,
+         base_url.Resolve(
+             chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
+  verify(
       ChromePage::CUPSPRINTERS,
       base_url.Resolve(chromeos::settings::mojom::kPrintingDetailsSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::KEYBOARDOVERLAY,
-      base_url.Resolve(chromeos::settings::mojom::kKeyboardSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::OSLANGUAGESINPUT,
-      base_url.Resolve(chromeos::settings::mojom::kInputSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::OSLANGUAGESLANGUAGES,
-      base_url.Resolve(chromeos::settings::mojom::kLanguagesSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::LOCKSCREEN,
-      base_url.Resolve(
-          chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2));
-  TestOpenOSSettingsChromePage(
+  verify(ChromePage::KEYBOARDOVERLAY,
+         base_url.Resolve(chromeos::settings::mojom::kKeyboardSubpagePath));
+  verify(ChromePage::OSLANGUAGESINPUT,
+         base_url.Resolve(chromeos::settings::mojom::kInputSubpagePath));
+  verify(ChromePage::OSLANGUAGESLANGUAGES,
+         base_url.Resolve(chromeos::settings::mojom::kLanguagesSubpagePath));
+  verify(ChromePage::LOCKSCREEN,
+         base_url.Resolve(
+             chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2));
+  verify(
       ChromePage::MANAGEACCESSIBILITY,
       base_url.Resolve(chromeos::settings::mojom::kAccessibilitySectionPath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::NETWORKSTYPEVPN,
-      base_url.Resolve(chromeos::settings::mojom::kVpnDetailsSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::POINTEROVERLAY,
-      base_url.Resolve(chromeos::settings::mojom::kPointersSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::SMARTPRIVACY,
-      base_url.Resolve(chromeos::settings::mojom::kSmartPrivacySubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::STORAGE,
-      base_url.Resolve(chromeos::settings::mojom::kStorageSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::MANAGEACCESSIBILITYTTS,
-      base_url.Resolve(chromeos::settings::mojom::kTextToSpeechSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::PRIVACYHUB,
-      base_url.Resolve(chromeos::settings::mojom::kPrivacyHubSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::PERDEVICEKEYBOARD,
-      base_url.Resolve(
-          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
-  TestOpenOSSettingsChromePage(
+  verify(ChromePage::NETWORKSTYPEVPN,
+         base_url.Resolve(chromeos::settings::mojom::kVpnDetailsSubpagePath));
+  verify(ChromePage::POINTEROVERLAY,
+         base_url.Resolve(chromeos::settings::mojom::kPointersSubpagePath));
+  verify(ChromePage::SMARTPRIVACY,
+         base_url.Resolve(chromeos::settings::mojom::kSmartPrivacySubpagePath));
+  verify(ChromePage::STORAGE,
+         base_url.Resolve(chromeos::settings::mojom::kStorageSubpagePath));
+  verify(ChromePage::MANAGEACCESSIBILITYTTS,
+         base_url.Resolve(chromeos::settings::mojom::kTextToSpeechSubpagePath));
+  verify(ChromePage::PRIVACYHUB,
+         base_url.Resolve(chromeos::settings::mojom::kPrivacyHubSubpagePath));
+  verify(ChromePage::PERDEVICEKEYBOARD,
+         base_url.Resolve(
+             chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath));
+  verify(
       ChromePage::GRAPHICSTABLET,
       base_url.Resolve(chromeos::settings::mojom::kGraphicsTabletSubpagePath));
-  TestOpenOSSettingsChromePage(
-      ChromePage::NETWORKS,
-      base_url.Resolve(chromeos::settings::mojom::kNetworkSectionPath));
+  verify(ChromePage::NETWORKS,
+         base_url.Resolve(chromeos::settings::mojom::kNetworkSectionPath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

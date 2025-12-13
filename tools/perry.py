@@ -8,7 +8,7 @@ detect state leakage between tests.
 
 Example invocation:
 
-gn gen out/asan --args='is_asan=true enable_nacl=false is_debug=false'
+gn gen out/asan --args='is_asan=true is_debug=false'
 ninja -C out/asan base_unittests
 tools/perry.py out/asan/base_unittests > perry.log &
 tail -f perry.log

@@ -10,6 +10,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/security_interstitials/content/insecure_form_tab_storage.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 
 // static

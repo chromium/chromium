@@ -14,8 +14,7 @@ import {
 } from '//ios/web/find_in_page/resources/find_in_page_constants.js';
 import {Match, PartialMatch, Replacement, Section, Timer} from
     '//ios/web/find_in_page/resources/find_in_page.js';
-import {gCrWebLegacy} from
-    '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 // clang-format on
 
 /**
@@ -190,6 +189,7 @@ function processPartialMatchesInCurrentSection(): void {
   }
   const newNodes: Node[] = [];
   let previousEnd = section.begin;
+
   for (const partialMatch of partialMatches_) {
     // Create the TEXT node for leading non-matching string piece. Notice that
     // substr must be taken from TEXT Node.textContent instead of |allText_|
@@ -665,10 +665,15 @@ function escapeHTML(text: string): string {
   return unusedDiv.innerHTML;
 }
 
-gCrWebLegacy.findInPage = {
-  findString,
-  matches: matches_,
-  pumpSearch,
-  selectAndScrollToVisibleMatch,
-  stop,
-};
+
+const findInPage = new CrWebApi();
+
+findInPage.addFunction('findString', findString);
+findInPage.addFunction('pumpSearch', pumpSearch);
+findInPage.addFunction(
+    'selectAndScrollToVisibleMatch', selectAndScrollToVisibleMatch);
+findInPage.addFunction('stop', stop);
+
+findInPage.addProperty('matches', matches_);
+
+gCrWeb.registerApi('findInPage', findInPage);

@@ -36,9 +36,6 @@ class WebAppOriginAssociationManager::Task {
   ScopeExtensionInfo& GetCurrentScopeExtension();
   void FetchAssociationFile(ScopeExtensionInfo& scope_extension);
   void OnAssociationFileFetched(std::optional<std::string> file_content);
-  void OnAssociationParsed(
-      webapps::mojom::WebAppOriginAssociationPtr association,
-      std::vector<webapps::mojom::WebAppOriginAssociationErrorPtr> errors);
   void MaybeStartNextScopeExtension();
   // Schedule a task to run |callback_| on the UI thread and notify |manager_|
   // that this task is completed.

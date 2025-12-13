@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 
 #include <algorithm>
 #include <random>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "components/gwp_asan/client/thread_local_random_bit_generator.h"
 #include "components/gwp_asan/common/allocation_info.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #include "components/crash/core/app/crashpad.h"  // nogncheck
 #endif
 
@@ -42,6 +38,19 @@ PoisonMetadataRecorder::PoisonMetadataRecorder(LightweightDetectorMode mode,
   // on what it reads from the crashing process.
   for (auto& memory_region : GetInternalMemoryRegions()) {
     crash_reporter::AllowMemoryRange(memory_region.first, memory_region.second);
+  }
+#elif BUILDFLAG(IS_IOS)
+  // Explicitly add internal memory regions to Crashpad's iOS intermediate dump
+  // handler.
+  crashpad::SimpleAddressRangeBag* ios_extra_ranges =
+      crash_reporter::IntermediateDumpExtraMemoryRanges();
+  if (ios_extra_ranges) {
+    for (auto& memory_region : GetInternalMemoryRegions()) {
+      if (!ios_extra_ranges->Insert(memory_region.first,
+                                    memory_region.second)) {
+        DLOG(ERROR) << "Failed to add InternalMemoryRegions to Crashpad.";
+      }
+    }
   }
 #endif
 }
@@ -98,8 +107,8 @@ void PoisonMetadataRecorder::RecordAndZap(void* ptr, size_t size) {
 
   size_t remainder_offset = count * sizeof(encoded_metadata_id);
   size_t remainder_size = size - remainder_offset;
-  std::fill_n(static_cast<uint8_t*>(ptr) + remainder_offset, remainder_size,
-              LightweightDetectorState::kMetadataRemainder);
+  std::fill_n(UNSAFE_TODO(static_cast<uint8_t*>(ptr) + remainder_offset),
+              remainder_size, LightweightDetectorState::kMetadataRemainder);
 }
 
 std::string PoisonMetadataRecorder::GetCrashKey() const {
@@ -118,7 +127,7 @@ PoisonMetadataRecorder::GetInternalMemoryRegions() {
 
 bool PoisonMetadataRecorder::HasAllocationForTesting(uintptr_t address) {
   return std::any_of(
-      metadata_.get(), metadata_.get() + state_.num_metadata,
+      metadata_.get(), UNSAFE_TODO(metadata_.get() + state_.num_metadata),
       [&](const auto& metadata) { return metadata.alloc_ptr == address; });
 }
 

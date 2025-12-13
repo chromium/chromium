@@ -45,6 +45,7 @@ class MDnsAPI : public BrowserContextKeyedAPI,
 
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<MDnsAPI>* GetFactoryInstance();
+  void Shutdown() override;
 
   // Used to mock out the DnsSdRegistry for testing. Does not take ownership of
   // |registry|.

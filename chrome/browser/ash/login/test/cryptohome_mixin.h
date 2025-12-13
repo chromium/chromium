@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/gtest_prod_util.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"

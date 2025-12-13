@@ -27,7 +27,6 @@
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -247,7 +246,6 @@ class SystemRoutineControllerTest : public AshTestBase {
   }
 
   base::ScopedTempDir temp_dir_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   std::unique_ptr<device::TestWakeLockProvider> wake_lock_provider_;
 };
 

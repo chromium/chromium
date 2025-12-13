@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -49,6 +48,7 @@ import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** Interface to get access to components concerning tab management. */
 @NullMarked

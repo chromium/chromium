@@ -116,8 +116,8 @@ std::string ReadCorruptionInfo(const base::FilePath& path_base,
   if (file.IsValid()) {
     std::vector<uint8_t> input_js(file_info.size, '\0');
     if (file.ReadAndCheck(/*offset=*/0, input_js)) {
-      std::optional<base::Value> val =
-          base::JSONReader::Read(base::as_string_view(input_js));
+      std::optional<base::Value> val = base::JSONReader::Read(
+          base::as_string_view(input_js), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (val && val->is_dict()) {
         std::string* s = val->GetDict().FindString("message");
         if (s) {
@@ -144,9 +144,7 @@ bool RecordCorruptionInfo(const base::FilePath& path_base,
 
   base::Value::Dict root_dict;
   root_dict.Set("message", message);
-  std::string output_js;
-
-  base::JSONWriter::Write(root_dict, &output_js);
+  std::string output_js = base::WriteJson(root_dict).value_or("");
   return base::ImportantFileWriter::WriteFileAtomically(info_path,
                                                         std::move(output_js));
 }

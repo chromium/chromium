@@ -182,20 +182,6 @@ base::Value::Dict CreateHostSuffixFilter(const std::string& suffix) {
 
 }  // namespace
 
-bool operator<(const EventTarget& e1, const EventTarget& e2) {
-  return std::tie(e1.extension_id, e1.render_process_id,
-                  e1.service_worker_version_id, e1.worker_thread_id) <
-         std::tie(e2.extension_id, e2.render_process_id,
-                  e2.service_worker_version_id, e2.worker_thread_id);
-}
-
-bool operator==(const EventTarget& e1, const EventTarget& e2) {
-  return std::tie(e1.extension_id, e1.render_process_id,
-                  e1.service_worker_version_id, e1.worker_thread_id) ==
-         std::tie(e2.extension_id, e2.render_process_id,
-                  e2.service_worker_version_id, e2.worker_thread_id);
-}
-
 std::ostream& operator<<(std::ostream& os, const EventTarget& e) {
   return os << "EventTarget{" << e.extension_id << "," << e.render_process_id
             << "," << e.service_worker_version_id << "," << e.worker_thread_id

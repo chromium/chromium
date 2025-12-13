@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef URL_URL_TEST_UTILS_H_
 #define URL_URL_TEST_UTILS_H_
 
@@ -32,7 +27,7 @@ inline std::u16string TruncateWStringToUTF16(const wchar_t* src) {
   std::u16string str;
   int length = static_cast<int>(wcslen(src));
   for (int i = 0; i < length; ++i) {
-    str.push_back(static_cast<char16_t>(src[i]));
+    str.push_back(static_cast<char16_t>(UNSAFE_TODO(src[i])));
   }
   return str;
 }

@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_session_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
-#include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"

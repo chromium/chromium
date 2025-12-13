@@ -74,7 +74,7 @@ class MockProxyResolver : public ProxyResolver {
     // Write something into |net_log| (doesn't really have any meaning.)
     net_log.BeginEvent(NetLogEventType::PAC_JAVASCRIPT_ALERT);
 
-    results->UseNamedProxy(query_url.host());
+    results->UseNamedProxy(query_url.GetHost());
 
     // Return a success code which represents the request's order.
     return request_count_++;

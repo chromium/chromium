@@ -4,9 +4,6 @@
 
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/test_browser_window.h"
@@ -17,6 +14,9 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/host_access_request_helper.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_builder.h"
@@ -58,8 +58,6 @@ class HostAccessRequestsHelperUnittest : public ExtensionServiceTestBase {
   void TearDown() override;
 
  private:
-  // The browser and accompaying window.
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
   raw_ptr<PermissionsManager> permissions_manager_;
@@ -112,8 +110,8 @@ content::WebContents* HostAccessRequestsHelperUnittest::AddTab(
 Browser* HostAccessRequestsHelperUnittest::browser() {
   if (!browser_) {
     Browser::CreateParams params(profile(), true);
-    browser_window_ = std::make_unique<TestBrowserWindow>();
-    params.window = browser_window_.get();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
   }
   return browser_.get();

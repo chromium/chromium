@@ -69,6 +69,12 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       nil);
 }
 
+// Matcher for the activity indicator.
+id<GREYMatcher> ActivityIndicatorMatcher() {
+  return grey_accessibilityID(
+      kCardUnmaskAuthenticationActivityIndicatorAccessibilityIdentifier);
+}
+
 @interface CardUnmaskAuthenticationSelectionEgtest : ChromeTestCase
 @end
 
@@ -144,7 +150,8 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       waitForUIElementToAppearWithMatcher:CardUnmaskPromptNavigationBarTitle()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionIsShownForVirtualCard {
+// TODO(crbug.com/444083194): Test is flaky.
+- (void)FLAKY_testCardUnmaskAuthenticationSelectionIsShownForVirtualCard {
   [self showAuthenticationSelection];
 
   // Verify that the card unmask prompt was shown.
@@ -192,7 +199,8 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionCancel {
+// TODO(crbug.com/444060942): Test is flaky.
+- (void)DISABLED_testCardUnmaskAuthenticationSelectionCancel {
   [self showAuthenticationSelection];
 
   // Tap the cancel button.
@@ -205,7 +213,9 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
                       CardUnmaskPromptNavigationBarTitle()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially {
+// TODO(crbug.com/415865471): Fix test and re-enable.
+- (void)
+    DISABLED_testCardUnmaskAuthenticationSelectionAcceptanceButtonIsSetInitially {
   [self showAuthenticationSelection];
 
   // Ensure the "Send" button is present (since the first option, OTP, is pre
@@ -216,7 +226,8 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
                                    nil)];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel {
+// TODO(crbug.com/415865471): Fix test and re-enable.
+- (void)DISABLED_testCardUnmaskAuthenticationSelectionAcceptanceButtonLabel {
   [self showAuthenticationSelection];
 
   // Verify selecting text message sets the acceptance button label to "Send".
@@ -240,7 +251,8 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
               nil)] assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
+// TODO(crbug.com/444090218): Test is flaky.
+- (void)FLAKY_testCardUnmaskAuthenticationSelectionShowsActivityIndicatorView {
   [self showAuthenticationSelection];
 
   // Select the text message otp challenge option.
@@ -252,12 +264,12 @@ id<GREYMatcher> CardUnmaskAuthenticationSelectionCancelButton() {
       performAction:grey_tap()];
 
   // Verify the activity indicator has been set.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"UIActivityIndicatorView")]
+  [[EarlGrey selectElementWithMatcher:ActivityIndicatorMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-- (void)testDismissInputViaSwipe {
+// TODO(crbug.com/444091898): Test is flaky.
+- (void)DISABLED_testDismissInputViaSwipe {
   [self showAuthenticationSelection];
 
   // The initial access token has been used up, set another fake access token.

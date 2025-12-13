@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 
 #include <asm-generic/errno.h>
@@ -16,6 +11,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -60,8 +56,9 @@ const std::vector<uint8_t> kLen() {
 }                            // little-endian uint16
 const int32_t kValue = 123;  // Fake v4l2 value
 const std::vector<uint8_t> kValueAsUint8() {
-  return std::vector<uint8_t>((std::uint8_t*)&(kValue),
-                              (std::uint8_t*)&(kValue) + sizeof(std::int32_t));
+  return std::vector<uint8_t>(
+      (std::uint8_t*)&(kValue),
+      UNSAFE_TODO((std::uint8_t*)&(kValue) + sizeof(std::int32_t)));
 }
 
 mojom::WebcamIdPtr kDevPath() {
@@ -102,10 +99,10 @@ class TestDelegate : public XuCameraService::Delegate {
           static_cast<uvc_xu_control_query*>(query);
       if (UVC_GET_LEN == control_query->query) {
         control_query->data[0] = kLen()[0];
-        control_query->data[1] = kLen()[1];
+        UNSAFE_TODO(control_query->data[1]) = kLen()[1];
       } else if (UVC_GET_CUR == control_query->query) {
         control_query->data[0] = kData()[0];
-        control_query->data[1] = kData()[1];
+        UNSAFE_TODO(control_query->data[1]) = kData()[1];
       }
     }
     return 0;

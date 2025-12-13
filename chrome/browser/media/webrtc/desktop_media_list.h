@@ -24,8 +24,6 @@ class WebContents;
 // tabs), and their thumbnails, to the desktop media picker dialog. It
 // transparently updates the list in the background, and notifies the desktop
 // media picker when something changes.
-//
-// TODO(crbug.com/40637301): Consider renaming this class.
 class DesktopMediaList {
  public:
   // Reflects content::DesktopMediaID::Type, but can decorate it with additional
@@ -69,11 +67,17 @@ class DesktopMediaList {
     std::u16string name;
 
     // The thumbnail for the source.
+    //
+    // This is sometimes a thumbnail and sometimes a favicon.
+    // TODO(https://crbug.com/466978541): Sort this out.
     gfx::ImageSkia thumbnail;
 
     // A preview for this source, used when both a thumbnail and preview are
     // used. Currently only the case in the tab_desktop_media_list.
     gfx::ImageSkia preview;
+
+    // Set to true if this source represents a Chromium window.
+    std::optional<bool> is_chromium_window;
   };
 
   using UpdateCallback = base::OnceClosure;

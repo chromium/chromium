@@ -7,9 +7,12 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -26,6 +29,7 @@
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "net/base/filename_util.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -116,7 +120,7 @@ class FileURLLoaderFactoryTest : public testing::Test {
 
     SimpleURLLoaderTestHelper helper;
     loader->DownloadToString(
-        factory_.get(), helper.GetCallbackDeprecated(),
+        factory_.get(), helper.GetCallback(),
         network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 
     helper.WaitForCallback();
@@ -300,6 +304,116 @@ TEST_F(FileURLLoaderFactoryTest, ResponseTypeForDirectoryListings) {
   ASSERT_NE(ResponseInfo(), nullptr);
   EXPECT_EQ(network::mojom::FetchResponseType::kOpaque,
             ResponseInfo()->response_type);
+}
+
+// Observer that blocks the read operation to keep the file handle open.
+// This is used to test that files can be deleted while open.
+//
+// Thread safety:
+// - On* methods: Called on the background loader thread.
+// - did_start_read() is intended to be called from the main test thread.
+//
+// Lifetime:
+// - Synchronization primitives must outlive this observer.
+class BlockingFileURLLoaderObserver : public FileURLLoaderObserver {
+ public:
+  BlockingFileURLLoaderObserver(base::WaitableEvent* read_started,
+                                base::WaitableEvent* unblock_read)
+      : read_started_(read_started), unblock_read_(unblock_read) {}
+  ~BlockingFileURLLoaderObserver() override = default;
+
+  bool did_start_read() const { return did_start_read_.load(); }
+
+ private:
+  void OnStart() override {}
+  void OnRead(
+      base::span<char> data,
+      mojo::DataPipeProducer::DataSource::ReadResult* read_result) override {
+    // Flag that we successfully entered the read phase.
+    did_start_read_.store(true);
+    // Signal that the read has started and the file handle is open.
+    read_started_->Signal();
+
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    // Block the read operation until the test allows it to proceed.
+    unblock_read_->Wait();
+  }
+  void OnSeekComplete(int64_t) override {}
+  void OnDone() override {
+    // Safety Fallback:
+    // If OnDone is called before OnRead (e.g., due to file open failure),
+    // we must signal 'read_started' to prevent the test body from
+    // waiting indefinitely (timeout).
+    if (!did_start_read_.load()) {
+      read_started_->Signal();
+    }
+  }
+
+  // Written on background thread, read on main thread.
+  std::atomic<bool> did_start_read_{false};
+  raw_ptr<base::WaitableEvent> read_started_;
+  raw_ptr<base::WaitableEvent> unblock_read_;
+};
+
+// Tests that files opened via file:// URLs can be deleted while being read.
+// This is important for user experience on Windows, where file locks prevent
+// deletion/renaming of open files. Regression test for bug 464436705.
+TEST_F(FileURLLoaderFactoryTest, FileShareDelete) {
+  static constexpr char kTestContent[] = "test content for file share delete";
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file = temp_dir.GetPath().AppendASCII("test_file.txt");
+  ASSERT_TRUE(base::WriteFile(file, kTestContent));
+
+  network::ResourceRequest request;
+  request.url = net::FilePathToFileURL(file);
+
+  mojo::Remote<network::mojom::URLLoader> loader_remote;
+  network::TestURLLoaderClient client;
+
+  // Events to synchronize the test thread with the background reading thread.
+  base::WaitableEvent read_started(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent unblock_read(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  auto observer = std::make_unique<BlockingFileURLLoaderObserver>(
+      &read_started, &unblock_read);
+  // Keep a raw pointer to verify state later
+  BlockingFileURLLoaderObserver* observer_ptr = observer.get();
+  CreateFileURLLoaderBypassingSecurityChecks(
+      request, loader_remote.BindNewPipeAndPassReceiver(),
+      client.CreateRemote(), std::move(observer),
+      /*allow_directory_listing=*/false, /*extra_response_headers=*/nullptr);
+  {
+    base::ScopedAllowBaseSyncPrimitivesForTesting allow_wait;
+    // Wait until the file is being read (or the loader fails).
+    read_started.Wait();
+  }
+
+  // CRITICAL CHECK: Ensure we actually paused inside OnRead.
+  // If did_start_read() is false, it means OnDone was called due to an error
+  // (e.g., file not found/access denied). If we proceeded without this check,
+  // DeleteFile below would succeed (because the handle is closed), giving a
+  // false positive test result.
+  ASSERT_TRUE(observer_ptr->did_start_read())
+      << "Loader finished without starting read. Test setup failed.";
+
+  // Verify that the file can be deleted even while it is being read.
+  // This requires base::File::FLAG_WIN_SHARE_DELETE to be set on Windows.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_TRUE(base::DeleteFile(file));
+
+  // Unblock the read operation to let the loader complete.
+  unblock_read.Signal();
+  client.RunUntilComplete();
+
+  // Verify the loader completed successfully despite the file being deleted.
+  // The content should have been read successfully before deletion.
+  EXPECT_EQ(net::OK, client.completion_status().error_code);
+  EXPECT_TRUE(client.has_received_response());
 }
 
 }  // namespace

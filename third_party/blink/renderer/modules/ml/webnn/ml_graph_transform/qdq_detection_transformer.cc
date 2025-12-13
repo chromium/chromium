@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 
+#include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
@@ -43,7 +44,7 @@ HeapVector<Member<CenterOpInput>> MatchCenterOpInputs(MLOperator* center_op) {
       inputs.push_back(MakeGarbageCollected<CenterOpInput>(nullptr, input_op));
     } else if (input_op->Kind() ==
                webnn::mojom::blink::Operation::Tag::kTranspose) {
-      MLOperand* dq_output_operand = input_op->Inputs()[0];
+      MLOperand* dq_output_operand = input_op->PositionalInputs()[0];
       MLOperator* dq = dq_output_operand->Operator();
       if (dq->Kind() !=
               webnn::mojom::blink::Operation::Tag::kDequantizeLinear ||
@@ -98,7 +99,16 @@ void QDQDetectionTransformer::HandleQuantize(
   //
   MLOperator* q = quantize;
 
-  MLOperand* q_input_operand = q->Inputs()[0];
+  // The current context's transpose opSupportLimits needs to support the
+  // quantized data type.
+  if (!graph_builder_->GetContext()
+           ->GetProperties()
+           .data_type_limits.transpose_input.Supports(
+               q->Outputs()[0]->Descriptor())) {
+    return;
+  }
+
+  MLOperand* q_input_operand = q->PositionalInputs()[0];
   if (q_input_operand->Kind() != webnn::mojom::blink::Operand::Kind::kOutput) {
     return;
   }
@@ -110,7 +120,7 @@ void QDQDetectionTransformer::HandleQuantize(
     return;
   }
 
-  MLOperand* transpose2_input_operand = transpose2->Inputs()[0];
+  MLOperand* transpose2_input_operand = transpose2->PositionalInputs()[0];
   if (transpose2_input_operand->Kind() !=
       webnn::mojom::blink::Operand::Kind::kOutput) {
     return;
@@ -145,10 +155,11 @@ void QDQDetectionTransformer::HandleQuantize(
       MLOperator* transpose = center_input->transpose();
       MLOperator* dq = center_input->dequantize();
 
-      MLOperand* original_subgraph_input_operand = dq->Inputs()[0].Get();
+      MLOperand* original_subgraph_input_operand =
+          dq->PositionalInputs()[0].Get();
 
       // Swap dq and transpose.
-      auto dq_input_data_type = dq->Inputs()[0]->DataType();
+      auto dq_input_data_type = dq->PositionalInputs()[0]->DataType();
       SwapInput(transpose, 0u, original_subgraph_input_operand);
       SwapInput(dq, 0u, transpose->Outputs()[0]);
       SwapInput(center_op, i, dq->Outputs()[0]);

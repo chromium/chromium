@@ -122,11 +122,11 @@ class PLATFORM_EXPORT FrameOrWorkerScheduler {
       }
     }
     void Clear() { details_list.clear(); }
-    bool operator==(BFCacheBlockingFeatureAndLocations& other) {
+    bool operator==(const BFCacheBlockingFeatureAndLocations& other) const {
       return details_list == other.details_list;
     }
 
-    WTF::Vector<FeatureAndJSLocationBlockingBFCache> details_list;
+    Vector<FeatureAndJSLocationBlockingBFCache> details_list;
   };
 
   class PLATFORM_EXPORT Delegate {

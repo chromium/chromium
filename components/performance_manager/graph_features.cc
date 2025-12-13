@@ -18,6 +18,7 @@
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
+#include "components/performance_manager/graph/tracing_observer.h"
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
@@ -93,6 +94,10 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
 
   if (flags_.v8_context_tracker) {
     Install<v8_memory::V8ContextTracker>(graph);
+  }
+
+  if (flags_.tracing_observers) {
+    Install<TracingObserverList>(graph);
   }
 }
 

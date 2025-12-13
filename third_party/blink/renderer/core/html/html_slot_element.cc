@@ -182,6 +182,7 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
     return;
 
   bool updated = false;
+  HeapHashSet<Member<HTMLSlotElement>> changed_slots;
   HeapLinkedHashSet<WeakMember<Node>> added_nodes;
   for (Node* node : nodes) {
     added_nodes.insert(node);
@@ -190,7 +191,7 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
         continue;
       previous_slot->manually_assigned_nodes_.erase(node);
       if (previous_slot->SupportsAssignment())
-        previous_slot->DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
+        changed_slots.insert(previous_slot);
     }
     updated = true;
     node->SetManuallyAssignedSlot(this);
@@ -215,14 +216,24 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
   }
   DCHECK(updated || removed_nodes.empty());
 
+  ShadowRoot* shadow_root = ContainingShadowRoot();
   if (updated) {
     for (auto removed_node : removed_nodes)
       removed_node->SetManuallyAssignedSlot(nullptr);
     manually_assigned_nodes_.Swap(added_nodes);
     // The slot might not be located in a shadow root yet.
-    if (ContainingShadowRoot()) {
+    if (shadow_root) {
       SetShadowRootNeedsAssignmentRecalc();
-      DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
+      changed_slots.insert(this);
+    }
+  }
+
+  if (!changed_slots.empty()) {
+    for (HTMLSlotElement& slot :
+         Traversal<HTMLSlotElement>::DescendantsOf(*shadow_root)) {
+      if (changed_slots.Contains(&slot)) {
+        slot.DidSlotChange(SlotChangeType::kSignalSlotChangeEvent);
+      }
     }
   }
 }

@@ -140,11 +140,11 @@ class ScriptContext {
                         blink::WebScriptExecutionCallback callback);
 
   // Returns the availability of the API `api_name`.
-  Feature::Availability GetAvailability(const std::string& api_name);
+  Feature::Availability GetAvailability(std::string_view api_name);
   // Returns the availability of the API `api_name`.
   // `check_alias` Whether API that has an alias that is available should be
   // considered available (even if the API itself is not available).
-  Feature::Availability GetAvailability(const std::string& api_name,
+  Feature::Availability GetAvailability(std::string_view api_name,
                                         CheckAliasStatus check_alias);
 
   // Returns a string description of the type of context this is.

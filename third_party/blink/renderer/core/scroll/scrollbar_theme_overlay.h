@@ -55,7 +55,6 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 
-  int ThumbLength(const Scrollbar&) const override;
   int ThumbThickness(float scale_from_dip,
                      EScrollbarWidth scrollbar_width) const;
 

@@ -16,14 +16,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPromptShowParamsTest,
                        WasParentDestroyedOutsideOfRoot) {
   aura::Window* context_window = browser()->window()->GetNativeWindow();
 
-  ExtensionInstallPromptShowParams params(browser()->profile(), context_window);
+  ExtensionInstallPromptShowParams params(GetProfile(), context_window);
   ASSERT_TRUE(context_window->GetRootWindow());
   // As the context window is parented to a root, the parent is valid.
   EXPECT_FALSE(params.WasParentDestroyed());
 
-  std::unique_ptr<aura::Window> window_with_no_root_ancestor(
-      aura::test::CreateTestWindowWithId(11, nullptr));
-  ExtensionInstallPromptShowParams params2(browser()->profile(),
+  std::unique_ptr<aura::Window> window_with_no_root_ancestor =
+      aura::test::CreateTestWindow({.bounds = {100, 100}, .window_id = 11});
+  ExtensionInstallPromptShowParams params2(GetProfile(),
                                            window_with_no_root_ancestor.get());
   // As `window_with_no_root_ancestor` is not parented to a root, it should
   // return true from WasParentDestroyed().

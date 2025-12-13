@@ -21,8 +21,8 @@
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/installable_payment_app_crawler.h"
 #include "components/payments/content/manifest_verifier.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_manifest_downloader.h"
@@ -97,7 +97,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
       const url::Origin& merchant_origin,
       content::RenderFrameHost* initiator_render_frame_host,
       std::unique_ptr<PaymentManifestDownloader> downloader,
-      scoped_refptr<PaymentManifestWebDataService> cache,
+      scoped_refptr<WebPaymentsWebDataService> cache,
       const std::vector<mojom::PaymentMethodDataPtr>& requested_method_data,
       ServiceWorkerPaymentAppFinder::GetAllPaymentAppsCallback callback,
       base::OnceClosure finished_using_resources_callback) {
@@ -398,7 +398,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
   std::unique_ptr<PaymentManifestDownloader> downloader_;
   std::unique_ptr<PaymentManifestParser> parser_;
-  scoped_refptr<PaymentManifestWebDataService> cache_;
+  scoped_refptr<WebPaymentsWebDataService> cache_;
   std::vector<mojom::PaymentMethodDataPtr> requested_method_data_;
   ServiceWorkerPaymentAppFinder::GetAllPaymentAppsCallback callback_;
   base::OnceClosure finished_using_resources_callback_;
@@ -426,7 +426,7 @@ ServiceWorkerPaymentAppFinder::~ServiceWorkerPaymentAppFinder() = default;
 
 void ServiceWorkerPaymentAppFinder::GetAllPaymentApps(
     const url::Origin& merchant_origin,
-    scoped_refptr<PaymentManifestWebDataService> cache,
+    scoped_refptr<WebPaymentsWebDataService> cache,
     std::vector<mojom::PaymentMethodDataPtr> requested_method_data,
     base::WeakPtr<CSPChecker> csp_checker,
     GetAllPaymentAppsCallback callback,

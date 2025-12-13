@@ -22,7 +22,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_RULE_LIST_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"

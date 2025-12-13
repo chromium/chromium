@@ -197,7 +197,7 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
 // `condition.location`. Returns std::nullopt if no such field exists.
 std::optional<size_t> FindFieldMeetingCondition(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     size_t start_index,
     const FieldCondition& condition);
 
@@ -208,7 +208,7 @@ std::optional<size_t> FindFieldMeetingCondition(
 void ApplyRuleIfApplicable(
     ParsingContext& context,
     const RationalizationRule& rule,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager = nullptr);
 
 }  // namespace internal
@@ -219,7 +219,7 @@ void ApplyRuleIfApplicable(
 // constness is inherited from the calling sites.
 void ApplyRationalizationEngineRules(
     ParsingContext& context,
-    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    base::span<const std::unique_ptr<AutofillField>> fields,
     LogManager* log_manager = nullptr);
 
 }  // namespace autofill::rationalization

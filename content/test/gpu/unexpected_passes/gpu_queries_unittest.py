@@ -18,6 +18,7 @@ from unexpected_passes import gpu_unittest_utils as gpu_uu
 
 
 class QueryBuilderUnittest(unittest.TestCase):
+
   def setUp(self) -> None:
     self._patcher = mock.patch.object(subprocess, 'Popen')
     self._popen_mock = self._patcher.start()
@@ -114,6 +115,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name as test_name,
       status,
       (
         SELECT value
@@ -148,7 +150,7 @@ WITH
           test_id,
           "gpu_tests\\\\.webgl1_conformance_integration_test\\\\.")
   )
-SELECT id, test_id, builder_name, status, step_name, typ_tags
+SELECT id, test_id, test_name, builder_name, status, step_name, typ_tags
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -195,6 +197,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name as test_name,
       status,
       (
         SELECT value
@@ -229,7 +232,7 @@ WITH
           test_id,
           "gpu_tests\\\\.webgl1_conformance_integration_test\\\\.")
   )
-SELECT id, test_id, builder_name, status, step_name, typ_tags
+SELECT id, test_id, test_name, builder_name, status, step_name, typ_tags
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -303,6 +306,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name as test_name,
       status,
       (
         SELECT value
@@ -337,7 +341,7 @@ WITH
           test_id,
           "gpu_tests\\\\.webgl1_conformance_integration_test\\\\.")
   )
-SELECT id, test_id, builder_name, status, step_name, typ_tags
+SELECT id, test_id, test_name, builder_name, status, step_name, typ_tags
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -399,6 +403,7 @@ WITH
     SELECT
       exported.id,
       test_id,
+      test_metadata.name as test_name,
       status,
       (
         SELECT value
@@ -433,7 +438,7 @@ WITH
           test_id,
           "gpu_tests\\\\.webgl1_conformance_integration_test\\\\.")
   )
-SELECT id, test_id, builder_name, status, step_name, typ_tags
+SELECT id, test_id, test_name, builder_name, status, step_name, typ_tags
 FROM results
 WHERE
   "Failure" IN UNNEST(typ_expectations)
@@ -441,27 +446,6 @@ WHERE
 ORDER BY builder_name DESC
 """
     self.assertEqual(self._querier._GetInternalTryQuery(), expected_query)
-
-
-class HelperMethodUnittest(unittest.TestCase):
-  def setUp(self) -> None:
-    self.instance = gpu_uu.CreateGenericGpuQuerier()
-
-  def testStripPrefixFromTestIdValidId(self):
-    test_name = 'conformance/programs/program-handling.html'
-    prefix = ('ninja://chrome/test:telemetry_gpu_integration_test/'
-              'gpu_tests.webgl_conformance_integration_test.'
-              'WebGLConformanceIntegrationTest.')
-    test_id = prefix + test_name
-    self.assertEqual(self.instance._StripPrefixFromTestId(test_id), test_name)
-
-  def testStripPrefixFromTestIdInvalidId(self) -> None:
-    test_name = 'conformance/programs/program-handling_html'
-    prefix = ('ninja://chrome/test:telemetry_gpu_integration_test/'
-              'gpu_testse.webgl_conformance_integration_test.')
-    test_id = prefix + test_name
-    with self.assertRaises(AssertionError):
-      self.instance._StripPrefixFromTestId(test_id)
 
 
 if __name__ == '__main__':

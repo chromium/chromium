@@ -15,13 +15,13 @@ if (is_android) {
     ]
 
     deps = [
-      "//components/viz/common:common",
-      "//content/public/browser:browser",
+      "//components/viz/common",
+      "//content/public/browser",
       "//device/vr/android:vr_android",
-      "//gpu/command_buffer/common:common",
-      "//gpu/ipc/common:common",
-      "//services/viz/public/cpp/gpu:gpu",
-      "//ui/gl:gl",
+      "//gpu/command_buffer/common",
+      "//gpu/ipc/common",
+      "//services/viz/public/cpp/gpu",
+      "//ui/gl",
     ]
   }
 }
@@ -35,6 +35,6 @@ source_set("test_support") {
   deps = [
     "//base",
     "//device/vr:vr_test_hook",
-    "//device/vr/public/mojom:test_mojom",
+    "//device/vr/public/mojom/test:test_mojom",
   ]
 }

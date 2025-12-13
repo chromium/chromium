@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/policy/core/common/policy_merger.h"
 
 #include <array>
 #include <map>
 #include <set>
 
+#include "base/compiler_specific.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -23,7 +20,8 @@ namespace policy {
 
 namespace {
 
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) && (!BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_DESKTOP_ANDROID))
 constexpr const char* kDictionaryPoliciesToMerge[] = {
 #if BUILDFLAG(IS_CHROMEOS)
     key::kExtensionSettings,       key::kDeviceLoginScreenPowerManagement,
@@ -33,7 +31,8 @@ constexpr const char* kDictionaryPoliciesToMerge[] = {
     key::kExtensionSettings,
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 };
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA) &&
+        // (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_DESKTOP_ANDROID))
 
 }  // namespace
 
@@ -190,7 +189,8 @@ void PolicyListMerger::DoMerge(PolicyMap::Entry* policy) const {
 
 PolicyDictionaryMerger::PolicyDictionaryMerger(
     base::flat_set<std::string> policies_to_merge)
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA) || \
+    (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID))
     : policies_to_merge_(std::move(policies_to_merge)){}
 #else
     : policies_to_merge_(std::move(policies_to_merge)),
@@ -299,7 +299,7 @@ void PolicyDictionaryMerger::DoMerge(PolicyMap::Entry* policy,
 
 void PolicyGroupMerger::Merge(PolicyMap* policies) const {
   for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
-    const AtomicGroup& group = kPolicyAtomicGroupMappings[i];
+    const AtomicGroup& group = UNSAFE_TODO(kPolicyAtomicGroupMappings[i]);
     bool use_highest_set_priority = false;
 
     // Defaults to the lowest priority.
@@ -308,7 +308,7 @@ void PolicyGroupMerger::Merge(PolicyMap* policies) const {
     // Find the policy with the highest priority that is both in |policies| and
     // |group.policies|, an array ending with a nullptr.
     for (const char* const* policy_name = group.policies; *policy_name;
-         ++policy_name) {
+         UNSAFE_TODO(++policy_name)) {
       const auto* policy = policies->Get(*policy_name);
       if (!policy)
         continue;
@@ -342,7 +342,7 @@ void PolicyGroupMerger::Merge(PolicyMap* policies) const {
     // nullptr, that do not share the same source as the one with the highest
     // priority.
     for (const char* const* policy_name = group.policies; *policy_name;
-         ++policy_name) {
+         UNSAFE_TODO(++policy_name)) {
       auto* policy = policies->GetMutable(*policy_name);
       if (!policy)
         continue;

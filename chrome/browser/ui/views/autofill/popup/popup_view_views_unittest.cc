@@ -12,12 +12,12 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -55,17 +55,23 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/display/screen_base.h"
+#include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -174,7 +180,18 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     profile_ = std::make_unique<TestingProfile>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
-    web_contents_->Resize({0, 0, 1024, 768});
+
+    // Create and configure the hosting widget for the WebContents. We need it
+    // since on Mac platforms WebContents delegate windowing management to its
+    // container, and we need to resize WebContents for some of the tests.
+    web_contents_widget_ =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    auto* web_view = web_contents_widget_->SetContentsView(
+        std::make_unique<views::WebView>(profile_.get()));
+    web_view->SetWebContents(web_contents_.get());
+    ResizeWebContents({0, 0, 1000, 1000});
+    web_contents_widget_->Show();
+
     // Make sure the element is inside the web contents area.
     autofill_popup_controller_.set_element_bounds(
         autofill_popup_controller_.element_bounds() +
@@ -195,6 +212,12 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view_ = nullptr;
     generator_.reset();
     widget_.reset();
+
+    // Destroy the WebContents hosting widget.
+    web_contents_widget_.reset();
+    web_contents_.reset();  // Destroy WebContents after its hosting widget's
+                            // WebView is gone.
+    profile_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -203,23 +226,35 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
     view->Show(AutoselectFirstSuggestion(false));
   }
 
-  void CreateAndShowView(
+  void CreateView(
       std::optional<views::Widget::InitParams> widget_params = std::nullopt,
       std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
           std::nullopt) {
     view_ = nullptr;
     generator_.reset();
+    widget_.reset();
 
-    widget_ = CreateTestWidget(
+    views::Widget::InitParams params =
         widget_params
             ? std::move(*widget_params)
             : CreateParamsForTestWidget(
                   views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                  views::Widget::InitParams::Type::TYPE_POPUP));
+                  views::Widget::InitParams::Type::TYPE_POPUP);
+    params.parent = web_contents_widget_->GetNativeView();
+    params.context = web_contents_widget_->GetNativeWindow();
+
+    widget_ = CreateTestWidget(std::move(params));
     generator_ = std::make_unique<ui::test::EventGenerator>(
         GetRootWindow(widget_.get()));
     view_ = new TestPopupViewViews(controller().GetWeakPtr(),
                                    std::move(search_bar_config));
+  }
+
+  void CreateAndShowView(
+      std::optional<views::Widget::InitParams> widget_params = std::nullopt,
+      std::optional<AutofillPopupView::SearchBarConfig> search_bar_config =
+          std::nullopt) {
+    CreateView(std::move(widget_params), std::move(search_bar_config));
     ShowView(view_, *widget_);
   }
 
@@ -298,6 +333,19 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
                             non_shift_modifier_pressed);
   }
 
+  void ResizeTestScreen(int new_width, int new_height) {
+    display::ScreenBase* test_screen =
+        static_cast<display::ScreenBase*>(display::Screen::Get());
+    display::Display primary_display = test_screen->GetPrimaryDisplay();
+    primary_display.set_bounds(gfx::Rect(0, 0, new_width, new_height));
+    primary_display.set_work_area(gfx::Rect(0, 0, new_width, new_height));
+    test_screen->display_list().UpdateDisplay(primary_display);
+  }
+
+  void ResizeWebContents(const gfx::Rect& bounds) {
+    web_contents_widget().SetBounds(bounds);
+  }
+
  protected:
   views::View& GetRowViewAt(size_t index) {
     return *std::visit([](views::View* view) { return view; },
@@ -317,6 +365,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   TestPopupViewViews& view() { return *view_; }
   views::Widget& widget() { return *widget_; }
   content::WebContents& web_contents() { return *web_contents_; }
+  views::Widget& web_contents_widget() { return *web_contents_widget_; }
 
   std::pair<std::unique_ptr<NiceMock<MockAutofillPopupController>>,
             PopupViewViews*>
@@ -341,6 +390,7 @@ class PopupViewViewsTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> widget_;
+  std::unique_ptr<views::Widget> web_contents_widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   raw_ptr<TestPopupViewViews> view_;
   NiceMock<MockAutofillPopupController> autofill_popup_controller_;
@@ -403,7 +453,7 @@ TEST_F(PopupViewViewsTest, AccessibleNameAndRole) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
+TEST_F(PopupViewViewsTest, CanShowDropdownInBoundsVertically) {
   CreateAndShowView({SuggestionType::kAutocompleteEntry,
                      SuggestionType::kSeparator,
                      SuggestionType::kManageAddress});
@@ -411,17 +461,20 @@ TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
   const int kSingleItemPopupHeight = view().GetPreferredSize().height();
   const int kElementY = 10;
   const int kElementHeight = 15;
+
   controller().set_element_bounds({10, kElementY, 100, kElementHeight});
 
-  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 100, 35}));
+  // The width is 120px to make it a bit bigger then
+  // kMinHorizontalOverlapForPopup.
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 120, 35}));
 
   // Test a smaller than the popup height (-10px) available space.
   EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds(
-      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
+      {0, 0, 120, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
 
   // Test a larger than the popup height (+10px) available space.
   EXPECT_TRUE(test_api(view()).CanShowDropdownInBounds(
-      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
+      {0, 0, 120, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
 
   view().Hide();
 
@@ -431,11 +484,339 @@ TEST_F(PopupViewViewsTest, CanShowDropdownInBounds) {
       {SuggestionType::kAutocompleteEntry, SuggestionType::kAutocompleteEntry,
        SuggestionType::kAutocompleteEntry, SuggestionType::kSeparator,
        SuggestionType::kManageAddress});
-  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 100, 35}));
+  EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds({0, 0, 120, 35}));
   EXPECT_FALSE(test_api(view()).CanShowDropdownInBounds(
-      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
+      {0, 0, 120, kElementY + kElementHeight + kSingleItemPopupHeight - 10}));
   EXPECT_TRUE(test_api(view()).CanShowDropdownInBounds(
-      {0, 0, 100, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
+      {0, 0, 120, kElementY + kElementHeight + kSingleItemPopupHeight + 10}));
+}
+
+namespace {
+
+constexpr gfx::Size kScreenSize = {1000, 1000};
+// Defines element size that has less width then kMinHorizontalOverlapForPopup.
+constexpr gfx::SizeF kNarrowerThanMargin(kMinHorizontalOverlapForPopup - 10,
+                                         35);
+// Defines element size that has more width then kMinHorizontalOverlapForPopup.
+constexpr gfx::SizeF kWiderThanMargin(kMinHorizontalOverlapForPopup + 10, 35);
+
+gfx::Rect GetLeftHalfScreenBounds(const gfx::Size& screen_size) {
+  return {0, 0, screen_size.width() / 2, screen_size.height()};
+}
+
+gfx::Rect GetRightHalfScreenBounds(const gfx::Size& screen_size) {
+  return {screen_size.width() / 2, 0, screen_size.width() / 2,
+          screen_size.height()};
+}
+
+}  // namespace
+
+// -----------------------------------------------------------------------------
+// Tests for CanShowDropdownInBounds to correctly handle horizontal overlap
+// with the display bounds. We have 'Left Edge Tests' and 'Right Edge Tests'.
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+// Left Edge Tests
+// -----------------------------------------------------------------------------
+// Hides narrow popup if element is fully left of screen.
+TEST_F(PopupViewViewsTest, HidesNarrowPopup_ElementFullyLeftOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element is 10px to the left of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{-kNarrowerThanMargin.width() - 10,
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Hides narrow popup if element is partially left of screen.
+TEST_F(PopupViewViewsTest, HidesNarrowPopup_ElementPartiallyLeftOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element starts 5px to the left of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x() - 5),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Shows narrow popup if element is at the left edge of the screen.
+TEST_F(PopupViewViewsTest, ShowsNarrowPopup_ElementAtLeftEdge) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element starts at the left edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x()),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Shows narrow popup if element is fully on-screen.
+TEST_F(PopupViewViewsTest, ShowsNarrowPopup_ElementFullyOnScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element starts at the left edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x() + 50),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Hides wide popup if element is fully left of screen.
+TEST_F(PopupViewViewsTest, HidesWidePopup_ElementFullyLeftOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element is 10px to the left of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{-kWiderThanMargin.width() - 10,
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Hides wide popup if element has insufficient overlap on the left edge.
+TEST_F(PopupViewViewsTest, HidesWidePopup_InsufficientLeftOverlap) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element's right edge is 1px short of the required left overlap.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x() -
+                                      kWiderThanMargin.width() +
+                                      kMinHorizontalOverlapForPopup - 1),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Shows wide popup if element has sufficient overlap on the left edge.
+TEST_F(PopupViewViewsTest, ShowsWidePopup_SufficientLeftOverlap) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element's right edge exactly meets the required left overlap.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x() -
+                                      kWiderThanMargin.width() +
+                                      kMinHorizontalOverlapForPopup),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Shows wide popup if element is at the left edge of the screen.
+TEST_F(PopupViewViewsTest, ShowsWidePopup_ElementAtLeftEdge) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element starts at the left edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x()),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Shows wide popup if element is fully on-screen.
+TEST_F(PopupViewViewsTest, ShowsWidePopup_ElementFullyOnScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetLeftHalfScreenBounds(kScreenSize);
+  // Element starts at the left edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.x() + 50),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// -----------------------------------------------------------------------------
+// Right Edge Tests
+// -----------------------------------------------------------------------------
+
+// Hides narrow popup if element is fully right of screen.
+TEST_F(PopupViewViewsTest, HidesNarrowPopup_ElementFullyRightOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element starts 10px to the right of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() + 10),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Hides narrow popup if element is partially right of screen.
+TEST_F(PopupViewViewsTest, HidesNarrowPopup_ElementPartiallyRightOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element starts 5px before the right edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() -
+                                      kNarrowerThanMargin.width() + 5),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Shows narrow popup if element is at the right edge of the screen.
+TEST_F(PopupViewViewsTest, ShowsNarrowPopup_ElementAtRightEdge) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element ends at the right edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() -
+                                      kNarrowerThanMargin.width()),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kNarrowerThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Hides wide popup if element is fully right of screen.
+TEST_F(PopupViewViewsTest, HidesWidePopup_ElementFullyRightOfScreen) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element starts 10px to the right of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() + 10),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Hides wide popup if element has insufficient overlap on the right edge.
+TEST_F(PopupViewViewsTest, HidesWidePopup_InsufficientRightOverlap) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element has 1px less than the required overlap on the right.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() -
+                                      kMinHorizontalOverlapForPopup + 1),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_FALSE(dropdown_shown);
+}
+
+// Shows wide popup if element has sufficient overlap on the right edge.
+TEST_F(PopupViewViewsTest, ShowsWidePopup_SufficientRightOverlap) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element has exactly the required overlap on the right.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() -
+                                      kMinHorizontalOverlapForPopup),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
+}
+
+// Shows wide popup if element is at the right edge of the screen.
+TEST_F(PopupViewViewsTest, ShowsWidePopup_ElementAtRightEdge) {
+  CreateAndShowView({SuggestionType::kAutocompleteEntry,
+                     SuggestionType::kSeparator,
+                     SuggestionType::kManageAddress});
+  const gfx::Rect web_contents_bounds = GetRightHalfScreenBounds(kScreenSize);
+  // Element ends at the right edge of the visible area.
+  controller().set_element_bounds(
+      {/*origin=*/{static_cast<float>(web_contents_bounds.right() -
+                                      kWiderThanMargin.width()),
+                   static_cast<float>(web_contents_bounds.y())},
+       /*size=*/kWiderThanMargin});
+
+  bool dropdown_shown =
+      test_api(view()).CanShowDropdownInBounds(web_contents_bounds);
+
+  EXPECT_TRUE(dropdown_shown);
 }
 
 // This is a regression test for crbug.com/1113255.
@@ -538,7 +919,9 @@ TEST_F(PopupViewViewsTest, AcceptingOnTap) {
   CreateAndShowView({SuggestionType::kPasswordEntry});
 
   // Tapping will accept the selection.
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kTap));
   generator().GestureTapAt(
       GetPopupRowViewAt(0).GetBoundsInScreen().CenterPoint());
 }
@@ -948,14 +1331,18 @@ class PopupViewViewsTestKeyboard : public PopupViewViewsTest {
 // Tests that hitting enter on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnEnter) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(
+                  0, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard));
   SimulateKeyPress(ui::VKEY_RETURN);
 }
 
 // Tests that hitting tab on a suggestion autofills it.
 TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(controller(),
+              AcceptSuggestion(
+                  0, AutofillMetrics::SuggestionAcceptedMethod::kKeyboard));
   SimulateKeyPress(ui::VKEY_TAB);
 }
 
@@ -963,7 +1350,7 @@ TEST_F(PopupViewViewsTestKeyboard, FillOnTabPressed) {
 // autofill a selected suggestion.
 TEST_F(PopupViewViewsTestKeyboard, NoFillOnTabPressedWithModifiers) {
   SelectFirstSuggestion();
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(0);
+  EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   SimulateKeyPress(ui::VKEY_TAB, /*shift_modifier_pressed=*/false,
                    /*non_shift_modifier_pressed=*/true);
 }
@@ -1675,123 +2062,124 @@ TEST_F(PopupViewViewsTest,
   task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
 }
 
-// TODO(crbug.com/40284129): Enable once the view shows itself properly.
-#if !BUILDFLAG(IS_MAC)
-// Tests that `GetPopupScreenLocation` returns the bounds and arrow position of
-// the popup.
-TEST_F(PopupViewViewsTest, GetPopupScreenLocation) {
-  CreateAndShowView({SuggestionType::kComposeResumeNudge});
-
-  using PopupScreenLocation = AutofillClient::PopupScreenLocation;
-  auto MatchesScreenLocation =
-      [](gfx::Rect bounds, PopupScreenLocation::ArrowPosition arrow_position) {
-        return Optional(
-            AllOf(Field(&PopupScreenLocation::bounds, bounds),
-                  Field(&PopupScreenLocation::arrow_position, arrow_position)));
-      };
-  EXPECT_THAT(
-      view().GetPopupScreenLocation(),
-      MatchesScreenLocation(widget().GetWindowBoundsInScreen(),
-                            PopupScreenLocation::ArrowPosition::kTopLeft));
-}
-#endif  // !BUILDFLAG(IS_MAC)
-
 // TODO(crbug.com/41496626): Rework into pixel tests and run on all available
 // platforms. The test below is a temporary solution to cover positioning
 // calculations in the popup. The exact numbers were obtained by observing
 // a local run, manually verified and hardcoded in the test with acceptable 15px
 // error, as on different machines the popup geometry/location slightly vary.
 #if BUILDFLAG(IS_LINUX)
-TEST_F(PopupViewViewsTest, PopupPositioning) {
-  constexpr gfx::Size kSmallWindow(300, 300);
-  constexpr gfx::Size kLargeWindow(1000, 1000);
+
+struct PopupPositioningTestCase {
+  const gfx::Size web_contents_bounds;
+  const gfx::PointF element_position;
+  const std::vector<SuggestionType> suggestions;
+  const gfx::Rect expected_popup_bounds;
+  std::string test_name;
+};
+
+const std::vector<SuggestionType> kSmallPopupSuggestions(
+    2,
+    SuggestionType::kAutocompleteEntry);
+const std::vector<SuggestionType> kLargePopupSuggestions(
+    10,
+    SuggestionType::kAutocompleteEntry);
+
+const gfx::Size kSmallWebContents = {300, 300};
+const gfx::Size kBigWebContents = {1000, 1000};
+
+const PopupPositioningTestCase kPopupPositioningTestCases[]{
+    {kBigWebContents,
+     {0, 0},
+     kSmallPopupSuggestions,
+     {25, 26, 164, 138},
+     "LargeWindowTopLeftElementSmallPopup"},
+    {kBigWebContents,
+     {0, 975},
+     kSmallPopupSuggestions,
+     {25, 840, 164, 134},
+     "LargeWindowBottomLeftElementSmallPopup"},
+    {kBigWebContents,
+     {500, 500},
+     kSmallPopupSuggestions,
+     {525, 526, 164, 138},
+     "LargeWindowCenterElementSmallPopup"},
+    {kBigWebContents,
+     {900, 0},
+     kSmallPopupSuggestions,
+     {832, 26, 164, 138},
+     "LargeWindowTopRightElementSmallPopup"},
+    {kBigWebContents,
+     {900, 975},
+     kSmallPopupSuggestions,
+     {832, 840, 164, 134},
+     "LargeWindowBottomRightElementSmallPopup"},
+    {kSmallWebContents,
+     {0, 0},
+     kSmallPopupSuggestions,
+     {25, 26, 164, 138},
+     "SmallWindowTopLeftElementSmallPopup"},
+    {kSmallWebContents,
+     {0, 0},
+     kLargePopupSuggestions,
+     {100, -10, 183, 308},
+     "SmallWindowTopLeftElementLargePopup"},
+    {kSmallWebContents,
+     {0, 140},
+     kLargePopupSuggestions,
+     {100, -2, 183, 308},
+     "SmallWindowLeftElementLargePopup"},
+    {kSmallWebContents,
+     {150, 0},
+     kLargePopupSuggestions,
+     {117, 26, 179, 288},
+     "SmallWindowTopElementLargePopup"},
+    {kSmallWebContents,
+     {150, 275},
+     kLargePopupSuggestions,
+     {117, -10, 179, 284},
+     "SmallWindowBottomElementLargePopup"},
+    {kSmallWebContents,
+     {200, 275},
+     kLargePopupSuggestions,
+     {17, 6, 183, 308},
+     "SmallWindowBottomRightElementLargePopup"},
+};
+class PopupPositioningTest
+    : public PopupViewViewsTest,
+      public ::testing::WithParamInterface<PopupPositioningTestCase> {};
+
+TEST_P(PopupPositioningTest, All) {
+  ResizeTestScreen(1920, 1080);
+
+  const PopupPositioningTestCase& test_case = GetParam();
+
+  ResizeWebContents(gfx::Rect(test_case.web_contents_bounds));
   constexpr gfx::SizeF kElementSize(100, 25);
-  constexpr gfx::PointF kLargeWindowTopLeftElement(0, 0);
-  constexpr gfx::PointF kLargeWindowBottomLeftElement(0, 975);
-  constexpr gfx::PointF kLargeWindowCenterElement(500, 500);
-  constexpr gfx::PointF kLargeWindowTopRightElement(900, 0);
-  constexpr gfx::PointF kLargeWindowBottomRightElement(900, 975);
-  constexpr gfx::PointF kSmallWindowTopLeftElement(0, 0);
-  constexpr gfx::PointF kSmallWindowLeftElement(0, 140);
-  constexpr gfx::PointF kSmallWindowTopElement(150, 0);
-  constexpr gfx::PointF kSmallWindowBottomElement(150, 275);
-  constexpr gfx::PointF kSmallWindowBottomRightElement(200, 275);
-  const std::vector<SuggestionType> kSmallPopupSuggestions(
-      2, SuggestionType::kAutocompleteEntry);
-  const std::vector<SuggestionType> kLargePopupSuggestions(
-      10, SuggestionType::kAutocompleteEntry);
+  controller().set_element_bounds(
+      gfx::RectF(test_case.element_position, kElementSize) +
+      web_contents().GetContainerBounds().OffsetFromOrigin());
 
-  struct TestCase {
-    const gfx::Size web_contents_bounds;
-    const gfx::PointF element_position;
-    const std::vector<SuggestionType> suggestions;
-    const gfx::Rect expected_popup_bounds;
-  } test_cases[]{
-      {kLargeWindow,
-       kLargeWindowTopLeftElement,
-       kSmallPopupSuggestions,
-       {25, 26, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowBottomLeftElement,
-       kSmallPopupSuggestions,
-       {25, 840, 164, 134}},
-      {kLargeWindow,
-       kLargeWindowCenterElement,
-       kSmallPopupSuggestions,
-       {525, 526, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowTopRightElement,
-       kSmallPopupSuggestions,
-       {832, 26, 164, 138}},
-      {kLargeWindow,
-       kLargeWindowBottomRightElement,
-       kSmallPopupSuggestions,
-       {832, 840, 164, 134}},
-      {kSmallWindow,
-       kSmallWindowTopLeftElement,
-       kSmallPopupSuggestions,
-       {25, 26, 164, 138}},
-      {kSmallWindow,
-       kSmallWindowTopLeftElement,
-       kLargePopupSuggestions,
-       {100, -10, 183, 308}},
-      {kSmallWindow,
-       kSmallWindowLeftElement,
-       kLargePopupSuggestions,
-       {100, -2, 183, 308}},
-      {kSmallWindow,
-       kSmallWindowTopElement,
-       kLargePopupSuggestions,
-       {117, 26, 179, 288}},
-      {kSmallWindow,
-       kSmallWindowBottomElement,
-       kLargePopupSuggestions,
-       {117, -10, 179, 284}},
-      {kSmallWindow,
-       kSmallWindowBottomRightElement,
-       kLargePopupSuggestions,
-       {17, 6, 183, 308}},
-  };
+  CreateAndShowView(test_case.suggestions);
 
-  for (TestCase& test_case : test_cases) {
-    web_contents().Resize(gfx::Rect(test_case.web_contents_bounds));
-    controller().set_element_bounds(
-        gfx::RectF(test_case.element_position, kElementSize) +
-        web_contents().GetContainerBounds().OffsetFromOrigin());
-    CreateAndShowView(test_case.suggestions);
-
-    const gfx::Rect& expected = test_case.expected_popup_bounds;
-    const gfx::Rect& actual = widget().GetWindowBoundsInScreen();
-    // The exact position and size varies on different machines (e.g. because of
-    // different available fonts) and this comparison relaxation is to mitigate
-    // slightly different dimensions.
-    const int kPxError = 15;
-    EXPECT_NEAR(expected.x(), actual.x(), kPxError);
-    EXPECT_NEAR(expected.y(), actual.y(), kPxError);
-    EXPECT_NEAR(expected.width(), actual.width(), kPxError);
-    EXPECT_NEAR(expected.height(), actual.height(), kPxError);
-  }
+  const gfx::Rect& expected = test_case.expected_popup_bounds;
+  const gfx::Rect& actual = widget().GetWindowBoundsInScreen();
+  // The exact position and size varies on different machines (e.g. because of
+  // different available fonts) and this comparison relaxation is to mitigate
+  // slightly different dimensions.
+  const int kPxError = 15;
+  EXPECT_NEAR(expected.x(), actual.x(), kPxError);
+  EXPECT_NEAR(expected.y(), actual.y(), kPxError);
+  EXPECT_NEAR(expected.width(), actual.width(), kPxError);
+  EXPECT_NEAR(expected.height(), actual.height(), kPxError);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PopupPositioningTest,
+    testing::ValuesIn(kPopupPositioningTestCases),
+    [](const testing::TestParamInfo<PopupPositioningTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 #endif  // BUILDFLAG(IS_LINUX)
 
 TEST_F(PopupViewViewsTest, StandaloneCvcSuggestion_ElementId) {
@@ -1819,7 +2207,10 @@ TEST_F(PopupViewViewsTest, VirtualCardSuggestion_ElementId) {
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
 TEST_P(PopupViewViewsTestWithAnySuggestionType, ShowClickTest) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0)).Times(IsClickable(type()));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse))
+      .Times(IsClickable(type()));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();
@@ -1832,7 +2223,9 @@ TEST_P(PopupViewViewsTestWithAnySuggestionType, ShowClickTest) {
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfUnfocusedAtPaint) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion(0));
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(gfx::Point(1000, 1000));
   ASSERT_FALSE(view().IsMouseHovered());
   Paint();
@@ -1845,7 +2238,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseSelectedAnotherRow) {
   CreateAndShowView({type(), type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(1, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
@@ -1858,7 +2253,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseTemporarilySelectedAnotherRow) {
   CreateAndShowView({type(), type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
@@ -1873,7 +2270,9 @@ TEST_P(PopupViewViewsTestWithClickableSuggestionType,
 TEST_P(PopupViewViewsTestWithClickableSuggestionType,
        AcceptSuggestionIfMouseExitedPopupSincePaint) {
   CreateAndShowView({type()});
-  EXPECT_CALL(controller(), AcceptSuggestion);
+  EXPECT_CALL(
+      controller(),
+      AcceptSuggestion(0, AutofillMetrics::SuggestionAcceptedMethod::kMouse));
   generator().MoveMouseTo(GetCenterOfSuggestion(0));
   ASSERT_TRUE(view().IsMouseHovered());
   Paint();
@@ -2036,6 +2435,73 @@ TEST_F(PopupViewViewsTest, WarningOnShowA11yFocus) {
   ASSERT_TRUE(row_view);
 
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus, *row_view));
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yAnnouncesPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kBackupPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions(suggestions);
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
+          true));
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, Show_A11yDoesNotAnnounceNonPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions(suggestions);
+  CreateView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run).Times(0);
+  ShowView(&view(), widget());
+}
+
+TEST_F(PopupViewViewsTest, OnSuggestionsChanged_A11yAnnouncesPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kBackupPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions({Suggestion(SuggestionType::kAddressEntry)});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(
+      announcement,
+      Run(l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_RECOVERY_SHOWN_A11Y_ANNOUNCEMENT),
+          true));
+  controller().set_suggestions(suggestions);
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
+}
+
+TEST_F(PopupViewViewsTest,
+       OnSuggestionsChanged_A11yDoesNotAnnounceNonPasswordRecovery) {
+  const std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kPasswordEntry),
+      Suggestion(SuggestionType::kPasswordEntry)};
+  controller().set_suggestions({Suggestion(SuggestionType::kAddressEntry)});
+  CreateAndShowView();
+  base::MockCallback<base::RepeatingCallback<void(const std::u16string&, bool)>>
+      announcement;
+  test_api(view()).SetA11yAnnouncer(announcement.Get());
+
+  EXPECT_CALL(announcement, Run).Times(0);
+  controller().set_suggestions(suggestions);
+  static_cast<AutofillPopupView&>(view()).OnSuggestionsChanged(false);
 }
 
 }  // namespace

@@ -22,7 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.build.BuildConfig;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Test RequestFinishedInfo.Listener and the metrics information it provides. */
@@ -475,19 +476,19 @@ public class RequestFinishedInfoTest {
     @Test
     @SmallTest
     public void testMetricsGetters() throws Exception {
-        long requestStart = 1;
-        long dnsStart = 2;
+        long requestStart = 1000;
+        long dnsStart = 2000;
         long dnsEnd = -1;
-        long connectStart = 4;
-        long connectEnd = 5;
-        long sslStart = 6;
-        long sslEnd = 7;
-        long sendingStart = 8;
-        long sendingEnd = 9;
-        long pushStart = 10;
-        long pushEnd = 11;
-        long responseStart = 12;
-        long requestEnd = 13;
+        long connectStart = 4000;
+        long connectEnd = 5000;
+        long sslStart = 6000;
+        long sslEnd = 7000;
+        long sendingStart = 8000;
+        long sendingEnd = 9000;
+        long pushStart = 10000;
+        long pushEnd = 11000;
+        long responseStart = 12000;
+        long requestEnd = 13000;
         boolean socketReused = true;
         long sentByteCount = 14;
         long receivedByteCount = 15;
@@ -510,18 +511,27 @@ public class RequestFinishedInfoTest {
                         socketReused,
                         sentByteCount,
                         receivedByteCount);
-        assertThat(metrics.getRequestStart()).isEqualTo(new Date(requestStart));
+        assertThat(metrics.getRequestStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(requestStart));
         // -1 timestamp should translate to null
         assertThat(metrics.getDnsEnd()).isNull();
-        assertThat(metrics.getDnsStart()).isEqualTo(new Date(dnsStart));
-        assertThat(metrics.getConnectStart()).isEqualTo(new Date(connectStart));
-        assertThat(metrics.getConnectEnd()).isEqualTo(new Date(connectEnd));
-        assertThat(metrics.getSslStart()).isEqualTo(new Date(sslStart));
-        assertThat(metrics.getSslEnd()).isEqualTo(new Date(sslEnd));
-        assertThat(metrics.getPushStart()).isEqualTo(new Date(pushStart));
-        assertThat(metrics.getPushEnd()).isEqualTo(new Date(pushEnd));
-        assertThat(metrics.getResponseStart()).isEqualTo(new Date(responseStart));
-        assertThat(metrics.getRequestEnd()).isEqualTo(new Date(requestEnd));
+        assertThat(metrics.getDnsStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(dnsStart));
+        assertThat(metrics.getConnectStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(connectStart));
+        assertThat(metrics.getConnectEnd().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(connectEnd));
+        assertThat(metrics.getSslStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(sslStart));
+        assertThat(metrics.getSslEnd().getTime()).isEqualTo(TimeUnit.MICROSECONDS.toMillis(sslEnd));
+        assertThat(metrics.getPushStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(pushStart));
+        assertThat(metrics.getPushEnd().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(pushEnd));
+        assertThat(metrics.getResponseStart().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(responseStart));
+        assertThat(metrics.getRequestEnd().getTime())
+                .isEqualTo(TimeUnit.MICROSECONDS.toMillis(requestEnd));
         assertThat(metrics.getSocketReused()).isEqualTo(socketReused);
         assertThat(metrics.getSentByteCount()).isEqualTo(sentByteCount);
         assertThat(metrics.getReceivedByteCount()).isEqualTo(receivedByteCount);

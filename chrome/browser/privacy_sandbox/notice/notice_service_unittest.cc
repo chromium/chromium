@@ -35,6 +35,7 @@ using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
@@ -245,8 +246,9 @@ TEST_F(PrivacySandboxNoticeServiceTest,
 
   {
     testing::Sequence s;
-    EXPECT_CALL(*mock_storage(),
-                RecordEvent(Eq(Notice1InCatalog()), Eq(Event::kAck)));
+    EXPECT_CALL(*mock_storage(), RecordEvent(Property(&Notice::notice_id,
+                                                      Eq(Notice1InCatalog())),
+                                             Eq(Event::kAck)));
 
     EXPECT_CALL(*mock_storage(), ReadNoticeData(StrEq("StorageNameA")))
         .WillOnce(Return(BuildStorageData(Event::kAck)));
@@ -271,8 +273,8 @@ class PrivacySandboxNoticeServiceGetRequiredNoticesTest
   PrivacySandboxNoticeServiceGetRequiredNoticesTest() {
     // Intentionally use a real Storage implementation, and forward the Mock
     // calls to it.
-    storage_impl_ = std::make_unique<PrivacySandboxNoticeStorage>(
-        profile()->GetPrefs(), mock_catalog());
+    storage_impl_ =
+        std::make_unique<PrivacySandboxNoticeStorage>(profile()->GetPrefs());
 
     ON_CALL(*mock_storage(), RecordEvent(_, _))
         .WillByDefault(

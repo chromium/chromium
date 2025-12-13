@@ -307,7 +307,6 @@ TEST_F(ShaderTranslatorTest, GetUniforms) {
   EXPECT_EQ(output_variable_list[0].mappedName, "gl_FragColor");
 }
 
-
 TEST_F(ES3ShaderTranslatorTest, InvalidInterfaceBlocks) {
   const char* shader =
       "#version 300 es\n"
@@ -382,10 +381,11 @@ TEST_F(ES3ShaderTranslatorTest, GetInterfaceBlocks) {
   // There should be one block in interface_block_map
   EXPECT_EQ(1u, interface_block_map.size());
   InterfaceBlockMap::const_iterator iter;
-  for (iter = interface_block_map.begin();
-       iter != interface_block_map.end(); ++iter) {
-    if (iter->second.name == "Color")
+  for (iter = interface_block_map.begin(); iter != interface_block_map.end();
+       ++iter) {
+    if (iter->second.name == "Color") {
       break;
+    }
   }
   EXPECT_TRUE(iter != interface_block_map.end());
 }
@@ -449,13 +449,11 @@ TEST_F(ShaderTranslatorOutputVersionTest, DISABLED_CompatibilityOutput) {
   scoped_refptr<ShaderTranslator> vertex_translator = new ShaderTranslator();
   ASSERT_TRUE(vertex_translator->Init(GL_VERTEX_SHADER, SH_GLES2_SPEC,
                                       &resources, shader_output_language,
-                                      compile_options,
-                                      false));
+                                      compile_options, false));
   scoped_refptr<ShaderTranslator> fragment_translator = new ShaderTranslator();
   ASSERT_TRUE(fragment_translator->Init(GL_FRAGMENT_SHADER, SH_GLES2_SPEC,
                                         &resources, shader_output_language,
-                                        compile_options,
-                                        false));
+                                        compile_options, false));
 
   std::string translated_source;
   int shader_version;
@@ -542,7 +540,7 @@ testing::tuple<const char*, const char*> make_gl_glsl_tuple(
     const char* glsl_version_directive) {
   return testing::make_tuple(gl_version, glsl_version_directive);
 }
-}
+}  // namespace
 
 // Test data for the above test. Check that for the OpenGL ES output
 // contexts, the shader is such that GLSL 1.0 is used. The translator

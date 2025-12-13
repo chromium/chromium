@@ -20,9 +20,6 @@ RendererStartupMetricRecorder& GetRenderer() {
   static_assert(
       std::is_trivially_destructible<RendererStartupMetricRecorder>::value,
       "Startup metric recorder classes must be trivially destructible.");
-  // The GPU service gets created in browser tests, where we are not in the gpu
-  // process, and so gating by --type=gpu-process being present on the command
-  // line doesn't make sense.
   static RendererStartupMetricRecorder instance;
   return instance;
 }

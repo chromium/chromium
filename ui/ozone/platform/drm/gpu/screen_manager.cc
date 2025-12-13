@@ -540,7 +540,9 @@ void ScreenManager::SetPreferredModifiers(
         auto it = FindDisplayController(params.drm, params.crtc);
         DCHECK(*it);
         it->get()->UpdatePreferredModifierForFormat(
-            display::DisplaySnapshot::PrimaryFormat(), picked_modifier);
+            viz::SinglePlaneSharedImageFormatToBufferFormat(
+                display::DisplaySnapshot::PrimaryFormat()),
+            picked_modifier);
       }
     }
   }

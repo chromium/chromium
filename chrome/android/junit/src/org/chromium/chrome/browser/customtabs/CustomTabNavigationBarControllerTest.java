@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 
 /** Tests for {@link CustomTabNavigationBarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,6 +43,7 @@ public class CustomTabNavigationBarControllerTest {
     @Mock private ColorProvider mColorProvider;
     @Mock private CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     @Mock private CustomTabsConnection mConnection;
+    @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     private Window mWindow;
     private Context mContext;
 
@@ -58,9 +60,14 @@ public class CustomTabNavigationBarControllerTest {
     public void doesNotSetBarColorWhenNull() {
         when(mColorProvider.getNavigationBarColor()).thenReturn(null);
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
 
         verify(mWindow, never()).setNavigationBarColor(Mockito.anyInt());
+        verify(mSystemBarColorHelper, never()).setNavigationBarColor(Mockito.anyInt());
     }
 
     @Test
@@ -71,20 +78,13 @@ public class CustomTabNavigationBarControllerTest {
         when(mColorProvider.getNavigationBarColor()).thenReturn(null);
 
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
         verify(mWindow, never()).setNavigationBarDividerColor(Mockito.anyInt());
-    }
-
-    @Test
-    // Android P+ (>=28) is needed for setting the divider color.
-    public void doesNotSetDividerColorWhenSdkLow() {
-        when(mColorProvider.getNavigationBarDividerColor()).thenReturn(Color.RED);
-        when(mColorProvider.getNavigationBarColor()).thenReturn(Color.GREEN);
-
-        // Make sure calling the line below does not throw an exception, because the method does not
-        // exist in android P+.
-        CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
+        verify(mSystemBarColorHelper, never()).setNavigationBarDividerColor(Mockito.anyInt());
     }
 
     @Test
@@ -95,8 +95,12 @@ public class CustomTabNavigationBarControllerTest {
         // The case when needsDarkButtons=true
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
-        verify(mWindow).setNavigationBarColor(Color.WHITE);
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.WHITE);
     }
 
     @Test
@@ -106,17 +110,24 @@ public class CustomTabNavigationBarControllerTest {
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.BLACK);
 
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
-        verify(mWindow).setNavigationBarDividerColor(Color.RED);
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarDividerColor(Color.RED);
 
         // The case when divider color is set implicitly due to needsDarkButtons=true.
         when(mColorProvider.getNavigationBarDividerColor()).thenReturn(null);
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
-        verify(mWindow)
-                .setNavigationBarDividerColor(
-                        mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper)
+                .setNavigationBarDividerColor(mContext.getColor(R.color.black_alpha_12));
     }
 
     @Test
@@ -125,11 +136,15 @@ public class CustomTabNavigationBarControllerTest {
         when(mConnection.shouldEnableGoogleBottomBarForIntent(mCustomTabIntentDataProvider))
                 .thenReturn(true);
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
-        verify(mWindow)
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ false,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper)
                 .setNavigationBarColor(
                         mContext.getColor(R.color.google_bottom_bar_background_color));
-        verify(mWindow)
+        verify(mSystemBarColorHelper)
                 .setNavigationBarDividerColor(
                         mContext.getColor(R.color.google_bottom_bar_background_color));
     }
@@ -137,7 +152,11 @@ public class CustomTabNavigationBarControllerTest {
     @Test
     public void setTransparentColorForEdgeToEdge() {
         CustomTabNavigationBarController.update(
-                mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ true);
-        verify(mWindow).setNavigationBarColor(Color.TRANSPARENT);
+                mWindow,
+                mCustomTabIntentDataProvider,
+                mContext,
+                /* isEdgeToEdge= */ true,
+                mSystemBarColorHelper);
+        verify(mSystemBarColorHelper).setNavigationBarColor(Color.TRANSPARENT);
     }
 }

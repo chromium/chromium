@@ -7,10 +7,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_views.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -52,6 +52,10 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
     // failure, but that the user may proceed with their upload, drag-and-drop
     // or paste if they want to.
     WARNING,
+
+    // The dialog is shown with a message indicating that the user has the
+    // option to force save the file to cloud storage.
+    FORCE_SAVE_TO_CLOUD,
   };
 
   ContentAnalysisDialogDelegate(
@@ -84,6 +88,9 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   inline bool is_failure() const { return dialog_state_ == State::FAILURE; }
   inline bool is_warning() const { return dialog_state_ == State::WARNING; }
   inline bool is_pending() const { return dialog_state_ == State::PENDING; }
+  inline bool is_force_save_to_cloud() const {
+    return dialog_state_ == State::FORCE_SAVE_TO_CLOUD;
+  }
 
   // Updates `final_result_` and `dialog_state_`.
   void UpdateStateFromFinalResult(FinalContentAnalysisResult final_result);
@@ -128,6 +135,8 @@ class ContentAnalysisDialogDelegate : public views::DialogDelegate,
   std::u16string GetWarningMessage() const;
   std::u16string GetSuccessMessage() const;
   std::u16string GetCustomMessage() const;
+  std::u16string GetForceSaveToCloudMessage() const;
+
   bool is_print_scan() const;
   bool has_custom_message() const;
   bool has_custom_message_ranges() const;

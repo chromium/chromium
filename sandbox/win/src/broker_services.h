@@ -55,11 +55,6 @@ class BrokerServicesBase final : public BrokerServices,
   std::unique_ptr<TargetPolicy> CreatePolicy() override;
   std::unique_ptr<TargetPolicy> CreatePolicy(std::string_view key) override;
 
-  ResultCode SpawnTarget(const wchar_t* exe_path,
-                         const wchar_t* command_line,
-                         std::unique_ptr<TargetPolicy> policy,
-                         DWORD* last_error,
-                         PROCESS_INFORMATION* target) override;
   void SpawnTargetAsync(const wchar_t* exe_path,
                         const wchar_t* command_line,
                         std::unique_ptr<TargetPolicy> policy,
@@ -103,14 +98,13 @@ class BrokerServicesBase final : public BrokerServices,
                             std::unique_ptr<TargetProcess>& target);
 
   // Implementation for SpawnTarget and SpawnTargetAsync.
-  // Parallel launching will be used if `allow_parallel_launch` is true and
-  // BrokerServicesDelegate::EnableParallelLaunch() returns true.
-  // The target creation result is returned to `result_callback`.
+  // Parallel launching will be used if
+  // BrokerServicesDelegate::EnableParallelLaunch() returns true. The target
+  // creation result is returned to `result_callback`.
   void SpawnTargetAsyncImpl(const wchar_t* exe_path,
                             const wchar_t* command_line,
                             std::unique_ptr<PolicyBase> policy_base,
-                            SpawnTargetCallback result_callback,
-                            bool allow_parallel_launch);
+                            SpawnTargetCallback result_callback);
 
   // This function is a wrapper for FinishSpawnTargetImpl and gets called after
   // the target process is created. This function is responsible for running

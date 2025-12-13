@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_ZUCCHINI_BUFFER_VIEW_H_
 #define COMPONENTS_ZUCCHINI_BUFFER_VIEW_H_
 
@@ -18,6 +13,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "components/zucchini/algorithm.h"
 
 namespace zucchini {
@@ -73,7 +69,7 @@ class BufferViewBase {
   BufferViewBase() = default;
 
   BufferViewBase(iterator first, size_type size)
-      : first_(first), last_(first_ + size) {
+      : first_(first), last_(UNSAFE_TODO(first_ + size)) {
     DCHECK_GE(last_, first_);
   }
 
@@ -119,14 +115,14 @@ class BufferViewBase {
   // If |pos| is not within the range of the buffer, the process is terminated.
   reference operator[](size_type pos) const {
     CHECK_LT(pos, size());
-    return first_[pos];
+    return UNSAFE_TODO(first_[pos]);
   }
 
   // Returns a sub-buffer described by |region|.
   BufferViewBase operator[](BufferRegion region) const {
     DCHECK_LE(region.offset, size());
     DCHECK_LE(region.size, size() - region.offset);
-    return {begin() + region.offset, region.size};
+    return {UNSAFE_TODO(begin() + region.offset), region.size};
   }
 
   template <class U>
@@ -135,7 +131,7 @@ class BufferViewBase {
     CHECK_LE(sizeof(U), size());
     CHECK_LE(pos, size() - sizeof(U));
     U ret = {};
-    ::memcpy(&ret, begin() + pos, sizeof(U));
+    UNSAFE_TODO(::memcpy(&ret, begin() + pos, sizeof(U)));
     return ret;
   }
 
@@ -144,7 +140,7 @@ class BufferViewBase {
     // TODO(huangs): Use can_access<U>(pos) after fixing can_access().
     CHECK_LE(sizeof(U), size());
     CHECK_LE(pos, size() - sizeof(U));
-    ::memcpy(begin() + pos, &value, sizeof(U));
+    UNSAFE_TODO(::memcpy(begin() + pos, &value, sizeof(U)));
   }
 
   template <class U>
@@ -164,14 +160,14 @@ class BufferViewBase {
   // Modifiers
 
   void shrink(size_type new_size) {
-    DCHECK_LE(first_ + new_size, last_);
-    last_ = first_ + new_size;
+    UNSAFE_TODO(DCHECK_LE(first_ + new_size, last_));
+    last_ = UNSAFE_TODO(first_ + new_size);
   }
 
   // Moves the start of the view forward by n bytes.
   void remove_prefix(size_type n) {
     DCHECK_LE(n, size());
-    first_ += n;
+    UNSAFE_TODO(first_ += n);
   }
 
   // Moves the start of the view to |it|, which is in range [begin(), end()).
@@ -193,7 +189,7 @@ class BufferViewBase {
         AlignCeil(static_cast<size_type>(first_ - origin.first_), alignment);
     if (aligned_size > static_cast<size_type>(last_ - origin.first_))
       return false;
-    first_ = origin.first_ + aligned_size;
+    first_ = UNSAFE_TODO(origin.first_ + aligned_size);
     return true;
   }
 

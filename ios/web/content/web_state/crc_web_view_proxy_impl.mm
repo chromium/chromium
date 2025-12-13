@@ -120,4 +120,11 @@
   return NO;
 }
 
+- (UIEdgeInsets)obscuredInsets {
+  return UIEdgeInsetsZero;
+}
+
+- (void)setObscuredInsets:(UIEdgeInsets)obscuredInsets {
+}
+
 @end

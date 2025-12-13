@@ -219,7 +219,7 @@ void WaitableEventWatcher::StopWatching() {
     // list. We've removed it, thus we can delete it and the task (which cannot
     // have been enqueued with the MessageLoop because the waiter was never
     // signaled)
-    delete waiter_;
+    waiter_.ClearAndDelete();
     cancel_flag_ = nullptr;
     return;
   }

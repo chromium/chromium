@@ -13,7 +13,6 @@
 #include "components/download/internal/background_service/download_driver.h"
 #include "components/download/internal/background_service/in_memory_download.h"
 #include "components/download/public/background_service/url_loader_factory_getter.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace download {
 

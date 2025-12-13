@@ -116,8 +116,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketManager
                        net::IPAddress default_ipv6_local_address);
 
   // P2PSocket::Delegate.
-  void AddAcceptedConnection(
-      std::unique_ptr<P2PSocket> accepted_connection) override;
   void DestroySocket(P2PSocket* socket) override;
   void DumpPacket(base::span<const uint8_t> data, bool incoming) override;
 

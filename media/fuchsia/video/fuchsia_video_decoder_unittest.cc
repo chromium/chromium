@@ -91,10 +91,6 @@ class TestRasterContextProvider
   gpu::ContextSupport* ContextSupport() override {
     return &gpu_context_support_;
   }
-  class GrDirectContext* GrContext() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::SharedImageInterface* SharedImageInterface() override {
     return shared_image_interface_.get();
   }
@@ -111,11 +107,6 @@ class TestRasterContextProvider
   gpu::raster::RasterInterface* RasterInterface() override {
     ADD_FAILURE();
     return nullptr;
-  }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    ADD_FAILURE();
-    return 0;
   }
 
  private:
@@ -211,7 +202,7 @@ class FakeClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override {
     return std::make_unique<FakeClientNativePixmap>(std::move(handle));
   }

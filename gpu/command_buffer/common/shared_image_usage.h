@@ -27,64 +27,51 @@ enum SharedImageUsage : uint32_t {
   SHARED_IMAGE_USAGE_DISPLAY_WRITE = 1 << 3,
   // Image will be used as a scanout buffer (overlay)
   SHARED_IMAGE_USAGE_SCANOUT = 1 << 4,
-  // Image will be used in OOP rasterization. This flag is used on top of
-  // SHARED_IMAGE_USAGE_RASTER_{READ, WRITE} to indicate that the client will
-  // only use RasterInterface for OOP rasterization. TODO(backer): Eliminate
-  // once we can CPU raster to SkImage via RasterInterface.
-  SHARED_IMAGE_USAGE_OOP_RASTERIZATION = 1 << 5,
   // Image will be read by Dawn (for WebGPU)
-  SHARED_IMAGE_USAGE_WEBGPU_READ = 1 << 6,
+  SHARED_IMAGE_USAGE_WEBGPU_READ = 1 << 5,
   // Image may use concurrent read/write access. Used by single buffered canvas.
   // TODO(crbug.com/41462072): This usage is currently not supported in
   // GL/Vulkan
   // interop cases.
-  SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 7,
+  SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE = 1 << 6,
   // Image will be used for video decode acceleration on Chrome OS.
-  SHARED_IMAGE_USAGE_VIDEO_DECODE = 1 << 8,
+  SHARED_IMAGE_USAGE_VIDEO_DECODE = 1 << 7,
   // Image will be used as a WebGPU swapbuffer
-  SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE = 1 << 9,
+  SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE = 1 << 8,
   // The image was created by VideoToolbox on macOS, and is backed by a
   // CVPixelBuffer's IOSurface. Because of this backing, IOSurfaceIsInUse will
   // always return true.
-  SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 10,
+  SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 9,
   // Image will be used with mipmap enabled.
-  SHARED_IMAGE_USAGE_MIPMAP = 1 << 11,
+  SHARED_IMAGE_USAGE_MIPMAP = 1 << 10,
   // Image will be used for CPU Writes by client. Normally write usage also
   // implies read. Hence adding ONLY tag to clarify that its write only in this
   // case.
-  SHARED_IMAGE_USAGE_CPU_WRITE_ONLY = 1 << 12,
+  SHARED_IMAGE_USAGE_CPU_WRITE_ONLY = 1 << 11,
   // Image will be used in RasterInterface with RawDraw.
-  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 13,
+  SHARED_IMAGE_USAGE_RAW_DRAW = 1 << 12,
   // Image will be created on the high performance GPU if supported.
-  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 14,
+  SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU = 1 << 13,
   // Windows only: image will be backed by a DComp surface. A swap chain is
   // preferred when an image is opaque and expected to update frequently and
   // independently of other overlays. This flag is incompatible with
   // DISPLAY_READ and SCANOUT_DXGI_SWAP_CHAIN.
-  SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 15,
+  SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE = 1 << 14,
   // Windows only: image will be backed by a DXGI swap chain. This flag is
   // incompatible with SCANOUT_DCOMP_SURFACE.
-  SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN = 1 << 16,
+  SHARED_IMAGE_USAGE_SCANOUT_DXGI_SWAP_CHAIN = 1 << 15,
 
   // Image will be used as a WebGPU storage texture.
-  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 17,
+  SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE = 1 << 16,
 
   // Image will be written via GLES2Interface
-  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 18,
+  SHARED_IMAGE_USAGE_GLES2_WRITE = 1 << 17,
 
   // Image will be written via RasterInterface
-  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 19,
+  SHARED_IMAGE_USAGE_RASTER_WRITE = 1 << 18,
 
   // Image will be written by Dawn (for WebGPU)
-  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 20,
-
-  // The image will be used by GLES2 only for raster over the GLES2 interface.
-  // Specified in conjunction with GLES2_READ and/or GLES2_WRITE.
-  SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY = 1 << 21,
-
-  // The image will be used by raster only over the GLES2 interface.
-  // Specified in conjunction with RASTER_READ and/or RASTER_WRITE.
-  SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY = 1 << 22,
+  SHARED_IMAGE_USAGE_WEBGPU_WRITE = 1 << 19,
 
   // Image will contain protected content to be scanned out. Note that this type
   // of image
@@ -93,10 +80,10 @@ enum SharedImageUsage : uint32_t {
   // to by a preprocessing step that converts the image's pixel format into
   // something the
   // display controller understands.
-  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 23,
+  SHARED_IMAGE_USAGE_PROTECTED_VIDEO = 1 << 20,
 
   // Image will be used as a WebGPU shared buffer
-  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 24,
+  SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER = 1 << 21,
 
   // Image will be used only by the CPU for Read and Writes by the client.
   // Note that this flag is a special case and will be used in cases where
@@ -104,26 +91,32 @@ enum SharedImageUsage : uint32_t {
   // CPU for read/write but is not importable/texturable in the GPU. Once such
   // use case is CrOs where client CameraBufferFactory uses BufferFormat::R_8
   // to create a MappableSI but that format is non-texturable.
-  SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 25,
+  SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE = 1 << 22,
 
   // Image will be used as a WebNN shared tensor
-  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 26,
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR = 1 << 23,
 
   // Image will be used by one copy raster for raster source access.
-  SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE = 1 << 27,
+  SHARED_IMAGE_USAGE_RASTER_COPY_SOURCE = 1 << 24,
 
   // Image will be used for CPU Reads by client.
-  SHARED_IMAGE_USAGE_CPU_READ = 1 << 28,
+  SHARED_IMAGE_USAGE_CPU_READ = 1 << 25,
+
+  // Image will be read by WebNN.
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_READ = 1 << 26,
+
+  // Image will be written by WebNN.
+  SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE = 1 << 27,
 
   // Start service side only usage flags after this entry. They must be larger
   // than `LAST_CLIENT_USAGE`.
-  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_CPU_READ,
+  LAST_CLIENT_USAGE = SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR_WRITE,
 
   // Image will have pixels uploaded from CPU. The backing must implement
   // `UploadFromMemory()` if it supports this usage. Clients should specify
   // SHARED_IMAGE_USAGE_CPU_WRITE_ONLY if they need to write pixels to the
   // image.
-  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1 << 29,
+  SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 28,
 
   LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
 };
@@ -188,12 +181,7 @@ class GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageUsageSet {
     PutAll(mask_b);
   }
 
-  // Temporary exception to allow for existing, non type safe, conversions.
-  // TODO(crbug.com/343347288): Remove after all usage has been converted to
-  // `SharedImageUsageSet`.
-  // NOLINTBEGIN(google-explicit-constructor)
-  inline constexpr operator uint32_t() const { return set_storage_; }
-  // NOLINTEND(google-explicit-constructor)
+  inline explicit constexpr operator uint32_t() const { return set_storage_; }
 
   std::string ToString() const;
 

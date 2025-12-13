@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/device_management/fake_install_attributes_client.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -241,7 +237,8 @@ bool FakeInstallAttributesClient::LoadInstallAttributes() {
 
   for (const auto& entry : install_attrs_proto.attributes()) {
     install_attrs_[entry.name()].assign(
-        entry.value().data(), entry.value().data() + entry.value().size());
+        entry.value().data(),
+        UNSAFE_TODO(entry.value().data() + entry.value().size()));
   }
 
   return true;

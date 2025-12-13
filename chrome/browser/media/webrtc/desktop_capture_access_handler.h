@@ -70,6 +70,8 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
                                blink::mojom::MediaStreamType stream_type,
                                content::MediaRequestState state) override;
 
+  void SetRequestApprovedForTest(bool approved);
+
  private:
   friend class DesktopCaptureAccessHandlerTest;
 
@@ -127,6 +129,9 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
   raw_ptr<aura::Window, DanglingUntriaged> primary_root_window_for_testing_ =
       nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Skips the screen capture request approval dialog in tests.
+  bool request_approved_for_test_ = false;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_ACCESS_HANDLER_H_

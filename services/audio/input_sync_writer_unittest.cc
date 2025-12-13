@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/audio/input_sync_writer.h"
 
 #include <stddef.h>
@@ -223,12 +218,12 @@ class InputSyncWriterTest
     size_t segment_id = current_renderer_side_buffer_ % kSegments;
     uint8_t* ptr =
         static_cast<uint8_t*>(renderer_shared_memory_mapping_.memory());
-    ptr += segment_id * segment_length_;
+    UNSAFE_TODO(ptr += segment_id * segment_length_);
     media::AudioInputBuffer* buffer =
         reinterpret_cast<media::AudioInputBuffer*>(ptr);
-    EXPECT_EQ(base::subtle::NoBarrier_Load(&(buffer->params.has_unread_data)),
-              1);
-    base::subtle::Release_Store(&(buffer->params.has_unread_data), 0);
+    std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
+    EXPECT_EQ(has_unread_data.load(std::memory_order_relaxed), 1u);
+    has_unread_data.store(0, std::memory_order_release);
     ++current_renderer_side_buffer_;
   }
 

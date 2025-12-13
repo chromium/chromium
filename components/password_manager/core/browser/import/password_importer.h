@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/types/expected.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -104,6 +105,14 @@ class PasswordImporter {
               password_manager::PasswordForm::Store to_store,
               ImportResultsCallback results_callback);
 
+  // Imports `passwords` into the `to_store`.
+  // `results_callback` is used to return import summary back to the user.
+  // This function should be used when there is no need to parse passwords in a
+  // sandbox process.
+  void Import(const std::vector<CSVPassword>& csv_passwords,
+              PasswordForm::Store to_store,
+              ImportResultsCallback results_callback);
+
   // Resumes the import process when user has selected which passwords to
   // replace. The caller earlier received an array with conflicting
   // ImportEntry's that are displayed to the user, the ids of the selected items
@@ -139,10 +148,31 @@ class PasswordImporter {
       ImportResultsCallback results_callback,
       base::expected<std::string, ImportResults::Status> result);
 
-  // Processes passwords when they've been parsed by ParseCSVPasswordsInSandbox.
+  // Verifies the `seq` returned from `ParseCSVPasswordsInSandbox`. If there
+  // are no errors, proceeds to consuming the passwords. Otherwise, invokes
+  // `results_callback` to inform the user about the error and resets the
+  // importer to the initial state.
+  void OnCSVPasswordsParsed(
+      PasswordForm::Store to_store,
+      ImportResultsCallback results_callback,
+      password_manager::mojom::CSVPasswordSequencePtr seq);
+
+  // Processes `csv_passwords` by identifying errors and conflicts with the
+  // existing password in the store. If there are no errors or user interaction
+  // is not required, proceeds to execute import. Otherwise, runs
+  // `results_callback` informing the user about the status of import.
   void ConsumePasswords(PasswordForm::Store to_store,
-                        ImportResultsCallback results_callback,
-                        password_manager::mojom::CSVPasswordSequencePtr seq);
+                        const std::vector<CSVPassword>& csv_passwords,
+                        ImportResultsCallback results_callback);
+
+  // Caches the import results and triggers the user interaction flow to resolve
+  // conflicts or confirm the import.
+  void ShowImportConflicts(
+      ImportResultsCallback results_callback,
+      ImportResults results,
+      IncomingPasswords incoming_passwords,
+      std::vector<std::vector<password_manager::PasswordForm>> conflicts,
+      base::Time start_time);
 
   // Triggers the processes for adding and updating `incoming_passwords`.
   void ExecuteImport(ImportResultsCallback results_callback,

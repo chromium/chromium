@@ -41,6 +41,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",

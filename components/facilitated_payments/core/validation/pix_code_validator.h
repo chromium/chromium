@@ -21,18 +21,18 @@ class PixCodeValidator : public mojom::PixCodeValidator {
   PixCodeValidator& operator=(const PixCodeValidator& other) = delete;
   PixCodeValidator(const PixCodeValidator& other) = delete;
 
-  // Returns true if the input `code` is a valid PIX code, i.e.:
-  // 1) It consists of valid PIX code sections.
+  // Returns true if the input `code` is a valid Pix code, i.e.:
+  // 1) It consists of valid Pix code sections.
   // 2) The first section is the payload format indicator.
   // 3) The last section is the CRC16.
   // 4) The merchant account information section contains valid subsections,
-  //    including the PIX code indicator as the first subsection. The case
-  //    (upper/lower) of the PIX code indicator is ignored.
+  //    including the Pix code indicator as the first subsection. The case
+  //    (upper/lower) of the Pix code indicator is ignored.
   // 5) The additional data field template section, if present, contains valid
   //    subsections.
   //
   // This function does not validate the value of the CRC16.
-  static bool IsValidPixCode(std::string_view code);
+  static mojom::PixQrCodeType GetPixQrCodeType(std::string_view code);
 
   // Returns true if the input `code` contains the Pix code indicator.
   static bool ContainsPixIdentifier(std::string_view code);
@@ -41,7 +41,8 @@ class PixCodeValidator : public mojom::PixCodeValidator {
   // mojom::PixValidator implementation:
   void ValidatePixCode(
       const std::string& input_text,
-      base::OnceCallback<void(std::optional<bool>)> callback) override;
+      base::OnceCallback<void(std::optional<mojom::PixQrCodeType>)> callback)
+      override;
 };
 
 }  // namespace payments::facilitated

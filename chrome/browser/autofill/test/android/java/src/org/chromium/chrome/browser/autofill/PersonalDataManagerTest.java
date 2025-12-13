@@ -11,6 +11,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -31,12 +32,9 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
@@ -47,8 +45,8 @@ import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -166,16 +164,16 @@ public class PersonalDataManagerTest {
     public void testRecordSeparatorMetricForAddAndEditProfiles() throws TimeoutException {
         AutofillProfile profile =
                 AutofillProfile.builder()
-                        .setFullName("John Smith")
-                        .setAlternativeFullName("James Bond")
+                        .setFullName("山本 葵")
+                        .setAlternativeFullName("ヤマモト・アオイ")
                         .setCompanyName("Acme Inc.")
                         .setStreetAddress("1 Main\nApt A")
-                        .setRegion("CA")
-                        .setLocality("San Francisco")
+                        .setRegion("Tokyo")
+                        .setLocality("Tokyo")
                         .setPostalCode("94102")
-                        .setCountryCode("US")
+                        .setCountryCode("JP")
                         .setPhoneNumber("4158889999")
-                        .setEmailAddress("john@acme.inc")
+                        .setEmailAddress("aoi_yamamoto@acme.inc")
                         .build();
 
         // Expect histogram to record separator existence in alternative name.
@@ -238,10 +236,10 @@ public class PersonalDataManagerTest {
                         .setAlternativeFullName("やまもと·あおい")
                         .setCompanyName("Acme Inc.")
                         .setStreetAddress("1 Main\nApt A")
-                        .setRegion("CA")
-                        .setLocality("San Francisco")
+                        .setRegion("Tokyo")
+                        .setLocality("Tokyo")
                         .setPostalCode("94102")
-                        .setCountryCode("US")
+                        .setCountryCode("JP")
                         .setPhoneNumber("4158889999")
                         .setEmailAddress("aoi_yamamoto@acme.inc")
                         .build();
@@ -655,7 +653,7 @@ public class PersonalDataManagerTest {
         mHelper.setProfile(profile3);
         mHelper.setProfile(profile4);
 
-        List<String> expectedLabels = new LinkedList<>();
+        List<String> expectedLabels = new ArrayList<>();
         expectedLabels.add("123 Main, jm@example.com");
         expectedLabels.add("123 Main, jm-work@example.com");
         expectedLabels.add("1500 Second Ave, 90068");
@@ -673,8 +671,24 @@ public class PersonalDataManagerTest {
 
     @Test
     @SmallTest
+    public void testProfileEditorDescription() throws TimeoutException {
+        AutofillProfile profile =
+                AutofillProfile.builder()
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("US")
+                        .build();
+
+        String guid = mHelper.setProfile(profile);
+        String profileDescription = mHelper.getProfileDescriptionForEditor(guid);
+        assertEquals("123 Main, Los Angeles", profileDescription);
+    }
+
+    @Test
+    @SmallTest
     @Feature({"Autofill"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
     public void testProfilesFrecency() throws TimeoutException {
         // Create 3 profiles.
         AutofillProfile profile1 =
@@ -727,8 +741,7 @@ public class PersonalDataManagerTest {
         // use date. Because of its very high use count, it is still ranked second.
         mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
 
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
+        List<AutofillProfile> profiles = mHelper.getProfilesToSuggest();
         assertEquals(3, profiles.size());
         assertTrue("Profile1 should be ranked first", guid1.equals(profiles.get(0).getGUID()));
         assertTrue("Profile3 should be ranked second", guid3.equals(profiles.get(1).getGUID()));
@@ -738,7 +751,6 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
     public void testCreditCardsFrecency() throws TimeoutException {
         // Create 3 credit cards.
         CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
@@ -765,70 +777,6 @@ public class PersonalDataManagerTest {
         assertTrue("Card1 should be ranked first", guid1.equals(cards.get(0).getGUID()));
         assertTrue("Card3 should be ranked second", guid3.equals(cards.get(1).getGUID()));
         assertTrue("Card2 should be ranked third", guid2.equals(cards.get(2).getGUID()));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
-    public void testProfileRanking() throws TimeoutException {
-        // Create 3 profiles.
-        AutofillProfile profile1 = AutofillProfile.builder().setFullName("John Major").build();
-        AutofillProfile profile2 = AutofillProfile.builder().setFullName("Josh Larkin").build();
-        AutofillProfile profile3 = AutofillProfile.builder().setFullName("Jasper Lundgren").build();
-
-        String guid1 = mHelper.setProfile(profile1);
-        String guid2 = mHelper.setProfile(profile2);
-        String guid3 = mHelper.setProfile(profile3);
-
-        // The first profile has the lowest use count but has most recently been used, making it
-        // ranked second.
-        mHelper.setProfileUseStatsForTesting(guid1, 6, 1);
-        // The second profile has the median use count and use date, and with these values it is
-        // ranked first.
-        mHelper.setProfileUseStatsForTesting(guid2, 25, 10);
-        // The third profile has the highest use count and is the profile with the farthest last
-        // use date. Because of its very far last use date, it's ranked third.
-        mHelper.setProfileUseStatsForTesting(guid3, 100, 20);
-
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
-        assertEquals(3, profiles.size());
-        assertTrue("Profile2 should be ranked first", guid2.equals(profiles.get(0).getGUID()));
-        assertTrue("Profile1 should be ranked second", guid1.equals(profiles.get(1).getGUID()));
-        assertTrue("Profile3 should be ranked third", guid3.equals(profiles.get(2).getGUID()));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_CREDIT_CARDS)
-    public void testCreditCardRanking() throws TimeoutException {
-        // Create 3 credit cards.
-        CreditCard card1 = createLocalCreditCard("Visa", "1234123412341234", "5", "2020");
-
-        CreditCard card2 =
-                createLocalCreditCard("American Express", "1234123412341234", "8", "2020");
-        card2.setOrigin("http://www.example.com");
-
-        CreditCard card3 = createLocalCreditCard("Mastercard", "1234123412341234", "11", "2020");
-        card3.setOrigin("http://www.example.com");
-
-        // The first credit card has the lowest use count but has most recently been used, making it
-        // ranked first.
-        String guid1 = mHelper.addCreditCardWithUseStatsForTesting(card1, 6, 1);
-        // The second credit card has the median use count and use date, and with these
-        // values it is ranked third.
-        String guid2 = mHelper.addCreditCardWithUseStatsForTesting(card2, 25, 10);
-        // The third credit card has the highest use count and is the credit card with the farthest
-        // last use date. Because of its very high use count, it is still ranked second.
-        String guid3 = mHelper.addCreditCardWithUseStatsForTesting(card3, 100, 20);
-
-        List<CreditCard> cards = mHelper.getCreditCardsToSuggest();
-        assertEquals(3, cards.size());
-        assertTrue("Card2 should be ranked first", guid2.equals(cards.get(0).getGUID()));
-        assertTrue("Card1 should be ranked second", guid1.equals(cards.get(1).getGUID()));
-        assertTrue("Card3 should be ranked third", guid3.equals(cards.get(2).getGUID()));
     }
 
     @Test
@@ -989,27 +937,12 @@ public class PersonalDataManagerTest {
     @Test
     @SmallTest
     @Feature({"Autofill"})
-    public void testGetProfilesToSuggest_NoName() throws TimeoutException {
+    public void testGetProfilesToSuggest() throws TimeoutException {
         mHelper.setProfile(createTestProfile());
 
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ false);
+        List<AutofillProfile> profiles = mHelper.getProfilesToSuggest();
         assertEquals(
                 "Acme Inc., 123 Main, Los Angeles, California 90210, United States",
-                profiles.get(0).getLabel());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testGetProfilesToSuggest_WithName() throws TimeoutException {
-        mHelper.setProfile(createTestProfile());
-
-        List<AutofillProfile> profiles =
-                mHelper.getProfilesToSuggest(/* includeNameInLabel= */ true);
-        assertEquals(
-                "John Major, Acme Inc., 123 Main, Los Angeles, California 90210, "
-                        + "United States",
                 profiles.get(0).getLabel());
     }
 
@@ -1253,5 +1186,35 @@ public class PersonalDataManagerTest {
                                         AutofillTestHelper
                                                 .getPersonalDataManagerForLastUsedProfile()
                                                 .getEwallets()));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testToggleOptInEmitsMetric() throws TimeoutException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager pdm =
+                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile();
+                    assertTrue(pdm.isAutofillProfileEnabled());
+
+                    HistogramWatcher histogramExpectation =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    PersonalDataManager
+                                            .AUTOFILL_ADDRESS_OPT_IN_CHANGE_HISTOGRAM_NAME,
+                                    PersonalDataManager.AutofillAddressOptInChange.OPT_OUT);
+                    pdm.setAutofillProfileEnabled(false);
+                    assertFalse(pdm.isAutofillProfileEnabled());
+                    histogramExpectation.assertExpected();
+
+                    histogramExpectation =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    PersonalDataManager
+                                            .AUTOFILL_ADDRESS_OPT_IN_CHANGE_HISTOGRAM_NAME,
+                                    PersonalDataManager.AutofillAddressOptInChange.OPT_IN);
+                    pdm.setAutofillProfileEnabled(true);
+                    assertTrue(pdm.isAutofillProfileEnabled());
+                    histogramExpectation.assertExpected();
+                });
     }
 }

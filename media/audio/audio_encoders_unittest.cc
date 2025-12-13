@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -18,6 +19,7 @@
 #include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/audio/simple_sources.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"
@@ -823,11 +825,36 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
 
 // Tests we can configure the AudioOpusEncoder's extra options.
 TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
-  // TODO(crbug.com/40243924): Test an OpusOptions::frame_duration which forces
-  // repacketization.
   constexpr media::AudioEncoder::OpusOptions kTestOpusOptions[] = {
       // Base case
       {.frame_duration = base::Milliseconds(20),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+
+      // Test Repacketizer by using valid non-standard durations
+      {.frame_duration = base::Milliseconds(30),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Microseconds(117500),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Microseconds(7500),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Milliseconds(80),
+       .complexity = 10,
+       .packet_loss_perc = 0,
+       .use_in_band_fec = false,
+       .use_dtx = false},
+      {.frame_duration = base::Milliseconds(120),
        .complexity = 10,
        .packet_loss_perc = 0,
        .use_in_band_fec = false,

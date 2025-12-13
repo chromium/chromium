@@ -7,6 +7,8 @@
 
 namespace autofill {
 
+// TODO(crbug.com/430575808): Rename this to `AutofillProgressUiType` as it will
+// not be a "dialog" on mobile.
 // The type of autofill progress dialog to show.
 enum class AutofillProgressDialogType {
   // Unspecified progress dialog type.
@@ -23,6 +25,8 @@ enum class AutofillProgressDialogType {
   kCardInfoRetrievalEnrolledUnmaskProgressDialog,
   // Used when fetching VCN details during a BNPL transaction.
   kBnplFetchVcnProgressDialog,
+  // Used when extracting the checkout amount during a BNPL transaction.
+  kBnplAmountExtractionProgressUi,
 };
 
 }  // namespace autofill

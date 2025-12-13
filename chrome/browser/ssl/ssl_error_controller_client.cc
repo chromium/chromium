@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
@@ -101,7 +101,7 @@ void SSLErrorControllerClient::Proceed() {
     // Notifies the browser process when a certificate exception is allowed.
     web_contents->SetAlwaysSendSubresourceNotifications();
 
-    state->AllowCert(request_url_.host(), *ssl_info_.cert.get(), cert_error_,
+    state->AllowCert(request_url_.GetHost(), *ssl_info_.cert.get(), cert_error_,
                      InterstitialRenderFrameHost()->GetStoragePartition());
     Reload();
   }
@@ -124,3 +124,12 @@ void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
       base::BindOnce(&security_interstitials::LaunchDateAndTimeSettings));
 #endif
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void SSLErrorControllerClient::ShowCertificateViewer() {
+  // TODO(crbug.com/436274249): support "view certificate" on android too.
+  ::ShowCertificateViewer(web_contents(),
+                          web_contents()->GetTopLevelNativeWindow(),
+                          ssl_info_.cert.get());
+}
+#endif

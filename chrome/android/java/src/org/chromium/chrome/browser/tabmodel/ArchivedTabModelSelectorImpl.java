@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -22,6 +21,8 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /** {@link TabModelSelector} for archived tabs. Must be instantiated and used on the UI thread. */
 @NullMarked

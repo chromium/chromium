@@ -383,8 +383,7 @@ void ExtendedDragSource::OnDraggedWindowVisibilityChanged(bool visible) {
 
   auto toplevel_bounds =
       gfx::Rect({screen_location, toplevel->bounds().size()});
-  auto display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(toplevel);
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(toplevel);
   toplevel->SetBoundsInScreen(toplevel_bounds, display);
 
   DVLOG(1) << "Dragged window mapped. toplevel=" << toplevel

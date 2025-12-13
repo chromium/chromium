@@ -6,13 +6,13 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -73,7 +73,7 @@ std::optional<OmniboxPopupSelection> ui::metadata::TypeConverter<
 }
 
 OmniboxRowView::OmniboxRowView(size_t line, OmniboxPopupViewViews* popup_view)
-    : popup_view_(popup_view) {
+    : popup_view_(popup_view), line_(line) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   result_view_ =

@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -44,6 +43,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_fixed.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "stale_host_resolver.h"
@@ -131,17 +131,11 @@ class MockHostResolverProc : public HostResolverProc {
   const int result_;
 };
 
-class StaleHostResolverTest : public testing::Test {
+class StaleHostResolverTest : public TestWithTaskEnvironment {
  protected:
   StaleHostResolverTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        mock_network_change_notifier_(
-            net::NetworkChangeNotifier::CreateMockIfNeeded()),
-        mock_proc_(new MockHostResolverProc(OK)),
-        resolver_(nullptr) {
-    // Make value clock not empty.
-    tick_clock_.Advance(base::Microseconds(1));
-  }
+      : TestWithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ~StaleHostResolverTest() override {}
 
@@ -203,7 +197,6 @@ class StaleHostResolverTest : public testing::Test {
 
     stale_resolver_ = std::make_unique<StaleHostResolver>(
         CreateMockInnerResolverWithDnsClient(std::move(dns_client)), options_);
-    stale_resolver_->SetTickClockForTesting(&tick_clock_);
     resolver_ = stale_resolver_.get();
   }
 
@@ -238,8 +231,8 @@ class StaleHostResolverTest : public testing::Test {
         error,
         error == OK ? MakeEndpoints(kCacheAddress) : std::vector<IPEndPoint>(),
         /*aliases=*/{}, HostCache::Entry::SOURCE_UNKNOWN, ttl);
-    base::TimeDelta age = base::Seconds(age_sec);
-    base::TimeTicks then = tick_clock_.NowTicks() - age;
+    auto age = base::Seconds(age_sec);
+    auto then = base::TimeTicks::Now() - age;
     resolver_->GetHostCache()->Set(key, entry, then, ttl);
   }
 
@@ -256,7 +249,7 @@ class StaleHostResolverTest : public testing::Test {
 
     HostCache::Key key(kHostname, DnsQueryType::UNSPECIFIED, 0,
                        HostResolverSource::ANY, NetworkAnonymizationKey());
-    base::TimeTicks now = tick_clock_.NowTicks();
+    auto now = base::TimeTicks::Now();
     HostCache::EntryStaleness stale;
     EXPECT_TRUE(resolver_->GetHostCache()->LookupStale(key, now, &stale));
     EXPECT_TRUE(stale.is_stale());
@@ -339,31 +332,26 @@ class StaleHostResolverTest : public testing::Test {
     }
   }
 
-  void AdvanceTickClock(base::TimeDelta delta) { tick_clock_.Advance(delta); }
-
   bool resolve_complete() const { return resolve_complete_; }
   int resolve_error() const { return resolve_error_; }
   const AddressList& resolve_addresses() const {
     DCHECK(resolve_complete_);
-    return *request_->GetAddressResults();
+    return request_->GetAddressResults();
   }
 
  private:
-  // Needed for HostResolver to run HostResolverProc callbacks.
-  base::test::TaskEnvironment task_environment_;
-  base::SimpleTestTickClock tick_clock_;
-  std::unique_ptr<net::NetworkChangeNotifier> mock_network_change_notifier_;
+  std::unique_ptr<net::NetworkChangeNotifier> mock_network_change_notifier_{
+      net::NetworkChangeNotifier::CreateMockIfNeeded()};
 
-  scoped_refptr<MockHostResolverProc> mock_proc_;
-
+  scoped_refptr<MockHostResolverProc> mock_proc_{
+      base::MakeRefCounted<MockHostResolverProc>(OK)};
   StaleHostResolver::StaleOptions options_;
 
   // Must outlive `resolver_`.
   std::unique_ptr<StaleHostResolver> stale_resolver_;
 
-  raw_ptr<HostResolver> resolver_;
+  raw_ptr<HostResolver> resolver_{nullptr};
 
-  base::TimeTicks now_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
   bool resolve_pending_{false};
   bool resolve_complete_{false};
@@ -430,12 +418,7 @@ TEST_F(StaleHostResolverTest, DefaultOptions) {
 }
 
 // Flaky on Linux ASan, crbug.com/838524.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_StaleCache DISABLED_StaleCache
-#else
-#define MAYBE_StaleCache StaleCache
-#endif
-TEST_F(StaleHostResolverTest, MAYBE_StaleCache) {
+TEST_F(StaleHostResolverTest, StaleCache) {
   SetStaleDelay(kNoStaleDelaySec);
   CreateResolver();
   CreateCacheEntry(kAgeExpiredSec, OK);
@@ -562,14 +545,7 @@ TEST_F(StaleHostResolverTest, ReturnStaleCacheSync) {
 // CancelWithFreshCache makes no sense; the request would've returned
 // synchronously.
 
-// Disallow other networks cases fail under Fuchsia (crbug.com/816143).
-// Flaky on Win buildbots. See crbug.com/836106
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_StaleUsability DISABLED_StaleUsability
-#else
-#define MAYBE_StaleUsability StaleUsability
-#endif
-TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
+TEST_F(StaleHostResolverTest, StaleUsability) {
   struct TestCase {
     int max_expired_time_sec;
     int max_stale_uses;
@@ -637,17 +613,17 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
     CreateResolver();
     CreateCacheEntry(kCacheEntryTTLSec + test_case.age_sec, test_case.error);
 
-    AdvanceTickClock(base::Milliseconds(1));
+    FastForwardBy(base::Milliseconds(1));
     for (int j = 0; j < test_case.network_changes; ++j) {
       OnNetworkChange();
     }
 
-    AdvanceTickClock(base::Milliseconds(1));
+    FastForwardBy(base::Milliseconds(1));
     for (int j = 0; j < test_case.stale_use - 1; ++j) {
       LookupStale();
     }
 
-    AdvanceTickClock(base::Milliseconds(1));
+    FastForwardBy(base::Milliseconds(1));
     Resolve(std::nullopt);
     WaitForResolve();
     EXPECT_TRUE(resolve_complete());
@@ -671,7 +647,7 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
       }
     }
     // Make sure that all tasks complete so jobs are freed properly.
-    AdvanceTickClock(base::Seconds(kLongStaleDelaySec));
+    FastForwardBy(base::Seconds(kLongStaleDelaySec));
     WaitForNetworkResolveComplete();
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();

@@ -268,6 +268,24 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
+    public void performReportWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            Callback<WebAuthSecurityChecksResults> callback) {
+        if (mNativeRenderFrameHostAndroid == 0) {
+            var result =
+                    new WebAuthSecurityChecksResults(
+                            AuthenticatorStatus.UNKNOWN_ERROR, /* isCrossOrigin= */ false);
+            callback.onResult(result);
+            return;
+        }
+
+        RenderFrameHostImplJni.get()
+                .performReportWebAuthSecurityChecks(
+                        mNativeRenderFrameHostAndroid, relyingPartyId, effectiveOrigin, callback);
+    }
+
+    @Override
     public GlobalRenderFrameHostId getGlobalRenderFrameHostId() {
         return mRenderFrameHostId;
     }
@@ -294,6 +312,17 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         RenderFrameHostImplJni.get()
                 .executeJavaScriptInIsolatedWorld(
                         mNativeRenderFrameHostAndroid, script, worldId, callback);
+    }
+
+    @Override
+    public boolean hasHitTestDataForTesting() {
+        return RenderFrameHostImplJni.get()
+                .hasHitTestDataForTesting(mNativeRenderFrameHostAndroid); // IN-TEST
+    }
+
+    @Override
+    public void viewSource() {
+        RenderFrameHostImplJni.get().viewSource(mNativeRenderFrameHostAndroid);
     }
 
     @NativeMethods
@@ -349,6 +378,12 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 @Nullable Origin remoteDesktopClientOverrideOrigin,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
+        void performReportWebAuthSecurityChecks(
+                long nativeRenderFrameHostAndroid,
+                String relyingPartyId,
+                Origin effectiveOrigin,
+                Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
+
         int getLifecycleState(long nativeRenderFrameHostAndroid);
 
         void insertVisualStateCallback(
@@ -359,5 +394,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 String stript,
                 int isolatedWorldId,
                 @Nullable JavaScriptCallback callback);
+
+        boolean hasHitTestDataForTesting(long nativeRenderFrameHostAndroid);
+
+        void viewSource(long nativeRenderFrameHostAndroid);
     }
 }

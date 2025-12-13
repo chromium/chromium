@@ -48,7 +48,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -57,6 +56,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -1072,9 +1072,9 @@ TEST_F(CaptureModeDemoToolsTest,
   for (const auto test_case : kTestCases) {
     if (test_case.enable_tablet_mode) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const auto histogram_name =
@@ -1145,8 +1145,8 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources,
 // Tests that the mouse highlight layer will be created on mouse down and
 // will disappear after the animation.
 TEST_P(CaptureModeDemoToolsTestWithAllSources, MouseHighlightTest) {
-  ui::ScopedAnimationDurationScaleMode normal_animation(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_animation(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartDemoToolsEnabledVideoRecordingWithParam();
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
   EXPECT_TRUE(demo_tools_controller);
@@ -1171,8 +1171,8 @@ TEST_P(CaptureModeDemoToolsTestWithAllSources, MouseHighlightTest) {
 // will be centered on its mouse event location.
 TEST_P(CaptureModeDemoToolsTestWithAllSources,
        MouseHighlightShouldBeCenteredWithMouseClick) {
-  ui::ScopedAnimationDurationScaleMode normal_animation(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode normal_animation(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   StartDemoToolsEnabledVideoRecordingWithParam();
   auto* recording_watcher =
       CaptureModeController::Get()->video_recording_watcher_for_testing();
@@ -1359,8 +1359,8 @@ TEST_F(ProjectorCaptureModeDemoToolsTest, EnableDemoToolsByDefault) {
 // projector-initiated capture mode.
 TEST_F(ProjectorCaptureModeDemoToolsTest,
        DisablePointerHighlightWithAnnotatorEnabled) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* capture_mode_controller = CaptureModeController::Get();
   capture_mode_controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
@@ -1440,9 +1440,9 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
   for (const auto test_case : kTestCases) {
     if (test_case.enable_tablet_mode) {
       SwitchToTabletMode();
-      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+      EXPECT_TRUE(display::Screen::Get()->InTabletMode());
     } else {
-      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+      EXPECT_FALSE(display::Screen::Get()->InTabletMode());
     }
 
     const std::string histogram_name = BuildHistogramName(

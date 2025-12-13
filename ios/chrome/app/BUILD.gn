@@ -155,7 +155,6 @@ source_set("unit_tests") {
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/public/provider/chrome/browser/application_mode_fetcher:application_mode_fetcher_api",
     "//ios/testing:block_swizzler",
-    "//ios/third_party/material_components_ios",
     "//ios/web/public/test",
     "//testing/gmock",
     "//testing/gtest",
@@ -167,6 +166,7 @@ source_set("unit_tests") {
 source_set("tests_hook") {
   # This target is intentionally not test-only, as the main app depends on it.
   sources = [ "tests_hook.h" ]
+  deps = [ "//base" ]
 }
 
 source_set("tests_fake_hook") {
@@ -174,19 +174,26 @@ source_set("tests_fake_hook") {
   sources = [ "tests_fake_hook.mm" ]
   deps = [
     ":tests_hook",
+    "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
   ]
 }
 
 source_set("perf_tests_hook") {
-  sources = [ "perf_tests_hook.mm" ]
+  sources = [
+    "perf_tests_hook.mm",
+    "perf_tests_hook_logging.mm",
+  ]
   deps = [
     ":tests_hook",
+    "//components/commerce/core:shopping_service",
     "//components/feature_engagement/public",
     "//components/signin/internal/identity_manager",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/public/snackbar:constants",
     "//ios/public/provider/chrome/browser/primes:primes_api",
   ]
 }
@@ -374,8 +381,6 @@ source_set("enterprise_app_agent_ui") {
 
 source_set("app_internal") {
   sources = [
-    "chrome_overlay_window.h",
-    "chrome_overlay_window.mm",
     "main_application_delegate.h",
     "main_application_delegate.mm",
     "main_application_delegate_testing.h",
@@ -431,6 +436,7 @@ source_set("app_internal") {
     "//components/metrics",
     "//components/optimization_guide/core:features",
     "//components/password_manager/core/common",
+    "//components/policy/core/common",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/previous_session_info",
@@ -467,8 +473,10 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
+    "//ios/chrome/browser/cross_platform_promos/model",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_browser/model/install_attribution",
     "//ios/chrome/browser/device_orientation/ui_bundled",
     "//ios/chrome/browser/discover_feed/model:discover_feed_app_agent",
     "//ios/chrome/browser/download/model",
@@ -486,11 +494,12 @@ source_set("app_internal") {
     "//ios/chrome/browser/main/ui_bundled",
     "//ios/chrome/browser/memory/model",
     "//ios/chrome/browser/metrics/model",
-    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/metrics/model:metrics_internal",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_browser_agent",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/promos_manager/model:factory",
     "//ios/chrome/browser/push_notification/model:push_notification_delegate",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
@@ -501,6 +510,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/sessions/model:session_restoration_service",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/sessions/model:session_util",
+    "//ios/chrome/browser/share_extension/model:controller",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
@@ -512,6 +522,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
@@ -541,7 +552,6 @@ source_set("app_internal") {
     "//ios/public/provider/chrome/browser/signin:choice_api",
     "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",
-    "//ios/third_party/material_components_ios",
     "//ios/web/common:uikit",
     "//ios/web/public/webui",
     "//net",
@@ -613,7 +623,7 @@ source_set("change_profile_animator") {
     "//base",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
   ]
 }
 
@@ -657,19 +667,6 @@ source_set("main") {
   if (ios_chrome_generate_order_file) {
     deps += [ "//ios/components/order_file" ]
   }
-  assert_no_deps = []
-
-  if (ios_chrome_links_with_material_components_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
 }
 
 if (ios_chrome_privacy_manifest != "") {
@@ -691,23 +688,21 @@ source_set("multitasking_test_app_delegate") {
     "//base",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/browser/shared/coordinator/scene",
-    "//ios/third_party/material_components_ios",
+    "//ios/chrome/browser/shared/ui/chrome_overlay_window",
   ]
 }
 
-if (ios_partition_alloc_enabled) {
-  ios_framework_bundle("early_partition_alloc_framework") {
-    output_name = "EarlyMallocZoneRegistration"
-    sources = [ "early_pa_registration.cc" ]
-    info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
-    extra_substitutions =
-        [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
+ios_framework_bundle("early_partition_alloc_framework") {
+  output_name = "EarlyMallocZoneRegistration"
+  sources = [ "early_pa_registration.cc" ]
+  info_plist = "//ios/chrome/app/resources/EarlyPAFrameworkInfo.plist"
+  extra_substitutions =
+      [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
 
-    deps = [
-      "//base/allocator:early_zone_registration_apple",
-      "//base/allocator/partition_allocator:buildflags",
-    ]
-  }
+  deps = [
+    "//base/allocator:early_zone_registration_apple",
+    "//base/allocator/partition_allocator:buildflags",
+  ]
 }
 
 chrome_app("chrome") {
@@ -720,13 +715,16 @@ chrome_app("chrome") {
     orderfile_path = ios_chrome_orderfile
   }
 
+  link_framework_first = "EarlyMallocZoneRegistration"
+
   bundle_deps = [
     "//ios/chrome/app/resources",
     "//ios/chrome/app/resources:settings_resources",
   ]
   if (!is_chrome_branded || ios_chrome_app_variants == []) {
-    assert(ios_application_icons_target_legacy != "",
-           "ios_application_icons_target_legacy must be defined.")
+    assert(ios_application_icons_target != "",
+           "ios_application_icons_target must be defined.")
+    bundle_deps += [ ios_application_icons_target ]
     bundle_deps += [ ios_application_icons_target_legacy ]
     bundle_deps += ios_providers_resources_targets
   } else {
@@ -807,18 +805,6 @@ chrome_app("chrome") {
   }
 
   assert_no_deps = ios_assert_no_deps + ios_chrome_extra_assert_no_deps
-
-  if (ios_chrome_links_with_material_components_framework) {
-    deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  } else {
-    assert_no_deps += [
-      "//ios/third_party/material_components_ios:material_components_ios+bundle",
-      "//ios/third_party/material_components_ios:material_components_ios+link",
-    ]
-  }
 
   # Lottie links with GLKit which does not support macCatalyst environment
   # (see https://crbug.com/1394553 for details of the build failure). This

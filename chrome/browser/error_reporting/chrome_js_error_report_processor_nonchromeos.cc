@@ -4,6 +4,8 @@
 
 #include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -38,7 +40,7 @@ void ChromeJsErrorReportProcessor::OnRequestComplete(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     base::ScopedClosureRunner callback_runner,
     base::Time report_time,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (response_body) {
     DVLOG(1) << "Uploaded crash report. ID: " << *response_body;
     base::ThreadPool::PostTaskAndReply(

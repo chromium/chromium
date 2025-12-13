@@ -49,7 +49,26 @@ class TestReadWriteCardsView : public ReadWriteCardsView {
 
  private:
   int update_bounds_called_ = 0;
-  size_t maximum_height_ = 0;
+  int maximum_height_ = 0;
+};
+
+class TestMinWidthReadCardsView : public TestReadWriteCardsView {
+  METADATA_HEADER(TestMinWidthReadCardsView, TestReadWriteCardsView)
+
+ public:
+  static constexpr int kMinWidth = 280;
+
+  explicit TestMinWidthReadCardsView(ReadWriteCardsUiController& controller)
+      : TestReadWriteCardsView(controller) {}
+
+  TestMinWidthReadCardsView(const TestMinWidthReadCardsView&) = delete;
+  TestMinWidthReadCardsView& operator=(const TestMinWidthReadCardsView&) =
+      delete;
+
+  ~TestMinWidthReadCardsView() override = default;
+
+  // ReadWriteCardsView:
+  std::optional<int> GetMinWidth() const override { return kMinWidth; }
 };
 
 std::unique_ptr<TestReadWriteCardsView> CreateViewWithHeight(
@@ -62,7 +81,14 @@ std::unique_ptr<TestReadWriteCardsView> CreateViewWithHeight(
   return view;
 }
 
+std::string GetTestVariantName(testing::TestParamInfo<bool> param) {
+  return param.param ? "HmrOn" : "HmrOff";
+}
+
 BEGIN_METADATA(TestReadWriteCardsView)
+END_METADATA
+
+BEGIN_METADATA(TestMinWidthReadCardsView)
 END_METADATA
 
 }  // namespace
@@ -90,7 +116,8 @@ class ReadWriteCardsUiControllerTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ReadWriteCardsUiControllerTest,
-                         /*IsMahiEnabled()=*/testing::Bool());
+                         /*IsMahiEnabled()=*/testing::Bool(),
+                         &GetTestVariantName);
 
 TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersUi) {
   ReadWriteCardsUiController controller;
@@ -319,6 +346,26 @@ TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsWithExtraReservedHeight) {
 
   EXPECT_EQ(view_height, widget_bounds.height());
   EXPECT_EQ(kDefaultWidth, widget_bounds.width());
+}
+
+TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsWithMinWidth) {
+  ReadWriteCardsUiController controller;
+
+  gfx::Rect context_menu_bounds =
+      gfx::Rect(gfx::Point(500, 250), gfx::Size(kDefaultWidth, 140));
+  controller.SetContextMenuBounds(context_menu_bounds);
+
+  ASSERT_LT(kDefaultWidth, TestMinWidthReadCardsView::kMinWidth)
+      << "kDefaultWidth needs to be smaller than kMinWidth as this tests that "
+         "kMinWidth is respected.";
+
+  controller.SetQuickAnswersUi(
+      std::make_unique<TestMinWidthReadCardsView>(controller));
+  ASSERT_TRUE(controller.widget_for_test());
+  gfx::Rect widget_bounds =
+      controller.widget_for_test()->GetWindowBoundsInScreen();
+
+  EXPECT_EQ(TestMinWidthReadCardsView::kMinWidth, widget_bounds.width());
 }
 
 TEST_P(ReadWriteCardsUiControllerTest, ChildViewsPosition) {

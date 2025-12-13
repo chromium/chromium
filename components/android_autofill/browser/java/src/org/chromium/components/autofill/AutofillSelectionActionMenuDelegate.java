@@ -5,14 +5,16 @@
 package org.chromium.components.autofill;
 
 import android.content.pm.ResolveInfo;
+import android.view.View;
 
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,36 +29,36 @@ public class AutofillSelectionActionMenuDelegate implements SelectionActionMenuD
     public AutofillSelectionActionMenuDelegate() {}
 
     @Override
-    public void modifyDefaultMenuItems(
-            List<SelectionMenuItem.Builder> menuItemBuilders,
+    public List<SelectionMenuItem> getAdditionalMenuItems(
+            @MenuType int menuType,
             boolean isSelectionPassword,
             boolean isSelectionReadOnly,
-            String selectedText) {}
+            String selectedText) {
+        if (selectedText.isEmpty() && mAutofillSelectionMenuItemHelper != null) {
+            return mAutofillSelectionMenuItemHelper.getAdditionalItems();
+        }
+        return List.of();
+    }
 
     @Override
-    public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
+    public List<ResolveInfo> filterTextProcessingActivities(
+            @MenuType int menuType, List<ResolveInfo> activities) {
         return activities;
     }
 
     @Override
-    public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
-        if (mAutofillSelectionMenuItemHelper != null) {
-            return mAutofillSelectionMenuItemHelper.getAdditionalItems();
-        }
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public boolean canReuseCachedSelectionMenu() {
+    public boolean canReuseCachedSelectionMenu(@MenuType int menuType) {
         return true;
     }
 
     public void setAutofillSelectionMenuItemHelper(AutofillSelectionMenuItemHelper provider) {
         mAutofillSelectionMenuItemHelper = provider;
+    }
+
+    @Override
+    public boolean handleMenuItemClick(
+            SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
+        return mAutofillSelectionMenuItemHelper != null
+                && mAutofillSelectionMenuItemHelper.handleMenuItemClick(item);
     }
 }

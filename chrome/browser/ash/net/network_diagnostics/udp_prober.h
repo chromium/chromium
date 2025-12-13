@@ -14,7 +14,6 @@
 #include "net/base/host_port_pair.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_context_getter.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ash::network_diagnostics {
 

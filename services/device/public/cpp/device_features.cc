@@ -11,19 +11,15 @@ namespace features {
 // Enables mitigation algorithm to prevent attempt of calibration from an
 // attacker.
 BASE_FEATURE(kComputePressureBreakCalibrationMitigation,
-             "ComputePressureBreakCalibrationMitigation",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables an extra set of concrete sensors classes based on Generic Sensor API,
 // which expose previously unexposed platform features, e.g. ALS or Magnetometer
-BASE_FEATURE(kGenericSensorExtraClasses,
-             "GenericSensorExtraClasses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGenericSensorExtraClasses, base::FEATURE_DISABLED_BY_DEFAULT);
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.
 BASE_FEATURE(kSerialPortConnected,
-             "SerialPortConnected",
 #if !BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
@@ -41,20 +37,15 @@ BASE_FEATURE(kWebUsbBlocklist,
 // When enabled, accessing the navigator.hid attribute does not prevent the
 // frame from entering the back forward cache.
 BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,
-             "WebHidAttributeAllowsBackForwardCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN)
 // Enable integration with the Windows system-level location permission.
-BASE_FEATURE(kWinSystemLocationPermission,
-             "WinSystemLocationPermission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWinSystemLocationPermission, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables a fix for a HID issue where feature reports read from devices that
 // do not use report IDs would incorrectly include an extra zero byte at the
 // start of the report and truncate the last byte of the report.
-BASE_FEATURE(kHidGetFeatureReportFix,
-             "HidGetFeatureReportFix",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHidGetFeatureReportFix, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Defines a feature parameter for the `kWinSystemLocationPermission` feature.
 // This parameter controls the polling interval (in milliseconds) for checking
@@ -67,30 +58,23 @@ const base::FeatureParam<int> kWinSystemLocationPermissionPollingParam{
 // Enables usage of the location provider manager to select between
 // the operating system's location API or our network-based provider
 // as the source of location data for Geolocation API.
-#if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kLocationProviderManager,
-             "LocationProviderManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+BASE_FEATURE(kLocationProviderManager, base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kLocationProviderManager,
-             "LocationProviderManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
+BASE_FEATURE(kLocationProviderManager, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables crash key logging for USB device open operations on ChromeOS. See
 // crbug.com/332722607. Can be disabled as a kill switch if needed.
-BASE_FEATURE(kUsbDeviceLinuxOpenCrashKey,
-             "UsbDeviceLinuxOpenCrashKey",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUsbDeviceLinuxOpenCrashKey, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Enables registering & unregistering of the Battery Status Manager broadcast
 // receiver to the background thread.
 BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
-             "BatteryStatusManagerBroadcastReceiverInBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -98,8 +82,7 @@ BASE_FEATURE(kBatteryStatusManagerBroadcastReceiverInBackground,
 // to bypass the HID blocklist when accessing FIDO devices. When enabled,
 // privileged extensions can access non-FIDO interfaces on known security keys.
 BASE_FEATURE(kSecurityKeyHidInterfacesAreFido,
-             "SecurityKeyHidInterfacesAreFido",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>::Option
@@ -119,6 +102,12 @@ const base::FeatureParam<device::mojom::LocationProviderManagerMode>
     kLocationProviderManagerParam{
         &kLocationProviderManager, "LocationProviderManagerMode",
         device::mojom::LocationProviderManagerMode::kHybridPlatform,
+        &location_provider_manager_mode_options};
+#elif BUILDFLAG(IS_WIN)
+const base::FeatureParam<device::mojom::LocationProviderManagerMode>
+    kLocationProviderManagerParam{
+        &kLocationProviderManager, "LocationProviderManagerMode",
+        device::mojom::LocationProviderManagerMode::kPlatformOnly,
         &location_provider_manager_mode_options};
 #else
 const base::FeatureParam<device::mojom::LocationProviderManagerMode>
@@ -140,18 +129,20 @@ bool IsOsLevelGeolocationPermissionSupportEnabled() {
 
 // Controls whether Chrome will try to automatically detach kernel drivers when
 // a USB interface is busy.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
-BASE_FEATURE(kAutomaticUsbDetach,
-             "AutomaticUsbDetach",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kAutomaticUsbDetach, base::FEATURE_ENABLED_BY_DEFAULT);
+#elif BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kAutomaticUsbDetach, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_WIN)
 // Splits DTR and RTS control signals. See crbug.com/420689824.
 // Can be disabled as a kill switch if needed.
-BASE_FEATURE(kSerialSplitDtrAndRts,
-             "SerialSplitDtrAndRts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSerialSplitDtrAndRts, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kHidReportRequestExactLength, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features

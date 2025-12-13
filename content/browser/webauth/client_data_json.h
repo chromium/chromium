@@ -5,55 +5,28 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_CLIENT_DATA_JSON_H_
 #define CONTENT_BROWSER_WEBAUTH_CLIENT_DATA_JSON_H_
 
-#include <stdint.h>
-
-#include <optional>
-#include <string>
-
-#include "base/containers/span.h"
+#include "components/webauthn/core/browser/client_data_json.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace content {
-
-// ClientDataRequestType enumerates different request types that
-// CollectedClientData can be built for. See
-// |BuildClientDataJson|.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content_public.browser
-// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ClientDataRequestType
-enum class ClientDataRequestType {
-  kWebAuthnCreate,
-  kWebAuthnGet,
-  kPaymentGet,
-};
-
-// ClientDataJsonParams is the parameter struct for `BuildClientDataJson()`.
-struct CONTENT_EXPORT ClientDataJsonParams {
-  ClientDataJsonParams(ClientDataRequestType type,
-                       url::Origin origin,
-                       url::Origin top_origin,
-                       std::optional<std::vector<uint8_t>> challenge,
-                       bool is_cross_origin_iframe = false);
-  ClientDataJsonParams(ClientDataJsonParams&&);
-  ClientDataJsonParams& operator=(ClientDataJsonParams&&);
-  ~ClientDataJsonParams();
-
-  ClientDataRequestType type;
-  url::Origin origin;
-  url::Origin top_origin;
-  std::optional<std::vector<uint8_t>> challenge;
-  bool is_cross_origin_iframe = false;
-
-  // The following fields are only set if `type` is `kPaymentGet`.
-  blink::mojom::PaymentOptionsPtr payment_options = nullptr;
-  std::string payment_rp;
-};
 
 // Builds the CollectedClientData[1] dictionary with the given values,
 // serializes it to JSON, and returns the resulting string.
 // This CHECKs if `challenge` has not been provided with a value.
 // [1] https://w3c.github.io/webauthn/#dictdef-collectedclientdata
-CONTENT_EXPORT std::string BuildClientDataJson(ClientDataJsonParams params);
+CONTENT_EXPORT std::string BuildClientDataJson(
+    webauthn::ClientDataJsonParams params);
+
+// Same as BuildClientDataJson above, but with payment data.
+// The 'payment_options' and 'payment_rp' arguments are used if the
+// `params.type` is `kPaymentGet`.
+// The browser bound key in the 'payment_options' argument is used if the
+// `params.type` is `kWebAuthnCreate`.
+CONTENT_EXPORT std::string BuildClientDataJsonWithPayment(
+    webauthn::ClientDataJsonParams params,
+    blink::mojom::PaymentOptionsPtr payment_options,
+    std::string_view payment_rp);
 
 }  // namespace content
 

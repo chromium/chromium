@@ -41,6 +41,38 @@ class D3D12VideoEncodeH265DelegateTest
           EXPECT_TRUE(false) << "Unexpected feature: " << feature;
           return E_INVALIDARG;
         });
+    ON_CALL(
+        *video_device3_.Get(),
+        CheckFeatureSupport(
+            D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+          EXPECT_EQ(
+              size,
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT));
+          if (size !=
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT)) {
+            return E_INVALIDARG;
+          }
+          auto* picture_control = static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT*>(
+              data);
+          picture_control->Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC;
+          picture_control->IsSupported =
+              picture_control->Codec == D3D12_VIDEO_ENCODER_CODEC_HEVC;
+          EXPECT_EQ(
+              picture_control->PictureSupport.DataSize,
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC));
+          if (picture_control->PictureSupport.DataSize !=
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC)) {
+            return E_INVALIDARG;
+          }
+          picture_control->PictureSupport.pHEVCSupport->MaxLongTermReferences =
+              1;
+          picture_control->PictureSupport.pHEVCSupport->MaxDPBCapacity = 16;
+          return S_OK;
+        });
     ON_CALL(*video_device3_.Get(),
             CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_CODEC, _, _))
         .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
@@ -201,7 +233,7 @@ class D3D12VideoEncodeH265DelegateTest
 TEST_F(D3D12VideoEncodeH265ReferenceFrameManagerTest,
        MarkReferenceFrameAndCheckDescriptors) {
   D3D12VideoEncodeH265ReferenceFrameManager reference_manager;
-  ASSERT_TRUE(reference_manager.InitializeTextureArray(
+  ASSERT_TRUE(reference_manager.InitializeTextureResources(
       device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4));
   EXPECT_EQ(reference_manager.GetReferenceFrameId(0), std::nullopt);
 
@@ -324,7 +356,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrame) {
   ASSERT_TRUE(result_or_error.has_value());
 
   BitstreamBufferMetadata metadata =
-      std::move(result_or_error).value().metadata_;
+      std::move(result_or_error).value().metadata;
   EXPECT_EQ(metadata.key_frame, is_key_frame);
   if (encoder_delegate_->ReportsAverageQp()) {
     EXPECT_GE(metadata.qp, 0);
@@ -338,7 +370,7 @@ TEST_F(D3D12VideoEncodeH265DelegateTest, EncodeFrame) {
   ASSERT_LE(metadata.payload_size_bytes, kBufferSize);
   H265Parser parser;
   base::WritableSharedMemoryMapping map = shared_memory.Map();
-  parser.SetStream(map.data(), map.size());
+  parser.SetStream(map.GetMemoryAsSpan<uint8_t>());
   H265NALU nalu;
   ASSERT_EQ(parser.AdvanceToNextNALU(&nalu), H265Parser::Result::kOk);
   EXPECT_EQ(nalu.nal_unit_type, H265NALU::VPS_NUT);

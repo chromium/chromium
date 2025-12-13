@@ -69,8 +69,6 @@
 - (void)start {
   self.viewController = [[PrivacySafeBrowsingViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.styler.cellHighlightColor =
-      [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
   self.viewController.presentationDelegate = self;
   self.mediator = [[PrivacySafeBrowsingMediator alloc]
       initWithUserPrefService:self.profile->GetPrefs()];
@@ -116,8 +114,8 @@
   }
   self.safeBrowsingEnhancedProtectionCoordinator =
       [[SafeBrowsingEnhancedProtectionCoordinator alloc]
-          initWithBaseNavigationController:self.baseNavigationController
-                                   browser:self.browser];
+          initWithBaseViewController:self.baseNavigationController
+                             browser:self.browser];
   self.safeBrowsingEnhancedProtectionCoordinator.delegate = self;
   [self.safeBrowsingEnhancedProtectionCoordinator start];
 }

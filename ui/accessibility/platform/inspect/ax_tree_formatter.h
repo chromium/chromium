@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "base/values.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -133,6 +133,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   // Set regular expression filters that apply to every node before output.
   virtual void SetNodeFilters(
       const std::vector<AXNodeFilter>& node_filters) = 0;
+
+  // Set a pattern to match for dumping only a subtree. When set, only the
+  // subtree starting from the first node matching this pattern will be dumped.
+  virtual void SetSubtreePattern(const std::string& pattern) = 0;
 
   // If true, the internal accessibility id of each node will be included
   // in its output.

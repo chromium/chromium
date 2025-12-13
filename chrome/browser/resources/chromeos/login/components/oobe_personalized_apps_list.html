@@ -124,7 +124,6 @@
                 aria-checked="[[item.selected]]">
               <div class="content flex horizontal layout">
                 <div class="logo-container">
-                  <!-- TODO(b/343402671): Migrate from WebView to cr-auto-img. -->
                   <webview
                       id="[[getWebViewId(item.appId)]]"
                       role="img"
@@ -141,7 +140,7 @@
                   <div class="app-subtitle">[[item.subname]]</div>
                 </div>
                   <cr-checkbox class="app-checkbox no-label"
-                      id="[[getAppId(item.appId)]]""
+                      id="[[getAppId(item.appId)]]"
                       checked="{{item.selected}}"
                       aria-label$="[[item.name]]"
                       aria-description$="[[item.subname]]"

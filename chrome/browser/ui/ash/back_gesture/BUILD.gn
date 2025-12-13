@@ -10,7 +10,10 @@ static_library("back_gesture") {
     "back_gesture_contextual_nudge_delegate.h",
   ]
 
-  deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
+  deps = [
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ui/tabs:tab_strip",
+  ]
 
   public_deps = [
     "//ash/public/cpp",

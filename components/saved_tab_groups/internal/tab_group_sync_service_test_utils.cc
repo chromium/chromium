@@ -114,7 +114,8 @@ std::unique_ptr<TabGroupSyncService> CreateTabGroupSyncService(
       MaybeCreateSharedTabGroupAccountDataTypeConfiguration(
           channel, data_type_store_service),
       pref_service, std::move(metrics_logger), optimization_guide,
-      identity_manager, std::move(collaboration_finder),
+      identity_manager, /*personal_collaboration_data_service=*/nullptr,
+      std::move(collaboration_finder),
       /*logger=*/nullptr);
 }
 

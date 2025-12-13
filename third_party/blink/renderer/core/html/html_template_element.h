@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/template_content_document_fragment.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -62,7 +61,7 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   }
 
   // This retrieves either a currently-being-parsed declarative shadow root,
-  // a target for a patch, or the content fragment for a "regular" template
+  // or the content fragment for a "regular" template
   // element. This should only be used by HTMLConstructionSite.
   ContainerNode* InsertionTarget() const {
     return override_insertion_target_ ? override_insertion_target_.Get()
@@ -70,17 +69,19 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   }
 
   void SetOverrideInsertionTarget(ContainerNode& target) {
-    CHECK(target.IsShadowRoot() ||
-          (RuntimeEnabledFeatures::DocumentPatchingEnabled() &&
-           target.IsElementNode()));
+    CHECK(target.IsShadowRoot() || target.IsDocumentFragment());
     override_insertion_target_ = &target;
+  }
+
+  bool IsShadowRootModeTemplate() const {
+    return override_insertion_target_ &&
+           override_insertion_target_->IsShadowRoot();
   }
 
  private:
   void CloneNonAttributePropertiesFrom(const Element&,
                                        NodeCloningData&) override;
   void DidMoveToNewDocument(Document& old_document) override;
-
   mutable Member<TemplateContentDocumentFragment> content_;
 
   Member<ContainerNode> override_insertion_target_;

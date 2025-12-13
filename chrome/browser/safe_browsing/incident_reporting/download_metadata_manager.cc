@@ -181,7 +181,7 @@ class DownloadMetadataManager::ManagerContext {
   ManagerContext(const ManagerContext&) = delete;
   ManagerContext& operator=(const ManagerContext&) = delete;
 
-  content::BrowserContext* browser_context() { return &browser_context_.get(); }
+  content::BrowserContext* browser_context() { return browser_context_.get(); }
 
   // Detaches this context from its owner. The owner must not access the context
   // following this call. The context will be deleted immediately if it is not
@@ -263,7 +263,7 @@ class DownloadMetadataManager::ManagerContext {
   // A task runner to which IO tasks are posted.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  const raw_ref<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The path to the metadata file for this context.
   base::FilePath metadata_path_;
@@ -304,7 +304,7 @@ DownloadMetadataManager::DownloadMetadataManager()
 
 DownloadMetadataManager::~DownloadMetadataManager() {
   // Destruction may have taken place before coordinators have gone down.
-  for (auto [coordinator, context] : contexts_) {
+  for (const auto& [coordinator, context] : contexts_) {
     coordinator->GetNotifier()->RemoveObserver(this);
     context->Detach();
   }
@@ -413,7 +413,7 @@ DownloadMetadataManager::ManagerContext::ManagerContext(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     content::BrowserContext& browser_context)
     : task_runner_(std::move(task_runner)),
-      browser_context_(browser_context),
+      browser_context_(&browser_context),
       metadata_path_(GetMetadataPath(&browser_context)),
       state_(WAITING_FOR_LOAD) {
   // Start the asynchronous task to read the persistent metadata.
@@ -421,6 +421,8 @@ DownloadMetadataManager::ManagerContext::ManagerContext(
 }
 
 void DownloadMetadataManager::ManagerContext::Detach() {
+  // Remove the dangling pointer unconditionally
+  browser_context_ = nullptr;
   // Delete the instance immediately if there's no work to process after a
   // pending read completes.
   if (get_details_callbacks_.empty() && pending_items_.empty()) {

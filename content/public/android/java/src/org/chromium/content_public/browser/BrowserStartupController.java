@@ -6,24 +6,60 @@ package org.chromium.content_public.browser;
 
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.BrowserStartupControllerImpl;
 
 /**
  * This class controls how C++ browser main loop is started and ensures it happens only once.
  *
- * It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
+ * <p>It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
  * many times as needed (for instance, multiple activities for the same application), but the
  * browser process will still only be initialized once. All requests to start the browser will
  * always get their callback executed; if the browser process has already been started, the callback
  * is called immediately, else it is called when initialization is complete.
  *
- * All communication with this class must happen on the main thread.
+ * <p>All communication with this class must happen on the main thread.
  */
 @NullMarked
 public interface BrowserStartupController {
+    /** This provides timing metrics for browserprocess startup calls. */
+    final class StartupMetrics {
+        private final long mLongestDurationOfPostedTasksMs;
+        private final long mTotalDurationOfPostedTasksMs;
+
+        public StartupMetrics(
+                long longestDurationOfPostedTasksMs, long totalDurationOfPostedTasksMs) {
+            mLongestDurationOfPostedTasksMs = longestDurationOfPostedTasksMs;
+            mTotalDurationOfPostedTasksMs = totalDurationOfPostedTasksMs;
+        }
+
+        /**
+         * The longest wall-clock duration of tasks posted as part of async browser process startup.
+         * By posted, we mean tasks scheduled to the task runner following a call to {@code
+         * startBrowserProcessesAsync()}.
+         *
+         * <p>This metric is only applicable to FULL_BROWSER startup.
+         */
+        public long getLongestDurationOfPostedTasksMs() {
+            return mLongestDurationOfPostedTasksMs;
+        }
+
+        /**
+         * The total wall-clock duration of tasks posted as part of async browser process startup.
+         * By posted, we mean tasks scheduled to the task runner following a call to {@code
+         * startBrowserProcessesAsync()}.
+         *
+         * <p>This metric is only applicable to FULL_BROWSER startup.
+         */
+        public long getTotalDurationOfPostedTasksMs() {
+            return mTotalDurationOfPostedTasksMs;
+        }
+    }
+
     /** This provides the interface to the callbacks for successful or failed startup */
     interface StartupCallback {
-        void onSuccess();
+        /** metrics is null if FULL_BROWSER startup has not completed. */
+        void onSuccess(@Nullable StartupMetrics metrics);
 
         void onFailure();
     }
@@ -61,7 +97,7 @@ public interface BrowserStartupController {
             boolean startMinimalBrowser,
             boolean singleProcess,
             boolean scheduleFlushStartupTasks,
-            final StartupCallback callback);
+            StartupCallback callback);
 
     /**
      * Start the browser process synchronously. If the browser is already being started
@@ -122,15 +158,4 @@ public interface BrowserStartupController {
      *     org.chromium.content.browser.ServicificationStartupUma} for more details.
      */
     int getStartupMode(boolean startMinimalBrowser);
-
-    /**
-     * @return how long it took to run content start.
-     */
-    long getContentStartDuration();
-
-    /**
-     * @return how long it took the longest startup task to run. If flushed, this is the total of
-     *     all the startup tasks.
-     */
-    long getStartupTasksLongestBlockingDuration();
 }

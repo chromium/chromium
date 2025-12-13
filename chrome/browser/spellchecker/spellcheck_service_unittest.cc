@@ -181,14 +181,10 @@ class SpellcheckServiceHybridUnitTestBase
 
  protected:
   void SetUp() override {
-    InitFeatures();
-
     // Use SetTestingFactoryAndUse to force creation and initialization.
     SpellcheckServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         &profile_, base::BindRepeating(&BuildSpellcheckService));
   }
-
-  virtual void InitFeatures() {}
 
   virtual void InitializeSpellcheckService(
       const std::vector<std::string>& spellcheck_languages_for_testing) {
@@ -218,8 +214,6 @@ class SpellcheckServiceHybridUnitTestBase
   // Used for faking the presence of Windows spellcheck dictionaries.
   static const std::vector<std::string>
       windows_spellcheck_languages_for_testing_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   raw_ptr<SpellcheckService> spellcheck_service_;
 };
@@ -333,18 +327,6 @@ const std::vector<std::string> SpellcheckServiceHybridUnitTestBase::
                              // dictionaries.
 };
 
-class GetDictionariesHybridUnitTestNoDelayInit
-    : public SpellcheckServiceHybridUnitTestBase,
-      public testing::WithParamInterface<TestCase> {
- protected:
-  void InitFeatures() override {
-    // Disable kWinDelaySpellcheckServiceInit, as the case where it's enabled
-    // is tested in SpellcheckServiceWindowsDictionaryMappingUnitTestDelayInit.
-    feature_list_.InitAndDisableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
-};
-
 static const TestCase kHybridGetDictionariesParams[] = {
     // Galician (gl) has only Windows support, no Hunspell dictionary. Croatian
     // (hr) has only Hunspell support, no local Windows dictionary. First
@@ -397,16 +379,6 @@ static const TestCase kHybridGetDictionariesParams[] = {
     TestCase("it,it-IT", {"it", "it-IT"}, {"it", "it-IT"}, {"it", "it-IT"}),
 };
 
-INSTANTIATE_TEST_SUITE_P(TestCases,
-                         GetDictionariesHybridUnitTestNoDelayInit,
-                         testing::ValuesIn(kHybridGetDictionariesParams));
-
-TEST_P(GetDictionariesHybridUnitTestNoDelayInit, GetDictionaries) {
-  RunGetDictionariesTest(GetParam().accept_languages,
-                         GetParam().spellcheck_dictionaries,
-                         GetParam().expected_dictionaries);
-}
-
 struct DictionaryMappingTestCase {
   std::string full_tag;
   std::string expected_accept_language;
@@ -428,18 +400,6 @@ std::ostream& operator<<(std::ostream& out,
 
   return out;
 }
-
-class SpellcheckServiceWindowsDictionaryMappingUnitTest
-    : public SpellcheckServiceHybridUnitTestBase,
-      public testing::WithParamInterface<DictionaryMappingTestCase> {
- protected:
-  void InitFeatures() override {
-    // Disable kWinDelaySpellcheckServiceInit, as the case where it's enabled
-    // is tested in SpellcheckServiceWindowsDictionaryMappingUnitTestDelayInit.
-    feature_list_.InitAndDisableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
-};
 
 static const DictionaryMappingTestCase kHybridDictionaryMappingsParams[] = {
     DictionaryMappingTestCase({"en-CA", "en-CA", "en-CA", "en", "en"}),
@@ -463,18 +423,6 @@ static const DictionaryMappingTestCase kHybridDictionaryMappingsParams[] = {
     DictionaryMappingTestCase({"pt-BR", "pt-BR", "pt-BR", "pt", "pt"}),
 };
 
-INSTANTIATE_TEST_SUITE_P(TestCases,
-                         SpellcheckServiceWindowsDictionaryMappingUnitTest,
-                         testing::ValuesIn(kHybridDictionaryMappingsParams));
-
-TEST_P(SpellcheckServiceWindowsDictionaryMappingUnitTest, CheckMappings) {
-  RunDictionaryMappingTest(
-      GetParam().full_tag, GetParam().expected_accept_language,
-      GetParam().expected_tag_passed_to_spellcheck,
-      GetParam().expected_accept_language_generic,
-      GetParam().expected_tag_passed_to_spellcheck_generic);
-}
-
 class SpellcheckServiceHybridUnitTestDelayInitBase
     : public SpellcheckServiceHybridUnitTestBase {
  public:
@@ -487,12 +435,6 @@ class SpellcheckServiceHybridUnitTestDelayInitBase
   }
 
  protected:
-  void InitFeatures() override {
-    // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-  }
-
   void InitializeSpellcheckService(
       const std::vector<std::string>& spellcheck_languages_for_testing)
       override {

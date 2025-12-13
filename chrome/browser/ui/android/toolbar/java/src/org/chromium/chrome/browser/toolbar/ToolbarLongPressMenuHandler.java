@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.setToolbarPositionAndSource;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -21,16 +23,14 @@ import android.widget.PopupWindow;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -69,28 +69,34 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     private final int mMenuOmniboxOverlap;
     private int mScreenWidthDp;
     private final Context mContext;
-    private final ObservableSupplier<Profile> mProfileSupplier;
+    private final ObservableSupplier<@Nullable Profile> mProfileSupplier;
     private final BooleanSupplier mSuppressLongPressSupplier;
-    private final Supplier<GURL> mUrlSupplier;
+    private final Supplier<@Nullable GURL> mUrlSupplier;
     private final Supplier<ViewRectProvider> mUrlBarViewRectProviderSupplier;
     private final @Nullable OnLongClickListener mOnLongClickListener;
-    private final SharedPreferencesManager mSharedPreferencesManager;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     /**
      * Creates a new {@link ToolbarLongPressMenuHandler}.
      *
-     * @param context current context
+     * @param context current context.
+     * @param profileSupplier supplier of the current profile.
+     * @param isCustomTab whether the handler is used in a custom tab.
+     * @param suppressLongPressSupplier supplier of whether the long press should be suppressed.
+     * @param lifecycleDispatcher dispatcher for the activity lifecycle.
+     * @param windowAndroid window for the activity.
+     * @param urlSupplier supplier of the current URL, can be null.
+     * @param urlBarViewRectProviderSupplier supplier of the URL bar view rect provider.
      */
     public ToolbarLongPressMenuHandler(
             Context context,
-            ObservableSupplier<Profile> profileSupplier,
+            ObservableSupplier<@Nullable Profile> profileSupplier,
             boolean isCustomTab,
             BooleanSupplier suppressLongPressSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             WindowAndroid windowAndroid,
-            Supplier<GURL> urlSupplier,
+            Supplier<@Nullable GURL> urlSupplier,
             Supplier<ViewRectProvider> urlBarViewRectProviderSupplier) {
         mContext = context;
         mProfileSupplier = profileSupplier;
@@ -118,7 +124,6 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
             mOnLongClickListener = null;
         }
 
-        mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         mAppMenuShadowLength =
                 context.getResources().getDimensionPixelSize(R.dimen.app_menu_shadow_length);
         mAdditonalHorizontalPadding =
@@ -171,7 +176,7 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
                 BrowserUiListMenuUtils.getBasicListMenu(
                         view.getContext(),
                         buildMenuItems(onTop),
-                        (model) -> {
+                        (model, unusedView) -> {
                             handleMenuClick(model.get(ListMenuItemProperties.MENU_ITEM_ID));
                             assumeNonNull(mPopupMenu);
                             mPopupMenu.dismiss();
@@ -208,7 +213,8 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
 
         // Notify the IPH that the User has interacted with the Bottom Toolbar menu.
         // This effectively disables the IPH bubble.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfileSupplier.get());
+        Tracker tracker =
+                TrackerFactory.getTrackerForProfile(assertNonNull(mProfileSupplier.get()));
         tracker.notifyEvent(EventConstants.BOTTOM_TOOLBAR_MENU_TRIGGERED);
     }
 
@@ -243,12 +249,18 @@ public class ToolbarLongPressMenuHandler implements ConfigurationChangedObserver
     }
 
     private void handleMoveAddressBarTo() {
-        boolean onTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, !onTop);
+        boolean currentlyOnTop = AddressBarPreference.isToolbarConfiguredToShowOnTop();
+        // The new position is the inverse of the current position.
+        if (currentlyOnTop) {
+            setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_LONG_PRESS);
+        } else {
+            setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_LONG_PRESS);
+        }
     }
 
     private void handleCopyLink() {
-        Clipboard.getInstance().copyUrlToClipboard(mUrlSupplier.get());
+        GURL url = mUrlSupplier.get() == null ? GURL.emptyGURL() : mUrlSupplier.get();
+        Clipboard.getInstance().copyUrlToClipboard(url);
     }
 
     @VisibleForTesting

@@ -61,9 +61,11 @@ class CORE_EXPORT DocumentMarkerController final
   DocumentMarkerController& operator=(const DocumentMarkerController&) = delete;
 
   void AddSpellingMarker(const EphemeralRange&,
-                         const String& description = g_empty_string);
+                         const String& description = g_empty_string,
+                         bool should_hide_suggestion_menu = false);
   void AddGrammarMarker(const EphemeralRange&,
-                        const String& description = g_empty_string);
+                        const String& description = g_empty_string,
+                        bool should_hide_suggestion_menu = false);
   void AddTextMatchMarker(const EphemeralRange&, TextMatchMarker::MatchStatus);
   void AddCompositionMarker(const EphemeralRange&,
                             Color underline_color,

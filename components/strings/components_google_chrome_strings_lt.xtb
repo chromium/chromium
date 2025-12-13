@@ -34,16 +34,16 @@
         ir panaikinkite „<ph name="NO_PREFETCH_DESCRIPTION" />“ pasirinkimą.
         Jei tai atlikus problema išlieka, rekomenduojame vėl pasirinkti šią parinktį,
         kad pagerėtų našumas.</translation>
-<translation id="6855094794438142393">Eikite į
+<translation id="6581867098636731226">Eikite į
           „Chrome“ meniu &gt;
-          „<ph name="SETTINGS_TITLE" />“
+          <ph name="SETTINGS_TITLE" />
           &gt;
-          „<ph name="ADVANCED_TITLE" />“
+          <ph name="SYSTEM_TITLE" />
           &gt;
-          „<ph name="PROXIES_TITLE" />“
+          <ph name="PROXIES_TITLE" />
           &gt;
-          „LAN nustatymai“
-          ir panaikinkite „Naudoti tarpinį serverį LAN tinkle“ pasirinkimą.</translation>
+          „Tinklas ir internetas“ &gt; „Tarpinis serveris“
+          ir panaikinkite parinkties „Automatiškai aptikti nustatymus“ pasirinkimą.</translation>
 <translation id="7230956101631259640">Peržiūrite saugų „Chrome“ puslapį</translation>
 <translation id="8232971017369963250">„Chrome“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą.</translation>
 <translation id="8279509328145658601">„Chrome“ taip pat pasiekiama naudojant kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>

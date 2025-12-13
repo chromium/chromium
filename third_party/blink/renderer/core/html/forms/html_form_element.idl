@@ -22,9 +22,9 @@
 
 [
     Exposed=Window,
-    HTMLConstructor,
     LegacyOverrideBuiltIns
 ] interface HTMLFormElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [CEReactions, Reflect=accept_charset] attribute DOMString acceptCharset;
     [CEReactions, URL] attribute USVString action;
     [CEReactions, Reflect, ReflectOnly=("on","off"), ReflectMissing="on", ReflectInvalid="on"] attribute DOMString autocomplete;

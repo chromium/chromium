@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internals.h"
@@ -382,6 +383,14 @@ TEST(NativeValueTraitsImplTest, IDLBigint) {
     const blink::BigInt& bigint = NativeValueTraits<IDLBigint>::NativeValue(
         scope.GetIsolate(), v8_string, exception_state);
     EXPECT_TRUE(exception_state.HadException());
+  }
+  {
+    // Construction from uint128 works
+    const absl::uint128 bigint_absl = absl::Uint128Max();
+    const auto bigint_absl_converted_around =
+        blink::BigInt(bigint_absl).ToUInt128();
+    EXPECT_TRUE(bigint_absl_converted_around.has_value());
+    EXPECT_EQ(bigint_absl, bigint_absl_converted_around.value());
   }
 }
 

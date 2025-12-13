@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
-<translation id="1036348656032585052">አጥፋ</translation>
 <translation id="1049697408958544531">{NUM_WEEKS,plural, =1{ከ<ph name="NUM_WEEKS_ONE" /> ሳምንት በፊት የተፈጠረ}one{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንት በፊት የተፈጠረ}other{ከ<ph name="NUM_WEEKS_MANY" /> ሳምንቶች በፊት የተፈጠረ}}</translation>
 <translation id="1063300264396686489">ከሌሎች መሣሪያዎች ሆነው የትር ቡድኖችን በራስ-ሰር ይክፈቱ</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> ትሮችዎ በቅርቡ ሥራ ላይ አልዋሉም። ይዘጉ?</translation>
 <translation id="1092908249939127748">{NUM_MONTHS,plural, =1{ከ<ph name="NUM_YEARS_ONE" /> ዓመት በፊት የተፈጠረ}one{ከ<ph name="NUM_YEARS_MANY" /> ዓመት በፊት የተፈጠረ}other{ከ<ph name="NUM_YEARS_MANY" /> ዓመታት በፊት የተፈጠረ}}</translation>
 <translation id="1137385688780024041">{DAY_COUNT,plural, =1{የቦዘኑ ትሮች እና ቡድኖች ከ1 ወር በኋላ ይዘጋሉ}one{የቦዘኑ ትሮች እና ቡድኖች ከ<ph name="MONTH_COUNT_MANY" /> ወር በኋላ ይዘጋሉ}other{የቦዘኑ ትሮች እና ቡድኖች ከ<ph name="MONTH_COUNT_MANY" /> ወራት}}</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
-<translation id="1197088940767939838">ብርቱካናማ</translation>
+<translation id="1203747227183434426">ሚዲያን በመቅዳት ላይ</translation>
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{ከ<ph name="TAB_COUNT2" /> ትር ጋር <ph name="TITLE_OF_GROUP" /> ይክፈቱ}one{ከ<ph name="TAB_COUNT2" /> ትር ጋር <ph name="TITLE_OF_GROUP" /> ይክፈቱ}other{ከ<ph name="TAB_COUNT2" /> ትሮች ጋር <ph name="TITLE_OF_GROUP" /> ይክፈቱ}}</translation>
 <translation id="1273910660700874265"><ph name="TITLE_OF_GROUP" /> የትር ቡድን አማራጮች</translation>
 <translation id="1300188005269437765">ትሮች እና የትር ቡድኖች በራስ-ሰር ወደ የቦዘነ ክፍል መቼ እንደሚንቀሳቀሱ ይምረጡ።</translation>
+<translation id="1321004960118052490">የእርስዎ ገቢር ያልሆኑ ንጥሎች አይደራረቡም</translation>
 <translation id="1329584516321524826">አሁን የተዘመነ</translation>
 <translation id="1340839264183302272">ቡድኑን ለቅቀው ይውጡ</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}one{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}other{የተጋራ የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም፣ በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}}</translation>
@@ -20,23 +20,25 @@
 <translation id="1499635324672558517">ሁሉም ማንነት የማያሳውቁ ትሮች ይዘጉ?</translation>
 <translation id="1501480321619201731">ቡድን ሰርዝ</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የቦዘነ ንጥል}one{<ph name="TABS_COUNT_MANY" /> የቦዘነ ንጥል}other{<ph name="TABS_COUNT_MANY" /> የቦዘኑ ንጥሎች}}</translation>
-<translation id="1555130319947370107">ሰማያዊ</translation>
-<translation id="161042844686301425">ውሃ ሰማያዊ</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> ትሮች ተሰብስበዋል</translation>
 <translation id="1657719826150349398">ትርን ወደ ታች ያንቀሳቅሱ</translation>
+<translation id="1670942869417022142">ድምፀ-ከል የተደረገ ኦዲዮ</translation>
 <translation id="1697284962337958118">አክል ወደ</translation>
 <translation id="1713541401465507417">ሁሉንም ትሮች እና ቡድኖች ዝጋ</translation>
 <translation id="1738346536511908887">{TAB_GROUPS_COUNT,plural, =1{<ph name="TAB_GROUPS_COUNT_ONE" /> የትር ቡድን ከእንግዲህ አይገኝም}one{<ph name="TAB_GROUPS_COUNT_MANY" /> የትር ቡድን ከእንግዲህ አይገኝም}other{<ph name="TAB_GROUPS_COUNT_MANY" /> የትር ቡድኖች ከእንግዲህ አይገኙም}}</translation>
 <translation id="176485176228926164"><ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="END_LINK1" /></translation>
 <translation id="1828808367831369073"><ph name="TABS_COUNT_ONE" /> ትር ተሰብስቧል</translation>
+<translation id="1844381456014878100">ከ7 የቦዘኑ ቀናት በኋላ</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ትር}one{<ph name="TABS_COUNT_MANY" /> ትሮች}other{<ph name="TABS_COUNT_MANY" /> ትሮች}}</translation>
 <translation id="1909810060368225529">ማሳወቂያ፦ በዚህ የተጋራ ትር ቡድን ላይ የተደረጉ ለውጦች ለሁሉም ሰው ይታያሉ። ሁሉም ሰው በእርስዎ የተጋሩ የትር ቡድኖች ላይ ለውጦችን ማድረግ ይችላል</translation>
+<translation id="1925363809167540686">{TAB_COUNT,plural, =1{ትር ሰካ}one{ትር ሰካ}other{ትሮችን ሰካ}}</translation>
 <translation id="1982637982196732906">ወደ የቦዘነ ክፍል ያንቀሳቅሱ</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{የዕልባት <ph name="TABS_COUNT_ONE" /> የተመረጠ ትር}one{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጠ ትር}other{የዕልባት <ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮች}}</translation>
 <translation id="2055057176188061528">የትር ቡድን ይምረጡ ወይም አዲስ የትር ቡድን ይፍጠሩ</translation>
-<translation id="2069658190745773012">{AUTO_DELETE_DELAY,plural, =1{Chrome በ<ph name="AUTO_DELETE_DELAY_ONE" /> ወር ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎች በራስ-ሰር ይዘጋል። ይህን ቅንብሮች ውስጥ አሁን ወይም በማንኛውም ጊዜ ማጥፋት ይችላሉ።}one{Chrome በ<ph name="AUTO_DELETE_DELAY_MANY" /> ወር ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎች በራስ-ሰር ይዘጋል። ይህን ቅንብሮች ውስጥ አሁን ወይም በማንኛውም ጊዜ ማጥፋት ይችላሉ።}other{Chrome በ<ph name="AUTO_DELETE_DELAY_MANY" /> ወራት ውስጥ ያልተጠቀሙባቸውን ገቢር ባልሆነ ክፍል ውስጥ ያሉ ንጥሎችን በራስ-ሰር ይዘጋል። ይህን ቅንብሮች ውስጥ አሁን ወይም በማንኛውም ጊዜ ማጥፋት ይችላሉ።}}</translation>
+<translation id="2074527029802029717">ትር ይንቀሉ</translation>
 <translation id="2118649612461486615">የመደብር መረጃ</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ ማንነት የማያሳውቅ ትር አይገኝም።}one{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቅ ትር አይገኝም።}other{የእርስዎ የተዘጉ ትሮች እና ቡድኖች ከቅርብ ጊዜ የትሮች ክፍል እና ከትር ቡድኖች ክፍል እንደገና ሊከፈቱ ይችላሉ። የእርስዎ # ማንነት የማያሳውቁ ትሮች አይገኙም።}}</translation>
+<translation id="2153899164605463849">{TAB_COUNT,plural, =1{የጣቢያን ድምጸ-ከል አንሳ}one{የጣቢያን ድምጸ-ከል አንሳ}other{የጣቢያዎችን ድምጸ-ከል አንሳ}}</translation>
 <translation id="2162620598375156287">አሁን <ph name="CURRENT_PRICE" /> <ph name="SOURCE_WEBSITE" /> ላይ</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{ትርን ነጥል}one{ትርን ነጥል}other{ትሮችን ነጥል}}</translation>
 <translation id="2271452184061378400">የእርስዎ የትር ቡድኖች እዚህ ተቀምጠዋል</translation>
@@ -61,7 +63,10 @@
 <translation id="2801787514987684416">የመደብር መረጃ ይታይ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ትር ተዘግቷል}one{<ph name="MANY_CLOSED" /> ትር ተዘግቷል}other{<ph name="MANY_CLOSED" /> ትሮች ተዘግተዋል}}</translation>
 <translation id="2894757982205307093">በቡድን ውስጥ አዲስ ትር</translation>
+<translation id="2918484639460781603">ወደ ቅንብሮች ይሂዱ</translation>
 <translation id="2928243913527329289">Google | ስለዚህ መደብር</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> ተመርጧል}one{<ph name="ITEMS_COUNT_MANY" /> ተመርጧል}other{<ph name="ITEMS_COUNT_MANY" /> ተመርጠዋል}}</translation>
+<translation id="2991702137079525605">{TABS_COUNT,plural, =1{ትር ሰካ}one{ትር ሰካ}other{ትሮችን ሰካ}}</translation>
 <translation id="3008554597174452548">ምርቱን መከታተል አቁም</translation>
 <translation id="3026391124054406831">ትሮችዎን ለማስተባበር ቡድኖችን ይፍጠሩ።</translation>
 <translation id="3051031624272448591">በማንኛውም ጊዜ በታሪክ ውስጥ መልሰው ሊያገኟቸው ይችላሉ</translation>
@@ -78,20 +83,24 @@
 <translation id="3649471731638882002">{TAB_COUNT,plural, =1{ንጥልን ዝጋ}one{ንጥልን ዝጋ}other{ንጥሎችን ዝጋ}}</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ለሉህ ቅድመ ዕይታን አጋራ ጥፍር አከል</translation>
+<translation id="3776329373944672717">የትር ቡድን ርዕስ <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="3810973564298564668">አደራጅ</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{ትር ንቀል}one{ትር ንቀል}other{ትሮችን ንቀል}}</translation>
 <translation id="3940195383040445971">በትሮች ላይ ዋጋዎችን ይከታተሉ</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{<ph name="ONE_ADDED" /> አዲስ ትር፣ <ph name="ANY_CLOSED" /> ተዘግቷል}one{<ph name="MANY_ADDED" /> አዲስ ትር፣ <ph name="ANY_CLOSED" /> ተዘግቷል}other{<ph name="MANY_ADDED" /> አዲስ ትሮች፣ <ph name="ANY_CLOSED" /> ተዘግተዋል}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ትርን ቦድን}one{ትርን ቦድን}other{ትሮችን ቦድን}}</translation>
+<translation id="3962134438902735041">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ንቀል}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን ንቀል}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ንቀል}}</translation>
 <translation id="4009732926939031387">{NUM_DAYS,plural, =1{ከ<ph name="NUM_DAYS_ONE" /> ቀን በፊት የተፈጠረ}one{ከ<ph name="NUM_DAYS_MANY" /> ቀን በፊት የተፈጠረ}other{ከ<ph name="NUM_DAYS_MANY" /> ቀኖች በፊት የተፈጠረ}}</translation>
 <translation id="4076226664360336092">የትር ቡድን ዝርዝር፣ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ትሮች የሚዛመዱ ይመስላሉ ይቦደኑ?</translation>
 <translation id="4156086991340739772">{NUMBER_OF_TABS,plural, =1{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" />ቀለም ዝጋ።}}</translation>
-<translation id="4159784952369912983">ሐምራዊ</translation>
 <translation id="4203448675570432781">ስለ የትሮች በራስ-ሰር ሰርዝ ለውጦች ማሳወቂያ ተዘግቷል።</translation>
 <translation id="427987768447457592">አዲስ የትር ቡድን</translation>
 <translation id="4371591986692297148">ያልነቃ</translation>
 <translation id="4429658455677831355">{TAB_COUNT,plural, =1{ንጥልን ወደነበረበት መልስ}one{ንጥልን ወደነበረበት መልስ}other{ንጥሎችን ወደነበሩበት መልስ}}</translation>
 <translation id="4453940245650019914">{NUM_DAYS,plural, =1{ከ<ph name="NUM_DAYS_ONE" /> ቀን በፊት ተዘምኗል}one{ከ<ph name="NUM_DAYS_MANY" /> ቀን በፊት ተዘምኗል}other{ከ<ph name="NUM_DAYS_MANY" /> ቀናት በፊት ተዘምኗል}}</translation>
+<translation id="4496868141611329150">የትር ቡድንን ወደ ግራ አንቀሳቅስ</translation>
+<translation id="4653140634010630594">{TAB_COUNT,plural, =1{ጣቢያን ድምጸ-ከል አድርግ}one{ጣቢያን ድምጸ-ከል አድርግ}other{ጣቢያዎችን ድምጸ-ከል አድርግ}}</translation>
 <translation id="4686942373615810936">አሁን የተፈጠረ</translation>
 <translation id="4783638485675352219">በሥርዓተ ክወናው ከዚህ መሣሪያ የክፍት ትሮች ርዕሶች እና ዩአርኤሎችን ያጋሩ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ግምገማ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}other{(<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች)}}</translation>
@@ -103,17 +112,19 @@
 <translation id="4871719318659334896">ቡድንን ዝጋ</translation>
 <translation id="4876860795942196286">{NUMBER_OF_TABS,plural, =1{የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}one{የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}other{የ<ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ ቀለም <ph name="COLOR_NAME" /> ወደነበረበት ይመልሱ እና ይክፈቱ።}}</translation>
 <translation id="4881695831933465202">ክፍት የሚሆንባቸው</translation>
+<translation id="4894777338623123366">የትር ማያ ገጽን በማጋራት ላይ</translation>
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ትርን ዝጋ}one{ትርን ዝጋ}other{ትሮችን ዝጋ}}</translation>
 <translation id="4908147833782857886">የ<ph name="USER_EMAIL" /> ቡድኖች ተቀምጠዋል (ትሮችን ይዘጋል እና ቡድኖች ይሰርዛሉ)</translation>
 <translation id="492284538114688557">የዋጋ ቅነሳ ታይቷል</translation>
 <translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{የተጋራ የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}one{የተጋራ የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}other{የተጋራ የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም በ<ph name="CARD_LABEL" /> መሰየሚያ ይዘረጋል።}}</translation>
 <translation id="5007392906805964215">ገምግም</translation>
+<translation id="5042769431350623987">{WINDOW_COUNT,plural, =1{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}one{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}other{ትሮችን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
 <translation id="5073204694187207510">የሙሉ ማያ ፍርግርግን ደብቅ</translation>
 <translation id="5076161749301278626">የመደብር ግምገማዎችን ይመለከታሉ?</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome ከ<ph name="AUTO_DELETE_DELAY_ONE" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}one{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወር በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}other{Chrome ከ<ph name="AUTO_DELETE_DELAY_MANY" /> ወራት በኋላ ገቢር ያልሆኑ ትሮች እና የትር ቡድኖችን በራስ-ሰር ይዘጋል። ይህን በቅንብሮች ውስጥ መለወጥ ይችላሉ።}}</translation>
 <translation id="5339733443032484186">የእርስዎ የመጨረሻ ትር</translation>
 <translation id="5380159289133845234">የተባዙ ትሮችን በማህደር ያስቀምጡ</translation>
-<translation id="5400836586163650660">ግራጫ</translation>
 <translation id="5446043142172831860">ትርን ያስወግዱ እና ከቡድን ይውጡ</translation>
 <translation id="5490235265819901748">የትር ቡድን ተዘርግቷል</translation>
 <translation id="5494920125229734069">ሁሉንም ይመርጣል</translation>
@@ -121,22 +132,24 @@
 <translation id="5556417849629758491">የመደብር መረጃን ይመልከቱ፣ አማራጩ ከማያ ገጹ አናት አጠገብ ይገኛል</translation>
 <translation id="5627941783489838464">ምንም የትር ዝማኔዎች የሉም</translation>
 <translation id="5656738671621697952">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> አገናኝ ከChrome}one{<ph name="TABS_COUNT_MANY" /> አገናኝ ከChrome}other{<ph name="TABS_COUNT_MANY" /> አገናኞች ከChrome}}</translation>
+<translation id="5740354908255726955">{TAB_COUNT,plural, =1{ትርን ወደ ግራ አንቀሳቅስ}one{ትርን ወደ ግራ አንቀሳቅስ}other{ትሮችን ወደ ግራ አንቀሳቅስ}}</translation>
 <translation id="5746204836956568669">በፍጥነት እንዲሰሩ <ph name="NUMBER_OF_TABS" /> ትሮች ይቦደኑ?</translation>
 <translation id="5773295109010386583">የቦዘኑ ንጥሎችን በራስ-ሰር ይዘጋል</translation>
 <translation id="58326064309361797">ለመቦደን ትሮችን ይጎትቱ</translation>
-<translation id="5901630391730855834">ቢጫ</translation>
 <translation id="5972844218283131174">ሁሉንም አትምረጥ</translation>
-<translation id="6017514345406065928">አረንጓዴ</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
 <translation id="6051432659151380973">የእርስዎ የትር ቡድኖች በራስ-ሰር ያስቀምጣሉ</translation>
 <translation id="6054741997831917303">የዚህ ንጥል ዋጋ በቅርቡ ከ<ph name="PREVIOUS_PRICE" /> ወደ <ph name="NEW_PRICE" /> ቀንሷል</translation>
 <translation id="6109251075362363230">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው ቅጂ በስተቀር ሁሉም የተባዙ ትሮች አሁን በማህደር ይቀመጣሉ።</translation>
 <translation id="6149218574440723463">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ንጥልን ዝጋ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ንጥልን ዝጋ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ንጥሎችን ዝጋ}}</translation>
 <translation id="61924696525243173">{WINDOW_COUNT,plural, =1{ስብስብን ወደ አዲስ መስኮት አንቀሳቅስ}one{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}other{ስብስብን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
-<translation id="6220820548421939212">አዎ። ገብቼያለሁ</translation>
+<translation id="6212374449852603982">{TAB_COUNT,plural, =1{ትርን ወደ ቀኝ አንቀሳቅስ}one{ትርን ወደ ቀኝ አንቀሳቅስ}other{ትሮችን ወደ ቀኝ አንቀሳቅስ}}</translation>
 <translation id="6228793724645064692">(የተሰጠ ደረጃ)</translation>
+<translation id="6251046978189636310">ኦዲዮ በማጫወት ላይ</translation>
+<translation id="625996437999624951">{TAB_COUNT,plural, =1{ትርን ከቡድን አስወግድ}one{ትርን ከቡድን አስወግድ}other{ትሮችን ከቡድን አስወግድ}}</translation>
 <translation id="6313830465749181217">{TABS_COUNT,plural, =1{ትርን ወደ አዲስ ቡድን ያክሉ}one{ትርን ወደ አዲስ ቡድን ያክሉ}other{ትሮችን ወደ አዲስ ቡድን ያክሉ}}</translation>
 <translation id="6333260925957816943">ስለዚህ መደብር መረጃ</translation>
+<translation id="6344715021569694246">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ፒን አድርግ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን ፒን አድርግ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ፒን አድርግ}}</translation>
 <translation id="6381032505162537930">የትር ቡድኖችዎን እዚህ ያገኟቸዋል</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ትርን ነጥል}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ትርን ነጥል}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ትሮችን ነጥል}}</translation>
 <translation id="6499296376514955580">ስለ የተጋራ ትር ቡድን ለውጦች ማሳወቂያ ተዘግቷል</translation>
@@ -153,6 +166,7 @@
 <translation id="6784585810034073638">{TAB_COUNT,plural, =1{ከ<ph name="TAB_COUNT1" /> ትር ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}one{ከ<ph name="TAB_COUNT1" /> ትር ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}other{ከ<ph name="TAB_COUNT1" /> ትሮች ጋር ወደ <ph name="TITLE_OF_GROUP" /> ቡድን ያክሉ}}</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
 <translation id="6856809498882026482">ባለብዙ ምርጫ ሁነታን ደብቅ</translation>
+<translation id="6957436309971790274">ከ21 የቦዘኑ ቀናት በኋላ</translation>
 <translation id="7064815189603108598">{NUMBER_OF_TABS,plural, =1{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}one{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን፣ በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}other{የተጋራ <ph name="TITLE_OF_GROUP" /> የትር ቡድንን፣ በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ይዘረጋል።}}</translation>
 <translation id="709473454666962555">የትር ቡድን ይምረጡ</translation>
 <translation id="7100731960740376323">{TABS_COUNT,plural, =1{ትርን አጋራ}one{ትርን አጋራ}other{ትሮችን አጋራ}}</translation>
@@ -163,8 +177,10 @@
 <translation id="7326879924029668159">የመመለሻ መመሪያን እና ሌሎችንም ይመልከቱ</translation>
 <translation id="7352298686197644113">በክፍት ትሮችዎ ውስጥ የትኛው ንጥል የተሻለ ዋጋ እንዳለው ይመልከቱ</translation>
 <translation id="7369451074646620503">«<ph name="TAB_GROUP_NAME" />» የትር ቡድን ከእንግዲህ አይገኝም</translation>
+<translation id="7402375256128852434">የቅርብ ጊዜ ትሮችን ያክሉ</translation>
 <translation id="7452985128687107478">የትር ቡድኖች በሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ</translation>
 <translation id="747459581954555080">ሁሉንም ወደነበረበት መልስ</translation>
+<translation id="7489558427602531799">የትር ቡድንን ወደ ቀኝ አንቀሳቅስ</translation>
 <translation id="7501728912575021674">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ንጥል}one{<ph name="TABS_COUNT_MANY" /> ንጥል}other{<ph name="TABS_COUNT_MANY" /> ንጥሎች}}</translation>
 <translation id="7507010952168401940">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> የተመረጠ ንጥልን ወደነበረበት መልስ}one{<ph name="TABS_COUNT_MANY" /> የተመረጠ ንጥልን ወደነበረበት መልስ}other{<ph name="TABS_COUNT_MANY" /> የተመረጡ ንጥሎችን ወደነበሩበት መልስ}}</translation>
 <translation id="753732157349120914">የትር መቀያየሪያ</translation>
@@ -183,9 +199,8 @@
 <translation id="7853202427316060426">እንቅስቃሴ</translation>
 <translation id="7854360405711302755">{REVIEWS,plural, =1{ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣ <ph name="REVIEWS_COUNT_ONE" /> ግምገማ}one{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}other{<ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> ደረጃ፣<ph name="REVIEWS_COUNT_MANY" /> ግምገማዎች}}</translation>
 <translation id="7885132941432959125">ቅርን ወደ ቀኝ አንቀሳቅስ</translation>
-<translation id="788914896430720926">ገቢር ያልሆነ ክፍልዎን ንፁህ አድርገው ያቆያሉ?</translation>
+<translation id="7887334752153342268">አባዛ</translation>
 <translation id="7939917283308035850"><ph name="COLOR_NAME" /> አልተመረጠም</translation>
-<translation id="7942349550061667556">ቀይ</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7966321538264951561">ጥቆማ ሐሳቦችን ያሰናብቱ።</translation>
 <translation id="796696298310625748">{WINDOW_COUNT,plural, =1{ትርን ወደ አዲስ መስኮት አንቀሳቅስ}one{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}other{ትርን ወደ ሌላ መስኮት አንቀሳቅስ}}</translation>
@@ -193,7 +208,9 @@
 <translation id="8029301326595421733">ስለዚህ መደብር መረጃ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="8053770993984522566">የትር ቡድን ዝርዝር፣ በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="805809603610022708">{TABS_COUNT,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትርን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
+<translation id="8138067144082174140">ከ14 የቦዘኑ ቀናት በኋላ</translation>
 <translation id="8153873338998959464">{NUMBER_OF_TABS,plural, =1{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}one{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}other{የ<ph name="TITLE_OF_GROUP" /> ትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}}</translation>
+<translation id="8195186926670288294">{TABS_COUNT,plural, =1{ትር ንቀል}one{ትር ንቀል}other{ትሮችን ንቀል}}</translation>
 <translation id="8205266828577616993">ትርን ወደ ላይ አንቀሳቅስ</translation>
 <translation id="8207688828622594111">{NUM_MINS,plural, =1{ከ<ph name="NUM_MINS_ONE" /> ደቂቃ በፊት ተዘምኗል}one{ከ<ph name="NUM_MINS_MANY" /> ደቂቃ በፊት ተዘምኗል}other{ከ<ph name="NUM_MINS_MANY" /> ደቂቃዎች በፊት ተዘምኗል}}</translation>
 <translation id="8236097722223016103">ወደ እልባቶች አክል</translation>
@@ -206,6 +223,7 @@
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="855081842937141170">ትር አጣብቅ</translation>
 <translation id="8633025649649592204">የቅርብ ጊዜ እንቅስቃሴ</translation>
+<translation id="8635822281281406185">እስከ 10 ፋይሎች፣ ትሮች ወይም ምስሎች ያክሉ</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="8714939927607906138">ዝቅተኛ ዋጋ</translation>
 <translation id="8730621377337864115">ተከናውኗል</translation>
@@ -221,6 +239,5 @@
 <translation id="9187834032751045001">ስለ የትሮች በራስ-ሰር ሰርዝ ለውጦች ማሳወቂያ በግማሽ ቁመት።</translation>
 <translation id="927441551066996669">{NUMBER_OF_TABS,plural, =1{የትር ቡድንን በ<ph name="TABS_COUNT_ONE" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}one{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትር፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}other{የትር ቡድንን በ<ph name="TABS_COUNT_MANY" /> ትሮች፣ በ<ph name="COLOR_NAME" /> ቀለም ዘርጋ።}}</translation>
 <translation id="945522503751344254">ግብረመልስ ላክ</translation>
-<translation id="992256792861109788">ሮዝ</translation>
 <translation id="994514002078791059">{TAB_COUNT,plural, =1{1 የቦዘነ ንጥል ይዘጋ?}one{<ph name="TAB_COUNT_MANY" /> የቦዘነ ንጥል ይዘጋ?}other{<ph name="TAB_COUNT_MANY" /> የቦዘኑ ንጥሎች ይዘጉ?}}</translation>
 </translationbundle>

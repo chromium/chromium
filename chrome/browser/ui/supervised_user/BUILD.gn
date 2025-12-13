@@ -4,14 +4,21 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-if (enable_extensions) {
-  source_set("supervised_user") {
-    sources = [ "parent_permission_dialog.h" ]
+source_set("supervised_user") {
+  if (enable_extensions_core) {
+    sources = [ "extension_install_blocked_by_parent_dialog.cc" ]
     public_deps = [
       "//base",
-      "//chrome/browser/supervised_user",
-      "//ui/base",
+      "//ui/base/interaction",
       "//ui/gfx",
     ]
+    deps = [
+      "//chrome/browser/supervised_user",
+      "//chrome/browser/ui/extensions",
+    ]
+  }
+
+  if (enable_extensions) {
+    sources += [ "parent_permission_dialog.h" ]
   }
 }

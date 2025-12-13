@@ -20,7 +20,7 @@ source_set("javascript_dialogs") {
     sources += [ "javascript_tab_modal_dialog_manager_delegate_desktop.h" ]
     public_deps += [
       "//chrome/browser/ui:browser_list",
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/tabs:tabs_public",
     ]
@@ -65,6 +65,7 @@ if (!is_android) {
     deps = [
       ":javascript_dialogs",
       "//base/test:test_support",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",

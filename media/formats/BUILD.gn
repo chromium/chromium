@@ -11,6 +11,7 @@ source_set("formats") {
   visibility = [
     "//media",
     "//media/base/android/",
+    "//media/base/win:media_foundation_util",
     "//media/cdm",
     "//media/ffmpeg",
     "//media/filters",
@@ -206,6 +207,8 @@ source_set("formats") {
 
   # TODO(crbug.com/40057824): These should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/abr_algorithm.cc",
+    "hls/abr_algorithm.h",
     "hls/items.cc",
     "hls/items.h",
     "hls/media_playlist.cc",
@@ -232,8 +235,6 @@ source_set("formats") {
     "hls/source_string.h",
     "hls/tag_name.cc",
     "hls/tag_name.h",
-    "hls/tag_recorder.cc",
-    "hls/tag_recorder.h",
     "hls/tags.cc",
     "hls/tags.h",
     "hls/types.cc",
@@ -244,7 +245,7 @@ source_set("formats") {
     "hls/variant_stream.h",
   ]
   deps += [
-    "//crypto:crypto",
+    "//crypto",
     "//third_party/re2",
   ]
   public_deps = [
@@ -374,6 +375,7 @@ source_set("unit_tests") {
 
   # TODO(crbug.com/40057824): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
+    "hls/abr_algorithm_unittest.cc",
     "hls/common_playlist_unittest.cc",
     "hls/items_unittest.cc",
     "hls/media_playlist_test_builder.cc",

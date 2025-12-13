@@ -5,7 +5,6 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_tracker_service.h",
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
   "+components/trusted_vault",
-  "+ios/chrome/browser/authentication/ui_bundled/account_menu/account_menu_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/browser_state/model/constants.h",
@@ -24,15 +23,11 @@ specific_include_rules = {
     "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
     "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
   ],
-  # TODO(crbug.com/331781927): remove when kIdentityDiscAccountMenu launches.
-  "^authentication_service_delegate_impl.cc": [
-    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
-  ],
   "^system_account_updater.mm": [
     "+ios/chrome/browser/widget_kit/model/features.h",
     "+ios/chrome/browser/widget_kit/model/model_swift.h",
   ],
-  "^system_account_updater_unittests.mm": [
+  "^system_account_updater_unittest.mm": [
     "+ios/chrome/browser/widget_kit/model/features.h",
   ],
 }

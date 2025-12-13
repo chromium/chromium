@@ -6,6 +6,18 @@ import("//build/config/ios/rules.gni")
 import("//ios/build/config.gni")
 import("//testing/test.gni")
 
+config("unittest_config") {
+  defines = [ "CWV_UNIT_TEST" ]
+}
+
+group("all_tests") {
+  testonly = true
+  deps = [
+    ":ios_web_view_inttests",
+    ":ios_web_view_unittests",
+  ]
+}
+
 source_set("inttests") {
   testonly = true
 
@@ -34,11 +46,93 @@ source_set("inttests") {
     "//components/variations:test_support",
     "//ios/third_party/webkit",
     "//ios/web/common:uikit",
-    "//ios/web_view:web_view+link",
+    "//ios/web_view/framework:web_view+link",
     "//net",
     "//net:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "../internal/autofill/cwv_autofill_controller_unittest.mm",
+    "../internal/autofill/cwv_autofill_data_manager_unittest.mm",
+    "../internal/autofill/cwv_autofill_form_unittest.mm",
+    "../internal/autofill/cwv_autofill_profile_unittest.mm",
+    "../internal/autofill/cwv_autofill_suggestion_unittest.mm",
+    "../internal/autofill/cwv_credit_card_otp_verifier_unittest.mm",
+    "../internal/autofill/cwv_credit_card_saver_unittest.mm",
+    "../internal/autofill/cwv_credit_card_unittest.mm",
+    "../internal/autofill/cwv_credit_card_verifier_unittest.mm",
+    "../internal/autofill/cwv_vcn_enrollment_manager_unittest.mm",
+    "../internal/autofill/web_view_autofill_image_fetcher_impl_unittest.mm",
+    "../internal/cwv_download_task_unittest.mm",
+    "../internal/cwv_favicon_unittest.mm",
+    "../internal/cwv_flags_unittest.mm",
+    "../internal/cwv_global_state.mm",
+    "../internal/cwv_html_element_unittest.mm",
+    "../internal/cwv_lookalike_url_handler_unittest.mm",
+    "../internal/cwv_omnibox_input_unittest.mm",
+    "../internal/cwv_preferences_unittest.mm",
+    "../internal/cwv_preview_element_info_unittest.mm",
+    "../internal/cwv_ssl_error_handler_unittest.mm",
+    "../internal/cwv_ssl_status_unittest.mm",
+    "../internal/cwv_web_view_configuration_internal_unittest.mm",
+    "../internal/cwv_web_view_unittest.mm",
+    "../internal/cwv_x509_certificate_unittest.mm",
+    "../internal/metrics/cwv_metrics_provider_unittest.mm",
+    "../internal/passwords/cwv_credential_provider_extension_utils_unittest.mm",
+    "../internal/passwords/cwv_leak_check_credential_unittest.mm",
+    "../internal/passwords/cwv_leak_check_service_unittest.mm",
+    "../internal/passwords/cwv_password_unittest.mm",
+    "../internal/passwords/cwv_reuse_check_service_unittest.mm",
+    "../internal/passwords/cwv_weak_check_utils_unittest.mm",
+    "../internal/passwords/web_view_password_manager_client_unittest.mm",
+    "../internal/safe_browsing/cwv_unsafe_url_handler_unittest.mm",
+    "../internal/signin/account_capabilities_fetcher_ios_web_view_unittest.mm",
+    "../internal/signin/cwv_identity_unittest.mm",
+    "../internal/signin/web_view_device_accounts_provider_impl_unittest.mm",
+    "../internal/signin/web_view_gaia_auth_fetcher_unittest.mm",
+    "../internal/sync/cwv_sync_controller_unittest.mm",
+    "../internal/sync/cwv_trusted_vault_observer_unittest.mm",
+    "../internal/translate/cwv_translation_controller_unittest.mm",
+    "../internal/translate/cwv_translation_language_unittest.mm",
+    "../internal/translate/cwv_translation_policy_unittest.mm",
+    "../internal/web_view_web_client_unittest.mm",
+  ]
+
+  configs += [ ":unittest_config" ]
+
+  deps = [
+    ":test_support",
+    "//base/test:test_support",
+    "//components/affiliations/core/browser:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/browser:test_support",
+    "//components/autofill/ios/form_util:test_support",
+    "//components/language_detection/core",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/browser/leak_detection:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/base:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
+    "//components/translate/core/browser:test_support",
+    "//components/translate/core/language_detection",
+    "//ios/web/common:uikit",
+    "//ios/web/common:web_view_creation_util",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
+    "//ios/web_view/framework:web_view_sources",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/gfx:test_support",
   ]
 }
 
@@ -67,4 +161,34 @@ source_set("test_support") {
     "//testing/gtest",
     "//ui/base",
   ]
+}
+
+source_set("run_all_unittests") {
+  testonly = true
+  sources = [ "run_all_unittests.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+  ]
+}
+
+test("ios_web_view_unittests") {
+  testonly = true
+  deps = [
+    ":run_all_unittests",
+    ":unittests",
+  ]
+
+  assert_no_deps = ios_assert_no_deps
+}
+
+test("ios_web_view_inttests") {
+  testonly = true
+
+  deps = [ ":inttests" ]
+
+  bundle_deps = [ "//ios/web_view/framework:web_view+bundle" ]
+
+  assert_no_deps = ios_assert_no_deps
 }

@@ -53,7 +53,8 @@ id<GREYMatcher> ElementWithAccessibilityLabelSubstring(NSString* substring) {
 
 id<GREYMatcher> NavigationBarBackButton() {
   return grey_allOf(grey_accessibilityID(@"BackButton"),
-                    grey_kindOfClassName(@"_UIButtonBarButton"), nil);
+                    grey_kindOfClassName(@"_UIButtonBarButton"),
+                    grey_sufficientlyVisible(), nil);
 }
 
 }  // namespace testing

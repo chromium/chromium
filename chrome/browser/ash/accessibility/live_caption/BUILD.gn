@@ -16,6 +16,8 @@ static_library("live_caption") {
 
   deps = [
     "//ash/webui/settings/public/constants:mojom",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/settings_ui",
     "//components/live_caption",
     "//components/live_caption:constants",
     "//components/live_caption:live_translate",

@@ -40,6 +40,7 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace cc {
 
@@ -345,13 +346,11 @@ void SingleThreadProxy::SetDeferMainFrameUpdate(bool defer_main_frame_update) {
     return;
 
   if (defer_main_frame_update) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
+                      perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "cc", "SingleThreadProxy::SetDeferMainFrameUpdate",
-        TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferMainFrameUpdate"*/
+                    perfetto::Track::FromPointer(this));
   }
 
   defer_main_frame_update_ = defer_main_frame_update;
@@ -375,11 +374,11 @@ void SingleThreadProxy::SetPauseRendering(bool pause_rendering) {
 
   pause_rendering_ = pause_rendering;
   if (pause_rendering_) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetPauseRendering",
+                      perfetto::Track::FromPointer(this));
   } else {
-    TRACE_EVENT_NESTABLE_ASYNC_END0(
-        "cc", "SingleThreadProxy::SetPauseRendering", TRACE_ID_LOCAL(this));
+    TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetPauseRendering"*/
+                    perfetto::Track::FromPointer(this));
   }
 
   // The scheduler needs to know that it should not issue BeginFrame.
@@ -398,8 +397,8 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
   if (IsDeferringCommits())
     return false;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc", "SingleThreadProxy::SetDeferCommits",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("cc", "SingleThreadProxy::SetDeferCommits",
+                    perfetto::Track::FromPointer(this));
 
   paint_holding_reason_ = reason;
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
@@ -418,8 +417,8 @@ void SingleThreadProxy::StopDeferringCommits(
   paint_holding_reason_.reset();
   commits_restart_time_ = base::TimeTicks();
   UMA_HISTOGRAM_ENUMERATION("PaintHolding.CommitTrigger2", trigger);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("cc", "SingleThreadProxy::SetDeferCommits",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferCommits"*/
+                  perfetto::Track::FromPointer(this));
 
   // Notify dependent systems that the deferral status has changed.
   layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);
@@ -442,13 +441,20 @@ void SingleThreadProxy::Stop() {
     DebugScopedSetMainThreadBlocked main_thread_blocked(task_runner_provider_);
     DebugScopedSetImplThread impl(task_runner_provider_);
 
-    // Prevent the scheduler from performing actions while we're in an
+    // Prevent the scheduler from performing scheduled actions while we're in an
     // inconsistent state.
     if (scheduler_on_impl_thread_)
       scheduler_on_impl_thread_->Stop();
+
     // Take away the LayerTreeFrameSink before destroying things so it doesn't
     // try to call into its client mid-shutdown.
     host_impl_->ReleaseLayerTreeFrameSink();
+
+    // The `Scheduler` has a raw_ptr to the CompositorFrameReportingController
+    // that is owned by the LTHI.
+    if (scheduler_on_impl_thread_) {
+      scheduler_on_impl_thread_->TearDown();
+    }
 
     // It is important to destroy LTHI before the Scheduler since it can make
     // callbacks that access it during destruction cleanup.
@@ -462,10 +468,6 @@ void SingleThreadProxy::QueueImageDecode(int request_id,
                                          const DrawImage& image,
                                          bool speculative) {
   DCHECK(task_runner_provider_->IsMainThread());
-  if (speculative) {
-    CHECK(!speculative_decode_request_in_flight_);
-    speculative_decode_request_in_flight_ = true;
-  }
   DebugScopedSetImplThread impl(task_runner_provider_);
   host_impl_->QueueImageDecode(request_id, image, speculative);
 }
@@ -558,6 +560,8 @@ void SingleThreadProxy::SetVideoNeedsBeginFrames(bool needs_begin_frames) {
   if (scheduler_on_impl_thread_)
     scheduler_on_impl_thread_->SetVideoNeedsBeginFrames(needs_begin_frames);
 }
+
+void SingleThreadProxy::DidChangeBeginFrameSourcePaused(bool paused) {}
 
 bool SingleThreadProxy::IsInsideDraw() {
   DCHECK(!task_runner_provider_->HasImplThread() ||
@@ -654,18 +658,10 @@ void SingleThreadProxy::SetNeedsImplSideInvalidation(
   }
 }
 
-bool SingleThreadProxy::SpeculativeDecodeRequestInFlight() const {
-  return speculative_decode_request_in_flight_;
-}
-
 void SingleThreadProxy::NotifyImageDecodeRequestFinished(
     int request_id,
     bool speculative,
     bool decode_succeeded) {
-  if (speculative) {
-    CHECK(speculative_decode_request_in_flight_);
-    speculative_decode_request_in_flight_ = false;
-  }
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   if (base::FeatureList::IsEnabled(
@@ -846,7 +842,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     host_impl_->Animate();
 
     if (raster) {
-      LayerTreeHostImpl::FrameData frame;
+      FrameData frame;
       frame.begin_frame_ack = viz::BeginFrameAck(begin_frame_args, true);
       frame.origin_begin_main_frame_args = begin_frame_args;
       DoComposite(&frame);
@@ -879,7 +875,7 @@ void SingleThreadProxy::ScheduleRequestNewLayerTreeFrameSink() {
   }
 }
 
-DrawResult SingleThreadProxy::DoComposite(LayerTreeHostImpl::FrameData* frame) {
+DrawResult SingleThreadProxy::DoComposite(FrameData* frame) {
   TRACE_EVENT0("cc", "SingleThreadProxy::DoComposite");
 
   DrawResult draw_result;
@@ -1222,7 +1218,7 @@ void SingleThreadProxy::BeginMainFrameAbortedOnImplThread(
 
 DrawResult SingleThreadProxy::ScheduledActionDrawIfPossible() {
   DebugScopedSetImplThread impl(task_runner_provider_);
-  LayerTreeHostImpl::FrameData frame;
+  FrameData frame;
   frame.begin_frame_ack =
       scheduler_on_impl_thread_->CurrentBeginFrameAckForActiveTree();
   frame.origin_begin_main_frame_args =

@@ -16,7 +16,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.IntentHandler;
@@ -29,7 +28,7 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Implementation of {@link BookmarkOpener} which relies on intents. */
 @NullMarked
@@ -71,7 +70,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     public boolean openBookmarksInNewTabs(
             List<BookmarkId> bookmarkIds,
             boolean incognito,
-            Optional<@TabLaunchType Integer> tabLaunchType) {
+            @Nullable @TabLaunchType Integer tabLaunchType) {
         if (bookmarkIds.size() == 0) return false;
 
         BookmarkItem firstItem = null;
@@ -99,7 +98,9 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, incognito);
         intent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, additionalUrls);
-        tabLaunchType.ifPresent(v -> IntentHandler.setTabLaunchType(intent, v));
+        if (tabLaunchType != null) {
+            IntentHandler.setTabLaunchType(intent, tabLaunchType);
+        }
         IntentHandler.startActivityForTrustedIntent(intent);
 
         return true;
@@ -147,6 +148,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
         recordTypeOpened(item, "Bookmarks.OpenBookmarkType");
         recordTimeSinceAdded(item, "Bookmarks.OpenBookmarkTimeInterval2.");
+        recordBookmarkURLOpened();
     }
 
     private void recordMetricsForOpenBookmarksInNewTabs(List<BookmarkItem> items) {
@@ -155,6 +157,7 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
         for (BookmarkItem item : items) {
             recordTypeOpened(item, "Bookmarks.MultipleOpened.OpenBookmarkType");
             recordTimeSinceAdded(item, "Bookmarks.MultipleOpened.OpenBookmarkTimeInterval2.");
+            recordBookmarkURLOpened();
         }
     }
 
@@ -183,5 +186,9 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
                 1,
                 DateUtils.DAY_IN_MILLIS * 30,
                 50);
+    }
+
+    private void recordBookmarkURLOpened() {
+        RecordHistogram.recordBooleanHistogram("Bookmarks.MobileBookmarkManager.OpenedURL", true);
     }
 }

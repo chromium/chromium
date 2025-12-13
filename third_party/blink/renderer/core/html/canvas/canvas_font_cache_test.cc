@@ -50,7 +50,8 @@ void CanvasFontCacheTest::SetUp() {
   String canvas_type("2d");
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = true;
-  canvas_element_->GetCanvasRenderingContext(canvas_type, attributes);
+  canvas_element_->GetCanvasRenderingContext(
+      GetDocument().GetExecutionContext(), canvas_type, attributes);
   Context2D();  // Calling this for the checks
 }
 

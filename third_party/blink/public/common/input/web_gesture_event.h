@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_GESTURE_EVENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_INPUT_WEB_GESTURE_EVENT_H_
 
 #include <memory>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
@@ -210,11 +206,21 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
       int modifiers,
       base::TimeTicks time_stamp,
       mojom::GestureDevice device = mojom::GestureDevice::kUninitialized)
-      : WebInputEvent(type, modifiers, time_stamp), source_device_(device) {
-    memset(&data, 0, sizeof(data));
+      : WebInputEvent(type,
+                      Type::kGestureTypeFirst,
+                      Type::kGestureTypeLast,
+                      modifiers,
+                      time_stamp),
+        source_device_(device) {
+    UNSAFE_TODO(memset(&data, 0, sizeof(data)));
   }
 
-  WebGestureEvent() { memset(&data, 0, sizeof(data)); }
+  WebGestureEvent()
+      : WebInputEvent(Type::kUndefined,
+                      Type::kGestureTypeFirst,
+                      Type::kGestureTypeLast) {
+    UNSAFE_TODO(memset(&data, 0, sizeof(data)));
+  }
 
   const gfx::PointF& PositionInWidget() const { return position_in_widget_; }
   const gfx::PointF& PositionInScreen() const { return position_in_screen_; }

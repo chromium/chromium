@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
@@ -66,7 +62,7 @@ void AddCustomEvent(const CustomEvent& custom_event, MetadataWriter& writer) {
   std::vector<UkmMetricHash> metrics;
   for (unsigned j = 0; j < custom_event.metric_names_size; ++j) {
     metrics.emplace_back(
-        base::HashMetricName(custom_event.metric_names.get()[j]));
+        base::HashMetricName(UNSAFE_TODO(custom_event.metric_names.get()[j])));
   }
   MetadataWriter::SqlFeature::EventAndMetrics event{
       .event_hash = UkmEventHash(base::HashMetricName(custom_event.event_name)),

@@ -343,10 +343,11 @@ class DiceBrowsingDataRemoverBrowserTest
                                   bool is_primary) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
     if (is_primary) {
-      DCHECK(!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+      DCHECK(
+          !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
       return signin::MakePrimaryAccountAvailable(identity_manager,
                                                  account_id + "@gmail.com",
-                                                 signin::ConsentLevel::kSync);
+                                                 signin::ConsentLevel::kSignin);
     }
     auto account_info =
         signin::MakeAccountAvailable(identity_manager, account_id);
@@ -541,9 +542,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, VideoDecodePerfHistory) {
   {
     base::RunLoop run_loop;
     video_decode_perf_history->GetSaveCallback().Run(
-        ukm::kInvalidSourceId, media::learning::FeatureValue(0), kIsTopFrame,
-        prediction_features, prediction_targets, kPlayerId,
-        run_loop.QuitWhenIdleClosure());
+        ukm::kInvalidSourceId, kIsTopFrame, prediction_features,
+        prediction_targets, kPlayerId, run_loop.QuitWhenIdleClosure());
     run_loop.Run();
   }
 
@@ -813,172 +813,6 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, HistoryDeletion) {
   EXPECT_FALSE(HasDataForType(kType));
 }
 
-// ChromeOS users cannot sign out, their account preferences can never be
-// cleared.
-#if !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       ClearingCookiesAlsoClearsPasswordAccountStorageOptIn) {
-  const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(GetProfile());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-
-  // TODO(crbug.com/375024026): Revisit.
-  sync_service->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
-
-  signin::ClearPrimaryAccount(identity_manager);
-  RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA);
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    BrowsingDataRemoverBrowserTest,
-    ClearingCookiesWithFilterAlsoClearsPasswordAccountStorageSetting) {
-  const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(GetProfile());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-
-  sync_service->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, false);
-  ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
-
-  // Clearing cookies for some random domain should have no effect on the
-  // setting.
-  signin::ClearPrimaryAccount(identity_manager);
-  {
-    std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
-        BrowsingDataFilterBuilder::Create(
-            BrowsingDataFilterBuilder::Mode::kDelete);
-    filter_builder->AddRegisterableDomain("example.com");
-    RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
-                            std::move(filter_builder));
-  }
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-  EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
-
-  // Clearing cookies for google.com should clear the setting.
-  signin::ClearPrimaryAccount(identity_manager);
-  {
-    std::unique_ptr<BrowsingDataFilterBuilder> filter_builder =
-        BrowsingDataFilterBuilder::Create(
-            BrowsingDataFilterBuilder::Mode::kDelete);
-    filter_builder->AddRegisterableDomain("google.com");
-    RemoveWithFilterAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
-                            std::move(filter_builder));
-  }
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-  EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-      prefs, sync_service));
-}
-
-IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest, ClearSiteData) {
-  const char kTestEmail[] = "foo@gmail.com";
-  PrefService* prefs = GetProfile()->GetPrefs();
-  syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(GetProfile());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                      signin::ConsentLevel::kSignin);
-
-  const GURL kFirstPartyURL("https://google.com");
-  const GURL kCrossSiteURL("https://example.com");
-
-  struct TestCases {
-    const url::Origin origin;
-    const std::optional<net::CookiePartitionKey> cookie_partition_key;
-    const std::optional<blink::StorageKey> storage_key;
-    bool expects_keep_optin_pref;
-  };
-  const auto test_cases = std::to_array<TestCases>({
-      {
-          url::Origin::Create(kFirstPartyURL),
-          std::nullopt,
-          std::nullopt,
-          false,
-      },
-      {
-          url::Origin::Create(kCrossSiteURL),
-          std::nullopt,
-          std::nullopt,
-          true,
-      },
-      {
-          url::Origin::Create(kFirstPartyURL),
-          net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
-          std::nullopt,
-          false,
-      },
-      {
-          url::Origin::Create(kFirstPartyURL),
-          net::CookiePartitionKey::FromURLForTesting(kFirstPartyURL),
-          blink::StorageKey::CreateFirstParty(
-              url::Origin::Create(kFirstPartyURL)),
-          false,
-      },
-      {
-          url::Origin::Create(kFirstPartyURL),
-          net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
-          std::nullopt,
-          true,
-      },
-      {
-          url::Origin::Create(kFirstPartyURL),
-          net::CookiePartitionKey::FromURLForTesting(kCrossSiteURL),
-          blink::StorageKey::Create(
-              url::Origin::Create(kCrossSiteURL),
-              net::SchemefulSite(url::Origin::Create(kFirstPartyURL)),
-              blink::mojom::AncestorChainBit::kCrossSite),
-          true,
-      },
-  });
-  for (size_t i = 0; i < std::size(test_cases); i++) {
-    SCOPED_TRACE(base::StringPrintf("Test case %zu", i));
-    const auto& test_case = test_cases[i];
-
-    sync_service->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kPasswords, false);
-    ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-        prefs, sync_service));
-    signin::ClearPrimaryAccount(identity_manager);
-    ClearSiteDataAndWait(test_case.origin, test_case.cookie_partition_key,
-                         test_case.storage_key, {});
-    signin::MakePrimaryAccountAvailable(identity_manager, kTestEmail,
-                                        signin::ConsentLevel::kSignin);
-
-    if (test_case.expects_keep_optin_pref) {
-      EXPECT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
-          prefs, sync_service));
-    } else {
-      EXPECT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
-          prefs, sync_service));
-    }
-  }
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 // Storage Buckets
 
 class BrowsingDataRemoverStorageBucketsBrowserTest
@@ -1183,18 +1017,6 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   // Start data removal.  This will CreateTaskCompletionClosureForMojo and
   // register it as a completion callback for mojo calls to NetworkContext
   // and other StorageParition-owned mojo::Remote(s).
-  //
-  // kRemoveMask contains:
-  // - DATA_TYPE_SITE_DATA - cargo-culted default from other tests
-  // - DEFERRED_COOKIE_DELETION_DATA_TYPES - to get non-empty result from
-  //   ChromeBrowsingDataRemoverDelegate::GetDomainsForDeferredCookieDeletion
-  //   (which is needed to touch StoragePartition in
-  //   BrowsingDataRemoverImpl::OnTaskComplete when it is called later,
-  //   after starting destruction of the BrowserContext - see the description
-  //   of the next test step below).
-  constexpr uint64_t kRemoveMask =
-      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
-      chrome_browsing_data_remover::DEFERRED_COOKIE_DELETION_DATA_TYPES;
   content::BrowserContext* browser_context = GetBrowser()->profile();
   content::BrowsingDataRemover* remover =
       browser_context->GetBrowsingDataRemover();
@@ -1202,7 +1024,8 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataRemoverBrowserTestP,
   remover->RemoveAndReply(
       base::Time(),       // delete_begin
       base::Time::Max(),  // delete_end
-      kRemoveMask, content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
       &completion_observer);
 
   // Close the incognito browser.  This will tear down its

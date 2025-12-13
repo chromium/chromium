@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(CorsFileOriginBrowserTest,
 
   // Navigate to a file: test page.
   GURL page_url = GetTestUrl(nullptr, "title1.html");
-  EXPECT_EQ(url::kFileScheme, page_url.scheme());
+  EXPECT_EQ(url::kFileScheme, page_url.GetScheme());
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
 
   // Fetching http resources should be allowed by CORS when

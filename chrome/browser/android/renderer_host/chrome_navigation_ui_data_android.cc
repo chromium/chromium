@@ -17,3 +17,5 @@ static jlong JNI_ChromeNavigationUiData_CreateUnownedNativeCopy(
   return reinterpret_cast<intptr_t>(
       static_cast<content::NavigationUIData*>(ui_data));
 }
+
+DEFINE_JNI(ChromeNavigationUiData)

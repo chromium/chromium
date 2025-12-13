@@ -15,6 +15,7 @@
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace safe_browsing {
 
@@ -30,8 +31,8 @@ PhishingImageEmbedder::~PhishingImageEmbedder() {
 }
 
 void PhishingImageEmbedder::BeginImageEmbedding(DoneCallback done_callback) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("safe_browsing", "PhishingImageEmbedding",
-                                    this);
+  TRACE_EVENT_BEGIN("safe_browsing", "PhishingImageEmbedding",
+                    perfetto::Track::FromPointer(this));
   DCHECK(is_ready());
 
   // However, in an opt build, we will go ahead and clean up the pending
@@ -84,8 +85,8 @@ void PhishingImageEmbedder::OnImageEmbeddingDone(
 
 void PhishingImageEmbedder::RunCallback(
     const ImageFeatureEmbedding& image_feature_embedding) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "PhishingImageEmbedding",
-                                  this);
+  TRACE_EVENT_END("safe_browsing", /* PhishingImageEmbedding */
+                  perfetto::Track::FromPointer(this));
   std::move(done_callback_).Run(image_feature_embedding);
   Clear();
 }

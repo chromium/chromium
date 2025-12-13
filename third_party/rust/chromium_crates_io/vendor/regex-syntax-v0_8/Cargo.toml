@@ -13,41 +13,30 @@
 edition = "2021"
 rust-version = "1.65"
 name = "regex-syntax"
-version = "0.8.5"
+version = "0.8.8"
 authors = [
     "The Rust Project Developers",
     "Andrew Gallant <jamslam@gmail.com>",
 ]
 build = false
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false
 autobenches = false
 description = "A regular expression parser."
+homepage = "https://github.com/rust-lang/regex/tree/master/regex-syntax"
 documentation = "https://docs.rs/regex-syntax"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/rust-lang/regex/tree/master/regex-syntax"
+repository = "https://github.com/rust-lang/regex"
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = [
     "--cfg",
-    "docsrs",
+    "docsrs_regex",
 ]
-
-[lib]
-name = "regex_syntax"
-path = "src/lib.rs"
-
-[[bench]]
-name = "bench"
-path = "benches/bench.rs"
-
-[dependencies.arbitrary]
-version = "1.3.0"
-features = ["derive"]
-optional = true
 
 [features]
 arbitrary = ["dep:arbitrary"]
@@ -72,3 +61,21 @@ unicode-gencat = []
 unicode-perl = []
 unicode-script = []
 unicode-segment = []
+
+[lib]
+name = "regex_syntax"
+path = "src/lib.rs"
+
+[[bench]]
+name = "bench"
+path = "benches/bench.rs"
+
+[dependencies.arbitrary]
+version = "1.3.0"
+features = ["derive"]
+optional = true
+
+[lints.rust.unexpected_cfgs]
+level = "allow"
+priority = 0
+check-cfg = ["cfg(docsrs_regex)"]

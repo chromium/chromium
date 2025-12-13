@@ -13,19 +13,21 @@
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/mock_fido_device.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +73,52 @@ TEST_F(FidoGetAssertionTaskTest, TestGetAssertionSuccess) {
   EXPECT_EQ(CtapDeviceResponseCode::kSuccess,
             std::get<0>(get_assertion_future().Get()));
   EXPECT_EQ(std::get<1>(get_assertion_future().Get()).size(), 1u);
+}
+
+TEST_F(FidoGetAssertionTaskTest, RedactLog) {
+  // This is a base 64 encoded CTAP get assertion response with:
+  // * largeBlobKey
+  // * largeBlob extension
+  // * PRF extension
+  // All the values intended to be redacted are set to the string "secret".
+  // (The response is not valid, but that's okay here.)
+  constexpr char kTestCtapGetAssertionResponse[] =
+      "AKUBomJpZFBP92OYWX3ztmRWuLsC74ndZHR5cGVqcHVibGljLWtleQJYJcRs74KtG1Rkd1kd"
+      "AIsIdZ7D5tLstPOUdL/"
+      "qaWmSXQO3HQAAAAADZnNlY3JldAdmc2VjcmV0CKJjcHJmomdlbmFibGVk9GdyZXN1bHRzoWV"
+      "maXJzdGZzZWNyZXRpbGFyZ2VCbG9iZnNlY3JldA==";
+  auto device = MockFidoDevice::MakeCtap();
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      *base::Base64Decode(kTestCtapGetAssertionResponse));
+
+  device_event_log::Initialize(/*max_entries=*/0);
+  CtapGetAssertionRequest request_param(test_data::kRelyingPartyId,
+                                        test_data::kClientDataJson);
+  auto task = std::make_unique<GetAssertionTask>(
+      device.get(), std::move(request_param), CtapGetAssertionOptions(),
+      get_assertion_future().GetCallback());
+  EXPECT_TRUE(get_assertion_future().Wait());
+
+  // Signature.
+  std::string device_log = device_event_log::GetAsString(
+      device_event_log::NEWEST_FIRST, /*format=*/"level",
+      /*types=*/"fido",
+      /*max_level=*/device_event_log::LOG_LEVEL_EVENT, /*max_events=*/0);
+  EXPECT_THAT(device_log, testing::HasSubstr("3: \"[redacted]\""));
+  // Large blob key.
+  EXPECT_THAT(device_log, testing::HasSubstr("7: \"[redacted]\""));
+  // PRF extension.
+  EXPECT_THAT(
+      device_log,
+      testing::HasSubstr(
+          "8: {\"prf\": {\"enabled\": false, \"results\": \"[redacted]\""));
+  // Large blob extension.
+  EXPECT_THAT(device_log, testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
+
+  // Verify that the data hasn't escaped redaction somehow.
+  EXPECT_THAT(device_log, testing::Not(testing::HasSubstr("secret")));
+  device_event_log::Shutdown();
 }
 
 TEST_F(FidoGetAssertionTaskTest, TestU2fSignSuccess) {

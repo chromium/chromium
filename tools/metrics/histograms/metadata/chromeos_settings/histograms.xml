@@ -34,7 +34,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.AccessibilityMagnifierFollowsSts"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>lkupo@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -44,7 +44,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CaretBlinkInterval" units="ms"
-    expires_after="2025-11-23">
+    expires_after="2026-05-31">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -56,7 +56,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount"
-    units="%" expires_after="2025-09-23">
+    units="%" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -66,7 +66,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ColorCorrection.FilterType"
-    enum="ColorCorrectionFilterTypes" expires_after="2025-09-23">
+    enum="ColorCorrectionFilterTypes" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -76,7 +76,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.ConnectBrailleDisplay"
-    enum="BooleanConnected" expires_after="2025-09-23">
+    enum="BooleanConnected" expires_after="2026-02-01">
   <owner>dtseng@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -88,7 +88,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.CursorColor.Enabled"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
 <!-- Kept separate from the generic accessibility settings metric because this
  is not a simple toggle on/off presented to the user, but is a dropdown list
  of color choices. -->
@@ -103,7 +103,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
-    enum="BooleanToggled" expires_after="2025-09-23">
+    enum="BooleanToggled" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -114,7 +114,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierMouseFollowingMode"
-    enum="MagnifierMouseFollowingMode" expires_after="2025-09-23">
+    enum="MagnifierMouseFollowingMode" expires_after="2026-09-23">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -125,7 +125,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.MagnifierFollowsChromeVox"
-    enum="BooleanToggled" expires_after="2025-11-23">
+    enum="BooleanToggled" expires_after="2026-01-25">
   <owner>aldietz@google.com</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -135,7 +135,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
-    enum="BooleanToggled" expires_after="2025-11-23">
+    enum="BooleanToggled" expires_after="2026-05-31">
   <owner>katie@chromium.org</owner>
   <owner>chromeos-a11y-eng@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Apps.DoNotDisturbOnOff"
-    enum="BooleanToggled" expires_after="2025-12-14">
+    enum="BooleanToggled" expires_after="2026-02-22">
   <owner>hsuregan@chromium.org</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <summary>
@@ -183,7 +183,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Bluetooth.BluetoothOnOff"
-    enum="BooleanToggled" expires_after="2026-02-14">
+    enum="BooleanToggled" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -193,7 +193,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.BlurredWindowDuration" units="ms"
-    expires_after="2026-01-11">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -204,10 +204,10 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.ChargingSoundsButtonEnabled"
-    enum="BooleanEnabled" expires_after="2025-11-01">
+    enum="BooleanEnabled" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>bicioglu@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records when a user toggles the Charging sounds setting in the Audio subpage
     of the Device section.
@@ -216,7 +216,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Device.Keyboard.AutoBrightnessEnabled.Changed"
-    enum="BooleanToggled" expires_after="2025-12-31">
+    enum="BooleanToggled" expires_after="2026-12-15">
   <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -227,7 +227,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted"
-    units="%" expires_after="2025-12-31">
+    units="%" expires_after="2026-03-01">
   <owner>longbo@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -261,7 +261,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardColorLinkClicks"
-    enum="Boolean" expires_after="2025-12-31">
+    enum="Boolean" expires_after="2026-12-15">
   <owner>longbowei@google.com</owner>
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
@@ -273,7 +273,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
-    enum="BooleanToggled" expires_after="2025-12-15">
+    enum="BooleanToggled" expires_after="2026-12-15">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -283,10 +283,10 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.LowBatterySoundButtonEnabled"
-    enum="BooleanEnabled" expires_after="2025-07-22">
+    enum="BooleanEnabled" expires_after="2026-11-20">
   <owner>hongyulong@chromium.org</owner>
   <owner>bicioglu@google.com</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records when a user toggles the Low battery sound setting in the Audio
     subpage of the Device section.
@@ -317,7 +317,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.Internal.AutoBrightnessEnabled"
-    enum="BooleanToggled" expires_after="2025-09-07">
+    enum="BooleanToggled" expires_after="2026-06-01">
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -327,7 +327,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.Internal.BrightnessSliderAdjusted"
-    units="%" expires_after="2026-01-11">
+    units="%" expires_after="2026-03-15">
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -340,7 +340,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="ChromeOS.Settings.Display.Internal.UserInitiated.AmbientLightSensorDisabledCause"
     enum="UserInitiatedAmbientLightSensorDisabledCause"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.NewDisplayConnected"
-    enum="DisplayType" expires_after="2025-11-16">
+    enum="DisplayType" expires_after="2026-05-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -384,7 +384,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}"
-    enum="DisplaySettingsType" expires_after="2025-11-16">
+    enum="DisplaySettingsType" expires_after="2026-05-24">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -398,7 +398,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightSchedule"
-    enum="DisplaySettingsNightLightScheduleOption" expires_after="2025-09-07">
+    enum="DisplaySettingsNightLightScheduleOption" expires_after="2026-07-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -412,7 +412,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.NightLightStatus"
-    enum="DisplaySettingsBoolean" expires_after="2025-09-07">
+    enum="DisplaySettingsBoolean" expires_after="2026-07-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -426,7 +426,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Display.{DisplayType}.Orientation"
-    enum="DisplaySettingsOrientationOption" expires_after="2025-10-12">
+    enum="DisplaySettingsOrientationOption" expires_after="2026-04-26">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -441,7 +441,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettings"
-    enum="DisplayDefaultSettingsMeasurement" expires_after="2025-08-10">
+    enum="DisplayDefaultSettingsMeasurement" expires_after="2026-07-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -458,7 +458,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Display.{DisplayType}.UserOverrideDisplayDefaultSettingsTimeElapsed.{DisplaySettings}"
-    units="minutes" expires_after="2025-09-23">
+    units="minutes" expires_after="2026-03-23">
   <owner>zhangwenyu@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -547,7 +547,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="ChromeOS.Settings.Keyboard.UserInitiated.AmbientLightSensorDisabledCause"
     enum="UserInitiatedAmbientLightSensorDisabledCause"
-    expires_after="2025-12-31">
+    expires_after="2026-12-31">
   <owner>longbowei@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -597,7 +597,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadCompletedTime" units="ms"
-    expires_after="2026-01-04">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -609,7 +609,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.LoadDocumentTime" units="ms"
-    expires_after="2025-09-23">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -621,7 +621,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.Enabled" enum="BooleanToggled"
-    expires_after="2025-12-14">
+    expires_after="2026-04-26">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -631,7 +631,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.HelpMeReadEnabled"
-    enum="BooleanToggled" expires_after="2025-12-14">
+    enum="BooleanToggled" expires_after="2026-03-15">
   <owner>alanlxl@google.com</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -651,7 +651,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.MagicBoost.LobsterEnabled"
-    enum="BooleanToggled" expires_after="2025-10-25">
+    enum="BooleanToggled" expires_after="2026-05-24">
   <owner>curtismcmullan@google.com</owner>
   <owner>hdchuong@google.com</owner>
   <summary>
@@ -671,7 +671,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumCharsOfQueries" units="characters"
-    expires_after="2026-02-14">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -682,7 +682,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumClicksUntilChange{OsSettingsChangeType}"
-    units="clicks" expires_after="2026-01-11">
+    units="clicks" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -693,7 +693,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumNavigationsUntilChange{OsSettingsChangeType}"
-    units="navigations" expires_after="2025-12-28">
+    units="navigations" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -704,7 +704,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumSearchesUntilChange{OsSettingsChangeType}"
-    units="searches" expires_after="2025-11-30">
+    units="searches" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -714,7 +714,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumSearchResultsFetched" units="results"
-    expires_after="2026-07-09">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -726,8 +726,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime2.{Time}"
-    units="Unique Setting(s) Changed" expires_after="2025-12-14">
-  <owner>moteva@google.com</owner>
+    units="Unique Setting(s) Changed" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -749,8 +748,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.NumUniqueSettingsChanged.PerSession"
-    units="UniqueChanges" expires_after="2025-12-28">
-  <owner>moteva@google.com</owner>
+    units="UniqueChanges" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -760,7 +758,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2025-12-28">
+    enum="BooleanEnabled" expires_after="2026-03-01">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -772,7 +770,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.PathVisited"
-    enum="WebUIOSSettingsPathHashes" expires_after="2025-11-16">
+    enum="WebUIOSSettingsPathHashes" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -783,7 +781,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.People.AddAccountCount" units="accounts"
-    expires_after="2026-02-14">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -795,7 +793,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Privacy.PeripheralDataAccessProtection"
-    enum="BooleanEnabled" expires_after="2026-01-04">
+    enum="BooleanEnabled" expires_after="2026-05-17">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -828,7 +826,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.RevenEnableHwDataUsage"
-    enum="BooleanToggled" expires_after="2025-09-03">
+    enum="BooleanToggled" expires_after="2026-09-03">
   <owner>tinghaolin@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -840,7 +838,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.ScannerEnabled" enum="BooleanToggled"
-    expires_after="2025-12-28">
+    expires_after="2026-06-30">
   <owner>curtismcmullan@google.com</owner>
   <owner>mlcui@google.com</owner>
   <summary>
@@ -850,7 +848,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchLatency" units="ms"
-    expires_after="2025-11-18">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -861,7 +859,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequests"
-    enum="OsSettingSearchRequestTypes" expires_after="2026-06-30">
+    enum="OsSettingSearchRequestTypes" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -875,7 +873,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchRequestsPerSession"
-    units="mojo search requests" expires_after="2026-06-30">
+    units="mojo search requests" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -896,7 +894,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSectionSelected"
-    enum="OsSettingsSection" expires_after="2025-10-19">
+    enum="OsSettingsSection" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -906,7 +904,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSettingSelected"
-    enum="OsSetting" expires_after="2026-02-14">
+    enum="OsSetting" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -916,7 +914,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultSubpageSelected"
-    enum="OsSettingsSubpage" expires_after="2025-09-23">
+    enum="OsSettingsSubpage" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -926,7 +924,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SearchResultTypeSelected"
-    enum="OsSettingsSearchResultType" expires_after="2026-07-09">
+    enum="OsSettingsSearchResultType" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -936,7 +934,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SettingChanged" enum="OsSetting"
-    expires_after="2026-03-24">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -949,7 +947,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SnapWindowSuggestions" enum="BooleanToggled"
-    expires_after="2025-08-24">
+    expires_after="2026-05-21">
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -959,7 +957,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SunfishEnabled" enum="BooleanToggled"
-    expires_after="2025-10-25">
+    expires_after="2026-05-21">
   <owner>sophiewen@chromium.org</owner>
   <owner>curtismcmullan@google.com</owner>
   <summary>
@@ -969,7 +967,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilChange{OsSettingsChangeType}"
-    units="ms" expires_after="2025-11-30">
+    units="ms" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -980,7 +978,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.TimeUntilInteractive" units="ms"
-    expires_after="2025-12-23">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -992,7 +990,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.UserActionOnSearchResultsShown"
-    enum="OsSettingSearchBoxUserAction" expires_after="2025-09-03">
+    enum="OsSettingSearchBoxUserAction" expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -1027,7 +1025,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
-    expires_after="2025-12-14">
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
@@ -1038,8 +1036,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.WindowTotalActiveDuration" units="ms"
-    expires_after="2026-01-11">
-  <owner>moteva@google.com</owner>
+    expires_after="2026-11-11">
   <owner>wesokuhara@google.com</owner>
   <owner>cros-settings@google.com</owner>
   <summary>

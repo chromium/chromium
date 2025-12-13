@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "components/persistent_cache/mojom/persistent_cache.mojom";
 import "gpu/ipc/common/device_perf_info.mojom";
 import "gpu/ipc/common/gpu_disk_cache_type.mojom";
 import "gpu/ipc/common/gpu_feature_info.mojom";
@@ -17,7 +18,6 @@ import "media/mojo/mojom/video_encode_accelerator.mojom";
 import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
-import "mojo/public/mojom/base/shared_memory.mojom";
 import "services/webnn/public/mojom/features.mojom";
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -56,10 +56,13 @@ interface GpuService {
   // client. The GPU service responds with an IPC handle. |gpu_info| and
   // |gpu_feature_info| are returned so that if this method is called
   // synchronously they are available (since the PostTask for
-  // GpuHost::DidInitialize might not be dispatched yet.
+  // GpuHost::DidInitialize might not be dispatched yet).
   [Sync, NoInterrupt]
   EstablishGpuChannel(
-      int32 client_id, uint64 client_tracing_id, bool is_gpu_host)
+      int32 client_id,
+      uint64 client_tracing_id,
+      bool is_gpu_host,
+      bool enable_extra_handles_validation)
       => (handle<message_pipe>? channel_handle,
           gpu.mojom.GpuInfo gpu_info,
           gpu.mojom.GpuFeatureInfo gpu_feature_info,
@@ -74,6 +77,12 @@ interface GpuService {
   // handle per client only one unique handle is expected.
   SetChannelDiskCacheHandle(
       int32 client_id, gpu.mojom.GpuDiskCacheHandle cache_handle);
+
+  // Sets the persistent cache pending backend for the given channel.
+  SetChannelPersistentCachePendingBackend(
+      int32 client_id,
+      gpu.mojom.GpuDiskCacheHandle cache_handle,
+      persistent_cache.mojom.PendingReadWriteBackend pending_backend);
 
   // Called by the browser when the last reference to a GPU disk cache handle
   // is gone. Results in the GPU process purging the in memory copy.
@@ -153,7 +162,7 @@ interface GpuService {
 
   // Tells GPU that host has seen a GPU switch. This can happen when the display
   // is reconfigured, for example.
-  GpuSwitched(gl.mojom.GpuPreference active_gpu_heuristic);
+  GpuSwitched();
 
   // Tells GPU that host has seen a monitor being plugged in.
   DisplayAdded();

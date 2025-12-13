@@ -67,8 +67,9 @@ void MemoryDetails::CollectProcessData(
     base::ProcessId pid = process_entry.th32ProcessID;
     base::win::ScopedHandle process_handle(::OpenProcess(
         PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid));
-    if (!process_handle.IsValid())
+    if (!process_handle.is_valid()) {
       continue;
+    }
     if (_wcsicmp(base::as_wcstr(process_data_[0].process_name),
                  process_entry.szExeFile) != 0) {
       continue;

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TRANSLATE_TRANSLATE_BUBBLE_VIEW_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -31,7 +30,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 
 class Browser;
 
@@ -53,13 +52,13 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
  public:
   // Item IDs for the option button's menu.
-  enum OptionsMenuItem {
-    ALWAYS_TRANSLATE_LANGUAGE,
-    NEVER_TRANSLATE_LANGUAGE,
-    NEVER_TRANSLATE_SITE,
-    CHANGE_TARGET_LANGUAGE,
-    CHANGE_SOURCE_LANGUAGE,
-    OPEN_LANGUAGE_SETTINGS
+  enum class OptionsMenuItem {
+    kAlwaysTranslateLanguage,
+    kNeverTranslateLanguage,
+    kNeverTranslateSite,
+    kChangeTargetLanguage,
+    kChangeSourceLanguage,
+    kOpenLanguageSettings
   };
 
   // Element IDs for ui::ElementTracker.
@@ -77,8 +76,7 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kErrorMessage);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOpenLanguageSettings);
 
-  TranslateBubbleView(const base::WeakPtr<actions::ActionItem> action_item,
-                      views::View* anchor_view,
+  TranslateBubbleView(views::View* anchor_view,
                       std::unique_ptr<TranslateBubbleModel> model,
                       translate::TranslateErrors error_type,
                       content::WebContents* web_contents,
@@ -307,8 +305,6 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
   std::unique_ptr<TranslateBubbleModel> model_;
 
   translate::TranslateErrors error_type_;
-
-  base::WeakPtr<actions::ActionItem> translate_action_item_ = nullptr;
 
   // Whether the window is an incognito window.
   const bool is_in_incognito_window_;

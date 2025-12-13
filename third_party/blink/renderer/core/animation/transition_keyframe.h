@@ -95,7 +95,8 @@ class CORE_EXPORT TransitionKeyframe : public Keyframe {
     }
     Interpolation* CreateInterpolation(
         const PropertyHandle&,
-        const Keyframe::PropertySpecificKeyframe& other) const final;
+        const Keyframe::PropertySpecificKeyframe& other,
+        const Keyframe::PropertySpecificKeyframe* final_keyframe) const final;
 
     bool IsTransitionPropertySpecificKeyframe() const final { return true; }
 

@@ -27,11 +27,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 
 #import <AppKit/AppKit.h>
@@ -65,7 +60,8 @@ using base::apple::ScopedCFTypeRef;
 // We don't need localized variation axis name, so we can use
 // `CTFontCopyVariationAxesInternal()` instead.
 // Request for public API: FB13788219.
-extern "C" CFArrayRef CTFontCopyVariationAxesInternal(CTFontRef);
+extern "C" CFArrayRef CTFontCopyVariationAxesInternal(CTFontRef)
+    CT_AVAILABLE(macos(12.1));
 
 namespace blink {
 
@@ -745,7 +741,7 @@ int ToAppKitFontWeight(FontSelectionValue font_weight) {
   };
   DCHECK_GE(select_weight, 0ul);
   DCHECK_LE(select_weight, std::size(app_kit_font_weights));
-  return app_kit_font_weights[select_weight];
+  return UNSAFE_TODO(app_kit_font_weights[select_weight]);
 }
 
 // CoreText font weight ranges are taken from `GetFontWeightFromCTFont` in
@@ -791,7 +787,7 @@ float ToCTFontWeight(int css_weight) {
       0.62,   // Black (Heavy)
   };
   int index = (css_weight - 50) / 100;
-  return weights[index];
+  return UNSAFE_TODO(weights[index]);
 }
 
 // AppKit font weight ranges are taken from `ToNSFontManagerWeight` in

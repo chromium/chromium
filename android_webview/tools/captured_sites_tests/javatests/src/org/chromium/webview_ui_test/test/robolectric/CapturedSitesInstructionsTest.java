@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import androidx.annotation.Nullable;
 import androidx.test.filters.SmallTest;
 
 import org.json.JSONArray;
@@ -20,7 +21,6 @@ import org.chromium.webview_ui_test.test.util.Action;
 import org.chromium.webview_ui_test.test.util.CapturedSitesInstructions;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /** Unit testing for CapturedSitesInstructions. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,7 +58,7 @@ public final class CapturedSitesInstructionsTest {
     }
 
     // Creates CapturedSistes insturctions for LoadPage tests.
-    private CapturedSitesInstructions loadPageForceHelper(Optional<Boolean> force)
+    private CapturedSitesInstructions loadPageForceHelper(@Nullable Boolean force)
             throws Throwable {
         JSONObject test = new JSONObject();
         JSONArray jsonActions = new JSONArray();
@@ -66,8 +66,8 @@ public final class CapturedSitesInstructionsTest {
         JSONObject obj = new JSONObject();
         obj.put("type", "loadPage");
         obj.put("url", "myUrl");
-        if (force.isPresent()) {
-            obj.put("force", force.get().toString());
+        if (force != null) {
+            obj.put("force", force.toString());
         }
         jsonActions.put(obj);
         test.put("actions", jsonActions);
@@ -77,7 +77,7 @@ public final class CapturedSitesInstructionsTest {
     @Test
     @SmallTest
     public void verifyBuild_succeedsWithLoadPageForce() throws Throwable {
-        CapturedSitesInstructions actions = loadPageForceHelper(Optional.of(true));
+        CapturedSitesInstructions actions = loadPageForceHelper(true);
         actions.getNextAction(); // Skip startingURL
         Action action = actions.getNextAction();
         assertTrue(action.toString().contains("myUrl"));
@@ -87,7 +87,7 @@ public final class CapturedSitesInstructionsTest {
     @Test
     @SmallTest
     public void verifyBuild_succeedsWithLoadPageNoForce() throws Throwable {
-        CapturedSitesInstructions actions = loadPageForceHelper(Optional.of(false));
+        CapturedSitesInstructions actions = loadPageForceHelper(false);
         actions.getNextAction(); // Skip startingURL
         Action action = actions.getNextAction();
         assertTrue(action.toString().contains("myUrl"));
@@ -97,7 +97,7 @@ public final class CapturedSitesInstructionsTest {
     @Test
     @SmallTest
     public void verifyBuild_succeedsWithLoadPageNullForce() throws Throwable {
-        CapturedSitesInstructions actions = loadPageForceHelper(Optional.empty());
+        CapturedSitesInstructions actions = loadPageForceHelper(null);
         actions.getNextAction(); // Skip startingURL
         Action action = actions.getNextAction();
         assertTrue(action.toString().contains("myUrl"));

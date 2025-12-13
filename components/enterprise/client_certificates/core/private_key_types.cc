@@ -15,6 +15,8 @@ std::optional<PrivateKeySource> ToPrivateKeySource(
       return PrivateKeySource::kSoftwareKey;
     case client_certificates_pb::PrivateKey::PRIVATE_OS_SOFTWARE_KEY:
       return PrivateKeySource::kOsSoftwareKey;
+    case client_certificates_pb::PrivateKey::PRIVATE_ANDROID_KEY:
+      return PrivateKeySource::kAndroidKey;
     default:
       return std::nullopt;
   }
@@ -29,6 +31,8 @@ client_certificates_pb::PrivateKey::PrivateKeySource ToProtoKeySource(
       return client_certificates_pb::PrivateKey::PRIVATE_SOFTWARE_KEY;
     case PrivateKeySource::kOsSoftwareKey:
       return client_certificates_pb::PrivateKey::PRIVATE_OS_SOFTWARE_KEY;
+    case PrivateKeySource::kAndroidKey:
+      return client_certificates_pb::PrivateKey::PRIVATE_ANDROID_KEY;
   }
 }
 
@@ -40,6 +44,8 @@ std::optional<PrivateKeySource> ToPrivateKeySource(int pref_key_source) {
       return PrivateKeySource::kSoftwareKey;
     case 2:
       return PrivateKeySource::kOsSoftwareKey;
+    case 3:
+      return PrivateKeySource::kAndroidKey;
     default:
       return std::nullopt;
   }

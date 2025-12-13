@@ -11,9 +11,11 @@
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -23,9 +25,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
-#include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPinnedActionToolbarUnpinElementId);
 
 namespace {
 // Returns true if the button pin state is managed through prefs instead of
@@ -58,7 +62,8 @@ PinnedActionToolbarButtonMenuModel::PinnedActionToolbarButtonMenuModel(
   AddActionSpecificItems();
   // Add the pin/unpin and customize toolbar items.
   items_.emplace_back(kActionPinActionToToolbar, TYPE_COMMAND);
-  items_.emplace_back(kActionUnpinActionFromToolbar, TYPE_COMMAND);
+  items_.emplace_back(kActionUnpinActionFromToolbar, TYPE_COMMAND,
+                      kPinnedActionToolbarUnpinElementId);
   items_.emplace_back(kActionSidePanelShowCustomizeChromeToolbar, TYPE_COMMAND);
 }
 
@@ -205,15 +210,26 @@ void PinnedActionToolbarButtonMenuModel::ActivatedAt(size_t index,
   }
 }
 
+ui::ElementIdentifier
+PinnedActionToolbarButtonMenuModel::GetElementIdentifierAt(size_t index) const {
+  if (index >= items_.size()) {
+    return ui::ElementIdentifier();
+  }
+
+  return items_[index].unique_id.value_or(ui::ElementIdentifier());
+}
+
 actions::ActionId PinnedActionToolbarButtonMenuModel::GetActionIdAtForTesting(
     size_t index) {
   return items_[index].action_id;
 }
 
 PinnedActionToolbarButtonMenuModel::Item::Item(Item&&) = default;
-PinnedActionToolbarButtonMenuModel::Item::Item(actions::ActionId action_id,
-                                               ItemType type)
-    : action_id(action_id), type(type) {}
+PinnedActionToolbarButtonMenuModel::Item::Item(
+    actions::ActionId action_id,
+    ItemType type,
+    std::optional<ui::ElementIdentifier> unique_id)
+    : action_id(action_id), type(type), unique_id(unique_id) {}
 PinnedActionToolbarButtonMenuModel::Item::Item(ItemType type) : type(type) {}
 PinnedActionToolbarButtonMenuModel::Item&
 PinnedActionToolbarButtonMenuModel::Item::operator=(Item&&) = default;

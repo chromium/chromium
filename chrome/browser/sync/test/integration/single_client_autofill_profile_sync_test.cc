@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -10,6 +11,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
@@ -45,11 +47,33 @@ class SingleClientAutofillProfileSyncTest : public SyncTest {
       const SingleClientAutofillProfileSyncTest&) = delete;
 
   ~SingleClientAutofillProfileSyncTest() override = default;
+
+  // AUTOFILL_PROFILE is only supported with Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
+  bool SetupSyncAndHideAccountNameEmailProfile() {
+    if (!SetupSync()) {
+      return false;
+    }
+    HideAccountNameEmailProfile();
+    return true;
+  }
+
+  void HideAccountNameEmailProfile() {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(GetProfile(0));
+    autofill::test::HideAccountNameEmailProfile(
+        GetProfile(0)->GetPrefs(), identity_manager->FindExtendedAccountInfo(
+                                       identity_manager->GetPrimaryAccountInfo(
+                                           signin::ConsentLevel::kSignin)));
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientAutofillProfileSyncTest,
                        DisablingAutofillDoesNotDisableSyncing) {
-  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   ASSERT_TRUE(GetClient(0)->service()->GetActiveDataTypes().Has(
       syncer::AUTOFILL_PROFILE));
 

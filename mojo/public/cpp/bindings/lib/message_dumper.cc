@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/message_dumper.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -65,7 +61,7 @@ MessageDumper::MessageEntry::MessageEntry(const uint8_t* data,
                                           const char* method_name)
     : interface_name(interface_name),
       method_name(method_name),
-      data_bytes(data, data + data_size) {}
+      data_bytes(data, UNSAFE_TODO(data + data_size)) {}
 
 MessageDumper::MessageEntry::MessageEntry(const MessageEntry& entry) = default;
 

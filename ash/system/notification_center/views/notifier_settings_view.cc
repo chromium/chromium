@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -73,7 +74,6 @@ namespace ash {
 
 using message_center::MessageCenter;
 using message_center::NotifierId;
-using ContentLayerType = AshColorProvider::ContentLayerType;
 
 namespace {
 
@@ -406,8 +406,6 @@ class EmptyNotifierView : public views::View {
 
  public:
   EmptyNotifierView() {
-    const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary);
     auto layout = std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
     layout->set_main_axis_alignment(
@@ -417,21 +415,22 @@ class EmptyNotifierView : public views::View {
     SetLayoutManager(std::move(layout));
 
     views::ImageView* icon = new views::ImageView();
-    icon->SetImage(
-        ui::ImageModel::FromVectorIcon(kNotificationCenterEmptyIcon, text_color,
-                                       message_center_style::kEmptyIconSize));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kNotificationCenterEmptyIcon, cros_tokens::kTextColorPrimary,
+        message_center_style::kEmptyIconSize));
     icon->SetBorder(
         views::CreateEmptyBorder(message_center_style::kEmptyIconPadding));
     AddChildViewRaw(icon);
 
     views::Label* label = new views::Label(
         l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_NO_NOTIFIERS));
-    label->SetEnabledColor(text_color);
+    label->SetEnabledColor(cros_tokens::kTextColorPrimary);
     label->SetAutoColorReadabilityEnabled(false);
     label->SetSubpixelRenderingEnabled(false);
     // "Roboto-Medium, 12sp" is specified in the mock.
     label->SetFontList(
         gfx::FontList().DeriveWithWeight(gfx::Font::Weight::MEDIUM));
+    label->SetEnabledColor(cros_tokens::kTextColorPrimary);
     label_ = AddChildViewRaw(label);
   }
 
@@ -439,12 +438,6 @@ class EmptyNotifierView : public views::View {
   EmptyNotifierView& operator=(const EmptyNotifierView&) = delete;
 
  private:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary));
-  }
-
   raw_ptr<views::Label> label_;
 };
 
@@ -461,8 +454,7 @@ class NotifierViewCheckbox : public views::Checkbox {
   // views::Checkbox:
   SkColor GetIconImageColor(int icon_state) const override {
     if (icon_state & IconState::CHECKED) {
-      return AshColorProvider::Get()->GetContentLayerColor(
-          ContentLayerType::kIconColorProminent);
+      return GetColorProvider()->GetColor(cros_tokens::kIconColorProminent);
     }
     return views::Checkbox::GetIconImageColor(icon_state);
   }
@@ -492,8 +484,7 @@ class NotifierButtonNameView : public views::Label {
     SetEnabledColor(
         cached_notifier_enforced_
             ? SkColorSetA(GetEnabledColor(), gfx::kDisabledControlAlpha)
-            : AshColorProvider::Get()->GetContentLayerColor(
-                  ContentLayerType::kTextColorPrimary));
+            : GetColorProvider()->GetColor(cros_tokens::kTextColorPrimary));
   }
 
   // NotifierButtonNameView uses different EnabledColor based on the notifier
@@ -511,17 +502,12 @@ class PrimaryTextColorLabel : public ::views::Label {
 
  public:
   explicit PrimaryTextColorLabel(const std::u16string& text)
-      : views::Label(text) {}
+      : views::Label(text) {
+    SetEnabledColor(cros_tokens::kTextColorPrimary);
+  }
   PrimaryTextColorLabel(const PrimaryTextColorLabel&) = delete;
   PrimaryTextColorLabel& operator=(const PrimaryTextColorLabel&) = delete;
   ~PrimaryTextColorLabel() override = default;
-
- private:
-  void OnThemeChanged() override {
-    Label::OnThemeChanged();
-    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kTextColorPrimary));
-  }
 };
 
 BEGIN_METADATA(PrimaryTextColorLabel)
@@ -532,20 +518,14 @@ class AdaptiveBadgingIcon : public ::views::ImageView {
   METADATA_HEADER(AdaptiveBadgingIcon, views::ImageView)
 
  public:
-  AdaptiveBadgingIcon() = default;
+  AdaptiveBadgingIcon() {
+    SetImage(ui::ImageModel::FromVectorIcon(kSystemTrayAppBadgingIcon,
+                                            cros_tokens::kIconColorPrimary,
+                                            kMenuIconSize));
+  }
   AdaptiveBadgingIcon(const AdaptiveBadgingIcon&) = delete;
   AdaptiveBadgingIcon& operator=(const AdaptiveBadgingIcon&) = delete;
   ~AdaptiveBadgingIcon() override = default;
-
- private:
-  void OnThemeChanged() override {
-    views::ImageView::OnThemeChanged();
-    SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTrayAppBadgingIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
-        kMenuIconSize));
-  }
 };
 
 BEGIN_METADATA(AdaptiveBadgingIcon)
@@ -576,8 +556,7 @@ NotifierSettingsView::NotifierButton::NotifierButton(
           },
           this));
   name_view->SetAutoColorReadabilityEnabled(false);
-  name_view->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary));
+  name_view->SetEnabledColor(cros_tokens::kTextColorPrimary);
   name_view->SetSubpixelRenderingEnabled(false);
   // "Roboto-Regular, 13sp" is specified in the mock.
   name_view->SetFontList(
@@ -632,9 +611,7 @@ void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
+        message_center::kProductIcon, cros_tokens::kIconColorPrimary,
         kEntryIconSize));
   } else {
     icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
@@ -799,9 +776,7 @@ void NotifierSettingsView::NotifierButton::GridChanged() {
   if (!GetEnabled()) {
     auto policy_enforced_icon = std::make_unique<views::ImageView>();
     policy_enforced_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemMenuBusinessIcon,
-        AshColorProvider::Get()->GetContentLayerColor(
-            ContentLayerType::kIconColorPrimary),
+        kSystemMenuBusinessIcon, cros_tokens::kIconColorPrimary,
         kEntryIconSize));
     layout->AddColumn(
         views::LayoutAlignment::kCenter, views::LayoutAlignment::kCenter,
@@ -833,15 +808,11 @@ NotifierSettingsView::NotifierSettingsView() {
         gfx::Insets::TLBR(0, 0, 4, 0), kTopBorderColor));
   }
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
-
   // Row for the app badging toggle button.
   auto app_badging_icon = std::make_unique<AdaptiveBadgingIcon>();
   app_badging_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kSystemTrayAppBadgingIcon, icon_color, kMenuIconSize));
+      kSystemTrayAppBadgingIcon, cros_tokens::kIconColorPrimary,
+      kMenuIconSize));
   auto app_badging_label =
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
           IDS_ASH_MESSAGE_CENTER_APP_BADGING_BUTTON_TOOLTIP));
@@ -902,7 +873,8 @@ NotifierSettingsView::NotifierSettingsView() {
     notification_settings_label->SetFontList(gfx::FontList().Derive(
         kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
     notification_settings_label->SetAutoColorReadabilityEnabled(false);
-    notification_settings_label->SetEnabledColor(text_color);
+    notification_settings_label->SetEnabledColor(
+        cros_tokens::kTextColorPrimary);
     notification_settings_label->SetSubpixelRenderingEnabled(false);
     notification_settings_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     notification_settings_label->SetMultiLine(true);
@@ -920,7 +892,7 @@ NotifierSettingsView::NotifierSettingsView() {
     top_label->SetFontList(gfx::FontList().Derive(
         kLabelFontSizeDelta, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
     top_label->SetAutoColorReadabilityEnabled(false);
-    top_label->SetEnabledColor(text_color);
+    top_label->SetEnabledColor(cros_tokens::kTextColorPrimary);
     top_label->SetSubpixelRenderingEnabled(false);
     top_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     top_label->SetMultiLine(true);
@@ -958,14 +930,14 @@ bool NotifierSettingsView::IsScrollable() {
 
 void NotifierSettingsView::SetQuietModeState(bool is_quiet_mode) {
   quiet_mode_toggle_->SetIsOn(is_quiet_mode);
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kIconColorPrimary);
   if (is_quiet_mode) {
     quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kSystemTrayDoNotDisturbIcon, icon_color, kMenuIconSize));
+        kSystemTrayDoNotDisturbIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   } else {
     quiet_mode_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kDoNotDisturbDisabledIcon, icon_color, kMenuIconSize));
+        kDoNotDisturbDisabledIcon, cros_tokens::kIconColorPrimary,
+        kMenuIconSize));
   }
 }
 
@@ -1127,13 +1099,11 @@ std::unique_ptr<views::View> NotifierSettingsView::CreateToggleButtonRow(
   icon->SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
   row_view->AddChildView(std::move(icon));
 
-  const SkColor text_color = AshColorProvider::Get()->GetContentLayerColor(
-      ContentLayerType::kTextColorPrimary);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // "Roboto-Regular, 13sp" is specified in the mock.
   label->SetFontList(gfx::FontList().DeriveWithSizeDelta(kLabelFontSizeDelta));
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColor(text_color);
+  label->SetEnabledColor(cros_tokens::kTextColorPrimary);
   label->SetSubpixelRenderingEnabled(false);
   label->SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding));
   auto* label_ptr = row_view->AddChildView(std::move(label));

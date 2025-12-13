@@ -13,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

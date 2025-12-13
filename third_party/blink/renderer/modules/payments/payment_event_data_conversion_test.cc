@@ -167,7 +167,8 @@ TEST(PaymentEventDataConversionTest, ToPaymentRequestEventData) {
   ASSERT_TRUE(data->paymentOptions()->hasRequestShipping());
   ASSERT_TRUE(data->paymentOptions()->requestShipping());
   ASSERT_TRUE(data->paymentOptions()->hasShippingType());
-  EXPECT_EQ("delivery", data->paymentOptions()->shippingType());
+  EXPECT_EQ(V8PaymentShippingType::Enum::kDelivery,
+            data->paymentOptions()->shippingType());
 
   // shippingOptions
   ASSERT_TRUE(data->hasShippingOptions());

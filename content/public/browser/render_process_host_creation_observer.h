@@ -23,18 +23,34 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
 
   virtual ~RenderProcessHostCreationObserver();
 
-  // This method is invoked when the process was successfully launched. Note
-  // that the channel may or may not have been connected when this is invoked.
+  // This method is invoked when the process host is being initialized, and the
+  // renderer process has been requested to be launched. Note that the channel
+  // may or may not have been connected when this is invoked. Use this instead
+  // of `OnRenderProcessHostLaunched` when information needs to be sent to the
+  // renderer process as soon as possible before e.g. the renderer process
+  // commits a navigation, etc. (which can possibly be triggered before the
+  // OnRenderProcessLaunched signal if there is no IPC channel pausing).
   // A RenderProcessHost can be reused for a different renderer process (for
   // instance in the case of a renderer process crash). In this case,
   // `OnRenderProcessHostCreated` will be called again for the same
-  // `RenderProcessHost` when the new process is launched, without having been
+  // `RenderProcessHost` when initializing the new process, without having been
   // destroyed (i.e. `RenderProcessHostObserver::RenderProcessHostDestroyed` is
   // not called).
-  virtual void OnRenderProcessHostCreated(RenderProcessHost* process_host) = 0;
+  // TODO(crbug.com/448511116): Rename this to reflect that this is triggered
+  // when initializing and requesting to launch the renderer process, instead
+  // of when the `process_host` itself being created.
+  virtual void OnRenderProcessHostCreated(RenderProcessHost* process_host) {}
+
+  // This method is invoked when the renderer process for the given host was
+  // successfully launched. Use this instead of `OnRenderProcessHostCreated`
+  // when information from the launched process is needed, e.g. the PID. Similar
+  // to `OnRenderProcessHostCreated`, this can be triggered multiple times for
+  // the same host.
+  // TODO(crbug.com/448511116): Move this to RenderProcessHostObserver instead.
+  virtual void OnRenderProcessLaunched(RenderProcessHost* process_host) {}
 
   // This method is invoked when a renderer process failed to launch
-  // successfully, and `OnRenderProcessHostCreated` hasn't yet been fired for
+  // successfully, and `OnRenderProcessHostLaunched` hasn't yet been fired for
   // the `RenderProcessHost`.
   virtual void OnRenderProcessHostCreationFailed(
       RenderProcessHost* host,

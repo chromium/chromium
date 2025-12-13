@@ -13,7 +13,6 @@
 #include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
@@ -69,8 +68,7 @@ std::string GetUploadParameters(
           .Set(kUploadedEventTypeKey, static_cast<int>(trigger_event_type))
           .Set(kFileTypeKey, kEventBasedLogFileType)
           .Set(kUploadIdKey, upload_id);
-  std::string json;
-  base::JSONWriter::Write(upload_parameters_dict, &json);
+  std::string json = base::WriteJson(upload_parameters_dict).value_or("");
   return base::StringPrintf("%s\n%s", json.c_str(), kContentTypeJson);
 }
 

@@ -23,4 +23,7 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
     id<UIPasteConfigurationSupporting> pasteTarget,
     bool useLens);
 
+// Returns YES if the assistive keyboard should apply a glass effect.
+BOOL GlassEffectEnabled();
+
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_KEYBOARD_ASSIST_OMNIBOX_ASSISTIVE_KEYBOARD_VIEWS_UTILS_H_

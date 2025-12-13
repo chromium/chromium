@@ -10,25 +10,24 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace ash {
 
 using kiosk::test::WaitKioskLaunched;
 
 namespace {
-
-void WaitForPageLoaded(content::WebContents* web_contents) {
-  content::TestNavigationObserver(web_contents).WaitForNavigationFinished();
-}
 
 int WindowWidth(content::WebContents* web_contents) {
   return content::EvalJs(web_contents, "window.innerWidth").ExtractInt();
@@ -55,7 +54,9 @@ class WebKioskAcceleratorTest : public MixinBasedInProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    ui_test_utils::BrowserCreatedObserver browser_created_observer;
     ASSERT_TRUE(WaitKioskLaunched());
+    SetBrowser(browser_created_observer.Wait());
   }
 
   KioskMixin kiosk_{
@@ -67,28 +68,25 @@ class WebKioskAcceleratorTest : public MixinBasedInProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, AcceleratorsDontCloseSession) {
-  SelectFirstBrowser();
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_FALSE(PressCloseTabAccelerator(browser()));
   ASSERT_FALSE(PressCloseWindowAccelerator(browser()));
   ASSERT_FALSE(ash::PressSignOutAccelerator());
   base::RunLoop loop;
   loop.RunUntilIdle();
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_FALSE(
       KioskController::Get().GetKioskSystemSession()->is_shutting_down());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
-  SelectFirstBrowser();
-
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_NE(browser_view, nullptr);
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
   ASSERT_NE(web_contents, nullptr);
 
   // Await page load so accelerators are processed. Prevents a race condition.
-  WaitForPageLoaded(web_contents);
+  ASSERT_TRUE(WaitForLoadStop(web_contents));
 
   int initial_width = WindowWidthAfterChange(web_contents, 0);
   ASSERT_GT(initial_width, 0);
@@ -116,27 +114,27 @@ IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorTest, ZoomAccelerators) {
 class NonKioskAcceleratorTest : public InProcessBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseTabAccelerator) {
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(PressCloseTabAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
   ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, CloseWindowAccelerator) {
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(PressCloseWindowAccelerator(browser()));
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
   ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(NonKioskAcceleratorTest, SignOutAccelerator) {
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
   ASSERT_TRUE(ash::PressSignOutAccelerator());
   TestBrowserClosedWaiter settings_browser_closed_waiter{browser()};
   ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
-  ASSERT_EQ(BrowserList::GetInstance()->size(), 0u);
+  ASSERT_EQ(chrome::GetTotalBrowserCount(), 0u);
 }
 
 }  // namespace ash

@@ -45,9 +45,9 @@ class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
   ~FileSystemAccessDirectoryHandleImpl() override;
 
   // blink::mojom::FileSystemAccessDirectoryHandle:
-  void GetPermissionStatus(bool writable,
+  void GetPermissionStatus(blink::mojom::FileSystemAccessPermissionMode mode,
                            GetPermissionStatusCallback callback) override;
-  void RequestPermission(bool writable,
+  void RequestPermission(blink::mojom::FileSystemAccessPermissionMode mode,
                          RequestPermissionCallback callback) override;
   void GetFile(const std::string& basename,
                bool create,

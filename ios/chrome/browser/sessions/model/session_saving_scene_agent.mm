@@ -21,11 +21,11 @@
     transitionedToActivationLevel:(SceneActivationLevel)level {
   switch (level) {
     case SceneActivationLevelUnattached:
-    case SceneActivationLevelDisconnected:
     case SceneActivationLevelForegroundInactive:
       // no-op.
       break;
     case SceneActivationLevelBackground:
+    case SceneActivationLevelDisconnected:
       [self saveSessionsIfNeeded];
       break;
     case SceneActivationLevelForegroundActive:
@@ -34,8 +34,10 @@
   }
 }
 
-#pragma mark - Public
+#pragma mark - Private
 
+// Saves the scene's sessions if they haven't been saved since the last time
+// the scene was foregrounded.
 - (void)saveSessionsIfNeeded {
   // No need to save the session if the scene didn't reach the
   // SceneActivationLevelForegroundActive stage.

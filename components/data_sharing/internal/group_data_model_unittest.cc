@@ -253,12 +253,12 @@ class GroupDataModelTest : public testing::Test {
     size_t call_count = 0;
     EXPECT_CALL(observer_, OnGroupAdded(_, NotNullTime()))
         .Times(::testing::AtLeast(0))
-        .WillRepeatedly(::testing::DoAll(::testing::Invoke([&]() {
+        .WillRepeatedly([&]() {
           ++call_count;
           if (call_count == number_of_groups) {
             run_loop.Quit();
           }
-        })));
+        });
     run_loop.Run();
   }
 

@@ -74,7 +74,7 @@ public abstract class XrTestFramework {
     public static final String[] NATIVE_URLS_OF_INTEREST = {
         UrlConstants.BOOKMARKS_FOLDER_URL + "3",
         UrlConstants.BOOKMARKS_UNCATEGORIZED_URL,
-        UrlConstants.BOOKMARKS_URL,
+        UrlConstants.BOOKMARKS_NATIVE_URL,
         UrlConstants.DOWNLOADS_URL,
         UrlConstants.NATIVE_HISTORY_URL,
         UrlConstants.NTP_URL,
@@ -408,7 +408,7 @@ public abstract class XrTestFramework {
                         runJavaScriptOrFail("testPassed", POLL_TIMEOUT_SHORT_MS, webContents));
         if (testPassed) {
             return TestStatus.PASSED;
-        } else if (!testPassed && resultString.equals("\"\"")) {
+        } else if (resultString.equals("\"\"")) {
             return TestStatus.RUNNING;
         } else {
             // !testPassed && !resultString.equals("\"\"")
@@ -541,7 +541,11 @@ public abstract class XrTestFramework {
         // It is possible, particularly with multiple sessions and navigations within a single test,
         // for the page to get zoomed in on navigation. So, ensure that we are always zoomed out
         // enough to see all page content after we do a page load.
-        ThreadUtils.runOnUiThreadBlocking(() -> ZoomController.zoomReset(mRule.getWebContents()));
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ZoomController.zoomReset(
+                                mRule.getWebContents(),
+                                mRule.getProfile(/* incognito= */ false).getOriginalProfile()));
         return result;
     }
 
@@ -664,7 +668,7 @@ public abstract class XrTestFramework {
     }
 
     public View getCurrentContentView() {
-        return mRule.getActivity().getActivityTab().getContentView();
+        return mRule.getActivityTab().getContentView();
     }
 
     public WebContents getCurrentWebContents() {
@@ -676,7 +680,7 @@ public abstract class XrTestFramework {
     }
 
     public void simulateRendererKilled() {
-        final Tab tab = getRule().getActivity().getActivityTab();
+        final Tab tab = getRule().getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeTabUtils.simulateRendererKilledForTesting(tab));
 

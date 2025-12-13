@@ -47,6 +47,10 @@ enum class TabsSectionHeaderType {
     UICollectionViewDiffableDataSource<NSString*, GridItemIdentifier*>*
         diffableDataSource;
 
+// Index path of a new group being created from drag and drop. It is used to
+// nicely transition from the old grid cell to the new group cell.
+@property(nonatomic, strong) NSIndexPath* dragAndDropGroupIndexPath;
+
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Unavailable initializers

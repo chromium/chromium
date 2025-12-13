@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.educational_tip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -92,14 +93,19 @@ public class EducationalTipModuleMediator {
     /** Called when the educational tip module is visible to users on the magic stack. */
     void onViewCreated() {
         if (mModuleType == ModuleType.DEFAULT_BROWSER_PROMO) {
-            boolean shouldDisplay =
-                    mTracker.shouldTriggerHelpUi(
-                            FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
-            if (shouldDisplay) {
-                DefaultBrowserPromoUtils defaultBrowserPromoUtils =
-                        DefaultBrowserPromoUtils.getInstance();
-                defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
-                defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
+            if (mTracker.isInitialized()) {
+                boolean shouldDisplay =
+                        mTracker.shouldTriggerHelpUi(
+                                FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK);
+                if (shouldDisplay) {
+                    notifyDefaultBrowserPromoVisible();
+                }
+            } else {
+                notifyDefaultBrowserPromoVisible();
+                mTracker.addOnInitializedCallback(
+                        (T) ->
+                                mTracker.shouldTriggerHelpUi(
+                                        FeatureConstants.DEFAULT_BROWSER_PROMO_MAGIC_STACK));
             }
         }
     }
@@ -139,6 +145,13 @@ public class EducationalTipModuleMediator {
     /** Called when user clicks the card. */
     private void onCardClicked() {
         mModuleDelegate.onModuleClicked(mModuleType);
+    }
+
+    /** Notifies that the default browser promo is visible. */
+    private void notifyDefaultBrowserPromoVisible() {
+        DefaultBrowserPromoUtils defaultBrowserPromoUtils = DefaultBrowserPromoUtils.getInstance();
+        defaultBrowserPromoUtils.removeListener(mDefaultBrowserPromoTriggerStateListener);
+        defaultBrowserPromoUtils.notifyDefaultBrowserPromoVisible();
     }
 
     DefaultBrowserPromoTriggerStateListener getDefaultBrowserPromoTriggerStateListenerForTesting() {

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/user_education/common/session/user_education_idle_observer.h"
 #include "components/user_education/common/session/user_education_idle_policy.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
@@ -78,6 +79,7 @@ void PollingIdleObserver::OnIdleStateChange(
 }
 
 bool PollingIdleObserver::IsChromeActive() const {
-  auto* const browser = BrowserList::GetInstance()->GetLastActive();
+  BrowserWindowInterface* const browser =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   return browser && browser->IsActive();
 }

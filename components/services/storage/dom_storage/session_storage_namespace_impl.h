@@ -13,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/dom_storage/session_storage_area_impl.h"
 #include "components/services/storage/dom_storage/session_storage_data_map.h"
 #include "components/services/storage/dom_storage/session_storage_metadata.h"
@@ -75,7 +75,7 @@ class SessionStorageNamespaceImpl final
 
     // This is called when the |Clone()| method is called by mojo.
     virtual void RegisterShallowClonedNamespace(
-        SessionStorageMetadata::NamespaceEntry source_namespace,
+        const std::string& source_namespace,
         const std::string& destination_namespace,
         const StorageKeyAreas& areas_to_clone) = 0;
 
@@ -144,9 +144,7 @@ class SessionStorageNamespaceImpl final
   // destruct the object instead of having this method.
   void Reset();
 
-  SessionStorageMetadata::NamespaceEntry namespace_entry() {
-    return namespace_entry_;
-  }
+  const std::string& namespace_id() const { return namespace_id_; }
 
   bool IsPopulated() const { return state_ == State::kPopulated; }
 
@@ -173,7 +171,8 @@ class SessionStorageNamespaceImpl final
   // StorageKey. Note that the source of |receiver| must have already been
   // access-checked for access to |StorageKey|.
   void OpenArea(const blink::StorageKey& storage_key,
-                mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
+                mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+                SessionStorageMetadata::NamespaceEntry namespace_metadata);
 
   // SessionStorageNamespace:
   void Clone(const std::string& clone_to_namespace) override;
@@ -200,7 +199,6 @@ class SessionStorageNamespaceImpl final
                            ReopenClonedAreaAfterPurge);
 
   const std::string namespace_id_;
-  SessionStorageMetadata::NamespaceEntry namespace_entry_;
   raw_ptr<AsyncDomStorageDatabase> database_ = nullptr;
 
   raw_ptr<SessionStorageDataMap::Listener> data_map_listener_;
@@ -210,7 +208,15 @@ class SessionStorageNamespaceImpl final
   State state_ = State::kNotPopulated;
   std::string pending_population_from_parent_namespace_;
   bool bind_waiting_on_population_ = false;
-  std::vector<base::OnceClosure> run_after_population_;
+
+  // Accumulates pending operations while waiting for the namespace's metadata
+  // to load, which includes all `storage_key_areas_` that have maps in
+  // `namespace_id_`. Pending operations wait for either the database to load or
+  // the cloning to complete.  Runs all pending callbacks after `state_` becomes
+  // `kPopulated`.
+  using AfterPopulationCallback = base::OnceCallback<void(
+      SessionStorageMetadata::NamespaceEntry namespace_metadata)>;
+  std::vector<AfterPopulationCallback> run_after_population_;
 
   // Namespaces that are waiting for the |Clone| call to be called on this
   // namespace. If this namespace is destructed, then these namespaces are still

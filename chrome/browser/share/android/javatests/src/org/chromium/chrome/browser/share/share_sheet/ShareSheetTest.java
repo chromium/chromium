@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.share.share_sheet;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -73,12 +75,12 @@ public class ShareSheetTest {
 
     // foo.bar.baz -> baz
     private String labelFromPackageName(String packageName) {
-        assert packageName.contains(".");
+        assertThat(packageName).contains(".");
         return packageName.substring(packageName.lastIndexOf('.') + 1);
     }
 
     private String packageNameFromLabel(String label) {
-        assert !label.contains(".");
+        assertThat(label).doesNotContain(".");
         return "org.chromium." + label;
     }
 
@@ -93,8 +95,8 @@ public class ShareSheetTest {
     private ResolveInfo createStubResolveInfo(String packageName) {
         // Do not pass a history entry name to this method - it just takes a
         // package name.
-        assert !packageName.contains("/");
-        assert packageName.contains(".");
+        assertThat(packageName).doesNotContain("/");
+        assertThat(packageName).contains(".");
 
         ResolveInfo resolveInfo = mock(ResolveInfo.class);
         ActivityInfo activityInfo = mock(ActivityInfo.class);

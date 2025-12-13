@@ -6,9 +6,8 @@
   await dp.Page.enable();
 
   const frameId = (await dp.Page.getResourceTree()).result.frameTree.frame.id;
-  const storageKey = (await dp.Storage.getStorageKeyForFrame({
-    frameId: frameId
-  })).result.storageKey;
+  const storageKey =
+      (await dp.Storage.getStorageKey({frameId: frameId})).result.storageKey;
 
   await dp.Storage.setStorageBucketTracking({ storageKey, enable: true });
 

@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_AUTOFILL_DELEGATE_H_
 
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -13,16 +15,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
+#include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_view.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace password_manager {
 class PasskeyCredential;
@@ -51,7 +53,6 @@ class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
   using ShowHybridOption = base::StrongAlias<struct ShowHybridOptionTag, bool>;
-  using ShowDataLossWarningCallback = base::RepeatingCallback<void(void)>;
 
   // The action a user took when interacting with the Touch To Fill sheet.
   //
@@ -95,9 +96,7 @@ class TouchToFillControllerAutofillDelegate
       std::unique_ptr<password_manager::PasswordCredentialFiller> filler,
       const password_manager::PasswordForm* form_to_fill,
       autofill::FieldRendererId focused_field_renderer_id,
-      ShowHybridOption should_show_hybrid_option,
-      std::unique_ptr<PasswordAccessLossWarningBridge>
-          data_loss_warning_bridge);
+      ShowHybridOption should_show_hybrid_option);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -115,9 +114,8 @@ class TouchToFillControllerAutofillDelegate
   ~TouchToFillControllerAutofillDelegate() override;
 
   // TouchToFillControllerDelegate:
-  void OnShow(base::span<const password_manager::UiCredential> credentials,
-              base::span<password_manager::PasskeyCredential>
-                  passkey_credentials) override;
+  void OnShow(
+      base::span<const TouchToFillView::Credential> credentials) override;
   void OnCredentialSelected(const password_manager::UiCredential& credential,
                             base::OnceClosure action_completed) override;
   void OnPasskeyCredentialSelected(
@@ -133,6 +131,8 @@ class TouchToFillControllerAutofillDelegate
   bool ShouldTriggerSubmission() override;
   bool ShouldShowHybridOption() override;
   bool ShouldShowNoPasskeysSheetIfRequired() override;
+  std::optional<std::vector<TouchToFillView::Credential>> SortCredentials(
+      base::span<const TouchToFillView::Credential> credentials) override;
   gfx::NativeView GetNativeView() override;
 
  private:
@@ -182,10 +182,6 @@ class TouchToFillControllerAutofillDelegate
 
   // Whether the controller should show an option for passkey hybrid sign-in.
   ShowHybridOption should_show_hybrid_option_ = ShowHybridOption(false);
-
-  // Bridge used to show the data loss warning (expected to be shown after
-  // filling user's credentials).
-  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };

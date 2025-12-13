@@ -12,7 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/subresource_filter/content/shared/renderer/filter_utils.h"
+#include "components/subresource_filter/content/renderer/filter_utils.h"
 #include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"

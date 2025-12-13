@@ -32,7 +32,8 @@ static base::Value::Dict CreateTestTypeDictionary() {
 }
 
 void GetManifestParseError(std::string_view manifest_json, std::string* error) {
-  std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  std::optional<base::Value> manifest = base::JSONReader::Read(
+      manifest_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(manifest) << "Invalid json \n" << manifest_json;
 
   simple_api::ManifestKeys manifest_keys;
@@ -46,7 +47,8 @@ void GetManifestParseError(std::string_view manifest_json, std::string* error) {
 
 void PopulateManifestKeys(std::string_view manifest_json,
                           simple_api::ManifestKeys* manifest_keys) {
-  std::optional<base::Value> manifest = base::JSONReader::Read(manifest_json);
+  std::optional<base::Value> manifest = base::JSONReader::Read(
+      manifest_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(manifest.has_value());
 
   std::u16string error_16;

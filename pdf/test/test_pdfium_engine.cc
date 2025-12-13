@@ -28,7 +28,21 @@ const uint8_t TestPDFiumEngine::kLoadedData[];
 const uint8_t TestPDFiumEngine::kSaveData[];
 
 TestPDFiumEngine::TestPDFiumEngine(PDFiumEngineClient* client)
-    : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {}
+    : PDFiumEngine(client, PDFiumFormFiller::ScriptOption::kNoJavaScript) {
+  ON_CALL(*this, GetLoadedByteSize)
+      .WillByDefault(testing::Return(sizeof(kLoadedData)));
+
+  ON_CALL(*this, GetSaveData)
+      .WillByDefault(testing::Return(
+          std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData))));
+
+  ON_CALL(*this, ReadLoadedBytes)
+      .WillByDefault([](uint32_t offset, base::span<uint8_t> buffer) {
+        buffer.copy_from(
+            base::span(kLoadedData).subspan(offset, buffer.size()));
+        return true;
+      });
+}
 
 TestPDFiumEngine::~TestPDFiumEngine() = default;
 
@@ -47,20 +61,6 @@ int TestPDFiumEngine::GetNumberOfPages() const {
 
 base::Value::List TestPDFiumEngine::GetBookmarks() {
   return base::Value::List();
-}
-
-uint32_t TestPDFiumEngine::GetLoadedByteSize() {
-  return sizeof(kLoadedData);
-}
-
-bool TestPDFiumEngine::ReadLoadedBytes(uint32_t offset,
-                                       base::span<uint8_t> buffer) {
-  buffer.copy_from(base::span(kLoadedData).subspan(offset, buffer.size()));
-  return true;
-}
-
-std::vector<uint8_t> TestPDFiumEngine::GetSaveData() {
-  return std::vector<uint8_t>(std::begin(kSaveData), std::end(kSaveData));
 }
 
 }  // namespace chrome_pdf

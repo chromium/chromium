@@ -7,6 +7,8 @@
 #import <string>
 
 #import "base/functional/bind.h"
+#import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -15,15 +17,20 @@
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
+#import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
 #import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
+#import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
+#import "ios/chrome/browser/intelligence/smart_tab_grouping/model/smart_tab_grouping_service_impl.h"
+#import "ios/chrome/browser/intelligence/smart_tab_grouping/utils/smart_tab_grouping_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/mojom/enhanced_calendar_service.mojom-forward.h"
@@ -32,6 +39,9 @@
 #import "ios/web/public/web_state.h"
 
 @implementation AIPrototypingMediator {
+  // Browser agent responsible for persisting and retrieving tab context data.
+  raw_ptr<PersistTabContextBrowserAgent> _persistTabContextBrowserAgent;
+  // The list of web states in the current browser window.
   raw_ptr<WebStateList> _webStateList;
 
   // Mojo related service and service implementations. Kept alive to have an
@@ -57,16 +67,32 @@
   std::unique_ptr<ai::EnhancedCalendarServiceImpl>
       _enhanced_calendar_service_impl;
 
+  // Remote used to make calls to functions related to
+  // 'SmartTabGroupingService'.
+  mojo::Remote<ai::mojom::SmartTabGroupingService> _smartTabGroupingService;
+  // Instatiated to pipe virtual remote calls to overriden functions in
+  // 'SmartTabGroupingServiceImpl'.
+  std::unique_ptr<ai::SmartTabGroupingServiceImpl> _smartTabGroupingServiceImpl;
+
   // The Tab Organization feature's request wrapper.
   TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
 
   // The freeform feature's PageContext wrapper.
   PageContextWrapper* _pageContextWrapper;
+
+  // Whether to upload data to MQLS.
+  BOOL _enableMQLSUpload;
+
+  // Whether to store page context locally.
+  BOOL _storePageContextLocally;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+       persistTabContextBrowserAgent:
+           (PersistTabContextBrowserAgent*)persistTabContextBrowserAgent {
   self = [super init];
   if (self) {
+    _persistTabContextBrowserAgent = persistTabContextBrowserAgent;
     _webStateList = webStateList;
 
     bool startOnDevice = false;
@@ -99,6 +125,14 @@
         std::make_unique<ai::EnhancedCalendarServiceImpl>(
             std::move(enhanced_calendar_receiver),
             _webStateList->GetActiveWebState());
+
+    mojo::PendingReceiver<ai::mojom::SmartTabGroupingService>
+        smartTabGroupingReceiver =
+            _smartTabGroupingService.BindNewPipeAndPassReceiver();
+    _smartTabGroupingServiceImpl =
+        std::make_unique<ai::SmartTabGroupingServiceImpl>(
+            std::move(smartTabGroupingReceiver), _webStateList,
+            _persistTabContextBrowserAgent);
   }
   return self;
 }
@@ -108,10 +142,15 @@
 - (void)executeFreeformServerQuery:(NSString*)query
                 systemInstructions:(NSString*)systemInstructions
                 includePageContext:(BOOL)includePageContext
+                      uploadToMQLS:(BOOL)uploadToMQLS
+                  storePageContext:(BOOL)storePageContext
                        temperature:(float)temperature
                              model:
                                  (optimization_guide::proto::
                                       BlingPrototypingRequest_ModelEnum)model {
+  _enableMQLSUpload = uploadToMQLS;
+  _storePageContextLocally = storePageContext;
+
   optimization_guide::proto::BlingPrototypingRequest request;
 
   // Set the whitespace-trimmed query on the request.
@@ -136,12 +175,14 @@
   request.set_model_enum(model);
 
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const std::string&)> handle_response_callback =
-      base::BindOnce(^void(const std::string& response_string) {
-        [weakSelf.consumer
-            updateQueryResult:base::SysUTF8ToNSString(response_string)
-                   forFeature:AIPrototypingFeature::kFreeform];
-      });
+  base::OnceCallback<void(const std::string&, ::mojo_base::ProtoWrapper)>
+      handle_response_callback =
+          base::BindOnce(^void(const std::string& response_string,
+                               ::mojo_base::ProtoWrapper logging_data) {
+            [weakSelf
+                handleFreeformServerQueryResponse:std::move(response_string)
+                                  withLoggingData:std::move(logging_data)];
+          });
 
   // Execute the query immediately and early return if `includePageContext` is
   // false.
@@ -164,13 +205,10 @@
           });
 
   // Populate the PageContext proto and then execute the query.
-  _pageContextWrapper = [[PageContextWrapper alloc]
-        initWithWebState:_webStateList->GetActiveWebState()
-      completionCallback:std::move(page_context_completion_callback)];
-  [_pageContextWrapper setShouldGetAnnotatedPageContent:YES];
-  [_pageContextWrapper setShouldGetSnapshot:YES];
-  [_pageContextWrapper setShouldGetFullPagePDF:YES];
-  [_pageContextWrapper populatePageContextFieldsAsync];
+  _pageContextWrapper =
+      CreatePageContextWrapper(_webStateList->GetActiveWebState(),
+                               std::move(page_context_completion_callback));
+  PopulatePageContext(_pageContextWrapper, _webStateList->GetActiveWebState());
 }
 
 - (void)executeFreeformOnDeviceQuery:
@@ -239,6 +277,22 @@
   [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
 }
 
+- (void)executeSmartTabGrouping {
+  __weak __typeof(self) weakSelf = self;
+  auto handleResponseBlock =
+      ^void(ai::mojom::SmartTabGroupingResponseResultPtr result) {
+        [weakSelf handleSmartTabGroupingResponseResult:std::move(result)];
+      };
+
+  base::OnceCallback<void(ai::mojom::SmartTabGroupingResponseResultPtr)>
+      handleResponseCallback = base::BindOnce(handleResponseBlock);
+
+  // Call the service to execute the request, the service will handle the
+  // request population.
+  _smartTabGroupingService->ExecuteSmartTabGroupingRequest(
+      std::move(handleResponseCallback));
+}
+
 - (void)executeEnhancedCalendarQueryWithPrompt:(NSString*)prompt
                                   selectedText:(NSString*)selectedText {
   // Create and set the request params.
@@ -279,18 +333,34 @@
   _pageContextWrapper = nil;
   freeform_request.set_allocated_page_context(page_context.release());
 
+  if (_storePageContextLocally) {
+    [self serializePageContextToStorage:freeform_request.page_context()];
+  }
+
   __weak __typeof(self) weakSelf = self;
-  base::OnceCallback<void(const std::string&)> handle_response_callback =
-      base::BindOnce(^void(const std::string& response_string) {
-        [weakSelf.consumer
-            updateQueryResult:base::SysUTF8ToNSString(response_string)
-                   forFeature:AIPrototypingFeature::kFreeform];
-      });
+  base::OnceCallback<void(const std::string&, ::mojo_base::ProtoWrapper)>
+      handle_response_callback =
+          base::BindOnce(^void(const std::string& response_string,
+                               ::mojo_base::ProtoWrapper logging_data) {
+            [weakSelf
+                handleFreeformServerQueryResponse:std::move(response_string)
+                                  withLoggingData:std::move(logging_data)];
+          });
 
   ::mojo_base::ProtoWrapper proto_wrapper =
       mojo_base::ProtoWrapper(freeform_request);
   _ai_prototyping_service->ExecuteServerQuery(
       std::move(proto_wrapper), std::move(handle_response_callback));
+}
+
+- (void)handleFreeformServerQueryResponse:(const std::string&)response_string
+                          withLoggingData:
+                              (::mojo_base::ProtoWrapper)logging_data {
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(response_string)
+                        forFeature:AIPrototypingFeature::kFreeform];
+  if (_enableMQLSUpload) {
+    [self uploadLoggingDataToMQLS:std::move(logging_data)];
+  }
 }
 
 // Handles the Enhanced Calendar by outputting the response proto or an error
@@ -345,6 +415,109 @@
   result += base::StringPrintf("Recurrence: %s\n", enum_name);
 
   return result;
+}
+
+// Handles the IosSmartTabGroupingResponse by outputting the response proto or
+// an error message into the result text field.
+- (void)handleSmartTabGroupingResponseResult:
+    (ai::mojom::SmartTabGroupingResponseResultPtr)response_result {
+  if (response_result->is_error()) {
+    [self.consumer
+        updateQueryResult:base::SysUTF8ToNSString(response_result->get_error())
+               forFeature:AIPrototypingFeature::kSmartTabGrouping];
+    return;
+  }
+
+  auto response_proto =
+      response_result->get_response()
+          .As<optimization_guide::proto::IosSmartTabGroupingResponse>();
+
+  if (!response_proto.has_value()) {
+    [self.consumer
+        updateQueryResult:@"Error parsing IosSmartTabGroupingResponse"
+               forFeature:AIPrototypingFeature::kSmartTabGrouping];
+    return;
+  }
+
+  ApplySmartTabGroupResponse(response_proto.value(), _webStateList);
+
+  std::string result_string =
+      [self serializeSmartTabGroupingResponseToString:response_proto.value()];
+
+  [self.consumer updateQueryResult:base::SysUTF8ToNSString(result_string)
+                        forFeature:AIPrototypingFeature::kSmartTabGrouping];
+}
+
+// Serializes the IosSmartTabGroupingResponse proto into a human-readable
+// string.
+- (std::string)serializeSmartTabGroupingResponseToString:
+    (const optimization_guide::proto::IosSmartTabGroupingResponse&)
+        response_proto {
+  std::string result;
+  result += "iOS Smart Tab Grouping Response:\n\n";
+
+  for (const auto& group : response_proto.tab_groups()) {
+    result += base::StringPrintf("Group: %s %s\n", group.emoji().c_str(),
+                                 group.label().c_str());
+
+    std::vector<std::string> tab_ids_str;
+    for (int64_t tab_id : group.tab_ids()) {
+      tab_ids_str.push_back(base::NumberToString(tab_id));
+    }
+    result += "Tabs: ";
+    for (size_t i = 0; i < tab_ids_str.size(); ++i) {
+      result += tab_ids_str[i];
+      if (i < tab_ids_str.size() - 1) {
+        result += ", ";
+      }
+    }
+    result += "\n\n";
+  }
+
+  return result;
+}
+
+- (void)uploadLoggingDataToMQLS:(::mojo_base::ProtoWrapper)logging_data {
+  // If MQLS toggle is not enabled, ignore the data.
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(
+              _webStateList->GetActiveWebState()->GetBrowserState()));
+  if (!optimization_guide_service) {
+    return;
+  }
+  auto* mqls_service =
+      optimization_guide_service->GetModelQualityLogsUploaderService();
+  if (!mqls_service) {
+    return;
+  }
+  if (!logging_data.As<optimization_guide::proto::BlingPrototypingLoggingData>()
+           .has_value()) {
+    return;
+  }
+  optimization_guide::proto::BlingPrototypingLoggingData proto_logging_data =
+      logging_data.As<optimization_guide::proto::BlingPrototypingLoggingData>()
+          .value();
+  std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry =
+      std::make_unique<optimization_guide::ModelQualityLogEntry>(
+          mqls_service->GetWeakPtr());
+  *log_entry->log_ai_data_request()->mutable_bling_prototyping() =
+      proto_logging_data;
+  optimization_guide::ModelQualityLogEntry::Upload(std::move(log_entry));
+}
+
+- (void)serializePageContextToStorage:
+    (const optimization_guide::proto::PageContext&)pageContext {
+  SavePageContextResult result = SaveSerializedPageContextToDisk(pageContext);
+  if (!result.success) {
+    NSLog(@"[AIPrototypingMediator] Failed to save serialized page context to "
+          @"disk: %@",
+          base::SysUTF8ToNSString(result.error_message));
+  } else {
+    NSLog(@"[AIPrototypingMediator] Successfully saved serialized page context "
+          @"to: %@",
+          base::SysUTF8ToNSString(result.file_path.value()));
+  }
 }
 
 @end

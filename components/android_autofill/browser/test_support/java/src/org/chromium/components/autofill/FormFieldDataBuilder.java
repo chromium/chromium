@@ -23,14 +23,16 @@ public class FormFieldDataBuilder {
     int mMaxLength;
     String mHeuristicType;
     String mServerType;
-    String mComputedType;
+    String mOverallType;
     String[] mServerPredictions;
     RectF mBounds = new RectF();
     String[] mDatalistValues;
     String[] mDatalistLabels;
+    boolean mFocusable;
     boolean mVisible;
     boolean mIsAutofilled;
     RectF mBoundsInContainerViewCoordinates = new RectF();
+    String mOrigin = "";
 
     public FormFieldData build() {
         FormFieldData result =
@@ -50,7 +52,7 @@ public class FormFieldDataBuilder {
                         mMaxLength,
                         mHeuristicType,
                         mServerType,
-                        mComputedType,
+                        mOverallType,
                         mServerPredictions,
                         mBounds.left,
                         mBounds.top,
@@ -58,8 +60,10 @@ public class FormFieldDataBuilder {
                         mBounds.bottom,
                         mDatalistValues,
                         mDatalistLabels,
+                        mFocusable,
                         mVisible,
-                        mIsAutofilled);
+                        mIsAutofilled,
+                        mOrigin);
         result.setBoundsInContainerViewCoordinates(mBoundsInContainerViewCoordinates);
         return result;
     }

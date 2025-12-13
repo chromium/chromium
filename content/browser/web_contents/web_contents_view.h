@@ -10,7 +10,7 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace content {
 
@@ -71,6 +71,12 @@ class WebContentsView {
   // Get the bounds of the View in the global screen position.
   virtual gfx::Rect GetViewBounds() const = 0;
 
+  // Resizes the view to the new bounds.
+  virtual void Resize(const gfx::Rect& new_bounds) = 0;
+
+  // Returns the size of the view.
+  virtual gfx::Size GetSize() const = 0;
+
   virtual void CreateView(gfx::NativeView context) = 0;
 
   // Sets up the View that holds the rendered web page, receives messages for
@@ -117,8 +123,8 @@ class WebContentsView {
   virtual void FullscreenStateChanged(bool is_fullscreen) = 0;
 
   // Returns an animation manager that displays a preview of the history page
-  // during a session history navigation gesture. Only non-null if
-  // `features::kBackForwardTransitions` is enabled for the supported platform.
+  // during a session history navigation gesture. Only non-null if supported for
+  // the platform.
   virtual BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() = 0;
 

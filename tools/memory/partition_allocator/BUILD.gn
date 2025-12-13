@@ -53,7 +53,7 @@ if (_tcache_tool_supported) {
     deps = [
       ":pa_tool_utils",
       "//base",
-      "//third_party/snappy:snappy",
+      "//third_party/snappy",
     ]
 
     if (target_os == "mac") {

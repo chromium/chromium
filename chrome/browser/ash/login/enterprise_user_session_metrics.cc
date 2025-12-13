@@ -38,29 +38,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(prefs::kLastSessionLength, 0);
 }
 
-void RecordSignInEvent(SignInEventType sign_in_event_type) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Enterprise.UserSession.Logins", static_cast<int>(sign_in_event_type),
-      static_cast<int>(SignInEventType::SIGN_IN_EVENT_COUNT));
-}
-
-void RecordSignInEvent(const UserContext& user_context, bool is_auto_login) {
-  DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
-
-  const user_manager::UserType session_type = user_context.GetUserType();
-  if (session_type == user_manager::UserType::kRegular) {
-    RecordSignInEvent(SignInEventType::REGULAR_USER);
-  } else if (session_type == user_manager::UserType::kPublicAccount) {
-    RecordSignInEvent(is_auto_login ? SignInEventType::AUTOMATIC_PUBLIC_SESSION
-                                    : SignInEventType::MANUAL_PUBLIC_SESSION);
-  }
-
-  // Kiosk sign-ins are handled separately in AppLaunchController and other
-  // session types are ignored for now.
-}
-
 void StoreSessionLength(user_manager::UserType session_type,
                         const base::TimeDelta& session_length) {
   DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());

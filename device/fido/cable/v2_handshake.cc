@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/v2_handshake.h"
 
 #include <inttypes.h>
@@ -14,10 +9,13 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 
 #include "base/base64url.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -30,9 +28,9 @@
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/v2_constants.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -125,16 +123,18 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   }
 
   char templ[] = "caBLEv2 tunnel server domain\x00\x00";
-  memcpy(&templ[sizeof(templ) - 1 - sizeof(domain)], &domain, sizeof(domain));
+  UNSAFE_TODO(memcpy(&templ[sizeof(templ) - 1 - sizeof(domain)], &domain,
+                     sizeof(domain)));
   uint8_t digest[SHA256_DIGEST_LENGTH];
   // The input should be NUL-terminated, thus the trailing NUL in |templ| is
   // included here.
   SHA256(reinterpret_cast<const uint8_t*>(templ), sizeof(templ), digest);
   uint64_t result;
   static_assert(sizeof(result) <= sizeof(digest), "");
-  memcpy(&result, digest, sizeof(result));
+  UNSAFE_TODO(memcpy(&result, digest, sizeof(result)));
 
-  static const char kBase32Chars[33] = "abcdefghijklmnopqrstuvwxyz234567";
+  static const std::string_view kBase32Chars =
+      "abcdefghijklmnopqrstuvwxyz234567";
   const int tld_value = result & 3;
   result >>= 2;
 
@@ -146,7 +146,7 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   ret.push_back('.');
 
   static const char kTLDs[4][5] = {"com", "org", "net", "info"};
-  ret += kTLDs[tld_value];
+  ret += UNSAFE_TODO(kTLDs[tld_value]);
 
   return ret;
 }
@@ -214,12 +214,12 @@ std::array<uint8_t, kAdvertSize> Encrypt(
 
   uint8_t hmac[SHA256_DIGEST_LENGTH];
   unsigned hmac_len;
-  CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, ret.data(), AES_BLOCK_SIZE,
-             hmac, &hmac_len) != nullptr);
+  UNSAFE_TODO(CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, ret.data(),
+                         AES_BLOCK_SIZE, hmac, &hmac_len) != nullptr));
   CHECK_EQ(hmac_len, sizeof(hmac));
 
   static_assert(sizeof(hmac) >= 4, "");
-  memcpy(ret.data() + AES_BLOCK_SIZE, hmac, 4);
+  UNSAFE_TODO(memcpy(ret.data() + AES_BLOCK_SIZE, hmac, 4));
 
   return ret;
 }
@@ -234,11 +234,13 @@ std::optional<CableEidArray> Decrypt(
 
   uint8_t calculated_hmac[SHA256_DIGEST_LENGTH];
   unsigned calculated_hmac_len;
-  CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, advert.data(), AES_BLOCK_SIZE,
-             calculated_hmac, &calculated_hmac_len) != nullptr);
+  UNSAFE_TODO(CHECK(HMAC(EVP_sha256(), key.data() + 32, 32, advert.data(),
+                         AES_BLOCK_SIZE, calculated_hmac,
+                         &calculated_hmac_len) != nullptr));
   CHECK_EQ(calculated_hmac_len, sizeof(calculated_hmac));
 
-  if (CRYPTO_memcmp(calculated_hmac, advert.data() + AES_BLOCK_SIZE, 4) != 0) {
+  if (CRYPTO_memcmp(calculated_hmac,
+                    UNSAFE_TODO(advert.data() + AES_BLOCK_SIZE), 4) != 0) {
     return std::nullopt;
   }
 
@@ -258,9 +260,10 @@ std::optional<CableEidArray> Decrypt(
 
   uint16_t tunnel_server_domain;
   static_assert(plaintext.size() >= sizeof(tunnel_server_domain));
-  memcpy(&tunnel_server_domain,
-         &plaintext[plaintext.size() - sizeof(tunnel_server_domain)],
-         sizeof(tunnel_server_domain));
+  UNSAFE_TODO(
+      memcpy(&tunnel_server_domain,
+             &plaintext[plaintext.size() - sizeof(tunnel_server_domain)],
+             sizeof(tunnel_server_domain)));
   if (!tunnelserver::ToKnownDomainID(tunnel_server_domain)) {
     return std::nullopt;
   }
@@ -275,12 +278,12 @@ CableEidArray FromComponents(const Components& components) {
                                   sizeof(components.tunnel_server_domain));
 
   eid[0] = 0;
-  memcpy(&eid[1], components.nonce.data(), kNonceSize);
-  memcpy(&eid[1 + kNonceSize], components.routing_id.data(),
-         sizeof(components.routing_id));
-  memcpy(&eid[1 + kNonceSize + sizeof(components.routing_id)],
-         &components.tunnel_server_domain,
-         sizeof(components.tunnel_server_domain));
+  UNSAFE_TODO(memcpy(&eid[1], components.nonce.data(), kNonceSize));
+  UNSAFE_TODO(memcpy(&eid[1 + kNonceSize], components.routing_id.data(),
+                     sizeof(components.routing_id)));
+  UNSAFE_TODO(memcpy(&eid[1 + kNonceSize + sizeof(components.routing_id)],
+                     &components.tunnel_server_domain,
+                     sizeof(components.tunnel_server_domain)));
 
   return eid;
 }
@@ -292,12 +295,14 @@ Components ToComponents(const CableEidArray& eid) {
                 1 + kNonceSize + sizeof(ret.routing_id) +
                     sizeof(ret.tunnel_server_domain));
 
-  memcpy(ret.nonce.data(), &eid[1], kNonceSize);
-  memcpy(ret.routing_id.data(), &eid[1 + kNonceSize], sizeof(ret.routing_id));
+  UNSAFE_TODO(memcpy(ret.nonce.data(), &eid[1], kNonceSize));
+  UNSAFE_TODO(memcpy(ret.routing_id.data(), &eid[1 + kNonceSize],
+                     sizeof(ret.routing_id)));
 
   uint16_t tunnel_server_domain;
-  memcpy(&tunnel_server_domain, &eid[1 + kNonceSize + sizeof(ret.routing_id)],
-         sizeof(tunnel_server_domain));
+  UNSAFE_TODO(memcpy(&tunnel_server_domain,
+                     &eid[1 + kNonceSize + sizeof(ret.routing_id)],
+                     sizeof(tunnel_server_domain)));
   // |eid| has been checked by |Decrypt| so the tunnel server domain must be
   // valid.
   ret.tunnel_server_domain =
@@ -457,7 +462,7 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
   while (in.size() >= kChunkSize) {
     uint64_t v = 0;
     static_assert(sizeof(v) >= kChunkSize, "");
-    memcpy(&v, in.data(), kChunkSize);
+    UNSAFE_TODO(memcpy(&v, in.data(), kChunkSize));
 
     char digits[kChunkDigits + 1];
     static_assert(kChunkDigits == 17, "Need to change next line");
@@ -480,11 +485,11 @@ std::string BytesToDigits(base::span<const uint8_t> in) {
 
     uint64_t v = 0;
     CHECK_LE(in.size(), sizeof(v));
-    memcpy(&v, in.data(), in.size());
+    UNSAFE_TODO(memcpy(&v, in.data(), in.size()));
 
     char digits[kChunkDigits + 1];
-    CHECK_LT(snprintf(digits, sizeof(digits), format, v),
-             static_cast<int>(sizeof(digits)));
+    UNSAFE_TODO(CHECK_LT(snprintf(digits, sizeof(digits), format, v),
+                         static_cast<int>(sizeof(digits))));
     ret += digits;
   }
 
@@ -501,8 +506,9 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
         v >> (kChunkSize * 8) != 0) {
       return std::nullopt;
     }
-    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
-    ret.insert(ret.end(), v_bytes, v_bytes + kChunkSize);
+    const base::span<const uint8_t> v_bytes =
+        base::as_writable_byte_span(base::span_from_ref(v)).first(kChunkSize);
+    ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
 
     in = in.substr(kChunkDigits);
   }
@@ -537,8 +543,10 @@ std::optional<std::vector<uint8_t>> DigitsToBytes(std::string_view in) {
       return std::nullopt;
     }
 
-    const uint8_t* const v_bytes = reinterpret_cast<uint8_t*>(&v);
-    ret.insert(ret.end(), v_bytes, v_bytes + remaining_bytes);
+    const base::span<const uint8_t> v_bytes =
+        base::as_writable_byte_span(base::span_from_ref(v))
+            .first(remaining_bytes);
+    ret.insert(ret.end(), v_bytes.begin(), v_bytes.end());
   }
 
   return ret;
@@ -675,8 +683,9 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   cbor_bytes->resize(padded_size);
   const uint16_t num_padding_bytes16 =
       base::checked_cast<uint16_t>(num_padding_bytes);
-  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
-         &num_padding_bytes16, sizeof(num_padding_bytes16));
+  UNSAFE_TODO(
+      memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
+             &num_padding_bytes16, sizeof(num_padding_bytes16)));
 
   return *cbor_bytes;
 }
@@ -731,8 +740,9 @@ std::optional<cbor::Value> DecodePaddedCBORMap16(
   }
 
   uint16_t padding_length16;
-  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
-         sizeof(padding_length16));
+  UNSAFE_TODO(memcpy(&padding_length16,
+                     &input[input.size() - sizeof(padding_length16)],
+                     sizeof(padding_length16)));
   const size_t padding_length = padding_length16;
   if (padding_length + sizeof(uint16_t) > input.size()) {
     return std::nullopt;
@@ -794,8 +804,8 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   const size_t num_zeros = padded_size - message_to_encrypt->size() - 1;
 
   std::vector<uint8_t> padded_message(padded_size, 0);
-  memcpy(padded_message.data(), message_to_encrypt->data(),
-         message_to_encrypt->size());
+  UNSAFE_TODO(memcpy(padded_message.data(), message_to_encrypt->data(),
+                     message_to_encrypt->size()));
   // The number of added zeros has to fit in a single byte so it has to be
   // less than 256.
   DCHECK_LT(num_zeros, 256u);
@@ -925,9 +935,9 @@ std::vector<uint8_t> HandshakeInitiator::BuildInitialMessage() {
   std::vector<uint8_t> handshake_message;
   handshake_message.reserve(sizeof(ephemeral_key_public_bytes) +
                             ciphertext.size());
-  handshake_message.insert(
-      handshake_message.end(), ephemeral_key_public_bytes,
-      ephemeral_key_public_bytes + sizeof(ephemeral_key_public_bytes));
+  handshake_message.insert(handshake_message.end(), ephemeral_key_public_bytes,
+                           UNSAFE_TODO(ephemeral_key_public_bytes +
+                                       sizeof(ephemeral_key_public_bytes)));
   handshake_message.insert(handshake_message.end(), ciphertext.begin(),
                            ciphertext.end());
 
@@ -1081,9 +1091,9 @@ HandshakeResult RespondToHandshake(
   }
 
   const std::vector<uint8_t> my_ciphertext = noise.EncryptAndHash({});
-  out_response->insert(
-      out_response->end(), ephemeral_key_public_bytes,
-      ephemeral_key_public_bytes + sizeof(ephemeral_key_public_bytes));
+  out_response->insert(out_response->end(), ephemeral_key_public_bytes,
+                       UNSAFE_TODO(ephemeral_key_public_bytes +
+                                   sizeof(ephemeral_key_public_bytes)));
   out_response->insert(out_response->end(), my_ciphertext.begin(),
                        my_ciphertext.end());
 

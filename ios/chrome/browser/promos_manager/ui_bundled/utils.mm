@@ -67,22 +67,5 @@ bool IsUIAvailableForPromo(SceneState* scene_state) {
     return NO;
   }
 
-  // (8) User Policy notification has priority over showing promos.
-  // This will only prevent showing a promo before policy notification but might
-  // show a promo within same user session.
-  DCHECK(scene_state.profileState.profile);
-  ProfileIOS* profile = scene_state.profileState.profile;
-  AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForProfile(profile);
-
-  // Don't show promo until auth service is initialized and we are sure that
-  // there is no conflict.
-  if (!auth_service) {
-    return NO;
-  }
-  PrefService* pref_service = profile->GetPrefs();
-  policy::UserCloudPolicyManager* user_policy_manager =
-      profile->GetUserCloudPolicyManager();
-  return !IsUserPolicyNotificationNeeded(auth_service, pref_service,
-                                         user_policy_manager);
+  return YES;
 }

@@ -2,7 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
 
 static_library("sync_preferences") {
   sources = [
@@ -52,18 +58,21 @@ source_set("common_syncable_prefs_database") {
     "//components/browsing_data/core",
     "//components/commerce/core:pref_names",
     "//components/content_settings/core/common",
+    "//components/desktop_to_mobile_promos",
     "//components/dom_distiller/core",
     "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics/demographics",
     "//components/ntp_tiles",
+    "//components/ntp_tiles:pref_names",
     "//components/omnibox/browser",
     "//components/password_manager/core/common",
     "//components/payments/core",
-    "//components/plus_addresses:prefs",
+    "//components/plus_addresses/core/common:prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/saved_tab_groups/public",
     "//components/sharing_message",
+    "//components/sync_preferences/cross_device_pref_tracker/prefs",
     "//components/translate/core/browser",
     "//components/variations/service",
   ]
@@ -113,4 +122,8 @@ source_set("unit_tests") {
   if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

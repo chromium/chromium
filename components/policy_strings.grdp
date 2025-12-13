@@ -79,6 +79,9 @@
   <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
     Blocked by your organization
   </message>
+  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to GDrive">
+    Local download blocked
+  </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
     Validation successful
   </message>
@@ -400,10 +403,10 @@ Additional details:
   <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is defined as an empty string.">
     Shortcut can't be empty
   </message>
-  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a name is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a name is defined as an empty string.">
     Name can't be empty
   </message>
-  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a URL is defined as an empty string.">
     URL can't be empty
   </message>
   <message name="IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
@@ -432,6 +435,21 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported restriction level">
     "<ph name="DATA_CONTROLS_RESTRICTION">$1<ex>SCREENSHOT</ex></ph>" cannot be set to "<ph name="DATA_CONTROLS_LEVEL">$2<ex>WARN</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_MAX_SHORTCUTS_LIMIT_ERROR" desc="The text displayed in the status column of the NTPShortcuts policy when the max number of shortcuts is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>10</ex></ph> shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the NTPShortcuts policy when there is no valid entry in the policy.">
+    The list contains no valid shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_DUPLICATED_URL" desc="The text displayed in the status column of the NTPShortcuts policy when there is more than one entry using the same URL.">
+    Ignored non-unique URL: <ph name="URL_NAME">$1<ex>https://www.shortcut.com</ex></ph>
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NAME_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a name that is too long.">
+    The name of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_URL_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a url that is too long.">
+    The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
   </message>
 
   <!-- chrome://policy -->
@@ -829,6 +847,12 @@ Additional details:
   </message>
   <message name="IDS_POLICY_BANNER_PROMOTION_BTN" desc="Button for Chrome Enterprise Core (CEC) promotion banner">
     Try Chrome Enterprise Core
+  </message>
+  <message name="IDS_DEVTOOLS_BLOCKED_BY_POLICY" desc="Message shown when DevTools is blocked by policy.">
+    Your organization has blocked the use of DevTools on this page
+  </message>
+  <message name="IDS_DEVTOOLS_NOT_ALLOWED" desc="Message shown when DevTools is not allowed.">
+    DevTools not allowed on this page
   </message>
 
   <!-- Strings for chrome://policy/logs -->
@@ -1290,6 +1314,9 @@ Additional details:
   </message>
   <message name="IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO" desc="The text displayed in the status column when a browsing data policy is applied for types for which sync will be automatically disabled.">
     This policy automatically disables syncing across devices for: <ph name="ACTION_LIST">$1<ex>passwords, autofill</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_BROWSING_DATA_PLATFORM_UNSUPPORTED" desc="Warning message displayed on chrome://policy page when policies controlling browser data duration include data types that are not supported on the current platform.">
+    This policy specifies data types that are not supported on your current platform: <ph name="TYPE_LIST">$1<ex>hosted_app_data, download_history</ex></ph>.
   </message>
   <message name="IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS" desc="The text displayed in the status column when a policy is not supported as a user policy on ios.">
     This policy is not yet supported as a user policy on iOS.

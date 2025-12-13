@@ -4,7 +4,7 @@ include_rules = [
   "+third_party/blink/public/mojom/choosers/file_chooser.mojom.h",
   "+third_party/skia/include/core/SkColor.h",
   "+ui/base/l10n/l10n_util.h",
-  "+ui/gfx/native_widget_types.h",
+  "+ui/gfx/native_ui_types.h",
   "+ui/shell_dialogs/select_file_dialog.h",
   "+ui/shell_dialogs/select_file_policy.h",
   "+ui/shell_dialogs/selected_file_info.h",

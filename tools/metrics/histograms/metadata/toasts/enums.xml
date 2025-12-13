@@ -41,15 +41,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Aborted"/>
 </enum>
 
-<!-- LINT.IfChange(ToastDismissMenuEntries) -->
-
-<enum name="ToastDismissMenuEntries">
-  <int value="0" label="Dismiss"/>
-  <int value="1" label="Don't show again"/>
-</enum>
-
-<!-- LINT.ThenChange(/chrome/browser/ui/toasts/toast_metrics.h:ToastDismissMenuEntries) -->
-
 <!-- LINT.IfChange(ToastId) -->
 
 <enum name="ToastId">
@@ -75,6 +66,11 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Close pinned tab confirmation toast"/>
   <int value="17" label="Gemini will keep working on task"/>
   <int value="18" label="Dice user migrated"/>
+  <int value="19" label="SharedGroups is now available after version update"/>
+  <int value="20"
+      label="Autofilled email got automatically verified by the browser"/>
+  <int value="21" label="Sharing image with Gemini failed"/>
+  <int value="22" label="Copied to clipboard"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

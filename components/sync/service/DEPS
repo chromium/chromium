@@ -1,7 +1,9 @@
 include_rules = [
   "+components/keyed_service/core",
   "+components/metrics",
+  "+components/os_crypt/async",
   "+components/os_crypt/sync",
+  "+components/password_manager/core/browser/split_stores_and_local_upm.h",
   "+components/policy",
   "+components/pref_registry",
   "+components/prefs",

@@ -15,4 +15,6 @@ interface WorkerInternals {
     void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
     boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
     boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
+
+    [CallWith=ScriptState] DOMString? getCanvasNoiseToken();
 };

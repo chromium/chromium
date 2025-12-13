@@ -1,0 +1,26 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// A meta tag.
+struct MetaTag {
+  string name;
+  string content;
+};
+
+// Metadata about a frame.
+struct FrameMetadata {
+  url.mojom.Url url;
+  array<MetaTag> meta_tags;
+};
+
+// Metadata about the page content. Includes metadata for each local frame
+// descendant.
+struct PageMetadata {
+  // The local frame where the traversal starts is the first entry in the array.
+  array<FrameMetadata> frame_metadata;
+};

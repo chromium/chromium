@@ -101,4 +101,26 @@ found in the LICENSE file.
     <!-- Colors used in Google Pay icon -->
     <color name="google_pay_icon_grey_dark">#3C4043</color>
 
+    <!-- Sepia color for reader mode prefs theme button. -->
+    <color name="reader_mode_prefs_sepia_theme_button_color">#F8F1E3</color>
+
+    <!-- Ntp customization theme colors. -->
+    <color name="ntp_color_blue_primary_light">#3B5F99</color>
+    <color name="ntp_color_blue_primary_dark">#81A3E2</color>
+    <color name="ntp_color_aqua_primary_light">#036B63</color>
+    <color name="ntp_color_aqua_primary_dark">#5FB0A7</color>
+    <color name="ntp_color_green_primary_light">#3C6A31</color>
+    <color name="ntp_color_green_primary_dark">#7EB06E</color>
+    <color name="ntp_color_viridian_primary_light">#566253</color>
+    <color name="ntp_color_viridian_primary_dark">#9AA695</color>
+    <color name="ntp_color_citron_primary_light">#705E01</color>
+    <color name="ntp_color_citron_primary_dark">#BBA247</color>
+    <color name="ntp_color_orange_primary_light">#8F4F1C</color>
+    <color name="ntp_color_orange_primary_dark">#DF9058</color>
+    <color name="ntp_color_rose_primary_light">#924759</color>
+    <color name="ntp_color_rose_primary_dark">#E2899C</color>
+    <color name="ntp_color_fuchsia_primary_light">#844B7E</color>
+    <color name="ntp_color_fuchsia_primary_dark">#CF8DC5</color>
+    <color name="ntp_color_violet_primary_light">#6B5395</color>
+    <color name="ntp_color_violet_primary_dark">#B196DE</color>
 </resources>

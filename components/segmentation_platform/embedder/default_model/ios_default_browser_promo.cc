@@ -32,8 +32,8 @@ constexpr int64_t kMinSignalCollectionLength = 0;
 // Refresh the result every time.
 constexpr int64_t kResultTTLMinutes = 1;
 
-constexpr std::array<const char*, 1> kOutputLabels = {
-    kIosDefaultBrowserPromoShowLabel};
+constexpr LabelPair<IosDefaultBrowserPromo::Label> kLabels[] = {
+    {IosDefaultBrowserPromo::kLabelShow, kIosDefaultBrowserPromoShowLabel}};
 
 // Input features:
 constexpr std::array<int32_t, 1> kEnumValueForFirstRunStageSignIn{
@@ -54,198 +54,125 @@ constexpr std::array<int32_t, 1> kEnumValueForIncognitoInterstitialEnabled{
     /*Enabled=*/1};
 constexpr std::array<int32_t, 2> kEnumValueForOmniboxSearchVsURL{/*URL=*/0,
                                                                  /*search=*/1};
-constexpr std::array<float, 1> kDefaultBrowserFeatureDefaultValue{0};
 
-constexpr std::array<MetadataWriter::UMAFeature, 32> kUMAFeatures = {
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "FirstRun.Stage",
-        28,
-        proto::Aggregation::COUNT_BOOLEAN,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Session.TotalDuration",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Session.TotalDuration",
-        28,
-        proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::HISTOGRAM_ENUM,
-        .name = "FirstRun.Stage",
-        .bucket_count = 28,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT_BOOLEAN,
-        .enum_ids_size = kEnumValueForFirstRunStageSignIn.size(),
-        .accepted_enum_ids = kEnumValueForFirstRunStageSignIn.data()},
-
-    MetadataWriter::UMAFeature{
-        .signal_type = proto::SignalType::HISTOGRAM_ENUM,
-        .name = "FirstRun.Stage",
-        .bucket_count = 28,
-        .tensor_length = 1,
-        .aggregation = proto::Aggregation::COUNT_BOOLEAN,
-        .enum_ids_size = kEnumValueForFirstRunStageOpenSettings.size(),
-        .accepted_enum_ids = kEnumValueForFirstRunStageOpenSettings.data()},
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.PageLoadCount.Counts",
-        28,
-        kEnumValueForPageLoadCountsPageLoadNavigation.data(),
-        kEnumValueForPageLoadCountsPageLoadNavigation.size()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "IOS.LaunchSource",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.LaunchSource",
-        28,
-        kEnumValueForLaunchSourceAppIcon.data(),
-        kEnumValueForLaunchSourceAppIcon.size()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.LaunchSource",
-        28,
-        kEnumValueForLaunchSourceDefaultIntent.data(),
-        kEnumValueForLaunchSourceDefaultIntent.size()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.LaunchSource",
-        28,
-        kEnumValueForLaunchSourceLinkOpen.data(),
-        kEnumValueForLaunchSourceLinkOpen.size()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Startup.MobileSessionStartFromApps",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromUserAction("MobileNewTabOpened", 28),
-
-    MetadataWriter::UMAFeature::FromUserAction("MobileTabGridEntered", 28),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "IOS.Start.Impression",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "IOS.NTP.Impression",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.NTP.Impression",
-        28,
-        kEnumValueForNTPImpressionFeedVisible.data(),
-        kEnumValueForNTPImpressionFeedVisible.size()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "IOS.Incognito.TimeSpent",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "IOS.IncognitoInterstitial.Settings",
-        28,
-        kEnumValueForIncognitoInterstitialEnabled.data(),
-        kEnumValueForIncognitoInterstitialEnabled.size()),
-
-    MetadataWriter::UMAFeature::FromEnumHistogram(
-        "Omnibox.SuggestionUsed.SearchVsUrl",
-        28,
-        kEnumValueForOmniboxSearchVsURL.data(),
-        kEnumValueForOmniboxSearchVsURL.size()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "NewTabPage.TimeSpent",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall."
-        "WithoutCustomPassphrase",
-        28,
-        proto::Aggregation::LATEST_OR_DEFAULT,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "PasswordManager.AccountStore.TotalAccountsHiRes3.ByType.Overall."
-        "WithoutCustomPassphrase",
-        28,
-        proto::Aggregation::LATEST_OR_DEFAULT,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "IOS.CredentialExtension.IsEnabled.Startup",
-        28,
-        proto::Aggregation::LATEST_OR_DEFAULT,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "PasswordManager.BulkCheck.UserAction",
-        28,
-        proto::Aggregation::SUM,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Session.TotalDuration.WithAccount",
-        28,
-        proto::Aggregation::SUM_BOOLEAN,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromValueHistogram(
-        "Signin.IOSNumberOfDeviceAccounts",
-        28,
-        proto::Aggregation::SUM_BOOLEAN,
-        kDefaultBrowserFeatureDefaultValue.size(),
-        kDefaultBrowserFeatureDefaultValue.data()),
-
-    MetadataWriter::UMAFeature::FromUserAction("Bookmarks.FolderAdded", 28),
-
-    MetadataWriter::UMAFeature::FromUserAction(
-        "IOSMagicStackSafetyCheckFreshSignal",
-        28),
-
-    MetadataWriter::UMAFeature::FromUserAction("Forward", 28),
-
-    MetadataWriter::UMAFeature::FromUserAction("Back", 28),
-
-    MetadataWriter::UMAFeature::FromUserAction("MobileStackSwipeCancelled", 28),
-
-    MetadataWriter::UMAFeature::FromUserAction("MobileToolbarForward", 28),
+constexpr FeaturePair<IosDefaultBrowserPromo::Feature> kFeatures[] = {
+    {IosDefaultBrowserPromo::kFeatureFirstRunStageCount,
+     features::UMAAggregate("FirstRun.Stage",
+                            28,
+                            proto::Aggregation::COUNT_BOOLEAN)},
+    {IosDefaultBrowserPromo::kFeatureSessionTotalDurationSum,
+     features::UMASum("Session.TotalDuration", 28)},
+    {IosDefaultBrowserPromo::kFeatureSessionTotalDurationBooleanTrueCount,
+     features::UMAAggregate(
+         "Session.TotalDuration",
+         28,
+         proto::Aggregation::BUCKETED_COUNT_BOOLEAN_TRUE_COUNT)},
+    {IosDefaultBrowserPromo::kFeatureFirstRunStageSignInCount,
+     features::UMAEnum("FirstRun.Stage",
+                       28,
+                       base::span(kEnumValueForFirstRunStageSignIn))},
+    {IosDefaultBrowserPromo::kFeatureFirstRunStageOpenSettingsCount,
+     features::UMAEnum("FirstRun.Stage",
+                       28,
+                       base::span(kEnumValueForFirstRunStageOpenSettings))},
+    {IosDefaultBrowserPromo::kFeaturePageLoadCountsPageLoadNavigationCount,
+     features::UMAEnum(
+         "IOS.PageLoadCount.Counts",
+         28,
+         base::span(kEnumValueForPageLoadCountsPageLoadNavigation))},
+    {IosDefaultBrowserPromo::kFeatureLaunchSourceSum,
+     features::UMASum("IOS.LaunchSource", 28)},
+    {IosDefaultBrowserPromo::kFeatureLaunchSourceAppIconCount,
+     features::UMAEnum("IOS.LaunchSource",
+                       28,
+                       base::span(kEnumValueForLaunchSourceAppIcon))},
+    {IosDefaultBrowserPromo::kFeatureLaunchSourceDefaultIntentCount,
+     features::UMAEnum("IOS.LaunchSource",
+                       28,
+                       base::span(kEnumValueForLaunchSourceDefaultIntent))},
+    {IosDefaultBrowserPromo::kFeatureLaunchSourceLinkOpenCount,
+     features::UMAEnum("IOS.LaunchSource",
+                       28,
+                       base::span(kEnumValueForLaunchSourceLinkOpen))},
+    {IosDefaultBrowserPromo::kFeatureMobileSessionStartFromAppsSum,
+     features::UMASum("Startup.MobileSessionStartFromApps", 28)},
+    {IosDefaultBrowserPromo::kFeatureMobileNewTabOpenedCount,
+     features::UserAction("MobileNewTabOpened", 28)},
+    {IosDefaultBrowserPromo::kFeatureMobileTabGridEnteredCount,
+     features::UserAction("MobileTabGridEntered", 28)},
+    {IosDefaultBrowserPromo::kFeatureStartImpressionSum,
+     features::UMASum("IOS.Start.Impression", 28)},
+    {IosDefaultBrowserPromo::kFeatureNTPImpressionSum,
+     features::UMASum("IOS.NTP.Impression", 28)},
+    {IosDefaultBrowserPromo::kFeatureNTPImpressionFeedVisibleCount,
+     features::UMAEnum("IOS.NTP.Impression",
+                       28,
+                       base::span(kEnumValueForNTPImpressionFeedVisible))},
+    {IosDefaultBrowserPromo::kFeatureIncognitoTimeSpentSum,
+     features::UMASum("IOS.Incognito.TimeSpent", 28)},
+    {IosDefaultBrowserPromo::kFeatureIncognitoInterstitialEnabledCount,
+     features::UMAEnum("IOS.IncognitoInterstitial.Settings",
+                       28,
+                       base::span(kEnumValueForIncognitoInterstitialEnabled))},
+    {IosDefaultBrowserPromo::kFeatureOmniboxSearchVsUrlCount,
+     features::UMAEnum("Omnibox.SuggestionUsed.SearchVsUrl",
+                       28,
+                       base::span(kEnumValueForOmniboxSearchVsURL))},
+    {IosDefaultBrowserPromo::kFeatureNewTabPageTimeSpentSum,
+     features::UMASum("NewTabPage.TimeSpent", 28)},
+    {IosDefaultBrowserPromo::kFeatureProfileStorePasswordCount,
+     features::LatestOrDefaultValue(
+         "PasswordManager.ProfileStore.TotalAccountsHiRes3.ByType.Overall."
+         "WithoutCustomPassphrase",
+         28,
+         0)},
+    {IosDefaultBrowserPromo::kFeatureAccountStorePasswordCount,
+     features::LatestOrDefaultValue(
+         "PasswordManager.AccountStore.TotalAccountsHiRes3.ByType.Overall."
+         "WithoutCustomPassphrase",
+         28,
+         0)},
+    {IosDefaultBrowserPromo::kFeatureIOSCredentialExtensionEnabled,
+     features::LatestOrDefaultValue("IOS.CredentialExtension.IsEnabled.Startup",
+                                    28,
+                                    0)},
+    {IosDefaultBrowserPromo::kFeaturePasswordManagerBulkCheckSum,
+     features::UMASum("PasswordManager.BulkCheck.UserAction", 28)},
+    {IosDefaultBrowserPromo::kFeatureSessionTotalDurationWithAccountBooleanSum,
+     features::UMAAggregate("Session.TotalDuration.WithAccount",
+                            28,
+                            proto::Aggregation::SUM_BOOLEAN)},
+    {IosDefaultBrowserPromo::kFeatureSigninIOSNumberOfDeviceAccountsBooleanSum,
+     features::UMAAggregate("Signin.IOSNumberOfDeviceAccounts",
+                            28,
+                            proto::Aggregation::SUM_BOOLEAN)},
+    {IosDefaultBrowserPromo::kFeatureBookmarksFolderAddedCount,
+     features::UserAction("Bookmarks.FolderAdded", 28)},
+    {IosDefaultBrowserPromo::kFeatureIOSMagicStackSafetyCheckFreshSignalCount,
+     features::UserAction("IOSMagicStackSafetyCheckFreshSignal", 28)},
+    {IosDefaultBrowserPromo::kFeatureForwardCount,
+     features::UserAction("Forward", 28)},
+    {IosDefaultBrowserPromo::kFeatureBackCount,
+     features::UserAction("Back", 28)},
+    {IosDefaultBrowserPromo::kFeatureMobileStackSwipeCancelledCount,
+     features::UserAction("MobileStackSwipeCancelled", 28)},
+    {IosDefaultBrowserPromo::kFeatureMobileToolbarForwardCount,
+     features::UserAction("MobileToolbarForward", 28)},
+    {IosDefaultBrowserPromo::kFeatureClientAgeWeeks,
+     features::InputContext(kClientAgeWeeks)},
+    {IosDefaultBrowserPromo::kFeatureIsPhone, features::InputContext(kIsPhone)},
+    {IosDefaultBrowserPromo::kFeatureIsCountryBRIIM,
+     features::InputContext(kCountryBRIIM)},
+    {IosDefaultBrowserPromo::kFeatureIsSegmentationAndroidPhone,
+     features::InputContext(kSegmentationAndroidPhone)},
+    {IosDefaultBrowserPromo::kFeatureIsSegmentationIOSPhoneChrome,
+     features::InputContext(kSegmentationIOSPhoneChrome)},
+    {IosDefaultBrowserPromo::kFeatureIsSegmentationSyncedFirstDevice,
+     features::InputContext(kSegmentationSyncedAndFirstDevice)},
 };
 
 // TODO(crbug.com/407788921): Clean up the killswitch.
 BASE_FEATURE(kIOSDefaultBrowserPromoDefaultModel,
-             "IOSDefaultBrowserPromoDefaultModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -275,15 +202,14 @@ IosDefaultBrowserPromo::GetModelConfig() {
   metadata.set_upload_tensors(false);
 
   // Set output config.
-  writer.AddOutputConfigForMultiClassClassifier(kOutputLabels,
-                                                kOutputLabels.size(),
-                                                /*threshold=*/-99999.0);
+  writer.AddOutputConfigForMultiClassClassifier<Label>(kLabels,
+                                                       /*threshold=*/-99999.0);
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{},
       /*default_ttl=*/kResultTTLMinutes, proto::TimeUnit::MINUTE);
 
   // Set features.
-  writer.AddUmaFeatures(kUMAFeatures.data(), kUMAFeatures.size());
+  writer.AddFeatures<Feature>(kFeatures);
 
   return std::make_unique<ModelConfig>(std::move(metadata), kModelVersion);
 }

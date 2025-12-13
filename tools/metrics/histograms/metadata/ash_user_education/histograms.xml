@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Prevented.Reason"
-    enum="WelcomeTourPreventedReason" expires_after="2026-01-04">
+    enum="WelcomeTourPreventedReason" expires_after="2026-05-10">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Result" enum="WelcomeTourResult"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>wutao@google.com</owner>
   <owner>llin@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WelcomeTour.Step.Shown" enum="WelcomeTourStep"
-    expires_after="2026-01-04">
+    expires_after="2026-05-10">
   <owner>wutao@chromium.org</owner>
   <owner>teresachow@google.com</owner>
   <summary>

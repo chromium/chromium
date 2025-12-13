@@ -6,20 +6,18 @@
 
 #include <utility>
 
+#include "base/byte_count.h"
 #include "net/base/load_timing_info.h"
 
 namespace page_load_metrics {
-
-MemoryUpdate::MemoryUpdate(content::GlobalRenderFrameHostId id, int64_t delta)
-    : routing_id(id), delta_bytes(delta) {}
 
 ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
     const url::SchemeHostPort& final_url,
     const net::IPEndPoint& remote_endpoint,
     content::FrameTreeNodeId frame_tree_node_id,
     bool was_cached,
-    int64_t raw_body_bytes,
-    int64_t original_network_content_length,
+    base::ByteCount raw_body_bytes,
+    base::ByteCount original_network_content_length,
     network::mojom::RequestDestination request_destination,
     int net_error,
     std::unique_ptr<net::LoadTimingInfo> load_timing_info)
@@ -129,8 +127,8 @@ PageLoadMetricsObserver::ShouldObserveMimeType(
 
 PageLoadMetricsObserver::ObservePolicy
 PageLoadMetricsObserver::ShouldObserveScheme(const GURL& url) const {
-  bool should_observe_scheme =
-      url.SchemeIsHTTPOrHTTPS() || delegate_->ShouldObserveScheme(url.scheme());
+  bool should_observe_scheme = url.SchemeIsHTTPOrHTTPS() ||
+                               delegate_->ShouldObserveScheme(url.GetScheme());
   return should_observe_scheme ? CONTINUE_OBSERVING : STOP_OBSERVING;
 }
 

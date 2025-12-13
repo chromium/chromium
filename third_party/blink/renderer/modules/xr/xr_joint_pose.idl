@@ -5,7 +5,7 @@
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRHandInput
+    RuntimeEnabled=WebXR
 ] interface XRJointPose : XRPose {
   readonly attribute float radius;
 };

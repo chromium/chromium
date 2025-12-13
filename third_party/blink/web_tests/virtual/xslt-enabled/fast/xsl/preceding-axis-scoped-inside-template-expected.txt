@@ -1,0 +1,4 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+This test checks that using the XPath preceding:: axis when instantiating a template (the content of a variable-binding element) does not match nodes outside the template.
+
+2

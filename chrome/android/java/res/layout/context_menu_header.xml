@@ -14,16 +14,13 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingStart="@dimen/context_menu_list_lateral_padding"
-    android:paddingEnd="@dimen/context_menu_list_lateral_padding">
+    android:paddingHorizontal="@dimen/context_menu_padding">
 
     <FrameLayout
         android:id="@+id/menu_header_image_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/context_menu_header_vertical_padding"
-        android:layout_marginBottom="@dimen/context_menu_bottom_padding"
-        android:layout_marginEnd="16dp">
+        android:padding="@dimen/context_menu_padding">
 
         <!-- Circle background for when we have a favicon or monogram -->
         <View
@@ -44,34 +41,10 @@ found in the LICENSE file.
             android:src="@color/thumbnail_placeholder_on_primary_bg" />
     </FrameLayout>
 
-    <LinearLayout
+    <include
         android:id="@+id/title_and_url"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center_vertical"
-        android:paddingTop="@dimen/context_menu_header_vertical_padding"
-        android:paddingBottom="@dimen/context_menu_bottom_padding">
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-            app:leading="@dimen/text_size_small_leading" />
-
-        <org.chromium.ui.widget.TextViewWithLeading
-            android:id="@+id/menu_header_url"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="viewStart"
-            android:textDirection="ltr"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            app:leading="@dimen/text_size_small_leading" />
-    </LinearLayout>
+        layout="@layout/context_menu_header_text"/>
 </LinearLayout>

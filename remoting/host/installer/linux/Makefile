@@ -81,6 +81,10 @@ install:
 	  "$(INSTALL_DIR)/wireplumber.conf.template"
 
 	install -m 0644 \
+	  "$(SRC_DIR)/remoting/resources/chromoting128.png" \
+	  "$(INSTALL_DIR)/crd_logo_128.png"
+
+	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
 	  "$(CHROME_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_desktop.json"
 	install -m 0644 \

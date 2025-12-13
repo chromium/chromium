@@ -1,12 +1,10 @@
 include_rules = [
-  "+components/miracle_parameter",
   "+components/ukm/test_ukm_recorder.h",
   "+components/viz/client",
   "+components/viz/common",
   "+gpu/GLES2",
   "+gpu/command_buffer/client/client_shared_image.h",
   "+gpu/command_buffer/client/context_support.h",
-  "+gpu/command_buffer/client/raster_implementation_gles.h",
   "+gpu/command_buffer/client/raster_interface.h",
   "+gpu/command_buffer/client/shared_image_interface.h",
   "+gpu/command_buffer/client/test_shared_image_interface.h",
@@ -73,6 +71,12 @@ specific_include_rules = {
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/common/command_buffer_id.h",
     "+gpu/command_buffer/common/constants.h",
+  ],
+  "gpu_image_decode_cache_unittest\.cc" : [
+      "+gpu/skia_bindings/gl_bindings_skia_cmd_buffer.h",
+  ],
+  "layer_tree_host_impl_test_base\.cc": [
+    "+components/viz/test",
   ],
   "oop_pixeltest\.cc" : [
     "+gpu/command_buffer/client",

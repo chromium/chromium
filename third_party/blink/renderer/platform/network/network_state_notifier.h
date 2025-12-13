@@ -51,7 +51,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 
  public:
   struct NetworkState {
-    static const int kInvalidMaxBandwidth = -1;
+    static constexpr int kInvalidMaxBandwidth = -1;
     bool on_line_initialized = false;
     bool on_line = true;
     bool connection_initialized = false;
@@ -249,7 +249,7 @@ class PLATFORM_EXPORT NetworkStateNotifier {
       WebConnectionType,
       std::optional<WebEffectiveConnectionType> effective_type,
       int64_t http_rtt_msec,
-      double max_bandwidth_mbps);
+      std::optional<double> max_bandwidth_mbps);
   void SetSaveDataEnabledOverride(bool enabled);
   void ClearOverride();
 
@@ -364,12 +364,6 @@ class PLATFORM_EXPORT NetworkStateNotifier {
 };
 
 PLATFORM_EXPORT NetworkStateNotifier& GetNetworkStateNotifier();
-
-template <>
-struct CrossThreadCopier<NetworkStateNotifier::NetworkState>
-    : public CrossThreadCopierPassThrough<NetworkStateNotifier::NetworkState> {
-  STATIC_ONLY(CrossThreadCopier);
-};
 
 }  // namespace blink
 

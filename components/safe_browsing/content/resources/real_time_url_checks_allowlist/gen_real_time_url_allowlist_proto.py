@@ -55,8 +55,8 @@ class RealTimeUrlAllowlistProtoGenerator(BinaryProtoGenerator):
         outfile = os.path.join(opts.outdir, opts.outbasename)
         if opts.gcs:
             # File path should be
-            # ../allowlist/{vers}/android/real_time_url_checks_allowlist.pb
-            outfile = os.path.join(opts.outdir, str(pb.version_id),
+            # ../allowlist/android/real_time_url_checks_allowlist.pb
+            outfile = os.path.join(opts.outdir,
                                    'android', opts.outbasename)
         MakeSubDirs(outfile)
         WritePbFile(pb, outfile)

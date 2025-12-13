@@ -75,7 +75,7 @@ void PermissionRequestCreatorMock::HandleDelayedRequests() {
 
   for (size_t i = last_url_request_handled_index_ + 1; i < url_requests_.size();
        i++) {
-    dict_to_insert.Set(url_requests_[i].host(), result_);
+    dict_to_insert.Set(url_requests_[i].GetHost(), result_);
   }
 
   settings_service_->SetLocalSetting(
@@ -89,7 +89,7 @@ void PermissionRequestCreatorMock::CreateURLAccessRequestImpl(
     const GURL& url_requested) {
   base::Value::Dict dict_to_insert =
       GetManualBehaviorHostDict(settings_service_.get());
-  dict_to_insert.Set(url_requested.host(), result_);
+  dict_to_insert.Set(url_requested.GetHost(), result_);
 
   settings_service_->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,

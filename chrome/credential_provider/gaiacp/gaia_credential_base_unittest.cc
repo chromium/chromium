@@ -329,7 +329,7 @@ TEST_F(GcpGaiaCredentialBaseTest, GetSerialization_MultipleCalls) {
       L"GetSerialization_MultipleCalls_Wait";
   base::win::ScopedHandle start_event_handle(
       ::CreateEvent(nullptr, false, false, kStartGlsEventName));
-  ASSERT_TRUE(start_event_handle.IsValid());
+  ASSERT_TRUE(start_event_handle.is_valid());
   ASSERT_EQ(S_OK, test->SetStartGlsEventName(kStartGlsEventName));
   base::WaitableEvent start_event(std::move(start_event_handle));
 
@@ -623,7 +623,7 @@ TEST_F(GcpGaiaCredentialBaseTest, GetSerialization_Cancel) {
   constexpr wchar_t kStartGlsEventName[] = L"GetSerialization_Cancel_Signal";
   base::win::ScopedHandle start_event_handle(
       ::CreateEvent(nullptr, false, false, kStartGlsEventName));
-  ASSERT_TRUE(start_event_handle.IsValid());
+  ASSERT_TRUE(start_event_handle.is_valid());
   ASSERT_EQ(S_OK, test->SetStartGlsEventName(kStartGlsEventName));
   base::WaitableEvent start_event(std::move(start_event_handle));
 
@@ -3796,7 +3796,7 @@ TEST_P(GcpGaiaCredentialBaseFetchCloudPoliciesTest, FetchAndStore) {
       base::Value policies_value = policies.ToValue();
       auto expected_response_value =
           base::Value::Dict().Set("policies", std::move(policies_value));
-      base::JSONWriter::Write(expected_response_value, &expected_response);
+      expected_response = base::WriteJson(expected_response_value).value_or("");
     }
 
     fake_http_url_fetcher_factory()->SetFakeResponse(

@@ -58,9 +58,9 @@ DOMUint8Array* ConvertUnsignedDataToUint8Array(
   auto array_data = array->ByteSpan();
   for (wtf_size_t i = 0; i < unsigned_data.size(); ++i) {
     if (unsigned_data[i] > 0xff) {
-      exception_state.ThrowTypeError("The value at index " + String::Number(i) +
-                                     " (" + String::Number(unsigned_data[i]) +
-                                     ") is greater than 0xFF.");
+      exception_state.ThrowTypeError(StrCat(
+          {"The value at index ", String::Number(i), " (",
+           String::Number(unsigned_data[i]), ") is greater than 0xFF."}));
       return nullptr;
     }
     array_data[i] = unsigned_data[i];
@@ -98,7 +98,7 @@ class MessageValidator {
   explicit MessageValidator(DOMUint8Array* array) : data_(array->ByteSpan()) {}
 
   bool Process(ExceptionState& exception_state, bool sysex_enabled) {
-    // data_ is put into a WTF::Vector eventually, which only has wtf_size_t
+    // data_ is put into a Vector eventually, which only has wtf_size_t
     // space.
     if (!base::CheckedNumeric<wtf_size_t>(data_.size()).IsValid()) {
       exception_state.ThrowRangeError(
@@ -107,46 +107,49 @@ class MessageValidator {
     }
     while (!IsEndOfData() && AcceptRealTimeMessages()) {
       if (!IsStatusByte()) {
-        exception_state.ThrowTypeError("Running status is not allowed " +
-                                       GetPositionString());
+        exception_state.ThrowTypeError(
+            StrCat({"Running status is not allowed ", GetPositionString()}));
         return false;
       }
       if (IsEndOfSysex()) {
         exception_state.ThrowTypeError(
-            "Unexpected end of system exclusive message " +
-            GetPositionString());
+            StrCat({"Unexpected end of system exclusive message ",
+                    GetPositionString()}));
         return false;
       }
       if (IsReservedStatusByte()) {
-        exception_state.ThrowTypeError("Reserved status is not allowed " +
-                                       GetPositionString());
+        exception_state.ThrowTypeError(
+            StrCat({"Reserved status is not allowed ", GetPositionString()}));
         return false;
       }
       if (IsSysex()) {
         if (!sysex_enabled) {
           exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidAccessError,
-              "System exclusive message is not allowed " + GetPositionString());
+              DOMExceptionCode::kNotAllowedError,
+              StrCat({"System exclusive message is not allowed ",
+                      GetPositionString()}));
           return false;
         }
         if (!AcceptCurrentSysex()) {
-          if (IsEndOfData())
+          if (IsEndOfData()) {
             exception_state.ThrowTypeError(
                 "System exclusive message is not ended by end of system "
                 "exclusive message.");
-          else
+          } else {
             exception_state.ThrowTypeError(
-                "System exclusive message contains a status byte " +
-                GetPositionString());
+                StrCat({"System exclusive message contains a status byte ",
+                        GetPositionString()}));
+          }
           return false;
         }
       } else {
         if (!AcceptCurrentMessage()) {
-          if (IsEndOfData())
+          if (IsEndOfData()) {
             exception_state.ThrowTypeError("Message is incomplete.");
-          else
-            exception_state.ThrowTypeError("Unexpected status byte " +
-                                           GetPositionString());
+          } else {
+            exception_state.ThrowTypeError(
+                StrCat({"Unexpected status byte ", GetPositionString()}));
+          }
           return false;
         }
       }
@@ -225,8 +228,9 @@ class MessageValidator {
   }
 
   String GetPositionString() {
-    return "at index " + String::Number(offset_) + " (" +
-           String::Number(static_cast<uint16_t>(data_[offset_])) + ").";
+    return StrCat({"at index ", String::Number(offset_), " (",
+                   String::Number(static_cast<uint16_t>(data_[offset_])),
+                   ")."});
   }
 
   base::span<const uint8_t> data_;

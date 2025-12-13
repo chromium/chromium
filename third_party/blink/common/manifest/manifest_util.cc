@@ -4,12 +4,14 @@
 
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
+#include <string>
+
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
@@ -56,6 +58,19 @@ std::optional<blink::mojom::Manifest_TextDirection> TextDirectionFromString(
   return std::nullopt;
 }
 
+std::string TextDirectionToString(
+    blink::mojom::Manifest_TextDirection direction) {
+  switch (direction) {
+    case blink::mojom::Manifest_TextDirection::kAuto:
+      return "auto";
+    case blink::mojom::Manifest_TextDirection::kLTR:
+      return "ltr";
+    case blink::mojom::Manifest_TextDirection::kRTL:
+      return "rtl";
+  }
+  NOTREACHED();
+}
+
 std::string DisplayModeToString(blink::mojom::DisplayMode display) {
   switch (display) {
     case blink::mojom::DisplayMode::kUndefined:
@@ -73,11 +88,11 @@ std::string DisplayModeToString(blink::mojom::DisplayMode display) {
     case blink::mojom::DisplayMode::kTabbed:
       return "tabbed";
     case blink::mojom::DisplayMode::kBorderless:
-      return "borderless";
+      return "unframed";
     case blink::mojom::DisplayMode::kPictureInPicture:
       return "picture-in-picture";
   }
-  return "";
+  NOTREACHED();
 }
 
 blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
@@ -93,8 +108,13 @@ blink::mojom::DisplayMode DisplayModeFromString(const std::string& display) {
     return blink::mojom::DisplayMode::kWindowControlsOverlay;
   if (base::EqualsCaseInsensitiveASCII(display, "tabbed"))
     return blink::mojom::DisplayMode::kTabbed;
-  if (base::EqualsCaseInsensitiveASCII(display, "borderless"))
+  // TODO(crbug.com/466441366): Stop accepting "borderless".
+  if (base::EqualsCaseInsensitiveASCII(display, "borderless")) {
     return blink::mojom::DisplayMode::kBorderless;
+  }
+  if (base::EqualsCaseInsensitiveASCII(display, "unframed")) {
+    return blink::mojom::DisplayMode::kBorderless;
+  }
   if (base::EqualsCaseInsensitiveASCII(display, "picture-in-picture")) {
     return blink::mojom::DisplayMode::kPictureInPicture;
   }
@@ -156,17 +176,6 @@ device::mojom::ScreenOrientationLockType WebScreenOrientationLockTypeFromString(
   if (base::EqualsCaseInsensitiveASCII(orientation, "natural"))
     return device::mojom::ScreenOrientationLockType::NATURAL;
   return device::mojom::ScreenOrientationLockType::DEFAULT;
-}
-
-mojom::CaptureLinks CaptureLinksFromString(const std::string& capture_links) {
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "none"))
-    return mojom::CaptureLinks::kNone;
-  if (base::EqualsCaseInsensitiveASCII(capture_links, "new-client"))
-    return mojom::CaptureLinks::kNewClient;
-  if (base::EqualsCaseInsensitiveASCII(capture_links,
-                                       "existing-client-navigate"))
-    return mojom::CaptureLinks::kExistingClientNavigate;
-  return mojom::CaptureLinks::kUndefined;
 }
 
 std::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(

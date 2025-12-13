@@ -26,6 +26,7 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/media_router/access_code_cast/access_code_cast_integration_browsertest.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
@@ -425,7 +426,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   SetMockOpenChannelCallbackResponse(true);
 
   SetUpPrimaryAccountWithHostedDomain(
-      signin::ConsentLevel::kSync,
       ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   SetupUserProfile(account_id2_, /* allow_access_code */ true);
 
   // Show the first cast dialog from the browser.
-  SelectFirstBrowser();
+  SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   EnableAccessCodeCasting();
   ASSERT_TRUE(ShowDialog());
 
@@ -484,7 +484,6 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastAccessCodeChromeOSTest,
   SetMockOpenChannelCallbackResponse(true);
 
   SetUpPrimaryAccountWithHostedDomain(
-      signin::ConsentLevel::kSync,
       ProfileHelper::Get()->GetProfileByUser(user_), /*sign_in_account=*/false);
 
   content::WebContentsAddedObserver observer;

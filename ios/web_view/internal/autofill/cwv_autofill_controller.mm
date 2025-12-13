@@ -9,14 +9,18 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_field.h"
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -28,6 +32,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -36,11 +41,15 @@
 #import "ios/web_view/internal/autofill/cwv_autofill_controller+testing.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_controller_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_form_internal.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
+#import "ios/web_view/internal/autofill/cwv_card_unmask_challenge_option_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/autofill/cwv_credit_card_otp_verifier_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_verifier_internal.h"
+#import "ios/web_view/internal/autofill/cwv_vcn_enrollment_manager_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
@@ -58,6 +67,33 @@ using autofill::FieldRendererId;
 using autofill::FormData;
 using autofill::FormRendererId;
 using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
+
+namespace {
+// Helper function to map C++ enum to Objective-C enum
+CWVAutofillProgressDialogType ToCWVAutofillProgressDialogType(
+    autofill::AutofillProgressDialogType type) {
+  switch (type) {
+    case autofill::AutofillProgressDialogType::kUnspecified:
+      return CWVAutofillProgressDialogTypeUnspecified;
+    case autofill::AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+      return CWVAutofillProgressDialogTypeVirtualCardUnmask;
+    case autofill::AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
+      return CWVAutofillProgressDialogTypeServerCardUnmask;
+    case autofill::AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+      return CWVAutofillProgressDialogTypeIbanUnmask;
+    case autofill::AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+      return CWVAutofillProgressDialogType3DSFetchVCN;
+    case autofill::AutofillProgressDialogType::
+        kCardInfoRetrievalEnrolledUnmaskProgressDialog:
+      return CWVAutofillProgressDialogTypeCardInfoRetrievalEnrolledUnmask;
+    case autofill::AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
+      return CWVAutofillProgressDialogTypeBNPLFetchVCN;
+    case autofill::AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+      return CWVAutofillProgressDialogTypeBNPLAmountExtraction;
+  }
+  return CWVAutofillProgressDialogTypeUnspecified;
+}
+}  // namespace
 
 @implementation CWVAutofillController {
   // Bridge to observe the |webState|.
@@ -79,12 +115,21 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
-  // Held weak because |_delegate| is responsible for maintaing its lifetime.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
   __weak CWVCreditCardSaver* _saver;
 
   // The current credit card verifier. Can be nil if no verification is pending.
-  // Held weak because |_delegate| is responsible for maintaing its lifetime.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
   __weak CWVCreditCardVerifier* _verifier;
+
+  // The current VCNEnrollmentManager. Can be nil if no enrollment is pending.
+  // Held weak because |_delegate| is responsible for maintaining its lifetime.
+  __weak CWVVCNEnrollmentManager* _enrollmentManager;
+
+  // The current CWVCreditCardOTPVerifier. Can be nil if no verification is
+  // pending. Held weak because |_delegate| is responsible for maintaining its
+  // lifetime.
+  __weak CWVCreditCardOTPVerifier* _OTPVerifier;
 
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
@@ -144,18 +189,10 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
 
-    auto from_web_state_impl =
-        [](web::WebState* web_state) -> autofill::AutofillClientIOS* {
-      if (CWVWebView* web_view = [CWVWebView webViewForWebState:web_state]) {
-        CWVAutofillController* controller = web_view.autofillController;
-        return [controller autofillClient];
-      }
-      return nullptr;
-    };
-    _autofillClient = autofillClientForTest
-                          ? std::move(autofillClientForTest)
-                          : autofill::WebViewAutofillClientIOS::Create(
-                                from_web_state_impl, _webState, self);
+    _autofillClient =
+        autofillClientForTest
+            ? std::move(autofillClientForTest)
+            : autofill::WebViewAutofillClientIOS::Create(_webState, self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
@@ -387,9 +424,27 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
                delegate {
   // We only want Autofill suggestions.
   std::vector<autofill::Suggestion> filtered_suggestions;
+
+  web::WebState* currentWebState = _webState;
+
   std::ranges::copy_if(
       suggestions, std::back_inserter(filtered_suggestions),
-      [](const autofill::Suggestion& suggestion) {
+      [currentWebState](const autofill::Suggestion& suggestion) {
+        if (!currentWebState) {
+          return false;
+        }
+        PrefService* prefService =
+            ios_web_view::WebViewBrowserState::FromBrowserState(
+                currentWebState->GetBrowserState())
+                ->GetPrefs();
+        if (prefService->GetBoolean(
+                ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+          return suggestion.type == autofill::SuggestionType::kAddressEntry ||
+                 suggestion.type ==
+                     autofill::SuggestionType::kCreditCardEntry ||
+                 suggestion.type ==
+                     autofill::SuggestionType::kVirtualCreditCardEntry;
+        }
         return suggestion.type == autofill::SuggestionType::kAddressEntry ||
                suggestion.type == autofill::SuggestionType::kCreditCardEntry;
       });
@@ -431,8 +486,17 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   _saver = saver;
 }
 
-- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved {
+- (void)handleCreditCardUploadCompleted:(BOOL)cardSaved
+                               callback:(base::OnceClosure)callback {
   [_saver handleCreditCardUploadCompleted:cardSaved];
+  PrefService* prefService =
+      ios_web_view::WebViewBrowserState::FromBrowserState(
+          _webState->GetBrowserState())
+          ->GetPrefs();
+
+  if (prefService->GetBoolean(ios_web_view::kCWVAutofillVCNUsageEnabled)) {
+    std::move(callback).Run();
+  }
 }
 
 - (void)showUnmaskPromptForCard:(const autofill::CreditCard&)creditCard
@@ -468,6 +532,58 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     [_verifier loadRiskData:std::move(callback)];
   } else if (_saver) {
     [_saver loadRiskData:std::move(callback)];
+  } else {
+    // Request risk data from the delegate. This is needed early for VCN
+    // flows, before a credit card verifier or saver object is created.
+    // The delegate will call the handler block asynchronously with the data.
+    if ([_delegate respondsToSelector:@selector
+                   (autofillControllerLoadRiskData:riskDataHandler:)]) {
+      auto wrappedRiskDataCallback =
+          base::BindOnce(&base::SysNSStringToUTF8).Then(std::move(callback));
+
+      void (^riskDataBlock)(NSString*) =
+          base::CallbackToBlock(std::move(wrappedRiskDataCallback));
+
+      [_delegate autofillControllerLoadRiskData:self
+                                riskDataHandler:riskDataBlock];
+    }
+  }
+}
+
+- (void)showUnmaskAuthenticatorSelectorWithOptions:
+            (const std::vector<autofill::CardUnmaskChallengeOption>&)
+                challenge_options
+                                    acceptCallback:
+                                        (base::OnceCallback<void(
+                                             const std::string&)>)acceptCallback
+                                    cancelCallback:
+                                        (base::OnceClosure)cancelCallback {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              showUnmaskCreditCardAuthenticatorWithChallengeOptions:acceptBlock
+                                                                   :cancelBlock
+                                                                   :)]) {
+    NSMutableArray<CWVCardUnmaskChallengeOption*>* options =
+        [NSMutableArray arrayWithCapacity:challenge_options.size()];
+    for (const auto& option : challenge_options) {
+      CWVCardUnmaskChallengeOption* objcOption =
+          [[CWVCardUnmaskChallengeOption alloc] initWithChallengeOption:option];
+      [options addObject:objcOption];
+    }
+
+    auto wrappedAcceptCallback = base::BindOnce(&base::SysNSStringToUTF8)
+                                     .Then(std::move(acceptCallback));
+    void (^acceptBlock)(NSString*) =
+        base::CallbackToBlock(std::move(wrappedAcceptCallback));
+
+    void (^cancelBlock)(void) =
+        base::CallbackToBlock(std::move(cancelCallback));
+
+    [_delegate autofillController:self
+        showUnmaskCreditCardAuthenticatorWithChallengeOptions:options
+                                                  acceptBlock:acceptBlock
+                                                  cancelBlock:cancelBlock];
   }
 }
 
@@ -513,6 +629,98 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   }
 }
 
+- (void)showAutofillProgressDialogOfType:
+            (autofill::AutofillProgressDialogType)type
+                          cancelCallback:(base::OnceClosure)cancelCallback {
+  if ([_delegate respondsToSelector:@selector
+                 (autofillController:showProgressDialogOfType:cancelAction:)]) {
+    CWVAutofillProgressDialogType cwvType =
+        ToCWVAutofillProgressDialogType(type);
+
+    ProceduralBlock block = base::CallbackToBlock(std::move(cancelCallback));
+    [_delegate autofillController:self
+         showProgressDialogOfType:cwvType
+                     cancelAction:block];
+  }
+}
+
+- (void)closeAutofillProgressDialogWithConfirmation:(BOOL)showConfirmation
+                                 completionCallback:
+                                     (base::OnceClosure)callback {
+  if ([_delegate respondsToSelector:@selector
+                 (autofillController:
+                     closeProgressDialogWithConfirmation:completion:)]) {
+    ProceduralBlock block = callback
+                                ? base::CallbackToBlock(std::move(callback))
+                                : (ProceduralBlock)nil;
+    [_delegate autofillController:self
+        closeProgressDialogWithConfirmation:showConfirmation
+                                 completion:block];
+  }
+}
+
+- (void)showVirtualCardEnrollmentWithEnrollmentFields:
+            (const autofill::VirtualCardEnrollmentFields&)enrollmentFields
+                                       acceptCallback:
+                                           (base::OnceClosure)acceptCallback
+                                      declineCallback:
+                                          (base::OnceClosure)declineCallback {
+  if ([_delegate
+          respondsToSelector:@selector(autofillController:
+                                 enrollCreditCardWithVCNEnrollmentManager:)]) {
+    autofill::LegalMessageLines allLegalMessages;
+
+    std::ranges::copy(enrollmentFields.google_legal_message,
+        std::back_inserter(allLegalMessages));
+
+    std::ranges::copy(enrollmentFields.issuer_legal_message,
+        std::back_inserter(allLegalMessages));
+
+    CWVVCNEnrollmentManager* enrollmentManager =
+        [[CWVVCNEnrollmentManager alloc]
+            initWithCreditCard:enrollmentFields.credit_card
+             legalMessageLines:allLegalMessages
+                enrollCallback:std::move(acceptCallback)
+               declineCallback:std::move(declineCallback)];
+
+    [_delegate autofillController:self
+        enrollCreditCardWithVCNEnrollmentManager:enrollmentManager];
+
+    _enrollmentManager = enrollmentManager;
+  }
+}
+
+- (void)handleVirtualCardEnrollmentResult:(BOOL)cardEnrolled {
+  [_enrollmentManager handleCreditCardVCNEnrollmentCompleted:cardEnrolled];
+}
+
+- (void)showCardUnmaskOtpInputDialogForCardType:
+            (autofill::CreditCard::RecordType)cardType
+                                challengeOption:
+                                    (const autofill::CardUnmaskChallengeOption&)
+                                        challengeOption
+                                       delegate:
+                                           (base::WeakPtr<
+                                               autofill::OtpUnmaskDelegate>)
+                                               delegate {
+  if ([_delegate respondsToSelector:@selector(autofillController:
+                                        verifyCreditCardWithOTPVerifier:)]) {
+    CWVCreditCardOTPVerifier* OTPVerifier =
+        [[CWVCreditCardOTPVerifier alloc] initWithCardType:cardType
+                                           challengeOption:challengeOption
+                                            unmaskDelegate:delegate];
+    [_delegate autofillController:self
+        verifyCreditCardWithOTPVerifier:OTPVerifier];
+
+    _OTPVerifier = OTPVerifier;
+  }
+}
+
+- (void)didReceiveUnmaskOtpVerificationResult:
+    (autofill::OtpUnmaskResult)unmaskResult {
+  [_OTPVerifier didReceiveUnmaskOtpVerificationResult:unmaskResult];
+}
+
 #pragma mark - AutofillDriverIOSBridge
 
 - (void)fillData:(const std::vector<autofill::FormFieldData::FillData>&)fields
@@ -528,8 +736,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 }
 
 - (void)handleParsedForms:
-            (const std::vector<
-                raw_ptr<autofill::FormStructure, VectorExperimental>>&)forms
+            (const std::vector<raw_ref<const autofill::FormStructure>>&)forms
                   inFrame:(web::WebFrame*)frame {
   if (![_delegate respondsToSelector:@selector(autofillController:
                                                      didFindForms:frameID:)]) {
@@ -537,7 +744,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   }
 
   NSMutableArray<CWVAutofillForm*>* autofillForms = [NSMutableArray array];
-  for (autofill::FormStructure* form : forms) {
+  for (const raw_ref<const autofill::FormStructure>& form : forms) {
     CWVAutofillForm* autofillForm =
         [[CWVAutofillForm alloc] initWithFormStructure:*form];
     [autofillForms addObject:autofillForm];
@@ -638,14 +845,17 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const autofill::FormData&)formData
                    hasUserGesture:(BOOL)userInitiated
-                          inFrame:(web::WebFrame*)frame {
-  if ([_delegate respondsToSelector:@selector
-                 (autofillController:
-                     didSubmitFormWithName:frameID:userInitiated:)]) {
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling {
+  if ([_delegate
+          respondsToSelector:@selector
+          (autofillController:
+              didSubmitFormWithName:frameID:userInitiated:perfectFilling:)]) {
     [_delegate autofillController:self
             didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
                           frameID:base::SysUTF8ToNSString(frame->GetFrameId())
-                    userInitiated:userInitiated];
+                    userInitiated:userInitiated
+                   perfectFilling:perfectFilling];
   }
 }
 
@@ -692,20 +902,12 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
+  __weak CWVAutofillController* weakSelf = self;
   [self.delegate autofillController:self
         decideSavePolicyForPassword:password
                     decisionHandler:^(CWVPasswordUserDecision decision) {
-                      switch (decision) {
-                        case CWVPasswordUserDecisionYes:
-                          formPtr->Save();
-                          break;
-                        case CWVPasswordUserDecisionNever:
-                          formPtr->Blocklist();
-                          break;
-                        case CWVPasswordUserDecisionNotThisTime:
-                          // Do nothing.
-                          break;
-                      }
+                      [weakSelf onDecidedSavePolicy:decision
+                                    forPasswordForm:formPtr.get()];
                     }];
 }
 
@@ -727,17 +929,12 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   CWVPassword* password =
       [[CWVPassword alloc] initWithPasswordForm:credentials];
 
+  __weak CWVAutofillController* weakSelf = self;
   [self.delegate autofillController:self
       decideUpdatePolicyForPassword:password
                     decisionHandler:^(CWVPasswordUserDecision decision) {
-                      // Marking a password update as "never" makes no sense as
-                      // the password has already been saved.
-                      DCHECK_NE(decision, CWVPasswordUserDecisionNever)
-                          << "A password update can only be accepted or "
-                             "ignored.";
-                      if (decision == CWVPasswordUserDecisionYes) {
-                        formPtr->Save();
-                      }
+                      [weakSelf onDecidedUpdatePolicy:decision
+                                      forPasswordForm:formPtr.get()];
                     }];
 }
 
@@ -839,6 +1036,48 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   // No op.
+}
+
+#pragma mark - Private
+
+- (void)onDecidedSavePolicy:(CWVPasswordUserDecision)decision
+            forPasswordForm:(password_manager::PasswordFormManagerForUI*)form {
+  // The state may be invalid by the time this is called.
+  if (![self hasValidState]) {
+    return;
+  }
+  switch (decision) {
+    case CWVPasswordUserDecisionYes:
+      form->Save();
+      break;
+    case CWVPasswordUserDecisionNever:
+      form->Blocklist();
+      break;
+    case CWVPasswordUserDecisionNotThisTime:
+      // Do nothing.
+      break;
+  }
+}
+
+- (void)onDecidedUpdatePolicy:(CWVPasswordUserDecision)decision
+              forPasswordForm:
+                  (password_manager::PasswordFormManagerForUI*)form {
+  // The state may be invalid by the time this is called.
+  if (![self hasValidState]) {
+    return;
+  }
+  // Marking a password update as "never" makes no sense as
+  // the password has already been saved.
+  DCHECK_NE(decision, CWVPasswordUserDecisionNever)
+      << "A password update can only be accepted or "
+         "ignored.";
+  if (decision == CWVPasswordUserDecisionYes) {
+    form->Save();
+  }
+}
+
+- (BOOL)hasValidState {
+  return _webState && _passwordManagerClient;
 }
 
 @end

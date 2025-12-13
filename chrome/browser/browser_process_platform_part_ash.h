@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 
 class BrowserProcessPlatformPartTestApi;
@@ -25,8 +24,8 @@ class EssentialSearchManager;
 namespace ash {
 class AccountManagerFactory;
 class AshProxyMonitor;
+class AutoSignOutService;
 class BrowserContextFlusher;
-class BrowserRestoreObserver;
 class ChromeSessionManager;
 class CrosSettingsHolder;
 class InSessionPasswordChangeManager;
@@ -162,6 +161,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
     return in_session_password_change_manager_.get();
   }
 
+  ash::AutoSignOutService* auto_sign_out_service() {
+    return auto_sign_out_service_.get();
+  }
+
   ash::system::TimeZoneResolverManager* GetTimezoneResolverManager();
 
   // Overridden from BrowserProcessPlatformPartBase:
@@ -177,14 +180,11 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   static void EnsureFactoryBuilt();
 
  private:
-
   friend class BrowserProcessPlatformPartTestApi;
 
   void CreateProfileHelper();
 
   void ShutdownPrimaryProfileServices();
-
-  std::unique_ptr<ash::BrowserRestoreObserver> browser_restore_observer_;
 
   std::unique_ptr<ash::ChromeSessionManager> session_manager_;
 
@@ -246,6 +246,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   std::unique_ptr<ash::AshProxyMonitor> ash_proxy_monitor_;
 
   std::unique_ptr<ash::SecureDnsManager> secure_dns_manager_;
+
+  std::unique_ptr<ash::AutoSignOutService> auto_sign_out_service_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -15,6 +15,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"

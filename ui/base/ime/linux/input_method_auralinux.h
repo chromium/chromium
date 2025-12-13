@@ -12,7 +12,7 @@
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

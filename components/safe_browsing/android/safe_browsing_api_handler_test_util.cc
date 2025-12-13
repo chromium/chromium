@@ -43,6 +43,14 @@ void WithMockSafeBrowsingApiHandler::SetVerifyAppsResult(
       env_, static_cast<int>(result));
 }
 
+void WithMockSafeBrowsingApiHandler::SetHarmfulAppsResult(
+    HasHarmfulAppsResultStatus result,
+    int num_of_apps,
+    int status_code) {
+  Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setHarmfulAppsResult(
+      env_, static_cast<int>(result), num_of_apps, status_code);
+}
+
 void WithMockSafeBrowsingApiHandler::SetSafetyNetIdResultEmpty() {
   Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_setSafetyNetIdResultEmpty(
       env_);
@@ -141,3 +149,5 @@ void WithMockSafeBrowsingApiHandler::RunHashRealTimeUrlCheck(
 }
 
 }  // namespace safe_browsing::test
+
+DEFINE_JNI(SafeBrowsingApiHandlerBridgeNativeUnitTestHelper)

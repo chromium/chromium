@@ -83,8 +83,7 @@ void ShortcutsProviderExtensionTest::SetUp() {
   ASSERT_TRUE(client_->GetShortcutsBackend());
   provider_ = new ShortcutsProvider(client_.get());
   PopulateShortcutsBackendWithTestData(client_->GetShortcutsBackend(),
-                                       shortcut_test_db,
-                                       std::size(shortcut_test_db));
+                                       shortcut_test_db);
 }
 
 void ShortcutsProviderExtensionTest::TearDown() {

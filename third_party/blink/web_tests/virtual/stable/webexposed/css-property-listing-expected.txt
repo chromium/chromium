@@ -129,6 +129,7 @@ All changes to this list should go through Blink's feature review process: http:
     caption-side
     caret-animation
     caret-color
+    caret-shape
     clear
     clip
     clip-path
@@ -141,11 +142,13 @@ All changes to this list should go through Blink's feature review process: http:
     column-count
     column-fill
     column-gap
+    column-height
     column-rule-color
     column-rule-style
     column-rule-width
     column-span
     column-width
+    column-wrap
     contain
     contain-intrinsic-block-size
     contain-intrinsic-height
@@ -191,6 +194,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-family
     font-feature-settings
     font-kerning
+    font-language-override
     font-optical-sizing
     font-palette
     font-size
@@ -233,6 +237,8 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline-end
     inset-inline-start
     interactivity
+    interest-delay-end
+    interest-delay-start
     interpolate-size
     isolation
     justify-content
@@ -432,6 +438,7 @@ All changes to this list should go through Blink's feature review process: http:
     view-timeline-inset
     view-timeline-name
     view-transition-class
+    view-transition-group
     view-transition-name
     visibility
     white-space-collapse
@@ -607,7 +614,9 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-width
     columns
         column-count
+        column-height
         column-width
+        column-wrap
     contain-intrinsic-size
         contain-intrinsic-height
         contain-intrinsic-width
@@ -654,6 +663,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-family
         font-feature-settings
         font-kerning
+        font-language-override
         font-optical-sizing
         font-size
         font-size-adjust
@@ -717,6 +727,9 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline
         inset-inline-end
         inset-inline-start
+    interest-delay
+        interest-delay-end
+        interest-delay-start
     list-style
         list-style-image
         list-style-position

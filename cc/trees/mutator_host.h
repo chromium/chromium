@@ -8,12 +8,16 @@
 #include <memory>
 #include <vector>
 
-#include "base/time/time.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+
+namespace base {
+class TimeDelta;
+class TimeTicks;
+}  // namespace base
 
 namespace cc {
 
@@ -55,6 +59,7 @@ class MutatorHost {
                                 const PropertyTrees& property_trees) = 0;
 
   virtual void RemoveStaleTimelines() = 0;
+  virtual void RemoveStaleTriggers() = 0;
 
   virtual void SetScrollAnimationDurationForTesting(
       base::TimeDelta duration) = 0;

@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -35,8 +36,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const GURL& bundle_url,
       const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
-      std::optional<std::string> devtools_request_id,
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojom::CrossOriginEmbedderPolicyReporter* coep_reporter);
 

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/browser/google_keys.h"
+
+#include "base/compiler_specific.h"
 
 namespace enterprise_connectors {
 
@@ -61,7 +58,7 @@ constexpr char kTestVAEncryptionPublicKeyID[] = "\x00\xef\x22\x0f\xb0";
 template <size_t size>
 std::string ZeroTerminatedCharArrayToString(
     const char (&array)[size]) noexcept {
-  return std::string(std::begin(array), std::end(array) - 1);
+  return std::string(std::begin(array), UNSAFE_TODO(std::end(array) - 1));
 }
 
 }  // namespace

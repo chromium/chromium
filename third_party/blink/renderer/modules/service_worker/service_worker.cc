@@ -108,8 +108,8 @@ void ServiceWorker::postMessage(ScriptState* script_state,
     Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     if (document->IsPrerendering()) {
       document->AddPostPrerenderingActivationStep(
-          WTF::BindOnce(&ServiceWorker::PostMessageInternal,
-                        WrapWeakPersistent(this), std::move(msg)));
+          BindOnce(&ServiceWorker::PostMessageInternal,
+                   WrapWeakPersistent(this), std::move(msg)));
       return;
     }
   }
@@ -126,7 +126,7 @@ ScriptPromise<IDLUndefined> ServiceWorker::InternalsTerminate(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
-  host_->TerminateForTesting(WTF::BindOnce(
+  host_->TerminateForTesting(BindOnce(
       [](ScriptPromiseResolver<IDLUndefined>* resolver) {
         resolver->Resolve();
       },

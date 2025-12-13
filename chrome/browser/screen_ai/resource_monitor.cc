@@ -74,8 +74,8 @@ void ResourceMonitor::OnResourceUsageUpdated(
       result.memory_summary_result;
 
   if (memory.has_value()) {
-    max_resident_memory_kb_ =
-        std::max(max_resident_memory_kb_, memory->resident_set_size_kb);
+    max_resident_memory_ =
+        std::max(max_resident_memory_, memory->resident_set_size);
   }
 }
 

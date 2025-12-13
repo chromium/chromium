@@ -17,7 +17,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {AnchorAlignment} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -30,7 +29,7 @@ import {logRecentImageActionMenuItemClick, RecentImageActionMenuItem} from './se
 import {getTemplate} from './sea_pen_recent_wallpapers_element.html.js';
 import {SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
-import {getUserVisibleQuery, isActiveSeaPenQuery, isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId} from './sea_pen_utils.js';
+import {getUserVisibleQuery, isActiveSeaPenQuery, isImageDataUrl, isNonEmptyArray, isPersonalizationApp, isSeaPenImageId, isUrl} from './sea_pen_utils.js';
 
 export class SeaPenRecentImageDeleteEvent extends CustomEvent<null> {
   static readonly EVENT_NAME = 'sea-pen-recent-image-delete';
@@ -131,7 +130,8 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private onRecentImagesChanged_(recentImages: SeaPenImageId[]|null) {
     this.recentImagesToDisplay_ = (recentImages || []).filter(id => {
       if (this.recentImageDataLoading_[id] === false) {
-        return isImageDataUrl(this.recentImageData_[id]?.url);
+        const dataUrl = this.recentImageData_[id]?.url;
+        return isUrl(dataUrl) && isImageDataUrl(dataUrl);
       }
       return true;
     });
@@ -153,7 +153,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
     for (let i = this.recentImagesToDisplay_.length - 1; i >= 0; i--) {
       const id = this.recentImagesToDisplay_[i];
       const data = recentImageData[id];
-      const validData = isImageDataUrl(data?.url);
+      const validData = isUrl(data?.url) && isImageDataUrl(data.url);
       const failed = recentImageDataLoading[id] === false && !validData;
       if (failed) {
         this.splice('recentImagesToDisplay_', i, 1);
@@ -182,7 +182,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
     const data = recentImageData[recentImage];
-    if (!isImageDataUrl(data?.url)) {
+    if (!isUrl(data?.url) || !isImageDataUrl(data.url)) {
       return {url: ''};
     }
     return data.url;
@@ -221,9 +221,7 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
       return null;
     }
 
-    return this.i18n(
-        'seaPenAboutDialogDate',
-        mojoString16ToString(data.imageInfo.creationTime));
+    return this.i18n('seaPenAboutDialogDate', data.imageInfo.creationTime);
   }
 
   private getAboutDialogTitle_(): string {
@@ -346,8 +344,6 @@ export class SeaPenRecentWallpapersElement extends WithSeaPenStore {
   private async onClickDeleteWallpaper_(event: Event&{
     model: {index: number, image: SeaPenImageId},
   }) {
-    // TODO (b/315069374): confirm if currently set Sea Pen wallpaper can be
-    // removed.
     assert(
         isSeaPenImageId(event.model.image),
         'selected Sea Pen image is a positive number');

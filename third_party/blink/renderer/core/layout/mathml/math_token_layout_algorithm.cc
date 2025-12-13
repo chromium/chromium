@@ -4,11 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_token_layout_algorithm.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/web_feature.h"
-#include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
@@ -16,6 +11,36 @@
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
 namespace blink {
+
+namespace {
+
+struct InkAscentDescent {
+  LayoutUnit ascent;
+  LayoutUnit descent;
+};
+
+InkAscentDescent ComputeInkMetrics(const Font& font,
+                                   TextDirection direction,
+                                   const String& characters) {
+  const SimpleFontData* font_data = font.PrimaryFont();
+  if (!font_data) {
+    return {};
+  }
+
+  gfx::RectF glyph_bounds;
+  PlainTextPainter::Shared().ComputeInlineSize(TextRun(characters, direction),
+                                               font, &glyph_bounds);
+  const float baseline =
+      font_data->GetFontMetrics().AlphabeticBaseline().value_or(0);
+  const float glyph_bounds_ascent = -glyph_bounds.y() - baseline;
+  const float glyph_bounds_descent = glyph_bounds.bottom() + baseline;
+  return {
+      .ascent = LayoutUnit(glyph_bounds_ascent),
+      .descent = LayoutUnit(glyph_bounds_descent),
+  };
+}
+
+}  // namespace
 
 MathTokenLayoutAlgorithm::MathTokenLayoutAlgorithm(
     const LayoutAlgorithmParams& params)
@@ -33,23 +58,13 @@ const LayoutResult* MathTokenLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
-  PlainTextPainter* text_painter = nullptr;
-  auto* execution_context = Node().GetDocument().GetExecutionContext();
-  if (RuntimeEnabledFeatures::CanvasTextNgEnabled(execution_context)) {
-    text_painter = &PlainTextPainter::Shared();
-    UseCounter::Count(execution_context, WebFeature::kCanvasTextNg);
-  }
-  TextMetrics* metrics = MakeGarbageCollected<TextMetrics>(
-      Style().GetFont(), Style().Direction(),
-      V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kStart,
-      DynamicTo<MathMLTokenElement>(Node().GetDOMNode())
-          ->GetTokenContent()
-          .characters,
-      text_painter);
-  LayoutUnit ink_ascent(metrics->actualBoundingBoxAscent());
-  LayoutUnit ink_descent(metrics->actualBoundingBoxDescent());
-  LayoutUnit ascent = BorderScrollbarPadding().block_start + ink_ascent;
-  LayoutUnit descent = ink_descent + BorderScrollbarPadding().block_end;
+  InkAscentDescent ink_metrics =
+      ComputeInkMetrics(*Style().GetFont(), Style().Direction(),
+                        To<MathMLTokenElement>(*Node().GetDOMNode())
+                            .GetTokenContent()
+                            .characters);
+  LayoutUnit ascent = BorderScrollbarPadding().block_start + ink_metrics.ascent;
+  LayoutUnit descent = ink_metrics.descent + BorderScrollbarPadding().block_end;
 
   SimpleInlineChildLayoutContext context(To<InlineNode>(child),
                                          &container_builder_);

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CONTENT_SETTINGS_MODEL_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 #define IOS_CHROME_BROWSER_CONTENT_SETTINGS_MODEL_HOST_CONTENT_SETTINGS_MAP_FACTORY_H_
 
-#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
@@ -27,10 +27,10 @@ class HostContentSettingsMapFactory
   HostContentSettingsMapFactory();
   ~HostContentSettingsMapFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const override;
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

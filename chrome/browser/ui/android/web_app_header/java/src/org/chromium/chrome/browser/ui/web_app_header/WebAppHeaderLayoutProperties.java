@@ -41,6 +41,9 @@ class WebAppHeaderLayoutProperties {
     /** Background color of the header */
     static final WritableIntPropertyKey BACKGROUND_COLOR = new WritableIntPropertyKey();
 
+    static final WritableObjectPropertyKey<List<Rect>> BACKGROUND_CUTOUTS =
+            new WritableObjectPropertyKey<>();
+
     /** The set of all model properties. */
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -50,6 +53,7 @@ class WebAppHeaderLayoutProperties {
                 NON_DRAGGABLE_AREAS,
                 WIDTH_CHANGED_CALLBACK,
                 BACKGROUND_COLOR,
+                BACKGROUND_CUTOUTS,
                 VISIBILITY_CHANGED_CALLBACK,
             };
 

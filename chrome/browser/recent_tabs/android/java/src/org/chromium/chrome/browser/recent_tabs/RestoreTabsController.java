@@ -13,10 +13,10 @@ import java.util.List;
 @NullMarked
 public interface RestoreTabsController {
     /** Destroy when lifecycle of the controller ends. */
-    public void destroy();
+    void destroy();
 
     /** Show the home screen of the restore tabs promo when triggered. */
-    public void showHomeScreen(
+    void showHomeScreen(
             ForeignSessionHelper foreignSessionHelper,
             List<ForeignSession> sessions,
             RestoreTabsControllerDelegate delegate);

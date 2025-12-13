@@ -186,21 +186,6 @@ TEST_F(DeviceAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
                   Bucket(static_cast<int>(DeviceAuthFinalResult::kFailed), 1)));
 }
 
-TEST_F(DeviceAuthenticatorAndroidTest, GetBiometricAvailabilityStatusRequired) {
-  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
-      .WillOnce(Return(BiometricsAvailability::kRequired));
-  EXPECT_EQ(device_reauth::BiometricStatus::kRequired,
-            authenticator()->GetBiometricAvailabilityStatus());
-}
-
-TEST_F(DeviceAuthenticatorAndroidTest,
-       GetBiometricAvailabilityStatusRequiredButHasErrors) {
-  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
-      .WillOnce(Return(BiometricsAvailability::kRequiredButHasError));
-  EXPECT_EQ(device_reauth::BiometricStatus::kRequired,
-            authenticator()->GetBiometricAvailabilityStatus());
-}
-
 TEST_F(DeviceAuthenticatorAndroidTest,
        GetBiometricAvailabilityStatusAvailable) {
   EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)

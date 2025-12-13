@@ -189,7 +189,7 @@ class BookmarkBridge {
         if (mInitializedPartnerBookmarks) return;
 
         mInitializedPartnerBookmarks = true;
-        assert sPartnerBookmarkIteratorSupplier.hasValue();
+        assert sPartnerBookmarkIteratorSupplier.get() != null;
         sPartnerBookmarkIteratorSupplier.runSyncOrOnAvailable(
                 (provider) -> {
                     // Don't attempt to load partner bookmarks if the bridge has been deleted.
@@ -923,11 +923,11 @@ class BookmarkBridge {
 
     @CalledByNative
     @VisibleForTesting
-    void bookmarkNodeAdded(BookmarkItem parent, int index) {
+    void bookmarkNodeAdded(BookmarkItem parent, int index, boolean addedByUser) {
         if (mIsDoingExtensiveChanges) return;
 
         for (BookmarkModelObserver observer : mObservers) {
-            observer.bookmarkNodeAdded(parent, index);
+            observer.bookmarkNodeAdded(parent, index, addedByUser);
         }
     }
 

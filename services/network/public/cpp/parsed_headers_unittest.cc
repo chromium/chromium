@@ -378,5 +378,18 @@ TEST(ParsedHeadersTest, IntegrityPolicy) {
       1u);
 }
 
+TEST(ParsedHeadersTest, ConnectionAllowlist) {
+  base::test::ScopedFeatureList enable{features::kConnectionAllowlists};
+  const std::string_view headers =
+      "HTTP/1.1 200 OK\r\n"
+      "Connection-Allowlist: (\"https://site.example/\")\r\n"
+      "Connection-Allowlist-Report-Only: (\"https://site.example/\")\r\n";
+  const auto parsed_headers = ParseHeaders(headers);
+
+  ASSERT_TRUE(parsed_headers);
+  EXPECT_TRUE(parsed_headers->connection_allowlists.enforced.has_value());
+  EXPECT_TRUE(parsed_headers->connection_allowlists.report_only.has_value());
+}
+
 }  // namespace
 }  // namespace network

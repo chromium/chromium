@@ -19,34 +19,34 @@ constexpr base::FeatureState kOverlayScrollbarFeatureState =
 // Enables or disables overlay scrollbars in Blink (i.e. web content) on Aura
 // or Linux.  The status of native UI overlay scrollbars is determined in
 // PlatformStyle::CreateScrollBar. Does nothing on Mac.
-BASE_FEATURE(kOverlayScrollbar,
-             "OverlayScrollbar",
-             kOverlayScrollbarFeatureState);
+BASE_FEATURE(kOverlayScrollbar, kOverlayScrollbarFeatureState);
 
 // Disable to keep scrollbars visible forever once shown, and immediately
 // update scrollbar states instead of animating. This is used to ensure
 // ref tests in WPT do not flake based on the time taken before the
 // screenshot is captured.
-BASE_FEATURE(kScrollbarAnimations,
-             "ScrollbarAnimations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kScrollbarAnimations, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay and
-// non-overlay) to fit the Fluent design language. For now, the feature will
-// only support the Windows and Linux platforms. The feature is currently in
-// development and disabled by default.
-BASE_FEATURE(kFluentScrollbar,
-             "FluentScrollbar",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// non-overlay) to fit the Fluent design language. Currently only supported on
+// Windows and Linux.
+BASE_FEATURE(kFluentScrollbar, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Makes all native scrollbars behave as overlay scrollbars styled to fit the
 // Fluent design language.
 // TODO(crbug.com/40280779): Right now this feature flag will force Fluent
 // overlay scrollbars on. We have yet to decide how we will expose this feature
 // once it is complete.
-BASE_FEATURE(kFluentOverlayScrollbar,
-             "FluentOverlayScrollbar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFluentOverlayScrollbar, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, scrollbars flash only once when a page is loaded or when they
+// become visible on the viewport instead of flashing after every scroll update.
+BASE_FEATURE(kOverlayScrollbarFlashOnlyOnceVisibleOnViewport,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables will flash scrollbar when user move mouse enter a scrollable area.
+BASE_FEATURE(kOverlayScrollbarFlashWhenMouseEnter,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

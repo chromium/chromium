@@ -36,9 +36,9 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
 
@@ -91,9 +91,7 @@ static bool ParseKeyTimes(const String& string,
   string.Split(';', true, parse_list);
   for (unsigned n = 0; n < parse_list.size(); ++n) {
     String time_string = parse_list[n].StripWhiteSpace();
-    if (RuntimeEnabledFeatures::
-            SmilKeyTimesKeyPointsAllowTrailingSemicolonEnabled() &&
-        time_string.empty()) {
+    if (time_string.empty()) {
       // Tolerate trailing ';'
       if (n == parse_list.size() - 1) {
         continue;
@@ -121,33 +119,34 @@ fail:
 }
 
 template <typename CharType>
-static bool ParseKeySplinesInternal(const CharType* ptr,
-                                    const CharType* end,
+static bool ParseKeySplinesInternal(base::span<const CharType> span,
                                     Vector<gfx::CubicBezier>& result) {
-  SkipOptionalSVGSpaces(ptr, end);
+  SkipOptionalSVGSpaces(span);
 
-  while (ptr < end) {
+  while (!span.empty()) {
     float cp1x = 0;
-    if (!ParseNumber(ptr, end, cp1x))
+    if (!ParseNumber(span, cp1x)) {
       return false;
+    }
 
     float cp1y = 0;
-    if (!ParseNumber(ptr, end, cp1y))
+    if (!ParseNumber(span, cp1y)) {
       return false;
+    }
 
     float cp2x = 0;
-    if (!ParseNumber(ptr, end, cp2x))
+    if (!ParseNumber(span, cp2x)) {
       return false;
+    }
 
     float cp2y = 0;
-    if (!ParseNumber(ptr, end, cp2y, kDisallowWhitespace))
+    if (!ParseNumber(span, cp2y, kDisallowWhitespace)) {
       return false;
+    }
 
-    SkipOptionalSVGSpaces(ptr, end);
-
-    if (ptr < end && *ptr == ';')
-      UNSAFE_TODO(ptr++);
-    SkipOptionalSVGSpaces(ptr, end);
+    SkipOptionalSVGSpaces(span);
+    SkipExactly<CharType>(span, ';');
+    SkipOptionalSVGSpaces(span);
 
     // The values of cpx1 cpy1 cpx2 cpy2 must all be in the range 0 to 1.
     if (!IsInZeroToOneRange(cp1x) || !IsInZeroToOneRange(cp1y) ||
@@ -157,7 +156,7 @@ static bool ParseKeySplinesInternal(const CharType* ptr,
     result.push_back(gfx::CubicBezier(cp1x, cp1y, cp2x, cp2y));
   }
 
-  return ptr == end;
+  return span.empty();
 }
 
 static bool ParseKeySplines(const String& string,
@@ -166,8 +165,7 @@ static bool ParseKeySplines(const String& string,
   if (string.empty())
     return true;
   bool parsed = VisitCharacters(string, [&](auto chars) {
-    return ParseKeySplinesInternal(chars.data(), chars.data() + chars.size(),
-                                   result);
+    return ParseKeySplinesInternal(chars, result);
   });
   if (!parsed) {
     result.clear();
@@ -622,20 +620,16 @@ bool SVGAnimationElement::CheckAnimationParameters() const {
 bool SVGAnimationElement::UpdateAnimationValues() {
   switch (GetAnimationMode()) {
     case kFromToAnimation:
-      CalculateFromAndToValues(FromValue(), ToValue());
-      break;
+      return CalculateFromAndToValues(FromValue(), ToValue());
     case kToAnimation:
       // For to-animations the from value is the current accumulated value from
       // lower priority animations. The value is not static and is determined
       // during the animation.
-      CalculateFromAndToValues(g_empty_string, ToValue());
-      break;
+      return CalculateFromAndToValues(g_empty_string, ToValue());
     case kFromByAnimation:
-      CalculateFromAndByValues(FromValue(), ByValue());
-      break;
+      return CalculateFromAndByValues(FromValue(), ByValue());
     case kByAnimation:
-      CalculateFromAndByValues(g_empty_string, ByValue());
-      break;
+      return CalculateFromAndByValues(g_empty_string, ByValue());
     case kValuesAnimation: {
       Vector<String> string_values;
       const AtomicString& values_attr = getAttribute(svg_names::kValuesAttr);
@@ -644,11 +638,13 @@ bool SVGAnimationElement::UpdateAnimationValues() {
                                     svg_names::kValuesAttr, values_attr);
         return false;
       }
-      CalculateValues(string_values);
+      if (!CalculateValues(string_values)) {
+        return false;
+      }
       if (GetCalcMode() == kCalcModePaced) {
         CalculateKeyTimesForCalcModePaced();
       }
-      break;
+      return true;
     }
     case kPathAnimation:
       break;

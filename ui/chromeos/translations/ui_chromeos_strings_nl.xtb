@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Rechtstreekse internetverbinding</translation>
 <translation id="1272293450992660632">Pincodewaarden komen niet overeen.</translation>
+<translation id="1279040297980392566">Wachten tot de scan is afgerond. Probeer het later opnieuw.</translation>
 <translation id="1280820357415527819">Mobiele netwerken zoeken</translation>
 <translation id="1293556467332435079">Bestanden</translation>
 <translation id="1297922636971898492">Google Drive is momenteel niet beschikbaar. Het uploaden wordt automatisch gestart zodra Google Drive weer beschikbaar is.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 bestand geselecteerd</translation>
 <translation id="3817579325494460411">Niet opgegeven</translation>
 <translation id="3819448694985509187">Onjuiste pincode. Je hebt nog 1 poging.</translation>
-<translation id="3822559385185038546">Deze proxy wordt afgedwongen door je beheerder</translation>
 <translation id="3830674330436234648">Afspelen is niet beschikbaar</translation>
 <translation id="383652340667548381">Servisch</translation>
 <translation id="3839045880592694915">Je modem mag geen verbinding maken van je provider. Neem contact op met je provider voor meer informatie.</translation>
@@ -597,6 +597,7 @@
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5602622065581044566">Bulgaars met fonetisch toetsenbord</translation>
 <translation id="5605830556594064952">Amerikaans Dvorak</translation>
+<translation id="560739212255190568">Je beheerder heeft regels voor proxyoverschrijving ingesteld en dwingt de volgende proxy af</translation>
 <translation id="5618330573454123917">Dit bestand is bedoeld voor een computer met Macintosh-software. Het is niet geschikt voor jouw apparaat, waarop Chrome OS wordt gebruikt. Bekijk <ph name="BEGIN_LINK_HELP" />meer informatie<ph name="END_LINK_HELP" /> over hoe je bestanden opent in Chrome OS.</translation>
 <translation id="5625294776298156701">Tamil met Tamil99-toetsenbord</translation>
 <translation id="5633226425545095130">Als je dit item verplaatst, wordt het gedeeld met iedereen die de gedeelde map <ph name="DESTINATION_NAME" /> kan bekijken.</translation>
@@ -996,6 +997,7 @@
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="8545476925160229291">Engels (VS)</translation>
 <translation id="854655314928502177">URL voor WPAD:</translation>
+<translation id="8547747809824590510">Je beheerder heeft regels voor proxyoverschrijving ingesteld</translation>
 <translation id="8549186985808798022">Italiaans</translation>
 <translation id="8551494947769799688">Lets</translation>
 <translation id="8560515948038859357">Kantonees</translation>
@@ -1056,6 +1058,7 @@
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
 <translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="9065512565307033593">Als de verificatie mislukt, wordt je netwerktoegang ingetrokken.</translation>
+<translation id="9079844694307518094">Je beheerder dwingt de volgende proxy af</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>
@@ -1079,6 +1082,7 @@
 <translation id="9213073329713032541">De installatie is gestart.</translation>
 <translation id="9219103736887031265">Afbeeldingen</translation>
 <translation id="9219908252191632183">Lunair</translation>
+<translation id="931652069802536959">Netwerk is geblokkeerd door beleid</translation>
 <translation id="938470336146445890">Installeer een gebruikerscertificaat.</translation>
 <translation id="939736085109172342">Nieuwe map</translation>
 <translation id="943972244133411984">Aangepast door</translation>

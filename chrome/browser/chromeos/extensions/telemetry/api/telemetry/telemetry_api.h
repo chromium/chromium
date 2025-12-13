@@ -10,7 +10,6 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 

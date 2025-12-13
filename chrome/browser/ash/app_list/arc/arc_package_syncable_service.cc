@@ -195,8 +195,9 @@ ArcPackageSyncableService::MergeDataAndStartSyncing(
   // Creates sync items for local unsynced packages.
   syncer::SyncChangeList change_list;
   for (const auto& local_package_name : local_packages) {
-    if (base::Contains(sync_items_, local_package_name))
+    if (base::Contains(sync_items_, local_package_name)) {
       continue;
+    }
 
     if (!ShouldSyncPackage(local_package_name))
       continue;

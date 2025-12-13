@@ -101,36 +101,34 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
 
   if (!crop_needed) {
     // If the frame has a GMB, yank out its IOSurface if possible.
-    if (frame->HasMappableGpuBuffer()) {
+    if (frame->HasMappableSharedImage()) {
       auto handle = frame->GetGpuMemoryBufferHandle();
       if (handle.type == gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
-        gfx::ScopedIOSurface io_surface = handle.io_surface;
-        if (io_surface) {
-          CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
-              nullptr, io_surface.get(), nullptr,
-              pixel_buffer.InitializeInto());
-          if (cv_return != kCVReturnSuccess) {
-            DLOG(ERROR) << "CVPixelBufferCreateWithIOSurface failed: "
-                        << cv_return;
-            pixel_buffer.reset();
-          }
-          if (!IsAcceptableCvPixelFormat(
-                  frame->format(),
-                  CVPixelBufferGetPixelFormatType(pixel_buffer.get()))) {
-            DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
-            pixel_buffer.reset();
-          } else {
-            SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer.get());
-          }
-          return pixel_buffer;
+        CHECK(handle.io_surface());
+        CVReturn cv_return = CVPixelBufferCreateWithIOSurface(
+            nullptr, handle.io_surface().get(), nullptr,
+            pixel_buffer.InitializeInto());
+        if (cv_return != kCVReturnSuccess) {
+          DLOG(ERROR) << "CVPixelBufferCreateWithIOSurface failed: "
+                      << cv_return;
+          pixel_buffer.reset();
         }
+        if (!IsAcceptableCvPixelFormat(
+                frame->format(),
+                CVPixelBufferGetPixelFormatType(pixel_buffer.get()))) {
+          DLOG(ERROR) << "Dropping CVPixelBuffer w/ incorrect format.";
+          pixel_buffer.reset();
+        } else {
+          SetCvPixelBufferColorSpace(frame->ColorSpace(), pixel_buffer.get());
+        }
+        return pixel_buffer;
       }
     }
   }
 
   // If the frame is backed by a GPU buffer, but needs cropping, map it and
   // and handle like a software frame. There is no memcpy here.
-  if (frame->HasMappableGpuBuffer()) {
+  if (frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(std::move(frame));
   }
   if (!frame) {

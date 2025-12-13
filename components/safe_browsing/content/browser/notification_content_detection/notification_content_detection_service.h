@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_SERVICE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_SERVICE_H_
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_model.h"

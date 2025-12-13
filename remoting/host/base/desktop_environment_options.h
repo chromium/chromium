@@ -7,12 +7,29 @@
 
 #include <optional>
 
-#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "remoting/base/session_options.h"
+#include "remoting/base/session_policies.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 
 namespace remoting {
+
+// Where to route audio from the local host during a CRD session, where a remote
+// client is viewing the local host's screen.
+// The enum below is used in histograms, do not remove/renumber entries. If
+// you're adding to this enum, update the corresponding enum listing in
+// tools/metrics/histograms/metadata/remoting/enums.xml.
+enum class AudioPlaybackMode {
+  kUnknown,
+  // Audio is played on the local (host) machine.
+  kLocalOnly,
+  // Audio is played on the remote (client) machine and the local (host)
+  // machine.
+  kRemoteAndLocal,
+  // Audio is played on the remote (client) machine.
+  kRemoteOnly,
+  kMaxValue = kRemoteOnly,
+};
 
 // A container of options a DesktopEnvironment or its derived classes need to
 // control the behavior.
@@ -55,6 +72,9 @@ class DesktopEnvironmentOptions final {
   base::TimeDelta maximum_session_duration() const;
   void set_maximum_session_duration(base::TimeDelta duration);
 
+  AudioPlaybackMode audio_playback_mode() const;
+  void set_audio_playback_mode(AudioPlaybackMode);
+
   // Reads configurations from a SessionOptions instance.
   void ApplySessionOptions(const SessionOptions& options);
 
@@ -83,6 +103,9 @@ class DesktopEnvironmentOptions final {
 
   // Maximum session duration after which session will be terminated.
   base::TimeDelta maximum_session_duration_;
+
+  // Audio playback mode for the session.
+  AudioPlaybackMode audio_playback_mode_ = AudioPlaybackMode::kRemoteAndLocal;
 
   // The DesktopCaptureOptions to initialize DesktopCapturer.
   webrtc::DesktopCaptureOptions desktop_capture_options_;

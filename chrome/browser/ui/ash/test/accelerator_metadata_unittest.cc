@@ -9,7 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -19,16 +19,16 @@ namespace {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add two extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 103;
+constexpr int kChromeAcceleratorsTotalNum = 104;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "c282a17ba234831076aa56d669e3f0b9029d000c63ecfb4b4536551e28f06974";
+    "cd3987311946a85ceb55a17a52adc771f057f3701eb6b557830fc714a198aa2b";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 101;
+constexpr int kChromeAcceleratorsTotalNum = 102;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "9402197253b0e51ab774a01cb4f8ed2ead743711c7a6a96f19b4901d3fd9dae3";
+    "9fddbbf49ce00ef73e227d0edc81d05286533e356da4d9fd0ce298b260954019";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char kCommonMessage[] =

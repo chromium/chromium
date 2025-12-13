@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -33,7 +34,6 @@
 #include "net/base/isolation_info.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "third_party/blink/public/mojom/navigation/system_entropy.mojom-forward.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -64,7 +64,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     // Returns whether this TreeNode corresponds to |frame_tree_node|.  If this
     // is called on the root TreeNode, we only check if |frame_tree_node| is the
     // main frame.  Otherwise, we check if the unique name matches.
-    bool MatchesFrame(FrameTreeNode* frame_tree_node) const;
+    bool MatchesFrame(const FrameTreeNode* frame_tree_node) const;
 
     // Recursively makes a copy of this TreeNode, either sharing
     // FrameNavigationEntries or making deep copies depending on |clone_policy|.
@@ -121,62 +121,64 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   ~NavigationEntryImpl() override;
 
   // NavigationEntry implementation:
-  bool IsInitialEntry() override;
-  int GetUniqueID() override;
-  PageType GetPageType() override;
+  bool IsInitialEntry() const override;
+  int GetUniqueID() const override;
+  PageType GetPageType() const override;
   void SetURL(const GURL& url) override;
   const GURL& GetURL() const override;
   void SetBaseURLForDataURL(const GURL& url) override;
-  const GURL& GetBaseURLForDataURL() override;
+  const GURL& GetBaseURLForDataURL() const override;
 #if BUILDFLAG(IS_ANDROID)
   void SetDataURLAsString(
       scoped_refptr<base::RefCountedString> data_url) override;
   const scoped_refptr<const base::RefCountedString>& GetDataURLAsString()
-      override;
+      const override;
 #endif
   void SetReferrer(const Referrer& referrer) override;
-  const Referrer& GetReferrer() override;
+  const Referrer& GetReferrer() const override;
   void SetVirtualURL(const GURL& url) override;
   const GURL& GetVirtualURL() const override;
   void SetTitle(std::u16string title) override;
-  const std::u16string& GetTitle() override;
+  const std::u16string& GetTitle() const override;
   void SetApplicationTitle(const std::u16string& application_title) override;
-  const std::optional<std::u16string>& GetApplicationTitle() override;
+  const std::optional<std::u16string>& GetApplicationTitle() const override;
   void SetPageState(const blink::PageState& state,
                     NavigationEntryRestoreContext* context) override;
-  blink::PageState GetPageState() override;
-  const std::u16string& GetTitleForDisplay() override;
-  bool IsViewSourceMode() override;
+  blink::PageState GetPageState() const override;
+  const std::u16string& GetTitleForDisplay() const override;
+  bool IsViewSourceMode() const override;
   void SetTransitionType(ui::PageTransition transition_type) override;
-  ui::PageTransition GetTransitionType() override;
-  const GURL& GetUserTypedURL() override;
+  ui::PageTransition GetTransitionType() const override;
+  const GURL& GetUserTypedURL() const override;
   void SetHasPostData(bool has_post_data) override;
-  bool GetHasPostData() override;
+  bool GetHasPostData() const override;
   void SetPostID(int64_t post_id) override;
-  int64_t GetPostID() override;
+  int64_t GetPostID() const override;
   void SetPostData(
       const scoped_refptr<network::ResourceRequestBody>& data) override;
-  scoped_refptr<network::ResourceRequestBody> GetPostData() override;
+  const scoped_refptr<const network::ResourceRequestBody> GetPostData()
+      const override;
   FaviconStatus& GetFavicon() override;
   SSLStatus& GetSSL() override;
   void SetOriginalRequestURL(const GURL& original_url) override;
-  const GURL& GetOriginalRequestURL() override;
+  const GURL& GetOriginalRequestURL() const override;
   void SetIsOverridingUserAgent(bool override_ua) override;
-  bool GetIsOverridingUserAgent() override;
+  bool GetIsOverridingUserAgent() const override;
   void SetTimestamp(base::Time timestamp) override;
-  base::Time GetTimestamp() override;
+  base::Time GetTimestamp() const override;
   void SetCanLoadLocalResources(bool allow) override;
-  bool GetCanLoadLocalResources() override;
+  bool GetCanLoadLocalResources() const override;
   void SetHttpStatusCode(int http_status_code) override;
-  int GetHttpStatusCode() override;
+  int GetHttpStatusCode() const override;
   void SetRedirectChain(const std::vector<GURL>& redirects) override;
-  const std::vector<GURL>& GetRedirectChain() override;
+  const std::vector<GURL>& GetRedirectChain() const override;
   const std::optional<ReplacedNavigationEntryData>& GetReplacedEntryData()
-      override;
-  bool IsRestored() override;
-  std::string GetExtraHeaders() override;
+      const override;
+  bool IsRestored() const override;
+  std::string GetExtraHeaders() const override;
   void AddExtraHeaders(const std::string& extra_headers) override;
-  int64_t GetMainFrameDocumentSequenceNumber() override;
+  int64_t GetMainFrameDocumentSequenceNumber() const override;
+  bool IsPossiblySkippableAdEntryForTesting() const override;
 
   // Creates a copy of this NavigationEntryImpl that can be modified
   // independently from the original, but that shares FrameNavigationEntries.
@@ -227,7 +229,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
       int current_length_to_send,
       const blink::FramePolicy& frame_policy,
       bool ancestor_or_self_has_cspee,
-      blink::mojom::SystemEntropy system_entropy_at_navigation_start,
       std::optional<blink::scheduler::TaskAttributionId>
           soft_navigation_heuristics_task_id);
 
@@ -239,10 +240,15 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Exposes the tree of FrameNavigationEntries that make up this joint session
   // history item.
-  TreeNode* root_node() const { return frame_tree_.get(); }
+  TreeNode* root_node() { return frame_tree_.get(); }
+  const TreeNode* root_node() const { return frame_tree_.get(); }
 
   // Finds the TreeNode associated with |frame_tree_node|, if any.
-  NavigationEntryImpl::TreeNode* GetTreeNode(
+  NavigationEntryImpl::TreeNode* GetTreeNode(FrameTreeNode* frame_tree_node) {
+    return const_cast<NavigationEntryImpl::TreeNode*>(
+        std::as_const(*this).GetTreeNode(frame_tree_node));
+  }
+  const NavigationEntryImpl::TreeNode* GetTreeNode(
       FrameTreeNode* frame_tree_node) const;
 
   // Finds the TreeNode associated with |frame_tree_node_id| to add or update
@@ -275,7 +281,12 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
 
   // Returns the FrameNavigationEntry corresponding to |frame_tree_node|, if
   // there is one in this NavigationEntry.
-  FrameNavigationEntry* GetFrameEntry(FrameTreeNode* frame_tree_node) const;
+  FrameNavigationEntry* GetFrameEntry(FrameTreeNode* frame_tree_node) {
+    return const_cast<FrameNavigationEntry*>(
+        std::as_const(*this).GetFrameEntry(frame_tree_node));
+  }
+  const FrameNavigationEntry* GetFrameEntry(
+      FrameTreeNode* frame_tree_node) const;
 
   // Calls |on_frame_entry| for each FrameNavigationEntry in this
   // NavigationEntry. More efficient than calling GetFrameEntry() N times while
@@ -337,7 +348,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Note that the SiteInstance should usually not be changed after it is set,
   // but this may happen if the NavigationEntry was cloned and needs to use a
   // different SiteInstance.
-  SiteInstanceImpl* site_instance() const {
+  SiteInstanceImpl* site_instance() {
+    return const_cast<SiteInstanceImpl*>(std::as_const(*this).site_instance());
+  }
+  const SiteInstanceImpl* site_instance() const {
     return frame_tree_->frame_entry->site_instance();
   }
 
@@ -440,6 +454,26 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     should_skip_on_back_forward_ui_ = should_skip;
   }
 
+  // These functions are for the ad-related additions to the history
+  // manipulation intervention.
+  bool is_ad_entry_creator() const { return is_ad_entry_creator_; }
+  void set_is_ad_entry_creator(bool is_ad_entry_creator) {
+    is_ad_entry_creator_ = is_ad_entry_creator;
+  }
+  bool is_entry_created_by_ad() const { return is_entry_created_by_ad_; }
+  void set_is_entry_created_by_ad(bool is_entry_created_by_ad) {
+    is_entry_created_by_ad_ = is_entry_created_by_ad;
+  }
+
+  // Returns true if this entry might be skipped on back/forward navigation in
+  // the UI even if there has been a user activation, due to ad related actions
+  // (i.e., ads both created this entry and caused it to create another entry).
+  // The final determination of whether to skip it will be made in
+  // NavigationControllerImpl.
+  bool is_possibly_skippable_ad_entry() const {
+    return is_ad_entry_creator_ && is_entry_created_by_ad_;
+  }
+
   BackForwardCacheMetrics* back_forward_cache_metrics() {
     return back_forward_cache_metrics_.get();
   }
@@ -493,12 +527,12 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     kNonInitial
   };
 
-  bool IsInitialEntryNotForSynchronousAboutBlank() {
+  bool IsInitialEntryNotForSynchronousAboutBlank() const {
     return initial_navigation_entry_state_ ==
            InitialNavigationEntryState::kInitialNotForSynchronousAboutBlank;
   }
 
-  bool IsInitialEntryForSynchronousAboutBlank() {
+  bool IsInitialEntryForSynchronousAboutBlank() const {
     return initial_navigation_entry_state_ ==
            InitialNavigationEntryState::kInitialForSynchronousAboutBlank;
   }
@@ -508,7 +542,7 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     initial_navigation_entry_state_ = initial_navigation_entry_state;
   }
 
-  InitialNavigationEntryState initial_navigation_entry_state() {
+  InitialNavigationEntryState initial_navigation_entry_state() const {
     return initial_navigation_entry_state_;
   }
 
@@ -649,8 +683,25 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // TODO(shivanisha): Persist this field once the intervention is stable.
   bool should_skip_on_back_forward_ui_;
 
-  // TODO(altimin, crbug.com/933147): Remove this logic after we are done
-  // with implement back-forward cache.
+  // `is_entry_created_by_ad_`: Indicates whether this navigation entry was
+  // created by an ad. Updated for same-document navigations or subframe
+  // cross-document navigations based on the initiator's ad status (e.g., ad
+  // script in JavaScript stack).
+  //
+  // `is_ad_entry_creator_`: Indicates whether a *new* navigation entry was
+  // created by an ad while this entry was active. Once set, it is never reset.
+  // This prevents pages from hiding that an ad entry was created.
+  //
+  // If both `is_entry_created_by_ad_` and `is_ad_entry_creator_` are true, this
+  // entry is considered a "possibly skippable ad entry" (see
+  // is_possibly_skippable_ad_entry() for implications).
+  //
+  // These states are not reset in `ResetForCommit`.
+  //
+  // TODO(yaoxia):  Persist these fields once the intervention is stable.
+  bool is_entry_created_by_ad_;
+  bool is_ad_entry_creator_;
+
   // It is preserved at commit but not persisted.
   scoped_refptr<BackForwardCacheMetrics> back_forward_cache_metrics_;
 

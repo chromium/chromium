@@ -118,6 +118,14 @@ class AndroidNonZPSSection : public Section {
   static size_t num_visible_matches_;
 };
 
+// Android section for a single default match suggestion when there is one or
+// more composebox attachment.
+class AndroidComposeboxNonZPSSection : public Section {
+ public:
+  explicit AndroidComposeboxNonZPSSection(
+      omnibox::GroupConfigMap& group_configs);
+};
+
 // Android prefix section for Hub search (ZPS).
 class AndroidHubZPSSection : public Section {
  public:
@@ -173,6 +181,7 @@ class AndroidWebZpsSection : public ZpsSectionWithMVTiles {
 // suggestion being the IPH).
 //  - up to 8 MIA or personalized suggestions.
 //  - up to 8 trending search suggestions.
+//  - up to 5 contextual search suggestions.
 class DesktopNTPZpsSection : public ZpsSectionWithLocalHistory {
  public:
   DesktopNTPZpsSection(omnibox::GroupConfigMap& group_configs,
@@ -272,12 +281,39 @@ class DesktopLensContextualZpsSection : public ZpsSection {
 
 // Section expressing the Desktop ZPS limits and grouping for the Lens
 // multimodal searchbox.
-// - up to 8 suggestions total.
-//  - up to 8 multimodal suggestions.
+// - default to 8 multimodal suggestions.
 class DesktopLensMultimodalZpsSection : public ZpsSection {
  public:
   explicit DesktopLensMultimodalZpsSection(
       omnibox::GroupConfigMap& group_configs);
+
+  explicit DesktopLensMultimodalZpsSection(
+      omnibox::GroupConfigMap& group_configs,
+      size_t max_suggestions);
+};
+
+class AndroidComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit AndroidComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                       size_t max_suggestions,
+                                       size_t max_aim_suggestions,
+                                       size_t max_contextual_suggestions);
+};
+
+class IOSComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit IOSComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                   size_t max_suggestions,
+                                   size_t max_aim_suggestions,
+                                   size_t max_contextual_suggestions);
+};
+
+class DesktopComposeboxZpsSection : public ZpsSection {
+ public:
+  explicit DesktopComposeboxZpsSection(omnibox::GroupConfigMap& group_configs,
+                                       size_t max_suggestions,
+                                       size_t max_aim_suggestions,
+                                       size_t max_contextual_suggestions);
 };
 
 // A ZPS section that includes only the toolbelt match.

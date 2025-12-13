@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Found 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Window interface: attribute pushManager
+  assert_own_property: The global object must have a property "pushManager" expected property "pushManager" missing
+Harness: the test ran to completion.
+

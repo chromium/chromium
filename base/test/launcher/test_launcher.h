@@ -29,6 +29,8 @@
 
 namespace base {
 
+class TaskRunner;
+
 // Constants for GTest command-line flags.
 extern const char kGTestFilterFlag[];
 extern const char kGTestFlagfileFlag[];

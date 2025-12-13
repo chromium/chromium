@@ -515,6 +515,8 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         case ConfigureResult.kFatalError:
           console.error('Error configuring recovery');
           return;
+        default:
+          break;
       }
     } finally {
       this.recoveryChangeInProcess_ = false;

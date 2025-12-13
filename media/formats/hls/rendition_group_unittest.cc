@@ -43,9 +43,13 @@ TEST(RenditionGroupUnittest, MayNotAutoSelectIfNothingTagged) {
       "#EXT-X-STREAM-INF:BANDWIDTH=200,CODECS=\"audio.codec\",AUDIO=\"G\"",
       "200.m3u8");
   ASSERT_EQ(mvp->GetVariants().size(), 2u);
-  auto g = mvp->GetVariants()[0].GetAudioRenditionGroup();
-  auto lookup = g->MostSimilar(std::nullopt);
-  ASSERT_FALSE(lookup.has_value());
+  const auto& g = mvp->GetVariants()[0].GetAudioRenditionGroup();
+  auto lookup = g.MostSimilar(std::nullopt);
+  ASSERT_TRUE(lookup.has_value());
+  auto rendition = std::get<1>(*lookup);
+  ASSERT_TRUE(rendition->GetUri().has_value());
+  // This is an implicit rendition.
+  EXPECT_EQ(rendition->GetName(), "Default");
 }
 
 TEST(RenditionGroupUnittest, XStreamInfTag) {
@@ -80,13 +84,13 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
       "variant3_480p.m3u8");
   ASSERT_EQ(mvp->GetVariants().size(), 3u);
 
-  auto group1 = mvp->GetVariants()[0].GetAudioRenditionGroup();
-  auto group2 = mvp->GetVariants()[1].GetAudioRenditionGroup();
-  auto group3 = mvp->GetVariants()[2].GetAudioRenditionGroup();
+  const auto& group1 = mvp->GetVariants()[0].GetAudioRenditionGroup();
+  const auto& group2 = mvp->GetVariants()[1].GetAudioRenditionGroup();
+  const auto& group3 = mvp->GetVariants()[2].GetAudioRenditionGroup();
 
   // uses DEFAULT=YES rendition even if not first.
   {
-    auto lookup = group1->MostSimilar(std::nullopt);
+    auto lookup = group1.MostSimilar(std::nullopt);
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "English");
@@ -95,7 +99,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
 
   // uses first if no default.
   {
-    auto lookup = group2->MostSimilar(std::nullopt);
+    auto lookup = group2.MostSimilar(std::nullopt);
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "English");
@@ -104,7 +108,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
 
   // uses omits non-autoselectable
   {
-    auto lookup = group3->MostSimilar(std::nullopt);
+    auto lookup = group3.MostSimilar(std::nullopt);
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "English");
@@ -122,7 +126,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
         .channels = std::nullopt,
     });
     auto exact = MakeRenditionTrack(&rendition, 3);
-    auto lookup = group1->MostSimilar(std::move(exact));
+    auto lookup = group1.MostSimilar(std::move(exact));
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "French");
@@ -140,7 +144,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
         .channels = std::nullopt,
     });
     auto exact = MakeRenditionTrack(&rendition, 99);
-    auto lookup = group1->MostSimilar(std::move(exact));
+    auto lookup = group1.MostSimilar(std::move(exact));
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "English");
@@ -158,7 +162,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
         .channels = std::nullopt,
     });
     auto exact = MakeRenditionTrack(&rendition, 3);
-    auto lookup = group2->MostSimilar(std::move(exact));
+    auto lookup = group2.MostSimilar(std::move(exact));
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "English");
@@ -176,7 +180,7 @@ TEST(RenditionGroupUnittest, XStreamInfTag) {
         .channels = std::nullopt,
     });
     auto exact = MakeRenditionTrack(&rendition, 6);
-    auto lookup = group1->MostSimilar(std::move(exact));
+    auto lookup = group1.MostSimilar(std::move(exact));
     ASSERT_TRUE(lookup.has_value());
     auto lookup_track = std::get<0>(*lookup);
     EXPECT_EQ(*lookup_track.track_id(), "Spanish");

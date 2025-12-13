@@ -17,8 +17,17 @@ struct Counts {
   base::HistogramBase::Sample32 unused = 0;
 };
 
-// Logs metrics related to |counts|.
-void LogProfileMetricsCounts(const Counts& counts);
+enum class ProfileActivityThreshold {
+  kDuration1Day,
+  kDuration7Days,
+  kDuration28Days,  // Used as the default threshold check.
+};
+
+void LogTotalNumberOfProfiles(base::HistogramBase::Sample32 number_of_profiles);
+// Logs metrics related to `counts`. If `counts.total` is 0, nothing is
+// recorded.
+void LogProfileMetricsCounts(const Counts& counts,
+                             ProfileActivityThreshold activity_threshold);
 
 }  // namespace profile_metrics
 

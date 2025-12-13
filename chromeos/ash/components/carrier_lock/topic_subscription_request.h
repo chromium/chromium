@@ -5,10 +5,13 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_TOPIC_SUBSCRIPTION_REQUEST_H_
 #define CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK_TOPIC_SUBSCRIPTION_REQUEST_H_
 
+#include <optional>
+#include <string>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/carrier_lock/common.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -72,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
 
   // Invoked from SimpleURLLoader.
   void OnUrlLoadComplete(const network::SimpleURLLoader* source,
-                         std::unique_ptr<std::string> body);
+                         std::optional<std::string> body);
 
  private:
   friend class TopicSubscriptionRequestTest;

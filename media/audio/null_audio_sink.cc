@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_hash.h"
 #include "media/base/fake_audio_worker.h"
@@ -48,6 +49,7 @@ void NullAudioSink::Start() {
 void NullAudioSink::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   started_ = false;
+  playing_ = false;
   // Stop may be called at any time, so we have to check before stopping.
   if (fake_worker_)
     fake_worker_->Stop();

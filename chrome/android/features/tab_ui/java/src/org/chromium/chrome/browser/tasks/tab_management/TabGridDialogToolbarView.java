@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -63,6 +64,21 @@ public class TabGridDialogToolbarView extends FrameLayout {
         mNewTabButton = findViewById(R.id.toolbar_new_tab_button);
         mMenuButton = findViewById(R.id.toolbar_menu_button);
         mTitleTextView = (EditText) findViewById(R.id.title);
+        mTitleTextView.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        String originalText =
+                                info.getText() == null ? "" : info.getText().toString();
+                        info.setText(
+                                getContext()
+                                        .getString(
+                                                R.string.accessibility_tab_group_title_field,
+                                                originalText));
+                    }
+                });
         mMainContent = findViewById(R.id.main_content);
         mColorIconContainer = findViewById(R.id.tab_group_color_icon_container);
         mColorIcon = findViewById(R.id.tab_group_color_icon);
@@ -254,7 +270,8 @@ public class TabGridDialogToolbarView extends FrameLayout {
         // Set accessibility content for the color icon.
         Resources res = getContext().getResources();
         final @StringRes int colorDescRes =
-                ColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(colorId);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColorAccessibilityString(
+                        colorId);
         String colorDesc = res.getString(colorDescRes);
         String contentDescription =
                 res.getString(R.string.accessibility_tab_group_color_icon_description, colorDesc);

@@ -51,7 +51,6 @@
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -61,6 +60,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/interpolated_transform.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_abort_handle.h"
@@ -859,7 +859,7 @@ TrayBackgroundView::CreateContextMenuModel() {
 
 void TrayBackgroundView::StartPulseAnimation() {
   // Do not start animation when animations are set to ZERO_DURATION (in tests).
-  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+  if (gfx::ScopedAnimationDurationScaleMode::is_zero()) {
     return;
   }
 
@@ -1002,7 +1002,8 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
   MirrorInsetsIfNecessary(&local_contents_insets);
   insets += local_contents_insets;
 
-  if (Shell::Get()->IsInTabletMode() && ShelfConfig::Get()->is_in_app()) {
+  if (display::Screen::Get()->InTabletMode() &&
+      ShelfConfig::Get()->is_in_app()) {
     insets +=
         gfx::Insets(ShelfConfig::Get()->in_app_control_button_height_inset());
   }
@@ -1056,7 +1057,8 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
   // The shelf is not transparent when 1)the shelf is in app mode OR 2) the
   // shelf is in the regular logged in page (not session blocked).
   const bool is_shelf_opaque =
-      (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
+      (!display::Screen::Get()->InTabletMode() ||
+       ShelfConfig::Get()->is_in_app()) &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked();
 
   const ui::ColorId non_active_color_id =

@@ -6,6 +6,7 @@
 #define COMPONENTS_SPEECH_UPSTREAM_LOADER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -40,7 +41,7 @@ class UpstreamLoader : public network::mojom::ChunkedDataPipeGetter {
 
  private:
   void OnUploadPipeWriteable(MojoResult unused);
-  void OnComplete(std::unique_ptr<std::string> response_body);
+  void OnComplete(std::optional<std::string> response_body);
 
   // mojom::ChunkedDataPipeGetter implementation:
   void GetSize(GetSizeCallback get_size_callback) override;

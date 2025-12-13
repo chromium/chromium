@@ -21,11 +21,11 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
-import android.net.Network;
 import android.os.Bundle;
 
 import org.junit.Before;
@@ -38,15 +38,14 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.cookies.CookiesFetcherJni;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.autofill.AndroidAutofillFeatures;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -58,11 +57,6 @@ import org.chromium.net.NetId;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowUrlUtilities.class})
-@Features.EnableFeatures({
-    ChromeFeatureList.CCT_PREWARM_TAB,
-    ChromeFeatureList.CCT_EARLY_NAV,
-    AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID_IN_CCT_NAME
-})
 public class CustomTabActivityTabControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -73,7 +67,6 @@ public class CustomTabActivityTabControllerUnitTest {
     private CustomTabActivityTabController mTabController;
 
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
-    @Mock private Network mNetwork;
     @Mock private UserPrefsJni mMockUserPrefsJni;
 
     @Mock private CookiesFetcher.Natives mCookiesFetcherJni;
@@ -90,7 +83,7 @@ public class CustomTabActivityTabControllerUnitTest {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 
-        mTabController = env.createTabController();
+        mTabController = spy(env.createTabController());
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
 
         CookiesFetcherJni.setInstanceForTesting(mCookiesFetcherJni);
@@ -314,24 +307,6 @@ public class CustomTabActivityTabControllerUnitTest {
         assertEquals(transferredWebcontents, env.webContentsCaptor.getValue());
     }
 
-    @Test
-    public void usesSpareWebContents_IfAvailable() {
-        WebContents spareWebcontents = env.prepareSpareWebcontents();
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        assertEquals(spareWebcontents, env.webContentsCaptor.getValue());
-    }
-
-    @Test
-    public void prefersTransferredWebContents_ToSpareWebContents() {
-        WebContents transferredWebcontents = env.prepareTransferredWebcontents();
-        WebContents spareWebcontents = env.prepareSpareWebcontents();
-        mTabController.setUpInitialTab(null);
-        mTabController.finishNativeInitialization();
-        assertEquals(transferredWebcontents, env.webContentsCaptor.getValue());
-        assertNotEquals(spareWebcontents, env.webContentsCaptor.getValue());
-    }
-
     // This is important so that the tab doesn't get hidden, see ChromeActivity#onStopWithNative
     @Test
     public void clearsActiveTab_WhenStartsReparenting() {
@@ -382,9 +357,23 @@ public class CustomTabActivityTabControllerUnitTest {
     @Test
     public void doesNotUseTabFromIntent_IfNotInAsyncParamsManager() {
         Tab tab = env.prepareTransferredTab();
+        AsyncTabParamsManagerSingleton.getInstance().remove(tab.getId());
         mTabController.setUpInitialTab(null);
         mTabController.finishNativeInitialization();
-        assertEquals(tab, env.tabProvider.getTab());
+        assertNotEquals(tab, env.tabProvider.getTab());
+    }
+
+    // If the Activity has been recreated, ignore the Tab ID provided in the Intent -- the Tab will
+    // be restored using a different mechanism. See crbug.com/448865648.
+    @Test
+    public void doesNotUseTabFromIntent_IfActivityRecreated() {
+        Tab popupTab = env.prepareTransferredTab();
+        Tab savedTab = env.prepareTab();
+        env.saveTab(savedTab);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(savedTab, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
     }
 
     @Test
@@ -403,5 +392,28 @@ public class CustomTabActivityTabControllerUnitTest {
     public void getTabCount_multipleTabs() {
         when(env.tabModel.getCount()).thenReturn(5);
         assertEquals(5, mTabController.getTabCount());
+    }
+
+    @Test
+    public void updatesIntentInTab_WhenNotWebapp() {
+        env.warmUp();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertNotNull(env.tabProvider.getTab());
+
+        verify(mTabController).updateIntentInTab(eq(env.tabProvider.getTab()), eq(true));
+        // Verify that RedirectHandlerTabHelper did not need to ask the tab if it was a custom tab.
+        verify(env.tabFromFactory, never()).isCustomTab();
+    }
+
+    @Test
+    public void doesNotUpdateIntentInTab_WhenIsWebapp() {
+        env.warmUp();
+        when(env.intentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertNotNull(env.tabProvider.getTab());
+
+        verify(mTabController, never()).updateIntentInTab(any(), anyBoolean());
     }
 }

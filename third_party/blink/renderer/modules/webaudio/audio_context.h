@@ -8,6 +8,7 @@
 #include <atomic>
 
 #include "base/gtest_prod_util.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
@@ -21,8 +22,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkoptions_string.h"
 #include "third_party/blink/renderer/core/frame/frame_visibility_observer.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/setsinkid_resolver.h"
 #include "third_party/blink/renderer/platform/audio/audio_frame_stats_accumulator.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -48,6 +49,7 @@ class MediaStreamAudioDestinationNode;
 class MediaStreamAudioSourceNode;
 class RealtimeAudioDestinationNode;
 class ScriptState;
+class V8UnionAudioSinkOptionsOrString;
 class WebAudioLatencyHint;
 
 // This is an BaseAudioContext which actually plays sound, unlike an
@@ -57,10 +59,55 @@ class MODULES_EXPORT AudioContext final
       public mojom::blink::PermissionObserver,
       public mojom::blink::MediaDevicesListener,
       public FrameVisibilityObserver,
+      public PageVisibilityObserver,
       public media::mojom::blink::MediaPlayer {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // SetSinkIdResolver is a helper class that manages the asynchronous operation
+  // of AudioContext.setSinkId(). It encapsulates a ScriptPromise that is
+  // resolved or rejected based on the success or failure of changing the audio
+  // output device.
+  class SetSinkIdResolver final : public GarbageCollected<SetSinkIdResolver> {
+   public:
+    SetSinkIdResolver(ScriptState*,
+                      AudioContext&,
+                      const V8UnionAudioSinkOptionsOrString&);
+    SetSinkIdResolver(const SetSinkIdResolver&) = delete;
+    SetSinkIdResolver& operator=(const SetSinkIdResolver&) = delete;
+    ~SetSinkIdResolver() = default;
+
+    void Trace(Visitor*) const;
+
+    void Start();
+
+    // Resolves the promise and sets `resolver_` to nullptr.
+    void Resolve();
+
+    // Rejects the promise with a DOMException and sets `resolver_` to nullptr.
+    void Reject(DOMException* exception);
+
+    // Rejects the promise with a v8::Local<v8::Value> and sets `resolver_` to
+    // nullptr. Used when creating an exception with
+    // V8ThrowDOMException::CreateOrEmpty.
+    void Reject(v8::Local<v8::Value>);
+
+    ScriptPromise<IDLUndefined> GetPromise();
+
+   private:
+    // Will decide whether to resolve or reject the promise based on `status`.
+    // After this method returns, `resolver_` is set to nullptr.
+    void HandleOutputDeviceStatus(media::OutputDeviceStatus status);
+
+    // This callback function is passed to 'AudioDestinationNode::SetSinkId()'.
+    // When the device status is okay, 'NotifySetSinkIdIsDone()' gets invoked.
+    void OnSetSinkIdComplete(media::OutputDeviceStatus status);
+
+    WeakMember<AudioContext> audio_context_;
+    Member<ScriptPromiseResolver<IDLUndefined>> resolver_;
+    WebAudioSinkDescriptor sink_descriptor_;
+  };
+
   static AudioContext* Create(ExecutionContext*,
                               const AudioContextOptions*,
                               ExceptionState&);
@@ -69,7 +116,8 @@ class MODULES_EXPORT AudioContext final
                const WebAudioLatencyHint&,
                std::optional<float> sample_rate,
                WebAudioSinkDescriptor sink_descriptor,
-               bool update_echo_cancellation_on_first_start);
+               bool update_echo_cancellation_on_first_start,
+               std::optional<uint32_t> render_quantum_frames);
   AudioContext(const AudioContext&) = delete;
   AudioContext& operator=(const AudioContext&) = delete;
   ~AudioContext() override;
@@ -110,6 +158,9 @@ class MODULES_EXPORT AudioContext final
   // FrameVisibilityObserver
   void FrameVisibilityChanged(
       mojom::blink::FrameVisibility frame_visibility) override;
+
+  // PageVisibilityObserver
+  void PageVisibilityChanged() override;
 
   // media::mojom::MediaPlayer  implementation.
   void RequestPlay() override {}
@@ -200,13 +251,17 @@ class MODULES_EXPORT AudioContext final
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
+  void set_clock_for_testing(const base::TickClock* clock);
 
  private:
   friend class AudioContextAutoplayTest;
   friend class AudioContextTest;
+  friend class AudioContextStatsTest;
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest, MediaDevicesService);
   FRIEND_TEST_ALL_PREFIXES(AudioContextTest,
                            OnRenderErrorFromPlatformDestination);
+
+  class StatsUpdateRestrictor;
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -272,9 +327,6 @@ class MODULES_EXPORT AudioContext final
   // posting a main thread task to perform the actual resolving, if needed.
   void ResolvePromisesForUnpause();
 
-  AudioIOPosition OutputPosition() const
-      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
-
   // Send notification to browser that an AudioContext has started or stopped
   // playing audible audio.
   void NotifyAudibleAudioStarted()
@@ -316,6 +368,8 @@ class MODULES_EXPORT AudioContext final
 
   LocalFrame* GetLocalFrame() const;
 
+  Page* GetPageFromFrame() const;
+
   // Connects to the MediaPlayerHost to register as a media player.
   void EnsureMediaPlayerConnection();
 
@@ -332,7 +386,9 @@ class MODULES_EXPORT AudioContext final
   uint32_t context_id_;
   Member<ScriptPromiseResolver<IDLUndefined>> close_resolver_;
 
-  AudioIOPosition output_position_;
+  // Protected by the graph lock.
+  AudioIOPosition output_position_{0.0, 0.0, 0.0};
+
   AudioCallbackMetric callback_metric_;
 
   // Accessed only on the thread pulling audio from the graph.
@@ -474,6 +530,8 @@ class MODULES_EXPORT AudioContext final
   // Set to true when the DidClose() method is called. Used to detect if the
   // context is destroyed without being properly closed.
   bool is_closed_ = false;
+
+  std::unique_ptr<StatsUpdateRestrictor> stats_update_restrictor_;
 
   SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };

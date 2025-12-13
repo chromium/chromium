@@ -10,16 +10,14 @@ ImageDecodeCache::TaskResult StubDecodeCache::GetTaskForImageAndRef(
     ClientId client_id,
     const DrawImage& image,
     const TracingInfo& tracing_info) {
-  return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                    /*can_do_hardware_accelerated_decode=*/false);
+  return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 }
 
 ImageDecodeCache::TaskResult
 StubDecodeCache::GetOutOfRasterDecodeTaskForImageAndRef(ClientId client_id,
                                                         const DrawImage& image,
                                                         bool speculative) {
-  return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false,
-                    /*can_do_hardware_accelerated_decode=*/false);
+  return TaskResult(/*need_unref=*/true, /*is_at_raster_decode=*/false);
 }
 
 DecodedDrawImage StubDecodeCache::GetDecodedImageForDraw(

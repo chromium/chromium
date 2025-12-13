@@ -11,12 +11,14 @@ import android.view.ViewConfiguration;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
+
+import java.util.function.Supplier;
 
 /** A UI coordinator the app menu. */
 @NullMarked
@@ -45,6 +47,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      * @param appRect Supplier of the app area in Window that the menu should fit in.
      * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
      * @param browserControlsStateProvider a provider that can provide the state of the toolbar
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
+     *     HierarchicalMenuController}.
      */
     public AppMenuCoordinatorImpl(
             Context context,
@@ -55,7 +59,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
             View hardwareButtonAnchorView,
             Supplier<Rect> appRect,
             WindowAndroid windowAndroid,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SubmenuHeaderFactory submenuHeaderFactory) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -71,7 +76,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         hardwareButtonAnchorView,
                         appRect,
                         windowAndroid,
-                        browserControlsStateProvider);
+                        browserControlsStateProvider,
+                        submenuHeaderFactory);
     }
 
     @Override

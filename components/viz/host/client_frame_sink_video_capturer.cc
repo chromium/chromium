@@ -88,19 +88,18 @@ void ClientFrameSinkVideoCapturer::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ChangeTarget(target, sub_capture_target_version_);
+  ChangeTarget(target, sub_capture_version_);
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
     const std::optional<VideoCaptureTarget>& target,
-    uint32_t sub_capture_target_version) {
+    uint32_t sub_capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GE(sub_capture_target_version, sub_capture_target_version_);
 
   target_ = target;
-  sub_capture_target_version_ = sub_capture_target_version;
+  sub_capture_version_ = sub_capture_version;
 
-  capturer_remote_->ChangeTarget(target, sub_capture_target_version);
+  capturer_remote_->ChangeTarget(target, sub_capture_version);
 }
 
 void ClientFrameSinkVideoCapturer::Start(
@@ -183,11 +182,11 @@ void ClientFrameSinkVideoCapturer::OnFrameWithEmptyRegionCapture() {
   consumer_->OnFrameWithEmptyRegionCapture();
 }
 
-void ClientFrameSinkVideoCapturer::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void ClientFrameSinkVideoCapturer::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  consumer_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+  consumer_->OnNewCaptureVersion(capture_version);
 }
 
 void ClientFrameSinkVideoCapturer::OnLog(const std::string& message) {
@@ -229,8 +228,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
   if (target_) {
-    capturer_remote_->ChangeTarget(target_.value(),
-                                   sub_capture_target_version_);
+    capturer_remote_->ChangeTarget(target_.value(), sub_capture_version_);
   }
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());

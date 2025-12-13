@@ -4,8 +4,11 @@
 
 source_set("metrics") {
   sources = [
-    "bwg_metrics.h",
-    "bwg_metrics.mm",
+    "gemini_metrics.h",
+    "gemini_metrics.mm",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+  ]
 }

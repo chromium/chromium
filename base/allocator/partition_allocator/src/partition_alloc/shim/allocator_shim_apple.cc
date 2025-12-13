@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/shim/allocator_shim.h"
 
 #include <malloc/malloc.h>
@@ -27,6 +32,10 @@
 namespace allocator_shim {
 
 void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
+  if (!ptr) [[unlikely]] {
+    return;
+  }
+
   unsigned int zone_count = 0;
   vm_address_t* zones = nullptr;
   kern_return_t result =
@@ -52,7 +61,8 @@ void TryFreeDefaultFallbackToFindZoneAndFree(void* ptr) {
   }
 
   // There must be an owner zone.
-  PA_CHECK(false);
+  PA_CHECK(false) << "Oops! No zone found for "
+                  << reinterpret_cast<uintptr_t>(ptr);
 }
 
 }  // namespace allocator_shim

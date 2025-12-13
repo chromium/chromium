@@ -5,12 +5,13 @@
 #ifndef CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 #define CONTENT_BROWSER_PERMISSIONS_PERMISSION_CONTROLLER_IMPL_H_
 
-#include <map>
 #include <optional>
 #include <set>
 
 #include "base/containers/id_map.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/permissions/permission_overrides.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
@@ -51,28 +52,28 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   enum class OverrideStatus { kOverrideNotSet, kOverrideSet };
 
-  // For the given |origin|, grant permissions in |overrides| and reject all
-  // others. If no |origin| is specified, grant permissions to all origins in
-  // the browser context.
-  OverrideStatus GrantOverridesForDevTools(
-      const std::optional<url::Origin>& origin,
-      const std::vector<PermissionType>& permissions);
-  OverrideStatus SetOverrideForDevTools(
-      const std::optional<url::Origin>& origin,
+  // Sets status for |permissions| to GRANTED for |requesting_origin| and
+  // |embedding_origin|, and DENIED for all others. Null |requesting_origin| and
+  // |embedding_origin| grants permissions globally for context.
+  // It is invalid to call these methods with exactly one non-null origin.
+  // If the overrides were set, the callback is run with
+  // |OverrideStatus::kOverrideSet|. If not set, the callback is run with
+  // |OverrideStatus::kOverrideNotSet|.
+  void GrantPermissionOverrides(
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin,
+      const std::vector<PermissionType>& permissions,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  // If the overrides were set, the callback is run with
+  // |OverrideStatus::kOverrideSet|. If not set, the callback is run with
+  // |OverrideStatus::kOverrideNotSet|.
+  void SetPermissionOverride(
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin,
       PermissionType permission,
-      const PermissionStatus& status);
-  void ResetOverridesForDevTools();
-
-  // Sets status for |permissions| to GRANTED in |origin|, and DENIED
-  // for all others.
-  // Null |origin| grants permissions globally for context.
-  OverrideStatus GrantPermissionOverrides(
-      const std::optional<url::Origin>& origin,
-      const std::vector<PermissionType>& permissions);
-  OverrideStatus SetPermissionOverride(const std::optional<url::Origin>& origin,
-                                       PermissionType permission,
-                                       const PermissionStatus& status);
-  void ResetPermissionOverrides();
+      const PermissionStatus& status,
+      base::OnceCallback<void(OverrideStatus)> callback);
+  void ResetPermissionOverrides(base::OnceClosure callback);
 
   void ResetPermission(PermissionType permission,
                        const GURL& requesting_origin,
@@ -80,15 +81,15 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  SubscriptionId SubscribeToPermissionStatusChange(
-      PermissionType permission,
+  SubscriptionId SubscribeToPermissionResultChange(
+      blink::mojom::PermissionDescriptorPtr permission_descriptor,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
-      const base::RepeatingCallback<void(PermissionStatus)>& callback) override;
+      const base::RepeatingCallback<void(PermissionResult)>& callback) override;
 
-  void UnsubscribeFromPermissionStatusChange(
+  void UnsubscribeFromPermissionResultChange(
       SubscriptionId subscription_id) override;
 
   // If there's currently a permission prompt bubble for the given WebContents,
@@ -102,26 +103,38 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   }
 
   void set_exclusion_area_bounds_for_tests(
-      const std::optional<gfx::Rect>& bounds) {
-    exclusion_area_bounds_for_tests_ = bounds;
+      base::optional_ref<const gfx::Rect> bounds) {
+    exclusion_area_bounds_for_tests_ = bounds.CopyAsOptional();
   }
 
  private:
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
 
-  PermissionStatus GetPermissionStatusInternal(
+  // Updates CookieManager content settings. Currently this is only used for
+  // Storage Access permissions. This method can be used for extra processing
+  // for other permissions. If you add more permissions or different
+  // processesing steps, update the method's name.
+  void UpdateCookieManagerContentSettings(
+      std::optional<PermissionType> permission_to_process,
+      base::OnceClosure callback);
+
+  PermissionResult GetPermissionResultInternal(
       const blink::mojom::PermissionDescriptorPtr& permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin);
 
-  PermissionStatus GetPermissionStatusForCurrentDocumentInternal(
+  PermissionResult GetPermissionResultForCurrentDocumentInternal(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status = false);
 
   // PermissionController implementation.
   PermissionStatus GetPermissionStatusForWorker(
+      const blink::mojom::PermissionDescriptorPtr& permission,
+      RenderProcessHost* render_process_host,
+      const url::Origin& worker_origin) override;
+  PermissionResult GetPermissionResultForWorker(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) override;
@@ -144,47 +157,48 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/40864728): Migrate to `std::set`.
   // TODO(crbug.com/40275129): `RequestPermissions` and
-  // `RequestPermissionsFromCurrentDocument` do exactly the same things. Merge
-  // them together.
+  // `RequestPermissionsFromCurrentDocument` do exactly the same things.
+  // Merge them together.
   void RequestPermissions(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback);
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback);
   void RequestPermissionFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(PermissionStatus)> callback) override;
+      base::OnceCallback<void(PermissionResult)> callback) override;
   // WARNING: Permission requests order is not guaranteed.
   // TODO(crbug.com/40864728): Migrate to `std::set`.
   void RequestPermissionsFromCurrentDocument(
       RenderFrameHost* render_frame_host,
       PermissionRequestDescription request_description,
-      base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback)
+      base::OnceCallback<void(const std::vector<PermissionResult>&)> callback)
       override;
   void ResetPermission(blink::PermissionType permission,
                        const url::Origin& origin) override;
 
-  PermissionStatus GetPermissionStatusForEmbeddedRequester(
+  PermissionResult GetPermissionResultForEmbeddedRequester(
       const blink::mojom::PermissionDescriptorPtr& permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin);
 
   using SubscriptionsStatusMap =
-      base::flat_map<SubscriptionsMap::KeyType, PermissionStatus>;
+      base::flat_map<SubscriptionsMap::KeyType, PermissionResult>;
 
-  PermissionStatus GetSubscriptionCurrentValue(
-      const content::PermissionStatusSubscription& subscription);
+  PermissionResult GetSubscriptionCurrentResult(
+      const content::PermissionResultSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
-      const std::optional<GURL>& origin = std::nullopt);
+      base::optional_ref<const GURL> requesting_origin = std::nullopt,
+      base::optional_ref<const GURL> embedding_origin = std::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   // Notifies the callback of the new permission status.
   // If `ignore_status_override` is true, the status override is not applied,
   // which means that the permission status change will be notified to
   // subscribed users even the status has been overridden.
-  void PermissionStatusChange(
-      const base::RepeatingCallback<void(PermissionStatus)>& callback,
+  void PermissionResultChange(
+      const base::RepeatingCallback<void(PermissionResult)>& callback,
       SubscriptionId subscription_id,
-      PermissionStatus status,
+      PermissionResult result,
       bool ignore_status_override = false);
   bool IsSubscribedToPermissionChangeEvent(
       blink::PermissionType permission,

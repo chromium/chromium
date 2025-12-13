@@ -12,9 +12,9 @@
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
 
@@ -134,7 +134,7 @@ class ProtectedBufferManager : public DecoderProtectedBufferManager {
   // Returns whether allocation is successful.
   bool AllocateProtectedNativePixmap(uint64_t allocator_id,
                                      base::ScopedFD dummy_fd,
-                                     gfx::BufferFormat format,
+                                     viz::SharedImageFormat format,
                                      const gfx::Size& size);
 
   // Releases reference to ProtectedSharedMemory or ProtectedNativePixmap

@@ -35,41 +35,22 @@
 
 @implementation SafeBrowsingEnhancedProtectionCoordinator
 
-@synthesize baseNavigationController = _baseNavigationController;
-
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser {
-  self = [super initWithBaseViewController:navigationController
-                                   browser:browser];
-  if (self) {
-    _baseNavigationController = navigationController;
-  }
-  return self;
-}
-
 - (void)start {
   SafeBrowsingEnhancedProtectionViewController* viewController = nil;
-  viewController = [[SafeBrowsingEnhancedProtectionViewController alloc]
-      initWithStyle:UITableViewStyleGrouped];
+  viewController = [[SafeBrowsingEnhancedProtectionViewController alloc] init];
+  viewController.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   self.viewController = viewController;
 
   viewController.presentationDelegate = self;
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  viewController.applicationHandler =
-      HandlerForProtocol(dispatcher, ApplicationCommands);
-  viewController.browserHandler =
-      HandlerForProtocol(dispatcher, BrowserCommands);
-  viewController.settingsHandler =
-      HandlerForProtocol(dispatcher, SettingsCommands);
-  viewController.snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
 
-  DCHECK(self.baseNavigationController);
-  [self.baseNavigationController
-      presentViewController:viewController.navigationController
-                   animated:YES
-                 completion:nil];
+  UINavigationController* navigationController = [[UINavigationController alloc]
+      initWithRootViewController:viewController];
+  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+
+  [self.baseViewController presentViewController:navigationController
+                                        animated:YES
+                                      completion:nil];
 }
 
 #pragma mark - SafeBrowsingEnhancedProtectionViewControllerPresentationDelegate

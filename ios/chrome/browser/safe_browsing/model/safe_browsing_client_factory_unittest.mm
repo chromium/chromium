@@ -12,11 +12,11 @@
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/real_time_url_lookup_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
@@ -29,6 +29,7 @@ class SafeBrowsingClientFactoryTest : public PlatformTest {
       : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ProfileIOS> profile_;
 };
 
@@ -48,9 +49,6 @@ TEST_F(SafeBrowsingClientFactoryTest, DifferentClientInstances) {
 // Tests that SafeBrowsingClientFactory returns the enterprise url lookup
 // service when Url filtering is enabled.
 TEST_F(SafeBrowsingClientFactoryTest, GetEnterpriseOrConsumerLookupService) {
-  base::test::ScopedFeatureList feature(
-      enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering);
-
   SafeBrowsingClient* recording_client =
       SafeBrowsingClientFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(recording_client);

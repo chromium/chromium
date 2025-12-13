@@ -10,18 +10,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_client.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 namespace media {
 class FakeVideoCaptureDeviceFactory;
@@ -43,20 +39,13 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       NativeScreenCapturePicker* picker);
   ~InProcessVideoCaptureDeviceLauncher() override;
 
-  void LaunchDeviceAsync(
-      const std::string& device_id,
-      blink::mojom::MediaStreamType stream_type,
-      const media::VideoCaptureParams& params,
-      base::WeakPtr<media::VideoFrameReceiver> receiver,
-      base::OnceClosure connection_lost_cb,
-      Callbacks* callbacks,
-      base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor,
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager) override;
+  void LaunchDeviceAsync(const std::string& device_id,
+                         blink::mojom::MediaStreamType stream_type,
+                         const media::VideoCaptureParams& params,
+                         base::WeakPtr<media::VideoFrameReceiver> receiver,
+                         base::OnceClosure connection_lost_cb,
+                         Callbacks* callbacks,
+                         base::OnceClosure done_cb) override;
 
   void AbortLaunch() override;
 
@@ -98,6 +87,14 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::unique_ptr<media::VideoCaptureDeviceClient> client,
       ReceiveDeviceCallback result_callback);
 
+  void OnPipScreenCaptureCoordinatorProxyCreated(
+      const DesktopMediaID& desktop_id,
+      const media::VideoCaptureParams& params,
+      std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
+      ReceiveDeviceCallback result_callback,
+      std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+          pip_screen_capture_coordinator_proxy);
+
   void DoStartDesktopCaptureWithReceiverOnDeviceThread(
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,
@@ -120,6 +117,7 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   State state_;
   std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
   raw_ptr<NativeScreenCapturePicker> native_screen_capture_picker_;
+  base::WeakPtrFactory<InProcessVideoCaptureDeviceLauncher> weak_factory_{this};
 };
 
 }  // namespace content

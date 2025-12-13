@@ -20,7 +20,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_otr_state.h"
@@ -142,11 +141,11 @@ bool IsPluginLoadingAccessibleResourceInWebView(
     return false;
   }
 
-  const std::string extension_id = resource.host();
+  const std::string extension_id = resource.GetHost();
   const extensions::Extension* extension =
       extension_registry->enabled_extensions().GetByID(extension_id);
   if (!extension || !extensions::WebviewInfo::IsResourceWebviewAccessible(
-                        extension, partition_id, resource.path())) {
+                        extension, partition_id, resource.GetPath())) {
     return false;
   }
 
@@ -166,8 +165,7 @@ PluginInfoHostImpl::Context::Context(int render_process_id, Profile* profile)
       extension_registry_(extensions::ExtensionRegistry::Get(profile)),
 #endif
       host_content_settings_map_(
-          HostContentSettingsMapFactory::GetForProfile(profile)),
-      plugin_prefs_(PluginPrefs::GetForProfile(profile)) {
+          HostContentSettingsMapFactory::GetForProfile(profile)) {
 }
 
 PluginInfoHostImpl::Context::~Context() = default;
@@ -188,42 +186,33 @@ void PluginInfoHostImpl::ShutdownOnUIThread() {
 
 PluginInfoHostImpl::~PluginInfoHostImpl() = default;
 
-struct PluginInfoHostImpl::GetPluginInfo_Params {
-  GURL url;
-  url::Origin main_frame_origin;
-  std::string mime_type;
-};
-
 void PluginInfoHostImpl::GetPluginInfo(const GURL& url,
                                        const url::Origin& origin,
                                        const std::string& mime_type,
                                        GetPluginInfoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  GetPluginInfo_Params params = {url, origin, mime_type};
-  PluginService::GetInstance()->GetPlugins(
-      base::BindOnce(&PluginInfoHostImpl::PluginsLoaded,
-                     weak_factory_.GetWeakPtr(), params, std::move(callback)));
-}
-
-void PluginInfoHostImpl::PluginsLoaded(
-    const GetPluginInfo_Params& params,
-    GetPluginInfoCallback callback,
-    const std::vector<WebPluginInfo>& plugins) {
+  // Refresh plugins.
+  PluginService::GetInstance()->GetPlugins();
   chrome::mojom::PluginInfoPtr output = chrome::mojom::PluginInfo::New();
   // This also fills in |actual_mime_type|.
   std::unique_ptr<PluginMetadata> plugin_metadata;
-  if (context_.FindEnabledPlugin(params.url, params.mime_type, &output->status,
+  if (context_.FindEnabledPlugin(url, mime_type, &output->status,
                                  &output->plugin, &output->actual_mime_type,
                                  &plugin_metadata)) {
     // TODO(crbug.com/40164563): Simplify this once PDF is the only "plugin."
-    context_.DecidePluginStatus(params.url, params.main_frame_origin,
-                                output->plugin,
+    context_.DecidePluginStatus(url, origin, output->plugin,
                                 plugin_metadata->security_status(),
                                 plugin_metadata->identifier(), &output->status);
   }
 
-  GetPluginInfoFinish(params, std::move(output), std::move(callback),
-                      std::move(plugin_metadata));
+  if (plugin_metadata) {
+    output->group_identifier = plugin_metadata->identifier();
+    output->group_name = plugin_metadata->name();
+  }
+
+  context_.MaybeGrantAccess(output->status, output->plugin.path);
+
+  std::move(callback).Run(std::move(output));
 }
 
 void PluginInfoHostImpl::Context::DecidePluginStatus(
@@ -239,23 +228,16 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   }
 
   ContentSetting plugin_setting = CONTENT_SETTING_DEFAULT;
-  bool uses_default_content_setting = true;
   bool is_managed = false;
   // Check plugin content settings. The primary URL is the top origin URL and
   // the secondary URL is the plugin URL.
   PluginUtils::GetPluginContentSetting(
       host_content_settings_map_, plugin, main_frame_origin, url,
-      plugin_identifier, &plugin_setting, &uses_default_content_setting,
-      &is_managed);
-
-  DCHECK(plugin_setting != CONTENT_SETTING_DEFAULT);
-
-  // Check if the plugin is crashing too much.
-  if (PluginService::GetInstance()->IsPluginUnstable(plugin.path) &&
-      plugin_setting != CONTENT_SETTING_BLOCK && uses_default_content_setting) {
-    *status = chrome::mojom::PluginStatus::kUnauthorized;
-    return;
-  }
+      plugin_identifier, &plugin_setting, &is_managed);
+  // GetPluginContentSetting() reads the JS setting, which only allows these 2
+  // values.
+  CHECK(plugin_setting == CONTENT_SETTING_ALLOW ||
+        plugin_setting == CONTENT_SETTING_BLOCK);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If an app has explicitly made internal resources available by listing them
@@ -269,10 +251,9 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  if (plugin_setting == CONTENT_SETTING_ASK ||
-      plugin_setting == CONTENT_SETTING_ALLOW) {
-    *status = chrome::mojom::PluginStatus::kPlayImportantContent;
-  } else if (plugin_setting == CONTENT_SETTING_BLOCK) {
+  if (plugin_setting == CONTENT_SETTING_ALLOW) {
+    *status = chrome::mojom::PluginStatus::kAllowed;
+  } else {
     *status = is_managed ? chrome::mojom::PluginStatus::kBlockedByPolicy
                          : chrome::mojom::PluginStatus::kBlocked;
   }
@@ -283,8 +264,7 @@ void PluginInfoHostImpl::Context::DecidePluginStatus(
   // and update the status as appropriate depending on the response from the
   // embedder.
   if (*status == chrome::mojom::PluginStatus::kAllowed ||
-      *status == chrome::mojom::PluginStatus::kBlocked ||
-      *status == chrome::mojom::PluginStatus::kPlayImportantContent) {
+      *status == chrome::mojom::PluginStatus::kBlocked) {
     if (extensions::WebViewRendererState::GetInstance()->IsGuest(
             render_process_id_))
       *status = chrome::mojom::PluginStatus::kUnauthorized;
@@ -301,11 +281,10 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
     std::unique_ptr<PluginMetadata>* plugin_metadata) const {
   *status = chrome::mojom::PluginStatus::kAllowed;
 
-  bool allow_wildcard = true;
   std::vector<WebPluginInfo> matching_plugins;
   std::vector<std::string> mime_types;
   PluginService::GetInstance()->GetPluginInfoArray(
-      url, mime_type, allow_wildcard, &matching_plugins, &mime_types);
+      url, mime_type, &matching_plugins, &mime_types);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   std::erase_if(matching_plugins, [&](const WebPluginInfo& info) {
     return info.path.value() == ChromeContentClient::kNotPresent;
@@ -346,21 +325,6 @@ bool PluginInfoHostImpl::Context::FindEnabledPlugin(
   return enabled;
 }
 
-void PluginInfoHostImpl::GetPluginInfoFinish(
-    const GetPluginInfo_Params& params,
-    chrome::mojom::PluginInfoPtr output,
-    GetPluginInfoCallback callback,
-    std::unique_ptr<PluginMetadata> plugin_metadata) {
-  if (plugin_metadata) {
-    output->group_identifier = plugin_metadata->identifier();
-    output->group_name = plugin_metadata->name();
-  }
-
-  context_.MaybeGrantAccess(output->status, output->plugin.path);
-
-  std::move(callback).Run(std::move(output));
-}
-
 // static
 void PluginInfoHostImpl::EnsureFactoryBuilt() {
   PluginInfoHostImplShutdownNotifierFactory::GetInstance();
@@ -369,14 +333,8 @@ void PluginInfoHostImpl::EnsureFactoryBuilt() {
 void PluginInfoHostImpl::Context::MaybeGrantAccess(
     chrome::mojom::PluginStatus status,
     const base::FilePath& path) const {
-  if (status == chrome::mojom::PluginStatus::kAllowed ||
-      status == chrome::mojom::PluginStatus::kPlayImportantContent) {
+  if (status == chrome::mojom::PluginStatus::kAllowed) {
     ChromePluginServiceFilter::GetInstance()->AuthorizePlugin(
         render_process_id_, path);
   }
-}
-
-bool PluginInfoHostImpl::Context::IsPluginEnabled(
-    const content::WebPluginInfo& plugin) const {
-  return plugin_prefs_->IsPluginEnabled(plugin);
 }

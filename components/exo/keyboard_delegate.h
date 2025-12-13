@@ -7,7 +7,6 @@
 
 #include <string_view>
 
-#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"

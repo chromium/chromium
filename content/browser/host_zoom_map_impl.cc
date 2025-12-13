@@ -23,7 +23,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -32,7 +31,13 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include <jni.h>
+
+#include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/jni_utils.h"
+#include "base/android/scoped_java_ref.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -66,7 +71,7 @@ std::string GetHostFromProcessFrame(RenderFrameHostImpl* rfh) {
 }
 
 // Allows HostZoomMap to grant independent zoom to subframes.
-BASE_FEATURE(kSubframeZoom, "SubframeZoom", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSubframeZoom, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Returns true if local root subframes may have different zoom levels than
 // the primary main frame.
@@ -162,9 +167,12 @@ void HostZoomMap::SendErrorPageZoomLevelRefresh(WebContents* web_contents) {
 }
 
 HostZoomMapImpl::HostZoomMapImpl()
-    : default_zoom_level_(0.0),
-      clock_(base::DefaultClock::GetInstance()) {
+    : default_zoom_level_(0.0), clock_(base::DefaultClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_ANDROID)
+  jni_callbacks_subscription_ = AddZoomLevelChangedCallback(base::BindRepeating(
+      &HostZoomMapImpl::NotifyJniObservers, base::Unretained(this)));
+#endif
 }
 
 void HostZoomMapImpl::CopyFrom(HostZoomMap* copy_interface) {
@@ -310,7 +318,7 @@ void HostZoomMapImpl::SetZoomLevelForHostAndScheme(const std::string& scheme,
                                                    double level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // No last_modified timestamp for scheme and host because they are
-  // not persistet and are used for special cases only.
+  // not persistent and are used for special cases only.
   scheme_host_zoom_levels_[scheme][host].level = level;
 
   SendZoomLevelChange(scheme, host);
@@ -342,7 +350,7 @@ void HostZoomMapImpl::SetDefaultZoomLevelInternal(double level,
   GURL url = GetURLForRenderFrameHostPtr(rfh);
   // It is possible for a WebContent's zoom level to be queried before
   // a navigation has occurred, in which case `url` will be empty.
-  scheme = url.scheme();
+  scheme = url.GetScheme();
   host = net::GetHostOrSpecFromURL(url);
 
   bool uses_default_zoom = !HasZoomLevel(scheme, host) &&
@@ -434,10 +442,10 @@ double HostZoomMapImpl::GetZoomLevelForWebContents(
   GURL url = GetURLForRenderFrameHost(rfh_id);
 
 #if BUILDFLAG(IS_ANDROID)
-  return GetZoomLevelForHostAndSchemeAndroid(url.scheme(),
+  return GetZoomLevelForHostAndSchemeAndroid(url.GetScheme(),
                                              net::GetHostOrSpecFromURL(url));
 #else
-  return GetZoomLevelForHostAndScheme(url.scheme(),
+  return GetZoomLevelForHostAndScheme(url.GetScheme(),
                                       net::GetHostOrSpecFromURL(url));
 #endif
 }
@@ -601,9 +609,9 @@ HostZoomMapImpl::GetDefaultZoomLevelPrefCallback() {
   return &default_zoom_level_pref_callback_;
 }
 
-void JNI_HostZoomMapImpl_SetZoomLevel(
+static void JNI_HostZoomMapImpl_SetZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
+    const base::android::JavaRef<jobject>& j_web_contents,
     jdouble new_zoom_level,
     jdouble adjusted_zoom_level) {
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
@@ -629,10 +637,10 @@ void JNI_HostZoomMapImpl_SetZoomLevel(
   host_zoom_map->SetNoLongerUsesTemporaryZoomLevel(rfh_id);
 }
 
-void JNI_HostZoomMapImpl_SetZoomLevelForHost(
+static void JNI_HostZoomMapImpl_SetZoomLevelForHost(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context,
-    const base::android::JavaParamRef<jstring>& j_host,
+    const base::android::JavaRef<jobject>& j_context,
+    const base::android::JavaRef<jstring>& j_host,
     jdouble level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -648,18 +656,18 @@ void JNI_HostZoomMapImpl_SetZoomLevelForHost(
   host_zoom_map->SetZoomLevelForHost(host, level);
 }
 
-jdouble JNI_HostZoomMapImpl_GetZoomLevel(
+static jdouble JNI_HostZoomMapImpl_GetZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_web_contents) {
+    const base::android::JavaRef<jobject>& j_web_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(j_web_contents);
   DCHECK(web_contents);
 
   return HostZoomMap::GetZoomLevel(web_contents);
 }
 
-void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
+static void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context,
+    const base::android::JavaRef<jobject>& j_context,
     jdouble new_default_zoom_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);
@@ -681,9 +689,9 @@ void JNI_HostZoomMapImpl_SetDefaultZoomLevel(
   host_zoom_map->SetDefaultZoomLevel(new_default_zoom_level);
 }
 
-jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
+static jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context) {
+    const base::android::JavaRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* context = BrowserContextFromJavaHandle(j_context);
   if (!context)
@@ -694,10 +702,10 @@ jdouble JNI_HostZoomMapImpl_GetDefaultZoomLevel(
   return host_zoom_map->GetDefaultZoomLevel();
 }
 
-std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
+static std::vector<jni_zero::ScopedJavaLocalRef<jobject>>
 JNI_HostZoomMapImpl_GetAllHostZoomLevels(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_context) {
+    const base::android::JavaRef<jobject>& j_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<jni_zero::ScopedJavaLocalRef<jobject>> ret;
 
@@ -726,6 +734,82 @@ JNI_HostZoomMapImpl_GetAllHostZoomLevels(
   }
 
   return ret;
+}
+
+void HostZoomMapImpl::NotifyJniObservers(
+    const HostZoomMap::ZoomLevelChange& change) {
+  if (jni_callbacks_.empty()) {
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto site_zoom_info = Java_HostZoomMapImpl_buildSiteZoomInfo(
+      env, change.host, change.zoom_level);
+
+  for (const auto& it : jni_callbacks_) {
+    base::android::RunObjectCallbackAndroid(it.second, site_zoom_info);
+  }
+}
+
+static jlong JNI_HostZoomMapImpl_AddZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_browser_context_handle,
+    const base::android::JavaRef<jobject>& j_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BrowserContext* browser_context =
+      BrowserContextFromJavaHandle(j_browser_context_handle);
+
+  if (!browser_context) {
+    return -1;
+  }
+
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::GetDefaultForBrowserContext(browser_context));
+
+  return host_zoom_map->AddJniZoomLevelObserver(env, j_callback);
+}
+
+jlong HostZoomMapImpl::AddJniZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  int64_t key = next_jni_subscription_key_++;
+  jni_callbacks_[key] = base::android::ScopedJavaGlobalRef<jobject>(j_callback);
+
+  return key;
+}
+
+static void JNI_HostZoomMapImpl_RemoveZoomLevelObserver(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& j_browser_context_handle,
+    jlong subscription_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (subscription_key == -1) {
+    // This is a special value that indicates that the observer was never
+    // created.
+    return;
+  }
+
+  BrowserContext* browser_context =
+      BrowserContextFromJavaHandle(j_browser_context_handle);
+
+  if (!browser_context) {
+    return;
+  }
+
+  HostZoomMapImpl* host_zoom_map = static_cast<HostZoomMapImpl*>(
+      HostZoomMap::GetDefaultForBrowserContext(browser_context));
+
+  host_zoom_map->RemoveJniZoomLevelObserver(subscription_key);
+}
+
+void HostZoomMapImpl::RemoveJniZoomLevelObserver(jlong subscription_key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  size_t erased_count = jni_callbacks_.erase(subscription_key);
+  DCHECK_EQ(1u, erased_count);
 }
 #endif
 
@@ -770,3 +854,7 @@ bool HostZoomMapImpl::IsIndependentZoomFrameTreeNode(
 }
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(HostZoomMapImpl)
+#endif

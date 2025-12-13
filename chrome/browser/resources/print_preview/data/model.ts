@@ -688,11 +688,6 @@ export class PrintPreviewModelElement extends CrLitElement {
     this.setSettingPath_(
         'copies.available', this.destination.hasCopiesCapability);
     this.setSettingPath_('collate.available', !!caps && !!caps.collate);
-    // TODO(crbug.com/374066702): "color.available" is set to false if the
-    // per-printer job options policy allows to use only a single color (even if
-    // the destination supports both b&w and color printing). This hides the
-    // color setting dropdown instead of disabling it. Figure out if that's
-    // desirable behaviour.
     this.setSettingPath_(
         'color.available', this.destination.hasColorCapability);
 

@@ -23,7 +23,7 @@ ParseUrlForVcn3ds(const GURL& url,
                   const Vcn3dsChallengeOptionMetadata& metadata) {
   std::string redirect_completion_result;
   bool is_failure = false;
-  std::string_view query_piece = url.query_piece();
+  std::string_view query_piece = url.query();
   url::Component query(0, query_piece.length());
   url::Component key;
   url::Component value;

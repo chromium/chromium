@@ -115,6 +115,7 @@ namespace developerPrivate {
     long renderViewId;
     long renderProcessId;
     boolean canInspect;
+    boolean isServiceWorker;
     StackFrame[] stackTrace;
   };
 
@@ -818,6 +819,12 @@ namespace developerPrivate {
     // eligible for upload or if there is no signed in user, returns an error.
     static void uploadExtensionToAccount(DOMString extensionId,
                                          BoolCallback callback);
+
+    // Shows the site settings for the extension.
+    [platforms=("desktop_android")]
+    static void showSiteSettings(
+        DOMString extensionId
+    );
 
     [nocompile, deprecated="Use openDevTools"]
         static void inspect(InspectOptions options,

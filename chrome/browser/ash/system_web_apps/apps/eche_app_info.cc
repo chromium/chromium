@@ -87,7 +87,7 @@ gfx::Rect EcheSystemAppDelegate::GetDefaultBounds(ash::BrowserDelegate*) const {
   // Ensures the Eche bounds is always 16:9 portrait aspect ratio and not more
   // than half of the windows.
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   const float bounds_aspect_ratio =
       static_cast<float>(bounds.width()) / bounds.height();
   const bool is_landscape = (bounds_aspect_ratio >= 1);

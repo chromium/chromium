@@ -53,7 +53,8 @@ void ParseJson(const std::string& json,
                bool& disable_stun_server,
                bool& check_android_network_info,
                bool& process_android_accessibility_tree) {
-  std::optional<base::Value> message_value = base::JSONReader::Read(json);
+  std::optional<base::Value> message_value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   base::Value::Dict* message_dictionary = message_value->GetIfDict();
   const std::string* device_name_ptr =
       message_dictionary->FindString(kJsonDeviceNameKey);

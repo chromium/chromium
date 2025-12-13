@@ -204,6 +204,11 @@ WebStateList::~WebStateList() {
     observer.WebStateListDestroyed(this);
   }
 
+  // Clear all openers to avoid dangling references.
+  for (const auto& wrapper : web_state_wrappers_) {
+    wrapper->SetOpener(WebStateOpener());
+  }
+
   CHECK(!locked_);
   CHECK(!batch_operation_in_progress_);
 }
@@ -676,79 +681,88 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(
   web::WebState* web_state = wrapper->web_state();
   delegate_->WillRemoveWebState(web_state);
 
-  const WebStateListChangeDetach detach_change(web_state, index,
-                                               params.detach_reason, group);
+  // Will own the WebStateWrapper once detached (set in the inner block).
+  std::unique_ptr<WebStateWrapper> detached_wrapper;
 
-  // `new_active_index` may be invalid e.g. when closing all the WebStates,
-  // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
-  web::WebState* old_active_web_state = GetActiveWebState();
-  web::WebState* new_active_web_state = ContainsIndex(new_active_index)
-                                            ? GetWebStateAt(new_active_index)
-                                            : nullptr;
+  // Use an inner block to ensure the WebStateListChange's raw_ptr<...> are
+  // destroyed before the objects they point to.
+  {
+    const WebStateListChangeDetach detach_change(web_state, index,
+                                                 params.detach_reason, group);
 
-  const WebStateListStatus status = {
-      .old_active_web_state = old_active_web_state,
-      .new_active_web_state = new_active_web_state,
-  };
+    // `new_active_index` may be invalid e.g. when closing all the WebStates,
+    // so use `ContainsIndex(...)` to avoid crashing in `GetWebStateAt(...)`.
+    web::WebState* old_active_web_state = GetActiveWebState();
+    web::WebState* new_active_web_state = ContainsIndex(new_active_index)
+                                              ? GetWebStateAt(new_active_index)
+                                              : nullptr;
 
-  for (auto& observer : observers_) {
-    observer.WebStateListWillChange(this, detach_change, status);
-  }
+    const WebStateListStatus status = {
+        .old_active_web_state = old_active_web_state,
+        .new_active_web_state = new_active_web_state,
+    };
 
-  ClearOpenersReferencing(index);
+    for (auto& observer : observers_) {
+      observer.WebStateListWillChange(this, detach_change, status);
+    }
 
-  // Past this point the WebState has been removed from the list but is
-  // still owned by detached_wrapper. The variables `group`, `wrapper`,
-  // and `web_state` are still valid.
-  std::unique_ptr<WebStateWrapper> detached_wrapper =
-      std::move(web_state_wrappers_[index]);
-  web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
-  CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
-  CHECK_EQ(detached_wrapper->web_state(), web_state);
-  CHECK_EQ(detached_wrapper.get(), wrapper);
+    ClearOpenersReferencing(index);
 
-  // Update the number of pinned tabs if necessary.
-  if (index < pinned_tabs_count_) {
-    CHECK_GT(pinned_tabs_count_, 0);
-    --pinned_tabs_count_;
-  }
+    // Past this point the WebState has been removed from the list but is
+    // still owned by detached_wrapper. The variables `group`, `wrapper`,
+    // and `web_state` are still valid.
+    detached_wrapper = std::move(web_state_wrappers_[index]);
+    web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
+    CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
+    CHECK_EQ(detached_wrapper->web_state(), web_state);
+    CHECK_EQ(detached_wrapper.get(), wrapper);
 
-  // Update the span of the group containing the detached WebState and the
-  // starting index of all groups located after the detached WebState.
-  for (const auto& current_group : groups_) {
-    TabGroupRange& current_range = current_group->range();
-    if (current_group.get() == group) {
-      current_range.ContractRight();
-    } else if (current_range.range_begin() >= index) {
-      current_range.MoveLeft();
+    // Update the number of pinned tabs if necessary.
+    if (index < pinned_tabs_count_) {
+      CHECK_GT(pinned_tabs_count_, 0);
+      --pinned_tabs_count_;
+    }
+
+    // Update the span of the group containing the detached WebState and the
+    // starting index of all groups located after the detached WebState.
+    for (const auto& current_group : groups_) {
+      TabGroupRange& current_range = current_group->range();
+      if (current_group.get() == group) {
+        current_range.ContractRight();
+      } else if (current_range.range_begin() >= index) {
+        current_range.MoveLeft();
+      }
+    }
+
+    // Update the active index to prevent observer from seeing an invalid
+    // WebState as the active one but only send the WebStateActivatedAt
+    // notification after the WebStateListDidChange with kDetach.
+    active_index_ = new_active_index;
+    if (index < active_index_) {
+      CHECK_GT(active_index_, 0);
+      --active_index_;
+    }
+
+    // Check that the active element (if there is one) is valid and expected.
+    CHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
+    CHECK_EQ(GetActiveWebState(), new_active_web_state);
+
+    // Inform the delegate that the active WebState changed (it may decide to
+    // force its realization, ...).
+    if (is_active_web_state_detached) {
+      OnActiveWebStateChanged();
+    }
+
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, detach_change, status);
     }
   }
 
-  // Update the active index to prevent observer from seeing an invalid WebState
-  // as the active one but only send the WebStateActivatedAt notification after
-  // the WebStateListDidChange with kDetach.
-  active_index_ = new_active_index;
-  if (index < active_index_) {
-    CHECK_GT(active_index_, 0);
-    --active_index_;
+  if (group) {
+    // If the group is now empty, delete it.
+    detached_wrapper->SetGroup(nullptr);
+    DeleteGroupIfEmpty(group);
   }
-
-  // Check that the active element (if there is one) is valid and expected.
-  CHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
-  CHECK_EQ(GetActiveWebState(), new_active_web_state);
-
-  // Inform the delegate that the active WebState changed (it may decide to
-  // force its realization, ...).
-  if (is_active_web_state_detached) {
-    OnActiveWebStateChanged();
-  }
-
-  for (auto& observer : observers_) {
-    observer.WebStateListDidChange(this, detach_change, status);
-  }
-
-  // If the group is now empty, delete it.
-  DeleteGroupIfEmpty(group);
 
   CHECK(!base::Contains(web_state_wrappers_, detached_wrapper));
   return WebStateWrapper::ReleaseWebState(std::move(detached_wrapper));
@@ -963,7 +977,7 @@ void WebStateList::MoveToGroupImpl(const std::set<int>& indices,
 
   // Iterate over the WebStates on the left of the group.
   // Reverse `before_group` to start from the rightmost, to keep indices valid.
-  std::reverse(before_group.begin(), before_group.end());
+  std::ranges::reverse(before_group);
   int to_index = group_range.range_end() - 1;
   for (int index : before_group) {
     MoveWebStateWrapperAt(index, to_index, /*pinned=*/false, group);
@@ -1274,9 +1288,13 @@ void WebStateList::DeleteGroupIfEmpty(const TabGroup* group) {
   web::WebState* const active_web_state = GetActiveWebState();
   const WebStateListStatus status = {.old_active_web_state = active_web_state,
                                      .new_active_web_state = active_web_state};
-  const WebStateListChangeGroupDelete group_delete_change(group);
-  for (auto& observer : observers_) {
-    observer.WebStateListDidChange(this, group_delete_change, status);
+
+  // Scope `group_delete_change` so it is destroyed before `group` is.
+  {
+    const WebStateListChangeGroupDelete group_delete_change(group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, group_delete_change, status);
+    }
   }
 
   // Actually delete the group.

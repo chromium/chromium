@@ -70,7 +70,7 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     if (!render_process_host_) {
       if (!vd_factory_remote_.is_bound()) {
         LaunchOOPVideoDecoderFactory(
-            vd_factory_remote_.BindNewPipeAndPassReceiver());
+            vd_factory_remote_.BindNewPipeAndPassReceiver(), /*gpu_remote=*/{});
         vd_factory_remote_.reset_on_disconnect();
       }
 
@@ -136,9 +136,7 @@ void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
     mojo::PendingRemote<media::mojom::MediaLog> media_log_remote,
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
-        renderer_extension_receiver,
-    mojo::PendingRemote<media::mojom::MediaFoundationRendererClientExtension>
-        client_extension_remote) {}
+        renderer_extension_receiver) {}
 #endif  // BUILDFLAG(IS_WIN)
 
 void FramelessMediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,

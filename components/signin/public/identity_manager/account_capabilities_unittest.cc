@@ -4,6 +4,7 @@
 
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,6 +43,23 @@ TEST_F(AccountCapabilitiesTest, CanHaveEmailAddressDisplayed) {
   EXPECT_EQ(capabilities.can_have_email_address_displayed(),
             signin::Tribool::kFalse);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(AccountCapabilitiesTest, CanMakeChromeSearchEngineChoiceScreenChoice) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_make_chrome_search_engine_choice_screen_choice(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_make_chrome_search_engine_choice_screen_choice(true);
+  EXPECT_EQ(capabilities.can_make_chrome_search_engine_choice_screen_choice(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_make_chrome_search_engine_choice_screen_choice(false);
+  EXPECT_EQ(capabilities.can_make_chrome_search_engine_choice_screen_choice(),
+            signin::Tribool::kFalse);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(AccountCapabilitiesTest,
        CanShowHistorySyncOptInsWithoutMinorModeRestrictions) {
@@ -206,18 +224,33 @@ TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {
             signin::Tribool::kFalse);
 }
 
-TEST_F(AccountCapabilitiesTest, IsSubjectToEnterprisePolicies) {
+TEST_F(AccountCapabilitiesTest, IsSubjectToAccountLevelEnterprisePolicies) {
   AccountCapabilities capabilities;
-  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
             signin::Tribool::kUnknown);
 
   AccountCapabilitiesTestMutator mutator(&capabilities);
-  mutator.set_is_subject_to_enterprise_policies(true);
-  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+  mutator.set_is_subject_to_account_level_enterprise_policies(true);
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
             signin::Tribool::kTrue);
 
-  mutator.set_is_subject_to_enterprise_policies(false);
-  EXPECT_EQ(capabilities.is_subject_to_enterprise_policies(),
+  mutator.set_is_subject_to_account_level_enterprise_policies(false);
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
+            signin::Tribool::kFalse);
+}
+
+TEST_F(AccountCapabilitiesTest, IsSubjectToEnterpriseFeatures) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_features(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_enterprise_features(true);
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_features(),
+            signin::Tribool::kTrue);
+
+  mutator.set_is_subject_to_enterprise_features(false);
+  EXPECT_EQ(capabilities.is_subject_to_enterprise_features(),
             signin::Tribool::kFalse);
 }
 

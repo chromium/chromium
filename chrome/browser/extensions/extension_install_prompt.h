@@ -20,14 +20,14 @@
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/install_prompt_permissions.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
 #include "chrome/common/buildflags.h"
+#include "extensions/browser/install_prompt_permissions.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_message.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -114,6 +114,8 @@ class ExtensionInstallPrompt {
                          double average_rating,
                          int rating_count,
                          const std::string& localized_rating_count);
+    void SetInitialExtensionsProviderName(
+        std::u16string initial_extensions_provider_name);
 
     PromptType type() const { return type_; }
 
@@ -139,18 +141,12 @@ class ExtensionInstallPrompt {
 
     // Getters for webstore metadata. Only populated when the type is
     // INLINE_INSTALL_PROMPT, EXTERNAL_INSTALL_PROMPT, or REPAIR_PROMPT.
-
-    // The star display logic replicates the one used by the webstore (from
-    // components.ratingutils.setFractionalYellowStars). Callers pass in an
-    // "appender", which will be repeatedly called back with the star images
-    // that they append to the star display area.
-    typedef void(*StarAppender)(const gfx::ImageSkia*, void*);
-    void AppendRatingStars(StarAppender appender, void* data) const;
+    std::vector<const gfx::ImageSkia*> GetRatingStars() const;
     std::u16string GetRatingCount() const;
     std::u16string GetUserCount() const;
     size_t GetPermissionCount() const;
+    extensions::InstallPromptPermissions GetPermissions() const;
     std::u16string GetPermission(size_t index) const;
-    std::u16string GetPermissionsDetails(size_t index) const;
 
     const extensions::Extension* extension() const { return extension_; }
     void set_extension(const extensions::Extension* extension) {
@@ -182,6 +178,10 @@ class ExtensionInstallPrompt {
 
    private:
     const PromptType type_;
+
+    // When this is non empty, means that this extension is an initial
+    // pre-installed one.
+    std::u16string initial_extensions_provider_name_;
 
     // Permissions that are being requested (may not be all of an extension's
     // permissions if only additional ones are being requested)
@@ -217,9 +217,6 @@ class ExtensionInstallPrompt {
     // Whether or not this prompt has been populated with data from the
     // webstore.
     bool has_webstore_data_;
-
-    std::vector<base::FilePath> retained_files_;
-    std::vector<std::u16string> retained_device_messages_;
 
     base::ObserverList<Observer> observers_;
   };
@@ -269,7 +266,7 @@ class ExtensionInstallPrompt {
       const std::string& id,
       const std::string& localized_name,
       const std::string& localized_description,
-      std::string* error);
+      std::u16string* error);
 
   // Creates a prompt with a parent web content.
   explicit ExtensionInstallPrompt(content::WebContents* contents);
@@ -307,10 +304,7 @@ class ExtensionInstallPrompt {
                   const SkBitmap* icon,
                   std::unique_ptr<Prompt> prompt,
                   const ShowDialogCallback& show_dialog_callback);
-  // Declared virtual for testing purposes.
-  // Note: if all you want to do is automatically confirm or cancel, prefer
-  // ScopedTestDialogAutoConfirm from extension_dialog_auto_confirm.h
-  virtual void ShowDialog(
+  void ShowDialog(
       DoneCallback install_callback,
       const extensions::Extension* extension,
       const SkBitmap* icon,

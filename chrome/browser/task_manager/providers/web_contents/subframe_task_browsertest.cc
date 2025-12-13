@@ -6,6 +6,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,7 +23,14 @@
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "pdf/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "base/test/with_feature_override.h"
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
+#include "pdf/pdf_features.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace task_manager {
 
@@ -79,6 +87,12 @@ class SubframeTaskBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser(), embedded_test_server()->GetURL(page_url)));
   }
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 // Makes sure that, if sites are isolated, the task manager will show the
@@ -222,5 +236,66 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   EXPECT_TRUE(unresponsive_task == subframe_task_1 ||
               unresponsive_task == subframe_task_2);
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class SubframeTaskPDFBrowserTest : public base::test::WithFeatureOverride,
+                                   public PDFExtensionTestBase {
+ public:
+  SubframeTaskPDFBrowserTest()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+
+  bool UseOopif() const override { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
+                       TaskManagerShowsPDFSubframeTask) {
+  MockWebContentsTaskManager task_manager;
+  task_manager.StartObserving();
+
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+
+  // The PDF viewer has 3 frames: the main embedder frame, the PDF extension
+  // frame, and the PDF content frame.
+  ASSERT_EQ(3U, task_manager.tasks().size());
+  const Task* subframe_task = task_manager.tasks()[2];
+
+  // The PDF content frame should have the PDF subframe prefix.
+  EXPECT_EQ(Task::RENDERER, subframe_task->GetType());
+  const std::u16string expected_prefix = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PDF_SUBFRAME_PREFIX, std::u16string());
+  EXPECT_TRUE(base::StartsWith(subframe_task->title(), expected_prefix,
+                               base::CompareCase::INSENSITIVE_ASCII));
+}
+
+IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
+                       TaskManagerShowsIncognitoPDFSubframeTask) {
+  MockWebContentsTaskManager task_manager;
+  task_manager.StartObserving();
+
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      incognito_browser, embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(EnsureFullPagePDFHasLoadedWithValidFrameTree(
+      incognito_browser->tab_strip_model()->GetActiveWebContents(),
+      /*allow_multiple_frames=*/false));
+
+  // There are 4 tasks. There is an about:blank frame from the first browser.
+  // Then, the PDF viewer in the incognito browser has 3 frames: the main
+  // embedder frame, the PDF extension frame, and the PDF content frame.
+  ASSERT_EQ(4U, task_manager.tasks().size());
+  const Task* subframe_task = task_manager.tasks()[3];
+
+  // The PDF content frame should have the incognito PDF subframe prefix.
+  EXPECT_EQ(Task::RENDERER, subframe_task->GetType());
+  const std::u16string expected_prefix = l10n_util::GetStringFUTF16(
+      IDS_TASK_MANAGER_PDF_SUBFRAME_INCOGNITO_PREFIX, std::u16string());
+  EXPECT_TRUE(base::StartsWith(subframe_task->title(), expected_prefix,
+                               base::CompareCase::INSENSITIVE_ASCII));
+}
+
+// TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
+// launches.
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(SubframeTaskPDFBrowserTest);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace task_manager

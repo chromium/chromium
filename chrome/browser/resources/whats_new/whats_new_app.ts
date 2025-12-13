@@ -34,6 +34,16 @@ enum EventType {
   PLAY_CLICKED = 'play_clicked',
   PAUSE_CLICKED = 'pause_clicked',
   RESTART_CLICKED = 'restart_clicked',
+  // Refresh metrics.
+  QR_CODE_TOGGLE_OPEN = 'qr_code_toggle_open',
+  QR_CODE_TOGGLE_CLOSE = 'qr_code_toggle_close',
+  NAV_CLICK = 'nav_click',
+  FEATURE_TILE_NAVIGATION = 'feature_tile_navigation',
+  CAROUSEL_SCROLL_BUTTON_CLICK = 'carousel_scroll_button_click',
+  EXPEND_MEDIA = 'expand_media',
+  CLOSE_EXPANDED_MEDIA = 'close_expanded_media',
+  CTA_CLICK = 'cta_click',
+  NEXT_BUTTON_CLICK = 'next_button_click',
 }
 
 enum SectionType {
@@ -155,11 +165,82 @@ interface RestartClickedMetric {
   order?: '1'|'2'|'3'|'4'|'5'|'6';
 }
 
+interface QrCodeToggleOpenMetric {
+  event: EventType.QR_CODE_TOGGLE_OPEN;
+  // Not a What's New module.
+  module_name?: string;
+}
+
+interface QrCodeToggleCloseMetric {
+  event: EventType.QR_CODE_TOGGLE_CLOSE;
+  // Not a What's New module.
+  module_name?: string;
+}
+
+interface NavClickMetric {
+  event: EventType.NAV_CLICK;
+  // Not a What's New module.
+  module_name?: string;
+  link_text: string;
+  link_url: string;
+  link_type: 'internal'|'external';
+}
+
+interface FeatureTileNavigationMetric {
+  event: EventType.FEATURE_TILE_NAVIGATION;
+  // Not a What's New module.
+  module_name?: string;
+  navigation_label: string;
+  position: string;
+}
+
+interface CarouselScrollButtonClickMetric {
+  event: EventType.CAROUSEL_SCROLL_BUTTON_CLICK;
+  // Not a What's New module.
+  module_name?: string;
+  navigation_label: string;
+  position: string;
+}
+
+interface ExpandMediaMetric {
+  event: EventType.EXPEND_MEDIA;
+  module_name?: string;
+  section: 'spotlight';
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface CloseExpandedMediaMetric {
+  event: EventType.CLOSE_EXPANDED_MEDIA;
+  module_name?: string;
+  section: 'spotlight';
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface CtaClickMetric {
+  event: EventType.CTA_CLICK;
+  module_name?: string;
+  section: 'spotlight';
+  link_text: string;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface NextButtonClickMetric {
+  event: EventType.NEXT_BUTTON_CLICK;
+  module_name?: string;
+  section: 'spotlight';
+  link_text: string;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
 type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
     GeneralLinkClickMetric|ModulesRenderedMetric|VideoStartedMetric|
-    VideoEndedMetric|PlayClickedMetric|PauseClickedMetric|RestartClickedMetric;
+    VideoEndedMetric|PlayClickedMetric|PauseClickedMetric|RestartClickedMetric|
+    QrCodeToggleOpenMetric|QrCodeToggleCloseMetric|NavClickMetric|
+    FeatureTileNavigationMetric|CarouselScrollButtonClickMetric|
+    ExpandMediaMetric|CloseExpandedMediaMetric|CtaClickMetric|
+    NextButtonClickMetric;
 
 interface EventData {
   data: BrowserCommand|MetricData;
@@ -222,6 +303,8 @@ function handleScrollDepthMetric(data: ScrollDepthMetric) {
       break;
     case '100':
       scrollDepth = ScrollDepth.k100;
+      break;
+    default:
       break;
   }
   if (scrollDepth) {
@@ -293,10 +376,10 @@ export function formatModuleName(moduleName: string) {
   return kebabCaseToCamelCase(withoutPrefix);
 }
 
-function handleModuleEvent(data: ModuleImpressionMetric|GeneralLinkClickMetric|
-                           VideoStartedMetric|VideoEndedMetric|
-                           PlayClickedMetric|PauseClickedMetric|
-                           RestartClickedMetric) {
+function handleModuleEvent(
+    data: ModuleImpressionMetric|GeneralLinkClickMetric|VideoStartedMetric|
+    VideoEndedMetric|PlayClickedMetric|PauseClickedMetric|RestartClickedMetric|
+    ExpandMediaMetric|CloseExpandedMediaMetric) {
   // Reject falsy `module_name`, including empty strings.
   if (!data.module_name) {
     return;
@@ -331,6 +414,16 @@ function handleModuleEvent(data: ModuleImpressionMetric|GeneralLinkClickMetric|
     case EventType.RESTART_CLICKED:
       handler.recordModuleRestartClicked(
           formatModuleName(data.module_name), position);
+      break;
+    case EventType.EXPEND_MEDIA:
+      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+          data.module_name, true);
+      break;
+    case EventType.CLOSE_EXPANDED_MEDIA:
+      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+          data.module_name, false);
+      break;
+    default:
       break;
   }
 }
@@ -462,7 +555,31 @@ export class WhatsNewAppElement extends CrLitElement {
       case EventType.PLAY_CLICKED:
       case EventType.PAUSE_CLICKED:
       case EventType.RESTART_CLICKED:
+      case EventType.EXPEND_MEDIA:
+      case EventType.CLOSE_EXPANDED_MEDIA:
         handleModuleEvent(data);
+        break;
+      case EventType.QR_CODE_TOGGLE_OPEN:
+        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(true);
+        break;
+      case EventType.QR_CODE_TOGGLE_CLOSE:
+        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(false);
+        break;
+      case EventType.NAV_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordNavClick();
+        break;
+      case EventType.FEATURE_TILE_NAVIGATION:
+        WhatsNewProxyImpl.getInstance().handler.recordFeatureTileNavigation();
+        break;
+      case EventType.CAROUSEL_SCROLL_BUTTON_CLICK:
+        WhatsNewProxyImpl.getInstance()
+            .handler.recordCarouselScrollButtonClick();
+        break;
+      case EventType.CTA_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordCtaClick();
+        break;
+      case EventType.NEXT_BUTTON_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordNextButtonClick();
         break;
       default:
         console.warn('Unrecognized message.', data);

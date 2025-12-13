@@ -8,7 +8,6 @@
 
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -23,18 +22,9 @@ namespace enterprise_signals {
 namespace {
 
 std::string GetOsVersion() {
-  base::FilePath os_release_file("/etc/os-release");
-  std::string release_info;
-  base::StringPairs values;
-  if (base::PathExists(os_release_file) &&
-      base::ReadFileToStringWithMaxSize(os_release_file, &release_info, 8192) &&
-      base::SplitStringIntoKeyValuePairs(release_info, '=', '\n', &values)) {
-    auto version_id = std::ranges::find(
-        values, "VERSION_ID", &std::pair<std::string, std::string>::first);
-    if (version_id != values.end()) {
-      return std::string(
-          base::TrimString(version_id->second, "\"", base::TRIM_ALL));
-    }
+  const auto& distribution_version = device_signals::GetDistributionVersion();
+  if (distribution_version) {
+    return distribution_version.value();
   }
   return base::SysInfo::OperatingSystemVersion();
 }

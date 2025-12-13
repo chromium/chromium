@@ -66,8 +66,8 @@ void TabletVolumeController::ParseSideVolumeButtonLocationInfo() {
     return;
   }
 
-  std::optional<base::Value::Dict> parsed_json =
-      base::JSONReader::ReadDict(location_info);
+  std::optional<base::Value::Dict> parsed_json = base::JSONReader::ReadDict(
+      location_info, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json) {
     LOG(ERROR) << "JSONReader failed reading side volume button location info: "
                << location_info;

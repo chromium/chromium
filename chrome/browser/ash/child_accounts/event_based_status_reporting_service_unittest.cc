@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
+#include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -26,6 +27,7 @@
 #include "components/account_id/account_id_literal.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -111,7 +113,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   ~EventBasedStatusReportingServiceTest() override = default;
 
   void SetUp() override {
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
         TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
@@ -123,6 +126,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
     chromeos::PowerManagerClient::InitializeFake();
     SystemClockClient::InitializeFake();
+
+    arc_app_test_.PreProfileSetUp();
 
     session_manager_->SetSessionState(
         session_manager::SessionState::LOGIN_PRIMARY);
@@ -138,7 +143,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     profile_->SetIsSupervisedProfile();
     // TODO(hidehiko): we should set up kChild account from the beginning,
     // but ArcAppTest does not support such a case. Fix the test helper.
-    arc_test_.SetUp(profile());
+    arc_app_test_.PostProfileSetUp(profile());
 
     ChildStatusReportingServiceFactory::GetInstance()->SetTestingFactory(
         profile(),
@@ -148,6 +153,11 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     test_consumer_status_reporting_service_ =
         static_cast<TestingConsumerStatusReportingService*>(
             consumer_status_reporting_service);
+
+    // `ScreenTimeController` depends on `ParentAccessService`.
+    parent_access_service_ =
+        std::make_unique<parent_access::ParentAccessService>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
     ScreenTimeControllerFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&CreateTestingScreenTimeController));
@@ -161,12 +171,14 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
 
   void TearDown() override {
     service_->Shutdown();
-    arc_test_.TearDown();
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     SystemClockClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 
     // This is following the production teardown order.
+    parent_access_service_.reset();
     session_manager_.reset();
     user_manager_.Reset();
   }
@@ -177,7 +189,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  arc::mojom::AppHost* app_host() { return arc_test_.arc_app_list_prefs(); }
+  arc::mojom::AppHost* app_host() { return arc_app_test_.arc_app_list_prefs(); }
   Profile* profile() { return profile_.get(); }
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
@@ -202,7 +214,8 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
-  ArcAppTest arc_test_{ArcAppTest::UserManagerMode::kDoNothing};
+  std::unique_ptr<parent_access::ParentAccessService> parent_access_service_;
+  ArcAppTest arc_app_test_{ArcAppTest::UserManagerMode::kDoNothing};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<TestingConsumerStatusReportingService, DanglingUntriaged>
       test_consumer_status_reporting_service_;

@@ -8,8 +8,8 @@ import android.text.TextUtils;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -102,7 +102,7 @@ public class SurveyClientFactory {
     }
 
     /** Get the crash upload supplier initialized in this factory. */
-    public Supplier<Boolean> getCrashUploadPermissionSupplier() {
+    public ObservableSupplier<Boolean> getCrashUploadPermissionSupplier() {
         return mCrashUploadPermissionSupplier;
     }
 }

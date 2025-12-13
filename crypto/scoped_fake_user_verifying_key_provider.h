@@ -5,9 +5,11 @@
 #ifndef CRYPTO_SCOPED_FAKE_USER_VERIFYING_KEY_PROVIDER_H_
 #define CRYPTO_SCOPED_FAKE_USER_VERIFYING_KEY_PROVIDER_H_
 
+#include "crypto/user_verifying_key.h"
+
 namespace crypto {
 
-// ScopedFakeUserVerifyingKeyProvider causes `GetUserVerifyingKeyProvider` to
+// `ScopedFakeUserVerifyingKeyProvider` causes `GetUserVerifyingKeyProvider` to
 // return a mock implementation of `UserVerifyingKeyProvider`, that does not use
 // system APIs, while it is in scope.
 class ScopedFakeUserVerifyingKeyProvider {
@@ -26,13 +28,23 @@ class ScopedNullUserVerifyingKeyProvider {
   ~ScopedNullUserVerifyingKeyProvider();
 };
 
-// ScopedFailingUserVerifyingKeyProvider causes `GetUserVerifyingKeyProvider` to
-// return a mock implementation of `UserVerifyingKeyProvider` that fails all
+// `ScopedFailingUserVerifyingKeyProvider` causes `GetUserVerifyingKeyProvider`
+// to return a mock implementation of `UserVerifyingKeyProvider` that fails all
 // signing requests.
 class ScopedFailingUserVerifyingKeyProvider {
  public:
   ScopedFailingUserVerifyingKeyProvider();
   ~ScopedFailingUserVerifyingKeyProvider();
+};
+
+// `ScopedUserVerifyingKeysSupportedOverride` allows a client to control the
+// timing and result of `AreUserVerifyingKeysSupported`. If this is in scope, it
+// takes priority over any of the scoped providers above.
+class ScopedUserVerifyingKeysSupportedOverride {
+ public:
+  explicit ScopedUserVerifyingKeysSupportedOverride(
+      UserVerifyingKeysSupportedOverride override);
+  ~ScopedUserVerifyingKeysSupportedOverride();
 };
 
 }  // namespace crypto

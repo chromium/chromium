@@ -7,6 +7,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chrome/browser/safe_browsing/notification_telemetry/notification_telemetry_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -42,6 +43,7 @@ class NotificationTelemetryServiceFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
@@ -75,6 +77,42 @@ TEST_F(NotificationTelemetryServiceFactoryTest, DisabledForGuestMode) {
           /*create_if_needed=*/true);
   EXPECT_EQ(nullptr,
             NotificationTelemetryServiceFactory::GetForProfile(profile));
+}
+
+TEST_F(NotificationTelemetryServiceFactoryTest,
+       CreatedWithDatabaseManagerWhenGlobalCacheListDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      kGlobalCacheListForGatingNotificationProtections);
+  TestingProfile* profile =
+      profile_manager_->CreateTestingProfile("testing_profile");
+  NotificationTelemetryService* notification_telemetry_service =
+      NotificationTelemetryServiceFactory::GetForProfile(profile);
+#if !BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
+  EXPECT_NE(nullptr, notification_telemetry_service);
+  EXPECT_NE(nullptr, notification_telemetry_service->database_manager_);
+#else
+  // Service is not created for Android arm32 devices.
+  EXPECT_EQ(nullptr, notification_telemetry_service);
+#endif  // !(!BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) &&
+        // defined(ARCH_CPU_ARM64)))
+}
+
+TEST_F(NotificationTelemetryServiceFactoryTest,
+       CreatedWithoutDatabaseManagerWhenGlobalCacheListEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      kGlobalCacheListForGatingNotificationProtections);
+  TestingProfile* profile =
+      profile_manager_->CreateTestingProfile("testing_profile");
+  NotificationTelemetryService* notification_telemetry_service =
+      NotificationTelemetryServiceFactory::GetForProfile(profile);
+#if !BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64))
+  EXPECT_NE(nullptr, notification_telemetry_service);
+  EXPECT_EQ(nullptr, notification_telemetry_service->database_manager_);
+#else
+  // Service is not created for Android arm32 devices.
+  EXPECT_EQ(nullptr, notification_telemetry_service);
+#endif  // !(!BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_ANDROID) &&
+        // defined(ARCH_CPU_ARM64)))
 }
 
 }  // namespace safe_browsing

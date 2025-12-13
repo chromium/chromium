@@ -9,6 +9,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -16,7 +17,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-constexpr CGFloat kCustomSpacingBeforeImageIfNoNavigationBar = 24.0;
+constexpr CGFloat kCustomSpacingBeforeImage = 24.0;
 constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 }  // namespace
 
@@ -28,14 +29,17 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
 - (instancetype)initWithIdleTimeoutTitleId:(int)titleId
                      idleTimeoutSubtitleId:(int)subtitleId
                       idleTimeoutThreshold:(int)threshold {
-  if ((self = [super init])) {
+  ButtonStackConfiguration* configuration =
+      [[ButtonStackConfiguration alloc] init];
+  configuration.primaryActionString =
+      l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME);
+  self = [super initWithConfiguration:configuration];
+  if (self) {
     self.titleString = l10n_util::GetNSString(titleId);
     self.subtitleString = base::SysUTF16ToNSString(
         l10n_util::GetPluralStringFUTF16(subtitleId, threshold));
     _timeRemainingTextView = [self createUnderTitleViewTextView];
     self.underTitleView = _timeRemainingTextView;
-    self.primaryActionString =
-        l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_CONTINUE_USING_CHROME);
   }
   return self;
 }
@@ -75,13 +79,9 @@ constexpr CGFloat kCustomSpacingAfterImage = 1.0;
   self.imageViewAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_IDLE_TIMEOUT_DIALOG_ACCESSIBILITY_LABEL);
 
-  self.showDismissBarButton = NO;
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.
-  self.customSpacingBeforeImageIfNoNavigationBar =
-      kCustomSpacingBeforeImageIfNoNavigationBar;
+  self.customSpacingBeforeImage = kCustomSpacingBeforeImage;
   self.customSpacingAfterImage = kCustomSpacingAfterImage;
   self.topAlignedLayout = YES;
   [super viewDidLoad];

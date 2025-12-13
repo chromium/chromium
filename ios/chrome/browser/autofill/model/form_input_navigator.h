@@ -30,14 +30,6 @@
 // directly.
 - (void)selectNextElementWithoutButtonPress;
 
-// Called when updating the keyboard view. Checks if the page contains a next
-// and a previous element.
-// `completionHandler` is called with 2 bools, the first indicating if a
-// previous element was found, and the second indicating if a next element was
-// found. `completionHandler` cannot be nil.
-- (void)fetchPreviousAndNextElementsPresenceWithCompletionHandler:
-    (void (^)(bool, bool))completionHandler;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_FORM_INPUT_NAVIGATOR_H_

@@ -6,6 +6,7 @@
 
 #include "base/hash/hash.h"
 #include "net/cookies/canonical_cookie.h"
+#include "url/gurl.h"
 
 namespace canonical_cookie {
 
@@ -15,7 +16,7 @@ size_t FastHash(const net::CanonicalCookie& cookie) {
          7 * base::PersistentHash(cookie.Path()) +
          (cookie.IsPartitioned()
               ? 13 * base::PersistentHash(
-                         cookie.PartitionKey()->site().GetURL().host())
+                         cookie.PartitionKey()->site().GetURL().GetHost())
               : 0);
 }
 

@@ -15,8 +15,8 @@ import android.text.format.Formatter;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.MathUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -145,6 +145,10 @@ public final class UiUtils {
             return context.getString(R.string.download_manager_dangerous_blocked);
         }
 
+        if (DownloadUtils.isBlockedSensitiveDownload(item)) {
+            return context.getString(R.string.download_message_single_download_blocked);
+        }
+
         String displayUrl =
                 DownloadUtils.formatUrlForDisplayInNotification(
                         item.url, DownloadUtils.MAX_ORIGIN_LENGTH_FOR_DOWNLOAD_HOME_CAPTION);
@@ -196,7 +200,8 @@ public final class UiUtils {
      * @return A drawable resource id representing an icon for {@code item}.
      */
     public static @DrawableRes int getIconForItem(OfflineItem item) {
-        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)) {
+        if (DownloadUtils.shouldDisplayDownloadAsDangerous(item.dangerType, item.state)
+                || DownloadUtils.isBlockedSensitiveDownload(item)) {
             return R.drawable.dangerous_filled_24dp;
         }
 
@@ -206,7 +211,7 @@ public final class UiUtils {
             case Filters.FilterType.SITES:
                 return R.drawable.ic_globe_24dp;
             case Filters.FilterType.VIDEOS:
-                return R.drawable.ic_videocam_24dp;
+                return R.drawable.ic_videocam_fill_24dp;
             case Filters.FilterType.MUSIC:
                 return R.drawable.ic_music_note_24dp;
             case Filters.FilterType.IMAGES:
@@ -425,7 +430,7 @@ public final class UiUtils {
         }
         // Sharing functionality that leads directly to the Android share sheet is
         // currently disabled.
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             return false;
         }
         return (item.state == OfflineItemState.COMPLETE)

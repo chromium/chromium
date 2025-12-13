@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
@@ -30,10 +31,6 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
   }
 
   const webnn::OperandDataType data_type = FromBlinkDataType(v8_data_type);
-  if (!context_properties.data_type_limits.input.Has(data_type)) {
-    return base::unexpected(String(webnn::NotSupportedInputTypeError(
-        name.Utf8(), data_type, context_properties.data_type_limits.input)));
-  }
 
   ASSIGN_OR_RETURN(
       webnn::OperandDescriptor descriptor,
@@ -41,6 +38,11 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
           context_properties, data_type, dimensions,
           webnn::GetErrorLabelPrefix(base::StrCat({"input ", name.Utf8()}))),
       [](std::string error) { return String(error); });
+
+  if (!context_properties.data_type_limits.input.Supports(descriptor)) {
+    return base::unexpected(String(webnn::NotSupportedInputError(
+        name.Utf8(), descriptor, context_properties.data_type_limits.input)));
+  }
 
   auto* input = MakeGarbageCollected<MLOperand>(
       builder, webnn::mojom::blink::Operand::Kind::kInput,
@@ -124,9 +126,9 @@ V8MLOperandDataType MLOperand::dataType() const {
   return ToBlinkDataType(descriptor_.data_type());
 }
 
-MLConstantOperand const* MLOperand::AsConstantOperand() const {
+MLConstantOperand* MLOperand::AsConstantOperand() {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kConstant);
-  return static_cast<MLConstantOperand const*>(this);
+  return static_cast<MLConstantOperand*>(this);
 }
 
 void MLOperand::AddDependentOperator(MLOperator* ml_operator) {

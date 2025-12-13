@@ -55,17 +55,20 @@ public class ConfirmationDialogHelper {
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
-     * @param confirmButtonTextId A string ID for positive button label.
+     * @param message A {@link CharSequence} used message body.
+     * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
-            String title, String message, int confirmButtonTextId, Runnable confirmedCallback) {
+            String title,
+            CharSequence message,
+            String confirmButtonText,
+            Runnable confirmedCallback) {
         showConfirmation(
                 title,
                 message,
-                confirmButtonTextId,
+                confirmButtonText,
                 confirmedCallback,
                 CallbackUtils.emptyRunnable());
     }
@@ -74,15 +77,15 @@ public class ConfirmationDialogHelper {
      * Shows an dialog to confirm the deletion.
      *
      * @param title A {@link String} used as title.
-     * @param message A {@link String} used message body.
-     * @param confirmButtonTextId A string ID for positive button label.
+     * @param message A {@link CharSequence} used message body.
+     * @param confirmButtonText A {@link String} for confirmation button label.
      * @param confirmedCallback A callback to run when the dialog is accepted.
      * @param declinedCallback A callback to run when the dialog is declined.
      */
     public void showConfirmation(
             String title,
-            String message,
-            int confirmButtonTextId,
+            CharSequence message,
+            String confirmButtonText,
             Runnable confirmedCallback,
             Runnable declinedCallback) {
         assert title != null;
@@ -105,9 +108,7 @@ public class ConfirmationDialogHelper {
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPHS,
                                 new ArrayList<>(List.of(message)))
-                        .with(
-                                ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                mContext.getString(confirmButtonTextId))
+                        .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonText)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                                 mContext.getString(R.string.cancel))

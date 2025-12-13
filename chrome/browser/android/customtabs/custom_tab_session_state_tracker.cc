@@ -67,3 +67,5 @@ static void JNI_CustomTabsOpenTimeRecorder_RecordCustomTabSession(
       .RecordCustomTabSession(j_time, package_name, j_session_duration,
                               j_was_user_closed, j_is_partial_cct);
 }
+
+DEFINE_JNI(CustomTabsOpenTimeRecorder)

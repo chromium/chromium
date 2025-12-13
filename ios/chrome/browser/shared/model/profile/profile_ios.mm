@@ -39,7 +39,9 @@ ProfileIOS::ProfileIOS(const base::FilePath& state_path,
               std::make_unique<base::SupportsUserData::Data>());
 }
 
-ProfileIOS::~ProfileIOS() {}
+ProfileIOS::~ProfileIOS() {
+  CHECK(profile_destroyed_callbacks_.empty());
+}
 
 // static
 ProfileIOS* ProfileIOS::FromBrowserState(web::BrowserState* browser_state) {
@@ -111,4 +113,14 @@ void ProfileIOS::UpdateCorsExemptHeader(
     network::mojom::NetworkContextParams* params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   variations::UpdateCorsExemptHeaderForVariations(params);
+}
+
+base::CallbackListSubscription ProfileIOS::RegisterProfileDestroyedCallback(
+    base::OnceClosure closure) {
+  return profile_destroyed_callbacks_.Add(std::move(closure));
+}
+
+void ProfileIOS::NotifyProfileDestroyed() {
+  profile_destroyed_callbacks_.Notify();
+  CHECK(profile_destroyed_callbacks_.empty());
 }

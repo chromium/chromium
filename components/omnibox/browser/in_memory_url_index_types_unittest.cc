@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <array>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,14 +19,15 @@ using base::UTF8ToUTF16;
 // Helper function for verifying that the contents of a C++ iterable container
 // of ints matches a C array ints.
 template <typename T>
-bool IntArraysEqual(const size_t* expected,
-                    size_t expected_size,
-                    const T& actual) {
-  if (expected_size != actual.size())
+bool IntArraysEqual(base::span<const size_t> expected, const T& actual) {
+  if (expected.size() != actual.size()) {
     return false;
-  for (size_t i = 0; i < expected_size; ++i)
-    if (expected[i] != actual[i])
+  }
+  for (size_t i = 0; i < expected.size(); ++i) {
+    if (expected[i] != actual[i]) {
       return false;
+    }
+  }
   return true;
 }
 
@@ -53,8 +50,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_EQ(u"brammy", string_vec[6]);
   // Verify the word starts.
   size_t expected_starts_a[] = {0, 7, 11, 18, 23, 31, 35};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_a, std::size(expected_starts_a),
-                             actual_starts_a));
+  EXPECT_TRUE(IntArraysEqual(expected_starts_a, actual_starts_a));
 
   std::u16string string_b(
       u" funky%20string-with=@strange   sequences, intended(to exceed)");
@@ -63,8 +59,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   ASSERT_EQ(9U, string_vec.size());
   // Note that we stop collecting words and word starts at kMaxSignificantChars.
   size_t expected_starts_b[] = {1, 7, 9, 16, 22, 32, 43, 52, 55};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_b, std::size(expected_starts_b),
-                             actual_starts_b));
+  EXPECT_TRUE(IntArraysEqual(expected_starts_b, actual_starts_b));
 
   std::u16string string_c(u"http://www.google.com/frammy_the_brammy");
   WordStarts actual_starts_c;
@@ -78,8 +73,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_EQ(u"the", string_vec[5]);
   EXPECT_EQ(u"brammy", string_vec[6]);
   size_t expected_starts_c[] = {0, 7, 11, 18, 22, 29, 33};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_c, std::size(expected_starts_c),
-                             actual_starts_c));
+  EXPECT_TRUE(IntArraysEqual(expected_starts_c, actual_starts_c));
 
   // Test trailing underscore case. https://crbug.com/1071216
   std::u16string string_d(u"http://www.google.com/frammy_");
@@ -92,8 +86,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_EQ(u"com", string_vec[3]);
   EXPECT_EQ(u"frammy", string_vec[4]);
   size_t expected_starts_d[] = {0, 7, 11, 18, 22};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_d, std::size(expected_starts_d),
-                             actual_starts_d));
+  EXPECT_TRUE(IntArraysEqual(expected_starts_d, actual_starts_d));
 
   // Test String16SetFromString16
   std::u16string string_e(u"http://web.google.com/search Google Web Search");
@@ -107,8 +100,7 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   EXPECT_TRUE(string_set.find(u"search") != string_set.end());
   EXPECT_TRUE(string_set.find(u"web") != string_set.end());
   size_t expected_starts_e[] = {0, 7, 11, 18, 22, 29, 36, 40};
-  EXPECT_TRUE(IntArraysEqual(expected_starts_e, std::size(expected_starts_e),
-                             actual_starts_e));
+  EXPECT_TRUE(IntArraysEqual(expected_starts_e, actual_starts_e));
 
   // Test SortMatches and DeoverlapMatches.
   TermMatches matches_e;

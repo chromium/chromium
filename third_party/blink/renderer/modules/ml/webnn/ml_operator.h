@@ -7,6 +7,7 @@
 
 #include <variant>
 
+#include "services/webnn/public/cpp/ml_number.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
@@ -78,7 +79,10 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
 
   const MLOperatorOptions* Options() const;
   MLOperatorOptions* Options();
-  const HeapVector<Member<MLOperand>>& Inputs() const;
+  // This includes optional inputs from Options.
+  HeapVector<Member<MLOperand>> Inputs() const;
+  const HeapVector<Member<MLOperand>>& PositionalInputs() const;
+
   const HeapVector<Member<MLOperand>>& Outputs() const;
   MLGraphBuilder const* Builder() const { return builder_.Get(); }
 
@@ -92,6 +96,8 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
                HeapVector<Member<MLOperand>> outputs);
 
  private:
+  void AddOptionalInputs(HeapVector<Member<MLOperand>>& inputs) const;
+
   Member<MLGraphBuilder> builder_;
   webnn::mojom::blink::Operation::Tag kind_;
 
@@ -124,6 +130,29 @@ class MODULES_EXPORT MLArgMinMaxOperator : public MLOperator {
 
  private:
   uint32_t axis_;
+};
+
+class MODULES_EXPORT MLClampOperator : public MLOperator {
+ public:
+  MLClampOperator(MLGraphBuilder* builder,
+                  String label,
+                  webnn::MLNumber min_value,
+                  webnn::MLNumber max_value);
+
+  MLClampOperator(const MLClampOperator&) = delete;
+  MLClampOperator& operator=(const MLClampOperator&) = delete;
+
+  ~MLClampOperator() override;
+
+  const String& label() const { return label_; }
+
+  const webnn::MLNumber& min_value() const { return min_value_; }
+  const webnn::MLNumber& max_value() const { return max_value_; }
+
+ private:
+  const String label_;
+  const webnn::MLNumber min_value_;
+  const webnn::MLNumber max_value_;
 };
 
 class MODULES_EXPORT MLConcatOperator : public MLOperator {
@@ -239,6 +268,7 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
   MLPadOperator(MLGraphBuilder* builder,
                 const Vector<uint32_t>& beginning_padding,
                 const Vector<uint32_t>& ending_padding,
+                webnn::MLNumber value,
                 MLPadOptions* options);
 
   MLPadOperator(const MLPadOperator&) = delete;
@@ -248,10 +278,12 @@ class MODULES_EXPORT MLPadOperator : public MLOperator {
 
   const Vector<uint32_t>& BeginningPadding() const;
   const Vector<uint32_t>& EndingPadding() const;
+  const webnn::MLNumber& Value() const { return value_; }
 
  private:
   Vector<uint32_t> beginning_padding_;
   Vector<uint32_t> ending_padding_;
+  const webnn::MLNumber value_;
 };
 
 class MODULES_EXPORT MLReverseOperator : public MLOperator {

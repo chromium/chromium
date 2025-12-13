@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/font_fallback_linux.h"
 
 #include <fontconfig/fontconfig.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -273,7 +269,7 @@ bool GetFallbackFont(const Font& font,
       // Add each potential fallback font returned by font-config to the
       // set of fallback fonts and keep track of their codepoints coverage.
       for (int i = 0; i < fonts->nfont; ++i) {
-        FcPattern* current_font = fonts->fonts[i];
+        FcPattern* current_font = UNSAFE_TODO(fonts->fonts[i]);
         if (!IsValidFontFromPattern(current_font))
           continue;
 
@@ -311,7 +307,7 @@ bool GetFallbackFont(const Font& font,
     size_t i = 0;
     while (i < text.length()) {
       UChar32 c = 0;
-      U16_NEXT(text.data(), i, text.length(), c);
+      UNSAFE_TODO(U16_NEXT(text.data(), i, text.length(), c));
       if (entry.HasGlyphForCharacter(c)) {
         ++matching_glyphs;
       } else {
@@ -374,7 +370,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
     if (fonts) {
       std::set<std::string> fallback_names;
       for (int i = 0; i < fonts->nfont; ++i) {
-        std::string name_str = GetFontName(fonts->fonts[i]);
+        std::string name_str = GetFontName(UNSAFE_TODO(fonts->fonts[i]));
         if (name_str.empty())
           continue;
 
@@ -494,7 +490,7 @@ class CachedFontSet {
       return;
 
     for (int i = 0; i < font_set_->nfont; ++i) {
-      FcPattern* pattern = font_set_->fonts[i];
+      FcPattern* pattern = UNSAFE_TODO(font_set_->fonts[i]);
 
       if (!IsValidFontFromPattern(pattern))
         continue;

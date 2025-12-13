@@ -285,7 +285,7 @@ function getLogSource(logSource: number) {
     return 'NTP_MODULE';
   }
   if (logSource === 8) {
-    return 'BUILT_IN_AI';
+    return 'CONTEXTUAL_TASKS_CONTEXT';
   }
   return logSource.toString();
 }

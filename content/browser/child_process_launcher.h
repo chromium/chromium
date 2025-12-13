@@ -95,13 +95,12 @@ struct RenderProcessPriority {
                         bool intersects_viewport,
                         bool boost_for_pending_views,
                         bool boost_for_loading,
-                        bool is_spare_renderer
+                        bool boost_for_discard,
 #if BUILDFLAG(IS_ANDROID)
-                        ,
-                        ChildProcessImportance importance
-#endif
-#if !BUILDFLAG(IS_ANDROID)
-                        ,
+                        bool is_spare_renderer,
+                        ChildProcessImportance importance,
+                        bool has_active_clients
+#else
                         std::optional<base::Process::Priority> priority_override
 #endif
   );
@@ -167,13 +166,21 @@ struct RenderProcessPriority {
   // navigation and initial loading.
   bool boost_for_loading;
 
+  // |boost_for_discard| is true if this process is responsible for executing
+  // discard logic.
+  bool boost_for_discard;
+
+#if BUILDFLAG(IS_ANDROID)
   // |is_spare_renderer| is true if this process should be treated as a spare
   // renderer. The process will be given a moderate priority even it is not
   // visible and used.
   bool is_spare_renderer;
 
-#if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;
+
+  // |has_active_clients| is true if this process has at least one client that
+  // is considered active.
+  bool has_active_clients;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -232,6 +239,15 @@ class CONTENT_EXPORT ChildProcessLauncher
 #if BUILDFLAG(IS_ANDROID)
     // Whether the process can use pre-warmed up connection.
     virtual bool CanUseWarmUpConnection();
+    // Whether the process should be set to the priority of a spare renderer.
+    virtual bool HasSpareRendererPriority();
+    // The callback function triggered when the spare renderer priority has been
+    // successfully updated to normal renderer priority.
+    // If the child process is dead when trying to update
+    // the priority, is_alive will be false. The callback will be triggered
+    // after calling
+    // RenderProcessHostImpl::GraduateSpareToNormalRendererPriority.
+    virtual void OnSpareRendererPriorityGraduated(bool is_alive) {}
 #endif
 
    protected:
@@ -250,7 +266,7 @@ class CONTENT_EXPORT ChildProcessLauncher
   ChildProcessLauncher(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
-      int child_process_id,
+      ChildProcessId child_process_id,
       Client* client,
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
@@ -260,8 +276,7 @@ class CONTENT_EXPORT ChildProcessLauncher
       scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
           trace_config_memory_region = nullptr,
       scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
-          trace_output_memory_region = nullptr,
-      bool terminate_on_shutdown = true);
+          trace_output_memory_region = nullptr);
 
   ChildProcessLauncher(const ChildProcessLauncher&) = delete;
   ChildProcessLauncher& operator=(const ChildProcessLauncher&) = delete;
@@ -329,6 +344,10 @@ class CONTENT_EXPORT ChildProcessLauncher
               DWORD last_error,
 #endif
               int error_code);
+
+#if BUILDFLAG(IS_ANDROID)
+  void OnSpareRendererPriorityGraduated(bool is_alive);
+#endif
 
 #if BUILDFLAG(IS_MAC)
   // base::PortProvider::Observer:

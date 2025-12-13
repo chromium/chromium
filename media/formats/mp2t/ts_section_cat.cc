@@ -4,6 +4,7 @@
 
 #include "media/formats/mp2t/ts_section_cat.h"
 
+#include <optional>
 #include <vector>
 
 #include "base/logging.h"
@@ -11,30 +12,28 @@
 #include "media/formats/mp2t/descriptors.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
-namespace media {
-namespace mp2t {
+namespace media::mp2t {
 
 TsSectionCat::TsSectionCat(
     const RegisterCencPidsCB& register_cenc_ids_cb,
     const RegisterEncryptionSchemeCB& register_encryption_scheme_cb)
     : register_cenc_ids_cb_(register_cenc_ids_cb),
-      register_encryption_scheme_cb_(register_encryption_scheme_cb),
-      version_number_(-1) {}
+      register_encryption_scheme_cb_(register_encryption_scheme_cb) {}
 
 TsSectionCat::~TsSectionCat() {}
 
 bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
   DCHECK(bit_reader);
   // Read the fixed section length.
-  int table_id;
-  int section_syntax_indicator;
-  int dummy_zero;
-  int reserved;
-  int section_length;
-  int version_number;
-  int current_next_indicator;
-  int section_number;
-  int last_section_number;
+  uint8_t table_id;
+  uint8_t section_syntax_indicator;
+  uint8_t dummy_zero;
+  uint32_t reserved;
+  uint16_t section_length;
+  uint8_t version_number;
+  uint8_t current_next_indicator;
+  uint8_t section_number;
+  uint8_t last_section_number;
   RCHECK(bit_reader->ReadBits(8, &table_id));
   RCHECK(bit_reader->ReadBits(1, &section_syntax_indicator));
   RCHECK(bit_reader->ReadBits(1, &dummy_zero));
@@ -57,14 +56,14 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(!dummy_zero);
 
   Descriptors descriptors;
-  int ca_pid, pssh_pid;
+  uint16_t ca_pid, pssh_pid;
   EncryptionScheme scheme;
   if (section_length < 4) {
     return false;
   }
   RCHECK(descriptors.Read(bit_reader, section_length - 4));
   RCHECK(descriptors.HasCADescriptorCenc(&ca_pid, &pssh_pid, &scheme));
-  int crc32;
+  uint32_t crc32;
   RCHECK(bit_reader->ReadBits(32, &crc32));
 
   // Just ignore the CAT if not applicable yet.
@@ -74,8 +73,9 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
   }
 
   // Ignore the CAT if it hasn't changed.
-  if (version_number == version_number_)
+  if (version_number == version_number_) {
     return true;
+  }
 
   // Can now register the PIDs and scheme.
   register_cenc_ids_cb_.Run(ca_pid, pssh_pid);
@@ -87,8 +87,7 @@ bool TsSectionCat::ParsePsiSection(BitReader* bit_reader) {
 }
 
 void TsSectionCat::ResetPsiSection() {
-  version_number_ = -1;
+  version_number_ = std::nullopt;
 }
 
-}  // namespace mp2t
-}  // namespace media
+}  // namespace media::mp2t

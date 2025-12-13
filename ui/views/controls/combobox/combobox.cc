@@ -47,6 +47,7 @@
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -154,15 +155,17 @@ Combobox::Combobox(ui::ComboboxModel* model) {
   // TODO(crbug.com/40250124): This setter should be removed and the behavior
   // made default when ChromeRefresh2023 is finalized.
   SetEventHighlighting(true);
-  enabled_changed_subscription_ = AddEnabledChangedCallback(base::BindRepeating(
-      [](Combobox* combobox) {
-        combobox->SetBackgroundColorId(
-            combobox->GetEnabled() ? ui::kColorComboboxBackground
-                                   : ui::kColorComboboxBackgroundDisabled);
-        combobox->UpdateBorder();
-        combobox->UpdateAccessibleDefaultActionVerb();
-      },
-      base::Unretained(this)));
+  enabled_changed_subscription_ =
+      AddEnabledInViewsSubtreeChangedCallback(base::BindRepeating(
+          [](Combobox* combobox) {
+            combobox->SetBackgroundColorId(
+                combobox->GetEnabledInViewsSubtree()
+                    ? ui::kColorComboboxBackground
+                    : ui::kColorComboboxBackgroundDisabled);
+            combobox->UpdateBorder();
+            combobox->UpdateAccessibleDefaultActionVerb();
+          },
+          base::Unretained(this)));
 
   // A layer is applied to make sure that canvas bounds are snapped to pixel
   // boundaries (for the sake of drawing the arrow).
@@ -203,10 +206,10 @@ void Combobox::SetSelectedIndex(std::optional<size_t> index) {
   }
 
   if (size_to_largest_label_) {
-    OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
+    OnPropertyChanged(&selected_index_, PropertyEffects::kPaint);
   } else {
     content_size_ = GetContentSize();
-    OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
+    OnPropertyChanged(&selected_index_, PropertyEffects::kPreferredSizeChanged);
   }
 
   UpdateAccessibleValue();
@@ -279,7 +282,7 @@ void Combobox::SetInvalid(bool invalid) {
   }
 
   UpdateBorder();
-  OnPropertyChanged(&selected_index_, kPropertyEffectsPaint);
+  OnPropertyChanged(&selected_index_, PropertyEffects::kPaint);
 }
 
 void Combobox::SetBorderColorId(ui::ColorId color_id) {
@@ -319,7 +322,7 @@ void Combobox::SetSizeToLargestLabel(bool size_to_largest_label) {
 
   size_to_largest_label_ = size_to_largest_label;
   content_size_ = GetContentSize();
-  OnPropertyChanged(&selected_index_, kPropertyEffectsPreferredSizeChanged);
+  OnPropertyChanged(&selected_index_, PropertyEffects::kPreferredSizeChanged);
 }
 
 bool Combobox::IsMenuRunning() const {
@@ -566,7 +569,7 @@ const std::unique_ptr<ui::ComboboxModel>& Combobox::GetOwnedModel() const {
 }
 
 void Combobox::UpdateBorder() {
-  if (!GetEnabled()) {
+  if (!GetEnabledInViewsSubtree()) {
     SetBorder(nullptr);
     return;
   }
@@ -616,9 +619,10 @@ void Combobox::PaintIconAndText(gfx::Canvas* canvas) {
   }
 
   // Draw the text.
-  SkColor text_color = foreground_color_id_
-                           ? GetColorProvider()->GetColor(*foreground_color_id_)
-                           : GetTextColorForEnableState(*this, GetEnabled());
+  SkColor text_color =
+      foreground_color_id_
+          ? GetColorProvider()->GetColor(*foreground_color_id_)
+          : GetTextColorForEnableState(*this, GetEnabledInViewsSubtree());
   std::u16string text = GetModel()->GetItemAt(*selected_index_);
   const gfx::FontList& font_list = GetForegroundFontList();
 
@@ -825,7 +829,7 @@ void Combobox::UpdateAccessibleValue() const {
 }
 
 void Combobox::UpdateAccessibleDefaultActionVerb() {
-  if (GetEnabled()) {
+  if (GetEnabledInViewsSubtree()) {
     GetViewAccessibility().SetDefaultActionVerb(
         ax::mojom::DefaultActionVerb::kOpen);
   } else {

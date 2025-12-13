@@ -8,7 +8,6 @@
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 

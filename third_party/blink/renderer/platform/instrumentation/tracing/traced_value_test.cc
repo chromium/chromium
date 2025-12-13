@@ -14,7 +14,8 @@ namespace blink {
 
 std::optional<base::Value> ParseTracedValue(
     std::unique_ptr<TracedValueJSON> value) {
-  return base::JSONReader::Read(value->ToJSON().Utf8());
+  return base::JSONReader::Read(value->ToJSON().Utf8(),
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 TEST(TracedValueTest, FlatDictionary) {

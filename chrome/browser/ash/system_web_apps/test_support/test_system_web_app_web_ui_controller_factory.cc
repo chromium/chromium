@@ -40,8 +40,7 @@ std::unique_ptr<content::WebUIController>
 TestSystemWebAppWebUIControllerFactory::CreateWebUIControllerForURL(
     content::WebUI* web_ui,
     const GURL& url) {
-  if (!url.SchemeIs(content::kChromeUIScheme) ||
-      url.host_piece() != source_name_) {
+  if (!url.SchemeIs(content::kChromeUIScheme) || url.host() != source_name_) {
     return nullptr;
   }
 
@@ -61,8 +60,7 @@ content::WebUI::TypeID TestSystemWebAppWebUIControllerFactory::GetWebUIType(
 bool TestSystemWebAppWebUIControllerFactory::UseWebUIForURL(
     content::BrowserContext* browser_context,
     const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme) &&
-         url.host_piece() == source_name_;
+  return url.SchemeIs(content::kChromeUIScheme) && url.host() == source_name_;
 }
 
 }  // namespace ash

@@ -40,7 +40,7 @@ PageActionContainerView::PageActionContainerView(
                    gfx::Insets().set_right(params.between_icon_spacing))
       .SetIgnoreDefaultMainAxisMargins(!params.should_bridge_containers);
 
-  int initial_index = 0;
+  size_t initial_index = 0;
   for (actions::ActionItem* action_item : action_items) {
     const auto action_item_id = action_item->GetActionId().value();
     const auto& properties = properties_provider.GetProperties(action_item_id);
@@ -58,6 +58,11 @@ PageActionContainerView::PageActionContainerView(
     chip_state_changed_callbacks_.push_back(
         view->AddChipVisibilityChangedCallback(base::BindRepeating(
             &PageActionContainerView::OnPageActionSuggestionChipStateChanged,
+            base::Unretained(this))));
+
+    page_action_view_visible_changed_callbacks_.push_back(
+        view->AddVisibleChangedCallback(base::BindRepeating(
+            &PageActionContainerView::NormalizePageActionViewOrder,
             base::Unretained(this))));
 
     // Record the original index for the page action view so that even if it
@@ -91,15 +96,42 @@ PageActionView* PageActionContainerView::GetPageActionView(
 
 void PageActionContainerView::OnPageActionSuggestionChipStateChanged(
     PageActionView* view) {
-  if (view->IsChipVisible()) {
-    // Bring the suggestion chip to the front.
-    ReorderChildView(view, 0u);
-  } else {
-    const auto action_id = view->GetActionId();
-    // Restore the original order using the recorded index.
-    if (page_action_view_initial_indices_.contains(action_id)) {
-      ReorderChildView(view, page_action_view_initial_indices_.at(action_id));
-    }
+  NormalizePageActionViewOrder();
+}
+
+void PageActionContainerView::NormalizePageActionViewOrder() {
+  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>> chips;
+  std::vector<std::pair<size_t /*initial_index*/, PageActionView*>> non_chips;
+
+  chips.reserve(page_action_views_.size());
+  non_chips.reserve(page_action_views_.size());
+
+  for (const auto& [action_id, view] : page_action_views_) {
+    const auto it = page_action_view_initial_indices_.find(action_id);
+    CHECK(it != page_action_view_initial_indices_.end());
+
+    const size_t initial_index = it->second;
+    (view->IsChipVisible() ? chips : non_chips)
+        .emplace_back(initial_index, view);
+  }
+
+  // Sort both groups by initial insertion index to keep stable, predictable
+  // order.
+  auto by_initial_index = [](const auto& a, const auto& b) {
+    return a.first < b.first;
+  };
+  std::sort(chips.begin(), chips.end(), by_initial_index);
+  std::sort(non_chips.begin(), non_chips.end(), by_initial_index);
+
+  // Place all chips first, in initial-order.
+  size_t next_index = 0;
+  for (const auto& entry : chips) {
+    ReorderChildView(entry.second, next_index++);
+  }
+
+  // Place the rest, offset by the number of chips.
+  for (const auto& entry : non_chips) {
+    ReorderChildView(entry.second, next_index++);
   }
 }
 

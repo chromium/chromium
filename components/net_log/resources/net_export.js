@@ -8,6 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 // </if>
 
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
@@ -186,6 +187,8 @@ class NetExportView {
         // This is a short-lived state, no need to do anything special.
         this.renderLogging_(info);
         break;
+      default:
+        assertNotReached(`Unknown state: ${info.state}`);
     }
   }
 

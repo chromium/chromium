@@ -54,7 +54,6 @@ class VideoEncodeAcceleratorAdapterTest
 
     vea_ = new FakeVideoEncodeAccelerator(vea_runner_);
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
     gpu_factories_ =
         std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
     supported_profiles_ = {
@@ -528,6 +527,46 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, AutomaticResizeSupport) {
                     ValidatingStatusCB());
   adapter()->Encode(frame2, VideoEncoder::EncodeOptions(false),
                     ValidatingStatusCB());
+  RunUntilIdle();
+  EXPECT_EQ(outputs_count, 2);
+}
+
+TEST_F(VideoEncodeAcceleratorAdapterTest, ManualReferenceControl) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.manual_reference_buffer_control = true;
+  int outputs_count = 0;
+  auto pixel_format = PIXEL_FORMAT_NV12;
+  const gfx::ColorSpace expected_color_space =
+      ExpectedColorSpace(pixel_format, pixel_format);
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription>) {
+        EXPECT_EQ(output.color_space, expected_color_space);
+        outputs_count++;
+      });
+
+  vea()->SetEncodingCallback(base::BindLambdaForTesting(
+      [&](BitstreamBuffer&, bool keyframe, scoped_refptr<VideoFrame> frame) {
+        return BitstreamBufferMetadata(1, keyframe, frame->timestamp());
+      }));
+
+  adapter()->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                        std::move(output_cb), ValidatingStatusCB());
+
+  auto frame1 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(1));
+  auto frame2 =
+      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(2));
+
+  VideoEncoder::EncodeOptions encode_opts;
+  encode_opts.reference_buffers = {};
+  encode_opts.update_buffer = 0;
+  adapter()->Encode(frame1, encode_opts, ValidatingStatusCB());
+
+  encode_opts.reference_buffers = {0};
+  encode_opts.update_buffer = std::nullopt;
+  adapter()->Encode(frame2, encode_opts, ValidatingStatusCB());
   RunUntilIdle();
   EXPECT_EQ(outputs_count, 2);
 }

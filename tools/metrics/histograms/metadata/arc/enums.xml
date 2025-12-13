@@ -739,6 +739,8 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Http error 404"/>
   <int value="8" label="Http error 500"/>
   <int value="9" label="Http error 503"/>
+  <int value="10" label="Developer mode"/>
+  <int value="11" label="Http error 400"/>
 </enum>
 
 <enum name="CompanionLibraryApisList">

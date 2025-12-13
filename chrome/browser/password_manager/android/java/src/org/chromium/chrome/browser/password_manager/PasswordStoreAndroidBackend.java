@@ -13,13 +13,13 @@ import java.util.Date;
 import java.util.Optional;
 
 /**
- * Interface to send backend requests to a downstream implementation to fulfill password store
- * jobs. All methods are expected to respond asynchronously to callbacks.
+ * Interface to send backend requests to a downstream implementation to fulfill password store jobs.
+ * All methods are expected to respond asynchronously to callbacks.
  */
 @NullMarked
 public interface PasswordStoreAndroidBackend {
     /** Serves as a general exception for failed requests to the PasswordStoreAndroidBackend. */
-    public class BackendException extends Exception {
+    class BackendException extends Exception {
         public @AndroidBackendErrorType int errorCode;
 
         public BackendException(String message, @AndroidBackendErrorType int error) {

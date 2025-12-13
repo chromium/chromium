@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
@@ -35,6 +36,9 @@ struct ConfigurationSection;
 // A struct holding device properties that are useful when interacting with
 // the gestures lib.
 struct GestureDeviceProperties {
+  GestureDeviceProperties();
+  ~GestureDeviceProperties();
+
   int area_left = 0;
   int area_right = 0;
   int area_top = 0;
@@ -345,7 +349,7 @@ struct GesturesProp {
   // property is accessed.
   GesturesPropGetHandler get_ = nullptr;
   GesturesPropSetHandler set_ = nullptr;
-  void* handler_data_ = nullptr;
+  raw_ptr<void> handler_data_ = nullptr;
 };
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_PROPERTY_PROVIDER_H_

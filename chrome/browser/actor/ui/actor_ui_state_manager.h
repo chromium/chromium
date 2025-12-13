@@ -8,11 +8,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/widget/glic_window_controller.h"
-#endif
+#include "chrome/common/actor/task_id.h"
 
 namespace tabs {
 class TabInterface;
@@ -27,40 +24,39 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // ActorUiStateManagerInterface:
   void OnUiEvent(AsyncUiEvent event, UiCompleteCallback callback) override;
   void OnUiEvent(SyncUiEvent event) override;
-  ActorUiTabControllerInterface* GetUiTabController(
-      tabs::TabInterface* tab) override;
+  void MaybeShowToast(BrowserWindowInterface* bwi) override;
 
-// TODO(crbug.com/424495020): Post-task icon refactor, look into removing this
-// function from AUSM.
-#if BUILDFLAG(ENABLE_GLIC)
-  void OnGlicUpdateFloatyState(
-      glic::GlicWindowController::State floaty_state) override;
-#endif
+  base::CallbackListSubscription RegisterActorTaskStateChange(
+      ActorTaskStateChangeCallback callback) override;
+  base::CallbackListSubscription RegisterActorTaskStopped(
+      ActorTaskStoppedCallback callback) override;
 
   // Returns the tabs associated with a given task id.
   std::vector<tabs::TabInterface*> GetTabs(TaskId id);
 
-  // Returns the current profile scoped ui state.
-  UiState GetUiState() const;
-
  private:
-  void MaybeUpdateProfileScopedUiState();
-  void OnActorTaskStateChange(TaskId task_id, ActorTask::State new_task_state);
+  // Notify profile scoped ui components about actor task state changes.
+  void NotifyActorTaskStateChange(TaskId task_id);
+  // Called whenever an actor task state changes.
+  void OnActorTaskStateChange(TaskId task_id,
+                              ActorTask::State new_task_state,
+                              const std::string& title);
 
-  // Returns completed tasks within the kCompletedTaskExpiryDelay of the
-  // `current_time`.
-  std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
+  // Notify profile scoped ui components about actor task stop.
+  void NotifyActorTaskStopped(TaskId task_id,
+                              ActorTask::State final_state,
+                              const std::string& title);
 
-  // Shows toast that notifies user the agent is working in the background.
-  // Shows a maximum of kToastShownMax per profile.
-  // TODO(crbug.com/428014205): Define kToastShownMax.
-  void MaybeShowToast();
-
-  base::OneShotTimer update_profile_scoped_ui_debounce_timer_;
-  base::OneShotTimer completed_tasks_expiry_timer_;
+  base::OneShotTimer notify_actor_task_state_change_debounce_timer_;
 
   const raw_ref<ActorKeyedService> actor_service_;
-  UiState state_ = UiState::kInactive;
+
+  base::RepeatingCallbackList<void(TaskId)>
+      actor_task_state_change_callback_list_;
+
+  base::RepeatingCallbackList<void(TaskId, ActorTask::State, std::string)>
+      actor_task_stopped_callback_list_;
+
   base::WeakPtrFactory<ActorUiStateManager> weak_factory_{this};
 };
 

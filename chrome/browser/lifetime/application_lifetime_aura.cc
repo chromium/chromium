@@ -50,7 +50,7 @@ void HandleAppExitingForPlatform() {
   }
 #endif
 
-  views::Widget::CloseAllSecondaryWidgets();
+  views::Widget::CloseAllWidgets();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(

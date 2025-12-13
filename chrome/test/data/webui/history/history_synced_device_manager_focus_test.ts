@@ -5,26 +5,31 @@
 import 'chrome://history/history.js';
 
 import type {HistorySyncedDeviceManagerElement} from 'chrome://history/history.js';
-import {ensureLazyLoaded} from 'chrome://history/history.js';
+import {BrowserServiceImpl, HistorySignInState, SyncState} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestBrowserService} from './test_browser_service.js';
 import {createSession, createWindow} from './test_util.js';
 
 suite('<history-synced-device-manager>', function() {
   let element: HistorySyncedDeviceManagerElement;
+  let testService: TestBrowserService;
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    return ensureLazyLoaded().then(() => {
-      element = document.createElement('history-synced-device-manager');
-      element.signInState = true;
-      element.searchTerm = '';
-      document.body.appendChild(element);
+    testService = new TestBrowserService();
+    BrowserServiceImpl.setInstance(testService);
+    testService.setInitialIdentityState({
+      signIn: HistorySignInState.SIGNED_IN,
+      tabsSync: SyncState.TURNED_ON,
+      historySync: SyncState.TURNED_OFF,
     });
+    element = document.createElement('history-synced-device-manager');
+    element.searchTerm = '';
+    document.body.appendChild(element);
   });
 
   test('focus and keyboard nav', async () => {

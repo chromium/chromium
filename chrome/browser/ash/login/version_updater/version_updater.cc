@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -96,26 +95,23 @@ void VersionUpdater::Init() {
 }
 
 void VersionUpdater::StartNetworkCheck() {
-  // If portal detector is enabled and portal detection before AU is
-  // allowed, initiate network state check. Otherwise, directly
-  // proceed to update.
-  if (!network_portal_detector::GetInstance()->IsEnabled()) {
+  // If network state is available, initiate network state check. Otherwise,
+  // directly proceed to update.
+  if (!NetworkHandler::IsInitialized()) {
     StartUpdateCheck();
     return;
   }
 
   delegate_->UpdateInfoChanged(update_info_);
 
-  if (NetworkHandler::IsInitialized()) {
-    NetworkStateHandler* handler =
-        NetworkHandler::Get()->network_state_handler();
-    if (!handler->HasObserver(this))
-      handler->AddObserver(this);
-    const NetworkState* default_network = handler->DefaultNetwork();
-    PortalStateChanged(default_network,
-                       default_network ? default_network->portal_state()
-                                       : NetworkState::PortalState::kUnknown);
+  NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
+  if (!handler->HasObserver(this)) {
+    handler->AddObserver(this);
   }
+  const NetworkState* default_network = handler->DefaultNetwork();
+  PortalStateChanged(default_network,
+                     default_network ? default_network->portal_state()
+                                     : NetworkState::PortalState::kUnknown);
 }
 
 void VersionUpdater::StartUpdateCheck() {

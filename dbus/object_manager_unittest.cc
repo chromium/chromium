@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -89,7 +90,7 @@ class ObjectManagerTest
     bus_options.bus_type = Bus::SESSION;
     bus_options.connection_type = Bus::PRIVATE;
     bus_options.dbus_task_runner = dbus_thread_->task_runner();
-    bus_ = new Bus(bus_options);
+    bus_ = new Bus(std::move(bus_options));
     ASSERT_TRUE(bus_->HasDBusThread());
 
     object_manager_ = bus_->GetObjectManager(

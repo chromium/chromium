@@ -34,13 +34,17 @@
 #include <iosfwd>
 #include <vector>
 
-#include "base/functional/callback_helpers.h"
+#include "base/functional/callback_forward.h"
 #include "cc/paint/element_id.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_dom_event.h"
 #include "v8/include/v8-forward.h"
+
+namespace base {
+class ScopedClosureRunner;
+}  // namespace base
 
 namespace blink {
 
@@ -59,7 +63,18 @@ class WebPluginContainer;
 class BLINK_EXPORT WebNode {
  public:
   enum class EventType {
+    kAutofill,
     kSelectionchange,
+    kBeforeinput,
+    kInput,
+    kCompositionstart,
+    kCompositionupdate,
+    kCompositionend,
+    kDrop,
+    kPaste,
+    kKeydown,
+    kKeyup,
+    kKeypress,
   };
 
   static WebNode FromDomNodeId(int dom_node_id);
@@ -82,6 +97,9 @@ class BLINK_EXPORT WebNode {
   explicit operator bool() const { return !IsNull(); }
 
   bool IsConnected() const;
+
+  bool Contains(const WebNode*) const;
+  bool ContainsViaFlatTree(const WebNode*) const;
 
   WebNode ParentNode() const;
   WebNode ParentOrShadowHostNode() const;
@@ -131,6 +149,8 @@ class BLINK_EXPORT WebNode {
 
   bool Focused() const;
 
+  void RevealAutoExpandableAncestors() const;
+
   WebPluginContainer* PluginContainer() const;
 
   bool IsInsideFocusableElementOrARIAWidget() const;
@@ -143,7 +163,11 @@ class BLINK_EXPORT WebNode {
   // Returns a RAII object that removes the listener.
   base::ScopedClosureRunner AddEventListener(
       EventType event_type,
-      base::RepeatingCallback<void(WebDOMEvent)> handler);
+      base::RepeatingCallback<void(WebDOMEvent)> handler,
+      bool use_capture = false);
+
+  // Returns true there is at least one listener for `event_type` on this node.
+  bool HasEventListeners(EventType event_type) const;
 
   // Helper to downcast to `T`. Will fail with a CHECK() if converting to `T` is
   // not legal. The returned `T` will always be non-null if `this` is non-null.
@@ -204,10 +228,6 @@ class BLINK_EXPORT WebNode {
 
 inline bool operator==(const WebNode& a, const WebNode& b) {
   return a.Equals(b);
-}
-
-inline bool operator!=(const WebNode& a, const WebNode& b) {
-  return !(a == b);
 }
 
 inline bool operator<(const WebNode& a, const WebNode& b) {

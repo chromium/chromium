@@ -146,7 +146,6 @@ class MODULES_EXPORT AXSelection::Builder final {
 };
 
 MODULES_EXPORT bool operator==(const AXSelection&, const AXSelection&);
-MODULES_EXPORT bool operator!=(const AXSelection&, const AXSelection&);
 MODULES_EXPORT std::ostream& operator<<(std::ostream&, const AXSelection&);
 
 }  // namespace blink

@@ -38,7 +38,7 @@ constexpr char kVideoCaptureStoppedNotificationId[] =
 constexpr char kDlpPolicyNotifierId[] = "policy.dlp";
 
 void OnNotificationClicked(const std::string id) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(dlp::kDlpLearnMoreUrl),
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);

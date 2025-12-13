@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/lobster/lobster_result.h"
+#include "base/functional/callback.h"
 
 LobsterImageFetcher::LobsterImageFetcher(std::unique_ptr<Provider> provider)
     : provider_(std::move(provider)) {

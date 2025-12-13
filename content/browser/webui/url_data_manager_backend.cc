@@ -58,17 +58,11 @@ const char kChromeURLXFrameOptionsHeaderValue[] = "DENY";
 const char kNetworkErrorKey[] = "netError";
 const char kURLDataManagerBackendKeyName[] = "url_data_manager_backend";
 
-bool SchemeIsInSchemes(const std::string& scheme,
-                       const std::vector<std::string>& schemes) {
-  return base::Contains(schemes, scheme);
-}
-
 bool g_disallow_webui_scheme_caching_for_testing = false;
 
 std::vector<std::string> GetWebUISchemesSlow() {
-  std::vector<std::string> schemes;
-  schemes.emplace_back(kChromeUIScheme);
-  schemes.emplace_back(kChromeUIUntrustedScheme);
+  std::vector<std::string> schemes = {kChromeUIScheme,
+                                      kChromeUIUntrustedScheme};
   GetContentClient()->browser()->GetAdditionalWebUISchemes(&schemes);
   return schemes;
 }
@@ -121,10 +115,9 @@ URLDataManagerBackend* URLDataManagerBackend::GetForBrowserContext(
 
 void URLDataManagerBackend::AddDataSource(URLDataSourceImpl* source) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!source->source()->ShouldReplaceExistingSource()) {
-    auto i = data_sources_.find(source->source_name());
-    if (i != data_sources_.end())
-      return;
+  if (!source->source()->ShouldReplaceExistingSource() &&
+      data_sources_.contains(source->source_name())) {
+    return;
   }
   data_sources_[source->source_name()] = source;
   source->backend_ = weak_factory_.GetWeakPtr();
@@ -144,7 +137,7 @@ void URLDataManagerBackend::UpdateWebUIDataSource(
 URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
     const GURL& url) {
   // chrome-untrusted:// sources keys are of the form "chrome-untrusted://host".
-  if (url.scheme() == kChromeUIUntrustedScheme) {
+  if (url.GetScheme() == kChromeUIUntrustedScheme) {
     auto i = data_sources_.find(url.DeprecatedGetOriginAsURL().spec());
     if (i == data_sources_.end())
       return nullptr;
@@ -153,13 +146,13 @@ URLDataSourceImpl* URLDataManagerBackend::GetDataSourceFromURL(
 
   // The input usually looks like: chrome://source_name/extra_bits?foo
   // so do a lookup using the host of the URL.
-  auto i = data_sources_.find(url.host());
+  auto i = data_sources_.find(url.GetHost());
   if (i != data_sources_.end())
     return i->second.get();
 
   // No match using the host of the URL, so do a lookup using the scheme for
   // URLs on the form source_name://extra_bits/foo .
-  i = data_sources_.find(url.scheme() + "://");
+  i = data_sources_.find(url.GetScheme() + "://");
   if (i != data_sources_.end())
     return i->second.get();
 
@@ -186,7 +179,7 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
   if (source->ShouldAddContentSecurityPolicy()) {
     std::string csp_header;
 
-    const network::mojom::CSPDirectiveName kAllDirectives[] = {
+    constexpr network::mojom::CSPDirectiveName kAllDirectives[] = {
         network::mojom::CSPDirectiveName::BaseURI,
         network::mojom::CSPDirectiveName::ChildSrc,
         network::mojom::CSPDirectiveName::ConnectSrc,
@@ -203,8 +196,7 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
         network::mojom::CSPDirectiveName::StyleSrc,
         network::mojom::CSPDirectiveName::TrustedTypes,
         network::mojom::CSPDirectiveName::WorkerSrc};
-
-    for (auto& directive : kAllDirectives) {
+    for (const auto& directive : kAllDirectives) {
       csp_header.append(source->GetContentSecurityPolicy(directive));
     }
 
@@ -264,7 +256,7 @@ bool URLDataManagerBackend::CheckURLIsValid(const GURL& url) {
          url.SchemeIs(kChromeUIUntrustedScheme) ||
          (GetContentClient()->browser()->GetAdditionalWebUISchemes(
               &additional_schemes),
-          SchemeIsInSchemes(url.scheme(), additional_schemes)));
+          base::Contains(additional_schemes, url.GetScheme())));
 
   if (!url.is_valid()) {
     NOTREACHED();
@@ -277,12 +269,11 @@ bool URLDataManagerBackend::IsValidNetworkErrorCode(int error_code) {
   base::Value::Dict error_codes = net::GetNetConstants();
   const base::Value::Dict* net_error_codes_dict =
       error_codes.FindDict(kNetworkErrorKey);
-
-  if (net_error_codes_dict != nullptr) {
-    for (auto it = net_error_codes_dict->begin();
-         it != net_error_codes_dict->end(); ++it) {
-      if (error_code == it->second.GetInt())
+  if (net_error_codes_dict) {
+    for (auto [key, value] : *net_error_codes_dict) {
+      if (error_code == value.GetInt()) {
         return true;
+      }
     }
   }
   return false;

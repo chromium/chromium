@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_transition_delegate.h"
@@ -101,6 +102,10 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
 
 - (void)stop {
   [super stop];
+  self.identityChooserViewController.presentationDelegate = nil;
+  [self.identityChooserViewController dismissViewControllerAnimated:NO
+                                                         completion:nil];
+  self.identityChooserViewController = nil;
   base::RecordAction(base::UserMetricsAction("Signin_AccountPicker_Close"));
   [self.identityChooserMediator disconnect];
   self.identityChooserMediator = nil;
@@ -140,6 +145,8 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
                               didSelectIdentity:self.selectedIdentity];
       break;
   }
+  self.identityChooserViewController.presentationDelegate = nil;
+  self.identityChooserViewController = nil;
   [self.delegate identityChooserCoordinatorDidClose:self];
 }
 
@@ -150,11 +157,15 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   self.state = IdentityChooserCoordinatorStateClosedByAddingAccount;
   [self.identityChooserViewController dismissViewControllerAnimated:YES
                                                          completion:nil];
+  // Note that, even if the user tapped on "add account", we do not display the
+  // add account view here. Instead, it’ll be displayed asynchronously once the
+  // identity chooser disappeared. The implementation is in
+  // `-identityChooserViewControllerDidDisappear:`.
 }
 
 - (void)identityChooserViewController:
             (IdentityChooserViewController*)viewController
-          didSelectIdentityWithGaiaID:(NSString*)gaiaID {
+          didSelectIdentityWithGaiaID:(const GaiaId&)gaiaID {
   DCHECK_EQ(self.identityChooserViewController, viewController);
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
   [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
@@ -165,6 +176,12 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   }
   [self.identityChooserViewController dismissViewControllerAnimated:YES
                                                          completion:nil];
+  // Note that, even if the user tapped on an identity, the delegate is not
+  // notified of the choice here. Instead, the notification is sent
+  // asynchronously, so that when the delegate is notified, the identity chooser
+  // view has already disappeared and the delegate is free to open whatever view
+  // immediately. The implementation is in
+  // `-identityChooserViewControllerDidDisappear:`.
 }
 
 @end

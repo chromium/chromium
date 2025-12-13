@@ -28,6 +28,7 @@ if (!use_system_libsync) {
 
   source_set("libsync") {
     sources = [
+      "src/include/ndk/sync.h",
       "src/include/sync/sync.h",
       "src/sw_sync.h",
       "src/sync.c",

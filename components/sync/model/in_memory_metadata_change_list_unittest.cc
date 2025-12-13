@@ -30,6 +30,7 @@ class MockMetadataChangeList : public MetadataChangeList {
               ClearMetadata,
               (const std::string& storage_key),
               (override));
+  MOCK_METHOD(void, TransferChangesTo, (MetadataChangeList * other), (override));
 };
 
 TEST(InMemoryMetadataChangeListTest, ShouldTransferNothingIfEmptyChangeList) {

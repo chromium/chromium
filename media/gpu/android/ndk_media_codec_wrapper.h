@@ -12,6 +12,7 @@
 
 #include "base/android/requires_api.h"
 #include "base/containers/circular_deque.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "media/gpu/media_gpu_export.h"
@@ -110,7 +111,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
   // to be manually released by calling AMediaCodec_releaseOutputBuffer().
   base::span<uint8_t> GetOutputBuffer(const OutputInfo& info);
 
- private:
+ protected:
   friend class NdkMediaCodecWrapperTest;
 
   using MediaCodecPtr = std::unique_ptr<AMediaCodec, AMediaCodecDeleter>;

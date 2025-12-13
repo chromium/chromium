@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/bind_post_task.h"
@@ -27,10 +26,10 @@ namespace metrics::structured {
 constexpr size_t kMinLogQueueCount = 10;
 
 // Controls the minimum size of all logs that can be stored in bytes.
-constexpr size_t kMinLogQueueSizeBytes = 300 * 1024 * 1024;  // 300 KiB
+constexpr size_t kMinLogQueueSizeBytes = 300 * 1024;  // 300 KiB
 
 // Controls the maximum size of a single log in bytes.
-constexpr size_t kMaxLogSizeBytes = 1024 * 1024 * 1024;  // 1 MiB
+constexpr size_t kMaxLogSizeBytes = 1024 * 1024;  // 1 MiB
 
 // Controls the upload interval.
 constexpr base::TimeDelta kUploadInterval = base::Minutes(10);
@@ -162,6 +161,7 @@ void StructuredMetricsService::EnableReporting() {
     return;
   }
   if (!reporting_active()) {
+    log_creation_time_ = base::TimeTicks::Now();
     scheduler_->Start();
   }
   reporting_service_->EnableReporting();
@@ -279,12 +279,10 @@ void StructuredMetricsService::StoreLogAndStartUpload(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler,
     ChromeUserMetricsExtension uma_proto) {
-  // The |uma_proto| is created by |io_helper_|, this adds all additional
-  // metadata to the output proto.
-  InitializeUmaProto(uma_proto);
-
   const std::string serialized_log = SerializeLog(uma_proto);
   reporting_service_->StoreLog(serialized_log, reason);
+
+  log_creation_time_ = base::TimeTicks::Now();
 
   // If this callback is set, then run it and return.
   // It will only be set from tests where we do not want to upload.
@@ -320,10 +318,17 @@ void StructuredMetricsService::InitializeUmaProto(
 
   SystemProfileProto* system_profile = uma_proto.mutable_system_profile();
   metrics::MetricsLog::RecordCoreSystemProfile(client_, system_profile);
+  metrics_providers_.ProvideSystemProfileMetricsWithLogCreationTime(
+      log_creation_time_, uma_proto.mutable_system_profile());
 }
 
 void StructuredMetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   reporting::StructuredMetricsReportingService::RegisterPrefs(registry);
+}
+
+void StructuredMetricsService::RegisterMetricsProvider(
+    std::unique_ptr<metrics::MetricsProvider> provider) {
+  metrics_providers_.RegisterMetricsProvider(std::move(provider));
 }
 
 void StructuredMetricsService::SetRecorderForTest(

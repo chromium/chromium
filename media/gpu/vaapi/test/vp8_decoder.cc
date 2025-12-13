@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/vp8_decoder.h"
 
 #include <va/va.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
@@ -29,7 +25,7 @@ void CheckedMemcpy(To& to, From& from) {
   static_assert(std::is_array<From>::value,
                 "Second parameter must be an array");
   static_assert(sizeof(to) == sizeof(from), "arrays must be of same size");
-  memcpy(&to, &from, sizeof(to));
+  UNSAFE_TODO(memcpy(&to, &from, sizeof(to)));
 }
 
 }  // namespace
@@ -94,19 +90,24 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        q = sgmnt_hdr.quantizer_update_value[i];
+        q = UNSAFE_TODO(sgmnt_hdr.quantizer_update_value[i]);
       } else {
-        q += sgmnt_hdr.quantizer_update_value[i];
+        q += UNSAFE_TODO(sgmnt_hdr.quantizer_update_value[i]);
       }
     }
 
 #define CLAMP_Q(q) std::clamp(q, 0, 127)
-    iq_matrix_buf.quantization_index[i][0] = CLAMP_Q(q);
-    iq_matrix_buf.quantization_index[i][1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
-    iq_matrix_buf.quantization_index[i][2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
-    iq_matrix_buf.quantization_index[i][3] = CLAMP_Q(q + quant_hdr.y2_ac_delta);
-    iq_matrix_buf.quantization_index[i][4] = CLAMP_Q(q + quant_hdr.uv_dc_delta);
-    iq_matrix_buf.quantization_index[i][5] = CLAMP_Q(q + quant_hdr.uv_ac_delta);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])[0] = CLAMP_Q(q);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
+    [1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
+    [2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
+    [3] = CLAMP_Q(q + quant_hdr.y2_ac_delta);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
+    [4] = CLAMP_Q(q + quant_hdr.uv_dc_delta);
+    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
+    [5] = CLAMP_Q(q + quant_hdr.uv_ac_delta);
 #undef CLAMP_Q
   }
 
@@ -154,13 +155,13 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        lf_level = sgmnt_hdr.lf_update_value[i];
+        lf_level = UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
       } else {
-        lf_level += sgmnt_hdr.lf_update_value[i];
+        lf_level += UNSAFE_TODO(sgmnt_hdr.lf_update_value[i]);
       }
     }
 
-    pic_param.loop_filter_level[i] = std::clamp(lf_level, 0, 63);
+    UNSAFE_TODO(pic_param.loop_filter_level[i]) = std::clamp(lf_level, 0, 63);
   }
 
   static_assert(
@@ -174,8 +175,10 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
                     std::extent<decltype(lf_hdr.mb_mode_delta)>(),
                 "loop filter deltas arrays size mismatch");
   for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
-    pic_param.loop_filter_deltas_ref_frame[i] = lf_hdr.ref_frame_delta[i];
-    pic_param.loop_filter_deltas_mode[i] = lf_hdr.mb_mode_delta[i];
+    UNSAFE_TODO(pic_param.loop_filter_deltas_ref_frame[i]) =
+        UNSAFE_TODO(lf_hdr.ref_frame_delta[i]);
+    UNSAFE_TODO(pic_param.loop_filter_deltas_mode[i]) =
+        UNSAFE_TODO(lf_hdr.mb_mode_delta[i]);
   }
 
 #define FHDR_TO_PP(a) pic_param.a = frame_hdr.a
@@ -206,7 +209,8 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
       frame_hdr.first_part_size - ((frame_hdr.macroblock_bit_offset + 7) / 8);
 
   for (size_t i = 0; i < frame_hdr.num_of_dct_partitions; ++i)
-    slice_param.partition_size[i + 1] = frame_hdr.dct_partition_sizes[i];
+    UNSAFE_TODO(slice_param.partition_size[i + 1]) =
+        UNSAFE_TODO(frame_hdr.dct_partition_sizes[i]);
 }
 
 // Based on update_reference_frames() in libvpx: vp8/encoder/onyx_if.c
@@ -315,7 +319,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   void* iq_matrix_data;
   res = vaMapBuffer(va_device_->display(), iq_matrix_id, &iq_matrix_data);
   VA_LOG_ASSERT(res, "vaMapBuffer");
-  memcpy(iq_matrix_data, &iq_matrix_buf, sizeof(iq_matrix_buf));
+  UNSAFE_TODO(memcpy(iq_matrix_data, &iq_matrix_buf, sizeof(iq_matrix_buf)));
   buffers.push_back(iq_matrix_id);
 
   VABufferID prob_buffer_id;
@@ -326,7 +330,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   void* prob_buffer_data;
   res = vaMapBuffer(va_device_->display(), prob_buffer_id, &prob_buffer_data);
   VA_LOG_ASSERT(res, "vaMapBuffer");
-  memcpy(prob_buffer_data, &prob_buf, sizeof(prob_buf));
+  UNSAFE_TODO(memcpy(prob_buffer_data, &prob_buf, sizeof(prob_buf)));
   buffers.push_back(prob_buffer_id);
 
   VABufferID picture_params_id;
@@ -338,7 +342,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   res = vaMapBuffer(va_device_->display(), picture_params_id,
                     &picture_params_data);
   VA_LOG_ASSERT(res, "vaMapBuffer");
-  memcpy(picture_params_data, &pic_param, sizeof(pic_param));
+  UNSAFE_TODO(memcpy(picture_params_data, &pic_param, sizeof(pic_param)));
   buffers.push_back(picture_params_id);
 
   VABufferID slice_params_id;
@@ -349,7 +353,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   void* slice_params_data;
   res = vaMapBuffer(va_device_->display(), slice_params_id, &slice_params_data);
   VA_LOG_ASSERT(res, "vaMapBuffer");
-  memcpy(slice_params_data, &slice_param, sizeof(pic_param));
+  UNSAFE_TODO(memcpy(slice_params_data, &slice_param, sizeof(pic_param)));
   buffers.push_back(slice_params_id);
 
   VABufferID encoded_data_id;
@@ -360,7 +364,7 @@ VideoDecoder::Result Vp8Decoder::DecodeNextFrame() {
   void* encoded_data;
   res = vaMapBuffer(va_device_->display(), encoded_data_id, &encoded_data);
   VA_LOG_ASSERT(res, "vaMapBuffer");
-  memcpy(encoded_data, frame_hdr.data, frame_hdr.frame_size);
+  UNSAFE_TODO(memcpy(encoded_data, frame_hdr.data, frame_hdr.frame_size));
   buffers.push_back(encoded_data_id);
 
   // Time to render!

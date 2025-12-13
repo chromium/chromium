@@ -4,6 +4,7 @@
 
 #include "components/crash/content/browser/crash_memory_metrics_collector_android.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/atomicops.h"
@@ -32,9 +33,7 @@ CrashMemoryMetricsCollector::CrashMemoryMetricsCollector(
       base::UnsafeSharedMemoryRegion::Create(
           sizeof(blink::OomInterventionMetrics));
   metrics_mapping_ = shared_metrics_buffer.Map();
-  UNSAFE_TODO(memset(metrics_mapping_.memory(), 0,
-                     sizeof(blink::OomInterventionMetrics)));
-
+  std::ranges::fill(metrics_mapping_.GetMemoryAsSpan<uint8_t>(), 0);
   mojo::Remote<blink::mojom::CrashMemoryMetricsReporter> reporter;
   rph->BindReceiver(reporter.BindNewPipeAndPassReceiver());
   reporter->SetSharedMemory(shared_metrics_buffer.Duplicate());

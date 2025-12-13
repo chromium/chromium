@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -58,16 +59,17 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
     DCHECK_EQ(result.contexts.size(), result.sizes_in_bytes.size());
     for (size_t i = 0; i < result.contexts.size(); ++i) {
       const v8::Local<v8::Context>& context = result.contexts[i];
-      const size_t size = result.sizes_in_bytes[i];
+      const base::ByteCount size =
+          base::ByteCount::FromUnsigned(result.sizes_in_bytes[i]);
 
       LocalFrame* frame = ToLocalFrameIfNotDetached(context);
 
       if (!frame) {
-        // TODO(crbug.com/1080672): It would be prefereable to count the
-        // V8SchemaRegistry context's overhead with unassociated_bytes, but at
-        // present there isn't a public API that allows this distinction.
+        // TODO(https://crbug.com/40130181): It would be preferable to count
+        // the V8SchemaRegistry context's overhead with unassociated_bytes, but
+        // at present there isn't a public API that allows this distinction.
         ++(isolate_memory_usage->num_detached_contexts);
-        isolate_memory_usage->detached_bytes_used += size;
+        isolate_memory_usage->detached_memory_used += size;
         continue;
       }
       v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -80,7 +82,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
       auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();
       context_memory_usage->token =
           frame->DomWindow()->GetExecutionContextToken();
-      context_memory_usage->bytes_used = size;
+      context_memory_usage->memory_used = size;
 #if DCHECK_IS_ON()
       // Check that the token didn't already occur.
       for (const auto& entry : isolate_memory_usage->contexts) {
@@ -89,7 +91,8 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
-    isolate_memory_usage->shared_bytes_used = result.unattributed_size_in_bytes;
+    isolate_memory_usage->shared_memory_used =
+        base::ByteCount::FromUnsigned(result.unattributed_size_in_bytes);
     std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 
@@ -142,16 +145,16 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       MainMeasurementComplete(mojom::blink::PerIsolateV8MemoryUsage::New());
     } else {
       auto delegate = std::make_unique<FrameAssociatedMeasurementDelegate>(
-          WTF::BindOnce(&V8ProcessMemoryReporter::MainV8MeasurementComplete,
-                        scoped_refptr<V8ProcessMemoryReporter>(this)));
+          blink::BindOnce(&V8ProcessMemoryReporter::MainV8MeasurementComplete,
+                          scoped_refptr<V8ProcessMemoryReporter>(this)));
 
       isolate_->MeasureMemory(std::move(delegate),
                               ToV8MeasureMemoryExecution(mode));
     }
     // 2. Start measurement of all worker isolates.
     V8WorkerMemoryReporter::GetMemoryUsage(
-        WTF::BindOnce(&V8ProcessMemoryReporter::WorkerMeasurementComplete,
-                      scoped_refptr<V8ProcessMemoryReporter>(this)),
+        blink::BindOnce(&V8ProcessMemoryReporter::WorkerMeasurementComplete,
+                        scoped_refptr<V8ProcessMemoryReporter>(this)),
         ToV8MeasureMemoryExecution(mode));
   }
 
@@ -167,16 +170,17 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
     // heap given by ThreadState::Current() is attached to the main V8
     // isolate given by v8::Isolate::GetCurrent().
     ThreadState::Current()->CollectNodeAndCssStatistics(
-        WTF::BindOnce(&V8ProcessMemoryReporter::MainBlinkMeasurementComplete,
-                      scoped_refptr<V8ProcessMemoryReporter>(this),
-                      std::move(isolate_memory_usage)));
+        blink::BindOnce(&V8ProcessMemoryReporter::MainBlinkMeasurementComplete,
+                        scoped_refptr<V8ProcessMemoryReporter>(this),
+                        std::move(isolate_memory_usage)));
   }
 
   void MainBlinkMeasurementComplete(
       mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage,
       size_t node_bytes,
       size_t css_bytes) {
-    isolate_memory_usage->blink_bytes_used = node_bytes + css_bytes;
+    isolate_memory_usage->blink_memory_used =
+        base::ByteCount::FromUnsigned(node_bytes + css_bytes);
     MeasureCanvasMemory(std::move(isolate_memory_usage));
   }
 
@@ -184,28 +188,29 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage) {
     // We do not use HashMap here because there is no designated deleted value
     // of ExecutionContextToken.
-    std::unordered_map<ExecutionContextToken, uint64_t,
+    std::unordered_map<ExecutionContextToken, base::ByteCount,
                        ExecutionContextToken::Hasher>
         per_context_bytes;
     // Group and accumulate canvas bytes by execution context token.
-    for (auto entry : CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
+    for (const auto& entry :
+         CanvasResourceTracker::For(isolate_)->GetResourceMap()) {
       ExecutionContextToken token = entry.value->GetExecutionContextToken();
-      uint64_t bytes_used = entry.key->GetMemoryUsage();
-      if (!bytes_used) {
+      base::ByteCount memory_used = entry.key->GetMemoryUsage();
+      if (memory_used.is_zero()) {
         // Ignore canvas elements that do not have buffers.
         continue;
       }
       auto it = per_context_bytes.find(token);
       if (it == per_context_bytes.end()) {
-        per_context_bytes[token] = bytes_used;
+        per_context_bytes[token] = memory_used;
       } else {
-        it->second += bytes_used;
+        it->second += memory_used;
       }
     }
-    for (auto entry : per_context_bytes) {
+    for (const auto& entry : per_context_bytes) {
       auto memory_usage = mojom::blink::PerContextCanvasMemoryUsage::New();
       memory_usage->token = entry.first;
-      memory_usage->bytes_used = entry.second;
+      memory_usage->memory_used = entry.second;
       isolate_memory_usage->canvas_contexts.push_back(std::move(memory_usage));
     }
 
@@ -224,7 +229,7 @@ class V8ProcessMemoryReporter : public RefCounted<V8ProcessMemoryReporter> {
       auto worker_memory_usage = mojom::blink::PerIsolateV8MemoryUsage::New();
       auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();
       context_memory_usage->token = ToExecutionContextToken(worker.token);
-      context_memory_usage->bytes_used = worker.bytes;
+      context_memory_usage->memory_used = worker.memory;
       if (!worker.url.IsNull()) {
         context_memory_usage->url = worker.url.GetString();
       }
@@ -269,7 +274,7 @@ void V8DetailedMemoryReporterImpl::GetV8MemoryUsage(
   auto v8_process_memory_reporter =
       base::MakeRefCounted<V8ProcessMemoryReporter>(std::move(callback));
   // Start async measurements. The lifetime of the reporter is extended
-  // using more shared pointers until the measuremnts complete.
+  // using more shared pointers until the measurements complete.
   v8_process_memory_reporter->StartMeasurements(mode);
 }
 

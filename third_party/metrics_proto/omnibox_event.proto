@@ -99,9 +99,10 @@ message OmniboxEventProto {
     // An invalid URL; shouldn't happen.
     INVALID_SPEC = 0;
 
-    // chrome://newtab/.  For modern versions of Chrome, this is only reported
-    // when an extension is replacing the new tab page. Otherwise, new tab
-    // page interactions will be reported as NTP_REALBOX, or
+    // chrome://newtab/. For modern versions of Chrome, this is only reported
+    // when an extension is replacing the new tab page or when the user visits
+    // the new tab page while in Incognito mode. Otherwise, new tab page
+    // interactions will be reported as NTP_REALBOX, or
     // INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS.
     // For old versions of Chrome, this was reported for the default New Tab
     // Page.
@@ -221,6 +222,25 @@ message OmniboxEventProto {
     // JumpStart Omnibox feature (Android): start Chrome to Search Activity on
     // Low End devices.
     JUMP_START = 30;
+
+    // The new tab page in which this omnibox interaction started with the user
+    // having focus in the composebox.
+    NTP_COMPOSEBOX = 31;
+
+    // The composebox in the Lens side panel.
+    LENS_SIDE_PANEL_COMPOSEBOX = 32;
+
+    // The omnibox composebox in the NTP.
+    NTP_OMNIBOX_COMPOSEBOX = 33;
+
+    // The omnibox composebox in the SRP.
+    SRP_OMNIBOX_COMPOSEBOX = 34;
+
+    // The omnibox composebox on Web.
+    OTHER_OMNIBOX_COMPOSEBOX = 35;
+
+    // Co-browsing composebox
+    CO_BROWSING_COMPOSEBOX = 36;
 
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
@@ -798,6 +818,10 @@ message OmniboxEventProto {
     // the model returned 0 matches or its matches were hidden. Suffixed with
     // '_FEATURE' to avoid name conflict with 'ProviderType.HISTORY_EMBEDDINGS'.
     HISTORY_EMBEDDINGS_FEATURE = 12;
+
+    // Whether the "AIM page action omnibox entrypoint" was shown in the
+    // right-hand side of the Omnibox for AIM eligible users.
+    AIM_PAGE_ACTION_OMNIBOX_ENTRYPOINT = 13;
   }
 
   // The set of features triggered in the most recent query. Each element is a

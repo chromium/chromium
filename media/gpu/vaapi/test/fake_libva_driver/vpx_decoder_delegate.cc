@@ -65,11 +65,11 @@ void VpxDecoderDelegate::EnqueueWork(
 void VpxDecoderDelegate::Run() {
   CHECK(render_target_);
   CHECK(encoded_data_buffer_);
-  const vpx_codec_err_t status = vpx_codec_decode(
-      vpx_codec_.get(), static_cast<uint8_t*>(encoded_data_buffer_->GetData()),
-      base::checked_cast<unsigned int>(encoded_data_buffer_->GetDataSize()),
-      /*user_priv=*/nullptr,
-      /*deadline=*/0);
+  const vpx_codec_err_t status =
+      vpx_codec_decode(vpx_codec_.get(), encoded_data_buffer_->GetData().data(),
+                       encoded_data_buffer_->GetData().size(),
+                       /*user_priv=*/nullptr,
+                       /*deadline=*/0);
   CHECK_EQ(status, VPX_CODEC_OK);
 
   vpx_codec_iter_t iter = nullptr;

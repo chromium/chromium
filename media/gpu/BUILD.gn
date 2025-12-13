@@ -57,9 +57,6 @@ component("gpu") {
     "//third_party/blink/renderer/modules:unit_tests",
     "//third_party/blink/renderer/modules/mediarecorder",
     "//ui/gl:gl_unittests",
-
-    # TODO(crbug.com/40752360): Remove //remoting/host:common when the usage is removed.
-    "//remoting/host:common",
   ]
 
   if (is_apple) {
@@ -111,8 +108,7 @@ component("gpu") {
   # V4L2 and VAAPI for video acceleration should not be enabled simultaneously.
   assert(!(use_v4l2_codec && use_vaapi))
 
-  # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-  if (use_v4l2_codec || use_vaapi) {
+  if (use_linux_video_acceleration) {
     public_deps += [
       ":video_frame_mapper",
       "//media/gpu/chromeos",
@@ -125,8 +121,6 @@ component("gpu") {
 
   if (is_android) {
     sources += [
-      "android/android_video_encode_accelerator.cc",
-      "android/android_video_encode_accelerator.h",
       "android/android_video_surface_chooser.cc",
       "android/android_video_surface_chooser.h",
       "android/android_video_surface_chooser_impl.cc",
@@ -173,6 +167,8 @@ component("gpu") {
       "android/video_frame_factory.h",
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
+      "android/video_frame_gl_surface_renderer.cc",
+      "android/video_frame_gl_surface_renderer.h",
     ]
     if (proprietary_codecs) {
       sources += [
@@ -188,11 +184,11 @@ component("gpu") {
       # TODO(crbug.com/40552063): This can be removed once CdmManager is removed.
       "//gpu/ipc/common",
       "//media/mojo:buildflags",
-      "//services/service_manager/public/cpp:cpp",
+      "//services/service_manager/public/cpp",
       "//third_party/libgav1:libgav1_parser",
     ]
     if (enable_vulkan) {
-      deps += [ "//gpu/vulkan:vulkan" ]
+      deps += [ "//gpu/vulkan" ]
     }
   }
 
@@ -252,6 +248,8 @@ component("gpu") {
       "windows/d3d12_fence.h",
       "windows/d3d12_helpers.cc",
       "windows/d3d12_helpers.h",
+      "windows/d3d12_video_decode_task.cc",
+      "windows/d3d12_video_decode_task.h",
       "windows/d3d12_video_decoder_wrapper.cc",
       "windows/d3d12_video_decoder_wrapper.h",
       "windows/d3d12_video_encode_accelerator.cc",
@@ -306,7 +304,7 @@ component("gpu") {
       ]
     }
     deps += [
-      "//gpu/ipc/common:common",
+      "//gpu/ipc/common",
       "//media/base/win:color_space_util_win",
       "//third_party/angle:includes",
       "//third_party/libaom:libaomrc",
@@ -395,8 +393,7 @@ source_set("common") {
     "//media/gpu/*",
   ]
 
-  # TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-  if (use_v4l2_codec || use_vaapi) {
+  if (use_linux_video_acceleration) {
     sources += [
       "vp8_decoder.cc",
       "vp8_decoder.h",
@@ -486,18 +483,14 @@ source_set("command_buffer_helper") {
   ]
 }
 
-# TODO(crbug.com/1006266): consider using |use_chromeos_video_acceleration|.
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   source_set("video_frame_mapper") {
     defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
     sources = [ "video_frame_mapper_factory.cc" ]
     public_deps = [ ":video_frame_mapper_common" ]
-    deps = []
 
     # generic_dmabuf_video_frame_mapper
-    if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//media/gpu/chromeos:video_frame_mapper" ]
-    }
+    deps = [ "//media/gpu/chromeos:video_frame_mapper" ]
 
     # vaapi_dmabuf_video_frame_mapper
     if (use_vaapi) {
@@ -594,6 +587,7 @@ source_set("android_video_decode_accelerator_unittests") {
       "android/promotion_hint_aggregator_impl_unittest.cc",
       "android/surface_chooser_helper_unittest.cc",
       "android/video_frame_factory_impl_unittest.cc",
+      "android/video_frame_gl_surface_renderer_test.cc",
     ]
     deps = [
       ":gpu",
@@ -604,7 +598,8 @@ source_set("android_video_decode_accelerator_unittests") {
       "//media:test_support",
       "//testing/gmock",
       "//testing/gtest",
-      "//third_party/libyuv:libyuv",
+      "//third_party/libvpx",
+      "//third_party/libyuv",
       "//ui/gl",
       "//ui/gl/init",
     ]

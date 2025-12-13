@@ -678,41 +678,41 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The Elevator IIDs, one for each of the kInstallModes.
   static constexpr IID kElevatorIids[] = {
-      {0x463abecf,
-       0x410d,
-       0x407f,
-       {0x8a, 0xf5, 0xd, 0xf3, 0x5a, 0x0, 0x5c,
-        0xc8}},  // IElevator IID and TypeLib
-                 // {463ABECF-410D-407F-8AF5-0DF35A005CC8} for Google Chrome.
-      {0xa2721d66,
-       0x376e,
-       0x4d2f,
-       {0x9f, 0xf, 0x90, 0x70, 0xe9, 0xa4, 0x2b,
-        0x5f}},  // IElevator IID and TypeLib
-                 // {A2721D66-376E-4D2F-9F0F-9070E9A42B5F} for Google Chrome
+      {0x1bf5208b,
+       0x295f,
+       0x4992,
+       {0xb5, 0xf4, 0x3a, 0x9b, 0xb6, 0x49, 0x48,
+        0x38}},  // IElevator IID and TypeLib
+                 // {1BF5208B-295F-4992-B5F4-3A9BB6494838} for Google Chrome.
+      {0xb96a14b8,
+       0xd0b0,
+       0x44d8,
+       {0xba, 0x68, 0x23, 0x85, 0xb2, 0xa0, 0x32,
+        0x54}},  // IElevator IID and TypeLib
+                 // {B96A14B8-D0B0-44D8-BA68-2385B2A03254} for Google Chrome
                  // Beta.
-      {0xbb2aa26b,
-       0x343a,
-       0x4072,
-       {0x8b, 0x6f, 0x80, 0x55, 0x7b, 0x8c, 0xe5,
-        0x71}},  // IElevator IID and TypeLib
-                 // {BB2AA26B-343A-4072-8B6F-80557B8CE571} for Google Chrome
-                 // Dev.
-      {0x4f7ce041,
-       0x28e9,
-       0x484f,
-       {0x9d, 0xd0, 0x61, 0xa8, 0xca, 0xce, 0xfe,
-        0xe4}},  // IElevator IID and TypeLib
-                 // {4F7CE041-28E9-484F-9DD0-61A8CACEFEE4} for Google Chrome
-                 // Canary.
+      {0x3fefa48e,
+       0xc8bf,
+       0x461f,
+       {0xae, 0xd6, 0x63, 0xf6, 0x58, 0xcc, 0x85,
+        0xa}},  // IElevator IID and TypeLib
+                // {3FEFA48E-C8BF-461F-AED6-63F658CC850A} for Google Chrome
+                // Dev.
+      {0xff672e9f,
+       0x994,
+       0x4322,
+       {0x81, 0xe5, 0x3a, 0x5a, 0x97, 0x46, 0x14,
+        0xa}},  // IElevator IID and TypeLib
+                // {FF672E9F-0994-4322-81E5-3A5A9746140A} for Google Chrome
+                // Canary.
   };
 
   // The string representation of the IIDs above.
   static constexpr const wchar_t* kElevatorIidsString[] = {
-      L"{463ABECF-410D-407F-8AF5-0DF35A005CC8}",  // Google Chrome.
-      L"{A2721D66-376E-4D2F-9F0F-9070E9A42B5F}",  // Google Chrome Beta.
-      L"{BB2AA26B-343A-4072-8B6F-80557B8CE571}",  // Google Chrome Dev.
-      L"{4F7CE041-28E9-484F-9DD0-61A8CACEFEE4}",  // Google Chrome Canary.
+      L"{1BF5208B-295F-4992-B5F4-3A9BB6494838}",  // Google Chrome.
+      L"{B96A14B8-D0B0-44D8-BA68-2385B2A03254}",  // Google Chrome Beta.
+      L"{3FEFA48E-C8BF-461F-AED6-63F658CC850A}",  // Google Chrome Dev.
+      L"{FF672E9F-0994-4322-81E5-3A5A9746140A}",  // Google Chrome Canary.
   };
 #elif BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   // The Elevator IIDs, one for each of the kInstallModes.
@@ -733,17 +733,17 @@ TEST_P(InstallStaticUtilTest, GetElevatorIid) {
 #else
   // The Elevator IIDs, one for each of the kInstallModes.
   static constexpr IID kElevatorIids[] = {
-      {0xb88c45b9,
-       0x8825,
-       0x4629,
-       {0xb8, 0x3e, 0x77, 0xcc, 0x67, 0xd9, 0xce,
-        0xed}},  // IElevator IID and TypeLib
-                 // {B88C45B9-8825-4629-B83E-77CC67D9CEED} for Chromium.
+      {0xbb19a0e5,
+       0xc6,
+       0x4966,
+       {0x94, 0xb2, 0x5a, 0xfe, 0xc6, 0xfe, 0xd9,
+        0x3a}},  // IElevator IID and TypeLib
+                 // {BB19A0E5-00C6-4966-94B2-5AFEC6FED93A} for Chromium.
   };
 
   // The string representation of the IIDs above.
   static constexpr const wchar_t* kElevatorIidsString[] = {
-      L"{B88C45B9-8825-4629-B83E-77CC67D9CEED}",  // Chromium.
+      L"{BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}",  // Chromium.
   };
 #endif
   static_assert(std::size(kElevatorIids) == NUM_INSTALL_MODES,

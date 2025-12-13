@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+#import "ios/chrome/app/tests_hook.h"
+// clang-format on
+
 #import <Foundation/Foundation.h>
-#import <os/log.h>
-#import <os/signpost.h>
 
 #import "base/time/time.h"
+#import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_activation.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
-#import "ios/chrome/app/tests_hook.h"
-#import "ios/public/provider/chrome/browser/primes/primes_api.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 
 namespace tests_hook {
+
+bool DisableGeminiEligibilityCheck() {
+  return false;
+}
 
 bool DisableAppGroupAccess() {
   return false;
@@ -53,8 +59,8 @@ std::unique_ptr<ProfileOAuth2TokenService> GetOverriddenTokenService(
     std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate) {
   return nullptr;
 }
-bool DisableUpgradeSigninPromo() {
-  // Always disable upgrade sign-in promo for perf tests.
+bool DisableFullscreenSigninPromo() {
+  // Always disable fullscreen sign-in promo for perf tests.
   return true;
 }
 bool DisableUpdateService() {
@@ -67,6 +73,11 @@ bool DelayAppLaunchPromos() {
 bool NeverPurgeDiscardedSessionsData() {
   return false;
 }
+
+bool LoadMinimalAppUI() {
+  return false;
+}
+
 policy::ConfigurationPolicyProvider* GetOverriddenPlatformPolicyProvider() {
   return nullptr;
 }
@@ -80,6 +91,10 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend() {
   return nullptr;
 }
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
+    ProfileIOS* profile) {
+  return nullptr;
+}
+std::unique_ptr<commerce::ShoppingService> CreateShoppingService(
     ProfileIOS* profile) {
   return nullptr;
 }
@@ -107,31 +122,16 @@ GetOverriddenRecipientsFetcher() {
 void SetUpTestsIfPresent() {}
 void RunTestsIfPresent() {}
 
-void SignalAppLaunched() {
-  // The app launched signal is only used by startup tests, which unlike EG
-  // tests do not have a tear down method which stops logging, so stop logging
-  // here to flush logs
-  ios::provider::PrimesStopLogging();
-
-  os_log_t hke_os_log = os_log_create("com.google.hawkeye.ios",
-                                      OS_LOG_CATEGORY_POINTS_OF_INTEREST);
-  os_signpost_id_t os_signpost = os_signpost_id_generate(hke_os_log);
-  os_signpost_event_emit(hke_os_log, os_signpost, "APP_LAUNCHED");
-  // For startup tests instrumented with xctrace we need to log the signal using
-  // os_log
-  os_log(hke_os_log, "APP_LAUNCHED");
-
-  // For regular startup tests we rely on printf to signal that the app has
-  // started and can be terminated
-  printf("APP_LAUNCHED\n");
-}
+// Note SignalAppLaunched() is not implemented here because in needs to
+// include system libraries that defines a macro PLATFORM_IOS which is
+// in  conflict with the multiple uses of PLATFORM_IOS as an enumerator
+// in Chromium code.
+//
+// The function is implemented in perf_tests_hook_logging.mm to prevent
+// compilation failures.
 
 base::TimeDelta PasswordCheckMinimumDuration() {
   // No artificial delays for perf tests.
-  return base::Seconds(0);
-}
-
-base::TimeDelta GetOverriddenSnackbarDuration() {
   return base::Seconds(0);
 }
 
@@ -143,13 +143,21 @@ feature_engagement::FeatureActivation FETDemoModeOverride() {
   return feature_engagement::FeatureActivation::AllEnabled();
 }
 
-void WipeProfileIfRequested(int argc, char* argv[]) {
+void WipeProfileIfRequested(base::span<const char* const> args) {
   // Do nothing.
 }
 
 base::TimeDelta
 GetOverriddenDelayForRequestingTurningOnCredentialProviderExtension() {
   return base::Seconds(0);
+}
+
+base::TimeDelta GetSnackbarMessageDuration() {
+  return kSnackbarMessageDuration;
+}
+
+UIImage* GetPHPickerViewControllerImage() {
+  return nil;
 }
 
 }  // namespace tests_hook

@@ -8,8 +8,6 @@ static_library("arc") {
   sources = [
     "arc_open_url_delegate_impl.cc",
     "arc_open_url_delegate_impl.h",
-    "arc_vm_data_migration_confirmation_dialog.cc",
-    "arc_vm_data_migration_confirmation_dialog.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -45,6 +43,7 @@ static_library("arc") {
     "//chromeos/ash/experiences/arc/intent_helper",
     "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ash/experiences/arc/vector_icons",
+    "//chromeos/ash/experiences/arc/vm_data_migration",
     "//components/user_manager",
     "//components/web_modal",
     "//content/public/browser",
@@ -73,6 +72,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui",
     "//chrome/test:test_support_unit",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/vm_data_migration",
     "//components/prefs:test_support",
     "//testing/gtest",
     "//ui/base/mojom",

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/signin/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 # TODO(crbug.com/369369575): complete modularization of this component.
@@ -24,6 +26,11 @@ source_set("settings") {
     "//url",
   ]
 
+  if (enable_dice_support) {
+    public_deps +=
+        [ "//ui/webui/resources/js/batch_upload_promo:mojo_bindings" ]
+  }
+
   allow_circular_includes_from = [ "//chrome/browser/ui/safety_hub" ]
 }
 
@@ -41,8 +48,11 @@ source_set("impl") {
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
+    "//chrome/browser/ui/promos:service",
     "//components/content_settings/core/browser",
+    "//components/desktop_to_mobile_promos",
     "//components/permissions:permissions_common",
+    "//components/prefs",
     "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/site_engagement/content",

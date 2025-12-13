@@ -25,6 +25,7 @@
 namespace {
 
 using google::protobuf::Descriptor;
+using google::protobuf::Edition;
 using google::protobuf::FieldDescriptor;
 using google::protobuf::FileDescriptor;
 using google::protobuf::OneofDescriptor;
@@ -95,36 +96,51 @@ void FieldToMapKeyFunction(const FieldDescriptor* field, Printer* printer) {
 }
 
 void FieldToValueFunction(const FieldDescriptor* field, Printer* printer) {
+  using enum FieldDescriptor::CppType;
   using enum FieldDescriptor::Type;
+  using enum FieldDescriptor::CppStringType;
   auto conversion_function = [&]() -> std::string {
-    switch (field->type()) {
-      case TYPE_DOUBLE:
-      case TYPE_FLOAT:
+    if (field->options().debug_redact()) {
+      return "::proto_extras::ToValueForDebugRedact";
+    }
+
+    switch (field->cpp_type()) {
+      case CPPTYPE_DOUBLE:
+      case CPPTYPE_FLOAT:
         return "static_cast<double>";
-      case TYPE_INT32:
-      case TYPE_INT64:
-      case TYPE_UINT64:
-      case TYPE_UINT32:
-      case TYPE_FIXED64:
-      case TYPE_FIXED32:
-      case TYPE_SFIXED64:
-      case TYPE_SFIXED32:
-      case TYPE_SINT64:
-      case TYPE_SINT32:
+      case CPPTYPE_INT32:
+        // No function needed.
+        return "";
+      case CPPTYPE_UINT32:
+      case CPPTYPE_INT64:
+      case CPPTYPE_UINT64:
         return "::proto_extras::ToNumericTypeForValue";
-      case TYPE_BOOL:
+      case CPPTYPE_BOOL:
         return "static_cast<bool>";
-      case TYPE_STRING:
-        return "static_cast<std::string>";
-      case TYPE_BYTES:
-        return "base::Base64Encode";
-      case TYPE_ENUM:
+      case CPPTYPE_STRING: {
+        bool output_bytes = field->type() == TYPE_BYTES;
+        switch (field->cpp_string_type()) {
+          case kView:
+          case kString:
+            if (output_bytes) {
+              return "base::Base64Encode";
+            } else {
+              // No function needed.
+              return "";
+            }
+          case kCord:
+            CHECK(output_bytes) << "kCord is only supported for bytes fields.";
+            // If cord support is enabled for strings, this should probably
+            // return "std::string".
+            return "::proto_extras::Base64EncodeCord";
+        }
+      }
+      case CPPTYPE_ENUM:
         return base::StrCat({QualifiedClassName(field->enum_type()), "_Name"});
-      case TYPE_MESSAGE:
-      case TYPE_GROUP:
-        // The Serialize function for the message is in the namespace of the
+      case CPPTYPE_MESSAGE:
+        // The ToValue function for the message is in the namespace of the
         // nested message itself.
-        return base::StrCat({Namespace(field->message_type()), "::Serialize"});
+        return base::StrCat({Namespace(field->message_type()), "::ToValue"});
     }
     NOTREACHED();
   };
@@ -137,7 +153,7 @@ void CreateToValueSerializationDefinitions(
     const ProtoExtrasGeneratorOptions& options) {
   printer->Emit(
       {{"message_type", ClassName(&message)},
-       {"serialize_fields",
+       {"to_value_fields",
         [&]() {
           for (int j = 0; j < message.field_count(); j++) {
             const FieldDescriptor* field = message.field(j);
@@ -204,19 +220,19 @@ void CreateToValueSerializationDefinitions(
           }
         }}},
       R"(
-base::DictValue Serialize(const $message_type$& message) {
+base::Value ToValue(const $message_type$& message) {
   base::DictValue dict;
   ::proto_extras::SerializeUnknownFields(message, dict);
-  $serialize_fields$
-  return dict;
+  $to_value_fields$
+  return base::Value(std::move(dict));
 }
-void MaybeSerialize(const std::optional<$message_type$>& opt_message,
+void MaybeToValue(const std::optional<$message_type$>& opt_message,
                     std::string_view name,
                     base::DictValue& output_dictionary) {
   if (!opt_message.has_value()) {
     return;
   }
-  output_dictionary.Set(name, Serialize(*opt_message));
+  output_dictionary.Set(name, ToValue(*opt_message));
 }
 )");
 }
@@ -228,8 +244,8 @@ void CreateOstreamDefinition(const Descriptor& message,
   printer->Emit({{"message_type", message_type}},
                 R"(
 std::ostream& operator<<(std::ostream& out, const $message_type$& message) {
-  // This relies on Serialize() from *.to_value.h.
-  return out << Serialize(message).DebugString();
+  // This relies on ToValue() from *.to_value.h.
+  return out << ToValue(message).DebugString();
 }
 )");
 }
@@ -257,7 +273,9 @@ void CreateEqualityOperatorDefinition(
               "false;\n");
 
           // Compare oneof fields using a switch statement.
-          for (int i = 0; i < message.oneof_decl_count(); ++i) {
+          // Skip synthetic oneofs.
+          // (see implementing_proto3_presence.md#to-iterate-over-all-oneofs)
+          for (int i = 0; i < message.real_oneof_decl_count(); ++i) {
             const OneofDescriptor* oneof = message.oneof_decl(i);
             printer->Emit(
                 {{"oneof_name", oneof->name()},
@@ -298,7 +316,7 @@ void CreateEqualityOperatorDefinition(
           for (int j = 0; j < message.field_count(); j++) {
             const FieldDescriptor* field = message.field(j);
             // Skip fields that are part of a oneof, as they are handled above.
-            if (field->containing_oneof()) {
+            if (field->real_containing_oneof()) {
               continue;
             }
 
@@ -361,6 +379,14 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
   ProtoExtrasGenerator() = default;
   ~ProtoExtrasGenerator() override = default;
 
+  uint64_t GetSupportedFeatures() const override {
+    return FEATURE_PROTO3_OPTIONAL | FEATURE_SUPPORTS_EDITIONS;
+  }
+
+  Edition GetMinimumEdition() const override { return Edition::EDITION_PROTO2; }
+
+  Edition GetMaximumEdition() const override { return Edition::EDITION_2024; }
+
   bool Generate(const FileDescriptor* file,
                 const std::string& command_line_options,
                 GeneratorContext* context,
@@ -414,7 +440,7 @@ class ProtoExtrasGenerator : public google::protobuf::compiler::CodeGenerator {
     auto forward_declarations = [&]() {
       if (generator_options.generate_to_value_serialization) {
         NamespaceOpener ns("base", &h_printer);
-        h_printer.Print("class DictValue;\n");
+        h_printer.Print("class DictValue;\nclass Value;\n");
       }
       NamespaceOpener ns(Namespace(file), &h_printer);
       base::flat_set<std::string> forward_declarations;
@@ -467,10 +493,14 @@ $function_declarations$
 
     // Determine the #includes for the implementation file.
     base::flat_set<std::string> impl_system_includes;
-    base::flat_set<std::string> impl_user_includes = {
-        proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
-            .AsUTF8Unsafe(),
-    };
+    bool needs_pb_h = generator_options.generate_to_value_serialization ||
+                      generator_options.generate_equality;
+    base::flat_set<std::string> impl_user_includes;
+    if (needs_pb_h) {
+      impl_user_includes.insert(
+          proto_file_path.ReplaceExtension(FILE_PATH_LITERAL("pb.h"))
+              .AsUTF8Unsafe());
+    }
     if (generator_options.generate_stream_operator) {
       impl_system_includes.insert("<ostream>");
       impl_user_includes.insert(
@@ -487,8 +517,6 @@ $function_declarations$
     for (int i = 0; i < file->dependency_count(); i++) {
       base::FilePath dependency_proto_file_path =
           base::FilePath::FromASCII(file->dependency(i)->name());
-      bool needs_pb_h = generator_options.generate_to_value_serialization ||
-                        generator_options.generate_equality;
       if (needs_pb_h) {
         impl_user_includes.insert(
             dependency_proto_file_path
@@ -560,14 +588,15 @@ $function_definitions$
     }
     std::string message_type = ClassName(&message);
     if (options.generate_to_value_serialization) {
-      printer->Print("base::DictValue Serialize(const $m$& message);", "m",
+      printer->Print("base::Value ToValue(const $m$& message);", "m",
                      message_type);
       printer->Print(
           R"(
-void MaybeSerialize(const std::optional<$m$>& opt_message,
-                    std::string_view output_dictionary_field_name,
-                    base::DictValue& output_dictionary);
-)", "m", message_type);
+void MaybeToValue(const std::optional<$m$>& opt_message,
+                  std::string_view output_dictionary_field_name,
+                  base::DictValue& output_dictionary);
+)",
+          "m", message_type);
     }
     if (options.generate_stream_operator) {
       printer->Print(

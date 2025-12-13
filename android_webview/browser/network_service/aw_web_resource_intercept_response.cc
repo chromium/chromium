@@ -46,3 +46,5 @@ AwWebResourceInterceptResponse::GetResponse(JNIEnv* env) const {
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwWebResourceInterceptResponse)

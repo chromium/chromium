@@ -67,9 +67,7 @@ ProductSpecificationsPageActionController::ShouldShowForNavigation() {
 
   return existing_set.has_value() &&
          existing_set->url_infos().size() < kMaxTableSize &&
-         (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
-                  base::FeatureList::IsEnabled(
-                      commerce::kCompareConfirmationToast)
+         (base::FeatureList::IsEnabled(commerce::kProductSpecifications)
               ? !is_in_recommended_set_
               : true);
 }

@@ -59,22 +59,6 @@ suite('Logger', () => {
     assertEquals(0, metrics.getCallCount('recordNewPageWithSpeech'));
   });
 
-  test('highlight on', () => {
-    logger.logHighlightState(true);
-    logger.logHighlightState(true);
-
-    assertEquals(2, metrics.getCallCount('recordHighlightOn'));
-    assertEquals(0, metrics.getCallCount('recordHighlightOff'));
-  });
-
-  test('highlight off', () => {
-    logger.logHighlightState(false);
-    logger.logHighlightState(false);
-
-    assertEquals(0, metrics.getCallCount('recordHighlightOn'));
-    assertEquals(2, metrics.getCallCount('recordHighlightOff'));
-  });
-
   test('highlight granularity change', () => {
     logger.logHighlightGranularity(0);
     logger.logHighlightGranularity(4);
@@ -117,6 +101,11 @@ suite('Logger', () => {
     const source = 123;
     logger.logSpeechStopSource(source);
     assertEquals(source, await metrics.whenCalled('recordSpeechStopSource'));
+  });
+
+  test('empty state', () => {
+    logger.logEmptyState();
+    assertEquals(1, metrics.getCallCount('recordEmptyState'));
   });
 
   test('logVoiceSpeed', () => {

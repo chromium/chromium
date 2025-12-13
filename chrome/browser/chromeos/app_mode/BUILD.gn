@@ -24,6 +24,10 @@ static_library("app_mode") {
     "kiosk_app_level_logs_saver.h",
     "kiosk_app_service_launcher.cc",
     "kiosk_app_service_launcher.h",
+    "kiosk_app_windows_logs_collector.cc",
+    "kiosk_app_windows_logs_collector.h",
+    "kiosk_browser_logs_collector.cc",
+    "kiosk_browser_logs_collector.h",
     "kiosk_browser_session.cc",
     "kiosk_browser_session.h",
     "kiosk_browser_window_handler.cc",
@@ -40,14 +44,16 @@ static_library("app_mode") {
     "kiosk_troubleshooting_controller.h",
     "kiosk_troubleshooting_controller_ash.cc",
     "kiosk_troubleshooting_controller_ash.h",
+    "kiosk_web_app_browser_controller.cc",
+    "kiosk_web_app_browser_controller.h",
     "kiosk_web_app_install_util.cc",
     "kiosk_web_app_install_util.h",
     "kiosk_web_app_update_observer.cc",
     "kiosk_web_app_update_observer.h",
+    "kiosk_web_contents_observer.cc",
+    "kiosk_web_contents_observer.h",
     "startup_app_launcher_update_checker.cc",
     "startup_app_launcher_update_checker.h",
-    "web_kiosk_browser_controller_base.cc",
-    "web_kiosk_browser_controller_base.h",
   ]
 
   if (enable_plugins) {
@@ -85,8 +91,12 @@ static_library("app_mode") {
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
     "//chrome/browser/apps/app_service:constants",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/ui/extensions",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/web_applications:launch_utils",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//components/pref_registry",
@@ -108,9 +118,12 @@ source_set("unit_tests") {
     "kiosk_app_level_logs_manager_wrapper_unittest.cc",
     "kiosk_app_level_logs_saver_unittest.cc",
     "kiosk_app_service_launcher_unittest.cc",
+    "kiosk_app_windows_logs_collector_unittest.cc",
+    "kiosk_browser_logs_collector_unittest.cc",
     "kiosk_browser_session_unittest.cc",
     "kiosk_policies_unittest.cc",
     "kiosk_service_workers_logs_collector_unittest.cc",
+    "kiosk_web_contents_observer_unittest.cc",
   ]
 
   if (enable_plugins) {
@@ -130,8 +143,10 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode:test_support",
+    "//chrome/browser/ash/extensions:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/test_support",
@@ -147,7 +162,6 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
-    "//chrome/test:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/dbus/power",
@@ -165,10 +179,6 @@ source_set("unit_tests") {
     "//ui/events:event_constants",
     "//ui/gfx/geometry",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {

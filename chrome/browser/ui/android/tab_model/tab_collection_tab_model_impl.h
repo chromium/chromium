@@ -64,12 +64,13 @@ class TabCollectionTabModelImpl {
                        const std::optional<base::Token>& j_new_tab_group_id,
                        bool new_is_pinned);
 
-  // Adds a tab to the tab model.
-  void AddTabRecursive(JNIEnv* env,
-                       TabAndroid* tab,
-                       size_t index,
-                       const std::optional<base::Token>& j_tab_group_id,
-                       bool is_pinned);
+  // Adds a tab to the tab model. Returns the final index of the tab.
+  int AddTabRecursive(JNIEnv* env,
+                      TabAndroid* tab,
+                      size_t index,
+                      const std::optional<base::Token>& j_tab_group_id,
+                      bool is_attaching_group,
+                      bool is_pinned);
 
   // Removes a list of tabs from the tab model.
   void RemoveTabRecursive(JNIEnv* env, TabAndroid* tab);
@@ -92,6 +93,25 @@ class TabCollectionTabModelImpl {
   std::vector<TabAndroid*> GetTabsInGroup(JNIEnv* env,
                                           const base::Token& token);
 
+  // Returns the number of tabs in a group. If the group is not found, returns
+  // 0.
+  int GetTabCountForGroup(JNIEnv* env, const base::Token& token);
+
+  // Returns whether a tab group with tabs exists.
+  bool TabGroupExists(JNIEnv* env, const base::Token& token);
+
+  // Returns the number of individual tabs and tab groups.
+  int GetIndividualTabAndGroupCount(JNIEnv* env);
+
+  // Returns the number of tab groups.
+  int GetTabGroupCount(JNIEnv* env);
+
+  // Returns the index of a tab within its group. Returns -1 if tab is not in a
+  // group or not found.
+  int GetIndexOfTabInGroup(JNIEnv* env,
+                           TabAndroid* tab,
+                           const base::Token& token);
+
   // Update tab group visual data.
   void UpdateTabGroupVisualData(
       JNIEnv* env,
@@ -104,6 +124,9 @@ class TabCollectionTabModelImpl {
   std::u16string GetTabGroupTitle(JNIEnv* env, const base::Token& tab_group_id);
   jint GetTabGroupColor(JNIEnv* env, const base::Token& tab_group_id);
   bool GetTabGroupCollapsed(JNIEnv* env, const base::Token& tab_group_id);
+
+  // Checks if a detached tab group exists.
+  bool DetachedTabGroupExists(JNIEnv* env, const base::Token& tab_group_id);
 
   // Closes a detached tab group.
   void CloseDetachedTabGroup(JNIEnv* env, const base::Token& tab_group_id);
@@ -125,10 +148,22 @@ class TabCollectionTabModelImpl {
   // Gets the last shown tab for a group.
   TabAndroid* GetLastShownTabForGroup(JNIEnv* env, const base::Token& group_id);
 
+  // Returns the index of the first non-pinned tab.
+  int GetIndexOfFirstNonPinnedTab(JNIEnv* env);
+
+  // Returns the TabStripCollection associated with this TabModel.
+  tabs::TabStripCollection* GetTabStripCollection(JNIEnv* env);
+
  private:
-  // Returns a safe index for adding or moving a single tab without it changing
-  // state.
-  size_t GetSafeIndex(const std::optional<size_t>& current_index,
+  // Returns a safe index for adding or moving a tab or tab group.
+  // `is_tab_group` is used to indicate if we are working with a tab or a tab
+  // group. `current_index` is the current index of the tab; it should be
+  // nullopt when adding a new tab to the collection. `proposed_index` is the
+  // index at which the tab or group is proposed to be moved or added. The
+  // returned value should be used instead. `tab_group_id` and `is_pinned` are
+  // the collection the tab or group will be in after the add or move operation.
+  size_t GetSafeIndex(bool is_tab_group,
+                      const std::optional<size_t>& current_index,
                       size_t proposed_index,
                       const std::optional<tab_groups::TabGroupId>& tab_group_id,
                       bool is_pinned) const;

@@ -149,7 +149,8 @@ class DepsChecker(DepsBuilder):
       rule_description is human-readable. Empty if no problems.
     """
     return self.CheckIncludesAndImports(
-        added_includes, cpp_checker.CppChecker(self.verbose))
+        added_includes, cpp_checker.CppChecker(
+        self.verbose, self._resolve_dotdot, self.base_directory))
 
   def CheckAddedJavaImports(self, added_imports,
                             allow_multiple_definitions=None):
@@ -186,7 +187,7 @@ class DepsChecker(DepsBuilder):
     """
     return self.CheckIncludesAndImports(
         added_imports, proto_checker.ProtoChecker(
-            verbose=self.verbose, root_dir=self.base_directory))
+        self.verbose, self._resolve_dotdot, self.base_directory))
 
 def PrintUsage():
   print("""Usage: python checkdeps.py [--root <root>] [tocheck]

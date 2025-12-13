@@ -28,11 +28,6 @@ class MediaTiming : public GarbageCollectedMixin {
   // for animated media.)
   virtual bool IsSufficientContentLoadedForPaint() const = 0;
 
-  // True if the Timing-Allow-Origin headers have been received and indicate
-  // that the timing information for this resource are allowed to be observed
-  // by its cross-origin embedder.
-  virtual bool TimingAllowPassed() const = 0;
-
   // Returns the number of bytes of data used to represent the image (or to
   // represent enough of the content that it can be displayed on screen.) This
   // is used to approximate the entropy of the image so that very-low-entropy

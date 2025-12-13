@@ -4,6 +4,9 @@
 
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_client.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/feature_list.h"
@@ -293,7 +296,7 @@ void KAnonymityServiceClient::RequestJoinSetOHTTPKey() {
 }
 
 void KAnonymityServiceClient::OnGotJoinSetOHTTPKey(
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   join_url_loader_.reset();
   if (!response) {
     RecordJoinSetAction(
@@ -302,7 +305,7 @@ void KAnonymityServiceClient::OnGotJoinSetOHTTPKey(
     return;
   }
 
-  OHTTPKeyAndExpiration ohttp_key{*response,
+  OHTTPKeyAndExpiration ohttp_key{*std::move(response),
                                   base::Time::Now() + kKeyCacheDuration};
   storage_->UpdateOHTTPKeyFor(join_origin_, ohttp_key);
   JoinSetCheckTrustTokens(std::move(ohttp_key));
@@ -521,7 +524,7 @@ void KAnonymityServiceClient::RequestQuerySetOHTTPKey() {
 }
 
 void KAnonymityServiceClient::OnGotQuerySetOHTTPKey(
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   query_url_loader_.reset();
   if (!response) {
     RecordQuerySetAction(
@@ -529,7 +532,7 @@ void KAnonymityServiceClient::OnGotQuerySetOHTTPKey(
     FailQuerySetsRequests();
     return;
   }
-  OHTTPKeyAndExpiration ohttp_key{*response,
+  OHTTPKeyAndExpiration ohttp_key{*std::move(response),
                                   base::Time::Now() + kKeyCacheDuration};
   storage_->UpdateOHTTPKeyFor(query_origin_, ohttp_key);
   QuerySetsSendRequest(std::move(ohttp_key));
@@ -561,8 +564,7 @@ void KAnonymityServiceClient::QuerySetsSendRequest(
   base::Value::Dict request_dict;
   request_dict.Set("setsForType", std::move(types));
 
-  std::string request_body;
-  base::JSONWriter::Write(request_dict, &request_body);
+  std::string request_body = base::WriteJson(request_dict).value_or("");
 
   network::mojom::ObliviousHttpRequestPtr request =
       network::mojom::ObliviousHttpRequest::New();

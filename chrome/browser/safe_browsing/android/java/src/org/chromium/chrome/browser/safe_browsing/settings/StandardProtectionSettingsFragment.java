@@ -12,8 +12,10 @@ import androidx.preference.Preference;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
@@ -34,6 +36,11 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
         mManagedPreferenceDelegate = createManagedPreferenceDelegate();
 
         mExtendedReportingPreference = findPreference(PREF_EXTENDED_REPORTING);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY)) {
+            getPreferenceScreen().removePreference(mExtendedReportingPreference);
+            return;
+        }
         mExtendedReportingPreference.setOnPreferenceChangeListener(this);
         mExtendedReportingPreference.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
@@ -101,4 +108,10 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    StandardProtectionSettingsFragment.class.getName(),
+                    R.xml.standard_protection_preferences);
 }

@@ -5,13 +5,17 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
@@ -21,9 +25,11 @@
 #include "base/values.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_features.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -88,7 +94,7 @@ class GaiaOAuthClient::Core
                     Delegate* delegate);
 
   // Called as a SimpleURLLoader callback
-  void OnURLLoadComplete(std::unique_ptr<std::string> body);
+  void OnURLLoadComplete(std::optional<std::string> body);
 
  private:
   friend class base::RefCountedThreadSafe<Core>;
@@ -130,7 +136,7 @@ class GaiaOAuthClient::Core
   // Actually sends the request.
   void SendRequestImpl();
 
-  void HandleResponse(std::unique_ptr<std::string> body,
+  void HandleResponse(std::optional<std::string> body,
                       bool* should_retry_request);
 
   net::BackoffEntry::Policy backoff_policy_;
@@ -364,17 +370,6 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
     base::span<const std::string_view> capabilities_names,
     int max_retries,
     Delegate* delegate) {
-  DCHECK(!capabilities_names.empty());
-
-  std::string post_body =
-      base::StrCat({"names=", base::EscapeUrlEncodedData(
-                                  *capabilities_names.begin(), true)});
-  for (auto it = capabilities_names.begin() + 1; it != capabilities_names.end();
-       ++it) {
-    base::StrAppend(&post_body,
-                    {"&names=", base::EscapeUrlEncodedData(*it, true)});
-  }
-
   std::string auth = base::StrCat({"Bearer ", oauth_access_token});
 
   net::MutableNetworkTrafficAnnotationTag traffic_annotation(
@@ -408,10 +403,30 @@ void GaiaOAuthClient::Core::GetAccountCapabilities(
           }
         })"));
 
-  MakeRequest(ACCOUNT_CAPABILITIES,
-              GURL(GaiaUrls::GetInstance()->account_capabilities_url()),
-              post_body, auth, /*http_method_override_header=*/"GET",
-              max_retries, delegate, traffic_annotation);
+  if (base::FeatureList::IsEnabled(
+          gaia::features::kGetAccountCapabilitiesUsesGetAllVisibleUrl)) {
+    MakeRequest(ACCOUNT_CAPABILITIES,
+                GURL(GaiaUrls::GetInstance()
+                         ->account_capabilities_get_all_visible_url()),
+                /*post_body=*/std::string(), auth,
+                /*http_method_override_header=*/std::string(), max_retries,
+                delegate, traffic_annotation);
+  } else {
+    std::string post_body =
+        base::StrCat({"names=", base::EscapeUrlEncodedData(
+                                    *capabilities_names.begin(), true)});
+    for (auto it = capabilities_names.begin() + 1;
+         it != capabilities_names.end(); ++it) {
+      base::StrAppend(&post_body,
+                      {"&names=", base::EscapeUrlEncodedData(*it, true)});
+    }
+
+    MakeRequest(
+        ACCOUNT_CAPABILITIES,
+        GURL(GaiaUrls::GetInstance()->account_capabilities_batch_get_url()),
+        post_body, auth, /*http_method_override_header=*/"GET", max_retries,
+        delegate, traffic_annotation);
+  }
 }
 
 void GaiaOAuthClient::Core::MakeRequest(
@@ -484,8 +499,7 @@ void GaiaOAuthClient::Core::SendRequestImpl() {
                      base::Unretained(this)));
 }
 
-void GaiaOAuthClient::Core::OnURLLoadComplete(
-    std::unique_ptr<std::string> body) {
+void GaiaOAuthClient::Core::OnURLLoadComplete(std::optional<std::string> body) {
   bool should_retry = false;
   base::WeakPtr<GaiaOAuthClient::Core> weak_this =
       weak_ptr_factory_.GetWeakPtr();
@@ -502,7 +516,7 @@ void GaiaOAuthClient::Core::OnURLLoadComplete(
   }
 }
 
-void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
+void GaiaOAuthClient::Core::HandleResponse(std::optional<std::string> body,
                                            bool* should_retry_request) {
   *should_retry_request = false;
   // Move ownership of the request fetcher into a local scoped_ptr which
@@ -525,8 +539,8 @@ void GaiaOAuthClient::Core::HandleResponse(std::unique_ptr<std::string> body,
 
   std::optional<base::Value::Dict> response_dict;
   if (response_code == net::HTTP_OK && body) {
-    std::string data = std::move(*body);
-    response_dict = base::JSONReader::ReadDict(data);
+    response_dict =
+        base::JSONReader::ReadDict(*body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   }
 
   if (!response_dict) {

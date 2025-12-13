@@ -143,4 +143,11 @@ import Foundation
       largeBlob: extensionOutput?.largeBlob,
       prf: ASAuthorizationPublicKeyCredentialPRFRegistrationOutput.supported)
   }
+
+  @objc public func setLargeBlobIsSupported() {
+    extensionOutput = ASPasskeyRegistrationCredentialExtensionOutput(
+      largeBlob: ASAuthorizationPublicKeyCredentialLargeBlobRegistrationOutput.supported,
+      prf: extensionOutput?.prf
+    )
+  }
 }

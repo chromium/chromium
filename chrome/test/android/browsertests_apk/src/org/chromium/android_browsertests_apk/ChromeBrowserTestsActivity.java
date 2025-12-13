@@ -75,13 +75,14 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
     }
 
     /**
-     * This is the point at which Java initialization tasks are done and tests can be run.
-     * While mTest.postStart() runs the test harness, it waits for Java initialization
-     * tasks, and this signals that they are done.
+     * This is the point at which Java initialization tasks are done and tests can be run. While
+     * mTest.postStart() runs the test harness, it waits for Java initialization tasks, and this
+     * signals that they are done.
      */
     @Override
     public void finishNativeInitialization() {
         super.finishNativeInitialization();
+        NativeBrowserTest.setActivityTeardownCallback(() -> finishAndRemoveTask());
         NativeBrowserTest.javaStartupTasksComplete();
     }
 
@@ -89,6 +90,12 @@ public class ChromeBrowserTestsActivity extends ChromeTabbedActivity {
         return new File(
                 PathUtils.getDataDirectory(),
                 ChromeBrowserTestsApplication.PRIVATE_DATA_DIRECTORY_SUFFIX);
+    }
+
+    @Override
+    public void onDestroyInternal() {
+        super.onDestroyInternal();
+        NativeBrowserTest.activityTeardownComplete();
     }
 
     @Override

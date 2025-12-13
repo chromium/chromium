@@ -77,7 +77,7 @@ void TrustedVaultClientAndroid::FetchKeysCompleted(
     JNIEnv* env,
     jint request_id,
     std::string& gaia_id,
-    const base::android::JavaParamRef<jobjectArray>& keys) {
+    const base::android::JavaRef<jobjectArray>& keys) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   OngoingRequest ongoing_request = GetAndUnregisterOngoingRequest(request_id);
@@ -128,9 +128,15 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethodCompleted(
       .Run();
 }
 
-void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env) {
+void TrustedVaultClientAndroid::NotifyKeysChanged(JNIEnv* env,
+                                                  std::optional<jint> trigger) {
   for (Observer& observer : observer_list_) {
-    observer.OnTrustedVaultKeysChanged();
+    observer.OnTrustedVaultKeysChanged(
+        trigger
+            ? std::optional(static_cast<
+                            trusted_vault::TrustedVaultUserActionTriggerForUMA>(
+                  *trigger))
+            : std::nullopt);
   }
 }
 
@@ -167,7 +173,8 @@ void TrustedVaultClientAndroid::FetchKeys(
 void TrustedVaultClientAndroid::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   // Not supported on Android, where keys are fetched outside the browser.
   NOTREACHED();
 }
@@ -270,12 +277,14 @@ TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
 static void JNI_TrustedVaultClient_RecordKeyRetrievalTrigger(JNIEnv* env,
                                                              int trigger) {
   syncer::RecordKeyRetrievalTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
 }
 
 static void JNI_TrustedVaultClient_RecordRecoverabilityDegradedFixTrigger(
     JNIEnv* env,
     int trigger) {
   syncer::RecordRecoverabilityDegradedFixTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
+      static_cast<trusted_vault::TrustedVaultUserActionTriggerForUMA>(trigger));
 }
+
+DEFINE_JNI(TrustedVaultClient)

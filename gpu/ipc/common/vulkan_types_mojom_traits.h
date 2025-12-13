@@ -14,6 +14,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/notreached.h"
 #include "gpu/ipc/common/vulkan_types.h"
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 

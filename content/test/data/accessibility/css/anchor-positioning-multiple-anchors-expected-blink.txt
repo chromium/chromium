@@ -4,7 +4,7 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='target1'
 ++++++++++inlineTextBox name='target1'
-++++++button name='anchor1' detailsFrom=cssAnchor detailsIds=paragraph
+++++++button name='anchor1'
 ++++++++staticText name='anchor1'
 ++++++++++inlineTextBox name='anchor1'
 ++++++heading name='anchor2'
@@ -30,6 +30,6 @@ rootWebArea name='removeAnchor() done'
 ++++++paragraph
 ++++++++staticText name='target1'
 ++++++++++inlineTextBox name='target1'
-++++++heading name='anchor2' detailsFrom=cssAnchor detailsIds=paragraph
+++++++heading name='anchor2'
 ++++++++staticText name='anchor2'
 ++++++++++inlineTextBox name='anchor2'

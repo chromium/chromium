@@ -242,6 +242,11 @@ void FullRestoreService::Init(bool& show_notification) {
   if (is_shut_down_)
     return;
 
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kDisableWelcomeRecapForFactoryTest)) {
+    return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
 
@@ -262,8 +267,6 @@ void FullRestoreService::Init(bool& show_notification) {
     if (!HasRestorePref(prefs))
       SetDefaultRestorePrefIfNecessary(prefs);
 
-    // TODO(crbug.com/388309832): Determine if we should show a notification for
-    // crashes if always or never restore setting is set for forest.
     if (!IsAskEveryTime(prefs)) {
       return;
     }
@@ -706,7 +709,7 @@ void FullRestoreService::OnSessionInformationReceived(
         const GURL& virtual_url = entry.virtual_url();
         if (tab_title.empty()) {
           if (url.SchemeIs(content::kChromeUIScheme)) {
-            tab_title = url.host_piece();
+            tab_title = url.host();
           } else {
             tab_title = base::UTF16ToUTF8(url_formatter::FormatUrl(
                 virtual_url.is_empty() ? url : virtual_url,

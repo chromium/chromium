@@ -29,7 +29,7 @@ public class ViewType implements Parcelable {
     public final String mServerType;
 
     /** The type computed overall type. The valid types are the same as for mServerType. */
-    public final String mComputedType;
+    public final String mOverallType;
 
     private final String[] mServerPredictions;
 
@@ -49,18 +49,18 @@ public class ViewType implements Parcelable {
     public ViewType(
             @Nullable AutofillId id,
             String serverType,
-            String computedType,
+            String overallType,
             String[] serverPredictions) {
         mAutofillId = id;
         mServerType = serverType;
-        mComputedType = computedType;
+        mOverallType = overallType;
         mServerPredictions = serverPredictions;
     }
 
     private ViewType(Parcel in) {
         mAutofillId = AutofillId.CREATOR.createFromParcel(in);
         mServerType = assertNonNull(in.readString());
-        mComputedType = assertNonNull(in.readString());
+        mOverallType = assertNonNull(in.readString());
         mServerPredictions = assertNonNull(in.createStringArray());
     }
 
@@ -76,7 +76,7 @@ public class ViewType implements Parcelable {
         assumeNonNull(mAutofillId);
         mAutofillId.writeToParcel(parcel, flags);
         parcel.writeString(mServerType);
-        parcel.writeString(mComputedType);
+        parcel.writeString(mOverallType);
         parcel.writeStringArray(mServerPredictions);
     }
 

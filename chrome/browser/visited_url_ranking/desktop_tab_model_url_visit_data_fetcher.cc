@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
@@ -56,54 +56,56 @@ void DesktopTabModelURLVisitDataFetcher::FetchURLVisitData(
     const FetcherConfig& config,
     FetchResultCallback callback) {
   std::map<URLMergeKey, URLVisitAggregate::TabData> url_visit_tab_data_map;
-  const BrowserList* browser_list = BrowserList::GetInstance();
-  for (const Browser* browser : *browser_list) {
-    if (browser->profile() != profile_) {
-      continue;
-    }
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    for (int i = 0; i < tab_strip_model->GetTabCount(); ++i) {
-      auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-      auto* last_entry = web_contents->GetController().GetLastCommittedEntry();
-      if (!last_entry || last_entry->GetTimestamp() < options.begin_time) {
-        continue;
-      }
-      if (!web_contents->GetURL().SchemeIs(url::kHttpScheme) &&
-          !web_contents->GetURL().SchemeIs(url::kHttpsScheme)) {
-        continue;
-      }
-
-      auto url_key = ComputeURLMergeKey(web_contents->GetLastCommittedURL(),
-                                        web_contents->GetTitle(),
-                                        config.deduplication_helper);
-      auto it = url_visit_tab_data_map.find(url_key);
-      bool tab_data_map_already_has_url_entry =
-          (it != url_visit_tab_data_map.end());
-      base::Time tab_entry_last_active = web_contents->GetLastActiveTime();
-      if (!tab_data_map_already_has_url_entry) {
-        auto tab_data = URLVisitAggregate::TabData(
-            MakeAggregateTabFromWebContents(web_contents));
-        tab_data.last_active = tab_entry_last_active;
-        url_visit_tab_data_map.insert_or_assign(url_key, std::move(tab_data));
-      }
-
-      auto& tab_data = url_visit_tab_data_map.at(url_key);
-      if (tab_data_map_already_has_url_entry) {
-        if (tab_entry_last_active > tab_data.last_active) {
-          tab_data.last_active_tab =
-              MakeAggregateTabFromWebContents(web_contents);
-          tab_data.last_active = tab_entry_last_active;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &url_visit_tab_data_map, &options,
+       &config](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
         }
-        tab_data.tab_count += 1;
-      }
 
-      tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+        TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+        for (tabs::TabInterface* tab : *tab_strip_model) {
+          auto* web_contents = tab->GetContents();
+          auto* last_entry =
+              web_contents->GetController().GetLastCommittedEntry();
+          if (!last_entry || last_entry->GetTimestamp() < options.begin_time) {
+            continue;
+          }
+          if (!web_contents->GetURL().SchemeIs(url::kHttpScheme) &&
+              !web_contents->GetURL().SchemeIs(url::kHttpsScheme)) {
+            continue;
+          }
 
-      tab_data.pinned = tab_data.pinned || tab->IsPinned();
-      tab_data.in_group = tab_data.in_group || tab->GetGroup().has_value();
-    }
-  }
+          auto url_key = ComputeURLMergeKey(web_contents->GetLastCommittedURL(),
+                                            web_contents->GetTitle(),
+                                            config.deduplication_helper);
+          auto it = url_visit_tab_data_map.find(url_key);
+          bool tab_data_map_already_has_url_entry =
+              (it != url_visit_tab_data_map.end());
+          base::Time tab_entry_last_active = web_contents->GetLastActiveTime();
+          if (!tab_data_map_already_has_url_entry) {
+            auto tab_data = URLVisitAggregate::TabData(
+                MakeAggregateTabFromWebContents(web_contents));
+            tab_data.last_active = tab_entry_last_active;
+            url_visit_tab_data_map.insert_or_assign(url_key,
+                                                    std::move(tab_data));
+          }
+
+          auto& tab_data = url_visit_tab_data_map.at(url_key);
+          if (tab_data_map_already_has_url_entry) {
+            if (tab_entry_last_active > tab_data.last_active) {
+              tab_data.last_active_tab =
+                  MakeAggregateTabFromWebContents(web_contents);
+              tab_data.last_active = tab_entry_last_active;
+            }
+            tab_data.tab_count += 1;
+          }
+
+          tab_data.pinned = tab_data.pinned || tab->IsPinned();
+          tab_data.in_group = tab_data.in_group || tab->GetGroup().has_value();
+        }
+        return true;
+      });
 
   std::map<URLMergeKey, URLVisitVariant> url_visit_variant_map;
   std::transform(

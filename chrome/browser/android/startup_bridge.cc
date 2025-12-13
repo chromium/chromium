@@ -23,3 +23,5 @@ void LoadFullBrowser() {
 }
 
 }  // namespace android_startup
+
+DEFINE_JNI(NativeStartupBridge)

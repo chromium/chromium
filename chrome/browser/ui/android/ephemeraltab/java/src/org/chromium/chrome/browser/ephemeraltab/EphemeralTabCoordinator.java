@@ -12,7 +12,6 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -20,6 +19,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.content.ContentUtils;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -43,6 +43,8 @@ import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.url.GURL;
+
+import java.util.function.Supplier;
 
 /**
  * Central class for ephemeral tab, responsible for spinning off other classes necessary to display
@@ -144,6 +146,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             String title,
             Profile profile,
             boolean canPromoteToNewTab) {
+        assert !isOpened() : "Avoid making new requests when an ephemeral tab is showing.";
         mUrl = url;
         mFullPageUrl = fullPageUrl;
         mCanPromoteToNewTab = canPromoteToNewTab;
@@ -226,7 +229,17 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
                 mContentView,
                 mWindow,
                 WebContents.createDefaultInternalsHolder());
+        // Set UA override in renderer preferences.
         ContentUtils.setUserAgentOverride(mWebContents, /* overrideInNewTabs= */ false);
+        // Set UA override in WebContents preferences.
+        boolean shouldUseDesktopUserAgent =
+                DesktopSiteUtils.shouldOverrideDesktopSite(profile, mUrl, mContext);
+        mWebContents
+                .getNavigationController()
+                .setUseDesktopUserAgent(
+                        shouldUseDesktopUserAgent,
+                        /* reloadOnChange= */ false,
+                        /* skipOnInitialNavigation= */ false);
     }
 
     private void destroyWebContents() {

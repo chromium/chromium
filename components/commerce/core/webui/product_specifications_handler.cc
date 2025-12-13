@@ -10,6 +10,7 @@
 #include "components/commerce/core/mojom/shared.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/webui/webui_utils.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_service.h"
 
 namespace commerce {
@@ -48,7 +49,7 @@ void ProductSpecificationsHandler::GetPageTitleFromHistory(
   }
 
   history_service_->QueryURL(
-      url, false,
+      url,
       base::BindOnce(
           [](GetPageTitleFromHistoryCallback callback,
              history::QueryURLResult result) {
@@ -170,6 +171,12 @@ void ProductSpecificationsHandler::OnStateChanged(syncer::SyncService* sync) {
     is_sync_active_ = is_sync_active;
     remote_page_->OnSyncStateChanged();
   }
+}
+
+void ProductSpecificationsHandler::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this class is tied to UI which gets destroyed before the
+  // Profile and its KeyedServices.
+  NOTREACHED();
 }
 
 }  // namespace commerce

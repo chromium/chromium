@@ -57,7 +57,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
@@ -102,6 +101,9 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/window_util.h"
+
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace ash {
 
@@ -219,7 +221,6 @@ bool IsVideoFileExtensionSupported(const base::FilePath& video_file_path) {
 base::FilePath SelectFilePathForCapturedFile(
     const base::FilePath& current_path,
     const base::FilePath& fallback_path) {
-  // TODO(b/323146997): Revisit the behavior if enforced by policy.
   if (base::PathExists(current_path.DirName()))
     return current_path;
   DCHECK(base::PathExists(fallback_path.DirName()));
@@ -255,7 +256,7 @@ base::FilePath SaveFile(scoped_refptr<base::RefCountedMemory> data,
 // Called when the "Share to YouTube" button is pressed to
 // open the YouTube share video page.
 void OnShareToYouTubeButtonPressed() {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kShareToYouTubeURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -509,7 +510,7 @@ bool MaybeLockCursor() {
 void MaybeUnlockCursor(bool was_cursor_originally_blocked) {
   if (!was_cursor_originally_blocked) {
     auto* cursor_manager = Shell::Get()->cursor_manager();
-    if (!display::Screen::GetScreen()->InTabletMode()) {
+    if (!display::Screen::Get()->InTabletMode()) {
       cursor_manager->ShowCursor();
     }
     // TODO(crbug.com/376171009): Investigate why the cursor may have already
@@ -1042,6 +1043,12 @@ void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
 }
 
 bool CaptureModeController::CanShowSunfishRegionNudge() const {
+  // The nudge applies to both Sunfish and Scanner, if neither can be shown then
+  // we don't want to show the nudge either.
+  if (!CanShowSunfishOrScannerUi()) {
+    return false;
+  }
+
   auto* session_controller = Shell::Get()->session_controller();
   DCHECK(session_controller->IsActiveUserSessionStarted());
 
@@ -1227,6 +1234,7 @@ void CaptureModeController::PerformImageSearch(
   base::WeakPtr<BaseCaptureModeSession> image_search_token =
       capture_mode_session_->GetImageSearchToken();
   if (!image_search_token) {
+    VLOG(1) << "Image search token invalid before capturing image.";
     // In theory, this should only be possible if the capture mode session is
     // the null session, which should not be able to perform image searches.
     return;
@@ -1527,15 +1535,15 @@ void CaptureModeController::ReturnToApp(const base::UnguessableToken& token,
 
 void CaptureModeController::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled,
+    bool enabled,
     SetSystemMediaDeviceStatusCallback callback) {
   switch (device) {
     case crosapi::mojom::VideoConferenceMediaDevice::kCamera:
-      is_camera_muted_ = disabled;
+      is_camera_muted_ = !enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kMicrophone:
-      is_microphone_muted_ = disabled;
+      is_microphone_muted_ = !enabled;
       std::move(callback).Run(true);
       return;
     case crosapi::mojom::VideoConferenceMediaDevice::kUnusedDefault:
@@ -1550,14 +1558,11 @@ void CaptureModeController::StopAllScreenShare() {
 }
 
 void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
-  // TODO: crbug.com/404941151 - Remove this method and use
-  // `SunfishScannerFeatureWatcher` instead.
   if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
     return;
   }
 
-  if (IsActive() && capture_mode_session_->active_behavior()->behavior_type() ==
-                        BehaviorType::kSunfish) {
+  if (IsActive()) {
     Stop();
   }
   CloseSearchResultsPanel();
@@ -1691,9 +1696,9 @@ bool CaptureModeController::ShouldBlockRecordingForContentProtection(
   //     |window_being_recorded| in this case is the root window, and a
   //     protected window on this root will be a descendant.
   //   - When recording a browser window showing a page with protected content,
-  //     the |window_being_recorded| in this case is the BrowserFrame, while the
-  //     protected window will be the RenderWidgetHostViewAura, which is also a
-  //     descendant.
+  //     the |window_being_recorded| in this case is the BrowserWidget, while
+  //     the protected window will be the RenderWidgetHostViewAura, which is
+  //     also a descendant.
   for (const auto& iter : protected_windows_) {
     if (window_being_recorded->Contains(iter.first))
       return true;
@@ -2059,6 +2064,7 @@ void CaptureModeController::OnImageCapturedForSearch(
   // The capture parameters / region / session may have changed before
   // `jpeg_bytes` were received.
   if (!image_search_token) {
+    VLOG(1) << "Image search token invalid after capturing image.";
     return;
   }
   capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
@@ -2124,9 +2130,9 @@ void CaptureModeController::OnImageCapturedForSearch(
                             weak_ptr_factory_.GetWeakPtr(),
                             image_search_token));
 
-  // Immediately show the search results panel, with a loading animation in
-  // place of the web contents. We will replace it once we receive the URL from
-  // the server.
+    // Immediately show the search results panel, with a loading animation in
+    // place of the web contents. We will replace it once we receive the URL
+    // from the server.
     ShowSearchResultsPanel();
 }
 
@@ -2156,8 +2162,17 @@ void CaptureModeController::OnTextDetectionComplete(
 void CaptureModeController::OnLensTextDetectionComplete(
     base::WeakPtr<BaseCaptureModeSession> image_search_token,
     std::optional<std::string> detected_text) {
-  if (!image_search_token || !detected_text.has_value() ||
-      detected_text->empty()) {
+  bool text_present = detected_text.has_value() && !detected_text->empty();
+  RecordCaptureModeTextDetectionResult(
+      text_present ? CaptureModeTextDetectionResult::kSuccessTextPresent
+                   : CaptureModeTextDetectionResult::kSuccessNoTextPresent);
+
+  if (!image_search_token) {
+    VLOG(1) << "Image search token invalid after text detection completed.";
+    return;
+  }
+
+  if (!text_present) {
     return;
   }
 
@@ -2239,14 +2254,29 @@ void CaptureModeController::OnScannerActionsFetched(
 void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
                                                const gfx::ImageSkia& image,
                                                GURL url) {
+  RecordCaptureModeImageSearchResult(CaptureModeImageSearchResult::kSuccess);
   if (captured_region == user_capture_region_) {
     NavigateSearchResultsPanel(url);
   }
 }
 
 void CaptureModeController::OnLensWebError(
-    base::WeakPtr<BaseCaptureModeSession> image_search_token) {
-  CloseSearchResultsPanel();
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    CaptureModeImageSearchResult image_result,
+    CaptureModeTextDetectionResult text_result) {
+  // TODO: crbug.com/446249623 - Add separate error handling for text
+  // detection.
+  // If image search goes wrong, close the panel. Otherwise, even if there is
+  // a text error, don't close the panel. Record metrics except for successes,
+  // as those are recorded separately upon completion of the desired task.
+  if (image_result != CaptureModeImageSearchResult::kSuccess) {
+    RecordCaptureModeImageSearchResult(image_result);
+    CloseSearchResultsPanel();
+  }
+  if (text_result != CaptureModeTextDetectionResult::kSuccessNoTextPresent &&
+      text_result != CaptureModeTextDetectionResult::kSuccessTextPresent) {
+    RecordCaptureModeTextDetectionResult(text_result);
+  }
 
   // TODO: crbug.com/406072681 - Show an error message if the session is no
   // longer active, such as in the case of clicking the Search with Lens button

@@ -125,7 +125,8 @@ std::optional<base::Time> OnVersionReleasesFetched(
     return std::nullopt;
   }
 
-  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(*raw_data);
+  std::optional<base::Value::Dict> json = base::JSONReader::ReadDict(
+      *raw_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!json) {
     return std::nullopt;
   }

@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "skia/ext/event_tracer_impl.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
-#include "skia/ext/event_tracer_impl.h"
 #include "third_party/skia/include/utils/SkEventTracer.h"
 
 namespace skia {
@@ -57,10 +54,9 @@ SkEventTracer::Handle
       numArgs, argNames, argTypes,
       reinterpret_cast<const unsigned long long*>(argValues));
   base::trace_event::TraceEventHandle handle = TRACE_EVENT_API_ADD_TRACE_EVENT(
-      phase, categoryEnabledFlag, name, trace_event_internal::kGlobalScope, id,
-      &args, flags);
+      phase, categoryEnabledFlag, name, id, &args, flags);
   SkEventTracer::Handle result;
-  memcpy(&result, &handle, sizeof(result));
+  UNSAFE_TODO(memcpy(&result, &handle, sizeof(result)));
   return result;
 }
 
@@ -70,9 +66,9 @@ void
         const char *name,
         SkEventTracer::Handle handle) {
   base::trace_event::TraceEventHandle traceEventHandle;
-      memcpy(&traceEventHandle, &handle, sizeof(handle));
-      TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(
-          categoryEnabledFlag, name, traceEventHandle);
+  UNSAFE_TODO(memcpy(&traceEventHandle, &handle, sizeof(handle)));
+  TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(categoryEnabledFlag, name,
+                                              traceEventHandle);
 }
 
 }  // namespace skia

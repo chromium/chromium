@@ -172,3 +172,5 @@ SkColorType ConvertToSkiaColorType(const JavaRef<jobject>& bitmap_config) {
 }
 
 }  //  namespace gfx
+
+DEFINE_JNI(BitmapHelper)

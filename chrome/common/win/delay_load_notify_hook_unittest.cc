@@ -39,9 +39,9 @@ TEST(ChromeDelayLoadNotifyHookTest, OverrideDliNotifyHook) {
   DelayLoadInfo dli = {.szDll = kTestDll};
   dli.dlp.szProcName = kDummyFunction;
   absl::Cleanup reset_callback = [] {
-    chrome::SetDelayLoadHookCallback(nullptr);
+    SetDelayLoadHookCallback(nullptr);
   };
-  chrome::SetDelayLoadHookCallback(&TestDelayLoadCallbackFunction);
+  SetDelayLoadHookCallback(&TestDelayLoadCallbackFunction);
   EXPECT_EQ(__pfnDliNotifyHook2(dliNotePreGetProcAddress, &dli),
             reinterpret_cast<FARPROC>(DummyFunction));
 }

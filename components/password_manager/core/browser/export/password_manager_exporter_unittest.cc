@@ -99,7 +99,7 @@ class PasswordManagerExporterTest : public testing::Test {
     exporter_.SetDeleteForTesting(mock_delete_file_.Get());
     exporter_.SetSetPosixFilePermissionsForTesting(
         mock_set_posix_file_permissions_.Get());
-    store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+    store_->Init(/*affiliated_match_helper=*/nullptr);
     presenter_.Init();
     task_environment_.RunUntilIdle();
   }

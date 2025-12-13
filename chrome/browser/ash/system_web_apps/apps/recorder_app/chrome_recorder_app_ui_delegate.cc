@@ -67,9 +67,9 @@ std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
 }
 
 std::string ChromeRecorderAppUIDelegate::GetDefaultTranscriptionLanguage() {
-  return speech::GetDefaultLiveCaptionLanguage(
+  return std::string(speech::GetDefaultLiveCaptionLanguage(
       g_browser_process->GetApplicationLocale(),
-      Profile::FromWebUI(web_ui_)->GetPrefs());
+      Profile::FromWebUI(web_ui_)->GetPrefs()));
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(

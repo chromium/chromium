@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
@@ -19,6 +20,22 @@
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
+
+namespace {
+
+ElementTracker::Callback FilterCallback(ElementTracker::Callback callback,
+                                        ElementIdentifier id) {
+  return base::BindRepeating(
+      [](const ElementTracker::Callback& callback, ElementIdentifier id,
+         TrackedElement* el) {
+        if (el->identifier() == id) {
+          callback.Run(el);
+        }
+      },
+      std::move(callback), id);
+}
+
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
 
@@ -188,12 +205,19 @@ class ElementTracker::GarbageCollector {
 };
 
 TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
-    : identifier_(id), context_(context) {}
+    : identifier_(id), context_(context) {
+  CHECK(id);
+  CHECK(context);
+}
 
 TrackedElement::~TrackedElement() = default;
 
 gfx::Rect TrackedElement::GetScreenBounds() const {
   return gfx::Rect();
+}
+
+gfx::NativeView TrackedElement::GetNativeView() const {
+  return gfx::NativeView();
 }
 
 std::string TrackedElement::ToString() const {
@@ -271,7 +295,12 @@ bool ElementTracker::IsElementVisible(ElementIdentifier id,
 ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
   Contexts result;
   for (const auto& [key, data] : element_data_) {
-    result.insert(key.second);
+    const ElementContext context = key.second;
+    // The null context is used for registering "in any context" callbacks, but
+    // is not actually a valid context.
+    if (context) {
+      result.insert(context);
+    }
   }
   return result;
 }
@@ -367,6 +396,32 @@ ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
   // can store both in the same lookup table.
   return GetOrAddElementData(event_type, ElementContext())
       ->AddCustomEventCallback(callback);
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    ElementContext context,
+    Callback callback) {
+  DCHECK(event_type);
+  DCHECK(context);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, context)
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    Callback callback) {
+  DCHECK(event_type);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, ElementContext())
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
 }
 
 ElementTracker::ElementTracker()

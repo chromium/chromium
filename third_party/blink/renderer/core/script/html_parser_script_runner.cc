@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/script/html_parser_script_runner.h"
 
 #include <inttypes.h>
+
 #include <memory>
+
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -38,11 +40,11 @@
 #include "third_party/blink/renderer/core/html/parser/html_input_stream.h"
 #include "third_party/blink/renderer/core/script/html_parser_script_runner_host.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
-#include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 
 namespace blink {
@@ -161,13 +163,10 @@ void HTMLParserScriptRunner::Detach() {
 
 bool HTMLParserScriptRunner::IsParserBlockingScriptReady() {
   DCHECK(ParserBlockingScript());
-  if (!document_->IsScriptExecutionReady())
+  if (!document_->IsScriptExecutionReady() ||
+      document_->IsScriptBlockedUntilPrerenderActivation()) {
     return false;
-  // TODO(crbug.com/1344772) Consider moving this condition to
-  // Document::IsScriptExecutionReady(), while we are not yet sure.
-  if (base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
-      document_->GetScriptRunner()->HasForceInOrderScripts())
-    return false;
+  }
   return ParserBlockingScript()->IsReady();
 }
 
@@ -193,8 +192,10 @@ void HTMLParserScriptRunner::
     document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
     // The parser cannot be unblocked as a microtask requested another
     // resource
-    if (!document_->IsScriptExecutionReady())
+    if (!document_->IsScriptExecutionReady() ||
+        document_->IsScriptBlockedUntilPrerenderActivation()) {
       return;
+    }
   }
 
   // <spec step="B.2">Set the pending parsing-blocking script to null.</spec>
@@ -265,9 +266,9 @@ void HTMLParserScriptRunner::PendingScriptFinished(
   // yielding for cooperative scheduling. Cooperative scheduling requires that
   // the Blink C++ stack be thin when it executes JavaScript.
   document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&HTMLParserScriptRunnerHost::NotifyScriptLoaded,
-                               WrapPersistent(host_.Get())));
+      ->PostTask(FROM_HERE, blink::BindOnce(
+                                &HTMLParserScriptRunnerHost::NotifyScriptLoaded,
+                                WrapPersistent(host_.Get())));
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#scriptEndTag">
@@ -400,6 +401,19 @@ void HTMLParserScriptRunner::ExecuteScriptsWaitingForResources() {
   ExecuteParsingBlockingScripts();
 }
 
+void HTMLParserScriptRunner::UnblockForPrerenderActivation() {
+  // Should be aligned with `ExecuteScriptsWaitingForResources`.
+  CHECK(document_);
+  CHECK(!IsExecutingScript());
+  // We cannot check if the RuntimeEnabledFeature of PrerenderUntilScript is
+  // enabled or not here, because the OriginTrial token may attached to the
+  // initiator page only.
+  // TODO(crbug.com/428500219): Bring the check back after the feature is
+  // shipped.
+  CHECK(!document_->IsScriptBlockedUntilPrerenderActivation());
+  ExecuteParsingBlockingScripts();
+}
+
 // <specdef href="https://html.spec.whatwg.org/C/#stop-parsing">
 PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
     HeapDeque<Member<PendingScript>>* waiting_scripts) {
@@ -409,8 +423,10 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
   // scripts that will execute when the document has finished parsing has its
   // ready to be parser-executed set to true and the parser's Document has no
   // style sheet that is blocking scripts.</spec>
-  if (!document_->IsScriptExecutionReady())
+  if (!document_->IsScriptExecutionReady() ||
+      document_->IsScriptBlockedUntilPrerenderActivation()) {
     return nullptr;
+  }
   PendingScript* script = waiting_scripts->front();
   if (!script->IsReady()) {
     if (!script->IsWatchingForLoad()) {
@@ -435,6 +451,64 @@ PendingScript* HTMLParserScriptRunner::TryTakeReadyScriptWaitingForParsing(
 bool HTMLParserScriptRunner::ExecuteScriptsWaitingForParsing() {
   TRACE_EVENT0("blink",
                "HTMLParserScriptRunner::executeScriptsWaitingForParsing");
+
+  // If the feature is enabled, execute scripts one at a time with event loop
+  // yields between them to prevent long tasks and improve responsiveness.
+  if (RuntimeEnabledFeatures::SeparateDeferModuleScriptTasksEnabled()) {
+    // If we're already executing scripts asynchronously, check if we have more
+    // scripts to process.
+    if (scripts_to_execute_after_parsing_.empty()) {
+      // All scripts completed, allow parsing to complete.
+      return true;
+    }
+
+    DCHECK(!IsExecutingScript());
+    DCHECK(!HasParserBlockingScript());
+    DCHECK(scripts_to_execute_after_parsing_.front()->IsExternalOrModule());
+
+    // <spec step="5.3">Remove the first script element from the list of scripts
+    // that will execute when the document has finished parsing (i.e. shift out
+    // the first entry in the list).</spec>
+    PendingScript* first =
+        TryTakeReadyScriptWaitingForParsing(&scripts_to_execute_after_parsing_);
+    if (!first) {
+      return false;
+    }
+
+    // <spec step="5.2">Execute the script element given by the first script in
+    // the list of scripts that will execute when the document has finished
+    // parsing.</spec>
+    ExecutePendingDeferredScriptAndDispatchEvent(first);
+
+    // FIXME: What is this m_document check for?
+    if (!document_) {
+      return false;
+    }
+
+    // If there are more scripts to execute, post a task to continue execution
+    // in the next iteration of the event loop, yielding control between
+    // scripts. This achieves the goal of separating script execution into
+    // individual tasks.
+    if (!scripts_to_execute_after_parsing_.empty()) {
+      document_->GetTaskRunner(TaskType::kInternalContinueScriptLoading)
+          ->PostTask(FROM_HERE,
+                     blink::BindOnce(
+                         [](HTMLParserScriptRunner* runner) {
+                           // Continue execution and potentially resume parser
+                           if (runner->ExecuteScriptsWaitingForParsing()) {
+                             // If all scripts are done, need to notify parser
+                             // The parser will be resumed when it tries again
+                             runner->host_->NotifyScriptLoaded();
+                           }
+                         },
+                         WrapPersistent(this)));
+      // Return false to keep the parser paused until all scripts complete
+      return false;
+    }
+
+    // All scripts executed, allow parsing to continue
+    return true;
+  }
 
   // <spec step="5">While the list of scripts that will execute when the
   // document has finished parsing is not empty:</spec>
@@ -542,7 +616,6 @@ void HTMLParserScriptRunner::ProcessScriptElementInternal(
 
       case ScriptSchedulingType::kAsync:
       case ScriptSchedulingType::kInOrder:
-      case ScriptSchedulingType::kForceInOrder:
       case ScriptSchedulingType::kImmediate:
       case ScriptSchedulingType::kNotSet:
       case ScriptSchedulingType::kDeprecatedForceDefer:

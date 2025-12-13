@@ -79,7 +79,7 @@ export class PeerConnectionUpdateTable {
     const row = document.createElement('tr');
     tableElement.firstChild.appendChild(row);
 
-    const time = new Date(parseFloat(update.time));
+    const time = new Date(parseFloat(update.timestamp));
     const timeItem = document.createElement('td');
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
@@ -96,17 +96,20 @@ export class PeerConnectionUpdateTable {
     }
 
     if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
-      const parts = update.value.split(', ');
-      type += '(' + parts[0] + ', ' + parts[1]; // show sdpMid/sdpMLineIndex.
-      const candidateParts = parts[2].substring(11).split(' ');
-      if (candidateParts && candidateParts[7]) { // show candidate type.
-        type += ', type: ' + candidateParts[7];
-      }
-      if (parts[3]) { // url, if present.
-        type += ', ' + parts[3];
-      }
-      if (parts[4]) { // relayProtocol, if present.
-        type += ', ' + parts[4];
+      const parts = JSON.parse(update.value);
+      type += '(sdpMid="' + parts.sdpMid +'", ' +
+          'sdpMLineIndex=' + parts.sdpMLineIndex;
+      if (parts.candidate) {
+        const candidateParts = parts.candidate.split(' ');
+        if (candidateParts && candidateParts[7]) { // show candidate type.
+          type += ', type: ' + candidateParts[7];
+        }
+        if (parts[3]) { // url, if present.
+          type += ', ' + parts[3];
+        }
+        if (parts[4]) { // relayProtocol, if present.
+          type += ', ' + parts[4];
+        }
       }
       type += ')';
     } else if (
@@ -125,21 +128,14 @@ export class PeerConnectionUpdateTable {
       peerConnectionElement.firstChild.children[2].textContent = update.value;
     } else if (['transceiverAdded',
         'transceiverModified'].includes(update.type)) {
-      // Show the transceiver index.
-      const indexLine = update.value.split('\n', 3)[2];
-      if (indexLine.startsWith('getTransceivers()[')) {
-        type += ' ' + indexLine.substring(17, indexLine.length - 2);
-      }
-      const kindLine = update.value.split('\n', 5)[4].trim();
-      if (kindLine.startsWith('kind:')) {
-        type += ', ' + kindLine.substring(6, kindLine.length - 2);
-      }
-    } else if (['iceconnectionstatechange', 'connectionstatechange',
-        'signalingstatechange'].includes(update.type)) {
+      const data = JSON.parse(update.value);
+      type += '(index=' + data.transceiverIndex + ', kind=' + data.kind + ')';
+    } else if (['oniceconnectionstatechange', 'onconnectionstatechange',
+        'onsignalingstatechange'].includes(update.type)) {
       const fieldName = {
-        'iceconnectionstatechange' : 'iceconnectionstate',
-        'connectionstatechange' : 'connectionstate',
-        'signalingstatechange' : 'signalingstate',
+        'oniceconnectionstatechange' : 'iceconnectionstate',
+        'onconnectionstatechange' : 'connectionstate',
+        'onsignalingstatechange' : 'signalingstate',
       }[update.type];
       const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
       const numberOfEvents = el.textContent.split(' => ').length;
@@ -160,18 +156,18 @@ export class PeerConnectionUpdateTable {
     details.appendChild(valueContainer);
 
     // Highlight ICE/DTLS failures and failure callbacks.
-    if ((update.type === 'iceconnectionstatechange' &&
-         update.value === 'failed') ||
-        (update.type === 'connectionstatechange' &&
-         update.value === 'failed') ||
+    if ((update.type === 'oniceconnectionstatechange' &&
+         update.value === '"failed"') ||
+        (update.type === 'onconnectionstatechange' &&
+         update.value === '"failed"') ||
         update.type.indexOf('OnFailure') !== -1 ||
         update.type === 'addIceCandidateFailed') {
       valueContainer.parentElement.classList.add('update-log-failure');
     }
 
-    // RTCSessionDescription is serialized as 'type: <type>, sdp:'
-    if (update.value.indexOf(', sdp:') !== -1) {
-      const [type, sdp] = update.value.substring(6).split(', sdp: ');
+    // RTCSessionDescription is serialized as JSON.
+    if (update.value.startsWith("{\"type\":")) {
+      const {type, sdp} = JSON.parse(update.value);
       if (type === 'rollback') {
         // Rollback has no SDP.
         summary.textContent += ' (type: "rollback")';
@@ -189,7 +185,7 @@ export class PeerConnectionUpdateTable {
         if (update.type === 'setLocalDescription' && lastOfferAnswer &&
             lastOfferAnswer !== update.value) {
           lastSections = SDPUtils.splitSections(
-              lastOfferAnswer.substring(6).split(', sdp: ')[1]);
+              JSON.parse(lastOfferAnswer).sdp);
         }
         // Fold the SDP sections.
         const sections = SDPUtils.splitSections(sdp);
@@ -237,12 +233,10 @@ export class PeerConnectionUpdateTable {
           valueContainer.appendChild(sectionDetails);
         });
       }
-    } else if (update.type === 'icecandidate' ||
-        update.type === 'addIceCandidate') {
-      const parts = update.value.split(', ');
-      valueContainer.textContent = parts.slice(0, 2).join(', ') + '\n' +
-        parts[2] + '\n' +
-        parts.slice(3).join(', ');
+    } else if (['icecandidate', 'addIceCandidate', 'transceiverAdded',
+        'transceiverModified'].includes(update.type)) {
+      const parts = JSON.parse(update.value);
+      valueContainer.textContent = JSON.stringify(parts, null, ' ');
     } else {
       valueContainer.textContent = update.value;
     }

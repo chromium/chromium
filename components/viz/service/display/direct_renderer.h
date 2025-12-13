@@ -13,7 +13,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -83,7 +82,8 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   void SetVisible(bool visible);
   void ReallocatedFrameBuffers();
   void DecideRenderPassAllocationsForFrame(
-      const AggregatedRenderPassList& render_passes_in_draw_order);
+      const AggregatedRenderPassList& render_passes_in_draw_order,
+      bool skip_root_render_pass_allocation);
   void DrawFrame(AggregatedRenderPassList* render_passes_in_draw_order,
                  float device_scale_factor,
                  const gfx::Size& device_viewport_size,
@@ -152,11 +152,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     gfx::AxisTransform2d target_to_device_transform;
 
     OverlayProcessorInterface::CandidateList overlay_list;
-    // When we have a buffer queue, the output surface could be treated as an
-    // overlay plane, and the struct to store that information is in
-    // |output_surface_plane|.
-    std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-        output_surface_plane;
   };
 
   void SetCurrentFrameForTesting(const DrawingFrame& frame);
@@ -200,9 +195,11 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // 0 < n <= capabilities_.number_of_buffers.
   virtual void EnsureMinNumberOfBuffers(int n) {}
 
+#if BUILDFLAG(IS_OZONE)
   // Gets a mailbox that can be used for overlay testing the primary plane. This
   // does not need to be the next mailbox that will be swapped.
   virtual gpu::Mailbox GetPrimaryPlaneOverlayTestingMailbox();
+#endif
 
   // Return the bounding rect of previously drawn delegated ink trail.
   gfx::Rect GetDelegatedInkTrailDamageRect();
@@ -409,10 +406,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::ColorSpace reshape_color_space() const {
     DCHECK(reshape_params_);
     return reshape_params_->color_space;
-  }
-  RenderPassAlphaType reshape_alpha_type() const {
-    DCHECK(reshape_params_);
-    return reshape_params_->alpha_type;
   }
 
   // Sets a DelegatedInkPointRendererSkiaForTest to be used for testing only, in

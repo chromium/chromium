@@ -83,7 +83,7 @@ enum UnitKind {
     /// Represents a byte value, or more typically, an equivalence class
     /// represented as a byte value.
     U8(u8),
-    /// Represents the "end of input" sentinel. We regretably use a `u16`
+    /// Represents the "end of input" sentinel. We regrettably use a `u16`
     /// here since the maximum sentinel value is `256`. Thankfully, we don't
     /// actually store a `Unit` anywhere, so this extra space shouldn't be too
     /// bad.
@@ -117,8 +117,8 @@ impl Unit {
     pub fn eoi(num_byte_equiv_classes: usize) -> Unit {
         assert!(
             num_byte_equiv_classes <= 256,
-            "max number of byte-based equivalent classes is 256, but got {}",
-            num_byte_equiv_classes,
+            "max number of byte-based equivalent classes is 256, but got \
+             {num_byte_equiv_classes}",
         );
         Unit(UnitKind::EOI(u16::try_from(num_byte_equiv_classes).unwrap()))
     }
@@ -469,7 +469,7 @@ impl ByteClasses {
     /// # Ok::<(), Box<dyn std::error::Error>>(())
     /// ```
     #[inline]
-    pub fn elements(&self, class: Unit) -> ByteClassElements {
+    pub fn elements(&self, class: Unit) -> ByteClassElements<'_> {
         ByteClassElements { classes: self, class, byte: 0 }
     }
 
@@ -477,7 +477,7 @@ impl ByteClasses {
     ///
     /// That is, a sequence of contiguous ranges are returned. Typically, every
     /// class maps to a single contiguous range.
-    fn element_ranges(&self, class: Unit) -> ByteClassElementRanges {
+    fn element_ranges(&self, class: Unit) -> ByteClassElementRanges<'_> {
         ByteClassElementRanges { elements: self.elements(class), range: None }
     }
 }
@@ -501,9 +501,9 @@ impl core::fmt::Debug for ByteClasses {
                 write!(f, "{:?} => [", class.as_usize())?;
                 for (start, end) in self.element_ranges(class) {
                     if start == end {
-                        write!(f, "{:?}", start)?;
+                        write!(f, "{start:?}")?;
                     } else {
-                        write!(f, "{:?}-{:?}", start, end)?;
+                        write!(f, "{start:?}-{end:?}")?;
                     }
                 }
                 write!(f, "]")?;
@@ -786,12 +786,12 @@ impl ByteSet {
     }
 
     /// Returns an iterator over all bytes in this set.
-    pub(crate) fn iter(&self) -> ByteSetIter {
+    pub(crate) fn iter(&self) -> ByteSetIter<'_> {
         ByteSetIter { set: self, b: 0 }
     }
 
     /// Returns an iterator over all contiguous ranges of bytes in this set.
-    pub(crate) fn iter_ranges(&self) -> ByteSetRangeIter {
+    pub(crate) fn iter_ranges(&self) -> ByteSetRangeIter<'_> {
         ByteSetRangeIter { set: self, b: 0 }
     }
 

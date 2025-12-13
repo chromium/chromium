@@ -16,10 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/api/tasks/tasks_client_impl.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_classroom_client_impl.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_id/account_id.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -70,20 +67,25 @@ constexpr net::NetworkTrafficAnnotationTag kTasksTrafficAnnotation =
 
 }  // namespace
 
-GlanceablesKeyedService::GlanceablesKeyedService(Profile* profile)
-    : profile_(profile),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
-      account_id_(BrowserContextHelper::Get()
-                      ->GetUserByBrowserContext(profile_)
-                      ->GetAccountId()) {
+GlanceablesKeyedService::GlanceablesKeyedService(
+    const AccountId& account_id,
+    PrefService* pref_service,
+    apps::AppServiceProxy* app_service_proxy,
+    PolicyBlocklistService* policy_blocklist_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    signin::IdentityManager* identity_manager)
+    : account_id_(account_id),
+      url_loader_factory_(std::move(url_loader_factory)),
+      identity_manager_(identity_manager) {
   const auto create_request_sender_callback = base::BindRepeating(
       &GlanceablesKeyedService::CreateRequestSenderForClient,
       base::Unretained(this));
   classroom_client_ = std::make_unique<GlanceablesClassroomClientImpl>(
-      profile_, base::DefaultClock::GetInstance(),
-      create_request_sender_callback);
+      pref_service, app_service_proxy, policy_blocklist_service,
+      base::DefaultClock::GetInstance(), create_request_sender_callback);
   tasks_client_ = std::make_unique<api::TasksClientImpl>(
-      profile_, create_request_sender_callback, kTasksTrafficAnnotation);
+      pref_service, app_service_proxy, policy_blocklist_service,
+      create_request_sender_callback, kTasksTrafficAnnotation);
 
   if (Shell::HasInstance() && Shell::Get()->glanceables_controller()) {
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
@@ -108,15 +110,14 @@ void GlanceablesKeyedService::Shutdown() {
 
 std::unique_ptr<google_apis::RequestSender>
 GlanceablesKeyedService::CreateRequestSenderForClient(
-    const std::vector<std::string>& scopes,
+    signin::OAuthConsumerId oauth_consumer_id,
     const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const {
-  const auto url_loader_factory = profile_->GetURLLoaderFactory();
   auto auth_service = std::make_unique<google_apis::AuthService>(
       identity_manager_,
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      url_loader_factory, scopes);
+      url_loader_factory_, oauth_consumer_id);
   return std::make_unique<google_apis::RequestSender>(
-      std::move(auth_service), url_loader_factory,
+      std::move(auth_service), url_loader_factory_,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(),
            /* `USER_VISIBLE` is because the requested/returned data is visible

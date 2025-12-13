@@ -51,6 +51,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/sessions/session_service_lookup.h"
 #include "chrome/browser/sessions/session_service_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -63,10 +64,12 @@
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -1046,8 +1049,7 @@ class SessionRestoreImpl : public BrowserListObserver {
 
     for (const std::unique_ptr<sessions::SessionSplitTab>& session_split_tab :
          split_tabs) {
-      if (!browser->tab_strip_model()->ListSplits().contains(
-              session_split_tab->id_)) {
+      if (!browser->tab_strip_model()->ContainsSplit(session_split_tab->id_)) {
         continue;
       }
 
@@ -1104,7 +1106,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                          const tab_groups::LocalTabGroupID& local_id,
                          std::optional<std::string> sync_id) {
     tab_groups::TabGroupSyncService* service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
     if (!service) {
       return;
     }
@@ -1156,8 +1158,28 @@ class SessionRestoreImpl : public BrowserListObserver {
     params.initial_workspace = workspace;
     params.initial_visible_on_all_workspaces_state = visible_on_all_workspaces;
     params.creation_source = Browser::CreationSource::kSessionRestore;
-    Browser* browser = Browser::Create(params);
 
+    if (tabs::IsVerticalTabsFeatureEnabled()) {
+      if (extra_data.contains(
+              tabs::VerticalTabStripStateController::kCollapsedKey)) {
+        params.vertical_tab_strip_collapsed =
+            extra_data.at(
+                tabs::VerticalTabStripStateController::kCollapsedKey) == "true";
+      }
+
+      if (extra_data.contains(
+              tabs::VerticalTabStripStateController::kUncollapsedWidthKey)) {
+        int uncollapsed_width = 0;
+        if (base::StringToInt(
+                extra_data.at(tabs::VerticalTabStripStateController::
+                                  kUncollapsedWidthKey),
+                &uncollapsed_width)) {
+          params.vertical_tab_strip_uncollapsed_width = uncollapsed_width;
+        }
+      }
+    }
+
+    Browser* browser = Browser::Create(params);
     return browser;
   }
 
@@ -1197,7 +1219,6 @@ class SessionRestoreImpl : public BrowserListObserver {
                                ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                                : WindowOpenDisposition::NEW_BACKGROUND_TAB;
       params.tabstrip_add_types = add_types;
-      params.suggested_system_entropy = blink::mojom::SystemEntropy::kHigh;
       is_first_tab = false;
       Navigate(&params);
     }

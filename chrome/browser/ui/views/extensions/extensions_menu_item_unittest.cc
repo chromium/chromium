@@ -6,7 +6,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -44,8 +44,7 @@ class ExtensionMenuItemViewTest : public ExtensionsToolbarUnitTest,
   raw_ptr<ExtensionsMenuButton, DanglingUntriaged> primary_button_ = nullptr;
   raw_ptr<HoverButton, DanglingUntriaged> pin_button_ = nullptr;
   raw_ptr<HoverButton, DanglingUntriaged> context_menu_button_ = nullptr;
-  raw_ptr<TestToolbarActionViewController, DanglingUntriaged> controller_ =
-      nullptr;
+  raw_ptr<TestToolbarActionViewModel, DanglingUntriaged> model_ = nullptr;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -64,26 +63,25 @@ void ExtensionMenuItemViewTest::SetUp() {
   // create a DesktopNativeWidgetAura for Mash. We can get by without manually
   // creating it because AshTestViewsDelegate and MusClient will do the right
   // thing automatically.
-  init_params.native_widget =
-      CreateNativeWidget(NativeWidgetType::DESKTOP_NATIVE_WIDGET_AURA,
-                         &init_params, widget_.get());
+  init_params.native_widget = CreateNativeWidget(
+      NativeWidgetType::kDesktopNativeWidgetAura, &init_params, widget_.get());
 #endif
   widget_->Init(std::move(init_params));
 
-  auto controller = std::make_unique<TestToolbarActionViewController>("hello");
-  controller_ = controller.get();
-  controller_->SetActionName(initial_extension_name_);
-  controller_->SetTooltip(initial_tooltip_);
+  auto model = std::make_unique<TestToolbarActionViewModel>("hello");
+  model_ = model.get();
+  model_->SetActionName(initial_extension_name_);
+  model_->SetTooltip(initial_tooltip_);
 
   std::unique_ptr<ExtensionMenuItemView> menu_item;
   if (GetParam()) {
     menu_item = std::make_unique<ExtensionMenuItemView>(
-        browser(), /*is_enterprise=*/false, std::move(controller),
+        browser(), /*is_enterprise=*/false, std::move(model),
         /*site_access_toggle_callback*/ base::DoNothing(),
         /*site_permissions_button_callback=*/base::RepeatingClosure());
   } else {
     menu_item = std::make_unique<ExtensionMenuItemView>(
-        browser(), std::move(controller), /*allow_pinning=*/true);
+        browser(), std::move(model), /*allow_pinning=*/true);
   }
 
   primary_button_ = menu_item->primary_action_button_for_testing();
@@ -113,7 +111,7 @@ TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayCorrectActionTitle) {
             initial_extension_name_);
 
   std::u16string extension_name = u"Extension Name";
-  controller_->SetActionName(extension_name);
+  model_->SetActionName(extension_name);
 
   EXPECT_EQ(primary_button()->label_text_for_testing(), extension_name);
 }
@@ -123,16 +121,16 @@ TEST_P(ExtensionMenuItemViewTest, UpdatesToDisplayTooltip) {
             initial_tooltip_);
 
   std::u16string tooltip = u"New Tooltip";
-  controller_->SetTooltip(tooltip);
+  model_->SetTooltip(tooltip);
 
   EXPECT_EQ(primary_button()->GetRenderedTooltipText(gfx::Point()), tooltip);
 }
 
 TEST_P(ExtensionMenuItemViewTest, ButtonMatchesEnabledStateOfExtension) {
   EXPECT_TRUE(primary_button()->GetEnabled());
-  controller_->SetEnabled(false);
+  model_->SetEnabled(false);
   EXPECT_FALSE(primary_button()->GetEnabled());
-  controller_->SetEnabled(true);
+  model_->SetEnabled(true);
   EXPECT_TRUE(primary_button()->GetEnabled());
 }
 
@@ -140,13 +138,13 @@ TEST_P(ExtensionMenuItemViewTest, NotifyClickExecutesAction) {
   base::UserActionTester user_action_tester;
   constexpr char kActivatedUserAction[] =
       "Extensions.Toolbar.ExtensionActivatedFromMenu";
-  EXPECT_EQ(0, controller_->execute_action_count());
+  EXPECT_EQ(0, model_->execute_action_count());
   EXPECT_EQ(0, user_action_tester.GetActionCount(kActivatedUserAction));
 
   primary_button()->SetBounds(0, 0, 100, 100);
   ClickButton(primary_button());
 
-  EXPECT_EQ(1, controller_->execute_action_count());
+  EXPECT_EQ(1, model_->execute_action_count());
   EXPECT_EQ(1, user_action_tester.GetActionCount(kActivatedUserAction));
 }
 

@@ -102,8 +102,6 @@ component("services") {
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/service",
-    "//media/learning/impl",
-    "//media/learning/mojo:impl",
     "//media/mojo/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
@@ -218,6 +216,7 @@ component("services") {
       "//components/viz/common",
       "//media/gpu/chromeos",
       "//media/mojo/common",
+      "//services/viz/public/cpp/gpu",
     ]
   }
 
@@ -285,7 +284,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//media:test_support",
-    "//media/learning/common",
     "//media/mojo:test_support",
     "//media/mojo/clients",
     "//media/mojo/common",

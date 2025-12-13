@@ -15,25 +15,4 @@ window.addEventListener('load', function() {
         'chrome://theme/css/incognito_tab_theme.css?' + Date.now();
   });
   chrome.send('observeThemeChanges');
-
-  addWebUiListener('cookie-controls-changed', dict => {
-    $('cookie-controls-tooltip-icon').hidden = !dict.enforced;
-    $('cookie-controls-tooltip-icon').iconClass = dict.icon;
-    $('cookie-controls-toggle').disabled = dict.enforced;
-    $('cookie-controls-toggle').checked = dict.checked;
-    cookieSettingsUrl = dict.cookieSettingsUrl;
-  });
-  $('cookie-controls-toggle').addEventListener('change', event => {
-    chrome.send('cookieControlsToggleChanged', [event.detail]);
-  });
-  // Make cookie-controls-tooltip-icon respond to the enter key.
-  $('cookie-controls-tooltip-icon').addEventListener('keyup', event => {
-    if (event.key === 'Enter') {
-      $('cookie-controls-tooltip-icon').click();
-    }
-  });
-  $('cookie-controls-tooltip-icon').onclick = () => {
-    window.location.href = cookieSettingsUrl;
-  };
-  chrome.send('observeCookieControlsSettingsChanges');
 });

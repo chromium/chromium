@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
 #define COMPONENTS_INPUT_PASSTHROUGH_TOUCH_EVENT_QUEUE_H_
 
+#include <optional>
 #include <set>
 #include <string>
 
@@ -19,6 +20,10 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/events/blink/blink_features.h"
+
+namespace base {
+class SequencedTaskRunner;
+} // namespace base
 
 namespace content {
 class InputRouterImplTestBase;
@@ -106,7 +111,7 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   void QueueEvent(const TouchEventWithLatencyInfo& event,
                   DispatchToRendererCallback& dispatch_callback);
 
-  void PrependTouchScrollNotification();
+  void PrependTouchScrollNotification(uint32_t primary_unique_touch_event_id);
 
   void ProcessTouchAck(blink::mojom::InputEventResultSource ack_source,
                        blink::mojom::InputEventResultState ack_result,
@@ -134,6 +139,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   // Empties the queue of touch events. This may result in any number of gesture
   // events being sent to the renderer.
   void FlushQueue();
+
+  void OnTouchActionFromMain();
 
  protected:
   void SendTouchCancelEventForTouchEvent(
@@ -229,6 +236,9 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   PreFilterResult FilterBeforeForwardingImpl(const blink::WebTouchEvent& event);
   bool ShouldFilterForEvent(const blink::WebTouchEvent& event);
 
+  void SetAckStateForPendingTouchMovesFromSequence(
+      uint32_t primary_unique_touch_event_id);
+
   void AckTouchEventToClient(
       const TouchEventWithLatencyInfo& acked_event,
       blink::mojom::InputEventResultSource ack_source,
@@ -277,6 +287,8 @@ class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueue {
   std::set<TouchEventWithLatencyInfoAndAckState,
            TouchEventWithLatencyInfoAndAckStateComparator>
       outstanding_touches_;
+
+  std::optional<uint32_t> curr_sequence_down_event_id_ = std::nullopt;
 
   // Whether we should allow events to bypass normal queue filter rules.
   const bool skip_touch_filter_;

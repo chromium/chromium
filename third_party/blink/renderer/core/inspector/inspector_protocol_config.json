@@ -58,6 +58,10 @@
                 "async": ["requestDatabaseNames", "requestDatabase", "requestData", "getMetadata", "deleteObjectStoreEntries", "clearObjectStore", "deleteDatabase"]
             },
             {
+                "domain": "Inspector",
+                "include": []
+            },
+            {
                 "domain": "LayerTree"
             },
             {
@@ -81,7 +85,7 @@
             {
                 "domain": "Page",
                 "exclude": ["getNavigationHistory", "navigateToHistoryEntry", "resetNavigationHistory", "captureScreenshot", "screencastFrameAck", "handleJavaScriptDialog", "setColorPickerEnabled",
-                            "getAppManifest", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed"],
+                            "getAppManifest", "getAnnotatedPageContent", "setControlNavigations", "processNavigation", "printToPDF", "bringToFront", "setDownloadBehavior", "navigate", "crash", "close", "setWebLifecycleState", "captureSnapshot", "getInstallabilityErrors", "getManifestIcons", "getAppId", "setSPCTransactionMode", "setRPHRegistrationMode", "setPrerenderingAllowed"],
                 "async": ["getResourceContent", "searchInResource", "createIsolatedWorld"],
                 "exclude_events": ["screencastFrame", "screencastVisibilityChanged", "colorPicked", "interstitialShown", "interstitialHidden",
                                    "javascriptDialogOpening", "javascriptDialogClosed", "navigationRequested", "frameStartedLoading", "frameStoppedLoading"]
@@ -106,7 +110,12 @@
                 "domain": "Network",
                 "exclude": ["clearBrowserCache", "clearBrowserCookies", "getCookies", "getAllCookies", "deleteCookies", "setCookie", "setCookies", "canEmulateNetworkConditions",
                             "setRequestInterception", "continueInterceptedRequest", "getResponseBodyForInterception",
-                            "takeResponseBodyForInterceptionAsStream", "getSecurityIsolationStatus", "loadNetworkResource", "enableReportingApi", "setCookieControls"],
+                            "takeResponseBodyForInterceptionAsStream",
+                            "getSecurityIsolationStatus",
+                            "loadNetworkResource",
+                            "enableReportingApi",
+                            "setCookieControls"
+                          ],
                 "async": ["getResponseBody", "getRequestPostData"]
             },
             {

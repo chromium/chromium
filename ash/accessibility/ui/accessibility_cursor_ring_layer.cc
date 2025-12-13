@@ -47,8 +47,7 @@ void AccessibilityCursorRingLayer::Set(const gfx::Point& location) {
   int inset = kGradientWidth + kCursorRingRadius + kLayerMargin;
   bounds.Inset(-inset);
 
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds);
+  display::Display display = display::Screen::Get()->GetDisplayMatching(bounds);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   // Root could be null if window tree host is being updated. See
   // http://b/326074244 for more details.
@@ -78,8 +77,8 @@ void AccessibilityCursorRingLayer::OnPaintLayer(
   const int w = kGradientWidth;
   for (int i = 0; i < w; ++i) {
     flags.setColor(SkColorSetARGB(255 * i * i / (w * w), red_, green_, blue_));
-    SkPath path;
-    path.addOval(SkRect::MakeXYWH(r.x(), r.y(), r.width(), r.height()));
+    const SkPath path =
+        SkPath::Oval(SkRect::MakeXYWH(r.x(), r.y(), r.width(), r.height()));
     r.Inset(1);
     recorder.canvas()->DrawPath(path, flags);
   }

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/onboarding_ui_tracker_impl.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"

@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"

@@ -7,13 +7,18 @@
 
 #include <concepts>
 
+#include "base/byte_count.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 // Template to be used as a mixin class for memory saver tests extending
 // TestWithBrowserView.
@@ -34,8 +39,8 @@ class MemorySaverUnitTestMixin : public T {
   }
 
   // Creates a new tab at index 0 that would report the given memory savings and
-  // discard reason if the tab was discarded
-  void AddNewTab(int memory_savings,
+  // discard reason if the tab was discarded.
+  void AddNewTab(base::ByteCount memory_savings,
                  mojom::LifecycleUnitDiscardReason discard_reason) {
     T::AddTab(T::browser(), GURL("http://foo.com"));
     content::WebContents* const contents =
@@ -65,11 +70,15 @@ class MemorySaverUnitTestMixin : public T {
         ->UpdateAll();
   }
 
-  PageActionIconView* GetPageActionIconView() {
-    return T::browser_view()
-        ->GetLocationBarView()
-        ->page_action_icon_controller()
-        ->GetIconView(PageActionIconType::kMemorySaver);
+  IconLabelBubbleView* GetPageActionIconView() {
+    return T::browser_view()->toolbar_button_provider()->GetPageActionView(
+        kActionShowMemorySaverChip);
+  }
+
+  views::View* GetBubbleView() {
+    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+        MemorySaverBubbleView::kMemorySaverDialogBodyElementId,
+        views::ElementTrackerViews::GetContextForView(T::browser_view()));
   }
 };
 

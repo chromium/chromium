@@ -591,7 +591,7 @@ suite('AppearanceTest', () => {
           'display', 'none');
       // Edit theme button shows the right text.
       assertEquals(
-          appearanceElement.$.editThemeButton.textContent!.trim(),
+          appearanceElement.$.editThemeButton.textContent.trim(),
           'wallpaper search button enabled');
     });
 
@@ -654,7 +654,7 @@ suite('AppearanceTest', () => {
             'display', 'none');
         assertEquals(
             $$<HTMLElement>(
-                appearanceElement, '#editThemeButton')!.textContent!.trim(),
+                appearanceElement, '#editThemeButton')!.textContent.trim(),
             'wallpaper search button disabled');
       });
     });

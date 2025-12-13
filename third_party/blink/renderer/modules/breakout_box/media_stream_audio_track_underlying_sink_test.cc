@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -39,13 +40,6 @@ using testing::_;
 using testing::StrictMock;
 
 namespace blink {
-
-template <>
-struct CrossThreadCopier<std::unique_ptr<WritableStreamTransferringOptimizer>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::unique_ptr<WritableStreamTransferringOptimizer>;
-  static Type Copy(Type pointer) { return pointer; }
-};
 
 class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:
@@ -100,8 +94,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
     AudioDataInit* init = AudioDataInit::Create();
     init->setFormat(V8AudioSampleFormat::Enum::kF32);
     init->setSampleRate(31600.0f);
-    init->setNumberOfFrames(316u);
-    init->setNumberOfChannels(26u);  // This maps to CHANNEL_LAYOUT_UNSUPPORTED
+    init->setNumberOfFrames(media::limits::kMaxSamplesPerPacket +
+                            1);  // Invalid frame count.
+    init->setNumberOfChannels(1u);
     init->setTimestamp(1u);
     init->setData(
         MakeGarbageCollected<AllowSharedBufferSource>(DOMArrayBuffer::Create(

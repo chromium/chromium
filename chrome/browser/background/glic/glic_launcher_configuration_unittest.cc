@@ -7,7 +7,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,13 +33,13 @@ class GlicLauncherConfigurationTest : public testing::Test {
   GlicLauncherConfigurationTest() = default;
   ~GlicLauncherConfigurationTest() override = default;
 
-  PrefService* local_state() { return scoped_testing_local_state_.Get(); }
+  PrefService* local_state() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(GlicLauncherConfigurationTest, IsEnabled) {
@@ -59,6 +58,10 @@ TEST_F(GlicLauncherConfigurationTest, GetGlobalHotkey_Default) {
   EXPECT_TRUE(accelerator.IsCtrlDown());
   EXPECT_FALSE(accelerator.IsAltDown());
   EXPECT_FALSE(accelerator.IsCmdDown());
+#elif BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(accelerator.IsCtrlDown());
+  EXPECT_FALSE(accelerator.IsAltDown());
+  EXPECT_TRUE(accelerator.IsCmdDown());
 #else
   EXPECT_FALSE(accelerator.IsCtrlDown());
   EXPECT_TRUE(accelerator.IsAltDown());

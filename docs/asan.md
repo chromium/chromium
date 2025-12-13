@@ -2,14 +2,19 @@
 
 [AddressSanitizer](https://github.com/google/sanitizers) (ASan) is a fast memory
 error detector based on compiler instrumentation (LLVM). It is fully usable for
-Chrome on Android, Chrome OS, iOS simulator, Linux, Mac, and 64-bit Windows.
+Chrome OS, iOS simulator, Linux, Mac, and 64-bit Windows.
 Additional info on the tool itself is available at
 https://clang.llvm.org/docs/AddressSanitizer.html.
+
+For Android, only "Hardware ASAN" is supported, and only on arm64 (see
+[crbug/441905843](https://crbug.com/441905843)).
 
 For the memory leak detector built into ASan, see
 [LeakSanitizer](https://www.chromium.org/developers/testing/leaksanitizer).
 If you want to debug memory leaks, please refer to the instructions on that page
 instead.
+
+[TOC]
 
 ## Buildbots and trybots
 
@@ -155,20 +160,6 @@ defaults for some options, so the default behavior may be different from that
 observed in other projects.
 See `build/sanitizers/sanitizer_options.cc` for more details.
 
-## NaCl support under ASan
-
-On Linux (and soon on macOS) you can build and run Chromium with NaCl under ASan.
-Untrusted code (nexe) itself is not instrumented with ASan in this mode, but
-everything else is.
-
-To do this, remove `enable_nacl=false` from your `args.gn`, and define
-`NACL_DANGEROUS_SKIP_QUALIFICATION_TEST=1` in your environment at run time.
-
-Pipe chromium output (stderr) through ``tools/valgrind/asan/asan_symbolize.py
-`pwd`/`` to get function names and line numbers in ASan reports.
-If you're seeing crashes within `nacl_helper_bootstrap`, try deleting
-`out/Release/nacl_helper`.
-
 ## Building on iOS
 
 It's possible to build and run Chrome tests for iOS simulator (which are x86
@@ -196,7 +187,8 @@ changes:
 
 ```python
 target_os="android"
-is_asan=true
+target_cpu="arm64" # The only supported architecture.
+is_hwasan=true
 is_debug=false
 ```
 

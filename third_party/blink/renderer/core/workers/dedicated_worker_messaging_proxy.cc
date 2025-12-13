@@ -281,8 +281,10 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
       *GetExecutionContext(), std::move(message.ports));
   debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
   if (message.message->CanDeserializeIn(GetExecutionContext())) {
-    MessageEvent* event =
-        MessageEvent::Create(ports, std::move(message.message));
+    MessageEvent* event = MessageEvent::Create(
+        ports, std::move(message.message), /* origin=*/nullptr,
+        MessageEvent::kMessageIsSameOrigin,
+        /* last_event_id=*/{}, /* source=*/nullptr);
     event->SetTraceId(message.trace_id);
     TRACE_EVENT(
         "devtools.timeline", "HandlePostMessage", "data",
@@ -306,7 +308,7 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   if (!worker_object_)
     return;
 
-  SourceLocation* location = cross_location.CreateSourceLocation();
+  SourceLocation* location = cross_location.ToSourceLocation();
 
   // We don't bother checking the AskedToTerminate() flag for dispatching the
   // event on the owner context, because exceptions should *always* be reported

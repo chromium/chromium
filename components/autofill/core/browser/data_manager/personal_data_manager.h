@@ -83,11 +83,12 @@ class PersonalDataManager : public KeyedService,
       signin::IdentityManager* identity_manager,
       history::HistoryService* history_service,
       syncer::SyncService* sync_service,
-      StrikeDatabaseBase* strike_database,
+      strike_database::StrikeDatabaseBase* strike_database,
       AutofillImageFetcherBase* image_fetcher,
       std::unique_ptr<AutofillSharedStorageHandler> shared_storage_handler,
       std::string app_locale,
-      std::string country_code);
+      std::string country_code,
+      AutofillOptimizationGuideDecider* autofill_optimization_guide_decider);
   PersonalDataManager(const PersonalDataManager&) = delete;
   PersonalDataManager& operator=(const PersonalDataManager&) = delete;
   ~PersonalDataManager() override;
@@ -165,6 +166,8 @@ class PersonalDataManager : public KeyedService,
 
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
+
+  bool has_initial_load_finished_ = false;
 
   base::WeakPtrFactory<PersonalDataManager> weak_factory_{this};
 };

@@ -75,10 +75,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
   // Testing:
   static void SetNetworkContextForTesting(network::mojom::NetworkContext*);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  static void SetAlwaysOpenFirewallHoleForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
  private:
   explicit DirectSocketsServiceImpl(Context context);
 
@@ -92,8 +88,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenTCPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults&);
 
   void CreateTCPConnectedSocketImpl(
       const net::AddressList& resolved_addresses,
@@ -109,8 +105,8 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
       OpenConnectedUDPSocketCallback,
       int result,
       const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults&);
 
   void CreateRestrictedUDPSocketImpl(
       const net::IPEndPoint& peer_addr,
@@ -123,11 +119,6 @@ class CONTENT_EXPORT DirectSocketsServiceImpl
 
   Context context_;
   std::unique_ptr<network::SimpleHostResolver> resolver_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  class FirewallHoleDelegate;
-  std::unique_ptr<FirewallHoleDelegate> firewall_hole_delegate_;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::WeakPtrFactory<DirectSocketsServiceImpl> weak_factory_{this};
 };

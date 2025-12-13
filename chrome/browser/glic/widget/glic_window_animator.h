@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_ANIMATOR_H_
 #define CHROME_BROWSER_GLIC_WIDGET_GLIC_WINDOW_ANIMATOR_H_
 
-#include "base/callback_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
@@ -15,7 +14,7 @@
 
 namespace glic {
 
-class GlicWindowController;
+class GlicWidget;
 class GlicWindowResizeAnimation;
 
 // This class will handle the open and close animations for the glic widget
@@ -23,7 +22,8 @@ class GlicWindowResizeAnimation;
 // resizing-related animations.
 class GlicWindowAnimator : public gfx::AnimationDelegate {
  public:
-  explicit GlicWindowAnimator(GlicWindowController* window_controller);
+  explicit GlicWindowAnimator(base::WeakPtr<GlicWidget> widget,
+                              base::RepeatingClosure resize_finished_callback);
   GlicWindowAnimator(const GlicWindowAnimator&) = delete;
   GlicWindowAnimator& operator=(const GlicWindowAnimator&) = delete;
   ~GlicWindowAnimator() override;
@@ -59,6 +59,8 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
 
   bool IsAnimating() const;
 
+  void CancelAnimation();
+
  private:
   // Sets target bounds for the widget (must exist) and creates a
   // GlicWindowResizeAnimation instance to begin a new animation. If a bounds
@@ -80,9 +82,11 @@ class GlicWindowAnimator : public gfx::AnimationDelegate {
                           float target_opacity,
                           base::TimeDelta duration);
 
-  // GlicWindowController owns GlicWindowAnimator and will outlive it
-  const raw_ptr<GlicWindowController> window_controller_;
+  // The widget that this animator is responsible for.
+  base::WeakPtr<GlicWidget> widget_;
   std::unique_ptr<GlicWindowResizeAnimation> window_resize_animation_;
+
+  base::RepeatingClosure resize_finished_callback_;
 
   // Last requested target size. Will be (0, 0) if there hasn't been a resize
   // request or glic has already been resized to the target size.

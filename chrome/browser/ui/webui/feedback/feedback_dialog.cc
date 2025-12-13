@@ -57,8 +57,7 @@ void FeedbackDialog::CreateOrShow(
     const extensions::api::feedback_private::FeedbackInfo& info) {
   if (current_instance_) {
     DCHECK(current_instance_->widget_);
-    const Profile* current_profile =
-        current_instance_->profile_keep_alive_.profile();
+    Profile* current_profile = current_instance_->profile_keep_alive_.profile();
     if (profile == current_profile) {
       // Focus the window hosting the dialog that has already been created.
       current_instance_->widget_->Show();

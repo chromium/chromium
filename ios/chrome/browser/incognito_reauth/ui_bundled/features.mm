@@ -8,7 +8,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 
-BASE_FEATURE(kIOSSoftLock, "IOSSoftLock", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSSoftLock, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIOSSoftLockEnabled() {
   return base::FeatureList::IsEnabled(kIOSSoftLock);

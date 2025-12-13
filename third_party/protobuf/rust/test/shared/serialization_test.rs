@@ -5,6 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#[cfg(not(bzl))]
+mod protos;
+#[cfg(not(bzl))]
+use protos::*;
+
 use googletest::prelude::*;
 use protobuf::prelude::*;
 use protobuf::View;
@@ -12,7 +17,7 @@ use protobuf::View;
 use paste::paste;
 use unittest_proto3_optional_rust_proto::TestProto3Optional;
 use unittest_proto3_rust_proto::TestAllTypes as TestAllTypesProto3;
-use unittest_rust_proto::TestAllTypes;
+use unittest_rust_proto::{TestAllTypes, TestRequired};
 
 macro_rules! generate_parameterized_serialization_test {
     ($(($type: ident, $name_ext: ident)),*) => {
@@ -147,3 +152,24 @@ generate_parameterized_int32_byte_size_test!(
                                            * presence" semantics and setting it to 0 (default
                                            * value) will cause it to not be serialized */
 );
+
+#[gtest]
+fn test_required_field_enforced() {
+    // Empty bytes slice is a valid binaryproto with no fields set -- therefore it should not parse
+    // as a message with required fields.
+    expect_that!(TestRequired::parse(&[]), err(anything()));
+
+    let mut msg = TestRequired::new();
+    expect_that!(msg.clear_and_parse(&[]), err(anything()));
+}
+
+#[gtest]
+fn test_required_field_not_enforced() {
+    // Empty bytes slice is a valid binaryproto with no fields set.
+    let mut msg = TestRequired::parse_dont_enforce_required(&[]).unwrap();
+    expect_that!(msg.has_a(), eq(false));
+
+    msg.set_a(1);
+    msg.clear_and_parse_dont_enforce_required(&[]).unwrap();
+    expect_that!(msg.has_a(), eq(false));
+}

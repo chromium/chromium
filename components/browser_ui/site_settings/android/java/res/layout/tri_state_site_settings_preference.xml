@@ -40,7 +40,7 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="?android:attr/listPreferredItemPaddingStart"
-            app:primaryText="@string/website_settings_category_blocked" />
+            app:primaryText="@string/website_settings_category_not_allowed" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 </LinearLayout>

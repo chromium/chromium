@@ -68,6 +68,8 @@ component("variations") {
     "seed_reader_writer.h",
     "seed_response.cc",
     "seed_response.h",
+    "sticky_activation_manager.cc",
+    "sticky_activation_manager.h",
     "study_filtering.cc",
     "study_filtering.h",
     "synthetic_trial_registry.cc",
@@ -124,6 +126,7 @@ component("variations") {
   public_deps = [
     ":variations_features",
     "proto",
+    "proto:client_variations_proto",
     "//base",
   ]
 
@@ -131,6 +134,7 @@ component("variations") {
     ":buildflags",
     ":variations_mojom",
     "proto",
+    "//base:build_time",
     "//components/crash/core/common:crash_key",
     "//components/prefs",
     "//components/version_info",
@@ -138,6 +142,15 @@ component("variations") {
     "//third_party/protobuf:protobuf_lite",
     "//third_party/zlib/google:compression_utils",
   ]
+
+  if (!is_android) {
+    # ZSTD is not supported on Android due to binary size increase. See
+    # crbug.com/40196713.
+    deps += [
+      "//third_party/zstd:compress",
+      "//third_party/zstd:decompress",
+    ]
+  }
 
   if (is_android) {
     sources += [
@@ -150,13 +163,6 @@ component("variations") {
       "//components/crash/android:anr_build_id_provider",
       "//components/crash/android:anr_collector_jni_headers",
       "//components/variations/android:variations_seed_jni",
-    ]
-  }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
     ]
   }
 }
@@ -213,17 +219,22 @@ static_library("test_support") {
   ]
 
   deps = [
-    "field_trial_config:field_trial_config",
+    "field_trial_config",
     "proto",
+    "proto:client_variations_proto",
     "//base/test:test_support",
     "//components/metrics",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/variations/service",
     "//components/web_resource:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/zlib/google:compression_utils",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -242,6 +253,7 @@ source_set("unit_tests") {
     "processed_study_unittest.cc",
     "seed_reader_writer_unittest.cc",
     "simulate_for_crosstalk_unittest.cc",
+    "sticky_activation_manager_unittest.cc",
     "study_filtering_unittest.cc",
     "synthetic_trial_registry_unittest.cc",
     "uniformity_unittest.cc",
@@ -258,6 +270,13 @@ source_set("unit_tests") {
 
   if (is_android || is_ios) {
     sources += [ "variations_request_scheduler_mobile_unittest.cc" ]
+  }
+
+  if (use_blink) {
+    sources += [
+      "net/omnibox_autofocus_http_headers_unittest.cc",
+      "net/omnibox_autofocus_url_loader_throttle_unittest.cc",
+    ]
   }
 
   if (is_chromeos) {
@@ -281,10 +300,12 @@ source_set("unit_tests") {
     ":variations_mojom",
     "net",
     "proto",
+    "//base:build_time",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
     "//components/prefs:test_support",
-    "//components/variations/field_trial_config:field_trial_config",
+    "//components/variations/field_trial_config",
+    "//services/network:test_support",
     "//services/network/public/cpp:cpp_base",
     "//testing/gmock",
     "//testing/gtest",
@@ -293,12 +314,13 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
-    ]
+  if (use_blink) {
+    deps += [ "//third_party/blink/public/common" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # Convenience testing target
@@ -339,7 +361,7 @@ if (use_fuzzing_engine_with_lpm) {
       "//third_party/libprotobuf-mutator",
     ]
   }
-  fuzzer_test("create_trials_from_seed_fuzzer_v2") {
+  fuzzer_test("create_trials_from_seed_v2_fuzzer") {
     sources = [ "fuzzers/create_trials_from_seed_fuzzer_v2.cc" ]
     deps = [
       ":test_cases_proto",
@@ -347,6 +369,10 @@ if (use_fuzzing_engine_with_lpm) {
       ":variations",
       "proto",
       "//base/test:test_support",
+      "//components/metrics",
+      "//components/metrics:test_support",
+      "//components/prefs:test_support",
+      "//components/variations/service",
       "//third_party/libprotobuf-mutator",
     ]
     seed_corpus = "fuzzers/testcases/create_trials_from_seed/"

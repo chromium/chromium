@@ -5,7 +5,7 @@ Metadata: {
     length : 1
     remainingBudget : 12
 }
-Entries:[
+Entries: [
     [0] : {
         key : hello
         value : worldfriend

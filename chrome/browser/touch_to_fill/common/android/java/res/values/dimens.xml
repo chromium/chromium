@@ -8,6 +8,7 @@ found in the LICENSE file.
 <resources>
     <dimen name="ttf_drag_handlebar_margin">6dp</dimen>
     <dimen name="ttf_buttons_vertical_margin">4dp</dimen>
+    <dimen name="ttf_buttons_horizontal_margin">8dp</dimen>
     <dimen name="ttf_buttons_height">56dp</dimen>
     <dimen name="ttf_sheet_padding">22dp</dimen>
     <dimen name="ttf_sheet_margin">16dp</dimen>

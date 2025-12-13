@@ -28,7 +28,7 @@ public class ChildProcessCrashObserver {
 
     /** An interface for registering a callback to be executed when a child process crashes. */
     public interface ChildCrashedCallback {
-        public void childCrashed(int pid);
+        void childCrashed(int pid);
     }
 
     /**

@@ -120,13 +120,27 @@ std::vector<float> FeatureProcessorState::MergeTensors(
   } else {
     for (size_t i = 0; i < tensor.size(); ++i) {
       for (const ProcessedValue& value : tensor.at(i)) {
-        if (value.type == ProcessedValue::Type::FLOAT) {
-          result.push_back(value.float_val);
-        } else {
-          SetError(stats::FeatureProcessingError::kResultTensorError,
-                   "Expected ProcessedValue::Type::FLOAT but found " +
-                       base::NumberToString(static_cast<int>(value.type)));
-          return result;
+        switch (value.type) {
+          case ProcessedValue::BOOL:
+            result.push_back(static_cast<float>(value.bool_val));
+            break;
+          case ProcessedValue::INT:
+            result.push_back(static_cast<float>(value.int_val));
+            break;
+          case ProcessedValue::DOUBLE:
+            result.push_back(static_cast<float>(value.double_val));
+            break;
+          case ProcessedValue::INT64:
+            result.push_back(static_cast<float>(value.int64_val));
+            break;
+          case ProcessedValue::FLOAT:
+            result.push_back(value.float_val);
+            break;
+          default:
+            SetError(stats::FeatureProcessingError::kResultTensorError,
+                     "Expected float compatible but found " +
+                         base::NumberToString(static_cast<int>(value.type)));
+            return result;
         }
       }
     }

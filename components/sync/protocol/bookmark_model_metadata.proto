@@ -4,15 +4,14 @@
 
 syntax = "proto2";
 
-option java_multiple_files = true;
-option java_package = "org.chromium.components.sync.protocol";
-
-option optimize_for = LITE_RUNTIME;
-
 package sync_pb;
 
 import "components/sync/protocol/data_type_state.proto";
 import "components/sync/protocol/entity_metadata.proto";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+option optimize_for = LITE_RUNTIME;
 
 // Corresponds to a single bookmark id/metadata pair.
 message BookmarkMetadata {
@@ -75,5 +74,12 @@ message BookmarkModelMetadata {
   // Indicates whether the count of remote updates during the latest initial
   // merge exceeded the bookmark limit. This field is mutually exclusive to all
   // the other fields and is managed completely by the processor.
+  // TODO(454302754): Remove this field once
+  // `last_initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros`
+  // is stable.
   optional bool last_initial_merge_remote_updates_exceeded_limit = 9;
+  // The timestamp (in microseconds) when the above limit was exceeded.
+  optional int64
+      initial_merge_remote_updates_exceeded_limit_timestamp_windows_epoch_micros =
+          10;
 }

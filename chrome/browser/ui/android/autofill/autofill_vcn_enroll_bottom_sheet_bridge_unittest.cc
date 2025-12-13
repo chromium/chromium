@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
@@ -64,7 +64,7 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
 TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
        RequestShowContentWithWebContents) {
   auto delegate =
-      std::make_unique<AutofillVirtualCardEnrollmentInfoBarDelegateMobile>(
+      std::make_unique<AutofillVirtualCardEnrollmentBottomSheetDelegateMobile>(
           BuildController());
   AutofillVCNEnrollBottomSheetBridge bridge;
 
@@ -74,12 +74,13 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,
   EXPECT_FALSE(did_show);
 }
 
-class MockDelegate : public AutofillVirtualCardEnrollmentInfoBarDelegateMobile {
+class MockDelegate
+    : public AutofillVirtualCardEnrollmentBottomSheetDelegateMobile {
  public:
   explicit MockDelegate(VirtualCardEnrollBubbleControllerImpl* controller)
-      : AutofillVirtualCardEnrollmentInfoBarDelegateMobile(controller) {}
+      : AutofillVirtualCardEnrollmentBottomSheetDelegateMobile(controller) {}
   ~MockDelegate() override = default;
-  MOCK_METHOD(void, InfoBarDismissed, (), (override));
+  MOCK_METHOD(void, OnDismiss, (), (override));
   MOCK_METHOD(bool, Accept, (), (override));
   MOCK_METHOD(bool, Cancel, (), (override));
 };
@@ -90,7 +91,7 @@ TEST_F(AutofillVCNEnrollBottomSheetBridgeTest, DismissCallback) {
   AutofillVCNEnrollBottomSheetBridge bridge;
   bridge.RequestShowContent(web_contents(), std::move(delegate));
 
-  EXPECT_CALL(delegate_reference, InfoBarDismissed());
+  EXPECT_CALL(delegate_reference, OnDismiss());
 
   bridge.OnDismiss(/*env=*/nullptr);
 }

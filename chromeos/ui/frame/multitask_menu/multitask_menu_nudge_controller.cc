@@ -26,6 +26,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 
 namespace chromeos {
@@ -74,7 +75,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   params.parent = window->parent();
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
-  const int message_id = display::Screen::GetScreen()->InTabletMode()
+  const int message_id = display::Screen::Get()->InTabletMode()
                              ? IDS_TABLET_MULTITASK_MENU_NUDGE_TEXT
                              : IDS_MULTITASK_MENU_NUDGE_TEXT;
 
@@ -176,7 +177,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
   // are owned by the frame which also owns `this`. They can be passed safely on
   // tablet since tablet is controlled by ash which is sync.
   g_delegate_instance->GetNudgePreferences(
-      display::Screen::GetScreen()->InTabletMode(),
+      display::Screen::Get()->InTabletMode(),
       base::BindOnce(&MultitaskMenuNudgeController::OnGetPreferences,
                      weak_ptr_factory_.GetWeakPtr(), window, anchor_view));
 }
@@ -327,7 +328,7 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   }
 
   // Tablet state has changed since we fetched preferences.
-  if (tablet_mode != display::Screen::GetScreen()->InTabletMode()) {
+  if (tablet_mode != display::Screen::Get()->InTabletMode()) {
     return;
   }
 
@@ -351,7 +352,7 @@ void MultitaskMenuNudgeController::OnGetPreferences(
   // If the anchor is passed and hidden or offscreen, we cannot show the nudge.
   if (anchor_view) {
     if (!anchor_view->IsDrawn() ||
-        !display::Screen::GetScreen()
+        !display::Screen::Get()
              ->GetDisplayNearestWindow(window)
              .bounds()
              .Contains(anchor_view->GetBoundsInScreen())) {
@@ -442,7 +443,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
   CHECK(window_);
   CHECK(nudge_widget_);
 
-  const bool tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool tablet_mode = display::Screen::Get()->InTabletMode();
   if (!tablet_mode) {
     CHECK(pulse_layer_);
     CHECK(anchor_view_);
@@ -486,7 +487,7 @@ void MultitaskMenuNudgeController::UpdateWidgetAndPulse() {
       anchor_bounds_in_screen.bottom() + kNudgeDistanceFromAnchor, size.width(),
       size.height());
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestView(window_);
+      display::Screen::Get()->GetDisplayNearestView(window_);
   // If the nudge is going to be offscreen, make sure it is within the window
   // bounds.
   bool adjust_to_fit = !display.work_area().Contains(bounds_in_screen);

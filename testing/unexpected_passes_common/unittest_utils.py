@@ -32,6 +32,7 @@ def FakeQueryResult(builder_name: str, id_: str, test_id: str, status: str,
           'builder_name': builder_name,
           'id': id_,
           'test_id': test_id,
+          'test_name': test_id.split('.')[-1],
           'status': status,
           'typ_tags': list(typ_tags),
           'step_name': step_name,
@@ -50,9 +51,6 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
 
   def _GetRelevantExpectationFilesForQueryResult(self, _) -> None:
     return None
-
-  def _StripPrefixFromTestId(self, test_id: str) -> str:
-    return test_id.split('.')[-1]
 
   def _GetPublicCiQuery(self) -> str:
     return 'public_ci'
@@ -105,6 +103,7 @@ class GenericBuilders(builders.Builders):
                suite: Optional[str] = None,
                include_internal_builders: bool = False):
     super().__init__(suite, include_internal_builders)
+
   #pylint: enable=useless-super-delegation
 
   def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
@@ -125,6 +124,7 @@ def RegisterGenericBuildersImplementation() -> None:
 
 
 class GenericExpectations(expectations.Expectations):
+
   def GetExpectationFilepaths(self) -> list:
     return []
 

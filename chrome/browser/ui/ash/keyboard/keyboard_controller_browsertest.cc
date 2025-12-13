@@ -302,10 +302,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
                                       ->GetRenderWidgetHostView()
                                       ->GetVisibleViewportSize()
                                       .height();
-  const int screen_height = display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .GetSizeInPixel()
-                                .height();
+  const int screen_height =
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height();
   EXPECT_EQ(new_viewport_height,
             screen_height - client->GetKeyboardWindow()->bounds().height());
 }
@@ -328,10 +326,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
                                       ->GetRenderWidgetHostView()
                                       ->GetVisibleViewportSize()
                                       .height();
-  const int screen_height = display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .GetSizeInPixel()
-                                .height();
+  const int screen_height =
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height();
   EXPECT_EQ(new_viewport_height,
             screen_height - ChromeKeyboardControllerClient::Get()
                                 ->GetKeyboardWindow()
@@ -372,10 +368,8 @@ IN_PROC_BROWSER_TEST_F(KeyboardControllerAppWindowTest,
   controller->ShowKeyboard();
   KeyboardVisibleWaiter(true).Wait();
 
-  int screen_height = display::Screen::GetScreen()
-                          ->GetPrimaryDisplay()
-                          .GetSizeInPixel()
-                          .height();
+  int screen_height =
+      display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel().height();
   int keyboard_height = screen_height - ime_window_visible_height + 1;
   ASSERT_GT(keyboard_height, 0);
   gfx::Rect test_bounds = controller->GetKeyboardWindow()->bounds();

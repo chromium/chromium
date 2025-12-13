@@ -9,6 +9,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
 #import "ios/chrome/browser/browsing_data/model/tabs_closure_util.h"
 

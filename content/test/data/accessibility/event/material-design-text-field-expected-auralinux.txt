@@ -1,0 +1,101 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===
+TEXT-INSERT (start=0 length=5 'Hello') role=ROLE_ENTRY name='Test Text Field' EDITABLE,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,SINGLE-LINE,VISIBLE,SELECTABLE-TEXT
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===
+TEXT-INSERT (start=5 length=6 ' World') role=ROLE_ENTRY name='Test Text Field' EDITABLE,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,SINGLE-LINE,VISIBLE,SELECTABLE-TEXT
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===
+TEXT-REMOVE (start=0 length=11 'Hello World') role=ROLE_ENTRY name='Test Text Field' EDITABLE,ENABLED,FOCUSABLE,SENSITIVE,SHOWING,SINGLE-LINE,VISIBLE,SELECTABLE-TEXT
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Text Field Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++[section]
+++++++++++[section]
+++++++++++[section]
+++++++++++++[section]
+++++++++++++++[section]
+++++++++++++++++[static] name='Test Text Field'
+++++++++++++[entry] name='Test Text Field' selectable-text
+++++++++++[section]
+=== End accessibility tree ===

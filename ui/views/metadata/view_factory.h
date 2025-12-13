@@ -10,314 +10,44 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
 #include <variant>
 #include <vector>
 
-#include "base/functional/bind.h"
 #include "base/macros/concat.h"
 #include "base/macros/remove_parens.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_export.h"
 
+class SkPath;
+
+namespace ax {
+enum class DescriptionFrom;
+enum class NameFrom;
+enum class Role;
+}  // namespace ax
+
+namespace gfx {
+class Point;
+class Rect;
+class Size;
+class Transform;
+}  // namespace gfx
+
 namespace views {
 
-// The builder for `View` inherits from this class by virtue of the declaration
-// macro pretending that `View`'s base class is `BaseView`.
-template <typename Builder>
-class BaseViewBuilderT : public internal::ViewBuilderCore {
- public:
-  using ViewClass_ = typename internal::ViewClassTrait<Builder>::ViewClass_;
-
- private:
-  using OwnedPtr = std::unique_ptr<ViewClass_>;
-  using Ptr = raw_ptr<ViewClass_>;
-  using ViewStorage = std::variant<OwnedPtr, Ptr>;
-
- public:
-  explicit BaseViewBuilderT(OwnedPtr view = std::make_unique<ViewClass_>())
-      : view_(std::move(view)) {
-    CHECK(std::get<OwnedPtr>(view_));
-  }
-  explicit BaseViewBuilderT(ViewClass_* view) : view_(view) {
-    CHECK(std::get<Ptr>(view_));
-  }
-
-  // Implicit conversion from Builder<Derived> to Builder<Base>.
-  template <typename OtherBuilder>
-    requires(!std::same_as<Builder, OtherBuilder> &&
-             std::convertible_to<
-                 typename BaseViewBuilderT<OtherBuilder>::ViewClass_*,
-                 ViewClass_*>)
-  BaseViewBuilderT(BaseViewBuilderT<OtherBuilder>&& other)
-      : view_(
-            std::visit([](auto&& view) { return ViewStorage(std::move(view)); },
-                       std::move(other.view_))),
-        configure_callbacks_(
-            ConvertCallbacks(std::move(other.configure_callbacks_))),
-        after_build_callbacks_(
-            ConvertCallbacks(std::move(other.after_build_callbacks_))) {}
-
-  // Move construction/assignment. (Copy is not possible, no copyable members.)
-  BaseViewBuilderT(BaseViewBuilderT&&) = default;
-  BaseViewBuilderT& operator=(BaseViewBuilderT&&) = default;
-
-  ~BaseViewBuilderT() override = default;
-
-  template <typename Child>
-  Builder& AddChild(Child&& child) & {
-    children_.emplace_back(std::make_pair(child.Release(), std::nullopt));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename Child>
-  Builder&& AddChild(Child&& child) && {
-    return std::move(this->AddChild(std::move(child)));
-  }
-
-  template <typename Child>
-  Builder& AddChildAt(Child&& child, size_t index) & {
-    children_.emplace_back(std::make_pair(child.Release(), index));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename Child>
-  Builder&& AddChildAt(Child&& child, size_t index) && {
-    return std::move(this->AddChildAt(std::move(child), index));
-  }
-
-  template <typename Child, typename... Types>
-  Builder& AddChildren(Child&& child, Types&&... args) & {
-    return AddChildrenImpl(&child, &args...);
-  }
-
-  template <typename Child, typename... Types>
-  Builder&& AddChildren(Child&& child, Types&&... args) && {
-    return std::move(this->AddChildrenImpl(&child, &args...));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T>* property,
-                       ui::metadata::ArgType<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyValueSetter<ViewClass_, T>>(
-            property, value);
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T>* property,
-                        ui::metadata::ArgType<T> value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property,
-                       ui::metadata::ArgType<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
-            property, value);
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property,
-                        ui::metadata::ArgType<T> value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property, T&& value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyMoveSetter<ViewClass_, T>>(
-            property, std::move(value));
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property, T&& value) && {
-    return std::move(this->SetProperty(property, value));
-  }
-
-  template <typename T>
-  Builder& SetProperty(const ui::ClassProperty<T*>* property,
-                       std::unique_ptr<T> value) & {
-    auto setter =
-        std::make_unique<internal::ClassPropertyUniquePtrSetter<ViewClass_, T>>(
-            property, std::move(value));
-    internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-  Builder&& SetProperty(const ui::ClassProperty<T*>* property,
-                        std::unique_ptr<T> value) && {
-    return std::move(this->SetProperty(property, std::move(value)));
-  }
-
-  template <typename ViewPtr>
-  Builder& CopyAddressTo(ViewPtr* view_address) & {
-    *view_address = std::visit([](auto& view) { return view.get(); }, view_);
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename ViewPtr>
-  Builder&& CopyAddressTo(ViewPtr* view_address) && {
-    return std::move(this->CopyAddressTo(view_address));
-  }
-
-  // Schedules `configure_callback` to run after the View is constructed and
-  // properties have been set. Calling this repeatedly will result in running
-  // all callbacks in the order provided.
-  //
-  // The difference between this and `AfterBuild()` is that this runs after
-  // properties are set but before children are built, while that runs after
-  // both.
-  template <typename T>
-    requires(std::convertible_to<ViewClass_*, T*>)
-  Builder& CustomConfigure(base::OnceCallback<void(T*)> configure_callback) & {
-    return AddCallbackImpl(std::move(configure_callback), configure_callbacks_);
-  }
-
-  template <typename T>
-    requires(std::convertible_to<ViewClass_*, T*>)
-  Builder&& CustomConfigure(
-      base::OnceCallback<void(T*)> configure_callback) && {
-    return std::move(this->CustomConfigure(std::move(configure_callback)));
-  }
-
-  // Schedules `after_build_callback` to run after View and its children have
-  // been constructed. Calling this repeatedly will result in running all
-  // callbacks in the order provided.
-  //
-  // The difference between this and `CustomConfigure()` is that this runs after
-  // children are built, while that runs before.
-  template <typename T>
-    requires(std::convertible_to<ViewClass_*, T*>)
-  Builder& AfterBuild(base::OnceCallback<void(T*)> after_build_callback) & {
-    return AddCallbackImpl(std::move(after_build_callback),
-                           after_build_callbacks_);
-  }
-
-  template <typename T>
-    requires(std::convertible_to<ViewClass_*, T*>)
-  Builder&& AfterBuild(base::OnceCallback<void(T*)> after_build_callback) && {
-    return std::move(this->AfterBuild(std::move(after_build_callback)));
-  }
-
-  [[nodiscard]] OwnedPtr Build() && {
-    CHECK(std::holds_alternative<OwnedPtr>(view_))
-        << "Use `BuildChildren()` on `Builder`s of non-owned `View`s.";
-    auto view = std::get<OwnedPtr>(std::move(view_));
-    SetProperties(view.get());
-    DoCustomConfigure(view.get());
-    CreateChildren(view.get());
-    DoAfterBuild(view.get());
-    return view;
-  }
-
-  void BuildChildren() && {
-    CHECK(std::holds_alternative<Ptr>(view_))
-        << "Use `Build()` on `Builder`s of owned `View`s.";
-    auto view = std::get<Ptr>(view_);
-    SetProperties(view);
-    DoCustomConfigure(view);
-    CreateChildren(view);
-    DoAfterBuild(view);
-  }
-
- private:
-  // Allow conversion to other builders when appropriate. This friend
-  // declaration is necessary since `BaseViewBuilderT<T>` and
-  // `BaseViewBuilderT<U>` are unrelated types and normally cannot access
-  // non-public members of each other.
-  template <typename T>
-  friend class BaseViewBuilderT;
-
-  using ConfigureCallback = base::OnceCallback<void(ViewClass_*)>;
-
-  // Thunks callbacks in `other_callbacks` to be invocable from this object.
-  // This is intended only for use by the "implicit upcast" constructor; see
-  // comments in implementation.
-  template <typename T>
-    requires(!std::same_as<ViewClass_, T> &&
-             std::convertible_to<T*, ViewClass_*>)
-  static std::vector<ConfigureCallback> ConvertCallbacks(
-      std::vector<base::OnceCallback<void(T*)>> other_callbacks) {
-    std::vector<ConfigureCallback> callbacks;
-    callbacks.reserve(other_callbacks.size());
-    for (auto& callback : other_callbacks) {
-      callbacks.push_back(base::BindOnce(
-          [](base::OnceCallback<void(T*)> cb, ViewClass_* view) {
-            // This downcast should always succeed, since the source view was
-            // originally created on a `Builder<T>` (or subclass-of-`T`).
-            auto* const t = AsViewClass<T>(view);
-            CHECK(t);
-            std::move(cb).Run(t);
-          },
-          std::move(callback)));
-    }
-    return callbacks;
-  }
-
-  // Internal implementation which iterates over all the parameters without
-  // resorting to recursion which can lead to more code generation.
-  template <typename... Args>
-  Builder& AddChildrenImpl(Args*... args) & {
-    std::vector<internal::ViewBuilderCore*> children = {args...};
-    for (auto* child : children) {
-      children_.emplace_back(std::make_pair(child->Release(), std::nullopt));
-    }
-    return *static_cast<Builder*>(this);
-  }
-
-  template <typename T>
-    requires(std::convertible_to<ViewClass_*, T*>)
-  Builder& AddCallbackImpl(base::OnceCallback<void(T*)> callback,
-                           std::vector<ConfigureCallback>& callbacks) & {
-    if constexpr (std::same_as<T, ViewClass_>) {
-      callbacks.push_back(std::move(callback));
-    } else {
-      callbacks.push_back(
-          base::BindOnce([](base::OnceCallback<void(T*)> cb,
-                            ViewClass_* view) { std::move(cb).Run(view); },
-                         std::move(callback)));
-    }
-    return *static_cast<Builder*>(this);
-  }
-
-  void DoCustomConfigure(ViewClass_* view) {
-    for (auto& cb : configure_callbacks_) {
-      std::move(cb).Run(view);
-    }
-  }
-
-  std::unique_ptr<View> DoBuild() override { return std::move(*this).Build(); }
-
-  void DoAfterBuild(ViewClass_* view) {
-    for (auto& cb : after_build_callbacks_) {
-      std::move(cb).Run(view);
-    }
-  }
-
-  // Controlled view, which may or may not be owned by this builder.
-  ViewStorage view_;
-
-  // Optional callbacks invoked right before `CreateChildren()`.
-  std::vector<ConfigureCallback> configure_callbacks_;
-
-  // Optional callbacks invoked right after `CreateChildren()`.
-  std::vector<ConfigureCallback> after_build_callbacks_;
-};
+using internal::Builder;
 
 }  // namespace views
 
@@ -353,9 +83,9 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 //     requires(
 //         !std::same_as<BuilderT, OtherBuilder> &&
 //         std::convertible_to<
-//             typename BaseViewBuilderT<OtherBuilder>::ViewClass_*,
+//             typename internal::BaseViewBuilderT<OtherBuilder>::ViewClass_*,
 //             ViewClass_*>)
-//   view_class##BuilderT(BaseViewBuilderT<OtherBuilder> && other)
+//   view_class##BuilderT(internal::BaseViewBuilderT<OtherBuilder> && other)
 //       : ancestor##BuilderT<BuilderT>(std::move(other)) {}
 //   ViewBuilderT(ViewBuilderT&&) = default;
 //   ViewBuilderT& operator=(ViewBuilderT&&) = default;
@@ -394,9 +124,10 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 //   template <typename OtherBuilder>
 //     requires(!std::same_as<Builder, OtherBuilder> &&
 //              std::convertible_to<
-//                  typename BaseViewBuilderT<OtherBuilder>::ViewClass_*,
+//                  typename
+//                  internal::BaseViewBuilderT<OtherBuilder>::ViewClass_*,
 //                  ViewClass_*>)
-//   Builder(BaseViewBuilderT<OtherBuilder>&& other)
+//   Builder(internal::BaseViewBuilderT<OtherBuilder>&& other)
 //       : view_class##BuilderT<Builder>(std::move(other)) {}
 //   Builder(Builder&&) = default;
 //   Builder& operator=(Builder&&) = default;
@@ -464,8 +195,8 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
    public:                                                                    \
     view_class##BuilderT() = default;                                         \
     explicit view_class##BuilderT(                                            \
-        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_*     \
-            view)                                                             \
+        typename ::views::internal::ViewClassTrait<BuilderT>::ViewClass_ *    \
+        view)                                                                 \
         : ancestor##BuilderT<BuilderT>(view) {}                               \
     explicit view_class##BuilderT(                                            \
         std::unique_ptr<                                                      \
@@ -475,11 +206,11 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
     template <typename OtherBuilder>                                          \
       requires(                                                               \
           !std::same_as<BuilderT, OtherBuilder> &&                            \
-          std::convertible_to<                                                \
-              typename ::views::BaseViewBuilderT<OtherBuilder>::ViewClass_*,  \
-              ViewClass_*>)                                                   \
+          std::convertible_to<typename ::views::internal::BaseViewBuilderT<   \
+                                  OtherBuilder>::ViewClass_*,                 \
+                              ViewClass_*>)                                   \
     explicit view_class##BuilderT(                                            \
-        ::views::BaseViewBuilderT<OtherBuilder>&& other)                      \
+        ::views::internal::BaseViewBuilderT<OtherBuilder> && other)           \
         : ancestor##BuilderT<BuilderT>(std::move(other)) {}                   \
     view_class##BuilderT(view_class##BuilderT&&) = default;                   \
     view_class##BuilderT& operator=(view_class##BuilderT&&) = default;        \
@@ -667,36 +398,99 @@ class BaseViewBuilderT : public internal::ViewBuilderCore {
 // Unlike the above macros, DEFINE_VIEW_BUILDER must be placed in the global
 // namespace. Unless 'view_class' is already in the 'views' namespace, it should
 // be fully qualified with the namespace in which it lives.
-#define DEFINE_VIEW_BUILDER(export, view_class)                              \
-  namespace views {                                                          \
-  template <>                                                                \
-  class export Builder<view_class>                                           \
-      : public view_class##BuilderT<Builder<view_class>> {                   \
-   private:                                                                  \
-    using ViewClass_ = view_class;                                           \
-                                                                             \
-   public:                                                                   \
-    Builder() = default;                                                     \
-    explicit Builder(ViewClass_* view)                                       \
-        : view_class##BuilderT<Builder>(view) {}                             \
-    explicit Builder(std::unique_ptr<ViewClass_> view)                       \
-        : view_class##BuilderT<Builder>(std::move(view)) {}                  \
-    template <typename OtherBuilder>                                         \
-      requires(                                                              \
-          !std::same_as<Builder, OtherBuilder> &&                            \
-          std::convertible_to<                                               \
-              typename ::views::BaseViewBuilderT<OtherBuilder>::ViewClass_*, \
-              ViewClass_*>)                                                  \
-    explicit Builder(::views::BaseViewBuilderT<OtherBuilder>&& other)        \
-        : view_class##BuilderT<Builder>(std::move(other)) {}                 \
-    Builder(Builder&&) = default;                                            \
-    Builder& operator=(Builder&&) = default;                                 \
-    ~Builder() = default;                                                    \
-    [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()       \
-        override {                                                           \
-      return std::make_unique<Builder>(std::move(*this));                    \
-    }                                                                        \
-  };                                                                         \
+#define DEFINE_VIEW_BUILDER(export, view_class)                             \
+  namespace views {                                                         \
+  template <>                                                               \
+  class export Builder<view_class>                                          \
+      : public view_class##BuilderT<Builder<view_class>> {                  \
+   private:                                                                 \
+    using ViewClass_ = view_class;                                          \
+                                                                            \
+   public:                                                                  \
+    Builder() = default;                                                    \
+    explicit Builder(ViewClass_ * view)                                     \
+        : view_class##BuilderT<Builder>(view) {}                            \
+    explicit Builder(std::unique_ptr<ViewClass_> view)                      \
+        : view_class##BuilderT<Builder>(std::move(view)) {}                 \
+    template <typename OtherBuilder>                                        \
+      requires(                                                             \
+          !std::same_as<Builder, OtherBuilder> &&                           \
+          std::convertible_to<typename ::views::internal::BaseViewBuilderT< \
+                                  OtherBuilder>::ViewClass_*,               \
+                              ViewClass_*>)                                 \
+    explicit Builder(::views::internal::BaseViewBuilderT<OtherBuilder> &&   \
+                     other)                                                 \
+        : view_class##BuilderT<Builder>(std::move(other)) {}                \
+    Builder(Builder&&) = default;                                           \
+    Builder& operator=(Builder&&) = default;                                \
+    ~Builder() = default;                                                   \
+    [[nodiscard]] std::unique_ptr<internal::ViewBuilderCore> Release()      \
+        override {                                                          \
+      return std::make_unique<Builder>(std::move(*this));                   \
+    }                                                                       \
+  };                                                                        \
   }  // namespace views
+
+namespace views {
+
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, internal::BaseView)
+template <typename LayoutManager>
+BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
+  auto setter = std::make_unique<::views::internal::PropertySetter<
+      ViewClass_, std::unique_ptr<LayoutManager>,
+      decltype((static_cast<LayoutManager* (
+                    ViewClass_::*)(std::unique_ptr<LayoutManager>)>(
+          &ViewClass_::SetLayoutManager))),
+      &ViewClass_::SetLayoutManager>>(std::move(layout_manager));
+  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
+  return *static_cast<BuilderT*>(this);
+}
+template <typename LayoutManager>
+BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
+  return std::move(this->SetLayoutManager(std::move(layout_manager)));
+}
+
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, const std::u16string&)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, View*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName,
+                             std::u16string,
+                             ax::mojom::NameFrom)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, const std::u16string&)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, View*)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription,
+                             const std::u16string&,
+                             ax::mojom::DescriptionFrom)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole, ax::mojom::Role)
+VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole,
+                             ax::mojom::Role,
+                             const std::u16string&)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
+VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
+VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)
+VIEW_BUILDER_PROPERTY(gfx::Size, Size)
+VIEW_BUILDER_PROPERTY(gfx::Point, Position)
+VIEW_BUILDER_PROPERTY(int, X)
+VIEW_BUILDER_PROPERTY(int, Y)
+VIEW_BUILDER_PROPERTY(gfx::Size, PreferredSize)
+VIEW_BUILDER_PROPERTY(SkPath, ClipPath)
+VIEW_BUILDER_PROPERTY_DEFAULT(ui::LayerType, PaintToLayer, ui::LAYER_TEXTURED)
+VIEW_BUILDER_PROPERTY(bool, Enabled)
+VIEW_BUILDER_PROPERTY(bool, FlipCanvasOnPaintForRTLUI)
+VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
+VIEW_BUILDER_PROPERTY(int, Group)
+VIEW_BUILDER_PROPERTY(int, OwnedGroup)
+VIEW_BUILDER_PROPERTY(int, ID)
+VIEW_BUILDER_PROPERTY(bool, Mirrored)
+VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
+VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
+VIEW_BUILDER_PROPERTY(bool, Visible)
+VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
+VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
+VIEW_BUILDER_PROPERTY(bool, ClipLayerToVisibleBounds)
+END_VIEW_BUILDER
+
+}  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 #endif  // UI_VIEWS_METADATA_VIEW_FACTORY_H_

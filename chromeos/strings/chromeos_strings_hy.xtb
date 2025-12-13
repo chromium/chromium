@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">նարինջներ</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
+<translation id="1292474106138697109">Class Tools-ի էկրան</translation>
 <translation id="1300115153046603471">APN-ը կանխադրված և <ph name="ATTACH" /> տեսակի է։</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Փոխարկեք</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
 <translation id="4300272766492248925">Բացել հավելվածը</translation>
 <translation id="430786093962686457">շիֆոն</translation>
+<translation id="4309762678330556039">Ավտոմատ ստեղծեք գրադարձումներ և որոնեք աուդիո։ Դուք կարող եք ձայնագրություններ ստեղծել, նույնիսկ երբ միացած չեք ինտերնետին։</translation>
 <translation id="4310735698903592804">Վերջին պաստառները ստեղծվել են Google AI-ի կողմից</translation>
 <translation id="4320904097188876154">նեոնային վարդագույն</translation>
 <translation id="432961742358282111">Սեղմեք մկնիկի աջ կոճակը կամ սեղմեք և պահեք՝ սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ տեսնելու համար։ Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
 <translation id="5606865426897221650">Ներդիր</translation>
+<translation id="5612205513582918357">Class Tools-ը ցուցադրում է ձեր էկրանը <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="5613201299517339763">Դուք դուրս եք գրվել հաշվից</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5628106863521633649">Հասանելի լեզուներ</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Ամպերի հոսք</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>
-<translation id="6231648282154119906">Ձեր ընտրած բարելավված պաշտպանության շրջանակում Google Ապահով դիտարկումն ավտոմատ կերպով կստուգի կասկածելի ֆայլերը</translation>
 <translation id="6232017090690406397">Մարտկոց</translation>
 <translation id="6234024205316847054">Ցույց տալ եզրագծերը</translation>
 <translation id="6243280677745499710">Այժմ տեղադրված է</translation>

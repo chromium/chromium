@@ -23,7 +23,7 @@ public interface CommerceBottomSheetContentProvider {
     /** Supported content types, the content is prioritized based on this order. */
     @IntDef({ContentType.PRICE_TRACKING, ContentType.DISCOUNTS, ContentType.PRICE_INSIGHTS})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ContentType {
+    @interface ContentType {
         int PRICE_TRACKING = 0;
         int DISCOUNTS = 1;
         int PRICE_INSIGHTS = 2;

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -46,7 +45,7 @@ class DOMStorageBrowserTest : public ContentBrowserTest {
     Shell* the_browser = incognito ? CreateOffTheRecordBrowser() : shell();
     NavigateToURLBlockUntilNavigationsComplete(the_browser, test_url, 2);
     std::string result =
-        the_browser->web_contents()->GetLastCommittedURL().ref();
+        the_browser->web_contents()->GetLastCommittedURL().GetRef();
     if (result != "pass") {
       std::string js_result = EvalJs(the_browser, "getLog()").ExtractString();
       FAIL() << "Failed: " << js_result;

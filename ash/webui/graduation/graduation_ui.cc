@@ -144,18 +144,12 @@ void GraduationUI::BindInterface(
       web_ui()->GetWebContents()->GetBrowserContext();
   CHECK(context);
   const std::string host_name =
-      web_ui()->GetWebContents()->GetVisibleURL().host();
+      web_ui()->GetWebContents()->GetVisibleURL().GetHost();
   ui_handler_ = std::make_unique<GraduationUiHandler>(
       std::move(receiver),
       std::make_unique<WebviewAuthHandler>(context, host_name),
       CHECK_DEREF(
           ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context)));
-}
-
-void GraduationUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GraduationUI)

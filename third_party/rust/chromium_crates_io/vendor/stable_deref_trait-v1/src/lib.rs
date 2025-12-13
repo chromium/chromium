@@ -136,17 +136,19 @@ pub unsafe trait CloneStableDeref: StableDeref + Clone {}
 use alloc::boxed::Box;
 #[cfg(feature = "alloc")]
 use alloc::rc::Rc;
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", target_has_atomic = "ptr"))]
 use alloc::sync::Arc;
 #[cfg(feature = "alloc")]
 use alloc::vec::Vec;
 #[cfg(feature = "alloc")]
 use alloc::string::String;
+#[cfg(feature = "alloc")]
+use alloc::borrow::Cow;
 
 #[cfg(feature = "std")]
-use std::ffi::{CString, OsString};
+use std::ffi::{CStr, CString, OsStr, OsString};
 #[cfg(feature = "std")]
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 #[cfg(feature = "std")]
 use std::sync::{MutexGuard, RwLockReadGuard, RwLockWriteGuard};
 
@@ -167,12 +169,23 @@ unsafe impl StableDeref for OsString {}
 unsafe impl StableDeref for PathBuf {}
 
 #[cfg(feature = "alloc")]
+unsafe impl<'a> StableDeref for Cow<'a, str> {}
+#[cfg(feature = "alloc")]
+unsafe impl<'a, T: Clone> StableDeref for Cow<'a, [T]> {}
+#[cfg(feature = "std")]
+unsafe impl<'a> StableDeref for Cow<'a, Path> {}
+#[cfg(feature = "std")]
+unsafe impl<'a> StableDeref for Cow<'a, CStr> {}
+#[cfg(feature = "std")]
+unsafe impl<'a> StableDeref for Cow<'a, OsStr> {}
+
+#[cfg(feature = "alloc")]
 unsafe impl<T: ?Sized> StableDeref for Rc<T> {}
 #[cfg(feature = "alloc")]
 unsafe impl<T: ?Sized> CloneStableDeref for Rc<T> {}
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", target_has_atomic = "ptr"))]
 unsafe impl<T: ?Sized> StableDeref for Arc<T> {}
-#[cfg(feature = "alloc")]
+#[cfg(all(feature = "alloc", target_has_atomic = "ptr"))]
 unsafe impl<T: ?Sized> CloneStableDeref for Arc<T> {}
 
 unsafe impl<'a, T: ?Sized> StableDeref for Ref<'a, T> {}

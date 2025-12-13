@@ -85,7 +85,7 @@ static_library("test_database_manager") {
     ":database_manager",
     ":util",
     ":v4_protocol_manager_util",
-    "//base:base",
+    "//base",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -106,9 +106,9 @@ static_library("util") {
   ]
   deps = [
     "//base",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//url",
   ]
@@ -143,6 +143,7 @@ static_library("v4_get_hash_protocol_manager") {
   public_deps = [
     ":safebrowsing_proto",
     ":util",
+    ":v4_protocol_config",
   ]
   deps = [
     ":v4_protocol_manager_util",
@@ -150,7 +151,7 @@ static_library("v4_get_hash_protocol_manager") {
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//net",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//url",
   ]
 }
@@ -183,6 +184,18 @@ static_library("v4_local_database_manager") {
   ]
 }
 
+source_set("v4_protocol_config") {
+  sources = [
+    "v4_protocol_config.cc",
+    "v4_protocol_config.h",
+  ]
+
+  deps = [
+    "//components/version_info",
+    "//google_apis",
+  ]
+}
+
 source_set("v4_protocol_manager_util") {
   sources = [
     "v4_protocol_manager_util.cc",
@@ -193,10 +206,10 @@ source_set("v4_protocol_manager_util") {
 
   public_deps = [ ":safebrowsing_proto" ]
   deps = [
+    ":v4_protocol_config",
     "//base",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/version_info:version_info",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//url",
   ]
@@ -299,14 +312,14 @@ static_library("v4_update_protocol_manager") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [ ":v4_protocol_config" ]
+
   deps = [
     ":safebrowsing_proto",
-    ":util",
     ":v4_protocol_manager_util",
     "//base",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/proto:webui_proto",
     "//net",
     "//services/network/public/cpp",
@@ -388,8 +401,8 @@ static_library("allowlist_checker_client") {
 
   deps = [
     ":database_manager",
-    "//base:base",
-    "//url:url",
+    "//base",
+    "//url",
   ]
 }
 

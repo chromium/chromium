@@ -81,7 +81,7 @@ cfg_if! {
                 pub st_dev: crate::dev_t,
 
                 #[cfg(not(gnu_time_bits64))]
-                __pad1: c_uint,
+                __pad1: Padding<c_uint>,
 
                 #[cfg(any(gnu_time_bits64, not(gnu_file_offset_bits64)))]
                 pub st_ino: crate::ino_t,
@@ -96,7 +96,7 @@ cfg_if! {
                 pub st_rdev: crate::dev_t,
 
                 #[cfg(not(gnu_time_bits64))]
-                __pad2: c_uint,
+                __pad2: Padding<c_uint>,
 
                 pub st_size: off_t,
 
@@ -176,7 +176,7 @@ s! {
     pub struct semid_ds {
         pub sem_perm: ipc_perm,
         #[cfg(all(not(gnu_time_bits64), target_arch = "powerpc"))]
-        __reserved: crate::__syscall_ulong_t,
+        __reserved: Padding<crate::__syscall_ulong_t>,
         pub sem_otime: crate::time_t,
         #[cfg(not(any(
             gnu_time_bits64,
@@ -184,9 +184,9 @@ s! {
             target_arch = "mips32r6",
             target_arch = "powerpc"
         )))]
-        __reserved: crate::__syscall_ulong_t,
+        __reserved: Padding<crate::__syscall_ulong_t>,
         #[cfg(all(not(gnu_time_bits64), target_arch = "powerpc"))]
-        __reserved2: crate::__syscall_ulong_t,
+        __reserved2: Padding<crate::__syscall_ulong_t>,
         pub sem_ctime: crate::time_t,
         #[cfg(not(any(
             gnu_time_bits64,
@@ -194,7 +194,7 @@ s! {
             target_arch = "mips32r6",
             target_arch = "powerpc"
         )))]
-        __reserved2: crate::__syscall_ulong_t,
+        __reserved2: Padding<crate::__syscall_ulong_t>,
         pub sem_nsems: crate::__syscall_ulong_t,
         #[cfg(all(
             gnu_time_bits64,
@@ -206,7 +206,7 @@ s! {
                 target_arch = "x86"
             ))
         ))]
-        __reserved2: crate::__syscall_ulong_t,
+        __reserved2: Padding<crate::__syscall_ulong_t>,
         __glibc_reserved3: crate::__syscall_ulong_t,
         __glibc_reserved4: crate::__syscall_ulong_t,
     }
@@ -214,13 +214,13 @@ s! {
     #[cfg(gnu_time_bits64)]
     pub struct timex {
         pub modes: c_uint,
-        _pad1: c_int,
+        _pad1: Padding<c_int>,
         pub offset: c_longlong,
         pub freq: c_longlong,
         pub maxerror: c_longlong,
         pub esterror: c_longlong,
         pub status: c_int,
-        _pad2: c_int,
+        _pad2: Padding<c_int>,
         pub constant: c_longlong,
         pub precision: c_longlong,
         pub tolerance: c_longlong,
@@ -229,7 +229,7 @@ s! {
         pub ppsfreq: c_longlong,
         pub jitter: c_longlong,
         pub shift: c_int,
-        _pad3: c_int,
+        _pad3: Padding<c_int>,
         pub stabil: c_longlong,
         pub jitcnt: c_longlong,
         pub calcnt: c_longlong,

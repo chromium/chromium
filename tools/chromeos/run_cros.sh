@@ -54,6 +54,13 @@ DISPLAY_CONFIG=${DISPLAY_RES[wxga]}
 
 FEATURES=
 
+# GLIC specific feature flags.
+GLIC_FEATURES=Glic,TabstripComboButton,GlicDevelopmentCookies,\
+ContextualCueing,GlicKeyboardShortcutNewBadge,GlicRollout,GlicFreWarming,\
+GlicUseNonClient,GlicSidePanel,GlicMultiInstance,FeatureManagementGlic,\
+GlicDefaultTabContextSetting,GlicLiveModeOnlyGlow,GlicDaisyChainNewTabs,\
+GlicUnifiedFreScreen
+
 export XDG_RUNTIME_DIR=${USER_TMP_DIR}/xdg1
 
 # Check if the directory contains chrome binary
@@ -198,6 +205,12 @@ do
       ;;
     --wayland-debug)
       export WAYLAND_DEBUG=1
+      ;;
+    --glic-side-panel)
+      echo "Warning: --glic-side-panel is deprecated. use --glic instead."
+      ;&
+    --glic)
+      FEATURES=${FEATURES},${GLIC_FEATURES}
       ;;
     --touch-device-id=*)
       id=${1:18}

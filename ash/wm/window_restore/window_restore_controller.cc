@@ -97,7 +97,7 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
     return;
 
   const auto& closest_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect display_area = closest_display.work_area();
   if (display_area.Contains(current_bounds))
     return;
@@ -199,7 +199,7 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
 // static
 bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return true;
   }
 
@@ -431,7 +431,7 @@ void WindowRestoreController::OnWindowVisibilityChanged(aura::Window* window,
   // Early return if we're not in tablet mode, or the app list is null.
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetWindow();
-  if (!Shell::Get()->IsInTabletMode() || !app_list_window) {
+  if (!display::Screen::Get()->InTabletMode() || !app_list_window) {
     return;
   }
 

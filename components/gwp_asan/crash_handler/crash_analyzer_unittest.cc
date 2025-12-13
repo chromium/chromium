@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
 
 #include <cstdint>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback_helpers.h"
@@ -56,7 +52,7 @@ void SetNonCanonicalAccessAddress(
 #if defined(ARCH_CPU_X86_64)
   auto* context = exception.MutableContext();
   context->architecture = crashpad::kCPUArchitectureX86_64;
-  memset(context->x86_64, 0, sizeof(*context->x86_64));
+  UNSAFE_TODO(memset(context->x86_64, 0, sizeof(*context->x86_64)));
 #endif  // defined(ARCH_CPU_X86_64)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

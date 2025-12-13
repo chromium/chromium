@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 
@@ -96,7 +92,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   uint32_t pixels_shm_id = shared_memory_id_;
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  uint8_t* dest = reinterpret_cast<uint8_t*>(&result[1]);
+  uint8_t* dest = reinterpret_cast<uint8_t*>(&UNSAFE_TODO(result[1]));
 
   // The test cases
   static struct {
@@ -128,7 +124,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
   for (auto test : tests) {
     // Clear the readpixels buffer so that we can see which pixels have been
     // written
-    memset(dest, 0, 4 * test.w * test.h);
+    UNSAFE_TODO(memset(dest, 0, 4 * test.w * test.h));
 
     cmds::ReadPixels cmd;
     cmd.Init(test.x, test.y, test.w, test.h, kFormat, GL_UNSIGNED_BYTE,
@@ -158,7 +154,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsOutOfRange) {
 
         bool expect_written = 0 <= x && x < kWidth && 0 <= y && y < kHeight;
         for (GLint component = 0; component < 4; ++component) {
-          uint8_t value = dest[4 * (dy * test.w + dx) + component];
+          uint8_t value = UNSAFE_TODO(dest[4 * (dy * test.w + dx) + component]);
           EXPECT_EQ(expect_written, value != 0)
               << x << " " << y << " " << value;
         }
@@ -251,12 +247,12 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   constexpr char kDummyValue = 11;
   size_t read_pixels_result_size = kWidth * kHeight * 4;
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
-  memset(pixels, kDummyValue, pixels_memory_size);
+  UNSAFE_TODO(memset(pixels, kDummyValue, pixels_memory_size));
 
   cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -287,7 +283,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncModifyCommand) {
     constexpr char kReadPixelsValue = 42;
     char expected_value =
         i < read_pixels_result_size ? kReadPixelsValue : kDummyValue;
-    EXPECT_EQ(expected_value, pixels[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_value, pixels[i]));
   }
 }
 
@@ -303,12 +299,12 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
   uint32_t pixels_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
   size_t pixels_memory_size = shm_size - 1;
-  char* pixels = reinterpret_cast<char*>(result + 1);
+  char* pixels = reinterpret_cast<char*>(UNSAFE_TODO(result + 1));
 
   constexpr char kDummyValue = 11;
   size_t read_pixels_result_size = kWidth * kHeight * 4;
   EXPECT_GT(pixels_memory_size, read_pixels_result_size);
-  memset(pixels, kDummyValue, pixels_memory_size);
+  UNSAFE_TODO(memset(pixels, kDummyValue, pixels_memory_size));
 
   cmds::ReadPixels read_pixels_cmd;
   read_pixels_cmd.Init(0, 0, kWidth, kHeight, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -338,7 +334,7 @@ TEST_F(GLES2DecoderPassthroughTest, ReadPixelsAsyncChangePackAlignment) {
     constexpr char kReadPixelsValue = 42;
     char expected_value =
         i < read_pixels_result_size ? kReadPixelsValue : kDummyValue;
-    EXPECT_EQ(expected_value, pixels[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_value, pixels[i]));
   }
 }
 

@@ -4,12 +4,13 @@
 
 package org.chromium.chrome.browser.permissions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.view.View;
 
-import androidx.annotation.CallSuper;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
 
@@ -77,7 +78,7 @@ public class PermissionPromptRenderTest {
      */
     public static class PermissionTestActivity extends ChromeTabbedActivity {
         @Override
-        @CallSuper
+        @SuppressLint("CheckResult")
         protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
             super.applyOverrides(baseContext, overrideConfig);
             overrideConfig.densityDpi = 1300;
@@ -110,9 +111,10 @@ public class PermissionPromptRenderTest {
                 "initiate_getCurrentPosition()");
 
         mPermissionRule.waitForDialogShownState(true);
+        View modalDialogView = mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view);
+        RenderTestRule.sanitize(modalDialogView);
 
-        mRenderTestRule.render(
-                mPermissionRule.getActivity().findViewById(R.id.modal_dialog_view), goldenViewId);
+        mRenderTestRule.render(modalDialogView, goldenViewId);
     }
 
     @Test
@@ -125,7 +127,7 @@ public class PermissionPromptRenderTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Prompt", "RenderTest"})
     public void testGeolocationOneTimePrompt_Tablet() throws Exception {
         testGeolocationOneTimePromptInternal(/* goldenViewId= */ "oneTimePrompt_tablet");
@@ -151,7 +153,7 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures("ApproximateGeolocationPermission")
     public void testGeolocationOneTimePromptWithRadioButtons_Tablet() throws Exception {
         testGeolocationOneTimePromptWithRadioButtonsInternal(
@@ -178,7 +180,7 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testGeolocationOneTimePromptWithAllowAlwaysFirst_Tablet() throws Exception {
         testGeolocationOneTimePromptWithAllowAlwaysFirstInternal(
                 /* goldenViewId= */ "oneTimePromptAllowAlwaysAsFirstButton_tablet");
@@ -204,7 +206,7 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testGeolocationOneTimePromptWithAllowWhileVisitingFirst_Tablet() throws Exception {
         testGeolocationOneTimePromptWithAllowWhileVisitingFirstInternal(
                 /* goldenViewId= */ "oneTimePromptAllowWhileVisitingAsFirstButton_tablet");
@@ -231,7 +233,7 @@ public class PermissionPromptRenderTest {
     @Test
     @MediumTest
     @Feature({"Prompt", "RenderTest"})
-    @Restriction(DeviceFormFactor.ONLY_TABLET)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testGeolocationOneTimePromptLongOriginWrapsToNextLineAndIsNotElided_Tablet()
             throws Exception {
         testGeolocationOneTimePromptLongOriginWrapsToNextLineAndIsNotElidedInternal(

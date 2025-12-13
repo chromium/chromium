@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/crash/core/app/crashpad.h"
 
 #include <stddef.h>
@@ -76,7 +71,8 @@ bool InitializeCrashpadImpl(bool initial_client,
                             const std::string& user_data_dir,
                             const base::FilePath& exe_path,
                             const std::vector<std::string>& initial_arguments,
-                            bool embedded_handler) {
+                            bool embedded_handler,
+                            const std::vector<base::FilePath>& attachments) {
   static bool initialized = false;
   DCHECK(!initialized);
   initialized = true;
@@ -114,7 +110,7 @@ bool InitializeCrashpadImpl(bool initial_client,
   base::FilePath database_path;
   if (!internal::PlatformCrashpadInitialization(
           initial_client, browser_process, embedded_handler, user_data_dir,
-          exe_path, initial_arguments, &database_path)) {
+          exe_path, initial_arguments, attachments, &database_path)) {
     return false;
   }
 
@@ -199,17 +195,19 @@ bool InitializeCrashpadImpl(bool initial_client,
 bool InitializeCrashpad(bool initial_client, const std::string& process_type) {
   return InitializeCrashpadImpl(initial_client, process_type, std::string(),
                                 base::FilePath(), std::vector<std::string>(),
-                                /*embedded_handler=*/false);
+                                /*embedded_handler=*/false, /*attachments=*/{});
 }
 
 #if BUILDFLAG(IS_WIN)
-bool InitializeCrashpadWithEmbeddedHandler(bool initial_client,
-                                           const std::string& process_type,
-                                           const std::string& user_data_dir,
-                                           const base::FilePath& exe_path) {
+bool InitializeCrashpadWithEmbeddedHandler(
+    bool initial_client,
+    const std::string& process_type,
+    const std::string& user_data_dir,
+    const base::FilePath& exe_path,
+    const std::vector<base::FilePath>& attachments) {
   return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
                                 exe_path, std::vector<std::string>(),
-                                /*embedded_handler=*/true);
+                                /*embedded_handler=*/true, attachments);
 }
 
 bool InitializeCrashpadWithDllEmbeddedHandler(
@@ -217,10 +215,11 @@ bool InitializeCrashpadWithDllEmbeddedHandler(
     const std::string& process_type,
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
-    const std::vector<std::string>& initial_arguments) {
+    const std::vector<std::string>& initial_arguments,
+    const std::vector<base::FilePath>& attachments) {
   return InitializeCrashpadImpl(initial_client, process_type, user_data_dir,
                                 exe_path, initial_arguments,
-                                /*embedded_handler=*/true);
+                                /*embedded_handler=*/true, attachments);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

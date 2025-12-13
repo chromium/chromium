@@ -13,6 +13,10 @@
 
 namespace blink {
 
+// Used within the LineFlexer, indicates if this item is in a min/max
+// violation state, or frozen.
+enum class FlexerState { kNone, kMinViolation, kMaxViolation, kFrozen };
+
 struct FlexItem {
   DISALLOW_NEW();
 
@@ -55,7 +59,9 @@ struct FlexItem {
         is_initial_block_size_indefinite(is_initial_block_size_indefinite),
         is_used_flex_basis_indefinite(is_used_flex_basis_indefinite),
         depends_on_min_max_sizes(depends_on_min_max_sizes),
-        is_horizontal_flow(is_horizontal_flow) {}
+        is_horizontal_flow(is_horizontal_flow),
+        // Set all items to their hypothetical size initially.
+        flexed_content_size(hypothetical_content_size) {}
 
   LayoutUnit HypotheticalMainAxisMarginBoxSize() const {
     return hypothetical_content_size + main_axis_border_padding +
@@ -124,7 +130,8 @@ struct FlexItem {
   const bool is_horizontal_flow;
 
   // Fields mutated within the line-flexer.
-  bool frozen = false;
+  double free_space_fraction = 0.0;
+  FlexerState state = FlexerState::kNone;
   LayoutUnit flexed_content_size;
 };
 

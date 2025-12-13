@@ -6,9 +6,10 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 
 import {ReadAnythingSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {LineSpacingMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {mockMetrics} from './common.js';
+import {assertCheckMarksForDropdown, mockMetrics} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -25,6 +26,10 @@ suite('LineSpacing', () => {
 
     lineSpacingMenu = document.createElement('line-spacing-menu');
     document.body.appendChild(lineSpacingMenu);
+  });
+
+  test('has checkmarks', () => {
+    assertCheckMarksForDropdown(lineSpacingMenu);
   });
 
   test('spacing change', async () => {
@@ -47,5 +52,39 @@ suite('LineSpacing', () => {
         ReadAnythingSettingsChange.LINE_HEIGHT_CHANGE,
         await metrics.whenCalled('recordTextSettingsChange'));
     assertEquals(3, metrics.getCallCount('recordTextSettingsChange'));
+  });
+
+  test('restores saved spacing option', async () => {
+    const spacing = chrome.readingMode.veryLooseLineSpacing;
+    const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
+    assertNotEquals(spacing, startingIndex);
+
+    lineSpacingMenu.settingsPrefs = {
+      letterSpacing: 0,
+      lineSpacing: spacing,
+      theme: 0,
+      speechRate: 0,
+      font: '',
+      highlightGranularity: 0,
+    };
+    await microtasksFinished();
+
+    assertNotEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);
+  });
+
+  test('does nothing if saved spacing is the same', async () => {
+    const startingIndex = lineSpacingMenu.$.menu.currentSelectedIndex;
+
+    lineSpacingMenu.settingsPrefs = {
+      letterSpacing: 101,
+      lineSpacing: 0,
+      theme: 102,
+      speechRate: 103,
+      font: 'font',
+      highlightGranularity: 103,
+    };
+    await microtasksFinished();
+
+    assertEquals(startingIndex, lineSpacingMenu.$.menu.currentSelectedIndex);
   });
 });

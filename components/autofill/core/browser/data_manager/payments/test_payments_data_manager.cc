@@ -20,10 +20,13 @@ TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
                           /*sync_service=*/nullptr,
                           /*identity_manager=*/nullptr,
                           /*variations_country_code=*/GeoIpCountryCode("US"),
-                          app_locale) {
+                          app_locale,
+                          /*autofill_optimization_guide_decider=*/nullptr) {
   is_payments_data_loaded_ = true;
   owned_image_fetcher_ = std::make_unique<TestAutofillImageFetcher>();
   image_fetcher_ = owned_image_fetcher_.get();
+  autofill_optimization_guide_decider_ = std::make_unique<
+      testing::NiceMock<MockAutofillOptimizationGuideDecider>>();
 }
 
 TestPaymentsDataManager::~TestPaymentsDataManager() {
@@ -99,6 +102,22 @@ void TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
         std::ranges::find(local_ibans_, iban, &std::unique_ptr<Iban>::get));
     NotifyObservers();
   }
+}
+
+bool TestPaymentsDataManager::SaveCardLocallyIfNew(
+    const CreditCard& imported_credit_card) {
+  CHECK(!imported_credit_card.number().empty());
+
+  for (auto& card : local_credit_cards_) {
+    if (card->MatchingCardDetails(imported_credit_card)) {
+      return false;
+    }
+  }
+  local_credit_cards_.push_back(
+      std::make_unique<CreditCard>(imported_credit_card));
+
+  NotifyObservers();
+  return true;
 }
 
 void TestPaymentsDataManager::RecordUseOfCard(const CreditCard& card) {
@@ -244,7 +263,7 @@ void TestPaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   PaymentsDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
-bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() {
+bool TestPaymentsDataManager::IsPaymentCvcStorageEnabled() const {
   if (payments_cvc_storage_enabled_.has_value()) {
     return payments_cvc_storage_enabled_.value();
   }
@@ -255,6 +274,21 @@ bool TestPaymentsDataManager::IsSyncFeatureEnabledForPaymentsServerMetrics()
     const {
   return false;
 }
+
+bool TestPaymentsDataManager::IsAutofillBnplPrefEnabled() const {
+  if (autofill_bnpl_enabled_.has_value()) {
+    return autofill_bnpl_enabled_.value();
+  }
+  return PaymentsDataManager::IsAutofillBnplPrefEnabled();
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+bool TestPaymentsDataManager::IsAutofillHasSeenBnplPrefEnabled() const {
+  return PaymentsDataManager::IsAutofillHasSeenBnplPrefEnabled();
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
 CoreAccountInfo TestPaymentsDataManager::GetAccountInfoForPaymentsServer()
     const {

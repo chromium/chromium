@@ -4,7 +4,6 @@
 
 #include "components/component_updater/timer.h"
 
-#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -17,8 +16,7 @@ namespace component_updater {
 
 class ComponentUpdaterTimerTest : public testing::Test {
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+  base::test::TaskEnvironment environment_;
 };
 
 TEST_F(ComponentUpdaterTimerTest, Start) {

@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -19,6 +21,12 @@
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/memory_measurement_provider.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
+#include "components/performance_manager/resource_attribution/query_params.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
+namespace base {
+class ScopedUmaHistogramTimer;
+}
 
 namespace performance_manager {
 class Graph;
@@ -29,8 +37,6 @@ class ContextCollection;
 }
 
 namespace resource_attribution::internal {
-
-class QueryParams;
 
 // QueryScheduler keeps track of all queries for a particular resource type and
 // owns the machinery that performs measurements.
@@ -60,8 +66,12 @@ class QueryScheduler
 
   // Notifies the scheduler that a scoped query will begin repeatedly requesting
   // results. The query now needs a QueryId to track what results it has
-  // received.
-  void StartRepeatingQuery(QueryParams* query_params);
+  // received. If `passive_observer_callback` is not null, it will be called for
+  // results from all queries that match `query_params`.
+  void StartRepeatingQuery(QueryParams* query_params,
+                           base::RepeatingCallback<void(const QueryResultMap&)>
+                               passive_observer_callback =
+                                   base::NullCallback());
 
   // Requests the latest results for the given `query_params`, and passes them
   // to `callback`.
@@ -99,15 +109,27 @@ class QueryScheduler
   // Decreases the memory query count.
   void RemoveMemoryQuery();
 
-  // Invoked from RequestResults when all results are received. `all_results`
-  // will contain a separate result map for each ResourceType that was
-  // requested.
+  // Invoked from RequestResults when all results for `query_id` are received.
+  // `all_results` will contain a separate result map for each ResourceType that
+  // was requested. Combines them int a single result map associating all
+  // results for each context in `contexts`, and passes it to `callback`.
+  // `request_timer` logs the time from the beginning of RequestResults to the
+  // end of this function.
   void OnResultsReceived(
+      const std::optional<QueryId>& query_id,
       const ContextCollection& contexts,
+      std::unique_ptr<base::ScopedUmaHistogramTimer> request_timer,
       base::OnceCallback<void(const QueryResultMap&)> callback,
       std::vector<QueryResultMap> all_results);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Copies of the queries that are observing all results.
+  absl::flat_hash_map<
+      QueryId,
+      std::pair<std::unique_ptr<QueryParams>,
+                base::RepeatingCallback<void(const QueryResultMap&)>>>
+      passive_observer_queries_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU measurement machinery.
   CPUMeasurementMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);

@@ -62,7 +62,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
     DEPRECATED_METHOD_GET_FALLBACK_FONT_FOR_CHAR = 64,
     DEPRECATED_METHOD_GET_CHILD_WITH_INODE,
     DEPRECATED_METHOD_GET_STYLE_FOR_STRIKE,
-    METHOD_MAKE_SHARED_MEMORY_SEGMENT,
+    DEPRECATED_METHOD_MAKE_SHARED_MEMORY_SEGMENT,
     DEPRECATED_METHOD_MATCH_WITH_FALLBACK,
   };
 
@@ -241,9 +241,6 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // syscalls that take pathnames, so we can enforce pathname whitelisting.
   // Only usable if StartBrokerProcess() was already called.
   bpf_dsl::ResultExpr HandleViaBroker(int sysno) const;
-
-  // Reports Landlock status through UMA metrics.
-  static void ReportLandlockStatus();
 
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;

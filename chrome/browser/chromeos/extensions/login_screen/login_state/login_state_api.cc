@@ -7,15 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/login_state.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/browser_context.h"
-
-namespace {
-bool IsSigninProfile(const Profile* profile) {
-  return profile && profile->GetBaseName().value() == chrome::kInitialProfile;
-}
-}  // namespace
 
 namespace extensions {
 
@@ -41,11 +36,16 @@ api::login_state::SessionState ToApiEnum(session_manager::SessionState state) {
 }
 
 ExtensionFunction::ResponseAction LoginStateGetProfileTypeFunction::Run() {
-  bool is_signin_profile =
-      IsSigninProfile(Profile::FromBrowserContext(browser_context()));
-  api::login_state::ProfileType profile_type =
-      is_signin_profile ? api::login_state::ProfileType::kSigninProfile
-                        : api::login_state::ProfileType::kUserProfile;
+  const Profile* profile = Profile::FromBrowserContext(browser_context());
+  api::login_state::ProfileType profile_type;
+
+  if (ash::IsSigninBrowserContext(profile)) {
+    profile_type = api::login_state::ProfileType::kSigninProfile;
+  } else if (ash::IsLockScreenBrowserContext(profile)) {
+    profile_type = api::login_state::ProfileType::kLockProfile;
+  } else {
+    profile_type = api::login_state::ProfileType::kUserProfile;
+  }
   return RespondNow(WithArguments(api::login_state::ToString(profile_type)));
 }
 

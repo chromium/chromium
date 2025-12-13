@@ -69,10 +69,10 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
     fullscreen_accelerator_ =
         ui::Accelerator(ui::VKEY_F, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 #else
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_FULLSCREEN, &fullscreen_accelerator_);
 #endif
-    chrome::AcceleratorProviderForBrowser(browser())
+    AcceleratorProviderForBrowser(browser())
         ->GetAcceleratorForCommandId(IDC_CLOSE_TAB, &close_tab_accelerator_);
   }
 
@@ -128,7 +128,7 @@ class AppMenuFullscreenInteractiveTest : public InteractiveBrowserTest {
               if (is_fullscreen) {
                 do {
                   auto display =
-                      display::Screen::GetScreen()->GetDisplayNearestWindow(
+                      display::Screen::Get()->GetDisplayNearestWindow(
                           browser->window()->GetNativeWindow());
                   auto display_size = display.bounds().size();
                   auto workarea_size = display.work_area().size();

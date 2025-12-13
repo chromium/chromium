@@ -40,10 +40,6 @@ inline bool operator==(const TabSize& a, const TabSize& b) {
   return (a.float_value_ == b.float_value_) && (a.is_spaces_ == b.is_spaces_);
 }
 
-inline bool operator!=(const TabSize& a, const TabSize& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TAB_SIZE_H_

@@ -32,7 +32,7 @@ enum class PageActionIconType {
   // DEPRECATED: kSendTabToSelf = 16,
   kSharingHub = 17,
   // DEPRECATED: kSideSearch = 18,
-  kSmsRemoteFetcher = 19,
+  // DEPRECATED: kSmsRemoteFetcher = 19,
   kTranslate = 20,
   kVirtualCardEnroll = 21,
   kFilledCardInformation = 22,
@@ -48,7 +48,11 @@ enum class PageActionIconType {
   kCollaborationMessaging = 32,
   // DEPRECATED: kChangePassword = 33,
   kLensOverlayHomework = 34,
-  kMaxValue = kLensOverlayHomework,
+  kAiMode = 35,
+  kReadingMode = 36,
+  kContextualSidePanel = 37,
+  kJsOptimizations = 38,
+  kMaxValue = kJsOptimizations,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 
@@ -67,7 +71,6 @@ static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
 static_assert(static_cast<int>(PageActionIconType::kSharingHub) == 17);
-static_assert(static_cast<int>(PageActionIconType::kSmsRemoteFetcher) == 19);
 static_assert(static_cast<int>(PageActionIconType::kTranslate) == 20);
 static_assert(static_cast<int>(PageActionIconType::kVirtualCardEnroll) == 21);
 static_assert(static_cast<int>(PageActionIconType::kFilledCardInformation) ==
@@ -84,6 +87,10 @@ static_assert(static_cast<int>(PageActionIconType::kOptimizationGuide) == 31);
 static_assert(static_cast<int>(PageActionIconType::kCollaborationMessaging) ==
               32);
 static_assert(static_cast<int>(PageActionIconType::kLensOverlayHomework) == 34);
+static_assert(static_cast<int>(PageActionIconType::kAiMode) == 35);
+static_assert(static_cast<int>(PageActionIconType::kReadingMode) == 36);
+static_assert(static_cast<int>(PageActionIconType::kContextualSidePanel) == 37);
+static_assert(static_cast<int>(PageActionIconType::kJsOptimizations) == 38);
 
 // Returns a bool indicating whether the given page action type has been
 // migrated to the new framework, which is based on ActionItems instead of

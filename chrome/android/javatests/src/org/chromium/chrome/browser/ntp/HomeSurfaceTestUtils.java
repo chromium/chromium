@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.M26_GOOGLE_COM;
+import static org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.V2_GOOGLE_COM_FBS;
 
 import android.graphics.Bitmap;
 import android.util.Base64;
@@ -26,9 +26,12 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelMetadata;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 
@@ -62,7 +65,7 @@ public class HomeSurfaceTestUtils {
      *
      * @param tabIds all the Tab IDs in the normal tab model.
      */
-    public static void createTabStatesAndMetadataFile(int[] tabIds) throws IOException {
+    public static void createTabStatesAndMetadataFile(int[] tabIds) {
         createTabStatesAndMetadataFile(tabIds, null, null, 0);
     }
 
@@ -72,8 +75,7 @@ public class HomeSurfaceTestUtils {
      * @param tabIds all the Tab IDs in the normal tab model.
      * @param rootIds all the root IDs in the normal tab model.
      */
-    public static void createTabStatesAndMetadataFile(int[] tabIds, @Nullable int[] rootIds)
-            throws IOException {
+    public static void createTabStatesAndMetadataFile(int[] tabIds, @Nullable int[] rootIds) {
         createTabStatesAndMetadataFile(tabIds, rootIds, null, 0);
     }
 
@@ -86,8 +88,7 @@ public class HomeSurfaceTestUtils {
      * @param selectedIndex the selected index of normal tab model.
      */
     public static void createTabStatesAndMetadataFile(
-            int[] tabIds, @Nullable int[] rootIds, @Nullable String[] urls, int selectedIndex)
-            throws IOException {
+            int[] tabIds, @Nullable int[] rootIds, @Nullable String[] urls, int selectedIndex) {
         createTabStatesAndMetadataFile(tabIds, rootIds, urls, selectedIndex, true);
     }
 
@@ -96,10 +97,8 @@ public class HomeSurfaceTestUtils {
             int[] rootIds,
             @Nullable String[] urls,
             int selectedIndex,
-            boolean createStateFile)
-            throws IOException {
-        TabPersistentStore.TabModelMetadata normalInfo =
-                new TabPersistentStore.TabModelMetadata(selectedIndex);
+            boolean createStateFile) {
+        TabModelMetadata normalInfo = new TabModelMetadata(selectedIndex);
         for (int i = 0; i < tabIds.length; i++) {
             normalInfo.ids.add(tabIds[i]);
             String url = urls != null ? urls[i] : "about:blank";
@@ -110,18 +109,17 @@ public class HomeSurfaceTestUtils {
                 saveTabState(tabIds[i], rootId);
             }
         }
-        TabPersistentStore.TabModelMetadata incognitoInfo =
-                new TabPersistentStore.TabModelMetadata(0);
+        TabModelMetadata incognitoInfo = new TabModelMetadata(0);
 
-        TabPersistentStore.TabModelSelectorMetadata selectorMetaData =
-                new TabPersistentStore.TabModelSelectorMetadata(normalInfo, incognitoInfo);
+        TabModelSelectorMetadata selectorMetaData =
+                new TabModelSelectorMetadata(normalInfo, incognitoInfo);
 
-        TabPersistentStore.saveTabModelPrefs(normalInfo, incognitoInfo, 0, ActiveTabState.OTHER);
+        TabPersistentStoreImpl.saveTabModelPrefs(0, ActiveTabState.OTHER);
         File metadataFile =
                 new File(
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         TabbedModeTabPersistencePolicy.getMetadataFileNameForIndex(0));
-        TabPersistentStore.saveListToFile(metadataFile, selectorMetaData);
+        TabMetadataFileManager.saveListToFile(metadataFile, selectorMetaData);
     }
 
     /**
@@ -147,12 +145,11 @@ public class HomeSurfaceTestUtils {
             int tabId, BrowserControlsStateProvider browserControlsStateProvider) {
         final int height = 100;
         final int width =
-                (int)
-                        Math.round(
-                                height
-                                        * TabUtils.getTabThumbnailAspectRatio(
-                                                ContextUtils.getApplicationContext(),
-                                                browserControlsStateProvider));
+                Math.round(
+                        height
+                                * TabUtils.getTabThumbnailAspectRatio(
+                                        ContextUtils.getApplicationContext(),
+                                        browserControlsStateProvider));
         final Bitmap thumbnailBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
 
         try {
@@ -198,8 +195,8 @@ public class HomeSurfaceTestUtils {
                         TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
                         tabId,
                         /* encrypted= */ false,
-                        /* isFlatbuffer= */ false);
-        writeFile(file, M26_GOOGLE_COM.encodedTabState);
+                        /* isFlatbuffer= */ true);
+        writeFile(file, V2_GOOGLE_COM_FBS.encodedTabState);
 
         CipherFactory unusedCipherFactory = new CipherFactory();
         TabState tabState =

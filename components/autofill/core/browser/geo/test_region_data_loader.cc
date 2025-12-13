@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/geo/test_region_data_loader.h"
 
+#include "base/check.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data.h"
 
 namespace autofill {

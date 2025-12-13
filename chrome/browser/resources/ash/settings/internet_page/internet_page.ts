@@ -1037,9 +1037,10 @@ export class SettingsInternetPageElement extends
         }
         return;
       case StartConnectResult.kBlocked:
-        // This shouldn't happen, the UI should prevent this, fall through and
-        // show the error.
+      // This shouldn't happen, the UI should prevent this, fall through and
+      // show the error.
       case StartConnectResult.kUnknown:
+      default:
         console.warn(
             'startConnect failed for: ' + networkState.guid +
             ' Error: ' + response.message);

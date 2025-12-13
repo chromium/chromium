@@ -157,10 +157,10 @@ base::TimeDelta ScrollOffsetAnimationCurve::EaseInOutSegmentDuration(
         break;
       case DurationBehavior::kDeltaBased: {
         CHECK_EQ(scroll_type_, ScrollType::kProgrammatic);
-        duration =
-            std::min<double>(std::sqrt(std::abs(MaximumDimension(delta))),
-                             features::kMaxAnimtionDuration.Get().InSecondsF() *
-                                 kDurationDivisor);
+        duration = std::min<double>(
+            std::sqrt(std::abs(MaximumDimension(delta))),
+            features::kMaxAnimationDuration.Get().InSecondsF() *
+                kDurationDivisor);
         break;
       }
       case DurationBehavior::kInverseDelta:

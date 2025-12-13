@@ -12,20 +12,11 @@ repositories {
 dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
-    // Needed only by internal targets:
-    compile 'com.android.support:support-annotations:28.0.0'
-
-    // buildCompile needed because we add a custom dep of onto this from guava
-    // to fix "unknown enum constant ReflectionSupport$Level.FULL".
-    buildCompile 'com.google.j2objc:j2objc-annotations:2.8'
-
-    // Needed by androidx.room, but by default it selects a lower version that
-    // does not exist in CIPD.
-    compile 'org.jetbrains.kotlinx:atomicfu-jvm:0.23.2'
     // Needed by androidx and by doubledown targets.
     // Note: These have version overrides set in ChromiumDepGraph.groovy.
     compile "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.8.1"
     compile "org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.2"
+    compile "org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.2"
     compile "org.jetbrains.kotlin:kotlin-parcelize-runtime:1.9.22"
 
     // Used by ModuleInterfaceProcessor.java
@@ -54,7 +45,7 @@ dependencies {
     // exclude it in ChromiumDepGraph.
     androidTestCompile 'com.google.protobuf:protobuf-lite:3.0.0'
 
-    String mockitoVersion = '5.11.0'
+    String mockitoVersion = '5.19.0'
     androidTestCompile "org.mockito:mockito-android:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-core:${mockitoVersion}"
     androidTestCompile "org.mockito:mockito-subclass:${mockitoVersion}"

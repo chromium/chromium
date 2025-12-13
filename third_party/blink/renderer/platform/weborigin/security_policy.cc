@@ -335,45 +335,4 @@ bool SecurityPolicy::ReferrerPolicyFromHeaderValue(
   return true;
 }
 
-#if BUILDFLAG(IS_FUCHSIA)
-namespace {
-std::vector<url::Origin> GetSharedArrayBufferOrigins() {
-  std::string switch_value =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kSharedArrayBufferAllowedOrigins);
-  std::vector<std::string> list =
-      SplitString(switch_value, ",", base::WhitespaceHandling::TRIM_WHITESPACE,
-                  base::SplitResult::SPLIT_WANT_NONEMPTY);
-  std::vector<url::Origin> result;
-  for (auto& origin : list) {
-    GURL url(origin);
-    if (!url.is_valid() || url.scheme() != url::kHttpsScheme) {
-      LOG(FATAL) << "Invalid --" << switches::kSharedArrayBufferAllowedOrigins
-                 << " specified: " << switch_value;
-    }
-    result.push_back(url::Origin::Create(url));
-  }
-  return result;
-}
-}  // namespace
-#endif  // BUILDFLAG(IS_FUCHSIA)
-
-// static
-bool SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(
-    const SecurityOrigin* security_origin) {
-#if BUILDFLAG(IS_FUCHSIA)
-  static base::NoDestructor<std::vector<url::Origin>> allowed_origins(
-      GetSharedArrayBufferOrigins());
-  url::Origin origin = security_origin->ToUrlOrigin();
-  for (const url::Origin& allowed_origin : *allowed_origins) {
-    if (origin.scheme() == allowed_origin.scheme() &&
-        origin.DomainIs(allowed_origin.host()) &&
-        origin.port() == allowed_origin.port()) {
-      return true;
-    }
-  }
-#endif
-  return false;
-}
-
 }  // namespace blink

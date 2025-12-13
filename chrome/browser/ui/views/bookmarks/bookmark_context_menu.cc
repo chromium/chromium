@@ -16,7 +16,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -38,6 +38,8 @@ bool IsRemoveBookmarksCommand(int command_id) {
 }
 
 }  // namespace
+
+BookmarkContextMenuObserver::~BookmarkContextMenuObserver() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // BookmarkContextMenu, public:
@@ -95,6 +97,15 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
                           views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
+void BookmarkContextMenu::AddObserver(BookmarkContextMenuObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void BookmarkContextMenu::RemoveObserver(
+    BookmarkContextMenuObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // BookmarkContextMenu, views::MenuDelegate implementation:
 
@@ -119,9 +130,7 @@ bool BookmarkContextMenu::ShouldCloseAllMenusOnExecute(int id) {
 }
 
 void BookmarkContextMenu::OnMenuClosed(views::MenuItemView* menu) {
-  if (observer_) {
-    observer_->OnContextMenuClosed();
-  }
+  observers_.Notify(&BookmarkContextMenuObserver::OnContextMenuClosed);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,13 +145,14 @@ void BookmarkContextMenu::WillExecuteCommand(
     int command_id,
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
         bookmarks) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
-    observer_->WillRemoveBookmarks(bookmarks);
+  if (IsRemoveBookmarksCommand(command_id)) {
+    observers_.Notify(&BookmarkContextMenuObserver::WillRemoveBookmarks,
+                      bookmarks);
   }
 }
 
 void BookmarkContextMenu::DidExecuteCommand(int command_id) {
-  if (observer_ && IsRemoveBookmarksCommand(command_id)) {
-    observer_->DidRemoveBookmarks();
+  if (IsRemoveBookmarksCommand(command_id)) {
+    observers_.Notify(&BookmarkContextMenuObserver::DidRemoveBookmarks);
   }
 }

@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <type_traits>
 #include <utility>
@@ -154,6 +155,19 @@ class BASE_EXPORT SequenceManager {
 
     PrioritySettings priority_settings = PrioritySettings::CreateDefault();
 
+    // Whether this sequence manager represents the main thread of the process.
+    // This is only used to set
+    // base::SingleThreadTaskRunner::GetMainThreadDefault().
+    bool is_main_thread = false;
+
+    bool should_report_lock_metrics = false;
+
+    // If true, tasks posted to this sequence manager should be delayed when a
+    // Scoped(*)ExecutionFence covering the task type exists. For example
+    // best-effort tasks would be delayed by ScopedBestEffortExecutionFence.
+    // (Note: ScopedThreadPoolExecutionFence only ever affects the ThreadPool.)
+    bool should_block_on_scoped_fences = false;
+
 #if DCHECK_IS_ON()
     // TODO(alexclarke): Consider adding command line flags to control these.
     enum class TaskLogging {
@@ -257,6 +271,12 @@ class BASE_EXPORT SequenceManager {
 
   virtual TaskQueue::QueuePriority GetPriorityCount() const = 0;
 
+  // Returns all TaskQueues with the priority used for "best-effort" tasks. This
+  // is the largest value (lowest priority) defined by the PrioritySettings,
+  // unless that's the default priority, in which case there's no "best-effort"
+  // priority and the returned list is empty.
+  virtual std::vector<TaskQueue*> GetBestEffortTaskQueues() = 0;
+
   // Creates a `TaskQueue` and returns a `TaskQueue::Handle`for it. The queue is
   // owned by the handle and shut down when the handle is destroyed. Must be
   // called on the main thread.
@@ -307,6 +327,15 @@ class BASE_EXPORT SequenceManager::Settings::Builder {
   Builder& SetCanRunTasksByBatches(bool can_run_tasks_by_batches);
 
   Builder& SetPrioritySettings(PrioritySettings settings);
+
+  Builder& SetIsMainThread(bool is_main_thread);
+
+  // Whether lock contention metrics should be reported to UMA.
+  Builder& SetShouldReportLockMetrics(bool enable);
+
+  // Whether tasks posted to this sequence manager should be delayed when a
+  // Scoped(*)ExecutionFence covering the task type exists.
+  Builder& SetShouldBlockOnScopedFences(bool enable);
 
 #if DCHECK_IS_ON()
   // Controls task execution logging.

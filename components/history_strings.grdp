@@ -15,7 +15,7 @@
     <ph name="RELATIVE_DATE">$1<ex>Today</ex></ph> - <ph name="FULL_DATE">$2<ex>Wednesday, Nov 7, 2007</ex></ph>
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
-    Remove
+    Delete
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history page">
     Are you sure you want to delete these pages from your history?
@@ -38,8 +38,17 @@
   <message name="IDS_HISTORY_FOUND_SEARCH_RESULTS" desc="Message shown when zero or multiple search results are found.">
     Found <ph name="NUMBER_OF_RESULTS">$1</ph> <ph name="SEARCH_RESULTS"><ex>search results</ex>$2</ph> for '<ph name="SEARCH_STRING">$3</ph>'
   </message>
-  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
-    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>
+  <!-- Although navigation is handled programmatically, set the href for all -->
+  <!-- `IDS_HISTORY_OTHER_FORMS_OF_HISTORY_*` strings. This is for user -->
+  <!--  transparency, allowing them to see the destination URL on hover. -->
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" id="footerGoogleMyActivityLink" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GAA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Gemini Apps Activity.">
+    Your Google Account may have your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" id="footerGeminiAppsActivityLink" href="$1"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity and Gemini Apps Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" id="footerGoogleMyActivityLink" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>, such as your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" id="footerGeminiAppsActivityLink" href="$2"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_HISTORY_LOADING" desc="Text shown when we're loading the user's history">
     Loading...
@@ -78,7 +87,7 @@
     </message>
   </if>
   <message name="IDS_HISTORY_REMOVE_BOOKMARK" desc="Tooltip shown when hovered over a history entry's bookmark star. When clicked, removes the bookmark.">
-    Remove bookmark
+    Delete bookmark
   </message>
   <message name="IDS_HISTORY_REMOVE_PAGE" desc="Command in the history entry drop-down menu. Removes a page from the history.">
     Remove from history
@@ -87,7 +96,7 @@
     '<ph name="PAGE_TITLE">$1<ex>Google Store - My Cart</ex></ph>' deleted
   </message>
   <message name="IDS_HISTORY_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history items">
-    Remove selected items
+    Delete selected items
   </message>
   <message name="IDS_HISTORY_SEARCH_BUTTON" desc="Title of the button in the history page that triggers a search">
     Search history
@@ -135,6 +144,25 @@
   <message name="IDS_HISTORY_UNKNOWN_DEVICE" desc="On the dropdown menu for a history entry, the text that is shown instead of a device name, when the device name is not known.">
     Unknown device
   </message>
+  <message name="IDS_ACTOR_TASK" translateable="false">
+    Gemini task
+  </message>
+
+  <message name="IDS_HISTORY_SYNC_PROMO_TITLE" desc="The title of the history sync promo.">
+    See your history on other devices
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_OUT" desc="The promo body text for signed out users.">
+    To get your history from your other devices, sign in and sync history. You’ll also get your passwords and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING" desc="The promo body text for pending sign in users with sync history off.">
+    To get your history from your other devices, verify it’s you and sync your history and tabs. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING_SYNC_HISTORY_ON" desc="The promo body text for pending sign in users with sync history on.">
+    To get your history from your other devices, verify it’s you. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN" desc="The promo body text for signed in users with sync history off.">
+    To get your history from your other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
 
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
     Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
@@ -145,7 +173,7 @@
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI." translateable="false">
     Promo
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the promo for history search powered by AI." translateable="false">
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the history promos." translateable="false">
     Close promo
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">

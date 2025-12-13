@@ -121,7 +121,7 @@ std::u16string GenerateIconLetterFromUrl(const GURL& app_url) {
   if (!domain_and_registry.empty()) {
     app_url_part = domain_and_registry;
   } else if (app_url.has_host()) {
-    app_url_part = app_url.host();
+    app_url_part = app_url.GetHost();
   }
 
   // Translate punycode into unicode before retrieving the first letter.

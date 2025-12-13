@@ -62,6 +62,7 @@ class DeskSyncBridge : public syncer::DataTypeSyncBridge, public DeskModel {
       const syncer::EntityData& entity_data) const override;
   std::string GetStorageKey(
       const syncer::EntityData& entity_data) const override;
+  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // DeskModel overrides.
   DeskModel::GetAllEntriesResult GetAllEntries() override;

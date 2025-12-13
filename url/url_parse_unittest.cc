@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/third_party/mozilla/url_parse.h"
 
 #include <stddef.h>
@@ -126,7 +121,8 @@ AssertionResult ComponentMatches(const char* input,
   }
 
   // Now check the actual characters.
-  return strncmp(reference, &input[component.begin], component.len) == 0
+  return UNSAFE_TODO(
+             strncmp(reference, &input[component.begin], component.len)) == 0
              ? AssertionSuccess()
              : AssertionFailure() << "characters do not match";
 }
@@ -174,7 +170,7 @@ TEST(URLParser, Length) {
   };
   for (const char* length_case : length_cases) {
     int true_length = static_cast<int>(strlen(length_case));
-    Parsed parsed = ParseStandardURL(length_case);
+    Parsed parsed = ParseStandardUrl(length_case);
 
     EXPECT_EQ(true_length, parsed.Length());
   }
@@ -231,8 +227,8 @@ TEST(URLParser, CountCharactersBefore) {
   };
   for (const auto& count_case : count_cases) {
     // Simple test to distinguish file and standard URLs.
-    Parsed parsed = count_case.url[0] == 'f' ? ParseFileURL(count_case.url)
-                                             : ParseStandardURL(count_case.url);
+    Parsed parsed = count_case.url[0] == 'f' ? ParseFileUrl(count_case.url)
+                                             : ParseStandardUrl(count_case.url);
 
     int chars_before = parsed.CountCharactersBefore(
         count_case.component, count_case.include_delimiter);
@@ -344,7 +340,7 @@ TEST(URLParser, Standard) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& i : cases) {
-    Parsed parsed = ParseStandardURL(i.input);
+    Parsed parsed = ParseStandardUrl(i.input);
     URLParseCaseMatches(i, parsed);
   }
 }
@@ -366,12 +362,12 @@ auto path_cases = std::to_array<PathURLParseCase>({
 });
 // clang-format on
 
-TEST(URLParser, PathURL) {
+TEST(URLParser, PathUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (size_t i = 0; i < std::size(path_cases); i++) {
     const char* url = path_cases[i].input;
-    Parsed parsed = ParsePathURL(url, false);
+    Parsed parsed = ParsePathUrl(url, false);
 
     EXPECT_TRUE(ComponentMatches(url, path_cases[i].scheme, parsed.scheme))
         << i;
@@ -466,11 +462,11 @@ static URLParseCase file_cases[] = {
 };
 // clang-format on
 
-TEST(URLParser, ParseFileURL) {
+TEST(URLParser, ParseFileUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the construtor.
   for (const auto& file_case : file_cases) {
-    Parsed parsed = ParseFileURL(file_case.input);
+    Parsed parsed = ParseFileUrl(file_case.input);
     URLParseCaseMatches(file_case, parsed);
     EXPECT_FALSE(parsed.has_opaque_path);
   }
@@ -500,7 +496,7 @@ TEST(URLParser, ExtractFileName) {
 
   for (const auto& extract_case : extract_cases) {
     const char* url = extract_case.input;
-    Parsed parsed = ParseStandardURL(url);
+    Parsed parsed = ParseStandardUrl(url);
 
     Component file_name;
     ExtractFileName(url, parsed.path, &file_name);
@@ -516,7 +512,7 @@ static bool NthParameterIs(const char* url,
                            int parameter,
                            const char* expected_key,
                            const char* expected_value) {
-  Parsed parsed = ParseStandardURL(url);
+  Parsed parsed = ParseStandardUrl(url);
 
   Component query = parsed.query;
 
@@ -532,10 +528,13 @@ static bool NthParameterIs(const char* url,
       if (!expected_key)
         return false;
 
-      if (strncmp(&url[key.begin], expected_key, key.len) != 0)
+      if (UNSAFE_TODO(strncmp(&url[key.begin], expected_key, key.len)) != 0) {
         return false;
-      if (strncmp(&url[value.begin], expected_value, value.len) != 0)
+      }
+      if (UNSAFE_TODO(strncmp(&url[value.begin], expected_value, value.len)) !=
+          0) {
         return false;
+      }
       return true;
     }
   }
@@ -605,7 +604,7 @@ TEST(URLParser, MailtoUrl) {
   // to reset something that is reset by the constructor.
   for (const auto& mailto_case : mailto_cases) {
     const char* url = mailto_case.input;
-    Parsed parsed = ParseMailtoURL(url);
+    Parsed parsed = ParseMailtoUrl(url);
     int port = ParsePort(url, parsed.port);
 
     EXPECT_TRUE(ComponentMatches(url, mailto_case.scheme, parsed.scheme));
@@ -639,12 +638,12 @@ static FileSystemURLParseCase filesystem_cases[] = {
      nullptr, nullptr},
 };
 
-TEST(URLParser, FileSystemURL) {
+TEST(URLParser, FileSystemUrl) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& filesystem_case : filesystem_cases) {
     const char* url = filesystem_case.input;
-    Parsed parsed = ParseFileSystemURL(url);
+    Parsed parsed = ParseFileSystemUrl(url);
 
     EXPECT_TRUE(ComponentMatches(url, "filesystem", parsed.scheme));
     EXPECT_EQ(!filesystem_case.inner_scheme, !parsed.inner_parsed());
@@ -712,7 +711,7 @@ TEST(URLParser, NonSpecial) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& i : non_special_cases) {
-    Parsed parsed = ParseNonSpecialURL(i.input);
+    Parsed parsed = ParseNonSpecialUrl(i.input);
     URLParseCaseMatches(i, parsed);
     EXPECT_FALSE(parsed.has_opaque_path) << "url: " << i.input;
   }
@@ -735,7 +734,7 @@ TEST(URLParser, NonSpecialOpaquePath) {
   // Declared outside for loop to try to catch cases in init() where we forget
   // to reset something that is reset by the constructor.
   for (const auto& i : non_special_opaque_path_cases) {
-    Parsed parsed = ParseNonSpecialURL(i.input);
+    Parsed parsed = ParseNonSpecialUrl(i.input);
     URLParseCaseMatches(i, parsed);
     EXPECT_TRUE(parsed.has_opaque_path) << "url: " << i.input;
   }

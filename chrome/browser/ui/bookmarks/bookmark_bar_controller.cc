@@ -9,6 +9,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -83,6 +84,12 @@ BookmarkBarController::~BookmarkBarController() = default;
 
 BookmarkBarController* BookmarkBarController::From(
     BrowserWindowInterface* browser_window_interface) {
+  return ui::ScopedUnownedUserData<BookmarkBarController>::Get(
+      browser_window_interface->GetUnownedUserDataHost());
+}
+
+const BookmarkBarController* BookmarkBarController::From(
+    const BrowserWindowInterface* browser_window_interface) {
   return ui::ScopedUnownedUserData<BookmarkBarController>::Get(
       browser_window_interface->GetUnownedUserDataHost());
 }
@@ -167,12 +174,20 @@ bool BookmarkBarController::ShouldShowBookmarkBar() const {
   const bool has_bookmarks = bookmark_model && bookmark_model->HasBookmarks();
 
   tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile);
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   const bool has_saved_tab_groups =
       tab_group_service && !tab_group_service->GetAllGroups().empty();
 
   // The bookmark bar is only shown if the user has added something to it.
   if (!has_bookmarks && !has_saved_tab_groups) {
+    return false;
+  }
+
+  // Prevent the bookmark bar from showing itself when entering fullscreen if
+  // fullscreen is entered through webview (TAB). This creates a consistent
+  // experience for split view fullscreen and the rest of the UI.
+  const tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
+  if (active_tab->GetContents()->IsFullscreen()) {
     return false;
   }
 

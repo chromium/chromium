@@ -66,14 +66,12 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
-#include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -171,7 +169,7 @@ std::optional<gfx::SizeF> ComputeFilterViewport(const PaintLayer& layer) {
   if (box->IsSVGForeignObject()) {
     return std::nullopt;
   }
-  return gfx::SizeF(box->Size());
+  return gfx::SizeF(box->StitchedSize());
 }
 
 }  // namespace
@@ -390,6 +388,7 @@ void PaintLayer::UpdateDescendantDependentFlags() {
     has_self_painting_layer_descendant_ = false;
     descendant_needs_check_position_visibility_ = false;
     has_backdrop_filter_descendant_ = false;
+    has_descendant_with_transform_anim_ = false;
 
     bool can_contain_abs =
         GetLayoutObject().CanContainAbsolutePositionObjects();
@@ -447,6 +446,13 @@ void PaintLayer::UpdateDescendantDependentFlags() {
           has_backdrop_filter_descendant_ ||
           child->HasBackdropFilterDescendant() ||
           child->GetLayoutObject().StyleRef().HasNonInitialBackdropFilter();
+
+      has_descendant_with_transform_anim_ =
+          has_descendant_with_transform_anim_ ||
+          child->HasDescendantWithTransformAnim() ||
+          child->GetLayoutObject()
+              .StyleRef()
+              .HasCurrentTransformRelatedAnimation();
     }
 
     // See SetInvisibleForPositionVisibility() for explanation for
@@ -498,7 +504,9 @@ void PaintLayer::UpdateHasVisibleContent() {
   bool previously_has_visible_content = has_visible_content_;
 
   const LayoutObject& object = GetLayoutObject();
-  if (object.StyleRef().Visibility() == EVisibility::kVisible) {
+  if (object.StyleRef().Visibility() == EVisibility::kVisible ||
+      (object.StyleRef().HasReferenceFilter() &&
+       RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
     has_visible_content_ = true;
   } else {
     // layer may be hidden but still have some visible content, check for this
@@ -510,7 +518,9 @@ void PaintLayer::UpdateHasVisibleContent() {
         r = r->NextInPreOrderAfterChildren(&object);
         continue;
       }
-      if (r->StyleRef().Visibility() == EVisibility::kVisible) {
+      if (r->StyleRef().Visibility() == EVisibility::kVisible ||
+          (r->StyleRef().HasReferenceFilter() &&
+           RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled())) {
         has_visible_content_ = true;
         break;
       }
@@ -854,10 +864,13 @@ void PaintLayer::UpdateStackingNode() {
 }
 
 bool PaintLayer::RequiresScrollableArea() const {
-  if (!GetLayoutBox())
+  const LayoutBox* box = GetLayoutBox();
+  if (!box) {
     return false;
-  if (GetLayoutObject().IsScrollContainer())
+  }
+  if (box->Style()->HasOverscrollArea() || box->IsScrollContainer()) {
     return true;
+  }
   // Iframes with the resize property can be resized. This requires
   // scroll corner painting, which is implemented, in part, by
   // PaintLayerScrollableArea.
@@ -1264,10 +1277,11 @@ PaintLayer* PaintLayer::HitTestLayer(
   // there is an ongoing transition, since this may be too heavy of a check for
   // each hit test.
   if (auto* transition =
-          ViewTransitionUtils::GetTransition(layout_object.GetDocument())) {
+          ViewTransitionUtils::TransitionForTaggedElement(layout_object)) {
     // This means that the contents of the object are drawn elsewhere.
-    if (transition->IsRepresentedViaPseudoElements(layout_object))
+    if (transition->IsRepresentedViaPseudoElements(layout_object)) {
       return nullptr;
+    }
   }
 
   ShouldRespectOverflowClipType clip_behavior = kRespectOverflowClip;
@@ -1403,6 +1417,28 @@ PaintLayer* PaintLayer::HitTestLayer(
     z_offset_for_contents_ptr = z_offset;
   }
 
+  // This variable tracks which layer the mouse ends up being inside.
+  PaintLayer* candidate_layer = nullptr;
+
+  PaintLayer* hit_layer = nullptr;
+  if (auto* element = DynamicTo<Element>(layout_object.GetNode())) {
+    if (element->GetPseudoElement(kPseudoIdViewTransition)) {
+      hit_layer = HitTestChildren(
+          kAllChildren, transform_container, container_fragment, result,
+          recursion_data, container_transform_state,
+          z_offset_for_descendants_ptr, z_offset, local_transform_state,
+          depth_sort_descendants, true /* transition_pseudo_pass */);
+      if (hit_layer) {
+        if (!depth_sort_descendants) {
+          return hit_layer;
+        }
+        // Depth-sorting may override z-index, so we need to check below for
+        // other hit_layer candidates.
+        candidate_layer = hit_layer;
+      }
+    }
+  }
+
   // Collect the fragments. This will compute the clip rectangles for each
   // layer fragment.
   PaintLayerFragments layer_fragments;
@@ -1425,6 +1461,9 @@ PaintLayer* PaintLayer::HitTestLayer(
             recursion_data.location) &&
         GetLayoutBox()->HitTestOverflowControl(
             result, recursion_data.location, layer_fragments[0].layer_offset)) {
+      if (z_offset && local_transform_state) {
+        *z_offset = ComputeZOffset(*local_transform_state);
+      }
       return this;
     }
   }
@@ -1432,12 +1471,9 @@ PaintLayer* PaintLayer::HitTestLayer(
   if (overflow_controls_only)
     return nullptr;
 
-  // This variable tracks which layer the mouse ends up being inside.
-  PaintLayer* candidate_layer = nullptr;
-
   // Begin by walking our list of positive layers from highest z-index down to
   // the lowest z-index.
-  PaintLayer* hit_layer = HitTestChildren(
+  hit_layer = HitTestChildren(
       kPositiveZOrderChildren, transform_container, container_fragment, result,
       recursion_data, container_transform_state, z_offset_for_descendants_ptr,
       z_offset, local_transform_state, depth_sort_descendants);
@@ -1470,7 +1506,8 @@ PaintLayer* PaintLayer::HitTestLayer(
           result.GetHitTestRequest(), recursion_data.original_location);
       bool inside_fragment_foreground_rect = false;
 
-      if (HitTestForegroundForFragments(layer_fragments, temp_result,
+      if (HitTestForegroundForFragments(transform_container, container_fragment,
+                                        layer_fragments, temp_result,
                                         recursion_data.location,
                                         inside_fragment_foreground_rect) &&
           IsHitCandidateForDepthOrder(this, false, z_offset_for_contents_ptr,
@@ -1504,16 +1541,12 @@ PaintLayer* PaintLayer::HitTestLayer(
     candidate_layer = hit_layer;
   }
 
-  // If we found a layer, return. Child layers, and foreground always render
-  // in front of background.
-  if (candidate_layer)
-    return candidate_layer;
-
   if (recursion_data.intersects_location && IsSelfPaintingLayer()) {
     STACK_UNINITIALIZED HitTestResult temp_result(
         result.GetHitTestRequest(), recursion_data.original_location);
     bool inside_fragment_background_rect = false;
-    if (HitTestFragmentsWithPhase(layer_fragments, temp_result,
+    if (HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                  layer_fragments, temp_result,
                                   recursion_data.location,
                                   HitTestPhase::kSelfBlockBackground,
                                   inside_fragment_background_rect) &&
@@ -1533,25 +1566,30 @@ PaintLayer* PaintLayer::HitTestLayer(
     }
   }
 
-  return nullptr;
+  return candidate_layer;
 }
 
 bool PaintLayer::HitTestForegroundForFragments(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
     const PaintLayerFragments& layer_fragments,
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
     bool& inside_clip_rect) const {
-  if (HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+  if (HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kForeground, inside_clip_rect)) {
     return true;
   }
   if (inside_clip_rect &&
-      HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+      HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kFloat, inside_clip_rect)) {
     return true;
   }
   if (inside_clip_rect &&
-      HitTestFragmentsWithPhase(layer_fragments, result, hit_test_location,
+      HitTestFragmentsWithPhase(transform_container, container_fragment,
+                                layer_fragments, result, hit_test_location,
                                 HitTestPhase::kDescendantBlockBackgrounds,
                                 inside_clip_rect)) {
     return true;
@@ -1560,6 +1598,8 @@ bool PaintLayer::HitTestForegroundForFragments(
 }
 
 bool PaintLayer::HitTestFragmentsWithPhase(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
     const PaintLayerFragments& layer_fragments,
     HitTestResult& result,
     const HitTestLocation& hit_test_location,
@@ -1576,6 +1616,15 @@ bool PaintLayer::HitTestFragmentsWithPhase(
     if (!bounds.Intersects(hit_test_location))
       continue;
 
+    // Check if inside the border-radius clipping area
+    if (RuntimeEnabledFeatures::
+            HitTestBorderRadiusForStackingContextEnabled() &&
+        bounds.HasRadius() &&
+        HitTestClippedOutByBorderRadius(transform_container, container_fragment,
+                                        hit_test_location, bounds)) {
+      continue;
+    }
+
     inside_clip_rect = true;
 
     if (GetLayoutObject().IsLayoutInline() &&
@@ -1586,7 +1635,7 @@ bool PaintLayer::HitTestFragmentsWithPhase(
       // transform, though, we'll only have one PaintLayerFragment in the list
       // at this point (we iterate over them further up on the stack, and pass a
       // "list" of one fragment at a time from there instead).
-      DCHECK(fragment.fragment_idx != WTF::kNotFound);
+      DCHECK(fragment.fragment_idx != kNotFound);
       HitTestLocation location_for_fragment(hit_test_location,
                                             fragment.fragment_idx);
       if (HitTestFragmentWithPhase(result, fragment.physical_fragment,
@@ -1624,6 +1673,16 @@ PaintLayer* PaintLayer::HitTestTransformedLayerInFragments(
     // Apply any clips established by layers in between us and the root layer.
     if (!fragment.background_rect.Intersects(recursion_data.location))
       continue;
+
+    // `recursion_data.location` is relative to `transform_container`.
+    if (RuntimeEnabledFeatures::
+            HitTestBorderRadiusForStackingContextEnabled() &&
+        fragment.background_rect.HasRadius() &&
+        HitTestClippedOutByBorderRadius(transform_container, container_fragment,
+                                        recursion_data.location,
+                                        fragment.background_rect)) {
+      continue;
+    }
 
     PaintLayer* hit_layer = HitTestLayerByApplyingTransform(
         transform_container, container_fragment, fragment, result,
@@ -1720,15 +1779,6 @@ bool PaintLayer::HitTestFragmentWithPhase(
     // We hit something anonymous, and we didn't find a DOM node ancestor in
     // this layer.
 
-    if (GetLayoutObject().IsLayoutFlowThread()) {
-      // For a flow thread it's safe to just say that we didn't hit anything.
-      // That means that we'll continue as normally, and eventually hit a column
-      // set sibling instead. Column sets are also anonymous, but, unlike flow
-      // threads, they don't establish layers, so we'll fall back and hit the
-      // multicol container parent (which should have a DOM node).
-      return false;
-    }
-
     Node* e = EnclosingNode();
     // FIXME: should be a call to result.setNodeAndPosition. What we would
     // really want to do here is to return and look for the nearest
@@ -1756,7 +1806,8 @@ PaintLayer* PaintLayer::HitTestChildren(
     double* z_offset_for_descendants,
     double* z_offset,
     HitTestingTransformState* local_transform_state,
-    bool depth_sort_descendants) {
+    bool depth_sort_descendants,
+    bool transition_pseudo_pass) {
   if (!HasSelfPaintingLayerDescendant()) {
     return nullptr;
   }
@@ -1765,9 +1816,13 @@ PaintLayer* PaintLayer::HitTestChildren(
     return nullptr;
   }
 
-  if (GetLayoutObject().IsCanvas() &&
-      !RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
-    return nullptr;
+  if (GetLayoutObject().IsCanvas()) {
+    if (!RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+      return nullptr;
+    }
+    if (!To<HTMLCanvasElement>(GetLayoutObject().GetNode())->layoutSubtree()) {
+      return nullptr;
+    }
   }
 
   const LayoutObject* stop_node = result.GetHitTestRequest().GetStopNode();
@@ -1782,6 +1837,16 @@ PaintLayer* PaintLayer::HitTestChildren(
           const HitTestRecursionData& recursion_data) -> bool {
     if (child_layer->IsReplacedNormalFlowStacking())
       return false;
+
+    bool is_scoped_transition_pseudo =
+        !GetLayoutObject().IsViewTransitionRoot() &&
+        ViewTransitionUtils::IsViewTransitionRoot(
+            child_layer->GetLayoutObject());
+    if (is_scoped_transition_pseudo != transition_pseudo_pass) {
+      // A scoped ::view-transition pseudo is handled separately since it paints
+      // on top of all other children of the scope regardless of their z-index.
+      return false;
+    }
 
     // Avoid the call to child_layer.HitTestLayer() if possible.
     if (stop_layer == this &&
@@ -1813,98 +1878,6 @@ PaintLayer* PaintLayer::HitTestChildren(
     }
     return false;
   };
-
-  if (GetLayoutObject().IsCanvas()) {
-    CHECK(RuntimeEnabledFeatures::CanvasDrawElementEnabled());
-    HTMLCanvasElement* canvas =
-        To<HTMLCanvasElement>(GetLayoutObject().GetNode());
-    const auto& hit_test_regions = canvas->GetHitTestRegions();
-    for (const auto& region : base::Reversed(hit_test_regions)) {
-      // TODO(vmpstr): Need to figure out what to do if the element goes away or
-      // is no longer the canvas direct child. For now, just silently skip that
-      // element.
-      if (!region->element()) {
-        continue;
-      }
-
-      LayoutBox* box = region->element()->GetLayoutBox();
-      if (!box || !box->Layer() || box->GetNode()->parentElement() != canvas) {
-        continue;
-      }
-
-      // TODO(vmpstr): This does hit-test in css space, since it's not exactly
-      // obvious how to get the right offsets in physical space for the hit
-      // point and elements. We should probably do this in physical space
-      // though.
-      //
-      // We also need to double check all this for all the cases. Maybe we need
-      // to copy something like `HitTestLayerByApplyingTransform` except that we
-      // don't have a separate transform container.
-      gfx::RectF element_rect =
-          region->element()->GetBoundingClientRectNoLifecycleUpdate();
-      gfx::RectF canvas_rect = canvas->GetBoundingClientRectNoLifecycleUpdate();
-
-      // Hit test region is in canvas backing space, so convert it to canvas css
-      // space.
-      gfx::RectF hit_test_region = region->rect();
-      gfx::Size backing_size = canvas->Size();
-      hit_test_region.Scale(canvas_rect.width() / backing_size.width(),
-                            canvas_rect.height() / backing_size.height());
-
-      // Get the css -> physical space zoom factor, see
-      // `AdjustForAbsoluteZoom::AdjustRectMaybeExcludingCSSZoom`.
-      double zoom = [&]() -> double {
-        auto* layout_object = canvas->GetLayoutObject();
-        if (layout_object->GetDocument().StandardizedBrowserZoomEnabled()) {
-          return layout_object->GetFrame()->LayoutZoomFactor();
-        } else {
-          return layout_object->StyleRef().EffectiveZoom();
-        }
-      }();
-
-      // Determine current point (hit test point) in canvas css space.
-      PhysicalOffset current_point = recursion_data.location.Point();
-      current_point.Scale(1.0 / zoom);
-      current_point -=
-          PhysicalOffset::FromVector2dFRound(canvas_rect.OffsetFromOrigin());
-
-      // If the point is outside of the hit test region, this isn't a candidate.
-      // Both of these should be in css canvas space at this point.
-      if (!hit_test_region.Contains(current_point.left, current_point.top)) {
-        continue;
-      }
-
-      // Determine the percent x of the current point in the hit test rect, so
-      // we map arbitrary x y to [0, 1) range.
-      double percent_x =
-          (current_point.left - hit_test_region.x()) / hit_test_region.width();
-      double percent_y =
-          (current_point.top - hit_test_region.y()) / hit_test_region.height();
-
-      // Now determine the new offset within the hit test element by using the
-      // percentages. This is now in css global space since we also add the
-      // element offset to take it from element space to global space.
-      PhysicalOffset new_offset = PhysicalOffset::FromPointFRound(
-          gfx::PointF(element_rect.x() + percent_x * element_rect.width(),
-                      element_rect.y() + percent_y * element_rect.height()));
-
-      // Convert the offset to physical space before doing the hit test.
-      new_offset.Scale(zoom);
-
-      // HitTestRecursionData takes and stores its parameters by reference, so
-      // create them on the stack explicitly and pass them in.
-      auto adjusted_hit_test_rect = HitTestLocation::RectForPoint(new_offset);
-      auto adjusted_hit_test_location = HitTestLocation(new_offset);
-      HitTestRecursionData adjusted_recursion_data(
-          adjusted_hit_test_rect, adjusted_hit_test_location,
-          recursion_data.original_location);
-
-      if (hit_test_child(box->Layer(), false, adjusted_recursion_data)) {
-        break;
-      }
-    }
-    return result_layer;
-  }
 
   while (PaintLayer* child_layer = iterator.Next()) {
     if (stacking_node_) {
@@ -1982,6 +1955,10 @@ std::optional<gfx::SizeF> PaintLayer::FilterViewport() const {
 
 gfx::RectF PaintLayer::BackdropFilterReferenceBox() const {
   if (const auto* layout_inline = DynamicTo<LayoutInline>(GetLayoutObject())) {
+    if (RuntimeEnabledFeatures::
+            PaintOffsetTranslationForBackdropFilterWithInlineElementEnabled()) {
+      return gfx::RectF(layout_inline->PhysicalLinesBoundingBox());
+    }
     return gfx::RectF(
         gfx::SizeF(layout_inline->PhysicalLinesBoundingBox().size));
   }
@@ -2008,6 +1985,46 @@ bool PaintLayer::HitTestClippedOutByClipPath(
 
   const HitTestLocation location_in_layer(hit_test_location, -origin);
   return !ClipPathClipper::HitTest(GetLayoutObject(), location_in_layer);
+}
+
+// Checks if `hit_test_location` is clipped out by any ancestor `border-radius`
+// up to `transform_container`.
+bool PaintLayer::HitTestClippedOutByBorderRadius(
+    const PaintLayer& transform_container,
+    const PaintLayerFragment* container_fragment,
+    const HitTestLocation& hit_test_location,
+    const ClipRect& clip_rect) const {
+  DCHECK(clip_rect.HasRadius());
+  const FragmentData& container_fragment_data =
+      container_fragment
+          ? *container_fragment->fragment_data
+          : transform_container.GetLayoutObject().FirstFragment();
+  // `hit_test_location` is relative to `transform_container`.
+  const auto& current_transform =
+      container_fragment_data.LocalBorderBoxProperties().Transform();
+
+  for (const LayoutObject* current = GetLayoutObject().Container();
+       current &&
+       current->IsDescendantOf(&transform_container.GetLayoutObject());
+       current = current->Container()) {
+    const auto* properties = current->FirstFragment().PaintProperties();
+    if (!properties) {
+      continue;
+    }
+
+    const auto* clip = properties->InnerBorderRadiusClip();
+    if (!clip) {
+      continue;
+    }
+
+    gfx::RectF mapped_location(hit_test_location.BoundingBox());
+    GeometryMapper::SourceToDestinationRect(
+        current_transform, clip->LocalTransformSpace(), mapped_location);
+    if (!clip->PaintClipRect().IntersectsQuad(gfx::QuadF(mapped_location))) {
+      return true;
+    }
+  }
+  return false;
 }
 
 PhysicalRect PaintLayer::LocalBoundingBox() const {
@@ -2692,7 +2709,7 @@ void ShowLayerTree(const blink::PaintLayer* layer) {
   }
 
   if (blink::LocalFrame* frame = layer->GetLayoutObject().GetFrame()) {
-    WTF::String output =
+    blink::String output =
         ExternalRepresentation(frame,
                                blink::kLayoutAsTextShowLayerNesting |
                                    blink::kLayoutAsTextShowAddresses |

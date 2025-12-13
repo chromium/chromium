@@ -65,4 +65,11 @@ bool SecurePaymentConfirmationNoCreds::ClickOptOutForTesting() {
   return view_->ClickOptOutForTesting();
 }
 
+bool SecurePaymentConfirmationNoCreds::AcceptDialogForTesting() {
+  if (!view_) {
+    return false;
+  }
+  return view_->AcceptDialogForTesting();
+}
+
 }  // namespace payments

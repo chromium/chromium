@@ -17,8 +17,10 @@
 #include <cstdint>
 #include <vector>
 
+#include "google/protobuf/compiler/cpp/helpers.h"
 #include "google/protobuf/compiler/cpp/options.h"
 #include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_tctable_gen.h"
 
 namespace google {
 namespace protobuf {
@@ -31,27 +33,26 @@ class FieldGroup {
  public:
   FieldGroup()
       : fields_(),
-        preferred_location_(0) {
+        preferred_location_(0),
+        estimated_memory_size_(0) {
   }
 
   // A group with a single field.
   FieldGroup(float preferred_location, const FieldDescriptor* field,
              uint64_t num_accesses = 0)
       : fields_(1, field),
-        preferred_location_(preferred_location) {
+        preferred_location_(preferred_location),
+        estimated_memory_size_(
+            static_cast<uint32_t>(EstimateAlignmentSize(field))) {
   }
 
   const std::vector<const FieldDescriptor*>& fields() const { return fields_; }
 
-  // Returns an estimate of the total memory size of the fields in this group,
-  // ignoring padding/alignment.
-  //
-  // Since fields are added to groups in descending size order, and the sizes
-  // are all powers of 2, this will be the true size of the group, ignoring the
-  // padding at the end. This padding at the end can be filled by other field
-  // groups so long as the size of the other group is at most
-  // `8 - EstimateMemorySize()`.
-  size_t EstimateMemorySize() const;
+  size_t num_fields() const { return fields_.size(); }
+
+  size_t estimated_memory_size() const {
+    return static_cast<size_t>(estimated_memory_size_);
+  }
 
   void SetPreferredLocation(double location) { preferred_location_ = location; }
 
@@ -66,6 +67,15 @@ class FieldGroup {
 
   std::vector<const FieldDescriptor*> fields_;
   float preferred_location_;
+  // An estimate of the total memory size of the fields in this group, ignoring
+  // padding/alignment.
+  //
+  // Since fields are added to groups in descending size order, and the sizes
+  // are all powers of 2, this will be the true size of the group, ignoring the
+  // padding at the end. This padding at the end can be filled by other field
+  // groups so long as the size of the other group is at most
+  // `8 - EstimateMemorySize()`.
+  uint32_t estimated_memory_size_;
 };
 
 // Provides an abstract interface to optimize message layout
@@ -87,16 +97,26 @@ class MessageLayoutHelper {
   }
 
  protected:
+  // Enum of hotness classes for fields, which is the major factor in layout
+  // order. Use enum class instead of enum to avoid implicit conversion to an
+  // index.
+  //
   // TODO: Merge kCold and kSplit once all field types can be
   // split.
-  enum FieldHotness {
-    kRepeated,  // Non-split repeated fields.
-    kHot,
-    kWarm,
-    kCold,
+  enum class FieldHotness {
     kSplit,
+    kCold,
+    kWarm,
+    kHot,
+    kFastParse,  // Fast-parse eligible fields.
+    kRepeated,   // Non-split repeated fields.
     kMaxHotness,
   };
+
+  static constexpr size_t kMaxHotness =
+      static_cast<size_t>(FieldHotness::kMaxHotness);
+
+  friend bool operator<(FieldHotness h1, FieldHotness h2);
 
   // Reorder 'fields' so that if the fields are output into a C++ class in the
   // new order, fields of similar family (see below) are together and within
@@ -154,6 +174,8 @@ class MessageLayoutHelper {
     FieldPartitionArray aligned_to_8;
   };
 
+  static constexpr size_t FieldHotnessIndex(FieldHotness hotness);
+
   // Returns true if the message has PDProto data.
   virtual bool HasProfiledData() const = 0;
 
@@ -167,9 +189,22 @@ class MessageLayoutHelper {
                                     const Options& options,
                                     MessageSCCAnalyzer* scc_analyzer);
 
-  FieldHotness GetFieldHotnessCategory(const FieldDescriptor* field,
-                                       const Options& options,
-                                       MessageSCCAnalyzer* scc_analyzer) const;
+  // Constructs the fast parse table for the message as it would be generated,
+  // ignoring hasbits/inlined string indices as those have not been assigned
+  // yet. This is used to determine which fields to prioritize for the fast
+  // parse hotness class, which guarantees fast-parse eligibility.
+  std::vector<internal::TailCallTableInfo::FastFieldInfo> BuildFastParseTable(
+      const Options& options, MessageSCCAnalyzer* scc_analyzer) const;
+
+  static bool IsFastPathField(
+      const FieldDescriptor* field,
+      const std::vector<internal::TailCallTableInfo::FastFieldInfo>&
+          fast_path_fields);
+
+  static bool ShouldPromoteToFastParse(
+      const FieldDescriptor* field, FieldHotness hotness,
+      const std::vector<internal::TailCallTableInfo::FastFieldInfo>&
+          fast_path_fields);
 
   // Groups fields into alignment equivalence classes (1, 4, and 8). Within
   // each alignment equivalence class, fields are partitioned by `FieldFamily`
@@ -208,8 +243,27 @@ class MessageLayoutHelper {
       std::array<std::vector<FieldGroup>, kMaxHotness>& field_groups,
       size_t alignment, size_t target_alignment);
 
+  // Moves field groups from `src_partition` into `dst_partition` to fill the
+  // extra padding of `dst_partition`.
+  //
+  // This will not increase the size of `dst_partition` nor break runs of field
+  // families. The fields moved to `dst_partition` will be removed from
+  // `src_partition`.
+  static void FillPaddingFromPartition(std::vector<FieldGroup>& dst_partition,
+                                       std::vector<FieldGroup>& src_partition,
+                                       size_t alignment);
+
+  // Merges the hot field groups into the fast field groups if the total size of
+  // the fast parse group would not exceed 32 fields. This means that every
+  // field projected to be placed in the fast parse path will be assigned low
+  // enough hasbits to guarantee eligibility.
+  static void MaybeMergeHotIntoFast(FieldPartitionArray& field_groups);
+
   const Descriptor* descriptor_;
 };
+
+bool operator<(MessageLayoutHelper::FieldHotness h1,
+               MessageLayoutHelper::FieldHotness h2);
 
 }  // namespace cpp
 }  // namespace compiler

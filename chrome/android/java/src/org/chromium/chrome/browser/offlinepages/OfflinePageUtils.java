@@ -79,7 +79,7 @@ public class OfflinePageUtils {
      * We are using an internal interface, so that instance methods can have the same names as
      * static methods.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public interface Internal {
         /** Returns offline page bridge for specified profile. */
         @Nullable OfflinePageBridge getOfflinePageBridge(@Nullable Profile profile);
@@ -112,6 +112,7 @@ public class OfflinePageUtils {
 
         /**
          * Shows the "reload" snackbar for the given tab.
+         *
          * @param context The application context.
          * @param snackbarManager Class that shows the snackbar.
          * @param snackbarController Class to control the snackbar.
@@ -120,7 +121,7 @@ public class OfflinePageUtils {
         void showReloadSnackbar(
                 Context context,
                 SnackbarManager snackbarManager,
-                final SnackbarController snackbarController,
+                SnackbarController snackbarController,
                 int tabId);
     }
 
@@ -160,7 +161,7 @@ public class OfflinePageUtils {
         public void showReloadSnackbar(
                 Context context,
                 SnackbarManager snackbarManager,
-                final SnackbarController snackbarController,
+                SnackbarController snackbarController,
                 int tabId) {
             if (tabId == Tab.INVALID_TAB_ID) return;
 
@@ -171,7 +172,7 @@ public class OfflinePageUtils {
                                     snackbarController,
                                     Snackbar.TYPE_ACTION,
                                     Snackbar.UMA_OFFLINE_PAGE_RELOAD)
-                            .setSingleLine(false)
+                            .setDefaultLines(false)
                             .setAction(context.getString(R.string.reload), tabId);
             snackbar.setDuration(sSnackbarDurationMs);
             snackbarManager.showSnackbar(snackbar);
@@ -396,20 +397,7 @@ public class OfflinePageUtils {
             return;
         }
 
-        // The file access permission is needed since we may need to publish the archive
-        // file if it resides in internal directory.
-        offlinePageBridge.acquireFileAccessPermission(
-                webContents,
-                (granted) -> {
-                    if (!granted) {
-                        return;
-                    }
-
-                    // If the page is not in a public location, we must publish it before
-                    // sharing it.
-                    publishThenShareInternalPage(
-                            window, offlinePageBridge, offlinePage, shareCallback);
-                });
+        publishThenShareInternalPage(window, offlinePageBridge, offlinePage, shareCallback);
     }
 
     /**
@@ -668,9 +656,10 @@ public class OfflinePageUtils {
      * top of WebContents' counterpart methods. This interface is designed to ensure these extra
      * steps have been taken into account.
      */
-    public static interface OfflinePageLoadUrlDelegate {
+    public interface OfflinePageLoadUrlDelegate {
         /**
          * Load the url of the given {@link LoadUrlParam} in WebContents.
+         *
          * @param params The LoadUrlParams that has specified which url to load.
          */
         /* package */ void loadUrl(LoadUrlParams params);
@@ -752,7 +741,7 @@ public class OfflinePageUtils {
         /** The single, stateless TabRestoreTracker instance to monitor all tab restores. */
         private final TabModelSelector mTabModelSelector;
 
-        public RecentTabTracker(TabModelSelector selector) {
+        RecentTabTracker(TabModelSelector selector) {
             super(selector);
             mTabModelSelector = selector;
         }

@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -172,7 +173,7 @@ NtpMicrosoftAuthResponseCaptureNavigationThrottle::
 void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
     RedirectNavigationHandleToAboutBlank() {
   GURL::Replacements addRef;
-  addRef.SetRefStr(navigation_handle()->GetURL().ref_piece());
+  addRef.SetRefStr(navigation_handle()->GetURL().ref());
 
   auto* web_contents = navigation_handle()->GetWebContents();
   if (!web_contents->HasOpener() && !navigation_handle()->GetParentFrame()) {

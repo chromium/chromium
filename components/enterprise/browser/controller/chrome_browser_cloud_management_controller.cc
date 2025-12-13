@@ -20,8 +20,12 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_helper.h"
+#include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
+#include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
+#include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -136,9 +140,23 @@ ChromeBrowserCloudManagementController::CreatePolicyManager(
                // Block shutdown to make sure the policy cache update is always
                // finished.
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> extension_install_store =
+      nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_install_store =
+      MachineLevelUserCloudPolicyStore::CreateForExtensionInstall(
+          dm_token, client_id, policy_dir,
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               // Block shutdown to make sure the policy cache update is
+               // always finished.
+               base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+#endif  // !BUILDFLAG(ENABLE_EXTENSIONS)
+
   return std::make_unique<MachineLevelUserCloudPolicyManager>(
-      std::move(policy_store), nullptr, policy_dir,
-      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::move(policy_store), std::move(extension_install_store), nullptr,
+      policy_dir, base::SingleThreadTaskRunner::GetCurrentDefault(),
       delegate_->CreateNetworkConnectionTrackerGetter());
 }
 

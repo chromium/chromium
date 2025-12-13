@@ -11,7 +11,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/test/extension_test_message_listener.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 using PermissionsApiInteractiveTest = ExtensionApiTest;
@@ -38,7 +38,7 @@ IN_PROC_BROWSER_TEST_F(PermissionsApiInteractiveTest,
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(first_browser));
 
   // Create a second browser window and wait for activation.
-  Browser* second_browser = CreateBrowser(browser()->profile());
+  Browser* second_browser = CreateBrowser(profile());
   ASSERT_NE(first_browser, second_browser);
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(second_browser));
 

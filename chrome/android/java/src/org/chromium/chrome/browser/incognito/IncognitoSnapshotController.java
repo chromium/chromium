@@ -9,9 +9,10 @@ import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
+import java.util.function.Supplier;
 
 /**
  * An abstract base class to provide common functionalities related to allowing/blocking snapshot

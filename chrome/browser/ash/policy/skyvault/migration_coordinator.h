@@ -34,61 +34,6 @@ using MigrationDoneCallback =
 // restarted.
 using MigrationStoppedCallback = base::OnceCallback<void(bool)>;
 
-class MigrationCloudUploader;
-
-// Handles the upload of local files to a specified cloud storage destination.
-// This class provides a generic interface for initiating, stopping, and
-// monitoring uploads. The specific implementation for each cloud provider is
-// handled by derived classes of MigrationCloudUploader.
-class MigrationCoordinator {
- public:
-  explicit MigrationCoordinator(Profile* profile);
-  MigrationCoordinator(const MigrationCoordinator&) = delete;
-  MigrationCoordinator& operator=(const MigrationCoordinator&) = delete;
-  virtual ~MigrationCoordinator();
-
-  // Starts the upload of files specified by `source_urls` to the
-  // `upload_root` directory on `destination`. Invokes `callback` upon
-  // completion, passing any errors that occurred and the absolute path to the
-  // root upload directory. Fails if a migration is already in progress.
-  virtual void Run(MigrationDestination destination,
-                   std::vector<base::FilePath> files,
-                   const std::string& upload_root,
-                   MigrationDoneCallback callback);
-
-  // Cancels any ongoing file uploads.
-  virtual void Cancel(MigrationStoppedCallback callback);
-
-  // Returns whether any file uploads are currently in progress.
-  virtual bool IsRunning() const;
-
-  // Sets the `cb` to be invoked when all the uploads are stopped.
-  void SetCancelledCallbackForTesting(base::OnceClosure cb);
-  void SetErrorLogPathForTesting(const base::FilePath& path);
-
- private:
-  // Called after underlying upload operation completes.
-  virtual void OnMigrationDone(
-      MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors,
-      base::FilePath upload_root_path,
-      base::FilePath error_log_path);
-
-  // Profile for which this instance was created.
-  raw_ptr<Profile> profile_;
-
-  base::FilePath error_log_path_;
-
-  // The implementation of the upload process, specific to the
-  // `destination` argument passed to the `Run` method.
-  std::unique_ptr<MigrationCloudUploader> uploader_ = nullptr;
-
-  // If set, invoked when all the uploaders are stopped. Used in tests.
-  base::OnceClosure cancelled_cb_for_testing_;
-
-  base::WeakPtrFactory<MigrationCoordinator> weak_ptr_factory_{this};
-};
-
 // Abstract class for the implementation of file uploads to a specific cloud
 // storage destination. Derived classes provide the concrete logic for
 // interacting with the respective cloud provider.
@@ -142,6 +87,59 @@ class MigrationCloudUploader {
   scoped_refptr<base::SequencedTaskRunner> log_task_runner_;
 
   base::WeakPtrFactory<MigrationCloudUploader> weak_ptr_factory_{this};
+};
+
+// Handles the upload of local files to a specified cloud storage destination.
+// This class provides a generic interface for initiating, stopping, and
+// monitoring uploads. The specific implementation for each cloud provider is
+// handled by derived classes of MigrationCloudUploader.
+class MigrationCoordinator {
+ public:
+  explicit MigrationCoordinator(Profile* profile);
+  MigrationCoordinator(const MigrationCoordinator&) = delete;
+  MigrationCoordinator& operator=(const MigrationCoordinator&) = delete;
+  virtual ~MigrationCoordinator();
+
+  // Starts the upload of files specified by `source_urls` to the
+  // `upload_root` directory on `destination`. Invokes `callback` upon
+  // completion, passing any errors that occurred and the absolute path to the
+  // root upload directory. Fails if a migration is already in progress.
+  virtual void Run(MigrationDestination destination,
+                   std::vector<base::FilePath> files,
+                   const std::string& upload_root,
+                   MigrationDoneCallback callback);
+
+  // Cancels any ongoing file uploads.
+  virtual void Cancel(MigrationStoppedCallback callback);
+
+  // Returns whether any file uploads are currently in progress.
+  virtual bool IsRunning() const;
+
+  // Sets the `cb` to be invoked when all the uploads are stopped.
+  void SetCancelledCallbackForTesting(base::OnceClosure cb);
+  void SetErrorLogPathForTesting(const base::FilePath& path);
+
+ private:
+  // Called after underlying upload operation completes.
+  virtual void OnMigrationDone(
+      MigrationDoneCallback callback,
+      std::map<base::FilePath, MigrationUploadError> errors,
+      base::FilePath upload_root_path,
+      base::FilePath error_log_path);
+
+  // Profile for which this instance was created.
+  raw_ptr<Profile> profile_;
+
+  base::FilePath error_log_path_;
+
+  // The implementation of the upload process, specific to the
+  // `destination` argument passed to the `Run` method.
+  std::unique_ptr<MigrationCloudUploader> uploader_ = nullptr;
+
+  // If set, invoked when all the uploaders are stopped. Used in tests.
+  base::OnceClosure cancelled_cb_for_testing_;
+
+  base::WeakPtrFactory<MigrationCoordinator> weak_ptr_factory_{this};
 };
 
 // Migration file uploader for uploads to Microsoft OneDrive.

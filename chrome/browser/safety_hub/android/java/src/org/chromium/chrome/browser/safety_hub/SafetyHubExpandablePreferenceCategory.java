@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
 
 @NullMarked
@@ -24,13 +25,17 @@ public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceG
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
 
-        // Set the top padding for the preference.
+        // Set the top+bottom padding for the preference.
         View container = holder.itemView;
-        container.setPadding(
-                container.getPaddingStart(),
-                32,
-                container.getPaddingEnd(),
-                container.getPaddingBottom());
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            container.setPadding(container.getPaddingStart(), 0, container.getPaddingEnd(), 0);
+        } else {
+            container.setPadding(
+                    container.getPaddingStart(),
+                    32,
+                    container.getPaddingEnd(),
+                    container.getPaddingBottom());
+        }
 
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
         assert titleView != null;
@@ -39,6 +44,7 @@ public class SafetyHubExpandablePreferenceCategory extends ExpandablePreferenceG
 
     @Override
     public void onExpandedChanged(boolean expanded) {
+        super.onExpandedChanged(expanded);
         for (int i = 0; i < getPreferenceCount(); ++i) {
             getPreference(i).setVisible(expanded);
         }

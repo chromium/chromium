@@ -1,7 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove this dependency.
-  "^chromium_logo_controller.h": [
-    "+ios/chrome/browser/ntp/ui_bundled/logo_vendor.h",
-  ],
-}
-

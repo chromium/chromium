@@ -74,7 +74,6 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   deps = [
-    "//media/learning/mojo:unit_tests",
     "//media/mojo/clients:unit_tests",
     "//media/mojo/common:unit_tests",
     "//media/mojo/mojom:unit_tests",

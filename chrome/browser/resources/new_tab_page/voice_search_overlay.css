@@ -166,6 +166,12 @@
   width: var(--mic-button-size);
 }
 
+@media (forced-colors: active) {
+  #micIconContainer {
+    background-color: ButtonText;
+  }
+}
+
 .receiving #micIconContainer {
   background-color: var(--receiving-audio-color);
   border-color: var(--receiving-audio-color);

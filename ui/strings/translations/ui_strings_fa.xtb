@@ -7,7 +7,7 @@
 <translation id="1156623771253174079">{SECONDS,plural, =1{۱ دقیقه قبل}one{# دقیقه قبل}other{# دقیقه قبل}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{۱ دقیقه}one{# دقیقه}other{# دقیقه}}</translation>
 <translation id="1178017578188974117">{DAYS,plural, =1{یک روز قبل}one{# روز قبل}other{# روز قبل}}</translation>
-<translation id="1181037720776840403">حذف</translation>
+<translation id="1181037720776840403">برداشتن</translation>
 <translation id="1243314992276662751">بارگذاری</translation>
 <translation id="1253734725326687145">هدف لمسی به بالا چپ منتقل شد. اینجا تک‌ضرب بزنید.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> هم‌رسانی نشد</translation>
@@ -79,7 +79,7 @@
 <translation id="3049748772180311791"><ph name="QUANTITY" /> مگابایت</translation>
 <translation id="3087734570205094154">پایین</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3157931365184549694">بازیابی</translation>
+<translation id="3157931365184549694">بازگرداندن</translation>
 <translation id="3183922693828471536">پیمایش به اینجا</translation>
 <translation id="3234408098842461169">کلید پایین‌بر</translation>
 <translation id="3240426699337459095">پیوند کپی شد</translation>

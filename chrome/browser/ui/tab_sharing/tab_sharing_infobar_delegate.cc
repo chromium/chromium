@@ -11,10 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
+#include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -70,7 +72,9 @@ class TabSharingInfoBarDelegate::StopButton
       : ui_(ui), capture_type_(capture_type) {}
   ~StopButton() override = default;
 
-  void Click(infobars::InfoBar* infobar) override { ui_->StopSharing(); }
+  void Click(infobars::InfoBar* infobar) override {
+    ui_->StopSharing("StopButton clicked");
+  }
 
   std::u16string GetLabel() const override {
     switch (capture_type_) {
@@ -265,13 +269,16 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     bool captured_surface_control_active,
     TabSharingUI* ui,
     TabShareType capture_type) {
-  DCHECK(infobar_manager);
+  CHECK(infobar_manager);
+  CHECK(ui);
+
   std::unique_ptr<infobars::InfoBar> new_infobar = CreateTabSharingInfoBar(
       base::WrapUnique(new TabSharingInfoBarDelegate(
           web_contents, role, share_this_tab_instead_button_state, focus_target,
           captured_surface_control_active, ui, capture_type)),
       shared_tab_id, capturer_id, shared_tab_name, capturer_name, role,
-      capture_type);
+      capture_type, ui->GetUmaLogger().GetWeakPtr());
+
   return old_infobar ? infobar_manager->ReplaceInfoBar(old_infobar,
                                                        std::move(new_infobar))
                      : infobar_manager->AddInfoBar(std::move(new_infobar));
@@ -324,6 +331,11 @@ bool TabSharingInfoBarDelegate::ShouldExpire(
 infobars::InfoBarDelegate::InfoBarIdentifier
 TabSharingInfoBarDelegate::GetIdentifier() const {
   return TAB_SHARING_INFOBAR_DELEGATE;
+}
+
+infobars::InfoBarDelegate::InfobarPriority
+TabSharingInfoBarDelegate::GetPriority() const {
+  return infobars::InfoBarDelegate::InfobarPriority::kCriticalSecurity;
 }
 
 std::u16string TabSharingInfoBarDelegate::GetButtonLabel(

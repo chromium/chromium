@@ -7,18 +7,20 @@
 #import <memory>
 #import <utility>
 
-#import "base/command_line.h"
-#import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
-#import "base/task/sequenced_task_runner.h"
-#import "base/task/thread_pool.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#import "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
+#import "components/password_manager/core/browser/password_store/password_store.h"
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
-#import "components/sync/service/sync_service.h"
+#import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
@@ -50,36 +52,36 @@ WebViewProfilePasswordStoreFactory::GetInstance() {
 
 WebViewProfilePasswordStoreFactory::WebViewProfilePasswordStoreFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
-          "PasswordStore",
-          BrowserStateDependencyManager::GetInstance()) {}
+          "ProfilePasswordStore",
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(WebViewAffiliationServiceFactory::GetInstance());
+}
 
 WebViewProfilePasswordStoreFactory::~WebViewProfilePasswordStoreFactory() {}
 
 scoped_refptr<RefcountedKeyedService>
 WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
+  WebViewBrowserState* browser_state =
+      WebViewBrowserState::FromBrowserState(context);
+  PrefService* prefs = browser_state->GetPrefs();
   std::unique_ptr<password_manager::LoginDatabase> login_db(
-      password_manager::CreateLoginDatabaseForProfileStorage(
-          context->GetStatePath(),
-          WebViewBrowserState::FromBrowserState(context)->GetPrefs()));
-
-  scoped_refptr<base::SequencedTaskRunner> main_task_runner(
-      base::SequencedTaskRunner::GetCurrentDefault());
-  // USER_VISIBLE priority is chosen for the background task runner, because
-  // the passwords obtained through tasks on the background runner influence
-  // what the user sees.
-  scoped_refptr<base::SequencedTaskRunner> db_task_runner(
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
-
+      password_manager::CreateLoginDatabase(password_manager::kProfileStore,
+                                            context->GetStatePath(), prefs));
   scoped_refptr<password_manager::PasswordStore> store =
       new password_manager::PasswordStore(
           std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
               std::move(login_db),
-              syncer::WipeModelUponSyncDisabledBehavior::kNever,
-              WebViewBrowserState::FromBrowserState(context)->GetPrefs(),
+              syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs,
               ApplicationContext::GetInstance()->GetOSCryptAsync()));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  affiliations::AffiliationService* affiliation_service =
+      WebViewAffiliationServiceFactory::GetForBrowserState(browser_state);
+  store->Init(std::make_unique<password_manager::AffiliatedMatchHelper>(
+      affiliation_service));
+  auto password_affiliation_adapter =
+      std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
+  password_affiliation_adapter->RegisterPasswordStore(store.get());
+  affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
   return store;
 }
 

@@ -45,6 +45,8 @@ class ExtensionKeybindingRegistryViews
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   bool CanHandleAccelerators() const override;
 
+  void OnHostActivationChanged(bool active);
+
  private:
   // Overridden from ExtensionKeybindingRegistry:
   bool PopulateCommands(const extensions::Extension* extension,

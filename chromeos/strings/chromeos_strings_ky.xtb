@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">апельсиндер</translation>
 <translation id="1275718070701477396">Тандалган</translation>
 <translation id="1290331692326790741">Начар сигнал</translation>
+<translation id="1292474106138697109">Окуу куралдарынын дисплейи</translation>
 <translation id="1300115153046603471">APN түрү – default жана <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Өзгөртүү</translation>
@@ -188,7 +189,7 @@
 <translation id="1706391837335750954">DNS которгучун текшерүү</translation>
 <translation id="1708602061922134366">Көк (Google)</translation>
 <translation id="1710499924611012470">Атайын мүмкүнчүлүктөрдө өтүү</translation>
-<translation id="1715359911173058521">Сканерге туташа албай койду. Тармакка же USB туташууңузду текшерип, кайталап көрүңүз.</translation>
+<translation id="1715359911173058521">Сканерге туташа албай койду. Интернетти же USB аркылуу байланышты текшерип, кайталап көрүңүз.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" /> менен <ph name="SECOND_MANAGER" /> башкарат</translation>
 <translation id="1718553040985966377">көл</translation>
 <translation id="1720424726586960395">жаркырак токой</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сүрөт</translation>
 <translation id="4300272766492248925">Колдонмону ачуу</translation>
 <translation id="430786093962686457">шифон</translation>
+<translation id="4309762678330556039">Транскрипцияларды автоматтык түрдө түзүп, аудиону издеңиз. Жаздырууларды офлайн режиминде да түзө аласыз.</translation>
 <translation id="4310735698903592804">Google сунуштаган ЖИ технологиялары менен түзүлгөн соңку тушкагаздар</translation>
 <translation id="4320904097188876154">кызгылтым неон</translation>
 <translation id="432961742358282111">Аныктамаларды, котормолорду жана бирдиктерди которуу үчүн оң баскычын чыкылдатып же коё бербей басып туруңуз. Бул функцияны Солго же Оңго жебе баскычы менен башкарасыз.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> баскычы сыналды</translation>
 <translation id="5606865426897221650">Өтмөк</translation>
+<translation id="5612205513582918357">Окуу куралдары экраныңызды <ph name="RECEIVER_NAME" /> менен бөлүшүп жатат</translation>
 <translation id="5613201299517339763">Чыгып кеттиңиз</translation>
 <translation id="5620281292257375798">Ички колдонуу үчүн</translation>
 <translation id="5628106863521633649">Жеткиликтүү тилдер</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Булут</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
-<translation id="6231648282154119906">Шектүү файлдар сиз тандаган мыктылап коргоонун алкагында Google Коопсуз серептөө тарабынан автоматтык түрдө текшерилет</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6234024205316847054">Тышкы сызыктарды көрсөтүү</translation>
 <translation id="6243280677745499710">Учурда тушкагаз катары орнотулган</translation>
@@ -1874,7 +1876,7 @@
 <translation id="952992212772159698">Жандырылган эмес</translation>
 <translation id="95718197892796296">чопо</translation>
 <translation id="959792926760890141">Коопсуздукту баштапкы абалга келтирүү Chrome серепчисинин кеңейтүүлөрүн өчүрүп, тармакты жана башка параметрлерди баштапкы абалга келтирет.
-          Демейки издөө куралы баштапкы абалга келтирилет, бирок өтмөктөр, файлдар, cookie файлдары жана таржымал өзгөрбөйт.</translation>
+          Демейки издөө куралы кайра коюлат, бирок өтмөктөр, файлдар, cookie файлдары жана таржымал өзгөрбөйт.</translation>
 <translation id="960719561871045870">Оператордун коду</translation>
 <translation id="965918541715156800">сары жана көгүш жашыл</translation>
 <translation id="966787709310836684">меню</translation>

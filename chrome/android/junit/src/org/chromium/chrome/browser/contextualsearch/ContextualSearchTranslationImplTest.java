@@ -54,7 +54,6 @@ public class ContextualSearchTranslationImplTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TranslateBridgeWrapper mTranslateBridgeWrapperMock;
     @Mock private ContextualSearchRequest mRequest;
-    @Mock private ContextualSearchPolicy mPolicy;
 
     private ContextualSearchTranslationImpl mImpl;
 
@@ -113,6 +112,7 @@ public class ContextualSearchTranslationImplTest {
 
     @Test
     @Feature("TranslateUtilities")
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testForceTranslateIfNeededWhenNeeded() {
         doReturn(ENGLISH_AND_SPANISH)
                 .when(mTranslateBridgeWrapperMock)
@@ -129,6 +129,7 @@ public class ContextualSearchTranslationImplTest {
 
     @Test
     @Feature("TranslateUtilities")
+    @SuppressWarnings("DirectInvocationOnMock")
     public void testForceTranslateIfNeededWhenNotNeeded() {
         doReturn(ENGLISH_AND_SPANISH)
                 .when(mTranslateBridgeWrapperMock)

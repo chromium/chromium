@@ -46,12 +46,9 @@ public class AdaptiveToolbarFeatures {
     /** Default action chip delay for reader mode. */
     public static final int DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS = 3000;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME =
             "CONTEXTUAL_PAGE_ACTION_TEST_FEATURE_NAME";
-
-    private static final String CONTEXTUAL_PAGE_ACTION_CHIP_ALTERNATE_COLOR =
-            "action_chip_with_different_color";
 
     /** For testing only. */
     private static @Nullable String sDefaultSegmentForTesting;
@@ -161,12 +158,8 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.READER_MODE:
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
-                return false;
             case AdaptiveToolbarButtonVariant.DISCOUNTS:
-                return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.ENABLE_DISCOUNT_INFO_API,
-                        CONTEXTUAL_PAGE_ACTION_CHIP_ALTERNATE_COLOR,
-                        false);
+                return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return false;
@@ -190,10 +183,6 @@ public class AdaptiveToolbarFeatures {
 
     public static boolean isAdaptiveToolbarReadAloudEnabled(Profile profile) {
         return ReadAloudFeatures.isAllowed(profile);
-    }
-
-    public static boolean isDiscountsPageActionEnabled() {
-        return ChromeFeatureList.sEnableDiscountInfoApi.isEnabled();
     }
 
     public static boolean isTabGroupingPageActionEnabled() {

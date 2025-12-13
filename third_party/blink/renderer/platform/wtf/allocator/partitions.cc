@@ -48,13 +48,12 @@
 #include "partition_alloc/partition_root.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
 BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
-             "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
@@ -124,24 +123,12 @@ bool Partitions::InitializeOnce() {
   partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
   auto options = PartitionOptionsFromFeatures();
-
-  const auto actual_brp_setting = options.backup_ref_ptr;
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = PartitionOptions::kDisabled;
-  }
-
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       buffer_allocator(options);
   buffer_root_ = buffer_allocator->root();
   if (base::FeatureList::IsEnabled(
           kBlinkUseLargeEmptySlotSpanRingForBufferRoot)) {
     buffer_root_->EnableLargeEmptySlotSpanRing();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = actual_brp_setting;
   }
 
   // FastMalloc doesn't provide isolation, only a (hopefully fast) malloc().
@@ -193,7 +180,7 @@ void Partitions::InitializeArrayBufferPartition() {
 // static
 void Partitions::StartMemoryReclaimer(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  CHECK(blink::IsMainThread());
+  CHECK(IsMainThread());
   DCHECK(initialized_);
 
   base::allocator::StartMemoryReclaimer(task_runner);
@@ -205,7 +192,7 @@ void Partitions::DumpMemoryStats(
     partition_alloc::PartitionStatsDumper* partition_stats_dumper) {
   // Object model and rendering partitions are not thread safe and can be
   // accessed only on the main thread.
-  DCHECK(blink::IsMainThread());
+  DCHECK(IsMainThread());
 
   if (auto* fast_malloc_partition = FastMallocPartition()) {
     fast_malloc_partition->DumpStats("fast_malloc", is_light_dump,
@@ -264,7 +251,7 @@ size_t Partitions::TotalSizeOfCommittedPages() {
 // static
 size_t Partitions::TotalActiveBytes() {
   LightPartitionStatsDumperImpl dumper;
-  WTF::Partitions::DumpMemoryStats(true, &dumper);
+  Partitions::DumpMemoryStats(true, &dumper);
   return dumper.TotalActiveBytes();
 }
 
@@ -345,6 +332,11 @@ void* Partitions::BufferTryRealloc(void* p, size_t n, const char* type_name) {
 // static
 void Partitions::BufferFree(void* p) {
   BufferPartition()->Free(p);
+}
+
+// static
+void Partitions::BufferFreeWithSize(void* p, size_t size) {
+  BufferPartition()->FreeWithSize(p, size);
 }
 
 // static
@@ -462,4 +454,4 @@ void Partitions::AdjustPartitionsForBackground() {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

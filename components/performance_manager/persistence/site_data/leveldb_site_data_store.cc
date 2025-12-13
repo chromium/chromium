@@ -8,24 +8,30 @@
 #include <limits>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+#include "crypto/obsolete/md5.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/env.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace performance_manager {
+
+std::string Md5AsHexForDatabaseKey(std::string_view input) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(input));
+}
 
 namespace {
 
@@ -59,11 +65,11 @@ bool ShouldAttemptDbRepair(const leveldb::Status& status) {
 
 struct DatabaseSizeResult {
   std::optional<int64_t> num_rows;
-  std::optional<int64_t> on_disk_size_kb;
+  std::optional<base::ByteCount> on_disk_size;
 };
 
 std::string SerializeOriginIntoDatabaseKey(const url::Origin& origin) {
-  return base::MD5String(origin.host());
+  return Md5AsHexForDatabaseKey(origin.host());
 }
 
 }  // namespace
@@ -321,7 +327,7 @@ DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
   // report.
   db_.reset();
 #endif
-  ret.on_disk_size_kb = base::ComputeDirectorySize(db_path_) / 1024;
+  ret.on_disk_size = base::ByteCount(base::ComputeDirectorySize(db_path_));
 #if BUILDFLAG(IS_WIN)
   OpenOrCreateDatabase();
   if (!db_) {
@@ -475,7 +481,7 @@ void LevelDBSiteDataStore::GetStoreSize(GetStoreSizeCallback callback) {
   // Adapt the callback with a lambda to allow using PostTaskAndReplyWithResult.
   auto reply_callback = base::BindOnce(
       [](GetStoreSizeCallback callback, const DatabaseSizeResult& result) {
-        std::move(callback).Run(result.num_rows, result.on_disk_size_kb);
+        std::move(callback).Run(result.num_rows, result.on_disk_size);
       },
       std::move(callback));
 

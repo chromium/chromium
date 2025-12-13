@@ -1,14 +1,11 @@
 // Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #ifndef UI_GFX_VECTOR_ICON_TYPES_H_
 #define UI_GFX_VECTOR_ICON_TYPES_H_
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_span.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -112,7 +109,7 @@ struct VectorIcon {
   constexpr VectorIcon(const VectorIconRep* reps_data,
                        size_t reps_size,
                        const char* name)
-      : reps(reps_data, reps_size), name(name) {}
+      : UNSAFE_TODO(reps(reps_data, reps_size)), name(name) {}
 
   // Copying is problematic because the output of `PaintVectorIcon()` is cached
   // keyed on `VectorIcon*`, and because of the dangling ref issues mentioned

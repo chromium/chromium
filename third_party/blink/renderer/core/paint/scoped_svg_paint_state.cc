@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/paint/svg_mask_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
 namespace blink {
@@ -62,16 +63,19 @@ ScopedSVGTransformState::ScopedSVGTransformState(const PaintInfo& paint_info,
 }
 
 ScopedSVGPaintState::ScopedSVGPaintState(const LayoutObject& object,
-                                         const PaintInfo& paint_info)
-    : ScopedSVGPaintState(object, paint_info, object) {}
+                                         const PaintInfo& paint_info,
+                                         PaintBehavior paint_behavior)
+    : ScopedSVGPaintState(object, paint_info, object, paint_behavior) {}
 
 ScopedSVGPaintState::ScopedSVGPaintState(
     const LayoutObject& object,
     const PaintInfo& paint_info,
-    const DisplayItemClient& display_item_client)
+    const DisplayItemClient& display_item_client,
+    PaintBehavior paint_behavior)
     : object_(object),
       paint_info_(paint_info),
-      display_item_client_(display_item_client) {
+      display_item_client_(display_item_client),
+      paint_behavior_(paint_behavior) {
   if (paint_info.phase == PaintPhase::kForeground) {
     ApplyEffects();
   }
@@ -151,6 +155,41 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
   scoped_paint_chunk_properties_.emplace(
       paint_controller, state, display_item_client_,
       DisplayItem::PaintPhaseToSVGEffectType(paint_info_.phase));
+
+  // If SVG element has no content other than a reference filter, we still need
+  // to ensure a paint chunk is created so that the reference filter paints.
+  CHECK(paint_info_.phase == PaintPhase::kForeground);
+  if ((paint_behavior_.Has(PaintComponent::kReferenceFilter)) &&
+      RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled() &&
+      properties.Filter() && properties.Filter()->HasReferenceFilter()) {
+    paint_info_.context.GetPaintController().EnsureChunk();
+  }
+}
+
+ScopedSVGPaintState::PaintBehavior ScopedSVGPaintState::ComputePaintBehavior(
+    const LayoutObject& object,
+    const PaintInfo& paint_info,
+    bool has_content) {
+  DCHECK(object.IsSVG());
+
+  // If we have content (shapes for leaves, children for containers, etc.),
+  // paint everything.
+  if (has_content) {
+    return PaintBehavior::All();
+  }
+
+  // No content - check if we have reference filter that still needs painted. We
+  // must ensure a paint chunk is created for reference filters, even if there
+  // is no content to paint.
+  if (paint_info.phase == PaintPhase::kForeground &&
+      RuntimeEnabledFeatures::SvgFilterPaintsForHiddenContentEnabled() &&
+      !paint_info.IsRenderingClipPathAsMaskImage() &&
+      object.StyleRef().Filter().HasReferenceFilter()) {
+    return {PaintComponent::kReferenceFilter};
+  }
+
+  // No content and no reference filter - can skip painting entirely.
+  return {};
 }
 
 }  // namespace blink

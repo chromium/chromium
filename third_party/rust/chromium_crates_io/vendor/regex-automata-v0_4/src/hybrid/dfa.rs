@@ -1247,7 +1247,7 @@ impl DFA {
     /// the unknown transition. Otherwise, trying to use the "unknown" state
     /// ID will just result in transitioning back to itself, and thus never
     /// terminating. (This is technically a special exemption to the state ID
-    /// validity rules, but is permissible since this routine is guarateed to
+    /// validity rules, but is permissible since this routine is guaranteed to
     /// never mutate the given `cache`, and thus the identifier is guaranteed
     /// to remain valid.)
     ///
@@ -1371,7 +1371,7 @@ impl DFA {
     /// the unknown transition. Otherwise, trying to use the "unknown" state
     /// ID will just result in transitioning back to itself, and thus never
     /// terminating. (This is technically a special exemption to the state ID
-    /// validity rules, but is permissible since this routine is guarateed to
+    /// validity rules, but is permissible since this routine is guaranteed to
     /// never mutate the given `cache`, and thus the identifier is guaranteed
     /// to remain valid.)
     ///
@@ -1857,7 +1857,7 @@ pub struct Cache {
     bytes_searched: usize,
     /// The progress of the current search.
     ///
-    /// This is only non-`None` when callers utlize the `Cache::search_start`,
+    /// This is only non-`None` when callers utilize the `Cache::search_start`,
     /// `Cache::search_update` and `Cache::search_finish` APIs.
     ///
     /// The purpose of recording search progress is to be able to make a
@@ -2132,7 +2132,19 @@ impl<'i, 'c> Lazy<'i, 'c> {
             unit,
             empty_builder,
         );
-        let save_state = !self.as_ref().state_builder_fits_in_cache(&builder);
+        // This is subtle, but if we *might* clear the cache, then we should
+        // try to save the current state so that we can re-map its ID after
+        // cache clearing. We *might* clear the cache when either the new
+        // state can't fit in the cache or when the number of transitions has
+        // reached the maximum. Even if either of these conditions is true,
+        // the cache might not be cleared if we can reuse an existing state.
+        // But we don't know that at this point. Moreover, we don't save the
+        // current state every time because it is costly.
+        //
+        // TODO: We should try to find a way to make this less subtle and error
+        // prone. ---AG
+        let save_state = !self.as_ref().state_builder_fits_in_cache(&builder)
+            || self.cache.trans.len() >= LazyStateID::MAX;
         if save_state {
             self.save_state(current);
         }
@@ -2598,8 +2610,8 @@ impl<'i, 'c> Lazy<'i, 'c> {
         unit: alphabet::Unit,
         to: LazyStateID,
     ) {
-        assert!(self.as_ref().is_valid(from), "invalid 'from' id: {:?}", from);
-        assert!(self.as_ref().is_valid(to), "invalid 'to' id: {:?}", to);
+        assert!(self.as_ref().is_valid(from), "invalid 'from' id: {from:?}");
+        assert!(self.as_ref().is_valid(to), "invalid 'to' id: {to:?}");
         let offset =
             from.as_usize_untagged() + self.dfa.classes.get_by_unit(unit);
         self.cache.trans[offset] = to;
@@ -2761,7 +2773,7 @@ impl<'i, 'c> LazyRef<'i, 'c> {
         let needed = self.cache.memory_usage()
             + self.memory_usage_for_one_more_state(state.memory_usage());
         trace!(
-            "lazy DFA cache capacity check: {:?} ?<=? {:?}",
+            "lazy DFA cache capacity state check: {:?} ?<=? {:?}",
             needed,
             self.dfa.cache_capacity
         );
@@ -2773,6 +2785,11 @@ impl<'i, 'c> LazyRef<'i, 'c> {
     fn state_builder_fits_in_cache(&self, state: &StateBuilderNFA) -> bool {
         let needed = self.cache.memory_usage()
             + self.memory_usage_for_one_more_state(state.as_bytes().len());
+        trace!(
+            "lazy DFA cache capacity state builder check: {:?} ?<=? {:?}",
+            needed,
+            self.dfa.cache_capacity
+        );
         needed <= self.dfa.cache_capacity
     }
 
@@ -4080,10 +4097,9 @@ impl Builder {
             // and mush on.
             if self.config.get_skip_cache_capacity_check() {
                 debug!(
-                    "given capacity ({}) is too small, \
+                    "given capacity ({cache_capacity}) is too small, \
                      since skip_cache_capacity_check is enabled, \
-                     setting cache capacity to minimum ({})",
-                    cache_capacity, min_cache,
+                     setting cache capacity to minimum ({min_cache})",
                 );
                 cache_capacity = min_cache;
             } else {

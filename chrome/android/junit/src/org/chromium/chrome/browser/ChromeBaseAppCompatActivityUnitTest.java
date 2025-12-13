@@ -26,10 +26,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.ui.display.DisplayUtil;
-import org.chromium.ui.util.XrUtils;
 
 /** Unit tests for {@link ChromeBaseAppCompatActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -146,7 +146,7 @@ public class ChromeBaseAppCompatActivityUnitTest {
         config.smallestScreenWidthDp = 0;
 
         // Set XR environment.
-        XrUtils.setXrDeviceForTesting(true);
+        DeviceInfo.setIsXrForTesting(true);
         ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
 
         float xrScaleUpFactor =
@@ -182,8 +182,8 @@ public class ChromeBaseAppCompatActivityUnitTest {
         config.screenHeightDp = MOCK_REAL_DISPLAY_HEIGHT_PIXELS;
         config.smallestScreenWidthDp = 0;
 
-        // Set XR environment.
-        XrUtils.setXrDeviceForTesting(false);
+        // Set non-XR environment.
+        DeviceInfo.setIsXrForTesting(false);
         ChromeBaseAppCompatActivity.applyOverridesForXr(mContext, config);
 
         assertEquals(

@@ -34,17 +34,27 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
          */
         void onUiEvent(@UiEvent int uiEvent);
 
-        /** Called whenever a bank account is selected. */
+        /**
+         * Called whenever a bank account is selected.
+         *
+         * @param instrumentId The instrument ID of the selected bank account.
+         */
         void onBankAccountSelected(long instrumentId);
 
-        /** Called whenever a bank account is selected. */
+        /**
+         * Called whenever an eWallet is selected.
+         *
+         * @param instrumentId The instrument ID of the selected eWallet.
+         */
         void onEwalletSelected(long instrumentId);
 
-        /** Called whenever the payment settings text is clicked on the bottom sheet. */
-        boolean showFinancialAccountsManagementSettings(Context context);
-
-        /** Called whenever the manage payment methods footer is tapped on the bottom sheet. */
-        boolean showManagePaymentMethodsSettings(Context context);
+        /**
+         * Called whenever a payment app is selected.
+         *
+         * @param packageName The package name of the selected payment app.
+         * @param activityName The activity name of the selected payment app.
+         */
+        void onPaymentAppSelected(String packageName, String activityName);
 
         /** Called whenever the Pix account linking prompt is accepted. */
         void onPixAccountLinkingPromptAccepted();

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
-import("//build/config/features.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//build/timestamp.gni")
@@ -74,6 +73,9 @@ source_set("lib") {
   # Initialization may insert unexpected memset calls.
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
   configs += [ ":mini_installer_compiler_flags" ]
+
+  # Because it changes the stack protector.
+  use_libcxx_modules = false
 }
 
 process_version_rc_template("version") {
@@ -178,11 +180,6 @@ action("mini_installer_archive") {
     "--build_time",
     build_timestamp,
 
-    # Optional arguments to generate diff installer.
-    #'--last_chrome_installer=C:/Temp/base',
-    #'--setup_exe_format=DIFF',
-    #'--diff_algorithm=ZUCCHINI',
-
     # Optional argument for verbose archiving output.
     #"--verbose",
   ]
@@ -257,6 +254,9 @@ source_set("mini_installer_sources") {
   ]
   configs -= [ "//build/config/compiler:default_init_stack_vars" ]
   configs += [ ":mini_installer_compiler_flags" ]
+
+  # Because it changes the stack protector.
+  use_libcxx_modules = false
 }
 
 copy("copy_signing") {

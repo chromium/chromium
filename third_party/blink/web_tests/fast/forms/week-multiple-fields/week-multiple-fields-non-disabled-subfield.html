@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<title>Sub-fields in input[type=week] should not be disabled</title>
+<link rel='help' href='https://issues.chromium.org/issues/442293382'>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src="../resources/common.js"></script>
+<script>
+function createWeekInput(min, max, value) {
+  return createInput('week', min, max, '', value);
+}
+
+test(() => {
+  assert_false(isYearFieldDisabled(createWeekInput('', '', '')));
+  assert_false(isYearFieldDisabled(createWeekInput('2012-W50', '', '')));
+  assert_false(isYearFieldDisabled(createWeekInput('', '2012-W50', '')));
+  assert_false(isYearFieldDisabled(createWeekInput('', '', '2012-W50')));
+  assert_false(isYearFieldDisabled(createWeekInput('2012-W01', '2012-W50', '')));
+  assert_false(isYearFieldDisabled(createWeekInput('2012-W01', '2013-W50', '')));
+  assert_false(isYearFieldDisabled(createWeekInput('2012-W01', '2012-W50', '2012-W05')));
+  assert_false(isYearFieldDisabled(createWeekInput('2012-W01', '2012-W50', '2013-W01')));
+}, 'The year field should be non-disabled');
+
+test(() => {
+  assert_false(isWeekFieldDisabled(createWeekInput('', '', '')));
+  assert_false(isWeekFieldDisabled(createWeekInput('2012-W50', '', '')));
+  assert_false(isWeekFieldDisabled(createWeekInput('', '2012-W50', '')));
+  assert_false(isWeekFieldDisabled(createWeekInput('', '', '2012-W50')));
+  assert_false(isWeekFieldDisabled(createWeekInput('2012-W01', '2012-W50', '')));
+  assert_false(isWeekFieldDisabled(createWeekInput('2012-W01', '2013-W50', '')));
+  assert_false(isWeekFieldDisabled(createWeekInput('2012-W01', '2012-W50', '2012-W05')));
+  assert_false(isWeekFieldDisabled(createWeekInput('2012-W01', '2012-W50', '2013-W01')));
+}, 'The week field should be non-disabled');
+</script>

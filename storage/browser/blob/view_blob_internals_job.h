@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 
 namespace storage {
 

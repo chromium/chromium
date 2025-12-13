@@ -8,7 +8,12 @@ option optimize_for = LITE_RUNTIME;
 package tabs_pb;
 option java_package = "org.chromium.chrome.browser.tabs.proto";
 
+import "chrome/browser/tab/protocol/token.proto";
+
+// Next ID: 16
 message TabState {
+  optional int32 tab_id = 15;
+
   optional int32 parent_id = 1;
 
   optional int32 root_id = 2;
@@ -16,6 +21,8 @@ message TabState {
   optional int64 timestamp_millis = 3;
 
   optional bytes web_contents_state_bytes = 4;
+
+  optional int32 web_contents_state_version = 14;
 
   optional string opener_app_id = 5;
 
@@ -27,8 +34,7 @@ message TabState {
 
   optional int64 last_navigation_committed_timestamp_millis = 9;
 
-  optional fixed64 tab_group_id_high = 10;
-  optional fixed64 tab_group_id_low = 11;
+  optional Token tab_group_id = 10;
 
   optional bool tab_has_sensitive_content = 12;
 

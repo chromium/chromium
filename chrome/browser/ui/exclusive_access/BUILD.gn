@@ -6,7 +6,7 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/ozone.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos)
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("exclusive_access") {
   sources = [
@@ -25,6 +25,7 @@ source_set("exclusive_access") {
     "fullscreen_controller.cc",
     "fullscreen_controller.h",
     "fullscreen_observer.h",
+    "fullscreen_tab_params.h",
     "fullscreen_within_tab_helper.cc",
     "fullscreen_within_tab_helper.h",
     "keyboard_lock_controller.cc",
@@ -34,7 +35,6 @@ source_set("exclusive_access") {
   ]
   public_deps = [
     "//base",
-    "//chrome/browser:browser_public_dependencies",
     "//components/content_settings/core/common",
     "//content/public/browser",
     "//third_party/blink/public/common:headers",
@@ -42,12 +42,13 @@ source_set("exclusive_access") {
     "//url",
   ]
   deps = [
-    "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode",
+    "//chrome/browser/history",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/common:constants",
     "//components/content_settings/core/browser",
-    "//components/fullscreen_control:fullscreen_control",
+    "//components/fullscreen_control",
     "//components/history/core/browser",
     "//components/input",
     "//components/permissions:permissions_common",
@@ -69,7 +70,11 @@ source_set("exclusive_access") {
     ]
   }
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/blocked_content" ]
+    public_deps += [ "//chrome/browser:browser_public_dependencies" ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui/blocked_content",
+    ]
   }
 }
 
@@ -102,7 +107,7 @@ if (!is_android) {
     ]
     deps = [
       ":test_support",
-      "//components/fullscreen_control:fullscreen_control",
+      "//components/fullscreen_control",
     ]
   }
 
@@ -136,6 +141,7 @@ if (!is_android) {
       deps = [
         ":test_support",
         "//chrome/browser/content_settings:content_settings_factory",
+        "//chrome/browser/preloading:test_support",
         "//chrome/browser/ui:test_support",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//components/blocked_content",

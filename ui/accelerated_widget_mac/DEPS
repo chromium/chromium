@@ -1,5 +1,6 @@
 include_rules = [
   "+components/metal_util",
+  "+components/viz/common/resources/shared_image_format.h",
   "+gpu/GLES2",
   "+media/base/mac/color_space_util_mac.h",
   "+third_party/skia",

@@ -331,6 +331,12 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if host_information.IsLinux():
       return
 
+    # On Mac, featureStatusForHardwareGpu is not populated when running on
+    # SwiftShader. The previous checks are enough to confirm that WebGL is
+    # blocklisted.
+    if host_information.IsMac():
+      return
+
     feature_status_for_hardware_gpu_list = _GetBrowserBridgeProperty(
         self.tab, 'gpuInfo.featureStatusForHardwareGpu.featureStatus')
     for name, status in feature_status_for_hardware_gpu_list.items():
@@ -795,7 +801,7 @@ class GpuProcessIntegrationTest(gpu_integration_test.GpuIntegrationTest):
           'hold on the high-performance GPU')
 
   def _GpuProcess_webgpu_iframe_removed(self, test_path: str) -> None:
-    self.RestartBrowserIfNecessaryWithArgs(cba.ENABLE_WEBGPU_FOR_TESTING)
+    self.RestartBrowserIfNecessaryWithArgs([])
     self._NavigateAndWait(test_path)
 
   @classmethod

@@ -67,6 +67,10 @@ class DisplayParameterizedCaptureModePixelTest
   }
 
   void SetUp() override {
+    scoped_feature_list_.InitWithFeatureState(
+        chromeos::features::kNotificationWidthIncrease,
+        IsNotificationWidthIncreaseEnabled());
+
     AshTestBase::SetUp();
     test_api_ = std::make_unique<NotificationCenterTestApi>();
 
@@ -88,11 +92,6 @@ class DisplayParameterizedCaptureModePixelTest
         CreateAppWindow(/*bounds_in_screen=*/gfx::Rect(220, 220, 100, 100));
     DecorateWindow(window1_.get(), u"Window1", SK_ColorDKGRAY);
     DecorateWindow(window2_.get(), u"Window2", SK_ColorBLUE);
-
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatureState(
-        chromeos::features::kNotificationWidthIncrease,
-        IsNotificationWidthIncreaseEnabled());
   }
 
   void TearDown() override {
@@ -112,7 +111,7 @@ class DisplayParameterizedCaptureModePixelTest
   std::unique_ptr<aura::Window> window2_;
 
   std::unique_ptr<NotificationCenterTestApi> test_api_;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -174,7 +173,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       GetScreenshotName(base::StrCat({"video_capture_notification_popup_",
                                       GetDisplayTypeName(GetDisplayType())}),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/5, notification_popup_view));
+      /*revision_number=*/6, notification_popup_view));
 
   test_api()->ToggleBubble();
   auto* notification_view =
@@ -183,7 +182,7 @@ TEST_P(DisplayParameterizedCaptureModePixelTest, VideoCaptureNotification) {
       GetScreenshotName(base::StrCat({"video_capture_notification_view_",
                                       GetDisplayTypeName(GetDisplayType())}),
                         IsNotificationWidthIncreaseEnabled()),
-      /*revision_number=*/5, notification_view));
+      /*revision_number=*/6, notification_view));
 }
 
 }  // namespace ash

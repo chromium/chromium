@@ -74,7 +74,7 @@ TEST_F(ReadAnythingNodeUtilsTest, GetTextContent_PDF_FiltersReturnCharacters) {
   node.SetData(std::move(data));
 
   std::u16string text =
-      a11y::GetTextContent(&node, /*is_docs=*/false, /*is_pdf=*/true);
+      a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
   EXPECT_EQ(text.length(), sentence.length());
   EXPECT_EQ(text.find('\n'), std::string::npos);
   EXPECT_EQ(text.find('\r'), std::string::npos);
@@ -91,11 +91,178 @@ TEST_F(ReadAnythingNodeUtilsTest,
   node.SetData(std::move(data));
 
   std::u16string text =
-      a11y::GetTextContent(&node, /*is_docs=*/false, /*is_pdf=*/true);
+      a11y::GetTextContent(&node, /*is_pdf=*/true, /*is_docs=*/false);
 
   EXPECT_EQ(text.length(), sentence.length());
   EXPECT_NE(text.find('\n'), std::string::npos);
   EXPECT_NE(text.find('\r'), std::string::npos);
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetPrefixText_ReturnsPreviousText) {
+  std::u16string sentence1 =
+      u"Hes the fruit and I'm the peel. He's Achilles I'm the heel";
+  std::u16string sentence2 = u"Yeah he's my brother through and through!";
+  std::u16string sentence3 = u"Yeah you can't have tea without the two";
+  EXPECT_GT(static_cast<int>(sentence1.length()), a11y::kMinPrefixLength);
+  EXPECT_GT(static_cast<int>(sentence2.length()), a11y::kMinPrefixLength);
+
+  /*
+   * Sets up a tree of:
+   *           1
+   *        /  |  \
+   *       3   4   2
+   *               |
+   *               5
+   */
+  static constexpr ui::AXNodeID rootId = 1;
+  static constexpr ui::AXNodeID childId = 2;
+  static constexpr ui::AXNodeID kId1 = 3;
+  static constexpr ui::AXNodeID kId2 = 4;
+  static constexpr ui::AXNodeID kId3 = 5;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  ui::AXNodeData child_data;
+  child_data.id = childId;
+  child_data.child_ids = {kId3};
+
+  ui::AXNodeData root_data;
+  root_data.id = rootId;
+  root_data.child_ids = {kId1, kId2, childId};
+
+  ui::AXTree tree;
+  ui::AXNode root(&tree, nullptr, 1, 0);
+  root.SetData(std::move(root_data));
+  ui::AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, static_text1, static_text2, child_data,
+                  static_text3};
+  tree.Unserialize(update);
+
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId1), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            tree.root()->GetTextContentUTF16());
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId2), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId3), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence2);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(childId), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence2);
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetPrefixText_SkipsDuplicateText) {
+  std::u16string sentence1 =
+      u"My folks were in a business too, the business we call show";
+  std::u16string sentence2 =
+      u"They taught me every time step, then I shuffled off to school";
+  EXPECT_GT(static_cast<int>(sentence1.length()), a11y::kMinPrefixLength);
+  EXPECT_GT(static_cast<int>(sentence2.length()), a11y::kMinPrefixLength);
+
+  /*
+   * Sets up a tree of:
+   *           1
+   *        /  |  \
+   *       3   4   2
+   *               |
+   *               5
+   */
+  static constexpr ui::AXNodeID rootId = 1;
+  static constexpr ui::AXNodeID childId = 2;
+  static constexpr ui::AXNodeID kId1 = 3;
+  static constexpr ui::AXNodeID kId2 = 4;
+  static constexpr ui::AXNodeID kId3 = 5;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence2);
+
+  ui::AXNodeData child_data;
+  child_data.id = childId;
+  child_data.child_ids = {kId3};
+
+  ui::AXNodeData root_data;
+  root_data.id = rootId;
+  root_data.child_ids = {kId1, kId2, childId};
+
+  ui::AXTree tree;
+  ui::AXNode root(&tree, nullptr, 1, 0);
+  root.SetData(std::move(root_data));
+  ui::AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, static_text1, static_text2, child_data,
+                  static_text3};
+  tree.Unserialize(update);
+
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId1), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            tree.root()->GetTextContentUTF16());
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId2), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId3), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(childId), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, GetPrefixText_SkipsShortText) {
+  std::u16string sentence1 =
+      u"But on the south side of Chicago, no one loved this dancin fool";
+  std::u16string sentence2 = u"the";
+  EXPECT_GT(static_cast<int>(sentence1.length()), a11y::kMinPrefixLength);
+  EXPECT_LT(static_cast<int>(sentence2.length()), a11y::kMinPrefixLength);
+
+  /*
+   * Sets up a tree of:
+   *           1
+   *        /  |  \
+   *       3   4   2
+   *               |
+   *               5
+   */
+  static constexpr ui::AXNodeID rootId = 1;
+  static constexpr ui::AXNodeID childId = 2;
+  static constexpr ui::AXNodeID kId1 = 3;
+  static constexpr ui::AXNodeID kId2 = 4;
+  static constexpr ui::AXNodeID kId3 = 5;
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence2);
+
+  ui::AXNodeData child_data;
+  child_data.id = childId;
+  child_data.child_ids = {kId3};
+
+  ui::AXNodeData root_data;
+  root_data.id = rootId;
+  root_data.child_ids = {kId1, kId2, childId};
+
+  ui::AXTree tree;
+  ui::AXNode root(&tree, nullptr, 1, 0);
+  root.SetData(std::move(root_data));
+  ui::AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, static_text1, static_text2, child_data,
+                  static_text3};
+  tree.Unserialize(update);
+
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId1), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            tree.root()->GetTextContentUTF16());
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId2), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(kId3), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
+  EXPECT_EQ(a11y::GetPrefixText(tree.GetFromId(childId), /*is_pdf=*/false,
+                                /*is_docs=*/false),
+            sentence1);
 }
 
 TEST_F(ReadAnythingNodeUtilsTest,
@@ -109,7 +276,7 @@ TEST_F(ReadAnythingNodeUtilsTest,
   node.SetData(std::move(data));
 
   std::u16string text =
-      a11y::GetTextContent(&node, /*is_docs=*/false, /*is_pdf=*/false);
+      a11y::GetTextContent(&node, /*is_pdf=*/false, /*is_docs=*/false);
   EXPECT_EQ(text.length(), sentence.length());
   EXPECT_NE(text.find('\n'), std::string::npos);
   EXPECT_NE(text.find('\r'), std::string::npos);
@@ -450,15 +617,4 @@ TEST_F(ReadAnythingNodeUtilsTest, GetNameAttributeText_GetsChildText) {
   tree.Unserialize(update);
   EXPECT_EQ(a11y::GetNameAttributeText(tree.root()),
             u"Not like you- You lost your nerve You lost the game");
-}
-
-TEST_F(ReadAnythingNodeUtilsTest, GetImageDataUrl) {
-  std::string image_url = "www.google.com";
-  ui::AXNodeData data = test::TextNode(2);
-  data.AddStringAttribute(ax::mojom::StringAttribute::kImageDataUrl, image_url);
-
-  ui::AXTree tree;
-  ui::AXNode node(&tree, nullptr, 2, 0);
-  node.SetData(std::move(data));
-  EXPECT_EQ(a11y::GetImageDataUrl(&node), image_url);
 }

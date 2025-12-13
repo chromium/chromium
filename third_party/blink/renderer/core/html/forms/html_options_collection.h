@@ -91,12 +91,9 @@ inline bool HTMLOptionsCollection::ElementMatches(
       parent->parentNode() == &RootNode()) {
     return true;
   }
-  if (HTMLSelectElement::SelectParserRelaxationEnabled(&ownerNode())) {
-    // If there is another <select> in between RootNode and element, then
-    // RootNode should not include element in its options.
-    return To<HTMLOptionElement>(element).OwnerSelectElement() == RootNode();
-  }
-  return false;
+  // If there is another <select> in between RootNode and element, then
+  // RootNode should not include element in its options.
+  return To<HTMLOptionElement>(element).OwnerSelectElement() == RootNode();
 }
 
 }  // namespace blink

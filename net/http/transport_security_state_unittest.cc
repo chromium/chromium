@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
@@ -130,15 +131,6 @@ std::vector<SHA256HashValue> DeserializeHashes(
     result.push_back(h.sha256hashvalue());
   }
   return result;
-}
-
-std::vector<std::vector<uint8_t>> UnpackRawHashes(
-    const std::vector<SHA256HashValue>& hashes) {
-  std::vector<std::vector<uint8_t>> raws;
-  for (const auto& hash : hashes) {
-    raws.emplace_back(base::ToVector(hash));
-  }
-  return raws;
 }
 
 }  // namespace
@@ -1455,23 +1447,17 @@ TEST_F(TransportSecurityStateStaticTest, PreloadedPins) {
   EXPECT_TRUE(OnlyPinningInStaticState("doubleclick.net"));
   EXPECT_TRUE(OnlyPinningInStaticState("googlegroups.com"));
 
-  // Facebook has pinning and hsts on facebook.com, but only pinning on
-  // subdomains.
-  EXPECT_TRUE(state.GetStaticPKPState("facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  // Facebook is not pinned but has hsts only on facebook.com.
+  EXPECT_FALSE(state.GetStaticPKPState("facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("facebook.com"));
-
-  EXPECT_TRUE(state.GetStaticPKPState("foo.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  EXPECT_FALSE(state.GetStaticPKPState("foo.facebook.com", &pkp_state));
   EXPECT_FALSE(StaticShouldRedirect("foo.facebook.com"));
 
-  // www.facebook.com and subdomains have both pinning and hsts.
-  EXPECT_TRUE(state.GetStaticPKPState("www.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  // www.facebook.com and subdomains are not pinned, but do have hsts.
+  EXPECT_FALSE(state.GetStaticPKPState("www.facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("www.facebook.com"));
 
-  EXPECT_TRUE(state.GetStaticPKPState("foo.www.facebook.com", &pkp_state));
-  EXPECT_FALSE(pkp_state.spki_hashes.empty());
+  EXPECT_FALSE(state.GetStaticPKPState("foo.www.facebook.com", &pkp_state));
   EXPECT_TRUE(StaticShouldRedirect("foo.www.facebook.com"));
 }
 
@@ -1579,7 +1565,7 @@ TEST_F(TransportSecurityStateTest, WriteSizeDecodeSize) {
     size_t position = writer.position();
     writer.Flush();
     ASSERT_NE(writer.bytes().data(), nullptr);
-    extras::PreloadDecoder::BitReader reader(writer.bytes().data(), position);
+    extras::PreloadDecoder::BitReader reader(writer.bytes(), position);
     size_t decoded_size;
     EXPECT_TRUE(reader.DecodeSize(&decoded_size));
     EXPECT_EQ(i, decoded_size);
@@ -1597,7 +1583,7 @@ TEST_F(TransportSecurityStateTest, DecodeSizeFour) {
   // 4 is encoded as 0b010. Shifted right to fill one byte, it is 0x02, with 5
   // bits of padding.
   uint8_t encoded = 0x02;
-  extras::PreloadDecoder::BitReader reader(&encoded, 8);
+  extras::PreloadDecoder::BitReader reader(base::span_from_ref(encoded), 8);
   for (size_t i = 0; i < 5; ++i) {
     bool unused;
     ASSERT_TRUE(reader.Next(&unused));
@@ -1626,7 +1612,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListValidPin) {
   // host.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(bad_hashes),
+      /*static_spki_hashes=*/bad_hashes,
       /*bad_static_spki_hashes=*/{});
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /*pinset_name=*/"test",
@@ -1656,7 +1642,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListNotValidPin) {
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
       /*static_spki_hashes=*/{},
-      /*bad_static_spki_hashes=*/UnpackRawHashes(good_hashes));
+      /*bad_static_spki_hashes=*/good_hashes);
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /* pinset_name=*/"test",
       /*include_subdomains=*/false);
@@ -1721,7 +1707,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomains) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.sub.test", so this pinset will only
   // match due to include subdomains.
@@ -1759,7 +1745,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsIncludeSubdomainsTLD) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.test", so this pinset will only match
   // due to include subdomains.
@@ -1797,7 +1783,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsDontIncludeSubdomains) {
   // kBadPath is used for convenience.
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
-      /*static_spki_hashes=*/UnpackRawHashes(DeserializeHashes(kBadPath)),
+      /*static_spki_hashes=*/DeserializeHashes(kBadPath),
       /*bad_static_spki_hashes=*/{});
   // The host used in the test is "example.test", so this pinset will not match
   // due to include subdomains not being set.
@@ -1839,7 +1825,7 @@ TEST_F(TransportSecurityStateTest, UpdateKeyPinsListTimestamp) {
   TransportSecurityState::PinSet test_pinset(
       /*name=*/"test",
       /*static_spki_hashes=*/{},
-      /*bad_static_spki_hashes=*/UnpackRawHashes(bad_hashes));
+      /*bad_static_spki_hashes=*/bad_hashes);
   TransportSecurityState::PinSetInfo test_pinsetinfo(
       /*hostname=*/kHost, /* pinset_name=*/"test",
       /*include_subdomains=*/false);

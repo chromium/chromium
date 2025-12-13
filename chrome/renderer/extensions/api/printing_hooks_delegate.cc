@@ -47,7 +47,7 @@ RequestResult PrintingHooksDelegate::HandleRequest(
     return result;
   }
 
-  return HandleSubmitJob(context->GetIsolate(), arguments);
+  return HandleSubmitJob(v8::Isolate::GetCurrent(), arguments);
 }
 
 RequestResult PrintingHooksDelegate::HandleSubmitJob(

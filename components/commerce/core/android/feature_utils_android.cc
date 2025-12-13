@@ -13,7 +13,7 @@
 
 namespace commerce {
 
-jboolean JNI_CommerceFeatureUtils_IsShoppingListEligible(
+static jboolean JNI_CommerceFeatureUtils_IsShoppingListEligible(
     JNIEnv* env,
     jlong shopping_service_android_ptr) {
   if (!shopping_service_android_ptr) {
@@ -26,7 +26,7 @@ jboolean JNI_CommerceFeatureUtils_IsShoppingListEligible(
                                         : nullptr);
 }
 
-jboolean JNI_CommerceFeatureUtils_IsDiscountInfoApiEnabled(
+static jboolean JNI_CommerceFeatureUtils_IsDiscountInfoApiEnabled(
     JNIEnv* env,
     jlong shopping_service_android_ptr) {
   if (!shopping_service_android_ptr) {
@@ -39,7 +39,7 @@ jboolean JNI_CommerceFeatureUtils_IsDiscountInfoApiEnabled(
                                           : nullptr);
 }
 
-jboolean JNI_CommerceFeatureUtils_IsPriceAnnotationsEnabled(
+static jboolean JNI_CommerceFeatureUtils_IsPriceAnnotationsEnabled(
     JNIEnv* env,
     jlong shopping_service_android_ptr) {
   if (!shopping_service_android_ptr) {
@@ -53,3 +53,5 @@ jboolean JNI_CommerceFeatureUtils_IsPriceAnnotationsEnabled(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(CommerceFeatureUtils)

@@ -30,7 +30,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_BIQUAD_H_
 
 #include <sys/types.h>
+
 #include <complex>
+
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -44,8 +47,6 @@ namespace blink {
 //    lowpass, highpass, shelving, parameteric, notch, allpass, ...
 
 class PLATFORM_EXPORT Biquad final {
-  DISALLOW_NEW();
-
  public:
   explicit Biquad(unsigned render_quantum_frames);
   ~Biquad();
@@ -83,10 +84,9 @@ class PLATFORM_EXPORT Biquad final {
   // Filter response at a set of n frequencies. The magnitude and
   // phase response are returned in magResponse and phaseResponse.
   // The phase response is in radians.
-  void GetFrequencyResponse(int n_frequencies,
-                            const float* frequency,
-                            float* mag_response,
-                            float* phase_response) const;
+  void GetFrequencyResponse(base::span<const float> frequency,
+                            base::span<float> mag_response,
+                            base::span<float> phase_response) const;
 
  private:
   void SetNormalizedCoefficients(int,

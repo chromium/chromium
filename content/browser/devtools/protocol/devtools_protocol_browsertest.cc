@@ -1,10 +1,6 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include <stddef.h>
 
@@ -15,6 +11,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -451,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
 
   HostZoomMap* host_zoom_map =
       HostZoomMap::GetForWebContents(shell()->web_contents());
-  host_zoom_map->SetZoomLevelForHost(test_url.host(),
+  host_zoom_map->SetZoomLevelForHost(test_url.GetHost(),
                                      blink::ZoomFactorToZoomLevel(2.5));
   WaitForNotification("Page.frameResized", true);
 
@@ -733,9 +730,8 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // If the device scale factor is 0,
     // get the original device scale factor to compare with
     if (!device_scale_factor) {
-      device_scale_factor = display::Screen::GetScreen()
-                                ->GetPrimaryDisplay()
-                                .device_scale_factor();
+      device_scale_factor =
+          display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
     }
 
     CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
@@ -787,7 +783,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       GenerateBitmap(actual_page_size, SkColorSetRGB(0x12, 0x34, 0x56));
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Verify there are no scrollbars on the screenshot.
   CaptureScreenshotAndCompareTo(
@@ -840,7 +836,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                      SkColorSetRGB(0x12, 0x34, 0x56));
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Verify there are no scrollbars on the screenshot.
   // Even if margin is 0 then the iframe appears 8px away from beginning of the
@@ -887,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(
       CaptureScreenshot(ScreenshotEncoding::PNG, /*from_surface=*/false);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Compare the captured screenshot with one made "from_surface", where actual
   // scrollbar magic happened, and verify it looks the same, meaning the
@@ -1040,7 +1036,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 #if !BUILDFLAG(IS_ANDROID)
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Check that device emulation does not affect the transparency.
   SetDeviceMetricsOverride(view_size.width(), view_size.height(),
@@ -1106,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
       GenerateBitmap(view_size, SK_ColorTRANSPARENT);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   gfx::RectF clip;
   clip.SetRect(0, 0, view_size.width(), view_size.height());
 
@@ -1217,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshotsFull) {
                                 /*from_surface=*/true);  //.
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
   gfx::RectF clip;
   clip.SetRect(0, 0, view_size.width(), view_size.height());
 
@@ -1352,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                                     /*a=*/1.0);
 
   float device_scale_factor =
-      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+      display::Screen::Get()->GetPrimaryDisplay().device_scale_factor();
 
   // Check device emulation.
   // Additionally checks if emulation doesnt affect color change
@@ -1557,7 +1553,15 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest,
   EXPECT_EQ(frame_target_id, *params.FindString("targetId"));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_PageCrashClearsPendingCommands \
+  DISABLED_PageCrashClearsPendingCommands
+#else
+#define MAYBE_PageCrashClearsPendingCommands PageCrashClearsPendingCommands
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       MAYBE_PageCrashClearsPendingCommands) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
@@ -1692,7 +1696,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteCrash) {
   // Should not crash at this point.
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorTargetCrashedNavigate) {
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_InspectorTargetCrashedNavigate \
+  DISABLED_InspectorTargetCrashedNavigate
+#else
+#define MAYBE_InspectorTargetCrashedNavigate InspectorTargetCrashedNavigate
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       MAYBE_InspectorTargetCrashedNavigate) {
   set_agent_host_can_close();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -1712,7 +1724,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorTargetCrashedNavigate) {
   WaitForNotification("Inspector.targetReloadedAfterCrash", true);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetGetTargetsAfterCrash) {
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+#define MAYBE_TargetGetTargetsAfterCrash DISABLED_TargetGetTargetsAfterCrash
+#else
+#define MAYBE_TargetGetTargetsAfterCrash TargetGetTargetsAfterCrash
+#endif
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, MAYBE_TargetGetTargetsAfterCrash) {
   set_agent_host_can_close();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -2075,17 +2093,32 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   const base::Value& target_info_value = target_infos->front();
   const base::Value::Dict* target_info = target_info_value.GetIfDict();
   ASSERT_TRUE(target_info);
-  const std::string* target_id = target_info->FindString("target_id");
+  const std::string* target_id = target_info->FindString("targetId");
   const std::string* type = target_info->FindString("type");
   const std::string* title = target_info->FindString("title");
   const std::string* url = target_info->FindString("url");
-  EXPECT_FALSE(target_id);
+  ASSERT_TRUE(target_id);
   ASSERT_TRUE(type);
   ASSERT_TRUE(title);
   ASSERT_TRUE(url);
   EXPECT_EQ("page", *type);
   EXPECT_EQ("about:blank", *title);
   EXPECT_EQ("about:blank", *url);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetBrowserContexts) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  AttachToBrowserTarget();
+  SendCommandSync("Target.getBrowserContexts");
+  const base::Value::List* contexts = result()->FindList("browserContextIds");
+  EXPECT_TRUE(contexts);
+
+  const std::string* default_context_id =
+      result()->FindString("defaultBrowserContextId");
+  EXPECT_TRUE(default_context_id);
+  for (const auto& context : *contexts) {
+    EXPECT_NE(context.GetString(), *default_context_id);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {
@@ -2230,12 +2263,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandAsync("Security.enable");
   SendCommandSync("Network.setRequestInterception",
                   std::move(base::JSONReader::Read(
-                                "{\"patterns\": [{\"urlPattern\": \"*\"}]}")
+                                "{\"patterns\": [{\"urlPattern\": \"*\"}]}",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS)
                                 ->GetDict()));
 
   SendCommandSync(
       "Security.setIgnoreCertificateErrors",
-      std::move(base::JSONReader::Read("{\"ignore\": true}")->GetDict()));
+      std::move(base::JSONReader::Read("{\"ignore\": true}",
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    ->GetDict()));
 
   SendCommandSync("Network.clearBrowserCache");
   SendCommandSync("Network.clearBrowserCookies");
@@ -2244,10 +2280,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   base::Value::Dict params =
       WaitForNotification("Network.requestIntercepted", false);
   std::string interceptionId = *params.FindString("interceptionId");
-  SendCommandAsync("Network.continueInterceptedRequest",
-                   std::move(base::JSONReader::Read("{\"interceptionId\": \"" +
-                                                    interceptionId + "\"}")
-                                 ->GetDict()));
+  SendCommandAsync(
+      "Network.continueInterceptedRequest",
+      std::move(base::JSONReader::Read(
+                    "{\"interceptionId\": \"" + interceptionId + "\"}",
+                    base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    ->GetDict()));
   continue_observer.Wait();
   EXPECT_EQ(test_url, shell()
                           ->web_contents()
@@ -3391,8 +3429,10 @@ class DevToolsDownloadContentTest : public DevToolsProtocolTest {
 
     // Check the contents.
     EXPECT_EQ(value, file_contents);
-    if (memcmp(file_contents.c_str(), value.c_str(), expected_size) != 0)
+    if (UNSAFE_TODO(
+            memcmp(file_contents.c_str(), value.c_str(), expected_size)) != 0) {
       return false;
+    }
 
     return true;
   }
@@ -3542,6 +3582,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest,
   Attach();
   SendCommandSync("Page.setDownloadBehavior", std::move(params));
   EXPECT_FALSE(error());
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, GetAnnotatedPageContent) {
+  GURL url = GURL("data:text/html,<body>Hello, world!</body>");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
+  Attach();
+  const base::Value::Dict* result_ptr = SendCommandSync(
+      "Page.getAnnotatedPageContent",
+      base::Value::Dict().Set("includeActionableInformation", false));
+  ASSERT_FALSE(result_ptr);
+  EXPECT_EQ(*error()->FindInt("code"),
+            static_cast<int>(crdtp::DispatchCode::SERVER_ERROR));
+  EXPECT_EQ(*error()->FindString("message"),
+            "Failed to get annotated page content");
 }
 
 // Flaky on ChromeOS https://crbug.com/860312
@@ -3871,13 +3925,13 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   net::SSLServerConfig server_config;
   server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_2;
   server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_2;
-  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-  server_config.cipher_suite_for_testing = 0xc02f;
+  // TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+  server_config.cipher_suite_for_testing = 0xc02b;
   server_config.curves_for_testing = {NID_X25519};
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SECP384R1_SHA384;
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
-  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
-                      server_config);
+  server.SetSSLConfig(cert_config, server_config);
   server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(server.Start());
 
@@ -3898,7 +3952,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
   const std::string* key_exchange =
       response.FindStringByDottedPath("response.securityDetails.keyExchange");
   ASSERT_TRUE(key_exchange);
-  EXPECT_EQ("ECDHE_RSA", *key_exchange);
+  EXPECT_EQ("ECDHE_ECDSA", *key_exchange);
 
   const std::string* cipher =
       response.FindStringByDottedPath("response.securityDetails.cipher");
@@ -3915,7 +3969,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetails) {
 
   std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
-  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+  EXPECT_EQ(SSL_SIGN_ECDSA_SECP384R1_SHA384, sigalg);
 
   std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
@@ -3957,10 +4011,10 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
   server_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
   server_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
   server_config.curves_for_testing = {NID_X25519};
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PSS_RSAE_SHA384;
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SECP256R1_SHA256;
   net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
-  server.SetSSLConfig(net::EmbeddedTestServer::ServerCertificate::CERT_OK,
-                      server_config);
+  server.SetSSLConfig(cert_config, server_config);
   server.ServeFilesFromSourceDirectory(GetTestDataFilePath());
   ASSERT_TRUE(server.Start());
 
@@ -4000,7 +4054,7 @@ IN_PROC_BROWSER_TEST_F(NetworkResponseProtocolTest, SecurityDetailsTLS13) {
 
   std::optional<int> sigalg = response.FindIntByDottedPath(
       "response.securityDetails.serverSignatureAlgorithm");
-  EXPECT_EQ(SSL_SIGN_RSA_PSS_RSAE_SHA384, sigalg);
+  EXPECT_EQ(SSL_SIGN_ECDSA_SECP256R1_SHA256, sigalg);
 
   std::optional<bool> ech = response.FindBoolByDottedPath(
       "response.securityDetails.encryptedClientHello");
@@ -4422,7 +4476,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
                                              ->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   partition->GetNetworkContext()->AddHSTS(
-      https_url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      https_url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   GURL::Replacements replace_scheme;
@@ -4516,6 +4570,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TestRawHeadersWithRedirects) {
     EXPECT_THAT(response_received.FindStringByDottedPath("response.statusText"),
                 Pointee(std::string("OK")));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, OpenDevTools_FailWhenUnavailable) {
+  AttachToBrowserTarget();
+
+  SendCommandSync("Target.getTargets");
+  const base::Value::List* list = result()->FindList("targetInfos");
+  EXPECT_EQ(1u, list->size());
+  const std::string targetId = *list->front().GetDict().FindString("targetId");
+
+  base::Value::Dict params;
+  params.Set("targetId", targetId);
+  SendCommandSync("Target.openDevTools", std::move(params));
+
+  EXPECT_EQ(*error()->FindString("message"),
+            "Failed to create DevTools window");
 }
 
 }  // namespace content

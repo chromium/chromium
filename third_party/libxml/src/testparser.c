@@ -14,8 +14,16 @@
 #include <libxml/xmlsave.h>
 #include <libxml/xmlwriter.h>
 #include <libxml/HTMLparser.h>
+#include <libxml/HTMLtree.h>
 
 #include <string.h>
+
+#ifdef LIBXML_SAX1_ENABLED
+static void
+ignoreError(void *ctxt ATTRIBUTE_UNUSED,
+            const xmlError *error ATTRIBUTE_UNUSED) {
+}
+#endif
 
 static int
 testNewDocNode(void) {
@@ -124,6 +132,141 @@ testCFileIO(void) {
 
     if (err)
         fprintf(stderr, "xmlReadFile failed with FILE input callbacks\n");
+
+    return err;
+}
+
+/*
+ * The exact rules when undeclared entities are a fatal error
+ * depend on some conditions that aren't recovered from the
+ * context document when parsing XML content. This test case
+ * demonstrates such an asymmetry.
+ */
+static int
+testUndeclEntInContent(void) {
+    const char xml[] = "<!DOCTYPE doc SYSTEM 'my.dtd'><doc>&undecl;</doc>";
+    const char content[] = "<doc>&undecl;</doc>";
+    xmlDocPtr doc;
+    xmlNodePtr root, list;
+    int options = XML_PARSE_NOENT | XML_PARSE_NOERROR;
+    int err = 0;
+    int res;
+
+    /* Parsing the document succeeds because of the external DTD. */
+    doc = xmlReadDoc(BAD_CAST xml, NULL, NULL, options);
+    root = xmlDocGetRootElement(doc);
+
+    /* Parsing content fails. */
+
+    res = xmlParseInNodeContext(root, content, sizeof(content) - 1, options,
+                                &list);
+    if (res != XML_ERR_UNDECLARED_ENTITY || list != NULL) {
+        fprintf(stderr, "Wrong result from xmlParseInNodeContext\n");
+        err = 1;
+    }
+    xmlFreeNodeList(list);
+
+#ifdef LIBXML_SAX1_ENABLED
+    xmlSetStructuredErrorFunc(NULL, ignoreError);
+    res = xmlParseBalancedChunkMemory(doc, NULL, NULL, 0, BAD_CAST content,
+                                      &list);
+    if (res != XML_ERR_UNDECLARED_ENTITY || list != NULL) {
+        fprintf(stderr, "Wrong result from xmlParseBalancedChunkMemory\n");
+        err = 1;
+    }
+    xmlFreeNodeList(list);
+    xmlSetStructuredErrorFunc(NULL, NULL);
+#endif /* LIBXML_SAX1_ENABLED */
+
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
+static int
+testInvalidCharRecovery(void) {
+    const char *xml = "<doc>&#x10;</doc>";
+    xmlDoc *doc;
+    int err = 0;
+
+    doc = xmlReadDoc(BAD_CAST xml, NULL, NULL,
+                     XML_PARSE_RECOVER | XML_PARSE_NOERROR);
+
+    if (strcmp((char *) doc->children->children->content, "\x10") != 0) {
+        fprintf(stderr, "Failed to recover from invalid char ref\n");
+        err = 1;
+    }
+
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
+static void
+testCtxtInputGetterError(void *errCtxt, const xmlError *error) {
+    int *err = errCtxt;
+    xmlParserCtxt *ctxt = error->ctxt;
+    const char *filename;
+    int line, col;
+    unsigned long bytePos;
+    const xmlChar *start;
+    int size, offset;
+
+    xmlCtxtGetInputPosition(ctxt, 0, &filename, &line, &col, &bytePos);
+
+    if (strcmp(filename, "test.xml") != 0 ||
+        line != 4 || col != 11 || bytePos != 62) {
+        fprintf(stderr, "unexpected position: %s %d %d %lu\n",
+                filename, line, col, bytePos);
+        *err = 1;
+    }
+
+    size = 80;
+    xmlCtxtGetInputWindow(ctxt, 0, &start, &size, &offset);
+
+    if (strncmp((char *) start, "<doc>&ent;", 10) != 0 ||
+        size != 16 || offset != 10) {
+        fprintf(stderr, "unexpected window: %.10s %d %d\n",
+                start, size, offset);
+        *err = 1;
+    }
+
+    xmlCtxtGetInputPosition(ctxt, -1, &filename, &line, &col, &bytePos);
+
+    if (filename != NULL ||
+        line != 1 || col != 11 || bytePos != 10) {
+        fprintf(stderr, "unexpected position: %s %d %d %lu\n",
+                filename, line, col, bytePos);
+        *err = 1;
+    }
+
+    size = 80;
+    xmlCtxtGetInputWindow(ctxt, -1, &start, &size, &offset);
+
+    if (strncmp((char *) start, "xxx &fail;", 10) != 0 ||
+        size != 14 || offset != 10) {
+        fprintf(stderr, "unexpected window: %.10s %d %d\n",
+                start, size, offset);
+        *err = 1;
+    }
+}
+
+static int
+testCtxtInputGetters(void) {
+    const char *xml =
+        "<!DOCTYPE doc [\n"
+        "  <!ENTITY ent 'xxx &fail; xxx'>\n"
+        "]>\n"
+        "<doc>&ent;</doc>\n";
+    xmlParserCtxt *ctxt;
+    xmlDoc *doc;
+    int err = 0;
+
+    ctxt = xmlNewParserCtxt();
+    xmlCtxtSetErrorHandler(ctxt, testCtxtInputGetterError, &err);
+    doc = xmlCtxtReadDoc(ctxt, BAD_CAST xml, "test.xml", NULL, 0);
+    xmlFreeDoc(doc);
+    xmlFreeParserCtxt(ctxt);
 
     return err;
 }
@@ -288,6 +431,74 @@ testNoBlanks(void) {
 
     return err;
 }
+
+static int
+testSaveNullEncDoc(const char *xml, const char *expect) {
+    xmlDocPtr doc;
+    xmlBufferPtr buffer;
+    xmlSaveCtxtPtr save;
+    const xmlChar *result;
+    int err = 0;
+
+    doc = xmlReadDoc(BAD_CAST xml, NULL, NULL, 0);
+
+    buffer = xmlBufferCreate();
+    save = xmlSaveToBuffer(buffer, NULL, 0);
+    xmlSaveDoc(save, doc);
+    xmlSaveClose(save);
+
+    result = xmlBufferContent(buffer);
+    if (strcmp((char *) result, expect) != 0) {
+        fprintf(stderr, "xmlSave with NULL encodíng failed\n");
+        err = 1;
+    }
+
+    xmlBufferFree(buffer);
+    xmlFreeDoc(doc);
+
+    return err;
+}
+
+static int
+testSaveNullEnc(void) {
+    int err = 0;
+
+    err |= testSaveNullEncDoc(
+        "<?xml version=\"1.0\"?><doc>\xC3\x98</doc>",
+        "<?xml version=\"1.0\"?>\n<doc>&#xD8;</doc>\n");
+    err |= testSaveNullEncDoc(
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?><doc>\xC3\x98</doc>",
+        "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<doc>\xC3\x98</doc>\n");
+    err |= testSaveNullEncDoc(
+        "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?><doc>\xD8</doc>",
+        "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n<doc>\xD8</doc>\n");
+
+    return err;
+}
+
+static int
+testDocDumpFormatMemoryEnc(void) {
+    const char *xml = "<doc>\xC3\x98</doc>";
+    const char *expect =
+        "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\n"
+        "<doc>\xD8</doc>\n";
+    xmlDocPtr doc;
+    xmlChar *text;
+    int len;
+    int err = 0;
+
+    doc = xmlReadDoc(BAD_CAST xml, NULL, NULL, 0);
+    xmlDocDumpFormatMemoryEnc(doc, &text, &len, "iso-8859-1", 0);
+
+    if (strcmp((char *) text, expect) != 0) {
+        fprintf(stderr, "xmlDocDumpFormatMemoryEnc failed\n");
+        err = 1;
+    }
+
+    xmlFree(text);
+    xmlFreeDoc(doc);
+    return err;
+}
 #endif /* LIBXML_OUTPUT_ENABLED */
 
 #ifdef LIBXML_SAX1_ENABLED
@@ -413,7 +624,7 @@ testPushCDataEnd(void) {
     int err = 0;
     int k;
 
-    for (k = 0; k < 2; k++) {
+    for (k = 0; k < 4; k++) {
         xmlBufferPtr buf;
         xmlChar *chunk;
         xmlParserCtxtPtr ctxt;
@@ -431,7 +642,7 @@ testPushCDataEnd(void) {
         /*
          * Also test xmlParseCharDataCopmlex
          */
-        if (k == 0)
+        if (k & 1)
             xmlBufferCCat(buf, "x");
         else
             xmlBufferCCat(buf, "\xC3\xA4");
@@ -443,12 +654,19 @@ testPushCDataEnd(void) {
         for (i = 0; i < 2000; i++)
             xmlBufferCCat(buf, "x");
 
-        xmlBufferCCat(buf, "]");
+        if (k & 2)
+            xmlBufferCCat(buf, "]");
+        else
+            xmlBufferCCat(buf, "]]");
+
         chunk = xmlBufferDetach(buf);
         xmlBufferFree(buf);
 
         xmlParseChunk(ctxt, (char *) chunk, xmlStrlen(chunk), 0);
-        xmlParseChunk(ctxt, "]>xxx</doc>", 11, 1);
+        if (k & 2)
+            xmlParseChunk(ctxt, "]>xxx</doc>", 11, 1);
+        else
+            xmlParseChunk(ctxt, ">xxx</doc>", 10, 1);
 
         if (ctxt->errNo != XML_ERR_MISPLACED_CDATA_END) {
             fprintf(stderr, "xmlParseChunk failed to detect CData end: %d\n",
@@ -488,6 +706,131 @@ testHtmlIds(void) {
     xmlFreeDoc(doc);
     return 0;
 }
+
+#define MHE "meta http-equiv=\"Content-Type\""
+
+#ifdef LIBXML_OUTPUT_ENABLED
+static int
+testHtmlInsertMetaEncoding(void) {
+    /* We currently require a head element to be present. */
+    const char *html =
+        "<html>"
+        "<head></head>"
+        "<body>text</body>"
+        "</html>\n";
+    const char *expect =
+        "<html>"
+        "<head><meta charset=\"utf-8\"></head>"
+        "<body>text</body>"
+        "</html>\n";
+    htmlDocPtr doc;
+    xmlBufferPtr buf;
+    xmlSaveCtxtPtr save;
+    xmlChar *out;
+    int size, err = 0;
+
+
+    doc = htmlReadDoc(BAD_CAST html, NULL, NULL, HTML_PARSE_NODEFDTD);
+
+    /* xmlSave updates meta tags */
+    buf = xmlBufferCreate();
+    save = xmlSaveToBuffer(buf, "utf-8", 0);
+    xmlSaveDoc(save, doc);
+    xmlSaveClose(save);
+    if (!xmlStrEqual(xmlBufferContent(buf), BAD_CAST expect)) {
+        fprintf(stderr, "meta tag insertion failed when serializing\n");
+        err = 1;
+    }
+    xmlBufferFree(buf);
+
+    htmlSetMetaEncoding(doc, BAD_CAST "utf-8");
+    /* htmlDocDumpMemoryFormat doesn't update meta tags */
+    htmlDocDumpMemoryFormat(doc, &out, &size, 0);
+    if (!xmlStrEqual(out, BAD_CAST expect)) {
+        fprintf(stderr, "htmlSetMetaEncoding insertion failed\n");
+        err = 1;
+    }
+    xmlFree(out);
+
+    xmlFreeDoc(doc);
+    return err;
+}
+
+static int
+testHtmlUpdateMetaEncoding(void) {
+    /* We rely on the implementation adjusting all meta tags */
+    const char *html =
+        "<html>\n"
+        "    <head>\n"
+        "        <meta charset=\"utf-8\">\n"
+        "        <meta charset=\"  foo  \">\n"
+        "        <meta charset=\"\">\n"
+        "        <" MHE " content=\"text/html; ChArSeT=foo\">\n"
+        "        <" MHE " content=\"text/html; charset = \">\n"
+        "        <" MHE " content=\"text/html; charset = '  foo  '\">\n"
+        "        <" MHE " content=\"text/html; charset = '  foo  \">\n"
+        "        <" MHE " content='text/html; charset = \"  foo  \"'>\n"
+        "        <" MHE " content='text/html; charset = \"  foo  '>\n"
+        "        <" MHE " content=\"charset ; charset = bar; baz\">\n"
+        "        <" MHE " content=\"text/html\">\n"
+        "        <" MHE " content=\"\">\n"
+        "        <" MHE ">\n"
+        "    </head>\n"
+        "    <body></body>\n"
+        "</html>\n";
+    const char *expect =
+        "<html>\n"
+        "    <head>\n"
+        "        <meta charset=\"utf-8\">\n"
+        "        <meta charset=\"  utf-8  \">\n"
+        "        <meta charset=\"utf-8\">\n"
+        "        <" MHE " content=\"text/html; ChArSeT=utf-8\">\n"
+        "        <" MHE " content=\"text/html; charset = \">\n"
+        "        <" MHE " content=\"text/html; charset = '  utf-8  '\">\n"
+        "        <" MHE " content=\"text/html; charset = '  foo  \">\n"
+        "        <" MHE " content=\"text/html; charset = &quot;  utf-8  &quot;\">\n"
+        "        <" MHE " content=\"text/html; charset = &quot;  foo  \">\n"
+        "        <" MHE " content=\"charset ; charset = utf-8; baz\">\n"
+        "        <" MHE " content=\"text/html\">\n"
+        "        <" MHE " content=\"\">\n"
+        "        <" MHE ">\n"
+        "    </head>\n"
+        "    <body></body>\n"
+        "</html>\n";
+    htmlDocPtr doc;
+    xmlBufferPtr buf;
+    xmlSaveCtxtPtr save;
+    xmlChar *out;
+    int size, err = 0;
+
+    doc = htmlReadDoc(BAD_CAST html, NULL, NULL, HTML_PARSE_NODEFDTD);
+
+    /* xmlSave updates meta tags */
+    buf = xmlBufferCreate();
+    save = xmlSaveToBuffer(buf, NULL, 0);
+    xmlSaveDoc(save, doc);
+    xmlSaveClose(save);
+    if (!xmlStrEqual(xmlBufferContent(buf), BAD_CAST expect)) {
+        fprintf(stderr, "meta tag update failed when serializing\n");
+        err = 1;
+    }
+    xmlBufferFree(buf);
+
+    xmlFree((xmlChar *) doc->encoding);
+    doc->encoding = NULL;
+    htmlSetMetaEncoding(doc, BAD_CAST "utf-8");
+    /* htmlDocDumpMemoryFormat doesn't update meta tags */
+    htmlDocDumpMemoryFormat(doc, &out, &size, 0);
+    if (!xmlStrEqual(out, BAD_CAST expect)) {
+        fprintf(stderr, "htmlSetMetaEncoding update failed\n");
+        err = 1;
+    }
+    xmlFree(out);
+
+    xmlFreeDoc(doc);
+    return err;
+}
+#endif /* LIBXML_OUTPUT_ENABLED */
 
 #ifdef LIBXML_PUSH_ENABLED
 static int
@@ -553,6 +896,7 @@ testReaderEncoding(void) {
     return err;
 }
 
+#ifdef LIBXML_OUTPUT_ENABLED
 static int
 testReaderContent(void) {
     xmlTextReader *reader;
@@ -587,6 +931,7 @@ testReaderContent(void) {
     xmlFreeTextReader(reader);
     return err;
 }
+#endif /* LIBXML_OUTPUT_ENABLED */
 
 static int
 testReaderNode(xmlTextReader *reader) {
@@ -1151,12 +1496,17 @@ main(void) {
     err |= testUnsupportedEncoding();
     err |= testNodeGetContent();
     err |= testCFileIO();
+    err |= testUndeclEntInContent();
+    err |= testInvalidCharRecovery();
+    err |= testCtxtInputGetters();
 #ifdef LIBXML_VALID_ENABLED
     err |= testSwitchDtd();
 #endif
 #ifdef LIBXML_OUTPUT_ENABLED
     err |= testCtxtParseContent();
     err |= testNoBlanks();
+    err |= testSaveNullEnc();
+    err |= testDocDumpFormatMemoryEnc();
 #endif
 #ifdef LIBXML_SAX1_ENABLED
     err |= testBalancedChunk();
@@ -1168,13 +1518,19 @@ main(void) {
 #endif
 #ifdef LIBXML_HTML_ENABLED
     err |= testHtmlIds();
+#ifdef LIBXML_OUTPUT_ENABLED
+    err |= testHtmlInsertMetaEncoding();
+    err |= testHtmlUpdateMetaEncoding();
+#endif
 #ifdef LIBXML_PUSH_ENABLED
     err |= testHtmlPushWithEncoding();
 #endif
 #endif
 #ifdef LIBXML_READER_ENABLED
     err |= testReaderEncoding();
+#ifdef LIBXML_OUTPUT_ENABLED
     err |= testReaderContent();
+#endif
     err |= testReader();
 #ifdef LIBXML_XINCLUDE_ENABLED
     err |= testReaderXIncludeError();

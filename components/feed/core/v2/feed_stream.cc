@@ -961,6 +961,32 @@ base::Time FeedStream::GetLastFetchTime(SurfaceId surface_id) {
   return (fetch_time > base::Time::Now()) ? base::Time() : fetch_time;
 }
 
+std::vector<std::string> FeedStream::GetFeedUrls(SurfaceId surface_id) {
+  FeedStreamSurface* surface = FindSurface(surface_id);
+  if (!surface) {
+    return {};
+  }
+  Stream& stream = GetStream(surface->GetStreamType());
+  if (!stream.model) {
+    return {};
+  }
+
+  std::vector<std::string> urls;
+  for (ContentRevision content_revision : stream.model->GetContentList()) {
+    const feedstore::Content* content =
+        stream.model->FindContent(content_revision);
+    if (content) {
+      std::string url = content->prefetch_metadata(0).uri();
+      // Exclude video streaming cards.
+      if (!url.starts_with("https://www.youtube.com") &&
+          !url.starts_with("https://m.youtube.com")) {
+        urls.push_back(url);
+      }
+    }
+  }
+  return urls;
+}
+
 void FeedStream::LoadModelForTesting(const StreamType& stream_type,
                                      std::unique_ptr<StreamModel> model) {
   LoadModel(stream_type, std::move(model));

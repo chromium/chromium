@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -39,6 +40,7 @@ import java.io.IOException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+@DisabledTest(message = "crbug.com/459863718")
 public class ToolbarTabletTest {
     @ClassRule
     public static AutoResetCtaTransitTestRule mActivityTestRule =

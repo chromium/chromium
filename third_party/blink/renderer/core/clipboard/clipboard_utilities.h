@@ -39,9 +39,6 @@
 
 namespace blink {
 
-#if BUILDFLAG(IS_WIN)
-CORE_EXPORT void ReplaceNewlinesWithWindowsStyleNewlines(String&);
-#endif
 CORE_EXPORT void ReplaceNBSPWithSpace(String&);
 CORE_EXPORT String ConvertURIListToURL(const String& uri_list);
 CORE_EXPORT String URLToImageMarkup(const KURL&, const String& title);

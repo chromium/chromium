@@ -4,11 +4,15 @@
 
 #include "storage/browser/test/fake_blob.h"
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "net/base/net_errors.h"
 
 namespace storage {
 
 FakeBlob::FakeBlob(const std::string& uuid) : uuid_(uuid) {}
+FakeBlob::~FakeBlob() = default;
 
 mojo::PendingRemote<blink::mojom::Blob> FakeBlob::Clone() {
   mojo::PendingRemote<blink::mojom::Blob> result;
@@ -17,8 +21,11 @@ mojo::PendingRemote<blink::mojom::Blob> FakeBlob::Clone() {
 }
 
 void FakeBlob::Clone(mojo::PendingReceiver<blink::mojom::Blob> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid_),
-                              std::move(receiver));
+  auto other = std::make_unique<FakeBlob>(uuid_);
+  if (body_.has_value()) {
+    other->set_body(*body_);
+  }
+  mojo::MakeSelfOwnedReceiver(std::move(other), std::move(receiver));
 }
 
 void FakeBlob::AsDataPipeGetter(
@@ -33,9 +40,23 @@ void FakeBlob::ReadRange(uint64_t offset,
   NOTREACHED();
 }
 
-void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
-                       mojo::PendingRemote<blink::mojom::BlobReaderClient>) {
-  NOTREACHED();
+void FakeBlob::ReadAll(
+    mojo::ScopedDataPipeProducerHandle handle,
+    mojo::PendingRemote<blink::mojom::BlobReaderClient> client) {
+  mojo::Remote<blink::mojom::BlobReaderClient> client_remote(std::move(client));
+  if (!body_) {
+    if (client_remote.is_bound()) {
+      client_remote->OnComplete(net::Error::ERR_FILE_NOT_FOUND, 0);
+    }
+  } else {
+    if (client_remote.is_bound()) {
+      client_remote->OnCalculatedSize(body_->size(), body_->size());
+    }
+    CHECK(mojo::BlockingCopyFromString(*body_, handle));
+    if (client_remote.is_bound()) {
+      client_remote->OnComplete(net::Error::OK, body_->size());
+    }
+  }
 }
 
 void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,

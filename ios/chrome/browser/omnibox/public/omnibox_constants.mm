@@ -6,6 +6,12 @@
 
 const CGFloat kOmniboxPlaceholderAlpha = 0.3;
 
+NSString* const kOmniboxCancelButtonAccessibilityIdentifier =
+    @"OmniboxCancelButtonAccessibilityIdentifier";
+
+NSString* const kOmniboxClearButtonAccessibilityIdentifier =
+    @"OmniboxClearButtonAccessibilityIdentifier";
+
 NSString* const kOmniboxLeadingImageDefaultAccessibilityIdentifier =
     @"OmniboxLeadingImageDefaultAccessibilityIdentifier";
 
@@ -14,6 +20,9 @@ NSString* const kOmniboxLeadingImageEmptyTextAccessibilityIdentifier =
 
 NSString* const kOmniboxLeadingImageSuggestionImageAccessibilityIdentifier =
     @"OmniboxLeadingImageSuggestionImageAccessibilityIdentifier";
+
+NSString* const kOmniboxPopupCloseButtonAccessibilityIdentifier =
+    @"OmniboxPopupCloseButtonAccessibilityIdentifier";
 
 constexpr CGFloat kOmniboxLeadingImageSize = 30;
 constexpr CGFloat kOmniboxLeadingImageViewEdgeOffset = 7;

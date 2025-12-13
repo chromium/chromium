@@ -76,9 +76,7 @@ SimpleFontData::SimpleFontData(const FontPlatformData* platform_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
     : platform_data_(platform_data),
-      shape_cache_(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled()
-                       ? MakeGarbageCollected<NGShapeCache>(this)
-                       : nullptr),
+      shape_cache_(MakeGarbageCollected<NGShapeCache>(this)),
       font_(platform_data->size() ? platform_data->CreateSkFont()
                                   : skia::DefaultFont()),
       custom_font_data_(custom_data) {
@@ -171,7 +169,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   if (metrics_override.line_gap_override) {
     line_gap = *metrics_override.line_gap_override * platform_data_->size();
   } else {
-    line_gap = SkScalarToFloat(metrics.fLeading);
+    line_gap = metrics.fLeading;
   }
   font_metrics_.SetLineGap(line_gap);
   font_metrics_.SetLineSpacing(lroundf(ascent) + lroundf(descent) +
@@ -203,7 +201,7 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 
 #if !BUILDFLAG(IS_APPLE)
   if (metrics.fAvgCharWidth) {
-    avg_char_width_ = SkScalarToFloat(metrics.fAvgCharWidth);
+    avg_char_width_ = metrics.fAvgCharWidth;
   } else {
 #endif
     avg_char_width_ = x_height;
@@ -490,7 +488,7 @@ const HanKerning::FontData& SimpleFontData::HanKerningData(
 
   // The cache didn't hit. Shift the list and create a new entry at `[0]`.
   for (wtf_size_t i = 1; i < std::size(han_kerning_cache_); ++i) {
-    UNSAFE_TODO(han_kerning_cache_[i] = std::move(han_kerning_cache_[i - 1]));
+    han_kerning_cache_[i] = std::move(han_kerning_cache_[i - 1]);
   }
   HanKerningCacheEntry& new_entry = han_kerning_cache_[0];
   new_entry = {.locale = &locale,
@@ -520,7 +518,7 @@ void SimpleFontData::BoundsForGlyphs(const Vector<Glyph, 256>& glyphs,
   }
 
   DCHECK_EQ(bounds->size(), glyphs.size());
-  SkFontGetBoundsForGlyphs(font_, glyphs, bounds->data());
+  SkFontGetBoundsForGlyphs(font_, glyphs, *bounds);
 }
 
 float SimpleFontData::WidthForGlyph(Glyph glyph) const {

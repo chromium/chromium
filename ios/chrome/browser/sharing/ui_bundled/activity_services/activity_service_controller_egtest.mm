@@ -85,6 +85,9 @@ NSString* const kEGOpenExtension = @"EGOpenExtension";
                 ? more_button_0
                 : more_button_1;
         [more_button tap];
+      } else if (more_buttons.count == 1) {
+         XCUIElement* more_button = [more_buttons elementBoundByIndex:0];
+         [more_button tap];
       }
 
       // TODO(crbug.com/432223861): Revisit using

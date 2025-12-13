@@ -24,8 +24,8 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
+#import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
@@ -82,10 +82,10 @@ const char kEnterpriseBlockPage[] =
 
 // Error message logged when the wrong number of Enterprise Reports were
 // received.
-NSString* kWrongNumberOfReportsErrorMessage = @"Wrong number of reports.";
+NSString* const kWrongNumberOfReportsErrorMessage = @"Wrong number of reports.";
 
 // Id of the primary button in the security interstitial pages.
-NSString* kPrimaryButtonID = @"primary-button";
+NSString* const kPrimaryButtonID = @"primary-button";
 
 // Duration to wait for an enterprise security event report.
 constexpr base::TimeDelta kReportUploadTimeout = base::Seconds(15);
@@ -228,7 +228,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
         std::string("--mark_as_enterprise_blocked=") +
         _enterpriseBlockURL.spec());
   } else if ([self isRunningTest:@selector(testEnterpriseWarningPage)] ||
-             [self isRunningTest:@selector(testEnterpriseWarningPageBypass)]) {
+             [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+             [self isRunningTest:@selector
+                   (testEnterpriseWarningPageRefreshedThenBypass)]) {
     config.additional_args.push_back(
         std::string("--mark_as_enterprise_warned=") +
         _enterpriseWarnURL.spec());
@@ -380,13 +382,17 @@ void EnableEnterpriseUrlFilteringPrefs() {
                (testProceedingPastMalwareWarningReported)] ||
          [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
          [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
-         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)];
+         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+         [self isRunningTest:@selector
+               (testEnterpriseWarningPageRefreshedThenBypass)];
 }
 
 - (BOOL)isRunningEntepriseUrlFilteringTest {
   return [self isRunningTest:@selector(testEnterpriseBlockingPage)] ||
          [self isRunningTest:@selector(testEnterpriseWarningPage)] ||
-         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)];
+         [self isRunningTest:@selector(testEnterpriseWarningPageBypass)] ||
+         [self isRunningTest:@selector
+               (testEnterpriseWarningPageRefreshedThenBypass)];
 }
 - (void)waitForEnterpriseReports:(int)count {
   // Use metrics to detect that the report upload completed. This is the best
@@ -1132,6 +1138,68 @@ void EnableEnterpriseUrlFilteringPrefs() {
   requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
   GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
   [self assertUrlFilteringInterstitialEvent:requests[1]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:YES
+                                eventResult:EventResult::EVENT_RESULT_BYPASSED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_BYPASS];
+
+  // Load the enterprise flagged page should go directly to the page after the
+  // warning was bypassed.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+}
+
+// Verifies that the Enteprise warning interstitial allows to bypass the warning
+// after refreshing the warning page and navigate to urls flagged by Enterprise
+// organizations.
+- (void)testEnterpriseWarningPageRefreshedThenBypass {
+  EnableEnterpriseUrlFilteringPrefs();
+
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  // Load the enterprise flagged page and verify a warning is shown.
+  [ChromeEarlGrey loadURL:_enterpriseWarnURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser flagged a navigation.
+  [self waitForEnterpriseReports:1];
+  std::vector<UploadEventsRequest> requests =
+      _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(1U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[0]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  // Use javaScript command to refresh since iPad does not have pull-to-refresh.
+  NSString* script = @"location.reload();";
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:script];
+  [ChromeEarlGrey waitForWebStateContainingText:kEnterpriseWarningPage];
+
+  // Verify the server is notified the browser flagged a navigation.
+  [self waitForEnterpriseReports:2];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(2U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[1]
+                                        url:_enterpriseWarnURL
+                             clickedThrough:NO
+                                eventResult:EventResult::EVENT_RESULT_WARNED
+                                 threatType:UrlFilteringInterstitialEvent::
+                                                ENTERPRISE_WARNED_SEEN];
+
+  [ChromeEarlGrey tapWebStateElementWithID:@"proceed-button"];
+  [ChromeEarlGrey waitForWebStateContainingText:_enterpriseWarnContent];
+
+  // Verify the server is notified about the user bypassing a flagged a
+  // navigation.
+  [self waitForEnterpriseReports:3];
+  requests = _reportingEnvironment->reporting_server()->GetUploadedReports();
+  GREYAssertEqual(3U, requests.size(), kWrongNumberOfReportsErrorMessage);
+  [self assertUrlFilteringInterstitialEvent:requests[2]
                                         url:_enterpriseWarnURL
                              clickedThrough:YES
                                 eventResult:EventResult::EVENT_RESULT_BYPASSED

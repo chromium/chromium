@@ -27,6 +27,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -127,6 +128,13 @@ base::CommandLine CommandLineArgsForLauncher(
   // during launch.
   if (!extension_app_id.empty()) {
     new_cmd_line.AppendSwitchASCII(switches::kAppId, extension_app_id);
+    // Add --enable-automation switch to support app launches against a browser
+    // process already running with --enable-automation. If not present, app
+    // launches will fail as process hand-off is prohibited in automation mode.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableAutomation)) {
+      new_cmd_line.AppendSwitch(switches::kEnableAutomation);
+    }
   } else {
     // Use '--app=url' instead of just 'url' to launch the browser with minimal
     // chrome.
@@ -328,7 +336,7 @@ DefaultSchemeClientWorker::DefaultSchemeClientWorker(const std::string& scheme)
 
 DefaultSchemeClientWorker::DefaultSchemeClientWorker(const GURL& url)
     : DefaultWebClientWorker("DefaultSchemeClient"),
-      scheme_(url.scheme()),
+      scheme_(url.GetScheme()),
       url_(url) {}
 
 void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientName(
@@ -340,19 +348,31 @@ void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientName(
           this, std::move(callback)));
 }
 
+#if BUILDFLAG(IS_WIN)
+void DefaultSchemeClientWorker::StartCheckIsDefaultAndGetDefaultClientProgId(
+    DefaultSchemeHandlerWorkerCallback callback) {
+  g_sequenced_task_runner.Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId,
+          this, std::move(callback)));
+}
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultSchemeClientWorker, protected:
 
 DefaultSchemeClientWorker::~DefaultSchemeClientWorker() = default;
 
-void DefaultSchemeClientWorker::OnCheckIsDefaultAndGetDefaultClientNameComplete(
-    DefaultWebClientState state,
-    std::u16string program_name,
-    DefaultSchemeHandlerWorkerCallback callback) {
+void DefaultSchemeClientWorker::
+    OnCheckIsDefaultAndGetDefaultClientValueComplete(
+        DefaultWebClientState state,
+        std::u16string client_value,
+        DefaultSchemeHandlerWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!callback.is_null() && IsValidDefaultWebClientState(state)) {
-    std::move(callback).Run(state, program_name);
+    std::move(callback).Run(state, client_value);
   }
 }
 
@@ -370,9 +390,26 @@ void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientName(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&DefaultSchemeClientWorker::
-                         OnCheckIsDefaultAndGetDefaultClientNameComplete,
+                         OnCheckIsDefaultAndGetDefaultClientValueComplete,
                      this, state, program_name, std::move(callback)));
 }
+
+#if BUILDFLAG(IS_WIN)
+void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId(
+    DefaultSchemeHandlerWorkerCallback callback) {
+  DCHECK(!url_.is_empty());
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  DefaultWebClientState state = CheckIsDefaultImpl();
+  std::u16string program_id = GetDefaultClientProgIdImpl();
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DefaultSchemeClientWorker::
+                         OnCheckIsDefaultAndGetDefaultClientValueComplete,
+                     this, state, program_id, std::move(callback)));
+}
+#endif
 
 DefaultWebClientState DefaultSchemeClientWorker::CheckIsDefaultImpl() {
   return IsDefaultClientForScheme(scheme_);
@@ -381,6 +418,12 @@ DefaultWebClientState DefaultSchemeClientWorker::CheckIsDefaultImpl() {
 std::u16string DefaultSchemeClientWorker::GetDefaultClientNameImpl() {
   return GetApplicationNameForScheme(url_);
 }
+
+#if BUILDFLAG(IS_WIN)
+std::u16string DefaultSchemeClientWorker::GetDefaultClientProgIdImpl() {
+  return GetProgIdForScheme(url_);
+}
+#endif
 
 void DefaultSchemeClientWorker::SetAsDefaultImpl(
     base::OnceClosure on_finished_callback) {

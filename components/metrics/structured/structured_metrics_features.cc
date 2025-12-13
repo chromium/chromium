@@ -5,16 +5,13 @@
 #include "components/metrics/structured/structured_metrics_features.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace metrics::structured {
 
-BASE_FEATURE(kPhoneHubStructuredMetrics,
-             "PhoneHubStructuredMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPhoneHubStructuredMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEventStorageManager,
-             "EventStorageManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEventStorageManager, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kLimitFilesPerScanParam{
     &features::kStructuredMetrics, "file_limit", 100};

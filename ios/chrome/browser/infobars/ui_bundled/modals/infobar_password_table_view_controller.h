@@ -9,17 +9,36 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_password_modal_consumer.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
-@protocol InfobarPasswordModalDelegate;
+@class IOSChromePasswordInfobarMetricsRecorder;
+
+@protocol InfobarPasswordTableViewControllerContainerDelegate
+
+// The text used for the save/update credentials button.
+- (void)setAcceptButtonText:(NSString*)acceptButtonText;
+// The text used for the cancel button.
+- (void)setCancelButtonText:(NSString*)cancelButtonText;
+// YES if the current set of credentials has already been saved.
+- (void)setCurrentCredentialsSaved:(BOOL)currentCredentialsSaved;
+// Updates the accept button state.
+- (void)updateAcceptButtonEnabled:(BOOL)enabled title:(NSString*)title;
+
+@end
 
 // InfobarPasswordTableViewController represents the content for the Passwords
 // InfobarModal.
 @interface InfobarPasswordTableViewController
     : LegacyChromeTableViewController <InfobarPasswordModalConsumer>
 
-- (instancetype)initWithDelegate:(id<InfobarPasswordModalDelegate>)modalDelegate
-                            type:(InfobarType)infobarType
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
+// Delegate containing the view controller.
+@property(nonatomic, weak)
+    id<InfobarPasswordTableViewControllerContainerDelegate>
+        containerDelegate;
+// Used to build and record metrics specific to passwords.
+@property(nonatomic, strong)
+    IOSChromePasswordInfobarMetricsRecorder* passwordMetricsRecorder;
+
+@property(nonatomic, readonly) NSString* username;
+@property(nonatomic, readonly) NSString* unmaskedPassword;
 
 @end
 

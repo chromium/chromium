@@ -86,10 +86,13 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoIndeterminate:
     case CSSSelector::kPseudoTarget:
     case CSSSelector::kPseudoTargetCurrent:
+    case CSSSelector::kPseudoTargetBefore:
+    case CSSSelector::kPseudoTargetAfter:
     case CSSSelector::kPseudoCurrent:
     case CSSSelector::kPseudoCheckMark:
     case CSSSelector::kPseudoBefore:
     case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoInterestHint:
     case CSSSelector::kPseudoPickerIcon:
     case CSSSelector::kPseudoMarker:
     case CSSSelector::kPseudoModal:
@@ -98,6 +101,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoLang:
     case CSSSelector::kPseudoDir:
     case CSSSelector::kPseudoNot:
+    case CSSSelector::kPseudoOverscrollAreaParent:
     case CSSSelector::kPseudoPlaceholder:
     case CSSSelector::kPseudoDetailsContent:
     case CSSSelector::kPseudoPermissionIcon:
@@ -130,9 +134,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoFullScreen:
     case CSSSelector::kPseudoFullScreenAncestor:
     case CSSSelector::kPseudoFullscreen:
+    case CSSSelector::kPseudoPatching:
     case CSSSelector::kPseudoPaused:
-    case CSSSelector::kPseudoPermissionElementInvalidStyle:
-    case CSSSelector::kPseudoPermissionElementOccluded:
     case CSSSelector::kPseudoPermissionGranted:
     case CSSSelector::kPseudoPictureInPicture:
     case CSSSelector::kPseudoPlaying:
@@ -156,6 +159,8 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoPicker:
     case CSSSelector::kPseudoPopoverInTopLayer:
     case CSSSelector::kPseudoPopoverOpen:
+    case CSSSelector::kPseudoMenulistPopoverWithMenubarAnchor:
+    case CSSSelector::kPseudoMenulistPopoverWithMenulistAnchor:
     case CSSSelector::kPseudoSlotted:
     case CSSSelector::kPseudoVideoPersistent:
     case CSSSelector::kPseudoVideoPersistentAncestor:
@@ -178,9 +183,10 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoViewTransitionOld:
     case CSSSelector::kPseudoActiveViewTransition:
     case CSSSelector::kPseudoActiveViewTransitionType:
-    case CSSSelector::kPseudoHasInterest:
-    case CSSSelector::kPseudoTargetOfInterest:
+    case CSSSelector::kPseudoInterestSource:
+    case CSSSelector::kPseudoInterestTarget:
     case CSSSelector::kPseudoHasSlotted:
+    case CSSSelector::kPseudoLinkTo:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
@@ -343,6 +349,37 @@ RuleInvalidationDataVisitor<VisitorType>::CollectFeaturesFromSelector(
   return SelectorPreMatch::kMayMatch;
 }
 
+namespace {
+
+// True if a selector list pointed to by '&' can possibly match something.
+//
+// For example, a rule like `::before { & {} }` is valid parse-time,
+// but can never match anything (since '&' can't represent a pseudo-element).
+//
+// Note that cases with mixed allowed/disallowed selectors
+// can not be handled here. This is instead handled per argument
+// in SelectorChecker::CheckPseudoElement, via the check on
+// context.in_nested_complex_selector.
+bool ParentPseudoListCanMatchSomething(const CSSSelector* selector_list) {
+  if (!selector_list) {
+    // A '&' selector with no list is valid, and matches like :scope.
+    return true;
+  }
+  for (const CSSSelector* s = selector_list; s; s = CSSSelectorList::Next(*s)) {
+    // Recurse into any inner '&' to catch cases like: ::before { & { & {} } }.
+    if (s->GetPseudoType() == CSSSelector::kPseudoParent) {
+      if (ParentPseudoListCanMatchSomething(s->SelectorListOrParent())) {
+        return true;
+      }
+    } else if (s->IsAllowedInParentPseudo()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 template <RuleInvalidationDataVisitorType VisitorType>
 SelectorPreMatch
 RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
@@ -369,16 +406,8 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
                                         metadata);
         break;
       case CSSSelector::kPseudoParent:
-        if (const CSSSelector* selector_list = current->SelectorListOrParent();
-            selector_list &&
-            !CSSSelectorList::IsAnyAllowedInParentPseudo(selector_list)) {
-          // A rule like `::before { & {} }` is valid parse-time,
-          // but can never match anything.
-          //
-          // Note that cases with mixed allowed/disallowed selectors
-          // can not be handled here. This is instead handled per argument
-          // in SelectorChecker::CheckPseudoElement, via the check on
-          // context.in_nested_complex_selector.
+        if (!ParentPseudoListCanMatchSomething(
+                current->SelectorListOrParent())) {
           return SelectorPreMatch::kNeverMatches;
         }
         CollectMetadataFromSelectorList(current->SelectorListOrParent(),
@@ -1640,14 +1669,14 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoIndeterminate:
       case CSSSelector::kPseudoTarget:
       case CSSSelector::kPseudoTargetCurrent:
+      case CSSSelector::kPseudoTargetBefore:
+      case CSSSelector::kPseudoTargetAfter:
       case CSSSelector::kPseudoLang:
       case CSSSelector::kPseudoDir:
       case CSSSelector::kPseudoFullScreen:
       case CSSSelector::kPseudoFullScreenAncestor:
       case CSSSelector::kPseudoFullscreen:
       case CSSSelector::kPseudoPaused:
-      case CSSSelector::kPseudoPermissionElementInvalidStyle:
-      case CSSSelector::kPseudoPermissionElementOccluded:
       case CSSSelector::kPseudoPermissionGranted:
       case CSSSelector::kPseudoPictureInPicture:
       case CSSSelector::kPseudoPlaying:
@@ -1665,9 +1694,10 @@ RuleInvalidationDataVisitor<VisitorType>::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoSelectorFragmentAnchor:
       case CSSSelector::kPseudoActiveViewTransition:
       case CSSSelector::kPseudoActiveViewTransitionType:
-      case CSSSelector::kPseudoHasInterest:
-      case CSSSelector::kPseudoTargetOfInterest:
+      case CSSSelector::kPseudoInterestSource:
+      case CSSSelector::kPseudoInterestTarget:
       case CSSSelector::kPseudoHasSlotted:
+      case CSSSelector::kPseudoLinkTo:
         return EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                            position, in_nth_child);
       case CSSSelector::kPseudoFirstOfType:

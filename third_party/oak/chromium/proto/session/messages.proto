@@ -1,0 +1,51 @@
+//
+// Copyright 2022 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package oak.session.v1;
+
+import "proto/crypto/crypto.proto";
+import "proto/attestation/endorsement.proto";
+import "proto/attestation/evidence.proto";
+
+option java_multiple_files = true;
+option java_package = "com.google.oak.session.v1";
+
+// Endorsed evidence contains an attestation evidence provided by the enclave
+// and the corresponding attestation endorsements provided by the hostlib.
+message EndorsedEvidence {
+  oak.attestation.v1.Evidence evidence = 1;
+  oak.attestation.v1.Endorsements endorsements = 2;
+}
+
+message GetEndorsedEvidenceRequest {}
+
+message GetEndorsedEvidenceResponse {
+  EndorsedEvidence endorsed_evidence = 1;
+}
+
+message InvokeRequest {
+  // Body of the request, encrypted using Hybrid Public Key Encryption (HPKE).
+  // <https://www.rfc-editor.org/rfc/rfc9180.html>
+  oak.crypto.v1.EncryptedRequest encrypted_request = 2;
+}
+
+message InvokeResponse {
+  // Body of the request, encrypted using Hybrid Public Key Encryption (HPKE).
+  // <https://www.rfc-editor.org/rfc/rfc9180.html>
+  oak.crypto.v1.EncryptedResponse encrypted_response = 2;
+}

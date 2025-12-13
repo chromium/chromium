@@ -29,3 +29,12 @@ features:
 - name: relative-color
   files:
   - relative-*
+- name: rgb
+  files:
+  - rgb-*
+  - rgba-*
+  - hex-*
+- name: system-color
+  files:
+  - "deprecated-sameas-*"
+  - "system-color-*"

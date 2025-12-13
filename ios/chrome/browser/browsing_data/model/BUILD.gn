@@ -2,14 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("feature_flags") {
-  sources = [
-    "browsing_data_features.cc",
-    "browsing_data_features.h",
-  ]
-  deps = [ "//base" ]
-}
-
 source_set("model_remove_mask") {
   sources = [ "browsing_data_remove_mask.h" ]
 }
@@ -35,13 +27,13 @@ source_set("model") {
   ]
   deps = [
     ":counters",
-    ":feature_flags",
     ":util",
     "//base",
     "//components/autofill/core/browser",
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/desktop_to_mobile_promos",
     "//components/history/core/browser",
     "//components/language/core/browser",
     "//components/omnibox/browser",
@@ -55,11 +47,12 @@ source_set("model") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/crash_report/model",
+    "//ios/chrome/browser/cross_platform_promos/model:data_remover",
     "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/language/model",
-    "//ios/chrome/browser/metrics/model:metrics_browser_agent",
+    "//ios/chrome/browser/metrics/model:tab_usage_recorder_browser_agent",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/profile/model:ios_thread",
@@ -85,6 +78,7 @@ source_set("model") {
     "//ios/components/security_interstitials/https_only_mode",
     "//ios/components/security_interstitials/safe_browsing",
     "//ios/net",
+    "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/browsing_data",
     "//net",
@@ -112,8 +106,6 @@ source_set("counters") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web/public",
-    "//ios/web/public/session/proto",
-    "//ios/web/public/session/proto:proto_util",
     "//net",
   ]
 }
@@ -158,6 +150,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/sync_preferences",
     "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",

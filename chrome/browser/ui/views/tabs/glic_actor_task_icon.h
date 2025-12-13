@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_TASK_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_GLIC_ACTOR_TASK_ICON_H_
 
+#include <string>
+
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace glic {
 
@@ -15,11 +16,36 @@ class GlicActorTaskIcon : public TabStripNudgeButton {
 
  public:
   explicit GlicActorTaskIcon(TabStripController* tab_strip_controller,
-                             const gfx::VectorIcon& icon,
-                             const std::u16string& tooltip);
+                             PressedCallback pressed_callback);
   GlicActorTaskIcon(const GlicActorTaskIcon&) = delete;
   GlicActorTaskIcon& operator=(const GlicActorTaskIcon&) = delete;
   ~GlicActorTaskIcon() override;
+
+  // TabStripControlButton:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
+  // TabStripNudgeButton:
+  void SetIsShowingNudge(bool is_showing) override;
+
+  // Sets the task icon back to its default colors.
+  void SetDefaultColors();
+
+  // Sets the task icon to its highlighted state.
+  void HighlightTaskIcon();
+
+  // Show the task nudge with the given text.
+  void ShowNudgeLabel(const std::u16string nudge_label);
+
+  // Sets the task icon to its default colors, label, and tooltip text.
+  void SetTaskIconToDefault();
+
+  // Updates the background painter to match the current border insets.
+  void RefreshBackground();
+
+ private:
+  // Tab strip that contains this button.
+  raw_ptr<TabStripController> tab_strip_controller_;
 };
 
 }  // namespace glic

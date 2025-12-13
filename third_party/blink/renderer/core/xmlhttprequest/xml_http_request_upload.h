@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XMLHTTPREQUEST_XML_HTTP_REQUEST_UPLOAD_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XMLHTTPREQUEST_XML_HTTP_REQUEST_UPLOAD_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request_event_target.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"

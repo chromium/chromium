@@ -757,6 +757,7 @@ ChromeClient* VisualViewport::GetChromeClient() const {
 bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
+    cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior,
     ScrollCallback on_finish,
     bool targeted_scroll) {
@@ -770,14 +771,16 @@ bool VisualViewport::SetScrollOffset(
   // crbug.com/626315.
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
   return ScrollableArea::SetScrollOffset(new_scroll_offset, scroll_type,
-                                         scroll_behavior, std::move(on_finish));
+                                         source_type, scroll_behavior,
+                                         std::move(on_finish));
 }
 
 bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
+    cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior scroll_behavior) {
-  return SetScrollOffset(offset, scroll_type, scroll_behavior,
+  return SetScrollOffset(offset, scroll_type, source_type, scroll_behavior,
                          ScrollCallback());
 }
 
@@ -799,9 +802,11 @@ PhysicalRect VisualViewport::ScrollIntoView(
 
   if (new_scroll_offset != GetScrollOffset()) {
     if (params->is_for_scroll_sequence) {
-      SetScrollOffset(new_scroll_offset, params->type, params->behavior);
+      SetScrollOffset(new_scroll_offset, params->type,
+                      cc::ScrollSourceType::kAbsoluteScroll, params->behavior);
     } else {
-      SetScrollOffset(new_scroll_offset, params->type, params->behavior,
+      SetScrollOffset(new_scroll_offset, params->type,
+                      cc::ScrollSourceType::kAbsoluteScroll, params->behavior,
                       ScrollCallback());
     }
   }
@@ -943,7 +948,8 @@ mojom::blink::ColorScheme VisualViewport::UsedColorSchemeScrollbars() const {
 }
 
 void VisualViewport::UpdateScrollOffset(const ScrollOffset& position,
-                                        mojom::blink::ScrollType scroll_type) {
+                                        mojom::blink::ScrollType scroll_type,
+                                        cc::ScrollSourceType source_type) {
   if (!DidSetScaleOrLocation(scale_, is_pinch_gesture_active_,
                              gfx::PointAtOffsetFromOrigin(position))) {
     return;

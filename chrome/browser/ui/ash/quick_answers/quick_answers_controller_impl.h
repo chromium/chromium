@@ -85,6 +85,7 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   void OverrideTimeTickNowForTesting(
       TimeTickNowFunction time_tick_now_function);
+  void SetOnTextAvailableCallbackForTesting(base::OnceClosure callback);
 
   void ShowMagicBoostDisclaimerView();
 
@@ -178,6 +179,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   // Use `std::unique_ptr` instead of `std::optional` as we can pass a class
   // defined in an unnamed namespace.
   std::unique_ptr<QuickAnswersStateObserver> perform_on_consent_accepted_;
+
+  base::OnceClosure on_text_available_callback_for_testing_;
 
   base::WeakPtrFactory<QuickAnswersControllerImpl> weak_factory_{this};
 };

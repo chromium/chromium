@@ -26,15 +26,11 @@ OpenXRPathHelper::OpenXRPathHelper() = default;
 
 OpenXRPathHelper::~OpenXRPathHelper() = default;
 
-XrResult OpenXRPathHelper::Initialize(XrInstance instance, XrSystemId system) {
+XrResult OpenXRPathHelper::Initialize(XrInstance instance,
+                                      const std::string& system_name) {
   DCHECK(!initialized_);
 
-  // Get the system properties, which is needed to determine the name of the
-  // hardware being used. This helps disambiguate certain sets of controllers.
-  XrSystemProperties system_properties = {XR_TYPE_SYSTEM_PROPERTIES};
-  RETURN_IF_XR_FAILED(
-      xrGetSystemProperties(instance, system, &system_properties));
-  system_name_ = std::string(system_properties.systemName);
+  system_name_ = system_name;
 
   // Create path declarations
   for (const auto& profile : GetOpenXrControllerInteractionProfiles()) {

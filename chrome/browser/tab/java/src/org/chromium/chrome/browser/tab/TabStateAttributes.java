@@ -220,7 +220,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
                     @Override
                     public void onTabPinnedStateChanged(Tab tab, boolean isPinned) {
                         if (!tab.isInitialized()) return;
-                        updateIsDirty(DirtinessState.DIRTY);
+                        updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
                     }
                 });
     }
@@ -306,8 +306,10 @@ public class TabStateAttributes extends TabWebContentsUserData {
         if (mNumberOpenBatchEdits > 0) {
             updatePendingDirty(mDirtinessState);
         } else {
+            // All observers should see the new state, even if it's not the current state anymore.
+            @DirtinessState int newState = mDirtinessState;
             for (Observer observer : mObservers) {
-                observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
+                observer.onTabStateDirtinessChanged(mTab, newState);
             }
         }
     }

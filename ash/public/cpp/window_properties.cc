@@ -44,6 +44,9 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIgnoreWindowActivationKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInOverviewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInShelfKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsDraggingTabsKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*,
+                             kTabDraggingSourceWindowKey,
+                             nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideInDeskMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kForceVisibleInMiniViewKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(uint64_t, kLacrosProfileId, 0)

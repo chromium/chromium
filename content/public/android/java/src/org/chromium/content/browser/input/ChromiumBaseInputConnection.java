@@ -19,9 +19,8 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface ChromiumBaseInputConnection extends InputConnection {
     /** A factory class to create or reuse ChromiumBaseInputConnection. */
-    public interface Factory {
-        @Nullable
-        ChromiumBaseInputConnection initializeAndGet(
+    interface Factory {
+        @Nullable ChromiumBaseInputConnection initializeAndGet(
                 View view,
                 ImeAdapterImpl imeAdapter,
                 int inputType,
@@ -51,19 +50,19 @@ public interface ChromiumBaseInputConnection extends InputConnection {
      * Updates the internal representation of the text being edited and its selection and
      * composition properties.
      *
-     * @param text The String contents of the field being edited.
+     * @param text The contents of the field being edited.
      * @param selectionStart The character offset of the selection start, or the caret position if
-     *                       there is no selection.
+     *     there is no selection.
      * @param selectionEnd The character offset of the selection end, or the caret position if there
-     *                     is no selection.
+     *     is no selection.
      * @param compositionStart The character offset of the composition start, or -1 if there is no
-     *                         composition.
+     *     composition.
      * @param compositionEnd The character offset of the composition end, or -1 if there is no
-     *                       selection.
+     *     selection.
      * @param replyToRequest True when the update was made in a reply to IME's request.
      */
     void updateStateOnUiThread(
-            String text,
+            CharSequence text,
             int selectionStart,
             int selectionEnd,
             int compositionStart,

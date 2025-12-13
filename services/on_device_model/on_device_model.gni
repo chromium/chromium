@@ -12,10 +12,16 @@ declare_args() {
 }
 
 declare_args() {
+  # The on device model service is only enabled on a subset of platforms.
+  # Exclude it on other platforms due to binary size.
+  use_on_device_model_service = is_win || is_mac || is_linux || is_ios || is_cbx
+}
+
+declare_args() {
   # Constraint code is disabled on platforms where the on-device model does not
   # run due to binary size.
-  enable_constraints = is_win || is_mac || is_linux || is_ios || is_cbx
-  enable_ml_internal = build_with_internal_optimization_guide &&
-                       (is_win || is_mac || is_linux || is_ios || is_cbx)
+  enable_constraints = use_on_device_model_service
+  enable_ml_internal =
+      build_with_internal_optimization_guide && use_on_device_model_service
   use_chromeos_model_service = is_chrome_branded && is_cbx
 }

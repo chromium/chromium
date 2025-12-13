@@ -6,7 +6,7 @@
 #define UI_GTK_X_GTK_UI_PLATFORM_X11_H_
 
 #include "base/memory/raw_ref.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
@@ -24,8 +24,8 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
 
   // GtkUiPlatform:
   void OnInitialized() override;
-  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGtkWidgetTransientFor(GtkWidget* widget,
+  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) const override;
+  void SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
   void ShowGtkWindow(GtkWindow* window) override;

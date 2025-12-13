@@ -23,7 +23,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
 /** MockTabCreator for use in tests. */
-public class MockTabCreator extends TabCreator {
+public class MockTabCreator implements TabCreator {
     public final SparseArray<TabState> created;
     public final CallbackHelper callback;
 
@@ -74,7 +74,7 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public Tab createFrozenTab(TabState state, int id, int index) {
+    public @Nullable Tab createFrozenTab(TabState state, int id, int index) {
         MockTab tab =
                 new MockTab(
                         id,
@@ -111,6 +111,9 @@ public class MockTabCreator extends TabCreator {
     public Tab launchUrl(String url, @TabLaunchType int type) {
         return null;
     }
+
+    @Override
+    public void launchNtp(@TabLaunchType int type) {}
 
     private void storeTabInfo(TabState state, int id) {
         if (created.size() == 0) idOfFirstCreatedTab = id;

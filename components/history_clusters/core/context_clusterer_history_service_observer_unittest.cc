@@ -4,11 +4,14 @@
 
 #include "components/history_clusters/core/context_clusterer_history_service_observer.h"
 
+#include <optional>
+
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/search_engines/search_engines_test_environment.h"
@@ -56,7 +59,7 @@ class TestOptimizationGuideDecider
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
     DCHECK_EQ(optimization_guide::proto::HISTORY_CLUSTERS, optimization_type);
-    return url.host() == "shouldskip.com"
+    return url.GetHost() == "shouldskip.com"
                ? optimization_guide::OptimizationGuideDecision::kFalse
                : optimization_guide::OptimizationGuideDecision::kTrue;
   }
@@ -212,7 +215,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
                 history::VisitID opener_visit = history::kInvalidVisitID,
                 history::VisitID referring_visit = history::kInvalidVisitID,
                 bool is_synced_visit = false,
-                bool is_visible_visit = true) {
+                bool is_visible_visit = true,
+                history::VisitResponseCodeCategory response_code_category =
+                    history::VisitResponseCodeCategory::kNot404) {
     history::URLRow url_row(url);
     history::VisitRow new_visit;
     new_visit.visit_id = visit_id;
@@ -224,7 +229,9 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         (is_visible_visit ? ui::PAGE_TRANSITION_LINK
                           : ui::PAGE_TRANSITION_AUTO_SUBFRAME) |
         ui::PAGE_TRANSITION_CHAIN_END);
-    observer_->OnURLVisited(history_service_.get(), url_row, new_visit);
+    observer_->OnURLVisited(
+        history_service_.get(),
+        history::VisitedURLInfo(url_row, new_visit, response_code_category));
   }
 
   // Simulates deleting `urls` from history. If `urls` is empty, we will
@@ -640,6 +647,28 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
 
   histogram_tester.ExpectTotalCount(
       "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
+}
+
+TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
+  base::HistogramTester histogram_tester;
+
+  SetPersistenceExpectedConfig();
+
+  VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
+           history::kInvalidVisitID, history::kInvalidVisitID,
+           /*is_synced_visit=*/false, /*is_visible_visit=*/true,
+           history::VisitResponseCodeCategory::k404);
+
+  EXPECT_EQ(0, GetNumClustersCreated());
+
+  // No DB latency histograms should be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.ReserveNextClusterId", 0);
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.DbLatency.UpdateClusterVisit", 0);
+  // Visit processing histogram should not be recorded.
+  histogram_tester.ExpectTotalCount(
+      "History.Clusters.ContextClusterer.VisitProcessingLatency.UrlVisited", 0);
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {

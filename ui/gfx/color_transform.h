@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/feature_list.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/color_space.h"
@@ -49,7 +48,7 @@ class COLOR_SPACE_EXPORT ColorTransform {
     float multiplier = 1.f;
 
     // Used for tone mapping PQ sources.
-    std::optional<gfx::HDRMetadata> src_hdr_metadata;
+    gfx::HDRMetadata src_hdr_metadata;
 
     // Used for interpreting color spaces whose definition depends on an SDR
     // white point and for tone mapping.

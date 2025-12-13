@@ -61,8 +61,13 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
 
   sync_pb::CrossUserSharingKeys malformed_proto = original_keys.ToProto();
   ASSERT_THAT(malformed_proto.private_key(), SizeIs(2));
-  malformed_proto.mutable_private_key(1)->set_x25519_private_key(
-      "malformed-key");
+  for (sync_pb::CrossUserSharingPrivateKey& private_key :
+       *malformed_proto.mutable_private_key()) {
+    if (private_key.version() == 1) {
+      private_key.set_x25519_private_key("malformed-key");
+      break;
+    }
+  }
 
   CrossUserSharingKeys restored_keys =
       CrossUserSharingKeys::CreateFromProto(malformed_proto);

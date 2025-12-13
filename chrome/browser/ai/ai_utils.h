@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_AI_AI_UTILS_H_
 #define CHROME_BROWSER_AI_AI_UTILS_H_
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
@@ -45,9 +45,8 @@ class AIUtils {
     }
   }
 
-  static blink::mojom::ModelStreamingResponseStatus ConvertModelExecutionError(
-      optimization_guide::OptimizationGuideModelExecutionError::
-          ModelExecutionError error);
+  static blink::mojom::ModelStreamingResponseStatus ConvertOnDeviceError(
+      optimization_guide::OnDeviceError error);
 
   static constexpr int kNormalizedDownloadProgressMax = 0x10000;
 

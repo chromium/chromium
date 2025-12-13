@@ -72,6 +72,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #endif
 
 namespace policy {
@@ -194,7 +197,7 @@ class LocalTestInfoBarVisibilityManager :
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     CHECK(browser);
 
-    if (BrowserList::GetInstance()->empty()) {
+    if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
       BrowserList::GetInstance()->RemoveObserver(this);
     }
     browser->tab_strip_model()->RemoveObserver(this);
@@ -229,17 +232,19 @@ class LocalTestInfoBarVisibilityManager :
       model->AddObserver(this);
     }
 #else
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CHECK(browser);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          CHECK(browser);
 
-      OnBrowserAdded(browser);
+          OnBrowserAdded(browser->GetBrowserForMigrationOnly());
 
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); i++) {
-        AddInfobarForActiveLocalTestPolicies(
-            tab_strip_model->GetWebContentsAt(i));
-      }
-    }
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); i++) {
+            AddInfobarForActiveLocalTestPolicies(
+                tab_strip_model->GetWebContentsAt(i));
+          }
+          return true;
+        });
     BrowserList::GetInstance()->AddObserver(this);
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = true;
@@ -252,7 +257,9 @@ class LocalTestInfoBarVisibilityManager :
         infobars::ContentInfoBarManager::FromWebContents(web_contents),
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
         l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),
-        /*auto_expire=*/false, /*should_animate=*/false, /*closeable=*/false);
+        /*auto_expire=*/false, /*should_animate=*/false, /*closeable=*/false,
+        /*infobar_priority=*/
+        infobars::InfoBarDelegate::InfobarPriority::kLow);
   }
 
   void DismissInfobarsForActiveLocalTestPoliciesAllTabs() {
@@ -268,17 +275,19 @@ class LocalTestInfoBarVisibilityManager :
       model->RemoveObserver(this);
     }
 #else
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      CHECK(browser);
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          CHECK(browser);
 
-      browser->tab_strip_model()->RemoveObserver(this);
+          browser->GetTabStripModel()->RemoveObserver(this);
 
-      TabStripModel* tab_strip_model = browser->tab_strip_model();
-      for (int i = 0; i < tab_strip_model->count(); i++) {
-        DismissInfobarForActiveLocalTestPolicies(
-            tab_strip_model->GetWebContentsAt(i));
-      }
-    }
+          TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_strip_model->count(); i++) {
+            DismissInfobarForActiveLocalTestPolicies(
+                tab_strip_model->GetWebContentsAt(i));
+          }
+          return true;
+        });
     BrowserList::GetInstance()->RemoveObserver(this);
 #endif  // BUILDFLAG(IS_ANDROID)
     infobar_active_ = false;
@@ -404,7 +413,6 @@ void ProfilePolicyConnector::Init(
     // the user supplied is not a device-local account user or not in demo mode.
     std::string user_id = user->GetAccountId().GetUserEmail();
     if (ash::demo_mode::IsDemoAccountSignInEnabled()) {
-      // TODO(crbug.com/355043200): Figure out if it is safe to do so.
       std::vector<DeviceLocalAccount> device_local_accounts =
           GetDeviceLocalAccounts(ash::CrosSettings::Get());
       CHECK_EQ(device_local_accounts.size(), 1u);

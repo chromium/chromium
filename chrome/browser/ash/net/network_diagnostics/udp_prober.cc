@@ -68,11 +68,10 @@ class UdpProberImpl final : public network::mojom::UDPSocketListener,
 
  private:
   // Processes the results of the DNS resolution done by |host_resolver_|.
-  void OnHostResolutionComplete(
-      int result,
-      const net::ResolveErrorInfo&,
-      const std::optional<net::AddressList>& resolved_addresses,
-      const std::optional<net::HostResolverEndpointResults>&);
+  void OnHostResolutionComplete(int result,
+                                const net::ResolveErrorInfo&,
+                                const net::AddressList& resolved_addresses,
+                                const net::HostResolverEndpointResults&);
 
   // On success, the UDP socket is connected to the destination and is ready to
   // send data. On failure, the UdpProberImpl exits with a failure.
@@ -169,16 +168,16 @@ UdpProberImpl::~UdpProberImpl() = default;
 void UdpProberImpl::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (result != net::OK) {
-    CHECK(!resolved_addresses);
+    CHECK(resolved_addresses.empty());
     OnDone(result, ProbeExitEnum::kDnsFailure);
     return;
   }
-  CHECK(resolved_addresses);
+  CHECK(!resolved_addresses.empty());
 
   network::mojom::NetworkContext* network_context =
       network_context_getter_.Run();
@@ -200,7 +199,7 @@ void UdpProberImpl::OnHostResolutionComplete(
       FROM_HERE, timeout_after_host_resolution_,
       base::BindOnce(&UdpProberImpl::OnDone, weak_factory_.GetWeakPtr(),
                      net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout));
-  udp_socket_remote_->Connect(resolved_addresses->front(), nullptr,
+  udp_socket_remote_->Connect(resolved_addresses.front(), nullptr,
                               base::BindOnce(&UdpProberImpl::OnConnectComplete,
                                              weak_factory_.GetWeakPtr()));
 }

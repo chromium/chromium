@@ -48,7 +48,10 @@ class DrawWaiterForTest : public CompositorObserver {
   void OnCompositingDidCommit(Compositor* compositor) override;
   void OnCompositingStarted(Compositor* compositor,
                             base::TimeTicks start_time) override;
-  void OnCompositingAckDeprecated(Compositor* compositor) override;
+  void OnDidPresentCompositorFrame(
+      Compositor* compositor,
+      uint32_t frame_token,
+      const gfx::PresentationFeedback& feedback) override;
 
   std::unique_ptr<base::RunLoop> wait_run_loop_;
 

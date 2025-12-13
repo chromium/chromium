@@ -49,7 +49,6 @@ source_set("tracking_price_ui") {
     "tracking_price_consumer.h",
     "tracking_price_view_controller.h",
     "tracking_price_view_controller.mm",
-    "tracking_price_view_controller_delegate.h",
   ]
   deps = [
     ":constants",
@@ -81,7 +80,6 @@ source_set("eg2_tests") {
     "//components/commerce/core:pref_names",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/settings/ui_bundled/notifications:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ui/base",

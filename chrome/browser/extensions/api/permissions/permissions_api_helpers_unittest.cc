@@ -11,8 +11,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/common/extensions/api/permissions.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permission_set.h"
@@ -466,7 +466,8 @@ TEST(PermissionsApiHelpersTest, Unpack_UsbDevicePermission) {
   constexpr char kUsbDevicesPermissionJson[] =
       R"(usbDevices|[{"productId":2,"vendorId":1}])";
 
-  auto device_list = base::JSONReader::Read(kDeviceListJson);
+  auto device_list = base::JSONReader::Read(
+      kDeviceListJson, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(device_list) << "Failed to parse device list JSON.";
 
   auto usb_device_permission = std::make_unique<UsbDevicePermission>(

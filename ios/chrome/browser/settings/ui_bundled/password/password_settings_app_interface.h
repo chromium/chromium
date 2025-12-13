@@ -93,6 +93,12 @@
                          username:(NSString*)username
                   userDisplayName:(NSString*)userDisplayName;
 
+// Creates a hidden passkey in the passkey store.
++ (void)saveHiddenPasskeyToStore:(NSString*)rpId
+                          userId:(NSString*)userId
+                        username:(NSString*)username
+                 userDisplayName:(NSString*)userDisplayName;
+
 // Returns the number of password forms stored in the profile store.
 + (NSInteger)passwordProfileStoreResultsCount;
 

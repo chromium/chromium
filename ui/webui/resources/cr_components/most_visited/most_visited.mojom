@@ -4,6 +4,7 @@
 
 module most_visited.mojom;
 
+import "components/ntp_tiles/tile_source.mojom";
 import "mojo/public/mojom/base/text_direction.mojom";
 import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
@@ -13,10 +14,11 @@ struct MostVisitedTile {
   mojo_base.mojom.TextDirection title_direction;
   url.mojom.Url url;
   bool is_query_tile;
+  bool allow_user_edit;
+  bool allow_user_delete;
+  ntp_tiles.mojom.TileSource source;
 
   // ======= METRICS =======
-  // Identifier of most visited entry source (e.g. top sites).
-  int32 source;
   // Identifier of most visited entry title source (e.g. page's title tag).
   int32 title_source;
 };
@@ -32,6 +34,7 @@ struct MostVisitedTheme {
 
 struct MostVisitedInfo {
   bool custom_links_enabled;
+  bool enterprise_shortcuts_enabled;
   bool visible;
   array<MostVisitedTile> tiles;
 };
@@ -48,30 +51,38 @@ interface MostVisitedPageHandlerFactory {
 interface MostVisitedPageHandler {
   // Adds tile.
   AddMostVisitedTile(url.mojom.Url url, string title) => (bool success);
-  // Deletes tile by |url|.
-  DeleteMostVisitedTile(url.mojom.Url url);
-  // Moves tile identified by url to a new position at index |new_pos|.
-  ReorderMostVisitedTile(url.mojom.Url url, uint8 new_pos);
-  // Replaces the custom and most-visited tiles with the default tile set.
-  RestoreMostVisitedDefaults();
-  // Undoes the last action done to the tiles (add, delete, reorder, restore or
-  // update). Note that only the last action can be undone.
-  UndoMostVisitedTileAction();
+  // Deletes |tile|.
+  DeleteMostVisitedTile(MostVisitedTile tile);
+  // Moves |tile| to a new position at index |new_pos|.
+  ReorderMostVisitedTile(MostVisitedTile tile, uint8 new_pos);
+  // Replaces the tiles with the default tile set.
+  RestoreMostVisitedDefaults(ntp_tiles.mojom.TileSource source);
+  // Undoes the auto removal of the most tiles due to inactivity.
+  UndoMostVisitedAutoRemoval();
+  // Undoes the last action done to the tiles (add, delete, reorder, restore
+  // or update).
+  UndoMostVisitedTileAction(ntp_tiles.mojom.TileSource source);
   // Called to get updates on visibility of most visited tiles, whether custom
   // links are enabled, and the tiles themselves.
   UpdateMostVisitedInfo();
-  // Updates a tile by url.
-  UpdateMostVisitedTile(url.mojom.Url url,
+  // Updates |tile| with |new_url| and |new_title|.
+  UpdateMostVisitedTile(MostVisitedTile tile,
                         url.mojom.Url new_url,
                         string new_title) => (bool success);
   // Prerenders |tile|.
-  PrerenderMostVisitedTile(MostVisitedTile tile, bool is_hover_trigger);
+  PrerenderMostVisitedTile(MostVisitedTile tile);
+  // Prefetches |tile|.
+  PrefetchMostVisitedTile(MostVisitedTile tile);
   // Preconnects |tile|. Preresolve/preconnects the origin; a socket created
   // by this call will be reused, if possible, for a subsequent attempt to
   // prerender or navigate to this url.
   PreconnectMostVisitedTile(MostVisitedTile tile);
   // Cancel the on-going prerender if exists.
   CancelPrerender();
+  // Called to get the expanded state of most visited tiles.
+  GetMostVisitedExpandedState() => (bool is_expanded);
+  // Called to set the expanded state of most visited tiles.
+  SetMostVisitedExpandedState(bool is_expanded);
   // ======= METRICS =======
   // Logs that |tiles| were displayed / updated at |time|. The first instance of
   // this event is used as a proxy for when the NTP has finished loading.

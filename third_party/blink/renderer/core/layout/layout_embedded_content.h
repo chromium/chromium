@@ -66,7 +66,7 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
   gfx::Rect BorderBoxFromEmbeddedContent(const gfx::Rect&) const;
 
   PhysicalRect ReplacedContentRectFrom(
-      const PhysicalRect& base_content_rect) const final;
+      const PhysicalRect& base_content_rect) const override;
 
   void UpdateOnEmbeddedContentViewChange();
   void UpdateGeometry(EmbeddedContentView&);
@@ -93,7 +93,9 @@ class CORE_EXPORT LayoutEmbeddedContent : public LayoutReplaced {
 
   PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) final;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) final;
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const final;

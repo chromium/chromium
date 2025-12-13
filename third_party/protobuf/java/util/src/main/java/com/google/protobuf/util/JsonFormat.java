@@ -7,9 +7,6 @@
 
 package com.google.protobuf.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.io.BaseEncoding;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -54,6 +51,7 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -68,11 +66,7 @@ import javax.annotation.Nullable;
 
 /**
  * Utility class to convert protobuf messages to/from the <a href=
- * 'https://developers.google.com/protocol-buffers/docs/proto3#json'>Proto3 JSON format.</a>
- * Only proto3 features are supported. Proto2 only features such as extensions and unknown fields
- * are discarded in the conversion. That is, when converting proto2 messages to JSON format,
- * extensions and unknown fields are treated as if they do not exist. This applies to proto2
- * messages embedded in proto3 messages as well.
+ * 'https://protobuf.dev/programming-guides/json/'>ProtoJSON format.</a>
  */
 public class JsonFormat {
   private static final Logger logger = Logger.getLogger(JsonFormat.class.getName());
@@ -87,7 +81,7 @@ public class JsonFormat {
         com.google.protobuf.TypeRegistry.getEmptyTypeRegistry(),
         TypeRegistry.getEmptyTypeRegistry(),
         ShouldPrintDefaults.ONLY_IF_PRESENT,
-        /* includingDefaultValueFields */ ImmutableSet.of(),
+        /* includingDefaultValueFields */ Collections.emptySet(),
         /* preservingProtoFieldNames */ false,
         /* omittingInsignificantWhitespace */ false,
         /* printingEnumsAsInts */ false,
@@ -200,7 +194,7 @@ public class JsonFormat {
           registry,
           oldRegistry,
           ShouldPrintDefaults.ALWAYS_PRINT_EXCEPT_MESSAGES_AND_ONEOFS,
-          ImmutableSet.of(),
+          Collections.emptySet(),
           preservingProtoFieldNames,
           omittingInsignificantWhitespace,
           printingEnumsAsInts,
@@ -217,9 +211,10 @@ public class JsonFormat {
      * here.
      */
     public Printer includingDefaultValueFields(Set<FieldDescriptor> fieldsToAlwaysOutput) {
-      Preconditions.checkArgument(
-          null != fieldsToAlwaysOutput && !fieldsToAlwaysOutput.isEmpty(),
-          "Non-empty Set must be supplied for includingDefaultValueFields.");
+      if (fieldsToAlwaysOutput == null || fieldsToAlwaysOutput.isEmpty()) {
+        throw new IllegalArgumentException(
+            "Non-empty Set must be supplied for includingDefaultValueFields.");
+      }
       if (shouldPrintDefaults != ShouldPrintDefaults.ONLY_IF_PRESENT) {
         throw new IllegalStateException(
             "JsonFormat includingDefaultValueFields has already been set.");
@@ -228,7 +223,7 @@ public class JsonFormat {
           registry,
           oldRegistry,
           ShouldPrintDefaults.ALWAYS_PRINT_SPECIFIED_FIELDS,
-          ImmutableSet.copyOf(fieldsToAlwaysOutput),
+          Collections.unmodifiableSet(new HashSet<>(fieldsToAlwaysOutput)),
           preservingProtoFieldNames,
           omittingInsignificantWhitespace,
           printingEnumsAsInts,
@@ -249,7 +244,7 @@ public class JsonFormat {
           registry,
           oldRegistry,
           ShouldPrintDefaults.ALWAYS_PRINT_WITHOUT_PRESENCE_FIELDS,
-          ImmutableSet.of(),
+          Collections.emptySet(),
           preservingProtoFieldNames,
           omittingInsignificantWhitespace,
           printingEnumsAsInts,
@@ -1255,7 +1250,7 @@ public class JsonFormat {
 
         case BYTES:
           generator.print("\"");
-          generator.print(BaseEncoding.base64().encode(((ByteString) value).toByteArray()));
+          generator.print(Base64.getEncoder().encodeToString(((ByteString) value).toByteArray()));
           generator.print("\"");
           break;
 
@@ -1910,9 +1905,9 @@ public class JsonFormat {
 
     private ByteString parseBytes(JsonElement json) {
       try {
-        return ByteString.copyFrom(BaseEncoding.base64().decode(json.getAsString()));
+        return ByteString.copyFrom(Base64.getDecoder().decode(json.getAsString()));
       } catch (IllegalArgumentException e) {
-        return ByteString.copyFrom(BaseEncoding.base64Url().decode(json.getAsString()));
+        return ByteString.copyFrom(Base64.getUrlDecoder().decode(json.getAsString()));
       }
     }
 
@@ -1968,7 +1963,7 @@ public class JsonFormat {
           // If the field type is primitive, but the json type is JsonObject rather than
           // JsonElement, throw a type mismatch error.
           throw new InvalidProtocolBufferException(
-              String.format("Invalid value: %s for expected type: %s", json, field.getType()));
+              "Invalid value: " + json + " for expected type: " + field.getType());
         }
       }
       switch (field.getType()) {

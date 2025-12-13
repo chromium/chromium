@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
-namespace WTF {
+namespace blink {
 namespace internal {
 
 template <typename T>
@@ -27,12 +27,12 @@ using IsCrossThreadOnceFunction =
 
 struct SequenceBoundBindTraits {
   template <typename Signature>
-  using CrossThreadTask = WTF::CrossThreadOnceFunction<Signature>;
+  using CrossThreadTask = CrossThreadOnceFunction<Signature>;
 
   template <typename Functor, typename... Args>
   static inline auto BindOnce(Functor&& functor, Args&&... args) {
-    return blink::CrossThreadBindOnce(std::forward<Functor>(functor),
-                                      std::forward<Args>(args)...);
+    return CrossThreadBindOnce(std::forward<Functor>(functor),
+                               std::forward<Args>(args)...);
   }
 
   template <typename T>
@@ -77,9 +77,8 @@ struct SequenceBoundBindTraits {
 }  // namespace internal
 
 template <typename T>
-using SequenceBound =
-    base::SequenceBound<T, WTF::internal::SequenceBoundBindTraits>;
+using SequenceBound = base::SequenceBound<T, internal::SequenceBoundBindTraits>;
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SEQUENCE_BOUND_H_

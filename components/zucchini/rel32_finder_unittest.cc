@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/zucchini/rel32_finder.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -44,8 +40,8 @@ TEST(Abs32GapFinderTest, All) {
     CHECK_LE(rhi, kRegionTotal);
     CHECK(std::is_sorted(abs32_locations.begin(), abs32_locations.end()));
     CHECK_GT(abs32_width, 0);
-    ConstBufferView region =
-        ConstBufferView::FromRange(image.begin() + rlo, image.begin() + rhi);
+    ConstBufferView region = ConstBufferView::FromRange(
+        UNSAFE_TODO(image.begin() + rlo), UNSAFE_TODO(image.begin() + rhi));
     Abs32GapFinder gap_finder(image, region, abs32_locations, abs32_width);
 
     std::string out_str;
@@ -162,35 +158,43 @@ TEST(Rel32FinderTest, Scan) {
     CHECK_LE(expected_cursor, kRegionTotal);
     CHECK_LE(expected_accept_it, kRegionTotal);
 
-    EXPECT_EQ(image.begin() + expected_cursor, finder.region().begin());
-    EXPECT_EQ(image.begin() + expected_accept_it, finder.accept_it());
+    UNSAFE_TODO(
+        EXPECT_EQ(image.begin() + expected_cursor, finder.region().begin()));
+    UNSAFE_TODO(
+        EXPECT_EQ(image.begin() + expected_accept_it, finder.accept_it()));
   };
 
   check_finder_state(finder, 0, 0);
 
-  finder.next_result = {image.begin() + 1, image.begin() + 1};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 1),
+                        UNSAFE_TODO(image.begin() + 1)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 1, 1);
 
-  finder.next_result = {image.begin() + 2, image.begin() + 2};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 2),
+                        UNSAFE_TODO(image.begin() + 2)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 2, 2);
 
-  finder.next_result = {image.begin() + 5, image.begin() + 6};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 5),
+                        UNSAFE_TODO(image.begin() + 6)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 5, 6);
   finder.Accept();
   check_finder_state(finder, 6, 6);
 
-  finder.next_result = {image.begin() + 7, image.begin() + 7};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 7),
+                        UNSAFE_TODO(image.begin() + 7)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 7, 7);
 
-  finder.next_result = {image.begin() + 8, image.begin() + 8};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 8),
+                        UNSAFE_TODO(image.begin() + 8)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 8, 8);
 
-  finder.next_result = {image.begin() + 99, image.begin() + 99};
+  finder.next_result = {UNSAFE_TODO(image.begin() + 99),
+                        UNSAFE_TODO(image.begin() + 99)};
   EXPECT_TRUE(finder.FindNext());
   check_finder_state(finder, 99, 99);
 
@@ -256,7 +260,8 @@ TEST(Rel32FinderX86Test, FindNext) {
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, rel32.location);
-    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    UNSAFE_TODO(EXPECT_EQ(image.begin() + (rel32.location + 4),
+                          rel_finder.accept_it()));
     EXPECT_FALSE(rel32.can_point_outside_section);
     rel_finder.Accept();
   }
@@ -409,7 +414,8 @@ TEST(Rel32FinderX64Test, FindNext) {
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, rel32.location);
-    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    UNSAFE_TODO(EXPECT_EQ(image.begin() + (rel32.location + 4),
+                          rel_finder.accept_it()));
     EXPECT_FALSE(rel32.can_point_outside_section);
     rel_finder.Accept();
   }
@@ -420,7 +426,8 @@ TEST(Rel32FinderX64Test, FindNext) {
     EXPECT_EQ(location.first,
               size_t(rel_finder.region().begin() - image.begin()));
     EXPECT_EQ(location.second, rel32.location);
-    EXPECT_EQ(image.begin() + (rel32.location + 4), rel_finder.accept_it());
+    UNSAFE_TODO(EXPECT_EQ(image.begin() + (rel32.location + 4),
+                          rel_finder.accept_it()));
     EXPECT_TRUE(rel32.can_point_outside_section);  // Different from before.
     rel_finder.Accept();
   }

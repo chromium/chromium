@@ -18,6 +18,14 @@ class EntityTableTestApi {
 
   sql::Database* db() { return entity_table_->db(); }
 
+  std::vector<EntityInstance::EntityMetadata> GetMetadataEntries() const {
+    std::vector<EntityInstance::EntityMetadata> all_metadata;
+    for (const auto& [guid, metadata] : entity_table_->LoadMetadata()) {
+      all_metadata.push_back(metadata);
+    }
+    return all_metadata;
+  }
+
  private:
   const raw_ref<EntityTable> entity_table_;
 };

@@ -10,11 +10,13 @@
 #include <string>
 
 // TODO(https://crbug.com/skia/13721): Add these operators to Skia source.
+#if !defined(SKIA_COLOR_SPACE_PRIMARIES_OPERATOR_EQUAL)
 SK_API bool operator==(const SkColorSpacePrimaries& a,
                        const SkColorSpacePrimaries& b);
 
 SK_API bool operator!=(const SkColorSpacePrimaries& a,
                        const SkColorSpacePrimaries& b);
+#endif
 
 namespace skia {
 

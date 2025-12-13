@@ -1,6 +1,6 @@
 Name: googleid
 Short Name: googleid
-URL: https://developers.google.com/android/guides/setup
+URL: https://dl.google.com/dl/android/maven2/com/google/android/libraries/identity/googleid/googleid/1.1.1/googleid-1.1.1.aar
 Version: 1.1.1
 Update Mechanism: Autoroll
 License: Android Software Development Kit License

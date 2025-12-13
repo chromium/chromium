@@ -1,0 +1,20 @@
+# https://crbug.com/441973530
+-org.chromium.chrome.browser.PopupMultiwindowPTTest.testLaunchBoundsSize
+
+# https://crbug.com/442027285
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
+
+# https://crbug.com/353910783
+-org.chromium.chrome.browser.TabsTest.testHideKeyboard
+-org.chromium.chrome.browser.keyboard_accessory.AutofillKeyboardAccessoryIntegrationTest.testSelectSuggestionHidesKeyboardAccessory
+
+# https://crbug.com/445993228
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSavePageRightClick
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testPrintPageRightClick
+
+# https://crbug.com/445994927
+-org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
+
+# https://crbug.com/40901097
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testTabSwitcherScrim

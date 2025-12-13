@@ -72,8 +72,9 @@
 <translation id="1261045951892393759">um gato a tocar uma guitarra Flying V montado num unicórnio, com um relâmpago ao fundo</translation>
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1274654146705270731">laranjas</translation>
-<translation id="1275718070701477396">Linha selecionada</translation>
+<translation id="1275718070701477396">Opção selecionada</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
+<translation id="1292474106138697109">Ecrã das Ferramentas para sala de aula</translation>
 <translation id="1300115153046603471">O tipo de APN é predefinido e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Converter</translation>
@@ -561,7 +562,7 @@
 <translation id="3484914941826596830">Enquanto o firmware está a ser atualizado, não desligue este dispositivo externo nem encerre o computador. Pode minimizar esta janela. Esta atualização pode demorar alguns minutos e o seu dispositivo externo pode não funcionar durante este período.</translation>
 <translation id="3486220673238053218">definição</translation>
 <translation id="3487866404496702283">Feedback sobre a caraterística do mahi</translation>
-<translation id="3488065109653206955">Parcialmente activado</translation>
+<translation id="3488065109653206955">Parcialmente ativado</translation>
 <translation id="3492882532495507361">Um escritório <ph name="OFFICE_STYLE" /> com tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">Os dados são medidos pelo seu Chromebook. Estes dados podem ser diferentes dos dados do fornecedor.</translation>
 <translation id="3502426834823382181">ver todas as apps</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
 <translation id="4300272766492248925">Abrir aplicação</translation>
 <translation id="430786093962686457">chiffon</translation>
+<translation id="4309762678330556039">Crie automaticamente transcrições e pesquise áudio. Pode criar gravações mesmo quando não tem ligação à Internet.</translation>
 <translation id="4310735698903592804">Imagens de fundo recentes com tecnologia de IA da Google</translation>
 <translation id="4320904097188876154">rosa fluorescente</translation>
 <translation id="432961742358282111">Clique com o botão direito do rato ou prima sem soltar para ver definições, traduções ou conversões de unidades. Use as teclas de seta para a esquerda ou para a direita para gerir esta funcionalidade.</translation>
@@ -1009,7 +1011,7 @@
 <translation id="5400907029458559844">O dispositivo está a ligar.</translation>
 <translation id="5401938042319910061">Executar todas as rotinas</translation>
 <translation id="5410755018770633464">cachorros quentes</translation>
-<translation id="5423849171846380976">Activado</translation>
+<translation id="5423849171846380976">Ativado</translation>
 <translation id="5430931332414098647">Ligação via telemóvel instantânea</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5457599981699367932">Navegar como convidado</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> testada</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">As Ferramentas para sala de aula estão a partilhar o seu ecrã com <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">A sua sessão foi terminada</translation>
 <translation id="5620281292257375798">Apenas interno</translation>
 <translation id="5628106863521633649">Idiomas disponíveis</translation>
@@ -1106,7 +1109,7 @@
 <translation id="5907649332524363701">cor das teclas</translation>
 <translation id="5908813850962688338">A instalação desta atualização vai demorar alguns minutos. Mantenha o dispositivo ligado e a receber alimentação quando a atualização estiver a ser transferida. O dispositivo pode ser reiniciado várias vezes e apresentar um ecrã preto durante este processo. Vai ser-lhe pedido que reinicie o dispositivo para concluir a instalação.</translation>
 <translation id="5915794087373112615">O professor vai ver o seu ecrã dentro de <ph name="NUM_SECONDS" /> segundos</translation>
-<translation id="5916084858004523819">Proibido</translation>
+<translation id="5916084858004523819">Proibida</translation>
 <translation id="5916664084637901428">Ativado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O seu ficheiro foi digitalizado com êxito e guardado em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os seus ficheiros foram digitalizados com êxito e guardados em <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Botão de eliminação para <ph name="ACCELERATOR_INFO" />.</translation>
@@ -1115,7 +1118,7 @@
 <translation id="5939518447894949180">Repor</translation>
 <translation id="5942727615796467094">O administrador de <ph name="MANAGER" /> definiu quando é possível usar este dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="594552776027197022">Gerar par de chaves aleatório</translation>
-<translation id="5946538341867151940">Ainda não estabeleceu ligação. Se o seu operador móvel recomendar um APN (nome do ponto de acesso) personalizado, introduza as informações do APN através da seleção de "+ Novo APN"</translation>
+<translation id="5946538341867151940">Ainda não estabeleceu ligação. Se o seu operador móvel recomendar um APN personalizado, introduza as informações do APN selecionando "+ Novo APN".</translation>
 <translation id="5947266287934282605">Se o último dia do mês for antes deste dia, os dados são repostos no último dia do mês</translation>
 <translation id="5948460390109837040">cães</translation>
 <translation id="594989847980441553">Selecione "Criar" para criar uma imagem com IA.
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Fluxo das nuvens</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nenhum scanner disponível</translation>
-<translation id="6231648282154119906">Como parte da Proteção melhorada que escolheu, a Navegação Segura do Google vai analisar automaticamente os ficheiros suspeitos</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6234024205316847054">Apresentar limites</translation>
 <translation id="6243280677745499710">Definida atualmente</translation>
@@ -1765,7 +1767,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8820457400746201697">Mova o ponto de toque azul para uma ação. Selecione a tecla associada para personalizar.</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8833620912470026819">floresta de catos</translation>
-<translation id="8834539327799336565">Atualmente ligados</translation>
+<translation id="8834539327799336565">Dispositivos atualmente ligados</translation>
 <translation id="8845001906332463065">Obter ajuda</translation>
 <translation id="8849799913685544685">farol</translation>
 <translation id="8851859208664803097">Parada – Impressora inacessível</translation>
@@ -1871,7 +1873,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="950520315903467048">Tecla em falta para <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Compare vozes ao longo da gravação para que a transcrição reflita o que cada interlocutor disse e quando</translation>
-<translation id="952992212772159698">Não activado</translation>
+<translation id="952992212772159698">Não ativado</translation>
 <translation id="95718197892796296">argila</translation>
 <translation id="959792926760890141">A reposição de segurança desativa as extensões do navegador Chrome e repõe a rede e outras definições para as predefinições seguras.
           O seu motor de pesquisa predefinido vai ser reposto, mas os seus separadores, ficheiros, cookies e histórico não vão ser alterados.</translation>

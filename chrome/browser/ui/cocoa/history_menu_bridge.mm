@@ -27,11 +27,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/cocoa/group_menu_util.h"
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/grit/components_scaled_resources.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -73,12 +75,6 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
   if (auto* profile_manager = g_browser_process->profile_manager()) {
     profile_manager_observation_.Observe(profile_manager);
   }
-
-  // Set the static icons in the menu.
-  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-  NSMenuItem* full_history_item = [HistoryMenu() itemWithTag:IDC_SHOW_HISTORY];
-  [full_history_item
-      setImage:rb.GetNativeImageNamed(IDR_HISTORY_FAVICON).ToNSImage()];
 
   // Set the visibility of menu items according to profile type.
   // "Recently Visited", "Recently Closed" and "Show Full History" sections
@@ -123,6 +119,7 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     }
   }
 
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   default_favicon_ = rb.GetNativeImageNamed(IDR_DEFAULT_FAVICON).ToNSImage();
 
   [HistoryMenu() setDelegate:controller_];
@@ -159,7 +156,8 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       }
     } else if (entry->type == sessions::tab_restore::Type::TAB) {
       const auto& tab = static_cast<sessions::tab_restore::Tab&>(*entry);
-      std::unique_ptr<HistoryItem> item = HistoryItemForTab(tab);
+      std::unique_ptr<HistoryItem> item =
+          HistoryItemForTab(tab, /*attach_group_icon=*/true);
       if (item) {
         AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
         ++added_count;
@@ -292,6 +290,9 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
     [item->menu_item setImage:default_favicon_];
   }
 
+  chrome::UpdateGroupIndicatorForMenuItem(item->menu_item,
+                                          item->tab_group_color_id);
+
   // Add a tooltip if the history item is for a single tab.
   if (item->tabs.empty()) {
     NSString* tooltip = [NSString
@@ -422,7 +423,9 @@ int HistoryMenuBridge::AddTabsToSubmenu(
   NSInteger subindex = [[submenu itemArray] count];
   int added_count = 0;
   for (const auto& tab : tabs) {
-    std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
+    // Do not attach group icon to tabs in sub menu.
+    std::unique_ptr<HistoryItem> tab_item =
+        HistoryItemForTab(*tab, /*attach_group_icon=*/false);
     if (tab_item) {
       item->tabs.push_back(tab_item.get());
       AddItemToMenu(std::move(tab_item), submenu, kRecentlyClosed + 1,
@@ -476,6 +479,7 @@ void HistoryMenuBridge::FinishCreateMenu() {
   history::QueryOptions options;
   options.max_count = kVisitedCount;
   options.SetRecentDayRange(kVisitedScope);
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
 
   history_service_->QueryHistory(
       std::u16string(), options,
@@ -535,7 +539,8 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
 }
 
 std::unique_ptr<HistoryMenuBridge::HistoryItem>
-HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry) {
+HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry,
+                                     bool attach_group_icon) {
   DCHECK(!entry.navigations.empty());
 
   const sessions::SerializedNavigationEntry& current_navigation =
@@ -547,6 +552,11 @@ HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry) {
 
   // Tab navigations don't come with icons, so we always have to request them.
   GetFaviconForHistoryItem(item.get());
+
+  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu) &&
+      entry.group_visual_data.has_value() && attach_group_icon) {
+    item->tab_group_color_id = entry.group_visual_data.value().color();
+  }
 
   return item;
 }
@@ -590,9 +600,13 @@ void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
   }
 }
 
-void HistoryMenuBridge::OnURLVisited(history::HistoryService* history_service,
-                                     const history::URLRow& url_row,
-                                     const history::VisitRow& new_visit) {
+void HistoryMenuBridge::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
   OnHistoryChanged();
 }
 

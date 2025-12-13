@@ -45,7 +45,7 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   // current password_manager::ui::State value for the provided |web_contents|.
   static PasswordBubbleViewBase* CreateBubble(
       content::WebContents* web_contents,
-      views::View* anchor_view,
+      views::BubbleAnchor anchor_view,
       DisplayReason reason);
 
   // Closes the existing bubble.
@@ -62,11 +62,15 @@ class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
   virtual PasswordBubbleControllerBase* GetController() = 0;
   virtual const PasswordBubbleControllerBase* GetController() const = 0;
 
+  // views::View:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
+
  protected:
   // The |easily_dismissable| flag indicates if the bubble should close upon
   // a click in the content area of the browser.
   PasswordBubbleViewBase(content::WebContents* web_contents,
-                         views::View* anchor_view,
+                         views::BubbleAnchor anchor_view,
                          bool easily_dismissable);
 
   ~PasswordBubbleViewBase() override;

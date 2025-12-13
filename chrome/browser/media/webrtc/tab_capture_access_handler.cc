@@ -144,7 +144,7 @@ void TabCaptureAccessHandler::HandleRequest(
   if (!can_show_web_contents.Run(target_web_contents)) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+        blink::mojom::MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
         /*ui=*/nullptr);
     return;
   }
@@ -157,7 +157,8 @@ void TabCaptureAccessHandler::HandleRequest(
           request.render_process_id, request.render_frame_id, extension_id)) {
     std::move(callback).Run(
         blink::mojom::StreamDevicesSet(),
-        blink::mojom::MediaStreamRequestResult::INVALID_STATE, /*ui=*/nullptr);
+        blink::mojom::MediaStreamRequestResult::REGISTRY_REQUEST_UNVERIFIED,
+        /*ui=*/nullptr);
     return;
   }
 
@@ -251,7 +252,7 @@ void TabCaptureAccessHandler::OnDlpRestrictionChecked(
   } else {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED,
+             blink::mojom::MediaStreamRequestResult::DLP_PERMISSION_DENIED,
              /*ui=*/nullptr);
   }
 }

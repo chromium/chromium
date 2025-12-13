@@ -76,7 +76,6 @@ void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
                        kCameraRollThumbnailBorderSize.height(), false);
 
   if (video_type_) {
-    auto* color_provider = AshColorProvider::Get();
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
@@ -86,8 +85,7 @@ void CameraRollThumbnail::PaintButtonContents(gfx::Canvas* canvas) {
     canvas->DrawImageInt(
         CreateVectorIcon(
             kPhoneHubCameraRollItemVideoIcon, kCameraRollThumbnailVideoIconSize,
-            color_provider->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kIconColorPrimary)),
+            GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary)),
         kCameraRollThumbnailVideoIconOrigin.x(),
         kCameraRollThumbnailVideoIconOrigin.y());
   }

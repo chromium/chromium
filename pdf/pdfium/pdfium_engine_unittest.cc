@@ -13,8 +13,9 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
@@ -24,15 +25,19 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/hash.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
+#include "pdf/page_character_index.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_draw_selection_test_base.h"
+#include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_test_base.h"
+#include "pdf/test/input_event_util.h"
 #include "pdf/test/mouse_event_builder.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
@@ -71,11 +76,18 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::IsEmpty;
+using ::testing::Mock;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Return;
 using ::testing::StrictMock;
+
+constexpr char kSelectTextExpectedText[] =
+    "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
+
+constexpr gfx::PointF kHelloWorldStartPosition{35.0f, 110.0f};
+constexpr gfx::PointF kHelloWorldEndPosition{100.0f, 110.0f};
 
 MATCHER_P2(LayoutWithSize, width, height, "") {
   return arg.size() == gfx::Size(width, height);
@@ -83,16 +95,6 @@ MATCHER_P2(LayoutWithSize, width, height, "") {
 
 MATCHER_P(LayoutWithOptions, options, "") {
   return arg.options() == options;
-}
-
-blink::WebMouseEvent CreateLeftClickWebMouseEventAtPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder().CreateLeftClickAtPosition(position).Build();
-}
-
-blink::WebMouseEvent CreateLeftClickWebMouseUpEventAtPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder().CreateLeftMouseUpAtPosition(position).Build();
 }
 
 blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
@@ -105,17 +107,18 @@ blink::WebMouseEvent CreateRightClickWebMouseEventAtPosition(
       .Build();
 }
 
-blink::WebMouseEvent CreateMoveWebMouseEventToPosition(
-    const gfx::PointF& position) {
-  return MouseEventBuilder()
-      .SetType(blink::WebInputEvent::Type::kMouseMove)
-      .SetPosition(position)
-      .Build();
+std::string GetPlatformTextExpectation(std::string expectation) {
+#if BUILDFLAG(IS_WIN)
+  base::ReplaceSubstringsAfterOffset(&expectation, /*start_offset=*/0, "\n",
+                                     "\r\n");
+#endif
+  return expectation;
 }
 
 class MockTestClient : public TestClient {
  public:
-  MockTestClient() {
+  explicit MockTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {
     ON_CALL(*this, ProposeDocumentLayout)
         .WillByDefault([this](const DocumentLayout& layout) {
           TestClient::ProposeDocumentLayout(layout);
@@ -136,10 +139,30 @@ class MockTestClient : public TestClient {
   MOCK_METHOD(bool, IsPrintPreview, (), (const override));
   MOCK_METHOD(void, DocumentFocusChanged, (bool), (override));
   MOCK_METHOD(void, SetLinkUnderCursor, (const std::string&), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
 #if BUILDFLAG(ENABLE_PDF_INK2)
   MOCK_METHOD(bool, IsInAnnotationMode, (), (const override));
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 };
+
+void SimulateMultiClick(PDFiumEngine& engine,
+                        const gfx::PointF& position,
+                        int click_count) {
+  for (int i = 0, click = 1; i < click_count; ++i, ++click) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // On both Linux and ChromeOS `click_count` is only 1, 2 or 3. On MacOS and
+    // Windows `click_count` just keeps increasing as the user keeps clicking.
+    if (click > 3) {
+      click = 1;
+    }
+#endif
+    EXPECT_TRUE(engine.HandleInputEvent(MouseEventBuilder()
+                                            .CreateLeftClickAtPosition(position)
+                                            .SetClickCount(click)
+                                            .Build()));
+  }
+}
 
 }  // namespace
 
@@ -148,7 +171,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
   void ExpectPageRect(const PDFiumEngine& engine,
                       size_t page_index,
                       const gfx::Rect& expected_rect) {
-    const PDFiumPage& page = GetPDFiumPageForTest(engine, page_index);
+    const PDFiumPage& page = GetPDFiumPage(engine, page_index);
     EXPECT_EQ(expected_rect, page.rect());
   }
 
@@ -156,7 +179,7 @@ class PDFiumEngineTest : public PDFiumTestBase {
   // loaded incrementally. Note that this function will return `false` if
   // incremental loading fails, but also if incremental loading is disabled.
   bool TryLoadIncrementally() {
-    NiceMock<MockTestClient> client;
+    TestClient client(/*use_skia_renderer=*/GetParam());
     InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
         &client, FILE_PATH_LITERAL("linearized.pdf"));
     if (!initialize_result.engine) {
@@ -205,15 +228,16 @@ class PDFiumEngineTest : public PDFiumTestBase {
   int CountAvailablePages(const PDFiumEngine& engine) {
     int available_pages = 0;
     for (int i = 0; i < engine.GetNumberOfPages(); ++i) {
-      if (GetPDFiumPageForTest(engine, i).available())
+      if (GetPDFiumPage(engine, i).available()) {
         ++available_pages;
+      }
     }
     return available_pages;
   }
 };
 
 TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
 
   // ProposeDocumentLayout() gets called twice during loading because
   // PDFiumEngine::ContinueLoadingDocument() calls LoadBody() (which eventually
@@ -237,7 +261,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdf) {
 }
 
 TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -260,7 +284,7 @@ TEST_P(PDFiumEngineTest, InitializeWithRectanglesMultiPagesPdfInTwoUpView) {
 }
 
 TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   {
     InSequence normal_then_append;
     EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(343, 1664)))
@@ -281,7 +305,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithFewerPages) {
 }
 
 TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   {
     InSequence normal_then_append;
     EXPECT_CALL(client, ProposeDocumentLayout(LayoutWithSize(343, 1664)))
@@ -306,7 +330,7 @@ TEST_P(PDFiumEngineTest, AppendBlankPagesWithMorePages) {
 }
 
 TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -321,7 +345,7 @@ TEST_P(PDFiumEngineTest, ProposeDocumentLayoutWithOverlap) {
 }
 
 TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -333,12 +357,12 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutBeforePluginSizeUpdated) {
   EXPECT_CALL(client, ScrollToPage(-1)).Times(0);
   EXPECT_EQ(gfx::Size(343, 1664), engine.ApplyDocumentLayout(options));
 
-  EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
+  EXPECT_CALL(client, ScrollToPage(-1));
   FinishWithPluginSizeUpdated(engine);
 }
 
 TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -348,13 +372,13 @@ TEST_P(PDFiumEngineTest, ApplyDocumentLayoutAvoidsInfiniteLoop) {
   EXPECT_EQ(gfx::Size(343, 1664), engine->ApplyDocumentLayout(options));
 
   options.RotatePagesClockwise();
-  EXPECT_CALL(client, ScrollToPage(-1)).Times(1);
+  EXPECT_CALL(client, ScrollToPage(-1));
   EXPECT_EQ(gfx::Size(343, 1463), engine->ApplyDocumentLayout(options));
   EXPECT_EQ(gfx::Size(343, 1463), engine->ApplyDocumentLayout(options));
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("embedded_attachments.pdf"));
   ASSERT_TRUE(engine);
@@ -379,7 +403,8 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
   }
 
   {
-    static constexpr char kCheckSum[] = "72afcddedf554dda63c0c88e06f1ce18";
+    static constexpr char kCheckSum[] =
+        "137F774765ABC1E8D6E650DB560F5EBBBC1603664BF34D21A6AD846BB26E2165";
     const DocumentAttachmentInfo& attachment = attachments[1];
     EXPECT_EQ("attached.pdf", base::UTF16ToUTF8(attachment.name));
     EXPECT_TRUE(attachment.is_readable);
@@ -392,9 +417,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
     ASSERT_EQ(attachment.size_bytes, content.size());
     // The whole attachment content is too long to do string comparison.
     // Instead, we only verify the checksum value here.
-    base::MD5Digest hash;
-    base::MD5Sum(content, &hash);
-    EXPECT_EQ(kCheckSum, base::MD5DigestToBase16(hash));
+    EXPECT_EQ(kCheckSum, base::HexEncode(crypto::hash::Sha256(content)));
   }
 
   {
@@ -414,7 +437,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachments) {
 }
 
 TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("invalid_attachment.pdf"));
   ASSERT_TRUE(engine);
@@ -435,7 +458,7 @@ TEST_P(PDFiumEngineTest, GetInvalidDocumentAttachment) {
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("embedded_attachments_invalid_data.pdf"));
   ASSERT_TRUE(engine);
@@ -455,7 +478,7 @@ TEST_P(PDFiumEngineTest, GetDocumentAttachmentWithInvalidData) {
 }
 
 TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -464,7 +487,7 @@ TEST_P(PDFiumEngineTest, NoDocumentAttachmentInfo) {
 }
 
 TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("document_info.pdf"));
   ASSERT_TRUE(engine);
@@ -493,7 +516,7 @@ TEST_P(PDFiumEngineTest, GetDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -514,7 +537,7 @@ TEST_P(PDFiumEngineTest, GetEmptyDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(engine);
@@ -522,7 +545,7 @@ TEST_P(PDFiumEngineTest, GetLinearizedDocumentMetadata) {
 }
 
 TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bad_version.pdf"));
   ASSERT_TRUE(engine);
@@ -532,7 +555,7 @@ TEST_P(PDFiumEngineTest, GetBadPdfVersion) {
 }
 
 TEST_P(PDFiumEngineTest, GetNamedDestination) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("named_destinations.pdf"));
   ASSERT_TRUE(engine);
@@ -565,7 +588,7 @@ TEST_P(PDFiumEngineTest, GetNamedDestination) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -578,7 +601,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedBeforeLoad) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -592,7 +615,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedDuringLoad) {
 }
 
 TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -605,7 +628,7 @@ TEST_P(PDFiumEngineTest, PluginSizeUpdatedAfterLoad) {
 }
 
 TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -620,7 +643,7 @@ TEST_P(PDFiumEngineTest, OnLeftMouseDownBeforePluginSizeUpdated) {
 }
 
 TEST_P(PDFiumEngineTest, OnLeftMouseDownAfterPluginSizeUpdated) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -652,7 +675,7 @@ TEST_P(PDFiumEngineTest, IncrementalLoadingFeatureDisabled) {
 }
 
 TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("variable_page_sizes.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -680,7 +703,7 @@ TEST_P(PDFiumEngineTest, GetPageSizeInPoints) {
 }
 
 TEST_P(PDFiumEngineTest, RequestThumbnail) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rectangles_multi_pages.pdf"));
   ASSERT_TRUE(engine);
@@ -702,7 +725,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -741,7 +764,7 @@ TEST_P(PDFiumEngineTest, RequestThumbnailLinearized) {
 }
 
 TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -755,7 +778,7 @@ TEST_P(PDFiumEngineTest, HandleInputEventKeyDown) {
 }
 
 TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -769,332 +792,21 @@ TEST_P(PDFiumEngineTest, HandleInputEventRawKeyDown) {
   EXPECT_TRUE(engine->HandleInputEvent(raw_key_down_event));
 }
 
-namespace {
-#if BUILDFLAG(IS_WIN)
-constexpr char kSelectTextExpectedText[] =
-    "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
-#else
-constexpr char kSelectTextExpectedText[] =
-    "Hello, world!\nGoodbye, world!\nHello, world!\nGoodbye, world!";
-#endif
-}  // namespace
-
-TEST_P(PDFiumEngineTest, SelectText) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  EXPECT_TRUE(engine->HasPermission(DocumentPermission::kCopy));
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextBackwards) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kSecondPageBeginPosition(100, 420);
-  constexpr gfx::PointF kFirstPageEndPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kSecondPageBeginPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kFirstPageEndPosition)));
-
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "bye, world!\r\nHello, world!\r\nGoodby";
-#else
-  constexpr char kExpectedText[] = "bye, world!\nHello, world!\nGoodby";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithCopyRestriction) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("hello_world2_with_copy_restriction.pdf"));
-  ASSERT_TRUE(engine);
-
-  EXPECT_FALSE(engine->HasPermission(DocumentPermission::kCopy));
-
-  // The copy restriction should not affect the text selection hehavior.
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectCroppedText) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
-  ASSERT_TRUE(engine);
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  engine->SelectAll();
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "world!\r\n";
-#else
-  constexpr char kExpectedText[] = "world!\n";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithDoubleClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(2)
-                                           .Build()));
-  EXPECT_EQ("Goodbye", engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithTripleClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kPosition(100, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(3)
-                                           .Build()));
-  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithMouse) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kStartPosition(50, 110);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-
-  constexpr gfx::PointF kEndPosition(100, 110);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-
-  EXPECT_EQ("Goodb", engine->GetSelectedText());
-}
-
-#if BUILDFLAG(IS_MAC)
-TEST_P(PDFiumEngineTest, CtrlLeftClickShouldNotSelectTextOnMac) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  // In https://crbug.com/339681892, these are the events PDFiumEngine sees.
-  constexpr gfx::PointF kStartPosition(50, 110);
-  MouseEventBuilder builder;
-  builder.CreateLeftClickAtPosition(kStartPosition)
-      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
-  EXPECT_FALSE(engine->HandleInputEvent(builder.Build()));
-
-  constexpr gfx::PointF kEndPosition(100, 110);
-  EXPECT_FALSE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-
-  EXPECT_EQ("", engine->GetSelectedText());
-}
-#else
-TEST_P(PDFiumEngineTest, CtrlLeftClickSelectTextOnNonMac) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kStartPosition(50, 110);
-  MouseEventBuilder builder;
-  builder.CreateLeftClickAtPosition(kStartPosition)
-      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
-  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
-
-  constexpr gfx::PointF kEndPosition(100, 110);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-
-  EXPECT_EQ("Goodb", engine->GetSelectedText());
-}
-#endif  // BUILDFLAG(IS_MAC)
-
-TEST_P(PDFiumEngineTest, SelectLinkAreaWithNoText) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  constexpr gfx::PointF kStartPosition(90, 120);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-
-  constexpr gfx::PointF kMiddlePosition(100, 230);
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kMiddlePosition)));
-
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "Link Annotations - Page 1\r\nL";
-#else
-  constexpr char kExpectedText[] = "Link Annotations - Page 1\nL";
-#endif
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
-
-  constexpr gfx::PointF kEndPosition(430, 230);
-  EXPECT_FALSE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-
-  // This is still `kExpectedText` because of the unit test's uncanny ability to
-  // move the mouse to `kEndPosition` in one move.
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextAcrossEmptyPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  static constexpr gfx::PointF kStartPosition(80, 200);
-  static constexpr gfx::PointF kEndPosition(95, 765);
-
-  // Forward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kEndPosition)));
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedForwardSelection[] = "world!\r\nGoodbye";
-#else
-  static constexpr char kExpectedForwardSelection[] = "world!\nGoodbye";
-#endif
-  EXPECT_EQ(kExpectedForwardSelection, engine->GetSelectedText());
-
-  // Backward selection.
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(kEndPosition)));
-  EXPECT_TRUE(engine->HandleInputEvent(
-      CreateMoveWebMouseEventToPosition(kStartPosition)));
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedBackwardSelection[] = "world!\r\nGoodbye,";
-#else
-  static constexpr char kExpectedBackwardSelection[] = "world!\nGoodbye,";
-#endif
-  EXPECT_EQ(kExpectedBackwardSelection, engine->GetSelectedText());
-
-  // Select all.
-  engine->SelectAll();
-#if BUILDFLAG(IS_WIN)
-  static constexpr char kExpectedAllSelection[] =
-      "Hello, world!\r\nGoodbye, world!";
-#else
-  static constexpr char kExpectedAllSelection[] =
-      "Hello, world!\nGoodbye, world!";
-#endif
-  EXPECT_EQ(kExpectedAllSelection, engine->GetSelectedText());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithDoubleClickOnEmptyPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  constexpr gfx::PointF kPosition(100, 100);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(2)
-                                           .Build()));
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-}
-
-TEST_P(PDFiumEngineTest, SelectTextWithDoubleClickAtEndOfPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  constexpr gfx::PointF kPosition(195, 130);
-  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
-                                           .CreateLeftClickAtPosition(kPosition)
-                                           .SetClickCount(2)
-                                           .Build()));
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-}
-
 TEST_P(PDFiumEngineTest, GetPageText) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  static constexpr char16_t kExpectedPageText[] = u"Hello, world!\r\nGoodbye, world!";
+  static constexpr char16_t kExpectedPageText[] =
+      u"Hello, world!\r\nGoodbye, world!";
 
   EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/0));
   EXPECT_EQ(kExpectedPageText, engine->GetPageText(/*page_index=*/1));
 }
 
 TEST_P(PDFiumEngineTest, LinkNavigates) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1112,7 +824,7 @@ TEST_P(PDFiumEngineTest, LinkNavigates) {
 
 // Test case for crbug.com/699000
 TEST_P(PDFiumEngineTest, LinkDisabledInPrintPreview) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1129,20 +841,8 @@ TEST_P(PDFiumEngineTest, LinkDisabledInPrintPreview) {
       CreateLeftClickWebMouseUpEventAtPosition(kMiddlePosition)));
 }
 
-TEST_P(PDFiumEngineTest, SelectTextWithNonPrintableCharacter) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("bug_1357385.pdf"));
-  ASSERT_TRUE(engine);
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-
-  engine->SelectAll();
-  EXPECT_EQ("Hello, world!", engine->GetSelectedText());
-}
-
 TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1176,7 +876,7 @@ TEST_P(PDFiumEngineTest, RotateAfterSelectedText) {
 }
 
 TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1208,40 +908,27 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
-TEST_P(PDFiumEngineTest, SetFormHighlight) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
-  ASSERT_TRUE(engine);
-
-  // Removing form highlights should remove focus.
-  EXPECT_CALL(client, FormFieldFocusChange(
-                          PDFiumEngineClient::FocusFieldType::kNoFocus));
-  engine->SetFormHighlight(false);
-}
-
-TEST_P(PDFiumEngineTest, ClearTextSelection) {
-  NiceMock<MockTestClient> client;
+TEST_P(PDFiumEngineTest, GetCharUnicode) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_EQ(30u, engine->GetCharCount(0));
+  ASSERT_EQ(30u, engine->GetCharCount(1));
 
-  // Update the plugin size so that all the text is visible by
-  // `SelectionChangeInvalidator`.
-  engine->PluginSizeUpdated({500, 500});
-
-  // Select text.
-  engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
-
-  // Clear selected text.
-  engine->ClearTextSelection();
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  // "H" on page 0.
+  EXPECT_EQ(72u, engine->GetCharUnicode({0, 0}));
+  // "," on page 0.
+  EXPECT_EQ(44u, engine->GetCharUnicode({0, 5}));
+  // " " on page 1.
+  EXPECT_EQ(32u, engine->GetCharUnicode({1, 6}));
+  // Line feed on page 1.
+  EXPECT_EQ(10u, engine->GetCharUnicode({1, 14}));
 }
 
-TEST_P(PDFiumEngineTest, GetScreenRectsForChar) {
-  NiceMock<MockTestClient> client;
+TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1258,16 +945,63 @@ TEST_P(PDFiumEngineTest, GetScreenRectsForChar) {
   constexpr gfx::Rect kExpectedRect2{67, 188, 5, 19};
   constexpr gfx::Rect kExpectedRect3{43, 468, 8, 19};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  EXPECT_THAT(engine->GetScreenRectsForChar({0, 0}),
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}),
               ElementsAre(kExpectedRect1));
-  EXPECT_THAT(engine->GetScreenRectsForChar({0, 5}),
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 5}),
               ElementsAre(kExpectedRect2));
-  EXPECT_THAT(engine->GetScreenRectsForChar({1, 1}),
+  EXPECT_THAT(engine->GetScreenRectsForCaret({1, 1}),
               ElementsAre(kExpectedRect3));
 }
 
+TEST_P(PDFiumEngineTest, GetScreenRectsForCaretBlankPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}),
+              ElementsAre(gfx::Rect(18, 16, 17, 17)));
+}
+
+TEST_P(PDFiumEngineTest, GetScreenRectsForCaretMiniBlankPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank_mini.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  // Page is too small to fit a caret.
+  EXPECT_THAT(engine->GetScreenRectsForCaret({0, 0}), IsEmpty());
+}
+
+TEST_P(PDFiumEngineTest, GetTextRunInfoAt) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_EQ(30u, engine->GetCharCount(0));
+
+  EXPECT_FALSE(engine->GetTextRunInfoAt({0, 31}).has_value());
+  EXPECT_TRUE(engine->GetTextRunInfoAt({0, 10}).has_value());
+}
+
+TEST_P(PDFiumEngineTest, GetTextRunInfoAtBlankPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(1, engine->GetNumberOfPages());
+  ASSERT_EQ(0u, engine->GetCharCount(0));
+
+  EXPECT_FALSE(engine->GetTextRunInfoAt({0, 0}).has_value());
+}
+
 TEST_P(PDFiumEngineTest, InvalidateRect) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1276,13 +1010,471 @@ TEST_P(PDFiumEngineTest, InvalidateRect) {
   engine->InvalidateRect(gfx::Rect(1, 2, 3, 4));
 }
 
+TEST_P(PDFiumEngineTest, IsSynthesizedNewline) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("text_newlines.pdf"));
+  ASSERT_TRUE(engine);
+
+  // 'L'.
+  EXPECT_FALSE(engine->IsSynthesizedNewline({0, 0}));
+
+  // '\n' non-synthesized.
+  EXPECT_FALSE(engine->IsSynthesizedNewline({0, 6}));
+
+  // '\r' non-synthesized.
+  EXPECT_FALSE(engine->IsSynthesizedNewline({0, 13}));
+
+  // '\r' synthesized.
+  EXPECT_TRUE(engine->IsSynthesizedNewline({0, 21}));
+
+  // '\n' synthesized.
+  EXPECT_TRUE(engine->IsSynthesizedNewline({0, 22}));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTest, testing::Bool());
+
+class PDFiumEngineSelectionTest : public PDFiumEngineTest {
+ public:
+  PDFiumEngineSelectionTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
+  void TearDown() override {
+    // Reset `engine_` before PDFium gets uninitialized.
+    engine_.reset();
+    PDFiumEngineTest::TearDown();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    if (engine_) {
+      // Plugin size chosen so all pages of the document are visible.
+      engine_->PluginSizeUpdated({1024, 4096});
+
+      EXPECT_THAT(engine_->GetSelectedText(), IsEmpty());
+    }
+    return engine_.get();
+  }
+
+  // Select from `point1` to `point2` and then select in the reverse order.
+  // Only returns one of the two selection results since they should be the
+  // same.
+  std::string DoForwardBackwardSelections(const gfx::PointF& point1,
+                                          const gfx::PointF& point2) {
+    EXPECT_TRUE(engine_->HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(point1)));
+    EXPECT_TRUE(
+        engine_->HandleInputEvent(CreateMoveWebMouseEventToPosition(point2)));
+    std::string direction1_text = engine_->GetSelectedText();
+
+    EXPECT_TRUE(engine_->HandleInputEvent(
+        CreateLeftClickWebMouseEventAtPosition(point2)));
+    EXPECT_TRUE(
+        engine_->HandleInputEvent(CreateMoveWebMouseEventToPosition(point1)));
+    std::string direction2_text = engine_->GetSelectedText();
+    EXPECT_EQ(direction1_text, direction2_text);
+    return direction1_text;
+  }
+
+ private:
+  std::unique_ptr<PDFiumEngine> engine_;
+  TestClient client_;
+};
+
+TEST_P(PDFiumEngineSelectionTest, SelectText) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_TRUE(engine->HasPermission(DocumentPermission::kCopy));
+
+  engine->SelectAll();
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextBackwards) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kSecondPageBeginPosition(105, 420);
+  constexpr gfx::PointF kFirstPageEndPosition(85, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kSecondPageBeginPosition)));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kFirstPageEndPosition)));
+
+  constexpr char kExpectedText[] = "bye, world!\nHello, world!\nGoodby";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithCopyRestriction) {
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("hello_world2_with_copy_restriction.pdf"));
+  ASSERT_TRUE(engine);
+
+  // The copy restriction should not affect the text selection hehavior.
+  EXPECT_FALSE(engine->HasPermission(DocumentPermission::kCopy));
+
+  engine->SelectAll();
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectCroppedText) {
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("hello_world_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->SelectAll();
+  constexpr char kExpectedText[] = "world!\n";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithDoubleClick) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 2);
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithTripleClick) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 3);
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithFourClicks) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 4);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+#else
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+#endif
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextFiveClicks) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 5);
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ("Goodbye", engine->GetSelectedText());
+#else
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+#endif
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithSixClicks) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 120);
+  SimulateMultiClick(*engine, kPosition, 6);
+  EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithMouse) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldStartPosition)));
+
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+
+#if BUILDFLAG(IS_MAC)
+TEST_P(PDFiumEngineSelectionTest, CtrlLeftClickShouldNotSelectTextOnMac) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // In https://crbug.com/339681892, these are the events PDFiumEngine sees.
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kHelloWorldStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  EXPECT_FALSE(engine->HandleInputEvent(builder.Build()));
+
+  EXPECT_FALSE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
+
+  EXPECT_EQ("", engine->GetSelectedText());
+}
+#else
+TEST_P(PDFiumEngineSelectionTest, CtrlLeftClickSelectTextOnNonMac) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  MouseEventBuilder builder;
+  builder.CreateLeftClickAtPosition(kHelloWorldStartPosition)
+      .SetModifiers(blink::WebInputEvent::Modifiers::kControlKey);
+  EXPECT_TRUE(engine->HandleInputEvent(builder.Build()));
+
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kHelloWorldEndPosition)));
+
+  EXPECT_EQ("Goodb", engine->GetSelectedText());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST_P(PDFiumEngineSelectionTest, SelectLinkAreaWithNoText) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kStartPosition(90, 120);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kStartPosition)));
+
+  constexpr gfx::PointF kMiddlePosition(120, 230);
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kMiddlePosition)));
+
+  constexpr char kExpectedText[] = "Link Annotations - Page 1\nL";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+
+  constexpr gfx::PointF kEndPosition(430, 230);
+  EXPECT_FALSE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition(kEndPosition)));
+
+  // This is still `kExpectedText` because of the unit test's uncanny ability to
+  // move the mouse to `kEndPosition` in one move.
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextOneChar) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr gfx::PointF kStartPosition(158, 120);
+  static constexpr gfx::PointF kEndPosition(161, 120);
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ("r", result);
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextTwoChar) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr gfx::PointF kStartPosition(158, 120);
+  static constexpr gfx::PointF kEndPosition(167, 120);
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ("rl", result);
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossLine) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Click and drag to the right.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({159, 120})));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateMoveWebMouseEventToPosition({159.5f, 120.0f})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({163, 120})));
+  EXPECT_EQ("r", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({167, 120})));
+  EXPECT_EQ("rl", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({172, 120})));
+  EXPECT_EQ("rl", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({176, 120})));
+  EXPECT_EQ("rld", engine->GetSelectedText());
+
+  // Click and drag to the left.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({159.5f, 120.0f})));
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({159, 120})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({146, 120})));
+  EXPECT_EQ("o", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({145, 120})));
+  EXPECT_EQ("o", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({137, 120})));
+  EXPECT_EQ("wo", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({130, 120})));
+  EXPECT_EQ("wo", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossLineRtl) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hebrew_mirrored.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Click and drag to the right.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({220, 50})));
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({225, 50})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({230, 50})));
+  EXPECT_EQ("י", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({235, 50})));
+  EXPECT_EQ("ני", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({240, 50})));
+  EXPECT_EQ("בני", engine->GetSelectedText());
+
+  // Click and drag to the left.
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition({225, 50})));
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({220, 50})));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({215, 50})));
+  EXPECT_EQ("מ", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({210, 50})));
+  EXPECT_EQ("מי", engine->GetSelectedText());
+
+  EXPECT_TRUE(
+      engine->HandleInputEvent(CreateMoveWebMouseEventToPosition({205, 50})));
+  EXPECT_EQ("מין", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextAcrossEmptyPage) {
+  PDFiumEngine* engine = CreateEngine(
+      FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  ASSERT_TRUE(engine);
+
+  static constexpr gfx::PointF kStartPosition(80, 200);
+  static constexpr gfx::PointF kEndPosition(95, 765);
+  std::string result =
+      DoForwardBackwardSelections(kStartPosition, kEndPosition);
+  EXPECT_EQ(GetPlatformTextExpectation("world!\nGoodbye,"), result);
+
+  // Select all.
+  engine->SelectAll();
+  static constexpr char kExpectedAllSelection[] =
+      "Hello, world!\nGoodbye, world!";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedAllSelection),
+            engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithDoubleClickOnEmptyPage) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(100, 100);
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithDoubleClickAtEndOfPage) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr gfx::PointF kPosition(195, 130);
+  EXPECT_TRUE(engine->HandleInputEvent(MouseEventBuilder()
+                                           .CreateLeftClickAtPosition(kPosition)
+                                           .SetClickCount(2)
+                                           .Build()));
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+TEST_P(PDFiumEngineSelectionTest, SelectTextWithNonPrintableCharacter) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("bug_1357385.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->SelectAll();
+  EXPECT_EQ("Hello, world!", engine->GetSelectedText());
+}
+
+TEST_P(PDFiumEngineSelectionTest, ClearTextSelection) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Select text.
+  engine->SelectAll();
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
+
+  // Clear selected text.
+  engine->ClearTextSelection();
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+}
+
+TEST_P(PDFiumEngineSelectionTest, StartExtendAndInvalidateSelectionByChar) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Cannot extend selection without starting a selection first.
+  engine->ExtendAndInvalidateSelectionByChar({1, 5});
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_FALSE(engine->IsSelecting());
+
+  engine->StartSelection({0, 21});
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_FALSE(engine->IsSelecting());
+
+  engine->ExtendAndInvalidateSelectionByChar({0, 22});
+  EXPECT_EQ("e", engine->GetSelectedText());
+  EXPECT_TRUE(engine->IsSelecting());
+
+  engine->ExtendAndInvalidateSelectionByChar({1, 5});
+  constexpr char kExpectedText[] = "e, world!\nHello";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+  EXPECT_TRUE(engine->IsSelecting());
+
+  // Start another selection while one is active. This should be a no-op.
+  engine->StartSelection({0, 0});
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
+  EXPECT_TRUE(engine->IsSelecting());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineSelectionTest, testing::Bool());
 
 using PDFiumEngineDrawSelectionTest = PDFiumDrawSelectionTestBase;
 
 TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
   constexpr int kPageIndex = 0;
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1292,7 +1484,8 @@ TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
   engine->PluginSizeUpdated({500, 500});
 
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
 
   SetSelection(*engine, /*start_page_index=*/kPageIndex, /*start_char_index=*/1,
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
@@ -1314,7 +1507,7 @@ TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsHelloWorld) {
 }
 
 TEST_P(PDFiumEngineDrawSelectionTest, DrawTextSelectionsBigtableMicro) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bigtable_micro.pdf"));
   ASSERT_TRUE(engine);
@@ -1339,7 +1532,7 @@ TEST_P(PDFiumEngineDeathTest, RequestThumbnailRedundant) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kPdfIncrementalLoading);
 
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   InitializeEngineResult initialize_result = InitializeEngineWithoutLoading(
       &client, FILE_PATH_LITERAL("linearized.pdf"));
   ASSERT_TRUE(initialize_result.engine);
@@ -1410,7 +1603,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1427,8 +1620,9 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
     EXPECT_CALL(client, SetLinkUnderCursor("")).Times(2);
   }
 
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  }
 
   // Tab to Link annotation.
   EXPECT_CALL(client, SetLinkUnderCursor("https://www.google.com/"));
@@ -1442,7 +1636,7 @@ TEST_P(PDFiumEngineTabbingTest, LinkUnderCursor) {
 
 // Test case for crbug.com/1088296
 TEST_P(PDFiumEngineTabbingTest, LinkUnderCursorAfterTabAndRightClick) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1494,7 +1688,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingSupportedAnnots) {
    * ++++ Highlight annotation
    * ++++ Link annotation
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1544,7 +1738,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingForward) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1554,8 +1748,9 @@ TEST_P(PDFiumEngineTabbingTest, TabbingForward) {
   static constexpr bool kExpectedFocusState[] = {true, false};
   {
     InSequence sequence;
-    for (auto focused : kExpectedFocusState)
+    for (auto focused : kExpectedFocusState) {
       EXPECT_CALL(client, DocumentFocusChanged(focused));
+    }
   }
 
   ASSERT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1596,7 +1791,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingBackward) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1606,8 +1801,9 @@ TEST_P(PDFiumEngineTabbingTest, TabbingBackward) {
   static constexpr bool kExpectedFocusState[] = {true, false};
   {
     InSequence sequence;
-    for (auto focused : kExpectedFocusState)
+    for (auto focused : kExpectedFocusState) {
       EXPECT_CALL(client, DocumentFocusChanged(focused));
+    }
   }
 
   ASSERT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1653,7 +1849,7 @@ TEST_P(PDFiumEngineTabbingTest, TabbingWithModifiers) {
    * ++ Page 2
    * ++++ Annotation
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1703,7 +1899,7 @@ TEST_P(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
    * ++ Page 1
    * ++ Page 2
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -1713,8 +1909,9 @@ TEST_P(PDFiumEngineTabbingTest, NoFocusableElementTabbing) {
   static constexpr bool kExpectedFocusState[] = {true, false, true, false};
   {
     InSequence sequence;
-    for (auto focused : kExpectedFocusState)
+    for (auto focused : kExpectedFocusState) {
       EXPECT_CALL(client, DocumentFocusChanged(focused));
+    }
   }
 
   ASSERT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1752,7 +1949,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1762,8 +1959,9 @@ TEST_P(PDFiumEngineTabbingTest, RestoringDocumentFocus) {
   static constexpr bool kExpectedFocusState[] = {true, false, true};
   {
     InSequence sequence;
-    for (auto focused : kExpectedFocusState)
+    for (auto focused : kExpectedFocusState) {
       EXPECT_CALL(client, DocumentFocusChanged(focused));
+    }
   }
 
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1797,7 +1995,7 @@ TEST_P(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
    * ++ Page 2
    * ++++ Annotation
    */
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1807,8 +2005,9 @@ TEST_P(PDFiumEngineTabbingTest, RestoringAnnotFocus) {
   static constexpr bool kExpectedFocusState[] = {true, false};
   {
     InSequence sequence;
-    for (auto focused : kExpectedFocusState)
+    for (auto focused : kExpectedFocusState) {
       EXPECT_CALL(client, DocumentFocusChanged(focused));
+    }
   }
 
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1848,7 +2047,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
    * ++++ Annotation (Text Field)
    * ++++ Annotation (Radio Button)
    */
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1882,7 +2081,7 @@ TEST_P(PDFiumEngineTabbingTest, VerifyFormFieldStatesOnTabbing) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1906,7 +2105,7 @@ TEST_P(PDFiumEngineTabbingTest, ClearSelectionOnFocusInFormTextArea) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("annots.pdf"));
   ASSERT_TRUE(engine);
@@ -1929,20 +2128,42 @@ TEST_P(PDFiumEngineTabbingTest, RetainSelectionOnFocusNotInFormTextArea) {
   EXPECT_EQ(1u, GetSelectionSize(engine.get()));
 }
 
+TEST_P(PDFiumEngineTabbingTest, SetFormHighlight) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+
+  // Removing form highlights should remove focus.
+  EXPECT_CALL(client, FormFieldFocusChange(
+                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->SetFormHighlight(false);
+}
+
 class ScrollingTestClient : public TestClient {
  public:
-  ScrollingTestClient() = default;
-  ~ScrollingTestClient() override = default;
+  explicit ScrollingTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
   ScrollingTestClient(const ScrollingTestClient&) = delete;
   ScrollingTestClient& operator=(const ScrollingTestClient&) = delete;
+  ~ScrollingTestClient() override = default;
 
   // Mock PDFiumEngineClient methods.
-  MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
 };
 
 TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
-  StrictMock<ScrollingTestClient> client;
+  StrictMock<ScrollingTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -1952,12 +2173,14 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
   {
     InSequence sequence;
     static constexpr gfx::Point kScrollValue = {510, 478};
-    EXPECT_CALL(client, ScrollToY(kScrollValue.y()))
-        .WillOnce(Invoke(
-            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); }));
-    EXPECT_CALL(client, ScrollToX(kScrollValue.x()))
-        .WillOnce(Invoke(
-            [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); }));
+    EXPECT_CALL(client,
+                ScrollToY(kScrollValue.y(), /*force_smooth_scroll=*/false))
+        .WillOnce(
+            [&engine]() { engine->ScrolledToYPosition(kScrollValue.y()); });
+    EXPECT_CALL(client,
+                ScrollToX(kScrollValue.x(), /*force_smooth_scroll=*/false))
+        .WillOnce(
+            [&engine]() { engine->ScrolledToXPosition(kScrollValue.x()); });
   }
 
   EXPECT_EQ(PDFiumEngine::FocusElementType::kNone,
@@ -1995,7 +2218,7 @@ TEST_P(PDFiumEngineTabbingTest, MaintainViewportWhenFocusIsUpdated) {
 }
 
 TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
-  StrictMock<ScrollingTestClient> client;
+  StrictMock<ScrollingTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
@@ -2007,14 +2230,16 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
     static constexpr gfx::Point kScrollValues[] = {{510, 478}, {510, 478}};
 
     for (const auto& scroll_value : kScrollValues) {
-      EXPECT_CALL(client, ScrollToY(scroll_value.y()))
-          .WillOnce(Invoke([&engine, &scroll_value]() {
+      EXPECT_CALL(client,
+                  ScrollToY(scroll_value.y(), /*force_smooth_scroll=*/false))
+          .WillOnce([&engine, &scroll_value]() {
             engine->ScrolledToYPosition(scroll_value.y());
-          }));
-      EXPECT_CALL(client, ScrollToX(scroll_value.x()))
-          .WillOnce(Invoke([&engine, &scroll_value]() {
+          });
+      EXPECT_CALL(client,
+                  ScrollToX(scroll_value.x(), /*force_smooth_scroll=*/false))
+          .WillOnce([&engine, &scroll_value]() {
             engine->ScrolledToXPosition(scroll_value.x());
-          }));
+          });
     }
   }
 
@@ -2043,30 +2268,37 @@ TEST_P(PDFiumEngineTabbingTest, ScrollFocusedAnnotationIntoView) {
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineTabbingTest, testing::Bool());
 
-using PDFiumEngineReadOnlyTest = PDFiumTestBase;
+using PDFiumEngineReadOnlyTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineReadOnlyTest, KillFormFocus) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
+
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
 
   // Setting read-only mode should kill form focus.
   EXPECT_FALSE(engine->IsReadOnly());
   EXPECT_CALL(client, FormFieldFocusChange(
                           PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->SetReadOnly(true);
-
-  // Attempting to focus during read-only mode should once more trigger a
-  // killing of form focus.
   EXPECT_TRUE(engine->IsReadOnly());
-  EXPECT_CALL(client, FormFieldFocusChange(
-                          PDFiumEngineClient::FocusFieldType::kNoFocus));
+
+  // Attempting to focus during read-only mode should do nothing since there is
+  // no form focus change.
   engine->UpdateFocus(true);
 }
 
 TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
-  TestClient client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2079,7 +2311,8 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
   // Select text before going into read-only mode.
   EXPECT_FALSE(engine->IsReadOnly());
   engine->SelectAll();
-  EXPECT_EQ(kSelectTextExpectedText, engine->GetSelectedText());
+  EXPECT_EQ(GetPlatformTextExpectation(kSelectTextExpectedText),
+            engine->GetSelectedText());
 
   // Setting read-only mode should unselect the text.
   engine->SetReadOnly(true);
@@ -2089,25 +2322,33 @@ TEST_P(PDFiumEngineReadOnlyTest, UnselectText) {
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineReadOnlyTest, testing::Bool());
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-using PDFiumEngineInkTest = PDFiumTestBase;
+using PDFiumEngineInkTest = PDFiumEngineTabbingTest;
 
 TEST_P(PDFiumEngineInkTest, KillFormFocusInAnnotationMode) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("annotation_form_fields.pdf"));
   ASSERT_TRUE(engine);
 
-  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
+  InSequence sequence;
+  EXPECT_CALL(client,
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
 
-  // Attempting to focus in annotation mode should once more trigger a killing
-  // of form focus.
+  // Tab into the document.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+  // Tab into the page.
+  ASSERT_TRUE(HandleTabEvent(engine.get(), /*modifiers=*/0));
+
+  // Attempting to focus the PDF Viewer in annotation mode should kill form
+  // focus.
+  EXPECT_CALL(client, IsInAnnotationMode()).WillOnce(Return(true));
   EXPECT_CALL(client, FormFieldFocusChange(
                           PDFiumEngineClient::FocusFieldType::kNoFocus));
   engine->UpdateFocus(true);
 }
 
 TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -2125,7 +2366,7 @@ TEST_P(PDFiumEngineInkTest, CannotSelectTextInAnnotationMode) {
 }
 
 TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2150,7 +2391,7 @@ TEST_P(PDFiumEngineInkTest, ContainsV2InkPath) {
 }
 
 TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
@@ -2176,29 +2417,66 @@ TEST_P(PDFiumEngineInkTest, LoadV2InkPathsForPage) {
       kPageIndex));
 }
 
+TEST_P(PDFiumEngineInkTest, GetCanonicalToPdfTransform) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+
+  static constexpr gfx::PointF kCanonicalTopLeftPoint(0.0f, 0.0f);
+  static constexpr gfx::PointF kCanonicalMiddlePoint(100.0f, 50.0f);
+  const gfx::Transform transform =
+      engine->GetCanonicalToPdfTransform(/*page_index=*/0);
+  EXPECT_EQ(gfx::PointF(0.0f, 200.0f),
+            transform.MapPoint(kCanonicalTopLeftPoint));
+  EXPECT_EQ(gfx::PointF(75.0f, 162.5f),
+            transform.MapPoint(kCanonicalMiddlePoint));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkTest, testing::Bool());
 
 class PDFiumEngineInkTextSelectionTest : public PDFiumEngineInkTest {
  public:
-#if BUILDFLAG(IS_WIN)
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 114, 156, 30};
-#elif BUILDFLAG(IS_MAC)
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 115, 156, 29};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 96.656f,
+                                                          136.496f, 111.648f};
 #else
-  static constexpr gfx::Rect kGoodbyeWorldExpectedRectPage0{32, 116, 156, 26};
-#endif  // BUILDFLAG(IS_WIN)
-  static constexpr gfx::PointF kStartTextPositionPage0{50.0f, 110.0f};
+  static constexpr PdfRect kGoodbyeWorldExpectedRectPage0{20.0f, 96.592f,
+                                                          136.496f, 111.792f};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   static constexpr gfx::PointF kNonTextPositionPage0{5.0f, 5.0f};
+
+  PDFiumEngineInkTextSelectionTest()
+      : client_(/*use_skia_renderer=*/GetParam()) {}
+
+  void TearDown() override {
+    // Reset `engine_` before PDFium gets uninitialized.
+    engine_.reset();
+    PDFiumEngineInkTest::TearDown();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    if (engine_) {
+      // Plugin size chosen so all pages of the document are visible.
+      engine_->PluginSizeUpdated({1024, 4096});
+
+      EXPECT_THAT(engine_->GetSelectedText(), IsEmpty());
+      EXPECT_THAT(engine_->GetSelectionRectMap(), IsEmpty());
+    }
+    return engine_.get();
+  }
+
+ private:
+  std::unique_ptr<PDFiumEngine> engine_;
+  TestClient client_;
 };
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByNonTextPoint) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Test point not on a page.
   EXPECT_FALSE(engine->ExtendSelectionByPoint({-30.0f, -30.0f}));
@@ -2208,101 +2486,76 @@ TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByNonTextPoint) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPoint) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
 
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
-
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
-
-  constexpr gfx::PointF kEndPosition(100.0f, 110.0f);
-  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldEndPosition));
 
   EXPECT_EQ("Goodb", engine->GetSelectedText());
-#if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRect{32, 114, 64, 30};
-#elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRect{32, 115, 64, 29};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  constexpr PdfRect kExpectedRect{20.0f, 99.824f, 68.032f, 111.648f};
 #else
-  constexpr gfx::Rect kExpectedRect{32, 116, 64, 26};
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+  constexpr PdfRect kExpectedRect{20.0f, 99.712f, 68.032f, 111.792f};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kExpectedRect))));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, ExtendSelectionByPointMultiPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
-
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/1);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
 
   constexpr gfx::PointF kEndPosition(75.0f, 480.0f);
-  EXPECT_TRUE(engine->ExtendSelectionByPoint((kEndPosition)));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kEndPosition));
 
-#if BUILDFLAG(IS_WIN)
-  constexpr char kExpectedText[] = "Goodbye, world!\r\nHello,";
-#else
-  constexpr char kExpectedText[] = "Goodbye, world!\nHello,";
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_EQ(kExpectedText, engine->GetSelectedText());
+  constexpr char kExpectedText[] = "Goodbye, world!\nHello, ";
+  EXPECT_EQ(GetPlatformTextExpectation(kExpectedText),
+            engine->GetSelectedText());
 
-#if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
-#elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRectPage1{32, 466, 40, 22};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  constexpr PdfRect kExpectedRectPage1{20.0f, 48.008f, 52.664f, 58.328f};
 #else
-  constexpr gfx::Rect kExpectedRectPage1{32, 468, 40, 19};
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(),
-              ElementsAre(kGoodbyeWorldExpectedRectPage0, kExpectedRectPage1));
+  constexpr PdfRect kExpectedRectPage1{20.0f, 48.32f, 52.664f, 58.196f};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0)),
+                          Pair(1, ElementsAre(kExpectedRectPage1))));
+}
+
+TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithSingleClick) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
+
+  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
+  EXPECT_THAT(engine->GetSelectionRectMap(), IsEmpty());
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithDoubleClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
-
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/2);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/2);
 
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
-#if BUILDFLAG(IS_WIN)
-  constexpr gfx::Rect kExpectedRect{32, 114, 87, 30};
-#elif BUILDFLAG(IS_MAC)
-  constexpr gfx::Rect kExpectedRect{32, 115, 87, 29};
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  constexpr PdfRect kExpectedRect{20.0f, 96.656f, 84.928f, 111.648f};
 #else
-  constexpr gfx::Rect kExpectedRect{32, 116, 87, 26};
-#endif  // BUILDFLAG(IS_WIN)
-  EXPECT_THAT(engine->GetSelectionRects(), ElementsAre(kExpectedRect));
+  constexpr PdfRect kExpectedRect{20.0f, 96.592f, 84.928f, 111.792f};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  EXPECT_THAT(engine->GetSelectionRectMap(),
+              ElementsAre(Pair(0, ElementsAre(kExpectedRect))));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("form_text_fields.pdf"));
+  PDFiumEngine* engine =
+      CreateEngine(FILE_PATH_LITERAL("form_text_fields.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Non-text position.
   EXPECT_FALSE(engine->IsSelectableTextOrLinkArea(kNonTextPositionPage0));
@@ -2315,35 +2568,23 @@ TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaText) {
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, IsSelectableTextOrLinkAreaLink) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // Link position.
   EXPECT_TRUE(engine->IsSelectableTextOrLinkArea({155.0f, 230.0f}));
 }
 
 TEST_P(PDFiumEngineInkTextSelectionTest, OnTextOrLinkAreaClickWithTripleClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
-
-  EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
-  EXPECT_THAT(engine->GetSelectionRects(), IsEmpty());
-
-  engine->OnTextOrLinkAreaClick(kStartTextPositionPage0, /*click_count=*/3);
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/3);
 
   EXPECT_EQ("Goodbye, world!", engine->GetSelectedText());
-  EXPECT_THAT(engine->GetSelectionRects(),
-              ElementsAre(kGoodbyeWorldExpectedRectPage0));
+  EXPECT_THAT(
+      engine->GetSelectionRectMap(),
+      ElementsAre(Pair(0, ElementsAre(kGoodbyeWorldExpectedRectPage0))));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -2353,7 +2594,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 using PDFiumEngineInkDrawTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineInkDrawTest, NoStrokeData) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2364,7 +2605,7 @@ TEST_P(PDFiumEngineInkDrawTest, NoStrokeData) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2411,7 +2652,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
   engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
   engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
   const base::FilePath kAppliedStroke2FilePath(
@@ -2466,7 +2707,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2499,7 +2740,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
   constexpr InkStrokeId kStrokeId(0);
   engine->ApplyStroke(kPageIndex, kStrokeId, stroke0);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
   const base::FilePath kAppliedStroke1FilePath(
@@ -2551,7 +2792,7 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeDiscardStroke) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("ink_v2.pdf"));
   ASSERT_TRUE(engine);
@@ -2562,7 +2803,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
   constexpr gfx::Size kPageSizeInPoints(200, 200);
   const base::FilePath kInkV2PngPath =
       GetInkTestDataFilePath(FILE_PATH_LITERAL("ink_v2.png"));
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
   CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kInkV2PngPath);
   EXPECT_EQ(GetPdfMarkObjCountForTesting(engine->doc(),
                                          kInkAnnotationIdentifierKeyV2),
@@ -2616,7 +2857,7 @@ TEST_P(PDFiumEngineInkDrawTest, LoadedV2InkPathsAndUpdateShapeActive) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2681,7 +2922,7 @@ TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
 }
 
 TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
-  NiceMock<MockTestClient> client;
+  TestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
       &client, FILE_PATH_LITERAL("rotated_multi_page_cropped.pdf"));
   ASSERT_TRUE(engine);
@@ -2714,7 +2955,7 @@ TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
   engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
   engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
 
-  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
 
   // Verify the visibility of strokes for in-memory PDF.
   constexpr gfx::Size kPageSizeInPoints(500, 350);
@@ -2738,7 +2979,7 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkDrawTest, testing::Values(false));
 using PDFiumEngineInkPrintTest = PDFiumTestBase;
 
 TEST_P(PDFiumEngineInkPrintTest, InkStrokes) {
-  NiceMock<MockTestClient> client;
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
   ASSERT_TRUE(engine);
@@ -2778,10 +3019,15 @@ INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineInkPrintTest, testing::Values(false));
 
 class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
  public:
-  PDFiumEngineCaretTest() = default;
+  static constexpr gfx::Size kAnnotationFormFieldsVisiblePageSize{816, 1056};
+  static constexpr gfx::Size kHelloWorldExpectedVisiblePageSize{266, 266};
+  static constexpr gfx::PointF kHelloWorldGoodbyeWorldCharB{85.0f, 118.0f};
+  PDFiumEngineCaretTest() : client_(/*use_skia_renderer=*/GetParam()) {}
   PDFiumEngineCaretTest(const PDFiumEngineCaretTest&) = delete;
   PDFiumEngineCaretTest& operator=(const PDFiumEngineCaretTest&) = delete;
   ~PDFiumEngineCaretTest() override = default;
+
+  MockTestClient& client() { return client_; }
 
   void SetUp() override {
     PDFiumDrawSelectionTestBase::SetUp();
@@ -2791,29 +3037,182 @@ class PDFiumEngineCaretTest : public PDFiumDrawSelectionTestBase {
         {{features::kPdfInk2TextHighlighting.name, "true"}});
   }
 
+  void TearDown() override {
+    // Reset `engine_` before PDFium gets uninitialized.
+    engine_.reset();
+    PDFiumDrawSelectionTestBase::TearDown();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    return engine_.get();
+  }
+
+  [[nodiscard]] PDFiumEngine* CreateEngineWithCaret(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    if (engine_) {
+      // Plugin size chosen so all pages of the document are visible.
+      engine_->PluginSizeUpdated({1024, 4096});
+      engine_->UpdateFocus(true);
+      engine_->SetCaretBrowsingEnabled(true);
+    }
+    return engine_.get();
+  }
+
+  bool HandleKeyDownEvent(ui::KeyboardCode key) {
+    blink::WebKeyboardEvent event(
+        blink::WebInputEvent::Type::kKeyDown,
+        blink::WebInputEvent::kNoModifiers,
+        blink::WebInputEvent::GetStaticTimeStampForTests());
+    event.windows_key_code = key;
+    return engine_->HandleInputEvent(event);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<PDFiumEngine> engine_;
+  NiceMock<MockTestClient> client_;
 };
 
-TEST_P(PDFiumEngineCaretTest, Draw) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+TEST_P(PDFiumEngineCaretTest, InitializeCaretWithoutFocus) {
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->PluginSizeUpdated({500, 500});
+  // Plugin size chosen so all pages of the document are visible.
+  engine->PluginSizeUpdated({1024, 4096});
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+
+  // Engine does not have focus, so enabling caret browsing still draws blank.
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+}
+
+TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabled) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  engine->SetCaretBrowsingEnabled(false);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, SetCaretBrowsingEnabledNoOp) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldGoodbyeWorldCharB)));
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
+
+  // Already enabled. Caret should not move.
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
+}
+
+TEST_P(PDFiumEngineCaretTest,
+       SetCaretBrowsingEnabledSetsCaretAtFirstVisibleTextRun) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("link_annots.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Starts at first text run.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "link_annots_visible_text_run_0.png");
+
+  // Scroll so that text on page 0 and page 1 are visible.
+  constexpr gfx::Size kPluginSizeWithPage0AndPage1{617, 900};
+  engine->PluginSizeUpdated(kPluginSizeWithPage0AndPage1);
+  engine->ScrolledToYPosition(400);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0, {612, 659});
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 227});
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "link_annots_visible_text_run_1.png");
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 227});
+
+  // Scroll so both pages are visible, but only text on page 1 is visible.
+  engine->ScrolledToYPosition(800);
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  constexpr gfx::Size kPage0ExpectedVisiblePageSize{612, 259};
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/1, "link_annots_visible_text_run_2.png");
+
+  // Shrink the plugin's size so that no text is visible.
+  engine->PluginSizeUpdated({617, 300});
+
+  engine->SetCaretBrowsingEnabled(false);
+  engine->SetCaretBrowsingEnabled(true);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/1, {612, 27});
+
+  // Go back to the previous plugin size. The caret should still be at the
+  // previous position.
+  engine->PluginSizeUpdated(kPluginSizeWithPage0AndPage1);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kPage0ExpectedVisiblePageSize);
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/1, "link_annots_visible_text_run_2.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, UpdateFocus) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  engine->UpdateFocus(false);
+
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kHelloWorldExpectedVisiblePageSize);
+
+  engine->UpdateFocus(true);
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret.png");
 }
 
 TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->PluginSizeUpdated({500, 500});
 
   engine->ScrolledToXPosition(20);
 
@@ -2827,16 +3226,13 @@ TEST_P(PDFiumEngineCaretTest, DrawOnGeometryChange) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClick) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
-
-  engine->PluginSizeUpdated({500, 500});
 
   // The "b" in "Goodbye, world!".
   EXPECT_TRUE(engine->HandleInputEvent(
-      CreateLeftClickWebMouseEventAtPosition(gfx::PointF(92, 118))));
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldGoodbyeWorldCharB)));
 
   DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
                                               "hello_world_caret_1.png");
@@ -2849,13 +3245,45 @@ TEST_P(PDFiumEngineCaretTest, TextClick) {
                                               "hello_world_caret_newline.png");
 }
 
-TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
+TEST_P(PDFiumEngineCaretTest, TextMultiClick) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
 
-  engine->PluginSizeUpdated({500, 500});
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(kHelloWorldGoodbyeWorldCharB)));
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
+
+  SimulateMultiClick(*engine, kHelloWorldGoodbyeWorldCharB, /*click_count=*/2);
+
+  // Caret should not be visible.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_word.png");
+
+  SimulateMultiClick(*engine, kHelloWorldGoodbyeWorldCharB, /*click_count=*/3);
+
+  // Caret should not be visible.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_line.png");
+
+  SimulateMultiClick(*engine, kHelloWorldGoodbyeWorldCharB, /*click_count=*/4);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_1.png");
+#else
+  // Caret should not be visible.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_line.png");
+#endif
+}
+
+TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("text_synthetic_whitespace.pdf"));
+  ASSERT_TRUE(engine);
 
   // The synthetic whitespace with an empty screen rect.
   EXPECT_TRUE(engine->HandleInputEvent(
@@ -2866,13 +3294,9 @@ TEST_P(PDFiumEngineCaretTest, TextClickSyntheticWhitespace) {
 }
 
 TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
-  NiceMock<MockTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
-      &client, FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
+  PDFiumEngine* engine = CreateEngineWithCaret(
+      FILE_PATH_LITERAL("multi_page_hello_world_with_empty_page.pdf"));
   ASSERT_TRUE(engine);
-
-  // Plugin size chosen so all pages of the document are visible.
-  engine->PluginSizeUpdated({1024, 4096});
 
   // First page. The first "l" in "Hello, world!".
   EXPECT_TRUE(engine->HandleInputEvent(
@@ -2889,12 +3313,168 @@ TEST_P(PDFiumEngineCaretTest, TextClickMultiPage) {
       *engine, /*page_index=*/2, "multi_page_hello_world_caret_1.png");
 }
 
+TEST_P(PDFiumEngineCaretTest, TextSelectAndMove) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_start.png");
+
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldEndPosition));
+
+  // Caret should not be visible when text selecting.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection.png");
+
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT));
+
+  // TODO(crbug.com/446944878): Caret should appear at the end of the text
+  // selection.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_end.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, TextSelectAndBack) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  engine->OnTextOrLinkAreaClick(kHelloWorldStartPosition, /*click_count=*/1);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_start.png");
+
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldEndPosition));
+  EXPECT_TRUE(engine->ExtendSelectionByPoint(kHelloWorldStartPosition));
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret_start.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, SelectAll) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  DrawCaretAndCompareWithPlatformExpectations(*engine, /*page_index=*/0,
+                                              "hello_world_caret.png");
+
+  engine->SelectAll();
+
+  // Caret should not be visible.
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/0, "hello_world_caret_text_selection_all.png");
+  DrawCaretAndCompareWithPlatformExpectations(
+      *engine, /*page_index=*/1, "hello_world_caret_text_selection_all.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, FormFocus) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Focus onto a form field page element.
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  // Press an arrow key, which is a key event that the caret may handle.
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  // Press tab, which will update focus to a different form field.
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  // Click outside the form field to kill focus.
+  EXPECT_CALL(client(), FormFieldFocusChange(
+                            PDFiumEngineClient::FocusFieldType::kNoFocus));
+  EXPECT_TRUE(engine->HandleInputEvent(
+      CreateLeftClickWebMouseEventAtPosition(gfx::PointF(1.0f, 1.0f))));
+
+  // Caret should be visible.
+  DrawCaretAndCompare(*engine, /*page_index=*/0,
+                      "annotation_form_fields_caret.png");
+}
+
+TEST_P(PDFiumEngineCaretTest, FormFieldLoseFocusGainFocus) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("annotation_form_fields.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Focus onto a form field page element.
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_TAB));
+
+  // Caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+
+  EXPECT_CALL(client(), FormFieldFocusChange(
+                            PDFiumEngineClient::FocusFieldType::kNoFocus));
+  engine->UpdateFocus(false);
+
+  EXPECT_CALL(client(),
+              FormFieldFocusChange(PDFiumEngineClient::FocusFieldType::kText));
+  engine->UpdateFocus(true);
+
+  // Form still has focus, so caret should not be visible.
+  DrawCaretAndExpectBlank(*engine, /*page_index=*/0,
+                          kAnnotationFormFieldsVisiblePageSize);
+}
+
+TEST_P(PDFiumEngineCaretTest, ScrollToChar) {
+  PDFiumEngine* engine =
+      CreateEngineWithCaret(FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Already visible.
+  EXPECT_CALL(client(), ScrollToX(_, _)).Times(0);
+  EXPECT_CALL(client(), ScrollToY(_, _)).Times(0);
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_RIGHT));
+  Mock::VerifyAndClearExpectations(&client());
+
+  // Shrink the plugin size so only a portion of the page is visible.
+  engine->PluginSizeUpdated({35, 300});
+
+  EXPECT_CALL(client(), ScrollToX(37, /*force_smooth_scroll=*/false));
+  EXPECT_CALL(client(), ScrollToY(0, /*force_smooth_scroll=*/false));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
+  Mock::VerifyAndClearExpectations(&client());
+
+  EXPECT_CALL(client(), ScrollToX(36, /*force_smooth_scroll=*/false));
+  EXPECT_CALL(client(), ScrollToY(327, /*force_smooth_scroll=*/false));
+  EXPECT_TRUE(HandleKeyDownEvent(ui::KeyboardCode::VKEY_DOWN));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, PDFiumEngineCaretTest, testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 class SearchStringTestClient : public TestClient {
  public:
+  explicit SearchStringTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  SearchStringTestClient(const SearchStringTestClient&) = delete;
+  SearchStringTestClient& operator=(const SearchStringTestClient&) = delete;
+  ~SearchStringTestClient() override = default;
+
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
                                                const std::u16string& haystack,
                                                bool case_sensitive) override {
@@ -2903,14 +3483,16 @@ class SearchStringTestClient : public TestClient {
     return TextSearch(/*needle=*/needle, /*haystack=*/haystack, case_sensitive);
   }
 
-  MOCK_METHOD(void, ScrollToX, (int), (override));
-  MOCK_METHOD(void, ScrollToY, (int), (override));
+  MOCK_METHOD(void, ScrollToX, (int, bool), (override));
+  MOCK_METHOD(void, ScrollToY, (int, bool), (override));
   MOCK_METHOD(void, OnNewTextFragmentsSearchStarted, (), (override));
 };
 
 class PDFiumEngineHighlightTextFragmentTest
     : public PDFiumEngineDrawSelectionTest {
  public:
+  static constexpr gfx::Size kSpannerExpectedVisiblePageSize{816, 1056};
+
   std::unique_ptr<PDFiumEngine> InitializePdfEngine(TestClient& client) {
     std::unique_ptr<PDFiumEngine> engine =
         InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
@@ -2922,7 +3504,7 @@ class PDFiumEngineHighlightTextFragmentTest
 };
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, OnlyTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
   engine->FindAndHighlightTextFragments({"Spanner"});
@@ -2931,7 +3513,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, OnlyTextStart) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2941,7 +3523,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndEnd) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndTextSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2952,7 +3534,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartAndTextSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2963,7 +3545,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixAndTextStart) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2974,7 +3556,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixAndTextStart) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2985,7 +3567,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -2996,7 +3578,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, TextPrefixStartEndAndSuffix) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, MultipleTextFragments) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3009,41 +3591,41 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, MultipleTextFragments) {
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, FragmentNotInPDF) {
-  NiceMock<SearchStringTestClient> client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
   engine->FindAndHighlightTextFragments({});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"apples"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"of-,Google,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"of-,Google,random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"and-,applications,old,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"apples-,Google"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"Google,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"applications,random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 
   engine->FindAndHighlightTextFragments({"applications,old,-random"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 // Assert that the second highlight should clear the existing highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3058,7 +3640,7 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, ConsecutiveHighlights) {
 // highlight.
 TEST_P(PDFiumEngineHighlightTextFragmentTest,
        ClearExistingHighlightOnFailedFind) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3066,11 +3648,11 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest,
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
 
   engine->FindAndHighlightTextFragments({"does_not_exist"});
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 
@@ -3078,26 +3660,26 @@ TEST_P(PDFiumEngineHighlightTextFragmentTest, RemoveTextFragments) {
   DrawHighlightsAndCompare(*engine, 0, "spanner_text_start_highlight.png");
 
   engine->RemoveTextFragments();
-  DrawHighlightsAndCompare(*engine, 0, "spanner_blank.png");
+  DrawAndExpectBlank(*engine, 0, kSpannerExpectedVisiblePageSize);
 }
 
 TEST_P(PDFiumEngineHighlightTextFragmentTest, ScrollToFirstTextFragment) {
-  SearchStringTestClient client;
+  NiceMock<SearchStringTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
   engine->PluginSizeUpdated({200, 400});
 
-  EXPECT_CALL(client, ScrollToX(424));
-  EXPECT_CALL(client, ScrollToY(749));
+  EXPECT_CALL(client, ScrollToX(424, /*force_smooth_scroll=*/true));
+  EXPECT_CALL(client, ScrollToY(749, /*force_smooth_scroll=*/true));
 
   engine->FindAndHighlightTextFragments({"difficult to implement"});
-  engine->ScrollToFirstTextFragment();
+  engine->ScrollToFirstTextFragment(/*force_smooth_scroll=*/true);
 }
 
 // Assert that OnNewTextFragmentsSearchStarted() is called for any text
 // fragment search.
 TEST_P(PDFiumEngineHighlightTextFragmentTest, OnNewTextFragmentsSearchStarted) {
-  SearchStringTestClient client;
+  SearchStringTestClient client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine = InitializePdfEngine(client);
   ASSERT_TRUE(engine);
 

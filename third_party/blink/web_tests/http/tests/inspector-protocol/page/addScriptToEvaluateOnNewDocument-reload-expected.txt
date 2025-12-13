@@ -1,0 +1,29 @@
+Tests that Page.addScriptToEvaluateOnNewDocument on auto-attach with runImmediately=true.
+Regression test for crbug.com/390710982.
+console called: {
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : evaluated
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 8
+                    functionName :
+                    lineNumber : 0
+                    scriptId : <string>
+                    url :
+                }
+            ]
+        }
+        timestamp : <number>
+        type : log
+    }
+    sessionId : <string>
+}
+

@@ -9,7 +9,6 @@
 #include "base/files/file_error_or.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/content_lru_cache.h"
 #include "chrome/browser/ash/file_system_provider/content_cache/context_database.h"

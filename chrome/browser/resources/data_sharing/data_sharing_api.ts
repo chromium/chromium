@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 // <if expr="_google_chrome">
 import './data_sharing_sdk.js';
+
+import {SHAREKIT_SDK_VERSION} from './data_sharing_sdk_version.js';
 // </if>
 // <if expr="not _google_chrome">
-import './dummy_data_sharing_sdk.js';
+import {SHAREKIT_SDK_VERSION} from './dummy_data_sharing_sdk.js';
 // </if>
+// clang-format on
+
+
 
 import '/strings.m.js';
 
@@ -26,6 +32,9 @@ const dataSharingSdk: DataSharingSdk =
 
 const browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
+dataSharingSdk.setClientVersionAndResetPeopleStore(
+    loadTimeData.getStringF('currentClientVersion'),
+    parseInt(SHAREKIT_SDK_VERSION));
 dataSharingSdk.updateClearcut(
     {enabled: loadTimeData.getBoolean('metricsReportingEnabled')});
 browserProxy.callbackRouter.onAccessTokenFetched.addListener(

@@ -15,14 +15,12 @@ class OneShotTimer;
 }  // namespace base
 
 namespace content {
-class BrowserContext;
 class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace page_load_metrics {
 
-class PageLoadMetricsMemoryTracker;
 class PageLoadTracker;
 
 // This class serves as a functional interface to various chrome// features.
@@ -35,16 +33,12 @@ class PageLoadMetricsEmbedderInterface {
       PageLoadTracker* metrics,
       content::NavigationHandle* navigation_handle) = 0;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer() = 0;
+  virtual bool HasWebUIConfig(const GURL& url) = 0;
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
   virtual bool IsExtensionUrl(const GURL& url) = 0;
   virtual bool IsNonTabWebUI(const GURL& url) = 0;
+  virtual bool IsInternalWebUI(const GURL& url) = 0;
   virtual bool ShouldObserveScheme(std::string_view scheme) = 0;
-  virtual bool IsIncognito(content::WebContents* web_contents) = 0;
-
-  // Returns the PageLoadMetricsMemoryTracker for the given BrowserContext if
-  // tracking is enabled.
-  virtual PageLoadMetricsMemoryTracker* GetMemoryTrackerForBrowserContext(
-      content::BrowserContext* browser_context) = 0;
 };
 
 }  // namespace page_load_metrics

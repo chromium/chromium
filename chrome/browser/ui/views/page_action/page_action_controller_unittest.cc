@@ -11,6 +11,7 @@
 #include "base/callback_list.h"
 #include "base/metrics/histogram_base.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
@@ -559,16 +560,32 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
   ui::ImageModel override_image =
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
 
-  EXPECT_CALL(
-      models().Get(kFirstActionItemId),
-      SetOverrideImage(_, std::optional<ui::ImageModel>(override_image)))
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
+                               PageActionColorSource::kForeground))
       .Times(1);
   controller().OverrideImage(kFirstActionItemId, override_image);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt)))
+              SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt),
+                               PageActionColorSource::kForeground))
       .Times(1);
   controller().ClearOverrideImage(kFirstActionItemId);
+}
+
+TEST_F(PageActionControllerMockModelTest, OverrideImageWithColorSource) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  ui::ImageModel override_image =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideImage(_, std::optional<ui::ImageModel>(override_image),
+                               PageActionColorSource::kCascadingAccent))
+      .Times(1);
+  controller().OverrideImage(kFirstActionItemId, override_image,
+                             PageActionColorSource::kCascadingAccent);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {
@@ -593,13 +610,13 @@ TEST_F(PageActionControllerMockModelTest, ShouldForciblyHidePageActions) {
                           properties_provider_);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldHidePageAction(_, /*should_hide_page_actions*/ true))
+              SetIsSuppressedByOmnibox(_, /*is_suppressed*/ true))
       .Times(1);
 
   controller().SetShouldHidePageActions(true);
 
   EXPECT_CALL(models().Get(kFirstActionItemId),
-              SetShouldHidePageAction(_, /*should_hide_page_actions*/ false))
+              SetIsSuppressedByOmnibox(_, /*is_suppressed*/ false))
       .Times(1);
 
   controller().SetShouldHidePageActions(false);

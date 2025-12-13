@@ -114,6 +114,49 @@ suite('SplitNewTabPageTest', () => {
     assertEquals(3, tabSearchItems.length);
   });
 
+  test('Formats urls properly', async () => {
+    await splitNewTabPageSetup();
+
+    const windowData = createWindowData();
+    windowData[0]!.tabs.push(
+        createTab({
+          index: 6,
+          lastActiveTimeTicks: {internalValue: BigInt(10)},
+          tabId: 8,
+          title: '',
+          url: {url: 'about:blank'},
+        }),
+        createTab({
+          index: 7,
+          lastActiveTimeTicks: {internalValue: BigInt(11)},
+          tabId: 9,
+          title: 'file.jpg',
+          url: {url: 'file://file.jpg'},
+        }),
+        createTab({
+          index: 8,
+          lastActiveTimeTicks: {internalValue: BigInt(12)},
+          tabId: 10,
+          title: 'Data',
+          url: {url: 'blob://data'},
+        }),
+    );
+    testApiProxy.getCallbackRouterRemote().tabsChanged(createProfileData({
+      windows: windowData,
+    }));
+    await eventToPromise('viewport-filled', splitNewTabPage.$.splitTabsList);
+
+    const tabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(
+        loadTimeData.getString('blobUrlSource'),
+        tabSearchItems[1]!.data.hostname);
+    assertEquals(
+        loadTimeData.getString('fileUrlSource'),
+        tabSearchItems[2]!.data.hostname);
+    assertEquals('about:blank', tabSearchItems[3]!.data.hostname);
+  });
+
   test('Sorts list', async () => {
     await splitNewTabPageSetup();
     const tabSearchItems =
@@ -256,5 +299,15 @@ suite('SplitNewTabPageTest', () => {
     const [replacementTabId] =
         await testApiProxy.whenCalled('replaceActiveSplitTab');
     assertEquals(tabSearchItemId, replacementTabId);
+  });
+
+  test('Handles missing host window', async () => {
+    const windowData = createWindowData();
+    windowData[0]!['isHostWindow'] = false;
+    testApiProxy.setProfileData(createProfileData({windows: windowData}));
+    await splitNewTabPageSetup();
+    const initialTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(0, initialTabSearchItems.length);
   });
 });

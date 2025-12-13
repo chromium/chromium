@@ -10,7 +10,6 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
@@ -19,6 +18,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/content_analysis_delegate_base.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,6 +30,11 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#endif
 
 namespace enterprise_data_protection {
 
@@ -99,7 +105,7 @@ class TestClipboardRequestHandler
         base::BindOnce(
             &TestClipboardRequestHandler::OnContentAnalysisResponse,
             base::Unretained(this),
-            safe_browsing::BinaryUploadService::Result::SUCCESS,
+            enterprise_connectors::ScanRequestUploadResult::kSuccess,
             CreateResponse(enterprise_connectors::ContentAnalysisResponse::
                                Result::TriggeredRule::BLOCK)));
   }
@@ -116,6 +122,18 @@ class PasteAllowedRequestTest : public testing::Test {
   void SetUp() override {
     PasteAllowedRequest::CleanupRequestsForTesting();
     ui::TestClipboard::CreateForCurrentThread();
+
+#if BUILDFLAG(IS_CHROMEOS)
+    network_config_helper_ =
+        std::make_unique<ash::network_config::CrosNetworkConfigTestHelper>();
+    ash::NetworkHandler::Initialize();
+#endif
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::NetworkHandler::Shutdown();
+#endif
   }
 
   content::WebContents* main_web_contents() {
@@ -167,6 +185,10 @@ class PasteAllowedRequestTest : public testing::Test {
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> main_web_contents_;
   std::unique_ptr<content::WebContents> secondary_web_contents_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<ash::network_config::CrosNetworkConfigTestHelper>
+      network_config_helper_;
+#endif
 };
 
 class PasteAllowedRequestScanningTest : public PasteAllowedRequestTest {

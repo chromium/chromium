@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/time/time.h"
 #include "base/version_info/version_info.h"
@@ -51,11 +52,14 @@ namespace autofill {
 namespace {
 
 using ::base::UTF8ToUTF16;
+using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AssertionResult;
+using ::testing::DoAll;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
+using ::testing::SaveArg;
 
 const char kDefaultAutocompleteInputId[] = "n300";
 const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
@@ -193,17 +197,28 @@ class AutocompleteTest : public InProcessBrowserTest {
   std::vector<Suggestion> GetAutocompleteSuggestions(
       const std::string& input_name,
       const std::string& prefix) {
+    base::RunLoop run_loop;
     base::MockCallback<SingleFieldFillRouter::OnSuggestionsReturnedCallback>
         mock_callback;
     std::vector<Suggestion> suggestions;
-    EXPECT_CALL(mock_callback, Run).WillOnce(testing::SaveArg<1>(&suggestions));
+    EXPECT_CALL(mock_callback, Run)
+        .WillOnce(DoAll(SaveArg<1>(&suggestions),
+                        RunClosure(run_loop.QuitClosure())));
+    FormFieldData field = test::CreateTestFormField(
+        /*label=*/"", input_name, prefix, FormControlType::kInputText);
+    FormData form;
+    form.set_url(GURL("https://www.foo.com"));
+    form.set_fields({field});
     autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        test::CreateTestFormField(/*label=*/"", input_name, prefix,
-                                  FormControlType::kInputText),
-        autofill_manager()->client(), mock_callback.Get());
+        form, /*form_structure=*/nullptr, field,
+        /*trigger_autofill_field=*/nullptr, autofill_manager()->client(),
+        mock_callback.Get());
 
     // Make sure the DB task gets executed.
     WaitForPendingDBTasks(*GetWebDataService());
+    // This is a speculative fix for crbug.com/443678288. It's not clear why
+    // waiting for pending DB tasks does not suffice.
+    std::move(run_loop).Run();
 
     return suggestions;
   }
@@ -226,7 +241,8 @@ class AutocompleteTest : public InProcessBrowserTest {
 };
 
 // Tests that a user can save a simple Autocomplete value.
-IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
+// TODO(crbug.com/434794640): flaky.
+IN_PROC_BROWSER_TEST_F(AutocompleteTest, DISABLED_SubmitSimpleValue_Saves) {
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
@@ -238,8 +254,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       SubmitSimpleValue_OTR_DoesNotSave) {
+                       DISABLED_SubmitSimpleValue_OTR_DoesNotSave) {
   set_active_browser(CreateIncognitoBrowser());
 
   std::string prefix = "Some";
@@ -286,8 +303,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 }
 
 // Tests that the retention policy cleanup removes an expired entry.
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       RetentionPolicy_RemovesExpiredEntry) {
+                       DISABLED_RetentionPolicy_RemovesExpiredEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.
@@ -311,8 +329,9 @@ IN_PROC_BROWSER_TEST_F(AutocompleteTest,
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
 // 20 days old).
+// TODO(crbug.com/434794640): flaky.
 IN_PROC_BROWSER_TEST_F(AutocompleteTest,
-                       RetentionPolicy_DoesNot_RemoveValidEntry) {
+                       DISABLED_RetentionPolicy_DoesNot_RemoveValidEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.

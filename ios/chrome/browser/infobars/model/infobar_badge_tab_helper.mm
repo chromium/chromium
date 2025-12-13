@@ -217,6 +217,10 @@ InfobarBadgeTabHelper::InfobarManagerObserver::~InfobarManagerObserver() =
 void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarAdded(
     infobars::InfoBar* infobar) {
   tab_helper_->RegisterInfobar(infobar);
+  // Ensure that any changes to the acceptance state prior to registering the
+  // infobar are captured.
+  tab_helper_->OnInfobarAcceptanceStateChanged(
+      GetInfobarType(infobar), static_cast<InfoBarIOS*>(infobar)->accepted());
   tab_helper_->UpdateBadgesShown();
 }
 
@@ -254,7 +258,7 @@ void InfobarBadgeTabHelper::InfobarManagerObserver::OnInfoBarReplaced(
   OnInfoBarAdded(new_infobar);
 }
 
-void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerShuttingDown(
+void InfobarBadgeTabHelper::InfobarManagerObserver::OnManagerWillBeDestroyed(
     infobars::InfoBarManager* manager) {
   DCHECK(scoped_observation_.IsObservingSource(manager));
   scoped_observation_.Reset();

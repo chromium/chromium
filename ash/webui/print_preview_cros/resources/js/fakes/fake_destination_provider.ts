@@ -131,8 +131,6 @@ export class FakeDestinationProvider implements DestinationProvider,
   }
 }
 
-// TODO(b/323421684): Move this function to "fake_data.ts" once all the
-//    DestinationProvider methods are migrated to mojo.
 export function getFakeCapabilitiesResponse(destinationId: string = 'Printer1'):
     {capabilities: Capabilities} {
   const collate: CollateCapability = {

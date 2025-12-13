@@ -5,9 +5,6 @@
 #ifndef REMOTING_HOST_FTL_HOST_CHANGE_NOTIFICATION_LISTENER_H_
 #define REMOTING_HOST_FTL_HOST_CHANGE_NOTIFICATION_LISTENER_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -44,9 +41,8 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
   bool OnSignalStrategyIncomingStanza(
       const jingle_xmpp::XmlElement* stanza) override;
   bool OnSignalStrategyIncomingMessage(
-      const ftl::Id& sender_id,
-      const std::string& sender_registration_id,
-      const ftl::ChromotingMessage& message) override;
+      const SignalingAddress& sender_address,
+      const SignalingMessage& message) override;
 
  private:
   void OnHostDeleted();

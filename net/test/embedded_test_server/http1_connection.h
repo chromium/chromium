@@ -6,6 +6,7 @@
 #define NET_TEST_EMBEDDED_TEST_SERVER_HTTP1_CONNECTION_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -57,17 +58,17 @@ class Http1Connection : public HttpConnection, public HttpResponseDelegate {
   // HttpResponseDelegate
   void AddResponse(std::unique_ptr<HttpResponse> response) override;
   void SendResponseHeaders(HttpStatusCode status,
-                           const std::string& status_reason,
+                           std::string_view status_reason,
                            const base::StringPairs& headers) override;
-  void SendRawResponseHeaders(const std::string& headers) override;
-  void SendContents(const std::string& contents,
+  void SendRawResponseHeaders(std::string_view headers) override;
+  void SendContents(std::string_view contents,
                     base::OnceClosure callback) override;
   void FinishResponse() override;
-  void SendContentsAndFinish(const std::string& contents) override;
+  void SendContentsAndFinish(std::string_view contents) override;
   void SendHeadersContentAndFinish(HttpStatusCode status,
-                                   const std::string& status_reason,
+                                   std::string_view status_reason,
                                    const base::StringPairs& headers,
-                                   const std::string& contents) override;
+                                   std::string_view contents) override;
 
  private:
   void ReadData();

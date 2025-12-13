@@ -222,19 +222,30 @@ enum class AppLaunchSource {
 // application.
 // Do not remove items or re-order this enum as it is used in preferences
 // and histograms.
+// TODO(crbug.com/420858216): Add add "class" to declaration.
 enum LaunchType {
-  LAUNCH_TYPE_INVALID = -1,
-  LAUNCH_TYPE_FIRST = 0,
-  LAUNCH_TYPE_PINNED = LAUNCH_TYPE_FIRST,
-  LAUNCH_TYPE_REGULAR = 1,
-  LAUNCH_TYPE_FULLSCREEN = 2,
-  LAUNCH_TYPE_WINDOW = 3,
-  NUM_LAUNCH_TYPES,
+  kInvalid = -1,
+  kFirst = 0,
+  kPinned = kFirst,
+  kRegular = 1,
+  kFullscreen = 2,
+  kWindow = 3,
+  kNumLaunchTypes,
 
   // Launch an app in the in the way a click on the NTP would,
   // if no user pref were set.  Update this constant to change
   // the default for the NTP and chrome.management.launchApp().
-  LAUNCH_TYPE_DEFAULT = LAUNCH_TYPE_REGULAR
+  kDefault = kRegular,
+
+  // TODO(crbug.com/420858216): Remove these legacy values/names.
+  LAUNCH_TYPE_INVALID = kInvalid,
+  LAUNCH_TYPE_FIRST = kFirst,
+  LAUNCH_TYPE_PINNED = kPinned,
+  LAUNCH_TYPE_REGULAR = kRegular,
+  LAUNCH_TYPE_FULLSCREEN = kFullscreen,
+  LAUNCH_TYPE_WINDOW = kWindow,
+  NUM_LAUNCH_TYPES = kNumLaunchTypes,
+  LAUNCH_TYPE_DEFAULT = kDefault
 };
 
 }  // namespace extensions
@@ -273,9 +284,11 @@ inline constexpr char kChromeVoxExtensionId[] =
 // The extension id of the PDF extension.
 inline constexpr char kPdfExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 
+#if BUILDFLAG(IS_CHROMEOS)
 // The extension id of the Office Viewer component extension.
 inline constexpr char kQuickOfficeComponentExtensionId[] =
     "bpmcpldpdmajfigpchkicefoigmkfalc";
+#endif
 
 // The extension id of the Office Viewer extension on the internal webstore.
 inline constexpr char kQuickOfficeInternalExtensionId[] =

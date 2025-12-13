@@ -16,10 +16,6 @@
 #include "services/data_decoder/public/mojom/structured_headers_parser.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
-#endif
-
 namespace data_decoder {
 
 class DataDecoderService : public mojom::DataDecoderService {
@@ -54,11 +50,6 @@ class DataDecoderService : public mojom::DataDecoderService {
   void BindPixCodeValidator(
       mojo::PendingReceiver<payments::facilitated::mojom::PixCodeValidator>
           receiver) override;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  void BindBleScanParser(
-      mojo::PendingReceiver<mojom::BleScanParser> receiver) override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // In-process instances (e.g. on iOS or in tests) may have multiple concurrent
   // remote DataDecoderService clients.

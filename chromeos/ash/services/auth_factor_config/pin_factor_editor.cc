@@ -6,13 +6,35 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h"
 #include "chromeos/ash/services/auth_factor_config/auth_factor_config.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash::auth {
+
+namespace {
+
+mojom::PinComplexity LocalAuthFactorsComplexityToMojom(
+    LocalAuthFactorsComplexity complexity) {
+  switch (complexity) {
+    case LocalAuthFactorsComplexity::kNone:
+      return mojom::PinComplexity::kErrNone;
+    case LocalAuthFactorsComplexity::kLow:
+      return mojom::PinComplexity::kErrLow;
+    case LocalAuthFactorsComplexity::kMedium:
+      return mojom::PinComplexity::kErrMedium;
+    case LocalAuthFactorsComplexity::kHigh:
+      return mojom::PinComplexity::kErrHigh;
+  }
+}
+
+}  // namespace
 
 PinFactorEditor::PinFactorEditor(AuthFactorConfig* auth_factor_config,
                                  PinBackendDelegate* pin_backend)
@@ -114,7 +136,6 @@ void PinFactorEditor::OnRemovePinConfiguredWithContext(
 void PinFactorEditor::ObtainContext(
     const std::string& auth_token,
     base::OnceCallback<void(std::unique_ptr<UserContext>)> callback) {
-
   if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
     std::move(callback).Run(nullptr);
     return;
@@ -324,6 +345,50 @@ void PinFactorEditor::OnPinRemoveWithContext(
   auth_factor_config_->NotifyFactorObserversAfterSuccess(
       {factor}, auth_token, std::move(context), std::move(callback));
   return;
+}
+
+void PinFactorEditor::CheckPinComplexity(
+    const std::string& auth_token,
+    const std::string& pin,
+    base::OnceCallback<void(mojom::PinComplexity)> callback) {
+  ObtainContext(auth_token,
+                base::BindOnce(&PinFactorEditor::CheckPinComplexityWithContext,
+                               weak_factory_.GetWeakPtr(), auth_token, pin,
+                               std::move(callback)));
+}
+
+void PinFactorEditor::CheckPinComplexityWithContext(
+    const std::string& auth_token,
+    const std::string& pin,
+    base::OnceCallback<void(mojom::PinComplexity)> callback,
+    std::unique_ptr<UserContext> context) {
+  if (!context) {
+    LOG(ERROR) << "Invalid auth token";
+    std::move(callback).Run(mojom::PinComplexity::kInvalidTokenError);
+    return;
+  }
+
+  AccountId account_id = context->GetAccountId();
+  ash::AuthSessionStorage::Get()->Return(auth_token, std::move(context));
+
+  std::optional<LocalAuthFactorsComplexity> complexity =
+      AuthParts::Get()->GetAuthPolicyConnector()->GetLocalAuthFactorsComplexity(
+          account_id);
+  if (!complexity.has_value()) {
+    // The policy is not set.
+    return std::move(callback).Run(mojom::PinComplexity::kOk);
+  }
+
+  // TODO(crbug.com/445625494): Unify this method with the other codepath going
+  // through the legacy QuickUnlockPrivate API.
+
+  bool ok = policy::local_auth_factors::CheckPinComplexity(pin, *complexity);
+
+  mojom::PinComplexity result =
+      ok ? mojom::PinComplexity::kOk
+         : LocalAuthFactorsComplexityToMojom(*complexity);
+
+  std::move(callback).Run(result);
 }
 
 void PinFactorEditor::BindReceiver(

@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"

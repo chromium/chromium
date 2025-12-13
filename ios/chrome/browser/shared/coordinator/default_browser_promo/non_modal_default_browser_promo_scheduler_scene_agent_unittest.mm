@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -53,7 +55,7 @@
 namespace {
 
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* context) {
+    ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
 
@@ -138,8 +140,8 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
-  raw_ptr<web::FakeWebState> test_web_state_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<web::FakeWebState, DanglingUntriaged> test_web_state_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   FakeOverlayPresentationContext overlay_presentation_context_;
   id promo_commands_handler_;
@@ -153,8 +155,6 @@ class NonModalDefaultBrowserPromoSchedulerSceneAgentTest : public PlatformTest {
 // Tests that the omnibox paste event triggers the promo to show.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestOmniboxPasteShowsPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -192,8 +192,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // promo.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestFirstPartySchemeShowsPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -230,8 +228,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests that the completed share event triggers the promo.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestShareCompletedShowsPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(
       *mock_tracker_,
@@ -264,8 +260,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // the event is stored.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestTimeoutDismissesPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -307,8 +301,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests that if the user takes the promo action, that is handled correctly.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestActionDismissesPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -336,10 +328,15 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 
   [promo_commands_handler_ verify];
 
-  [[application_ expect]
-                openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
-                options:@{}
-      completionHandler:nil];
+  NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+  if (@available(iOS 18.3, *)) {
+    if (IsDefaultAppsDestinationAvailable() &&
+        IsUseDefaultAppsDestinationForPromosEnabled()) {
+      url = [NSURL
+          URLWithString:UIApplicationOpenDefaultApplicationsSettingsURLString];
+    }
+  }
+  [[application_ expect] openURL:url options:{} completionHandler:nil];
   [scheduler_ logUserPerformedPromoAction];
 
   [application_ verify];
@@ -372,8 +369,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // interactions count is only incremented once.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestMultipleInteractionsOnlyIncrementsCountOnce) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -434,8 +429,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // finishes, the promo does not show.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestTabSwitchPreventsPromoShown) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -468,8 +461,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests that if a message is triggered on page load, the promo is not shown.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestMessagePreventsPromoShown) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -516,8 +507,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // does not update the shown promo count.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundingDismissesPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -580,8 +569,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // does not update the shown promo count.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestTabGridDismissesPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -642,8 +629,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests background cancel metric logs correctly.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetric) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -677,8 +662,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests background cancel metric is not logged after a promo is shown.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricNotLogAfterPromoShown) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -724,8 +707,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests background cancel metric is not logged after a promo is dismissed.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricNotLogAfterPromoDismiss) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -777,8 +758,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Prevents crbug.com/1221379 regression.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundCancelMetricDoesNotLogWhenPromoNotShown) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectUniqueSample(
       "IOS.DefaultBrowserPromo.NonModal.VisitPastedLink",
@@ -828,8 +807,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // Tests that if the user currently has Chrome as default, the promo does not
 // show. Prevents regression of crbug.com/1224875
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest, NoPromoIfDefault) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mark Chrome as currently default
   LogOpenHTTPURLFromExternalURL();
 
@@ -849,8 +826,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest, NoPromoIfDefault) {
 // crbug.com/1224427
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        NoDCHECKIfPromoNotShown) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(
@@ -889,8 +864,6 @@ TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
 // have been displayed. See b/326565601.
 TEST_F(NonModalDefaultBrowserPromoSchedulerSceneAgentTest,
        TestBackgroundingDoesNotRecordIfCannotDisplayPromo) {
-  base::test::ScopedFeatureList feature_list(kTailoredNonModalDBPromo);
-
   // Mock the FET tracker.
   EXPECT_CALL(*mock_tracker_,
               WouldTriggerHelpUI(testing::Ref(

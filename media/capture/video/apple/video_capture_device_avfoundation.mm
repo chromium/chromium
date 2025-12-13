@@ -49,12 +49,13 @@
 #endif
 
 BASE_FEATURE(kAVFoundationCaptureForwardSampleTimestamps,
-             "AVFoundationCaptureForwardSampleTimestamps",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAVFoundationCaptureSonomaRestartStalledCamera,
-             "AVFoundationCaptureSonomaRestartStalledCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAVFoundationCaptureAccept420FullRange,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -108,14 +109,11 @@ constexpr size_t kPixelBufferPoolSize = 10;
 namespace media {
 
 // Uses the most recent advice from Apple for configuring and starting.
-BASE_FEATURE(kConfigureCaptureBeforeStart,
-             "ConfigureCaptureBeforeStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kConfigureCaptureBeforeStart, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allow disabling optimizations (https://crbug.com/1143477,
 // https://crbug.com/959962) because of flickering (https://crbug.com/1515598).
 BASE_FEATURE(kOverrideCameraIOSurfaceColorSpace,
-             "OverrideCameraIOSurfaceColorSpace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 AVCaptureDeviceFormat* FindBestCaptureFormat(
@@ -138,24 +136,35 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
     // If the pixel format is unsupported by our code, then it is not useful.
     if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
+      VLOG(1) << "Ignoring device supported format, unknown FourCC: "
+              << media::MacFourCCToString(fourcc);
       continue;
     }
 
     // If our CMSampleBuffers will have a different size than the native
     // capture, then we will not be the fast path.
     if (dimensions.width != width || dimensions.height != height) {
+      VLOG(1) << "Ignoring device supported format, wrong resolution: "
+              << VideoPixelFormatToString(pixelFormat) << " "
+              << dimensions.width << "x" << dimensions.height;
       continue;
     }
 
     Float64 maxFrameRate = 0;
     bool matchesFrameRate = false;
+    std::stringstream ssFrameRateRanges;
     for (AVFrameRateRange* frameRateRange in captureFormat
              .videoSupportedFrameRateRanges) {
+      ssFrameRateRanges << ", " << frameRateRange.minFrameRate << "-"
+                        << frameRateRange.maxFrameRate;
       maxFrameRate = std::max(maxFrameRate, frameRateRange.maxFrameRate);
       matchesFrameRate |=
           frameRateRange.minFrameRate <= frame_rate + kFrameRateEpsilon &&
           frame_rate - kFrameRateEpsilon <= frameRateRange.maxFrameRate;
     }
+    VLOG(1) << "Available device supported format: "
+            << VideoPixelFormatToString(pixelFormat) << " " << width << "x"
+            << height << ssFrameRateRanges.str();
     // Prefer a capture format that handles the requested framerate to one
     // that doesn't.
     if (bestCaptureFormat) {
@@ -193,7 +202,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
 
   VLOG(1) << "Selecting AVCaptureDevice format "
-          << VideoPixelFormatToString(bestPixelFormat);
+          << VideoPixelFormatToString(bestPixelFormat) << " " << width << "x"
+          << height << "@" << bestMaxFrameRate;
   return bestCaptureFormat;
 }
 
@@ -279,14 +289,24 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
 + (media::VideoPixelFormat)FourCCToChromiumPixelFormat:(FourCharCode)code {
   switch (code) {
+    // Mac fourcc: "420f".
+    case kCVPixelFormatType_420YpCbCr8BiPlanarFullRange:
+      return base::FeatureList::IsEnabled(
+                 kAVFoundationCaptureAccept420FullRange)
+                 ? media::PIXEL_FORMAT_NV12
+                 : media::PIXEL_FORMAT_UNKNOWN;
+    // Mac fourcc: "420v".
     case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
-      return media::PIXEL_FORMAT_NV12;  // Mac fourcc: "420v".
+      return media::PIXEL_FORMAT_NV12;
+    // Mac fourcc: "2vuy".
     case kCVPixelFormatType_422YpCbCr8:
-      return media::PIXEL_FORMAT_UYVY;  // Mac fourcc: "2vuy".
+      return media::PIXEL_FORMAT_UYVY;
+    // Mac fourcc: "yuvs".
     case kCMPixelFormat_422YpCbCr8_yuvs:
       return media::PIXEL_FORMAT_YUY2;
+    // Mac fourcc: "dmb1".
     case kCMVideoCodecType_JPEG_OpenDML:
-      return media::PIXEL_FORMAT_MJPEG;  // Mac fourcc: "dmb1".
+      return media::PIXEL_FORMAT_MJPEG;
     default:
       return media::PIXEL_FORMAT_UNKNOWN;
   }
@@ -440,6 +460,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     return NO;
   }
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(https://crbug.com/461717105): Remove this logging.
+  media::LogAVCaptureDeviceInfo(_captureDevice);
+#endif
+
   // Create the capture input associated with the device. Easy peasy.
   NSError* error = nil;
   _captureDeviceInput =
@@ -513,9 +538,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
   }
 
+  // TODO(crbug.com/439372638): Log a more trustworthy FPS than frameRate here,
+  // it may not be what was selected by FindBestCaptureFormat() or if MJPEG
+  // workaround was activated then FPS could also be different.
   VLOG(2) << __func__ << ": configuring '"
           << media::MacFourCCToString(best_fourcc) << "' " << width << "x"
-          << height << "@" << frameRate;
+          << height << "@" << frameRate << " (FPS not trusted)";
 
   // The capture output has to be configured, despite Mac documentation
   // detailing that setting the sessionPreset would be enough. The reason for
@@ -966,9 +994,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                       colorSpace:
                                           (const gfx::ColorSpace&)colorSpace {
   DCHECK(ioSurface);
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
+  gfx::GpuMemoryBufferHandle handle(
+      gfx::ScopedIOSurface(ioSurface, base::scoped_policy::RETAIN));
 
   // The BT709_APPLE color space is stored as an ICC profile, which is parsed
   // every frame in the GPU process. For this particularly common case, go back

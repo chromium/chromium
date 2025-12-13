@@ -40,7 +40,8 @@ const char kErrorInvalidURL[] = "Login screen URL is not valid.";
 const char kErrorNotOnLoginOrLockScreen[] =
     "Windows can only be created on the login and lock screen.";
 
-const char kExtensionNameImprivata[] = "Imprivata OneSign";
+const char kExtensionNameAuthX[] = "AuthX Security LLC";
+const char kExtensionNameImprivata[] = "Imprivata Enterprise Access Management";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
 
 std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
@@ -48,12 +49,15 @@ std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
       extensions::FeatureProvider::GetBehaviorFeature(
           extensions::behavior_feature::kImprivataLoginScreenExtension);
 
-  if (imprivata_login_screen_extension->IsAvailableToExtension(extension)
-          .is_available()) {
-    return kExtensionNameImprivata;
+  if (extension->id() == "cgfejmnibdpmonndkkmfghicnokiomoi") {
+    return kExtensionNameAuthX;
   }
   if (extension->id() == "oclffehlkdgibkainkilopaalpdobkan") {
     return kExtensionNameImprivataTest;
+  }
+  if (imprivata_login_screen_extension->IsAvailableToExtension(extension)
+          .is_available()) {
+    return kExtensionNameImprivata;
   }
   NOTREACHED();
 }

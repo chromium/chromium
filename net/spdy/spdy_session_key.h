@@ -5,6 +5,7 @@
 #ifndef NET_SPDY_SPDY_SESSION_KEY_H_
 #define NET_SPDY_SPDY_SESSION_KEY_H_
 
+#include <iosfwd>
 #include <optional>
 
 #include "net/base/net_export.h"
@@ -15,6 +16,7 @@
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/socket_tag.h"
+
 namespace net {
 
 // SpdySessionKey is used as unique index for SpdySessionPool.
@@ -67,19 +69,13 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   CompareForAliasingResult CompareForAliasing(
       const SpdySessionKey& other) const;
 
-  const HostPortProxyPair& host_port_proxy_pair() const {
-    return host_port_proxy_pair_;
-  }
-
-  const HostPortPair& host_port_pair() const {
-    return host_port_proxy_pair_.first;
-  }
-
-  const ProxyChain& proxy_chain() const { return host_port_proxy_pair_.second; }
+  const HostPortPair& host_port_pair() const { return host_port_pair_; }
 
   PrivacyMode privacy_mode() const {
     return privacy_mode_;
   }
+
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
 
   SessionUsage session_usage() const { return session_usage_; }
 
@@ -96,9 +92,10 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   }
 
  private:
-  HostPortProxyPair host_port_proxy_pair_;
+  HostPortPair host_port_pair_;
   // If enabled, then session cannot be tracked by the server.
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
+  ProxyChain proxy_chain_;
   SessionUsage session_usage_ = SessionUsage::kDestination;
   SocketTag socket_tag_;
   // Used to separate requests made in different contexts. If network state
@@ -107,6 +104,9 @@ class NET_EXPORT_PRIVATE SpdySessionKey {
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool disable_cert_verification_network_fetches_ = false;
 };
+
+NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,
+                                            const SpdySessionKey& key);
 
 }  // namespace net
 

@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
+#include <sys/fileport.h>
 
 #include "base/apple/mach_logging.h"
 #include "base/apple/scoped_mach_port.h"
@@ -95,10 +96,6 @@ base::ScopedFD RecoverFDFromTransmissible(PlatformHandle handle) {
   return fd;
 }
 #elif BUILDFLAG(IS_APPLE)
-extern "C" {
-kern_return_t fileport_makeport(int fd, mach_port_t*);
-int fileport_makefd(mach_port_t);
-}  // extern "C"
 
 PlatformHandle MakeFDTransmissible(base::ScopedFD fd) {
   base::apple::ScopedMachSendRight port;

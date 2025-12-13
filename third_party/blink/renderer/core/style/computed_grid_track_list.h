@@ -38,10 +38,6 @@ class CORE_EXPORT ComputedGridTrackList
            axis_type_ == other.axis_type_;
   }
 
-  bool operator!=(const ComputedGridTrackList& other) const {
-    return !(*this == other);
-  }
-
   bool IsSubgriddedAxis() const {
     return axis_type_ == GridAxisType::kSubgriddedAxis;
   }

@@ -7,10 +7,8 @@
 
 #include <windows.h>
 
-#include <string>
-
 #include "ipc/ipc_message_support_export.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 
 namespace base {
 class Pickle;
@@ -46,7 +44,6 @@ struct IPC_MESSAGE_SUPPORT_EXPORT ParamTraits<HandleWin> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* p);
-  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

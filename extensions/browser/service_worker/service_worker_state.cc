@@ -49,6 +49,22 @@ void ServiceWorkerState::Reset() {
   worker_id_.reset();
   browser_state_ = BrowserState::kNotActive;
   renderer_state_ = RendererState::kNotActive;
+
+  // NOTE: `worker_starting_` is intentionally NOT reset here.
+  //
+  // `Reset()` can be called when a worker stops, including when it stops in the
+  // middle of a start attempt. In that case, `content::ServiceWorkerVersion`
+  // may try to restart the worker to fulfill the pending start request(s)
+  // (see `content::ServiceWorkerVersion::OnStoppedInternal`).
+  //
+  // `worker_starting_` must remain true to prevent the extensions layer from
+  // issuing a new start request while the content layer's automatic restart
+  // is in flight. Resetting it here can create a race condition where two
+  // `DidStartWorkerForScope` callbacks are processed concurrently, leading
+  // to a crash (see crbug.com/452178846).
+  //
+  // The flag is correctly cleared only upon success (in
+  // `NotifyObserversIfReady`) or failure (in `DidStartWorkerFail`).
 }
 
 bool ServiceWorkerState::IsStarting() const {

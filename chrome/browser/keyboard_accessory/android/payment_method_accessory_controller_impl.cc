@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -103,6 +104,8 @@ void AddCardDetailsToUserInfo(const CreditCard& card,
                  enabled);
 }
 
+// TODO(crbug.com/430575808): Consolidate `TranslateCard()` and
+// `TranslateCachedCard()` into one method.
 UserInfo TranslateCard(const CreditCard* data, bool enabled) {
   DCHECK(data);
   UserInfo user_info(data->network(), GetCardArtUrl(*data));
@@ -131,10 +134,13 @@ UserInfo TranslateCachedCard(const CachedServerCardInfo* data, bool enabled) {
   DCHECK(data);
 
   const CreditCard& card = data->card;
-  UserInfo user_info(card.network(), GetCardArtUrl(card));
+  UserInfo user_info(card.is_bnpl_card() ? card.issuer_id() : card.network(),
+                     GetCardArtUrl(card));
   std::u16string card_number = card.GetRawInfo(CREDIT_CARD_NUMBER);
   std::u16string card_number_a11y_description =
-      card_number + u" " + card.NetworkForDisplay();
+      card_number + u" " +
+      (card.is_bnpl_card() ? card.CardNameForAutofillDisplay()
+                           : card.NetworkForDisplay());
   user_info.add_field(
       AccessorySheetField::Builder()
           .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
@@ -224,7 +230,7 @@ PaymentMethodAccessoryControllerImpl::GetSheetData() const {
   for (const CardOrVirtualCard& card_or_virtual : GetAllCreditCards()) {
     const CreditCard* card = UnwrapCardOrVirtualCard(card_or_virtual);
     if (add_all_cards || !autofill_manager->GetCreditCardAccessManager()
-                              .IsCardPresentInUnmaskedCache(*card)) {
+                              ->IsCardPresentInUnmaskedCache(*card)) {
       info_to_add.push_back(TranslateCard(card, allow_filling));
     }
   }
@@ -466,7 +472,7 @@ PaymentMethodAccessoryControllerImpl::GetUnmaskedCreditCards() const {
     return std::vector<const CachedServerCardInfo*>();
   }
   std::vector<const CachedServerCardInfo*> unmasked_cards =
-      autofill_manager->GetCreditCardAccessManager().GetCachedUnmaskedCards();
+      autofill_manager->GetCreditCardAccessManager()->GetCachedUnmaskedCards();
   // Show unmasked virtual cards and card info retrieval enrolled server cards
   // in the manual filling view if they exist. All other cards are dropped.
   auto non_runtime_retrieval_card = [](const CachedServerCardInfo* card_info) {
@@ -570,7 +576,7 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfCreditCardId(
     return false;
   }
 
-  GetAutofillManager()->GetCreditCardAccessManager().FetchCreditCard(
+  GetAutofillManager()->GetCreditCardAccessManager()->FetchCreditCard(
       UnwrapCardOrVirtualCard(*card_iter),
       base::BindOnce(&PaymentMethodAccessoryControllerImpl::OnCreditCardFetched,
                      weak_ptr_factory_.GetWeakPtr()));

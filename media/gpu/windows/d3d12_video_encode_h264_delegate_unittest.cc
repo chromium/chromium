@@ -4,7 +4,10 @@
 
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 
+#include <array>
+
 #include "base/strings/stringprintf.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/d3d12_mocks.h"
 #include "media/base/win/d3d12_video_mocks.h"
 #include "media/gpu/windows/d3d12_video_encode_delegate_unittest.h"
@@ -40,6 +43,38 @@ class D3D12VideoEncodeH264DelegateTest
         .WillByDefault([](D3D12_FEATURE_VIDEO feature, void*, UINT) {
           EXPECT_TRUE(false) << "Unexpected feature: " << feature;
           return E_INVALIDARG;
+        });
+    ON_CALL(
+        *video_device3_.Get(),
+        CheckFeatureSupport(
+            D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT, _, _))
+        .WillByDefault([](D3D12_FEATURE_VIDEO, void* data, UINT size) {
+          EXPECT_EQ(
+              size,
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT));
+          if (size !=
+              sizeof(
+                  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT)) {
+            return E_INVALIDARG;
+          }
+          auto* picture_control = static_cast<
+              D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT*>(
+              data);
+          EXPECT_EQ(picture_control->Codec, D3D12_VIDEO_ENCODER_CODEC_H264);
+          picture_control->IsSupported =
+              picture_control->Codec == D3D12_VIDEO_ENCODER_CODEC_H264;
+          EXPECT_EQ(
+              picture_control->PictureSupport.DataSize,
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264));
+          if (picture_control->PictureSupport.DataSize !=
+              sizeof(D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_H264)) {
+            return E_INVALIDARG;
+          }
+          picture_control->PictureSupport.pH264Support->MaxLongTermReferences =
+              1;
+          picture_control->PictureSupport.pH264Support->MaxDPBCapacity = 16;
+          return S_OK;
         });
     ON_CALL(*video_device3_.Get(),
             CheckFeatureSupport(D3D12_FEATURE_VIDEO_ENCODER_CODEC, _, _))
@@ -136,7 +171,8 @@ class D3D12VideoEncodeH264DelegateTest
                       support->InputFormat == DXGI_FORMAT_P010);
           support->SupportFlags =
               support->Codec == D3D12_VIDEO_ENCODER_CODEC_H264
-                  ? D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK
+                  ? D3D12_VIDEO_ENCODER_SUPPORT_FLAG_GENERAL_SUPPORT_OK |
+                        D3D12_VIDEO_ENCODER_SUPPORT_FLAG_RECONSTRUCTED_FRAMES_REQUIRE_TEXTURE_ARRAYS
                   : D3D12_VIDEO_ENCODER_SUPPORT_FLAG_NONE;
           support->ValidationFlags =
               support->Codec != D3D12_VIDEO_ENCODER_CODEC_H264
@@ -149,7 +185,7 @@ class D3D12VideoEncodeH264DelegateTest
         });
 
     encoder_delegate_ =
-        std::make_unique<D3D12VideoEncodeH264Delegate>(video_device3_);
+        std::make_unique<D3D12VideoEncodeH264Delegate>(video_device3_, true);
     encoder_delegate_->SetFactoriesForTesting(
         base::BindRepeating(&CreateVideoEncoderWrapper),
         base::BindRepeating(&CreateVideoProcessorWrapper));
@@ -165,8 +201,8 @@ TEST_F(D3D12VideoEncodeH264ReferenceFrameManagerTest,
        ProcessMemoryManagementControlOperation) {
   // Initialization
   D3D12VideoEncodeH264ReferenceFrameManager reference_manager;
-  ASSERT_TRUE(reference_manager.InitializeTextureArray(
-      device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4));
+  ASSERT_TRUE(reference_manager.InitializeTextureResources(
+      device_.Get(), {1280, 720}, DXGI_FORMAT_NV12, 4, true));
   EXPECT_EQ(reference_manager.GetMaxLongTermFrameIndexPlus1(), 0u);
   EXPECT_EQ(reference_manager.GetLongTermReferenceFrameResourceId(0),
             std::nullopt);
@@ -328,7 +364,7 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFrame) {
   ASSERT_TRUE(result_or_error.has_value());
 
   BitstreamBufferMetadata metadata =
-      std::move(result_or_error).value().metadata_;
+      std::move(result_or_error).value().metadata;
   EXPECT_EQ(metadata.key_frame, is_key_frame);
   if (encoder_delegate_->ReportsAverageQp()) {
     EXPECT_GE(metadata.qp, 0);
@@ -387,6 +423,91 @@ TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeFramesAndVerifyKeyFrameFlag) {
     ASSERT_TRUE(result_or_error.has_value());
     Mock::VerifyAndClearExpectations(GetVideoEncoderWrapper());
   }
+}
+
+TEST_F(D3D12VideoEncodeH264DelegateTest,
+       EncodeAtL1T3AndVerifyMaxNumOfRefFrames) {
+  EnableFeature(kD3D12VideoEncodeAcceleratorL1T3);
+
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.spatial_layers = {{
+      .width = config.input_visible_size.width(),
+      .height = config.input_visible_size.height(),
+      .bitrate_bps = config.bitrate.target_bps(),
+      .framerate = config.framerate,
+      .num_of_temporal_layers = 3,
+  }};
+
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+  // H.264 requires one extra DPB slot to be allocated for frame_num gap
+  // handling; at the same time for the test, we disable non-reference
+  // frames, so another DPB slot is reserved for storing the frame that
+  // is not referenced.
+  EXPECT_EQ(encoder_delegate_->GetMaxNumOfRefFrames(), 4u);
+
+  constexpr uint32_t kFramesToEncode = 10;
+  constexpr size_t kStreamSize = 512;
+  constexpr size_t kBufferSize = 1024;
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+  for (uint32_t i = 0; i < kFramesToEncode; i++) {
+    static const std::array<uint32_t, 4> layer_pattern = {0, 2, 1, 2};
+    uint32_t temporal_idx = layer_pattern[i % layer_pattern.size()];
+    EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata())
+        .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kStreamSize)));
+    auto result_or_error = encoder_delegate_->Encode(
+        input_frame, 0, gfx::ColorSpace::CreateSRGB(), bitstream_buffer,
+        VideoEncoder::EncodeOptions());
+    ASSERT_TRUE(result_or_error.has_value());
+
+    BitstreamBufferMetadata metadata =
+        std::move(result_or_error).value().metadata;
+    ASSERT_TRUE(metadata.h264.has_value());
+    ASSERT_EQ(metadata.h264->temporal_idx, temporal_idx);
+  }
+}
+
+TEST_F(D3D12VideoEncodeH264DelegateTest, EncodeWithManualReferenceControl) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  config.manual_reference_buffer_control = true;
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  auto input_frame =
+      CreateResource(config.input_visible_size, config.input_format);
+  constexpr size_t kBufferSize = 1024;
+  constexpr size_t kStreamSize = 512;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kBufferSize);
+  BitstreamBuffer bitstream_buffer(0, shared_memory.Duplicate(), kBufferSize);
+
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillRepeatedly(
+          [&] { return GetEncoderOutputMetadataResourceMap(kStreamSize); });
+
+  // Pass reference_buffers and update_buffer in EncodeOptions for emulation of
+  // L1T2 encoding of 3 frames.
+  VideoEncoder::EncodeOptions encode_opts;
+  encode_opts.reference_buffers = {};
+  encode_opts.update_buffer = 0;
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  encode_opts.reference_buffers = {0};
+  encode_opts.update_buffer = std::nullopt;
+  result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
+
+  encode_opts.reference_buffers = {0};
+  encode_opts.update_buffer = 0;
+  result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, gfx::ColorSpace::CreateSRGB(),
+                                bitstream_buffer, encode_opts);
+  ASSERT_TRUE(result_or_error.has_value());
 }
 
 }  // namespace media

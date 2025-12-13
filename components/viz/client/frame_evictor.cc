@@ -37,14 +37,16 @@ void FrameEvictor::OnSurfaceDiscarded() {
 }
 
 void FrameEvictor::SetVisible(bool visible) {
-  if (visible_ == visible)
+  if (visible_ == visible) {
     return;
+  }
   visible_ = visible;
   if (has_surface_) {
-    if (visible)
+    if (visible) {
       FrameEvictionManager::GetInstance()->LockFrame(this);
-    else
+    } else {
       FrameEvictionManager::GetInstance()->UnlockFrame(this);
+    }
   }
 }
 

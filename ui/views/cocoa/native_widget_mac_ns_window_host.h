@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -185,8 +186,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   uint64_t GetRootViewNSViewId() const { return root_view_id_; }
 
   void set_immersive_mode_reveal_client(
-      ImmersiveModeRevealClient* reveal_client) {
-    immersive_mode_reveal_client_ = reveal_client;
+      base::WeakPtr<ImmersiveModeRevealClient> reveal_client) {
+    immersive_mode_reveal_client_ = std::move(reveal_client);
   }
 
   // Initialize the ui::Compositor and ui::Layer.
@@ -341,6 +342,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                                               bool* event_swallowed,
                                               bool* event_handled) override;
   bool DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
+                            bool target_is_this_window,
                             bool* event_handled) override;
   bool GetHasMenuController(bool* has_menu_controller) override;
   bool GetHitTestResult(
@@ -366,6 +368,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
                                 bool full_keyboard_access_enabled) override;
   void OnWindowStateRestorationDataChanged(
       const std::vector<uint8_t>& data) override;
+  void OnSheetModalShown() override;
+  void OnSheetModalClosed() override;
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override;
   void OnImmersiveFullscreenMenuBarRevealChanged(double reveal_amount) override;
   void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override;
@@ -412,6 +416,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
       std::unique_ptr<ui::Event> event,
       DispatchKeyEventToMenuControllerRemoteCallback callback) override;
   void DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
+                            bool target_is_this_window,
                             DispatchMonitorEventCallback callback) override;
   void GetHasMenuController(GetHasMenuControllerCallback callback) override;
   void GetHitTestResult(const gfx::Point& location_in_content,
@@ -527,7 +532,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   std::unique_ptr<TooltipManager> tooltip_manager_;
   std::unique_ptr<TextInputHost> text_input_host_;
 
-  raw_ptr<ImmersiveModeRevealClient> immersive_mode_reveal_client_;
+  base::WeakPtr<ImmersiveModeRevealClient> immersive_mode_reveal_client_;
 
   std::u16string window_title_;
 
@@ -546,7 +551,6 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   bool is_miniaturized_ = false;
   bool is_window_key_ = false;
   bool is_mouse_capture_active_ = false;
-  bool is_headless_mode_window_ = false;
   bool is_zoomed_ = false;
   gfx::Rect window_bounds_before_fullscreen_;
 

@@ -74,7 +74,7 @@ class BookmarkSearchBoxRowViewBinder {
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES);
             // TODO(crbug.com/40924045): Use tintWithTextColor because the drawable tint
             // is broken.
-            shoppingChip.setIcon(res, /* tintWithTextColor= */ true);
+            shoppingChip.setIconWithTint(res, /* tintWithTextColor= */ true);
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES) {
             final @StringRes int res =
                     model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TEXT_RES);

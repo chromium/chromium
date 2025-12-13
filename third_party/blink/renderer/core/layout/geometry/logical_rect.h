@@ -135,7 +135,7 @@ struct CORE_EXPORT LogicalRect {
       : offset(LayoutUnit(r.x()), LayoutUnit(r.y())),
         size(LayoutUnit(r.width()), LayoutUnit(r.height())) {}
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const LogicalRect&);

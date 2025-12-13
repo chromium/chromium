@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -18,7 +16,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_CCT_MINIMIZATION_SYSTEM_TIME;
 import static org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizationManager.KEY_IS_CCT_MINIMIZED;
 import static org.chromium.chrome.browser.tab.TabLoadIfNeededCaller.ON_ACTIVITY_SHOWN_THEN_SHOW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
@@ -47,11 +44,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -70,6 +65,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabMinimizationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -92,7 +88,6 @@ public class CustomTabMinimizationManagerUnitTest {
                     JUnitTestGURLs.SEARCH_URL);
 
     @Spy private AppCompatActivity mActivity;
-    @Mock private ActivityTabProvider mTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
@@ -104,6 +99,7 @@ public class CustomTabMinimizationManagerUnitTest {
     @Mock private CustomTabMinimizeDelegate mOtherMinimizeDelegate;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     private CustomTabMinimizationManager mManager;
 
@@ -113,17 +109,16 @@ public class CustomTabMinimizationManagerUnitTest {
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
 
         CustomTabsConnection.setInstanceForTesting(mConnection);
+        mActivityTabProvider.setForTesting(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.SEARCH_URL);
         when(mTab.getTitle()).thenReturn(TITLE);
-        when(mTabProvider.hasValue()).thenReturn(true);
-        when(mTabProvider.get()).thenReturn(mTab);
         when(mActivity.enterPictureInPictureMode(any(PictureInPictureParams.class)))
                 .thenReturn(true);
         mManager =
                 new CustomTabMinimizationManager(
                         mActivity,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mFeatureEngagementDelegate,
                         mCloseTabRunnable,
                         mIntentData,
@@ -139,10 +134,6 @@ public class CustomTabMinimizationManagerUnitTest {
 
     @Test
     public void testMinimize() {
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.MINIMIZE);
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
         verify(mFeatureEngagementDelegate).notifyUserEngaged();
@@ -157,9 +148,6 @@ public class CustomTabMinimizationManagerUnitTest {
         verify(mWebContents).suspendAllMediaPlayers();
         verify(mWebContents).setAudioMuted(eq(true));
 
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.MINIMIZE should be recorded once");
-
         assertEquals(TITLE, ((TextView) mActivity.findViewById(R.id.title)).getText());
         assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
     }
@@ -170,23 +158,12 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate Activity exiting PiP.
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.MAXIMIZE);
-        var timeElapsedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.TimeElapsedSinceMinimized.Maximized");
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
         verify(mConnection).onUnminimized(any());
         verify(mMinimizationObserver).onMinimizationChanged(false);
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
-        timeElapsedWatcher.assertExpected(
-                "CustomTabs.TimeElapsedSinceMinimized.Maximized should be recorded once");
     }
 
     @Test
@@ -195,23 +172,11 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate PiP being dismissed by the user.
-        var minimizationEventsWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.MinimizedEvents",
-                        CustomTabMinimizationManager.MinimizationEvents.DESTROY);
-        var timeElapsedWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "CustomTabs.TimeElapsedSinceMinimized.Destroyed");
         mActivityScenarioRule.getScenario().moveToState(State.CREATED);
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab, never()).show(anyInt(), anyInt());
         verify(mCloseTabRunnable).run();
-
-        minimizationEventsWatcher.assertExpected(
-                "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
-        timeElapsedWatcher.assertExpected(
-                "CustomTabs.TimeElapsedSinceMinimized.Destroyed should be recorded once");
     }
 
     @Test
@@ -329,7 +294,6 @@ public class CustomTabMinimizationManagerUnitTest {
         mManager.onSaveInstanceState(outBundle);
 
         assertTrue(outBundle.getBoolean(KEY_IS_CCT_MINIMIZED));
-        assertThat(outBundle.getLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME), greaterThan(0L));
         assertEquals(TITLE, outBundle.getString(MinimizedCardProperties.TITLE.toString()));
         assertEquals(HOST, outBundle.getString(MinimizedCardProperties.URL.toString()));
     }
@@ -338,16 +302,14 @@ public class CustomTabMinimizationManagerUnitTest {
     public void testInitWithInstanceState() {
         var bundle = new Bundle();
         bundle.putBoolean(KEY_IS_CCT_MINIMIZED, true);
-        bundle.putLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME, 999999L);
         bundle.putString(MinimizedCardProperties.TITLE.toString(), TITLE);
         bundle.putString(MinimizedCardProperties.URL.toString(), HOST);
 
-        when(mSavedInstanceStateSupplier.hasValue()).thenReturn(true);
         when(mSavedInstanceStateSupplier.get()).thenReturn(bundle);
         var manager =
                 new CustomTabMinimizationManager(
                         mActivity,
-                        mTabProvider,
+                        mActivityTabProvider,
                         mFeatureEngagementDelegate,
                         mCloseTabRunnable,
                         mIntentData,

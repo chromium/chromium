@@ -35,7 +35,7 @@ void RemoteHostContactedSignalProcessor::ProcessSignal(
   } else {
     // For new signals, create a new store entry with |rhc_id| as the key.
     RemoteHostInfo remote_host_info;
-    remote_host_info.set_url(rhc_signal.remote_host_url().host());
+    remote_host_info.set_url(rhc_signal.remote_host_url().GetHost());
     remote_host_info.set_connection_protocol(rhc_signal.protocol_type());
     remote_host_info.set_contacted_by(rhc_signal.contact_initiator());
     remote_host_info.set_contact_count(1);

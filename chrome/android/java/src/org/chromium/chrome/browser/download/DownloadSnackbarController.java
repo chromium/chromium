@@ -8,24 +8,27 @@ import android.app.Activity;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 
 /** Class for displaying a snackbar when a download completes. */
+@NullMarked
 public class DownloadSnackbarController implements SnackbarManager.SnackbarController {
     public static final int INVALID_NOTIFICATION_ID = -1;
     private static final int SNACKBAR_DURATION_MS = 7000;
 
     @Override
-    public void onAction(Object actionData) {
+    public void onAction(@Nullable Object actionData) {
         DownloadManagerService.openDownloadsPage(
                 /* otrProfileId= */ null, DownloadOpenSource.SNACK_BAR);
     }
 
     @Override
-    public void onDismissNoAction(Object actionData) {}
+    public void onDismissNoAction(@Nullable Object actionData) {}
 
     /**
      * Called to display the download failed snackbar.
@@ -36,7 +39,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
      * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     public void onDownloadFailed(
-            String errorMessage, boolean showAllDownloads, OtrProfileId otrProfileId) {
+            String errorMessage, boolean showAllDownloads, @Nullable OtrProfileId otrProfileId) {
         if (isShowingDownloadInfoBar(otrProfileId)) return;
         if (getSnackbarManager() == null) return;
         // TODO(qinmin): Coalesce snackbars if multiple downloads finish at the same time.
@@ -46,7 +49,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
                                 this,
                                 Snackbar.TYPE_NOTIFICATION,
                                 Snackbar.UMA_DOWNLOAD_FAILED)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setDuration(SNACKBAR_DURATION_MS);
         if (showAllDownloads) {
             snackbar.setAction(
@@ -70,12 +73,12 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
                                 this,
                                 Snackbar.TYPE_NOTIFICATION,
                                 Snackbar.UMA_MISSING_FILES_NO_SD_CARD)
-                        .setSingleLine(false)
+                        .setDefaultLines(false)
                         .setDuration(SNACKBAR_DURATION_MS);
         getSnackbarManager().showSnackbar(snackbar);
     }
 
-    private Activity getActivity() {
+    private @Nullable Activity getActivity() {
         if (ApplicationStatus.hasVisibleActivities()) {
             return ApplicationStatus.getLastTrackedFocusedActivity();
         } else {
@@ -83,7 +86,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         }
     }
 
-    public SnackbarManager getSnackbarManager() {
+    public @Nullable SnackbarManager getSnackbarManager() {
         Activity activity = getActivity();
         if (activity != null && activity instanceof SnackbarManager.SnackbarManageable) {
             return ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
@@ -91,7 +94,7 @@ public class DownloadSnackbarController implements SnackbarManager.SnackbarContr
         return null;
     }
 
-    private boolean isShowingDownloadInfoBar(OtrProfileId otrProfileId) {
+    private boolean isShowingDownloadInfoBar(@Nullable OtrProfileId otrProfileId) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
                         .getMessageUiController(otrProfileId);

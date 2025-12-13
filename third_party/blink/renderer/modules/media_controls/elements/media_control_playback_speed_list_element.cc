@@ -128,7 +128,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
     event.SetDefaultHandled();
   } else if (event.type() == event_type_names::kChange) {
     // Identify which input element was selected and update playback speed
-    Node* target = event.target()->ToNode();
+    Node* target = event.RawTarget()->ToNode();
     if (!target || !target->IsElementNode())
       return;
 
@@ -253,7 +253,7 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
   if (!checked_item_)
     return;
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("center");
+  options->setBlock(V8ScrollLogicalPosition::Enum::kCenter);
   checked_item_->scrollIntoViewWithOptions(options);
   checked_item_->Focus(FocusParams(FocusTrigger::kUserGesture));
 }

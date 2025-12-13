@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script>
+
+const ms = Math.floor(Math.random() * 50);
+console.log(`[popup] Waiting for ${ms}ms`);
+const timeout_promise = ms
+  ? new Promise(resolve => setTimeout(resolve, ms))
+  : Promise.resolve();
+
+const wasm = window.location.search.substring(1);
+const url = `../../wasm/resources/load-wasm.php?name=${wasm}`;
+console.log(`[popup] Loading ${wasm} after ${ms}ms...`);
+timeout_promise.then(() => WebAssembly.compileStreaming(fetch(url))
+  .then(module => console.log(`[popup] Compilation ready: ${module}`),
+        error => console.log(`[popup] Compilation failed: ${error}`)));
+</script>

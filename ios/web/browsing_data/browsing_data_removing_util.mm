@@ -8,7 +8,6 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/time/time.h"
-#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/browser_state_utils.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -22,6 +21,7 @@ NSSet<NSString*>* ConvertClearBrowsingDataMask(ClearBrowsingDataMask types) {
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveCacheStorage)) {
     [result addObject:WKWebsiteDataTypeDiskCache];
     [result addObject:WKWebsiteDataTypeMemoryCache];
+    [result addObject:WKWebsiteDataTypeFetchCache];
   }
   if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveAppCache)) {
     [result addObject:WKWebsiteDataTypeOfflineWebApplicationCache];
@@ -45,12 +45,16 @@ NSSet<NSString*>* ConvertClearBrowsingDataMask(ClearBrowsingDataMask types) {
       [result addObject:WKWebsiteDataTypeFileSystem];
     }
   }
+  if (IsRemoveDataMaskSet(types, ClearBrowsingDataMask::kRemoveServiceWorkers)) {
+    [result addObject:WKWebsiteDataTypeServiceWorkerRegistrations];
+  }
   return result;
 }
 
 }  // anonymous namespace
 
-void ClearBrowsingData(BrowserState* browser_state,
+void ClearBrowsingData(UIWindow* window,
+                       BrowserState* browser_state,
                        ClearBrowsingDataMask types,
                        base::Time modified_since,
                        base::OnceClosure closure) {
@@ -92,8 +96,7 @@ void ClearBrowsingData(BrowserState* browser_state,
     // remove/check the cookies which indicates that we might have the same
     // issue with cookies. Adding the web view to the view hierarchy as a safe
     // guard.
-    [GetAnyKeyWindow() insertSubview:dummy_web_view atIndex:0];
-
+    [window insertSubview:dummy_web_view atIndex:0];
     base::OnceClosure remove_dummy_web_view = base::BindOnce(^{
       [dummy_web_view removeFromSuperview];
     });

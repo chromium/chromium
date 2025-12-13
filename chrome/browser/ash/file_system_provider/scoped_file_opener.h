@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SCOPED_FILE_OPENER_H_
 #define CHROME_BROWSER_ASH_FILE_SYSTEM_PROVIDER_SCOPED_FILE_OPENER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 
 namespace base {

@@ -38,7 +38,6 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -83,6 +82,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Unit test for {@link DataSharingTabManager} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -218,7 +218,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testManageSharing() {
         mDataSharingTabManager.showManageSharing(
-                mActivity, COLLABORATION_ID1, /* outcomeCallback= */ null);
+                mActivity, COLLABORATION_ID1, /* manageCallback= */ null);
     }
 
     @Test

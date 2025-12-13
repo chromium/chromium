@@ -52,36 +52,6 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
 
-// This is only here so that we can display an informational message when
-// Chrome is started with --headless=old switch. This should be deleted
-// sometime after old headless code is removed from Chrome.
-// See https://crbug.com/373672160.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define ENABLE_OLD_HEADLESS_INFO
-#endif
-
-#ifdef ENABLE_OLD_HEADLESS_INFO
-namespace {
-void ShowOldHeadlessInfoMaybe(const base::CommandLine* command_line) {
-  // Show warning only if in browser process.
-  if (!command_line->GetSwitchValueASCII(::switches::kProcessType).empty()) {
-    return;
-  }
-
-  std::cerr
-      << "Old Headless mode has been removed from the Chrome binary. "
-         "Please use the new Headless mode "
-         "(https://developer.chrome.com/docs/chromium/new-headless) or the "
-         "chrome-headless-shell which is a standalone implementation of "
-         "the old Headless mode "
-         "(https://developer.chrome.com/blog/chrome-headless-shell)."
-      << std::endl
-      << std::endl;
-}
-}  // namespace
-#endif  // ENABLE_OLD_HEADLESS_INFO
-
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
 extern "C" {
@@ -156,8 +126,7 @@ int ChromeMain(int argc, const char** argv) {
   // dynamic linking.
   base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
 
-  // Verify that chrome_elf and this module (chrome.dll and chrome_child.dll)
-  // have the same version.
+  // Verify that chrome_elf and this module (chrome.dll) have the same version.
   if (install_static::InstallDetails::Get().VersionMismatch())
     base::debug::DumpWithoutCrashing();
 #else
@@ -202,14 +171,14 @@ int ChromeMain(int argc, const char** argv) {
       LOG(ERROR) << "Multiple targets are not supported in headless mode.";
       return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
     }
-    headless_mode_handle = headless::InitHeadlessMode();
-  } else {
-#ifdef ENABLE_OLD_HEADLESS_INFO
-    if (headless::IsOldHeadlessMode()) {
-      ShowOldHeadlessInfoMaybe(command_line);
+
+    auto init_headless_mode = headless::InitHeadlessMode();
+    if (!init_headless_mode.has_value()) {
+      LOG(ERROR) << init_headless_mode.error();
       return EXIT_FAILURE;
     }
-#endif  // ENABLE_OLD_HEADLESS_INFO
+
+    headless_mode_handle = std::move(init_headless_mode.value());
   }
 
 #if BUILDFLAG(IS_MAC)

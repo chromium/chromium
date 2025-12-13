@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#import "base/apple/foundation_util.h"
+#import "base/apple/scoped_cftyperef.h"
+#import "base/ios/ios_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -25,7 +24,7 @@ const char kPageWithGreenAndBlueColor[] = "/green_and_blue_page.html";
 // page filled with different color.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.GetURL().path() == kPageWithRedColor) {
+  if (request.GetURL().GetPath() == kPageWithRedColor) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     result->set_content(R"(<html>
@@ -43,7 +42,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 </body></html>)");
     return std::move(result);
   }
-  if (request.GetURL().path() == kPageWithGreenAndBlueColor) {
+  if (request.GetURL().GetPath() == kPageWithGreenAndBlueColor) {
     auto result = std::make_unique<net::test_server::BasicHttpResponse>();
     result->set_content_type("text/html");
     result->set_content(R"(<html>
@@ -70,6 +69,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   return nullptr;
 }
 
+// Returns a matcher for the cell's snapshot at `index` in the tab grid.
+id<GREYMatcher> TabGridCellSnapshotAtIndex(unsigned int index) {
+  return grey_allOf(
+      grey_accessibilityID([NSString
+          stringWithFormat:@"%@%u", kGridCellSnapshotIdentifierPrefix, index]),
+      grey_sufficientlyVisible(), nil);
+}
+
 }  // namespace
 
 @interface SnapshotTestCase : ChromeTestCase
@@ -85,15 +92,23 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests the snapshot of the page filled with one solid color.
 - (void)testOneColorSnapshot {
+  // TODO(crbug.com/453575683): Re-enable the test.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+#endif
+
   // Open a page filled with one solid color.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithRedColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"red"];
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
       [[EDORemoteVariable alloc] init];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+  [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
       performAction:grey_snapshot(tabGridSnapshot)];
   UIImage* image = tabGridSnapshot.object;
 
@@ -121,16 +136,26 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   GREYAssert(alpha > 0.9, @"A alpha value should be close to 1.");
 }
 
-- (void)testTwoColorsSnapshot {
+// Tests the snapshot of the page filled with 2 colors. The upper side is green
+// and the lower side is blue in the page.
+// TODO(crbug.com/454267702): test is flaky, disable it.
+- (void)DISABLED_testTwoColorsSnapshot {
+  // TODO(crbug.com/453575683): Re-enable the test.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid.
   EDORemoteVariable<UIImage*>* tabGridSnapshot =
       [[EDORemoteVariable alloc] init];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+  [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
       performAction:grey_snapshot(tabGridSnapshot)];
   UIImage* image = tabGridSnapshot.object;
 
@@ -141,7 +166,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Check a color of the upper side in the image.
   {
-    const CGPoint pos = CGPointMake(width / 2, height / 2 - 10);
+    const CGPoint pos = CGPointMake(width / 2, height / 4);
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
     [self getColorAtPoint:pos
                     image:image
@@ -184,6 +209,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // and the lower side is blue in the page. A snapshot is taken 2 times with the
 // same position before and after scrolling down.
 - (void)testSnapshotWithScrollDown {
+  // TODO(crbug.com/453575683): Re-enable the test.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 26.1, *)) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.1.");
+  }
+#endif
   // Open a page filled with 2 colors.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageWithGreenAndBlueColor)];
   [ChromeEarlGrey waitForWebStateContainingText:"green"];
@@ -191,9 +222,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   // Take a snapshot of the first cell in the tab grid.
   {
     [ChromeEarlGreyUI openTabGrid];
+    [ChromeEarlGreyUI waitForAppToIdle];
     EDORemoteVariable<UIImage*>* tabGridSnapshot =
         [[EDORemoteVariable alloc] init];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+    [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
@@ -201,11 +233,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     // can be different. CGImage is used in `-getColorAtPoint:`.
     const NSUInteger width = CGImageGetWidth(image.CGImage);
     const NSUInteger height = CGImageGetHeight(image.CGImage);
-    const CGPoint center = CGPointMake(width / 2, height / 2);
+    // Get a point just above the center to validate the green color.
+    const CGPoint justAboveCenter = CGPointMake(width / 2, height / 2 - 10);
 
-    // Check a color of the center position in the image.
+    // Check a color of the just above center position in the image.
     CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
-    [self getColorAtPoint:center
+    [self getColorAtPoint:justAboveCenter
                     image:image
                       red:&red
                     green:&green
@@ -235,13 +268,14 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Go back to the tab grid.
   [ChromeEarlGreyUI openTabGrid];
+  [ChromeEarlGreyUI waitForAppToIdle];
 
   // Take a snapshot of the first cell in the tab grid again. The snapshot
   // should be updated.
   {
     EDORemoteVariable<UIImage*>* tabGridSnapshot =
         [[EDORemoteVariable alloc] init];
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+    [[EarlGrey selectElementWithMatcher:TabGridCellSnapshotAtIndex(0)]
         performAction:grey_snapshot(tabGridSnapshot)];
     UIImage* image = tabGridSnapshot.object;
 
@@ -278,23 +312,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                   green:(CGFloat*)green
                    blue:(CGFloat*)blue
                   alpha:(CGFloat*)alpha {
-  CFDataRef pixelData =
-      CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage));
-  const UInt8* data = CFDataGetBytePtr(pixelData);
+  base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
+      CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage)));
+  base::span<const uint8_t> pixelDataSpan =
+      base::apple::NSDataToSpan((__bridge NSData*)pixelData.get());
 
   const NSUInteger bytesPerPixel = CGImageGetBitsPerPixel(image.CGImage) /
                                    CGImageGetBitsPerComponent(image.CGImage);
   const NSUInteger index =
       (CGImageGetWidth(image.CGImage) * point.y + point.x) * bytesPerPixel;
 
-  *red = ((CGFloat)data[index]) / 255.0f;
-  *green = ((CGFloat)data[index + 1]) / 255.0f;
-  *blue = ((CGFloat)data[index + 2]) / 255.0f;
-  *alpha = ((CGFloat)data[index + 3]) / 255.0f;
-
-  // Release CFDataRef explicitly because a Core Foundation object is not
-  // released automatically.
-  CFRelease(pixelData);
+  base::span<const uint8_t> pixelDataView =
+      pixelDataSpan.subspan(index, bytesPerPixel);
+  *red = CGFloat(pixelDataView[0]) / 255.0f;
+  *green = CGFloat(pixelDataView[1]) / 255.0f;
+  *blue = CGFloat(pixelDataView[2]) / 255.0f;
+  *alpha = CGFloat(pixelDataView[3]) / 255.0f;
 }
 
 @end

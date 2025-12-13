@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service.h"
+#include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
@@ -47,6 +49,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/desktop_to_mobile_promos/features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -172,6 +175,11 @@ SafetyHubHandler::SafetyHubHandler(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
+  pref_change_registrar_.Init(profile_->GetPrefs());
+  pref_change_registrar_.Add(
+      prefs::kSafeBrowsingEnhanced,
+      base::BindRepeating(&SafetyHubHandler::OnSafeBrowsingEnhancedChanged,
+                          base::Unretained(this)));
 }
 SafetyHubHandler::~SafetyHubHandler() = default;
 
@@ -824,3 +832,16 @@ void SafetyHubHandler::SetTriggeringExtensionForTesting(
 void SafetyHubHandler::OnJavascriptAllowed() {}
 
 void SafetyHubHandler::OnJavascriptDisallowed() {}
+
+void SafetyHubHandler::OnSafeBrowsingEnhancedChanged() {
+  if (profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnhanced) &&
+      MobilePromoOnDesktopTypeEnabled(
+          MobilePromoOnDesktopPromoType::kESBPromo)) {
+    IOSPromoTriggerService* service =
+        IOSPromoTriggerServiceFactory::GetForProfile(profile_);
+    if (service) {
+      service->NotifyPromoShouldBeShown(
+          desktop_to_mobile_promos::PromoType::kEnhancedBrowsing);
+    }
+  }
+}

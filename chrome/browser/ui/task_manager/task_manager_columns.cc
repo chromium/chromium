@@ -11,9 +11,6 @@
 
 namespace task_manager {
 
-const char kSortColumnIdKey[] = "sort_column_id";
-const char kSortIsAscendingKey[] = "sort_is_ascending";
-
 // We can't derive session restore keys from the integer IDs of the columns
 // since the IDs are generated, and so may change from one build to another.
 // Instead we stringify the column ID symbol (i.e. for the ID

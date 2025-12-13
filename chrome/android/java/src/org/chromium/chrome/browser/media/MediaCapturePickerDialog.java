@@ -24,14 +24,13 @@ import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.media.MediaCapturePickerHeadlessFragment.CaptureAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.media.capture.ScreenCapture;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -43,11 +42,10 @@ import java.util.Map;
 
 /** Dialog for selecting a media source for media capture. */
 @NullMarked
-public class MediaCapturePickerDialog implements AllTabObserver.Observer {
+public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.Delegate {
     // This web contents is the one that is receiving the shared content.
-    private final WebContents mWebContents;
     private final ModalDialogManager mModalDialogManager;
-    private final String mAppName;
+    private final MediaCapturePickerManager.Params mParams;
     private final View mDialogView;
     private final LinearLayout mButtonsView;
     private final View mPositiveButton;
@@ -57,31 +55,11 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
     private final Map<Tab, TabItemState> mTabItemStateMap = new HashMap<>();
     private @Nullable TabItemState mLastSelectedTabItemState;
     private @Nullable PropertyModel mPropertyModel;
-    private @Nullable Delegate mDelegate;
-
-    /** A delegate for handling returning the picker result. */
-    interface Delegate {
-        /**
-         * Called when the user has selected a tab to share.
-         *
-         * @param webContents The contents to share.
-         * @param audioShare True if tab audio should be shared.
-         */
-        void onPickTab(WebContents webContents, boolean audioShare);
-
-        /** Called when the user has selected a window to share. */
-        void onPickWindow();
-
-        /** Called when the user has selected a screen to share. */
-        void onPickScreen();
-
-        /** Called when the user has elected to not share anything. */
-        void onCancel();
-    }
+    private MediaCapturePickerManager.@Nullable Delegate mDelegate;
 
     private class TabItemState {
         private final Tab mTab;
-        private final ModelListAdapter.ListItem mItem;
+        private final MVCListAdapter.ListItem mItem;
         private final PropertyModel mModel;
 
         TabItemState(Tab tab) {
@@ -92,7 +70,7 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                             .with(MediaCapturePickerItemProperties.TAB_NAME, tab.getTitle())
                             .with(MediaCapturePickerItemProperties.SELECTED, false)
                             .build();
-            mItem = new ModelListAdapter.ListItem(EntryType.DEFAULT, mModel);
+            mItem = new MVCListAdapter.ListItem(EntryType.DEFAULT, mModel);
             mModelList.add(mItem);
         }
 
@@ -104,6 +82,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
             mModel.set(MediaCapturePickerItemProperties.SELECTED, true);
             mPositiveButton.setEnabled(true);
             mLastSelectedTabItemState = this;
+        }
+
+        void update() {
+            mModel.set(MediaCapturePickerItemProperties.TAB_NAME, mTab.getTitle());
         }
 
         void destroy() {
@@ -121,40 +103,13 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         int DEFAULT = 0;
     }
 
-    private static @Nullable Context maybeGetContext(WebContents webContents) {
-        final WindowAndroid window = webContents.getTopLevelNativeWindow();
-        if (window == null) return null;
-        return window.getContext().get();
-    }
-
-    /**
-     * Shows the media capture picker dialog.
-     *
-     * @param webContents The {@link WebContents} to show the dialog on behalf of.
-     * @param appName Name of the app that wants to share content.
-     * @param requestAudio True if audio sharing is also requested.
-     * @param delegate Invoked with a WebContents if a tab is selected, or {@code null} if the
-     *     dialog is dismissed.
-     */
-    public static void showDialog(
-            WebContents webContents, String appName, boolean requestAudio, Delegate delegate) {
-        final Context context = maybeGetContext(webContents);
-        if (context == null) {
-            delegate.onCancel();
-            return;
-        }
-        new MediaCapturePickerDialog(context, webContents, appName, requestAudio, delegate).show();
-    }
-
-    private MediaCapturePickerDialog(
+    MediaCapturePickerDialog(
             Context context,
-            WebContents webContents,
-            String appName,
-            boolean requestAudio,
-            Delegate delegate) {
-        mWebContents = webContents;
+            MediaCapturePickerManager.Params params,
+            MediaCapturePickerManager.Delegate delegate) {
+        // TODO(crbug.com/352187279): Support all parameters in `params`.
+        mParams = params;
         mModalDialogManager = ((ModalDialogManagerHolder) context).getModalDialogManager();
-        mAppName = appName;
         mDelegate = delegate;
 
         mDialogView =
@@ -179,10 +134,15 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         mPositiveButton = mButtonsView.findViewById(R.id.positive_button);
         mScreenButton = mButtonsView.findViewById(R.id.screen_button);
 
+        if (params.captureThisTab
+                || params.allowedCaptureLevel < AllowedScreenCaptureLevel.WINDOW) {
+            mScreenButton.setVisibility(View.GONE);
+        }
+
         // Share audio should be on by default.
         mAudioSwitch = mButtonsView.findViewById(R.id.media_capture_picker_audio_share_switch);
 
-        if (requestAudio) {
+        if (params.requestAudio) {
             // Share audio should be on by default if audio sharing was requested.
             mAudioSwitch.setChecked(true);
         } else {
@@ -207,13 +167,20 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
         removed.destroy();
     }
 
+    @Override
+    public void onTabUpdated(Tab tab) {
+        final var state = mTabItemStateMap.get(tab);
+        assert state != null;
+        state.update();
+    }
+
     private void startAndroidCapturePrompt() {
         var fragment = MediaCapturePickerHeadlessFragment.getInstanceForCurrentActivity();
         assumeNonNull(fragment);
         fragment.startAndroidCapturePrompt(
                 (action, result) -> {
                     if (action != CaptureAction.CAPTURE_CANCELLED) {
-                        ScreenCapture.onPick(mWebContents, result);
+                        ScreenCapture.onPick(mParams.webContents, result);
                     }
 
                     assumeNonNull(mDelegate);
@@ -237,8 +204,10 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                 });
     }
 
-    private void show() {
-        var allTabObserver = new AllTabObserver(this);
+    void show() {
+        final var observer =
+                new MediaCapturePickerTabObserver(this, mParams, assumeNonNull(mDelegate));
+        final var allTabObserver = new AllTabObserver(observer);
 
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -271,11 +240,13 @@ public class MediaCapturePickerDialog implements AllTabObserver.Observer {
                             mDelegate = null;
                         }
                         allTabObserver.destroy();
+                        observer.destroy();
                     }
                 };
 
         Resources resources = mDialogView.getResources();
-        var title = resources.getString(R.string.media_capture_picker_dialog_title, mAppName);
+        var title =
+                resources.getString(R.string.media_capture_picker_dialog_title, mParams.appName);
 
         assert mPropertyModel == null;
         mPropertyModel =

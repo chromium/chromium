@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/environment.h"
+#include "base/test/scoped_libc_timezone_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
@@ -17,8 +17,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,8 +49,7 @@ class TestUpgradeDetector : public UpgradeDetector {
 class UpgradeDetectorTest : public ::testing::Test {
  protected:
   UpgradeDetectorTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   const base::Clock* GetMockClock() { return task_environment_.GetMockClock(); }
 
@@ -58,31 +58,10 @@ class UpgradeDetectorTest : public ::testing::Test {
   }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  ~UpgradeDetectorTest() override {
-    if (!tz_overridden_)
-      return;
-
-    // Revert back to the original timezone.
-    DCHECK(env_);
-    if (original_tz_) {
-      env_->SetVar("TZ", original_tz_.value());
-    } else {
-      env_->UnSetVar("TZ");
-    }
-    tzset();
-  }
-
   void OverrideTimezone(const std::string& tz) {
-    if (!tz_overridden_) {
-      env_ = base::Environment::Create();
-      // Store the original timezone of the device so that it can be restored in
-      // the destructor at the end of the test.
-      original_tz_ = env_->GetVar("TZ");
-      tz_overridden_ = true;
-    }
-    DCHECK(env_);
-    env_->SetVar("TZ", tz);
-    tzset();
+    // If there already is the override, reset it first.
+    libc_timezone_override_.reset();
+    libc_timezone_override_.emplace(tz);
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
@@ -102,8 +81,8 @@ class UpgradeDetectorTest : public ::testing::Test {
     base::Value::Dict value;
     value.Set("entries", std::move(entries));
 
-    scoped_local_state_.Get()->SetManagedPref(prefs::kRelaunchWindow,
-                                              base::Value(std::move(value)));
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
+        prefs::kRelaunchWindow, base::Value(std::move(value)));
   }
 
   UpgradeDetector::RelaunchWindow CreateRelaunchWindow(int hour,
@@ -115,11 +94,8 @@ class UpgradeDetectorTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<base::Environment> env_;
-  std::optional<std::string> original_tz_;
-  bool tz_overridden_ = false;
+  std::optional<base::test::ScopedLibcTimezoneOverride> libc_timezone_override_;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 };
 

@@ -17,7 +17,6 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

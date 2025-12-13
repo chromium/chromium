@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/one_shot_event.h"

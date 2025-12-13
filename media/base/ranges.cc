@@ -4,6 +4,8 @@
 
 #include "media/base/ranges.h"
 
+#include "base/time/time.h"
+
 namespace media {
 
 template<>

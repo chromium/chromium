@@ -17,10 +17,9 @@ FakeTabRestoreService::~FakeTabRestoreService() = default;
 // static
 FakeTabRestoreService::TestingFactory
 FakeTabRestoreService::GetTestingFactory() {
-  return base::BindRepeating(
-      [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
-        return std::make_unique<FakeTabRestoreService>();
-      });
+  return base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
+    return std::make_unique<FakeTabRestoreService>();
+  });
 }
 
 void FakeTabRestoreService::AddObserver(

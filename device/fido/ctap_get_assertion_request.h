@@ -15,13 +15,14 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "crypto/sha2.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/json_request.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/pin.h"
 #include "device/fido/prf_input.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
 
 namespace cbor {
 class Value;
@@ -63,6 +64,10 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionOptions {
   // Indicates whether the request was created in an off-the-record
   // BrowserContext (e.g. Chrome Incognito mode).
   bool is_off_the_record_context = false;
+
+  // The set of hints passed by the relying party.
+  // https://w3c.github.io/webauthn/#enum-hints.
+  std::vector<blink::mojom::Hint> hints;
 };
 
 // Object that encapsulates request parameters for AuthenticatorGetAssertion as

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/image_writer/image_writer.h"
 
 #include <windows.h>
@@ -15,6 +10,7 @@
 #include <stddef.h>
 #include <winioctl.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
@@ -32,7 +28,7 @@ bool ImageWriter::IsValidDevice() {
                  OPEN_EXISTING,
                  FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH,
                  NULL));
-  if (!device_handle.IsValid()) {
+  if (!device_handle.is_valid()) {
     Error(error::kOpenDevice);
     return false;
   }
@@ -118,11 +114,11 @@ void ImageWriter::UnmountVolumes(base::OnceClosure continuation) {
          FindNextVolume(volume_finder, volume_path, MAX_PATH + 1)) {
     first_volume = false;
 
-    size_t length = wcsnlen(volume_path, MAX_PATH + 1);
+    size_t length = UNSAFE_TODO(wcsnlen(volume_path, MAX_PATH + 1));
     if (length < 1) {
       continue;
     }
-    volume_path[length - 1] = L'\0';
+    UNSAFE_TODO(volume_path[length - 1]) = L'\0';
 
     volume_handle = CreateFile(volume_path,
                                GENERIC_READ | GENERIC_WRITE,

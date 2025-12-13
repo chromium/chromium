@@ -4,13 +4,11 @@
 
 package org.chromium.components.browser_ui.contacts_picker;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
-import android.content.ContentResolver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.blink.mojom.ContactIconBlob;
@@ -24,7 +22,8 @@ import java.util.Set;
 /** A worker task to retrieve images for contacts. */
 @NullMarked
 public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
-    private final ContentResolver mContentResolver;
+    private static final String TAG = "CompressIconsTask";
+
     private final Set<String> mNoIconIds;
     private final HashMap<String, Bitmap> mBitmaps;
     private final List<ContactDetails> mSelectedContacts;
@@ -39,17 +38,14 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
     }
 
     /**
-     * @param contentResolver The context's content resolver.
      * @param bitmapCache The bitmap cache holding the icon bitmaps.
      * @param selectedContacts The list of contacts selected by the user.
      * @param callback The callback to return the results to.
      */
     public CompressContactIconsWorkerTask(
-            ContentResolver contentResolver,
             PickerCategoryView.ContactsBitmapCache bitmapCache,
             List<ContactDetails> selectedContacts,
             CompressContactIconsCallback callback) {
-        mContentResolver = contentResolver;
         mNoIconIds = bitmapCache.noIconIds;
         mBitmaps = new HashMap<>();
         for (ContactDetails contact : selectedContacts) {
@@ -77,12 +73,7 @@ public class CompressContactIconsWorkerTask extends AsyncTask<Void> {
                 if (drawable != null && drawable instanceof BitmapDrawable) {
                     icon = ((BitmapDrawable) drawable).getBitmap();
                 } else if (!contact.isSelf()) {
-                    // Passing a null callback doesn't break as long as only doInBackground() is
-                    // called.
-                    icon =
-                            new FetchIconWorkerTask(
-                                            contact.getId(), mContentResolver, assumeNonNull(null))
-                                    .doInBackground();
+                    Log.e(TAG, "Icons of non-self contacts should be already tried to load");
                 }
             }
 

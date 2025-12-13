@@ -37,7 +37,7 @@ suite(PerDeviceInstallRowElement.is, () => {
     const appLabel =
         strictQuery('#appName', installRow.shadowRoot, HTMLSpanElement);
     assertEquals(
-        `Install ${defaultAppInfo.appName}`, appLabel.textContent!.trim());
+        `Install ${defaultAppInfo.appName}`, appLabel.textContent.trim());
   });
 
   test('App image is loaded', async () => {

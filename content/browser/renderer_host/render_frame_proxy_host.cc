@@ -42,7 +42,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer_type_converters.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -70,14 +69,10 @@ base::LazyInstance<RoutingIDFrameProxyMap>::DestructorAtExit
 
 using TokenFrameMap =
     absl::flat_hash_map<blink::RemoteFrameToken, RenderFrameProxyHost*>;
-base::LazyInstance<TokenFrameMap>::Leaky g_token_frame_proxy_map =
-    LAZY_INSTANCE_INITIALIZER;
-
-// TODO(https://crbug.com/339512240): Remove this killswitch once the
-// optimization for postMessage proxy creation finishes rolling out.
-BASE_FEATURE(kSkipPostMessageProxyCreationWithinFrameTree,
-             "SkipPostMessageProxyCreationWithinFrameTree",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+TokenFrameMap& GetTokenFrameProxyMap() {
+  static base::NoDestructor<TokenFrameMap> token_frame_proxy_map;
+  return *token_frame_proxy_map;
+}
 
 }  // namespace
 
@@ -102,7 +97,7 @@ RenderFrameProxyHost* RenderFrameProxyHost::FromFrameToken(
     int process_id,
     const blink::RemoteFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TokenFrameMap* frames = g_token_frame_proxy_map.Pointer();
+  TokenFrameMap* frames = &GetTokenFrameProxyMap();
   auto it = frames->find(frame_token);
   // The check against |process_id| isn't strictly necessary, but represents
   // an extra level of protection against a renderer trying to force a frame
@@ -117,7 +112,7 @@ RenderFrameProxyHost* RenderFrameProxyHost::FromFrameToken(
 bool RenderFrameProxyHost::IsFrameTokenInUse(
     const blink::RemoteFrameToken& frame_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TokenFrameMap* frames = g_token_frame_proxy_map.Pointer();
+  TokenFrameMap* frames = &GetTokenFrameProxyMap();
   return frames->find(frame_token) != frames->end();
 }
 
@@ -143,7 +138,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
                                        routing_id_),
                 this))
             .second);
-  CHECK(g_token_frame_proxy_map.Get()
+  CHECK(GetTokenFrameProxyMap()
             .insert(std::make_pair(frame_token_, this))
             .second);
   CHECK(render_view_host_ ||
@@ -196,7 +191,7 @@ RenderFrameProxyHost::~RenderFrameProxyHost() {
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
   g_routing_id_frame_proxy_map.Get().erase(
       RenderFrameProxyHostID(GetProcess()->GetDeprecatedID(), routing_id_));
-  g_token_frame_proxy_map.Get().erase(frame_token_);
+  GetTokenFrameProxyMap().erase(frame_token_);
   TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
 }
 
@@ -498,44 +493,11 @@ void RenderFrameProxyHost::SetIsInert(bool inert) {
   cross_process_frame_connector_->SetIsInert(inert);
 }
 
-std::u16string RenderFrameProxyHost::SerializePostMessageSourceOrigin(
-    const url::Origin& source_origin) {
-  std::u16string source_origin_string =
-      base::UTF8ToUTF16(source_origin.Serialize());
-
-  // TODO(crbug.com/40554285, crbug.com/40467682): This serialization used to
-  // happen in blink via blink::SecurityOrigin::ToString(), but is now happening
-  // here via url::Origin::Serialize(). The two are the same except for one
-  // unfortunate difference with file URLs. url::Origin always serializes them
-  // as "file://", while blink::SecurityOrigin serializes them to "null" or
-  // "file://" depending on the `allow_file_access_from_file_urls` flag in
-  // WebPreferences. For now, mimic Blink's file: URL serialization here to
-  // minimize compat risks. Eventually, this should be improved to (1) rely on
-  // url::Origin's version and fix url::Origin::Serialize() to honor
-  // `allow_file_access_from_file_urls` if that is important enough to support,
-  // (2) plumb `source_origin` further into blink in the receiving renderer, so
-  // that it can be serialized there (this requires refactoring the other uses
-  // of RenderFrameHostImpl::PostMessageEvent()), or (3) fix file: URLs to
-  // always correspond to opaque origins, so that their serializations are
-  // always "null" in both blink::SecurityOrigin and url::Origin.
-  if (source_origin.scheme() == url::kFileScheme) {
-    auto prefs = frame_tree_node()
-                     ->current_frame_host()
-                     ->delegate()
-                     ->GetOrCreateWebPreferences();
-    if (!prefs.allow_file_access_from_file_urls) {
-      source_origin_string = u"null";
-    }
-  }
-  return source_origin_string;
-}
-
 void RenderFrameProxyHost::RouteMessageEvent(
     const std::optional<blink::LocalFrameToken>& source_frame_token,
     const url::Origin& source_origin,
-    const std::u16string& target_origin,
+    const std::optional<url::Origin>& target_origin,
     blink::TransferableMessage message) {
-  base::ElapsedTimer timer;
   RenderFrameHostImpl* target_rfh = frame_tree_node()->current_frame_host();
   if (!target_rfh->IsRenderFrameLive()) {
     // Check if there is an inner delegate involved; if so target its main
@@ -549,31 +511,18 @@ void RenderFrameProxyHost::RouteMessageEvent(
       return;
   }
 
-  // |target_origin| argument of postMessage is already checked by
+  // |serialized_target_origin| argument of postMessage is already checked by
   // blink::LocalDOMWindow::DispatchMessageEventWithOriginCheck (needed for
   // messages sent within the same process - e.g. same-site, cross-origin),
   // but this check needs to be duplicated below in case the recipient renderer
   // process got compromised (i.e. in case the renderer-side check may be
-  // bypassed).
-  if (!target_origin.empty()) {
-    url::Origin target_url_origin =
-        url::Origin::Create(GURL(base::UTF16ToUTF8(target_origin)));
-
-    // Renderer should send either an empty string (this is how "*" is expressed
-    // in the IPC) or a valid, non-opaque origin.  OTOH, there are no security
-    // implications here - the message payload needs to be protected from an
-    // unintended recipient, not from the sender.
-    DCHECK(!target_url_origin.opaque());
-
-    // While the postMessage was in flight, the target might have navigated away
-    // to another origin.  In this case, the postMessage should be silently
-    // dropped.
-    if (target_url_origin != target_rfh->GetLastCommittedOrigin())
-      return;
+  // bypassed), or navigation has changed the origin of the target frame in the
+  // meantime. In either case, drop the message on the floor rather than
+  // delivering it.
+  if (target_origin &&
+      !target_origin->IsSameOriginWith(target_rfh->GetLastCommittedOrigin())) {
+    return;
   }
-
-  std::u16string source_origin_string =
-      SerializePostMessageSourceOrigin(source_origin);
 
   // Verify the source origin. Note that this used to skip cases where the
   // origin serialized to "null", but now that old behavior is behind a kill
@@ -584,7 +533,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
   bool should_verify_source_origin =
       base::FeatureList::IsEnabled(
           features::kAdditionalOpaqueOriginEnforcements) ||
-      source_origin_string != u"null";
+      !source_origin.opaque();
   if (should_verify_source_origin) {
     auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
     if (!policy->HostsOrigin(GetProcess()->GetDeprecatedID(), source_origin)) {
@@ -647,8 +596,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
     return;
   }
 
-  bool did_call_create_opener_proxies = false;
-
   // If there is a |source_frame_token|, translate it to the frame token of the
   // equivalent RenderFrameProxyHost in the target process.
   std::optional<blink::RemoteFrameToken> translated_source_token;
@@ -708,9 +655,7 @@ void RenderFrameProxyHost::RouteMessageEvent(
         // frame trees, guests are already handled above, and fenced frames
         // disallow postMessage to/from their embedder.
         if (&source_rfh->frame_tree_node()->frame_tree() !=
-                &target_rfh->frame_tree_node()->frame_tree() ||
-            !base::FeatureList::IsEnabled(
-                kSkipPostMessageProxyCreationWithinFrameTree)) {
+            &target_rfh->frame_tree_node()->frame_tree()) {
           // Subtle: postMessages may be sent between frames after their page
           // has entered the back-forward cache (e.g., when dispatched from
           // pagehide events) - see
@@ -742,7 +687,6 @@ void RenderFrameProxyHost::RouteMessageEvent(
                     target_rfh->GetSiteInstance()->group(), nullptr,
                     source_rfh->browsing_context_state(),
                     /*navigation_metrics_token=*/std::nullopt);
-            did_call_create_opener_proxies = true;
           }
         }
       }
@@ -764,14 +708,10 @@ void RenderFrameProxyHost::RouteMessageEvent(
     }
   }
 
-  target_rfh->PostMessageEvent(translated_source_token, source_origin_string,
-                               target_origin, std::move(message));
-
-  base::UmaHistogramMicrosecondsTimes(
-      "SiteIsolation.CrossProcessPostMessageTime", timer.Elapsed());
-  base::UmaHistogramBoolean(
-      "SiteIsolation.CrossProcessPostMessage.CreateOpenerProxiesCalled",
-      did_call_create_opener_proxies);
+  target_rfh->PostMessageEvent(
+      translated_source_token, &source_origin,
+      target_origin.has_value() ? &(*target_origin) : nullptr,
+      std::move(message));
 }
 
 void RenderFrameProxyHost::PrintCrossProcessSubframe(const gfx::Rect& rect,

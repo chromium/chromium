@@ -22,7 +22,6 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -143,7 +142,7 @@ class CloudPolicyValidatorTest : public testing::Test {
       validator->ValidateDomain(owning_domain_);
     validator->ValidateDMToken(existing_dm_token_, dm_token_option_);
     validator->ValidateDeviceId(existing_device_id_, device_id_option_);
-    validator->ValidatePolicyType(dm_protocol::kChromeUserPolicyType);
+    validator->ValidatePolicyType(dm_protocol::GetChromeUserPolicyType());
     validator->ValidatePayload();
     validator->ValidateCachedKey(public_key, cached_key_signature_,
                                  owning_domain_, verification_data,
@@ -335,12 +334,12 @@ TEST_F(CloudPolicyValidatorTest, SuccessfulValidationWithSignatureTypeSHA256) {
 // as unsigned, which is not supported.
 TEST_F(CloudPolicyValidatorTest, FailedValidationWithSignatureTypeNONE) {
   policy_.SetSignatureType(em::PolicyFetchRequest::SHA1_RSA);
-  policy_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_.policy_data().set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_.Build();
   policy_.policy().set_policy_data_signature_type(em::PolicyFetchRequest::NONE);
   std::unique_ptr<UserCloudPolicyValidator> validator =
       CreateValidator(policy_.GetCopy());
-  validator->ValidatePolicyType(dm_protocol::kChromeUserPolicyType);
+  validator->ValidatePolicyType(dm_protocol::GetChromeUserPolicyType());
   ValidatePolicy(
       CheckStatus(CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE),
       std::move(validator));

@@ -40,8 +40,6 @@ class AidaClient {
   // Needed because VariationsService is not available for unit tests.
   static ScopedOverride OverrideCountryForTesting(std::string country_code);
 
-  void OverrideAidaScopeForTesting(const std::string& aida_scope);
-
   static constexpr std::string_view kDoConversationUrl =
       "https://aida.googleapis.com/v1/aida:doConversation";
   static constexpr std::string_view kCompleteCodeUrl =
@@ -75,7 +73,6 @@ class AidaClient {
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
-  std::string aida_scope_;
   std::string access_token_;
   base::Time access_token_expiration_;
 };

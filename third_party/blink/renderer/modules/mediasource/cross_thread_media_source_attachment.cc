@@ -213,15 +213,13 @@ void CrossThreadMediaSourceAttachment::RemoveTracksFromMediaElementInternal(
 
   // Otherwise, post a task to the main thread to update the media element's
   // track lists there. Note that task might never run if the main context is
-  // destroyed in the interim. Using WTF::RetainedRef(this) here to ensure we
-  // are still alive if/when |main_runner_| executes the task. Note that there
-  // exists a CrossThreadCopier<Vector<String>> that deep-copies the bound ids
-  // vector to keep thread safety for the contained Strings.
+  // destroyed in the interim. Using blink::RetainedRef(this) here to ensure we
+  // are still alive if/when |main_runner_| executes the task.
   PostCrossThreadTask(
       *main_runner_, FROM_HERE,
       CrossThreadBindOnce(&CrossThreadMediaSourceAttachment::
                               RemoveTracksFromMediaElementOnMainThread,
-                          WTF::RetainedRef(this), track_type, track_ids,
+                          blink::RetainedRef(this), track_type, track_ids,
                           enqueue_change_event));
 }
 
@@ -337,15 +335,13 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementInternal(
 
   // Post a task to the main thread to add the track to the appropriate media
   // element track list there. Note that task might never run if the main
-  // context is destroyed in the interim. Using WTF::RetainedRef(this) here to
-  // ensure we are still alive if/when |main_runner_| executes the task. Note
-  // that there exists a CrossThreadCopier<String> that deep-copies the bound
-  // Strings to keep thread safety.
+  // context is destroyed in the interim. Using blink::RetainedRef(this) here to
+  // ensure we are still alive if/when |main_runner_| executes the task.
   PostCrossThreadTask(
       *main_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread,
-          WTF::RetainedRef(this), track_type, id, kind, label, language,
+          blink::RetainedRef(this), track_type, id, kind, label, language,
           enable_or_select));
 }
 
@@ -389,7 +385,7 @@ void CrossThreadMediaSourceAttachment::AddTrackToMediaElementOnMainThread(
   // media element. Note, we use default nullptr for the supplemental
   // sourceBuffer attribute to prevent main thread JS from attempting to
   // reference worker-thread SourceBuffer. Due to lack of deducible conversion
-  // from WTF::String to AtomicString, we construct the atomics locally for
+  // from String to AtomicString, we construct the atomics locally for
   // use in track creation here.
   const AtomicString atomic_id(id);
   const AtomicString atomic_kind(kind);
@@ -608,13 +604,13 @@ void CrossThreadMediaSourceAttachment::CompleteAttachingToMediaElement(
     cached_seekable_.clear();
 
     // Verify the rest of the status once we're completing this in the worker
-    // thread. Using WTF::RetainedRef(this) here to ensure we are still alive
+    // thread. Using blink::RetainedRef(this) here to ensure we are still alive
     // if/when |worker_runner_| executes the task.
     PostCrossThreadTask(
         *worker_runner_, FROM_HERE,
         CrossThreadBindOnce(&CrossThreadMediaSourceAttachment::
                                 CompleteAttachingToMediaElementOnWorkerThread,
-                            WTF::RetainedRef(this),
+                            blink::RetainedRef(this),
                             std::move(web_media_source)));
   }
 }
@@ -696,13 +692,13 @@ void CrossThreadMediaSourceAttachment::Close(MediaSourceTracer* /* tracer */) {
   // RunExclusively()), since the Chromium abstractions underlying those are
   // owned by the main thread WebMediaPlayer which is shutting down concurrently
   // with the task scheduling to complete the close operation on the worker
-  // thread. Using WTF::RetainedRef(this) here to ensure we are still alive
+  // thread. Using blink::RetainedRef(this) here to ensure we are still alive
   // if/when |worker_runner_| executes the task.
   PostCrossThreadTask(
       *worker_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &CrossThreadMediaSourceAttachment::CloseOnWorkerThread,
-          WTF::RetainedRef(this)));
+          blink::RetainedRef(this)));
 }
 
 void CrossThreadMediaSourceAttachment::CloseOnWorkerThread() {
@@ -866,7 +862,7 @@ void CrossThreadMediaSourceAttachment::OnElementTimeUpdate(double time) {
         *worker_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &CrossThreadMediaSourceAttachment::UpdateWorkerThreadTimeCache,
-            WTF::RetainedRef(this), base::Seconds(time)));
+            blink::RetainedRef(this), base::Seconds(time)));
   }
 }
 
@@ -903,7 +899,7 @@ void CrossThreadMediaSourceAttachment::OnElementError() {
         *worker_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &CrossThreadMediaSourceAttachment::HandleElementErrorOnWorkerThread,
-            WTF::RetainedRef(this)));
+            blink::RetainedRef(this)));
   }
 }
 
@@ -981,7 +977,7 @@ void CrossThreadMediaSourceAttachment::SendUpdatedInfoToMainThreadCacheInternal(
       *main_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &CrossThreadMediaSourceAttachment::UpdateMainThreadInfoCache,
-          WTF::RetainedRef(this), std::move(new_buffered),
+          blink::RetainedRef(this), std::move(new_buffered),
           std::move(new_seekable), has_new_duration, new_duration));
 }
 

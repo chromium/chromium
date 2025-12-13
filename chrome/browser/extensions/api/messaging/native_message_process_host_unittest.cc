@@ -51,7 +51,7 @@
 #include "extensions/common/features/feature_channel.h"
 #include "net/base/file_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -153,7 +153,8 @@ class NativeMessagingTest : public ::testing::Test,
     last_message_ = message;
 
     // Parse the message.
-    std::optional<base::Value> dict_value = base::JSONReader::Read(message);
+    std::optional<base::Value> dict_value =
+        base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!dict_value || !dict_value->is_dict()) {
       LOG(ERROR) << "Failed to parse " << message;
       last_message_parsed_.reset();

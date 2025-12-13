@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_layout_delegate.h"
+#import "ios/chrome/browser/authentication/consistency_promo_signin/ui/consistency_layout_delegate.h"
 
 // Delegate for updating navigation controller content.
 @protocol ConsistencySheetNavigationControllerLayoutDelegate <NSObject>

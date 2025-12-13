@@ -107,13 +107,25 @@ kStringMapCcSuffix = '''
 '''
 
 
+def get_message_id(raw_content):
+    presentable_content = ""
+    for child in raw_content.childNodes:
+        if child.nodeType == child.TEXT_NODE:
+            presentable_content += child.data
+        elif child.nodeType == child.ELEMENT_NODE and child.tagName == "ph":
+            presentable_content += child.getAttribute("name")
+    # Text nodes include extra whitespace resulting from potential XML formatting;
+    # collapse each run of consecutive whitespace characters into a single space.
+    cleaned_content = ' '.join(presentable_content.split())
+    return tclib.GenerateMessageId(cleaned_content)
+
 def get_message_id_map_and_orderings(input_base_dir):
     dom = parse(input_base_dir + "permission_element_strings.grd")
     dic = {}
     messages = dom.getElementsByTagName("message")
     for message in messages:
-        dic[tclib.GenerateMessageId(
-            message.firstChild.data.strip())] = message.getAttribute("name")
+        dic[get_message_id(message)] = message.getAttribute("name")
+
     # The returned orderings are used to help sort keys for the fixed flat map.
     # Empirically, resource IDs appear to be allocated in the order the messages
     # are listed in the grd.
@@ -137,7 +149,9 @@ def generate_grd_file(id_map, file_list, output_file_path):
         for translated_message in translated_messages:
             message_name_prefix = id_map[translated_message.getAttribute("id")]
             generated_message_name = message_name_prefix + "_" + message_name_suffix
-            message = translated_message.firstChild.data.strip()
+            message = "".join([
+                child.toxml() for child in translated_message.childNodes
+            ]).strip()
             new_message_node = doc.createElement("message")
             new_message_node.setAttribute("name", generated_message_name)
             new_message_node.setAttribute("translateable", "false")

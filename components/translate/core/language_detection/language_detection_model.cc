@@ -4,6 +4,7 @@
 
 #include "components/translate/core/language_detection/language_detection_model.h"
 
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -72,8 +73,7 @@ std::string LanguageDetectionModel::DeterminePageLanguage(
 
   // TODO(crbug.com/40748826): Use the model threshold provided
   // by the model itself. Not needed until threshold is finalized.
-  bool is_reliable =
-      prediction_reliability_score > GetTFLiteLanguageDetectionThreshold();
+  bool is_reliable = prediction_reliability_score > kTFLiteReliabilityThreshold;
 
   std::string final_prediction = translate::FilterDetectedLanguage(
       base::UTF16ToUTF8(contents), prediction.language, is_reliable);

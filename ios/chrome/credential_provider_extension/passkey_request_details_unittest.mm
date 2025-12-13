@@ -2,16 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
+
+#import <AuthenticationServices/AuthenticationServices.h>
+
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/credential_provider_extension/passkey_request_details+Testing.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace {
 
 NSString* const url1 = @"http://www.example.com";
 NSString* const url2 = @"http://www.example2.com";
-NSString* const url3 = @"http://www.example2.com";
+NSString* const url3 = @"http://www.example3.com";
+
+NSString* const domain1 = @"example.com";
+NSString* const domain2 = @"example2.com";
+NSString* const domain3 = @"example3.com";
 
 NSString* const user1 = @"user1";
 NSString* const user2 = @"user2";
@@ -24,7 +35,8 @@ NSData* StringToData(std::string str) {
 constexpr int64_t kJan1st2024 = 1704085200;
 
 ArchivableCredential* TestPasswordCredential(NSString* username,
-                                             NSString* url) {
+                                             NSString* url,
+                                             NSString* domain) {
   return [[ArchivableCredential alloc] initWithFavicon:nil
                                                   gaia:nil
                                               password:@"qwerty123"
@@ -32,6 +44,7 @@ ArchivableCredential* TestPasswordCredential(NSString* username,
                                       recordIdentifier:@"recordIdentifier"
                                      serviceIdentifier:url
                                            serviceName:url
+                              registryControlledDomain:domain
                                               username:username
                                                   note:@"note"];
 }
@@ -51,7 +64,10 @@ ArchivableCredential* TestPasskeyCredential(NSString* username,
             privateKey:StringToData("privateKey")
              encrypted:StringToData("encrypted")
           creationTime:kJan1st2024
-          lastUsedTime:kJan1st2024];
+          lastUsedTime:kJan1st2024
+                hidden:NO
+            hiddenTime:kJan1st2024
+          editedByUser:NO];
 }
 
 }  // namespace
@@ -64,33 +80,28 @@ class PasskeyRequestDetailsTest : public PlatformTest {
   void TearDown() override;
 };
 
-void PasskeyRequestDetailsTest::SetUp() {
-  if (@available(iOS 17.0, *)) {
-  } else {
-    GTEST_SKIP() << "Does not apply on iOS 16 and below";
-  }
-}
+void PasskeyRequestDetailsTest::SetUp() {}
 
 void PasskeyRequestDetailsTest::TearDown() {}
 
 // Tests that the allowed credentials list works as expected.
 TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
-  id<Credential> credential1 = TestPasswordCredential(user1, url1);
-  id<Credential> credential2 = TestPasswordCredential(user2, url1);
-  id<Credential> credential3 = TestPasswordCredential(user1, url2);
+  id<Credential> credential1 = TestPasswordCredential(user1, url1, domain1);
+  id<Credential> credential2 = TestPasswordCredential(user2, url2, domain2);
+  id<Credential> credential3 = TestPasswordCredential(user1, url2, domain2);
   id<Credential> credential4 = TestPasskeyCredential(user3, url1);
   NSArray<id<Credential>>* credentials =
       @[ credential1, credential2, credential3, credential4 ];
 
   // Matching credential 1.
   PasskeyRequestDetails* details =
-      [[PasskeyRequestDetails alloc] initWithURL:url1
+      [[PasskeyRequestDetails alloc] initWithURL:@"www.example.com"
                                         username:user1
                              excludedCredentials:nil];
   EXPECT_TRUE([details hasMatchingPassword:credentials]);
 
   // Matching credential 2.
-  details = [[PasskeyRequestDetails alloc] initWithURL:url1
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"www.abc.example2.com"
                                               username:user2
                                    excludedCredentials:nil];
   EXPECT_TRUE([details hasMatchingPassword:credentials]);
@@ -99,7 +110,7 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
   EXPECT_FALSE([details hasMatchingPassword:@[]]);
 
   // Matching no credential.
-  details = [[PasskeyRequestDetails alloc] initWithURL:url2
+  details = [[PasskeyRequestDetails alloc] initWithURL:@"www.example23.com"
                                               username:user2
                                    excludedCredentials:nil];
   EXPECT_FALSE([details hasMatchingPassword:credentials]);
@@ -113,7 +124,7 @@ TEST_F(PasskeyRequestDetailsTest, MatchingPassword) {
 
 // Tests that the excluded credentials list works as expected.
 TEST_F(PasskeyRequestDetailsTest, ExcludedPasskey) {
-  id<Credential> credential1 = TestPasswordCredential(user1, url1);
+  id<Credential> credential1 = TestPasswordCredential(user1, url1, domain1);
   id<Credential> credential2 = TestPasskeyCredential(user2, url2);
   id<Credential> credential3 = TestPasskeyCredential(user3, url3);
   NSData* id2 = credential2.credentialId;
@@ -148,6 +159,54 @@ TEST_F(PasskeyRequestDetailsTest, ExcludedPasskey) {
                                               username:user3
                                    excludedCredentials:@[ id2, id3 ]];
   EXPECT_FALSE([details hasExcludedPasskey:credentials]);
+}
+
+TEST_F(PasskeyRequestDetailsTest, LargeBlobHelperDetectsRequest) {
+  if (@available(iOS 18.0, *)) {
+    NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+    [defaults
+        setBool:YES
+         forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+    [defaults synchronize];
+
+    // Large Blob required.
+    id mockInputRequired =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    id mockLargeBlobRequired = OCMClassMock(
+        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+    OCMStub([mockLargeBlobRequired supportRequirement])
+        .andReturn(
+            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementRequired);
+    OCMStub([mockInputRequired largeBlob]).andReturn(mockLargeBlobRequired);
+    EXPECT_TRUE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputRequired]);
+
+    // Large Blob preferred.
+    id mockInputPreferred =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    id mockLargeBlobPreferred = OCMClassMock(
+        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+    OCMStub([mockLargeBlobPreferred supportRequirement])
+        .andReturn(
+            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementPreferred);
+    OCMStub([mockInputPreferred largeBlob]).andReturn(mockLargeBlobPreferred);
+    EXPECT_TRUE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputPreferred]);
+
+    // Large Blob preference none.
+    id mockInputNil =
+        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+    OCMStub([mockInputNil largeBlob]).andReturn(nil);
+    EXPECT_FALSE([PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:mockInputNil]);
+
+    // Clean up flag.
+    [defaults
+        removeObjectForKey:
+            AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+  } else {
+    GTEST_SKIP() << "Large Blob requires iOS 18.0+.";
+  }
 }
 
 }  // namespace credential_provider_extension

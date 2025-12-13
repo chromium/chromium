@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_throttler.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"

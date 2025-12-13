@@ -50,6 +50,9 @@ class MojomFormatTest(unittest.TestCase):
     def test_struct_fields(self):
         self.golden_test('struct_fields')
 
+    def test_result(self):
+        self.golden_test('result')
+
 
 class LineWrapperTest(unittest.TestCase):
 

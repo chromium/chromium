@@ -105,7 +105,7 @@ public class CaptivePortalTest {
      * in a captive portal interstitial.
      */
     private void navigateAndCheckCaptivePortalInterstitial() throws Exception {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.loadUrlOnUiThread(
                 tab, mServer.getURL("/chrome/test/data/android/navigate/simple.html"));
 

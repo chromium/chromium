@@ -31,7 +31,6 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=cros-chrome",
           "--upload-results",
           "--test-shard-map-filename=chromeos-kevin-perf-fyi_map.json",
@@ -41,6 +40,8 @@
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
@@ -92,13 +93,11 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-nsn_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -140,13 +139,11 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-nsn-pgo_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -188,13 +185,11 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-shk_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -236,13 +231,11 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=web-engine-shell",
           "--upload-results",
           "--test-shard-map-filename=fuchsia-perf-shk-pgo_map.json",
           "--ignore-benchmark-exit-code",
           "--output-format=histograms",
-          "--experimental-tbmv3-metrics",
           "-d",
           "--os-check=ignore"
         ],
@@ -284,7 +277,6 @@
       {
         "args": [
           "-v",
-          "-v",
           "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-fyi_map.json",
@@ -298,6 +290,8 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
@@ -308,55 +302,6 @@
             "gpu": "10de",
             "os": "Ubuntu",
             "pool": "chrome.tests.perf-fyi"
-          },
-          "expiration": 7200,
-          "hard_timeout": 14400,
-          "io_timeout": 21600,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
-        },
-        "test": "performance_test_suite",
-        "trigger_script": {
-          "args": [
-            "--multiple-dimension-script-verbose",
-            "True"
-          ],
-          "requires_simultaneous_shard_dispatch": true,
-          "script": "//testing/trigger_scripts/perf_device_trigger.py"
-        }
-      }
-    ]
-  },
-  "win-10_laptop_low_end-perf_HP-Candidate": {
-    "isolated_scripts": [
-      {
-        "args": [
-          "-v",
-          "-v",
-          "--browser=builder",
-          "--upload-results",
-          "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
-          "--ignore-benchmark-exit-code",
-          "--output-format=histograms",
-          "--experimental-tbmv3-metrics"
-        ],
-        "merge": {
-          "args": [
-            "--upload-skia-json"
-          ],
-          "script": "//tools/perf/process_perf_results.py"
-        },
-        "name": "performance_test_suite",
-        "resultdb": {
-          "enable": true
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimensions": {
-            "gpu": null,
-            "os": "Windows-10",
-            "pool": "chrome.tests.perf-fyi",
-            "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
           "hard_timeout": 14400,
@@ -376,22 +321,27 @@
       }
     ]
   },
-  "win-arm64-builder-perf": {},
-  "win-arm64-snapdragon-plus-perf": {
+  "win-10_laptop_low_end-perf_HP-Candidate": {
     "isolated_scripts": [
       {
         "args": [
           "-v",
-          "-v",
           "--browser=builder",
           "--upload-results",
-          "--test-shard-map-filename=win-arm64-snapdragon-plus-perf_map.json",
+          "--test-shard-map-filename=win-10_laptop_low_end-perf_hp-candidate_map.json",
           "--ignore-benchmark-exit-code",
-          "--assert-gpu-compositing"
+          "--output-format=histograms",
+          "--experimental-tbmv3-metrics",
+          "--extra-browser-args=--disable-features=SessionRestoreInfobar"
         ],
         "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
           "script": "//tools/perf/process_perf_results.py"
         },
+        "module_name": "//chrome/test:performance_test_suite",
+        "module_scheme": "flat",
         "name": "performance_test_suite",
         "resultdb": {
           "enable": true
@@ -399,10 +349,10 @@
         "swarming": {
           "can_use_on_swarming_builders": true,
           "dimensions": {
-            "cpu": "arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU",
-            "os": "Windows-11",
-            "pool": "chrome.tests.perf",
-            "synthetic_product_name": "Inspiron 14 Plus 7441 (Dell Inc.)"
+            "gpu": null,
+            "os": "Windows-10",
+            "pool": "chrome.tests.perf-fyi",
+            "synthetic_product_name": "HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)"
           },
           "expiration": 7200,
           "hard_timeout": 14400,

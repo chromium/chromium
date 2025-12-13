@@ -457,6 +457,36 @@ TEST_F(BackgroundLoaderOfflinerTest, CancelWhenLoadTerminated) {
   EXPECT_EQ(Offliner::RequestStatus::FOREGROUND_CANCELED, request_status());
 }
 
+// Regression test for https://crbug.com/468011398.
+// This test ensures that if the load is terminated immediately after the
+// completion callback is invoked, the offliner does not crash attempting to
+// invoke the cancel callback.
+TEST_F(BackgroundLoaderOfflinerTest, TerminateLoadAfterCanDownload) {
+  base::Time creation_time = base::Time::Now();
+  ClientId browser_actions("browser_actions", "123");
+  SavePageRequest request(kRequestId, GURL(kHttpUrl), browser_actions,
+                          creation_time, kUserRequested);
+
+  EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
+                                      progress_callback()));
+
+  // Simulate a download starting, this will trigger the completion callback.
+  offliner()->stub()->CanDownload(GURL(kHttpUrl), "foo",
+                                  can_download_callback());
+  // Immediately trigger load termination.
+  load_termination_listener()->TerminateLoad();
+  PumpLoop();
+
+  EXPECT_TRUE(can_download_callback_called());
+  EXPECT_TRUE(can_download());
+  EXPECT_TRUE(completion_callback_called());
+  EXPECT_EQ(Offliner::RequestStatus::DOWNLOAD_THROTTLED, request_status());
+  // With the fix, TerminateLoadIfInProgress will see a null
+  // completion_callback_ and should not proceed to call Cancel(). So
+  // cancel_callback_ should not be called.
+  EXPECT_FALSE(cancel_callback_called());
+}
+
 TEST_F(BackgroundLoaderOfflinerTest, CancelWhenLoaded) {
   base::Time creation_time = base::Time::Now();
   SavePageRequest request(kRequestId, GURL(kHttpUrl), kClientId, creation_time,

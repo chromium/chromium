@@ -85,24 +85,23 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
   request_dict.Set("detected_values", detected_values_);
 
   switch (upload_card_source_) {
-    case UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
+    case UploadCardSource::kUnknown:
       request_dict.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
-    case UploadCardSource::UPSTREAM_CHECKOUT_FLOW:
+    case UploadCardSource::kUpstreamCheckoutFlow:
       request_dict.Set("upload_card_source", "UPSTREAM_CHECKOUT_FLOW");
       break;
-    case UploadCardSource::UPSTREAM_SETTINGS_PAGE:
+    case UploadCardSource::kUpstreamSettingsPage:
       request_dict.Set("upload_card_source", "UPSTREAM_SETTINGS_PAGE");
       break;
-    case UploadCardSource::UPSTREAM_CARD_OCR:
+    case UploadCardSource::kUpstreamCardOcr:
       request_dict.Set("upload_card_source", "UPSTREAM_CARD_OCR");
       break;
     default:
       NOTREACHED();
   }
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
+  std::string request_content = base::WriteJson(request_dict).value_or("");
   DVLOG(3) << "getdetailsforsavecard request body: " << request_content;
   return request_content;
 }

@@ -20,7 +20,6 @@
 #include "content/public/browser/webid/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace url {
@@ -32,6 +31,7 @@ struct LoginStatusOptions;
 }  // namespace blink::common::webid
 
 namespace content {
+class WebContents;
 
 // This class implements the various FedCM delegates. It is used to store
 // permission and login state in memory as a default implementation.
@@ -50,8 +50,6 @@ class InMemoryFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RemoveEmbargoAndResetCounts(
       const url::Origin& relying_party_embedder) override;
-  void RecordIgnoreAndEmbargo(
-      const url::Origin& relying_party_embedder) override;
   bool ShouldCompleteRequestImmediately() const override;
   bool HasThirdPartyCookiesAccess(
       content::RenderFrameHost& host,
@@ -63,6 +61,8 @@ class InMemoryFederatedPermissionContext
   bool IsAutoReauthnSettingEnabled() override;
   bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) override;
+  bool IsAutoReauthnDisabledByEmbedder(
+      content::WebContents* web_contents) override;
   base::Time GetAutoReauthnEmbargoStartTime(
       const url::Origin& relying_party_embedder) override;
   void RecordEmbargoForAutoReauthn(

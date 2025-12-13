@@ -25,7 +25,7 @@ struct PartitionDirectMapExtent {
   size_t padding_for_alignment;
 
   PA_ALWAYS_INLINE static PartitionDirectMapExtent* FromSlotSpanMetadata(
-      SlotSpanMetadataBase* slot_span);
+      SlotSpanMetadata* slot_span);
 };
 
 // Metadata page for direct-mapped allocations.
@@ -44,12 +44,11 @@ struct PartitionDirectMapMetadata {
   PartitionDirectMapExtent direct_map_extent;
 
   PA_ALWAYS_INLINE static PartitionDirectMapMetadata* FromSlotSpanMetadata(
-      SlotSpanMetadataBase* slot_span);
+      SlotSpanMetadata* slot_span);
 };
 
 PA_ALWAYS_INLINE PartitionDirectMapMetadata*
-PartitionDirectMapMetadata::FromSlotSpanMetadata(
-    SlotSpanMetadataBase* slot_span) {
+PartitionDirectMapMetadata::FromSlotSpanMetadata(SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   // |*slot_span| is the first field of |PartitionDirectMapMetadata|, just cast.
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata*>(slot_span);
@@ -58,8 +57,7 @@ PartitionDirectMapMetadata::FromSlotSpanMetadata(
 }
 
 PA_ALWAYS_INLINE PartitionDirectMapExtent*
-PartitionDirectMapExtent::FromSlotSpanMetadata(
-    SlotSpanMetadataBase* slot_span) {
+PartitionDirectMapExtent::FromSlotSpanMetadata(SlotSpanMetadata* slot_span) {
   PA_DCHECK(slot_span->bucket->is_direct_mapped());
   return &PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span)
               ->direct_map_extent;

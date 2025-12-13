@@ -6,6 +6,7 @@
 
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/gfx/vector_icon_utils.h"

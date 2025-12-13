@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/v2_test_util.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -32,8 +28,8 @@
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/websocket_adapter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/fido_constants.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,6 +37,7 @@
 #include "net/http/http_status_code.h"
 #include "net/storage_access_api/status.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -67,6 +64,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       std::vector<network::mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
       const url::Origin& origin,
+      network::mojom::ClientSecurityStatePtr client_security_state,
       uint32_t options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
@@ -80,7 +78,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       override {
     CHECK(url.has_path());
 
-    std::string_view path = url.path_piece();
+    std::string_view path = url.path();
     static const char kNewPrefix[] = "/cable/new/";
     static const char kConnectPrefix[] = "/cable/connect/";
     static const char kContactPrefix[] = "/cable/contact/";
@@ -178,8 +176,7 @@ class TestNetworkContext : public network::TestNetworkContext {
           in_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
           out_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
           handshake_client_(std::move(pending_handshake_client)) {
-      MojoCreateDataPipeOptions options;
-      memset(&options, 0, sizeof(options));
+      MojoCreateDataPipeOptions options = {};
       options.struct_size = sizeof(options);
       options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
       options.element_num_bytes = sizeof(uint8_t);
@@ -349,8 +346,9 @@ class TestNetworkContext : public network::TestNetworkContext {
         } else {
           const size_t new_length =
               peer_->buffer_.size() - actually_written_bytes;
-          memmove(peer_->buffer_.data(),
-                  &peer_->buffer_.data()[actually_written_bytes], new_length);
+          UNSAFE_TODO(memmove(peer_->buffer_.data(),
+                              &peer_->buffer_.data()[actually_written_bytes],
+                              new_length));
           peer_->buffer_.resize(new_length);
           peer_->buffer_i_ -= actually_written_bytes;
         }
@@ -413,8 +411,8 @@ class TestPlatform : public authenticator::Platform {
         std::move(params->user),
         PublicKeyCredentialParams(std::move(params->public_key_parameters)));
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    memcpy(request.client_data_hash.data(), params->challenge.data(),
-           params->challenge.size());
+    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
+                       params->challenge.data(), params->challenge.size()));
     request.resident_key_required =
         !params->authenticator_selection
             ? false
@@ -439,8 +437,8 @@ class TestPlatform : public authenticator::Platform {
     request.user_verification = params->user_verification;
 
     CHECK_EQ(request.client_data_hash.size(), params->challenge->size());
-    memcpy(request.client_data_hash.data(), params->challenge->data(),
-           params->challenge->size());
+    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
+                       params->challenge->data(), params->challenge->size()));
     if (params->extensions) {
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
@@ -674,7 +672,7 @@ class LateLinkingDevice : public authenticator::Transaction {
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-        url::Origin::Create(target),
+        url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         websocket_client_->BindNewHandshakeClientPipe(),
@@ -894,7 +892,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
         target, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
         net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
         /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
-        url::Origin::Create(target),
+        url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
         websocket_client_->BindNewHandshakeClientPipe(),

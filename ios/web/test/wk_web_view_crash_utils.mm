@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "third_party/ocmock/OCMock/NSInvocation+OCMAdditions.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 

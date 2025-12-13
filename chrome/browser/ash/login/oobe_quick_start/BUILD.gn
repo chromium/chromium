@@ -25,8 +25,8 @@ static_library("oobe_quick_start") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/nearby:quick_start_connectivity_service",
-    "//chrome/common:channel_info",
     "//chromeos/ash/components/attestation",
+    "//chromeos/ash/components/channel",
     "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/constants",
     "//chromeos/ash/components/quick_start",
@@ -75,6 +75,6 @@ source_set("unit_tests") {
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/chromeos:chromeos",
+    "//ui/chromeos",
   ]
 }

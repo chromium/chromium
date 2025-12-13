@@ -38,9 +38,6 @@ BASE_DECLARE_FEATURE(kWallpaperSearchGraduated);
 // Feature for disabling the model execution user account capability check.
 BASE_DECLARE_FEATURE(kModelExecutionCapabilityDisable);
 
-// Allow on-device model support for Test feature, to be used in tests.
-BASE_DECLARE_FEATURE(kOnDeviceModelTestFeature);
-
 // Checks if the provided `feature` is graduated from experimental AI settings.
 bool IsGraduatedFeature(UserVisibleFeatureKey feature);
 
@@ -53,11 +50,6 @@ base::flat_set<UserVisibleFeatureKey> GetAllowedFeaturesForUnsignedUser();
 
 // Returns whether the `feature` should get enabled, when the main toggle is on.
 bool ShouldEnableFeatureWhenMainToggleOn(UserVisibleFeatureKey feature);
-
-// Returns the opt target to use for on-device configuration for `feature`.
-// Returns nullopt for features where on-device execution is not enabled.
-std::optional<proto::OptimizationTarget> GetOptimizationTargetForCapability(
-    ModelBasedCapabilityKey feature);
 
 }  // namespace optimization_guide::features::internal
 

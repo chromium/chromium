@@ -38,17 +38,18 @@ public class UrlSimilarityScorerUnitTest {
 
     /** Interface to reduce test boilerplate. */
     interface StringToInt {
-        public abstract int run(String s);
+        int run(String s);
     }
 
     /** Interface to reduce test boilerplate. */
     interface StringStringToInteger {
-        public abstract Integer run(String s1, String s2);
+        Integer run(String s1, String s2);
     }
 
     /** Interface to reduce test boilerplate. */
     interface Boolean4ToString {
-        public abstract @Nullable String run(boolean b1, boolean b2, boolean b3, boolean b4);
+        @Nullable
+        String run(boolean b1, boolean b2, boolean b3, boolean b4);
     }
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -446,13 +447,16 @@ public class UrlSimilarityScorerUnitTest {
 
     private TabList createTabList(List<GURL> urlList) {
         TabList tabList = mock(TabList.class);
+        List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < urlList.size(); ++i) {
             Tab tab = mock(Tab.class);
             // Use lenient() since some of these might not get called, findTabWithMostSimilarUrl()'s
             // early-exit path executes.
             lenient().doReturn(urlList.get(i)).when(tab).getUrl();
             lenient().doReturn(tab).when(tabList).getTabAt(i);
+            tabs.add(tab);
         }
+        lenient().doAnswer(invocation -> tabs.iterator()).when(tabList).iterator();
         doReturn(urlList.size()).when(tabList).getCount();
         return tabList;
     }

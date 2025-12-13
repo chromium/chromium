@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 
+#include "android_webview/browser/aw_browser_process.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/gfx/aw_draw_fn_impl.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
@@ -22,8 +23,9 @@
 #include "android_webview/common/crash_reporter/crash_keys.h"
 #include "android_webview/gpu/aw_content_gpu_client.h"
 #include "android_webview/renderer/aw_content_renderer_client.h"
+#include "base/android/android_info.h"
 #include "base/android/apk_assets.h"
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -36,6 +38,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/default_clock.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -140,10 +143,6 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
   // isn't much point in having the crash dumps there.
   cl->AppendSwitch(switches::kDisableOoprDebugCrashDump);
 
-  // Deemed that performance benefit is not worth the stability cost.
-  // See crbug.com/1309151.
-  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
-
   // Keep data: URL support in SVGUseElement for webview until deprecation is
   // completed in the Web Platform.
   cl->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
@@ -219,7 +218,7 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
       base::BindRepeating(&IsTraceEventArgsAllowlisted));
   base::trace_event::TraceLog::GetInstance()->SetMetadataFilterPredicate(
       base::BindRepeating(&IsTraceMetadataAllowlisted));
-  tracing::TrackNameRecorder::GetInstance()->SetRecordHostAppPackageName(true);
+  tracing::TrackNameRecorder::SetRecordHostAppPackageName(true);
 
   // The TLS slot used by the memlog allocator shim needs to be initialized
   // early to ensure that it gets assigned a low slot number. If it gets
@@ -255,20 +254,17 @@ void AwMainDelegate::PreSandboxStartup() {
 
   EnableCrashReporter(process_type);
 
-  base::android::BuildInfo* android_build_info =
-      base::android::BuildInfo::GetInstance();
-
   static ::crash_reporter::CrashKeyString<64> app_name_key(
       crash_keys::kAppPackageName);
-  app_name_key.Set(android_build_info->host_package_name());
+  app_name_key.Set(base::android::apk_info::host_package_name());
 
   static ::crash_reporter::CrashKeyString<64> app_version_key(
       crash_keys::kAppPackageVersionCode);
-  app_version_key.Set(android_build_info->host_version_code());
+  app_version_key.Set(base::android::apk_info::host_version_code());
 
   static ::crash_reporter::CrashKeyString<8> sdk_int_key(
       crash_keys::kAndroidSdkInt);
-  sdk_int_key.Set(base::NumberToString(android_build_info->sdk_int()));
+  sdk_int_key.Set(base::NumberToString(base::android::android_info::sdk_int()));
 }
 
 std::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(
@@ -304,8 +300,11 @@ bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 
 variations::VariationsIdsProvider*
 AwMainDelegate::CreateVariationsIdsProvider() {
-  return variations::VariationsIdsProvider::Create(
-      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+  // TODO: crbug.com/442849530 - Use VariationsNetworkClock instead of
+  // base::DefaultClock.
+  return variations::VariationsIdsProvider::CreateInstance(
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations,
+      std::make_unique<base::DefaultClock>());
 }
 
 std::optional<int> AwMainDelegate::PostEarlyInitialization(
@@ -397,4 +396,14 @@ void AwMainDelegate::InitializeMemorySystem(const bool is_browser_process) {
                                process_type)
       .Initialize(memory_system_);
 }
+
+bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
+  const bool is_browser_process =
+      std::holds_alternative<InvokedInBrowserProcess>(invoked_in);
+  if (!is_browser_process) {
+    return true;
+  }
+  return !AwBrowserProcess::DidEarlyPerfettoInitialization();
+}
+
 }  // namespace android_webview

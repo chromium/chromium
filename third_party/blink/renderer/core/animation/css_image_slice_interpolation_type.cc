@@ -61,7 +61,6 @@ struct SliceTypes {
     }
     return fill == other.fill;
   }
-  bool operator!=(const SliceTypes& other) const { return !(*this == other); }
 
   // If a side is not a number then it is a percentage.
   std::array<bool, kSideIndexCount> is_number;

@@ -10,8 +10,10 @@
 #include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/offset_tag.h"
@@ -106,7 +108,7 @@ void ResolvedPassData::ResetCompositorRenderPass() {
 
 ResolvedFrameData::ResolvedFrameData(DisplayResourceProvider* resource_provider,
                                      Surface* surface,
-                                     uint64_t previous_frame_index,
+                                     uint32_t previous_frame_index,
                                      AggregatedRenderPassId prev_root_pass_id)
     : resource_provider_(resource_provider),
       surface_id_(surface->surface_id()),
@@ -311,11 +313,15 @@ void ResolvedFrameData::UpdateOffsetTags(OffsetTagLookupFn lookup_value_fn) {
   for (auto& tag_def : offset_tags_to_find) {
     auto offset = lookup_value_fn(tag_def);
     if (!tag_def.constraints.IsOffsetValid(offset)) {
-      SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
-      SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
-                                tag_def.constraints.ToString());
-      base::debug::DumpWithoutCrashing();
-
+#if BUILDFLAG(IS_ANDROID)
+      if (base::FeatureList::IsEnabled(
+              features::kAndroidDumpForBadCompositedUiState)) {
+        SCOPED_CRASH_KEY_STRING32("BCIV", "offset", offset.ToString());
+        SCOPED_CRASH_KEY_STRING32("BCIV", "OffsetTagConstraints",
+                                  tag_def.constraints.ToString());
+        base::debug::DumpWithoutCrashing();
+      }
+#endif
       offset = tag_def.constraints.Clamp(offset);
     }
 
@@ -409,23 +415,26 @@ void ResolvedFrameData::RebuildRenderPassesForOffsetTags() {
     source_pass->copy_requests = std::move(copy_requests);
 
     for (auto* sqs : modified_pass->shared_quad_state_list) {
-      if (sqs->offset_tag && offset_tag_data_.contains(sqs->offset_tag)) {
-        auto& tag_data = offset_tag_data_[sqs->offset_tag];
-        if (!tag_data.current_offset.IsZero()) {
-          sqs->quad_to_target_transform.PostTranslate(tag_data.current_offset);
+      if (sqs->offset_tag) {
+        if (auto it = offset_tag_data_.find(sqs->offset_tag);
+            it != offset_tag_data_.end()) {
+          auto& tag_data = it->second;
+          if (!tag_data.current_offset.IsZero()) {
+            sqs->quad_to_target_transform.PostTranslate(
+                tag_data.current_offset);
 
-          if (!sqs->mask_filter_info.IsEmpty()) {
-            // Slim compositor enforces that mask filter info isn't added on
-            // a fixed parent layer that has a child layer with offset tag, so
-            // we can assume the mask filter info should also be translated.
-            // See crbug.com/361804880 for details.
-            sqs->mask_filter_info.ApplyTransform(
-                gfx::Transform::MakeTranslation(tag_data.current_offset));
+            if (!sqs->mask_filter_info.IsEmpty()) {
+              // Slim compositor enforces that mask filter info isn't added on
+              // a fixed parent layer that has a child layer with offset tag, so
+              // we can assume the mask filter info should also be translated.
+              // See crbug.com/361804880 for details.
+              sqs->mask_filter_info.ApplyTransform(
+                  gfx::Transform::MakeTranslation(tag_data.current_offset));
+            }
           }
         }
       }
     }
-
     // Replace the CompositorRenderPass pointer so that modified frame is used
     // during aggregation.
     resolved_pass.fixed_.render_pass = modified_pass.get();

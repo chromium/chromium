@@ -27,7 +27,7 @@ source_set("service") {
   ]
 
   if (is_chromeos) {
-    deps += [ "//chrome/browser/ash/accessibility:accessibility" ]
+    deps += [ "//chrome/browser/ash/accessibility" ]
   }
 }
 
@@ -67,7 +67,7 @@ source_set("internal") {
     "//components/paint_preview/browser",
     "//components/paint_preview/common",
     "//components/paint_preview/public",
-    "//content/public/browser:browser",
-    "//services/screen_ai/public/mojom:mojom",
+    "//content/public/browser",
+    "//services/screen_ai/public/mojom",
   ]
 }

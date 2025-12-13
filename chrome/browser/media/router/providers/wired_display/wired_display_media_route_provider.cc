@@ -258,11 +258,11 @@ void WiredDisplayMediaRouteProvider::OnDisplayMetricsChanged(
 }
 
 std::vector<Display> WiredDisplayMediaRouteProvider::GetAllDisplays() const {
-  return display::Screen::GetScreen()->GetAllDisplays();
+  return display::Screen::Get()->GetAllDisplays();
 }
 
 Display WiredDisplayMediaRouteProvider::GetPrimaryDisplay() const {
-  return display::Screen::GetScreen()->GetPrimaryDisplay();
+  return display::Screen::Get()->GetPrimaryDisplay();
 }
 
 WiredDisplayMediaRouteProvider::Presentation::Presentation(

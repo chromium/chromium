@@ -18,7 +18,7 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/common/extension.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 

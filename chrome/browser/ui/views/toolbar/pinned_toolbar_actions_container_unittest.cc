@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/test/metrics/action_suffix_reader.h"
+#include "base/test/metrics/action_variants_reader.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -27,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/actions/action_id.h"
@@ -697,12 +698,12 @@ TEST_F(PinnedToolbarActionsContainerTest, MetricsRecordedForPinnableActions) {
                std::underlying_type_t<actions::ActionPinnableState>(
                    actions::ActionPinnableState::kPinnable);
       });
-  const auto pinnable_action_suffixes = base::ReadActionSuffixesForAction(
-      "Actions.PinnedToolbarButtonActivation");
-  EXPECT_EQ(1U, pinnable_action_suffixes.size());
+  const auto pinnable_action_variants = base::test::ReadActionVariantsForAction(
+      "Actions.PinnedToolbarButtonActivation", ".");
+  EXPECT_EQ(1U, pinnable_action_variants.size());
   // Only one of history or history clusters should be pinnable. The Split View
   // action is not available via `root_action_item()`.
-  size_t expected_pinnable_count = pinnable_action_suffixes[0].size() - 2;
+  size_t expected_pinnable_count = pinnable_action_variants[0].size() - 2;
   if (!features::HasTabSearchToolbarButton()) {
     // Tab search is not pinnable if the feature is disabled.
     expected_pinnable_count -= 1;

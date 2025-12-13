@@ -261,3 +261,5 @@ TEST(JniAndroidExceptionTest, HandleExceptionInJava_ReentrantOom) {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(JniAndroidTestUtils)

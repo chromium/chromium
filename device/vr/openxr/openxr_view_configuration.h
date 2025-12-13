@@ -52,24 +52,29 @@ mojom::XREye GetEyeFromIndex(int i);
 class OpenXrViewProperties {
  public:
   OpenXrViewProperties(XrViewConfigurationView xr_properties,
-                       uint32_t view_count);
+                       uint32_t view_count,
+                       gfx::Size max_texture_size);
   ~OpenXrViewProperties();
 
   uint32_t Width() const;
   uint32_t Height() const;
   uint32_t RecommendedSwapchainSampleCount() const;
   uint32_t MaxSwapchainSampleCount() const;
+  float RecommendedViewportScale() const;
 
   XrViewConfigurationView GetPropertiesForTest() const {
     return xr_properties_;
   }
 
  private:
+  uint32_t ClampWidth(uint32_t val) const;
+  uint32_t ClampHeight(uint32_t val) const;
   XrViewConfigurationView xr_properties_;
 
-  // Unused on some platforms, but leaving in to simplify the usage and not
-  // introduce per-platform constructors or a factory method.
-  [[maybe_unused]] uint32_t view_count_;
+  // Because our textures are created as single side-by-side textures, this
+  // information helps us determine our max width/height.
+  uint32_t view_count_;
+  gfx::Size max_texture_size_;
 };
 
 // Stores information about an OpenXR view configuration that is available in
@@ -90,7 +95,8 @@ class OpenXrViewConfiguration {
   ~OpenXrViewConfiguration();
 
   void Initialize(XrViewConfigurationType type,
-                  std::vector<XrViewConfigurationView> properties);
+                  std::vector<XrViewConfigurationView> properties,
+                  gfx::Size max_texture_size);
   bool Initialized() const;
 
   XrViewConfigurationType Type() const;
@@ -102,13 +108,11 @@ class OpenXrViewConfiguration {
   void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
   const std::vector<OpenXrViewProperties>& Properties() const;
-  void SetProperties(std::vector<XrViewConfigurationView> properties);
+  void SetProperties(std::vector<XrViewConfigurationView> properties,
+                     gfx::Size max_texture_size);
 
   const std::vector<XrView>& Views() const;
   void SetViews(std::vector<XrView> views);
-
-  const std::vector<XrCompositionLayerProjectionView>& ProjectionViews() const;
-  XrCompositionLayerProjectionView& GetProjectionView(uint32_t view_index);
 
   bool CanEnableAntiAliasing() const;
 
@@ -124,7 +128,6 @@ class OpenXrViewConfiguration {
   std::vector<OpenXrViewProperties> properties_;
 
   std::vector<XrView> local_from_view_;
-  std::vector<XrCompositionLayerProjectionView> projection_views_;
 };
 
 }  // namespace device

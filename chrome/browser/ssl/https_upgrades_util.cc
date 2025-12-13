@@ -6,13 +6,19 @@
 
 #include "base/feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
+#include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
+#include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -56,6 +62,59 @@ void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
 void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
   base::Value::List empty_list;
   prefs->SetList(prefs::kHttpAllowlist, std::move(empty_list));
+}
+
+security_interstitials::https_only_mode::HttpInterstitialState
+ComputeInterstitialState(content::WebContents* web_contents, const GURL& url) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  PrefService* prefs = profile->GetPrefs();
+  security_interstitials::https_only_mode::HttpInterstitialState
+      interstitial_state;
+  interstitial_state.enabled_by_pref =
+      prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
+
+  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
+    if (profile->IsIncognitoProfile() && prefs &&
+        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
+      interstitial_state.enabled_by_incognito = true;
+    }
+  }
+
+  StatefulSSLHostStateDelegate* state =
+      static_cast<StatefulSSLHostStateDelegate*>(
+          profile->GetSSLHostStateDelegate());
+
+  if (IsBalancedModeEnabled(prefs) && state &&
+      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
+    interstitial_state.enabled_in_balanced_mode = true;
+  }
+
+  auto* storage_partition =
+      web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+
+  HttpsFirstModeService* hfm_service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile);
+  if (hfm_service) {
+    interstitial_state.enabled_by_typically_secure_browsing =
+        hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
+  }
+
+  // StatefulSSLHostStateDelegate can be null during tests.
+  if (state && state->IsHttpsEnforcedForUrl(url, storage_partition) &&
+      !MustDisableSiteEngagementHeuristic(profile)) {
+    interstitial_state.enabled_by_engagement_heuristic = true;
+  }
+
+  auto* advanced_protection_manager =
+      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+          profile);
+  if (advanced_protection_manager) {
+    interstitial_state.enabled_by_advanced_protection =
+        advanced_protection_manager->IsUnderAdvancedProtection();
+  }
+
+  return interstitial_state;
 }
 
 bool IsBalancedModeAvailable() {
@@ -118,6 +177,9 @@ bool IsStrictInterstitialEnabled(const HttpInterstitialState& state) {
       state.enabled_by_incognito) {
     return true;
   }
+  if (state.enabled_by_advanced_protection) {
+    return true;
+  }
   return false;
 }
 
@@ -133,7 +195,7 @@ bool ShouldExcludeUrlFromInterstitial(const HttpInterstitialState& state,
   // are excluded from interstitials. This also applies if one of the HFM
   // heuristics enabled Balanced Mode.
   return IsBalancedModeUniquelyEnabled(state) &&
-         (net::GetSuperdomain(url.host()).empty() ||
+         (net::GetSuperdomain(url.GetHost()).empty() ||
           (url.has_port() &&
            url.IntPort() != HttpsUpgradesInterceptor::GetHttpPortForTesting()));
 }

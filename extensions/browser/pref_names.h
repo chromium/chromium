@@ -89,6 +89,16 @@ inline constexpr char kInstallDenyList[] = "extensions.install.denylist";
 // accessed through extensions::ExternalPolicyProvider.
 inline constexpr char kInstallForceList[] = "extensions.install.forcelist";
 
+// A list containing the ids of extensions that Chrome will install disabled for
+// acceptance by the user. This preference is typically populated from the
+// contents of the "initial_extensions" list in the installation's
+// inital_preferences file only for the initial profile during first run.
+inline constexpr char kInitialInstallList[] = "extensions.install.initiallist";
+
+// String pref indicates the name of the provider of the `kInitialInstallList`.
+inline constexpr char kInitialInstallProviderName[] =
+    "extensions.install.initialprovidername";
+
 // A dictionary containing, for each extension id, additional
 // OAuth redirect URLs that will be allowed in chrome.identity API.
 inline constexpr char kOAuthRedirectUrls[] = "extensions.oauth_redirect_urls";
@@ -120,27 +130,49 @@ inline constexpr char kPinnedExtensions[] = "extensions.pinned_extensions";
 inline constexpr char kExtensionInstallTypeBlocklist[] =
     "extensions.extension_install_type_blocklist";
 
+// Pref for policy to enable/disable force-install extensions with non-malware
+// violations.
+inline constexpr char kExtensionForceInstallWithNonMalwareViolationsEnabled[] =
+    "extensions.extension_force_install_with_non_malware_violations_enabled";
+
 // Properties in kExtensions dictionaries --------------------------------------
 
 // Extension-controlled preferences.
-extern const char kPrefPreferences[];
+inline constexpr char kPrefPreferences[] = "preferences";
 
 // Extension-controlled incognito preferences.
-extern const char kPrefIncognitoPreferences[];
+inline constexpr char kPrefIncognitoPreferences[] = "incognito_preferences";
 
 // Extension-controlled regular-only preferences.
-extern const char kPrefRegularOnlyPreferences[];
+inline constexpr char kPrefRegularOnlyPreferences[] =
+    "regular_only_preferences";
 
 // Extension-set content settings.
-extern const char kPrefContentSettings[];
+inline constexpr char kPrefContentSettings[] = "content_settings";
 
 // Extension-set incognito content settings.
-extern const char kPrefIncognitoContentSettings[];
+inline constexpr char kPrefIncognitoContentSettings[] =
+    "incognito_content_settings";
 
 // Per-profile UUID to distinguish global shortcut sessions for
 // org.freedesktop.portal.GlobalShortcuts.
 inline constexpr char kGlobalShortcutsUuid[] =
     "extensions.global_shortcuts.uuid";
+
+// Boolean that specifies whether ExtensionInstallCloudPolicyChecks is enabled.
+inline constexpr char kExtensionInstallCloudPolicyChecksEnabled[] =
+    "extensions.install.cloud_policy_checks_enabled";
+
+// A pref that stores the expiration time for the enterprise promotion banner
+// on the Chrome Web Store. After this time, the banner will not be shown
+// anymore.
+inline constexpr char kEnterprisePromotionExpirationTime[] =
+    "extensions.enterprise_promotion.expiration_time";
+
+// A pref that stores whether the enterprise promotion banner on the Chrome
+// Web Store has been dismissed by the user by clicking the banner button.
+inline constexpr char kHasDismissedEnterprisePromotion[] =
+    "extensions.has_dismissed_enterprise_promotion";
 
 }  // namespace pref_names
 }  // namespace extensions

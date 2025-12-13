@@ -26,7 +26,7 @@ source_set("mahi") {
     "//chromeos/components/magic_boost/public/cpp",
     "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",
-    "//chromeos/constants:constants",
+    "//chromeos/constants",
     "//chromeos/strings:strings_grit",
     "//chromeos/ui/vector_icons",
     "//components/application_locale_storage",

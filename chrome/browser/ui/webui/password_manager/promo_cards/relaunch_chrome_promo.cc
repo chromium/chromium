@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/password_manager/promo_cards/relaunch_chrome_promo.h"
 
 #include "chrome/grit/generated_resources.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,7 +24,7 @@ password_manager::PromoCardType RelaunchChromePromo::GetPromoCardType() const {
 }
 
 bool RelaunchChromePromo::ShouldShowPromo() const {
-  if (OSCrypt::IsEncryptionAvailable()) {
+  if (is_encryption_available_.value_or(true)) {
     return false;
   }
 

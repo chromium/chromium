@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/vaapi_jpeg_encode_accelerator.h"
 
 #include <stddef.h>
@@ -23,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
@@ -197,8 +203,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   gfx::Size input_size = input_frame->coded_size();
-  gfx::BufferFormat buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-  uint32_t va_format = VaapiWrapper::BufferFormatToVARTFormat(buffer_format);
+  viz::SharedImageFormat si_format = viz::MultiPlaneFormat::kNV12;
+  uint32_t va_format = VaapiWrapper::SharedImageFormatToVARTFormat(si_format);
   bool context_changed = input_size != input_size_ || va_format != va_format_;
   if (context_changed) {
     vaapi_wrapper_->DestroyContextAndSurfaces(
@@ -304,7 +310,7 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   std::unique_ptr<gfx::ClientNativePixmap> native_pixmap =
       client_native_pixmap_factory_->ImportFromHandle(
           std::move(output_gmb_handle).native_pixmap_handle(),
-          native_pixmap_size, gfx::BufferFormat::R_8,
+          native_pixmap_size, viz::SinglePlaneFormat::kR_8,
           gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE);
   if (native_pixmap == nullptr) {
     VLOGF(1) << "Failed to create NativePixmap from handle";
@@ -327,8 +333,8 @@ void VaapiJpegEncodeAccelerator::Encoder::EncodeWithDmaBufTask(
   uint8_t* output_memory =
       static_cast<uint8_t*>(native_pixmap->GetMemoryAddress(0));
   size_t encoded_size = 0;
-  // Since the format of |native_pixmap| is gfx::BufferFormat::R_8, we can
-  // use its area as the maximum bytes we need to download to avoid buffer
+  // Since the format of |native_pixmap| is viz::SinglePlaneFormat::kR_8, we
+  // can use its area as the maximum bytes we need to download to avoid buffer
   // overflow.
   // Since we didn't supply EXIF data to the JPEG encoder, it creates a default
   // APP0 segment in the header. We will download the result to an offset and

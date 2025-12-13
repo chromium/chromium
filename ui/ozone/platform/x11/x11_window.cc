@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/x11/x11_window.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -478,8 +474,8 @@ void X11Window::OnXWindowLostCapture() {
   platform_window_delegate_->OnLostCapture();
 }
 
-void X11Window::OnMouseEnter() {
-  platform_window_delegate_->OnMouseEnter();
+void X11Window::OnCursorUpdate() {
+  platform_window_delegate_->OnCursorUpdate();
 }
 
 gfx::AcceleratedWidget X11Window::GetWidget() const {
@@ -737,7 +733,7 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
 void X11Window::Maximize() {
   if (IsFullscreen()) {
     // Unfullscreen the window if it is fullscreen.
-    SetFullscreen(false);
+    SetFullscreen(false, display::kInvalidDisplayId);
 
     // Resize the window so that it does not have the same size as a monitor.
     // (Otherwise, some window managers immediately put the window back in
@@ -777,6 +773,8 @@ void X11Window::Restore() {
   if (IsMinimized()) {
     SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_HIDDEN"),
                    x11::Atom::None);
+  } else if (IsFullscreen()) {
+    SetFullscreen(false, display::kInvalidDisplayId);
   } else if (IsMaximized()) {
     should_maximize_after_map_ = false;
     SetWMSpecState(false, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"),
@@ -1019,11 +1017,10 @@ void X11Window::SetShape(std::unique_ptr<ShapeRects> native_shape,
       native_region.op(gfx::RectToSkIRect(rect), SkRegion::kUnion_Op);
     }
     if (!transform.IsIdentity() && !native_region.isEmpty()) {
-      SkPath path_in_dip;
-      if (native_region.getBoundaryPath(&path_in_dip)) {
-        SkPath path_in_pixels;
-        path_in_dip.transform(gfx::TransformToFlattenedSkMatrix(transform),
-                              &path_in_pixels);
+      if (!native_region.isEmpty()) {
+        const SkPath path_in_pixels =
+            native_region.getBoundaryPath().makeTransform(
+                gfx::TransformToFlattenedSkMatrix(transform));
         xregion = x11::CreateRegionFromSkPath(path_in_pixels);
       } else {
         xregion = std::make_unique<std::vector<x11::Rectangle>>();
@@ -1039,8 +1036,7 @@ void X11Window::SetShape(std::unique_ptr<ShapeRects> native_shape,
 }
 
 void X11Window::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
-  x11::SizeHints size_hints;
-  memset(&size_hints, 0, sizeof(size_hints));
+  x11::SizeHints size_hints = {};
 
   connection_->GetWmNormalHints(xwindow_, &size_hints);
   // Unforce aspect ratio is parameter length is 0, otherwise set normally.
@@ -1195,8 +1191,8 @@ void X11Window::NotifyStartupComplete(const std::string& startup_id) {
   for (size_t offset = 0; offset < data_size; offset += kChunkSize) {
     size_t copy_size = std::min<size_t>(kChunkSize, data_size - offset);
     uint8_t* dst = &event.data.data8[0];
-    memcpy(dst, data + offset, copy_size);
-    memset(dst + copy_size, 0, kChunkSize - copy_size);
+    UNSAFE_TODO(memcpy(dst, data + offset, copy_size));
+    UNSAFE_TODO(memset(dst + copy_size, 0, kChunkSize - copy_size));
     connection_->SendEvent(event, x_root_window_,
                            x11::EventMask::PropertyChange);
     event.type = net_startup_info;
@@ -1769,7 +1765,7 @@ gfx::Size X11Window::AdjustSizeForDisplay(
   // We do not need to apply the workaround for the ChromeOS.
   return requested_size_in_pixels;
 #else
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   if (screen && !UseTestConfigForPlatformWindows()) {
     std::vector<display::Display> displays = screen->GetAllDisplays();
     // Compare against all monitor sizes. The window manager can move the window
@@ -1928,8 +1924,7 @@ void X11Window::CloseXWindow() {
 void X11Window::Map(bool inactive) {
   // Before we map the window, set size hints. Otherwise, some window managers
   // will ignore toplevel XMoveWindow commands.
-  x11::SizeHints size_hints;
-  memset(&size_hints, 0, sizeof(size_hints));
+  x11::SizeHints size_hints = {};
   connection_->GetWmNormalHints(xwindow_, &size_hints);
   size_hints.flags |= x11::SIZE_HINT_P_POSITION;
   size_hints.x = GetBoundsInPixels().x();
@@ -2042,8 +2037,7 @@ void X11Window::SetFlashFrameHint(bool flash_frame) {
     return;
   }
 
-  x11::WmHints hints;
-  memset(&hints, 0, sizeof(hints));
+  x11::WmHints hints = {};
   connection_->GetWmHints(xwindow_, &hints);
 
   if (flash_frame) {
@@ -2070,8 +2064,7 @@ void X11Window::UpdateMinAndMaxSize() {
   min_size_in_pixels_ = minimum_in_pixels.value();
   max_size_in_pixels_ = maximum_in_pixels.value();
 
-  x11::SizeHints hints;
-  memset(&hints, 0, sizeof(hints));
+  x11::SizeHints hints = {};
   connection_->GetWmNormalHints(xwindow_, &hints);
 
   if (min_size_in_pixels_.IsEmpty()) {

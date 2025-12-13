@@ -5,15 +5,13 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/user_script.h"
 #include "extensions/test/test_content_script_load_waiter.h"
@@ -81,11 +79,9 @@ IN_PROC_BROWSER_TEST_F(UserScriptExtensionBrowserTest, TestBasicInjection) {
   // Navigate to a page and ensure the script injected.
   const GURL url =
       embedded_test_server()->GetURL("example.com", "/simple.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  EXPECT_EQ(
-      "user script injected",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      "document.title"));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+  EXPECT_EQ("user script injected",
+            content::EvalJs(GetActiveWebContents(), "document.title"));
 }
 
 }  // namespace extensions

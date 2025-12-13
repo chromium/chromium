@@ -56,7 +56,7 @@ public class WebappIntentUtilsTest {
         fromIntent.putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 1L);
         fromIntent.putExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 2L);
         fromIntent.putExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 3L);
-        BrowserIntentUtils.addStartupTimestampsToIntent(fromIntent);
+        BrowserIntentUtils.addLauncherTimestampsToIntent(fromIntent);
 
         Intent toIntent = new Intent();
         WebappIntentUtils.copyWebappLaunchIntentExtras(fromIntent, toIntent);
@@ -68,8 +68,8 @@ public class WebappIntentUtilsTest {
         assertEquals(1L, toIntent.getLongExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0L));
         assertEquals(2L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_THEME_COLOR, 0L));
         assertEquals(3L, toIntent.getLongExtra(WebappConstants.EXTRA_DARK_BACKGROUND_COLOR, 0L));
-        assertNotEquals(-1L, BrowserIntentUtils.getStartupRealtimeMillis(toIntent));
-        assertNotEquals(-1L, BrowserIntentUtils.getStartupUptimeMillis(toIntent));
+        assertNotEquals(-1L, BrowserIntentUtils.getLaunchedRealtimeMillis(toIntent));
+        assertNotEquals(-1L, BrowserIntentUtils.getLaunchedUptimeMillis(toIntent));
     }
 
     /**

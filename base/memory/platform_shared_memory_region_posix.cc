@@ -59,18 +59,6 @@ std::optional<FDAccessModeError> CheckFDAccessMode(int fd, int expected_mode) {
 
 }  // namespace
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-// static
-ScopedFD PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(size_t size) {
-  PlatformSharedMemoryRegion region =
-      Create(Mode::kUnsafe, size, true /* executable */);
-  if (region.IsValid()) {
-    return region.PassPlatformHandle().fd;
-  }
-  return ScopedFD();
-}
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
 // static
 expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
 PlatformSharedMemoryRegion::TakeOrFail(ScopedFDPair handle,

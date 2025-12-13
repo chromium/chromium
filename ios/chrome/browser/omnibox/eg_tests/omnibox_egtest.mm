@@ -12,11 +12,14 @@
 #import "base/test/ios/wait_util.h"
 #import "build/build_config.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_test_util.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -74,7 +77,7 @@ void DefocusOmnibox() {
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     id<GREYMatcher> cancel_button =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier);
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(cancel_button,
                                             grey_sufficientlyVisible(), nil)]
@@ -268,11 +271,13 @@ void FocusFakebox() {
     [ChromeEarlGrey clearBrowsingHistory];
   }
 
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (void)tearDownHelper {
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [super tearDownHelper];
 }
 
@@ -316,8 +321,7 @@ void FocusFakebox() {
                         .ReplaceComponents(httpsReplacements)
                         .spec()];
 
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(URL)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:URL];
   // TODO(crbug.com/40916974): Use simulatePhysicalKeyboardEvent until
   // replaceText can properly handle \n.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
@@ -358,16 +362,28 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_longPress()];
 
+  NSError* error = nil;
+  [[EarlGrey
+      selectElementWithMatcher:[EditMenuAppInterface editMenuNextButtonMatcher]]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error == nil) {
+    // Tap the forward button if it's visible. It depends on the device size.
+    [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
+                                            editMenuNextButtonMatcher]]
+        performAction:grey_tap()];
+  }
+
   // Wait for UIMenuController to appear or timeout after 2 seconds.
   GREYCondition* SearchTextButtonIsDisplayed = [GREYCondition
       conditionWithName:@"Search Copied Text button display condition"
                   block:^BOOL {
-                    NSError* error = nil;
+                    NSError* e = nil;
                     [[EarlGrey
                         selectElementWithMatcher:SearchCopiedTextButton()]
                         assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
+                                    error:&e];
+                    return e == nil;
                   }];
   GREYAssertTrue([SearchTextButtonIsDisplayed
                      waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
@@ -446,11 +462,13 @@ void FocusFakebox() {
   // Clear the pasteboard in case there is a URL copied.
   [ChromeEarlGrey clearPasteboard];
 
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 }
 
 - (void)tearDownHelper {
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [super tearDownHelper];
 }
 
@@ -488,10 +506,16 @@ void FocusFakebox() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:chrome_test_util::LocationViewContainingText(
-                            _URL1.host())];
+                            _URL1.GetHost())];
 }
 
 - (void)testCopyPaste {
+#if !TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/449210011): Re-enable the test on iPad device.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+#endif
   [self openPage1];
 
   // Long pressing should allow copying.
@@ -582,8 +606,7 @@ void FocusFakebox() {
   [self openPage2];
 
   [ChromeEarlGreyUI focusOmnibox];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"Obama")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"Obama"];
 
   // The popup should open.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
@@ -612,8 +635,7 @@ void FocusFakebox() {
   [self openPage2];
 
   [ChromeEarlGreyUI focusOmnibox];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"Obama")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"Obama"];
 
   // The popup should open.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
@@ -712,8 +734,7 @@ void FocusFakebox() {
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"hello")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"hello"];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello")];
 }
@@ -897,8 +918,7 @@ void FocusFakebox() {
       assertWithMatcher:grey_nil()];
 
   // Writing in the omnibox field.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"this is a test")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"this is a test"];
 
   // Long press on the omnibox.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -930,7 +950,8 @@ void FocusFakebox() {
 // fied, Select button should be hidden & SelectAll button should be displayed.
 // If the selected text is the entire omnibox field, select & SelectAll button
 // should be hidden.
-- (void)testSelection {
+// TODO(crbug.com/460741696): Test is flaky.
+- (void)FLAKY_testSelection {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1011,8 +1032,7 @@ void FocusFakebox() {
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"127")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"127"];
 
   // We expect to have an autocomplete.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1021,7 +1041,8 @@ void FocusFakebox() {
 
 // Verifies that tapping an autocomplete suggestion in the omnibox successfully
 // completes the user's query.
-- (void)testTapBehaviors {
+// TODO(crbug.com/455132352): Test is flaky.
+- (void)FLAKY_testTapBehaviors {
   // Disable all autocomplete providers except the history url provider.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   omnibox::DisableAutocompleteProviders(config, 524279);
@@ -1034,8 +1055,7 @@ void FocusFakebox() {
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"127")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"127"];
 
   // We expect to have an autocomplete.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1262,8 +1282,7 @@ void FocusFakebox() {
   // TODO(crbug.com/40916974): This should use grey_typeText when fixed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"127")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"127"];
 
   // Autocomplete is present.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]

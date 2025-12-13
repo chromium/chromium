@@ -33,11 +33,6 @@ static_library("util") {
     ":proto",
     "//ash",
     "//base",
-
-    # TODO(crbug.com/353875741): Remove this after fixing cyclic dependency from
-    # //chrome/browser/ash/app_list/search for
-    # obj/chrome/browser/ash/app_list/search/util/util/keyword_cache.o.
-    "//chrome/browser/apps/app_preload_service/proto",
   ]
 }
 

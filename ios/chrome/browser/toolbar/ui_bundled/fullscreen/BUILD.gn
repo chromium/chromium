@@ -6,6 +6,8 @@ source_set("fullscreen") {
   sources = [
     "toolbars_size.h",
     "toolbars_size.mm",
+    "toolbars_size_browser_agent.h",
+    "toolbars_size_browser_agent.mm",
     "toolbars_size_observer.h",
     "toolbars_size_observer.mm",
     "toolbars_size_observer_bridge.h",
@@ -13,6 +15,7 @@ source_set("fullscreen") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/web",

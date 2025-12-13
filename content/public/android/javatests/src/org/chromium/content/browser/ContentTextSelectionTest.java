@@ -4,6 +4,12 @@
 
 package org.chromium.content.browser;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyChar;
+import static org.mockito.ArgumentMatchers.anyInt;
+
+import android.app.PendingIntent;
+import android.app.RemoteAction;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -12,12 +18,16 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Icon;
 import android.os.SystemClock;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.textclassifier.TextClassification;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.filters.SdkSuppress;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
@@ -26,7 +36,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
+import org.chromium.base.IntentUtils;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -36,29 +49,31 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content.R;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
-import org.chromium.content.browser.selection.SelectActionMenuHelper.DefaultItemOrder;
-import org.chromium.content.browser.selection.SelectActionMenuHelper.GroupItemOrder;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
+import org.chromium.content_public.browser.PendingSelectionMenu;
 import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.browser.test.util.TestSelectionDropdownMenuDelegate;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 /** Integration tests for text selection-related behavior. */
@@ -128,16 +143,24 @@ public class ContentTextSelectionTest {
 
     private static class TestSelectionActionMenuDelegate implements SelectionActionMenuDelegate {
         @Override
-        public void modifyDefaultMenuItems(
-                List<SelectionMenuItem.Builder> menuItemBuilders,
+        public List<SelectionMenuItem> getAdditionalMenuItems(
+                @MenuType int menuType,
                 boolean isSelectionPassword,
                 boolean isSelectionReadOnly,
                 String selectedText) {
-            // No-op because we are testing default menu item ordering with no modifications.
+            if (selectedText.isEmpty()) {
+                return List.of(
+                        new SelectionMenuItem.Builder("testNonSelectionItem")
+                                .setOrderAndCategory(
+                                        0, SelectionMenuItem.ItemGroupOffset.SECONDARY_ASSIST_ITEMS)
+                                .build());
+            }
+            return new ArrayList<>();
         }
 
         @Override
-        public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
+        public List<ResolveInfo> filterTextProcessingActivities(
+                @MenuType int menuType, List<ResolveInfo> activities) {
             List<ResolveInfo> resolveInfos = new ArrayList<>();
             ResolveInfo resolveInfo =
                     createResolveInfoWithActivityInfo("ProcessTextActivity", true);
@@ -146,17 +169,7 @@ public class ContentTextSelectionTest {
         }
 
         @Override
-        public List<SelectionMenuItem> getAdditionalNonSelectionItems() {
-            return Arrays.asList(new SelectionMenuItem.Builder("testNonSelectionItem").build());
-        }
-
-        @Override
-        public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-            return new ArrayList<>();
-        }
-
-        @Override
-        public boolean canReuseCachedSelectionMenu() {
+        public boolean canReuseCachedSelectionMenu(@MenuType int menuType) {
             return true;
         }
 
@@ -358,91 +371,193 @@ public class ContentTextSelectionTest {
         Assert.assertFalse(mSelectionPopupController.isActionModeValid());
     }
 
-    @Test
-    @MediumTest
-    @Feature({"TextSelection"})
-    @SdkSuppress(minSdkVersion = Build.VERSION_CODES.P) /* getSecondaryAssistItems requires >= P */
-    public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection() throws Throwable {
+    private void setUpTestCorrectPasteMenuItemsAddedWhenThereIsNoSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
         mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         copyStringToClipboard("SampleTextToCopy");
+        // TODO(crbug.com/452918681): Update to use rightClickNode for dropdown tests. Currently,
+        //  rightClickNode is fundamentally broken as it doesn't click in the correct place.
         DOMUtils.longPressNode(mWebContents, "whitespace_input_text");
         waitForPastePopupStatus(true);
         waitForSelectActionBarVisible(false);
-        SelectionMenuGroup[] menuGroups =
-                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
-        // Default and secondary assist item groups are added to the menu.
-        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[0].order);
-        Assert.assertEquals(GroupItemOrder.SECONDARY_ASSIST_ITEMS, menuGroups[1].order);
-        // Default items. Subtracting 1 to adjust the 1-based indices of the DefaultItemOrder
-        // constants to the 0-based indices of arrays.
-        SelectionMenuItem[] defaultItems = menuGroups[0].items.toArray(new SelectionMenuItem[0]);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
-        // The additional non selection (secondary assist) menu item we created is
-        // added to the menu.
-        Assert.assertEquals(
-                "testNonSelectionItem",
-                menuGroups[1].items.first().getTitle(mActivityTestRule.getActivity()));
-        Assert.assertTrue(menuGroups[1].items.first().isEnabled);
     }
 
     @Test
     @MediumTest
     @Feature({"TextSelection"})
-    public void testCorrectSelectionMenuItemsAddedForInputSelection() throws Throwable {
+    public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection_dropdown() throws Throwable {
+        setUpTestCorrectPasteMenuItemsAddedWhenThereIsNoSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.DROPDOWN);
+
+        List<ItemMatcher> matchers =
+                List.of(
+                        hasId(R.id.select_action_menu_paste),
+                        hasId(R.id.select_action_menu_select_all),
+                        isDivider(),
+                        hasTitle("testNonSelectionItem"));
+        TestSelectionDropdownMenuDelegate dropdownDelegate =
+                new TestSelectionDropdownMenuDelegate();
+        MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
+        verifyMenu(items, matchers, dropdownDelegate);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    public void testCorrectPasteMenuItemsAddedWhenThereIsNoSelection_floating() throws Throwable {
+        setUpTestCorrectPasteMenuItemsAddedWhenThereIsNoSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
+
+        List<ItemMatcher> matchers =
+                List.of(
+                        hasId(R.id.select_action_menu_paste),
+                        hasId(R.id.select_action_menu_select_all),
+                        hasTitle("testNonSelectionItem"));
+        ArrayList<MenuItem> actualItems = new ArrayList<>();
+        Menu fakeMenu = createFakeMenu(actualItems);
+        menu.getMenuAsActionMode(fakeMenu);
+        verifyMenu(actualItems, matchers);
+    }
+
+    private void setUpTestCorrectSelectionMenuItemsAddedForInputSelection() throws Throwable {
         SelectionActionMenuDelegate selectionActionMenuDelegate =
                 new TestSelectionActionMenuDelegate();
         mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
         // For primary assist item.
         SelectionClient.Result result = new SelectionClient.Result();
-        result.label = "Phone";
-        result.intent = new Intent();
+        result.textClassification = createSingleActionTextClassification("Phone");
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
         client.setResultCallback(mSelectionPopupController.getResultCallback());
         mSelectionPopupController.setSelectionClient(client);
 
         copyStringToClipboard("SampleTextToCopy");
+        // TODO(crbug.com/452918681): Update to use rightClickNode for dropdown tests. Currently,
+        //  rightClickNode is fundamentally broken as it doesn't click in the correct place.
         DOMUtils.longPressNode(mWebContents, "phone_number");
         waitForSelectActionBarVisible(true);
         waitForPastePopupStatus(false);
-        SelectionMenuGroup[] menuGroups =
-                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
-        // Default, primary assist, and text processing item groups are added to the menu.
-        Assert.assertEquals(GroupItemOrder.ASSIST_ITEMS, menuGroups[0].order);
-        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[1].order);
-        Assert.assertEquals(GroupItemOrder.TEXT_PROCESSING_ITEMS, menuGroups[2].order);
+    }
 
-        // Primary assist item we created is added to menu.
-        Assert.assertEquals(
-                "Phone", menuGroups[0].items.first().getTitle(mActivityTestRule.getActivity()));
-        Assert.assertTrue(menuGroups[0].items.first().isEnabled);
-        // Default items.
-        SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
-        // The text processing menu item we created is added to the menu.
-        Assert.assertEquals(
-                "testTextProcessingItem",
-                menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
-        Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    public void testCorrectSelectionMenuItemsAddedForInputSelection_dropdown() throws Throwable {
+        setUpTestCorrectSelectionMenuItemsAddedForInputSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.DROPDOWN);
+
+        List<ItemMatcher> matchers =
+                List.of(
+                        hasTitle("Phone"),
+                        isDivider(),
+                        hasId(R.id.select_action_menu_cut),
+                        hasId(R.id.select_action_menu_copy),
+                        hasId(R.id.select_action_menu_paste),
+                        hasId(R.id.select_action_menu_select_all),
+                        isDivider(),
+                        hasTitle("testTextProcessingItem"));
+        TestSelectionDropdownMenuDelegate dropdownDelegate =
+                new TestSelectionDropdownMenuDelegate();
+        MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
+        verifyMenu(items, matchers, dropdownDelegate);
         // Check correct processText intent state is sent to 3rd party apps.
         Assert.assertFalse(
-                menuGroups[2]
-                        .items
-                        .first()
+                menu.getMenuItemsForTesting()
+                        .get(menu.getMenuItemsForTesting().size() - 1)
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    public void testCorrectSelectionMenuItemsAddedForInputSelection_floating() throws Throwable {
+        setUpTestCorrectSelectionMenuItemsAddedForInputSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
+
+        List<ItemMatcher> matchers =
+                List.of(
+                        hasTitle("Phone"),
+                        hasId(R.id.select_action_menu_cut),
+                        hasId(R.id.select_action_menu_copy),
+                        hasId(R.id.select_action_menu_paste),
+                        hasId(R.id.select_action_menu_select_all),
+                        hasTitle("testTextProcessingItem"));
+        ArrayList<MenuItem> actualItems = new ArrayList<>();
+        Menu fakeMenu = createFakeMenu(actualItems);
+        menu.getMenuAsActionMode(fakeMenu);
+        verifyMenu(actualItems, matchers);
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertFalse(
+                menu.getMenuItemsForTesting()
+                        .get(menu.getMenuItemsForTesting().size() - 1)
+                        .intent
+                        .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
+    }
+
+    private void setUpTestCorrectSelectionMenuItemsAddedForPlainTextSelection() throws Throwable {
+        SelectionActionMenuDelegate selectionActionMenuDelegate =
+                new TestSelectionActionMenuDelegate();
+        mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
+        // For primary assist item.
+        SelectionClient.Result result = new SelectionClient.Result();
+        result.textClassification = createSingleActionTextClassification("Map");
+        TestSelectionClient client = new TestSelectionClient();
+        client.setResult(result);
+        client.setResultCallback(mSelectionPopupController.getResultCallback());
+        mSelectionPopupController.setSelectionClient(client);
+
+        // TODO(crbug.com/452918681): Update to use rightClickNode for dropdown tests. Currently,
+        //  rightClickNode is fundamentally broken as it doesn't click in the correct place.
+        DOMUtils.longPressNode(mWebContents, "smart_selection");
+        waitForSelectActionBarVisible(true);
+        waitForPastePopupStatus(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"TextSelection"})
+    // TODO(crbug.com/385205045) Re-enable on automotive devices once fixed / made less flaky on
+    // auto.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void testCorrectSelectionMenuItemsAddedForPlainTextSelection_dropdown()
+            throws Throwable {
+        setUpTestCorrectSelectionMenuItemsAddedForPlainTextSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.DROPDOWN);
+        boolean shareAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_SHARE);
+        boolean webSearchAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
+
+        // Map | Copy [Share] Select All [Web Search] | testTextProcessingItem
+        ArrayList<ItemMatcher> matchers = new ArrayList<>();
+        matchers.add(hasTitle("Map"));
+        matchers.add(isDivider());
+        matchers.add(hasId(R.id.select_action_menu_copy));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
+        matchers.add(hasId(R.id.select_action_menu_select_all));
+        if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
+        matchers.add(isDivider());
+        // The text processing menu item we created is added to the menu.
+        matchers.add(hasTitle("testTextProcessingItem"));
+
+        TestSelectionDropdownMenuDelegate dropdownDelegate =
+                new TestSelectionDropdownMenuDelegate();
+        MVCListAdapter.ModelList items = menu.getMenuAsDropdown(dropdownDelegate);
+        verifyMenu(items, matchers, dropdownDelegate);
+
+        // Check correct processText intent state is sent to 3rd party apps.
+        Assert.assertTrue(
+                menu.getMenuItemsForTesting()
+                        .get(menu.getMenuItemsForTesting().size() - 1)
                         .intent
                         .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
@@ -453,64 +568,37 @@ public class ContentTextSelectionTest {
     // TODO(crbug.com/385205045) Re-enable on automotive devices once fixed / made less flaky on
     // auto.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testCorrectSelectionMenuItemsAddedForPlainTextSelection() throws Throwable {
-        SelectionActionMenuDelegate selectionActionMenuDelegate =
-                new TestSelectionActionMenuDelegate();
-        mSelectionPopupController.setSelectionActionMenuDelegate(selectionActionMenuDelegate);
-        // For primary assist item.
-        SelectionClient.Result result = new SelectionClient.Result();
-        result.label = "Map";
-        result.intent = new Intent();
-        TestSelectionClient client = new TestSelectionClient();
-        client.setResult(result);
-        client.setResultCallback(mSelectionPopupController.getResultCallback());
-        mSelectionPopupController.setSelectionClient(client);
+    public void testCorrectSelectionMenuItemsAddedForPlainTextSelection_floating()
+            throws Throwable {
+        setUpTestCorrectSelectionMenuItemsAddedForPlainTextSelection();
+        PendingSelectionMenu menu =
+                mSelectionPopupController.getPendingSelectionMenu(MenuType.FLOATING);
+        boolean shareAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_SHARE);
+        boolean webSearchAllowed =
+                mSelectionPopupController.isSelectActionModeAllowed(
+                        ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
 
-        DOMUtils.longPressNode(mWebContents, "smart_selection");
-        waitForSelectActionBarVisible(true);
-        waitForPastePopupStatus(false);
-        SelectionMenuGroup[] menuGroups =
-                mSelectionPopupController.getMenuItems().toArray(new SelectionMenuGroup[0]);
-
-        // Default, primary assist, and text processing item groups are added to the menu.
-        Assert.assertEquals(GroupItemOrder.ASSIST_ITEMS, menuGroups[0].order);
-        Assert.assertEquals(GroupItemOrder.DEFAULT_ITEMS, menuGroups[1].order);
-        Assert.assertEquals(GroupItemOrder.TEXT_PROCESSING_ITEMS, menuGroups[2].order);
-        // Primary assist item we created is added to menu.
-        Assert.assertEquals(
-                "Map", menuGroups[0].items.first().getTitle(mActivityTestRule.getActivity()));
-        Assert.assertTrue(menuGroups[0].items.first().isEnabled);
-
-        // Default items.
-        SelectionMenuItem[] defaultItems = menuGroups[1].items.toArray(new SelectionMenuItem[0]);
-
-        // MENU_ITEM_SHARE and MENU_ITEM_WEB_SEARCH are added to the menu by default but can
-        // be removed if there are no activities that can resolve their intents on the system.
-        // So check if they're present first.
-        if (mSelectionPopupController.isSelectActionModeAllowed(
-                ActionModeCallbackHelper.MENU_ITEM_SHARE)) {
-            Assert.assertTrue(defaultItems[DefaultItemOrder.SHARE - 1].isEnabled);
-        }
-        if (mSelectionPopupController.isSelectActionModeAllowed(
-                ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH)) {
-            Assert.assertTrue(defaultItems[DefaultItemOrder.WEB_SEARCH - 1].isEnabled);
-        }
-        Assert.assertTrue(defaultItems[DefaultItemOrder.COPY - 1].isEnabled);
-        Assert.assertTrue(defaultItems[DefaultItemOrder.SELECT_ALL - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.CUT - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE - 1].isEnabled);
-        Assert.assertFalse(defaultItems[DefaultItemOrder.PASTE_AS_PLAIN_TEXT - 1].isEnabled);
-
+        // Map Copy [Share] Select All [Web Search] testTextProcessingItem
+        ArrayList<ItemMatcher> matchers = new ArrayList<>();
+        matchers.add(hasTitle("Map"));
+        matchers.add(hasId(R.id.select_action_menu_copy));
+        if (shareAllowed) matchers.add(hasId(R.id.select_action_menu_share));
+        matchers.add(hasId(R.id.select_action_menu_select_all));
+        if (webSearchAllowed) matchers.add(hasId(R.id.select_action_menu_web_search));
         // The text processing menu item we created is added to the menu.
-        Assert.assertEquals(
-                "testTextProcessingItem",
-                menuGroups[2].items.first().getTitle(mActivityTestRule.getActivity()));
-        Assert.assertTrue(menuGroups[2].items.first().isEnabled);
+        matchers.add(hasTitle("testTextProcessingItem"));
+
+        ArrayList<MenuItem> actualItems = new ArrayList<>();
+        Menu fakeMenu = createFakeMenu(actualItems);
+        menu.getMenuAsActionMode(fakeMenu);
+        verifyMenu(actualItems, matchers);
+
         // Check correct processText intent state is sent to 3rd party apps.
         Assert.assertTrue(
-                menuGroups[2]
-                        .items
-                        .first()
+                menu.getMenuItemsForTesting()
+                        .get(menu.getMenuItemsForTesting().size() - 1)
                         .intent
                         .getBooleanExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, false));
     }
@@ -518,6 +606,7 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @DisabledTest(message = "https://crbug.com/440474993")
     public void testPastePopupNotShownOnLongPressingNonEmptyInput() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
@@ -661,7 +750,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -5;
         result.endAdjust = 8;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
 
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
@@ -678,7 +767,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result returnResult = mSelectionPopupController.getClassificationResult();
         Assert.assertEquals(-5, returnResult.startAdjust);
         Assert.assertEquals(8, returnResult.endAdjust);
-        Assert.assertEquals("Maps", returnResult.label);
+        Assert.assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
     }
 
     @Test
@@ -688,7 +777,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result result = new SelectionClient.Result();
         result.startAdjust = -5;
         result.endAdjust = 8;
-        result.label = "Maps";
+        result.textClassification = createSingleActionTextClassification("Maps");
 
         TestSelectionClient client = new TestSelectionClient();
         client.setResult(result);
@@ -705,7 +794,7 @@ public class ContentTextSelectionTest {
         SelectionClient.Result returnResult = mSelectionPopupController.getClassificationResult();
         Assert.assertEquals(-5, returnResult.startAdjust);
         Assert.assertEquals(8, returnResult.endAdjust);
-        Assert.assertEquals("Maps", returnResult.label);
+        Assert.assertEquals("Maps", returnResult.textClassification.getActions().get(0).getTitle());
 
         DOMUtils.clickNode(mWebContents, "smart_selection");
 
@@ -1101,6 +1190,18 @@ public class ContentTextSelectionTest {
         Assert.assertEquals(i.getFlags() & new_task_flag, new_task_flag);
     }
 
+    private TextClassification createSingleActionTextClassification(String title) {
+        Icon actionIcon = Icon.createWithBitmap(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
+        PendingIntent intent =
+                PendingIntent.getBroadcast(
+                        mActivityTestRule.getActivity(),
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(false));
+        RemoteAction action = new RemoteAction(actionIcon, title, "This is a menu item", intent);
+        return new TextClassification.Builder().addAction(action).build();
+    }
+
     private void selectActionBarPaste() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1253,5 +1354,85 @@ public class ContentTextSelectionTest {
                     Criteria.checkThat(
                             mSelectionPopupController.isInsertionForTesting(), Matchers.is(show));
                 });
+    }
+
+    // An interface used to check some property of a SelectionMenuItem. To add a new matcher, create
+    // a helper method below that returns an implementation. A call to verifyMenu will check all of
+    // the matchers for a given menu.
+    private interface ItemMatcher {
+        // Check whether the given item matches the criteria. A value of null means the item is a
+        // divider.
+        boolean check(@Nullable SelectionMenuItem item);
+    }
+
+    // Non-static as it needs access to mActivityTestRule.
+    private ItemMatcher hasTitle(CharSequence title) {
+        return item ->
+                item != null
+                        && TextUtils.equals(item.getTitle(mActivityTestRule.getActivity()), title);
+    }
+
+    private static ItemMatcher hasId(int id) {
+        return item -> item != null && item.id == id;
+    }
+
+    private static ItemMatcher isDivider() {
+        return Objects::isNull;
+    }
+
+    private static void verifyMenu(
+            MVCListAdapter.ModelList actual,
+            List<ItemMatcher> expected,
+            TestSelectionDropdownMenuDelegate delegate) {
+        Assert.assertEquals(expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            SelectionMenuItem menuItem = delegate.getMinimalMenuItem(actual.get(i).model);
+            Assert.assertTrue(
+                    expected.get(i)
+                            .check(
+                                    actual.get(i).type
+                                                    == TestSelectionDropdownMenuDelegate
+                                                            .ListMenuItemType.DIVIDER
+                                            ? null
+                                            : menuItem));
+        }
+    }
+
+    private static void verifyMenu(List<MenuItem> menuItems, List<ItemMatcher> expected) {
+        Assert.assertEquals(expected.size(), menuItems.size());
+        for (int i = 0; i < expected.size(); i++) {
+            SelectionMenuItem menuItem =
+                    new SelectionMenuItem.Builder(menuItems.get(i).getTitle())
+                            .setId(menuItems.get(i).getItemId())
+                            .build();
+            Assert.assertTrue(expected.get(i).check(menuItem));
+        }
+    }
+
+    /**
+     * Create a fake Android Menu that can be passed to PendingSelectionMenu#getMenuAsActionMode.
+     *
+     * @param itemList A list of MenuItems to populate as items are added.
+     * @return the fake menu.
+     */
+    private static Menu createFakeMenu(ArrayList<MenuItem> itemList) {
+        Menu menu = Mockito.spy(Menu.class);
+        Mockito.doAnswer(
+                        i -> {
+                            MenuItem ret = Mockito.spy(MenuItem.class);
+                            Mockito.doReturn(i.getArguments()[1]).when(ret).getItemId();
+                            Mockito.doReturn(i.getArguments()[3]).when(ret).getTitle();
+                            // Mock out the builder methods so we don't break chaining.
+                            Mockito.doReturn(ret).when(ret).setShowAsActionFlags(anyInt());
+                            Mockito.doReturn(ret).when(ret).setIcon(any());
+                            Mockito.doReturn(ret).when(ret).setContentDescription(any());
+                            Mockito.doReturn(ret).when(ret).setIntent(any());
+                            Mockito.doReturn(ret).when(ret).setAlphabeticShortcut(anyChar());
+                            itemList.add(ret);
+                            return ret;
+                        })
+                .when(menu)
+                .add(anyInt(), anyInt(), anyInt(), any());
+        return menu;
     }
 }

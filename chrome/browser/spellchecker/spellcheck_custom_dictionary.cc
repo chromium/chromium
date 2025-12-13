@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 
 #include <stddef.h>
@@ -18,10 +13,10 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/observer_list.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +27,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 #include "components/spellcheck/common/spellcheck_common.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
@@ -39,8 +35,15 @@
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 
 using content::BrowserThread;
+
+namespace spellcheck {
+std::string Md5AsHexForDictionaryChecksum(std::string_view data) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
+}
+}  // namespace spellcheck
 
 namespace {
 
@@ -88,8 +91,9 @@ ChecksumStatus LoadFile(const base::FilePath& file_path,
   if (pos != std::string::npos) {
     std::string checksum = contents.substr(pos + strlen(CHECKSUM_PREFIX));
     contents = contents.substr(0, pos);
-    if (checksum != base::MD5String(contents))
+    if (checksum != spellcheck::Md5AsHexForDictionaryChecksum(contents)) {
       return INVALID_CHECKSUM;
+    }
   }
 
   std::vector<std::string> word_list = base::SplitString(
@@ -163,7 +167,8 @@ void SaveDictionaryFileReliably(const base::FilePath& path,
   for (const std::string& word : custom_words)
     content << word << '\n';
 
-  std::string checksum = base::MD5String(content.str());
+  std::string checksum =
+      spellcheck::Md5AsHexForDictionaryChecksum(content.str());
   content << CHECKSUM_PREFIX << checksum;
   {
     base::ScopedBlockingCall scoped_blocking_call(
@@ -247,9 +252,9 @@ SpellcheckCustomDictionary::SpellcheckCustomDictionary(
 
 SpellcheckCustomDictionary::~SpellcheckCustomDictionary() = default;
 
-const std::set<std::string>& SpellcheckCustomDictionary::GetWords() const {
+std::set<std::string> SpellcheckCustomDictionary::GetWords() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return words_;
+  return base::STLSetUnion<std::set<std::string>>(words_, account_words_);
 }
 
 bool SpellcheckCustomDictionary::AddWord(const std::string& word) {
@@ -277,7 +282,7 @@ bool SpellcheckCustomDictionary::RemoveWord(const std::string& word) {
 }
 
 bool SpellcheckCustomDictionary::HasWord(const std::string& word) const {
-  return base::Contains(words_, word);
+  return base::Contains(GetWords(), word);
 }
 
 void SpellcheckCustomDictionary::Clear() {
@@ -346,6 +351,17 @@ SpellcheckCustomDictionary::MergeDataAndStartSyncing(
     to_change_locally->AddWord(data.GetSpecifics().dictionary().word());
   }
 
+  // The account words set should be empty right now, irrespective of if feature
+  // kSpellcheckSeparateLocalAndAccountDictionaries is enabled.
+  CHECK(account_words_.empty());
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    // Add remote words to the in-memory account dictionary.
+    ApplyToSet(*to_change_locally, &account_words_);
+    Notify(*to_change_locally);
+    return std::nullopt;
+  }
+
   // Add as many as possible local words remotely.
   to_change_locally->Sanitize(GetWords());
   Change to_change_remotely;
@@ -364,22 +380,7 @@ void SpellcheckCustomDictionary::StopSyncing(syncer::DataType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(syncer::DICTIONARY, type);
   sync_processor_.reset();
-}
-
-syncer::SyncDataList SpellcheckCustomDictionary::GetAllSyncDataForTesting(
-    syncer::DataType type) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(syncer::DICTIONARY, type);
-  syncer::SyncDataList data;
-  size_t i = 0;
-  for (const auto& word : words_) {
-    if (i++ >= spellcheck::kMaxSyncableDictionaryWords)
-      break;
-    sync_pb::EntitySpecifics specifics;
-    specifics.mutable_dictionary()->set_word(word);
-    data.push_back(syncer::SyncData::CreateLocalData(word, word, specifics));
-  }
-  return data;
+  account_words_.clear();
 }
 
 std::optional<syncer::ModelError>
@@ -387,7 +388,7 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Change> dictionary_change(new Change);
+  auto dictionary_change = std::make_unique<Change>();
   for (const syncer::SyncChange& change : change_list) {
     const std::string& word =
         change.sync_data().GetSpecifics().dictionary().word();
@@ -403,6 +404,14 @@ SpellcheckCustomDictionary::ProcessSyncChanges(
             FROM_HERE,
             syncer::ModelError::Type::kSpellcheckCustomDictionaryUpdateFailed);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    dictionary_change->Sanitize(account_words_);
+    ApplyToSet(*dictionary_change, &account_words_);
+    Notify(*dictionary_change);
+    return std::nullopt;
   }
 
   dictionary_change->Sanitize(GetWords());
@@ -466,9 +475,12 @@ void SpellcheckCustomDictionary::OnLoaded(
   DCHECK(result);
   Change dictionary_change;
   dictionary_change.AddWords(result->words);
-  dictionary_change.Sanitize(GetWords());
-  Apply(dictionary_change);
-  Sync(dictionary_change);
+  dictionary_change.Sanitize(words_);
+  ApplyToSet(dictionary_change, &words_);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)) {
+    Sync(dictionary_change);
+  }
   is_loaded_ = true;
   if (wait_until_ready_to_sync_cb_)
     std::move(wait_until_ready_to_sync_cb_).Run();
@@ -484,16 +496,28 @@ void SpellcheckCustomDictionary::OnLoaded(
   }
 }
 
-void SpellcheckCustomDictionary::Apply(const Change& dictionary_change) {
+void SpellcheckCustomDictionary::ApplyToSet(const Change& dictionary_change,
+                                            std::set<std::string>* words) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (dictionary_change.clear())
-    words_.clear();
-  if (!dictionary_change.to_add().empty()) {
-    words_.insert(dictionary_change.to_add().begin(),
-                  dictionary_change.to_add().end());
+  if (dictionary_change.clear()) {
+    words->clear();
   }
-  for (const auto& word : dictionary_change.to_remove())
-    words_.erase(word);
+  const std::set<std::string>& to_add = dictionary_change.to_add();
+  if (!to_add.empty()) {
+    words->insert(to_add.begin(), to_add.end());
+  }
+  for (const auto& word : dictionary_change.to_remove()) {
+    words->erase(word);
+  }
+}
+
+void SpellcheckCustomDictionary::Apply(const Change& dictionary_change) {
+  ApplyToSet(dictionary_change, &words_);
+  if (base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries) &&
+      IsSyncing()) {
+    ApplyToSet(dictionary_change, &account_words_);
+  }
 }
 
 void SpellcheckCustomDictionary::FixInvalidFile(
@@ -521,9 +545,15 @@ std::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
   if (!IsSyncing() || dictionary_change.empty())
     return std::nullopt;
 
+  // If the account words set is maintained separately, then use that.
+  const std::set<std::string>& words =
+      base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries)
+          ? account_words_
+          : words_;
   // The number of words on the sync server should not exceed the limits.
-  int server_size = static_cast<int>(words_.size()) -
-      static_cast<int>(dictionary_change.to_add().size());
+  int server_size = static_cast<int>(words.size()) -
+                    static_cast<int>(dictionary_change.to_add().size());
   int max_upload_size =
       std::max(0, static_cast<int>(spellcheck::kMaxSyncableDictionaryWords) -
                       server_size);
@@ -561,8 +591,16 @@ std::optional<syncer::ModelError> SpellcheckCustomDictionary::Sync(
 
   // Turn off syncing of this dictionary if the server already has the maximum
   // number of words.
-  if (words_.size() > spellcheck::kMaxSyncableDictionaryWords)
+  // If the account words set is maintained separately, then stopping sync will
+  // clear the account words set which is not desired. No words will be uploaded
+  // anymore anyway because of the logic above which takes care of the max
+  // syncable dictionary words, so the following extra logic is not really
+  // needed.
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSpellcheckSeparateLocalAndAccountDictionaries) &&
+      words.size() > spellcheck::kMaxSyncableDictionaryWords) {
     StopSyncing(syncer::DICTIONARY);
+  }
 
   return std::nullopt;
 }

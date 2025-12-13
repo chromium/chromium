@@ -422,7 +422,8 @@ ThreadTicks ThreadTicks::GetForThread(
   ::GetThreadTimes(thread_handle.platform_handle(), &creation_time, &exit_time,
                    &kernel_time, &user_time);
 
-  const int64_t us = FileTimeToMicroseconds(user_time);
+  const int64_t us =
+      FileTimeToMicroseconds(user_time) + FileTimeToMicroseconds(kernel_time);
 #else
   // Get the number of TSC ticks used by the current thread.
   ULONG64 thread_cycle_time = 0;

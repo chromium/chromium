@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -27,6 +26,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class KioskCryptohomeRemover;
+
 class KioskIwaManager : public KioskAppManagerBase {
  public:
   static const char kIwaKioskDictionaryName[];
@@ -36,7 +37,10 @@ class KioskIwaManager : public KioskAppManagerBase {
 
   // Returns the manager instance or will crash if it not yet initiazlied.
   static KioskIwaManager* Get();
-  explicit KioskIwaManager(PrefService& local_state);
+
+  // `cryptohome_remover` must be non-null, and must outlive `this`.
+  KioskIwaManager(PrefService& local_state,
+                  KioskCryptohomeRemover* cryptohome_remover);
   KioskIwaManager(const KioskIwaManager&) = delete;
   KioskIwaManager& operator=(const KioskIwaManager&) = delete;
   ~KioskIwaManager() override;
@@ -87,8 +91,6 @@ class KioskIwaManager : public KioskAppManagerBase {
   // removed.
   void ProcessDeviceLocalAccount(const policy::DeviceLocalAccount& account,
                                  KioskIwaDataMap& previous_apps);
-
-  const raw_ref<PrefService> local_state_;
 
   // TODO(crbug.com/377878781): Make common helpers for all kiosk app managers.
   std::vector<std::unique_ptr<KioskIwaData>> isolated_web_apps_;

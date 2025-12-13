@@ -146,8 +146,6 @@ class ASH_EXPORT QuickInsertSectionView : public views::View {
     return title_trailing_link_;
   }
 
-  // TODO: b/322900302 - Figure out a nice way to access the item views for
-  // keyboard navigation (e.g. how to handle grid items).
   base::span<const raw_ptr<QuickInsertItemView>> item_views() const {
     return item_views_;
   }

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/pointers/raw_ptr.h"
 
 #include <climits>
@@ -1197,15 +1202,15 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  // 2 items to compare to => 4 calls.
-                  .get_for_comparison_cnt = 4,
-                  // 1 element to compare to => 2 calls.
-                  .wrapped_ptr_less_cnt = 2,
+                  // 2 comparisons => 2 spaceship operator calls.
+                  .get_for_comparison_cnt = 2,
+                  // The comparisons above can be reused
+                  .wrapped_ptr_less_cnt = 0,
               }),
               CountersMatch());
 
   RawPtrCountingImpl::ClearCounters();
-  set.count(&x);
+  std::ignore = set.count(&x);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
@@ -1219,15 +1224,15 @@ TEST_F(RawPtrTest, SetLookupUsesGetForComparison) {
               CountersMatch());
 
   RawPtrCountingImpl::ClearCounters();
-  set.count(ptr);
+  std::ignore = set.count(ptr);
   EXPECT_THAT((CountingRawPtrExpectations{
                   .wrap_raw_ptr_cnt = 0,
                   .get_for_dereference_cnt = 0,
                   .get_for_extraction_cnt = 0,
-                  // 2 comparisons => 4 extractions.
-                  .get_for_comparison_cnt = 4,
-                  // 2 items to compare to => 4 calls.
-                  .wrapped_ptr_less_cnt = 2,
+                  // 2 comparisons => 2 spaceship operator calls.
+                  .get_for_comparison_cnt = 2,
+                  // The comparisons above can be reused.
+                  .wrapped_ptr_less_cnt = 0,
               }),
               CountersMatch());
 }
@@ -1680,10 +1685,8 @@ TEST_F(BackupRefPtrTest, Basic) {
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(g_volatile_int_to_ignore = *wrapped_ptr1, "");
 #else   // DCHECK_IS_ON() || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-#if !PA_BUILDFLAG(IS_IOS)
   // The allocation should be poisoned since there's a raw_ptr alive.
   EXPECT_NE(*wrapped_ptr1, 42);
-#endif  // !PA_BUILDFLAG(IS_IOS)
 
   // The allocator should not be able to reuse the slot at this point.
   void* raw_ptr2 = allocator_.root()->Alloc(sizeof(int), "");
@@ -2439,54 +2442,6 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
   }  // <- unquarantined here
 
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
-}
-
-TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
-  // Allocate a slot so that a slot span doesn't get decommitted from memory,
-  // while we allocate/deallocate/access the tested slot below.
-  void* sentinel = allocator_.root()->Alloc(sizeof(unsigned int), "");
-  constexpr uint32_t kQuarantined2Bytes =
-      partition_alloc::internal::kQuarantinedByte |
-      (partition_alloc::internal::kQuarantinedByte << 8);
-  constexpr uint32_t kQuarantined4Bytes =
-      kQuarantined2Bytes | (kQuarantined2Bytes << 16);
-
-  {
-    raw_ptr<unsigned int, DanglingUntriaged> ptr = static_cast<unsigned int*>(
-        allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    // Freeing would  update the MTE tag so use |TagPtr()| to dereference it
-    // below.
-    allocator_.root()->Free(ptr);
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    // Recreate the raw_ptr so we can use a pointer with the updated MTE tag.
-    // Reassigning to |ptr| would hit the PartitionRefCount cookie check rather
-    // than the |IsPointeeAlive()| check.
-    raw_ptr<unsigned int, DanglingUntriaged> dangling_ptr =
-        partition_alloc::internal::TagPtr(ptr.get());
-    EXPECT_DEATH_IF_SUPPORTED(*dangling_ptr = 0, "");
-#elif !PA_BUILDFLAG(IS_IOS)
-    EXPECT_EQ(kQuarantined4Bytes,
-              *partition_alloc::internal::TagPtr(ptr.get()));
-#endif
-  }
-  // raw_ptr with DisableBRP, BRP is expected to be off.
-  {
-    raw_ptr<unsigned int, DanglingUntriaged | RawPtrTraits::kDisableBRP> ptr =
-        static_cast<unsigned int*>(
-            allocator_.root()->Alloc(sizeof(unsigned int), ""));
-    *ptr = 0;
-    allocator_.root()->Free(ptr);
-    // A tad fragile as a new allocation or free-list pointer may be there, but
-    // highly unlikely it'll match 4 quarantine bytes in a row.
-    // Use |TagPtr()| for this dereference because freeing would have updated
-    // the MTE tag.
-    EXPECT_NE(kQuarantined4Bytes,
-              *partition_alloc::internal::TagPtr(ptr.get()));
-  }
-
-  allocator_.root()->Free(sentinel);
 }
 
 #endif  // PA_BUILDFLAG(USE_RAW_PTR_BACKUP_REF_IMPL) &&

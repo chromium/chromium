@@ -42,8 +42,7 @@ class TabModalDialogViewAndroid : public TabModalDialogView {
   void CloseDialogWithoutCallback() override;
   std::u16string GetUserInput() override;
 
-  void Accept(JNIEnv* env,
-              const base::android::JavaParamRef<jstring>& prompt);
+  void Accept(JNIEnv* env, const base::android::JavaRef<jstring>& prompt);
   void Cancel(JNIEnv* env,
               jboolean button_clicked);
 

@@ -19,7 +19,8 @@ using webrtc::VideoFrame;
 namespace {
 
 std::unique_ptr<DesktopFrame> MakeDesktopFrame(int width, int height) {
-  return std::make_unique<BasicDesktopFrame>(DesktopSize(width, height));
+  return std::make_unique<BasicDesktopFrame>(DesktopSize(width, height),
+                                             webrtc::FOURCC_ARGB);
 }
 
 }  // namespace

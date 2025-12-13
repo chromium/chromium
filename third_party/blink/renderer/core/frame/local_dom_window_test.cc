@@ -316,7 +316,7 @@ TEST_F(LocalDOMWindowTest, ConsoleMessageCategory) {
   window->AddConsoleMessageImpl(console_message, false);
   auto* message_storage = &GetFrame().GetPage()->GetConsoleMessageStorage();
   EXPECT_EQ(1u, message_storage->size());
-  for (WTF::wtf_size_t i = 0; i < message_storage->size(); ++i) {
+  for (wtf_size_t i = 0; i < message_storage->size(); ++i) {
     EXPECT_EQ(mojom::blink::ConsoleMessageCategory::Cors,
               *message_storage->at(i)->Category());
   }

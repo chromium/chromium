@@ -21,9 +21,11 @@
  */
 
 #include "third_party/blink/renderer/core/css/style_rule_css_style_declaration.h"
+
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node.h"

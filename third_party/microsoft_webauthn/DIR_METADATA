@@ -1,7 +1,4 @@
-monorail: {
-  component: "Blink>WebAuthentication"
-}
-team_email: "identity-dev@chromium.org"
+team_email: "chrome-webauthn@google.com"
 buganizer_public: {
   component_id: 1456855
 }

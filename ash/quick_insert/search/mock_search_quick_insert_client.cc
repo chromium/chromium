@@ -9,7 +9,6 @@
 
 namespace ash {
 
-using ::testing::Invoke;
 using ::testing::SaveArg;
 
 MockSearchQuickInsertClient::MockSearchQuickInsertClient() {

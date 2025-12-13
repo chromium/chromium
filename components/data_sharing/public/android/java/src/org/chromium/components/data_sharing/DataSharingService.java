@@ -79,7 +79,7 @@ public interface DataSharingService {
     }
 
     /** Result that contains a groupToken and an status of the action that was requested. */
-    public static class ParseUrlResult {
+    class ParseUrlResult {
         /**
          * The group data requested.
          *

@@ -92,11 +92,13 @@ TEST(PersistentMetricsData, DefaultValuesForGoodVisits) {
 }
 
 TEST(PersistentMetricsData, CanHandleMissingGoodVisitsState) {
-  std::optional<base::Value> dict = base::JSONReader::Read(R"({
+  std::optional<base::Value> dict =
+      base::JSONReader::Read(R"({
    "day_start": "11644473600000000",
    "time_spent_in_feed": "7200000000"
 }
-)");
+)",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
   ASSERT_TRUE(dict->is_dict());
   PersistentMetricsData data = PersistentMetricsDataFromDict(dict->GetDict());

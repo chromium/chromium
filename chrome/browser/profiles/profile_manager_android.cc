@@ -28,7 +28,7 @@ void ProfileManagerAndroid::OnProfileMarkedForPermanentDeletion(
     Profile* profile) {}
 
 // static
-ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
+static ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
     JNIEnv* env) {
   Profile* profile = ProfileManager::GetLastUsedProfile();
   if (!profile) {
@@ -38,12 +38,13 @@ ScopedJavaLocalRef<jobject> JNI_ProfileManager_GetLastUsedRegularProfile(
 }
 
 // static
-std::vector<Profile*> JNI_ProfileManager_GetLoadedProfiles(JNIEnv* env) {
+static std::vector<Profile*> JNI_ProfileManager_GetLoadedProfiles(JNIEnv* env) {
   return g_browser_process->profile_manager()->GetLoadedProfiles();
 }
 
 // static
-void JNI_ProfileManager_OnProfileActivated(JNIEnv* env, Profile* profile) {
+static void JNI_ProfileManager_OnProfileActivated(JNIEnv* env,
+                                                  Profile* profile) {
   if (!profile) {
     return;
   }
@@ -51,7 +52,8 @@ void JNI_ProfileManager_OnProfileActivated(JNIEnv* env, Profile* profile) {
 }
 
 // static
-void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env, Profile* profile) {
+static void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env,
+                                                      Profile* profile) {
   CHECK(profile) << "Attempting to destroy a null profile.";
   CHECK(profile->IsOffTheRecord())
       << "Only OTR profiles can be destroyed from Java as regular profiles are "
@@ -60,3 +62,5 @@ void JNI_ProfileManager_DestroyWhenAppropriate(JNIEnv* env, Profile* profile) {
   // RenderViewHost might not be deleted yet.
   ProfileDestroyer::DestroyOTRProfileWhenAppropriate(profile);
 }
+
+DEFINE_JNI(ProfileManager)

@@ -40,7 +40,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_utils.h",
   "+chrome/browser/lifetime",
   "+chrome/browser/media/webrtc",
-  "+chrome/browser/notifications",
   "+chrome/browser/policy",
   "+chrome/browser/prefs",
   "+chrome/browser/profiles",
@@ -56,12 +55,21 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "minimum_version_policy_handler_browsertest\\.cc": [
+    "+ui/message_center/message_center.h",
+    "+ui/message_center/test/message_center_waiter.h"
+  ],
+
   ".*test(_.*)?\\.(cc|h)": [
     "+chrome/browser/ash/arc/test",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/tabs",
     "+chrome/test/base",
+  ],
+  ".*_unittest\\.cc": [
+    "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
   ],
 }

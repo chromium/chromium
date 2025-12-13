@@ -16,7 +16,7 @@ public abstract class AppDetailsDelegate {
          *
          * @param data Data about the requested package. Will be null if retrieval failed.
          */
-        public void onAppDetailsRetrieved(AppData data);
+        void onAppDetailsRetrieved(AppData data);
     }
 
     /**

@@ -54,9 +54,6 @@
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS" file="common/autofill_offers.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS_DARK_CHROME_REFRESH_2023" file="common/autofill_offers_dark_chrome_refresh_2023.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_OFFERS_LIGHT_CHROME_REFRESH_2023" file="common/autofill_offers_light_chrome_refresh_2023.png" />
-        <structure type="chrome_scaled_image" name="IDR_DISCOUNTS_BUBBLE_HEADER_DARK" file="common/discounts_bubble_header_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_DISCOUNTS_BUBBLE_HEADER_LIGHT" file="common/discounts_bubble_header_light.png" />
-
       </if>
       <if expr="is_chromeos">
         <structure type="chrome_scaled_image" name="IDR_AVATAR_HOLDER" file="cros/avatar_holder.png" />
@@ -108,6 +105,13 @@
         <structure type="chrome_scaled_image" name="IDR_FORWARD_P" file="common/browser_forward_pressed.png" />
       </if>
       <if expr="not is_android">
+        <if expr="_google_chrome">
+            <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_16" file="google_chrome/google_g_gradient_16.png" />
+            <structure type="chrome_scaled_image" name="IDR_GOOGLE_G_GRADIENT_20" file="google_chrome/google_g_gradient_20.png" />
+            <structure type="chrome_scaled_image" name="IDR_GOOGLE_G" file="google_chrome/google_icon.png" />
+        </if>
+      </if>
+      <if expr="not is_android">
         <structure type="chrome_scaled_image" name="IDR_HELP_MENU" file="common/help_16.png" />
       </if>
 
@@ -132,6 +136,7 @@
         <if expr="_google_chrome">
             <structure type="chrome_scaled_image" name="IDR_LENS_PERMISSION_MODAL_IMAGE" file="google_chrome/lens_permission_modal_image.png" />
             <structure type="chrome_scaled_image" name="IDR_LENS_PERMISSION_MODAL_IMAGE_ALT" file="google_chrome/lens_permission_modal_image_alt.png" />
+            <structure type="chrome_scaled_image" name="IDR_LENS_ON_IOS_ICON" file="google_chrome/lens_on_ios_icon.png" />
         </if>
         <structure type="chrome_scaled_image" name="IDR_NTP_CART_DISCOUNT_CONSENT_DARK" file="common/ntp_cart_discount_consent_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_NTP_CART_DISCOUNT_CONSENT_LIGHT" file="common/ntp_cart_discount_consent_light.png" />
@@ -293,12 +298,6 @@
         <structure type="chrome_scaled_image" name="IDR_SAVE_CVC_DARK" file="common/save_cvc_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54" file="common/migrate_address_avatar50_x135_y54.png" />
         <structure type="chrome_scaled_image" name="IDR_MIGRATE_ADDRESS_AVATAR50_X135_Y54_DARK" file="common/migrate_address_avatar50_x135_y54_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_NEUTRAL" file="common/password_change_neutral.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_WARNING" file="common/password_change_failure.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_SUCCESS" file="common/password_change_success.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_NEUTRAL_DARK" file="common/password_change_neutral_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_WARNING_DARK" file="common/password_change_failure_dark.png" />
-        <structure type="chrome_scaled_image" name="IDR_PASSWORD_CHANGE_SUCCESS_DARK" file="common/password_change_success_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER" file="common/privacy_sandbox_confirmation_banner.png" />
         <structure type="chrome_scaled_image" name="IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER_DARK" file="common/privacy_sandbox_confirmation_banner_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_AUTOFILL_MANDATORY_REAUTH_OPT_IN" file="common/autofill_mandatory_reauth_opt_in.png" />

@@ -7,7 +7,8 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/ui_bundled/promos_manager_ui_handler.h"
-#import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_ui_handler.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
+#import "ios/chrome/browser/safari_data_import/public/safari_data_import_ui_handler.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 
 @interface SafariDataImportReminderPromoDisplayHandler () <
@@ -38,7 +39,9 @@
 
 - (void)handleDisplay {
   CHECK(_applicationHandler);
-  [_applicationHandler displaySafariDataImportEntryPointWithUIHandler:self];
+  [_applicationHandler displaySafariDataImportFromEntryPoint:
+                           SafariDataImportEntryPoint::kReminder
+                                               withUIHandler:self];
 }
 
 #pragma mark - PromoProtocol

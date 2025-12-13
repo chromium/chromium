@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -33,6 +34,9 @@ class SadTabCoordinatorTest : public PlatformTest {
     AddSameConstraints(guide, base_view_controller_.view);
     LensBrowserAgent::CreateForBrowser(browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
+    // FullscreenController depends on ToolbarsSizeBrowserAgent, so the agent
+    // must be created first. Please maintain this order.
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
   }
   web::WebTaskEnvironment task_environment_;

@@ -93,7 +93,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
     gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
     bool opaque = true;
     gfx::ColorSpace color_space;
-    std::optional<gfx::HDRMetadata> hdr_metadata;
+    gfx::HDRMetadata hdr_metadata;
 
     // Indicates whether the |surface| will be visible or hidden.
     bool visibility = true;

@@ -29,6 +29,7 @@ function testPart1()
       db.createObjectStore('store1');
       db.createObjectStore('store2', {keyPath: ''});
       db.createObjectStore('store3', {keyPath: 'some_path'});
+      db.createObjectStore('store4', {keyPath: ['', '']});
     };
     openreq.onsuccess = function() {
       test_store(db, 'first run');
@@ -40,6 +41,8 @@ function testPart2()
 {
   var openreq = window.indexedDB.open('bug90635');
   openreq.onerror = unexpectedErrorCallback;
+  openreq.onblocked = unexpectedBlockedCallback;
+  openreq.onupgradeneeded = unexpectedUpgradeNeededCallback;
   openreq.onsuccess = function(e) {
     var db = openreq.result;
     test_store(db, 'second run');
@@ -47,14 +50,16 @@ function testPart2()
 }
 
 function test_store(db, msg) {
-  var transaction = db.transaction(['store1', 'store2', 'store3'], 'readonly');
+  var transaction =
+      db.transaction(['store1', 'store2', 'store3', 'store4'], 'readonly');
   var store1 = transaction.objectStore('store1');
   var store2 = transaction.objectStore('store2');
   var store3 = transaction.objectStore('store3');
+  var store4 = transaction.objectStore('store4');
 
-  if (store1.keyPath !== null ||
-      store2.keyPath !== '' ||
-      store3.keyPath !== 'some_path') {
+  if (store1.keyPath !== null || store2.keyPath !== '' ||
+      store3.keyPath !== 'some_path' || store4.keyPath.length !== 2 ||
+      store4.keyPath[0] !== '' || store4.keyPath[1] !== '') {
     result('fail - ' + msg);
   } else {
     result('pass - ' + msg);

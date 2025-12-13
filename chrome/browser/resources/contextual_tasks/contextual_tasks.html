@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>$i18n{title}</title>
+    <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        overscroll-behavior-x: contain;
+        padding: 0;
+        width: 100%;
+      }
+
+      body {
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+      }
+
+      contextual-tasks-app {
+        flex-grow: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <contextual-tasks-app></contextual-tasks-app>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

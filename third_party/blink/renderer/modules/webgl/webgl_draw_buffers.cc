@@ -31,7 +31,8 @@
 
 namespace blink {
 
-WebGLDrawBuffers::WebGLDrawBuffers(WebGLRenderingContextBase* context)
+WebGLDrawBuffers::WebGLDrawBuffers(WebGLRenderingContextBase* context,
+                                   ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled("GL_EXT_draw_buffers");
 }

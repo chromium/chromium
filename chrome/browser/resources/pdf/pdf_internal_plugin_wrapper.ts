@@ -27,6 +27,7 @@ if (parentOrigin === 'chrome-untrusted://print') {
 
 // Plugin-to-parent message handlers. All messages are passed through, but some
 // messages may affect this frame, too.
+let caretBrowsingEnabled: boolean = false;
 let isFormFieldFocused: boolean = false;
 plugin.addEventListener('message', e => {
   const message = (e as MessageEvent).data;
@@ -36,6 +37,13 @@ plugin.addEventListener('message', e => {
       // interesting keyboard events first.
       const focusedData = convertFormFocusChangeMessage(message);
       isFormFieldFocused = focusedData.focused !== FormFieldFocusType.NONE;
+      break;
+    case 'rendererPreferencesUpdated':
+      const caretBrowsingEnabledData =
+          message as unknown as {caretBrowsingEnabled: boolean};
+      caretBrowsingEnabled = caretBrowsingEnabledData.caretBrowsingEnabled;
+      break;
+    default:
       break;
   }
 
@@ -48,14 +56,6 @@ plugin.addEventListener('message', e => {
 let isPresentationMode = false;
 channel.port1.onmessage = e => {
   switch (e.data.type) {
-    case 'loadArray':
-      if (plugin.src.startsWith('blob:')) {
-        URL.revokeObjectURL(plugin.src);
-      }
-      plugin.src = URL.createObjectURL(new Blob([e.data.dataToLoad]));
-      plugin.setAttribute('has-edits', '');
-      return;
-
     case 'setPresentationMode':
       isPresentationMode = e.data.enablePresentationMode;
 
@@ -72,10 +72,10 @@ channel.port1.onmessage = e => {
       break;
 
     case 'syncScrollToRemote':
-      // TODO(crbug.com/40218278): Implement smooth scrolling correctly.
       window.scrollTo({
         left: e.data.x,
         top: e.data.y,
+        behavior: e.data.isSmooth ? 'smooth' : 'auto',
       });
       channel.port1.postMessage({
         type: 'ackScrollToRemote',
@@ -106,6 +106,9 @@ channel.port1.onmessage = e => {
             break;
         }
       }
+      break;
+
+    default:
       break;
   }
 
@@ -194,6 +197,12 @@ document.addEventListener('keydown', e => {
     case 'ArrowLeft':
     case 'ArrowRight':
     case 'ArrowUp':
+      if (caretBrowsingEnabled) {
+        // Do not prevent default, otherwise the plugin will not handle
+        // directional key events.
+        break;
+      }
+
       // Don't prevent arrow navigation in form fields, or if modified.
       if (!isFormFieldFocused && !hasKeyModifiers(e)) {
         e.preventDefault();
@@ -260,6 +269,8 @@ document.addEventListener('keypress', e => {
       if (!isFormFieldFocused) {
         e.preventDefault();
       }
+      break;
+    default:
       break;
   }
 });

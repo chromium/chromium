@@ -4,8 +4,9 @@
 
 #include "android_webview/lib/webview_jni_onload.h"
 #include "base/android/base_jni_init.h"
-#include "base/android/jni_onload.h"
+#include "base/android/library_loader/library_loader_hooks.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
 bool NativeInitializationHook(
     base::android::LibraryProcessType library_process_type) {

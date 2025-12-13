@@ -11,12 +11,13 @@
 #include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -28,6 +29,27 @@
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {
+
+namespace {
+
+BrowserDelegate* GetActiveBrowser() {
+  BrowserDelegate* browser =
+      BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (!browser ||
+      !browser->GetBrowser().SupportsWindowFeature(
+          Browser::WindowFeature::kFeatureTabStrip) ||
+      !browser->IsActive()) {
+    return nullptr;
+  }
+  return browser;
+}
+
+views::Widget* GetWidget(BrowserDelegate* browser) {
+  CHECK(browser);
+  return views::Widget::GetWidgetForNativeWindow(browser->GetNativeWindow());
+}
+
+}  // namespace
 
 // static
 TabScrubber* TabScrubber::GetInstance() {
@@ -101,12 +123,10 @@ void TabScrubber::SynthesizedScrollEvent(float x_offset,
 
 TabScrubber::TabScrubber() {
   ash::Shell::Get()->AddPreTargetHandler(this);
-  BrowserList::AddObserver(this);
+  browser_controller_observation_.Observe(BrowserController::GetInstance());
 }
 
-TabScrubber::~TabScrubber() {
-  BrowserList::RemoveObserver(this);
-}
+TabScrubber::~TabScrubber() = default;
 
 void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   if (!enabled_) {
@@ -127,20 +147,19 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
     return;
   }
 
-  Browser* browser = GetActiveBrowser();
+  BrowserDelegate* browser = GetActiveBrowser();
   if (!browser || (scrubbing_ && browser_ && browser != browser_) ||
-      (highlighted_tab_ != -1 &&
-       highlighted_tab_ >= browser->tab_strip_model()->count())) {
+      (highlighted_tab_ != -1 && static_cast<size_t>(highlighted_tab_) >=
+                                     browser->GetWebContentsCount())) {
     if (FinishScrub(false)) {
       event->SetHandled();
     }
     return;
   }
 
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  TabStrip* tab_strip = browser_view->tabstrip();
-
-  if (tab_strip->IsAnimating()) {
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(&browser->GetBrowser());
+  if (browser_view->tab_strip_view()->IsAnimating()) {
     if (FinishScrub(false)) {
       event->SetHandled();
     }
@@ -178,7 +197,7 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
 
   int new_index = tab_strip_->GetModelIndexOf(new_tab).value();
   if (highlighted_tab_ == -1 &&
-      new_index == browser_->tab_strip_model()->active_index()) {
+      new_index == browser_->GetBrowser().tab_strip_model()->active_index()) {
     return;
   }
 
@@ -198,15 +217,13 @@ void TabScrubber::OnScrollEvent(ui::ScrollEvent* event) {
   }
 }
 
-void TabScrubber::OnBrowserRemoved(Browser* browser) {
+void TabScrubber::OnBrowserClosed(BrowserDelegate* browser) {
   if (browser != browser_) {
     return;
   }
 
   if (browser_) {
-    BrowserView::GetBrowserViewForBrowser(browser_)
-        ->GetWidget()
-        ->ReleaseCapture();
+    GetWidget(browser_)->ReleaseCapture();
   }
 
   activate_timer_.Stop();
@@ -255,16 +272,6 @@ void TabScrubber::OnTabRemoved(int index) {
   }
 }
 
-Browser* TabScrubber::GetActiveBrowser() {
-  Browser* browser = chrome::FindLastActive();
-  if (!browser || !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP) ||
-      !browser->window()->IsActive()) {
-    return nullptr;
-  }
-
-  return browser;
-}
-
 void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   DCHECK(browser_view);
   DCHECK(browser_view->browser());
@@ -272,49 +279,52 @@ void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
   scrubbing_start_time_ = base::TimeTicks::Now();
   tab_strip_ = browser_view->tabstrip();
   scrubbing_ = true;
-  browser_ = browser_view->browser();
+  browser_ =
+      BrowserController::GetInstance()->GetDelegate(browser_view->browser());
 
   Direction direction = (x_offset < 0) ? LEFT : RIGHT;
   ScrubDirectionChanged(direction);
 
-  ImmersiveModeController* immersive_controller =
-      browser_view->immersive_mode_controller();
+  auto* const immersive_controller =
+      ImmersiveModeController::From(&browser_->GetBrowser());
   if (immersive_controller->IsEnabled()) {
     immersive_reveal_lock_ = immersive_controller->GetRevealedLock(
         ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  tab_strip_->SetTabStripObserver(this);
+  browser_view->tab_strip_view()->SetTabStripObserver(this);
 
   // Capture the event so that the scroll event will not be handled by other
   // clients. This is required to work well with overview mode gesture.
-  browser_view->GetWidget()->SetCapture(/*view=*/nullptr);
+  GetWidget(browser_)->SetCapture(/*view=*/nullptr);
 }
 
 bool TabScrubber::FinishScrub(bool activate) {
   const int stops_scrubbing = scrubbing_;
   activate_timer_.Stop();
 
-  if (browser_ && browser_->window()) {
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+  if (browser_ && browser_->GetWindow()) {
+    GetWidget(browser_)->ReleaseCapture();
 
-    browser_view->GetWidget()->ReleaseCapture();
-
-    TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
-      Tab* tab = tab_strip->tab_at(highlighted_tab_);
+      Tab* tab = tab_strip_->tab_at(highlighted_tab_);
       tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
-      int distance = std::abs(highlighted_tab_ -
-                              browser_->tab_strip_model()->active_index());
+      int distance =
+          std::abs(highlighted_tab_ -
+                   browser_->GetBrowser().tab_strip_model()->active_index());
       UMA_HISTOGRAM_CUSTOM_COUNTS("Tabs.ScrubDistance", distance, 1, 20, 21);
       UMA_HISTOGRAM_TIMES("Tabs.ScrubDuration",
                           base::TimeTicks::Now() - scrubbing_start_time_);
-      browser_->tab_strip_model()->ActivateTabAt(
+      browser_->GetBrowser().tab_strip_model()->ActivateTabAt(
           highlighted_tab_,
           TabStripUserGestureDetails(
               TabStripUserGestureDetails::GestureType::kOther));
     }
-    tab_strip->SetTabStripObserver(nullptr);
+
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser());
+    TabStripRegionView* tab_strip_view = browser_view->tab_strip_view();
+    tab_strip_view->SetTabStripObserver(nullptr);
   }
 
   browser_ = nullptr;
@@ -344,9 +354,9 @@ void TabScrubber::ScrubDirectionChanged(Direction direction) {
   DCHECK(scrubbing_);
 
   swipe_direction_ = direction;
-  const gfx::Point start_point =
-      GetStartPoint(tab_strip_, browser_->tab_strip_model()->active_index(),
-                    swipe_direction_);
+  const gfx::Point start_point = GetStartPoint(
+      tab_strip_, browser_->GetBrowser().tab_strip_model()->active_index(),
+      swipe_direction_);
   swipe_x_ = start_point.x();
   swipe_y_ = start_point.y();
 }
@@ -400,7 +410,7 @@ void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
     tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);
   }
 
-  if (new_index != browser_->tab_strip_model()->active_index()) {
+  if (new_index != browser_->GetBrowser().tab_strip_model()->active_index()) {
     highlighted_tab_ = new_index;
     new_tab->tab_style_views()->ShowHover(
         TabStyle::ShowHoverStyle::kPronounced);

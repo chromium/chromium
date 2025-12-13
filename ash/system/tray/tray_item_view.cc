@@ -19,8 +19,8 @@
 #include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -220,8 +220,8 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   // Immediately progress to the end of the animation if animation is disabled.
   // NOTE: `ScreenRotationAnimator` can set animations to ZERO_DURATION.
   if (!ShouldVisibilityChangeBeAnimated() ||
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Tray items need to stay visible if the notification center tray's hide
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`

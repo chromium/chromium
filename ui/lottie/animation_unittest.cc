@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/lottie/animation.h"
 
 #include <map>
@@ -15,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -316,7 +312,7 @@ class AnimationTest : public testing::Test {
       const SkColor* pixels = reinterpret_cast<SkColor*>(bitmap.getPixels());
       const int num_pixels = bitmap.width() * bitmap.height();
       for (int i = 0; i < num_pixels; i++)
-        EXPECT_EQ(pixels[i], color);
+        UNSAFE_TODO(EXPECT_EQ(pixels[i], color));
     } else {
       for (int x = 0; x < bitmap.width(); x++)
         for (int y = 0; y < bitmap.height(); y++)
@@ -1582,29 +1578,31 @@ TEST_F(AnimationTest, GetPlaybackConfig) {
       {{/*start_offset=*/kAnimationDuration / 4,
         /*end_offset=*/kAnimationDuration * 3 / 4}},
       /*initial_offset=*/kAnimationDuration / 2,
-      /*initial_completed_cycles=*/2, Animation::Style::kThrobbing);
+      /*initial_completed_cycles=*/2,
+      /*style=*/Animation::Style::kThrobbing,
+      /*ignore_reduced_motion=*/false);
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
-  EXPECT_THAT(
-      *animation_->GetPlaybackConfig(),
-      FieldsAre(ElementsAre(
-                    FieldsAre(test_config.scheduled_cycles.front().start_offset,
-                              test_config.scheduled_cycles.front().end_offset)),
-                test_config.initial_offset,
-                test_config.initial_completed_cycles, test_config.style));
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
+                        test_config.initial_offset,
+                        test_config.initial_completed_cycles, test_config.style,
+                        test_config.ignore_reduced_motion));
   animation_->Stop();
   EXPECT_FALSE(animation_->GetPlaybackConfig());
   test_config.scheduled_cycles.front().start_offset = kAnimationDuration / 2;
   test_config.style = Animation::Style::kLoop;
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
-  EXPECT_THAT(
-      *animation_->GetPlaybackConfig(),
-      FieldsAre(ElementsAre(
-                    FieldsAre(test_config.scheduled_cycles.front().start_offset,
-                              test_config.scheduled_cycles.front().end_offset)),
-                test_config.initial_offset,
-                test_config.initial_completed_cycles, test_config.style));
+  EXPECT_THAT(*animation_->GetPlaybackConfig(),
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
+                        test_config.initial_offset,
+                        test_config.initial_completed_cycles, test_config.style,
+                        test_config.ignore_reduced_motion));
 }
 
 TEST_F(AnimationTest, GetNumCompletedCycles) {

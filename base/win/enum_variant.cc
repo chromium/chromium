@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/win/enum_variant.h"
 
 #include <wrl/client.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace base {
 namespace win {
@@ -45,7 +41,7 @@ HRESULT EnumVariant::Next(ULONG requested_count,
   ULONG available_count = static_cast<ULONG>(items_.size()) - current_index_;
   ULONG count = std::min(requested_count, available_count);
   for (ULONG i = 0; i < count; ++i) {
-    out_elements[i] = items_[current_index_ + i].Copy();
+    UNSAFE_TODO(out_elements[i]) = items_[current_index_ + i].Copy();
   }
   current_index_ += count;
 

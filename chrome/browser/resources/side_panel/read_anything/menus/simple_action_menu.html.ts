@@ -17,6 +17,7 @@ export function getHtml(this: SimpleActionMenuElement) {
     ${this.menuItems.map((item, index) => html`
       <button
           class="dropdown-item"
+          style="${item.style}"
           @click="${this.onClick_}"
           data-index="${index}">
         <cr-icon

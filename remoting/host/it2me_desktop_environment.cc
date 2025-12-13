@@ -135,12 +135,16 @@ void It2MeDesktopEnvironmentFactory::Create(
          scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
          base::WeakPtr<ClientSessionControl> client_session_control,
          const DesktopEnvironmentOptions& options,
-         std::unique_ptr<DesktopInteractionStrategy> interaction_strategy) {
-        return base::WrapUnique(new It2MeDesktopEnvironment(
-            std::move(caller_task_runner), std::move(ui_task_runner),
-            std::move(interaction_strategy), std::move(client_session_control),
-            options));
-      };
+         std::unique_ptr<DesktopInteractionStrategy> interaction_strategy)
+      -> std::unique_ptr<DesktopEnvironment> {
+    if (!interaction_strategy) {
+      return nullptr;
+    }
+    return base::WrapUnique(new It2MeDesktopEnvironment(
+        std::move(caller_task_runner), std::move(ui_task_runner),
+        std::move(interaction_strategy), std::move(client_session_control),
+        options));
+  };
 
   CreateInteractionStrategy(
       options, base::BindOnce(create_with_interaction_strategy,

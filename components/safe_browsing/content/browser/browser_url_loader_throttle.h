@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"

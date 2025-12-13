@@ -1,0 +1,216 @@
+Test that font related at-rules are reported when used in pseudo-elements
+[
+    [0] : {
+        name : {
+            range : {
+                endColumn : 32
+                endLine : 24
+                startColumn : 23
+                startLine : 24
+            }
+            text : --palette
+        }
+        origin : regular
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : font-family
+                    range : {
+                        endColumn : 22
+                        endLine : 25
+                        startColumn : 4
+                        startLine : 25
+                    }
+                    text : font-family: Bixa;
+                    value : Bixa
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : override-colors
+                    range : {
+                        endColumn : 27
+                        endLine : 26
+                        startColumn : 4
+                        startLine : 26
+                    }
+                    text : override-colors: 0 red;
+                    value : 0 red
+                }
+                [2] : {
+                    name : font-family
+                    value : Bixa
+                }
+                [3] : {
+                    name : override-colors
+                    value : 0 red
+                }
+            ]
+            cssText :      font-family: Bixa;     override-colors: 0 red;   
+            range : {
+                endColumn : 2
+                endLine : 27
+                startColumn : 34
+                startLine : 24
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+        type : font-palette-values
+    }
+    [1] : {
+        name : {
+            range : {
+                endColumn : 27
+                endLine : 29
+                startColumn : 23
+                startLine : 29
+            }
+            text : Bixa
+        }
+        origin : regular
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : cool
+                    range : {
+                        endColumn : 4
+                        endLine : 36
+                        startColumn : 6
+                        startLine : 35
+                    }
+                    text : cool: 3;     
+                    value : 3
+                }
+            ]
+            cssText :        cool: 3;     
+            range : {
+                endColumn : 4
+                endLine : 36
+                startColumn : 15
+                startLine : 34
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+        subsection : styleset
+        type : font-feature-values
+    }
+    [2] : {
+        origin : regular
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : font-family
+                    range : {
+                        endColumn : 22
+                        endLine : 43
+                        startColumn : 4
+                        startLine : 43
+                    }
+                    text : font-family: Bixa;
+                    value : Bixa
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : src
+                    range : {
+                        endColumn : 21
+                        endLine : 44
+                        startColumn : 4
+                        startLine : 44
+                    }
+                    text : src: local(Bixa);
+                    value : local(Bixa)
+                }
+                [2] : {
+                    name : font-family
+                    value : Bixa
+                }
+                [3] : {
+                    name : src
+                    value : local("Bixa")
+                }
+            ]
+            cssText :      font-family: Bixa;     src: local(Bixa);   
+            range : {
+                endColumn : 2
+                endLine : 45
+                startColumn : 14
+                startLine : 42
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+        type : font-face
+    }
+    [3] : {
+        name : {
+            range : {
+                endColumn : 27
+                endLine : 29
+                startColumn : 23
+                startLine : 29
+            }
+            text : Bixa
+        }
+        origin : regular
+        style : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : fancy
+                    range : {
+                        endColumn : 6
+                        endLine : 32
+                        startColumn : 6
+                        startLine : 31
+                    }
+                    text : fancy: 1;       
+                    value : 1
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : boring
+                    range : {
+                        endColumn : 4
+                        endLine : 33
+                        startColumn : 6
+                        startLine : 32
+                    }
+                    text : boring: 2;     
+                    value : 2
+                }
+            ]
+            cssText :        fancy: 1;       boring: 2;     
+            range : {
+                endColumn : 4
+                endLine : 33
+                startColumn : 12
+                startLine : 30
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+        styleSheetId : <string>
+        subsection : swash
+        type : font-feature-values
+    }
+]
+

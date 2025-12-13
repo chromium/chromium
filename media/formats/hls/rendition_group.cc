@@ -7,6 +7,7 @@
 #include <optional>
 #include <variant>
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/types/pass_key.h"
 #include "media/formats/hls/parse_status.h"
@@ -16,8 +17,62 @@
 
 namespace media::hls {
 
+namespace {
+
+MediaTrack CreateTrackForRendition(const Rendition& rendition,
+                                   MediaType type,
+                                   RenditionGroup::RenditionTrackId unique_id) {
+  switch (type) {
+    case MediaType::kAudio: {
+      return MediaTrack::CreateAudioTrack(
+          /*id = */ rendition.GetName(),
+          /*kind =*/MediaTrack::AudioKind::kMain,
+          /*label = */ rendition.GetName(),
+          /*language = */ rendition.GetLanguage().value_or(""),
+          /*enabled = */ false,
+          /*stream_id =*/unique_id.value(),
+          /*exclusive =*/true);
+    }
+    case MediaType::kVideo: {
+      return MediaTrack::CreateVideoTrack(
+          /*id = */ rendition.GetName(),
+          /*kind =*/MediaTrack::VideoKind::kMain,
+          /*label = */ rendition.GetName(),
+          /*language = */ rendition.GetLanguage().value_or(""),
+          /*enabled = */ false,
+          /*stream_id =*/unique_id.value());
+    }
+    default: {
+      NOTREACHED();
+    }
+  }
+}
+
+}  // namespace
+
+RenditionGroup::View::~View() = default;
+RenditionGroup::View::View(scoped_refptr<RenditionGroup> group,
+                           Rendition rendition,
+                           MediaTrack track)
+    : group_(std::move(group)),
+      rendition_(std::move(rendition)),
+      track_(std::make_tuple(std::move(track), &rendition_)) {}
+
+void RenditionGroup::View::UpdateImplicitRenditionMediaTrackName(
+    std::string name) {
+  auto old_track = std::get<0>(track_);
+  track_ = std::make_tuple(MediaTrack::CreateVideoTrack(
+                               /*id = */ name,
+                               /*kind =*/MediaTrack::VideoKind::kMain,
+                               /*label = */ name,
+                               /*language = */ "",
+                               /*enabled = */ old_track.enabled(),
+                               /*stream_id =*/old_track.stream_id()),
+                           &rendition_);
+}
+
 RenditionGroup::RenditionGroup(base::PassKey<MultivariantPlaylist>,
-                               std::string id)
+                               std::optional<std::string> id)
     : id_(std::move(id)) {}
 
 RenditionGroup::~RenditionGroup() = default;
@@ -26,7 +81,7 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     base::PassKey<MultivariantPlaylist>,
     XMediaTag tag,
     const GURL& playlist_uri,
-    uint64_t rendition_unique_id) {
+    RenditionTrackId unique_id) {
   DCHECK(tag.group_id.Str() == id_);
   DCHECK(playlist_uri.is_valid());
 
@@ -65,38 +120,6 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
     associated_language = std::string(tag.associated_language->Str());
   }
 
-  // TODO(crbug.com/371024058): We might want to try figuring out Kind
-  // values, but it would have to be post-hoc with respect to the entire
-  // rendition group being parsed. We could also figure out a better label
-  // value, since that's what gets shown to the used in the track selection UX.
-  std::optional<MediaTrack> track;
-  switch (tag.type) {
-    case MediaType::kAudio: {
-      track = MediaTrack::CreateAudioTrack(
-          /*id = */ name,
-          /*kind =*/MediaTrack::AudioKind::kMain,
-          /*label = */ name,
-          /*language = */ language.value_or(""),
-          /*enabled = */ false,
-          /*stream_id =*/rendition_unique_id,
-          /*exclusive =*/true);
-      break;
-    }
-    case MediaType::kVideo: {
-      track = MediaTrack::CreateVideoTrack(
-          /*id = */ name,
-          /*kind =*/MediaTrack::VideoKind::kMain,
-          /*label = */ name,
-          /*language = */ language.value_or(""),
-          /*enabled = */ false,
-          /*stream_id =*/rendition_unique_id);
-      break;
-    }
-    default: {
-      NOTREACHED();
-    }
-  }
-
   auto& rendition = renditions_.emplace_back(
       base::PassKey<RenditionGroup>(),
       Rendition::CtorArgs{
@@ -109,13 +132,17 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
           .autoselect = std::move(tag.autoselect),
       });
 
-  tracks_.push_back(*track);
-  renditions_map_.emplace(track->track_id(),
-                          std::make_tuple(*track, &rendition));
+  // TODO(crbug.com/371024058): We might want to try figuring out Kind
+  // values, but it would have to be post-hoc with respect to the entire
+  // rendition group being parsed. We could also figure out a better label
+  // value, since that's what gets shown to the used in the track selection UX.
+  MediaTrack track = CreateTrackForRendition(rendition, tag.type, unique_id);
+  tracks_.push_back(track);
+  renditions_map_.emplace(track.track_id(), std::make_tuple(track, &rendition));
 
   if (tag.is_default) {
     if (!default_rendition_.has_value()) {
-      default_rendition_ = std::make_tuple(*track, &rendition);
+      default_rendition_ = std::make_tuple(track, &rendition);
     } else if (!HLSQuirks::AllowMultipleDefaultRenditionsInGroup()) {
       return ParseStatusCode::kRenditionGroupHasDuplicateRenditionNames;
     }
@@ -124,47 +151,43 @@ ParseStatus::Or<std::monostate> RenditionGroup::AddRendition(
   return std::monostate();
 }
 
-RenditionGroup::RenditionTrack RenditionGroup::MakeImplicitRendition(
+std::unique_ptr<RenditionGroup::View> RenditionGroup::MakeImplicitView(
     base::PassKey<MultivariantPlaylist>,
+    MediaType type,
     const GURL& default_rendition_uri,
-    uint64_t rendition_unique_id) {
-  auto& rendition =
-      renditions_.emplace_back(base::PassKey<RenditionGroup>(),
-                               Rendition::CtorArgs{
-                                   .uri = std::move(default_rendition_uri),
-                                   .name = "",
-                                   .language = std::nullopt,
-                                   .associated_language = std::nullopt,
-                                   .stable_rendition_id = std::nullopt,
-                                   .channels = std::nullopt,
-                                   .autoselect = true,
-                               });
-  MediaTrack track = MediaTrack::CreateVideoTrack(
-      /*id = */ rendition.GetName(),
-      /*kind =*/MediaTrack::VideoKind::kMain,
-      /*label = */ rendition.GetName(),
-      /*language = */ "",
-      /*enabled = */ true,
-      /*stream_id =*/rendition_unique_id);
-  return std::make_tuple(track, &rendition);
+    RenditionTrackId unique_id) {
+  Rendition rendition = Rendition{base::PassKey<RenditionGroup>(),
+                                  Rendition::CtorArgs{
+                                      .uri = std::move(default_rendition_uri),
+                                      .name = "Default",
+                                      .language = std::nullopt,
+                                      .associated_language = std::nullopt,
+                                      .stable_rendition_id = std::nullopt,
+                                      .channels = std::nullopt,
+                                      .autoselect = true,
+                                  }};
+  auto track = CreateTrackForRendition(rendition, type, unique_id);
+  return std::make_unique<View>(base::WrapRefCounted(this),
+                                std::move(rendition), std::move(track));
 }
 
-const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
+const std::optional<RenditionGroup::RenditionTrack>
+RenditionGroup::View::MostSimilar(
     const std::optional<RenditionTrack>& to) const {
-#define CHECK_RENDITIONS(expr)                  \
-  do {                                          \
-    for (const auto& entry : renditions_map_) { \
-      if (expr(std::get<1>(entry.second))) {    \
-        return entry.second;                    \
-      }                                         \
-    }                                           \
+#define CHECK_RENDITIONS(expr)                          \
+  do {                                                  \
+    for (const auto& entry : group_->renditions_map_) { \
+      if (expr(std::get<1>(entry.second))) {            \
+        return entry.second;                            \
+      }                                                 \
+    }                                                   \
   } while (0)
 
   if (to.has_value()) {
     // Find an exact match for the track, and use if if it exists.
     const auto& [track, rendition] = *to;
-    auto lookup = renditions_map_.find(track.track_id());
-    if (lookup != renditions_map_.end()) {
+    auto lookup = group_->renditions_map_.find(track.track_id());
+    if (lookup != group_->renditions_map_.end()) {
       if (std::get<0>(lookup->second).stream_id() == track.stream_id()) {
         return lookup->second;
       }
@@ -182,8 +205,8 @@ const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
   }
 
   // We didn't find any URI or language matches, so fall back to default.
-  if (default_rendition_.has_value()) {
-    return *default_rendition_;
+  if (group_->default_rendition_.has_value()) {
+    return *group_->default_rendition_;
   }
 
   // Find anything with AUTOSELECT=YES
@@ -191,13 +214,17 @@ const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
 
 #undef CHECK_RENDITIONS
 
-  return std::nullopt;
+  return GetImplicitRenditionTrack();
 }
 
 const std::optional<RenditionGroup::RenditionTrack>
-RenditionGroup::GetRenditionById(const MediaTrack::Id& id) const {
-  auto lookup = renditions_map_.find(id);
-  if (lookup == renditions_map_.end()) {
+RenditionGroup::View::GetRenditionById(const MediaTrack::Id& id) const {
+  if (!group_->default_rendition_.has_value() &&
+      id == std::get<0>(track_).track_id()) {
+    return GetImplicitRenditionTrack();
+  }
+  auto lookup = group_->renditions_map_.find(id);
+  if (lookup == group_->renditions_map_.end()) {
     return std::nullopt;
   }
   return lookup->second;

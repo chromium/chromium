@@ -96,6 +96,10 @@ android_library("native_browser_test_java") {
   ]
 }
 
+android_resources("cleartext_traffic_resources") {
+  sources = [ "java/res/xml/allow_cleartext_traffic.xml" ]
+}
+
 generate_jni("native_test_jni") {
   testonly = true
   sources = [ "java/src/org/chromium/native_test/NativeTest.java" ]

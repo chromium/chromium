@@ -15,20 +15,12 @@ class MockPasswordCheckupLauncherHelper : public PasswordCheckupLauncherHelper {
   MockPasswordCheckupLauncherHelper();
   ~MockPasswordCheckupLauncherHelper() override;
   MOCK_METHOD(void,
-              LaunchCheckupOnlineWithWindowAndroid,
-              (JNIEnv*, std::string&, const base::android::JavaRef<jobject>&),
-              (override));
-  MOCK_METHOD(void,
               LaunchCheckupOnDevice,
               (JNIEnv*,
                Profile*,
                ui::WindowAndroid*,
                password_manager::PasswordCheckReferrerAndroid,
                std::string account_email),
-              (override));
-  MOCK_METHOD(void,
-              LaunchCheckupOnlineWithActivity,
-              (JNIEnv*, std::string&, const base::android::JavaRef<jobject>&),
               (override));
   MOCK_METHOD(void,
               LaunchSafetyCheck,

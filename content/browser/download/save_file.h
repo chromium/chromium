@@ -31,8 +31,8 @@ class SaveFile {
 
   // BaseFile delegated functions.
   download::DownloadInterruptReason Initialize();
-  download::DownloadInterruptReason AppendDataToFile(const char* data,
-                                                     size_t data_len);
+  download::DownloadInterruptReason AppendDataToFile(
+      base::span<const uint8_t> data);
   download::DownloadInterruptReason Rename(const base::FilePath& full_path);
   void Detach();
   void Cancel();
@@ -55,6 +55,8 @@ class SaveFile {
     return info_->save_source;
   }
   const SaveFileCreateInfo& create_info() const { return *info_; }
+
+  void RunQuarantineCallback();
 
  private:
   download::BaseFile file_;

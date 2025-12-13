@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -46,10 +45,7 @@ struct MEDIA_EXPORT alignas(kParametersAlignment) AudioInputBufferParameters {
   uint32_t glitch_count;
   uint32_t size;
   uint32_t id;
-  // Intentionally using deprecated Atomic32 instead of std::atomic to keep the
-  // struct as a trivial type.
-  // TODO(https://crbug.com/40259737): Switch to atomic_ref once it's available.
-  base::subtle::Atomic32 has_unread_data;
+  uint32_t has_unread_data;
 };
 struct MEDIA_EXPORT alignas(kParametersAlignment) AudioOutputBufferParameters {
   int64_t delay_us;            // base::TimeDelta in microseconds.
@@ -65,11 +61,11 @@ struct MEDIA_EXPORT alignas(kParametersAlignment) AudioOutputBufferParameters {
 
 struct MEDIA_EXPORT AudioInputBuffer {
   AudioInputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
 struct MEDIA_EXPORT AudioOutputBuffer {
   AudioOutputBufferParameters params;
-  int8_t audio[1];
+  uint8_t audio[1];
 };
 
 struct MEDIA_EXPORT AudioRendererAlgorithmParameters {

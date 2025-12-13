@@ -32,16 +32,16 @@
         e desmarca a opción <ph name="NO_PREFETCH_DESCRIPTION" />.
         Se esta acción non resolve o problema, é recomendable volver seleccionar esta opción
         para mellorar o rendemento.</translation>
-<translation id="6855094794438142393">Accede ao
+<translation id="6581867098636731226">Vai ao
           menú de Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Configuración de LAN
-          e desmarca "Utilizar un servidor proxy para a túa LAN".</translation>
+          Rede e Internet &gt; Proxy
+          e anula a selección de Automatically detect settings (Detectar automaticamente a configuración).</translation>
 <translation id="7230956101631259640">Estás vendo unha páxina de Chrome segura</translation>
 <translation id="8232971017369963250">Chrome creouse grazas ao proxecto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome tamén se creou grazas a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>

@@ -1,0 +1,9 @@
+exit code: 1
+stdout:
+Errors in test_dir_invalid_metadata/README.chromium:
+ couldn't find 'License' line in README.chromium or licenses.py SPECIAL_CASES;
+ License file not found for test_dir_invalid_metadata/README.chromium>>License tools invalid metadata parsing. Either add a file named LICENSE, import upstream's COPYING if available, or add a 'License File:' line to README.chromium with the appropriate paths.
+
+Error: missing third party metadata file or licenses.py SPECIAL_CASES entry in third_party/test_dir_with_missing_files
+
+stderr:

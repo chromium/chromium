@@ -24,6 +24,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
     : public OverlayProcessorInterface {
  public:
   using CandidateList = OverlayCandidateList;
+  // TODO(crbug.com/444264038): Delete this declaration when the RPDQ refactor
+  // is finished. Need to avoid hiding the base class' overload.
+  using OverlayProcessorInterface::ProcessForOverlays;
 
   OverlayProcessorMac();
   // For testing.
@@ -54,18 +57,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      OutputSurfaceOverlayPlane* output_surface_plane,
+      const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds) override;
-
-  // For Mac, if we successfully generated a candidate list for CALayerOverlay,
-  // we no longer need the |output_surface_plane|. This function takes a pointer
-  // to the std::optional instance so the instance can be reset.
-  // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
-  // processor.
-  void AdjustOutputSurfaceOverlay(
-      std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
   gfx::CALayerResult GetCALayerErrorCode() const override;
 
@@ -82,9 +77,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorMac
   CALayerOverlayProcessor* GetOverlayProcessor() const {
     return ca_layer_overlay_processor_.get();
   }
-
- private:
-  bool output_surface_already_handled_;
 };
 
 }  // namespace viz

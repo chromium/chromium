@@ -22,7 +22,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   METADATA_HEADER(BrowserFrameViewLinux, OpaqueBrowserFrameView)
 
  public:
-  BrowserFrameViewLinux(BrowserFrame* frame,
+  BrowserFrameViewLinux(BrowserWidget* widget,
                         BrowserView* browser_view,
                         BrowserFrameViewLayoutLinux* layout);
 
@@ -33,11 +33,17 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
 
   BrowserFrameViewLayoutLinux* layout() { return layout_; }
 
-  // BrowserNonClientFrameView:
+  // BrowserFrameView:
   gfx::Insets RestoredMirroredFrameBorderInsets() const override;
   gfx::Insets GetInputInsets() const override;
   SkRRect GetRestoredClipRegion() const override;
   int GetTranslucentTopAreaHeight() const override;
+  void LayoutWebAppWindowTitle(const gfx::Rect& available_space,
+                               views::Label& window_title_label) const override;
+  BrowserLayoutParams GetBrowserLayoutParams() const override;
+  bool CaptionButtonsOnLeadingEdge() const override;
+  bool CaptionButtonsOnTrailingEdge() const override;
+  BoundsAndMargins GetCaptionButtonBounds() const override;
 
   // Gets the shadow metrics (radius, offset, and number of shadows).  This will
   // always return shadow values, even if shadows are not actually drawn.
@@ -53,7 +59,7 @@ class BrowserFrameViewLinux : public OpaqueBrowserFrameView,
   // ui::WindowButtonOrderObserver:
   void OnWindowButtonOrderingChange() override;
 
-  // views::NonClientFrameView:
+  // views::FrameView:
   int NonClientHitTest(const gfx::Point& point) override;
 
   // Gets the radius of the top corners when the window is restored.  The

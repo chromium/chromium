@@ -22,14 +22,15 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/gpm_enclave_transaction.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
+#include "chrome/browser/webauthn/shared_types.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace content {
 class RenderFrameHost;
@@ -42,8 +43,6 @@ struct VectorIcon;
 struct AccountInfo;
 class AuthenticatorRequestDialogViewController;
 class Profile;
-
-using PasswordCredentialPair = std::pair<std::u16string, std::u16string>;
 
 enum class EnclaveEnabledStatus {
   kDisabled,
@@ -289,7 +288,9 @@ struct AuthenticatorRequestDialogModel
     kErrorFetchingChallenge,
     // OS authentication after selecting a password.
     kPasswordOsAuth,
-    kMaxValue = kPasswordOsAuth,
+    // The request is being dispatched to a platform authenticator.
+    kPlatformAuthenticator,
+    kMaxValue = kPlatformAuthenticator,
   };
 
   // Views and controllers implement this interface to receive events, which
@@ -347,21 +348,20 @@ struct AuthenticatorRequestDialogModel
     using WindowsAPI = base::StrongAlias<class WindowsAPITag, std::monostate>;
     using ICloudKeychain =
         base::StrongAlias<class iCloudKeychainTag, std::monostate>;
-    using AddPhone = base::StrongAlias<class AddPhoneTag, std::monostate>;
+    using Hybrid = base::StrongAlias<class HybridTag, std::monostate>;
     using Enclave = base::StrongAlias<class EnclaveTag, std::monostate>;
     using SignInAgain = base::StrongAlias<class SignInAgainTag, std::monostate>;
     using Type = std::variant<Credential,
                               Password,
                               Transport,
                               WindowsAPI,
-                              AddPhone,
+                              Hybrid,
                               ICloudKeychain,
                               Enclave,
                               SignInAgain>;
 
     Mechanism(Type type,
               std::u16string name,
-              std::u16string short_name,
               const gfx::VectorIcon& icon,
               base::RepeatingClosure callback,
               std::u16string display_name = std::u16string());
@@ -372,8 +372,6 @@ struct AuthenticatorRequestDialogModel
 
     const Type type;
     const std::u16string name;
-    // TODO(crbug.com/422394117): This is not used anywhere. Remove it.
-    const std::u16string short_name;
     const std::u16string display_name;
     std::u16string description;
     const raw_ref<const gfx::VectorIcon> icon;

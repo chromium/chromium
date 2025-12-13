@@ -76,8 +76,9 @@ void IpcNetworkManager::StartUpdating() {
   if (network_list_received_) {
     // Post a task to avoid reentrancy.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, WTF::BindOnce(&IpcNetworkManager::SendNetworksChangedSignal,
-                                 weak_factory_.GetWeakPtr()));
+        FROM_HERE,
+        blink::BindOnce(&IpcNetworkManager::SendNetworksChangedSignal,
+                        weak_factory_.GetWeakPtr()));
   } else {
     VLOG(1) << "IpcNetworkManager::StartUpdating called; still waiting for "
                "network list from browser process.";
@@ -217,7 +218,7 @@ void IpcNetworkManager::OnNetworkListChanged(
   NetworkManager::Stats stats;
   MergeNetworkList(std::move(networks), &changed, &stats);
   if (changed)
-    SignalNetworksChanged();
+    NotifyNetworksChanged();
 
   // Send interface counts to UMA.
   UMA_HISTOGRAM_COUNTS_100("WebRTC.PeerConnection.IPv4Interfaces",
@@ -233,7 +234,7 @@ webrtc::MdnsResponderInterface* IpcNetworkManager::GetMdnsResponder() const {
 
 void IpcNetworkManager::SendNetworksChangedSignal() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SignalNetworksChanged();
+  NotifyNetworksChanged();
 }
 
 }  // namespace blink

@@ -46,10 +46,22 @@ extern const char kExtensionsMenuUtmSource[];
 extern const char kExtensionsSidebarUtmSource[];
 // From the Extensions Zero State Promo custom action IPH.
 extern const char kCustomActionIphUtmSource[];
-// From the Extensions Zero State Promo, custom UI IPH, chips variant.
-extern const char kCustomUiChipIphUtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, chips variant,
+// version 1.
+extern const char kCustomUiChipIphV1UtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, chips variant,
+// version 2.
+extern const char kCustomUiChipIphV2UtmSource[];
+// From the Extensions Zero State Promo, custom UI IPH, text link variant.
+extern const char kCustomUiChipIphV3UtmSource[];
 // From the Extensions Zero State Promo, custom UI IPH, text link variant.
 extern const char kCustomUiPlainLinkIphUtmSource[];
+// From the New Tab Page browser feature promo, single-promo variant.
+extern const char kNtpPromo1pUtmSource[];
+// From the New Tab Page browser feature promo, two-promo variant.
+extern const char kNtpPromo2pUtmSource[];
+// From the New Tab Page browser feature promo, setup-list variant.
+extern const char kNtpPromoSlUtmSource[];
 
 // Returns the URL prefix for the extension/apps gallery. Can be set via the
 // --apps-gallery-url switch. The URL returned will not contain a trailing
@@ -75,6 +87,10 @@ std::string GetWebstoreItemDetailURLPrefix();
 // Returns the URL used to get webstore data (ratings, manifest, icon URL,
 // etc.) about an extension from the webstore using the new itemSnippets API.
 GURL GetWebstoreItemSnippetURL(const extensions::ExtensionId& extension_id);
+
+// Returns the URL used to get the block status of queried extensions from the
+// webstore.
+GURL GetWebstoreBlockStatusURL();
 
 // Sets the itemSnippets API URL to `test_url`.
 base::AutoReset<const GURL*> SetItemSnippetURLForTesting(const GURL* test_url);

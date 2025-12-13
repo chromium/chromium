@@ -14,6 +14,7 @@
 @class BannerPromoView;
 @class TabGroupIndicatorView;
 @class ToolbarButtonFactory;
+enum class ToolbarCancelButtonStyle;
 
 // View for the primary toolbar. In an adaptive toolbar paradigm, this is the
 // toolbar always displayed.
@@ -34,15 +35,16 @@
 // hidden by the NTP.
 @property(nonatomic, strong) UIView* fakeOmniboxTarget;
 
+// Whether the expanded version is in place.
+@property(nonatomic, assign) BOOL expanded;
+@property(nonatomic, assign) BOOL splitToolbarMode;
+
 // StackView containing the leading buttons (relative to the location bar).
 // It should only contain ToolbarButtons.
 @property(nonatomic, strong, readonly) UIStackView* leadingStackView;
 // StackView containing the trailing buttons (relative to the location bar).
 // It should only contain ToolbarButtons.
 @property(nonatomic, strong, readonly) UIStackView* trailingStackView;
-
-// Button to cancel the edit of the location bar.
-@property(nonatomic, strong, readonly) UIButton* cancelButton;
 
 // Constraints to be activated when the location bar is expanded and positioned
 // relatively to the cancel button.
@@ -73,6 +75,9 @@
 
 // View that shows a banner promo.
 @property(nonatomic, strong) BannerPromoView* bannerPromo;
+
+// The style to use for the cancel button.
+@property(nonatomic, assign) ToolbarCancelButtonStyle cancelButtonStyle;
 
 // Sets all the subviews and constraints of the view. The `topSafeAnchor` needs
 // to be set before calling this.

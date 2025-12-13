@@ -2,16 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/bindings/tests/validation_test_input_parser.h"
-
-#include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 
 #include <assert.h>
 #include <stddef.h>
@@ -19,11 +10,18 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <array>
 #include <limits>
 #include <map>
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/strings/string_number_conversions.h"
 #include "mojo/public/c/system/macros.h"
 
 namespace mojo {
@@ -43,15 +41,12 @@ class ValidationTestInputParser {
  private:
   struct DataType;
 
-  typedef std::pair<const char*, const char*> Range;
-
   typedef bool (ValidationTestInputParser::*ParseDataFunc)(
       const DataType& type,
-      const std::string& value_string);
+      std::string_view value_string);
 
   struct DataType {
-    const char* name;
-    size_t name_size;
+    std::string_view name;
     size_t data_size;
     ParseDataFunc parse_data_func;
   };
@@ -64,32 +59,27 @@ class ValidationTestInputParser {
     size_t data_size;
   };
 
-  bool GetNextItem(Range* range);
+  bool GetNextItem(std::string_view* item);
 
-  bool ParseItem(const Range& range);
+  bool ParseItem(std::string_view item);
 
   bool ParseUnsignedInteger(const DataType& type,
-                            const std::string& value_string);
-  bool ParseSignedInteger(const DataType& type,
-                          const std::string& value_string);
-  bool ParseFloat(const DataType& type, const std::string& value_string);
-  bool ParseDouble(const DataType& type, const std::string& value_string);
-  bool ParseBinarySequence(const DataType& type,
-                           const std::string& value_string);
-  bool ParseDistance(const DataType& type, const std::string& value_string);
-  bool ParseAnchor(const DataType& type, const std::string& value_string);
-  bool ParseHandles(const DataType& type, const std::string& value_string);
+                            std::string_view value_string);
+  bool ParseSignedInteger(const DataType& type, std::string_view value_string);
+  bool ParseFloatingPoint(const DataType& type, std::string_view value_string);
+  bool ParseBinarySequence(const DataType& type, std::string_view value_string);
+  bool ParseDistance(const DataType& type, std::string_view value_string);
+  bool ParseAnchor(const DataType& type, std::string_view value_string);
+  bool ParseHandles(const DataType& type, std::string_view value_string);
 
-  bool StartsWith(const Range& range, const char* prefix, size_t prefix_length);
-
-  bool ConvertToUnsignedInteger(const std::string& value_string,
-                                unsigned long long int* value);
+  bool ConvertToUnsignedInteger(std::string_view value_string, uint64_t* value);
+  bool ConvertToSignedInteger(std::string_view value_string, int64_t* value);
 
   template <typename T>
   void AppendData(T data) {
-    size_t pos = data_->size();
-    data_->resize(pos + sizeof(T));
-    memcpy(&(*data_)[pos], &data, sizeof(T));
+    for (const uint8_t& byte : AsBytes(data)) {
+      data_->push_back(byte);
+    }
   }
 
   template <typename TargetType, typename InputType>
@@ -110,55 +100,60 @@ class ValidationTestInputParser {
     }
     TargetType target_value = static_cast<TargetType>(value);
     assert(pos + sizeof(TargetType) <= data_->size());
-    memcpy(&(*data_)[pos], &target_value, sizeof(TargetType));
+    for (const uint8_t& byte : AsBytes(target_value)) {
+      (*data_)[pos++] = byte;
+    }
     return true;
   }
 
-  static const DataType kDataTypes[];
-  static const size_t kDataTypeCount;
+  template <typename T>
+  static base::span<const uint8_t, sizeof(T)> AsBytes(
+      const T& data LIFETIME_BOUND) {
+    if constexpr (std::has_unique_object_representations_v<T>) {
+      return base::byte_span_from_ref(data);
+    } else {
+      return base::byte_span_from_ref(base::allow_nonunique_obj, data);
+    }
+  }
+
+  static const std::array<DataType, 15> kDataTypes;
 
   const raw_ref<const std::string> input_;
-  size_t input_cursor_;
+  const std::string_view input_view_;
+  size_t input_cursor_ = 0;
 
   raw_ptr<std::vector<uint8_t>> data_;
   raw_ptr<size_t> num_handles_;
   raw_ptr<std::string> error_message_;
 
-  std::map<std::string, PendingDistanceItem> pending_distance_items_;
-  std::set<std::string> anchors_;
+  std::map<std::string_view, PendingDistanceItem> pending_distance_items_;
+  std::set<std::string_view> anchors_;
 };
 
-#define DATA_TYPE(name, data_size, parse_data_func) \
-  { name, sizeof(name) - 1, data_size, parse_data_func }
-
-const ValidationTestInputParser::DataType
-    ValidationTestInputParser::kDataTypes[] = {
-        DATA_TYPE("[u1]", 1, &ValidationTestInputParser::ParseUnsignedInteger),
-        DATA_TYPE("[u2]", 2, &ValidationTestInputParser::ParseUnsignedInteger),
-        DATA_TYPE("[u4]", 4, &ValidationTestInputParser::ParseUnsignedInteger),
-        DATA_TYPE("[u8]", 8, &ValidationTestInputParser::ParseUnsignedInteger),
-        DATA_TYPE("[s1]", 1, &ValidationTestInputParser::ParseSignedInteger),
-        DATA_TYPE("[s2]", 2, &ValidationTestInputParser::ParseSignedInteger),
-        DATA_TYPE("[s4]", 4, &ValidationTestInputParser::ParseSignedInteger),
-        DATA_TYPE("[s8]", 8, &ValidationTestInputParser::ParseSignedInteger),
-        DATA_TYPE("[b]", 1, &ValidationTestInputParser::ParseBinarySequence),
-        DATA_TYPE("[f]", 4, &ValidationTestInputParser::ParseFloat),
-        DATA_TYPE("[d]", 8, &ValidationTestInputParser::ParseDouble),
-        DATA_TYPE("[dist4]", 4, &ValidationTestInputParser::ParseDistance),
-        DATA_TYPE("[dist8]", 8, &ValidationTestInputParser::ParseDistance),
-        DATA_TYPE("[anchr]", 0, &ValidationTestInputParser::ParseAnchor),
-        DATA_TYPE("[handles]", 0, &ValidationTestInputParser::ParseHandles)};
-
-const size_t ValidationTestInputParser::kDataTypeCount =
-    sizeof(ValidationTestInputParser::kDataTypes) /
-    sizeof(ValidationTestInputParser::kDataTypes[0]);
+const std::array<ValidationTestInputParser::DataType, 15>
+    ValidationTestInputParser::kDataTypes = {
+        {{"[u1]", 1, &ValidationTestInputParser::ParseUnsignedInteger},
+         {"[u2]", 2, &ValidationTestInputParser::ParseUnsignedInteger},
+         {"[u4]", 4, &ValidationTestInputParser::ParseUnsignedInteger},
+         {"[u8]", 8, &ValidationTestInputParser::ParseUnsignedInteger},
+         {"[s1]", 1, &ValidationTestInputParser::ParseSignedInteger},
+         {"[s2]", 2, &ValidationTestInputParser::ParseSignedInteger},
+         {"[s4]", 4, &ValidationTestInputParser::ParseSignedInteger},
+         {"[s8]", 8, &ValidationTestInputParser::ParseSignedInteger},
+         {"[b]", 1, &ValidationTestInputParser::ParseBinarySequence},
+         {"[f]", 4, &ValidationTestInputParser::ParseFloatingPoint},
+         {"[d]", 8, &ValidationTestInputParser::ParseFloatingPoint},
+         {"[dist4]", 4, &ValidationTestInputParser::ParseDistance},
+         {"[dist8]", 8, &ValidationTestInputParser::ParseDistance},
+         {"[anchr]", 0, &ValidationTestInputParser::ParseAnchor},
+         {"[handles]", 0, &ValidationTestInputParser::ParseHandles}}};
 
 ValidationTestInputParser::ValidationTestInputParser(const std::string& input,
                                                      std::vector<uint8_t>* data,
                                                      size_t* num_handles,
                                                      std::string* error_message)
     : input_(input),
-      input_cursor_(0),
+      input_view_(*input_),
       data_(data),
       num_handles_(num_handles),
       error_message_(error_message) {
@@ -174,14 +169,14 @@ ValidationTestInputParser::~ValidationTestInputParser() {
 }
 
 bool ValidationTestInputParser::Run() {
-  Range range;
+  std::string_view item;
   bool result = true;
-  while (result && GetNextItem(&range))
-    result = ParseItem(range);
+  while (result && GetNextItem(&item)) {
+    result = ParseItem(item);
+  }
 
   if (!result) {
-    *error_message_ =
-        "Error occurred when parsing " + std::string(range.first, range.second);
+    *error_message_ = "Error occurred when parsing " + std::string(item);
   } else if (!pending_distance_items_.empty()) {
     // We have parsed all the contents in |input_| successfully, but there are
     // unmatched dist4/8 items.
@@ -198,56 +193,57 @@ bool ValidationTestInputParser::Run() {
   return result;
 }
 
-bool ValidationTestInputParser::GetNextItem(Range* range) {
+bool ValidationTestInputParser::GetNextItem(std::string_view* item) {
   const char kWhitespaceChars[] = " \t\n\r";
   const char kItemDelimiters[] = " \t\n\r/";
   const char kEndOfLineChars[] = "\n\r";
   while (true) {
     // Skip leading whitespaces.
     // If there are no non-whitespace characters left, |input_cursor_| will be
-    // set to std::npos.
-    input_cursor_ = input_->find_first_not_of(kWhitespaceChars, input_cursor_);
+    // set to std::string_view::npos.
+    input_cursor_ =
+        input_view_.find_first_not_of(kWhitespaceChars, input_cursor_);
 
-    if (input_cursor_ >= input_->size()) {
+    if (input_cursor_ == std::string_view::npos) {
       return false;
     }
 
-    if (StartsWith(Range(&(*input_)[0] + input_cursor_,
-                         &(*input_)[0] + input_->size()),
-                   "//", 2)) {
+    if (input_view_.substr(input_cursor_).starts_with("//")) {
       // Skip contents until the end of the line.
-      input_cursor_ = input_->find_first_of(kEndOfLineChars, input_cursor_);
-    } else {
-      range->first = &(*input_)[0] + input_cursor_;
-      input_cursor_ = input_->find_first_of(kItemDelimiters, input_cursor_);
-      range->second = input_cursor_ >= input_->size()
-                          ? &(*input_)[0] + input_->size()
-                          : &(*input_)[0] + input_cursor_;
-      return true;
+      input_cursor_ = input_view_.find_first_of(kEndOfLineChars, input_cursor_);
+      continue;
     }
+
+    size_t end_pos = input_view_.find_first_of(kItemDelimiters, input_cursor_);
+    size_t count = std::string_view::npos;  // Character count of the item
+    if (end_pos != std::string_view::npos) {
+      count = end_pos - input_cursor_;
+    }
+    *item = input_view_.substr(input_cursor_, count);
+    input_cursor_ = end_pos;
+    return true;
   }
 }
 
-bool ValidationTestInputParser::ParseItem(const Range& range) {
-  for (size_t i = 0; i < kDataTypeCount; ++i) {
-    if (StartsWith(range, kDataTypes[i].name, kDataTypes[i].name_size)) {
-      return (this->*kDataTypes[i].parse_data_func)(
-          kDataTypes[i],
-          std::string(range.first + kDataTypes[i].name_size, range.second));
+bool ValidationTestInputParser::ParseItem(std::string_view item) {
+  for (const auto& data_type : kDataTypes) {
+    if (item.starts_with(data_type.name)) {
+      return (this->*data_type.parse_data_func)(
+          data_type, item.substr(data_type.name.size()));
     }
   }
 
   // "[u1]" is optional.
-  return ParseUnsignedInteger(kDataTypes[0],
-                              std::string(range.first, range.second));
+  return ParseUnsignedInteger(kDataTypes.front(), item);
 }
 
 bool ValidationTestInputParser::ParseUnsignedInteger(
     const DataType& type,
-    const std::string& value_string) {
-  unsigned long long int value;
-  if (!ConvertToUnsignedInteger(value_string, &value))
+    std::string_view value_string) {
+  uint64_t value;
+  if (!ConvertToUnsignedInteger(value_string, &value)) {
     return false;
+  }
 
   switch (type.data_size) {
     case 1:
@@ -266,10 +262,11 @@ bool ValidationTestInputParser::ParseUnsignedInteger(
 
 bool ValidationTestInputParser::ParseSignedInteger(
     const DataType& type,
-    const std::string& value_string) {
-  long long int value;
-  if (sscanf(value_string.c_str(), "%lli", &value) != 1)
+    std::string_view value_string) {
+  int64_t value;
+  if (!ConvertToSignedInteger(value_string, &value)) {
     return false;
+  }
 
   switch (type.data_size) {
     case 1:
@@ -286,52 +283,51 @@ bool ValidationTestInputParser::ParseSignedInteger(
   }
 }
 
-bool ValidationTestInputParser::ParseFloat(const DataType& type,
-                                           const std::string& value_string) {
+bool ValidationTestInputParser::ParseFloatingPoint(
+    const DataType& type,
+    std::string_view value_string) {
   static_assert(sizeof(float) == 4, "sizeof(float) is not 4");
-
-  float value;
-  if (sscanf(value_string.c_str(), "%f", &value) != 1)
-    return false;
-
-  AppendData(value);
-  return true;
-}
-
-bool ValidationTestInputParser::ParseDouble(const DataType& type,
-                                            const std::string& value_string) {
   static_assert(sizeof(double) == 8, "sizeof(double) is not 8");
 
   double value;
-  if (sscanf(value_string.c_str(), "%lf", &value) != 1)
+  if (!base::StringToDouble(value_string, &value)) {
     return false;
+  }
 
-  AppendData(value);
-  return true;
+  switch (type.data_size) {
+    case 4:
+      AppendData(static_cast<float>(value));
+      return true;
+    case 8:
+      AppendData(value);
+      return true;
+    default:
+      assert(false);
+      return false;
+  }
 }
 
 bool ValidationTestInputParser::ParseBinarySequence(
     const DataType& type,
-    const std::string& value_string) {
+    std::string_view value_string) {
   if (value_string.size() != 8)
     return false;
 
   uint8_t value = 0;
-  for (std::string::const_iterator iter = value_string.begin();
-       iter != value_string.end();
-       ++iter) {
+  for (const auto& c : value_string) {
     value <<= 1;
-    if (*iter == '1')
+    if (c == '1') {
       value++;
-    else if (*iter != '0')
+    } else if (c != '0') {
       return false;
+    }
   }
   AppendData(value);
   return true;
 }
 
 bool ValidationTestInputParser::ParseDistance(const DataType& type,
-                                              const std::string& value_string) {
+                                              std::string_view value_string) {
   if (base::Contains(pending_distance_items_, value_string)) {
     return false;
   }
@@ -344,12 +340,12 @@ bool ValidationTestInputParser::ParseDistance(const DataType& type,
 }
 
 bool ValidationTestInputParser::ParseAnchor(const DataType& type,
-                                            const std::string& value_string) {
-  if (anchors_.find(value_string) != anchors_.end())
+                                            std::string_view value_string) {
+  if (!anchors_.insert(value_string).second) {
     return false;
-  anchors_.insert(value_string);
+  }
 
-  std::map<std::string, PendingDistanceItem>::iterator iter =
+  std::map<std::string_view, PendingDistanceItem>::const_iterator iter =
       pending_distance_items_.find(value_string);
   if (iter == pending_distance_items_.end())
     return false;
@@ -370,14 +366,15 @@ bool ValidationTestInputParser::ParseAnchor(const DataType& type,
 }
 
 bool ValidationTestInputParser::ParseHandles(const DataType& type,
-                                             const std::string& value_string) {
+                                             std::string_view value_string) {
   // It should be the first item.
   if (!data_->empty())
     return false;
 
-  unsigned long long int value;
-  if (!ConvertToUnsignedInteger(value_string, &value))
+  uint64_t value;
+  if (!ConvertToUnsignedInteger(value_string, &value)) {
     return false;
+  }
 
   if (value > std::numeric_limits<size_t>::max())
     return false;
@@ -386,24 +383,20 @@ bool ValidationTestInputParser::ParseHandles(const DataType& type,
   return true;
 }
 
-bool ValidationTestInputParser::StartsWith(const Range& range,
-                                           const char* prefix,
-                                           size_t prefix_length) {
-  if (static_cast<size_t>(range.second - range.first) < prefix_length)
-    return false;
-
-  return memcmp(range.first, prefix, prefix_length) == 0;
+bool ValidationTestInputParser::ConvertToUnsignedInteger(
+    std::string_view value_string,
+    uint64_t* value) {
+  return value_string.find_first_of("xX") != std::string_view::npos
+             ? base::HexStringToUInt64(value_string, value)
+             : base::StringToUint64(value_string, value);
 }
 
-bool ValidationTestInputParser::ConvertToUnsignedInteger(
-    const std::string& value_string,
-    unsigned long long int* value) {
-  const char* format = nullptr;
-  if (value_string.find_first_of("xX") != std::string::npos)
-    format = "%llx";
-  else
-    format = "%llu";
-  return sscanf(value_string.c_str(), format, value) == 1;
+bool ValidationTestInputParser::ConvertToSignedInteger(
+    std::string_view value_string,
+    int64_t* value) {
+  return value_string.find_first_of("xX") != std::string_view::npos
+             ? base::HexStringToInt64(value_string, value)
+             : base::StringToInt64(value_string, value);
 }
 
 }  // namespace

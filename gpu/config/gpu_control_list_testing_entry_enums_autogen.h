@@ -100,6 +100,7 @@ enum GpuControlListTestingEntryEnum {
   kGpuControlListEntryTest_ANGLEException = 84,
   kGpuControlListEntryTest_GlTypeAngleGl = 85,
   kGpuControlListEntryTest_GLVersionOnly = 86,
+  kGpuControlListEntryTest_D3DFeatureLevel = 87,
 };
 }  // namespace gpu
 

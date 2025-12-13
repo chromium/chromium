@@ -14,7 +14,7 @@ source_set("page_info") {
   public = [ "page_info_features.h" ]
 
   public_deps = [
-    "//base:base",
+    "//base",
     "//chrome/browser:browser_process",
   ]
 }

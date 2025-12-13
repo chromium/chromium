@@ -64,19 +64,18 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   bool IsInitialized() override;
   std::vector<PersistentMessage> GetMessagesForTab(
       tab_groups::EitherTabID tab_id,
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<PersistentMessage> GetMessagesForGroup(
       tab_groups::EitherGroupID group_id,
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<PersistentMessage> GetMessages(
-      std::optional<PersistentNotificationType> type) override;
+      PersistentNotificationType type) override;
   std::vector<ActivityLogItem> GetActivityLog(
       const ActivityLogQueryParams& params) override;
   void ClearDirtyTabMessagesForGroup(
       const data_sharing::GroupId& collaboration_group_id) override;
-  void ClearPersistentMessage(
-      const base::Uuid& message_id,
-      std::optional<PersistentNotificationType> type) override;
+  void ClearPersistentMessage(const base::Uuid& message_id,
+                              PersistentNotificationType type) override;
   void RemoveMessages(const std::vector<base::Uuid>& message_ids) override;
   void AddActivityLogForTesting(
       data_sharing::GroupId collaboration_id,
@@ -179,14 +178,14 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
   std::vector<PersistentMessage> ConvertMessagesToPersistentMessages(
       const std::vector<collaboration_pb::Message>& messages,
       DirtyType lookup_dirty_type,
-      const std::optional<PersistentNotificationType>& type);
+      PersistentNotificationType type);
 
   // Convert a single stored Message to PersistentMessages. Each stored message
   // may result in multiple PersistentMessages, e.g. both CHIP and DIRTY_TAB.
   std::vector<PersistentMessage> ConvertMessageToPersistentMessages(
       const collaboration_pb::Message& message,
       DirtyType lookup_dirty_type,
-      const std::optional<PersistentNotificationType>& type,
+      PersistentNotificationType type,
       bool allow_dirty_tab_group_message);
 
   // Creates a PersistentMessage based on the provided information.
@@ -194,7 +193,7 @@ class MessagingBackendServiceImpl : public MessagingBackendService,
       const collaboration_pb::Message& message,
       const std::optional<tab_groups::SavedTabGroup>& tab_group,
       const std::optional<tab_groups::SavedTabGroupTab>& tab,
-      const std::optional<PersistentNotificationType>& type);
+      PersistentNotificationType type);
 
   InstantMessage CreateInstantMessage(
       const collaboration_pb::Message& message,

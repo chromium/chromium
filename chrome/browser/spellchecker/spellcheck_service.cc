@@ -165,9 +165,7 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
   custom_dictionary_->Load();
 
 #if BUILDFLAG(IS_WIN)
-  if (spellcheck::UseBrowserSpellChecker() &&
-      base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // If initialization of the spellcheck service is on-demand, it is up to the
     // instantiator of the spellcheck service to call InitializeDictionaries
     // with a callback.
@@ -297,8 +295,9 @@ std::string SpellcheckService::GetSupportedAcceptLanguageCode(
   // language, but not sr-Cyrl-CS. Matching language + script subtags assures
   // we get the correct script for spellchecking, and not use sr-Latn-RS if
   // language packs for both scripts are installed on the system.
-  if (!base::Contains(supported_language_full_tag, "-"))
+  if (!base::Contains(supported_language_full_tag, "-")) {
     return "";
+  }
 
   iter = std::ranges::find_if(
       accept_languages,
@@ -408,8 +407,9 @@ void SpellcheckService::InitForRenderer(content::RenderProcessHost* host) {
           hunspell_dictionary->GetLanguage()));
     }
 
-    custom_words.assign(custom_dictionary_->GetWords().begin(),
-                        custom_dictionary_->GetWords().end());
+    std::set<std::string> custom_words_set = custom_dictionary_->GetWords();
+    custom_words.assign(std::make_move_iterator(custom_words_set.begin()),
+                        std::make_move_iterator(custom_words_set.end()));
   } else {
     // Disabling spell check should also disable spelling service.
     user_prefs::UserPrefs::Get(context)->SetBoolean(
@@ -487,9 +487,7 @@ void SpellcheckService::LoadDictionaries() {
   }
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  if (base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit) &&
-      spellcheck::UseBrowserSpellChecker()) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // Only want to fire the callback on first call to LoadDictionaries
     // originating from InitializeDictionaries, since supported platform
     // dictionaries are cached throughout the browser session and not
@@ -517,9 +515,7 @@ bool SpellcheckService::IsSpellcheckEnabled() const {
 
   bool enable_if_uninitialized = false;
 #if BUILDFLAG(IS_WIN)
-  if (spellcheck::UseBrowserSpellChecker() &&
-      base::FeatureList::IsEnabled(
-          spellcheck::kWinDelaySpellcheckServiceInit)) {
+  if (spellcheck::UseBrowserSpellChecker()) {
     // If initialization of the spellcheck service is on-demand, the
     // renderer-side SpellCheck object needs to start out as enabled in order
     // for a click on editable content to initialize the spellcheck service.

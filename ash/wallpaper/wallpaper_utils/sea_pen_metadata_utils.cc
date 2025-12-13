@@ -14,6 +14,7 @@
 #include "ash/webui/common/mojom/sea_pen_generated.mojom.h"
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/strings/escape.h"
@@ -21,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
@@ -41,10 +41,11 @@ std::optional<std::u16string> GetCreationTimeInfo(
   return base::TimeFormatShortDate(*time);
 }
 
-std::optional<base::Value::Dict> AsOptionalDict(
-    data_decoder::DataDecoder::ValueOrError parsed) {
+std::optional<base::Value::Dict> ParseAsOptionalDict(const std::string& json) {
+  std::optional<base::Value> parsed =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed.has_value()) {
-    LOG(WARNING) << "Failed to parse JSON: " << parsed.error();
+    LOG(WARNING) << "Failed to parse JSON";
     return std::nullopt;
   }
   if (!parsed->is_dict()) {
@@ -218,19 +219,15 @@ void DecodeJsonMetadata(
     const std::string& json,
     base::OnceCallback<
         void(personalization_app::mojom::RecentSeaPenImageInfoPtr)> callback) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json, base::BindOnce(&AsOptionalDict)
-                .Then(base::BindOnce(&SeaPenQueryDictToRecentImageInfo))
-                .Then(std::move(callback)));
+  std::move(callback).Run(
+      SeaPenQueryDictToRecentImageInfo(ParseAsOptionalDict(json)));
 }
 
 void DecodeJsonMetadataGetTemplateId(
     const std::string& json,
     base::OnceCallback<void(std::optional<int>)> callback) {
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json, base::BindOnce(&AsOptionalDict)
-                .Then(base::BindOnce(&ExtractTemplateIdFromSeaPenQueryDict))
-                .Then(std::move(callback)));
+  std::move(callback).Run(
+      ExtractTemplateIdFromSeaPenQueryDict(ParseAsOptionalDict(json)));
 }
 
 std::optional<uint32_t> GetIdFromFileName(const base::FilePath& file_path) {

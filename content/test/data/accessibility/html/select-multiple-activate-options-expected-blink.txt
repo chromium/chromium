@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++listBox multiselectable activedescendantId=listBoxOption
+++++++++genericContainer ignored
+++++++++++listBoxOption name='one' selected=true
+++++++++++listBoxOption name='two' selected=true

@@ -98,6 +98,10 @@ class WebAutofillClient {
   // Called when the given form element is reset.
   virtual void FormElementReset(const WebFormElement&) {}
 
+  // Called when DevTools is connected or disconnect to the frame.
+  // The document is not fired again when the document changes.
+  virtual void OnDevToolsSessionConnectionChanged(bool attached) {}
+
   // Determines the form-related issues in the WebAutofillClient's document and
   // adds them to the associated frame's DevTools issues.
   virtual void EmitFormIssuesToDevtools() {}

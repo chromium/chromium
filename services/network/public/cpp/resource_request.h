@@ -14,7 +14,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
@@ -61,6 +60,28 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // TODO(mmenke):  There are likely other fields that should be moved into this
   // class.
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
+    // Typemapped to network.mojom.EnabledClientHints, see comments there for
+    // details of each field.
+    struct COMPONENT_EXPORT(NETWORK_CPP_BASE) EnabledClientHints {
+      EnabledClientHints();
+      ~EnabledClientHints();
+      EnabledClientHints(const EnabledClientHints&);
+      EnabledClientHints& operator=(const EnabledClientHints&);
+      bool operator==(const EnabledClientHints& other) const;
+
+      url::Origin origin;
+      bool is_outermost_main_frame = false;
+      // The set of client hints that are enabled for the origin and currently
+      // allowed to be attached to the request (e.g., by Feature Policy).
+      std::vector<network::mojom::WebClientHintsType> hints;
+      // The set of client hints that are persisted for the origin but are
+      // currently not allowed to be attached to the request (e.g., blocked by
+      // Feature Policy). This is used in the network service to avoid an
+      // unnecessary IPC to the browser process when an ACCEPT_CH frame contains
+      // such hints.
+      std::vector<network::mojom::WebClientHintsType> not_allowed_hints;
+    };
+
     TrustedParams();
     ~TrustedParams();
     // TODO(crbug.com/332706093): Make this move-only to avoid cloning mojo
@@ -77,8 +98,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     bool has_user_activation = false;
     bool allow_cookies_from_browser = false;
     bool include_request_cookies_with_response = false;
-    std::optional<std::vector<network::mojom::WebClientHintsType>>
-        enabled_client_hints;
+    std::optional<EnabledClientHints> enabled_client_hints;
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer;
     mojo::PendingRemote<mojom::TrustTokenAccessObserver> trust_token_observer;
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
@@ -223,17 +243,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       devtools_accepted_stream_types;
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;
-
-  // Used internally by the network service. Should not be modified by external
-  // callers, which should pass in address space of the request initiator via
-  // the ClientSecurityState includde either in URLLoaderFactoryParams or
-  // ResourceRequest::TrustedParams.
-  //
-  // See
-  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/url_request.mojom
-  // for more details.
-  mojom::IPAddressSpace target_ip_address_space =
-      mojom::IPAddressSpace::kUnknown;
 
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;

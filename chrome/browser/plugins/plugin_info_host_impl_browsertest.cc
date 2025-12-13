@@ -136,8 +136,8 @@ class PluginInfoHostImplBidiTest : public PluginInfoHostImplBidiTestBase,
 IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest, CoverAllPlugins) {
   // Note that "internal" plugins are the only type that can be registered with
   // `content::PluginService` now.
-  std::vector<WebPluginInfo> plugins;
-  content::PluginService::GetInstance()->GetInternalPlugins(&plugins);
+  const std::vector<WebPluginInfo> plugins =
+      content::PluginService::GetInstance()->GetInternalPluginsForTesting();
 
   size_t expected_plugin_count = 0;
 
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(PluginInfoHostImplTest,
   EXPECT_EQ(base::FilePath(ChromeContentClient::kPDFInternalPluginPath),
             plugin_info->plugin.path);
   EXPECT_EQ(u"", plugin_info->plugin.version);
-  EXPECT_EQ(u"Portable Document Format", plugin_info->plugin.desc);
+  EXPECT_EQ(u"Built-in PDF viewer", plugin_info->plugin.desc);
   EXPECT_EQ(WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN,
             plugin_info->plugin.type);
   EXPECT_EQ(WebPluginInfo::kDefaultBackgroundColor,

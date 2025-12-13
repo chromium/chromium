@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/task/task_traits.h"
 #include "build/build_config.h"

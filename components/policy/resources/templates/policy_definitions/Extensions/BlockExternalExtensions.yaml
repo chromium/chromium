@@ -14,7 +14,7 @@ features:
   dynamic_refresh: false
   per_profile: true
 future_on:
-- fuchsia
+- android
 items:
 - caption: Block installation of external extensions
   value: true

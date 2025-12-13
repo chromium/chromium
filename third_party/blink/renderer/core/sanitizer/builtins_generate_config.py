@@ -48,10 +48,39 @@ def bool(value):
 
 
 def generate_nameset(name, default_config, formatter_fn, output):
-    print("  /* %s */ HashSet<QualifiedName> {" % name, file=output)
-    for item in default_config.get(name, []):
-        print("    %s," % formatter_fn(item), file=output)
-    print("  },", file=output)
+    if name in default_config:
+        print("  /* %s */" % name, file=output)
+        print("  std::make_unique<SanitizerNameSet>(", file=output)
+        print("    std::initializer_list<SanitizerNameSet::ValueType>({",
+              file=output)
+        for item in default_config.get(name):
+            print("      %s," % formatter_fn(item), file=output)
+        print("    })", file=output)
+        print("  ),", file=output)
+    else:
+        print("  /* %s */ nullptr," % name, file=output)
+
+
+def generate_namemap(key, subkey, default_config, output):
+    print("  /* %s[%s] */" % (key, subkey), file=output)
+    print("  SanitizerNameMap(", file=output)
+    print("    std::initializer_list<SanitizerNameMap::ValueType>({",
+          file=output)
+    for elem in default_config.get(key, []):
+        if subkey in elem:
+            print("      SanitizerNameMap::ValueType(", file=output)
+            print("        %s," % element(elem), file=output)
+            print(
+                "        SanitizerNameMap::MappedType("
+                "std::initializer_list<"
+                "SanitizerNameMap::MappedType::ValueType>"
+                "({",
+                file=output)
+            for attr in elem.get(subkey, {}):
+                print("          %s," % attribute(attr), file=output)
+            print("      }))),", file=output)
+    print("    })", file=output)
+    print("  ),", file=output)
 
 
 def generate_config(default_config, output):
@@ -61,9 +90,11 @@ def generate_config(default_config, output):
                      output)
     generate_nameset("attributes", default_config, attribute, output)
     generate_nameset("removeAttributes", default_config, attribute, output)
-    print("/* comments */ %s," % bool(default_config.get("comments")),
+    generate_namemap("elements", "attributes", default_config, output)
+    generate_namemap("elements", "removeAttributes", default_config, output)
+    print("  /* comments */ %s," % bool(default_config.get("comments")),
           file=output)
-    print("/* dataAttributes */ %s" %
+    print("  /* dataAttributes */ %s" %
           bool(default_config.get("dataAttributes")),
           file=output)
 

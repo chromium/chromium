@@ -13,11 +13,10 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-10-x86-rel",
+              "builder": "android-10-x86-nofieldtrial-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-android-archive",
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
@@ -48,11 +47,12 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-10-x86-rel",
+          "builder": "android-10-x86-nofieldtrial-rel",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/try/android-x86-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/android-x86-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/code_coverage": {

@@ -27,14 +27,12 @@ void LogStatsDuringShutdown() {
   Thread::MainThread()
       ->Scheduler()
       ->ToMainThreadScheduler()
-      ->ForEachMainThreadIsolate(WTF::BindRepeating(
-          [](bool dump_call_stats, v8::Isolate* isolate) {
-            isolate->DumpAndResetStats();
-            if (dump_call_stats) {
-              LogRuntimeCallStats(isolate);
-            }
-          },
-          dump_call_stats));
+      ->ForEachMainThreadIsolate([&](v8::Isolate* isolate) {
+        isolate->DumpAndResetStats();
+        if (dump_call_stats) {
+          LogRuntimeCallStats(isolate);
+        }
+      });
 }
 
 }  // namespace blink

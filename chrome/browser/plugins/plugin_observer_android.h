@@ -8,7 +8,6 @@
 #include "chrome/common/plugin.mojom.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 class WebContents;

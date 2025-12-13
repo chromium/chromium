@@ -60,6 +60,18 @@ public class HistorySyncHelper {
                 .containsAll(Set.of(UserSelectableType.HISTORY, UserSelectableType.TABS));
     }
 
+    /**
+     * Whether history sync is enabled.
+     *
+     * <p>History and Tabs should usually have the same value, but in some cases they may not, e.g.
+     * if one of them is disabled by policy. In that case, this method returns true if at least one
+     * of them is enabled.
+     */
+    public boolean isHistorySyncEnabled() {
+        return mSyncService.getSelectedTypes().contains(UserSelectableType.HISTORY)
+                || mSyncService.getSelectedTypes().contains(UserSelectableType.TABS);
+    }
+
     /** Whether history sync is disabled by enterprise policy. */
     public boolean isHistorySyncDisabledByPolicy() {
         return mSyncService.isSyncDisabledByEnterprisePolicy()
@@ -73,11 +85,11 @@ public class HistorySyncHelper {
                 || mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS);
     }
 
-    /** Whether the history sync prompt should be suppressed. */
-    public boolean shouldSuppressHistorySync() {
-        return didAlreadyOptIn()
-                || isHistorySyncDisabledByCustodian()
-                || isHistorySyncDisabledByPolicy();
+    /** Whether the history sync prompt should be displayed. */
+    public boolean shouldDisplayHistorySync() {
+        return !didAlreadyOptIn()
+                && !isHistorySyncDisabledByCustodian()
+                && !isHistorySyncDisabledByPolicy();
     }
 
     /** Whether history sync is often declined. */
@@ -117,10 +129,15 @@ public class HistorySyncHelper {
         mPrefService.clearPref(Pref.HISTORY_SYNC_SUCCESSIVE_DECLINE_COUNT);
     }
 
+    /** Enables or clears history and tabs sync */
+    public void setHistoryAndTabsSync(boolean turnTypesOn) {
+        mSyncService.setSelectedType(UserSelectableType.HISTORY, turnTypesOn);
+        mSyncService.setSelectedType(UserSelectableType.TABS, turnTypesOn);
+    }
+
     private void recordUserAlreadyOptedIn(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
-                SigninAccessPoint.MAX_VALUE);
+                "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint, SigninAccessPoint.MAX_VALUE);
     }
 
     private void recordHistorySyncSkipped(@SigninAccessPoint int accessPoint) {

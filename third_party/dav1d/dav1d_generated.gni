@@ -97,6 +97,19 @@ arm64_asm_sources = [
 ]
 
 arm_template_sources = []
+riscv64_asm_sources = [
+  "libdav1d/src/riscv/64/cdef.S",
+  "libdav1d/src/riscv/64/cdef16.S",
+  "libdav1d/src/riscv/64/cpu.S",
+  "libdav1d/src/riscv/64/ipred.S",
+  "libdav1d/src/riscv/64/ipred16.S",
+  "libdav1d/src/riscv/64/itx.S",
+  "libdav1d/src/riscv/64/mc.S",
+  "libdav1d/src/riscv/64/mc16.S",
+  "libdav1d/src/riscv/64/pal.S",
+  "libdav1d/src/riscv/asm.S",
+]
+
 template_sources = [
   "libdav1d/src/cdef_apply_tmpl.c",
   "libdav1d/src/cdef_tmpl.c",

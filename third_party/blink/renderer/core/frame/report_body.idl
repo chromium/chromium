@@ -7,5 +7,5 @@
 [
     Exposed=(Window, Worker)
 ] interface ReportBody {
-    [CallWith=ScriptState] object toJSON();
+    [CallWith=ScriptState] object toJSON(optional DOMString key);
 };

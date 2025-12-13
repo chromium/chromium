@@ -289,6 +289,8 @@ export class FileTasks {
       case 'qo_documents':
         fileHandler = OfficeFileHandlersHistogramValues.QUICK_OFFICE;
         break;
+      default:
+        break;
     }
 
     recordEnum(
@@ -424,20 +426,23 @@ export class FileTasks {
         actionId: 'view-in-browser',
       };
       const result = await executeTask(descriptor, this.entries_);
+      const TaskResult = chrome.fileManagerPrivate.TaskResult;
       switch (result) {
-        case 'opened':
+        case TaskResult.OPENED:
           break;
-        case 'message_sent':
+        case TaskResult.MESSAGE_SENT:
           isTeleported().then(teleported => {
             if (teleported) {
               this.ui_.showOpenInOtherDesktopAlert(this.entries_);
             }
           });
           break;
-        case 'empty':
+        case TaskResult.EMPTY:
           break;
-        case 'failed':
+        case TaskResult.FAILED:
           throw new Error();
+        default:
+          break;
       }
     } catch {
       let textMessageId;
@@ -517,6 +522,8 @@ export class FileTasks {
               entries, this.volumeManager_, this.metadataModel_, this.ui_,
               moveMessage, copyMessage, this.fileTransferController_,
               this.directoryModel_);
+          break;
+        default:
           break;
       }
     } catch (error) {

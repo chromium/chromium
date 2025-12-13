@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "tryserver.blink",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -40,7 +39,8 @@
         }
       ],
       "retry_failed_shards": false,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/win10.20h2-blink-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/win10.20h2-blink-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/audio_bus.h"
 
 #include <stddef.h>
@@ -18,6 +13,7 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -33,7 +29,7 @@ namespace media {
 
 // Returns `frames` rounded up to the nearest number which allows full rows of
 // SIMD instructions.
-static size_t AlignFramesUp(size_t frames) {
+constexpr static size_t AlignFramesUp(size_t frames) {
   // Since our internal sample format is float, we can guarantee the alignment
   // by making the number of frames an integer multiple of
   // AudioBus::kChannelAlignment / sizeof(float).
@@ -48,11 +44,12 @@ static size_t AlignFramesUp(size_t frames) {
 // We do this by allocating space for potentially more frames than requested.
 // This method returns the required size for the contiguous memory block
 // in bytes and outputs the adjusted number of frames via |out_aligned_frames|.
-static size_t CalculateMemorySizeInternal(int channels, size_t frames) {
+constexpr static size_t CalculateMemorySizeInternal(int channels,
+                                                    size_t frames) {
   return sizeof(float) * channels * AlignFramesUp(frames);
 }
 
-static bool IsValidChannelCount(int channels) {
+constexpr static bool IsValidChannelCount(int channels) {
   CHECK_GT(channels, 0);
   return base::checked_cast<size_t>(channels) <=
          static_cast<size_t>(limits::kMaxChannels);
@@ -84,14 +81,6 @@ AudioBus::AudioBus(int channels, int frames)
   BuildChannelData(channels, data_);
 }
 
-AudioBus::AudioBus(int channels, int frames, float* data)
-    : AudioBus(
-          channels,
-          frames,
-          // Per interface contract, `data` must have a size of at least
-          // CalculateMemorySizeInternal().
-          base::span(data, CalculateMemorySizeInternal(channels, frames))) {}
-
 AudioBus::AudioBus(int channels, int frames, base::span<float> data)
     : frames_(base::checked_cast<size_t>(frames)) {
   CHECK(IsValidChannelCount(channels));
@@ -106,17 +95,6 @@ AudioBus::AudioBus(int channels, int frames, base::span<float> data)
   // `data` must be at least CalculateMemorySizeInternal(), per interface
   // contract.
   BuildChannelData(channels, data);
-}
-
-AudioBus::AudioBus(int frames, const std::vector<float*>& channel_data)
-    : frames_(base::checked_cast<size_t>(frames)) {
-  CHECK(IsValidChannelCount(channel_data.size()));
-  channel_data_.reserve(channel_data.size());
-
-  for (float* data : channel_data) {
-    CHECK(IsAligned(data));
-    channel_data_.emplace_back(data, frames_);
-  }
 }
 
 AudioBus::AudioBus(int channels) : channel_data_(channels), is_wrapper_(true) {
@@ -142,48 +120,36 @@ std::unique_ptr<AudioBus> AudioBus::CreateWrapper(int channels) {
   return base::WrapUnique(new AudioBus(channels));
 }
 
-std::unique_ptr<AudioBus> AudioBus::WrapVector(
-    int frames,
-    const std::vector<float*>& channel_data) {
-  return base::WrapUnique(new AudioBus(frames, channel_data));
-}
-
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(int channels,
                                                int frames,
-                                               void* data) {
+                                               base::span<float> data) {
   // |data| must be aligned by AudioBus::kChannelAlignment.
   CHECK(IsAligned(data));
-  return base::WrapUnique(
-      new AudioBus(channels, frames, static_cast<float*>(data)));
+  return base::WrapUnique(new AudioBus(channels, frames, data));
 }
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
-                                               void* data) {
+                                               base::span<uint8_t> data) {
+  CHECK(IsAligned(data.data()));
+  CHECK_EQ(data.size() % sizeof(float), 0u);
+
+  // SAFETY: This reinterpret cast is unfortunately unavoidable, since we want
+  // to expose channels as float spans. Making sure `data` is aligned and its
+  // size a multiple of `sizeof(float)` is the best we can do for safety here.
+  auto float_span = UNSAFE_BUFFERS(base::span<float>(
+      reinterpret_cast<float*>(data.data()), data.size() / sizeof(float)));
+  return WrapMemory(params, float_span);
+}
+
+std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
+                                               base::span<float> data) {
   // |data| must be aligned by AudioBus::kChannelAlignment.
   CHECK(IsAligned(data));
-  return base::WrapUnique(new AudioBus(params.channels(),
-                                       params.frames_per_buffer(),
-                                       static_cast<float*>(data)));
-}
-
-std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(int channels,
-                                                             int frames,
-                                                             const void* data) {
-  // Note: const_cast is generally dangerous but is used in this case since
-  // AudioBus accommodates both read-only and read/write use cases. A const
-  // AudioBus object is returned to ensure no one accidentally writes to the
-  // read-only data.
-  return WrapMemory(channels, frames, const_cast<void*>(data));
-}
-
-std::unique_ptr<const AudioBus> AudioBus::WrapReadOnlyMemory(
-    const AudioParameters& params,
-    const void* data) {
-  // Note: const_cast is generally dangerous but is used in this case since
-  // AudioBus accommodates both read-only and read/write use cases. A const
-  // AudioBus object is returned to ensure no one accidentally writes to the
-  // read-only data.
-  return WrapMemory(params, const_cast<void*>(data));
+  CHECK_GE(data.size_bytes(),
+           CalculateMemorySizeInternal(params.channels(),
+                                       params.frames_per_buffer()));
+  return base::WrapUnique(
+      new AudioBus(params.channels(), params.frames_per_buffer(), data));
 }
 
 void AudioBus::SetChannelData(int channel, Channel data) {

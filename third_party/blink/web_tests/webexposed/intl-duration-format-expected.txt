@@ -1,0 +1,316 @@
+This test dumps the output of Intl.DurationFormat.prototype.format() for
+some common locales.
+
+[am] Amharic
+  [digital] 2:00:35
+  [narrow] 2 ሰ እና 35 ሰ
+  [short] 2 ሰዓ እና 35 ሰከ
+  [long] 2 ሰዓቶች እና 35 ሰከንዶች
+
+[ar] Arabic
+  [digital] 2:00:35
+  [narrow] 2 س و35 ث
+  [short] 2 س و35 ث
+  [long] ساعتان و35 ثانية
+
+[ar-EG] Arabic (Egypt)
+  [digital] ٢:٠٠:٣٥
+  [narrow] ٢ س و٣٥ ث
+  [short] ٢ س و٣٥ ث
+  [long] ساعتان و٣٥ ثانية
+
+[ar-SD] Arabic (Sudan)
+  [digital] ٢:٠٠:٣٥
+  [narrow] ٢ س و٣٥ ث
+  [short] ٢ س و٣٥ ث
+  [long] ساعتان و٣٥ ثانية
+
+[ar-SY] Arabic (Syria)
+  [digital] ٢:٠٠:٣٥
+  [narrow] ٢ س و٣٥ ث
+  [short] ٢ س و٣٥ ث
+  [long] ساعتان و٣٥ ثانية
+
+[bn] Bangla
+  [digital] ২:০০:৩৫
+  [narrow] ২ ঘঃ, ৩৫ সেঃ
+  [short] ২ ঘন্টা, ৩৫ সেকেন্ড
+  [long] ২ ঘন্টা, ৩৫ সেকেন্ড
+
+[de] German
+  [digital] 2:00:35
+  [narrow] 2 Std., 35 Sek.
+  [short] 2 Std., 35 Sek.
+  [long] 2 Stunden, 35 Sekunden
+
+[en] English
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hr, 35 sec
+  [long] 2 hours, 35 seconds
+
+[en-AU] Australian English
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-CA] Canadian English
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-GB] British English
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-IE] English (Ireland)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-IN] English (India)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-NG] English (Nigeria)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-NZ] English (New Zealand)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-PH] English (Philippines)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hr, 35 sec
+  [long] 2 hours, 35 seconds
+
+[en-PK] English (Pakistan)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-TZ] English (Tanzania)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[en-US] American English
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hr, 35 sec
+  [long] 2 hours, 35 seconds
+
+[en-ZA] English (South Africa)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 hrs, 35 secs
+  [long] 2 hours, 35 seconds
+
+[es] Spanish
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h y 35 s
+  [long] 2 horas y 35 segundos
+
+[es-419] Latin American Spanish
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h y 35 s
+  [long] 2 horas y 35 segundos
+
+[es-ES] European Spanish
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h y 35 s
+  [long] 2 horas y 35 segundos
+
+[es-MX] Mexican Spanish
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h y 35 s
+  [long] 2 horas y 35 segundos
+
+[fa] Persian
+  [digital] ۲:۰۰:۳۵
+  [narrow] ۲h ۳۵s
+  [short] ۲ ساعت،‏ ۳۵ ثانیه
+  [long] ۲ ساعت و ۳۵ ثانیه
+
+[fil] Filipino
+  [digital] 2:00:35
+  [narrow] 2 oras 35s
+  [short] 2 oras, 35 seg.
+  [long] 2 oras, 35 segundo
+
+[fr] French
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h et 35 s
+  [long] 2 heures et 35 secondes
+
+[gu] Gujarati
+  [digital] 2:00:35
+  [narrow] 2 ક, 35 સે
+  [short] 2 કલાક, 35 સેકંડ
+  [long] 2 કલાક અને 35 સેકંડ
+
+[hi] Hindi
+  [digital] 2:00:35
+  [narrow] 2 घं 35 से
+  [short] 2 घं॰, 35 से॰
+  [long] 2 घंटे और 35 सेकंड
+
+[id] Indonesian
+  [digital] 2.00.35
+  [narrow] 2 j, 35 dtk
+  [short] 2 j, 35 dtk
+  [long] 2 jam, 35 detik
+
+[it] Italian
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 h e 35 s
+  [long] 2 ore e 35 secondi
+
+[ja] Japanese
+  [digital] 2:00:35
+  [narrow] 2h35s
+  [short] 2 時間 35 秒
+  [long] 2 時間 35 秒
+
+[kn] Kannada
+  [digital] 2:00:35
+  [narrow] 2ಗಂ. 35 ಸೆಕೆಂ
+  [short] 2 ಗಂ., 35 ಸೆಕೆಂ
+  [long] 2 ಗಂಟೆಗಳು, 35 ಸೆಕೆಂಡುಗಳು
+
+[ko] Korean
+  [digital] 2:00:35
+  [narrow] 2시간 35초
+  [short] 2시간 35초
+  [long] 2시간 35초
+
+[mr] Marathi
+  [digital] २:००:३५
+  [narrow] २ता ३५से
+  [short] २ ता, ३५ से
+  [long] २ तास, ३५ सेकंद
+
+[nl] Dutch
+  [digital] 2:00:35
+  [narrow] 2 u, 35 s
+  [short] 2 uur, 35 sec
+  [long] 2 uur en 35 seconden
+
+[pl] Polish
+  [digital] 2:00:35
+  [narrow] 2 h i 35 s
+  [short] 2 godz. i 35 sek.
+  [long] 2 godziny i 35 sekund
+
+[pt-BR] Brazilian Portuguese
+  [digital] 2:00:35
+  [narrow] 2 h 35 s
+  [short] 2 h e 35 s
+  [long] 2 horas e 35 segundos
+
+[pt-PT] European Portuguese
+  [digital] 2:00:35
+  [narrow] 2 h e 35 s
+  [short] 2 h e 35 s
+  [long] 2 horas e 35 segundos
+
+[ru] Russian
+  [digital] 2:00:35
+  [narrow] 2 ч 35 с
+  [short] 2 ч 35 с
+  [long] 2 часа 35 секунд
+
+[sv-SE] Swedish (Sweden)
+  [digital] 2:00:35
+  [narrow] 2h 35s
+  [short] 2 tim, 35 s
+  [long] 2 timmar, 35 sekunder
+
+[sw] Swahili
+  [digital] 2:00:35
+  [narrow] saa 2 na sek 35
+  [short] saa 2 na sekunde 35
+  [long] saa 2 na sekunde 35
+
+[ta] Tamil
+  [digital] 2:00:35
+  [narrow] 2 ம.நே. 35 வி.
+  [short] 2 மணிநேரம், 35 விநாடி
+  [long] 2 மணிநேரங்கள், 35 விநாடிகள்
+
+[te] Telugu
+  [digital] 2:00:35
+  [narrow] 2గం, 35సె
+  [short] 2 గం., 35 సెక.
+  [long] 2 గంటలు, 35 సెకన్లు
+
+[th] Thai
+  [digital] 2:00:35
+  [narrow] 2ชม. 35วิ
+  [short] 2 ชม. 35 วิ
+  [long] 2 ชั่วโมง และ 35 วินาที
+
+[tl] Filipino
+  [digital] 2:00:35
+  [narrow] 2 oras 35s
+  [short] 2 oras, 35 seg.
+  [long] 2 oras, 35 segundo
+
+[tr] Turkish
+  [digital] 2:00:35
+  [narrow] 2s 35sn
+  [short] 2 sa. 35 sn.
+  [long] 2 saat 35 saniye
+
+[ur] Urdu
+  [digital] 2:00:35
+  [narrow] 2 گھنٹے اور 35 سیکنڈ
+  [short] 2 گھنٹے اور 35 سیکنڈ
+  [long] 2 گھنٹے، 35 سیکنڈ
+
+[vi] Vietnamese
+  [digital] 2:00:35
+  [narrow] 2 giờ 35 giây
+  [short] 2 giờ, 35 giây
+  [long] 2 giờ, 35 giây
+
+[zh-CN] Chinese (China)
+  [digital] 2:00:35
+  [narrow] 2小时35秒
+  [short] 2小时35秒
+  [long] 2小时35秒钟
+
+[zh-HK] Chinese (Hong Kong)
+  [digital] 2:00:35
+  [narrow] 2小時35秒
+  [short] 2 小時 35 秒
+  [long] 2 小時 35 秒
+
+[zh-TW] Chinese (Taiwan)
+  [digital] 2:00:35
+  [narrow] 2 小時35 秒
+  [short] 2 小時 35 秒
+  [long] 2 小時 35 秒
+
+

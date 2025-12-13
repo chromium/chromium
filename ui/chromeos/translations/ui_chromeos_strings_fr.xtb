@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Genre</translation>
 <translation id="1254593899333212300">Connexion directe à Internet</translation>
 <translation id="1272293450992660632">Les valeurs de code PIN sont différentes.</translation>
+<translation id="1279040297980392566">En attente de la fin de l'analyse. Réessayez plus tard.</translation>
 <translation id="1280820357415527819">Recherche de réseaux mobiles…</translation>
 <translation id="1293556467332435079">Fichiers</translation>
 <translation id="1297922636971898492">Google Drive n'est pas disponible pour le moment. L'importation reprendra lorsque Google Drive sera à nouveau disponible.</translation>
@@ -107,7 +108,7 @@
 <translation id="1810764548349082891">Aucun aperçu disponible</translation>
 <translation id="1812302367230252929">Amharique (translittération)</translation>
 <translation id="1813278315230285598">Services</translation>
-<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez une autre requête.</translation>
+<translation id="181434555916624618">Pour le moment, les résultats contenant des personnes ne sont pas affichés. Essayez un autre prompt.</translation>
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="183183971458492120">Chargement des informations…</translation>
 <translation id="1832073788765803750">Katakana de demi-chasse</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 fichier sélectionné</translation>
 <translation id="3817579325494460411">Non indiqué</translation>
 <translation id="3819448694985509187">Code PIN incorrect. Il vous reste 1 tentative.</translation>
-<translation id="3822559385185038546">Ce proxy est appliqué par votre administrateur</translation>
 <translation id="3830674330436234648">Aucune lecture disponible</translation>
 <translation id="383652340667548381">Serbe</translation>
 <translation id="3839045880592694915">Votre opérateur n'autorise pas votre modem à se connecter. Contactez votre opérateur pour en savoir plus.</translation>
@@ -432,7 +432,7 @@
 <translation id="4462159676511157176">Serveurs de noms personnalisés</translation>
 <translation id="4465725236958772856">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, géré par votre administrateur, connexion</translation>
 <translation id="4470564870223067757">Hangûl, dubeol-sik</translation>
-<translation id="4472575034687746823">Premiers pas</translation>
+<translation id="4472575034687746823">Commencer</translation>
 <translation id="4474142134969976028">Aucun résultat</translation>
 <translation id="4477002475007461989">Roumain</translation>
 <translation id="4477219268485577442">Phonétique bulgare</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5602622065581044566">Bulgare avec clavier phonétique</translation>
 <translation id="5605830556594064952">Dvorak américain</translation>
+<translation id="560739212255190568">Votre administrateur a défini des règles de remplacement de proxy en plus d'appliquer le proxy suivant</translation>
 <translation id="5618330573454123917">Ce fichier est conçu pour un ordinateur Macintosh. Il n'est pas compatible avec votre appareil qui exécute Chrome OS. <ph name="BEGIN_LINK_HELP" />En savoir plus<ph name="END_LINK_HELP" /> sur l'ouverture de fichiers dans Chrome OS</translation>
 <translation id="5625294776298156701">Tamoul (avec clavier Tamil99)</translation>
 <translation id="5633226425545095130">En déplaçant cet élément, vous le partagerez avec toute personne pouvant voir le dossier partagé "<ph name="DESTINATION_NAME" />".</translation>
@@ -787,7 +788,7 @@
 <translation id="7075931588889865715">Thaï avec clavier TIS 820-2531</translation>
 <translation id="708278670402572152">Déconnecter pour permettre la recherche</translation>
 <translation id="7086590977277044826">Tamoul (avec clavier InScript)</translation>
-<translation id="7088615885725309056">Ancien</translation>
+<translation id="7088615885725309056">Page plus ancienne</translation>
 <translation id="7103992300314999525">Macédonien</translation>
 <translation id="7104338189998813914">Un problème est survenu lors de l'accès à votre compte OneDrive</translation>
 <translation id="7106346894903675391">Acheter de l'espace de stockage supplémentaire…</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, détails</translation>
 <translation id="8545476925160229291">Anglais (États-Unis)</translation>
 <translation id="854655314928502177">URL du proxy Web Auto Discovery :</translation>
+<translation id="8547747809824590510">Votre administrateur a défini des règles de remplacement de proxy</translation>
 <translation id="8549186985808798022">Italien</translation>
 <translation id="8551494947769799688">Letton</translation>
 <translation id="8560515948038859357">Cantonais</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Le nom "<ph name="FILE_NAME" />" est déjà attribué à un fichier. Veuillez en choisir un autre.</translation>
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">En cas d'échec de la validation, votre accès réseau sera désactivé.</translation>
+<translation id="9079844694307518094">Votre administrateur applique le proxy suivant</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9086302186042011942">Synchronisation en cours</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Installation démarrée avec succès.</translation>
 <translation id="9219103736887031265">Images</translation>
 <translation id="9219908252191632183">Paysage lunaire</translation>
+<translation id="931652069802536959">Le réseau est bloqué par une règle</translation>
 <translation id="938470336146445890">Veuillez installer un certificat utilisateur.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
 <translation id="943972244133411984">Modifié par</translation>

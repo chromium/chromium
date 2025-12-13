@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[deprecated="This enum is deprecated"] enum DeprecatedEnum {
+  "name1",
+  "name2"
+};
+
+[deprecated="This dict is deprecated"] dictionary DeprecatedDictionary {
+  boolean normalMember;
+};
+
+dictionary DictionaryWithDeprecatedMember {
+  [deprecated="This dict member is deprecated"] boolean deprecatedMember;
+};
+
+callback OnDeprecatedEventListener = undefined ();
+interface OnDeprecatedEvent : ExtensionEvent {
+  static void addListener(OnDeprecatedEventListener listener);
+  static void removeListener(OnDeprecatedEventListener listener);
+  static void hasListener(OnDeprecatedEventListener listener);
+};
+
+// The extremely deprecated API. Tests the deprecated extended attribute on
+// various nodes.
+[deprecated="This API is deprecated"] interface DeprecatedAPI {
+  [deprecated="This function is deprecated and it has such a long message that
+  it requires line wrapping"]
+  static undefined deprecatedFunction();
+
+  [deprecated="This event is deprecated"]
+  static attribute OnDeprecatedEvent onDeprecatedEvent;
+
+  [deprecated="This property is deprecated"]
+  const long DEPRECATED_PROPERTY = 6;
+};
+
+partial interface Browser {
+  static attribute DeprecatedAPI deprecatedAPI;
+};

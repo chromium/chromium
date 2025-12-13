@@ -25,19 +25,19 @@
 
 namespace {
 // The number of bytes in a KB.
-CGFloat kBytesInKiloBytes = 1000;
+constexpr CGFloat kBytesInKiloBytes = 1000;
 // The number of KB in a MB.
-CGFloat kKiloBytesInMegaBytes = 1000;
+constexpr CGFloat kKiloBytesInMegaBytes = 1000;
 // The number of bytes in MB.
-CGFloat kBytesInMegaBytes = kBytesInKiloBytes * kKiloBytesInMegaBytes;
+constexpr CGFloat kBytesInMegaBytes = kBytesInKiloBytes * kKiloBytesInMegaBytes;
 // The threshold where if the user has less than this percentage of storage
 // remaining on their device then the Auto-deletion IPH should be shown. This
 // value is a percentage.
-CGFloat kAvailableStorageThreshold = 2.0;
+constexpr CGFloat kAvailableStorageThreshold = 2.0;
 // The threshold where if a file downloaded onto the device is greater than this
 // value then the Auto-deletion IPH should be shown. This value is in units of
 // MB.
-CGFloat kLargeFileSizeThreshold = 20.0;
+constexpr CGFloat kLargeFileSizeThreshold = 20.0;
 }  // namespace
 
 typedef void (^UIAlertActionHandler)(UIAlertAction* action);
@@ -121,7 +121,7 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
   ProceduralBlock cancelAction = ^{
     base::RecordAction(base::UserMetricsAction(
         "IOS.AutoDeletion.ActionSheet.RejectDownloadEnrollment"));
-    [weakSelf dismiss];
+    [weakSelf cancel];
   };
   [coordinator
       addItemWithTitle:l10n_util::GetNSString(
@@ -151,8 +151,16 @@ typedef void (^UIAlertActionHandler)(UIAlertAction* action);
 // Schedules the downloaded file for automatic deletion when the user hits the
 // action sheet's primary action button.
 - (void)scheduleFileForDeletion {
-  GetApplicationContext()->GetAutoDeletionService()->ScheduleFileForDeletion(
-      _downloadTask);
+  GetApplicationContext()->GetAutoDeletionService()->MarkTaskForDeletion(
+      _downloadTask, auto_deletion::DeletionEnrollmentStatus::kEnrolled);
+}
+
+// Informs the AutoDeletionService that the user does not intend to enroll the
+// file in Auto-deletion and then closes the action sheet.
+- (void)cancel {
+  GetApplicationContext()->GetAutoDeletionService()->MarkTaskForDeletion(
+      _downloadTask, auto_deletion::DeletionEnrollmentStatus::kNotEnrolled);
+  [self dismiss];
 }
 
 // Creates a handler that conforms to the AutoDeletionCommands protocol and

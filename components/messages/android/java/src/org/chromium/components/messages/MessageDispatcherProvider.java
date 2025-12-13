@@ -4,7 +4,6 @@
 
 package org.chromium.components.messages;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,10 +16,10 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class MessageDispatcherProvider {
     /** An interface that allows a MessageDispatcher to be associated with an unowned data host. */
-    interface Unowned extends MessageDispatcher, UnownedUserData {}
+    interface Unowned extends MessageDispatcher {}
 
     /** The key used to bind the MessageDispatcher to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Retrieves the shared MessageDispatcher from the provided WindowAndroid. Returns null if

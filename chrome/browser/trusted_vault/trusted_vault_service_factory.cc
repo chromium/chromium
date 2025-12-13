@@ -12,7 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
-#include "device/fido/features.h"
+#include "device/fido/public/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/trusted_vault/trusted_vault_client_android.h"

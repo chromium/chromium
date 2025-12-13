@@ -73,7 +73,8 @@ bool MeminfoDumpProvider::OnMemoryDump(
     return false;
   }
 
-  ScopedJavaLocalRef<jclass> clazz{env, env->GetObjectClass(memory_info.obj())};
+  auto clazz = ScopedJavaLocalRef<jclass>::Adopt(
+      env, env->GetObjectClass(memory_info.obj()));
 
   jfieldID other_private_dirty_id =
       env->GetFieldID(clazz.obj(), "otherPrivateDirty", "I");
@@ -98,3 +99,5 @@ bool MeminfoDumpProvider::OnMemoryDump(
 }
 
 }  // namespace base::android
+
+DEFINE_JNI(MemoryInfoBridge)

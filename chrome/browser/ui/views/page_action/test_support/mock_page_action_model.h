@@ -23,13 +23,15 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetVisible, (), (const, override));
   MOCK_METHOD(bool, IsChipShowing, (), (const, override));
   MOCK_METHOD(bool, ShouldShowSuggestionChip, (), (const, override));
-  MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateChipOut, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnimateChipIn, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionActive, (), (const, override));
+  MOCK_METHOD(PageActionColorSource, GetColorSource, (), (const, override));
   MOCK_METHOD(bool, GetActionItemIsShowingBubble, (), (const, override));
   MOCK_METHOD(void,
               AddObserver,
@@ -82,7 +84,8 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(void,
               SetOverrideImage,
               (base::PassKey<PageActionController>,
-               const std::optional<ui::ImageModel>& override_text),
+               const std::optional<ui::ImageModel>& override_text,
+               PageActionColorSource color_source),
               (override));
   MOCK_METHOD(void,
               SetOverrideTooltip,
@@ -94,8 +97,12 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool is_active),
               (override));
   MOCK_METHOD(void,
-              SetShouldHidePageAction,
-              (base::PassKey<PageActionController>, bool should_hide),
+              SetIsSuppressedByOmnibox,
+              (base::PassKey<PageActionController>, bool is_suppressed),
+              (override));
+  MOCK_METHOD(void,
+              SetExemptFromOmniboxSuppression,
+              (base::PassKey<PageActionController>, bool is_exempt),
               (override));
   MOCK_METHOD(bool, IsEphemeral, (), (const, override));
 };

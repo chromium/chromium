@@ -137,6 +137,10 @@
   return !IsSplitToolbarMode(self.viewController);
 }
 
+- (BOOL)shouldPointArrowDownForTabGridIPH {
+  return NO;
+}
+
 #pragma mark - Private
 
 // Returns whether the banner promo is supported given the current view
@@ -217,6 +221,10 @@
     tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
   [self activeBannerPromoAppAgent].UICurrentlySupportsPromo =
       [self viewControllerSupportsBannerPromo];
+}
+
+- (ToolbarCancelButtonStyle)styleForCancelButtonInToolbar {
+  return [self.viewControllerDelegate styleForCancelButtonInToolbar];
 }
 
 @end

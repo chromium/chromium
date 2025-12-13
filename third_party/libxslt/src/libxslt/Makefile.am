@@ -21,6 +21,7 @@ xsltinc_HEADERS = 			\
 	documents.h			\
 	preproc.h			\
 	transform.h			\
+	transformInternals.h	\
 	security.h			\
 	xsltInternals.h			\
 	xsltexports.h			\

@@ -8,8 +8,6 @@
 
 namespace ui {
 
-const char kMediaHardwareKeyActionHistogramName[] = "Media.HardwareKeyPressed";
-
 void RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction action) {
   UMA_HISTOGRAM_ENUMERATION(kMediaHardwareKeyActionHistogramName, action);
 }

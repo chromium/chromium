@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
@@ -37,6 +38,7 @@ class WebContents;
 
 namespace web_app {
 
+struct ManifestSilentUpdateCompletionInfo;
 class WebAppProvider;
 
 // Documentation: docs/webapps/manifest_update_process.md
@@ -52,6 +54,8 @@ class WebAppProvider;
 //
 // TODO(crbug.com/40611449): Replace MaybeUpdate() with a background check
 // instead of being triggered by page loads.
+// TODO(crbug.com/442643377): Delete this after we can simply use a per-page
+// class that notifies when a valid manifest is attached to a page.
 class ManifestUpdateManager final : public WebAppInstallManagerObserver {
  public:
   class ScopedBypassWindowCloseWaitingForTesting {
@@ -150,6 +154,12 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       base::Time check_time,
       base::WeakPtr<content::WebContents> web_contents);
 
+  void OnManifestSilentUpdateComplete(
+      base::WeakPtr<content::WebContents> contents,
+      const GURL& url,
+      const webapps::AppId& app_id,
+      ManifestSilentUpdateCompletionInfo completion_info);
+
   void OnManifestCheckAwaitAppWindowClose(
       base::WeakPtr<content::WebContents> contents,
       const GURL& url,
@@ -189,7 +199,18 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
       install_manager_observation_{this};
 
   std::map<webapps::AppId, UpdateStage> update_stages_;
+
+  // Stores the last time a manifest update was triggered for an app. Used in
+  // the old manifest update logic for limiting app updates to once per day.
   base::flat_map<webapps::AppId, base::Time> last_update_check_;
+
+  // Stores the last time a manifest update was silently made for an app based
+  // on the small icon difference as per the new predictable app update
+  // algorithm. Used to throttle silent icon updates to once every 24 hours.
+  // Please see https://bit.ly/predictable-webapp-updating-prd for more
+  // information.
+  absl::flat_hash_map<webapps::AppId, base::Time>
+      update_check_for_silent_updates_;
 
   std::optional<base::Time> time_override_for_testing_;
 

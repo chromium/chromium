@@ -60,9 +60,9 @@ bool PointerLockController::RequestPointerLock(Element* target,
   window->GetFrame()->GetWidgetForLocalRoot()->RequestMouseLock(
       LocalFrame::HasTransientUserActivation(window->GetFrame()),
       /*unadjusted_movement_requested=*/false,
-      WTF::BindOnce(&PointerLockController::LockRequestCallback,
-                    WrapWeakPersistent(this), std::move(callback),
-                    /*unadjusted_movement_requested=*/false));
+      blink::BindOnce(&PointerLockController::LockRequestCallback,
+                      WrapWeakPersistent(this), std::move(callback),
+                      /*unadjusted_movement_requested=*/false));
   lock_pending_ = true;
   element_ = target;
   return true;
@@ -135,12 +135,11 @@ void PointerLockController::RequestPointerLock(
 
       mouse_lock_context_->RequestMouseLockChange(
           unadjusted_movement_requested,
-          WTF::BindOnce(
-              &PointerLockController::ChangeLockRequestCallback,
-              WrapWeakPersistent(this), WrapWeakPersistent(target),
-              WTF::BindOnce(&PointerLockController::ProcessResultPromise,
-                            WrapPersistent(resolver)),
-              unadjusted_movement_requested));
+          blink::BindOnce(&PointerLockController::ChangeLockRequestCallback,
+                          WrapWeakPersistent(this), WrapWeakPersistent(target),
+                          BindOnce(&PointerLockController::ProcessResultPromise,
+                                   WrapPersistent(resolver)),
+                          unadjusted_movement_requested));
       return;
     }
 
@@ -153,12 +152,11 @@ void PointerLockController::RequestPointerLock(
     window->GetFrame()->GetWidgetForLocalRoot()->RequestMouseLock(
         LocalFrame::HasTransientUserActivation(window->GetFrame()),
         unadjusted_movement_requested,
-        WTF::BindOnce(
-            &PointerLockController::LockRequestCallback,
-            WrapWeakPersistent(this),
-            WTF::BindOnce(&PointerLockController::ProcessResultPromise,
-                          WrapPersistent(resolver)),
-            unadjusted_movement_requested));
+        blink::BindOnce(&PointerLockController::LockRequestCallback,
+                        WrapWeakPersistent(this),
+                        BindOnce(&PointerLockController::ProcessResultPromise,
+                                 WrapPersistent(resolver)),
+                        unadjusted_movement_requested));
     lock_pending_ = true;
     element_ = target;
   }
@@ -186,7 +184,7 @@ void PointerLockController::LockRequestCallback(
                                  TaskType::kUserInteraction));
     // The browser might unlock the mouse for many reasons including closing
     // the tab, the user hitting esc, the page losing focus, and more.
-    mouse_lock_context_.set_disconnect_handler(WTF::BindOnce(
+    mouse_lock_context_.set_disconnect_handler(BindOnce(
         &PointerLockController::ExitPointerLock, WrapWeakPersistent(this)));
   }
   ProcessResult(std::move(callback), unadjusted_movement_requested, result);

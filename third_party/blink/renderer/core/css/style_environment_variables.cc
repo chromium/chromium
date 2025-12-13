@@ -28,16 +28,14 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
                         kSafeAreaInsetDefault);
   instance->SetVariable(UADefinedVariable::kSafeAreaInsetRight,
                         kSafeAreaInsetDefault);
-  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetTop,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetLeft,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetBottom,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetRight,
-                          kSafeAreaInsetDefault);
-  }
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetTop,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetLeft,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetBottom,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetRight,
+                        kSafeAreaInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetTop,
                         kKeyboardInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetLeft,
@@ -51,9 +49,7 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
   instance->SetVariable(UADefinedVariable::kKeyboardInsetHeight,
                         kKeyboardInsetDefault);
 
-  if (RuntimeEnabledFeatures::CSSPreferredTextScaleEnabled()) {
-    instance->SetVariable(UADefinedVariable::kPreferredTextScale, "1");
-  }
+  instance->SetVariable(UADefinedVariable::kPreferredTextScale, "1");
 }
 
 }  // namespace.
@@ -110,14 +106,6 @@ const AtomicString StyleEnvironmentVariables::GetVariableName(
       return AtomicString("titlebar-area-width");
     case UADefinedVariable::kTitlebarAreaHeight:
       return AtomicString("titlebar-area-height");
-    case UADefinedVariable::kContextMenuInsetTop:
-      return AtomicString("context-menu-inset-top");
-    case UADefinedVariable::kContextMenuInsetLeft:
-      return AtomicString("context-menu-inset-left");
-    case UADefinedVariable::kContextMenuInsetBottom:
-      return AtomicString("context-menu-inset-bottom");
-    case UADefinedVariable::kContextMenuInsetRight:
-      return AtomicString("context-menu-inset-right");
     case UADefinedVariable::kPreferredTextScale:
       return AtomicString("preferred-text-scale");
     case UADefinedVariable::kSafePrintableInset:
@@ -245,7 +233,7 @@ void StyleEnvironmentVariables::RemoveVariable(const AtomicString& name) {
 
 CSSVariableData* StyleEnvironmentVariables::ResolveVariable(
     const AtomicString& name,
-    WTF::Vector<unsigned> indices) {
+    Vector<unsigned> indices) {
   if (indices.size() == 0u) {
     auto result = data_.find(name);
     if (result == data_.end() && parent_) {

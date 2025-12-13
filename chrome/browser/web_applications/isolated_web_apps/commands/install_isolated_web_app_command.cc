@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -27,9 +28,11 @@
 #include "chrome/browser/web_applications/commands/command_metrics.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/isolated_web_app_install_command_helper.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
+#include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -54,7 +57,7 @@ namespace web_app {
 
 InstallIsolatedWebAppCommandSuccess::InstallIsolatedWebAppCommandSuccess(
     IsolatedWebAppUrlInfo url_info,
-    base::Version installed_version,
+    IwaVersion installed_version,
     IsolatedWebAppStorageLocation location)
     : url_info(std::move(url_info)),
       installed_version(std::move(installed_version)),
@@ -84,7 +87,7 @@ std::ostream& operator<<(std::ostream& os,
 InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
     const IsolatedWebAppUrlInfo& url_info,
     const IsolatedWebAppInstallSource& install_source,
-    const std::optional<base::Version>& expected_version,
+    const std::optional<IwaVersion>& expected_version,
     std::unique_ptr<content::WebContents> web_contents,
     std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
@@ -156,22 +159,48 @@ void InstallIsolatedWebAppCommand::StartWithLock(
 
   RunChainedWeakCallbacks(
       weak_factory_.GetWeakPtr(),
-      &InstallIsolatedWebAppCommand::CheckNotInstalledAlready,
+      &InstallIsolatedWebAppCommand::CheckCanBeInstalled,
       &InstallIsolatedWebAppCommand::CopyToProfileDirectory,
       &InstallIsolatedWebAppCommand::CheckTrustAndSignatures,
       &InstallIsolatedWebAppCommand::CreateStoragePartition,
       &InstallIsolatedWebAppCommand::PrepareInstallInfo,
+      &InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed,
       &InstallIsolatedWebAppCommand::FinalizeInstall);
 }
 
-void InstallIsolatedWebAppCommand::CheckNotInstalledAlready(
+void InstallIsolatedWebAppCommand::CheckCanBeInstalled(
     base::OnceClosure next_step_callback) {
-  if (GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id())
-          .has_value()) {
+  // Check 1: App not on the blocklist
+
+  // Although IWA installation may be blocked earlier for performance reasons,
+  // this is the final check for all installation paths to ensure that apps are
+  // not installed if they are on the blocklist.
+  if (ChromeIwaRuntimeDataProvider::GetInstance().IsBundleBlocklisted(
+          url_info_.web_bundle_id().id())) {
+    ReportFailure(InstallIwaError::kAppNotPermitted,
+                  webapps::InstallResultCode::kNotInstallable,
+                  "App is on the blocklist");
+    return;
+  }
+
+  // Check 2: App is not already installed
+  ASSIGN_OR_RETURN(
+      const WebApp& app,
+      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id()),
+      [&next_step_callback](const std::string&) {
+        std::move(next_step_callback).Run();
+      });
+
+  if (app.GetSources().Has(
+          ConvertInstallSurfaceToWebAppSource(install_surface_)) ||
+      app.IsIwaPolicyInstalledApp()) {
+    // The app is already installed from the same source or from policy.
     ReportFailure(InstallIwaError::kAppIsNotInstallable,
                   webapps::InstallResultCode::kNotInstallable,
                   "App is already installed");
   } else {
+    // App exists, but is installed from a different source. Proceed with
+    // installation of the new source.
     std::move(next_step_callback).Run();
   }
 }
@@ -245,7 +274,8 @@ void InstallIsolatedWebAppCommand::PrepareInstallInfo(
       std::move(next_step_callback));
 }
 
-void InstallIsolatedWebAppCommand::FinalizeInstall(
+void InstallIsolatedWebAppCommand::ProcessInstallInfoResultAndProceed(
+    base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
     PrepareInstallInfoJob::InstallInfoOrFailure result) {
   prepare_install_info_job_.reset();
 
@@ -276,9 +306,34 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
         ReportFailure(iwa_error, web_app_error, failure.message);
       });
 
+  // As IWAs can have more than one install source at a time, the app might
+  // already be installed.
+  auto iwa_result =
+      GetIsolatedWebAppById(lock_->registrar(), url_info_.app_id());
+
+  // Policy source always takes precedence over the user installed
+  // version, even if it is lower. Such scenario requires user data clearance
+  // before downgrading.
+  if (iwa_result.has_value() &&
+      install_info.isolated_web_app_version() <
+          iwa_result.value().get().isolation_data()->version()) {
+    web_app::RemoveIsolatedWebAppBrowsingData(
+        &profile(), url_info_.origin(),
+        base::BindOnce(std::move(next_step_callback), std::move(install_info)));
+    return;
+  }
+
+  std::move(next_step_callback).Run(std::move(install_info));
+}
+
+void InstallIsolatedWebAppCommand::FinalizeInstall(
+    WebAppInstallInfo install_info) {
+  const IwaVersion to_be_installed_version =
+      install_info.isolated_web_app_version();
+
   GetMutableDebugValue().Set("actual_version",
-                             install_info.isolated_web_app_version.GetString());
-  GetMutableDebugValue().Set("app_title", install_info.title);
+                             to_be_installed_version.GetString());
+  GetMutableDebugValue().Set("app_title", install_info.title.value());
 
   WebAppInstallFinalizer::FinalizeOptions options(install_surface_);
 
@@ -286,14 +341,13 @@ void InstallIsolatedWebAppCommand::FinalizeInstall(
       *destination_storage_location_, std::move(integrity_block_data_));
 
   lock_->install_finalizer().FinalizeInstall(
-      install_info, options,
+      std::move(install_info), options,
       base::BindOnce(&InstallIsolatedWebAppCommand::OnFinalizeInstall,
-                     weak_factory_.GetWeakPtr(),
-                     install_info.isolated_web_app_version));
+                     weak_factory_.GetWeakPtr(), to_be_installed_version));
 }
 
 void InstallIsolatedWebAppCommand::OnFinalizeInstall(
-    const base::Version& attempted_version,
+    const IwaVersion& attempted_version,
     const webapps::AppId& unused_app_id,
     webapps::InstallResultCode install_result_code) {
   if (install_result_code == webapps::InstallResultCode::kSuccessNewInstall) {
@@ -322,7 +376,7 @@ void InstallIsolatedWebAppCommand::ReportFailure(
 }
 
 void InstallIsolatedWebAppCommand::ReportSuccess(
-    const base::Version& installed_version) {
+    const IwaVersion& installed_version) {
   GetMutableDebugValue().Set("result", "success");
   RecordInstallMetrics(
       InstallCommand::kInstallIsolatedWebApp, WebAppType::kIsolatedWebApp,

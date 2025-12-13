@@ -243,18 +243,6 @@ FrameTreeNode::~FrameTreeNode() {
     CHECK(!render_manager()->speculative_frame_host());
   }
 
-  // If the removed frame was created by a script, then its history entry will
-  // never be reused - we can save some memory by removing the history entry.
-  // See also https://crbug.com/784356.
-  if (is_created_by_script_ && parent_) {
-    NavigationEntryImpl* nav_entry =
-        navigator().controller().GetLastCommittedEntry();
-    if (nav_entry) {
-      nav_entry->RemoveEntryForFrame(this,
-                                     /* only_if_different_position = */ false);
-    }
-  }
-
   frame_tree_->FrameRemoved(this);
 
   DestroyInnerFrameTreeIfExists();
@@ -321,6 +309,20 @@ FrameTreeNode::~FrameTreeNode() {
 
   // Matches the TRACE_EVENT_BEGIN in the constructor.
   TRACE_EVENT_END("navigation.debug", perfetto::Track::FromPointer(this));
+}
+
+void FrameTreeNode::MaybeRemoveFromLastCommittedEntry() {
+  // If the removed frame was created by a script, then its history entry will
+  // never be reused - we can save some memory by removing the history entry.
+  // See also https://crbug.com/784356.
+  if (is_created_by_script_ && parent_) {
+    NavigationEntryImpl* nav_entry =
+        navigator().controller().GetLastCommittedEntry();
+    if (nav_entry) {
+      nav_entry->RemoveEntryForFrame(this,
+                                     /* only_if_different_position = */ false);
+    }
+  }
 }
 
 void FrameTreeNode::AddObserver(Observer* observer) {
@@ -803,7 +805,7 @@ bool FrameTreeNode::NotifyUserActivation(
   // If we're in a picture-in-picture frame tree, then also activate the opener
   // frame of the picture-in-picture root.
   FrameTree* pip_opener =
-      frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+      frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
   if (base::FeatureList::IsEnabled(
           blink::features::kDocumentPictureInPictureUserActivation) &&
       pip_opener) {
@@ -834,7 +836,7 @@ bool FrameTreeNode::NotifyUserActivation(
     // If we own a picture-in-picture window, then also activate same-origin
     // frames within the picture-in-picture window.
     FrameTree* picture_in_picture_frame_tree =
-        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
         if (node->current_frame_host()
@@ -876,7 +878,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we're consuming user activation in a picture-in-picture window, ensure
     // that its opener's frames also consume activation.
     FrameTree* pip_opener =
-        frame_tree().delegate()->GetPictureInPictureOpenerFrameTree();
+        frame_tree().delegate()->GetDocumentPictureInPictureOpenerFrameTree();
     if (pip_opener) {
       for (FrameTreeNode* node : pip_opener->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();
@@ -886,7 +888,7 @@ bool FrameTreeNode::ConsumeTransientUserActivation() {
     // If we own a picture-in-picture window, ensure that its frames also
     // consume activation.
     FrameTree* picture_in_picture_frame_tree =
-        frame_tree().delegate()->GetOwnedPictureInPictureFrameTree();
+        frame_tree().delegate()->GetOwnedDocumentPictureInPictureFrameTree();
     if (picture_in_picture_frame_tree) {
       for (FrameTreeNode* node : picture_in_picture_frame_tree->Nodes()) {
         node->current_frame_host()->ConsumeTransientUserActivation();

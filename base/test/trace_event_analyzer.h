@@ -103,10 +103,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 
-namespace base {
-class Value;
-}
-
 namespace trace_analyzer {
 class QueryNode;
 

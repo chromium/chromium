@@ -15,8 +15,11 @@
 #include "chrome/browser/extensions/commands/command_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -47,6 +50,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
    public:
     // Returns the currently active WebContents, or nullptr if there is none.
     virtual content::WebContents* GetWebContentsForExtension() = 0;
+
+   protected:
+    ~Delegate() {}  // should only be deleted via concrete type.
   };
 
   // If `extension_filter` is not ALL_EXTENSIONS, only keybindings by
@@ -141,9 +147,9 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
  private:
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const ExtensionId& extension_id,
-                               const Command& command) override;
+                               const std::string& command_name) override;
   void OnExtensionCommandRemoved(const ExtensionId& extension_id,
-                                 const Command& command) override;
+                                 const std::string& command_name) override;
   void OnCommandServiceDestroying() override;
 
   // ExtensionRegistryObserver implementation.

@@ -26,18 +26,11 @@ class HTMLFormElement;
 class QualifiedName;
 class CustomElementDefinition;
 class CustomElementReaction;
-class CustomElementRegistry;
 
 class CORE_EXPORT CustomElement {
   STATIC_ONLY(CustomElement);
 
  public:
-  // Retrieves the CustomElementRegistry for Element, if any. This
-  // may be a different object for a given element over its lifetime
-  // as it moves between documents.
-  static CustomElementRegistry* Registry(const Element&);
-  static CustomElementRegistry* Registry(const TreeScope&);
-
   static CustomElementDefinition* DefinitionForElement(const Element*);
 
   static void AddEmbedderCustomElementName(const AtomicString& name);
@@ -119,8 +112,12 @@ class CORE_EXPORT CustomElement {
       Document&,
       const QualifiedName&,
       const CreateElementFlags,
-      const AtomicString& is_value);
-  static HTMLElement* CreateFailedElement(Document&, const QualifiedName&);
+      const AtomicString& is_value,
+      CustomElementRegistry* registry,
+      const bool wait_for_registry);
+  static HTMLElement* CreateFailedElement(Document&,
+                                          const QualifiedName&,
+                                          CustomElementRegistry*);
 
   static void Enqueue(Element&, CustomElementReaction&);
   static void EnqueueConnectedCallback(Element&);
@@ -161,11 +158,17 @@ class CORE_EXPORT CustomElement {
     kQNameIsValid,
   };
   template <CreateUUCheckLevel>
+  // When a null registry is passed in, we can use wait_for_registry flag to
+  // control if the created element is "explicit null" and wait for a registry
+  // to be set later or "implicit null" and pick up the registry from the tree
+  // scope.
   static Element* CreateUncustomizedOrUndefinedElementTemplate(
       Document&,
       const QualifiedName&,
       const CreateElementFlags,
-      const AtomicString& is_value);
+      const AtomicString& is_value,
+      CustomElementRegistry* registry,
+      const bool wait_for_registry);
 };
 
 }  // namespace blink

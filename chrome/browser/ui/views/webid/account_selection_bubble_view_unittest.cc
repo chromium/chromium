@@ -40,6 +40,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -48,6 +49,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/mock_input_event_activation_protector.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 
@@ -70,6 +72,8 @@ class FakeTabInterface : public tabs::MockTabInterface {
   explicit FakeTabInterface(content::WebContents* contents)
       : contents_(contents) {}
   content::WebContents* GetContents() const override { return contents_; }
+  bool IsActivated() const override { return true; }
+  bool CanShowModalUI() const override { return true; }
 
  private:
   raw_ptr<content::WebContents> contents_;
@@ -86,12 +90,13 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
             &test_url_loader_factory_);
   }
 
-  void OnAccountSelected(const IdentityRequestAccountPtr& account,
+  bool OnAccountSelected(const IdentityRequestAccountPtr& account,
                          const ui::Event& event) {
     // Simulate the account selection by calling ShowSingleAccountConfirmDialog
     // directly
     account_selection_view()->ShowSingleAccountConfirmDialog(
         account, /*show_back_button=*/false);
+    return true;
   }
 
   void ClickAccountHoverButton(webid::AccountHoverButton* account_hover_button,
@@ -111,6 +116,14 @@ class FakeFedCmAccountSelectionView : public FedCmAccountSelectionView {
                          ui::EF_LEFT_MOUSE_BUTTON, 0);
 
     account_hover_button->OnPressed(event);
+  }
+
+ protected:
+  void ShowDialog(
+      views::Widget* widget,
+      std::unique_ptr<tabs::TabDialogManager::Params> params) override {
+    widget->Show();
+    widget->SetVisible(true);
   }
 
  private:
@@ -169,7 +182,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
       const std::u16string& iframe_for_display = u"") {
     Reset();
     views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW);
 
     anchor_widget_ = std::make_unique<views::Widget>();
@@ -236,11 +249,11 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
                            bool expected_icon_visibility,
                            const std::u16string& expected_subtitle = u"") {
     // Perform some basic dialog checks.
-    EXPECT_FALSE(dialog()->ShouldShowCloseButton());
-    EXPECT_FALSE(dialog()->ShouldShowWindowTitle());
+    EXPECT_FALSE(dialog_delegate()->ShouldShowCloseButton());
+    EXPECT_FALSE(dialog_delegate()->ShouldShowWindowTitle());
 
-    EXPECT_FALSE(dialog()->GetOkButton());
-    EXPECT_FALSE(dialog()->GetCancelButton());
+    EXPECT_FALSE(dialog_delegate()->GetOkButton());
+    EXPECT_FALSE(dialog_delegate()->GetCancelButton());
 
     // Order: Potentially hidden IDP brand icon, potentially hidden back button,
     // titles, close button.
@@ -562,6 +575,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   AccountSelectionBubbleView* dialog() { return dialog_; }
+  views::BubbleDialogDelegate* dialog_delegate() {
+    CHECK(dialog()->GetWidget());
+    return dialog()->GetWidget()->widget_delegate()->AsBubbleDialogDelegate();
+  }
 
   content::WebContents* web_contents() { return test_web_contents_.get(); }
 
@@ -730,7 +747,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->SetBackgroundColor(SK_ColorWHITE);
+  dialog_delegate()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kDarkBlue = "#1a73e8";
   SkColor bg_color;
@@ -763,7 +780,7 @@ TEST_F(AccountSelectionBubbleViewTest,
   CreateAccountSelectionBubble();
 
   // Set the dialog background color to white.
-  dialog()->SetBackgroundColor(SK_ColorWHITE);
+  dialog_delegate()->SetBackgroundColor(SK_ColorWHITE);
 
   const std::string kWhite = "#fff";
   SkColor bg_color;
@@ -841,43 +858,9 @@ TEST_F(AccountSelectionBubbleViewTest, Failure) {
   TestFailureDialog(kTitleSignIn, /*expected_icon_visibility=*/true);
 }
 
-class MultipleIdpAccountSelectionBubbleViewTest
-    : public AccountSelectionBubbleViewTest {
- public:
-  MultipleIdpAccountSelectionBubbleViewTest() = default;
-
- protected:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kFedCmMultipleIdentityProviders);
-    AccountSelectionBubbleViewTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Tests that the single account case is the same with
-// features::kFedCmMultipleIdentityProviders enabled. See
-// AccountSelectionBubbleViewTest's SingleAccount test.
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, SingleAccount) {
-  TestSingleAccount(kTitleSignIn,
-                    /*expected_icon_visibility=*/true,
-                    /*has_display_identifier=*/true);
-}
-
-// Tests that when there is multiple accounts but only one IDP, the UI is
-// exactly the same with features::kFedCmMultipleIdentityProviders enabled (see
-// AccountSelectionBubbleViewTest's MultipleAccounts test).
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleAccountsSingleIdp) {
-  TestMultipleAccounts(kTitleSignIn,
-                       /*expected_icon_visibility=*/true);
-}
-
 // Tests that the logo is visible with features::kFedCmMultipleIdentityProviders
 // enabled and multiple IDPs.
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
-       MultipleAccountsMultipleIdps) {
+TEST_F(AccountSelectionBubbleViewTest, MultipleAccountsMultipleIdps) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3", "4"};
   std::vector<IdentityProviderDataPtr> idp_list = {
@@ -923,7 +906,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                             /*expect_idp=*/true);
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
+TEST_F(AccountSelectionBubbleViewTest, OneIdpWithMismatch) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   std::vector<IdentityProviderDataPtr> idp_list = {
       base::MakeRefCounted<content::IdentityProviderData>(
@@ -966,8 +949,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, OneIdpWithMismatch) {
       base::StrCat({u"Use your ", kSecondIdpETLDPlusOne, u" account"}));
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
-       MultiIdpUseOtherAccountNotSupported) {
+TEST_F(AccountSelectionBubbleViewTest, MultiIdpUseOtherAccountNotSupported) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   content::IdentityProviderMetadata idp_with_supports_add =
@@ -1014,7 +996,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
                             /*expect_idp=*/true);
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
+TEST_F(AccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
   const std::vector<std::string> kAccountSuffixes1 = {"1", "2"};
   const std::vector<std::string> kAccountSuffixes2 = {"3"};
   idp_list_ = {base::MakeRefCounted<content::IdentityProviderData>(
@@ -1077,7 +1059,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, ShowSingleReturningAccount) {
   CheckMismatchIdp(contents[accounts_index++], u"Use your idp4.com account");
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
+TEST_F(AccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
   std::vector<IdentityProviderDataPtr> idp_list = {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
@@ -1114,7 +1096,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpWithAllIdpsMismatch) {
       base::StrCat({u"Use your ", kSecondIdpETLDPlusOne, u" account"}));
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
+TEST_F(AccountSelectionBubbleViewTest, MultipleReturningAccounts) {
   std::vector<IdentityProviderDataPtr> idp_list = {
       base::MakeRefCounted<content::IdentityProviderData>(
           kIdpForDisplay, content::IdentityProviderMetadata(),
@@ -1160,7 +1142,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultipleReturningAccounts) {
                             /*expect_idp=*/true);
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
+TEST_F(AccountSelectionBubbleViewTest,
        MultipleReturningAccountsWithTimestamps) {
   const std::vector<std::string> kAccountSuffixes1 = {"new1", "returning1",
                                                       "returning2"};
@@ -1504,8 +1486,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleIdentifierAccounts) {
   CheckUseOtherAccount(contents[3]);
 }
 
-TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
-       SingleAccountSingleIdentifier) {
+TEST_F(AccountSelectionBubbleViewTest, SingleAccountSingleIdentifier) {
   TestSingleAccount(kTitleSignIn,
                     /*expected_icon_visibility=*/true,
                     /*has_display_identifier=*/false);
@@ -1586,6 +1567,31 @@ TEST_F(AccountSelectionInteractionTest,
   PerformSingleAccountConfirmDialogChecks(kTitleSignIn,
                                           /*expected_icon_visibility=*/true,
                                           /*has_display_identifier=*/true);
+}
+
+TEST_F(AccountSelectionInteractionTest, ClickProtectionButtonState) {
+  const std::vector<std::string> kAccountSuffixes = {"1", "2", "3"};
+  CreateAndShowMultiAccountPicker(kAccountSuffixes);
+
+  AccountHoverButton* account_hover_button =
+      static_cast<AccountHoverButton*>(GetFirstAccountHoverButton());
+  IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, idp_data_, LoginState::kSignUp);
+
+  auto input_protector =
+      std::make_unique<views::MockInputEventActivationProtector>();
+  EXPECT_CALL(*input_protector, IsPossiblyUnintendedInteraction)
+      .WillOnce(testing::Return(true));
+  account_selection_view_->SetInputEventActivationProtectorForTesting(
+      std::move(input_protector));
+
+  // If a click is rejected by input protector, the hover button should remain
+  // unclicked.
+  views::test::ButtonTestApi(account_hover_button)
+      .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
+                                  gfx::Point(), base::TimeTicks(),
+                                  ui::EF_LEFT_MOUSE_BUTTON, 0));
+  EXPECT_FALSE(account_hover_button->HasBeenClicked());
 }
 
 }  //  namespace webid

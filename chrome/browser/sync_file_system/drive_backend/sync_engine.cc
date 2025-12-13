@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -48,8 +49,6 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -195,18 +194,13 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
-  extensions::ExtensionRegistrar* extension_registrar =
-      extensions::ExtensionRegistrar::Get(context);
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(context);
 
   // Use WrapUnique instead of std::make_unique because of the private ctor.
   auto sync_engine = base::WrapUnique(new SyncEngine(
       ui_task_runner.get(), worker_task_runner.get(), drive_task_runner.get(),
-      GetSyncFileSystemDir(context->GetPath()), task_logger,
-      extension_registrar, extension_registry, identity_manager,
-      url_loader_factory, std::make_unique<DriveServiceFactory>(),
-      nullptr /* env_override */));
+      GetSyncFileSystemDir(context->GetPath()), task_logger, profile,
+      identity_manager, url_loader_factory,
+      std::make_unique<DriveServiceFactory>(), nullptr /* env_override */));
 
   sync_engine->Initialize();
   return sync_engine;
@@ -316,9 +310,8 @@ void SyncEngine::InitializeInternal(
       ui_task_runner_.get(), weak_ptr_factory_.GetWeakPtr());
 
   if (!sync_worker) {
-    sync_worker = std::make_unique<SyncWorker>(
-        sync_file_system_dir_, extension_registrar_->GetWeakPtr(),
-        extension_registry_->GetWeakPtr(), env_override_);
+    sync_worker = std::make_unique<SyncWorker>(sync_file_system_dir_, profile_,
+                                               env_override_);
   }
 
   sync_worker_ = std::move(sync_worker);
@@ -625,8 +618,7 @@ SyncEngine::SyncEngine(
     const scoped_refptr<base::SequencedTaskRunner>& drive_task_runner,
     const base::FilePath& sync_file_system_dir,
     TaskLogger* task_logger,
-    extensions::ExtensionRegistrar* extension_registrar,
-    extensions::ExtensionRegistry* extension_registry,
+    Profile* profile,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<DriveServiceFactory> drive_service_factory,
@@ -636,8 +628,6 @@ SyncEngine::SyncEngine(
       drive_task_runner_(drive_task_runner),
       sync_file_system_dir_(sync_file_system_dir),
       task_logger_(task_logger),
-      extension_registrar_(extension_registrar),
-      extension_registry_(extension_registry),
       identity_manager_(identity_manager),
       url_loader_factory_(url_loader_factory),
       drive_service_factory_(std::move(drive_service_factory)),
@@ -648,6 +638,11 @@ SyncEngine::SyncEngine(
       sync_enabled_(false),
       env_override_(env_override) {
   DCHECK(sync_file_system_dir_.IsAbsolute());
+  if (profile) {
+    profile_ = profile->GetWeakPtr();
+  } else {
+    CHECK_IS_TEST();
+  }
   if (identity_manager_)
     identity_manager_->AddObserver(this);
   content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);

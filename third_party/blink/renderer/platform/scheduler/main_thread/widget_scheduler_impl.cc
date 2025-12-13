@@ -4,10 +4,16 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/widget_scheduler_impl.h"
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 
 namespace blink::scheduler {
+
+namespace {
+BASE_FEATURE(kDeferTasksAfterInputOnlyWhenRenderingUnpaused,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 WidgetSchedulerImpl::WidgetSchedulerImpl(
     MainThreadSchedulerImpl* main_thread_scheduler,
@@ -112,8 +118,24 @@ void WidgetSchedulerImpl::DidHandleInputEventOnMainThread(
     const WebInputEvent& web_input_event,
     WebInputEventResult result,
     bool frame_requested) {
+  // TODO(crbug.com/451389811): We should probably move `frame_requested` to the
+  // `Delegate`.
+  bool is_frame_expected = frame_requested;
+  if (base::FeatureList::IsEnabled(
+          kDeferTasksAfterInputOnlyWhenRenderingUnpaused)) {
+    // `delegate_` can be null in unit tests, or if input tasks run during
+    // shutdown between `WillShutdown()` and actually destroying the widget
+    // scheduler, which also happens in tests.
+    if (delegate_) {
+      // A frame is not expected if rendering is deferred, which happens early
+      // in page load, or paused, which happens during view transitions. We do,
+      // however, expect a main frame with all the requisite callbacks if frame
+      // commits are deferred.
+      is_frame_expected &= !delegate_->AreMainFramesPausedOrDeferred();
+    }
+  }
   main_thread_scheduler_->DidHandleInputEventOnMainThread(
-      web_input_event, result, frame_requested);
+      web_input_event, result, is_frame_expected);
 }
 
 void WidgetSchedulerImpl::DidRunBeginMainFrame() {}

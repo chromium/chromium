@@ -2,6 +2,30 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("prefs") {
+  sources = [ "pref_names.h" ]
+}
+
+component("dom_distiller_features") {
+  defines = [ "IS_DOM_DISTILLER_FEATURES_IMPL" ]
+
+  sources = [
+    "dom_distiller_features.cc",
+    "dom_distiller_features.h",
+    "dom_distiller_switches.cc",
+    "dom_distiller_switches.h",
+  ]
+
+  deps = [
+    ":prefs",
+    "//base",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/dom_distiller/core/android:jni_headers" ]
+  }
+}
+
 static_library("core") {
   sources = [
     "article_distillation_update.cc",
@@ -23,21 +47,16 @@ static_library("core") {
     "distiller_url_fetcher.h",
     "dom_distiller_constants.cc",
     "dom_distiller_constants.h",
-    "dom_distiller_features.cc",
-    "dom_distiller_features.h",
     "dom_distiller_request_view_base.cc",
     "dom_distiller_request_view_base.h",
     "dom_distiller_service.cc",
     "dom_distiller_service.h",
-    "dom_distiller_switches.cc",
-    "dom_distiller_switches.h",
     "experiments.cc",
     "experiments.h",
     "extraction_utils.cc",
     "extraction_utils.h",
     "page_features.cc",
     "page_features.h",
-    "pref_names.h",
     "task_tracker.cc",
     "task_tracker.h",
     "url_constants.h",
@@ -48,6 +67,8 @@ static_library("core") {
   ]
 
   public_deps = [
+    ":prefs",
+    "//components/dom_distiller/core:dom_distiller_features",
     "//components/dom_distiller/core/proto",
     "//net",
     "//third_party/dom_distiller_js:proto",
@@ -61,7 +82,7 @@ static_library("core") {
     "//components/resources",
     "//components/strings",
     "//components/variations",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//skia",
     "//third_party/re2",
     "//ui/base",
@@ -118,11 +139,13 @@ source_set("unit_tests") {
     "article_entry_unittest.cc",
     "distillable_page_detector_unittest.cc",
     "distilled_content_store_unittest.cc",
-    "distilled_page_prefs_unittests.cc",
+    "distilled_page_prefs_unittest.cc",
+    "distiller_page_unittest.cc",
     "distiller_unittest.cc",
     "distiller_url_fetcher_unittest.cc",
     "dom_distiller_request_view_base_unittest.cc",
     "dom_distiller_service_unittest.cc",
+    "extraction_utils_unittest.cc",
     "page_features_unittest.cc",
     "task_tracker_unittest.cc",
     "url_utils_unittest.cc",
@@ -140,7 +163,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//net:test_support",
     "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

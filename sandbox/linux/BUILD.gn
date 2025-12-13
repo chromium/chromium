@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//sandbox/features.gni")
 import("//testing/test.gni")
 
@@ -384,6 +383,7 @@ source_set("sandbox_services_headers") {
     "system_headers/linux_filter.h",
     "system_headers/linux_futex.h",
     "system_headers/linux_landlock.h",
+    "system_headers/linux_memfd.h",
     "system_headers/linux_prctl.h",
     "system_headers/linux_ptrace.h",
     "system_headers/linux_seccomp.h",

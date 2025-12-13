@@ -49,7 +49,7 @@ class GridFocusgroupStructureInfo {
   virtual ~GridFocusgroupStructureInfo() = default;
 
   virtual Element* Root() = 0;
-  virtual FocusgroupFlags Flags() = 0;
+  virtual FocusgroupBehavior Behavior() = 0;
   virtual unsigned ColumnCount() = 0;
 
   virtual Element* PreviousCellInRow(const Element* cell) = 0;
@@ -93,7 +93,7 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
   const LayoutTable* Table();
 
   Element* Root() override;
-  FocusgroupFlags Flags() override;
+  FocusgroupBehavior Behavior() override;
   unsigned ColumnCount() override;
 
   Element* PreviousCellInRow(const Element* cell_element) override;

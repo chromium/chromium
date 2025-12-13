@@ -181,7 +181,9 @@ class PageActionViewTest : public ChromeViewsTestBase {
     ON_CALL(mock_model_, GetVisible()).WillByDefault(Return(false));
     ON_CALL(mock_model_, ShouldShowSuggestionChip())
         .WillByDefault(Return(false));
-    ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShouldAnimateChipIn()).WillByDefault(Return(false));
+    ON_CALL(mock_model_, GetShouldAnimateChipOut())
+        .WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetAccessibleName())
         .WillByDefault(ReturnRef(mock_string_));
@@ -384,9 +386,29 @@ TEST_F(PageActionViewTest, Highlight) {
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_TRUE(ink_drop->GetHighlighted());
 
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(ink_drop->GetHighlighted());
+
   EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
   EXPECT_FALSE(ink_drop->GetHighlighted());
+}
+
+// Regression test to ensure proper clean up when the view is destroyed while
+// highlighted.
+TEST_F(PageActionViewTest, HandleDestructionWhileHighlighted) {
+  auto scoped_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+  views::InkDropHost* const ink_drop =
+      views::InkDrop::Get(page_action_view()->ink_drop_view());
+
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetActionActive()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(ink_drop->GetHighlighted());
 }
 
 // Test that OnThemeChanged updates the icon image correctly.
@@ -434,32 +456,6 @@ TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
   EXPECT_FALSE(page_action_view()
                    ->GetImageModel(views::Button::STATE_NORMAL)
                    ->IsVectorIcon());
-}
-
-// Test that UpdateBorder() applies correct padding to image that is not a
-// vector icon.
-TEST_F(PageActionViewTest, UpdateBorderUsesChipPaddingForBitmapIcon) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
-  const ui::ImageModel bitmap_image =
-      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
-  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
-  ASSERT_FALSE(bitmap_image.IsVectorIcon());
-
-  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-
-  page_action_view()->OnPageActionModelChanged(*model());
-  page_action_view()->UpdateBorder();
-
-  const gfx::Insets expected_insets =
-      gfx::Insets::VH(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
-                      GetLayoutConstant(LOCATION_BAR_CHIP_PADDING));
-  EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
-  EXPECT_EQ(page_action_view()->GetMinimumSize(),
-            page_action_view()->GetImageContainerView()->GetPreferredSize() +
-                expected_insets.size());
 }
 
 // Test that the corner radii are consistent for chips, regardless of whether
@@ -538,7 +534,7 @@ TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
       .WillOnce([&first_loop](bool) { first_loop.Quit(); });
 
   EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(false));
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
@@ -554,6 +550,8 @@ TEST_F(PageActionViewTest, ChipExpandedCallbackNoAnimation) {
       .WillOnce([&second_loop](bool) { second_loop.Quit(); });
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut())
       .WillRepeatedly(Return(false));
 
   page_action_view()->OnPageActionModelChanged(*model());
@@ -714,7 +712,7 @@ class PageActionViewAnimationTest : public PageActionViewTest {
 };
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(true);
   ExtendAnimations();
 
@@ -739,7 +737,7 @@ TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateOut) {
 }
 
 TEST_F(PageActionViewAnimationTest, ChipStateDuringAnimateIn) {
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(true));
   SetInitialChipVisibility(false);
   ExtendAnimations();
 
@@ -769,7 +767,7 @@ TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
   SetInitialChipVisibility(false);
 
   ExtendAnimations();
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(false));
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
   page_action_view()->OnPageActionModelChanged(*model());
@@ -778,6 +776,8 @@ TEST_F(PageActionViewAnimationTest, AnimationsDisabled) {
   EXPECT_TRUE(page_action_view()->IsChipVisible());
 
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut())
       .WillRepeatedly(Return(false));
   page_action_view()->OnPageActionModelChanged(*model());
 
@@ -803,7 +803,7 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateIn) {
       .WillOnce([&run_loop](bool) { run_loop.Quit(); });
 
   // 3)  Animate-in path.
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipIn()).WillRepeatedly(Return(true));
   ExtendAnimations();
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(true));
@@ -839,7 +839,7 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateOut) {
   }
 
   // 3)  Animate-out path.
-  EXPECT_CALL(*model(), GetShouldAnimateChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnimateChipOut()).WillRepeatedly(Return(true));
   ExtendAnimations();
   EXPECT_CALL(*model(), ShouldShowSuggestionChip())
       .WillRepeatedly(Return(false));
@@ -849,6 +849,71 @@ TEST_F(PageActionViewAnimationTest, ChipExpandedCallbackAnimateOut) {
   FastForwardAnimation();
   run_loop.Run();
 }
+
+struct PageActionViewNonVectorImagePaddingTestParams {
+  int image_size_delta;
+};
+
+class PageActionViewNonVectorImagePaddingTest
+    : public PageActionViewTest,
+      public ::testing::WithParamInterface<
+          PageActionViewNonVectorImagePaddingTestParams> {};
+
+// Test that UpdateBorder() applies correct padding to image against different
+// sizes.
+TEST_P(PageActionViewNonVectorImagePaddingTest,
+       UpdateBorderUsesChipPaddingForBitmapIcon) {
+  const int image_size = kDefaultIconSize - GetParam().image_size_delta;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(image_size, image_size);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+  ASSERT_FALSE(bitmap_image.IsVectorIcon());
+
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+
+  page_action_view()->OnPageActionModelChanged(*model());
+  page_action_view()->UpdateBorder();
+
+  const int padding = (kDefaultIconSize - image_size) / 2;
+  const gfx::Insets expected_insets = gfx::Insets(padding);
+
+  EXPECT_EQ(page_action_view()->GetInsets(), expected_insets);
+  EXPECT_EQ(page_action_view()->GetMinimumSize(),
+            page_action_view()->GetImageContainerView()->GetPreferredSize() +
+                expected_insets.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PageActionViewNonVectorImagePaddingTest,
+    ::testing::Values(
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 4,
+        },
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 2,
+        },
+        PageActionViewNonVectorImagePaddingTestParams{
+            .image_size_delta = 0,
+        }),
+    [](const ::testing::TestParamInfo<
+        PageActionViewNonVectorImagePaddingTest::ParamType>& info) {
+      switch (info.param.image_size_delta) {
+        case 4:
+          return "VerySmallImage";
+        case 2:
+          return "SmallImage";
+        case 0:
+          return "SimilarImage";
+        default:
+          NOTREACHED();
+      }
+    });
 
 }  // namespace
 }  // namespace page_actions

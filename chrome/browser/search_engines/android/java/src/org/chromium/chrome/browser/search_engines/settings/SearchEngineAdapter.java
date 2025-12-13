@@ -25,19 +25,26 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.widget.containment.ContainerStyle;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
+import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.ChoiceMadeLocation;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -52,7 +59,9 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 /** A custom adapter for listing search engines. */
 @NullMarked
@@ -72,32 +81,33 @@ public class SearchEngineAdapter extends BaseAdapter
             NetworkTrafficAnnotationTag.createComplete(
                     "search_engine_adapter",
                     """
-            semantics {
-                sender: 'SearchEngineAdapter'
-                description: 'Sends a request to a Google server to retrieve the favicon bitmap.'
-                trigger:
-                    'A request is sent when the user opens search engine settings and Chrome does '
-                    'not have a favicon.'
-                data: 'Search engine URL and desired icon size.'
-                destination: GOOGLE_OWNED_SERVICE
-                internal {
-                    contacts {
-                        email: 'chrome-signin-team@google.com'
+                    semantics {
+                        sender: 'SearchEngineAdapter'
+                        description: 'Sends a request to a Google server to retrieve the favicon bitmap.'
+                        trigger:
+                            'A request is sent when the user opens search engine settings and Chrome does '
+                            'not have a favicon.'
+                        data: 'Search engine URL and desired icon size.'
+                        destination: GOOGLE_OWNED_SERVICE
+                        internal {
+                            contacts {
+                                email: 'chrome-signin-team@google.com'
+                            }
+                            contacts {
+                                email: 'triploblastic@google.com'
+                            }
+                        }
+                        user_data {
+                            type: NONE
+                        }
+                        last_reviewed: '2023-12-04'
                     }
-                    contacts {
-                        email: 'triploblastic@google.com'
-                    }
-                }
-                user_data {
-                    type: NONE
-                }
-                last_reviewed: '2023-12-04'
-            }
-            policy {
-                cookies_allowed: NO
-                policy_exception_justification: 'Not implemented.'
-                setting: 'This feature cannot be disabled by settings.'
-            }""");
+                    policy {
+                        cookies_allowed: NO
+                        policy_exception_justification: 'Not implemented.'
+                        setting: 'This feature cannot be disabled by settings.'
+                    }\
+                    """);
 
     /**
      * Type for source of search engine. This is needed because if a custom search engine is set as
@@ -150,6 +160,7 @@ public class SearchEngineAdapter extends BaseAdapter
     private boolean mIsLocationPermissionChanged;
 
     private @MonotonicNonNull Runnable mDisableAutoSwitchRunnable;
+    private final ContainmentItemController mContainmentItemController;
 
     /**
      * Construct a SearchEngineAdapter.
@@ -162,6 +173,7 @@ public class SearchEngineAdapter extends BaseAdapter
         mProfile = profile;
         mLayoutInflater =
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContainmentItemController = new ContainmentItemController(mContext);
     }
 
     /** Start the adapter to gather the available search engines and listen for updates. */
@@ -214,9 +226,11 @@ public class SearchEngineAdapter extends BaseAdapter
         RegionalCapabilitiesService regionalCapabilities =
                 RegionalCapabilitiesServiceFactory.getForProfile(mProfile);
         List<TemplateUrl> templateUrls = templateUrlService.getTemplateUrls();
-        TemplateUrl defaultSearchEngineTemplateUrl =
+
+        // Note: DSE may be null if explicitly blocked by policy.
+        @Nullable TemplateUrl defaultSearchEngineTemplateUrl =
                 templateUrlService.getDefaultSearchEngineTemplateUrl();
-        assert defaultSearchEngineTemplateUrl != null;
+
         sortAndFilterUnnecessaryTemplateUrl(
                 templateUrls,
                 defaultSearchEngineTemplateUrl,
@@ -244,26 +258,55 @@ public class SearchEngineAdapter extends BaseAdapter
         // Convert the TemplateUrl index into an index of mSearchEngines.
         mSelectedSearchEnginePosition = -1;
         for (int i = 0; i < mPrepopulatedSearchEngines.size(); ++i) {
-            if (mPrepopulatedSearchEngines.get(i).equals(defaultSearchEngineTemplateUrl)) {
+            if (Objects.equals(mPrepopulatedSearchEngines.get(i), defaultSearchEngineTemplateUrl)) {
                 mSelectedSearchEnginePosition = i;
             }
         }
 
         for (int i = 0; i < mRecentSearchEngines.size(); ++i) {
-            if (mRecentSearchEngines.get(i).equals(defaultSearchEngineTemplateUrl)) {
+            if (Objects.equals(mRecentSearchEngines.get(i), defaultSearchEngineTemplateUrl)) {
                 // Add one to offset the title for the recent search engine list.
                 mSelectedSearchEnginePosition = i + computeStartIndexForRecentSearchEngines();
             }
         }
 
         if (mSelectedSearchEnginePosition == -1) {
-            throw new IllegalStateException(
-                    String.format(
-                            "Default search engine is not found in available search engines:"
-                                    + " DSE is valid=%b, is managed=%b",
-                            defaultSearchEngineTemplateUrl != null,
-                            TemplateUrlServiceFactory.getForProfile(mProfile)
-                                    .isDefaultSearchManaged()));
+            if (defaultSearchEngineTemplateUrl != null) {
+                mRecentSearchEngines.add(defaultSearchEngineTemplateUrl);
+                mSelectedSearchEnginePosition = mRecentSearchEngines.size() - 1;
+            }
+
+            if (VersionInfo.isOfficialBuild()) {
+                // TODO(crbug.com/437052188): address exceptions linked to search engine choice
+                // program and remove the diagnostics logic.
+                // It's very likely this is impacting users who have selected a search engine in a
+                // country where SEC program is in effect and have moved/relocated.
+                // If true, these engines should not be suppressed/removed, but appended to recents.
+                var knownEngines = new StringBuilder(" ");
+                for (var engine : mPrepopulatedSearchEngines) {
+                    knownEngines.append(engine.getShortName()).append(", ");
+                }
+                for (var engine : mRecentSearchEngines) {
+                    knownEngines.append(engine.getShortName()).append(", ");
+                }
+                var report =
+                        new IllegalStateException(
+                                String.format(
+                                        Locale.ROOT,
+                                        "Default search engine is not found in available search"
+                                                + " engines: DSE is valid=%b (%s), is managed=%b,"
+                                                + " known=%d [%s]",
+                                        defaultSearchEngineTemplateUrl != null,
+                                        defaultSearchEngineTemplateUrl != null
+                                                ? defaultSearchEngineTemplateUrl.getShortName()
+                                                : "<null>",
+                                        TemplateUrlServiceFactory.getForProfile(mProfile)
+                                                .isDefaultSearchManaged(),
+                                        mPrepopulatedSearchEngines.size()
+                                                + mRecentSearchEngines.size(),
+                                        knownEngines.toString()));
+                JavaExceptionReporter.reportException(report);
+            }
         }
 
         mInitialEnginePosition = mSelectedSearchEnginePosition;
@@ -274,7 +317,7 @@ public class SearchEngineAdapter extends BaseAdapter
     @VisibleForTesting
     public static void sortAndFilterUnnecessaryTemplateUrl(
             List<TemplateUrl> templateUrls,
-            TemplateUrl defaultSearchEngine,
+            @Nullable TemplateUrl defaultSearchEngine,
             boolean isEeaChoiceCountry) {
         // In the EEA and when the new settings design is shown, we want to avoid re-sorting, to
         // stick to the order of prepopulated engines provided by the service.
@@ -304,7 +347,7 @@ public class SearchEngineAdapter extends BaseAdapter
      * the current user selections.
      */
     private static Comparator<TemplateUrl> templateUrlsComparatorWith(
-            TemplateUrl defaultSearchEngine, boolean sortPrepopulatedEngines) {
+            @Nullable TemplateUrl defaultSearchEngine, boolean sortPrepopulatedEngines) {
         return (TemplateUrl templateUrl1, TemplateUrl templateUrl2) -> {
             // Don't change the order for duplicates.
             if (templateUrl1.getNativePtr() == templateUrl2.getNativePtr()) {
@@ -328,9 +371,9 @@ public class SearchEngineAdapter extends BaseAdapter
             }
 
             // A custom DSE should be displayed right after the prepopulated ones.
-            if (templateUrl1.equals(defaultSearchEngine)) {
+            if (Objects.equals(templateUrl1, defaultSearchEngine)) {
                 return -1;
-            } else if (templateUrl2.equals(defaultSearchEngine)) {
+            } else if (Objects.equals(templateUrl2, defaultSearchEngine)) {
                 return 1;
             }
 
@@ -341,10 +384,11 @@ public class SearchEngineAdapter extends BaseAdapter
     }
 
     private static @TemplateUrlSourceType int getSearchEngineSourceType(
-            TemplateUrl templateUrl, TemplateUrl defaultSearchEngine) {
+            TemplateUrl templateUrl, @Nullable TemplateUrl defaultSearchEngine) {
         if (templateUrl.getIsPrepopulated()) {
             return TemplateUrlSourceType.PREPOPULATED;
-        } else if (templateUrl.getNativePtr() == defaultSearchEngine.getNativePtr()) {
+        } else if (defaultSearchEngine != null
+                && templateUrl.getNativePtr() == defaultSearchEngine.getNativePtr()) {
             return TemplateUrlSourceType.DEFAULT;
         } else {
             return TemplateUrlSourceType.RECENT;
@@ -445,14 +489,30 @@ public class SearchEngineAdapter extends BaseAdapter
         int itemViewType = getItemViewType(position);
         if (itemViewType == VIEW_TYPE_DIVIDER) {
             if (convertView == null && mRecentSearchEngines.size() != 0) {
-                view = mLayoutInflater.inflate(R.layout.search_engine_recent_title, null);
+                view = mLayoutInflater.inflate(R.layout.search_engine_recent_title, parent, false);
             }
             return view;
         }
 
         if (convertView == null) {
             int layoutId = R.layout.search_engine_with_logo;
-            view = mLayoutInflater.inflate(layoutId, null);
+            view = mLayoutInflater.inflate(layoutId, parent, false);
+        }
+
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            boolean isTop = position == 0 || getItemViewType(position - 1) == VIEW_TYPE_DIVIDER;
+            boolean isBottom =
+                    position == getCount() - 1
+                            || getItemViewType(position + 1) == VIEW_TYPE_DIVIDER;
+
+            View containerView = view.findViewById(R.id.container);
+
+            ContainerStyle containerStyle =
+                    mContainmentItemController
+                            .createStandardBuilder(isTop, isBottom, /* isSingleLine= */ true)
+                            .build();
+            ContainmentViewStyler.applyBackgroundStyle(containerView, containerStyle);
+            ContainmentViewStyler.applyMargins(containerView, containerStyle);
         }
 
         view.setOnClickListener(this);
@@ -479,7 +539,8 @@ public class SearchEngineAdapter extends BaseAdapter
                 new GURL(
                         templateUrlService.getSearchEngineUrlFromTemplateUrl(
                                 templateUrl.getKeyword()));
-        updateLogo(logoView, faviconUrl);
+
+        updateLogo(logoView, templateUrl, faviconUrl);
 
         // To improve the explore-by-touch experience, the radio button is hidden from accessibility
         // and instead, "checked" or "not checked" is read along with the search engine's name, e.g.
@@ -506,10 +567,19 @@ public class SearchEngineAdapter extends BaseAdapter
         return view;
     }
 
-    private void updateLogo(ImageView logoView, GURL faviconUrl) {
+    private void updateLogo(ImageView logoView, TemplateUrl templateUrl, GURL faviconUrl) {
         if (mIconCache.containsKey(faviconUrl)) {
             logoView.setImageBitmap(mIconCache.get(faviconUrl));
             return;
+        }
+
+        if (OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+            @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
+            if (bitmap != null) {
+                mIconCache.put(faviconUrl, bitmap);
+                logoView.setImageBitmap(bitmap);
+                return;
+            }
         }
 
         // Use a placeholder image while trying to fetch the logo.

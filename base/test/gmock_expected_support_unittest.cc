@@ -15,6 +15,22 @@
 namespace base::test {
 namespace {
 
+TEST(GmockExpectedSupportTest, ExpectOk) {
+  const expected<void, std::string> e_void;
+  EXPECT_OK(e_void);
+
+  const expected<int, std::string> e_int = 1;
+  EXPECT_OK(e_int);
+}
+
+TEST(GmockExpectedSupportTest, AssertOk) {
+  const expected<void, std::string> e_void;
+  ASSERT_OK(e_void);
+
+  const expected<int, std::string> e_int = 1;
+  ASSERT_OK(e_int);
+}
+
 TEST(GmockExpectedSupportTest, AssertOkAndAssign) {
   const expected<int, std::string> e_int = 1;
   ASSERT_OK_AND_ASSIGN(int result1, e_int);

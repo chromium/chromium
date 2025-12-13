@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"

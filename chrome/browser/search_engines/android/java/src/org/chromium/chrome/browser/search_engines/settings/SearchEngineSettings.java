@@ -120,4 +120,9 @@ public class SearchEngineSettings extends ListFragment
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    @Override
+    public @Nullable String getMainMenuKey() {
+        return "search_engine";
+    }
 }

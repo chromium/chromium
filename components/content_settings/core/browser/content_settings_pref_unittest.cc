@@ -19,7 +19,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
-#include "components/content_settings/core/common/content_settings_partition_key.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -28,8 +27,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "services/preferences/public/cpp/dictionary_value_update.h"
-#include "services/preferences/public/cpp/scoped_pref_update.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -48,8 +45,6 @@ constexpr char kTestPatternCanonicalGamma[] = "https://gamma.com,*";
 constexpr char kTestPatternCanonicalDelta[] = "https://delta.com,*";
 
 constexpr char kTestContentSettingPrefName[] = "content_settings.test";
-constexpr char kTestContentSettingPartitionedPrefName[] =
-    "content_settings.test_partitioned";
 
 constexpr char kExpirationKey[] = "expiration";
 constexpr char kLastModifiedKey[] = "last_modified";
@@ -102,8 +97,6 @@ class ContentSettingsPrefTest : public testing::Test {
  public:
   void SetUp() override {
     prefs_.registry()->RegisterDictionaryPref(kTestContentSettingPrefName);
-    prefs_.registry()->RegisterDictionaryPref(
-        kTestContentSettingPartitionedPrefName);
 
     registrar_.Init(&prefs_);
   }
@@ -111,39 +104,16 @@ class ContentSettingsPrefTest : public testing::Test {
   std::unique_ptr<ContentSettingsPref> CreateContentSettingsPref(
       ContentSettingsType type) {
     return std::make_unique<ContentSettingsPref>(
-        type, &prefs_, &registrar_, kTestContentSettingPrefName,
-        kTestContentSettingPartitionedPrefName, false, false,
+        type, &prefs_, &registrar_, kTestContentSettingPrefName, false, false,
         base::DoNothing());
   }
 
-  void SetPrefForPartition(const PartitionKey& partition_key,
-                           base::Value::Dict partition_settings_dictionary) {
-    if (partition_key.is_default()) {
-      prefs_.SetUserPref(kTestContentSettingPrefName,
-                         std::move(partition_settings_dictionary));
-      return;
-    }
-
-    SetPrefForNonDefaultPartition(partition_key.Serialize(),
-                                  std::move(partition_settings_dictionary));
+  void SetPrefDict(base::Value::Dict pref_value) {
+    prefs_.SetUserPref(kTestContentSettingPrefName, std::move(pref_value));
   }
 
-  void SetPrefForNonDefaultPartition(
-      const std::string& serialized_partition_key,
-      base::Value::Dict partition_settings_dictionary) {
-    prefs::ScopedDictionaryPrefUpdate update(
-        &prefs_, kTestContentSettingPartitionedPrefName);
-    update->SetDictionaryWithoutPathExpansion(
-        serialized_partition_key, std::move(partition_settings_dictionary));
-  }
-
-  const base::Value::Dict* GetPrefForPartition(
-      const PartitionKey& partition_key) {
-    if (partition_key.is_default()) {
-      return &prefs_.GetDict(kTestContentSettingPrefName);
-    }
-    return prefs_.GetDict(kTestContentSettingPartitionedPrefName)
-        .FindDict(partition_key.Serialize());
+  const base::Value::Dict* GetPrefDict() {
+    return &prefs_.GetDict(kTestContentSettingPrefName);
   }
 
  protected:
@@ -151,37 +121,17 @@ class ContentSettingsPrefTest : public testing::Test {
   PrefChangeRegistrar registrar_;
 };
 
-class ContentSettingsPrefParameterizedTest
-    : public ContentSettingsPrefTest,
-      public testing::WithParamInterface<PartitionKey> {
- public:
-  PartitionKey partition_key() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ContentSettingsPrefParameterizedTest,
-    testing::Values(PartitionKey::GetDefaultForTesting(),
-                    PartitionKey::CreateForTesting(/*domain=*/"foo",
-                                                   /*name=*/"bar",
-                                                   /*in_memory=*/false)));
-
-TEST_P(ContentSettingsPrefParameterizedTest, BasicReadWrite) {
+TEST_F(ContentSettingsPrefTest, BasicReadWrite) {
   const char* pattern_pair = "http://example.com,*";
 
-  SetPrefForPartition(
-      partition_key(),
-      base::Value::Dict().Set(
-          pattern_pair,
-          base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
+  SetPrefDict(base::Value::Dict().Set(
+      pattern_pair,
+      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   auto check_value = [&](ContentSetting expected_value) {
     auto rule_iterator = content_settings_pref->GetRuleIterator(
-        /*off_the_record=*/false, partition_key());
+        /*off_the_record=*/false);
     ASSERT_TRUE(rule_iterator->HasNext());
     auto rule = rule_iterator->Next();
     EXPECT_EQ(pattern_pair, CreatePatternString(rule->primary_pattern,
@@ -195,10 +145,10 @@ TEST_P(ContentSettingsPrefParameterizedTest, BasicReadWrite) {
   content_settings_pref->SetWebsiteSetting(
       ContentSettingsPattern::FromString("http://example.com"),
       ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-      RuleMetaData(), partition_key());
+      RuleMetaData());
   check_value(CONTENT_SETTING_ALLOW);
   // Check that the pref has been updated.
-  auto* pref_value = GetPrefForPartition(partition_key());
+  auto* pref_value = GetPrefDict();
   EXPECT_EQ(pref_value->size(), 1ul);
   auto* setting = pref_value->FindDict(pattern_pair);
   ASSERT_NE(setting, nullptr);
@@ -206,60 +156,31 @@ TEST_P(ContentSettingsPrefParameterizedTest, BasicReadWrite) {
             std::make_optional<int>(CONTENT_SETTING_ALLOW));
 }
 
-TEST_F(ContentSettingsPrefTest,
-       ReadContentSettingsFromPrefShouldRemovePartitionIfNecessary) {
-  PartitionKey key1 = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar", /*in_memory=*/false);
-  PartitionKey key2 = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar2", /*in_memory=*/false);
-  auto data = base::Value::Dict().Set(
-      kTestPatternCanonicalAlpha,
-      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK));
-  SetPrefForPartition(key1, data.Clone());
-  SetPrefForPartition(key2, base::Value::Dict());
-  SetPrefForNonDefaultPartition("invalid serialized key", data.Clone());
-
-  auto content_settings_pref =
-      CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-  // Only key2 should remain in the pref.
-  auto& dict = prefs_.GetDict(kTestContentSettingPartitionedPrefName);
-  EXPECT_EQ(dict.size(), 1ul);
-  EXPECT_NE(dict.FindDict(key1.Serialize()), nullptr);
-}
-
-TEST_P(ContentSettingsPrefParameterizedTest,
-       SetWebsiteSettingShouldRemovePartitionIfEmpty) {
-  SetPrefForPartition(
-      partition_key(),
-      base::Value::Dict().Set(
-          "http://example.com,*",
-          base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
+TEST_F(ContentSettingsPrefTest, SetWebsiteSettingShouldRemoveSettingIfEmpty) {
+  SetPrefDict(base::Value::Dict().Set(
+      "http://example.com,*",
+      base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   content_settings_pref->SetWebsiteSetting(
       ContentSettingsPattern::FromString("http://example.com"),
-      ContentSettingsPattern::Wildcard(), base::Value(), RuleMetaData(),
-      partition_key());
-  EXPECT_EQ(content_settings_pref->GetRuleIterator(/*off_the_record=*/false,
-                                                   partition_key()),
+      ContentSettingsPattern::Wildcard(), base::Value(), RuleMetaData());
+  EXPECT_EQ(content_settings_pref->GetRuleIterator(/*off_the_record=*/false),
             nullptr);
-  // For non-default partition, the top-level dict containing data for the
-  // partition will be removed.
-  if (!partition_key().is_default()) {
-    EXPECT_EQ(GetPrefForPartition(partition_key()), nullptr);
-  }
+  // Check that the pref is empty.
+  EXPECT_TRUE(GetPrefDict()->empty());
 }
 
-TEST_P(ContentSettingsPrefParameterizedTest, SetWebsiteSettingWhenEmpty) {
+TEST_F(ContentSettingsPrefTest, SetWebsiteSettingWhenEmpty) {
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   content_settings_pref->SetWebsiteSetting(
       ContentSettingsPattern::FromString("http://example.com"),
       ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-      RuleMetaData(), partition_key());
+      RuleMetaData());
 
   auto rule_iterator = content_settings_pref->GetRuleIterator(
-      /*off_the_record=*/false, partition_key());
+      /*off_the_record=*/false);
   ASSERT_TRUE(rule_iterator->HasNext());
   auto rule = rule_iterator->Next();
   EXPECT_EQ(
@@ -269,7 +190,7 @@ TEST_P(ContentSettingsPrefParameterizedTest, SetWebsiteSettingWhenEmpty) {
   EXPECT_FALSE(rule_iterator->HasNext());
 
   // Check pref.
-  auto* pref_value = GetPrefForPartition(partition_key());
+  auto* pref_value = GetPrefDict();
   EXPECT_EQ(pref_value->size(), 1ul);
   auto* setting = pref_value->FindDict("http://example.com,*");
   ASSERT_NE(setting, nullptr);
@@ -277,77 +198,25 @@ TEST_P(ContentSettingsPrefParameterizedTest, SetWebsiteSettingWhenEmpty) {
             std::make_optional<int>(CONTENT_SETTING_ALLOW));
 }
 
-TEST_F(ContentSettingsPrefTest, DoNotPersistInMemoryPartition) {
-  PartitionKey normal_pk = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar1", /*in_memory=*/false);
-  PartitionKey in_memory_pk = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar2", /*in_memory=*/true);
-
-  auto content_settings_pref =
-      CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-
-  for (const auto& partition_key : {normal_pk, in_memory_pk}) {
-    content_settings_pref->SetWebsiteSetting(
-        ContentSettingsPattern::FromString("http://example.com"),
-        ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        RuleMetaData(), partition_key);
-  }
-
-  // The value should still be stored, but for `in_memory_pk`, the value will
-  // not be written to pref.
-  EXPECT_NE(content_settings_pref->GetRuleIterator(/*off_the_record=*/false,
-                                                   normal_pk),
-            nullptr);
-  EXPECT_NE(content_settings_pref->GetRuleIterator(/*off_the_record=*/false,
-                                                   in_memory_pk),
-            nullptr);
-  EXPECT_NE(GetPrefForPartition(normal_pk), nullptr);
-  EXPECT_EQ(GetPrefForPartition(in_memory_pk), nullptr);
-}
-
 TEST_F(ContentSettingsPrefTest, ClearAllContentSettingsRules) {
   base::Value::Dict dummy_pref_value = base::Value::Dict().Set(
       kTestPatternCanonicalAlpha,
       base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK));
-  PartitionKey pk1 =
-      PartitionKey::CreateForTesting("foo", "bar1", /*in_memory=*/false);
-  PartitionKey pk2 =
-      PartitionKey::CreateForTesting("foo", "bar2", /*in_memory=*/false);
-  SetPrefForPartition(PartitionKey::GetDefaultForTesting(),
-                      dummy_pref_value.Clone());
-  SetPrefForPartition(pk1, dummy_pref_value.Clone());
-  SetPrefForPartition(pk2, dummy_pref_value.Clone());
+  SetPrefDict(dummy_pref_value.Clone());
 
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-  content_settings_pref->ClearAllContentSettingsRules(
-      PartitionKey::GetDefaultForTesting());
-  content_settings_pref->ClearAllContentSettingsRules(pk1);
+  content_settings_pref->ClearAllContentSettingsRules();
 
   EXPECT_EQ(content_settings_pref->GetRuleIterator(
-                /*off_the_record=*/false, PartitionKey::GetDefaultForTesting()),
+                /*off_the_record=*/false),
             nullptr);
-  EXPECT_EQ(
-      content_settings_pref->GetRuleIterator(/*off_the_record=*/false, pk1),
-      nullptr);
-  EXPECT_NE(
-      content_settings_pref->GetRuleIterator(/*off_the_record=*/false, pk2),
-      nullptr);
 
-  EXPECT_TRUE(
-      GetPrefForPartition(PartitionKey::GetDefaultForTesting())->empty());
-  EXPECT_EQ(GetPrefForPartition(pk1), nullptr);
-  EXPECT_NE(GetPrefForPartition(pk2), nullptr);
+  EXPECT_TRUE(GetPrefDict()->empty());
 }
 
 TEST_F(ContentSettingsPrefTest, GetNumExceptions) {
-  SetPrefForPartition(
-      PartitionKey::GetDefaultForTesting(),
-      base::Value::Dict().Set(
-          kTestPatternCanonicalAlpha,
-          base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK)));
-  SetPrefForPartition(
-      PartitionKey::CreateForTesting("foo", "bar1", /*in_memory=*/false),
+  SetPrefDict(
       base::Value::Dict()
           .Set(kTestPatternCanonicalAlpha,
                base::Value::Dict().Set(kSettingKey, CONTENT_SETTING_BLOCK))
@@ -356,12 +225,11 @@ TEST_F(ContentSettingsPrefTest, GetNumExceptions) {
 
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
-  EXPECT_EQ(content_settings_pref->GetNumExceptions(), 3ul)
-      << "It should take all partitions into account";
+  EXPECT_EQ(content_settings_pref->GetNumExceptions(), 2ul)
+      << "It should count all exceptions in the single pref store";
 }
 
-TEST_P(ContentSettingsPrefParameterizedTest,
-       CanonicalizationWhileReadingFromPrefs) {
+TEST_F(ContentSettingsPrefTest, CanonicalizationWhileReadingFromPrefs) {
   // Canonical/non-canonical patterns originally in preferences.
   constexpr const char* kTestOriginalPatterns[] = {
       kTestPatternNonCanonicalAlpha1,
@@ -401,7 +269,7 @@ TEST_P(ContentSettingsPrefParameterizedTest,
         pattern, CreateDummyContentSettingValue(pattern, /*expired=*/false));
   }
 
-  SetPrefForPartition(partition_key(), std::move(original_pref_value));
+  SetPrefDict(std::move(original_pref_value));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::MEDIA_ENGAGEMENT);
 
@@ -409,8 +277,8 @@ TEST_P(ContentSettingsPrefParameterizedTest,
   // and setting.
 
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_memory;
-  auto rule_iterator = content_settings_pref->GetRuleIterator(
-      false /* is_incognito */, partition_key());
+  auto rule_iterator =
+      content_settings_pref->GetRuleIterator(false /* is_incognito */);
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
@@ -424,7 +292,7 @@ TEST_P(ContentSettingsPrefParameterizedTest,
   // Verify that Preferences do, as well.
 
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_prefs;
-  for (auto key_value : *GetPrefForPartition(partition_key())) {
+  for (auto key_value : *GetPrefDict()) {
     patterns_to_tags_in_prefs.emplace_back(
         key_value.first,
         GetTagFromDummyContentSettingValue(key_value.second.GetDict()));
@@ -436,7 +304,7 @@ TEST_P(ContentSettingsPrefParameterizedTest,
 
 // If we are reading from prefs and we have any persistend settings that have
 // expired we should remove these to prevent unbounded growth and bloat.
-TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
+TEST_F(ContentSettingsPrefTest, ExpirationWhileReadingFromPrefs) {
   // Upon construction, ContentSettingPref reads all content setting exception
   // data stored in Preferences for a given content setting. This process also
   // has the side effect that it clears out expired settings.
@@ -471,15 +339,15 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
                               mojom::SessionModel::DURABLE,
                               /*decided_by_related_website_sets=*/true));
 
-  SetPrefForPartition(partition_key(), std::move(original_pref_value));
+  SetPrefDict(std::move(original_pref_value));
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::MEDIA_ENGAGEMENT);
 
   // Verify that the |value_map| contains the expected content setting patterns
   // and setting.
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_memory;
-  auto rule_iterator = content_settings_pref->GetRuleIterator(
-      false /* is_incognito */, partition_key());
+  auto rule_iterator =
+      content_settings_pref->GetRuleIterator(false /* is_incognito */);
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
@@ -492,7 +360,7 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
 
   // Verify that Preferences do, as well.
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_prefs;
-  for (auto key_value : *GetPrefForPartition(partition_key())) {
+  for (auto key_value : *GetPrefDict()) {
     patterns_to_tags_in_prefs.emplace_back(
         key_value.first,
         GetTagFromDummyContentSettingValue(key_value.second.GetDict()));
@@ -504,7 +372,7 @@ TEST_P(ContentSettingsPrefParameterizedTest, ExpirationWhileReadingFromPrefs) {
 
 // Ensure that any previously set last_modified values using
 // base::Time::ToInternalValue can be read correctly.
-TEST_P(ContentSettingsPrefParameterizedTest, LegacyLastModifiedLoad) {
+TEST_F(ContentSettingsPrefTest, LegacyLastModifiedLoad) {
   constexpr char kPatternPair[] = "http://example.com,*";
 
   base::Value::Dict original_pref_value;
@@ -520,7 +388,7 @@ TEST_P(ContentSettingsPrefParameterizedTest, LegacyLastModifiedLoad) {
 
   original_pref_value.Set(kPatternPair, std::move(pref_value));
 
-  SetPrefForPartition(partition_key(), std::move(original_pref_value));
+  SetPrefDict(std::move(original_pref_value));
 
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
@@ -528,16 +396,13 @@ TEST_P(ContentSettingsPrefParameterizedTest, LegacyLastModifiedLoad) {
   // Ensure that after reading from our JSON/old value the last_modified time is
   // still parsed correctly.
   EXPECT_EQ(content_settings_pref->GetNumExceptions(), 1u);
-  auto it = content_settings_pref->GetRuleIterator(false, partition_key());
+  auto it = content_settings_pref->GetRuleIterator(false);
   base::Time retrieved_last_modified = it->Next()->metadata.last_modified();
   EXPECT_EQ(last_modified, retrieved_last_modified);
 }
 
 // Ensure that decided_by_related_website_sets can be written and read.
 TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
-  PartitionKey partition_key = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar", /*in_memory=*/false);
-
   // Write pref.
   {
     auto content_settings_pref =
@@ -548,7 +413,7 @@ TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
     content_settings_pref->SetWebsiteSetting(
         ContentSettingsPattern::FromString("http://example.com"),
         ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        std::move(metadata), partition_key);
+        std::move(metadata));
   }
 
   // Read pref.
@@ -560,7 +425,7 @@ TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
   auto content_settings_pref =
       CreateContentSettingsPref(ContentSettingsType::STORAGE_ACCESS);
   auto rule_iterator = content_settings_pref->GetRuleIterator(
-      /*off_the_record=*/false, partition_key);
+      /*off_the_record=*/false);
   ASSERT_TRUE(rule_iterator->HasNext());
   auto rule = rule_iterator->Next();
   EXPECT_EQ(
@@ -576,9 +441,6 @@ TEST_F(ContentSettingsPrefTest, DecidedByRelatedWebsiteSetsLoad) {
 // false.
 TEST_F(ContentSettingsPrefTest,
        DecidedByRelatedWebsiteSetsFalseNotWrittenToJson) {
-  PartitionKey partition_key = PartitionKey::CreateForTesting(
-      /*domain=*/"foo", /*name=*/"bar", /*in_memory=*/false);
-
   // Write pref.
   {
     auto content_settings_pref =
@@ -589,14 +451,13 @@ TEST_F(ContentSettingsPrefTest,
     content_settings_pref->SetWebsiteSetting(
         ContentSettingsPattern::FromString("http://example.com"),
         ContentSettingsPattern::Wildcard(), base::Value(CONTENT_SETTING_ALLOW),
-        std::move(metadata), partition_key);
+        std::move(metadata));
   }
 
   // Read pref from dict and make sure `decided_by_related_website_sets` is not
   // written when it's false.
-  auto& dict = prefs_.GetDict(kTestContentSettingPartitionedPrefName);
-  EXPECT_EQ(dict.FindDict(partition_key.Serialize())
-                ->FindDict("http://example.com,*")
+  auto& dict = prefs_.GetDict(kTestContentSettingPrefName);
+  EXPECT_EQ(dict.FindDict("http://example.com,*")
                 ->FindBool("decided_by_related_website_sets"),
             std::nullopt);
 }

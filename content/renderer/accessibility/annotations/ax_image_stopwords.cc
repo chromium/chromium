@@ -523,8 +523,9 @@ bool AXImageStopwords::IsImageStopword(const char* word_utf8) const {
 
   // It's not really meaningful, but since short words are stopwords, for
   // simplicity we define the empty string to be a stopword too.
-  if (word_utf16.empty())
+  if (word_utf16.empty()) {
     return true;
+  }
 
   // Canonicalize case, this is like "ToLower" for many languages but
   // works independently of the current locale.
@@ -564,8 +565,9 @@ bool AXImageStopwords::IsImageStopword(const char* word_utf8) const {
   // actually two or more unicode codepoints (consonants and vowels that are
   // joined together), which is why this heuristic still works. Anything with
   // two or fewer unicode codepoints is an extremely short word.
-  if (supported_count == iter.char_offset() && iter.char_offset() <= 2)
+  if (supported_count == iter.char_offset() && iter.char_offset() <= 2) {
     return true;
+  }
 
   return base::Contains(stopword_set_, base::UTF16ToUTF8(word_utf16));
 }

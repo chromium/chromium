@@ -85,6 +85,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
@@ -250,7 +251,9 @@ void DragController::DragExited(DragData* drag_data, LocalFrame& local_root) {
   file_input_element_under_mouse_ = nullptr;
 }
 
-void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
+void DragController::PerformDrop(DragData* drag_data,
+                                 LocalFrame& local_root,
+                                 const Operation& browser_drag_operation) {
   DCHECK(drag_data);
   document_under_mouse_ = local_root.DocumentAtPoint(
       PhysicalOffset::FromPointFRound(drag_data->ClientPosition()));
@@ -267,6 +270,10 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
       // Sending an event can result in the destruction of the view and part.
       DataTransfer* data_transfer = CreateDraggingDataTransfer(
           DataTransferAccessPolicy::kReadable, drag_data);
+      if (RuntimeEnabledFeatures::PreserveDropEffectEnabled()) {
+        data_transfer->SetDestinationOperation(
+            browser_drag_operation.operation);
+      }
       data_transfer->SetSourceOperation(
           drag_data->DraggingSourceOperationMask());
       EventHandler& event_handler = local_root.GetEventHandler();
@@ -312,6 +319,9 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
     }
     bool has_transient_user_activation = LocalFrame::HasTransientUserActivation(
         document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr);
+
+    const bool is_single_link = urls.size() == 1 && !drag_data->ContainsFiles();
+
     bool should_focus_tab = true;
     for (const String& url : urls) {
       ResourceRequest resource_request(url);
@@ -329,12 +339,19 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
       FrameLoadRequest request(nullptr, resource_request);
 
       // Open the dropped URL in a new tab to avoid potential data-loss in the
-      // current tab. See https://crbug.com/451659.
-      // First tab should be focused, the rest should be background tabs.
-      request.SetNavigationPolicy(
-          should_focus_tab
-              ? NavigationPolicy::kNavigationPolicyNewForegroundTab
-              : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
+      // current tab. See https://crbug.com/451659. The feature
+      // kSupportOpeningDraggedLinksInSameTab explores allowing links to be
+      // opened in the same tab if the drop data indicates that should be the
+      // case.
+      if (!base::FeatureList::IsEnabled(
+              blink::features::kSupportOpeningDraggedLinksInSameTab) ||
+          !is_single_link) {
+        // First tab should be focused, the rest should be background tabs.
+        request.SetNavigationPolicy(
+            should_focus_tab
+                ? NavigationPolicy::kNavigationPolicyNewForegroundTab
+                : NavigationPolicy::kNavigationPolicyNewBackgroundTab);
+      }
       local_root.Navigate(request, WebFrameLoadType::kStandard);
       should_focus_tab = false;
     }

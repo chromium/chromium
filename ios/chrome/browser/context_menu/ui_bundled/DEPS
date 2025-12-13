@@ -1,5 +1,6 @@
 include_rules = [
   "+components/data_sharing/public/features.h",
+  "+ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/net/model/crurl.h",
   "+ios/chrome/browser/photos/model",
@@ -7,6 +8,9 @@ include_rules = [
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
+  "+ios/chrome/browser/intelligence/bwg/model",
+  "+ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h",
+  "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_availability.h",
   "+ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h",
   "+ios/chrome/browser/menu/ui_bundled",
@@ -15,4 +19,5 @@ include_rules = [
   "+ios/chrome/browser/text_selection/model/text_classifier_util.h",
   "+ios/chrome/browser/url_loading/model",
   "+ios/chrome/browser/web/model",
+  "+ios/components/enterprise/data_controls",
 ]

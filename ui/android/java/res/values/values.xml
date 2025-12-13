@@ -20,4 +20,8 @@ found in the LICENSE file.
     <!-- Menu Animation Constants -->
     <item type="fraction" format="fraction" name="menu_animation_pivot_x">95%</item>
     <item type="fraction" format="fraction" name="menu_start_animation_pivot_x">5%</item>
+
+    <!-- Flyout Menu Constants-->
+    <item type="integer" format="integer" name="flyout_menu_delay_in_ms">300</item>
+    <item type="integer" format="integer" name="flyout_menu_hover_exit_delay_in_ms">50</item>
 </resources>

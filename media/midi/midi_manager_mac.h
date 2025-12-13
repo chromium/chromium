@@ -7,10 +7,10 @@
 
 #include <CoreMIDI/MIDIServices.h>
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"

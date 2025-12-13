@@ -13,7 +13,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "ui/compositor/layer.h"
@@ -124,7 +123,7 @@ void ScopedOverviewWallpaperClipper::RefreshWallpaperClipBounds(
       wallpaper_widget_controller->wallpaper_view()->layer();
 
   gfx::Rect target_clip_rect = animation_type == AnimationType::kRestore
-                                   ? display::Screen::GetScreen()
+                                   ? display::Screen::Get()
                                          ->GetDisplayNearestWindow(root_window)
                                          .bounds()
                                    : overview_grid_->GetWallpaperClipBounds();

@@ -30,7 +30,8 @@ class ActiveStyleSheetsTest : public PageTestBase {
         MakeGarbageCollected<CSSParserContext>(
             kHTMLStandardMode, SecureContextMode::kInsecureContext));
     contents->ParseString(css_text);
-    contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()));
+    contents->EnsureRuleSet(MediaQueryEvaluator(GetDocument().GetFrame()),
+                            /*mixins=*/{});
     return MakeGarbageCollected<CSSStyleSheet>(contents);
   }
 };
@@ -124,7 +125,7 @@ TEST_F(ActiveStyleSheetsTest, CompareActiveStyleSheets_Mutated) {
 
   sheet2->Contents()->ClearRuleSet();
   sheet2->Contents()->EnsureRuleSet(
-      MediaQueryEvaluator(GetDocument().GetFrame()));
+      MediaQueryEvaluator(GetDocument().GetFrame()), /*mixins=*/{});
 
   EXPECT_NE(old_sheets[1].second, &sheet2->Contents()->GetRuleSet());
 

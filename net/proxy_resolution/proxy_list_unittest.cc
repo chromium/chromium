@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_server.h"
@@ -23,6 +25,14 @@ using net::test::IsOk;
 namespace net {
 
 namespace {
+
+// Returns a ProxyRetryInfo that marks a proxy as being bad for a *very* long
+// time (to avoid the test depending on the current time.)
+ProxyRetryInfo GetProxyRetryInfo() {
+  ProxyRetryInfo proxy_retry_info;
+  proxy_retry_info.bad_until = base::TimeTicks::Now() + base::Days(1);
+  return proxy_retry_info;
+}
 
 // Test parsing from a PAC string.
 TEST(ProxyListTest, SetFromPacString) {
@@ -146,244 +156,165 @@ TEST(ProxyListTest, RemoveProxiesWithoutSchemeWithProxyChains) {
   EXPECT_EQ(list.AllChains(), expected);
 }
 
-TEST(ProxyListTest, DeprioritizeBadProxyChains) {
-  // Retry info that marks a proxy as being bad for a *very* long time (to avoid
-  // the test depending on the current time.)
-  ProxyRetryInfo proxy_retry_info;
-  proxy_retry_info.bad_until = base::TimeTicks::Now() + base::Days(1);
-
+TEST(ProxyListTest, DeprioritizeBadProxyChains_EmptyMap) {
   // Call DeprioritizeBadProxyChains with an empty map -- should have no effect.
-  {
-    ProxyList list;
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+  ProxyList list;
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
 
-    ProxyRetryInfoMap retry_info_map;
-    list.DeprioritizeBadProxyChains(retry_info_map);
-    EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToDebugString());
-  }
-
-  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
-  // These proxies should be retried last.
-  {
-    ProxyList list;
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-
-    ProxyRetryInfoMap retry_info_map;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy1:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy3:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    retry_info_map[ProxyUriToProxyChain("socks5://localhost:1080",
-                                        ProxyServer::SCHEME_HTTP)] =
-        proxy_retry_info;
-
-    list.DeprioritizeBadProxyChains(retry_info_map);
-
-    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80;PROXY foopy3:80",
-              list.ToDebugString());
-  }
-
-  // Call DeprioritizeBadProxyChains where ALL of the chains are marked as bad.
-  // This should have no effect on the order.
-  {
-    ProxyList list;
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-
-    ProxyRetryInfoMap retry_info_map;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy1:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy2:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy3:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-
-    list.DeprioritizeBadProxyChains(retry_info_map);
-
-    EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
-              list.ToDebugString());
-  }
-
-  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
-  // Of the 2 bad proxies, one is to be reconsidered and should be retried last.
-  // The other is not to be reconsidered and should be removed from the list.
-  {
-    ProxyList list;
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-
-    ProxyRetryInfoMap retry_info_map;
-    // |proxy_retry_info.reconsider defaults to true.
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy1:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    proxy_retry_info.try_while_bad = false;
-    retry_info_map[ProxyUriToProxyChain(
-        "foopy3:80", ProxyServer::SCHEME_HTTP)] = proxy_retry_info;
-    proxy_retry_info.try_while_bad = true;
-    retry_info_map[ProxyUriToProxyChain("socks5://localhost:1080",
-                                        ProxyServer::SCHEME_SOCKS5)] =
-        proxy_retry_info;
-
-    list.DeprioritizeBadProxyChains(retry_info_map);
-
-    EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80", list.ToDebugString());
-  }
+  ProxyRetryInfoMap retry_info_map;
+  list.DeprioritizeBadProxyChains(retry_info_map);
+  EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
+            list.ToDebugString());
 }
 
-TEST(ProxyListTest, UpdateRetryInfoOnFallback) {
-  // Retrying should put the first proxy on the retry list.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, ERR_PROXY_CONNECTION_FAILED,
-                                   net_log);
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-    EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
-              retry_info_map[proxy_chain].net_error);
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy3:80", ProxyServer::SCHEME_HTTP)));
-  }
-  // Retrying should put the first proxy on the retry list, even if there
-  // was no network error.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, OK, net_log);
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-    EXPECT_THAT(retry_info_map[proxy_chain].net_error, IsOk());
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy3:80", ProxyServer::SCHEME_HTTP)));
-  }
-  // Including another bad proxy should put both the first and the specified
-  // proxy on the retry list.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, ERR_NAME_RESOLUTION_FAILED,
-                                   net_log);
-    EXPECT_TRUE(retry_info_map.end() !=
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy1:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_EQ(ERR_NAME_RESOLUTION_FAILED,
-              retry_info_map[proxy_chain].net_error);
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-  }
-  // If the first proxy is DIRECT, nothing is added to the retry list, even
-  // if another bad proxy is specified.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP));
-    std::vector<ProxyChain> bad_proxies;
-    bad_proxies.push_back(proxy_chain);
-    list.SetFromPacString("DIRECT;PROXY foopy2:80;PROXY foopy3:80");
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   bad_proxies, OK, net_log);
-    EXPECT_TRUE(retry_info_map.end() == retry_info_map.find(proxy_chain));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy3:80", ProxyServer::SCHEME_HTTP)));
-  }
-  // If the bad proxy is already on the retry list, and the old retry info would
-  // cause the proxy to be retried later than the newly specified retry info,
-  // then the old retry info should be kept.
-  {
-    ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
-    list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+TEST(ProxyListTest, DeprioritizeBadProxyChains_SomeBad) {
+  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
+  // These proxies should be retried last.
+  ProxyList list;
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
 
-    // First, mark the proxy as bad for 60 seconds.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   std::vector<ProxyChain>(),
-                                   ERR_PROXY_CONNECTION_FAILED, net_log);
-    // Next, mark the same proxy as bad for 1 second. This call should have no
-    // effect, since this would cause the bad proxy to be retried sooner than
-    // the existing retry info.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false,
-                                   std::vector<ProxyChain>(), OK, net_log);
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-    EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
-              retry_info_map[proxy_chain].net_error);
-    EXPECT_TRUE(retry_info_map[proxy_chain].try_while_bad);
-    EXPECT_EQ(base::Seconds(60), retry_info_map[proxy_chain].current_delay);
-    EXPECT_GT(retry_info_map[proxy_chain].bad_until,
-              base::TimeTicks::Now() + base::Seconds(30));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy3:80", ProxyServer::SCHEME_HTTP)));
-  }
+  ProxyRetryInfoMap retry_info_map;
+  retry_info_map[ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+  retry_info_map[ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+
+  list.DeprioritizeBadProxyChains(retry_info_map);
+
+  EXPECT_EQ("PROXY foopy2:80;PROXY foopy1:80;PROXY foopy3:80",
+            list.ToDebugString());
+}
+
+TEST(ProxyListTest, DeprioritizeBadProxyChains_AllBad) {
+  // Call DeprioritizeBadProxyChains where ALL of the chains are marked as bad.
+  // This should have no effect on the order.
+  ProxyList list;
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+
+  ProxyRetryInfoMap retry_info_map;
+  retry_info_map[ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+  retry_info_map[ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+  retry_info_map[ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+
+  list.DeprioritizeBadProxyChains(retry_info_map);
+
+  EXPECT_EQ("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80",
+            list.ToDebugString());
+}
+
+TEST(ProxyListTest, DeprioritizeBadProxyChains_RemoveBad) {
+  // Call DeprioritizeBadProxyChains with 2 of the three chains marked as bad.
+  // These proxies should be removed from the list.
+  ProxyList list;
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+
+  ProxyRetryInfoMap retry_info_map;
+  retry_info_map[ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+  retry_info_map[ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)] =
+      GetProxyRetryInfo();
+
+  list.DeprioritizeBadProxyChains(retry_info_map,
+                                  /*remove_bad_proxy_chains=*/true);
+
+  EXPECT_EQ("PROXY foopy2:80", list.ToDebugString());
+}
+
+TEST(ProxyListTest, Fallback_Basic) {
+  // Falling back should put the first proxy on the retry list.
+  ProxyList list;
+  ProxyRetryInfoMap retry_info_map;
+  NetLogWithSource net_log;
+  ProxyChain proxy_chain(
+      ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+  list.Fallback(&retry_info_map, ERR_PROXY_CONNECTION_FAILED, net_log);
+  EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
+  EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED, retry_info_map[proxy_chain].net_error);
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP)));
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)));
+}
+
+TEST(ProxyListTest, Fallback_NoNetworkError) {
+  // Falling back should put the first proxy on the retry list, even if there
+  // was no network error.
+  ProxyList list;
+  ProxyRetryInfoMap retry_info_map;
+  NetLogWithSource net_log;
+  ProxyChain proxy_chain(
+      ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+  list.Fallback(&retry_info_map, OK, net_log);
+  EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
+  EXPECT_THAT(retry_info_map[proxy_chain].net_error, IsOk());
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP)));
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)));
+}
+
+TEST(ProxyListTest, Fallback_Direct) {
+  // If the first proxy is DIRECT, nothing is added to the retry list.
+  ProxyList list;
+  ProxyRetryInfoMap retry_info_map;
+  NetLogWithSource net_log;
+  list.SetFromPacString("DIRECT;PROXY foopy2:80;PROXY foopy3:80");
+  list.Fallback(&retry_info_map, OK, net_log);
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP)));
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)));
+}
+
+TEST(ProxyListTest, Fallback_RetryInfoExists) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
+  ProxyRetryInfoMap retry_info_map;
+  NetLogWithSource net_log;
+  ProxyChain proxy_chain(
+      ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
+  static constexpr base::TimeDelta kDefaultRetryDelay = base::Minutes(5);
+
   // If the bad proxy is already on the retry list, and the newly specified
   // retry info would cause the proxy to be retried later than the old retry
   // info, then the old retry info should be replaced with the new retry info.
   {
     ProxyList list;
-    ProxyRetryInfoMap retry_info_map;
-    NetLogWithSource net_log;
     list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
-
-    // First, mark the proxy as bad for 1 second.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(1), false,
-                                   std::vector<ProxyChain>(), OK, net_log);
-    // Next, mark the same proxy as bad for 60 seconds. This call should replace
-    // the existing retry info with the new 60 second retry info.
-    list.UpdateRetryInfoOnFallback(&retry_info_map, base::Seconds(60), true,
-                                   std::vector<ProxyChain>(),
-                                   ERR_PROXY_CONNECTION_FAILED, net_log);
-    ProxyChain proxy_chain(
-        ProxyUriToProxyChain("foopy1:80", ProxyServer::SCHEME_HTTP));
-    EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
-    EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
-              retry_info_map[proxy_chain].net_error);
-    EXPECT_TRUE(retry_info_map[proxy_chain].try_while_bad);
-    EXPECT_EQ(base::Seconds(60), retry_info_map[proxy_chain].current_delay);
-    EXPECT_GT(retry_info_map[proxy_chain].bad_until,
-              base::TimeTicks::Now() + base::Seconds(30));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy2:80", ProxyServer::SCHEME_HTTP)));
-    EXPECT_TRUE(retry_info_map.end() ==
-                retry_info_map.find(ProxyUriToProxyChain(
-                    "foopy3:80", ProxyServer::SCHEME_HTTP)));
+    // First, mark the proxy as bad.
+    list.Fallback(&retry_info_map, OK, net_log);
+    task_environment.AdvanceClock(base::Minutes(1));
+    EXPECT_EQ(retry_info_map[proxy_chain].bad_until,
+              base::TimeTicks::Now() + kDefaultRetryDelay - base::Minutes(1));
   }
+
+  ProxyList list;
+  list.SetFromPacString("PROXY foopy1:80;PROXY foopy2:80;PROXY foopy3:80");
+  // Next, mark the same proxy as bad. This call should replace the existing
+  // retry info with the new retry info.
+  list.Fallback(&retry_info_map, ERR_PROXY_CONNECTION_FAILED, net_log);
+  EXPECT_TRUE(retry_info_map.end() != retry_info_map.find(proxy_chain));
+  EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED, retry_info_map[proxy_chain].net_error);
+  EXPECT_EQ(retry_info_map[proxy_chain].bad_until,
+            base::TimeTicks::Now() + kDefaultRetryDelay);
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy2:80", ProxyServer::SCHEME_HTTP)));
+  EXPECT_TRUE(retry_info_map.end() ==
+              retry_info_map.find(
+                  ProxyUriToProxyChain("foopy3:80", ProxyServer::SCHEME_HTTP)));
 }
 
 TEST(ProxyListTest, ToPacString) {

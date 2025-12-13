@@ -15,8 +15,8 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "device/fido/attestation_object.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
 
 namespace device {
 

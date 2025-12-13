@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -23,7 +19,6 @@
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
-#include "gpu/command_buffer/service/service_discardable_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/command_buffer/service/test_helper.h"
@@ -659,7 +654,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormat) {
   for (size_t i = 0; i < std::size(kUnsizedInternalFormats); ++i) {
     // Copy from main framebuffer to texture, using the unsized internal format.
     DoBindFramebuffer(GL_FRAMEBUFFER, 0, 0);
-    GLenum internal_format = kUnsizedInternalFormats[i];
+    GLenum internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]);
     DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
     DoCopyTexImage2D(target, level, internal_format, 0, 0, width, height, border);
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -739,7 +734,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormatES3) {
   for (size_t i = 0; i < std::size(kUnsizedInternalFormats); ++i) {
     // Copy from main framebuffer to texture, using the unsized internal format.
     DoBindFramebuffer(GL_FRAMEBUFFER, 0, 0);
-    GLenum internal_format = kUnsizedInternalFormats[i].unsized;
+    GLenum internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]).unsized;
     DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
     DoCopyTexImage2D(target, level, internal_format,
                      0, 0, width, height, border);
@@ -768,7 +763,7 @@ TEST_P(GLES2DecoderManualInitTest, CopyTexImage2DUnsizedInternalFormatES3) {
     if (DoCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
       continue;
 
-    internal_format = kUnsizedInternalFormats[i].sized;
+    internal_format = UNSAFE_TODO(kUnsizedInternalFormats[i]).sized;
     DoBindTexture(GL_TEXTURE_2D, kNewClientId, kNewServiceId);
 
     bool complete =
@@ -1677,7 +1672,7 @@ TEST_P(GLES2DecoderManualInitTest, CompressedTexImage2DS3TCWebGL) {
   };
 
   for (size_t ii = 0; ii < std::size(test_data); ++ii) {
-    const S3TCTestData& test = test_data[ii];
+    const S3TCTestData& test = UNSAFE_TODO(test_data[ii]);
     cmds::CompressedTexImage2DBucket cmd;
     // test small width.
     DoCompressedTexImage2D(
@@ -1833,7 +1828,7 @@ TEST_P(GLES2DecoderManualInitTest, CompressedTexImage2DS3TC) {
   };
 
   for (size_t ii = 0; ii < std::size(test_data); ++ii) {
-    const S3TCTestData& test = test_data[ii];
+    const S3TCTestData& test = UNSAFE_TODO(test_data[ii]);
     cmds::CompressedTexImage2DBucket cmd;
     // test small width.
     DoCompressedTexImage2D(
@@ -3347,7 +3342,7 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
 
   static bool ValueInArray(GLint value, GLint* array, GLint count) {
     for (GLint ii = 0; ii < count; ++ii) {
-      if (array[ii] == value) {
+      if (UNSAFE_TODO(array[ii]) == value) {
         return true;
       }
     }
@@ -3393,8 +3388,8 @@ class GLES2DecoderCompressedFormatsTest : public GLES2DecoderManualInitTest {
     EXPECT_EQ(num_formats, result->GetNumResults());
 
     for (int i = 0; i < count; ++i) {
-      EXPECT_TRUE(
-          ValueInArray(formats[i], result->GetData(), result->GetNumResults()));
+      UNSAFE_TODO(EXPECT_TRUE(ValueInArray(formats[i], result->GetData(),
+                                           result->GetNumResults())));
     }
 
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -3951,89 +3946,6 @@ TEST_P(WebGL2DecoderTest, TexSwizzleDisabled) {
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
   }
-}
-
-TEST_P(GLES2DecoderTest, TestInitDiscardableTexture) {
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  DoInitializeDiscardableTextureCHROMIUM(client_texture_id_);
-  EXPECT_EQ(1u, group().discardable_manager()->NumCacheEntriesForTesting());
-}
-
-TEST_P(GLES2DecoderTest, TestInitInvalidDiscardableTexture) {
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  DoInitializeDiscardableTextureCHROMIUM(0);
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
-}
-
-TEST_P(GLES2DecoderTest, TestInitDiscardableTextureWithInvalidArguments) {
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-
-  // Manually initialize an init command with an invalid buffer.
-  {
-    cmds::InitializeDiscardableTextureCHROMIUM cmd;
-    cmd.Init(client_texture_id_, kInvalidSharedMemoryId, 0);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-    EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  }
-
-  // Manually initialize an init command with an out of bounds offset.
-  {
-    cmds::InitializeDiscardableTextureCHROMIUM cmd;
-    cmd.Init(client_texture_id_, shared_memory_id_, kInvalidSharedMemoryOffset);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-    EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  }
-
-  // Manually initialize an init command with a non-atomic32-aligned offset.
-  {
-    cmds::InitializeDiscardableTextureCHROMIUM cmd;
-    cmd.Init(client_texture_id_, shared_memory_id_, 1);
-    EXPECT_EQ(error::kInvalidArguments, ExecuteCmd(cmd));
-    EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  }
-}
-
-TEST_P(GLES2DecoderTest, TestUnlockDiscardableTexture) {
-  const ContextGroup& context_group = group();
-  EXPECT_EQ(0u,
-            context_group.discardable_manager()->NumCacheEntriesForTesting());
-  DoInitializeDiscardableTextureCHROMIUM(client_texture_id_);
-  EXPECT_TRUE(context_group.discardable_manager()->IsEntryLockedForTesting(
-      client_texture_id_, context_group.texture_manager()));
-  DoUnlockDiscardableTextureCHROMIUM(client_texture_id_);
-  EXPECT_FALSE(context_group.discardable_manager()->IsEntryLockedForTesting(
-      client_texture_id_, context_group.texture_manager()));
-}
-
-TEST_P(GLES2DecoderTest, TestDeleteDiscardableTexture) {
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-  DoInitializeDiscardableTextureCHROMIUM(client_texture_id_);
-  EXPECT_EQ(1u, group().discardable_manager()->NumCacheEntriesForTesting());
-  DoDeleteTexture(client_texture_id_, kServiceTextureId);
-  EXPECT_EQ(0u, group().discardable_manager()->NumCacheEntriesForTesting());
-}
-
-TEST_P(GLES2DecoderManualInitTest,
-       TestDiscardableTextureUnusableWhileUnlocked) {
-  InitState init;
-  InitDecoder(init);
-
-  DoInitializeDiscardableTextureCHROMIUM(client_texture_id_);
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, 0)).RetiresOnSaturation();
-  DoUnlockDiscardableTextureCHROMIUM(client_texture_id_);
-  {
-    // Avoid DoBindTexture, as we expect failure.
-    cmds::BindTexture cmd;
-    cmd.Init(GL_TEXTURE_2D, client_texture_id_);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  }
-  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
-  DoLockDiscardableTextureCHROMIUM(client_texture_id_);
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
 TEST_P(GLES2DecoderTest, CopySubTextureCHROMIUMTwiceClearsUnclearedTexture) {

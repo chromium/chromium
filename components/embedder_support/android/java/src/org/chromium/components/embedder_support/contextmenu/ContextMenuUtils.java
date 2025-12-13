@@ -24,11 +24,145 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.dragdrop.DragStateTracker;
 import org.chromium.ui.mojom.MenuSourceType;
+import org.chromium.url.GURL;
 
 /** Provides utility methods for generating context menus. */
 @NullMarked
 public final class ContextMenuUtils {
+
+    /** An immutable data carrier for the title and urls shown at the top of a context menu. */
+    public static final class HeaderInfo {
+        private final CharSequence mTitle;
+        private final GURL mUrl;
+        private final GURL mSecondaryUrl;
+        private final GURL mTertiaryUrl;
+
+        private HeaderInfo(Builder builder) {
+            mTitle = (builder.mTitle != null) ? builder.mTitle : "";
+            mUrl = (builder.mUrl != null) ? builder.mUrl : GURL.emptyGURL();
+            mSecondaryUrl =
+                    (builder.mSecondaryUrl != null) ? builder.mSecondaryUrl : GURL.emptyGURL();
+            mTertiaryUrl = (builder.mTertiaryUrl != null) ? builder.mTertiaryUrl : GURL.emptyGURL();
+        }
+
+        /**
+         * @return The title. It returns "" if not set.
+         */
+        public CharSequence getTitle() {
+            return mTitle;
+        }
+
+        /**
+         * @return The URL.
+         */
+        public GURL getUrl() {
+            return mUrl;
+        }
+
+        /**
+         * @return The secondary URL.
+         */
+        public GURL getSecondaryUrl() {
+            return mSecondaryUrl;
+        }
+
+        /**
+         * @return The tertiary URL.
+         */
+        public GURL getTertiaryUrl() {
+            return mTertiaryUrl;
+        }
+
+        /** Builder for creating {@link HeaderInfo} instances. */
+        public static final class Builder {
+            @Nullable private CharSequence mTitle;
+            @Nullable private GURL mUrl;
+            @Nullable private GURL mSecondaryUrl;
+            @Nullable private GURL mTertiaryUrl;
+
+            /**
+             * Sets the title to be displayed.
+             *
+             * @param title The title.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setTitle(CharSequence title) {
+                mTitle = title;
+                return this;
+            }
+
+            /**
+             * Sets the primary URL to be displayed.
+             *
+             * @param url The URL.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setUrl(GURL url) {
+                mUrl = url;
+                return this;
+            }
+
+            /**
+             * Sets the optional secondary URL.
+             *
+             * @param secondaryUrl The secondary URL.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setSecondaryUrl(GURL secondaryUrl) {
+                mSecondaryUrl = secondaryUrl;
+                return this;
+            }
+
+            /**
+             * Sets the optional tertiary URL.
+             *
+             * @param tertiaryUrl The tertiary URL.
+             * @return This Builder instance for chaining.
+             */
+            public Builder setTertiaryUrl(GURL tertiaryUrl) {
+                mTertiaryUrl = tertiaryUrl;
+                return this;
+            }
+
+            /**
+             * Creates a new {@link HeaderInfo} instance. Any fields not set in the builder will be
+             * empty strings in the final object.
+             *
+             * @return A new, immutable {@link HeaderInfo} object with non-null fields.
+             */
+            public HeaderInfo build() {
+                return new HeaderInfo(this);
+            }
+        }
+    }
+
     private ContextMenuUtils() {}
+
+    /** Returns the header info to be displayed in the context menu. */
+    public static HeaderInfo getHeaderInfo(
+            ContextMenuParams params, boolean isCustomContextMenuItemPresent) {
+        CharSequence title = getTitle(params);
+        GURL url = params.getLinkUrl();
+        GURL secondaryUrl = GURL.emptyGURL();
+        GURL tertiaryUrl = GURL.emptyGURL();
+
+        if (isCustomContextMenuItemPresent) {
+            if (params.isImage()) {
+                url = params.getSrcUrl();
+                secondaryUrl = params.getPageUrl();
+                if (params.isAnchor()) {
+                    tertiaryUrl = params.getLinkUrl();
+                }
+            }
+        }
+
+        return new HeaderInfo.Builder()
+                .setTitle(title)
+                .setUrl(url)
+                .setSecondaryUrl(secondaryUrl)
+                .setTertiaryUrl(tertiaryUrl)
+                .build();
+    }
 
     /** Returns the title for the given {@link ContextMenuParams}. */
     public static String getTitle(ContextMenuParams params) {

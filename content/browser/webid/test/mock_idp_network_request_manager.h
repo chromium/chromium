@@ -16,7 +16,7 @@ class Origin;
 
 namespace content {
 
-class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
+class MockIdpNetworkRequestManager : public webid::IdpNetworkRequestManager {
  public:
   MockIdpNetworkRequestManager();
   ~MockIdpNetworkRequestManager() override;
@@ -39,7 +39,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       FetchClientMetadata,
       (const GURL&, const std::string&, int, int, FetchClientMetadataCallback),
       (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               SendAccountsRequest,
               (const url::Origin& idp_origin,
                const GURL&,
@@ -66,7 +66,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
               (override));
   MOCK_METHOD(void,
               SendFailedTokenRequestMetrics,
-              (const GURL&, bool, MetricsEndpointErrorCode),
+              (const GURL&, bool, webid::MetricsEndpointErrorCode),
               (override));
   MOCK_METHOD(void,
               SendLogout,

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/autofill/android/save_update_address_profile_prompt_mode.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_prompt_view_android.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -24,7 +25,7 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   DCHECK(web_contents);
   DCHECK(callback);
@@ -37,8 +38,8 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
     return;
   }
 
-  ShowConfirmationMessage(web_contents, profile, original_profile,
-                          is_migration_to_account, std::move(callback));
+  ShowConfirmationMessage(web_contents, profile, original_profile, prompt_mode,
+                          std::move(callback));
 }
 
 SaveUpdateAddressProfileMessageController*
@@ -55,11 +56,10 @@ void SaveUpdateAddressProfileFlowManager::ShowConfirmationMessage(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   save_update_address_profile_message_controller_.DisplayMessage(
-      web_contents, profile, original_profile, is_migration_to_account,
-      std::move(callback),
+      web_contents, profile, original_profile, prompt_mode, std::move(callback),
       base::BindOnce(
           &SaveUpdateAddressProfileFlowManager::ShowPromptWithDetails,
           // Passing base::Unretained(this) is safe since |this|
@@ -71,7 +71,7 @@ void SaveUpdateAddressProfileFlowManager::ShowPromptWithDetails(
     content::WebContents* web_contents,
     const AutofillProfile& profile,
     const AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback callback) {
   auto prompt_view_android =
       std::make_unique<SaveUpdateAddressProfilePromptViewAndroid>(web_contents);
@@ -81,7 +81,7 @@ void SaveUpdateAddressProfileFlowManager::ShowPromptWithDetails(
   save_update_address_profile_prompt_controller_ = std::make_unique<
       SaveUpdateAddressProfilePromptController>(
       std::move(prompt_view_android), personal_data, profile, original_profile,
-      is_migration_to_account, std::move(callback),
+      prompt_mode, std::move(callback),
       /*dismissal_callback=*/
       base::BindOnce(
           &SaveUpdateAddressProfileFlowManager::OnPromptWithDetailsDismissed,

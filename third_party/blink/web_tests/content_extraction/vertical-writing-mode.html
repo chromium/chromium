@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="./resources/consistent-rendering.css" rel="stylesheet" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/content-extraction-test-helpers.js"></script>
+<script src="../resources/ahem.js"></script>
+
+<script>
+function runTest() {
+  finishTest(dumpContentNodeTree(document));
+}
+</script>
+</head>
+
+<body onload="runTest()">
+  <!--
+  Expected: Vertical text fragmented between characters (no spaces) with horizontal inline element.
+  Challenge: Mixed writing directions with character-level fragmentation in content extraction.
+  -->
+  <div style="writing-mode: vertical-rl; width: 100px; height: 60px;">
+    ABCDEFGHIJKL<span style="writing-mode: horizontal-tb;">horizontal</span>MNOPQRSTU
+  </div>
+</body>
+</html>

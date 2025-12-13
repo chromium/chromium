@@ -6,7 +6,6 @@
 
 #include "base/containers/heap_array.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_component_swizzle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -99,20 +98,43 @@ void ConvertToDawnType(const GPUTextureViewDescriptor* webgpu_desc,
     dawn_desc_info->dawn_desc.usage =
         static_cast<wgpu::TextureUsage>(webgpu_desc->usage());
   }
-  if (webgpu_desc->hasSwizzle()) {
+  const auto& swizzle = webgpu_desc->swizzle();
+  // Only pass the swizzle descriptor to Dawn if swizzle is non-default because
+  // the C API will produce validation errors if a chained struct is passed
+  // without its feature being enabled.
+  if (swizzle != "rgba") {
     dawn_desc_info->swizzle_desc =
         std::make_unique<wgpu::TextureComponentSwizzleDescriptor>();
-    dawn_desc_info->swizzle_desc->swizzle.r =
-        AsDawnEnum(webgpu_desc->swizzle()->r());
-    dawn_desc_info->swizzle_desc->swizzle.g =
-        AsDawnEnum(webgpu_desc->swizzle()->g());
-    dawn_desc_info->swizzle_desc->swizzle.b =
-        AsDawnEnum(webgpu_desc->swizzle()->b());
-    dawn_desc_info->swizzle_desc->swizzle.a =
-        AsDawnEnum(webgpu_desc->swizzle()->a());
-
+    dawn_desc_info->swizzle_desc->swizzle.r = AsDawnEnum(swizzle[0]);
+    dawn_desc_info->swizzle_desc->swizzle.g = AsDawnEnum(swizzle[1]);
+    dawn_desc_info->swizzle_desc->swizzle.b = AsDawnEnum(swizzle[2]);
+    dawn_desc_info->swizzle_desc->swizzle.a = AsDawnEnum(swizzle[3]);
     dawn_desc_info->dawn_desc.nextInChain = dawn_desc_info->swizzle_desc.get();
   }
+}
+
+// Validate swizzle must be a four-character string that only includes "r", "g",
+// "b", "a", "0", or "1".
+bool ValidateSwizzle(const String& swizzle, ExceptionState& exception_state) {
+  if (swizzle.length() != 4) {
+    exception_state.ThrowTypeError(String::Format(
+        "Swizzle ('%s') must be exactly a four-character string.",
+        swizzle.Utf8().c_str()));
+    return false;
+  }
+
+  if (AsDawnEnum(swizzle[0]) == wgpu::ComponentSwizzle::Undefined ||
+      AsDawnEnum(swizzle[1]) == wgpu::ComponentSwizzle::Undefined ||
+      AsDawnEnum(swizzle[2]) == wgpu::ComponentSwizzle::Undefined ||
+      AsDawnEnum(swizzle[3]) == wgpu::ComponentSwizzle::Undefined) {
+    exception_state.ThrowTypeError(String::Format(
+        "Swizzle ('%s') must contain only 'r', 'g', 'b', 'a', '0', "
+        "or '1' characters.",
+        swizzle.Utf8().c_str()));
+    return false;
+  }
+
+  return true;
 }
 
 // Dawn represents `undefined` as the special uint32_t value (0xFFFF'FFFF).
@@ -240,6 +262,10 @@ GPUTextureView* GPUTexture::createView(
 
   if (webgpu_desc->hasFormat() && !device()->ValidateTextureFormatUsage(
                                       webgpu_desc->format(), exception_state)) {
+    return nullptr;
+  }
+
+  if (!ValidateSwizzle(webgpu_desc->swizzle(), exception_state)) {
     return nullptr;
   }
 

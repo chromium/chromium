@@ -2,7 +2,7 @@
 # annotation auditor. Please refer to README.md for more details.
 
 # Low-level networking code is deliberately excluded from the analysis.
-all,tools/*,*test*,*fuzzer*,*mock*,*fake*,weblayer/*
+all,tools/*,*test*,*fuzzer*,*mock*,*fake*
 all,net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java
 missing,remoting/host/token_validator_factory_impl.cc
 missing,components/cronet/cronet_url_request.cc
@@ -45,8 +45,7 @@ missing,chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/StoreP
 missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
-missing,components/optimization_guide/core/model_execution/model_execution_fetcher.cc
-missing,chrome/browser/glic/glic_keyed_service.cc
+missing,components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc
 
 # Android annotations missing fields internal::contact:email, user_data::type, last_reviewed
 missing_new_fields,missing,android_webview/browser/network_service/aw_proxy_config_monitor.cc

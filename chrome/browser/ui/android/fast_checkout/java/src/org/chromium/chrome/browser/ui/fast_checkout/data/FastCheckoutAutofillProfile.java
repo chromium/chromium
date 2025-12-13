@@ -140,7 +140,7 @@ public class FastCheckoutAutofillProfile {
     public int getAddressHomeAndWorkIconId() {
         if (!ChromeFeatureList.isEnabled(
                 ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
-            return R.drawable.location_on_logo;
+            return R.drawable.ic_location_on_fill_24dp;
         }
 
         @RecordType int recordType = getRecordType();
@@ -150,7 +150,7 @@ public class FastCheckoutAutofillProfile {
             case RecordType.ACCOUNT_WORK:
                 return R.drawable.work_logo;
             default:
-                return R.drawable.location_on_logo;
+                return R.drawable.ic_location_on_fill_24dp;
         }
     }
 }

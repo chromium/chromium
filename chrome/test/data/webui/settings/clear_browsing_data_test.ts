@@ -11,6 +11,7 @@ import {ClearBrowsingDataBrowserProxyImpl, TimePeriod} from 'chrome://settings/l
 import type {CrButtonElement, SettingsDropdownMenuElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isChildVisible, isVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestClearBrowsingDataBrowserProxy} from './test_clear_browsing_data_browser_proxy.js';
@@ -112,7 +113,6 @@ suite('ClearBrowsingDataDesktop', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    // TODO(b/314968275): Add tests for when UNO Desktop is enabled.
     resetRouterForTesting();
 
     element = document.createElement('settings-clear-browsing-data-dialog');
@@ -154,11 +154,11 @@ suite('ClearBrowsingDataDesktop', function() {
     flush();
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
-    assertTrue(isChildVisible(element, '#signin-info'));
-    assertFalse(isChildVisible(element, '#sync-info'));
-    assertFalse(isChildVisible(element, '#sync-paused-info'));
-    assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
-    assertFalse(isChildVisible(element, '#sync-other-error-info'));
+    assertTrue(isChildVisible(element, '#signinInfo'));
+    assertFalse(isChildVisible(element, '#syncInfo'));
+    assertFalse(isChildVisible(element, '#syncPausedInfo'));
+    assertFalse(isChildVisible(element, '#syncPassphraseErrorInfo'));
+    assertFalse(isChildVisible(element, '#syncOtherErrorInfo'));
 
     // Syncing: the footer is shown, with the normal sync info.
     webUIListenerCallback('sync-status-changed', {
@@ -168,11 +168,11 @@ suite('ClearBrowsingDataDesktop', function() {
     flush();
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
-    assertTrue(isChildVisible(element, '#sync-info'));
-    assertFalse(isChildVisible(element, '#sync-paused-info'));
-    assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
-    assertFalse(isChildVisible(element, '#sync-other-error-info'));
-    assertFalse(isChildVisible(element, '#signin-info'));
+    assertTrue(isChildVisible(element, '#syncInfo'));
+    assertFalse(isChildVisible(element, '#syncPausedInfo'));
+    assertFalse(isChildVisible(element, '#syncPassphraseErrorInfo'));
+    assertFalse(isChildVisible(element, '#syncOtherErrorInfo'));
+    assertFalse(isChildVisible(element, '#signinInfo'));
 
     // Sync is paused.
     webUIListenerCallback('sync-status-changed', {
@@ -181,11 +181,11 @@ suite('ClearBrowsingDataDesktop', function() {
       statusAction: StatusAction.REAUTHENTICATE,
     });
     flush();
-    assertFalse(isChildVisible(element, '#sync-info'));
-    assertTrue(isChildVisible(element, '#sync-paused-info'));
-    assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
-    assertFalse(isChildVisible(element, '#sync-other-error-info'));
-    assertFalse(isChildVisible(element, '#signin-info'));
+    assertFalse(isChildVisible(element, '#syncInfo'));
+    assertTrue(isChildVisible(element, '#syncPausedInfo'));
+    assertFalse(isChildVisible(element, '#syncPassphraseErrorInfo'));
+    assertFalse(isChildVisible(element, '#syncOtherErrorInfo'));
+    assertFalse(isChildVisible(element, '#signinInfo'));
 
     // Sync passphrase error.
     webUIListenerCallback('sync-status-changed', {
@@ -194,11 +194,11 @@ suite('ClearBrowsingDataDesktop', function() {
       statusAction: StatusAction.ENTER_PASSPHRASE,
     });
     flush();
-    assertFalse(isChildVisible(element, '#sync-info'));
-    assertFalse(isChildVisible(element, '#sync-paused-info'));
-    assertTrue(isChildVisible(element, '#sync-passphrase-error-info'));
-    assertFalse(isChildVisible(element, '#sync-other-error-info'));
-    assertFalse(isChildVisible(element, '#signin-info'));
+    assertFalse(isChildVisible(element, '#syncInfo'));
+    assertFalse(isChildVisible(element, '#syncPausedInfo'));
+    assertTrue(isChildVisible(element, '#syncPassphraseErrorInfo'));
+    assertFalse(isChildVisible(element, '#syncOtherErrorInfo'));
+    assertFalse(isChildVisible(element, '#signinInfo'));
 
     // Other sync error.
     webUIListenerCallback('sync-status-changed', {
@@ -207,11 +207,11 @@ suite('ClearBrowsingDataDesktop', function() {
       statusAction: StatusAction.NO_ACTION,
     });
     flush();
-    assertFalse(isChildVisible(element, '#sync-info'));
-    assertFalse(isChildVisible(element, '#sync-paused-info'));
-    assertFalse(isChildVisible(element, '#sync-passphrase-error-info'));
-    assertTrue(isChildVisible(element, '#sync-other-error-info'));
-    assertFalse(isChildVisible(element, '#signin-info'));
+    assertFalse(isChildVisible(element, '#syncInfo'));
+    assertFalse(isChildVisible(element, '#syncPausedInfo'));
+    assertFalse(isChildVisible(element, '#syncPassphraseErrorInfo'));
+    assertTrue(isChildVisible(element, '#syncOtherErrorInfo'));
+    assertFalse(isChildVisible(element, '#signinInfo'));
   });
 
   test('ClearBrowsingDataPauseSyncDesktop', function() {
@@ -222,7 +222,7 @@ suite('ClearBrowsingDataDesktop', function() {
     flush();
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
-    const syncInfo = element.shadowRoot!.querySelector('#sync-info');
+    const syncInfo = element.shadowRoot!.querySelector('#syncInfo');
     assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
     const signoutLink = syncInfo.querySelector<HTMLElement>('a[href]');
@@ -241,7 +241,7 @@ suite('ClearBrowsingDataDesktop', function() {
     flush();
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
-    const syncInfo = element.shadowRoot!.querySelector('#sync-paused-info');
+    const syncInfo = element.shadowRoot!.querySelector('#syncPausedInfo');
     assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
     const signinLink = syncInfo.querySelector<HTMLElement>('a[href]');
@@ -261,7 +261,7 @@ suite('ClearBrowsingDataDesktop', function() {
     assertTrue(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
     const syncInfo =
-        element.shadowRoot!.querySelector('#sync-passphrase-error-info');
+        element.shadowRoot!.querySelector('#syncPassphraseErrorInfo');
     assertTrue(!!syncInfo);
     assertTrue(isVisible(syncInfo));
     const passphraseLink = syncInfo.querySelector<HTMLElement>('a[href]');
@@ -490,7 +490,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await microtasksFinished();
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
-    assertTrue(isChildVisible(element, '#basic-tab'));
+    assertTrue(isChildVisible(element, '#basicTab'));
 
     // Changing the tab selection changes the visible tab, but does not persist
     // the tab selection to the pref.
@@ -498,7 +498,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     await microtasksFinished();
     assertEquals(
         0, element.getPref('browser.last_clear_browsing_data_tab').value);
-    assertTrue(isChildVisible(element, '#advanced-tab'));
+    assertTrue(isChildVisible(element, '#advancedTab'));
 
     // Select a datatype for deletion to enable the clear button.
     element.$.cookiesCheckbox.$.checkbox.click();
@@ -555,8 +555,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     promiseResolver.resolve(
         {showHistoryNotice: true, showPasswordsNotice: false});
     await promiseResolver.promise;
-
-    flush();
+    await flushTasks();
     const notice1 =
         element.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
             '#historyNotice');
@@ -604,7 +603,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Yields to the message loop to allow the callback chain of the
     // Promise that was just resolved to execute before the
     // assertions.
-    flush();
+    await flushTasks();
     const notice1 = element.shadowRoot!
                         .querySelector<SettingsPasswordsDeletionDialogElement>(
                             '#passwordsNotice');
@@ -655,7 +654,7 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     // Yields to the message loop to allow the callback chain of the
     // Promise that was just resolved to execute before the
     // assertions.
-    flush();
+    await flushTasks();
     const notice1 =
         element.shadowRoot!.querySelector<SettingsHistoryDeletionDialogElement>(
             '#historyNotice');

@@ -47,6 +47,7 @@ class LayoutSVGInlineText final : public LayoutText {
     return *scaled_font_;
   }
   void UpdateScaledFont();
+  static float ComputeFontScale(const LayoutObject&);
   static const Font* ComputeNewScaledFontForStyle(const LayoutObject&,
                                                   float& scaling_factor);
 
@@ -63,7 +64,9 @@ class LayoutSVGInlineText final : public LayoutText {
 
  private:
   void TextDidChange() override;
-  void StyleDidChange(StyleDifference, const ComputedStyle*) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle*,
+                      const StyleChangeContext&) override;
   bool IsFontFallbackValid() const override;
   void InvalidateSubtreeLayoutForFontUpdates() override;
 

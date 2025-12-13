@@ -24,8 +24,18 @@ message LensOverlayVisualSearchInteractionData {
   // Currently unsupported and should not be populated.
   string object_id = 3;
 
+  // The selected text for this interaction.
+  message TextSelect {
+    // The selected texts string for a text selection interaction. This is set
+    // when sending a text selection interaction from Lens surfaces.
+    string selected_texts = 5;
+
+    reserved 1, 2, 3, 4;
+  }
+  TextSelect text_select = 4;
+
   // Logging-specific data.
   LensOverlayVisualSearchInteractionLogData log_data = 5;
 
-  reserved 2, 4, 6;
+  reserved 2, 6;
 }

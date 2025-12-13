@@ -24,10 +24,16 @@ import * as Application from 'devtools/panels/application/application.js';
       "type": "image/png"
     }]
   }`;
+  const appManifest = {url: 'test_manifest', data: manifest, errors: []};
 
+  const originalFetchAppManifest =
+      TestRunner.resourceTreeModel.fetchAppManifest;
+  TestRunner.resourceTreeModel.fetchAppManifest = () =>
+      Promise.resolve(appManifest);
   await TestRunner.showPanel('resources');
   const manifestView = Application.ResourcesPanel.ResourcesPanel.instance().visibleView;
-  await manifestView.renderManifest('test_manifest', manifest, [], []);
+  await manifestView.performUpdate();
   await AxeCoreTestRunner.runValidation(manifestView.contentElement);
+  TestRunner.resourceTreeModel.fetchAppManifest = originalFetchAppManifest;
   TestRunner.completeTest();
 })();

@@ -20,6 +20,7 @@
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_switches.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
@@ -293,6 +294,10 @@ bool ExtractVariationIds(const std::string& variations,
   if (!proto.ParseFromString(serialized_proto)) {
     return false;
   }
+
+  EXPECT_TRUE(IsSortedAndUnique(proto.variation_id()));
+  EXPECT_TRUE(IsSortedAndUnique(proto.trigger_variation_id()));
+
   for (int i = 0; i < proto.variation_id_size(); ++i) {
     variation_ids->insert(proto.variation_id(i));
   }
@@ -302,16 +307,28 @@ bool ExtractVariationIds(const std::string& variations,
   return true;
 }
 
+scoped_refptr<base::FieldTrial> CreateInactiveTrialAndAssociateId(
+    const std::string& trial_name,
+    const std::string& group_name,
+    IDCollectionKey key,
+    VariationID id,
+    TimeWindow time_window) {
+  AssociateGoogleVariationIDForTesting(key, trial_name, group_name, id,
+                                       time_window);
+  scoped_refptr<base::FieldTrial> trial(
+      base::FieldTrialList::CreateFieldTrial(trial_name, group_name));
+  CHECK(trial);
+  return trial;
+}
+
 scoped_refptr<base::FieldTrial> CreateTrialAndAssociateId(
     const std::string& trial_name,
-    const std::string& default_group_name,
+    const std::string& group_name,
     IDCollectionKey key,
-    VariationID id) {
-  AssociateGoogleVariationID(key, trial_name, default_group_name, id);
-  scoped_refptr<base::FieldTrial> trial(
-      base::FieldTrialList::CreateFieldTrial(trial_name, default_group_name));
-  DCHECK(trial);
-
+    VariationID id,
+    TimeWindow time_window) {
+  auto trial = CreateInactiveTrialAndAssociateId(trial_name, group_name, key,
+                                                 id, time_window);
   if (trial) {
     // Ensure the trial is registered under the correct key so we can look it
     // up.
@@ -343,8 +360,8 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
 }
 
 void ResetVariations() {
-  testing::ClearAllVariationIDs();
-  testing::ClearAllVariationParams();
+  test::ClearAllVariationIDs();
+  test::ClearAllVariationParams();
 }
 
 const FieldTrialTestingConfig kTestingConfig = {

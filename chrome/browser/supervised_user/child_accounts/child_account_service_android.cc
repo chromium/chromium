@@ -19,7 +19,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::RunBooleanCallbackAndroid;
 using base::android::ScopedJavaGlobalRef;
@@ -45,11 +44,14 @@ void ReauthenticateChildAccount(
       reinterpret_cast<jlong>(callback_copy.release()));
 }
 
-void JNI_ChildAccountService_OnReauthenticationFailed(JNIEnv* env,
-                                                      jlong jcallbackPtr) {
+static void JNI_ChildAccountService_OnReauthenticationFailed(
+    JNIEnv* env,
+    jlong jcallbackPtr) {
   // Cast the pointer value back to a Callback and take ownership of it.
   std::unique_ptr<base::RepeatingCallback<void()>> callback(
       reinterpret_cast<base::RepeatingCallback<void()>*>(jcallbackPtr));
 
   callback->Run();
 }
+
+DEFINE_JNI(ChildAccountService)

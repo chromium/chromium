@@ -124,13 +124,15 @@ if (use_centipede) {
       "src/centipede/runner_dl_info.cc",
       "src/centipede/runner_dl_info.h",
       "src/centipede/runner_fork_server.cc",
-      "src/centipede/runner_interceptors.cc",
       "src/centipede/runner_interface.h",
-      "src/centipede/runner_sancov.cc",
-      "src/centipede/runner_sancov_object.cc",
-      "src/centipede/runner_sancov_object.h",
       "src/centipede/runner_utils.cc",
       "src/centipede/runner_utils.h",
+      "src/centipede/sancov_callbacks.cc",
+      "src/centipede/sancov_interceptors.cc",
+      "src/centipede/sancov_object_array.cc",
+      "src/centipede/sancov_object_array.h",
+      "src/centipede/sancov_state.cc",
+      "src/centipede/sancov_state.h",
     ]
 
     deps = [
@@ -190,6 +192,8 @@ if (use_centipede) {
       "src/centipede/corpus.cc",
       "src/centipede/corpus_io.cc",
       "src/centipede/coverage.cc",
+      "src/centipede/crash_deduplication.cc",
+      "src/centipede/crash_deduplication.h",
       "src/centipede/distill.cc",
       "src/centipede/distill.h",
       "src/centipede/environment.cc",
@@ -243,6 +247,10 @@ source_set("fuzztest_internal") {
   }
 
   sources = [
+    # Ideally all files in common/ would live in `:common`, but some files
+    # depend on fuzztest/internal.
+    "src/common/crashing_input_filename.cc",
+    "src/common/crashing_input_filename.h",
     "src/fuzztest/domain.h",
     "src/fuzztest/domain_core.h",
     "src/fuzztest/fuzzing_bit_gen.cc",
@@ -309,6 +317,8 @@ source_set("fuzztest_internal") {
     "src/fuzztest/internal/registry.h",
     "src/fuzztest/internal/runtime.cc",
     "src/fuzztest/internal/runtime.h",
+    "src/fuzztest/internal/sanitizer_interface.cc",
+    "src/fuzztest/internal/sanitizer_interface.h",
     "src/fuzztest/internal/seed_seq.cc",
     "src/fuzztest/internal/seed_seq.h",
     "src/fuzztest/internal/serialization.cc",
@@ -350,6 +360,10 @@ source_set("fuzztest_internal") {
 
   configs -= fuzztest_remove_configs
   configs += fuzztest_add_configs
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("common") {

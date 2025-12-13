@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/webrtc_video_encoder_av1.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -274,6 +270,7 @@ void WebrtcVideoEncoderAV1::PrepareImage(
   }
 
   // Convert the updated region to YUV ready for encoding.
+  CHECK_EQ(frame->pixel_format(), webrtc::FOURCC_ARGB);
   const uint8_t* rgb_data = frame->data();
   const int rgb_stride = frame->stride();
   const int y_stride = image_->stride[0];
@@ -292,10 +289,11 @@ void WebrtcVideoEncoderAV1::PrepareImage(
                          rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
         int y_offset = y_stride * rect.top() + rect.left();
         int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
-                           y_stride, u_data + uv_offset, uv_stride,
-                           v_data + uv_offset, uv_stride, rect.width(),
-                           rect.height());
+        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + y_offset), y_stride,
+                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
+                           rect.width(), rect.height());
       }
       break;
     case AOM_IMG_FMT_I444:
@@ -305,9 +303,10 @@ void WebrtcVideoEncoderAV1::PrepareImage(
         int rgb_offset = rgb_stride * rect.top() +
                          rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
-                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
-                           uv_stride, v_data + yuv_offset, uv_stride,
+        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
+                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
                            rect.width(), rect.height());
       }
       break;

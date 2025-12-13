@@ -48,15 +48,19 @@ class ReloadButtonViewBinder {
             button.getDrawable().setLevel(model.get(ReloadButtonProperties.DRAWABLE_LEVEL));
         } else if (key == ReloadButtonProperties.IS_ENABLED) {
             button.setEnabled(model.get(ReloadButtonProperties.IS_ENABLED));
+        } else if (key == ReloadButtonProperties.HAS_SPACE_TO_SHOW) {
+            updateVisibility(model, button);
         } else if (key == ReloadButtonProperties.IS_VISIBLE) {
-            button.setVisibility(
-                    model.get(ReloadButtonProperties.IS_VISIBLE) ? View.VISIBLE : View.GONE);
+            updateVisibility(model, button);
         } else if (key == ReloadButtonProperties.ALPHA) {
             button.setAlpha(model.get(ReloadButtonProperties.ALPHA));
         } else if (key == ReloadButtonProperties.TINT_LIST) {
             ImageViewCompat.setImageTintList(button, model.get(ReloadButtonProperties.TINT_LIST));
         } else if (key == ReloadButtonProperties.BACKGROUND_HIGHLIGHT) {
             button.setBackground(model.get(ReloadButtonProperties.BACKGROUND_HIGHLIGHT));
+        } else if (key == ReloadButtonProperties.PADDING) {
+            final var padding = model.get(ReloadButtonProperties.PADDING);
+            button.setPadding(padding.left, padding.top, padding.right, padding.bottom);
         } else if (key == ReloadButtonProperties.LONG_CLICK_LISTENER) {
             final var listener = model.get(ReloadButtonProperties.LONG_CLICK_LISTENER);
             button.setOnLongClickListener(
@@ -69,6 +73,12 @@ class ReloadButtonViewBinder {
         } else {
             assert false : String.format("Unsupported property key %s", key.toString());
         }
+    }
+
+    private static void updateVisibility(PropertyModel model, ImageButton button) {
+        boolean hasSpaceToShow = model.get(ReloadButtonProperties.HAS_SPACE_TO_SHOW);
+        boolean shouldBeVisible = model.get(ReloadButtonProperties.IS_VISIBLE);
+        button.setVisibility(hasSpaceToShow && shouldBeVisible ? View.VISIBLE : View.GONE);
     }
 
     // required to set a touch listener to intercept clicks with shift

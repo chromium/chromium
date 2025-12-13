@@ -33,13 +33,15 @@ class MockClipboardPermissionService final
       void,
       RegisterPageEmbeddedPermissionControl,
       (Vector<mojom::blink::PermissionDescriptorPtr> permissions,
+       mojom::blink::EmbeddedPermissionRequestDescriptorPtr descriptor,
        mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
            client),
       (override));
 
   MOCK_METHOD(void,
               RequestPageEmbeddedPermission,
-              (mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
+              (Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
+               mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
                RequestPageEmbeddedPermissionCallback),
               (override));
 
@@ -71,7 +73,7 @@ class MockClipboardPermissionService final
               (override));
 
   MOCK_METHOD(void,
-              AddCombinedPermissionObserver,
+              AddPageEmbeddedPermissionObserver,
               (mojom::blink::PermissionDescriptorPtr permission,
                mojom::blink::PermissionStatus last_known_status,
                mojo::PendingRemote<mojom::blink::PermissionObserver>),

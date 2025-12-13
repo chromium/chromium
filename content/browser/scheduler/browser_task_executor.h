@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -112,6 +113,10 @@ class CONTENT_EXPORT BrowserTaskExecutor {
   static void CreateForTesting(
       std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler,
       std::unique_ptr<BrowserIOThreadDelegate> browser_io_thread_delegate);
+
+  // This must be called after the FeatureList has been initialized in order
+  // for scheduling experiments to function.
+  static void InstallPartitionAllocSchedulerLoopQuarantineTaskObserver();
 
   // Winds down the BrowserTaskExecutor, after this no tasks can be executed
   // and the base::TaskExecutor APIs are non-functional but won't crash if

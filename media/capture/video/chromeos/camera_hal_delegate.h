@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
 
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
@@ -24,10 +23,11 @@
 #include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace media {
 
@@ -214,7 +214,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   // Signaled/Reset when |pending_external_camera_info_.empty()| is changed.
   base::WaitableEvent external_camera_info_updated_;
-  std::unordered_set<int> pending_external_camera_info_;
+  absl::flat_hash_set<int> pending_external_camera_info_;
 
   // Signaled/Reset when |camera_info_.empty()| is changed.
   base::WaitableEvent has_camera_connected_;
@@ -230,7 +230,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
   // |camera_info_lock_|.
   base::Lock camera_info_lock_;
   size_t num_builtin_cameras_ GUARDED_BY(camera_info_lock_);
-  std::unordered_map<int, cros::mojom::CameraInfoPtr> camera_info_
+  absl::flat_hash_map<int, cros::mojom::CameraInfoPtr> camera_info_
       GUARDED_BY(camera_info_lock_);
 
   // A map from |VideoCaptureDeviceDescriptor.device_id| to camera id, which is

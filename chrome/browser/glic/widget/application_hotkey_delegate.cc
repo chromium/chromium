@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -41,20 +43,25 @@ class ApplicationScopedHotkeyRegistration
       base::WeakPtr<ui::AcceleratorTarget> target)
       : accelerator_(accelerator), target_(target) {
     CHECK(!accelerator_.IsEmpty());
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      RegisterAccelerator(browser);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser_window_interface) {
+          RegisterAccelerator(browser_window_interface);
+          return true;
+        });
     browser_list_observation_.Observe(BrowserList::GetInstance());
   }
 
   ~ApplicationScopedHotkeyRegistration() override {
     CHECK(target_);
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
-        browser_view->GetFocusManager()->UnregisterAccelerator(accelerator_,
-                                                               target_.get());
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser_window_interface) {
+          if (auto* const browser_view = BrowserView::GetBrowserViewForBrowser(
+                  browser_window_interface)) {
+            browser_view->GetFocusManager()->UnregisterAccelerator(
+                accelerator_, target_.get());
+          }
+          return true;
+        });
   }
 
  private:
@@ -63,9 +70,10 @@ class ApplicationScopedHotkeyRegistration
     RegisterAccelerator(browser);
   }
 
-  void RegisterAccelerator(Browser* browser) {
+  void RegisterAccelerator(BrowserWindowInterface* browser_window_interface) {
     CHECK(target_);
-    if (auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser)) {
+    if (auto* const browser_view =
+            BrowserView::GetBrowserViewForBrowser(browser_window_interface)) {
       browser_view->GetFocusManager()->RegisterAccelerator(
           accelerator_,
           ui::AcceleratorManager::HandlerPriority::kNormalPriority,
@@ -81,8 +89,8 @@ class ApplicationScopedHotkeyRegistration
 }  // namespace
 
 ApplicationHotkeyDelegate::ApplicationHotkeyDelegate(
-    base::WeakPtr<GlicWindowController> window_controller)
-    : window_controller_(window_controller) {}
+    base::WeakPtr<LocalHotkeyManager::Panel> panel)
+    : panel_(panel) {}
 
 ApplicationHotkeyDelegate::~ApplicationHotkeyDelegate() = default;
 
@@ -101,13 +109,13 @@ ApplicationHotkeyDelegate::CreateScopedHotkeyRegistration(
 
 bool ApplicationHotkeyDelegate::AcceleratorPressed(
     LocalHotkeyManager::Hotkey hotkey) {
-  if (!window_controller_) {
+  if (!panel_) {
     return false;
   }
 
   switch (hotkey) {
     case LocalHotkeyManager::Hotkey::kFocusToggle:
-      window_controller_->FocusIfOpen();
+      panel_->FocusIfOpen();
       base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
       return true;
     default:
@@ -117,10 +125,9 @@ bool ApplicationHotkeyDelegate::AcceleratorPressed(
 }
 
 std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<GlicWindowController> window_controller) {
+    base::WeakPtr<LocalHotkeyManager::Panel> panel) {
   auto hotkey_manager = std::make_unique<LocalHotkeyManager>(
-      window_controller,
-      std::make_unique<ApplicationHotkeyDelegate>(window_controller));
+      panel, std::make_unique<ApplicationHotkeyDelegate>(panel));
   hotkey_manager->InitializeAccelerators();
   return hotkey_manager;
 }

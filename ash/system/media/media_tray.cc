@@ -36,6 +36,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -71,7 +72,7 @@ bool GetIsPinnedToShelfByDefault() {
 
   display::ManagedDisplayInfo info =
       Shell::Get()->display_manager()->GetDisplayInfo(
-          display::Screen::GetScreen()->GetPrimaryDisplay().id());
+          display::Screen::Get()->GetPrimaryDisplay().id());
   DCHECK(info.device_dpi());
   float screen_width = info.size_in_pixel().width() / info.device_dpi();
   float screen_height = info.size_in_pixel().height() / info.device_dpi();
@@ -109,6 +110,7 @@ class GlobalMediaControlsTitleView : public views::View {
     pin_button_ = AddChildView(std::make_unique<MediaTray::PinButton>());
 
     title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    title_label_->SetEnabledColor(cros_tokens::kTextColorPrimary);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                           *title_label_);
     SetPreferredSize(gfx::Size(kWideTrayMenuWidth, kTitleViewHeight));
@@ -118,12 +120,6 @@ class GlobalMediaControlsTitleView : public views::View {
         gfx::Insets::TLBR(0, pin_button_->GetPreferredSize().width(), 0, 0)));
 
     box_layout->SetFlexForView(title_label_, 1);
-  }
-
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
   }
 
   views::Button* pin_button() { return pin_button_; }
@@ -410,16 +406,16 @@ void MediaTray::SetNotificationColorTheme() {
   }
 
   media_message_center::NotificationTheme theme;
-  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
-  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorPrimary);
-  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconColorSecondary);
-  theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kSeparatorColor);
+  theme.primary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorPrimary);
+  theme.secondary_text_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kTextColorSecondary);
+  theme.enabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorPrimary);
+  theme.disabled_icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kIconColorSecondary);
+  theme.separator_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kSeparatorColor);
   theme.background_color =
       GetColorProvider()->GetColor(kColorAshControlBackgroundColorInactive);
   MediaNotificationProvider::Get()->SetColorTheme(theme);
@@ -450,8 +446,7 @@ void MediaTray::ShowEmptyState() {
   auto no_media_label = std::make_unique<views::Label>();
   no_media_label->SetAutoColorReadabilityEnabled(false);
   no_media_label->SetSubpixelRenderingEnabled(false);
-  no_media_label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary));
+  no_media_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
   no_media_label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
   no_media_label->SetFontList(

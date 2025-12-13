@@ -12,6 +12,10 @@
 #include "base/time/time.h"
 #include "components/viz/common/viz_common_export.h"
 
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
+
 namespace viz {
 
 // Information passed from viz clients used to compute the overall ideal frame
@@ -46,12 +50,16 @@ struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
   // videos with the same content frame interval, then they can share the same
   // entry and `duplicate_count` should be set to 1.
   uint32_t duplicate_count = 0u;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 };
 
 struct VIZ_COMMON_EXPORT FrameIntervalInputs {
   FrameIntervalInputs();
   FrameIntervalInputs(const FrameIntervalInputs& other);
   ~FrameIntervalInputs();
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // Frame time used to produce this frame. This is used to selectively ignore
   // clients that has not submitted a frame for some time.

@@ -23,6 +23,10 @@
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
+namespace autofill {
+struct AutofillServerPrediction;
+}
+
 namespace password_manager {
 
 class PasswordManagerClient;
@@ -129,7 +133,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       PasswordManagerDriver* driver,
       const autofill::FormData& form,
       const base::flat_map<autofill::FieldGlobalId,
-                           autofill::AutofillType::ServerPrediction>&
+                           autofill::AutofillServerPrediction>&
           field_predictions) = 0;
 
   // Processes the classification model predictions received via Autofill.

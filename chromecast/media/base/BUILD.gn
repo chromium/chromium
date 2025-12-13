@@ -104,6 +104,6 @@ cast_source_set("monotonic_clock") {
   deps = [
     ":buildflags",
     "//base",
-    "//chromecast/media/api:api",
+    "//chromecast/media/api",
   ]
 }

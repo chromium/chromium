@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 
+#include <algorithm>
+
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -324,10 +327,12 @@ void LayoutShiftTracker::ObjectShifted(
   gfx::RectF new_rect_in_root(new_rect);
   new_rect_in_root = transform.MapRect(new_rect_in_root);
 
-  gfx::Rect visible_old_rect = gfx::ToRoundedRect(
-      gfx::IntersectRects(old_rect_in_root, clip_rect.Rect()));
-  gfx::Rect visible_new_rect = gfx::ToRoundedRect(
-      gfx::IntersectRects(new_rect_in_root, clip_rect.Rect()));
+  gfx::RectF visible_old_rect_f =
+      gfx::IntersectRects(old_rect_in_root, clip_rect.Rect());
+  gfx::RectF visible_new_rect_f =
+      gfx::IntersectRects(new_rect_in_root, clip_rect.Rect());
+  gfx::Rect visible_old_rect = gfx::ToRoundedRect(visible_old_rect_f);
+  gfx::Rect visible_new_rect = gfx::ToRoundedRect(visible_new_rect_f);
   if (visible_old_rect.IsEmpty() && visible_new_rect.IsEmpty())
     return;
 
@@ -382,7 +387,7 @@ void LayoutShiftTracker::ObjectShifted(
 
   if (Node* node = object.GetNode()) {
     MaybeRecordAttribution(
-        {node->GetDomNodeId(), visible_old_rect, visible_new_rect});
+        {node->GetDomNodeId(), visible_old_rect_f, visible_new_rect_f});
   }
 }
 
@@ -396,13 +401,14 @@ bool LayoutShiftTracker::Attribution::Encloses(const Attribution& other) const {
 }
 
 uint64_t LayoutShiftTracker::Attribution::Area() const {
-  uint64_t old_area = old_visual_rect.size().Area64();
-  uint64_t new_area = new_visual_rect.size().Area64();
+  float old_area = old_visual_rect.size().GetArea();
+  float new_area = new_visual_rect.size().GetArea();
 
-  gfx::Rect intersection =
+  gfx::RectF intersection =
       gfx::IntersectRects(old_visual_rect, new_visual_rect);
-  uint64_t shared_area = intersection.size().Area64();
-  return old_area + new_area - shared_area;
+  float shared_area = intersection.size().GetArea();
+
+  return static_cast<uint64_t>(old_area + new_area - shared_area);
 }
 
 bool LayoutShiftTracker::Attribution::MoreImpactfulThan(
@@ -442,7 +448,7 @@ void LayoutShiftTracker::NotifyBoxPrePaint(
   ObjectShifted(box, property_tree_state, old_rect, new_rect,
                 StartingPoint(old_paint_offset, box, box.PreviousSize()),
                 translation_delta, scroll_delta, scroll_anchor_adjustment,
-                StartingPoint(new_paint_offset, box, box.Size()));
+                StartingPoint(new_paint_offset, box, box.StitchedSize()));
 }
 
 void LayoutShiftTracker::NotifyTextPrePaint(
@@ -588,10 +594,37 @@ LayoutShift::AttributionList LayoutShiftTracker::CreateAttributionList() const {
   for (const Attribution& att : attributions_) {
     if (att.node_id == kInvalidDOMNodeId)
       break;
+
+    gfx::RectF old_css_rect = att.old_visual_rect;
+    gfx::RectF new_css_rect = att.new_visual_rect;
+
+    if (RuntimeEnabledFeatures::ReportLayoutShiftRectsInCssPixelsEnabled()) {
+      // Convert attribution rectangles from physical pixels to CSS pixels.
+      // Attribution rectangles are stored in root coordinate space, so we use
+      // the main frame's device scale factor.
+      LocalFrame& main_frame = frame_view_->GetFrame().LocalFrameRoot();
+      FrameWidget* widget = main_frame.GetWidgetForLocalRoot();
+
+      // Widget should always exist when Performance API is active (ordinary
+      // Pages). However, handle gracefully for robustness (e.g., during
+      // initialization).
+      if (widget) {
+        // Use BlinkSpaceToDIPs with RectF to preserve fractional values
+        old_css_rect = widget->BlinkSpaceToDIPs(old_css_rect);
+        new_css_rect = widget->BlinkSpaceToDIPs(new_css_rect);
+      } else {
+        // Widget is null in non-ordinary Pages or very early initialization.
+        // Return rects in physical pixels (feature effectively disabled).
+        // This matches PaintTimingDetector's fallback behavior.
+        VLOG(1)
+            << "LayoutShiftTracker: Widget null in CreateAttributionList(). "
+            << "Attribution rects will be in physical pixels.";
+      }
+    }
     list.push_back(LayoutShiftAttribution::Create(
         DOMNodeIds::NodeForId(att.node_id),
-        DOMRectReadOnly::FromRect(att.old_visual_rect),
-        DOMRectReadOnly::FromRect(att.new_visual_rect)));
+        DOMRectReadOnly::FromRectF(old_css_rect),
+        DOMRectReadOnly::FromRectF(new_css_rect)));
   }
   return list;
 }
@@ -626,6 +659,24 @@ void LayoutShiftTracker::ReportShift(double score_delta,
       frame.Client()->DidObserveLayoutShift(weighted_score_delta,
                                             observed_input_or_scroll_);
     }
+  }
+
+  if (RuntimeEnabledFeatures::SortedLayoutShiftSourcesByImpactAreaEnabled()) {
+    // Sort attributions by impact area in descending order (largest first).
+    // This benefits both the Performance API and tracing data.
+    // Using stable_sort to maintain insertion order for equal impact areas.
+    std::stable_sort(attributions_.begin(), attributions_.end(),
+                     [](const Attribution& a, const Attribution& b) {
+                       // Invalid attributions (kInvalidDOMNodeId) should sort
+                       // to the end.
+                       if (a.node_id == kInvalidDOMNodeId) {
+                         return false;
+                       }
+                       if (b.node_id == kInvalidDOMNodeId) {
+                         return true;
+                       }
+                       return a.MoreImpactfulThan(b);
+                     });
   }
 
   SubmitPerformanceEntry(score_delta, had_recent_input);
@@ -808,8 +859,10 @@ void LayoutShiftTracker::AttributionsToTracedValue(TracedValue& value) const {
   while (it != attributions_.end() && it->node_id != kInvalidDOMNodeId) {
     value.BeginDictionary();
     value.SetInteger("node_id", it->node_id);
-    RectToTracedValue(it->old_visual_rect, value, "old_rect");
-    RectToTracedValue(it->new_visual_rect, value, "new_rect");
+    RectToTracedValue(gfx::ToRoundedRect(it->old_visual_rect), value,
+                      "old_rect");
+    RectToTracedValue(gfx::ToRoundedRect(it->new_visual_rect), value,
+                      "new_rect");
     if (should_include_names) {
       Node* node = DOMNodeIds::NodeForId(it->node_id);
       value.SetString("debug_name", node ? node->DebugName() : "");

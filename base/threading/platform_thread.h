@@ -20,7 +20,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread_ref.h"
-#include "base/time/time.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -39,6 +38,8 @@
 #endif
 
 namespace base {
+
+class TimeDelta;
 
 // Used for uniquely identifying a thread.
 //
@@ -185,18 +186,6 @@ enum class ThreadType : int {
   kMaxValue = kRealtimeAudio,
 };
 
-// Cross-platform mapping of physical thread priorities. Used by tests to verify
-// the underlying effects of SetCurrentThreadType.
-enum class ThreadPriorityForTest : int {
-  kBackground,
-  kUtility,
-  kNormal,
-  kDisplay,
-  kInteractive,
-  kRealtimeAudio,
-  kMaxValue = kRealtimeAudio,
-};
-
 // A namespace for low-level thread functions.
 class BASE_EXPORT PlatformThreadBase {
  public:
@@ -333,7 +322,11 @@ class BASE_EXPORT PlatformThreadBase {
   // explicitly set default size then returns 0.
   static size_t GetDefaultThreadStackSize();
 
-  static ThreadPriorityForTest GetCurrentThreadPriorityForTest();
+  // Returns the ThreadType that corresponds to the current OS thread settings.
+  // Note that this returns a canonical ThreadType for the settings and may not
+  // match the exact ThreadType set if multiple ThreadTypes map to the same OS
+  // thread settings.
+  static ThreadType GetCurrentEffectiveThreadTypeForTest();
 
  protected:
   static void SetNameCommon(const std::string& name);
@@ -457,29 +450,22 @@ using PlatformThread = PlatformThreadBase;
 
 namespace internal {
 
-void SetCurrentThreadType(ThreadType thread_type,
-                          MessagePumpType pump_type_hint);
+#if BUILDFLAG(IS_APPLE)
+using PlatformPriorityOverride = pthread_override_t;
+#else
+using PlatformPriorityOverride = bool;
+#endif
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type);
+void RemoveThreadTypeOverride(
+    const PlatformPriorityOverride& priority_override_handle);
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type);
 
 void SetCurrentThreadTypeImpl(ThreadType thread_type,
                               MessagePumpType pump_type_hint);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeLinux(ProcessId process_id,
-                        PlatformThreadId thread_id,
-                        ThreadType thread_type,
-                        IsViaIPC via_ipc);
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-void SetThreadTypeChromeOS(ProcessId process_id,
-                           PlatformThreadId thread_id,
-                           ThreadType thread_type,
-                           IsViaIPC via_ipc);
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-inline constexpr auto SetThreadType = SetThreadTypeChromeOS;
-#elif BUILDFLAG(IS_LINUX)
-inline constexpr auto SetThreadType = SetThreadTypeLinux;
-#endif
 
 }  // namespace internal
 

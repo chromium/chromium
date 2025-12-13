@@ -7,6 +7,7 @@
 #include <array>
 
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,13 +27,12 @@ constexpr int kIconStrokeWidth = 2;
 constexpr int kCellularIconOffset = 1;
 
 SkPath CreateArcPath(gfx::RectF oval, float start_angle, float sweep_angle) {
-  SkPath path;
-  path.setIsVolatile(true);
-  path.setFillType(SkPathFillType::kWinding);
-  path.moveTo(oval.CenterPoint().x(), oval.CenterPoint().y());
-  path.arcTo(gfx::RectFToSkRect(oval), start_angle, sweep_angle, false);
-  path.close();
-  return path;
+  return SkPathBuilder()
+      .setIsVolatile(true)
+      .moveTo(oval.CenterPoint().x(), oval.CenterPoint().y())
+      .arcTo(gfx::RectFToSkRect(oval), start_angle, sweep_angle, false)
+      .close()
+      .detach();
 }
 
 }  // namespace
@@ -183,13 +183,13 @@ void SignalStrengthImageSource::DrawBars(gfx::Canvas* canvas) {
       SkIntToScalar(size().width()) - padding_ * 2;
 
   auto make_triangle = [scale, kFullTriangleSide, this](SkScalar side) {
-    SkPath triangle;
-    triangle.moveTo(scale(padding_ + kCellularIconOffset),
-                    scale(padding_ + kFullTriangleSide + kCellularIconOffset));
-    triangle.rLineTo(scale(side), 0);
-    triangle.rLineTo(0, -scale(side));
-    triangle.close();
-    return triangle;
+    return SkPathBuilder()
+        .moveTo(scale(padding_ + kCellularIconOffset),
+                scale(padding_ + kFullTriangleSide + kCellularIconOffset))
+        .rLineTo(scale(side), 0)
+        .rLineTo(0, -scale(side))
+        .close()
+        .detach();
   };
 
   cc::PaintFlags flags;

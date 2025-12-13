@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 

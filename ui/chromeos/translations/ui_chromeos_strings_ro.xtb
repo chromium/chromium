@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">Gen</translation>
 <translation id="1254593899333212300">Conexiune directă la internet</translation>
 <translation id="1272293450992660632">Valorile PIN nu se potrivesc.</translation>
+<translation id="1279040297980392566">Se așteaptă finalizarea scanării. Reîncearcă mai târziu.</translation>
 <translation id="1280820357415527819">Se caută rețele mobile</translation>
 <translation id="1293556467332435079">Fișiere</translation>
 <translation id="1297922636971898492">Google Drive nu este disponibil momentan. Încărcarea va reporni automat când Google Drive va putea fi accesat.</translation>
@@ -102,7 +103,7 @@
 <translation id="1761091787730831947">Permite accesul pentru <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificatul de autentificare a fost respins local</translation>
 <translation id="1775381402323441512">Informații despre fișierul video</translation>
-<translation id="180035236176489073">Trebuie să fiți online pentru a accesa aceste fișiere.</translation>
+<translation id="180035236176489073">Trebuie să fii online pentru a accesa aceste fișiere.</translation>
 <translation id="1807938677607439181">Toate fișierele</translation>
 <translation id="1810764548349082891">Nicio previzualizare disponibilă</translation>
 <translation id="1812302367230252929">Amharică, transliterație</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">1 fișier selectat</translation>
 <translation id="3817579325494460411">Nu s-a specificat</translation>
 <translation id="3819448694985509187">Codul PIN este incorect. Mai ai o încercare.</translation>
-<translation id="3822559385185038546">Acest proxy este impus de administrator</translation>
 <translation id="3830674330436234648">Nicio redare disponibilă</translation>
 <translation id="383652340667548381">Sârbă</translation>
 <translation id="3839045880592694915">Operatorul nu are permisiunea de a se conecta la modem. Contactează operatorul pentru mai multe detalii.</translation>
@@ -393,7 +393,7 @@
 <translation id="4193154014135846272">Document Google</translation>
 <translation id="4202378258276439759">Spaniolă (America Latină)</translation>
 <translation id="4202977638116331303">Georgiană</translation>
-<translation id="421017592316736757">Trebuie să fiți online pentru a accesa acest fișier.</translation>
+<translation id="421017592316736757">Trebuie să fii online pentru a accesa acest fișier.</translation>
 <translation id="4212740939091998969">Dosarul cu numele „<ph name="FOLDER_NAME" />” există deja. Alege un alt nume.</translation>
 <translation id="4218274196133425560">Elimină excepția pentru <ph name="HOST_NAME" /></translation>
 <translation id="4261901459838235729">Prezentare Google</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5605830556594064952">S.U.A. Dvorak</translation>
+<translation id="560739212255190568">Administratorul a setat reguli de modificare a proxy-ului, pe lângă aplicarea următorului proxy</translation>
 <translation id="5618330573454123917">Fișierul este creat pentru un computer care folosește software Macintosh. Acesta nu este compatibil cu dispozitivul tău care rulează sistemul de operare Chrome. <ph name="BEGIN_LINK_HELP" />Află mai multe<ph name="END_LINK_HELP" /> despre deschiderea fișierelor în sistemul de operare Chrome.</translation>
 <translation id="5625294776298156701">Tastatură tamilă Tamil99</translation>
 <translation id="5633226425545095130">În cazul în care muți elementul, acesta va putea fi accesat de toată lumea care vede dosarul comun <ph name="DESTINATION_NAME" />.</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, detalii</translation>
 <translation id="8545476925160229291">Engleză (S.U.A.)</translation>
 <translation id="854655314928502177">Adresa URL a protocolului WPAD (Web Proxy Auto-Discovery):</translation>
+<translation id="8547747809824590510">Administratorul a setat reguli de modificare a proxy-ului</translation>
 <translation id="8549186985808798022">Italiană</translation>
 <translation id="8551494947769799688">Letonă</translation>
 <translation id="8560515948038859357">Cantoneză</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Alege un alt nume.</translation>
 <translation id="9046895021617826162">Conectare nereușită</translation>
 <translation id="9065512565307033593">Dacă nu confirmi codul, accesul tău la rețea va fi oprit.</translation>
+<translation id="9079844694307518094">Administratorul aplică următorul proxy</translation>
 <translation id="908378762078012445">Tastatură rusă fonetică AATSEEL</translation>
 <translation id="9086302186042011942">Se sincronizează</translation>
 <translation id="9099674669267916096">Numărul de pagini</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">Instalarea a început.</translation>
 <translation id="9219103736887031265">Imagini</translation>
 <translation id="9219908252191632183">Peisaj lunar</translation>
+<translation id="931652069802536959">Rețeaua este blocată de politică</translation>
 <translation id="938470336146445890">Instalează un certificat de utilizator.</translation>
 <translation id="939736085109172342">Dosar nou</translation>
 <translation id="943972244133411984">Modificat de</translation>

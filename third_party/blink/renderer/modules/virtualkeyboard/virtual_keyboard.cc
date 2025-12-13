@@ -23,6 +23,15 @@
 
 namespace blink {
 
+namespace {
+
+// Kill switch for allowing `virtualKeyboard.show()` if this page was navigated
+// from a same-site page that had user gesture.
+BASE_FEATURE(kShowKeyboardIfLastPageHadGesture,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
 // static
 const char VirtualKeyboard::kSupplementName[] = "VirtualKeyboard";
 
@@ -131,7 +140,13 @@ void VirtualKeyboard::show() {
   if (!window)
     return;
 
-  if (window->GetFrame()->HasStickyUserActivation()) {
+  // To show the keyboard, the page needs to have transient user activation.
+  // We also allow showing the keyboard if the page had sticky user activation
+  // that was consumed by a recent cross-origin navigation (which clears the
+  // user activation state).
+  if (window->GetFrame()->HasStickyUserActivation() ||
+      (base::FeatureList::IsEnabled(kShowKeyboardIfLastPageHadGesture) &&
+       window->GetFrame()->HadStickyUserActivationBeforeNavigation())) {
     window->GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW);
   } else {

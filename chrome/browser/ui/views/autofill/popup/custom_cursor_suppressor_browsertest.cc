@@ -7,10 +7,10 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -28,24 +28,16 @@ class CustomCursorSuppressorBrowsertest
     CHECK(extension);
     SidePanelEntry::Key extension_key =
         SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id());
-    CHECK(global_registry()->GetEntryForKey(extension_key));
+    SidePanelEntry* const entry =
+        SidePanelRegistry::From(browser())->GetEntryForKey(extension_key);
+    CHECK(entry);
 
     ExtensionTestMessageListener default_path_listener("default_path");
-    side_panel_coordinator()->Show(extension_key);
+    SidePanelUI* const side_panel_ui = browser()->GetFeatures().side_panel_ui();
+    side_panel_ui->Show(extension_key);
     CHECK(default_path_listener.WaitUntilSatisfied());
-    CHECK(side_panel_coordinator()->IsSidePanelShowing());
+    CHECK(side_panel_ui->IsSidePanelShowing(entry->type()));
     return extension;
-  }
-
-  SidePanelRegistry* global_registry() {
-    return browser()
-        ->browser_window_features()
-        ->side_panel_coordinator()
-        ->GetWindowRegistry();
-  }
-
-  SidePanelCoordinator* side_panel_coordinator() {
-    return browser()->GetFeatures().side_panel_coordinator();
   }
 };
 

@@ -1,7 +1,7 @@
 Name: play-services-base
 Short Name: play-services-base
-URL: https://developers.google.com/android/guides/setup
-Version: 18.7.2
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-base/18.9.0/play-services-base-18.9.0.aar
+Version: 18.9.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE

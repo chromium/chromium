@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view.h"
 
-#import <MaterialComponents/MaterialOverlayWindow.h>
-
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"

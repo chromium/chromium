@@ -1,0 +1,87 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal") {
+  visibility = [
+    ":*",
+    "..:impl",
+    "//chrome/browser:*",
+    "//chrome/test:*",
+    "//components/omnibox/composebox/ios:*",
+  ]
+
+  sources = [
+    "composebox_query_controller.cc",
+    "composebox_query_controller.h",
+  ]
+
+  deps = [
+    "..:public",
+    "//base",
+    "//components/endpoint_fetcher",
+    "//components/keyed_service/core",
+    "//components/lens",
+    "//components/lens/proto/server:proto",
+    "//components/omnibox/composebox:mojo_bindings",
+    "//components/search",
+    "//components/search_engines",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/variations",
+    "//components/version_info:channel",
+    "//google_apis/common",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//third_party/icu:icui18n",
+    "//third_party/icu:icuuc_public",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_composebox_query_controller.cc",
+    "test_composebox_query_controller.h",
+  ]
+  deps = [
+    ":internal",
+    "..:impl",
+    "//base",
+    "//base/test:test_support",
+    "//components/endpoint_fetcher",
+    "//components/endpoint_fetcher:test_support",
+    "//components/lens",
+    "//components/variations",
+    "//components/variations:variations_mojom",
+    "//google_apis/common",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_query_controller_unittest.cc" ]
+  deps = [
+    ":internal",
+    ":test_support",
+    "..:impl",
+    "//base/test:test_support",
+    "//components/lens",
+    "//components/omnibox/composebox:mojo_bindings",
+    "//components/search_engines:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/variations",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//testing/gtest",
+    "//third_party/lens_server_proto:lens_overlay_proto",
+  ]
+}

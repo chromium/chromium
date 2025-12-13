@@ -31,17 +31,25 @@ class InstalledWebappGeolocationContext
   ~InstalledWebappGeolocationContext() override;
 
   // mojom::GeolocationContext implementation:
+  // This class does not support approximate location (granular geolocation
+  // permission control), so the `has_precise_permission` parameter is ignored.
   void BindGeolocation(
       mojo::PendingReceiver<device::mojom::Geolocation> receiver,
       const GURL& requesting_url,
-      device::mojom::GeolocationClientId client_id) override;
-  void OnPermissionRevoked(const url::Origin& origin) override;
+      device::mojom::GeolocationClientId client_id,
+      bool has_precise_permission) override;
+  void OnPermissionUpdated(
+      const url::Origin& origin,
+      device::mojom::GeolocationPermissionLevel permission_level) override;
   void SetOverride(device::mojom::GeopositionResultPtr result) override;
   void ClearOverride() override;
 
   // Called when a InstalledWebappGeolocationBridge has a connection error.
   // After this call, it is no longer safe to access |impl|.
   void OnConnectionError(InstalledWebappGeolocationBridge* impl);
+
+  // Called when the geolocation permission to an origin has been revoked.
+  void OnPermissionRevoked(const url::Origin& origin);
 
  private:
   std::vector<std::unique_ptr<InstalledWebappGeolocationBridge>> impls_;

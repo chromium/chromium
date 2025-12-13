@@ -99,10 +99,7 @@ source_set("client_info") {
 
 # Used by the Chrome installer, which doesn't need the whole metrics library.
 source_set("metrics_pref_names") {
-  sources = [
-    "metrics_pref_names.cc",
-    "metrics_pref_names.h",
-  ]
+  sources = [ "metrics_pref_names.h" ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
@@ -149,110 +146,117 @@ if (!is_cronet_build || is_ios) {
   static_library("metrics") {
     sources = [
       "call_stacks/call_stack_profile_metrics_provider.cc",
-      "call_stacks/call_stack_profile_metrics_provider.h",
       "child_histogram_fetcher_impl.cc",
-      "child_histogram_fetcher_impl.h",
       "clean_exit_beacon.cc",
-      "clean_exit_beacon.h",
       "cloned_install_detector.cc",
-      "cloned_install_detector.h",
       "cpu_metrics_provider.cc",
-      "cpu_metrics_provider.h",
       "daily_event.cc",
-      "daily_event.h",
       "data_use_tracker.cc",
-      "data_use_tracker.h",
       "date_changed_helper.cc",
-      "date_changed_helper.h",
       "delegating_provider.cc",
-      "delegating_provider.h",
       "drive_metrics_provider.cc",
-      "drive_metrics_provider.h",
       "enabled_state_provider.cc",
-      "enabled_state_provider.h",
       "entropy_state.cc",
-      "entropy_state.h",
       "entropy_state_provider.cc",
-      "entropy_state_provider.h",
       "environment_recorder.cc",
-      "environment_recorder.h",
       "expired_histogram_util.cc",
-      "expired_histogram_util.h",
       "expired_histograms_checker.cc",
-      "expired_histograms_checker.h",
       "field_trials_provider.cc",
-      "field_trials_provider.h",
       "file_metrics_provider.cc",
-      "file_metrics_provider.h",
-      "fre_source_trial.cc",
-      "fre_source_trial.h",
       "install_date_provider.cc",
-      "install_date_provider.h",
       "log_decoder.cc",
+      "metrics_data_validation.cc",
+      "metrics_features.cc",
+      "metrics_log.cc",
+      "metrics_log_store.cc",
+      "metrics_logs_event_manager.cc",
+      "metrics_provider.cc",
+      "metrics_reporting_default_state.cc",
+      "metrics_reporting_service.cc",
+      "metrics_rotation_scheduler.cc",
+      "metrics_scheduler.cc",
+      "metrics_service.cc",
+      "metrics_service_accessor.cc",
+      "metrics_service_client.cc",
+      "metrics_service_observer.cc",
+      "metrics_shutdown.cc",
+      "metrics_state_manager.cc",
+      "metrics_switches.cc",
+      "metrics_upload_scheduler.cc",
+      "persistent_histograms.cc",
+      "persistent_synthetic_trial_observer.cc",
+      "persistent_system_profile.cc",
+      "reporting_service.cc",
+      "sampling_metrics_provider.cc",
+      "server_urls.cc",
+      "stability_metrics_helper.cc",
+      "stability_metrics_provider.cc",
+      "unsent_log_store.cc",
+      "unsent_log_store_metrics.cc",
+      "unsent_log_store_metrics_impl.cc",
+      "version_utils.cc",
+    ]
+
+    # TODO(crbug.com/438235148): Refactor this component to have a smaller, more
+    # granular public API.
+    #
+    # Headers that are exposed to other targets. Headers used by tests should
+    # also be included here.
+    public = [
+      "call_stacks/call_stack_profile_metrics_provider.h",
+      "call_stacks/stack_sampling_recorder.h",
+      "child_histogram_fetcher_impl.h",
+      "clean_exit_beacon.h",
+      "cloned_install_detector.h",
+      "cpu_metrics_provider.h",
+      "daily_event.h",
+      "data_use_tracker.h",
+      "date_changed_helper.h",
+      "delegating_provider.h",
+      "drive_metrics_provider.h",
+      "enabled_state_provider.h",
+      "entropy_state.h",
+      "entropy_state_provider.h",
+      "environment_recorder.h",
+      "expired_histogram_util.h",
+      "expired_histograms_checker.h",
+      "field_trials_provider.h",
+      "file_metrics_provider.h",
+      "install_date_provider.h",
       "log_decoder.h",
       "log_store.h",
       "machine_id_provider.h",
-      "metrics_data_validation.cc",
       "metrics_data_validation.h",
-      "metrics_features.cc",
       "metrics_features.h",
-      "metrics_log.cc",
       "metrics_log.h",
-      "metrics_log_store.cc",
       "metrics_log_store.h",
       "metrics_log_uploader.h",
-      "metrics_logs_event_manager.cc",
       "metrics_logs_event_manager.h",
-      "metrics_provider.cc",
       "metrics_provider.h",
-      "metrics_reporting_default_state.cc",
       "metrics_reporting_default_state.h",
-      "metrics_reporting_service.cc",
-      "metrics_reporting_service.h",
-      "metrics_rotation_scheduler.cc",
       "metrics_rotation_scheduler.h",
-      "metrics_scheduler.cc",
       "metrics_scheduler.h",
-      "metrics_service.cc",
       "metrics_service.h",
-      "metrics_service_accessor.cc",
       "metrics_service_accessor.h",
-      "metrics_service_client.cc",
       "metrics_service_client.h",
-      "metrics_service_observer.cc",
       "metrics_service_observer.h",
-      "metrics_shutdown.cc",
       "metrics_shutdown.h",
-      "metrics_state_manager.cc",
       "metrics_state_manager.h",
-      "metrics_switches.cc",
       "metrics_switches.h",
-      "metrics_upload_scheduler.cc",
       "metrics_upload_scheduler.h",
-      "persistent_histograms.cc",
+      "motherboard_metrics_provider.h",
       "persistent_histograms.h",
-      "persistent_synthetic_trial_observer.cc",
       "persistent_synthetic_trial_observer.h",
-      "persistent_system_profile.cc",
       "persistent_system_profile.h",
-      "reporting_service.cc",
       "reporting_service.h",
-      "sampling_metrics_provider.cc",
       "sampling_metrics_provider.h",
-      "server_urls.cc",
       "server_urls.h",
-      "stability_metrics_helper.cc",
       "stability_metrics_helper.h",
-      "stability_metrics_provider.cc",
       "stability_metrics_provider.h",
       "ukm_demographic_metrics_provider.h",
-      "unsent_log_store.cc",
       "unsent_log_store.h",
-      "unsent_log_store_metrics.cc",
       "unsent_log_store_metrics.h",
-      "unsent_log_store_metrics_impl.cc",
       "unsent_log_store_metrics_impl.h",
-      "version_utils.cc",
       "version_utils.h",
     ]
 
@@ -263,8 +267,11 @@ if (!is_cronet_build || is_ios) {
 
     public_deps = [
       ":metrics_component",
+      "//components/country_codes",
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",
+      "//components/regional_capabilities:country_id",
+      "//components/variations",
       "//third_party/metrics_proto",
       "//third_party/zlib/google:compression_utils",
     ]
@@ -274,6 +281,7 @@ if (!is_cronet_build || is_ios) {
       ":server_urls_grd",
       "//base",
       "//base:base_static",
+      "//base:build_time",
       "//base:i18n",
       "//build:branding_buildflags",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
@@ -282,7 +290,7 @@ if (!is_cronet_build || is_ios) {
       "//components/prefs",
       "//components/variations",
       "//components/variations/field_trial_config",
-      "//components/version_info:version_info",
+      "//components/version_info",
       "//components/webui/flags:switches",
       "//crypto",
       "//extensions/buildflags",
@@ -299,6 +307,10 @@ if (!is_cronet_build || is_ios) {
         "gms_metrics_provider.cc",
         "gms_metrics_provider.h",
       ]
+      public += [
+        "android_metrics_provider.h",
+        "gms_metrics_provider.h",
+      ]
       deps += [ ":jni_headers" ]
     } else {
       deps += [ "//components/keep_alive_registry" ]
@@ -306,13 +318,6 @@ if (!is_cronet_build || is_ios) {
 
     if (is_ios) {
       sources += [ "clean_exit_beacon_ios.mm" ]
-    }
-
-    if (is_linux || is_chromeos) {
-      sources += [
-        "psi_memory_parser.h",
-        "psi_memory_parser_linux.cc",
-      ]
     }
 
     if (is_chromeos) {
@@ -328,8 +333,8 @@ if (!is_cronet_build || is_ios) {
       sources += [
         "machine_id_provider_win.cc",
         "system_session_analyzer/system_session_analyzer_win.cc",
-        "system_session_analyzer/system_session_analyzer_win.h",
       ]
+      public += [ "system_session_analyzer/system_session_analyzer_win.h" ]
       libs = [ "wevtapi.lib" ]
     } else {
       sources += [ "machine_id_provider_nonwin.cc" ]
@@ -411,7 +416,7 @@ if (!is_cronet_build) {
       public_deps = [ ":metrics" ]
       deps = [
         "//base",
-        "//components/metrics/dwa",
+        "//components/metrics/private_metrics",
         "//content/public/browser",
         "//extensions/buildflags",
         "//gpu/config",
@@ -442,8 +447,8 @@ if (!is_cronet_build) {
 
     deps = [
       "//base",
+      "//components/encrypted_messages",
       "//components/encrypted_messages:encrypted_message_proto",
-      "//components/encrypted_messages:encrypted_messages",
       "//components/variations",
       "//net",
       "//services/network/public/cpp",
@@ -507,7 +512,7 @@ if (!is_cronet_build) {
     ]
 
     deps = [
-      "//base:base",
+      "//base",
       "//components/sampling_profiler:profile_params",
       "//third_party/metrics_proto",
     ]
@@ -638,7 +643,7 @@ if (!is_cronet_build) {
       "//build:branding_buildflags",
       "//components/component_updater:test_support",
       "//components/encrypted_messages:encrypted_message_proto",
-      "//components/metrics/dwa",
+      "//components/metrics/private_metrics",
       "//components/metrics/public/mojom:call_stack_mojo_bindings",
       "//components/network_time:network_time_test_support",
       "//components/prefs:test_support",
@@ -652,7 +657,7 @@ if (!is_cronet_build) {
       "//mojo/public/cpp/bindings",
       "//net:test_support",
       "//services/network:test_support",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//services/service_manager/public/cpp",
       "//testing/gmock",
       "//testing/gtest",
@@ -671,10 +676,7 @@ if (!is_cronet_build) {
     }
 
     if (is_linux || is_chromeos) {
-      sources += [
-        "psi_memory_parser_linux_unittest.cc",
-        "serialization/serialization_utils_unittest.cc",
-      ]
+      sources += [ "serialization/serialization_utils_unittest.cc" ]
       deps += [ ":serialization" ]
     }
 
@@ -737,7 +739,7 @@ if (!is_cronet_build) {
 }
 
 grit("server_urls_grd") {
-  if (is_chrome_branded) {
+  if (is_internal_chrome_branded) {
     source = "internal/server_urls.grd"
   } else {
     source = "server_urls.grd"

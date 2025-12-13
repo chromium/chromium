@@ -29,7 +29,10 @@ class MockManualFillingView : public ManualFillingViewInterface {
               (override));
   MOCK_METHOD((void), CloseAccessorySheet, (), (override));
   MOCK_METHOD((void), SwapSheetWithKeyboard, (), (override));
-  MOCK_METHOD((void), Show, (WaitForKeyboard), (override));
+  MOCK_METHOD((void),
+              Show,
+              (WaitForKeyboard, IsCredentialFieldOrHasAutofillSuggestions),
+              (override));
   MOCK_METHOD((void), Hide, (), (override));
   MOCK_METHOD((void),
               ShowAccessorySheetTab,

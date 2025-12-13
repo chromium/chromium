@@ -25,15 +25,11 @@ namespace google {
 namespace protobuf {
 namespace {
 
-using ::proto2_nofieldpresence_unittest::ExplicitForeignMessage;
 using ::proto2_nofieldpresence_unittest::FOREIGN_BAZ;
 using ::proto2_nofieldpresence_unittest::FOREIGN_FOO;
-using ::proto2_nofieldpresence_unittest::ForeignMessage;
 using ::proto2_nofieldpresence_unittest::TestAllMapTypes;
 using ::testing::Eq;
-using ::testing::Gt;
 using ::testing::Not;
-using ::testing::StrEq;
 using ::testing::UnorderedPointwise;
 
 // Custom gmock matchers to simplify testing for map entries.
@@ -133,7 +129,7 @@ TEST(NoFieldPresenceTest, GenCodeMapReflectionMissingKeyDeathTest) {
 
   // Trying to get an unset map entry would crash with a DCHECK in debug mode.
   EXPECT_DEATH(r->GetRepeatedMessage(message, field_map_int32_bytes, 0),
-               "index < current_size_");
+               "index < size");
 }
 #endif
 
@@ -766,9 +762,6 @@ class NoFieldPresenceMapSerializeTest : public testing::Test {
 
 using SerializableOutputTypes = ::testing::Types<std::string, absl::Cord>;
 
-// TODO: b/358616816 - `if constexpr` can be used here once C++17 is baseline.
-// https://google.github.io/googletest/reference/testing.html#TYPED_TEST_SUITE
-#ifdef __cpp_if_constexpr
 // Providing the NameGenerator produces slightly more readable output in the
 // test invocation summary (type names are displayed instead of numbers).
 class NameGenerator {
@@ -789,9 +782,6 @@ class NameGenerator {
 
 TYPED_TEST_SUITE(NoFieldPresenceMapSerializeTest, SerializableOutputTypes,
                  NameGenerator);
-#else
-TYPED_TEST_SUITE(NoFieldPresenceMapSerializeTest, SerializableOutputTypes);
-#endif
 
 TYPED_TEST(NoFieldPresenceMapSerializeTest,
            MapRoundTripNonZeroKeyNonZeroString) {

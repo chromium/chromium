@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_FOR_FRAME_H_
 #define CONTENT_BROWSER_COMPUTE_PRESSURE_PRESSURE_SERVICE_FOR_FRAME_H_
 
-#include "base/functional/callback.h"
 #include "content/browser/compute_pressure/pressure_service_base.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 
 #include <sys/sysinfo.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -34,11 +30,11 @@
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_anr.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_wm_metrics.h"
+#include "chromeos/ash/experiences/arc/metrics/psi_memory_parser.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/exo/wm_helper.h"
-#include "components/metrics/psi_memory_parser.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -248,8 +244,8 @@ ArcMetricsService::ArcMetricsService(content::BrowserContext* context,
       NativeBridgeType::UNKNOWN);
 
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports)) {
-    psi_parser_ = std::make_unique<metrics::PSIMemoryParser>(
-        kVmMemoryPSIReportsPeriod.Get());
+    psi_parser_ =
+        std::make_unique<arc::PSIMemoryParser>(kVmMemoryPSIReportsPeriod.Get());
   }
 
   arc_wm_metrics_ = std::make_unique<ArcWmMetrics>();
@@ -805,16 +801,16 @@ void ArcMetricsService::ReportMemoryPressure(
       &metric_full);
   psi_parser_->LogParseStatus(
       stat);  // Log success and failure, for histograms.
-  if (stat != metrics::ParsePSIMemStatus::kSuccess) {
+  if (stat != arc::ParsePSIMemStatus::kSuccess) {
     return;
   }
 
   base::UmaHistogramCustomCounts(
-      kPSIMemoryPressureSomeARC, metric_some, metrics::kMemPressureMin,
-      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+      kPSIMemoryPressureSomeARC, metric_some, arc::kMemPressureMin,
+      arc::kMemPressureExclusiveMax, arc::kMemPressureHistogramBuckets);
   base::UmaHistogramCustomCounts(
-      kPSIMemoryPressureFullARC, metric_full, metrics::kMemPressureMin,
-      metrics::kMemPressureExclusiveMax, metrics::kMemPressureHistogramBuckets);
+      kPSIMemoryPressureFullARC, metric_full, arc::kMemPressureMin,
+      arc::kMemPressureExclusiveMax, arc::kMemPressureHistogramBuckets);
 }
 
 void ArcMetricsService::SetPrefService(PrefService* prefs) {
@@ -990,7 +986,7 @@ void ArcMetricsService::OnArcStarted() {
         FROM_HERE,
         base::BindOnce(&ArcMetricsService::MeasureLoadAverage,
                        weak_ptr_factory_.GetWeakPtr(), index),
-        kLoadAverageHistograms[index].duration);
+        UNSAFE_TODO(kLoadAverageHistograms[index]).duration);
   }
 }
 
@@ -1073,13 +1069,14 @@ void ArcMetricsService::MeasureLoadAverage(size_t index) {
   if (sysinfo(&info) < 0) {
     DCHECK_LT(index, std::size(kLoadAverageHistograms));
     PLOG(ERROR) << "sysinfo() failed when trying to record "
-                << kLoadAverageHistograms[index].name;
+                << UNSAFE_TODO(kLoadAverageHistograms[index]).name;
     return;
   }
   DCHECK_LT(index, std::size(info.loads));
   // Load average values returned by sysinfo() are scaled up by
   // 1 << SI_LOAD_SHIFT.
-  const int loadx100 = info.loads[index] * 100 / (1 << SI_LOAD_SHIFT);
+  const int loadx100 =
+      UNSAFE_TODO(info.loads[index]) * 100 / (1 << SI_LOAD_SHIFT);
   // _SC_NPROCESSORS_ONLN instead of base::SysInfo::NumberOfProcessors() which
   // uses _SC_NPROCESSORS_CONF to get the number of online processors in case
   // some cores are disabled.
@@ -1099,7 +1096,8 @@ void ArcMetricsService::MaybeRecordLoadAveragePerProcessor() {
     const int loadx100_per_processor = value.second;
     DCHECK_LT(index, std::size(kLoadAverageHistograms));
     base::UmaHistogramCustomCounts(
-        kLoadAverageHistograms[index].name + BootTypeToString(boot_type_),
+        UNSAFE_TODO(kLoadAverageHistograms[index]).name +
+            BootTypeToString(boot_type_),
         loadx100_per_processor, 0, 5000, 50);
   }
   // Erase the values to avoid recording them again.

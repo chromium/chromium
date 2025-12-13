@@ -478,14 +478,14 @@ Do not use heap collection with persistent types (e.g. `HeapVector<Persistent<T>
 
 Collections compared to other libraries used in Blink:
 
-| stdlib             | WTF                 | Oilpan                    |
-| ------------------ | ------------------- | ------------------------- |
-| std::vector        | WTF::Vector         | blink::HeapVector         |
-| std::deque         | WTF::Deque          | blink::HeapDeque          |
-| std::unordered_map | WTF::HashMap        | blink::HeapHashMap        |
-| std::unordered_set | WTF::HashSet        | blink::HeapHashSet        |
-| -                  | WTF::LinkedHashSet  | blink::HeapLinkedHashSet  |
-| -                  | WTF::HashCountedSet | blink::HeapHashCountedSet |
+| stdlib             | WTF                   | Oilpan                    |
+| ------------------ | --------------------- | ------------------------- |
+| std::vector        | blink::Vector         | blink::HeapVector         |
+| std::deque         | blink::Deque          | blink::HeapDeque          |
+| std::unordered_map | blink::HashMap        | blink::HeapHashMap        |
+| std::unordered_set | blink::HashSet        | blink::HeapHashSet        |
+| -                  | blink::LinkedHashSet  | blink::HeapLinkedHashSet  |
+| -                  | blink::HashCountedSet | blink::HeapHashCountedSet |
 
 These heap collections work mostly the same way as their stdlib or WTF collection counterparts but there are some things to keep in mind.
 Heap collections are regular heap objects and thus must be properly traced from a `Trace` method.

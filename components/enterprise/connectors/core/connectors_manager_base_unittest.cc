@@ -20,6 +20,20 @@ constexpr char kNormalReportingSettingsPref[] = R"([
 ])";
 }  // namespace
 
+class TestConnectorsManagerBase : public ConnectorsManagerBase {
+ public:
+  using ConnectorsManagerBase::ConnectorsManagerBase;
+
+  void CacheAnalysisConnectorPolicy(
+      AnalysisConnector connector) const override {
+    // do nothing
+  }
+
+  DataRegion GetDataRegion(AnalysisConnector connector) const override {
+    return DataRegion::NO_PREFERENCE;
+  }
+};
+
 class ConnectorsManagerBaseTest : public testing::Test {
  public:
   ConnectorsManagerBaseTest() { RegisterProfilePrefs(prefs_.registry()); }
@@ -66,7 +80,7 @@ class ConnectorsManagerBaseReportingTest : public ConnectorsManagerBaseTest {
 };
 
 TEST_F(ConnectorsManagerBaseReportingTest, DynamicPolicies) {
-  ConnectorsManagerBase manager(pref_service(), GetServiceProviderConfig());
+  TestConnectorsManagerBase manager(pref_service(), GetServiceProviderConfig());
   // The cache is initially empty.
   ASSERT_TRUE(manager.GetReportingConnectorsSettingsForTesting().empty());
 

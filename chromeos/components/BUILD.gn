@@ -27,7 +27,7 @@ test("chromeos_components_unittests") {
     "//chromeos/components/security_token_pin:unit_tests",
     "//chromeos/components/sensors:ash_unit_tests",
     "//mojo/core/embedder",
-    "//ui/base:base",
+    "//ui/base",
   ]
 
   data_deps = [

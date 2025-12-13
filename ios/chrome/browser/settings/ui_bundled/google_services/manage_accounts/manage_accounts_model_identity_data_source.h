@@ -8,6 +8,7 @@
 #include <vector>
 
 struct CoreAccountInfo;
+class GaiaId;
 enum class IdentityAvatarSize;
 @class IdentityViewItem;
 @class LegacyAccountsTableViewController;
@@ -18,7 +19,7 @@ enum class IdentityAvatarSize;
 @protocol ManageAccountsModelIdentityDataSource <NSObject>
 
 // Provides identity info with gaiaID.
-- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID;
+- (id<SystemIdentity>)identityWithGaiaID:(const GaiaId&)gaiaID;
 
 // Provides identity avatar.
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity

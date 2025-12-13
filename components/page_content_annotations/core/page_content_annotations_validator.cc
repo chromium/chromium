@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -29,7 +30,7 @@ namespace page_content_annotations {
 
 namespace {
 
-auto kRandomNouns = std::to_array<const char*>({
+constexpr auto kRandomNouns = std::to_array<const char*>({
     "Airplane", "Boat",       "Book",          "Dinosaur",   "Earth",
     "Football", "Fork",       "Hummingbird",   "Magic Wand", "Mailbox",
     "Molecule", "Pizza",      "Record Player", "Skeleton",   "Soda",

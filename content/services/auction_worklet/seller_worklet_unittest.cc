@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -239,8 +240,11 @@ class SellerWorkletTest : public testing::Test,
       base::test::TaskEnvironment::TimeSource time_mode =
           base::test::TaskEnvironment::TimeSource::MOCK_TIME)
       : task_environment_(time_mode) {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kFledgeTrustedSignalsKVv1CreativeScanning);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::
+                                  kFledgeTrustedSignalsKVv1CreativeScanning,
+                              features::kFledgeTextConversionHelpers},
+        /*disabled_features=*/{});
     SetDefaultParameters();
   }
 
@@ -1024,10 +1028,10 @@ class SellerWorkletTwoThreadsTest : public SellerWorkletTest {
   size_t NumThreads() override { return 2u; }
 };
 
-class SellerWorkletTextConversionsTest : public SellerWorkletTest {
+class SellerWorkletNoTextConversionsTest : public SellerWorkletTest {
  public:
-  SellerWorkletTextConversionsTest() {
-    feature_list_.InitAndEnableFeature(features::kFledgeTextConversionHelpers);
+  SellerWorkletNoTextConversionsTest() {
+    feature_list_.InitAndDisableFeature(features::kFledgeTextConversionHelpers);
   }
 
  protected:
@@ -1965,12 +1969,12 @@ TEST_F(SellerWorkletTest, ScoreAdAdComponentsCreativeScanningMetadata) {
       3);
 }
 
-TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
+TEST_F(SellerWorkletNoTextConversionsTest, ScoreAdTextConversions) {
   RunScoreAdWithReturnValueExpectingResult(
       R"('protectedAudience' in globalThis? 3 : 2)", 2);
 }
 
-TEST_F(SellerWorkletTextConversionsTest, ScoreAdTextConversions) {
+TEST_F(SellerWorkletTest, ScoreAdTextConversions) {
   RunScoreAdWithReturnValueExpectingResult(
       R"('encodeUtf8' in protectedAudience? 3 : 2)", 3);
   RunScoreAdWithReturnValueExpectingResult(
@@ -1983,7 +1987,7 @@ TEST_F(SellerWorkletTextConversionsTest, ScoreAdTextConversions) {
       3);
 }
 
-TEST_F(SellerWorkletTextConversionsTest, ScoreAdNoGlobalStomp) {
+TEST_F(SellerWorkletTest, ScoreAdNoGlobalStomp) {
   const char kScript[] = R"(
     function protectedAudience() {
       return 5;
@@ -3560,14 +3564,14 @@ TEST_F(SellerWorkletTest, ReportResultNoAdComponentsCreativeScanningMetadata) {
       /*expected_signals_for_winner=*/"1", GURL("https://foo.test/?2"));
 }
 
-TEST_F(SellerWorkletTest, ReportResultTextConversions) {
+TEST_F(SellerWorkletNoTextConversionsTest, ReportResultTextConversions) {
   RunReportResultCreatedScriptExpectingResult(
       "('protectedAudience' in globalThis) ? 2 : 1",
       /*extra_code=*/std::string(), "1",
       /*expected_report_url=*/std::nullopt);
 }
 
-TEST_F(SellerWorkletTextConversionsTest, ReportResultTextConversions) {
+TEST_F(SellerWorkletTest, ReportResultTextConversions) {
   RunReportResultCreatedScriptExpectingResult(
       "('encodeUtf8' in protectedAudience) ? 2 : 1",
       /*extra_code=*/std::string(), "2",
@@ -3578,7 +3582,7 @@ TEST_F(SellerWorkletTextConversionsTest, ReportResultTextConversions) {
       /*expected_report_url=*/std::nullopt);
 }
 
-TEST_F(SellerWorkletTextConversionsTest, ReportResultNoGlobalStomp) {
+TEST_F(SellerWorkletTest, ReportResultNoGlobalStomp) {
   const char kScript[] = R"(
     function protectedAudience() {
       sendReportTo('https://report.test/');

@@ -13,9 +13,6 @@
 // Whether the NTP should initially be scrolled into the feed.
 @property(nonatomic, assign) BOOL shouldScrollIntoFeed;
 
-// Changes the selected feed on the NTP to be `feedType`.
-- (void)selectFeedType:(FeedType)feedType;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONFIGURING_H_

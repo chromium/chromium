@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/canvas_capture_handler.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/limits.h"
@@ -219,7 +220,7 @@ TEST_P(CanvasCaptureHandlerTest, GetFormatsStartAndStop) {
   video_capture_callbacks.deliver_frame_cb = base::BindRepeating(
       &CanvasCaptureHandlerTest::OnDeliverFrame, base::Unretained(this));
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   source->StartCapture(params, std::move(video_capture_callbacks),
                        base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                                            base::Unretained(this)));
@@ -253,7 +254,7 @@ TEST_P(CanvasCaptureHandlerTest, VerifyFrame) {
       base::BindRepeating(&CanvasCaptureHandlerTest::OnVerifyDeliveredFrame,
                           base::Unretained(this), opaque_frame, width, height);
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   source->StartCapture(params, std::move(video_capture_callbacks),
                        base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                                            base::Unretained(this)));
@@ -283,7 +284,7 @@ TEST_F(CanvasCaptureHandlerTest, DropAlphaDeliversOpaqueFrame) {
       &CanvasCaptureHandlerTest::OnVerifyDeliveredFrame, base::Unretained(this),
       /*opaque_frame=*/true, width, height);
   video_capture_callbacks.frame_dropped_cb = base::DoNothing();
-  video_capture_callbacks.sub_capture_target_version_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   source->StartCapture(params, std::move(video_capture_callbacks),
                        base::BindRepeating(&CanvasCaptureHandlerTest::OnRunning,
                                            base::Unretained(this)));

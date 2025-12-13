@@ -19,11 +19,15 @@
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_overlay_params.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
+
+// Get the size of the monitor on which the window handle is displayed.
+gfx::Size GetMonitorSizeForWindow(HWND window);
 
 // SwapChainPresenter holds a swap chain, direct composition visuals, and other
 // associated resources for a single overlay layer.  It is updated by calling
@@ -39,26 +43,40 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   ~SwapChainPresenter() override;
 
-  // Present the given overlay to swap chain. The backing content may not match
-  // |overlay.quad_rect| (e.g. in the case of full screen) so this method
-  // returns a modified |visual_transform| and |visual_clip_rect| that should be
-  // used instead of the ones on |overlay|.
-  // Returns true on success.
-  bool PresentToSwapChain(DCLayerOverlayParams& overlay,
-                          gfx::Transform* visual_transform,
-                          gfx::Rect* visual_clip_rect);
+  // Indicates the modification overlay position required to display the swap
+  // chain image.
+  //
+  // Note this can be removed once we migrate fully to
+  // `EarlyFullScreenVideoOptimization` since we will only need adjustment in
+  // the full screen optimization case and we know the intended on-screen rect
+  // in this case (i.e. the monitor rect).
+  struct OverlayPositionAdjustment {
+    gfx::Transform transform;
+    gfx::Rect quad_rect;
+    gfx::Rect clip_rect;
+  };
+
+  // Take and present `overlay.overlay_image` to this swap chain and return a
+  // new overlay image representing the video. Also returns
+  // `overlay_position_adjustment` if the overlay position needs to be adjusted,
+  // e.g. the handle the swap chain being resized in the full screen case.
+  std::optional<DCLayerOverlayImage> PresentToSwapChain(
+      DCLayerOverlayParams& overlay,
+      std::optional<OverlayPositionAdjustment>& overlay_position_adjustment);
 
   const Microsoft::WRL::ComPtr<IDXGISwapChain1>& swap_chain() const {
     return swap_chain_;
   }
 
-  const Microsoft::WRL::ComPtr<IUnknown>& content() const { return content_; }
+  const Microsoft::WRL::ComPtr<IUnknown>& content_for_testing() const {
+    return content_;
+  }
 
   const gfx::Size& content_size() const { return content_size_; }
 
   // Valid HANDLE is needed for testing to create an IDCompositionSurface with
   // `CreateSurfaceFromHandle`.
-  GL_EXPORT static bool CreateSurfaceHandleHelperForTesting(HANDLE* handle);
+  GL_EXPORT static base::win::ScopedHandle CreateDCompSurfaceHandleForTesting();
 
   // This only differs from `VideoPresentationMode` because that does not
   // include MF surface proxy.
@@ -105,6 +123,26 @@ class SwapChainPresenter : public base::PowerStateObserver {
     base::circular_deque<DXGI_FRAME_PRESENTATION_MODE> presents_;
     int composed_count_ = 0;
   };
+
+  // Ensure the swap chain is allocated and take `overlay.overlay_image` and
+  // prepare the swap chain to present it.
+  //
+  // The backing content may not match `overlay.quad_rect` (e.g. in the case of
+  // full screen) so this method returns a modified `visual_transform` and
+  // `visual_clip_rect` that should be used instead of the ones on `overlay`.
+  //
+  // Returns true on success.
+  bool SetupPresentToSwapChain(DCLayerOverlayParams& overlay,
+                               gfx::Transform* visual_transform,
+                               gfx::Rect* visual_clip_rect);
+
+  // Attempt to disable the desktop primary plane by expanding the video swap
+  // chain to fill `monitor_size`, fully occluding any content behind it with
+  // solid black.
+  bool TryDisablePrimaryPlane(const gfx::Size& monitor_size,
+                              const DCLayerOverlayParams& overlay);
+
+  bool FinishPresentToSwapChain();
 
   // Upload given YUV buffers to an NV12 texture that can be used to create
   // video processor input view.  Returns nullptr on failure.
@@ -278,6 +316,12 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // The Direct Composition surface handle from MediaFoundationRenderer.
   HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
 
+  // If set, represents the pending rect meant to be passed to
+  // `DCOMPSurfaceProxy::SetRect` when we finalize the current commit. This is
+  // needed because the full screen optimization can possibly adjust this rect,
+  // but still only want to call `SetRect` once per frame.
+  std::optional<gfx::Rect> pending_dcomp_surface_rect_in_window_;
+
   // Layer tree instance that owns this swap chain presenter.
   raw_ptr<DCLayerTree> layer_tree_ = nullptr;
 
@@ -336,10 +380,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> dcomp_device_;
   Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain_;
 
-  // Handle returned by DCompositionCreateSurfaceHandle() used to create YUV
-  // swap chain that can be used for direct composition.
-  base::win::ScopedHandle swap_chain_handle_;
-
   // Video processor output view created from swap chain back buffer.  Must be
   // cached for performance reasons.
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorOutputView> output_view_;
@@ -347,6 +387,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   Microsoft::WRL::ComPtr<IDXGIResource> decode_resource_;
   Microsoft::WRL::ComPtr<IDXGIDecodeSwapChain> decode_swap_chain_;
   Microsoft::WRL::ComPtr<IUnknown> decode_surface_;
+
+  std::optional<uint32_t> pending_swap_buffer_;
 
   bool is_on_battery_power_;
 

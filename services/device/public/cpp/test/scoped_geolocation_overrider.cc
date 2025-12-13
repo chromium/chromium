@@ -44,11 +44,15 @@ class ScopedGeolocationOverrider::FakeGeolocationContext
   void OnDisconnect(FakeGeolocation* impl);
 
   // mojom::GeolocationContext implementation:
+  // The `has_precise_permission` parameter is ignored as approximate │
+  // geolocation is not yet supported by this fake test class.
   void BindGeolocation(mojo::PendingReceiver<mojom::Geolocation> receiver,
                        const GURL& requesting_url,
-                       mojom::GeolocationClientId client_id) override;
-  void OnPermissionRevoked(const url::Origin& origin) override;
-
+                       mojom::GeolocationClientId client_id,
+                       bool has_precise_permission) override;
+  void OnPermissionUpdated(
+      const url::Origin& origin,
+      mojom::GeolocationPermissionLevel permission_level) override;
   void SetOverride(mojom::GeopositionResultPtr result) override;
   void ClearOverride() override;
 
@@ -206,22 +210,32 @@ void ScopedGeolocationOverrider::FakeGeolocationContext::BindForOverrideService(
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::BindGeolocation(
     mojo::PendingReceiver<mojom::Geolocation> receiver,
-    const GURL& requesting_origin,
-    mojom::GeolocationClientId client_id) {
+    const GURL& requesting_url,
+    mojom::GeolocationClientId client_id,
+    bool has_precise_permission) {
+  // The `has_precise_permission` parameter is ignored as approximate
+  // geolocation is not yet supported by this fake test class.
   impls_.insert(std::make_unique<FakeGeolocation>(std::move(receiver),
-                                                  requesting_origin, this));
+                                                  requesting_url, this));
 }
 
-void ScopedGeolocationOverrider::FakeGeolocationContext::OnPermissionRevoked(
-    const url::Origin& origin) {
-  std::erase_if(impls_, [&origin](const auto& impl) {
+void ScopedGeolocationOverrider::FakeGeolocationContext::OnPermissionUpdated(
+    const url::Origin& origin,
+    mojom::GeolocationPermissionLevel permission_level) {
+  // This function currently only handles the kDenied permission level. It
+  // should be updated to handle other permission levels if the fake needs to
+  // support them.
+  std::erase_if(impls_, [&origin, &permission_level](const auto& impl) {
     if (!origin.IsSameOriginWith(impl->url())) {
       return false;
     }
-    // Invoke the position callback with kPermissionDenied before removing.
-    impl->OnPermissionRevoked();
-    return true;
+    if (permission_level == mojom::GeolocationPermissionLevel::kDenied) {
+      impl->OnPermissionRevoked();
+      return true;
+    }
+    return false;
   });
+  return;
 }
 
 void ScopedGeolocationOverrider::FakeGeolocationContext::SetOverride(

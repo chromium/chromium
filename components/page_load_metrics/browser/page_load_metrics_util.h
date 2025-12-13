@@ -32,10 +32,10 @@
   base::UmaHistogramCustomTimes(name, sample, base::Milliseconds(10), \
                                 base::Hours(1), 100)
 
-// Records |bytes| to |histogram_name| in kilobytes (i.e., bytes / 1024).
-#define PAGE_BYTES_HISTOGRAM(histogram_name, bytes) \
-  base::UmaHistogramCustomCounts(                   \
-      histogram_name, static_cast<int>((bytes) / 1024), 1, 500 * 1024, 50)
+// Records |bytes| to |histogram_name| in kilobytes.
+#define PAGE_BYTES_HISTOGRAM(histogram_name, bytes)                \
+  base::UmaHistogramCustomCounts(histogram_name, bytes.InKiB(), 1, \
+                                 base::MiB(500).InKiB(), 50)
 
 // Up to 1 minute with 50 buckets.
 #define INPUT_DELAY_HISTOGRAM(name, sample)                          \
@@ -265,6 +265,19 @@ PageVisitFinalStatus RecordPageVisitFinalStatusForTiming(
 // UKM Review:
 // https://docs.google.com/document/d/1TSbtp5I5Bc1pbAKrrEHfmZlAwgeh6AlgAH7GbDMNPRQ/edit?disco=AAABe5h90jQ
 std::optional<uint32_t> GetCategoryIdFromUrl(const GURL& url);
+
+// Returns true if the page is controlled by a service worker.
+bool IsServiceWorkerControlled(const PageLoadMetricsObserverDelegate& delegate);
+
+// Returns true if the page is returned by a service worker synthetic response.
+//
+// TODO(crbug.com/40240298): Remove this once `ControllerServiceWorkerMode` is
+// updated. Conceptually `IsServiceWorkerControlled()` should return true when
+// the synthetic response is used. We don't need a dedicated method.
+bool IsServiceWorkerSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate);
+bool IsServiceWorkerControlledOrSyntheticResponseEnabled(
+    const PageLoadMetricsObserverDelegate& delegate);
 
 }  // namespace page_load_metrics
 

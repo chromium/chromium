@@ -33,9 +33,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
@@ -52,6 +52,7 @@ import java.util.Locale;
 @Config(manifest = Config.NONE)
 @DisableFeatures({
     ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK,
+    ChromeFeatureList.FEED_AUDIO_OVERVIEWS
 })
 public class ExpandedPlayerSheetContentUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -60,7 +61,6 @@ public class ExpandedPlayerSheetContentUnitTest {
     @Mock private PropertyModel mModel;
     @Mock private OptionsMenuSheetContent mOptionsMenu;
     @Mock private SpeedMenuSheetContent mSpeedMenu;
-    @Mock private View.OnClickListener mOnClickListener;
     @Mock private PlaybackModeIphController mPlaybackModeIphController;
 
     private Context mContext;
@@ -329,32 +329,36 @@ public class ExpandedPlayerSheetContentUnitTest {
 
     @Test
     public void testLoadingTextIsSetCorrectly() {
-      TextView loadingText = (TextView) mContentView.findViewById(R.id.readaloud_loading_text);
+        TextView loadingText = (TextView) mContentView.findViewById(R.id.readaloud_loading_text);
 
-      mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
-      assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
+        mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
+        assertEquals(
+                loadingText.getText(),
+                mContext.getString(R.string.readaloud_mini_player_loading_ai_playback));
 
-      mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
-      assertEquals(loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
+        mContent.setRequestedPlaybackMode(PlaybackMode.CLASSIC);
+        assertEquals(
+                loadingText.getText(), mContext.getString(R.string.readaloud_playback_loading));
     }
 
     @Test
     public void testLoadingLayoutIsShownInPlaybackCreation() {
-      mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYBACK_CREATION);
+        mContent.onPlaybackStateChanged(PlaybackListener.State.PLAYBACK_CREATION);
 
-      assertTrue(mErrorLayout.getVisibility() == View.GONE);
-      assertTrue(mLoadingLayout.getVisibility() == View.VISIBLE);
+        assertTrue(mErrorLayout.getVisibility() == View.GONE);
+        assertTrue(mLoadingLayout.getVisibility() == View.VISIBLE);
     }
-
 
     @Test
     public void testFormatDuration() {
-      assertEquals("1 hour and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3623));
-      assertEquals("1 hour, 2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3743));
-      assertEquals("1 minute and 23 seconds", ExpandedPlayerSheetContent.formatDuration(83));
-      assertEquals("2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(143));
-      assertEquals("0 seconds", ExpandedPlayerSheetContent.formatDuration(0));
-      assertEquals("1 second", ExpandedPlayerSheetContent.formatDuration(1));
-      assertEquals("53 seconds", ExpandedPlayerSheetContent.formatDuration(53));
+        assertEquals("1 hour and 23 seconds", ExpandedPlayerSheetContent.formatDuration(3623));
+        assertEquals(
+                "1 hour, 2 minutes and 23 seconds",
+                ExpandedPlayerSheetContent.formatDuration(3743));
+        assertEquals("1 minute and 23 seconds", ExpandedPlayerSheetContent.formatDuration(83));
+        assertEquals("2 minutes and 23 seconds", ExpandedPlayerSheetContent.formatDuration(143));
+        assertEquals("0 seconds", ExpandedPlayerSheetContent.formatDuration(0));
+        assertEquals("1 second", ExpandedPlayerSheetContent.formatDuration(1));
+        assertEquals("53 seconds", ExpandedPlayerSheetContent.formatDuration(53));
     }
 }

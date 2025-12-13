@@ -50,7 +50,7 @@ public class FaceDetectionImplTest {
         new PointF(597.0f, 118.0f)
     };
 
-    private static enum DetectionProviderType {
+    private enum DetectionProviderType {
         ANDROID,
         GMS_CORE
     }
@@ -70,8 +70,7 @@ public class FaceDetectionImplTest {
         } else if (api == DetectionProviderType.GMS_CORE) {
             detector = new FaceDetectionImplGmsCore(options);
         } else {
-            assert false;
-            return null;
+            throw new AssertionError();
         }
 
         final ArrayBlockingQueue<FaceDetectionResult[]> queue = new ArrayBlockingQueue<>(1);

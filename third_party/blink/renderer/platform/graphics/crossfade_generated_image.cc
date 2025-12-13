@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -66,7 +65,9 @@ void CrossfadeGeneratedImage::DrawCrossfade(
       image_flags.setBlendMode(SkBlendMode::kPlus);
     }
     const WeightedImage& image = images_[image_idx];
-    image_flags.setColor(ScaleAlpha(flags.getColor(), image.weight));
+    // TODO: Don't quantize the alpha to 8-bit.
+    const float image_alpha = SkColorGetA(flags.getColor()) * image.weight;
+    image_flags.setAlphaf(base::ClampRound<uint8_t>(image_alpha) / 255.0f);
     image.image->Draw(canvas, image_flags, dest_rect,
                       gfx::RectF(gfx::SizeF(image.image->Size())),
                       image_draw_options);

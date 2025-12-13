@@ -24,10 +24,7 @@
 #include "media/base/audio_processing.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "services/audio/loopback_mixin.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -40,8 +37,9 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
-class ReferenceSignalProvider;
+class MlModelManager;
 class OutputTapper;
+class ReferenceSignalProvider;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class ProcessingAudioFifo;
@@ -202,7 +200,9 @@ class InputController final {
       SyncWriter* sync_writer,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb,
       const media::AudioParameters& params,
       const std::string& device_id,
       bool agc_is_enabled);
@@ -223,6 +223,7 @@ class InputController final {
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
  private:
+  class DelayReporter;
   friend class InputControllerTestHelper;
 
   // Used to log the result of capture startup.
@@ -250,15 +251,18 @@ class InputController final {
       SyncWriter* sync_writer,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
       media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
       const media::AudioParameters& output_params,
       const media::AudioParameters& device_params,
       StreamType type);
 
-  void DoCreate(media::AudioManager* audio_manager,
-                const media::AudioParameters& params,
-                const std::string& device_id,
-                bool enable_agc);
+  void DoCreate(
+      media::AudioManager* audio_manager,
+      const media::AudioParameters& params,
+      const std::string& device_id,
+      bool enable_agc,
+      LoopbackMixin::MaybeCreateCallback maybe_create_loopback_mixin_cb);
   void DoReportError(ErrorCode error_code);
   void DoLogAudioLevels(float level_dbfs, int microphone_volume_percent);
 
@@ -271,11 +275,14 @@ class InputController final {
   // Logs the result of creating an InputController.
   void LogCaptureStartupResult(CaptureStartupResult result);
 
-  // Logs whether an error was encountered suring the stream.
+  // Logs whether an error was encountered for the native input stream.
   void LogCallbackError();
 
-  // Called by the stream with log messages.
+  // Called by the native input stream with log messages.
   void LogMessage(const std::string& message);
+
+  // Helper method for creating internal log messages prefixed with "AIC::".
+  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
 
   // Does power monitoring on supported platforms.
   // Called on the hw callback thread.
@@ -307,7 +314,8 @@ class InputController final {
       const media::AudioParameters& processing_output_params,
       const media::AudioParameters& device_params,
       std::unique_ptr<ReferenceSignalProvider> reference_signal_provider,
-      media::AecdumpRecordingManager* aecdump_recording_manager);
+      media::AecdumpRecordingManager* aecdump_recording_manager,
+      raw_ptr<MlModelManager> ml_model_manager);
 
   // Used as a callback for |audio_processor_handler_|.
   void DeliverProcessedAudio(const media::AudioBus& audio_bus,
@@ -334,6 +342,9 @@ class InputController final {
   const raw_ptr<SyncWriter> sync_writer_;
 
   StreamType type_;
+
+  // Helper class to report capture delay UMA stats.
+  std::unique_ptr<DelayReporter> delay_reporter_;
 
   double max_volume_ = 0.0;
 
@@ -369,6 +380,9 @@ class InputController final {
 
   bool is_muted_ = false;
   base::RepeatingTimer check_muted_state_timer_;
+
+  // If configured, used to add chromium playout to the captured audio signal.
+  std::unique_ptr<LoopbackMixin> loopback_mixin_;
 
   // Holds a pointer to the callback object that receives audio data from
   // the lower audio layer. Valid only while 'recording' (between calls to

@@ -15,12 +15,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_switches.h"
@@ -42,7 +42,6 @@ namespace {
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kSessionIdItemKey[] = "session_id";
 const size_t kMaxAssertionRequestsAllowed = 5;
-const size_t kMaxGenerateAssertionFailuresAllowed = 1;
 
 constexpr std::string_view kRotationResultHistogramName =
     "Signin.BoundSessionCredentials.CookieRotationResult";
@@ -57,7 +56,8 @@ bool IsExpectedCookie(
     CHECK(cookie_ptr->cookie_or_line->is_cookie());
     const net::CanonicalCookie& cookie =
         cookie_ptr->cookie_or_line->get_cookie();
-    return (cookie.Name() == cookie_name) && cookie.IsDomainMatch(url.host());
+    return (cookie.Name() == cookie_name) &&
+           cookie.IsDomainMatch(url.GetHost());
   }
   return false;
 }
@@ -126,6 +126,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
     std::string_view session_id,
     const GURL& refresh_url,
     const GURL& cookie_url,
+    bound_session_credentials::SessionOrigin session_origin,
     base::flat_set<std::string> cookie_names,
     bool is_off_the_record_profile,
     Trigger trigger,
@@ -134,6 +135,7 @@ BoundSessionRefreshCookieFetcherImpl::BoundSessionRefreshCookieFetcherImpl(
       session_binding_helper_(session_binding_helper),
       session_id_(session_id),
       refresh_url_(refresh_url),
+      session_origin_(session_origin),
       expected_cookie_domain_(cookie_url),
       expected_cookie_names_(std::move(cookie_names)),
       is_off_the_record_profile_(is_off_the_record_profile),
@@ -342,12 +344,27 @@ void BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult() {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::ReportRefreshResult",
               perfetto::TerminatingFlow::FromPointer(this), "result", result_);
+  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
+
   const std::string_view histogram_trigger_suffix =
       GetRotationHistogramTriggerSuffix(trigger_);
-  base::UmaHistogramEnumeration(kRotationResultHistogramName, result_);
   base::UmaHistogramEnumeration(
       base::StrCat({kRotationResultHistogramName, histogram_trigger_suffix}),
       result_);
+  if (const std::optional<std::string_view> histogram_session_origin_suffix =
+          bound_session_credentials::GetSessionOriginHistogramSuffix(
+              session_origin_);
+      histogram_session_origin_suffix.has_value()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {kRotationResultHistogramName, *histogram_session_origin_suffix}),
+        result_);
+    base::UmaHistogramEnumeration(
+        base::StrCat({kRotationResultHistogramName,
+                      *histogram_session_origin_suffix,
+                      histogram_trigger_suffix}),
+        result_);
+  }
 
   CHECK(cookie_refresh_duration_.has_value());
   base::TimeDelta duration = base::TimeTicks::Now() - *cookie_refresh_duration_;
@@ -429,8 +446,7 @@ void BoundSessionRefreshCookieFetcherImpl::
 }
 
 void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
-    const std::string& challenge,
-    size_t generate_assertion_attempt) {
+    const std::string& challenge) {
   TRACE_EVENT("browser",
               "BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge",
               perfetto::Flow::FromPointer(this));
@@ -438,24 +454,19 @@ void BoundSessionRefreshCookieFetcherImpl::RefreshWithChallenge(
       challenge, refresh_url_,
       base::BindOnce(
           &BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion,
-          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge,
-          generate_assertion_attempt));
+          weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(), challenge));
 }
 
 void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
     base::ElapsedTimer generate_assertion_timer,
     const std::string& challenge,
-    size_t generate_assertion_attempt,
     base::expected<std::string, SessionBindingHelper::Error>
         assertion_or_error) {
   base::UmaHistogramMediumTimes(
       "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionDuration",
       generate_assertion_timer.Elapsed());
   base::UmaHistogramEnumeration(
-      base::StrCat({"Signin.BoundSessionCredentials."
-                    "CookieRotationGenerateAssertionResult."
-                    "Attempt",
-                    base::NumberToString(generate_assertion_attempt)}),
+      "Signin.BoundSessionCredentials.CookieRotationGenerateAssertionResult",
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
   TRACE_EVENT(
       "browser",
@@ -464,14 +475,6 @@ void BoundSessionRefreshCookieFetcherImpl::OnGenerateBindingKeyAssertion(
       assertion_or_error.error_or(SessionBindingHelper::kNoErrorForMetrics));
 
   if (!assertion_or_error.has_value()) {
-    // `assertion_or_error.error()` doesn't expose enough information to
-    // decide whether an error was transient or permanent. As permanent errors
-    // are issued almost immediately, it's acceptable to retry on them.
-    if (generate_assertion_attempt < kMaxGenerateAssertionFailuresAllowed) {
-      RefreshWithChallenge(challenge, generate_assertion_attempt + 1);
-      return;
-    }
-
     CompleteRequestAndReportRefreshResult(Result::kSignChallengeFailed);
     return;
   }

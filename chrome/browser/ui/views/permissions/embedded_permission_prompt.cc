@@ -69,7 +69,7 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
         prompt_view = new EmbeddedPermissionPromptPreviouslyGrantedView(
             browser(), weak_factory_.GetWeakPtr());
       } else {
-        delegate()->FinalizeCurrentRequests();
+        FinalizePrompt();
         return;
       }
       break;

@@ -5,6 +5,7 @@
 #include "services/viz/public/cpp/compositing/thread_mojom_traits.h"
 
 #include "base/bit_cast.h"
+#include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 
 namespace mojo {

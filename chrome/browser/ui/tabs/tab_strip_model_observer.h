@@ -61,7 +61,10 @@ class TabStripModelChange {
     kDeleted,
 
     // Tab got detached from a TabStrip and inserted into another TabStrip.
-    kInsertedIntoOtherTabStrip
+    kInsertedIntoOtherTabStrip,
+
+    // Insert the WebContents into side panel.
+    kInsertedIntoSidePanel
   };
 
   struct RemovedTab {
@@ -545,6 +548,12 @@ class TabStripModelObserver {
   // independent of the tabstrip model and do not affect any tab state.
   virtual void OnTabGroupChanged(const TabGroupChange& change);
 
+  // Called when the "GroupFocused" state changes. This will happen before the
+  // group is fully destroyed.
+  virtual void OnTabGroupFocusChanged(
+      std::optional<tab_groups::TabGroupId> new_focused_group_id,
+      std::optional<tab_groups::TabGroupId> old_focused_group_id);
+
   // Notfies us when a Tab Group is added to the Tab Group Model.
   virtual void OnTabGroupAdded(const tab_groups::TabGroupId& group_id);
 
@@ -606,10 +615,15 @@ class TabStripModelObserver {
   virtual void CloseAllTabsStopped(TabStripModel* tab_strip_model,
                                    CloseAllStoppedReason reason);
 
-  // The specified tab at |index| requires the display of a UI indication to the
+  // The specified tab at `index` requires the display of a UI indication to the
   // user that it needs their attention. The UI indication is set iff
-  // |attention| is true.
+  // `attention` is true.
   virtual void SetTabNeedsAttentionAt(int index, bool attention);
+
+  // Similar to SetTabNeedsAttentionAt but for Tab Groups. The UI indication is
+  // set iff `attention` is true.
+  virtual void SetTabGroupNeedsAttention(const tab_groups::TabGroupId& group,
+                                         bool attention);
 
   // Called when an observed TabStripModel is beginning destruction.
   virtual void OnTabStripModelDestroyed(TabStripModel* tab_strip_model);

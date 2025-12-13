@@ -14,12 +14,11 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/mac/credential_metadata.h"
 #include "device/fido/p256_public_key.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device::fido::mac {
 

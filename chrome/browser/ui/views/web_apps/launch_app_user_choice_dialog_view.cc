@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -128,9 +130,11 @@ void LaunchAppUserChoiceDialogView::InitChildViews() {
         views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
         icon_label_spacing));
 
-    provider->icon_manager().ReadIcons(
-        app_id_, IconPurpose::ANY,
-        provider->registrar_unsafe().GetAppDownloadedIconSizesAny(app_id_),
+    provider->icon_manager().ReadTrustedIconsWithFallbackToManifestIcons(
+        app_id_,
+        provider->registrar_unsafe().GetAppTrustedIconSizesFallbackToUntrusted(
+            app_id_),
+        IconPurpose::ANY,
         base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconsRead,
                        weak_ptr_factory_.GetWeakPtr()));
     icon_image_view_ =
@@ -178,7 +182,8 @@ void LaunchAppUserChoiceDialogView::RunCloseCallback(
 }
 
 void LaunchAppUserChoiceDialogView::OnIconsRead(
-    std::map<SquareSizePx, SkBitmap> icon_bitmaps) {
+    IconMetadataFromDisk icon_metadata) {
+  SizeToBitmap icon_bitmaps = std::move(icon_metadata.icons_map);
   if (icon_bitmaps.empty() || !icon_image_view_) {
     return;
   }
@@ -189,6 +194,21 @@ void LaunchAppUserChoiceDialogView::OnIconsRead(
                          web_app::kWebAppIconSmall, std::move(icon_bitmaps)),
                      image_size);
   icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(image_skia));
+
+  if (icon_metadata.purpose == IconPurpose::MASKABLE) {
+    web_app::MaskIconOnOs(
+        *image_skia.bitmap(),
+        base::BindOnce(&LaunchAppUserChoiceDialogView::OnIconMaskedUpdateDialog,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void LaunchAppUserChoiceDialogView::OnIconMaskedUpdateDialog(
+    SkBitmap masked_bitmap) {
+  CHECK(icon_image_view_);
+  CHECK(!masked_bitmap.drawsNothing());
+  icon_image_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(std::move(masked_bitmap))));
 }
 
 BEGIN_METADATA(LaunchAppUserChoiceDialogView)

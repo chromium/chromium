@@ -93,7 +93,6 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
                             new PropertyModel.Builder(AppMenuItemProperties.ALL_KEYS)
                                     .with(AppMenuItemProperties.MENU_ITEM_ID, R.id.icon_row_menu_id)
                                     .with(AppMenuItemProperties.ADDITIONAL_ICONS, icons)
-                                    .with(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true)
                                     .with(AppMenuItemProperties.POSITION, modelList.size())
                                     .build()));
         }
@@ -106,7 +105,6 @@ class TestAppMenuPropertiesDelegate implements AppMenuPropertiesDelegate {
                 .with(AppMenuItemProperties.MENU_ITEM_ID, id)
                 .with(AppMenuItemProperties.ENABLED, enabled)
                 .with(AppMenuItemProperties.TITLE, title)
-                .with(AppMenuItemProperties.SUPPORT_ENTER_ANIMATION, true)
                 .with(AppMenuItemProperties.POSITION, position)
                 .build();
     }

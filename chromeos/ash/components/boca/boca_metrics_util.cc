@@ -126,6 +126,23 @@ void RecordSpotlightGoogleApiErrorCode(const std::string& name,
       error_code);
 }
 
+void RecordListCoursesErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourses, error_code);
+}
+
+void RecordListStudentsErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListStudents, error_code);
+}
+
+void RecordListCourseWorksErrorCode(google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourseWorks, error_code);
+}
+
+void RecordListCourseWorkMaterialsErrorCode(
+    google_apis::ApiErrorCode error_code) {
+  RecordGoogleApiErrorCode(kListCourseWorkMaterials, error_code);
+}
+
 void RecordGetSessionErrorCode(google_apis::ApiErrorCode error_code) {
   RecordGoogleApiErrorCode(kBocaGetSession, error_code);
 }
@@ -200,6 +217,39 @@ void RecordPollingResult(const ::boca::Session* previous_session,
 
 void RecordTokenRetrievalIsValidation(const bool is_validation) {
   base::UmaHistogramBoolean(kBocaTokenRetrievalIsValidation, is_validation);
+}
+
+void RecordPresentOwnScreenResult(const bool result,
+                                  const bool is_session_active) {
+  if (is_session_active) {
+    base::UmaHistogramBoolean(kBocaScreenSharePresentOwnScreenInSessionResult,
+                              result);
+  } else {
+    base::UmaHistogramBoolean(
+        kBocaScreenSharePresentOwnScreenOutOfSessionResult, result);
+  }
+}
+
+void RecordPresentStudentScreenResult(const bool result) {
+  base::UmaHistogramBoolean(kBocaScreenSharePresentStudentScreenResult, result);
+}
+
+void RecordPresentOwnScreenFailureReason(
+    BocaPresentOwnScreenFailureReason reason,
+    const bool is_session_active) {
+  if (is_session_active) {
+    base::UmaHistogramEnumeration(
+        kBocaScreenSharePresentOwnScreenInSessionFailureReason, reason);
+  } else {
+    base::UmaHistogramEnumeration(
+        kBocaScreenSharePresentOwnScreenOutOfSessionFailureReason, reason);
+  }
+}
+
+void RecordPresentStudentScreenFailureReason(
+    BocaPresentStudentScreenFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      kBocaScreenSharePresentStudentScreenFailureReason, reason);
 }
 
 }  // namespace ash::boca

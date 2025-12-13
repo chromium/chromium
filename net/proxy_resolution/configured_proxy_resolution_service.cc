@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -29,6 +30,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/url_util.h"
+#include "net/dns/host_resolver.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_util.h"
@@ -357,13 +359,6 @@ base::Value::Dict NetLogBadProxyListParams(
   return dict;
 }
 
-// Returns NetLog parameters on a successful proxy resolution.
-base::Value::Dict NetLogFinishedResolvingProxyParams(const ProxyInfo* result) {
-  base::Value::Dict dict;
-  dict.Set("proxy_info", result->ToDebugString());
-  return dict;
-}
-
 // Returns a sanitized copy of |url| which is safe to pass on to a PAC script.
 //
 // PAC scripts are modelled as being controllable by a network-present
@@ -394,6 +389,13 @@ GURL SanitizeUrl(const GURL& url) {
   }
 
   return url.ReplaceComponents(replacements);
+}
+
+base::Value::Dict CreateDnsConditionNetLogParam(
+    const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition) {
+  base::Value::Dict dict;
+  dict.Set("dns_condition", dns_condition.ToDict());
+  return dict;
 }
 
 }  // namespace
@@ -822,14 +824,18 @@ const ConfiguredProxyResolutionService::PacPollPolicy*
 ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
     std::unique_ptr<ProxyConfigService> config_service,
     std::unique_ptr<ProxyResolverFactory> resolver_factory,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log,
-    bool quick_check_enabled)
+    bool quick_check_enabled,
+    bool enable_pac_runtime_backoff)
     : config_service_(std::move(config_service)),
       resolver_factory_(std::move(resolver_factory)),
+      host_resolver_for_override_rules_(host_resolver_for_override_rules),
       net_log_(net_log),
       stall_proxy_auto_config_delay_(
           base::Milliseconds(kDelayAfterNetworkChangesMs)),
-      quick_check_enabled_(quick_check_enabled) {
+      quick_check_enabled_(quick_check_enabled),
+      enable_pac_runtime_backoff_(enable_pac_runtime_backoff) {
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddDNSObserver(this);
   config_service_->AddObserver(this);
@@ -839,32 +845,35 @@ ConfiguredProxyResolutionService::ConfiguredProxyResolutionService(
 std::unique_ptr<ConfiguredProxyResolutionService>
 ConfiguredProxyResolutionService::CreateUsingSystemProxyResolver(
     std::unique_ptr<ProxyConfigService> proxy_config_service,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log,
     bool quick_check_enabled) {
   DCHECK(proxy_config_service);
 
   if (!ProxyResolverFactoryForSystem::IsSupported()) {
     VLOG(1) << "PAC support disabled because there is no system implementation";
-    return CreateWithoutProxyResolver(std::move(proxy_config_service), net_log);
+    return CreateWithoutProxyResolver(std::move(proxy_config_service),
+                                      host_resolver_for_override_rules,
+                                      net_log);
   }
 
-  std::unique_ptr<ConfiguredProxyResolutionService> proxy_resolution_service =
-      std::make_unique<ConfiguredProxyResolutionService>(
-          std::move(proxy_config_service),
-          std::make_unique<ProxyResolverFactoryForSystem>(
-              kDefaultNumPacThreads),
-          net_log, quick_check_enabled);
-  return proxy_resolution_service;
+  return std::make_unique<ConfiguredProxyResolutionService>(
+      std::move(proxy_config_service),
+      std::make_unique<ProxyResolverFactoryForSystem>(kDefaultNumPacThreads),
+      host_resolver_for_override_rules, net_log, quick_check_enabled,
+      /*enable_pac_runtime_backoff=*/true);
 }
 
 // static
 std::unique_ptr<ConfiguredProxyResolutionService>
 ConfiguredProxyResolutionService::CreateWithoutProxyResolver(
     std::unique_ptr<ProxyConfigService> proxy_config_service,
+    HostResolver* host_resolver_for_override_rules,
     NetLog* net_log) {
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForNullResolver>(), net_log,
+      std::make_unique<ProxyResolverFactoryForNullResolver>(),
+      host_resolver_for_override_rules, net_log,
       /*quick_check_enabled=*/false);
 }
 
@@ -875,8 +884,9 @@ ConfiguredProxyResolutionService::CreateFixedForTest(
   // TODO(eroman): This isn't quite right, won't work if |pc| specifies
   //               a PAC script.
   return CreateUsingSystemProxyResolver(
-      std::make_unique<ProxyConfigServiceFixed>(pc), nullptr,
-      /*quick_check_enabled=*/true);
+      std::make_unique<ProxyConfigServiceFixed>(pc),
+      /*host_resolver_for_override_rules=*/nullptr,
+      /*net_log=*/nullptr, /*quick_check_enabled=*/true);
 }
 
 // static
@@ -896,7 +906,8 @@ ConfiguredProxyResolutionService::CreateDirect() {
   // Use direct connections.
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::make_unique<ProxyConfigServiceDirect>(),
-      std::make_unique<ProxyResolverFactoryForNullResolver>(), nullptr,
+      std::make_unique<ProxyResolverFactoryForNullResolver>(),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -914,7 +925,8 @@ ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string), nullptr,
+      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -929,7 +941,8 @@ ConfiguredProxyResolutionService::CreateFixedFromAutoDetectedPacResultForTest(
 
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
-      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string), nullptr,
+      std::make_unique<ProxyResolverFactoryForPacResult>(pac_string),
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -948,7 +961,7 @@ ConfiguredProxyResolutionService::CreateFixedFromProxyChainsForTest(
   return std::make_unique<ConfiguredProxyResolutionService>(
       std::move(proxy_config_service),
       std::make_unique<ProxyResolverFactoryForProxyChains>(proxy_chains),
-      nullptr,
+      /*host_resolver_for_override_rules=*/nullptr, /*net_log=*/nullptr,
       /*quick_check_enabled=*/true);
 }
 
@@ -959,7 +972,8 @@ int ConfiguredProxyResolutionService::ResolveProxy(
     ProxyInfo* result,
     CompletionOnceCallback callback,
     std::unique_ptr<ProxyResolutionRequest>* out_request,
-    const NetLogWithSource& net_log) {
+    const NetLogWithSource& net_log,
+    RequestPriority priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!callback.is_null());
   DCHECK(out_request);
@@ -981,9 +995,16 @@ int ConfiguredProxyResolutionService::ResolveProxy(
   // to be disclosed to the resolver.
   GURL url = SanitizeUrl(raw_url);
 
+  if (config_ && !host_resolver_for_override_rules_) {
+    // A host resolver should always be configured in services which may receive
+    // configurations with override rules.
+    CHECK(config_->value().proxy_override_rules().empty());
+  }
+
   // Check if the request can be completed right away. (This is the case when
   // using a direct connection for example).
-  int rv = TryToCompleteSynchronously(url, result);
+  int rv = TryToCompleteSynchronously(url, /*bypass_override_rules=*/false,
+                                      net_log, result);
   if (rv != ERR_IO_PENDING) {
     rv = DidFinishResolvingProxy(url, network_anonymization_key, method, result,
                                  rv, net_log);
@@ -992,9 +1013,9 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 
   auto req = std::make_unique<ConfiguredProxyResolutionRequest>(
       this, url, method, network_anonymization_key, result, std::move(callback),
-      net_log);
+      net_log, priority);
 
-  if (current_state_ == STATE_READY) {
+  if (IsReady()) {
     // Start the resolve request.
     rv = req->Start();
     if (rv != ERR_IO_PENDING)
@@ -1016,13 +1037,40 @@ int ConfiguredProxyResolutionService::ResolveProxy(
 
 int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     const GURL& url,
+    bool bypass_override_rules,
+    const NetLogWithSource& net_log,
     ProxyInfo* result) {
   DCHECK_NE(STATE_NONE, current_state_);
 
-  if (current_state_ != STATE_READY)
+  if (!IsReady()) {
     return ERR_IO_PENDING;  // Still initializing.
+  }
 
   DCHECK(config_);
+
+  if (!bypass_override_rules &&
+      !config_->value().proxy_override_rules().empty()) {
+    // Override rules are prioritized in the order that they are defined.
+    for (const auto& rule : config_->value().proxy_override_rules()) {
+      if (rule.MatchesDestination(url)) {
+        if (rule.dns_conditions.empty()) {
+          net_log.AddEvent(
+              NetLogEventType::PROXY_RESOLUTION_OVERRIDE_RULE_APPLIED,
+              [&] { return rule.ToDict(); });
+
+          result->UseProxyList(rule.proxy_list);
+          result->set_traffic_annotation(MutableNetworkTrafficAnnotationTag(
+              config_->traffic_annotation()));
+          return OK;
+        }
+
+        // If the first matching rule requires any DNS resolution, go to the
+        // asynchronous path.
+        return ERR_IO_PENDING;
+      }
+    }
+  }
+
   // If it was impossible to fetch or parse the PAC script, we cannot complete
   // the request here and bail out.
   if (permanent_error_ != OK) {
@@ -1033,8 +1081,23 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
     return permanent_error_;
   }
 
-  if (config_->value().HasAutomaticSettings())
+  // If using automatic settings and we are in a PAC runtime error backoff
+  // window, avoid invoking the resolver. This prevents repeated PAC
+  // evaluations (and re-fetches on some platforms) during the backoff period.
+  if (config_->value().HasAutomaticSettings()) {
+    if (enable_pac_runtime_backoff_ &&
+        (pac_retry_throttler_.IsInBackoffWindow() ||
+         pac_retry_throttler_.HasFailedDuringCurrentLoad())) {
+      if (config_->value().pac_mandatory()) {
+        return ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      }
+      result->UseDirect();
+      result->set_traffic_annotation(
+          MutableNetworkTrafficAnnotationTag(config_->traffic_annotation()));
+      return OK;
+    }
     return ERR_IO_PENDING;  // Must submit the request to the proxy resolver.
+  }
 
   // Use the manual proxy settings.
   config_->value().proxy_rules().Apply(url, result);
@@ -1046,6 +1109,7 @@ int ConfiguredProxyResolutionService::TryToCompleteSynchronously(
 
 ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  in_destruction_ = true;
   NetworkChangeNotifier::RemoveIPAddressObserver(this);
   NetworkChangeNotifier::RemoveDNSObserver(this);
   config_service_->RemoveObserver(this);
@@ -1065,12 +1129,15 @@ ConfiguredProxyResolutionService::~ConfiguredProxyResolutionService() {
 void ConfiguredProxyResolutionService::SuspendAllPendingRequests() {
   for (ConfiguredProxyResolutionRequest* req : pending_requests_) {
     if (req->is_started()) {
-      req->CancelResolveJob();
+      req->Cancel();
 
       req->net_log()->BeginEvent(
           NetLogEventType::PROXY_RESOLUTION_SERVICE_WAITING_FOR_INIT_PAC);
     }
   }
+
+  // Also cancel any pending DNS resolution requests.
+  host_resolution_requests_.clear();
 }
 
 void ConfiguredProxyResolutionService::SetReady() {
@@ -1175,28 +1242,9 @@ void ConfiguredProxyResolutionService::ReportSuccess(const ProxyInfo& result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   const ProxyRetryInfoMap& new_retry_info = result.proxy_retry_info();
-  if (new_retry_info.empty())
-    return;
-
-  if (proxy_delegate_) {
-    proxy_delegate_->OnSuccessfulRequestAfterFailures(new_retry_info);
-  }
-
-  for (const auto& iter : new_retry_info) {
-    auto existing = proxy_retry_info_.find(iter.first);
-    if (existing == proxy_retry_info_.end()) {
-      proxy_retry_info_[iter.first] = iter.second;
-      if (proxy_delegate_) {
-        const ProxyChain& bad_proxy = iter.first;
-        DCHECK(!bad_proxy.is_direct());
-        const ProxyRetryInfo& proxy_retry_info = iter.second;
-        proxy_delegate_->OnFallback(bad_proxy, proxy_retry_info.net_error);
-      }
-    } else if (existing->second.bad_until < iter.second.bad_until) {
-      existing->second.bad_until = iter.second.bad_until;
-    }
-  }
-  if (net_log_) {
+  ProxyResolutionService::ProcessProxyRetryInfo(
+      new_retry_info, proxy_retry_info_, proxy_delegate_);
+  if (!new_retry_info.empty() && net_log_) {
     net_log_->AddGlobalEntry(NetLogEventType::BAD_PROXY_LIST_REPORTED, [&] {
       return NetLogBadProxyListParams(&new_retry_info);
     });
@@ -1232,49 +1280,68 @@ int ConfiguredProxyResolutionService::DidFinishResolvingProxy(
                                       proxy_retry_info_, result);
 
     net_log.AddEvent(
-        NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
-        [&] { return NetLogFinishedResolvingProxyParams(result); });
+        NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST, [&] {
+          base::Value::Dict dict;
+          dict.Set("proxy_info", result->ToDebugString());
+          return dict;
+        });
 
-    // This check is done to only log the NetLog event when necessary, it's
-    // not a performance optimization.
-    if (!proxy_retry_info_.empty()) {
-      result->DeprioritizeBadProxyChains(proxy_retry_info_);
-      net_log.AddEvent(
-          NetLogEventType::PROXY_RESOLUTION_SERVICE_DEPRIORITIZED_BAD_PROXIES,
-          [&] { return NetLogFinishedResolvingProxyParams(result); });
+    DeprioritizeBadProxyChains(proxy_retry_info_, result, net_log);
+    // If we previously had PAC failures and now we have a successful
+    // resolution while using a PAC resolver, reset the throttler.
+    if (enable_pac_runtime_backoff_ &&
+        !pac_retry_throttler_.HasFailedDuringCurrentLoad()) {
+      ResetPacRetryThrottler();
     }
   } else {
     net_log.AddEventWithNetErrorCode(
         NetLogEventType::PROXY_RESOLUTION_SERVICE_RESOLVED_PROXY_LIST,
         result_code);
 
-    bool reset_config = result_code == ERR_PAC_SCRIPT_TERMINATED;
-    if (config_ && !config_->value().pac_mandatory()) {
-      // Fall-back to direct when the proxy resolver fails. This corresponds
-      // with a javascript runtime error in the PAC script.
-      //
-      // This implicit fall-back to direct matches Firefox 3.5 and
-      // Internet Explorer 8. For more information, see:
-      //
-      // http://www.chromium.org/developers/design-documents/proxy-settings-fallback
-      result->UseDirect();
-      result_code = OK;
+    // Preserve the original resolver error for backoff/throttle decisions.
+    const int resolver_error = result_code;
+    bool reset_config = resolver_error == ERR_PAC_SCRIPT_TERMINATED;
 
-      // Allow the proxy delegate to interpose on the resolution decision,
-      // possibly modifying the ProxyInfo.
-      if (proxy_delegate_)
-        proxy_delegate_->OnResolveProxy(url, network_anonymization_key, method,
-                                        proxy_retry_info_, result);
-    } else {
+    // During destruction, treat aborted outstanding requests under automatic
+    // proxy configurations as mandatory failures so callers don't confuse
+    // teardown with a successful DIRECT fallback.
+    //
+    // This can be observed because the service destructor sets
+    // `in_destruction_ = true` and synchronously calls
+    // QueryComplete(ERR_ABORTED) on each pending request. QueryComplete
+    // synchronously calls QueryDidComplete, which in turn calls
+    // DidFinishResolvingProxy on this service before the request removes itself
+    // from `pending_requests_` and runs the user callback.
+    if (resolver_error == ERR_ABORTED && in_destruction_ && !config_) {
       result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      net_log.EndEvent(NetLogEventType::PROXY_RESOLUTION_SERVICE);
+      return result_code;
     }
+
+    if (config_) {
+      if (!config_->value().pac_mandatory()) {
+        // Fall-back to direct for non-mandatory PAC runtime errors or other
+        // resolver failures.
+        result->UseDirect();
+        result_code = OK;
+        if (proxy_delegate_) {
+          proxy_delegate_->OnResolveProxy(url, network_anonymization_key,
+                                          method, proxy_retry_info_, result);
+        }
+      } else {
+        // Mandatory PAC: surface mandatory failure (unless original was a
+        // crash that triggers reset; mapping still needed for callers).
+        result_code = ERR_MANDATORY_PROXY_CONFIGURATION_FAILED;
+      }
+    }
+
     if (reset_config) {
       ResetProxyConfig(false);
-      // If the ProxyResolver crashed, force it to be re-initialized for the
-      // next request by resetting the proxy config. If there are other pending
-      // requests, trigger the recreation immediately so those requests retry.
       if (pending_requests_.size() > 1)
         ApplyProxyConfigIfAvailable();
+    } else if (enable_pac_runtime_backoff_ &&
+               resolver_error == ERR_PAC_SCRIPT_FAILED) {
+      HandlePacScriptLoadError();
     }
   }
 
@@ -1286,7 +1353,8 @@ void ConfiguredProxyResolutionService::SetPacFileFetchers(
     std::unique_ptr<PacFileFetcher> pac_file_fetcher,
     std::unique_ptr<DhcpPacFileFetcher> dhcp_pac_file_fetcher) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  State previous_state = ResetProxyConfig(false);
+  State previous_state =
+      ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
   pac_file_fetcher_ = std::move(pac_file_fetcher);
   dhcp_pac_file_fetcher_ = std::move(dhcp_pac_file_fetcher);
   if (previous_state != STATE_NONE)
@@ -1325,6 +1393,34 @@ PacFileFetcher* ConfiguredProxyResolutionService::GetPacFileFetcher() const {
   return pac_file_fetcher_.get();
 }
 
+ConfiguredProxyResolutionService::HostResolutionRequest::HostResolutionRequest(
+    std::unique_ptr<HostResolver::ResolveHostRequest> request,
+    RequestPriority initial_priority)
+    : request(std::move(request)), current_priority(initial_priority) {}
+
+ConfiguredProxyResolutionService::HostResolutionRequest::HostResolutionRequest(
+    HostResolutionRequest&&) = default;
+
+ConfiguredProxyResolutionService::HostResolutionRequest&
+ConfiguredProxyResolutionService::HostResolutionRequest::operator=(
+    HostResolutionRequest&&) = default;
+
+ConfiguredProxyResolutionService::HostResolutionRequest::
+    ~HostResolutionRequest() = default;
+
+void ConfiguredProxyResolutionService::HostResolutionRequest::AddListener(
+    base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
+    RequestPriority priority) {
+  listeners.push_back(std::move(listener));
+
+  if (current_priority < priority) {
+    // If another request requiring the same DNS host resolution has a higher
+    // priority, bump the pending DNS resolution request's priority to match.
+    request->ChangeRequestPriority(priority);
+    current_priority = priority;
+  }
+}
+
 bool ConfiguredProxyResolutionService::GetLoadStateIfAvailable(
     LoadState* load_state) const {
   if (current_state_ == STATE_WAITING_FOR_INIT_PROXY_RESOLVER) {
@@ -1339,8 +1435,14 @@ ProxyResolver* ConfiguredProxyResolutionService::GetProxyResolver() const {
   return resolver_.get();
 }
 
+HostResolver*
+ConfiguredProxyResolutionService::GetHostResolverForOverrideRules() const {
+  return host_resolver_for_override_rules_.get();
+}
+
 ConfiguredProxyResolutionService::State
-ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
+ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config,
+                                                   bool reset_pac_retry_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   State previous_state = current_state_;
 
@@ -1351,6 +1453,12 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   SuspendAllPendingRequests();
   resolver_.reset();
   config_ = std::nullopt;
+  if (reset_pac_retry_state) {
+    // Reset throttler on config reset (e.g., effective PAC URL/content changed
+    // or network environment changed). This avoids carrying backoff across
+    // different PAC scripts or configurations.
+    pac_retry_throttler_.ResetRetryState();
+  }
   if (reset_fetched_config)
     fetched_config_ = std::nullopt;
   current_state_ = STATE_NONE;
@@ -1358,10 +1466,74 @@ ConfiguredProxyResolutionService::ResetProxyConfig(bool reset_fetched_config) {
   return previous_state;
 }
 
+bool ConfiguredProxyResolutionService::ShouldResetPacRetryStateForNextReset() {
+  if (!preserve_pac_retry_state_for_next_reset_) {
+    return true;
+  }
+  preserve_pac_retry_state_for_next_reset_ = false;
+  return false;
+}
+
+void ConfiguredProxyResolutionService::HandlePacScriptLoadError() {
+  // Delegate scheduling to the throttler (clears per-load flag on timer fire
+  // and triggers ForceReloadProxyConfig via WeakPtr).
+  pac_retry_throttler_.OnRuntimeFailure(weak_ptr_factory_.GetWeakPtr());
+}
+
+void ConfiguredProxyResolutionService::ResetPacRetryThrottler() {
+  pac_retry_throttler_.ResetRetryState();
+}
+
+// Scheduling moved into PacRetryThrottler.
+void ConfiguredProxyResolutionService::PacRetryThrottler::OnRuntimeFailure(
+    base::WeakPtr<ConfiguredProxyResolutionService> service) {
+  // Only schedule one backoff per resolver load until a success.
+  if (has_failed_during_current_load_) {
+    return;
+  }
+  has_failed_during_current_load_ = true;
+  MaybeScheduleScriptReloadWithDelay(std::move(service));
+}
+
+void ConfiguredProxyResolutionService::PacRetryThrottler::
+    MaybeScheduleScriptReloadWithDelay(
+        base::WeakPtr<ConfiguredProxyResolutionService> service) {
+  base::TimeDelta delay = CalculateRetryDelay();
+  IncrementRetryCount();
+  next_retry_time_ = base::TimeTicks::Now() + delay;
+
+  // Bind the reload step to the service's WeakPtr so the task naturally
+  // cancels if the service is destructed. The throttler clears its per-load
+  // failure flag when the timer fires, allowing new failures to schedule
+  // another retry.
+  retry_schedule_timer_.Start(
+      FROM_HERE, delay,
+      base::BindOnce(
+          &ConfiguredProxyResolutionService::OnRetryScheduleTimerFired,
+          std::move(service)));
+}
+
+void ConfiguredProxyResolutionService::PacRetryThrottler::
+    OnRetryScheduleTimerFired() {
+  // Clear the failure flag when timer fires to allow new requests/backoffs.
+  has_failed_during_current_load_ = false;
+  next_retry_time_ = base::TimeTicks();
+}
+
+void ConfiguredProxyResolutionService::OnRetryScheduleTimerFired() {
+  pac_retry_throttler_.OnRetryScheduleTimerFired();
+  ForceReloadProxyConfig();
+}
+
 void ConfiguredProxyResolutionService::ForceReloadProxyConfig() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  ResetProxyConfig(false);
+  preserve_pac_retry_state_for_next_reset_ = true;
+  ResetProxyConfig(false, /*reset_pac_retry_state=*/false);
   ApplyProxyConfigIfAvailable();
+}
+
+bool ConfiguredProxyResolutionService::IsReady() const {
+  return current_state_ == STATE_READY;
 }
 
 base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
@@ -1379,22 +1551,7 @@ base::Value::Dict ConfiguredProxyResolutionService::GetProxyNetLogValues() {
   }
 
   // Log Bad Proxies.
-  {
-    base::Value::List list;
-
-    for (const auto& it : proxy_retry_info_) {
-      const std::string& proxy_chain_uri = it.first.ToDebugString();
-      const ProxyRetryInfo& retry_info = it.second;
-
-      base::Value::Dict dict;
-      dict.Set("proxy_chain_uri", proxy_chain_uri);
-      dict.Set("bad_until", NetLog::TickCountToString(retry_info.bad_until));
-
-      list.Append(base::Value(std::move(dict)));
-    }
-
-    net_info_dict.Set(kNetInfoBadProxies, std::move(list));
-  }
+  net_info_dict.Set(kNetInfoBadProxies, BuildBadProxiesList(proxy_retry_info_));
 
   return net_info_dict;
 }
@@ -1455,7 +1612,7 @@ bool ConfiguredProxyResolutionService::ApplyPacBypassRules(const GURL& url,
                                                            ProxyInfo* results) {
   DCHECK(config_);
 
-  if (ProxyBypassRules::MatchesImplicitRules(url)) {
+  if (ProxyHostMatchingRules::MatchesImplicitRules(url)) {
     results->UseDirectWithBypassedProxy();
     return true;
   }
@@ -1464,7 +1621,7 @@ bool ConfiguredProxyResolutionService::ApplyPacBypassRules(const GURL& url,
 }
 
 void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
-  ResetProxyConfig(false);
+  ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
 
   DCHECK(fetched_config_);
   if (!fetched_config_->value().HasAutomaticSettings()) {
@@ -1500,7 +1657,7 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
   DCHECK(fetched_config_);
   DCHECK(fetched_config_->value().HasAutomaticSettings());
 
-  ResetProxyConfig(false);
+  ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
 
   current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
 
@@ -1516,7 +1673,76 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
     OnInitProxyResolverComplete(rv);
 }
 
-void ConfiguredProxyResolutionService::OnIPAddressChanged() {
+std::optional<ResolveHostResult>
+ConfiguredProxyResolutionService::RequestHostResolution(
+    const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
+    base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    const NetLogWithSource& net_log,
+    RequestPriority priority) {
+  CHECK(host_resolver_for_override_rules_);
+  auto key = std::make_pair(dns_condition.host, network_anonymization_key);
+  auto request_it = host_resolution_requests_.find(key);
+  if (request_it != host_resolution_requests_.end()) {
+    // A DNS resolution request is already pending for this host,
+    // subscribe to it.
+    net_log.AddEvent(
+        NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION,
+        [&] { return CreateDnsConditionNetLogParam(dns_condition); });
+    request_it->second.AddListener(std::move(listener), priority);
+    return std::nullopt;
+  }
+
+  HostResolver::ResolveHostParameters parameters;
+  parameters.initial_priority = priority;
+
+  auto sub_net_log = NetLogWithSource::Make(
+      net_log.net_log(), NetLogSourceType::PROXY_OVERRIDE_HOST_RESOLUTION);
+  auto request = host_resolver_for_override_rules_->CreateRequest(
+      dns_condition.host, network_anonymization_key, sub_net_log, parameters);
+
+  // Link the two net log sources together.
+  sub_net_log.AddEventReferencingSource(
+      NetLogEventType::PROXY_OVERRIDE_HOST_RESOLUTION, net_log.source());
+  net_log.AddEvent(NetLogEventType::PROXY_OVERRIDE_BEGIN_HOST_RESOLUTION, [&] {
+    base::Value::Dict dict = CreateDnsConditionNetLogParam(dns_condition);
+    sub_net_log.source().AddToEventParameters(dict);
+    return dict;
+  });
+
+  int rv = request->Start(base::BindOnce(
+      &ConfiguredProxyResolutionService::OnHostResolved, base::Unretained(this),
+      dns_condition.host, network_anonymization_key));
+  if (rv != ERR_IO_PENDING) {
+    return ResolveHostResult(rv, *request);
+  }
+
+  auto [inserted_request_it, inserted_unused] =
+      host_resolution_requests_.emplace(
+          key, HostResolutionRequest(std::move(request), priority));
+  inserted_request_it->second.AddListener(std::move(listener), priority);
+  return std::nullopt;
+}
+
+void ConfiguredProxyResolutionService::OnHostResolved(
+    const url::SchemeHostPort& scheme_host_port,
+    const NetworkAnonymizationKey& network_anonymization_key,
+    int net_error) {
+  auto key = std::make_pair(scheme_host_port, network_anonymization_key);
+  auto request_it = host_resolution_requests_.find(key);
+  CHECK(request_it != host_resolution_requests_.end());
+
+  auto map_node = host_resolution_requests_.extract(key);
+  ResolveHostResult result(net_error, *map_node.mapped().request);
+  for (auto& listener : map_node.mapped().listeners) {
+    if (listener) {
+      listener->OnDnsHostResolved(scheme_host_port, result);
+    }
+  }
+}
+
+void ConfiguredProxyResolutionService::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   // See the comment block by |kDelayAfterNetworkChangesMs| for info.
   stall_proxy_autoconfig_until_ =
       TimeTicks::Now() + stall_proxy_auto_config_delay_;
@@ -1525,7 +1751,8 @@ void ConfiguredProxyResolutionService::OnIPAddressChanged() {
   // new connection may be essential for URL requests to work properly. Reset
   // the config to ensure new URL requests are blocked until the potential new
   // proxy configuration is loaded.
-  State previous_state = ResetProxyConfig(false);
+  State previous_state =
+      ResetProxyConfig(false, ShouldResetPacRetryStateForNextReset());
   if (previous_state != STATE_NONE)
     ApplyProxyConfigIfAvailable();
 }

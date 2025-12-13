@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/protocol/pseudotcp_adapter.h"
 
 #include <stddef.h>
@@ -25,16 +20,38 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 
-using webrtc::PseudoTcp;
+using remoting::protocol::PseudoTcp;
 
 namespace {
 const int kReadBufferSize = 65536;  // Maximum size of a packet.
 const uint16_t kDefaultMtu = 1280;
+
+// Maps PseudoTcp logical error states to Chromium net errors.
+// PseudoTcp is a simulated socket, not a real system socket, so we can't
+// use MapSystemError() which is designed for actual system error codes.
+int MapPseudoTcpError(int pseudo_tcp_error) {
+  switch (pseudo_tcp_error) {
+    case EWOULDBLOCK:
+      return net::ERR_IO_PENDING;
+    case ENOTCONN:
+      return net::ERR_SOCKET_NOT_CONNECTED;
+    case ECONNRESET:
+      return net::ERR_CONNECTION_RESET;
+    case ECONNABORTED:
+      return net::ERR_CONNECTION_ABORTED;
+    case ETIMEDOUT:
+      return net::ERR_TIMED_OUT;
+    default:
+      // For unknown logical errors, return generic failure
+      DLOG(WARNING) << "Unknown PseudoTcp logical error: " << pseudo_tcp_error;
+      return net::ERR_FAILED;
+  }
+}
 }  // namespace
 
 namespace remoting::protocol {
 
-class PseudoTcpAdapter::Core : public webrtc::IPseudoTcpNotify,
+class PseudoTcpAdapter::Core : public IPseudoTcpNotify,
                                public base::RefCounted<Core> {
  public:
   explicit Core(std::unique_ptr<P2PDatagramSocket> socket);
@@ -52,15 +69,15 @@ class PseudoTcpAdapter::Core : public webrtc::IPseudoTcpNotify,
             const net::NetworkTrafficAnnotationTag& traffic_annotation);
   net::CompletionOnceCallback Connect(net::CompletionOnceCallback callback);
 
-  // webrtc::IPseudoTcpNotify interface.
+  // IPseudoTcpNotify interface.
   // These notifications are triggered from NotifyPacket.
-  void OnTcpOpen(webrtc::PseudoTcp* tcp) override;
-  void OnTcpReadable(webrtc::PseudoTcp* tcp) override;
-  void OnTcpWriteable(webrtc::PseudoTcp* tcp) override;
+  void OnTcpOpen(PseudoTcp* tcp) override;
+  void OnTcpReadable(PseudoTcp* tcp) override;
+  void OnTcpWriteable(PseudoTcp* tcp) override;
   // This is triggered by NotifyClock or NotifyPacket.
-  void OnTcpClosed(webrtc::PseudoTcp* tcp, uint32_t error) override;
+  void OnTcpClosed(PseudoTcp* tcp, uint32_t error) override;
   // This is triggered by NotifyClock, NotifyPacket, Recv and Send.
-  WriteResult TcpWritePacket(webrtc::PseudoTcp* tcp,
+  WriteResult TcpWritePacket(PseudoTcp* tcp,
                              const char* buffer,
                              size_t len) override;
 
@@ -98,7 +115,7 @@ class PseudoTcpAdapter::Core : public webrtc::IPseudoTcpNotify,
   net::CompletionOnceCallback read_callback_;
   net::CompletionOnceCallback write_callback_;
 
-  webrtc::PseudoTcp pseudo_tcp_;
+  PseudoTcp pseudo_tcp_;
   std::unique_ptr<P2PDatagramSocket> socket_;
 
   scoped_refptr<net::IOBuffer> read_buffer_;
@@ -146,7 +163,7 @@ int PseudoTcpAdapter::Core::Read(const scoped_refptr<net::IOBuffer>& buffer,
 
   int result = pseudo_tcp_.Recv(buffer->data(), buffer_size);
   if (result < 0) {
-    result = net::MapSystemError(pseudo_tcp_.GetError());
+    result = MapPseudoTcpError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
   }
 
@@ -173,7 +190,7 @@ int PseudoTcpAdapter::Core::Write(
 
   int result = pseudo_tcp_.Send(buffer->data(), buffer_size);
   if (result < 0) {
-    result = net::MapSystemError(pseudo_tcp_.GetError());
+    result = MapPseudoTcpError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
   }
 
@@ -207,7 +224,7 @@ int PseudoTcpAdapter::Core::Write(
 
 net::CompletionOnceCallback PseudoTcpAdapter::Core::Connect(
     net::CompletionOnceCallback callback) {
-  DCHECK_EQ(pseudo_tcp_.State(), webrtc::PseudoTcp::TCP_LISTEN);
+  DCHECK_EQ(pseudo_tcp_.State(), PseudoTcp::TCP_LISTEN);
 
   // Reference the Core in case a callback deletes the adapter.
   scoped_refptr<Core> core(this);
@@ -245,7 +262,7 @@ void PseudoTcpAdapter::Core::OnTcpReadable(PseudoTcp* tcp) {
 
   int result = pseudo_tcp_.Recv(read_buffer_->data(), read_buffer_size_);
   if (result < 0) {
-    result = net::MapSystemError(pseudo_tcp_.GetError());
+    result = MapPseudoTcpError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
     if (result == net::ERR_IO_PENDING) {
       return;
@@ -271,7 +288,7 @@ void PseudoTcpAdapter::Core::OnTcpWriteable(PseudoTcp* tcp) {
 
   int result = pseudo_tcp_.Send(write_buffer_->data(), write_buffer_size_);
   if (result < 0) {
-    result = net::MapSystemError(pseudo_tcp_.GetError());
+    result = MapPseudoTcpError(pseudo_tcp_.GetError());
     DCHECK(result < 0);
     if (result == net::ERR_IO_PENDING) {
       return;
@@ -308,19 +325,19 @@ void PseudoTcpAdapter::Core::OnTcpClosed(PseudoTcp* tcp, uint32_t error) {
 }
 
 void PseudoTcpAdapter::Core::SetAckDelay(int delay_ms) {
-  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_ACKDELAY, delay_ms);
+  pseudo_tcp_.SetOption(PseudoTcp::OPT_ACKDELAY, delay_ms);
 }
 
 void PseudoTcpAdapter::Core::SetNoDelay(bool no_delay) {
-  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_NODELAY, no_delay ? 1 : 0);
+  pseudo_tcp_.SetOption(PseudoTcp::OPT_NODELAY, no_delay ? 1 : 0);
 }
 
 void PseudoTcpAdapter::Core::SetReceiveBufferSize(int32_t size) {
-  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_RCVBUF, size);
+  pseudo_tcp_.SetOption(PseudoTcp::OPT_RCVBUF, size);
 }
 
 void PseudoTcpAdapter::Core::SetSendBufferSize(int32_t size) {
-  pseudo_tcp_.SetOption(webrtc::PseudoTcp::OPT_SNDBUF, size);
+  pseudo_tcp_.SetOption(PseudoTcp::OPT_SNDBUF, size);
 }
 
 void PseudoTcpAdapter::Core::SetWriteWaitsForSend(bool write_waits_for_send) {
@@ -338,7 +355,7 @@ void PseudoTcpAdapter::Core::DeleteSocket() {
   socket_.reset();
 }
 
-webrtc::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
+IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
     PseudoTcp* tcp,
     const char* buffer,
     size_t len) {
@@ -352,7 +369,7 @@ webrtc::IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
   }
 
   auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
-  memcpy(write_buffer->data(), buffer, len);
+  UNSAFE_TODO(memcpy(write_buffer->data(), buffer, len));
 
   // Our underlying socket is datagram-oriented, which means it should either
   // send exactly as many bytes as we requested, or fail.

@@ -66,9 +66,8 @@ void ImageView::OnPaint(gfx::Canvas* canvas) {
   // content).
   TRACE_EVENT1("views", "ImageView::OnPaint", "class", GetClassName());
   if (corner_radius_) {
-    SkPath mask;
-    mask.addRoundRect(gfx::RectToSkRect(GetImageBounds()), corner_radius_,
-                      corner_radius_);
+    const SkPath mask = SkPath::RRect(gfx::RectToSkRect(GetImageBounds()),
+                                      corner_radius_, corner_radius_);
     canvas->ClipPath(mask, true);
   }
 

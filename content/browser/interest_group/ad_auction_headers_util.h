@@ -39,14 +39,17 @@ enum class AdAuctionHeadersIsEligibleOutcomeForMetrics {
 
 // The request header key that triggers interception of the auction result,
 // signals, and additional bids from their associated response headers.
-extern const char kAdAuctionRequestHeaderKey[];
+inline constexpr char kAdAuctionRequestHeaderKey[] = "Sec-Ad-Auction-Fetch";
 
 // Response header keys associated with auction result, nonce, signals, and
 // additional bids, respectively.
-extern const char CONTENT_EXPORT kAdAuctionResultResponseHeaderKey[];
-extern const char CONTENT_EXPORT kAdAuctionResultNonceResponseHeaderKey[];
-extern const char CONTENT_EXPORT kAdAuctionSignalsResponseHeaderKey[];
-extern const char CONTENT_EXPORT kAdAuctionAdditionalBidResponseHeaderKey[];
+inline constexpr char kAdAuctionResultResponseHeaderKey[] = "Ad-Auction-Result";
+inline constexpr char kAdAuctionResultNonceResponseHeaderKey[] =
+    "Ad-Auction-Result-Nonce";
+inline constexpr char kAdAuctionSignalsResponseHeaderKey[] =
+    "Ad-Auction-Signals";
+inline constexpr char kAdAuctionAdditionalBidResponseHeaderKey[] =
+    "Ad-Auction-Additional-Bid";
 
 // Returns whether or not this request is eligible for ad auction headers
 // requested for fetch requests. The `initiator_rfh` should be the

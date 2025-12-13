@@ -96,9 +96,8 @@ void NewTabFooterController::RemoveObserver(
 NewTabFooterController::ContentsViewFooterCotroller::
     ContentsViewFooterCotroller(NewTabFooterController* owner,
                                 ContentsContainerView* contents_container_view)
-    : owner_(owner), footer_(contents_container_view->GetNewTabFooterView()) {
-  ContentsWebView* contents_web_view =
-      contents_container_view->GetContentsView();
+    : owner_(owner), footer_(contents_container_view->new_tab_footer_view()) {
+  ContentsWebView* contents_web_view = contents_container_view->contents_view();
   web_contents_attached_subscription_ =
       contents_web_view->AddWebContentsAttachedCallback(base::BindRepeating(
           &ContentsViewFooterCotroller::OnWebContentsAttached,

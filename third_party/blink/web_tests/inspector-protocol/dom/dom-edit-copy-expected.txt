@@ -1,0 +1,15 @@
+Tests that copying + editing <body> does not crash.
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Survived
+

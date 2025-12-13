@@ -19,11 +19,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
-#include "services/video_effects/public/cpp/buildflags.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "media/base/media_switches.h"
@@ -90,13 +85,7 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     base::WeakPtr<media::VideoFrameReceiver> receiver,
     base::OnceClosure connection_lost_cb,
     Callbacks* callbacks,
-    base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor,
-#endif
-    mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-        readonly_video_effects_manager) {
+    base::OnceClosure done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::READY_TO_LAUNCH);
 
@@ -135,17 +124,6 @@ void ServiceVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   mojo::Remote<video_capture::mojom::VideoSource> source;
   service_connection_->source_provider()->GetVideoSource(
       device_id, source.BindNewPipeAndPassReceiver());
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (video_effects_processor) {
-    source->RegisterVideoEffectsProcessor(std::move(video_effects_processor));
-  }
-
-  if (readonly_video_effects_manager) {
-    source->RegisterReadonlyVideoEffectsManager(
-        std::move(readonly_video_effects_manager));
-  }
-#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 
   auto receiver_adapter =
       std::make_unique<video_capture::ReceiverMediaToMojoAdapter>(

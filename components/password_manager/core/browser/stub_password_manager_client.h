@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -30,6 +31,10 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   ~StubPasswordManagerClient() override;
 
   // PasswordManagerClient:
+  bool IsSavingAndFillingEnabled(const GURL& url) const override;
+  bool IsFillingEnabled(const GURL& url) const override;
+  bool IsFieldFilledWithOtp(autofill::FormGlobalId form_id,
+                            autofill::FieldGlobalId field_id) override;
   bool PromptUserToSaveOrUpdatePassword(
       std::unique_ptr<PasswordFormManagerForUI> form_to_save,
       bool update_password) override;
@@ -48,6 +53,8 @@ class StubPasswordManagerClient : public PasswordManagerClient {
       std::vector<std::unique_ptr<PasswordForm>> local_forms,
       const url::Origin& origin,
       CredentialsCallback callback) override;
+  bool IsReauthBeforeFillingRequired(
+      device_reauth::DeviceAuthenticator* authenticator) override;
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<PasswordForm>> local_forms,
       const url::Origin& origin) override;
@@ -118,6 +125,8 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   network::mojom::NetworkContext* GetNetworkContext() const override;
   bool IsIsolationForPasswordSitesEnabled() const override;
   bool IsNewTabPage() const override;
+  password_manager::UndoPasswordChangeController*
+  GetUndoPasswordChangeController() override;
 
  private:
   const StubCredentialsFilter credentials_filter_;
@@ -125,6 +134,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   autofill::StubLogManager log_manager_;
   ukm::SourceId ukm_source_id_;
   std::optional<PasswordManagerMetricsRecorder> metrics_recorder_;
+  UndoPasswordChangeController undo_password_change_controller_;
 };
 
 }  // namespace password_manager

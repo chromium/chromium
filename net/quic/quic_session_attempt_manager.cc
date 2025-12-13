@@ -86,11 +86,17 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
             std::move(dns_aliases), session_creation_initiator,
             std::move(connection_management_config));
     QuicSessionAttempt* raw_attempt = attempt.get();
-    auto [_, inserted] = attempts_.emplace(std::move(attempt));
+    auto [it, inserted] = attempts_.emplace(std::move(attempt));
     CHECK(inserted);
     int rv = raw_attempt->Start(base::BindOnce(
         &Job::OnAttemptComplete, base::Unretained(this), raw_attempt));
     if (rv != ERR_IO_PENDING) {
+      // If the attempt failed synchronously but there are other attempts, wait
+      // for them to complete.
+      if (rv != OK && attempts_.size() > 1) {
+        attempts_.erase(it);
+        return ERR_IO_PENDING;
+      }
       OnAttemptComplete(raw_attempt, rv);
     }
     return rv;

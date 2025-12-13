@@ -53,7 +53,11 @@ static_library("performance_manager") {
     "execution_context/execution_context_registry_impl.h",
     "execution_context_priority/boosting_vote_aggregator.cc",
     "execution_context_priority/boosting_vote_aggregator.h",
+    "execution_context_priority/closing_page_voter.cc",
+    "execution_context_priority/closing_page_voter.h",
     "execution_context_priority/execution_context_priority.cc",
+    "execution_context_priority/extension_service_worker_voter.cc",
+    "execution_context_priority/extension_service_worker_voter.h",
     "execution_context_priority/frame_audible_voter.cc",
     "execution_context_priority/frame_audible_voter.h",
     "execution_context_priority/frame_capturing_media_stream_voter.cc",
@@ -118,10 +122,13 @@ static_library("performance_manager") {
     "graph/process_node_impl.h",
     "graph/process_node_impl_describer.cc",
     "graph/process_node_impl_describer.h",
+    "graph/properties.cc",
     "graph/properties.h",
     "graph/system_node.cc",
     "graph/system_node_impl.cc",
     "graph/system_node_impl.h",
+    "graph/tracing_observer.cc",
+    "graph/tracing_observer.h",
     "graph/worker_node.cc",
     "graph/worker_node_impl.cc",
     "graph/worker_node_impl.h",
@@ -221,6 +228,7 @@ static_library("performance_manager") {
     "public/resource_attribution/resource_types.h",
     "public/resource_attribution/type_helpers.h",
     "public/resource_attribution/worker_context.h",
+    "public/scenarios/process_performance_scenario_observer.h",
     "public/scenarios/process_performance_scenarios.h",
     "public/tracing_support.h",
     "public/user_tuning/prefs.h",
@@ -274,6 +282,7 @@ static_library("performance_manager") {
     "scenarios/loading_scenario_observer.h",
     "scenarios/performance_scenario_data.cc",
     "scenarios/performance_scenario_data.h",
+    "scenarios/process_performance_scenario_observer.cc",
     "scenarios/process_performance_scenarios.cc",
     "scenarios/scoped_global_scenario_memory.cc",
     "service_worker_context_adapter.cc",
@@ -305,9 +314,9 @@ static_library("performance_manager") {
     "//components/guest_view/buildflags",
     "//components/metrics",
     "//components/performance_manager/scenario_api",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
-    "//components/system_cpu:system_cpu",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/system_cpu",
     "//third_party/blink/public/common:headers",
   ]
 
@@ -370,7 +379,9 @@ source_set("unit_tests") {
     "execution_context/execution_context_attached_data_unittest.cc",
     "execution_context/execution_context_registry_impl_unittest.cc",
     "execution_context_priority/boosting_vote_aggregator_unittest.cc",
+    "execution_context_priority/closing_page_voter_unittest.cc",
     "execution_context_priority/execution_context_priority_unittest.cc",
+    "execution_context_priority/extension_service_worker_voter_unittest.cc",
     "execution_context_priority/frame_audible_voter_unittest.cc",
     "execution_context_priority/frame_capturing_media_stream_voter_unittest.cc",
     "execution_context_priority/frame_visibility_voter_unittest.cc",
@@ -438,7 +449,7 @@ source_set("unit_tests") {
 
   deps = [
     ":performance_manager",
-    "test_support:test_support",
+    "test_support",
     "test_support:test_support_common",
     "//base/test:test_support",
     "//components/input",
@@ -486,6 +497,10 @@ source_set("unit_tests") {
 
     sources += [ "power/battery_level_provider_chromeos_unittest.cc" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("browser_tests") {

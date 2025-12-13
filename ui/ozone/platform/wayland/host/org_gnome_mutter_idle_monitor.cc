@@ -8,6 +8,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -34,16 +35,7 @@ constexpr char kSignalWatchFired[] = "WatchFired";
 }  // namespace
 
 OrgGnomeMutterIdleMonitor::OrgGnomeMutterIdleMonitor()
-    : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          base::TaskTraits(base::MayBlock(),
-                           base::TaskPriority::USER_VISIBLE,
-                           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN))) {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = task_runner_;
-  bus_ = base::MakeRefCounted<dbus::Bus>(options);
-}
+    : bus_(dbus_thread_linux::GetSharedSessionBus()) {}
 
 OrgGnomeMutterIdleMonitor::~OrgGnomeMutterIdleMonitor() = default;
 
@@ -71,8 +63,9 @@ std::optional<base::TimeDelta> OrgGnomeMutterIdleMonitor::GetIdleTime() const {
       return base::Seconds(0);
 
     case ServiceState::kWorking:
-      if (idle_timestamp_.is_null())
+      if (idle_timestamp_.is_null()) {
         return base::Seconds(0);
+      }
       return base::Time::Now() - idle_timestamp_;
 
     case ServiceState::kNotAvailable:
@@ -204,21 +197,24 @@ void OrgGnomeMutterIdleMonitor::OnWatchFired(dbus::Signal* signal) {
 }
 
 bool OrgGnomeMutterIdleMonitor::UpdateIdleTime(dbus::Message* message) {
-  if (!message)
+  if (!message) {
     return false;
+  }
 
   dbus::MessageReader reader(message);
   uint64_t idletime;
-  if (!reader.PopUint64(&idletime) || reader.HasMoreData())
+  if (!reader.PopUint64(&idletime) || reader.HasMoreData()) {
     return false;
+  }
   idle_timestamp_ = base::Time::Now() - base::Milliseconds(idletime);
   return true;
 }
 
 bool OrgGnomeMutterIdleMonitor::ReadWatchId(dbus::Message* message,
                                             uint32_t* watch_id) {
-  if (!message)
+  if (!message) {
     return false;
+  }
 
   DCHECK(watch_id);
 

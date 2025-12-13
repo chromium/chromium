@@ -10,6 +10,7 @@
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -37,8 +38,7 @@ void ScrollArrowButton::PaintButtonContents(gfx::Canvas* canvas) {
   const bool show_left_arrow = is_left_arrow_ ^ base::i18n::IsRTL();
   gfx::ImageSkia img = CreateVectorIcon(
       show_left_arrow ? kOverflowShelfLeftIcon : kOverflowShelfRightIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary));
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary));
 
   DCHECK(!bar_view_->mini_views().empty());
   const auto* mini_view = bar_view_->mini_views()[0].get();

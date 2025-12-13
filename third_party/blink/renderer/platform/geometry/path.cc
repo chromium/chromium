@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quad_f.h"
@@ -52,16 +53,17 @@ namespace blink {
 namespace {
 
 bool PathQuadIntersection(const SkPath& path, const gfx::QuadF& quad) {
-  SkPath quad_path, intersection;
-  quad_path.moveTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p1())))
-      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p2())))
-      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p3())))
-      .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p4())))
-      .close();
-  if (!Op(path, quad_path, kIntersect_SkPathOp, &intersection)) {
-    return false;
-  }
-  return !intersection.isEmpty();
+  const SkPath quad_path =
+      SkPathBuilder()
+          .moveTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p1())))
+          .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p2())))
+          .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p3())))
+          .lineTo(gfx::PointFToSkPoint(ClampNonFiniteToZero(quad.p4())))
+          .close()
+          .detach();
+  const auto intersection = Op(path, quad_path, kIntersect_SkPathOp);
+
+  return intersection && !intersection->isEmpty();
 }
 
 }  // namespace

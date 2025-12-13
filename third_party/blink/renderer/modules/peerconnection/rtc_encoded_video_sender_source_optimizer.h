@@ -19,18 +19,18 @@ class RTCEncodedVideoUnderlyingSource;
 class MODULES_EXPORT RtcEncodedVideoSenderSourceOptimizer
     : public ReadableStreamTransferringOptimizer {
  public:
-  using UnderlyingSourceSetter = WTF::CrossThreadFunction<void(
-      RTCEncodedVideoUnderlyingSource*,
-      scoped_refptr<base::SingleThreadTaskRunner>)>;
+  using UnderlyingSourceSetter =
+      CrossThreadFunction<void(RTCEncodedVideoUnderlyingSource*,
+                               scoped_refptr<base::SingleThreadTaskRunner>)>;
   RtcEncodedVideoSenderSourceOptimizer(
       UnderlyingSourceSetter,
-      WTF::CrossThreadOnceClosure disconnect_callback);
+      CrossThreadOnceClosure disconnect_callback);
   UnderlyingSourceBase* PerformInProcessOptimization(
       ScriptState* script_state) override;
 
  private:
   UnderlyingSourceSetter set_underlying_source_;
-  WTF::CrossThreadOnceClosure disconnect_callback_;
+  CrossThreadOnceClosure disconnect_callback_;
 };
 
 }  // namespace blink

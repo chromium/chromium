@@ -290,10 +290,10 @@ class FormForest {
   // (1) All origins are trusted (that's dangerous!).
   // (2) The field's origin is the triggered origin.
   // (3) The field's origin is the main origin, the field's type is
-  //     non-sensitive, and the policy-controlled feature shared-autofill is
-  //     enabled in the field's frame.
+  //     non-sensitive, and the policy-controlled feature "autofill" is enabled
+  //     in the field's frame.
   // (4) The triggered origin is the main origin and the policy-controlled
-  //     feature shared-autofill is enabled in the field's frame.
+  //     feature "autofill" is enabled in the field's frame.
   // (5) The field is in the same frame tree as the field on which Autofill was
   //     triggered.
   //
@@ -313,7 +313,7 @@ class FormForest {
   // expiration dates.
   //
   // The "allow" attribute of the <iframe> element controls whether the
-  // *policy-controlled feature shared-autofill* is enabled in a document
+  // *policy-controlled feature "autofill"* is enabled in a document
   // (see https://www.w3.org/TR/permissions-policy-1/).
   RendererForms GetRendererFormsOfBrowserFields(
       base::span<const FormFieldData> browser_fields,

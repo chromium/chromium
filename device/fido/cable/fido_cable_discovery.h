@@ -18,9 +18,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_device_discovery.h"
+#include "device/fido/public/cable_discovery_data.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"

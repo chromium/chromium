@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<title>UserMedia Element: Disabled</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<usermedia type="camera" id="usermedia"></usermedia>
+<script>
+  test(() => {
+    // Element in DOM.
+    let element = document.getElementById('usermedia');
+    assert_true(element instanceof HTMLUnknownElement, 'usermedia should be an HTMLUnknownElement when disabled');
+    assert_equals(element.constructor.name, "HTMLUnknownElement", "Constructor name should be HTMLUnknownElement");
+    assert_equals(element.isValid, undefined, 'isValid property should not exist');
+    assert_equals(element.type, undefined, 'type property should not exist');
+
+    // Created element.
+    element = document.createElement('usermedia');
+    assert_true(element instanceof HTMLUnknownElement, 'usermedia should be an HTMLUnknownElement when disabled');
+    assert_equals(element.constructor.name, "HTMLUnknownElement", "Constructor name should be HTMLUnknownElement");
+    assert_equals(element.isValid, undefined, 'isValid property should not exist');
+    assert_equals(element.type, undefined, 'type property should not exist');
+  }, "Test HTMLUserMediaElement is HTMLUnknownElement when feature is disabled");
+</script>
+</body>
+</html>

@@ -106,8 +106,9 @@ EntropyProviders::~EntropyProviders() = default;
 
 const base::FieldTrial::EntropyProvider& EntropyProviders::default_entropy()
     const {
-  if (high_entropy_.has_value())
+  if (high_entropy_.has_value()) {
     return high_entropy_.value();
+  }
   return low_entropy_;
 }
 

@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "base_migratable_sync_service.h",
+    "context_id.h",
+    "migratable_bridge_mediator.h",
+    "migratable_entity_converter.h",
+    "migratable_sync_bridge.h",
+    "migratable_sync_service.h",
+    "migratable_sync_service_coordinator.h",
+    "sync_entity_identifier.h",
+  ]
+
+  deps = [
+    ":features",
+    "//components/keyed_service/core",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+}
+
+static_library("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+
+  public_deps = [ "//base" ]
+}

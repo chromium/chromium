@@ -51,8 +51,9 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
+import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.WindowAndroid;
@@ -94,20 +95,16 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
 
     private SharedPreferencesManager mSharedPrefsManager;
 
-    private CoreAccountInfo mCoreAccountInfo;
-
-    private static final String TEST_EMAIL = "test.account@gmail.com";
-
     @Before
     public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         mSharedPrefsManager = ChromeSharedPreferences.getInstance();
-        mCoreAccountInfo = mAccountManagerTestRule.addAccount(TEST_EMAIL);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mIdentityServicesProviderMock.getIdentityManager(mProfile))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
-                .thenReturn(mCoreAccountInfo);
+                .thenReturn(TestAccounts.ACCOUNT1);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TrustedVaultClient.get().setBackendForTesting(mTrustedVaultBackend);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -166,26 +163,6 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
-    public void testEnoughTimeSinceLastUpmError() {
-        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
-                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
-        mFakeTimeTestRule.advanceMillis(
-                PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        assertTrue(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
-    }
-
-    @Test
-    public void testNotEnoughTimeSinceLastUpmError() {
-        final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
-                .thenReturn(Long.toString(timeOfFirstUpmPrompt));
-        assertFalse(
-                PasswordManagerErrorMessageHelperBridge.shouldShowUpdateGMSCoreErrorUi(mProfile));
-    }
-
-    @Test
     public void testSaveErrorUiShownTimestamp() {
         final long currentTimeMs = TimeUtils.currentTimeMillis();
         final long timeIncrementMs = 30;
@@ -209,7 +186,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                         })
                 .when(mFakeAccountManagerFacade)
                 .updateCredentials(
-                        eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(CoreAccountInfo.getAndroidAccountFrom(TestAccounts.ACCOUNT1)),
                         eq(activity),
                         any());
 
@@ -237,7 +214,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
                         })
                 .when(mFakeAccountManagerFacade)
                 .updateCredentials(
-                        eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(CoreAccountInfo.getAndroidAccountFrom(TestAccounts.ACCOUNT1)),
                         eq(activity),
                         any());
 
@@ -289,7 +266,7 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     public void testStartTrustedVaultKeyRetrievalFlow() {
         final Activity activity = mock(Activity.class);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(mSyncService.getAccountInfo()).thenReturn(mCoreAccountInfo);
+        when(mSyncService.getAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
 
         Promise<PendingIntent> intentPromise = new Promise<>();
         when(mTrustedVaultBackend.createKeyRetrievalIntent(any())).thenReturn(intentPromise);

@@ -10,26 +10,26 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.RadioGroup;
 
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 
 /** A binary state radio group preference for components/permissions/features.cc */
 @NullMarked
-public class BinaryStatePermissionPreference extends Preference
+public class BinaryStatePermissionPreference extends ContainedRadioButtonGroupPreference
         implements RadioGroup.OnCheckedChangeListener {
 
     private @Nullable RadioButtonWithDescription mPositive;
     private @Nullable RadioButtonWithDescription mNegative;
     private @Nullable RadioGroup mRadioGroup;
     private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
-    private @ContentSettingValues int mSetting = ContentSettingValues.DEFAULT;
+    private @ContentSetting int mSetting = ContentSetting.DEFAULT;
 
     /**
      * An array of 4 resource IDs for primary texts for enabled and disabled states and description
@@ -40,8 +40,8 @@ public class BinaryStatePermissionPreference extends Preference
     /** An array of 2 resource IDs for icons for enabled and disabled states, in that order. */
     private int @Nullable [] mIconIds;
 
-    private @ContentSettingValues int mDefaultEnabledValue;
-    private @ContentSettingValues int mDefaultDisabledValue;
+    private @ContentSetting int mDefaultEnabledValue;
+    private @ContentSetting int mDefaultDisabledValue;
     private int mIconMarginEnd;
 
     public BinaryStatePermissionPreference(Context context, AttributeSet attrs) {
@@ -56,11 +56,11 @@ public class BinaryStatePermissionPreference extends Preference
 
     /** Initialize Binary radio button group with descriptions and default setting. */
     public void initialize(
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             int[] descriptionIds,
             int[] iconIds,
-            @ContentSettingValues int defaultEnabledValue,
-            @ContentSettingValues int defaultDisabledValue,
+            @ContentSetting int defaultEnabledValue,
+            @ContentSetting int defaultDisabledValue,
             int iconMarginEnd) {
         mSetting = setting;
         mDescriptionIds = descriptionIds;
@@ -70,7 +70,7 @@ public class BinaryStatePermissionPreference extends Preference
         mIconMarginEnd = iconMarginEnd;
     }
 
-    public @ContentSettingValues int getCheckedSetting() {
+    public @ContentSetting int getCheckedSetting() {
         return mSetting;
     }
 
@@ -122,7 +122,7 @@ public class BinaryStatePermissionPreference extends Preference
         callChangeListener(mSetting == mDefaultEnabledValue);
     }
 
-    public @Nullable RadioButtonWithDescription findRadioButton(@ContentSettingValues int setting) {
+    public @Nullable RadioButtonWithDescription findRadioButton(@ContentSetting int setting) {
         if (setting == mDefaultEnabledValue) {
             return mPositive;
         } else if (setting == mDefaultDisabledValue) {

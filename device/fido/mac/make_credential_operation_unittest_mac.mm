@@ -14,13 +14,13 @@
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/mac/credential_store.h"
 #include "device/fido/mac/make_credential_operation.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device::fido::mac {

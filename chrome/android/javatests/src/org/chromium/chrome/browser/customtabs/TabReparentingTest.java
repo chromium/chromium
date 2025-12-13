@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -219,7 +220,10 @@ public class TabReparentingTest {
                 () -> isSelectPopupVisible(mCustomTabActivityTestRule.getActivity()));
 
         final ChromeActivity newActivity = reparentAndVerifyTab();
-        DOMUtils.clickNode(newActivity.getActivityTab().getWebContents(), "select");
+        WebContents webContents =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> newActivity.getActivityTab().getWebContents());
+        DOMUtils.clickNode(webContents, "select");
         CriteriaHelper.pollUiThread(() -> isSelectPopupVisible(newActivity));
     }
 

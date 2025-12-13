@@ -314,7 +314,7 @@ void DeskBarController::OnDisplayMetricsChanged(const display::Display& display,
     }
 
     const int64_t display_id =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayNearestWindow(desk_bar.bar_view->root())
             .id();
     if (display.id() != display_id) {

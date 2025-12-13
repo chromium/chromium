@@ -1,13 +1,13 @@
-/*
- * Summary: implementation of XInclude
- * Description: API to handle XInclude processing,
- * implements the
- * World Wide Web Consortium Last Call Working Draft 10 November 2003
- * http://www.w3.org/TR/2003/WD-xinclude-20031110
+/**
+ * @file
  *
- * Copy: See Copyright for the status of this software.
+ * @brief Implementation of XInclude 1.0
  *
- * Author: Daniel Veillard
+ * API to process XML Inclusions.
+ *
+ * @copyright See Copyright for the status of this software.
+ *
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_XINCLUDE_H__
@@ -25,66 +25,47 @@ extern "C" {
 #endif
 
 /**
- * XINCLUDE_NS:
- *
  * Macro defining the Xinclude namespace: http://www.w3.org/2003/XInclude
  */
 #define XINCLUDE_NS (const xmlChar *) "http://www.w3.org/2003/XInclude"
 /**
- * XINCLUDE_OLD_NS:
- *
  * Macro defining the draft Xinclude namespace: http://www.w3.org/2001/XInclude
  */
 #define XINCLUDE_OLD_NS (const xmlChar *) "http://www.w3.org/2001/XInclude"
 /**
- * XINCLUDE_NODE:
- *
  * Macro defining "include"
  */
 #define XINCLUDE_NODE (const xmlChar *) "include"
 /**
- * XINCLUDE_FALLBACK:
- *
  * Macro defining "fallback"
  */
 #define XINCLUDE_FALLBACK (const xmlChar *) "fallback"
 /**
- * XINCLUDE_HREF:
- *
  * Macro defining "href"
  */
 #define XINCLUDE_HREF (const xmlChar *) "href"
 /**
- * XINCLUDE_PARSE:
- *
  * Macro defining "parse"
  */
 #define XINCLUDE_PARSE (const xmlChar *) "parse"
 /**
- * XINCLUDE_PARSE_XML:
- *
  * Macro defining "xml"
  */
 #define XINCLUDE_PARSE_XML (const xmlChar *) "xml"
 /**
- * XINCLUDE_PARSE_TEXT:
- *
  * Macro defining "text"
  */
 #define XINCLUDE_PARSE_TEXT (const xmlChar *) "text"
 /**
- * XINCLUDE_PARSE_ENCODING:
- *
  * Macro defining "encoding"
  */
 #define XINCLUDE_PARSE_ENCODING (const xmlChar *) "encoding"
 /**
- * XINCLUDE_PARSE_XPOINTER:
- *
  * Macro defining "xpointer"
  */
 #define XINCLUDE_PARSE_XPOINTER (const xmlChar *) "xpointer"
 
+/** XInclude context */
 typedef struct _xmlXIncludeCtxt xmlXIncludeCtxt;
 typedef xmlXIncludeCtxt *xmlXIncludeCtxtPtr;
 
@@ -92,46 +73,46 @@ typedef xmlXIncludeCtxt *xmlXIncludeCtxtPtr;
  * standalone processing
  */
 XMLPUBFUN int
-		xmlXIncludeProcess	(xmlDocPtr doc);
+		xmlXIncludeProcess	(xmlDoc *doc);
 XMLPUBFUN int
-		xmlXIncludeProcessFlags	(xmlDocPtr doc,
+		xmlXIncludeProcessFlags	(xmlDoc *doc,
 					 int flags);
 XMLPUBFUN int
-		xmlXIncludeProcessFlagsData(xmlDocPtr doc,
+		xmlXIncludeProcessFlagsData(xmlDoc *doc,
 					 int flags,
 					 void *data);
 XMLPUBFUN int
-                xmlXIncludeProcessTreeFlagsData(xmlNodePtr tree,
+                xmlXIncludeProcessTreeFlagsData(xmlNode *tree,
                                          int flags,
                                          void *data);
 XMLPUBFUN int
-		xmlXIncludeProcessTree	(xmlNodePtr tree);
+		xmlXIncludeProcessTree	(xmlNode *tree);
 XMLPUBFUN int
-		xmlXIncludeProcessTreeFlags(xmlNodePtr tree,
+		xmlXIncludeProcessTreeFlags(xmlNode *tree,
 					 int flags);
 /*
  * contextual processing
  */
-XMLPUBFUN xmlXIncludeCtxtPtr
-		xmlXIncludeNewContext	(xmlDocPtr doc);
+XMLPUBFUN xmlXIncludeCtxt *
+		xmlXIncludeNewContext	(xmlDoc *doc);
 XMLPUBFUN int
-		xmlXIncludeSetFlags	(xmlXIncludeCtxtPtr ctxt,
+		xmlXIncludeSetFlags	(xmlXIncludeCtxt *ctxt,
 					 int flags);
 XMLPUBFUN void
-		xmlXIncludeSetErrorHandler(xmlXIncludeCtxtPtr ctxt,
+		xmlXIncludeSetErrorHandler(xmlXIncludeCtxt *ctxt,
 					 xmlStructuredErrorFunc handler,
 					 void *data);
 XMLPUBFUN void
-		xmlXIncludeSetResourceLoader(xmlXIncludeCtxtPtr ctxt,
+		xmlXIncludeSetResourceLoader(xmlXIncludeCtxt *ctxt,
 					 xmlResourceLoader loader,
 					 void *data);
 XMLPUBFUN int
-		xmlXIncludeGetLastError	(xmlXIncludeCtxtPtr ctxt);
+		xmlXIncludeGetLastError	(xmlXIncludeCtxt *ctxt);
 XMLPUBFUN void
-		xmlXIncludeFreeContext	(xmlXIncludeCtxtPtr ctxt);
+		xmlXIncludeFreeContext	(xmlXIncludeCtxt *ctxt);
 XMLPUBFUN int
-		xmlXIncludeProcessNode	(xmlXIncludeCtxtPtr ctxt,
-					 xmlNodePtr tree);
+		xmlXIncludeProcessNode	(xmlXIncludeCtxt *ctxt,
+					 xmlNode *tree);
 #ifdef __cplusplus
 }
 #endif

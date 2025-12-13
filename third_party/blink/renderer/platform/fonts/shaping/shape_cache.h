@@ -55,7 +55,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         : length_(kEmptyValueLength),
           direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
 
-    SmallStringKey(WTF::HashTableDeletedValueType)
+    SmallStringKey(HashTableDeletedValueType)
         : length_(kDeletedValueLength),
           direction_(static_cast<unsigned>(TextDirection::kLtr)) {}
 
@@ -188,7 +188,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
     return nullptr;
   }
 
-  struct SmallStringKeyHashTraits : WTF::SimpleClassHashTraits<SmallStringKey> {
+  struct SmallStringKeyHashTraits : SimpleClassHashTraits<SmallStringKey> {
     STATIC_ONLY(SmallStringKeyHashTraits);
     static unsigned GetHash(const SmallStringKey& key) { return key.GetHash(); }
     static const bool kEmptyValueIsZero = false;

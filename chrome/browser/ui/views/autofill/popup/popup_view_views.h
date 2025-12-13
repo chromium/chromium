@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -75,11 +76,14 @@ class PopupViewViews : public PopupBaseView,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kAutofillCreditCardSuggestionEntryElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillAiOptInIphElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillAiValuablesElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kAutofillStandaloneCvcSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillHomeWorkSuggestionElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutofillEnableLoyaltyCardsElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillAccountNameEmailSuggestionElementId);
 
   using RowPointer = std::variant<PopupRowView*,
                                   PopupSeparatorView*,
@@ -132,8 +136,6 @@ class PopupViewViews : public PopupBaseView,
   void AxAnnounce(const std::u16string& text) override;
   base::WeakPtr<AutofillPopupView> CreateSubPopupView(
       base::WeakPtr<AutofillSuggestionController> controller) override;
-  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
-      const override;
   bool HasFocus() const override;
   base::WeakPtr<AutofillPopupView> GetWeakPtr() override;
 
@@ -171,6 +173,10 @@ class PopupViewViews : public PopupBaseView,
   // displays a feature promo bubble if the suggestion has associated IPH
   // metadata.
   void ShowIPHFeaturePromos();
+
+  // If the current suggestions are for password recovery, announces it to the
+  // user.
+  void MaybeAnnouncePasswordRecoveryPopup();
 
   // Returns the `PopupRowView` at line number `index`. Assumes that there is
   // such a view at that line number - otherwise the underlying variant will
@@ -218,7 +224,8 @@ class PopupViewViews : public PopupBaseView,
   // Attempts to accept the selected cell. It will return false if there is no
   // selected cell or the cell does not trigger field filling or scanning a
   // credit card.
-  bool AcceptSelectedContentOrCreditCardCell();
+  bool AcceptSelectedContentOrCreditCardCell(
+      AutofillMetrics::SuggestionAcceptedMethod accept_method);
 
   // Attempts to remove the selected cell. Only content cells are allowed to be
   // selected.

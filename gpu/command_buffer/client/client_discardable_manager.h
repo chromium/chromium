@@ -15,9 +15,9 @@
 
 namespace gpu {
 
-// ClientDiscardableManager is a helper class used by the
-// ClientDiscardableTextureManager. It allows for the creation and management
-// of ClientDiscardableHandles.
+// ClientDiscardableManager is a helper class used by the client side of the
+// transfer cache. It allows for the creation and management of
+// ClientDiscardableHandles.
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientDiscardableManager {
  public:
   ClientDiscardableManager();
@@ -36,9 +36,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientDiscardableManager {
   bool HandleIsValid(ClientDiscardableHandle::Id handle_id) const;
   ClientDiscardableHandle GetHandle(ClientDiscardableHandle::Id handle_id);
   bool HandleIsDeleted(ClientDiscardableHandle::Id handle_id);
-
-  // For diagnostic tracing only.
-  bool HandleIsDeletedForTracing(ClientDiscardableHandle::Id handle_id) const;
 
   // Test only functions.
   void CheckPendingForTesting(CommandBuffer* command_buffer) {

@@ -22,6 +22,7 @@ inline constexpr char kKeyHome[] = "Home";
 inline constexpr char kKeyIns[] = "Insert";
 inline constexpr char kKeyLeft[] = "Left";
 inline constexpr char kKeyMacCtrl[] = "MacCtrl";
+inline constexpr char kKeyOption[] = "Option";
 inline constexpr char kKeyMediaNextTrack[] = "MediaNextTrack";
 inline constexpr char kKeyMediaPlayPause[] = "MediaPlayPause";
 inline constexpr char kKeyMediaPrevTrack[] = "MediaPrevTrack";

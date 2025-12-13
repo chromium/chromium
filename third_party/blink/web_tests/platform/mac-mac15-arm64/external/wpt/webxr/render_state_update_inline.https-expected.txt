@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] updateRenderState handles appropriately XRRenderStateInit params - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] updateRenderState handles appropriately XRRenderStateInit params - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.
+

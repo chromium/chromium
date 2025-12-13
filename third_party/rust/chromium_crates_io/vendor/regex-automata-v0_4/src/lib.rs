@@ -451,6 +451,10 @@ useful in trying to understand what the meta regex engine is doing.
 
 ### Performance features
 
+**Note**:
+  To get performance benefits offered by the SIMD, `std` must be enabled.
+  None of the `perf-*` features will enable `std` implicitly.
+
 * **perf** - Enables all of the below features.
 * **perf-inline** - When enabled, `inline(always)` is used in (many) strategic
 locations to help performance at the expense of longer compile times and
@@ -599,10 +603,9 @@ enables `alloc` and `nfa-thompson`.
 )]
 // We generally want all types to impl Debug.
 #![warn(missing_debug_implementations)]
-// No clue why this thing is still unstable because it's pretty amazing. This
-// adds Cargo feature annotations to items in the rustdoc output. Which is
+// This adds Cargo feature annotations to items in the rustdoc output. Which is
 // sadly hugely beneficial for this crate due to the number of features.
-#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![cfg_attr(docsrs_regex, feature(doc_cfg))]
 
 // I have literally never tested this crate on 16-bit, so it is quite
 // suspicious to advertise support for it. But... the regex crate, at time

@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +33,7 @@ class FullscreenWebViewResizerTest : public PlatformTest {
   FullscreenWebViewResizerTest() {
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
+    ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     TestFullscreenController::CreateForBrowser(browser_.get());
     TestFullscreenController* controller =
         TestFullscreenController::FromBrowser(browser_.get());

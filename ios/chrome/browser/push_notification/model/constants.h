@@ -252,6 +252,9 @@ extern const char kSafetyCheckNotificationKey[];
 // `kFeaturePushNotificationPermissions`.
 extern const char kReminderNotificationKey[];
 
+// Key of Cross-Platform Promos notification used in pref
+// `kFeaturePushNotificationPermissions`.
+extern const char kCrossPlatformPromosNotificationKey[];
 // Action identifier for the Content Notifications Feedback action.
 extern NSString* const kContentNotificationFeedbackActionIdentifier;
 

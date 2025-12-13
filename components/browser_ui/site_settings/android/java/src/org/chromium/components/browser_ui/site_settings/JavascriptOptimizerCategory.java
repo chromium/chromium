@@ -20,6 +20,7 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 @NullMarked
 public class JavascriptOptimizerCategory extends SiteSettingsCategory {
     private final boolean mBlockedByOs;
+    private final boolean mBlockAddingException;
 
     public JavascriptOptimizerCategory(BrowserContextHandle browserContextHandle) {
         super(browserContextHandle, Type.JAVASCRIPT_OPTIMIZER, /* androidPermission= */ "");
@@ -28,6 +29,8 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
                                 browserContextHandle, ContentSettingsType.JAVASCRIPT_OPTIMIZER)
                         && WebsitePreferenceBridge.isJavascriptOptimizerOsProvidedSetting(
                                 browserContextHandle, ContentSettingsType.JAVASCRIPT_OPTIMIZER);
+        mBlockAddingException =
+                !WebsitePreferenceBridge.canAddExceptionsForJavascriptOptimizerSetting();
     }
 
     @Override
@@ -50,5 +53,12 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
         int disabledColor = SemanticColorUtils.getDefaultControlColorActive(context);
         icon.setColorFilter(disabledColor, PorterDuff.Mode.SRC_IN);
         return icon;
+    }
+
+    @Override
+    protected int getBlockAddingExceptionsReasonResourceId() {
+        return mBlockAddingException
+                ? R.string.website_settings_js_opt_add_exceptions_disabled_reason
+                : 0;
     }
 }

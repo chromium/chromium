@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/views_test_helper.h"
 #include "ui/views/views_delegate.h"

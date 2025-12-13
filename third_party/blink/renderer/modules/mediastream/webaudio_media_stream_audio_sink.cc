@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"

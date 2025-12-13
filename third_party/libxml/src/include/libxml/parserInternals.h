@@ -1,12 +1,14 @@
-/*
- * Summary: internals routines and limits exported by the parser.
- * Description: this module exports a number of internal parsing routines
- *              they are not really all intended for applications but
- *              can prove useful doing low level processing.
+/**
+ * @file
+ * 
+ * @brief Internals routines and limits exported by the parser.
+ * 
+ * Except for some I/O-related functions, most of these macros and
+ * functions are deprecated.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_PARSER_INTERNALS_H__
@@ -22,16 +24,24 @@
 extern "C" {
 #endif
 
-/*
- * Backward compatibility
+/**
+ * Push an input on the stack.
+ *
+ * @deprecated Use #xmlCtxtPushInput
  */
 #define inputPush xmlCtxtPushInput
+/**
+ * Pop an input from the stack.
+ *
+ * @deprecated Use #xmlCtxtPushInput
+ */
 #define inputPop xmlCtxtPopInput
+/**
+ * Maximum element nesting depth (without XML_PARSE_HUGE).
+ */
 #define xmlParserMaxDepth 256
 
 /**
- * XML_MAX_TEXT_LENGTH:
- *
  * Maximum size allowed for a single text node when building a tree.
  * This is not a limitation of the parser but a safety boundary feature,
  * use XML_PARSE_HUGE option to override it.
@@ -40,15 +50,11 @@ extern "C" {
 #define XML_MAX_TEXT_LENGTH 10000000
 
 /**
- * XML_MAX_HUGE_LENGTH:
- *
  * Maximum size allowed when XML_PARSE_HUGE is set.
  */
 #define XML_MAX_HUGE_LENGTH 1000000000
 
 /**
- * XML_MAX_NAME_LENGTH:
- *
  * Maximum size allowed for a markup identifier.
  * This is not a limitation of the parser but a safety boundary feature,
  * use XML_PARSE_HUGE option to override it.
@@ -59,8 +65,6 @@ extern "C" {
 #define XML_MAX_NAME_LENGTH 50000
 
 /**
- * XML_MAX_DICTIONARY_LIMIT:
- *
  * Maximum size allowed by the parser for a dictionary by default
  * This is not a limitation of the parser but a safety boundary feature,
  * use XML_PARSE_HUGE option to override it.
@@ -69,8 +73,6 @@ extern "C" {
 #define XML_MAX_DICTIONARY_LIMIT 100000000
 
 /**
- * XML_MAX_LOOKUP_LIMIT:
- *
  * Maximum size allowed by the parser for ahead lookup
  * This is an upper boundary enforced by the parser to avoid bad
  * behaviour on "unfriendly' content
@@ -79,8 +81,6 @@ extern "C" {
 #define XML_MAX_LOOKUP_LIMIT 10000000
 
 /**
- * XML_MAX_NAMELEN:
- *
  * Identifiers can be longer, but this will be more costly
  * at runtime.
  */
@@ -92,452 +92,405 @@ extern "C" {
  *									*
  ************************************************************************/
 /**
- * IS_BYTE_CHAR:
- * @c:  an byte value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [2] Char ::= #x9 | #xA | #xD | [#x20...]
+ *     [2] Char ::= #x9 | #xA | #xD | [#x20...]
+ *
  * any byte character in the accepted range
+ *
+ * @param c  an byte value (int)
  */
 #define IS_BYTE_CHAR(c)	 xmlIsChar_ch(c)
 
 /**
- * IS_CHAR:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [2] Char ::= #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD]
- *                  | [#x10000-#x10FFFF]
+ *     [2] Char ::= #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD]
+ *                      | [#x10000-#x10FFFF]
+ *
  * any Unicode character, excluding the surrogate blocks, FFFE, and FFFF.
+ *
+ * @param c  an UNICODE value (int)
  */
 #define IS_CHAR(c)   xmlIsCharQ(c)
 
 /**
- * IS_CHAR_CH:
- * @c: an xmlChar (usually an unsigned char)
- *
  * Behaves like IS_CHAR on single-byte value
+ *
+ * @param c  an xmlChar (usually an unsigned char)
  */
 #define IS_CHAR_CH(c)  xmlIsChar_ch(c)
 
 /**
- * IS_BLANK:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [3] S ::= (#x20 | #x9 | #xD | #xA)+
+ *     [3] S ::= (#x20 | #x9 | #xD | #xA)+
+ * @param c  an UNICODE value (int)
  */
 #define IS_BLANK(c)  xmlIsBlankQ(c)
 
 /**
- * IS_BLANK_CH:
- * @c:  an xmlChar value (normally unsigned char)
- *
  * Behaviour same as IS_BLANK
+ *
+ * @param c  an xmlChar value (normally unsigned char)
  */
 #define IS_BLANK_CH(c)  xmlIsBlank_ch(c)
 
 /**
- * IS_BASECHAR:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [85] BaseChar ::= ... long list see REC ...
+ *     [85] BaseChar ::= ... long list see REC ...
+ * @param c  an UNICODE value (int)
  */
 #define IS_BASECHAR(c) xmlIsBaseCharQ(c)
 
 /**
- * IS_DIGIT:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [88] Digit ::= ... long list see REC ...
+ *     [88] Digit ::= ... long list see REC ...
+ * @param c  an UNICODE value (int)
  */
 #define IS_DIGIT(c) xmlIsDigitQ(c)
 
 /**
- * IS_DIGIT_CH:
- * @c:  an xmlChar value (usually an unsigned char)
- *
  * Behaves like IS_DIGIT but with a single byte argument
+ *
+ * @param c  an xmlChar value (usually an unsigned char)
  */
 #define IS_DIGIT_CH(c)  xmlIsDigit_ch(c)
 
 /**
- * IS_COMBINING:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- * [87] CombiningChar ::= ... long list see REC ...
+ *     [87] CombiningChar ::= ... long list see REC ...
+ * @param c  an UNICODE value (int)
  */
 #define IS_COMBINING(c) xmlIsCombiningQ(c)
 
 /**
- * IS_COMBINING_CH:
- * @c:  an xmlChar (usually an unsigned char)
- *
  * Always false (all combining chars > 0xff)
+ *
+ * @param c  an xmlChar (usually an unsigned char)
  */
 #define IS_COMBINING_CH(c) 0
 
 /**
- * IS_EXTENDER:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- *
- * [89] Extender ::= #x00B7 | #x02D0 | #x02D1 | #x0387 | #x0640 |
- *                   #x0E46 | #x0EC6 | #x3005 | [#x3031-#x3035] |
- *                   [#x309D-#x309E] | [#x30FC-#x30FE]
+ *     [89] Extender ::= #x00B7 | #x02D0 | #x02D1 | #x0387 | #x0640 |
+ *                       #x0E46 | #x0EC6 | #x3005 | [#x3031-#x3035] |
+ *                       [#x309D-#x309E] | [#x30FC-#x30FE]
+ * @param c  an UNICODE value (int)
  */
 #define IS_EXTENDER(c) xmlIsExtenderQ(c)
 
 /**
- * IS_EXTENDER_CH:
- * @c:  an xmlChar value (usually an unsigned char)
- *
  * Behaves like IS_EXTENDER but with a single-byte argument
+ *
+ * @param c  an xmlChar value (usually an unsigned char)
  */
 #define IS_EXTENDER_CH(c)  xmlIsExtender_ch(c)
 
 /**
- * IS_IDEOGRAPHIC:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- *
- * [86] Ideographic ::= [#x4E00-#x9FA5] | #x3007 | [#x3021-#x3029]
+ *     [86] Ideographic ::= [#x4E00-#x9FA5] | #x3007 | [#x3021-#x3029]
+ * @param c  an UNICODE value (int)
  */
 #define IS_IDEOGRAPHIC(c) xmlIsIdeographicQ(c)
 
 /**
- * IS_LETTER:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- *
- * [84] Letter ::= BaseChar | Ideographic
+ *     [84] Letter ::= BaseChar | Ideographic
+ * @param c  an UNICODE value (int)
  */
 #define IS_LETTER(c) (IS_BASECHAR(c) || IS_IDEOGRAPHIC(c))
 
 /**
- * IS_LETTER_CH:
- * @c:  an xmlChar value (normally unsigned char)
- *
  * Macro behaves like IS_LETTER, but only check base chars
  *
+ * @param c  an xmlChar value (normally unsigned char)
  */
 #define IS_LETTER_CH(c) xmlIsBaseChar_ch(c)
 
 /**
- * IS_ASCII_LETTER:
- * @c: an xmlChar value
- *
  * Macro to check [a-zA-Z]
  *
+ * @param c  an xmlChar value
  */
 #define IS_ASCII_LETTER(c)	((0x61 <= ((c) | 0x20)) && \
                                  (((c) | 0x20) <= 0x7a))
 
 /**
- * IS_ASCII_DIGIT:
- * @c: an xmlChar value
- *
  * Macro to check [0-9]
  *
+ * @param c  an xmlChar value
  */
 #define IS_ASCII_DIGIT(c)	((0x30 <= (c)) && ((c) <= 0x39))
 
 /**
- * IS_PUBIDCHAR:
- * @c:  an UNICODE value (int)
- *
  * Macro to check the following production in the XML spec:
  *
- *
- * [13] PubidChar ::= #x20 | #xD | #xA | [a-zA-Z0-9] | [-'()+,./:=?;!*#@$_%]
+ *     [13] PubidChar ::= #x20 | #xD | #xA | [a-zA-Z0-9] |
+ *                        [-'()+,./:=?;!*#@$_%]
+ * @param c  an UNICODE value (int)
  */
 #define IS_PUBIDCHAR(c)	xmlIsPubidCharQ(c)
 
 /**
- * IS_PUBIDCHAR_CH:
- * @c:  an xmlChar value (normally unsigned char)
- *
  * Same as IS_PUBIDCHAR but for single-byte value
+ *
+ * @param c  an xmlChar value (normally unsigned char)
  */
 #define IS_PUBIDCHAR_CH(c) xmlIsPubidChar_ch(c)
 
-/**
+/*
  * Global variables used for predefined strings.
  */
+/** @cond ignore */
 XMLPUBVAR const xmlChar xmlStringText[];
 XMLPUBVAR const xmlChar xmlStringTextNoenc[];
 XML_DEPRECATED
 XMLPUBVAR const xmlChar xmlStringComment[];
+/** @endcond */
 
 XML_DEPRECATED
 XMLPUBFUN int                   xmlIsLetter     (int c);
 
-/**
+/*
  * Parser context.
  */
-XMLPUBFUN xmlParserCtxtPtr
+XMLPUBFUN xmlParserCtxt *
 			xmlCreateFileParserCtxt	(const char *filename);
-XMLPUBFUN xmlParserCtxtPtr
+XMLPUBFUN xmlParserCtxt *
 			xmlCreateURLParserCtxt	(const char *filename,
 						 int options);
-XMLPUBFUN xmlParserCtxtPtr
+XMLPUBFUN xmlParserCtxt *
 			xmlCreateMemoryParserCtxt(const char *buffer,
 						 int size);
 XML_DEPRECATED
-XMLPUBFUN xmlParserCtxtPtr
+XMLPUBFUN xmlParserCtxt *
 			xmlCreateEntityParserCtxt(const xmlChar *URL,
 						 const xmlChar *ID,
 						 const xmlChar *base);
 XMLPUBFUN void
-			xmlCtxtErrMemory	(xmlParserCtxtPtr ctxt);
+			xmlCtxtErrMemory	(xmlParserCtxt *ctxt);
 XMLPUBFUN int
-			xmlSwitchEncoding	(xmlParserCtxtPtr ctxt,
+			xmlSwitchEncoding	(xmlParserCtxt *ctxt,
 						 xmlCharEncoding enc);
 XMLPUBFUN int
-			xmlSwitchEncodingName	(xmlParserCtxtPtr ctxt,
+			xmlSwitchEncodingName	(xmlParserCtxt *ctxt,
 						 const char *encoding);
 XMLPUBFUN int
-			xmlSwitchToEncoding	(xmlParserCtxtPtr ctxt,
-					 xmlCharEncodingHandlerPtr handler);
+			xmlSwitchToEncoding	(xmlParserCtxt *ctxt,
+					 xmlCharEncodingHandler *handler);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlSwitchInputEncoding	(xmlParserCtxtPtr ctxt,
-						 xmlParserInputPtr input,
-					 xmlCharEncodingHandlerPtr handler);
+			xmlSwitchInputEncoding	(xmlParserCtxt *ctxt,
+						 xmlParserInput *input,
+					 xmlCharEncodingHandler *handler);
 
-/**
+/*
  * Input Streams.
  */
-XMLPUBFUN xmlParserInputPtr
-			xmlNewStringInputStream	(xmlParserCtxtPtr ctxt,
+XMLPUBFUN xmlParserInput *
+			xmlNewStringInputStream	(xmlParserCtxt *ctxt,
 						 const xmlChar *buffer);
 XML_DEPRECATED
-XMLPUBFUN xmlParserInputPtr
-			xmlNewEntityInputStream	(xmlParserCtxtPtr ctxt,
-						 xmlEntityPtr entity);
+XMLPUBFUN xmlParserInput *
+			xmlNewEntityInputStream	(xmlParserCtxt *ctxt,
+						 xmlEntity *entity);
 XMLPUBFUN int
-			xmlCtxtPushInput	(xmlParserCtxtPtr ctxt,
-						 xmlParserInputPtr input);
-XMLPUBFUN xmlParserInputPtr
-			xmlCtxtPopInput		(xmlParserCtxtPtr ctxt);
+			xmlCtxtPushInput	(xmlParserCtxt *ctxt,
+						 xmlParserInput *input);
+XMLPUBFUN xmlParserInput *
+			xmlCtxtPopInput		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlPushInput		(xmlParserCtxtPtr ctxt,
-						 xmlParserInputPtr input);
+			xmlPushInput		(xmlParserCtxt *ctxt,
+						 xmlParserInput *input);
 XML_DEPRECATED
 XMLPUBFUN xmlChar
-			xmlPopInput		(xmlParserCtxtPtr ctxt);
+			xmlPopInput		(xmlParserCtxt *ctxt);
 XMLPUBFUN void
-			xmlFreeInputStream	(xmlParserInputPtr input);
-XMLPUBFUN xmlParserInputPtr
-			xmlNewInputFromFile	(xmlParserCtxtPtr ctxt,
+			xmlFreeInputStream	(xmlParserInput *input);
+XMLPUBFUN xmlParserInput *
+			xmlNewInputFromFile	(xmlParserCtxt *ctxt,
 						 const char *filename);
-XMLPUBFUN xmlParserInputPtr
-			xmlNewInputStream	(xmlParserCtxtPtr ctxt);
+XMLPUBFUN xmlParserInput *
+			xmlNewInputStream	(xmlParserCtxt *ctxt);
 
-/**
+/*
  * Namespaces.
  */
 XMLPUBFUN xmlChar *
-			xmlSplitQName		(xmlParserCtxtPtr ctxt,
+			xmlSplitQName		(xmlParserCtxt *ctxt,
 						 const xmlChar *name,
 						 xmlChar **prefix);
 
-/**
+/*
  * Generic production rules.
  */
 XML_DEPRECATED
 XMLPUBFUN const xmlChar *
-			xmlParseName		(xmlParserCtxtPtr ctxt);
+			xmlParseName		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseNmtoken		(xmlParserCtxtPtr ctxt);
+			xmlParseNmtoken		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseEntityValue	(xmlParserCtxtPtr ctxt,
+			xmlParseEntityValue	(xmlParserCtxt *ctxt,
 						 xmlChar **orig);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseAttValue	(xmlParserCtxtPtr ctxt);
+			xmlParseAttValue	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseSystemLiteral	(xmlParserCtxtPtr ctxt);
+			xmlParseSystemLiteral	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParsePubidLiteral	(xmlParserCtxtPtr ctxt);
+			xmlParsePubidLiteral	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseCharData	(xmlParserCtxtPtr ctxt,
+			xmlParseCharData	(xmlParserCtxt *ctxt,
 						 int cdata);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseExternalID	(xmlParserCtxtPtr ctxt,
-						 xmlChar **publicID,
+			xmlParseExternalID	(xmlParserCtxt *ctxt,
+						 xmlChar **publicId,
 						 int strict);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseComment		(xmlParserCtxtPtr ctxt);
+			xmlParseComment		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN const xmlChar *
-			xmlParsePITarget	(xmlParserCtxtPtr ctxt);
+			xmlParsePITarget	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParsePI		(xmlParserCtxtPtr ctxt);
+			xmlParsePI		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseNotationDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseNotationDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseEntityDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseEntityDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseDefaultDecl	(xmlParserCtxtPtr ctxt,
+			xmlParseDefaultDecl	(xmlParserCtxt *ctxt,
 						 xmlChar **value);
 XML_DEPRECATED
-XMLPUBFUN xmlEnumerationPtr
-			xmlParseNotationType	(xmlParserCtxtPtr ctxt);
+XMLPUBFUN xmlEnumeration *
+			xmlParseNotationType	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
-XMLPUBFUN xmlEnumerationPtr
-			xmlParseEnumerationType	(xmlParserCtxtPtr ctxt);
-XML_DEPRECATED
-XMLPUBFUN int
-			xmlParseEnumeratedType	(xmlParserCtxtPtr ctxt,
-						 xmlEnumerationPtr *tree);
+XMLPUBFUN xmlEnumeration *
+			xmlParseEnumerationType	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseAttributeType	(xmlParserCtxtPtr ctxt,
-						 xmlEnumerationPtr *tree);
+			xmlParseEnumeratedType	(xmlParserCtxt *ctxt,
+						 xmlEnumeration **tree);
+XML_DEPRECATED
+XMLPUBFUN int
+			xmlParseAttributeType	(xmlParserCtxt *ctxt,
+						 xmlEnumeration **tree);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseAttributeListDecl(xmlParserCtxtPtr ctxt);
+			xmlParseAttributeListDecl(xmlParserCtxt *ctxt);
 XML_DEPRECATED
-XMLPUBFUN xmlElementContentPtr
+XMLPUBFUN xmlElementContent *
 			xmlParseElementMixedContentDecl
-						(xmlParserCtxtPtr ctxt,
+						(xmlParserCtxt *ctxt,
 						 int inputchk);
 XML_DEPRECATED
-XMLPUBFUN xmlElementContentPtr
+XMLPUBFUN xmlElementContent *
 			xmlParseElementChildrenContentDecl
-						(xmlParserCtxtPtr ctxt,
+						(xmlParserCtxt *ctxt,
 						 int inputchk);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseElementContentDecl(xmlParserCtxtPtr ctxt,
+			xmlParseElementContentDecl(xmlParserCtxt *ctxt,
 						 const xmlChar *name,
-						 xmlElementContentPtr *result);
+						 xmlElementContent **result);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseElementDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseElementDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseMarkupDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseMarkupDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseCharRef		(xmlParserCtxtPtr ctxt);
+			xmlParseCharRef		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
-XMLPUBFUN xmlEntityPtr
-			xmlParseEntityRef	(xmlParserCtxtPtr ctxt);
-XML_DEPRECATED
-XMLPUBFUN void
-			xmlParseReference	(xmlParserCtxtPtr ctxt);
+XMLPUBFUN xmlEntity *
+			xmlParseEntityRef	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParsePEReference	(xmlParserCtxtPtr ctxt);
+			xmlParseReference	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseDocTypeDecl	(xmlParserCtxtPtr ctxt);
+			xmlParsePEReference	(xmlParserCtxt *ctxt);
+XML_DEPRECATED
+XMLPUBFUN void
+			xmlParseDocTypeDecl	(xmlParserCtxt *ctxt);
 #ifdef LIBXML_SAX1_ENABLED
 XML_DEPRECATED
 XMLPUBFUN const xmlChar *
-			xmlParseAttribute	(xmlParserCtxtPtr ctxt,
+			xmlParseAttribute	(xmlParserCtxt *ctxt,
 						 xmlChar **value);
 XML_DEPRECATED
 XMLPUBFUN const xmlChar *
-			xmlParseStartTag	(xmlParserCtxtPtr ctxt);
+			xmlParseStartTag	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseEndTag		(xmlParserCtxtPtr ctxt);
+			xmlParseEndTag		(xmlParserCtxt *ctxt);
 #endif /* LIBXML_SAX1_ENABLED */
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseCDSect		(xmlParserCtxtPtr ctxt);
+			xmlParseCDSect		(xmlParserCtxt *ctxt);
 XMLPUBFUN void
-			xmlParseContent		(xmlParserCtxtPtr ctxt);
+			xmlParseContent		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseElement		(xmlParserCtxtPtr ctxt);
+			xmlParseElement		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseVersionNum	(xmlParserCtxtPtr ctxt);
+			xmlParseVersionNum	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseVersionInfo	(xmlParserCtxtPtr ctxt);
+			xmlParseVersionInfo	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-			xmlParseEncName		(xmlParserCtxtPtr ctxt);
+			xmlParseEncName		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN const xmlChar *
-			xmlParseEncodingDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseEncodingDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int
-			xmlParseSDDecl		(xmlParserCtxtPtr ctxt);
+			xmlParseSDDecl		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseXMLDecl		(xmlParserCtxtPtr ctxt);
+			xmlParseXMLDecl		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseTextDecl	(xmlParserCtxtPtr ctxt);
+			xmlParseTextDecl	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseMisc		(xmlParserCtxtPtr ctxt);
+			xmlParseMisc		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN void
-			xmlParseExternalSubset	(xmlParserCtxtPtr ctxt,
-						 const xmlChar *ExternalID,
-						 const xmlChar *SystemID);
-/**
- * XML_SUBSTITUTE_NONE:
- *
- * If no entities need to be substituted.
- */
-#define XML_SUBSTITUTE_NONE	0
-/**
- * XML_SUBSTITUTE_REF:
- *
- * Whether general entities need to be substituted.
- */
-#define XML_SUBSTITUTE_REF	1
-/**
- * XML_SUBSTITUTE_PEREF:
- *
- * Whether parameter entities need to be substituted.
- */
-#define XML_SUBSTITUTE_PEREF	2
-/**
- * XML_SUBSTITUTE_BOTH:
- *
- * Both general and parameter entities need to be substituted.
- */
-#define XML_SUBSTITUTE_BOTH	3
+			xmlParseExternalSubset	(xmlParserCtxt *ctxt,
+						 const xmlChar *publicId,
+						 const xmlChar *systemId);
 
+/** @cond ignore */
+#define XML_SUBSTITUTE_NONE	0
+#define XML_SUBSTITUTE_REF	1
+#define XML_SUBSTITUTE_PEREF	2
+#define XML_SUBSTITUTE_BOTH	3
+/** @endcond */
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-		xmlStringDecodeEntities		(xmlParserCtxtPtr ctxt,
+		xmlStringDecodeEntities		(xmlParserCtxt *ctxt,
 						 const xmlChar *str,
 						 int what,
 						 xmlChar end,
@@ -545,7 +498,7 @@ XMLPUBFUN xmlChar *
 						 xmlChar end3);
 XML_DEPRECATED
 XMLPUBFUN xmlChar *
-		xmlStringLenDecodeEntities	(xmlParserCtxtPtr ctxt,
+		xmlStringLenDecodeEntities	(xmlParserCtxt *ctxt,
 						 const xmlChar *str,
 						 int len,
 						 int what,
@@ -557,13 +510,13 @@ XMLPUBFUN xmlChar *
  * other commodities shared between parser.c and parserInternals.
  */
 XML_DEPRECATED
-XMLPUBFUN int			xmlSkipBlankChars	(xmlParserCtxtPtr ctxt);
+XMLPUBFUN int			xmlSkipBlankChars	(xmlParserCtxt *ctxt);
 XML_DEPRECATED
-XMLPUBFUN int			xmlStringCurrentChar	(xmlParserCtxtPtr ctxt,
+XMLPUBFUN int			xmlStringCurrentChar	(xmlParserCtxt *ctxt,
 						 const xmlChar *cur,
 						 int *len);
 XML_DEPRECATED
-XMLPUBFUN void			xmlParserHandlePEReference(xmlParserCtxtPtr ctxt);
+XMLPUBFUN void			xmlParserHandlePEReference(xmlParserCtxt *ctxt);
 XML_DEPRECATED
 XMLPUBFUN int			xmlCheckLanguageID	(const xmlChar *lang);
 
@@ -571,7 +524,7 @@ XMLPUBFUN int			xmlCheckLanguageID	(const xmlChar *lang);
  * Really core function shared with HTML parser.
  */
 XML_DEPRECATED
-XMLPUBFUN int			xmlCurrentChar		(xmlParserCtxtPtr ctxt,
+XMLPUBFUN int			xmlCurrentChar		(xmlParserCtxt *ctxt,
 						 int *len);
 XML_DEPRECATED
 XMLPUBFUN int		xmlCopyCharMultiByte	(xmlChar *out,
@@ -581,9 +534,9 @@ XMLPUBFUN int			xmlCopyChar		(int len,
 						 xmlChar *out,
 						 int val);
 XML_DEPRECATED
-XMLPUBFUN void			xmlNextChar		(xmlParserCtxtPtr ctxt);
+XMLPUBFUN void			xmlNextChar		(xmlParserCtxt *ctxt);
 XML_DEPRECATED
-XMLPUBFUN void			xmlParserInputShrink	(xmlParserInputPtr in);
+XMLPUBFUN void			xmlParserInputShrink	(xmlParserInput *in);
 
 #ifdef __cplusplus
 }

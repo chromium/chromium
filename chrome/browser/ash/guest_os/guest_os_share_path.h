@@ -71,7 +71,7 @@ class GuestOsSharePath : public KeyedService,
   // ConvertArgsToPathsToShare returns this.
   struct PathsToShare {
     PathsToShare();
-    PathsToShare(PathsToShare&);
+    PathsToShare(const PathsToShare&);
     ~PathsToShare();
 
     std::vector<base::FilePath> paths_to_share;

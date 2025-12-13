@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/process/process_handle.h"

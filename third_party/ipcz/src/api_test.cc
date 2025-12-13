@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <cstring>
 #include <string>
 
@@ -15,6 +10,7 @@
 #include "reference_drivers/sync_reference_driver.h"
 #include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz {
 namespace {
@@ -450,7 +446,8 @@ TEST_F(APITest, TwoPhasePutGet) {
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr,
                                             &out_data, &num_bytes, &put));
   EXPECT_EQ(kMessage.size(), num_bytes);
-  memcpy(const_cast<void*>(out_data), kMessage.data(), kMessage.size());
+  IPCZ_UNSAFE_TODO(
+      memcpy(const_cast<void*>(out_data), kMessage.data(), kMessage.size()));
   EXPECT_EQ(IPCZ_RESULT_OK, ipcz().EndPut(a, put, num_bytes, nullptr, 0,
                                           IPCZ_NO_FLAGS, nullptr));
 
@@ -500,7 +497,8 @@ TEST_F(APITest, OverlappedTwoPhasePuts) {
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data1, &num_bytes1,
                             &transaction1));
   EXPECT_EQ(kMessage1.size(), num_bytes1);
-  memcpy(const_cast<void*>(out_data1), kMessage1.data(), kMessage1.size());
+  IPCZ_UNSAFE_TODO(
+      memcpy(const_cast<void*>(out_data1), kMessage1.data(), kMessage1.size()));
 
   size_t num_bytes2 = kMessage2.size();
   volatile void* out_data2;
@@ -509,7 +507,8 @@ TEST_F(APITest, OverlappedTwoPhasePuts) {
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data2, &num_bytes2,
                             &transaction2));
   EXPECT_EQ(kMessage2.size(), num_bytes2);
-  memcpy(const_cast<void*>(out_data2), kMessage2.data(), kMessage2.size());
+  IPCZ_UNSAFE_TODO(
+      memcpy(const_cast<void*>(out_data2), kMessage2.data(), kMessage2.size()));
 
   size_t num_bytes3 = kMessage3.size();
   volatile void* out_data3;
@@ -518,7 +517,8 @@ TEST_F(APITest, OverlappedTwoPhasePuts) {
             ipcz().BeginPut(a, IPCZ_NO_FLAGS, nullptr, &out_data3, &num_bytes3,
                             &transaction3));
   EXPECT_EQ(kMessage3.size(), num_bytes3);
-  memcpy(const_cast<void*>(out_data3), kMessage3.data(), kMessage3.size());
+  IPCZ_UNSAFE_TODO(
+      memcpy(const_cast<void*>(out_data3), kMessage3.data(), kMessage3.size()));
 
   // Complete them out-of-order. They should arrive in the order in which they
   // were completed rather than the order in which they were started.

@@ -6,24 +6,28 @@
 #define CONTENT_PUBLIC_TEST_MOCK_NAVIGATION_HANDLE_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/types/optional_util.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/error_navigation_trigger.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/process_selection_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -99,7 +103,7 @@ class MockNavigationHandle : public NavigationHandle {
   }
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(ChildProcessId, GetExpectedRenderProcessHostId, ());
-  bool IsServedFromBackForwardCache() override {
+  bool IsServedFromBackForwardCache() const override {
     return is_served_from_bfcache_;
   }
   bool IsPageActivation() const override {
@@ -146,6 +150,13 @@ class MockNavigationHandle : public NavigationHandle {
     return render_frame_host_;
   }
   bool IsSameDocument() const override { return is_same_document_; }
+  std::optional<base::UnguessableToken> GetSameDocumentMetricsToken()
+      const override {
+    return same_document_metrics_token_;
+  }
+  void set_same_document_metrics_token(base::UnguessableToken token) {
+    same_document_metrics_token_ = token;
+  }
   bool IsHistory() const override {
     NOTIMPLEMENTED();
     return false;
@@ -163,10 +174,8 @@ class MockNavigationHandle : public NavigationHandle {
   const net::HttpRequestHeaders& GetRequestHeaders() override {
     return request_headers_;
   }
-  MOCK_METHOD1(RemoveRequestHeader, void(const std::string&));
-  MOCK_METHOD2(SetRequestHeader, void(const std::string&, const std::string&));
-  MOCK_METHOD2(SetCorsExemptRequestHeader,
-               void(const std::string&, const std::string&));
+  MOCK_METHOD1(RemoveRequestHeader, void(std::string_view));
+  MOCK_METHOD2(SetRequestHeader, void(std::string_view, std::string_view));
   const net::HttpResponseHeaders* GetResponseHeaders() override {
     return response_headers_.get();
   }
@@ -195,6 +204,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(IsSignedExchangeInnerResponse, bool());
   MOCK_METHOD0(HasPrefetchedAlternativeSubresourceSignedExchange, bool());
   bool WasResponseCached() override { return was_response_cached_; }
+  bool NetworkAccessed() override { return network_accessed_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
   const std::optional<blink::Impression>& GetImpression() override {
     return impression_;
@@ -243,11 +253,14 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD(void, CancelNavigationTimeout, ());
   MOCK_METHOD(PreloadingTriggerType, GetPrerenderTriggerType, ());
   MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
+  MOCK_METHOD(bool, IsPrerenderHostReused, ());
   MOCK_METHOD(void, SetAllowCookiesFromBrowser, (bool));
   MOCK_METHOD(void, GetResponseBody, (ResponseBodyCallback));
   MOCK_METHOD(std::optional<NavigationDiscardReason>,
               GetNavigationDiscardReason,
               ());
+  MOCK_METHOD(bool, NeedsUrlLoader, ());
+  MOCK_METHOD(bool, IsInitialWebUISyncNavigation, ());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(const base::android::JavaRef<jobject>&,
@@ -270,6 +283,11 @@ class MockNavigationHandle : public NavigationHandle {
       override {
     return nullptr;
   }
+
+  ProcessSelectionUserData& GetProcessSelectionUserData() override {
+    return process_selection_user_data_;
+  }
+
   MOCK_METHOD(void, SetIsAdTagged, ());
 
   blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
@@ -400,6 +418,7 @@ class MockNavigationHandle : public NavigationHandle {
   content::GlobalRequestID global_request_id_;
   bool is_form_submission_ = false;
   bool was_response_cached_ = false;
+  bool network_accessed_ = false;
   std::optional<url::Origin> initiator_origin_;
   std::optional<GURL> initiator_base_url_;
   ReloadType reload_type_ = content::ReloadType::NONE;
@@ -409,6 +428,8 @@ class MockNavigationHandle : public NavigationHandle {
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
   bool was_started_from_context_menu_ = false;
   blink::RuntimeFeatureStateContext runtime_feature_state_context_;
+  ProcessSelectionUserData process_selection_user_data_;
+  std::optional<base::UnguessableToken> same_document_metrics_token_;
 
   base::WeakPtrFactory<MockNavigationHandle> weak_factory_{this};
 };

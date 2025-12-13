@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_FEATURE_PROMO_FEATURE_PROMO_CONTROLLER_H_
 
 #include <initializer_list>
-#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -31,11 +30,11 @@
 #include "components/user_education/common/help_bubble/help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_data.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
-class AcceleratorProvider;
 class TrackedElement;
 }  // namespace ui
 
@@ -99,12 +98,14 @@ class FeaturePromoController {
   // Note that some fields of `params` may be ignored if they are not needed to
   // perform the checks involved.
   virtual FeaturePromoResult CanShowPromo(
-      const FeaturePromoParams& params) const = 0;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const = 0;
 
   // Starts the promo if possible. If a result callback is specified, it will be
   // called with the result of trying to show the promo. In cases where a promo
   // could be queued, the callback may happen significantly later.
-  virtual void MaybeShowPromo(FeaturePromoParams params) = 0;
+  virtual void MaybeShowPromo(FeaturePromoParams params,
+                              UserEducationContextPtr context) = 0;
 
   // Tries to start the promo at a time when the Feature Engagement backend may
   // not yet be initialized. Once it is initialized (which could be
@@ -125,7 +126,8 @@ class FeaturePromoController {
   // like UMA logging) or use a weak pointer to avoid this situation.
   //
   // Otherwise, this is identical to MaybeShowPromo().
-  virtual void MaybeShowStartupPromo(FeaturePromoParams params) = 0;
+  virtual void MaybeShowStartupPromo(FeaturePromoParams params,
+                                     UserEducationContextPtr context) = 0;
 
   // Gets the current status of the promo associated with `iph_feature`.
   virtual FeaturePromoStatus GetPromoStatus(
@@ -169,7 +171,8 @@ class FeaturePromoController {
 
   // Starts a promo with the settings for skipping any logging or filtering
   // provided by the implementation for MaybeShowPromo.
-  virtual void MaybeShowPromoForDemoPage(FeaturePromoParams params) = 0;
+  virtual void MaybeShowPromoForDemoPage(FeaturePromoParams params,
+                                         UserEducationContextPtr context) = 0;
 
   // Ends or cancels the current promo if it is queued. Returns true if a promo
   // was successfully canceled or a bubble closed.
@@ -289,7 +292,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Method that creates the bubble for a feature promo. May return null if the
   // bubble cannot be shown.
   std::unique_ptr<HelpBubble> ShowPromoBubbleImpl(
-      FeaturePromoSpecification::BuildHelpBubbleParams build_params);
+      FeaturePromoSpecification::BuildHelpBubbleParams build_params,
+      UserEducationContextPtr context);
 
   // Does the work of ending a promo with the specified `close_reason`.
   bool EndPromo(const base::Feature& iph_feature,
@@ -366,12 +370,6 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Possibly fires a queued promo based on certain conditions.
   virtual void MaybeShowQueuedPromo() = 0;
 
-  // Gets the context in which to locate the anchor view.
-  virtual ui::ElementContext GetAnchorContext() const = 0;
-
-  // Get the accelerator provider to use to look up accelerators.
-  virtual const ui::AcceleratorProvider* GetAcceleratorProvider() const = 0;
-
   // Gets the alt text to use for body icons.
   virtual std::u16string GetBodyIconAltText() const = 0;
 
@@ -389,7 +387,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Returns the special prompt to play with the initial bubble of a tutorial;
   // instead of the general navigation help prompt returned by
   // GetFocusHelpBubbleScreenReaderHint().
-  virtual std::u16string GetTutorialScreenReaderHint() const = 0;
+  virtual std::u16string GetTutorialScreenReaderHint(
+      const ui::AcceleratorProvider* accelerator_provider) const = 0;
 
   // Gets a typed weak pointer to this object.
   virtual base::WeakPtr<FeaturePromoControllerCommon> GetCommonWeakPtr() = 0;
@@ -398,7 +397,13 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // accelerator to focus the help bubble.
   virtual std::u16string GetFocusHelpBubbleScreenReaderHint(
       FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element) const = 0;
+      ui::TrackedElement* anchor_element,
+      const ui::AcceleratorProvider* accelerator_provider) const = 0;
+
+  // Returns the anchor context for a help bubble, in case the help bubble isn't
+  // in the same context as the caller. May return null.
+  virtual UserEducationContextPtr GetContextForHelpBubble(
+      const ui::TrackedElement* anchor_element) const = 0;
 
  private:
   friend BrowserFeaturePromoControllerTestHelper;
@@ -440,6 +445,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Callback when a tutorial triggered from a promo is actually started.
   void OnTutorialStarted(const base::Feature* iph_feature,
+                         const UserEducationContextPtr& context,
+                         const UserEducationContextPtr& bubble_context,
                          TutorialIdentifier tutorial_id);
 
   // Called when a tutorial launched via StartTutorial() completes.
@@ -450,6 +457,8 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // Called when the user opts to take a custom action.
   void OnCustomAction(const base::Feature* iph_feature,
+                      const UserEducationContextPtr& context,
+                      const UserEducationContextPtr& bubble_context,
                       FeaturePromoSpecification::CustomActionCallback callback);
 
   // Create appropriate buttons for a toast promo that's part of a rotating
@@ -465,12 +474,16 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
   // Create appropriate buttons for a tutorial promo on the current platform.
   std::vector<HelpBubbleButtonParams> CreateTutorialButtons(
       const base::Feature& feature,
+      const UserEducationContextPtr& context,
+      const UserEducationContextPtr& bubble_context,
       bool can_snooze,
       TutorialIdentifier tutorial_id);
 
   // Create appropriate buttons for a custom action promo.
   std::vector<HelpBubbleButtonParams> CreateCustomActionButtons(
       const base::Feature& feature,
+      const UserEducationContextPtr& context,
+      const UserEducationContextPtr& bubble_context,
       const std::u16string& custom_action_caption,
       FeaturePromoSpecification::CustomActionCallback custom_action_callback,
       bool custom_action_is_default,

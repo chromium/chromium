@@ -14,7 +14,7 @@ import org.chromium.url.GURL;
 
 /** Represents a recently closed tab from TabRestoreService. */
 @NullMarked
-public class RecentlyClosedTab extends RecentlyClosedEntry {
+public class RecentlyClosedTab extends SessionRecentlyClosedEntry {
     private final String mTitle;
     private final GURL mUrl;
     private final @Nullable Token mTabGroupId;

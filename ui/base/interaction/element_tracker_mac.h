@@ -22,7 +22,8 @@ namespace ui {
 
 // Tracked element representing a native Mac visual element (typically a menu or
 // menu item, since we use Views for everything else).
-class COMPONENT_EXPORT(UI_BASE) TrackedElementMac : public TrackedElement {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElementMac
+    : public TrackedElement {
  public:
   TrackedElementMac(ElementIdentifier identifier,
                     ElementContext context,
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElementMac : public TrackedElement {
 // Helper class for translating between Mac visual elements and TrackedElements.
 // Largely used to track native menus and menu items, as almost all other
 // surfaces are rendered using Views.
-class COMPONENT_EXPORT(UI_BASE) ElementTrackerMac {
+class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTrackerMac {
  public:
   ElementTrackerMac(const ElementTrackerMac& other) = delete;
   void operator=(const ElementTrackerMac& other) = delete;

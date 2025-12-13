@@ -116,8 +116,9 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
         scoped_observation{&mock_backend_observer};
     scoped_observation.Observe(
         managed_photo_controller()->ambient_backend_model());
-    ON_CALL(mock_backend_observer, OnImagesReady)
-        .WillByDefault(::testing::Invoke([&future]() { future.SetValue(); }));
+    ON_CALL(mock_backend_observer, OnImagesReady).WillByDefault([&future]() {
+      future.SetValue();
+    });
     ASSERT_TRUE(future.Wait()) << "Timed out waiting for OnImagesReady";
   }
 
@@ -130,13 +131,12 @@ class AmbientManagedPhotoControllerTest : public AmbientAshTestBase {
     scoped_observation.Observe(
         managed_photo_controller()->ambient_backend_model());
     ON_CALL(mock_backend_observer, OnImageAdded)
-        .WillByDefault(
-            ::testing::Invoke([&future, &num_topics_added, &expected_topics]() {
-              num_topics_added++;
-              if (expected_topics == num_topics_added) {
-                future.SetValue();
-              }
-            }));
+        .WillByDefault([&future, &num_topics_added, &expected_topics]() {
+          num_topics_added++;
+          if (expected_topics == num_topics_added) {
+            future.SetValue();
+          }
+        });
     ASSERT_TRUE(future.Wait()) << "Timed out waiting for OnImageAdded";
   }
 

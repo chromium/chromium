@@ -36,12 +36,13 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//chrome/browser/background:background",
+    "//chrome/browser/background",
     "//chrome/browser/glic",
     "//chrome/browser/glic/resources:browser_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/glic:resources_grit",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:browser_list",
@@ -50,6 +51,10 @@ source_set("impl") {
     "//ui/base/accelerators/global_accelerator_listener",
     "//ui/gfx",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -63,12 +68,13 @@ source_set("unit_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser:global_features",
-    "//chrome/browser/glic:glic",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support",
     "//chrome/browser/profiles",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/status_icons",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui/webui/whats_new:whats_new",
+    "//chrome/browser/ui/webui/whats_new",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//testing/gtest",
@@ -90,12 +96,14 @@ source_set("interactive_ui_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
-    "//chrome/browser/background:background",
+    "//chrome/browser/background",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/fre",
     "//chrome/browser/glic/test_support",
-    "//chrome/browser/status_icons:status_icons",
+    "//chrome/browser/startup",
+    "//chrome/browser/status_icons",
+    "//chrome/browser/ui/views/frame/",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
     "//components/keep_alive_registry",
@@ -105,4 +113,8 @@ source_set("interactive_ui_tests") {
     "//ui/base/accelerators/global_accelerator_listener",
   ]
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
+
+  if (is_chromeos) {
+    deps += [ "//ash" ]
+  }
 }

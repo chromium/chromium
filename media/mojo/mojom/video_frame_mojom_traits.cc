@@ -12,6 +12,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
@@ -38,12 +39,6 @@ namespace {
 base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
                                               std::vector<uint32_t>& offsets,
                                               std::vector<int32_t>& strides) {
-  if (!media::IsYuvPlanar(frame.format()) || !media::IsOpaque(frame.format())) {
-    DLOG(ERROR) << "format is not opaque YUV: "
-                << VideoPixelFormatToString(frame.format());
-    return base::ReadOnlySharedMemoryRegion();
-  }
-
   size_t num_planes = media::VideoFrame::NumPlanes(frame.format());
   DCHECK_LE(num_planes, 3u);
   offsets.resize(num_planes);
@@ -120,34 +115,13 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  bool is_mappable_si_enabled = input->is_mappable_si_enabled();
-  if (input->HasMappableGpuBuffer()) {
+  if (input->HasMappableSharedImage()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
-    // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy shared_image.
+    // STORAGE_MAPPABLE_SHARED_IMAGE may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
     gpu::SyncToken sync_token;
-#if BUILDFLAG(IS_CHROMEOS)
-    if (input->HasSharedImage()) {
-      shared_image = input->shared_image()->Export(
-          /*with_buffer_handle=*/is_mappable_si_enabled);
-      sync_token = input->acquire_sync_token();
-
-      if (is_mappable_si_enabled) {
-        return media::mojom::VideoFrameData::NewSharedImageData(
-            media::mojom::SharedImageVideoFrameData::New(
-                std::move(shared_image.value()), std::move(sync_token),
-                /*is_mappable_si_enabled=*/true));
-      }
-    }
-
-    return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
-        media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
-            std::move(gpu_memory_buffer_handle), std::move(shared_image),
-            std::move(sync_token)));
-#else
     CHECK(input->HasSharedImage());
-    CHECK(is_mappable_si_enabled);
     shared_image = input->shared_image()->Export(
         /*with_buffer_handle=*/true);
     sync_token = input->acquire_sync_token();
@@ -155,31 +129,27 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
-            /*is_mappable_si_enabled=*/true, std::move(input->ycbcr_info())));
+            /*is_mappable=*/true, std::move(input->ycbcr_info())));
 #else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image.value()), std::move(sync_token),
-            /*is_mappable_si_enabled=*/true));
-#endif
+            /*is_mappable=*/true));
 #endif
   }
 
   if (input->HasSharedImage()) {
-    // Mappable SI should only be used with `HasMappableGpuBuffer()`
-    // VideoFrames.
-    CHECK(!is_mappable_si_enabled);
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
 #if BUILDFLAG(IS_ANDROID)
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
-            /*is_mappable_si_enabled=*/false, std::move(input->ycbcr_info())));
+            /*is_mappable=*/false, std::move(input->ycbcr_info())));
 #else
     return media::mojom::VideoFrameData::NewSharedImageData(
         media::mojom::SharedImageVideoFrameData::New(
             std::move(shared_image), input->acquire_sync_token(),
-            /*is_mappable_si_enabled=*/false));
+            /*is_mappable=*/false));
 #endif
   }
 
@@ -349,52 +319,21 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
-        plane_data[2], timestamp);
+    if (media::IsYuvPlanar(format) && media::IsOpaque(format)) {
+      frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+          *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
+          plane_data[2], timestamp);
+    } else if (media::IsRGB(format)) {
+      frame = media::VideoFrame::WrapExternalDataWithLayout(
+          *layout, visible_rect, natural_size, plane_data[0], timestamp);
+    } else {
+      DLOG(ERROR) << "Format is not opaque YUV or RGB: "
+                  << VideoPixelFormatToString(format);
+      return false;
+    }
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
-  } else if (data.is_gpu_memory_buffer_shared_image_data()) {
-#if BUILDFLAG(IS_CHROMEOS)
-    media::mojom::GpuMemoryBufferSharedImageVideoFrameDataDataView
-        gpu_memory_buffer_data;
-    data.GetGpuMemoryBufferSharedImageDataDataView(&gpu_memory_buffer_data);
-
-    gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
-    if (!gpu_memory_buffer_data.ReadGpuMemoryBufferHandle(
-            &gpu_memory_buffer_handle)) {
-      DLOG(ERROR) << "Failed to read GpuMemoryBufferHandle";
-      return false;
-    }
-
-    std::optional<gfx::BufferFormat> buffer_format =
-        VideoPixelFormatToGfxBufferFormat(format);
-    if (!buffer_format) {
-      return false;
-    }
-
-    if (gpu_memory_buffer_handle.type !=
-        gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-      return false;
-    }
-
-    gfx::BufferUsage buffer_usage;
-    if (metadata.protected_video) {
-      buffer_usage = gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
-    } else {
-      buffer_usage = gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-    }
-
-    auto client_native_pixmap_factory =
-        ui::CreateClientNativePixmapFactoryOzone();
-    frame = media::VideoFrame::WrapExternalGpuMemoryBufferHandle(
-        visible_rect, natural_size, client_native_pixmap_factory.get(),
-        std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-        buffer_usage, timestamp);
-#else
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS)
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
     data.GetSharedImageDataDataView(&shared_image_data);
@@ -411,9 +350,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    bool is_mappable_si_enabled = shared_image_data.is_mappable_si_enabled();
-    if (is_mappable_si_enabled) {
-      // VideoFrame should have buffer usage if Mappable SharedImage is enabled.
+    bool is_mappable = shared_image_data.is_mappable();
+    if (is_mappable) {
+      // VideoFrame should have buffer usage if its SI is mappable.
       // NOTE: This isn't exactly correct for software SharedImages can be
       // mappable but do not have buffer usage. But since, such software
       // SharedImages are not used with VideoFrames this should work.
@@ -614,10 +553,10 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
   frame->set_color_space(color_space);
 
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
-  frame->set_hdr_metadata(std::move(hdr_metadata));
+  frame->set_hdr_metadata(hdr_metadata);
 
   *output = std::move(frame);
   return true;

@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_CONTENT_METRICS_SERVICES_WEB_CONTENTS_OBSERVER_H_
 
 #include "base/functional/callback.h"
-#include "components/metrics/metrics_service_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -28,12 +27,14 @@ class MetricsServicesWebContentsObserver
   ~MetricsServicesWebContentsObserver() override;
 
  private:
+  friend class content::WebContentsUserData<MetricsServicesWebContentsObserver>;
+
+  // Can only be instantiated by content::WebContentsUserData.
   explicit MetricsServicesWebContentsObserver(
       content::WebContents* web_contents,
       OnDidStartLoadingCb did_start_loading_cb,
       OnDidStopLoadingCb did_stop_loading_cb,
       OnRendererUnresponsiveCb renderer_unresponsive_cb);
-  friend class content::WebContentsUserData<MetricsServicesWebContentsObserver>;
 
   // content::WebContentsObserver:
   void DidStartLoading() override;

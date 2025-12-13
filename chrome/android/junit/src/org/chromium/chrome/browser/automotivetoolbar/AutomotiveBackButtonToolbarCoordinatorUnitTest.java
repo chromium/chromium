@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -89,15 +90,6 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
-    public void testAutomotiveBackButtonBarStreamline_onAppStart() {
-        Assert.assertEquals(
-                "Back button toolbar should be gone when the app opens.",
-                View.GONE,
-                mAutomotiveToolbar.getVisibility());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
     public void testAutomotiveBackButtonBarStreamline_onEnterAndExitFullScreen() {
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();
@@ -148,6 +140,7 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE)
     public void testFullscreen_onExitFullscreen() {
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();

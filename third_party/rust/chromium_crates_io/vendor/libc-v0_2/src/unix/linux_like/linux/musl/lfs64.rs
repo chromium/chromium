@@ -117,7 +117,10 @@ pub unsafe extern "C" fn mmap64(
 //
 // These aliases are mostly fine though, neither function takes a LFS64-namespaced type as an
 // argument, nor do their names clash with any declared types.
-pub use crate::{open as open64, openat as openat64};
+pub use crate::{
+    open as open64,
+    openat as openat64,
+};
 
 #[inline]
 pub unsafe extern "C" fn posix_fadvise64(

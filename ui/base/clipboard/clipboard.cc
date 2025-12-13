@@ -29,6 +29,10 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/linux/linux_ui.h"
+#endif
+
 namespace ui {
 
 Clipboard::HtmlData::HtmlData() noexcept = default;
@@ -71,6 +75,20 @@ bool Clipboard::IsSupportedClipboardBuffer(ClipboardBuffer buffer) {
       return false;
   }
   NOTREACHED();
+}
+
+// static
+bool Clipboard::IsMiddleClickPasteEnabled() {
+#if BUILDFLAG(IS_LINUX)
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    return linux_ui->PrimaryPasteEnabled();
+  }
+#endif
+
+  // This code is most likely never hit on other platforms, but
+  // if it happens to be, let's return `true` to preserve
+  // middle click paste behavior without a preference.
+  return true;
 }
 
 // static
@@ -167,8 +185,8 @@ std::map<std::string, std::string> Clipboard::ExtractCustomPlatformNames(
     ReadData(ui::ClipboardFormatType::WebCustomFormatMap(), data_dst,
              &custom_format_json);
     if (!custom_format_json.empty()) {
-      std::optional<base::Value> json_val =
-          base::JSONReader::Read(custom_format_json);
+      std::optional<base::Value> json_val = base::JSONReader::Read(
+          custom_format_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (json_val.has_value() && json_val->is_dict()) {
         for (const auto it : json_val->GetDict()) {
           const std::string* custom_format_name = it.second.GetIfString();

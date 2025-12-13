@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/context_state.h"
 
 #include <stddef.h>
@@ -15,6 +10,8 @@
 #include <cmath>
 #include <optional>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/framebuffer_manager.h"
@@ -141,15 +138,15 @@ void Vec4::GetValues<GLfloat>(GLfloat* values) const {
   switch (type_) {
     case SHADER_VARIABLE_FLOAT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = v_[ii].float_value;
+        UNSAFE_TODO(values[ii]) = v_[ii].float_value;
       break;
     case SHADER_VARIABLE_INT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLfloat>(v_[ii].int_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLfloat>(v_[ii].int_value);
       break;
     case SHADER_VARIABLE_UINT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLfloat>(v_[ii].uint_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLfloat>(v_[ii].uint_value);
       break;
     default:
       NOTREACHED();
@@ -162,15 +159,15 @@ void Vec4::GetValues<GLint>(GLint* values) const {
   switch (type_) {
     case SHADER_VARIABLE_FLOAT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLint>(v_[ii].float_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLint>(v_[ii].float_value);
       break;
     case SHADER_VARIABLE_INT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = v_[ii].int_value;
+        UNSAFE_TODO(values[ii]) = v_[ii].int_value;
       break;
     case SHADER_VARIABLE_UINT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLint>(v_[ii].uint_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLint>(v_[ii].uint_value);
       break;
     default:
       NOTREACHED();
@@ -183,15 +180,15 @@ void Vec4::GetValues<GLuint>(GLuint* values) const {
   switch (type_) {
     case SHADER_VARIABLE_FLOAT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLuint>(v_[ii].float_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLuint>(v_[ii].float_value);
       break;
     case SHADER_VARIABLE_INT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = static_cast<GLuint>(v_[ii].int_value);
+        UNSAFE_TODO(values[ii]) = static_cast<GLuint>(v_[ii].int_value);
       break;
     case SHADER_VARIABLE_UINT:
       for (size_t ii = 0; ii < 4; ++ii)
-        values[ii] = v_[ii].uint_value;
+        UNSAFE_TODO(values[ii]) = v_[ii].uint_value;
       break;
     default:
       NOTREACHED();
@@ -202,7 +199,7 @@ template <>
 void Vec4::SetValues<GLfloat>(const GLfloat* values) {
   DCHECK(values);
   for (size_t ii = 0; ii < 4; ++ii)
-    v_[ii].float_value = values[ii];
+    v_[ii].float_value = UNSAFE_TODO(values[ii]);
   type_ = SHADER_VARIABLE_FLOAT;
 }
 
@@ -210,7 +207,7 @@ template <>
 void Vec4::SetValues<GLint>(const GLint* values) {
   DCHECK(values);
   for (size_t ii = 0; ii < 4; ++ii)
-    v_[ii].int_value = values[ii];
+    v_[ii].int_value = UNSAFE_TODO(values[ii]);
   type_ = SHADER_VARIABLE_INT;
 }
 
@@ -218,7 +215,7 @@ template <>
 void Vec4::SetValues<GLuint>(const GLuint* values) {
   DCHECK(values);
   for (size_t ii = 0; ii < 4; ++ii)
-    v_[ii].uint_value = values[ii];
+    v_[ii].uint_value = UNSAFE_TODO(values[ii]);
   type_ = SHADER_VARIABLE_UINT;
 }
 
@@ -655,14 +652,16 @@ size_t ContextState::GetMaxWindowRectangles() const {
   return size / 4;
 }
 
-void ContextState::SetWindowRectangles(GLenum mode,
-                                       size_t count,
-                                       const volatile GLint* box) {
+void ContextState::SetWindowRectangles(
+    GLenum mode,
+    base::span<const volatile GLint> box) {
+  CHECK(box.size() % 4 == 0);
   window_rectangles_mode = mode;
-  num_window_rectangles = count;
-  DCHECK_LE(count, GetMaxWindowRectangles());
-  if (count) {
-    std::copy(box, &box[count * 4], window_rectangles_.begin());
+  num_window_rectangles = box.size() / 4;
+  DCHECK_LE(static_cast<size_t>(num_window_rectangles),
+            GetMaxWindowRectangles());
+  if (!box.empty()) {
+    std::ranges::copy(box, window_rectangles_.begin());
   }
 }
 

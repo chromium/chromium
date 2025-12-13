@@ -114,7 +114,7 @@ DOMWindowDigitalGoods::GetDigitalGoodsService(ScriptState* script_state,
 
   mojo_service_->CreateDigitalGoods(
       payment_method,
-      WTF::BindOnce(&OnCreateDigitalGoodsResponse, WrapPersistent(resolver)));
+      BindOnce(&OnCreateDigitalGoodsResponse, WrapPersistent(resolver)));
 
   return promise;
 }

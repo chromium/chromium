@@ -19,6 +19,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
 namespace resource_attribution {
@@ -70,6 +71,11 @@ TEST_F(ResourceAttrFrameContextTest, FrameContexts) {
       FrameContext::FromRenderFrameHost(rfh2);
   EXPECT_TRUE(frame_context2.has_value());
   EXPECT_NE(frame_context2, frame_context);
+
+  // Put contexts in an absl set to make sure they can be hashed.
+  absl::flat_hash_set<FrameContext> context_set{frame_context.value(),
+                                                frame_context2.value()};
+  EXPECT_EQ(context_set.size(), 2u);
 
   web_contents.reset();
 

@@ -24,15 +24,15 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_mediator.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_delegate.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_consumer.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_ranking_model.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/placeholder_config.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/coordinator/magic_stack_ranking_model.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/magic_stack_consumer.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/ui/placeholder_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/coordinator/most_visited_tiles_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_config.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/coordinator/set_up_list_mediator.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shortcuts/coordinator/shortcuts_mediator.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
@@ -56,7 +56,7 @@
 
 @implementation ContentSuggestionsMediator {
   // Local State prefs.
-  raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
 }
 
 #pragma mark - Public

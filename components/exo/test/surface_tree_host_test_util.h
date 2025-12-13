@@ -7,6 +7,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "components/exo/layer_tree_frame_sink_holder.h"
 #include "components/exo/surface_tree_host.h"
 

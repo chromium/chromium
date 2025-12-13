@@ -673,7 +673,6 @@ export class EmojiPickerApp extends PolymerElement {
                              ?.value?.length ??
         0;
 
-    // TODO(b/217276960): change to a more generic name
     this.apiProxy.insertEmoji(text, isVariant, searchLength);
   }
 

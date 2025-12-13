@@ -11,10 +11,12 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/context_factory.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
@@ -92,6 +94,31 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
 
   ++rendered_frame_count_;
 
+  if (latest_frame_->HasSharedImage()) {
+    // When passed a VideoFrame with a SharedImage in it,
+    // PaintCanvasVideoRenderer historically could paint only if GPU
+    // rasterization was supported on the passed-in context provider. This is no
+    // longer the case, but examination would need to be done to determine
+    // whether it is now appropriate to remove these checks. Note that we put
+    // these checks underneath the increment above to preserve historical
+    // behavior.
+    if (!features::IsUiGpuRasterizationEnabled()) {
+      return;
+    }
+
+    if (!raster_context_provider_) {
+      return;
+    }
+
+    const auto& gpu_feature_info =
+        raster_context_provider_->GetGpuFeatureInfo();
+    if (gpu_feature_info
+            .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] !=
+        gpu::kGpuFeatureStatusEnabled) {
+      return;
+    }
+  }
+
   media::PaintCanvasVideoRenderer::PaintParams paint_params;
   paint_params.dest_rect = gfx::RectF(media::ComputeLetterboxRegion(
       {width(), height()}, latest_frame_->natural_size()));
@@ -101,6 +128,7 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
   // Select high quality frame scaling.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   flags.setAntiAlias(true);
+
   video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(), flags,
                         paint_params, raster_context_provider_.get());
 }

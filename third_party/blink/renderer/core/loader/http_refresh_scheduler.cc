@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -116,7 +117,10 @@ void HttpRefreshScheduler::NavigateTask() {
       document_->GetFrame()->Loader().HasLoadedNonInitialEmptyDocument()) {
     request.GetResourceRequest().SetCacheMode(
         mojom::FetchCacheMode::kValidateCache);
-    load_type = WebFrameLoadType::kReload;
+    // Fragment-only navigation is handled by ShouldPerformFragmentNavigation().
+    if (!refresh->url.HasFragmentIdentifier()) {
+      load_type = WebFrameLoadType::kReload;
+    }
   } else if (refresh->delay <= base::Seconds(1)) {
     load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
@@ -137,8 +141,7 @@ void HttpRefreshScheduler::MaybeStartTimer() {
   // task handle is destroyed on the dtor of this HttpRefreshScheduler.
   navigate_task_handle_ = PostDelayedCancellableTask(
       *document_->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-      WTF::BindOnce(&HttpRefreshScheduler::NavigateTask,
-                    WrapWeakPersistent(this)),
+      BindOnce(&HttpRefreshScheduler::NavigateTask, WrapWeakPersistent(this)),
       refresh_->delay);
 
   probe::FrameScheduledNavigation(document_->GetFrame(), refresh_->url,

@@ -54,6 +54,66 @@ void GPURenderPassEncoder::setBindGroup(
       data_span.size(), data_span.data());
 }
 
+void GPURenderPassEncoder::setImmediates(uint32_t range_offset,
+                                         const DOMArrayBufferBase* data,
+                                         uint64_t data_offset,
+                                         ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), 1, data_offset)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderPassEncoder::setImmediates(uint32_t range_offset,
+                                         const DOMArrayBufferBase* data,
+                                         uint64_t data_offset,
+                                         uint64_t size,
+                                         ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), 1, data_offset, size)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderPassEncoder::setImmediates(
+    uint32_t range_offset,
+    const MaybeShared<DOMArrayBufferView>& data,
+    uint64_t data_offset,
+    ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), data->TypeSize(), data_offset)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
+void GPURenderPassEncoder::setImmediates(
+    uint32_t range_offset,
+    const MaybeShared<DOMArrayBufferView>& data,
+    uint64_t data_offset,
+    uint64_t size,
+    ExceptionState& exception_state) {
+  base::span<const uint8_t> data_span;
+  if (!ValidateSetImmediatesAndSubSpan(
+          exception_state, &data_span, range_offset,
+          data->ByteSpanMaybeShared(), data->TypeSize(), data_offset, size)) {
+    return;
+  }
+
+  GetHandle().SetImmediates(range_offset, data_span.data(), data_span.size());
+}
+
 void GPURenderPassEncoder::setBlendConstant(const V8GPUColor* color,
                                             ExceptionState& exception_state) {
   wgpu::Color dawn_color;

@@ -5,24 +5,25 @@
 #ifndef UI_GFX_WIN_SINGLETON_HWND_H_
 #define UI_GFX_WIN_SINGLETON_HWND_H_
 
-#include <windows.h>
-
+#include "base/callback_list.h"
 #include "base/component_export.h"
-#include "base/observer_list.h"
+#include "base/win/windows_types.h"
 #include "ui/gfx/win/window_impl.h"
 
 namespace base {
-template<typename T> struct DefaultSingletonTraits;
+template <typename T>
+class NoDestructor;
 }
 
 namespace gfx {
-
-class SingletonHwndObserver;
 
 // Singleton message-only HWND that allows interested clients to receive WM_*
 // notifications.
 class COMPONENT_EXPORT(GFX) SingletonHwnd : public WindowImpl {
  public:
+  using CallbackList =
+      base::RepeatingCallbackList<void(HWND, UINT, WPARAM, LPARAM)>;
+
   static SingletonHwnd* GetInstance();
 
   SingletonHwnd(const SingletonHwnd&) = delete;
@@ -36,19 +37,16 @@ class COMPONENT_EXPORT(GFX) SingletonHwnd : public WindowImpl {
                             LRESULT& result,
                             DWORD msg_map_id) override;
 
+  base::CallbackListSubscription RegisterCallback(
+      CallbackList::CallbackType callback);
+
  private:
-  friend class SingletonHwndObserver;
-  friend struct base::DefaultSingletonTraits<SingletonHwnd>;
+  friend class base::NoDestructor<SingletonHwnd>;
 
   SingletonHwnd();
   ~SingletonHwnd() override;
 
-  // Add/remove SingletonHwndObserver to forward WM_* notifications.
-  void AddObserver(SingletonHwndObserver* observer);
-  void RemoveObserver(SingletonHwndObserver* observer);
-
-  // List of registered observers.
-  base::ObserverList<SingletonHwndObserver, true>::Unchecked observer_list_;
+  CallbackList callback_list_;
 };
 
 }  // namespace gfx

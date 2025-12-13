@@ -484,7 +484,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
         self.pattern()[i..]
             .chars()
             .next()
-            .unwrap_or_else(|| panic!("expected char at offset {}", i))
+            .unwrap_or_else(|| panic!("expected char at offset {i}"))
     }
 
     /// Bump the parser to the next Unicode scalar value.
@@ -2254,7 +2254,7 @@ impl<'s, P: Borrow<Parser>> ParserI<'s, P> {
             'S' => (true, ast::ClassPerlKind::Space),
             'w' => (false, ast::ClassPerlKind::Word),
             'W' => (true, ast::ClassPerlKind::Word),
-            c => panic!("expected valid Perl class but got '{}'", c),
+            c => panic!("expected valid Perl class but got '{c}'"),
         };
         ast::ClassPerl { span, kind, negated }
     }
@@ -4598,7 +4598,7 @@ bar
 
         // We also support superfluous escapes in most cases now too.
         for c in ['!', '@', '%', '"', '\'', '/', ' '] {
-            let pat = format!(r"\{}", c);
+            let pat = format!(r"\{c}");
             assert_eq!(
                 parser(&pat).parse_primitive(),
                 Ok(Primitive::Literal(ast::Literal {
@@ -4713,7 +4713,7 @@ bar
     #[test]
     fn parse_octal() {
         for i in 0..511 {
-            let pat = format!(r"\{:o}", i);
+            let pat = format!(r"\{i:o}");
             assert_eq!(
                 parser_octal(&pat).parse_escape(),
                 Ok(Primitive::Literal(ast::Literal {
@@ -4788,7 +4788,7 @@ bar
     #[test]
     fn parse_hex_two() {
         for i in 0..256 {
-            let pat = format!(r"\x{:02x}", i);
+            let pat = format!(r"\x{i:02x}");
             assert_eq!(
                 parser(&pat).parse_escape(),
                 Ok(Primitive::Literal(ast::Literal {
@@ -4829,7 +4829,7 @@ bar
                 None => continue,
                 Some(c) => c,
             };
-            let pat = format!(r"\u{:04x}", i);
+            let pat = format!(r"\u{i:04x}");
             assert_eq!(
                 parser(&pat).parse_escape(),
                 Ok(Primitive::Literal(ast::Literal {
@@ -4893,7 +4893,7 @@ bar
                 None => continue,
                 Some(c) => c,
             };
-            let pat = format!(r"\U{:08x}", i);
+            let pat = format!(r"\U{i:08x}");
             assert_eq!(
                 parser(&pat).parse_escape(),
                 Ok(Primitive::Literal(ast::Literal {

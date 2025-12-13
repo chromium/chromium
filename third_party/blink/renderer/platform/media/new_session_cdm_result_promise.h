@@ -14,6 +14,7 @@
 #include "media/base/cdm_promise.h"
 #include "third_party/blink/public/platform/web_content_decryption_module_result.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -45,12 +46,11 @@ using SessionInitializedCB =
 class PLATFORM_EXPORT NewSessionCdmResultPromise
     : public media::CdmPromiseTemplate<std::string> {
  public:
-  NewSessionCdmResultPromise(
-      const WebContentDecryptionModuleResult& result,
-      const std::string& key_system_uma_prefix,
-      const std::string& uma_name,
-      SessionInitializedCB new_session_created_cb,
-      const std::vector<SessionInitStatus>& expected_statuses);
+  NewSessionCdmResultPromise(const WebContentDecryptionModuleResult& result,
+                             const std::string& key_system_uma_prefix,
+                             const std::string& uma_name,
+                             SessionInitializedCB new_session_created_cb,
+                             Vector<SessionInitStatus> expected_statuses);
   NewSessionCdmResultPromise(const NewSessionCdmResultPromise&) = delete;
   NewSessionCdmResultPromise& operator=(const NewSessionCdmResultPromise&) =
       delete;
@@ -73,7 +73,7 @@ class PLATFORM_EXPORT NewSessionCdmResultPromise
   // be reported to blink. Returned status must be in |expected_statuses_| or
   // else the promise will be rejected.
   SessionInitializedCB new_session_created_cb_;
-  std::vector<SessionInitStatus> expected_statuses_;
+  Vector<SessionInitStatus> expected_statuses_;
 
   // Time when |this| is created.
   base::TimeTicks creation_time_;

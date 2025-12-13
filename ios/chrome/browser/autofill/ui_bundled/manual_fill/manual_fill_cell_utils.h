@@ -11,7 +11,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_site_info.h"
 
-@class TableViewCell;
+@class LegacyTableViewCell;
 
 // Margins of the cell content.
 extern const CGFloat kCellMargin;
@@ -79,17 +79,6 @@ void AppendVerticalConstraintsSpacingForViews(
     const std::vector<ManualFillCellView>& manual_fill_cell_views,
     UILayoutGuide* layout_guide);
 
-// Adds vertical constraints like `AppendVerticalConstraintsSpacingForViews`
-// above but using an `offset` to shift the first view's top anchor upwards when
-// displaying a password cell that is connected to the previous one.
-// TODO(crbug.com/326398845): Remove the `offset` parameter once the Keyboard
-// Accessory Upgrade feature has launched both on iPhone and iPad.
-void AppendVerticalConstraintsSpacingForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    const std::vector<ManualFillCellView>& manual_fill_cell_views,
-    UILayoutGuide* layout_guide,
-    CGFloat offset);
-
 // Creates a ManualFillCellView with each chip button of `chip_groups`,
 // and adds the ManualFillCellViews to `vertical_lead_views`.
 void AddChipGroupsToVerticalLeadViews(
@@ -111,34 +100,22 @@ void AppendHorizontalConstraintsForViews(
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide);
 
-// Adds constraints like `AppendHorizontalConstraintsForViews` above but also
-// applies the given constant `margin` at both ends of the whole row.
-void AppendHorizontalConstraintsForViews(
-    NSMutableArray<NSLayoutConstraint*>* constraints,
-    NSArray<UIView*>* views,
-    UILayoutGuide* layout_guide,
-    CGFloat margin);
-
 // Adds constraints like `AppendHorizontalConstraintsForViews` above
 // but with given `options`.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options);
 
 // Adds constraints like `AppendHorizontalConstraintsForViews` above,
 // but with the given `trailing_view`, which is a view that is attached to the
 // trailing side of the cell. The last view of `views` is therefore constraint
 // to not overlap `trailing_view` when valid (i.e., when not `nil`).
-// TODO(crbug.com/326398845): Remove the `margin` parameter once the Keyboard
-// Accessory Upgrade feature has launched both on iPhone and iPad.
 void AppendHorizontalConstraintsForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UILayoutGuide* layout_guide,
-    CGFloat margin,
     AppendConstraints options,
     UIView* trailing_view);
 
@@ -222,7 +199,7 @@ void GiveAccessibilityContextToCellAndButton(UIView* cell_container,
 // Without setting the cell's accessibility elements, VoiceOver would read the
 // elements following the view's hierarchy, meaning that it would follow the
 // back to front order instead of the top to bottom order.
-void SetUpCellAccessibilityElements(TableViewCell* cell,
+void SetUpCellAccessibilityElements(LegacyTableViewCell* cell,
                                     NSArray<UIView*>* accessibilityElements);
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_MANUAL_FILL_MANUAL_FILL_CELL_UTILS_H_

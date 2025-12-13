@@ -86,7 +86,7 @@ TEST_F(FocusCyclerTest, CycleFocusBrowserOnly) {
   focus_cycler()->ResetForTesting();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -99,7 +99,7 @@ TEST_F(FocusCyclerTest, CycleFocusForward) {
   SetUpFocusCycle();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -120,7 +120,7 @@ TEST_F(FocusCyclerTest, CycleFocusBackward) {
   SetUpFocusCycle();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -141,7 +141,7 @@ TEST_F(FocusCyclerTest, CycleFocusForwardBackward) {
   SetUpFocusCycle();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -204,8 +204,8 @@ TEST_F(FocusCyclerTest, Shelf_CycleFocusForward) {
   GetPrimaryShelf()->hotseat_widget()->Hide();
 
   // Create two test windows.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
-  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
+  std::unique_ptr<Window> window1(CreateTestWindowInShell({.window_id = 1}));
   wm::ActivateWindow(window1.get());
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
@@ -229,7 +229,7 @@ TEST_F(FocusCyclerTest, Shelf_CycleFocusBackwardInvisible) {
   GetPrimaryShelf()->hotseat_widget()->Hide();
 
   // Create a single test window.
-  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window0(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window0.get());
   EXPECT_TRUE(wm::IsActiveWindow(window0.get()));
 
@@ -421,7 +421,7 @@ TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
   UpdateDisplay("800x700");
 
   // Create a single test window.
-  std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window(CreateTestWindowInShell({.window_id = 0}));
   wm::ActivateWindow(window.get());
   EXPECT_TRUE(wm::IsActiveWindow(window.get()));
 

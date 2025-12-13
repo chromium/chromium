@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/jobs/get_progressive_web_app_size_job.h"
 
+#include "base/strings/to_string.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 #include "chrome/browser/web_applications/commands/computed_app_size.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"

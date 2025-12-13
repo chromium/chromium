@@ -9,8 +9,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -124,7 +127,7 @@ void DisplayInfoProvider::GetAllDisplaysInfo(
     bool /* single_unified*/,
     base::OnceCallback<void(DisplayUnitInfoList result)> callback) {
   const display::Screen* screen =
-      provided_screen_ ? provided_screen_.get() : display::Screen::GetScreen();
+      provided_screen_ ? provided_screen_.get() : display::Screen::Get();
   int64_t primary_id = screen->GetPrimaryDisplay().id();
   std::vector<display::Display> displays = screen->GetAllDisplays();
   base::ThreadPool::PostTaskAndReplyWithResult(

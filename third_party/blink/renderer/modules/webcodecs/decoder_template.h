@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBCODECS_DECODER_TEMPLATE_H_
 
 #include <stdint.h>
+
 #include <memory>
 
+#include "base/sequence_checker.h"
 #include "media/base/decoder_status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

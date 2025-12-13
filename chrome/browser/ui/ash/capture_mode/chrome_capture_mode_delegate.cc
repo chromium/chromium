@@ -11,12 +11,13 @@
 #include <vector>
 
 #include "ash/capture_mode/capture_mode_constants.h"
-#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/capture_mode/capture_mode_api.h"
+#include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
@@ -37,8 +38,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -101,11 +100,12 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_util.h"
 
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace {
 
 ChromeCaptureModeDelegate* g_instance = nullptr;
-
-constexpr char kConsumerName[] = "ChromeCaptureModeDelegate";
 
 // The image quality when encoding the image being searched into the body of the
 // POST request.
@@ -217,12 +217,6 @@ void CaptureFileFinalized(
       base::BindOnce(base::IgnoreResult(&base::DeleteFile), original_path));
 }
 
-base::ScopedTempDir CreateTempDir() {
-  base::ScopedTempDir temp_dir;
-  CHECK(temp_dir.CreateUniqueTempDir());
-  return temp_dir;
-}
-
 std::vector<unsigned char> EncodeImage(const gfx::Image& image,
                                        std::string& content_type,
                                        lens::mojom::ImageFormat& image_format) {
@@ -275,6 +269,8 @@ scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
+// TODO: crbug.com/438030515 - Add a Tast or E2E test to verify that responses
+// with and without text are being parsed properly.
 // Attempts to parse the `response` as if it was a
 // `FetchQueryFormulationMetadataResponse` encoded in JSON, and store the
 // formatted text in `extracted_text`. Returns true if the response was
@@ -304,28 +300,28 @@ bool ParseQueryFormulationMetadataResponse(
   }
 
   // Deconstruct the metadata response in order to build our string for Copy
-  // Text.
+  // Text. If there is no `detected_text` object or the field is empty, then
+  // there might not be any text to detect, so we can return true.
   const base::Value::List* detected_text =
       (*metadata_response)[kQFMetadataResponseFieldDetectedText].GetIfList();
   if (!detected_text || detected_text->empty()) {
-    return false;
-  }
-
-  // If we don't have a `text_layout` object, then there may not be any text to
-  // detect, so we should return true.
-  const base::Value::List* text_layout =
-      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
-  if (!text_layout) {
     return true;
   }
-  if (text_layout->empty()) {
-    return false;
+
+  // Similarly, if we don't have a `text_layout` object, then there may not be
+  // any text to detect, so we should return true.
+  const base::Value::List* text_layout =
+      (*detected_text)[kDetectedTextFieldTextLayout].GetIfList();
+  if (!text_layout || text_layout->empty()) {
+    return true;
   }
 
+  // Lastly, if we don't have a `paragraph_list` object, then there may not be
+  // any text to detect, so we should return true.
   const base::Value::List* paragraph_list =
       (*text_layout)[kTextLayoutFieldParagraphs].GetIfList();
   if (!paragraph_list || paragraph_list->empty()) {
-    return false;
+    return true;
   }
 
   // Begin constructing the extracted text by looping through a sequence of
@@ -403,24 +399,9 @@ ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&CreateTempDir),
-      base::BindOnce(&ChromeCaptureModeDelegate::SetOdfsTempDir,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ChromeCaptureModeDelegate::~ChromeCaptureModeDelegate() {
-  base::ThreadPool::PostTask(FROM_HERE,
-                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                             base::BindOnce(
-                                 [](base::ScopedTempDir) {
-                                   // No-op other than running
-                                   // the base::ScopedTempDir
-                                   // destructor.
-                                 },
-                                 std::move(odfs_temp_dir_)));
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
@@ -684,37 +665,30 @@ bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
 void ChromeCaptureModeDelegate::RegisterVideoConferenceManagerClient(
     crosapi::mojom::VideoConferenceManagerClient* client,
     const base::UnguessableToken& client_id) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->RegisterCppClient(client, client_id);
+  video_conference_manager_ash_->RegisterCppClient(client, client_id);
 }
 
 void ChromeCaptureModeDelegate::UnregisterVideoConferenceManagerClient(
     const base::UnguessableToken& client_id) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->UnregisterClient(client_id);
+  video_conference_manager_ash_->UnregisterClient(client_id);
 }
 
 void ChromeCaptureModeDelegate::UpdateVideoConferenceManager(
     crosapi::mojom::VideoConferenceMediaUsageStatusPtr status) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyMediaUsageUpdate(std::move(status), base::DoNothing());
+  video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(status),
+                                                        base::DoNothing());
 }
 
 void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyDeviceUsedWhileDisabled(
-          device,
-          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
-          base::DoNothing());
+  video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+      device, l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_DISPLAY_SOURCE),
+      base::DoNothing());
+}
+
+void ChromeCaptureModeDelegate::set_video_conference_manager_ash(
+    ash::VideoConferenceManagerAsh* video_conference_manager_ash) {
+  video_conference_manager_ash_ = video_conference_manager_ash;
 }
 
 void ChromeCaptureModeDelegate::FinalizeSavedFile(
@@ -723,8 +697,8 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
     const gfx::Image& thumbnail,
     bool for_video) {
   auto* profile = ProfileManager::GetActiveUserProfile();
-  if (!odfs_temp_dir_.GetPath().empty() &&
-      odfs_temp_dir_.GetPath().IsParent(path) && profile) {
+  if (!odfs_temp_dir_.path().empty() && odfs_temp_dir_.path().IsParent(path) &&
+      profile) {
     // Passing the notification to the callback so that it's destructed once
     // file upload finishes.
     auto notification =
@@ -749,16 +723,16 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
 
 base::FilePath ChromeCaptureModeDelegate::RedirectFilePath(
     const base::FilePath& path) {
-  if (odfs_temp_dir_.GetPath().empty()) {
+  if (odfs_temp_dir_.path().empty()) {
     return path;
   }
   base::FilePath odfs_path = GetOneDriveVirtualPath();
   if (!odfs_path.empty() && path.DirName() == odfs_path) {
-    return odfs_temp_dir_.GetPath().Append(path.BaseName());
+    return odfs_temp_dir_.path().Append(path.BaseName());
   }
   if (!odfs_path.empty() && odfs_path.IsParent(path)) {
     base::FilePath ret = path;
-    if (odfs_path.AppendRelativePath(odfs_temp_dir_.GetPath(), &ret)) {
+    if (odfs_path.AppendRelativePath(odfs_temp_dir_.path(), &ret)) {
       return ret;
     }
   }
@@ -819,7 +793,7 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
     const bool is_standalone_session,
     ash::OnSearchUrlFetchedCallback search_callback,
     ash::OnTextDetectionComplete text_callback,
-    base::OnceCallback<void()> error_callback) {
+    ash::OnLensErrorCallback error_callback) {
   on_search_url_fetched_callback_ = std::move(search_callback);
   on_text_detection_complete_callback_ = std::move(text_callback);
   on_error_callback_ = std::move(error_callback);
@@ -827,10 +801,12 @@ void ChromeCaptureModeDelegate::SendLensWebRegionSearch(
   // Increment the `lens_request_id_` to represent a new request id.
   ++lens_request_id_;
 
-  GetPrimaryAccountAccessToken(base::BindRepeating(
-      &ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch,
-      weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session,
-      lens_request_id_));
+  GetPrimaryAccountAccessToken(
+      base::BindRepeating(
+          &ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch,
+          weak_ptr_factory_.GetWeakPtr(), image, is_standalone_session,
+          lens_request_id_),
+      AccessTokenPurpose::kImageSearch);
 }
 
 bool ChromeCaptureModeDelegate::IsNetworkConnectionOffline() const {
@@ -860,65 +836,6 @@ bool ChromeCaptureModeDelegate::ActiveUserDefaultSearchProviderIsGoogle()
   return search::DefaultSearchProviderIsGoogle(template_url_service);
 }
 
-void ChromeCaptureModeDelegate::HandleStartQueryResponse(
-    std::vector<lens::OverlayObject> objects,
-    lens::Text text,
-    bool is_error) {
-  if (is_error || !on_text_detection_complete_callback_ ||
-      !text.has_text_layout()) {
-    return;
-  }
-
-  std::string extracted_text;
-  const lens::TextLayout& text_layout = text.text_layout();
-
-  for (int i = 0; i < text_layout.paragraphs_size(); i++) {
-    const auto& paragraph = text_layout.paragraphs()[i];
-
-    // Add an extra newline between each paragraph (i.e., before each
-    // paragraph after the first).
-    if (i > 0) {
-      extracted_text += "\n";
-    }
-
-    for (int j = 0; j < paragraph.lines().size(); j++) {
-      const auto& line = paragraph.lines()[j];
-
-      // Add a newline between each line (i.e., before each line after the
-      // first).
-      if (j > 0) {
-        extracted_text += "\n";
-      }
-
-      for (const auto& word : line.words()) {
-        extracted_text += word.plain_text();
-
-        // Add the text separator if it exists.
-        if (word.has_text_separator()) {
-          extracted_text += word.text_separator();
-        }
-      }
-    }
-  }
-
-  std::move(on_text_detection_complete_callback_)
-      .Run(std::move(extracted_text));
-}
-
-void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
-    lens::proto::LensOverlayUrlResponse response) {
-  if (on_search_url_fetched_callback_ && response.IsInitialized() &&
-      response.has_url()) {
-    std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
-  }
-}
-
-void ChromeCaptureModeDelegate::HandleSuggestInputsResponse(
-    lens::proto::LensOverlaySuggestInputs suggest_inputs) {}
-
-void ChromeCaptureModeDelegate::HandleThumbnailCreated(
-    const std::string& thumbnail_bytes) {}
-
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,
     drive::FileError error,
@@ -929,11 +846,6 @@ void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
   }
 
   std::move(callback).Run(usage->free_cloud_bytes);
-}
-
-void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  odfs_temp_dir_ = std::move(temp_dir);
 }
 
 void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {
@@ -997,7 +909,8 @@ void ChromeCaptureModeDelegate::ResetOcr() {
 }
 
 void ChromeCaptureModeDelegate::GetPrimaryAccountAccessToken(
-    base::RepeatingCallback<void(const std::string& access_token)> callback) {
+    base::RepeatingCallback<void(const std::string& access_token)> callback,
+    AccessTokenPurpose purpose) {
   const user_manager::User* const active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   CHECK(active_user);
@@ -1011,23 +924,40 @@ void ChromeCaptureModeDelegate::GetPrimaryAccountAccessToken(
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // TODO: crbug.com/399914333 - Determine error handling for the access
     // token.
+
+    if (purpose == AccessTokenPurpose::kImageSearch) {
+      VLOG(1) << "Image search failure: Identity manager missing or no primary "
+                 "account.";
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kFailureIdentityManager,
+                 ash::CaptureModeTextDetectionResult::kUnreached);
+      }
+    } else {
+      VLOG(1) << "Text detection failure: Identity manager missing or no "
+                 "primary account.";
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kSuccess,
+                 ash::CaptureModeTextDetectionResult::kFailureIdentityManager);
+      }
+    }
     return;
   }
 
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kSupportContentOAuth2Scope);
   primary_account_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kConsumerName, identity_manager, scopes,
+          signin::OAuthConsumerId::kCaptureModeDelegate, identity_manager,
           base::BindOnce(
               &ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable,
-              base::Unretained(this), std::move(callback)),
+              base::Unretained(this), std::move(callback), purpose),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
           signin::ConsentLevel::kSignin);
 }
 
 void ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable(
     base::RepeatingCallback<void(const std::string& access_token)> callback,
+    AccessTokenPurpose purpose,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   // Reset token fetcher for the next request.
@@ -1035,13 +965,49 @@ void ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable(
   primary_account_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
-    if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
+    if (purpose == AccessTokenPurpose::kImageSearch) {
+      VLOG(1) << "Image search failure: Access token authentication error - " +
+                     error.ToString();
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kFailureAccessTokenAuth,
+                 ash::CaptureModeTextDetectionResult::kUnreached);
+      }
+    } else {
+      VLOG(1)
+          << "Text detection failure: Access token authentication error - " +
+                 error.ToString();
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kSuccess,
+                 ash::CaptureModeTextDetectionResult::kFailureAccessTokenAuth);
+      }
     }
     return;
   }
 
-  DCHECK(!access_token_info.token.empty());
+  if (access_token_info.token.empty()) {
+    // TODO: crbug.com/446249623 - Add separate error handling for text
+    // detection.
+
+    if (purpose == AccessTokenPurpose::kImageSearch) {
+      VLOG(1) << "Image search failure: Empty access token.";
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kFailureEmptyAccessToken,
+                 ash::CaptureModeTextDetectionResult::kUnreached);
+      }
+    } else {
+      VLOG(1) << "Text detection failure: Empty access token.";
+      if (on_error_callback_) {
+        std::move(on_error_callback_)
+            .Run(ash::CaptureModeImageSearchResult::kSuccess,
+                 ash::CaptureModeTextDetectionResult::kFailureEmptyAccessToken);
+      }
+    }
+    return;
+  }
+
   std::move(callback).Run(access_token_info.token);
 }
 
@@ -1050,13 +1016,7 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForImageSearch(
     const bool is_standalone_session,
     const int request_id,
     const std::string& access_token) {
-  // If the access token is empty, let the user know that an error has occurred.
-  if (access_token.empty()) {
-    if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
-    }
-    return;
-  }
+  DCHECK(!access_token.empty());
 
   // Create the POST request and add the access token for authentication.
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -1162,13 +1122,7 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText(
     const std::string vsr_id,
     const int request_id,
     const std::string& access_token) {
-  // If the access token is empty, let the user know that an error has occurred.
-  if (access_token.empty()) {
-    if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
-    }
-    return;
-  }
+  DCHECK(!access_token.empty());
 
   // Create a new GET request for the text metadata.
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -1201,7 +1155,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
     const int request_id,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
@@ -1209,6 +1163,7 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // If the given `request_id` does not match the current request id, we should
   // not run the callback, and just wait for the most recent request to resolve.
   if (request_id != lens_request_id_) {
+    VLOG(1) << "Request ID invalid after dispatch completed for Image Search.";
     return;
   }
 
@@ -1226,15 +1181,20 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // If the response code is not a success, return early and let the user know
   // an error has occurred.
   if (!network::IsSuccessfulStatus(response_code)) {
+    VLOG(1) << "Image search failure: Unsuccessful status code.";
     if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
+      std::move(on_error_callback_)
+          .Run(
+              ash::CaptureModeImageSearchResult::kFailureUnsuccessfulStatusCode,
+              ash::CaptureModeTextDetectionResult::kUnreached);
     }
     return;
   }
 
-  // Pass in an empty image, as the Lens Web API uses its own thumbnail from the
-  // image we uploaded previously.
+  // Success, return the search results URL to be used by the panel, before
+  // continuing to text detection.
   const GURL final_url = simple_url_loader->GetFinalURL();
+  VLOG(1) << "Image search success.";
   if (on_search_url_fetched_callback_) {
     std::move(on_search_url_fetched_callback_).Run(final_url);
   }
@@ -1243,21 +1203,29 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForImageSearch(
   // /qfmetadata request.
   std::string vsr_id;
   if (!net::GetValueForKeyInQuery(final_url, "vsrid", &vsr_id)) {
+    VLOG(1) << "Text detection failure: Missing VSR ID.";
+    if (on_error_callback_) {
+      std::move(on_error_callback_)
+          .Run(ash::CaptureModeImageSearchResult::kSuccess,
+               ash::CaptureModeTextDetectionResult::kFailureMissingVsrId);
+    }
     return;
   }
 
   // Get a new access token, as they are short lived and we don't want to risk
   // the original expiring.
-  GetPrimaryAccountAccessToken(base::BindRepeating(
-      &ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText,
-      weak_ptr_factory_.GetWeakPtr(), vsr_id, request_id));
+  GetPrimaryAccountAccessToken(
+      base::BindRepeating(
+          &ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText,
+          weak_ptr_factory_.GetWeakPtr(), vsr_id, request_id),
+      AccessTokenPurpose::kTextDetection);
 }
 
 void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
     base::WeakPtr<const network::SimpleURLLoader> url_loader,
     const std::string& access_token,
     const int request_id,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   absl::Cleanup deferred_runner = [this, url_loader]() {
     uploads_in_progress_.remove_if(base::MatchesUniquePtr(url_loader.get()));
   };
@@ -1265,21 +1233,26 @@ void ChromeCaptureModeDelegate::OnDispatchCompleteForCopyText(
   // If the given `request_id` does not match the current request id, we should
   // not run the callback, and just wait for the most recent request to resolve.
   if (request_id != lens_request_id_) {
+    VLOG(1) << "Request ID invalid after dispatch completed for Copy Text.";
     return;
   }
 
   // If there is no response body, return early and let the user know an error
   // has occurred.
   if (!response_body) {
+    VLOG(1) << "Text detection failure: Missing response body.";
     if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
+      std::move(on_error_callback_)
+          .Run(
+              ash::CaptureModeImageSearchResult::kSuccess,
+              ash::CaptureModeTextDetectionResult::kFailureMissingResponseBody);
     }
     return;
   }
 
   // Response body that has a form of JSON contains protection characters
   // against XSSI that have to be removed. See go/xssi.
-  std::string json_data = std::move(*response_body);
+  std::string json_data = std::move(response_body).value();
   json_data =
       json_data.substr(std::min(json_data.find('\n'), json_data.size()));
 
@@ -1294,12 +1267,21 @@ void ChromeCaptureModeDelegate::OnJsonParsed(
   // Attempty to parse the JSON further to get the extracted text. If
   // unsuccessful, return early and let the user know an error has occurred.
   if (!ParseQueryFormulationMetadataResponse(result, extracted_text)) {
+    VLOG(1) << "Text detection failure: Issues parsing QFMetadata.";
     if (on_error_callback_) {
-      std::move(on_error_callback_).Run();
+      std::move(on_error_callback_)
+          .Run(ash::CaptureModeImageSearchResult::kSuccess,
+               ash::CaptureModeTextDetectionResult::kFailureParseQFMetadata);
     }
     return;
   }
 
+  // Success, return the text to be used by the "Copy Text" action button.
+  if (extracted_text.empty()) {
+    VLOG(1) << "Text detection success: no text present.";
+  } else {
+    VLOG(1) << "Text detection success: text present.";
+  }
   if (on_text_detection_complete_callback_) {
     std::move(on_text_detection_complete_callback_).Run(extracted_text);
   }

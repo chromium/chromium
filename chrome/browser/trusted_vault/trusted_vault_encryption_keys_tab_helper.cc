@@ -120,9 +120,12 @@ class EncryptionKeyApi
  private:
   // Null `trusted_vault_service` is interpreted as incognito (when it comes to
   // metrics).
-  EncryptionKeyApi(content::RenderFrameHost* rfh,
-                   EnclaveManager* enclave_manager,
-                   trusted_vault::TrustedVaultService* trusted_vault_service)
+  EncryptionKeyApi(
+      content::RenderFrameHost* rfh,
+      EnclaveManager* enclave_manager,
+      trusted_vault::TrustedVaultService* trusted_vault_service,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          user_action_trigger)
       : DocumentUserData<EncryptionKeyApi>(rfh),
         is_off_the_record_for_uma_(
             content::WebContents::FromRenderFrameHost(rfh)
@@ -130,6 +133,7 @@ class EncryptionKeyApi
                 ->IsOffTheRecord()),
         trusted_vault_service_(trusted_vault_service),
         enclave_manager_(enclave_manager),
+        user_action_trigger_(user_action_trigger),
         receivers_(content::WebContents::FromRenderFrameHost(rfh), this) {}
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -169,7 +173,8 @@ class EncryptionKeyApi
                   << static_cast<int>(security_domain);
       return;
     }
-    trusted_vault_client->StoreKeys(gaia_id, keys_as_bytes, last_key_version);
+    trusted_vault_client->StoreKeys(gaia_id, keys_as_bytes, last_key_version,
+                                    user_action_trigger_);
   }
 #endif
 
@@ -180,6 +185,8 @@ class EncryptionKeyApi
 
   const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
   const raw_ptr<EnclaveManager> enclave_manager_;
+  const std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+      user_action_trigger_;
 
   content::RenderFrameHostReceiverSet<
       chrome::mojom::TrustedVaultEncryptionKeysExtension>
@@ -246,10 +253,16 @@ TrustedVaultEncryptionKeysTabHelper::TrustedVaultEncryptionKeysTabHelper(
           *web_contents),
       content::WebContentsObserver(web_contents),
       trusted_vault_service_(trusted_vault_service),
-      enclave_manager_(enclave_manager) {}
+      enclave_manager_(enclave_manager),
+      user_action_trigger_(std::nullopt) {}
 
 TrustedVaultEncryptionKeysTabHelper::~TrustedVaultEncryptionKeysTabHelper() =
     default;
+
+void TrustedVaultEncryptionKeysTabHelper::SetUserActionTrigger(
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger) {
+  user_action_trigger_ = trigger;
+}
 
 void TrustedVaultEncryptionKeysTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -260,7 +273,7 @@ void TrustedVaultEncryptionKeysTabHelper::DidFinishNavigation(
   if (ShouldExposeGoogleAccountsPrivateApi(navigation_handle)) {
     EncryptionKeyApi::CreateForCurrentDocument(
         navigation_handle->GetRenderFrameHost(), enclave_manager_,
-        trusted_vault_service_);
+        trusted_vault_service_, user_action_trigger_);
   } else {
     // NavigationHandle::GetRenderFrameHost() can only be accessed after a
     // response has been delivered for processing, or after the navigation fails

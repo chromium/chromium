@@ -31,6 +31,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLDrawBuffers final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -38,7 +40,7 @@ class WebGLDrawBuffers final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLDrawBuffers(WebGLRenderingContextBase*);
+  WebGLDrawBuffers(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 

@@ -89,6 +89,17 @@ const cssTemplate: string = `
   html[hcx="5"] video {
     filter: url("#hc_extension_yellow_on_black_back");
   }
+
+  html[hc] .docs-menubar,
+  html[hc] .docs-titlebar-buttons,
+  html[hc] .kix-appview-editor-toolbar,
+  html[hc] .goog-toolbar {
+    z-index: 2147483647 !important;
+    will-change: transform;
+    transform: translateZ(0);
+    contain: paint;
+    pointer-events: auto !important;
+  }
 `;
 
 /**
@@ -132,6 +143,7 @@ function addOrUpdateExtraElements(): void {
       right: '0px',
       bottom: '0px',
       zIndex: '-1999999999',
+      pointerEvents: 'none',
     });
     document.body.appendChild(bg);
   }

@@ -74,6 +74,7 @@ class SoftwareVideoEncoderTest
   SoftwareVideoEncoderTest() = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(kStandardizeVP9AndAV1Quantizer);
     auto args = GetParam();
     profile_ = args.profile;
     pixel_format_ = args.pixel_format;
@@ -248,43 +249,6 @@ class SoftwareVideoEncoderTest
     run_loop.Run(location);
   }
 
-  int CountDifferentPixels(VideoFrame& frame1, VideoFrame& frame2) {
-    int diff_cnt = 0;
-    uint8_t tolerance = 10;
-
-    if (frame1.format() != frame2.format() ||
-        frame1.visible_rect().size() != frame2.visible_rect().size()) {
-      return frame1.coded_size().GetArea();
-    }
-
-    VideoPixelFormat format = frame1.format();
-    size_t num_planes = VideoFrame::NumPlanes(format);
-    gfx::Size visible_size = frame1.visible_rect().size();
-    for (size_t plane = 0; plane < num_planes; ++plane) {
-      int stride1 = frame1.stride(plane);
-      int stride2 = frame2.stride(plane);
-      size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
-      size_t row_bytes =
-          VideoFrame::RowBytes(plane, format, visible_size.width());
-      auto data1 = frame1.GetVisiblePlaneData(plane);
-      auto data2 = frame2.GetVisiblePlaneData(plane);
-
-      for (size_t r = 0; r < rows; ++r) {
-        auto row1 = data1.subspan(stride1 * r, row_bytes);
-        auto row2 = data2.subspan(stride2 * r, row_bytes);
-        for (size_t c = 0; c < row_bytes; ++c) {
-          uint8_t b1 = row1[c];
-          uint8_t b2 = row2[c];
-          uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
-          if (diff > tolerance) {
-            ++diff_cnt;
-          }
-        }
-      }
-    }
-    return diff_cnt;
-  }
-
   VideoPixelFormat GetExpectedOutputPixelFormat(VideoCodecProfile profile) {
     switch (profile) {
       case VP9PROFILE_PROFILE1:
@@ -303,6 +267,9 @@ class SoftwareVideoEncoderTest
     switch (codec) {
       case media::VideoCodec::kAV1:
       case media::VideoCodec::kVP9:
+        if (base::FeatureList::IsEnabled(kStandardizeVP9AndAV1Quantizer)) {
+          return {0, 255};
+        }
         return {0, 63};
       default:
         return {0, 0};
@@ -348,11 +315,13 @@ class SoftwareVideoEncoderTest
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<VideoEncoder> encoder_;
   std::unique_ptr<VideoDecoder> decoder_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class H264VideoEncoderTest : public SoftwareVideoEncoderTest {};
 class SVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
 class ManualSVCVideoEncoderTest : public SoftwareVideoEncoderTest {};
+class LargeTimestampOverflowTest : public SoftwareVideoEncoderTest {};
 
 TEST_P(SoftwareVideoEncoderTest, StopCallbackWrapping) {
   VideoEncoder::Options options = CreateDefaultOptions();
@@ -528,6 +497,35 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
   EXPECT_EQ(outputs_count, total_frames_count);
 }
 
+TEST_P(LargeTimestampOverflowTest, LargeTimestampOverflow) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(320, 200);
+  // Set a very low framerate to generate large total durations.
+  // In microseconds (old timebase): 10,000,000,000 > UINT32_MAX.
+  // In milliseconds (new timebase): 10,000,000 < UINT32_MAX.
+  options.framerate = 1.0 / 1000.0;
+  int total_frames_count = 10;
+  VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          std::optional<VideoEncoder::CodecDescription> desc) {
+        EXPECT_FALSE(output.data.empty());
+      });
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(output_cb), ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  for (int i = 0; i < total_frames_count; i++) {
+    auto timestamp = i * base::Seconds(5000);
+    auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp);
+    encoder_->Encode(std::move(frame), VideoEncoder::EncodeOptions(false),
+                     ValidatingStatusCB());
+  }
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
+}
+
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   VideoEncoder::Options options = CreateDefaultOptions();
@@ -565,7 +563,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -656,7 +654,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
         EXPECT_EQ(decoded_frame->format(),
                   GetExpectedOutputPixelFormat(profile_));
         if (decoded_frame->format() == original_frame->format()) {
-          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame),
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *original_frame, 10),
                     original_frame->visible_rect().width());
         }
         ++total_decoded_frames;
@@ -1172,7 +1170,7 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
                   .is_ok());
           original_frame = i420_frame;
         }
-        EXPECT_LE(CountDifferentPixels(*frame, *original_frame),
+        EXPECT_LE(CountDifferentPixels(*frame, *original_frame, 10),
                   original_frame->visible_rect().width());
         ++total_decoded_frames;
       });
@@ -1256,8 +1254,8 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
             H264ToAnnexBBitstreamConverter converter;
             mp4::AVCDecoderConfigurationRecord avc_config;
-            bool parse_ok = converter.ParseConfiguration(
-                desc->data(), desc->size(), &avc_config);
+            bool parse_ok =
+                converter.ParseConfiguration(desc.value(), &avc_config);
             EXPECT_TRUE(parse_ok);
             EXPECT_EQ(profile_, ProfileIDToVideoCodecProfile(
                                     avc_config.profile_indication));
@@ -1448,6 +1446,13 @@ INSTANTIATE_TEST_SUITE_P(H264Generic,
                          ::testing::ValuesIn(kH264Params),
                          PrintTestParams);
 
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowH264,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kH264, H264PROFILE_BASELINE,
+                             PIXEL_FORMAT_I420}),
+                         PrintTestParams);
+
 SwVideoTestParams kH264SVCParams[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420, std::nullopt},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
@@ -1509,6 +1514,13 @@ INSTANTIATE_TEST_SUITE_P(VpxTemporalSvc,
                          SVCVideoEncoderTest,
                          ::testing::ValuesIn(kVpxSVCParams),
                          PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowVpx,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kVP9, VP9PROFILE_PROFILE0,
+                             PIXEL_FORMAT_I420}),
+                         PrintTestParams);
 #endif  // ENABLE_LIBVPX
 
 #if BUILDFLAG(ENABLE_LIBAOM)
@@ -1547,6 +1559,13 @@ INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
 INSTANTIATE_TEST_SUITE_P(Av1ManualSvc,
                          ManualSVCVideoEncoderTest,
                          ::testing::ValuesIn(kAv1SVCParams),
+                         PrintTestParams);
+
+INSTANTIATE_TEST_SUITE_P(TimestampOverflowAv1,
+                         LargeTimestampOverflowTest,
+                         ::testing::Values(SwVideoTestParams{
+                             VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN,
+                             PIXEL_FORMAT_I420}),
                          PrintTestParams);
 #endif  // ENABLE_LIBAOM
 

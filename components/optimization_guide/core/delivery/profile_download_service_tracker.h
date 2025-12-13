@@ -17,6 +17,8 @@ namespace optimization_guide {
 // model delivery infrastructure.
 class ProfileDownloadServiceTracker {
  public:
+  virtual ~ProfileDownloadServiceTracker() = default;
+
   // Returns the background download service to be used for model download
   // purposes. Can be null when no valid profile exists.
   virtual download::BackgroundDownloadService*

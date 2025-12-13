@@ -26,7 +26,7 @@ class TemplateURLFetcherFactory : public ProfileKeyedServiceFactoryIOS {
   ~TemplateURLFetcherFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

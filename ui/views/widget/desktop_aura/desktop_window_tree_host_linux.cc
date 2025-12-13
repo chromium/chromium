@@ -296,7 +296,7 @@ bool DesktopWindowTreeHostLinux::IsOverrideRedirect(
 }
 
 gfx::Rect DesktopWindowTreeHostLinux::GetGuessedFullScreenSizeInPx() const {
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayMatching(GetWindowBoundsInScreen());
   return gfx::Rect(gfx::ScaleToFlooredPoint(display.bounds().origin(),

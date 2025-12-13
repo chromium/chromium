@@ -36,7 +36,9 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -84,19 +86,16 @@ public class HubManagerImplUnitTest {
     @Mock private Tracker mTracker;
     @Mock private SearchActivityClient mSearchActivityClient;
 
-    private final ObservableSupplierImpl<Tab> mTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mTabSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<FullButtonData> mActionButtonDataSupplier =
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mRegularHubSearchEnabledStateSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplierImpl<Boolean> mIncognitoHubSearchEnabledStateSupplier =
-            new ObservableSupplierImpl<>();
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.alwaysNull();
     private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;
@@ -112,23 +111,26 @@ public class HubManagerImplUnitTest {
         when(mTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mTabSwitcherPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mRegularHubSearchEnabledStateSupplier);
+                .thenReturn(ObservableSuppliers.alwaysTrue());
         when(mTabSwitcherPane.getActionButtonDataSupplier()).thenReturn(mActionButtonDataSupplier);
         when(mTabSwitcherPane.getRootView()).thenReturn(mTabSwitcherPaneView);
         when(mTabSwitcherPane.getMenuOrKeyboardActionHandler())
                 .thenReturn(mTabSwitcherMenuOrKeyboardActionHandler);
-
+        when(mTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
         when(mIncognitoTabSwitcherPane.getPaneId()).thenReturn(PaneId.INCOGNITO_TAB_SWITCHER);
         when(mIncognitoTabSwitcherPane.getColorScheme()).thenReturn(HubColorScheme.INCOGNITO);
         when(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier())
                 .thenReturn(mReferenceButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getHubSearchEnabledStateSupplier())
-                .thenReturn(mIncognitoHubSearchEnabledStateSupplier);
+                .thenReturn(ObservableSuppliers.alwaysTrue());
         when(mIncognitoTabSwitcherPane.getActionButtonDataSupplier())
                 .thenReturn(mActionButtonDataSupplier);
         when(mIncognitoTabSwitcherPane.getRootView()).thenReturn(mIncognitoTabSwitcherPaneView);
         when(mIncognitoTabSwitcherPane.getMenuOrKeyboardActionHandler())
                 .thenReturn(mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
+        when(mIncognitoTabSwitcherPane.getHubSearchBoxVisibilitySupplier())
+                .thenReturn(ObservableSuppliers.alwaysTrue());
 
         when(mHubLayoutController.getPreviousLayoutTypeSupplier())
                 .thenReturn(mPreviousLayoutTypeSupplier);
@@ -175,7 +177,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -208,7 +211,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -272,7 +276,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -312,7 +317,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -356,7 +362,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -407,7 +414,8 @@ public class HubManagerImplUnitTest {
                         mHubShowPaneHelper,
                         mEdgeToEdgeSupplier,
                         mSearchActivityClient,
-                        /* xrSpaceModeObservableSupplier= */ null);
+                        /* xrSpaceModeObservableSupplier= */ null,
+                        /* defaultPaneId= */ PaneId.TAB_SWITCHER);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

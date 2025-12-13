@@ -5,21 +5,24 @@
 package org.chromium.chrome.browser.omaha;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Represents parameters for a single XML request to send to the server.
- * Persisted requests (those that must be resent in case of failure) should use the same ID from
- * the first failed attempt.
+ * Represents parameters for a single XML request to send to the server. Persisted requests (those
+ * that must be resent in case of failure) should use the same ID from the first failed attempt.
  */
 @NullMarked
 public class RequestData {
     private final long mCreationTimestamp;
     private final boolean mSendInstallEvent;
     private final String mRequestID;
-    private final String mInstallSource;
+    private final @Nullable String mInstallSource;
 
     public RequestData(
-            boolean sendInstallEvent, long timeStamp, String requestID, String installSource) {
+            boolean sendInstallEvent,
+            long timeStamp,
+            String requestID,
+            @Nullable String installSource) {
         assert requestID != null;
         mSendInstallEvent = sendInstallEvent;
         mCreationTimestamp = timeStamp;
@@ -56,10 +59,10 @@ public class RequestData {
     }
 
     /**
-     * Get the install source for the APK.  Values can include
-     * {@link OmahaClient#INSTALL_SOURCE_SYSTEM} or {@link OmahaClient#INSTALL_SOURCE_ORGANIC}.
+     * Get the install source for the APK. Values can include {@link
+     * OmahaClient#INSTALL_SOURCE_SYSTEM} or {@link OmahaClient#INSTALL_SOURCE_ORGANIC}.
      */
-    public String getInstallSource() {
+    public @Nullable String getInstallSource() {
         return mInstallSource;
     }
 }

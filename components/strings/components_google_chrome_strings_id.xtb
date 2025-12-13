@@ -33,16 +33,16 @@
           dan batalkan pilihan "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Jika hal ini tidak menyelesaikan masalah, sebaiknya pilih lagi opsi ini
           untuk meningkatkan kinerja.</translation>
-<translation id="6855094794438142393">Buka
+<translation id="6581867098636731226">Buka
           menu Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Setelan LAN
-          dan batalkan pilihan "Gunakan server proxy untuk LAN".</translation>
+          Jaringan &amp; internet &gt; Proxy
+          dan batalkan pilihan "Otomatis deteksi setelan".</translation>
 <translation id="7230956101631259640">Anda melihat halaman Chrome yang aman</translation>
 <translation id="8232971017369963250">Chrome terwujud karena adanya project open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome juga terwujud karena adanya <ph name="BEGIN_LINK_OSS" />software open source<ph name="END_LINK_OSS" /> lainnya.</translation>

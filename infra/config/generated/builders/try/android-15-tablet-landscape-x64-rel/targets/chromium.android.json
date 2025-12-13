@@ -6,6 +6,7 @@
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet_landscape.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_tablet_landscape.chrome_public_test_apk.filter",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -19,6 +20,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -59,6 +62,7 @@
         "args": [
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet_landscape.textpb",
+          "--skia-gold-consider-unsupported",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -72,6 +76,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//chrome/android:chrome_public_unit_test_apk",
+        "module_scheme": "junit",
         "name": "chrome_public_unit_test_apk",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",

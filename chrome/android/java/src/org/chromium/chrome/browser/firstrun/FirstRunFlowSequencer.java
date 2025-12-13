@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CommandLine;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -233,7 +234,7 @@ public abstract class FirstRunFlowSequencer {
     public static boolean checkIfFirstRunIsNecessary(boolean preferLightweightFre, boolean isCct) {
         // If FRE is disabled (e.g. in tests), proceed directly to the intent handling.
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-                || ApiCompatibilityUtils.isDemoUser()
+                || DeviceInfo.isRetailDemoMode()
                 || ApiCompatibilityUtils.isRunningInUserTestHarness()) {
             return false;
         }

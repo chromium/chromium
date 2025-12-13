@@ -19,7 +19,8 @@ class CdmHostProxy;
 
 // Mock implementation of the cdm::ContentDecryptionModule interfaces.
 class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
-                       public cdm::ContentDecryptionModule_11 {
+                       public cdm::ContentDecryptionModule_11,
+                       public cdm::ContentDecryptionModule_12 {
  public:
   // Provides easy access to the MockLibraryCdm instance for testing to avoid
   // going through multiple layers to get it (e.g. CdmAdapter -> CdmWrapper ->
@@ -33,7 +34,8 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
 
   CdmHostProxy* GetCdmHostProxy();
 
-  // cdm::ContentDecryptionModule_10 implementation.
+  // cdm::ContentDecryptionModule_10 and cdm::ContentDecryptionModule_11
+  // implementation.
   MOCK_METHOD1(
       InitializeVideoDecoder,
       cdm::Status(const cdm::VideoDecoderConfig_2& video_decoder_config));
@@ -41,7 +43,7 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
                cdm::Status(const cdm::InputBuffer_2& encrypted_buffer,
                            cdm::VideoFrame* video_frame));
 
-  // cdm::ContentDecryptionModule_11 implementation.
+  // cdm::ContentDecryptionModule_12 implementation.
   MOCK_METHOD1(
       InitializeVideoDecoder,
       cdm::Status(const cdm::VideoDecoderConfig_3& video_decoder_config));
@@ -49,7 +51,7 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
                cdm::Status(const cdm::InputBuffer_2& encrypted_buffer,
                            cdm::VideoFrame_2* video_frame));
 
-  // cdm::ContentDecryptionModule_10/11 implementation.
+  // Common cdm::ContentDecryptionModule_* implementation.
   void Initialize(bool allow_distinctive_identifier,
                   bool allow_persistent_state,
                   bool use_hw_secure_codecs) override;
@@ -63,7 +65,6 @@ class MockLibraryCdm : public cdm::ContentDecryptionModule_10,
                cdm::Status(const cdm::InputBuffer_2& encrypted_buffer,
                            cdm::AudioFrames* audio_frames));
 
-  // Common cdm::ContentDecryptionModule_* implementation.
   MOCK_METHOD2(GetStatusForPolicy,
                void(uint32_t promise_id, const cdm::Policy& policy));
   MOCK_METHOD5(CreateSessionAndGenerateRequest,

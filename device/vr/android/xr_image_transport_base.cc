@@ -4,7 +4,6 @@
 
 #include "device/vr/android/xr_image_transport_base.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
@@ -105,7 +104,8 @@ bool XrImageTransportBase::ResizeSharedBuffer(WebXrPresentationState* webxr,
   // Remove reference to previous image (if any).
   buffer->local_eglimage.reset();
 
-  static constexpr gfx::BufferFormat format = gfx::BufferFormat::RGBA_8888;
+  static constexpr viz::SharedImageFormat format =
+      viz::SinglePlaneFormat::kRGBA_8888;
   static constexpr gfx::BufferUsage usage = gfx::BufferUsage::SCANOUT;
 
   // The SharedImages created here will eventually be transferred to other

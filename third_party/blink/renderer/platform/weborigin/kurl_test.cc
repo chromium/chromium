@@ -1105,7 +1105,7 @@ TEST(KURLTest, InvalidKURLToGURL) {
   // GURL exposes host for invalid hosts. The invalid percent escape
   // becomes an escaped percent sign (%25), and the invalid UTF-8
   // character becomes REPLACEMENT CHARACTER' (U+FFFD) encoded as UTF-8.
-  EXPECT_EQ(gurl.host_piece(), "%25t%EF%BF%BD");
+  EXPECT_EQ(gurl.host(), "%25t%EF%BF%BD");
 }
 
 TEST(KURLTest, IPv4EmbeddedIPv6Address) {
@@ -1154,6 +1154,7 @@ struct PortTestCase {
   const uint16_t constructor_output;
   const uint16_t set_port_output;
   const PortIsValid is_valid;
+  const bool set_port_success;
 };
 
 // port used if SetHostAndPort/SetPort is a no-op
@@ -1162,37 +1163,38 @@ constexpr int kNoopPort = 8888;
 // The tested behaviour matches the implementation. It doesn't necessarily match
 // the URL Standard.
 const PortTestCase port_test_cases[] = {
-    {"80", 0, 0, PortIsValid::kAlways},  // 0 because scheme is http.
-    {"443", 443, 443, PortIsValid::kAlways},
-    {"8000", 8000, 8000, PortIsValid::kAlways},
-    {"0", 0, 0, PortIsValid::kAlways},
-    {"1", 1, 1, PortIsValid::kAlways},
-    {"00000000000000000000000000000000000443", 443, 443, PortIsValid::kAlways},
-    {"+80", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"-80", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"443e0", 0, 443, PortIsValid::kInSetHostAndPort},
-    {"0x80", 0, 0, PortIsValid::kInSetHostAndPort},
-    {"8%30", 0, 8, PortIsValid::kInSetHostAndPort},
-    {" 443", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"443 ", 0, 443, PortIsValid::kInSetHostAndPort},
-    {":443", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"65534", 65534, 65534, PortIsValid::kAlways},
-    {"65535", 65535, 65535, PortIsValid::kAlways},
-    {"65535junk", 0, 65535, PortIsValid::kInSetHostAndPort},
-    {"65536", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"65537", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"65537junk", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483647", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483648", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483649", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967295", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967296", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967297", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551615", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551616", 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551617", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"80", 0, 0, PortIsValid::kAlways, true},  // 0 because scheme is http.
+    {"443", 443, 443, PortIsValid::kAlways, true},
+    {"8000", 8000, 8000, PortIsValid::kAlways, true},
+    {"0", 0, 0, PortIsValid::kAlways, true},
+    {"1", 1, 1, PortIsValid::kAlways, true},
+    {"00000000000000000000000000000000000443", 443, 443, PortIsValid::kAlways,
+     true},
+    {"+80", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"-80", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"443e0", 0, 443, PortIsValid::kInSetHostAndPort, true},
+    {"0x80", 0, 0, PortIsValid::kInSetHostAndPort, true},
+    {"8%30", 0, 8, PortIsValid::kInSetHostAndPort, true},
+    {" 443", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"443 ", 0, 443, PortIsValid::kInSetHostAndPort, true},
+    {":443", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"65534", 65534, 65534, PortIsValid::kAlways, true},
+    {"65535", 65535, 65535, PortIsValid::kAlways, true},
+    {"65535junk", 0, 65535, PortIsValid::kInSetHostAndPort, true},
+    {"65536", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"65537", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"65537junk", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"2147483647", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"2147483648", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"2147483649", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"4294967295", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"4294967296", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"4294967297", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"18446744073709551615", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"18446744073709551616", 0, kNoopPort, PortIsValid::kInSetPort, false},
+    {"18446744073709551617", 0, kNoopPort, PortIsValid::kInSetPort, false},
     {"9999999999999999999999999999990999999999", 0, kNoopPort,
-     PortIsValid::kInSetPort},
+     PortIsValid::kInSetPort, false},
 };
 
 void PrintTo(const PortTestCase& port_test_case, ::std::ostream* os) {
@@ -1227,7 +1229,8 @@ TEST_P(KURLPortTest, ConstructRelative) {
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
   KURL url("http://a:" + String::Number(kNoopPort) + "/");
-  url.SetPort(param.input);
+  const bool set_port_result_actual = url.SetPort(param.input);
+  EXPECT_EQ(set_port_result_actual, param.set_port_success);
   EXPECT_EQ(url.Port(), param.set_port_output);
   EXPECT_EQ(url.IsValid(), true);
 }

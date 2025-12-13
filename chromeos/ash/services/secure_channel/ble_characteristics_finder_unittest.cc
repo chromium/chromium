@@ -47,7 +47,6 @@ using ::device::MockBluetoothGattService;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -167,7 +166,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
     // |task_environment_.RunUntilIdle()| in tests will process any
     // pending callbacks.
     ON_CALL(*characteristic.get(), ReadRemoteCharacteristic_(_))
-        .WillByDefault(Invoke(
+        .WillByDefault(
             [read_success, correct_eid](
                 BluetoothRemoteGattCharacteristic::ValueCallback& callback) {
               std::optional<BluetoothGattService::GattErrorCode> error_code;
@@ -183,7 +182,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
               base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
                   FROM_HERE,
                   base::BindOnce(std::move(callback), error_code, value));
-            }));
+            });
     return characteristic;
   }
 
@@ -282,7 +281,7 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
 
 TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
        ConstructAndDestroyDontCrash) {
-  std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
+  std::ignore = std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
       adapter_, device_.get(), remote_service_, to_peripheral_char_,
       from_peripheral_char_,
       base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::

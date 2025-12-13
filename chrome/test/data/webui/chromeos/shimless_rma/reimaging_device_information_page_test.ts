@@ -98,6 +98,8 @@ suite('reimagingDeviceInformationPageTest', function() {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       'dynamicDeviceInfoInputsEnabled': true,
+      'flexibleSerialNumberNameEnabled': true,
+      'hideGoogleSKUEnabled': true,
     });
   });
 
@@ -153,18 +155,27 @@ suite('reimagingDeviceInformationPageTest', function() {
     return flushTasks();
   }
 
+  const DEFAULT_DEVICE_INFO_PROPERTIES = {
+    serialNumberModifiable: true,
+    regionModifiable: true,
+    skuModifiable: true,
+    customLabelModifiable: true,
+    dramPartNumberModifiable: true,
+    featureLevelModifiable: true,
+    customizedSerialNumberNaming: 'DEFAULT SN NAME',
+    hideGoogleSku: false,
+  };
+
   // Helper function to set all modifiability for device info inputs.
-  const setAllInputModifiable = (isModifiable: boolean) => {
+  const setDeviceInfoProperties = (overrideProperties = {}) => {
+    const mergedProperties = {
+      ...DEFAULT_DEVICE_INFO_PROPERTIES,
+      ...overrideProperties,
+    };
+
     service.setGetStatePropertiesResult({
       property: {
-        updateDeviceInfoStateProperty: {
-          serialNumberModifiable: isModifiable,
-          regionModifiable: isModifiable,
-          skuModifiable: isModifiable,
-          customLabelModifiable: isModifiable,
-          dramPartNumberModifiable: isModifiable,
-          featureLevelModifiable: isModifiable,
-        },
+        updateDeviceInfoStateProperty: mergedProperties,
       },
     });
   };
@@ -373,7 +384,7 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   // Test case: All inputs enabled when all are modifiable
   test('AllInputsEnabled_WhenAllModifiable', async () => {
-    setAllInputModifiable(true);
+    setDeviceInfoProperties();
 
     await initializeReimagingDeviceInformationPage();
     assert(component);
@@ -410,7 +421,14 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   // Test case: All inputs disabled when none are modifiable
   test('AllInputsDisabled_WhenNonModifiable', async () => {
-    setAllInputModifiable(false);
+    setDeviceInfoProperties({
+      serialNumberModifiable: false,
+      regionModifiable: false,
+      skuModifiable: false,
+      customLabelModifiable: false,
+      dramPartNumberModifiable: false,
+      featureLevelModifiable: false,
+    });
 
     await initializeReimagingDeviceInformationPage();
     assert(component);
@@ -443,6 +461,38 @@ suite('reimagingDeviceInformationPageTest', function() {
     assertTrue(
         isChassisBrandedElement.disabled,
         'Is Chassis Branded should be disabled.');
+  });
+
+  // Verify the serial number label is replaced.
+  test('Customized_serial_number_naming', async () => {
+    setDeviceInfoProperties({
+      customizedSerialNumberNaming: 'TEST SN NAME',
+    });
+
+    await initializeReimagingDeviceInformationPage();
+    assert(component);
+
+    const serialNumberSelect =
+        strictQuery(serialNumberSelector, component.shadowRoot, CrInputElement);
+
+    assertEquals(serialNumberSelect.label, 'TEST SN NAME');
+  });
+
+  // Verify the Google SKU IDs is hidden from the dropdown options.
+  test('HideGoogleSku', async () => {
+    setDeviceInfoProperties({
+      hideGoogleSku: true,
+    });
+
+    await initializeReimagingDeviceInformationPage();
+    assert(component);
+
+    const skuSelect =
+        strictQuery(skuSelectSelector, component.shadowRoot, HTMLSelectElement);
+
+    for (let i = 0; i < skuSelect.options.length; ++i) {
+      assertEquals(fakeDeviceSkuDescriptions[i], skuSelect.options[i]!.text);
+    }
   });
 
   // Verify the next button gets disabled when the inputs has invalid values.
@@ -662,7 +712,7 @@ suite('reimagingDeviceInformationPageTest', function() {
         loadTimeData.getString('confirmDeviceInfoDeviceNotCompliant'),
         strictQuery(
             complianceStatusStringSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     await setFeatureLevelAndReinitialize(FeatureLevel.kRmadFeatureLevel1);
     complianceWarning = strictQuery(
@@ -678,6 +728,6 @@ suite('reimagingDeviceInformationPageTest', function() {
         loadTimeData.getString('confirmDeviceInfoDeviceCompliant'),
         strictQuery(
             complianceStatusStringSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 });

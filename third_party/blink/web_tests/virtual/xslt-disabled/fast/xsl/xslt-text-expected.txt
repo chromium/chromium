@@ -1,0 +1,8 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been removed in this browser. See https://chromestatus.com/feature/4709671889534976.
+SOURCE XML: &lt;&lt;&lt;&amp;тест&amp;&gt;&gt;&gt;
+
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+SOURCE XML: <<<&тест&>>>

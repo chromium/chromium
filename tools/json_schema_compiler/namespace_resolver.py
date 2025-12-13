@@ -25,7 +25,7 @@ def _GenerateFilenames(full_namespace):
       basename = UnixName(namespace + '.' + basename)
     else:
       basename = UnixName(namespace)
-    for ext in ['json', 'idl']:
+    for ext in ['json', 'idl', 'webidl']:
       filenames.append('%s.%s' % (basename, ext))
   return filenames
 

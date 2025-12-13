@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei „<ph name="KEY_PATH" />“. Möchtest du den Vorgang wirklich fortsetzen?</translation>
 <translation id="5486326529110362464">Es muss ein Eingabewert für den privaten Schlüssel vorhanden sein.</translation>
+<translation id="5707185214361380026">Fehler beim Laden der Erweiterung aus:</translation>
 <translation id="5972529113578162692">Der Administrator dieses Computers hat die Installation von <ph name="EXTENSION_NAME" /> vorgegeben. Eine Deinstallation ist daher nicht möglich.</translation>
 <translation id="6027032947578871493">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Fehler beim Laden der Erweiterung</translation>
 <translation id="6322279351188361895">Privater Schlüssel konnte nicht gelesen werden.</translation>
 <translation id="6391538222494443604">Eingabeverzeichnis muss vorhanden sein.</translation>
 <translation id="641087317769093025">Erweiterung kann nicht entpackt werden.</translation>

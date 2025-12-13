@@ -447,8 +447,8 @@ bool FakeDownloadItem::IsFromExternalApp() {
   return false;
 }
 
-bool FakeDownloadItem::IsMustDownload() {
-  return false;
+bool FakeDownloadItem::AllowAutoOpenAfterCompletion() {
+  return true;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

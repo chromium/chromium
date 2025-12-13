@@ -54,8 +54,8 @@ blink_modules_sources("accessibility") {
   deps = [
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/strings:strings_grit",
-    "//third_party/blink/renderer/modules/media_controls:media_controls",
-    "//third_party/blink/renderer/modules/permissions:permissions",
+    "//third_party/blink/renderer/modules/media_controls",
+    "//third_party/blink/renderer/modules/permissions",
     "//ui/accessibility",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo_blink",

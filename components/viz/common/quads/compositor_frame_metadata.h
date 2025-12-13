@@ -19,6 +19,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/common/quads/offset_tag.h"
+#include "components/viz/common/quads/trees_in_viz_timing.h"
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
@@ -36,6 +37,10 @@
 #include "components/viz/common/quads/selection.h"
 #include "ui/gfx/selection_bound.h"
 #endif  // BUILDFLAG(IS_ANDROID)
+
+namespace base::trace_event {
+class TracedValue;
+}  // namespace base::trace_event
 
 namespace viz {
 
@@ -86,6 +91,8 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   CompositorFrameMetadata& operator=(CompositorFrameMetadata&& other);
 
   CompositorFrameMetadata Clone() const;
+
+  void AsValueInto(base::trace_event::TracedValue* value) const;
 
   // The device scale factor used to generate this compositor frame. Must be
   // greater than zero.
@@ -228,6 +235,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Information used to compute overall ideal frame interval.
   FrameIntervalInputs frame_interval_inputs;
+
+  // Timestamps for TreesInViz metric reporting.
+  TreesInVizTiming trees_in_viz_timing_details;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

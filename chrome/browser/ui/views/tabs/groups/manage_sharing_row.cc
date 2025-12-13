@@ -23,6 +23,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
@@ -45,7 +46,7 @@ gfx::Insets GetControlInsets() {
 
 ManageSharingRow::ManageSharingRow(
     Profile* profile,
-    const tab_groups::CollaborationId& collaboration_id,
+    const syncer::CollaborationId& collaboration_id,
     PressedCallback callback)
     : Button(std::move(callback)),
       profile_(profile),
@@ -57,7 +58,7 @@ ManageSharingRow::ManageSharingRow(
   views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
                                                /*highlight_on_hover=*/false,
                                                /*highlight_on_focus=*/true);
-  views::InkDrop::Get(this)->SetBaseColorId(kColorHoverButtonBackgroundHovered);
+  views::InkDrop::Get(this)->SetBaseColor(kColorHoverButtonBackgroundHovered);
   views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
   views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);

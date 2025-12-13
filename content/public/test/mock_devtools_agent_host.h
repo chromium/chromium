@@ -28,6 +28,7 @@ class MockDevToolsAgentHost : public content::DevToolsAgentHost {
   std::string GetOpenerId() override;
   bool CanAccessOpener() override;
   std::string GetOpenerFrameId() override;
+  std::string GetParentFrameId() override;
   content::WebContents* GetWebContents() override;
   content::BrowserContext* GetBrowserContext() override;
   void DisconnectWebContents() override {}

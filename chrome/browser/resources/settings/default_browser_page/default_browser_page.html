@@ -5,7 +5,10 @@
       <div class="cr-row first">
         <div class="flex cr-padded-text">
           <div id="canBeDefaultBrowser">$i18n{defaultBrowser}</div>
-          <div class="secondary">$i18n{defaultBrowserMakeDefault}</div>
+          <div class="secondary" id="makeDefaultLabel">
+            [[getMakeDefaultLabel(canPin_,
+                userValueDefaultBrowserStringsEnabled_)]]
+          </div>
         </div>
         <div class="separator"></div>
         <cr-button on-click="onSetDefaultBrowserClick_">
@@ -17,7 +20,20 @@
       <div class="cr-row first">
         <div class="flex cr-padded-text" hidden$="[[!isDefault_]]"
             id="isDefault">
-          $i18n{defaultBrowserDefault}
+          <!--
+            Shows a more user-centric string when the
+            UserValueDefaultBrowserStrings feature is enabled.
+            TODO(crbug.com/459593729): Clean up by removing the old string
+            and this conditional logic after the feature is launched.
+          -->
+            <span id="defaultString"
+                hidden$="[[userValueDefaultBrowserStringsEnabled_]]">
+              $i18n{defaultBrowserDefault}
+            </span>
+            <span id="defaultStringThankYou"
+                hidden$="[[!userValueDefaultBrowserStringsEnabled_]]">
+              $i18n{defaultBrowserDefaultThankYou}
+            </span>
         </div>
         <div class="flex cr-padded-text" hidden$="[[!isSecondaryInstall_]]"
             id="isSecondaryInstall">

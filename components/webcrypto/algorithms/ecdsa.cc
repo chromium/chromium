@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "third_party/boringssl/src/include/openssl/ecdsa.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/ec.h"
@@ -19,6 +17,8 @@
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
+#include "crypto/ecdsa_utils.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "crypto/secure_util.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -28,7 +28,6 @@
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
-#include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
@@ -76,29 +75,19 @@ Status ConvertDerSignatureToWebCryptoSignature(
     std::vector<uint8_t>* signature) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
-  bssl::UniquePtr<ECDSA_SIG> ecdsa_sig(
-      ECDSA_SIG_from_bytes(signature->data(), signature->size()));
-  if (!ecdsa_sig.get())
-    return Status::ErrorUnexpected();
-
-  // Determine the maximum length of r and s.
-  size_t order_size_bytes;
-  Status status = GetEcGroupOrderSize(key, &order_size_bytes);
-  if (status.IsError())
-    return status;
-
-  signature->resize(order_size_bytes * 2);
-
-  if (!BN_bn2bin_padded(signature->data(), order_size_bytes,
-                        ecdsa_sig.get()->r)) {
+  EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(key);
+  if (!ec_key) {
     return Status::ErrorUnexpected();
   }
 
-  if (!BN_bn2bin_padded(&(*signature)[order_size_bytes], order_size_bytes,
-                        ecdsa_sig.get()->s)) {
+  std::optional<std::vector<uint8_t>> raw_signature =
+      crypto::ConvertEcdsaDerSignatureToRaw(EC_KEY_get0_group(ec_key),
+                                            *signature);
+  if (!raw_signature.has_value()) {
     return Status::ErrorUnexpected();
   }
 
+  *signature = std::move(raw_signature).value();
   return Status::Success();
 }
 
@@ -153,7 +142,7 @@ Status ConvertWebCryptoSignatureToDerSignature(
   size_t der_len;
   if (!ECDSA_SIG_to_bytes(&der, &der_len, ecdsa_sig.get()))
     return Status::OperationError();
-  der_signature->assign(der, der + der_len);
+  der_signature->assign(der, UNSAFE_TODO(der + der_len));
   OPENSSL_free(der);
 
   return Status::Success();

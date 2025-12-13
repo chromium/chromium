@@ -19,6 +19,7 @@
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 
 class Profile;
+class Browser;
 
 // //chrome's implementation of the SecurityBlockingPageFactory interface.
 class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
@@ -85,7 +86,17 @@ class ChromeSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   // Opens a login tab if the profile's active window doesn't have one already.
   static void OpenLoginTabForWebContents(content::WebContents* web_contents,
-                                         bool focus);
+                                         bool focus_tab);
+
+  // Opens a login tab in any profile tabbed window or
+  // creates a new browser if there's no any yet.
+  static void OpenLoginPageInAnyTabbedBrowserOrCreateOne(Profile* profile,
+                                                         bool focus_tab);
+
+  // Opens a login tab if not opened already in the browser
+  // provided by get_browser.
+  static void OpenLoginPageForBrowser(base::FunctionRef<Browser*()> get_browser,
+                                      bool focus_tab);
 #endif
 };
 

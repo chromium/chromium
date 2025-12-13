@@ -428,8 +428,9 @@ class SystemTrayClientShowCalendarTest : public ash::LoginManagerTest {
     app->short_name = name;
     app->readiness = apps::Readiness::kReady;
     app->handles_intents = true;
-    app->intent_filters.push_back(google_meet_filter->Clone());
-    app->intent_filters.push_back(calendar_filter->Clone());
+    app->intent_filters.emplace();
+    app->intent_filters->push_back(google_meet_filter->Clone());
+    app->intent_filters->push_back(calendar_filter->Clone());
     return app;
   }
 

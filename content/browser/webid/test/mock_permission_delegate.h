@@ -13,7 +13,6 @@
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/webid/login_status_options.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -82,7 +82,9 @@ enum TerminationStatus : int {
   // On Windows, the OS terminated process due to code integrity failure.
   TERMINATION_STATUS_INTEGRITY_FAILURE = 9,
 #endif
-  TERMINATION_STATUS_MAX_ENUM = 10,
+  // The process was proactively terminated by the browser to reclaim memory.
+  TERMINATION_STATUS_EVICTED_FOR_MEMORY = 10,
+  TERMINATION_STATUS_MAX_ENUM = 11,
 };
 
 // Attempts to kill all the processes on the current machine that were launched

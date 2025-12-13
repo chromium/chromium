@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -190,7 +189,7 @@ class InfobarUIChangeObserver : public TabStripModelObserver {
       NOTREACHED();
     }
 
-    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override {
+    void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override {
       manager->RemoveObserver(this);
       DCHECK(!shutdown_callback_.is_null());
       std::move(shutdown_callback_).Run(this);

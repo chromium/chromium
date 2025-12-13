@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/mime_sniffer.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/mime_sniffing_url_loader.h"
 

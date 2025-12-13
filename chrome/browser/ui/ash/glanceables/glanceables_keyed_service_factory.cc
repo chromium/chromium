@@ -9,10 +9,14 @@
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -63,7 +67,11 @@ GlanceablesKeyedServiceFactory::GlanceablesKeyedServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
+  // LINT.IfChange(Deps)
+  DependsOn(apps::AppServiceProxyFactory::GetInstance());
+  DependsOn(AshPolicyBlocklistServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
+  // LINT.ThenChange(//chrome/browser/ui/ash/glanceables/glanceables_keyed_service.h:Deps)
 }
 
 GlanceablesKeyedService* GlanceablesKeyedServiceFactory::GetService(
@@ -76,8 +84,19 @@ GlanceablesKeyedService* GlanceablesKeyedServiceFactory::GetService(
 std::unique_ptr<KeyedService>
 GlanceablesKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  auto* profile = Profile::FromBrowserContext(context);
+  apps::AppServiceProxy* app_service_proxy =
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
+          ? apps::AppServiceProxyFactory::GetForProfile(profile)
+          : nullptr;
   return std::make_unique<GlanceablesKeyedService>(
-      Profile::FromBrowserContext(context));
+      BrowserContextHelper::Get()
+          ->GetUserByBrowserContext(profile)
+          ->GetAccountId(),
+      profile->GetPrefs(), app_service_proxy,
+      AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
+      profile->GetURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

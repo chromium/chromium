@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/mac/graphics_context_canvas.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 
 namespace blink {
+
+using ::testing::ElementsAreArray;
 
 enum TestType {
   kTestIdentity = 0,
@@ -26,13 +27,16 @@ void RunTest(TestType test) {
   const unsigned kWidth = 2;
   const unsigned kHeight = 2;
   const unsigned kStorageSize = kWidth * kHeight;
-  const unsigned kOriginal[] = {0xFF333333, 0xFF666666, 0xFF999999, 0xFFCCCCCC};
-  EXPECT_EQ(kStorageSize, sizeof(kOriginal) / sizeof(kOriginal[0]));
-  unsigned bits[kStorageSize];
-  memcpy(bits, kOriginal, sizeof(kOriginal));
+  std::array<unsigned, kStorageSize> bits = {
+      0xFF333333,
+      0xFF666666,
+      0xFF999999,
+      0xFFCCCCCC,
+  };
+
   SkImageInfo info = SkImageInfo::MakeN32Premul(kWidth, kHeight);
   SkBitmap bitmap;
-  bitmap.installPixels(info, bits, info.minRowBytes());
+  bitmap.installPixels(info, bits.data(), info.minRowBytes());
 
   SkiaPaintCanvas canvas(bitmap);
   if (test & kTestTranslate)
@@ -50,14 +54,13 @@ void RunTest(TestType test) {
     CGRect cg_rect = {{0, 0}, {kWidth, kHeight}};
     CGContextFillRect(cg_context, cg_rect);
   }
-  const unsigned kResults[][kStorageSize] = {
+  const auto kResults = std::to_array<std::array<unsigned, kStorageSize>>({
       {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF},  // identity
       {0xFF333333, 0xFFFFFFFF, 0xFF999999, 0xFFFFFFFF},  // translate
       {0xFF333333, 0xFF666666, 0xFFFFFFFF, 0xFFFFFFFF},  // clip
-      {0xFF333333, 0xFF666666, 0xFF999999, 0xFFFFFFFF}   // translate | clip
-  };
-  for (unsigned index = 0; index < kStorageSize; index++)
-    EXPECT_EQ(kResults[test][index], bits[index]) << "Index: " << index;
+      {0xFF333333, 0xFF666666, 0xFF999999, 0xFFFFFFFF},  // translate | clip
+  });
+  EXPECT_THAT(bits, ElementsAreArray(kResults[test]));
 }
 
 TEST(GraphicsContextCanvasTest, Identity) {

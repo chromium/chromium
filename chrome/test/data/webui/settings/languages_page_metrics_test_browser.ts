@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {LanguageHelper, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {LanguagesBrowserProxyImpl, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
@@ -144,7 +143,7 @@ suite('LanguagesPageMetricsBrowser', function() {
       const menuItems =
           actionMenu.querySelectorAll<HTMLElement>('.dropdown-item');
       const menuItem = Array.from(menuItems).find(
-          item => item.textContent!.trim() === i18nString);
+          item => item.textContent.trim() === i18nString);
       assertTrue(!!menuItem, 'Menu item "' + i18nKey + '" not found');
       return menuItem;
     }

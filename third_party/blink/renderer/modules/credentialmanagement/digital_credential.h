@@ -25,8 +25,10 @@ class MODULES_EXPORT DigitalCredential final : public Credential {
   void Trace(Visitor* visitor) const override;
 
   // DigitalCredential.idl
+  ScriptObject toJSON(ScriptState* script_state) const;
   const String& protocol() const { return protocol_; }
   const ScriptObject& data() const { return data_; }
+  static bool userAgentAllowsProtocol(const String& protocol);
 
  private:
   const String protocol_;

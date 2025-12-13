@@ -9,18 +9,24 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -82,6 +88,15 @@ IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
+void IsolatedWebAppBrowserTestHarness::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  WebAppBrowserTestBase::CreatedBrowserMainParts(parts);
+  if (auto* provider = GetRuntimeDataProvider()) {
+    static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
+        std::make_unique<FakeIwaRuntimeDataProviderInitializer>(*provider));
+  }
+}
+
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
     base::FilePath::StringViewType chrome_test_data_relative_root) {
@@ -100,6 +115,11 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
       content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;
+}
+
+ChromeIwaRuntimeDataProvider*
+IsolatedWebAppBrowserTestHarness::GetRuntimeDataProvider() {
+  return nullptr;
 }
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
@@ -159,7 +179,7 @@ UpdateApplyTaskResultWaiter::~UpdateApplyTaskResultWaiter() = default;
 // IsolatedWebAppUpdateManager::Observer:
 void UpdateApplyTaskResultWaiter::OnUpdateApplyTaskCompleted(
     const webapps::AppId& app_id,
-    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+    IsolatedWebAppApplyUpdateCommandResult status) {
   if (app_id != expected_app_id_) {
     return;
   }

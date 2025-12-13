@@ -1,0 +1,78 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "price_tracking_promo_action_delegate.h",
+    "price_tracking_promo_mediator.h",
+    "price_tracking_promo_mediator.mm",
+    "price_tracking_promo_mediator_delegate.h",
+  ]
+  deps = [
+    "//components/bookmarks/browser",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//google_apis",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/settings/ui_bundled/notifications:utils",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/web/public/thread",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "price_tracking_promo_mediator+testing.h",
+    "price_tracking_promo_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:pref_names",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/model:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo/ui",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/push_notification:push_notification_api",
+    "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}

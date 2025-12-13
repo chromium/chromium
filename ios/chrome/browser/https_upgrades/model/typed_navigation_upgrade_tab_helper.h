@@ -5,16 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_TYPED_NAVIGATION_UPGRADE_TAB_HELPER_H_
 
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "ios/web/public/web_state_user_data.h"
 #include "url/gurl.h"
 
 class HttpsUpgradeService;
-class PrerenderService;
 
 // A tab helper that handles the fallback and timeout logic for Omnibox HTTPS
 // upgrades. Omnibox HTTPS upgrades feature automatically upgrades navigations
@@ -65,7 +64,6 @@ class TypedNavigationUpgradeTabHelper
   };
 
   TypedNavigationUpgradeTabHelper(web::WebState* web_state,
-                                  PrerenderService* prerender_service,
                                   HttpsUpgradeService* service);
 
   // Called when the upgrade timer times out.
@@ -84,7 +82,6 @@ class TypedNavigationUpgradeTabHelper
 
   base::OneShotTimer timer_;
 
-  raw_ptr<PrerenderService> prerender_service_;
   raw_ptr<HttpsUpgradeService> service_;
 };
 

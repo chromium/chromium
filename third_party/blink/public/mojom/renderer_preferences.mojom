@@ -197,6 +197,10 @@ struct RendererPreferences {
   [EnableIf=is_selection_clipboard_buffer_possible]
   bool selection_clipboard_buffer_available = false;
 
+  // Whether to allow pasting text on middle click mouse events.
+  [EnableIf=is_linux]
+  bool middle_click_paste_allowed = true;
+
   // Set to true if the renderer should assume that the embedder delegates all
   // Autofill activity and requests to the platform instead of providing its
   // own implementation.
@@ -205,10 +209,6 @@ struct RendererPreferences {
   bool uses_platform_autofill = false;
 
   array<uint16> explicitly_allowed_network_ports;
-
-  // A randomized 64 bit token that is generated per browser session,
-  // used for canvas noising.
-  uint64 canvas_noise_token = 0;
 
   // Whether line wrapping should be enabled by default in view source pages.
   bool view_source_line_wrap_enabled = false;

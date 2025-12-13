@@ -1,9 +1,6 @@
 include_rules = [
     "+media/base",
     "+media/filters/stream_parser_factory.h",
-    "+media/learning/common",
-    "+media/learning/mojo/public/cpp/mojo_learning_task_controller.h",
-    "+media/learning/mojo/public/mojom/learning_task_controller.mojom-blink.h",
     "+media/mojo/mojom/media_types.mojom-blink.h",
     "+media/mojo/mojom/video_decode_perf_history.mojom-blink.h",
     "+media/mojo/mojom/webrtc_video_perf.mojom-blink.h",
@@ -12,7 +9,6 @@ include_rules = [
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/encryptedmedia",
     "+third_party/blink/renderer/modules/media_capabilities",
-    "+third_party/blink/renderer/modules/media_capabilities_names.h",
     "+third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h",
     "+third_party/blink/renderer/modules/modules_export.h",
 ]

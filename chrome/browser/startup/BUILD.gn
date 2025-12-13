@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android, "Startup launch manager is only for desktop platforms")
+
+source_set("startup") {
+  public = [ "startup_launch_manager.h" ]
+
+  sources = [ "startup_launch_manager.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/common:non_code_constants",
+    "//chrome/installer/util:with_no_strings",
+    "//ui/base/unowned_user_data",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "startup_launch_manager_unittest.cc" ]
+
+  deps = [
+    ":startup",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//ui/base/unowned_user_data",
+  ]
+}

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/feedback/redaction_tool/redaction_tool.h"
 
 #include <algorithm>
@@ -15,6 +10,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -39,15 +36,9 @@ using redaction_internal::IPAddress;
 namespace redaction {
 
 namespace features {
-COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_FEATURE(kEnableCreditCardRedaction,
-             "EnableCreditCardRedaction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableCreditCardRedaction, base::FEATURE_ENABLED_BY_DEFAULT);
 
-COMPONENT_EXPORT(REDACTION_TOOL)
-BASE_FEATURE(kEnableIbanRedaction,
-             "EnableIbanRedaction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableIbanRedaction, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace {
@@ -362,6 +353,22 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
      "(" IPV4ADDRESS ")"
      "([^-\\.0-9]|$)",
      PIIType::kIPAddress},
+
+    // Redacts PII from kernel logs for virtual input devices (e.g., Bluetooth).
+    // Matches lines like:
+    //   input: Edman Paes dos Anjos’s Keyboard as
+    //   /devices/virtual/misc/uhid/0005:...
+    // Redacts the name part only.
+    {"Bluetooth HID Device",
+     "(input: )([^\\r\\n]+?)(\\s+as\\s+/devices/virtual/misc/uhid/0005:.*?)",
+     PIIType::kBluetoothHidDevice},
+
+    // Redacts PII from kernel logs for explicit Bluetooth HID devices.
+    // Matches lines like:
+    //   ... [Edman Paes dos Anjos’s Keyboard] on ...
+    // Redacts the name part found inside the brackets.
+    {"Bluetooth HID Device", R"((BLUETOOTH HID.+?\[)([^\]]+)(\]))",
+     PIIType::kBluetoothHidDevice},
 };
 
 bool MaybeUnmapAddress(IPAddress* addr) {
@@ -452,7 +459,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   IPAddress input_addr;
   if (input_addr.AssignFromIPLiteral(addr) && input_addr.IsValid()) {
     bool mapped = MaybeUnmapAddress(&input_addr);
-    bool translated = !mapped ? MaybeUntranslateAddress(&input_addr) : false;
+    bool translated = !mapped && MaybeUntranslateAddress(&input_addr);
     for (const auto& range : *kNonIdentifyingIPRanges) {
       if (IPAddressMatchesPrefix(input_addr, range.ip_addr,
                                  range.prefix_length)) {
@@ -521,19 +528,19 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
 bool FindAndConsumeAndGetSkippedN(std::string_view* input,
                                   const re2::RE2& pattern,
                                   std::string_view* skipped_input,
-                                  std::string_view* args[],
-                                  int argc) {
+                                  base::span<std::string_view*> args) {
   std::string_view old_input = *input;
 
-  CHECK_GE(argc, 1);
-  re2::RE2::Arg a0(argc > 0 ? args[0] : nullptr);
-  re2::RE2::Arg a1(argc > 1 ? args[1] : nullptr);
-  re2::RE2::Arg a2(argc > 2 ? args[2] : nullptr);
-  re2::RE2::Arg a3(argc > 3 ? args[3] : nullptr);
+  CHECK_GE(args.size(), 1u);
+  re2::RE2::Arg a0(args.size() > 0 ? args[0] : nullptr);
+  re2::RE2::Arg a1(args.size() > 1 ? args[1] : nullptr);
+  re2::RE2::Arg a2(args.size() > 2 ? args[2] : nullptr);
+  re2::RE2::Arg a3(args.size() > 3 ? args[3] : nullptr);
   const re2::RE2::Arg* const wrapped_args[] = {&a0, &a1, &a2, &a3};
-  CHECK_LE(argc, 4);
+  CHECK_LE(args.size(), 4u);
 
-  bool result = re2::RE2::FindAndConsumeN(input, pattern, wrapped_args, argc);
+  bool result =
+      re2::RE2::FindAndConsumeN(input, pattern, wrapped_args, args.size());
 
   if (skipped_input && result) {
     size_t bytes_skipped = args[0]->data() - old_input.data();
@@ -549,8 +556,7 @@ bool FindAndConsumeAndGetSkipped(std::string_view* input,
                                  std::string_view* skipped_input,
                                  Arg*... match_groups) {
   std::string_view* args[] = {match_groups...};
-  return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args,
-                                      std::size(args));
+  return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args);
 }
 
 bool HasRepeatedChar(std::string_view text, char c) {
@@ -1051,7 +1057,7 @@ std::string RedactionTool::RedactIbans(
       chunk.append(numbers_only.substr(pos, next_chunk_size));
 
       const unsigned long chunk_number =
-          std::strtoul(chunk.c_str(), nullptr, 10);
+          UNSAFE_TODO(std::strtoul(chunk.c_str(), nullptr, 10));
 
       remainder = chunk_number % 97;
       chunk = base::NumberToString(remainder);
@@ -1198,7 +1204,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
       prematch.append(pre_matched_id);
       scrubbed_match = MaybeScrubIPAddress(matched_id_as_string);
       if (scrubbed_match == matched_id_as_string ||
-          ((strcmp("IPv4", pattern.alias) == 0) &&
+          ((UNSAFE_TODO(strcmp("IPv4", pattern.alias)) == 0) &&
            ShouldSkipIPv4Address(prematch))) {
         result.append(skipped);
         result.append(pre_matched_id);
@@ -1278,14 +1284,14 @@ bool IsUrlExempt(std::string_view url,
   }
 
   int i = 0;
-  const char* test_id = first_party_extension_ids[i];
+  const char* test_id = UNSAFE_TODO(first_party_extension_ids[i]);
   const std::string_view url_sub =
       url.substr(sizeof("chrome-extension://") - 1);
   while (test_id) {
     if (url_sub.starts_with(test_id)) {
       return true;
     }
-    test_id = first_party_extension_ids[++i];
+    test_id = UNSAFE_TODO(first_party_extension_ids[++i]);
   }
   return false;
 }

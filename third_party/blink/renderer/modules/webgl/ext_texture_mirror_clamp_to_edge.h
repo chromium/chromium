@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class EXTTextureMirrorClampToEdge final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -17,7 +19,7 @@ class EXTTextureMirrorClampToEdge final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit EXTTextureMirrorClampToEdge(WebGLRenderingContextBase*);
+  EXTTextureMirrorClampToEdge(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

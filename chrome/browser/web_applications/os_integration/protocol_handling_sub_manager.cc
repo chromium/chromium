@@ -11,7 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"

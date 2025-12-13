@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">Orangen</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
+<translation id="1292474106138697109">Anzeige der Unterrichtstools</translation>
 <translation id="1300115153046603471">APN hat den Typ „Standard“ und „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Umwandeln</translation>
@@ -199,7 +200,7 @@
 <translation id="1751249301761991853">Personalisierung</translation>
 <translation id="1751335846119670066">Leseübersicht</translation>
 <translation id="1753496554272155572">Hintergrundvorschau beenden</translation>
-<translation id="1754578112426924640">Schaltfläche zum Bearbeiten von „<ph name="ACCELERATOR_INFO" />“.</translation>
+<translation id="1754578112426924640">Button zum Bearbeiten von „<ph name="ACCELERATOR_INFO" />“.</translation>
 <translation id="1755556344721611131">Diagnose-App</translation>
 <translation id="1756681705074952506">Eingabemethode</translation>
 <translation id="175763766237925754">Gut (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -219,7 +220,7 @@
 <translation id="1807246157184219062">Hell</translation>
 <translation id="1808803439260407870">Klassik</translation>
 <translation id="181434555916624618">Ergebnisse mit Personen werden vorerst nicht angezeigt. Versuche es mit einem anderen Prompt.</translation>
-<translation id="1815850098929213707">Die ausgewählte Taste ist „<ph name="KEYS" />“. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
+<translation id="1815850098929213707">Die ausgewählte Taste ist „<ph name="KEYS" />“. Wenn du das Steuerelement bearbeiten möchtest, tippe auf den Button.</translation>
 <translation id="1818174214124933000">Wenn du „Senden“ auswählst, werden dein Feedback und deine Inhalte (wie unten angezeigt) gemäß der <ph name="LINK_POLICY_BEGIN" />Datenschutzerklärung<ph name="LINK_POLICY_END" /> und den <ph name="LINK_TERMS_OF_SERVICE_BEGIN" />Google-Nutzungsbedingungen<ph name="LINK_TERMS_OF_SERVICE_END" /> an Google gesendet, manuell geprüft und dazu verwendet, unsere Produkte und Dienste zu trainieren und zu verbessern.</translation>
 <translation id="1823120442877418684">Objekte</translation>
 <translation id="1827738518074806965">Kunstgalerie</translation>
@@ -298,7 +299,7 @@
 <translation id="2157660087437850958">Emoji-Auswahl</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
-<translation id="215916044711630446">Schaltfläche „APN hinzufügen“ ist jetzt deaktiviert</translation>
+<translation id="215916044711630446">Button „APN hinzufügen“ ist jetzt deaktiviert</translation>
 <translation id="2161394479394250669">Druckauftrag abbrechen</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">Dunklen Modus einschalten</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Bilder</translation>
 <translation id="4300272766492248925">App öffnen</translation>
 <translation id="430786093962686457">Chiffon</translation>
+<translation id="4309762678330556039">Du kannst automatisch Transkripte erstellen und in Audioinhalten suchen. Aufnahmen können auch ohne Internetverbindung erstellt werden.</translation>
 <translation id="4310735698903592804">Zuletzt verwendete Hintergründe, die auf Google AI basieren</translation>
 <translation id="4320904097188876154">neonrosa</translation>
 <translation id="432961742358282111">Mit der rechten Maustaste anklicken oder gedrückt halten, um Definitionen, Übersetzungen oder Umrechnungen von Einheiten abzurufen. Zum Verwalten der Funktion Rechts- und Linkspfeiltaste verwenden.</translation>
@@ -769,7 +771,7 @@
 <translation id="437477383107495720">Hasen</translation>
 <translation id="4376423484621194274">Dein Administrator lässt das Schließen von <ph name="APP_NAME" /> nicht zu</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
-<translation id="4378551569595875038">Verbindung...</translation>
+<translation id="4378551569595875038">Verbinden...</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4383322413532809099">Wenn du Titel für deine Aufnahme erstellen möchtest, starte dein Gerät (<ph name="DEVICE_TYPE" />) neu</translation>
 <translation id="4394049700291259645">Deaktivieren</translation>
@@ -791,7 +793,7 @@
 <translation id="445059817448385655">Altes Passwort</translation>
 <translation id="4453205916657964690">Subnetzmaske</translation>
 <translation id="4454245904991689773">Speichern unter</translation>
-<translation id="4456812688969919973">Schaltfläche „APN speichern“ ist jetzt deaktiviert</translation>
+<translation id="4456812688969919973">Button „APN speichern“ ist jetzt deaktiviert</translation>
 <translation id="4469288414739283461">Earth Flow-Bildschirmschoner</translation>
 <translation id="4474142134969976028">Keine passenden Ergebnisse</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -840,7 +842,7 @@
 <translation id="467510802200863975">Die Passwörter stimmen nicht überein</translation>
 <translation id="467715984478005772">Verdacht auf Firewall</translation>
 <translation id="4678534708181186163">Zusammenfassung nicht möglich. Versuche es mit einem kürzeren Transkript.</translation>
-<translation id="4683762547447150570">Wenn du den Fokus auf die Tastenzuweisung legen möchtest, tippe auf die Schaltfläche</translation>
+<translation id="4683762547447150570">Wenn du den Fokus auf die Tastenzuweisung legen möchtest, tippe auf den Button</translation>
 <translation id="4691278870498629773">Angehalten – Fach fehlt</translation>
 <translation id="469379815867856270">Signalstärke</translation>
 <translation id="4697260493945012995">Steuerelementtyp auswählen</translation>
@@ -944,7 +946,7 @@
 <translation id="5139813694804168398">Bitte nicht stören</translation>
 <translation id="5140788690559353412">Wenn du den Zugriff auf dein Konto einer Bildungseinrichtung verlierst, hast du auch keinen Zugriff mehr auf die zugehörigen E‑Mails und Google Drive-Dateien in Produkten wie Gmail, Google Docs und Google Präsentationen.</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
-<translation id="5144311987923128508">Schaltfläche „Bestätigen“ ist jetzt deaktiviert</translation>
+<translation id="5144311987923128508">Button „Bestätigen“ ist jetzt deaktiviert</translation>
 <translation id="5144887194300568405">Übersetzung kopieren</translation>
 <translation id="5145081769226915336">Dunklen Modus automatisch aktivieren?</translation>
 <translation id="5145331109270917438">Änderungsdatum</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Weitere Optionen</translation>
 <translation id="5600027863942488546">Die Taste „<ph name="KEY_NAME" />“ wurde getestet</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Dein Bildschirm wird über Unterrichtstools für <ph name="RECEIVER_NAME" /> freigegeben</translation>
 <translation id="5613201299517339763">Du wurdest abgemeldet</translation>
 <translation id="5620281292257375798">Nur zur internen Nutzung</translation>
 <translation id="5628106863521633649">Verfügbare Sprachen</translation>
@@ -1066,7 +1069,7 @@
 <translation id="5701381305118179107">Zentrieren</translation>
 <translation id="5703716265115423771">Lautstärke verringern</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> von <ph name="TOTAL_PAGES" /></translation>
-<translation id="572854785834323605">Schaltfläche zum Bearbeiten von „<ph name="SHORTCUT_DESCRIPTION" />“.</translation>
+<translation id="572854785834323605">Button zum Bearbeiten von „<ph name="SHORTCUT_DESCRIPTION" />“.</translation>
 <translation id="5736820754189340309">Datennutzung wurde zurückgesetzt</translation>
 <translation id="574392208103952083">Mittel</translation>
 <translation id="5744175046705638478">„<ph name="QUERY" />“ übersetzen</translation>
@@ -1109,7 +1112,7 @@
 <translation id="5916084858004523819">Unzulässig</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Deine Datei wurde gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}other{Deine Dateien wurden gescannt und im Ordner <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> gespeichert.}}</translation>
-<translation id="5928411637936685857">Schaltfläche zum Löschen von „<ph name="ACCELERATOR_INFO" />“.</translation>
+<translation id="5928411637936685857">Button zum Löschen von „<ph name="ACCELERATOR_INFO" />“.</translation>
 <translation id="5930669310554144537">Dreamscape</translation>
 <translation id="5931523347251946569">Datei nicht gefunden</translation>
 <translation id="5939518447894949180">Zurücksetzen</translation>
@@ -1143,7 +1146,7 @@
 <translation id="6074608334942655098">Nicht mehr übersetzen</translation>
 <translation id="6074752328838739425">Zusammenfassung ausblenden</translation>
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
-<translation id="6078323886959318429">Verknüpfung</translation>
+<translation id="6078323886959318429">Neue Verknüpfung</translation>
 <translation id="6079693086494835199">Setze die Einstellungen zurück, um sicherzustellen, dass die standardmäßige Startseite keine Phishing-Website ist. Verwende nur Websites, denen du vertraust.</translation>
 <translation id="6090672065638047175">ein Foto eines leuchtenden Baums aus Sternen mit einem wunderschönen Nachthimmel und einer Galaxie im Hintergrund</translation>
 <translation id="6091080061796993741">gelben</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Keine Scanner verfügbar</translation>
-<translation id="6231648282154119906">Verdächtige Dateien werden im Rahmen des von dir ausgewählten erweiterten Schutzes automatisch von Google Safe Browsing gescannt</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6234024205316847054">Umrisse anzeigen</translation>
 <translation id="6243280677745499710">Derzeit festgelegt</translation>
@@ -1232,7 +1234,7 @@
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
-<translation id="6462978824459367242">Schaltfläche „APN hinzufügen“ ist jetzt aktiviert</translation>
+<translation id="6462978824459367242">Button „APN hinzufügen“ ist jetzt aktiviert</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Seite neu scannen?}=1{Seite {PAGE_NUMBER} neu scannen?}other{Seite {PAGE_NUMBER} neu scannen?}}</translation>
 <translation id="6468146470109254228">Dies sind deine letzten 3 Prompts und Ausgaben. Du kannst nur darauf zugreifen, wenn du „Hintergrund &amp; Stil“ verwendest.</translation>
 <translation id="6472207088655375767">OTP</translation>
@@ -1257,7 +1259,7 @@
 <translation id="6543412779435705598">Tacos</translation>
 <translation id="6550369542114086980">am Donnerstag</translation>
 <translation id="6551839203326557324">Äpfel</translation>
-<translation id="65526652485742171">Schaltfläche „Bestätigen“ ist jetzt aktiviert</translation>
+<translation id="65526652485742171">Button „Bestätigen“ ist jetzt aktiviert</translation>
 <translation id="6557784757915238407">APN hat den Typ „<ph name="ATTACH" />“.</translation>
 <translation id="65587193855025101">Flachbett</translation>
 <translation id="6560196641871357166">Kräftig</translation>
@@ -1294,7 +1296,7 @@
 <translation id="6716013206176357696">Erdbeeren</translation>
 <translation id="671733080802536771">Jugendstil</translation>
 <translation id="6721525125027474520">Sumpf</translation>
-<translation id="6723839937902243910">Leistung</translation>
+<translation id="6723839937902243910">Ein/Aus-Taste</translation>
 <translation id="6723847290197874913">Hintergrundbeleuchtung der Tastatur</translation>
 <translation id="672609503628871915">Neuigkeiten</translation>
 <translation id="6738867403308150051">Wird heruntergeladen...</translation>
@@ -1394,7 +1396,7 @@
 <translation id="7135814714616751706">Tastenkombinationen suchen</translation>
 <translation id="7138614237884624401">Vereinfachter Text</translation>
 <translation id="7138668887584231801">Nicht genügend Wörter für eine Zusammenfassung</translation>
-<translation id="7143207342074048698">Verbindung...</translation>
+<translation id="7143207342074048698">Verbinden...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7144954474087165241">Pagode</translation>
 <translation id="7147557737960578492">Durch Auswahl einer anderen Taste neu zuweisen</translation>
@@ -1409,7 +1411,7 @@
 <translation id="7180611975245234373">Aktualisieren</translation>
 <translation id="7180865173735832675">Anpassen</translation>
 <translation id="7182063559013288142">Instant-Hotspot</translation>
-<translation id="7184043045742675738">Klicke auf eine beliebige Taste, um deine Schaltfläche zu personalisieren. Du kannst die Taste mit der Maus oder den Pfeiltasten neu positionieren.</translation>
+<translation id="7184043045742675738">Klicke auf eine beliebige Taste, um deinen Button zu personalisieren. Du kannst die Taste mit der Maus oder den Pfeiltasten neu positionieren.</translation>
 <translation id="7187669805838282391">am Mittwoch</translation>
 <translation id="7205318498545665455">Wähle dein Mikrofon aus</translation>
 <translation id="7206979415662233817">Nutzungsbedingungen</translation>
@@ -1825,7 +1827,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9036971622563146214">Ergebnisse</translation>
 <translation id="9039663905644212491">PEAP</translation>
 <translation id="9045842401566197375">Bücher</translation>
-<translation id="9049868303458988905">Schaltfläche „APN speichern“ ist jetzt aktiviert</translation>
+<translation id="9049868303458988905">Button „APN speichern“ ist jetzt aktiviert</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-Auflösung hat eine hohe Latenz</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
@@ -1861,12 +1863,12 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="9189000703457422362">Über automatisch erkannte APNs kann keine Verbindung zu diesem Netzwerk hergestellt werden. Wende dich für weitere Informationen an deinen Mobilfunkanbieter.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
-<translation id="9195918315673527512">Ausgewählte Joysticktasten: <ph name="KEYS" />. Wenn du das Steuerelement bearbeiten möchtest, tippe auf die Schaltfläche.</translation>
+<translation id="9195918315673527512">Ausgewählte Joysticktasten: <ph name="KEYS" />. Wenn du das Steuerelement bearbeiten möchtest, tippe auf den Button.</translation>
 <translation id="9204237731135241582">Gateway kann von Android-Apps aus nicht kontaktiert werden</translation>
 <translation id="921080052717160800">Bild als Kamerahintergrund festgelegt</translation>
 <translation id="9211490828691860325">Alle Desktops</translation>
 <translation id="9218016617214286986">Bekannte APNs anzeigen</translation>
-<translation id="932327136139879170">Startseite</translation>
+<translation id="932327136139879170">Privat</translation>
 <translation id="939519157834106403">SSID</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="950520315903467048">Taste für „<ph name="DIRECTION" />“ fehlt. <ph name="ASSIGN_INSTRUCTION" /></translation>

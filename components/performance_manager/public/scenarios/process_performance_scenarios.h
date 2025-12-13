@@ -5,14 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_PROCESS_PERFORMANCE_SCENARIOS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_PROCESS_PERFORMANCE_SCENARIOS_H_
 
-#include "base/observer_list.h"
-#include "base/scoped_observation_traits.h"
 #include "components/performance_manager/scenario_api/performance_scenarios.h"
-
-namespace performance_scenarios {
-class MatchingScenarioObserver;
-class PerformanceScenarioObserver;
-}  // namespace performance_scenarios
 
 namespace performance_manager {
 
@@ -46,58 +39,6 @@ bool CurrentProcessScenariosMatch(
     const ProcessNode* process,
     performance_scenarios::ScenarioPattern pattern);
 
-// Returns a list of PerformanceScenarioObservers for `process` that will be
-// notified when the scenarios for that process change. The list is only valid
-// as long as the ProcessNode exists.
-base::ObserverList<performance_scenarios::PerformanceScenarioObserver>&
-GetScenarioObserversForProcess(const ProcessNode* process);
-
-// Returns a list of MatchingScenarioObservers for `process` that will be
-// notified when the scenarios for that process change to start or stop
-// matching a scenario pattern. The list is only valid as long as the
-// ProcessNode exists.
-base::ObserverList<performance_scenarios::MatchingScenarioObserver>&
-GetMatchingScenarioObserversForProcess(const ProcessNode* process);
-
 }  // namespace performance_manager
-
-namespace base {
-
-// Specialize ScopedObservation to look up the observer lists for a ProcessNode.
-// These must be in the same namespace as base::ScopedObservationTraits.
-
-template <>
-struct ScopedObservationTraits<
-    performance_manager::ProcessNode,
-    performance_scenarios::PerformanceScenarioObserver> {
-  static void AddObserver(
-      const performance_manager::ProcessNode* source,
-      performance_scenarios::PerformanceScenarioObserver* observer) {
-    GetScenarioObserversForProcess(source).AddObserver(observer);
-  }
-  static void RemoveObserver(
-      const performance_manager::ProcessNode* source,
-      performance_scenarios::PerformanceScenarioObserver* observer) {
-    GetScenarioObserversForProcess(source).RemoveObserver(observer);
-  }
-};
-
-template <>
-struct ScopedObservationTraits<
-    performance_manager::ProcessNode,
-    performance_scenarios::MatchingScenarioObserver> {
-  static void AddObserver(
-      const performance_manager::ProcessNode* source,
-      performance_scenarios::MatchingScenarioObserver* observer) {
-    GetMatchingScenarioObserversForProcess(source).AddObserver(observer);
-  }
-  static void RemoveObserver(
-      const performance_manager::ProcessNode* source,
-      performance_scenarios::MatchingScenarioObserver* observer) {
-    GetMatchingScenarioObserversForProcess(source).RemoveObserver(observer);
-  }
-};
-
-}  // namespace base
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_SCENARIOS_PROCESS_PERFORMANCE_SCENARIOS_H_

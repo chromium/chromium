@@ -25,4 +25,15 @@ interface AIProofreader {
   // Proofreads the given input.
   Proofread(string input,
             pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Get a short string label for the type of correction made, given the
+  // specific correction instruction, the error annotated in the original
+  // input, and the correction annotated in the complete corrected input, e.g.:
+  // input = "`can` you profread fir me",
+  // corrected_input = "`Can` you proofread for me?",
+  // correction_instruction = "Correcting `can` to `Can`".
+  GetCorrectionType(string input,
+                    string corrected_input,
+                    string correction_instruction,
+                    pending_remote<ModelStreamingResponder> pending_responder);
 };

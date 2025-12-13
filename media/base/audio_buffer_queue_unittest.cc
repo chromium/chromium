@@ -31,7 +31,7 @@ static void VerifyBus(AudioBus* bus,
                       ValueType type = ValueType::kNormal) {
   for (int ch = 0; ch < bus->channels(); ++ch) {
     const float v = start + ch * buffer_size * increment;
-    auto channel_data = bus->channel_span(ch);
+    auto channel_data = bus->channel(ch);
     for (int i = offset; i < offset + frames; ++i) {
       float expected_value = v + (i - offset) * increment;
       if (type == ValueType::kFloat)

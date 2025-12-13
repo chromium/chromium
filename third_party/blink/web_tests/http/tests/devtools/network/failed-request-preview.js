@@ -12,12 +12,13 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   TestRunner.addResult(`Verifies that network request previews don't have src set when the request fails`);
   await TestRunner.showPanel('network');
 
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.conditionsEnabled = true;
   TestRunner.networkManager.addEventListener(
     SDK.NetworkManager.Events.RequestFinished, (event) => {
       const request = event.data;
       TestRunner.addResult('request.url(): ' + request.url());
       TestRunner.addResult('request.failed: ' + request.failed);
+      TestRunner.addResult('request.blockedReason: ' + request.blockedReason());
 
       const previewImage = document.createElement('img');
       previewImage.classList.add('image-network-icon-preview');
@@ -27,9 +28,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       });
     });
 
-  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([
-    {url: '*', enabled: true}
-  ]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().requestConditions.add(
+    SDK.NetworkManager.RequestCondition.createFromSetting({url: '*://*:*', enabled: true})
+  );
 
   NetworkTestRunner.makeXHR('GET', 'http://localhost:8000');
 })();

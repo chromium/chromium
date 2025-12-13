@@ -100,20 +100,23 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
 
 class MockLeakDetectionCheck : public LeakDetectionCheck {
  public:
-  MOCK_METHOD(
-      void,
-      Start,
-      (LeakDetectionInitiator, const GURL&, std::u16string, std::u16string),
-      (override));
+  MOCK_METHOD(void,
+              Start,
+              (LeakDetectionInitiator, const PasswordForm&),
+              (override));
 };
 
 class MockPasswordChangeService : public PasswordChangeServiceInterface {
  public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (override));
+  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const override));
   MOCK_METHOD(bool,
               IsPasswordChangeSupported,
               (const GURL&, const autofill::LanguageCode&),
-              (override));
+              (const override));
+  MOCK_METHOD(void,
+              RecordLoginAttemptQuality,
+              (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
+              (const override));
 };
 
 }  // namespace
@@ -134,11 +137,6 @@ class LeakDetectionDelegateTest : public testing::Test {
         ::prefs::kSafeBrowsingEnabled, true);
     pref_service_->registry()->RegisterBooleanPref(
         ::prefs::kSafeBrowsingEnhanced, false);
-#if BUILDFLAG(IS_ANDROID)
-    pref_service_->registry()->RegisterIntegerPref(
-        prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-#endif  // BUILDFLAG(IS_ANDROID)
     ON_CALL(client_, GetPrefs()).WillByDefault(Return(pref_service()));
   }
 
@@ -268,8 +266,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheck) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
+              Start(LeakDetectionInitiator::kSignInCheck, form));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
@@ -297,8 +294,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
+              Start(LeakDetectionInitiator::kSignInCheck, form));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
@@ -334,8 +330,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithNonBlockedFormURL) {
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
+              Start(LeakDetectionInitiator::kSignInCheck, form));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
@@ -369,8 +364,7 @@ TEST_F(LeakDetectionDelegateTest,
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
+              Start(LeakDetectionInitiator::kSignInCheck, form));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
       .WillOnce(Return(ByMove(std::move(check_instance))));
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
@@ -410,7 +404,7 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {
 
   EXPECT_CALL(client(), NotifyUserCredentialsWereLeaked).Times(0);
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/false, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/false, std::move(form));
   histogram_tester.ExpectTotalCount(
       "PasswordManager.LeakDetection.NotifyIsLeakedTime", 0);
 }
@@ -433,22 +427,18 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithTrueResult) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
   histogram_tester.ExpectTotalCount(
       "PasswordManager.LeakDetection.NotifyIsLeakedTime", 1);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// On Android, syncing passwords from the profile store is only possible
+// before login db deprecation.
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, syncing passwords from the profile store is only possible
-  // before login db deprecation.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
-#endif
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -472,14 +462,14 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForSyncingUser) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
 
   EXPECT_CALL(*profile_store(), UpdateLogin);
   WaitForPasswordStore();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
@@ -510,10 +500,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneForAccountStoreUser) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ true)));
+                  form, /* in_account_store = */ true)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
 
   EXPECT_CALL(*account_store(), UpdateLogin);
   WaitForPasswordStore();
@@ -551,20 +540,16 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
 
   EXPECT_CALL(*profile_store(), UpdateLogin);
   WaitForPasswordStore();
 }
 
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneLocalStoreWithUPMSplitStoresBeforeDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneLocalStore) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -573,11 +558,6 @@ TEST_F(LeakDetectionDelegateTest,
       .WillByDefault(Return(account_store()));
   ON_CALL(client(), GetProfilePasswordStore())
       .WillByDefault(Return(profile_store()));
-
-  // Mark that the local and account stores are split.
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
             sync_util::SyncState::kActiveWithNormalEncryption);
@@ -596,19 +576,15 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
 
   EXPECT_CALL(*profile_store(), UpdateLogin);
   WaitForPasswordStore();
 }
 
-TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneLocalStoreWithUPMSplitStoresAfterDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLoginDbDeprecationAndroid);
+TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneAccountStore) {
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   const PasswordForm form = CreateTestForm();
 
@@ -617,57 +593,6 @@ TEST_F(LeakDetectionDelegateTest,
       .WillByDefault(Return(account_store()));
   ON_CALL(client(), GetProfilePasswordStore())
       .WillByDefault(Return(profile_store()));
-
-  // The login db deprecation also stops automatic migration and deprecates
-  // the migration pref, so set it to off to verify that its value doesn't
-  // matter.
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-
-  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
-            sync_util::SyncState::kActiveWithNormalEncryption);
-  ASSERT_TRUE(
-      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
-
-  ExpectPasswords({}, /*store=*/account_store());
-  ExpectPasswords({form}, /*store=*/profile_store());
-  EXPECT_CALL(factory(), TryCreateLeakCheck)
-      .WillOnce(
-          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
-                            GetTestUrl());
-
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
-  delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
-
-  EXPECT_CALL(*profile_store(), UpdateLogin);
-  WaitForPasswordStore();
-}
-
-TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneAccountStoreWithUPMSplitStoresBeforeDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kLoginDbDeprecationAndroid);
-  LeakDetectionDelegateInterface* delegate_interface = &delegate();
-  const PasswordForm form = CreateTestForm();
-
-  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
-  ON_CALL(client(), GetAccountPasswordStore())
-      .WillByDefault(Return(account_store()));
-  ON_CALL(client(), GetProfilePasswordStore())
-      .WillByDefault(Return(profile_store()));
-
-  // Mark that the local and account stores are split.
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
 
   ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
             sync_util::SyncState::kActiveWithNormalEncryption);
@@ -686,56 +611,9 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ true)));
+                  form, /* in_account_store = */ true)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
-
-  EXPECT_CALL(*account_store(), UpdateLogin);
-  WaitForPasswordStore();
-}
-
-TEST_F(LeakDetectionDelegateTest,
-       LeakDetectionDoneAccountStoreWithUPMSplitStoresAfterDbDeprecation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kLoginDbDeprecationAndroid);
-  LeakDetectionDelegateInterface* delegate_interface = &delegate();
-  const PasswordForm form = CreateTestForm();
-
-  ON_CALL(client(), GetSyncService()).WillByDefault(Return(sync_service()));
-  ON_CALL(client(), GetAccountPasswordStore())
-      .WillByDefault(Return(account_store()));
-  ON_CALL(client(), GetProfilePasswordStore())
-      .WillByDefault(Return(profile_store()));
-
-  // The login db deprecation also stops automatic migration and deprecates
-  // the migration pref, so set it to off to verify that its value doesn't
-  // matter.
-  pref_service()->SetInteger(
-      prefs::kPasswordsUseUPMLocalAndSeparateStores,
-      static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
-
-  ASSERT_EQ(sync_util::GetPasswordSyncState(sync_service()),
-            sync_util::SyncState::kActiveWithNormalEncryption);
-  ASSERT_TRUE(
-      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service()));
-
-  ExpectPasswords({form}, /*store=*/account_store());
-  ExpectPasswords({}, /*store=*/profile_store());
-  EXPECT_CALL(factory(), TryCreateLeakCheck)
-      .WillOnce(
-          Return(ByMove(std::make_unique<NiceMock<MockLeakDetectionCheck>>())));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
-                            GetTestUrl());
-
-  EXPECT_CALL(client(),
-              NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
-                  password_manager::CreateLeakType(
-                      IsSaved(true), IsReused(false), IsSyncing(true)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ true)));
-  delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
 
   EXPECT_CALL(*account_store(), UpdateLogin);
   WaitForPasswordStore();
@@ -759,10 +637,9 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(true), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, form);
 
   // The expected form should have a leaked entry.
   form.password_issues.insert_or_assign(
@@ -790,7 +667,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   // The delegate analyses the password store after this call.
   LeakDetectionDelegateInterface* delegate_interface = &delegate();
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, form);
 
   // Start the check again on another form in the mean time.
   check_instance = std::make_unique<NiceMock<MockLeakDetectionCheck>>();
@@ -809,7 +686,7 @@ TEST_F(LeakDetectionDelegateTest, CallStartTwice) {
   // The second check is finishing and talking to the password store. It should
   // not crash.
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
 }
 
@@ -819,8 +696,7 @@ TEST_F(LeakDetectionDelegateTest, PassesChromeChannel) {
   const PasswordForm form = CreateTestForm();
   auto check_instance = std::make_unique<MockLeakDetectionCheck>();
   EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
+              Start(LeakDetectionInitiator::kSignInCheck, form));
   const version_info::Channel channel = version_info::Channel::STABLE;
   EXPECT_CALL(client(), GetChannel).WillOnce(Return(channel));
   EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, channel))
@@ -833,7 +709,7 @@ TEST_F(LeakDetectionDelegateTest, PassesChromeChannel) {
 
 TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
   base::test::ScopedFeatureList feature(
-      features::kImprovedPasswordChangeService);
+      features::kFetchChangePasswordUrlForPasswordChange);
 
   SetLeakDetectionEnabled(true);
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
@@ -859,14 +735,13 @@ TEST_F(LeakDetectionDelegateTest, StartCheckTriggersChangePwdUrlPrefetch) {
 
   static_cast<LeakDetectionDelegateInterface*>(&delegate())
       ->OnLeakDetectionDone(
-          /*is_leaked=*/true, form.url, form.username_value,
-          form.password_value);
+          /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
   base::test::ScopedFeatureList feature(
-      features::kImprovedPasswordChangeService);
+      features::kFetchChangePasswordUrlForPasswordChange);
 
   SetLeakDetectionEnabled(true);
   EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
@@ -893,8 +768,7 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
 
   static_cast<LeakDetectionDelegateInterface*>(&delegate())
       ->OnLeakDetectionDone(
-          /*is_leaked=*/true, form.url, form.username_value,
-          form.password_value);
+          /*is_leaked=*/true, form);
   WaitForPasswordStore();
 
   MockPasswordChangeService mock_password_change_service;
@@ -909,8 +783,7 @@ TEST_F(LeakDetectionDelegateTest, LeakNotifiedAfterChangePwdUrlIsFetched) {
                             password_manager::CreateLeakType(
                                 IsSaved(false), IsReused(false),
                                 IsSyncing(false), HasChangePasswordUrl(true)),
-                            form.url, form.username_value, form.password_value,
-                            /* in_account_store = */ false)));
+                            form, /* in_account_store = */ false)));
   std::move(change_pwd_url_fetch_callback).Run();
 }
 
@@ -942,10 +815,9 @@ TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithChangePwdFlag) {
                             password_manager::CreateLeakType(
                                 IsSaved(false), IsReused(false),
                                 IsSyncing(false), HasChangePasswordUrl(true)),
-                            form.url, form.username_value, form.password_value,
-                            /* in_account_store = */ false)));
+                            form, /* in_account_store = */ false)));
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
 }
 
@@ -955,7 +827,7 @@ TEST_F(LeakDetectionDelegateTest,
   features.InitWithFeatures(
       {
           features::kMarkAllCredentialsAsLeaked,
-          features::kImprovedPasswordChangeService,
+          features::kFetchChangePasswordUrlForPasswordChange,
       },
       {});
 
@@ -986,11 +858,10 @@ TEST_F(LeakDetectionDelegateTest,
               NotifyUserCredentialsWereLeaked(LeakedPasswordDetails(
                   password_manager::CreateLeakType(
                       IsSaved(false), IsReused(false), IsSyncing(false)),
-                  form.url, form.username_value, form.password_value,
-                  /* in_account_store = */ false)));
+                  form, /* in_account_store = */ false)));
 
   delegate_interface->OnLeakDetectionDone(
-      /*is_leaked=*/true, form.url, form.username_value, form.password_value);
+      /*is_leaked=*/true, std::move(form));
   WaitForPasswordStore();
 }
 

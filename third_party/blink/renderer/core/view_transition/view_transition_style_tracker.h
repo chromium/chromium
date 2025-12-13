@@ -222,7 +222,7 @@ class ViewTransitionStyleTracker
 
   // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
   // Returns the class list for a captured element by name.
-  const Vector<AtomicString>& GetViewTransitionClassList(
+  const Vector<AtomicString> GetViewTransitionClassList(
       const AtomicString& name) const;
 
   const Vector<AtomicString>& GetViewTransitionNames() const {
@@ -231,7 +231,7 @@ class ViewTransitionStyleTracker
 
   // This returns the resolved containing group name for a given view transition
   // name. Note that this only works once the transition starts.
-  AtomicString GetContainingGroupName(const AtomicString& name) const;
+  const AtomicString& GetContainingGroupName(const AtomicString& name) const;
 
   void WillEnterGetComputedStyleScope();
   void WillExitGetComputedStyleScope();
@@ -241,6 +241,8 @@ class ViewTransitionStyleTracker
   // Computes a list of contained group names for a given view transition name.
   Vector<AtomicString> ComputeContainedGroupNames(
       const AtomicString& container_name) const;
+
+  void InvalidateBackdropFilterCompositingProperties();
 
  private:
   class ImageWrapperPseudoElement;
@@ -319,14 +321,22 @@ class ViewTransitionStyleTracker
     base::flat_map<CSSPropertyID, String> captured_css_properties;
 
     // The set of properties to set on the view-transition-group-children
-    // pseudo. Only updated during the capture phase. This also includes the
-    // border offset from the border box to the content area.
+    // pseudo. This also includes the border offset from the border box to the
+    // content area.
     base::flat_map<CSSPropertyID, String> group_children_css_properties;
     gfx::Vector2d border_offset;
+
+    // Border offset as of capture time.
+    gfx::Vector2d cached_border_offset;
 
     // This only contains properties that need to be animated, which is a
     // subset of `captured_css_properties`.
     base::flat_map<CSSPropertyID, String> cached_animated_css_properties;
+
+    // This only contains properties that need to be animated on group children,
+    // which is a subset of `group_children_css_properties`.
+    base::flat_map<CSSPropertyID, String>
+        cached_group_children_animated_properties;
 
     // https://drafts.csswg.org/css-view-transitions-2/#captured-element-class-list
     Vector<AtomicString> class_list;
@@ -338,6 +348,11 @@ class ViewTransitionStyleTracker
     // getAnimations.
     bool is_generated_name;
   };
+
+  // Remaps the element data's snapshot matrix to be relative to the new parent
+  // transform (i.e. from the cached parent's snapshot matrix to the parent's
+  // current snapshot matrix). Returns true if a style invalidation is needed.
+  bool RemapSnapshotMatrixToNewParentSpace(ElementData* element_data) const;
 
   bool RunPostPrePaintStepsForElement(AtomicString name,
                                       ElementData* element_data,
@@ -454,7 +469,7 @@ class ViewTransitionStyleTracker
       pending_transition_element_names_;
 
   // This vector is passed as constructed to cc's view transition request,
-  // so this uses the std::vector for that reason, instead of WTF::Vector.
+  // so this uses the std::vector for that reason, instead of blink::Vector.
   std::vector<viz::ViewTransitionElementResourceId> capture_resource_ids_
       ALLOW_DISCOURAGED_TYPE("cc API uses STL types");
 
@@ -486,6 +501,8 @@ class ViewTransitionStyleTracker
 
   HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
 
+  // All of the view transition names associated with this transition. Note that
+  // these names are in DOM order.
   Vector<AtomicString> view_transition_names_;
 
   bool in_get_computed_style_scope_ = false;

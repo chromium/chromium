@@ -89,6 +89,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
 
   // Implementation of SyncServiceObserver.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // Updates the footer of the dialog when the sync state changes.
   virtual void UpdateSyncState();

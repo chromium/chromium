@@ -10,7 +10,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/sql/cache_entry_key.h"
@@ -35,10 +34,16 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
     : public Entry,
       public base::RefCounted<SqlEntryImpl> {
  public:
+  // For a speculatively created entry, this holds `std::nullopt` initially, and
+  // when the entry creation task is complete, it will hold either the `ResId`
+  // on success or an `Error` on failure. Otherwise, it just holds a `ResId`.
+  using ResIdOrErrorHolder = base::RefCountedData<std::optional<
+      std::variant<SqlPersistentStore::ResId, SqlPersistentStore::Error>>>;
+
   // Constructs a SqlEntryImpl.
   SqlEntryImpl(base::WeakPtr<SqlBackendImpl> backend,
                CacheEntryKey key,
-               const base::UnguessableToken& token,
+               scoped_refptr<ResIdOrErrorHolder> res_id_or_error,
                base::Time last_used,
                int64_t body_end,
                scoped_refptr<net::GrowableIOBuffer> head);
@@ -48,14 +53,14 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,
@@ -74,13 +79,16 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   bool CouldBeSparse() const override;
   void CancelSparseIO() override;
   net::Error ReadyForSparseIO(CompletionOnceCallback callback) override;
+  void SetEntryInMemoryData(uint8_t data) override;
   void SetLastUsedTimeForTest(base::Time time) override;
 
   // Returns the cache key of the entry.
   const CacheEntryKey& cache_key() const { return key_; }
 
-  // Returns the unique token for this entry instance.
-  const base::UnguessableToken& token() const { return token_; }
+  // Returns the holder for the resource ID or an error.
+  const scoped_refptr<ResIdOrErrorHolder>& res_id_or_error() const {
+    return res_id_or_error_;
+  }
 
   // Marks the entry as doomed. This is called by the backend when an
   // active entry is doomed.
@@ -118,10 +126,9 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
   // The key for this cache entry.
   const CacheEntryKey key_;
 
-  // A unique token identifying this specific instance of the entry.
-  // This is used to ensure that operations (like dooming or deleting)
-  // target the correct version of an entry if it's reopened.
-  const base::UnguessableToken token_;
+  // Holds the ResId of the entry or an error if the speculative creation
+  // failed.
+  const scoped_refptr<ResIdOrErrorHolder> res_id_or_error_;
 
   // The last time this entry was accessed.
   base::Time last_used_;
@@ -135,6 +142,11 @@ class NET_EXPORT_PRIVATE SqlEntryImpl final
 
   // The entry's header data (stream 0).
   scoped_refptr<net::GrowableIOBuffer> head_;
+
+  // Stores the new hints value if it has been modified. This is used to
+  // determine if the hints need to be persisted to the database when the entry
+  // is destructed.
+  std::optional<MemoryEntryDataHints> new_hints_;
 
   // Stores the original size of the header (stream 0) before it was first
   // modified. `std::nullopt` indicates that the header has not been written to

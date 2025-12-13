@@ -386,7 +386,14 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, NonNestableTask) {
   ASSERT_TRUE(non_nested_task_ran);
 }
 
-IN_PROC_BROWSER_TEST_F(ContentBrowserTest, RunTimeoutInstalled) {
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
+// TODO(crbug.com/440535492): Flaky on Win dbg.
+#define MAYBE_RunTimeoutInstalled DISABLED_RunTimeoutInstalled
+#else
+#define MAYBE_RunTimeoutInstalled RunTimeoutInstalled
+#endif
+IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunTimeoutInstalled) {
   // Verify that a RunLoop timeout is installed and shorter than the test
   // timeout itself.
   const base::RunLoop::RunLoopTimeout* run_timeout =

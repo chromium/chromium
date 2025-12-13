@@ -15,13 +15,13 @@
 
 class ReadingListModel;
 
+namespace reading_list {
+
 // Implementation of ReadingListManager.
 // 1. Holds a in memory bookmark node tree. Contains a folder root and reading
 // list nodes as children. Only has one level of children.
 // 2. Talk to reading list model, and sync with the in memory bookmark tree.
 // 3. Talk to observers to report model change events.
-// TODO(crbug.com/41483143): Refactor this to be part of the bookmarks dir.
-// - Better renamed to ReadingListAsBookmarkAdapter when moved.
 class ReadingListManagerImpl : public ReadingListManager,
                                public ReadingListModelObserver {
  public:
@@ -99,5 +99,7 @@ class ReadingListManagerImpl : public ReadingListManager,
 
   base::ObserverList<Observer> observers_;
 };
+
+}  // namespace reading_list
 
 #endif  // CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_MANAGER_IMPL_H_

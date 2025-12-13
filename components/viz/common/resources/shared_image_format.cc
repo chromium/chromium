@@ -16,14 +16,7 @@
 namespace viz {
 namespace {
 
-static size_t ConvertBitsToBytes(size_t bits) {
-  size_t bytes = bits / 8;
-  // Don't add anything to `bits` to avoid potential overflow.
-  if ((bits & 7) != 0) {
-    ++bytes;
-  }
-  return bytes;
-}
+using PlaneConfig = SharedImageFormat::PlaneConfig;
 
 const char* SinglePlaneFormatToString(SharedImageFormat format) {
   CHECK(format.is_single_plane());
@@ -63,18 +56,6 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "R_F16";
   }
   NOTREACHED();
-}
-
-uint64_t StorageBytesPerElement(SharedImageFormat::ChannelFormat channel) {
-  switch (channel) {
-    case SharedImageFormat::ChannelFormat::k8:
-      return 1;
-    // 10 bit formats like P010 still use 2 bytes per element.
-    case SharedImageFormat::ChannelFormat::k10:
-    case SharedImageFormat::ChannelFormat::k16:
-    case SharedImageFormat::ChannelFormat::k16F:
-      return 2;
-  }
 }
 
 const char* PlaneConfigToString(SharedImageFormat::PlaneConfig plane) {
@@ -120,6 +101,24 @@ const char* PrefersExternalSamplerToString(SharedImageFormat format) {
   return format.PrefersExternalSampler() ? "ExtSamplerOn" : "ExtSamplerOff";
 }
 
+bool IsUVPlane(SharedImageFormat format, int plane) {
+  DCHECK(format.IsValidPlaneIndex(plane));
+  if (format.is_single_plane()) {
+    return false;
+  }
+
+  switch (format.plane_config()) {
+    case PlaneConfig::kY_U_V:
+    case PlaneConfig::kY_V_U:
+      return plane != 0;
+    case PlaneConfig::kY_UV:
+    case PlaneConfig::kY_UV_A:
+      return plane == 1;
+    case PlaneConfig::kY_U_V_A:
+      return plane == 1 || plane == 2;
+  }
+}
+
 }  // namespace
 
 // Ensure that SharedImageFormat is suitable for passing around by value.
@@ -160,14 +159,26 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
   if (is_single_plane()) {
     DCHECK_EQ(plane_index, 0);
 
-    base::CheckedNumeric<size_t> bits_per_row = BitsPerPixel();
-    bits_per_row *= size.width();
-    if (!bits_per_row.IsValid()) {
-      return std::nullopt;
+    if (singleplanar_format() == mojom::SingleplanarFormat::ETC1) {
+      // ETC stores 4x4 blocks. No risk of overflow on alignup as width/height
+      // are positive signed values converted to unsigned.
+      size_t block_width = base::bits::AlignUp<size_t>(size.width(), 4) >> 2;
+      size_t block_height = base::bits::AlignUp<size_t>(size.height(), 4) >> 2;
+
+      // ETC uses 8 bytes per block.
+      base::CheckedNumeric<size_t> estimated_bytes = 8;
+      estimated_bytes *= block_width;
+      estimated_bytes *= block_height;
+
+      if (!estimated_bytes.IsValid()) {
+        return std::nullopt;
+      }
+
+      return estimated_bytes.ValueOrDie();
     }
 
-    base::CheckedNumeric<size_t> estimated_bytes =
-        ConvertBitsToBytes(bits_per_row.ValueOrDie());
+    base::CheckedNumeric<size_t> estimated_bytes = BytesPerPixel();
+    estimated_bytes *= size.width();
     estimated_bytes *= size.height();
     if (!estimated_bytes.IsValid()) {
       return std::nullopt;
@@ -176,7 +187,7 @@ std::optional<size_t> SharedImageFormat::MaybeEstimatedPlaneSizeInBytes(
     return estimated_bytes.ValueOrDie();
   }
 
-  size_t bytes_per_element = StorageBytesPerElement(channel_format());
+  size_t bytes_per_element = MultiplanarStorageBytesPerChannel();
 
   gfx::Size plane_size = GetPlaneSize(plane_index, size);
 
@@ -225,40 +236,36 @@ bool SharedImageFormat::VerifySizeInBytes(const gfx::Size& size) const {
   return MaybeEstimatedSizeInBytes(size).has_value();
 }
 
-gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
-                                          const gfx::Size& size) const {
-  DCHECK(IsValidPlaneIndex(plane_index));
-  if (is_single_plane()) {
-    return size;
-  }
-
-  // First plane is always Y plane and it is always size (not subsampled).
-  if (plane_index == 0) {
-    return size;
-  }
-  // A plane is always size
-  if (plane_config() == PlaneConfig::kY_UV_A && plane_index == 2) {
-    return size;
-  }
-  if (plane_config() == PlaneConfig::kY_U_V_A && plane_index == 3) {
-    return size;
-  }
-
+std::pair<int, int> SharedImageFormat::GetSubsamplingScale() const {
+  DCHECK(is_multi_plane());
   // UV scales
-  float width_scale = 1.0;
-  float height_scale = 1.0;
+  int width_scale = 1;
+  int height_scale = 1;
   switch (subsampling()) {
     case Subsampling::k420:
-      width_scale = 0.5;
-      height_scale = 0.5;
+      width_scale = 2;
+      height_scale = 2;
       break;
     case Subsampling::k422:
-      width_scale = 0.5;
+      width_scale = 2;
       break;
     case Subsampling::k444:
       break;
   }
-  return gfx::ScaleToCeiledSize(size, width_scale, height_scale);
+
+  return {width_scale, height_scale};
+}
+
+gfx::Size SharedImageFormat::GetPlaneSize(int plane_index,
+                                          const gfx::Size& size) const {
+  DCHECK(IsValidPlaneIndex(plane_index));
+  if (IsUVPlane(*this, plane_index)) {
+    auto [width_scale, height_scale] = GetSubsamplingScale();
+    return gfx::ScaleToCeiledSize(size, 1.0 / width_scale, 1.0 / height_scale);
+  }
+
+  // Single-planar and Planes Y, A are always size.
+  return size;
 }
 
 // For multiplanar formats.
@@ -275,6 +282,19 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
       return plane_index == 1 ? 2 : 1;
   }
   NOTREACHED();
+}
+
+// For multiplanar formats.
+uint64_t SharedImageFormat::MultiplanarStorageBytesPerChannel() const {
+  switch (channel_format()) {
+    case ChannelFormat::k8:
+      return 1;
+    // 10 bit formats like P010 still use 2 bytes per element.
+    case ChannelFormat::k10:
+    case ChannelFormat::k16:
+    case ChannelFormat::k16F:
+      return 2;
+  }
 }
 
 // For multiplanar formats.
@@ -352,11 +372,11 @@ bool SharedImageFormat::IsCompressed() const {
          singleplanar_format() == mojom::SingleplanarFormat::ETC1;
 }
 
-int SharedImageFormat::BitsPerPixel() const {
+int SharedImageFormat::BytesPerPixel() const {
   CHECK(is_single_plane());
   switch (singleplanar_format()) {
     case mojom::SingleplanarFormat::RGBA_F16:
-      return 64;
+      return 8;
     case mojom::SingleplanarFormat::BGRA_8888:
     case mojom::SingleplanarFormat::RGBA_8888:
     case mojom::SingleplanarFormat::RGBX_8888:
@@ -364,19 +384,21 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RGBA_1010102:
     case mojom::SingleplanarFormat::BGRA_1010102:
     case mojom::SingleplanarFormat::RG_1616:
-      return 32;
+      return 4;
     case mojom::SingleplanarFormat::RGBA_4444:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
     case mojom::SingleplanarFormat::R_F16:
     case mojom::SingleplanarFormat::R_16:
     case mojom::SingleplanarFormat::BGR_565:
     case mojom::SingleplanarFormat::RG_88:
-      return 16;
+      return 2;
     case mojom::SingleplanarFormat::ALPHA_8:
     case mojom::SingleplanarFormat::R_8:
-      return 8;
+      return 1;
     case mojom::SingleplanarFormat::ETC1:
-      return 4;
+      // ETC compression is blocked based and can't be expressed as bytes per
+      // pixel.
+      break;
   }
   NOTREACHED();
 }

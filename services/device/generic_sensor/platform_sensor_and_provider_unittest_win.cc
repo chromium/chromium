@@ -27,7 +27,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::IsNull;
 using ::testing::NiceMock;
 using ::testing::NotNull;
@@ -241,9 +240,9 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
   void SetUnsupportedSensor(REFSENSOR_TYPE_ID sensor) {
     EXPECT_CALL(*(sensor_manager_.Get()), GetSensorsByType(sensor, _))
         .WillRepeatedly(
-            Invoke([](REFSENSOR_TYPE_ID type, ISensorCollection** collection) {
+            [](REFSENSOR_TYPE_ID type, ISensorCollection** collection) {
               return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
-            }));
+            });
   }
 
   // Sets sensor with REFSENSOR_TYPE_ID |sensor| to be supported by mocked
@@ -251,36 +250,36 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
   void SetSupportedSensor(REFSENSOR_TYPE_ID sensor) {
     // Returns mock ISensorCollection.
     EXPECT_CALL(*(sensor_manager_.Get()), GetSensorsByType(sensor, _))
-        .WillOnce(Invoke(
+        .WillOnce(
             [this](REFSENSOR_TYPE_ID type, ISensorCollection** collection) {
               sensor_collection_->QueryInterface(
                   __uuidof(ISensorCollection),
                   reinterpret_cast<void**>(collection));
               return S_OK;
-            }));
+            });
 
     // Returns number of ISensor objects in ISensorCollection, at the moment
     // only one ISensor interface instance is suported.
     EXPECT_CALL(*(sensor_collection_.Get()), GetCount(_))
-        .WillOnce(Invoke([](ULONG* count) {
+        .WillOnce([](ULONG* count) {
           *count = 1;
           return S_OK;
-        }));
+        });
 
     // Returns ISensor interface instance at index 0.
     EXPECT_CALL(*(sensor_collection_.Get()), GetAt(0, _))
-        .WillOnce(Invoke([this](ULONG index, ISensor** sensor) {
+        .WillOnce([this](ULONG index, ISensor** sensor) {
           sensor_->QueryInterface(__uuidof(ISensor),
                                   reinterpret_cast<void**>(sensor));
           return S_OK;
-        }));
+        });
 
     // Handles |SetEventSink| call that is used to subscribe to sensor events
     // through ISensorEvents interface. ISensorEvents is stored and attached to
     // |sensor_events_| that is used later to generate fake error, state and
     // data change events.
     ON_CALL(*(sensor_.Get()), SetEventSink(NotNull()))
-        .WillByDefault(Invoke([this](ISensorEvents* events) {
+        .WillByDefault([this](ISensorEvents* events) {
           events->AddRef();
           sensor_events_.Attach(events);
           if (this->run_loop_) {
@@ -290,12 +289,12 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
                                base::Unretained(this)));
           }
           return S_OK;
-        }));
+        });
 
     // When |SetEventSink| is called with nullptr, it means that client is no
     // longer interested in sensor events and ISensorEvents can be released.
     ON_CALL(*(sensor_.Get()), SetEventSink(IsNull()))
-        .WillByDefault(Invoke([this](ISensorEvents* events) {
+        .WillByDefault([this](ISensorEvents* events) {
           sensor_events_.Reset();
           if (this->run_loop_) {
             task_environment_.GetMainThreadTaskRunner()->PostTask(
@@ -304,23 +303,22 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
                                base::Unretained(this)));
           }
           return S_OK;
-        }));
+        });
   }
 
   // Sets minimal reporting frequency for the mock sensor.
   void SetSupportedReportingFrequency(int frequency) {
     ON_CALL(*(sensor_.Get()),
             GetProperty(SENSOR_PROPERTY_MIN_REPORT_INTERVAL, _))
-        .WillByDefault(
-            Invoke([frequency](REFPROPERTYKEY key, PROPVARIANT* pProperty) {
-              pProperty->vt = VT_UI4;
-              pProperty->ulVal = 0;
-              if (frequency != 0) {
-                pProperty->ulVal =
-                    (1.0 / frequency) * base::Time::kMillisecondsPerSecond;
-              }
-              return S_OK;
-            }));
+        .WillByDefault([frequency](REFPROPERTYKEY key, PROPVARIANT* pProperty) {
+          pProperty->vt = VT_UI4;
+          pProperty->ulVal = 0;
+          if (frequency != 0) {
+            pProperty->ulVal =
+                (1.0 / frequency) * base::Time::kMillisecondsPerSecond;
+          }
+          return S_OK;
+        });
   }
 
   // Generates OnLeave event, e.g. when sensor is disconnected.
@@ -359,21 +357,21 @@ class PlatformSensorAndProviderTestWin : public ::testing::Test {
     mock_report.As(&data_report);
 
     EXPECT_CALL(*(mock_report.Get()), GetTimestamp(_))
-        .WillOnce(Invoke([](SYSTEMTIME* timestamp) {
+        .WillOnce([](SYSTEMTIME* timestamp) {
           GetSystemTime(timestamp);
           return S_OK;
-        }));
+        });
 
     EXPECT_CALL(*(mock_report.Get()), GetSensorValue(_, _))
-        .WillRepeatedly(WithArgs<0, 1>(
-            Invoke([&values](REFPROPERTYKEY key, PROPVARIANT* variant) {
+        .WillRepeatedly(
+            WithArgs<0, 1>([&values](REFPROPERTYKEY key, PROPVARIANT* variant) {
               auto it = values.find(key);
               if (it == values.end())
                 return E_FAIL;
 
               PropVariantCopy(variant, it->second);
               return S_OK;
-            })));
+            }));
 
     sensor_events_->OnDataUpdated(sensor_.Get(), data_report.Get());
   }
@@ -410,10 +408,10 @@ TEST_F(PlatformSensorAndProviderTestWin, SensorIsNotImplemented) {
 TEST_F(PlatformSensorAndProviderTestWin, SensorIsNotSupported) {
   EXPECT_CALL(*(sensor_manager_.Get()),
               GetSensorsByType(SENSOR_TYPE_AMBIENT_LIGHT, _))
-      .WillOnce(Invoke([](REFSENSOR_TYPE_ID, ISensorCollection** result) {
+      .WillOnce([](REFSENSOR_TYPE_ID, ISensorCollection** result) {
         *result = nullptr;
         return E_FAIL;
-      }));
+      });
 
   EXPECT_FALSE(CreateSensor(SensorType::AMBIENT_LIGHT));
 }
@@ -450,7 +448,7 @@ TEST_F(PlatformSensorAndProviderTestWin, SensorStarted) {
   EXPECT_CALL(*(sensor_.Get()), SetEventSink(NotNull())).Times(1);
   EXPECT_CALL(*(sensor_.Get()), SetEventSink(IsNull())).Times(1);
   EXPECT_CALL(*(sensor_.Get()), SetProperties(NotNull(), _))
-      .WillRepeatedly(Invoke(
+      .WillRepeatedly(
           [](IPortableDeviceValues* props, IPortableDeviceValues** result) {
             ULONG value = 0;
             HRESULT hr = props->GetUnsignedIntegerValue(
@@ -459,7 +457,7 @@ TEST_F(PlatformSensorAndProviderTestWin, SensorStarted) {
             // 10Hz is 100msec
             EXPECT_THAT(value, 100);
             return hr;
-          }));
+          });
 
   auto sensor = CreateSensor(SensorType::AMBIENT_LIGHT);
   EXPECT_TRUE(sensor);

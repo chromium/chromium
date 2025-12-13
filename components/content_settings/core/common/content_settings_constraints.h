@@ -80,11 +80,6 @@ class ContentSettingConstraints {
   // constraints. This controls when the setting expires.
   //
   // If the lifetime is zero, then the setting does not expire.
-  //
-  // TODO(crbug.com/40270137): created_at_ and lifetime_ need to be
-  // persisted (likely in/by content_settings::RuleMetaData) and recreated in
-  // order be useful. Otherwise, everything still operates in terms of
-  // expirations.
   base::TimeDelta lifetime_;
 
   // Used to specify the lifetime model that should be used.

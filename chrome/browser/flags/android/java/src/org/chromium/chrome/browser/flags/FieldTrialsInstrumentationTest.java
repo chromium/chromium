@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
@@ -126,6 +127,7 @@ public final class FieldTrialsInstrumentationTest {
         "enable-features=" + FEATURE_1 + "<Study",
         "force-fieldtrials=Study/Group"
     })
+    @DisabledTest(message = "--force-fieldtrials and --force-fieldtrial-params are deprecated")
     public void testJava_FeatureWithoutParams_CommandLine_EnableAndFieldTrial() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
@@ -138,6 +140,7 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:a1/b1"
     })
+    @DisabledTest(message = "--force-fieldtrials and --force-fieldtrial-params are deprecated")
     public void testJava_OneFeatureTrialGroup_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.sTestDefaultDisabled.isEnabled());
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
@@ -155,6 +158,7 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study/Group",
         "force-fieldtrial-params=Study.Group:a1/b1/a2/b2"
     })
+    @DisabledTest(message = "--force-fieldtrials and --force-fieldtrial-params are deprecated")
     public void testJava_TwoFeaturesWithSameTrialGroup_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));
         Assert.assertEquals("b1", ChromeFeatureList.getFieldTrialParamByFeature(FEATURE_1, "a1"));
@@ -191,6 +195,7 @@ public final class FieldTrialsInstrumentationTest {
         "force-fieldtrials=Study1/Group1/Study2/Group2",
         "force-fieldtrial-params=Study1.Group1:a1/0.5/a2/100,Study2.Group2:a3/true"
     })
+    @DisabledTest(message = "--force-fieldtrials and --force-fieldtrial-params are deprecated")
     public void
             testJava_TwoFeaturesWithDifferentTrialGroupsAndMutipleTypesOfValues_CommandLine_FieldTrialParams() {
         Assert.assertTrue(ChromeFeatureList.isEnabled(FEATURE_1));

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_client.h"
 
 #include <stddef.h>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -112,12 +108,10 @@ class BluetoothGattCharacteristicClientImpl
     dbus::MessageWriter writer(&method_call);
     dbus::AppendValueData(&writer, base::Value::Dict());
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnValueSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnValueResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -149,12 +143,10 @@ class BluetoothGattCharacteristicClientImpl
     }
     dbus::AppendValueData(&writer, dict);
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -177,12 +169,10 @@ class BluetoothGattCharacteristicClientImpl
 
     dbus::AppendValueData(&writer, base::Value::Dict());
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -209,12 +199,10 @@ class BluetoothGattCharacteristicClientImpl
     writer.AppendByte(static_cast<uint8_t>(notification_type));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -233,12 +221,10 @@ class BluetoothGattCharacteristicClientImpl
         bluetooth_gatt_characteristic::kBluetoothGattCharacteristicInterface,
         bluetooth_gatt_characteristic::kStopNotify);
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattCharacteristicClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -295,30 +281,33 @@ class BluetoothGattCharacteristicClientImpl
       observer.GattCharacteristicPropertyChanged(object_path, property_name);
   }
 
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
-    DCHECK(response);
-    std::move(callback).Run();
+  void OnMethodResponse(base::OnceClosure callback,
+                        ErrorCallback error_callback,
+                        dbus::Response* response,
+                        dbus::ErrorResponse* error_response) {
+    if (response) {
+      std::move(callback).Run();
+    } else {
+      OnError(std::move(error_callback), error_response);
+    }
   }
 
-  // Called when a characteristic value response for a successful method call
-  // is received.
-  void OnValueSuccess(ValueCallback callback, dbus::Response* response) {
-    DCHECK(response);
+  void OnValueResponse(ValueCallback callback,
+                       ErrorCallback error_callback,
+                       dbus::Response* response,
+                       dbus::ErrorResponse* error_response) {
+    if (!response) {
+      OnError(std::move(error_callback), error_response);
+      return;
+    }
+
     dbus::MessageReader reader(response);
-
-    const uint8_t* bytes = NULL;
-    size_t length = 0;
-
-    if (!reader.PopArrayOfBytes(&bytes, &length))
+    base::span<const uint8_t> bytes;
+    if (!reader.PopArrayOfBytes(&bytes)) {
       DVLOG(2) << "Error reading array of bytes in ValueCallback";
+    }
 
-    std::vector<uint8_t> value;
-
-    if (bytes)
-      value.assign(bytes, bytes + length);
-
-    std::move(callback).Run(/*error_code=*/std::nullopt, value);
+    std::move(callback).Run(/*error_code=*/std::nullopt, base::ToVector(bytes));
   }
 
   // Called when a response for a failed method call is received.

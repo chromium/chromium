@@ -16,7 +16,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -180,11 +182,9 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
     navigation_observer.Wait();
   }
 
-  // Returns the URL of the first tab in the last opened browser.
-  static GURL GetLastOpenedUrl() {
-    auto* list = BrowserList::GetInstance();
-    return list->get(list->size() - 1)
-        ->tab_strip_model()
+  // Returns the URL of the first tab in `browser`.
+  GURL GetLastOpenedUrl(BrowserWindowInterface* browser) {
+    return browser->GetTabStripModel()
         ->GetWebContentsAt(0)
         ->GetLastCommittedURL();
   }
@@ -201,94 +201,105 @@ class FileHandlerLaunchDialogTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest,
                        EscapeDoesNotRememberPreference) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   LaunchAppAndRespond(/*remember_checkbox_state=*/true,
                       views::Widget::ClosedReason::kEscKeyPressed,
                       ApiApprovalState::kRequiresPrompt);
 
   // One normal browser window exists still as the app wasn't launched.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, DisallowAndRemember) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app to handle files, deny at the prompt and "don't ask
   // again".
   LaunchAppAndRespond(/*remember_checkbox_state=*/true,
                       views::Widget::ClosedReason::kCancelButtonClicked,
                       ApiApprovalState::kDisallowed);
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app again. It should fail without showing a dialog. The
   // app window will be shown, but the files won't be passed.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAppAndExpectUrlWithoutDialog(base::FilePath::FromASCII("foo.txt"),
                                      GURL(kStartUrl));
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
-  EXPECT_EQ(GURL(kStartUrl), GetLastOpenedUrl());
+  BrowserWindowInterface* const app_browser = browser_created_observer.Wait();
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_EQ(GURL(kStartUrl), GetLastOpenedUrl(app_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, AllowAndRemember) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app to handle files, allow at the prompt and "don't ask
   // again".
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   LaunchAppAndRespond(/*remember_checkbox_state=*/true,
                       views::Widget::ClosedReason::kAcceptButtonClicked,
                       ApiApprovalState::kAllowed,
                       /*file_paths=*/{}, GURL(kFileLaunchUrl));
   // An app window is created.
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
+  BrowserWindowInterface* const app_browser1 = browser_created_observer->Wait();
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser1->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   // Try to launch the app again. It should succeed without showing a dialog.
+  browser_created_observer.emplace();
   LaunchAppAndExpectUrlWithoutDialog(base::FilePath::FromASCII("foo.txt"),
                                      GURL(kFileLaunchUrl));
-  EXPECT_EQ(3U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(2)->is_type_app());
-  EXPECT_EQ(GURL(kFileLaunchUrl), GetLastOpenedUrl());
+  BrowserWindowInterface* const app_browser2 = browser_created_observer->Wait();
+  EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser2->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_EQ(GURL(kFileLaunchUrl), GetLastOpenedUrl(app_browser2));
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, DisallowDoNotRemember) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app to handle files, deny at the prompt and uncheck
   // "don't ask again".
   LaunchAppAndRespond(/*remember_checkbox_state=*/false,
                       views::Widget::ClosedReason::kCancelButtonClicked,
                       ApiApprovalState::kRequiresPrompt);
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app again. It should show a dialog again. This time,
   // accept.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAppAndRespond(/*remember_checkbox_state=*/false,
                       views::Widget::ClosedReason::kAcceptButtonClicked,
                       ApiApprovalState::kRequiresPrompt,
                       /*file_paths=*/{}, GURL(kFileLaunchUrl));
   // An app window is created.
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
-  EXPECT_EQ(GURL(kFileLaunchUrl), GetLastOpenedUrl());
+  BrowserWindowInterface* const app_browser = browser_created_observer.Wait();
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_EQ(GURL(kFileLaunchUrl), GetLastOpenedUrl(app_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, AcceptDoNotRemember) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app to handle files, allow at the prompt and uncheck
   // "don't ask again".
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAppAndRespond(/*remember_checkbox_state=*/false,
                       views::Widget::ClosedReason::kAcceptButtonClicked,
                       ApiApprovalState::kRequiresPrompt, /*file_paths=*/{},
                       GURL(kFileLaunchUrl));
   // An app window is created.
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
+  BrowserWindowInterface* const app_browser = browser_created_observer.Wait();
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
 
   // Try to launch the app again. It should show a dialog again.
   LaunchAppAndRespond(/*remember_checkbox_state=*/false,
@@ -296,27 +307,29 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, AcceptDoNotRemember) {
                       ApiApprovalState::kRequiresPrompt);
 
   // An app window is not created.
-  ASSERT_EQ(2U, BrowserList::GetInstance()->size());
+  ASSERT_EQ(2U, chrome::GetTotalBrowserCount());
 }
 
 // Regression test for crbug.com/1205528
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, UnhandledType) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app with a file type it doesn't handle. It should fail
   // without showing a dialog, but fall back to showing a normal browser
   // window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   LaunchAppAndExpectUrlWithoutDialog(base::FilePath::FromASCII("foo.rtf"),
                                      GURL(kStartUrl));
-  EXPECT_EQ(2U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
-  EXPECT_EQ(GURL(kStartUrl), GetLastOpenedUrl());
+  BrowserWindowInterface* const app_browser = browser_created_observer.Wait();
+  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(app_browser->GetType(), BrowserWindowInterface::Type::TYPE_APP);
+  EXPECT_EQ(GURL(kStartUrl), GetLastOpenedUrl(app_browser));
 }
 
 IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, MultiLaunch) {
   // One normal browser window exists.
-  EXPECT_EQ(1U, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
 
   // Try to launch the app with two file types it handles, each one
   // corresponding to a different file handler. Only one launch dialog for two
@@ -335,10 +348,15 @@ IN_PROC_BROWSER_TEST_F(FileHandlerLaunchDialogTest, MultiLaunch) {
   navigation_observer2.Wait();
 
   // The two .png files should be directed to 2 different windows.
-  ASSERT_EQ(4U, BrowserList::GetInstance()->size());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(1)->is_type_app());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(2)->is_type_app());
-  EXPECT_TRUE(BrowserList::GetInstance()->get(3)->is_type_app());
+  ASSERT_EQ(4U, chrome::GetTotalBrowserCount());
+  const std::vector<BrowserWindowInterface*> app_browsers =
+      ui_test_utils::FindMatchingBrowsers(
+          [this](BrowserWindowInterface* candidate_browser) {
+            return candidate_browser != browser() &&
+                   candidate_browser->GetType() ==
+                       BrowserWindowInterface::Type::TYPE_APP;
+          });
+  EXPECT_EQ(app_browsers.size(), 3U);
 }
 
 }  // namespace web_app

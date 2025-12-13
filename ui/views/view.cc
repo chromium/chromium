@@ -55,6 +55,7 @@
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
@@ -91,6 +92,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
@@ -463,15 +465,15 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
     LayoutImmediately();
   }
 
-  if (GetNeedsNotificationWhenVisibleBoundsChange()) {
-    OnVisibleBoundsChanged();
+  if (GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
+    OnVisibleBoundsChangedImpl();
   }
 
   // Notify interested Views that visible bounds within the root view may have
   // changed.
   if (descendants_to_notify_) {
     for (views::View* i : *descendants_to_notify_) {
-      i->OnVisibleBoundsChanged();
+      i->OnVisibleBoundsChangedImpl();
     }
   }
 
@@ -482,22 +484,22 @@ void View::SetBoundsRect(const gfx::Rect& bounds) {
   if (prev.x() != bounds_.x()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kXChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.y() != bounds_.y()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kYChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.width() != bounds_.width()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kWidthChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
   if (prev.height() != bounds_.height()) {
     OnPropertyChanged(
         ui::metadata::MakeUniquePropertyKey(&bounds_, kHeightChangedKey),
-        kPropertyEffectsNone);
+        PropertyEffects::kNone);
   }
 }
 
@@ -659,7 +661,7 @@ void View::SetVisible(bool visible) {
     UpdateLayerVisibility();
 
     // Notify all other subscriptions of the change.
-    OnPropertyChanged(&visible_, kPropertyEffectsPaint);
+    OnPropertyChanged(&visible_, PropertyEffects::kPaint);
 
     if (was_visible) {
       UpdateTooltip();
@@ -697,15 +699,24 @@ void View::SetEnabled(bool enabled) {
   }
 
   enabled_ = enabled;
-  GetViewAccessibility().SetIsEnabled(enabled);
-
-  AdvanceFocusIfNecessary();
-  OnPropertyChanged(&enabled_, kPropertyEffectsPaint);
+  UpdateEnabledInViewsSubtreeState();
+  OnPropertyChanged(&enabled_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription View::AddEnabledChangedCallback(
     PropertyChangedCallback callback) {
   return AddPropertyChangedCallback(&enabled_, std::move(callback));
+}
+
+bool View::GetEnabledInViewsSubtree() const {
+  return enabled_in_views_subtree_;
+}
+
+[[nodiscard]] base::CallbackListSubscription
+View::AddEnabledInViewsSubtreeChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&enabled_in_views_subtree_,
+                                    std::move(callback));
 }
 
 View::Views View::GetChildrenInZOrder() {
@@ -862,6 +873,32 @@ std::unique_ptr<ui::Layer> View::RecreateLayer() {
   return old_layer;
 }
 
+bool View::GetClipLayerToVisibleBounds() const {
+  return clip_layer_to_visible_bounds_;
+}
+
+void View::SetClipLayerToVisibleBounds(bool clip_layer) {
+  if (clip_layer_to_visible_bounds_ == clip_layer) {
+    return;
+  }
+  bool remove_layer_clip = clip_layer_to_visible_bounds_;
+  auto* widget = GetWidget();
+  // Register / Unregister to visible bounds notification only when the view is
+  // already added to the widget.  Otherwise this will registered when added to
+  // the widget.
+  if (!clip_layer && widget) {
+    UnregisterForVisibleBoundsNotification();
+  }
+  clip_layer_to_visible_bounds_ = clip_layer;
+  if (clip_layer_to_visible_bounds_ && widget) {
+    RegisterForVisibleBoundsNotification();
+  }
+
+  UpdateLayerClipForVisibleBounds(remove_layer_clip);
+
+  OnPropertyChanged(&clip_layer_to_visible_bounds_, PropertyEffects::kNone);
+}
+
 // RTL positioning -------------------------------------------------------------
 
 gfx::Rect View::GetMirroredBounds() const {
@@ -946,7 +983,7 @@ void View::SetLayoutManagerUseConstrainedSpace(
   InvalidateLayout();
 }
 
-void View::InvalidateLayout() {
+void View::InvalidateLayout(bool avoid_propagate_during_layout) {
   if (invalidating_) {
     return;
   }
@@ -972,7 +1009,11 @@ void View::InvalidateLayout() {
   }
 
   if (parent_) {
-    parent_->InvalidateLayout();
+    // When avoid propagation is on, only propagate invalidations while the
+    // parent isn't being laid out; this prevents layout loops.
+    if (!avoid_propagate_during_layout || !parent_->performing_layout_) {
+      parent_->InvalidateLayout();
+    }
   } else {
     Widget* widget = GetWidget();
     if (widget) {
@@ -1004,7 +1045,7 @@ void View::SetUseDefaultFillLayout(bool value) {
   } else {
     SetLayoutManager(nullptr);
   }
-  OnPropertyChanged(&use_default_fill_layout_, kPropertyEffectsLayout);
+  OnPropertyChanged(&use_default_fill_layout_, PropertyEffects::kLayout);
 }
 
 // Attributes ------------------------------------------------------------------
@@ -1016,8 +1057,7 @@ const View* View::GetViewByID(int id) const {
 
   internal::ScopedChildrenLock lock(this);
   for (views::View* child : children_) {
-    const View* view = child->GetViewByID(id);
-    if (view) {
+    if (const View* view = child->GetViewByID(id)) {
       return view;
     }
   }
@@ -1035,7 +1075,27 @@ void View::SetID(int id) {
 
   id_ = id;
 
-  OnPropertyChanged(&id_, kPropertyEffectsNone);
+  OnPropertyChanged(&id_, PropertyEffects::kNone);
+}
+
+const View* View::GetViewByElementId(ui::ElementIdentifier element_id) const {
+  if (element_id == GetProperty(kElementIdentifierKey)) {
+    return const_cast<View*>(this);
+  }
+
+  internal::ScopedChildrenLock lock(this);
+  for (views::View* child : children_) {
+    if (const View* view = child->GetViewByElementId(element_id)) {
+      return view;
+    }
+  }
+
+  return nullptr;
+}
+
+View* View::GetViewByElementId(ui::ElementIdentifier element_id) {
+  return const_cast<View*>(
+      const_cast<const View*>(this)->GetViewByElementId(element_id));
 }
 
 base::CallbackListSubscription View::AddIDChangedCallback(
@@ -1048,12 +1108,25 @@ void View::SetGroup(int gid) {
   DCHECK(group_ == -1 || group_ == gid);
   if (group_ != gid) {
     group_ = gid;
-    OnPropertyChanged(&group_, kPropertyEffectsNone);
+    OnPropertyChanged(&group_, PropertyEffects::kNone);
+  }
+}
+
+void View::SetOwnedGroup(int group_id) {
+  // Don't change the owned group once it's set.
+  DCHECK(owned_group_ == -1 || owned_group_ == group_id);
+  if (owned_group_ != group_id) {
+    owned_group_ = group_id;
+    OnPropertyChanged(&owned_group_, PropertyEffects::kNone);
   }
 }
 
 int View::GetGroup() const {
   return group_;
+}
+
+int View::GetOwnedGroup() const {
+  return owned_group_;
 }
 
 base::CallbackListSubscription View::AddGroupChangedCallback(
@@ -1357,8 +1430,6 @@ void View::Paint(const PaintInfo& parent_paint_info) {
       clip_recorder.ClipRect(gfx::Rect(paint_info.paint_recording_size()) +
                              paint_info.offset_from_parent());
     } else {
-      SkPath clip_path_in_parent = clip_path_;
-
       // Transform |clip_path_| from local space to parent recording space.
       gfx::Transform to_parent_recording_space;
 
@@ -1367,7 +1438,7 @@ void View::Paint(const PaintInfo& parent_paint_info) {
           SkFloatToScalar(paint_info.paint_recording_scale_x()),
           SkFloatToScalar(paint_info.paint_recording_scale_y()));
 
-      clip_path_in_parent.transform(
+      const SkPath clip_path_in_parent = clip_path_.makeTransform(
           gfx::TransformToFlattenedSkMatrix(to_parent_recording_space));
       clip_recorder.ClipPathWithAntiAliasing(clip_path_in_parent);
     }
@@ -1492,7 +1563,7 @@ void View::SetFlipCanvasOnPaintForRTLUI(bool enable) {
   }
   flip_canvas_on_paint_for_rtl_ui_ = enable;
 
-  OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, kPropertyEffectsPaint);
+  OnPropertyChanged(&flip_canvas_on_paint_for_rtl_ui_, PropertyEffects::kPaint);
 }
 
 base::CallbackListSubscription
@@ -1508,7 +1579,7 @@ void View::SetMirrored(bool is_mirrored) {
   }
   is_mirrored_ = is_mirrored;
 
-  OnPropertyChanged(&is_mirrored_, kPropertyEffectsPaint);
+  OnPropertyChanged(&is_mirrored_, PropertyEffects::kPaint);
 }
 
 bool View::GetMirrored() const {
@@ -1534,7 +1605,8 @@ void View::SetCanProcessEventsWithinSubtree(bool can_process) {
     return;
   }
   can_process_events_within_subtree_ = can_process;
-  OnPropertyChanged(&can_process_events_within_subtree_, kPropertyEffectsNone);
+  OnPropertyChanged(&can_process_events_within_subtree_,
+                    PropertyEffects::kNone);
 }
 
 View* View::GetTooltipHandlerForPoint(const gfx::Point& point) {
@@ -1587,7 +1659,7 @@ bool View::IsMouseHovered() const {
     return false;
   }
 
-  gfx::Point cursor_pos(display::Screen::GetScreen()->GetCursorScreenPoint());
+  gfx::Point cursor_pos(display::Screen::Get()->GetCursorScreenPoint());
   ConvertPointFromScreen(this, &cursor_pos);
   return HitTestPoint(cursor_pos);
 }
@@ -1633,6 +1705,15 @@ bool View::OnKeyReleased(const ui::KeyEvent& event) {
 
 bool View::OnMouseWheel(const ui::MouseWheelEvent& event) {
   return false;
+}
+
+void View::OnEvent(ui::Event* event) {
+  if (!GetEnabledInViewsSubtree()) {
+    // if this view or any of it parent is disabled, we should "eat" events
+    // without processing
+    return;
+  }
+  ui::EventHandler::OnEvent(event);
 }
 
 void View::OnKeyEvent(ui::KeyEvent* event) {
@@ -1812,7 +1893,8 @@ bool View::AcceleratorPressed(const ui::Accelerator& accelerator) {
 
 bool View::CanHandleAccelerators() const {
   const Widget* widget = GetWidget();
-  if (!GetEnabled() || !IsDrawn() || !widget || !widget->IsVisible()) {
+  if (!GetEnabledInViewsSubtree() || !IsDrawn() || !widget ||
+      !widget->IsVisible()) {
     return false;
   }
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
@@ -1971,22 +2053,28 @@ void View::SetFocusBehavior(FocusBehavior focus_behavior) {
                                                           FocusBehavior::NEVER);
   AdvanceFocusIfNecessary();
 
-  OnPropertyChanged(&focus_behavior_, kPropertyEffectsNone);
+  OnPropertyChanged(&focus_behavior_, PropertyEffects::kNone);
 }
 
 bool View::IsFocusable() const {
-  return GetFocusBehavior() == FocusBehavior::ALWAYS && GetEnabled() &&
-         IsDrawn();
+  return GetFocusBehavior() == FocusBehavior::ALWAYS &&
+         GetEnabledInViewsSubtree() && IsDrawn();
 }
 
 FocusManager* View::GetFocusManager() {
   Widget* widget = GetWidget();
+  // If the View is not yet in a Widget hierarchy, it might have a
+  // FocusManager set via a property for detached scenarios.
+  FocusManager* focus_manager = GetProperty(kDetachedViewFocusManagerKey);
+  if (focus_manager) {
+    CHECK(!widget);
+    return focus_manager;
+  }
   return widget ? widget->GetFocusManager() : nullptr;
 }
 
 const FocusManager* View::GetFocusManager() const {
-  const Widget* widget = GetWidget();
-  return widget ? widget->GetFocusManager() : nullptr;
+  return const_cast<View*>(this)->GetFocusManager();
 }
 
 void View::RequestFocus() {
@@ -2599,6 +2687,53 @@ void View::SetLayerParent(ui::Layer* parent_layer) {
   }
 }
 
+bool View::GetNeedsNotificationWhenVisibleBoundsChangeImpl() const {
+  return clip_layer_to_visible_bounds_ ||
+         GetNeedsNotificationWhenVisibleBoundsChange();
+}
+
+void View::OnVisibleBoundsChangedImpl() {
+  OnVisibleBoundsChanged();
+
+  if (!clip_layer_to_visible_bounds_) {
+    return;
+  }
+  UpdateLayerClipForVisibleBounds(/*remove_layer_clip=*/false);
+}
+
+void View::UpdateLayerClipForVisibleBounds(bool remove_layer_clip) {
+  if (!layer()) {
+    return;
+  }
+
+  std::optional<gfx::Rect> clip_bounds = GetVisibleBounds();
+  if (remove_layer_clip || clip_bounds == GetLocalBounds()) {
+    clip_bounds.reset();
+  }
+
+  auto apply_clip_bounds = [](ui::Layer* layer,
+                              std::optional<gfx::Rect>& clip_bounds) {
+    if (!clip_bounds) {
+      layer->SetClipRect({});
+    } else if (clip_bounds->IsEmpty()) {
+      // If the visible bounds is empty, that means the layer should be
+      // invisible. However, setting an empty clip rect reset means 'no
+      // clipping', and we cannot use `SetVisible` as a client may change this
+      // value. Use the clip bounds that never intersect with the layer to make
+      // this invisible.
+      constexpr gfx::Rect kOutOfBounds(-2, -2, 1, 1);
+      layer->SetClipRect(kOutOfBounds);
+    } else {
+      layer->SetClipRect(*clip_bounds);
+    }
+  };
+  apply_clip_bounds(layer(), clip_bounds);
+
+  for (ui::Layer* layer : GetLayersInOrder(ViewLayer::kExclude)) {
+    apply_clip_bounds(layer, clip_bounds);
+  }
+}
+
 void View::ReorderChildLayers(ui::Layer* parent_layer) {
   if (layer() && layer() != parent_layer) {
     DCHECK_EQ(parent_layer, layer()->parent());
@@ -2651,10 +2786,22 @@ void View::Focus() {
     AXVirtualView* const focused_virtual_child =
         view_accessibility_ ? view_accessibility_->FocusedVirtualChild()
                             : nullptr;
-    if (focused_virtual_child) {
-      focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
-    } else {
-      NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+
+    // Rare edge case: the top-level window can briefly lose focus to a child
+    // widget that is then destroyed (e.g., another widget opens, gains focus,
+    // and sets the popup-focus override). Destruction reactivates the top-level
+    // window, so we guard against inconsistent focus state here.
+    //
+    // TODO(crbug.com/40672441): Clean this up when we manage focus correctly
+    // with ViewsAX and remove the concept of popup focus override.
+    if (!ui::AXPlatformNode::GetPopupFocusOverride() ||
+        ui::AXPlatformNode::GetPopupFocusOverride() ==
+            GetNativeViewAccessible()) {
+      if (focused_virtual_child) {
+        focused_virtual_child->NotifyEvent(ax::mojom::Event::kFocus, true);
+      } else {
+        NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+      }
     }
   }
 
@@ -2696,11 +2843,11 @@ void View::OnThemeChanged() {
 void View::TooltipTextChanged() {
   Widget* widget = GetWidget();
   // TooltipManager may be null if there is a problem creating it.
-  if (widget && widget->GetTooltipManager()) {
+  if (widget && !widget->IsClosed() && widget->GetTooltipManager()) {
     widget->GetTooltipManager()->TooltipTextChanged(this);
   }
 
-  OnPropertyChanged(&cached_tooltip_text_, kPropertyEffectsNone);
+  OnPropertyChanged(&cached_tooltip_text_, PropertyEffects::kNone);
 }
 
 void View::UpdateTooltipForFocus() {
@@ -2745,19 +2892,28 @@ int View::GetVerticalDragThreshold() {
 }
 
 PaintInfo::ScaleType View::GetPaintScaleType() const {
-  return PaintInfo::ScaleType::kScaleWithEdgeSnapping;
+  if (::features::IsPixelCanvasRecordingEnabled()) {
+    return PaintInfo::ScaleType::kScaleWithEdgeSnapping;
+  }
+  return PaintInfo::ScaleType::kUniformScaling;
 }
 
 void View::HandlePropertyChangeEffects(PropertyEffects effects) {
-  if (effects & kPropertyEffectsPreferredSizeChanged) {
-    PreferredSizeChanged();
+  switch (effects) {
+    case PropertyEffects::kPreferredSizeChanged:
+      // This calls InvalidateLayout() internally.
+      PreferredSizeChanged();
+      return;
+    case PropertyEffects::kLayout:
+      InvalidateLayout();
+      return;
+    case PropertyEffects::kPaint:
+      SchedulePaint();
+      return;
+    case PropertyEffects::kNone:
+      return;
   }
-  if (effects & kPropertyEffectsLayout) {
-    InvalidateLayout();
-  }
-  if (effects & kPropertyEffectsPaint) {
-    SchedulePaint();
-  }
+  NOTREACHED();
 }
 
 void View::AfterPropertyChange(const void* key, int64_t old_value) {
@@ -2781,7 +2937,7 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
 
 void View::OnPropertyChanged(ui::metadata::PropertyKey property,
                              PropertyEffects property_effects) {
-  if (property_effects != kPropertyEffectsNone) {
+  if (property_effects != PropertyEffects::kNone) {
     HandlePropertyChangeEffects(property_effects);
   }
   TriggerChangedCallback(property);
@@ -3055,6 +3211,7 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   }
 
   view->PropagateAddNotifications(details, widget && widget != old_widget);
+  view->UpdateEnabledInViewsSubtreeState();
 
   UpdateTooltip();
 
@@ -3118,6 +3275,11 @@ void View::DoRemoveChildView(View* view,
   }
 
   view->parent_ = nullptr;
+  // Make sure the sub-tree of this view detaches from widget the same moment
+  // they're removed from previous view hierarchy.
+  if (is_removed_from_widget) {
+    view->SetWidget(nullptr);
+  }
 
   if (delete_removed_view && !view->owned_by_client_) {
     view_to_be_deleted.reset(view);
@@ -3157,8 +3319,8 @@ void View::PropagateRemoveNotifications(View* old_parent,
 
   if (is_removed_from_widget) {
     RemovedFromWidget();
+    GetViewAccessibility().OnViewRemovedFromWidget();
     observers_.Notify(&ViewObserver::OnViewRemovedFromWidget, this);
-    widget_ = nullptr;
   }
 }
 
@@ -3171,7 +3333,6 @@ void View::PropagateAddNotifications(const ViewHierarchyChangedDetails& details,
   // their parents as accelerators registered later take priority over those
   // registered earlier.
   RegisterPendingAccelerators();
-
   {
     internal::ScopedChildrenLock lock(this);
     for (views::View* child : children_) {
@@ -3260,7 +3421,7 @@ void View::SnapLayerToPixelBoundary(const LayerOffsetData& offset_data) {
 
 // static
 void View::RegisterChildrenForVisibleBoundsNotification(View* view) {
-  if (view->GetNeedsNotificationWhenVisibleBoundsChange()) {
+  if (view->GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
     view->RegisterForVisibleBoundsNotification();
   }
   for (View* child : view->children_) {
@@ -3270,7 +3431,7 @@ void View::RegisterChildrenForVisibleBoundsNotification(View* view) {
 
 // static
 void View::UnregisterChildrenForVisibleBoundsNotification(View* view) {
-  if (view->GetNeedsNotificationWhenVisibleBoundsChange()) {
+  if (view->GetNeedsNotificationWhenVisibleBoundsChangeImpl()) {
     view->UnregisterForVisibleBoundsNotification();
   }
   for (View* child : view->children_) {
@@ -3282,7 +3443,6 @@ void View::RegisterForVisibleBoundsNotification() {
   if (registered_for_visible_bounds_notification_) {
     return;
   }
-
   registered_for_visible_bounds_notification_ = true;
   for (View* ancestor = parent_; ancestor; ancestor = ancestor->parent_) {
     ancestor->AddDescendantToNotify(this);
@@ -3341,6 +3501,25 @@ void View::SetLayoutManagerImpl(std::unique_ptr<LayoutManager> layout_manager) {
 void View::SetToDefaultFillLayout() {
   SetLayoutManager(std::make_unique<FillLayout>())->SetIncludeInsets(false);
   has_default_fill_layout_ = true;
+}
+
+void View::UpdateEnabledInViewsSubtreeState() {
+  bool new_state = GetEnabled();
+  if (parent() && !parent()->GetEnabledInViewsSubtree()) {
+    // Inherit disabled state from parent.
+    new_state = false;
+  }
+  if (enabled_in_views_subtree_ == new_state) {
+    return;
+  }
+  enabled_in_views_subtree_ = new_state;
+  GetViewAccessibility().SetIsEnabled(enabled_in_views_subtree_);
+  AdvanceFocusIfNecessary();
+  internal::ScopedChildrenLock lock(this);
+  for (views::View* child : base::Reversed(children_)) {
+    child->UpdateEnabledInViewsSubtreeState();
+  }
+  OnPropertyChanged(&enabled_in_views_subtree_, PropertyEffects::kPaint);
 }
 
 void View::SetLayerBounds(const gfx::Size& size,
@@ -3551,7 +3730,7 @@ void View::LayoutImmediately() {
   });
   invalidates_during_layout_ = 0;
   ++layouts_since_last_paint_;
-  base::AutoReset allow_layout(&layout_allowed_, true);
+  base::AutoReset performing_layout(&performing_layout_, true);
 
   ++current_layout_call_depth_;
   ++max_layout_call_depth_;
@@ -3795,7 +3974,9 @@ void View::UpdateTooltip() {
   // TODO(beng): The TooltipManager nullptr check can be removed when we
   //             consolidate Init() methods and make views_unittests Init() all
   //             Widgets that it uses.
-  if (widget && widget->GetTooltipManager()) {
+  // Note: do not want to update tooltips while widget is closing; see
+  // https://crbug.com/452906899 for why this is bad.
+  if (widget && !widget->IsClosed() && widget->GetTooltipManager()) {
     widget->GetTooltipManager()->UpdateTooltip();
   }
 }
@@ -3873,9 +4054,11 @@ ADD_PROPERTY_METADATA(std::unique_ptr<Background>, Background)
 ADD_PROPERTY_METADATA(std::unique_ptr<Border>, Border)
 ADD_READONLY_PROPERTY_METADATA(std::string_view, ClassName)
 ADD_PROPERTY_METADATA(bool, Enabled)
+ADD_READONLY_PROPERTY_METADATA(bool, EnabledInViewsSubtree)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)
 ADD_PROPERTY_METADATA(bool, FlipCanvasOnPaintForRTLUI)
 ADD_PROPERTY_METADATA(int, Group)
+ADD_PROPERTY_METADATA(int, OwnedGroup)
 ADD_PROPERTY_METADATA(int, Height)
 ADD_PROPERTY_METADATA(int, ID)
 ADD_READONLY_PROPERTY_METADATA(bool, IsDrawn);
@@ -3892,6 +4075,7 @@ ADD_PROPERTY_METADATA(int, Width)
 ADD_PROPERTY_METADATA(int, X)
 ADD_PROPERTY_METADATA(int, Y)
 ADD_PROPERTY_METADATA(std::u16string, TooltipText)
+ADD_PROPERTY_METADATA(bool, ClipLayerToVisibleBounds)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kMarginsKey)
 ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInternalPaddingKey)
 ADD_CLASS_PROPERTY_METADATA(LayoutAlignment, kCrossAxisAlignmentKey)

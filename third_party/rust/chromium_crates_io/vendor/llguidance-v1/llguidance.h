@@ -78,6 +78,12 @@ typedef struct LlgParserLimits {
    * Default: true
    */
   bool precompute_large_lexemes;
+  /**
+   * If true, include parser state (including tokens so far) and grammar in
+   * errors.
+   * Default: true
+   */
+  bool verbose_errors;
 } LlgParserLimits;
 
 typedef struct LlgConstraintInit {

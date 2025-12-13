@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_register_job_base.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
@@ -35,10 +36,12 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
 
   // If |is_immediate| is true, unregister clears the active worker from the
   // registration without waiting for the controlled clients to unload.
-  ServiceWorkerUnregisterJob(ServiceWorkerContextCore* context,
-                             const GURL& scope,
-                             const blink::StorageKey& key,
-                             bool is_immediate);
+  ServiceWorkerUnregisterJob(
+      ServiceWorkerContextCore* context,
+      const GURL& scope,
+      const blink::StorageKey& key,
+      bool is_immediate,
+      ServiceWorkerRegistration::DeleteInitiator initiator);
 
   ServiceWorkerUnregisterJob(const ServiceWorkerUnregisterJob&) = delete;
   ServiceWorkerUnregisterJob& operator=(const ServiceWorkerUnregisterJob&) =
@@ -71,6 +74,7 @@ class ServiceWorkerUnregisterJob : public ServiceWorkerRegisterJobBase {
   const GURL scope_;
   const blink::StorageKey key_;
   const bool is_immediate_;
+  const ServiceWorkerRegistration::DeleteInitiator initiator_;
   std::vector<UnregistrationCallback> callbacks_;
   bool is_promise_resolved_ = false;
   base::WeakPtrFactory<ServiceWorkerUnregisterJob> weak_factory_{this};

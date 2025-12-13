@@ -10,13 +10,14 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/server_urls.h"
-#include "metrics_service_client.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 
 namespace metrics {
 
@@ -96,8 +97,7 @@ metrics::dwa::DwaService* MetricsServiceClient::GetDwaService() {
   return nullptr;
 }
 
-IdentifiabilityStudyState*
-MetricsServiceClient::GetIdentifiabilityStudyState() {
+metrics::private_metrics::PumaService* MetricsServiceClient::GetPumaService() {
   return nullptr;
 }
 
@@ -249,6 +249,11 @@ std::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent() const {
 }
 
 std::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
+  return std::nullopt;
+}
+
+std::optional<regional_capabilities::CountryIdHolder>
+MetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
   return std::nullopt;
 }
 

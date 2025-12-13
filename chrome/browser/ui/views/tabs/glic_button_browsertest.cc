@@ -7,20 +7,23 @@
 #include "base/test/run_until.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
@@ -31,25 +34,16 @@ namespace {
 
 class GlicButtonTest : public InProcessBrowserTest {
  public:
-  GlicButtonTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{});
-  }
+  GlicButtonTest() = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    glic::ForceSigninAndModelExecutionCapability(browser()->profile());
   }
 
  protected:
-  GlicButton* glic_button() {
-    return browser()
-        ->GetBrowserView()
-        .tab_strip_region_view()
-        ->GetTabStripActionContainer()
-        ->GetGlicButton();
+  glic::GlicButton* glic_button() {
+    return BrowserElementsViews::From(browser())->GetViewAs<glic::GlicButton>(
+        kGlicButtonElementId);
   }
 
   GlicKeyedService* glic_service() {
@@ -59,9 +53,8 @@ class GlicButtonTest : public InProcessBrowserTest {
   void WaitForFreShownAndInitialized() {
     ASSERT_TRUE(base::test::RunUntil([&]() {
       return glic_service()
-          ->window_controller()
-          .fre_controller()
-          ->IsShowingDialogAndStateInitialized();
+          ->fre_controller()
+          .IsShowingDialogAndStateInitialized();
     })) << "FRE dialog should have been shown";
   }
 
@@ -72,7 +65,7 @@ class GlicButtonTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  GlicTestEnvironment glic_test_env_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, ContextMenuPinned) {
@@ -131,6 +124,10 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextWhileGlicFreOpen) {
 #endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(GlicButtonTest,
                        MAYBE_TooltipAndA11yTextWhileGlicWindowOpen) {
+  if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
+    // TODO(b/453696965): Broken in multi-instance.
+    GTEST_SKIP() << "Skipping for kGlicMultiInstance";
+  }
   // Toggle to open the glic window.
   glic_service()->ToggleUI(browser(), false,
                            mojom::InvocationSource::kTopChromeButton);

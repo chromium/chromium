@@ -10,6 +10,7 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "net/base/request_priority.h"
 #include "services/network/public/cpp/network_service_task_priority.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +20,6 @@ namespace {
 
 using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
-
-using QueueType = NetworkServiceTaskQueues::QueueType;
 
 // Test fixture for NetworkServiceTaskQueues. Sets up a SequenceManager and
 // NetworkServiceTaskQueues instance for each test.
@@ -63,12 +62,12 @@ TEST_F(NetworkServiceTaskQueuesTest, SimplePosting) {
 }
 
 // Tests that tasks posted to different priority queues are executed according
-// to their priority (high priority first, then default).
+// to their priority (highest priority first, then default).
 TEST_F(NetworkServiceTaskQueuesTest, PostingToMultipleQueues) {
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       queues_.GetDefaultTaskRunner();
   scoped_refptr<base::SingleThreadTaskRunner> tq2 =
-      queues_.GetTaskRunner(QueueType::kHigh);
+      queues_.GetTaskRunner(net::RequestPriority::HIGHEST);
 
   StrictMockTask task_1;
   StrictMockTask task_2;

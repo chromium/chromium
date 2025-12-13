@@ -50,7 +50,8 @@
 
 @implementation FakeResultConsumer
 
-- (void)loadResultsURL:(GURL)URL {
+- (void)loadResultsURL:(GURL)URL
+           httpHeaders:(NSDictionary<NSString*, NSString*>*)httpHeaders {
   self.lastPushedURL = URL;
   if (self.webState) {
     web::FakeNavigationContext navigationContext;

@@ -73,7 +73,7 @@
 #include "ui/gl/gl_implementation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace cc {
@@ -142,7 +142,7 @@ class OopPixelTest : public testing::Test,
 
     raster_context_provider_ =
         base::MakeRefCounted<viz::TestInProcessContextProvider>(
-            viz::TestContextType::kGpuRaster, /*support_locking=*/false,
+            viz::TestContextType::kRaster, /*support_locking=*/false,
             &gr_shader_cache_, &use_shader_cache_shm_count_);
     gpu::ContextResult result =
         raster_context_provider_->BindToCurrentSequence();
@@ -150,8 +150,8 @@ class OopPixelTest : public testing::Test,
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;
     oop_image_cache_ = std::make_unique<GpuImageDecodeCache>(
-        raster_context_provider_.get(), true, kRGBA_8888_SkColorType,
-        kWorkingSetSize, raster_max_texture_size, nullptr);
+        raster_context_provider_.get(), kRGBA_8888_SkColorType, kWorkingSetSize,
+        raster_max_texture_size, nullptr);
   }
 
   class RasterOptions {
@@ -211,8 +211,7 @@ class OopPixelTest : public testing::Test,
     auto* ri = raster_context_provider_->RasterInterface();
     auto* sii = raster_context_provider_->SharedImageInterface();
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     auto client_shared_image = sii->CreateSharedImage(
         {viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
          options.target_color_params.color_space, flags, "TestLabel"},
@@ -300,8 +299,7 @@ class OopPixelTest : public testing::Test,
     // These SharedImages serve as both the source of reads and destination of
     // writes via the raster interface in these tests.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                                     gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                                     gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
     auto client_shared_image = sii->CreateSharedImage(
         {format, options.resource_size,
          color_space.value_or(options.target_color_params.color_space), flags,
@@ -312,10 +310,11 @@ class OopPixelTest : public testing::Test,
     return client_shared_image;
   }
 
-  void UploadPixels(gpu::raster::RasterInterface* ri,
-                    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
-                    const SkImageInfo& info,
-                    const SkBitmap& bitmap) {
+  gpu::SyncToken UploadPixels(
+      gpu::raster::RasterInterface* ri,
+      const scoped_refptr<gpu::ClientSharedImage>& shared_image,
+      const SkImageInfo& info,
+      const SkBitmap& bitmap) {
     auto ri_access = shared_image->BeginRasterAccess(
         ri, shared_image->creation_sync_token(), /*readonly=*/false);
     ri->WritePixels(shared_image->mailbox(), /*dst_x_offset=*/0,
@@ -323,7 +322,7 @@ class OopPixelTest : public testing::Test,
                     /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
-    gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+    return gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
   }
 
   void UploadPixelsYUV(
@@ -830,7 +829,7 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = 1.f;
+    options.target_color_params.hdr_headroom = 0.f;
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
     EXPECT_NEAR(out_color.fR, std::pow(kBaseLinear / kDestScale, kGamma), kEps);
@@ -844,7 +843,7 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kDestScale;
+    options.target_color_params.hdr_headroom = std::log2(kDestScale);
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
     EXPECT_NEAR(out_color.fR, std::pow(0.5f / kDestScale, kGamma), kEps);
@@ -918,7 +917,7 @@ TEST_F(OopPixelTest, DrawGainmapImageCubic) {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kRatioMax;
+    options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);
 
@@ -1021,7 +1020,7 @@ TEST_F(OopPixelTest, DrawGainmapImageFiltering) {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kRatioMax;
+    options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);
 
@@ -1080,13 +1079,12 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
     {
       ImageHeaderMetadata image_metadata;
-      image_metadata.hdr_metadata.emplace();
       if (peak_luminance.has_value()) {
-        image_metadata.hdr_metadata->cta_861_3.emplace(peak_luminance.value(),
-                                                       kContentAvgNits);
+        image_metadata.hdr_metadata.cta_861_3.emplace(peak_luminance.value(),
+                                                      kContentAvgNits);
       }
       if (white_luminance.has_value()) {
-        image_metadata.hdr_metadata->ndwl.emplace(white_luminance.value());
+        image_metadata.hdr_metadata.ndwl.emplace(white_luminance.value());
       }
       image_generator->SetImageHeaderMetadata(image_metadata);
       EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));
@@ -1157,7 +1155,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   {
     constexpr float kExpected = 0.933675419515227f;
     constexpr float kDstHeadroom = 1.5f;
-    options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
+    options.target_color_params.hdr_headroom = std::log2(kDstHeadroom);
     auto actual =
         Raster(make_display_item_list(image_500_nits, 10000.f), options);
     auto color = actual.getColor4f(0, 0);
@@ -1339,7 +1337,6 @@ class TestMailboxBacking : public TextureBacking {
 
   const SkImageInfo& GetSkImageInfo() override { return info_; }
   gpu::Mailbox GetMailbox() const override { return mailbox_; }
-  sk_sp<SkImage> GetAcceleratedSkImage() override { return nullptr; }
   sk_sp<SkImage> GetSkImageViaReadback() override { return nullptr; }
   bool readPixels(const SkImageInfo& dstInfo,
                   void* dstPixels,
@@ -1348,7 +1345,6 @@ class TestMailboxBacking : public TextureBacking {
                   int srcY) override {
     return false;
   }
-  void FlushPendingSkiaOps() override {}
 
  private:
   gpu::Mailbox mailbox_;
@@ -1358,7 +1354,7 @@ class TestMailboxBacking : public TextureBacking {
 
 TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   RasterOptions options(gfx::Size(16, 16));
-  options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kOop;
+  options.image_provider_raster_mode = PlaybackImageProvider::RasterMode::kGpu;
   SkImageInfo backing_info = SkImageInfo::MakeN32Premul(
       options.resource_size.width(), options.resource_size.height());
 
@@ -2165,8 +2161,8 @@ class OopTextBlobPixelTest
 #if BUILDFLAG(IS_ANDROID)
     // The nexus5 and nexus5x bots are particularly susceptible to small changes
     // when bilerping an image (not visible).
-    const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
-    if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
+    const int sdk = base::android::android_info::sdk_int();
+    if (sdk <= base::android::android_info::SDK_VERSION_MARSHMALLOW) {
       error_pixels_percentage = 10.f;
       max_abs_error = 20;
     } else {
@@ -2691,12 +2687,15 @@ TEST_F(OopPixelTest, WritePixels) {
       SkImageInfo::MakeN32Premul(dest_size.width(), dest_size.height()),
       expected_pixels.data(), dest_size.width() * sizeof(SkColor));
 
-  UploadPixels(ri, dest_client_si, expected.info(), expected);
+  gpu::SyncToken sync_token =
+      UploadPixels(ri, dest_client_si, expected.info(), expected);
 
+  auto ri_access =
+      dest_client_si->BeginRasterAccess(ri, sync_token, /*readonly=*/true);
   SkBitmap actual =
       ReadbackMailbox(ri, dest_client_si->mailbox(), options.resource_size);
-  gpu::SyncToken sync_token;
-  ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
+  sync_token = gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+
   sii->DestroySharedImage(sync_token, std::move(dest_client_si));
   ExpectEquals(actual, expected);
 }
@@ -2793,7 +2792,8 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888, dest_color_space);
 
   scoped_refptr<gpu::ClientSharedImage> yuv_client_si =
-      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kI420);
+      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kI420,
+                              gfx::ColorSpace::CreateREC709());
 
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 
@@ -2968,9 +2968,7 @@ class OopPathPixelTest : public OopPixelTest,
     PaintFlags flags;
     flags.setStyle(PaintFlags::kFill_Style);
     flags.setColor(SkColors::kGreen);
-    SkPath path;
-    path.addCircle(20, 20, 10);
-    display_item_list->push<DrawPathOp>(path, flags);
+    display_item_list->push<DrawPathOp>(SkPath::Circle(20, 20, 10), flags);
     flags.setColor(SkColors::kBlue);
     display_item_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);

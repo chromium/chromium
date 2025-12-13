@@ -67,12 +67,12 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/simple_feature.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -251,7 +251,8 @@ void PolicyUITest::VerifyPolicies(
       "JSON.stringify(policies);";
   std::string json =
       content::EvalJs(web_contents(), javascript).ExtractString();
-  std::optional<base::Value> value_ptr = base::JSONReader::Read(json);
+  std::optional<base::Value> value_ptr =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value_ptr);
   ASSERT_TRUE(value_ptr->is_list());
   const base::Value::List& actual_policies = value_ptr->GetList();
@@ -353,7 +354,8 @@ bool PolicyUIStatusTest::ReadStatusFor(
   content::WebContents* contents =
       chrome_test_utils::GetActiveWebContents(this);
   std::string json = content::EvalJs(contents, javascript).ExtractString();
-  std::optional<base::Value> statuses = base::JSONReader::Read(json);
+  std::optional<base::Value> statuses =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!statuses.has_value() || !statuses->is_dict()) {
     return false;
   }

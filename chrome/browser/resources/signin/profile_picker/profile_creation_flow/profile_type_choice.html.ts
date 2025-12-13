@@ -35,7 +35,7 @@ export function getHtml(this: ProfileTypeChoiceElement) {
   </cr-button>
   <cr-button id="notNowButton" @click="${this.onNotNowClick_}"
       ?disabled="${this.profileCreationInProgress}">
-    $i18n{notNowButtonLabel}
+    $i18n{declineSignInButtonLabel}
   </cr-button>
 </div>
 

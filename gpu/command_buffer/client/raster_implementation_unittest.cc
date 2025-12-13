@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Tests for RasterImplementation.
 
 #include "gpu/command_buffer/client/raster_implementation.h"
@@ -45,7 +40,6 @@ using testing::AtLeast;
 using testing::AnyNumber;
 using testing::DoAll;
 using testing::InSequence;
-using testing::Invoke;
 using testing::Mock;
 using testing::Sequence;
 using testing::StrictMock;
@@ -56,11 +50,11 @@ namespace gpu {
 namespace raster {
 
 ACTION_P2(SetMemory, dst, obj) {
-  memcpy(dst, &obj, sizeof(obj));
+  UNSAFE_TODO(memcpy(dst, &obj, sizeof(obj)));
 }
 
 ACTION_P3(SetMemoryFromArray, dst, array, size) {
-  memcpy(dst, array, size);
+  UNSAFE_TODO(memcpy(dst, array, size));
 }
 
 // Used to help set the transfer buffer result to SizedResult of a single value.
@@ -121,8 +115,7 @@ class RasterImplementationTest : public testing::Test {
 
         gl_ = std::make_unique<RasterImplementation>(
             helper_.get(), transfer_buffer_.get(),
-            lose_context_when_out_of_memory, gpu_control_.get(),
-            nullptr /* image_decode_accelerator */);
+            lose_context_when_out_of_memory, gpu_control_.get());
       }
 
       // The client should be set to something non-null.
@@ -135,8 +128,9 @@ class RasterImplementationTest : public testing::Test {
       Mock::VerifyAndClearExpectations(gl_.get());
 
       scoped_refptr<Buffer> ring_buffer = helper_->get_ring_buffer();
-      commands_ = static_cast<CommandBufferEntry*>(ring_buffer->memory()) +
-                  command_buffer()->GetServicePutOffset();
+      commands_ =
+          UNSAFE_TODO(static_cast<CommandBufferEntry*>(ring_buffer->memory()) +
+                      command_buffer()->GetServicePutOffset());
       ClearCommands();
       EXPECT_TRUE(transfer_buffer_->InSync());
 
@@ -164,7 +158,8 @@ class RasterImplementationTest : public testing::Test {
 
     void ClearCommands() {
       scoped_refptr<Buffer> ring_buffer = helper_->get_ring_buffer();
-      memset(ring_buffer->memory(), kInitialValue, ring_buffer->size());
+      UNSAFE_TODO(
+          memset(ring_buffer->memory(), kInitialValue, ring_buffer->size()));
     }
 
     std::unique_ptr<MockClientCommandBuffer> command_buffer_;
@@ -185,8 +180,8 @@ class RasterImplementationTest : public testing::Test {
   bool NoCommandsWritten() {
     scoped_refptr<Buffer> ring_buffer = helper_->get_ring_buffer();
     const uint8_t* cmds = static_cast<const uint8_t*>(ring_buffer->memory());
-    const uint8_t* end = cmds + ring_buffer->size();
-    for (; cmds < end; ++cmds) {
+    const uint8_t* end = UNSAFE_TODO(cmds + ring_buffer->size());
+    for (; cmds < end; UNSAFE_TODO(++cmds)) {
       if (*cmds != kInitialValue) {
         return false;
       }
@@ -233,7 +228,8 @@ class RasterImplementationTest : public testing::Test {
 
   void ClearCommands() {
     scoped_refptr<Buffer> ring_buffer = helper_->get_ring_buffer();
-    memset(ring_buffer->memory(), kInitialValue, ring_buffer->size());
+    UNSAFE_TODO(
+        memset(ring_buffer->memory(), kInitialValue, ring_buffer->size()));
   }
 
   uint32_t MaxTransferBufferSize() {
@@ -358,16 +354,16 @@ TEST_F(RasterImplementationTest, GetBucketContents) {
       .WillOnce(DoAll(
           SetMemory(result1.ptr, kTestSize),
           SetMemoryFromArray(mem1.ptr, buf.data(), MaxTransferBufferSize())))
-      .WillOnce(SetMemoryFromArray(mem2.ptr,
-                                   buf.data() + MaxTransferBufferSize(),
-                                   kTestSize - MaxTransferBufferSize()))
+      .WillOnce(SetMemoryFromArray(
+          mem2.ptr, UNSAFE_TODO(buf.data() + MaxTransferBufferSize()),
+          kTestSize - MaxTransferBufferSize()))
       .RetiresOnSaturation();
 
   std::vector<int8_t> data;
   GetBucketContents(kBucketId, &data);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
   ASSERT_EQ(kTestSize, data.size());
-  EXPECT_EQ(0, memcmp(buf.data(), &data[0], data.size()));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(buf.data(), &data[0], data.size())));
 }
 
 TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
@@ -384,8 +380,8 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   expected_gen_cmds.gen.Init(std::size(expected_ids), &expected_ids[0]);
   std::array<GLuint, std::size(expected_ids)> ids = {};
   gl_->GenQueriesEXT(std::size(expected_ids), &ids[0]);
-  EXPECT_EQ(0,
-            memcmp(&expected_gen_cmds, commands_, sizeof(expected_gen_cmds)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&expected_gen_cmds, commands_, sizeof(expected_gen_cmds))));
   GLuint id1 = ids[0];
   GLuint id2 = ids[1];
   ClearCommands();
@@ -406,8 +402,8 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   ASSERT_TRUE(query != nullptr);
   expected_begin_cmds.begin_query.Init(GL_COMMANDS_COMPLETED_CHROMIUM, id1,
                                        query->shm_id(), query->shm_offset());
-  EXPECT_EQ(
-      0, memcmp(&expected_begin_cmds, commands, sizeof(expected_begin_cmds)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&expected_begin_cmds, commands, sizeof(expected_begin_cmds))));
   ClearCommands();
 
   // Test BeginQueryEXT fails if between Begin/End.
@@ -424,7 +420,8 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   EndCmds expected_end_cmds;
   expected_end_cmds.end_query.Init(GL_COMMANDS_COMPLETED_CHROMIUM,
                                    query->submit_count());
-  EXPECT_EQ(0, memcmp(&expected_end_cmds, commands, sizeof(expected_end_cmds)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&expected_end_cmds, commands, sizeof(expected_end_cmds))));
 
   // Test EndQueryEXT fails if no current query.
   ClearCommands();
@@ -441,7 +438,8 @@ TEST_F(RasterImplementationTest, BeginEndQueryEXT) {
   EXPECT_NE(old_submit_count, query->submit_count());
   expected_end_cmds.end_query.Init(GL_COMMANDS_COMPLETED_CHROMIUM,
                                    query->submit_count());
-  EXPECT_EQ(0, memcmp(&expected_end_cmds, commands, sizeof(expected_end_cmds)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&expected_end_cmds, commands, sizeof(expected_end_cmds))));
 
   // Test GetQueryObjectuivEXT fails if unused id
   GLuint available = 0xBDu;
@@ -509,7 +507,8 @@ TEST_F(RasterImplementationTest, GenUnverifiedSyncTokenCHROMIUM) {
   EXPECT_CALL(*gpu_control_, GenerateFenceSyncRelease())
       .WillOnce(Return(kFenceSync));
   gl_->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  EXPECT_EQ(0, memcmp(&insert_fence_sync, commands, sizeof(insert_fence_sync)));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(&insert_fence_sync, commands, sizeof(insert_fence_sync))));
   EXPECT_EQ(GL_NO_ERROR, CheckError());
 
   EXPECT_FALSE(sync_token.verified_flush());
@@ -671,7 +670,7 @@ TEST_F(RasterImplementationTest, WaitSyncTokenCHROMIUM) {
   verified_sync_token.SetVerifyFlush();
   EXPECT_CALL(*gpu_control_, WaitSyncToken(verified_sync_token));
   gl_->WaitSyncTokenCHROMIUM(sync_token_data);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
 }
 
 TEST_F(RasterImplementationTest, WaitSyncTokenCHROMIUMErrors) {
@@ -730,10 +729,10 @@ TEST_F(RasterImplementationTest, SignalSyncToken) {
   // run when the sync token is reached.
   base::OnceClosure signal_closure;
   EXPECT_CALL(*gpu_control_, DoSignalSyncToken(_, _))
-      .WillOnce(Invoke([&signal_closure](const SyncToken& sync_token,
-                                         base::OnceClosure* callback) {
+      .WillOnce([&signal_closure](const SyncToken& sync_token,
+                                  base::OnceClosure* callback) {
         signal_closure = std::move(*callback);
-      }));
+      });
   EXPECT_CALL(*gpu_control_, CanWaitUnverifiedSyncToken(sync_token))
       .WillOnce(Return(true));
   gl_->SignalSyncToken(sync_token,
@@ -765,10 +764,10 @@ TEST_F(RasterImplementationTest, SignalSyncTokenAfterContextLoss) {
   // run when the sync token is reached.
   base::OnceClosure signal_closure;
   EXPECT_CALL(*gpu_control_, DoSignalSyncToken(_, _))
-      .WillOnce(Invoke([&signal_closure](const SyncToken& sync_token,
-                                         base::OnceClosure* callback) {
+      .WillOnce([&signal_closure](const SyncToken& sync_token,
+                                  base::OnceClosure* callback) {
         signal_closure = std::move(*callback);
-      }));
+      });
   EXPECT_CALL(*gpu_control_, CanWaitUnverifiedSyncToken(sync_token))
       .WillOnce(Return(true));
   gl_->SignalSyncToken(sync_token,
@@ -827,18 +826,18 @@ TEST_F(RasterImplementationTest, TransferCacheSerialization) {
   ASSERT_EQ(buffer.size(), buffer_size);
 
   uint8_t* buffer_start = reinterpret_cast<uint8_t*>(buffer.address());
-  memset(buffer_start, 0, buffer_size);
+  UNSAFE_TODO(memset(buffer_start, 0, buffer_size));
   gl_->SetRasterMappedBufferForTesting(std::move(buffer));
   auto transfer_cache = gl_->CreateTransferCacheHelperForTesting();
 
   std::vector<uint8_t> data(buffer_size - 16u);
-  uint8_t* memory = buffer_start + 8u;
+  uint8_t* memory = UNSAFE_TODO(buffer_start + 8u);
   cc::ClientRawMemoryTransferCacheEntry inlined_entry(data);
   EXPECT_EQ(transfer_cache->CreateEntry(inlined_entry, memory), data.size());
-  EXPECT_EQ(memcmp(data.data(), memory, data.size()), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(data.data(), memory, data.size()), 0));
 
   data.resize(buffer_size + 16u);
-  memory = buffer_start + 8u;
+  memory = UNSAFE_TODO(buffer_start + 8u);
   cc::ClientRawMemoryTransferCacheEntry non_inlined_entry(data);
   EXPECT_EQ(transfer_cache->CreateEntry(non_inlined_entry, memory), 0u);
 }
@@ -861,8 +860,8 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
   };
 
   ExpectedMemoryInfo mem = GetExpectedMemory(kPaddedStringSize);
-  EXPECT_EQ(0,
-            memcmp(url.c_str(), reinterpret_cast<char*>(mem.ptr), url.size()));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(url.c_str(), reinterpret_cast<char*>(mem.ptr), url.size())));
 
   Cmds expected;
   expected.url_size.Init(kURLBucketId, url.size());
@@ -870,7 +869,7 @@ TEST_F(RasterImplementationTest, SetActiveURLCHROMIUM) {
   expected.set_token.Init(GetNextToken());
   expected.set_url_call.Init(kURLBucketId);
   expected.url_size_end.Init(kURLBucketId, 0);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected))));
 
   // Same URL shouldn't make any commands.
   EXPECT_FALSE(NoCommandsWritten());

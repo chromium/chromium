@@ -37,6 +37,7 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/resource_id.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/service/display/aggregated_frame.h"
@@ -5853,21 +5854,26 @@ CompositorFrame BuildCompositorFrameWithResources(
   }
 
   for (ResourceId resource_id : resource_ids) {
-    auto shared_image =
-        shared_image_interface->CreateSharedImageForSoftwareCompositor(
-            {SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1), gfx::ColorSpace(),
-             gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-             "SurfaceAggregatorWithResourcesTest"});
+    gpu::SharedImageInfo si_info{SinglePlaneFormat::kBGRA_8888, gfx::Size(1, 1),
+                                 gfx::ColorSpace(),
+                                 gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+                                 "SurfaceAggregatorWithResourcesTest"};
+    scoped_refptr<gpu::ClientSharedImage> shared_image;
+    if (valid) {
+      shared_image =
+          shared_image_interface->CreateSharedImageForSoftwareCompositor(
+              si_info);
+    } else {
+      // ResourceProvider is software, so only software resources are valid. Do
+      // this to cause the resource to be rejected.
+      shared_image = shared_image_interface->CreateSharedImage(
+          si_info, gpu::SurfaceHandle());
+    }
     auto resource = TransferableResource::Make(
         shared_image, TransferableResource::ResourceSource::kTileRasterTask,
         shared_image->creation_sync_token());
 
     resource.id = resource_id;
-    if (!valid) {
-      // ResourceProvider is software, so only software resources are valid. Do
-      // this to cause the resource to be rejected.
-      resource.is_software = false;
-    }
     frame.resource_list.push_back(resource);
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
     const gfx::Rect rect;
@@ -5969,11 +5975,12 @@ TEST_F(SurfaceAggregatorWithResourcesTest, TakeInvalidResources) {
   LocalSurfaceId local_surface_id(7u, base::UnguessableToken::Create());
   SurfaceId surface_id(root_sink_->frame_sink_id(), local_surface_id);
 
-  TransferableResource resource;
-  resource.id = ResourceId(11);
   // ResourceProvider is software but resource is not, so it should be
   // ignored.
-  resource.is_software = false;
+  TransferableResource resource = TransferableResource::Make(
+      gpu::ClientSharedImage::CreateForTesting(),
+      TransferableResource::ResourceSource::kTest, gpu::SyncToken());
+  resource.id = ResourceId(11);
 
   CompositorFrame frame = CompositorFrameBuilder()
                               .AddDefaultRenderPass()
@@ -6244,20 +6251,20 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
                                         0.5)}}};
 
   gfx::DisplayColorSpaces display_color_spaces(gfx::ColorSpace::CreateSRGB());
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kWideColorGamut, false /* needs_alpha */,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::SRGB),
-      gfx::BufferFormat::RGBA_8888);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      SinglePlaneFormat::kRGBA_8888);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kWideColorGamut, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_8888);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_8888);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, false /* needs_alpha */,
-      gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      gfx::ColorSpace::CreateHDR10(), SinglePlaneFormat::kBGRA_1010102);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_F16);
 
   std::vector<Pass> passes = {
       Pass(quads[0], CompositorRenderPassId{2}, kSurfaceSize),
@@ -6346,14 +6353,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, ColorSpaceTestWin) {
   // content can be drawn into a BT2020 buffer as 10-10-10-2, but transparent
   // content needs to bump up to 16-bit, and therefore (until we find a way
   // around this) linear color space.
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, false /* needs_alpha */,
       gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
                       gfx::ColorSpace::TransferID::SRGB),
-      gfx::BufferFormat::BGRA_1010102);
-  display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+      SinglePlaneFormat::kBGRA_1010102);
+  display_color_spaces.SetOutputColorSpaceAndFormat(
       gfx::ContentColorUsage::kHDR, true /* needs_alpha */,
-      gfx::ColorSpace::CreateSRGBLinear(), gfx::BufferFormat::RGBA_F16);
+      gfx::ColorSpace::CreateSRGBLinear(), SinglePlaneFormat::kRGBA_F16);
 
   // Opaque content renders to the appropriate space directly.
   passes[1].has_transparent_background = false;
@@ -10281,8 +10288,13 @@ class OnScreenshotCapturedWaiter : public mojom::FrameSinkManagerClient {
     observed_token_ = destination_token;
     run_loop_.Quit();
   }
+  void OnVizTouchStateAvailable(
+      base::ReadOnlySharedMemoryRegion region) override {}
 
   void Wait() { run_loop_.Run(); }
+
+  void OnViewTransitionResourcesCaptured(
+      const blink::ViewTransitionToken& transition_token) override {}
 
   const blink::SameDocNavigationScreenshotDestinationToken& observed_token() {
     return observed_token_;

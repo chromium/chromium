@@ -225,7 +225,7 @@ RenderFrameHost* CreateFencedFrame(RenderFrameHost* root,
 
   observer.Wait();
 
-  EXPECT_TRUE(result.error.empty());
+  EXPECT_TRUE(result.is_ok());
 
   return fenced_frame_root_node->current_frame_host();
 }

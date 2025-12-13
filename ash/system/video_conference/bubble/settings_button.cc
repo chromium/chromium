@@ -28,6 +28,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography_provider.h"
 
 namespace ash::video_conference {

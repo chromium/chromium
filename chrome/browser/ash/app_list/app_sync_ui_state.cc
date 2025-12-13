@@ -149,6 +149,11 @@ void AppSyncUIState::OnStateChanged(syncer::SyncService* sync) {
   CheckAppSync();
 }
 
+void AppSyncUIState::OnSyncShutdown(syncer::SyncService* sync) {
+  // Unreachable, since this service is Shutdown() before the SyncService.
+  NOTREACHED();
+}
+
 void AppSyncUIState::OnExtensionLoaded(content::BrowserContext* browser_context,
                                        const extensions::Extension* extension) {
   CheckAppSync();

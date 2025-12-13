@@ -17,6 +17,7 @@
 #include "absl/container/flat_hash_map.h"
 #include "absl/log/absl_check.h"
 #include "absl/strings/str_cat.h"
+#include "google/protobuf/compiler/code_generator_lite.h"
 #include "google/protobuf/compiler/java/context.h"
 #include "google/protobuf/compiler/java/doc_comment.h"
 #include "google/protobuf/compiler/java/field_common.h"
@@ -53,8 +54,6 @@ void SetEnumVariables(
 
   (*variables)["type"] =
       name_resolver->GetImmutableClassName(descriptor->enum_type());
-  (*variables)["mutable_type"] =
-      name_resolver->GetMutableClassName(descriptor->enum_type());
   (*variables)["default"] =
       ImmutableDefaultValue(descriptor, name_resolver, context->options());
   (*variables)["default_number"] =
@@ -70,7 +69,7 @@ void SetEnumVariables(
   (*variables)["required"] = descriptor->is_required() ? "true" : "false";
 
   if (HasHasbit(descriptor)) {
-    if (!context->options().opensource_runtime) {
+    if (!google::protobuf::internal::IsOss()) {
       (*variables)["bit_field_id"] = absl::StrCat(messageBitIndex / 32);
       (*variables)["bit_field_name"] = GetBitFieldNameForBit(messageBitIndex);
       (*variables)["bit_field_mask"] =
@@ -120,7 +119,7 @@ ImmutableEnumFieldLiteGenerator::ImmutableEnumFieldLiteGenerator(
                    &variables_, context);
 }
 
-ImmutableEnumFieldLiteGenerator::~ImmutableEnumFieldLiteGenerator() {}
+ImmutableEnumFieldLiteGenerator::~ImmutableEnumFieldLiteGenerator() = default;
 
 int ImmutableEnumFieldLiteGenerator::GetNumBitsForMessage() const {
   return HasHasbit(descriptor_) ? 1 : 0;
@@ -151,7 +150,7 @@ void ImmutableEnumFieldLiteGenerator::GenerateInterfaceMembers(
 
 void ImmutableEnumFieldLiteGenerator::GenerateMembers(
     io::Printer* printer) const {
-  if (!context_->options().opensource_runtime) {
+  if (!google::protobuf::internal::IsOss()) {
     printer->Print(variables_,
                    "@com.google.protobuf.ProtoField(\n"
                    "  isRequired=$required$)\n");
@@ -198,8 +197,9 @@ void ImmutableEnumFieldLiteGenerator::GenerateMembers(
 
   // Generate private setters for the builder to proxy into.
   if (SupportUnknownEnumValue(descriptor_)) {
-    WriteFieldEnumValueAccessorDocComment(printer, descriptor_, SETTER,
-                                          context_->options());
+    WriteFieldEnumValueAccessorDocComment(
+        printer, descriptor_, SETTER, context_->options(),
+        /* builder = */ false, /* is_private = */ true);
     printer->Print(variables_,
                    "private void set$capitalized_name$Value(int value) {\n"
                    "  $set_has_field_bit_message$"
@@ -329,7 +329,8 @@ ImmutableEnumOneofFieldLiteGenerator::ImmutableEnumOneofFieldLiteGenerator(
   SetCommonOneofVariables(descriptor, info, &variables_);
 }
 
-ImmutableEnumOneofFieldLiteGenerator::~ImmutableEnumOneofFieldLiteGenerator() {}
+ImmutableEnumOneofFieldLiteGenerator::~ImmutableEnumOneofFieldLiteGenerator() =
+    default;
 
 void ImmutableEnumOneofFieldLiteGenerator::GenerateMembers(
     io::Printer* printer) const {
@@ -374,8 +375,9 @@ void ImmutableEnumOneofFieldLiteGenerator::GenerateMembers(
 
   // Generate private setters for the builder to proxy into.
   if (SupportUnknownEnumValue(descriptor_)) {
-    WriteFieldEnumValueAccessorDocComment(printer, descriptor_, SETTER,
-                                          context_->options());
+    WriteFieldEnumValueAccessorDocComment(
+        printer, descriptor_, SETTER, context_->options(),
+        /* builder = */ false, /* is_private = */ true);
     printer->Print(variables_,
                    "private void set$capitalized_name$Value(int value) {\n"
                    "  $set_oneof_case_message$;\n"
@@ -497,7 +499,7 @@ RepeatedImmutableEnumFieldLiteGenerator::
 }
 
 RepeatedImmutableEnumFieldLiteGenerator::
-    ~RepeatedImmutableEnumFieldLiteGenerator() {}
+    ~RepeatedImmutableEnumFieldLiteGenerator() = default;
 
 int RepeatedImmutableEnumFieldLiteGenerator::GetNumBitsForMessage() const {
   return 0;
@@ -659,30 +661,33 @@ void RepeatedImmutableEnumFieldLiteGenerator::GenerateMembers(
                  "}\n");
   WriteFieldAccessorDocComment(printer, descriptor_, CLEARER,
                                context_->options(), /* builder */ false,
-                               /* kdoc */ false, /* is_private */ true);
+                               /* is_private */ true);
   printer->Print(variables_,
                  "private void clear$capitalized_name$() {\n"
                  "  $name$_ = emptyIntList();\n"
                  "}\n");
 
   if (SupportUnknownEnumValue(descriptor_)) {
-    WriteFieldEnumValueAccessorDocComment(printer, descriptor_, SETTER,
-                                          context_->options());
+    WriteFieldEnumValueAccessorDocComment(
+        printer, descriptor_, SETTER, context_->options(),
+        /* builder = */ false, /* is_private = */ true);
     printer->Print(variables_,
                    "private void set$capitalized_name$Value(\n"
                    "    int index, int value) {\n"
                    "  ensure$capitalized_name$IsMutable();\n"
                    "  $name$_.setInt(index, value);\n"
                    "}\n");
-    WriteFieldEnumValueAccessorDocComment(printer, descriptor_, LIST_ADDER,
-                                          context_->options());
+    WriteFieldEnumValueAccessorDocComment(
+        printer, descriptor_, LIST_ADDER, context_->options(),
+        /* builder = */ false, /* is_private = */ true);
     printer->Print(variables_,
                    "private void add$capitalized_name$Value(int value) {\n"
                    "  ensure$capitalized_name$IsMutable();\n"
                    "  $name$_.addInt(value);\n"
                    "}\n");
     WriteFieldEnumValueAccessorDocComment(
-        printer, descriptor_, LIST_MULTI_ADDER, context_->options());
+        printer, descriptor_, LIST_MULTI_ADDER, context_->options(),
+        /* builder = */ false, /* is_private = */ true);
     printer->Print(variables_,
                    "private void addAll$capitalized_name$Value(\n"
                    "    java.lang.Iterable<java.lang.Integer> values) {\n"

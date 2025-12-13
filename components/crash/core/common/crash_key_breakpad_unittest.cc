@@ -1,11 +1,13 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
+#include "base/containers/span.h"
 #include "components/crash/core/common/crash_key.h"
-
 #include "components/crash/core/common/crash_key_internal.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::ElementsAre;
 
 namespace crash_reporter {
 
@@ -23,11 +25,8 @@ class CrashKeyBreakpadTest : public testing::Test {
     return internal::GetCrashKeyStorage();
   }
 
-  size_t* GetIndexArray(internal::CrashKeyStringImpl* key) {
-    return key->index_array_;
-  }
-  size_t GetIndexArrayCount(internal::CrashKeyStringImpl* key) {
-    return key->index_array_count_;
+  base::span<const size_t> GetIndexes(internal::CrashKeyStringImpl* key) {
+    return key->indexes_;
   }
 };
 
@@ -41,24 +40,15 @@ TEST_F(CrashKeyBreakpadTest, Allocation) {
   const size_t kSentinel = internal::kCrashKeyStorageNumEntries;
 
   static CrashKeyStringBreakpad<32> key1("short");
-  ASSERT_EQ(1u, GetIndexArrayCount(&key1));
-  auto* indexes = GetIndexArray(&key1);
-  EXPECT_EQ(kSentinel, indexes[0]);
+  EXPECT_THAT(GetIndexes(&key1), ElementsAre(kSentinel));
 
   // An extra index slot is created for lengths equal to the value size.
   static CrashKeyStringBreakpad<128> key2("extra");
-  ASSERT_EQ(2u, GetIndexArrayCount(&key2));
-  indexes = GetIndexArray(&key2);
-  EXPECT_EQ(kSentinel, indexes[0]);
-  EXPECT_EQ(kSentinel, indexes[1]);
+  EXPECT_THAT(GetIndexes(&key2), ElementsAre(kSentinel, kSentinel));
 
   static CrashKeyStringBreakpad<395> key3("large");
-  ASSERT_EQ(4u, GetIndexArrayCount(&key3));
-  indexes = GetIndexArray(&key3);
-  EXPECT_EQ(kSentinel, indexes[0]);
-  EXPECT_EQ(kSentinel, indexes[1]);
-  EXPECT_EQ(kSentinel, indexes[2]);
-  EXPECT_EQ(kSentinel, indexes[3]);
+  EXPECT_THAT(GetIndexes(&key3),
+              ElementsAre(kSentinel, kSentinel, kSentinel, kSentinel));
 }
 
 TEST_F(CrashKeyBreakpadTest, SetClearSingle) {

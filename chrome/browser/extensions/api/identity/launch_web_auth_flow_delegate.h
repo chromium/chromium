@@ -8,7 +8,10 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/gfx/geometry/rect.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

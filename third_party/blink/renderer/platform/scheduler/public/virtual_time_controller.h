@@ -87,7 +87,7 @@ class VirtualTimeController {
   // the WebScopedVirtualTimePauser returned by this method is initially
   // unpaused.
   virtual WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
+      const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration) = 0;
 };
 

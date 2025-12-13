@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chromecast/browser/audio_socket_broker.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -109,7 +105,7 @@ class AudioSocketBrokerTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(static_cast<size_t>(base::UnixDomainSocket::RecvMsg(
                   accepted_descriptor_, buffer, sizeof(buffer), &fds)),
               sizeof(kSocketMsg));
-    EXPECT_EQ(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)), 0);
+    UNSAFE_TODO(EXPECT_EQ(memcmp(buffer, kSocketMsg, sizeof(kSocketMsg)), 0));
     EXPECT_THAT(fds, ::testing::SizeIs(1U));
     accepted_socket_ = AdoptUnnamedSocketHandle(std::move(fds[0]));
   }

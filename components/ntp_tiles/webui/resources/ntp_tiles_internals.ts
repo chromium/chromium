@@ -7,9 +7,10 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 // </if>
 
-import {html, render} from '//resources/lit/v3_0/lit.rollup.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {TileSource} from 'chrome://resources/mojo/components/ntp_tiles/tile_source.mojom-webui.js';
 
 interface PopularInfo {
   url: string;
@@ -28,17 +29,7 @@ interface SourceInfo {
   popular: boolean|PopularInfo;
   topSites: boolean;
   customLinks: boolean;
-}
-
-// Keep in sync with ntp_tiles::TileSource in
-// components/ntp_tiles/tile_source.h.
-enum TileSource {
-  TOP_SITES = 0,
-  POPULAR,
-  POPULAR_BAKED_IN,
-  CUSTOM_LINKS,
-  ALLOWLIST,
-  HOMEPAGE,
+  enterpriseShortcuts: boolean;
 }
 
 interface Icon {
@@ -146,6 +137,14 @@ function getSourcesHtml(
         <tr>
           <td class="detail">enabled</td>
           <td class="value">${state.customLinks ? 'yes' : 'no'}</td>
+        </tr>
+      </tbody>
+        <tr>
+          <th colspan="2">ENTEPRISE_SHORTCUTS</th>
+        </tr>
+        <tr>
+          <td class="detail">enabled</td>
+          <td class="value">${state.enterpriseShortcuts ? 'yes' : 'no'}</td>
         </tr>
       </tbody>
     </table>

@@ -140,7 +140,7 @@ TEST_F(ExtensionIconManagerTest, LoadRemoveLoad) {
   ASSERT_TRUE(manifest.get());
   ASSERT_TRUE(manifest->is_dict());
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
       manifest->GetDict(), Extension::NO_FLAGS, &error));
@@ -182,7 +182,7 @@ TEST_F(ExtensionIconManagerTest, LoadComponentExtensionResource) {
       deserializer.Deserialize(nullptr, nullptr);
   ASSERT_TRUE(manifest.get());
   ASSERT_TRUE(manifest->is_dict());
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kComponent,
       manifest->GetDict(), Extension::NO_FLAGS, &error));
@@ -227,7 +227,7 @@ TEST_F(ExtensionIconManagerTest, ScaleFactors) {
   ASSERT_TRUE(manifest.get());
   ASSERT_TRUE(manifest->is_dict());
 
-  std::string error;
+  std::u16string error;
   scoped_refptr<Extension> extension(Extension::Create(
       manifest_path.DirName(), mojom::ManifestLocation::kInvalidLocation,
       manifest->GetDict(), Extension::NO_FLAGS, &error));

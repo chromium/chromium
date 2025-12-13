@@ -96,8 +96,12 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_voiceSearch, @"⇧⌘.", @"keyCommand_voiceSearch",
          @"IDS_IOS_KEYBOARD_VOICE_SEARCH");
   Verify(UIKeyCommand.cr_close, @"⎋", @"keyCommand_close");
+  NSString* showSettingsString = @"IDS_IOS_KEYBOARD_SHOW_SETTINGS";
+  if (@available(iOS 26, *)) {
+    showSettingsString = @"IDS_IOS_KEYBOARD_SETTINGS";
+  }
   Verify(UIKeyCommand.cr_showSettings, @"⌘,", @"keyCommand_showSettings",
-         @"IDS_IOS_KEYBOARD_SHOW_SETTINGS");
+         showSettingsString);
   Verify(UIKeyCommand.cr_stop, @"⌘.", @"keyCommand_stop",
          @"IDS_IOS_KEYBOARD_STOP");
   Verify(UIKeyCommand.cr_showHelp, @"⌥⌘?", @"keyCommand_showHelp",
@@ -105,7 +109,8 @@ TEST_F(UIKeyCommandChromeTest, Factories) {
   Verify(UIKeyCommand.cr_showDownloads, @"⌥⌘L", @"keyCommand_showDownloads",
          @"IDS_IOS_KEYBOARD_SHOW_DOWNLOADS");
   Verify(UIKeyCommand.cr_showDownloads_2, @"⇧⌘J", @"keyCommand_showDownloads");
-  Verify(UIKeyCommand.cr_select1, @"⌘1", @"keyCommand_select1");
+  Verify(UIKeyCommand.cr_select1, @"⌘1", @"keyCommand_select1",
+         @"IDS_IOS_KEYBOARD_FIRST_TAB");
   Verify(UIKeyCommand.cr_select2, @"⌘2", @"keyCommand_select2");
   Verify(UIKeyCommand.cr_select3, @"⌘3", @"keyCommand_select3");
   Verify(UIKeyCommand.cr_select4, @"⌘4", @"keyCommand_select4");

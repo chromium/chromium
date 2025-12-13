@@ -10,7 +10,7 @@ dictionary IdentityCredentialDisconnectOptions : IdentityProviderConfig {
 [Exposed=Window, SecureContext]
 interface IdentityCredential : Credential {
   static Promise<undefined> disconnect(IdentityCredentialDisconnectOptions options);
-  readonly attribute USVString? token;
+  readonly attribute any token;
   readonly attribute boolean isAutoSelected;
   readonly attribute USVString configURL;
 };
@@ -59,7 +59,6 @@ dictionary IdentityProviderConfig {
 };
 
 dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
-  USVString nonce;
   DOMString loginHint;
   DOMString domainHint;
   sequence<USVString> fields;
@@ -113,7 +112,7 @@ dictionary IdentityProviderAccountList {
 };
 
 dictionary IdentityAssertionResponse {
-  USVString token;
+  any token;
   USVString continue_on;
   IdentityCredentialErrorInit error;
 };
@@ -121,6 +120,7 @@ dictionary IdentityAssertionResponse {
 dictionary IdentityProviderClientMetadata {
   USVString privacy_policy_url;
   USVString terms_of_service_url;
+  boolean client_is_third_party_to_top_frame_origin = false;
 };
 
 dictionary IdentityUserInfo {
@@ -136,6 +136,6 @@ dictionary IdentityResolveOptions {
 
 [Exposed=Window, SecureContext] interface IdentityProvider {
     static undefined close();
-    static Promise<undefined> resolve(DOMString token, optional IdentityResolveOptions options = {});
+    static Promise<undefined> resolve(any token, optional IdentityResolveOptions options = {});
     static Promise<sequence<IdentityUserInfo>> getUserInfo(IdentityProviderConfig config);
 };

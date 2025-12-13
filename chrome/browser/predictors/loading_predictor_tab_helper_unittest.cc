@@ -36,7 +36,6 @@ using ::testing::An;
 using ::testing::ByRef;
 using ::testing::DoAll;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -145,7 +144,7 @@ void LoadingPredictorTabHelperTest::
   EXPECT_CALL(*mock_collector_,
               RecordFinishNavigation(_, _,
                                      /* is_error_page */ false))
-      .WillOnce(DoAll(SaveArg<1>(&new_main_frame_url)));
+      .WillOnce(SaveArg<1>(&new_main_frame_url));
 
   NavigateAndCommitInFrame(url, main_rfh());
 
@@ -454,11 +453,11 @@ TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
               CanApplyOptimization(
                   _, optimization_guide::proto::LOADING_PREDICTOR,
                   An<optimization_guide::OptimizationGuideDecisionCallback>()))
-      .WillOnce(WithArg<2>(
-          Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
-                         got_callback) -> void {
+      .WillOnce(
+          WithArg<2>([&](optimization_guide::OptimizationGuideDecisionCallback
+                             got_callback) -> void {
             callback = std::move(got_callback);
-          })));
+          }));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Invoke callback after commit.
@@ -513,11 +512,11 @@ TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                   _, optimization_guide::proto::LOADING_PREDICTOR,
                   An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(3)
-      .WillOnce(WithArg<2>(
-          Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
-                         got_callback) -> void {
+      .WillOnce(
+          WithArg<2>([&](optimization_guide::OptimizationGuideDecisionCallback
+                             got_callback) -> void {
             callback = std::move(got_callback);
-          })))
+          }))
       .WillRepeatedly(Return());
   navigation->Start();
   base::RunLoop().RunUntilIdle();
@@ -598,11 +597,11 @@ TEST_P(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
               CanApplyOptimization(
                   _, optimization_guide::proto::LOADING_PREDICTOR,
                   An<optimization_guide::OptimizationGuideDecisionCallback>()))
-      .WillOnce(WithArg<2>(
-          Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
-                         got_callback) -> void {
+      .WillOnce(
+          WithArg<2>([&](optimization_guide::OptimizationGuideDecisionCallback
+                             got_callback) -> void {
             callback = std::move(got_callback);
-          })));
+          }));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   std::optional<OptimizationGuidePrediction> prediction =
@@ -718,7 +717,7 @@ class LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
 };
 

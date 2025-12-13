@@ -1,9 +1,9 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: 2.14.2
-Revision: 0e145ae4881c2a05ae00128a3bd90d76d4dadc4b
+Version: 22f9d730898d2dfcc03a484e65e1f8fc3675225f
+Revision: 22f9d730898d2dfcc03a484e65e1f8fc3675225f
 Update Mechanism: Manual
-CPEPrefix: cpe:/a:xmlsoft:libxml2:2.14.2
+CPEPrefix: cpe:/a:xmlsoft:libxml2:2.14.6
 License: MIT
 License File: src/Copyright
 Security Critical: yes
@@ -15,13 +15,11 @@ libxml2 from libxml.org.
 
 Modifications:
 
-- undo-sax-deprecation.patch: Un-deprecate xmlSAXParseMemory because it is used
-  in chromium's copy of maldoca. See https://github.com/google/maldoca/issues/87
 - remove-getentropy.patch: Removes calls to getentropy() and BCrypt because they
   aren't implemented or don't work on several platforms.
-- counted_by.patch: Work around __counted_by__ supported in a cronet toolchain
-  with a pre-release clang.
 - xml-attr-extra.patch: add an `extra` member to struct _xmlAttr.
+- widen-extra-field-in-_xmlNode-to-an-int.patch widen
+  the `extra` member in _xmlNode.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 - Disable various unused libxml features:

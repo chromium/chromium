@@ -137,7 +137,7 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
     base::WeakPtr<content::WebContents> web_contents,
     base::OnceClosure granted_callback,
     base::OnceClosure denied_callback,
-    const std::vector<blink::mojom::PermissionStatus>& status) {
+    const std::vector<content::PermissionResult>& status) {
   auto requests_it = pending_requests_.find(rfh_id);
   if (requests_it == pending_requests_.end()) {
     NOTREACHED();
@@ -145,7 +145,7 @@ void ExclusiveAccessPermissionManager::HandleRequestResult(
   PendingRequests& requests = requests_it->second;
   CHECK_EQ(status.size(), 1u);
   std::vector<base::OnceClosure> result_callbacks;
-  switch (status[0]) {
+  switch (status[0].status) {
     case blink::mojom::PermissionStatus::GRANTED:
       requests.result_callbacks.push_back(std::move(granted_callback));
       break;

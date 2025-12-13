@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 // Declaration of a Windows event trace provider class, to allow using
 // Windows Event Tracing for logging transport and control.
 #ifndef BASE_WIN_EVENT_TRACE_PROVIDER_H_
@@ -20,7 +15,9 @@
 #include <stdint.h>
 #include <wmistr.h>
 
+#include <array>
 #include <limits>
+#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -38,7 +35,7 @@ using EtwEventFlags = ULONG;
 template <size_t N>
 struct EtwMofEventBase {
   EVENT_TRACE_HEADER header;
-  MOF_FIELD fields[N];
+  std::array<MOF_FIELD, N> fields;
 };
 
 // Utility class to auto-initialize event trace header structures.
@@ -47,17 +44,20 @@ class EtwMofEvent : public EtwMofEventBase<N> {
  public:
   using Super = EtwMofEventBase<N>;
 
+  static_assert(std::is_trivial_v<Super> && std::is_standard_layout_v<Super>,
+                "EtwMofEventBase must be a POD type.");
+
   // Clang and the C++ standard don't allow unqualified lookup into dependent
   // bases, hence these using decls to explicitly pull the names out.
   using EtwMofEventBase<N>::header;
   using EtwMofEventBase<N>::fields;
 
-  EtwMofEvent() { memset(static_cast<Super*>(this), 0, sizeof(Super)); }
+  EtwMofEvent() : Super{} {}
 
   EtwMofEvent(const EtwEventClass& event_class,
               EtwEventType type,
-              EtwEventLevel level) {
-    memset(static_cast<Super*>(this), 0, sizeof(Super));
+              EtwEventLevel level)
+      : Super{} {
     header.Size = sizeof(Super);
     header.Guid = event_class;
     header.Class.Type = type;
@@ -68,8 +68,8 @@ class EtwMofEvent : public EtwMofEventBase<N> {
   EtwMofEvent(const EtwEventClass& event_class,
               EtwEventType type,
               EtwEventVersion version,
-              EtwEventLevel level) {
-    memset(static_cast<Super*>(this), 0, sizeof(Super));
+              EtwEventLevel level)
+      : Super{} {
     header.Size = sizeof(Super);
     header.Guid = event_class;
     header.Class.Type = type;

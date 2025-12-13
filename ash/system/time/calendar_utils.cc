@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash::calendar_utils {
@@ -200,20 +201,18 @@ base::Time GetMinTime(const base::Time d1, const base::Time d2) {
 
 SkColor GetPrimaryTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  return color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  return color_provider->GetColor(cros_tokens::kTextColorPrimary);
 }
 
 SkColor GetSecondaryTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  return color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  return color_provider->GetColor(cros_tokens::kTextColorSecondary);
 }
 
 SkColor GetDisabledTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
-  const SkColor primary_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  const SkColor primary_color =
+      color_provider->GetColor(cros_tokens::kTextColorPrimary);
   return ColorUtil::GetDisabledColor(primary_color);
 }
 

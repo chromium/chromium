@@ -15,7 +15,9 @@
 #include "gin/converter.h"
 #include "gin/function_template.h"
 #include "gin/gin_export.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "v8/include/v8-forward.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 
@@ -107,7 +109,18 @@ class GIN_EXPORT ObjectTemplateBuilder {
     return SetLazyDataPropertyImpl(name, callback, data);
   }
 
-  ObjectTemplateBuilder& AddNamedPropertyInterceptor();
+  template <WrappablePointerTag tag>
+  ObjectTemplateBuilder& AddNamedPropertyInterceptor() {
+    template_->SetHandler(v8::NamedPropertyHandlerConfiguration(
+        &ObjectTemplateBuilder::NamedPropertyGetter<tag>,
+        &ObjectTemplateBuilder::NamedPropertySetter<tag>,
+        &ObjectTemplateBuilder::NamedPropertyQuery<tag>, nullptr,
+        &ObjectTemplateBuilder::NamedPropertyEnumerator<tag>,
+        v8::Local<v8::Value>(),
+        v8::PropertyHandlerFlags::kOnlyInterceptStrings));
+    return *this;
+  }
+
   ObjectTemplateBuilder& AddIndexedPropertyInterceptor();
 
   v8::Local<v8::ObjectTemplate> Build();
@@ -125,6 +138,48 @@ class GIN_EXPORT ObjectTemplateBuilder {
       const std::string_view& name,
       v8::AccessorNameGetterCallback callback,
       v8::Local<v8::Value> data);
+
+  static v8::Intercepted NamedPropertyGetterImpl(
+      WrappablePointerTag tag,
+      v8::Local<v8::Name> property,
+      const v8::PropertyCallbackInfo<v8::Value>& info);
+  static v8::Intercepted NamedPropertySetterImpl(
+      WrappablePointerTag tag,
+      v8::Local<v8::Name> property,
+      v8::Local<v8::Value> value,
+      const v8::PropertyCallbackInfo<void>& info);
+  static v8::Intercepted NamedPropertyQueryImpl(
+      WrappablePointerTag tag,
+      v8::Local<v8::Name> property,
+      const v8::PropertyCallbackInfo<v8::Integer>& info);
+  static void NamedPropertyEnumeratorImpl(
+      WrappablePointerTag tag,
+      const v8::PropertyCallbackInfo<v8::Array>& info);
+
+  template <WrappablePointerTag tag>
+  static v8::Intercepted NamedPropertyGetter(
+      v8::Local<v8::Name> property,
+      const v8::PropertyCallbackInfo<v8::Value>& info) {
+    return NamedPropertyGetterImpl(tag, property, info);
+  }
+  template <WrappablePointerTag tag>
+  static v8::Intercepted NamedPropertySetter(
+      v8::Local<v8::Name> property,
+      v8::Local<v8::Value> value,
+      const v8::PropertyCallbackInfo<void>& info) {
+    return NamedPropertySetterImpl(tag, property, value, info);
+  }
+  template <WrappablePointerTag tag>
+  static v8::Intercepted NamedPropertyQuery(
+      v8::Local<v8::Name> property,
+      const v8::PropertyCallbackInfo<v8::Integer>& info) {
+    return NamedPropertyQueryImpl(tag, property, info);
+  }
+  template <WrappablePointerTag tag>
+  static void NamedPropertyEnumerator(
+      const v8::PropertyCallbackInfo<v8::Array>& info) {
+    NamedPropertyEnumeratorImpl(tag, info);
+  }
 
   raw_ptr<v8::Isolate> isolate_;
 

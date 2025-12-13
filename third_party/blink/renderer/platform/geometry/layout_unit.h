@@ -45,6 +45,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
@@ -159,6 +160,31 @@ class PLATFORM_EXPORT FixedPoint {
   template <typename T>
   static constexpr FixedPoint FromRawValueWithClamp(T raw_value) {
     return FromRawValue(ClampRawValue(raw_value));
+  }
+
+  // Given unrounded `start_value` and `end_value`, return a pair of rounded
+  // FixedPoints, where the final rounded values encompass the original passed
+  // in floats. However, if `start_value` and `end_value` are equal, the
+  // returned FixedPoints will also be equal, with both results being floored,
+  // ensuring that the pairs are also equivalent after rounding.
+  static std::pair<FixedPoint, FixedPoint> FromFloatEncompassRound(
+      float start_value,
+      float end_value) {
+    FixedPoint start_position;
+    FixedPoint end_position;
+    if (start_value < end_value ||
+        (!RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled() &&
+         start_value == end_value)) [[likely]] {
+      start_position = FromFloatFloor(start_value);
+      end_position = FromFloatCeil(end_value);
+    } else if (start_value > end_value) [[unlikely]] {
+      start_position = FromFloatCeil(start_value);
+      end_position = FromFloatFloor(end_value);
+    } else {
+      CHECK(RuntimeEnabledFeatures::EquivalentEncompassRoundingEnabled());
+      start_position = end_position = FromFloatFloor(start_value);
+    }
+    return {start_position, end_position};
   }
 
   // Construct from a `FixedPoint` with different template parameters. Implicit
@@ -343,7 +369,7 @@ class PLATFORM_EXPORT FixedPoint {
   std::optional<FixedPoint> NullOptIf(FixedPoint null_value) const;
   std::optional<FixedPoint> NullOptIfMin() const { return NullOptIf(Min()); }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
@@ -495,14 +521,6 @@ inline bool operator>(const int a, const LayoutUnit& b) {
   return LayoutUnit(a) > b;
 }
 
-inline bool operator!=(const int a, const LayoutUnit& b) {
-  return LayoutUnit(a) != b;
-}
-
-inline bool operator!=(const LayoutUnit& a, int b) {
-  return a != LayoutUnit(b);
-}
-
 inline bool operator==(const LayoutUnit& a, int b) {
   return a == LayoutUnit(b);
 }
@@ -617,6 +635,15 @@ constexpr double operator/(const double a, const LayoutUnit& b) {
 
 inline LayoutUnit operator/(std::integral auto a, const LayoutUnit& b) {
   return LayoutUnit(a) / b;
+}
+
+template <unsigned fractional_bits, typename RawValue>
+  requires(std::is_same_v<RawValue, int32_t>)
+inline FixedPoint<fractional_bits, RawValue> operator%(
+    const FixedPoint<fractional_bits, RawValue>& a,
+    const FixedPoint<fractional_bits, RawValue>& b) {
+  int64_t raw_val = a.RawValue() % b.RawValue();
+  return FixedPoint<fractional_bits, RawValue>::FromRawValueWithClamp(raw_val);
 }
 
 template <unsigned fractional_bits, typename RawValue>

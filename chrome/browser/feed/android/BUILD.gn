@@ -90,6 +90,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/android:base_module_java",
+    "//chrome/android/modules/on_demand:provider_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/feedback/android:factory_java",

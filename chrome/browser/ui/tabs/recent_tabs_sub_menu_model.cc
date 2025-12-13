@@ -30,7 +30,10 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
@@ -41,12 +44,16 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
@@ -246,7 +253,7 @@ bool RecentTabsSubMenuModel::ExecuteCustomCommand(int command_id,
   // Supported custom commands.
   static constexpr auto custom_commands = base::MakeFixedFlatSet<int>(
       {IDC_SHOW_HISTORY, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS});
+       IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS, IDC_RECENT_TABS_SEE_DEVICE_TABS});
 
   if (!custom_commands.contains(command_id)) {
     return false;
@@ -358,7 +365,7 @@ void RecentTabsSubMenuModel::Build() {
   InsertItemWithStringIdAt(0, IDC_SHOW_HISTORY, IDS_HISTORY_SHOW_HISTORY);
   SetCommandIcon(this, IDC_SHOW_HISTORY,
                  vector_icons::kHistoryChromeRefreshIcon);
-  if (browser_->GetFeatures().side_panel_coordinator() &&
+  if (browser_->GetFeatures().side_panel_ui() &&
       HistoryClustersSidePanelCoordinator::IsSupported(browser_->profile())) {
     InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                              IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
@@ -426,6 +433,42 @@ void RecentTabsSubMenuModel::BuildLocalEntries() {
 }
 
 void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    syncer::SyncService* sync_service =
+        SyncServiceFactory::GetForProfile(browser_->profile());
+    if (!sync_service) {
+      return;
+    }
+
+    if (!signin_util::IsSyncingUserSelectableTypesAllowedByPolicy(
+            sync_service, {syncer::UserSelectableType::kTabs})) {
+      // This option should not be built if syncing tabs is disabled by policy.
+      return;
+    }
+
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser_->profile());
+    switch (signin_util::GetSignedInState(identity_manager)) {
+      case signin_util::SignedInState::kSignedIn:
+      case signin_util::SignedInState::kSignInPending:
+        if (signin_util::HasExplicitlyDisabledHistorySync(sync_service,
+                                                          identity_manager)) {
+          // This option should not be built if syncing tabs is explicitly
+          // disabled by the user.
+          return;
+        }
+        break;
+      case signin_util::SignedInState::kSignedOut:
+      case signin_util::SignedInState::kWebOnlySignedIn:
+      case signin_util::SignedInState::kSyncing:
+      case signin_util::SignedInState::kSyncPaused:
+        break;
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   // All other devices' items (device headers or tabs) use AddItem*() to append
   // a menu item, because they take always place in the end of menu.
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -438,6 +481,13 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     if (open_tabs) {
       AddItemWithStringId(IDC_RECENT_TABS_NO_DEVICE_TABS,
                           IDS_RECENT_TABS_NO_DEVICE_TABS);
+    } else if (base::FeatureList::IsEnabled(
+                   syncer::kReplaceSyncPromosWithSignInPromos)) {
+      AddItemWithStringIdAndIcon(IDC_RECENT_TABS_SEE_DEVICE_TABS,
+                                 IDS_RECENT_TABS_SEE_DEVICE_TABS,
+                                 ui::ImageModel::FromVectorIcon(
+                                     kSyncRefreshIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
     } else {
       AddItemWithStringIdAndIcon(IDC_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,
                                  IDS_RECENT_TABS_LOGIN_FOR_DEVICE_TABS,

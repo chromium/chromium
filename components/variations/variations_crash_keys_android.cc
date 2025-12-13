@@ -4,12 +4,13 @@
 
 #include "components/variations/variations_crash_keys_android.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "components/crash/android/anr_build_id_provider.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -44,9 +45,8 @@ void SaveVariationsForAnrReporting(
     scoped_refptr<base::SequencedTaskRunner> runner,
     ExperimentListInfo info) {
   // ANR collection and reporting is only available on R and above.
-  bool sdk_version_enough =
-      base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_R;
+  bool sdk_version_enough = base::android::android_info::sdk_int() >=
+                            base::android::android_info::SDK_VERSION_R;
   bool is_browser_process = base::CommandLine::ForCurrentProcess()
                                 ->GetSwitchValueASCII(kProcessTypeSwitchName)
                                 .empty();
@@ -60,3 +60,5 @@ void SaveVariationsForAnrReporting(
 }
 
 }  // namespace variations
+
+DEFINE_JNI(AnrCollector)

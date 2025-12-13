@@ -7,8 +7,8 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/web_state.h"
 
 BrowserWebStateListDelegate::BrowserWebStateListDelegate(
@@ -29,10 +29,10 @@ void BrowserWebStateListDelegate::WillAddWebState(web::WebState* web_state) {
     return;
   }
 
-  // If CreateTabHelperOnlyForRealizedWebStates feature is enabled and the
-  // WebState is not realized, start observing the WebState and defer the
-  // creation of the TabHelpers until the WebState becomes realized.
-  if (CreateTabHelperOnlyForRealizedWebStates()) {
+  // If web::features::CreateTabHelperOnlyForRealizedWebStates feature is
+  // enabled and the WebState is not realized, start observing the WebState and
+  // defer the creation of the TabHelpers until the WebState becomes realized.
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
     if (!web_state->IsRealized()) {
       web_state_observations_.AddObservation(web_state);
       return;
@@ -57,18 +57,18 @@ void BrowserWebStateListDelegate::WillActivateWebState(
   // rapid change of the active WebState.
   web::IgnoreOverRealizationCheck();
   web_state->ForceRealizedWithPolicy(
-      CreateTabHelperOnlyForRealizedWebStates()
+      web::features::CreateTabHelperOnlyForRealizedWebStates()
           ? web::WebState::RealizationPolicy::kEnforceNoAttachedData
           : web::WebState::RealizationPolicy::kDefault);
 }
 
 void BrowserWebStateListDelegate::WillRemoveWebState(web::WebState* web_state) {
   CHECK_EQ(profile_, web_state->GetBrowserState());
-  // If the CreateTabHelperOnlyForRealizedWebStates feature is enabled and
-  // the WebState is not realized, stop observing it (there is no need to
-  // attach TabHelpers anymore).
+  // If the web::features::CreateTabHelperOnlyForRealizedWebStates feature is
+  // enabled and the WebState is not realized, stop observing it (there is no
+  // need to attach TabHelpers anymore).
   if (insertion_policy_ == InsertionPolicy::kAttachTabHelpers) {
-    if (CreateTabHelperOnlyForRealizedWebStates()) {
+    if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
       if (!web_state->IsRealized()) {
         web_state_observations_.RemoveObservation(web_state);
       }

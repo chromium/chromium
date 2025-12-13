@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdio.h>
 
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -49,7 +45,7 @@ SBOX_TESTS_COMMAND int AddressSanitizerTests_Report(int argc, wchar_t** argv) {
   // overflow) in this code.
   volatile int idx = 42;
   int* volatile blah = new int[42];
-  blah[idx] = 42;
+  UNSAFE_TODO(blah[idx]) = 42;
   delete[] blah;
   return SBOX_TEST_FAILED;
 }
@@ -97,17 +93,19 @@ TEST_F(AddressSanitizerTests, TestAddressSanitizer) {
     std::string data;
     ASSERT_TRUE(base::ReadFileToString(base::FilePath(temp_file_name), &data));
     // Redirection uses a feature that was added in Windows Vista.
-    ASSERT_TRUE(
-        strstr(data.c_str(), "ERROR: AddressSanitizer: heap-buffer-overflow"))
+    ASSERT_TRUE(UNSAFE_TODO(
+        strstr(data.c_str(), "ERROR: AddressSanitizer: heap-buffer-overflow")))
         << "There doesn't seem to be an ASan report:\n"
         << data;
-    ASSERT_TRUE(strstr(data.c_str(), "AddressSanitizerTests_Report"))
+    ASSERT_TRUE(
+        UNSAFE_TODO(strstr(data.c_str(), "AddressSanitizerTests_Report")))
         << "The ASan report doesn't appear to be symbolized:\n"
         << data;
     std::string source_file_basename(__FILE__);
     size_t last_slash = source_file_basename.find_last_of("/\\");
     last_slash = last_slash == std::string::npos ? 0 : last_slash + 1;
-    ASSERT_TRUE(strstr(data.c_str(), &source_file_basename[last_slash]))
+    ASSERT_TRUE(
+        UNSAFE_TODO(strstr(data.c_str(), &source_file_basename[last_slash])))
         << "The stack trace doesn't have a correct filename:\n"
         << data;
   } else {

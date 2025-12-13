@@ -1,0 +1,100 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/omnibox/test_omnibox_view.h"
+
+#include <algorithm>
+
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/test_omnibox_edit_model.h"
+#include "components/omnibox/browser/test_omnibox_client.h"
+
+// static
+OmniboxView::State TestOmniboxView::CreateState(std::string text,
+                                                size_t sel_start,
+                                                size_t sel_end) {
+  OmniboxView::State state;
+  state.text = base::UTF8ToUTF16(text);
+  state.keyword = std::u16string();
+  state.is_keyword_selected = false;
+  state.selection = {sel_start, sel_end};
+  return state;
+}
+
+std::u16string TestOmniboxView::GetText() const {
+  return text_;
+}
+
+void TestOmniboxView::SetWindowTextAndCaretPos(const std::u16string& text,
+                                               size_t caret_pos,
+                                               bool update_popup,
+                                               bool notify_text_changed) {
+  text_ = text;
+  selection_ = gfx::Range(caret_pos);
+}
+
+bool TestOmniboxView::IsSelectAll() const {
+  return selection_.EqualsIgnoringDirection(gfx::Range(0, text_.size()));
+}
+
+gfx::Range TestOmniboxView::GetSelectionBounds() const {
+  return selection_;
+}
+
+void TestOmniboxView::SelectAll(bool reversed) {
+  if (reversed) {
+    selection_ = gfx::Range(text_.size(), 0);
+  } else {
+    selection_ = gfx::Range(0, text_.size());
+  }
+}
+
+bool TestOmniboxView::AimButtonVisible() const {
+  return false;
+}
+
+void TestOmniboxView::OnTemporaryTextMaybeChanged(
+    const std::u16string& display_text,
+    const AutocompleteMatch& match,
+    bool save_original_selection,
+    bool notify_text_changed) {
+  text_ = display_text;
+
+  if (save_original_selection) {
+    saved_temporary_selection_ = selection_;
+  }
+}
+
+void TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
+    const std::u16string& user_text,
+    const std::u16string& inline_autocompletion) {
+  std::u16string display_text = user_text + inline_autocompletion;
+  const bool text_changed = text_ != display_text;
+  text_ = display_text;
+  inline_autocompletion_ = inline_autocompletion;
+
+  // Just like the Views control, only change the selection if the text has
+  // actually changed.
+  if (text_changed) {
+    selection_ = gfx::Range(text_.size(), inline_autocompletion.size());
+  }
+}
+
+void TestOmniboxView::OnInlineAutocompleteTextCleared() {
+  inline_autocompletion_.clear();
+}
+
+void TestOmniboxView::OnRevertTemporaryText(const std::u16string& display_text,
+                                            const AutocompleteMatch& match) {
+  selection_ = saved_temporary_selection_;
+}
+
+bool TestOmniboxView::OnAfterPossibleChange(bool allow_keyword_ui_change) {
+  return false;
+}
+
+int TestOmniboxView::GetOmniboxTextLength() const {
+  return 0;
+}

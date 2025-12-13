@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_HEADER_OBSERVER_H_
 #define CONTENT_BROWSER_SHARED_STORAGE_SHARED_STORAGE_HEADER_OBSERVER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

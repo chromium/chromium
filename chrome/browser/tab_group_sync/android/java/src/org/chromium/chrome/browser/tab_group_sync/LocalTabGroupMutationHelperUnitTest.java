@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -150,7 +151,8 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter).mergeListOfTabsToGroup(anyList(), any(), eq(false));
+        verify(mTabGroupModelFilter)
+                .mergeListOfTabsToGroup(anyList(), any(), eq(MergeNotificationType.DONT_NOTIFY));
         verify(mTabGroupModelFilter).setTabGroupColor(any(), anyInt());
         verify(mTabGroupModelFilter).setTabGroupTitle(any(), any());
         verify(mTabGroupModelFilter).setTabGroupCollapsed(any(), eq(true));
@@ -222,7 +224,9 @@ public class LocalTabGroupMutationHelperUnitTest {
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
         inOrder.verify(mTabGroupModelFilter, times(2))
                 .mergeListOfTabsToGroup(
-                        anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false));
+                        anyList(),
+                        argThat(tab -> tab.getId() == ROOT_ID_1),
+                        eq(MergeNotificationType.DONT_NOTIFY));
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         inOrder.verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
@@ -248,8 +252,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, never())
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
         verify(mTabRemover, never()).forceCloseTabs(any());
         verify(mTabCreationDelegate, times(1))
@@ -295,8 +298,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, never())
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
         verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
         verify(mTabCreationDelegate, never())
@@ -351,8 +353,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, times(1))
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, times(1))
-                .mergeListOfTabsToGroup(anyList(), any(), anyBoolean());
+        verify(mTabGroupModelFilter, times(1)).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
     }

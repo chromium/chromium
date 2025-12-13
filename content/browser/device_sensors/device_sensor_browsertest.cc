@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationTest) {
   GURL test_url = GetTestUrl("device_sensors", "device_orientation_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
       "device_sensors", "device_orientation_fallback_to_absolute_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationAbsoluteTest) {
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationAbsoluteTest) {
       GetTestUrl("device_sensors", "device_orientation_absolute_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionTest) {
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionTest) {
   GURL test_url = GetTestUrl("device_sensors", "device_motion_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationNullTest) {
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationNullTest) {
       GetTestUrl("device_sensors", "device_orientation_null_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationAbsoluteNullTest) {
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, OrientationAbsoluteNullTest) {
                              "device_orientation_absolute_null_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionNullTest) {
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionNullTest) {
   GURL test_url = GetTestUrl("device_sensors", "device_motion_null_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
                  "device_motion_only_some_sensors_are_available_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 2);
 
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, NullTestWithAlert) {
@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, NullTestWithAlert) {
   WaitForAlertDialogAndQuitAfterDelay(base::Milliseconds(500));
 
   same_tab_observer.Wait();
-  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   content::RenderFrameHost* iframe =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
-  EXPECT_EQ("fail", iframe->GetLastCommittedURL().ref());
+  EXPECT_EQ("fail", iframe->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   content::RenderFrameHost* iframe =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
-  EXPECT_EQ("pass", iframe->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", iframe->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   content::RenderFrameHost* iframe =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
-  EXPECT_EQ("fail", iframe->GetLastCommittedURL().ref());
+  EXPECT_EQ("fail", iframe->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
   content::RenderFrameHost* iframe =
       ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
   ASSERT_TRUE(iframe);
-  EXPECT_EQ("pass", iframe->GetLastCommittedURL().ref());
+  EXPECT_EQ("pass", iframe->GetLastCommittedURL().GetRef());
 }
 
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,

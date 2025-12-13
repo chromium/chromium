@@ -28,10 +28,11 @@ static_library("keyed_service") {
     "//chrome/browser/ash/app_mode/arcvm_app",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/ash/apps",
-    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/arc/session:service_launcher",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/boca/on_task",
+    "//chrome/browser/ash/boca/receiver",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/ash/bruschetta",
     "//chrome/browser/ash/calendar",
@@ -41,7 +42,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/concierge_helper",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crostini",
-    "//chrome/browser/ash/crostini/ansible",
     "//chrome/browser/ash/crostini/throttle",
     "//chrome/browser/ash/data_migration",
     "//chrome/browser/ash/early_prefs",
@@ -79,7 +79,6 @@ static_library("keyed_service") {
     "//chrome/browser/ash/printing/history",
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/ash/remote_apps",
-    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/ash/scanning",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/ash/smb_client",
@@ -94,6 +93,11 @@ static_library("keyed_service") {
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/ui/webui/ash/settings/services/hats",
     "//chrome/browser/ui/webui/ash/settings/services/settings_manager",
+    "//chromeos/ash/components/policy/policy_blocklist_service",
     "//printing/buildflags",
+
+    # Currently ArcApps is a KeyedService.
+    # TODO(crbug.com/442761233): Resolve the dependency.
+    "//chrome/browser/apps/app_service/publishers",
   ]
 }

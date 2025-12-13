@@ -41,6 +41,8 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="User selected the Customize Chrome Side Panel lab"/>
 </enum>
 
+<!-- LINT.IfChange(ContextMenuOptionDesktop) -->
+
 <enum name="ContextMenuOptionDesktop">
   <summary>The item selected from a context menu on Desktop.</summary>
   <int value="0" label="Open in new tab"/>
@@ -76,7 +78,12 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="Search web for... in new tab"/>
   <int value="30" label="Open link in preview"/>
   <int value="31" label="Open link in split view"/>
+  <int value="32" label="Create image with Gemini in Chrome"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:ContextMenuOptionDesktop) -->
+
+<!-- LINT.IfChange(DefaultBrowserInfoBarUserInteraction) -->
 
 <enum name="DefaultBrowserInfoBarUserInteraction">
   <int value="0" label="Accept">
@@ -86,10 +93,17 @@ chromium-metrics-reviews@google.com.
     The user clicked the &quot;Don't ask again&quot; button.
   </int>
   <int value="2" label="Ignore">
-    The user did not interact with the info bar.
+    (Obsolete) The user did not interact with the info bar. Deprecated in M145
+    due to it reporting one count per tab closed.
   </int>
   <int value="3" label="Dismiss">The user explicitly closed the infobar.</int>
+  <int value="4" label="IgnorePerSession">
+    The user did not interact with the info bar. Reports one count per browser
+    session.
+  </int>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/default_browser_infobar_manager.h:InfoBarUserInteraction) -->
 
 <enum name="DefaultBrowserState">
   <int value="0" label="Not Default"/>
@@ -98,12 +112,66 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Other Mode is Default"/>
 </enum>
 
+<!-- LINT.IfChange(DefaultBrowserStateValidationResult) -->
+
+<enum name="DefaultBrowserStateValidationResult">
+  <summary>
+    The result of comparing a secondary browser state checker's result to the
+    standard API used for determing default browser state.
+  </summary>
+  <int value="0" label="TruePositive"/>
+  <int value="1" label="TrueNegative"/>
+  <int value="2" label="FalsePositive"/>
+  <int value="3" label="FalseNegative"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_manager.cc:DefaultBrowserStateValidationResult) -->
+
+<!-- LINT.IfChange(DefaultBrowserUserInteraction) -->
+
+<enum name="DefaultBrowserUserInteraction">
+  <summary>
+    Decisions a user can take when presented with a choice to make Chrome their
+    default browser.
+  </summary>
+  <int value="0" label="Accepted"/>
+  <int value="1" label="Ignored"/>
+  <int value="2" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/default_browser/default_browser_controller.h:DefaultBrowserInteractionType) -->
+
 <enum name="OpenLinkAs">
   <int value="0" label="Open Link as Profile displayed."/>
   <int value="1" label="Open Link as Profile clicked."/>
   <int value="2" label="Open Link in Incognito Window displayed."/>
   <int value="3" label="Open Link in Incognito Window clicked."/>
 </enum>
+
+<!-- LINT.IfChange(PinInfoBarUserInteraction) -->
+
+<enum name="PinInfoBarUserInteraction">
+  <int value="0" label="Accepted">
+    The user clicked the &quot;Pin Chrome&quot; button.
+  </int>
+  <int value="1" label="Dismissed">The user explicitly closed the infobar.</int>
+  <int value="2" label="Ignored">
+    The user did not interact with the infobar; logged at object destruction.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_delegate.h:PinInfoBarUserInteraction) -->
+
+<!-- LINT.IfChange(ReloadButtonInputType) -->
+
+<enum name="ReloadButtonInputType">
+  <int value="0" label="MouseRelease"/>
+  <int value="1" label="KeyPress"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_ui_metrics_recorder.h:ReloadButtonInputType) -->
+
+<!-- LINT.IfChange(RenderViewContextMenuItem) -->
 
 <enum name="RenderViewContextMenuItem">
   <int value="0" label="IDC_CONTENT_CONTEXT_CUSTOM_FIRST"/>
@@ -287,7 +355,10 @@ chromium-metrics-reviews@google.com.
   <int value="154" label="IDC_CONTENT_CONTEXT_RELOAD_GLIC"/>
   <int value="155" label="IDC_CONTENT_CONTEXT_CLOSE_GLIC"/>
   <int value="156" label="IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW"/>
+  <int value="157" label="IDC_CONTENT_CONTEXT_GLICSHAREIMAGE"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->
 
 <enum name="ShapeRunFallback">
   <int value="0" label="FAILED">Finding a fallback font failed.</int>
@@ -376,6 +447,10 @@ chromium-metrics-reviews@google.com.
   <int value="73" label="UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION"/>
   <int value="74" label="UMA_BOOKMARK_BATCH_UPLOAD"/>
   <int value="75" label="UMA_NTP_MOST_VISITED_UNPIN_UNDO"/>
+  <int value="76" label="UMA_SIGN_IN"/>
+  <int value="77" label="UMA_TAB_PICKER_LIMIT_REACHED"/>
+  <int value="78" label="UMA_FUSEBOX_MAX_ATTACHMENTS"/>
+  <int value="79" label="UMA_FUSEBOX_UPLOAD_FAILED"/>
 </enum>
 
 <enum name="WebUIPreloadReason">
@@ -401,6 +476,7 @@ chromium-metrics-reviews@google.com.
   <int value="-2108276563" label="/adPrivacy/sites"/>
   <int value="-2088016711" label="/startupPages"/>
   <int value="-2082028555" label="/androidApps/details"/>
+  <int value="-2026378196" label="/contactInfo"/>
   <int value="-2019732586" label="/printing"/>
   <int value="-1950073287" label="/crostini/details"/>
   <int value="-1930329480" label="/signOut"/>
@@ -444,6 +520,7 @@ chromium-metrics-reviews@google.com.
   <int value="-988053194" label="/lockScreen"/>
   <int value="-972517930" label="/googleAssistant"/>
   <int value="-940942794" label="/content/pdfDocuments"/>
+  <int value="-922372967" label="/travel"/>
   <int value="-916174295" label="/internet"/>
   <int value="-907780721" label="/certificates"/>
   <int value="-898481268" label="/multidevice/features"/>
@@ -456,6 +533,7 @@ chromium-metrics-reviews@google.com.
   <int value="-686834549" label="/downloads"/>
   <int value="-655433489" label="/payments"/>
   <int value="-590688273" label="/content/sensors"/>
+  <int value="-587521019" label="/identityDocs"/>
   <int value="-570956986" label="/personalization"/>
   <int value="-565073397" label="/performance"/>
   <int value="-512116630" label="/search"/>
@@ -495,6 +573,7 @@ chromium-metrics-reviews@google.com.
   <int value="60238454" label="/content/ads"/>
   <int value="91791837" label="/content/localFonts"/>
   <int value="104900992" label="/content/insecureContent"/>
+  <int value="111607686" label="/yourSavedInfo"/>
   <int value="223791833" label="/help/about"/>
   <int value="254445609" label="/content/filesystem"/>
   <int value="273561147" label="/autofill"/>
@@ -594,9 +673,12 @@ chromium-metrics-reviews@google.com.
   <int value="-2008798042" label="chrome://extended-updates-dialog/"/>
   <int value="-1977692791" label="chrome://crash/"/>
   <int value="-1970917350" label="chrome-untrusted://compose/"/>
+  <int value="-1969079493"
+      label="chrome-untrusted://class-tools-remote-display/"/>
   <int value="-1949142440" label="chrome://smb-credentials-dialog/"/>
   <int value="-1941995226" label="chrome://attribution-internals/"/>
   <int value="-1911971715" label="chrome://history/"/>
+  <int value="-1905481895" label="chrome://reload-button.top-chrome/"/>
   <int value="-1899361569" label="chrome-untrusted://eche-app/"/>
   <int value="-1887206190" label="chrome://nfc-debug/"/>
   <int value="-1877210733" label="chrome-untrusted://privacy-sandbox-dialog/"/>
@@ -611,6 +693,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1716340463" label="chrome://safe-browsing/"/>
   <int value="-1704400468" label="chrome://quit/"/>
   <int value="-1700864659" label="chrome://slow/"/>
+  <int value="-1699890661" label="chrome://webui-browser/"/>
   <int value="-1697612520" label="chrome://print-management/"/>
   <int value="-1697077152" label="chrome://device-log/"/>
   <int value="-1690355375" label="chrome://mobilesetup/"/>
@@ -649,6 +732,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1362220223" label="chrome://connection-help/"/>
   <int value="-1346911023" label="chrome://signin-dice-web-intercept/"/>
   <int value="-1331415629" label="chrome://os-settings/"/>
+  <int value="-1326709686" label="chrome://class-tools-remote-display/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
   <int value="-1296182448" label="chrome://vc-tray-tester/"/>
   <int value="-1294799178" label="chrome://signout-confirmation/"/>
@@ -700,6 +784,7 @@ chromium-metrics-reviews@google.com.
   <int value="-753390931" label="chrome://interstitials/"/>
   <int value="-734627230" label="chrome://extension-icon/"/>
   <int value="-727952446" label="chrome://nacl/"/>
+  <int value="-722142308" label="chrome://updater/"/>
   <int value="-707542503" label="chrome://choose-mobile-network/"/>
   <int value="-695712248" label="chrome://segmentation-internals/"/>
   <int value="-680649366" label="chrome-untrusted://hats/"/>
@@ -747,6 +832,7 @@ chromium-metrics-reviews@google.com.
   <int value="-207369615" label="chrome://location-internals/"/>
   <int value="-206925255" label="chrome://popular-sites-internals/"/>
   <int value="-176639700" label="chrome://omnibox/"/>
+  <int value="-123905906" label="chrome://regional-capabilities-internals/"/>
   <int value="-108234722" label="chrome://batch-upload/"/>
   <int value="-106823253" label="chrome://conflicts/"/>
   <int value="-103805443" label="chrome://nearby-internals/"/>
@@ -769,6 +855,7 @@ chromium-metrics-reviews@google.com.
   <int value="48333657" label="chrome://about/"/>
   <int value="57900378" label="chrome://conch/"/>
   <int value="58807865" label="chrome://local-state/"/>
+  <int value="67875391" label="chrome://legion-internals/"/>
   <int value="71502624" label="chrome://history-sync-optin/"/>
   <int value="84832110" label="chrome://fileicon/"/>
   <int value="104579118" label="chrome://boca-app/"/>
@@ -811,6 +898,7 @@ chromium-metrics-reviews@google.com.
   <int value="634002171" label="chrome://projector-selfie-cam/"/>
   <int value="634165583" label="chrome://app-service-internals/"/>
   <int value="646837226" label="chrome://crashes/"/>
+  <int value="654460550" label="chrome://contextual-tasks/"/>
   <int value="659389881" label="chrome://gpu/"/>
   <int value="662045902" label="chrome://smb-share-dialog/"/>
   <int value="689991895" label="chrome://supervised-user-internals/"/>
@@ -1053,6 +1141,13 @@ chromium-metrics-reviews@google.com.
   <int value="93" label="Show tab search declutter page"/>
   <int value="94" label="Open glic"/>
   <int value="95" label="Find Extensions"/>
+  <int value="96" label="Show signin page"/>
+  <int value="97" label="Open recent tabs from other devices"/>
+  <int value="98" label="Trigger installed app update dialog"/>
+  <int value="99" label="Identity docs"/>
+  <int value="100" label="Travel"/>
+  <int value="101" label="Contact info"/>
+  <int value="102" label="Show contextual tasks side panel"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toolbar/app_menu_model.h:AppMenuAction) -->

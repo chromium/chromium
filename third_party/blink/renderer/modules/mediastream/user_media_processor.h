@@ -34,6 +34,7 @@ namespace blink {
 
 class AudioCaptureSettings;
 class LocalFrame;
+class MediaDevices;
 class MediaStreamAudioSource;
 class MediaStreamVideoSource;
 class VideoCaptureSettings;
@@ -91,12 +92,9 @@ class MODULES_EXPORT UserMediaProcessor
   void ProcessRequest(UserMediaRequest* request, base::OnceClosure callback);
 
   // If |user_media_request| is the request currently being processed, stops
-  // processing the request and returns true. Otherwise, performs no action and
-  // returns false.
-  // TODO(guidou): Make this method private and replace with a public
-  // CancelRequest() method that deletes the request only if it has not been
-  // generated yet. https://crbug.com/764293
-  bool DeleteUserMediaRequest(UserMediaRequest* user_media_request);
+  // processing the request, if possible, and returns true. Otherwise, performs
+  // no action and returns false.
+  bool CancelRequest(UserMediaRequest* user_media_request);
 
   // Stops processing the current request, if any, and stops all sources
   // currently being tracked, effectively stopping all tracks associated with
@@ -263,6 +261,10 @@ class MODULES_EXPORT UserMediaProcessor
 
   void DeleteAllUserMediaRequests();
 
+  // If |user_media_request| is the request currently being processed, then this
+  // function stops processing of the request.
+  void DeleteUserMediaRequest(UserMediaRequest* user_media_request);
+
   // Returns the source that use a device with |device.session_id|
   // and |device.device.id|. nullptr if such source doesn't exist.
   MediaStreamSource* FindLocalSource(const MediaStreamDevice& device) const {
@@ -315,14 +317,15 @@ class MODULES_EXPORT UserMediaProcessor
   std::optional<base::UnguessableToken> DetermineExistingAudioSessionId(
       const blink::AudioCaptureSettings& settings);
 
-  WTF::HashMap<String, base::UnguessableToken>
-  DetermineExistingAudioSessionIds();
+  HashMap<String, base::UnguessableToken> DetermineExistingAudioSessionIds();
 
   void GenerateStreamForCurrentRequestInfo(
-      WTF::HashMap<String, base::UnguessableToken>
+      HashMap<String, base::UnguessableToken>
           requested_audio_capture_session_ids = {});
 
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
+
+  MediaDevices* GetMediaDevices() const;
 
   // Owned by the test.
   raw_ptr<WebMediaStreamDeviceObserver, DanglingUntriaged>

@@ -35,7 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -176,8 +176,8 @@ class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
   void SetUpInProcessBrowserTestFixture() override {
     ShutdownPolicyBaseTest::SetUpInProcessBrowserTestFixture();
     zero_duration_mode_ =
-        std::make_unique<ui::ScopedAnimationDurationScaleMode>(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+        std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   }
 
   void SetUpOnMainThread() override {
@@ -193,7 +193,7 @@ class ShutdownPolicyLockerTest : public ShutdownPolicyBaseTest {
   }
 
  private:
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(ShutdownPolicyLockerTest, TestBasic) {

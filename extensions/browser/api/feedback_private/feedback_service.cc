@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
@@ -38,10 +37,10 @@
 #include "net/base/network_change_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ash/public/cpp/assistant/controller/assistant_controller.h"
+#include <optional>
+
 #include "base/base64.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -400,15 +399,6 @@ void FeedbackService::OnAllLogsFetched(
   DCHECK(feedback_data->attached_file_uuid().empty());
   DCHECK(feedback_data->screenshot_uuid().empty());
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Send feedback to Assistant server if triggered from Google Assistant.
-  if (feedback_data->from_assistant()) {
-    ash::AssistantController::Get()->SendAssistantFeedback(
-        feedback_data->assistant_debug_info_allowed(),
-        feedback_data->description(), feedback_data->image());
-  }
-#endif
-
   // Signal the feedback object that the data from the feedback page has been
   // filled - the object will manage sending of the actual report.
   feedback_data->OnFeedbackPageDataComplete();
@@ -489,7 +479,7 @@ void FeedbackService::OnVariationsFetchHpkeURL(
     std::unique_ptr<network::SimpleURLLoader> loader,
     scoped_refptr<feedback::FeedbackData> feedback_data,
     base::RepeatingClosure barrier_closure,
-    std::unique_ptr<std::string> hpke_public_key) {
+    std::optional<std::string> hpke_public_key) {
   if (!loader) {
     LOG(ERROR) << "invalid loader";
     return VariationsFinished(false, barrier_closure);

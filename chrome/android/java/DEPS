@@ -30,7 +30,6 @@ include_rules = [
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",
   "+components/browser_ui/accessibility",
   "+components/browser_ui/desktop_windowing/android",
-  "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/http_auth",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
@@ -79,6 +78,7 @@ include_rules = [
   "+content/public/android/java/src/org/chromium/content_public",
 
   "+device/gamepad/android/java",
+  "+ui/edge_to_edge",
 ]
 
 specific_include_rules = {

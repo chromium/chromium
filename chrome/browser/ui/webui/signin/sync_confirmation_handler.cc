@@ -58,47 +58,6 @@ inline bool ScreenModeIsPending(const AccountInfo& primary_account_info) {
          SyncConfirmationScreenMode::kPending;
 }
 
-SyncConfirmationScreenMode GetScreenModeFromValue(const base::Value& value) {
-  if (!value.is_int()) {
-    return SyncConfirmationScreenMode::kUnsupported;
-  }
-  return static_cast<SyncConfirmationScreenMode>(value.GetInt());
-}
-
-// Records the button click in the `mode` context. `equal` denotes button to
-// record in kRestricted `mode`, and `notEqual` denotes button to record in
-// kUnrestricted `mode`.
-void RecordButtonClicked(SyncConfirmationScreenMode mode,
-                         signin_metrics::SyncButtonClicked equal,
-                         signin_metrics::SyncButtonClicked not_equal) {
-  if (mode == SyncConfirmationScreenMode::kUnsupported) {
-    // Do not record metrics from SyncConfirmation screens that don't support
-    // minor modes.
-    return;
-  }
-
-  std::optional<signin_metrics::SyncButtonClicked> button_clicked;
-  switch (mode) {
-    case SyncConfirmationScreenMode::kRestricted:
-    case SyncConfirmationScreenMode::kDeadlined:
-      button_clicked = equal;
-      break;
-    case SyncConfirmationScreenMode::kUnrestricted:
-      button_clicked = not_equal;
-      break;
-    case SyncConfirmationScreenMode::kPending:
-      // Special case: the only button that can be clicked in this mode is the
-      // settings button.
-      button_clicked =
-          signin_metrics::SyncButtonClicked::kSyncSettingsUnknownWeighted;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *button_clicked);
-}
-
 // Translates screen `mode` to the corresponding metric describing what type of
 // buttons are presented.
 signin_metrics::SyncButtonsType GetButtonTypeMetricValue(
@@ -184,11 +143,6 @@ void SyncConfirmationHandler::RegisterMessages() {
 
 void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncOptInEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncOptInNotEqualWeighted);
-
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
   CloseModalSigninWindow(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
@@ -197,11 +151,6 @@ void SyncConfirmationHandler::HandleConfirm(const base::Value::List& args) {
 void SyncConfirmationHandler::HandleGoToSettings(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[2]),
-      signin_metrics::SyncButtonClicked::kSyncSettingsEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncSettingsNotEqualWeighted);
-
   DCHECK(SyncServiceFactory::IsSyncAllowed(profile_));
   did_user_explicitly_interact_ = true;
   RecordConsent(args[0].GetList(), args[1].GetString());
@@ -210,11 +159,6 @@ void SyncConfirmationHandler::HandleGoToSettings(
 
 void SyncConfirmationHandler::HandleUndo(const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
-  RecordButtonClicked(
-      GetScreenModeFromValue(args[0]),
-      signin_metrics::SyncButtonClicked::kSyncCancelEqualWeighted,
-      signin_metrics::SyncButtonClicked::kSyncCancelNotEqualWeighted);
-
   did_user_explicitly_interact_ = true;
   CloseModalSigninWindow(LoginUIService::ABORT_SYNC);
 }
@@ -268,10 +212,10 @@ void SyncConfirmationHandler::RecordConsent(
 }
 
 void SyncConfirmationHandler::OnAvatarChanged(const AccountInfo& info) {
-  DCHECK(info.IsValid());
+  CHECK(info.GetAvatarUrl().has_value());
   avatar_notified_ = true;
 
-  GURL picture_gurl(info.picture_url);
+  GURL picture_gurl(*info.GetAvatarUrl());
   GURL picture_gurl_with_options = signin::GetAvatarImageURLWithOptions(
       picture_gurl, kProfileImageSize, /*no_silhouette=*/false);
 

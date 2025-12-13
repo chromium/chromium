@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -56,17 +57,14 @@ class MinMaxButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override {
     views::ImageButton::PaintButtonContents(canvas);
 
-    SkPath path;
-    path.moveTo(0, height());
-    path.lineTo(height(), width());
-
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(1);
     flags.setColor(kHUDDefaultColor);
-    canvas->DrawPath(path, flags);
+    canvas->DrawLine(gfx::Point{0, height()}, gfx::Point{height(), width()},
+                     flags);
   }
 };
 

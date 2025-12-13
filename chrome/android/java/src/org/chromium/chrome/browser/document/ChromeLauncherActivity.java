@@ -9,19 +9,29 @@ import android.os.Bundle;
 
 import com.google.android.material.color.DynamicColors;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 
 /**
  * Dispatches incoming intents to the appropriate activity based on the current configuration and
  * Intent fired.
  */
+@NullMarked
 public class ChromeLauncherActivity extends Activity {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
+        setIntent(IntentUtils.sanitizeIntent(getIntent()));
+        // Needs to be called as early as possible, to accurately capture the
+        // time at which the intent was received.
+        if (BrowserIntentUtils.getLaunchedRealtimeMillis(getIntent()) == -1) {
+            BrowserIntentUtils.addLauncherTimestampsToIntent(getIntent());
+        }
         super.onCreate(savedInstanceState);
 
         // TODO(crbug.com/40775606): Figure out a scalable way to apply overlays to

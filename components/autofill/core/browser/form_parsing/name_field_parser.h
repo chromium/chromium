@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/gtest_prod_util.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/language_code.h"
@@ -22,7 +20,7 @@ class AutofillScanner;
 class NameFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
-                                                AutofillScanner* scanner);
+                                                AutofillScanner& scanner);
 
   NameFieldParser(const NameFieldParser&) = delete;
   NameFieldParser& operator=(const NameFieldParser&) = delete;

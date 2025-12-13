@@ -100,10 +100,6 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   enum { kNoVersion = -1, kDefaultVersion = 0 };
 
   IDBDatabaseMetadata();
-  IDBDatabaseMetadata(const String& name,
-                      int64_t version,
-                      int64_t max_object_store_id,
-                      bool was_cold_open);
 
   // Overwrites the database metadata, but does not change the object store and
   // index metadata.
@@ -114,6 +110,7 @@ struct MODULES_EXPORT IDBDatabaseMetadata {
   int64_t max_object_store_id = 0;
   HashMap<int64_t, scoped_refptr<IDBObjectStoreMetadata>> object_stores;
   bool was_cold_open = true;
+  bool is_sqlite = false;
 };
 
 }  // namespace blink

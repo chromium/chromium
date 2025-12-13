@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_util.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/pref_names.h"
@@ -81,7 +83,8 @@ class SubAppsAdminPolicyTest : public IsolatedWebAppBrowserTestHarness {
 
     EXPECT_EQ(provider().registrar_unsafe().GetInstallState(parent_app_id_),
               proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
-    EXPECT_THAT(provider().registrar_unsafe().IsIsolated(parent_app_id_),
+    EXPECT_THAT(provider().registrar_unsafe().AppMatches(
+                    parent_app_id_, WebAppFilter::IsIsolatedApp()),
                 IsTrue());
     EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 
@@ -164,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithGestureNoPolicy) {
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
 
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -176,9 +179,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, FailsNoGestureNoPolicy) {
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret.error, AllOf(Not(IsEmpty()),
-                               HasSubstr("This API can only be called shortly "
-                                         "after a user activation.")));
+  // TODO
+  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
+                       HasSubstr("This API can only be called shortly "
+                                 "after a user activation.")));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 
@@ -192,14 +196,14 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsNoGestureWithPolicy) {
 
   auto ret1 = EvalJs(iwa_frame, AddSubAppsScript({kSub1}),
                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret1.error, IsEmpty());
+  EXPECT_TRUE(ret1.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(1));
 
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
 
   auto ret2 = EvalJs(iwa_frame, AddSubAppsScript({kSub2}),
                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret2.error, IsEmpty());
+  EXPECT_TRUE(ret2.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -212,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest, SucceedsWithPolicyAndGesture) {
   EXPECT_THAT(CheckPolicyValue(iwa_frame), IsTrue());
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}));
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -229,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
 
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(ret.error, IsEmpty());
+  EXPECT_TRUE(ret.is_ok());
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), SizeIs(2));
 }
 
@@ -245,9 +249,10 @@ IN_PROC_BROWSER_TEST_F(SubAppsAdminPolicyTest,
   auto ret = EvalJs(iwa_frame, AddSubAppsScript({kSub1, kSub2}),
                     content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
-  EXPECT_THAT(ret.error, AllOf(Not(IsEmpty()),
-                               HasSubstr("This API can only be called shortly "
-                                         "after a user activation.")));
+  // TODO
+  EXPECT_THAT(ret, content::EvalJsResult::ErrorIs(
+                       HasSubstr("This API can only be called shortly "
+                                 "after a user activation.")));
   EXPECT_THAT(GetAllSubAppIds(parent_app_id_), IsEmpty());
 }
 

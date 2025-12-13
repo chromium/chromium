@@ -316,7 +316,8 @@ bool SVGAnimateElement::HasValidAnimation() const {
   return IsAnimatingCSSProperty() || GetAttributeType() != kAttributeTypeCSS;
 }
 
-SVGPropertyBase* SVGAnimateElement::CreatePropertyForAttributeAnimation(
+std::pair<SVGPropertyBase*, SVGParseStatus>
+SVGAnimateElement::CreatePropertyForAttributeAnimation(
     const String& value) const {
   // SVG DOM animVal animation code-path.
   // TransformList must be animated via <animateTransform>, and its
@@ -329,82 +330,82 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForAttributeAnimation(
   switch (base_value.GetType()) {
     case kAnimatedAngle: {
       auto* property = MakeGarbageCollected<SVGAngle>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedBoolean: {
       auto* property = MakeGarbageCollected<SVGBoolean>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedEnumeration: {
       auto* property = To<SVGEnumeration>(base_value).Clone();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedInteger: {
       auto* property = MakeGarbageCollected<SVGInteger>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedIntegerOptionalInteger: {
       auto* property = MakeGarbageCollected<SVGIntegerOptionalInteger>(
           MakeGarbageCollected<SVGInteger>(0),
           MakeGarbageCollected<SVGInteger>(0));
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedLength: {
       auto* property =
           MakeGarbageCollected<SVGLength>(To<SVGLength>(base_value).UnitMode());
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedLengthList: {
       auto* property = MakeGarbageCollected<SVGLengthList>(
           To<SVGLengthList>(base_value).UnitMode());
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedNumber: {
       auto* property = MakeGarbageCollected<SVGNumber>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedNumberList: {
       auto* property = MakeGarbageCollected<SVGNumberList>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedNumberOptionalNumber: {
       auto* property = MakeGarbageCollected<SVGNumberOptionalNumber>(
           MakeGarbageCollected<SVGNumber>(0),
           MakeGarbageCollected<SVGNumber>(0));
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedPath: {
       auto* property = MakeGarbageCollected<SVGPath>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedPoints: {
       auto* property = MakeGarbageCollected<SVGPointList>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedPreserveAspectRatio: {
       auto* property = MakeGarbageCollected<SVGPreserveAspectRatio>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedRect: {
       auto* property = MakeGarbageCollected<SVGRect>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedString:
-      return MakeGarbageCollected<SVGString>(value);
+      return {MakeGarbageCollected<SVGString>(value), SVGParseStatus::kNoError};
 
     // The following are either not animated or are not animated as
     // attributeType=XML. <animateTransform> handles the transform-list case.
@@ -487,36 +488,39 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
   // TODO(fs): At the moment the CSSValue gets converted to a String and needs
   // to get parsed again. In the future we might want to work with the value
   // type directly to avoid the String parsing.
-  return CreatePropertyForCSSAnimation(value ? value->CssText() : "");
+  return CreatePropertyForCSSAnimation(value ? value->CssText() : "").first;
 }
 
-SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
-    const String& value) const {
+std::pair<SVGPropertyBase*, SVGParseStatus>
+SVGAnimateElement::CreatePropertyForCSSAnimation(const String& value) const {
   // CSS properties animation code-path.
   // Create a basic instance of the corresponding SVG property.
   // The instance will not have full context info. (e.g. SVGLengthMode)
   switch (type_) {
-    case kAnimatedColor:
-      return MakeGarbageCollected<SVGColorProperty>(value);
+    case kAnimatedColor: {
+      auto* property = MakeGarbageCollected<SVGColorProperty>();
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
+    }
     case kAnimatedNumber: {
       auto* property = MakeGarbageCollected<SVGNumber>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedLength: {
       auto* property = MakeGarbageCollected<SVGLength>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedLengthList: {
       auto* property = MakeGarbageCollected<SVGLengthList>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     case kAnimatedString: {
       auto* property = MakeGarbageCollected<SVGString>();
-      property->SetValueAsString(value);
-      return property;
+      SVGParseStatus status = property->SetValueAsString(value).Status();
+      return {property, status};
     }
     // These types don't appear in the table in
     // AnimatedPropertyTypeForCSSAttribute() and thus don't need support.
@@ -541,11 +545,25 @@ SVGPropertyBase* SVGAnimateElement::CreatePropertyForCSSAnimation(
   }
 }
 
-SVGPropertyBase* SVGAnimateElement::ParseValue(const String& value) const {
-  if (IsAnimatingSVGDom())
-    return CreatePropertyForAttributeAnimation(value);
+ParsedAnimationValue SVGAnimateElement::ParseValue(const String& value) const {
+  if (IsAnimatingSVGDom()) {
+    auto [property, status] = CreatePropertyForAttributeAnimation(value);
+    AnimatedPropertyValueType value_type =
+        PropertyValueType(IsAnimatingCSSProperty(), value);
+    if (value_type == kInheritValue) {
+      status = SVGParseStatus::kNoError;
+    }
+    return {property, value_type, status};
+  }
+
   DCHECK(IsAnimatingCSSProperty());
-  return CreatePropertyForCSSAnimation(value);
+  auto [property, status] = CreatePropertyForCSSAnimation(value);
+  AnimatedPropertyValueType value_type =
+      PropertyValueType(/*is_css_property*/ true, value);
+  if (value_type == kInheritValue) {
+    status = SVGParseStatus::kNoError;
+  }
+  return {property, value_type, status};
 }
 
 SVGPropertyBase* SVGAnimateElement::AdjustForInheritance(
@@ -653,18 +671,26 @@ void SVGAnimateElement::UpdateKeyframeValues(const Keyframe& keyframe) {
                                 : kRegularPropertyValue;
 }
 
-void SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
+bool SVGAnimateElement::CalculateFromAndToValues(const String& from_string,
                                                  const String& to_string) {
   DCHECK(targetElement());
-  from_property_ = ParseValue(from_string);
-  from_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), from_string);
-  to_property_ = ParseValue(to_string);
-  to_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), to_string);
+  ParsedAnimationValue from_parsed_value = ParseValue(from_string);
+  ParsedAnimationValue to_parsed_value = ParseValue(to_string);
+
+  if ((!from_string.empty() &&
+       from_parsed_value.status != SVGParseStatus::kNoError) ||
+      to_parsed_value.status != SVGParseStatus::kNoError) {
+    return false;
+  }
+
+  from_property_ = from_parsed_value.property;
+  from_property_value_type_ = from_parsed_value.property_value_type;
+  to_property_ = to_parsed_value.property;
+  to_property_value_type_ = to_parsed_value.property_value_type;
+  return true;
 }
 
-void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
+bool SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
                                                  const String& by_string) {
   DCHECK(targetElement());
   DCHECK(GetAnimationMode() == kByAnimation ||
@@ -672,22 +698,35 @@ void SVGAnimateElement::CalculateFromAndByValues(const String& from_string,
   DCHECK(AnimatedPropertyTypeSupportsAddition());
   DCHECK(!IsA<SVGSetElement>(*this));
 
-  from_property_ = ParseValue(from_string);
-  from_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), from_string);
-  to_property_ = ParseValue(by_string);
-  to_property_value_type_ =
-      PropertyValueType(IsAnimatingCSSProperty(), by_string);
+  ParsedAnimationValue from_parsed_value = ParseValue(from_string);
+  ParsedAnimationValue to_parsed_value = ParseValue(by_string);
+
+  if ((!from_string.empty() &&
+       from_parsed_value.status != SVGParseStatus::kNoError) ||
+      to_parsed_value.status != SVGParseStatus::kNoError) {
+    return false;
+  }
+
+  from_property_ = from_parsed_value.property;
+  from_property_value_type_ = from_parsed_value.property_value_type;
+  to_property_ = to_parsed_value.property;
+  to_property_value_type_ = to_parsed_value.property_value_type;
   to_property_->Add(from_property_, targetElement());
+  return true;
 }
 
-void SVGAnimateElement::CalculateValues(const Vector<String>& values) {
+bool SVGAnimateElement::CalculateValues(const Vector<String>& values) {
   ClearValues();
   for (const auto& value : values) {
-    values_.push_back(ParseValue(value));
-    values_is_inherit_.push_back(
-        PropertyValueType(IsAnimatingCSSProperty(), value) == kInheritValue);
+    ParsedAnimationValue parsed_value = ParseValue(value);
+    if (parsed_value.status != SVGParseStatus::kNoError) {
+      return false;
+    }
+    values_.push_back(parsed_value.property);
+    values_is_inherit_.push_back(parsed_value.property_value_type ==
+                                 kInheritValue);
   }
+  return true;
 }
 
 void SVGAnimateElement::ClearValues() {

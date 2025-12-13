@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/paint/display_item_list.h"
+#include "cc/paint/frame_metadata.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"

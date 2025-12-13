@@ -12,11 +12,17 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.HOME_MODULE_PREF_REFACTOR;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.view.ContextThemeWrapper;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ViewFlipper;
 
@@ -30,28 +36,43 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.function.Supplier;
+
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(HOME_MODULE_PREF_REFACTOR)
 public class NtpCustomizationCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private NtpCustomizationMediator mMediator;
-    @Mock private View mView;
     @Mock private ViewFlipper mViewFlipper;
+    @Mock private NtpThemeCoordinator mNtpThemeCoordinator;
 
     private Context mContext;
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
+    private View mContentView;
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        mContentView =
+                LayoutInflater.from(mContext)
+                        .inflate(
+                                R.layout.ntp_customization_ntp_cards_bottom_sheet,
+                                /* root= */ null);
+        NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
+                /* hasShown= */ false);
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(
                         mContext, mBottomSheetController, mock(Supplier.class), MAIN);
@@ -63,6 +84,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     public void testShowBottomSheet() {
         mNtpCustomizationCoordinator.showBottomSheet();
         verify(mMediator).showBottomSheet(eq(MAIN));
+        assertTrue(NtpCustomizationUtils.getNtpCustomizationBottomSheetShownFromSharedPreference());
     }
 
     @Test
@@ -71,8 +93,8 @@ public class NtpCustomizationCoordinatorUnitTest {
                 mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
 
         // Verifies each implementation calls the corresponding method of the mediator.
-        delegate.registerBottomSheetLayout(11, mView);
-        verify(mViewFlipper).addView(eq(mView));
+        delegate.registerBottomSheetLayout(11, mContentView);
+        verify(mViewFlipper).addView(eq(mContentView));
         verify(mMediator).registerBottomSheetLayout(11);
 
         delegate.backPressOnCurrentBottomSheet();
@@ -112,7 +134,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                         mContext, mBottomSheetController, mock(Supplier.class), MAIN);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
         BottomSheetContent bottomSheetContent =
-                mNtpCustomizationCoordinator.initBottomSheetContent(mView);
+                mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
         bottomSheetContent.handleBackPress();
         verify(mMediator).backPressOnCurrentBottomSheet();
 
@@ -122,18 +144,18 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext, mBottomSheetController, mock(Supplier.class), NTP_CARDS);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
-        bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mView);
+        bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
         bottomSheetContent.handleBackPress();
-        verify(mMediator).dismissBottomSheet();
+        verify(mMediator).dismissBottomSheet(/* animate= */ eq(true));
 
         clearInvocations(mMediator);
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(
                         mContext, mBottomSheetController, mock(Supplier.class), FEED);
         mNtpCustomizationCoordinator.setMediatorForTesting(mMediator);
-        bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mView);
+        bottomSheetContent = mNtpCustomizationCoordinator.initBottomSheetContent(mContentView);
         bottomSheetContent.handleBackPress();
-        verify(mMediator).dismissBottomSheet();
+        verify(mMediator).dismissBottomSheet(/* animate= */ eq(true));
     }
 
     @Test
@@ -156,5 +178,29 @@ public class NtpCustomizationCoordinatorUnitTest {
         verify(mViewFlipper).removeAllViews();
         verify(mMediator).destroy();
         verify(ntpCardsCoordinator).destroy();
+    }
+
+    @Test
+    public void testBottomSheetDelegateImplementation_showBottomSheetForTheme() {
+        BottomSheetDelegate delegate =
+                mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
+        mNtpCustomizationCoordinator.setNtpThemeCoordinatorForTesting(mNtpThemeCoordinator);
+
+        delegate.showBottomSheet(THEME_COLLECTIONS);
+        verify(mMediator).showBottomSheet(eq(THEME_COLLECTIONS));
+        verify(mNtpThemeCoordinator).initializeBottomSheetContent(eq(THEME_COLLECTIONS));
+
+        delegate.showBottomSheet(SINGLE_THEME_COLLECTION);
+        verify(mMediator).showBottomSheet(eq(SINGLE_THEME_COLLECTION));
+        verify(mNtpThemeCoordinator).initializeBottomSheetContent(eq(SINGLE_THEME_COLLECTION));
+    }
+
+    @Test
+    public void testBottomSheetDelegateImplementation_onNewThemeCollectionImageSelected() {
+        BottomSheetDelegate delegate =
+                mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
+        Bitmap bitmap = mock(Bitmap.class);
+        delegate.onNewThemeCollectionImageSelected(bitmap);
+        verify(mMediator).onNewThemeCollectionImageSelected(eq(bitmap));
     }
 }

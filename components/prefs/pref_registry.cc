@@ -18,12 +18,18 @@
 PrefRegistry::PrefRegistry()
     : defaults_(base::MakeRefCounted<DefaultPrefStore>()) {}
 
-PrefRegistry::~PrefRegistry() {
-}
+PrefRegistry::~PrefRegistry() {}
 
 uint32_t PrefRegistry::GetRegistrationFlags(std::string_view pref_name) const {
   const auto& it = registration_flags_.find(pref_name);
   return it != registration_flags_.end() ? it->second : NO_REGISTRATION_FLAGS;
+}
+
+std::optional<PrefRegistry::RegisteredPrefType>
+PrefRegistry::GetRegisteredPrefType(std::string_view pref_name) const {
+  const auto& it = registration_types_.find(pref_name);
+  return it != registration_types_.end() ? std::make_optional(it->second)
+                                         : std::nullopt;
 }
 
 scoped_refptr<PrefStore> PrefRegistry::defaults() {
@@ -51,20 +57,25 @@ void PrefRegistry::SetDefaultPrefValue(std::string_view pref_name,
 
 void PrefRegistry::RegisterPreference(std::string_view path,
                                       base::Value default_value,
-                                      uint32_t flags) {
+                                      uint32_t flags,
+                                      RegisteredPrefType type) {
   base::Value::Type orig_type = default_value.type();
   DCHECK(orig_type != base::Value::Type::NONE &&
-         orig_type != base::Value::Type::BINARY) <<
-         "invalid preference type: " << orig_type;
+         orig_type != base::Value::Type::BINARY)
+      << "invalid preference type: " << orig_type;
   DCHECK(!defaults_->GetValue(path, nullptr))
       << "Trying to register a previously registered pref: " << path;
   DCHECK(!base::Contains(registration_flags_, std::string(path)))
+      << "Trying to register a previously registered pref: " << path;
+  DCHECK(!base::Contains(registration_types_, std::string(path)))
       << "Trying to register a previously registered pref: " << path;
 
   defaults_->SetDefaultValue(path, std::move(default_value));
   if (flags != NO_REGISTRATION_FLAGS) {
     registration_flags_.insert_or_assign(std::string(path), flags);
   }
+
+  registration_types_.insert_or_assign(std::string(path), type);
 
   OnPrefRegistered(path, flags);
 }

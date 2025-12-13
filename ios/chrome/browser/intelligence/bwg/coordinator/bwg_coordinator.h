@@ -21,9 +21,6 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// The promos manager ui handler to alert about UI changes.
-@property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
-
 // Dismisses the BWG flow with a completion block before stopping the
 // coordinator.
 - (void)stopWithCompletion:(ProceduralBlock)completion;

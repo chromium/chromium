@@ -78,10 +78,15 @@ class TestHelper {
   // On failure, returns nullptr.
   [[nodiscard]] User* AddKioskWebAppUser(std::string_view user_id);
 
+  // Creates and adds a new kiosk Isolated Web App (IWA) user, and returns it.
+  // On failure, returns nullptr.
+  [[nodiscard]] User* AddKioskIwaUser(std::string_view user_id);
+
  private:
   User* AddUserInternal(const AccountId& account_id, UserType user_type);
   User* AddDeviceLocalAccountUserInternal(std::string_view user_id,
                                           UserType user_type);
+  User* AddKioskUser(std::string_view user_id, UserType kiosk_type);
 
   raw_ref<UserManager> user_manager_;
 };

@@ -98,7 +98,7 @@
       <div id="mirrorDisplayToggleButton" class="settings-box"
           on-click="onMirroredClick_" actionable-row>
         <div id="mirrorDisplayToggleLabel" class="start">
-          [[getDisplayMirrorText_(displays)]]
+          [[getDisplayMirrorText_(displays, primaryDisplay)]]
         </div>
         <cr-toggle id="mirrorDisplayToggle"
             checked="[[isMirrored(displays)]]"

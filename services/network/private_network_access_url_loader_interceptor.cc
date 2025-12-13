@@ -33,6 +33,11 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     mojom::DevToolsObserver* devtools_observer,
     const std::optional<std::string>& devtools_request_id,
     mojom::URLLoaderNetworkServiceObserver* url_loader_network_observer) {
+  // Save the last response address space, if any, in case it is needed for an
+  // error message.
+  std::optional<mojom::IPAddressSpace> last_response_address_space =
+      checker_.ResponseAddressSpace();
+
   // Now that the request endpoint's address has been resolved, check if
   // this request should be blocked per Private Network Access.
   PrivateNetworkAccessCheckResult result =
@@ -51,23 +56,46 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // If the cached entry was blocked by the private network access check
     // without a preflight, we'll start over and attempt to request from the
     // network, so resetting the checker.
+    net_log.AddEvent(
+        net::NetLogEventType::LOCAL_NETWORK_ACCESS_RETRY_DUE_TO_CACHE);
     checker_.ResetForRetry();
     return net::
-        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
+        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY;
+  }
+
+  if (result == PrivateNetworkAccessCheckResult::
+                    kBlockedByRequiredIpAddressSpaceMismatch) {
+    // Error here is that we were expecting the resource to be in the
+    // required_address_space, but the resource was served in the
+    // response_address_space.
+    std::move(set_cors_error_status_callback)
+        .Run(CorsErrorStatus(
+            *cors_error,
+            /*resource_address_space=*/*checker_.ResponseAddressSpace(),
+            /*inconsistent_address_space=*/checker_.RequiredAddressSpace()));
+    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
+  }
+
+  if (result ==
+      PrivateNetworkAccessCheckResult::kBlockedByInconsistentIpAddressSpace) {
+    // Error here is that we initially saw the request served from an IP in the
+    // last_response_address_space, but then saw it served again from an IP the
+    // response_address_space.
+    DCHECK(last_response_address_space);
+    std::move(set_cors_error_status_callback)
+        .Run(CorsErrorStatus(
+            *cors_error,
+            /*resource_address_space=*/*checker_.ResponseAddressSpace(),
+            /*inconsistent_address_space=*/
+            last_response_address_space.value_or(
+                mojom::IPAddressSpace::kUnknown)));
+    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
   }
 
   // Report the CORS error back to the URLLoader. This ensures the final
   // URLLoaderCompletionStatus reflects the PNA failure reason.
   std::move(set_cors_error_status_callback)
-      .Run(CorsErrorStatus(*cors_error, checker_.TargetAddressSpace(),
-                           *checker_.ResponseAddressSpace()));
-
-  if (result == PrivateNetworkAccessCheckResult::
-                    kBlockedByInconsistentIpAddressSpace ||
-      result ==
-          PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
-    return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
-  }
+      .Run(CorsErrorStatus(*cors_error, *checker_.ResponseAddressSpace()));
 
   // Local network access permission is required for this connection.
   if (url_loader_network_observer &&
@@ -78,29 +106,39 @@ net::Error PrivateNetworkAccessUrlLoaderInterceptor::OnConnected(
     // to either continue the load (if granted) or result in an error (if
     // denied).
     url_loader_network_observer->OnLocalNetworkAccessPermissionRequired(
+        MapTransportTypeToMojomTransportType(info.type),
         base::BindOnce(
             [](base::WeakPtr<PrivateNetworkAccessUrlLoaderInterceptor>
                    weak_self,
+               const net::NetLogWithSource& net_log,
                base::OnceCallback<void(net::Error)> callback,
-               bool permission_granted) {
+               mojom::LocalNetworkAccessResult result) {
               if (!weak_self) {
                 // Checking the weak ptr not to call the `callback` after
                 // `this` is destructed. This is needed because the observer's
                 // pipe may outlive `this` and the owner `URLLoader`.
                 return;
               }
+              if (result == mojom::LocalNetworkAccessResult::kRetryDueToCache) {
+                weak_self->checker_.ResetForRetry();
+                std::move(callback).Run(
+                    net::
+                        ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_LOCAL_NETWORK_ACCESS_POLICY);
+                return;
+              }
               std::move(callback).Run(
-                  permission_granted
+                  result == mojom::LocalNetworkAccessResult::kGranted
                       ? net::OK
-                      : net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+                      : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
             },
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback_getter).Run()));
+            weak_ptr_factory_.GetWeakPtr(), net_log,
+            std::move(callback_getter).Run()));
     return net::ERR_IO_PENDING;
   }
 
   // Otherwise, if there was a Private Network Access CORS error, block by
   // default.
-  return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
+  return net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS;
 }
 
 void PrivateNetworkAccessUrlLoaderInterceptor::ResetForRedirect(
@@ -136,12 +174,11 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
   mojom::IPAddressSpace response_address_space =
       *checker_.ResponseAddressSpace();
   mojom::IPAddressSpace client_address_space = checker_.ClientAddressSpace();
-  mojom::IPAddressSpace target_address_space = checker_.TargetAddressSpace();
 
   net_log.AddEvent(net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
     return base::Value::Dict()
         .Set("client_address_space",
-             IPAddressSpaceToStringPiece(checker_.ClientAddressSpace()))
+             IPAddressSpaceToStringPiece(client_address_space))
         .Set("resource_address_space",
              IPAddressSpaceToStringPiece(response_address_space))
         .Set("result", PrivateNetworkAccessCheckResultToStringPiece(result));
@@ -150,9 +187,12 @@ PrivateNetworkAccessUrlLoaderInterceptor::DoCheck(
   if (url_loader_network_observer) {
     if (response_address_space == mojom::IPAddressSpace::kLoopback ||
         response_address_space == mojom::IPAddressSpace::kLocal) {
+      // We use the required_address_space as opposed to the
+      // target_address_space here because target_address_space is an overloaded
+      // term and has to do with PNA preflights.
       url_loader_network_observer->OnUrlLoaderConnectedToPrivateNetwork(
           url, response_address_space, client_address_space,
-          target_address_space);
+          checker_.RequiredAddressSpace());
     }
   }
 

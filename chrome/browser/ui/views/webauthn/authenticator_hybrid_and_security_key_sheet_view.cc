@@ -14,9 +14,10 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_qr_centered_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -94,17 +95,24 @@ AuthenticatorHybridAndSecurityKeySheetView::
 std::pair<std::unique_ptr<views::View>,
           AuthenticatorRequestSheetView::AutoFocus>
 AuthenticatorHybridAndSecurityKeySheetView::BuildStepSpecificContent() {
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   auto* sheet_model =
       static_cast<AuthenticatorHybridAndSecurityKeySheetModel*>(model());
   auto container = std::make_unique<views::BoxLayoutView>();
   container->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  container->SetBetweenChildSpacing(
-      views::LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  container->SetBetweenChildSpacing(layout_provider->GetDistanceMetric(
+      views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
   bool is_create = sheet_model->dialog_model()->request_type ==
                    device::FidoRequestType::kMakeCredential;
-  const std::u16string& rp_id =
-      base::UTF8ToUTF16(sheet_model->dialog_model()->relying_party_id);
+
+  // Elide the URL so it fits on the label.
+  gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
+  int label_width = AuthenticatorSheetModelBase::GetPreferredContentWidth() -
+                    kIconSize - kIconAndTextGap;
+  const std::u16string& rp_id = webauthn_ui_helpers::RpIdToElidedHost(
+      sheet_model->dialog_model()->relying_party_id, label_width, font_list);
+
   const std::vector<std::u16string> qr_labels = {l10n_util::GetStringFUTF16(
       is_create ? IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_CREATE_DESCRIPTION
                 : IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_SIGN_IN_DESCRIPTION,

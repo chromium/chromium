@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_TEST_API_H_
 
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
@@ -15,7 +16,7 @@ class FormFieldParserTestApi {
   explicit FormFieldParserTestApi(FormFieldParser* parser) : parser_(*parser) {}
 
   static bool Match(ParsingContext& context,
-                    const AutofillField& field,
+                    const FormFieldData& field,
                     std::u16string_view pattern,
                     DenseSet<MatchAttribute> match_attributes,
                     const char* regex_name = "") {
@@ -25,9 +26,9 @@ class FormFieldParserTestApi {
   }
 
   static bool ParseInAnyOrder(
-      AutofillScanner* scanner,
-      std::vector<
-          std::pair<raw_ptr<AutofillField>*, base::RepeatingCallback<bool()>>>
+      AutofillScanner& scanner,
+      base::span<const std::pair<raw_ptr<const FormFieldData>*,
+                                 base::FunctionRef<bool()>>>
           fields_and_parsers) {
     return FormFieldParser::ParseInAnyOrder(scanner, fields_and_parsers);
   }

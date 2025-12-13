@@ -7,7 +7,6 @@ import("//build/config/chromeos/args.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
-import("//build/config/features.gni")
 import("//build/config/locales.gni")
 import("//build/config/ozone.gni")
 import("//build/config/python.gni")
@@ -173,11 +172,12 @@ if (!is_android && !is_mac) {
     data = [ "$root_out_dir/resources.pak" ]
     data_deps = []
 
+    if (is_win || is_linux || is_chromeos) {
+      deps += [ "//components/webapps/isolated_web_apps:scheme" ]
+    }
+
     if (is_chromeos) {
-      data_deps += [
-        "//components/variations/cros_evaluate_seed:evaluate_seed",
-        "//sandbox/linux:chrome_sandbox",
-      ]
+      data_deps += [ "//sandbox/linux:chrome_sandbox" ]
       if (build_mojo_proxy) {
         data_deps += [ "//mojo/proxy:mojo_proxy" ]
       }
@@ -320,8 +320,8 @@ if (!is_android && !is_mac) {
         ldflags += [ "-L" + rebase_path(root_out_dir) ]
       }
 
-      # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
-      # a metadata.json file in root directory containing Chrome version.
+      # On Chrome OS builds, put a metadata.json file in root directory
+      # containing Chrome version.
       if (is_chromeos) {
         data_deps += [ "//build:version_metadata" ]
       }
@@ -369,8 +369,8 @@ if (!is_android && !is_mac) {
 
     data_deps += [
       "//chrome/browser/resources/media/mei_preload:component",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
-      "//components/webapps/isolated_web_apps/preload:component",
       "//third_party/widevine/cdm",
     ]
 
@@ -426,6 +426,7 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/memory_system",
       "//components/policy:generated",
+      "//components/webapps/isolated_web_apps:scheme",
       "//content/public/app",
       "//crypto",
       "//headless:headless_non_renderer",
@@ -441,10 +442,6 @@ if (is_win) {
 
     if (use_aura) {
       deps += [ "//ui/compositor" ]
-    }
-
-    if (is_chromeos) {
-      deps += [ "//chrome/browser/ash/schedqos" ]
     }
   }
 
@@ -1129,6 +1126,7 @@ if (is_win) {
       "//components/crash/core/app",
       "//components/memory_system",
       "//components/policy:generated",
+      "//components/webapps/isolated_web_apps:scheme",
       "//content/public/app",
       "//headless:headless_shell_lib",
       "//third_party/cld_3/src/src:cld_3",
@@ -1186,8 +1184,8 @@ if (is_win) {
       ":swiftshader_binaries",
       ":widevine_cdm_library",
       "//chrome/browser/resources/media/mei_preload:component_bundle",
+      "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component_bundle",
       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
-      "//components/webapps/isolated_web_apps/preload:component_bundle",
     ]
 
     if (is_chrome_branded) {
@@ -1422,7 +1420,8 @@ group("dependencies") {
     "//components/memory_system",
     "//components/startup_metric_utils",
     "//components/sync",
-    "//components/upload_list:upload_list",
+    "//components/upload_list",
+    "//components/variations/service",
     "//components/webui/about",
     "//content/public/child",
     "//pdf",
@@ -1505,8 +1504,9 @@ group("resources") {
 group("extra_resources") {
   # Deps should be same as those in chrome_extra_paks() within chrome_paks.gni.
   public_deps = [
-    "//chrome/browser/resources:resources",
+    "//chrome/browser/resources",
     "//components/autofill/core/browser:autofill_address_rewriter_resources",
+    "//components/autofill/core/browser:autofill_alternative_state_name_map_resources",
   ]
 }
 

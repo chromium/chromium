@@ -1149,9 +1149,6 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "trafficCountersForWifiTesting",
       ash::features::IsTrafficCountersForWiFiTestingEnabled());
-  html_source->AddBoolean(
-      "showHiddenToggle",
-      base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
   html_source->AddBoolean("isInstantHotspotRebrandEnabled",
                           ash::features::IsInstantHotspotRebrandEnabled());
 
@@ -1621,10 +1618,7 @@ void InternetSection::OnNetworkList(
         connected_wifi_guid_ = network->guid;
         updater.AddSearchTags(GetWifiConnectedSearchConcepts());
         updater.AddSearchTags(GetWifiMeteredSearchConcepts());
-        if (base::FeatureList::IsEnabled(
-                ::features::kShowHiddenNetworkToggle)) {
-          updater.AddSearchTags(GetWifiHiddenSearchConcepts());
-        }
+        updater.AddSearchTags(GetWifiHiddenSearchConcepts());
         break;
 
       case NetworkType::kCellular:

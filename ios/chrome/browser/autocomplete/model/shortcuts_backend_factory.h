@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_SHORTCUTS_BACKEND_FACTORY_H_
 #define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_SHORTCUTS_BACKEND_FACTORY_H_
 
-#import "base/memory/ref_counted.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
@@ -17,6 +17,7 @@ namespace ios {
 // ProfileIOS.
 class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
+  // This can be null if shortcuts are not eligibile.
   static scoped_refptr<ShortcutsBackend> GetForProfile(ProfileIOS* profile);
   static scoped_refptr<ShortcutsBackend> GetForProfileIfExists(
       ProfileIOS* profile);
@@ -30,9 +31,9 @@ class ShortcutsBackendFactory : public RefcountedProfileKeyedServiceFactoryIOS {
   ShortcutsBackendFactory();
   ~ShortcutsBackendFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

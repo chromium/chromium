@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 
 #import <map>
 
+#import "base/functional/callback_helpers.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_presentation_type.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -24,10 +21,10 @@ namespace {
 
 // The number of rows the infill mechanism should take into account when
 // computing the average color.
-CGFloat const kNumberOfRowsForInfill = 5;
+constexpr CGFloat kNumberOfRowsForInfill = 5;
 
 // Number of bytes per pixel.
-size_t const kBytesPerPixel = 4;
+constexpr size_t kBytesPerPixel = 4;
 
 }  // namespace
 
@@ -40,39 +37,41 @@ size_t const kBytesPerPixel = 4;
 UIColor* DominantColor(UIImage* image) {
   CGImageRef imageRef = [image CGImage];
 
-  size_t width = CGImageGetWidth(imageRef);
-  size_t height = CGImageGetHeight(imageRef);
-  size_t numberOfPixels = width * height;
-  CGFloat dominantColorThreshold = numberOfPixels / 2;
+  const size_t width = CGImageGetWidth(imageRef);
+  const size_t height = CGImageGetHeight(imageRef);
+  const size_t numberOfPixels = width * height;
+  const CGFloat dominantColorThreshold = numberOfPixels / 2;
 
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-  uint8_t* rawData = new uint8_t[numberOfPixels * kBytesPerPixel]();
 
-  NSUInteger bytesPerRow = kBytesPerPixel * width;
-  CGContextRef context =
-      CGBitmapContextCreate(rawData, width, height, 8, bytesPerRow, colorSpace,
-                            (uint32_t)kCGImageAlphaPremultipliedLast |
-                                (uint32_t)kCGImageByteOrder32Big);
+  std::vector<uint8_t> rawData;
+  rawData.resize(numberOfPixels * kBytesPerPixel);
+
+  const NSUInteger bytesPerRow = kBytesPerPixel * width;
+  CGContextRef context = CGBitmapContextCreate(
+      rawData.data(), width, height, 8, bytesPerRow, colorSpace,
+      base::to_underlying(kCGImageAlphaPremultipliedLast) |
+          base::to_underlying(kCGImageByteOrder32Big));
+
   CGColorSpaceRelease(colorSpace);
   CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);
   CGContextRelease(context);
 
   std::map<uint32_t, uint32_t> colorsMapping;
 
-  size_t columnIndex = 0;
-  size_t rowIndex = 0;
+  base::span<const uint8_t> pixelView;
+  base::span<const uint8_t> view = base::span(rawData);
   for (size_t n = 0; n < numberOfPixels; ++n) {
-    size_t index = (bytesPerRow * rowIndex) + columnIndex * kBytesPerPixel;
+    std::tie(pixelView, view) = view.split_at(kBytesPerPixel);
 
-    uint32_t red = rawData[index];
-    uint32_t green = rawData[index + 1];
-    uint32_t blue = rawData[index + 2];
-    uint32_t alpha = rawData[index + 3];
+    uint32_t red = pixelView[0];
+    uint32_t green = pixelView[1];
+    uint32_t blue = pixelView[2];
+    uint32_t alpha = pixelView[3];
     uint32_t color = (red << 24) | (green << 16) | (blue << 8) | alpha;
 
     uint32_t colorCount = colorsMapping[color] + 1;
     if (colorCount >= dominantColorThreshold) {
-      delete[] rawData;
       return [[UIColor alloc] initWithRed:CGFloat(red) / 256
                                     green:CGFloat(green) / 256
                                      blue:CGFloat(blue) / 256
@@ -80,15 +79,8 @@ UIColor* DominantColor(UIImage* image) {
     }
 
     colorsMapping[color] = colorCount;
-
-    rowIndex++;
-    if (rowIndex == height) {
-      rowIndex = 0;
-      ++columnIndex;
-    }
   }
 
-  delete[] rawData;
   return nil;
 }
 

@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // https://github.com/include-what-you-use/include-what-you-use/issues/1546
-// IWYU pragma: no_forward_declare WTF::internal::__thisIsHereToForceASemicolonAfterThisMacro
+// IWYU pragma: no_forward_declare internal::__thisIsHereToForceASemicolonAfterThisMacro
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 

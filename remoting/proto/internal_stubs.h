@@ -10,27 +10,18 @@
 #include <string>
 #include <string_view>
 
+#include "remoting/proto/do_nothing.pb.h"
 #include "remoting/proto/logging_service.h"
+#include "remoting/proto/messaging_service.h"
 #include "remoting/proto/remote_support_service.h"
 #include "remoting/proto/session_authz_service.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 // This file defines proto and function stubs for internal-only implementations.
 // This will allow us to build most of our code in Chromium rather than put
 // everything in //remoting/internal which is only built on official builders.
 namespace remoting::internal {
 
-// Base proto used for aliasing.
-class DoNothingProto : public google::protobuf::MessageLite {
- public:
-  // google::protobuf::MessageLite
-  const google::protobuf::internal::ClassData* GetClassData() const override;
-  void Clear() override;
-  size_t ByteSizeLong() const override;
-  uint8_t* _InternalSerialize(
-      uint8_t* ptr,
-      google::protobuf::io::EpsCopyOutputStream* stream) const override;
-};
+using DoNothingProto = remoting::DoNothing;
 
 // Aliases for internal protos.
 using RemoteAccessHostV1Proto = DoNothingProto;
@@ -143,6 +134,42 @@ extern std::string_view GetCreateRemoteSupportHostRequestPath();
 extern std::unique_ptr<RemoteSupportHost> GetRemoteSupportHost(
     const RemoteSupportHostStruct& request_struct);
 extern std::string_view GetSupportId(const RemoteSupportHost&);
+
+// ===========================
+// MessagingService helpers
+// ===========================
+
+extern std::string_view GetHostOpenChannelPath();
+extern std::string_view GetHostSendMessagePath();
+
+using HostOpenChannelRequest = DoNothingProto;
+extern std::unique_ptr<HostOpenChannelRequest> GetHostOpenChannelRequest(
+    const HostOpenChannelRequestStruct&);
+
+using HostOpenChannelResponse = DoNothingProto;
+extern std::unique_ptr<HostOpenChannelResponseStruct>
+GetHostOpenChannelResponseStruct(const HostOpenChannelResponse&);
+
+using HostSendMessageRequest = DoNothingProto;
+extern std::unique_ptr<HostSendMessageRequest> GetHostSendMessageRequest(
+    const HostSendMessageRequestStruct&);
+
+using HostSendMessageResponse = DoNothingProto;
+extern std::unique_ptr<HostSendMessageResponseStruct>
+GetHostSendMessageResponseStruct(const HostSendMessageResponse&);
+
+using PeerMessage = DoNothingProto;
+extern std::unique_ptr<PeerMessage> GetPeerMessage(const PeerMessageStruct&);
+extern std::unique_ptr<PeerMessageStruct> GetPeerMessageStruct(
+    const PeerMessage&);
+
+using IqStanza = DoNothingProto;
+extern std::unique_ptr<IqStanza> GetIqStanza(const IqStanzaStruct&);
+extern std::unique_ptr<IqStanzaStruct> GetIqStanzaStruct(const IqStanza&);
+
+using SystemTest = DoNothingProto;
+extern std::unique_ptr<SystemTest> GetSystemTest(const SystemTestStruct&);
+extern std::unique_ptr<SystemTestStruct> GetSystemTestStruct(const SystemTest&);
 
 }  // namespace remoting::internal
 

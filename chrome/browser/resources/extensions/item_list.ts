@@ -9,6 +9,7 @@ import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -234,6 +235,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         case Mv2ExperimentStage.UNSUPPORTED:
           return extension.isAffectedByMV2Deprecation &&
               extension.disableReasons.unsupportedManifestVersion;
+        default:
+          assertNotReachedCase(this.mv2ExperimentStage_);
       }
     });
   }
@@ -295,6 +298,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
         // extension is affected by the MV2 deprecation.
         return !this.isMv2DeprecationNoticeDismissed &&
             this.mv2DeprecatedExtensions_?.length !== 0;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 

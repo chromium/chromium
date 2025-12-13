@@ -2,17 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/vaapi/test/shared_va_surface.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/types/pass_key.h"
+#include "crypto/obsolete/md5.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
@@ -169,9 +167,9 @@ void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
   DCHECK(fourcc == VA_FOURCC_NV12 || fourcc == VA_FOURCC_P010);
 
   if (fourcc == VA_FOURCC_NV12) {
-    convert_res = libyuv::NV12ToARGB(image_data + image.offsets[0],
+    convert_res = libyuv::NV12ToARGB(UNSAFE_TODO(image_data + image.offsets[0]),
                                      base::checked_cast<int>(image.pitches[0]),
-                                     image_data + image.offsets[1],
+                                     UNSAFE_TODO(image_data + image.offsets[1]),
                                      base::checked_cast<int>(image.pitches[1]),
                                      argb_data.get(),
                                      base::checked_cast<int>(argb_stride),
@@ -181,24 +179,27 @@ void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
     LOG_ASSERT(image.width * 2 <= image.pitches[0]);
     LOG_ASSERT(4 * ((image.width + 1) / 2) <= image.pitches[1]);
 
-    uint8_t* y_8b = image_data + image.offsets[0];
+    uint8_t* y_8b = UNSAFE_TODO(image_data + image.offsets[0]);
     std::vector<uint16_t> y_plane;
     for (uint32_t row = 0u; row < image.height; row++) {
       for (uint32_t col = 0u; col < image.width * 2; col += 2) {
-        y_plane.push_back(JoinUint8(y_8b[col], y_8b[col + 1]));
+        y_plane.push_back(
+            JoinUint8(UNSAFE_TODO(y_8b[col]), UNSAFE_TODO(y_8b[col + 1])));
       }
-      y_8b += image.pitches[0];
+      UNSAFE_TODO(y_8b += image.pitches[0]);
     }
 
     // Split the interleaved UV plane.
-    uint8_t* uv_8b = image_data + image.offsets[1];
+    uint8_t* uv_8b = UNSAFE_TODO(image_data + image.offsets[1]);
     std::vector<uint16_t> u_plane, v_plane;
     for (uint32_t row = 0u; row < (image.height + 1) / 2; row++) {
       for (uint32_t col = 0u; col < 4 * ((image.width + 1) / 2); col += 4) {
-        u_plane.push_back(JoinUint8(uv_8b[col], uv_8b[col + 1]));
-        v_plane.push_back(JoinUint8(uv_8b[col + 2], uv_8b[col + 3]));
+        u_plane.push_back(
+            JoinUint8(UNSAFE_TODO(uv_8b[col]), UNSAFE_TODO(uv_8b[col + 1])));
+        v_plane.push_back(JoinUint8(UNSAFE_TODO(uv_8b[col + 2]),
+                                    UNSAFE_TODO(uv_8b[col + 3])));
       }
-      uv_8b += image.pitches[1];
+      UNSAFE_TODO(uv_8b += image.pitches[1]);
     }
 
     convert_res = libyuv::H010ToARGB(
@@ -247,28 +248,30 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
     // I420 still needs to be packed.
     LOG_ASSERT(image.num_planes == 3u);
     convert_res = libyuv::I420Copy(
-        image_data + image.offsets[0],
+        UNSAFE_TODO(image_data + image.offsets[0]),
         base::checked_cast<int>(image.pitches[0]),
-        image_data + image.offsets[1],
+        UNSAFE_TODO(image_data + image.offsets[1]),
         base::checked_cast<int>(image.pitches[1]),
-        image_data + image.offsets[2],
+        UNSAFE_TODO(image_data + image.offsets[2]),
         base::checked_cast<int>(image.pitches[2]), i420_data.data(),
-        base::strict_cast<int>(image.width), i420_data.data() + luma_plane_size,
+        base::strict_cast<int>(image.width),
+        UNSAFE_TODO(i420_data.data() + luma_plane_size),
         base::checked_cast<int>((image.width + 1) / 2),
-        i420_data.data() + luma_plane_size + chroma_plane_size,
+        UNSAFE_TODO(i420_data.data() + luma_plane_size + chroma_plane_size),
         base::checked_cast<int>((image.width + 1) / 2),
         base::strict_cast<int>(image.width),
         base::strict_cast<int>(image.height));
   } else if (fourcc == VA_FOURCC_NV12) {
     LOG_ASSERT(image.num_planes == 2u);
     convert_res = libyuv::NV12ToI420(
-        image_data + image.offsets[0],
+        UNSAFE_TODO(image_data + image.offsets[0]),
         base::checked_cast<int>(image.pitches[0]),
-        image_data + image.offsets[1],
+        UNSAFE_TODO(image_data + image.offsets[1]),
         base::checked_cast<int>(image.pitches[1]), i420_data.data(),
-        base::strict_cast<int>(image.width), i420_data.data() + luma_plane_size,
+        base::strict_cast<int>(image.width),
+        UNSAFE_TODO(i420_data.data() + luma_plane_size),
         base::checked_cast<int>((image.width + 1) / 2),
-        i420_data.data() + luma_plane_size + chroma_plane_size,
+        UNSAFE_TODO(i420_data.data() + luma_plane_size + chroma_plane_size),
         base::checked_cast<int>((image.width + 1) / 2),
         base::strict_cast<int>(image.width),
         base::strict_cast<int>(image.height));
@@ -284,9 +287,7 @@ std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
   res = vaDestroyImage(va_device_->display(), image.image_id);
   VA_LOG_ASSERT(res, "vaDestroyImage");
 
-  base::MD5Digest md5_digest;
-  base::MD5Sum(i420_data, &md5_digest);
-  return MD5DigestToBase16(md5_digest);
+  return base::HexEncodeLower(crypto::obsolete::Md5::HashForTesting(i420_data));
 }
 
 }  // namespace vaapi_test

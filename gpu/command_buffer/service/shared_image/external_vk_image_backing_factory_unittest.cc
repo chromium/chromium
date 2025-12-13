@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -52,8 +48,9 @@ class ExternalVkImageBackingFactoryTest : public SharedImageTestBase {
  protected:
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType::kVulkan));
-    backing_factory_ =
-        std::make_unique<ExternalVkImageBackingFactory>(context_state_);
+    constexpr bool kIsInterop = false;
+    backing_factory_ = std::make_unique<ExternalVkImageBackingFactory>(
+        context_state_, kIsInterop);
   }
 };
 
@@ -202,11 +199,11 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, DawnWrite_SkiaVulkanRead) {
 
     for (int i = 0; i < num_pixels; i++) {
       // Compare the pixel values.
-      const uint8_t* pixel = dst_pixels.data() + (i * 4);
+      const uint8_t* pixel = UNSAFE_TODO(dst_pixels.data() + (i * 4));
       EXPECT_EQ(pixel[0], 0);
-      EXPECT_EQ(pixel[1], 255);
-      EXPECT_EQ(pixel[2], 0);
-      EXPECT_EQ(pixel[3], 255);
+      UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
+      UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
+      UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
     }
 
     skia_scoped_access->ApplyBackendSurfaceEndState();
@@ -341,17 +338,17 @@ TEST_F(ExternalVkImageBackingFactoryDawnTest, SkiaVulkanWrite_DawnRead) {
         static_cast<const uint8_t*>(dst_buffer.GetConstMappedRange());
     for (int h = 0; h < size.height(); ++h) {
       for (int w = 0; w < size.width(); ++w) {
-        const uint8_t* pixel = (pixel_data + h * 256) + w * 4;
+        const uint8_t* pixel = UNSAFE_TODO((pixel_data + h * 256) + w * 4);
         if (h < size.height() / 2) {
           EXPECT_EQ(pixel[0], 0);
-          EXPECT_EQ(pixel[1], 0);
-          EXPECT_EQ(pixel[2], 255);
-          EXPECT_EQ(pixel[3], 255);
+          UNSAFE_TODO(EXPECT_EQ(pixel[1], 0));
+          UNSAFE_TODO(EXPECT_EQ(pixel[2], 255));
+          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
         } else {
           EXPECT_EQ(pixel[0], 0);
-          EXPECT_EQ(pixel[1], 255);
-          EXPECT_EQ(pixel[2], 0);
-          EXPECT_EQ(pixel[3], 255);
+          UNSAFE_TODO(EXPECT_EQ(pixel[1], 255));
+          UNSAFE_TODO(EXPECT_EQ(pixel[2], 0));
+          UNSAFE_TODO(EXPECT_EQ(pixel[3], 255));
         }
       }
     }

@@ -16,8 +16,8 @@ namespace blink {
 v8::FilterETWSessionByURLResult FilterETWSessionByURLCallback(
     v8::Local<v8::Context> context,
     const std::string& json_payload) {
-  std::optional<base::Value> optional_value =
-      base::JSONReader::Read(json_payload);
+  std::optional<base::Value> optional_value = base::JSONReader::Read(
+      json_payload, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!optional_value || !optional_value.value().is_dict()) {
     return {false, false};  // Invalid payload
   }

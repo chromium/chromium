@@ -183,7 +183,7 @@ class PLATFORM_EXPORT ShapeResultView final
       return const_reverse_iterator(begin());
     }
     const HarfBuzzRunGlyphData& GlyphAt(unsigned index) const {
-      return *(UNSAFE_TODO(range_.begin() + index));
+      return range_.Glyphs()[index];
     }
     template <bool has_non_zero_glyph_offsets>
     GlyphOffsetIterator<has_non_zero_glyph_offsets> GetGlyphOffsets() const {

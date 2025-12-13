@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/command_line.h"
 #include "base/containers/id_map.h"
@@ -32,26 +32,31 @@
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/process_type.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/resources/ui_resource_provider.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gl/gl_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/CompositorView_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace android {
 
-jlong JNI_CompositorView_Init(
+static jboolean JNI_CompositorView_IsSurfaceControlEnabled(JNIEnv* env) {
+  return features::IsAndroidSurfaceControlEnabled();
+}
+
+static jlong JNI_CompositorView_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    jboolean low_mem_device,
-    const JavaParamRef<jobject>& jwindow_android,
-    const JavaParamRef<jobject>& jtab_content_manager) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jwindow_android,
+    const JavaRef<jobject>& jtab_content_manager) {
   CompositorView* view;
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
@@ -61,8 +66,7 @@ jlong JNI_CompositorView_Init(
   DCHECK(tab_content_manager);
 
   // TODO(clholgat): Remove the compositor tabstrip flag.
-  view = new CompositorView(env, obj, low_mem_device, window_android,
-                            tab_content_manager);
+  view = new CompositorView(env, obj, window_android, tab_content_manager);
 
   if (tab_content_manager) {
     tab_content_manager->SetUIResourceProvider(view->GetUIResourceProvider());
@@ -71,9 +75,12 @@ jlong JNI_CompositorView_Init(
   return reinterpret_cast<intptr_t>(view);
 }
 
+static jboolean JNI_CompositorView_PreferRgb565ForDisplay(JNIEnv* env) {
+  return features::PreferRGB565ResourcesForDisplay();
+}
+
 CompositorView::CompositorView(JNIEnv* env,
                                const base::android::JavaRef<jobject>& obj,
-                               jboolean low_mem_device,
                                ui::WindowAndroid* window_android,
                                TabContentManager* tab_content_manager)
     : tab_content_manager_(tab_content_manager),
@@ -91,25 +98,34 @@ CompositorView::CompositorView(JNIEnv* env,
 
   root_layer_->SetIsDrawable(true);
   root_layer_->SetBackgroundColor(SkColors::kWhite);
+}
 
-  // It is safe to not keep a ref on the feature checker because it adds one
-  // internally in CheckGpuFeatureAvailability and unrefs after the callback is
-  // dispatched.
-  scoped_refptr<content::GpuFeatureChecker> surface_control_feature_checker =
-      content::GpuFeatureChecker::Create(
-          gpu::GpuFeatureType::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL,
-          base::BindOnce(&CompositorView::OnSurfaceControlFeatureStatusUpdate,
-                         weak_factory_.GetWeakPtr()));
-  surface_control_feature_checker->CheckGpuFeatureAvailability();
+// Constructor for testing.
+CompositorView::CompositorView(JNIEnv* env,
+                               const base::android::JavaRef<jobject>& obj,
+                               ui::WindowAndroid* window_android,
+                               TabContentManager* tab_content_manager,
+                               std::unique_ptr<content::Compositor> compositor)
+    : tab_content_manager_(tab_content_manager),
+      root_layer_(cc::slim::SolidColorLayer::Create()),
+      scene_layer_(nullptr),
+      current_surface_format_(0),
+      content_width_(0),
+      content_height_(0),
+      overlay_video_mode_(false),
+      overlay_immersive_ar_mode_(false),
+      overlay_xr_full_screen_mode_(false) {
+  content::BrowserChildProcessObserver::Add(this);
+  obj_.Reset(env, obj);
+  compositor_ = std::move(compositor);
+
+  root_layer_->SetIsDrawable(true);
+  root_layer_->SetBackgroundColor(SkColors::kWhite);
 }
 
 CompositorView::~CompositorView() {
   content::BrowserChildProcessObserver::Remove(this);
   tab_content_manager_->OnUIResourcesWereEvicted();
-
-  // Explicitly reset these scoped_ptrs here because otherwise we callbacks will
-  // try to access member variables during destruction.
-  compositor_.reset();
 }
 
 void CompositorView::Destroy(JNIEnv* env) {
@@ -164,13 +180,6 @@ base::WeakPtr<ui::UIResourceProvider> CompositorView::GetUIResourceProvider() {
   return compositor_ ? compositor_->GetUIResourceProvider() : nullptr;
 }
 
-void CompositorView::OnSurfaceControlFeatureStatusUpdate(bool available) {
-  if (available) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_CompositorView_notifyWillUseSurfaceControl(env, obj_);
-  }
-}
-
 void CompositorView::SurfaceCreated(JNIEnv* env) {
   compositor_->SetRootLayer(root_layer_);
   current_surface_format_ = 0;
@@ -188,8 +197,8 @@ std::optional<int> CompositorView::SurfaceChanged(
     jint width,
     jint height,
     bool can_be_used_with_surface_control,
-    const JavaParamRef<jobject>& surface,
-    const JavaParamRef<jobject>& browser_input_token) {
+    const JavaRef<jobject>& surface,
+    const JavaRef<jobject>& browser_input_token) {
   // Java View layout sometimes unexpectedly cause CompositorView to be sized so
   // large that it exceeds the max texture size and memory on the device. This
   // then subsequently causes the GPU process to crash loop. See
@@ -219,7 +228,7 @@ std::optional<int> CompositorView::SurfaceChanged(
 
 void CompositorView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint width,
     jint height) {
   content::WebContents* web_contents =
@@ -230,7 +239,7 @@ void CompositorView::OnPhysicalBackingSizeChanged(
 
 void CompositorView::OnControlsResizeViewChanged(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jboolean controls_resize_view) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
@@ -240,7 +249,7 @@ void CompositorView::OnControlsResizeViewChanged(
 
 void CompositorView::NotifyVirtualKeyboardOverlayRect(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint x,
     jint y,
     jint width,
@@ -310,7 +319,7 @@ void CompositorView::SetOverlayXrFullScreenMode(
 }
 
 void CompositorView::SetSceneLayer(JNIEnv* env,
-                                   const JavaParamRef<jobject>& jscene_layer) {
+                                   const JavaRef<jobject>& jscene_layer) {
   SceneLayer* scene_layer = SceneLayer::FromJavaObject(env, jscene_layer);
 
   if (scene_layer_ != scene_layer) {
@@ -378,9 +387,7 @@ void CompositorView::BrowserChildProcessKilled(
 
   // On Android R surface control layers leak if GPU process crashes, so we need
   // to re-create surface to get rid of them.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() ==
-          base::android::SDK_VERSION_R &&
-      data.process_type == content::PROCESS_TYPE_GPU) {
+  if (data.process_type == content::PROCESS_TYPE_GPU) {
     JNIEnv* env = base::android::AttachCurrentThread();
     compositor_->SetSurface(nullptr, false, nullptr);
     Java_CompositorView_recreateSurface(env, obj_);
@@ -389,7 +396,7 @@ void CompositorView::BrowserChildProcessKilled(
 
 void CompositorView::SetCompositorWindow(
     JNIEnv* env,
-    const JavaParamRef<jobject>& window_android) {
+    const JavaRef<jobject>& window_android) {
   ui::WindowAndroid* wa =
       ui::WindowAndroid::FromJavaWindowAndroid(window_android);
   compositor_->SetRootWindow(wa);
@@ -430,3 +437,5 @@ void CompositorView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
 }
 
 }  // namespace android
+
+DEFINE_JNI(CompositorView)

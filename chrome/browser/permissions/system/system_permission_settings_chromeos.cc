@@ -45,7 +45,6 @@ class PlatformHandleImpl : public PlatformHandle {
 
   void Request(ContentSettingsType type,
                SystemPermissionResponseCallback callback) override {
-    std::move(callback).Run();
     NOTREACHED();
   }
 

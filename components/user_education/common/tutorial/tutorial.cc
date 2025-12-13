@@ -333,7 +333,10 @@ Tutorial::Builder::BuildFromDescriptionStep(
         DCHECK_LE(current_progress, max_progress)
             << "Intermediate/progress steps should never exceed the maximum "
                "progress.";
-        progress = std::make_pair(current_progress, max_progress);
+        // Only show progress indicator if there is more than one step.
+        if (max_progress > 1) {
+          progress = std::make_pair(current_progress, max_progress);
+        }
       } else {
         DCHECK_LE(current_progress, max_progress + 1)
             << "Terminal step should always be immediately after final "

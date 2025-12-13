@@ -311,8 +311,7 @@ google_apis::RequestSender* YouTubeMusicClient::GetRequestSender() {
   if (!request_sender_) {
     CHECK(create_request_sender_callback_);
     request_sender_ =
-        std::move(create_request_sender_callback_)
-            .Run({GaiaConstants::kYouTubeMusicOAuth2Scope}, kTrafficAnnotation);
+        std::move(create_request_sender_callback_).Run(kTrafficAnnotation);
     create_request_sender_callback_ = base::NullCallback();
     CHECK(request_sender_);
   }

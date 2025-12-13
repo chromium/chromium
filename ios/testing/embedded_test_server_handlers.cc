@@ -28,8 +28,7 @@ namespace {
 std::string ExtractUlrSpecFromQuery(
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  std::string spec =
-      base::UnescapeBinaryURLComponent(request_url.query_piece());
+  std::string spec = base::UnescapeBinaryURLComponent(request_url.query());
 
   // Escape the URL spec.
   GURL url(spec);
@@ -160,7 +159,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandlePageWithContents(
     const net::test_server::HttpRequest& request) {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_content_type("text/html");
-  http_response->set_content(request.GetURL().query());
+  http_response->set_content(request.GetURL().GetQuery());
   return std::move(http_response);
 }
 
@@ -173,7 +172,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleEchoQueryOrCloseSocket(
   }
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/html");
-  response->set_content(request.GetURL().query());
+  response->set_content(request.GetURL().GetQuery());
   response->AddCustomHeader("Cache-Control", "no-store");
   return std::move(response);
 }
@@ -196,7 +195,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleForm(
 std::unique_ptr<net::test_server::HttpResponse> HandleDownload(
     const net::test_server::HttpRequest& request) {
   int length = 0;
-  if (!base::StringToInt(request.GetURL().query(), &length)) {
+  if (!base::StringToInt(request.GetURL().GetQuery(), &length)) {
     length = 1;
   }
 

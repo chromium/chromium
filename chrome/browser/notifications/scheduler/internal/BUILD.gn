@@ -56,6 +56,8 @@ source_set("lib") {
     "scheduler_utils.h",
     "stats.cc",
     "stats.h",
+    "tips_client.cc",
+    "tips_client.h",
     "webui_client.cc",
     "webui_client.h",
   ]
@@ -70,6 +72,7 @@ source_set("lib") {
     "//chrome/browser/notifications/scheduler/public",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
+    "//components/prefs",
     "//skia",
     "//ui/base",
     "//ui/gfx/codec",
@@ -94,6 +97,7 @@ source_set("unit_tests") {
     "scheduler_config_unittest.cc",
     "scheduler_utils_unittest.cc",
     "stats_unittest.cc",
+    "tips_client_unittest.cc",
   ]
 
   deps = [
@@ -102,7 +106,9 @@ source_set("unit_tests") {
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/notifications/scheduler/test:test_lib",
     "//chrome/browser/notifications/scheduler/test:test_support",
+    "//chrome/common:constants",
     "//components/leveldb_proto:test_support",
+    "//components/prefs:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

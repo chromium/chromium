@@ -23,16 +23,16 @@
           <ph name="ADVANCED_TITLE" />
           eta desautatu "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Arazoa horrela konpontzen ez bada, aukera hori hautatzea gomendatzen dizugu errendimendua hobetzeko.</translation>
-<translation id="6855094794438142393">Joan
-          Chrome-ko menua &gt;
+<translation id="6581867098636731226">Joan
+          Chrome-ko menura &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN ezarpenak atalera
-          eta desautatu "Erabili proxy-zerbitzaria LAN konexiorako".</translation>
+          Sareak eta Internet &gt; Proxya
+          eta desautatu "Automatically detect settings" (hauteman automatikoki ezarpenak).</translation>
 <translation id="7230956101631259640">Chrome-ko orri seguru bat ari zara ikusten</translation>
 <translation id="8232971017369963250">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak egiten du posible Chrome.</translation>
 <translation id="8279509328145658601"><ph name="BEGIN_LINK_OSS" />Kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek ere posible egiten dute Chrome.</translation>

@@ -15,7 +15,6 @@ All changes to this list should go through Blink's feature review process: http:
     -webkit-box-reflect
     -webkit-font-smoothing
     -webkit-line-break
-    -webkit-line-clamp
     -webkit-locale
     -webkit-mask-box-image-outset
     -webkit-mask-box-image-repeat
@@ -80,6 +79,7 @@ All changes to this list should go through Blink's feature review process: http:
     background-size
     baseline-shift
     baseline-source
+    block-ellipsis
     block-size
     border-block-end-color
     border-block-end-style
@@ -147,8 +147,12 @@ All changes to this list should go through Blink's feature review process: http:
     column-height
     column-rule-break
     column-rule-color
-    column-rule-outset
+    column-rule-edge-end-inset
+    column-rule-edge-start-inset
+    column-rule-interior-end-inset
+    column-rule-interior-start-inset
     column-rule-style
+    column-rule-visibility-items
     column-rule-width
     column-span
     column-width
@@ -162,6 +166,7 @@ All changes to this list should go through Blink's feature review process: http:
     container-type
     content
     content-visibility
+    continue
     corner-bottom-left-shape
     corner-bottom-right-shape
     corner-end-end-shape
@@ -198,6 +203,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-family
     font-feature-settings
     font-kerning
+    font-language-override
     font-optical-sizing
     font-palette
     font-size
@@ -217,12 +223,14 @@ All changes to this list should go through Blink's feature review process: http:
     font-variation-settings
     font-weight
     forced-color-adjust
-    gap-rule-paint-order
+    gap-rule-overlap
     grid-auto-columns
     grid-auto-flow
     grid-auto-rows
     grid-column-end
     grid-column-start
+    grid-lanes-direction
+    grid-lanes-fill
     grid-row-end
     grid-row-start
     grid-template-areas
@@ -241,8 +249,8 @@ All changes to this list should go through Blink's feature review process: http:
     inset-inline-end
     inset-inline-start
     interactivity
-    interest-hide-delay
-    interest-show-delay
+    interest-delay-end
+    interest-delay-start
     interpolate-size
     isolation
     item-tolerance
@@ -253,7 +261,6 @@ All changes to this list should go through Blink's feature review process: http:
     letter-spacing
     lighting-color
     line-break
-    line-clamp
     line-height
     list-style-image
     list-style-position
@@ -277,14 +284,13 @@ All changes to this list should go through Blink's feature review process: http:
     mask-repeat
     mask-size
     mask-type
-    masonry-direction
-    masonry-fill
     math-depth
     math-shift
     math-style
     max-block-size
     max-height
     max-inline-size
+    max-lines
     max-width
     min-block-size
     min-height
@@ -314,10 +320,12 @@ All changes to this list should go through Blink's feature review process: http:
     overflow-x
     overflow-y
     overlay
+    overscroll-area
     overscroll-behavior-block
     overscroll-behavior-inline
     overscroll-behavior-x
     overscroll-behavior-y
+    overscroll-position
     padding-block-end
     padding-block-start
     padding-bottom
@@ -349,10 +357,15 @@ All changes to this list should go through Blink's feature review process: http:
     row-gap
     row-rule-break
     row-rule-color
-    row-rule-outset
+    row-rule-edge-end-inset
+    row-rule-edge-start-inset
+    row-rule-interior-end-inset
+    row-rule-interior-start-inset
     row-rule-style
+    row-rule-visibility-items
     row-rule-width
     ruby-align
+    ruby-overhang
     ruby-position
     rx
     ry
@@ -379,10 +392,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
-    scroll-start-block
-    scroll-start-inline
-    scroll-start-x
-    scroll-start-y
     scroll-target-group
     scroll-timeline-axis
     scroll-timeline-name
@@ -424,6 +433,7 @@ All changes to this list should go through Blink's feature review process: http:
     text-emphasis-style
     text-grow
     text-indent
+    text-justify
     text-orientation
     text-overflow
     text-rendering
@@ -437,13 +447,12 @@ All changes to this list should go through Blink's feature review process: http:
     text-wrap-mode
     text-wrap-style
     timeline-scope
-    timeline-trigger-behavior
     timeline-trigger-exit-range-end
     timeline-trigger-exit-range-start
     timeline-trigger-name
     timeline-trigger-range-end
     timeline-trigger-range-start
-    timeline-trigger-timeline
+    timeline-trigger-source
     top
     touch-action
     transform
@@ -456,6 +465,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-property
     transition-timing-function
     translate
+    trigger-scope
     unicode-bidi
     user-select
     vector-effect
@@ -486,6 +496,10 @@ All changes to this list should go through Blink's feature review process: http:
         break-before
     -webkit-column-break-inside
         break-inside
+    -webkit-line-clamp
+        block-ellipsis
+        continue
+        max-lines
     -webkit-mask-box-image
         -webkit-mask-box-image-outset
         -webkit-mask-box-image-repeat
@@ -638,9 +652,16 @@ All changes to this list should go through Blink's feature review process: http:
         column-rule-color
         column-rule-style
         column-rule-width
+    column-rule-inset
+        column-rule-edge-end-inset
+        column-rule-edge-start-inset
+        column-rule-interior-end-inset
+        column-rule-interior-start-inset
     columns
         column-count
+        column-height
         column-width
+        column-wrap
     contain-intrinsic-size
         contain-intrinsic-height
         contain-intrinsic-width
@@ -696,6 +717,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-family
         font-feature-settings
         font-kerning
+        font-language-override
         font-optical-sizing
         font-size
         font-size-adjust
@@ -741,6 +763,14 @@ All changes to this list should go through Blink's feature review process: http:
     grid-column
         grid-column-end
         grid-column-start
+    grid-lanes
+        grid-lanes-direction
+        grid-lanes-fill
+        grid-template-areas
+        grid-template-columns
+    grid-lanes-flow
+        grid-lanes-direction
+        grid-lanes-fill
     grid-row
         grid-row-end
         grid-row-start
@@ -760,8 +790,12 @@ All changes to this list should go through Blink's feature review process: http:
         inset-inline-end
         inset-inline-start
     interest-delay
-        interest-hide-delay
-        interest-show-delay
+        interest-delay-end
+        interest-delay-start
+    line-clamp
+        block-ellipsis
+        continue
+        max-lines
     list-style
         list-style-image
         list-style-position
@@ -794,14 +828,6 @@ All changes to this list should go through Blink's feature review process: http:
     mask-position
         -webkit-mask-position-x
         -webkit-mask-position-y
-    masonry
-        grid-template-areas
-        grid-template-columns
-        masonry-direction
-        masonry-fill
-    masonry-flow
-        masonry-direction
-        masonry-fill
     offset
         offset-anchor
         offset-distance
@@ -851,6 +877,11 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-color
         row-rule-style
         row-rule-width
+    row-rule-inset
+        row-rule-edge-end-inset
+        row-rule-edge-start-inset
+        row-rule-interior-end-inset
+        row-rule-interior-start-inset
     rule
         column-rule-color
         column-rule-style
@@ -858,9 +889,21 @@ All changes to this list should go through Blink's feature review process: http:
         row-rule-color
         row-rule-style
         row-rule-width
+    rule-break
+        column-rule-break
+        row-rule-break
     rule-color
         column-rule-color
         row-rule-color
+    rule-inset
+        column-rule-edge-end-inset
+        column-rule-edge-start-inset
+        column-rule-interior-end-inset
+        column-rule-interior-start-inset
+        row-rule-edge-end-inset
+        row-rule-edge-start-inset
+        row-rule-interior-end-inset
+        row-rule-interior-start-inset
     rule-style
         column-rule-style
         row-rule-style
@@ -889,9 +932,6 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-padding-inline
         scroll-padding-inline-end
         scroll-padding-inline-start
-    scroll-start
-        scroll-start-block
-        scroll-start-inline
     scroll-timeline
         scroll-timeline-axis
         scroll-timeline-name
@@ -913,13 +953,18 @@ All changes to this list should go through Blink's feature review process: http:
         text-wrap-mode
         text-wrap-style
     timeline-trigger
-        timeline-trigger-behavior
         timeline-trigger-exit-range-end
         timeline-trigger-exit-range-start
         timeline-trigger-name
         timeline-trigger-range-end
         timeline-trigger-range-start
-        timeline-trigger-timeline
+        timeline-trigger-source
+    timeline-trigger-exit-range
+        timeline-trigger-exit-range-end
+        timeline-trigger-exit-range-start
+    timeline-trigger-range
+        timeline-trigger-range-end
+        timeline-trigger-range-start
     transition
         transition-behavior
         transition-delay

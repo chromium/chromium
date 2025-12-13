@@ -20,11 +20,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/current_thread.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
-#include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/dbus/utils/name_has_owner.h"
-#include "components/dbus/xdg/systemd.h"
+#include "components/dbus/xdg/portal.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -72,9 +70,10 @@ void SecretPortalKeyProvider::GetKey(KeyCallback callback) {
   CHECK(callback);
   key_callback_ = std::move(callback);
 
-  dbus_xdg::SetSystemdScopeUnitNameForXdgPortal(
-      bus_.get(), base::BindOnce(&SecretPortalKeyProvider::OnSystemdUnitStarted,
-                                 weak_ptr_factory_.GetWeakPtr()));
+  dbus_xdg::RequestXdgDesktopPortal(
+      bus_.get(),
+      base::BindOnce(&SecretPortalKeyProvider::OnPortalServiceStarted,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool SecretPortalKeyProvider::UseForEncryption() {
@@ -85,19 +84,9 @@ bool SecretPortalKeyProvider::IsCompatibleWithOsCryptSync() {
   return false;
 }
 
-void SecretPortalKeyProvider::OnSystemdUnitStarted(
-    dbus_xdg::SystemdUnitStatus) {
-  // Intentionally ignoring the status.
-  dbus_utils::CheckForServiceAndStart(
-      bus_.get(), GetSecretServiceName(),
-      base::BindOnce(&SecretPortalKeyProvider::OnPortalServiceStarted,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SecretPortalKeyProvider::OnPortalServiceStarted(
-    std::optional<bool> service_started) {
+void SecretPortalKeyProvider::OnPortalServiceStarted(uint32_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!service_started.value_or(false)) {
+  if (version == 0) {
     return Finalize(InitStatus::kNoService);
   }
 
@@ -110,22 +99,22 @@ void SecretPortalKeyProvider::OnPortalServiceStarted(
   read_fd_ = base::ScopedFD(fds[0]);
   base::ScopedFD write_fd(fds[1]);
 
-  DbusDictionary options;
+  dbus_xdg::Dictionary options;
   if (local_state_->HasPrefPath(kOsCryptTokenPrefName)) {
     const std::string token = local_state_->GetString(kOsCryptTokenPrefName);
     if (!token.empty()) {
-      options.PutAs("token", DbusString(token));
+      options["token"] = dbus_utils::Variant::Wrap<"s">(token);
     }
   }
 
   auto* secret_proxy = bus_->GetObjectProxy(
       GetSecretServiceName(), dbus::ObjectPath(kObjectPathSecret));
-  request_ = std::make_unique<dbus_xdg::Request>(
+  request_ = dbus_xdg::Request::CreateWithPortalServiceName(
       bus_, secret_proxy, kInterfaceSecret, kMethodRetrieveSecret,
-      DbusUnixFd(std::move(write_fd)), std::move(options),
+      std::move(options),
       base::BindOnce(&SecretPortalKeyProvider::OnRetrieveSecret,
                      weak_ptr_factory_.GetWeakPtr()),
-      GetSecretServiceName());
+      GetSecretServiceName(), std::move(write_fd));
 }
 
 void SecretPortalKeyProvider::OnSignalConnected(
@@ -141,7 +130,7 @@ void SecretPortalKeyProvider::OnSignalConnected(
 }
 
 void SecretPortalKeyProvider::OnRetrieveSecret(
-    base::expected<DbusDictionary, dbus_xdg::ResponseError> results) {
+    base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!results.has_value()) {
@@ -173,11 +162,15 @@ void SecretPortalKeyProvider::OnRetrieveSecret(
 
   // Though it is documented in the spec, xdg-desktop-portal does not currently
   // implement returning a token.
-  auto* token = results->GetAs<DbusString>("token");
-  if (token) {
-    local_state_->SetString(kOsCryptTokenPrefName, token->value());
+  dbus_xdg::Dictionary result_dict = std::move(*results);
+  std::optional<std::string> token;
+  if (auto it = result_dict.find("token"); it != result_dict.end()) {
+    token = std::move(it->second).Take<std::string>();
   }
-  base::UmaHistogramBoolean(kUmaGotTokenBoolean, token);
+  if (token) {
+    local_state_->SetString(kOsCryptTokenPrefName, *token);
+  }
+  base::UmaHistogramBoolean(kUmaGotTokenBoolean, token.has_value());
 }
 
 void SecretPortalKeyProvider::OnFdReadable() {

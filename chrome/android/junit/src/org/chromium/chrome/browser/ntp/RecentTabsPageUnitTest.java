@@ -26,13 +26,11 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class RecentTabsPageUnitTest {
@@ -68,7 +66,6 @@ public class RecentTabsPageUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN})
     public void testEdgeToEdge() {
         assertTrue("Recent tabs do support E2E.", mRecentTabsPage.supportsEdgeToEdge());
 

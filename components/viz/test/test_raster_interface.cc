@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/test/test_raster_interface.h"
 
 #include <limits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -56,14 +52,13 @@ void TestRasterInterface::LoseContextCHROMIUM(GLenum current, GLenum other) {
 
 void TestRasterInterface::GenQueriesEXT(GLsizei n, GLuint* queries) {
   for (GLsizei i = 0; i < n; ++i) {
-    queries[i] = 1u;
+    UNSAFE_TODO(queries[i]) = 1u;
   }
 }
 
 void TestRasterInterface::DeleteQueriesEXT(GLsizei n, const GLuint* queries) {}
 void TestRasterInterface::BeginQueryEXT(GLenum target, GLuint id) {}
 void TestRasterInterface::EndQueryEXT(GLenum target) {}
-void TestRasterInterface::QueryCounterEXT(GLuint id, GLenum target) {}
 
 void TestRasterInterface::GetQueryObjectuivEXT(GLuint id,
                                                GLenum pname,
@@ -73,74 +68,6 @@ void TestRasterInterface::GetQueryObjectuivEXT(GLuint id,
       pname == GL_QUERY_RESULT_AVAILABLE_NO_FLUSH_CHROMIUM_EXT) {
     *params = 1;
   }
-}
-
-void TestRasterInterface::GetQueryObjectui64vEXT(GLuint id,
-                                                 GLenum pname,
-                                                 GLuint64* params) {
-  // This is used for testing GL_COMMANDS_ISSUED_TIMESTAMP_QUERY, so we return
-  // the maximum that base::TimeDelta()::InMicroseconds() could return.
-  if (pname == GL_QUERY_RESULT_EXT) {
-    static_assert(std::is_same<decltype(base::TimeDelta().InMicroseconds()),
-                               int64_t>::value,
-                  "Expected the return type of "
-                  "base::TimeDelta()::InMicroseconds() to be int64_t");
-    *params = std::numeric_limits<int64_t>::max();
-  } else {
-    NOTREACHED();
-  }
-}
-
-gpu::SyncToken TestRasterInterface::ScheduleImageDecode(
-    base::span<const uint8_t> encoded_data,
-    const gfx::Size& output_size,
-    uint32_t transfer_cache_entry_id,
-    const gfx::ColorSpace& target_color_space,
-    bool needs_mips) {
-  return gpu::SyncToken();
-}
-
-GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
-    const gpu::Mailbox& mailbox) {
-  NOTREACHED();
-}
-
-GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
-    const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED();
-}
-
-void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED();
-}
-
-void TestRasterInterface::BeginGpuRaster() {
-  NOTREACHED();
-}
-
-void TestRasterInterface::EndGpuRaster() {
-  NOTREACHED();
-}
-
-void TestRasterInterface::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
-                                                               GLenum mode) {
-  NOTREACHED();
-}
-
-void TestRasterInterface::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
-void TestRasterInterface::InitializeDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
-void TestRasterInterface::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
-}
-
-bool TestRasterInterface::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED();
 }
 
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
@@ -153,7 +80,7 @@ void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
   sync_token_data.SetVerifyFlush();
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestRasterInterface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
@@ -165,23 +92,25 @@ void TestRasterInterface::GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) {
   gpu::SyncToken sync_token_data(gpu::CommandBufferNamespace::GPU_IO,
                                  gpu::CommandBufferId(),
                                  next_insert_fence_sync_++);
-  memcpy(sync_token, &sync_token_data, sizeof(sync_token_data));
+  UNSAFE_TODO(memcpy(sync_token, &sync_token_data, sizeof(sync_token_data)));
 }
 
 void TestRasterInterface::VerifySyncTokensCHROMIUM(GLbyte** sync_tokens,
                                                    GLsizei count) {
   for (GLsizei i = 0; i < count; ++i) {
     gpu::SyncToken sync_token_data;
-    memcpy(sync_token_data.GetData(), sync_tokens[i], sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(sync_token_data.GetData(), sync_tokens[i],
+                       sizeof(sync_token_data)));
     sync_token_data.SetVerifyFlush();
-    memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data));
+    UNSAFE_TODO(
+        memcpy(sync_tokens[i], &sync_token_data, sizeof(sync_token_data)));
   }
 }
 
 void TestRasterInterface::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   gpu::SyncToken sync_token_data;
   if (sync_token)
-    memcpy(&sync_token_data, sync_token, sizeof(sync_token_data));
+    UNSAFE_TODO(memcpy(&sync_token_data, sync_token, sizeof(sync_token_data)));
 
   if (sync_token_data.release_count() >
       last_waited_sync_token_.release_count()) {
@@ -213,7 +142,7 @@ bool TestRasterInterface::ReadbackImagePixels(
     int plane_index,
     void* dst_pixels) {
   auto size = dst_info.computeByteSize(dst_row_bytes);
-  memset(dst_pixels, 0, size);
+  UNSAFE_TODO(memset(dst_pixels, 0, size));
   return true;
 }
 }  // namespace viz

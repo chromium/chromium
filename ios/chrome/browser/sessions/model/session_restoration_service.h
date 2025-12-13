@@ -45,10 +45,6 @@ class SessionRestorationService : public KeyedService {
   // possible. Can be called at any time.
   virtual void SaveSessions() = 0;
 
-  // Requests that all pending changes to be saved to storage when possible.
-  // Can be called at any time.
-  virtual void ScheduleSaveSessions() = 0;
-
   // Sets the `identifier` used to save/load the session for `browser`. The
   // identifier is used to derive the location of the file on storage, thus
   // must be consistent across application restart.

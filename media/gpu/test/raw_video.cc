@@ -11,6 +11,7 @@
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -246,13 +247,15 @@ class RawVideo::VP9Decoder {
     LOG_ASSERT(i420_frame.format() == VideoPixelFormat::PIXEL_FORMAT_I420);
     std::vector<uint8_t> buffer(video_frame_size_);
     if (layout_.format() == PIXEL_FORMAT_NV12) {
-      uint8_t* nv12_frame = buffer.data();
+      base::span<uint8_t> nv12_frame = buffer;
       int ret = libyuv::I420ToNV12(
           i420_frame.data(0), i420_frame.stride(0), i420_frame.data(1),
           i420_frame.stride(1), i420_frame.data(2), i420_frame.stride(2),
-          nv12_frame + layout_.planes()[0].offset, layout_.planes()[0].stride,
-          nv12_frame + layout_.planes()[1].offset, layout_.planes()[1].stride,
-          layout_.coded_size().width(), layout_.coded_size().height());
+          nv12_frame.subspan(layout_.planes()[0].offset).data(),
+          layout_.planes()[0].stride,
+          nv12_frame.subspan(layout_.planes()[1].offset).data(),
+          layout_.planes()[1].stride, layout_.coded_size().width(),
+          layout_.coded_size().height());
       LOG_ASSERT(ret == 0) << "Failed converting from I420 to NV12";
     } else {
       CHECK_EQ(layout_.format(), PIXEL_FORMAT_I420);
@@ -435,8 +438,8 @@ bool RawVideo::LoadMetadata(const base::FilePath& json_file_path,
     return false;
   }
 
-  auto metadata_result =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  auto metadata_result = base::JSONReader::ReadAndReturnValueWithError(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!metadata_result.has_value()) {
     LOG(ERROR) << "Failed to parse video metadata: " << json_file_path << ": "
                << metadata_result.error().message;

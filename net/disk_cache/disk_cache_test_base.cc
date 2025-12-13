@@ -32,7 +32,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+#include "base/test/test_future.h"
 #include "net/disk_cache/sql/sql_backend_impl.h"
+#include "net/disk_cache/sql/sql_persistent_store.h"
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 using net::test::IsOk;
@@ -140,6 +142,17 @@ void DiskCacheTestWithCache::SetTestMode() {
   ASSERT_EQ(backend_to_test_, BackendToTest::kBlockfile);
   cache_impl_->SetUnitTestMode();
 }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+void DiskCacheTestWithCache::LoadInMemoryIndex() {
+  ASSERT_EQ(backend_to_test_, BackendToTest::kSql);
+  CHECK(sql_cache_impl_);
+  base::test::TestFuture<disk_cache::SqlPersistentStore::Error> future;
+  ASSERT_TRUE(sql_cache_impl_->GetSqlStoreForTest()->MaybeLoadInMemoryIndex(
+      future.GetCallback()));
+  ASSERT_EQ(future.Get(), disk_cache::SqlPersistentStore::Error::kOk);
+}
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 void DiskCacheTestWithCache::SetMaxSize(int64_t size) {
   size_ = size;
@@ -393,18 +406,21 @@ void DiskCacheTestWithCache::TearDown() {
 
 void DiskCacheTestWithCache::ResetCaches() {
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner;
+  std::vector<scoped_refptr<base::SequencedTaskRunner>> background_task_runners;
   if (sql_cache_impl_) {
-    background_task_runner = sql_cache_impl_->GetBackgroundTaskRunnerForTest();
+    background_task_runners =
+        sql_cache_impl_->GetBackgroundTaskRunnersForTest();
   }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
   std::unique_ptr<disk_cache::Backend> cache = TakeCache();
   cache.reset();
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
-  if (background_task_runner) {
-    base::RunLoop run_loop;
-    background_task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
+  if (!background_task_runners.empty()) {
+    for (auto background_task_runner : background_task_runners) {
+      base::RunLoop run_loop;
+      background_task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+      run_loop.Run();
+    }
   }
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 }
@@ -444,7 +460,8 @@ void DiskCacheTestWithCache::CreateBackend(uint32_t flags) {
         std::make_unique<disk_cache::SimpleBackendImpl>(
             /*file_operations=*/nullptr, cache_path_,
             /* cleanup_tracker = */ nullptr, simple_file_tracker_.get(), size_,
-            type_, /*net_log = */ nullptr);
+            type_, /*net_log = */ nullptr,
+            /*cache_encryption_delegate=*/nullptr);
     simple_backend->Init(cb.callback());
     ASSERT_THAT(cb.WaitForResult(), IsOk());
     simple_cache_impl_ = simple_backend.get();

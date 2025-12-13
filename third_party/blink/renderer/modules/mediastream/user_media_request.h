@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_USER_MEDIA_REQUEST_H_
 
-#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -100,8 +99,7 @@ class MODULES_EXPORT UserMediaRequest final
                                   UserMediaRequestType media_type,
                                   const MediaStreamConstraints* options,
                                   Callbacks*,
-                                  ExceptionState&,
-                                  IdentifiableSurface surface);
+                                  ExceptionState&);
   static UserMediaRequest* CreateForTesting(const MediaConstraints& audio,
                                             const MediaConstraints& video,
                                             bool is_user_media = true);
@@ -113,8 +111,7 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints video,
                    bool should_prefer_current_tab,
                    CaptureController* capture_controller,
-                   Callbacks*,
-                   IdentifiableSurface surface);
+                   Callbacks*);
   ~UserMediaRequest() override;
 
   LocalDOMWindow* GetWindow();
@@ -129,6 +126,7 @@ class MODULES_EXPORT UserMediaRequest final
             const String& message);
 
   UserMediaRequestType MediaRequestType() const;
+  bool IsGumExtensionRequest() const;
   bool Audio() const;
   bool Video() const;
   MediaConstraints AudioConstraints() const;
@@ -257,7 +255,6 @@ class MODULES_EXPORT UserMediaRequest final
   Member<UserMediaClient> client_;
 
   Member<Callbacks> callbacks_;
-  IdentifiableSurface surface_;
   bool is_resolved_ = false;
 
   std::optional<base::UnguessableToken> transferred_track_session_id_;

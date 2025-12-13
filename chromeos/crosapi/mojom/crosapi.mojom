@@ -6,7 +6,6 @@ module crosapi.mojom;
 
 import "chromeos/components/in_session_auth/mojom/in_session_auth.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
-import "chromeos/components/remote_apps/mojom/remote_apps.mojom";
 import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom";
@@ -17,8 +16,6 @@ import "chromeos/crosapi/mojom/desk_profiles.mojom";
 import "chromeos/crosapi/mojom/diagnostics_service.mojom";
 import "chromeos/crosapi/mojom/document_scan.mojom";
 import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
-import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
-import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
@@ -131,14 +128,7 @@ interface Crosapi {
   // BindNetworkingPrivate@83 was removed.
   // BindExtensionPublisher@73 was removed.
   // BindFileChangeServiceBridge@130 was removed.
-
-  // Binds the provider for cloud identifiers for files and folders used through
-  // the file system access web API.
-  // Added in M117.
-  [MinVersion=114]
-  BindFileSystemAccessCloudIdentifierProvider@117(
-    pending_receiver<FileSystemAccessCloudIdentifierProvider> receiver);
-
+  // BindFileSystemAccessCloudIdentifierProvider@117 was removed.
   // BindFileSystemProviderService@81 was removed.
   // BindForceInstalledTracker@57 was removed.
   // BindFullRestore@137 was removed.
@@ -199,13 +189,7 @@ interface Crosapi {
   // BindPolicyService@60 was removed.
   // BindPrefs@16 was removed.
   // BindNonclosableAppToastService@131 was removed.
-
-  // Binds the RemoteAppsLacrosBridge for the Remote Apps private Mojo API.
-  // Added in M103.
-  [MinVersion=74] BindRemoteAppsLacrosBridge@77(
-      pending_receiver<chromeos.remote_apps.mojom.RemoteAppsLacrosBridge>
-          receiver);
-
+  // BindRemoteAppsLacrosBridge@77 was removed.
   // BindRemoting@37 was removed.
   // BindScreenAIDownloader@113 was removed.
   // BindScreenManager@1 was removed.

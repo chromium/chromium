@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_IMAGE_FETCHER_IMPL_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_MODEL_AUTOFILL_IMAGE_FETCHER_IMPL_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 #include "components/keyed_service/core/keyed_service.h"
 

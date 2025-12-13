@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
@@ -82,7 +81,7 @@ class BrowserAutofillManagerForPopupTest : public BrowserAutofillManager {
 //   ShowSuggestions(manager(), {SuggestionType::kAddressEntry});
 //   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion);
 //   task_environment()->FastForwardBy(base::Milliseconds(500));
-//   client().popup_controller(manager()).AcceptSuggestion(/*index=*/0);
+//   client().suggestion_controller(manager()).AcceptSuggestion(/*index=*/0);
 // }
 //
 // The same test can be run on for the Keyboard Accessory on Android by simply
@@ -174,7 +173,7 @@ class AutofillSuggestionControllerTestBase
     FocusWebContentsOnFrame(
         static_cast<ContentAutofillDriver&>(manager.driver())
             .render_frame_host());
-    client().popup_controller(manager).Show(
+    client().suggestion_controller(manager).Show(
         AutofillSuggestionController::GenerateSuggestionUiSessionId(),
         std::move(suggestions), trigger_source,
         AutoselectFirstSuggestion(false));

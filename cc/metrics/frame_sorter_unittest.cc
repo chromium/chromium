@@ -30,6 +30,7 @@ class TestCustomMetricsRecorder : public CustomMetricRecorder {
     last_percent_dropped_frames_ = percent;
   }
   void ReportEventLatency(
+      const viz::BeginFrameArgs& args,
       std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 
   void Reset() {

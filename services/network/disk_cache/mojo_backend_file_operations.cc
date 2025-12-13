@@ -5,6 +5,7 @@
 #include "services/network/disk_cache/mojo_backend_file_operations.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "net/disk_cache/basic_cache_file.h"
 
 namespace network {
 
@@ -80,17 +81,18 @@ bool MojoBackendFileOperations::DirectoryExists(const base::FilePath& path) {
   return result;
 }
 
-base::File MojoBackendFileOperations::OpenFile(const base::FilePath& path,
-                                               uint32_t flags) {
+std::unique_ptr<disk_cache::CacheFile> MojoBackendFileOperations::OpenFile(
+    const base::FilePath& path,
+    uint32_t flags) {
   base::File file;
   base::File::Error error;
   // The value will be checked in the message receiver side.
   auto flags_to_pass = static_cast<mojom::HttpCacheBackendOpenFileFlags>(flags);
   remote_->OpenFile(path, flags_to_pass, &file, &error);
   if (error != base::File::FILE_OK) {
-    return base::File(error);
+    return std::make_unique<disk_cache::BasicCacheFile>(base::File(error));
   }
-  return file;
+  return std::make_unique<disk_cache::BasicCacheFile>(std::move(file));
 }
 
 bool MojoBackendFileOperations::DeleteFile(const base::FilePath& path,
@@ -144,6 +146,10 @@ void MojoBackendFileOperations::CleanupDirectory(
 std::unique_ptr<disk_cache::UnboundBackendFileOperations>
 MojoBackendFileOperations::Unbind() {
   return std::make_unique<UnboundMojoBackendFileOperations>(remote_.Unbind());
+}
+
+bool MojoBackendFileOperations::IsEncrypted() const {
+  return false;
 }
 
 UnboundMojoBackendFileOperations::UnboundMojoBackendFileOperations(

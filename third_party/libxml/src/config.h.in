@@ -30,12 +30,6 @@
 /* Define if readline library is available */
 #undef HAVE_LIBREADLINE
 
-/* Define to 1 if you have the <lzma.h> header file. */
-#undef HAVE_LZMA_H
-
-/* Define to 1 if you have the <poll.h> header file. */
-#undef HAVE_POLL_H
-
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 

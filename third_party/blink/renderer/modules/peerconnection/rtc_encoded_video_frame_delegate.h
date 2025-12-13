@@ -29,7 +29,7 @@ class DOMArrayBuffer;
 // copies. Its purpose is to support making RTCEncodedVideoFrames
 // serializable in the same process.
 class RTCEncodedVideoFrameDelegate
-    : public WTF::ThreadSafeRefCounted<RTCEncodedVideoFrameDelegate> {
+    : public ThreadSafeRefCounted<RTCEncodedVideoFrameDelegate> {
  public:
   explicit RTCEncodedVideoFrameDelegate(
       std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame);
@@ -52,9 +52,34 @@ class RTCEncodedVideoFrameDelegate
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> CloneWebRtcFrame();
 
  private:
+  V8RTCEncodedVideoFrameType::Enum ComputeType() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<base::TimeTicks> ComputeReceiveTime() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<CaptureTimeInfo> ComputeCaptureTime() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+  std::optional<base::TimeDelta> ComputeSenderCaptureTimeOffset() const
+      EXCLUSIVE_LOCKS_REQUIRED(&lock_);
+
   mutable base::Lock lock_;
   std::unique_ptr<webrtc::TransformableVideoFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
+
+  struct Metadata {
+    V8RTCEncodedVideoFrameType::Enum frame_type =
+        V8RTCEncodedVideoFrameType::Enum::kEmpty;
+    std::optional<uint8_t> payload_type;
+    std::optional<std::string> mime_type;
+    std::optional<webrtc::VideoFrameMetadata> video_frame_metadata;
+    std::optional<base::TimeTicks> receive_time;
+    std::optional<CaptureTimeInfo> capture_time;
+    std::optional<base::TimeDelta> sender_capture_time_offset;
+    uint32_t rtp_timestamp = 0;
+    std::optional<webrtc::Timestamp> presentation_timestamp;
+  };
+  // This field is set after the frame is neutered (e.g., written to a stream or
+  // transferred).
+  Metadata post_neuter_metadata_;
 };
 
 class MODULES_EXPORT RTCEncodedVideoFramesAttachment

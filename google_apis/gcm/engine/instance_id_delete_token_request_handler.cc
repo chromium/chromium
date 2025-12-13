@@ -42,7 +42,7 @@ InstanceIDDeleteTokenRequestHandler::InstanceIDDeleteTokenRequestHandler(
 
 InstanceIDDeleteTokenRequestHandler::~InstanceIDDeleteTokenRequestHandler() {}
 
-void InstanceIDDeleteTokenRequestHandler::BuildRequestBody(std::string* body){
+void InstanceIDDeleteTokenRequestHandler::BuildRequestBody(std::string* body) {
   BuildFormEncoding(kInstanceIDKey, instance_id_, body);
   BuildFormEncoding(kSenderKey, authorized_entity_, body);
   BuildFormEncoding(kScopeKey, scope_, body);

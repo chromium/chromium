@@ -45,11 +45,8 @@ END_METADATA
 
 HistoryClustersSidePanelCoordinator::HistoryClustersSidePanelCoordinator(
     BrowserWindowInterface* browser,
-    Profile* profile,
-    SidePanelCoordinator* side_panel_coordinator)
-    : browser_(CHECK_DEREF(browser)),
-      profile_(CHECK_DEREF(profile)),
-      side_panel_coordinator_(CHECK_DEREF(side_panel_coordinator)) {
+    Profile* profile)
+    : browser_(CHECK_DEREF(browser)), profile_(CHECK_DEREF(profile)) {
   pref_change_registrar_.Init(profile_->GetPrefs());
   base::RepeatingClosure callback(base::BindRepeating(
       &HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged,
@@ -77,7 +74,7 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
           &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
           base::Unretained(this)),
       /*more_info_callback=*/base::NullCallback(),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View>
@@ -121,7 +118,7 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
 }
 
 void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
-  auto* global_registry = side_panel_coordinator_->GetWindowRegistry();
+  auto* const global_registry = SidePanelRegistry::From(&browser_.get());
   if (IsSupported(profile())) {
     CreateAndRegisterEntry(global_registry);
   } else {
@@ -131,6 +128,17 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
 }
 
 bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
+  // The history clusters side panel entry may be registered / deregistered in
+  // `OnHistoryClustersPreferenceChanged()` depending on profile policies and
+  // prefs, and thus the registry must be checked before attempting to show the
+  // side panel.
+  SidePanelRegistry* const global_registry =
+      SidePanelRegistry::From(&browser_.get());
+  if (!global_registry || !global_registry->GetEntryForKey(SidePanelEntry::Key(
+                              SidePanelEntry::Id::kHistoryClusters))) {
+    return false;
+  }
+
   if (history_clusters_ui_) {
     history_clusters_ui_->SetQuery(query);
   } else {
@@ -139,7 +147,8 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
     initial_query_ = query;
   }
 
-  side_panel_coordinator_->Show(SidePanelEntry::Id::kHistoryClusters);
+  browser_->GetFeatures().side_panel_ui()->Show(
+      SidePanelEntry::Id::kHistoryClusters);
 
   return true;
 }

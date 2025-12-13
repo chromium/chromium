@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_URL_PATTERN_INDEX_STRING_SPLITTER_H_
 #define COMPONENTS_URL_PATTERN_INDEX_STRING_SPLITTER_H_
 
@@ -14,6 +9,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 
 namespace url_pattern_index {
@@ -65,8 +61,8 @@ class StringSplitter {
     Iterator(const StringSplitter& splitter, std::string_view remaining)
         : splitter_(&splitter), remaining_(remaining) {
       DCHECK_LE(splitter_->text_.data(), remaining_.data());
-      DCHECK_EQ(splitter_->text_.data() + splitter_->text_.size(),
-                remaining_.data() + remaining_.size());
+      UNSAFE_TODO(DCHECK_EQ(splitter_->text_.data() + splitter_->text_.size(),
+                            remaining_.data() + remaining_.size()));
       Advance();
     }
 

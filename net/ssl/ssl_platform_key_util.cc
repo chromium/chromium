@@ -6,8 +6,8 @@
 
 #include <string_view>
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "crypto/evp.h"
@@ -44,13 +44,11 @@ class SSLPlatformKeyTaskRunner {
   base::Thread worker_thread_;
 };
 
-base::LazyInstance<SSLPlatformKeyTaskRunner>::Leaky g_platform_key_task_runner =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 scoped_refptr<base::SingleThreadTaskRunner> GetSSLPlatformKeyTaskRunner() {
-  return g_platform_key_task_runner.Get().task_runner();
+  static base::NoDestructor<SSLPlatformKeyTaskRunner> instance;
+  return instance->task_runner();
 }
 
 bssl::UniquePtr<EVP_PKEY> GetClientCertPublicKey(

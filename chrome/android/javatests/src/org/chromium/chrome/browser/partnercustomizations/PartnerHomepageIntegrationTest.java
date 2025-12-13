@@ -15,8 +15,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -31,11 +33,11 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -51,18 +53,27 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class PartnerHomepageIntegrationTest {
-    @Rule
-    public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
-            new BasePartnerBrowserCustomizationIntegrationTestRule();
+    private final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    private final BasePartnerBrowserCustomizationIntegrationTestRule
+            mPartnerBrowserCustomizationRule =
+                    new BasePartnerBrowserCustomizationIntegrationTestRule();
 
     @Rule
     public SettingsActivityTestRule<HomepageSettings> mHomepageSettingsTestRule =
             new SettingsActivityTestRule<>(HomepageSettings.class);
 
+    @Rule
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mPartnerBrowserCustomizationRule).around(mActivityTestRule);
+
     private static final String TEST_PAGE = "/chrome/test/data/android/about.html";
 
     @Before
     public void setUp() {
+        // TODO(crbug.com/447670141): Figure out why this is necessary.
+        ContextUtils.getAppSharedPreferences().edit().clear().apply();
         mActivityTestRule.startMainActivityFromLauncher();
     }
 
@@ -74,8 +85,7 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertEquals(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
     }
 
     /** Clicking the homepage button should load homepage in the current tab. */
@@ -92,11 +102,10 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertNotSame(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
         // Click homepage button.
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
                 new Runnable() {
                     @Override
@@ -113,8 +122,7 @@ public class PartnerHomepageIntegrationTest {
         Assert.assertEquals(
                 Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
                 Uri.parse(
-                        ChromeTabUtils.getUrlStringOnUiThread(
-                                mActivityTestRule.getActivity().getActivityTab())));
+                        ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab())));
     }
 
     /**
@@ -180,45 +188,48 @@ public class PartnerHomepageIntegrationTest {
     public void testCloseAllTabs() {
         final CallbackHelper tabClosed = new CallbackHelper();
         final TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        InstrumentationRegistry.getInstrumentation()
-                .runOnMainSync(
-                        () -> {
-                            tabModel.addObserver(
-                                    new TabModelObserver() {
-                                        @Override
-                                        public void onFinishingTabClosure(
-                                                Tab tab, @TabClosingSource int closingSource) {
-                                            if (tabModel.getCount() == 0) tabClosed.notifyCalled();
-                                        }
-                                    });
-                            TabClosureParams params =
-                                    TabClosureParams.closeAllTabs().uponExit(false).build();
-                            TabModelSelector selector =
-                                    mActivityTestRule.getActivity().getTabModelSelector();
-                            selector.getModel(false)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                            selector.getModel(true)
-                                    .getTabRemover()
-                                    .closeTabs(params, /* allowDialog= */ false);
-                        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabModel.addObserver(
+                            new TabModelObserver() {
+                                @Override
+                                public void onFinishingTabClosure(
+                                        Tab tab, @TabClosingSource int closingSource) {
+                                    if (tabModel.getCount() == 0) tabClosed.notifyCalled();
+                                }
+                            });
+                    TabClosureParams params =
+                            TabClosureParams.closeAllTabs().uponExit(false).build();
+                    TabModelSelector selector =
+                            mActivityTestRule.getActivity().getTabModelSelector();
+                    selector.getModel(false)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                    selector.getModel(true)
+                            .getTabRemover()
+                            .closeTabs(params, /* allowDialog= */ false);
+                });
 
         try {
             tabClosed.waitForCallback(0);
         } catch (TimeoutException e) {
             throw new AssertionError("Never closed all of the tabs", e);
         }
-        Assert.assertEquals(
-                "Expected no tabs to be present",
-                0,
-                mActivityTestRule.getActivity().getCurrentTabModel().getCount());
-        TabList fullModel =
-                mActivityTestRule.getActivity().getCurrentTabModel().getComprehensiveModel();
+        int tabCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+        Assert.assertEquals("Expected no tabs to be present", 0, tabCount);
+        int fullModelCount =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getCurrentTabModel()
+                                        .getComprehensiveModel()
+                                        .getCount());
         // By the time TAB_CLOSED event is received, all tab closures should be finalized
         Assert.assertEquals(
-                "Expected no tabs to be present in the comprehensive model",
-                0,
-                fullModel.getCount());
+                "Expected no tabs to be present in the comprehensive model", 0, fullModelCount);
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue(

@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VSYNC_TICK_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_VSYNC_TICK_PROVIDER_H_
 
-#include <memory>
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -91,7 +91,7 @@ class PLATFORM_EXPORT VSyncTickProvider : public MetronomeSource::TickProvider {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The currently scheduled tick callback.
-  WTF::Vector<base::OnceClosure> tick_callbacks_
+  Vector<base::OnceClosure> tick_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The state of this tick provider.

@@ -10,14 +10,17 @@
 #include "base/mac/mac_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/ca_layer_params.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/scoped_make_current.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "ui/accelerated_widget_mac/io_surface_context.h"
 #include "ui/gl/gl_context.h"
 #endif
 
@@ -26,11 +29,13 @@ namespace ui {
 CALayerTreeCoordinator::CALayerTreeCoordinator(
     bool allow_av_sample_buffer_display_layer,
     BufferPresentedCallback buffer_presented_callback,
+    GLMakeCurrentCallback gl_make_current_callback,
     id<MTLDevice> metal_device)
     : allow_remote_layers_(ui::RemoteLayerAPISupported()),
       allow_av_sample_buffer_display_layer_(
           allow_av_sample_buffer_display_layer),
       buffer_presented_callback_(buffer_presented_callback),
+      gl_make_current_callback_(gl_make_current_callback),
       metal_device_(metal_device) {
   if (allow_remote_layers_) {
     root_ca_layer_ = [[CALayer alloc] init];
@@ -85,41 +90,82 @@ CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   return unpresented_ca_renderer_layer_tree_.get();
 }
 
-uint64_t CALayerTreeCoordinator::CreateBackpressureFence() {
-  gl::GLContext* current_context = gl::GLContext::GetCurrent();
-  if (current_context) {
-    return current_context->BackpressureFenceCreate();
-  }
-  return 0;
+void CALayerTreeCoordinator::EnqueueBackpressureFences(
+    std::vector<gfx::MTLSharedEventFence> metal_fences) {
+  pending_backpressure_metal_fences_.insert(
+      pending_backpressure_metal_fences_.end(),
+      std::make_move_iterator(metal_fences.begin()),
+      std::make_move_iterator(metal_fences.end()));
 }
 
 void CALayerTreeCoordinator::ApplyBackpressure() {
   // No frame has been committed yet - this is the first frame being presented.
-  if (presented_frames_.empty() || !presented_frames_.front()->has_committed) {
+  if (presented_frames_.empty() || !presented_frames_.front().has_committed) {
     return;
   }
 
   TRACE_EVENT0("gpu", "CALayerTreeCoordinator::ApplyBackpressure");
 
   // Apply back pressure to the previous frame.
-  uint64_t frame_fence = presented_frames_.front()->backpressure_fence;
+  auto metal_fences =
+      std::move(presented_frames_.front().backpressure_metal_fences);
 
   // Waiting on the previous frame's fence (to maximize CPU and GPU execution
-  // overlap).
-  gl::GLContext* current_context = gl::GLContext::GetCurrent();
-  if (current_context) {
-    current_context->BackpressureFenceWait(frame_fence);
+  // overlap). Poll for all Metal shared events to be signaled with a 1ms delay.
+  bool fences_signaled = false;
+  while (!fences_signaled) {
+    TRACE_EVENT0("gpu", "CALayerTreeCoordinator::ApplyBackpressure::Metal");
+    fences_signaled = true;
+    {
+      for (const auto& fence : metal_fences) {
+        if (!fence.HasSignaled()) {
+          fences_signaled = false;
+          break;
+        }
+      }
+    }
+    if (!fences_signaled) {
+      base::PlatformThread::Sleep(base::Milliseconds(1));
+    }
+  }
+
+  if (auto gl_fence =
+          std::move(presented_frames_.front().backpressure_gl_fence)) {
+    CHECK_NE(gl::GetANGLEImplementation(), gl::ANGLEImplementation::kMetal);
+    if (gl_make_current_callback_.Run()) {
+      TRACE_EVENT0("gpu", "CALayerTreeCoordinator::ApplyBackpressure::GL");
+      gl_fence->ClientWait();
+    } else {
+      DLOG(ERROR) << "Failed to make GL context current for waiting on "
+                     "backpressure GL fence";
+    }
   }
 }
 
 void CALayerTreeCoordinator::Present(
     gl::Presenter::SwapCompletionCallback completion_callback,
     gl::Presenter::PresentationCallback presentation_callback) {
-  presented_frames_.push(std::make_unique<PresentedFrame>(
-      std::move(completion_callback), std::move(presentation_callback),
-      CreateBackpressureFence(), ca_layer_error_code_,
-      /*ready_timestamp=*/base::TimeTicks::Now(),
-      std::move(unpresented_ca_renderer_layer_tree_)));
+  std::unique_ptr<gl::GLFence> gl_fence;
+  if (gl::GetANGLEImplementation() != gl::ANGLEImplementation::kMetal) {
+    if (gl_make_current_callback_.Run()) {
+      gl_fence = gl::GLFence::Create();
+    } else {
+      DLOG(ERROR) << "Failed to make GL context current for creating "
+                     "backpressure GL fence";
+    }
+  }
+
+  PresentedFrame frame;
+  frame.completion_callback = std::move(completion_callback);
+  frame.presentation_callback = std::move(presentation_callback);
+  frame.backpressure_metal_fences = gfx::MTLSharedEventFence::Reduce(
+      std::move(pending_backpressure_metal_fences_));
+  frame.backpressure_gl_fence = std::move(gl_fence);
+  frame.ca_layer_error_code = ca_layer_error_code_;
+  frame.ready_timestamp = base::TimeTicks::Now();
+  frame.layer_tree = std::move(unpresented_ca_renderer_layer_tree_);
+
+  presented_frames_.push(std::move(frame));
 }
 
 void CALayerTreeCoordinator::CommitPresentedFrameToCA(
@@ -131,9 +177,8 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   // Remove the committed frame which is displayed on the screen from the
   // |presented_frames_| queue;
   std::unique_ptr<CARendererLayerTree> current_tree;
-  if (!presented_frames_.empty() && presented_frames_.front()->has_committed) {
-    current_tree.swap(presented_frames_.front()->layer_tree);
-
+  if (!presented_frames_.empty() && presented_frames_.front().has_committed) {
+    current_tree.swap(presented_frames_.front().layer_tree);
     presented_frames_.pop();
   }
 
@@ -145,20 +190,19 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   }
 
   // Get the frame to be committed.
-  auto* frame = presented_frames_.front().get();
-  DCHECK(frame);
+  auto& frame = presented_frames_.front();
 
-  if (frame->layer_tree) {
-    frame->layer_tree->CommitScheduledCALayers(
+  if (frame.layer_tree) {
+    frame.layer_tree->CommitScheduledCALayers(
         root_ca_layer_, std::move(current_tree), pixel_size_, scale_factor_);
   } else {
     root_ca_layer_.sublayers = nil;
   }
-  frame->has_committed = true;
+  frame.has_committed = true;
 
   // Populate the CA layer parameters to send to the browser.
   // Send the swap parameters to the browser.
-  if (frame->completion_callback) {
+  if (frame.completion_callback) {
     gfx::CALayerParams params;
     TRACE_EVENT_INSTANT2("test_gpu", "SwapBuffers", TRACE_EVENT_SCOPE_THREAD,
                          "GLImpl", static_cast<int>(gl::GetGLImplementation()),
@@ -166,7 +210,7 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
     if (allow_remote_layers_) {
       params.ca_context_id = [ca_context_ contextId];
     } else {
-      IOSurfaceRef io_surface = frame->layer_tree->GetContentIOSurface();
+      IOSurfaceRef io_surface = frame.layer_tree->GetContentIOSurface();
       if (io_surface) {
         DCHECK(!allow_remote_layers_);
         params.io_surface_mach_port.reset(IOSurfaceCreateMachPort(io_surface));
@@ -178,7 +222,7 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(frame->completion_callback),
+        base::BindOnce(std::move(frame.completion_callback),
                        gfx::SwapCompletionResult(
                            gfx::SwapResult::SWAP_ACK,
                            std::make_unique<gfx::CALayerParams>(params))));
@@ -186,10 +230,10 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
 
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
                                      /*flags=*/0);
-  feedback.ca_layer_error_code = frame->ca_layer_error_code;
+  feedback.ca_layer_error_code = frame.ca_layer_error_code;
 
 #if BUILDFLAG(IS_MAC)
-    feedback.ready_timestamp = frame->ready_timestamp;
+    feedback.ready_timestamp = frame.ready_timestamp;
     feedback.latch_timestamp = base::TimeTicks::Now();
     feedback.interval = frame_interval;
     feedback.timestamp = display_time;
@@ -204,7 +248,7 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(buffer_presented_callback_,
-                     std::move(frame->presentation_callback), feedback));
+                     std::move(frame.presentation_callback), feedback));
 }
 
 void CALayerTreeCoordinator::SetMaxCALayerTrees(int max_ca_layer_trees) {
@@ -213,27 +257,15 @@ void CALayerTreeCoordinator::SetMaxCALayerTrees(int max_ca_layer_trees) {
 
 int CALayerTreeCoordinator::NumPendingSwaps() const {
   int num = presented_frames_.size();
-  if (num > 0 && presented_frames_.front()->has_committed) {
+  if (num > 0 && presented_frames_.front().has_committed) {
     num--;
   }
   return num;
 }
 
-PresentedFrame::PresentedFrame(
-    gl::Presenter::SwapCompletionCallback completion_cb,
-    gl::Presenter::PresentationCallback presentation_cb,
-    uint64_t fence,
-    gfx::CALayerResult error_code,
-    base::TimeTicks ready_timestamp,
-    std::unique_ptr<CARendererLayerTree> tree)
-    : completion_callback(std::move(completion_cb)),
-      presentation_callback(std::move(presentation_cb)),
-      backpressure_fence(fence),
-      ca_layer_error_code(error_code),
-      ready_timestamp(ready_timestamp),
-      layer_tree(std::move(tree)),
-      has_committed(false) {}
-
+PresentedFrame::PresentedFrame() = default;
+PresentedFrame::PresentedFrame(PresentedFrame&&) = default;
+PresentedFrame& PresentedFrame::operator=(PresentedFrame&&) = default;
 PresentedFrame::~PresentedFrame() = default;
 
 }  // namespace ui

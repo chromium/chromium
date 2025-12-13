@@ -11,9 +11,9 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
-#include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -64,8 +64,15 @@ AllSupportedQuicVersions() {
   return filtered_versions;
 }
 
-// When a connection is idle for 30 seconds it will be closed.
-inline constexpr base::TimeDelta kIdleConnectionTimeout = base::Seconds(30);
+// The idle connection timeout. Defaults to 30 seconds, but can be overridden
+// by a field trial.
+inline base::TimeDelta GetIdleConnectionTimeout() {
+  if (base::FeatureList::IsEnabled(
+          net::features::kQuicLongerIdleConnectionTimeout)) {
+    return base::Seconds(300);
+  }
+  return base::Seconds(30);
+}
 
 // Sessions can migrate if they have been idle for less than this period.
 constexpr base::TimeDelta kDefaultIdleSessionMigrationPeriod =
@@ -119,8 +126,12 @@ struct NET_EXPORT QuicParams {
   // Maximum number of server configs that are to be stored in
   // HttpServerProperties, instead of the disk cache.
   size_t max_server_configs_stored_in_properties = 0u;
+
+  // If trust, QUIC will be forced on all origins.
+  bool force_quic_everywhere = false;
   // QUIC will be used for all connections in this set.
-  std::set<HostPortPair> origins_to_force_quic_on;
+  std::set<url::SchemeHostPort> origins_to_force_quic_on;
+
   // WebTransport developer mode disables the requirement that all QUIC
   // connections are anchored to a system certificate root, but only for
   // WebTransport connections.
@@ -144,7 +155,7 @@ struct NET_EXPORT QuicParams {
   // changes.
   bool goaway_sessions_on_ip_change = false;
   // Specifies QUIC idle connection state lifetime.
-  base::TimeDelta idle_connection_timeout = kIdleConnectionTimeout;
+  base::TimeDelta idle_connection_timeout = GetIdleConnectionTimeout();
   // Specifies the reduced ping timeout subsequent connections should use when
   // a connection was timed out with open streams.
   base::TimeDelta reduced_ping_timeout = base::Seconds(quic::kPingTimeoutSecs);
@@ -239,6 +250,9 @@ struct NET_EXPORT QuicParams {
   // If true, a request will be sent on the existing session iff the hostname
   // matches the certificate presented during the handshake.
   bool ignore_ip_matching_when_finding_existing_sessions = false;
+
+  // If true, the obfuscated sni is sent in the transport parameters.
+  bool enable_debugging_sni_in_transport_param = false;
 };
 
 // QuicContext contains QUIC-related variables that are shared across all of the

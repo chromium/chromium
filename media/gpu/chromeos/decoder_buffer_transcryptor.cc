@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"

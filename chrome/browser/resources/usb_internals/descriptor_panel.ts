@@ -2311,6 +2311,8 @@ export class DescriptorPanel {
           directionInputElement =
               inputTableRow.querySelector('#query-request-type');
           break;
+        default:
+          break;
       }
       assert(directionInputElement);
       directionInputElement.addEventListener('change', () => {
@@ -2438,8 +2440,9 @@ function getRequestType(inputRow: HTMLElement, inputType: number): string {
           return 'CLASS';
         case 2:
           return 'VENDOR';
+        default:
+          return '';
       }
-      return '';
     default:
       return '';
   }
@@ -2470,8 +2473,9 @@ function getRequestTypeRecipient(
           return 'ENDPOINT';
         case 3:
           return 'OTHER';
+        default:
+          return '';
       }
-      return '';
     default:
       return '';
   }
@@ -2499,8 +2503,9 @@ function getRequestTypeDirection(
           return 'Host-to-Device';
         case CONTROL_TRANSFER_DIRECTION_DEVICE_TO_HOST:
           return 'Device-to-Host';
+        default:
+          return 'Device-to-Host';
       }
-      return 'Device-to-Host';
     default:
       return 'Device-to-Host';
   }
@@ -2833,6 +2838,8 @@ function checkTransferSuccess(
     case UsbTransferStatus.PERMISSION_DENIED:
       failReason = 'Permission denied';
       break;
+    default:
+      break;
   }
   // Response data will be null if |status| is neither COMPLETED, BABBLE, or
   // SHORT_PACKET. Throws an error to stop rendering response data.
@@ -3075,8 +3082,9 @@ export function renderClassCodeWithDescription(classCode: number): string {
       return `${classCode} (Application Specific)`;
     case 0xFF:
       return `${classCode} (Vendor Specific)`;
+    default:
+      return `${classCode}`;
   }
-  return `${classCode}`;
 }
 
 /**

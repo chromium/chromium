@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/component_export.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
@@ -48,8 +49,6 @@ BASE_DECLARE_FEATURE(kPreventLongRunningPredictionModels);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOverrideNumThreadsForModelExecution);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOptGuideEnableXNNPACKDelegateWithTFLite);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePersonalizedFetching);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
@@ -57,8 +56,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideModelExecution);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideOnDeviceModel);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kOptimizationGuideComposeOnDeviceEval);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kModelQualityLogging);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -72,11 +69,13 @@ BASE_DECLARE_FEATURE(kOnDeviceModelFetchPerformanceClassEveryStartup);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAiSettingsPageForceAvailable);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kPrivacyGuideAiSettings);
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kAnnotatedPageContentWithActionableElements);
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kAnnotatedPageContentWithMediaData);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kOptimizationGuideProactivePersonalizedHintsFetching);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kOptimizationGuideBypassFormsClassificationAuth);
 
 // Allows setting feature params for model download configuration, such as
 // minimum performance class for download.
@@ -111,6 +110,18 @@ BASE_DECLARE_FEATURE(kOptimizationGuideIconView);
 // Whether model sessions may be brokered to untrusted processes.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 BASE_DECLARE_FEATURE(kBrokerModelSessionsForUntrustedProcesses);
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kGetAIPageContentSubframeTimeoutEnabled);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kGetAIPageContentSubframeTimeoutParam;
+
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+BASE_DECLARE_FEATURE(kGetAIPageContentMainFrameTimeoutEnabled);
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FeatureParam<base::TimeDelta>
+    kGetAIPageContentMainFrameTimeoutParam;
 
 typedef base::EnumSet<proto::RequestContext,
                       proto::RequestContext_MIN,
@@ -240,11 +251,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<int> OverrideNumThreadsForOptTarget(
     proto::OptimizationTarget opt_target);
 
-// Whether XNNPACK should be used with TFLite, on platforms where it is
-// supported. This is a no-op on unsupported platforms.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool TFLiteXNNPACKDelegateEnabled();
-
 // Whether logging of model quality is enabled.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsModelQualityLoggingEnabled();
@@ -274,29 +280,6 @@ base::TimeDelta GetOnDeviceModelIdleTimeout();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelExecutionValidationStartupDelay();
 
-// These params determine how context processing works for the on device model.
-// The model will process at least min tokens before responding. While waiting
-// for the ExecuteModel() call, up to max tokens will be processed in chunks of
-// the given size.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMinTokensForContext();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForContext();
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelContextTokenChunkSize();
-
-// The maximum tokens for the input when executing the model.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForExecute();
-
-// The maximum tokens the model will output if the maximum input is given.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetOnDeviceModelMaxTokensForOutput();
-
-// The maximum total tokens, for input and output combined.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-uint32_t GetOnDeviceModelMaxTokens();
-
 // Returns the number of crashes without a successful response before the
 // on-device model won't be used.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -310,11 +293,6 @@ base::TimeDelta GetOnDeviceModelCrashBackoffBaseTime();
 
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceStartupMetricDelay();
-
-// Returns true if during execution a disconnect is received (which generally
-// means a crash) the message should be sent to the server for processing.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool GetOnDeviceFallbackToServerOnDisconnect();
 
 // Whether any features are enabled that allow launching the on-device
 // service.
@@ -340,21 +318,21 @@ base::TimeDelta GetOnDeviceEligibleModelFeatureRecentUsePeriod();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
-// Return the disk space (in MiB) required for on device model install.
+// Return the disk space required for on device model install.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-int GetDiskSpaceRequiredInMbForOnDeviceModelInstall();
+base::ByteCount GetDiskSpaceRequiredForOnDeviceModelInstall();
 
 // Whether there is enough free disk space to allow on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes);
+    base::ByteCount free_disk_space_bytes);
 
 // Whether there is too little disk space to retain the on-device model
 // installation.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
-    int64_t free_disk_space_bytes);
+    base::ByteCount free_disk_space_bytes);
 
 // Returns true if unsafe content should be removed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
@@ -369,6 +347,12 @@ bool ShouldUseTextSafetyClassifierModel();
 // range [0, 1].
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 double GetOnDeviceModelLanguageDetectionMinimumReliability();
+
+// Whether the newer generalized safety model is used instead of the ULM-based
+// model as the text safety model. Irrelevant if
+// `ShouldUseTextSafetyClassifierModel()` returns false;
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool ShouldUseGeneralizedSafetyModel();
 
 // These params configure the repetition checker. See HasRepeatingSuffix() in
 // repetition_checker.h for explanation. A value of 2 for num repeats and 16 for
@@ -398,13 +382,16 @@ std::vector<uint32_t> GetOnDeviceModelAllowedAdaptationRanks();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldEnableOptimizationGuideIconView();
 
-// Whether Ai settings page integration with Privacy Guide is enabled.
+// Returns what the timeout for calls to GetAIPageContent should be for
+// subframes. An empty return value indicates no timeout should be applied.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsPrivacyGuideAiSettingsEnabled();
+std::optional<base::TimeDelta> GetSubframeGetAIPageContentTimeout();
 
-// Whether policy-disabled AI settings are visible.
+// Returns what the timeout for calls to GetAIPageContent should be for
+// the main frame. An empty return value indicates no timeout should be
+// applied.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-BASE_DECLARE_FEATURE(kAiSettingsPageEnterpriseDisabledUi);
+std::optional<base::TimeDelta> GetMainFrameGetAIPageContentTimeout();
 
 }  // namespace features
 }  // namespace optimization_guide

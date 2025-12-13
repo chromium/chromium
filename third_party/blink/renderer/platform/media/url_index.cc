@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -67,7 +69,6 @@ UrlData::UrlData(const KURL& url,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : url_(url),
-      have_data_origin_(false),
       cors_mode_(cors_mode),
       has_access_control_(false),
       url_index_(url_index),
@@ -93,7 +94,7 @@ void UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   // We're merging from another UrlData that refers to the *same*
   // resource, so when we merge the metadata, we can use the most
   // optimistic values.
-  if (ValidateDataOrigin(other->data_origin_)) {
+  if (ValidateDataOrigin(other->data_origin_.value_or(KURL()))) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     valid_until_ = std::max(valid_until_, other->valid_until_);
     // set_length() will not override the length if already known.
@@ -148,7 +149,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   // Copy any cached data over to the new location.
   url_data->multibuffer()->MergeFrom(multibuffer());
 
-  std::vector<RedirectCB> redirect_callbacks;
+  Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
   for (RedirectCB& cb : redirect_callbacks) {
     std::move(cb).Run(url_data);
@@ -158,7 +159,7 @@ void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
 void UrlData::Fail() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Handled similar to a redirect.
-  std::vector<RedirectCB> redirect_callbacks;
+  Vector<RedirectCB> redirect_callbacks;
   redirect_callbacks.swap(redirect_callbacks_);
   for (RedirectCB& cb : redirect_callbacks) {
     std::move(cb).Run(nullptr);
@@ -176,19 +177,21 @@ void UrlData::Use() {
 }
 
 bool UrlData::ValidateDataOrigin(const KURL& origin) {
-  if (!have_data_origin_) {
+  if (!data_origin_) {
     data_origin_ = origin;
-    have_data_origin_ = true;
     return true;
   }
+
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // If both origins are null return true, otherwise
     // SecurityOrigin::AreSameOrigin will create a unique nonce for each.
-    if (data_origin_.IsNull() && origin.IsNull()) {
+    if (data_origin_->IsNull() && origin.IsNull()) {
       return true;
     }
-    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_, origin);
+    return SecurityOrigin::SecurityOrigin::AreSameOrigin(data_origin_.value(),
+                                                         origin);
   }
+
   // The actual cors checks is done in the net layer.
   return true;
 }
@@ -257,9 +260,10 @@ UrlIndex::UrlIndex(ResourceFetchContext* fetch_context,
     : fetch_context_(fetch_context),
       lru_(base::MakeRefCounted<MultiBuffer::GlobalLRU>(task_runner)),
       block_shift_(block_shift),
-      memory_pressure_listener_(FROM_HERE,
-                                WTF::BindRepeating(&UrlIndex::OnMemoryPressure,
-                                                   WTF::Unretained(this))),
+      memory_pressure_listener_registration_(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kMediaUrlIndex,
+          this),
       task_runner_(std::move(task_runner)) {}
 
 UrlIndex::~UrlIndex() = default;
@@ -296,14 +300,14 @@ scoped_refptr<UrlData> UrlIndex::NewUrlData(
 }
 
 void UrlIndex::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   switch (memory_pressure_level) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       lru_->TryFree(128);  // try to free 128 32kb blocks if possible
       break;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       lru_->TryFreeAll();  // try to free as many blocks as possible
       break;
   }

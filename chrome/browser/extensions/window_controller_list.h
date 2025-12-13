@@ -37,6 +37,12 @@ class WindowControllerList {
   void RemoveExtensionWindow(WindowController* window);
   void NotifyWindowBoundsChanged(WindowController* window);
 
+  // Notifies that the focus of the given |window| is changed.
+  //
+  // As of Sep 23, 2025, this API was only used on desktop Android.
+  // TODO(http://crbug.com/446925633): Use this API on non-Android OSes.
+  void NotifyWindowFocusChanged(WindowController* window, bool has_focus);
+
   void AddObserver(WindowControllerListObserver* observer);
   void RemoveObserver(WindowControllerListObserver* observer);
 

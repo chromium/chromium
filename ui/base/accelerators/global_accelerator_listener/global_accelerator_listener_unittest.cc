@@ -11,6 +11,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 namespace {
@@ -40,10 +41,11 @@ class BaseGlobalAcceleratorListenerForTesting final
   }
 
   MOCK_CONST_METHOD0(IsRegistrationHandledExternally, bool());
-  MOCK_METHOD4(OnCommandsChanged,
+  MOCK_METHOD5(OnCommandsChanged,
                void(const std::string&,
                     const std::string&,
                     const ui::CommandMap&,
+                    gfx::AcceleratedWidget,
                     Observer*));
 
  private:
@@ -52,8 +54,6 @@ class BaseGlobalAcceleratorListenerForTesting final
 
 class TestObserver final : public GlobalAcceleratorListener::Observer {
  public:
-  ~TestObserver() = default;
-
   void OnKeyPressed(const ui::Accelerator& accelerator) override {}
 
   void ExecuteCommand(const std::string& accelerator_group_id,
@@ -140,11 +140,29 @@ TEST_F(GlobalAcceleratorListenerTest, OnCommandsChanged) {
   const std::string kAcceleratorGroupId = "group_id";
   const std::string kProfileId = "profile_id";
   const ui::CommandMap kCommands;
-  EXPECT_CALL(*ui_listener, OnCommandsChanged(kAcceleratorGroupId, kProfileId,
-                                              testing::_, testing::_));
+  EXPECT_CALL(*ui_listener,
+              OnCommandsChanged(kAcceleratorGroupId, kProfileId, testing::_,
+                                testing::_, testing::_));
   listener->OnCommandsChanged(kAcceleratorGroupId, kProfileId, kCommands,
-                              GetObserver());
+                              gfx::kNullAcceleratedWidget, GetObserver());
 }
+
+#if !BUILDFLAG(IS_WIN)
+TEST_F(GlobalAcceleratorListenerTest, OnCommandsChangedWithWidget) {
+  GlobalAcceleratorListener* listener = GetUIListener();
+  BaseGlobalAcceleratorListenerForTesting* ui_listener = GetUIListener();
+
+  const std::string kAcceleratorGroupId = "group_id";
+  const std::string kProfileId = "profile_id";
+  const ui::CommandMap kCommands;
+  const gfx::AcceleratedWidget kWidget =
+      static_cast<gfx::AcceleratedWidget>(12345);
+  EXPECT_CALL(*ui_listener, OnCommandsChanged(kAcceleratorGroupId, kProfileId,
+                                              testing::_, kWidget, testing::_));
+  listener->OnCommandsChanged(kAcceleratorGroupId, kProfileId, kCommands,
+                              kWidget, GetObserver());
+}
+#endif
 
 }  // namespace
 }  // namespace ui

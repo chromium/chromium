@@ -7,13 +7,15 @@
 
 #include <stdint.h>
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/threading/thread.h"
 #include "base/values.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 
@@ -29,9 +31,8 @@ namespace extensions {
 // Linux NetworkingPrivateDelegate implementation.
 class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
  public:
+  using GuidList = std::vector<std::string>;
   using NetworkMap = std::map<std::u16string, base::Value::Dict>;
-
-  typedef std::vector<std::string> GuidList;
 
   NetworkingPrivateLinux();
   ~NetworkingPrivateLinux() override;
@@ -103,7 +104,6 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void RemoveObserver(NetworkingPrivateDelegateObserver* observer) override;
 
  private:
-
   // https://developer.gnome.org/NetworkManager/unstable/spec.html#type-NM_DEVICE_TYPE
   enum DeviceType {
     NM_DEVICE_TYPE_UNKNOWN = 0,
@@ -126,17 +126,27 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
     NM_802_11_AP_SEC_KEY_MGMT_802_1X = 0x200
   };
 
-  // Initializes the DBus instance and the proxy object to the network manager.
-  // Must be called on |dbus_thread_|.
-  void Initialize();
+  struct GetAccessPointInfoState;
+  class GetAllWiFiAccessPointsState;
+  class GetConnectedAccessPointState;
 
   // Enumerates all WiFi adapters and scans for access points on each.
   // Results are appended into the provided |network_map|.
-  // Must be called on |dbus_thread_|.
-  void GetAllWiFiAccessPoints(bool configured_only,
-                              bool visible_only,
-                              int limit,
-                              NetworkMap* network_map);
+  void GetAllWiFiAccessPoints(
+      bool configured_only,
+      bool visible_only,
+      int limit,
+      base::OnceCallback<void(std::unique_ptr<NetworkMap>)> callback);
+  void OnGetNetworkDevicesForGetAllWiFiAccessPoints(
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      std::optional<std::vector<dbus::ObjectPath>> device_paths);
+  void OnGetDeviceTypeForGetAllWiFiAccessPoints(
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      const dbus::ObjectPath& device_path,
+      std::optional<DeviceType> device_type);
+  void OnAddAccessPointsFromDeviceFinished(
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      bool success);
 
   // Helper function for handling a scan request. This function acts similarly
   // to the public GetNetworks to get visible networks and fire the
@@ -144,16 +154,21 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   bool GetNetworksForScanRequest();
 
   // Initiates the connection to the network.
-  // Must be called on |dbus_thread_|.
-  void ConnectToNetwork(const std::string& guid, std::string* error);
+  void ConnectToNetwork(const std::string& guid,
+                        base::OnceCallback<void(std::string)> callback);
+  void OnConnectToNetworkResponse(
+      const std::string& guid,
+      const std::string& ssid,
+      base::OnceCallback<void(std::string)> callback,
+      dbus::Response* response);
 
   // Initiates disconnection from the specified network.
-  // Must be called on |dbus_thread_|
-  void DisconnectFromNetwork(const std::string& guid, std::string* error);
-
-  // Checks whether the current thread is the DBus thread. If not, DCHECK will
-  // fail.
-  void AssertOnDBusThread();
+  void DisconnectFromNetwork(const std::string& guid,
+                             base::OnceCallback<void(std::string)> callback);
+  void OnDisconnectResponse(const std::string& guid,
+                            const std::string& ssid,
+                            base::OnceCallback<void(std::string)> callback,
+                            dbus::Response* response);
 
   // Verifies that NetworkManager interfaces are initialized.
   // Returns true if NetworkManager is initialized, otherwise returns false
@@ -161,25 +176,49 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   bool CheckNetworkManagerSupported();
 
   // Gets all network devices on the system.
-  // Returns false if there is an error getting the device paths.
-  bool GetNetworkDevices(std::vector<dbus::ObjectPath>* device_paths);
+  void GetNetworkDevices(
+      base::OnceCallback<void(std::optional<std::vector<dbus::ObjectPath>>)>
+          callback);
+  void OnGetNetworkDevicesResponse(
+      base::OnceCallback<void(std::optional<std::vector<dbus::ObjectPath>>)>
+          callback,
+      dbus::Response* response);
 
   // Returns the DeviceType (eg. WiFi, ethernet). corresponding to the
   // |device_path|.
-  DeviceType GetDeviceType(const dbus::ObjectPath& device_path);
+  void GetDeviceType(
+      const dbus::ObjectPath& device_path,
+      base::OnceCallback<void(std::optional<DeviceType>)> callback);
+  void OnGetDeviceTypeResponse(
+      base::OnceCallback<void(std::optional<DeviceType>)> callback,
+      dbus::Response* response);
 
   // Helper function to enumerate WiFi networks. Takes a path to a Wireless
   // device, scans that device and appends networks to network_list.
-  // Returns false if there is an error getting the access points visible
-  // to the |device_path|.
-  bool AddAccessPointsFromDevice(const dbus::ObjectPath& device_path,
-                                 NetworkMap* network_map);
+  void AddAccessPointsFromDevice(
+      const dbus::ObjectPath& device_path,
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      base::OnceCallback<void(bool)> callback);
+  void OnGetConnectedAccessPointForAddAccessPoints(
+      const dbus::ObjectPath& device_path,
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      base::OnceCallback<void(bool)> callback,
+      dbus::ObjectPath connected_access_point);
+  void OnGetAccessPointsForDevice(
+      const dbus::ObjectPath& device_path,
+      scoped_refptr<GetAllWiFiAccessPointsState> state,
+      base::OnceCallback<void(bool)> callback,
+      dbus::ObjectPath connected_access_point,
+      dbus::Response* response);
+  void OnGetAccessPointInfo(scoped_refptr<GetAllWiFiAccessPointsState> state,
+                            base::RepeatingClosure finished_callback,
+                            std::optional<base::Value::Dict> access_point_info);
 
   // Reply callback accepts the map of networks and fires the
   // OnNetworkListChanged event and user callbacks.
-  void OnAccessPointsFound(std::unique_ptr<NetworkMap> network_map,
-                           NetworkListCallback success_callback,
-                           FailureCallback failure_callback);
+  void OnAccessPointsFound(NetworkListCallback success_callback,
+                           FailureCallback failure_callback,
+                           std::unique_ptr<NetworkMap> network_map);
 
   // Reply callback accepts the map of networks and fires the
   // OnNetworkListChanged event.
@@ -190,24 +229,37 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void SendNetworkListChangedEvent(const base::Value::List& network_list);
 
   // Gets a dictionary of information about the access point.
-  // Returns false if there is an error getting information about the
-  // supplied |access_point_path|.
-  bool GetAccessPointInfo(const dbus::ObjectPath& access_point_path,
-                          base::Value::Dict* access_point_info);
+  void GetAccessPointInfo(
+      const dbus::ObjectPath& access_point_path,
+      const dbus::ObjectPath& device_path,
+      const dbus::ObjectPath& connected_access_point_path,
+      base::OnceCallback<void(std::optional<base::Value::Dict>)> callback);
+  void OnGetSsidForAccessPointInfo(
+      std::unique_ptr<GetAccessPointInfoState> state,
+      dbus::Response* response);
+  void OnGetStrengthForAccessPointInfo(
+      std::unique_ptr<GetAccessPointInfoState> state,
+      dbus::Response* response);
+  void OnGetWpaFlagsForAccessPointInfo(
+      std::unique_ptr<GetAccessPointInfoState> state,
+      dbus::Response* response);
+  void OnGetRsnFlagsForAccessPointInfo(
+      std::unique_ptr<GetAccessPointInfoState> state,
+      dbus::Response* response);
 
   // Helper function to extract a property from a device.
   // Returns the dbus::Response object from calling Get on the supplied
   // |property_name|.
-  std::unique_ptr<dbus::Response> GetAccessPointProperty(
+  void GetAccessPointProperty(
       dbus::ObjectProxy* access_point_proxy,
-      const std::string& property_name);
+      const std::string& property_name,
+      base::OnceCallback<void(dbus::Response*)> callback);
 
   // If the access_point is not already in the map it is added. Otherwise
   // the access point is updated (eg. with the max of the signal
   // strength).
   void AddOrUpdateAccessPoint(NetworkMap* network_map,
-                              const std::string& network_guid,
-                              base::Value::Dict* access_point);
+                              base::Value::Dict access_point);
 
   // Maps the WPA security flags to a human readable string.
   void MapSecurityFlagsToString(uint32_t securityFlags, std::string* security);
@@ -215,22 +267,39 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   // Gets the connected access point path on the given device. Internally gets
   // all active connections then checks if the device matches the requested
   // device, then gets the access point associated with the connection.
-  // Returns false if there is an error getting the connected access point.
-  bool GetConnectedAccessPoint(const dbus::ObjectPath& device_path,
-                               dbus::ObjectPath* access_point_path);
+  void GetConnectedAccessPoint(
+      const dbus::ObjectPath& device_path,
+      base::OnceCallback<void(dbus::ObjectPath)> callback);
+  void OnGetActiveConnections(
+      scoped_refptr<GetConnectedAccessPointState> state);
+  void OnGetActiveConnectionsResponse(
+      scoped_refptr<GetConnectedAccessPointState> state,
+      dbus::Response* response);
+  void OnGetDeviceOfConnection(
+      scoped_refptr<GetConnectedAccessPointState> state,
+      const dbus::ObjectPath& connection_path,
+      dbus::ObjectPath device_path);
+  void OnGetAccessPointForConnection(
+      scoped_refptr<GetConnectedAccessPointState> state,
+      dbus::ObjectPath access_point_path);
 
   // Given a path to an active connection gets the path to the device
-  // that the connection belongs to. Returns false if there is an error getting
-  // the device corresponding to the supplied |connection_path|.
-  bool GetDeviceOfConnection(dbus::ObjectPath connection_path,
-                             dbus::ObjectPath* device_path);
+  // that the connection belongs to.
+  void GetDeviceOfConnection(
+      dbus::ObjectPath connection_path,
+      base::OnceCallback<void(dbus::ObjectPath)> callback);
+  void OnGetDeviceOfConnectionResponse(
+      base::OnceCallback<void(dbus::ObjectPath)> callback,
+      dbus::Response* response);
 
   // Given a path to an active wireless connection gets the path to the
   // access point associated with that connection.
-  // Returns false if there is an error getting the |access_point_path|
-  // corresponding to the supplied |connection_path|.
-  bool GetAccessPointForConnection(dbus::ObjectPath connection_path,
-                                   dbus::ObjectPath* access_point_path);
+  void GetAccessPointForConnection(
+      dbus::ObjectPath connection_path,
+      base::OnceCallback<void(dbus::ObjectPath)> callback);
+  void OnGetAccessPointForConnectionResponse(
+      base::OnceCallback<void(dbus::ObjectPath)> callback,
+      dbus::Response* response);
 
   // Helper method to set the connection state in the |network_map_| and post
   // a change event.
@@ -238,35 +307,21 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
                                       const std::string& ssid,
                                       const std::string& connection_state);
 
-  // Helper method to post an OnNetworkChanged event to the UI thread from the
-  // dbus thread. Used for connection status progress during |StartConnect|.
-  void PostOnNetworksChangedToUIThread(std::unique_ptr<GuidList> guid_list);
-
-  // Helper method to be called from the UI thread and manage ownership of the
-  // passed vector from the |dbus_thread_|.
-  void OnNetworksChangedEventTask(std::unique_ptr<GuidList> guid_list);
-
   void GetCachedNetworkProperties(const std::string& guid,
                                   base::Value::Dict* properties,
                                   std::string* error);
 
-  void OnNetworksChangedEventOnUIThread(const GuidList& network_guids);
-
-  void OnNetworkListChangedEventOnUIThread(const GuidList& network_guids);
-
-  // Thread used for DBus actions.
-  base::Thread dbus_thread_;
-  // DBus instance. Only access on |dbus_thread_|.
+  // DBus instance.
   scoped_refptr<dbus::Bus> dbus_;
-  // Task runner used by the |dbus_| object.
-  scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
-  // This is owned by |dbus_| object. Only access on |dbus_thread_|.
-  raw_ptr<dbus::ObjectProxy> network_manager_proxy_;
-  // Holds the current mapping of known networks. Only access on |dbus_thread_|.
-  std::unique_ptr<NetworkMap> network_map_;
+  // This is owned by |dbus_| object.
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_ = nullptr;
+  // Holds the current mapping of known networks.
+  NetworkMap network_map_;
   // Observers to Network Events.
   base::ObserverList<NetworkingPrivateDelegateObserver>::Unchecked
       network_events_observers_;
+
+  base::WeakPtrFactory<NetworkingPrivateLinux> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

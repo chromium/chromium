@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"

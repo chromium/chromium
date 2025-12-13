@@ -22,8 +22,8 @@
 #include "device/fido/enclave/attestation.h"
 #include "device/fido/enclave/enclave_protocol_utils.h"
 #include "device/fido/enclave/enclave_websocket_client.h"
-#include "device/fido/features.h"
 #include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
 
 namespace device::enclave {
 
@@ -89,7 +89,9 @@ struct Transaction : base::RefCounted<Transaction> {
         return;
       }
 
-      FIDO_LOG(EVENT) << "<- " << cbor::DiagnosticWriter::Write(request_);
+      FIDO_LOG(EVENT) << "<- "
+                      << cbor::DiagnosticWriter::Write(
+                             RedactEnclaveRequest(request_));
       BuildCommandRequestBody(
           std::move(request_), std::move(signing_callback_), *handshake_hash_,
           base::BindOnce(&Transaction::RequestReady, scoped_refptr(this)));
@@ -111,7 +113,9 @@ struct Transaction : base::RefCounted<Transaction> {
           break;
         }
 
-        FIDO_LOG(EVENT) << "-> " << cbor::DiagnosticWriter::Write(*response);
+        FIDO_LOG(EVENT) << "-> "
+                        << cbor::DiagnosticWriter::Write(
+                               RedactEnclaveResponse(*response));
         if (!response->is_map()) {
           RecordTransactionResult(EnclaveTransactionResult::kParseFailure);
           std::move(callback_).Run(base::unexpected(TransactError::kOther));

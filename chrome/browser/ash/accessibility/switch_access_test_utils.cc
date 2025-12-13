@@ -16,10 +16,6 @@
 #include "extensions/browser/extension_registry_test_helper.h"
 
 namespace {
-
-constexpr char kTestSupportPathMV2[] =
-    "chrome/browser/resources/chromeos/accessibility/switch_access/mv2/"
-    "test_support.js";
 constexpr char kTestSupportPathMV3[] =
     "chrome/browser/resources/chromeos/accessibility/switch_access/mv3/"
     "test_support.js";
@@ -40,23 +36,12 @@ void SwitchAccessTestUtils::EnableSwitchAccess(
     const std::set<int>& next_key_codes,
     const std::set<int>& previous_key_codes) {
   AccessibilityManager* manager = AccessibilityManager::Get();
-
-  // Watch events from an MV2 extension which runs in a background page.
-  extensions::ExtensionHostTestHelper host_helper(
-      profile_, extension_misc::kSwitchAccessExtensionId);
   // Watch events from an MV3 extension which runs in a service worker.
   extensions::ExtensionRegistryTestHelper observer(
       extension_misc::kSwitchAccessExtensionId, profile_);
 
   manager->SetSwitchAccessEnabled(true);
-
-  if (observer.WaitForManifestVersion() == 3) {
-    version_ = ManifestVersion::kThree;
-    observer.WaitForServiceWorkerStart();
-  } else {
-    version_ = ManifestVersion::kTwo;
-    host_helper.WaitForHostCompletedFirstLoad();
-  }
+  observer.WaitForServiceWorkerStart();
 
   manager->SetSwitchAccessKeysForTest(
       select_key_codes, prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
@@ -144,9 +129,7 @@ void SwitchAccessTestUtils::InjectFocusRingWatcher() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath source_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
-  auto test_support_path = version_ == ManifestVersion::kThree
-                               ? source_dir.AppendASCII(kTestSupportPathMV3)
-                               : source_dir.AppendASCII(kTestSupportPathMV2);
+  auto test_support_path = source_dir.AppendASCII(kTestSupportPathMV3);
   std::string script;
   ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
       << test_support_path;

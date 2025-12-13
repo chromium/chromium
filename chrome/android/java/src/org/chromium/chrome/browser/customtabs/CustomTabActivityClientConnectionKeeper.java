@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -23,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
  * Keeps the client app alive, when possible, while CustomTabActivity is in foreground (see {@link
  * CustomTabsConnection#keepAliveForSession}).
  */
+@NullMarked
 public class CustomTabActivityClientConnectionKeeper implements StartStopWithNativeObserver {
     @IntDef({
         ConnectionStatus.DISCONNECTED,

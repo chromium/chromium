@@ -203,7 +203,6 @@ void ButtonOptionsMenu::AddHeader() {
                          gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 12, 0));
 
   action_name_label_ = container->AddChildView(ash::bubble_utils::CreateLabel(
-      // TODO(b/274690042): Replace placeholder text with localized strings.
       ash::TypographyToken::kCrosTitle1, u"", cros_tokens::kCrosSysOnSurface));
   action_name_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   action_name_label_->SetMultiLine(true);

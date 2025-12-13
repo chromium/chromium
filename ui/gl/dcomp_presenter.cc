@@ -4,13 +4,14 @@
 
 #include "ui/gl/dcomp_presenter.h"
 
+#include <winerror.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
-#include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/presentation_feedback.h"
@@ -120,7 +121,8 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
   if (!result.has_value()) {
     const HRESULT device_removed_reason =
         gl::GetDirectCompositionD3D11Device()->GetDeviceRemovedReason();
-    if (SUCCEEDED(device_removed_reason)) {
+    const bool not_device_removed = SUCCEEDED(device_removed_reason);
+    if (not_device_removed && result.error().hr != PRESENTATION_ERROR_LOST) {
       SCOPED_CRASH_KEY_NUMBER("gpu", "DCompPresenter.SWAP_FAILED.reason",
                               static_cast<int>(result.error().reason));
       SCOPED_CRASH_KEY_NUMBER(
@@ -129,7 +131,8 @@ void DCompPresenter::Present(SwapCompletionCallback completion_callback,
       base::debug::DumpWithoutCrashing();
     } else {
       // Ignore device removed cases as they don't usually indicate a problem
-      // originating from viz.
+      // originating from viz. `PRESENTATION_ERROR_LOST` usually happens when
+      // device removed is caught internally in DWM when using DComp textures.
     }
 
     std::move(completion_callback)

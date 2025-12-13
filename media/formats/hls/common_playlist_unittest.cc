@@ -109,7 +109,7 @@ TYPED_TEST(HlsCommonPlaylistTest, VersionChecks) {
     // "-1" is not a valid decimal-integer
     auto fork = builder;
     fork.AppendLine("#EXT-X-VERSION:-1");
-    fork.ExpectError(ParseStatusCode::kMalformedTag);
+    fork.ExpectError(ParseStatusCode::kFailedToParseDecimalInteger);
   }
 
   {

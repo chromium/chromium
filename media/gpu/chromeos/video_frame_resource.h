@@ -41,8 +41,7 @@ class VideoFrameResource : public FrameResource {
   scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
-  std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()
-      const override;
+  scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const override;
   const VideoFrameLayout& layout() const override;
   VideoPixelFormat format() const override;
   int stride(size_t plane) const override;
@@ -57,9 +56,8 @@ class VideoFrameResource : public FrameResource {
   const base::UnguessableToken& tracking_token() const override;
   gfx::ColorSpace ColorSpace() const override;
   void set_color_space(const gfx::ColorSpace& color_space) override;
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const override;
-  void set_hdr_metadata(
-      const std::optional<gfx::HDRMetadata>& hdr_metadata) override;
+  const gfx::HDRMetadata& hdr_metadata() const override;
+  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) override;
   base::TimeDelta timestamp() const override;
   void set_timestamp(base::TimeDelta timestamp) override;
   void AddDestructionObserver(base::OnceClosure callback) override;

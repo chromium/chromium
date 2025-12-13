@@ -9,7 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "ui/events/event_modifiers.h"
@@ -21,7 +21,7 @@
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
 #include "ui/events/ozone/gamepad/gamepad_event.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/sequential_id_generator.h"
 #include "ui/ozone/public/system_input_injector.h"
 
@@ -71,6 +71,11 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
 
   void WarpCursorTo(gfx::AcceleratedWidget widget,
                     const gfx::PointF& location);
+
+  // Creates and dispatches a synthesized mouse move event. This event is used
+  // to notify the logical location has been changed even if a user didn't move
+  // the mouse, such as display configuration change.
+  void SynthesizeMouseMove(const gfx::PointF& location);
 
   std::unique_ptr<SystemInputInjector> CreateSystemInputInjector();
 

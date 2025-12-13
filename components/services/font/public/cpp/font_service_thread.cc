@@ -121,6 +121,17 @@ bool FontServiceThread::MatchFontByPostscriptNameOrFullFontName(
 }
 
 #if BUILDFLAG(ENABLE_PDF)
+std::vector<std::string> FontServiceThread::ListFamilies() {
+  DCHECK(!task_runner_->RunsTasksInCurrentSequence());
+  std::vector<std::string> families;
+  base::WaitableEvent done_event;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&FontServiceThread::ListFamiliesImpl, this,
+                                &done_event, &families));
+  done_event.Wait();
+  return families;
+}
+
 void FontServiceThread::MatchFontWithFallback(
     std::string family,
     bool is_bold,
@@ -385,6 +396,31 @@ void FontServiceThread::OnMatchFontByPostscriptNameOrFullFontNameComplete(
 }
 
 #if BUILDFLAG(ENABLE_PDF)
+void FontServiceThread::ListFamiliesImpl(base::WaitableEvent* done_event,
+                                         std::vector<std::string>* families) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  if (!font_service_.is_connected()) {
+    done_event->Signal();
+    return;
+  }
+
+  pending_waitable_events_.insert(done_event);
+  font_service_->ListFamilies(base::BindOnce(
+      &FontServiceThread::OnListFamiliesComplete, this, done_event, families));
+}
+
+void FontServiceThread::OnListFamiliesComplete(
+    base::WaitableEvent* done_event,
+    std::vector<std::string>* families,
+    const std::vector<std::string>& response) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+
+  pending_waitable_events_.erase(done_event);
+  *families = response;
+  done_event->Signal();
+}
+
 void FontServiceThread::MatchFontWithFallbackImpl(
     base::WaitableEvent* done_event,
     std::string family,

@@ -136,6 +136,7 @@ RTCRtpReceiver* RTCRtpTransceiver::receiver() const {
 bool RTCRtpTransceiver::stopped() const {
   // Non-standard attribute reflecting being "stopping", whether or not we are
   // "stopped" per current_direction_.
+  // TODO(hbos): deprecate and remove.
   return direction_ == V8RTCRtpTransceiverDirection::Enum::kStopped;
 }
 
@@ -259,7 +260,7 @@ void RTCRtpTransceiver::setCodecPreferences(
     codec_preferences.emplace_back();
     auto& webrtc_codec = codec_preferences.back();
     auto slash_position = codec->mimeType().find('/');
-    if (slash_position == WTF::kNotFound) {
+    if (slash_position == kNotFound) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError, "Invalid codec");
       return;
@@ -281,15 +282,15 @@ void RTCRtpTransceiver::setCodecPreferences(
     }
     if (codec->hasSdpFmtpLine()) {
       auto sdpFmtpLine = codec->sdpFmtpLine();
-      if (sdpFmtpLine.find('=') == WTF::kNotFound) {
+      if (sdpFmtpLine.find('=') == kNotFound) {
         // Some parameters don't follow the key=value form.
         webrtc_codec.parameters.emplace("", sdpFmtpLine.Ascii());
       } else {
-        WTF::Vector<WTF::String> parameters;
+        Vector<String> parameters;
         sdpFmtpLine.Split(';', parameters);
         for (const auto& parameter : parameters) {
           auto equal_position = parameter.find('=');
-          if (equal_position == WTF::kNotFound) {
+          if (equal_position == kNotFound) {
             exception_state.ThrowDOMException(
                 DOMExceptionCode::kInvalidModificationError, "Invalid codec");
             return;

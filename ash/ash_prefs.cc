@@ -13,7 +13,6 @@
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/views/app_list_nudge_controller.h"
-#include "ash/assistant/assistant_controller_impl.h"
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
@@ -101,11 +100,11 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "ash/wm/window_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
@@ -154,6 +153,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
   DockedMagnifierController::RegisterProfilePrefs(registry);
   FeatureDiscoveryDurationReporterImpl::RegisterProfilePrefs(registry);
   FocusModeController::RegisterProfilePrefs(registry);
+  RegisterProfilePrefsFullRestore(registry);
   FullscreenController::RegisterProfilePrefs(registry);
   GameDashboardController::RegisterProfilePrefs(registry);
   GeolocationController::RegisterProfilePrefs(registry);
@@ -205,7 +205,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {
-    assistant::prefs::RegisterProfilePrefs(registry);
     quick_answers::prefs::RegisterProfilePrefs(registry);
     registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
     registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
@@ -247,10 +246,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackHome, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageUp, 0);
     registry->RegisterIntegerPref(prefs::kKeyEventRemappedToSixPackPageDown, 0);
-    registry->RegisterBooleanPref(prefs::kShowInformedRestoreOnboarding, false);
-    registry->RegisterIntegerPref(prefs::kInformedRestoreNudgeShownCount, 0);
-    registry->RegisterTimePref(prefs::kInformedRestoreNudgeLastShown,
-                               base::Time());
     registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
     registry->RegisterIntegerPref(
         prefs::kGenAISmartGroupingSettings,

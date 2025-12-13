@@ -40,7 +40,7 @@ TEST(SimpleSources, SineWaveAudioSource) {
 
   uint32_t half_period = AudioParameters::kTelephoneSampleRate / (freq * 2);
 
-  auto first_channel = audio_bus->channel_span(0);
+  auto first_channel = audio_bus->channel(0);
 
   // Spot test positive incursion of sine wave.
   EXPECT_NEAR(0, first_channel[0], std::numeric_limits<float>::epsilon());
@@ -98,9 +98,9 @@ void VerifyContainsTestFile(const AudioBus* audio_bus) {
 
   // The first frame should hold the WAV data.
   EXPECT_FLOAT_EQ(static_cast<float>(data[0]) / ((1 << 15) - 1),
-                  audio_bus->channel_span(0)[0]);
+                  audio_bus->channel(0)[0]);
   EXPECT_FLOAT_EQ(static_cast<float>(data[1]) / ((1 << 15) - 1),
-                  audio_bus->channel_span(1)[0]);
+                  audio_bus->channel(1)[0]);
 
   // All other frames should be zero-padded. This applies even when looping, as
   // the looping will restart on the next call to OnMoreData.

@@ -84,7 +84,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   ClientImageTransferCacheEntry(
       const Image& image,
       bool needs_mips,
-      const std::optional<gfx::HDRMetadata>& hdr_metadata = std::nullopt,
+      const gfx::HDRMetadata& hdr_metadata,
       sk_sp<SkColorSpace> target_color_space = nullptr);
   ClientImageTransferCacheEntry(const Image& image,
                                 const Image& gainmap_image,
@@ -121,7 +121,7 @@ class CC_PAINT_EXPORT ClientImageTransferCacheEntry final
   std::optional<SkGainmapInfo> gainmap_info_;
 
   // The HDR metadata for non-gainmap HDR metadata.
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 };
 
 class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
@@ -183,9 +183,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
   size_t num_planes() const { return plane_images_.size(); }
   bool fits_on_gpu() const;
 
-  const std::optional<gfx::HDRMetadata>& hdr_metadata() const {
-    return hdr_metadata_;
-  }
+  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
 
  private:
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
@@ -199,7 +197,7 @@ class CC_PAINT_EXPORT ServiceImageTransferCacheEntry final
 
   // HDR metadata used by global tone map application and (potentially but not
   // yet) gain map application.
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
   // The value of `size_` is computed during deserialization and never updated
   // (even if the size of the image changes due to mipmaps being requested).

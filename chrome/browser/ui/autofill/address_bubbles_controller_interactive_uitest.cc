@@ -37,6 +37,7 @@ class BaseAddressBubblesControllerTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kAutofillSupportLastNamePrefix, {}},
+            {features::kAutofillSupportSplitZipCode, {}},
             {::features::kPageActionsMigration,
              {{"autofill_address", GetParam() ? "true" : "false"}}},
         },
@@ -87,7 +88,7 @@ class SaveAddressProfileTest : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
-        /*is_migration_to_account=*/{},
+        AutofillClient::SaveAddressBubbleType::kSave,
         base::BindOnce(&SaveAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -178,7 +179,7 @@ class UpdateAddressProfileTest : public BaseAddressBubblesControllerTest {
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
-        /*is_migration_to_account=*/{},
+        AutofillClient::SaveAddressBubbleType::kSave,
         base::BindOnce(&UpdateAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -219,7 +220,7 @@ class UpdateAccountAddressProfileTest : public UpdateAddressProfileTest {
         .set_record_type(AutofillProfile::RecordType::kAccount);
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), &original_profile_,
-        /*is_migration_to_account=*/{},
+        AutofillClient::SaveAddressBubbleType::kSave,
         base::BindOnce(&UpdateAccountAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -257,7 +258,7 @@ class MigrateToProfileAddressProfileTest
   void TriggerBubble() override {
     autofill_client()->ConfirmSaveAddressProfile(
         test::GetFullProfile(), nullptr,
-        /*is_migration_to_account=*/true,
+        AutofillClient::SaveAddressBubbleType::kMigrateToAccount,
         base::BindOnce(&MigrateToProfileAddressProfileTest::OnUserDecision,
                        base::Unretained(this)));
   }
@@ -291,6 +292,9 @@ IN_PROC_BROWSER_TEST_P(MigrateToProfileAddressProfileTest, SaveWithEdit) {
       EnsureClosedWithDecision(
           AutofillClient::AddressPromptUserDecision::kAccepted));
 }
+
+// TODO(crbug.com/356845298): Add a test for combining the `kAccountNameEmail`
+// profile with one of the `kAccountHome`/`kAccountWork` profiles.
 
 INSTANTIATE_TEST_SUITE_P(AllAutofillAddressStates,
                          SaveAddressProfileTest,

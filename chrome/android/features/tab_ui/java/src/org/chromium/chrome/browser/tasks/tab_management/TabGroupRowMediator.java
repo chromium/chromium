@@ -22,7 +22,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesConfig;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -339,11 +338,7 @@ class TabGroupRowMediator {
 
     /** Determine the last used timestamp from {@link SavedTabGroupTab} update times. */
     private TabGroupTimeAgo getTabGroupTimeAgoTimestampEvent(SavedTabGroup savedTabGroup) {
-        if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
-            return new TabGroupTimeAgo(
-                    TabUiUtils.getGroupLastUpdatedTimestamp(savedTabGroup), TimestampEvent.UPDATED);
-        } else {
-            return new TabGroupTimeAgo(savedTabGroup.creationTimeMs, TimestampEvent.CREATED);
-        }
+        return new TabGroupTimeAgo(
+                TabUiUtils.getGroupLastUpdatedTimestamp(savedTabGroup), TimestampEvent.UPDATED);
     }
 }

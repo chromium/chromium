@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -13,8 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-
-import java.util.Optional;
 
 /** Unit tests for {@link AutocompleteState}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -75,7 +74,7 @@ public class AutocompleteStateUnitTest {
             boolean expectedRetVal,
             String expectedAutocompleteText) {
         assertEquals(expectedRetVal, s2.reuseAutocompleteTextIfPrefixExtension(s1));
-        assertEquals(expectedAutocompleteText, s2.getAutocompleteText().get());
+        assertEquals(expectedAutocompleteText, s2.getAutocompleteText());
     }
 
     @Test
@@ -110,7 +109,7 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAutocompleteText().isPresent());
+        assertNull(autocompleteState.getAutocompleteText());
     }
 
     @Test
@@ -118,7 +117,7 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", "", "", 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAutocompleteText().isPresent());
+        assertNull(autocompleteState.getAutocompleteText());
     }
 
     @Test
@@ -126,18 +125,18 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAutocompleteText().isPresent());
+        assertNull(autocompleteState.getAutocompleteText());
 
-        autocompleteState.setAutocompleteText(Optional.of("def"));
+        autocompleteState.setAutocompleteText("def");
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abcdef", autocompleteState.getText());
-        assertTrue(autocompleteState.getAutocompleteText().isPresent());
-        assertEquals("def", autocompleteState.getAutocompleteText().get());
+        assertNotNull(autocompleteState.getAutocompleteText());
+        assertEquals("def", autocompleteState.getAutocompleteText());
 
-        autocompleteState.setAutocompleteText(Optional.empty());
+        autocompleteState.setAutocompleteText(null);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAutocompleteText().isPresent());
+        assertNull(autocompleteState.getAutocompleteText());
     }
 
     @Test
@@ -145,8 +144,8 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", null, "foo.com", 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertTrue(autocompleteState.getAdditionalText().isPresent());
-        assertEquals("foo.com", autocompleteState.getAdditionalText().get());
+        assertNotNull(autocompleteState.getAdditionalText());
+        assertEquals("foo.com", autocompleteState.getAdditionalText());
     }
 
     @Test
@@ -154,7 +153,7 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", null, null, 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAdditionalText().isPresent());
+        assertNull(autocompleteState.getAdditionalText());
     }
 
     @Test
@@ -162,6 +161,6 @@ public class AutocompleteStateUnitTest {
         AutocompleteState autocompleteState = new AutocompleteState("abc", "", "", 3, 3);
         assertEquals("abc", autocompleteState.getUserText());
         assertEquals("abc", autocompleteState.getText());
-        assertFalse(autocompleteState.getAdditionalText().isPresent());
+        assertNull(autocompleteState.getAdditionalText());
     }
 }

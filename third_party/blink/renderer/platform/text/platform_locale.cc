@@ -346,7 +346,7 @@ bool Locale::DetectSignAndGetDigitRange(const String& input,
                                         bool& is_negative,
                                         unsigned& start_index,
                                         unsigned& end_index) {
-  DCHECK_EQ(input.Find(IsASCIISpace), WTF::kNotFound);
+  DCHECK_EQ(input.Find(IsASCIISpace), kNotFound);
   start_index = 0;
   end_index = input.length();
   const auto adjust_for_affixes = [&](const String& prefix,
@@ -480,20 +480,17 @@ bool Locale::IsSignPrefix(UChar ch) {
 
 bool Locale::HasTwoSignChars(const String& str) {
   // Unretained is safe because callback executes synchronously in Find().
-  auto pos = str.Find(
-      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
+  auto pos = str.Find(BindRepeating(&Locale::IsSignPrefix, Unretained(this)));
   if (pos == kNotFound)
     return false;
   // Unretained is safe because callback executes synchronously in Find().
-  return str.Find(
-             WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)),
-             pos + 1) != kNotFound;
+  return str.Find(BindRepeating(&Locale::IsSignPrefix, Unretained(this)),
+                  pos + 1) != kNotFound;
 }
 
 bool Locale::HasSignNotAfterE(const String& str) {
   // Unretained is safe because callback executes synchronously in Find().
-  auto pos = str.Find(
-      WTF::BindRepeating(&Locale::IsSignPrefix, WTF::Unretained(this)));
+  auto pos = str.Find(BindRepeating(&Locale::IsSignPrefix, Unretained(this)));
   if (pos == kNotFound)
     return false;
   return pos == 0 || !IsE(str[pos - 1]);
@@ -522,8 +519,8 @@ bool Locale::IsDecimalSeparator(UChar ch) {
 // Is there a decimal separator in a string?
 bool Locale::HasDecimalSeparator(const String& str) {
   // Unretained is safe because callback executes synchronously in Find().
-  return str.Find(WTF::BindRepeating(&Locale::IsDecimalSeparator,
-                                     WTF::Unretained(this))) != kNotFound;
+  return str.Find(BindRepeating(&Locale::IsDecimalSeparator,
+                                Unretained(this))) != kNotFound;
 }
 
 String Locale::FormatDateTime(const DateComponents& date,

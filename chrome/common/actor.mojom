@@ -18,8 +18,8 @@ union ToolTarget {
 
   // An x,y pair representing a location relative to the origin at the top-left
   // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
-  // physical pixels.
-  gfx.mojom.Point coordinate;
+  // DIP.
+  gfx.mojom.Point coordinate_dip;
 };
 
 // Attributes of the Node target returned from hit test on last observed APC.
@@ -45,7 +45,15 @@ struct ClickAction {
 };
 
 // Information specific to a mouse move action.
+// Has no members because the target, included in ToolInvocation, is the only
+// needed parameter.
 struct MouseMoveAction {
+};
+
+// Information specific to a scroll-to action.
+// Has no members because the target, included in ToolInvocation, is the only
+// needed parameter.
+struct ScrollToAction {
 };
 
 // Information specific to the type (keyboard input) action.  Note: TypeAction
@@ -89,7 +97,7 @@ struct ScrollAction {
   };
 
   ScrollDirection direction;
-  // Scroll distance in physical pixels, and it should always be positive.
+  // Scroll distance in DIPs, and it should always be positive.
   float distance;
 };
 
@@ -107,6 +115,12 @@ struct DragAndReleaseAction {
   ToolTarget to_target;
 };
 
+// Executes a script tool associated with the Document.
+struct ScriptToolAction {
+  string name;
+  string input_arguments;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
@@ -115,6 +129,8 @@ union ToolAction {
   ScrollAction scroll;
   SelectAction select;
   TypeAction type;
+  ScriptToolAction script_tool;
+  ScrollToAction scroll_to;
 };
 
 
@@ -130,11 +146,14 @@ union ToolAction {
 // optimization_guide.proto.BrowserActionResult.  New Codes may be added to
 // unused values, but existing codes should not be removed, reordered, or
 // renumbered.
+// Googlers: When making additions, also add the new value here:
+// http://shortn/_gLyPxrRm6p
 enum ActionResultCode {
   kOk = 0,
 
+  // DEPRECATED. Use explicit error codes instead.
   // A generic error that does not have a more specific code. Avoid using this.
-  kError = 10,
+  // kError = 10,
 
   // Actions are not allowed on the current URL.
   kUrlBlocked = 11,
@@ -205,6 +224,40 @@ enum ActionResultCode {
   // hit test on the live DOM.
   kObservedTargetElementChanged = 31,
 
+  // The target node's interaction point is obscured by other elements in hit
+  // testing.
+  kTargetNodeInteractionPointObscured = 32,
+
+  // The tool took too long to execute.
+  kToolTimeout = 33,
+
+  // The task triggered a file picker.
+  kFilePickerTriggered = 34,
+
+  // File picker was confirmed.
+  kFilePickerConfirmed = 35,
+
+  // File picker was cancelled.
+  kFilePickerCancelled = 36,
+
+  // The execution engine already had an existing action sequence when a new
+  // sequence was provided.
+  kExecutionEngineExistingAction = 37,
+
+  // Navigation to external protocol was blocked
+  kExternalProtocolNavigationBlocked = 38,
+
+  // The renderer process crashed.
+  kRendererCrashed = 39,
+
+  // Only used as place holder for planned but unimplemented features. Do not
+  // use as a generic error code.
+  kNotImplemented = 40,
+
+  // The PageTool invocation was canceled.
+  kInvokeCanceled = 41,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
@@ -213,11 +266,21 @@ enum ActionResultCode {
   // The requested URL was not valid.
   kNavigateInvalidUrl = 100,
 
+  // The navigation failed before it started.
+  kNavigateFailedToStart = 101,
+
+  // The navigation committed to an error page.
+  kNavigateCommittedErrorPage = 102,
+
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 200-299: Errors for ClickAction.
 
   // The click event was suppressed.
   kClickSuppressed = 200,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 300-399: Errors for DragAndRelease.
@@ -240,11 +303,15 @@ enum ActionResultCode {
   // The mouse up event was suppressed.
   kDragAndReleaseUpSuppressed = 305,
 
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 400-499: Errors for MouseMoveAction.
 
   // The mouse move event was suppressed.
   kMouseMoveEventSuppressed = 400,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 500-599: Errors for ScrollAction.
@@ -261,6 +328,8 @@ enum ActionResultCode {
   // The offset of the target element didn't change after scrolling.
   kScrollOffsetDidNotChange = 502,
 
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 600-699: Errors for SelectAction.
 
@@ -274,7 +343,10 @@ enum ActionResultCode {
   kSelectOptionDisabled = 602,
 
   // The invoking the tool resulted in an unexpected value.
-  kSelectUnexpectedValue = 603,
+  // DEPRECATED: Unused
+  // kSelectUnexpectedValue = 603,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 700-799: Errors for TypeAction.
@@ -293,6 +365,11 @@ enum ActionResultCode {
 
   // The key down event for one of the chars was suppressed by Blink.
   kTypeKeyDownSuppressed = 704,
+
+  // The text to type is not valid UTF-8 string.
+  kTypeInvalidTextEncoding = 705,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 800-899: Errors for history tool. (Not part of the ToolAction union
@@ -315,14 +392,115 @@ enum ActionResultCode {
 
   // History navigation committed to an error page.
   kHistoryErrorPage = 805,
+
+  // The navigation entry at the current offset changed between validation and
+  // time of use.
+  kHistoryNavigationEntryChanged = 806,
+
+  // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 900-999: Errors for attempt login.
+
+  // The login attempt failed because no credentials were available.
+  kLoginNoCredentialsAvailable = 900,
+
+  // The login attempt failed because the current page is not a login page.
+  // The caller needs to first navigate to a login page.
+  kLoginNotLoginPage = 901,
+
+  // The login attempt failed because the credentials were entered, but another
+  // action is needed to complete the login.
+  kLoginCredentialsEnteredButAnotherActionNeeded = 902,
+
+  // Neither the username, nor the password field could be filled.
+  kLoginNoFillableFields = 903,
+
+  // The use of the password manager is not allowed on the page (e.g. blocked
+  // by enterprise policy).
+  kLoginFillingNotAllowed = 904,
+
+  // The page changed before the credential selected by the user was filled.
+  kLoginPageChangedDuringSelection = 905,
+
+  // The task is in a background tab and filling requires device reauth. The
+  // user needs to focus that tab first.
+  kLoginDeviceReauthRequired = 906,
+
+  // The screen-lock-based authentication attempt failed (likely the user
+  // cancelled it).
+  kLoginDeviceReauthFailed = 907,
+
+  // The login attempt failed because the feature is disabled.
+  kLoginFeatureDisabled = 908,
+
+  // Multiple login requests were made at the same time.
+  kLoginTooManyRequests = 909,
+
+  // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1000-1099: Errors for media control.
+
+  // The media control action failed because there is no media on the page.
+  kMediaControlNoMedia = 1000,
+
+  // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1100-1199: Errors for form filling.
+
+  // Autofill is not available.
+  kFormFillingAutofillUnavailable = 1100,
+
+  // No autofill suggestions are available for the fields.
+  kFormFillingNoSuggestionsAvailable = 1101,
+
+  // The user could not choose a suggestion because of an error showing the
+  // suggestion selection dialog.
+  kFormFillingDialogError = 1102,
+
+  // The trigger field for form filling was not found. It could be that the page
+  // has changed since the action was requested.
+  kFormFillingFieldNotFound = 1103,
+
+  // An error occurred during autofill.
+  kFormFillingUnknownAutofillError = 1104,
+
+  // No tab observation was found when the TOCTOU check was performed.
+  kFormFillingNoLastTabObservation = 1105,
+
+  // The suggestion ID selected by the user was invalid.
+  kFormFillingInvalidSuggestionId = 1106,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1200-1299: Errors for script tool.
+
+  // The document did not return a response for the script tool.
+  kScriptToolNoResponse = 1200,
+
+  // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1300-1399: Errors for Chrome UI.
+
+  // The Chrome Actor UI could not be shown.
+  kActorUiError = 1300,
+
+  // Please see the comment above about adding new values.
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
 
+// The task ID associated with the tool invocation.
+struct TaskId {
+  int32 id;
+};
+
 // All information required to invoke a tool in the renderer.
 struct ToolInvocation {
   // The task ID owning this invocation.
-  int32 task_id;
+  TaskId task_id;
 
   // The action to carry out in this invocation.
   ToolAction action;
@@ -340,8 +518,21 @@ struct ActionResult {
   // A code with the outcome of the tool invocation.
   ActionResultCode code;
 
+  // Whether any action was taken on the page. This is used to know if we need
+  // to wait for the page to settle.
+  bool requires_page_stabilization;
+
   // If the code is not kOk, an English language message describing the error.
   string message;
+
+  // If the action is a script tool, provides the result of that execution. This
+  // is only populated if the execution was successful.
+  string? script_tool_response;
+
+  // Time at which execution of the action was complete and page
+  // stabilization was started. This field may not be available if the action's
+  // execution did not fully complete.
+  mojo_base.mojom.TimeTicks? execution_end_time;
 };
 
 // The type of the journal entry.
@@ -349,6 +540,12 @@ enum JournalEntryType {
   kBegin,
   kEnd,
   kInstant,
+};
+
+// Details of a journal entry.
+struct JournalDetails {
+  string key;
+  string value;
 };
 
 // Represents a journal entry. This should only be used for logging and
@@ -360,11 +557,7 @@ struct JournalEntry {
   JournalEntryType type;
 
   // The task ID associated with this entry.
-  int32 task_id;
-
-  // Unique identifier for entry. Begin/End types
-  // should use the same id.
-  uint64 id;
+  TaskId task_id;
 
   // The time the event occurred at.
   mojo_base.mojom.Time timestamp;
@@ -372,8 +565,11 @@ struct JournalEntry {
   // The event name.
   string event;
 
+  // Track UUID.
+  uint64 track_uuid;
+
   // Specific details of the event logged.
-  string details;
+  array<JournalDetails> details;
 };
 
 // Use to listen for new journal entries. Lives in the browser process and
@@ -381,4 +577,18 @@ struct JournalEntry {
 interface JournalClient {
   // New log messages are sent in batches to limit the frequency of calls.
   AddEntriesToJournal(array<JournalEntry> entries);
+};
+
+// Used to monitor page stability in the renderer. Implemented by
+// `actor::PageStabilityMonitor` and lives in the renderer process. The browser
+// queries this interface to learn when the current page associated with
+// `actor::PageStabilityMonitor` is stable.
+//
+// We CHECK that only one `NotifyWhenStable()` call is in flight at any given
+// time.
+//
+// `observation_delay` is the amount of time to wait when observing tool
+// execution before starting to wait for page stability.
+interface PageStabilityMonitor {
+  NotifyWhenStable(mojo_base.mojom.TimeDelta observation_delay) => ();
 };

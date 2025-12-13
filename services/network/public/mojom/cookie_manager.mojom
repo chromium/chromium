@@ -282,8 +282,20 @@ enum CookieChangeCause {
   // The cookie was overwritten with an already-expired expiration date.
   EXPIRED_OVERWRITE,
   // The cookie was inserted but resulted in an overwrite with no change
-  // that is observable to the site.
-  INSERTED_NO_CHANGE_OVERWRITE
+  // that is observable to the site. (i.e. the new cookie set has exactly
+  // the same name, value, expiry, secure attribute etc.)
+  INSERTED_NO_CHANGE_OVERWRITE,
+  // The cookie was inserted with a web observable overwrite, but it doesn't
+  // change the existing cookie's value. However, it may change the other
+  // attribute (expiry, secure, same-site, http-only).
+  // For example, given that the cookie is set to a=1 with expiry=19:00, and
+  // there is another cookie write:
+  // - if it's setting a=2, then it will trigger `INSERTED`.
+  // - if it's setting a=1 with expiry=19:01, then it will trigger
+  // `INSERTED_NO_VALUE_CHANGE_OVERWRITE`.
+  // - if it's setting a=1 with expiry=19:00, then it will trigger
+  // `INSERTED_NO_CHANGE_OVERWRITE`.
+  INSERTED_NO_VALUE_CHANGE_OVERWRITE
 };
 
 struct CookieChangeInfo {

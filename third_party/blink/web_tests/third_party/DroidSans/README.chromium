@@ -2,6 +2,7 @@ Name: DroidSans Font
 Short Name: DroidSans
 URL: https://github.com/android/platform_frameworks_base/tree/jb-release/data/fonts
 Version: 1.000
+Update Mechanism: Static (https://crbug.com/422923384)
 License: Apache-2.0
 License File: LICENSE.txt
 Security Critical: no

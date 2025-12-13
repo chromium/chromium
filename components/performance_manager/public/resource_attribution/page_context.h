@@ -8,6 +8,7 @@
 #include <compare>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
@@ -74,6 +75,12 @@ class PageContext {
   // Test PageContexts for equality by PageNode token.
   constexpr friend bool operator==(const PageContext& a, const PageContext& b) {
     return a.token_ == b.token_;
+  }
+
+  // Add PageContexts to absl hashes.
+  template <typename H>
+  friend H AbslHashValue(H h, const PageContext& c) {
+    return H::combine(std::move(h), c.token_);
   }
 
  private:

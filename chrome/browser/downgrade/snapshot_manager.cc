@@ -43,28 +43,24 @@ enum class SnapshotOperationResult {
 
 // Copies the item at |user_data_dir|/|relative_path| to
 // |snapshot_dir|/|relative_path| if the item exists. This also copies all files
-// related to items that are SQLite databases. Returns |true| if the item was
-// found at the source and successfully copied. Returns |false| if the item was
-// found at the source but not successfully copied. Returns no value if the file
-// was not at the source.
-std::optional<bool> CopyItemToSnapshotDirectory(
-    const base::FilePath& relative_path,
-    const base::FilePath& user_data_dir,
-    const base::FilePath& snapshot_dir,
-    bool is_directory) {
+// related to items that are SQLite databases.
+void CopyItemToSnapshotDirectory(const base::FilePath& relative_path,
+                                 const base::FilePath& user_data_dir,
+                                 const base::FilePath& snapshot_dir,
+                                 bool is_directory) {
   const auto source = user_data_dir.Append(relative_path);
   const auto destination = snapshot_dir.Append(relative_path);
 
   // If nothing exists to be moved, do not consider it a success or a failure.
   if (!base::PathExists(source))
-    return std::nullopt;
+    return;
 
-  bool copy_success = is_directory ? base::CopyDirectory(source, destination,
-                                                         /*recursive=*/true)
-                                   : base::CopyFile(source, destination);
+  if (is_directory) {
+    base::CopyDirectory(source, destination, /*recursive=*/true);
+    return;
+  }
 
-  if (is_directory)
-    return copy_success;
+  base::CopyFile(source, destination);
 
   // Copy SQLite journal, WAL and SHM files associated with the files that are
   // snapshotted if they exist.
@@ -77,10 +73,8 @@ std::optional<bool> CopyItemToSnapshotDirectory(
 
     const auto destination_journal = base::FilePath(
         destination.value() + base::FilePath::StringType(suffix));
-    copy_success &= base::CopyFile(sqlite_file_path, destination_journal);
+    base::CopyFile(sqlite_file_path, destination_journal);
   }
-
-  return copy_success;
 }
 
 // Returns true if |base_name| matches a user profile directory's format. This
@@ -153,22 +147,14 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
         snapshot_dir, move_target_dir.AppendASCII(version.GetString()));
   }
 
-  auto record_item_failure = [](std::optional<bool> success,
-                                SnapshotItemId id) {
-    if (!success.value_or(true))
-      base::UmaHistogramEnumeration("Downgrade.TakeSnapshot.ItemFailure", id);
-  };
-
   // Abort the snapshot if the snapshot directory could not be created.
   if (!base::CreateDirectory(snapshot_dir))
     return;
 
   // Copy items to be preserved at the top-level of User Data.
   for (const auto& file : GetUserSnapshotItemDetails()) {
-    record_item_failure(
-        CopyItemToSnapshotDirectory(base::FilePath(file.path), user_data_dir_,
-                                    snapshot_dir, file.is_directory),
-        file.id);
+    CopyItemToSnapshotDirectory(base::FilePath(file.path), user_data_dir_,
+                                snapshot_dir, file.is_directory);
   }
 
   const auto profile_snapshot_item_details = GetProfileSnapshotItemDetails();
@@ -180,21 +166,17 @@ void SnapshotManager::TakeSnapshot(const base::Version& version) {
     if (!base::CreateDirectory(snapshot_dir.Append(profile_dir)))
       continue;
     for (const auto& file : profile_snapshot_item_details) {
-      record_item_failure(CopyItemToSnapshotDirectory(
-                              profile_dir.Append(file.path), user_data_dir_,
-                              snapshot_dir, file.is_directory),
-                          file.id);
+      CopyItemToSnapshotDirectory(profile_dir.Append(file.path), user_data_dir_,
+                                  snapshot_dir, file.is_directory);
     }
   }
 
   // Copy the "Last Version" file to the snapshot directory last since it is the
   // file that determines, by its presence in the snapshot directory, if the
   // snapshot is complete.
-  record_item_failure(
-      CopyItemToSnapshotDirectory(base::FilePath(kDowngradeLastVersionFile),
-                                  user_data_dir_, snapshot_dir,
-                                  /*is_directory=*/false),
-      SnapshotItemId::kLastVersion);
+  CopyItemToSnapshotDirectory(base::FilePath(kDowngradeLastVersionFile),
+                              user_data_dir_, snapshot_dir,
+                              /*is_directory=*/false);
 }
 
 void SnapshotManager::RestoreSnapshot(const base::Version& version) {

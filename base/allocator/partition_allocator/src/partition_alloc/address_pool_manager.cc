@@ -13,6 +13,7 @@
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
+#include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/notreached.h"
 #include "partition_alloc/partition_alloc_check.h"
@@ -85,7 +86,7 @@ uintptr_t AddressPoolManager::GetPoolBaseAddress(pool_handle handle) {
 
 void AddressPoolManager::ResetForTesting() {
   for (size_t i = 0; i < std::size(pools_); ++i) {
-    pools_[i].Reset();
+    PA_UNSAFE_TODO(pools_[i]).Reset();
   }
 }
 

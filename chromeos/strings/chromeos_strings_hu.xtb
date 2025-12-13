@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">narancsok</translation>
 <translation id="1275718070701477396">Kijelölve</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
+<translation id="1292474106138697109">Kurzuseszközök-képernyő</translation>
 <translation id="1300115153046603471">Az APN típusa: alapértelmezett és <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konvertálás</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4300272766492248925">Alkalmazás megnyitása</translation>
 <translation id="430786093962686457">sifon</translation>
+<translation id="4309762678330556039">Automatikusan létrehozhat átiratokat, és kereshet a hangfelvételek között. Akkor is készíthet felvételeket, amikor nincs internetkapcsolata.</translation>
 <translation id="4310735698903592804">A legújabb háttérképeket a Google AI biztosítja</translation>
 <translation id="4320904097188876154">neonlila</translation>
 <translation id="432961742358282111">Definíciók, fordítások vagy mértékegységek átváltásának megjelenítéséhez kattintson a jobb egérgombbal, vagy tartsa nyomva az ujját a képernyőn. A funkció kezeléséhez használja a balra és jobbra nyilakat.</translation>
@@ -844,7 +846,7 @@
 <translation id="4691278870498629773">Leállt – Hiányzó tálca</translation>
 <translation id="469379815867856270">Jelerősség</translation>
 <translation id="4697260493945012995">Válassza ki a vezérlőtípust</translation>
-<translation id="4712940987669302829">bokeh effektus</translation>
+<translation id="4712940987669302829">bokeh effekt</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4733200407105375152">Nincs a Kurzuseszközökben</translation>
 <translation id="4734982181169850310">pasztellszínek</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">További lehetőségek</translation>
 <translation id="5600027863942488546">A következő gomb tesztelve: <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">A Kurzuseszközök megosztja az Ön képernyőjét a következővel: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">A rendszer kijelentkeztette Önt</translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5628106863521633649">Rendelkezésre álló nyelvek</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Szálló felhők</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nem áll rendelkezésre szkenner</translation>
-<translation id="6231648282154119906">A Google Biztonságos Böngészés automatikusan ellenőrzi a gyanús fájlokat az Ön által kiválasztott speciális védelem részeként</translation>
 <translation id="6232017090690406397">Akkumulátor</translation>
 <translation id="6234024205316847054">Főbb pontok megjelenítése</translation>
 <translation id="6243280677745499710">Jelenleg beállított</translation>

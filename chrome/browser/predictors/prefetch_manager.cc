@@ -470,6 +470,7 @@ std::optional<blink::mojom::ResourceType> GetResourceTypeForPrefetch(
     case network::mojom::RequestDestination::kXslt:
     case network::mojom::RequestDestination::kFencedframe:
     case network::mojom::RequestDestination::kWebIdentity:
+    case network::mojom::RequestDestination::kEmailVerification:
     case network::mojom::RequestDestination::kDictionary:
     case network::mojom::RequestDestination::kSpeculationRules:
     case network::mojom::RequestDestination::kJson:

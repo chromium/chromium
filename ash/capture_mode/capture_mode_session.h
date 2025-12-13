@@ -57,9 +57,6 @@ enum class ScannerEntryPoint;
 class UserNudgeController;
 class WindowDimmer;
 
-// TODO(http://b/366621847):  Create an API for creating action buttons that can
-// be called asynchronously from `capture_mode_util`.
-
 // Encapsulates an active capture mode session (i.e. an instance of this class
 // lives as long as capture mode is active). It creates and owns the capture
 // mode bar widget.

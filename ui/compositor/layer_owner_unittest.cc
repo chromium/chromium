@@ -16,10 +16,10 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_delegate.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/test_context_factories.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ui {
 namespace {
@@ -131,9 +131,9 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateRootLayerDuringAnimation) {
   // animation completion.
   std::unique_ptr<TestLayerAnimationObserver> observer(
       new TestLayerAnimationObserver(child.get()));
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> long_duration_animation(
-      new ui::ScopedAnimationDurationScaleMode(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
+  auto long_duration_animation =
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.SetTransitionDuration(base::Milliseconds(1000));
@@ -165,9 +165,9 @@ TEST_F(LayerOwnerTestWithCompositor, RecreateNonRootLayerDuringAnimation) {
   // animation completion.
   std::unique_ptr<TestLayerAnimationObserver> observer(
       new TestLayerAnimationObserver(child.get()));
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode> long_duration_animation(
-      new ui::ScopedAnimationDurationScaleMode(
-          ui::ScopedAnimationDurationScaleMode::SLOW_DURATION));
+  auto long_duration_animation =
+      std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
+          gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
   {
     ui::ScopedLayerAnimationSettings animation(child->GetAnimator());
     animation.SetTransitionDuration(base::Milliseconds(1000));

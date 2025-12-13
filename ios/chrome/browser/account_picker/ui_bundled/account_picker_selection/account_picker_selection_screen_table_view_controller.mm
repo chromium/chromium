@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/notreached.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_action_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_table_view_controller_model_delegate.h"
@@ -38,8 +39,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 // Table view header/footer height.
-CGFloat kSectionHeaderHeight = 8.;
-CGFloat kSectionFooterHeight = 8.;
+constexpr CGFloat kSectionHeaderHeight = 8.;
+constexpr CGFloat kSectionFooterHeight = 8.;
 
 }  // namespace
 
@@ -78,7 +79,7 @@ CGFloat kSectionFooterHeight = 8.;
       DCHECK(identityItem);
       [self.actionDelegate
           accountPickerListTableViewController:self
-                   didSelectIdentityWithGaiaID:identityItem.gaiaID];
+                   didSelectIdentityWithGaiaID:GaiaId(identityItem.gaiaID)];
       break;
     }
     case AddAccountItemType:
@@ -149,6 +150,8 @@ CGFloat kSectionFooterHeight = 8.;
       [[TableViewImageItem alloc] initWithType:AddAccountItemType];
   item.title = l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_ADD_ACCOUNT);
   item.textColor = [UIColor colorNamed:kBlueColor];
+  item.isAccessibilityElement = YES;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
   [model addItem:item toSectionWithIdentifier:AddAccountSectionIdentifier];
 }
 
@@ -205,7 +208,7 @@ CGFloat kSectionFooterHeight = 8.;
     TableViewIdentityItem* item =
         base::apple::ObjCCastStrict<TableViewIdentityItem>(
             [model itemAtIndexPath:path]);
-    if ([item.gaiaID isEqualToString:configurator.gaiaID]) {
+    if (item.gaiaID == configurator.gaiaID) {
       [configurator configureIdentityChooser:item];
       [self reconfigureCellsForItems:@[ item ]];
       [self.tableView reloadRowsAtIndexPaths:@[ path ]

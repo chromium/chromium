@@ -28,16 +28,13 @@ TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead) {
       "foo\n"
       "bar\n";
   std::string private_domains = "";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}),
+                       Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}))));
 }
 
 TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead_WindowsEndings) {
@@ -45,31 +42,26 @@ TEST(TldCleanupUtilTest, TwoRealTldsSuccessfullyRead_WindowsEndings) {
       "foo\r\n"
       "bar\r\n";
   std::string private_domains = "";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}),
+                       Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}))));
 }
 
 TEST(TldCleanupUtilTest, RealTldAutomaticallyAddedForSubdomain) {
   std::string icann_domains = "foo.bar\n";
   std::string private_domains = "";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                       /*is_private=*/false})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(
+               Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                /*is_private=*/false}),
+               Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                    /*is_private=*/false}))));
 }
 
 TEST(TldCleanupUtilTest, PrivateTldMarkedAsPrivate) {
@@ -77,33 +69,28 @@ TEST(TldCleanupUtilTest, PrivateTldMarkedAsPrivate) {
       "foo\n"
       "bar\n";
   std::string private_domains = "baz\n";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("baz", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/true}),
-                  Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}),
+                       Pair("baz", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/true}),
+                       Pair("foo", Rule{/*exception=*/false, /*wildcard=*/false,
+                                        /*is_private=*/false}))));
 }
 
 TEST(TldCleanupUtilTest, PrivateDomainMarkedAsPrivate) {
   std::string icann_domains = "bar\n";
   std::string private_domains = "foo.bar\n";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                       /*is_private=*/true})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(
+               Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                /*is_private=*/false}),
+               Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                    /*is_private=*/true}))));
 }
 
 TEST(TldCleanupUtilTest, ExtraTldRuleIsNotMarkedPrivate) {
@@ -111,20 +98,18 @@ TEST(TldCleanupUtilTest, ExtraTldRuleIsNotMarkedPrivate) {
       "foo.bar\n"
       "baz.bar\n";
   std::string private_domains = "qux.bar\n";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                   /*is_private=*/false}),
-                  Pair("baz.bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                       /*is_private=*/false}),
-                  Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                       /*is_private=*/false}),
-                  Pair("qux.bar", Rule{/*exception=*/false, /*wildcard=*/false,
-                                       /*is_private=*/true})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(
+               Pair("bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                /*is_private=*/false}),
+               Pair("baz.bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                    /*is_private=*/false}),
+               Pair("foo.bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                    /*is_private=*/false}),
+               Pair("qux.bar", Rule{/*exception=*/false, /*wildcard=*/false,
+                                    /*is_private=*/true}))));
 }
 
 TEST(TldCleanupUtilTest, WildcardAndExceptionParsedCorrectly) {
@@ -132,18 +117,16 @@ TEST(TldCleanupUtilTest, WildcardAndExceptionParsedCorrectly) {
       "*.bar\n"
       "!foo.bar\n";
   std::string private_domains = "!baz.bar\n";
-  RuleMap rules;
-  ASSERT_EQ(
-      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains), rules),
-      NormalizeResult::kSuccess);
   EXPECT_THAT(
-      rules,
-      ElementsAre(Pair("bar", Rule{/*exception=*/false, /*wildcard=*/true,
-                                   /*is_private=*/false}),
-                  Pair("baz.bar", Rule{/*exception=*/true, /*wildcard=*/false,
-                                       /*is_private=*/true}),
-                  Pair("foo.bar", Rule{/*exception=*/true, /*wildcard=*/false,
-                                       /*is_private=*/false})));
+      NormalizeDataToRuleMap(SetupData(icann_domains, private_domains)),
+      Pair(NormalizeResult::kSuccess,
+           ElementsAre(
+               Pair("bar", Rule{/*exception=*/false, /*wildcard=*/true,
+                                /*is_private=*/false}),
+               Pair("baz.bar", Rule{/*exception=*/true, /*wildcard=*/false,
+                                    /*is_private=*/true}),
+               Pair("foo.bar", Rule{/*exception=*/true, /*wildcard=*/false,
+                                    /*is_private=*/false}))));
 }
 
 TEST(TldCleanupUtilTest, RuleSerialization) {

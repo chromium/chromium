@@ -18,11 +18,12 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.widget.ChromeTransitionDrawable;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -60,7 +61,7 @@ public class CreatorTabSheetContent implements BottomSheetContent {
     private final Runnable mOpenNewTabCallback;
     private final Runnable mToolbarClickCallback;
     private final Runnable mCloseButtonCallback;
-    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
 
@@ -76,6 +77,7 @@ public class CreatorTabSheetContent implements BottomSheetContent {
 
     /**
      * Constructor.
+     *
      * @param context An Android context.
      * @param openNewTabCallback Callback invoked to open a new tab.
      * @param toolbarClickCallback Callback invoked when user clicks on the toolbar.
@@ -90,7 +92,7 @@ public class CreatorTabSheetContent implements BottomSheetContent {
             Runnable closeButtonCallback,
             int maxViewHeight,
             IntentRequestTracker intentRequestTracker,
-            UnownedUserDataSupplier<ShareDelegate> shareDelegateSupplier) {
+            ObservableSupplier<ShareDelegate> shareDelegateSupplier) {
         mContext = context;
         mOpenNewTabCallback = openNewTabCallback;
         mToolbarClickCallback = toolbarClickCallback;
@@ -125,7 +127,7 @@ public class CreatorTabSheetContent implements BottomSheetContent {
         // the share feature disabled on Preview Tab.
         WindowAndroid window = mWebContents.getTopLevelNativeWindow();
         assert window != null;
-        mShareDelegateSupplier.attach(window.getUnownedUserDataHost());
+        ShareDelegateSupplier.attach(window.getUnownedUserDataHost(), mShareDelegateSupplier);
     }
 
     /**

@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
@@ -267,6 +268,8 @@ class KeyboardCapabilityTest : public KeyboardCapabilityTestBase,
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 INSTANTIATE_TEST_SUITE_P(All, KeyboardCapabilityTest, testing::Bool());
@@ -847,6 +850,8 @@ class KeyEventTest
 
  protected:
   std::unique_ptr<base::test::ScopedFeatureList> modifier_split_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 // Tests that given the keyboard connection type and layout type, check if this
@@ -1317,6 +1322,8 @@ class TopRowLayoutCustomTest
  protected:
   std::vector<TopRowActionKey> top_row_action_keys_;
   std::string custom_layout_string_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/dbus/bluetooth_gatt_descriptor_client.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -115,12 +112,10 @@ class BluetoothGattDescriptorClientImpl
     dbus::MessageWriter writer(&method_call);
     dbus::AppendValueData(&writer, base::Value::Dict());
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnValueSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnReadValueResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -145,12 +140,10 @@ class BluetoothGattDescriptorClientImpl
     // Append empty option dict
     dbus::AppendValueData(&writer, base::Value::Dict());
 
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothGattDescriptorClientImpl::OnWriteValueResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -206,30 +199,35 @@ class BluetoothGattDescriptorClientImpl
       observer.GattDescriptorPropertyChanged(object_path, property_name);
   }
 
-  // Called when a response for a successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
-    DCHECK(response);
-    std::move(callback).Run();
+  void OnWriteValueResponse(base::OnceClosure callback,
+                            ErrorCallback error_callback,
+                            dbus::Response* response,
+                            dbus::ErrorResponse* error_response) {
+    if (response) {
+      std::move(callback).Run();
+    } else {
+      OnError(std::move(error_callback), error_response);
+    }
   }
 
-  // Called when a descriptor value response for a successful method call is
-  // received.
-  void OnValueSuccess(ValueCallback callback, dbus::Response* response) {
-    DCHECK(response);
+  // Called when a descriptor value response for a method call is received.
+  void OnReadValueResponse(ValueCallback callback,
+                           ErrorCallback error_callback,
+                           dbus::Response* response,
+                           dbus::ErrorResponse* error_response) {
+    if (!response) {
+      OnError(std::move(error_callback), error_response);
+      return;
+    }
+
     dbus::MessageReader reader(response);
+    base::span<const uint8_t> bytes;
 
-    const uint8_t* bytes = NULL;
-    size_t length = 0;
-
-    if (!reader.PopArrayOfBytes(&bytes, &length))
+    if (!reader.PopArrayOfBytes(&bytes)) {
       DVLOG(2) << "Error reading array of bytes in ValueCallback";
+    }
 
-    std::vector<uint8_t> value;
-
-    if (bytes)
-      value.assign(bytes, bytes + length);
-
-    std::move(callback).Run(/*error_code=*/std::nullopt, value);
+    std::move(callback).Run(/*error_code=*/std::nullopt, base::ToVector(bytes));
   }
 
   // Called when a response for a failed method call is received.

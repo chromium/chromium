@@ -24,28 +24,29 @@ source_set("impl") {
   deps = [
     ":commerce",
     "//chrome/browser:browser_process",
+    "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/persisted_state_db:persisted_state_db",
+    "//chrome/browser/persisted_state_db",
     "//chrome/browser/signin",
-    "//chrome/browser/sync:sync",
-    "//components/commerce/content/browser:browser",
+    "//chrome/browser/sync",
+    "//components/commerce/content/browser",
     "//components/commerce/core:commerce_constants",
     "//components/commerce/core:commerce_subscription_db_content_proto",
     "//components/commerce/core:feature_list",
     "//components/commerce/core:parcel_tracking_db_content_proto",
     "//components/commerce/core:proto",
     "//components/commerce/core:shopping_service",
-    "//components/commerce/core/product_specifications:product_specifications",
+    "//components/commerce/core/product_specifications",
     "//components/leveldb_proto",
-    "//components/prefs:prefs",
-    "//components/variations/service:service",
+    "//components/prefs",
+    "//components/variations/service",
     "//content/public/browser",
-    "//url:url",
+    "//url",
   ]
 
   if (!is_android) {
     deps += [
-      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui",
       "//components/commerce/core:discounts_db_content_proto",
     ]
   }
@@ -63,6 +64,6 @@ source_set("unit_tests") {
     "//components/commerce/core:feature_utils",
     "//components/commerce/core:shopping_service_test_support",
     "//content/test:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }

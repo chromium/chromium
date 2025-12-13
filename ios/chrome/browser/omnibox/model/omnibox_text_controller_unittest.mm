@@ -5,9 +5,13 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
 #import "base/test/task_environment.h"
+#import "components/omnibox/browser/autocomplete_controller.h"
+#import "components/omnibox/browser/autocomplete_provider_client.h"
+#import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -54,6 +58,11 @@ class OmniboxTextControllerTest : public PlatformTest {
  public:
   OmniboxTextControllerTest() {
     omnibox_client_ = std::make_unique<TestOmniboxClient>();
+    omnibox::RegisterProfilePrefs(
+        static_cast<sync_preferences::TestingPrefServiceSyncable*>(
+            classifier_pref_service())
+            ->registry());
+
     omnibox_text_model_ =
         std::make_unique<OmniboxTextModel>(omnibox_client_.get());
 
@@ -61,14 +70,22 @@ class OmniboxTextControllerTest : public PlatformTest {
     RegisterLocalStatePrefs(local_state_->registry());
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
+    autocomplete_controller_ = std::make_unique<AutocompleteController>(
+        omnibox_client_->CreateAutocompleteProviderClient(),
+        AutocompleteControllerConfig{
+            .provider_types =
+                AutocompleteClassifier::DefaultOmniboxProviders()});
+
     omnibox_autocomplete_controller_ = [[OmniboxAutocompleteController alloc]
-        initWithOmniboxClient:omnibox_client_.get()
-             omniboxTextModel:omnibox_text_model_.get()];
+         initWithOmniboxClient:omnibox_client_.get()
+        autocompleteController:autocomplete_controller_.get()
+              omniboxTextModel:omnibox_text_model_.get()
+           presentationContext:OmniboxPresentationContext::kLocationBar];
 
     omnibox_text_controller_ = [[TestOmniboxTextController alloc]
         initWithOmniboxClient:omnibox_client_.get()
              omniboxTextModel:omnibox_text_model_.get()
-                inLensOverlay:NO];
+          presentationContext:OmniboxPresentationContext::kLocationBar];
 
     omnibox_text_controller_.omniboxAutocompleteController =
         omnibox_autocomplete_controller_;
@@ -79,9 +96,17 @@ class OmniboxTextControllerTest : public PlatformTest {
     omnibox_text_controller_ = nil;
     [omnibox_autocomplete_controller_ disconnect];
     omnibox_autocomplete_controller_ = nil;
+    autocomplete_controller_.reset();
     omnibox_client_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
+  }
+
+  PrefService* classifier_pref_service() {
+    return omnibox_client_->autocomplete_classifier()
+        ->autocomplete_controller()
+        ->autocomplete_provider_client()
+        ->GetPrefs();
   }
 
   TestLocationBarModel* location_bar_model() {
@@ -97,6 +122,7 @@ class OmniboxTextControllerTest : public PlatformTest {
  protected:
   base::test::TaskEnvironment environment_;
 
+  std::unique_ptr<AutocompleteController> autocomplete_controller_;
   OmniboxAutocompleteController* omnibox_autocomplete_controller_;
   TestOmniboxTextController* omnibox_text_controller_;
   std::unique_ptr<OmniboxTextModel> omnibox_text_model_;
@@ -191,4 +217,52 @@ TEST_F(OmniboxTextControllerTest, DisplayText) {
   EXPECT_EQ(u"https://www.example.com/",
             [omnibox_text_controller_ displayedText]);
   EXPECT_TRUE(current_text_is_URL());
+}
+
+// Tests that calling onTextChanged after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, OnTextChangedAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  [omnibox_text_controller_ onTextChanged];
+  // The test passes if it doesn't crash.
+}
+
+// Tests that calling getInfoForCurrentText after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, GetInfoForCurrentTextAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  AutocompleteMatch match;
+  GURL alternate_url;
+  [omnibox_text_controller_ getInfoForCurrentText:&match
+                           alternateNavigationURL:&alternate_url];
+  // The test passes if it doesn't crash.
+}
+
+// Tests that calling setUserText after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, SetUserTextAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  [omnibox_text_controller_ setUserText:u"test"];
+  // The test passes if it doesn't crash.
+}
+
+// Tests that calling currentMatch after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, CurrentMatchAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  GURL alternate_url;
+  [omnibox_text_controller_ currentMatch:&alternate_url];
+  // The test passes if it doesn't crash.
+}
+
+// Tests that calling onPopupDataChanged after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, OnPopupDataChangedAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  [omnibox_text_controller_ onPopupDataChanged:u"inline"
+                                additionalText:u"additional"
+                                      newMatch:AutocompleteMatch()];
+  // The test passes if it doesn't crash.
+}
+
+// Tests that calling onCopy after disconnect doesn't crash.
+TEST_F(OmniboxTextControllerTest, OnCopyAfterDisconnect) {
+  [omnibox_text_controller_ disconnect];
+  [omnibox_text_controller_ onCopy];
+  // The test passes if it doesn't crash.
 }

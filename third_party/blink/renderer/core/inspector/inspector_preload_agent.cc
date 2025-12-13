@@ -60,7 +60,7 @@ bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
 }
 
 struct PreloadingAttemptKeyHashTraits
-    : WTF::GenericHashTraits<PreloadingAttemptKey> {
+    : GenericHashTraits<PreloadingAttemptKey> {
   static unsigned GetHash(const PreloadingAttemptKey& key) {
     unsigned hash = blink::GetHash(key.action);
     hash = HashInts(hash, blink::GetHash(key.url));
@@ -96,8 +96,9 @@ protocol::Preload::SpeculationAction GetProtocolSpeculationAction(
       return protocol::Preload::SpeculationActionEnum::Prerender;
     case mojom::blink::SpeculationAction::kPrefetch:
       return protocol::Preload::SpeculationActionEnum::Prefetch;
-    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
     case mojom::blink::SpeculationAction::kPrerenderUntilScript:
+      return protocol::Preload::SpeculationActionEnum::PrerenderUntilScript;
+    case mojom::blink::SpeculationAction::kPrefetchWithSubresources:
       NOTREACHED();
   }
 }
@@ -197,6 +198,10 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
     builder->setErrorMessage(GetProtocolRuleSetErrorMessage(rule_set));
   }
 
+  if (!rule_set.tag().IsNull()) {
+    builder->setTag(rule_set.tag());
+  }
+
   return builder;
 }
 
@@ -246,15 +251,10 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
               PreloadingAttemptKeyHashTraits>
       preloading_attempts;
   for (SpeculationCandidate* candidate : candidates) {
-    // We are explicitly not reporting candidates for kPrefetchWithSubresources
-    // and kPrerenderUntilScript to clients, they are currently only interested
-    // in kPrefetch, kPrerender.
-    // TODO(https://crbug.com/428500219): Report kPrerenderUntilScript to
-    // clients.
+    // We are explicitly not reporting candidates for kPrefetchWithSubresources,
+    // because it is supposed to be replaced by kPrerenderUntilScript soon.
     if (candidate->action() ==
-            mojom::blink::SpeculationAction::kPrefetchWithSubresources ||
-        candidate->action() ==
-            mojom::blink::SpeculationAction::kPrerenderUntilScript) {
+        mojom::blink::SpeculationAction::kPrefetchWithSubresources) {
       continue;
     }
     PreloadingAttemptKey key = {candidate->action(), candidate->url(),

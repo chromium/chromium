@@ -96,7 +96,7 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
     }
 
     @Override
-    protected Bundle extraCommand(String commandName, @Nullable Bundle args) {
+    protected @Nullable Bundle extraCommand(String commandName, @Nullable Bundle args) {
         return mImpl.extraCommand(commandName, args);
     }
 
@@ -216,7 +216,7 @@ public class SplitCompatCustomTabsService extends CustomTabsService {
         protected abstract void prefetch(
                 CustomTabsSessionToken sessionToken, List<Uri> urls, PrefetchOptions options);
 
-        protected abstract Bundle extraCommand(String commandName, @Nullable Bundle args);
+        protected abstract @Nullable Bundle extraCommand(String commandName, @Nullable Bundle args);
 
         protected abstract boolean updateVisuals(
                 CustomTabsSessionToken sessionToken, @Nullable Bundle bundle);

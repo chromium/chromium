@@ -284,14 +284,14 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcess() {
   }
 
   switch (AttemptToNotifyRunningChrome(remote_window_)) {
-    case NotifyChromeResult::NOTIFY_SUCCESS:
+    case NotifyChromeResult::kSuccess:
       return PROCESS_NOTIFIED;
-    case NotifyChromeResult::NOTIFY_FAILED:
+    case NotifyChromeResult::kFailed:
       remote_window_ = NULL;
       internal::SendRemoteProcessInteractionResultHistogram(
           RUNNING_PROCESS_NOTIFY_ERROR);
       return PROCESS_NONE;
-    case NotifyChromeResult::NOTIFY_WINDOW_HUNG:
+    case NotifyChromeResult::kWindowHung:
       // Fall through and potentially terminate the hung browser.
       break;
   }
@@ -391,7 +391,7 @@ bool ProcessSingleton::Create() {
     // since it isn't guaranteed we will get it. It is better to create it
     // without ownership and explicitly get the ownership afterward.
     base::win::ScopedHandle only_me(::CreateMutex(NULL, FALSE, kMutexName));
-    if (!only_me.IsValid()) {
+    if (!only_me.is_valid()) {
       DPLOG(FATAL) << "CreateMutex failed";
       return false;
     }

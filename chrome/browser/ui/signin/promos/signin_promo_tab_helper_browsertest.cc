@@ -35,13 +35,13 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
 
   // Expect the callback for enabling account storage and moving the data to be
   // called.
-  base::MockOnceClosure move_callback;
-  EXPECT_CALL(move_callback, Run()).Times(1);
+  base::MockOnceClosure completed_callback;
+  EXPECT_CALL(completed_callback, Run()).Times(1);
 
   SigninPromoTabHelper* user_data =
       SigninPromoTabHelper::GetForWebContents(*sign_in_tab);
-  user_data->InitializeDataMoveAfterSignIn(
-      /*move_callback=*/move_callback.Get(),
+  user_data->InitializeCallbackAfterSignIn(
+      /*completed_callback=*/completed_callback.Get(),
       /*access_point=*/signin_metrics::AccessPoint::kPasswordBubble);
 
   // Sign in, which will execute the callback.
@@ -69,13 +69,13 @@ IN_PROC_BROWSER_TEST_F(SigninPromoTabHelperTest,
 
   // Expect the callback for enabling account storage and moving the data to be
   // called.
-  base::MockOnceClosure move_callback;
-  EXPECT_CALL(move_callback, Run()).Times(1);
+  base::MockOnceClosure completed_callback;
+  EXPECT_CALL(completed_callback, Run()).Times(1);
 
   SigninPromoTabHelper* user_data =
       SigninPromoTabHelper::GetForWebContents(*reauth_tab);
-  user_data->InitializeDataMoveAfterSignIn(
-      /*move_callback=*/move_callback.Get(),
+  user_data->InitializeCallbackAfterSignIn(
+      /*completed_callback=*/completed_callback.Get(),
       /*access_point=*/signin_metrics::AccessPoint::kAddressBubble);
 
   // Set a new refresh token for the primary account, which verifies the

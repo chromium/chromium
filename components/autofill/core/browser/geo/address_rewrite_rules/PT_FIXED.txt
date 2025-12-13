@@ -1,0 +1,103 @@
+\bartur\s+de\s+sacadura\s+freire\s+cabral\b	sacadura cabral
+\bmanuel\s+maria\s+barbosa\s+du\s+bocage\b	barbosa du bocage
+\bjose\s+maria\s+de\s+eca\s+de\s+queiros\b	eca de queiros
+\bhumberto\s+da\s+silva\s+delgado\b	humberto delgado
+\bdom\s+nuno\s+alvares\s+pereira\b	nuno alvares pereira
+\bmovimento\s+forcas\s+armadas\b	mfa
+\bmiguel\s+auguato\s+bombarda\b	miguel bombarda
+\bcamilo\s+castelo\s+branco\b	castelo branco
+\bfrancisco\s+sa\s+carneiro\b	sa carneiro
+\bestrada\s+municipal\b	m
+\bestrada\s+nacional\b	n
+\beca\s+de\s+queiroz\b	eca de queiros
+\bentrocamento\b	cruzamento
+\buniversidade\b	univ
+\bconselheiro\b	cons
+\bjulio\s+diniz\b	julio dinis
+\btransversal\b	tranv
+\barquitecto\b	arq
+\bassociacao\b	ass
+\bbrigadeiro\b	brig
+\bcalcadinha\b	cc
+\bcomandante\b	cmdt
+\bcomendador\b	comend
+\bembaixador\b	emb
+\bengenheira\b	eng
+\bengenheiro\b	eng
+\bescadinhas\b	esc
+\bministerio\b	min
+\bpresidente\b	presid
+\bprofessora\b	prof
+\bprojectada\b	proj
+\balmirante\b	alm
+\bcommander\b	cmdt
+\binstituto\b	inst
+\bprofessor\b	prof
+\bsociedade\b	soc
+\bedificio\b	edf
+\bengineer\b	eng
+\bocidente\b	w
+\bportugal\b	pt
+\bsargento\b	sarg
+\btravessa\b	tv
+\bvisconde\b	visc
+\balferes\b	alf
+\bavenida\b	av
+\bbairro\b	br
+\bcalcada\b	cc
+\bcaminho\b	cam
+\bcapitao\b	cap
+\bcaptain\b	cap
+\bcoronel\b	cor
+\bdourora\b	dr
+\bescadas\b	esc
+\bestrada\b	estr
+\bgeneral\b	gen
+\binfante\b	inf
+\bmarques\b	mq
+\boriente\b	e
+\bpraceta\b	pc
+\brotunda\b	r.
+\btenente\b	ten
+\bvivenda\b	vv
+\barcada\b	arc.
+\bbairro\b	br
+\bdesvio\b	desv.
+\bdoctor\b	dr
+\bdoutor\b	dr
+\bjardim\b	jro
+\bparque\b	pq
+\bbloco\b	bl
+\bduque\b	dq
+\bescnh\b	esc
+\blargo\b	lg
+\bleste\b	e
+\blugar\b	lug
+\bm\s+f\s+a\b	mfa
+\bnorte\b	n
+\bnorth\b	n
+\boeste\b	w
+\bpatio\b	pto
+\bpraca\b	pc
+\bsouth\b	s
+\btorre\b	te
+\bbeco\b	bc
+\bcave\b	cv
+\bccnh\b	cc
+\bdona\b	d
+\beast\b	e
+\beste\b	e
+\bfrei\b	fr
+\blote\b	lt
+\brota\b	r.
+\bwest\b	w
+\bzona\b	zn
+\bdom\b	d
+\bpct\b	pc
+\brot\b	r.
+\brt\.\b	r.
+\brta\b	r.
+\bsao\b	s
+\bsul\b	s
+\bem\b	m
+\ben\b	n

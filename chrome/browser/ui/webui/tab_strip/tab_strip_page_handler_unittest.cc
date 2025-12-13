@@ -15,7 +15,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
@@ -171,7 +170,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
   void WaitForTabGroupSyncServiceInitialized(Profile* profile) {
     auto observer =
         std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
-            tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile));
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile));
     observer->Wait();
   }
 
@@ -393,9 +392,8 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
   AddTab(browser(), GURL("http://foo"));
 
   // Create a new window with the same profile, and add a group to it.
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
   std::unique_ptr<Browser> new_browser =
-      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+      CreateBrowser(profile(), browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
   AddTab(new_browser.get(), GURL("http://foo"));
   tab_groups::TabGroupId group_id =
@@ -446,9 +444,8 @@ TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
   browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
   // Create a new window with the same profile, and add a group to it.
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
   std::unique_ptr<Browser> new_browser =
-      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+      CreateBrowser(profile(), browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
   AddTab(new_browser.get(), GURL("http://foo"));
   tab_groups::TabGroupId group_id =
@@ -465,8 +462,8 @@ TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
   int new_index = 1;
   handler()->MoveGroup(group_id.ToString(), new_index);
 
-  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->GetTabCount());
-  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();
@@ -477,9 +474,8 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossProfiles) {
 
   TestingProfile* different_profile =
       profile_manager()->CreateTestingProfile("different_profile");
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
-  std::unique_ptr<Browser> new_browser = CreateBrowser(
-      different_profile, browser()->type(), false, new_window.get());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(different_profile, browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
 
   WaitForTabGroupSyncServiceInitialized(different_profile);
@@ -522,9 +518,8 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossProfiles) {
 
   TestingProfile* different_profile =
       profile_manager()->CreateTestingProfile("different_profile");
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
-  std::unique_ptr<Browser> new_browser = CreateBrowser(
-      different_profile, browser()->type(), false, new_window.get());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(different_profile, browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
 
   handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(
@@ -540,9 +535,8 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossProfiles) {
 TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindows) {
   AddTab(browser(), GURL("http://foo"));
 
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
   std::unique_ptr<Browser> new_browser =
-      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+      CreateBrowser(profile(), browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
   content::WebContents* moved_contents =
       new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
@@ -563,9 +557,8 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindowsInBetweenGroup) {
   tab_groups::TabGroupId group_id =
       browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
   std::unique_ptr<Browser> new_browser =
-      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+      CreateBrowser(profile(), browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
   content::WebContents* moved_contents =
       new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
@@ -704,15 +697,14 @@ TEST_F(TabStripPageHandlerTest, CloseTab) {
                           browser()->tab_strip_model()->GetWebContentsAt(0)),
                       false /* closed_by_swiped */);
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 TEST_F(TabStripPageHandlerTest, RemoveTabIfInvalidContextMenu) {
   AddTab(browser(), GURL("http://foo"));
 
-  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
   std::unique_ptr<Browser> new_browser =
-      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+      CreateBrowser(profile(), browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://bar"));
 
   web_ui()->ClearTrackedCalls();
@@ -765,11 +757,9 @@ TEST_F(TabStripPageHandlerTest, PreventsInvalidGroupDrags) {
                                       blink::kDragOperationMove));
 
   // Another group from a different profile.
-  std::unique_ptr<BrowserWindow> new_window(
-      std::make_unique<TestBrowserWindow>());
   std::unique_ptr<Browser> new_browser = CreateBrowser(
       browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
-      browser()->type(), false, new_window.get());
+      browser()->type(), false);
   AddTab(new_browser.get(), GURL("http://foo"));
 
   tab_groups::TabGroupId new_group_id =

@@ -9,7 +9,6 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
@@ -19,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +77,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   std::string email() const override { return "test@user.com"; }
 
-  std::string url() const override { return kUrl; }
+  const GURL& url() const override { return url_; }
 
   const GURL& tab_url() const override { return tab_url_; }
 
@@ -96,7 +96,10 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
     return {};
   }
 
+  content::WebContents* web_contents() const override { return nullptr; }
+
  private:
+  GURL url_{kUrl};
   GURL tab_url_{kTabUrl};
   AnalysisSettings settings_;
 };
@@ -115,9 +118,8 @@ class PagePrintRequestHandlerTest : public testing::Test {
     ContentAnalysisResponse response;
     *response.add_results() =
         CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
-    binary_upload_service_.SetResponse(
-        safe_browsing::CloudBinaryUploadService::Result::SUCCESS,
-        std::move(response));
+    binary_upload_service_.SetResponse(ScanRequestUploadResult::kSuccess,
+                                       std::move(response));
 
     scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kEnhancedFieldsForSecOps);

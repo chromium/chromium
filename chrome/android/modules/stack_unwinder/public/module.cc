@@ -50,3 +50,5 @@ Module::Module(DoNothingFunction do_nothing) : do_nothing_(do_nothing) {
 }
 
 }  // namespace stack_unwinder
+
+DEFINE_JNI(StackUnwinderModuleProvider)

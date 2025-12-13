@@ -170,6 +170,30 @@ TEST_F(RlzLibTest, RecordProductEvent) {
   EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::TOOLBAR_NOTIFIER,
                                              cgi_50, 50));
   EXPECT_STREQ("events=I7S,W1I", cgi_50);
+
+  EXPECT_TRUE(rlz_lib::ClearAllProductEvents(rlz_lib::CHROME));
+  EXPECT_TRUE(rlz_lib::RecordProductEvent(
+      rlz_lib::CHROME, rlz_lib::CHROME_OMNIBOX, rlz_lib::ENTERPRISE_ENROLLMENT));
+  EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi_50, 50));
+  EXPECT_STREQ("events=C1X", cgi_50);
+
+  EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::CHROME,
+                                          rlz_lib::CHROME_OMNIBOX,
+                                          rlz_lib::ENTERPRISE_UNENROLLMENT));
+  EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi_50, 50));
+  EXPECT_STREQ("events=C1X,C1Y", cgi_50);
+
+  ASSERT_TRUE(rlz_lib::RecordProductEvent(
+      rlz_lib::CHROME, rlz_lib::CHROME_OMNIBOX,
+      rlz_lib::ENTERPRISE_ENROLLED_ACTIVATE));
+  EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi_50, 50));
+  EXPECT_STREQ("events=C1X,C1Y,C1Z", cgi_50);
+
+  ASSERT_TRUE(rlz_lib::RecordProductEvent(
+      rlz_lib::CHROME, rlz_lib::CHROME_OMNIBOX,
+      rlz_lib::ENTERPRISE_ENROLLED_FIRST_SEARCH));
+  EXPECT_TRUE(rlz_lib::GetProductEventsAsCgi(rlz_lib::CHROME, cgi_50, 50));
+  EXPECT_STREQ("events=C1X,C1Y,C1Z,C1W", cgi_50);
 }
 
 TEST_F(RlzLibTest, ClearProductEvent) {

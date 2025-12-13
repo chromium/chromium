@@ -47,11 +47,11 @@ const char kHostname2[] = "hostname2";
 const char kIpAddress2[] = "127.0.0.3";
 const char kFailHostname[] = "failhostname";
 
-using ResolveHostFuture = base::test::TestFuture<
-    int,
-    const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>&,
-    const std::optional<net::HostResolverEndpointResults>&>;
+using ResolveHostFuture =
+    base::test::TestFuture<int,
+                           const net::ResolveErrorInfo&,
+                           const net::AddressList&,
+                           const net::HostResolverEndpointResults&>;
 
 }  // namespace
 
@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future;
   ResolveHostname(kHostname1, future.GetCallback());
 
-  const auto& addr_list1 = future.Get<std::optional<net::AddressList>>();
+  const auto& addr_list1 = future.Get<net::AddressList>();
 
   if (GetContentClientForTesting()
           ->browser()
@@ -122,10 +122,10 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
     EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
   }
 
-  ASSERT_TRUE(addr_list1);
+  ASSERT_FALSE(addr_list1.empty());
   net::IPAddress address1;
   EXPECT_TRUE(address1.AssignFromIPLiteral(kIpAddress1));
-  EXPECT_EQ(addr_list1->front(),
+  EXPECT_EQ(addr_list1.front(),
             net::IPEndPoint(net::IPAddress(address1), kHttpPort));
 }
 
@@ -136,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   ResolveHostFuture future2;
   ResolveHostname(kHostname2, future2.GetCallback());
 
-  const auto& addr_list1 = future1.Get<std::optional<net::AddressList>>();
-  const auto& addr_list2 = future2.Get<std::optional<net::AddressList>>();
+  const auto& addr_list1 = future1.Get<net::AddressList>();
+  const auto& addr_list2 = future2.Get<net::AddressList>();
 
   if (GetContentClientForTesting()
           ->browser()
@@ -148,16 +148,16 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
     EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname2), 1u);
   }
 
-  ASSERT_TRUE(addr_list1);
+  ASSERT_FALSE(addr_list1.empty());
   net::IPAddress address1;
   EXPECT_TRUE(address1.AssignFromIPLiteral(kIpAddress1));
-  EXPECT_EQ((*addr_list1)[0],
+  EXPECT_EQ(addr_list1[0],
             net::IPEndPoint(net::IPAddress(address1), kHttpPort));
 
-  ASSERT_TRUE(addr_list2);
+  ASSERT_FALSE(addr_list2.empty());
   net::IPAddress address2;
   EXPECT_TRUE(address2.AssignFromIPLiteral(kIpAddress2));
-  EXPECT_EQ((*addr_list2)[0],
+  EXPECT_EQ(addr_list2[0],
             net::IPEndPoint(net::IPAddress(address2), kHttpPort));
 }
 
@@ -296,7 +296,7 @@ perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
 // out-of-process system DNS resolution fully launches.
 IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
   std::vector<ResolveHostFuture> futures(kNumResolutions);
-  std::vector<std::optional<net::AddressList>> results(kNumResolutions);
+  std::vector<net::AddressList> results(kNumResolutions);
 
   // Simulate UI thread busyness:
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
     ResolveAHost(future.GetCallback());
   }
   for (size_t i = 0; i < kNumResolutions; i++) {
-    results[i] = futures[i].Get<std::optional<net::AddressList>>();
+    results[i] = futures[i].Get<net::AddressList>();
   }
   base::TimeDelta duration = base::TimeTicks::Now() - start;
 
@@ -316,9 +316,8 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
       duration.InMilliseconds() / static_cast<double>(kNumResolutions));
 
   // Verify there are results.
-  for (const std::optional<net::AddressList>& result : results) {
-    ASSERT_TRUE(result);
-    ASSERT_GT(result->size(), 0u);
+  for (const net::AddressList& result : results) {
+    ASSERT_GT(result.size(), 0u);
   }
 
   g_finished = true;

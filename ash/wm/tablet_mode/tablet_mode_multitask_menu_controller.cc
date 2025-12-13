@@ -25,7 +25,9 @@ namespace ash {
 namespace {
 
 // The dimensions of the region that can activate the multitask menu.
-constexpr gfx::SizeF kHitRegionSize(200.f, 100.f);
+// It's intentionally short in order to reduce the chance of clashing with
+// window/tab dragging.
+constexpr gfx::SizeF kHitRegionSize(200.f, 10.f);
 
 // Returns true if `window` can show the menu and `screen_location` is in the
 // menu hit bounds.

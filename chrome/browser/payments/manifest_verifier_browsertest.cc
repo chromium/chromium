@@ -5,6 +5,7 @@
 #include "components/payments/content/manifest_verifier.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,8 +15,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/const_csp_checker.h"
 #include "components/payments/core/test_payment_manifest_downloader.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
@@ -68,7 +69,7 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
     auto parser = std::make_unique<payments::PaymentManifestParser>(
         std::make_unique<ErrorLogger>());
     auto cache = webdata_services::WebDataServiceWrapperFactory::
-        GetPaymentManifestWebDataServiceForBrowserContext(
+        GetWebPaymentsWebDataServiceForBrowserContext(
             context, ServiceAccessType::EXPLICIT_ACCESS);
 
     ManifestVerifier verifier(url::Origin::Create(GURL("https://chromium.org")),

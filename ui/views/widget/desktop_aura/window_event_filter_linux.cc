@@ -18,6 +18,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
@@ -41,6 +42,23 @@ WindowEventFilterLinux::~WindowEventFilterLinux() {
 void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
     int hit_test,
     ui::LocatedEvent* event) {
+  if (event->type() == ui::EventType::kMouseDragged &&
+      begin_drag_location_.has_value()) {
+    auto* linux_theme_ui = ui::LinuxUi::instance();
+    int threshold = linux_theme_ui ? linux_theme_ui->GetWindowDragThresholdPx()
+                                   : ui::LinuxUi::kDefaultWindowDragThreshold;
+
+    gfx::Vector2d delta =
+        event->AsMouseEvent()->location() - begin_drag_location_.value();
+    if (abs(delta.x()) >= threshold || abs(delta.y()) >= threshold) {
+      begin_drag_location_.reset();
+      MaybeDispatchHostWindowDragMovement(HTCAPTION, event);
+    }
+    return;
+  }
+
+  begin_drag_location_.reset();
+
   if (event->type() != ui::EventType::kMousePressed) {
     return;
   }
@@ -80,7 +98,7 @@ bool WindowEventFilterLinux::HandleMouseEventWithHitTest(
                 ->GetPlatformRuntimeProperties()
                 .supports_server_window_menus) {
           desktop_window_tree_host_->ShowWindowControlsMenu(
-              display::Screen::GetScreen()->GetCursorScreenPoint());
+              display::Screen::Get()->GetCursorScreenPoint());
           return true;
         }
         break;
@@ -112,8 +130,10 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
     } else {
       return;
     }
+  } else if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
+    begin_drag_location_ = event->location();
+    return;
   } else {
-    MaybeDispatchHostWindowDragMovement(HTCAPTION, event);
     return;
   }
 

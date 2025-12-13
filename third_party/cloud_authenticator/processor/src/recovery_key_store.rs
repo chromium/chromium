@@ -17,9 +17,10 @@
 
 use crate::{
     debug, get_secret_from_request,
+    passkeys::PIN_CLAIM_KEY_KEY,
     pin::{self, VaultCohortDetails},
     Authentication, DirtyFlag, MetricsUpdate, ParsedState, Reauth, RequestError, COUNTER_ID_KEY,
-    VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
+    CREATE_NEW_VAULT_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
 };
 use alloc::collections::BTreeMap;
 use alloc::string::String;
@@ -455,19 +456,19 @@ mod xml {
 mod x509 {
     use super::SECONDS_IN_A_DAY;
     use crate::der;
-    use alloc::string::String;
+    use alloc::{string::String, vec::Vec};
 
     /// The parsed form of an X.509 certificate.
-    #[derive(Debug, PartialEq)]
-    pub struct Certificate<'a> {
+    #[derive(Debug, PartialEq, Clone)]
+    pub struct Certificate {
         /// The full DER contents of the certificate.
-        pub der: &'a [u8],
+        pub der: Vec<u8>,
         /// The DER bytes, including the header, of the subject of the
         /// certificate.
-        pub subject: &'a [u8],
+        pub subject: Vec<u8>,
         /// The DER bytes, including the header, of the issuer of the
         /// certificate.
-        pub issuer: &'a [u8],
+        pub issuer: Vec<u8>,
         /// The time before which the certificate is invalid. This is in seconds
         /// since the UNIX epoch, but only accurate to 24 hrs.
         pub not_before_approx_epoch_seconds: i64,
@@ -476,20 +477,20 @@ mod x509 {
         pub not_after_approx_epoch_seconds: i64,
         /// The SubjectPublicKeyInfo from the certificate (including DER
         /// header).
-        pub spki: &'a [u8],
+        pub spki: Vec<u8>,
         /// The signature by the issuer.
-        pub signature: &'a [u8],
+        pub signature: Vec<u8>,
         /// The object identifier bytes (not including the header) of the
         /// signature algorithm used to sign this certificate.
-        pub sig_algo_oid: &'a [u8],
+        pub sig_algo_oid: Vec<u8>,
         /// True if this is a CA certificate.
         pub is_ca: bool,
         /// The body of the certificate that is signed.
-        pub to_be_signed: &'a [u8],
+        pub to_be_signed: Vec<u8>,
     }
 
     /// Parse a DER-encoded, X.509 certificate.
-    pub fn parse(input: &[u8]) -> Option<Certificate<'_>> {
+    pub fn parse(input: &[u8]) -> Option<Certificate> {
         // https://datatracker.ietf.org/doc/html/rfc5280#section-4.1
         let (top_level, empty) = der::next_tagged(input, der::SEQUENCE)?;
         if !empty.is_empty() {
@@ -574,16 +575,16 @@ mod x509 {
         }
 
         Some(Certificate {
-            der: input,
-            subject,
-            issuer,
+            der: input.to_vec(),
+            subject: subject.to_vec(),
+            issuer: issuer.to_vec(),
             not_before_approx_epoch_seconds: not_before,
             not_after_approx_epoch_seconds: not_after,
-            spki,
-            signature,
-            sig_algo_oid,
+            spki: spki.to_vec(),
+            signature: signature.to_vec(),
+            sig_algo_oid: sig_algo_oid.to_vec(),
             is_ca,
-            to_be_signed,
+            to_be_signed: to_be_signed.to_vec(),
         })
     }
 
@@ -678,19 +679,19 @@ mod x509 {
         fn test_parse() {
             let result = parse(ROOT_CERTIFICATE).unwrap();
             let expected = Certificate {
-                der: ROOT_CERTIFICATE,
+                der: ROOT_CERTIFICATE.to_vec(),
                 not_before_approx_epoch_seconds: 1525651200,
                 not_after_approx_epoch_seconds: 2156889600,
                 is_ca: true,
                 // These offsets into `ROOT_CERTIFICATE` are derived from
                 // the output of `openssl asn1parse -i`.
-                issuer: &ROOT_CERTIFICATE[0x2e..0x2e + 51],
-                subject: &ROOT_CERTIFICATE[0x81..0x81 + 51],
+                issuer: ROOT_CERTIFICATE[0x2e..0x2e + 51].to_vec(),
+                subject: ROOT_CERTIFICATE[0x81..0x81 + 51].to_vec(),
                 // The self signature has been removed from the root certificate for size.
-                signature: b"",
-                spki: &ROOT_CERTIFICATE[0xb4..0xb4 + 550],
-                sig_algo_oid: &ROOT_CERTIFICATE[0x23..0x23 + 9],
-                to_be_signed: &ROOT_CERTIFICATE[0x04..0x04 + 763],
+                signature: b"".to_vec(),
+                spki: ROOT_CERTIFICATE[0xb4..0xb4 + 550].to_vec(),
+                sig_algo_oid: ROOT_CERTIFICATE[0x23..0x23 + 9].to_vec(),
+                to_be_signed: ROOT_CERTIFICATE[0x04..0x04 + 763].to_vec(),
             };
             assert_eq!(result, expected);
         }
@@ -750,8 +751,9 @@ mod x509 {
 /// from the distributed files that contain and validate them.
 mod key_distribution {
     use super::{x509, xml, ROOT_CERTIFICATE, SECONDS_IN_A_DAY};
+    use crate::recovery_key_store::xml::Element;
     use crate::spki;
-    use alloc::collections::BTreeMap;
+    use alloc::collections::btree_map::BTreeMap;
     use alloc::string::String;
     use alloc::vec;
     use alloc::vec::Vec;
@@ -760,27 +762,30 @@ mod key_distribution {
     #[cfg(feature = "chromium_integration_test")]
     use super::TEST_ROOT_CERTIFICATE;
 
-    /// A Cohort represents a specific recovery key store cohort. It includes:
-    ///   * The public key of the cohort.
-    ///   * Its certificate chain.
-    ///   * The serial number of the public key update.
-    type Cohort = ([u8; crypto::P256_X962_LENGTH], Vec<Vec<u8>>, i64);
+    /// An endpoint certificate. `public_key` is included in `cert`, but is
+    /// extracted for convenience.
+    #[derive(Debug, PartialEq)]
+    pub struct Endpoint {
+        pub public_key: [u8; crypto::P256_X962_LENGTH],
+        cert: x509::Certificate,
+    }
 
-    /// Return an ECDH public key, a certificate path, and the serial
-    /// number, from an arbitrary recovery key store cohort, given the published
-    /// XML files. These XML files are found at
-    ///   * https://www.gstatic.com/cryptauthvault/v0/cert.xml
-    ///   * https://www.gstatic.com/cryptauthvault/v0/cert.sig.xml
-    ///
-    /// The `current_time` is used for certificate validation. The
-    /// `cohort_selector` is used to deterministically select one of the
-    /// cohorts from the set.
-    pub fn get_cohort_key(
+    /// A representation of the interesting attributes of a cert.xml file.
+    #[derive(Debug, PartialEq)]
+    pub struct CertXml {
+        pub endpoints: Vec<Endpoint>,
+        intermediates: Vec<x509::Certificate>,
+        pub serial: i64,
+        root: &'static [u8],
+    }
+
+    /// Validates `cert_xml` using `sig_xml`, then parses `cert_xml`. The
+    /// `current_time` is used for certificate validation.
+    pub fn parse_cert_xml(
         cert_xml: &[u8],
         sig_xml: &[u8],
         current_time_epoch_millis: i64,
-        cohort_selector: u32,
-    ) -> Result<Cohort, &'static str> {
+    ) -> Result<CertXml, &'static str> {
         // The cert.sig.xml contains:
         //   a) a leaf X.509 certificate.
         //   b) a signature of the `cert.xml` file by that certificate.
@@ -813,7 +818,7 @@ mod key_distribution {
             .map_err(|_| "failed to base64-decode <certificate>")?;
         let leaf_cert = x509::parse(&leaf_cert_der).ok_or("failed to parse <certificate>")?;
         let (leaf_key_type, leaf_key) =
-            spki::parse(leaf_cert.spki).ok_or("failed to parse leaf key")?;
+            spki::parse(&leaf_cert.spki).ok_or("failed to parse leaf key")?;
         if leaf_key_type != spki::PublicKeyType::RSA {
             return Err("leaf key is not RSA, but should be");
         }
@@ -827,7 +832,17 @@ mod key_distribution {
 
         // The public key from <certificate> should only be trusted if it chains
         // up to `ROOT_CERTIFICATE`.
-        build_path(&leaf_cert, sig_value, root_cert, current_time_epoch_millis)?;
+        let Some(xml::Element::Single(xml::Value::Object(sig_intermediates_value))) =
+            sig_value.get("intermediates")
+        else {
+            return Err("missing <intermediates> for cert.sig.xml");
+        };
+        build_path(
+            &leaf_cert,
+            &parse_cert_section(&sig_intermediates_value)?,
+            root_cert,
+            current_time_epoch_millis,
+        )?;
 
         // The <value> is an RSA signature of the cert.xml file.
         if !crypto::rsa_verify(leaf_key, cert_xml, &sig) {
@@ -836,26 +851,6 @@ mod key_distribution {
 
         // Now that the `cert.xml` file has been validated, the cohort public keys
         // can be extracted from it.
-        get_public_keys_from_certs(
-            cert_xml,
-            current_time_epoch_millis,
-            root_cert,
-            cohort_selector,
-        )
-    }
-
-    /// Return an ECDH public key, a certificate path, and the serial number
-    /// from an arbitrary recovery key store cohort, given the `cert.xml` file,
-    /// which must already have been validated.
-    ///
-    /// The `current_time` is used for certificate validation and also to
-    /// "randomly" pick a cohort.
-    fn get_public_keys_from_certs(
-        cert_xml: &[u8],
-        current_time_epoch_millis: i64,
-        root_cert: &[u8],
-        cohort_selector: u32,
-    ) -> Result<Cohort, &'static str> {
         let (certs_toplevel, certs_value) =
             xml::parse(cert_xml).ok_or("failed to parse certs XML")?;
         if certs_toplevel != "certificate" {
@@ -876,57 +871,100 @@ mod key_distribution {
         let serial = serial
             .parse::<i64>()
             .map_err(|_| "cannot parse serial number")?;
-        let Some(xml::Element::Single(xml::Value::Object(endpoints))) =
+        let Some(xml::Element::Single(xml::Value::Object(endpoint_values))) =
             certs_value.get("endpoints")
         else {
             return Err("missing or incorrectly structured <endpoints>");
         };
-        let endpoint_ders = endpoints
+        let endpoints = parse_cert_section(endpoint_values)?
+            .into_iter()
+            .map(|endpoint| {
+                let (cohort_public_key_type, cohort_public_key) =
+                    spki::parse(&endpoint.spki).ok_or("invalid SPKI in leaf certificate")?;
+                if cohort_public_key_type != spki::PublicKeyType::P256 {
+                    return Err("leaf certificate public key is not P-256");
+                }
+                Ok(Endpoint {
+                    public_key: cohort_public_key
+                        .try_into()
+                        .map_err(|_| "leaf certificate public key invalid")?,
+                    cert: endpoint,
+                })
+            })
+            .collect::<Result<Vec<Endpoint>, &'static str>>()?;
+
+        let Some(xml::Element::Single(xml::Value::Object(intermediates_value))) =
+            certs_value.get("intermediates")
+        else {
+            return Err("missing <intermediates>");
+        };
+
+        Ok(CertXml {
+            endpoints,
+            intermediates: parse_cert_section(intermediates_value)?,
+            serial,
+            root: root_cert,
+        })
+    }
+
+    fn parse_cert_section(
+        certs_xml_selection: &BTreeMap<String, Element>,
+    ) -> Result<Vec<x509::Certificate>, &'static str> {
+        let ders = certs_xml_selection
             .get("cert")
-            .ok_or("missing <cert>")?
+            .unwrap_or(&xml::Element::List(Vec::new()))
             .iter()
             .map(|cert_value| {
                 let xml::Value::String(cert_der_b64) = cert_value else {
-                    return Err("unexpected object in <cert>");
+                    return Err("non-string in cert list");
                 };
                 base64::engine::general_purpose::STANDARD
                     .decode(cert_der_b64)
-                    .map_err(|_| "failed to base64-decode <cert>")
+                    .map_err(|_| "failed to base64-decode cert")
             })
             .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
+        ders.into_iter()
+            .map(|der| x509::parse(&der))
+            .collect::<Option<Vec<x509::Certificate>>>()
+            .ok_or("failed to parse cert list")
+    }
 
-        if endpoint_ders.is_empty() {
+    /// A Cohort represents a specific recovery key store cohort. It includes:
+    ///   * The public key of the cohort.
+    ///   * Its certificate chain.
+    ///   * The serial number of the public key update.
+    pub type Cohort = ([u8; crypto::P256_X962_LENGTH], Vec<x509::Certificate>, i64);
+
+    /// Return an ECDH public key, a certificate path, and the serial number
+    /// from an arbitrary recovery key store cohort, given the parsed cert_xml.
+    ///
+    /// The `current_time` is used for certificate validation.
+    pub fn get_public_keys_from_certs(
+        cert_xml: CertXml,
+        current_time_epoch_millis: i64,
+        cohort_selector: u32,
+    ) -> Result<Cohort, &'static str> {
+        if cert_xml.endpoints.is_empty() {
             // This should be impossible, but is checked here because
             // establishing that fact involves aspects of the XML parser.
             return Err("no endpoint certificates");
         }
         // Pick one of the endpoints arbitrarily.
-        let endpoint_der = &endpoint_ders[cohort_selector as usize % endpoints.len()];
-        let endpoint_cert = x509::parse(endpoint_der).ok_or("failed to parse <cert>")?;
-
-        let (cohort_public_key_type, cohort_public_key) =
-            spki::parse(endpoint_cert.spki).ok_or("invalid SPKI in leaf certificate")?;
-        if cohort_public_key_type != spki::PublicKeyType::P256 {
-            return Err("leaf certificate public key is not P-256");
-        }
-        let cohort_public_key: [u8; crypto::P256_X962_LENGTH] = cohort_public_key
-            .try_into()
-            .map_err(|_| "leaf certificate public key invalid")?;
-
+        let endpoint = &cert_xml.endpoints[cohort_selector as usize % cert_xml.endpoints.len()];
         Ok((
-            cohort_public_key,
+            endpoint.public_key,
             // Even though the `cert.xml` file is signed by `cert.sig.xml`,
             // the certificates within it also chain to `ROOT_CERTIFICATE` and
             // the certificate path is required in futher parts of the protocol.
             // Thus it might seem that checking `cert.sig.xml` is superfluous
             // but the Android implementation does it and so this code does too.
             build_path(
-                &endpoint_cert,
-                certs_value,
-                root_cert,
+                &endpoint.cert,
+                &cert_xml.intermediates,
+                cert_xml.root,
                 current_time_epoch_millis,
             )?,
-            serial,
+            cert_xml.serial,
         ))
     }
 
@@ -935,36 +973,11 @@ mod key_distribution {
     /// the path, not including the root, starting from the leaf.
     fn build_path(
         leaf: &x509::Certificate,
-        xml: BTreeMap<String, xml::Element>,
+        intermediates: &[x509::Certificate],
         root_der: &[u8],
         current_time_epoch_millis: i64,
-    ) -> Result<Vec<Vec<u8>>, &'static str> {
+    ) -> Result<Vec<x509::Certificate>, &'static str> {
         let root = x509::parse(root_der).ok_or("failed to parse root")?;
-
-        let Some(xml::Element::Single(xml::Value::Object(intermediates_value))) =
-            xml.get("intermediates")
-        else {
-            return Err("missing <intermediates>");
-        };
-        let mut intermediates_der = intermediates_value
-            .get("cert")
-            .unwrap_or(&xml::Element::List(Vec::new()))
-            .iter()
-            .map(|cert_value| {
-                let xml::Value::String(cert_der_b64) = cert_value else {
-                    return Err("non-string in intermediates list");
-                };
-                base64::engine::general_purpose::STANDARD
-                    .decode(cert_der_b64)
-                    .map_err(|_| "failed to base64-decode <intermediate>")
-            })
-            .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
-
-        let intermediates = intermediates_der
-            .iter()
-            .map(|der| x509::parse(der))
-            .collect::<Option<Vec<x509::Certificate>>>()
-            .ok_or("failed to parse <intermediate>")?;
 
         /// Verify an X.509 signature.
         fn verify(
@@ -1003,10 +1016,10 @@ mod key_distribution {
                     && pair[1].is_ca
                     && pair[0].issuer == pair[1].subject
                     && verify(
-                        pair[0].sig_algo_oid,
-                        pair[1].spki,
-                        pair[0].to_be_signed,
-                        pair[0].signature,
+                        pair[0].sig_algo_oid.as_slice(),
+                        pair[1].spki.as_slice(),
+                        pair[0].to_be_signed.as_slice(),
+                        pair[0].signature.as_slice(),
                     )
             })
         }
@@ -1095,11 +1108,9 @@ mod key_distribution {
 
         // Build a vector of the certificates in the valid path by pulling
         // the values from `intermediates_der`.
-        let mut ret = vec![leaf.der.to_vec()];
+        let mut ret = vec![leaf.clone()];
         for intermediate_index in intermediate_indexes {
-            ret.push(core::mem::take(
-                intermediates_der.get_mut(intermediate_index).unwrap(),
-            ));
+            ret.push(intermediates[intermediate_index].clone());
         }
 
         Ok(ret)
@@ -1107,16 +1118,27 @@ mod key_distribution {
 
     #[cfg(test)]
     mod tests {
+        use crate::recovery_key_store::key_distribution::{
+            get_public_keys_from_certs, parse_cert_xml, CertXml,
+        };
+
         use super::super::{SAMPLE_CERTS_XML, SAMPLE_SIG_XML, SAMPLE_VALIDATION_EPOCH_MILLIS};
-        use super::*;
 
         const SAMPLE_COHORT_SELECTOR: u32 = 0;
 
-        #[test]
-        fn test_get_public_keys() {
-            let (_key, path, serial) = get_cohort_key(
+        fn sample_parsed_cert_xml() -> CertXml {
+            parse_cert_xml(
                 SAMPLE_CERTS_XML,
                 SAMPLE_SIG_XML,
+                SAMPLE_VALIDATION_EPOCH_MILLIS,
+            )
+            .unwrap()
+        }
+
+        #[test]
+        fn test_get_public_keys() {
+            let (_key, path, serial) = get_public_keys_from_certs(
+                sample_parsed_cert_xml(),
                 SAMPLE_VALIDATION_EPOCH_MILLIS,
                 SAMPLE_COHORT_SELECTOR,
             )
@@ -1128,7 +1150,7 @@ mod key_distribution {
         #[test]
         fn test_get_public_keys_expired() {
             assert!(
-                get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
+                get_public_keys_from_certs(sample_parsed_cert_xml(), 1, SAMPLE_COHORT_SELECTOR)
                     .is_err()
             )
         }
@@ -1165,8 +1187,8 @@ mod key_distribution {
 "#;
             let sig_xml = TEMPLATE.replace("CERT", SELF_SIGNED);
             assert_eq!(
-                Err("no path found"),
-                get_cohort_key(b"", &sig_xml.into_bytes(), 1, SAMPLE_COHORT_SELECTOR)
+                Some("no path found"),
+                parse_cert_xml(b"", &sig_xml.into_bytes(), 1).err()
             );
         }
     }
@@ -1445,21 +1467,27 @@ impl Parameters {
         params.vault_handle[1..].copy_from_slice(vault_handle_without_type);
         Ok(params)
     }
+
+    /// Returns a new set of parameters based on the previous parameters that is
+    /// safe to use during rewrapping.
+    fn new_from_previous(previous: Parameters) -> Parameters {
+        let mut vault_handle = previous.vault_handle;
+        if let Some(last_digit) = vault_handle.last_mut() {
+            *last_digit = u8::wrapping_add(*last_digit, 1);
+        }
+        Parameters {
+            counter_id: previous.counter_id,
+            vault_handle,
+        }
+    }
 }
 
 fn wrap(
     pin_hash: &[u8],
-    cert_xml: &[u8],
-    sig_xml: &[u8],
+    cohort: key_distribution::Cohort,
     params: Parameters,
-    current_time_epoch_millis: i64,
 ) -> Result<Wrapped, &'static str> {
-    let (cohort_public_key, certs_in_path, serial) = key_distribution::get_cohort_key(
-        cert_xml,
-        sig_xml,
-        current_time_epoch_millis,
-        cohort_selector_from_handle(&params.vault_handle),
-    )?;
+    let (cohort_public_key, certs_in_path, serial) = cohort;
 
     let max_attempts = MAX_ATTEMPTS.to_le_bytes();
 
@@ -1525,7 +1553,7 @@ fn wrap(
         vault_handle: params.vault_handle,
         counter_id: params.counter_id,
         max_attempts: MAX_ATTEMPTS,
-        certs_in_path,
+        certs_in_path: certs_in_path.into_iter().map(|cert| cert.der).collect(),
         app_public_key,
         wrapped_app_private_key,
         wrapped_wrapping_key,
@@ -1637,14 +1665,18 @@ pub(crate) fn do_wrap(
     let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
         return debug("cert.sig.xml required");
     };
-    let wrapped = wrap(
-        pin_hash,
-        cert_xml,
-        sig_xml,
-        Parameters::random(),
+
+    let vault_params = Parameters::random();
+    let parsed_cert_xml =
+        key_distribution::parse_cert_xml(cert_xml, sig_xml, current_time_epoch_millis)
+            .map_err(RequestError::Debug)?;
+    let cohort_public_key = key_distribution::get_public_keys_from_certs(
+        parsed_cert_xml,
         current_time_epoch_millis,
+        cohort_selector_from_handle(&vault_params.vault_handle),
     )
     .map_err(RequestError::Debug)?;
+    let wrapped = wrap(pin_hash, cohort_public_key, vault_params).map_err(RequestError::Debug)?;
     metrics.recovery_key_store_wrap += 1;
     Ok(wrapped.into())
 }
@@ -1653,6 +1685,8 @@ pub(crate) fn do_wrap(
 /// domain member for that PIN hash. This is a sensitive operation because it
 /// allows a new PIN to be a member of the domain, thus the client must have
 /// done user verification or else reauthenticated very recently.
+///
+/// This is intended to be removed in favour of do_wrap_pin_and_secret.
 pub(crate) fn do_wrap_as_member(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -1661,9 +1695,10 @@ pub(crate) fn do_wrap_as_member(
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     // Reauth is required to perform this command. UV is not enough.
-    let device_id = match auth {
-        Authentication::Device(device_id, _, _, Reauth::Done) => device_id,
-        _ => return debug("PIN change needs reauth via RAPT token"),
+    let device_id = if let Authentication::Device(device_id, _, _, Reauth::Done) = auth {
+        device_id
+    } else {
+        return debug("PIN change needs reauth via RAPT token");
     };
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
         return debug("PIN hash required");
@@ -1675,14 +1710,18 @@ pub(crate) fn do_wrap_as_member(
         return debug("cert.sig.xml required");
     };
     let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
-    let wrapped = wrap(
-        pin_hash,
-        cert_xml,
-        sig_xml,
-        Parameters::from_request(&request)?,
+
+    let vault_params = Parameters::from_request(&request)?;
+    let parsed_cert_xml =
+        key_distribution::parse_cert_xml(cert_xml, sig_xml, current_time_epoch_millis)
+            .map_err(RequestError::Debug)?;
+    let cohort_public_key = key_distribution::get_public_keys_from_certs(
+        parsed_cert_xml,
         current_time_epoch_millis,
+        cohort_selector_from_handle(&vault_params.vault_handle),
     )
     .map_err(RequestError::Debug)?;
+    let wrapped = wrap(pin_hash, cohort_public_key, vault_params).map_err(RequestError::Debug)?;
 
     // Reset the PIN count. This operation allows the client to change the PIN thus
     // they could request the security domain secret from Folsom. Getting another
@@ -1696,12 +1735,103 @@ pub(crate) fn do_wrap_as_member(
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
+/// Combines recovery_key_store/wrap_as_member and passkeys/wrap_pin to allow
+/// changing the PIN by calling a single endpoint.
+///
+/// This is a sensitive operation, so it requires a reauth token.
+///
+/// First, the PIN hash is encrypted to a Vault public key and a security domain
+/// member is constructed for that PIN hash. Then, the PIN is encrypted to the
+/// security domain secret domain member for that PIN hash.
+///
+/// Parameters:
+/// * PIN hash.
+/// * PIN claim key.
+/// * cert.xml file.
+/// * cert.sig.xml file.
+/// * Wrapped secret.
+pub(crate) fn do_wrap_pin_and_secret(
+    metrics: &mut MetricsUpdate,
+    auth: &Authentication,
+    state: &mut DirtyFlag<ParsedState>,
+    current_time_epoch_millis: i64,
+    request: BTreeMap<MapKey, Value>,
+) -> Result<cbor::Value, RequestError> {
+    // Reauth is required to perform this command. UV is not enough.
+    let device_id = if let Authentication::Device(device_id, _, _, Reauth::Done) = auth {
+        device_id
+    } else {
+        return debug("PIN change needs reauth via RAPT token");
+    };
+    let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
+        return debug("PIN hash required");
+    };
+    let Some(Value::Bytestring(claim_key)) = request.get(PIN_CLAIM_KEY_KEY) else {
+        return debug("PIN claim key required");
+    };
+    let Some(Value::Bytestring(cert_xml)) = request.get(CERT_XML_KEY) else {
+        return debug("cert.xml required");
+    };
+    let Some(Value::Bytestring(sig_xml)) = request.get(SIG_XML_KEY) else {
+        return debug("cert.sig.xml required");
+    };
+    let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
+
+    // Select a new set of vault parameters and wrap the security domain secret
+    // using the PIN.
+    let vault_params = Parameters::random();
+    let parsed_cert_xml =
+        key_distribution::parse_cert_xml(cert_xml, sig_xml, current_time_epoch_millis)
+            .map_err(RequestError::Debug)?;
+    let cohort_public_key = key_distribution::get_public_keys_from_certs(
+        parsed_cert_xml,
+        current_time_epoch_millis,
+        cohort_selector_from_handle(&vault_params.vault_handle),
+    )
+    .map_err(RequestError::Debug)?;
+    let wrapped = wrap(pin_hash, cohort_public_key, vault_params).map_err(RequestError::Debug)?;
+    enforce_cert_highwater(state, device_id, wrapped.serial)?;
+
+    // Wrap the PIN using the security domain secret.
+    let pin_data = pin::Data {
+        pin_hash: pin_hash
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length PIN hash"))?,
+        claim_key: claim_key
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length claim key"))?,
+        counter_id: wrapped
+            .counter_id
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length counter id"))?,
+        vault_handle_without_type: wrapped.vault_handle[1..]
+            .as_ref()
+            .try_into()
+            .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
+        vault_cohort_details: Some(VaultCohortDetails {
+            cohort_public_key: wrapped.cohort_public_key.to_vec(),
+            cert_xml_serial_number: wrapped.serial,
+        }),
+    };
+
+    // Reset the PIN count. This operation allows the client to change the PIN thus
+    // they could request the security domain secret from Folsom. Getting another
+    // batch of PIN attempts is less powerful than that and it allows the device to
+    // use the new PIN immediately, without reregistering with the enclave.
+    state
+        .get_mut()
+        .set_pin_state(device_id, super::PINState { attempts: 0 })?;
+
+    metrics.recovery_key_store_wrap_pin_and_secret += 1;
+    include_security_domain_member_fields_with_pin(wrapped, pin_data, &security_domain_secret)
+}
+
 /// Re-encrypts a wrapped PIN to a Vault public key and then constructs a
 /// security domain member for that PIN. This will generate a new set of keys
-/// but the PIN will be unchanged. The Vault parameters (vault handle and
-/// counter id) will be the same. If the cert.xml file hasn't changed since the
-/// last time the PIN was wrapped, the cohort public key will also be the same,
-/// resulting in replacing the Vault.
+/// but the PIN will be unchanged.
 ///
 /// This operation does not require user verification since it doesn't actually
 /// change the PIN. However, it is sensitive: creating a new Vault resets the
@@ -1711,6 +1841,46 @@ pub(crate) fn do_wrap_as_member(
 ///   pass different cert.xml files that are valid to get new Vault parameters.
 /// * Cryptographically associating the Vault parameters to the PIN hash, so
 ///   clients cannot modify vault parameters without the enclave.
+///
+/// This method operates in one of two modes, selected by the `create_new_vault`
+/// parameter:
+///
+/// Replace the vault (legacy) -- `create_new_vault = false`
+/// ========================================================
+///
+/// In this mode, the Vault parameters (vault handle and counter id) will be
+/// kept the same. If the cert.xml file hasn't changed since the last time the
+/// PIN was wrapped, the cohort public key will also be the same, resulting in
+/// replacing the Vault. This is "simple" but has a disadvantage: because
+/// updating the Vault and the Security Domain Service are two non-atomic
+/// operations, the Security Domain Service will hold an invalid PIN member
+/// immediately after updating the Vault. Thus, eventually every client should
+/// switch to the other mode. See go/unusable-pins.
+///
+/// Create a new vault -- `create_new_vault = true`
+/// ===============================================
+///
+/// In this mode, the enclave first verifies that the cohort has been deprecated
+/// and a refresh is necessary. This is important because creating a new Vault
+/// will reset the PIN retry counter, so we don't want clients to be able to do
+/// that arbitrarily. The verification requires cohort details to be present in
+/// the wrapped PIN. If there are no details present, the rewrap operation
+/// continues as in "Replace the vault" mode. (The next time this command is
+/// called with the same PIN, the cohort details will be present.)
+///
+/// If the cohort hasn't been deprecated, the operation concludes with a status
+/// code being returned to the client.
+///
+/// If the cohort has been deprecated, the enclave will select a new vault
+/// handle by incrementing the previous one by one. (The method doesn't matter
+/// but it should be determinisitic to protect against replay attacks.) Then,
+/// the PIN & security domain secret are rewrapped and returned to the client.
+///
+/// Because the vault handle is different, this will result in creating a new
+/// Vault. If the update to the Security Domain Secret fails, the previous Vault
+/// is still usable.
+///
+/// See go/robust-gpm-pin-refreshes
 pub(crate) fn do_rewrap(
     metrics: &mut MetricsUpdate,
     auth: &Authentication,
@@ -1718,9 +1888,10 @@ pub(crate) fn do_rewrap(
     current_time_epoch_millis: i64,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
-    let device_id = match auth {
-        Authentication::Device(device_id, _, _, _) => device_id,
-        _ => return debug("not authenticated"),
+    let device_id = if let Authentication::Device(device_id, _, _, _) = auth {
+        device_id
+    } else {
+        return debug("Not authenticated");
     };
     let Some(Value::Bytestring(cert_xml)) = request.get(CERT_XML_KEY) else {
         return debug("cert.xml required");
@@ -1733,16 +1904,60 @@ pub(crate) fn do_rewrap(
     };
     let (security_domain_secret, _) = get_secret_from_request(state, &request, device_id)?;
     let mut pin_data = pin::Data::from_wrapped(wrapped_pin_data, &security_domain_secret)?;
-    let wrapped = wrap(
-        &pin_data.pin_hash,
-        cert_xml,
-        sig_xml,
-        Parameters::from_pin_data(&pin_data),
+    let create_new_vault = match request.get(CREATE_NEW_VAULT_KEY) {
+        Some(Value::Boolean(create_new_vault)) => *create_new_vault,
+        _ => false,
+    };
+    let original_vault_params = Parameters::from_pin_data(&pin_data);
+    let parsed_cert_xml =
+        key_distribution::parse_cert_xml(cert_xml, sig_xml, current_time_epoch_millis)
+            .map_err(RequestError::Debug)?;
+
+    // Only try creating a new vault if the client wants it (to allow
+    // experimenting) and if the wrapped PIN data contains the vault cohort
+    // details.
+    let vault_params = if create_new_vault {
+        if let Some(vault_cohort_details) = pin_data.vault_cohort_details {
+            // Check the serial number of the cert file against the wrapped PIN
+            // data. Unlike `enforce_cert_highwater` below, this covers other
+            // Keychain clients too.
+            if parsed_cert_xml.serial < vault_cohort_details.cert_xml_serial_number {
+                return Err(RequestError::RecoveryKeyStoreDowngrade);
+            }
+            // Check if the cohort has been deprecated.
+            let vault_cohort_active = parsed_cert_xml.endpoints.iter().any(|endpoint| {
+                endpoint.public_key == vault_cohort_details.cohort_public_key.as_slice()
+            });
+            if vault_cohort_active {
+                return Err(RequestError::CohortNotYetDeprecated);
+            }
+            // Select a new vault handle.
+            Parameters::new_from_previous(original_vault_params)
+        } else {
+            // The wrapped PIN still doesn't contain the vault cohort details.
+            original_vault_params
+        }
+    } else {
+        // The client wants the old process.
+        original_vault_params
+    };
+
+    let cohort_public_key = key_distribution::get_public_keys_from_certs(
+        parsed_cert_xml,
         current_time_epoch_millis,
+        cohort_selector_from_handle(&vault_params.vault_handle),
     )
     .map_err(RequestError::Debug)?;
-    // The cohort and serial number may have changed as a result of rewrapping,
-    // or the details may not have been set yet. Update the PIN with the values.
+    let wrapped =
+        wrap(&pin_data.pin_hash, cohort_public_key, vault_params).map_err(RequestError::Debug)?;
+
+    // The vault handle, cohort and serial number may have changed as a result
+    // of rewrapping, or the details may not have been set yet. Update the PIN
+    // with the values.
+    pin_data.vault_handle_without_type = wrapped.vault_handle[1..]
+        .as_ref()
+        .try_into()
+        .map_err(|_| RequestError::Debug("incorrect length vault handle"))?;
     pin_data.vault_cohort_details = Some(VaultCohortDetails {
         cert_xml_serial_number: wrapped.serial,
         cohort_public_key: wrapped.cohort_public_key.to_vec(),
@@ -1754,19 +1969,22 @@ pub(crate) fn do_rewrap(
 
 #[cfg(test)]
 mod tests {
+    use crate::recovery_key_store::key_distribution::{get_public_keys_from_certs, parse_cert_xml};
+
     use super::*;
 
     #[test]
     fn test_wrap() {
         let pin_hash = [1u8; 32];
-        assert!(wrap(
-            &pin_hash,
+        let cert_xml = parse_cert_xml(
             SAMPLE_CERTS_XML,
             SAMPLE_SIG_XML,
-            Parameters::random(),
-            SAMPLE_VALIDATION_EPOCH_MILLIS
+            SAMPLE_VALIDATION_EPOCH_MILLIS,
         )
-        .is_ok());
+        .unwrap();
+        let cohort =
+            get_public_keys_from_certs(cert_xml, SAMPLE_VALIDATION_EPOCH_MILLIS, 0).unwrap();
+        assert!(wrap(&pin_hash, cohort, Parameters::random(),).is_ok());
     }
 }
 
@@ -1855,6 +2073,16 @@ const SAMPLE_SIG_XML : &[u8] = br#"<?xml version="1.0" encoding="UTF-8"?>
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
 </signature>
 "#;
+
+// This is the first endpoint certificate public key. Extracted using cyberchef.
+#[cfg(test)]
+pub(crate) const SAMPLE_ENDPOINT_PUBLIC_KEY: &[u8] = &[
+    0x04, 0xc0, 0x83, 0xde, 0xc4, 0x91, 0xdb, 0xaa, 0xbd, 0xa1, 0xc7, 0x35, 0x63, 0xf2, 0xb6, 0x49,
+    0x0c, 0x88, 0xb1, 0x22, 0x64, 0x26, 0xd1, 0x80, 0x2e, 0xf7, 0x77, 0xb7, 0x89, 0x7d, 0x13, 0xc6,
+    0xa3, 0x98, 0xe5, 0x7d, 0x7d, 0x01, 0xe9, 0xed, 0xde, 0x04, 0xc6, 0x64, 0x49, 0x22, 0x57, 0x65,
+    0x14, 0xbf, 0xd8, 0xe6, 0x2e, 0x45, 0x06, 0x0d, 0xcd, 0xbf, 0x02, 0xbb, 0x4c, 0xbb, 0xe8, 0x00,
+    0xf9,
+];
 
 /// This is a timestamp at which the sample XML files are valid.
 #[cfg(test)]

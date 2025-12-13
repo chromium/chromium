@@ -14,11 +14,13 @@ GpuMemoryBufferVideoFramePool::GpuMemoryBufferVideoFramePool(
     int capacity,
     media::VideoPixelFormat format,
     const gfx::ColorSpace& color_space,
-    GmbVideoFramePoolContextProvider* context_provider)
+    GmbVideoFramePoolContextProvider* context_provider,
+    mojom::BufferFormatPreference buffer_format_preference)
     : VideoFramePool(capacity),
       format_(format),
       color_space_(color_space),
-      context_provider_(context_provider) {
+      context_provider_(context_provider),
+      buffer_format_preference_(buffer_format_preference) {
   RecreateVideoFramePool();
 }
 
@@ -54,7 +56,7 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
 media::mojom::VideoBufferHandlePtr
 GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
-  CHECK(frame.HasMappableGpuBuffer());
+  CHECK(frame.HasMappableSharedImage());
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
 
@@ -74,8 +76,13 @@ void GpuMemoryBufferVideoFramePool::RecreateVideoFramePool() {
   auto pool_context = context_provider_->CreateContext(
       base::BindOnce(&GpuMemoryBufferVideoFramePool::RecreateVideoFramePool,
                      weak_factory_.GetWeakPtr()));
+  // Determine whether the video frame pool should use CPU mappable buffers.
+  // If the caller prefers SharedImage with native handle (i.e., no CPU
+  // mapping), pass false. Otherwise, default to requiring CPU access.
   video_frame_pool_ = media::RenderableGpuMemoryBufferVideoFramePool::Create(
-      std::move(pool_context), format_);
+      std::move(pool_context), format_,
+      buffer_format_preference_ !=
+          mojom::BufferFormatPreference::kPreferSharedImageWithNativeHandle);
 
   video_frame_pool_generation_++;
   num_reserved_frames_ = 0;

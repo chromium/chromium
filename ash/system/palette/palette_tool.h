@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/palette/palette_ids.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace aura {

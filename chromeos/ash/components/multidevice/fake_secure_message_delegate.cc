@@ -9,9 +9,10 @@
 #include <algorithm>
 
 #include "base/functional/callback.h"
-#include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "crypto/hash.h"
 
 namespace ash::multidevice {
 
@@ -63,7 +64,8 @@ std::string Decrypt(const std::string& ciphertext,
 std::string Sign(const std::string& payload,
                  const std::string& associated_data,
                  const std::string& key) {
-  return base::MD5String(payload + "|" + associated_data + "|" + key);
+  return base::HexEncode(
+      crypto::hash::Sha256(payload + "|" + associated_data + "|" + key));
 }
 
 // Verifies that the |signature| for the the |payload| and |associated_data| is
@@ -102,7 +104,8 @@ void FakeSecureMessageDelegate::GenerateKeyPair(
   // The private key is simply the public key prepended with "private_".
   std::string private_key(kPrivateKeyPrefix + public_key);
 
-  next_public_key_ = std::string(kKeyPrefix) + base::MD5String(public_key);
+  next_public_key_ = std::string(kKeyPrefix) +
+                     base::HexEncode(crypto::hash::Sha256(public_key));
 
   std::move(callback).Run(public_key, private_key);
 }
@@ -123,7 +126,8 @@ void FakeSecureMessageDelegate::DeriveKey(const std::string& private_key,
   keys.push_back(normalized_private_key);
   keys.push_back(public_key);
   std::sort(keys.begin(), keys.end());
-  std::move(callback).Run(base::MD5String(keys[0] + "|" + keys[1]));
+  std::move(callback).Run(
+      base::HexEncode(crypto::hash::Sha256(keys[0] + "|" + keys[1])));
 }
 
 void FakeSecureMessageDelegate::CreateSecureMessage(

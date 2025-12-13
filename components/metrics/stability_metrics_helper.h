@@ -172,6 +172,7 @@ class StabilityMetricsHelper {
   // - TERMINATION_STATUS_PROCESS_CRASHED
   // - TERMINATION_STATUS_ABNORMAL_TERMINATION
   // - TERMINATION_STATUS_OOM
+  // - TERMINATION_STATUS_EVICTED_FOR_MEMORY
   // Extracted to a helper method to allow sharing between desktop and iOS.
   void LogRendererCrashImpl(CoarseRendererType coarse_renderer_type,
                             int exit_code);

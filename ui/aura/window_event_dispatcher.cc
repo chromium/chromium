@@ -15,6 +15,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/metrics/custom_metrics_recorder.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -208,8 +209,8 @@ void WindowEventDispatcher::HoldPointerMoves() {
     held_event_factory_.InvalidateWeakPtrs();
   }
   ++move_hold_count_;
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-      "ui", "WindowEventDispatcher::HoldPointerMoves", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("ui", "WindowEventDispatcher::HoldPointerMoves",
+                    perfetto::Track::FromPointer(this));
 }
 
 void WindowEventDispatcher::ReleasePointerMoves() {
@@ -242,8 +243,8 @@ void WindowEventDispatcher::ReleasePointerMoves() {
       }
     }
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0(
-      "ui", "WindowEventDispatcher::HoldPointerMoves", TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("ui", /*"WindowEventDispatcher::HoldPointerMoves"*/
+                  perfetto::Track::FromPointer(this));
 }
 
 gfx::Point WindowEventDispatcher::GetLastMouseLocationInRoot() const {
@@ -860,10 +861,9 @@ void WindowEventDispatcher::PostSynthesizeMouseMove(Window* window) {
 
 #if BUILDFLAG(IS_WIN)
   // Gets the window at the current cursor point.
-  gfx::Point cursor_point =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point cursor_point = display::Screen::Get()->GetCursorScreenPoint();
   gfx::NativeWindow window_under_cursor =
-      display::Screen::GetScreen()->GetWindowAtScreenPoint(cursor_point);
+      display::Screen::Get()->GetWindowAtScreenPoint(cursor_point);
 
   ConvertPointFromScreen(&cursor_point);
   // If the mouse cursor is within the |window|, but |window_under_cursor| is
@@ -920,8 +920,7 @@ ui::EventDispatchDetails WindowEventDispatcher::SynthesizeMouseMoveEvent() {
 
   // Do not use GetLastMouseLocationInRoot here because it's not updated when
   // the mouse is not over the window or when the window is minimized.
-  gfx::Point mouse_location =
-      display::Screen::GetScreen()->GetCursorScreenPoint();
+  gfx::Point mouse_location = display::Screen::Get()->GetCursorScreenPoint();
   ConvertPointFromScreen(&mouse_location);
   if (!window()->bounds().Contains(mouse_location))
     return details;

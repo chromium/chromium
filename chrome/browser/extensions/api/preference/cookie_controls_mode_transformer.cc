@@ -7,6 +7,9 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -31,15 +34,10 @@ CookieControlsModeTransformer::BrowserToExtensionPref(
     bool is_incognito_profile) {
   auto cookie_control_mode =
       static_cast<content_settings::CookieControlsMode>(browser_pref.GetInt());
-
-  bool third_party_cookies_allowed = cookie_control_mode == kOff;
-  if (cookie_control_mode == kIncognitoOnly ||
-      (third_party_cookies_allowed &&
-       base::FeatureList::IsEnabled(
-           privacy_sandbox::kAlwaysBlock3pcsIncognito))) {
-    third_party_cookies_allowed = !is_incognito_profile;
-  }
-  return base::Value(third_party_cookies_allowed);
+  // 3PCs are allowed iff: CookieControlsMode is not `kBlockThirdParty` and the
+  // user is not in Incognito (as 3PCs are always blocked in Incognito).
+  return base::Value(cookie_control_mode != kBlockThirdParty &&
+                     !is_incognito_profile);
 }
 
 }  // namespace extensions

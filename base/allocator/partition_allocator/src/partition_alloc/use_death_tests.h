@@ -20,14 +20,8 @@
 // An informal CQ survey
 // (https://chromium-review.googlesource.com/c/chromium/src/+/5493422/1?tab=checks)
 // tells us that iOS doesn't define `GTEST_HAS_DEATH_TEST`.
-//
-// In addition, Android is generally thought not to support death tests.
-// See also:
-// *  crbug.com/40483507
-// *  crbug.com/40785222
-// *  crbug.com/41372437
 #if defined(GTEST_HAS_DEATH_TEST)
-#define PA_USE_DEATH_TESTS() (!PA_BUILDFLAG(IS_ANDROID))
+#define PA_USE_DEATH_TESTS() 1
 #else
 #define PA_USE_DEATH_TESTS() 0
 #endif

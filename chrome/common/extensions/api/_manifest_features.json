@@ -25,20 +25,6 @@
     "extension_types": ["extension"],
     "platforms": ["win", "mac"]
   },
-  "chrome_url_overrides": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
-  },
-  "chrome_url_overrides.activationmessage": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos"]
-  },
-  "chrome_url_overrides.keyboard": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "platforms": ["chromeos"]
-  },
   "content_scripts": [
     {
       "channel": "stable",
@@ -57,10 +43,6 @@
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app"
     ]
-  },
-  "devtools_page": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "display_in_launcher": [
     {
@@ -159,10 +141,6 @@
   "theme": {
     "channel": "stable",
     "extension_types": ["theme"]
-  },
-  "tts_engine": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "url_handlers": {
     "channel": "stable",

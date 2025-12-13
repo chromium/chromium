@@ -28,9 +28,9 @@ import android.content.res.Resources;
 import androidx.annotation.PluralsRes;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.DismissActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ReviewActionProvider;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -41,13 +41,13 @@ public class CollaborationActivityMessageCardViewModel {
 
     /**
      * @param context The {@link Context} to use.
-     * @param reviewActionProvider The provider for the review action.
-     * @param dismissActionProvider The provider for the dismiss action.
+     * @param actionProvider The provider for the review action.
+     * @param serviceDismissActionProvider The provider for the dismiss action.
      */
     public CollaborationActivityMessageCardViewModel(
             Context context,
-            ReviewActionProvider reviewActionProvider,
-            DismissActionProvider dismissActionProvider) {
+            ActionProvider actionProvider,
+            ServiceDismissActionProvider serviceDismissActionProvider) {
         String dismissButtonContentDescription =
                 context.getString(R.string.accessibility_tab_suggestion_dismiss_button);
         String actionText =
@@ -59,8 +59,8 @@ public class CollaborationActivityMessageCardViewModel {
                         .with(CARD_ALPHA, 1f)
                         .with(ACTION_TEXT, actionText)
                         .with(MESSAGE_IDENTIFIER, DEFAULT_MESSAGE_IDENTIFIER)
-                        .with(MESSAGE_SERVICE_ACTION_PROVIDER, reviewActionProvider)
-                        .with(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, dismissActionProvider)
+                        .with(MESSAGE_SERVICE_ACTION_PROVIDER, actionProvider)
+                        .with(MESSAGE_SERVICE_DISMISS_ACTION_PROVIDER, serviceDismissActionProvider)
                         .with(DISMISS_BUTTON_CONTENT_DESCRIPTION, dismissButtonContentDescription)
                         .with(VIEW_AS_ACTION_BUTTON, false)
                         .with(ACTION_BUTTON_VISIBLE, true)

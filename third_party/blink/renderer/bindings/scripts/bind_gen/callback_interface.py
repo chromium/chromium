@@ -70,14 +70,13 @@ def make_constructors(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
     decls = ListNode([
-        CxxFuncDefNode(
-            name=cg_context.class_name,
-            arg_decls=["v8::Local<v8::Object> callback_object"],
-            return_type="",
-            explicit=True,
-            member_initializer_list=[
-                "${base_class_name}(callback_object, kSingleOperation)",
-            ]),
+        CxxFuncDefNode(name=cg_context.class_name,
+                       arg_decls=["v8::Local<v8::Object> callback_object"],
+                       return_type="",
+                       explicit=True,
+                       member_initializer_list=[
+                           "${base_class_name}(callback_object)",
+                       ]),
         CxxFuncDeclNode(name="~${class_name}",
                         arg_decls=[],
                         return_type="",

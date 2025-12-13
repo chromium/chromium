@@ -14,7 +14,6 @@
 #import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -32,9 +31,11 @@ namespace tab_groups {
 
 TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
-    TabGroupSyncService* sync_service)
+    TabGroupSyncService* sync_service,
+    SessionRestorationService* session_restoration_service)
     : sync_service_(sync_service), browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
+  session_restoration_service_observation_.Observe(session_restoration_service);
   CHECK(browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)
             .empty());
 }
@@ -192,20 +193,6 @@ void TabGroupLocalUpdateObserver::WebStateListDestroyed(
 
 #pragma mark - WebStateObserver
 
-void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
-  if (sync_update_paused_) {
-    return;
-  }
-
-  // Updates before the first navigation should be ignored.
-  web::WebStateID identifier = web_state->GetUniqueIdentifier();
-  if (ignored_web_state_identifiers_.contains(identifier)) {
-    return;
-  }
-
-  UpdateLocalWebStateInSyncedGroup(web_state);
-}
-
 void TabGroupLocalUpdateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -252,15 +239,6 @@ void TabGroupLocalUpdateObserver::SetSyncUpdatePaused(bool paused) {
 }
 
 void TabGroupLocalUpdateObserver::StartObservingBrowser(Browser* browser) {
-  // Observer should be set once the session restoration service has started.
-  // TODO(crbug.com/350885825): Directly inject the SessionRestorationService to
-  // this class when it's no longer necessary for MigrateSessionStorageFormat to
-  // instantiate it.
-  if (!session_restoration_service_observation_.IsObserving()) {
-    session_restoration_service_observation_.Observe(
-        SessionRestorationServiceFactory::GetForProfile(browser->GetProfile()));
-  }
-
   WebStateList* web_state_list = browser->GetWebStateList();
   web_state_list_observation_.AddObservation(web_state_list);
   for (const TabGroup* group : web_state_list->GetGroups()) {

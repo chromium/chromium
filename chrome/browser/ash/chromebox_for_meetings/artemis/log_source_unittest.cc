@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -66,8 +67,8 @@ class LogSourceForTesting : public LogSource {
  public:
   LogSourceForTesting(const std::string& filepath,
                       base::TimeDelta poll_rate,
-                      size_t batch_size)
-      : LogSource(filepath, poll_rate, batch_size) {}
+                      size_t num_lines_per_batch)
+      : LogSource(filepath, kBatchByteLimit, poll_rate, num_lines_per_batch) {}
   LogSourceForTesting(const LogSourceForTesting&) = delete;
   LogSourceForTesting& operator=(const LogSourceForTesting&) = delete;
   ~LogSourceForTesting() override = default;
@@ -326,15 +327,15 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 // ------- Start LogSource tests -------
 
 TEST_F(ArtemisLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
-  const size_t batch_size = 2;
-  const size_t expected_num_reads = kTestFileNumLines / batch_size;
+  const size_t num_lines_per_batch = 2;
+  const size_t expected_num_reads = kTestFileNumLines / num_lines_per_batch;
 
-  auto log_source =
-      LogSource(test_file_.value(), kDefaultPollFrequency, batch_size);
+  auto log_source = LogSource(test_file_.value(), kBatchByteLimit,
+                              kDefaultPollFrequency, num_lines_per_batch);
 
   for (size_t i = 0; i < expected_num_reads; ++i) {
     auto data = log_source.GetNextData();
-    EXPECT_EQ(data.size(), batch_size);
+    EXPECT_EQ(data.size(), num_lines_per_batch);
   }
 
   auto data = log_source.GetNextData();
@@ -342,8 +343,8 @@ TEST_F(ArtemisLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
 }
 
 TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRotation) {
-  auto log_source =
-      LogSource(test_file_.value(), kDefaultPollFrequency, kDefaultBatchSize);
+  auto log_source = LogSource(test_file_.value(), kBatchByteLimit,
+                              kDefaultPollFrequency, kDefaultBatchSize);
 
   // Initial setup. Read everything from original file
   auto data = log_source.GetNextData();
@@ -370,11 +371,11 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   base::test::TaskEnvironment task_environment;
   base::RunLoop run_loop;
 
-  size_t batch_size = 2;
+  size_t num_lines_per_batch = 2;
   auto log_source = std::make_unique<LogSourceForTesting>(
-      test_file_.value(), kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
 
-  // Add <batch_size> lines to internal buffer. Then fetch & drop.
+  // Add <num_lines_per_batch> lines to internal buffer. Then fetch & drop.
   log_source->FillDataBufferForTesting();
   log_source->Fetch(base::DoNothing());
   run_loop.RunUntilIdle();
@@ -390,24 +391,25 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   // Tear down and reset the log source. Then add more data.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_.value(), kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
   log_source->FillDataBufferForTesting();
 
   // Run the next Fetch and expect the data to be continued from the last
   // point. Note that the file we're examining is just filled with integers,
-  // 0 to kTestFileNumLines, so we expect to start at integer <batch_size>.
+  // 0 to kTestFileNumLines, so we expect to start at integer
+  // <num_lines_per_batch>.
   log_source->Fetch(base::BindOnce(
       [](size_t start, const std::vector<std::string>& results) {
         EXPECT_EQ(results[0], base::NumberToString(start));
         EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size));
+      num_lines_per_batch));
   run_loop.RunUntilIdle();
 
   // Explicitly do not Flush()! Tear down and reset again. Add more data.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_.value(), kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
   log_source->FillDataBufferForTesting();
 
   // Because Flush() was not called, we assume that the last attempt failed,
@@ -418,13 +420,13 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
         EXPECT_EQ(results[0], base::NumberToString(start));
         EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size));
+      num_lines_per_batch));
   run_loop.RunUntilIdle();
 
   // Tear down and reset again.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_.value(), kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
 
   // This time, before adding data, rotate the file.
   RotateFile();

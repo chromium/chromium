@@ -22,7 +22,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
-#include "components/policy/core/common/cloud/policy_invalidation_util.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
@@ -389,9 +388,8 @@ bool RemoteCommandsService::CanFetchRemoteCommands() {
         return false;
       }
     } else {
-      invalidation::Topic topic;
-      if (!GetRemoteCommandTopicFromPolicy(*policy, &topic)) {
-        LOG_POLICY(WARNING, REMOTE_COMMANDS) << "CEC is not enabled.";
+      if (!policy->has_command_invalidation_topic() ||
+          policy->command_invalidation_topic().empty()) {
         return false;
       }
     }
@@ -449,7 +447,8 @@ void RemoteCommandsService::OnRemoteCommandsFetched(
     std::move(on_command_acked_callback_).Run();
   }
 
-  // TODO(binjin): Add retrying on errors. See http://crbug.com/466572.
+  // No retry is implemented for errors. If you want to change that, please
+  // consider using exponential backoff.
   if (status == DM_STATUS_SUCCESS) {
     for (const auto& command : commands) {
       VerifyAndEnqueueSignedCommand(command);

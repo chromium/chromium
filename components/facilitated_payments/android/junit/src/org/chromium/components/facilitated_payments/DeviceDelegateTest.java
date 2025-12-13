@@ -5,6 +5,7 @@
 package org.chromium.components.facilitated_payments;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -12,7 +13,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -20,6 +23,10 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.Settings;
+import android.view.inputmethod.InputMethodInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.test.filters.SmallTest;
 
@@ -31,10 +38,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -48,10 +59,20 @@ import java.util.List;
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
 public class DeviceDelegateTest {
+    private static final int A2A_TRANSACTION_OUTCOME_SUCCEED = 1;
+    private static final int A2A_TRANSACTION_OUTCOME_CANCELED = 2;
+    private static final int A2A_TRANSACTION_OUTCOME_FAILED = 3;
+    private static final String A2A_TRANSACTION_OUTCOME = "A2A_TRANSACTION_OUTCOME";
+    private static final String A2A_INTENT_ACTION_NAME =
+            "org.chromium.intent.action.FACILITATED_PAYMENT";
     private static final String GOOGLE_WALLET_PACKAGE_NAME = "com.google.android.apps.walletnfcrel";
-    private static final String GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK =
-            "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome";
-    private static final GURL PAYMENT_LINK = new GURL("https://www.example.com");
+    private static final String GBOARD_PACKAGE_NAME = "com.google.android.inputmethod.latin";
+    private static final String NON_GBOARD_PACKAGE_NAME = "com.other.ime";
+    private static final long PIX_MIN_SUPPORTED_WALLET_VERSION = 932848136L;
+    private static final String EMAIL = "user@example.com";
+    private static final GURL PAYMENT_LINK =
+            new GURL("https://www.itmx.co.th/facilitated-payment/prompt-pay");
+    private static final String PAYMENT_LINK_SCHEME = "PromptPay";
 
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
@@ -60,16 +81,82 @@ public class DeviceDelegateTest {
     @Mock private PackageManagerDelegate mMockPackageManagerDelegate;
     @Mock private Drawable mMockDrawable;
     @Mock private PackageManager mMockPackageManager;
+    @Mock private InputMethodManager mMockInputMethodManager;
+    @Mock private InputMethodInfo mMockInputMethodInfo;
+    @Mock private ContentResolver mMockContentResolver;
 
     @Before
     public void setUp() {
         when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<Context>(mMockContext));
         when(mMockContext.getPackageManager()).thenReturn(mMockPackageManager);
+        when(mMockContext.getSystemService(InputMethodManager.class))
+                .thenReturn(mMockInputMethodManager);
+        when(mMockContext.getContentResolver()).thenReturn(mMockContentResolver);
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testIsPixSupportAvailableViaGboard_UnsupportedAndroidVersion() {
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_NullWindowAndroid_AndroidT() {
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(null));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_NullContext_AndroidT() {
+        when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_GboardIsCurrentIme_AndroidT() {
+        Settings.Secure.putString(
+                mMockContentResolver,
+                Settings.Secure.DEFAULT_INPUT_METHOD,
+                GBOARD_PACKAGE_NAME + "/.ImeService");
+
+        assertTrue(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.TIRAMISU)
+    public void testIsPixSupportAvailableViaGboard_GboardIsNotCurrentIme_AndroidT() {
+        Settings.Secure.putString(
+                mMockContentResolver,
+                Settings.Secure.DEFAULT_INPUT_METHOD,
+                NON_GBOARD_PACKAGE_NAME + "/.ImeService");
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIsPixSupportAvailableViaGboard_GboardIsCurrentIme() {
+        when(mMockInputMethodManager.getCurrentInputMethodInfo()).thenReturn(mMockInputMethodInfo);
+        when(mMockInputMethodInfo.getPackageName()).thenReturn(GBOARD_PACKAGE_NAME);
+
+        assertTrue(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
+    public void testIsPixSupportAvailableViaGboard_GboardIsNotCurrentIme() {
+        when(mMockInputMethodManager.getCurrentInputMethodInfo()).thenReturn(mMockInputMethodInfo);
+        when(mMockInputMethodInfo.getPackageName()).thenReturn(NON_GBOARD_PACKAGE_NAME);
+
+        assertFalse(DeviceDelegate.isPixSupportAvailableViaGboard(mMockWindowAndroid));
     }
 
     @Test
     public void testOpenPixAccountLinkingPageInWallet_Success() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         // Capture the Intent passed to startActivity
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -78,13 +165,16 @@ public class DeviceDelegateTest {
         // Assert the properties of the captured Intent
         Intent capturedIntent = intentCaptor.getValue();
         assertEquals(Intent.ACTION_VIEW, capturedIntent.getAction());
-        assertEquals(Uri.parse(GOOGLE_WALLET_ADD_PIX_ACCOUNT_LINK), capturedIntent.getData());
+        assertEquals(
+                Uri.parse(
+                        "https://wallet.google.com/gw/app/addbankaccount?utm_source=chrome&email=user@example.com"),
+                capturedIntent.getData());
         assertEquals(GOOGLE_WALLET_PACKAGE_NAME, capturedIntent.getPackage());
     }
 
     @Test
     public void testOpenPixAccountLinkingPageInWallet_NullWindowAndroid() {
-        DeviceDelegate.openPixAccountLinkingPageInWallet(null);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(null, EMAIL);
 
         // Verify that startActivity() was never called if WindowAndroid is null.
         verify(mMockContext, never()).startActivity(any(Intent.class));
@@ -94,7 +184,7 @@ public class DeviceDelegateTest {
     public void testOpenPixAccountLinkingPageInWallet_NullContext() {
         when(mMockWindowAndroid.getContext()).thenReturn(new WeakReference<>(null));
 
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         verify(mMockContext, never()).startActivity(any(Intent.class));
     }
@@ -107,7 +197,7 @@ public class DeviceDelegateTest {
                 .startActivity(any(Intent.class));
 
         // Call the method, expecting it to catch the exception
-        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid);
+        DeviceDelegate.openPixAccountLinkingPageInWallet(mMockWindowAndroid, EMAIL);
 
         // Verify startActivity was called (even though it threw).
         verify(mMockContext).startActivity(any(Intent.class));
@@ -265,5 +355,125 @@ public class DeviceDelegateTest {
         resolveInfo.activityInfo.packageName = packageName;
         resolveInfo.activityInfo.name = name;
         return resolveInfo;
+    }
+
+    @Test
+    public void testNullWindowAndroidCannotInvokePaymentApp() {
+        assertFalse(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
+                        PAYMENT_LINK,
+                        /* windowAndroid= */ null));
+    }
+
+    @Test
+    public void testInvokePaymentApp_launchesIntentSuccessfully() {
+        when(mMockWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(true);
+
+        assertTrue(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mMockWindowAndroid).showIntent(intentCaptor.capture(), any(), any());
+
+        Intent capturedIntent = intentCaptor.getValue();
+        assertEquals(A2A_INTENT_ACTION_NAME, capturedIntent.getAction());
+        assertEquals(Uri.parse(PAYMENT_LINK.getSpec()), capturedIntent.getData());
+        assertEquals("com.example.app", capturedIntent.getComponent().getPackageName());
+        assertEquals("com.example.app.Activity", capturedIntent.getComponent().getClassName());
+    }
+
+    @Test
+    public void testInvokePaymentApp_showIntentReturnsFalse() {
+        when(mMockWindowAndroid.showIntent(any(Intent.class), any(), any())).thenReturn(false);
+
+        assertFalse(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+        verify(mMockWindowAndroid).showIntent(any(Intent.class), any(), any());
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsSucceeded() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_SUCCEED.
+        testInvokePaymentAppCallback(
+                Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_SUCCEED, "Succeeded");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsCanceled() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_CANCELED.
+        testInvokePaymentAppCallback(
+                Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_CANCELED, "Canceled");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsFailed() {
+        // Corresponds to A2A_TRANSACTION_OUTCOME_FAILED.
+        testInvokePaymentAppCallback(Activity.RESULT_OK, A2A_TRANSACTION_OUTCOME_FAILED, "Failed");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsUnknown_withInvalidCode() {
+        testInvokePaymentAppCallback(Activity.RESULT_OK, 99, "Unknown");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsUnknown_withNoOutcome() {
+        testInvokePaymentAppCallback(Activity.RESULT_OK, null, "Unknown");
+    }
+
+    @Test
+    public void testInvokePaymentApp_callbackLogsActivityCanceled() {
+        testInvokePaymentAppCallback(Activity.RESULT_CANCELED, null, "Canceled");
+    }
+
+    private void testInvokePaymentAppCallback(
+            int resultCode, @Nullable Integer transactionOutcome, String expectedOutcome) {
+        ArgumentCaptor<IntentCallback> intentCallbackCaptor =
+                ArgumentCaptor.forClass(IntentCallback.class);
+        when(mMockWindowAndroid.showIntent(
+                        any(Intent.class), intentCallbackCaptor.capture(), any()))
+                .thenReturn(true);
+
+        assertTrue(
+                DeviceDelegate.invokePaymentApp(
+                        "com.example.app",
+                        "com.example.app.Activity",
+                        PAYMENT_LINK_SCHEME,
+                        PAYMENT_LINK,
+                        mMockWindowAndroid));
+
+        Intent resultIntent = new Intent();
+        if (transactionOutcome != null) {
+            resultIntent.putExtra(A2A_TRANSACTION_OUTCOME, transactionOutcome);
+        }
+
+        String latencyHistogram = "FacilitatedPayments.A2A." + expectedOutcome + ".Latency";
+        String schemeLatencyHistogram = latencyHistogram + ".PromptPay";
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(latencyHistogram)
+                        .expectAnyRecord(schemeLatencyHistogram)
+                        .build();
+
+        // Capture and invoke the callback
+        IntentCallback callback = intentCallbackCaptor.getValue();
+        callback.onIntentCompleted(resultCode, resultIntent);
+
+        // Verifies that the histograms were recorded. We don't assert on the value because
+        // the latency is not deterministic in this test.
+        watcher.assertExpected();
     }
 }

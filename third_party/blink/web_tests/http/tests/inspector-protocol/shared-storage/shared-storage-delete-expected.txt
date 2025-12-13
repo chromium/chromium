@@ -5,7 +5,7 @@ Metadata: {
     length : 3
     remainingBudget : 12
 }
-Entries:[
+Entries: [
     [0] : {
         key : key0-set-from-document
         value : value0
@@ -27,7 +27,7 @@ Metadata: {
     length : 2
     remainingBudget : 12
 }
-Entries:[
+Entries: [
     [0] : {
         key : key0-set-from-document
         value : value0
@@ -39,7 +39,7 @@ Entries:[
 ]
 Clear entries via devtools
 undefined
-Entries:[
+Entries: [
 ]
 Events: [
     [0] : {

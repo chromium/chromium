@@ -24,8 +24,8 @@ constexpr char kUnknownSegmentSelectionTTL[] =
 }  // namespace
 
 std::unique_ptr<Config> ParseConfigFromString(const std::string& config_str) {
-  auto value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(config_str);
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      config_str, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value_with_error.has_value()) {
     VLOG(1) << "Config failed to parse: " << config_str
             << ". with error: " << value_with_error.error().message;

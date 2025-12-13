@@ -6,8 +6,7 @@
 
 namespace installer {
 
-void UpdateInstallStatus(installer::ArchiveType archive_type,
-                         installer::InstallStatus install_status) {}
+void UpdateInstallStatus() {}
 
 std::wstring GetDistributionData() {
   return std::wstring();

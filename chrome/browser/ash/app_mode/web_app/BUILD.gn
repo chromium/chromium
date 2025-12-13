@@ -14,8 +14,6 @@ static_library("web_app") {
     "kiosk_web_app_manager.h",
     "kiosk_web_app_service_launcher.cc",
     "kiosk_web_app_service_launcher.h",
-    "web_kiosk_browser_controller_ash.cc",
-    "web_kiosk_browser_controller_ash.h",
   ]
   public_deps = [
     "//base",
@@ -61,9 +59,11 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:constants",
     "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/extensions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/test:test_support",

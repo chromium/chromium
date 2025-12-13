@@ -60,8 +60,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private ViewGroup mTitleContainer;
     private TextView mTitleView;
     private ImageView mTitleIcon;
-    private TextView mMessageParagraph1;
     private LinearLayout mMessageParagraphsContainer;
+    private View mMessageParagraphsSpacer;
+
+    private LinearLayout mMenuItemsContainer;
     private ViewGroup mCustomViewContainer;
     private ViewGroup mCustomButtonBarViewContainer;
     private View mButtonBar;
@@ -136,8 +138,9 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleContainer = findViewById(R.id.title_container);
         mTitleView = mTitleContainer.findViewById(R.id.title);
         mTitleIcon = mTitleContainer.findViewById(R.id.title_icon);
-        mMessageParagraph1 = findViewById(R.id.message_paragraph_1);
         mMessageParagraphsContainer = findViewById(R.id.message_paragraphs_container);
+        mMessageParagraphsSpacer = findViewById(R.id.message_paragraphs_bottom_spacer);
+        mMenuItemsContainer = findViewById(R.id.menu_items_container);
         mCustomViewContainer = findViewById(R.id.custom_view_not_in_scrollable);
         mCustomButtonBarViewContainer = findViewById(R.id.custom_button_bar);
         mCheckboxView = findViewById(R.id.modal_dialog_checkbox);
@@ -426,27 +429,12 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     }
 
     /**
-     * @param message The message in the dialog content.
-     */
-    void setMessageParagraph1(CharSequence message) {
-        assert mMessageParagraphsContainer.getChildCount() == 0
-                : "Please use only setMessageParagraphs().";
-
-        mMessageParagraph1.setText(message);
-        UiUtils.maybeSetLinkMovementMethod(mMessageParagraph1);
-        updateContentVisibility();
-    }
-
-    /**
      * Fills the dialog's message area with multiple paragraphs of text. This will clear any message
      * text previously set by other methods.
      *
      * @param paragraphs An {@link ArrayList} of {@link CharSequence} to display as paragraphs.
      */
-    public void setMessageParagraphs(ArrayList<CharSequence> paragraphs) {
-        assert TextUtils.isEmpty(mMessageParagraph1.getText())
-                : "Do not use setMessageParagraphs and setMessageParagraph1 at the same time.";
-
+    public void setMessageParagraphs(@Nullable ArrayList<CharSequence> paragraphs) {
         mMessageParagraphsContainer.removeAllViews();
 
         if (paragraphs == null || paragraphs.isEmpty()) {
@@ -479,6 +467,38 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
                         + childCount
                         + " children.";
         return (TextView) mMessageParagraphsContainer.getChildAt(index);
+    }
+
+    /**
+     * Fills the dialog with menu items. This will clear any previously set menu items.
+     *
+     * @param menuItems An {@link ArrayList} of {@link ModalDialogProperties.ModalDialogMenuItem} to
+     *     display.
+     */
+    public void setMenuItems(
+            @Nullable ArrayList<ModalDialogProperties.ModalDialogMenuItem> menuItems) {
+        mMenuItemsContainer.removeAllViews();
+
+        if (menuItems == null || menuItems.isEmpty()) {
+            updateContentVisibility();
+            return;
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        for (ModalDialogProperties.ModalDialogMenuItem item : menuItems) {
+            TextView itemView =
+                    (TextView)
+                            inflater.inflate(
+                                    R.layout.modal_dialog_menu_item_view,
+                                    mMenuItemsContainer,
+                                    false);
+            itemView.setText(item.getText());
+            itemView.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    item.getIcon(), null, null, null);
+            itemView.setOnClickListener((v) -> item.getCallback().run());
+            mMenuItemsContainer.addView(itemView);
+        }
+        updateContentVisibility();
     }
 
     /** Sets the listener for the checkbox. */
@@ -650,14 +670,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean titleVisible = !TextUtils.isEmpty(mTitleView.getText());
         boolean titleIconVisible = mTitleIcon.getDrawable() != null;
         boolean titleContainerVisible = titleVisible || titleIconVisible;
-
-        boolean messageParagraph1Visible = !TextUtils.isEmpty(mMessageParagraph1.getText());
-        boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
+        boolean messageParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 0;
+        boolean menuItemsVisible = mMenuItemsContainer.getChildCount() > 0;
+        boolean multipleParagraphsVisible = mMessageParagraphsContainer.getChildCount() > 1;
 
         boolean scrollViewVisible =
                 (mTitleScrollable && titleContainerVisible)
-                        || messageParagraph1Visible
-                        || multipleParagraphsVisible;
+                        || messageParagraphsVisible
+                        || menuItemsVisible;
 
         boolean footerMessageVisible = !TextUtils.isEmpty(mFooterMessageView.getText());
         boolean modalDialogScrollViewVisible =
@@ -667,8 +687,10 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         mTitleIcon.setVisibility(titleIconVisible ? View.VISIBLE : View.GONE);
         mTitleContainer.setVisibility(titleContainerVisible ? View.VISIBLE : View.GONE);
         mMessageParagraphsContainer.setVisibility(
+                messageParagraphsVisible ? View.VISIBLE : View.GONE);
+        mMessageParagraphsSpacer.setVisibility(
                 multipleParagraphsVisible ? View.VISIBLE : View.GONE);
-        mMessageParagraph1.setVisibility(messageParagraph1Visible ? View.VISIBLE : View.GONE);
+        mMenuItemsContainer.setVisibility(menuItemsVisible ? View.VISIBLE : View.GONE);
         mTitleScrollView.setVisibility(scrollViewVisible ? View.VISIBLE : View.GONE);
         mModalDialogScrollView.setVisibility(
                 modalDialogScrollViewVisible ? View.VISIBLE : View.GONE);

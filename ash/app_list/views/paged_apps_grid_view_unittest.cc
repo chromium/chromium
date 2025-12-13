@@ -25,15 +25,14 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/button/label_button.h"
@@ -565,8 +564,8 @@ TEST_F(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
 
 // Verifies that sorting app list with an app item focused works as expected.
 TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with enough apps to create multiple pages.
   auto* helper = GetAppListTestHelper();
@@ -626,8 +625,8 @@ TEST_F(PagedAppsGridViewTest, SortAppsWithItemFocused) {
 
 // Verify on the paged apps grid the undo toast should show after scrolling.
 TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Show an app list with enough apps to create multiple pages.
   auto* helper = GetAppListTestHelper();
@@ -673,8 +672,8 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
 // Test tapping on the close button to dismiss the reorder toast. Also make sure
 // that items animate upward to take the place of the closed toast.
 TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(50);
@@ -730,8 +729,8 @@ TEST_F(PagedAppsGridViewTest, CloseReorderToast) {
 // item view layers which are created when entering cardified state are
 // destroyed once the exit cardified item animations are complete.
 TEST_F(PagedAppsGridViewTest, DestroyLayersOnDragLastItemFromFolder) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->CreateSingleItemFolder("folder_id",
                                                           "Item_0");
   GetAppListTestHelper()->model()->PopulateApps(5);
@@ -833,8 +832,8 @@ TEST_F(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
   // Trigger animation for reordering, and move to the search box while it is
   // still animating.
   tasks.push_back(base::BindLambdaForTesting([&]() {
-    ui::ScopedAnimationDurationScaleMode scope_duration(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode scope_duration(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     generator->MoveMouseTo(
         GetPagedAppsGridView()->GetBoundsInScreen().CenterPoint());
     ASSERT_TRUE(GetPagedAppsGridView()->reorder_timer_for_test()->IsRunning());
@@ -856,8 +855,8 @@ TEST_F(PagedAppsGridViewTest, EnterSearchBoxDuringDragNoCrash) {
 // triggers `OnCardifiedStateEnded()` twice, so test that cardified state ended
 // only happens once.
 TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
@@ -901,8 +900,8 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItem) {
 // When quickly dragging and dropping an item from one row to another, test that
 // row change animations are not interrupted during cardified state exit.
 TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(10);
   UpdateLayout();
 
@@ -958,8 +957,8 @@ TEST_F(PagedAppsGridViewTest, QuicklyDragAndDropItemToNewRow) {
 }
 
 TEST_F(PagedAppsGridViewTest, CardifiedEnterAnimationInterruptedByExit) {
-  ui::ScopedAnimationDurationScaleMode scope_duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scope_duration(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   GetAppListTestHelper()->model()->PopulateApps(5);
   UpdateLayout();
 
@@ -1049,8 +1048,8 @@ TEST_F(PagedAppsGridViewTest, DragOutsideOfNextPageSelectsOriginalPage) {
   tasks.push_back(base::BindLambdaForTesting([&]() {
     auto page_flip_waiter = std::make_unique<PageFlipWaiter>(pagination_model);
     page_flip_waiter->Wait();
-    ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
-        ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+    gfx::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+        gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
     // Second page should be selected.
     EXPECT_EQ(1, pagination_model->selected_page());
   }));

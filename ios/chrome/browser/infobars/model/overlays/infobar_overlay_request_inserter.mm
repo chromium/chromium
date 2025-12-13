@@ -51,6 +51,11 @@ void InfobarOverlayRequestInserter::RemoveObserver(Observer* observer) {
 
 void InfobarOverlayRequestInserter::InsertOverlayRequest(
     const InsertParams& params) {
+  if (params.infobar->infobar_type() == suppressed_infobar_type_) {
+    suppressed_infobar_type_.reset();
+    return;
+  }
+
   // Create the request and its cancel handler.
   std::unique_ptr<OverlayRequest> request =
       request_factory_(params.infobar, params.overlay_type);
@@ -90,4 +95,9 @@ void InfobarOverlayRequestInserter::InsertOverlayRequest(
   }
   queue->InsertRequest(params.insertion_index, std::move(request),
                        std::move(cancel_handler));
+}
+
+void InfobarOverlayRequestInserter::SuppressNextInfobarOfType(
+    InfobarType type) {
+  suppressed_infobar_type_ = type;
 }

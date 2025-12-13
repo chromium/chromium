@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 

@@ -52,11 +52,12 @@ bool QuicSessionPoolPeer::HasActiveSession(
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
-  return pool->HasActiveSession(
-      QuicSessionKey(server_id, privacy_mode, proxy_chain, session_usage,
-                     SocketTag(), network_anonymization_key,
-                     SecureDnsPolicy::kAllow, require_dns_https_alpn));
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
+  return pool->HasActiveSession(QuicSessionKey(
+      server_id, privacy_mode, proxy_chain, session_usage, SocketTag(),
+      network_anonymization_key, SecureDnsPolicy::kAllow,
+      require_dns_https_alpn, disable_cert_verification_network_fetches));
 }
 
 bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
@@ -66,7 +67,8 @@ bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
   return pool->HasActiveJob(QuicSessionKey(
       server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-      require_dns_https_alpn));
+      require_dns_https_alpn,
+      /*disable_cert_verification_network_fetches=*/false));
 }
 
 // static
@@ -75,10 +77,11 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
     const quic::QuicServerId& server_id,
     PrivacyMode privacy_mode,
     url::SchemeHostPort destination) {
-  QuicSessionKey session_key(server_id, privacy_mode, ProxyChain::Direct(),
-                             SessionUsage::kDestination, SocketTag(),
-                             NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                             /*require_dns_https_alpn=*/false);
+  QuicSessionKey session_key(
+      server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
+      SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+      /*require_dns_https_alpn=*/false,
+      /*disable_cert_verification_network_fetches=*/false);
   QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(pool->HasActiveJob(session_key));
   DCHECK_EQ(pool->all_sessions_.size(), 1u);
@@ -94,11 +97,12 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
     const NetworkAnonymizationKey& network_anonymization_key,
     const ProxyChain& proxy_chain,
     SessionUsage session_usage,
-    bool require_dns_https_alpn) {
-  QuicSessionKey session_key(server_id, privacy_mode, proxy_chain,
-                             session_usage, SocketTag(),
-                             network_anonymization_key, SecureDnsPolicy::kAllow,
-                             require_dns_https_alpn);
+    bool require_dns_https_alpn,
+    bool disable_cert_verification_network_fetches) {
+  QuicSessionKey session_key(
+      server_id, privacy_mode, proxy_chain, session_usage, SocketTag(),
+      network_anonymization_key, SecureDnsPolicy::kAllow,
+      require_dns_https_alpn, disable_cert_verification_network_fetches);
   DCHECK(pool->HasActiveSession(session_key));
   return pool->active_sessions_[session_key];
 }

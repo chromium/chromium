@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/network/client_cert_resolver.h"
 
 #include <cert.h>
@@ -18,6 +13,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -318,7 +314,7 @@ std::string GetProvisioningIdForCert(CERTCertificate* cert) {
   if (attribute_value->len > 0) {
     std::string id;
     id.assign(attribute_value->data,
-              attribute_value->data + attribute_value->len);
+              UNSAFE_TODO(attribute_value->data + attribute_value->len));
     return id;
   }
 

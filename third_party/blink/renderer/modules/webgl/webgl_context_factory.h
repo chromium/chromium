@@ -14,6 +14,7 @@
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
+class ExecutionContext;
 
 // Used to tell CanvasRenderingContext how to create a WebGL 1/2 context in
 // <canvas>.getContext(). Handles set up of the WebGL context and error
@@ -30,6 +31,7 @@ class WebGLContextFactory : public CanvasRenderingContextFactory {
   WebGLContextFactory& operator=(const WebGLContextFactory&) = delete;
 
   CanvasRenderingContext* Create(
+      ExecutionContext*,
       CanvasRenderingContextHost*,
       const CanvasContextCreationAttributesCore&) override;
   CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI() const override;
@@ -37,6 +39,7 @@ class WebGLContextFactory : public CanvasRenderingContextFactory {
 
  private:
   CanvasRenderingContext* CreateInternal(
+      ExecutionContext*,
       CanvasRenderingContextHost*,
       const CanvasContextCreationAttributesCore&);
   CanvasRenderingContext* CreateInternalWebGPU(
@@ -44,7 +47,7 @@ class WebGLContextFactory : public CanvasRenderingContextFactory {
       const CanvasContextCreationAttributesCore&);
 
   const char* GetContextName() const;
-  Platform::ContextType GetContextType() const;
+  Platform::WebGLContextType GetContextType() const;
 
   bool is_webgl2_;
 };

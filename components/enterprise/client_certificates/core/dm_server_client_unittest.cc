@@ -50,8 +50,7 @@ class DMServerClientUnitTest : public testing::Test {
 
   void SetFailedJobReply(int net_error, int response_code) {
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(
-            DoAll(service_.SendJobResponseAsync(net_error, response_code)))
+        .WillOnce(service_.SendJobResponseAsync(net_error, response_code))
         .RetiresOnSaturation();
   }
 

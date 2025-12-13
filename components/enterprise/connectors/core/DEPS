@@ -1,7 +1,11 @@
 include_rules = [
+  "+components/file_access",
   "+components/keyed_service",
+  "+components/safe_browsing",
   "+components/security_interstitials/core",
+  "+components/policy",
   "+components/url_matcher",
+  "+ui/base/clipboard",
   "+ui/base/l10n",
   "+third_party/re2",
 ]

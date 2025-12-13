@@ -119,7 +119,7 @@ void Socket::OnBluetoothSocketReceive(base::span<uint8_t> pending_write_buffer,
     return;
 
   pending_write_buffer.copy_prefix_from(
-      io_buffer->span().first(base::checked_cast<size_t>(num_bytes_received)));
+      io_buffer->first(base::checked_cast<size_t>(num_bytes_received)));
   receive_stream_->EndWriteData(static_cast<uint32_t>(num_bytes_received));
 
   ReceiveMore();

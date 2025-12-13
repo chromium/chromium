@@ -70,7 +70,7 @@ struct PathLengthDepthAndHash {
 };
 
 PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
-  std::string_view path = target_url.path_piece();
+  std::string_view path = target_url.path();
   int64_t path_length = path.length();
   path_length = ukm::GetLinearBucketMin(path_length, 10);
   // Truncate at 100 characters.

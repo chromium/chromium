@@ -9,13 +9,13 @@
 #include "build/buildflag.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "crypto/scoped_lacontext.h"
+#include "crypto/apple/scoped_lacontext.h"
 #endif
 
 namespace webauthn {
 
 #if BUILDFLAG(IS_MAC)
-using LocalAuthenticationToken = crypto::ScopedLAContext;
+using LocalAuthenticationToken = crypto::apple::ScopedLAContext;
 #else
 struct NoopLocalAuthenticationToken {};
 using LocalAuthenticationToken = NoopLocalAuthenticationToken;

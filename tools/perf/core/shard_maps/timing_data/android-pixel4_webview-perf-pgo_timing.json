@@ -1640,22 +1640,6 @@
         "name": "blink_perf.webgl/binding-typed-array-uniforms.html"
     },
     {
-        "duration": "36.0",
-        "name": "blink_perf.webgl_fast_call/binding-bind-buffer.html"
-    },
-    {
-        "duration": "28.0",
-        "name": "blink_perf.webgl_fast_call/binding-buffer-sub-data.html"
-    },
-    {
-        "duration": "28.0",
-        "name": "blink_perf.webgl_fast_call/binding-draw-arrays.html"
-    },
-    {
-        "duration": "29.0",
-        "name": "blink_perf.webgl_fast_call/binding-typed-array-uniforms.html"
-    },
-    {
         "duration": "30.0",
         "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
     },

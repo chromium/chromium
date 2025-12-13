@@ -10,7 +10,6 @@
 #include "components/exo/wayland/clients/client_base.h"
 
 #include <aura-shell-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <fcntl.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
@@ -37,6 +36,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapper.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -352,13 +352,13 @@ static std::vector<char> ReadFile(const std::string& filename) {
     return std::vector<char>();
   }
 
-  size_t fileSize = (size_t)file.GetLength();
-  std::vector<char> buffer(fileSize);
-
-  fileSize = file.Read(0, buffer.data(), fileSize);
+  const size_t file_size = base::checked_cast<size_t>(file.GetLength());
+  std::vector<char> buffer(file_size);
+  std::optional<size_t> bytes_read =
+      file.Read(0, base::as_writable_byte_span(buffer));
   file.Close();
 
-  CHECK_EQ(fileSize, buffer.size())
+  CHECK_EQ(file_size, bytes_read.value_or(-1))
       << "Shader file " << filename << " can't be read properly.";
 
   return buffer;

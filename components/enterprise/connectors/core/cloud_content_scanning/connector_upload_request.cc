@@ -1,0 +1,107 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
+
+#include "base/files/file_path.h"
+#include "base/task/thread_pool.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace enterprise_connectors {
+
+// static
+ConnectorUploadRequestFactory* ConnectorUploadRequest::factory_ = nullptr;
+
+ConnectorUploadRequest::ConnectorUploadRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    const std::string& data,
+    ConnectorUploadRequest::DataSource data_source,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : base_url_(base_url),
+      metadata_(metadata),
+      data_source_(data_source),
+      data_(data),
+      data_size_(data.size()),
+      histogram_suffix_(histogram_suffix),
+      callback_(std::move(callback)),
+      ui_task_runner_(ui_task_runner),
+      url_loader_factory_(url_loader_factory),
+      traffic_annotation_(traffic_annotation) {}
+
+ConnectorUploadRequest::ConnectorUploadRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    const base::FilePath& path,
+    uint64_t file_size,
+    bool is_obfuscated,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : base_url_(base_url),
+      metadata_(metadata),
+      data_source_(FILE),
+      path_(path),
+      data_size_(file_size),
+      is_obfuscated_(is_obfuscated),
+      histogram_suffix_(histogram_suffix),
+      callback_(std::move(callback)),
+      ui_task_runner_(ui_task_runner),
+      url_loader_factory_(url_loader_factory),
+      traffic_annotation_(traffic_annotation) {}
+
+ConnectorUploadRequest::ConnectorUploadRequest(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const GURL& base_url,
+    const std::string& metadata,
+    base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
+    Callback callback,
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : base_url_(base_url),
+      metadata_(metadata),
+      data_source_(PAGE),
+      page_region_(std::move(page_region)),
+      data_size_(page_region_.GetSize()),
+      histogram_suffix_(histogram_suffix),
+      callback_(std::move(callback)),
+      ui_task_runner_(ui_task_runner),
+      url_loader_factory_(url_loader_factory),
+      traffic_annotation_(traffic_annotation) {}
+
+ConnectorUploadRequest::~ConnectorUploadRequest() {
+  // Take ownership of the file in `data_pipe_getter_` if there is one to close
+  // it on another thread since it makes blocking calls.
+  if (!data_pipe_getter_) {
+    return;
+  }
+
+  auto file = data_pipe_getter_->ReleaseFile();
+  if (file) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            [](std::unique_ptr<
+                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
+            std::move(file)));
+  }
+}
+
+void ConnectorUploadRequest::set_access_token(const std::string& access_token) {
+  access_token_ = access_token;
+}
+
+void ConnectorUploadRequest::AssertCalledOnUIThread() {
+  DCHECK(ui_task_runner_ && ui_task_runner_->RunsTasksInCurrentSequence());
+}
+
+}  // namespace enterprise_connectors

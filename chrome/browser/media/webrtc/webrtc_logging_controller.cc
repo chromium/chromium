@@ -13,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -303,6 +304,11 @@ void WebRtcLoggingController::StartEventLogging(
   WebRtcEventLogManager::GetInstance()->StartRemoteLogging(
       render_process_id_, session_id, max_log_size_bytes, output_period_ms,
       web_app_id, callback);
+}
+
+base::RepeatingCallback<void(const std::string&)>
+WebRtcLoggingController::GetLogMessageCallback() {
+  return text_log_handler_->GetLogMessageCallback();
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

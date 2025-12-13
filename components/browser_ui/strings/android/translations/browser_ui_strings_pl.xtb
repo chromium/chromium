@@ -1,18 +1,13 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
-<translation id="1004806631856047384">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
-
-Zaawansowana ochrona kontroluje te ustawienia Chrome:
-• Opcja „Zawsze używaj bezpiecznych połączeń” jest włączona.
-• Opcja „Optymalizator JavaScriptu” jest wyłączona. <ph name="BEGIN_LINK2" />Zarządzaj wyjątkami dotyczącymi witryny<ph name="END_LINK2" /></translation>
 <translation id="1006017844123154345">Otwórz online</translation>
 <translation id="1036348656032585052">Wyłącz</translation>
-<translation id="1044891598689252897">Strony będą działać normalnie</translation>
 <translation id="1070329623210597193">Pliki, które ta witryna może wyświetlać lub edytować</translation>
 <translation id="1073417869336441572">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Możesz poprosić o wyświetlenie witryn w wersji na komputer</translation>
 <translation id="1085696779717592361">Domyślne korzystanie z Chrome</translation>
+<translation id="113098737392899175">Gdy klawiatura jest podłączona, poruszaj się po stronach przy użyciu kursora tekstowego</translation>
 <translation id="1178015372320901893">Plansza dolna Moje skróty</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
@@ -26,6 +21,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="129382876167171263">W tym miejscu pojawiają się pliki zapisane przez witryny</translation>
 <translation id="131112695174432497">Dane, które mają wpływ na personalizację reklam, są usuwane</translation>
 <translation id="1317194122196776028">Zapomnij tę stronę</translation>
+<translation id="1321110954513621549">Dozwolona • Przybliżona</translation>
 <translation id="1323433172918577554">Pokaż więcej</translation>
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
 <translation id="1343356790768851700">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom</translation>
@@ -37,13 +33,16 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1409338233051621926">Kliknij Aplikacje, a potem Aplikacje domyślne</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1415855080660575082">Pozwól Chrome udostępniać ostatnie karty swojemu urządzeniu, aby były one widoczne na nim na liście aplikacji i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili włączyć lub wyłączyć w ustawieniach Chrome.</translation>
+<translation id="1420688843103859429">Przechodź do przodu i do tyłu, przesuwając 2 palcami po touchpadzie</translation>
 <translation id="1432650420699700107">Strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w sieci lokalnej</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1464044141348608623">Nie zezwalaj witrynom na sprawdzanie, kiedy używasz urządzenia</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> witryna}few{<ph name="SITE_COUNT" /> witryny}many{<ph name="SITE_COUNT" /> witryn}other{<ph name="SITE_COUNT" /> witryny}}</translation>
+<translation id="1476700086976862423">Kolor motywu: sepia</translation>
 <translation id="1500473259453106018">Ukryj kartę Obniżki cen na kartach</translation>
 <translation id="1508931164824684991">Strony mogą używać JavaScriptu</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
+<translation id="1532175480576580256">Plansza dolna Moje skróty otwarta na całą wysokość</translation>
 <translation id="1538031354170655462">Strony zwykle używają komunikacji Near Field Communication (NFC) do obsługi tagów lub urządzeń w pobliżu, na przykład do skanowania identyfikatorów lub dokonywania płatności zbliżeniowych</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
 <translation id="1569054338208717605">Witryny będą działać szybciej dzięki mechanizmowi V8 w przeglądarce Chrome, ale będzie ona trochę mniej odporna na ataki</translation>
@@ -72,12 +71,15 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="1799920918471566157">Chrome – wskazówki</translation>
 <translation id="1816835383954230954">Gdy ta opcja jest włączona, Chrome działa szybciej, a funkcje używające JavaScriptu powinny działać zgodnie z założeniami. Po jej wyłączeniu wydajność spada, ale mechanizm V8 jest bardziej odporny na ataki.</translation>
 <translation id="1818308510395330587">Aby w aplikacji <ph name="APP_NAME" /> można było korzystać z rzeczywistości rozszerzonej, włącz też aparat w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
+<translation id="1848033246551405023">Czcionka Sans Serif</translation>
+<translation id="1861262398884155592">Ten folder jest pusty</translation>
 <translation id="1881806992065048905">Plansza dolna wyglądu strony nowej karty</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1906181697255754968">Strony zwykle korzystają z dostępu do plików i folderów na Twoim urządzeniu, by na przykład automatycznie zapisywać efekty Twojej pracy</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1939059826036755332">Automatyczny obraz w obrazie</translation>
 <translation id="1954597385941141174">Strony mogą prosić o zgodę na połączenie z urządzeniami USB</translation>
 <translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
@@ -92,6 +94,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2080070583977670716">Więcej ustawień</translation>
 <translation id="2091887806945687916">Dźwięk</translation>
+<translation id="2094208275686143364">Kolor motywu: jasny</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
 <translation id="2102396546234652240">Nie zezwalaj witrynom na używanie mikrofonu</translation>
 <translation id="2117655453726830283">Następny slajd</translation>
@@ -115,17 +118,20 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="228293613124499805">Aby strony, na które wchodzisz, mogły lepiej działać, przeważnie zapisują one na Twoim urządzeniu dane. Najczęściej są to informacje, które im udostępniasz, lub Twoje ustawienia. Zalecamy pozostawienie tego ustawienia włączonego.</translation>
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
+<translation id="2347601491101454548">Plansza dolna Moje skróty otwarta do połowy wysokości</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
 <translation id="2390272837142897736">Zwiększ powiększenie</translation>
+<translation id="2397689164757137845">Dozwolona • Dokładna</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2403474027143565107">Dokładna</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Dozwolone: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
+<translation id="2404857459073803936">Dostęp do lokalizacji w tej witrynie</translation>
 <translation id="2410940059315936967">Witryna, którą odwiedzasz, może wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Pliki cookie tworzone przez inne witryny są nazywane plikami cookie innych firm.</translation>
 <translation id="2411116727035790889">Włącz skróty</translation>
 <translation id="2433507940547922241">Wygląd</translation>
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="2438120137003069591">Tymczasowo zezwalasz tej witrynie na używanie plików cookie innych firm. Oznacza to słabszą ochronę przeglądania, ale jest większa szansa na to, że funkcje witryny będą działać zgodnie z oczekiwaniami. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
-<translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
 <translation id="2445311670906052406">Chrome udostępnia teraz ostatnie karty Twojemu urządzeniu. Zobaczysz je na liście aplikacji na urządzeniu i w wynikach wyszukiwania. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
@@ -136,6 +142,8 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2498359688066513246">Pomoc i opinie</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2533138527374486328">Gdy ta opcja jest włączona, strony mogą prosić o zgodę na połączenie z dowolnym urządzeniem w Twojej sieci lokalnej. Gdy jest wyłączona, strony nie mogą łączyć się z urządzeniami w sieci lokalnej.</translation>
+<translation id="2536779053640817375">Dozwolona jednorazowo • Dokładna</translation>
+<translation id="2544997614631598250">Kolor motywu: ciemny</translation>
 <translation id="2546283357679194313">Pliki cookie i dane witryn</translation>
 <translation id="2570922361219980984">Dostęp do lokalizacji jest wyłączony też na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Rozwinięty – kliknij, by zwinąć.</translation>
@@ -143,6 +151,11 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2588271083332682494">Utrzymuj porządek dzięki grupom kart</translation>
 <translation id="2597457036804169544">Nie stosuj ciemnego motywu witryn</translation>
 <translation id="2606760465469169465">Automatyczna weryfikacja</translation>
+<translation id="2610903128639500624">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
+
+Zaawansowana ochrona kontroluje te ustawienia Chrome:
+• Opcja „Zawsze używaj bezpiecznych połączeń” jest włączona.
+• Opcja „Optymalizator JavaScriptu” jest wyłączona. <ph name="BEGIN_LINK2" />Zarządzaj wyjątkami dotyczącymi witryny<ph name="END_LINK2" /></translation>
 <translation id="2621115761605608342">Zezwól na użycie JavaScriptu w określonej witrynie.</translation>
 <translation id="2626708220538466178">Plansza dolna przeglądarki domyślnej zamknięta</translation>
 <translation id="2653659639078652383">Prześlij</translation>
@@ -158,6 +171,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2789132527330338807">Strony mogą prosić o utworzenie mapy 3D otoczenia lub śledzenie pozycji kamery</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
+<translation id="2794551654724114396">Włącz powiadomienia, aby otrzymywać przydatne wskazówki, które pomogą Ci w pełni wykorzystać możliwości Chrome</translation>
 <translation id="2795716239552913152">Strony zwykle używają lokalizacji w celu dobierania funkcji lub informacji, na przykład wiadomości lokalnych lub sklepów w pobliżu</translation>
 <translation id="2800760947029405028">Prześlij obraz</translation>
 <translation id="2802908157808345702">Nie zezwalaj stronom na wysyłanie wyskakujących okienek ani używanie przekierowań</translation>
@@ -170,6 +184,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
 <translation id="2918484639460781603">Przejdź do ustawień</translation>
+<translation id="293060180538644702">Otrzymuj powiadomienia z wskazówkami dotyczącymi Chrome</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2939338015096024043">Gdy ta opcja jest włączona, strony internetowe mogą prosić o możliwość śledzenia pozycji kamery i uzyskiwania informacji o otoczeniu. Gdy jest wyłączona, strony nie mogą śledzić pozycji kamery ani poznawać otoczenia.</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
@@ -190,10 +205,11 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3123473560110926937">Blokowane na niektórych stronach</translation>
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
 <translation id="3143754809889689516">Odtwórz od początku</translation>
-<translation id="3162899666601560689">Witryny mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
+<translation id="3164169438034704658">Dokładną lokalizację możesz włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3165022941318558018">Zezwól witrynie na używanie plików cookie innych firm</translation>
 <translation id="3167868116600277716">Karty Discover</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
+<translation id="3199078925536734975">Dozwolona jednorazowo • Przybliżona</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3223425961342298674">Lokalizacja nie jest dozwolona</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
@@ -205,7 +221,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="3295019059349372795">Rozdział 11: Szmaragdowe Miasto</translation>
 <translation id="3295602654194328831">Ukryj informacje</translation>
-<translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3333961966071413176">Wszystkie kontakty</translation>
 <translation id="3360338140203645771">Usunąć zapisane poziomy powiększenia?</translation>
 <translation id="3362437373201486687">Skanuję w poszukiwaniu urządzeń Bluetooth</translation>
@@ -228,7 +243,10 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3600792891314830896">Wycisz strony, które odtwarzają dźwięk</translation>
 <translation id="3602290021589620013">Podgląd</translation>
 <translation id="3611658447322220736">Niedawno zamknięte strony mogą dokończyć wysyłanie i odbieranie danych</translation>
+<translation id="3619294456800709762">Witryny mogą automatycznie włączać obraz w obrazie</translation>
 <translation id="3628308229821498208">Sugerowane wyszukiwania</translation>
+<translation id="3632460243282703117">Subskrybuj</translation>
+<translation id="363748948745453283">Używana jest przybliżona lokalizacja</translation>
 <translation id="3641456520301071208">Strony mogą prosić o informacje o Twojej lokalizacji</translation>
 <translation id="3658847490588580244">Plansza dolna przeglądarki domyślnej</translation>
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> witryna w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}few{<ph name="RWS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}many{<ph name="RWS_MEMBERS_COUNT" /> witryn w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}other{<ph name="RWS_MEMBERS_COUNT" /> witryny w grupie witryn <ph name="RWS_OWNER" />, które mają dostęp do danych o Twojej aktywności w tej grupie}}</translation>
@@ -249,6 +267,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3803367742635802571">Strony, które odwiedzasz, mogą przestać działać zgodnie z założeniami ich twórców</translation>
 <translation id="3816118180265633665">Kolory Chrome</translation>
 <translation id="381841723434055211">Numery telefonów</translation>
+<translation id="3823453485268218808">Czcionka o stałej szerokości znaków</translation>
 <translation id="3826050100957962900">Logowanie przez inną usługę</translation>
 <translation id="3835233591525155343">Korzystanie z urządzenia</translation>
 <translation id="3843916486309149084">Chrome ponownie zablokuje pliki cookie dzisiaj</translation>
@@ -258,10 +277,9 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3895926599014793903">Wymuś powiększenie</translation>
 <translation id="3903738175795615004">Aby zamknąć pełny ekran, przeciągnij od góry lub naciśnij klawisz Esc.</translation>
 <translation id="3905475044299942653">Zatrzymaj wiele powiadomień</translation>
-<translation id="3908288065506437185">Blokuj pliki cookie innych firm w trybie incognito</translation>
-<translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
 <translation id="3922092564198021702">Na telefonie otwórz Ustawienia.</translation>
 <translation id="3933121352599513978">Zwiń niechciane żądania (zalecane)</translation>
+<translation id="3934905113567851655">Ściągnij, aby zmienić rozmiar</translation>
 <translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="3955321697524543127">Nie zezwalaj witrynom na łączenie się z urządzeniami USB</translation>
 <translation id="3965467402665811906">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
@@ -274,8 +292,10 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
+<translation id="4042597221652780603">Przybliżona</translation>
 <translation id="4046123991198612571">Następny utwór</translation>
 <translation id="4077310749977440510">Strony zwykle odczytują zawartość schowka na przykład w celu zachowania formatowania kopiowanego tekstu</translation>
+<translation id="4082080074595021446">Wyjątki dla konkretnych witryn są niedozwolone, ponieważ urządzenie z Androidem nie ma wystarczającej ilości pamięci RAM.</translation>
 <translation id="4149890623864272035">Czy na pewno chcesz usunąć wszystkie dane lokalne, w tym pliki cookie, i zresetować wszystkie uprawnienia tej witryny?</translation>
 <translation id="4149994727733219643">Uproszczony widok stron internetowych</translation>
 <translation id="4151930093518524179">Domyślne powiększenie</translation>
@@ -298,12 +318,16 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4336566011000459927">Chrome ponownie ograniczy pliki cookie dzisiaj</translation>
 <translation id="4338831206024587507">Wszystkie witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nie zezwalaj witrynom na wysyłanie powiadomień</translation>
+<translation id="4341577178275615435">Aby włączyć lub wyłączyć przeglądanie przy użyciu kursora, użyj skrótu F7</translation>
 <translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
+<translation id="4412683424767388419">Plansza dolna Kolory Chrome otwarta do połowy wysokości</translation>
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
 <translation id="4419929467120297501">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
+<translation id="4425416282877905577">Czcionka Serif</translation>
 <translation id="443121186588148776">Port szeregowy</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
+<translation id="4441527683895888777">Plansza dolna Kolory Chrome otwarta na całą wysokość</translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
 <translation id="4475912480633855319">{COOKIES,plural, =1{# plik cookie}few{# pliki cookie}many{# plików cookie}other{# pliku cookie}}</translation>
 <translation id="4478158430052450698">Łatwiejsze dostosowywanie powiększenia w różnych witrynach</translation>
@@ -313,15 +337,16 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4566417217121906555">Wycisz mikrofon</translation>
 <translation id="4570913071927164677">Szczegóły</translation>
 <translation id="4578289292431526768">Rozpocznij</translation>
-<translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="461356340001513807">Umożliwia logowanie się w witrynach za pomocą Twojego konta w usłudze tożsamości</translation>
 <translation id="4635969503923889910">Nie zezwalaj stronom na używanie urządzeń NFC</translation>
 <translation id="4644713492825682049">Usuń i zresetuj</translation>
 <translation id="4645575059429386691">Zarządzany przez Twojego rodzica</translation>
+<translation id="4652266463001779298">Niedozwolone</translation>
 <translation id="4663373278480897665">Zezwolono na dostęp do kamery</translation>
 <translation id="4670064810192446073">Rzeczywistość wirtualna</translation>
 <translation id="4672315773691449562">Kliknij Przeglądarka, a potem Chrome</translation>
 <translation id="4676059169848868271">Aby umożliwić <ph name="APP_NAME" /> śledzenie rąk, włącz tę opcję w <ph name="BEGIN_LINK" />ustawieniach systemu<ph name="END_LINK" />.</translation>
+<translation id="4688045258817337666">Zarządzanie kartami</translation>
 <translation id="4751476147751820511">Czujniki ruchu lub światła</translation>
 <translation id="4755971844837804407">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać dowolne reklamy. Gdy jest wyłączona, strony nie mogą wyświetlać reklam uciążliwych ani wprowadzających w błąd.</translation>
 <translation id="4779083564647765204">Powiększ</translation>
@@ -330,6 +355,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4816495437032298535">Zapisane powiększenie witryn</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
+<translation id="4852997963351138624">Szesnastkowy kod koloru tła</translation>
 <translation id="4882919381756638075">Strony zwykle używają mikrofonu na potrzeby komunikacji, na przykład czatu wideo</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
 <translation id="4887024562049524730">Pytaj, zanim zezwolisz stronom na korzystanie z urządzenia i danych rzeczywistości wirtualnej (zalecane)</translation>
@@ -339,6 +365,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="4953688446973710931">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na automatyczne pobieranie kilku plików. Gdy jest wyłączona, strony nie mogą automatycznie pobierać kilku plików.</translation>
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
 <translation id="4972737347717125191">Strony mogą prosić o zgodę na używanie urządzeń i danych rzeczywistości wirtualnej</translation>
+<translation id="4973805849704516244">Plansza dolna Kolory Chrome</translation>
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
 <translation id="4978178243417029856">Więcej informacji o kanale Discover</translation>
@@ -360,6 +387,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5116239826668864748">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="512938610812707830">Plansza dolna kolekcji motywów wyglądu strony Nowa karta, otwarta na całą wysokość</translation>
+<translation id="5137460097045297858">Plansza dolna kart Discover otwarta do połowy wysokości</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Obniżka ceny na otwartych kartach}few{Obniżki cen na otwartych kartach}many{Obniżki cen na otwartych kartach}other{Obniżki cen na otwartych kartach}}</translation>
 <translation id="5186036860380548585">Opcja dostępna u góry ekranu</translation>
 <translation id="5197729504361054390">Wybrane kontakty zostaną udostępnione witrynie <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
@@ -378,7 +406,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5335288049665977812">Zezwalaj na wykonywanie kodu JavaScript w witrynach (zalecane)</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
-<translation id="5371407439562620893">Optymalizacja i zabezpieczenia JavaScriptu</translation>
 <translation id="5373874281522292782">Twoje grupy kart zostały zapisane</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
@@ -390,7 +417,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5515432237048785579">Plansza dolna karty Discover otwarta na całą wysokość</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
 <translation id="5527111080432883924">Pytaj, czy zezwolić stronom na odczytywanie tekstu i obrazów ze schowka (zalecane)</translation>
-<translation id="5545693483061321551">Witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem różnych witryn, na przykład w celu personalizowania reklam. W niektórych witrynach mogą nie działać funkcje.</translation>
 <translation id="5553374991681107062">Najnowsze</translation>
 <translation id="5555115555607204100">Działanie witryn nie będzie przyspieszane za pomocą mechanizmu V8 w przeglądarce Chrome, ale będzie ona trochę bardziej odporna na ataki</translation>
 <translation id="5556459405103347317">Odśwież</translation>
@@ -407,14 +433,16 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5700761515355162635">Pliki cookie innych firm są dozwolone</translation>
 <translation id="5706552988683188916">Spowoduje to usunięcie plików cookie i innych danych witryny <ph name="WEBSITE" /></translation>
 <translation id="571222594670061844">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości</translation>
-<translation id="5723967018671998714">Pliki cookie innych firm są blokowane w trybie incognito</translation>
 <translation id="5740126560802162366">Witryny mogą zapisywać dane na Twoim urządzeniu</translation>
 <translation id="5743425052258407233">Zyskaj dostęp do swojej historii na wszystkich urządzeniach, aby móc łatwo wznawiać przeglądanie od ostatniego miejsca</translation>
 <translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
 <translation id="5750869797196646528">Śledzenie rąk</translation>
 <translation id="5753570386948603678">Usuń z historii</translation>
 <translation id="5771720122942595109">Zablokowane: <ph name="PERMISSION_1" /></translation>
+<translation id="5792627621688759634">Przechodź między stronami za pomocą touchpada</translation>
+<translation id="5801457289562671820">Zalecane przez Twoją organizację</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
+<translation id="5817042798620209981">Informacje o witrynie, okno</translation>
 <translation id="5822675474983796325">Plansza dolna Dostosuj stronę nowej karty otwarta na całą wysokość</translation>
 <translation id="5833899990800318936">Nie zezwalaj witrynom na używanie JavaScriptu</translation>
 <translation id="583673505367439042">Strony mogą prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
@@ -425,6 +453,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5876056640971328065">Wstrzymaj film</translation>
 <translation id="5877248419911025165">Zwiń wszystkie żądania</translation>
 <translation id="5878945009165002849">Blokuj prośby o zalogowanie się pochodzące od usług tożsamości</translation>
+<translation id="588258955323874662">Pełny ekran</translation>
 <translation id="5884085660368669834">Ustawienie witryny</translation>
 <translation id="5887687176710214216">Ostatnio używana wczoraj</translation>
 <translation id="5908617755156109052">Nie zezwalaj stronom na tworzenie mapy 3D otoczenia ani na śledzenie pozycji kamery</translation>
@@ -439,12 +468,14 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="5975083100439434680">Pomniejsz</translation>
 <translation id="5976059395673079613"><ph name="PERMISSION" /> – <ph name="WARNING_MESSAGE" /></translation>
 <translation id="5998071268779572583">Włącz karty Discover</translation>
+<translation id="6012967556075291653">Przypięty skrót</translation>
 <translation id="6015775454662021376">Zarządzaj dostępem tej strony do Twojego urządzenia</translation>
 <translation id="6040143037577758943">Zamknij</translation>
 <translation id="6042308850641462728">Więcej</translation>
 <translation id="6064125863973209585">Ukończenie pobierania plików</translation>
 <translation id="6071501408666570960">Może nastąpić wylogowanie z tej strony</translation>
 <translation id="6085954183010297841">Usunąć uprawnienia do edycji pliku? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Gdy ta opcja jest włączona, strony internetowe mogą automatycznie włączać obraz w obrazie. Gdy jest wyłączona, strony nie mogą automatycznie włączać obrazu w obrazie.</translation>
 <translation id="6120483543004435978">Gdy ta opcja jest włączona, strony internetowe mogą prosić o pozwolenie na sprawdzanie, kiedy używasz urządzenia. Gdy jest wyłączona, strony nie mogą się dowiedzieć, kiedy używasz urządzenia.</translation>
 <translation id="615886654739818377">Nie zezwalaj stronom na zarządzanie oknami na wszystkich wyświetlaczach</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
@@ -459,6 +490,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6207207788774442484">Usuwanie danych i resetowanie uprawnień</translation>
 <translation id="6231752747840485235">Odinstalować aplikację „<ph name="APP_NAME" />”?</translation>
 <translation id="6234351944623978659">Kliknij Przeglądarka &gt; Chrome.</translation>
+<translation id="6260830281887654268">Plansza dolna kolekcji motywów wyglądu strony Nowa karta otwarta do połowy wysokości</translation>
 <translation id="6262191102408817757">Na podstawie ostatniej karty</translation>
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
@@ -490,8 +522,11 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Treść chroniona</translation>
 <translation id="662080504995468778">Zostań</translation>
+<translation id="6630443592285535486">Wpisz tutaj wartość szesnastkową</translation>
 <translation id="6635327442719709864">Gdy to ustawienie jest włączone, strony mogą prosić o zgodę na używanie portów szeregowych. Gdy jest wyłączone, strony nie mogą używać portów szeregowych.</translation>
+<translation id="6669390930482049506">Powiadom mnie</translation>
 <translation id="6678072580827808850">Przeprowadź kontrolę zabezpieczeń</translation>
+<translation id="6682057173375416470">Otrzymuj sugerowane artykuły na stronie Nowa karta</translation>
 <translation id="6683865262523156564">Ta witryna należy do grupy, która ma dostęp do danych o Twojej aktywności. Grupa jest zdefiniowana przez <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Zdjęcia profilowe</translation>
 <translation id="6697925417670533197">W trakcie pobierania</translation>
@@ -515,9 +550,11 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="6965382102122355670">OK</translation>
 <translation id="6980861169612950611">Usunąć dane witryny? <ph name="SITE_NAME" /></translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
+<translation id="6991142177939282156">Dozwolona • Używana jest przybliżona lokalizacja</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
 <translation id="7000754031042624318">Wyłączone w ustawieniach Androida</translation>
 <translation id="702275896380648118">Witryna określa Twoje zainteresowania, a potem sugeruje reklamy innym witrynom. Witryna wykorzystuje też gromadzone przez Chrome informacje o interesujących Cię tematach, aby wyświetlać trafniejsze reklamy.</translation>
+<translation id="7036823721811529709">Słuchaj w tle</translation>
 <translation id="7044081119134178347">Przyznano jednorazowy dostęp do aparatu</translation>
 <translation id="7053983685419859001">Blokuj</translation>
 <translation id="7055552182600664515">W przypadku odtwarzania treści chronionych prawem autorskim może być wymagane, aby strony korzystały z usługi ochrony treści. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
@@ -541,16 +578,21 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="728412880473384942">Strony są szybsze, ale mniej bezpieczne</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
+<translation id="7369678931043226462">Plansza dolna Dostosuj stronę nowej karty otwarta do połowy wysokości</translation>
 <translation id="7383715096023715447">Ustawienia domeny <ph name="DOMAIN" /></translation>
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7406113532070524618">To ustawienie działa bez ujawniania Twojej tożsamości i udzielania witrynom dostępu do Twojej historii przeglądania, chociaż witryny mogą w ramach weryfikacji udostępniać niewielką ilość informacji.</translation>
 <translation id="7409735910987429903">Strony mogą wysyłać wyskakujące okienka, by wyświetlać reklamy, albo używać przekierowań, by otwierać strony, których możesz nie chcieć odwiedzać</translation>
+<translation id="7412160840120117304">Szesnastkowy kod koloru podstawowego</translation>
+<translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{Powiększenie}few{Powiększenie: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}many{Powiększenie: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}other{Powiększenie: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
 <translation id="7423098979219808738">Najpierw zapytaj</translation>
 <translation id="7423538860840206698">Zablokowano odczytywanie schowka</translation>
 <translation id="7425915948813553151">Ciemny motyw witryn</translation>
+<translation id="746412105358554870">Optymalizacja i zabezpieczenia JavaScriptu</translation>
 <translation id="7478658909253570368">Nie zezwalaj witrynom na łączenie się z portami szeregowymi</translation>
 <translation id="7488573225650545859">Ukrywaj karty Widok na liście aplikacji</translation>
 <translation id="7521387064766892559">JavaScript</translation>
+<translation id="7538975533793429503">Suwak rozmiaru czcionki</translation>
 <translation id="7547989957535180761">Gdy ta opcja jest włączona, strony internetowe mogą wyświetlać prośby o zalogowanie. Gdy jest wyłączona, nie mogą wyświetlać takich próśb.</translation>
 <translation id="7553211568594248088">Zamknij wyszukiwanie w hubie</translation>
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
@@ -576,6 +618,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7804248752222191302">Strona używa kamery</translation>
 <translation id="7805832099057502789">Plansza dolna wyglądu strony nowej karty otwarta na całą wysokość</translation>
 <translation id="7807060072011926525">Udostępniany przez Google</translation>
+<translation id="7809029041571842593">Plansza dolna kart na stronie nowej karty otwarta do połowy wysokości</translation>
 <translation id="7815680994978050279">Zablokowano niebezpieczne pobieranie</translation>
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>
 <translation id="783819812427904514">Wyłącz wyciszenie filmu</translation>
@@ -583,7 +626,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7881140103901777395">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Takie pliki są jednak dozwolone w tej witrynie, ponieważ są w niej niezbędne do świadczenia podstawowych usług.\n\nAby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="7891547341794213004">Ukryj kartę Kontynuuj na tej karcie</translation>
-<translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="789722939441020330">Nie zezwalaj witrynom na automatyczne pobieranie wielu plików</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
 <translation id="7948081750384205628">Dowiedz się więcej o ustawieniu <ph name="SETTING_TITLE" /></translation>
@@ -592,6 +634,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="7990211076305263060">Gdy ta opcja jest włączona, strony internetowe mogą prosić o dostęp do mikrofonu. Gdy jest wyłączona, strony nie mogą go używać.</translation>
 <translation id="8007176423574883786">Wyłączona na tym urządzeniu</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
+<translation id="8033047164036749181">Zasubskrybuj powiadomienia z tej witryny</translation>
 <translation id="8042586301629853791">Sortuj według:</translation>
 <translation id="8051193500142930381">Nie będą działać funkcje, które potrzebują kamery</translation>
 <translation id="8056330801132235235">Wartość domyślna Chrome</translation>
@@ -607,6 +650,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8117244575099414087">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników urządzenia. Gdy jest wyłączona, strony nie mogą używać czujników.</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
+<translation id="8163152278172770963">Nie zezwalaj witrynom na automatyczne włączanie obrazu w obrazie</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="818487310457576362">Aby zamknąć pełny ekran, przeciągnij od krawędzi ekranu.</translation>
 <translation id="8186479265534291036">Strona nie działa? Pliki cookie innych firm zostały zablokowane</translation>
@@ -618,6 +662,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8261506727792406068">Usuń</translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
+<translation id="8301363963630676147">Przyznano jednorazowo • Używana jest przybliżona lokalizacja</translation>
 <translation id="8315509175050791576">Udostępniam kartę</translation>
 <translation id="8324158725704657629">Nie pytaj ponownie</translation>
 <translation id="8362795839483915693">Możesz powiększać lub pomniejszać odwiedzane witryny</translation>
@@ -633,12 +678,14 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8441146129660941386">Przewiń do tyłu</translation>
 <translation id="8444433999583714703">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do lokalizacji, musisz ją też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Cofnij zgodę na dostęp do urządzenia</translation>
+<translation id="8467359479529706065">Plansza dolna wyglądu strony nowej karty otwarta do połowy wysokości</translation>
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8473055640493819707">Aplikacja „<ph name="APP_NAME" />” jest nieaktualna. Zainstaluj ją ponownie.</translation>
 <translation id="847433688444405067">Przeglądaj na różnych urządzeniach</translation>
 <translation id="8487700953926739672">Dostępny offline</translation>
 <translation id="848952951823693243">Zawsze żądaj strony mobilnej</translation>
 <translation id="8492822722330266509">Strony mogą wysyłać wyskakujące okienka i używać przekierowań</translation>
+<translation id="8493548450030356203">Wyskakujące okienko powiększenia</translation>
 <translation id="8499083585497694743">Włącz mikrofon</translation>
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>
 <translation id="851751545965956758">Nie zezwalaj stronom na łączenie się z urządzeniami</translation>
@@ -648,7 +695,6 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8549127125482561383">Jak wyświetlać żądania</translation>
 <translation id="8558480467877843976">Teraz możesz używać Chrome za każdym razem, gdy przeglądasz lub klikasz linki w wiadomościach, dokumentach i innych aplikacjach.</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
-<translation id="8580511488901768832">plansza dolna Moje skróty otwarta na całą wysokość</translation>
 <translation id="8593422116412089302">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wykorzystanie zapisanych informacji o Tobie. Gdy jest wyłączona, nie mogą o to prosić.</translation>
 <translation id="8609465669617005112">W górę</translation>
 <translation id="8617611086246832542">Gdy ta opcja jest włączona, strony internetowe są wyświetlane w wersji na komputery. Gdy jest wyłączona, strony są wyświetlane w wersji na urządzenia mobilne.</translation>
@@ -666,6 +712,7 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="8730621377337864115">Gotowe</translation>
 <translation id="8737426583868847403">Tutaj pojawią się witryny, dla których zapiszesz niestandardowy poziom powiększenia</translation>
 <translation id="8751914237388039244">Wybierz obraz</translation>
+<translation id="8775741625735357092">Pasek zakładek możesz włączyć, klikając Ustawienia &gt; Wygląd</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>
 <translation id="8801657293260363985">V8 to mechanizm JavaScript i WebAssembly w Chrome używany do zwiększania wydajności witryny</translation>
@@ -692,12 +739,14 @@ Zaawansowana ochrona kontroluje te ustawienia Chrome:
 <translation id="9019902583201351841">Zarządzany przez Twoich rodziców</translation>
 <translation id="902236149563113779">Strony zwykle śledzą pozycję kamery na potrzeby funkcji AR, na przykład w grach czy do wyświetlania trasy</translation>
 <translation id="9039697262778250930">Może nastąpić wylogowanie z tych stron</translation>
+<translation id="9065203028668620118">Edytuj</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9106233582039520022">Usunąć pliki cookie?</translation>
 <translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="913657688200966289">Przyznaj aplikacji <ph name="APP_NAME" /> uprawnienia w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="9138037198177304356">Powiadomienia są dozwolone</translation>
 <translation id="9138217887606523162">Obecne powiększenie: <ph name="ZOOM_LEVEL" />%%</translation>
+<translation id="915112772806845021">Strony używają tego ustawienia, aby automatycznie włączać obraz w obrazie. Dzięki temu możesz kontynuować oglądanie filmu, a jednocześnie zyskać miejsce na ekranie na inne zadania.</translation>
 <translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>

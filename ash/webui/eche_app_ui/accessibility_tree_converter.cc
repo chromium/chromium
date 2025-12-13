@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"

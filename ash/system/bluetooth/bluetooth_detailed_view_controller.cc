@@ -17,6 +17,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/network/network_event_log.h"

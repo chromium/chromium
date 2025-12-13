@@ -47,28 +47,29 @@ const char kNoXshm[] = "no-xshm";
 }  // namespace switches
 
 namespace features {
-BASE_FEATURE(kOddHeightMultiPlanarBuffers,
-             "OddHeightMultiPlanarBuffers",
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+BASE_FEATURE(kUseSmartRefForGPUFenceHandle, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kOddWidthMultiPlanarBuffers,
-             "OddWidthMultiPlanarBuffers",
-#if BUILDFLAG(IS_APPLE)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+// Enables using rounding instead of flooring for coordinate conversions.
+//
+// Using `round()` instead of `floor()` prevents the systematic downward bias
+// that causes layout drift.
+//
+// Assume we have value d in DIP and scale factor p > 1.
+// Let d' = screen_to_dip(dip_to_screen(d)), then
+//     d' == screen_to_dip(round(d*p))
+//        == screen_to_dip(d*p + eps), where |eps| <= 0.5. Then,
+//     d' == round( (d*p+eps) / p)
+//        == round(d + eps/p).
+// Since |eps / p < 0.5| and d is an integer, round(d + eps/p) == d,
+// therefore d' == d. QED.
+BASE_FEATURE(kUseRoundedPointConversion, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseSmartRefForGPUFenceHandle,
-             "UseSmartRefForGPUFenceHandle",
+BASE_FEATURE(kHdrAgtm, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTransparentIconWorkaround,
+#if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kHdrAgtm, "HdrAgtm", base::FEATURE_DISABLED_BY_DEFAULT);
-
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace features

@@ -14,7 +14,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -28,12 +27,10 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
-#include "components/fingerprinting_protection_filter/interventions/common/interventions_features.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_utils.h"
-#include "content/browser/fingerprinting_protection/canvas_noise_token_data.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -58,6 +55,7 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_util.h"
@@ -350,7 +348,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // crbug.com/140910: Many places were calling this with base::Time() as
   // delete_end, even though they should've used base::Time::Max().
   DCHECK_NE(base::Time(), delete_end);
-  DCHECK(domains_for_deferred_cookie_deletion_.empty());
 
   // If a specific StoragePartition is specified in the filter, only data
   // types that are scoped to a StoragePartition should be removed.
@@ -427,11 +424,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       // above).
       storage_partition_remove_mask |=
           StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUPS;
-    }
-    if (embedder_delegate_) {
-      domains_for_deferred_cookie_deletion_ =
-          embedder_delegate_->GetDomainsForDeferredCookieDeletion(
-              storage_partition, remove_mask);
     }
   }
   if (remove_mask & DATA_TYPE_LOCAL_STORAGE) {
@@ -522,15 +514,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
       deletion_filter = filter_builder->BuildCookieDeletionFilter();
     } else {
       deletion_filter = network::mojom::CookieDeletionFilter::New();
-    }
-
-    if (!domains_for_deferred_cookie_deletion_.empty()) {
-      // The data types that require deferred deletion are currently not
-      // filterable. If they become filterable we need to check if the
-      // selected domains should actually be deleted.
-      DCHECK(!deletion_filter->excluding_domains.has_value());
-      deletion_filter->excluding_domains =
-          domains_for_deferred_cookie_deletion_;
     }
 
     BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher embedder_matcher;
@@ -647,8 +630,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
 
   // Clears the Prefetch Cache as part of Clear-Site-Data prefetchCache header
   // and Browsing Data Cache Removal.
-  if ((remove_mask & (DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_CACHE)) &&
-      base::FeatureList::IsEnabled(features::kPrefetchBrowsingDataRemoval)) {
+  if ((remove_mask & (DATA_TYPE_PREFETCH_CACHE | DATA_TYPE_CACHE))) {
     if (auto* prefetch_service =
             BrowserContextImpl::From(browser_context_)->GetPrefetchService()) {
       auto storage_key_filter = filter_builder->BuildStorageKeyFilter();
@@ -719,7 +701,7 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   // Shared Dictionaries.
   if ((remove_mask & DATA_TYPE_COOKIES) || (remove_mask & DATA_TYPE_CACHE)) {
     if (base::FeatureList::IsEnabled(
-            network::features::kCompressionDictionaryTransportBackend)) {
+            network::features::kCompressionDictionaryTransport)) {
       network::mojom::NetworkContext* network_context =
           storage_partition->GetNetworkContext();
       network_context->ClearSharedDictionaryCache(
@@ -749,20 +731,6 @@ void BrowsingDataRemoverImpl::RemoveImpl(
     }
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // Regenerate CanvasNoiseToken:
-  // Renegerate the noise token for canvas noising. Because these noise tokens
-  // are linked to the profile, it can be used to identify users. As such,
-  // regeneration of the randomized token must occur to prevent creating a
-  // stable identifier.
-  if (remove_mask & DATA_TYPE_COOKIES &&
-      base::FeatureList::IsEnabled(
-          fingerprinting_protection_interventions::features::kCanvasNoise) &&
-      filter_builder->MatchesMostOriginsAndDomains()) {
-    content::CanvasNoiseTokenData::SetNewToken(browser_context_);
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   // Embedder data.
   if (embedder_delegate_) {
     embedder_delegate_->RemoveEmbedderData(
@@ -932,11 +900,10 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
   size_t num_erased = pending_sub_tasks_.erase(data_type);
   DCHECK_EQ(num_erased, 1U);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "browsing_data", "BrowsingDataRemoverImpl",
-      TRACE_ID_WITH_SCOPE("BrowsingDataRemoverImpl",
-                          static_cast<int>(data_type)),
-      "data_type", static_cast<int>(data_type));
+  TRACE_EVENT_END("browsing_data",
+                  perfetto::NamedTrack("BrowsingDataRemoverImpl",
+                                       static_cast<int>(data_type)),
+                  "data_type", static_cast<int>(data_type));
 
   base::UmaHistogramMediumTimes(
       base::StrCat({"History.ClearBrowsingData.Duration.Task.",
@@ -945,45 +912,6 @@ void BrowsingDataRemoverImpl::OnTaskComplete(TracingDataType data_type,
 
   if (!pending_sub_tasks_.empty())
     return;
-
-  // If any cookie deletions have been deferred do them now since all other
-  // tasks are completed.
-  if (!domains_for_deferred_cookie_deletion_.empty()) {
-    std::optional<StoragePartitionConfig> storage_partition_config =
-        task_queue_.front().filter_builder->GetStoragePartitionConfig();
-
-    DCHECK(remove_mask_ & DATA_TYPE_COOKIES);
-    DCHECK(!storage_partition_config.has_value() ||
-           storage_partition_config->is_default());
-
-    auto deletion_filter = network::mojom::CookieDeletionFilter::New();
-    deletion_filter->including_domains =
-        std::move(domains_for_deferred_cookie_deletion_);
-    // Moving a vector is defined to empty this vector.
-    DCHECK(domains_for_deferred_cookie_deletion_.empty());
-
-    // Asynchronous removal tasks might end up finishing after an arbitrary
-    // delay - this can postpone when OnTaskComplete runs.  Therefore we need to
-    // check if destruction of our `browser_context_` might have started in the
-    // meantime.  See also https://crbug.com/1216406.
-    if (browser_context_->ShutdownStarted()) {
-      // The tasks related to `domains_for_deferred_cookie_deletion_` and
-      // `deletion_filter` are implicitly dropped if we can't clear the data
-      // because the StoragePartition's destructor has already started running.
-      failed_data_types_ |= StoragePartition::REMOVE_DATA_MASK_COOKIES;
-    } else {
-      GetStoragePartition(storage_partition_config)
-          ->ClearData(
-              StoragePartition::REMOVE_DATA_MASK_COOKIES,
-              /*quota_storage_remove_mask=*/0,
-              /*filter_builder=*/nullptr,
-              /*storage_key_policy_matcher=*/base::NullCallback(),
-              std::move(deletion_filter),
-              /*perform_storage_cleanup=*/false, delete_begin_, delete_end_,
-              CreateTaskCompletionClosure(TracingDataType::kDeferredCookies));
-      return;
-    }
-  }
 
   slow_pending_tasks_closure_.Cancel();
 
@@ -1024,8 +952,6 @@ const char* BrowsingDataRemoverImpl::GetHistogramSuffix(TracingDataType task) {
       return "TrustTokens";
     case TracingDataType::kConversions:
       return "Conversions";
-    case TracingDataType::kDeferredCookies:
-      return "DeferredCookies";
     case TracingDataType::kSharedStorage:
       return "SharedStorage";
     case TracingDataType::kPreflightCache:
@@ -1045,11 +971,10 @@ base::OnceClosure BrowsingDataRemoverImpl::CreateTaskCompletionClosure(
   auto result = pending_sub_tasks_.insert(data_type);
   DCHECK(result.second) << "Task already started: "
                         << static_cast<int>(data_type);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "browsing_data", "BrowsingDataRemoverImpl",
-      TRACE_ID_WITH_SCOPE("BrowsingDataRemoverImpl",
-                          static_cast<int>(data_type)),
-      "data_type", static_cast<int>(data_type));
+  TRACE_EVENT_BEGIN("browsing_data", "BrowsingDataRemoverImpl",
+                    perfetto::NamedTrack("BrowsingDataRemoverImpl",
+                                         static_cast<int>(data_type)),
+                    "data_type", static_cast<int>(data_type));
   return base::BindOnce(&BrowsingDataRemoverImpl::OnTaskComplete, GetWeakPtr(),
                         data_type, base::TimeTicks::Now());
 }

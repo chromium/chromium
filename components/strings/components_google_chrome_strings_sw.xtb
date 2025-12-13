@@ -32,16 +32,16 @@
         <ph name="ADVANCED_TITLE" />
         na uondoe tiki kwenye "<ph name="NO_PREFETCH_DESCRIPTION" />."
         Ikiwa hili halitatatua tatizo, tunapendekeza uchague tena chaguo hili kwa utendaji ulioboreshwa.</translation>
-<translation id="6855094794438142393">Nenda kwenye
+<translation id="6581867098636731226">Nenda kwenye
           menyu ya Chrome &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          Mipangilio ya LAN
-          na uondoe tiki kwenye "Tumia seva ya proksi kwa LAN yako".</translation>
+          Mtandao na intaneti &gt; Seva mbadala
+          kisha uache kuchagua "Tambua mipangilio kiotomatiki."</translation>
 <translation id="7230956101631259640">Unaangalia ukurasa salama wa Chrome</translation>
 <translation id="8232971017369963250">Chrome inawezeshwa na mradi wa programu huria wa <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome inawezeshwa pia na <ph name="BEGIN_LINK_OSS" />programu nyingine huria<ph name="END_LINK_OSS" />.</translation>

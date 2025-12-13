@@ -29,7 +29,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkPath;
 
@@ -299,13 +299,6 @@ class Surface final : public ui::PropertyHandler {
   bool HasPendingAcquireFence() const;
   // Returns whether the surface has a committed acquire fence.
   bool HasAcquireFence() const;
-
-  // Request a callback when the buffer attached at the next commit is
-  // no longer used by that commit.
-  void SetPerCommitBufferReleaseCallback(
-      Buffer::PerCommitExplicitReleaseCallback callback);
-  // Whether the surface has an uncommitted per-commit buffer release callback.
-  bool HasPendingPerCommitBufferReleaseCallback() const;
 
   // Surface state (damage regions, attached buffers, etc.) is double-buffered.
   // A Commit() call atomically applies all pending state, replacing the
@@ -598,12 +591,6 @@ class Surface final : public ui::PropertyHandler {
     // The acquire gpu fence to associate with the surface buffer.
     // Not persisted between commits.
     std::unique_ptr<gfx::GpuFence> acquire_fence;
-    // Callback to notify about the per-commit buffer release. The wayland
-    // Exo backend uses this callback to implement the immediate_release
-    // event of the explicit sync protocol.
-    // Not persisted between commits.
-    Buffer::PerCommitExplicitReleaseCallback
-        per_commit_explicit_release_callback_;
     // The hint for overlay prioritization
     // Persisted between commits.
     OverlayPriority overlay_priority_hint = OverlayPriority::REGULAR;

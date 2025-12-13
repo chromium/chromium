@@ -25,11 +25,11 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_cache.h"
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
-#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/speech/tts_controller_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/storage_partition_impl_map.h"
+#include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -37,10 +37,13 @@
 #include "content/public/browser/shared_worker_service.h"
 #include "content/public/common/content_client.h"
 #include "media/capabilities/webrtc_video_stats_db_impl.h"
-#include "media/learning/common/media_learning_tasks.h"
-#include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "storage/browser/file_system/external_mount_points.h"
@@ -55,19 +58,9 @@ void NotifyContextWillBeDestroyed(StoragePartition* partition) {
       ->OnBrowserContextWillBeDestroyed();
 }
 
-void RegisterMediaLearningTask(
-    media::learning::LearningSessionImpl* learning_session,
-    const media::learning::LearningTask& task) {
-  // The RegisterTask method cannot be directly used in base::Bind, because it
-  // provides a default argument value for the 2nd parameter
-  // (`feature_provider`).
-  learning_session->RegisterTask(task);
-}
-
 // Kill switch that controls whether to cancel navigations as part of
 // BrowserContext shutdown. See https://crbug.com/40274462.
 BASE_FEATURE(kCancelNavigationsDuringBrowserContextShutdown,
-             "CancelNavigationsDuringBrowserContextShutdown",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -157,19 +150,15 @@ BrowserContextImpl::~BrowserContextImpl() {
   // BrowserContext.
   policy->RemoveStateForBrowserContext(*self_);
 
-  if (download_manager_)
+  if (download_manager_) {
     download_manager_->Shutdown();
+  }
 
   TtsControllerImpl::GetInstance()->OnBrowserContextDestroyed(self_);
 
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    GetIOThreadTaskRunner({})->DeleteSoon(FROM_HERE,
-                                          std::move(resource_context_));
-  }
-
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
-      "browser_context_impl", static_cast<void*>(this));
+  // Corresponds to the TRACE_EVENT_BEGIN in NotifyWillBeDestroyed.
+  TRACE_EVENT_END("shutdown", perfetto::Track::FromPointer(this),
+                  "browser_context_impl", static_cast<void*>(this));
 }
 
 bool BrowserContextImpl::ShutdownStarted() {
@@ -179,14 +168,16 @@ bool BrowserContextImpl::ShutdownStarted() {
 void BrowserContextImpl::NotifyWillBeDestroyed() {
   TRACE_EVENT1("shutdown", "BrowserContextImpl::NotifyWillBeDestroyed",
                "browser_context_impl", static_cast<void*>(this));
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-      "shutdown", "BrowserContextImpl::NotifyWillBeDestroyed() called.", this,
-      "browser_context_impl", static_cast<void*>(this));
+  TRACE_EVENT_BEGIN("shutdown",
+                    "BrowserContextImpl::NotifyWillBeDestroyed() called.",
+                    perfetto::Track::FromPointer(this), "browser_context_impl",
+                    static_cast<void*>(this));
   // Make sure NotifyWillBeDestroyed is idempotent.  This helps facilitate the
   // pattern where NotifyWillBeDestroyed is called from *both*
   // ShellBrowserContext and its derived classes (e.g. WebTestBrowserContext).
-  if (will_be_destroyed_soon_)
+  if (will_be_destroyed_soon_) {
     return;
+  }
   will_be_destroyed_soon_ = true;
 
   self_->ForEachLoadedStoragePartition(&NotifyContextWillBeDestroyed);
@@ -214,8 +205,9 @@ void BrowserContextImpl::NotifyWillBeDestroyed() {
 StoragePartitionImplMap* BrowserContextImpl::GetOrCreateStoragePartitionMap() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!storage_partition_map_)
+  if (!storage_partition_map_) {
     storage_partition_map_ = std::make_unique<StoragePartitionImplMap>(self_);
+  }
 
   return storage_partition_map_.get();
 }
@@ -232,27 +224,12 @@ BrowsingDataRemoverImpl* BrowserContextImpl::GetBrowsingDataRemover() {
   return browsing_data_remover_.get();
 }
 
-media::learning::LearningSession* BrowserContextImpl::GetLearningSession() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (!learning_session_) {
-    learning_session_ = std::make_unique<media::learning::LearningSessionImpl>(
-        base::SequencedTaskRunner::GetCurrentDefault());
-
-    // Using base::Unretained is safe below, because the callback here will not
-    // be called or retained after the Register method below returns.
-    media::learning::MediaLearningTasks::Register(base::BindRepeating(
-        &RegisterMediaLearningTask, base::Unretained(learning_session_.get())));
-  }
-
-  return learning_session_.get();
-}
-
 media::VideoDecodePerfHistory* BrowserContextImpl::GetVideoDecodePerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!video_decode_perf_history_)
+  if (!video_decode_perf_history_) {
     video_decode_perf_history_ = self_->CreateVideoDecodePerfHistory();
+  }
 
   return video_decode_perf_history_.get();
 }
@@ -277,8 +254,9 @@ BrowserContextImpl::CreateWebrtcVideoPerfHistory() {
 media::WebrtcVideoPerfHistory* BrowserContextImpl::GetWebrtcVideoPerfHistory() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!webrtc_video_perf_history_)
+  if (!webrtc_video_perf_history_) {
     webrtc_video_perf_history_ = CreateWebrtcVideoPerfHistory();
+  }
 
   return webrtc_video_perf_history_.get();
 }
@@ -322,16 +300,18 @@ DownloadManager* BrowserContextImpl::GetDownloadManager() {
 void BrowserContextImpl::SetDownloadManagerForTesting(
     std::unique_ptr<DownloadManager> download_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (download_manager_)
+  if (download_manager_) {
     download_manager_->Shutdown();
+  }
   download_manager_ = std::move(download_manager);
 }
 
 PermissionController* BrowserContextImpl::GetPermissionController() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!permission_controller_)
+  if (!permission_controller_) {
     permission_controller_ = std::make_unique<PermissionControllerImpl>(self_);
+  }
 
   return permission_controller_.get();
 }
@@ -349,8 +329,9 @@ storage::ExternalMountPoints* BrowserContextImpl::GetMountPoints() {
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!external_mount_points_)
+  if (!external_mount_points_) {
     external_mount_points_ = storage::ExternalMountPoints::CreateRefCounted();
+  }
   return external_mount_points_.get();
 #else
   return nullptr;
@@ -383,15 +364,18 @@ void BrowserContextImpl::SetPrefetchServiceForTesting(
   prefetch_service_ = std::move(prefetch_service);
 }
 
+#if BUILDFLAG(IS_ANDROID)
 NavigationEntryScreenshotManager*
 BrowserContextImpl::GetNavigationEntryScreenshotManager() {
   if (!nav_entry_screenshot_manager_ &&
-      NavigationTransitionConfig::AreBackForwardTransitionsEnabled()) {
+      BackForwardTransitionAnimationManager::
+          ShouldAnimateBackForwardTransitions()) {
     nav_entry_screenshot_manager_ =
         std::make_unique<NavigationEntryScreenshotManager>();
   }
   return nav_entry_screenshot_manager_.get();
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void BrowserContextImpl::WriteIntoTrace(
     perfetto::TracedProto<TraceProto> proto) const {

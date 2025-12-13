@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/glic/widget/glic_window_animator.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/background.h"
 #include "ui/views/widget/widget.h"
@@ -35,16 +34,15 @@ void RunCallbackList(std::unique_ptr<base::OnceClosureList> callbacks) {
 }  // namespace
 
 GlicWindowResizeAnimation::GlicWindowResizeAnimation(
-    GlicWindowController* window_controller,
+    base::WeakPtr<GlicWidget> widget,
     GlicWindowAnimator* window_animator,
     const gfx::Rect& target_bounds,
     base::TimeDelta duration,
     base::OnceClosure destruction_callback)
     : gfx::LinearAnimation(duration, kDefaultFrameRate, this),
-      window_controller_(window_controller),
+      widget_(widget),
       glic_window_animator_(window_animator),
-      initial_bounds_(
-          window_controller_->GetGlicWidget()->GetWindowBoundsInScreen()),
+      initial_bounds_(widget->GetWindowBoundsInScreen()),
       new_bounds_(target_bounds),
       destruction_callbacks_(std::make_unique<base::OnceClosureList>()) {
   // Using AddUnsafe() because the callback list is run on a task posted on
@@ -71,23 +69,17 @@ GlicWindowResizeAnimation::~GlicWindowResizeAnimation() {
 }
 
 void GlicWindowResizeAnimation::AnimateToState(double state) {
-  if (window_controller_->IsDragging()) {
+  if (!widget_) {
     return;
   }
   gfx::Rect bounds_to_animate = gfx::Tween::RectValueBetween(
       gfx::Tween::CalculateValue(gfx::Tween::FAST_OUT_SLOW_IN_3, state),
       initial_bounds_, new_bounds_);
-  GlicWidget* glic_widget = window_controller_->GetGlicWidget();
 
-  if (window_controller_->IsAttached()) {
-    // If the widget is attached, resize normally.
-    glic_widget->SetBounds(bounds_to_animate);
-  } else {
-    // If the widget is detached, make sure the bounds don't go out-of-screen.
-    glic_widget->SetBoundsConstrained(bounds_to_animate);
-  }
+  // The widget is detached, so make sure the bounds don't go out-of-screen.
+  widget_->SetBoundsConstrained(bounds_to_animate);
 
-  duration_left_ = (1 - GetCurrentValue()) * duration();
+  duration_left_ = (1 - GetCurrentValue()) * GetDuration();
 }
 
 void GlicWindowResizeAnimation::AnimationEnded(const Animation* animation) {

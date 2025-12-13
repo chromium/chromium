@@ -23,7 +23,6 @@ namespace {
 constexpr float kMinFramesPerSecond = 1.0;
 
 BASE_FEATURE(kUseVideoFrameRateForCaptureRate,
-             "UseVideoFrameRateForCaptureRate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // anonymous namespace
@@ -106,8 +105,8 @@ void HtmlVideoElementCapturerSource::StartCapture(
 
   running_callback_.Run(VideoCaptureRunState::kRunning);
   task_runner_->PostTask(
-      FROM_HERE, WTF::BindOnce(&HtmlVideoElementCapturerSource::sendNewFrame,
-                               weak_factory_.GetWeakPtr()));
+      FROM_HERE, blink::BindOnce(&HtmlVideoElementCapturerSource::sendNewFrame,
+                                 weak_factory_.GetWeakPtr()));
 }
 
 void HtmlVideoElementCapturerSource::StopCapture() {

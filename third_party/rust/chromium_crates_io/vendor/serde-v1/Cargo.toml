@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.31"
+edition = "2021"
+rust-version = "1.56"
 name = "serde"
-version = "1.0.219"
+version = "1.0.228"
 authors = [
     "Erick Tryzelaar <erick.tryzelaar@gmail.com>",
     "David Tolnay <dtolnay@gmail.com>",
@@ -41,44 +41,44 @@ categories = [
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/serde-rs/serde"
 
-[package.metadata.docs.rs]
-features = [
-    "derive",
-    "rc",
-    "unstable",
-]
-rustdoc-args = [
-    "--generate-link-to-definition",
-    "--extern-html-root-url=core=https://doc.rust-lang.org",
-    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
-    "--extern-html-root-url=std=https://doc.rust-lang.org",
-]
-targets = ["x86_64-unknown-linux-gnu"]
-
 [package.metadata.playground]
 features = [
     "derive",
     "rc",
 ]
 
+[package.metadata.docs.rs]
+features = [
+    "derive",
+    "rc",
+    "unstable",
+]
+targets = ["x86_64-unknown-linux-gnu"]
+rustdoc-args = [
+    "--generate-link-to-definition",
+    "--generate-macro-expansion",
+    "--extern-html-root-url=core=https://doc.rust-lang.org",
+    "--extern-html-root-url=alloc=https://doc.rust-lang.org",
+    "--extern-html-root-url=std=https://doc.rust-lang.org",
+]
+
 [features]
-alloc = []
+alloc = ["serde_core/alloc"]
 default = ["std"]
 derive = ["serde_derive"]
-rc = []
-std = []
-unstable = []
+rc = ["serde_core/rc"]
+std = ["serde_core/std"]
+unstable = ["serde_core/unstable"]
 
 [lib]
 name = "serde"
 path = "src/lib.rs"
 
+[dependencies.serde_core]
+version = "=1.0.228"
+features = ["result"]
+default-features = false
+
 [dependencies.serde_derive]
 version = "1"
 optional = true
-
-[dev-dependencies.serde_derive]
-version = "1"
-
-[target."cfg(any())".dependencies.serde_derive]
-version = "=1.0.219"

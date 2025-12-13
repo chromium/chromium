@@ -39,7 +39,8 @@
         }
       ],
       "retry_failed_shards": true,
-      "targets_spec_directory": "src/infra/config/generated/builders/try/mac12.0.arm64-blink-rel/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/mac12.0.arm64-blink-rel/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

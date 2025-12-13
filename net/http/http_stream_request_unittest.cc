@@ -16,6 +16,7 @@
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -52,7 +53,7 @@ TEST(HttpStreamRequestTest, SetPriority) {
       factory, &request_delegate, session.get(), &job_factory, request_info,
       /*is_preconnect=*/false,
       /*is_websocket=*/false,
-      /*enable_ip_based_pooling=*/true,
+      /*enable_ip_based_pooling_for_h2=*/true,
       /*enable_alternative_services=*/true,
       /*delay_main_job_with_available_spdy_session=*/true,
       /*allowed_bad_certs=*/std::vector<SSLConfig::CertAndStatus>());
@@ -69,8 +70,8 @@ TEST(HttpStreamRequestTest, SetPriority) {
   request->SetPriority(MEDIUM);
   EXPECT_EQ(MEDIUM, job_controller_raw_ptr->main_job()->priority());
 
-  EXPECT_CALL(request_delegate, OnStreamFailed(_, _, _, _)).Times(1);
   job_controller_raw_ptr->OnStreamFailed(job_factory.main_job(), ERR_FAILED);
+  EXPECT_THAT(request_delegate.WaitForError(), test::IsError(ERR_FAILED));
 
   request->SetPriority(IDLE);
   EXPECT_EQ(IDLE, job_controller_raw_ptr->main_job()->priority());

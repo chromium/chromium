@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("reading") {
+  sources = [
+    "response_reader.cc",
+    "response_reader.h",
+    "response_reader_factory.cc",
+    "response_reader_factory.h",
+    "response_reader_registry.cc",
+    "response_reader_registry.h",
+    "response_reader_registry_factory.cc",
+    "response_reader_registry_factory.h",
+    "signed_web_bundle_reader.cc",
+    "signed_web_bundle_reader.h",
+    "validator.cc",
+    "validator.h",
+  ]
+
+  deps = [
+    "//components/webapps/isolated_web_apps:iwa_client",
+    "//content/public/browser",
+    "//mojo/public/cpp/system",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/web_package",
+    "//components/webapps/isolated_web_apps/error",
+    "//components/webapps/isolated_web_apps/service",
+    "//net",
+    "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "reader_registry_unittest.cc",
+    "response_reader_factory_unittest.cc",
+    "response_reader_unittest.cc",
+    "signed_web_bundle_reader_unittest.cc",
+    "validator_unittest.cc",
+  ]
+  deps = [
+    ":reading",
+    "//base",
+    "//base/test:test_support",
+    "//components/web_package",
+    "//components/web_package/test_support",
+    "//components/webapps/isolated_web_apps/identity",
+    "//components/webapps/isolated_web_apps/test_support",
+    "//content/test:test_support",
+    "//net",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

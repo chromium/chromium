@@ -16,7 +16,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -39,8 +38,9 @@ bool ContainsHost(
     const std::map<ukm::SourceId, std::unique_ptr<ukm::UkmSource>>& sources,
     const std::string& host) {
   for (const auto& kv : sources) {
-    if (host == kv.second->url().host())
+    if (host == kv.second->url().GetHost()) {
       return true;
+    }
   }
   return false;
 }
@@ -56,12 +56,6 @@ class AutofillMetricsBrowserTest : public InProcessBrowserTest {
   ~AutofillMetricsBrowserTest() override = default;
 
  protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // HTTPS server only serves a valid cert for localhost, so this is needed
-    // to load pages from other hosts without an error.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
   void PreRunTestOnMainThread() override {
     InProcessBrowserTest::PreRunTestOnMainThread();
 
@@ -100,9 +94,9 @@ IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
@@ -124,9 +118,9 @@ IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
@@ -137,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
 
   // Make sure the UKM were logged for the main frame url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
@@ -148,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(AutofillMetricsBrowserTest,
 
   // Make sure the UKM were logged for the main frame url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -171,9 +165,9 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -196,9 +190,9 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 class SitePerProcessAutofillMetricsBrowserTest
@@ -243,9 +237,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
@@ -269,9 +263,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
@@ -282,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
 
   // Make sure the UKM were logged for the main frame url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
@@ -293,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessAutofillMetricsBrowserTest,
 
   // Make sure the UKM were logged for the main frame url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -318,9 +312,9 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -345,9 +339,9 @@ IN_PROC_BROWSER_TEST_F(
   // Make sure the UKM were logged for the main frame url and none for the
   // iframe url.
   EXPECT_TRUE(
-      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), main_frame_url.GetHost()));
   EXPECT_FALSE(
-      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.host()));
+      ContainsHost(test_ukm_recorder_->GetSources(), iframe_url.GetHost()));
 }
 
 }  // namespace

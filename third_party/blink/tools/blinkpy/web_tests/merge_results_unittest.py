@@ -6,15 +6,15 @@
 # pylint complains about the assertXXX methods and the usage of short variables
 # m/a/b/d in the tests.
 
+from collections import OrderedDict
+import io
 import json
 import unittest
 
-from blinkpy.common.system.filesystem_mock import FileSystemTestCase, MockFileSystem
+from blinkpy.common.system.filesystem_mock import FileSystemTestCase
+from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests import merge_results
-
-from collections import OrderedDict
-from six import BytesIO
 
 
 class JSONMergerTests(unittest.TestCase):
@@ -642,7 +642,7 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         self.assertEqual(expected_after, after)
 
     def assertDump(self, before, json_data, after):
-        fd = BytesIO()
+        fd = io.BytesIO()
         merge_results.MergeFilesJSONP.dump_jsonp(fd, before, json_data, after)
         merged_str = fd.getvalue()
         self.assertTrue(self.check_before_after(merged_str, before, after))
@@ -661,7 +661,7 @@ class MergeFilesJSONPTests(FileSystemTestCase):
         return json_str
 
     def test_load(self):
-        fdcls = BytesIO
+        fdcls = io.BytesIO
         self.assertLoad(fdcls(b'{"a": 1}'), b'', {'a': 1}, b'')
         self.assertLoad(fdcls(b'f({"a": 1});'), b'f(', {'a': 1}, b');')
         self.assertLoad(fdcls(b'var o = {"a": 1}'), b'var o = ', {'a': 1}, b'')

@@ -27,7 +27,7 @@ class IOSPasswordManagerSettingsServiceFactory
   ~IOSPasswordManagerSettingsServiceFactory() override;
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_MANAGER_SETTINGS_SERVICE_FACTORY_H_

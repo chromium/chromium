@@ -149,12 +149,6 @@ class BASE_EXPORT OSInfo {
   const VersionType& version_type() const LIFETIME_BOUND {
     return version_type_;
   }
-  const ServicePack& service_pack() const LIFETIME_BOUND {
-    return service_pack_;
-  }
-  const std::string& service_pack_str() const LIFETIME_BOUND {
-    return service_pack_str_;
-  }
 
   // Returns the number of processors on the system.
   const int& processors() const { return processors_; }
@@ -226,7 +220,6 @@ class BASE_EXPORT OSInfo {
   Version version_;
   VersionNumber version_number_;
   VersionType version_type_;
-  ServicePack service_pack_;
 
   // Represents the version of the OS associated to a release of
   // Windows 10. Each version may have different releases (such as patch
@@ -238,10 +231,6 @@ class BASE_EXPORT OSInfo {
   // for more information.
   std::string release_id_;
 
-  // A string, such as "Service Pack 3", that indicates the latest Service Pack
-  // installed on the system. If no Service Pack has been installed, the string
-  // is empty.
-  std::string service_pack_str_;
   int processors_;
   size_t allocation_granularity_;
   WowProcessMachine wow_process_machine_;

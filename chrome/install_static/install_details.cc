@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <string.h>
 
+#include <string_view>
 #include <type_traits>
 
 #include "base/compiler_specific.h"
@@ -38,8 +39,7 @@ std::wstring InstallDetails::GetClientStateMediumKeyPath() const {
 bool InstallDetails::VersionMismatch() const {
   // Check the product version and the size of the mode structure.
   return payload_->size != sizeof(Payload) ||
-         UNSAFE_TODO(strcmp(payload_->product_version, &kProductVersion[0])) !=
-             0 ||
+         std::string_view(payload_->product_version) != kProductVersion ||
          payload_->mode->size != sizeof(InstallConstants);
 }
 

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -23,6 +22,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"

@@ -12,13 +12,15 @@
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo/feature_promo_precondition.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/user_education_context.h"
 
 namespace user_education {
 
 using PreconditionListProviderCallback =
     base::RepeatingCallback<FeaturePromoPreconditionList(
         const FeaturePromoSpecification&,
-        const FeaturePromoParams&)>;
+        const FeaturePromoParams&,
+        const UserEducationContextPtr&)>;
 
 // Factory for precondition lists for different types of feature promos.
 class PreconditionListProvider {
@@ -32,7 +34,8 @@ class PreconditionListProvider {
   // defined by `spec` to be queued or shown.
   virtual FeaturePromoPreconditionList GetPreconditions(
       const FeaturePromoSpecification& spec,
-      const FeaturePromoParams& params) const = 0;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const = 0;
 };
 
 // Factory for precondition lists that delegates creation of the list to a
@@ -46,7 +49,8 @@ class CallbackPreconditionListProvider : public PreconditionListProvider {
 
   FeaturePromoPreconditionList GetPreconditions(
       const FeaturePromoSpecification& spec,
-      const FeaturePromoParams& params) const override;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const override;
 
  private:
   Callback callback_;
@@ -64,7 +68,8 @@ class ComposingPreconditionListProvider : public PreconditionListProvider {
   // PreconditionListProvider:
   FeaturePromoPreconditionList GetPreconditions(
       const FeaturePromoSpecification& spec,
-      const FeaturePromoParams& params) const override;
+      const FeaturePromoParams& params,
+      const UserEducationContextPtr& context) const override;
 
  private:
   std::vector<std::unique_ptr<CallbackPreconditionListProvider>>

@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
@@ -135,12 +136,16 @@ ModelAssets::ModelAssets(mojo::DefaultConstruct::Tag tag) : weights(tag) {}
 ModelAssets::ModelAssets(const ModelAssets& other)
     : weights(other.weights),
       sp_model_path(other.sp_model_path),
-      cache(other.cache.Duplicate()) {}
+      cache(other.cache.Duplicate()),
+      encoder_cache(other.encoder_cache.Duplicate()),
+      adapter_cache(other.adapter_cache.Duplicate()) {}
 
 ModelAssets& ModelAssets::operator=(const ModelAssets& other) {
   weights = other.weights;
   sp_model_path = other.sp_model_path;
   cache = other.cache.Duplicate();
+  encoder_cache = other.encoder_cache.Duplicate();
+  adapter_cache = other.adapter_cache.Duplicate();
   return *this;
 }
 
@@ -149,6 +154,7 @@ ModelAssets& ModelAssets::operator=(ModelAssets&&) = default;
 ModelAssets::~ModelAssets() = default;
 
 ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
+  TRACE_EVENT("optimization_guide", "LoadModelAssets");
   if (!paths.weights.empty()) {
     PrefetchFile(paths.weights);
   }
@@ -161,6 +167,16 @@ ModelAssets LoadModelAssets(const ModelAssetPaths& paths) {
   if (!paths.cache.empty()) {
     PrefetchFile(paths.cache);
     assets.cache = base::File(paths.cache, kCacheFlags);
+  }
+
+  if (!paths.encoder_cache.empty()) {
+    PrefetchFile(paths.encoder_cache);
+    assets.encoder_cache = base::File(paths.encoder_cache, kCacheFlags);
+  }
+
+  if (!paths.adapter_cache.empty()) {
+    PrefetchFile(paths.adapter_cache);
+    assets.adapter_cache = base::File(paths.adapter_cache, kCacheFlags);
   }
 
   return assets;
@@ -187,6 +203,7 @@ AdaptationAssets& AdaptationAssets::operator=(AdaptationAssets&&) = default;
 AdaptationAssets::~AdaptationAssets() = default;
 
 AdaptationAssets LoadAdaptationAssets(const AdaptationAssetPaths& paths) {
+  TRACE_EVENT("optimization_guide", "LoadAdaptationAssets");
   AdaptationAssets assets;
   if (!paths.weights.empty()) {
     PrefetchFile(paths.weights);

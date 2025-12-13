@@ -132,6 +132,8 @@ export class PdfScriptingApi {
             this.keyEventCallback_(deserializeKeyEvent(event.data.keyEvent));
           }
           break;
+        default:
+          break;
       }
     }, false);
   }

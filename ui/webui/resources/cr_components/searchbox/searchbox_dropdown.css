@@ -1,0 +1,117 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=./searchbox_dropdown_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit searchbox-dropdown-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  user-select: none;
+}
+
+#content {
+  background-color: var(--color-searchbox-results-background);
+  border-radius: calc(0.5 * var(--cr-searchbox-height));
+  box-shadow: var(--cr-searchbox-shadow);
+  display: flex;
+  gap: 16px;
+  margin-bottom: var(--cr-searchbox-results-margin-bottom, 8px);
+  overflow: hidden;
+  padding-bottom: 8px;
+  padding-top: var(--cr-searchbox-height);
+}
+
+@media (forced-colors: active) {
+  #content {
+    border: 1px solid ActiveBorder;
+  }
+}
+
+.matches {
+  display: contents;
+}
+
+cr-searchbox-match {
+  color: var(--color-searchbox-results-foreground);
+}
+
+cr-searchbox-match:-webkit-any(:focus-within, [selected]) {
+  color: var(--color-searchbox-results-foreground-selected);
+}
+
+.header {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  font-size: inherit;
+  font-weight: inherit;
+  /* To mirror match typical row height of items in vertical list. */
+  height: 44px;
+  margin-block-end: 0;
+  margin-block-start: 0;
+  outline: none;
+  padding-bottom: 6px;
+  padding-inline-end: 16px;
+  padding-inline-start: 12px;
+  padding-top: 6px;
+}
+
+.header .text {
+  color: var(--color-searchbox-results-foreground-dimmed);
+  font-size: .875em;
+  font-weight: 500;
+  overflow: hidden;
+  padding-inline-end: 1px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (forced-colors: active) {
+  cr-searchbox-match:-webkit-any(:hover, :focus-within, [selected]) {
+    background-color: Highlight;
+  }
+}
+
+.primary-side {
+  flex: 1;
+  min-width: 0;
+}
+
+:host-context([is-lens-searchbox_]) .primary-side::before {
+  content: '';
+  position: relative;
+  height: 1px;
+  background-color: var(--color-searchbox-dropdown-divider);
+  top: 0;
+  width: calc(var(--cr-searchbox-width) - 24px);
+  display: block;
+  inset-inline-start: 12px;
+  margin-block-end: 4px;
+}
+
+.secondary-side {
+  display: var(--cr-searchbox-secondary-side-display, none);
+  min-width: 0;
+  padding-block-end: 8px;
+  padding-inline-end: 16px;
+  width: 314px;
+}
+
+.secondary-side .header {
+  padding-inline-end: 0;
+  padding-inline-start: 0;
+}
+
+.secondary-side .matches {
+  display: block;
+}
+
+.secondary-side .matches.horizontal {
+  display: flex;
+  gap: 4px;
+}

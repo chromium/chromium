@@ -31,6 +31,19 @@ struct PasswordForm;
 // user input on some site contains the password saved on another site.
 class PasswordReuseManager : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override = default;
+
+    virtual void HashPasswordManagerAvailable(
+        HashPasswordManager* hash_password_manager) = 0;
+
+    // The hash password data list might have changed.
+    virtual void HashPasswordStateMaybeChanged(
+        const std::string& username,
+        HashPasswordManager* hash_password_manager) = 0;
+  };
+
   PasswordReuseManager() = default;
 
   PasswordReuseManager(const PasswordReuseManager&) = delete;
@@ -93,13 +106,6 @@ class PasswordReuseManager : public KeyedService {
   // Clear all GAIA password hash that is not associated with a Gmail account.
   virtual void ClearAllNonGmailPasswordHash() = 0;
 
-  // Adds a listener on |hash_password_manager_| for when |kHashPasswordData|
-  // list might have changed. Should only be called on the UI thread.
-  virtual base::CallbackListSubscription
-  RegisterStateCallbackOnHashPasswordManager(
-      const base::RepeatingCallback<void(const std::string& username)>&
-          callback) = 0;
-
   // Shouldn't be called more than once, |notifier| must be not nullptr.
   virtual void SetPasswordReuseManagerSigninNotifier(
       std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier) = 0;
@@ -112,6 +118,13 @@ class PasswordReuseManager : public KeyedService {
   // enterprise or gaia password.
   virtual void MaybeSavePasswordHash(const PasswordForm* submitted_form,
                                      PasswordManagerClient* client) = 0;
+
+  // May return nullptr if the HashPasswordManager is not yet available.
+  virtual HashPasswordManager* GetHashPasswordManager() = 0;
+
+  // Must be called on the UI thread.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace password_manager

@@ -69,7 +69,7 @@ class IbanBubbleController {
   // Returns true iff the bubble for upload save is showing or has been shown.
   virtual bool IsUploadSave() const = 0;
   // Returns the current state of the bubble.
-  virtual IbanBubbleType GetBubbleType() const = 0;
+  virtual IbanBubbleType GetIbanBubbleType() const = 0;
 
   // Returns the UI parameters needed to display the IBAN upload save
   // confirmation view.

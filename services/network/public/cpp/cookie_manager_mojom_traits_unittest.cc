@@ -255,7 +255,8 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeCause) {
         net::CookieChangeCause::OVERWRITE, net::CookieChangeCause::EXPIRED,
         net::CookieChangeCause::EVICTED,
         net::CookieChangeCause::EXPIRED_OVERWRITE,
-        net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE}) {
+        net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE,
+        net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE}) {
     net::CookieChangeCause roundtrip;
     ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieChangeCause>(
         change_cause, roundtrip));

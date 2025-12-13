@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_issues/password_issues_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_view_controller.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -48,12 +48,11 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateMockSyncService));
+                              base::BindOnce(&CreateMockSyncService));
 
     // Create scene state for reauthentication coordinator.
     scene_state_ = [[SceneState alloc] initWithAppState:nil];

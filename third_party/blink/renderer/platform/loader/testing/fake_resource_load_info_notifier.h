@@ -24,25 +24,25 @@ class FakeResourceLoadInfoNotifier final
 
   // blink::mojom::ResourceLoadInfoNotifier overrides.
 #if BUILDFLAG(IS_ANDROID)
-  void NotifyUpdateUserGestureCarryoverInfo() override {}
+  void NotifyUpdateUserGestureCarryoverInfo() override;
 #endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
-      network::mojom::URLResponseHeadPtr redirect_response) override {}
+      network::mojom::URLResponseHeadPtr redirect_response) override;
   void NotifyResourceResponseReceived(
       int64_t request_id,
       const url::SchemeHostPort& final_url,
       network::mojom::URLResponseHeadPtr head,
       network::mojom::RequestDestination request_destination,
-      bool is_ad_resource) override {}
+      bool is_ad_resource) override;
   void NotifyResourceTransferSizeUpdated(int64_t request_id,
-                                         int32_t transfer_size_diff) override {}
+                                         int32_t transfer_size_diff) override;
   void NotifyResourceLoadCompleted(
       blink::mojom::ResourceLoadInfoPtr resource_load_info,
       const ::network::URLLoaderCompletionStatus& status) override;
-  void NotifyResourceLoadCanceled(int64_t request_id) override {}
+  void NotifyResourceLoadCanceled(int64_t request_id) override;
   void Clone(mojo::PendingReceiver<blink::mojom::ResourceLoadInfoNotifier>
-                 pending_resource_load_info_notifier) override {}
+                 pending_resource_load_info_notifier) override;
 
   std::string GetMimeType();
 

@@ -153,12 +153,11 @@ void SharedWorkerGlobalScope::FetchAndRunClassicScript(
       script_url, std::move(worker_main_script_load_params), context_type,
       destination, network::mojom::RequestMode::kSameOrigin,
       network::mojom::CredentialsMode::kSameOrigin,
-      WTF::BindOnce(
-          &SharedWorkerGlobalScope::DidReceiveResponseForClassicScript,
-          WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
-      WTF::BindOnce(&SharedWorkerGlobalScope::DidFetchClassicScript,
-                    WrapWeakPersistent(this),
-                    WrapPersistent(classic_script_loader), stack_id));
+      BindOnce(&SharedWorkerGlobalScope::DidReceiveResponseForClassicScript,
+               WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
+      BindOnce(&SharedWorkerGlobalScope::DidFetchClassicScript,
+               WrapWeakPersistent(this), WrapPersistent(classic_script_loader),
+               stack_id));
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
@@ -202,7 +201,7 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   port->Entangle(std::move(channel));
   MessageEvent* event =
       MessageEvent::Create(MakeGarbageCollected<GCedMessagePortArray>(1, port),
-                           String(), String(), port);
+                           /*origin=*/nullptr, String(), port);
   event->initEvent(event_type_names::kConnect, false, false);
   DispatchEvent(*event);
 }

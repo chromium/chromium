@@ -10,7 +10,7 @@
 #include <memory>
 
 #import "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -120,7 +120,7 @@ class NavigationContextImpl : public NavigationContext {
                         ui::PageTransition page_transition,
                         bool is_renderer_initiated);
 
-  raw_ptr<WebState> web_state_ = nullptr;
+  raw_ptr<WebState, DanglingUntriaged> web_state_ = nullptr;
   int64_t navigation_id_ = 0;
   GURL url_;
   bool has_user_gesture_ = false;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #include <pthread.h>
@@ -23,11 +18,14 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+#include <array>
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
@@ -328,9 +326,9 @@ ResultExpr ErrnoTestPolicy::EvaluateSyscall(int sysno) const {
 
 BPF_TEST_C(SandboxBPF, ErrnoTest, ErrnoTestPolicy) {
   // Verify that dup2() returns success, but doesn't actually run.
-  int fds[4];
-  BPF_ASSERT(pipe(fds) == 0);
-  BPF_ASSERT(pipe(fds + 2) == 0);
+  std::array<int, 4> fds;
+  BPF_ASSERT(pipe(fds.data()) == 0);
+  BPF_ASSERT(pipe(base::span(fds).subspan(2u).data()) == 0);
   BPF_ASSERT(dup2(fds[2], fds[0]) == 0);
   char buf[1] = {};
   BPF_ASSERT(write(fds[1], "\x55", 1) == 1);
@@ -666,7 +664,7 @@ BPF_TEST_C(SandboxBPF, ForwardSyscall, PrctlPolicy) {
   // unaffected by our policy.
   struct utsname uts = {};
   BPF_ASSERT(!uname(&uts));
-  BPF_ASSERT(!strcmp(uts.sysname, "Linux"));
+  UNSAFE_TODO(BPF_ASSERT(!strcmp(uts.sysname, "Linux")));
 }
 
 intptr_t AllowRedirectedSyscall(const struct arch_seccomp_data& args, void*) {
@@ -1054,7 +1052,7 @@ class EqualityStressTest {
     return err;
   }
 
-  void Verify(int sysno, intptr_t* args, const ArgValue& arg_value) {
+  void Verify(int sysno, base::span<intptr_t> args, const ArgValue& arg_value) {
     uint32_t mismatched = 0;
     // Iterate over all the k_values in arg_value.tests[] and verify that
     // we see the expected return values from system calls, when we pass
@@ -1089,7 +1087,7 @@ class EqualityStressTest {
     args[arg_value.argno] = 0;
   }
 
-  void VerifyErrno(int sysno, intptr_t* args, int err) {
+  void VerifyErrno(int sysno, base::span<intptr_t> args, int err) {
     // We installed BPF filters that return different errno values
     // based on the system call number and the parameters that we decided
     // to pass in. Verify that this condition holds true.
@@ -1699,24 +1697,19 @@ intptr_t PthreadTrapHandler(const struct arch_seccomp_data& args, void* aux) {
     // call. But if we ever get called for anything else, we want to verbosely
     // print as much information as possible.
     const char* msg = (const char*)aux;
-    printf(
-        "Clone() was called with unexpected arguments\n"
-        "  nr: %d\n"
-        "  1: 0x%llX\n"
-        "  2: 0x%llX\n"
-        "  3: 0x%llX\n"
-        "  4: 0x%llX\n"
-        "  5: 0x%llX\n"
-        "  6: 0x%llX\n"
-        "%s\n",
-        args.nr,
-        (long long)args.args[0],
-        (long long)args.args[1],
-        (long long)args.args[2],
-        (long long)args.args[3],
-        (long long)args.args[4],
-        (long long)args.args[5],
-        msg);
+    UNSAFE_TODO(
+        printf("Clone() was called with unexpected arguments\n"
+               "  nr: %d\n"
+               "  1: 0x%llX\n"
+               "  2: 0x%llX\n"
+               "  3: 0x%llX\n"
+               "  4: 0x%llX\n"
+               "  5: 0x%llX\n"
+               "  6: 0x%llX\n"
+               "%s\n",
+               args.nr, (long long)args.args[0], (long long)args.args[1],
+               (long long)args.args[2], (long long)args.args[3],
+               (long long)args.args[4], (long long)args.args[5], msg));
   }
   return -EPERM;
 }
@@ -2071,7 +2064,7 @@ bool FullPwrite64(int fd, const char* buffer, size_t count, off64_t offset) {
       return false;
     }
     count -= transfered;
-    buffer += transfered;
+    UNSAFE_TODO(buffer += transfered);
     offset += transfered;
   }
   return true;
@@ -2084,7 +2077,7 @@ bool FullPread64(int fd, char* buffer, size_t count, off64_t offset) {
       return false;
     }
     count -= transfered;
-    buffer += transfered;
+    UNSAFE_TODO(buffer += transfered);
     offset += transfered;
   }
   return true;
@@ -2138,7 +2131,8 @@ BPF_TEST_C(SandboxBPF, Pread64, TrapPread64Policy) {
                          read_test_string,
                          sizeof(read_test_string),
                          kLargeOffset));
-  BPF_ASSERT_EQ(0, memcmp(kTestString, read_test_string, sizeof(kTestString)));
+  UNSAFE_TODO(BPF_ASSERT_EQ(
+      0, memcmp(kTestString, read_test_string, sizeof(kTestString))));
   BPF_ASSERT(pread_64_was_forwarded);
 }
 

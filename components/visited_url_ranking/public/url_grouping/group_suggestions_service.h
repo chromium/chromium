@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_GROUPING_GROUP_SUGGESTIONS_SERVICE_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_URL_GROUPING_GROUP_SUGGESTIONS_SERVICE_H_
 
-#include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/core/session_id.h"

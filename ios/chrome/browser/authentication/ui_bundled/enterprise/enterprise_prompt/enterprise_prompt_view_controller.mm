@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_view_controller.h"
 
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -31,13 +32,9 @@
   self.imageHasFixedSize = YES;
   self.customSpacingAfterImage = 30;
 
-  self.showDismissBarButton = NO;
-
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemDone;
-
-  self.primaryActionString =
+  self.configuration.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_CONTINUE);
-  self.secondaryActionString =
+  self.configuration.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_LEARN_MORE);
 
   switch (self.promptType) {
@@ -54,7 +51,7 @@
 
   self.titleTextStyle = UIFontTextStyleTitle2;
   // Icon already contains some spacing for the shadow.
-  self.customSpacingBeforeImageIfNoNavigationBar = 24;
+  self.customSpacingBeforeImage = 24;
   self.customSpacingAfterImage = 1;
   self.topAlignedLayout = YES;
 

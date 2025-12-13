@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"

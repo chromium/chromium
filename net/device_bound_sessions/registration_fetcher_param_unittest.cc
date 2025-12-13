@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "crypto/signature_verifier.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,7 +21,8 @@ namespace net::device_bound_sessions {
 
 namespace {
 
-constexpr char kRegistrationHeader[] = "Sec-Session-Registration";
+constexpr char kRegistrationHeaderName[] = "Secure-Session-Registration";
+
 using crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
 using crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
 using ::testing::UnorderedElementsAre;
@@ -47,7 +49,7 @@ scoped_refptr<net::HttpResponseHeaders> CreateHeaders(
   if (!headers) {
     headers = HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   }
-  headers->AddHeader(kRegistrationHeader, full_string);
+  headers->AddHeader(kRegistrationHeaderName, full_string);
 
   return headers;
 }
@@ -120,7 +122,7 @@ TEST(RegistrationFetcherParamTest, ChallengeFirst) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->SetHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256 ES256);challenge=\"challenge1\";path=\"first\"");
 
   std::vector<RegistrationFetcherParam> params =
@@ -141,7 +143,7 @@ TEST(RegistrationFetcherParamTest, NoSpaces) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->SetHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256 ES256);path=\"startsession\";challenge=\"challenge1\"");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -200,7 +202,7 @@ TEST(RegistrationFetcherParamTest, AddedInvalidNonsenseCharacters) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(RS256);path=\"new\";challenge=\"test\";;=;");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -214,7 +216,7 @@ TEST(RegistrationFetcherParamTest, AddedValidNonsenseCharacters) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->AddHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256);path=\"new\";challenge=\"test\";nonsense=\";';'\",OTHER");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -231,7 +233,7 @@ TEST(RegistrationFetcherParamTest, AlgAsString) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(\"RS256\");path=\"new\";challenge=\"test\"");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -244,7 +246,7 @@ TEST(RegistrationFetcherParamTest, PathAsToken) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(RS256);path=new;challenge=\"test\"");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -257,7 +259,7 @@ TEST(RegistrationFetcherParamTest, ChallengeAsByteSequence) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(RS256);path=\"new\";challenge=:Y29kZWQ=:");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -327,7 +329,7 @@ TEST(RegistrationFetcherParamTest, ThreeRegistrationsList) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers = CreateHeaders(
       "/startsession", "(ES256 RS256)", "c1", /*authorization=*/std::nullopt);
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(ES256);path=\"new\";challenge=\"coded\", "
                               "(ES256);path=\"third\";challenge=\"another\"");
   std::vector<RegistrationFetcherParam> params =
@@ -492,7 +494,7 @@ TEST(RegistrationFetcherParamTest, InvalidParamIgnored) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->SetHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256);path=\"first\";challenge=\"c1\";another=true");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -574,7 +576,7 @@ TEST(RegistrationFetcherParamTest, InvalidAuthorizationIgnored) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->AddHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256);path=\"startsession\";challenge=\"c1\";authorization=123");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -594,7 +596,7 @@ TEST(RegistrationFetcherParamTest, MultipleAuthorizationHeaders) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->AddHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256);path=\"startsession\";challenge=\"c1\";"
       "authorization=\"auth1\";authorization=\"auth2\"");
   std::vector<RegistrationFetcherParam> params =
@@ -614,7 +616,7 @@ TEST(RegistrationFetcherParamTest, MultipleAuthorizationHeadersWithEmpty) {
   // Testing customized header.
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
-  response_headers->AddHeader(kRegistrationHeader,
+  response_headers->AddHeader(kRegistrationHeaderName,
                               "(RS256);path=\"startsession\";challenge=\"c1\";"
                               "authorization=\"auth1\";authorization=\"\"");
   std::vector<RegistrationFetcherParam> params =
@@ -635,7 +637,7 @@ TEST(RegistrationFetcherParamTest, EmptyStringAuthorization) {
   scoped_refptr<net::HttpResponseHeaders> response_headers =
       HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
   response_headers->AddHeader(
-      kRegistrationHeader,
+      kRegistrationHeaderName,
       "(RS256);path=\"startsession\";challenge=\"c1\";authorization=\"\"");
   std::vector<RegistrationFetcherParam> params =
       RegistrationFetcherParam::CreateIfValid(registration_request,
@@ -647,6 +649,73 @@ TEST(RegistrationFetcherParamTest, EmptyStringAuthorization) {
   EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(RSA_PKCS1_SHA256));
   EXPECT_EQ(param.challenge(), "c1");
   EXPECT_EQ(param.authorization(), "");
+}
+
+TEST(RegistrationFetcherParamTest, ValidProviderParams) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\";"
+      "provider_url=\"https://"
+      "provider.example.com\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  ASSERT_EQ(params.size(), 1U);
+  const auto& param = params[0];
+  EXPECT_EQ(param.registration_endpoint(),
+            GURL("https://www.example.com/startsession"));
+  EXPECT_THAT(param.supported_algos(), UnorderedElementsAre(ECDSA_SHA256));
+  EXPECT_EQ(param.challenge(), "c1");
+  EXPECT_EQ(param.provider_key(), "key");
+  EXPECT_EQ(param.provider_url(), GURL("https://provider.example.com"));
+  EXPECT_EQ(param.provider_session_id(), Session::Id("id"));
+}
+
+TEST(RegistrationFetcherParamTest, IncompleteProviderParams) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  EXPECT_TRUE(params.empty());
+}
+
+TEST(RegistrationFetcherParamTest, IncompleteProviderParams2) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";"
+      "provider_key=\"key\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  EXPECT_TRUE(params.empty());
+}
+
+TEST(RegistrationFetcherParamTest, InvalidProviderUrl) {
+  const GURL registration_request("https://www.example.com/registration");
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      HttpResponseHeaders::Builder({1, 1}, "200 OK").Build();
+  response_headers->AddHeader(
+      kRegistrationHeaderName,
+      "(ES256);path=\"startsession\";challenge=\"c1\";provider_key=\"key\";"
+      "provider_url=\"http://"
+      "provider.example.com\";provider_session_id=\"id\"");
+  std::vector<RegistrationFetcherParam> params =
+      RegistrationFetcherParam::CreateIfValid(registration_request,
+                                              response_headers.get());
+  // The provider_url is not secure, so reject the federated registration
+  // request.
+  EXPECT_TRUE(params.empty());
 }
 
 }  // namespace

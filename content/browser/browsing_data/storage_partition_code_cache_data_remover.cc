@@ -102,11 +102,16 @@ void StoragePartitionCodeCacheDataRemover::ClearCache(
 }
 
 void StoragePartitionCodeCacheDataRemover::ClearJSCodeCache() {
+  if (generated_code_cache_context_) {
+    // TODO(crbug.com/374930286): Add support for selective removal in
+    // PersistentCache.
+    generated_code_cache_context_->ClearAndDeletePersistentCacheCollection();
+  }
+
   if (generated_code_cache_context_ &&
       generated_code_cache_context_->generated_js_code_cache()) {
     generated_code_cache_context_->generated_js_code_cache()
         ->ClearInMemoryCache();
-
     net::CompletionOnceCallback callback = base::BindOnce(
         &StoragePartitionCodeCacheDataRemover::ClearWASMCodeCache,
         base::Unretained(this));

@@ -13,10 +13,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,8 +60,10 @@ using content::WebUIMessageHandler;
 namespace {
 
 // May only be accessed on the UI thread
-base::LazyInstance<base::FilePath>::Leaky last_save_dir =
-    LAZY_INSTANCE_INITIALIZER;
+base::FilePath& GetLastSaveDir() {
+  static base::NoDestructor<base::FilePath> last_save_dir;
+  return *last_save_dir;
+}
 
 void CreateAndAddNetExportHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -224,11 +226,11 @@ void NetExportMessageHandler::OnStartNetLog(const base::Value::List& params) {
     StartNetLog(base::FilePath());
   } else {
     base::FilePath initial_dir =
-        last_save_dir.Pointer()->empty()
+        GetLastSaveDir().empty()
             ? DownloadPrefs::FromBrowserContext(
                   web_ui()->GetWebContents()->GetBrowserContext())
                   ->DownloadPath()
-            : *last_save_dir.Pointer();
+            : GetLastSaveDir();
     base::FilePath initial_path =
         initial_dir.Append(FILE_PATH_LITERAL("chrome-net-export-log.json"));
     ShowSelectFileDialog(initial_path);
@@ -270,7 +272,7 @@ void NetExportMessageHandler::FileSelected(const ui::SelectedFileInfo& file,
                                            int index) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(select_file_dialog_);
-  *last_save_dir.Pointer() = file.path().DirName();
+  GetLastSaveDir() = file.path().DirName();
 
   StartNetLog(file.path());
 

@@ -4,9 +4,9 @@
 
 #include "content/public/test/browser_task_environment.h"
 
+#include <atomic>
 #include <string>
 
-#include "base/atomicops.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -35,12 +35,12 @@ constexpr int kNumTasks = 8;
 
 const char kDeathMatcher[] = "DCHECK failed:.*\n*.*BrowserTaskEnvironment";
 
-void PostTaskToUIThread(int iteration, base::subtle::Atomic32* tasks_run);
+void PostTaskToUIThread(int iteration, std::atomic<int32_t>* tasks_run);
 
-void PostToThreadPool(int iteration, base::subtle::Atomic32* tasks_run) {
+void PostToThreadPool(int iteration, std::atomic<int32_t>* tasks_run) {
   // All iterations but the first come from a task that was posted.
   if (iteration > 0)
-    base::subtle::NoBarrier_AtomicIncrement(tasks_run, 1);
+    tasks_run->fetch_add(1, std::memory_order_relaxed);
 
   if (iteration == kNumHops)
     return;
@@ -49,10 +49,10 @@ void PostToThreadPool(int iteration, base::subtle::Atomic32* tasks_run) {
       FROM_HERE, base::BindOnce(&PostTaskToUIThread, iteration + 1, tasks_run));
 }
 
-void PostTaskToUIThread(int iteration, base::subtle::Atomic32* tasks_run) {
+void PostTaskToUIThread(int iteration, std::atomic<int32_t>* tasks_run) {
   // All iterations but the first come from a task that was posted.
   if (iteration > 0)
-    base::subtle::NoBarrier_AtomicIncrement(tasks_run, 1);
+    tasks_run->fetch_add(1, std::memory_order_relaxed);
 
   if (iteration == kNumHops)
     return;
@@ -66,7 +66,7 @@ void PostTaskToUIThread(int iteration, base::subtle::Atomic32* tasks_run) {
 TEST(BrowserTaskEnvironmentTest, RunUntilIdle) {
   BrowserTaskEnvironment task_environment;
 
-  base::subtle::Atomic32 tasks_run = 0;
+  std::atomic<int32_t> tasks_run = 0;
 
   // Post half the tasks on ThreadPool and the other half on the UI thread
   // so they cross and the last hops aren't all on the same task runner.
@@ -80,7 +80,7 @@ TEST(BrowserTaskEnvironmentTest, RunUntilIdle) {
 
   task_environment.RunUntilIdle();
 
-  EXPECT_EQ(kNumTasks * kNumHops, base::subtle::NoBarrier_Load(&tasks_run));
+  EXPECT_EQ(kNumTasks * kNumHops, tasks_run.load(std::memory_order_relaxed));
 }
 
 namespace {

@@ -13,6 +13,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 
+// LINT.IfChange(ErrorType)
 enum class ErrorType {
   // Data retrieved successfully.
   NONE,
@@ -22,7 +23,12 @@ enum class ErrorType {
 
   // Response from backend couldn't be read.
   SERVICE_ERROR,
+
+  // The highest value in this enum. Must be a copy of the last valid value.
+  // Used by UMA histograms.
+  kMaxValue = SERVICE_ERROR,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSNtpBackgroundServiceErrorType)
 
 // Retrieve the options to be added to a thumbnail image URL.
 std::string GetThumbnailImageOptions();
@@ -39,6 +45,11 @@ std::string GetImageOptions();
 // setting it here.
 GURL AddOptionsToImageURL(const std::string& image_url,
                           const std::string& image_options);
+
+// Removes the options for resizing an image from a url. The URL includes the
+// options after a single `=` but all still part of the path, so they can't be
+// removed with built-in URL modification tools.
+GURL RemoveOptionsFromImageURL(const std::string& image_url);
 
 // Background images are organized into collections, according to a theme. This
 // struct contains the data required to display information about a collection,

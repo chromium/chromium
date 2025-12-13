@@ -518,6 +518,14 @@ structures:
    to determine if a hit-test can be done directly on the compositor or must be
    done on the main thread.
 
+6. [`HitTestData::xr_regions`](../../platform/graphics/paint/hit_test_data.h)
+
+   Used on Android XR to help keep track of the hit order / paint order of targets
+   on a page. On this platform, to support privacy requirements for eye gaze input,
+   the system renders hover effects for interactable elements. To do this it
+   requires information about those elements and how they're stacked on top of
+   each other.
+
 ### Scrollbar painting
 
 During painting, for a non-custom scrollbar we create a

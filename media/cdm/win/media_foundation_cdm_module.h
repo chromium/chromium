@@ -8,6 +8,7 @@
 #include <mfcontentdecryptionmodule.h>
 #include <wrl.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"

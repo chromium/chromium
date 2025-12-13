@@ -52,8 +52,6 @@ class SigninManagerAndroid : public KeyedService {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  bool IsSigninAllowed(JNIEnv* env) const;
-
   bool IsForceSigninEnabled(JNIEnv* env);
 
   // Registers a CloudPolicyClient for fetching policy for a user and fetches
@@ -63,11 +61,6 @@ class SigninManagerAndroid : public KeyedService {
                                 const base::RepeatingClosure& callback);
 
   void StopApplyingCloudPolicy(JNIEnv* env);
-
-  void IsAccountManaged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_account_info,
-      const base::android::JavaParamRef<jobject>& j_callback);
 
   base::android::ScopedJavaLocalRef<jstring> GetManagementDomain(JNIEnv* env);
 
@@ -109,9 +102,6 @@ class SigninManagerAndroid : public KeyedService {
       const CachedIsAccountManaged& cached_entry,
       const CoreAccountInfo& account);
 
-  void OnSigninAllowedPrefChanged() const;
-  bool IsSigninAllowed() const;
-
   using RegisterPolicyWithAccountCallback = base::OnceCallback<void(
       const std::optional<ManagementCredentials>& credentials)>;
 
@@ -125,12 +115,6 @@ class SigninManagerAndroid : public KeyedService {
       base::OnceCallback<void()> policy_callback,
       const std::optional<ManagementCredentials>& credentials);
 
-  void OnPolicyRegisterDoneForIsAccountManaged(
-      const CoreAccountInfo& account,
-      base::android::ScopedJavaGlobalRef<jobject> callback,
-      base::Time start_time,
-      const std::optional<ManagementCredentials>& credentials);
-
   void FetchPolicyBeforeSignIn(const CoreAccountInfo& account_id,
                                base::OnceCallback<void()> policy_callback,
                                const ManagementCredentials& credentials);
@@ -140,9 +124,6 @@ class SigninManagerAndroid : public KeyedService {
                        base::OnceClosure callback);
 
   const raw_ptr<Profile> profile_ = nullptr;
-
-  // Handler for prefs::kSigninAllowed set in user's profile.
-  BooleanPrefMember signin_allowed_;
 
   // Handler for prefs::kForceBrowserSignin. This preference is set in Local
   // State, not in user prefs.
@@ -156,9 +137,6 @@ class SigninManagerAndroid : public KeyedService {
 
   // Java-side SigninManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_signin_manager_;
-
-  // The last invocation of IsAccountManaged() is cached.
-  std::optional<CachedIsAccountManaged> cached_is_account_managed_;
 
   base::ThreadChecker thread_checker_;
 

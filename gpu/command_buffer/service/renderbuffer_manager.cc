@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -48,7 +44,7 @@ struct RenderbufferSignature {
                         GLsizei samples,
                         GLsizei width,
                         GLsizei height) {
-    memset(this, 0, sizeof(RenderbufferSignature));
+    UNSAFE_TODO(memset(this, 0, sizeof(RenderbufferSignature)));
     internal_format_ = internal_format;
     samples_ = samples;
     width_ = width;

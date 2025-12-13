@@ -89,7 +89,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ENHANCED_NETWORK_TTS)
   // encoded as a JSON string.
   void OnServerResponseReceived(
       const ServerRequestList::iterator server_request_it,
-      const std::unique_ptr<std::string> json_response);
+      std::optional<std::string> json_response);
 
   // Called when the data decoder service provides parsed JSON data for a
   // server response. The server response corresponds to the text piece that

@@ -37,6 +37,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_serializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
@@ -113,7 +114,7 @@
 namespace blink {
 
 namespace internal {
-// TODO(crbug.com/363289333): Try to add this functionality to wtf::String.
+// TODO(crbug.com/363289333): Try to add this functionality to blink::String.
 String ReplaceAllCaseInsensitive(
     String source,
     const String& from,
@@ -492,7 +493,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
       center_y = page->GetChromeClient().WindowToViewportScalar(
           window->GetFrame(), center_y);
     }
-    if (!PhysicalRect(box->PhysicalLocation(), box->Size())
+    if (!PhysicalRect(box->PhysicalLocation(), box->StitchedSize())
              .Contains(LayoutUnit(center_x), LayoutUnit(center_y))) {
       return false;
     }
@@ -815,7 +816,7 @@ class SerializerMarkupAccumulator : public MarkupAccumulator {
     // page.
     auto metadata = std::make_unique<JSONObject>();
     auto custom_elements = std::make_unique<JSONArray>();
-    CustomElementRegistry* custom_registry = CustomElement::Registry(document);
+    CustomElementRegistry* custom_registry = document.customElementRegistry();
     if (custom_registry) {
       for (const AtomicString& name : custom_registry->DefinedNames()) {
         CustomElementDefinition* definition =
@@ -1214,6 +1215,8 @@ function main(metadata) {
       // Rules inheriting CSSGroupingRule
       case CSSRule::kNestedDeclarationsRule:
       case CSSRule::kMediaRule:
+      case CSSRule::kMixinRule:
+      case CSSRule::kNavigationRule:
       case CSSRule::kSupportsRule:
       case CSSRule::kContainerRule:
       case CSSRule::kLayerBlockRule:
@@ -1262,6 +1265,13 @@ function main(metadata) {
       case CSSRule::kPositionTryRule:
       case CSSRule::kFunctionDeclarationsRule:
       case CSSRule::kFunctionRule:
+      case CSSRule::kCustomMediaRule:
+      case CSSRule::kContentsMixinRule:
+        break;
+
+      // FIXME(sesse): We can reference external resources in a @contents
+      // argument.
+      case CSSRule::kApplyMixinRule:
         break;
     }
   }

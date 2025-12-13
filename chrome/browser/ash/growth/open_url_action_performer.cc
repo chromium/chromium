@@ -89,7 +89,7 @@ void OpenUrlActionPerformer::Run(int campaign_id,
     return;
   }
 
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       open_url_param->url,
       ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       open_url_param->disposition);

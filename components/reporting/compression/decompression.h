@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/statusor.h"

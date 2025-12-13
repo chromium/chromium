@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
+import static org.chromium.chrome.browser.toolbar.top.ToolbarUtils.isToolbarTabletResizeRefactorEnabled;
+
+import android.animation.Animator;
 import android.content.res.ColorStateList;
 import android.graphics.Canvas;
 import android.view.View;
@@ -11,14 +14,18 @@ import android.view.View;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 
+import java.util.Collection;
+
 /** A child of top toolbar. Holds common methods that the sub-class should implement. */
 @NullMarked
-public abstract class ToolbarChild implements Destroyable, TintObserver, IncognitoStateObserver {
+public abstract class ToolbarChild
+        implements Destroyable, TintObserver, IncognitoStateObserver, ToolbarWidthConsumer {
 
     protected final ThemeColorProvider mTopUiThemeColorProvider;
     protected final IncognitoStateProvider mIncognitoStateProvider;
@@ -60,5 +67,19 @@ public abstract class ToolbarChild implements Destroyable, TintObserver, Incogni
      * @param root Root view for this view; used to position the canvas that's drawn on.
      * @param canvas Canvas to draw to.
      */
-    public abstract void draw(View root, Canvas canvas);
+    public void draw(View root, Canvas canvas) {
+        throw new UnsupportedOperationException("This method call is not implemented.");
+    }
+
+    @Override
+    public int updateVisibility(int availableWidth) {
+        assert isToolbarTabletResizeRefactorEnabled();
+        return 0;
+    }
+
+    @Override
+    public int updateVisibilityWithAnimation(int availableWidth, Collection<Animator> animators) {
+        assert isToolbarTabletResizeRefactorEnabled();
+        return 0;
+    }
 }

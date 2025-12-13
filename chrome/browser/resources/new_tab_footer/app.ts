@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -17,8 +18,9 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {NewTabFooterDocumentProxy} from './browser_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
-import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
+import {SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
+import {CustomizeChromeSection} from './customize_chrome.mojom-webui.js';
 import type {BackgroundAttribution, ManagementNotice, NewTabFooterDocumentCallbackRouter, NewTabFooterHandlerInterface} from './new_tab_footer.mojom-webui.js';
 import {NewTabPageType} from './new_tab_footer.mojom-webui.js';
 import {WindowProxy} from './window_proxy.js';
@@ -60,6 +62,9 @@ export enum FooterElement {
 
 const CUSTOMIZE_URL_PARAM: string = 'customize';
 
+const CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID =
+    'CustomizeButtonsHandler::kCustomizeChromeButtonElementId';
+
 function recordCustomizeChromeOpen(element: FooterCustomizeChromeEntryPoint) {
   chrome.metricsPrivate.recordEnumerationValue(
       'NewTabPage.Footer.CustomizeChromeOpened', element,
@@ -71,7 +76,9 @@ function recordClick(element: FooterElement) {
       'NewTabPage.Footer.Click', element, FooterElement.MAX_VALUE + 1);
 }
 
-export class NewTabFooterAppElement extends CrLitElement {
+const NewTabFooterAppElementBase = HelpBubbleMixinLit(CrLitElement);
+
+export class NewTabFooterAppElement extends NewTabFooterAppElementBase {
   static get is() {
     return 'new-tab-footer-app';
   }
@@ -111,6 +118,7 @@ export class NewTabFooterAppElement extends CrLitElement {
   protected accessor showBackgroundAttribution_: boolean = false;
 
   private selectedCustomizeDialogPage_: string|null;
+  private canCustomizeChrome_: boolean = false;
   private callbackRouter_: NewTabFooterDocumentCallbackRouter;
   private handler_: NewTabFooterHandlerInterface;
   private customizeCallbackRouter_: CustomizeButtonsDocumentCallbackRouter;
@@ -160,8 +168,9 @@ export class NewTabFooterAppElement extends CrLitElement {
             });
     this.setAttachedTabStateUpdatedListener_ =
         this.callbackRouter_.attachedTabStateUpdated.addListener(
-            (ntpType: NewTabPageType) => {
+            (ntpType: NewTabPageType, canCustomizeChrome: boolean) => {
               this.ntpType_ = ntpType;
+              this.canCustomizeChrome_ = canCustomizeChrome;
             });
     this.handler_.updateAttachedTabState();
     this.setBackgroundAttributionListener_ =
@@ -221,9 +230,31 @@ export class NewTabFooterAppElement extends CrLitElement {
     }
   }
 
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('showCustomizeButtons_') &&
+        this.showCustomizeButtons_) {
+      // Anchoring on the internal icon of the button is required here because
+      // the button may collapse (when the main view reaches a minimum width
+      // size). The collapse happens by hiding a text, which does not trigger
+      // the appropriate notifications for the help bubble to reposition
+      // properly. Anchoring to the icon ensures that the help bubble adapts
+      // accordingly.
+      this.registerHelpBubble(
+          CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID,
+          ['ntp-customize-buttons', '.customize-icon'], {anchorPaddingTop: 10});
+      this.handler_.notifyCustomizationButtonVisible();
+    }
+  }
+
   private computeShowCustomizeButtons_(): boolean {
-    return this.ntpType_ === NewTabPageType.kFirstPartyWebUI ||
-        this.ntpType_ === NewTabPageType.kExtension;
+    return this.canCustomizeChrome_ &&
+        (this.ntpType_ === NewTabPageType.kFirstPartyWebUI ||
+         this.ntpType_ === NewTabPageType.kExtension);
   }
 
   private computeShowExtension_(): boolean {
@@ -287,6 +318,8 @@ export class NewTabFooterAppElement extends CrLitElement {
         break;
       case CustomizeDialogPage.MODULES:
         section = CustomizeChromeSection.kModules;
+        break;
+      default:
         break;
     }
     this.customizeHandler_.setCustomizeChromeSidePanelVisible(

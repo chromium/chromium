@@ -141,14 +141,13 @@ class WTF_EXPORT ConcurrentlyReadBitField
 
   template <typename Value>
   typename Value::Type get_concurrently() const {
-    return Value::decode(
-        WTF::AsAtomicPtr(&bits_)->load(std::memory_order_relaxed));
+    return Value::decode(AsAtomicPtr(&bits_)->load(std::memory_order_relaxed));
   }
 
   template <typename Value>
   void set(typename Value::Type value) {
-    WTF::AsAtomicPtr(&bits_)->store(Value::update(bits_, value),
-                                    std::memory_order_relaxed);
+    AsAtomicPtr(&bits_)->store(Value::update(bits_, value),
+                               std::memory_order_relaxed);
   }
 };
 

@@ -98,7 +98,6 @@ class MockHistoryService : public history::HistoryService {
   MOCK_METHOD(base::CancelableTaskTracker::TaskId,
               QueryURL,
               (const GURL& url,
-               bool want_visits,
                QueryURLCallback callback,
                base::CancelableTaskTracker* tracker));
 };
@@ -236,7 +235,7 @@ TEST_F(ProductSpecificationsHandlerTest,
 
 TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_Found) {
   EXPECT_CALL(*history_service_, QueryURL)
-      .WillOnce([](const GURL& url, bool want_visits,
+      .WillOnce([](const GURL& url,
                    history::HistoryService::QueryURLCallback callback,
                    base::CancelableTaskTracker* tracker) {
         history::QueryURLResult result;
@@ -259,7 +258,7 @@ TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_Found) {
 
 TEST_F(ProductSpecificationsHandlerTest, TestGetPageTitleFromHistory_NotFound) {
   EXPECT_CALL(*history_service_, QueryURL)
-      .WillOnce([](const GURL& url, bool want_visits,
+      .WillOnce([](const GURL& url,
                    history::HistoryService::QueryURLCallback callback,
                    base::CancelableTaskTracker* tracker) {
         history::QueryURLResult result;

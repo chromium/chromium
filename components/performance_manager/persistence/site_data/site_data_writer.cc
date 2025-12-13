@@ -59,10 +59,10 @@ void SiteDataWriter::NotifyUsesAudioInBackground() {
 void SiteDataWriter::NotifyLoadTimePerformanceMeasurement(
     base::TimeDelta load_duration,
     base::TimeDelta cpu_usage_estimate,
-    uint64_t private_footprint_kb_estimate) {
+    base::ByteCount private_footprint_estimate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   impl_->NotifyLoadTimePerformanceMeasurement(load_duration, cpu_usage_estimate,
-                                              private_footprint_kb_estimate);
+                                              private_footprint_estimate);
 }
 
 const url::Origin& SiteDataWriter::Origin() const {

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "extensions/browser/api/socket/udp_socket.h"
 
 #include <algorithm>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -238,7 +234,8 @@ void UDPSocket::OnReceived(int32_t result,
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(data.value().size());
-  memcpy(io_buffer->data(), data.value().data(), data.value().size());
+  UNSAFE_TODO(
+      memcpy(io_buffer->data(), data.value().data(), data.value().size()));
 
   if (!read_callback_.is_null()) {
     std::move(read_callback_)

@@ -43,6 +43,8 @@
     'chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_webview_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_webview_arm64_orderfile',
     },
 
     'chrome.pgo': {
@@ -95,12 +97,9 @@
       'mac-arm-no-brp-builder-perf': 'official_remoteexec_mac_arm_no_brp_perf',
       'mac-builder-perf': 'official_remoteexec_mac_perf',
       'mac-builder-perf-pgo': 'official_remoteexec_mac_perf_pgo',
+      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
       'win64-builder-perf': 'official_remoteexec_perf_win_cross',
       'win64-builder-perf-pgo': 'official_remoteexec_perf_pgo',
-    },
-
-    'chromium.perf.calibration': {
-      'linux-perf-calibration': 'official_linux_perf',
     },
 
     'chromium.perf.fyi': {
@@ -110,7 +109,6 @@
       'fuchsia-builder-perf-arm64': 'official_remoteexec_fuchsia_arm64_perf',
       'fuchsia-builder-perf-arm64-pgo': 'official_remoteexec_fuchsia_arm64_perf_pgo',
       'linux-chromium-builder-perf': 'chromium_remoteexec_linux',
-      'win-arm64-builder-perf': 'official_remoteexec_perf_win_cross_arm64',
     },
 
     'chromium.perf.pinpoint': {
@@ -144,7 +142,7 @@
 
     'client.openscreen.chromium': {
       'chromium_linux_x64': 'debug_bot_remoteexec',
-      'chromium_mac_x64': 'debug_bot_remoteexec',
+      'chromium_mac_arm64': 'debug_bot_remoteexec',
       'chromium_win_x64': 'debug_bot_remoteexec',
     },
 
@@ -232,6 +230,8 @@
     'tryserver.chrome.orderfile': {
       'android-arm32-orderfile': 'official_android_arm32_orderfile',
       'android-arm64-orderfile': 'official_android_arm64_orderfile',
+      'webview-arm-orderfile': 'official_webview_arm32_orderfile',
+      'webview-arm64-orderfile': 'official_webview_arm64_orderfile',
     },
 
     'tryserver.chrome.pgo': {
@@ -450,7 +450,7 @@
     ],
 
     'official_android_arm32_orderfile': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm', 'minimal_symbols', 'orderfile_common', 'devtools_instrumentation_dumping',
     ],
 
     'official_android_arm32_pgo': [
@@ -458,7 +458,7 @@
     ],
 
     'official_android_arm64_orderfile': [
-      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile',
+      'official', 'remoteexec', 'android', 'android_external', 'arm64', 'minimal_symbols', 'orderfile_common', 'devtools_instrumentation_dumping',
     ],
 
     'official_android_arm64_pgo': [
@@ -554,7 +554,7 @@
     ],
 
     'official_remoteexec_minimal_symbols_android': [
-      'official', 'remoteexec', 'minimal_symbols', 'android', 'pgo_phase_0', 'no_default_afdo'
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm', 'pgo_phase_0', 'no_default_afdo'
     ],
 
     'official_remoteexec_minimal_symbols_android_arm64_high_end': [
@@ -570,7 +570,7 @@
     ],
 
     'official_remoteexec_minimal_symbols_android_pgo': [
-      'official', 'remoteexec', 'minimal_symbols', 'android'
+      'official', 'remoteexec', 'minimal_symbols', 'android', 'arm',
     ],
 
     'official_remoteexec_minimal_symbols_android_thin_lto_opt': [
@@ -599,6 +599,14 @@
 
     'official_remoteexec_x86': [
       'official', 'remoteexec', 'x86', 'minimal_symbols',
+    ],
+
+    'official_webview_arm32_orderfile': [
+      'official', 'remoteexec', 'android', 'arm', 'minimal_symbols', 'orderfile_common',
+    ],
+
+    'official_webview_arm64_orderfile': [
+      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'orderfile_common',
     ],
 
     'official_win_arm64_pgo': [
@@ -833,27 +841,20 @@
       'gn_args': 'ios_code_signing_identity_description="Apple Development: Google Development"',
     },
 
-    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_android': {
       'mixins': ['cronet_common'],
-      # LINT.IfChange(cronet_android)
-      'gn_args': ('use_partition_alloc=false '
-                  'use_hashed_jni_names=true '
-                  'default_min_sdk_version=23 '
-                  'clang_use_default_sample_profile=false '
-                  'use_thin_lto=false '  # https://crbug.com/1136963
-                  'enable_resource_allowlist_generation=false '),
-      # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_android)
+      # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+      # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+      # declaration so that the default value for the arg is derived from the
+      # `is_cronet_build` GN arg.
     },
 
-    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_common': {
-      # LINT.IfChange(cronet_common)
-      'gn_args': ('enable_websockets=false '
-                  'include_transport_security_state_preload_list=false '
-                  'is_cronet_build=true '
-                  'use_platform_icu_alternatives=true ')
-      # LINT.ThenChange(//infra/config/gn_args/gn_args.star:cronet_common)
+      # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+      # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+      # declaration so that the default value for the arg is derived from the
+      # `is_cronet_build` GN arg.
+      'gn_args': ('is_cronet_build=true ')
     },
 
     'custom_args': {
@@ -1023,8 +1024,8 @@
       'gn_args': 'use_order_profiling=true',
     },
 
-    'orderfile': {
-      'mixins': ['no_proguard_obfuscation', 'devtools_instrumentation_dumping', 'order_profiling', 'pgo_profile_override'],
+    'orderfile_common': {
+      'mixins': ['no_proguard_obfuscation', 'order_profiling', 'pgo_profile_override'],
     },
 
     'ozone_headless': {
@@ -1032,7 +1033,6 @@
     },
 
     'pgo_phase_0': {
-      'mixins': ['strip_absolute_paths_from_debug_symbols'],
       'gn_args': 'chrome_pgo_phase=0'
     },
 
@@ -1115,10 +1115,6 @@
 
     'static_angle': {
       'gn_args': 'use_static_angle=true',
-    },
-
-    'strip_absolute_paths_from_debug_symbols': {
-      'gn_args': 'strip_absolute_paths_from_debug_symbols=true'
     },
 
     'strip_debug_info': {

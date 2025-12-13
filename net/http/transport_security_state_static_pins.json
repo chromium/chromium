@@ -31,7 +31,7 @@
 // the 'static_spki_hashes' and 'bad_static_spki_hashes' fields in 'pinsets'
 // refer to, and the timestamp at which the pins list was last updated.
 //
-// Last updated: 2025-07-14 12:54 UTC
+// Last updated: 2025-12-11 12:53 UTC
 //
 {
   "pinsets": [
@@ -49,37 +49,23 @@
         "GTSRootR2",
         "GTSRootR3",
         "GTSRootR4",
-        "GlobalSignR4_owned_by_Google"
+        "GlobalSignR4_owned_by_Google",
+        "WR1_GoogleTrustServices",
+        "WR2_GoogleTrustServices",
+        "WR3_GoogleTrustServices",
+        "WR4_GoogleTrustServices",
+        "WR5_GoogleTrustServices",
+        "WE1_GoogleTrustServices",
+        "WE2_GoogleTrustServices",
+        "WE3_GoogleTrustServices",
+        "WE4_GoogleTrustServices",
+        "WE5_GoogleTrustServices",
+        "AE1_GoogleTrustServices"
       ],
       "bad_static_spki_hashes": [
         "GlobalSignExtendedValidationCA",
         "GlobalSignExtendedValidationCA_G2",
         "GlobalSignExtendedValidationCA_SHA256_G2"
-      ]
-    },
-    {
-      "name": "facebook",
-      "static_spki_hashes": [
-        "ComodoRSACertificationAuthority",
-        "ComodoECCCertificationAuthority",
-        "UserTrustRSACertificationAuthority",
-        "UserTrustECCCertificationAuthority",
-        "DigiCertGlobalRoot",
-        "DigiCertGlobalRootG2",
-        "DigiCertGlobalRootG3",
-        "DigiCertEVRoot",
-        "DigiCertTrustedRootG4",
-        "DigiCertTLSRSA4096RootG5",
-        "DigiCertTLSECCP384RootG5",
-        "GlobalSignRootCA",
-        "GlobalSignRootCA_R3",
-        "GlobalSignRootCA_R6",
-        "GlobalSignRootR46",
-        "ISRGRootX1",
-        "ISRGRootX2",
-        "FacebookBackup",
-        "SymantecClass3EVG3",
-        "DigiCertECCSecureServerCA"
       ]
     }
   ],
@@ -1898,96 +1884,6 @@
       "name": "ytimg.com",
       "include_subdomains": true,
       "pins": "google"
-    },
-    {
-      "name": "facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "www.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "m.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "tablet.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "secure.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "pixel.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "apps.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "upload.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "developers.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "touch.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "mbasic.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "code.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "t.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "mtouch.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "business.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "research.facebook.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "messenger.com",
-      "include_subdomains": true,
-      "pins": "facebook"
-    },
-    {
-      "name": "www.messenger.com",
-      "include_subdomains": true,
-      "pins": "facebook"
     }
   ]
 }

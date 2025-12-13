@@ -10,9 +10,7 @@
 #include "base/supports_user_data.h"
 #include "components/language_detection/content/common/language_detection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace language_detection {
 

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -90,6 +91,9 @@ id<GREYMatcher> MenuButtonMatcher(int accessibility_label_id) {
 // Displays the tab cell context menu by long pressing at the tab cell at
 // `tab_cell_index`.
 void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
+  // TODO(crbug.com/443957909): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::PlatformThread::Sleep(base::Seconds(1));
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_cell_index)]
       performAction:grey_longPress()];
 }
@@ -98,6 +102,10 @@ void DisplayContextMenuForTabCellAtIndex(int tab_cell_index) {
 // when no group is in the grid.
 void CreateDefaultFirstGroupFromTabCellAtIndex(int tab_cell_index) {
   DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+
+  // TODO(crbug.com/443957909): Investigate if there is a better solution to fix
+  // flakiness on iOS26.
+  base::PlatformThread::Sleep(base::Seconds(1));
   [[EarlGrey
       selectElementWithMatcher:
           ContextMenuItemWithAccessibilityLabel(l10n_util::GetPluralNSStringF(
@@ -128,9 +136,13 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 }
 
-// Creates a shared tab group and opens the tab group indicator menu.
-void CreateSharedGroupAndOpenMenu() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:NO];
+// Creates a shared tab group with a test URL and opens the tab group
+// indicator menu.
+void CreateSharedGroupAndOpenMenu(
+    net::test_server::EmbeddedTestServer* test_server) {
+  NSString* url =
+      base::SysUTF8ToNSString(GetQueryTitleURL(test_server, kTab1Title).spec());
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:NO url:url];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForCellAtIndex(0)]
       performAction:grey_tap()];
@@ -156,6 +168,7 @@ void CreateSharedGroupAndOpenMenu() {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
+  config.features_disabled.push_back(kIOSAutoOpenRemoteTabGroupsSettings);
 
   // Add the flag to use FakeTabGroupSyncService.
   config.additional_args.push_back(
@@ -217,13 +230,14 @@ void CreateSharedGroupAndOpenMenu() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Check that the indicator is not visible in landscape.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
   [[EarlGrey selectElementWithMatcher:TabGroupIndicatorViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 
   // Check that the indicator is visible when switching back to portrait.
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [[EarlGrey
       selectElementWithMatcher:TabGroupIndicatorViewMatcherWithGroupTitle(
                                    l10n_util::GetPluralNSStringF(
@@ -234,10 +248,6 @@ void CreateSharedGroupAndOpenMenu() {
 // Tests that the tab group indicator view is visible when the active tab is
 // grouped.
 - (void)testTabGroupIndicatorNotVisibleOnIpad {
-  if (@available(iOS 17, *)) {
-  } else {
-    EARL_GREY_TEST_SKIPPED(@"Skipped on iOS 16.");
-  }
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped on iPhone.");
   }
@@ -332,7 +342,7 @@ void CreateSharedGroupAndOpenMenu() {
       selectElementWithMatcher:chrome_test_util::TabGroupSnackBarAction()]
       performAction:grey_tap()];
 
-  // Check that the Tab Groups Panel is shown.
+  // Check that the tab groups page is shown.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGroupsPanel()]
       assertWithMatcher:grey_notNil()];
 }
@@ -362,6 +372,11 @@ void CreateSharedGroupAndOpenMenu() {
 
 // Tests that renaming a tab group from the tab group indicator menu works.
 - (void)testTabGroupIndicatorMenuActionsRenameGroup {
+  // TODO(crbug.com/442817314): Re-enable this flaky test on iOS26.
+  if (base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
+  }
+
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
@@ -515,7 +530,7 @@ void CreateSharedGroupAndOpenMenu() {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
   }
-  CreateSharedGroupAndOpenMenu();
+  CreateSharedGroupAndOpenMenu(self.testServer);
 
   // Verify that the leave button is not available.
   [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
@@ -545,7 +560,7 @@ void CreateSharedGroupAndOpenMenu() {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
   }
-  CreateSharedGroupAndOpenMenu();
+  CreateSharedGroupAndOpenMenu(self.testServer);
 
   // Verify that the delete button is not available.
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]

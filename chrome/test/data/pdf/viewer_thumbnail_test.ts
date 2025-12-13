@@ -226,9 +226,8 @@ const tests = [
     await testThumbnailRotations(
         [100, 100], [[100, 100], [100, 100], [100, 100], [100, 100]]);
 
-    // TODO(crbug.com/424225641): Sizes should always be 140x140.
     await testThumbnailRotations(
-        [300, 300], [[140, 140], [108, 108], [140, 140], [108, 108]]);
+        [300, 300], [[140, 140], [140, 140], [140, 140], [140, 140]]);
 
     chrome.test.succeed();
   },
@@ -238,9 +237,8 @@ const tests = [
     await testThumbnailRotations(
         [100, 100], [[50, 50], [50, 50], [50, 50], [50, 50]]);
 
-    // TODO(crbug.com/424225641): Sizes should always be 140x140.
     await testThumbnailRotations(
-        [300, 300], [[140, 140], [108, 108], [140, 140], [108, 108]]);
+        [300, 300], [[140, 140], [140, 140], [140, 140], [140, 140]]);
 
     chrome.test.succeed();
   },

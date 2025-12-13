@@ -11,7 +11,7 @@
 #include <set>
 #include <string>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -51,8 +51,10 @@ bool IsLocaleSupported() {
   return true;
 }
 
-base::LazyInstance<std::set<Profile*>>::Leaky g_perform_new_installation =
-    LAZY_INSTANCE_INITIALIZER;
+std::set<Profile*>& GetPerformNewInstallationProfiles() {
+  static base::NoDestructor<std::set<Profile*>> perform_new_installation;
+  return *perform_new_installation;
+}
 }  // namespace
 
 namespace preinstalled_apps {
@@ -63,7 +65,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 // static
 bool Provider::DidPerformNewInstallationForProfile(Profile* profile) {
-  return g_perform_new_installation.Get().count(profile);
+  return GetPerformNewInstallationProfiles().count(profile);
 }
 
 void Provider::InitProfileState() {
@@ -124,7 +126,7 @@ void Provider::InitProfileState() {
                                      *new_install_state);
   }
   if (perform_new_installation_)
-    g_perform_new_installation.Get().insert(profile_);
+    GetPerformNewInstallationProfiles().insert(profile_);
 }
 
 Provider::Provider(Profile* profile,

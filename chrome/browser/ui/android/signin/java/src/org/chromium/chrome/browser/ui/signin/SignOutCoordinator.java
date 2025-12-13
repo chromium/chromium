@@ -121,12 +121,7 @@ public class SignOutCoordinator {
         assert onSignOut != null;
         validateSignOutReason(profile, signOutReason);
 
-        IdentityManager identityManager =
-                IdentityServicesProvider.get().getIdentityManager(profile);
-        assumeNonNull(identityManager);
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            throw new IllegalStateException("There is no signed-in account");
-        }
+        IdentityManager identityManager = getSignedInIdentityManager(profile);
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         assumeNonNull(signinManager);
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
@@ -164,6 +159,59 @@ public class SignOutCoordinator {
                 });
     }
 
+    /**
+     * Starts a silent sign-out flow that only shows a snackbar upon completion. This bypasses the
+     * standard signout confirmation dialog.
+     *
+     * <p>This should ONLY be used when caller is sure there's no unsynced data, such as reversing a
+     * sign-in action immediately after it was completed (e.g., via an "Undo" button on a snackbar).
+     * For all other sign-out scenarios, use {@link #startSignOutFlow()} to ensure the user can save
+     * their work.
+     *
+     * @param context Context to create the view.
+     * @param profile The Profile to sign out of.
+     * @param snackbarManager The manager for displaying snackbars at the bottom of the activity.
+     * @param signOutReason The access point to sign out from.
+     * @param onSignOut A {@link Runnable} is called on the UI thread when the sign-out flow
+     *     finishes. If sign-out fails it will not be called.
+     */
+    @MainThread
+    public static void undoSignInWithSnackbar(
+            Context context,
+            Profile profile,
+            SnackbarManager snackbarManager,
+            @SignoutReason int signOutReason,
+            Runnable onSignOut) {
+        ThreadUtils.assertOnUiThread();
+        if (signOutReason != SignoutReason.USER_TAPPED_UNDO_RIGHT_AFTER_SIGN_IN) {
+            throw new IllegalArgumentException("Unsupported signOutReason: " + signOutReason);
+        }
+        getSignedInIdentityManager(profile);
+        assert snackbarManager != null;
+        assert onSignOut != null;
+
+        SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
+        assumeNonNull(signinManager);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assumeNonNull(syncService);
+
+        syncService.getTypesWithUnsyncedData(
+                unsyncedTypes -> {
+                    if (!unsyncedTypes.isEmpty()) {
+                        throw new IllegalStateException(
+                                "This sign-out flow should not be used if there is unsaved data.");
+                    }
+                });
+        signOutAndShowSnackbar(
+                context,
+                snackbarManager,
+                signinManager,
+                syncService,
+                signOutReason,
+                onSignOut,
+                false);
+    }
+
     // TODO: b/325654229 - This method should be private. It's temporarily made public as a work
     // around for b/343933167.
     /** Shows the sanckbar which is shown upon signing out. */
@@ -192,7 +240,7 @@ public class SignOutCoordinator {
                                 /* controller= */ null,
                                 Snackbar.TYPE_ACTION,
                                 Snackbar.UMA_SIGN_OUT)
-                        .setSingleLine(false));
+                        .setDefaultLines(false));
     }
 
     @IntDef({
@@ -222,6 +270,15 @@ public class SignOutCoordinator {
             default:
                 throw new IllegalArgumentException("Invalid signOutReason: " + signOutReason);
         }
+    }
+
+    private static IdentityManager getSignedInIdentityManager(Profile profile) {
+        IdentityManager identityManager =
+                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
+        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+            throw new IllegalStateException("There is no signed-in account");
+        }
+        return identityManager;
     }
 
     private static @UiState int getUiState(

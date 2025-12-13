@@ -52,7 +52,6 @@ import org.chromium.ui.widget.Toast;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Duration;
-import java.util.Optional;
 
 /*
  * Service to interact with an AI assistant, used to invoke an assistant UI to summarize web pages
@@ -471,7 +470,7 @@ public class AiAssistantService {
                                             != Tribool.FALSE) {
                                 enabled = false;
                             } else if (shouldDisableForEnterprise()
-                                    && capabilities.isSubjectToEnterprisePolicies()
+                                    && capabilities.isSubjectToEnterpriseFeatures()
                                             != Tribool.FALSE) {
                                 enabled = false;
                             }
@@ -480,16 +479,14 @@ public class AiAssistantService {
     }
 
     private void onInnerTextReceived(
-            Context context, Tab tab, boolean shouldUseSystemProvider, Optional<String> innerText) {
-        if (innerText.isEmpty()) {
+            Context context, Tab tab, boolean shouldUseSystemProvider, @Nullable String innerText) {
+        if (innerText == null) {
             Log.w(TAG, "Error while extracting page contents");
             return;
         }
 
         sendLaunchRequest(
-                context,
-                getLaunchRequestForSummarizeUrl(tab, innerText.get()),
-                shouldUseSystemProvider);
+                context, getLaunchRequestForSummarizeUrl(tab, innerText), shouldUseSystemProvider);
     }
 
     private boolean isTabPdf(Tab tab) {

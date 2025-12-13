@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
-#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button_menu_highlighter.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class AppMenu;
@@ -77,7 +77,7 @@ class AppMenuButton : public ToolbarButton {
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
 
   raw_ptr<views::MenuButtonController> menu_button_controller_;
-  user_education::FeaturePromoHandle promo_handle_;
+  ToolbarButtonMenuHighlighter highlighter_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_APP_MENU_BUTTON_H_

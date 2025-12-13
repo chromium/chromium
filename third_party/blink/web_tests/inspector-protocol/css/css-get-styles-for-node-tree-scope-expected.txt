@@ -1,0 +1,6 @@
+Tests that matched rules have originTreeScopeNodeId set correctly for matched rules.
+Rule with selector '#contained' has originTreeScopeNodeId.
+Its originTreeScopeNodeId matches shadow root node id.
+Rule with selector '::part(exposed)' has originTreeScopeNodeId.
+Its originTreeScopeNodeId matches document node id.
+

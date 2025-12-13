@@ -24,8 +24,8 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * Sizes are collected by
    [//build/android/resource_sizes.py](https://cs.chromium.org/chromium/src/build/android/resource_sizes.py).
  * How to analyze Android binary size discussed in [apk_size_regressions.md#debugging-apk-size-increase](../apk_size_regressions.md#debugging-apk-size-increase).
- * Sizes for `ChromePublic.apk`, `ChromeModernPublic.apk`, `MonochromePublic.apk`, `SystemWebview.apk` are tracked.
-   * But only `MonochromePublic.apk` is actively monitored.
+ * Sizes for `ChromePublic.apk`, `ChromeModernPublic.apk`, `TrichromeChrome.aab`, `SystemWebview.apk` are tracked.
+   * But only `TrichromeChrome.aab` is actively monitored.
  * We care most about on-disk size (for users with small device storage)
    * But also care about patch size (so that browser updates get applied)
 

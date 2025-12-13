@@ -187,7 +187,7 @@ TEST_F(PaletteInterpolationTest, MixCustomAndNonExistingPalettes) {
       {3, Color::FromRGBA(176, 255, 176, 255)},
       {4, Color::FromRGBA(116, 163, 255, 255)},
       {5, Color::FromRGBA(99, 0, 99, 255)},
-      {6, Color::FromRGBA(210, 169, 148, 255)},
+      {6, Color::FromRGBA(210, 169, 147, 255)},
       {7, Color::FromRGBA(173, 255, 166, 255)},
   };
   ExpectColorsEqualInSRGB(actual_color_records, expected_color_records);

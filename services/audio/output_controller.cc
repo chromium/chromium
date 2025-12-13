@@ -23,7 +23,9 @@
 #include "base/strings/to_string.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "services/audio/device_listener_output_stream.h"
 
@@ -35,7 +37,6 @@ namespace {
 // reduce audio output latency but may increase the probability of audio
 // glitches.
 BASE_FEATURE(kAudioOutputControllerRequestBeforeRead,
-             "AudioOutputControllerRequestBeforeRead",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Time in seconds between two successive measurements of audio power levels.
@@ -71,6 +72,16 @@ const char* ErrorTypeToString(
   return "Invalid";
 }
 
+bool ShouldMonitorAudioLevels() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(media::kEnableAudioMonitoringOnAndroid);
+#elif BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 }  // namespace
 
 OutputController::ErrorStatisticsTracker::ErrorStatisticsTracker(
@@ -93,6 +104,13 @@ OutputController::ErrorStatisticsTracker::~ErrorStatisticsTracker() {
   if (controller_) {
     controller_->SendLogMessage("StopStream => (duration=%" PRId64 " sec)",
                                 duration.InSeconds());
+    const double glitch_percentage =
+        duration.is_zero()
+            ? 0
+            : glitch_info_.duration.InSecondsF() / duration.InSecondsF();
+    controller_->SendLogMessage(
+        "StopStream => (glitches=[%s], glitch_percentage=%.3f%%)",
+        glitch_info_.ToString().c_str(), glitch_percentage * 100);
     controller_->SendLogMessage("StopStream => (error_during_callback=%s)",
                                 base::ToString(error_during_callback_).c_str());
   }
@@ -102,7 +120,9 @@ void OutputController::ErrorStatisticsTracker::RegisterError() {
   error_during_callback_ = true;
 }
 
-void OutputController::ErrorStatisticsTracker::OnMoreDataCalled() {
+void OutputController::ErrorStatisticsTracker::OnMoreDataCalled(
+    const media::AudioGlitchInfo& glitch_info) {
+  glitch_info_ += glitch_info;
   // Indicate that we haven't wedged (at least not indefinitely, WedgeCheck()
   // may have already fired if OnMoreData() took an abnormal amount of time).
   // Since this thread is the only writer of |on_more_io_data_called_| once the
@@ -144,7 +164,8 @@ OutputController::OutputController(
       power_monitor_(params.sample_rate(),
                      base::Milliseconds(kPowerMeasurementTimeConstantMillis)),
       request_before_read_(base::FeatureList::IsEnabled(
-          kAudioOutputControllerRequestBeforeRead)) {
+          kAudioOutputControllerRequestBeforeRead)),
+      will_monitor_audio_levels_(ShouldMonitorAudioLevels()) {
   DCHECK(audio_manager);
   DCHECK(handler_);
   DCHECK(sync_reader_);
@@ -302,7 +323,7 @@ void OutputController::StartStream() {
   state_ = kPlaying;
   SendLogMessage("%s => (state=%s)", __func__, StateToString(state_));
 
-  if (will_monitor_audio_levels()) {
+  if (will_monitor_audio_levels_) {
     last_audio_level_log_time_ = base::TimeTicks::Now();
   }
 
@@ -321,7 +342,7 @@ void OutputController::StopStream() {
     // Destructor of ErrorStatisticsTracker also adds a log message.
     stats_tracker_.reset();
 
-    if (will_monitor_audio_levels()) {
+    if (will_monitor_audio_levels_) {
       LogAudioPowerLevel(__func__);
     }
 
@@ -419,7 +440,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
               "playout_delay (ms)", delay.InMillisecondsF());
   glitch_info.MaybeAddTraceEvent();
 
-  stats_tracker_->OnMoreDataCalled();
+  stats_tracker_->OnMoreDataCalled(glitch_info);
 
   if (request_before_read_) {
     sync_reader_->RequestMoreData(delay, delay_timestamp, glitch_info);
@@ -458,7 +479,7 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 
   // Skip scanning `dest` when it's zero'ed to due to timeout glitches. This
   // gives more accurate results from `power_monitor_`.
-  if (will_monitor_audio_levels() && received_data && !is_bitstream) {
+  if (will_monitor_audio_levels_ && received_data && !is_bitstream) {
     // Note: this code path should never be hit when using bitstream streams.
     // Scan doesn't expect compressed audio, so it may go out of bounds trying
     // to read |frames| frames of PCM data.
@@ -602,7 +623,7 @@ void OutputController::ProcessDeviceChange() {
 }
 
 std::pair<float, bool> OutputController::ReadCurrentPowerAndClip() {
-  DCHECK(will_monitor_audio_levels());
+  DCHECK(will_monitor_audio_levels_);
   return power_monitor_.ReadCurrentPowerAndClip();
 }
 

@@ -21,15 +21,8 @@ class DOMViewTransition;
 
 class CORE_EXPORT ViewTransitionSupplement
     : public GarbageCollected<ViewTransitionSupplement>,
-      public Supplement<Document>,
       public ViewTransition::Delegate {
  public:
-  static const char kSupplementName[];
-
-  // Supplement functionality.
-  static ViewTransitionSupplement* From(Document&);
-  static ViewTransitionSupplement* FromIfExists(const Document&);
-
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
   // With callback:
@@ -47,6 +40,9 @@ class CORE_EXPORT ViewTransitionSupplement
   static DOMViewTransition* startViewTransition(ScriptState*,
                                                 Document&,
                                                 ExceptionState&);
+
+  // activeViewTransition idl implementation
+  static DOMViewTransition* activeViewTransition(Document&);
 
   static DOMViewTransition* StartViewTransitionForElement(
       ScriptState*,
@@ -87,7 +83,7 @@ class CORE_EXPORT ViewTransitionSupplement
   ~ViewTransitionSupplement() override;
 
   // GC functionality.
-  void Trace(Visitor* visitor) const override;
+  void Trace(Visitor* visitor) const;
 
   // ViewTransition::Delegate implementation.
   void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;
@@ -95,6 +91,7 @@ class CORE_EXPORT ViewTransitionSupplement
   void OnTransitionFinished(ViewTransition* transition) override;
   void OnSkipTransitionWithPendingCallback(ViewTransition*) override;
   void OnSkippedTransitionDOMCallback(ViewTransition*) override;
+  void OnTransitionCaptured(ViewTransition*) override;
 
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
@@ -119,7 +116,7 @@ class CORE_EXPORT ViewTransitionSupplement
   // Generates a new ID usable from viz to refer to a snapshot resource.
   viz::ViewTransitionElementResourceId GenerateResourceId(
       const blink::ViewTransitionToken& transition_token,
-      bool for_subframe_snapshot);
+      bool for_scope_snapshot);
 
   // Initializes the sequence such that the next call to GenerateResourceId()
   // will return `next_local_id`. Used to ensure a unique and continuous
@@ -141,6 +138,9 @@ class CORE_EXPORT ViewTransitionSupplement
   void SetCrossDocumentOptIn(mojom::blink::ViewTransitionSameOriginOptIn);
 
   void SendOptInStatusToHost();
+
+  // The document we belong to.
+  Member<Document> document_;
 
   // Document-level view transition.
   // TODO(crbug.com/394052227): Change document transitions to be stored in
@@ -169,6 +169,21 @@ class CORE_EXPORT ViewTransitionSupplement
 
   bool in_get_computed_style_scope_ = false;
   bool last_update_had_computed_style_scope_ = false;
+
+  // Track in flight and captured transitions. Advance from the capture phase to
+  // DOM callback is deferred until all in flight captures are complete in order
+  // to trigger the DOM callbacks in creation order.
+  int in_flight_capture_requests_ = 0;
+  HeapVector<Member<ViewTransition>> captured_transitions_;
+
+  // This allow deferring starting a navigation transition until some conditions
+  // are met, such as existing transitions are finished.
+  struct PendingNavigationTransition {
+    blink::ViewTransitionToken navigation_id;
+    mojom::blink::PageSwapEventParamsPtr params;
+    ViewTransition::ViewTransitionStateCallback callback;
+  };
+  std::optional<PendingNavigationTransition> pending_navigation_transition_;
 };
 
 }  // namespace blink

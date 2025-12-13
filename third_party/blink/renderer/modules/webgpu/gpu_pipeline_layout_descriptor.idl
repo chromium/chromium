@@ -6,4 +6,5 @@
 
 dictionary GPUPipelineLayoutDescriptor : GPUObjectDescriptorBase {
     required sequence<GPUBindGroupLayout?> bindGroupLayouts;
+    [RuntimeEnabled=WebGPUImmediatesFeature] GPUSize32 immediateSize = 0;
 };

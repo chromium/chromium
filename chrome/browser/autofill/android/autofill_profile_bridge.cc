@@ -32,7 +32,7 @@ namespace autofill {
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using base::android::ToJavaIntArray;
@@ -132,3 +132,5 @@ JNI_AutofillProfileBridge_GetAddressEditorUiInfo(JNIEnv* env,
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(AutofillProfileBridge)

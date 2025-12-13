@@ -29,7 +29,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_CLASSIC_SCRIPT_LOADER_H_
 
 #include <memory>
-#include "base/memory/scoped_refptr.h"
+
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"

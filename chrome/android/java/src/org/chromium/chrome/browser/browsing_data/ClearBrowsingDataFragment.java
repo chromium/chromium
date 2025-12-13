@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browsing_data.TimePeriodUtils.getTimePeriodSpinnerOptions;
 
 import android.app.Activity;
@@ -27,7 +29,6 @@ import android.widget.LinearLayout;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.preference.Preference;
@@ -40,16 +41,19 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataCounterBridge.BrowsingDataCounterCallback;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -79,6 +83,7 @@ import java.util.Set;
  * Settings screen that allows the user to clear browsing data. The user can choose which types of
  * data to clear (history, cookies, etc), and the time range from which to clear data.
  */
+@NullMarked
 public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         implements BrowsingDataBridge.OnClearBrowsingDataListener,
                 Preference.OnPreferenceClickListener,
@@ -95,7 +100,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         private final ClearBrowsingDataFragment mParent;
         private final @DialogOption int mOption;
         private final ClearBrowsingDataCheckBoxPreference mCheckbox;
-        private BrowsingDataCounterBridge mCounter;
+        private @Nullable BrowsingDataCounterBridge mCounter;
         private @TimePeriod int mSelectedTimePeriod;
 
         public Item(
@@ -226,17 +231,17 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     public static final String CLEAR_BROWSING_DATA_FETCHER = "clearBrowsingDataFetcher";
 
-    private OtherFormsOfHistoryDialogFragment mDialogAboutOtherFormsOfBrowsingHistory;
+    private @Nullable OtherFormsOfHistoryDialogFragment mDialogAboutOtherFormsOfBrowsingHistory;
 
     private SigninManager mSigninManager;
 
-    private ProgressDialog mProgressDialog;
+    private @Nullable ProgressDialog mProgressDialog;
     private Item[] mItems;
     private ClearBrowsingDataFetcher mFetcher;
 
     // This is the dialog we show to the user that lets them 'uncheck' (or exclude) the above
     // important domains from being cleared.
-    private ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
+    private @Nullable ConfirmImportantSitesDialogFragment mConfirmImportantSitesDialog;
 
     private @TimePeriod int mLastSelectedTimePeriod;
     private boolean mShouldShowPostDeleteFeedback;
@@ -349,11 +354,6 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     /** Called when browsing data is about to be cleared. */
     private void onClearBrowsingData() {
         RecordUserAction.record("ClearBrowsingData_AdvancedTab");
-
-        if (ChromeFeatureList.sClearBrowsingDataAndroidSurvey.isEnabled()) {
-            BrowsingDataBridge.getForProfile(getProfile())
-                    .requestHatsSurvey(/* quickDelete= */ false);
-        }
     }
 
     /**
@@ -363,10 +363,10 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
      */
     private void clearBrowsingData(
             Set<Integer> options,
-            @Nullable String[] excludedDomains,
-            @Nullable int[] excludedDomainReasons,
-            @Nullable String[] ignoredDomains,
-            @Nullable int[] ignoredDomainReasons) {
+            String @Nullable [] excludedDomains,
+            int @Nullable [] excludedDomainReasons,
+            String @Nullable [] ignoredDomains,
+            int @Nullable [] ignoredDomainReasons) {
         onClearBrowsingData();
         showProgressDialog();
         Set<Integer> dataTypes = new ArraySet<>();
@@ -398,6 +398,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
+        assumeNonNull(spinnerSelection);
         mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
         int[] dataTypesArray = CollectionUtil.integerCollectionToIntArray(dataTypes);
         if (excludedDomains != null && excludedDomains.length != 0) {
@@ -573,7 +574,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     /** Disable the "Clear" button if none of the options are selected. Otherwise, enable it. */
     private void updateButtonState() {
-        Button clearButton = (Button) getView().findViewById(R.id.clear_button);
+        Button clearButton = (Button) assumeNonNull(getView()).findViewById(R.id.clear_button);
         boolean isEnabled = !getSelectedOptions().isEmpty();
         clearButton.setEnabled(isEnabled);
     }
@@ -590,9 +591,9 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         return spinnerOptionIndex;
     }
 
-    private void setUpClearBrowsingDataFetcher(Bundle savedInstanceState) {
+    private void setUpClearBrowsingDataFetcher(@Nullable Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            mFetcher = savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER);
+            mFetcher = assertNonNull(savedInstanceState.getParcelable(CLEAR_BROWSING_DATA_FETCHER));
             return;
         }
 
@@ -610,7 +611,8 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
         setUpClearBrowsingDataFetcher(savedInstanceState);
         mPageTitle.set(getString(R.string.clear_browsing_data_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.clear_browsing_data_preferences);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(getProfile());
+        mSigninManager =
+                assertNonNull(IdentityServicesProvider.get().getSigninManager(getProfile()));
         List<Integer> options = getDialogOptions(fragmentArgs);
         mItems = new Item[options.size()];
 
@@ -639,6 +641,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();
+        assumeNonNull(spinnerSelection);
         mLastSelectedTimePeriod = ((TimePeriodSpinnerOption) spinnerSelection).getTimePeriod();
 
         for (int i = 0; i < options.size(); i++) {
@@ -758,12 +761,12 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     @VisibleForTesting
-    ProgressDialog getProgressDialog() {
+    @Nullable ProgressDialog getProgressDialog() {
         return mProgressDialog;
     }
 
     @VisibleForTesting
-    ConfirmImportantSitesDialogFragment getImportantSitesDialogFragment() {
+    @Nullable ConfirmImportantSitesDialogFragment getImportantSitesDialogFragment() {
         return mConfirmImportantSitesDialog;
     }
 
@@ -813,12 +816,13 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                         mFetcher.getSortedExampleOrigins());
         mConfirmImportantSitesDialog.setTargetFragment(this, IMPORTANT_SITES_DIALOG_CODE);
         mConfirmImportantSitesDialog.show(
-                getFragmentManager(), ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);
+                assertNonNull(getFragmentManager()),
+                ConfirmImportantSitesDialogFragment.FRAGMENT_TAG);
     }
 
     /** Used only to access the dialog about other forms of browsing history from tests. */
     @VisibleForTesting
-    OtherFormsOfHistoryDialogFragment getDialogAboutOtherFormsOfBrowsingHistory() {
+    @Nullable OtherFormsOfHistoryDialogFragment getDialogAboutOtherFormsOfBrowsingHistory() {
         return mDialogAboutOtherFormsOfBrowsingHistory;
     }
 
@@ -827,8 +831,9 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
      * positive button response.
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == IMPORTANT_SITES_DIALOG_CODE && resultCode == Activity.RESULT_OK) {
+            assert data != null;
             // Deselected means that the user is excluding the domain from being cleared.
             String[] deselectedDomains =
                     data.getStringArrayExtra(
@@ -850,6 +855,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
                         1,
                         mFetcher.getMaxImportantSites() + 1,
                         mFetcher.getMaxImportantSites() + 1);
+                assert ignoredDomains != null;
                 RecordHistogram.recordCustomCountHistogram(
                         "History.ClearBrowsingData.ImportantIgnoredNum",
                         ignoredDomains.length,
@@ -911,7 +917,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     /** Get the last focused activity that has not been destroyed. */
-    private Activity getLastFocusedActivity() {
+    private @Nullable Activity getLastFocusedActivity() {
         if (ApplicationStatus.hasVisibleActivities()) {
             return ApplicationStatus.getLastTrackedFocusedActivity();
         } else {
@@ -958,11 +964,17 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
     }
 
     private boolean isInMultiWindowMode() {
-        return MultiWindowUtils.getInstanceCount() > 1;
+        return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY) > 1;
     }
 
     @Override
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    ClearBrowsingDataFragment.class.getName(),
+                    R.xml.clear_browsing_data_preferences);
 }

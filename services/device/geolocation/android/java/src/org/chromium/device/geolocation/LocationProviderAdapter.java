@@ -60,7 +60,7 @@ public class LocationProviderAdapter {
         return mImpl.isRunning();
     }
 
-    public static void onNewLocationAvailable(Location location) {
+    public static void onNewLocationAvailable(Location location, boolean isPrecise) {
         LocationProviderAdapterJni.get()
                 .newLocationAvailable(
                         location.getLatitude(),
@@ -73,7 +73,8 @@ public class LocationProviderAdapter {
                         location.hasBearing(),
                         location.getBearing(),
                         location.hasSpeed(),
-                        location.getSpeed());
+                        location.getSpeed(),
+                        isPrecise);
     }
 
     public static void newErrorAvailable(String message) {
@@ -94,7 +95,8 @@ public class LocationProviderAdapter {
                 boolean hasHeading,
                 double heading,
                 boolean hasSpeed,
-                double speed);
+                double speed,
+                boolean isPrecise);
 
         void newErrorAvailable(String message);
     }

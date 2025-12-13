@@ -31,13 +31,16 @@ public final class ApplyButtonData {
             button.setVisibility(View.GONE);
             button.setText(null);
             button.setContentDescription(null);
+            button.setTooltipText(null);
             button.setOnClickListener(null);
             setStartDrawable(button, null);
         } else {
             Context context = button.getContext();
             button.setVisibility(View.VISIBLE);
             button.setText(buttonData.resolveText(context));
-            button.setContentDescription(buttonData.resolveContentDescription(context));
+            CharSequence contentDescription = buttonData.resolveContentDescription(context);
+            button.setContentDescription(contentDescription);
+            button.setTooltipText(contentDescription);
             if (buttonData.getOnPressRunnable() != null) {
                 button.setOnClickListener(
                         (v) -> assumeNonNull(buttonData.getOnPressRunnable()).run());

@@ -14,6 +14,7 @@
 #include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
+#include "content/browser/web_contents_based_canceller.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
@@ -21,7 +22,8 @@
 
 namespace content {
 
-class WebContents;
+class WebContentsBasedCanceller;
+class RenderFrameHost;
 
 // This is a ui::SelectFileDialog::Listener implementation that grants access to
 // the selected files to a specific renderer process on success, and then calls
@@ -74,10 +76,26 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
     base::FilePath default_path_;
   };
 
-  static void CreateAndShow(WebContents* web_contents,
+  // Struct to hold objects that should be kept alive for the lifetime of the
+  // chooser.
+  struct CONTENT_EXPORT ScopedObjects {
+    ScopedObjects();
+    ~ScopedObjects();
+    ScopedObjects(ScopedObjects&&);
+    ScopedObjects& operator=(ScopedObjects&&);
+    ScopedObjects(const ScopedObjects&) = delete;
+    ScopedObjects& operator=(const ScopedObjects&) = delete;
+    ScopedObjects(base::ScopedClosureRunner&& fullscreen_block,
+                  base::ScopedClosureRunner&& pip_tucker);
+
+    base::ScopedClosureRunner fullscreen_block;
+    base::ScopedClosureRunner pip_tucker;
+  };
+
+  static void CreateAndShow(RenderFrameHost* render_frame_host,
                             const Options& options,
                             ResultCallback callback,
-                            base::ScopedClosureRunner fullscreen_block);
+                            ScopedObjects scoped_objects);
 
   // Returns whether the specified extension receives special handling by the
   // Windows shell. These extensions should be sanitized before being shown in
@@ -87,7 +105,8 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   FileSystemChooser(ui::SelectFileDialog::Type type,
                     ResultCallback callback,
-                    base::ScopedClosureRunner fullscreen_block);
+                    ScopedObjects scoped_objects,
+                    std::unique_ptr<WebContentsBasedCanceller> canceller);
 
  private:
   ~FileSystemChooser() override;
@@ -102,10 +121,10 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
   const ui::SelectFileDialog::Type type_;
   ResultCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::ScopedClosureRunner fullscreen_block_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ScopedObjects scoped_objects_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   scoped_refptr<ui::SelectFileDialog> dialog_;
+  std::unique_ptr<WebContentsBasedCanceller> canceller_;
 };
 
 }  // namespace content

@@ -15,7 +15,7 @@ namespace sandbox::policy {
 class SANDBOX_POLICY_EXPORT CrosVirtIoGpuProcessPolicy
     : public GpuProcessPolicy {
  public:
-  CrosVirtIoGpuProcessPolicy();
+  explicit CrosVirtIoGpuProcessPolicy(MremapPolicy mremap_policy);
 
   CrosVirtIoGpuProcessPolicy(const CrosVirtIoGpuProcessPolicy&) = delete;
   CrosVirtIoGpuProcessPolicy& operator=(const CrosVirtIoGpuProcessPolicy&) =

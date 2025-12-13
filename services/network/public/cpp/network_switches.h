@@ -18,6 +18,8 @@ extern const char kForcePermissionPolicyUnloadDefaultEnabled[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kHostResolverRules[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+extern const char kHostRules[];
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreCertificateErrorsSPKIList[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES) extern const char kLogNetLog[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
@@ -44,8 +46,6 @@ COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kDisableSharedDictionaryStorageCleanupForTesting[];
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 extern const char kIgnoreBadMessageForTesting[];
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-extern const char kStoreProbabilisticRevealTokens[];
 
 }  // namespace switches
 

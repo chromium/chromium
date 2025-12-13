@@ -6,7 +6,6 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
-import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 android_library("safe_browsing_java") {
   deps = [
@@ -34,11 +33,6 @@ java_cpp_features("sb_java_features_srcjar") {
   visibility = [ ":*" ]
   sources = [ "//components/safe_browsing/core/common/features.cc" ]
   class_name = "org.chromium.components.safe_browsing.SafeBrowsingFeatures"
-}
-
-fuzzable_proto_library("realtimeallowlist_proto") {
-  proto_in_dir = "//"
-  sources = [ "proto/realtimeallowlist.proto" ]
 }
 
 generate_jni("jni_headers") {
@@ -73,10 +67,10 @@ if (safe_browsing_mode == 2) {
     deps = [
       "//base",
       "//components/resources:components_resources",
-      "//components/safe_browsing/android:realtimeallowlist_proto",
       "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//components/safe_browsing/core/common",
-      "//ui/base:base",
+      "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
+      "//ui/base",
       "//url",
     ]
   }
@@ -92,7 +86,7 @@ static_library("remote_database_manager") {
 
   deps = [
     ":safe_browsing_api_handler",
-    "//base:base",
+    "//base",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
     "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
@@ -138,7 +132,7 @@ source_set("safe_browsing_api_handler") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/common",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//url",
   ]
 }
@@ -193,12 +187,12 @@ source_set("unit_tests_mobile") {
     ":unit_tests_mobile_test_support",
     "//base",
     "//components/resources:components_resources_grit",
-    "//components/safe_browsing/android:realtimeallowlist_proto",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:unit_tests_shared",
     "//components/safe_browsing/core/browser/db:util",
     "//components/safe_browsing/core/browser/db:v4_test_util",
     "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/proto:realtimeallowlist_proto",
     "//components/variations",
     "//content/test:test_support",
     "//services/network:test_support",

@@ -214,6 +214,11 @@ class AccountReconcilor
                            DeleteCookieForSyncingUser);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
                            PendingStateThenClearPrimaryAccount);
+  FRIEND_TEST_ALL_PREFIXES(AccountReconcilorDiceTest,
+                           SetAccountsInCookiePersistentError);
+  FRIEND_TEST_ALL_PREFIXES(
+      AccountReconcilorDiceTest,
+      SetAccountsInCookiePersistentErrorRefreshTokensBoundToDifferentKeys);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest, TokensNotLoaded);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
                            StartReconcileCookiesDisabled);
@@ -452,7 +457,7 @@ class AccountReconcilor
       identity_manager_observer_{this};
 
   // The SigninClient associated with this reconcilor.
-  raw_ptr<SigninClient> client_;
+  raw_ptr<SigninClient, DanglingUntriaged> client_;
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   PrefChangeRegistrar pref_observer_;
@@ -460,11 +465,6 @@ class AccountReconcilor
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On Ash, this is a pointer to `AccountManagerFacadeImpl`.
-  // Note: On Lacros too, this is a pointer to `AccountManagerFacadeImpl`, and
-  // not `ProfileAccountManager`. This was done to simplify the design since
-  // this pointer is only used to observe the closure of the OS/Ash-level signin
-  // dialog and nothing else. Reconsider this decision if this usage changes in
-  // the future.
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

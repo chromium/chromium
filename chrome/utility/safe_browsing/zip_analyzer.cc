@@ -18,42 +18,14 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
+#include "chrome/utility/safe_browsing/archive_analysis_delegate.h"
+#include "chrome/utility/safe_browsing/zip_writer_delegate.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/zlib/google/zip_reader.h"
 
 namespace safe_browsing {
-
-namespace {
-
-class WriterDelegate : public zip::FileWriterDelegate {
- public:
-  explicit WriterDelegate(base::File* file)
-      : zip::FileWriterDelegate(file), has_disk_error_(false) {}
-  WriterDelegate(const WriterDelegate&) = delete;
-  WriterDelegate& operator=(const WriterDelegate&) = delete;
-
-  ~WriterDelegate() override = default;
-
-  bool PrepareOutput() override {
-    bool success = zip::FileWriterDelegate::PrepareOutput();
-    has_disk_error_ |= !success;
-    return success;
-  }
-  bool WriteBytes(const char* data, int num_bytes) override {
-    bool success = zip::FileWriterDelegate::WriteBytes(data, num_bytes);
-    has_disk_error_ |= !success;
-    return success;
-  }
-
-  bool has_disk_error() const { return has_disk_error_; }
-
- private:
-  bool has_disk_error_;
-};
-
-}  // namespace
 
 ZipAnalyzer::ZipAnalyzer() = default;
 ZipAnalyzer::~ZipAnalyzer() = default;
@@ -77,13 +49,20 @@ bool ZipAnalyzer::ResumeExtraction() {
     if (!temp_file_.SetLength(0)) {
       PLOG(WARNING) << "Failed truncate";
     }
-    WriterDelegate writer(&temp_file_);
+
+    CHECK(analysis_delegate_);
+
+    std::unique_ptr<SafeBrowsingZipWriterDelegate> writer =
+        analysis_delegate_->CreateZipWriterDelegate(temp_file_.Duplicate());
+
     bool extract_success = reader_.ExtractCurrentEntry(
-        &writer, std::numeric_limits<uint64_t>::max());
+        writer.get(), std::numeric_limits<uint64_t>::max());
+    writer->Close();
 
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
-    has_disk_error_ |= writer.has_disk_error();
+
+    has_disk_error_ |= writer->has_disk_error();
 
     if (!extract_success && entry->is_encrypted) {
       results()->encryption_info.password_status =
@@ -92,7 +71,7 @@ bool ZipAnalyzer::ResumeExtraction() {
 
     if (!UpdateResultsForEntry(temp_file_.Duplicate(),
                                GetRootPath().Append(entry->path),
-                               writer.file_length(), entry->is_encrypted,
+                               writer->file_length(), entry->is_encrypted,
                                entry->is_directory, extract_success)) {
       return false;
     }
@@ -130,7 +109,12 @@ void ZipAnalyzer::OnGetTempFile(base::File temp_file) {
     return;
   }
 
-  if (!reader_.OpenFromPlatformFile(GetArchiveFile().GetPlatformFile())) {
+  CHECK(analysis_delegate_);
+  reader_delegate_ =
+      analysis_delegate_->CreateZipReaderDelegate(GetArchiveFile().Duplicate());
+
+  if (!reader_delegate_ ||
+      !reader_.OpenFromReaderDelegate(reader_delegate_.get())) {
     InitComplete(ArchiveAnalysisResult::kUnknown);
     return;
   }

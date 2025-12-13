@@ -21,7 +21,8 @@ enum class FormType {
   kPasswordForm = 3,
   kStandaloneCvcForm = 4,
   kLoyaltyCardForm = 5,
-  kMaxValue = kLoyaltyCardForm
+  kOneTimePasswordForm = 6,
+  kMaxValue = kOneTimePasswordForm
 };
 
 // Enum for UMA metrics of the style
@@ -48,7 +49,9 @@ enum class FormTypeNameForLogging {
   kPostalAddressForm = 6,
   // Forms that contain a loyalty card field.
   kLoyaltyCardForm = 7,
-  kMaxValue = kLoyaltyCardForm
+  // Forms that contain a one time password field.
+  kOneTimePasswordForm = 8,
+  kMaxValue = kOneTimePasswordForm
 };
 
 // The strings returned by this function are persisted to logs. Don't change the

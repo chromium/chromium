@@ -5,13 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "google/protobuf/hpb/status.h"
+#include "hpb/status.h"
 
 #include <cstdint>
 
 #include "absl/status/status.h"
 #include "absl/strings/str_format.h"
-#include "absl/types/source_location.h"
 #include "upb/wire/decode.h"
 #include "upb/wire/encode.h"
 
@@ -21,7 +20,8 @@ absl::Status MessageAllocationError(SourceLocation loc) {
                       "Upb message allocation error");
 }
 
-absl::Status ExtensionNotFoundError(int ext_number, SourceLocation loc) {
+absl::Status ExtensionNotFoundError(uint32_t ext_number, SourceLocation loc)
+{
   return absl::Status(absl::StatusCode::kUnknown,
                       absl::StrFormat("Extension %d not found", ext_number));
 }

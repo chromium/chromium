@@ -24,7 +24,7 @@
 #include "components/subresource_filter/content/browser/safe_browsing_page_activation_throttle.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
-#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_prefs/user_prefs.h"
@@ -154,7 +154,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   raw_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_ = nullptr;

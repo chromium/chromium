@@ -29,6 +29,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_permission_controller.h"
@@ -80,10 +81,12 @@ void ExclusiveAccessTest::SetUpOnMainThread() {
           [](content::RenderFrameHost* render_frame_host,
              content::PermissionRequestDescription request_description,
              base::OnceCallback<void(
-                 const std::vector<content::PermissionStatus>&)> callback) {
-            std::move(callback).Run(std::vector<content::PermissionStatus>(
+                 const std::vector<content::PermissionResult>&)> callback) {
+            std::move(callback).Run(std::vector<content::PermissionResult>(
                 request_description.permissions.size(),
-                content::PermissionStatus::GRANTED));
+                content::PermissionResult(
+                    content::PermissionStatus::GRANTED,
+                    content::PermissionStatusSource::UNSPECIFIED)));
           });
 
   GetExclusiveAccessManager()
@@ -261,7 +264,7 @@ ExclusiveAccessBubbleType ExclusiveAccessTest::GetExclusiveAccessBubbleType() {
 ExclusiveAccessBubbleViews*
 ExclusiveAccessTest::GetExclusiveAccessBubbleView() {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  return browser_view ? browser_view->exclusive_access_bubble() : nullptr;
+  return browser_view ? browser_view->GetExclusiveAccessBubble() : nullptr;
 }
 
 bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {

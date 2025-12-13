@@ -12,15 +12,19 @@
 #include <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
 
+#include <algorithm>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/containers/span.h"
 #include "base/strings/sys_string_conversions.h"
 #include "device/gamepad/dualshock4_controller.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/hid_haptic_gamepad.h"
 #include "device/gamepad/hid_writer_mac.h"
+#include "device/gamepad/public/cpp/gamepad.h"
 #include "device/gamepad/xbox_hid_controller.h"
 
 namespace device {
@@ -185,7 +189,7 @@ bool GamepadDeviceMac::AddButtonsAndAxes(Gamepad* gamepad) {
 
 bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
   DCHECK(gamepad);
-  memset(gamepad->buttons, 0, sizeof(gamepad->buttons));
+  std::ranges::fill(gamepad->buttons, GamepadButton());
   std::fill(button_elements_, button_elements_ + Gamepad::kButtonsLengthCap,
             nullptr);
 
@@ -271,7 +275,7 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
 
 bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   DCHECK(gamepad);
-  memset(gamepad->axes, 0, sizeof(gamepad->axes));
+  std::ranges::fill(gamepad->axes, 0.0);
   std::fill(axis_elements_, axis_elements_ + Gamepad::kAxesLengthCap, nullptr);
   std::fill(axis_minimums_, axis_minimums_ + Gamepad::kAxesLengthCap, 0);
   std::fill(axis_maximums_, axis_maximums_ + Gamepad::kAxesLengthCap, 0);

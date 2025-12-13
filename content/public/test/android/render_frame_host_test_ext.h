@@ -20,13 +20,13 @@ class RenderFrameHostTestExt : public base::SupportsUserData::Data {
   explicit RenderFrameHostTestExt(RenderFrameHostImpl* rfhi);
 
   void ExecuteJavaScript(JNIEnv* env,
-                         const base::android::JavaParamRef<jstring>& jscript,
-                         const base::android::JavaParamRef<jobject>& jcallback,
+                         const base::android::JavaRef<jstring>& jscript,
+                         const base::android::JavaRef<jobject>& jcallback,
                          jboolean with_user_gesture);
   // This calls InsertVisualStateCallback(). See it for details on the return
   // value.
   void UpdateVisualState(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& jcallback);
+                         const base::android::JavaRef<jobject>& jcallback);
 
   void NotifyVirtualKeyboardOverlayRect(JNIEnv* env,
                                         jint x,

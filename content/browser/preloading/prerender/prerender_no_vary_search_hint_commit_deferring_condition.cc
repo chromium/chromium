@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"

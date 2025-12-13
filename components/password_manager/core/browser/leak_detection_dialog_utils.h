@@ -28,6 +28,8 @@ enum CredentialLeakFlags {
   kPasswordSynced = 1 << 2,
   // Password change url is available for this site.
   kHasChangePasswordUrl = 1 << 3,
+  // Password is saved as backup for current site.
+  kPasswordSavedAsBackup = 1 << 4,
 };
 
 enum class PasswordCheckupReferrer {
@@ -44,9 +46,7 @@ using CredentialLeakType = std::underlying_type_t<CredentialLeakFlags>;
 // a leaked password.
 struct LeakedPasswordDetails {
   LeakedPasswordDetails(CredentialLeakType leak_type,
-                        GURL origin,
-                        std::u16string username,
-                        std::u16string password,
+                        PasswordForm credentials,
                         bool in_account_store);
 
   LeakedPasswordDetails(const LeakedPasswordDetails&);
@@ -56,12 +56,13 @@ struct LeakedPasswordDetails {
   LeakedPasswordDetails& operator=(const LeakedPasswordDetails&);
   LeakedPasswordDetails& operator=(LeakedPasswordDetails&& other);
 
-  bool operator==(const LeakedPasswordDetails& other) const;
+#if defined(UNIT_TEST)
+  friend bool operator==(const LeakedPasswordDetails&,
+                         const LeakedPasswordDetails&) = default;
+#endif
 
   CredentialLeakType leak_type;
-  GURL origin;
-  std::u16string username;
-  std::u16string password;
+  PasswordForm credentials;
   bool in_account_store;
 };
 
@@ -70,15 +71,20 @@ using IsReused = base::StrongAlias<class IsReusedTag, bool>;
 using IsSyncing = base::StrongAlias<class IsSyncingTag, bool>;
 using HasChangePasswordUrl =
     base::StrongAlias<class HasChangePasswordUrlTag, bool>;
+using IsSavedAsBackup = base::StrongAlias<class IsSavedAsBackupTag, bool>;
 // Creates CredentialLeakType from strong booleans.
 CredentialLeakType CreateLeakType(
     IsSaved is_saved,
     IsReused is_reused,
     IsSyncing is_syncing,
-    HasChangePasswordUrl has_change_password = HasChangePasswordUrl(false));
+    HasChangePasswordUrl has_change_password = HasChangePasswordUrl(false),
+    IsSavedAsBackup is_saved_as_backup = IsSavedAsBackup(false));
 
 // Checks whether the password is saved in Chrome.
 bool IsPasswordSaved(CredentialLeakType leak_type);
+
+// Checks whether the password is saved as backup in Chrome.
+bool IsPasswordSavedAsBackup(CredentialLeakType leak_type);
 
 // Checks whether the password is reused on other sites.
 bool IsPasswordUsedOnOtherSites(CredentialLeakType leak_type);

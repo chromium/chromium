@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/dns/public/resolv_reader.h"
 
 #include <netinet/in.h>
@@ -20,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "net/base/ip_endpoint.h"
@@ -71,9 +67,9 @@ std::optional<std::vector<IPEndPoint>> GetNameservers(
   DCHECK_LE(nscount, MAXNS);
   for (int i = 0; i < nscount; ++i) {
     IPEndPoint ipe;
-    if (!ipe.FromSockAddr(
-            reinterpret_cast<const struct sockaddr*>(&addresses[i]),
-            sizeof addresses[i])) {
+    if (!ipe.FromSockAddr(reinterpret_cast<const struct sockaddr*>(
+                              &UNSAFE_TODO(addresses[i])),
+                          sizeof addresses[i])) {
       return std::nullopt;
     }
     nameservers.push_back(ipe);
@@ -90,11 +86,14 @@ std::optional<std::vector<IPEndPoint>> GetNameservers(
     IPEndPoint ipe;
     const struct sockaddr* addr = nullptr;
     size_t addr_len = 0;
-    if (res.nsaddr_list[i].sin_family) {  // The indicator used by res_nsend.
-      addr = reinterpret_cast<const struct sockaddr*>(&res.nsaddr_list[i]);
+    if (UNSAFE_TODO(res.nsaddr_list[i])
+            .sin_family) {  // The indicator used by res_nsend.
+      addr = reinterpret_cast<const struct sockaddr*>(
+          &UNSAFE_TODO(res.nsaddr_list[i]));
       addr_len = sizeof res.nsaddr_list[i];
-    } else if (res._u._ext.nsaddrs[i]) {
-      addr = reinterpret_cast<const struct sockaddr*>(res._u._ext.nsaddrs[i]);
+    } else if (UNSAFE_TODO(res._u._ext.nsaddrs[i])) {
+      addr = reinterpret_cast<const struct sockaddr*>(
+          UNSAFE_TODO(res._u._ext.nsaddrs[i]));
       addr_len = sizeof *res._u._ext.nsaddrs[i];
     } else {
       return std::nullopt;

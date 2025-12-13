@@ -9,20 +9,20 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/gtest_prod_util.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
 #include "components/input/gesture_event_queue.h"
-#include "components/input/mouse_wheel_event_queue.h"
-#include "components/input/passthrough_touch_event_queue.h"
-#include "components/input/touchpad_pinch_event_queue.h"
-#include "base/component_export.h"
 #include "components/input/input_event_stream_validator.h"
 #include "components/input/input_router.h"
 #include "components/input/input_router_client.h"
+#include "components/input/mouse_wheel_event_queue.h"
+#include "components/input/passthrough_touch_event_queue.h"
 #include "components/input/touch_action_filter.h"
+#include "components/input/touchpad_pinch_event_queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -52,7 +52,11 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
       public MouseWheelEventQueueClient,
       public PassthroughTouchEventQueueClient,
       public TouchpadPinchEventQueueClient,
+      public TouchActionFilterClient,
       public blink::mojom::WidgetInputHandlerHost {
+  // TODO(crbug.com/422044720): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   InputRouterImpl(InputRouterClient* client,
                   InputDispositionHandler* disposition_handler,
@@ -120,6 +124,9 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   void ForceResetTouchActionForTest();
 
   bool IsFlingActiveForTest();
+
+  // TouchActionFilterClient
+  void OnUnconfirmedTapConvertedToTap() override;
 
  private:
   friend class content::InputRouterImplTest;
@@ -277,6 +284,13 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   // The host receiver associated with the widget input handler from
   // the widget.
   mojo::Receiver<blink::mojom::WidgetInputHandlerHost> host_receiver_{this};
+
+  // The last touch move event that was received. If the
+  // kSendEmptyGestureScrollUpdate flag is enabled, `last_touch_move_event_` is
+  // stored until a gesture scroll update event is received and the two are sent
+  // to the renderer together. Otherwise, this is not used.
+  std::optional<std::unique_ptr<blink::WebCoalescedInputEvent>>
+      last_touch_move_event_;
 
   base::WeakPtr<InputRouterImpl> weak_this_;
   base::WeakPtrFactory<InputRouterImpl> weak_ptr_factory_{this};

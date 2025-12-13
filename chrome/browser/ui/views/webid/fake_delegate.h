@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace webid {
 

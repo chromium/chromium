@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
+
 // Scheduler-loop Quarantine is a quarantine pool behind PartitionAlloc with
 // Advanced Checks and `ADVANCED_MEMORY_SAFETY_CHECKS()`.
 // Both requests to prevent `free()`d allocation getting released to free-list,
@@ -73,7 +75,14 @@ struct SchedulerLoopQuarantineConfig {
   bool leak_on_destruction = false;
   bool enable_quarantine = false;
   bool enable_zapping = false;
+  // Accepts allocations up to this bucket size. If the given number does not
+  // match bucket size, it is rounded up to next bucket size.
+  size_t max_quarantine_size = BucketIndexLookup::kMaxBucketSize;
+  // For informational purposes only.
+  char branch_name[32] = "";
 };
+
+struct BucketSizeDetails;
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineRoot {
  public:
@@ -147,9 +156,23 @@ class SchedulerLoopQuarantineBranch {
   // requirement.
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
-  void Quarantine(void* object,
-                  SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-                  uintptr_t slot_start) PA_LOCKS_EXCLUDED(lock_);
+  // TODO(ayumiohno): Remove this once FreeAfterBRPQuarantine creates
+  // `size_details` and uses QuarantineWithSize.
+  void Quarantine(SlotStart slot_start, SlotSpanMetadata* slot_span)
+      PA_LOCKS_EXCLUDED(lock_);
+
+  void QuarantineWithSize(SlotStart slot_start,
+                          SlotSpanMetadata* slot_span,
+                          const internal::BucketSizeDetails& size_details)
+      PA_LOCKS_EXCLUDED(lock_);
+
+  void AllowScanlessPurge();
+  void DisallowScanlessPurge();
+
+  // Once called, all the branches stop purging. This means every branch grows
+  // unbounded, potentially resulting in OOM. However, if we know the program
+  // is being terminated, this can help reduce hangs.
+  static void DangerouslyDisablePurge();
 
   const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
 
@@ -201,13 +224,15 @@ class SchedulerLoopQuarantineBranch {
   bool enable_zapping_ = false;
   bool leak_on_destruction_ = false;
 
+  uint16_t largest_bucket_index_ = BucketIndexLookup::kNumBuckets - 1;
+
   // When non-zero, this branch temporarily stops accepting incoming quarantine
   // requests.
   int pause_quarantine_ = 0;
 
   // `slots_` hold quarantined entries.
   struct QuarantineSlot {
-    uintptr_t slot_start = 0;
+    SlotStart slot_start;
     // Record bucket index instead of slot size because look-up from bucket
     // index to slot size is more lightweight compared to its reverse look-up.
     size_t bucket_index = 0;
@@ -218,6 +243,15 @@ class SchedulerLoopQuarantineBranch {
   // Using `std::atomic` here so that other threads can update this value.
   std::atomic_size_t branch_capacity_in_bytes_ = 0;
 
+  // TODO(http://crbug.com/329027914): Implement stack scanning, to be performed
+  // when this value is non-zero.
+  //
+  // Currently, a scanless purge is always performed. However, this value is
+  // still used as a hint to determine safer purge timings for memory
+  // optimization.
+  uint32_t disallow_scanless_purge_ PA_GUARDED_BY(lock_) = 0;
+
+  // Debug and testing data.
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   std::atomic_bool being_destructed_ = false;
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)

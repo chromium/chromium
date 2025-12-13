@@ -78,7 +78,8 @@ class TabStripControlButton : public views::LabelButton,
 
   void SetFlatEdgeFactor(float factor);
 
-  // Helper function for changing the state for TabStripRegionView tests.
+  // Helper function for changing the state for HorizontalTabStripRegionView
+  // tests.
   void AnimateToStateForTesting(views::InkDropState state);
 
   // views::View
@@ -90,6 +91,9 @@ class TabStripControlButton : public views::LabelButton,
 
   // views::MaskedTargeterDelegate
   bool GetHitTestMask(SkPath* mask) const override;
+
+  // views::LabelButton
+  void SetText(std::u16string_view text) override;
 
  protected:
   // Returns colors based on the Frame active status.
@@ -113,6 +117,8 @@ class TabStripControlButton : public views::LabelButton,
  private:
   void UpdateBackground();
   void UpdateInkDrop();
+
+  bool IsWidgetAlive() const;
 
   // Optional icon for the label button.
   raw_ref<const gfx::VectorIcon> icon_;

@@ -41,7 +41,7 @@ class AppLock : public Lock, public WithAppResources {
   using LockDescription = AppLockDescription;
 
   AppLock();
-  ~AppLock();
+  ~AppLock() override;
 
   base::WeakPtr<AppLock> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 

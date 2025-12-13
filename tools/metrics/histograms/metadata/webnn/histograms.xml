@@ -46,6 +46,13 @@ chromium-metrics-reviews@google.com.
       summary="time to record graph execution on the main thread."/>
 </variants>
 
+<variants name="WebNNOrtActions">
+  <variant name="Compilation" summary="time to compile the graph."/>
+  <variant name="CreateEnvironment"
+      summary="time to create the ORT environment."/>
+  <variant name="Inference" summary="time to inference."/>
+</variants>
+
 <histogram name="WebNN.ConstantDataSizeInKB" units="KB"
     expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>
@@ -108,6 +115,61 @@ chromium-metrics-reviews@google.com.
     MLGraph, so to see the prevalence of a given operator, you need to divide
     its count by GraphBuilt count.
   </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.TimingMs.{WebNNOrtActions}" units="ms"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The time taken to perform a WebNN ORT action. This includes
+    {WebNNOrtActions}
+  </summary>
+  <token key="WebNNOrtActions" variants="WebNNOrtActions"/>
+</histogram>
+
+<histogram name="WebNN.ORT.WinAppRuntimeInstallState"
+    enum="WinAppRuntimeInstallStateUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the installation state during installation of the
+    Windows App Runtime package at browser startup. The state reflects whether
+    the installation completed, failed, or encountered other relevant
+    conditions.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.{PackageDependencyAction}.ErrorResult"
+    enum="Hresult" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    This histogram records the HRESULT of {PackageDependencyAction}. This action
+    occurs during installation of the Windows App Runtime package at browser
+    startup, or when initializing the WebNN ORT backend.
+  </summary>
+  <token key="PackageDependencyAction">
+    <variant name="AddPackageDependency"/>
+    <variant name="DeletePackageDependency"/>
+    <variant name="TryCreatePackageDependency"/>
+  </token>
+</histogram>
+
+<histogram name="WebNN.ORT.{WebNNOrtExecutionProvider}.Status"
+    enum="ExecutionProviderStatusUma" expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    WebNN ORT backend can run on different execution providers (EPs). This
+    histogram records the status of {WebNNOrtExecutionProvider} during the EP
+    initialization, queried by EP Catalog API.
+  </summary>
+  <token key="WebNNOrtExecutionProvider">
+    <variant name="NvTensorRTRTXExecutionProvider"/>
+    <variant name="OpenVINOExecutionProvider"/>
+    <variant name="QNNExecutionProvider"/>
+  </token>
 </histogram>
 
 </histograms>

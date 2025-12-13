@@ -47,7 +47,7 @@ uint32_t CreateNamedPipe(const std::string& pipe_name,
       PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS, 1,
       kBufferSize, kBufferSize, kTimeOutMilliseconds, &security_attributes));
 
-  if (!temp_handle.IsValid()) {
+  if (!temp_handle.is_valid()) {
     uint32_t error = GetLastError();
     PLOG(ERROR) << "Failed to create named pipe '" << pipe_name << "'";
     return error;
@@ -101,7 +101,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   base::win::ScopedHandle temp_write_handle;
   CreateNamedPipe(input_pipe_name, sd, PIPE_ACCESS_OUTBOUND,
                   &temp_write_handle);
-  if (!temp_write_handle.IsValid()) {
+  if (!temp_write_handle.is_valid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
@@ -109,7 +109,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   output_pipe_name.append(IPC::Channel::GenerateUniqueRandomChannelID());
   base::win::ScopedHandle temp_read_handle;
   CreateNamedPipe(output_pipe_name, sd, PIPE_ACCESS_INBOUND, &temp_read_handle);
-  if (!temp_read_handle.IsValid()) {
+  if (!temp_read_handle.is_valid()) {
     return PROCESS_LAUNCH_RESULT_FAILED;
   }
 
@@ -137,8 +137,7 @@ ProcessLaunchResult LaunchNativeMessagingHostProcess(
   base::CommandLine::StringType params = command_line.GetCommandLineString();
 
   // Launch the child process, requesting elevation if needed.
-  SHELLEXECUTEINFO info;
-  UNSAFE_TODO(memset(&info, 0, sizeof(info)));
+  SHELLEXECUTEINFO info = {};
   info.cbSize = sizeof(info);
   info.hwnd = reinterpret_cast<HWND>(parent_window_handle);
   info.lpFile = binary_path.value().c_str();

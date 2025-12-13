@@ -50,7 +50,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
 
   // HostResolver::ServiceEndpointRequest implementations:
   int Start(Delegate* delegate) override;
-  const std::vector<ServiceEndpoint>& GetEndpointResults() override;
+  base::span<const ServiceEndpoint> GetEndpointResults() override;
   const std::set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;

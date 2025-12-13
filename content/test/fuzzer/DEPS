@@ -4,3 +4,8 @@ include_rules = [
   "+tools/v8_context_snapshot/buildflags.h",
 ]
 
+specific_include_rules = {
+  "idb_factory_mojolpm_fuzzer.cc": [
+    "+components/services/storage",
+  ],
+}

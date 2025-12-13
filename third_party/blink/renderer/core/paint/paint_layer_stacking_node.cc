@@ -183,13 +183,13 @@ struct PaintLayerStackingNode::HighestLayers {
   }
 };
 
-static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
+static LayoutObject* ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(
     const PaintLayer* layer) {
   LayoutObject* parent = layer->GetLayoutObject().Parent();
   if (!parent) {
     return nullptr;
   }
-  if (parent->IsFlexibleBox() || parent->IsLayoutGrid()) {
+  if (parent->IsFlexibleBox() || parent->IsLayoutGridOrGridLanes()) {
     return &layer->GetLayoutObject();
   }
 
@@ -197,7 +197,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!grandparent) {
     return nullptr;
   }
-  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGrid()) {
+  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGridOrGridLanes()) {
     return parent;
   }
   return nullptr;
@@ -206,9 +206,10 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
 static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
   // TODO(chrishtr): make this work for arbitrary ancestors, not just parent
   // and grandparent.
-  LayoutObject* first_ancestor = ChildOfFlexboxOrGridParentOrGrandparent(first);
+  LayoutObject* first_ancestor =
+      ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(first);
   LayoutObject* second_ancestor =
-      ChildOfFlexboxOrGridParentOrGrandparent(second);
+      ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(second);
   if (!first_ancestor || !second_ancestor) {
     return false;
   }
@@ -242,7 +243,7 @@ static bool ChildrenMayBeAffectedByOrder(const PaintLayer& layer) {
     return false;
   }
   for (; child; child = child->NextSibling()) {
-    auto* ancestor = ChildOfFlexboxOrGridParentOrGrandparent(child);
+    auto* ancestor = ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(child);
     // This is the only case where `OrderLessThan` can return true;
     if (ancestor && ancestor->StyleRef().Order()) {
       return true;

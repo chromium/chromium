@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/current_thread.h"

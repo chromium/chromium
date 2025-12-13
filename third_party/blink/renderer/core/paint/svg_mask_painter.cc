@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/svg_background_paint_context.h"
+#include "third_party/blink/renderer/core/style/fill_layer.h"
 #include "third_party/blink/renderer/core/style/style_mask_source_image.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/blend_mode.h"
@@ -222,6 +223,14 @@ void PaintMaskLayer(const FillLayer& layer,
                          paint_timing_info, composite_op, respect_orientation);
 }
 
+template <typename Callback>
+void IterateFillLayersReveresed(const FillLayer* layer, Callback callback) {
+  if (!layer) {
+    return;
+  }
+  IterateFillLayersReveresed(layer->Next(), callback);
+  callback(*layer);
+}
 }  // namespace
 
 void SVGMaskPainter::Paint(GraphicsContext& context,
@@ -247,15 +256,12 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
   DrawingRecorder recorder(context, display_item_client, DisplayItem::kSVGMask,
                            gfx::ToEnclosingRect(visual_rect));
 
-  Vector<const FillLayer*, 8> layer_list;
-  for (const FillLayer* layer = &layout_object.StyleRef().MaskLayers(); layer;
-       layer = layer->Next()) {
-    layer_list.push_back(layer);
-  }
   const SVGBackgroundPaintContext bg_paint_context(layout_object);
-  for (const auto* layer : base::Reversed(layer_list)) {
-    PaintMaskLayer(*layer, layout_object, bg_paint_context, context);
-  }
+  IterateFillLayersReveresed(
+      &layout_object.StyleRef().MaskLayers(),
+      [&layout_object, &bg_paint_context, &context](const FillLayer& layer) {
+        PaintMaskLayer(layer, layout_object, bg_paint_context, context);
+      });
 }
 
 void SVGMaskPainter::PaintSVGMaskLayer(GraphicsContext& context,

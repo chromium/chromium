@@ -53,8 +53,6 @@ class ManagedSessionService : public ash::AuthStatusConsumer,
     virtual void OnLogin(Profile* profile) {}
 
     // Occurs when a user has logged out.
-    // TODO(b/194215634):: Check if this function can be replaced by
-    // `OnSessionTerminationStarted`
     virtual void OnLogout(Profile* profile) {}
 
     // Occurs when the active user has locked the user session.

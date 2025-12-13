@@ -9,8 +9,6 @@ import {VKey as ash_mojom_VKey} from 'chrome://resources/ash/common/shortcut_inp
 import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
-
 import type {Accelerator, AcceleratorId, AcceleratorInfo, AcceleratorSource, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from './shortcut_types.js';
 import {AcceleratorCategory, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier} from './shortcut_types.js';
 
@@ -448,7 +446,7 @@ export const getAriaLabelForStandardAccelerators =
 export const getAriaLabelForTextAccelerators =
     (acceleratorInfos: TextAcceleratorInfo[]): string => {
       return getTextAcceleratorParts(acceleratorInfos)
-          .map(part => getKeyDisplay(mojoString16ToString(part.text)))
+          .map(part => getKeyDisplay(part.text))
           .join('');
     };
 

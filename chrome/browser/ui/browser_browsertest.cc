@@ -42,6 +42,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/command_updater.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -80,6 +82,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/startup/web_app_startup_utils.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -96,9 +99,12 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/embedder_support/switches.h"
@@ -127,7 +133,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -157,6 +162,7 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
@@ -168,6 +174,13 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/i18n/rtl.h"
 #include "base/test/file_path_reparse_point_win.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/user_manager/user_names.h"
+
 #endif
 
 using base::ASCIIToUTF16;
@@ -402,12 +415,6 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
     NOTREACHED();
   }
 
-  // BrowserListObserver:
-  MOCK_METHOD(void,
-              OnBrowserCloseCancelled,
-              (Browser * browser, BrowserClosingStatus reason),
-              (override));
-
  private:
   web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
 };
@@ -416,7 +423,7 @@ class BrowserTest : public extensions::ExtensionBrowserTest,
 // correctly.
 IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File))));
   EXPECT_EQ(
@@ -455,7 +462,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
       {"#https://foo5.com#https://foo5.com",
        "file:/// URL with slashes in multiple refs"}};
 
-  GURL prefix_url = ui_test_utils::GetTestUrl(
+  GURL prefix_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File));
   std::u16string tab_title;
@@ -475,7 +482,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoTitleFileUrl) {
 // was set correctly.
 IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle2File))));
   const std::u16string test_title(u"Title Of Awesomeness");
@@ -491,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, Title) {
 // Check that the title is different when a page is opened in a captive portal
 // window.
 IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
-  const GURL url = ui_test_utils::GetTestUrl(
+  const GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle2File));
   NavigateParams captive_portal_params(browser(), url,
@@ -518,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CaptivePortalWindowTitle) {
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
   // Set up two tabs, with the tab at index 0 active.
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -582,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, NoJavaScriptDialogsActivateTab) {
 #define MAYBE_ThirtyFourTabs ThirtyFourTabs
 #endif
 IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_ThirtyFourTabs) {
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle2File)));
 
@@ -602,7 +609,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_ThirtyFourTabs) {
 #else
       17;
 #endif
-  if (base::SysInfo::AmountOfPhysicalMemoryMB() >= 2048) {
+  if (base::SysInfo::AmountOfPhysicalMemory().InGiB() >= 2) {
     EXPECT_GE(CountRenderProcessHosts(), kExpectedProcessCount);
   } else {
     EXPECT_LT(CountRenderProcessHosts(), kExpectedProcessCount);
@@ -984,6 +991,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
 
   // Accept the navigation so we end up on a page without a beforeunload hook.
   alert->view()->AcceptAppModalDialog();
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NotifiesBrowserDidClose) {
@@ -1220,8 +1228,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);
 
-  ui_test_utils::BrowserChangeObserver browser_change(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::test::TestFuture<void> launch_done;
   web_app::startup::SetStartupDoneCallbackForTesting(launch_done.GetCallback());
   EXPECT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
@@ -1229,7 +1236,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, MAYBE_AppIdSwitch) {
       {browser()->profile(), StartupProfileMode::kBrowserWindow}, {}));
 
   ASSERT_TRUE(launch_done.Wait());
-  Browser* app_browser = browser_change.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_TRUE(app_browser->is_type_app());
 
 #if BUILDFLAG(IS_WIN)
@@ -1280,6 +1287,8 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
   const Extension* extension_app = GetExtension();
 
   // Launch it in a window, as AppLauncherHandler::HandleLaunchApp() would.
+  auto browser_created_observer =
+      std::make_optional<ui_test_utils::BrowserCreatedObserver>();
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
@@ -1289,35 +1298,27 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ShouldShowLocationBar) {
               WindowOpenDisposition::NEW_WINDOW,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
+  Browser* const app_browser = browser_created_observer->Wait();
 
+  browser_created_observer.emplace();
   DevToolsWindow* devtools_window =
       DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
+  Browser* const dev_tools_browser = browser_created_observer->Wait();
 
   // The launch should have created a new app browser and a dev tools browser.
   ASSERT_EQ(3u, chrome::GetBrowserCount(browser()->profile()));
 
-  // Find the new browsers.
-  Browser* app_browser = nullptr;
-  Browser* dev_tools_browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b == browser()) {
-      continue;
-    } else if (b->app_name() == DevToolsWindow::kDevToolsApp) {
-      dev_tools_browser = b;
-    } else {
-      app_browser = b;
-    }
-  }
   ASSERT_TRUE(dev_tools_browser);
   ASSERT_TRUE(app_browser);
   ASSERT_TRUE(app_browser != browser());
 
-  EXPECT_FALSE(
-      dev_tools_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
+  EXPECT_FALSE(dev_tools_browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar));
 
   // App windows can show location bars, for example when they navigate away
   // from their starting origin.
-  EXPECT_TRUE(app_browser->SupportsWindowFeature(Browser::FEATURE_LOCATIONBAR));
+  EXPECT_TRUE(app_browser->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureLocationBar));
 
   DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }
@@ -1419,12 +1420,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, RestorePinnedTabs) {
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
   // Find the new browser.
-  BrowserList* browsers = BrowserList::GetInstance();
-  auto new_browser_iter = std::ranges::find_if_not(
-      *browsers, [this](Browser* b) { return b == browser(); });
-  ASSERT_NE(browsers->end(), new_browser_iter);
-
-  Browser* new_browser = *new_browser_iter;
+  Browser* const new_browser = ui_test_utils::GetBrowserNotInSet({browser()});
 
   // We should get back an additional tab for the app, and another for the
   // default home page.
@@ -1460,6 +1456,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   ASSERT_TRUE(extension_app);
 
   // Launch it in a window, as AppLauncherHandler::HandleLaunchApp() would.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   WebContents* app_window =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
           ->BrowserAppLauncher()
@@ -1469,6 +1466,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
               WindowOpenDisposition::NEW_WINDOW,
               apps::LaunchSource::kFromTest));
   ASSERT_TRUE(app_window);
+  Browser* const new_browser = browser_created_observer.Wait();
 
   // Apps launched in a window from the NTP have an extensions tab helper with
   // extension_app set.
@@ -1480,13 +1478,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OpenAppWindowLikeNtp) {
   // The launch should have created a new browser.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
-  // Find the new browser.
-  Browser* new_browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b != browser()) {
-      new_browser = b;
-    }
-  }
   ASSERT_TRUE(new_browser);
   ASSERT_TRUE(new_browser != browser());
 
@@ -1546,7 +1537,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ForwardDisabledOnForward) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), blank_url));
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), ui_test_utils::GetTestUrl(
+      browser(), chrome_test_utils::GetTestUrl(
                      base::FilePath(base::FilePath::kCurrentDirectory),
                      base::FilePath(kTitle1File))));
 
@@ -1613,18 +1604,18 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, ArcBrowserWindowFeaturesSetCorrectly) {
   ASSERT_TRUE(new_browser);
 
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_LOCATIONBAR));
+      Browser::WindowFeature::kFeatureLocationBar));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TITLEBAR));
+      Browser::WindowFeature::kFeatureTitleBar));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TABSTRIP));
+      Browser::WindowFeature::kFeatureTabStrip));
   EXPECT_FALSE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_BOOKMARKBAR));
+      Browser::WindowFeature::kFeatureBookmarkBar));
   EXPECT_FALSE(
-      new_browser->SupportsWindowFeature(Browser::WindowFeature::FEATURE_NONE));
+      new_browser->SupportsWindowFeature(Browser::WindowFeature::kFeatureNone));
 
   EXPECT_TRUE(new_browser->SupportsWindowFeature(
-      Browser::WindowFeature::FEATURE_TOOLBAR));
+      Browser::WindowFeature::kFeatureToolbar));
 }
 #endif
 
@@ -1977,8 +1968,70 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, FullscreenBookmarkBar) {
 }
 #endif
 
+// TODO(crbug.com/424490718): Fullscreen tests work differently on Mac and
+// require some additional flags to work.
+// See chrome/browser/ui/views/fullscreen_mac_browsertest.cc
+#if !BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserFullscreenShowBookmarkBarSplitView) {
+  chrome::AddTabAt(browser(), GURL("chrome://new-tab-page"), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a bookmark so we have something to show when bookmark bar is enabled
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  bookmarks::AddIfNotBookmarked(model, GURL("https://www.foo.goog"), u"Foo");
+
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+  chrome::ToggleFullscreenMode(browser());
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserTest, TabFullscreenHiddenBookmarkBarSplitView) {
+  chrome::AddTabAt(browser(), GURL("chrome://new-tab-page"), -1, true);
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  browser()->tab_strip_model()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a bookmark so we have something to show when bookmark bar is enabled
+  bookmarks::BookmarkModel* const model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  bookmarks::test::WaitForBookmarkModelToLoad(model);
+  bookmarks::AddIfNotBookmarked(model, GURL("https://www.foo.goog"), u"Foo");
+
+  chrome::ToggleBookmarkBar(browser());
+  EXPECT_EQ(BookmarkBar::SHOW,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()
+      ->GetFeatures()
+      .exclusive_access_manager()
+      ->fullscreen_controller()
+      ->EnterFullscreenModeForTab(web_contents->GetPrimaryMainFrame());
+
+  EXPECT_TRUE(browser()->window()->IsFullscreen());
+  EXPECT_EQ(BookmarkBar::HIDDEN,
+            BookmarkBarController::From(browser())->bookmark_bar_state());
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath().AppendASCII("fileurl_universalaccess.html"));
 
@@ -2219,7 +2272,7 @@ class AppModeTest : public BrowserTest {
   AppModeTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    GURL url = ui_test_utils::GetTestUrl(
+    GURL url = chrome_test_utils::GetTestUrl(
         base::FilePath(), base::FilePath().AppendASCII("title1.html"));
     command_line->AppendSwitchASCII(switches::kApp, url.spec());
   }
@@ -2260,7 +2313,7 @@ class ClickModifierTest : public InProcessBrowserTest {
 
   // Returns a url that opens a new window or tab when clicked, via javascript.
   GURL GetWindowOpenURL() const {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("window_open.html")));
   }
@@ -2268,7 +2321,7 @@ class ClickModifierTest : public InProcessBrowserTest {
   // Returns a url that follows a simple link when clicked, unless affected by
   // modifiers.
   GURL GetHrefURL() const {
-    return ui_test_utils::GetTestUrl(
+    return chrome_test_utils::GetTestUrl(
         base::FilePath(kTestDir),
         base::FilePath(FILE_PATH_LITERAL("href.html")));
   }
@@ -2569,7 +2622,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, GetSizeForNewRenderView) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, CanDuplicateTab) {
-  GURL url(ui_test_utils::GetTestUrl(
+  GURL url(chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kTitle1File)));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -2622,7 +2675,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DISABLED_ChangeDisplayMode) {
       ->EnterFullscreen(
           url::Origin(),
           EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION,
-          display::kInvalidDisplayId);
+          FullscreenTabParams());
 
   // Sync navigation just to make sure IPC has passed (updated
   // display mode is delivered to RP).
@@ -2676,7 +2729,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/567925.
     EXPECT_GE(bounds.width(), 100);
-    EXPECT_EQ(122, bounds.height());
+
+    // EXPECT_GE as Mac will have a larger height with the additional title bar.
+    EXPECT_GE(bounds.height(), 122);
     browser->window()->Close();
   }
 
@@ -2724,7 +2779,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/567925.
     EXPECT_GE(bounds.width(), 100);
-    EXPECT_EQ(122, bounds.height());
+
+    // EXPECT_GE as Mac will have a larger height with the additional title bar.
+    EXPECT_GE(bounds.height(), 122);
     browser->window()->Close();
   }
 }
@@ -3141,12 +3198,17 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
       web_app::LaunchWebAppBrowser(profile(), ash::kCalculatorAppId);
   ASSERT_TRUE(browser);
 
-  EXPECT_EQ(BrowserClosingStatus::kDeniedByPolicy,
-            browser->HandleBeforeClose());
-  EXPECT_CALL(*this, OnBrowserCloseCancelled(
-                         browser, BrowserClosingStatus::kDeniedByPolicy))
-      .Times(1);
+  int times_called = 0;
+  base::CallbackListSubscription browser_close_canelled_subscription =
+      browser->RegisterBrowserCloseCancelled(base::BindLambdaForTesting(
+          [&](BrowserWindowInterface* bwi,
+              BrowserWindowInterface::ClosingStatus status) {
+            EXPECT_EQ(BrowserWindowInterface::ClosingStatus::kDeniedByPolicy,
+                      status);
+            times_called++;
+          }));
   browser->OnWindowClosing();
+  EXPECT_EQ(1, times_called);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -3170,4 +3232,70 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BrowserCloseEmitsClosedNotificationsOnce) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   CloseBrowserSynchronously(browser());
   EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+}
+
+// Asserts that browser propagates browser closed notifications in the case the
+// object is synchronously destroyed via `SynchronouslyDestroyBrowser()`.
+IN_PROC_BROWSER_TEST_F(BrowserTest,
+                       BrowserCloseEmitsClosedNotificationsWhenDestroyed) {
+  Browser* const new_browser = CreateBrowser(GetProfile());
+
+  // Assert a closed event is delivered in the case the browser is synchronously
+  // destroyed.
+  base::MockCallback<BrowserWindowInterface::BrowserDidCloseCallback>
+      browser_did_close_callback;
+  EXPECT_CALL(browser_did_close_callback, Run).Times(1);
+  base::CallbackListSubscription subscription =
+      new_browser->RegisterBrowserDidClose(browser_did_close_callback.Get());
+
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  new_browser->SynchronouslyDestroyBrowser();
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+}
+
+class GuestSessionBrowserTest : public BrowserTest {
+ public:
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    user_manager::kGuestUserName);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+                                    TestingProfile::kTestUserProfileDir);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  void SetUpOnMainThread() override {
+    BrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
+    guest_browser_ = browser();
+#else
+    guest_browser_ = CreateGuestBrowser();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  void TearDownOnMainThread() override {
+    guest_browser_ = nullptr;
+    BrowserTest::TearDownOnMainThread();
+  }
+
+  Browser* guest_browser() { return guest_browser_; }
+
+ private:
+  raw_ptr<Browser> guest_browser_ = nullptr;
+};
+
+// Tests that Browser::Create creates a guest session browser.
+IN_PROC_BROWSER_TEST_F(GuestSessionBrowserTest, CreateGuestSessionBrowser) {
+  // Creating a guest session browser should succeed and the instantiated
+  // browser should be using an OTR profile.
+  Profile* guest_profile = guest_browser()->profile();
+  EXPECT_TRUE(guest_browser());
+  EXPECT_TRUE(guest_profile->IsGuestSession());
+  EXPECT_TRUE(guest_profile->IsOffTheRecord());
+
+  // Try creating a browser in original non-OTR guest profile - it should fail.
+  EXPECT_EQ(Browser::CreationStatus::kErrorProfileUnsuitable,
+            Browser::GetCreationStatusForProfile(
+                guest_profile->GetOriginalProfile()));
 }

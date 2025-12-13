@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
@@ -73,21 +74,15 @@ const LatencyInfoEnabledInitializer& GetLatencyInfoEnabledInitializer() {
   return initializer;
 }
 
-const perfetto::NamedTrack CreateInputLatencyParentTrack() {
-  perfetto::NamedTrack track("InputLatency", 0, perfetto::Track::Global(0));
-  if (perfetto::Tracing::IsInitialized()) {
-    // Because the track doesn't get any events of its own it must manually
-    // emit the track descriptor. SetTrackDescriptor may crash in unit tests
-    // where tracing isn't initialized.
-    base::TrackEvent::SetTrackDescriptor(track, track.Serialize());
-  }
-  return track;
+perfetto::NamedTrack CreateInputLatencyParentTrack() {
+  return perfetto::NamedTrack("InputLatency", 0, perfetto::Track::Global(0));
 }
 
 perfetto::Track GetInputLatencyTrack(int64_t trace_id) {
-  static const perfetto::NamedTrack parent_track =
-      CreateInputLatencyParentTrack();
-  return perfetto::Track(trace_id, parent_track);
+  static const base::NoDestructor<
+      base::trace_event::TrackRegistration<perfetto::NamedTrack>>
+      parent_track(CreateInputLatencyParentTrack());
+  return perfetto::Track(trace_id, parent_track->track());
 }
 
 }  // namespace

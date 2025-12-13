@@ -8,31 +8,31 @@
 #include <optional>
 #include <vector>
 
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
-#include "ui/gfx/buffer_types.h"
 
 namespace media {
 
 // A collection of the various pixel formats we need to look up.  We need to
 // resolve the HAL pixel format to VideoPixelFormat for VideoCaptureDevice, and
-// to gfx::BufferFormat for gpu::GpuMemoryBufferManager.
+// to viz::SharedImageFormat for gpu::GpuMemoryBufferManager.
 struct ChromiumPixelFormat {
   VideoPixelFormat video_format;
-  gfx::BufferFormat gfx_format;
+  viz::SharedImageFormat si_format;
 };
 
 // Converts the HAL pixel format |from| to Chromium pixel format.  Returns
 // empty vector if |from| is not supported.
-std::vector<ChromiumPixelFormat> PixFormatHalToChromium(
+std::vector<ChromiumPixelFormat> HalPixelFormatToChromiumPixelFormat(
     cros::mojom::HalPixelFormat from);
 
 // Converts the video pixel format |from| to DRM pixel format.  Returns 0
 // if |from| is not supported.
 uint32_t PixFormatVideoToDrm(VideoPixelFormat from);
 
-// Converts the video pixel format |pixel_format| to gfx::BufferFormat.
-std::optional<gfx::BufferFormat> PixFormatVideoToGfx(
+// Converts the video pixel format |pixel_format| to viz::SharedImageFormat.
+std::optional<viz::SharedImageFormat> VideoPixelFormatToVizSIFormat(
     VideoPixelFormat pixel_format);
 
 }  // namespace media

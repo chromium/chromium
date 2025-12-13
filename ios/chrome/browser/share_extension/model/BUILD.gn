@@ -2,29 +2,96 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("model") {
+source_set("controller") {
   sources = [
-    "share_extension_item_receiver.h",
-    "share_extension_item_receiver.mm",
-    "share_extension_service.h",
-    "share_extension_service.mm",
-    "share_extension_service_factory.h",
-    "share_extension_service_factory.mm",
+    "share_extension_controller.h",
+    "share_extension_controller.mm",
   ]
   deps = [
+    ":bookmark_adder",
+    ":reading_list_adder",
+    ":utils",
     "//base",
-    "//components/bookmarks/browser",
-    "//components/keyed_service/core",
-    "//components/reading_list/core",
-    "//ios/chrome/browser/bookmarks/model",
-    "//ios/chrome/browser/reading_list/model",
+    "//google_apis",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common/app_group",
     "//ios/web",
     "//ios/web/public/thread",
     "//net",
     "//url",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "parsed_share_extension_entry.h",
+    "parsed_share_extension_entry.mm",
+    "share_extension_utils.h",
+    "share_extension_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//google_apis",
+    "//ios/chrome/common/app_group",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("bookmark_adder") {
+  sources = [
+    "bookmark_adder.h",
+    "bookmark_adder.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common/app_group",
+    "//url",
+  ]
+}
+
+source_set("reading_list_adder") {
+  sources = [
+    "reading_list_adder.h",
+    "reading_list_adder.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/reading_list/core",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common/app_group",
+    "//url",
+  ]
+}
+
+source_set("agent") {
+  sources = [
+    "share_extension_scene_agent.h",
+    "share_extension_scene_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/common/app_group",
   ]
 }

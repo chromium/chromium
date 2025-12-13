@@ -38,9 +38,23 @@
 
   const promises = [ testEvents(), testMessages(), testProperties(), testErrors() ];
 
-  dp.Media.onPlayersCreated((event) => {
-    testRunner.log(`Received creation event for ${event.params.players.length} player`);
-    const playerId = event.params.players[0];
+  dp.Media.onPlayerCreated(async (event) => {
+    testRunner.log(`Received creation event for 1 player`);
+    const {playerId, domNodeId} = event.params.player;
+
+    // Verify that the domNodeId received from onPlayerCreated matches the
+    // actual node id.
+    const documentNodeId = (await dp.DOM.getDocument({})).result.root.nodeId;
+    const videoElementId = (await dp.DOM.querySelector({
+                             nodeId: documentNodeId,
+                             selector: 'video',
+                           })).result.nodeId;
+    const videoElementBackendNodeId = (await dp.DOM.describeNode({
+                                        nodeId: videoElementId,
+                                      })).result.node.backendNodeId;
+    testRunner.log(
+        `The domNodeId received from onPlayerCreated matches the actual node id: ${
+            videoElementBackendNodeId === domNodeId}`);
 
     Promise.all(promises).then(([events, messages, properties, errors]) => {
       if (events[0] === playerId && messages[0] === playerId && properties[0] === playerId, errors[0] == playerId)

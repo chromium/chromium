@@ -81,7 +81,7 @@ class Response;
 //   dbus::Bus::Options options;
 //   // Set up the bus options here.
 //   ...
-//   dbus::Bus bus(options);
+//   dbus::Bus bus(std::move(options));
 //
 //   dbus::ObjectProxy* object_proxy =
 //       bus.GetObjectProxy(service_name, object_path);
@@ -193,8 +193,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
     Options(Options&&);
     Options& operator=(Options&&);
 
-    BusType bus_type;  // SESSION by default.
-    ConnectionType connection_type;  // PRIVATE by default.
+    BusType bus_type{SESSION};
+    ConnectionType connection_type{PRIVATE};
+
     // If dbus_task_runner is set, the bus object will use that
     // task runner to process asynchronous operations.
     //
@@ -216,7 +217,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
     //   options.bus_type = CUSTOM_ADDRESS;
     //   options.address.assign("unix:path=/tmp/dbus-XXXXXXX");
     //   // Set up other options
-    //   dbus::Bus bus(options);
+    //   dbus::Bus bus(std::move(options));
     //
     //   // Do something.
     //
@@ -225,7 +226,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
 
   // Creates a Bus object. The actual connection will be established when
   // Connect() is called.
-  explicit Bus(const Options& options);
+  explicit Bus(Options options);
 
   Bus(const Bus&) = delete;
   Bus& operator=(const Bus&) = delete;

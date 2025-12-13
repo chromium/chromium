@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/bookmarks/browser/titled_url_index.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -159,11 +155,11 @@ class TitledUrlIndexTest : public testing::Test {
   }
 
   void ExpectMatches(const std::string& query,
-                     const char** expected_titles,
-                     size_t expected_count) {
+                     base::span<const char*> expected_titles) {
     std::vector<std::string> title_vector;
-    for (size_t i = 0; i < expected_count; ++i)
-      title_vector.push_back(expected_titles[i]);
+    for (const char* expected_title : expected_titles) {
+      title_vector.push_back(expected_title);
+    }
     ExpectMatches(query, query_parser::MatchingAlgorithm::DEFAULT,
                   title_vector);
   }

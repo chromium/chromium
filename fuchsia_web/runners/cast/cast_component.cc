@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "fuchsia_web/runners/cast/cast_component.h"
 
@@ -20,7 +16,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"

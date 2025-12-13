@@ -138,6 +138,7 @@ ResizingHostObserver::~ResizingHostObserver() {
 
 void ResizingHostObserver::RegisterForDisplayChanges(
     DesktopDisplayInfoMonitor& monitor) {
+  display_info_monitor_ = &monitor;
   monitor.AddCallback(base::BindRepeating(
       &ResizingHostObserver::OnDisplayInfoChanged, weak_factory_.GetWeakPtr()));
 }
@@ -183,13 +184,12 @@ void ResizingHostObserver::SetScreenResolution(
 
   // Resizing the desktop too often is probably not a good idea, so apply a
   // simple rate-limiting scheme.
-  // TODO(crbug.com/40225767): Rate-limiting should only be applied to requests
-  // for the same monitor.
+  auto& rate_limiter = rate_limiters_[screen_id];
   base::TimeTicks next_allowed_resize =
-      previous_resize_time_ + base::Milliseconds(kMinimumResizeIntervalMs);
+      rate_limiter.previous_time + base::Milliseconds(kMinimumResizeIntervalMs);
 
-  if (now < next_allowed_resize) {
-    deferred_resize_timer_.Start(
+  if (!rate_limiter.previous_time.is_null() && now < next_allowed_resize) {
+    rate_limiter.timer.Start(
         FROM_HERE, next_allowed_resize - now,
         base::BindOnce(&ResizingHostObserver::SetScreenResolution,
                        weak_factory_.GetWeakPtr(), resolution, opt_screen_id));
@@ -245,17 +245,12 @@ void ResizingHostObserver::SetScreenResolution(
   }
 
   // Update the time of last resize to allow it to be rate-limited.
-  previous_resize_time_ = now;
+  rate_limiter.previous_time = now;
 }
 
 void ResizingHostObserver::SetVideoLayout(
     const protocol::VideoLayout& video_layout) {
   desktop_resizer_->SetVideoLayout(video_layout);
-}
-
-void ResizingHostObserver::SetDisplayInfoForTesting(
-    const DesktopDisplayInfo& display_info) {
-  OnDisplayInfoChanged(display_info);
 }
 
 void ResizingHostObserver::SetClockForTesting(const base::TickClock* clock) {
@@ -292,11 +287,12 @@ void ResizingHostObserver::RecordOriginalResolution(
   }
 }
 
-void ResizingHostObserver::OnDisplayInfoChanged(
-    const DesktopDisplayInfo& display_info) {
+void ResizingHostObserver::OnDisplayInfoChanged() {
+  const auto* display_info = display_info_monitor_->GetLatestDisplayInfo();
+  DCHECK(display_info);
   current_monitor_ids_.clear();
-  for (int i = 0; i < display_info.NumDisplays(); i++) {
-    current_monitor_ids_.insert(display_info.GetDisplayInfo(i)->id);
+  for (int i = 0; i < display_info->NumDisplays(); i++) {
+    current_monitor_ids_.insert(display_info->GetDisplayInfo(i)->id);
   }
 
   // If there was a pending resolution request for an unspecifed monitor, apply

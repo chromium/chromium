@@ -34,6 +34,7 @@
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/utils.h"
 #include "third_party/puffin/src/include/puffin/puffpatch.h"
 
 namespace update_client {
@@ -141,8 +142,12 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
              const CrxInstaller::Result& result) {
             base::ThreadPool::PostTaskAndReply(
                 FROM_HERE, kTaskTraits,
-                base::BindOnce(IgnoreResult(&base::DeletePathRecursively),
-                               unpack_path),
+                base::BindOnce(
+                    [](const base::FilePath& unpack_path) {
+                      RetryFileOperation(&base::DeletePathRecursively,
+                                         unpack_path);
+                    },
+                    unpack_path),
                 base::BindOnce(std::move(callback), result));
           },
           std::move(callback), result.unpack_path),
@@ -163,6 +168,7 @@ void Install(base::OnceCallback<void(const CrxInstaller::Result&)> callback,
 // Runs on the original sequence.
 void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
             const std::string& id,
+            const std::string& prod_id,
             const base::FilePath& crx_file,
             std::unique_ptr<Unzipper> unzipper,
             const std::vector<uint8_t>& pk_hash,
@@ -177,7 +183,11 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
            const Unpacker::Result& result) {
           base::ThreadPool::PostTaskAndReply(
               FROM_HERE, kTaskTraits,
-              base::BindOnce(IgnoreResult(&base::DeleteFile), crx_file),
+              base::BindOnce(
+                  [](const base::FilePath& crx_file) {
+                    RetryFileOperation(&base::DeleteFile, crx_file);
+                  },
+                  crx_file),
               base::BindOnce(std::move(callback), result));
         },
         crx_file, std::move(callback));
@@ -188,7 +198,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
       ->PostTask(
           FROM_HERE,
           base::BindOnce(
-              &Unpacker::Unpack, id, pk_hash,
+              &Unpacker::Unpack, id, prod_id, pk_hash,
               // If and only if cached, the original path no longer exists.
               cache_result.has_value() ? cache_result.value() : crx_file,
               std::move(unzipper), crx_format,
@@ -202,6 +212,7 @@ base::OnceClosure InstallOperation(
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,
+    const std::string& prod_id,
     const std::string& file_hash,
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
@@ -216,8 +227,7 @@ base::OnceClosure InstallOperation(
         callback) {
   state_tracker.Run(ComponentState::kUpdating);
   crx_cache->Put(
-      // TODO(crbug.com/399617574): Remove FP.
-      crx_file, id, file_hash, /*fp=*/{},
+      crx_file, id, file_hash,
       base::BindOnce(
           &Unpack,
           base::BindOnce(
@@ -226,7 +236,7 @@ base::OnceClosure InstallOperation(
                              std::move(installer_result_callback),
                              std::move(callback), event_adder, crx_file),
               std::move(install_params), installer, progress_callback),
-          id, crx_file, std::move(unzipper), pk_hash, crx_format));
+          id, prod_id, crx_file, std::move(unzipper), pk_hash, crx_format));
   return base::DoNothing();
 }
 

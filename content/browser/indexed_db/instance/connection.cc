@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/instance/connection.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
@@ -17,12 +18,11 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/sequence_checker.h"
+#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
-#include "base/strings/string_util.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -46,9 +46,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-data-view.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 using blink::IndexedDBIndexKeys;
+using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBKeyRange;
@@ -66,20 +68,40 @@ static int32_t g_next_indexed_db_connection_id;
 const char kBadTransactionMode[] = "Bad transaction mode";
 const char kTransactionAlreadyExists[] = "Transaction already exists";
 
-std::string_view DisallowInactiveClientReasonToString(
-    storage::mojom::DisallowInactiveClientReason reason) {
-  using enum storage::mojom::DisallowInactiveClientReason;
-  switch (reason) {
-    case kVersionChangeEvent:
-      return "VersionChangeEvent";
-    case kTransactionIsAcquiringLocks:
-      return "TransactionIsAcquiringLocks";
-    case kTransactionIsStartingWhileBlockingOthers:
-      return "TransactionIsStartingWhileBlockingOthers";
-    case kTransactionIsOngoingAndBlockingOthers:
-      return "TransactionIsOngoingAndBlockingOthers";
+// Verification helper. This is used when a mojo message is allowed to pass an
+// invalid index (kInvalid), but if the index is not kInvalid, it must be
+// verified. In theory, the mojo message should instead notate optionality
+// natively, but this adapter helps with legacy code.
+std::optional<int64_t> IndexIsOptional(int64_t index_id) {
+  if (index_id == IndexedDBIndexMetadata::kInvalidId) {
+    return std::nullopt;
   }
-  NOTREACHED();
+  return index_id;
+}
+
+// Number of connections in the process, across all BucketContexts. All
+// operations use std::memory_order_relaxed since there is no dependency with
+// other data.
+//
+// TODO(crbug.com/381086791): Remove after the bug is understood.
+std::atomic_int64_t g_num_connections = 0;
+
+void IncrementNumConnections() {
+  int64_t new_connection_count =
+      g_num_connections.fetch_add(1, std::memory_order_relaxed) + 1;
+
+  // Report the number of connections when it's high. This will be used to
+  // determine the proportion of clients with elevated number of connections and
+  // as a trace trigger to understand how clients get into that state.
+  constexpr int64_t kHighPendingConnectionCount = 10000;
+  if (new_connection_count > kHighPendingConnectionCount) {
+    base::UmaHistogramCounts100000("IndexedDB.NumConnections.OnCreateAbove10k",
+                                   new_connection_count);
+  }
+}
+
+void DecrementNumConnections() {
+  g_num_connections.fetch_sub(1, std::memory_order_relaxed);
 }
 
 }  // namespace
@@ -89,7 +111,8 @@ mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase>
 Connection::MakeSelfOwnedReceiverAndBindRemote(
     std::unique_ptr<Connection> connection) {
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_remote;
-  mojo::MakeSelfOwnedAssociatedReceiver(
+  Connection* connection_ptr = connection.get();
+  connection_ptr->receiver_ = mojo::MakeSelfOwnedAssociatedReceiver(
       std::move(connection),
       pending_remote.InitWithNewEndpointAndPassReceiver());
   return pending_remote;
@@ -98,7 +121,7 @@ Connection::MakeSelfOwnedReceiverAndBindRemote(
 Connection::Connection(BucketContext& bucket_context,
                        base::WeakPtr<Database> database,
                        base::RepeatingClosure on_version_change_ignored,
-                       base::OnceCallback<void(Connection*)> on_close,
+                       base::OnceCallback<void(Connection&)> on_close,
                        std::unique_ptr<DatabaseCallbacks> callbacks,
                        mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
                            client_state_checker,
@@ -113,12 +136,15 @@ Connection::Connection(BucketContext& bucket_context,
       client_state_checker_(std::move(client_state_checker)),
       client_token_(client_token),
       scheduling_priority_(scheduling_priority) {
+  IncrementNumConnections();
+
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
 }
 
 Connection::~Connection() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DecrementNumConnections();
+
   is_shutting_down_ = true;
   if (!IsConnected()) {
     return;
@@ -129,7 +155,6 @@ Connection::~Connection() {
 }
 
 bool Connection::IsConnected() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return callbacks_.get();
 }
 
@@ -137,8 +162,10 @@ Transaction* Connection::CreateVersionChangeTransaction(
     int64_t id,
     const std::set<int64_t>& scope,
     std::unique_ptr<BackingStore::Transaction> backing_store_transaction) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+
+  RecordCreateTransactionHistograms(
+      blink::mojom::IDBTransactionMode::VersionChange);
   return (transactions_[id] = std::make_unique<Transaction>(
               id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
               blink::mojom::IDBTransactionDurability::Strict,
@@ -156,32 +183,34 @@ void Connection::DisallowInactiveClient(
     return;
   }
 
-  mojo::Remote<storage::mojom::IndexedDBClientKeepActive>
-      client_keep_active_remote;
+  size_t reason_index = base::to_underlying(reason);
+
+  if (client_keep_active_remotes_[reason_index].is_bound()) {
+    // Since the keep_active remote is found in client_keep_active_remotes_,
+    // the client must be active (would have been cleared if evicted).
+    // Still call server but pass null receiver.
+    client_state_checker_->DisallowInactiveClient(
+        id_, reason, mojo::NullReceiver(), std::move(callback));
+    return;
+  }
+
+  // Normal path - create new remote and bind it
   client_state_checker_->DisallowInactiveClient(
-      id_, reason, client_keep_active_remote.BindNewPipeAndPassReceiver(),
+      id_, reason,
+      client_keep_active_remotes_[reason_index].BindNewPipeAndPassReceiver(),
       std::move(callback));
-  client_keep_active_remotes_[base::to_underlying(reason)].Add(
-      std::move(client_keep_active_remote));
 
   // TODO(381086791): Remove this histogram when the regression is fixed.
   static constexpr char kClientKeepActiveRemotesCount[] =
       "IndexedDB.ClientKeepActiveRemotesCount";
   size_t remotes_count = 0u;
   for (const auto& remote : client_keep_active_remotes_) {
-    base::UmaHistogramCounts1M(
-        base::JoinString({kClientKeepActiveRemotesCount,
-                          DisallowInactiveClientReasonToString(reason)},
-                         "."),
-        remote.size());
-    remotes_count += remote.size();
+    remotes_count += remote.is_bound() ? 1u : 0u;
   }
   base::UmaHistogramCounts1M(kClientKeepActiveRemotesCount, remotes_count);
 }
 
 void Connection::RemoveTransaction(int64_t id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   size_t removed = transactions_.erase(id);
   if (!removed) {
     return;
@@ -213,7 +242,7 @@ void Connection::RemoveTransaction(int64_t id) {
   // Safe to make this client inactive.
   if (can_go_inactive) {
     for (auto& remotes : client_keep_active_remotes_) {
-      remotes.Clear();
+      remotes.reset();
     }
   }
 }
@@ -221,7 +250,6 @@ void Connection::RemoveTransaction(int64_t id) {
 void Connection::AbortTransactionAndTearDownOnError(
     Transaction* transaction,
     const DatabaseError& error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "txn.id",
                transaction->id());
   Status status = transaction->Abort(error);
@@ -231,7 +259,6 @@ void Connection::AbortTransactionAndTearDownOnError(
 }
 
 void Connection::CloseAndReportForceClose(const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
@@ -244,40 +271,24 @@ void Connection::CloseAndReportForceClose(const std::string& message) {
 void Connection::RenameObjectStore(int64_t transaction_id,
                                    int64_t object_store_id,
                                    const std::u16string& new_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(
+          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
-    mojo::ReportBadMessage(
-        "RenameObjectStore must be called from a version change transaction.");
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
-      base::BindOnce(
-          [](int64_t object_store_id, const std::u16string& new_name,
-             Transaction* transaction) {
-            return transaction->BackingStoreTransaction()->RenameObjectStore(
-                object_store_id, new_name);
-          },
-          object_store_id, new_name));
+  (*transaction)
+      ->ScheduleTask(
+          blink::mojom::IDBTaskType::Preemptive, "RenameObjectStore",
+          base::BindOnce(
+              [](int64_t object_store_id, const std::u16string& new_name,
+                 Transaction* transaction) {
+                return transaction->BackingStoreTransaction()
+                    ->RenameObjectStore(object_store_id, new_name);
+              },
+              object_store_id, new_name),
+          Transaction::ObjectStoreMustExist(object_store_id));
 }
 
 void Connection::CreateTransaction(
@@ -287,19 +298,18 @@ void Connection::CreateTransaction(
     const std::vector<int64_t>& object_store_ids,
     blink::mojom::IDBTransactionMode mode,
     blink::mojom::IDBTransactionDurability durability) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
 
   if (mode != blink::mojom::IDBTransactionMode::ReadOnly &&
       mode != blink::mojom::IDBTransactionMode::ReadWrite) {
-    mojo::ReportBadMessage(kBadTransactionMode);
+    receiver_->ReportBadMessage(kBadTransactionMode);
     return;
   }
 
   if (GetTransaction(transaction_id)) {
-    mojo::ReportBadMessage(kTransactionAlreadyExists);
+    receiver_->ReportBadMessage(kTransactionAlreadyExists);
     return;
   }
 
@@ -314,6 +324,7 @@ void Connection::CreateTransaction(
     }
   }
 
+  RecordCreateTransactionHistograms(mode);
   std::set<int64_t> scope(object_store_ids.begin(), object_store_ids.end());
   Transaction* transaction =
       (transactions_[transaction_id] = std::make_unique<Transaction>(
@@ -327,7 +338,6 @@ void Connection::CreateTransaction(
 }
 
 void Connection::VersionChangeIgnored() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
@@ -341,44 +351,33 @@ void Connection::Get(int64_t transaction_id,
                      IndexedDBKeyRange key_range,
                      bool key_only,
                      blink::mojom::IDBDatabase::GetCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Not connected.");
-    std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
-        blink::mojom::IDBError::New(error.code(), error.message())));
-    return;
-  }
+  TRACE_EVENT0("IndexedDB", "Connection::Get");
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Unknown transaction.");
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
+    TRACE_EVENT_INSTANT("IndexedDB", "Connection::Get - Error");
     std::move(callback).Run(blink::mojom::IDBDatabaseGetResult::NewErrorResult(
-        blink::mojom::IDBError::New(error.code(), error.message())));
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
+        blink::mojom::IDBError::New(transaction.error().code(),
+                                    transaction.error().message())));
     return;
   }
 
   blink::mojom::IDBDatabase::GetCallback aborting_callback =
       CreateCallbackAbortOnDestruct<blink::mojom::IDBDatabase::GetCallback,
                                     blink::mojom::IDBDatabaseGetResultPtr>(
-          std::move(callback), transaction->AsWeakPtr());
+          std::move(callback), (*transaction)->AsWeakPtr());
 
-  transaction->ScheduleTask(
-      BindWeakOperation(&Database::GetOperation, database_, object_store_id,
-                        index_id, std::move(key_range),
-                        key_only ? indexed_db::CursorType::kKeyOnly
-                                 : indexed_db::CursorType::kKeyAndValue,
-                        std::move(aborting_callback)));
+  (*transaction)
+      ->ScheduleTask(
+          "GetRecord",
+          BindWeakOperation(&Database::GetOperation, database_, object_store_id,
+                            index_id, std::move(key_range),
+                            key_only ? indexed_db::CursorType::kKeyOnly
+                                     : indexed_db::CursorType::kKeyAndValue,
+                            std::move(aborting_callback)),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
+                                                    IndexIsOptional(index_id)));
 }
 
 void Connection::GetAll(int64_t transaction_id,
@@ -386,49 +385,34 @@ void Connection::GetAll(int64_t transaction_id,
                         int64_t index_id,
                         IndexedDBKeyRange key_range,
                         blink::mojom::IDBGetAllResultType result_type,
-                        int64_t max_count,
+                        uint32_t max_count,
                         blink::mojom::IDBCursorDirection direction,
                         blink::mojom::IDBDatabase::GetAllCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (max_count == 0) {
+    receiver_->ReportBadMessage("max_count must be greater than 0.");
+    return;
+  }
 
-  auto bind_result_sink = [&callback]() {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>
         result_sink;
     auto receiver = result_sink.BindNewEndpointAndPassReceiver();
     std::move(callback).Run(std::move(receiver));
-    return result_sink;
-  };
-
-  if (!IsConnected()) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Not connected.");
-    bind_result_sink()->OnError(
-        blink::mojom::IDBError::New(error.code(), error.message()));
+    result_sink->OnError(blink::mojom::IDBError::New(
+        transaction.error().code(), transaction.error().message()));
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Unknown transaction.");
-    bind_result_sink()->OnError(
-        blink::mojom::IDBError::New(error.code(), error.message()));
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    bind_result_sink();
-    return;
-  }
-
-  transaction->ScheduleTask(database_->CreateGetAllOperation(
-      object_store_id, index_id, std::move(key_range), result_type, max_count,
-      direction, std::move(callback), transaction));
+  (*transaction)
+      ->ScheduleTask(
+          "GetAllRecords",
+          database_->CreateGetAllOperation(
+              object_store_id, index_id, std::move(key_range), result_type,
+              max_count, direction, std::move(callback), *transaction),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
+                                                    IndexIsOptional(index_id)));
 }
 
 void Connection::OpenCursor(
@@ -440,32 +424,13 @@ void Connection::OpenCursor(
     bool key_only,
     blink::mojom::IDBTaskType task_type,
     blink::mojom::IDBDatabase::OpenCursorCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Not connected.");
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
     std::move(callback).Run(
         blink::mojom::IDBDatabaseOpenCursorResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
-    return;
-  }
-
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Unknown transaction.");
-    std::move(callback).Run(
-        blink::mojom::IDBDatabaseOpenCursorResult::NewErrorResult(
-            blink::mojom::IDBError::New(error.code(), error.message())));
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
+            blink::mojom::IDBError::New(transaction.error().code(),
+                                        transaction.error().message())));
     return;
   }
 
@@ -473,11 +438,12 @@ void Connection::OpenCursor(
       CreateCallbackAbortOnDestruct<
           blink::mojom::IDBDatabase::OpenCursorCallback,
           blink::mojom::IDBDatabaseOpenCursorResultPtr>(
-          std::move(callback), transaction->AsWeakPtr());
+          std::move(callback), (*transaction)->AsWeakPtr());
 
-  if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange &&
+  if ((*transaction)->mode() !=
+          blink::mojom::IDBTransactionMode::VersionChange &&
       task_type == blink::mojom::IDBTaskType::Preemptive) {
-    mojo::ReportBadMessage(
+    receiver_->ReportBadMessage(
         "OpenCursor with |Preemptive| task type must be called from a version "
         "change transaction.");
     return;
@@ -493,9 +459,13 @@ void Connection::OpenCursor(
                                  : indexed_db::CursorType::kKeyAndValue;
   params->task_type = task_type;
   params->callback = std::move(aborting_callback);
-  transaction->ScheduleTask(BindWeakOperation(&Database::OpenCursorOperation,
-                                              database_, std::move(params),
-                                              GetBucketLocator()));
+  (*transaction)
+      ->ScheduleTask(
+          "OpenCursor",
+          BindWeakOperation(&Database::OpenCursorOperation, database_,
+                            std::move(params), GetBucketLocator()),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
+                                                    IndexIsOptional(index_id)));
 }
 
 void Connection::Count(int64_t transaction_id,
@@ -503,233 +473,188 @@ void Connection::Count(int64_t transaction_id,
                        int64_t index_id,
                        IndexedDBKeyRange key_range,
                        CountCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false, 0);
 
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction || !transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(BindWeakOperation(
-      &Database::CountOperation, database_, object_store_id, index_id,
-      std::move(key_range), std::move(wrapped_callback)));
+  (*transaction)
+      ->ScheduleTask(
+          "CountRecords",
+          BindWeakOperation(&Database::CountOperation, database_,
+                            object_store_id, index_id, std::move(key_range),
+                            std::move(wrapped_callback)),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id,
+                                                    IndexIsOptional(index_id)));
 }
 
 void Connection::DeleteRange(int64_t transaction_id,
                              int64_t object_store_id,
                              IndexedDBKeyRange key_range,
                              DeleteRangeCallback success_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(success_callback), /*success=*/false);
 
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(BindWeakOperation(
-      &Database::DeleteRangeOperation, database_, object_store_id,
-      std::move(key_range), std::move(wrapped_callback)));
+  (*transaction)
+      ->ScheduleTask(
+          "DeleteRecordRange",
+          BindWeakOperation(&Database::DeleteRangeOperation, database_,
+                            object_store_id, std::move(key_range),
+                            std::move(wrapped_callback)),
+          Transaction::ObjectStoreMustExist(object_store_id));
 }
 
 void Connection::GetKeyGeneratorCurrentNumber(
     int64_t transaction_id,
     int64_t object_store_id,
     GetKeyGeneratorCurrentNumberCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
+    std::move(callback).Run(
+        -1, blink::mojom::IDBError::New(transaction.error().code(),
+                                        transaction.error().message()));
+    return;
+  }
+
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), -1,
       blink::mojom::IDBError::New(
           blink::mojom::IDBException::kIgnorableAbortError,
           u"Aborting due to unknown failure."));
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(BindWeakOperation(
-      &Database::GetKeyGeneratorCurrentNumberOperation, database_,
-      object_store_id, std::move(wrapped_callback)));
+  (*transaction)
+      ->ScheduleTask(
+          "GetKeyGeneratorCurrentNumber",
+          BindWeakOperation(&Database::GetKeyGeneratorCurrentNumberOperation,
+                            database_, object_store_id,
+                            std::move(wrapped_callback)),
+          Transaction::ObjectStoreMustExist(object_store_id));
 }
 
 void Connection::Clear(int64_t transaction_id,
                        int64_t object_store_id,
                        ClearCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false);
-
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(transaction_id);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction || !transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(BindWeakOperation(&Database::ClearOperation,
-                                              database_, object_store_id,
-                                              std::move(wrapped_callback)));
+  (*transaction)
+      ->ScheduleTask(
+          "ClearObjectStore",
+          BindWeakOperation(&Database::ClearOperation, database_,
+                            object_store_id, std::move(wrapped_callback)),
+          Transaction::ObjectStoreMustExist(object_store_id));
 }
 
 void Connection::CreateIndex(int64_t transaction_id,
                              int64_t object_store_id,
-                             const blink::IndexedDBIndexMetadata& index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
+                             const IndexedDBIndexMetadata& index) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(
+          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
-    mojo::ReportBadMessage(
-        "CreateIndex must be called from a version change transaction.");
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(
-      blink::mojom::IDBTaskType::Preemptive,
-      base::BindOnce(
-          [](int64_t object_store_id, blink::IndexedDBIndexMetadata index,
-             Transaction* transaction) {
-            return transaction->BackingStoreTransaction()->CreateIndex(
-                object_store_id, std::move(index));
-          },
-          object_store_id, index));
+  (*transaction)
+      ->ScheduleTask(
+          blink::mojom::IDBTaskType::Preemptive, "CreateIndex",
+          base::BindOnce(
+              [](int64_t object_store_id, IndexedDBIndexMetadata index,
+                 Transaction* transaction) {
+                return transaction->BackingStoreTransaction()->CreateIndex(
+                    object_store_id, std::move(index));
+              },
+              object_store_id, index),
+          // Verification: the object store exists, the index does not exist,
+          // and the index ID is a valid new value.
+          base::BindOnce(
+              [](int64_t object_store_id, int64_t new_index_id,
+                 mojo::ReportBadMessageCallback report_bad_message_callback,
+                 Transaction& transaction) {
+                const std::map<int64_t, blink::IndexedDBObjectStoreMetadata>&
+                    object_stores = transaction.connection()
+                                        ->database()
+                                        ->metadata()
+                                        .object_stores;
+                auto obj_store_iter = object_stores.find(object_store_id);
+                if (obj_store_iter != object_stores.end() &&
+                    obj_store_iter->second.indexes.find(new_index_id) ==
+                        obj_store_iter->second.indexes.end() &&
+                    obj_store_iter->second.max_index_id < new_index_id) {
+                  return Status::OK();
+                }
+                std::move(report_bad_message_callback)
+                    .Run("Invalid object_store_id or index_id.");
+                return Status::InvalidArgument(
+                    "Invalid object_store_id or index_id.");
+              },
+              object_store_id, index.id, receiver_->GetBadMessageCallback()));
 }
 
 void Connection::DeleteIndex(int64_t transaction_id,
                              int64_t object_store_id,
                              int64_t index_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(
+          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
-    mojo::ReportBadMessage(
-        "DeleteIndex must be called from a version change transaction.");
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-  transaction->ScheduleTask(base::BindOnce(
-      [](int64_t object_store_id, int64_t index_id, Transaction* transaction) {
-        return transaction->BackingStoreTransaction()->DeleteIndex(
-            object_store_id, index_id);
-      },
-      object_store_id, index_id));
+  (*transaction)
+      ->ScheduleTask(
+          "DeleteIndex",
+          base::BindOnce(
+              [](int64_t object_store_id, int64_t index_id,
+                 Transaction* transaction) {
+                return transaction->BackingStoreTransaction()->DeleteIndex(
+                    object_store_id, index_id);
+              },
+              object_store_id, index_id),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id, index_id));
 }
 
 void Connection::RenameIndex(int64_t transaction_id,
                              int64_t object_store_id,
                              int64_t index_id,
                              const std::u16string& new_name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected()) {
+  base::expected<Transaction*, DatabaseError> transaction =
+      GetTransactionAndVerifyState(
+          transaction_id, blink::mojom::IDBTransactionMode::VersionChange);
+  if (!transaction.has_value()) {
     return;
   }
 
-  Transaction* transaction = GetTransaction(transaction_id);
-  if (!transaction) {
-    return;
-  }
-
-  if (transaction->mode() != blink::mojom::IDBTransactionMode::VersionChange) {
-    mojo::ReportBadMessage(
-        "RenameIndex must be called from a version change transaction.");
-    return;
-  }
-
-  if (!transaction->IsAcceptingRequests()) {
-    // TODO(crbug.com/40791538): If the transaction was already committed
-    // (or is in the process of being committed) we should kill the renderer.
-    // This branch however also includes cases where the browser process aborted
-    // the transaction, as currently we don't distinguish that state from the
-    // transaction having been committed. So for now simply ignore the request.
-    return;
-  }
-
-  transaction->ScheduleTask(base::BindOnce(
-      [](int64_t object_store_id, int64_t index_id, std::u16string new_name,
-         Transaction* transaction) {
-        return transaction->BackingStoreTransaction()->RenameIndex(
-            object_store_id, index_id, new_name);
-      },
-      object_store_id, index_id, new_name));
+  (*transaction)
+      ->ScheduleTask(
+          "RenameIndex",
+          base::BindOnce(
+              [](int64_t object_store_id, int64_t index_id,
+                 std::u16string new_name, Transaction* transaction) {
+                return transaction->BackingStoreTransaction()->RenameIndex(
+                    object_store_id, index_id, new_name);
+              },
+              object_store_id, index_id, new_name),
+          Transaction::ObjectStoreAndIndexMustExist(object_store_id, index_id));
 }
 
 void Connection::Abort(int64_t transaction_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
@@ -745,7 +670,6 @@ void Connection::Abort(int64_t transaction_id) {
 }
 
 void Connection::DidBecomeInactive() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return;
   }
@@ -767,11 +691,6 @@ void Connection::UpdatePriority(int new_priority) {
     transaction->OnSchedulingPriorityUpdated(new_priority);
   }
 
-  // Null after `AbortTransactionsAndClose()`.
-  if (bucket_context()) {
-    bucket_context()->OnConnectionPriorityUpdated();
-  }
-
   // TODO(crbug.com/359623664): consider reordering transactions already in the
   // queue. For now the priority change will only impact where new transactions
   // are placed (whether they skip past the existing ones).
@@ -788,7 +707,6 @@ storage::BucketLocator Connection::GetBucketLocator() {
 }
 
 Transaction* Connection::GetTransaction(int64_t id) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = transactions_.find(id);
   if (it == transactions_.end()) {
     return nullptr;
@@ -796,15 +714,58 @@ Transaction* Connection::GetTransaction(int64_t id) const {
   return it->second.get();
 }
 
+base::expected<Transaction*, DatabaseError>
+Connection::GetTransactionAndVerifyState(
+    int64_t transaction_id,
+    std::optional<blink::mojom::IDBTransactionMode> required_mode) {
+  if (!IsConnected()) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Not connected");
+    return base::unexpected(DatabaseError(
+        blink::mojom::IDBException::kUnknownError, "Not connected."));
+  }
+  Transaction* transaction = GetTransaction(transaction_id);
+  if (!transaction) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Unknown transaction");
+    return base::unexpected(DatabaseError(
+        blink::mojom::IDBException::kUnknownError, "Unknown transaction."));
+  }
+
+  if (required_mode.has_value() && (transaction->mode() != *required_mode)) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB", "Connection::GetTransactionAndVerifyState - Wrong mode");
+    receiver_->ReportBadMessage("Called from wrong transaction type.");
+    return base::unexpected(DatabaseError(
+        blink::mojom::IDBException::kUnknownError, "Wrong transaction type."));
+  }
+
+  if (!transaction->IsAcceptingRequests()) {
+    TRACE_EVENT_INSTANT(
+        "IndexedDB",
+        "Connection::GetTransactionAndVerifyState - Not accepting requests");
+    // TODO(crbug.com/40791538): If the transaction was already committed
+    // (or is in the process of being committed) we should kill the renderer.
+    // This branch however also includes cases where the browser process aborted
+    // the transaction, as currently we don't distinguish that state from the
+    // transaction having been committed. So for now simply ignore the request.
+    return base::unexpected(
+        DatabaseError(blink::mojom::IDBException::kIgnorableAbortError,
+                      u"Transaction may have been aborted."));
+  }
+  return transaction;
+}
+
 std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
     CloseErrorHandling error_handling,
     const std::string& message) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsConnected()) {
     return {};
   }
 
-  DCHECK(database_);
+  CHECK(database_);
 
   // Finish up any transaction, in case there were any running.
   DatabaseError error(blink::mojom::IDBException::kUnknownError,
@@ -820,9 +781,9 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   }
 
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
-  std::move(on_close_).Run(this);
+  std::move(on_close_).Run(*this);
   for (auto& remotes : client_keep_active_remotes_) {
-    remotes.Clear();
+    remotes.reset();
   }
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
       bucket_context_handle_->bucket_locator(), base::Time::Now());
@@ -835,7 +796,6 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
 
 Status Connection::AbortAllTransactionsAndIgnoreErrors(
     const DatabaseError& error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status last_error;
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
@@ -852,7 +812,6 @@ Status Connection::AbortAllTransactionsAndIgnoreErrors(
 }
 
 Status Connection::AbortAllTransactions(const DatabaseError& error) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& [_, transaction] : transactions_) {
     if (transaction->state() != Transaction::FINISHED) {
       TRACE_EVENT1("IndexedDB", "Database::Abort(error)", "transaction.id",
@@ -861,35 +820,6 @@ Status Connection::AbortAllTransactions(const DatabaseError& error) {
     }
   }
   return Status::OK();
-}
-
-// static
-bool Connection::HasHigherPriorityThan(const PartitionedLockHolder* this_one,
-                                       const PartitionedLockHolder& other) {
-  if (!base::FeatureList::IsEnabled(
-          features::kIdbPrioritizeForegroundClients)) {
-    return false;
-  }
-
-  auto* this_lock_request_data = static_cast<LockRequestData*>(
-      this_one->GetUserData(LockRequestData::kKey));
-  if (!this_lock_request_data) {
-    return false;
-  }
-
-  auto* other_lock_request_data =
-      static_cast<LockRequestData*>(other.GetUserData(LockRequestData::kKey));
-  if (!other_lock_request_data) {
-    return false;
-  }
-
-  if (this_lock_request_data->client_token ==
-      other_lock_request_data->client_token) {
-    return false;
-  }
-
-  return this_lock_request_data->scheduling_priority <
-         other_lock_request_data->scheduling_priority;
 }
 
 bool Connection::IsHoldingLocks(
@@ -902,6 +832,39 @@ bool Connection::IsHoldingLocks(
                     lock_ids, existing_transaction.second->lock_ids())
                     .empty();
       });
+}
+
+void Connection::RecordCreateTransactionHistograms(
+    blink::mojom::IDBTransactionMode mode) {
+  const bool db_exists = database_.get() != nullptr;
+  CHECK(db_exists, base::NotFatalUntil::M145);
+
+  // Histograms to diagnose memory leak crbug.com/381086791.
+  // TODO(crbug.com/381086791): Remove after the leak is fixed.
+
+  std::string_view mode_name;
+  switch (mode) {
+    case blink::mojom::IDBTransactionMode::ReadOnly:
+      mode_name = "ReadOnly";
+      break;
+    case blink::mojom::IDBTransactionMode::ReadWrite:
+      mode_name = "ReadWrite";
+      break;
+    case blink::mojom::IDBTransactionMode::VersionChange:
+      mode_name = "VersionChange";
+      break;
+  }
+
+  base::UmaHistogramCounts10000(
+      base::StrCat({"IndexedDB.Create", mode_name,
+                    "Transaction.NumTransactionsInConnection"}),
+      transactions_.size());
+  if (db_exists) {
+    base::UmaHistogramCounts10000(
+        base::StrCat({"IndexedDB.Create", mode_name,
+                      "Transaction.NumTransactionsInDatabase"}),
+        database_->GetNumTransactionsAcrossAllConnections());
+  }
 }
 
 }  // namespace content::indexed_db

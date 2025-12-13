@@ -12,9 +12,9 @@
 class GURL;
 class PolicyBlocklistService;
 class PrefService;
+class SafeSearchService;
 
 namespace content {
-class BrowserContext;
 class NavigationThrottleRegistry;
 }  // namespace content
 
@@ -28,7 +28,9 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
  public:
   PolicyBlocklistNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
-      content::BrowserContext* context);
+      PrefService* prefs,
+      PolicyBlocklistService* blocklist_service,
+      SafeSearchService* safe_search_service);
   PolicyBlocklistNavigationThrottle(const PolicyBlocklistNavigationThrottle&) =
       delete;
   PolicyBlocklistNavigationThrottle& operator=(
@@ -64,9 +66,9 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
 
   std::unique_ptr<content::NavigationThrottle> safe_sites_navigation_throttle_;
 
-  raw_ptr<PolicyBlocklistService, DanglingUntriaged> blocklist_service_;
+  const raw_ptr<PolicyBlocklistService, DanglingUntriaged> blocklist_service_;
 
-  raw_ptr<PrefService> prefs_;
+  const raw_ptr<PrefService> prefs_;
 };
 
 #endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_

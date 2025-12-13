@@ -39,11 +39,11 @@ int CalculateEventsPerSecond(uint64_t event_count,
 
 }  // namespace
 
-SystemMemoryInfoKB::SystemMemoryInfoKB() = default;
+SystemMemoryInfo::SystemMemoryInfo() = default;
 
-SystemMemoryInfoKB::SystemMemoryInfoKB(const SystemMemoryInfoKB&) = default;
+SystemMemoryInfo::SystemMemoryInfo(const SystemMemoryInfo&) = default;
 
-SystemMemoryInfoKB& SystemMemoryInfoKB::operator=(const SystemMemoryInfoKB&) =
+SystemMemoryInfo& SystemMemoryInfo::operator=(const SystemMemoryInfo&) =
     default;
 
 SystemMetrics::SystemMetrics() {
@@ -67,27 +67,6 @@ SystemMetrics SystemMetrics::Sample() {
   GetSystemPerformanceInfo(&system_metrics.performance_);
 #endif
   return system_metrics;
-}
-
-Value::Dict SystemMetrics::ToDict() const {
-  Value::Dict res;
-
-  res.Set("committed_memory", static_cast<int>(committed_memory_));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  Value::Dict meminfo = memory_info_.ToDict();
-  meminfo.Merge(vmstat_info_.ToDict());
-  res.Set("meminfo", std::move(meminfo));
-  res.Set("diskinfo", disk_info_.ToDict());
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  res.Set("swapinfo", swap_info_.ToDict());
-  res.Set("gpu_meminfo", gpu_memory_info_.ToDict());
-#endif
-#if BUILDFLAG(IS_WIN)
-  res.Set("perfinfo", performance_.ToDict());
-#endif
-
-  return res;
 }
 
 ProcessMetrics::~ProcessMetrics() = default;

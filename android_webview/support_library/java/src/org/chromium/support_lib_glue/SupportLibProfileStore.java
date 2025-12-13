@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 
 import com.android.webview.chromium.Profile;
 import com.android.webview.chromium.ProfileStore;
+import com.android.webview.chromium.ProfileStore.CallSite;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.support_lib_boundary.ProfileStoreBoundaryInterface;
@@ -38,7 +39,7 @@ public class SupportLibProfileStore implements ProfileStoreBoundaryInterface {
             @NonNull String name) {
         recordApiCall(ApiCall.GET_OR_CREATE_PROFILE);
         return BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                new SupportLibProfile(mImpl.getOrCreateProfile(name)));
+                new SupportLibProfile(mImpl.getOrCreateProfile(name, CallSite.ANDROIDX_API_CALL)));
     }
 
     @Override

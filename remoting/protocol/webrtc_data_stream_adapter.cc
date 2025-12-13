@@ -17,7 +17,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
+#include "remoting/base/logging.h"
 #include "remoting/protocol/message_serialization.h"
+#include "third_party/webrtc/api/data_channel_interface.h"
 
 namespace remoting::protocol {
 
@@ -31,7 +33,12 @@ WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     webrtc::scoped_refptr<webrtc::DataChannelInterface> channel)
     : channel_(channel.get()) {
   channel_->RegisterObserver(this);
-  DCHECK_EQ(channel_->state(), webrtc::DataChannelInterface::kConnecting);
+  if (channel_->state() != webrtc::DataChannelInterface::kConnecting) {
+    HOST_LOG << "Initial state for channel " << channel_->label() << " is "
+             << webrtc::DataChannelInterface::DataStateString(
+                    channel_->state());
+    OnStateChange();
+  }
 }
 
 WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
@@ -143,8 +150,7 @@ void WebrtcDataStreamAdapter::OnStateChange() {
 
 void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
   auto buffer = std::make_unique<CompoundBuffer>();
-  buffer->AppendCopyOf(reinterpret_cast<const char*>(rtc_buffer.data.data()),
-                       rtc_buffer.data.size());
+  buffer->AppendCopyOf(rtc_buffer.data);
   buffer->Lock();
   pending_incoming_messages_.emplace(std::move(buffer));
   HandleIncomingMessages();

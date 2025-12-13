@@ -35,7 +35,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   void AsyncTaskStarted(void* task) override;
   void AsyncTaskFinished(void* task) override;
   unsigned PromiseRejected(v8::Local<v8::Context>,
-                           const WTF::String& error_message,
+                           const String& error_message,
                            v8::Local<v8::Value> exception,
                            SourceLocation*) override;
   void PromiseRejectionRevoked(v8::Local<v8::Context>,
@@ -53,7 +53,7 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   virtual void ReportConsoleMessage(ExecutionContext*,
                                     mojom::ConsoleMessageSource,
                                     mojom::ConsoleMessageLevel,
-                                    const WTF::String& message,
+                                    const String& message,
                                     SourceLocation*) = 0;
   void installAdditionalCommandLineAPI(v8::Local<v8::Context>,
                                        v8::Local<v8::Object>) override;
@@ -122,12 +122,6 @@ class ThreadDebuggerCommonImpl : public ThreadDebugger {
   Vector<std::unique_ptr<TaskRunnerTimer<ThreadDebuggerCommonImpl>>> timers_;
   Vector<v8_inspector::V8InspectorClient::TimerCallback> timer_callbacks_;
   Vector<void*> timer_data_;
-};
-
-template <>
-struct CrossThreadCopier<v8_inspector::V8StackTraceId> {
-  typedef v8_inspector::V8StackTraceId Type;
-  static Type Copy(const Type& id) { return id; }
 };
 
 }  // namespace blink

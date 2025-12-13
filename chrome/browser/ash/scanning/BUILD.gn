@@ -60,6 +60,7 @@ static_library("scanning") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/printing",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/notifications",
     "//chrome/browser/ui/ash/holding_space",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/dbus",

@@ -10,6 +10,7 @@
 
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
@@ -44,7 +45,7 @@ std::string TabGroupToShortLogString(const std::string_view& prefix,
 std::string TabGroupIdsToShortLogString(
     const std::string_view& prefix,
     base::Uuid group_id,
-    const std::optional<CollaborationId> collaboration_id);
+    const std::optional<syncer::CollaborationId> collaboration_id);
 
 }  // namespace tab_groups
 

@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
+#include "components/autofill/core/browser/payments/mock_credit_card_access_manager_observer.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -24,8 +26,6 @@ class TestPaymentsNetworkInterface;
 
 class CreditCard;
 class CreditCardCvcAuthenticator;
-class TestAutofillDriver;
-class TestCreditCardOtpAuthenticator;
 class TestPersonalDataManager;
 
 struct CardUnmaskChallengeOption;
@@ -36,7 +36,9 @@ class TestCreditCardFidoAuthenticator;
 
 // A base class for unittests for CreditCardAccessManager, containing logic and
 // state that is shared across multiple test classes.
-class CreditCardAccessManagerTestBase : public testing::Test {
+class CreditCardAccessManagerTestBase
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
  public:
   static constexpr char kTestGUID[] = "00000000-0000-0000-0000-000000000001";
   static constexpr char kTestGUID2[] = "00000000-0000-0000-0000-000000000002";
@@ -98,6 +100,7 @@ class CreditCardAccessManagerTestBase : public testing::Test {
   ~CreditCardAccessManagerTestBase() override;
 
   void SetUp() override;
+  void TearDown() override;
 
   bool IsAuthenticationInProgress();
 
@@ -162,6 +165,12 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 
   void InvokeDelayedGetUnmaskDetailsResponse();
   void InvokeUnmaskDetailsTimeout();
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
+  // Runs until the task environment is idle.
   void WaitForCallbacks();
 
   void SetCreditCardFIDOAuthEnabled(bool enabled);
@@ -180,15 +189,25 @@ class CreditCardAccessManagerTestBase : public testing::Test {
   void VerifyOnSelectChallengeOptionInvoked();
 
  protected:
-  CreditCardAccessManager& credit_card_access_manager();
+  TestAccessor& accessor() { return accessor_; }
+
+  CreditCardAccessManager& credit_card_access_manager() {
+    return *autofill_manager().GetCreditCardAccessManager();
+  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   TestCreditCardFidoAuthenticator& fido_authenticator();
 #endif
-  payments::TestPaymentsAutofillClient& payments_autofill_client() {
-    return *autofill_client_.GetPaymentsAutofillClient();
+
+  TestCreditCardOtpAuthenticator& otp_authenticator() {
+    return static_cast<TestCreditCardOtpAuthenticator&>(
+        *payments_autofill_client().GetOtpAuthenticator());
   }
+
   payments::TestPaymentsNetworkInterface& payments_network_interface();
+
   TestPersonalDataManager& personal_data();
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   void OptUserInToFido();
 #endif
@@ -197,14 +216,25 @@ class CreditCardAccessManagerTestBase : public testing::Test {
 
   void FetchCreditCard(const CreditCard* card);
 
-  std::unique_ptr<TestAccessor> accessor_;
+  // Sets the expectation that `observer` witnesses a fetch card request for
+  // `card_to_fetch` that fails.
+  void ExpectCardRetrievalFailure(
+      CreditCard card_to_fetch,
+      MockCreditCardAccessManagerObserver& observer);
+
+  // Sets the expectation that `observer` witnesses a fetch card request for
+  // `card_to_fetch`, which succeeds in the retrieval of `retrieved_card`.
+  void ExpectCardRetrievalSuccess(
+      CreditCard card_to_fetch,
+      CreditCard retrieved_card,
+      MockCreditCardAccessManagerObserver& observer);
+
+ private:
   base::test::TaskEnvironment task_environment_;
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  TestAccessor accessor_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;
-  TestAutofillClient autofill_client_;
-  std::unique_ptr<TestAutofillDriver> autofill_driver_;
-  raw_ptr<TestCreditCardOtpAuthenticator> otp_authenticator_;
 };
 
 }  // namespace autofill

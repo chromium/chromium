@@ -16,9 +16,16 @@
 namespace blink {
 class MediaConstraints;
 class MediaStreamAudioSource;
+class V8UnionBooleanOrString;
 }  // namespace blink
 
 namespace blink {
+
+V8UnionBooleanOrString* EchoCancellationModeToBooleanOrString(
+    EchoCancellationMode);
+Vector<EchoCancellationMode> GetSupportedEchoCancellationModes(
+    int platform_effects,
+    mojom::blink::MediaStreamType);
 
 // This class represents the capability of an audio-capture device.
 // It may represent three different things:

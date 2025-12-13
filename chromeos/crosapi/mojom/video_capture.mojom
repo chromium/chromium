@@ -6,6 +6,7 @@ module crosapi.mojom;
 
 import "media/capture/mojom/image_capture.mojom";
 import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -148,12 +149,16 @@ interface VideoFrameHandler {
 
   OnFrameDropped@4(media.mojom.VideoCaptureFrameDropReason reason);
 
-  // Deprecated in favor of OnNewSubCaptureTargetVersion.
+  // Deprecated in favor of OnNewCaptureVersion.
   [MinVersion=2]
   DEPRECATED_OnNewCropVersion@10(uint32 crop_version);
 
+  // Deprecated in favor of OnNewCaptureTargetVersion.
   [MinVersion=4]
-  OnNewSubCaptureTargetVersion@12(uint32 sub_capture_target_version);
+  DEPRECATED_OnNewSubCaptureTargetVersion@12(uint32 sub_capture_target_version);
+
+  [MinVersion=14]
+  OnNewCaptureVersion@14(media.mojom.CaptureVersion capture_version);
 
   [MinVersion=1]
   OnFrameWithEmptyRegionCapture@9();

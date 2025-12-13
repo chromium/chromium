@@ -1,6 +1,8 @@
 include_rules = [
+  "+components/viz/common/resources/shared_image_format_utils.h",
   "+gpu/ipc/common",
   "+mojo/public",
+  "+components/viz/common/resources",
   "+third_party/angle/src/common/fuchsia_egl",
   "+third_party/skia/include",
   "+gpu/ipc/common",

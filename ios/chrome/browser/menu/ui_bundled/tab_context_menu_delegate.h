@@ -75,11 +75,9 @@ class WebStateID;
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
                      incognito:(BOOL)incognito;
 
-// Tells the delegate to delete the group. `incognito` tracks the incognito
-// state of the group. `sourceView` is the view that the delete action
-// originated from.
+// Tells the delegate to delete the group. `sourceView` is the view that the
+// delete action originated from.
 - (void)deleteTabGroup:(base::WeakPtr<const TabGroup>)group
-             incognito:(BOOL)incognito
             sourceView:(UIView*)sourceView;
 
 // Tells the delegate to leave the shared group. `sourceView` is the view that

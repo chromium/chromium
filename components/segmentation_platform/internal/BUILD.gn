@@ -193,8 +193,8 @@ static_library("internal") {
   ]
 
   deps = [
-    "//components/database_utils:database_utils",
-    "//components/history/core/browser:browser",
+    "//components/database_utils",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
     "//components/prefs",
@@ -204,8 +204,8 @@ static_library("internal") {
     "//components/ukm:ukm_recorder",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//sql:sql",
-    "//url:url",
+    "//sql",
+    "//url",
   ]
 
   public_deps = [
@@ -340,7 +340,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/history/core/browser:browser",
+    "//components/history/core/browser",
     "//components/history/core/test",
     "//components/leveldb_proto:test_support",
     "//components/optimization_guide/core",
@@ -354,11 +354,11 @@ source_set("unit_tests") {
     "//components/ukm:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
-    "//sql:sql",
+    "//sql",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 
   if (build_with_tflite_lib) {
@@ -373,6 +373,10 @@ source_set("unit_tests") {
       ":unit_tests_bundle_data",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -383,7 +387,7 @@ source_set("test_support") {
   ]
   deps = [
     "//base",
-    "//components/segmentation_platform/public:public",
+    "//components/segmentation_platform/public",
     "//testing/gmock",
     "//testing/gtest",
   ]

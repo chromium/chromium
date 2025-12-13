@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "ui/actions/action_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -30,9 +31,10 @@ class MandatoryReauthBubbleControllerImpl
       const MandatoryReauthBubbleControllerImpl&) = delete;
   ~MandatoryReauthBubbleControllerImpl() override;
 
-  void ShowBubble(base::OnceClosure accept_mandatory_reauth_callback,
-                  base::OnceClosure cancel_mandatory_reauth_callback,
-                  base::RepeatingClosure close_mandatory_reauth_callback);
+  void SetupAndShowBubble(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback);
   void ReshowBubble();
 
   // MandatoryReauthBubbleController:
@@ -46,19 +48,38 @@ class MandatoryReauthBubbleControllerImpl
 #endif
   AutofillBubbleBase* GetBubbleView() override;
   bool IsIconVisible() override;
-  MandatoryReauthBubbleType GetBubbleType() const override;
+  MandatoryReauthBubbleType GetMandatoryReauthBubbleType() const override;
+
+  // BubbleControllerBase:
+  void OnBubbleDiscarded() override;
+  bool CanBeReshown() const override;
+  BubbleType GetBubbleType() const override;
+  base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
 
  protected:
   explicit MandatoryReauthBubbleControllerImpl(
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
+  bool ShouldShowPageAction() override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<
       MandatoryReauthBubbleControllerImpl>;
+
+  // Sets up the controller to show the mandatory re-authentication bubble. It
+  // configures the callbacks for user actions (accept, cancel, close) and sets
+  // the initial bubble type.
+  void SetupBubble(base::OnceClosure accept_mandatory_reauth_callback,
+                   base::OnceClosure cancel_mandatory_reauth_callback,
+                   base::RepeatingClosure close_mandatory_reauth_callback);
+
+  // Logs opt in metrics when the bubble is closed.
+  void LogBubbleCloseOptInMetrics(PaymentsUiClosedReason reason);
 
   base::OnceClosure accept_mandatory_reauth_callback_;
   base::OnceClosure cancel_mandatory_reauth_callback_;
@@ -81,6 +102,9 @@ class MandatoryReauthBubbleControllerImpl
 
   // Whether the bubble is shown after user interacted with omnibox icon.
   bool is_reshow_ = false;
+
+  base::WeakPtrFactory<MandatoryReauthBubbleControllerImpl> weak_ptr_factory_{
+      this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

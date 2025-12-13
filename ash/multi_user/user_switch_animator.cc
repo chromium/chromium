@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <memory>
 
-#include "ash/multi_user/multi_user_window_manager_impl.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager_observer.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -90,7 +90,7 @@ void PutMruWindowLast(
 
 }  // namespace
 
-UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
+UserSwitchAnimator::UserSwitchAnimator(MultiUserWindowManager* owner,
                                        const AccountId& new_account_id,
                                        base::TimeDelta animation_speed)
     : owner_(owner),
@@ -129,7 +129,7 @@ bool UserSwitchAnimator::CoversScreen(aura::Window* window) {
   }
   gfx::Rect bounds = window->GetBoundsInScreen();
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   bounds.Intersect(work_area);
   return work_area == bounds;
 }
@@ -237,7 +237,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
           // different than that of the for_show_account_id) should return to
           // their
           // original owners' desktops.
-          MultiUserWindowManagerImpl::WindowToEntryMap::const_iterator itr =
+          MultiUserWindowManager::WindowToEntryMap::const_iterator itr =
               owner_->window_to_entry().find(window);
           DCHECK(itr != owner_->window_to_entry().end());
           if (show_for_account_id != itr->second->owner() &&

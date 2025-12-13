@@ -10,7 +10,8 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/bundle_versions_storage.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -35,6 +36,12 @@ class IwaTestServerConfigurator {
       net::HttpStatusCode http_status,
       std::string_view json_content);
 
+  // Sets the response for a specific update manifest. Used when testing updates
+  // behavior with non-default update manifests.
+  void SetServedUpdateManifestResponse(const GURL& update_manifest_url,
+                                       net::HttpStatusCode http_status,
+                                       std::string_view json_content);
+
   // Generates a policy entry that can be appended to
   // `prefs::kIsolatedWebAppInstallForceList` in order to force-install the IWA.
   // Delegates to `test::CreateForceInstallIwaPolicyEntry()` with a custom
@@ -42,12 +49,17 @@ class IwaTestServerConfigurator {
   static base::Value::Dict CreateForceInstallPolicyEntry(
       const web_package::SignedWebBundleId& web_bundle_id,
       const std::optional<UpdateChannel>& update_channel = std::nullopt,
-      const std::optional<base::Version>& pinned_version = std::nullopt,
+      const std::optional<IwaVersion>& pinned_version = std::nullopt,
       bool allow_downgrades = false);
 
   GURL GetUpdateManifestUrlForIwa(
       const web_package::SignedWebBundleId& web_bundle_id) {
     return storage_.GetUpdateManifestUrl(web_bundle_id);
+  }
+
+  GURL GetBundleUrlForIwa(const web_package::SignedWebBundleId& web_bundle_id,
+                          const IwaVersion& version) {
+    return storage_.GetBundleUrl(web_bundle_id, version);
   }
 
  private:

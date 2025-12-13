@@ -10,8 +10,7 @@
 #import <vector>
 
 #import "base/check.h"
-#import "base/debug/crash_logging.h"
-#import "base/debug/dump_without_crashing.h"
+#import "base/check_is_test.h"
 #import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
@@ -51,16 +50,6 @@ NSUUID* ToNSUUID(const base::Uuid& uuid) {
   NSUUID* nsuuid = [[NSUUID alloc] initWithUUIDString:uuid_nsstring];
   DCHECK(nsuuid);
   return nsuuid;
-}
-
-// Helper function to log errors from static list compilation.
-void LogStaticListRegistrationError(const char* key, NSError* error) {
-  if (error) {
-    SCOPED_CRASH_KEY_STRING64("WKWebViewConfigurationProvider", "key", key);
-    SCOPED_CRASH_KEY_STRING256("WKWebViewConfigurationProvider", "error",
-                               base::SysNSStringToUTF8(error.description));
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 }  // namespace
@@ -117,26 +106,36 @@ WKWebViewConfigurationProvider::AsWeakPtr() {
 WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
     BrowserState* browser_state)
     : browser_state_(browser_state),
-      content_rule_list_provider_(
-          std::make_unique<WKContentRuleListProvider>()) {
+      content_rule_list_provider_(std::make_unique<WKContentRuleListProvider>(
+          browser_state->GetStatePath())) {
+  Initialize();
+}
+
+WKWebViewConfigurationProvider::WKWebViewConfigurationProvider(
+    BrowserState* browser_state,
+    std::unique_ptr<WKContentRuleListProvider> rule_list_provider)
+    : browser_state_(browser_state),
+      content_rule_list_provider_(std::move(rule_list_provider)) {
+  CHECK_IS_TEST();
+  Initialize();
+}
+
+WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+}
+
+void WKWebViewConfigurationProvider::Initialize() {
   // Create the static content rule lists.
   // 1. Create Block Local List
   content_rule_list_provider_->UpdateRuleList(
       kBlockLocalResourcesRuleListKey,
       base::SysNSStringToUTF8(CreateLocalBlockingJsonRuleList()),
-      base::BindOnce(&LogStaticListRegistrationError,
-                     kBlockLocalResourcesRuleListKey));
-
+      base::DoNothing());
   // 2. Create Mixed Content Autoupgrade List
   content_rule_list_provider_->UpdateRuleList(
       kMixedContentUpgradeRuleListKey,
       base::SysNSStringToUTF8(CreateMixedContentAutoUpgradeJsonRuleList()),
-      base::BindOnce(&LogStaticListRegistrationError,
-                     kMixedContentUpgradeRuleListKey));
-}
-
-WKWebViewConfigurationProvider::~WKWebViewConfigurationProvider() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequence_checker_);
+      base::DoNothing());
 }
 
 void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(

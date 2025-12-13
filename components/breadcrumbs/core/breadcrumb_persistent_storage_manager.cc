@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/adapters.h"
-#include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
@@ -100,7 +99,7 @@ std::string GetEvents() {
     breadcrumbs.push_back(event);
   }
 
-  std::reverse(breadcrumbs.begin(), breadcrumbs.end());
+  std::ranges::reverse(breadcrumbs);
   return base::JoinString(breadcrumbs, kEventSeparator) + kEventSeparator;
 }
 

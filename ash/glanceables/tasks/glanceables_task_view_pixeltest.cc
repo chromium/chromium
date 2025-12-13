@@ -13,6 +13,7 @@
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
+#include "ash/test/pixel/ash_pixel_test_helper.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -44,7 +45,8 @@ class GlanceablesTaskViewPixelTest
                      /*has_subtasks=*/bool,
                      /*has_notes=*/bool,
                      /*completed=*/bool,
-                     /*is_in_edit_state=*/bool>> {
+                     /*is_in_edit_state=*/bool,
+                     /*enable_system_blur=*/bool>> {
  public:
   void SetUp() override {
     AshTestBase::SetUp();
@@ -82,21 +84,22 @@ class GlanceablesTaskViewPixelTest
       const override {
     pixel_test::InitParams init_params;
     init_params.under_rtl = use_rtl();
+    init_params.system_blur_enabled = enable_system_blur();
     return init_params;
   }
 
-  std::string GenerateScreenshotName() const {
+  std::string GenerateScreenshotName(const std::string& title) override {
     std::vector<std::string> parameters = {
         use_rtl() ? "rtl" : "ltr",
         has_due_date() ? "has_due_date=true" : "has_due_date=false",
         has_subtasks() ? "has_subtasks=true" : "has_subtasks=false",
         has_notes() ? "has_notes=true" : "has_notes=false",
         completed() ? "completed=true" : "completed=false",
-        is_in_edit_state() ? "is_in_edit_state=true"
-                           : "is_in_edit_state=false"};
+        is_in_edit_state() ? "is_in_edit_state=true" : "is_in_edit_state=false",
+        enable_system_blur() ? "with_system_blur" : "without_system_blur"};
 
     std::string stringified_params = base::JoinString(parameters, "|");
-    return base::JoinString({"glanceables_task_view", stringified_params}, ".");
+    return base::JoinString({title, stringified_params}, ".");
   }
 
   views::Widget* widget() const { return widget_.get(); }
@@ -107,6 +110,7 @@ class GlanceablesTaskViewPixelTest
   bool has_notes() const { return std::get<3>(GetParam()); }
   bool completed() const { return std::get<4>(GetParam()); }
   bool is_in_edit_state() const { return std::get<5>(GetParam()); }
+  bool enable_system_blur() const { return std::get<6>(GetParam()); }
 
  private:
   std::unique_ptr<api::Task> task_;
@@ -122,7 +126,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*has_subtasks=*/testing::Bool(),
                              /*has_notes=*/testing::Bool(),
                              /*completed=*/testing::Bool(),
-                             /*is_in_edit_state=*/testing::Bool()));
+                             /*is_in_edit_state=*/testing::Bool(),
+                             /*enable_system_blur=*/testing::Bool()));
 
 TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
   base::AddFeatureIdTagToTestResult(
@@ -158,7 +163,9 @@ TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
   widget()->LayoutRootViewIfNecessary();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/1, widget()));
+      GenerateScreenshotName("glanceables_task_view"),
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 1 : 0,
+      widget()));
 }
 
 }  // namespace ash

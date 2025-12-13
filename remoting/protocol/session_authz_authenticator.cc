@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "remoting/base/http_status.h"
+#include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/session_authz_service_client.h"
 #include "remoting/proto/session_authz_service.h"
@@ -281,7 +282,22 @@ void SessionAuthzAuthenticator::StartReauthorizerIfNecessary() {
   if (!underlying_ || underlying_->state() != ACCEPTED) {
     return;
   }
-  DCHECK(verify_token_response_);
+  if (verify_token_response_->session_reauth_token.empty()) {
+    // Reauthorization is optional for Cloud hosts but required for Corp.
+    if (credentials_type_ == CredentialsType::CLOUD_SESSION_AUTHZ) {
+      HOST_LOG << "Reauthorization is not required for this session.";
+    } else {
+      session_authz_state_ = SessionAuthzState::FAILED;
+      session_authz_rejection_reason_ = RejectionReason::UNEXPECTED_ERROR;
+      rejection_details_ = RejectionDetails(
+          base::StringPrintf("VerifySessionTokenResponse for session id '%s' "
+                             "is missing a session reauth token.",
+                             session_id_));
+      NotifyStateChangeAfterAccepted();
+    }
+    return;
+  }
+
   reauthorizer_ = std::make_unique<SessionAuthzReauthorizer>(
       service_client_.get(), verify_token_response_->session_id,
       verify_token_response_->session_reauth_token,

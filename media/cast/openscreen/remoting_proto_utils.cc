@@ -87,10 +87,13 @@ void ConvertDecoderBufferToProto(
   buffer_message->set_duration_usec(decoder_buffer.duration().InMicroseconds());
   buffer_message->set_is_key_frame(decoder_buffer.is_key_frame());
 
-  buffer_message->set_front_discard_usec(
-      decoder_buffer.discard_padding().first.InMicroseconds());
-  buffer_message->set_back_discard_usec(
-      decoder_buffer.discard_padding().second.InMicroseconds());
+  auto discard_padding = decoder_buffer.discard_padding();
+  if (discard_padding.has_value()) {
+    buffer_message->set_front_discard_usec(
+        discard_padding->first.InMicroseconds());
+    buffer_message->set_back_discard_usec(
+        discard_padding->second.InMicroseconds());
+  }
 
   if (decoder_buffer.side_data() &&
       !decoder_buffer.side_data()->alpha_data.empty()) {

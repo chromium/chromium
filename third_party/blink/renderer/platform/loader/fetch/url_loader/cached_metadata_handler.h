@@ -46,7 +46,7 @@ class PLATFORM_EXPORT CachedMetadataSender {
 
   static void SendToCodeCacheHost(CodeCacheHost*,
                                   mojom::blink::CodeCacheType,
-                                  WTF::String,
+                                  String,
                                   base::Time,
                                   const String&,
                                   base::span<const uint8_t>);

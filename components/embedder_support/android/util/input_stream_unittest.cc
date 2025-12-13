@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/embedder_support/android/util/input_stream.h"
 
 #include <memory>
 
 #include "base/android/jni_android.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -111,7 +107,7 @@ TEST_F(InputStreamTest, CheckContentsReadCorrectly) {
       DoReadCountedStreamTest(bytes_requested, bytes_requested, &bytes_read);
   EXPECT_EQ(bytes_requested, bytes_read);
   for (int i = 0; i < bytes_requested; ++i) {
-    EXPECT_EQ(i, (unsigned char)buffer->data()[i]);
+    UNSAFE_TODO(EXPECT_EQ(i, (unsigned char)buffer->data()[i]));
   }
 }
 
@@ -162,3 +158,5 @@ TEST_F(InputStreamTest, DoesNotCrashWhenExceptionThrown) {
   // This closes the stream.
   input_stream.reset(nullptr);
 }
+
+DEFINE_JNI(InputStreamUnittest)

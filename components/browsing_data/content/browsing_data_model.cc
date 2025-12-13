@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/attribution_reporting/features.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
@@ -38,6 +39,7 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -391,7 +393,7 @@ void StorageRemoverHelper::Visitor::operator()<
     const net::device_bound_sessions::SessionKey& data_key) {
   CHECK(types.Has(BrowsingDataModel::StorageType::kDeviceBoundSession));
   helper->storage_partition_->GetDeviceBoundSessionManager()->DeleteSession(
-      net::device_bound_sessions::kClearBrowsingData, data_key);
+      net::device_bound_sessions::DeletionReason::kClearBrowsingData, data_key);
 }
 
 void StorageRemoverHelper::RemoveDataKeyEntries(
@@ -429,8 +431,9 @@ void StorageRemoverHelper::BackendFinished() {
   DCHECK(callbacks_expected_ > callbacks_seen_);
   callbacks_seen_++;
 
-  if (callbacks_seen_ == callbacks_expected_)
+  if (callbacks_seen_ == callbacks_expected_) {
     std::move(completed_).Run();
+  }
 }
 
 // Only websafe state is considered browsing data.
@@ -445,8 +448,9 @@ void OnTrustTokenIssuanceInfoLoaded(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   for (const auto& token : tokens) {
-    if (token->count == 0)
+    if (token->count == 0) {
       continue;
+    }
 
     model->AddBrowsingData(token->issuer,
                            BrowsingDataModel::StorageType::kTrustTokens,
@@ -764,8 +768,9 @@ BrowsingDataModel::Iterator& BrowsingDataModel::Iterator::operator++() {
   }
   if (inner_iterator_ == outer_iterator_->second.end()) {
     outer_iterator_++;
-    if (outer_iterator_ != outer_end_iterator_)
+    if (outer_iterator_ != outer_end_iterator_) {
       inner_iterator_ = outer_iterator_->second.begin();
+    }
   }
   return *this;
 }
@@ -990,7 +995,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   bool is_shared_storage_enabled =
       base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
-      network::features::kCompressionDictionaryTransportBackend);
+      network::features::kCompressionDictionaryTransport);
   bool is_interest_group_enabled =
       base::FeatureList::IsEnabled(network::features::kInterestGroupStorage);
   bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(

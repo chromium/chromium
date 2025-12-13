@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MAPPED_MEMORY_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MAPPED_MEMORY_H_
 
@@ -16,8 +11,10 @@
 #include <bit>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
@@ -103,8 +100,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MemoryChunk {
 
   // Returns true if pointer is in the range of this block.
   bool IsInChunk(void* pointer) const {
-    return pointer >= shm_->memory() &&
-           pointer < static_cast<const int8_t*>(shm_->memory()) + shm_->size();
+    return pointer >= shm_->memory() && pointer <= &shm_->as_byte_span().back();
   }
 
   // Returns true of any memory in this chunk is in use or free pending token.
@@ -238,13 +234,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMappedMemoryPtr {
   ScopedMappedMemoryPtr(uint32_t size,
                         CommandBufferHelper* helper,
                         MappedMemoryManager* mapped_memory_manager)
-      : buffer_(nullptr),
-        size_(0),
-        shm_id_(0),
-        shm_offset_(0),
-        flush_after_release_(false),
-        helper_(helper),
-        mapped_memory_manager_(mapped_memory_manager) {
+      : helper_(helper), mapped_memory_manager_(mapped_memory_manager) {
     Reset(size);
   }
 
@@ -255,15 +245,13 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMappedMemoryPtr {
     Release();
   }
 
-  bool valid() const { return buffer_ != nullptr; }
+  bool valid() const { return buffer_.data() != nullptr; }
 
   void SetFlushAfterRelease(bool flush_after_release) {
     flush_after_release_ = flush_after_release;
   }
 
-  uint32_t size() const {
-    return size_;
-  }
+  uint32_t size() const { return buffer_.size(); }
 
   int32_t shm_id() const {
     return shm_id_;
@@ -273,20 +261,21 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMappedMemoryPtr {
     return shm_offset_;
   }
 
-  void* address() const {
-    return buffer_;
-  }
+  void* address() const { return buffer_.data(); }
+
+  base::span<uint8_t> as_byte_span() { return buffer_; }
+
+  base::span<const uint8_t> as_byte_span() const { return buffer_; }
 
   void Release();
 
   void Reset(uint32_t new_size);
 
  private:
-  raw_ptr<void> buffer_;
-  uint32_t size_;
-  int32_t shm_id_;
-  uint32_t shm_offset_;
-  bool flush_after_release_;
+  base::raw_span<uint8_t> buffer_;
+  int32_t shm_id_ = 0;
+  uint32_t shm_offset_ = 0;
+  bool flush_after_release_ = false;
   raw_ptr<CommandBufferHelper> helper_;
   raw_ptr<MappedMemoryManager> mapped_memory_manager_;
 };

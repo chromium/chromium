@@ -17,8 +17,6 @@ class ChromiumTrustedVaultClientBackend final
     : public TrustedVaultClientBackend {
  public:
   // TrustedVaultClientBackend implementation.
-  void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) final;
   void FetchKeys(id<SystemIdentity> identity,
                  trusted_vault::SecurityDomainId security_domain_id,
                  KeysFetchedCallback completion) final;
@@ -32,6 +30,7 @@ class ChromiumTrustedVaultClientBackend final
   CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) final;
   CancelDialogCallback FixDegradedRecoverability(
@@ -51,11 +50,6 @@ class ChromiumTrustedVaultClientBackend final
       UIView* brandedNavigationItemTitleView,
       UpdateGPMPinCompletionCallback completion) final;
 };
-
-void ChromiumTrustedVaultClientBackend::
-    SetDeviceRegistrationPublicKeyVerifierForUMA(VerifierCallback verifier) {
-  // Do nothing.
-}
 
 void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
@@ -82,6 +76,7 @@ TrustedVaultClientBackend::CancelDialogCallback
 ChromiumTrustedVaultClientBackend::Reauthentication(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
+    trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
     UIViewController* presenting_view_controller,
     CompletionBlock completion) {
   NOTREACHED();

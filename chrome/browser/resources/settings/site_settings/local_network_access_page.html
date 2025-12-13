@@ -1,0 +1,24 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsLocalNetworkAccess}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsLocalNetworkAccessDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.LOCAL_NETWORK_ACCESS]]"
+      allow-option-label="$i18n{siteSettingsLocalNetworkAccessAsk}"
+      allow-option-icon="settings20:router"
+      block-option-label="$i18n{siteSettingsLocalNetworkAccessBlock}"
+      block-option-icon="settings20:router-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.LOCAL_NETWORK_ACCESS]]"
+      block-header=
+          "$i18n{siteSettingsLocalNetworkAccessBlockedExceptions}"
+      allow-header=
+          "$i18n{siteSettingsLocalNetworkAccessAllowedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

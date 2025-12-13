@@ -98,6 +98,7 @@ class AppBannerManagerDesktop
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source) override;
   void OnWebAppInstallManagerDestroyed() override;
+  void InstallableWebAppStatusUpdate() override;
 
   void CreateWebApp(WebappInstallSource install_source,
                     web_app::WebAppInstalledCallback install_callback);

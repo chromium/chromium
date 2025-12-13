@@ -15,14 +15,18 @@ namespace crash_keys {
 // Keys that can be used for crash reporting.
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> gpu_vendor_id;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> gpu_device_id;
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> npu_vendor_id;
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> npu_device_id;
 #if !BUILDFLAG(IS_ANDROID)
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> gpu_count;
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> npu_count;
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> gpu_sub_sys_id;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16> gpu_revision;
 #endif  // BUILDFLAG(IS_WIN)
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<64> gpu_driver_version;
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<64> npu_driver_version;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16>
     gpu_pixel_shader_version;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<16>

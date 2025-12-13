@@ -127,7 +127,7 @@ class BasePinButton : public views::View {
     views::InkDropHost* const ink_drop_host = views::InkDrop::Get(this);
     ink_drop_host->SetMode(
         views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
-    ink_drop_host->SetBaseColorId(kColorAshInkDrop);
+    ink_drop_host->SetBaseColor(kColorAshInkDrop);
 
     ink_drop_host->SetCreateHighlightCallback(base::BindRepeating(
         [](BasePinButton* host) {

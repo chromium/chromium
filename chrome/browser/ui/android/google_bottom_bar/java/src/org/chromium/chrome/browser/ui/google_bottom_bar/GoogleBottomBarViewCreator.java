@@ -23,7 +23,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +33,8 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarCreatedEvent;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarVariantCreatedEvent;
 import org.chromium.ui.base.ViewUtils;
+
+import java.util.function.Supplier;
 
 /** Builds the GoogleBottomBar view. */
 @NullMarked

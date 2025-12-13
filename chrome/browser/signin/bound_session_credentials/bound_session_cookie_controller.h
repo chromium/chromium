@@ -50,6 +50,12 @@ class BoundSessionCookieController {
     // cookie expiration date changes. Cookie deletion is considered as a change
     // in the expiration date to the null time.
     virtual void OnBoundSessionThrottlerParamsChanged() = 0;
+
+    // Called when the cookie rotation has been stopped for more than a timeout
+    // period. `BoundSessionCookieController` is expected to be deleted after
+    // this call.
+    virtual void OnCookieRotationStoppedTimeout(
+        BoundSessionCookieController* controller) = 0;
   };
 
   BoundSessionCookieController(
@@ -68,6 +74,17 @@ class BoundSessionCookieController {
       chrome::mojom::BoundSessionRequestThrottledHandler::
           HandleRequestBlockedOnCookieCallback resume_blocked_request) = 0;
 
+  // Stops the cookie rotation for the given session.
+  //
+  // Once the cookie rotation is stopped, all throttled requests will remain
+  // throttled until the session is terminated. This is used by OAML to ensure
+  // all requests are throttled until the returned cookies are set.
+  //
+  // The session will be terminated after a timeout if it has not been
+  // terminated explicitly. This is a safety net to ensure the session is
+  // eventually terminated even if OAML fails to terminate the session.
+  virtual void StopCookieRotation() = 0;
+
   // URL determining the scope of the bound session. All requests that are
   // within the scope are subject to throttling.
   const GURL& scope_url() const { return scope_url_; }
@@ -80,6 +97,10 @@ class BoundSessionCookieController {
   // eTLD+1 of the session serving as a hard session boundary. Session IDs must
   // be unique within a single site.
   const GURL& site() const { return site_; }
+  // Where the session has been originated from.
+  bound_session_credentials::SessionOrigin session_origin() const {
+    return session_origin_;
+  }
   // The earliest time at which one of the bound cookies expires.
   base::Time min_cookie_expiration_time() const;
   chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params()
@@ -104,6 +125,8 @@ class BoundSessionCookieController {
   const base::Time session_creation_time_;
   const GURL refresh_url_;
   const GURL site_;
+  const bound_session_credentials::SessionOrigin session_origin_ =
+      bound_session_credentials::SessionOrigin::SESSION_ORIGIN_UNSPECIFIED;
   // Map from cookie name to cookie expiration time, it is expected to have two
   // elements the 1P and 3P cookies.
   // Cookie expiration time is reduced by threshold to guarantee cookie will be

@@ -8,7 +8,6 @@
 #include "base/base_paths.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -43,6 +42,13 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#define SERVICE_IS_EXPECTED_TO_BE_ENABLED true
+#else
+#define SERVICE_IS_EXPECTED_TO_BE_ENABLED false
+#endif
+
 namespace language_detection {
 namespace {
 
@@ -72,7 +78,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithJS(
     base::OnceClosure done_callback,
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path() != path) {
+  if (request_url.GetPath() != path) {
     return nullptr;
   }
 
@@ -101,113 +107,6 @@ int RetryForHistogramUntilCountReached(
     metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     base::RunLoop().RunUntilIdle();
   }
-}
-
-class LanguageDetectionModelServiceDisabledBrowserTest
-    : public InProcessBrowserTest {
- public:
-  LanguageDetectionModelServiceDisabledBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        translate::kTFLiteLanguageDetectionEnabled);
-  }
-
-  void SetUp() override {
-    origin_server_ = std::make_unique<net::EmbeddedTestServer>(
-        net::EmbeddedTestServer::TYPE_HTTPS);
-    origin_server_->ServeFilesFromSourceDirectory(
-        "chrome/test/data/optimization_guide");
-
-    ASSERT_TRUE(origin_server_->Start());
-    english_url_ = origin_server_->GetURL("/hello_world.html");
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    InProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "LanguageDetectionAPI");
-  }
-
-  std::string EvalJsCatchingError(Browser* browser, std::string_view script) {
-    return EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
-                  base::StringPrintf(R"(
-        (async () => {
-            try {
-                %s
-            } catch (e) {
-            return e.toString();
-            }
-            })();
-        )",
-                                     script))
-        .ExtractString();
-  }
-
-  void TestLanguageDetectionAvailable(Browser* browser,
-                                      const std::string_view result) {
-    ASSERT_EQ(EvalJsCatchingError(
-                  browser, "return await LanguageDetector.availability();"),
-              result);
-  }
-
-  ~LanguageDetectionModelServiceDisabledBrowserTest() override = default;
-
-  const GURL& english_url() const { return english_url_; }
-
- private:
-  GURL english_url_;
-  std::unique_ptr<net::EmbeddedTestServer> origin_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
-                       LanguageDetectionModelServiceDisabled) {
-  EXPECT_FALSE(LanguageDetectionModelServiceFactory::GetForProfile(
-      browser()->profile()));
-}
-
-IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
-                       Availability_ModelUnavailable) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
-
-  // Language detection is not available when the model service is disabled.
-  TestLanguageDetectionAvailable(browser(), "unavailable");
-}
-
-class LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest
-    : public LanguageDetectionModelServiceDisabledBrowserTest {
- public:
-  LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled},
-        {optimization_guide::features::kOptimizationHints});
-  }
-
-  ~LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest() override =
-      default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// This test confirms the translate model service is not available if
-// the optimization guide does not exist.
-IN_PROC_BROWSER_TEST_F(
-    LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest,
-    LanguageDetectionModelServiceEnabled) {
-  EXPECT_FALSE(LanguageDetectionModelServiceFactory::GetForProfile(
-      browser()->profile()));
-}
-
-IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceDisabledBrowserTest,
-                       LanguageDetectionModelNotCreated) {
-  base::HistogramTester histogram_tester;
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
-  RetryForHistogramUntilCountReached(
-      &histogram_tester, "Translate.CLD3.TopLanguageEvaluationDuration", 1);
-  histogram_tester.ExpectTotalCount(
-      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 0);
 }
 
 // Makes requesting and waiting for the model file easy. This can only be used
@@ -266,14 +165,11 @@ class ModelFileGetter {
   std::optional<base::File> model_file_;
 };
 
-class LanguageDetectionModelServiceBrowserTest
-    : public LanguageDetectionModelServiceDisabledBrowserTest {
+class LanguageDetectionModelServiceBrowserTest : public InProcessBrowserTest {
  public:
   LanguageDetectionModelServiceBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled,
-         optimization_guide::features::kOptimizationHints},
-        {});
+        {optimization_guide::features::kOptimizationHints}, {});
   }
 
   void SetUp() override {
@@ -293,6 +189,28 @@ class LanguageDetectionModelServiceBrowserTest
     InProcessBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "LanguageDetectionAPI");
+  }
+
+  std::string EvalJsCatchingError(Browser* browser, std::string_view script) {
+    return EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+                  base::StringPrintf(R"(
+        (async () => {
+            try {
+                %s
+            } catch (e) {
+            return e.toString();
+            }
+            })();
+        )",
+                                     script))
+        .ExtractString();
+  }
+
+  void TestLanguageDetectionAvailable(Browser* browser,
+                                      const std::string_view result) {
+    ASSERT_EQ(EvalJsCatchingError(
+                  browser, "return await LanguageDetector.availability();"),
+              result);
   }
 
   // Waits for the model file to be resolved. `nullopt` will be returned if the
@@ -319,7 +237,7 @@ class LanguageDetectionModelServiceBrowserTest
     // This script is render blocking in the HTML, but is intentionally slow.
     // This provides important time between commit and first layout for model
     // requests to make it to the renderer, reducing flakes.
-    if (request.GetURL().path() == "/slow-first-layout.js") {
+    if (request.GetURL().GetPath() == "/slow-first-layout.js") {
       std::unique_ptr<net::test_server::DelayedHttpResponse> resp =
           std::make_unique<net::test_server::DelayedHttpResponse>(
               base::Milliseconds(500));
@@ -336,6 +254,48 @@ class LanguageDetectionModelServiceBrowserTest
   std::unique_ptr<net::EmbeddedTestServer> origin_server_;
 };
 
+class LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest
+    : public LanguageDetectionModelServiceBrowserTest {
+ public:
+  LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {optimization_guide::features::kOptimizationHints});
+  }
+
+  ~LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// This test confirms the translate model service is not available if
+// the optimization guide does not exist.
+IN_PROC_BROWSER_TEST_F(
+    LanguageDetectionModelServiceWithoutOptimizationGuideBrowserTest,
+    LanguageDetectionModelServiceEnabled) {
+  EXPECT_FALSE(LanguageDetectionModelServiceFactory::GetForProfile(
+      browser()->profile()));
+}
+
+#if !SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_LanguageDetectionModelNotCreatedWhenDisabled \
+  LanguageDetectionModelNotCreatedWhenDisabled
+#else
+#define MAYBE_LanguageDetectionModelNotCreatedWhenDisabled \
+  DISABLED_LanguageDetectionModelNotCreatedWhenDisabled
+#endif
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
+                       MAYBE_LanguageDetectionModelNotCreatedWhenDisabled) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
+  RetryForHistogramUntilCountReached(
+      &histogram_tester, "Translate.CLD3.TopLanguageEvaluationDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", 0);
+}
+
 base::FilePath model_file_path() {
   base::FilePath source_root_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
@@ -348,17 +308,27 @@ base::FilePath model_file_path() {
 
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        LanguageDetectionModelServiceEnabled) {
-  EXPECT_TRUE(language_detection_model_service());
+  EXPECT_EQ(!!language_detection_model_service(),
+            SERVICE_IS_EXPECTED_TO_BE_ENABLED);
 }
 
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
                        LanguageDetectionModelServiceEnabled_OffTheRecord) {
-  EXPECT_TRUE(LanguageDetectionModelServiceFactory::GetForProfile(
-      browser()->profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+  EXPECT_EQ(!!LanguageDetectionModelServiceFactory::GetForProfile(
+                browser()->profile()->GetPrimaryOTRProfile(
+                    /*create_if_needed=*/true)),
+            SERVICE_IS_EXPECTED_TO_BE_ENABLED);
 }
 
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_LanguageDetectionModelReadyOnRequest \
+  LanguageDetectionModelReadyOnRequest
+#else
+#define MAYBE_LanguageDetectionModelReadyOnRequest \
+  DISABLED_LanguageDetectionModelReadyOnRequest
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       LanguageDetectionModelReadyOnRequest) {
+                       MAYBE_LanguageDetectionModelReadyOnRequest) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -379,8 +349,15 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   ASSERT_TRUE(RequestAndWaitForModelFile()->IsValid());
 }
 
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_LanguageDetectionModelLoadedAfterRequest \
+  LanguageDetectionModelLoadedAfterRequest
+#else
+#define MAYBE_LanguageDetectionModelLoadedAfterRequest \
+  DISABLED_LanguageDetectionModelLoadedAfterRequest
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       LanguageDetectionModelLoadedAfterRequest) {
+                       MAYBE_LanguageDetectionModelLoadedAfterRequest) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -407,8 +384,13 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
   EXPECT_TRUE(model_file->IsValid());
 }
 
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_InvalidModelWhenLoading InvalidModelWhenLoading
+#else
+#define MAYBE_InvalidModelWhenLoading DISABLED_InvalidModelWhenLoading
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       InvalidModelWhenLoading) {
+                       MAYBE_InvalidModelWhenLoading) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -497,8 +479,14 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
 
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_ModelUpdateFromOptimizationGuide ModelUpdateFromOptimizationGuide
+#else
+#define MAYBE_ModelUpdateFromOptimizationGuide \
+  DISABLED_ModelUpdateFromOptimizationGuide
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       ModelUpdateFromOptimizationGuide) {
+                       MAYBE_ModelUpdateFromOptimizationGuide) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -535,8 +523,15 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 // Test that the service correctly handles being notified that there is no
 // longer a valid model available and also that it then handles a valid model
 // becoming available.
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_ModelUpdateFromOptimizationGuideMissingModelInfo \
+  ModelUpdateFromOptimizationGuideMissingModelInfo
+#else
+#define MAYBE_ModelUpdateFromOptimizationGuideMissingModelInfo \
+  DISABLED_ModelUpdateFromOptimizationGuideMissingModelInfo
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       ModelUpdateFromOptimizationGuideMissingModelInfo) {
+                       MAYBE_ModelUpdateFromOptimizationGuideMissingModelInfo) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -585,8 +580,13 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 
 // Tests that we immediately reject requests if we exceed the allowed number of
 // pending requests.
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_LimitPendingRequests LimitPendingRequests
+#else
+#define MAYBE_LimitPendingRequests DISABLED_LimitPendingRequests
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       LimitPendingRequests) {
+                       MAYBE_LimitPendingRequests) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   base::HistogramTester histogram_tester;
   ASSERT_TRUE(language_detection_model_service());
@@ -642,8 +642,15 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 //
 // Test the behavior of the Language Detector API accessed from a service worker
 // outside of an extension.
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_APIAvailability_NonExtensionWorkers \
+  APIAvailability_NonExtensionWorkers
+#else
+#define MAYBE_APIAvailability_NonExtensionWorkers \
+  DISABLED_APIAvailability_NonExtensionWorkers
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       APIAvailability_NonExtensionWorkers) {
+                       MAYBE_APIAvailability_NonExtensionWorkers) {
   const std::string kWorkerScript =
       "try {"
       "    LanguageDetector;"
@@ -669,7 +676,13 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
 }
 
 // Tests the behavior of availability().
-IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest, Availability) {
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_Availability Availability
+#else
+#define MAYBE_Availability DISABLED_Availability
+#endif
+IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
+                       MAYBE_Availability) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   ASSERT_TRUE(language_detection_model_service());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));
@@ -692,8 +705,13 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest, Availability) {
 }
 
 // Tests the behavior of availability().
+#if SERVICE_IS_EXPECTED_TO_BE_ENABLED
+#define MAYBE_HebrewLanguageTags HebrewLanguageTags
+#else
+#define MAYBE_HebrewLanguageTags DISABLED_HebrewLanguageTags
+#endif
 IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
-                       HebrewLanguageTags) {
+                       MAYBE_HebrewLanguageTags) {
   base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
   ASSERT_TRUE(language_detection_model_service());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), english_url()));

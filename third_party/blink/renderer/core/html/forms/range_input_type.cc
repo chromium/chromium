@@ -133,8 +133,7 @@ double RangeInputType::ValueAsDouble() const {
 void RangeInputType::SetValueAsDouble(double new_value,
                                       TextFieldEventBehavior event_behavior,
                                       ExceptionState& exception_state) const {
-  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior,
-                    exception_state);
+  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior);
 }
 
 bool RangeInputType::TypeMismatchFor(const String& value) const {
@@ -179,7 +178,7 @@ void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {
   if (GetElement().IsDisabledFormControl())
     return;
 
-  Node* target_node = event.target()->ToNode();
+  Node* target_node = event.RawTarget()->ToNode();
   if (event.button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
       !target_node)
@@ -259,7 +258,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
     EventQueueScope scope;
     TextFieldEventBehavior event_behavior =
         TextFieldEventBehavior::kDispatchInputAndChangeEvent;
-    SetValueAsDecimal(new_value, event_behavior, IGNORE_EXCEPTION_FOR_TESTING);
+    SetValueAsDecimal(new_value, event_behavior);
 
     if (AXObjectCache* cache =
             GetElement().GetDocument().ExistingAXObjectCache())

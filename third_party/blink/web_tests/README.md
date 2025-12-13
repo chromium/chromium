@@ -2,15 +2,19 @@ The documentation for this directory is at:
 - [Web Tests](/docs/testing/web_tests.md)
 - [Writing Web Tests](/docs/testing/writing_web_tests.md)
 
-## WPT Configuration
+## wptserve Configuration
 
-There are some special files under this directory for adapting [web platform
-tests](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_platform_tests.md)
-for Blink:
-* `web_tests/external/wpt/.config.json`: `wptserve` configuration file for
-  overriding default routes and ports. Note that filesystem paths are relative
-  to `blink/web_tests` and will be changed to absolute path at run time for
-  `wptserve` to consume. When changing the ports (HTTP/S, WS/S), make sure to also:
-  * Update `WPT_HOST_AND_PORTS` in
-    `//third_party/blink/tools/blinkpy/web_tests/port/driver.py`
-  * Update `WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess`
+`web_tests/external/wpt/config.tmpl.json` is a configuration file template for
+overriding wptserve's default routes and ports.
+wptserve's default ports conflict with those used by httpd for legacy web
+tests, so the configuration file remaps them elsewhere.
+
+Note that the contained filesystem paths are relative to `blink/web_tests/`.
+At runtime, `run_{web,wpt}_tests.py` will resolve them to absolute paths so
+that the serving behavior doesn't depend on its working directory.
+
+When changing the ports for new servers, make sure to also:
+
+- Update `WPT_HOST_AND_PORTS` in
+  `//third_party/blink/tools/blinkpy/web_tests/port/driver.py`
+- Update `WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess`

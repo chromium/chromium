@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/parsers/jpeg_parser.h"
 
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/logging.h"
@@ -204,9 +200,9 @@ static bool ParseSOF(base::span<const uint8_t> buffer,
 
 // |q_table| is already initialized to 0 in ParseJpegPicture.
 static bool ParseDQT(base::span<const uint8_t> buffer,
-                     JpegQuantizationTable* q_table) {
+                     base::span<JpegQuantizationTable> q_table) {
   // Spec B.2.4.1 Quantization table-specification syntax
-  DCHECK(q_table);
+  DCHECK(!q_table.empty());
   auto reader = base::SpanReader(buffer);
   while (reader.remaining() > 0u) {
     uint8_t precision_and_table_id;
@@ -238,11 +234,11 @@ static bool ParseDQT(base::span<const uint8_t> buffer,
 
 // |dc_table| and |ac_table| are already initialized to 0 in ParseJpegPicture.
 static bool ParseDHT(base::span<const uint8_t> buffer,
-                     JpegHuffmanTable* dc_table,
-                     JpegHuffmanTable* ac_table) {
+                     base::span<JpegHuffmanTable> dc_table,
+                     base::span<JpegHuffmanTable> ac_table) {
   // Spec B.2.4.2 Huffman table-specification syntax
-  DCHECK(dc_table);
-  DCHECK(ac_table);
+  DCHECK(!dc_table.empty());
+  DCHECK(!ac_table.empty());
   auto reader = base::SpanReader(buffer);
   while (reader.remaining() > 0u) {
     uint8_t table_class_and_id;
@@ -270,7 +266,7 @@ static bool ParseDHT(base::span<const uint8_t> buffer,
       return false;
     }
     for (size_t i = 0; i < std::size(table->code_length); i++)
-      count += table->code_length[i];
+      count += UNSAFE_TODO(table->code_length[i]);
 
     if (!InRange(count, 0u, sizeof(table->code_value))) {
       DVLOG(1) << "Invalid code count " << count;

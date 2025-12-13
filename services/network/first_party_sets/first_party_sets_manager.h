@@ -95,15 +95,6 @@ class FirstPartySetsManager {
       base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 
-  // Returns `site`'s entry, or `nullopt` if `site` has no entry.
-  // `fps_context_config` is the configuration to be used in this context.
-  //
-  // This is synchronous, and must not be called until the instance is fully
-  // initialized.
-  std::optional<net::FirstPartySetEntry> FindEntry(
-      const net::SchemefulSite& site,
-      const net::FirstPartySetsContextConfig& fps_context_config) const;
-
   // Same as `FindEntries`, but plumbs the result into the callback. Must only
   // be called once the instance is fully initialized.
   void FindEntriesAndInvoke(

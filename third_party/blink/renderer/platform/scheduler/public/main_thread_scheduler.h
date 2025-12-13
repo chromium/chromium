@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/input/web_input_event_attribution.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -75,9 +75,9 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
 
   virtual void RemoveRAILModeObserver(RAILModeObserver const* observer) = 0;
 
-  // Calls the callback for each unique isolate that bound to the main thread.
+  // Calls `function` for each unique isolate that bound to the main thread.
   virtual void ForEachMainThreadIsolate(
-      base::RepeatingCallback<void(v8::Isolate* isolate)> callback) = 0;
+      base::FunctionRef<void(v8::Isolate* isolate)>) = 0;
 
   // Returns a list of all unique attributions that are marked for event
   // dispatch. If |include_continuous| is true, include event types from

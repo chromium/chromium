@@ -21,15 +21,22 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/win/taskbar_manager.h"
 #include "chrome/common/buildflags.h"
-#include "chrome/install_static/install_util.h"
-#include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/shell_util.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/install_static/install_util.h"
+#include "chrome/installer/util/install_util.h"
+#include "chrome/installer/util/shell_util.h"
+#endif  // #if BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/startup/default_browser_prompt/pin_infobar/pin_infobar_mac_util.h"
+#endif  // #if BUILDFLAG(IS_MAC)
 
 namespace default_browser {
 
@@ -91,11 +98,16 @@ void PinInfoBarController::OnIsDefaultBrowserResult(
     std::move(done_callback).Run(false);
     return;
   }
+#if BUILDFLAG(IS_WIN)
   // Check if Chrome can be pinned to the taskbar.
   browser_util::ShouldOfferToPin(
       ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
+      browser_util::PinAppToTaskbarChannel::kPinToTaskbarInfoBar,
       base::BindOnce(&PinInfoBarController::OnShouldOfferToPinResult,
                      weak_factory_.GetWeakPtr(), std::move(done_callback)));
+#elif BUILDFLAG(IS_MAC)
+  OnShouldOfferToPinResult(std::move(done_callback), ShouldOfferToPin());
+#endif
 }
 
 void PinInfoBarController::OnShouldOfferToPinResult(

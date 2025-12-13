@@ -15,13 +15,15 @@ WebMouseEvent::WebMouseEvent(WebInputEvent::Type type,
                              int modifiers,
                              base::TimeTicks time_stamp,
                              PointerId id_param)
-    : WebInputEvent(type, modifiers, time_stamp),
+    : WebInputEvent(type,
+                    WebInputEvent::Type::kMouseTypeFirst,
+                    WebInputEvent::Type::kMouseTypeLast,
+                    modifiers,
+                    time_stamp),
       WebPointerProperties(id_param,
                            WebPointerProperties::PointerType::kMouse,
                            button_param),
       click_count(click_count_param) {
-  DCHECK_GE(type, Type::kMouseTypeFirst);
-  DCHECK_LE(type, Type::kMouseTypeLast);
   SetPositionInWidget(gesture_event.PositionInWidget());
   SetPositionInScreen(gesture_event.PositionInScreen());
   SetFrameScale(gesture_event.FrameScale());

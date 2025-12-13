@@ -11,17 +11,13 @@
 #include "base/check_op.h"
 #include "base/containers/span_reader.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
-
+#include "media/base/sample_format.h"
 namespace media {
 
 AudioBlockFifo::AudioBlockFifo(int channels, int frames, int blocks)
-    : channels_(channels),
-      block_frames_(frames),
-      write_block_(0),
-      read_block_(0),
-      available_blocks_(0),
-      write_pos_(0) {
+    : channels_(channels), block_frames_(frames) {
   IncreaseCapacity(blocks);
 }
 
@@ -29,16 +25,17 @@ AudioBlockFifo::~AudioBlockFifo() = default;
 
 void AudioBlockFifo::Push(base::span<const uint8_t> source,
                           int frames,
-                          int bytes_per_sample) {
+                          SampleFormat sample_format) {
   TRACE_EVENT2("audio", "AudioBlockFifo::Push", "pushed frames", frames,
                "available frames", GetAvailableFrames());
-  PushInternal(source, frames, bytes_per_sample);
+  CHECK(!source.empty());
+  PushInternal(source, frames, sample_format);
 }
 
 void AudioBlockFifo::PushSilence(int frames) {
   TRACE_EVENT2("audio", "AudioBlockFifo::PushSilence", "pushed frames", frames,
                "available frames", GetAvailableFrames());
-  PushInternal({}, frames, 0);
+  PushInternal({}, frames, kUnknownSampleFormat);
 }
 
 const AudioBus* AudioBlockFifo::Consume() {
@@ -98,11 +95,14 @@ void AudioBlockFifo::IncreaseCapacity(int blocks) {
 
 void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
                                   int frames,
-                                  int bytes_per_sample) {
+                                  SampleFormat sample_format) {
   // |source| may be empty if bytes_per_sample is 0. In that case, we inject
   // silence.
-  DCHECK((!source.empty() && bytes_per_sample > 0) ||
-         (source.empty() && !bytes_per_sample));
+  const bool push_silence = source.empty();
+  CHECK_EQ(push_silence, (sample_format == kUnknownSampleFormat));
+
+  const int bytes_per_sample = SampleFormatToBytesPerChannel(sample_format);
+
   DCHECK_GT(frames, 0);
   DCHECK_LT(available_blocks_, static_cast<int>(audio_blocks_.size()));
   CHECK_LE(frames, GetUnfilledFrames());
@@ -110,7 +110,6 @@ void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
   int frames_to_push = frames;
 
   base::SpanReader span_reader(source);
-  const bool push_silence = source.empty();
   const size_t bytes_per_frame = channels_ * bytes_per_sample;
   while (frames_to_push) {
     // Get the current write block.
@@ -122,27 +121,33 @@ void AudioBlockFifo::PushInternal(base::span<const uint8_t> source,
         std::min(block_frames_ - write_pos_, frames_to_push);
 
     if (!push_silence) {
+      CHECK_GT(bytes_per_frame, 0u);
       auto data_for_current_block = span_reader.Read(
           base::CheckMul<size_t>(bytes_per_frame, push_frames).ValueOrDie());
       // Deinterleave the content to the FIFO.
-      switch (bytes_per_sample) {
-        case 1:
+      switch (sample_format) {
+        case kSampleFormatU8:
           current_block->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(
               data_for_current_block->data(), write_pos_, push_frames);
           break;
-        case 2:
+        case kSampleFormatS16:
           current_block->FromInterleavedPartial<SignedInt16SampleTypeTraits>(
               reinterpret_cast<const int16_t*>(data_for_current_block->data()),
               write_pos_, push_frames);
           break;
-        case 4:
+        case kSampleFormatS32:
           current_block->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
               reinterpret_cast<const int32_t*>(data_for_current_block->data()),
               write_pos_, push_frames);
           break;
+        case kSampleFormatF32:
+          current_block->FromInterleavedPartial<Float32SampleTypeTraits>(
+              reinterpret_cast<const float*>(data_for_current_block->data()),
+              write_pos_, push_frames);
+          break;
         default:
-          NOTREACHED() << "Unsupported bytes per sample encountered: "
-                       << bytes_per_sample;
+          NOTREACHED() << "Unsupported sample format encountered: "
+                       << SampleFormatToString(sample_format);
       }
     } else {
       current_block->ZeroFramesPartial(write_pos_, push_frames);

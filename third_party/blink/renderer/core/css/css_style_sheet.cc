@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
+#include "third_party/blink/renderer/core/css/media_query_exp.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -243,7 +244,7 @@ void CSSStyleSheet::DidMutate(Mutation mutation) {
         ownerNode()->GetTreeScope());
     invalidate_matched_properties_cache = true;
   } else if (!adopted_tree_scopes_.empty()) {
-    for (auto tree_scope : adopted_tree_scopes_.Keys()) {
+    for (const auto& tree_scope : adopted_tree_scopes_.Keys()) {
       // It is currently required that adopted sheets can not be moved between
       // documents.
       DCHECK(tree_scope->GetDocument() == document);

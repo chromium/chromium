@@ -7,10 +7,13 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("common") {
   sources = [
+    "aw_cached_flags.cc",
+    "aw_cached_flags.h",
     "aw_content_client.cc",
     "aw_content_client.h",
     "aw_descriptors.h",
     "aw_feature_map.cc",
+    "aw_feature_map.h",
     "aw_features.cc",
     "aw_features.h",
     "aw_media_drm_bridge_client.cc",

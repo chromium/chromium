@@ -19,6 +19,14 @@
 
 namespace base {
 
+// Enables task-controlled purge for the scheduler loop quarantine in
+// TaskAnnotator.
+BASE_EXPORT void EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+// Disables task-controlled purge for the scheduler loop quarantine in
+// TaskAnnotator. For use in tests.
+BASE_EXPORT void DisableSchedulerLoopQuarantineTaskControlledPurgeForTesting();
+
 namespace sequence_manager::internal {
 class WorkQueue;
 }

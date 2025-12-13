@@ -3,7 +3,7 @@
 <translationbundle lang="es">
 <translation id="1149198577555059081">Busca o escribe una URL</translation>
 <translation id="1324575488877808473">Abre Chrome para ver aquí los sitios que más has visitado.</translation>
-<translation id="1861587787412926934">Predeterminado</translation>
+<translation id="1861587787412926934">Predeterminada</translation>
 <translation id="2378341468609349249">Buscar contraseñas</translation>
 <translation id="2513892053093488070">Búsqueda por voz</translation>
 <translation id="2535710892645968259">Abre el juego del dinosaurio de Chrome desde la pantalla de bloqueo.</translation>
@@ -14,6 +14,7 @@
 <translation id="3464120926993669599">Búsqueda en incógnito</translation>
 <translation id="3501428580460217920">Haz búsquedas o navega en una pestaña de Incógnito nueva de Chrome.</translation>
 <translation id="3528874492835415837">Busca o escribe una URL</translation>
+<translation id="3606473512813866845">Cuenta de Google</translation>
 <translation id="3798529146539130967">Haz búsquedas en Chrome con la voz.</translation>
 <translation id="405442954313519726">Busca o desplázate por una nueva pestaña, en el modo Incógnito, usando la voz o con un código QR.</translation>
 <translation id="4557098988773644458">Abrir el juego del dinosaurio de Chrome</translation>
@@ -45,7 +46,7 @@ escribe una URL</translation>
 <translation id="8171952085734471362">Búsqueda en modo Incógnito</translation>
 <translation id="8310150944719146950">Cuenta</translation>
 <translation id="8564942608461410346">Haz búsquedas en Chrome con tu buscador favorito.</translation>
-<translation id="8858765528951093286">Se ha eliminado la cuenta que se usaba con el widget. Para seleccionar otra cuenta, toca Editar widget.</translation>
+<translation id="8858765528951093286">Se ha eliminado la cuenta que se usaba con el widget. Para seleccionar otra, toca Editar widget.</translation>
 <translation id="9175676375569833962">Buscar
 contraseñas</translation>
 </translationbundle>

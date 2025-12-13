@@ -72,7 +72,7 @@ String MessageCategoryValue(mojom::blink::ConsoleMessageCategory category) {
     case mojom::blink::ConsoleMessageCategory::Cors:
       return protocol::Log::LogEntry::CategoryEnum::Cors;
   }
-  return WTF::g_empty_string;
+  return g_empty_string;
 }
 
 }  // namespace
@@ -105,7 +105,7 @@ void InspectorLogAgent::Restore() {
   if (violation_thresholds_.IsEmpty())
     return;
   auto settings = std::make_unique<protocol::Array<ViolationSetting>>();
-  for (const WTF::String& key : violation_thresholds_.Keys()) {
+  for (const String& key : violation_thresholds_.Keys()) {
     settings->emplace_back(ViolationSetting::create()
                                .setName(key)
                                .setThreshold(violation_thresholds_.Get(key))
@@ -244,7 +244,7 @@ protocol::Response InspectorLogAgent::startViolationsReport(
   performance_monitor_->UnsubscribeAll(this);
   violation_thresholds_.Clear();
   for (const std::unique_ptr<ViolationSetting>& setting : *settings) {
-    const WTF::String& name = setting->getName();
+    const String& name = setting->getName();
     double threshold = setting->getThreshold();
     PerformanceMonitor::Violation violation = ParseViolation(name);
     if (violation == PerformanceMonitor::kAfterLast)

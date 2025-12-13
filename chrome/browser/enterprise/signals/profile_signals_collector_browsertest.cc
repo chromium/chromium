@@ -13,9 +13,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/device_signals/core/browser/signals_types.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -42,24 +42,23 @@ std::unique_ptr<KeyedService> CreateProfileIdService(
 
 namespace device_signals {
 
-class ProfileSignalsCollectorTest : public InProcessBrowserTest {
+class ProfileSignalsCollectorTest : public PlatformBrowserTest {
  protected:
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     enterprise::ProfileIdServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&CreateProfileIdService));
-    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    PlatformBrowserTest::SetUpBrowserContextKeyedServices(context);
   }
 
   std::unique_ptr<ProfileSignalsCollector> CreateProfileSignalsCollector() {
-    return std::make_unique<ProfileSignalsCollector>(browser()->profile());
+    return std::make_unique<ProfileSignalsCollector>(profile());
   }
 
   void SetFakePolicyAndPrefData() {
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
     policy_data->set_managed_by(kFakeUserEnrollmentDomain);
-    browser()
-        ->profile()
+    profile()
         ->GetCloudPolicyManager()
         ->core()
         ->store()
@@ -69,10 +68,8 @@ class ProfileSignalsCollectorTest : public InProcessBrowserTest {
         prefs::kBuiltInDnsClientEnabled, true);
 
     // Give the testing profile a safe browsing level of "STANDARD_PROTECTION"
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
-                                                 true);
-    browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced,
-                                                 false);
+    profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+    profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   }
 
   // Helper function to check the profile level signals are collected correctly.
@@ -83,6 +80,7 @@ class ProfileSignalsCollectorTest : public InProcessBrowserTest {
     EXPECT_TRUE(response.built_in_dns_client_enabled);
   }
 
+  Profile* profile() { return chrome_test_utils::GetProfile(this); }
   std::unique_ptr<ProfileSignalsCollector> signal_collector_ = nullptr;
 };
 

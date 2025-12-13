@@ -84,6 +84,7 @@ import androidx.browser.auth.AuthTabColorSchemeParams;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.auth.AuthTabSession;
 import androidx.browser.customtabs.CustomContentAction;
+import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsClient;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -162,6 +163,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON =
             "OverflowMenuItemButton";
     private static final String SHARED_PREF_CAN_LEAVE = "CanLeave";
+    private static final String SHARED_PREF_NAVBAR_COLOR_TOOLBAR = "NavbarColorToolbar";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
     private static final String CCT_OPTION_INCOGNITO = "Incognito CCT";
@@ -206,6 +208,7 @@ public class MainActivity extends AppCompatActivity
     private MaterialButtonToggleGroup mShareStateButton;
     private MaterialButtonToggleGroup mOpenInBrowserToggle;
 
+    private CheckBox mNavbarColorToolbarCheckbox;
     private TextView mToolbarCornerRadiusLabel;
     private SeekBar mToolbarCornerRadiusSlider;
     private CheckBox mBottomToolbarCheckbox;
@@ -390,6 +393,13 @@ public class MainActivity extends AppCompatActivity
                         args.getInt("right"),
                         args.getInt("bottom"),
                         args.getInt("state"));
+            } else {
+                StringBuilder sb = new StringBuilder();
+                sb.append("extra-callback: ").append(callbackName).append(" args: ");
+                for (String key : args.keySet()) {
+                    sb.append(" [").append(key).append("]: [").append(args.get(key)).append("]");
+                }
+                Log.w(TAG, sb.toString());
             }
         }
 
@@ -682,7 +692,7 @@ public class MainActivity extends AppCompatActivity
                             view =
                                     LayoutInflater.from(MainActivity.this)
                                             .inflate(
-                                                    android.R.layout.simple_list_item_2,
+                                                    android.R.layout.simple_list_item_1,
                                                     parent,
                                                     false);
                         }
@@ -825,6 +835,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeCheckBoxes() {
+        mNavbarColorToolbarCheckbox = findViewById(R.id.navbar_color_toolbar_checkbox);
+        mNavbarColorToolbarCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_NAVBAR_COLOR_TOOLBAR, UNCHECKED) == CHECKED);
         mPcctHeightResizableCheckbox = findViewById(R.id.pcct_height_resizable_checkbox);
         mPcctHeightResizableCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_HEIGHT_RESIZABLE, CHECKED) == CHECKED);
@@ -1311,6 +1324,9 @@ public class MainActivity extends AppCompatActivity
             customTabsIntent.launchUrl(this, Uri.parse(url));
         }
 
+        editor.putInt(
+                SHARED_PREF_NAVBAR_COLOR_TOOLBAR,
+                mNavbarColorToolbarCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_HEIGHT, mPcctInitialHeightSlider.getProgress());
         editor.putInt(SHARED_PREF_WIDTH, mPcctInitialWidthSlider.getProgress());
         editor.putInt(SHARED_PREF_BREAKPOINT, mPcctBreakpointSlider.getProgress());
@@ -1370,7 +1386,11 @@ public class MainActivity extends AppCompatActivity
         int colorScheme = getColorSchemeFromButton(null);
         AuthTabColorSchemeParams.Builder builder = new AuthTabColorSchemeParams.Builder();
         if (!TextUtils.isEmpty(mToolbarColor)) {
-            builder.setToolbarColor(Color.parseColor(mToolbarColor));
+            int toolbarColor = Color.parseColor(mToolbarColor);
+            builder.setToolbarColor(toolbarColor);
+            if (mNavbarColorToolbarCheckbox.isChecked()) {
+                builder.setNavigationBarColor(toolbarColor);
+            }
         }
         int closeButton = mCloseButtonIcon.getCheckedButtonId();
         @DrawableRes int closeIconId;
@@ -1434,7 +1454,13 @@ public class MainActivity extends AppCompatActivity
         int shareState = getShareStateFromButton(editor);
         int openInBrowserState = getOpenInBrowserStateFromToggle(editor);
         if (!TextUtils.isEmpty(mToolbarColor)) {
-            builder.setToolbarColor(Color.parseColor(mToolbarColor));
+            var colorSchemeBuilder = new CustomTabColorSchemeParams.Builder();
+            int toolbarColor = Color.parseColor(mToolbarColor);
+            colorSchemeBuilder.setToolbarColor(toolbarColor);
+            if (mNavbarColorToolbarCheckbox.isChecked()) {
+                colorSchemeBuilder.setNavigationBarColor(toolbarColor);
+            }
+            builder.setDefaultColorSchemeParams(colorSchemeBuilder.build());
         }
         editor.putString(SHARED_PREF_COLOR, mColorName);
         builder.setShowTitle(showTitle)

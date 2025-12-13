@@ -25,15 +25,14 @@ CrostiniFileSelector::~CrostiniFileSelector() {
 void CrostiniFileSelector::SelectFile(
     base::OnceCallback<void(const base::FilePath&)> selected_callback,
     base::OnceCallback<void(void)> cancelled_callback) {
+  // TODO(crbug.com/345312503): Can this path be deprecated? Appears to only be
+  // called from multi-container settings pages.
   selected_callback_ = std::move(selected_callback);
   cancelled_callback_ = std::move(cancelled_callback);
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui_->GetWebContents()));
 
-  // TODO(b/231905716): Add some logic to start from the path of the previously
-  // uploaded Ansible Playbook if the user has already "uploaded" a playbook
-  // before.
   base::FilePath downloads_path;
   if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_path)) {
     LOG(ERROR) << "Default Downloads path does not exist, cannot open file "
@@ -43,10 +42,9 @@ void CrostiniFileSelector::SelectFile(
 
   ui::SelectFileDialog::FileTypeInfo file_type_info{
       // Allowed file types include:
-      // * Ansible playbooks (yaml)
       // * Crostini backup files (tini, tar.gz, tgz)
-      {FILE_PATH_LITERAL("yaml"), FILE_PATH_LITERAL("tini"),
-       FILE_PATH_LITERAL("tar.gz"), FILE_PATH_LITERAL("tgz")},
+      {FILE_PATH_LITERAL("tini"), FILE_PATH_LITERAL("tar.gz"),
+       FILE_PATH_LITERAL("tgz")},
   };
   select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_OPEN_FILE,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/file_select_helper.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -170,7 +166,7 @@ TEST_F(FileSelectHelperTest, ZipPackage) {
                                    "Contents/_CodeSignature/CodeResources"};
   size_t file_count = std::size(files_to_verify);
   for (size_t i = 0; i < file_count; i++) {
-    const char* relative_path = files_to_verify[i];
+    const char* relative_path = UNSAFE_TODO(files_to_verify[i]);
     base::FilePath orig_file = src.Append(relative_path);
     base::FilePath final_file =
         temp_dir.GetPath().Append(app_name).Append(relative_path);

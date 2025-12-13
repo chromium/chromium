@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -34,7 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -77,11 +78,7 @@ void EnableSelectToSpeak(bool enabled) {
 }
 
 void EnableDictation(bool enabled) {
-  bool already_enabled = AccessibilityManager::Get()->IsDictationEnabled();
-  if (enabled == already_enabled) {
-    return;
-  }
-  AccessibilityManager::Get()->ToggleDictation();
+  AccessibilityManager::Get()->SetDictationEnabled(enabled);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -149,7 +146,7 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
  public:
   TrayAccessibilityTest()
       : disable_animations_(
-            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
+            gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {}
   ~TrayAccessibilityTest() override = default;
 
   // The profile which should be used by these tests.
@@ -159,6 +156,8 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     tray_test_api_ = ash::SystemTrayTestApi::Create();
+    ash::AccessibilityController::Get()
+        ->DisableSwitchAccessDisableConfirmationDialogTesting();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -214,13 +213,13 @@ class TrayAccessibilityTest : public InProcessBrowserTest,
   }
 
   // Disable animations so that tray icons hide immediately.
-  ui::ScopedAnimationDurationScaleMode disable_animations_;
+  gfx::ScopedAnimationDurationScaleMode disable_animations_;
 
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
 
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenu) {
   SetShowAccessibilityOptionsInSystemTrayMenu(false);
 
   // Confirms that the menu is hidden.
@@ -389,9 +388,7 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, DISABLED_ShowMenu) {
   EXPECT_FALSE(IsMenuButtonVisible());
 }
 
-// Fails on linux-chromeos-dbg see crbug/1027919.
-IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest,
-                       DISABLED_ShowMenuWithShowMenuOption) {
+IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, ShowMenuWithShowMenuOption) {
   SetShowAccessibilityOptionsInSystemTrayMenu(true);
 
   // Confirms that the menu is visible.

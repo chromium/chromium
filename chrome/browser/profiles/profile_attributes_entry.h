@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -209,6 +208,10 @@ class ProfileAttributesEntry {
   // |signin::constants::kNoHostedDomainFound| if the signed-in account has no
   // hosted domain (such as when it is a standard gmail.com account). Unlike
   // for other string getters, the returned value is UTF8 encoded.
+  //
+  // TODO(crbug.com/458409080): convert the return value to
+  // std::optional<std::string> for parity with
+  // `AccountInfo::GetHostedDomain()`.
   std::string GetHostedDomain() const;
 
   // Returns management status of the current signed-in account.

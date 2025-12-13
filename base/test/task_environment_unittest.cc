@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/debug/debugger.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -1787,6 +1786,19 @@ TEST_F(TaskEnvironmentTest, RunUntilQuit_MustCallQuitClosureFirst) {
   EXPECT_DCHECK_DEATH_WITH(
       task_environment.RunUntilQuit(),
       R"(QuitClosure\(\) not called before RunUntilQuit\(\))");
+}
+
+TEST_F(TaskEnvironmentTest, SingleThreadTaskRunnerGetMainThreadDefault) {
+  EXPECT_CHECK_DEATH(
+      { std::ignore = SingleThreadTaskRunner::GetMainThreadDefault(); });
+
+  {
+    TaskEnvironment task_environment;
+    ASSERT_TRUE(SingleThreadTaskRunner::GetMainThreadDefault());
+  }
+
+  EXPECT_CHECK_DEATH(
+      { std::ignore = SingleThreadTaskRunner::GetMainThreadDefault(); });
 }
 
 }  // namespace base::test

@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
+#include "net/base/mock_proxy_delegate.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_server.h"
@@ -925,8 +926,9 @@ TEST_P(ProxyResolvingClientSocketTest, URLSanitized) {
           std::make_unique<net::ProxyConfigServiceFixed>(
               net::ProxyConfigWithAnnotation(proxy_config,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::move(proxy_resolver_factory), nullptr,
-          /*quick_check_enabled=*/true));
+          std::move(proxy_resolver_factory),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr, /*quick_check_enabled=*/true));
   auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
@@ -970,8 +972,9 @@ TEST_P(ProxyResolvingClientSocketTest,
           std::make_unique<net::ProxyConfigServiceFixed>(
               net::ProxyConfigWithAnnotation(proxy_config,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::move(proxy_resolver_factory), nullptr,
-          /*quick_check_enabled=*/true));
+          std::move(proxy_resolver_factory),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr, /*quick_check_enabled=*/true));
   auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
@@ -1005,8 +1008,9 @@ TEST_P(ProxyResolvingClientSocketTest, NoSupportedProxies) {
           std::make_unique<net::ProxyConfigServiceFixed>(
               net::ProxyConfigWithAnnotation(proxy_config,
                                              TRAFFIC_ANNOTATION_FOR_TESTS)),
-          std::move(proxy_resolver_factory), nullptr,
-          /*quick_check_enabled=*/true));
+          std::move(proxy_resolver_factory),
+          /*host_resolver_for_override_rules=*/nullptr,
+          /*net_log=*/nullptr, /*quick_check_enabled=*/true));
   auto context = context_builder->Build();
 
   ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
@@ -1128,10 +1132,102 @@ TEST_P(ReconsiderProxyAfterErrorTest, ReconsiderProxyAfterError) {
   EXPECT_EQ(use_tls_, ssl_data3.ConnectDataConsumed());
 }
 
+// Confirms that ProxyResolvingClientSocket is passing net::ProxyDelegate to
+// net::CanFalloverToNextProxy.
+TEST_P(ReconsiderProxyAfterErrorTest,
+       ReconsiderProxyAfterErrorWithProxyDelegate) {
+  net::IoMode io_mode =
+      ::testing::get<1>(GetParam()) ? net::SYNCHRONOUS : net::ASYNC;
+  const int mock_error = ::testing::get<2>(GetParam());
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  context_builder->set_proxy_resolution_service(CreateProxyResolutionService(
+      "HTTPS badproxy:99; HTTPS badfallbackproxy:98; DIRECT"));
+  context_builder->set_client_socket_factory_for_testing(
+      &mock_client_socket_factory_);
+
+  auto proxy_delegate = std::make_unique<net::MockProxyDelegate>();
+  // This is the only thing we really care about in this test: we want to make
+  // sure that ProxyDelegate::CanFalloverToNextProxyOverride is correctly called
+  // by ProxyResolvingClientSocket. We return std:nullopt not alter this test
+  // behavior from net::ReconsiderProxyAfterError's.
+  EXPECT_CALL(*proxy_delegate,
+              CanFalloverToNextProxyOverride(::testing::_, mock_error))
+      .Times(2)
+      .WillRepeatedly(::testing::Return(std::nullopt));
+
+  context_builder->set_proxy_delegate(std::move(proxy_delegate));
+  auto context = context_builder->Build();
+
+  // Before starting the test, verify that there are no proxies marked as bad.
+  ASSERT_TRUE(context->proxy_resolution_service()->proxy_retry_info().empty())
+      << mock_error;
+
+  // Configure the HTTP CONNECT to fail with `mock_error`.
+  //
+  // TODO(crbug.com/40810987): Test this more accurately. Errors like
+  // `ERR_PROXY_CONNECTION_FAILED` or `ERR_PROXY_CERTIFICATE_INVALID` are
+  // surfaced in response to other errors in TCP or TLS connection setup.
+  static constexpr std::string_view kHttpConnect =
+      "CONNECT example.com:443 HTTP/1.1\r\n"
+      "Host: example.com:443\r\n"
+      "Proxy-Connection: keep-alive\r\n\r\n";
+  const net::MockWrite kWrites[] = {{net::ASYNC, kHttpConnect}};
+  const net::MockRead kReads[] = {{net::ASYNC, mock_error}};
+
+  // Connect to first broken proxy.
+  net::StaticSocketDataProvider data1(kReads, kWrites);
+  net::SSLSocketDataProvider ssl_data1(io_mode, net::OK);
+  data1.set_connect_data(net::MockConnect(io_mode, net::OK));
+  mock_client_socket_factory_.AddSocketDataProvider(&data1);
+  mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data1);
+
+  // Connect to second broken proxy.
+  net::StaticSocketDataProvider data2(kReads, kWrites);
+  net::SSLSocketDataProvider ssl_data2(io_mode, net::OK);
+  data2.set_connect_data(net::MockConnect(io_mode, net::OK));
+  mock_client_socket_factory_.AddSocketDataProvider(&data2);
+  mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data2);
+
+  // Connect using direct.
+  net::StaticSocketDataProvider data3;
+  net::SSLSocketDataProvider ssl_data3(io_mode, net::OK);
+  data3.set_connect_data(net::MockConnect(io_mode, net::OK));
+  mock_client_socket_factory_.AddSocketDataProvider(&data3);
+  mock_client_socket_factory_.AddSSLSocketDataProvider(&ssl_data3);
+
+  const GURL kDestination("https://example.com:443");
+  ProxyResolvingClientSocketFactory proxy_resolving_socket_factory(
+      context.get());
+  std::unique_ptr<ProxyResolvingClientSocket> socket =
+      proxy_resolving_socket_factory.CreateSocket(
+          kDestination, net::NetworkAnonymizationKey(), use_tls_);
+  net::TestCompletionCallback callback;
+  int status = socket->Connect(callback.callback());
+  EXPECT_EQ(net::ERR_IO_PENDING, status);
+  status = callback.WaitForResult();
+  EXPECT_EQ(net::OK, status);
+
+  const net::ProxyRetryInfoMap& retry_info =
+      context->proxy_resolution_service()->proxy_retry_info();
+  EXPECT_EQ(2u, retry_info.size()) << mock_error;
+  EXPECT_NE(retry_info.end(),
+            retry_info.find(ProxyUriToProxyChain(
+                "https://badproxy:99", net::ProxyServer::SCHEME_HTTPS)));
+  EXPECT_NE(retry_info.end(), retry_info.find(ProxyUriToProxyChain(
+                                  "https://badfallbackproxy:98",
+                                  net::ProxyServer::SCHEME_HTTPS)));
+  // Should always use HTTPS to talk to HTTPS proxy.
+  EXPECT_TRUE(ssl_data1.ConnectDataConsumed());
+  EXPECT_TRUE(ssl_data2.ConnectDataConsumed());
+  // This depends on whether the consumer has requested to use TLS.
+  EXPECT_EQ(use_tls_, ssl_data3.ConnectDataConsumed());
+}
+
 TEST_P(ProxyResolvingClientSocketTest,
        OnDestinationDnsAliasesResolved_ReturnsOK) {
   const GURL kDestination("https://dest.test/");
-  std::vector<std::string> aliases({"alias1", "alias2", kDestination.host()});
+  std::vector<std::string> aliases(
+      {"alias1", "alias2", kDestination.GetHost()});
   std::set<std::string> aliases_set(aliases.begin(), aliases.end());
 
   // Create mock host resolver to return DNS aliases during host resolution.
@@ -1140,7 +1236,7 @@ TEST_P(ProxyResolvingClientSocketTest,
           /*default_result=*/net::MockHostResolverBase::RuleResolver::
               GetLocalhostResult());
   host_resolver_->rules()->AddIPLiteralRuleWithDnsAliases(
-      kDestination.host(), "2.2.2.2", std::move(aliases));
+      kDestination.GetHost(), "2.2.2.2", std::move(aliases));
 
   std::unique_ptr<net::URLRequestContextBuilder> url_request_context_builder =
       CreateBuilder("DIRECT");

@@ -7,8 +7,18 @@
 #include <utility>
 
 #include "base/android/android_info.h"
+#include "components/input/features.h"
 
 namespace input {
+
+namespace {
+
+// Delay used to post a self destruction task for Android 16+.
+constexpr base::FeatureParam<int> kDestructionDelaySec{
+    &features::kInputOnViz, /*name=*/"input_receiver_destruction_delay_sec",
+    /*default_value=*/10};
+
+}  // namespace
 
 InputReceiverData::InputReceiverData(
     scoped_refptr<gfx::SurfaceControl::Surface> parent_input_sc,
@@ -24,15 +34,54 @@ InputReceiverData::InputReceiverData(
       android_input_callback_(std::move(android_input_callback)),
       callbacks_(std::move(callbacks)),
       receiver_(std::move(receiver)),
-      viz_input_token_(std::move(viz_input_token)) {}
+      viz_input_token_(std::move(viz_input_token)) {
+  android_input_callback_->AddObserver(this);
+}
 
-InputReceiverData::~InputReceiverData() = default;
+InputReceiverData::~InputReceiverData() {
+  android_input_callback_->RemoveObserver(this);
+}
 
-void InputReceiverData::OnDestroyedCompositorFrameSink() {
-  if (base::android::android_info::sdk_int() >=
-      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+void InputReceiverData::OnMotionEvent(
+    const base::android::ScopedInputEvent& input_event) {
+  has_seen_events_ = true;
+}
+
+void InputReceiverData::TryDestroySelf(
+    std::unique_ptr<InputReceiverData> receiver_data) {
+  CHECK(receiver_data);
+  if (!has_seen_events_) {
+    // InputReceiverData gets destroyed here.
     return;
   }
+  has_seen_events_ = false;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&InputReceiverData::TryDestroySelf,
+                     base::Unretained(receiver_data.get()),
+                     std::move(receiver_data)),
+      base::Seconds(kDestructionDelaySec.Get()));
+}
+
+void InputReceiverData::OnDestroyedCompositorFrameSink(
+    std::unique_ptr<InputReceiverData> receiver) {
+  if (base::android::android_info::sdk_int() >=
+      base::android::android_info::SdkVersion::SDK_VERSION_BAKLAVA) {
+    // For Android 16+ where input receiver could be destroyed, `receiver` would
+    // have non-nullptr in it, which should be cleanup eventually after seeing
+    // the full touch sequence or after giving up upon new input events to come.
+    CHECK_EQ(receiver.get(), this);
+    // TODO(431139615): Guard this delayed destruction logic with appropriate
+    // Android version once it has been fixed on Android side.
+    has_seen_events_ = false;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&InputReceiverData::TryDestroySelf,
+                       base::Unretained(receiver.get()), std::move(receiver)),
+        base::Seconds(kDestructionDelaySec.Get()));
+    return;
+  }
+  CHECK(!receiver);
   pending_destruction_ = true;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&InputReceiverData::DetachInputSurface,

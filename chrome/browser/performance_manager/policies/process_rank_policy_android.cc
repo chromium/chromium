@@ -14,6 +14,7 @@
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 
 namespace performance_manager::policies {
 
@@ -34,6 +35,10 @@ void ProcessRankPolicyAndroid::OnPassedToGraph(Graph* graph) {
 
 void ProcessRankPolicyAndroid::OnTakenFromGraph(Graph* graph) {
   graph->RemovePageNodeObserver(this);
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kProtectRecentlyVisibleTab)) {
+    visibility_timers_.clear();
+  }
 }
 
 void ProcessRankPolicyAndroid::OnPageNodeAdded(const PageNode* page_node) {
@@ -46,6 +51,10 @@ void ProcessRankPolicyAndroid::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
   PageLiveStateDecorator::Data::GetOrCreateForPageNode(page_node)
       ->RemoveObserver(this);
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kProtectRecentlyVisibleTab)) {
+    visibility_timers_.erase(page_node);
+  }
 }
 
 void ProcessRankPolicyAndroid::OnTypeChanged(const PageNode* page_node,
@@ -58,6 +67,32 @@ void ProcessRankPolicyAndroid::OnIsFocusedChanged(const PageNode* page_node) {
 }
 
 void ProcessRankPolicyAndroid::OnIsVisibleChanged(const PageNode* page_node) {
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kProtectRecentlyVisibleTab)) {
+    if (page_node->IsVisible()) {
+      visibility_timers_.erase(page_node);
+    } else {
+      // If the page becomes invisible, start a timer to update the rank after
+      // `minimum_time_in_background`.
+      base::TimeDelta minimum_time_in_background = base::Seconds(
+          chrome::android::kProtectRecentlyVisibleTabDuration.Get());
+
+      // If `minimum_time_in_background` is zero, we can skip the timer since
+      // the rank calculated via the call to `UpdateProcessRank` won't need to
+      // be downgraded.
+      if (!minimum_time_in_background.is_zero()) {
+        auto& timer = visibility_timers_[page_node];
+        if (!timer) {
+          timer = std::make_unique<base::OneShotTimer>();
+        }
+        timer->Start(
+            FROM_HERE, minimum_time_in_background,
+            base::BindOnce(
+                &ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer,
+                base::Unretained(this), page_node));
+      }
+    }
+  }
   UpdateProcessRank(page_node);
 }
 
@@ -153,6 +188,12 @@ void ProcessRankPolicyAndroid::OnUpdatedTitleOrFaviconInBackgroundChanged(
   UpdateProcessRank(page_node);
 }
 
+void ProcessRankPolicyAndroid::UpdateProcessRankAndClearTimer(
+    const PageNode* page_node) {
+  UpdateProcessRank(page_node);
+  visibility_timers_.erase(page_node);
+}
+
 void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
   content::ChildProcessImportance importance = CalculateRank(page_node);
 
@@ -160,21 +201,35 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
       page_node->GetWebContents();
   CHECK(web_contents, base::NotFatalUntil::M140);
   if (web_contents) {
-    web_contents->SetPrimaryMainFrameImportance(importance);
+    content::ChildProcessImportance subframe_importance =
+        content::ChildProcessImportance::NORMAL;
+    if (base::FeatureList::IsEnabled(features::kSubframePriorityContribution) &&
+        base::FeatureList::IsEnabled(features::kSubframeImportance) &&
+        importance >= content::ChildProcessImportance::PERCEPTIBLE) {
+      if (is_perceptible_importance_supported_) {
+        subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
+      } else if (base::FeatureList::IsEnabled(
+                     chrome::android::kProtectedTabsAndroid) &&
+                 chrome::android::kFallbackToModerateParam.Get()) {
+        subframe_importance = content::ChildProcessImportance::MODERATE;
+      }
+    }
+    web_contents->SetPrimaryPageImportance(importance, subframe_importance);
   }
 }
 
 content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     const PageNode* page_node) {
-  if (page_node->IsFocused()) {
-    return content::ChildProcessImportance::IMPORTANT;
-  } else if (page_node->IsVisible()) {
-    if (base::FeatureList::IsEnabled(
+  if (page_node->IsVisible()) {
+    // On Android visibility is updated synchronously on tab switch, but focus
+    // is updated asynchronously. Focused status should be checked only if it is
+    // visible.
+    if (page_node->IsFocused() ||
+        !base::FeatureList::IsEnabled(
             chrome::android::kChangeUnfocusedPriority)) {
-      return content::ChildProcessImportance::MODERATE;
-    } else {
       return content::ChildProcessImportance::IMPORTANT;
     }
+    return content::ChildProcessImportance::MODERATE;
   }
 
   if (!base::FeatureList::IsEnabled(chrome::android::kProtectedTabsAndroid) ||
@@ -190,9 +245,15 @@ content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
     DiscardEligibilityPolicy* eligibility_policy =
         DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
     CHECK(eligibility_policy);
+    base::TimeDelta minimum_time_in_background;
+    if (base::FeatureList::IsEnabled(
+            chrome::android::kProtectRecentlyVisibleTab)) {
+      minimum_time_in_background = base::Seconds(
+          chrome::android::kProtectRecentlyVisibleTabDuration.Get());
+    }
     if (eligibility_policy->CanDiscard(
-            page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE) !=
-        CanDiscardResult::kEligible) {
+            page_node, DiscardEligibilityPolicy::DiscardReason::PROACTIVE,
+            minimum_time_in_background) != CanDiscardResult::kEligible) {
       if (is_perceptible_importance_supported_) {
         return content::ChildProcessImportance::PERCEPTIBLE;
       } else if (chrome::android::kFallbackToModerateParam.Get()) {

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.layouts;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,13 +16,14 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class LayoutManagerProvider {
     /** An interface that allows a LayoutManager to be associated with an unowned data host. */
-    interface Unowned extends LayoutManager, UnownedUserData {}
+    interface Unowned extends LayoutManager {}
 
     /** The key used to bind the LayoutManager to the unowned data host. */
-    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>(Unowned.class);
+    private static final UnownedUserDataKey<Unowned> KEY = new UnownedUserDataKey<>();
 
     /**
      * Get the shared {@link LayoutManager} from the provided {@link WindowAndroid}.
+     *
      * @param windowAndroid The window to pull the LayoutManager from.
      * @return A shared instance of a {@link LayoutManager}.
      */

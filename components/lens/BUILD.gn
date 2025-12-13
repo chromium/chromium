@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//components/lens/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 
 # Generate a buildflag header for compile-time checking of Lens feature support.
 buildflag_header("buildflags") {
@@ -17,6 +18,9 @@ buildflag_header("buildflags") {
 
 static_library("lens") {
   sources = [
+    "contextual_input.cc",
+    "contextual_input.h",
+    "lens_composebox_user_action.h",
     "lens_constants.h",
     "lens_entrypoints.h",
     "lens_metadata.cc",
@@ -28,12 +32,14 @@ static_library("lens") {
     "lens_overlay_invocation_source.h",
     "lens_overlay_metrics.cc",
     "lens_overlay_metrics.h",
-    "lens_overlay_mime_type.h",
     "lens_overlay_new_tab_source.h",
+    "lens_overlay_non_blocking_privacy_notice_user_action.h",
     "lens_overlay_request_id_generator.cc",
     "lens_overlay_request_id_generator.h",
     "lens_overlay_side_panel_menu_option.h",
     "lens_overlay_side_panel_result.h",
+    "lens_payload_construction.cc",
+    "lens_payload_construction.h",
     "lens_permission_user_action.h",
     "lens_request_construction.cc",
     "lens_request_construction.h",
@@ -41,6 +47,7 @@ static_library("lens") {
     "lens_testing_utils.h",
     "lens_url_utils.cc",
     "lens_url_utils.h",
+    "ref_counted_lens_overlay_client_logs.cc",
     "ref_counted_lens_overlay_client_logs.h",
   ]
   deps = [
@@ -48,28 +55,65 @@ static_library("lens") {
     "//components/base32",
     "//components/lens:lens_mojo",
     "//components/lens/proto/v1:lens_latencies_metadata_proto",
+    "//components/sessions",
     "//components/signin/public/identity_manager",
+    "//components/tabs:public",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//google_apis/common",
     "//net",
+    "//pdf:buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//url",
   ]
-  public_deps = [ ":features" ]
-
+  public_deps = [
+    ":features",
+    ":mime_type",
+  ]
+  sources += [
+    "lens_bitmap_processing.cc",
+    "lens_bitmap_processing.h",
+  ]
+  deps += [ "//ui/gfx" ]
   if (!is_ios) {
+    deps += [ "//skia" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos || is_android) {
     sources += [
-      "lens_bitmap_processing.cc",
-      "lens_bitmap_processing.h",
+      "tab_contextualization_controller.cc",
+      "tab_contextualization_controller.h",
     ]
+    public_deps += [ "//ui/base/unowned_user_data" ]
     deps += [
-      "//skia",
-      "//ui/gfx",
+      "//components/optimization_guide/content/browser:page_context_eligibility",
+      "//content/public/browser",
+    ]
+
+    if (enable_pdf) {
+      public_deps += [
+        "//components/pdf/browser",
+        "//pdf/mojom",
+      ]
+    }
+  }
+
+  if (!is_android) {
+    deps += [ "//third_party/zstd:compress" ]
+  }
+
+  if (enable_pdf) {
+    public_deps += [
+      "//components/pdf/browser",
+      "//pdf/mojom",
     ]
   }
+}
+
+source_set("mime_type") {
+  sources = [ "lens_overlay_mime_type.h" ]
 }
 
 component("features") {
@@ -82,7 +126,10 @@ component("features") {
     "lens_features.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+  ]
 }
 
 mojom("lens_mojo") {

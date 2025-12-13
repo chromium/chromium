@@ -15,6 +15,7 @@ from webdriver.bidi.error import (
     InvalidArgumentException,
     NoSuchFrameException,
     NoSuchInterceptException,
+    NoSuchNetworkCollectorException,
     NoSuchRequestException,
     NoSuchScriptException,
     NoSuchUserContextException,
@@ -22,7 +23,12 @@ from webdriver.bidi.error import (
     UnderspecifiedStoragePartitionException
 )
 from webdriver.bidi.modules.input import Actions
+from webdriver.bidi.modules.network import (
+    Header,
+    NetworkStringValue,
+)
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
 from webdriver.error import TimeoutException
 
 
@@ -109,16 +115,45 @@ async def set_cookie(bidi_session):
 
 
 @pytest_asyncio.fixture
+async def top_context(bidi_session):
+    contexts = await bidi_session.browsing_context.get_tree()
+    return contexts[0]
+
+
+@pytest_asyncio.fixture
 async def new_tab(bidi_session):
     """Open and focus a new tab to run the test in a foreground tab."""
-    new_tab = await bidi_session.browsing_context.create(type_hint='tab')
+    result = await bidi_session.browsing_context.create(type_hint="tab")
+    contexts_info = await bidi_session.browsing_context.get_tree(
+        root=result["context"], max_depth=0
+    )
 
-    yield new_tab
+    yield contexts_info[0]
 
     try:
-        await bidi_session.browsing_context.close(context=new_tab["context"])
+        await bidi_session.browsing_context.close(context=contexts_info[0]["context"])
     except NoSuchFrameException:
-        print(f"Tab with id {new_tab['context']} has already been closed")
+        print(
+            f"Tab with context id {contexts_info[0]['context']} has already been closed"
+        )
+
+
+@pytest_asyncio.fixture
+async def new_window(bidi_session):
+    """Open a new window and focus the first tab to run the test in a foreground tab."""
+    result = await bidi_session.browsing_context.create(type_hint="window")
+    contexts_info = await bidi_session.browsing_context.get_tree(
+        root=result["context"], max_depth=0
+    )
+
+    yield contexts_info[0]
+
+    try:
+        await bidi_session.browsing_context.close(context=contexts_info[0]["context"])
+    except NoSuchFrameException:
+        print(
+            f"Window with context id {contexts_info[0]['context']} has already been closed"
+        )
 
 
 @pytest.fixture
@@ -236,7 +271,30 @@ def current_time(bidi_session, top_context):
 
 
 @pytest.fixture
-def add_and_remove_iframe(bidi_session):
+def create_iframe(bidi_session):
+    """
+    Create an iframe and wait for it to load. Return the iframe's context id.
+    """
+
+    async def create_iframe(context, url):
+        resp = await bidi_session.script.call_function(
+            function_declaration="""(url) => {
+                const iframe = document.createElement("iframe");
+                iframe.src = url;
+                document.documentElement.lastElementChild.append(iframe);
+                return new Promise(resolve => iframe.onload = () => resolve(iframe.contentWindow));
+            }""",
+            arguments=[{"type": "string", "value": url}],
+            target=ContextTarget(context["context"]),
+            await_promise=True)
+        assert resp["type"] == "window"
+        return resp["value"]
+
+    return create_iframe
+
+
+@pytest.fixture
+def add_and_remove_iframe(bidi_session, create_iframe):
     """Create a frame, wait for load, and remove it.
 
     Return the frame's context id, which allows to test for invalid
@@ -502,8 +560,8 @@ async def create_user_context(bidi_session):
 
     user_contexts = []
 
-    async def create_user_context(accept_insecure_certs=None, proxy=None,
-            unhandled_prompt_behavior=None):
+    async def create_user_context(accept_insecure_certs=UNDEFINED, proxy=UNDEFINED,
+            unhandled_prompt_behavior=UNDEFINED):
         nonlocal user_contexts
         user_context = await bidi_session.browser.create_user_context(
             accept_insecure_certs=accept_insecure_certs, proxy=proxy,
@@ -526,13 +584,13 @@ async def create_user_context(bidi_session):
 
 
 @pytest_asyncio.fixture
-async def add_cookie(bidi_session):
+async def add_document_cookie(bidi_session):
     """
     Add a cookie with `document.cookie` and remove them after the test is finished.
     """
     cookies = []
 
-    async def add_cookie(
+    async def add_document_cookie(
         context,
         name,
         value,
@@ -569,7 +627,7 @@ async def add_cookie(bidi_session):
 
         cookies.append(cookie)
 
-    yield add_cookie
+    yield add_document_cookie
 
     for cookie in reversed(cookies):
         cookie_string = f"""{cookie["name"]}="""
@@ -596,31 +654,66 @@ def domain_value(server_config):
 def fetch(bidi_session, top_context, configuration):
     """Perform a fetch from the page of the provided context, default to the
     top context.
+
+    :param url: The url to fetch.
+    :param method: Force a specific HTTP method. defaults to "GET".
+    :param headers: Dictionary of request headers.
+    :param post_data: Request post data (forces method to "POST" if set to "GET").
+                      If post_data is a dictionary, FormData will be used to set
+                      the data as multipart form data. Otherwise will be set as
+                      as string.
+    :param context: BrowsingContext info object.
+    :param timeout_in_seconds: Timeout in seconds (defaults to 3 seconds).
     """
 
     async def fetch(
         url,
-        method="GET",
+        method=None,
         headers=None,
         post_data=None,
         context=top_context,
         timeout_in_seconds=3,
+        sandbox_name=None
     ):
+        if method is None:
+            method = "GET" if post_data is None else "POST"
+
         method_arg = f"method: '{method}',"
 
         headers_arg = ""
         if headers is not None:
             headers_arg = f"headers: {json.dumps(headers)},"
 
-        body_arg = ""
-        if post_data is not None:
+        if post_data is None:
+            body_arg = ""
+        elif isinstance(post_data, dict):
+            body_arg = f"""body: (() => {{
+               const formData  = new FormData();
+               const data = {json.dumps(post_data)};
+               for(const name in data) {{
+                 // Handle file binary data.
+                 if (typeof data[name] == "object") {{
+                   const binary = atob(data[name].value);
+                   const bytes = new Uint8Array(binary.length);
+                   for (let i = 0; i < binary.length; i++) {{
+                     bytes[i] = binary.charCodeAt(i);
+                   }}
+                   const blob = new Blob([bytes], {{ type: data[name].type }});
+                   formData.append(name, blob, data[name].filename);
+                 }} else {{
+                   formData.append(name, data[name]);
+                 }}
+               }}
+               return formData;
+            }})(),"""
+        else:
             body_arg = f"body: {json.dumps(post_data)},"
 
         timeout_in_seconds = timeout_in_seconds * configuration["timeout_multiplier"]
         # Wait for fetch() to resolve a response and for response.text() to
         # resolve as well to make sure the request/response is completed when
         # the helper returns.
-        await bidi_session.script.evaluate(
+        return await bidi_session.script.evaluate(
             expression=f"""
                  {{
                    const controller = new AbortController();
@@ -632,7 +725,7 @@ def fetch(bidi_session, top_context, configuration):
                      signal: controller.signal,
                    }}).then(response => response.text());
                  }}""",
-            target=ContextTarget(context["context"]),
+            target=ContextTarget(context["context"], sandbox=sandbox_name),
             await_promise=True,
         )
 
@@ -671,6 +764,58 @@ async def setup_beforeunload_page(bidi_session, url):
 
 
 @pytest_asyncio.fixture
+async def setup_collected_data(
+    bidi_session,
+    subscribe_events,
+    wait_for_event,
+    wait_for_future_safe,
+    top_context,
+    url,
+    fetch,
+    setup_network_test,
+    add_data_collector,
+):
+    """Adds a global data collector and triggers a request which should match
+    the collector and waits for the network.responseCompleted event.
+    Collector can be configured (size, types) when calling the fixture.
+    Returns the request id of the triggered request.
+    """
+
+    async def _setup_collected_data(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=10000,
+        fetch_url=url("/webdriver/tests/bidi/network/support/empty.txt"),
+        fetch_post_data=None,
+        context=top_context,
+    ):
+        collector = await add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+        )
+
+        await setup_network_test(
+            events=[
+                "network.beforeRequestSent",
+                "network.responseCompleted",
+            ]
+        )
+        on_response_completed = wait_for_event("network.responseCompleted")
+
+        await fetch(
+            fetch_url,
+            post_data=fetch_post_data,
+            context=context,
+        )
+        response_completed_event = await on_response_completed
+        request = response_completed_event["request"]["request"]
+        return [request, collector]
+
+    return _setup_collected_data
+
+
+@pytest_asyncio.fixture
 async def setup_network_test(
     bidi_session,
     subscribe_events,
@@ -701,7 +846,7 @@ async def setup_network_test(
 
         # Listen for network.responseCompleted for the initial navigation to
         # make sure this event will not be captured unexpectedly by the tests.
-        await bidi_session.session.subscribe(
+        subscribe_result = await bidi_session.session.subscribe(
             events=["network.responseCompleted"], contexts=[context]
         )
         on_response_completed = wait_for_event("network.responseCompleted")
@@ -713,7 +858,7 @@ async def setup_network_test(
         )
         await wait_for_future_safe(on_response_completed)
         await bidi_session.session.unsubscribe(
-            events=["network.responseCompleted"], contexts=[context]
+            subscriptions=[subscribe_result["subscription"]]
         )
 
         await subscribe_events(events, contexts)
@@ -734,6 +879,44 @@ async def setup_network_test(
     # cleanup
     for remove_listener in listeners:
         remove_listener()
+
+
+@pytest_asyncio.fixture
+async def add_data_collector(bidi_session):
+    """Add a network data collector, and ensure the collector is removed at the
+    end of the test."""
+
+    collectors = []
+
+    async def add_data_collector(
+        collector_type="blob",
+        data_types=["response"],
+        max_encoded_data_size=1000,
+        contexts=None,
+        user_contexts=None,
+    ):
+        nonlocal collectors
+        collector = await bidi_session.network.add_data_collector(
+            collector_type=collector_type,
+            data_types=data_types,
+            max_encoded_data_size=max_encoded_data_size,
+            contexts=contexts,
+            user_contexts=user_contexts,
+        )
+        collectors.append(collector)
+
+        return collector
+
+    yield add_data_collector
+
+    # Remove all added collectors at the end of the test
+    for collector in collectors:
+        try:
+            await bidi_session.network.remove_data_collector(collector=collector)
+        except NoSuchNetworkCollectorException:
+            # Ignore exceptions in case a specific collector was already removed
+            # during the test.
+            pass
 
 
 @pytest_asyncio.fixture
@@ -812,9 +995,12 @@ async def setup_blocked_request(
         blocked_url=None,
         navigate=False,
         navigate_url=None,
+        has_preflight=None,
         **kwargs,
     ):
-        await setup_network_test(events=[f"network.{phase}"])
+        await setup_network_test(
+            events=[f"network.{phase}"], contexts=[context["context"]]
+        )
 
         if blocked_url is None:
             if phase == "authRequired":
@@ -840,7 +1026,6 @@ async def setup_blocked_request(
         )
 
         events = []
-
         async def on_event(method, data):
             events.append(data)
 
@@ -864,14 +1049,48 @@ async def setup_blocked_request(
         # be received before the blocked request.
         def check_has_blocked_request(_):
             assert len(events) >= 1, "No BiDi events were received"
-            assert any(
-                e["isBlocked"] is True for e in events), "Not all requests are blocked"
+            blocked_events = [e for e in events if e["isBlocked"] is True]
+            assert len(blocked_events) >= 1, "No blocked request found"
+            return blocked_events[0]
 
         wait = AsyncPoll(bidi_session, timeout=2)
-        await wait.until(check_has_blocked_request)
+        blocked_event = await wait.until(check_has_blocked_request)
 
-        [blocked_event] = [e for e in events if e["isBlocked"] is True]
         request = blocked_event["request"]["request"]
+        method = blocked_event["request"]["method"]
+
+        # If the test expects a preflight and the method is OPTIONS, handle the
+        # preflight first in order to be able to block the actual request.
+        if has_preflight and method == "OPTIONS":
+            # Clear the events array, the preflight request will be unblocked
+            # and wait for the next blocked request.
+            events = []
+
+            # Provide a basic preflight response to allow any CORS request.
+            await bidi_session.network.provide_response(
+                request=request,
+                status_code=204,
+                reason_phrase="No Content",
+                headers=[
+                    Header(
+                        name="Access-Control-Allow-Headers",
+                        value=NetworkStringValue("*"),
+                    ),
+                    Header(
+                        name="Access-Control-Allow-Origin",
+                        value=NetworkStringValue("*"),
+                    ),
+                    Header(
+                        name="Access-Control-Allow-Methods",
+                        value=NetworkStringValue("*"),
+                    ),
+                ],
+            )
+
+            wait = AsyncPoll(bidi_session, timeout=2)
+            blocked_event = await wait.until(check_has_blocked_request)
+
+            request = blocked_event["request"]["request"]
 
         if phase == "authRequired":
             blocked_auth_requests.append(request)
@@ -963,3 +1182,47 @@ async def assert_file_dialog_not_canceled(bidi_session, inline, top_context,
         cancel_event_future.cancel()
 
     yield assert_file_dialog_not_canceled
+
+
+@pytest_asyncio.fixture
+async def get_fetch_headers(url, fetch):
+    async def get_fetch_headers(context, sandbox_name=None):
+        result = await fetch(
+            url=url("webdriver/tests/support/http_handlers/headers_echo.py"),
+            context=context,
+            sandbox_name=sandbox_name
+        )
+
+        return (json.JSONDecoder().decode(result["value"]))["headers"]
+
+    return get_fetch_headers
+
+
+@pytest_asyncio.fixture
+async def assert_header_present(get_fetch_headers):
+    async def assert_header_present(context, header_name, header_value, sandbox_name=None):
+        actual_headers = await get_fetch_headers(context, sandbox_name)
+        assert header_name in actual_headers, \
+            f"header '{header_name}' should be present"
+        assert [header_value] == actual_headers[header_name], \
+            f"header '{header_name}' should have value '{header_value}'"
+
+    return assert_header_present
+
+
+@pytest_asyncio.fixture
+async def match_media_query(bidi_session):
+    async def match_media_query(context, media_query_type, media_query_value):
+        result = await bidi_session.script.call_function(
+            arguments=[
+                {"type": "string", "value": media_query_type},
+                {"type": "number", "value": media_query_value},
+            ],
+            function_declaration="""(type, value) => matchMedia(`(${type}: ${value}px)`).matches""",
+            target=ContextTarget(context["context"]),
+            await_promise=False,
+        )
+
+        return result["value"]
+
+    return match_media_query

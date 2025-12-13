@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_OOBE_QUICK_START_SECOND_DEVICE_AUTH_BROKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <variant>
 
@@ -13,12 +14,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 class GoogleServiceAuthError;
 
@@ -219,8 +220,8 @@ class SecondDeviceAuthBroker {
   // Internal helper method to respond to `auth_code_callback`.
   void RunAuthCodeCallbackFromParsedResponse(
       SecondDeviceAuthBroker::AuthCodeCallback auth_code_callback,
-      std::unique_ptr<endpoint_fetcher::EndpointResponse> unparsed_response,
-      data_decoder::DataDecoder::ValueOrError response);
+      std::optional<endpoint_fetcher::FetchErrorType> error_type,
+      std::optional<base::Value::Dict> response);
 
   // Internal helper methods to respond to `challenge_callback`.
   void HandleFetchChallengeBytesErrorResponse(

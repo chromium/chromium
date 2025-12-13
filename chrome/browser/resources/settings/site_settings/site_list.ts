@@ -23,7 +23,7 @@ import type {CrTooltipElement} from 'chrome://resources/cr_elements/cr_tooltip/c
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import type {SanitizeInnerHtmlOpts} from 'chrome://resources/js/parse_html_subset.js';
@@ -33,9 +33,9 @@ import {TooltipMixin} from '../tooltip_mixin.js';
 
 import {ContentSetting, ContentSettingsTypes, CookiesExceptionType, INVALID_CATEGORY_SUBTYPE, SITE_EXCEPTION_WILDCARD} from './constants.js';
 import {getTemplate} from './site_list.html.js';
+import type {RawSiteException, SiteException, SiteSettingsBrowserProxy} from './site_settings_browser_proxy.js';
+import {SiteSettingsBrowserProxyImpl} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {RawSiteException, SiteException, SiteSettingsPrefsBrowserProxy} from './site_settings_prefs_browser_proxy.js';
-import {SiteSettingsPrefsBrowserProxyImpl} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteListElement {
   $: {
@@ -184,8 +184,8 @@ export class SiteListElement extends SiteListElementBase {
   declare cookiesExceptionType: CookiesExceptionType;
 
   private activeDialogAnchor_: HTMLElement|null;
-  private browserProxy_: SiteSettingsPrefsBrowserProxy =
-      SiteSettingsPrefsBrowserProxyImpl.getInstance();
+  private browserProxy_: SiteSettingsBrowserProxy =
+      SiteSettingsBrowserProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -418,9 +418,10 @@ export class SiteListElement extends SiteListElementBase {
    */
   private processExceptions_(exceptionList: RawSiteException[]) {
     const sites = exceptionList
-                      .filter(
-                          site => site.setting !== ContentSetting.DEFAULT &&
-                              site.setting === this.categorySubtype)
+                      .filter(site => {
+                        return site.setting !== ContentSetting.DEFAULT &&
+                            site.setting === this.categorySubtype;
+                      })
                       .filter(site => {
                         if (this.category !== ContentSettingsTypes.COOKIES) {
                           return true;
@@ -440,9 +441,12 @@ export class SiteListElement extends SiteListElementBase {
                             // any filters and show exceptions with both pattern
                             // types.
                             return true;
+                          default:
+                            assertNotReachedCase(this.cookiesExceptionType);
                         }
                       })
                       .map(site => this.expandSiteException(site));
+
     this.updateList('sites', x => x.origin, sites);
   }
 

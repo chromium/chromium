@@ -7,7 +7,6 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -70,12 +69,12 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
 
 #if BUILDFLAG(IS_WIN)
   std::string path;
-  std::string host = url.host();
+  std::string host = url.GetHost();
   if (host.empty()) {
     // URL contains no host, the path is the filename. In this case, the path
     // will probably be preceded with a slash, as in "/C:/foo.txt", so we
     // trim out that here.
-    path = url.path();
+    path = url.GetPath();
     size_t first_non_slash = path.find_first_not_of("/\\");
     if (first_non_slash != std::string::npos && first_non_slash > 0)
       path.erase(0, first_non_slash);
@@ -84,7 +83,7 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
     // on the path.
     path = "\\\\";
     path.append(host);
-    path.append(url.path());
+    path.append(url.GetPath());
   }
   std::replace(path.begin(), path.end(), '/', '\\');
 #else   // BUILDFLAG(IS_WIN)
@@ -92,10 +91,10 @@ bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {
   // Usually, remote mounts are still mounted onto the local filesystem.
   // Therefore, we discard all URLs that are not obviously local to prevent
   // spoofing attacks using file:// URLs. See crbug.com/881675.
-  if (!url.host().empty() && !net::IsLocalhost(url)) {
+  if (!url.GetHost().empty() && !net::IsLocalhost(url)) {
     return false;
   }
-  std::string path = url.path();
+  std::string path = url.GetPath();
 #endif  // !BUILDFLAG(IS_WIN)
 
   if (path.empty())

@@ -38,8 +38,8 @@ class PaintPreviewCompositorServiceImpl : public PaintPreviewCompositorService {
   // PaintPreviewCompositorService Implementation.
   std::unique_ptr<PaintPreviewCompositorClient, base::OnTaskRunnerDeleter>
   CreateCompositor(base::OnceClosure connected_closure) override;
-  void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
-                            memory_pressure_level) override;
+  void OnMemoryPressure(
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   bool HasActiveClients() const override;
   // NOTE: this is set by the constructor. However, in some cases it may need to

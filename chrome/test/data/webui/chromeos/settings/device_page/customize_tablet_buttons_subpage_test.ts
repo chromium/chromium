@@ -119,7 +119,7 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
         assertEquals(
             'Add or locate buttons on your tablet',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
         // Go to the second tablet subpage with metadata.
         const url = new URLSearchParams({
           'graphicsTabletId': encodeURIComponent(fakeGraphicsTablets[1]!.id),
@@ -131,6 +131,6 @@ suite('<settings-customize-tablet-buttons-subpage>', () => {
         assertEquals(
             'Locate buttons on your tablet',
             page.shadowRoot!.querySelector<HTMLElement>(
-                                '.help-title')!.textContent!.trim());
+                                '.help-title')!.textContent.trim());
       });
 });

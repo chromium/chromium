@@ -273,8 +273,8 @@ public Tab getTabByIdChecked(String tabId) {
 Does not work: `boolean isNull = thing == null; if (!isNull) { ... }`
 * Feature request: https://github.com/uber/NullAway/issues/98
 
-It does not infer nullness of inferred generics.
-* Feature request: https://github.com/uber/NullAway/issues/1075
+Nullness of method reference not recognized when calling `ObservableSupplier.addObserver()`
+* Bug: https://github.com/uber/NullAway/issues/1307
 
 Validation of (but not use of) `@Contract` is buggy.
 * Bug: https://github.com/uber/NullAway/issues/1104

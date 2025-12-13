@@ -14,10 +14,6 @@
 
 class Profile;
 
-namespace base {
-class Version;
-}  // namespace base
-
 namespace web_app {
 
 class IsolatedWebAppInstallSource;
@@ -45,7 +41,7 @@ class MockIwaInstallCommandWrapper
   void Install(
       const IsolatedWebAppInstallSource& install_source,
       const IsolatedWebAppUrlInfo& url_info,
-      const base::Version& expected_version,
+      const IwaVersion& expected_version,
       WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) override;
 
   void ScheduleCommand();
@@ -61,7 +57,7 @@ class MockIwaInstallCommandWrapper
   bool command_was_scheduled_ = false;
   std::optional<IsolatedWebAppInstallSource> install_source_;
   std::optional<IsolatedWebAppUrlInfo> url_info_;
-  std::optional<base::Version> expected_version_;
+  std::optional<IwaVersion> expected_version_;
   std::optional<WebAppCommandScheduler::InstallIsolatedWebAppCallback>
       callback_;
 };

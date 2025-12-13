@@ -12,7 +12,7 @@
 #include "ash/frame_sink/ui_resource.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -53,7 +53,6 @@ void RoundedDisplayGutter::RoundedCorner::Paint(gfx::Canvas* canvas) const {
 
 void RoundedDisplayGutter::RoundedCorner::PaintCornerHelper(
     gfx::Canvas* canvas) const {
-  SkPath path;
   SkScalar startAngle = 0.0, sweepAngle = 0.0;
   SkScalar dx = 0.0, dy = 0.0;
   int translate_dx = 0.0, translate_dy = 0.0;
@@ -96,6 +95,7 @@ void RoundedDisplayGutter::RoundedCorner::PaintCornerHelper(
   const SkScalar oval_radius = radius_ * 2;
   SkRect oval{0, 0, oval_radius, oval_radius};
 
+  SkPathBuilder path;
   path.addArc(oval, startAngle, sweepAngle);
 
   if (position_ == RoundedCornerPosition::kUpperLeft ||
@@ -117,7 +117,7 @@ void RoundedDisplayGutter::RoundedCorner::PaintCornerHelper(
 
   canvas->Save();
   canvas->Translate({translate_dx, translate_dy});
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
   canvas->Restore();
 }
 

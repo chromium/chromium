@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/test/wayland_server_test.h"
 
 #include <wayland-server-protocol-core.h>
+
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -31,8 +28,8 @@ class ClientCreatedWaiter {
  public:
   explicit ClientCreatedWaiter(wl_display* display) {
     listener_.notify = [](wl_listener* listener_ptr, void* data) {
-      ClientCreatedWaiter* created_waiter = wl_container_of(
-          listener_ptr, /*sample=*/created_waiter, /*member=*/listener_);
+      ClientCreatedWaiter* created_waiter = UNSAFE_TODO(wl_container_of(
+          listener_ptr, /*sample=*/created_waiter, /*member=*/listener_));
       created_waiter->OnClientCreated(static_cast<wl_client*>(data));
     };
     wl_display_add_client_created_listener(display, &listener_);
@@ -61,8 +58,8 @@ class ClientDestroyedWaiter {
     future_cb_ = future_.GetCallback();
 
     listener_.notify = [](wl_listener* listener_ptr, void* data) {
-      ClientDestroyedWaiter* destroy_waiter = wl_container_of(
-          listener_ptr, /*sample=*/destroy_waiter, /*member=*/listener_);
+      ClientDestroyedWaiter* destroy_waiter = UNSAFE_TODO(wl_container_of(
+          listener_ptr, /*sample=*/destroy_waiter, /*member=*/listener_));
       destroy_waiter->OnClientDestroyed();
     };
     wl_client_add_destroy_listener(client, &listener_);

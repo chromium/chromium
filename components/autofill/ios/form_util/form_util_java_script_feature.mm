@@ -11,7 +11,6 @@
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {
-const char kFillScriptName[] = "fill";
 const char kFormScriptName[] = "form";
 }  // namespace
 
@@ -30,18 +29,12 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
           // worlds is required.
           web::ContentWorld::kAllContentWorlds,
           {FeatureScript::CreateWithFilename(
-               kFillScriptName,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kAllFrames,
-               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
-           FeatureScript::CreateWithFilename(
                kFormScriptName,
                FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
                FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
-              web::java_script_features::GetMessageJavaScriptFeature(),
               // Form extraction logic requires feature flags.
               AutofillFormFeaturesJavaScriptFeature::GetInstance(),
           }) {}

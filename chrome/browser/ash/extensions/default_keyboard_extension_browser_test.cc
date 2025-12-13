@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/site_instance.h"
@@ -110,7 +111,7 @@ DefaultKeyboardExtensionBrowserTest::GetKeyboardWebContents(
 void DefaultKeyboardExtensionBrowserTest::InjectJavascript(
     const base::FilePath& dir,
     const base::FilePath& file) {
-  base::FilePath path = ui_test_utils::GetTestFilePath(dir, file);
+  base::FilePath path = chrome_test_utils::GetTestFilePath(dir, file);
   std::string library_content;
   {
     base::ScopedAllowBlockingForTesting allow_io;
@@ -160,14 +161,14 @@ IN_PROC_BROWSER_TEST_F(DefaultKeyboardExtensionBrowserTest, EndToEndTest) {
   ASSERT_TRUE(browser_wc);
 
   // Set up the test page.
-  GURL url = ui_test_utils::GetTestUrl(
+  GURL url = chrome_test_utils::GetTestUrl(
       base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL(
           "chromeos/virtual_keyboard/default_extension/end_to_end_test.html")));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Press 'a' on keyboard.
-  base::FilePath path = ui_test_utils::GetTestFilePath(
+  base::FilePath path = chrome_test_utils::GetTestFilePath(
       base::FilePath(kVirtualKeyboardExtensionTestDir),
       base::FilePath(FILE_PATH_LITERAL("end_to_end_test.js")));
   std::string script;

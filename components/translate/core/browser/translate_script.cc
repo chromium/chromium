@@ -21,6 +21,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace translate {
@@ -33,8 +34,10 @@ const int kExpirationDelayDays = 1;
 
 const char TranslateScript::kScriptURL[] =
     "https://translate.googleapis.com/translate_a/element.js";
-const char TranslateScript::kRequestHeader[] =
-    "Google-Translate-Element-Mode: library";
+
+const char TranslateScript::kRequestHeaderName[] =
+    "Google-Translate-Element-Mode";
+const char TranslateScript::kRequestHeaderValue[] = "library";
 const char TranslateScript::kAlwaysUseSslQueryName[] = "aus";
 const char TranslateScript::kAlwaysUseSslQueryValue[] = "true";
 const char TranslateScript::kCallbackQueryName[] = "cb";
@@ -67,7 +70,12 @@ void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
   GURL translate_script_url = GetTranslateScriptURL();
 
   fetcher_ = std::make_unique<TranslateURLFetcher>();
-  fetcher_->set_extra_request_header(kRequestHeader);
+
+  net::HttpRequestHeaders headers;
+  headers.SetHeader(TranslateScript::kRequestHeaderName,
+                    TranslateScript::kRequestHeaderValue);
+
+  fetcher_->set_extra_request_header(headers);
   fetcher_->Request(translate_script_url,
                     base::BindOnce(&TranslateScript::OnScriptFetchComplete,
                                    base::Unretained(this)),
@@ -149,7 +157,9 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     // Append snippet to install callbacks on translate.js if available.
     const char* install_callbacks =
         "try {"
-        "  __gCrWeb.translate.installCallbacks();"
+        "  "
+        "__gCrWeb.getRegisteredApi('translate').getFunction('installCallbacks')"
+        "();"
         "} catch (error) {};";
     data_.append(install_callbacks);
 #endif  // BUILDFLAG(IS_IOS)

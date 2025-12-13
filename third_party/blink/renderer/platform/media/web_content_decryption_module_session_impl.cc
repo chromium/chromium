@@ -42,6 +42,7 @@ const char kRemoveSessionUMAName[] = "RemoveSession";
 const char kUpdateSessionUMAName[] = "UpdateSession";
 const char kKeyStatusSystemCodeUMAName[] = "KeyStatusSystemCode";
 const char kInitialKeyStatusMixUMAName[] = "InitialKeyStatusMix";
+const char kLastKeyStatusMixUMAName[] = "LastKeyStatusMix";
 
 media::CdmSessionType ConvertSessionType(
     WebEncryptedMediaSessionType session_type) {
@@ -128,7 +129,7 @@ bool SanitizeSessionId(const WebString& session_id,
   // Check that |sanitized_session_id| only contains printable characters for
   // easier logging. Note that checking alphanumeric is too strict because there
   // are key systems using Base64 session IDs (which may include spaces). See
-  // https://crbug.com/902828.
+  // https://crbug.com/40601386.
   for (const char c : *sanitized_session_id) {
     if (!base::IsAsciiPrintable(c))
       return false;
@@ -256,6 +257,14 @@ WebContentDecryptionModuleSessionImpl::
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!session_id_.empty()) {
+    if (last_keys_info_.has_value()) {
+      auto key_status_mix_for_uma =
+          GetKeyStatusMixForUma(last_keys_info_.value());
+      base::UmaHistogramEnumeration(
+          adapter_->GetKeySystemUMAPrefix() + kLastKeyStatusMixUMAName,
+          key_status_mix_for_uma);
+    }
+
     adapter_->UnregisterSession(session_id_);
 
     // From http://w3c.github.io/encrypted-media/#mediakeysession-interface
@@ -354,10 +363,10 @@ void WebContentDecryptionModuleSessionImpl::InitializeNewSession(
       eme_init_data_type, sanitized_init_data, session_type_,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kGenerateRequestUMAName,
-          WTF::BindOnce(
+          blink::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
-          std::vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
+          Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Load(
@@ -386,12 +395,11 @@ void WebContentDecryptionModuleSessionImpl::Load(
       session_type_, sanitized_session_id,
       std::make_unique<NewSessionCdmResultPromise>(
           result, adapter_->GetKeySystemUMAPrefix(), kLoadSessionUMAName,
-          WTF::BindOnce(
+          blink::BindOnce(
               &WebContentDecryptionModuleSessionImpl::OnSessionInitialized,
               weak_ptr_factory_.GetWeakPtr()),
-          std::vector<SessionInitStatus>{
-              SessionInitStatus::NEW_SESSION,
-              SessionInitStatus::SESSION_NOT_FOUND}));
+          Vector<SessionInitStatus>{SessionInitStatus::NEW_SESSION,
+                                    SessionInitStatus::SESSION_NOT_FOUND}));
 }
 
 void WebContentDecryptionModuleSessionImpl::Update(
@@ -463,7 +471,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionMessage(
     const std::vector<uint8_t>& message) {
   DCHECK(client_) << "Client not set before message event";
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  client_->OnSessionMessage(message_type, message.data(), message.size());
+  client_->OnSessionMessage(message_type, message);
 }
 
 void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
@@ -491,6 +499,9 @@ void WebContentDecryptionModuleSessionImpl::OnSessionKeysChange(
         key_status_mix_for_uma);
   }
 
+  // Update the last key status information.
+  last_keys_info_ = std::move(keys_info);
+
   // Now send the event to blink.
   client_->OnSessionKeysChange(keys, has_additional_usable_key);
 }
@@ -500,7 +511,7 @@ void WebContentDecryptionModuleSessionImpl::OnSessionExpirationUpdate(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // The check works around an issue in base::Time that converts null base::Time
   // to |1601-01-01 00:00:00 UTC| in InMillisecondsFSinceUnixEpoch(). See
-  // http://crbug.com/679079
+  // http://crbug.com/40500427.
   client_->OnSessionExpirationUpdate(
       new_expiry_time.is_null()
           ? std::numeric_limits<double>::quiet_NaN()

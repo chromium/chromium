@@ -68,6 +68,7 @@ enum class DOMExceptionCode : ExceptionCode {
   kNetworkError = 19,
   kAbortError = 20,
   kURLMismatchError = 21,
+  kQuotaExceededError = 22,
   kTimeoutError = 23,
   kInvalidNodeTypeError = 24,
   kDataCloneError = 25,
@@ -89,7 +90,6 @@ enum class DOMExceptionCode : ExceptionCode {
   kOperationError,
   kNotAllowedError,
   kOptOutError,
-  kQuotaExceededError,
 
   // The rest of entries are defined out of scope of Web IDL.
 

@@ -38,17 +38,10 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
   // Designated initializer. `storageDirectoryUrl` is the file path where all images managed by this
   // SnapshotStorage are stored. `storageDirectoryUrl` is not guaranteed to exist. The contents of
   // `storageDirectoryUrl` are entirely managed by this SnapshotStorage.
-  //
-  // To support renaming the directory where the snapshots are stored, it is possible to pass a
-  // non-empty path via `legacyDirectoryUrl`. If present, then it will be moved to
-  // `storageDirectoryUrl`.
-  //
-  // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
-  // migrated.
-  init(lruCache: SnapshotLRUCache, storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
+  init(lruCache: SnapshotLRUCache, storageDirectoryUrl: URL) {
     self.lruCache = lruCache
     self.fileManager = ImageFileManager(
-      storageDirectoryUrl: storageDirectoryUrl, legacyDirectoryUrl: legacyDirectoryUrl)
+      storageDirectoryUrl: storageDirectoryUrl)
     self.observers = []
 
     super.init()
@@ -62,7 +55,7 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
   }
 
   // Convenience initialize that uses a default `lruCache`.
-  convenience init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
+  convenience init(storageDirectoryUrl: URL) {
     var cacheSize = kLRUCacheBaseCapacity
     if UIDevice.current.userInterfaceIdiom != .pad {
       // Add more capacity to LRUCache when the pinned tabs feature is enabled.
@@ -72,8 +65,7 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
       cacheSize += kLRUCacheAdditionalCapacityForPinnedTabsEnabled
     }
     self.init(
-      lruCache: SnapshotLRUCache(size: cacheSize), storageDirectoryUrl: storageDirectoryUrl,
-      legacyDirectoryUrl: legacyDirectoryUrl)
+      lruCache: SnapshotLRUCache(size: cacheSize), storageDirectoryUrl: storageDirectoryUrl)
   }
 
   // Unregisters observers from Notification Center.
@@ -139,14 +131,6 @@ let kLRUCacheAdditionalCapacityForPinnedTabsEnabled = 4
   // `liveSnapshotIDs` will be kept. This will be done asynchronously.
   public func purgeImagesOlderThan(thresholdDate: Date, liveSnapshotIDs: [SnapshotIDWrapper]) {
     fileManager.purgeImagesOlderThan(thresholdDate: thresholdDate, liveSnapshotIDs: liveSnapshotIDs)
-  }
-
-  // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a programmatic error if
-  // the two array do not have the same length.
-  public func renameSnapshots(oldIDs: [String], newIDs: [SnapshotIDWrapper]) {
-    assert(
-      oldIDs.count == newIDs.count, "The number of old snapshot IDs and new IDs should be same")
-    fileManager.renameSnapshots(oldIDs: oldIDs, newIDs: newIDs)
   }
 
   // Moves the on-disk snapshot from the receiver storage to the destination on-disk storage. If

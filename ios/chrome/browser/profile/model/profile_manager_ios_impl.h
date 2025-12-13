@@ -10,7 +10,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -63,6 +62,7 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   bool IsProfileMarkedForDeletion(std::string_view name) const override;
   void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
+  base::FilePath GetProfilePath(std::string_view name) override;
 
   // ProfileIOS::Delegate:
   void OnProfileCreationStarted(ProfileIOS* profile,

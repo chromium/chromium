@@ -21,6 +21,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_implicit_device_sync_tests",
         "resultdb": {
           "enable": true,
@@ -61,6 +63,8 @@
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
         },
+        "module_name": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
+        "module_scheme": "gtest",
         "name": "dawn_end2end_tests",
         "resultdb": {
           "enable": true,
@@ -102,6 +106,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "name": "webgpu_cts_compat_tests",
         "resultdb": {
           "enable": true,
@@ -143,6 +148,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "name": "webgpu_cts_dedicated_worker_tests",
         "resultdb": {
           "enable": true,
@@ -184,6 +190,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "name": "webgpu_cts_service_worker_tests",
         "resultdb": {
           "enable": true,
@@ -224,6 +231,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "name": "webgpu_cts_tests",
         "resultdb": {
           "enable": true,
@@ -265,6 +273,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test:telemetry_gpu_integration_test_android_chrome",
         "name": "webgpu_cts_with_validation_tests",
         "resultdb": {
           "enable": true,

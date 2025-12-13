@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/common/aliases.h"
 #import "components/autofill/core/common/field_data_manager.h"
@@ -76,10 +77,16 @@ class IOSPasswordManagerDriver final
       override;
   int GetFrameId() const override;
   bool IsInPrimaryMainFrame() const override;
+  bool IsDirectChildOfPrimaryMainFrame() const override;
+  bool IsNestedWithinFencedFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
   gfx::RectF TransformToRootCoordinates(
       const gfx::RectF& bounds_in_frame_coordinates) override;
+  void CheckViewAreaVisible(autofill::FieldRendererId field_id,
+                            base::OnceCallback<void(bool)>) override;
+  autofill::AutofillDriver* GetAutofillDriver() const override;
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;
   const std::string& web_frame_id() const { return frame_id_; }
   const url::Origin& security_origin() const { return security_origin_; }
@@ -110,7 +117,8 @@ class IOSPasswordManagerDriver final
 
   base::WeakPtr<web::WebState> web_state_;
   __weak id<PasswordManagerDriverBridge> bridge_;  // (weak)
-  raw_ptr<password_manager::PasswordManagerInterface> password_manager_;
+  raw_ptr<password_manager::PasswordManagerInterface, DanglingUntriaged>
+      password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
   int id_;

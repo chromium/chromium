@@ -338,7 +338,7 @@
             </h1>
           </sp-heading>
           <iron-list id="shownBookmarksIronList[[index]]"
-              items="[[bookmarks]]" scroll-target="bookmarks">
+              items="[[bookmarks]]" scroll-target="bookmarks" role="tree">
             <template>
               <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
                   compact="[[compact_]]"
@@ -346,6 +346,7 @@
                   updated-element-ids="[[updatedElementIds_]]"
                   trailing-icon-tooltip="$i18n{tooltipMore}"
                   has-checkbox="[[editing_]]"
+                  active-sort-index="[[activeSortIndex_]]"
                   selected-bookmarks=
                       "[[getSelectedBookmarksList_(selectedBookmarks_.*)]]"
                   renaming-id="[[renamingId_]]"
@@ -362,7 +363,10 @@
                       "[[shoppingCollectionFolderId_]]"
                   context-menu-bookmark="[[contextMenuBookmark_]]"
                   draggable="[[canDrag_]]"
-                  can-drag="[[canDrag_]]">
+                  can-drag="[[canDrag_]]"
+                  has-active-drag="[[hasActiveDrag_]]"
+                  active-folder-path="[[activeFolderPath_]]"
+                  has-folders="[[hasFolders_]]">
               </power-bookmark-row>
             </template>
           </iron-list>

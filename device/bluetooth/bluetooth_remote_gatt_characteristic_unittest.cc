@@ -37,7 +37,6 @@
 #endif
 
 using testing::_;
-using testing::Invoke;
 using WriteType = device::BluetoothRemoteGattCharacteristic::WriteType;
 
 namespace device {
@@ -3651,23 +3650,21 @@ TEST_F(BluetoothRemoteGattCharacteristicTest,
   base::RunLoop loop;
   EXPECT_CALL(observer1, GattCharacteristicValueChanged(
                              adapter_.get(), characteristic1_.get(), _))
-      .WillOnce(
-          Invoke([&](BluetoothAdapter*, BluetoothRemoteGattCharacteristic*,
-                     const std::vector<uint8_t>& value) {
-            gatt_connections_[0]->Disconnect();
-            loop.Quit();
-          }));
+      .WillOnce([&](BluetoothAdapter*, BluetoothRemoteGattCharacteristic*,
+                    const std::vector<uint8_t>& value) {
+        gatt_connections_[0]->Disconnect();
+        loop.Quit();
+      });
   EXPECT_CALL(observer2, GattCharacteristicValueChanged(
                              adapter_.get(), characteristic1_.get(), _))
       .Times(testing::AtMost(1))
-      .WillRepeatedly(
-          Invoke([&](BluetoothAdapter*,
-                     BluetoothRemoteGattCharacteristic* characteristic,
-                     const std::vector<uint8_t>& value) {
-            // Call a method on |characteristic| to check the pointer is still
-            // valid.
-            EXPECT_EQ(value, characteristic->GetValue());
-          }));
+      .WillRepeatedly([&](BluetoothAdapter*,
+                          BluetoothRemoteGattCharacteristic* characteristic,
+                          const std::vector<uint8_t>& value) {
+        // Call a method on |characteristic| to check the pointer is still
+        // valid.
+        EXPECT_EQ(value, characteristic->GetValue());
+      });
 
   std::vector<uint8_t> empty_vector;
   SimulateGattCharacteristicChanged(characteristic1_, empty_vector);

@@ -260,7 +260,12 @@ pub fn derive_zeroable(
 ///
 /// If applied to an enum:
 /// - The enum must be explicit `#[repr(Int)]`, `#[repr(C)]`, or both
-/// - All variants must be fieldless
+/// - If the enum has fields:
+///   - All fields must implement `NoUninit`
+///   - All variants must not contain any padding bytes
+///   - All variants must be of the the same size
+///   - There must be no padding bytes between the discriminant and any of the
+///     variant fields
 /// - The enum must contain no generic parameters
 #[proc_macro_derive(NoUninit, attributes(bytemuck))]
 pub fn derive_no_uninit(
@@ -313,7 +318,10 @@ pub fn derive_maybe_pod(
 ///
 /// If the struct only contains a single field, the `Wrapped` type will
 /// automatically be determined. If there is more then one field in the struct,
-/// you need to specify the `Wrapped` type using `#[transparent(T)]`
+/// you need to specify the `Wrapped` type using `#[transparent(T)]`. Due to
+/// technical limitations, the type in the `#[transparent(Type)]` needs to be
+/// the exact same token sequence as the corresponding type in the struct
+/// definition.
 ///
 /// ## Examples
 ///

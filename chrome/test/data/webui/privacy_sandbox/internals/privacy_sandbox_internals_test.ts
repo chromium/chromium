@@ -14,6 +14,7 @@ import type {CrFrameListElement} from 'chrome://privacy-sandbox-internals/cr_fra
 import type {ExpandableJsonViewerElement} from 'chrome://privacy-sandbox-internals/expandable_json_viewer.js';
 import type {InternalsPage} from 'chrome://privacy-sandbox-internals/internals_page.js';
 import type {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
+import type {PrivacySandboxInternalsPrefGroup, PrivacySandboxInternalsPrefPageConfig} from 'chrome://privacy-sandbox-internals/pref_page.js';
 import type {PrivacySandboxInternalsPref} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals.mojom-webui.js';
 import {PrivacySandboxInternalsBrowserProxy} from 'chrome://privacy-sandbox-internals/privacy_sandbox_internals_browser_proxy.js';
 import {Router} from 'chrome://privacy-sandbox-internals/router.js';
@@ -21,14 +22,14 @@ import type {TextCopyButton} from 'chrome://privacy-sandbox-internals/text_copy_
 import type {ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {defaultLogicalFn, timestampLogicalFn} from 'chrome://privacy-sandbox-internals/value_display.js';
 import type {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPrivacySandboxInternalsBrowserProxy} from './test_privacy_sandbox_internals_browser_proxy.js';
 
 async function waitForElement(
-    root: ShadowRoot, selector: string): Promise<HTMLElement> {
+    root: Element|ShadowRoot, selector: string): Promise<HTMLElement> {
   return new Promise(resolve => {
     const check = () => {
       const element = root.querySelector<HTMLElement>(selector);
@@ -54,6 +55,158 @@ async function waitForCondition(checkFn: () => boolean): Promise<void> {
     check();
   });
 }
+
+// Test suite for search, filter, and highlight functionality on a Prefs page.
+suite('PrivacySandboxInternalsSearchTest', function() {
+  let page: InternalsPage;
+  let shadowRoot: ShadowRoot;
+  let searchInput: HTMLInputElement;
+
+  const MOCK_PREFS: PrivacySandboxInternalsPref[] = [
+    {name: 'enable_do_not_track', value: {boolValue: false}},
+    {
+      name: 'tracking_protection.pref_a',
+      value: {boolValue: true},
+    },
+    {
+      name: 'tracking_protection.pref_b',
+      value: {boolValue: false},
+    },
+    {name: 'profile.cookie_controls_mode', value: {intValue: 2}},
+    {name: 'tpcd_experiment.pref', value: {intValue: 0}},
+  ];
+
+  setup(async function() {
+    const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.testHandler.setPrefs(MOCK_PREFS);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+
+    Router.resetInstanceForTesting();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    await browserProxy.testHandler.whenCalled('readPrefsWithPrefixes');
+    await microtasksFinished();
+
+    shadowRoot = page.shadowRoot!;
+    const searchBar = await waitForElement(shadowRoot, 'search-bar');
+    searchInput =
+        (await waitForElement(searchBar.shadowRoot!, '#search-input')) as
+        HTMLInputElement;
+  });
+
+  async function navigateTo(pageName: string) {
+    Router.getInstance().navigateTo(pageName);
+    await waitForCondition(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('page') === pageName;
+    });
+    await microtasksFinished();
+  }
+
+  async function typeInSearch(query: string) {
+    searchInput.value = query;
+    searchInput.dispatchEvent(new Event('input'));
+    await waitForCondition(() => {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('search') === (query || null);
+    });
+    await microtasksFinished();
+  }
+
+  test('filtersPrefsBySearchTerm', async () => {
+    await navigateTo('tracking-protection');
+    await typeInSearch('pref_b');
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    const matchingElement =
+        tpPanel.querySelector<PrefDisplayElement>('pref-display:not([hidden])');
+
+    assertTrue(
+        !!matchingElement, 'A visible matching element should be found.');
+    assertFalse(matchingElement.hidden);
+
+    const nonMatchingElement =
+        tpPanel.querySelector<PrefDisplayElement>('pref-display[hidden]');
+    assertTrue(
+        !!nonMatchingElement, 'A non-matching element should be hidden.');
+  });
+
+  test('searchingAndClearingFiltersPrefs', async () => {
+    await navigateTo('tracking-protection');
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    await waitForElement(tpPanel, 'pref-display');
+    await typeInSearch('pref_a');
+    await waitForCondition(() => {
+      return tpPanel.querySelectorAll('pref-display:not([hidden])').length ===
+          1;
+    });
+    assertEquals(
+        tpPanel.querySelectorAll('pref-display:not([hidden])').length, 1,
+        'Search should result in exactly one match.');
+
+    await typeInSearch('');
+    await waitForCondition(() => {
+      return tpPanel.querySelectorAll('pref-display:not([hidden])').length > 1;
+    });
+    assertTrue(
+        tpPanel.querySelectorAll('pref-display:not([hidden])').length > 1,
+        'Clearing search should restore multiple prefs.');
+  });
+
+  test('highlightsMatchingTextInPrefs', async () => {
+    await navigateTo('tracking-protection');
+    const searchTerm = 'pref_a';
+    await typeInSearch(searchTerm);
+
+    const tpPanel =
+        await waitForElement(shadowRoot, '#tracking-protection-prefs-panel');
+    const matchingElement =
+        await waitForElement(tpPanel, 'pref-display:not([hidden])') as
+        PrefDisplayElement;
+    const highlightElement = await waitForElement(
+        matchingElement.shadowRoot!, '.search-highlight-hit');
+
+    assertTrue(
+        !!highlightElement,
+        'A <span class="search-highlight-hit"> element should be present for highlights.');
+    assertEquals(
+        highlightElement.textContent, searchTerm,
+        'The highlighted text should match the search term.');
+    await typeInSearch('');
+
+    const noHighlightElement =
+        matchingElement.shadowRoot!.querySelector('.search-highlight-hit');
+    assertFalse(
+        !!noHighlightElement,
+        'The highlight element should be removed after clearing the search.');
+  });
+});
+
+// Test suite for the Search Bar UI.
+suite('SearchBarUITest', function() {
+  let page: InternalsPage;
+
+  setup(async function() {
+    const browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    await microtasksFinished();
+  });
+
+  test('search bar is visible', async function() {
+    const searchBar = await waitForElement(page.shadowRoot!, 'search-bar');
+    assertTrue(!!searchBar, 'Search bar element should be present.');
+    assertTrue(
+        searchBar.offsetWidth > 0 && searchBar.offsetHeight > 0,
+        'Search bar should be visible on the page.');
+  });
+});
 
 // Test suite for the sidebar toggle functionality.
 suite('SidebarToggleTest', function() {
@@ -114,6 +267,91 @@ suite('SidebarToggleTest', function() {
   });
 });
 
+// Test suite for Sidebar behavior within the live InternalsPage.
+suite('PrivacySandboxInternalsFrameListTest', function() {
+  let page: InternalsPage;
+  let shadowRoot: ShadowRoot;
+  let browserProxy: TestPrivacySandboxInternalsBrowserProxy;
+
+  setup(async function() {
+    browserProxy = new TestPrivacySandboxInternalsBrowserProxy();
+    browserProxy.testHandler.setPrefs([]);
+    PrivacySandboxInternalsBrowserProxy.setInstance(browserProxy);
+    Router.resetInstanceForTesting();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('internals-page');
+    document.body.appendChild(page);
+    shadowRoot = page.shadowRoot!;
+    await waitForElement(shadowRoot, '[data-page-name="cookies"]');
+    await microtasksFinished();
+  });
+
+  test('SettingsCategoryHeaderCollapsesAndExpandsOnClick', async () => {
+    const prefsHeader = shadowRoot.querySelector<HTMLElement>(
+        'div[role="heading"].settings-category-header');
+    assertTrue(!!prefsHeader, 'The "Prefs" header should exist.');
+
+    assertFalse(
+        prefsHeader.hasAttribute('collapsed'),
+        'Prefs header should be expanded initially.');
+
+    prefsHeader.click();
+    await microtasksFinished();
+    assertTrue(
+        prefsHeader.hasAttribute('collapsed'),
+        'Prefs header should collapse after click.');
+  });
+
+  test('clickingGroupHeaderTogglesCollapseAndHidesSubGroup', async () => {
+    const groupHeaders = shadowRoot.querySelectorAll<HTMLElement>(
+        'div[role="heading"].settings-category-header');
+    assertEquals(2, groupHeaders.length, 'Should find two main group headers');
+    const contentSettingsHeader = groupHeaders[1]!;
+    const subGroupHeader = shadowRoot.querySelector<HTMLElement>(
+        'div[role="heading"].setting-header');
+    assertTrue(!!subGroupHeader, 'Sub-group header should exist.');
+
+    assertFalse(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should be expanded by default.');
+    assertFalse(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should be expanded by default.');
+
+    assertTrue(
+        !!subGroupHeader.offsetParent,
+        'Sub-group should be rendered initially.');
+
+    contentSettingsHeader.click();
+    await microtasksFinished();
+
+    assertTrue(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should collapse after click.');
+    assertEquals(
+        null, subGroupHeader.offsetParent,
+        'Sub-group should become hidden when parent collapses.');
+
+    contentSettingsHeader.click();
+    await microtasksFinished();
+
+    assertFalse(
+        contentSettingsHeader.hasAttribute('collapsed'),
+        'Content Settings header should re-expand.');
+    assertTrue(
+        !!subGroupHeader.offsetParent, 'Sub-group should be visible again.');
+    assertFalse(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should have retained its expanded state.');
+
+    subGroupHeader.click();
+    await microtasksFinished();
+    assertTrue(
+        subGroupHeader.hasAttribute('collapsed'),
+        'Sub-group header should collapse after its own click.');
+  });
+});
+
 // Test suite for routing within the Privacy Sandbox Internals page.
 suite('PrivacySandboxInternalsRoutingTest', function() {
   let page: InternalsPage;
@@ -144,8 +382,13 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('defaultsToFirstTabOnLoad', async function() {
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
     const params = new URLSearchParams(window.location.search);
     assertEquals(Page.TRACKING_PROTECTION, params.get('page'));
   });
@@ -190,8 +433,16 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
     shadowRoot = page.shadowRoot!;
     tabContainer = await waitForElement(shadowRoot, '#ps-page');
 
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
+
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
+
     const params = new URLSearchParams(window.location.search);
     assertEquals(
         Page.TRACKING_PROTECTION, params.get('page'),
@@ -199,8 +450,15 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
   });
 
   test('defaultsToFirstTabWhenNoPageInUrl', async function() {
+    const allTabs =
+        Array.from(shadowRoot.querySelectorAll<HTMLElement>('[slot="tab"]'));
+    const firstSelectableTab =
+        allTabs.find((tab) => tab.getAttribute('role') !== 'heading');
+
+    const expectedIndex = allTabs.indexOf(firstSelectableTab!).toString();
+
     await waitForCondition(
-        () => tabContainer.getAttribute('selected-index') === '0');
+        () => tabContainer.getAttribute('selected-index') === expectedIndex);
     const params = new URLSearchParams(window.location.search);
     assertEquals(
         Page.TRACKING_PROTECTION, params.get('page'),
@@ -225,7 +483,7 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
             Page.ADVERTISING);
 
     const advertisingTab = await waitForElement(
-        shadowRoot, `[data-page-name="${Page.ADVERTISING}"]`);
+        shadowRoot, `div[slot="tab"][data-page-name="${Page.ADVERTISING}"]`);
     const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
     const expectedIndex = allTabs.indexOf(advertisingTab).toString();
     assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
@@ -252,8 +510,8 @@ suite('PrivacySandboxInternalsRoutingTest', function() {
         () => new URLSearchParams(window.location.search).get('page') ===
             Page.POPUPS);
 
-    const popupsTab =
-        await waitForElement(shadowRoot, `[data-page-name="${Page.POPUPS}"]`);
+    const popupsTab = await waitForElement(
+        shadowRoot, `div[slot="tab"][data-page-name="${Page.POPUPS}"]`);
     const allTabs = Array.from(shadowRoot.querySelectorAll('[slot="tab"]'));
     const expectedIndex = allTabs.indexOf(popupsTab).toString();
     assertEquals(expectedIndex, tabContainer.getAttribute('selected-index'));
@@ -283,6 +541,7 @@ suite('InternalsPageTest', function() {
   });
 
   test('rendersAdvertisingPrefs', async () => {
+    Router.getInstance().navigateTo('advertising');
     const firstPrefElement = await waitForElement(
         internalsPage.shadowRoot!, '#advertising-prefs-panel > pref-display');
     assertTrue(
@@ -291,21 +550,19 @@ suite('InternalsPageTest', function() {
   });
 
   test('rendersTrackingProtectionPrefs', async () => {
-    const firstPrefElement = await waitForElement(
+    const firstPrefGroupElement = await waitForElement(
         internalsPage.shadowRoot!,
         '#tracking-protection-prefs-panel > pref-display');
     assertTrue(
-        !!firstPrefElement,
+        !!firstPrefGroupElement,
         'A <pref-display> element should be displayed for Tracking Protection Prefs.');
-  });
 
-  test('rendersTpcdExperimentPrefs', async () => {
-    const firstPrefElement = await waitForElement(
+    const secondPrefGroupElement = await waitForElement(
         internalsPage.shadowRoot!,
         '#tpcd-experiment-prefs-panel > pref-display');
     assertTrue(
-        !!firstPrefElement,
-        'A <pref-display> element should be displayed for TPCD Experiment Prefs.');
+        !!secondPrefGroupElement,
+        'A <pref-display> element should be displayed for 3PCD Experiment Prefs.');
   });
 });
 
@@ -337,20 +594,6 @@ suite('PSInternalsPageTpcdTabLoadingTest', function() {
 
     return foundTab;
   }
-
-  test('NoTpcdPanelIfDisabled', async () => {
-    setShouldShowTpcdMetadataGrants(false);
-    const anotherPanel = await waitForElement(
-        internalsPage.shadowRoot!, 'div[slot="panel"][title="COOKIES"]');
-    assertTrue(
-        !!anotherPanel,
-        'Panels that are not TPCD Metadata Grants should render normally.');
-    const tpcdPanel = internalsPage.shadowRoot!.querySelector(
-        'div[slot="panel"][title="TPCD_METADADATA_GRANTS"]');
-    assertNull(
-        tpcdPanel,
-        'The panel for TPCD Metadata Grants should not exist when the flag is disabled.');
-  });
 
   test('hidesTpcdMetadataGrantsTab', async () => {
     setShouldShowTpcdMetadataGrants(false);
@@ -749,8 +992,10 @@ suite('PrefDisplayElementTest', function() {
 suite('ExpandableJsonViewerElement', function() {
   let jsonViewer: ExpandableJsonViewerElement;
   const kJsonViewerTitle = 'JSON Viewer Title';
+  const kJsonContent = '{}';
 
   suiteSetup(async function() {
+    await customElements.whenDefined('text-copy-button');
     await customElements.whenDefined('expandable-json-viewer');
   });
 
@@ -759,14 +1004,20 @@ suite('ExpandableJsonViewerElement', function() {
     jsonViewer = document.createElement('expandable-json-viewer');
     document.body.appendChild(jsonViewer);
     const preElement = document.createElement('pre');
-    preElement.innerText = '{}';
+    preElement.innerText = kJsonContent;
     jsonViewer.configure(preElement, kJsonViewerTitle);
   });
+
+  const getChildElementByIdOrFail = (id: string) => {
+    const elem = jsonViewer.$(`#${id}`);
+    assertTrue(!!elem);
+    return elem;
+  };
 
   test('rendersPassedChildElement', () => {
     const preElementFromDOM = jsonViewer.$('#json-content > pre');
     assertTrue(!!preElementFromDOM);
-    assertEquals(preElementFromDOM.textContent, '{}');
+    assertEquals(preElementFromDOM.textContent, kJsonContent);
   });
 
   test('clickingJsonHeaderTogglesState', async () => {
@@ -783,6 +1034,79 @@ suite('ExpandableJsonViewerElement', function() {
 
   test('rendersTitleInJsonHeader', () => {
     assertEquals(jsonViewer.getTitleTextForTesting(), kJsonViewerTitle);
+  });
+
+  test('clickingJsonHeaderSwitchesIcons', async () => {
+    const jsonHeaderElement = jsonViewer.$('#json-header')!;
+    const openIcon = getChildElementByIdOrFail('open-icon');
+    const closeIcon = getChildElementByIdOrFail('close-icon');
+
+    // Only shows open icon by default
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'), 'none');
+
+    // Check that only close-icon is visible when content is expanded
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'none');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'),
+        'block');
+
+    // Only open-icon is visible when collapsed after being expanded
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(openIcon).getPropertyValue('display'), 'block');
+    assertEquals(
+        window.getComputedStyle(closeIcon).getPropertyValue('display'), 'none');
+  });
+
+  test('clickingJsonHeaderTogglesJsonContentVisibility', async () => {
+    const jsonHeaderElement = jsonViewer.$('#json-header')!;
+    const jsonContent = getChildElementByIdOrFail('json-content');
+
+    // Hides json-content by default
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'hidden');
+
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertNotEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'auto');
+
+    jsonHeaderElement.click();
+    await microtasksFinished();
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('height'), '0px');
+    assertEquals(
+        window.getComputedStyle(jsonContent).getPropertyValue('overflow'),
+        'hidden');
+  });
+
+  test('hasButtonToCopyContents', () => {
+    const copyButton: TextCopyButton|null = jsonViewer.$('text-copy-button');
+    assertTrue(!!copyButton);
+    assertEquals(copyButton.getAttribute('text-to-copy'), kJsonContent);
+  });
+
+  test('clickingCopyButtonDoesNotChangeContainerExpandedState', async () => {
+    const copyButton: TextCopyButton|null = jsonViewer.$('text-copy-button');
+    assertTrue(!!copyButton);
+
+    assertEquals(jsonViewer.hasAttribute('expanded'), false);
+    copyButton.click();
+    await microtasksFinished();
+    assertEquals(jsonViewer.hasAttribute('expanded'), false);
   });
 });
 
@@ -831,14 +1155,25 @@ suite('TextCopyButton', function() {
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     textCopyButton = document.createElement('text-copy-button');
-    textCopyButton.textToCopy = kTextToCopy;
+    textCopyButton.setAttribute('text-to-copy', kTextToCopy);
     document.body.appendChild(textCopyButton);
   });
 
-  test('clickingButtonCopiesText', async () => {
+  test('clickingButtonCopiesTextFromAttribute', async () => {
     textCopyButton.click();
     const clipboardText = await navigator.clipboard.readText();
     assertEquals(clipboardText, kTextToCopy);
+  });
+
+  test('updatesTextToCopyWhenTextToCopyAttributeIsChanged', async () => {
+    textCopyButton.click();
+    let clipboardText = await navigator.clipboard.readText();
+    assertEquals(clipboardText, kTextToCopy);
+
+    textCopyButton.setAttribute('text-to-copy', 'updated text');
+    textCopyButton.click();
+    clipboardText = await navigator.clipboard.readText();
+    assertEquals(clipboardText, 'updated text');
   });
 
   test('clickingButtonSetsRecentlyTextCopiedAttribute', async () => {
@@ -898,5 +1233,122 @@ suite('TextCopyButton', function() {
 
 
     mockTimer.uninstall();
+  });
+});
+
+
+// Test the <pref-page> element
+suite('PrefPageTest', function() {
+  let prefPageParentElement: HTMLElement;
+
+  const kPrefPageId = 'page-1';
+  const kPrefPageTitle = 'Page 1';
+  const kPrefGroup1Id = 'pref-group-1';
+  const kPrefGroup2Id = 'pref-group-1';
+  const kPrefGroup1Title = 'Group 1';
+  const kPrefGroup2Title = 'Group 2';
+
+  function createPrefGroup(id: string, title: string, prefPrefixes: string[]):
+      PrivacySandboxInternalsPrefGroup {
+    return {
+      id,
+      title,
+      prefPrefixes,
+    };
+  }
+
+  function createPrefPageConfig(
+      id: string, title: string,
+      prefGroups: PrivacySandboxInternalsPrefGroup[]):
+      PrivacySandboxInternalsPrefPageConfig {
+    return {
+      id,
+      title,
+      prefGroups,
+    };
+  }
+
+  const kPrefPageConfig = createPrefPageConfig(kPrefPageId, kPrefPageTitle, [
+    createPrefGroup(kPrefGroup1Id, kPrefGroup1Title, []),
+    createPrefGroup(kPrefGroup2Id, kPrefGroup2Title, []),
+  ]);
+
+  const kPrefPageConfigWithNoPrefGroups =
+      createPrefPageConfig(kPrefPageId, kPrefPageTitle, []);
+
+  suiteSetup(async function() {
+    await customElements.whenDefined('pref-page');
+  });
+
+  async function setupPrefPageWithConfig(
+      pageConfig: PrivacySandboxInternalsPrefPageConfig) {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefPageParentElement = document.createElement('div');
+    const prefPage = document.createElement('pref-page');
+    prefPage.pageConfig = pageConfig;
+    prefPageParentElement.appendChild(prefPage);
+    document.body.appendChild(prefPageParentElement);
+
+    // Wait for the <pref-page> to be removed from the DOM
+    await waitForCondition(
+        () => prefPageParentElement.querySelector('pref-page') === null);
+  }
+
+  test('createsTabSlotInParent', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const page1TabSlot = await waitForElement(
+        prefPageParentElement, `div[slot="tab"]#${kPrefPageId}-prefs-tab`);
+    assertTrue(
+        !!page1TabSlot,
+        'A slot="tab" element should be created in the parent of pref-page');
+    assertEquals(page1TabSlot.textContent, kPrefPageTitle);
+    assertEquals(page1TabSlot.dataset['pageName'], kPrefPageId);
+  });
+
+  test('createsPanelSlotInParent', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const page1PanelSlot =
+        await waitForElement(prefPageParentElement, 'div[slot="panel"]');
+    assertTrue(
+        !!page1PanelSlot,
+        'A slot="panel" element should be created in the parent of pref-page');
+  });
+
+  test('createsHeadingInParentForAllPrefGroups', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const allHeadings = prefPageParentElement.querySelectorAll('h3');
+    assertTrue(
+        allHeadings.length === 2, 'A header should be created for each page');
+    assertEquals(allHeadings[0]!.textContent, kPrefGroup1Title);
+    assertEquals(allHeadings[1]!.textContent, kPrefGroup2Title);
+  });
+
+  test('createsPrefGroupPanelInParentForAllPrefGroups', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfig);
+
+    const allPrefGroupPanels =
+        prefPageParentElement.querySelectorAll('.pref-group-panel');
+    assertTrue(
+        allPrefGroupPanels.length === 2,
+        'A pref-group-panel should be created for each pref group');
+    assertEquals(allPrefGroupPanels[0]!.id, kPrefGroup1Id + '-prefs-panel');
+    assertEquals(allPrefGroupPanels[1]!.id, kPrefGroup2Id + '-prefs-panel');
+  });
+
+  test('createsNoHeadingOrPrefGroupPanelWhenPrefGroupsIsEmpty', async () => {
+    await setupPrefPageWithConfig(kPrefPageConfigWithNoPrefGroups);
+
+    const allHeadings = prefPageParentElement.querySelectorAll('h3');
+    assertTrue(
+        allHeadings.length === 0,
+        'No header should be created when prefGroups is empty');
+    const allPrefGroupPanels =
+        prefPageParentElement.querySelectorAll('.pref-group-panel');
+    assertTrue(
+        allPrefGroupPanels.length === 0,
+        'No pref group panel should be created for each pref group');
   });
 });

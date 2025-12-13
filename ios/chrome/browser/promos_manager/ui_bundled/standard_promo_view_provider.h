@@ -21,7 +21,8 @@
 // The promo, `viewController`, to be displayed. Please override & implement (or
 // nillify) the titles, buttons, and images your promo does (or does
 // not) need.
-- (ConfirmationAlertViewController*)viewController;
+- (UIViewController*)viewControllerWithActionHandler:
+    (id<ConfirmationAlertActionHandler>)actionHandler;
 
 @end
 

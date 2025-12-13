@@ -47,7 +47,6 @@
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -111,7 +110,7 @@ class TestWebUIControllerFactory : public content::WebUIControllerFactory {
       content::WebUI* web_ui,
       const GURL& url) override {
     if (url.SchemeIs(content::kChromeUIScheme) &&
-        url.host_piece() == kTestWebUIHost) {
+        url.host() == kTestWebUIHost) {
       return std::make_unique<TestWebUIHelpBubbleController>(web_ui);
     }
 
@@ -296,6 +295,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCallbackEvent);
   std::unique_ptr<CustomWebUIHelpBubble> help_bubble;
   base::CallbackListSubscription sub;
+  auto context = BrowserUserEducationInterface::From(browser())
+                     ->GetUserEducationContextForTesting();
   RunTestSequence(
       CheckElement(
           kToolbarAppMenuButtonElementId,
@@ -304,9 +305,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
                 params;
             params.anchor_element = el;
             help_bubble = CustomWebUIHelpBubble::CreateForController<
-                TestWebUIHelpBubbleController>(
-                GURL(kTestWebUIHostUrl), el->context(),
-                user_education::HelpBubbleArrow::kTopRight, params);
+                TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl), context,
+                                               params);
             sub = help_bubble->custom_bubble_ui()->AddUserActionCallback(
                 base::BindLambdaForTesting(
                     [=](user_education::CustomHelpBubbleUi::UserAction action) {

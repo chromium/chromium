@@ -24,7 +24,7 @@ class CONTENT_EXPORT IdentityRegistry
   virtual void NotifyClose(const url::Origin& notifier_origin);
   virtual bool NotifyResolve(const url::Origin& notifier_origin,
                              const std::optional<std::string>& account_id,
-                             const std::string& token);
+                             const base::Value& token);
 
  private:
   friend class content::WebContentsUserData<IdentityRegistry>;

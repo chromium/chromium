@@ -12,7 +12,7 @@
 #include "ui/events/event_target.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class WindowHelpBubbleEventRelayMac::Delegate
     : public remote_cocoa::CocoaMouseCaptureDelegate {

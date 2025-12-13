@@ -1050,7 +1050,8 @@ TEST(ContentSecurityPolicy, NoDirective) {
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       EmptyCSP(), CSPDirectiveName::FormAction, GURL("http://www.example.com"),
-      GURL(), false, &context, SourceLocation(), true));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   ASSERT_EQ(0u, context.violations().size());
 }
 
@@ -1061,13 +1062,14 @@ TEST(ContentSecurityPolicy, ReportViolation) {
 
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FormAction, GURL("http://www.not-example.com"),
-      GURL("http://www.example.com"), false, &context, SourceLocation(), true));
+      GURL("http://www.example.com"), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   ASSERT_EQ(1u, context.violations().size());
   const char console_message[] =
-      "Refused to send form data to 'http://www.example.com/' because it "
-      "violates the following Content Security Policy directive: \"form-action "
-      "www.example.com\".\n";
+      "Sending form data to 'http://www.example.com/' violates the following "
+      "Content Security Policy directive: \"form-action www.example.com\". The "
+      "request has been blocked.\n";
   EXPECT_EQ(console_message, context.violations()[0]->console_message);
 }
 
@@ -1084,55 +1086,49 @@ TEST(ContentSecurityPolicy, DirectiveFallback) {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::DefaultSrc] = allow_host("a.com");
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char console_message[] =
-        "Refused to frame 'http://b.com/' because it violates "
-        "the following Content Security Policy directive: \"default-src "
-        "http://a.com\". Note that 'frame-src' was not explicitly "
-        "set, so 'default-src' is used as a fallback.\n";
-    EXPECT_EQ(console_message, context.violations()[0]->console_message);
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
+    EXPECT_THAT(
+        context.violations()[0]->console_message,
+        testing::HasSubstr("Note that 'frame-src' was not explicitly set, so "
+                           "'default-src' is used as a fallback."));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("a.com");
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char console_message[] =
-        "Refused to frame 'http://b.com/' because it violates "
-        "the following Content Security Policy directive: \"child-src "
-        "http://a.com\". Note that 'frame-src' was not explicitly "
-        "set, so 'child-src' is used as a fallback.\n";
-    EXPECT_EQ(console_message, context.violations()[0]->console_message);
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
+    EXPECT_THAT(
+        context.violations()[0]->console_message,
+        testing::HasSubstr("Note that 'frame-src' was not explicitly set, so "
+                           "'child-src' is used as a fallback."));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
     auto policy = EmptyCSP();
     policy->directives[CSPDirectiveName::FrameSrc] = allow_host("a.com");
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("b.com");
-    EXPECT_TRUE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                           GURL("http://a.com"), GURL(), false,
-                                           &context, SourceLocation(), false));
-    EXPECT_FALSE(CheckContentSecurityPolicy(policy, CSPDirectiveName::FrameSrc,
-                                            GURL("http://b.com"), GURL(), false,
-                                            &context, SourceLocation(), false));
+    EXPECT_TRUE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://a.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
+    EXPECT_FALSE(CheckContentSecurityPolicy(
+        policy, CSPDirectiveName::FrameSrc, GURL("http://b.com"), GURL(), false,
+        &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char console_message[] =
-        "Refused to frame 'http://b.com/' because it violates "
-        "the following Content Security Policy directive: \"frame-src "
-        "http://a.com\".\n";
-    EXPECT_EQ(console_message, context.violations()[0]->console_message);
+    EXPECT_THAT(context.violations()[0]->console_message,
+                Not(testing::HasSubstr(
+                    "Note that 'frame-src' was not explicitly set")));
   }
 }
 
@@ -1142,20 +1138,22 @@ TEST(ContentSecurityPolicy, RequestsAllowedWhenBypassingCSP) {
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://example.com/"), GURL(),
-      false, &context, SourceLocation(), false));
+      false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://example.com/"), GURL(),
-      false, &context, SourceLocation(), false));
+      false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
@@ -1165,11 +1163,11 @@ TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://example.com/file.txt"), GURL(), false, &context,
-      SourceLocation(), false));
+      SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://not-example.com/file.txt"), GURL(), false,
-      &context, SourceLocation(), false));
+      &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
@@ -1177,11 +1175,11 @@ TEST(ContentSecurityPolicy, FilesystemAllowedWhenBypassingCSP) {
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://example.com/file.txt"), GURL(), false, &context,
-      SourceLocation(), false));
+      SourceLocation(), /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc,
       GURL("filesystem:https://not-example.com/file.txt"), GURL(), false,
-      &context, SourceLocation(), false));
+      &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, BlobAllowedWhenBypassingCSP) {
@@ -1190,20 +1188,24 @@ TEST(ContentSecurityPolicy, BlobAllowedWhenBypassingCSP) {
 
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 
   // Register 'https' as bypassing CSP, which should now bypass it entirely.
   context.AddSchemeToBypassCSP("https");
 
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
   EXPECT_TRUE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FrameSrc, GURL("blob:https://not-example.com/"),
-      GURL(), false, &context, SourceLocation(), false));
+      GURL(), false, &context, SourceLocation(),
+      /*is_opaque_fenced_frame=*/false));
 }
 
 TEST(ContentSecurityPolicy, ParseSandbox) {
@@ -1237,10 +1239,12 @@ TEST(ContentSecurityPolicy,
   AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                       &policies);
   auto expected_csp = mojom::CSPSourceList::New();
-  expected_csp->hashes.push_back(mojom::IntegrityMetadata::New(
-      mojom::IntegrityAlgorithm::kSha256, std::vector<uint8_t>{'a', 'b', 'c'}));
-  expected_csp->hashes.push_back(mojom::IntegrityMetadata::New(
-      mojom::IntegrityAlgorithm::kSha256, std::vector<uint8_t>{'A', 'B', 'C'}));
+  expected_csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                    std::vector<uint8_t>{'a', 'b', 'c'});
+  expected_csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                    std::vector<uint8_t>{'A', 'B', 'C'});
+  expected_csp->url_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                        std::vector<uint8_t>{'c', 'd'});
   expected_csp->nonces.push_back("cde");
 
   EXPECT_TRUE(expected_csp.Equals(
@@ -1316,12 +1320,10 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD'",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
             return csp;
           }),
@@ -1332,36 +1334,32 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
+            csp->url_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                         std::vector<uint8_t>{'c', 'd'});
             return csp;
           }),
-          "The Content-Security-Policy directive 'script-src' contains "
-          "'url-sha256-Y2Q=' as a source expression that is permitted only "
-          "for 'script-src-v2' directive. It will be ignored.",
+          "",
       },
       {
           mojom::CSPDirectiveName::ScriptSrc,
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'eval-sha256-Y2Q='",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
+            csp->eval_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                          std::vector<uint8_t>{'c', 'd'});
             return csp;
           }),
-          "The Content-Security-Policy directive 'script-src' contains "
-          "'eval-sha256-Y2Q=' as a source expression that is permitted only "
-          "for 'script-src-v2' directive. It will be ignored.",
+          "",
       },
       {
           // TODO(crbug.com/392657736): Remove if script-src-v2 isn't
@@ -1370,17 +1368,14 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'url-sha256-Y2Q='",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
 
-            csp->url_hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'c', 'd'}));
+            csp->url_hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                         std::vector<uint8_t>{'c', 'd'});
             return csp;
           }),
           "",
@@ -1392,17 +1387,15 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD' 'eval-sha256-Y2Q='",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
 
-            csp->eval_hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'c', 'd'}));
+            csp->eval_hashes.push_back(
+                network::IntegrityMetadata(mojom::IntegrityAlgorithm::kSha256,
+                                           std::vector<uint8_t>{'c', 'd'}));
             return csp;
           }),
           "",
@@ -1413,17 +1406,15 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
           "https://a.com/",
           base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'a', 'b', 'c'}));
-            csp->hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'A', 'B', 'C'}));
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'a', 'b', 'c'});
+            csp->hashes.emplace_back(mojom::IntegrityAlgorithm::kSha256,
+                                     std::vector<uint8_t>{'A', 'B', 'C'});
             csp->nonces.push_back("cde");
 
-            csp->url_hashes.push_back(mojom::IntegrityMetadata::New(
-                mojom::IntegrityAlgorithm::kSha256,
-                std::vector<uint8_t>{'c', 'd'}));
+            csp->url_hashes.push_back(
+                network::IntegrityMetadata(mojom::IntegrityAlgorithm::kSha256,
+                                           std::vector<uint8_t>{'c', 'd'}));
             return csp;
           }),
           "The Content-Security-Policy directive 'script-src-v2' doesn't "
@@ -1644,7 +1635,11 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       {
           mojom::CSPDirectiveName::ScriptSrc,
           "'wrong' 'strict-dynamic-url'",
-          base::BindOnce([] { return mojom::CSPSourceList::New(); }),
+          base::BindOnce([] {
+            auto csp = mojom::CSPSourceList::New();
+            csp->allow_dynamic_url = true;
+            return csp;
+          }),
           "The source list for the Content Security Policy directive "
           "'script-src' contains an invalid source: ''wrong''. It will be "
           "ignored.",
@@ -1720,13 +1715,13 @@ TEST(ContentSecurityPolicy, ParseHash) {
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
-    const std::vector<mojom::IntegrityMetadataPtr>& hashes =
+    const std::vector<network::IntegrityMetadata>& hashes =
         policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]->hashes;
     if (!test.expected_hash.empty()) {
       EXPECT_EQ(1u, hashes.size()) << test.hash << " should parse to one hash";
-      EXPECT_EQ(test.expected_algorithm, hashes[0]->algorithm)
+      EXPECT_EQ(test.expected_algorithm, hashes[0].algorithm)
           << test.hash << " should have algorithm " << test.expected_algorithm;
-      EXPECT_EQ(test.expected_hash, hashes[0]->value)
+      EXPECT_EQ(test.expected_hash, hashes[0].value)
           << test.hash << " has not been base64decoded correctly";
     } else {
       EXPECT_TRUE(hashes.empty()) << test.hash << " should be an invalid hash";
@@ -2275,9 +2270,10 @@ TEST(ContentSecurityPolicy, AllowsBlanketEnforcementOfRequiredCSP) {
     EXPECT_EQ(test.expected_result, actual);
     if (test.expected_self_origin) {
       GURL expected_self_origin(test.expected_self_origin);
-      EXPECT_EQ(expected_self_origin.scheme(),
+      EXPECT_EQ(expected_self_origin.GetScheme(),
                 required_csp->self_origin->scheme);
-      EXPECT_EQ(expected_self_origin.host(), required_csp->self_origin->host);
+      EXPECT_EQ(expected_self_origin.GetHost(),
+                required_csp->self_origin->host);
       EXPECT_EQ(expected_self_origin.EffectiveIntPort(),
                 required_csp->self_origin->port);
     }
@@ -2299,17 +2295,15 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::DefaultSrc] = allow_host("a.com");
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char kConsoleMessage[] =
-        "Refused to frame 'http://b.com/' as a fenced frame because it "
-        "violates the following Content Security Policy directive: "
-        "\"default-src http://a.com\". Note that 'fenced-frame-src' was not "
-        "explicitly set, so 'default-src' is used as a fallback.\n";
-    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_THAT(
+        context.violations()[0]->console_message,
+        testing::HasSubstr("Note that 'fenced-frame-src' was not explicitly "
+                           "set, so 'default-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2317,17 +2311,15 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::ChildSrc] = allow_host("a.com");
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char kConsoleMessage[] =
-        "Refused to frame 'http://b.com/' as a fenced frame because it "
-        "violates the following Content Security Policy directive: "
-        "\"child-src http://a.com\". Note that 'fenced-frame-src' was not "
-        "explicitly set, so 'child-src' is used as a fallback.\n";
-    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_THAT(
+        context.violations()[0]->console_message,
+        testing::HasSubstr("Note that 'fenced-frame-src' was not explicitly "
+                           "set, so 'child-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2336,17 +2328,15 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
 
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char kConsoleMessage[] =
-        "Refused to frame 'http://b.com/' as a fenced frame because it "
-        "violates the following Content Security Policy directive: "
-        "\"frame-src http://a.com\". Note that 'fenced-frame-src' was not "
-        "explicitly set, so 'frame-src' is used as a fallback.\n";
-    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_THAT(
+        context.violations()[0]->console_message,
+        testing::HasSubstr("Note that 'fenced-frame-src' was not explicitly "
+                           "set, so 'frame-src' is used as a fallback."));
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
   }
   {
     CSPContextTest context;
@@ -2355,16 +2345,15 @@ TEST(ContentSecurityPolicy, FencedFrameSrcFallback) {
     policy->directives[CSPDirectiveName::FrameSrc] = allow_host("b.com");
     EXPECT_TRUE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://a.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     EXPECT_FALSE(CheckContentSecurityPolicy(
         policy, CSPDirectiveName::FencedFrameSrc, GURL("http://b.com"), GURL(),
-        false, &context, SourceLocation(), false));
+        false, &context, SourceLocation(), /*is_opaque_fenced_frame=*/false));
     ASSERT_EQ(1u, context.violations().size());
-    const char kConsoleMessage[] =
-        "Refused to frame 'http://b.com/' as a fenced frame because it "
-        "violates the following Content Security Policy directive: "
-        "\"fenced-frame-src http://a.com\".\n";
-    EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
+    EXPECT_THAT(context.violations()[0]->console_message,
+                Not(testing::HasSubstr(
+                    "Note that 'fenced-frame-src' was not explicitly set, so "
+                    "'frame-src' is used as a fallback.")));
   }
 }
 
@@ -2376,13 +2365,12 @@ TEST(ContentSecurityPolicy, FencedFrameSrcOpaqueURL) {
   EXPECT_FALSE(CheckContentSecurityPolicy(
       policy, CSPDirectiveName::FencedFrameSrc, GURL("https://a.com"), GURL(),
       /*has_followed_redirect=*/false, &context, SourceLocation(),
-      /*is_form_submission=*/false,
       /*is_opaque_fenced_frame=*/true));
   ASSERT_EQ(1u, context.violations().size());
   const char kConsoleMessage[] =
-      "Refused to frame 'urn:uuid' as a fenced frame because it violates the "
-      "following Content Security Policy directive: \"fenced-frame-src "
-      "'none'\".\n";
+      "Framing 'urn:uuid' as a fenced frame violates the following Content "
+      "Security Policy directive: \"fenced-frame-src 'none'\". The request has "
+      "been blocked.\n";
   EXPECT_EQ(kConsoleMessage, context.violations()[0]->console_message);
 }
 

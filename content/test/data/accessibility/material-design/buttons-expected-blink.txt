@@ -1,0 +1,228 @@
+rootWebArea htmlTag='#document' name='Material Web Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button'
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+++++++++genericContainer htmlTag='md-text-button'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Text Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Button'
+++++++++++++++++++inlineTextBox name='Text Button'
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++genericContainer className='background' htmlTag='div'
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button className='button' htmlTag='button' name='Disabled Button' restriction=disabled
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Disabled Button'
+++++++++++++++++inlineTextBox name='Disabled Button'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button'
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+++++++++genericContainer htmlTag='md-text-button'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Text Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Button'
+++++++++++++++++++inlineTextBox name='Text Button'
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++genericContainer className='background' htmlTag='div'
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button className='button' htmlTag='button' name='Disabled Button' restriction=disabled
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Disabled Button'
+++++++++++++++++inlineTextBox name='Disabled Button'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Filled Button Clicked'
+++++++++++++inlineTextBox name='Filled Button Clicked'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer className='outline' htmlTag='div'
+++++++++genericContainer className='background' htmlTag='div'
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button className='button' htmlTag='button' name='Outlined Button' restriction=disabled
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Outlined Button'
+++++++++++++++++inlineTextBox name='Outlined Button'
+++++++++genericContainer htmlTag='md-text-button'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Text Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Button'
+++++++++++++++++++inlineTextBox name='Text Button'
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++genericContainer className='background' htmlTag='div'
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button className='button' htmlTag='button' name='Disabled Button' restriction=disabled
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Disabled Button'
+++++++++++++++++inlineTextBox name='Disabled Button'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Filled Button Clicked'
+++++++++++++inlineTextBox name='Filled Button Clicked'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Outlined Button Disabled'
+++++++++++++inlineTextBox name='Outlined Button Disabled'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Buttons'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-filled-button'
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Filled Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Filled Button'
+++++++++++++++++++inlineTextBox name='Filled Button'
+++++++++genericContainer htmlTag='md-outlined-button'
+++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Outlined Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Outlined Button'
+++++++++++++++++++inlineTextBox name='Outlined Button'
+++++++++genericContainer htmlTag='md-text-button'
+++++++++++genericContainer className='background' htmlTag='div'
+++++++++++none ignored invisible
+++++++++++none ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++button className='button' htmlTag='button' name='Text Button'
+++++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++staticText name='Text Button'
+++++++++++++++++++inlineTextBox name='Text Button'
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++genericContainer className='background' htmlTag='div'
+++++++++none ignored invisible
+++++++++none ignored invisible
+++++++++++genericContainer ignored invisible
+++++++++button className='button' htmlTag='button' name='Disabled Button' restriction=disabled
+++++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='Disabled Button'
+++++++++++++++++inlineTextBox name='Disabled Button'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Filled Button Clicked'
+++++++++++++inlineTextBox name='Filled Button Clicked'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Outlined Button Disabled'
+++++++++++++inlineTextBox name='Outlined Button Disabled'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Outlined Button Enabled'
+++++++++++++inlineTextBox name='Outlined Button Enabled'

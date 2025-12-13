@@ -187,6 +187,17 @@ public class SequencedTaskRunnerTaskMigrationTest {
             TaskRunnerImpl.runTask(taskIndex);
         }
 
+        @Override
+        public void postDelayedTaskWithLocation(
+                long nativeTaskRunnerAndroid,
+                long delay,
+                int taskIndex,
+                String fileName,
+                String functionName,
+                int lineNumber) {
+            postDelayedTask(nativeTaskRunnerAndroid, delay, taskIndex);
+        }
+
         public boolean hasReceivedTasks() {
             return mReceivedTasksCount.get() > 0;
         }

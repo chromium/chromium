@@ -107,7 +107,8 @@ void MathScriptsLayoutAlgorithm::GatherChildren(
     if (child.IsOutOfFlowPositioned()) {
       if (container_builder) {
         container_builder->AddOutOfFlowChildCandidate(
-            block_child, BorderScrollbarPadding().StartOffset());
+            block_child,
+            LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       }
       continue;
     }
@@ -302,7 +303,7 @@ const LayoutResult* MathScriptsLayoutAlgorithm::Layout() {
   ChildAndMetrics prescripts_metrics;
   if (prescripts)
     prescripts_metrics = LayoutAndGetMetrics(prescripts);
-  for (auto sub_sup_pair : sub_sup_pairs) {
+  for (const auto& sub_sup_pair : sub_sup_pairs) {
     if (sub_sup_pair.sub)
       sub_metrics.emplace_back(LayoutAndGetMetrics(sub_sup_pair.sub));
     if (sub_sup_pair.sup)

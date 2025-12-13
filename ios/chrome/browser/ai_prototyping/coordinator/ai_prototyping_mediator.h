@@ -11,6 +11,7 @@
 
 @protocol AIPrototypingConsumer;
 
+class PersistTabContextBrowserAgent;
 class WebStateList;
 
 // The mediator for the AI prototyping menu.
@@ -20,7 +21,10 @@ class WebStateList;
 @property(nonatomic, weak) id<AIPrototypingConsumer> consumer;
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+       persistTabContextBrowserAgent:
+           (PersistTabContextBrowserAgent*)persistTabContextBrowserAgent
     NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

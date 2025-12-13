@@ -22,7 +22,6 @@ namespace drm = ::fuchsia::media::drm;
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::WithArgs;
 
 // This is a mock for the Chromium media::ProvisionFetcher (and not Fuchsia's
@@ -68,10 +67,10 @@ TEST_F(FuchsiaCdmProvisioningFetcherImplTest, Fetch) {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher,
                 Retrieve(Eq(kTestDefaultUrl), Eq(kTestRequest), _))
-        .WillOnce(WithArgs<2>(
-            Invoke([](ProvisionFetcher::ResponseCB response_callback) {
+        .WillOnce(
+            WithArgs<2>([](ProvisionFetcher::ResponseCB response_callback) {
               std::move(response_callback).Run(true, kTestResponse);
-            })));
+            }));
 
     return std::unique_ptr<ProvisionFetcher>(std::move(mock_provision_fetcher));
   }));
@@ -92,10 +91,10 @@ TEST_F(FuchsiaCdmProvisioningFetcherImplTest, RetrieveFails) {
   FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher, Retrieve(_, _, _))
-        .WillOnce(WithArgs<2>(
-            Invoke([](ProvisionFetcher::ResponseCB response_callback) {
+        .WillOnce(
+            WithArgs<2>([](ProvisionFetcher::ResponseCB response_callback) {
               std::move(response_callback).Run(false, "");
-            })));
+            }));
 
     return std::unique_ptr<ProvisionFetcher>(std::move(mock_provision_fetcher));
   }));
@@ -116,10 +115,10 @@ TEST_F(FuchsiaCdmProvisioningFetcherImplTest, NoDefaultProvisioningUrl) {
   FuchsiaCdmProvisioningFetcherImpl fetcher(base::BindLambdaForTesting([]() {
     auto mock_provision_fetcher = std::make_unique<MockProvisionFetcher>();
     EXPECT_CALL(*mock_provision_fetcher, Retrieve(_, _, _))
-        .WillOnce(WithArgs<2>(
-            Invoke([](ProvisionFetcher::ResponseCB response_callback) {
+        .WillOnce(
+            WithArgs<2>([](ProvisionFetcher::ResponseCB response_callback) {
               std::move(response_callback).Run(true, kTestResponse);
-            })));
+            }));
 
     return std::unique_ptr<ProvisionFetcher>(std::move(mock_provision_fetcher));
   }));

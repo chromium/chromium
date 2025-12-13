@@ -196,6 +196,29 @@ TEST_F(PasswordRequirementsServiceTest, FetchPasswordRequirementsSpecCaching) {
   EXPECT_EQ(fetcher_ptr_->GetFetchCount(test_origin_), 1);
 }
 
+// Tests that calling FetchPasswordRequirementsSpec with an empty domain
+// completes and returns the default spec without attempting a fetch.
+TEST_F(PasswordRequirementsServiceTest, FetchWithEmptyDomain) {
+  GURL empty_domain;
+  ASSERT_FALSE(empty_domain.is_valid());
+
+  // Initially, no fetch should have been called.
+  ASSERT_EQ(fetcher_ptr_->GetFetchCount(empty_domain), 0);
+
+  base::test::TestFuture<autofill::PasswordRequirementsSpec> completion_future;
+  service_.FetchPasswordRequirementsSpec(empty_domain,
+                                         completion_future.GetCallback());
+  ASSERT_TRUE(completion_future.Wait());
+
+  // The fetcher should not be called.
+  EXPECT_EQ(fetcher_ptr_->GetFetchCount(empty_domain), 0);
+
+  // The callback should receive a empty spec.
+  const auto& spec = completion_future.Get();
+  EXPECT_FALSE(spec.has_min_length());
+  EXPECT_FALSE(spec.has_max_length());
+  EXPECT_FALSE(spec.has_priority());
+}
 }  // namespace
 
 }  // namespace password_manager

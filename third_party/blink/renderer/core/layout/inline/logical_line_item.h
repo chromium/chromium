@@ -272,6 +272,7 @@ struct LogicalLineItem {
 
   bool has_over_annotation = false;
   bool has_under_annotation = false;
+  FontHeight annotation_metrics;
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream& stream,

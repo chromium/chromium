@@ -20,7 +20,8 @@ void SetDataControls(PrefService* prefs,
   }
 
   for (const std::string& rule : rules) {
-    list->Append(*base::JSONReader::Read(rule));
+    list->Append(
+        *base::JSONReader::Read(rule, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
   }
 
   prefs->SetInteger(

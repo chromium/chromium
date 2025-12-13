@@ -517,7 +517,7 @@ void Job::StartURLRequest(URLRequestContext* context) {
                                         this, traffic_annotation);
   if (request_params_->http_method == HTTP_METHOD_POST)
     url_request_->set_method("POST");
-  url_request_->set_allow_credentials(false);
+  url_request_->set_disallow_credentials();
 
   // Disable secure DNS for hostname lookups triggered by certificate network
   // fetches to prevent deadlock.

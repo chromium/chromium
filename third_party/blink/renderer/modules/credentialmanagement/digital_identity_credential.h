@@ -14,7 +14,6 @@ namespace blink {
 class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
-class ExceptionState;
 
 // Returns whether `CredentialRequestOptions options` contains a credential of
 // digital-identity type.
@@ -38,8 +37,7 @@ MODULES_EXPORT bool IsDigitalIdentityCredentialType(
 // communication with external sources.
 MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialRequestOptions& options,
-    ExceptionState& expection_state);
+    const CredentialRequestOptions& options);
 
 // Creates the digital-identity credential specified by `options`. Credentials
 // are stored in external wallets, and not stored in the browser. Therefore, the
@@ -47,8 +45,7 @@ MODULES_EXPORT void DiscoverDigitalIdentityCredentialFromExternalSource(
 // communication with external sources.
 MODULES_EXPORT void CreateDigitalIdentityCredentialInExternalSource(
     ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
-    const CredentialCreationOptions& options,
-    ExceptionState& exception_state);
+    const CredentialCreationOptions& options);
 
 }  // namespace blink
 

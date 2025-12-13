@@ -39,7 +39,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -52,7 +52,7 @@ constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 
 // Open the specified URL in a new tab with the specified profile
 void OpenUrl(Profile* profile, const GURL& url) {
-  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
       url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -384,7 +384,7 @@ void QuickAnswersUiController::OpenFeedbackPage(
 
   // TODO(b/229007013, crbug.com/374253370): Merge the logics after resolve the
   // deps cycle with //c/b/ui in ash chrome build.
-  ash::NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
+  ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage(
       ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
       feedback_template);
 }

@@ -305,7 +305,7 @@ bool CustomInputProcessor::AddDeviceRAMInMB(
   if (custom_input.tensor_length() != 1) {
     return false;
   }
-  float device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
+  float device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
   out_tensor.emplace_back(device_ram_in_mb);
   return true;
 }

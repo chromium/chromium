@@ -10,13 +10,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.support.annotation.Px;
-import android.view.Gravity;
 import android.view.TouchDelegate;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.core.widget.TextViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
@@ -31,7 +30,6 @@ public class HubActionButtonHelper {
         ApplyButtonData.apply(buttonData, button);
         button.setText(null);
         button.setCompoundDrawablePadding(0);
-
         if (HubUtils.isGtsUpdateEnabled()) {
             Resources resources = button.getResources();
             @Px
@@ -43,18 +41,9 @@ public class HubActionButtonHelper {
             int buttonSize =
                     resources.getDimensionPixelSize(R.dimen.hub_toolbar_action_button_size);
 
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) button.getLayoutParams();
+            ViewGroup.LayoutParams params = (ViewGroup.LayoutParams) button.getLayoutParams();
             params.width = buttonSize;
             params.height = buttonSize;
-
-            // Only set start margin if the button is positioned at the start
-            if ((params.gravity & Gravity.START) == Gravity.START) {
-                @Px
-                int startMarginPx =
-                        resources.getDimensionPixelSize(
-                                R.dimen.hub_toolbar_action_button_start_margin);
-                params.setMarginStart(startMarginPx);
-            }
 
             button.setLayoutParams(params);
         }

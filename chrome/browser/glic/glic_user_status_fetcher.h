@@ -19,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -141,7 +142,6 @@ class GlicUserStatusFetcher : public signin::IdentityManager::Observer {
   raw_ptr<Profile> profile_;
   const base::RepeatingClosure callback_;
   GURL endpoint_;
-  std::string oauth2_scope_;
 
   // Ensures we run a request at least as often as
   // `features::kGlicUserStatusRequestDelay`. Reset on browser start, when a

@@ -9,6 +9,8 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/zip.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -65,28 +67,9 @@ class FakeMediaStreamAudioSink : public WebMediaStreamAudioSink {
     EXPECT_EQ(data.frames(), expected_frames_);
 
     if (expected_data_) {
-      bool unexpected_data = false;
-
-      for (int ch = 0; ch < data.channels(); ++ch) {
-        const float* actual_channel_data = data.channel(ch);
-        const float* expected_channel_data = expected_data_->channel(ch);
-
-        for (int i = 0; i < data.frames(); ++i) {
-          // If we use ASSERT_EQ here, the test will hang, since |on_data_| will
-          // never be called.
-          UNSAFE_TODO(
-              EXPECT_EQ(actual_channel_data[i], expected_channel_data[i]));
-
-          // Force an early exit to prevent log spam from EXPECT_EQ.
-          if (UNSAFE_TODO(actual_channel_data[i]) !=
-              UNSAFE_TODO(expected_channel_data[i])) {
-            unexpected_data = true;
-            break;
-          }
-        }
-
-        if (unexpected_data)
-          break;
+      for (auto [expected_ch, actual_ch] :
+           base::zip(expected_data_->AllChannels(), data.AllChannels())) {
+        EXPECT_EQ(actual_ch, expected_ch);
       }
     }
 
@@ -310,12 +293,12 @@ TEST_P(PushableMediaStreamAudioSourceTest, ConvertsFormatInternally) {
 
   // Create reference planar data.
   auto expected_data = media::AudioBus::Create(kChannels, kFrames);
-  float* bus_data_ch_0 = expected_data->channel(0);
-  float* bus_data_ch_1 = expected_data->channel(1);
+  auto bus_data_ch_0 = expected_data->channel(0);
+  auto bus_data_ch_1 = expected_data->channel(1);
   for (int i = 0; i < kFrames; ++i) {
     float value = static_cast<float>(i) / kFrames;
-    UNSAFE_TODO(bus_data_ch_0[i]) = value;
-    UNSAFE_TODO(bus_data_ch_1[i]) = -value;
+    bus_data_ch_0[i] = value;
+    bus_data_ch_1[i] = -value;
   }
 
   // Sanity check.

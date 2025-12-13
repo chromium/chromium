@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 
 #include <memory>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -252,9 +248,9 @@ class PlatformKeysServiceBrowserTestBase
     CERTCertificate* cert = out_cert->get();
     ASSERT_TRUE(cert);
     ASSERT_GT(cert->derPublicKey.len, 0U);
-    *out_spki_der =
-        std::vector<uint8_t>(cert->derPublicKey.data,
-                             cert->derPublicKey.data + cert->derPublicKey.len);
+    *out_spki_der = std::vector<uint8_t>(
+        cert->derPublicKey.data,
+        UNSAFE_TODO(cert->derPublicKey.data + cert->derPublicKey.len));
   }
 
  private:

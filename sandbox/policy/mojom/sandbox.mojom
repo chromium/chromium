@@ -64,9 +64,6 @@ enum Sandbox {
   // Like kUtility but allows loading of speech recognition libraries.
   kSpeechRecognition,
 
-  // Like kService but allows loading of the optimization guide library.
-  [EnableIf=is_linux] kVideoEffects,
-
   // Equivalent to no sandbox on all non-Fuchsia platforms.
   // Minimally privileged sandbox on Fuchsia.
   [EnableIf=is_fuchsia] kVideoCapture,
@@ -95,9 +92,9 @@ enum Sandbox {
   // |kXrCompositing| hosts XR Device Service on Windows.
   [EnableIf=is_win] kXrCompositing,
 
-  // Allows LPAC capabilities for WinHttp. This only needs internet access,
-  // policy access, and service access.
-  [EnableIf=is_win] kWindowsSystemProxyResolver,
+  // Allows access to OS system proxy resolver APIs (WinHTTP on Windows,
+  // SystemConfiguration/CFNetwork on macOS).
+  [EnableIf=is_win|is_mac] kProxyResolver,
 
   // Used to protect processes that perform hardware video decode acceleration.
   // Currently uses the same policy as the GPU process sandbox. Warm-up does
@@ -126,10 +123,6 @@ enum Sandbox {
   // Text-to-speech.
   [EnableIf=is_chromeos] kTts,
 
-  // Hosts the Libassistant service on ChromeOS Ash, only used for
-  // Chrome branded builds.
-  [EnableIf=enable_cros_libassistant] kLibassistant,
-
   // Like kUtility but allows access to IOSurface on macOS.
   [EnableIf=is_mac] kMirroring,
 
@@ -143,11 +136,10 @@ enum Sandbox {
 
   // Hosts On Device Translation service.
   // Currently the sandboxing of the On Device Translation service needs
-  // a dedicated sandbox type on macOS and Linux.
+  // a dedicated sandbox type on macOS, Linux and ChromeOS.
   // On Windows the kService sandbox type is used.
-  // TODO(crbug.com/340778819): Implement sandboxing on other platforms.
-  [EnableIf=is_linux|is_mac] kOnDeviceTranslation,
+  [EnableIf=is_linux|is_mac|is_chromeos] kOnDeviceTranslation,
 
   // Like kUtility but allows loading of the shape detection internal library.
-  [EnableIf=is_chromeos] kShapeDetection,
+  [EnableIf=is_chromeos|is_linux] kShapeDetection,
 };

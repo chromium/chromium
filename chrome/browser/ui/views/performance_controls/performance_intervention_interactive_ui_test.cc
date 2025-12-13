@@ -77,8 +77,7 @@ class DiscardObserver : public resource_coordinator::LifecycleUnitObserver,
 
   void OnLifecycleUnitStateChanged(
       resource_coordinator::LifecycleUnit* lifecycle_unit,
-      ::mojom::LifecycleUnitState last_state,
-      ::mojom::LifecycleUnitStateChangeReason reason) override {
+      ::mojom::LifecycleUnitState last_state) override {
     if (lifecycle_unit->GetState() == ::mojom::LifecycleUnitState::DISCARDED) {
       expected_tab_discarded_count_--;
     }

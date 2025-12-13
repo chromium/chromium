@@ -7,6 +7,7 @@
 #include <shlobj.h>
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,15 +15,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
+#include "base/win/limited_access_features.h"
 #include "base/win/post_async_results.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/win/limited_access_features.h"
 #include "chrome/installer/util/shell_util.h"
 #include "content/public/browser/browser_thread.h"
+#include "taskbar_manager.h"
 #include "windows.ui.shell.h"
 
 using ABI::Windows::Foundation::IAsyncOperation;
@@ -40,6 +43,19 @@ namespace {
 
 using ResultMetricCallback = base::OnceCallback<void(PinResultMetric)>;
 
+constexpr const char* kShouldPinToTaskbarResultHistogram =
+    "Windows.ShouldPinToTaskbarResult";
+constexpr const char* kTaskbarPinResultHistogram = "Windows.TaskbarPinResult";
+
+// LINT.IfChange(PinAppToTaskbarChannel)
+// These must be kept in sync with the enum in taskbar_manager.h as well as the
+// variants list in /tools/metrics/histograms/metadata/windows/histograms.xml.
+constexpr std::array kChannels = {
+    "DefaultBrowserInfoBar", "PinToTaskbarInfoBar", "FirstRunExperience",
+    "SettingsPage",          "PinWebApp",
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/windows/histograms.xml:PinAppToTaskbarChannel)
+
 bool PinLimitedAccessFeatureAvailable() {
   static constexpr wchar_t taskbar_api_token[] =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -47,8 +63,8 @@ bool PinLimitedAccessFeatureAvailable() {
 #else
       L"ILzQYl3daXqTIyjmNj5xwg==";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return TryToUnlockLimitedAccessFeature(L"com.microsoft.windows.taskbar.pin",
-                                         taskbar_api_token);
+  return base::win::TryToUnlockLimitedAccessFeature(
+      L"com.microsoft.windows.taskbar.pin", taskbar_api_token);
 }
 
 // Returns whether pinning is allowed or not. If it returns std::nullopt, an
@@ -221,13 +237,14 @@ void PinWithLimitedAccessFeature(const std::wstring& app_user_model_id,
 }
 
 void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
+                             PinAppToTaskbarChannel channel,
                              bool check_only,
                              PinResultCallback callback) {
   // Do the initial work, which does a lot of COM stuff, on a background thread.
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::BindOnce(&PinAppToTaskbarInternal, app_user_model_id,
-                                  check_only, std::move(callback)));
+                                  channel, check_only, std::move(callback)));
     return;
   }
 
@@ -235,16 +252,22 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
   // App User Model Id is cleared, and to record detailed success and failure
   // metrics.
   ResultMetricCallback pin_result_callback(base::BindOnce(
-      [](PinResultCallback pin_callback, bool check_only,
-         PinResultMetric result) {
+      [](PinResultCallback pin_callback, PinAppToTaskbarChannel channel,
+         bool check_only, PinResultMetric result) {
         ::SetCurrentProcessExplicitAppUserModelID(L"");
         base::UmaHistogramEnumeration(check_only
-                                          ? "Windows.ShouldPinToTaskbarResult"
-                                          : "Windows.TaskbarPinResult",
+                                          ? kShouldPinToTaskbarResultHistogram
+                                          : kTaskbarPinResultHistogram,
                                       result);
+        base::UmaHistogramEnumeration(
+            check_only ? base::StrCat({kShouldPinToTaskbarResultHistogram, ".",
+                                       kChannels[static_cast<int>(channel)]})
+                       : base::StrCat({kTaskbarPinResultHistogram, ".",
+                                       kChannels[static_cast<int>(channel)]}),
+            result);
         std::move(pin_callback).Run(result == PinResultMetric::kSuccess);
       },
-      std::move(callback), check_only));
+      std::move(callback), channel, check_only));
 
   if (PinLimitedAccessFeatureAvailable()) {
     PinWithLimitedAccessFeature(app_user_model_id, check_only,
@@ -257,21 +280,22 @@ void PinAppToTaskbarInternal(const std::wstring& app_user_model_id,
 }  // namespace
 
 void ShouldOfferToPin(const std::wstring& app_user_model_id,
+                      PinAppToTaskbarChannel channel,
                       PinResultCallback callback) {
   auto callback_on_current_thread =
       base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE);
 
-  PinAppToTaskbarInternal(app_user_model_id, /*check_only=*/true,
+  PinAppToTaskbarInternal(app_user_model_id, channel, /*check_only=*/true,
                           std::move(callback_on_current_thread));
 }
 
 void PinAppToTaskbar(const std::wstring& app_user_model_id,
+                     PinAppToTaskbarChannel channel,
                      PinResultCallback callback) {
   auto callback_on_current_thread =
       base::BindPostTaskToCurrentDefault(std::move(callback), FROM_HERE);
 
-  PinAppToTaskbarInternal(app_user_model_id,
-                          /*check_only=*/false,
+  PinAppToTaskbarInternal(app_user_model_id, channel, /*check_only=*/false,
                           std::move(callback_on_current_thread));
 }
 

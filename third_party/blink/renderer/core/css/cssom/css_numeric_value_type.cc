@@ -96,29 +96,6 @@ CSSNumericValueType::BaseType UnitTypeToBaseType(
 
 }  // namespace
 
-String CSSNumericValueType::BaseTypeToString(BaseType base_type) {
-  switch (base_type) {
-    case BaseType::kLength:
-      return "length";
-    case BaseType::kAngle:
-      return "angle";
-    case BaseType::kTime:
-      return "time";
-    case BaseType::kFrequency:
-      return "frequency";
-    case BaseType::kResolution:
-      return "resolution";
-    case BaseType::kFlex:
-      return "flex";
-    case BaseType::kPercent:
-      return "percent";
-    default:
-      break;
-  }
-
-  NOTREACHED();
-}
-
 CSSNumericValueType::CSSNumericValueType(CSSPrimitiveValue::UnitType unit) {
   exponents_.Fill(0, kNumBaseTypes);
   if (unit != CSSPrimitiveValue::UnitType::kNumber) {

@@ -41,9 +41,7 @@
   GURL url = WebUIPageUrlWithHost(
       optimization_guide_internals::kChromeUIOptimizationGuideInternalsHost);
   [ChromeEarlGrey loadURL:url];
-
-  GREYAssert(WaitForOmniboxURLString(url.spec(), false),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:url];
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Optimization Guide Internals"];
@@ -54,8 +52,7 @@
   [ChromeEarlGrey openNewTab];
   GURL fooURL = GURL("https://foo");
   [ChromeEarlGrey loadURL:fooURL];
-  GREYAssert(WaitForOmniboxURLString(fooURL.spec(), false),
-             @"Omnibox did not contain URL.");
+  [ChromeEarlGrey waitForWebStateVisibleURL:fooURL];
   // Call `-canApplyOptimization:type:metadata:` for its side-effect of logging
   // to HintsManager. The event logged should then become visible in the WebUI.
   [OptimizationGuideTestAppInterface

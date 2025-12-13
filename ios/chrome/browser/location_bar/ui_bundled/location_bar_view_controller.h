@@ -22,6 +22,7 @@
 @protocol ContextualPanelEntrypointVisibilityDelegate;
 @protocol FakeboxButtonsSnapshotProvider;
 @protocol HelpCommands;
+@class LocationBarViewController;
 @protocol LensCommands;
 @protocol LensOverlayCommands;
 @protocol LocationBarOffsetProvider;
@@ -42,6 +43,9 @@ class Tracker;
 
 // Notifies the delegate about a tap on the Copy entry in the editing menu.
 - (void)locationBarCopyTapped;
+
+// Notifies the delegate about a tap on the Share entry in the editing menu.
+- (void)locationBarShareTapped;
 
 // Returns the target that location bar scribble events should be forwarded to.
 - (UIResponder<UITextInput>*)omniboxScribbleForwardingTarget;
@@ -70,6 +74,16 @@ class Tracker;
 // view will always be hidden. However, if it is YES, it will only be unhidden
 // if it should currently be displayed.
 - (void)displayContextualPanelEntrypointView:(BOOL)display;
+
+// Handles AI Hub "New" badge being tapped in the location bar.
+- (void)locationBarDidTapAIHubNewBadge;
+
+// Decides if AI Hub new badge should show.
+- (BOOL)shouldShowAIHubNewFeatureBadge;
+
+// Edit state required `height` changed.
+- (void)locationBarViewController:(LocationBarViewController*)controller
+         didChangeEditStateHeight:(CGFloat)height;
 
 @end
 
@@ -210,6 +224,9 @@ class Tracker;
 
 // Moves the focus of VoiceOver to the steady view.
 - (void)focusSteadyViewForVoiceOver;
+
+// Creates a visual copy of the location bar steady view.
+- (UIView*)locationBarSteadyViewVisualCopy;
 
 @end
 

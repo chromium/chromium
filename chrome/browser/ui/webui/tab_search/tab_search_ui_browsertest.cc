@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_InitialTabItemsListed) {
 
 // Flaky - see https://crbug.com/40932977
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_SwitchToTabAction) {
-  int tab_count = browser()->tab_strip_model()->GetTabCount();
+  int tab_count = browser()->tab_strip_model()->count();
   tabs::TabHandle tab_id =
       browser()->tab_strip_model()->GetTabAtIndex(tab_count - 1)->GetHandle();
   ASSERT_EQ(tab_id, GetActiveTab()->GetHandle());
@@ -118,8 +119,9 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_SwitchToTabAction) {
   ASSERT_EQ(tab_id, GetActiveTab()->GetHandle());
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
-  ASSERT_EQ(4, browser()->tab_strip_model()->GetTabCount());
+// TODO(https://crbug.com/401303184): Disabled due to excessive flakiness.
+IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, DISABLED_CloseTabAction) {
+  ASSERT_EQ(4, browser()->tab_strip_model()->count());
 
   tabs::TabHandle tab_id =
       browser()->tab_strip_model()->GetTabAtIndex(0)->GetHandle();
@@ -135,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, CloseTabAction) {
                               tab_item_button_js + ".click()",
                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                               ISOLATED_WORLD_ID_CHROME_INTERNAL));
-  int tab_count = browser()->tab_strip_model()->GetTabCount();
+  int tab_count = browser()->tab_strip_model()->count();
   ASSERT_EQ(3, tab_count);
 
   std::vector<tabs::TabHandle> open_tab_ids(tab_count);
@@ -153,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
                        CloseTabSearchAsBrowserTabDoesNotCrash) {
   AppendTab(chrome::kChromeUITabSearchURL);
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(5, tab_strip_model->GetTabCount());
+  ASSERT_EQ(5, tab_strip_model->count());
   content::WebContents* tab_contents = tab_strip_model->GetWebContentsAt(4);
   const tabs::TabHandle tab_id = tab_strip_model->GetTabAtIndex(4)->GetHandle();
 
@@ -179,11 +181,11 @@ IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest,
   page_handler->CloseTab(tab_id.raw_value());
   tab_contents->DispatchBeforeUnload(false /* auto_cancel */);
   close_observer.Wait();
-  ASSERT_EQ(4, tab_strip_model->GetTabCount());
+  ASSERT_EQ(4, tab_strip_model->count());
 
   // Check to make sure the browser tab hosting Tab Search has been closed but
   // the rest remain.
-  int tab_count = tab_strip_model->GetTabCount();
+  int tab_count = tab_strip_model->count();
   ASSERT_EQ(4, tab_count);
 
   std::vector<tabs::TabHandle> open_tab_ids(tab_count);

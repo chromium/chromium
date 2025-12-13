@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/run_until.h"
@@ -212,20 +213,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DownloadControls) {
   RunTestsInJsModule("download_controls_test.js", "test.pdf");
 }
 
-#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, CircularProgressRing) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("circular_progress_ring_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, SaveToDriveControls) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("save_to_drive_controls_test.js", "test.pdf");
-}
-#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
-
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Title) {
   RunTestsInJsModule("title_test.js", "test-title.pdf");
 }
@@ -303,6 +290,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerAttachment) {
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Fullscreen) {
+#if BUILDFLAG(IS_MAC)
+  if (!UseOopif()) {
+      GTEST_SKIP() << "TODO(crbug.com/463783828): Test is flaky on Mac.";
+  }
+#endif
   // Use a PDF document with multiple pages, to exercise navigating between
   // pages.
   RunTestsInJsModule("fullscreen_test.js", "test-bookmarks.pdf");
@@ -319,32 +311,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, Printing) {
   RunTestsInJsModule("printing_icon_test.js", "test.pdf");
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(ENABLE_INK)
-// TODO(crbug.com/41434927): Test times out under sanitizers.
-// TODO(crbug.com/41495998): Test fails for
-// testViewportToCameraConversion.
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, DISABLED_AnnotationsFeatureEnabled) {
-  // TODO(crbug.com/40268279): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
-  RunTestsInJsModule("annotations_feature_enabled_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, AnnotationsToolbar) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("annotations_toolbar_test.js", "test.pdf");
-}
-
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbarDropdown) {
-  // Although this test file does not require a PDF to be loaded, loading the
-  // elements without loading a PDF is difficult.
-  RunTestsInJsModule("viewer_toolbar_dropdown_test.js", "test.pdf");
-}
-#endif  // BUILDFLAG(ENABLE_INK)
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerFilePicker) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -425,7 +391,7 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
           content::EvalJs(extension_host, kEnsurePdfHasLoadedScript);
       // The dom can be in an unusable state during setup. If the EvalJs
       // errors out tries again.
-      if (js_result.error.empty() && js_result.ExtractBool()) {
+      if (js_result.is_ok() && js_result.ExtractBool()) {
         return true;
       }
     }
@@ -572,9 +538,40 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2) {
   RunTestsInJsModule("ink2_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Save) {
+// Params: kPdfOopif, kPdfGetSaveDataInBlocks
+class PDFExtensionJSInk2SaveTest
+    : public PDFExtensionJSTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  bool UseOopif() const override { return get<0>(GetParam()); }
+  bool IsPdfGetSaveDataInBlocksEnabled() const { return get<1>(GetParam()); }
+
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTestBase::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
+    if (IsPdfGetSaveDataInBlocksEnabled()) {
+      enabled.push_back({chrome_pdf::features::kPdfGetSaveDataInBlocks, {}});
+    }
+    return enabled;
+  }
+
+  std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
+    auto disabled = PDFExtensionJSTestBase::GetDisabledFeatures();
+    if (!IsPdfGetSaveDataInBlocksEnabled()) {
+      disabled.push_back(chrome_pdf::features::kPdfGetSaveDataInBlocks);
+    }
+    return disabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveTest, Ink2Save) {
   RunTestsInJsModule("ink2_save_test.js", "test.pdf");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PDFExtensionJSInk2SaveTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Manager) {
   RunTestsInJsModule("ink2_manager_test.js", "test.pdf");
@@ -646,7 +643,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2TextAlignmentSelector) {
   RunTestsInJsModule("ink2_text_alignment_selector_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextBoxTest) {
+// TODO(crbug.com/440552067): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, DISABLED_Ink2TextBoxTest) {
   RunTestsInJsModule("ink2_text_box_test.js", "test.pdf");
 }
 
@@ -658,6 +656,22 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextSidePanel) {
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2TextTest, Ink2TextStylesSelector) {
   RunTestsInJsModule("ink2_text_styles_selector_test.js", "test.pdf");
+}
+
+class PDFExtensionJSCaretBrowsingModeTest : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back(
+        {chrome_pdf::features::kPdfInk2,
+         {{chrome_pdf::features::kPdfInk2TextHighlighting.name, "true"}}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSCaretBrowsingModeTest, CaretBrowsingMode) {
+  RunTestsInJsModule("caret_browsing_mode_test.js", "test-bookmarks.pdf");
 }
 
 class PDFExtensionJSInk2BeforeUnloadTest : public PDFExtensionJSTestBase {
@@ -684,6 +698,85 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSInk2BeforeUnloadTest, Undo) {
 
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+class PDFExtensionJSSaveToDriveTest : public PDFExtensionJSTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfSaveToDrive, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, CircularProgressRing) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("circular_progress_ring_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, SaveToDrive) {
+  RunTestsInJsModule("save_to_drive_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, SaveToDriveBubble) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("save_to_drive_bubble_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveTest, SaveToDriveControls) {
+  // Although this test file does not require a PDF to be loaded, loading the
+  // elements without loading a PDF is difficult.
+  RunTestsInJsModule("save_to_drive_controls_test.js", "test.pdf");
+}
+
+class PDFExtensionJSSaveToDriveBeforeUnloadTest
+    : public PDFExtensionJSSaveToDriveTest {
+ protected:
+  // OOPIF PDF only, since MimeHandler handles the beforeunload event instead.
+  bool UseOopif() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSSaveToDriveBeforeUnloadTest, Uploading) {
+  RunTestsInJsModule("save_to_drive_before_unload_uploading_test.js",
+                     "test.pdf");
+}
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+class PDFExtensionJSInk2SaveToDriveBeforeUnloadTest
+    : public PDFExtensionJSSaveToDriveBeforeUnloadTest {
+ protected:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      const override {
+    auto enabled = PDFExtensionJSTest::GetEnabledFeatures();
+    enabled.push_back({chrome_pdf::features::kPdfInk2, {}});
+    enabled.push_back({chrome_pdf::features::kPdfSaveToDrive, {}});
+    return enabled;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadCanceled) {
+  RunTestsInJsModule("ink2_save_to_drive_cancelled_before_unload_test.js",
+                     "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadInProgressWithMoreEdits) {
+  RunTestsInJsModule(
+      "ink2_save_to_drive_uploading_more_edits_before_unload_test.js",
+      "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2SaveToDriveBeforeUnloadTest,
+                       UploadFinished) {
+  RunTestsInJsModule("ink2_save_to_drive_success_before_unload_test.js",
+                     "test.pdf");
+}
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSTest);
@@ -694,5 +787,17 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionServiceWorkerJSTest);
 #if !BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSNoInk2Test);
 #endif
+#if BUILDFLAG(ENABLE_PDF_INK2)
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2Test);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSInk2TextTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSCaretBrowsingModeTest);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+#if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionJSSaveToDriveTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionJSSaveToDriveBeforeUnloadTest);
+#if BUILDFLAG(ENABLE_PDF_INK2)
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionJSInk2SaveToDriveBeforeUnloadTest);
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
+#endif  // BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)

@@ -20,6 +20,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "net/ssl/ssl_info.h"
 #include "ui/base/page_transition_types.h"
 #include "url/url_constants.h"
 
@@ -47,7 +48,7 @@ void RecordUMA(Event event) {
 }
 
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
-  DCHECK_EQ(url::kHttpsScheme, url.scheme());
+  DCHECK_EQ(url::kHttpsScheme, url.GetScheme());
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
 
@@ -57,7 +58,7 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   if (http_fallback_port_for_testing) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!url.port().empty());
+    DCHECK(!url.GetPort().empty());
     replacements.SetPortStr(port_str);
   }
   return url.ReplaceComponents(replacements);
@@ -110,7 +111,7 @@ TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillStartRequest() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
+  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme());
   RecordUMA(Event::kHttpsLoadStarted);
   timer_.Start(FROM_HERE, kFallbackDelay.Get(), this,
                &TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout);
@@ -119,7 +120,7 @@ TypedNavigationUpgradeThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillFailRequest() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
+  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme());
   // Cancel the request, stop the timer and fall back to HTTP in case of SSL
   // errors or other net/ errors.
   timer_.Stop();
@@ -202,7 +203,7 @@ void TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout() {
 }
 
 void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
-  DCHECK_EQ(url::kHttpScheme, http_url_.scheme()) << http_url_;
+  DCHECK_EQ(url::kHttpScheme, http_url_.GetScheme()) << http_url_;
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.url = http_url_;

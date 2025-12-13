@@ -7,7 +7,7 @@
 // Name is based on the java file name: *.java -> jni/*_jni.h
 #include "third_party/jni_zero/sample/sample_jni/Sample_jni.h"
 
-using jni_zero::JavaParamRef;
+using jni_zero::JavaRef;
 using jni_zero::ScopedJavaLocalRef;
 
 namespace jni_zero::sample {
@@ -16,8 +16,8 @@ static void JNI_Sample_DoNothing(JNIEnv* env) {}
 static jboolean JNI_Sample_TestMultipleParams(JNIEnv* env,
                                               jint a,
                                               jint b,
-                                              const JavaParamRef<jstring>& c,
-                                              const JavaParamRef<jobject>& d) {
+                                              const JavaRef<jstring>& c,
+                                              const JavaRef<jobject>& d) {
   return jboolean(true);
 }
 
@@ -27,9 +27,11 @@ static void JNI_Sample_CallBackIntoJava(JNIEnv* env) {
 
 static ScopedJavaLocalRef<jobject> JNI_Sample_CallBackIntoInstance(
     JNIEnv* env,
-    const JavaParamRef<jobject>& sample) {
+    const JavaRef<jobject>& sample) {
   jni_zero::sample::Java_Sample_callback(env, sample);
   return ScopedJavaLocalRef<jobject>(sample);
 }
 
 }  // namespace jni_zero::sample
+
+DEFINE_JNI(Sample)

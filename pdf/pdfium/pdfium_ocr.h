@@ -16,7 +16,7 @@ SkBitmap GetImageForOcr(FPDF_DOCUMENT doc,
                         FPDF_PAGEOBJECT page_object,
                         uint32_t max_image_dimension);
 
-// Returns image bound's size in page coordinates. Returns (0,0) if fails.
+// Returns image bound's size in PDF coordinates. Returns (0,0) if fails.
 gfx::SizeF GetImageSize(FPDF_PAGEOBJECT page_object);
 
 }  // namespace chrome_pdf

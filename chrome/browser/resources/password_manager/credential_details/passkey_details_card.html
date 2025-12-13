@@ -1,5 +1,12 @@
 <style include="shared-style cr-input-style cr-shared-style
                 credential-details-card cr-icons">
+  #passkeyIcon {
+    margin: auto 2px auto 0;
+  }
+  #infoLabelContent {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
 </style>
 <div class="card" aria-label="[[getAriaLabelForPasswordCard_(passkey)]]"
     role="region">
@@ -39,15 +46,16 @@
       </div>
     </div>
     <div class="row-container">
-      <div id="infoLabel" class="cr-secondary-text">
-        <cr-icon icon="passwords-icon:passkey"></cr-icon>
-        [[infoLabelText_]]
+      <cr-icon icon="passwords-icon:passkey" id="passkeyIcon"></cr-icon>
+      <div id="infoLabelContent" class="cr-secondary-text"
+          inner-h-t-m-l="[[getInfoLabelText_(passkey)]]">
       </div>
     </div>
   </div>
   <div class="button-container">
     <cr-button id="editButton" class="edit-button" on-click="onEditClicked_"
-        aria-label="[[getAriaLabelForEditButton_(passkey)]]">
+        aria-label="[[getAriaLabelForEditButton_(passkey)]]"
+        disabled="[[passkey.hidden]]">
       $i18n{edit}
     </cr-button>
     <cr-button id="deleteButton" on-click="onDeleteClick_"

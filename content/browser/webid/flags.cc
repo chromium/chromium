@@ -11,75 +11,97 @@
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "services/network/public/cpp/features.h"
 
-namespace content {
+namespace content::webid {
 
-bool IsFedCmMultipleIdentityProvidersEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmMultipleIdentityProviders);
-}
-
-bool IsFedCmMetricsEndpointEnabled() {
+bool IsMetricsEndpointEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmMetricsEndpoint);
 }
 
-bool IsFedCmDelegationEnabled() {
+bool IsDelegationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmDelegation);
 }
 
-bool IsFedCmIdPRegistrationEnabled() {
+bool IsIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
 
-bool IsFedCmWithoutWellKnownEnforcementEnabled() {
+bool IsWithoutWellKnownEnforcementEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmWithoutWellKnownEnforcement);
 }
 
-bool IsWebIdentityDigitalCredentialsEnabled() {
+bool IsDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsWebIdentityDigitalCredentialsCreationEnabled() {
+bool IsDigitalCredentialsCreationEnabled() {
   return base::FeatureList::IsEnabled(
       features::kWebIdentityDigitalCredentialsCreation);
 }
 
-bool IsFedCmSameSiteLaxEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSameSiteLax);
+bool IsSameSiteLaxEnabled() {
+  return base::FeatureList::IsEnabled(
+      network::features::kSendSameSiteLaxForFedCM);
 }
 
-bool IsFedCmShowFilteredAccountsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmShowFilteredAccounts);
-}
-
-bool IsFedCmLightweightModeEnabled() {
+bool IsLightweightModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmLightweightMode);
 }
 
-bool IsFedCmAlternativeIdentifiersEnabled() {
+bool IsAlternativeIdentifiersEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmAlternativeIdentifiers);
 }
 
-bool IsFedCmCooldownOnIgnoreEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmCooldownOnIgnore);
-}
-
-bool IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled() {
+bool IsUseOtherAccountAndLabelsNewSyntaxEnabled() {
   return base::FeatureList::IsEnabled(
       features::kFedCmUseOtherAccountAndLabelsNewSyntax);
 }
 
-bool IsFedCmAutofillEnabled() {
+bool IsFedCmEmbedderCheckEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmEmbedderCheck);
+}
+
+bool IsAutofillEnabled() {
   // FedCmAutofill is a new flag extracted from FedCmDelegation. To avoid
   // breaking existing developer testing, we consider the new flag being enabled
   // if the old one is enabled.
   return base::FeatureList::IsEnabled(features::kFedCmAutofill) ||
-         IsFedCmDelegationEnabled();
+         IsDelegationEnabled();
 }
 
-bool IsFedCmIframeOriginEnabled() {
+bool IsIframeOriginEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIframeOrigin);
 }
 
-}  // namespace content
+bool IsNonceInParamsEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonceInParams);
+}
+
+bool IsNonStringTokenEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNonStringToken);
+}
+
+bool IsWellKnownEndpointValidationEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kFedCmWellKnownEndpointValidation);
+}
+
+bool IsPreservePortsForTestingEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmPreservePortsForTesting);
+}
+
+bool IsErrorAttributeEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmErrorAttribute);
+}
+
+bool IsNavigationInterceptionEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNavigationInterception);
+}
+
+bool IsNavigationCancellationEnabled() {
+  return base::FeatureList::IsEnabled(features::kFedCmNavigationCancellation);
+}
+
+}  // namespace content::webid

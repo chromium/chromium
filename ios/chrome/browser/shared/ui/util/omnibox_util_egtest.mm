@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -17,14 +18,16 @@
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
 - (void)tearDownHelper {
   [super tearDownHelper];
-  [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey
+      resetDataForLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGrey closeAllTabs];
 }
 
@@ -55,51 +58,60 @@
 
 // Tests `IsCurrentLayoutBottomOmnibox` on NTP.
 - (void)testIsBottomOmniboxOnNTP {
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGrey openNewTab];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:NO];
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on incognito NTP.
 - (void)testIsBottomOmniboxOnIncognitoNTP {
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey waitForIncognitoTabCount:1];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:YES];
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on a web page.
 - (void)testIsBottomOmniboxOnWebPage {
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [self loadPage];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:YES];
 }
 
 // Tests `IsCurrentLayoutBottomOmnibox` on landscape mode.
 - (void)testIsBottomOmniboxOnLandscape {
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
+                                   error:nil];
 
-  [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   [self loadPage];
   [self assertIsBottomOmnibox:NO];
 
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
+  [ChromeEarlGrey setBoolValue:YES
+             forLocalStatePref:omnibox::kIsOmniboxInBottomPosition];
   GREYWaitForAppToIdle(@"App failed to idle");
   [self assertIsBottomOmnibox:NO];
-  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
+  [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
+                                   error:nil];
   [self assertIsBottomOmnibox:YES];
 }
 

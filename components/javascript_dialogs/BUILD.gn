@@ -83,6 +83,6 @@ source_set("unit_tests") {
     ":javascript_dialogs",
     "//base",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }

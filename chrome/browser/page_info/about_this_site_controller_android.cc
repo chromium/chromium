@@ -37,9 +37,9 @@ static jint JNI_PageInfoAboutThisSiteController_GetJavaDrawableIconId(
 static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_PageInfoAboutThisSiteController_GetSiteInfo(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_browserContext,
-    const base::android::JavaParamRef<jobject>& j_url,
-    const base::android::JavaParamRef<jobject>& j_webContents) {
+    const base::android::JavaRef<jobject>& j_browserContext,
+    const base::android::JavaRef<jobject>& j_url,
+    const base::android::JavaRef<jobject>& j_webContents) {
   Profile* profile = Profile::FromBrowserContext(
       content::BrowserContextFromJavaHandle(j_browserContext));
   auto* service = AboutThisSiteServiceFactory::GetForProfile(profile);
@@ -67,3 +67,5 @@ static void JNI_PageInfoAboutThisSiteController_OnAboutThisSiteRowClicked(
     jboolean j_withDescription) {
   page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(j_withDescription);
 }
+
+DEFINE_JNI(PageInfoAboutThisSiteController)

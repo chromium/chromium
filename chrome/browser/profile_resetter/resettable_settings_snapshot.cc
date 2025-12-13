@@ -84,7 +84,7 @@ ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
   std::sort(enabled_extensions_.begin(), enabled_extensions_.end());
 
   // Choose a random ID for this snapshot and store it.
-  guid_ = base::ToLowerASCII(base::HexEncode(crypto::RandBytesAsArray<16>()));
+  guid_ = base::HexEncodeLower(crypto::RandBytesAsArray<16>());
 }
 
 ResettableSettingsSnapshot::~ResettableSettingsSnapshot() {
@@ -256,7 +256,7 @@ base::Value::List GetReadableFeedbackForSnapshot(
   for (auto i = urls.begin(); i != urls.end(); ++i) {
     if (!startup_urls.empty())
       startup_urls += ' ';
-    startup_urls += i->host();
+    startup_urls += i->GetHost();
   }
   if (!startup_urls.empty()) {
     AddPair(list,
@@ -315,9 +315,8 @@ base::Value::List GetReadableFeedbackForSnapshot(
   DCHECK(service);
   const TemplateURL* dse = service->GetDefaultSearchProvider();
   if (dse) {
-    AddPair(list,
-            l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_DSE),
-            dse->GenerateSearchURL(service->search_terms_data()).host());
+    AddPair(list, l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_DSE),
+            dse->GenerateSearchURL(service->search_terms_data()).GetHost());
   }
 
   if (snapshot.shortcuts_determined()) {

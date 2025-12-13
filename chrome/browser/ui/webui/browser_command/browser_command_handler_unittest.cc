@@ -24,6 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -53,9 +54,9 @@ std::vector<Command> supported_commands = {
     Command::kOpenPaymentsSettings,
     Command::kOpenGlic,
     Command::kOpenGlicSettings,
+    Command::kPrewarmGlicFre,
+    Command::kOpenSplitView,
 };
-
-const ui::ElementContext kTestContext1(1);
 
 class TestCommandHandler : public BrowserCommandHandler {
  public:
@@ -222,6 +223,10 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenGlic, ());
 
   MOCK_METHOD(void, OpenGlicSettings, ());
+
+  MOCK_METHOD(void, PrewarmGlicFre, ());
+
+  MOCK_METHOD(void, OpenSplitView, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -693,4 +698,21 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
   info->meta_key = true;
   EXPECT_CALL(*command_handler_, OpenGlicSettings());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, PrewarmGlicFreCommand) {
+  // The PrewarmGlicFre command prewarms the Glic FRE.
+  EXPECT_TRUE(CanExecuteCommand(Command::kPrewarmGlicFre));
+  ClickInfoPtr info = ClickInfo::New();
+  info->middle_button = true;
+  info->meta_key = true;
+  EXPECT_CALL(*command_handler_, PrewarmGlicFre());
+  EXPECT_TRUE(ExecuteCommand(Command::kPrewarmGlicFre, std::move(info)));
+}
+
+TEST_F(BrowserCommandHandlerTest, OpenSplitViewCommand) {
+  EXPECT_TRUE(CanExecuteCommand(Command::kOpenSplitView));
+  ClickInfoPtr info = ClickInfo::New();
+  EXPECT_CALL(*command_handler_, OpenSplitView());
+  EXPECT_TRUE(ExecuteCommand(Command::kOpenSplitView, std::move(info)));
 }

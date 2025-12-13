@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -92,3 +93,40 @@ TEST_F(TabStripModelStatsRecorderTest,
   tabstrip.RemoveObserver(&recorder);
   tabstrip.CloseAllTabs();
 }
+
+// This histogram is not present in ChromeOS. For more information:
+// crbug.com/457294205
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(TabStripModelStatsRecorderTest, TabSelectionCount) {
+  base::HistogramTester histogram_tester;
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+
+  TabStripModelStatsRecorder recorder;
+  tabstrip.AddObserver(&recorder);
+
+  // Create first tab
+  std::unique_ptr<WebContents> contents0 = CreateTestWebContents();
+  tabstrip.InsertWebContentsAt(0, std::move(contents0),
+                               AddTabTypes::ADD_ACTIVE);
+  histogram_tester.ExpectBucketCount("Tabs.Selections.Count", 1, 1);
+
+  // Add 2 more tabs.
+  for (int i = 1; i < 3; ++i) {
+    tabstrip.InsertWebContentsAt(i, CreateTestWebContents(),
+                                 AddTabTypes::ADD_NONE);
+  }
+
+  // Select all three tabs.
+  ui::ListSelectionModel selection_model;
+  selection_model.set_active(0);
+  selection_model.AddIndexToSelection(0);
+  selection_model.AddIndexToSelection(1);
+  selection_model.AddIndexToSelection(2);
+  tabstrip.SetSelectionFromModel(selection_model);
+  histogram_tester.ExpectBucketCount("Tabs.Selections.Count", 3, 1);
+
+  tabstrip.RemoveObserver(&recorder);
+  tabstrip.CloseAllTabs();
+}
+#endif

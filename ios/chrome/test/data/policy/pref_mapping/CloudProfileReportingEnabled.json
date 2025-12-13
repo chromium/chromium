@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CloudProfileReportingEnabled": true
+        },
+        "prefs": {
+          "enterprise_reporting.chrome_profile_cloud_reporting": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

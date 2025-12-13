@@ -16,6 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/mock_host_resolver.h"
@@ -23,11 +24,7 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#else
-#include "chrome/browser/ui/browser.h"
-#include "chrome/test/base/ui_test_utils.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -122,7 +119,6 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Values(SameSiteCookieSemantics::kLegacy,
                                          SameSiteCookieSemantics::kModern)));
 
-#if !BUILDFLAG(IS_ANDROID)
 // A test suite that only runs with MV3 extensions.
 using CookiesApiMV3Test = CookiesApiTest;
 INSTANTIATE_TEST_SUITE_P(
@@ -131,7 +127,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(ContextType::kServiceWorker),
                        ::testing::Values(SameSiteCookieSemantics::kLegacy,
                                          SameSiteCookieSemantics::kModern)));
-#endif
 
 // TODO(crbug.com/40839864): Flaky on Windows.
 // TODO(crbug.com/371423073): Flaky on desktop Android.
@@ -196,8 +191,6 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsObservePrimaryOTROnly) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/371423073): Enable this test on desktop android.
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
   // We need to initialize an incognito mode window in order have an initialized
   // incognito cookie store. Otherwise, the chrome.cookies.set operation is just
@@ -209,17 +202,14 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
       << message_;
 }
 
-// TODO(crbug.com/371423073): Enable this test on desktop android after the
-// tabs and webNavigation APIs are enabled.
 IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
   // Before running test, set up a top-level site (a.com) that embeds a
   // cross-site (b.com). To test the cookies.getPartitionKey() api.
+  content::WebContents* contents = GetActiveWebContents();
   const std::string default_response = "/defaultresponse";
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", default_response)));
+  ASSERT_TRUE(NavigateToURL(
+      contents, embedded_test_server()->GetURL("a.com", default_response)));
 
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   // Inject two iframes and navigate one to a cross-site with host permissions
   // (b.com) and the other to a cross-site (c.com) with no host permissions.
   const GURL cross_site_url =
@@ -243,6 +233,5 @@ IN_PROC_BROWSER_TEST_P(CookiesApiMV3Test, TestGetPartitionKey) {
   EXPECT_TRUE(WaitForLoadStop(contents));
   ASSERT_TRUE(RunTest("cookies/get_partition_key")) << message_;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

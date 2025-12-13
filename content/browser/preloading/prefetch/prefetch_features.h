@@ -83,10 +83,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchServiceWorker);
 bool IsPrefetchServiceWorkerEnabled(content::BrowserContext* browser_context);
 
-// If enabled, prefetch caches are cleared when browsing data removal. Please
-// see crbug.com/40262310 for more details.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchBrowsingDataRemoval);
-
 // Replace current prefetch queue with a new queue and scheduler, which allows
 // prioritization, concurrent prefetches, bursting.
 //
@@ -105,11 +101,6 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchSchedulerTestingActiveSetSizeLimitForBurst;
 
-// Provide a partial fix for prefetch queueing problem (crbug.com/400233773),
-// without `PrefetchScheduler` feature.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kPrefetchQueueingPartialFixWithoutScheduler);
-
 // Controls field trials parameters for prefetch canary checker.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCanaryCheckerParams);
 
@@ -117,6 +108,22 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCanaryCheckerParams);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue;
+
+// Kill switch, which enables reporting serving metrics of preloads.
+// (crbug.com/360094997)
+//
+// TODO(crbug.com/360094997): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPreloadServingMetrics);
+
+// Kill switch for the modified failure/disconnect notifications around
+// `PrefetchContainer`.
+// TODO(crbug.com/400761083): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchGracefulNotification);
+
+// Kill switch for making the cancelling of `PrefetchStreamingURLLoader` async.
+// TODO(crbug.com/400761083): Remove it after confirming stability.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchAsyncCancelOnCookiesChange);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

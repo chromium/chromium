@@ -27,11 +27,7 @@ class QuotaDatabaseMigrations {
                                        int new_version,
                                        bool success);
 
-  static bool MigrateFromVersion5ToVersion7(QuotaDatabase& quota_database);
-  static bool MigrateFromVersion6ToVersion7(QuotaDatabase& quota_database);
-  static bool MigrateFromVersion7ToVersion8(QuotaDatabase& quota_database);
-  static bool MigrateFromVersion8ToVersion9(QuotaDatabase& quota_database);
-  static bool MigrateFromVersion9ToVersion10(QuotaDatabase& quota_database);
+  static bool MigrateFromVersion10ToVersion11(QuotaDatabase& quota_database);
 };
 
 }  // namespace storage

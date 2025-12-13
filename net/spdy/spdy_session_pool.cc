@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -53,13 +54,13 @@ SpdySessionPool::SpdySessionRequest::Delegate::~Delegate() = default;
 
 SpdySessionPool::SpdySessionRequest::SpdySessionRequest(
     const SpdySessionKey& key,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool is_websocket,
     bool is_blocking_request_for_session,
     Delegate* delegate,
     SpdySessionPool* spdy_session_pool)
     : key_(key),
-      enable_ip_based_pooling_(enable_ip_based_pooling),
+      enable_ip_based_pooling_for_h2_(enable_ip_based_pooling_for_h2),
       is_websocket_(is_websocket),
       is_blocking_request_for_session_(is_blocking_request_for_session),
       delegate_(delegate),
@@ -154,13 +155,14 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
     const NetLogWithSource& net_log,
     const MultiplexedSessionCreationInitiator session_creation_initiator,
     base::WeakPtr<SpdySession>* session,
+    std::optional<ConnectionManagementConfig> connection_management_config,
     SpdySessionInitiator spdy_session_initiator) {
   TRACE_EVENT0(NetTracingCategory(),
                "SpdySessionPool::CreateAvailableSessionFromSocketHandle");
 
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, net_log.net_log(), session_creation_initiator,
-                    spdy_session_initiator);
+                    spdy_session_initiator, connection_management_config);
   std::set<std::string> dns_aliases =
       stream_socket_handle->socket()->GetDnsAliases();
 
@@ -189,7 +191,7 @@ SpdySessionPool::CreateAvailableSessionFromSocket(
 
   std::unique_ptr<SpdySession> new_session = CreateSession(
       key, net_log.net_log(), MultiplexedSessionCreationInitiator::kUnknown,
-      spdy_session_initiator);
+      spdy_session_initiator, std::nullopt);
   std::set<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
@@ -203,7 +205,7 @@ SpdySessionPool::CreateAvailableSessionFromSocket(
 
 base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
     const SpdySessionKey& key,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool is_websocket,
     const NetLogWithSource& net_log) {
   auto it = LookupAvailableSessionByKey(key);
@@ -221,7 +223,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindAvailableSession(
     return it->second;
   }
 
-  if (enable_ip_based_pooling) {
+  if (enable_ip_based_pooling_for_h2) {
     UMA_HISTOGRAM_ENUMERATION("Net.SpdySessionGet", FOUND_EXISTING_FROM_IP_POOL,
                               SPDY_SESSION_GET_MAX);
     net_log.AddEventReferencingSource(
@@ -238,7 +240,7 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
     const SpdySessionKey& key,
     const ServiceEndpoint& service_endpoint,
     const std::set<std::string>& dns_aliases) {
-  CHECK(!HasAvailableSession(key, /*enable_ip_based_pooling=*/true,
+  CHECK(!HasAvailableSession(key, /*enable_ip_based_pooling_for_h2=*/true,
                              /*is_websocket=*/false));
   CHECK(key.socket_tag() == SocketTag());
 
@@ -252,7 +254,7 @@ SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
 }
 
 bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
-                                          bool enable_ip_based_pooling,
+                                          bool enable_ip_based_pooling_for_h2,
                                           bool is_websocket) const {
   auto it = available_sessions_.find(key);
   if (it == available_sessions_.end() ||
@@ -260,12 +262,13 @@ bool SpdySessionPool::HasAvailableSession(const SpdySessionKey& key,
     return false;
   }
 
-  return enable_ip_based_pooling ? true : key == it->second->spdy_session_key();
+  return enable_ip_based_pooling_for_h2 ? true
+                                        : key == it->second->spdy_session_key();
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
     const SpdySessionKey& key,
-    bool enable_ip_based_pooling,
+    bool enable_ip_based_pooling_for_h2,
     bool is_websocket,
     const NetLogWithSource& net_log,
     base::RepeatingClosure on_blocking_request_destroyed_callback,
@@ -274,8 +277,8 @@ base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
     bool* is_blocking_request_for_session) {
   DCHECK(delegate);
 
-  base::WeakPtr<SpdySession> spdy_session =
-      FindAvailableSession(key, enable_ip_based_pooling, is_websocket, net_log);
+  base::WeakPtr<SpdySession> spdy_session = FindAvailableSession(
+      key, enable_ip_based_pooling_for_h2, is_websocket, net_log);
   if (spdy_session) {
     // This value doesn't really matter, but best to always populate it, for
     // consistency.
@@ -286,7 +289,7 @@ base::WeakPtr<SpdySession> SpdySessionPool::RequestSession(
   RequestInfoForKey* request_info = &spdy_session_request_map_[key];
   *is_blocking_request_for_session = !request_info->has_blocking_request;
   *spdy_session_request = std::make_unique<SpdySessionRequest>(
-      key, enable_ip_based_pooling, is_websocket,
+      key, enable_ip_based_pooling_for_h2, is_websocket,
       *is_blocking_request_for_session, delegate, this);
   request_info->request_set.insert(spdy_session_request->get());
 
@@ -485,6 +488,8 @@ void SpdySessionPool::RemoveUnavailableSession(
   CHECK(it != sessions_.end());
   std::unique_ptr<SpdySession> owned_session(*it);
   sessions_.erase(it);
+
+  NotifyOnSessionClosed(owned_session->spdy_session_key());
 }
 
 // Make a copy of |sessions_| in the Close* functions below to avoid
@@ -535,8 +540,17 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
   return std::make_unique<base::Value>(std::move(list));
 }
 
-void SpdySessionPool::OnIPAddressChanged() {
+void SpdySessionPool::OnIPAddressChanged(
+    NetworkChangeNotifier::IPAddressChangeType change_type) {
   DCHECK(cleanup_sessions_on_ip_address_changed_);
+
+  // Ignore changes to randomly generated IPv6 temporary addresses.
+  if (base::FeatureList::IsEnabled(
+          net::features::kMaintainConnectionsOnIpv6TempAddrChange) &&
+      change_type == NetworkChangeNotifier::IP_ADDRESS_CHANGE_IPV6_TEMPADDR) {
+    return;
+  }
+
   if (go_away_on_ip_change_) {
     MakeCurrentSessionsGoingAway(ERR_NETWORK_CHANGED);
   } else {
@@ -700,6 +714,7 @@ void SpdySessionPool::CloseCurrentSessionsHelper(Error error,
 
     session->CloseSessionOnError(error, description);
 
+    NotifyOnSessionClosed(session->spdy_session_key());
     DCHECK(!IsSessionAvailable(session));
     DCHECK(!session || session->IsDraining());
   }
@@ -709,7 +724,8 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     const SpdySessionKey& key,
     NetLog* net_log,
     const MultiplexedSessionCreationInitiator session_creation_initiator,
-    SpdySessionInitiator spdy_session_initiator) {
+    SpdySessionInitiator spdy_session_initiator,
+    std::optional<ConnectionManagementConfig> connection_management_config) {
   UMA_HISTOGRAM_ENUMERATION("Net.SpdySessionGet", IMPORTED_FROM_SOCKET,
                             SPDY_SESSION_GET_MAX);
 
@@ -725,6 +741,12 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
     it->second->RemovePooledAlias(key);
     UnmapKey(key);
     RemoveAliases(key);
+  }
+
+  // We only want to use the connection management config for the session if the
+  // feature is enabled.
+  if (connection_management_config.has_value()) {
+    AddConnectionManagementConfig(key, connection_management_config.value());
   }
 
   return std::make_unique<SpdySession>(
@@ -776,6 +798,7 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   if (!available_session->HasAcceptableTransportSecurity()) {
     available_session->CloseSessionOnError(
         ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY, "");
+    NotifyOnConnectionFailure(key);
     return base::unexpected(ERR_HTTP2_INADEQUATE_TRANSPORT_SECURITY);
   }
 
@@ -783,6 +806,7 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   if (rv != OK) {
     DCHECK_NE(ERR_IO_PENDING, rv);
     // ParseAlps() already closed the connection on error.
+    NotifyOnConnectionFailure(key);
     return base::unexpected(rv);
   }
 
@@ -817,8 +841,9 @@ void SpdySessionPool::UpdatePendingRequests(const SpdySessionKey& key) {
         if ((*request)->is_websocket() && !new_session->support_websocket())
           continue;
         // Don't use IP pooled session if not allowed.
-        if (!(*request)->enable_ip_based_pooling() && is_pooled)
+        if (!(*request)->enable_ip_based_pooling_for_h2() && is_pooled) {
           continue;
+        }
         break;
       }
       if (request == request_set->end())
@@ -909,6 +934,50 @@ base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
   }
 
   return nullptr;
+}
+
+void SpdySessionPool::AddConnectionManagementConfig(
+    const SpdySessionKey& key,
+    ConnectionManagementConfig& connection_management_config) {
+  if (!base::FeatureList::IsEnabled(
+          net::features::kConnectionKeepAliveForHttp2)) {
+    return;
+  }
+
+  // We only want to use the connection management config for the session if the
+  // feature is enabled.
+  if (connection_management_config.connection_change_observer) {
+    if (!base::Contains(connection_change_notifier_map_, key)) {
+      connection_change_notifier_map_[key] =
+          std::make_unique<ConnectionChangeNotifier>();
+    }
+    connection_change_notifier_map_[key]->AddObserver(
+        connection_management_config.connection_change_observer.get());
+  }
+}
+
+void SpdySessionPool::NotifyOnNetworkEvent(net::NetworkChangeEvent event) {
+  // TODO(crbug.com/453308537): We currently do not support
+  // `NotifyOnNetworkEvent` since `SpdySessionPool` does not observe
+  // `NetworkObserver`. We should add support, but for the time being, we can
+  // get similar behavior via the `IPAddressObserver`, which would close the
+  // connection on network changes.
+  NOTIMPLEMENTED() << "SpdySessionPool does not support NotifyOnNetworkEvent";
+}
+
+void SpdySessionPool::NotifyOnSessionClosed(const SpdySessionKey& session_key) {
+  auto notifier = connection_change_notifier_map_.find(session_key);
+  if (notifier != connection_change_notifier_map_.end()) {
+    notifier->second->OnSessionClosed();
+  }
+}
+
+void SpdySessionPool::NotifyOnConnectionFailure(
+    const SpdySessionKey& session_key) {
+  auto notifier = connection_change_notifier_map_.find(session_key);
+  if (notifier != connection_change_notifier_map_.end()) {
+    notifier->second->OnConnectionFailed();
+  }
 }
 
 }  // namespace net

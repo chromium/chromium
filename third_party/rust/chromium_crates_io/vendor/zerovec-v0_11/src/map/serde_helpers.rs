@@ -58,10 +58,8 @@ pub fn is_num_or_string<T: Serialize + ?Sized>(k: &T) -> bool {
         fn serialize_i64(self, _value: i64) -> Result<Self::Ok, Self::Error> {
             Ok(())
         }
-        serde::serde_if_integer128! {
-            fn serialize_i128(self, _value: i128) -> Result<Self::Ok, Self::Error> {
-                Ok(())
-            }
+        fn serialize_i128(self, _value: i128) -> Result<Self::Ok, Self::Error> {
+            Ok(())
         }
         fn serialize_u8(self, _value: u8) -> Result<Self::Ok, Self::Error> {
             Ok(())
@@ -75,10 +73,8 @@ pub fn is_num_or_string<T: Serialize + ?Sized>(k: &T) -> bool {
         fn serialize_u64(self, _value: u64) -> Result<Self::Ok, Self::Error> {
             Ok(())
         }
-        serde::serde_if_integer128! {
-            fn serialize_u128(self, _value: u128) -> Result<Self::Ok, Self::Error> {
-                Ok(())
-            }
+        fn serialize_u128(self, _value: u128) -> Result<Self::Ok, Self::Error> {
+            Ok(())
         }
         fn serialize_f32(self, _value: f32) -> Result<Self::Ok, Self::Error> {
             Err(core::fmt::Error)

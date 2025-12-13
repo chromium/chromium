@@ -320,8 +320,8 @@ IN_PROC_BROWSER_TEST_P(DataURLSiteInstanceGroupTest,
 
   // Compare hosts here, because `main_process_lock` is for the site "a.com" and
   // `data_process_lock` is for the origin "a.com:port", since it's sandboxed.
-  EXPECT_EQ(main_process_lock.lock_url().host(),
-            data_process_lock.lock_url().host());
+  EXPECT_EQ(main_process_lock.agent_cluster_key().GetSite().GetHost(),
+            data_process_lock.agent_cluster_key().GetSite().GetHost());
 }
 
 // Test where a main frame has multiple data: URL subframes. This tests that
@@ -533,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
   scoped_refptr<SiteInstanceImpl> c_instance =
       main_frame_host()->GetSiteInstance();
   EXPECT_FALSE(c_instance->RequiresDedicatedProcess());
-  EXPECT_TRUE(c_instance->GetProcess()->GetProcessLock().allows_any_site());
+  EXPECT_TRUE(c_instance->GetProcess()->GetProcessLock().AllowsAnySite());
   if (ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_EQ(c_instance->group(),
               c_instance->DefaultSiteInstanceGroupForBrowsingInstance());
@@ -554,7 +554,7 @@ IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
                                                    ->render_manager()
                                                    ->current_frame_host()
                                                    ->GetSiteInstance();
-  EXPECT_TRUE(a_instance->GetProcess()->GetProcessLock().allows_any_site());
+  EXPECT_TRUE(a_instance->GetProcess()->GetProcessLock().AllowsAnySite());
   EXPECT_FALSE(a_instance->RequiresDedicatedProcess());
   EXPECT_FALSE(b_instance->RequiresDedicatedProcess());
   if (ShouldUseDefaultSiteInstanceGroup()) {
@@ -599,9 +599,10 @@ IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
   EXPECT_FALSE(start_instance->HasSite());
   EXPECT_TRUE(start_instance->HasProcess());
   RenderProcessHost* start_process = start_instance->GetProcess();
-  EXPECT_FALSE(start_process->GetProcessLock().is_locked_to_site());
+  EXPECT_FALSE(start_process->GetProcessLock().IsLockedToSite());
   EXPECT_FALSE(start_process->GetProcessLock().is_invalid());
-  EXPECT_EQ(start_process->GetProcessLock().lock_url(), GURL());
+  EXPECT_EQ(start_process->GetProcessLock().agent_cluster_key().GetSite(),
+            GURL());
   if (ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_NE(start_instance->group(),
               start_instance->DefaultSiteInstanceGroupForBrowsingInstance());
@@ -620,9 +621,10 @@ IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
   RenderProcessHost* blank_process = blank_instance->GetProcess();
   EXPECT_EQ(start_process, blank_process);
   EXPECT_EQ(start_instance, blank_instance);
-  EXPECT_FALSE(blank_process->GetProcessLock().is_locked_to_site());
+  EXPECT_FALSE(blank_process->GetProcessLock().IsLockedToSite());
   EXPECT_FALSE(blank_process->GetProcessLock().is_invalid());
-  EXPECT_EQ(blank_process->GetProcessLock().lock_url().spec(), "");
+  EXPECT_EQ(
+      blank_process->GetProcessLock().agent_cluster_key().GetSite().spec(), "");
   if (ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_NE(start_instance->group(),
               start_instance->DefaultSiteInstanceGroupForBrowsingInstance());
@@ -639,9 +641,10 @@ IN_PROC_BROWSER_TEST_P(DefaultSiteInstanceGroupTest,
       main_frame_host()->GetSiteInstance();
   EXPECT_TRUE(foo_instance->HasSite());
   RenderProcessHost* foo_process = foo_instance->GetProcess();
-  EXPECT_TRUE(foo_process->GetProcessLock().allows_any_site());
+  EXPECT_TRUE(foo_process->GetProcessLock().AllowsAnySite());
   EXPECT_FALSE(blank_process->GetProcessLock().is_invalid());
-  EXPECT_EQ(foo_process->GetProcessLock().lock_url().spec(), "");
+  EXPECT_EQ(foo_process->GetProcessLock().agent_cluster_key().GetSite().spec(),
+            "");
   EXPECT_EQ(foo_instance, start_instance);
   if (ShouldUseDefaultSiteInstanceGroup()) {
     EXPECT_EQ(foo_instance->group(),

@@ -106,12 +106,13 @@ ExistingWindowSubMenuModel::GetPassKey() {
 // static:
 std::vector<ExistingBaseSubMenuModel::MenuItemInfo>
 ExistingWindowSubMenuModel::BuildMenuItemInfoVectorForBrowsers(
-    const std::vector<Browser*>& existing_browsers) {
+    const std::vector<BrowserWindowInterface*>& existing_browsers) {
   std::vector<MenuItemInfo> menu_item_infos;
   for (size_t i = 0; i < existing_browsers.size(); ++i) {
-    Browser* browser = existing_browsers[i];
+    BrowserWindowInterface* browser = existing_browsers[i];
     auto window_title =
-        browser->GetWindowTitleForMaxWidth(kWindowTitleForMenuMaxWidth);
+        browser->GetBrowserForMigrationOnly()->GetWindowTitleForMaxWidth(
+            kWindowTitleForMenuMaxWidth);
     menu_item_infos.emplace_back(window_title);
     menu_item_infos.back().may_have_mnemonics = false;
     menu_item_infos.back().target_index = i;

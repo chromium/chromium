@@ -12,6 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
+import org.chromium.chrome.browser.tab.Tab.MediaState;
 import org.chromium.components.find_in_page.FindMatchRectsDetails;
 import org.chromium.components.find_in_page.FindNotificationDetails;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -68,6 +69,9 @@ public class EmptyTabObserver implements TabObserver {
     public void onFaviconUpdated(Tab tab, @Nullable Bitmap icon, @Nullable GURL iconUrl) {}
 
     @Override
+    public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {}
+
+    @Override
     public void onTitleUpdated(Tab tab) {}
 
     @Override
@@ -78,12 +82,6 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onCrash(Tab tab) {}
-
-    @Override
-    public void webContentsWillSwap(Tab tab) {}
-
-    @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {}
 
     @Override
     public void onContextMenuShown(Tab tab) {}
@@ -101,7 +99,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onLoadProgressChanged(Tab tab, float progress) {}
 
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {}
+    public void onUpdateTargetUrl(Tab tab, GURL url) {}
 
     @Override
     public void onDidStartNavigationInPrimaryMainFrame(
@@ -157,7 +155,7 @@ public class EmptyTabObserver implements TabObserver {
             int bottomControlsMinHeightOffsetY) {}
 
     @Override
-    public void onBrowserControlsConstraintsChanged(
+    public void onOffsetTagsInfoChanged(
             Tab tab,
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
@@ -186,6 +184,12 @@ public class EmptyTabObserver implements TabObserver {
 
     @Override
     public void onGestureEnd() {}
+
+    @Override
+    public void onTouchDown() {}
+
+    @Override
+    public void onTouchUp() {}
 
     @Override
     public void didBackForwardTransitionAnimationChange(Tab tab) {}

@@ -5,7 +5,6 @@
 #ifndef CHROME_TEST_CHROMEDRIVER_CHROME_BIDI_TRACKER_H_
 #define CHROME_TEST_CHROMEDRIVER_CHROME_BIDI_TRACKER_H_
 
-#include <map>
 #include <string>
 
 #include "base/functional/callback.h"

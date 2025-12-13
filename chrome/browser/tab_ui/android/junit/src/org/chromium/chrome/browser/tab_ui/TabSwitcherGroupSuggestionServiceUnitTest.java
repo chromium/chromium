@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -25,7 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.Callback;
+import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,9 +42,9 @@ import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestion
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestionsService;
-import org.chromium.components.visited_url_ranking.url_grouping.UserResponse;
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponseMetadata;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -62,7 +61,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Mock private Profile mProfile;
     @Mock private GroupSuggestionsService mGroupSuggestionsService;
     @Mock private SuggestionLifecycleObserverHandler mSuggestionLifecycleObserverHandler;
-    @Mock private Callback<UserResponseMetadata> mUserResponseCallback;
+    @Mock private JniOnceCallback<UserResponseMetadata> mUserResponseCallback;
 
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -71,6 +70,8 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     @Spy
     private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
+
+    private final ArrayList<Tab> mTabs = new ArrayList<>();
 
     private TabSwitcherGroupSuggestionService mService;
 
@@ -81,6 +82,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.iterator()).thenAnswer(inv -> mTabs.iterator());
 
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
 
@@ -99,9 +101,10 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
     }
 
     @Test
-    public void testDestroy_removesObserver() {
+    public void testDestroy() {
         mService.destroy();
         verify(mTabGroupModelFilterSupplier).removeObserver(any());
+        verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
     @Test
@@ -160,11 +163,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
         verify(mSuggestionLifecycleObserverHandler).onShowSuggestion(shownTabIdsList);
         verify(mSuggestionLifecycleObserverHandler).updateSuggestionDetails(eq(10), any());
-        verify(mUserResponseCallback).onResult(mUserResponseMetadataCaptor.capture());
-
-        UserResponseMetadata response = mUserResponseMetadataCaptor.getValue();
-        assertEquals(11, response.mSuggestionId);
-        assertEquals(UserResponse.NOT_SHOWN, response.mUserResponse);
+        verify(mUserResponseCallback, never()).onResult(mUserResponseMetadataCaptor.capture());
     }
 
     @Test
@@ -207,6 +206,22 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
 
         mService.maybeShowSuggestions();
         verify(mSuggestionLifecycleObserverHandler, never()).onShowSuggestion(any());
+        verify(mUserResponseCallback).onResult(any());
+    }
+
+    @Test
+    public void testMaybeShowSuggestions_oneTabPinned() {
+        int[] tabIds = {1, 2};
+        GroupSuggestion suggestion = new GroupSuggestion(tabIds, 10, 0, "", "", "");
+        setupCachedSuggestion(suggestion);
+        mockTab(1, 0, true);
+        Tab pinnedTab = mockTab(2, 1, false);
+        when(pinnedTab.getIsPinned()).thenReturn(true);
+        when(mTabModel.getCount()).thenReturn(2);
+
+        mService.maybeShowSuggestions();
+        verify(mSuggestionLifecycleObserverHandler, never()).onShowSuggestion(any());
+        verify(mUserResponseCallback).onResult(any());
     }
 
     @Test
@@ -242,7 +257,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.tabPendingClosure(mockTab, 0);
+        observer.onTabClosePending(Collections.singletonList(mockTab), /* isAllTabs= */ false, 0);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
@@ -278,7 +293,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
     }
 
-    private void mockTab(int tabId, int index, boolean isActive) {
+    private Tab mockTab(int tabId, int index, boolean isActive) {
         Tab tab = mock();
 
         when(tab.getId()).thenReturn(tabId);
@@ -289,6 +304,8 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         when(mTabModel.getTabById(tabId)).thenReturn(tab);
         when(mTabModel.indexOf(tab)).thenReturn(index);
         when(mTabModel.getTabAt(index)).thenReturn(tab);
+        mTabs.add(index, tab);
+        return tab;
     }
 
     private void setupCachedSuggestion(GroupSuggestion suggestion) {

@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol HomeCustomizationSearchEngineLogoMediatorProvider;
 @class HomeCustomizationBackgroundPhotoFramingMediator;
 @class HomeCustomizationBackgroundPhotoPickerCoordinator;
 
@@ -37,6 +38,10 @@
 @property(nonatomic, weak)
     id<HomeCustomizationBackgroundPhotoPickerCoordinatorDelegate>
         delegate;
+
+// A provider responsible for supplying a logo vendor object.
+@property(nonatomic, weak) id<HomeCustomizationSearchEngineLogoMediatorProvider>
+    searchEngineLogoMediatorProvider;
 
 @end
 

@@ -16,7 +16,7 @@ namespace task_manager {
 
 WebAppTask::WebAppTask(content::WebContents* web_contents)
     : RendererTask(GetPrefixedTitle(web_contents),
-                   RendererTask::GetFaviconFromWebContents(web_contents),
+                   RendererTask::GetFaviconFromWebContents(web_contents).get(),
                    web_contents) {}
 
 WebAppTask::~WebAppTask() = default;

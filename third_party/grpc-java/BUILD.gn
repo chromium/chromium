@@ -18,7 +18,11 @@ if (is_android) {
 # Only compile the plugin for the host architecture.
 if (current_toolchain == host_toolchain) {
   config("grpc_java_plugin_internal_config") {
-    cflags = [ "-Wno-implicit-fallthrough" ]
+    cflags = [
+      "-Wno-implicit-fallthrough",
+      # Remove when https://github.com/grpc/grpc-java/issues/12464 fixed.
+      "-Wno-deprecated-declarations",
+    ]
   }
   executable("grpc_java_plugin") {
     sources = [
@@ -31,5 +35,9 @@ if (current_toolchain == host_toolchain) {
       "//third_party/protobuf:protobuf_config",
       ":grpc_java_plugin_internal_config",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

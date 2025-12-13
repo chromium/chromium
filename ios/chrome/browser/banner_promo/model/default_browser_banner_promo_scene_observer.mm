@@ -72,7 +72,7 @@
 
 // Returns whether the current navigation context changes should count as a
 // navigation for this feature.
-- (BOOL)navigationOccuredInNavigationContext:
+- (BOOL)navigationOccurredInNavigationContext:
     (web::NavigationContext*)navigationContext {
   // New tabs are added with a blank GURL. Those should automatically count as
   // a navigation.
@@ -220,7 +220,7 @@
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
-  if (![self navigationOccuredInNavigationContext:navigationContext]) {
+  if (![self navigationOccurredInNavigationContext:navigationContext]) {
     return;
   }
 

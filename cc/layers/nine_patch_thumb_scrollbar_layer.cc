@@ -74,14 +74,12 @@ void NinePatchThumbScrollbarLayer::PushDirtyPropertiesTo(
     NinePatchThumbScrollbarLayerImpl* scrollbar_layer =
         static_cast<NinePatchThumbScrollbarLayerImpl*>(layer);
 
+    scrollbar_layer->SetMinimumThumbLength(minimum_thumb_length_.Read(*this));
+    scrollbar_layer->SetThumbThickness(thumb_thickness_.Read(*this));
     if (orientation() == ScrollbarOrientation::kHorizontal) {
-      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).height());
-      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).width());
       scrollbar_layer->SetTrackStart(track_rect_.Read(*this).x());
       scrollbar_layer->SetTrackLength(track_rect_.Read(*this).width());
     } else {
-      scrollbar_layer->SetThumbThickness(thumb_size_.Read(*this).width());
-      scrollbar_layer->SetThumbLength(thumb_size_.Read(*this).height());
       scrollbar_layer->SetTrackStart(track_rect_.Read(*this).y());
       scrollbar_layer->SetTrackLength(track_rect_.Read(*this).height());
     }
@@ -138,8 +136,16 @@ bool NinePatchThumbScrollbarLayer::Update() {
                             &track_rect_.Write(*this));
   // Ignore ThumbRect's location because the NinePatchThumbScrollbarLayerImpl
   // will compute it from scroll offset.
-  updated |= UpdateProperty(scrollbar_.Read(*this)->ThumbRect().size(),
-                            &thumb_size_.Write(*this));
+  updated |= UpdateProperty(scrollbar_.Read(*this)->MinimumThumbLength(),
+                            &minimum_thumb_length_.Write(*this));
+  gfx::Size thumb_size = scrollbar_.Read(*this)->ThumbRect().size();
+  if (orientation() == ScrollbarOrientation::kHorizontal) {
+    updated |=
+        UpdateProperty(thumb_size.height(), &thumb_thickness_.Write(*this));
+  } else {
+    updated |=
+        UpdateProperty(thumb_size.width(), &thumb_thickness_.Write(*this));
+  }
   updated |= PaintThumbIfNeeded();
   updated |= SetHasFindInPageTickmarks(scrollbar_.Read(*this)->HasTickmarks());
   updated |= PaintTickmarks();

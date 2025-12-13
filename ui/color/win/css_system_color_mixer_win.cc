@@ -10,13 +10,13 @@
 namespace ui {
 
 // Maps the native Windows system colors to their corresponding CSS system
-// colors when in light or High Contrast mode as dark system colors are not
-// exposed yet.
+// colors.
 void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
-  if (key.forced_colors == ColorProviderKey::ForcedColors::kActive ||
+  // Windows' native colors don't get updated for dark mode, so unless we're
+  // forcing system colors (in which case we assume they're correct), only use
+  // them in light mode.
+  if (key.forced_colors == ColorProviderKey::ForcedColors::kSystem ||
       key.color_mode == ColorProviderKey::ColorMode::kLight) {
-    // Windows' native colors assume light mode or high contrast, so don't use
-    // them if that's undesirable.
     mixer[kColorCssSystemBtnFace] = {kColorNativeBtnFace};
     mixer[kColorCssSystemBtnText] = {kColorNativeBtnText};
     mixer[kColorCssSystemGrayText] = {kColorNativeGrayText};

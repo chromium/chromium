@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+{%- if not contains_only_enums %}
 {%- from 'cpp_macros.tmpl' import
     namespace_begin, namespace_end, variant_path %}
 
@@ -23,7 +24,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/lib/default_construct_tag_internal.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
@@ -194,3 +194,4 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
 #if defined(__clang__)
 #pragma clang diagnostic pop
 #endif
+{%- endif %}

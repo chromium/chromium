@@ -254,21 +254,10 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   auto decisionHandler = ^(WKNavigationActionPolicy policy) {
     preferences.preferredContentMode = contentMode;
     if (@available(iOS 16.0, *)) {
-      if ((policy == WKNavigationActionPolicyAllow) &&
-          isMainFrameNavigationAction) {
-        UMA_HISTOGRAM_BOOLEAN("IOS.MainFrameNavigationIsInLockdownMode",
-                              preferences.lockdownModeEnabled);
-      }
-
       if (!self.beingDestroyed) {
         bool browser_lockdown_mode_enabled =
             web::GetWebClient()->IsBrowserLockdownModeEnabled();
-        if ((policy == WKNavigationActionPolicyAllow) &&
-            isMainFrameNavigationAction) {
-          UMA_HISTOGRAM_BOOLEAN(
-              "IOS.MainFrameNavigationIsInBrowserLockdownMode",
-              browser_lockdown_mode_enabled);
-        }
+
         if (browser_lockdown_mode_enabled) {
           preferences.lockdownModeEnabled = true;
         }
@@ -690,6 +679,25 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     error = [NSError errorWithDomain:error.domain
                                 code:error.code
                             userInfo:userInfo];
+  }
+
+  if (@available(iOS 26, *)) {
+    if ([error.domain isEqualToString:@(web::kWebKitErrorDomain)] &&
+        error.code == web::kWebKitErrorCannotShowUrl &&
+        !error.userInfo[NSURLErrorFailingURLStringErrorKey]) {
+      // URL is expected in these errors, but it broke on iOS 26. Apply
+      // workaround until WebKit fix is shipped.
+      // TODO(crbug.com/441372052): Remove workaround.
+      NSString* urlString =
+          base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
+
+      NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
+      userInfo[NSURLErrorFailingURLStringErrorKey] = urlString;
+      userInfo[web::kNSErrorFailingURLKey] = urlString;
+      error = [NSError errorWithDomain:error.domain
+                                  code:error.code
+                              userInfo:userInfo];
+    }
   }
 
   // Handle load cancellation for directly cancelled navigations without
@@ -1383,19 +1391,25 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return YES;
   }
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(pageTransition,
-                                                  ui::PAGE_TRANSITION_TYPED)) {
+  if (pageTransition & ui::PAGE_TRANSITION_RELOAD) {
+    // Allow reload navigations.
     return YES;
   }
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(
-          pageTransition, ui::PAGE_TRANSITION_GENERATED)) {
-    return YES;
-  }
+  // Allow navigating to chrome:// pages if the navigation happens due to
+  //  - user typing the url in the omnibox,
+  //  - user tapping on a suggestion in the omnibox,
+  //  - user tapping on a bookmark.
+  static constexpr ui::PageTransition kAllowedTypes[] = {
+      ui::PAGE_TRANSITION_TYPED,
+      ui::PAGE_TRANSITION_GENERATED,
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+  };
 
-  if (ui::PageTransitionTypeIncludingQualifiersIs(
-          pageTransition, ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
-    return YES;
+  for (const ui::PageTransition allowedType : kAllowedTypes) {
+    if (ui::PageTransitionCoreTypeIs(pageTransition, allowedType)) {
+      return YES;
+    }
   }
 
   // Allow navigation to WebUI pages from error pages.
@@ -1403,17 +1417,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return YES;
   }
 
-  GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
-  if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL)
-#if !defined(__IPHONE_26_0) || __IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_26_0
-      // The `sourceFrame.mainFrame` property is now always non-null when
-      // compiling against the iOS26 SDK, breaking this check.
-      && !action.sourceFrame.mainFrame
-#endif
-  ) {
+  if (!action.sourceFrame.mainFrame) {
     // AppSpecific URLs are allowed inside iframe if the main frame is also
     // app specific page.
-    return YES;
+    GURL mainDocumentURL = net::GURLWithNSURL(action.request.mainDocumentURL);
+    if (web::GetWebClient()->IsAppSpecificURL(mainDocumentURL)) {
+      return YES;
+    }
   }
 
   return NO;

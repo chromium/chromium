@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/publishers/extension_apps_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "extensions/browser/uninstall_reason.h"

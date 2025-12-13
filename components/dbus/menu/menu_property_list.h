@@ -9,10 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "components/dbus/properties/types.h"
+#include "components/dbus/utils/variant.h"
 
 using MenuPropertyList = std::vector<std::string>;
-using MenuItemProperties = std::map<std::string, DbusVariant>;
+using MenuItemProperties = std::map<std::string, dbus_utils::Variant>;
 using MenuPropertyChanges = std::map<int32_t, MenuPropertyList>;
 
 namespace ui {

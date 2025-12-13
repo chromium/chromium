@@ -18,37 +18,49 @@ pub type Span = proc_macro2::Span;
 pub type TokenStream = proc_macro2::TokenStream;
 
 #[doc(hidden)]
-pub struct HasIterator; // True
+pub struct HasIterator<const B: bool>;
+
+impl BitOr<HasIterator<false>> for HasIterator<false> {
+    type Output = HasIterator<false>;
+    fn bitor(self, _rhs: HasIterator<false>) -> HasIterator<false> {
+        HasIterator::<false>
+    }
+}
+
+impl BitOr<HasIterator<false>> for HasIterator<true> {
+    type Output = HasIterator<true>;
+    fn bitor(self, _rhs: HasIterator<false>) -> HasIterator<true> {
+        HasIterator::<true>
+    }
+}
+
+impl BitOr<HasIterator<true>> for HasIterator<false> {
+    type Output = HasIterator<true>;
+    fn bitor(self, _rhs: HasIterator<true>) -> HasIterator<true> {
+        HasIterator::<true>
+    }
+}
+
+impl BitOr<HasIterator<true>> for HasIterator<true> {
+    type Output = HasIterator<true>;
+    fn bitor(self, _rhs: HasIterator<true>) -> HasIterator<true> {
+        HasIterator::<true>
+    }
+}
+
 #[doc(hidden)]
-pub struct ThereIsNoIteratorInRepetition; // False
-
-impl BitOr<ThereIsNoIteratorInRepetition> for ThereIsNoIteratorInRepetition {
-    type Output = ThereIsNoIteratorInRepetition;
-    fn bitor(self, _rhs: ThereIsNoIteratorInRepetition) -> ThereIsNoIteratorInRepetition {
-        ThereIsNoIteratorInRepetition
-    }
+#[cfg_attr(
+    not(no_diagnostic_namespace),
+    diagnostic::on_unimplemented(
+        message = "repetition contains no interpolated value that is an iterator",
+        label = "none of the values interpolated inside this repetition are iterable"
+    )
+)]
+pub trait CheckHasIterator<const B: bool>: Sized {
+    fn check(self) {}
 }
 
-impl BitOr<ThereIsNoIteratorInRepetition> for HasIterator {
-    type Output = HasIterator;
-    fn bitor(self, _rhs: ThereIsNoIteratorInRepetition) -> HasIterator {
-        HasIterator
-    }
-}
-
-impl BitOr<HasIterator> for ThereIsNoIteratorInRepetition {
-    type Output = HasIterator;
-    fn bitor(self, _rhs: HasIterator) -> HasIterator {
-        HasIterator
-    }
-}
-
-impl BitOr<HasIterator> for HasIterator {
-    type Output = HasIterator;
-    fn bitor(self, _rhs: HasIterator) -> HasIterator {
-        HasIterator
-    }
-}
+impl CheckHasIterator<true> for HasIterator<true> {}
 
 /// Extension traits used by the implementation of `quote!`. These are defined
 /// in separate traits, rather than as a single trait due to ambiguity issues.
@@ -58,8 +70,7 @@ impl BitOr<HasIterator> for HasIterator {
 /// the returned value should be idempotent.
 #[doc(hidden)]
 pub mod ext {
-    use super::RepInterp;
-    use super::{HasIterator as HasIter, ThereIsNoIteratorInRepetition as DoesNotHaveIter};
+    use super::{HasIterator, RepInterp};
     use crate::ToTokens;
     use alloc::collections::btree_set::{self, BTreeSet};
     use core::slice;
@@ -67,8 +78,8 @@ pub mod ext {
     /// Extension trait providing the `quote_into_iter` method on iterators.
     #[doc(hidden)]
     pub trait RepIteratorExt: Iterator + Sized {
-        fn quote_into_iter(self) -> (Self, HasIter) {
-            (self, HasIter)
+        fn quote_into_iter(self) -> (Self, HasIterator<true>) {
+            (self, HasIterator::<true>)
         }
     }
 
@@ -81,13 +92,13 @@ pub mod ext {
     pub trait RepToTokensExt {
         /// Pretend to be an iterator for the purposes of `quote_into_iter`.
         /// This allows repeated calls to `quote_into_iter` to continue
-        /// correctly returning DoesNotHaveIter.
+        /// correctly returning HasIterator<false>.
         fn next(&self) -> Option<&Self> {
             Some(self)
         }
 
-        fn quote_into_iter(&self) -> (&Self, DoesNotHaveIter) {
-            (self, DoesNotHaveIter)
+        fn quote_into_iter(&self) -> (&Self, HasIterator<false>) {
+            (self, HasIterator::<false>)
         }
     }
 
@@ -99,13 +110,13 @@ pub mod ext {
     pub trait RepAsIteratorExt<'q> {
         type Iter: Iterator;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter);
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>);
     }
 
     impl<'q, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &T {
         type Iter = T::Iter;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
             <T as RepAsIteratorExt>::quote_into_iter(*self)
         }
     }
@@ -113,7 +124,7 @@ pub mod ext {
     impl<'q, T: RepAsIteratorExt<'q> + ?Sized> RepAsIteratorExt<'q> for &mut T {
         type Iter = T::Iter;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
             <T as RepAsIteratorExt>::quote_into_iter(*self)
         }
     }
@@ -121,39 +132,39 @@ pub mod ext {
     impl<'q, T: 'q> RepAsIteratorExt<'q> for [T] {
         type Iter = slice::Iter<'q, T>;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
-            (self.iter(), HasIter)
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
+            (self.iter(), HasIterator::<true>)
         }
     }
 
     impl<'q, T: 'q, const N: usize> RepAsIteratorExt<'q> for [T; N] {
         type Iter = slice::Iter<'q, T>;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
-            (self.iter(), HasIter)
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
+            (self.iter(), HasIterator::<true>)
         }
     }
 
     impl<'q, T: 'q> RepAsIteratorExt<'q> for Vec<T> {
         type Iter = slice::Iter<'q, T>;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
-            (self.iter(), HasIter)
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
+            (self.iter(), HasIterator::<true>)
         }
     }
 
     impl<'q, T: 'q> RepAsIteratorExt<'q> for BTreeSet<T> {
         type Iter = btree_set::Iter<'q, T>;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
-            (self.iter(), HasIter)
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
+            (self.iter(), HasIterator::<true>)
         }
     }
 
     impl<'q, T: RepAsIteratorExt<'q>> RepAsIteratorExt<'q> for RepInterp<T> {
         type Iter = T::Iter;
 
-        fn quote_into_iter(&'q self) -> (Self::Iter, HasIter) {
+        fn quote_into_iter(&'q self) -> (Self::Iter, HasIterator<true>) {
             self.0.quote_into_iter()
         }
     }
@@ -272,19 +283,20 @@ pub fn parse(tokens: &mut TokenStream, s: &str) {
 #[doc(hidden)]
 pub fn parse_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
     let s: TokenStream = s.parse().expect("invalid token stream");
-    tokens.extend(s.into_iter().map(|t| respan_token_tree(t, span)));
+    for token in s {
+        tokens.append(respan_token_tree(token, span));
+    }
 }
 
 // Token tree with every span replaced by the given one.
 fn respan_token_tree(mut token: TokenTree, span: Span) -> TokenTree {
     match &mut token {
         TokenTree::Group(g) => {
-            let stream = g
-                .stream()
-                .into_iter()
-                .map(|token| respan_token_tree(token, span))
-                .collect();
-            *g = Group::new(g.delimiter(), stream);
+            let mut tokens = TokenStream::new();
+            for token in g.stream() {
+                tokens.append(respan_token_tree(token, span));
+            }
+            *g = Group::new(g.delimiter(), tokens);
             g.set_span(span);
         }
         other => other.set_span(span),
@@ -305,22 +317,21 @@ pub fn push_ident_spanned(tokens: &mut TokenStream, span: Span, s: &str) {
 
 #[doc(hidden)]
 pub fn push_lifetime(tokens: &mut TokenStream, lifetime: &str) {
-    tokens.extend([
-        TokenTree::Punct(Punct::new('\'', Spacing::Joint)),
-        TokenTree::Ident(Ident::new(&lifetime[1..], Span::call_site())),
-    ]);
+    tokens.append(TokenTree::Punct(Punct::new('\'', Spacing::Joint)));
+    tokens.append(TokenTree::Ident(Ident::new(
+        &lifetime[1..],
+        Span::call_site(),
+    )));
 }
 
 #[doc(hidden)]
 pub fn push_lifetime_spanned(tokens: &mut TokenStream, span: Span, lifetime: &str) {
-    tokens.extend([
-        TokenTree::Punct({
-            let mut apostrophe = Punct::new('\'', Spacing::Joint);
-            apostrophe.set_span(span);
-            apostrophe
-        }),
-        TokenTree::Ident(Ident::new(&lifetime[1..], span)),
-    ]);
+    tokens.append(TokenTree::Punct({
+        let mut apostrophe = Punct::new('\'', Spacing::Joint);
+        apostrophe.set_span(span);
+        apostrophe
+    }));
+    tokens.append(TokenTree::Ident(Ident::new(&lifetime[1..], span)));
 }
 
 macro_rules! push_punct {

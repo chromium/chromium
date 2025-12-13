@@ -22,6 +22,7 @@
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/channel_layout.h"
 #include "media/base/data_buffer.h"
@@ -35,7 +36,6 @@ using testing::AtLeast;
 using testing::DoAll;
 using testing::Field;
 using testing::InSequence;
-using testing::Invoke;
 using testing::InvokeWithoutArgs;
 using testing::Mock;
 using testing::MockFunction;
@@ -682,9 +682,9 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_DeviceSelect) {
     // The parameters are specified by ALSA documentation, and are in constants
     // in the implementation files.
     EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("IOID")))
-        .WillRepeatedly(Invoke(OutputHint));
+        .WillRepeatedly(OutputHint);
     EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("NAME")))
-        .WillRepeatedly(Invoke(EchoHint));
+        .WillRepeatedly(EchoHint);
 
     AlsaPcmOutputStream* test_stream = CreateStream(kExpectedLayouts[i]);
     EXPECT_TRUE(test_stream->AutoSelectDevice(i));
@@ -721,9 +721,9 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_FallbackDevices) {
       .WillOnce(DoAll(SetArgPointee<2>(GetFakeHints()), Return(0)));
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameFreeHint(GetFakeHints())).Times(1);
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("IOID")))
-      .WillRepeatedly(Invoke(OutputHint));
+      .WillRepeatedly(OutputHint);
   EXPECT_CALL(mock_alsa_wrapper_, DeviceNameGetHint(_, StrEq("NAME")))
-      .WillRepeatedly(Invoke(EchoHint));
+      .WillRepeatedly(EchoHint);
   EXPECT_CALL(mock_alsa_wrapper_, StrError(kTestFailedErrno))
       .WillRepeatedly(Return(kDummyMessage));
 

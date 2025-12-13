@@ -66,7 +66,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
                                         public TabGroupSyncService::Observer {
  public:
   TabGroupSyncDelegateBrowserTest() {
-    features_.InitWithFeatures({kTabGroupSyncServiceDesktopMigration}, {});
+    features_.InitWithFeatures({}, {});
 
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -500,8 +500,17 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
             GURL("chrome://newtab"));
 }
 
+// TODO(crbug.com/438299988): Re-enable this test after resolving null tab in
+// SavedTabGroupWebContentsListener::DidFinishNavigation.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP \
+  DISABLED_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP
+#else
+#define MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP \
+  RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
-                       RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP) {
+                       MAYBE_RemoveLastTabFromSyncKeepsGroupAndAddsPendingNTP) {
   chrome::AddTabAt(browser(), GURL("chrome://history"), 1, false);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
 
@@ -907,8 +916,16 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_TRUE(local_group->visual_data()->is_collapsed());
 }
 
+// TODO(crbug.com/438395752): Re-enable this test on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TabRemovalsFromSyncDontCauseZeroTabStateInLocal \
+  DISABLED_TabRemovalsFromSyncDontCauseZeroTabStateInLocal
+#else
+#define MAYBE_TabRemovalsFromSyncDontCauseZeroTabStateInLocal \
+  TabRemovalsFromSyncDontCauseZeroTabStateInLocal
+#endif
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
-                       TabRemovalsFromSyncDontCauseZeroTabStateInLocal) {
+                       MAYBE_TabRemovalsFromSyncDontCauseZeroTabStateInLocal) {
   // Starts with one tab.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 

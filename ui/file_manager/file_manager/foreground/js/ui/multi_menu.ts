@@ -136,11 +136,15 @@ export class MultiMenu extends Menu {
               this.hideSubMenu_();
             }
             break;
+          default:
+            break;
         }
         break;
       case 'mouseover':
       case 'mouseout':
         this.manageSubMenu(e as MouseEvent);
+        break;
+      default:
         break;
     }
   }
@@ -298,6 +302,8 @@ export class MultiMenu extends Menu {
         subMenu.hide();
         this.subMenu = null;
         this.currentMenu = this;
+        break;
+      default:
         break;
     }
   }

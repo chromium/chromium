@@ -55,8 +55,6 @@ mod common;
 mod double;
 mod error;
 mod frontend;
-#[cfg(all(feature = "zerovec", feature = "alloc"))]
-mod implementations;
 mod multi_named;
 #[cfg(feature = "alloc")]
 mod parser;

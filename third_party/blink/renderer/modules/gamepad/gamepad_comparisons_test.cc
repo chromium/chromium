@@ -566,4 +566,102 @@ TEST_F(GamepadComparisonsTest, CompareDifferentSurfaceTouch) {
   EXPECT_TRUE(compareResult.IsDifferent());
 }
 
+// Tests that a mismatch in the number of touches between two
+// gamepad states is detected as different.
+TEST_F(GamepadComparisonsTest, CompareTouchCountMismatch) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+  auto list2 = CreateGamepadListWithTopLeftTouchesTouchId1();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+// Tests that a difference in surface dimensions for otherwise identical
+// touches is detected.
+TEST_F(GamepadComparisonsTest, CompareTouchSurfaceDimensionsMismatch) {
+  auto list1 = CreateGamepadListWithTopLeftTouchSurface1();
+  auto list2 = CreateGamepadListWithTopLeftTouchSurface2();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+  EXPECT_FALSE(compareResult.GetChangedTouches(0).empty());
+  // Check which touch index changed.
+  for (int index : compareResult.GetChangedTouches(0)) {
+    EXPECT_EQ(list1[0]->touchEvents()->size(), list2[0]->touchEvents()->size());
+    // Surface dimensions should differ.
+    auto surface_dimensions1 =
+        (*list1[0]->touchEvents())[index].Get()->surfaceDimensions();
+    auto surface_dimensions2 =
+        (*list2[0]->touchEvents())[index].Get()->surfaceDimensions();
+    EXPECT_NE(surface_dimensions1->Item(0), surface_dimensions2->Item(0));
+    EXPECT_NE(surface_dimensions1->Item(1), surface_dimensions2->Item(1));
+  }
+}
+
+// Tests that a difference in touch IDs (even if other properties match)
+// is detected as different.
+TEST_F(GamepadComparisonsTest, CompareTouchIdOrderMatters) {
+  auto list1 = CreateGamepadListWithTopLeftTouchesTouchId1();
+  auto list2 = CreateGamepadListWithTopLeftTouchesTouchId3();
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+  EXPECT_FALSE(compareResult.GetChangedTouches(0).empty());
+  for (int index : compareResult.GetChangedTouches(0)) {
+    EXPECT_EQ(list1[0]->touchEvents()->size(), list2[0]->touchEvents()->size());
+    // Touch IDs should differ.
+    EXPECT_NE((*list1[0]->touchEvents())[index].Get()->touchId(),
+              (*list2[0]->touchEvents())[index].Get()->touchId());
+  }
+}
+
+// Tests that two gamepad states with identical touches
+// (compare a gamepad state to itself) are not detected as different.
+TEST_F(GamepadComparisonsTest, CompareIdenticalTouches) {
+  auto list1 = CreateGamepadListWithTopLeftTouchesTouchId1();
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list1, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_FALSE(compareResult.IsDifferent());
+  EXPECT_TRUE(compareResult.GetChangedTouches(0).empty());
+}
+
+// Tests that when a gamepad previously had a touch event and now has no
+// touches, this change is detected as a difference. This simulates a user
+// lifting their finger off a touch-sensitive area of the gamepad.
+TEST_F(GamepadComparisonsTest, CompareTouchUpOnConnectedGamepad) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+  auto list2 = CreateGamepadListWithNeutralGamepad();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+
+  EXPECT_TRUE(compareResult.IsDifferent());
+  EXPECT_TRUE(compareResult.GetChangedTouches(0).empty());
+}
+
+// Tests that when a gamepad with an active touch becomes absent (e.g.,
+// disconnected), the change is detected as different.
+TEST_F(GamepadComparisonsTest, CompareTouchPresentToNone) {
+  auto list1 = CreateGamepadListWithTopLeftTouch();
+  auto list2 = CreateEmptyGamepadList();
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+  EXPECT_TRUE(compareResult.IsDifferent());
+}
+
+// Tests that when a touch appears on a previously absent gamepad, the change is
+// detected as different.
+TEST_F(GamepadComparisonsTest, CompareNoneToTouchPresent) {
+  auto list1 = CreateEmptyGamepadList();
+  auto list2 = CreateGamepadListWithTopLeftTouch();
+
+  auto compareResult = GamepadComparisons::Compare(
+      list1, list2, /*compare_all_axes=*/false, /*compare_all_buttons=*/false);
+
+  EXPECT_TRUE(compareResult.IsDifferent());
+  EXPECT_TRUE(compareResult.GetChangedTouches(0).empty());
+}
+
 }  // namespace blink

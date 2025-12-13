@@ -41,10 +41,6 @@ class TrustedVaultClientBackend : public KeyedService {
       base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>;
   using UpdateGPMPinCompletionCallback =
       base::OnceCallback<void(NSError* error)>;
-
-  // Callback used to verify local device registration and log the result to
-  // UMA metrics. The argument represents the gaia ID subject to verification.
-  using VerifierCallback = base::OnceCallback<void(const std::string&)>;
   TrustedVaultClientBackend();
 
   TrustedVaultClientBackend(const TrustedVaultClientBackend&) = delete;
@@ -58,13 +54,6 @@ class TrustedVaultClientBackend : public KeyedService {
                    trusted_vault::SecurityDomainId security_domain_id);
   void RemoveObserver(Observer* observer,
                       trusted_vault::SecurityDomainId security_domain_id);
-
-  // Registers a delegate-like callback that implements device registration
-  // verification.
-  // TODO(crbug.com/40939090): device registration verification has been
-  // removed, remove remaining code from TrustedVaultClientBackend.
-  virtual void SetDeviceRegistrationPublicKeyVerifierForUMA(
-      VerifierCallback verifier) = 0;
 
   // Asynchronously fetches the shared keys for `identity` and invokes
   // `callback` with the fetched keys.
@@ -96,6 +85,7 @@ class TrustedVaultClientBackend : public KeyedService {
   virtual CancelDialogCallback Reauthentication(
       id<SystemIdentity> identity,
       trusted_vault::SecurityDomainId security_domain_id,
+      trusted_vault::TrustedVaultUserActionTriggerForUMA trigger,
       UIViewController* presenting_view_controller,
       CompletionBlock completion) = 0;
 
@@ -135,7 +125,10 @@ class TrustedVaultClientBackend : public KeyedService {
 
  protected:
   // Functions to notify observers.
-  void NotifyKeysChanged(trusted_vault::SecurityDomainId security_domain_id);
+  void NotifyKeysChanged(
+      trusted_vault::SecurityDomainId security_domain_id,
+      std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA>
+          trigger);
 
   void NotifyRecoverabilityChanged(
       trusted_vault::SecurityDomainId security_domain_id);

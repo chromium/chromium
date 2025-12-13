@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "abstract_find_tab_helper.h",
-    "abstract_find_tab_helper.mm",
     "constants.h",
     "constants.mm",
     "find_in_page_controller.h",
@@ -15,18 +13,13 @@ source_set("model") {
     "find_in_page_response_delegate.h",
     "find_tab_helper.h",
     "find_tab_helper.mm",
-    "java_script_find_in_page_controller.h",
-    "java_script_find_in_page_controller.mm",
-    "java_script_find_tab_helper.h",
-    "java_script_find_tab_helper.mm",
   ]
   deps = [
-    ":util",
     "//base",
     "//components/strings:components_strings_grit",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/fullscreen/ui_bundled",
-    "//ios/chrome/browser/ntp/model",
+    "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
@@ -39,43 +32,13 @@ source_set("model") {
   frameworks = [ "CoreGraphics.framework" ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "java_script_find_in_page_controller_unittest.mm" ]
-  deps = [
-    ":model",
-    "//base",
-    "//base/test:test_support",
-    "//components/ukm:test_support",
-    "//components/ukm/ios:ukm_url_recorder",
-    "//ios/chrome/browser/shared/model/profile/test",
-    "//ios/chrome/browser/web/model:web_internal",
-    "//ios/chrome/test:test_support",
-    "//ios/web/public/test",
-    "//testing/gtest",
-  ]
-}
-
-source_set("util") {
-  sources = [
-    "util.h",
-    "util.mm",
-  ]
-  public_deps = [ "//base" ]
-}
-
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
-  sources = [
-    "find_in_page_egtest.mm",
-    "find_in_page_egtest_util.h",
-    "find_in_page_egtest_util.mm",
-  ]
+  sources = [ "find_in_page_egtest.mm" ]
   deps = [
     ":eg_test_support+eg2",
-    "//ios/chrome/browser/find_bar/ui_bundled:constants",
-    "//ios/chrome/browser/find_in_page/model:util",
+    "//components/omnibox/browser:pref_names",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/features",

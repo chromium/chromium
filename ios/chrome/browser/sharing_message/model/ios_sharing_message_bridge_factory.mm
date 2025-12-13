@@ -39,7 +39,7 @@ IOSSharingMessageBridgeFactory::~IOSSharingMessageBridgeFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   if (!base::FeatureList::IsEnabled(
           send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     return nullptr;

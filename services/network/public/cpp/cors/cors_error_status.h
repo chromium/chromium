@@ -31,10 +31,13 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   CorsErrorStatus(mojom::CorsError cors_error,
                   const std::string& failed_parameter);
 
-  // Constructor for Private Network Access errors.
+  // Constructors for Local Network Access errors.
   CorsErrorStatus(mojom::CorsError cors_error,
-                  mojom::IPAddressSpace target_address_space,
                   mojom::IPAddressSpace resource_address_space);
+
+  CorsErrorStatus(mojom::CorsError cors_error,
+                  mojom::IPAddressSpace resource_address_space,
+                  mojom::IPAddressSpace inconsistent_address_space);
 
   ~CorsErrorStatus();
 
@@ -48,8 +51,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) CorsErrorStatus {
   mojom::CorsError cors_error = mojom::CorsError::kMaxValue;
 
   std::string failed_parameter;
-  mojom::IPAddressSpace target_address_space = mojom::IPAddressSpace::kUnknown;
   mojom::IPAddressSpace resource_address_space =
+      mojom::IPAddressSpace::kUnknown;
+  mojom::IPAddressSpace inconsistent_address_space =
       mojom::IPAddressSpace::kUnknown;
   bool has_authorization_covered_by_wildcard_on_preflight = false;
   base::UnguessableToken issue_id = base::UnguessableToken::Create();

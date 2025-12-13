@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/users/avatar/user_image_loader.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "ash/public/cpp/image_downloader.h"
@@ -390,24 +392,27 @@ void OnAnimationDecoded(
 
 void DecodeAnimation(LoadedCallback loaded_cb,
                      bool require_encode,
-                     std::unique_ptr<std::string> data) {
-  if (!data || data->empty()) {
+                     std::string data) {
+  if (data.empty()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(loaded_cb),
                                   std::make_unique<user_manager::UserImage>()));
     return;
   }
 
-  auto bytes = base::as_byte_span(*data);
+  // A pointer to `std::string` may be invalidated after a move operation, so
+  // it's necessary for pointer stability to put `data` into `data_container`.
+  auto data_container = std::make_unique<std::string>(std::move(data));
+  auto bytes = base::as_byte_span(*data_container);
   data_decoder::DecodeAnimationIsolated(
       bytes, /*shrink_to_fit=*/true, kMaxImageSizeInBytes,
       base::BindOnce(&OnAnimationDecoded, std::move(loaded_cb), require_encode,
-                     std::move(data)));
+                     std::move(data_container)));
 }
 
 void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
                        LoadedCallback loaded_cb,
-                       std::unique_ptr<std::string> body) {
+                       std::optional<std::string> body) {
   if (loader->NetError() != net::OK || !body) {
     base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, false);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -417,7 +422,7 @@ void OnImageDownloaded(std::unique_ptr<network::SimpleURLLoader> loader,
   }
   base::UmaHistogramBoolean(kURLLoaderDownloadSuccessHistogramName, true);
   DecodeAnimation(std::move(loaded_cb), /*require_encode=*/true,
-                  std::move(body));
+                  std::move(body).value());
 }
 
 }  // namespace
@@ -468,7 +473,7 @@ void StartWithFilePathAnimated(
             if (!base::ReadFileToString(file_path, &data)) {
               data.clear();
             }
-            return std::make_unique<std::string>(std::move(data));
+            return data;
           },
           file_path),
       base::BindOnce(&DecodeAnimation, std::move(loaded_cb),

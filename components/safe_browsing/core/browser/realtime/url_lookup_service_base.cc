@@ -5,8 +5,11 @@
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/base64url.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -517,7 +520,7 @@ void RealTimeUrlLookupServiceBase::OnURLLoaderComplete(
     bool is_sampled_report,
     scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
     std::optional<int> webui_token,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(first_request_start_time_);
 
@@ -671,7 +674,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
 
   std::string content_area_account_email = GetContentAreaAccountEmail(url);
   if (!content_area_account_email.empty()) {
-    request->set_content_area_account_email(std::move(content_area_account_email));
+    request->set_content_area_account_email(
+        std::move(content_area_account_email));
   }
 
   *request->mutable_population() = get_user_population_callback_.Run();
@@ -722,15 +726,13 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     }
 
     // The IP addresses are only needed for enterprise requests.
-    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-      base::ThreadPool::PostTaskAndReplyWithResult(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
-          base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
-                         GetWeakPtr(), std::move(request),
-                         std::move(request_callback)));
-      return;
-    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
+        base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
+                       GetWeakPtr(), std::move(request),
+                       std::move(request_callback)));
+    return;
   }
   std::move(request_callback).Run(std::move(request));
 }

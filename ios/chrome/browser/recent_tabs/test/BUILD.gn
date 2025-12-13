@@ -1,0 +1,71 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "recent_tabs_app_interface.h",
+    "recent_tabs_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "recent_tabs_app_interface.h",
+    "recent_tabs_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "recent_tabs_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
+    "//components/policy:policy_code_generate",
+    "//components/policy/core/common:common_constants",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//components/unified_consent",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/authentication/ui_bundled/cells:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/history/ui_bundled:constants",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:eg_test_support+eg2",
+    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/recent_tabs/public:ui_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:test_constants",
+    "//ios/chrome/browser/tabs/ui_bundled/tests:eg_test_support+eg2",
+    "//ios/chrome/browser/tabs/ui_bundled/tests:fake_distant_tab",
+    "//ios/chrome/common/ui/promo_style:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

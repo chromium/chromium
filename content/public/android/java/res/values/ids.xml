@@ -10,6 +10,7 @@ found in the LICENSE file.
     <item type="id" name="select_action_menu_assist_items" />
     <item type="id" name="select_action_menu_default_items" />
     <item type="id" name="select_action_menu_text_processing_items" />
+    <item type="id" name="select_action_menu_delegate_items" />
 
     <!-- Selection Menu Items -->
     <item type="id" name="select_action_menu_cut" />
@@ -19,4 +20,12 @@ found in the LICENSE file.
     <item type="id" name="select_action_menu_select_all" />
     <item type="id" name="select_action_menu_paste_as_plain_text" />
     <item type="id" name="select_action_menu_web_search" />
+
+    <!-- Autofill specific Menu Items -->
+    <item type="id" name="select_action_menu_passkey_entry" />
+
+    <!-- Samsung specific Menu Items -->
+    <item type="id" name="select_action_menu_manage_apps" />
+    <item type="id" name="select_action_menu_translate" />
+
 </resources>

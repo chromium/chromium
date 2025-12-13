@@ -4,12 +4,13 @@
 
 // https://wicg.github.io/badging/
 [
-    SecureContext,
-    ImplementedAs=NavigatorBadge
-] partial interface Navigator {
+    SecureContext
+] interface mixin NavigatorBadge {
   [CallWith=ScriptState, MeasureAs=BadgeSet, RaisesException]
   Promise<undefined> setAppBadge(optional [EnforceRange] unsigned long long contents);
 
   [CallWith=ScriptState, MeasureAs=BadgeClear, RaisesException]
   Promise<undefined> clearAppBadge();
 };
+
+Navigator includes NavigatorBadge;

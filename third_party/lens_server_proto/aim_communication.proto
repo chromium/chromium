@@ -1,0 +1,148 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "aim_query.proto";
+
+// Feature Capabilities shared between AIM and Client. Both sides need to
+// support a feature for it to WAI. Sent in the handshake request/response so
+// both ends of communication are aware of what features to support.
+enum FeatureCapability {
+  // Default value. The only supported feature is sending a query from the
+  // client to AIM.
+  DEFAULT = 0;
+
+  // AiModeOpenThreadsView event
+  OPEN_THREADS_VIEW = 15;
+
+  // SetCobrowsingDisplayMode event
+  COBROWSING_DISPLAY_CONTROL = 16;
+
+  // AiModeUpdateThreadContextLibrary() method
+  THREAD_CONTEXT_LIBRARY = 17;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Client -> AIM messages
+////////////////////////////////////////////////////////////////////////////////
+
+// Message clients send to AIM to initiate a handshake. Sent continuously on
+// page load until AIM acknowledges with a HandshakeResponse.
+message HandshakePing {
+  // The list of features supports by this client.
+  repeated FeatureCapability capabilities = 1;
+}
+
+// Message from client to AIM to submit a query.
+message SubmitQuery {
+  // The set of data that's required to generate a response from the LLM.
+  // Queries can be unimodal (text only or image only) or multimodal (e.g. text
+  // + image).
+  QueryPayload payload = 1;
+}
+
+// Payload for SetCobrowsingDisplayMode event.
+message CobrowsingDisplayModeParams {
+  enum DisplayMode {
+    UNKNOWN = 0;
+    COBROWSING_TAB = 1;
+    COBROWSING_SIDEPANEL = 2;
+  }
+  DisplayMode display_mode = 1;
+}
+
+// Message from client to AIM to update the display mode for cobrowsing.
+message SetCobrowsingDisplayMode {
+  CobrowsingDisplayModeParams payload = 1;
+}
+
+// Payload for the AiModeOpenThreadsView event.
+message OpenThreadsViewPayload {}
+
+// Message from client to AIM to open the threads view.
+message OpenThreadsView {
+  OpenThreadsViewPayload payload = 1;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// AIM -> Client messages
+////////////////////////////////////////////////////////////////////////////////
+
+// Message AIM sends to clients to confirm a handshake, at which point the
+// client can send messages to AIM knowing they will be delivered.
+message HandshakeResponse {
+  // The list of features supported by this AIM instance.
+  repeated FeatureCapability capabilities = 1;
+}
+
+// The message for clients to send messages to AIM.
+message ClientToAimMessage {
+  oneof event_message {
+    HandshakePing handshake_ping = 1;
+    SubmitQuery submit_query = 2;
+    OpenThreadsView open_threads_view = 3;
+    SetCobrowsingDisplayMode set_cobrowsing_display_mode = 4;
+  }
+}
+
+// The message for AIM to send messages to native clients.
+message AimToClientMessage {
+  oneof event_message {
+    HandshakeResponse handshake_response = 1;
+    HideInput hide_input = 2;
+    RestoreInput restore_input = 3;
+    EnterBasicMode enter_basic_mode = 4;
+    ExitBasicMode exit_basic_mode = 5;
+    UpdateThreadContextLibrary update_thread_context_library = 7;
+  }
+}
+
+// Message AIM sends to clients to hide the input plate.
+message HideInput {}
+
+// Message AIM sends to clients to restore the input plate.
+message RestoreInput {}
+
+// Message AIM sends to clients to enter basic mode.
+message EnterBasicMode {}
+
+// Message AIM sends to clients to exit basic mode.
+message ExitBasicMode {}
+
+// Message AIM sends to clients to update the thread context library.
+message UpdateThreadContextLibrary {
+  repeated Context contexts = 1;
+}
+
+// Context input for AIM threads.
+message Context {
+  // Unique identifier for the user uploaded context (e.g. PDF). This is created
+  // during context upload.
+  int64 context_id = 1;
+  oneof context_input {
+    Image image = 2;
+    Pdf pdf = 3;
+    Webpage webpage = 4;
+  }
+}
+
+message Image {
+  string title = 1;
+  string url = 2;
+}
+
+message Pdf {
+  string title = 1;
+  string url = 2;
+}
+
+message Webpage {
+  string title = 1;
+  string url = 2;
+}

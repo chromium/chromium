@@ -20,6 +20,10 @@ export const OptionalPrimitivesSpec: { $: mojo.internal.MojomType } =
 
 export interface OptionalPrimitivesMojoType {
   int: (number | null);
+  long: (bigint | null);
+  intWithDefault: (number | null);
+  longWithDefault: (bigint | null);
+  boolWithDefault: (boolean | null);
   uints: Array<(number | null)>;
   boolarray: Array<(boolean | null)>;
   bitmap: {[key: boolean]: (boolean | null)};
@@ -58,8 +62,35 @@ mojo.internal.Struct<OptionalPrimitivesMojoType>(
         },
         undefined,
     ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, boolean>(
+        'long_$flag', 0,
+        1,
+        mojo.internal.Bool,
+        false,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: true,
+          linkedValueFieldName: "long_$value",
+          originalFieldName: "long",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, bigint>(
+        'long_$value', 8,
+        0,
+        mojo.internal.Int64,
+        BigInt(0),
+        false /* nullable */,
+        0,
+        {
+          isPrimary: false,
+          originalFieldName: "long",
+        },
+        undefined,
+    ),
       mojo.internal.StructField<OptionalPrimitivesMojoType, Array<(number | null)>>(
-        'uints', 8,
+        'uints', 16,
         0,
         mojo.internal.Array(mojo.internal.Uint32, true),
         null,
@@ -69,7 +100,7 @@ mojo.internal.Struct<OptionalPrimitivesMojoType>(
         undefined,
     ),
       mojo.internal.StructField<OptionalPrimitivesMojoType, Array<(boolean | null)>>(
-        'boolarray', 16,
+        'boolarray', 24,
         0,
         mojo.internal.Array(mojo.internal.Bool, true),
         null,
@@ -79,7 +110,7 @@ mojo.internal.Struct<OptionalPrimitivesMojoType>(
         undefined,
     ),
       mojo.internal.StructField<OptionalPrimitivesMojoType, {[key: boolean]: (boolean | null)}>(
-        'bitmap', 24,
+        'bitmap', 32,
         0,
         mojo.internal.Map(mojo.internal.Bool, mojo.internal.Bool, true),
         null,
@@ -88,8 +119,89 @@ mojo.internal.Struct<OptionalPrimitivesMojoType>(
         undefined,
         undefined,
     ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, boolean>(
+        'int_with_default_$flag', 0,
+        2,
+        mojo.internal.Bool,
+        true,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: true,
+          linkedValueFieldName: "int_with_default_$value",
+          originalFieldName: "intWithDefault",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, number>(
+        'int_with_default_$value', 40,
+        0,
+        mojo.internal.Int32,
+        1,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: false,
+          originalFieldName: "intWithDefault",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, boolean>(
+        'long_with_default_$flag', 0,
+        3,
+        mojo.internal.Bool,
+        true,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: true,
+          linkedValueFieldName: "long_with_default_$value",
+          originalFieldName: "longWithDefault",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, bigint>(
+        'long_with_default_$value', 48,
+        0,
+        mojo.internal.Int64,
+        BigInt('2'),
+        false /* nullable */,
+        0,
+        {
+          isPrimary: false,
+          originalFieldName: "longWithDefault",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, boolean>(
+        'bool_with_default_$flag', 0,
+        4,
+        mojo.internal.Bool,
+        true,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: true,
+          linkedValueFieldName: "bool_with_default_$value",
+          originalFieldName: "boolWithDefault",
+        },
+        undefined,
+    ),
+      mojo.internal.StructField<OptionalPrimitivesMojoType, boolean>(
+        'bool_with_default_$value', 0,
+        5,
+        mojo.internal.Bool,
+        true,
+        false /* nullable */,
+        0,
+        {
+          isPrimary: false,
+          originalFieldName: "boolWithDefault",
+        },
+        undefined,
+    ),
     ],
-    [[0, 40],]);
+    [[0, 64],]);
 
 
 

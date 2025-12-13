@@ -1,0 +1,20 @@
+include_rules = [
+  "+chrome/browser/ash/certificate_provider",
+  "+chrome/browser/profiles/profile_keyed_service_factory.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/ui/ash/login/login_display_host.h",
+  "+chrome/browser/ui/views/notifications/request_pin_view_chromeos.h",
+  "+chrome/common/extensions/api/certificate_provider.h",
+]
+
+specific_include_rules = {
+  "test_certificate_provider_extension\\.cc": [
+    "+chrome/common/chrome_paths.h",
+    "+chrome/common/extensions/api/certificate_provider.h",
+  ],
+  "test_certificate_provider_extension_mixin\\.(cc|h)": [
+    "+chrome/browser/policy/extension_force_install_mixin.h",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/test/base/mixin_based_in_process_browser_test.h",
+  ]
+}

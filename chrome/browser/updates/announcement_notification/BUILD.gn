@@ -52,7 +52,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content",
     "//components/pref_registry",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//skia",
     "//ui/base",
     "//url",

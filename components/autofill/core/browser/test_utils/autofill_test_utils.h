@@ -7,11 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
@@ -33,6 +34,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_testing_pref_service.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
 class PrefService;
@@ -105,6 +107,14 @@ std::unique_ptr<PrefService> PrefServiceForTesting(
 // Returns a `FormData` corresponding to a simple address form. Use `unique_id`
 // to ensure that the form has its own signature.
 [[nodiscard]] FormData CreateTestAddressFormData(
+    const char* unique_id = nullptr);
+
+// Returns a `FormData` corresponding to a simple one-time-password form.
+[[nodiscard]] FormData CreateTestOtpFormData(const char* unique_id = nullptr);
+
+// Returns a `FormData` corresponding to a simple sign-up form that also
+// accepts a passkey.
+[[nodiscard]] FormData CreateTestHybridSignUpFormData(
     const char* unique_id = nullptr);
 
 // Returns a full profile with valid info according to rules for Canada.
@@ -184,6 +194,12 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_Type);
 // Returns a copy of `credit_card` with `cvc` set as specified.
 CreditCard WithCvc(CreditCard credit_card, std::u16string cvc = u"123");
 
+// Returns a `credit_card` with its record type set to full server card.
+CreditCard AsFullServerCard(CreditCard credit_card);
+
+// Returns a `credit_card` with its record type set to virtual card.
+CreditCard AsVirtualCard(CreditCard credit_card);
+
 // Returns a credit card cloud token data full of dummy info.
 CreditCardCloudTokenData GetCreditCardCloudTokenData1();
 
@@ -231,6 +247,9 @@ CreditCardMerchantBenefit GetActiveCreditCardMerchantBenefit();
 // benefit.
 base::flat_set<url::Origin> GetOriginsForMerchantBenefit();
 
+// Prevents kAccountNameEmail profile from being created.
+void HideAccountNameEmailProfile(PrefService* pref_service, AccountInfo info);
+
 // Adds `card` with a set `issuer_id`, `benefit` and `benefit_source` to
 // `personal_data`. Also configures a category benefit with the
 // `optimization_guide`.
@@ -240,7 +259,7 @@ void SetUpCreditCardAndBenefitData(
     const CreditCardBenefit& benefit,
     const std::string& benefit_source,
     TestPersonalDataManager& personal_data,
-    AutofillOptimizationGuide* optimization_guide);
+    AutofillOptimizationGuideDecider* optimization_guide);
 
 // A unit testing utility that is common to a number of the Autofill unit
 // tests.  |SetProfileInfo| provides a quick way to populate a profile with
@@ -339,7 +358,12 @@ struct PassportEntityOptionsT {
   std::string_view guid = "00000000-0000-4000-8000-000000000000";
   std::string_view nickname = "Passie";
   base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using PassportEntityOptions = PassportEntityOptionsT<>;
 
@@ -349,6 +373,9 @@ using PassportEntityOptions = PassportEntityOptionsT<>;
 // entity from the database obtains the original entity (the resolution of
 // base::Time in the database is seconds).
 EntityInstance GetPassportEntityInstance(PassportEntityOptions options = {});
+
+EntityInstance GetPassportEntityInstanceWithRandomGuid(
+    PassportEntityOptions options = {});
 
 template <typename = void>
 struct DriversLicenseOptionsT {
@@ -360,11 +387,19 @@ struct DriversLicenseOptionsT {
   std::string_view guid = "00000000-0000-4000-8000-100000000000";
   std::string_view nickname = "License";
   base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using DriversLicenseOptions = DriversLicenseOptionsT<>;
 
 EntityInstance GetDriversLicenseEntityInstance(
+    DriversLicenseOptions options = {});
+
+EntityInstance GetDriversLicenseEntityInstanceWithRandomGuid(
     DriversLicenseOptions options = {});
 
 template <typename = void>
@@ -378,11 +413,103 @@ struct VehicleOptionsT {
   const char16_t* state = u"California";
   std::string_view guid = "00000000-0000-4000-8000-200000000000";
   std::string_view nickname = "Vehicle";
+  base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
   std::string_view app_locale = "en-US";
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
 };
 using VehicleOptions = VehicleOptionsT<>;
 
 EntityInstance GetVehicleEntityInstance(VehicleOptions options = {});
+
+EntityInstance GetVehicleEntityInstanceWithRandomGuid(
+    VehicleOptions options = {});
+
+template <typename = void>
+struct NationalIdCardOptionsT {
+  const char16_t* number = u"987654321";
+  const char16_t* country = u"United States";
+  const char16_t* issue_date = u"01/12/2020";
+  const char16_t* expiry_date = u"01/12/2030";
+  std::string_view guid = "00000000-0000-4000-8000-300000000000";
+  std::string_view nickname = "IdCard";
+  std::string_view app_locale = "en-US";
+  base::Time use_date = kJune2017;
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using NationalIdCardOptions = NationalIdCardOptionsT<>;
+
+EntityInstance GetNationalIdCardEntityInstance(
+    NationalIdCardOptions options = {});
+
+template <typename = void>
+struct KnownTravelerNumberOptionsT {
+  const char16_t* number = u"987654321";
+  const char16_t* expiration_date = u"01/12/2030";
+  std::string_view guid = "00000000-0000-4000-8000-400000000000";
+  std::string_view nickname = "Known Traveler Number";
+  std::string_view app_locale = "en-US";
+  base::Time use_date = kJune2017;
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using KnownTravelerNumberOptions = KnownTravelerNumberOptionsT<>;
+
+EntityInstance GetKnownTravelerNumberInstance(
+    KnownTravelerNumberOptions options = {});
+
+template <typename = void>
+struct RedressNumberOptionsT {
+  const char16_t* number = u"987654321";
+  std::string_view guid = "00000000-0000-4000-8000-500000000000";
+  std::string_view nickname = "RedressNumber";
+  std::string_view app_locale = "en-US";
+  base::Time use_date = kJune2017;
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using RedressNumberOptions = RedressNumberOptionsT<>;
+
+EntityInstance GetRedressNumberEntityInstance(
+    RedressNumberOptions options = {});
+
+template <typename = void>
+struct FlightReservationOptionsT {
+  const char16_t* flight_number = u"AA123";
+  const char16_t* ticket_number = u"123123456";
+  const char16_t* confirmation_code = u"AB4KW5";
+  const char16_t* name = u"John Doe";
+  const char16_t* departure_airport = u"MUC";
+  const char16_t* arrival_airport = u"BEY";
+  std::optional<base::Time> departure_time = std::nullopt;
+  base::TimeDelta departure_time_zone_offset = base::TimeDelta();
+  std::string_view guid = "00000000-0000-4000-8000-500000000000";
+  std::string_view nickname = "FlightReservation";
+  std::string_view app_locale = "en-US";
+  base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
+  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using FlightReservationOptions = FlightReservationOptionsT<>;
+
+EntityInstance GetFlightReservationEntityInstance(
+    FlightReservationOptions options = {});
+
+EntityInstance GetFlightReservationEntityInstanceWithRandomGuid(
+    FlightReservationOptions options = {});
 
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
@@ -405,12 +532,12 @@ void FillUploadField(AutofillUploadContents::Field* field,
 // Perhaps a neater way would be to move this to TestFormStructure.
 std::vector<FormSignature> GetEncodedSignatures(const FormStructure& form);
 std::vector<FormSignature> GetEncodedSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ref<FormStructure>>& forms);
 
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
     const FormStructure& form);
 std::vector<FormSignature> GetEncodedAlternativeSignatures(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ref<FormStructure>>& forms);
 
 // Calls the required functions on the given external delegate to cause the
 // delegate to display a popup.
@@ -488,12 +615,16 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     std::string issuer_id,
     std::string currency,
     uint64_t min_price_in_micros,
-    uint64_t max_price_in_micros);
+    uint64_t max_price_in_micros,
+    std::vector<sync_pb::PaymentInstrument_ActionRequired> actions_required =
+        {});
 
 // Returns a linked BNPL issuer with fake data.
 BnplIssuer GetTestLinkedBnplIssuer(
     autofill::BnplIssuer::IssuerId issuer_id =
-        autofill::BnplIssuer::IssuerId::kBnplAffirm);
+        autofill::BnplIssuer::IssuerId::kBnplAffirm,
+    DenseSet<PaymentInstrument::ActionRequired> actions_required =
+        DenseSet<PaymentInstrument::ActionRequired>());
 
 // Returns an unlinked BNPL issuer with fake data.
 BnplIssuer GetTestUnlinkedBnplIssuer();
@@ -502,6 +633,21 @@ BnplIssuer GetTestUnlinkedBnplIssuer();
 // fake data using `id` as the `PaymentInstrumentCreationOption.id`.
 sync_pb::PaymentInstrumentCreationOption
 CreatePaymentInstrumentCreationOptionWithBnplIssuer(const std::string& id);
+
+// For the key metrics as used for different data types, this struct allows to
+// define expectations. The values are marked optional. `std::nullopt` means
+// that no value was recorded to the histogram.
+struct SingleSubmissionKeyMetricExpectations {
+  std::optional<bool> readiness;
+  std::optional<bool> acceptance;
+  std::optional<bool> assistance;
+  std::optional<bool> correctness;
+};
+
+void VerifySingleSubmissionKeyMetricExpectations(
+    const base::HistogramTester& histogram_tester,
+    std::string_view form_type_name,
+    const SingleSubmissionKeyMetricExpectations& expectations);
 
 }  // namespace test
 }  // namespace autofill

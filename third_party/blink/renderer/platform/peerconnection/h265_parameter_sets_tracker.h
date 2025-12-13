@@ -105,21 +105,21 @@ class PLATFORM_EXPORT H265ParameterSetsTracker {
   webrtc::H265BitstreamParser parser_;
   // Map from vps_video_parameter_set_id to the VPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<PpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<PpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       pps_data_;
   // Map from sps_video_parameter_set_id to the SPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<SpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<SpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       sps_data_;
   // Map from pps_pic_parameter_set_id to the PPS payload associated with this
   // ID.
-  WTF::HashMap<uint32_t,
-               std::unique_ptr<VpsData>,
-               IntWithZeroKeyHashTraits<uint32_t>>
+  HashMap<uint32_t,
+          std::unique_ptr<VpsData>,
+          IntWithZeroKeyHashTraits<uint32_t>>
       vps_data_;
 };
 

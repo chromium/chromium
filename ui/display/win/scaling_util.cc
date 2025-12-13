@@ -179,6 +179,7 @@ DisplayPlacement CalculateDisplayPlacement(
   // There are a few ways lines can intersect:
   // End Aligned
   // CURRENT's offset is relative to the end (in our world, BOTTOM_RIGHT).
+  // If PARENT and CURRENT are also begin aligned, that takes precedence.
   //                 +-PARENT----------------+
   //                    +-CURRENT------------+
   //
@@ -198,7 +199,7 @@ DisplayPlacement CalculateDisplayPlacement(
   // PARENT.
   //                 +-PARENT----------------+
   //           +-CURRENT--------------------------+
-  if (parent_end == current_end) {
+  if (parent_end == current_end && parent_begin != current_begin) {
     // End aligned.
     placement.offset_reference =
         DisplayPlacement::OffsetReference::BOTTOM_RIGHT;

@@ -24,14 +24,21 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   }
 
   // Helper functions to help with getting expanded positions when needed.
-  // These helpers are currently used for DevTools, ComputedStyles and Gap
-  // Decorations.
+  // These helpers are currently used for DevTools, ComputedStyles, Masonry and
+  // Gap Decorations.
   static Vector<LayoutUnit> ComputeTrackSizeRepeaterForRange(
       const GridLayoutTrackCollection& track_collection,
       wtf_size_t range_index);
+  // TODO(celestepan): Look into if it may be worth caching the results of this
+  // considering it is used in so many places.
   static Vector<LayoutUnit> ComputeExpandedPositions(
-      const GridLayoutData* grid_layout_data,
-      GridTrackSizingDirection track_direction);
+      const GridLayoutTrackCollection& track_collection);
+
+  // Helper functions shared between LayoutGrid and LayoutGridLanes.
+  static const GridLayoutData* GetGridLayoutDataFromFragments(
+      const LayoutBlock* layout_block);
+  static LayoutUnit ComputeGridGap(const GridLayoutData* grid_layout_data,
+                                   GridTrackSizingDirection track_direction);
 
   bool HasCachedPlacementData() const;
   const GridPlacementData& CachedPlacementData() const;
@@ -54,9 +61,12 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   LayoutUnit GridItemOffset(GridTrackSizingDirection track_direction) const;
   Vector<LayoutUnit, 1> TrackSizesForComputedStyle(
       GridTrackSizingDirection track_direction) const;
+  static Vector<LayoutUnit, 1> CollectTrackSizesForComputedStyle(
+      const GridLayoutData* grid_layout_data,
+      GridTrackSizingDirection track_direction);
 
-  Vector<LayoutUnit> RowPositions() const;
-  Vector<LayoutUnit> ColumnPositions() const;
+  Vector<LayoutUnit> GridTrackPositions(
+      GridTrackSizingDirection track_direction) const;
 
   const GridLayoutData* LayoutData() const;
 
@@ -71,7 +81,8 @@ class CORE_EXPORT LayoutGrid : public LayoutBlock {
   void AddChild(LayoutObject* new_child, LayoutObject* before_child) override;
   void RemoveChild(LayoutObject* child) override;
   void StyleDidChange(StyleDifference diff,
-                      const ComputedStyle* old_style) override;
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   std::optional<GridPlacementData> cached_placement_data_;
   std::optional<const SubgridMinMaxSizesCache> cached_subgrid_min_max_sizes_;

@@ -1,0 +1,10 @@
+noparent = True
+
+include_rules = [
+  "+absl",
+  "+fcp",
+  "+gmock",
+  "+google",
+  "+gtest",
+  "+components/cbor",
+]

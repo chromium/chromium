@@ -17,7 +17,7 @@ source_set("sandbox") {
   deps = [
     "//base",
     "//media/gpu:buildflags",
-    "//sandbox/policy:policy",
+    "//sandbox/policy",
   ]
   if (use_vaapi) {
     deps += [ "//media/gpu/vaapi:common" ]

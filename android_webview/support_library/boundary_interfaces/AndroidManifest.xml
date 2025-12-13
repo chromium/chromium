@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2012 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="no.manifest.configured"
+    android:versionCode="1"
+    android:versionName="1.0">
+    <!--
+      This is to verify that the boundary interfaces compile and lint correctly
+      against the minSdkVersion of the webkit AndroidX module. This needs to be
+      hardcoded to exactly match whatever AndroidX uses for their minSdkVersion,
+      and we should update this number as AndroidX changes their minSdkVersion.
+      See http://crbug.com/828184 for more details.
+    -->
+    <uses-sdk android:minSdkVersion="23"/>
+</manifest>

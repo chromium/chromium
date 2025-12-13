@@ -40,6 +40,9 @@
 // Animates fading the selection UI of the container view controller.
 - (void)fadeSelectionUIWithCompletion:(void (^)())completion;
 
+// Hides the container, optionally animated.
+- (void)setContainerHidden:(BOOL)hidden animated:(BOOL)animated;
+
 @end
 
 // Presentation delegate for the Lens Overlay container.

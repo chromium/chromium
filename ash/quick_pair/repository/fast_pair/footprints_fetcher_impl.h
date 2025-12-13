@@ -11,7 +11,6 @@
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace ash {
 namespace quick_pair {

@@ -17,7 +17,7 @@ import android.widget.FrameLayout;
 import androidx.annotation.AnyRes;
 import androidx.annotation.ColorInt;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -119,7 +119,7 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
         // system DialogWhenLarge theme.
         // Note that we don't care about the return values, because onMeasure() handles null
         // constraints (and they will be null when the device is not considered "large").
-        if (BuildInfo.getInstance().isAutomotive) {
+        if (DeviceInfo.isAutomotive()) {
             safeGetResourceValue(R.dimen.dialog_fixed_width_minor_automotive, mFixedWidthMinor);
             safeGetResourceValue(R.dimen.dialog_fixed_width_major_automotive, mFixedWidthMajor);
             safeGetResourceValue(R.dimen.dialog_fixed_height_minor_automotive, mFixedHeightMinor);
@@ -168,8 +168,7 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
 
                 // Calculate height from the View's measureSpec to account for larger status
                 // bar and back toolbar on automotive devices.
-                int referenceHeight =
-                        BuildInfo.getInstance().isAutomotive ? heightSize : metrics.heightPixels;
+                int referenceHeight = DeviceInfo.isAutomotive() ? heightSize : metrics.heightPixels;
 
                 int height = (int) tvh.getFraction(referenceHeight, referenceHeight);
                 heightSize = Math.min(height, heightSize);

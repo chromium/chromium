@@ -413,6 +413,12 @@ void ThemeSyncableService::StopSyncing(syncer::DataType type) {
     base::UmaHistogramBoolean("Theme.RestoredLocalThemeUponSignout", result);
     if (!result) {
       theme_service_->UseDefaultTheme();
+      // Explicitly reset the browser color scheme to default because
+      // UseDefaultTheme() does not do it.
+      // TODO(crbug.com/442592525): Consider resetting the browser color scheme
+      // in UseDefaultTheme().
+      theme_service_->SetBrowserColorScheme(
+          ThemeService::BrowserColorScheme::kSystem);
     }
   }
 }

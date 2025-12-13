@@ -34,6 +34,7 @@
 #include "components/media_control/browser/media_blocker.h"
 #include "components/media_control/mojom/media_playback_options.mojom.h"
 #include "content/public/browser/message_port_provider.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -365,7 +366,7 @@ void CastWebContentsImpl::AddBeforeLoadJavaScript(uint64_t id,
 }
 
 void CastWebContentsImpl::PostMessageToMainFrame(
-    const std::string& target_origin,
+    const std::string& serialized_target_origin,
     const std::string& data,
     std::vector<blink::WebMessagePort> ports) {
   DCHECK(!data.empty());
@@ -373,16 +374,17 @@ void CastWebContentsImpl::PostMessageToMainFrame(
   std::u16string data_utf16;
   data_utf16 = base::UTF8ToUTF16(data);
 
-  // If origin is set as wildcard, no origin scoping would be applied.
-  std::optional<std::u16string> target_origin_utf16;
+  // If |serialized_target_origin| is set as wildcard, no origin scoping will be
+  // applied.
+  std::optional<url::Origin> target;
   constexpr char kWildcardOrigin[] = "*";
-  if (target_origin != kWildcardOrigin) {
-    target_origin_utf16 = base::UTF8ToUTF16(target_origin);
+  if (serialized_target_origin != kWildcardOrigin) {
+    target = url::Origin::Create(GURL(serialized_target_origin));
   }
 
   content::MessagePortProvider::PostMessageToFrame(
-      web_contents()->GetPrimaryPage(), std::u16string(), target_origin_utf16,
-      data_utf16, std::move(ports));
+      web_contents()->GetPrimaryPage(), nullptr,
+      target.has_value() ? &(*target) : nullptr, data_utf16, std::move(ports));
 }
 
 void CastWebContentsImpl::ExecuteJavaScript(

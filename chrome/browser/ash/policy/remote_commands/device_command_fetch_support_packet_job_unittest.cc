@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/remote_commands/device_command_fetch_support_packet_job_test_util.h"
@@ -45,6 +46,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "record.pb.h"
 #include "record_constants.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -100,8 +102,14 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
     ash::system::StatisticsProvider::SetTestProvider(&statistics_provider_);
     cros_settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
-    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>();
-    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>();
+    kiosk_web_app_manager_ = std::make_unique<ash::KioskWebAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        &kiosk_cryptohome_remover_);
+    kiosk_chrome_app_manager_ = std::make_unique<ash::KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        &kiosk_cryptohome_remover_);
 
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -144,6 +152,9 @@ class DeviceCommandFetchSupportPacketTest : public ash::DeviceSettingsTestBase {
   }
 
  protected:
+  ash::KioskCryptohomeRemover kiosk_cryptohome_remover_{
+      TestingBrowserProcess::GetGlobal()->local_state()};
+
   // App manager instances for testing kiosk sessions.
   std::unique_ptr<ash::KioskWebAppManager> kiosk_web_app_manager_;
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;

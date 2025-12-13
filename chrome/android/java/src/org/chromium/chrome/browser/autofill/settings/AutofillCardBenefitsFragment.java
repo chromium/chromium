@@ -18,6 +18,7 @@ import android.text.style.ClickableSpan;
 import android.util.Pair;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.fragment.app.Fragment;
@@ -37,12 +38,16 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData.Entry;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.url.GURL;
 
@@ -81,6 +86,9 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
         // Create blank preference screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        // Suppresses unwanted animations while Preferences are removed from and re-added to the
+        // screen.
+        screen.setShouldUseGeneratedIds(false);
         setPreferenceScreen(screen);
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
@@ -108,7 +116,9 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         createCardBenefitSwitch();
         createLearnAboutCardBenefitsLink();
         createPreferencesForCardBenefitTerms();
-        drawBottomDivider();
+        if (!ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            drawBottomDivider();
+        }
     }
 
     private Context getStyledContext() {
@@ -122,8 +132,8 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
     private void createCardBenefitSwitch() {
         ChromeSwitchPreference cardBenefitSwitch = new ChromeSwitchPreference(getStyledContext());
-        cardBenefitSwitch.setTitle(R.string.autofill_settings_page_card_benefits_label);
-        cardBenefitSwitch.setSummary(R.string.autofill_settings_page_card_benefits_toggle_summary);
+        cardBenefitSwitch.setTitle(getCardBenefitsTitle());
+        cardBenefitSwitch.setSummary(getCardBenefitsSummary());
         cardBenefitSwitch.setKey(PREF_KEY_ENABLE_CARD_BENEFIT);
         cardBenefitSwitch.setChecked(mPersonalDataManager.isCardBenefitEnabled());
         cardBenefitSwitch.setOnPreferenceChangeListener(this);
@@ -156,27 +166,30 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     }
 
     private void createPreferencesForCardBenefitTerms() {
-        HashSet<Pair<String, String>> issuersAndProductDescriptions = new HashSet<>();
+        HashSet<Pair<String, String>> benefitSourcesAndProductDescriptions = new HashSet<>();
 
         // List the card for product terms redirect if:
-        // 1. The card has a valid product term url.
-        // 2. Same issuer and card product combination is not listed before.
+        // 1. The card is eligible for benefits.
+        // 2. The card has a valid product term url.
+        // 3. Same benefit source and card product combination is not listed before.
         for (CreditCard card : mPersonalDataManager.getCreditCardsForSettings()) {
-            Pair<String, String> issuerAndProductDescriptionPair =
-                    Pair.create(card.getIssuerId(), card.getProductDescription());
+            Pair<String, String> benefitSourceAndProductDescriptionPair =
+                    Pair.create(card.getBenefitSource(), card.getProductDescription());
 
-            if (issuersAndProductDescriptions.contains(issuerAndProductDescriptionPair)
+            if (!mPersonalDataManager.isCardEligibleForBenefits(card.getGUID())
+                    || benefitSourcesAndProductDescriptions.contains(
+                            benefitSourceAndProductDescriptionPair)
                     || GURL.isEmptyOrInvalid(card.getProductTermsUrl())) {
                 continue;
             }
 
-            issuersAndProductDescriptions.add(issuerAndProductDescriptionPair);
+            benefitSourcesAndProductDescriptions.add(benefitSourceAndProductDescriptionPair);
 
             // Add a preference for the credit card.
             ChromeBasePreference cardPref = new ChromeBasePreference(getStyledContext());
             cardPref.setDividerAllowedAbove(false);
             cardPref.setDividerAllowedBelow(false);
-            cardPref.setTitle(issuerAndProductDescriptionPair.second);
+            cardPref.setTitle(benefitSourceAndProductDescriptionPair.second);
             cardPref.setSummary(R.string.autofill_settings_page_card_benefits_issuer_term_text);
             cardPref.setKey(PREF_KEY_CARD_BENEFIT_TERM);
 
@@ -247,6 +260,20 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
         super.onDestroyView();
     }
 
+    @StringRes
+    private static int getCardBenefitsTitle() {
+        return R.string.autofill_settings_page_card_benefits_label;
+    }
+
+    @StringRes
+    private static int getCardBenefitsSummary() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT)
+                ? R.string
+                        .autofill_settings_page_card_benefits_toggle_summary_with_issuer_terms_apply_text
+                : R.string.autofill_settings_page_card_benefits_toggle_summary;
+    }
+
     // Custom ItemDecoration class that adds a divider at the end of the list.
     private static class BottomDividerItemDecoration extends RecyclerView.ItemDecoration {
         private static final int[] ATTRS = new int[] {android.R.attr.listDivider};
@@ -283,4 +310,24 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
     }
+
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(AutofillCardBenefitsFragment.class.getName(), 0) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    // Add entry for switch. No need for "learn more" link and card details.
+                    int titleId = getCardBenefitsTitle();
+                    int summaryTextId = getCardBenefitsSummary();
+                    String uniqueId = getUniqueId(PREF_KEY_ENABLE_CARD_BENEFIT);
+                    Entry entry =
+                            new Entry.Builder(
+                                            uniqueId,
+                                            PREF_KEY_ENABLE_CARD_BENEFIT,
+                                            context.getString(titleId),
+                                            AutofillCardBenefitsFragment.class.getName())
+                                    .setSummary(context.getString(summaryTextId))
+                                    .build();
+                    indexData.addEntry(uniqueId, entry);
+                }
+            };
 }

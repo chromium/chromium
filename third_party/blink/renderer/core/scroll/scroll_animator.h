@@ -112,8 +112,10 @@ class CORE_EXPORT ScrollAnimator : public ScrollAnimatorBase {
   // cancelled or reset.
   ScrollResult UserScroll(ui::ScrollGranularity,
                           const ScrollOffset& delta,
+                          cc::ScrollSourceType source_type,
                           ScrollableArea::ScrollCallback on_finish) override;
-  void ScrollToOffsetWithoutAnimation(const ScrollOffset&) override;
+  void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
+                                      cc::ScrollSourceType) override;
   ScrollOffset DesiredTargetOffset() const override;
   void AdjustAnimation(const gfx::Vector2d& adjustment) override;
 

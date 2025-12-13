@@ -85,7 +85,7 @@ class AXObjectCacheLifecycle {
   void AdvanceTo(LifecycleState);
   void EnsureStateAtMost(LifecycleState);
 
-  WTF::String ToString() const;
+  String ToString() const;
 
 #if DCHECK_IS_ON()
   bool CanAdvanceTo(LifecycleState) const;

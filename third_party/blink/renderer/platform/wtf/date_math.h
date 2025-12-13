@@ -43,33 +43,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DATE_MATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_DATE_MATH_H_
 
-#include <stdint.h>
-#include <string.h>
-
-#include <optional>
-
 #include "base/time/time.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
-
-// Not really math related, but this is currently the only shared place to put
-// these.
-//
-// TODO(tkent): Only blink::ParseDate() uses this function to parse HTTP
-// header values. net::HTTPResponseHeaders::GetTimeValuedHeader() uses
-// base::Time::FromUTCString() for the same purpose.  We should consider
-// switching to base::Time::FromUTCString() for consistency.
-WTF_EXPORT std::optional<base::Time> ParseDateFromNullTerminatedCharacters(
-    const char* date_string);
-
-const double kMinutesPerHour = 60.0;
-const double kSecondsPerMinute = 60.0;
-const double kMsPerSecond = 1000.0;
-const double kMsPerMinute = 60.0 * 1000.0;
-const double kMsPerHour = 60.0 * 60.0 * 1000.0;
-const double kMsPerDay = 24.0 * 60.0 * 60.0 * 1000.0;
 
 WTF_EXPORT bool IsLeapYear(int year);
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/country_codes/country_codes.h"
 #include "components/policy/core/common/mock_policy_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -41,6 +42,9 @@ class SearchEngineChoiceServiceTestBase : public ::testing::Test {
   search_engines::SearchEngineChoiceService& search_engine_choice_service();
   TestingPrefServiceSimple& local_state();
   TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver();
+  regional_capabilities::RegionalCapabilitiesService&
+  regional_capabilities_service();
+  policy::ManagementService& management_service();
 
   policy::MockPolicyService& policy_service() { return policy_service_; }
   policy::PolicyMap& policy_map() { return policy_map_; }
@@ -61,6 +65,8 @@ class SearchEngineChoiceServiceTestBase : public ::testing::Test {
   // `DefaultSearchProviderSearchURL` policies are not initially set.
   void CheckPoliciesInitialState();
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   TestingPrefServiceSimple local_state_;
   testing::NiceMock<policy::MockPolicyService> policy_service_;

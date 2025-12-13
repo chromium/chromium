@@ -5,6 +5,7 @@
 #import "ios/web_view/internal/signin/ios_web_view_signin_client.h"
 
 #import "base/notimplemented.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "components/signin/ios/browser/wait_for_network_callback_helper_ios.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "components/version_info/channel.h"
@@ -12,13 +13,35 @@
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+namespace {
+
+class IOSWebViewOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
+ protected:
+  signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
+      const override {
+    CHECK(base::FeatureList::IsEnabled(
+        plus_addresses::features::kPlusAddressesEnabled));
+    return signin::OAuthConsumer(
+        signin::oauth_consumer_name::kEnterprisePlusAddressName,
+        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
+  }
+
+  signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {
+    NOTREACHED();
+  }
+};
+
+}  // namespace
+
 IOSWebViewSigninClient::IOSWebViewSigninClient(
     PrefService* pref_service,
     ios_web_view::WebViewBrowserState* browser_state)
     : network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperIOS>()),
       pref_service_(pref_service),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      oauth_consumer_registry_(
+          std::make_unique<IOSWebViewOAuthConsumerRegistry>()) {}
 
 IOSWebViewSigninClient::~IOSWebViewSigninClient() {}
 
@@ -65,8 +88,7 @@ void IOSWebViewSigninClient::RemoveContentSettingsObserver(
 
 void IOSWebViewSigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-    signin_metrics::ProfileSignout signout_source_metric,
-    bool has_sync_account) {
+    signin_metrics::ProfileSignout signout_source_metric) {
   std::move(on_signout_decision_reached).Run(SignoutDecision::ALLOW);
 }
 
@@ -93,3 +115,8 @@ version_info::Channel IOSWebViewSigninClient::GetClientChannel() {
 
 void IOSWebViewSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {}
+
+signin::OAuthConsumer IOSWebViewSigninClient::GetOAuthConsumerFromId(
+    signin::OAuthConsumerId oauth_consumer_id) const {
+  return oauth_consumer_registry_->GetOAuthConsumerFromId(oauth_consumer_id);
+}

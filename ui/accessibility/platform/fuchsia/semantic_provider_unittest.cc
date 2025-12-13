@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "base/fuchsia/fidl_event_handler.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
@@ -300,8 +301,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
   auto nodes = TreeNodes();
-  std::reverse(nodes.begin(), nodes.end());
-  for (auto& node : nodes) {
+  for (auto& node : base::Reversed(nodes)) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
 

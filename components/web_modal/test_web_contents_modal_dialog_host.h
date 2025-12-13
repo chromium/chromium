@@ -5,11 +5,10 @@
 #ifndef COMPONENTS_WEB_MODAL_TEST_WEB_CONTENTS_MODAL_DIALOG_HOST_H_
 #define COMPONENTS_WEB_MODAL_TEST_WEB_CONTENTS_MODAL_DIALOG_HOST_H_
 
-#include "components/web_modal/web_contents_modal_dialog_host.h"
-
 #include "base/compiler_specific.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace web_modal {
 

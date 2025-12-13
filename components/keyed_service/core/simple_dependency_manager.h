@@ -47,11 +47,6 @@ class KEYED_SERVICE_EXPORT SimpleDependencyManager : public DependencyManager {
 
  private:
   ~SimpleDependencyManager() override;
-
-#ifndef NDEBUG
-  // DependencyManager:
-  void DumpContextDependencies(void* context) const final;
-#endif  // NDEBUG
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_DEPENDENCY_MANAGER_H_

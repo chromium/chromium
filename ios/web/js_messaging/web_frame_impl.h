@@ -5,20 +5,20 @@
 #ifndef IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 #define IOS_WEB_JS_MESSAGING_WEB_FRAME_IMPL_H_
 
-#include <map>
-#include <string>
+#import <map>
+#import <string>
 
-#include "base/cancelable_callback.h"
+#import "base/cancelable_callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#include "base/values.h"
-#include "ios/web/js_messaging/web_frame_internal.h"
+#import "base/values.h"
+#import "ios/web/js_messaging/web_frame_internal.h"
 #import "ios/web/public/js_messaging/content_world.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_observer.h"
-#include "url/gurl.h"
-#include "url/origin.h"
+#import "ios/web/public/web_state_observer.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 @class WKFrameInfo;
 
@@ -51,6 +51,7 @@ class WebFrameImpl final : public WebFrame,
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
   url::Origin GetSecurityOrigin() const override;
+  GURL GetUrl() const override;
   BrowserState* GetBrowserState() override;
 
   bool CallJavaScriptFunction(const std::string& name,

@@ -6,7 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_WEBAUTHN_SECURITY_UTILS_H_
 
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
 #include "url/origin.h"
 
 namespace content {

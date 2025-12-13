@@ -27,7 +27,6 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -40,6 +39,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.function.Supplier;
 
 /** A class to communicate with the {@link DecoderService}. */
 @NullMarked

@@ -27,8 +27,8 @@ found in the LICENSE file.
 
     <FrameLayout
         android:id="@+id/action_icon_container"
-        android:layout_width="56dp"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignTop="@id/menu_item_container"
         android:layout_alignBottom="@id/menu_item_container"
         android:layout_alignParentEnd="true">
@@ -36,15 +36,13 @@ found in the LICENSE file.
         <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
         <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon
             android:id="@+id/checkbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="match_parent"
+            android:src="?android:attr/listChoiceIndicatorMultiple"
             android:background="?attr/listChoiceBackgroundIndicator"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
             android:scaleType="fitCenter"
-            android:src="?android:attr/listChoiceIndicatorMultiple" />
+            android:paddingHorizontal="?attr/listItemControlPadding"
+            android:layout_marginEnd="4dp" />
 
         <!-- Displays an icon. -->
         <!-- TODO(twellington): Consider setting a default tint that adjusts when the item is disabled.
@@ -52,13 +50,11 @@ found in the LICENSE file.
              is currently unused. -->
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="?attr/minInteractTargetSize"
+            android:layout_height="match_parent"
             android:background="?attr/listChoiceBackgroundIndicator"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:scaleType="fitCenter" />
+            android:scaleType="fitCenter"
+            android:paddingHorizontal="?attr/listItemIconPadding"
+            android:layout_marginEnd="4dp" />
     </FrameLayout>
 </RelativeLayout>

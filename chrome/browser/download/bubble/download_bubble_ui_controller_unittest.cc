@@ -172,10 +172,10 @@ class DownloadBubbleUIControllerTest : public testing::Test {
     mock_update_service_ =
         std::make_unique<StrictMock<MockDownloadBubbleUpdateService>>(
             profile_, items_, offline_items_);
-    window_ = std::make_unique<TestBrowserWindow>();
+    auto window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile_, true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = window_.get();
+    params.window = window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
     controller_ = std::make_unique<DownloadBubbleUIController>(
         browser_.get(), mock_update_service_.get());
@@ -341,7 +341,6 @@ class DownloadBubbleUIControllerTest : public testing::Test {
   std::unique_ptr<
       NiceMock<offline_items_collection::MockOfflineContentProvider>>
       content_provider_;
-  std::unique_ptr<TestBrowserWindow> window_;
   std::unique_ptr<StrictMock<MockDownloadBubbleUpdateService>>
       mock_update_service_;
   std::unique_ptr<Browser> browser_;

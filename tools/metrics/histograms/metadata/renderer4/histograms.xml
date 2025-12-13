@@ -22,44 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="RasterTaskSchedulingDelayNoAtRasterDecodesType">
-  <variant name=".All"
-      summary="This metric applies to all raster work that doesn't depend on
-               at-raster image decodes."/>
-  <variant name=".TilesWithJpegHwDecodeCandidates"
-      summary="This metric applies only to raster work that depends on JPEGs
-               that are candidates for hardware decode acceleration (and that
-               doesn't depend on at-raster image decodes)."/>
-  <variant name=".TilesWithWebPHwDecodeCandidates"
-      summary="This metric applies only to raster work that depends on WebPs
-               that are candidates for hardware decode acceleration (and that
-               doesn't depend on at-raster image decodes)."/>
-</variants>
-
 <variants name="RasterTaskTypeGpu">
   <variant name=".Gpu" summary="This metric is for only gpu raster."/>
   <variant name=".Oop" summary="This metric is for only oop raster."/>
 </variants>
 
-<histogram
-    name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
-    units="microseconds" expires_after="2022-09-30">
-  <owner>andrescj@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    The wall time elapsed between creating a raster task in the client and being
-    ready to issue raster work to the driver in the GPU process. This includes
-    time decoding and uploading images. Note that this does not count raster
-    tasks that depend on at-raster image decodes. Since this metric is only
-    reported for Chrome OS clients, it has data only from high-resolution
-    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.Browser.RasterTaskTotalDuration{RasterTaskTypeGpu}"
     units="microseconds" expires_after="2023-09-10">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -128,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
-    enum="BooleanWasted" expires_after="2025-11-30">
+    enum="BooleanWasted" expires_after="2026-04-05">
   <owner>vmpstr@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -141,7 +113,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
-    expires_after="2025-12-28">
+    expires_after="2026-05-03">
   <owner>jonross@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -152,10 +124,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer4.ImageDecodeTaskDurationUs{ImageOrTaskType}.{DecodeType}"
-    units="microseconds" expires_after="2025-12-21">
+    units="microseconds" expires_after="2026-04-26">
   <owner>cblume@chromium.org</owner>
   <owner>vmpstr@chromium.org</owner>
   <owner>sashamcintosh@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     This metric records the duration of an image decode for the raster path in
     the compositor. It is recorded every time we decode an image. It is suffixed
@@ -193,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadGestureScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-11-16">
+    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -212,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.MainThreadWheelScrollReason2"
-    enum="MainThreadScrollingReason2" expires_after="2025-11-16">
+    enum="MainThreadScrollingReason2" expires_after="2026-05-24">
   <owner>flackr@chromium.org</owner>
   <owner>pdr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -231,25 +204,11 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes{RasterTaskSchedulingDelayNoAtRasterDecodesType}"
-    units="microseconds" expires_after="2022-09-30">
-  <owner>andrescj@chromium.org</owner>
-  <owner>chromeos-gfx@google.com</owner>
-  <summary>
-    The wall time elapsed between creating a raster task in the client and being
-    ready to issue raster work to the driver in the GPU process. This includes
-    time decoding and uploading images. Note that this does not count raster
-    tasks that depend on at-raster image decodes. Since this metric is only
-    reported for Chrome OS clients, it has data only from high-resolution
-    clocks. {RasterTaskSchedulingDelayNoAtRasterDecodesType}
-  </summary>
-</histogram>
-
 <histogram name="Renderer4.Renderer.RasterTaskTotalDuration{RasterTaskTypeGpu}"
-    units="microseconds" expires_after="2025-12-07">
+    units="microseconds" expires_after="2026-04-12">
   <owner>khushalsagar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Time spent completing all work for a compositor rasterization task. This
     includes the time in the renderer process for sending GL or paint commands
@@ -262,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer4.ScrollingThread.{ScrollSourceDevice}"
-    enum="ScrollingThreadStatus" expires_after="2025-12-28">
+    enum="ScrollingThreadStatus" expires_after="2026-05-03">
   <owner>bokan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>

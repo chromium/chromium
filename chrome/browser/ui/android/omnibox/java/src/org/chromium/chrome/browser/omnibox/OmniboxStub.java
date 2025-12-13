@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 
 import java.util.List;
 
@@ -26,7 +27,10 @@ public interface OmniboxStub {
      * @param reason The given reason.
      */
     void setUrlBarFocus(
-            boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason);
+            boolean shouldBeFocused,
+            @Nullable String pastedText,
+            @OmniboxFocusReason int reason,
+            @AutocompleteRequestType int requestType);
 
     /**
      * Performs a search query on the current {@link Tab}. This calls {@link

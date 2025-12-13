@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
@@ -284,14 +285,14 @@ void Location::SetLocation(const String& url,
       exception_state->ThrowSecurityError(
           StrCat({"The current window does not have permission to navigate the "
                   "target frame to '",
-                  url, "'."}));
+                  completed_url.GetString(), "'."}));
     }
     return;
   }
   if (exception_state && !completed_url.IsValid()) {
     exception_state->ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        StrCat({"'", url, "' is not a valid URL."}));
+        StrCat({"'", completed_url.GetString(), "' is not a valid URL."}));
     return;
   }
 

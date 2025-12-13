@@ -11,10 +11,7 @@ namespace base {
 class FilePath;
 }
 
-// Creates an instance of SnapshotStorage with `storage_path` and
-// `legacy_storage_path`.
-id<SnapshotStorage> CreateSnapshotStorage(
-    const base::FilePath& storage_path,
-    const base::FilePath& legacy_storage_path);
+// Creates an instance of SnapshotStorage with `storage_path`.
+id<SnapshotStorage> CreateSnapshotStorage(const base::FilePath& storage_path);
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_STORAGE_UTIL_H_

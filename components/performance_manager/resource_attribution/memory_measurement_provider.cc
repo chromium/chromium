@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/features.h"
@@ -99,6 +100,10 @@ void MemoryMeasurementProvider::OnMemorySummary(
       MemoryMeasurementDelegate::MemorySummaryMeasurement;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "PerformanceManager.ResourceQueryTime.MemoryMeasurementProvider",
+      base::ScopedUmaHistogramTimer::ScopedHistogramTiming::kMicrosecondTimes);
+
   QueryResultMap results;
 
   // Adds the memory from `summary` to a MemorySummaryResult for `context`.
@@ -117,8 +122,9 @@ void MemoryMeasurementProvider::OnMemorySummary(
       CHECK_LE(result.metadata.measurement_time, now);
       CHECK_EQ(result.metadata.algorithm, algorithm);
     }
-    result.resident_set_size_kb += summary.resident_set_size_kb;
-    result.private_footprint_kb += summary.private_footprint_kb;
+    result.resident_set_size += summary.resident_set_size;
+    result.private_footprint += summary.private_footprint;
+    result.private_swap += summary.private_swap;
     return inserted;
   };
 
@@ -191,9 +197,11 @@ base::Value::Dict MemoryMeasurementProvider::DescribeContextData(
         it->second.memory_summary_result.value();
     dict.Merge(DescribeResultMetadata(result.metadata));
     dict.Set("resident_set_size_kb",
-             base::NumberToString(result.resident_set_size_kb));
+             base::NumberToString(result.resident_set_size.InKiB()));
     dict.Set("private_footprint_kb",
-             base::NumberToString(result.private_footprint_kb));
+             base::NumberToString(result.private_footprint.InKiB()));
+    dict.Set("private_swap_kb",
+             base::NumberToString(result.private_swap.InKiB()));
   }
   return dict;
 }

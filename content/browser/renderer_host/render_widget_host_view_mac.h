@@ -52,6 +52,10 @@ namespace input {
 class CursorManager;
 }  // namespace input
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 @protocol RenderWidgetHostViewMacDelegate;
 
 @class NSAccessibilityRemoteUIElement;
@@ -154,13 +158,16 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
-      base::OnceCallback<void(const SkBitmap&)> callback) override;
+      base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+          callback) override;
   void EnsureSurfaceSynchronizedForWebTest() override;
+  ui::FilteredGestureProvider* GetFilteredGestureProviderForTesting() override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
   void InvalidateLocalSurfaceIdAndAllocationGroup() override;
   void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
+  void OnUnconfirmedTapConvertedToTap() override;
   bool RequestRepaintOnNewSurface() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
@@ -498,7 +505,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void ShowSharePicker(
       const std::string& title,
       const std::string& text,
-      const std::string& url,
+      const GURL& url,
       const std::vector<std::string>& file_paths,
       blink::mojom::ShareService::ShareCallback callback) override;
 
@@ -563,6 +570,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // `screen_infos_` was changed. The second boolean returns true if the current
   // ScreenInfo element was changed.
   std::pair<bool, bool> MaybeUpdateScreenInfosForHiDPI();
+
+  // Returns true if running with no associated platform window, i.e. has NSView
+  // but no NSWindow, like when in headless.
+  bool IsHeadless() const;
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.

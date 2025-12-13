@@ -29,39 +29,43 @@
   }
 
 </style>
-<div id="explanationText">
-  $i18n{manageTopicsPageDescription}
-  <span id="learnMoreLink" on-click="onLearnMoreClick_">
-    $i18nRaw{manageTopicsPageLearnMoreLink}
-  </span>
-</div>
-<template is="dom-repeat" items="[[firstLevelTopicsList_]]">
-  <div class="topic-toggle-row" on-click="onToggleRowClick_" actionable>
-    <div class="outer-row">
-      <span class="icon">
-        <cr-icon slot="icon"
-            icon="[[computeTopicIcon_(item.topic.topicId)]]">
-        </cr-icon>
-      </span>
-      <div class="flex label-wrapper">
-        <div class="label">[[item.topic.displayString]]</div>
-        <div class="cr-secondary-text sub-label">
-          <span class="sub-label-text">[[item.topic.description]]</span>
-        </div>
-      </div>
-      <cr-toggle id="toggle-[[item.topic.topicId]]"
-          on-change="onToggleChange_"
-          checked="[[!item.removed]]"
-          aria-label="[[item.topic.displayString]]"
-          aria-description="[[item.topic.description]]"></cr-toggle>
-    </div>
+<settings-subpage page-title="$i18n{manageTopicsHeading}"
+    learn-more-url="$i18n{adPrivacyLearnMoreURL}"
+    route-path$="[[routePath]]">
+  <div id="explanationText">
+    $i18n{manageTopicsPageDescription}
+    <span id="learnMoreLink" on-click="onLearnMoreClick_">
+      $i18nRaw{manageTopicsPageLearnMoreLink}
+    </span>
   </div>
-</template>
-<template is="dom-if" if="[[shouldShowBlockTopicDialog_]]" restamp>
-  <settings-simple-confirmation-dialog id="blockTopicDialog"
-      title-text="[[blockTopicDialogTitle_]]"
-      body-text="[[blockTopicDialogBody_]]"
-      confirm-text="$i18n{topicsPageBlockTopic}"
-      on-close="onBlockTopicDialogClose_">
-  </settings-simple-confirmation-dialog>
-</template>
+  <template is="dom-repeat" items="[[firstLevelTopicsList_]]">
+    <div class="topic-toggle-row" on-click="onToggleRowClick_" actionable>
+      <div class="outer-row">
+        <span class="icon">
+          <cr-icon slot="icon"
+              icon="[[computeTopicIcon_(item.topic.topicId)]]">
+          </cr-icon>
+        </span>
+        <div class="flex label-wrapper">
+          <div class="label">[[item.topic.displayString]]</div>
+          <div class="cr-secondary-text sub-label">
+            <span class="sub-label-text">[[item.topic.description]]</span>
+          </div>
+        </div>
+        <cr-toggle id="toggle-[[item.topic.topicId]]"
+            on-change="onToggleChange_"
+            checked="[[!item.removed]]"
+            aria-label="[[item.topic.displayString]]"
+            aria-description="[[item.topic.description]]"></cr-toggle>
+      </div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[shouldShowBlockTopicDialog_]]" restamp>
+    <settings-simple-confirmation-dialog id="blockTopicDialog"
+        title-text="[[blockTopicDialogTitle_]]"
+        body-text="[[blockTopicDialogBody_]]"
+        confirm-text="$i18n{topicsPageBlockTopic}"
+        on-close="onBlockTopicDialogClose_">
+    </settings-simple-confirmation-dialog>
+  </template>
+</settings-subpage>

@@ -1,0 +1,16 @@
+Tests Autofill.trigger with a credit card.
+
+`Autofill.trigger` result: {
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+
+Form data: {
+    cvc : 123
+    expiryMonth : 12
+    expiryYear : 2030
+    name : John Smith
+    number : 4111111111111111
+}

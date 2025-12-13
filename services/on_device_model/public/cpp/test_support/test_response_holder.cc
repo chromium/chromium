@@ -12,20 +12,6 @@ TestResponseHolder::TestResponseHolder() = default;
 
 TestResponseHolder::~TestResponseHolder() = default;
 
-mojo::PendingRemote<mojom::StreamingResponder>
-TestResponseHolder::BindRemote() {
-  auto remote = receiver_.BindNewPipeAndPassRemote();
-  receiver_.set_disconnect_handler(base::BindOnce(
-      &TestResponseHolder::OnDisconnect, base::Unretained(this)));
-  complete_ = false;
-  disconnected_ = false;
-  return remote;
-}
-
-void TestResponseHolder::WaitForCompletion() {
-  run_loop_.Run();
-}
-
 void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
   responses_.push_back(chunk->text);
 }
@@ -33,12 +19,21 @@ void TestResponseHolder::OnResponse(mojom::ResponseChunkPtr chunk) {
 void TestResponseHolder::OnComplete(mojom::ResponseSummaryPtr summary) {
   complete_ = true;
   output_token_count_ = summary->output_token_count;
-  run_loop_.Quit();
+  OnCompleted();
 }
 
-void TestResponseHolder::OnDisconnect() {
-  disconnected_ = true;
-  run_loop_.Quit();
+TestAsrResponseHolder::TestAsrResponseHolder() = default;
+TestAsrResponseHolder::~TestAsrResponseHolder() = default;
+
+void TestAsrResponseHolder::OnResponse(
+    std::vector<mojom::SpeechRecognitionResultPtr> results) {
+  for (const auto& r : results) {
+    responses_.push_back(r->transcript);
+  }
+  if (wait_for_response_) {
+    wait_for_response_ = false;
+    OnCompleted();
+  }
 }
 
 }  // namespace on_device_model

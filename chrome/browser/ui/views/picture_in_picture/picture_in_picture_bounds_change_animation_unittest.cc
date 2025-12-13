@@ -6,6 +6,7 @@
 
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace {
 
@@ -28,6 +29,9 @@ void ExpectRectBetween(const gfx::Rect& actual_rect,
 using PictureInPictureBoundsChangeAnimationTest = ChromeViewsTestBase;
 
 TEST_F(PictureInPictureBoundsChangeAnimationTest, AnimatesWidgetMove) {
+  gfx::ScopedAnimationDurationScaleMode normal(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetBounds(kInitialBounds);

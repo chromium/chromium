@@ -43,6 +43,11 @@ class SingleClientPrintersSyncTest : public SyncTest {
     // TODO(crbug.com/40724972): rewrite tests to not use verifier.
     return true;
   }
+
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
 };
 
 // Verify that printers aren't added with a sync call.

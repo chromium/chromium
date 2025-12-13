@@ -49,9 +49,10 @@ IN_PROC_BROWSER_TEST_F(WebAppServiceWorkerOpenWindowBrowserTest,
   Navigate(&params);
 
   EXPECT_NE(browser(), params.browser);
-  EXPECT_FALSE(params.browser->is_type_normal());
-  EXPECT_TRUE(params.browser->is_type_app());
-  EXPECT_TRUE(params.browser->is_trusted_source());
+  EXPECT_FALSE(params.browser->GetBrowserForMigrationOnly()->is_type_normal());
+  EXPECT_TRUE(params.browser->GetBrowserForMigrationOnly()->is_type_app());
+  EXPECT_TRUE(
+      params.browser->GetBrowserForMigrationOnly()->is_trusted_source());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppServiceWorkerOpenWindowBrowserTest,

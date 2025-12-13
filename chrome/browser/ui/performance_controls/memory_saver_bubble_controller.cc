@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
@@ -20,37 +21,34 @@ MemorySaverBubbleController::MemorySaverBubbleController(
     BrowserWindowInterface* bwi) {
   // Associate the bubble with its ActionItem, to ensure that any future
   // invocations come from the expected ActionItem.
-  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
+  action_item_ = actions::ActionManager::Get().FindAction(
       kActionShowMemorySaverChip,
       /*scope=*/bwi->GetActions()->root_action_item());
-  CHECK(action);
-  action_item_ = action->GetAsWeakPtr();
+  CHECK(action_item_);
 }
 
 MemorySaverBubbleController::~MemorySaverBubbleController() = default;
 
-void MemorySaverBubbleController::InvokeAction(Browser* browser,
+void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
                                                actions::ActionItem* item) {
-  CHECK(item == action_item_.get());
+  CHECK(item == action_item_);
 
   // Open the dialog bubble.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
   CHECK_NE(browser_view, nullptr);
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
-  bubble_ = MemorySaverBubbleView::ShowBubble(browser, anchor_view, this);
+  bubble_ = MemorySaverBubbleView::ShowBubble(bwi->GetBrowserForMigrationOnly(),
+                                              anchor_view, this);
 }
 
 void MemorySaverBubbleController::OnBubbleShown() {
-  if (action_item_) {
-    action_item_->SetIsShowingBubble(true);
-  }
+  action_item_->SetIsShowingBubble(true);
 }
 
 void MemorySaverBubbleController::OnBubbleHidden() {
-  if (action_item_) {
-    action_item_->SetIsShowingBubble(false);
-  }
+  action_item_->SetIsShowingBubble(false);
   bubble_ = nullptr;
 }
 

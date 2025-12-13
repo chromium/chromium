@@ -103,7 +103,7 @@ FindFragmentItemForAddressableCodeUnitIndex(const LayoutObject& query_root,
     return {item, item_text, item->StartOffset() + i,
             item->StartOffset() + item_text.NextCodePointOffset(i)};
   }
-  return {nullptr, StringView(), WTF::kNotFound, WTF::kNotFound};
+  return {nullptr, StringView(), kNotFound, kNotFound};
 }
 
 void GetCanvasRotation(void* context,

@@ -640,7 +640,7 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, ShouldCallOnAlbumsChanged) {
   ReplyFetchSettingsAndAlbums(/*success=*/true);
   // The fake albums are set in FakeAmbientBackendControllerImpl. Hidden setting
   // will be sent to JS side.
-  EXPECT_EQ(6u, ObservedAlbums().size());
+  EXPECT_EQ(7u, ObservedAlbums().size());
   EXPECT_FALSE(ObservedPreviews().empty());
 }
 
@@ -1206,11 +1206,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
        HideBannerForPolicyManagedUsers) {
   WallpaperControllerImpl* wallpaper_controller =
       Shell::Get()->wallpaper_controller();
-  base::ScopedTempDir user_wallpaper_dir;
-  ASSERT_TRUE(user_wallpaper_dir.CreateUniqueTempDir());
-  wallpaper_controller->Init(
-      user_wallpaper_dir.GetPath(), user_wallpaper_dir.GetPath(),
-      user_wallpaper_dir.GetPath(), user_wallpaper_dir.GetPath());
   TestWallpaperControllerClient client;
   wallpaper_controller->SetClient(&client);
   client.set_fake_files_id_for_account_id(kFakeTestAccountId,

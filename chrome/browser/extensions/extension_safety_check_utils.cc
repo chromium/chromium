@@ -15,7 +15,10 @@
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

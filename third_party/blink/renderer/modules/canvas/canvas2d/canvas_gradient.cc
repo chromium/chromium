@@ -26,18 +26,15 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 
-#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_color_interpolation_method.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_hue_interpolation_method.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -57,6 +54,8 @@ static Color::ColorSpace V8ColorSpaceToColorSpace(
       return Color::ColorSpace::kSRGBLinear;
     case V8ColorInterpolationMethod::Enum::kDisplayP3:
       return Color::ColorSpace::kDisplayP3;
+    case V8ColorInterpolationMethod::Enum::kDisplayP3Linear:
+      return Color::ColorSpace::kDisplayP3Linear;
     case V8ColorInterpolationMethod::Enum::kA98Rgb:
       return Color::ColorSpace::kA98RGB;
     case V8ColorInterpolationMethod::Enum::kProphotoRgb:
@@ -106,10 +105,6 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0, const gfx::PointF& p1)
                                  Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateLinearGradient, p0.x(), p0.y(), p1.x(), p1.y());
-  }
 }
 
 CanvasGradient::CanvasGradient(const gfx::PointF& p0,
@@ -125,11 +120,6 @@ CanvasGradient::CanvasGradient(const gfx::PointF& p0,
                                  Gradient::SpreadMethod::kPad,
                                  Gradient::PremultipliedAlpha::kUnpremultiplied,
                                  Gradient::DegenerateHandling::kDisallow)) {
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(
-        CanvasOps::kCreateRadialGradient, p0.x(), p0.y(), r0, p1.x(), p1.y(),
-        r1);
-  }
 }
 
 // CanvasRenderingContext2D.createConicGradient only takes one angle argument
@@ -148,34 +138,23 @@ void CanvasGradient::addColorStop(double value,
                                   const String& color_string,
                                   ExceptionState& exception_state) {
   if (!(value >= 0 && value <= 1.0)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The provided value (" +
-                                          String::Number(value) +
-                                          ") is outside the range (0.0, 1.0).");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        StrCat({"The provided value (", String::Number(value),
+                ") is outside the range (0.0, 1.0)."}));
     return;
   }
 
   Color color = Color::kTransparent;
   if (!ParseCanvasColorString(color_string, color)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "The value provided ('" + color_string +
-                                          "') could not be parsed as a color.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"The value provided ('", color_string,
+                "') could not be parsed as a color."}));
     return;
-  }
-  if (identifiability_study_helper_.ShouldUpdateBuilder()) [[unlikely]] {
-    identifiability_study_helper_.UpdateBuilder(CanvasOps::kAddColorStop, value,
-                                                color.Rgb());
   }
 
   gradient_->AddColorStop(value, color);
-}
-
-IdentifiableToken CanvasGradient::GetIdentifiableToken() const {
-  return identifiability_study_helper_.GetToken();
-}
-
-void CanvasGradient::SetExecutionContext(ExecutionContext* context) {
-  identifiability_study_helper_.SetExecutionContext(context);
 }
 
 void CanvasGradient::setColorInterpolationMethod(
@@ -194,11 +173,6 @@ void CanvasGradient::setHueInterpolationMethod(
       V8ColorSpaceToColorSpace(color_interpolation_method_),
       V8HueInterpolationMethodToHueInterpolationMethod(
           hue_interpolation_method_));
-}
-
-void CanvasGradient::Trace(Visitor* visitor) const {
-  visitor->Trace(identifiability_study_helper_);
-  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

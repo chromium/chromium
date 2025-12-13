@@ -19,14 +19,14 @@
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace embedder_support {
 
 namespace {
 
-GURL JNI_UrlUtilities_ConvertJavaStringToGURL(
+static GURL JNI_UrlUtilities_ConvertJavaStringToGURL(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& url) {
   return url ? GURL(ConvertJavaStringToUTF8(env, url)) : GURL();
@@ -45,8 +45,8 @@ net::registry_controlled_domains::PrivateRegistryFilter GetRegistryFilter(
 // See net::registry_controlled_domains::SameDomainOrHost for details.
 static jboolean JNI_UrlUtilities_SameDomainOrHost(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url_1_str,
-    const JavaParamRef<jstring>& url_2_str,
+    const JavaRef<jstring>& url_1_str,
+    const JavaRef<jstring>& url_2_str,
     jboolean include_private) {
   GURL url_1 = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url_1_str);
   GURL url_2 = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url_2_str);
@@ -62,7 +62,7 @@ static jboolean JNI_UrlUtilities_SameDomainOrHost(
 // See net::registry_controlled_domains::GetDomainAndRegistry for details.
 static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetDomainAndRegistry(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
+    const JavaRef<jstring>& url,
     jboolean include_private) {
   DCHECK(url);
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
@@ -81,7 +81,7 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetDomainAndRegistry(
 // See google_util::IsGoogleDomainUrl for details.
 static jboolean JNI_UrlUtilities_IsGoogleDomainUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
+    const JavaRef<jstring>& url,
     jboolean allow_non_standard_port) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   if (gurl.is_empty())
@@ -97,7 +97,7 @@ static jboolean JNI_UrlUtilities_IsGoogleDomainUrl(
 // See google_util::IsGoogleDomainUrl for details.
 static jboolean JNI_UrlUtilities_IsGoogleSubDomainUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const JavaRef<jstring>& url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   if (gurl.is_empty())
     return false;
@@ -110,7 +110,7 @@ static jboolean JNI_UrlUtilities_IsGoogleSubDomainUrl(
 // See google_util::IsGoogleSearchUrl for details.
 static jboolean JNI_UrlUtilities_IsGoogleSearchUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const JavaRef<jstring>& url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   if (gurl.is_empty())
     return false;
@@ -121,7 +121,7 @@ static jboolean JNI_UrlUtilities_IsGoogleSearchUrl(
 // See google_util::IsGoogleHomePageUrl for details.
 static jboolean JNI_UrlUtilities_IsGoogleHomePageUrl(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
+    const JavaRef<jstring>& url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   if (gurl.is_empty())
     return false;
@@ -130,13 +130,13 @@ static jboolean JNI_UrlUtilities_IsGoogleHomePageUrl(
 
 static jboolean JNI_UrlUtilities_IsUrlWithinScope(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& scope_url) {
+    const JavaRef<jstring>& url,
+    const JavaRef<jstring>& scope_url) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   GURL gscope_url = JNI_UrlUtilities_ConvertJavaStringToGURL(env, scope_url);
   return gurl.DeprecatedGetOriginAsURL() ==
              gscope_url.DeprecatedGetOriginAsURL() &&
-         base::StartsWith(gurl.path(), gscope_url.path(),
+         base::StartsWith(gurl.GetPath(), gscope_url.GetPath(),
                           base::CompareCase::SENSITIVE);
 }
 
@@ -144,8 +144,8 @@ static jboolean JNI_UrlUtilities_IsUrlWithinScope(
 // URLs.
 static jboolean JNI_UrlUtilities_UrlsMatchIgnoringFragments(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& url2) {
+    const JavaRef<jstring>& url,
+    const JavaRef<jstring>& url2) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   GURL gurl2 = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url2);
   if (gurl.is_empty())
@@ -162,20 +162,20 @@ static jboolean JNI_UrlUtilities_UrlsMatchIgnoringFragments(
 // Returns whether the given URLs have fragments that differ.
 static jboolean JNI_UrlUtilities_UrlsFragmentsDiffer(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
-    const JavaParamRef<jstring>& url2) {
+    const JavaRef<jstring>& url,
+    const JavaRef<jstring>& url2) {
   GURL gurl = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url);
   GURL gurl2 = JNI_UrlUtilities_ConvertJavaStringToGURL(env, url2);
   if (gurl.is_empty())
     return !gurl2.is_empty();
   if (!gurl.is_valid() || !gurl2.is_valid())
     return true;
-  return gurl.ref() != gurl2.ref();
+  return gurl.GetRef() != gurl2.GetRef();
 }
 
 static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
     JNIEnv* env,
-    const JavaParamRef<jstring>& url,
+    const JavaRef<jstring>& url,
     jboolean use_plus) {
   return ConvertUTF8ToJavaString(
       env, base::EscapeQueryParamValue(
@@ -184,8 +184,8 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_EscapeQueryParamValue(
 
 static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url,
-    const JavaParamRef<jstring>& j_key) {
+    const JavaRef<jobject>& j_url,
+    const JavaRef<jstring>& j_key) {
   DCHECK(j_url);
   DCHECK(j_key);
   const std::string& key = ConvertJavaStringToUTF8(env, j_key);
@@ -197,9 +197,9 @@ static ScopedJavaLocalRef<jstring> JNI_UrlUtilities_GetValueForKeyInQuery(
   return base::android::ConvertUTF8ToJavaString(env, out);
 }
 
-ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
+static ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_url) {
+    const JavaRef<jobject>& j_url) {
   GURL gurl = url::GURLAndroid::ToNativeGURL(env, j_url);
   GURL::Replacements remove_port;
   remove_port.ClearPort();
@@ -208,3 +208,5 @@ ScopedJavaLocalRef<jobject> JNI_UrlUtilities_ClearPort(
 }
 
 }  // namespace embedder_support
+
+DEFINE_JNI(UrlUtilities)

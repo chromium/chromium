@@ -16,9 +16,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 

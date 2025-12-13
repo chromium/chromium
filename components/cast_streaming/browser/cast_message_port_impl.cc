@@ -124,7 +124,8 @@ void CastMessagePortImpl::ResetClient() {
 
 void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
                                              const std::string& message) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(message);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": non-dictionary json payload: " << message;
@@ -164,7 +165,8 @@ void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
 
 void CastMessagePortImpl::HandleMediaMessage(const std::string& sender_id,
                                              const std::string& message) {
-  std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(message);
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     LOG(ERROR) << "Malformed message from sender " << sender_id
                << ": non-dictionary json payload: " << message;

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<title>CSS random() function: CSSOM</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<div id="test"></div>
+</body>
+
+<script>
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.height = 'random(10%, 30%)';
+  const allComputedStyles = target.computedStyleMap();
+  computedHeight = allComputedStyles.get("height");
+
+  assert_true(computedHeight instanceof CSSMathRandom);
+
+  assert_true(computedHeight.min instanceof CSSUnitValue);
+  assert_equals(computedHeight.min.toString(), '10%');
+
+  assert_true(computedHeight.max instanceof CSSUnitValue);
+  assert_equals(computedHeight.max.toString(), '30%');
+
+  assert_equals(computedHeight.step, null);
+
+  assert_greater_than_equal(computedHeight.baseValue, 0);
+  assert_less_than_equal(computedHeight.baseValue, 1);
+}, 'CSSMathRandom random(min, max) simple percentage');
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.height = 'random(10%, 300px)';
+  const allComputedStyles = target.computedStyleMap();
+  computedHeight = allComputedStyles.get("height");
+
+  assert_true(computedHeight instanceof CSSMathRandom);
+
+  assert_true(computedHeight.min instanceof CSSUnitValue);
+  assert_equals(computedHeight.min.toString(), '10%');
+
+  assert_true(computedHeight.max instanceof CSSUnitValue);
+  assert_equals(computedHeight.max.toString(), '300px');
+
+  assert_equals(computedHeight.step, null);
+
+  assert_greater_than_equal(computedHeight.baseValue, 0);
+  assert_less_than_equal(computedHeight.baseValue, 1);
+}, 'CSSMathRandom random(min, max) mixed length types');
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.height = 'random(10%, 30%, 1%)';
+  const allComputedStyles = target.computedStyleMap();
+  computedHeight = allComputedStyles.get("height");
+
+  assert_true(computedHeight instanceof CSSMathRandom);
+
+  assert_true(computedHeight.min instanceof CSSUnitValue);
+  assert_equals(computedHeight.min.toString(), '10%');
+
+  assert_true(computedHeight.max instanceof CSSUnitValue);
+  assert_equals(computedHeight.max.toString(), '30%');
+
+  assert_true(computedHeight.step instanceof CSSUnitValue);
+  assert_equals(computedHeight.step.toString(), '1%');
+
+  assert_greater_than_equal(computedHeight.baseValue, 0);
+  assert_less_than_equal(computedHeight.baseValue, 1);
+}, 'CSSMathRandom random(min, max, step) percentages');
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.height = 'random(3% * 3, 10% * 3)';
+  const allComputedStyles = target.computedStyleMap();
+  computedHeight = allComputedStyles.get("height");
+
+  assert_true(computedHeight instanceof CSSMathRandom);
+
+  assert_true(computedHeight.min instanceof CSSUnitValue);
+  assert_equals(computedHeight.min.toString(), '9%');
+
+  assert_true(computedHeight.max instanceof CSSUnitValue);
+  assert_equals(computedHeight.max.toString(), '30%');
+}, 'CSSMathRandom random(min, max) percentage simplified computed');
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.height = 'random(100px, 300px)';
+  const allComputedStyles = target.computedStyleMap();
+  computedHeight = allComputedStyles.get("height");
+
+  assert_true(computedHeight instanceof CSSUnitValue);
+
+  assert_equals(computedHeight.unit, 'px');
+
+  assert_greater_than_equal(computedHeight.value, 100);
+  assert_less_than_equal(computedHeight.value, 300);
+}, 'CSSMathRandom random(min, max) with px');
+
+test(t => {
+  const target = document.getElementById("test");
+  target.style.scale = new CSSScale(new CSSMathRandom(0.3, 1, 3), 3);
+}, 'CSSMathRandom in CSSScale not crash');
+</script>

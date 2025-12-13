@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- A preference to be indexed -->
+    <CheckBoxPreference
+        android:key="child_checkbox_pref"
+        android:title="Child Setting Title"
+        android:summary="Child Summary" />
+
+    <!-- A preference that links to the Grandchild Fragment -->
+    <Preference
+        android:key="link_to_grandchild"
+        android:title="Go to Grandchild"
+        android:fragment="org.chromium.TestGrandchildFragment" />
+</PreferenceScreen>

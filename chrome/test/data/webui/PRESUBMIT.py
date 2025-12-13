@@ -18,7 +18,8 @@ def CheckChange(input_api, output_api):
   finally:
     sys.path = old_sys_path
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True)
+                                                         check_js=True,
+                                                         check_python=False)
   return results
 
 def CheckTestFilename(input_api, output_api):

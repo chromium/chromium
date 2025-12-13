@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>input type=file text-overflow should be ellipsis even if it's specified string value</title>
+<link rel="author" title="Minseong Kim" href="mailto:jja08111@gmail.com">
+<link rel="help" href="https://crrev.com/c/6773707">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+  #test-input {
+    text-overflow: "some harmless filename" !important;
+  }
+</style>
+<body>
+  <input type="file" id="test-input">
+</body>
+<script>
+  promise_test(async function() {
+    const input = document.getElementById('test-input');
+    const computedStyle = window.getComputedStyle(input);
+    assert_equals(computedStyle.textOverflow, 'ellipsis', "text-overflow should be ellipsis even if it's specified string value, ignoring the page style.");
+  }, 'The text-overflow property of a file input should be forced to ellipsis.');
+</script>

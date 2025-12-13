@@ -6,6 +6,7 @@
 
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -14,8 +15,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::InvokeWithoutArgs;
+using ::base::test::RunOnceClosure;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
@@ -230,6 +233,30 @@ TEST_F(BroadcastingReceiverTest, AccessPermissionsSurviveStop) {
 
   // Both buffers should now be released.
   DCHECK_EQ(HoldBufferContextSize(), 0u);
+}
+
+TEST_F(BroadcastingReceiverTest, OnNewCaptureVersion) {
+  base::RunLoop run_loop_1;
+  base::RunLoop run_loop_2;
+
+  // Ignore uninteresting calls.
+  EXPECT_CALL(*mock_video_frame_handler_1_, DoOnNewBuffer(_, _))
+      .Times(AnyNumber());
+  EXPECT_CALL(*mock_video_frame_handler_2_, DoOnNewBuffer(_, _))
+      .Times(AnyNumber());
+
+  const media::CaptureVersion capture_version(/*source=*/321,
+                                              /*sub_capture=*/456);
+  EXPECT_CALL(*mock_video_frame_handler_1_,
+              OnNewCaptureVersion(capture_version))
+      .WillOnce(RunOnceClosure(run_loop_1.QuitClosure()));
+  EXPECT_CALL(*mock_video_frame_handler_2_,
+              OnNewCaptureVersion(capture_version))
+      .WillOnce(RunOnceClosure(run_loop_2.QuitClosure()));
+  broadcaster_.OnNewCaptureVersion(capture_version);
+
+  run_loop_1.Run();
+  run_loop_2.Run();
 }
 
 }  // namespace video_capture

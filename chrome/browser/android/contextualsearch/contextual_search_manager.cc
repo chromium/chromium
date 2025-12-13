@@ -18,12 +18,12 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate_impl.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate_impl.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -34,7 +34,6 @@
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchPolicy_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using content::WebContents;
 
@@ -69,8 +68,8 @@ void ContextualSearchManager::Destroy(JNIEnv* env) {
 
 void ContextualSearchManager::StartSearchTermResolutionRequest(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_contextual_search_context,
-    const JavaParamRef<jobject>& j_base_web_contents) {
+    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
@@ -87,8 +86,8 @@ void ContextualSearchManager::StartSearchTermResolutionRequest(
 
 void ContextualSearchManager::GatherSurroundingText(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_contextual_search_context,
-    const JavaParamRef<jobject>& j_base_web_contents) {
+    const base::android::JavaRef<jobject>& j_contextual_search_context,
+    const JavaRef<jobject>& j_base_web_contents) {
   WebContents* base_web_contents =
       WebContents::FromJavaWebContents(j_base_web_contents);
   DCHECK(base_web_contents);
@@ -157,15 +156,15 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
       env, java_manager_, encoding, surrounding_text, start_offset, end_offset);
 }
 
-jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& obj,
-                                       Profile* profile) {
+static jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
+                                              const JavaRef<jobject>& obj,
+                                              Profile* profile) {
   ContextualSearchManager* manager =
       new ContextualSearchManager(env, obj, profile);
   return reinterpret_cast<intptr_t>(manager);
 }
 
-jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
+static jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
     JNIEnv* env,
     Profile* profile) {
   // Attempt to resolve a (empty) query. Return whether resulting URL is
@@ -188,3 +187,6 @@ jboolean JNI_ContextualSearchPolicy_IsContextualSearchResolutionUrlValid(
 
   return url.is_valid();
 }
+
+DEFINE_JNI(ContextualSearchManager)
+DEFINE_JNI(ContextualSearchPolicy)

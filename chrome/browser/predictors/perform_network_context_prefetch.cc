@@ -17,6 +17,7 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reduce_accept_language_utils.h"
@@ -137,12 +138,12 @@ void PrefetchResource(
   // We shouldn't be prefetching if data saver is enabled, so we should never
   // need to set the "save-data" header.
 
-  headers.SetHeader("User-Agent", user_agent);
+  headers.SetHeader(net::HttpRequestHeaders::kUserAgent, user_agent);
 
-  headers.SetHeader("Accept-Language", accept_language);
+  headers.SetHeader(net::HttpRequestHeaders::kAcceptLanguage, accept_language);
 
   headers.SetHeader(
-      "Accept",
+      net::HttpRequestHeaders::kAccept,
       blink::network_utils::GetAcceptHeaderForDestination(destination));
 
   // Add the X-Client-Data header for requests to Google properties.
@@ -273,18 +274,10 @@ void PerformNetworkContextPrefetch(Profile* profile,
   // TODO(crbug.com/342445996): Make it const once the blink::UserAgentMetadata
   // methods have been made const.
   blink::UserAgentMetadata ua_metadata =
-      embedder_support::GetUserAgentMetadata(g_browser_process->local_state());
+      embedder_support::GetUserAgentMetadata();
 
-  // When generating the User-Agent header, we need to take into account user
-  // agent reduction enterprise policy. Nothing is ever simple. This code
-  // gratuitously copied from from chrome_content_browser_client.cc. This
-  // doesn't take into account DevTools overrides or desktop emulation.
   const PrefService* prefs = profile->GetPrefs();
-  const embedder_support::UserAgentReductionEnterprisePolicyState
-      user_agent_reduction =
-          embedder_support::GetUserAgentReductionFromPrefs(prefs);
-  const std::string user_agent =
-      embedder_support::GetUserAgent(user_agent_reduction);
+  const std::string user_agent = embedder_support::GetUserAgent();
 
   for (const auto& [url, destination] : requests) {
     auto resource_type = GetResourceTypeForPrefetch(destination);

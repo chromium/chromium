@@ -57,7 +57,6 @@ class CORE_EXPORT TextBoxEdge {
   bool operator==(const TextBoxEdge& other) const {
     return over_ == other.Over() && under_ == other.Under();
   }
-  bool operator!=(const TextBoxEdge& other) const { return !(*this == other); }
 
   const Type& Over() const { return over_; }
   const Type& Under() const { return under_; }

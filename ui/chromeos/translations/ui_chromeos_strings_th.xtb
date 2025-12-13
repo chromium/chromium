@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ประเภท</translation>
 <translation id="1254593899333212300">เชื่อมต่ออินเทอร์เน็ตโดยตรง</translation>
 <translation id="1272293450992660632">ค่า PIN ไม่ตรงกัน</translation>
+<translation id="1279040297980392566">กำลังรอให้การสแกนเสร็จสิ้น โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="1280820357415527819">กำลังค้นหาเครือข่ายมือถือ</translation>
 <translation id="1293556467332435079">ไฟล์</translation>
 <translation id="1297922636971898492">Google ไดรฟ์ไม่พร้อมใช้งานในขณะนี้ การอัปโหลดจะเริ่มต้นอีกครั้งโดยอัตโนมัติเมื่อ Google ไดรฟ์ใช้งานได้</translation>
@@ -171,7 +172,7 @@
 <translation id="2325650632570794183">ไฟล์ประเภทนี้ไม่ได้รับการสนับสนุน โปรดไปที่ Chrome เว็บสโตร์เพื่อหาแอปพลิเคชันที่สามารถเปิดไฟล์ประเภทนี้</translation>
 <translation id="2326539130272988168">บัลแกเรีย</translation>
 <translation id="233822363739146957">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ทั้งหมด</translation>
-<translation id="23721837607121582">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
+<translation id="23721837607121582">ดาวน์โหลดโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">เปลี่ยนเป็นมุมมองรายการ</translation>
 <translation id="2377590462528165447">แชร์กับ Linux แล้ว <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์</translation>
 <translation id="2379576081295865700">กำลังตรวจสอบพื้นที่เก็บข้อมูล… พบ 1 รายการ</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">เลือกแล้ว 1 ไฟล์</translation>
 <translation id="3817579325494460411">ไม่ได้ระบุ</translation>
 <translation id="3819448694985509187">PIN ไม่ถูกต้อง คุณลองได้อีก 1 ครั้ง</translation>
-<translation id="3822559385185038546">ผู้ดูแลระบบของคุณกำหนดให้ใช้พร็อกซีนี้</translation>
 <translation id="3830674330436234648">ไม่สามารถเล่นได้</translation>
 <translation id="383652340667548381">เซอร์เบีย</translation>
 <translation id="3839045880592694915">ผู้ให้บริการไม่อนุญาตให้เชื่อมต่อโมเด็ม โปรดติดต่อผู้ให้บริการเพื่อสอบถามรายละเอียดเพิ่มเติม</translation>
@@ -363,14 +363,14 @@
 <translation id="3866249974567520381">คำอธิบาย</translation>
 <translation id="3899991606604168269">ฝรั่งเศส (แคนาดา) ด้วยแป้นพิมพ์หลายภาษา</translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
-<translation id="3906232975181435906">กำลังติดตั้งโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
+<translation id="3906232975181435906">กำลังติดตั้งโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3952872973865944257">เตลูกู (ตามการออกเสียง)</translation>
 <translation id="3958548648197196644">กีวี</translation>
 <translation id="397105322502079400">กำลังคำนวณ...</translation>
-<translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
+<translation id="3971140002794351170">ดาวน์โหลดโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="3973925058222872294">อังกฤษ (สหราชอาณาจักร)</translation>
 <translation id="3975895378829046965">บังกลา (ตามการออกเสียง)</translation>
 <translation id="3999574733850440202">ไฟล์ Microsoft ที่เปิดล่าสุดได้ย้ายไปยัง OneDrive แล้ว</translation>
@@ -451,7 +451,7 @@
 <translation id="4603392156942865207">กำลังคัดลอก <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="4631887759990505102">ศิลปิน</translation>
 <translation id="4635373743001040938">พื้นที่เก็บข้อมูลเหลือน้อยมาก ปิดการซิงค์ไฟล์แล้ว</translation>
-<translation id="4642769377300286600">กำลังติดตั้งโปรไฟล์อุปกรณ์เคลื่อนที่, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
+<translation id="4642769377300286600">กำลังติดตั้งโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
 <translation id="4646813851450205600">เช็กด้วยแป้นพิมพ์ Qwerty</translation>
 <translation id="4656777537938206294">ทำให้ไฟล์ใช้งานได้แบบออฟไลน์</translation>
 <translation id="4658782175094886150">คนอยู่ท่ามกลางหิมะ</translation>
@@ -596,6 +596,7 @@
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5602622065581044566">บัลแกเรียด้วยแป้นพิมพ์ตามการออกเสียง</translation>
 <translation id="5605830556594064952">ดีโวรักสหรัฐอเมริกา</translation>
+<translation id="560739212255190568">ผู้ดูแลระบบได้ตั้งกฎการลบล้างพร็อกซี นอกเหนือจากการบังคับใช้พร็อกซีต่อไปนี้</translation>
 <translation id="5618330573454123917">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงไม่สามารถใช้ร่วมกับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="5625294776298156701">ทมิฬด้วยแป้นพิมพ์ Tamil99</translation>
 <translation id="5633226425545095130">การย้ายรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
@@ -995,6 +996,7 @@
 <translation id="8540608333167683902">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="8545476925160229291">อังกฤษ (สหรัฐฯ)</translation>
 <translation id="854655314928502177">URL การค้นพบเว็บพร็อกซีโดยอัตโนมัติ:</translation>
+<translation id="8547747809824590510">ผู้ดูแลระบบได้ตั้งกฎการลบล้างพร็อกซี</translation>
 <translation id="8549186985808798022">อิตาลี</translation>
 <translation id="8551494947769799688">ลัตเวีย</translation>
 <translation id="8560515948038859357">จีนกวางตุ้ง</translation>
@@ -1055,6 +1057,7 @@
 <translation id="9038620279323455325">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว โปรดเลือกชื่ออื่น</translation>
 <translation id="9046895021617826162">การเชื่อมต่อล้มเหลว</translation>
 <translation id="9065512565307033593">หากไม่ยืนยัน ระบบจะปิดใช้สิทธิ์เข้าถึงเครือข่ายของคุณ</translation>
+<translation id="9079844694307518094">ผู้ดูแลระบบกำลังบังคับใช้พร็อกซีต่อไปนี้</translation>
 <translation id="908378762078012445">รัสเซียด้วยแป้นพิมพ์ AATSEEL (ตามการออกเสียง)</translation>
 <translation id="9086302186042011942">กำลังซิงค์</translation>
 <translation id="9099674669267916096">จำนวนหน้า</translation>
@@ -1078,6 +1081,7 @@
 <translation id="9213073329713032541">เริ่มการติดตั้งสำเร็จแล้ว</translation>
 <translation id="9219103736887031265">ภาพ</translation>
 <translation id="9219908252191632183">ดวงจันทร์</translation>
+<translation id="931652069802536959">เครือข่ายถูกบล็อกโดยนโยบาย</translation>
 <translation id="938470336146445890">โปรดติดตั้งใบรับรองของผู้ใช้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
 <translation id="943972244133411984">แก้ไขโดย</translation>

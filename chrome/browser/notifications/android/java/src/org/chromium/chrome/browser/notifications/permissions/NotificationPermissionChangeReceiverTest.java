@@ -17,6 +17,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 
 /** Robolectric tests for {@link NotificationPermissionChangeReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,5 +60,43 @@ public class NotificationPermissionChangeReceiverTest {
         receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);
 
         verifyPermissionChangeHistogramWasRecorded(true);
+    }
+
+    @Test
+    public void testChannelBlocked_RecordsHistogram() {
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Mobile.SystemNotification.Permission.Change.Tips", false);
+
+        // Broadcast sent by Android when the user changes a notification channel's state.
+        Intent broadcastIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        broadcastIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
+                ChromeChannelDefinitions.ChannelId.TIPS);
+        broadcastIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, true);
+
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testChannelUnblocked_RecordsHistogram() {
+        NotificationPermissionChangeReceiver receiver = new NotificationPermissionChangeReceiver();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Mobile.SystemNotification.Permission.Change.Tips", true);
+
+        // Broadcast sent by Android when the user changes a notification channel's state.
+        Intent broadcastIntent =
+                new Intent(NotificationManager.ACTION_NOTIFICATION_CHANNEL_BLOCK_STATE_CHANGED);
+        broadcastIntent.putExtra(
+                NotificationManager.EXTRA_NOTIFICATION_CHANNEL_ID,
+                ChromeChannelDefinitions.ChannelId.TIPS);
+        broadcastIntent.putExtra(NotificationManager.EXTRA_BLOCKED_STATE, false);
+
+        receiver.onReceive(ApplicationProvider.getApplicationContext(), broadcastIntent);
+        histogramWatcher.assertExpected();
     }
 }

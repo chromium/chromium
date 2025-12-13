@@ -17,7 +17,6 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -77,12 +76,6 @@ public class OptimizationGuidePushNotificationManager {
      * @param payload the incoming payload.
      */
     public static void onPushNotification(HintNotificationPayload payload) {
-        if (!ChromeFeatureList.sOptimizationGuidePushNotifications.isEnabled()) {
-            // In case the feature has become disabled after once being enabled, clear everything.
-            clearCacheForAllTypes();
-            return;
-        }
-
         if (nativeIsInitialized()) {
             var optimizationGuideBridge =
                     OptimizationGuideBridgeFactory.getForProfile(
@@ -110,13 +103,6 @@ public class OptimizationGuidePushNotificationManager {
      */
     public static void clearCacheForOptimizationType(OptimizationType optimizationType) {
         ChromeSharedPreferences.getInstance().removeKey(cacheKey(optimizationType));
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void clearCacheForAllTypes() {
-        for (OptimizationType type : OptimizationType.values()) {
-            clearCacheForOptimizationType(type);
-        }
     }
 
     /**
@@ -218,6 +204,9 @@ public class OptimizationGuidePushNotificationManager {
         return cache != null && cache.equals(OVERFLOW_SENTINEL_SET);
     }
 
+    // Public for testing.
+    public static final int OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS_MAX_CACHE_SIZE = 100;
+
     private static void persistNotificationPayload(HintNotificationPayload payload) {
         if (!payload.hasOptimizationType()) return;
         if (!payload.hasKeyRepresentation()) return;
@@ -229,9 +218,7 @@ public class OptimizationGuidePushNotificationManager {
         if (checkForOverflow(cache)) return;
 
         // Check if we would overflow the cache by writing the new element.
-        if (cache.size()
-                >= ChromeFeatureList.sOptimizationGuidePushNotificationsMaxCacheSize.getValue()
-                        - 1) {
+        if (cache.size() >= OPTIMIZATION_GUIDE_PUSH_NOTIFICATIONS_MAX_CACHE_SIZE - 1) {
             ChromeSharedPreferences.getInstance()
                     .writeStringSet(cacheKey(payload.getOptimizationType()), OVERFLOW_SENTINEL_SET);
             return;

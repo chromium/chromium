@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"

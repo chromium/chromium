@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative/declarative_rule.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/containers/contains.h"
@@ -58,7 +59,7 @@ struct RecordingCondition {
       return nullptr;
     }
 
-    std::unique_ptr<RecordingCondition> result(new RecordingCondition());
+    auto result = std::make_unique<RecordingCondition>();
     result->factory = url_matcher_condition_factory;
     result->value = base::Value::ToUniquePtrValue(condition.Clone());
     return result;
@@ -134,7 +135,7 @@ struct FulfillableCondition {
       URLMatcherConditionFactory* url_matcher_condition_factory,
       const base::Value& condition,
       std::string* error) {
-    std::unique_ptr<FulfillableCondition> result(new FulfillableCondition());
+    auto result = std::make_unique<FulfillableCondition>();
     if (!condition.is_dict()) {
       *error = "Expected dict";
       return result;

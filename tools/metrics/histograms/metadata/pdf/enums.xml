@@ -150,6 +150,27 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Foreground XFA (XFAF)"/>
 </enum>
 
+<!-- LINT.IfChange(PdfInfoBarSettingsResult) -->
+
+<enum name="PdfInfoBarSettingsResult">
+  <int value="0" label="NotShown">The settings UI was not shown.</int>
+  <int value="1" label="Success">
+    The settings UI was shown and Chrome was set as default PDF viewer.
+  </int>
+  <int value="2" label="SuccessNoChange">
+    The settings UI was shown, but Chrome wasn't set as default.
+  </int>
+  <int value="3" label="Fallback">
+    The fallback settings UI was shown and Chrome was set as default.
+  </int>
+  <int value="4" label="FallbackNoChange">
+    The fallback settings UI was shown, but Chrome wasn't set as default.
+  </int>
+  <int value="5" label="Error">The settings UI failed to open.</int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/pdf/infobar/pdf_infobar_delegate.cc:PdfInfoBarSettingsResult) -->
+
 <!-- LINT.IfChange(PDFInfoBarUserInteraction) -->
 
 <enum name="PDFInfoBarUserInteraction">
@@ -209,6 +230,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Mouse"/>
   <int value="1" label="Touch"/>
   <int value="2" label="Pen"/>
+  <int value="3" label="Keyboard"/>
 </enum>
 
 <!-- LINT.ThenChange(//pdf/pdf_ink_metrics_handler.h:PDFInk2StrokeInputDeviceType) -->
@@ -257,6 +279,99 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="getSelectedText"/>
   <int value="1" label="print"/>
   <int value="2" label="selectAll"/>
+</enum>
+
+<!-- LINT.IfChange(PDFSaveToDriveBubbleAction) -->
+
+<enum name="PDFSaveToDriveBubbleAction">
+<!-- This must be kept current with SaveToDriveBubbleAction in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Action"/>
+  <int value="1" label="Cancel upload"/>
+  <int value="2" label="Manage storage"/>
+  <int value="3" label="Open in Drive"/>
+  <int value="4" label="Retry"/>
+  <int value="5" label="Close"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveBubbleAction) -->
+
+<!-- LINT.IfChange(PDFSaveToDriveBubbleState) -->
+
+<enum name="PDFSaveToDriveBubbleState">
+<!-- This must be kept current with SaveToDriveBubbleState in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Show bubble"/>
+  <int value="1" label="Show bubble in uploading state"/>
+  <int value="2" label="Show bubble in success state"/>
+  <int value="3" label="Show bubble in connection error state"/>
+  <int value="4" label="Show bubble in storage full error state"/>
+  <int value="5" label="Show bubble in session timeout error state"/>
+  <int value="6" label="Show bubble in unknown error state"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveBubbleState) -->
+
+<enum name="PdfSaveToDriveErrorType">
+<!-- This must be kept current with SaveToDriveErrorType in
+     tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
+
+  <int value="0" label="Undefined"/>
+  <int value="1" label="No error"/>
+  <int value="2" label="Unknown error"/>
+  <int value="3" label="Quota exceeded"/>
+  <int value="4" label="Offline"/>
+  <int value="5" label="OAuth error"/>
+  <int value="6" label="Account chooser cancelled"/>
+  <int value="7" label="Parent folder selection failed"/>
+</enum>
+
+<!-- LINT.IfChange(PDFSaveToDrivePrimaryAccountSelectionStatus) -->
+
+<enum name="PDFSaveToDrivePrimaryAccountSelectionStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Primary account selected"/>
+  <int value="2" label="Primary account not selected"/>
+  <int value="3" label="No primary account"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/save_to_drive/save_to_drive_recorder.cc:PDFSaveToDrivePrimaryAccountSelectionStatus) -->
+
+<!-- LINT.IfChange(PDFSaveToDriveSaveType) -->
+
+<enum name="PDFSaveToDriveSaveType">
+<!-- This must be kept current with SaveToDriveSaveType in
+     chrome/browser/resources/pdf/save_to_drive_metrics.ts. -->
+
+  <int value="0" label="Save"/>
+  <int value="1" label="Save original only"/>
+  <int value="2" label="Save original"/>
+  <int value="3" label="Save edited"/>
+  <int value="4" label="Save with annotation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/resources/pdf/save_to_drive_metrics.ts:PDFSaveToDriveSaveType) -->
+
+<enum name="PdfSaveToDriveStatus">
+<!-- This must be kept current with SaveToDriveStatus in
+     tools/typescript/definitions/pdf_viewer_private.d.ts and chrome/common/extensions/api/pdf_viewer_private.idl. -->
+
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Not started"/>
+  <int value="2" label="Initiated"/>
+  <int value="3" label="Account chooser shown"/>
+  <int value="4" label="Account selected"/>
+  <int value="5" label="Account add selected"/>
+  <int value="6" label="Account added"/>
+  <int value="7" label="Fetch OAuth"/>
+  <int value="8" label="Fetch parent folder"/>
+  <int value="9" label="Upload started"/>
+  <int value="10" label="Upload in progress"/>
+  <int value="11" label="Upload completed"/>
+  <int value="12" label="Upload retried"/>
+  <int value="13" label="Upload failed"/>
 </enum>
 
 <enum name="PDFVersion">

@@ -21,6 +21,10 @@ AnimationDelegateViews::AnimationDelegateViews(View* view,
   }
 }
 
+AnimationDelegateViews::AnimationDelegateViews(Widget* widget,
+                                               const base::Location& location)
+    : AnimationDelegateViews(widget->GetRootView(), location) {}
+
 AnimationDelegateViews::~AnimationDelegateViews() {
   // Reset the delegate so that we don't attempt to notify our observer from
   // the destructor.

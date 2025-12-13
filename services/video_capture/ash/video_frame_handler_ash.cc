@@ -13,6 +13,7 @@
 #include "media/base/video_transformation.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/buffer.h"
+#include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 namespace crosapi {
@@ -187,9 +188,9 @@ void VideoFrameHandlerAsh::OnFrameDropped(
   proxy_->OnFrameDropped(reason);
 }
 
-void VideoFrameHandlerAsh::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
-  proxy_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
+void VideoFrameHandlerAsh::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {
+  proxy_->OnNewCaptureVersion(capture_version);
 }
 
 void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {

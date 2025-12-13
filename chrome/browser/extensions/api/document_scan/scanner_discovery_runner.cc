@@ -6,10 +6,11 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
+#include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
@@ -37,17 +38,71 @@ bool CanSkipConfirmation(content::BrowserContext* browser_context,
   return base::Contains(list, base::Value(extension_id));
 }
 
+api::document_scan::OperationResult ToApiOperationResult(
+    lorgnette::OperationResult result) {
+  switch (result) {
+    default:
+      NOTREACHED();
+    case lorgnette::OPERATION_RESULT_UNKNOWN:
+      return api::document_scan::OperationResult::kUnknown;
+    case lorgnette::OPERATION_RESULT_SUCCESS:
+      return api::document_scan::OperationResult::kSuccess;
+    case lorgnette::OPERATION_RESULT_UNSUPPORTED:
+      return api::document_scan::OperationResult::kUnsupported;
+    case lorgnette::OPERATION_RESULT_CANCELLED:
+      return api::document_scan::OperationResult::kCancelled;
+    case lorgnette::OPERATION_RESULT_DEVICE_BUSY:
+      return api::document_scan::OperationResult::kDeviceBusy;
+    case lorgnette::OPERATION_RESULT_INVALID:
+      return api::document_scan::OperationResult::kInvalid;
+    case lorgnette::OPERATION_RESULT_WRONG_TYPE:
+      return api::document_scan::OperationResult::kWrongType;
+    case lorgnette::OPERATION_RESULT_EOF:
+      return api::document_scan::OperationResult::kEof;
+    case lorgnette::OPERATION_RESULT_ADF_JAMMED:
+      return api::document_scan::OperationResult::kAdfJammed;
+    case lorgnette::OPERATION_RESULT_ADF_EMPTY:
+      return api::document_scan::OperationResult::kAdfEmpty;
+    case lorgnette::OPERATION_RESULT_COVER_OPEN:
+      return api::document_scan::OperationResult::kCoverOpen;
+    case lorgnette::OPERATION_RESULT_IO_ERROR:
+      return api::document_scan::OperationResult::kIoError;
+    case lorgnette::OPERATION_RESULT_ACCESS_DENIED:
+      return api::document_scan::OperationResult::kAccessDenied;
+    case lorgnette::OPERATION_RESULT_NO_MEMORY:
+      return api::document_scan::OperationResult::kNoMemory;
+    case lorgnette::OPERATION_RESULT_UNREACHABLE:
+      return api::document_scan::OperationResult::kUnreachable;
+    case lorgnette::OPERATION_RESULT_MISSING:
+      return api::document_scan::OperationResult::kMissing;
+    case lorgnette::OPERATION_RESULT_INTERNAL_ERROR:
+      return api::document_scan::OperationResult::kInternalError;
+  }
+}
+
+api::document_scan::ConnectionType ToApiConnectionType(
+    lorgnette::ConnectionType type) {
+  switch (type) {
+    default:
+      NOTREACHED();
+    case lorgnette::ConnectionType::CONNECTION_UNSPECIFIED:
+      return api::document_scan::ConnectionType::kUnspecified;
+    case lorgnette::ConnectionType::CONNECTION_USB:
+      return api::document_scan::ConnectionType::kUsb;
+    case lorgnette::ConnectionType::CONNECTION_NETWORK:
+      return api::document_scan::ConnectionType::kNetwork;
+  }
+}
+
 }  // namespace
 
 ScannerDiscoveryRunner::ScannerDiscoveryRunner(
     gfx::NativeWindow native_window,
     content::BrowserContext* browser_context,
-    scoped_refptr<const Extension> extension,
-    crosapi::mojom::DocumentScan* document_scan)
+    scoped_refptr<const Extension> extension)
     : native_window_(native_window),
       browser_context_(browser_context),
-      extension_(std::move(extension)),
-      document_scan_(document_scan) {
+      extension_(std::move(extension)) {
   CHECK(extension_);
   if (native_window_) {
     native_window_tracker_ = ui::NativeWindowTracker::Create(native_window_);
@@ -63,11 +118,12 @@ void ScannerDiscoveryRunner::SetDiscoveryConfirmationResultForTesting(
 }
 
 void ScannerDiscoveryRunner::Start(bool approved,
-                                   crosapi::mojom::ScannerEnumFilterPtr filter,
+                                   api::document_scan::DeviceFilter filter,
                                    GetScannerListCallback callback) {
   CHECK(!callback_) << "discovery call already in progress";
+  CHECK(callback);
   callback_ = std::move(callback);
-  filter_ = std::move(filter);
+  filter_.emplace(std::move(filter));
 
   if (approved || CanSkipConfirmation(browser_context_, extension_->id())) {
     SendGetScannerListRequest();
@@ -114,21 +170,57 @@ void ScannerDiscoveryRunner::OnConfirmationDialogClosed(bool approved) {
     return;
   }
 
-  auto response = crosapi::mojom::GetScannerListResponse::New();
-  response->result = crosapi::mojom::ScannerOperationResult::kAccessDenied;
-  std::move(callback_).Run(std::move(response));
+  api::document_scan::GetScannerListResponse api_response;
+  api_response.result = api::document_scan::OperationResult::kAccessDenied;
+  std::move(callback_).Run(std::move(api_response));
 }
 
 void ScannerDiscoveryRunner::SendGetScannerListRequest() {
-  document_scan_->GetScannerList(
-      extension_->id(), std::move(filter_),
-      base::BindOnce(&ScannerDiscoveryRunner::OnScannerListReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+  using LocalScannerFilter = ash::LorgnetteScannerManager::LocalScannerFilter;
+  using SecureScannerFilter = ash::LorgnetteScannerManager::SecureScannerFilter;
+
+  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(browser_context_)
+      ->GetScannerInfoList(
+          extension_->id(),
+          filter_->local.value_or(false)
+              ? LocalScannerFilter::kLocalScannersOnly
+              : LocalScannerFilter::kIncludeNetworkScanners,
+          filter_->secure.value_or(false)
+              ? SecureScannerFilter::kSecureScannersOnly
+              : SecureScannerFilter::kIncludeUnsecureScanners,
+          base::BindOnce(&ScannerDiscoveryRunner::OnScannerListReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScannerDiscoveryRunner::OnScannerListReceived(
-    crosapi::mojom::GetScannerListResponsePtr response) {
-  std::move(callback_).Run(std::move(response));
+    const std::optional<lorgnette::ListScannersResponse>& response) {
+  if (!response.has_value()) {
+    api::document_scan::GetScannerListResponse api_response;
+    api_response.result = api::document_scan::OperationResult::kInternalError;
+    std::move(callback_).Run(std::move(api_response));
+    return;
+  }
+
+  api::document_scan::GetScannerListResponse api_response;
+  api_response.result = ToApiOperationResult(response->result());
+  for (const lorgnette::ScannerInfo& scanner : response->scanners()) {
+    api::document_scan::ScannerInfo& scanner_out =
+        api_response.scanners.emplace_back();
+    scanner_out.scanner_id = scanner.name();
+    scanner_out.name = scanner.display_name();
+    scanner_out.manufacturer = scanner.manufacturer();
+    scanner_out.model = scanner.model();
+    scanner_out.device_uuid = scanner.device_uuid();
+    scanner_out.connection_type =
+        ToApiConnectionType(scanner.connection_type());
+    scanner_out.secure = scanner.secure();
+    for (const std::string& format : scanner.image_format()) {
+      scanner_out.image_formats.emplace_back(format);
+    }
+    scanner_out.protocol_type = scanner.protocol_type();
+  }
+
+  std::move(callback_).Run(std::move(api_response));
 }
 
 }  // namespace extensions

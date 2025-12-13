@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] [required] cast float32 1D tensor to int32
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast int32 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] cast float32 2D tensor to int32
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast int32 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] cast float32 3D tensor to int32
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast int32 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] cast float32 4D tensor to int32
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast int32 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [optional] cast float32 4D tensor to uint32
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast uint32 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] cast float32 4D tensor to int8
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast int8 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+[FAIL] [required] cast float32 4D tensor to uint8
+  assert_less_than_equal: assert_array_approx_equals_ulp: test cast uint8 actual 73 should be close enough to expected 72 by ULP distance: expected a number less than or equal to 0 but got 1
+Harness: the test ran to completion.
+

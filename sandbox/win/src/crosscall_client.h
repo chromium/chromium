@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SANDBOX_WIN_SRC_CROSSCALL_CLIENT_H_
 #define SANDBOX_WIN_SRC_CROSSCALL_CLIENT_H_
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -125,14 +122,14 @@ class CopyHelper<void*> {
 };
 
 // This copy helper template specialization catches the cases where the
-// parameter is a pointer to a string.
+// parameter is a wstring_view object.
 template <>
-class CopyHelper<const wchar_t*> {
+class CopyHelper<std::wstring_view> {
  public:
-  explicit CopyHelper(const wchar_t* t) : t_(t) {}
+  explicit CopyHelper(std::wstring_view t) : t_(t) {}
 
   // Returns the pointer to the start of the string.
-  const void* GetStart() const { return t_; }
+  const void* GetStart() const { return t_.data(); }
 
   // Update the stored value with the value in the buffer. This is not
   // supported for this type.
@@ -141,15 +138,9 @@ class CopyHelper<const wchar_t*> {
     return true;
   }
 
-  // Returns the size of the string in bytes. We define a nullptr string to
-  // be of zero length.
+  // Returns the size of the string in bytes.
   uint32_t GetSize() const {
-    __try {
-      return (!t_) ? 0
-                   : static_cast<uint32_t>(StringLength(t_) * sizeof(t_[0]));
-    } __except (EXCEPTION_EXECUTE_HANDLER) {
-      return UINT32_MAX;
-    }
+    return static_cast<uint32_t>(t_.size() * sizeof(wchar_t));
   }
 
   // Returns true if the current type is used as an In or InOut parameter.
@@ -158,56 +149,7 @@ class CopyHelper<const wchar_t*> {
   ArgType GetType() { return WCHAR_TYPE; }
 
  private:
-  // We provide our not very optimized version of wcslen(), since we don't
-  // want to risk having the linker use the version in the CRT since the CRT
-  // might not be present when we do an early IPC call.
-  static size_t StringLength(const wchar_t* wcs) {
-    const wchar_t* eos = wcs;
-    while (*eos++)
-      ;
-    return static_cast<size_t>(eos - wcs - 1);
-  }
-
-  const wchar_t* t_;
-};
-
-// Specialization for non-const strings. We just reuse the implementation of the
-// const string specialization.
-template <>
-class CopyHelper<wchar_t*> : public CopyHelper<const wchar_t*> {
- public:
-  typedef CopyHelper<const wchar_t*> Base;
-  explicit CopyHelper(wchar_t* t) : Base(t) {}
-
-  const void* GetStart() const { return Base::GetStart(); }
-
-  bool Update(void* buffer) { return Base::Update(buffer); }
-
-  uint32_t GetSize() const { return Base::GetSize(); }
-
-  bool IsInOut() { return Base::IsInOut(); }
-
-  ArgType GetType() { return Base::GetType(); }
-};
-
-// Specialization for wchar_t arrays strings. We just reuse the implementation
-// of the const string specialization.
-template <size_t n>
-class CopyHelper<const wchar_t[n]> : public CopyHelper<const wchar_t*> {
- public:
-  typedef const wchar_t array[n];
-  typedef CopyHelper<const wchar_t*> Base;
-  explicit CopyHelper(array t) : Base(t) {}
-
-  const void* GetStart() const { return Base::GetStart(); }
-
-  bool Update(void* buffer) { return Base::Update(buffer); }
-
-  uint32_t GetSize() const { return Base::GetSize(); }
-
-  bool IsInOut() { return Base::IsInOut(); }
-
-  ArgType GetType() { return Base::GetType(); }
+  std::wstring_view t_;
 };
 
 // Generic encapsulation class containing a pointer to a buffer and the

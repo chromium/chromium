@@ -15,17 +15,15 @@
 #include "base/token.h"
 #include "chrome/browser/compose/compose_session.h"
 #include "chrome/browser/compose/proactive_nudge_tracker.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/common/compose/compose.mojom.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_dialog_controller.h"
 #include "components/compose/core/browser/compose_manager.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
-#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,12 +32,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 class Page;
 class WebContents;
 }  // namespace content
+
+namespace optimization_guide {
+class ModelQualityLogsUploaderService;
+class OptimizationGuideDecider;
+class RemoteModelExecutor;
+}  // namespace optimization_guide
 
 class ComposeEnabling;
 
@@ -73,7 +76,9 @@ class ChromeComposeClient
         const std::u16string& text_value) override;
     // Used to reset the field content changes count when a new suggestions UI
     // is shown.
-    void OnSuggestionsShown(autofill::AutofillManager& manager) override;
+    void OnSuggestionsShown(
+        autofill::AutofillManager& manager,
+        base::span<const autofill::Suggestion> suggestions) override;
 
     // Asks Autofill to hide any open compose-related popups.
     void HideComposeNudges();
@@ -103,8 +108,6 @@ class ChromeComposeClient
   void ShowComposeDialog(
       EntryPoint ui_entry_point,
       const autofill::FormFieldData& trigger_field,
-      std::optional<autofill::AutofillClient::PopupScreenLocation>
-          popup_screen_location,
       ComposeCallback callback) override;
   bool HasSession(const autofill::FieldGlobalId& trigger_field_id) override;
   bool ShouldTriggerPopup(
@@ -179,7 +182,8 @@ class ChromeComposeClient
   // Called when the focused element changes. This is only used to inform
   // the proactive nudge tracker that focus has changed until the
   // AutofillManager::Observer APIs for focus tracking are fixed.
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override;
+  void OnFocusChangedInPage(
+      const content::FocusedNodeDetails& details) override;
 
   // compose::ProactiveNudgeTracker::Delegate implementation.
   void ShowProactiveNudge(autofill::FormGlobalId form,
@@ -203,7 +207,7 @@ class ChromeComposeClient
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
   void SetModelExecutorForTest(
-      optimization_guide::OptimizationGuideModelExecutor* model_executor);
+      optimization_guide::RemoteModelExecutor* model_executor);
   void SetModelQualityLogsUploaderServiceForTest(
       optimization_guide::ModelQualityLogsUploaderService*
           model_quality_logs_uploader_service);
@@ -217,7 +221,7 @@ class ChromeComposeClient
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);
-  optimization_guide::OptimizationGuideModelExecutor* GetModelExecutor();
+  optimization_guide::RemoteModelExecutor* GetModelExecutor();
   optimization_guide::ModelQualityLogsUploaderService*
   GetModelQualityLogsUploaderService();
   optimization_guide::OptimizationGuideDecider* GetOptimizationGuide();
@@ -297,7 +301,7 @@ class ChromeComposeClient
   // recently been navigated to.
   raw_ptr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
-  std::optional<optimization_guide::OptimizationGuideModelExecutor*>
+  std::optional<optimization_guide::RemoteModelExecutor*>
       model_executor_for_test_;
 
   std::optional<optimization_guide::ModelQualityLogsUploaderService*>

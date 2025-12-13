@@ -239,7 +239,7 @@ s_no_extra_traits! {
         pub pminfo: syspage_entry_info,
         pub old_mdriver: syspage_entry_info,
         spare0: [u32; 1],
-        __reserved: [u8; 160], // anonymous union with architecture dependent structs
+        __reserved: Padding<[u8; 160]>, // anonymous union with architecture dependent structs
         pub new_asinfo: syspage_array_info,
         pub new_cpuinfo: syspage_array_info,
         pub new_cacheattr: syspage_array_info,
@@ -1245,13 +1245,13 @@ extern "C" {
         __id: crate::clockid_t,
         _new: *const crate::_clockperiod,
         __old: *mut crate::_clockperiod,
-        __reserved: c_int,
+        __reserved: Padding<c_int>,
     ) -> c_int;
     pub fn ClockPeriod_r(
         __id: crate::clockid_t,
         _new: *const crate::_clockperiod,
         __old: *mut crate::_clockperiod,
-        __reserved: c_int,
+        __reserved: Padding<c_int>,
     ) -> c_int;
     pub fn ClockId(__pid: crate::pid_t, __tid: c_int) -> c_int;
     pub fn ClockId_r(__pid: crate::pid_t, __tid: c_int) -> c_int;

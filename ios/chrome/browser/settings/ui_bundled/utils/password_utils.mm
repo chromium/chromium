@@ -117,6 +117,15 @@ bool MatchCredentialForTerm(const CredentialUIEntry& credential,
     if (ContainsSubStringLowerCase(domain_info.name, search_term)) {
       return true;
     }
+
+    if (ContainsSubStringLowerCase(domain_info.signon_realm, search_term)) {
+      return true;
+    }
+
+    if (domain_info.url.is_valid() &&
+        ContainsSubStringLowerCase(domain_info.url.spec(), search_term)) {
+      return true;
+    }
   }
   return false;
 }

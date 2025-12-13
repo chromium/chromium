@@ -785,7 +785,8 @@ size_t FindMatchingEvents(const std::vector<TraceEvent>& events,
 
 bool ParseEventsFromJson(const std::string& json,
                          std::vector<TraceEvent>* output) {
-  std::optional<base::Value> root = base::JSONReader::Read(json);
+  std::optional<base::Value> root =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   if (!root) {
     return false;
@@ -824,7 +825,7 @@ TraceAnalyzer::~TraceAnalyzer() = default;
 // static
 std::unique_ptr<TraceAnalyzer> TraceAnalyzer::Create(
     const std::string& json_events) {
-  std::unique_ptr<TraceAnalyzer> analyzer(new TraceAnalyzer());
+  auto analyzer = base::WrapUnique(new TraceAnalyzer());
   if (analyzer->SetEvents(json_events)) {
     return analyzer;
   }

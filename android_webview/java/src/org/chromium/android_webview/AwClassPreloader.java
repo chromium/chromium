@@ -4,9 +4,7 @@
 
 package org.chromium.android_webview;
 
-import org.chromium.android_webview.common.AwFeatureMap;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -30,14 +28,11 @@ public final class AwClassPreloader {
 
     /** Preloads a set of classes on a background thread. */
     public static void preloadClasses() {
-        if (!AwFeatureMap.isEnabled("WebViewPreloadClasses")) {
-            return;
-        }
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT,
                 () -> {
-                    try (ScopedSysTraceEvent e =
-                            ScopedSysTraceEvent.scoped("AwClassPreloader.preloadClasses")) {
+                    try (DualTraceEvent e =
+                            DualTraceEvent.scoped("AwClassPreloader.preloadClasses")) {
                         // This set of classes was chosen by local instrumentation of the class
                         // loader to determine which classes were slow during initialization.
                         for (Class<?> clz :

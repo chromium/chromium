@@ -52,9 +52,6 @@ FileSuggestKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
 
   Profile* profile = Profile::FromBrowserContext(context);
 
-  // TODO(https://crbug.com/1368833): Right now, the service reuses the proto
-  // originally for app list. The service should have its own proto that
-  // contains file ids only.
   PersistentProto<app_list::RemovedResultsProto> proto(
       app_list::RankerStateDirectory(profile).AppendASCII("removed_results.pb"),
       /*write_delay=*/base::TimeDelta());

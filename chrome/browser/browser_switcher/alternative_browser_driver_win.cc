@@ -36,7 +36,7 @@ namespace {
 
 using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
 
-const wchar_t kUrlVarName[] = L"${url}";
+constexpr std::wstring_view kUrlVarName = L"${url}";
 
 const wchar_t kIExploreKey[] =
     L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\App Paths\\IEXPLORE.EXE";
@@ -157,7 +157,7 @@ bool ExpandUrlVarName(std::wstring* arg, const std::wstring& url_spec) {
   size_t url_index = arg->find(kUrlVarName);
   if (url_index == std::wstring::npos)
     return false;
-  arg->replace(url_index, UNSAFE_TODO(wcslen(kUrlVarName)), url_spec);
+  arg->replace(url_index, kUrlVarName.size(), url_spec);
   return true;
 }
 

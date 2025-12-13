@@ -7,18 +7,21 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-using omnibox::ActionInfo;
-using ActionType = omnibox::ActionInfo_ActionType;
+using TemplateAction = omnibox::SuggestTemplateInfo::TemplateAction;
+using ActionType = omnibox::SuggestTemplateInfo_TemplateAction_ActionType;
 
 namespace {
 class FakeOmniboxAction : public OmniboxAction {
@@ -35,12 +38,17 @@ class FakeOmniboxAction : public OmniboxAction {
 // Note: can't use operator<<, because ActionType is a plain old enum.
 const char* ToString(ActionType type) {
   switch (type) {
-    case omnibox::ActionInfo_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
       return "Call";
-    case omnibox::ActionInfo_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
       return "Directions";
-    case omnibox::ActionInfo_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return "Reviews";
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return "Aim";
+    case omnibox::
+        SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH:
+      return "TabSwitch";
     default:
       NOTREACHED();
   }
@@ -69,34 +77,50 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
     int want_contents;
     int want_accessibility_focus_hint;
     int want_accessibility_activate_hint;
-  } test_cases[] = {{
-                        omnibox::ActionInfo_ActionType_CALL,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
-                    },
-                    {
-                        omnibox::ActionInfo_ActionType_DIRECTIONS,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
-                    },
-                    {
-                        omnibox::ActionInfo_ActionType_REVIEWS,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
-                        IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
-                        IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
-                    }};
+  } test_cases[] = {
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
+      },
+      {
+          omnibox::
+              SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS,
+      }};
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case.action_type);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case.action_type);
 
     auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-        std::move(action_info), std::nullopt);
+        std::move(template_action), std::nullopt);
     EXPECT_EQ(OmniboxActionId::ACTION_IN_SUGGEST, action->ActionId())
         << "while evaluatin action " << ToString(test_case.action_type);
     EXPECT_EQ(test_case.action_type, action->Type());
@@ -119,16 +143,19 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
 }
 
 TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
-  const ActionType test_cases[]{omnibox::ActionInfo_ActionType_CALL,
-                                omnibox::ActionInfo_ActionType_DIRECTIONS,
-                                omnibox::ActionInfo_ActionType_REVIEWS};
+  const ActionType test_cases[]{
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH};
 
   for (auto test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case);
 
     scoped_refptr<OmniboxAction> upcasted_action =
-        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
+        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(template_action),
                                                      std::nullopt);
 
     auto* downcasted_action =
@@ -156,15 +183,15 @@ TEST_F(OmniboxActionInSuggestTest, AllDeclaredActionTypesAreProperlyReflected) {
   // This test verifies that we're not quietly migrating new action types, and
   // failing to recognize the need for appropriate coverage, both in terms of
   // labels (hints, accessibility) but also UMA metrics.
-  for (int type = ActionInfo::ActionType_MIN;
-       type <= ActionInfo::ActionType_MAX; type++) {
-    if (omnibox::ActionInfo_ActionType_IsValid(type)) {
-      ActionInfo action_info;
-      action_info.set_action_type(ActionType(type));
+  for (int type = TemplateAction::ActionType_MIN;
+       type <= TemplateAction::ActionType_MAX; type++) {
+    if (omnibox::SuggestTemplateInfo_TemplateAction_ActionType_IsValid(type)) {
+      TemplateAction template_action;
+      template_action.set_action_type(ActionType(type));
 
       // This is a valid action type. Object MUST build.
       auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
-          std::move(action_info), std::nullopt);
+          std::move(template_action), std::nullopt);
       // This is a valid action type. Object MUST be able to report metrics.
       {
         base::HistogramTester histograms;
@@ -196,27 +223,36 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
     kDirections,
     kWebsite,
     kReviews,
+    kAim,
+    kLens,
+    kTabSwitch,
   };
 
   // Correlation between ActionType and UMA-recorded bucket.
   struct {
-    omnibox::ActionInfo::ActionType type;
+    omnibox::SuggestTemplateInfo::TemplateAction::ActionType type;
     UmaTypeForTest recordedUmaType;
     const char* dedicatedHistogram;
   } test_cases[]{
-      {omnibox::ActionInfo_ActionType_CALL, UmaTypeForTest::kCall,
-       "Omnibox.ActionInSuggest.UsageByType.Call"},
-      {omnibox::ActionInfo_ActionType_DIRECTIONS, UmaTypeForTest::kDirections,
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
+       UmaTypeForTest::kCall, "Omnibox.ActionInSuggest.UsageByType.Call"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
+       UmaTypeForTest::kDirections,
        "Omnibox.ActionInSuggest.UsageByType.Directions"},
-      {omnibox::ActionInfo_ActionType_REVIEWS, UmaTypeForTest::kReviews,
-       "Omnibox.ActionInSuggest.UsageByType.Reviews"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+       UmaTypeForTest::kReviews, "Omnibox.ActionInSuggest.UsageByType.Reviews"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+       UmaTypeForTest::kAim, "Omnibox.ActionInSuggest.UsageByType.AIM"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH,
+       UmaTypeForTest::kTabSwitch,
+       "Omnibox.ActionInSuggest.UsageByType.TabSwitch"},
   };
 
   for (const auto& test_case : test_cases) {
-    ActionInfo action_info;
-    action_info.set_action_type(test_case.type);
+    TemplateAction template_action;
+    template_action.set_action_type(test_case.type);
     scoped_refptr<OmniboxAction> action =
-        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(action_info),
+        base::MakeRefCounted<OmniboxActionInSuggest>(std::move(template_action),
                                                      std::nullopt);
 
     {
@@ -250,3 +286,43 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
     }
   }
 }
+
+TEST_F(OmniboxActionInSuggestTest, ShowAsActionButton) {
+  for (int type = TemplateAction::ActionType_MIN;
+       type <= TemplateAction::ActionType_MAX; type++) {
+    if (omnibox::SuggestTemplateInfo_TemplateAction_ActionType_IsValid(type) &&
+        type !=
+            omnibox::
+                SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH) {
+      TemplateAction template_action;
+      template_action.set_action_type(ActionType(type));
+      auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
+          std::move(template_action), std::nullopt);
+      if (type ==
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM) {
+        EXPECT_TRUE(action->show_as_action_button_);
+      } else {
+        EXPECT_FALSE(action->show_as_action_button_);
+      }
+    }
+  }
+}
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(OmniboxActionInSuggestTest, ShowAsActionButtonForTabSwitch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxImprovementForLFF, {
+                                              {"switch_to_tab_chip", "true"},
+                                          });
+  TemplateAction template_action;
+  template_action.set_action_type(
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_TAB_SWITCH);
+  auto action = base::MakeRefCounted<OmniboxActionInSuggest>(
+      std::move(template_action), std::nullopt);
+  auto form_factor = ui::GetDeviceFormFactor();
+  EXPECT_EQ(form_factor == ui::DEVICE_FORM_FACTOR_PHONE ||
+                form_factor == ui::DEVICE_FORM_FACTOR_FOLDABLE,
+            action->show_as_action_button_);
+}
+#endif

@@ -28,7 +28,7 @@ webnn::OperandDescriptor CreateInvalidOperandDescriptor() {
 
 TEST(OperandDescriptorMojomTraitsTest, Basic) {
   auto input = webnn::OperandDescriptor::CreateForDeserialization(
-      webnn::OperandDataType::kInt32, std::array<uint32_t, 2>{2, 3});
+      webnn::OperandDataType::kInt32, std::array<uint32_t, 2>{2, 3}, {});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -40,7 +40,7 @@ TEST(OperandDescriptorMojomTraitsTest, Basic) {
 
 TEST(OperandDescriptorMojomTraitsTest, Int4) {
   auto input = webnn::OperandDescriptor::CreateForDeserialization(
-      webnn::OperandDataType::kInt4, std::array<uint32_t, 2>{3, 3});
+      webnn::OperandDataType::kInt4, std::array<uint32_t, 2>{3, 3}, {});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -56,7 +56,7 @@ TEST(OperandDescriptorMojomTraitsTest, Int4) {
 TEST(OperandDescriptorMojomTraitsTest, EmptyShape) {
   // Descriptors with an empty shape are treated as scalars.
   auto input = webnn::OperandDescriptor::CreateForDeserialization(
-      webnn::OperandDataType::kInt32, {});
+      webnn::OperandDataType::kInt32, {}, {});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -73,7 +73,7 @@ TEST(OperandDescriptorMojomTraitsTest, ZeroDimension) {
   const std::array<uint32_t, 3> shape{2, 0, 3};
 
   ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
-                   webnn::OperandDataType::kInt32, shape)
+                   webnn::OperandDataType::kInt32, shape, {})
                    .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
@@ -92,7 +92,7 @@ TEST(OperandDescriptorMojomTraitsTest, NumberOfElementsTooLarge) {
   // Using int4 so that the byte length won't overflow the max size_t on 64-bit
   // platforms.
   ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
-                   webnn::OperandDataType::kInt4, shape)
+                   webnn::OperandDataType::kInt4, shape, {})
                    .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
@@ -110,7 +110,7 @@ TEST(OperandDescriptorMojomTraitsTest, ByteLengthTooLarge) {
 
   // The byte length overflows the max size_t on all platforms.
   ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
-                   webnn::OperandDataType::kInt64, shape)
+                   webnn::OperandDataType::kInt64, shape, {})
                    .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
@@ -129,7 +129,7 @@ TEST(OperandDescriptorMojomTraitsTest, ByteLengthExceedTensorSizeLimit) {
       base::checked_cast<uint32_t>(std::numeric_limits<int32_t>::max() / 4), 2};
 
   auto input = webnn::OperandDescriptor::CreateForDeserialization(
-      webnn::OperandDataType::kInt32, shape);
+      webnn::OperandDataType::kInt32, shape, {});
   ASSERT_TRUE(input.has_value());
 
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
@@ -149,6 +149,54 @@ TEST(OperandDescriptorMojomTraitsTest, DataType) {
   auto output = webnn::OperandDataType::kMinValue;
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<webnn::mojom::DataType>(
       input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, InvalidSizePendingPermutation) {
+  const std::array<uint32_t, 2> shape{1u, 2u};
+
+  const std::array<uint32_t, 1> pending_permutation{1};
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt64, shape, pending_permutation)
+                   .has_value());
+
+  auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
+      webnn::OperandDataType::kInt64, shape, pending_permutation);
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, InvalidDimensionPendingPermutation) {
+  const std::array<uint32_t, 2> shape{1u, 2u};
+
+  const std::array<uint32_t, 2> pending_permutation{3, 2};
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt64, shape, pending_permutation)
+                   .has_value());
+
+  auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
+      webnn::OperandDataType::kInt64, shape, pending_permutation);
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, SubBytePendingPermutation) {
+  const std::array<uint32_t, 2> shape{1u, 2u};
+
+  const std::array<uint32_t, 2> pending_permutation{1, 0};
+  ASSERT_FALSE(webnn::OperandDescriptor::CreateForDeserialization(
+                   webnn::OperandDataType::kInt4, shape, pending_permutation)
+                   .has_value());
+
+  auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
+      webnn::OperandDataType::kInt4, shape, pending_permutation);
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          input, output));
 }
 
 }  // namespace mojo

@@ -72,11 +72,6 @@ class CustomThemeSupplier
   // Whether this theme provides an image for |id|.
   bool HasCustomImage(int id) const override;
 
-  // Returns whether or not the default incognito colors can be used with this
-  // theme. This is a workaround for the IncreasedContrastThemeSupplier that
-  // doesn't supply all the colors it should (http://crbug.com/1045630).
-  virtual bool CanUseIncognitoColors() const;
-
   // ui::ColorProviderKey::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
                       const ui::ColorProviderKey& key) const override {

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/inference/model_execution_timeout_watchdog.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 
 namespace optimization_guide {

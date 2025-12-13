@@ -18,10 +18,7 @@ using send_tab_to_self::SendTabToSelfSyncService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildSendTabToSelfService(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-
+std::unique_ptr<KeyedService> BuildSendTabToSelfService(ProfileIOS* profile) {
   syncer::OnceDataTypeStoreFactory store_factory =
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
 
@@ -55,9 +52,9 @@ SendTabToSelfSyncService* SendTabToSelfSyncServiceFactory::GetForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+SendTabToSelfSyncServiceFactory::TestingFactory
 SendTabToSelfSyncServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildSendTabToSelfService);
+  return base::BindOnce(&BuildSendTabToSelfService);
 }
 
 SendTabToSelfSyncServiceFactory::SendTabToSelfSyncServiceFactory()
@@ -71,6 +68,6 @@ SendTabToSelfSyncServiceFactory::~SendTabToSelfSyncServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 SendTabToSelfSyncServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildSendTabToSelfService(context);
+    ProfileIOS* profile) const {
+  return BuildSendTabToSelfService(profile);
 }

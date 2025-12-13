@@ -19,14 +19,17 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
+#include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/string_data_source.h"
@@ -47,9 +50,11 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "url/gurl.h"
 
 using blink::mojom::FileSystemAccessStatus;
+using blink::mojom::PermissionStatus;
 using storage::FileSystemURL;
 
 using testing::_;
@@ -111,9 +116,9 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
 
 }  // namespace
 
-class FileSystemAccessFileWriterImplTest : public testing::Test {
+class FileSystemAccessFileWriterImplTestBase : public testing::Test {
  public:
-  FileSystemAccessFileWriterImplTest()
+  FileSystemAccessFileWriterImplTestBase()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   virtual FileSystemAccessPermissionContext* permission_context() {
@@ -150,9 +155,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
 
     return manager_->CreateFileWriter(
         kBindingContext, file_url, swap_url, std::move(lock),
-        std::move(swap_lock),
-        FileSystemAccessManagerImpl::SharedHandleState(permission_grant_,
-                                                       permission_grant_),
+        std::move(swap_lock), CreateSharedHandleState(),
         remote.InitWithNewPipeAndPassReceiver(),
         /*has_transient_user_activation=*/false,
         /*auto_close=*/false, quarantine_callback_);
@@ -393,15 +396,31 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   mojo::ReceiverSet<quarantine::mojom::Quarantine> quarantine_receivers_;
   download::QuarantineConnectionCallback quarantine_callback_;
 
-  scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
-      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          PathInfo());
+  // Creates the SharedHandleState for the file writer. Subclasses must
+  // implement this to provide the appropriate permission grants for the handle.
+  virtual FileSystemAccessManagerImpl::SharedHandleState
+  CreateSharedHandleState() = 0;
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;
 
   FileSystemAccessLockManager::LockType writable_shared_lock_type_;
+};
+
+class FileSystemAccessFileWriterImplTest
+    : public FileSystemAccessFileWriterImplTestBase {
+ protected:
+  // FileSystemAccessFileWriterImplTestBase overrides:
+  FileSystemAccessManagerImpl::SharedHandleState CreateSharedHandleState()
+      override {
+    return {permission_grant_, permission_grant_};
+  }
+
+ private:
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo());
 };
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
@@ -582,15 +601,27 @@ TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
 }
 
 class FileSystemAccessFileWriterAfterWriteChecksTest
-    : public FileSystemAccessFileWriterImplTest {
+    : public FileSystemAccessFileWriterImplTestBase {
  public:
   FileSystemAccessPermissionContext* permission_context() override {
     return &permission_context_;
   }
 
  protected:
+  // FileSystemAccessFileWriterImplTestBase overrides:
+  FileSystemAccessManagerImpl::SharedHandleState CreateSharedHandleState()
+      override {
+    return {permission_grant_, permission_grant_};
+  }
+
   testing::StrictMock<MockFileSystemAccessPermissionContext>
       permission_context_;
+
+ private:
+  scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
+      base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+          PathInfo());
 };
 
 TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
@@ -619,6 +650,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
           kFrameId, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           FileSystemAccessPermissionContext::AfterWriteCheckResult::kAllow));
+  EXPECT_CALL(permission_context_, NotifyEntryModified(_, _)).Times(1);
 
   result = CloseSync();
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
@@ -664,12 +696,12 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
-      }));
+      });
+  EXPECT_CALL(permission_context_, NotifyEntryModified(_, _)).Times(1);
 
   handle_->Close(base::DoNothing());
   loop.Run();
@@ -706,12 +738,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         loop.Quit();
-      }));
+      });
 
   handle_->Close(base::DoNothing());
   loop.Run();
@@ -770,12 +801,11 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   SBCallback sb_callback;
   base::RunLoop sb_loop;
   EXPECT_CALL(permission_context_, PerformAfterWriteChecks_)
-      .WillOnce(testing::Invoke([&](FileSystemAccessWriteItem* item,
-                                    GlobalRenderFrameHostId frame_id,
-                                    SBCallback& callback) {
+      .WillOnce([&](FileSystemAccessWriteItem* item,
+                    GlobalRenderFrameHostId frame_id, SBCallback& callback) {
         sb_callback = std::move(callback);
         sb_loop.Quit();
-      }));
+      });
 
   handle_->Close(base::DoNothing());
   sb_loop.Run();
@@ -805,5 +835,163 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   // Destination file should also have been quarantined.
   EXPECT_TRUE(base::Contains(quarantine_.paths, test_file_url_.path()));
 }
+
+struct WriteModeTestParams {
+  const char* test_name_suffix;
+  bool is_feature_enabled;
+};
+
+constexpr WriteModeTestParams kTestParams[] = {
+    {"WriteModeDisabled", false},
+    {"WriteModeEnabled", true},
+};
+
+class FileSystemAccessFileWriterImplPermissionTest
+    : public FileSystemAccessFileWriterImplTestBase,
+      public testing::WithParamInterface<WriteModeTestParams> {
+ public:
+  FileSystemAccessFileWriterImplPermissionTest() {
+    if (GetParam().is_feature_enabled) {
+      scoped_feature_list_.InitWithFeatures(
+          {blink::features::kFileSystemAccessWriteMode,
+           blink::features::kFileSystemAccessRevokeReadOnRemove},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {blink::features::kFileSystemAccessWriteMode,
+               blink::features::kFileSystemAccessRevokeReadOnRemove});
+    }
+  }
+
+  void SetUp() override {
+    // These two must be initialized first as they will be referenced in parent
+    // by virtual functions.
+    mock_read_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+    mock_write_grant_ = base::MakeRefCounted<
+        testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
+
+    FileSystemAccessFileWriterImplTestBase::SetUp();
+  }
+
+ protected:
+  // FileSystemAccessFileWriterImplTestBase overrides:
+  FileSystemAccessManagerImpl::SharedHandleState CreateSharedHandleState()
+      override {
+    return {mock_read_grant_, mock_write_grant_};
+  }
+
+  // Sets up expectations for a call to `RequestPermission()` on a mock grant.
+  void SetUpGrantExpectations(
+      testing::StrictMock<MockFileSystemAccessPermissionGrant>& grant,
+      PermissionStatus new_status,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome outcome) {
+    EXPECT_CALL(grant, GetStatus())
+        .WillRepeatedly(testing::Return(PermissionStatus::ASK));
+    EXPECT_CALL(
+        grant,
+        RequestPermission_(
+            kFrameId,
+            FileSystemAccessPermissionGrant::UserActivationState::kRequired, _))
+        .WillOnce(
+            testing::DoAll(testing::InvokeWithoutArgs([&grant, new_status]() {
+                             EXPECT_CALL(grant, GetStatus())
+                                 .WillRepeatedly(testing::Return(new_status));
+                           }),
+                           base::test::RunOnceCallback<2>(outcome)));
+  }
+
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_read_grant_;
+  scoped_refptr<testing::StrictMock<MockFileSystemAccessPermissionGrant>>
+      mock_write_grant_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that `Write()` requests the correct permissions. When
+// `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessFileWriterImplPermissionTest,
+       Write_RequestsCorrectPermissions) {
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  uint64_t bytes_written;
+  std::string test_data("foo");
+  EXPECT_EQ(WriteStreamSync(0, CreateStream(test_data), &bytes_written),
+            FileSystemAccessStatus::kOk);
+  EXPECT_EQ(bytes_written, test_data.size());
+}
+
+// Verifies that `Truncate()` requests the correct permissions. When
+// `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessFileWriterImplPermissionTest,
+       Truncate_RequestsCorrectPermissions) {
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_EQ(TruncateSync(0), FileSystemAccessStatus::kOk);
+}
+
+// Verifies that `Close()` requests the correct permissions. When
+// `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessFileWriterImplPermissionTest,
+       Close_RequestsCorrectPermissions) {
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_EQ(CloseSync(), FileSystemAccessStatus::kOk);
+}
+
+// Verifies that `Abort()` requests the correct permissions. When
+// `kFileSystemAccessWriteMode` is
+// - disabled: it should request both read and write permissions.
+// - enabled: it should only request write permission.
+TEST_P(FileSystemAccessFileWriterImplPermissionTest,
+       Abort_RequestsCorrectPermissions) {
+  if (!GetParam().is_feature_enabled) {
+    SetUpGrantExpectations(*mock_read_grant_, PermissionStatus::GRANTED,
+                           FileSystemAccessPermissionGrant::
+                               PermissionRequestOutcome::kUserGranted);
+  }
+  SetUpGrantExpectations(
+      *mock_write_grant_, PermissionStatus::GRANTED,
+      FileSystemAccessPermissionGrant::PermissionRequestOutcome::kUserGranted);
+
+  EXPECT_EQ(AbortSync(), FileSystemAccessStatus::kOk);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FileSystemAccessFileWriterImplPermissionTest,
+    testing::ValuesIn(kTestParams),
+    [](const testing::TestParamInfo<WriteModeTestParams>& info) {
+      return info.param.test_name_suffix;
+    });
 
 }  // namespace content

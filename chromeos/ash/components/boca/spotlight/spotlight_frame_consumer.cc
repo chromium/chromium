@@ -38,7 +38,7 @@ SpotlightFrameConsumer::~SpotlightFrameConsumer() = default;
 
 std::unique_ptr<webrtc::DesktopFrame> SpotlightFrameConsumer::AllocateFrame(
     const webrtc::DesktopSize& size) {
-  return std::make_unique<webrtc::BasicDesktopFrame>(size);
+  return std::make_unique<webrtc::BasicDesktopFrame>(size, webrtc::FOURCC_ARGB);
 }
 
 void SpotlightFrameConsumer::DrawFrame(

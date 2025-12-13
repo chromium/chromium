@@ -7,13 +7,16 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 
 namespace installer_downloader {
 
 InstallerDownloaderActiveBrowserWindowTracker::
     InstallerDownloaderActiveBrowserWindowTracker() {
   BrowserList::GetInstance()->AddObserver(this);
-  MaybeUpdateLastActiveWindow(BrowserList::GetInstance()->GetLastActive());
+  MaybeUpdateLastActiveWindow(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
 InstallerDownloaderActiveBrowserWindowTracker::
@@ -49,21 +52,21 @@ void InstallerDownloaderActiveBrowserWindowTracker::OnBrowserRemoved(
     return;
   }
 
-  MaybeUpdateLastActiveWindow(BrowserList::GetInstance()->GetLastActive());
+  MaybeUpdateLastActiveWindow(
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
 
 void InstallerDownloaderActiveBrowserWindowTracker::MaybeUpdateLastActiveWindow(
-    Browser* browser) {
-  BrowserWindowInterface* last_active_window =
-      browser && browser->is_type_normal()
-          ? static_cast<BrowserWindowInterface*>(browser)
-          : nullptr;
+    BrowserWindowInterface* bwi) {
+  if (bwi && bwi->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    bwi = nullptr;
+  }
 
-  if (last_active_window == last_active_window_) {
+  if (last_active_window_ == bwi) {
     return;
   }
 
-  last_active_window_ = last_active_window;
+  last_active_window_ = bwi;
   active_window_change_callbacks_.Notify(last_active_window_);
 }
 

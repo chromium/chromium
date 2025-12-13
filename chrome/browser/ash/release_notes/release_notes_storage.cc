@@ -11,9 +11,9 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -60,7 +60,7 @@ bool IsEligibleProfile(Profile* profile) {
 }
 
 bool ShouldShowForCurrentChannel() {
-  return chrome::GetChannel() == version_info::Channel::STABLE ||
+  return ash::GetChannel() == version_info::Channel::STABLE ||
          base::FeatureList::IsEnabled(
              ash::features::kReleaseNotesNotificationAllChannels);
 }

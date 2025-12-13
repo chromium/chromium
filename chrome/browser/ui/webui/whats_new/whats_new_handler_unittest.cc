@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new.mojom.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
@@ -114,13 +115,12 @@ TEST_F(WhatsNewHandlerTest, GetServerUrl) {
   base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
 
   const GURL expected_url = GURL(base::StringPrintf(
-      "https://www.google.com/chrome/v2/whats-new/?version=%d&internal=true",
+      "https://www.google.com/chrome/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR));
 
-  EXPECT_CALL(callback, Run)
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&](GURL actual_url) { EXPECT_EQ(actual_url, expected_url); }));
+  EXPECT_CALL(callback, Run).Times(1).WillOnce([&](GURL actual_url) {
+    EXPECT_EQ(actual_url, expected_url);
+  });
 
   handler_->GetServerUrl(false, callback.Get());
   mock_page_.FlushForTesting();
@@ -280,6 +280,56 @@ TEST_F(WhatsNewHandlerTest, SurveyIsNotTriggeredForPreviouslyUsedEdition) {
   EXPECT_CALL(*mock_hats_service(),
               LaunchDelayedSurveyForWebContents(kHatsSurveyTriggerWhatsNew, _,
                                                 _, _, _, _, _, _, _, _))
+      .Times(1);
+
+  handler_->GetServerUrl(false, callback.Get());
+  mock_page_.FlushForTesting();
+}
+
+class WhatsNewRefreshHandlerTest : public WhatsNewHandlerTest {
+ public:
+  WhatsNewRefreshHandlerTest() = default;
+  ~WhatsNewRefreshHandlerTest() override = default;
+
+  void SetUp() override {
+    WhatsNewHandlerTest::SetUp();
+    features_.InitWithFeaturesAndParameters(
+        {base::test::FeatureRefAndParams(
+             features::kHappinessTrackingSurveysForDesktopWhatsNew,
+             {{"whats-new-time", "20s"}}),
+         {features::kWhatsNewDesktopRefresh,
+          {{"en_site_id", survey_override_id_}}}},
+        {});
+  }
+
+ protected:
+  const std::string survey_override_id_ = "my-survey-id";
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_F(WhatsNewRefreshHandlerTest, GetServerUrl) {
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+
+  const GURL expected_url =
+      GURL(base::StringPrintf("https://www.google.com/chrome/wn-2025/whats-new/"
+                              "?version=%d&internal=true",
+                              CHROME_VERSION_MAJOR));
+
+  EXPECT_CALL(callback, Run).Times(1).WillOnce([&](GURL actual_url) {
+    EXPECT_EQ(actual_url, expected_url);
+  });
+
+  handler_->GetServerUrl(false, callback.Get());
+  mock_page_.FlushForTesting();
+}
+
+TEST_F(WhatsNewRefreshHandlerTest, SurveyIsTriggered) {
+  base::MockCallback<WhatsNewHandler::GetServerUrlCallback> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  EXPECT_CALL(*mock_hats_service(),
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerWhatsNew, _, _, _, _, _, _, _,
+                  std::optional<std::string>(survey_override_id_), _))
       .Times(1);
 
   handler_->GetServerUrl(false, callback.Get());

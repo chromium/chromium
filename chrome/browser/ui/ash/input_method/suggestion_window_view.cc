@@ -79,10 +79,10 @@ SuggestionWindowView* SuggestionWindowView::Create(gfx::NativeView parent,
   return view;
 }
 
-std::unique_ptr<views::NonClientFrameView>
-SuggestionWindowView::CreateNonClientFrameView(views::Widget* widget) {
-  std::unique_ptr<views::NonClientFrameView> frame =
-      views::BubbleDialogDelegateView::CreateNonClientFrameView(widget);
+std::unique_ptr<views::FrameView> SuggestionWindowView::CreateFrameView(
+    views::Widget* widget) {
+  std::unique_ptr<views::FrameView> frame =
+      views::BubbleDialogDelegateView::CreateFrameView(widget);
   static_cast<views::BubbleFrameView*>(frame.get())
       ->SetBubbleBorder(GetBorderForWindow(WindowBorderType::Suggestion));
   return frame;
@@ -113,9 +113,7 @@ void SuggestionWindowView::ShowMultipleCandidates(
   Reorient(orientation, /*extra_padding_on_right=*/
            properties.type !=
                ash::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion);
-  ResizeCandidateArea(
-      candidates,
-      properties.type == ash::ime::AssistiveWindowType::kEmojiSuggestion);
+  ResizeCandidateArea(candidates);
   learn_more_button_->SetVisible(properties.show_setting_link);
   type_ = properties.type;
   // Ensure colours are correct.
@@ -260,8 +258,7 @@ raw_ptr<views::ImageButton> SuggestionWindowView::getLearnMoreButton() {
 }
 
 void SuggestionWindowView::ResizeCandidateArea(
-    const std::vector<std::u16string>& new_candidates,
-    bool use_legacy_candidate) {
+    const std::vector<std::u16string>& new_candidates) {
   const views::View::Views& candidates = multiple_candidate_area_->children();
   while (candidates.size()) {
     subscriptions_.erase(
@@ -278,8 +275,7 @@ void SuggestionWindowView::ResizeCandidateArea(
                                       .suggestion_index = index}),
             /* candidate_text=*/new_candidates[index],
             // Label indexes start from "1", hence we increment index by one.
-            /* index_text=*/base::FormatNumber(index + 1),
-            use_legacy_candidate));
+            /* index_text=*/base::FormatNumber(index + 1)));
     // TODO(crbug.com/40232718): See View::SetLayoutManagerUseConstrainedSpace.
     candidate->SetLayoutManagerUseConstrainedSpace(false);
 

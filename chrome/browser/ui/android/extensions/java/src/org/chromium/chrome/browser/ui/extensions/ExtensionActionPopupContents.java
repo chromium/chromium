@@ -12,7 +12,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -50,8 +50,10 @@ public class ExtensionActionPopupContents implements Destroyable {
     }
 
     /** Creates an {@link ExtensionActionPopupContents} instance. */
-    public static ExtensionActionPopupContents create(Profile profile, String actionId, int tabId) {
-        return ExtensionActionPopupContentsJni.get().create(profile, actionId, tabId);
+    public static ExtensionActionPopupContents create(
+            ChromeAndroidTask task, String actionId, int tabId) {
+        return ExtensionActionPopupContentsJni.get()
+                .create(task.getOrCreateNativeBrowserWindowPtr(), actionId, tabId);
     }
 
     /**
@@ -108,15 +110,29 @@ public class ExtensionActionPopupContents implements Destroyable {
         }
     }
 
+    @CalledByNative
+    private void onClose() {
+        if (mDelegate != null) {
+            mDelegate.onClose();
+        }
+    }
+
     /**
      * Interface for receiving UI-related callbacks from an {@link ExtensionActionPopupContents}.
      *
      * <p>This allows embedders or UI coordinators to react to events like content resizing.
      */
     public interface Delegate {
+        /** Called when the renderer requested to resize the window to fit the content size. */
         void resizeDueToAutoResize(int width, int height);
 
+        /** Called when it finished loading the initial page. */
         void onLoaded();
+
+        /**
+         * Called when the popup is requested to close programmatically (e.g. by window.close()).
+         */
+        void onClose();
     }
 
     @NativeMethods
@@ -124,15 +140,13 @@ public class ExtensionActionPopupContents implements Destroyable {
         /**
          * Creates the native ExtensionActionPopupContents object and returns its Java peer.
          *
-         * @param profile The {@link Profile} associated with the extension.
+         * @param androidBrowserWindowPtr The address of a native {@code BrowserWindowInterface}.
          * @param actionId The ID of the extension action.
          * @param tabId The ID of the tab context.
          * @return The Java {@link ExtensionActionPopupContents} object, or {@code null} on failure.
          */
         ExtensionActionPopupContents create(
-                @JniType("Profile*") Profile profile,
-                @JniType("std::string") String actionId,
-                int tabId);
+                long androidBrowserWindowPtr, @JniType("std::string") String actionId, int tabId);
 
         /**
          * Destroys the native ExtensionActionPopupContents object.

@@ -7,8 +7,12 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
@@ -39,6 +43,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeExpirationMonth,
   ItemTypeExpirationYear,
   ItemTypeCardNickname,
+  ItemTypeCardCvc,
+  ItemTypeUseCameraButton,
 };
 
 }  // namespace
@@ -66,6 +72,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // The user provided nickname for the credit card.
   NSString* _cardNickname;
+
+  // The card CVC in the UI.
+  NSString* _cardCvc;
 }
 
 - (instancetype)initWithDelegate:
@@ -114,8 +123,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateCreditCardData];
 
   BOOL hasUserInput = _cardHolderName.length || _cardNumber.length ||
-                      _expirationMonth.length || _expirationYear.length ||
-                      _cardNickname.length;
+                      _cardCvc.length || _expirationMonth.length ||
+                      _expirationYear.length || _cardNickname.length;
 
   return hasUserInput;
 }
@@ -134,6 +143,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillCreditCardEditItem* cardNumberItem = [self cardNumberItem];
   AutofillCreditCardEditItem* expirationMonthItem = [self expirationMonthItem];
   AutofillCreditCardEditItem* expirationYearItem = [self expirationYearItem];
+  AutofillCreditCardEditItem* cardCvcItem = [self cardCvcItem];
 
   [model addSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   [model addItem:cardNumberItem
@@ -146,6 +156,48 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
   [model addItem:[self cardNicknameItem]
       toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
+    [model addItem:cardCvcItem
+        toSectionWithIdentifier:SectionIdentifierCreditCardDetails];
+  }
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCreditCardScannerIos)) {
+    TableViewTextItem* cameraButtonItem =
+        [[TableViewTextItem alloc] initWithType:ItemTypeUseCameraButton];
+    cameraButtonItem.textColor = [UIColor colorNamed:kBlueColor];
+    cameraButtonItem.text = l10n_util::GetNSString(
+        IDS_IOS_AUTOFILL_ADD_CREDIT_CARD_OPEN_CAMERA_BUTTON_LABEL);
+    cameraButtonItem.accessibilityTraits |= UIAccessibilityTraitButton;
+
+    [model addSectionWithIdentifier:SectionIdentifierCameraButton];
+    [model addItem:cameraButtonItem
+        toSectionWithIdentifier:SectionIdentifierCameraButton];
+  }
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+          ItemTypeUseCameraButton &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillCreditCardScannerIos)) {
+    [self.presentationDelegate
+        addCreditCardViewControllerRequestedCameraScan:self];
+  }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (NSIndexPath*)tableView:(UITableView*)tableView
+    willSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypeUseCameraButton) {
+    return indexPath;
+  }
+  return [super tableView:tableView willSelectRowAtIndexPath:indexPath];
 }
 
 #pragma mark - TableViewTextEditItemDelegate
@@ -163,12 +215,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // the user types a character that makes the form valid/invalid.
   [self updateCreditCardData];
 
+  BOOL isValid = [self isItemValid:tableViewTextEditItem];
+
+  // Update Accessibility Label.
+  NSString* error =
+      isValid ? nil : [self errorMessageForItem:tableViewTextEditItem];
+  [AutofillSettingsUtil updateAccessibilityLabelForItem:tableViewTextEditItem
+                                           isInputValid:isValid
+                                           errorMessage:error];
+
   self.navigationItem.rightBarButtonItem.enabled =
       [_delegate addCreditCardViewController:self
                      isValidCreditCardNumber:_cardNumber
                              expirationMonth:_expirationMonth
                               expirationYear:_expirationYear
-                                cardNickname:_cardNickname];
+                                cardNickname:_cardNickname
+                                     cardCvc:_cardCvc];
 
   [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
 }
@@ -182,35 +244,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Considers a textfield to be valid if it has no data.
   if (tableViewTextEditItem.textFieldValue.length == 0) {
     tableViewTextEditItem.hasValidText = YES;
+    tableViewTextEditItem.cellAccessibilityLabel = nil;
     [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
     return;
   }
 
-  switch (tableViewTextEditItem.type) {
-    case ItemTypeCardNumber:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                         isValidCreditCardNumber:_cardNumber];
-      break;
-    case ItemTypeExpirationMonth:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                isValidCreditCardExpirationMonth:_expirationMonth];
-      break;
-    case ItemTypeExpirationYear:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                 isValidCreditCardExpirationYear:_expirationYear];
-      break;
-    case ItemTypeCardNickname:
-      tableViewTextEditItem.hasValidText =
-          [_delegate addCreditCardViewController:self
-                             isValidCardNickname:_cardNickname];
-      break;
-    default:
-      // For the 'Name on card' textfield.
-      tableViewTextEditItem.hasValidText = YES;
-  }
+  BOOL isValid = [self isItemValid:tableViewTextEditItem];
+
+  // Update Visual State
+  tableViewTextEditItem.hasValidText = isValid;
+
+  // Update Accessibility Label
+  NSString* error =
+      isValid ? nil : [self errorMessageForItem:tableViewTextEditItem];
+  [AutofillSettingsUtil updateAccessibilityLabelForItem:tableViewTextEditItem
+                                           isInputValid:isValid
+                                           errorMessage:error];
+
   [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
 }
 
@@ -232,6 +282,30 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+#pragma mark - CreditCardScannerConsumer
+
+- (void)setCreditCardNumber:(NSString*)cardNumber
+            expirationMonth:(NSString*)expirationMonth
+             expirationYear:(NSString*)expirationYear {
+  if (cardNumber) {
+    [self updateCellForItemType:ItemTypeCardNumber
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:cardNumber];
+  }
+
+  if (expirationMonth) {
+    [self updateCellForItemType:ItemTypeExpirationMonth
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:expirationMonth];
+  }
+
+  if (expirationYear) {
+    [self updateCellForItemType:ItemTypeExpirationYear
+            inSectionIdentifier:SectionIdentifierCreditCardDetails
+                       withText:expirationYear];
+  }
+}
+
 #pragma mark - AutofillEditTableViewController
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
@@ -242,7 +316,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeExpirationMonth:
     case ItemTypeExpirationYear:
     case ItemTypeCardNickname:
+    case ItemTypeCardCvc:
       return YES;
+    case ItemTypeUseCameraButton:
+      return NO;
   }
   NOTREACHED();
 }
@@ -257,7 +334,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                               cardNumber:_cardNumber
                          expirationMonth:_expirationMonth
                           expirationYear:_expirationYear
-                            cardNickname:_cardNickname];
+                            cardNickname:_cardNickname
+                                 cardCvc:_cardCvc];
 }
 
 // Updates credit card data properties with the text in TableView cells.
@@ -280,6 +358,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _cardNickname =
       [self readTextFromItemtype:ItemTypeCardNickname
                sectionIdentifier:SectionIdentifierCreditCardDetails];
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCvcStorageAndFilling)) {
+    _cardCvc = [self readTextFromItemtype:ItemTypeCardCvc
+                        sectionIdentifier:SectionIdentifierCreditCardDetails];
+  }
 }
 
 // Reads and returns the data from the item with passed `itemType` and
@@ -307,8 +391,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   AutofillCreditCardEditItem* item =
       base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(
           [self.tableViewModel itemAtIndexPath:path]);
-  item.textFieldValue = text;
-  [self reconfigureCellsForItems:@[ item ]];
+  [item updateTextFieldValue:text];
 }
 
 // Dimisses this view controller when Cancel button is tapped.
@@ -404,8 +487,55 @@ typedef NS_ENUM(NSInteger, ItemType) {
                        l10n_util::GetNSString(
                            IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME)
                            keyboardType:UIKeyboardTypeDefault
-               autofillCreditCardUIType:AutofillCreditCardUIType::kUnknown];
+               autofillCreditCardUIType:AutofillCreditCardUIType::kNickname];
   return cardNicknameItem;
 }
 
+- (AutofillCreditCardEditItem*)cardCvcItem {
+  AutofillCreditCardEditItem* cardCvcItem = [self
+      createTableViewItemWithType:ItemTypeCardCvc
+               fieldNameLabelText:l10n_util::GetNSString(
+                                      IDS_IOS_AUTOFILL_SECURITY_CODE)
+                   textFieldValue:_cardCvc
+             textFieldPlaceholder:
+                 l10n_util::GetNSString(
+                     IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)
+                     keyboardType:UIKeyboardTypeNumberPad
+         autofillCreditCardUIType:AutofillCreditCardUIType::kSecurityCode];
+  return cardCvcItem;
+}
+
+#pragma mark - Private Helpers
+
+// Helper to get the localized error message for the item type.
+- (NSString*)errorMessageForItem:(TableViewTextEditItem*)item {
+  AutofillCreditCardEditItem* editItem =
+      base::apple::ObjCCastStrict<AutofillCreditCardEditItem>(item);
+
+  return [AutofillSettingsUtil
+      errorMessageForUIType:editItem.autofillCreditCardUIType];
+}
+
+// Helper to check if the text entered in the item is valid.
+- (BOOL)isItemValid:(TableViewTextEditItem*)item {
+  switch (item.type) {
+    case ItemTypeCardNumber:
+      return [_delegate addCreditCardViewController:self
+                            isValidCreditCardNumber:_cardNumber];
+    case ItemTypeExpirationMonth:
+      return [_delegate addCreditCardViewController:self
+                   isValidCreditCardExpirationMonth:_expirationMonth];
+    case ItemTypeExpirationYear:
+      return [_delegate addCreditCardViewController:self
+                    isValidCreditCardExpirationYear:_expirationYear];
+    case ItemTypeCardNickname:
+      return [_delegate addCreditCardViewController:self
+                                isValidCardNickname:_cardNickname];
+    case ItemTypeCardCvc:
+      return [_delegate addCreditCardViewController:self
+                                     isValidCardCvc:_cardCvc];
+    default:
+      return YES;
+  }
+}
 @end

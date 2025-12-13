@@ -181,8 +181,8 @@ class VideoWakeLockTest : public testing::Test {
 
     GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
         mojom::blink::PictureInPictureService::Name_,
-        WTF::BindRepeating(&VideoWakeLockPictureInPictureService::Bind,
-                           WTF::Unretained(&pip_service_)));
+        BindRepeating(&VideoWakeLockPictureInPictureService::Bind,
+                      Unretained(&pip_service_)));
 
     fake_layer_ = cc::Layer::Create();
 

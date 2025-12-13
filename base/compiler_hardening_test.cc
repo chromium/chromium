@@ -8,11 +8,6 @@
 
 namespace {
 
-// TODO(crbug.com/386992829): differentiate `-fsanitize=array-bounds`
-// from a full-on UBSan build, and remove this particular gating
-// pattern.
-#if __has_feature(undefined_behavior_sanitizer)
-
 template <typename T>
 void DoNotOptimize(T t) {
   // Ensure the compiler does not optimize the access out before the hardening
@@ -52,7 +47,5 @@ TEST(CompilerHardeningDeathTest, ArrayOutOfBounds) {
   EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(a[idx] = 0), "");
   EXPECT_DEATH_IF_SUPPORTED(UNSAFE_BUFFERS(b[idx] = 0), "");
 }
-
-#endif  // !__has_feature(undefined_behavior_sanitizer)
 
 }  // namespace

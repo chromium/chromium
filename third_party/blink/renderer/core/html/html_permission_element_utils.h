@@ -14,6 +14,14 @@ namespace blink {
 
 class HTMLPermissionElementUtils {
  public:
+  // Returns a calculation expression node that represents the given length
+  // bounded by the given lower and upper bounds using clamp/min/max based on
+  // which bounds are specified.
+  static const CalculationExpressionNode* BuildLengthBoundExpr(
+      const Length& length,
+      const CalculationExpressionNode* lower_bound_expr,
+      const CalculationExpressionNode* upper_bound_expr);
+
   // Returns an adjusted bounded length that takes in the site-provided length
   // and creates an expression-type length that is bounded on upper or lower
   // sides by the provided bounds. The expression uses min|max|clamp depending

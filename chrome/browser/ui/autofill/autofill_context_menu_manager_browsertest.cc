@@ -47,15 +47,16 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/plus_addresses/blocked_facets.pb.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_blocklist_data.h"
-#include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
-#include "components/plus_addresses/plus_address_types.h"
+#include "components/plus_addresses/core/browser/blocked_facets.pb.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_blocklist_data.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#include "components/plus_addresses/core/browser/plus_address_types.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
@@ -500,12 +501,19 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(PasswordManualFallbackTest,
                        SelectPasswordTriggersSuggestions) {
-  // Faking the pref value so that the context menu believes the user has
-  // passwords saved.
-  password_manager_client()->GetPrefs()->SetBoolean(
-      password_manager::prefs::
-          kAutofillableCredentialsProfileStoreLoginDatabase,
-      true);
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordStoreWaiter add_waiter(password_store);
+  password_manager::PasswordForm existing_form;
+  existing_form.username_value = u"username";
+  existing_form.password_value = u"password";
+  existing_form.signon_realm = "http://test.com";
+  existing_form.url = GURL(existing_form.signon_realm);
+  password_store->AddLogin(existing_form);
+  add_waiter.WaitOrReturn();
+
   autofill_context_menu_manager()->AppendItems();
 
   EXPECT_CALL(
@@ -668,26 +676,9 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
         break;
     }
 
-    const std::string pref =
-        use_profile_store()
-            ? password_manager::prefs::
-                  kAutofillableCredentialsProfileStoreLoginDatabase
-            : password_manager::prefs::
-                  kAutofillableCredentialsAccountStoreLoginDatabase;
-
-    if (!has_autofillable_credentials()) {
-      // `base::test::RunUntil()` can detect whether a change in the prefs
-      // occur, but cannot detect anything if the prefs don't change. The pref
-      // is set to `true`, because it is expected to turn to `false` when
-      // `PasswordStoreInterface::AddLogin()` is called.
-      password_manager_client()->GetPrefs()->SetBoolean(pref, true);
-    }
-
+    password_manager::PasswordStoreWaiter add_waiter(password_store);
     password_store->AddLogin(password_form);
-    ASSERT_TRUE(base::test::RunUntil([&]() {
-      return password_manager_client()->GetPrefs()->GetBoolean(pref) ==
-             has_autofillable_credentials();
-    })) << "Adding the login timed out.";
+    add_waiter.WaitOrReturn();
   }
 
   // If false, then use account store.
@@ -837,12 +828,19 @@ class SelectPasswordFallbackMetricsTest
  public:
   void SetUpOnMainThread() override {
     BaseAutofillContextMenuManagerTest::SetUpOnMainThread();
-    // Faking the pref value so that the context menu believes the user has
-    // passwords saved.
-    password_manager_client()->GetPrefs()->SetBoolean(
-        password_manager::prefs::
-            kAutofillableCredentialsProfileStoreLoginDatabase,
-        true);
+    // Add a saved password so the manual fallback option shows.
+    password_manager::PasswordStoreInterface* password_store =
+        ProfilePasswordStoreFactory::GetForProfile(
+            browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+            .get();
+    password_manager::PasswordStoreWaiter add_waiter(password_store);
+    password_manager::PasswordForm form;
+    form.username_value = u"username";
+    form.password_value = u"password";
+    form.signon_realm = "http://example.com";
+    form.url = GURL(form.signon_realm);
+    password_store->AddLogin(form);
+    add_waiter.WaitOrReturn();
   }
 
   // Returns the expected metric that should be emitted depending on the

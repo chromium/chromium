@@ -22,3 +22,5 @@ void DumpstateWriter::AddDumpValue(const std::string& name,
 }
 
 }  // namespace chromecast
+
+DEFINE_JNI(DumpstateWriter)

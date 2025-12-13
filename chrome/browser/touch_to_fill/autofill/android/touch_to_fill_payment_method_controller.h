@@ -6,13 +6,21 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_PAYMENT_METHOD_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_controller.h"
 
 namespace autofill {
 
+namespace payments {
+struct BnplIssuerContext;
+struct BnplTosModel;
+}  // namespace payments
+
+class BnplIssuer;
 class ContentAutofillClient;
 class Iban;
 class LoyaltyCard;
@@ -35,7 +43,7 @@ class TouchToFillPaymentMethodController
   // field determines which card suggestions should be disabled and grayed out
   // for the current merchant. Returns whether the surface was successfully
   // shown.
-  virtual bool ShowCreditCards(
+  virtual bool ShowPaymentMethods(
       std::unique_ptr<TouchToFillPaymentMethodView> view,
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const Suggestion> suggestions) = 0;
@@ -58,8 +66,72 @@ class TouchToFillPaymentMethodController
       base::span<const LoyaltyCard> all_loyalty_cards,
       bool first_time_usage) = 0;
 
+  // If the user is on the credit card suggestion screen and amount extraction
+  // is completed, this updates the BNPL payment method option on the Touch To
+  // Fill suggestion view. If the `extracted_amount` is null, the option is
+  // grayed out and its message text is updated to inform users that the
+  // purchase is not available. If the amount is present but not supported by
+  // any issuer, the UI is updated with a grayed out BNPL option. If the amount
+  // is available and supported by at least one issuer, it is set to continue
+  // the flow. If the user clicks on the BNPL suggestion before amount
+  // extraction is completed, the user is shown the progress screen. If amount
+  // extraction then returns with a valid amount, the progress screen is
+  // updated with the issuer selection screen. If the amount is not null but
+  // not supported by any issuer, the selection screen is shown with grayed out
+  // issuers, and when the user returns to the home screen, the BNPL suggestion
+  // is grayed out as well. If the amount is null, an error screen is shown.
+  virtual bool OnPurchaseAmountExtracted(
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      std::optional<int64_t> extracted_amount,
+      bool is_amount_supported_by_any_issuer,
+      const std::optional<std::string>& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
+
+  // Shows the Touch To Fill progress screen. If the TTF surface is already
+  // being shown when this is called, `view` is optional and will override the
+  // existing view when present. Otherwise, if the TTF surface is not already
+  // being shown, `view` is required. `cancel_callback` will be run if the
+  // screen is dismissed by the user. Returns whether the surface was
+  // successfully shown.
+  virtual bool ShowProgressScreen(
+      std::unique_ptr<TouchToFillPaymentMethodView> view,
+      base::OnceClosure cancel_callback) = 0;
+
+  // Shows the Touch To Fill BNPL issuer selection screen.
+  // `bnpl_issuer_contexts` provides a read-only list of BNPL issuer contexts
+  // to be shown. `app_locale` provides the application's current language and
+  // region code for localization. `selected_issuer_callback` provides a
+  // one-time callback to be invoked when an issuer is selected.
+  // `cancel_callback` provides a one-time callback to be invoked to reset the
+  // BNPL flow. Returns whether the surface was successfully shown.
+  virtual bool ShowBnplIssuers(
+      base::span<const payments::BnplIssuerContext> bnpl_issuer_contexts,
+      const std::string& app_locale,
+      base::OnceCallback<void(BnplIssuer)> selected_issuer_callback,
+      base::OnceClosure cancel_callback) = 0;
+
+  // Shows the Touch To Fill error screen. If the TTF surface is already being
+  // shown when this is called, `view` is optional and will override the
+  // existing view when present. Otherwise, if the TTF surface is not already
+  // being shown, `view` is required. `title` and `description` are displayed on
+  // the screen. Returns whether the surface was successfully shown.
+  virtual bool ShowErrorScreen(
+      std::unique_ptr<TouchToFillPaymentMethodView> view,
+      const std::u16string& title,
+      const std::u16string& description) = 0;
+
+  // Shows the Touch To Fill BNPL issuer Terms of Service screen. Returns
+  // whether the surface was successfully shown.
+  virtual bool ShowBnplIssuerTos(payments::BnplTosModel bnpl_tos_model,
+                                 base::OnceClosure accept_callback,
+                                 base::OnceClosure cancel_callback) = 0;
+
   // Hides the surface if it is currently shown.
   virtual void Hide() = 0;
+
+  // Sets the surface visibility to `visible`.
+  virtual void SetVisible(bool visible) = 0;
 };
 
 }  // namespace autofill

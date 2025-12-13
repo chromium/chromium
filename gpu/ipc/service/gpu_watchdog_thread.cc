@@ -2,20 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -37,6 +32,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_crash_keys.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/result_codes.h"
 
@@ -47,6 +43,15 @@
 namespace gpu {
 
 base::TimeDelta GetGpuWatchdogTimeout(bool software_rendering) {
+  if (base::FeatureList::IsEnabled(features::kConfigurableGPUWatchdogTimeout)) {
+    int seconds = features::kConfigurableGPUWatchdogTimeoutSeconds.Get();
+    if (seconds > 0) {
+      return base::Seconds(seconds);
+    }
+    LOG(WARNING) << "Invalid GPU watchdog timeout seconds: " << seconds
+                 << ". Using default timeout.";
+  }
+
   std::string timeout_str =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kGpuWatchdogTimeoutSeconds);
@@ -274,7 +279,6 @@ void GpuWatchdogThread::CleanUp() {
 }
 
 void GpuWatchdogThread::ReportProgress() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
   InProgress();
 }
 
@@ -416,13 +420,20 @@ void GpuWatchdogThread::UpdateInitializationFlag() {
   in_gpu_initialization_ = false;
 }
 
-// Called from the watched gpu thread.
+// Note on the atomic operations on `arm_disarm_counter_`:
+// We use `std::memory_order_relaxed` for the atomic operations. This is safe
+// because for the increments we only care about atomicity - this is similar to
+// the usual atomic ref counting patterns. And for reads we only care about
+// consistency since we only use it for detecting hangs - it's not critical if
+// there's a race between arming/disarming and reading.
+//
+// Arm() and Disarm() are called from the watched gpu thread only.
 // The watchdog is armed only in these three functions -
 // GpuWatchdogThread(), WillProcessTask(), and OnGpuProcessTearDown()
 void GpuWatchdogThread::Arm() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
-  base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 1);
+  arm_disarm_counter_.fetch_add(1, std::memory_order_relaxed);
 
   // Arm/Disarm are always called in sequence. Now it's an odd number.
   DCHECK(IsArmed());
@@ -431,25 +442,29 @@ void GpuWatchdogThread::Arm() {
 void GpuWatchdogThread::Disarm() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(watched_thread_sequence_checker_);
 
-  base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 1);
+  arm_disarm_counter_.fetch_add(1, std::memory_order_relaxed);
 
   // Arm/Disarm are always called in sequence. Now it's an even number.
   DCHECK(!IsArmed());
 }
 
+// It's ok to call this function on any thread since it doesn't change the
+// IsArmed() state by itself.
 void GpuWatchdogThread::InProgress() {
   // Increment by 2. This is equivalent to Disarm() + Arm().
   // If Watchdog is already disarmed, it stays in the same disarmed status.
-  base::subtle::NoBarrier_AtomicIncrement(&arm_disarm_counter_, 2);
+  arm_disarm_counter_.fetch_add(2, std::memory_order_relaxed);
 }
 
+// The watchdog is considered armed if the `arm_disarm_counter_` is odd.
 bool GpuWatchdogThread::IsArmed() {
-  // It's an odd number.
-  return base::subtle::NoBarrier_Load(&arm_disarm_counter_) & 1;
+  return arm_disarm_counter_.load(std::memory_order_relaxed) & 1;
 }
 
-base::subtle::Atomic32 GpuWatchdogThread::ReadArmDisarmCounter() {
-  return base::subtle::NoBarrier_Load(&arm_disarm_counter_);
+// This is used for reading the `arm_disarm_counter_` value to be compared with
+// the `last_arm_disarm_counter_` value.
+int GpuWatchdogThread::ReadArmDisarmCounter() {
+  return arm_disarm_counter_.load(std::memory_order_relaxed);
 }
 
 // Running on the watchdog thread.
@@ -480,7 +495,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
 #endif
 
   // Collect all needed info for gpu hang detection.
-  auto arm_disarm_counter = ReadArmDisarmCounter();
+  int arm_disarm_counter = ReadArmDisarmCounter();
   bool disarmed = arm_disarm_counter % 2 == 0;  // even number
   bool gpu_makes_progress = arm_disarm_counter != last_arm_disarm_counter_;
   bool no_gpu_hang = disarmed || gpu_makes_progress || SlowWatchdogThread();
@@ -495,6 +510,10 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
     ContinueWithNextWatchdogTimeoutTask();
     return;
   }
+
+  // A GPU hang is detected.
+  TRACE_EVENT1("gpu,startup", "OnWatchdogTimeout", "timeoutMs",
+               watchdog_timeout_.InMilliseconds());
 
   // If the watched thread makes a progress after crash dump, the GPU process
   // will not be killed and every thing continues after this function.
@@ -808,9 +827,9 @@ void GpuWatchdogThread::UpdateActiveTTY() {
   active_tty_ = -1;
   char tty_string[8] = {};
   if (tty_file_ && !fseek(tty_file_.get(), 0, SEEK_SET) &&
-      fread(tty_string, 1, 7, tty_file_.get())) {
+      UNSAFE_TODO(fread(tty_string, 1, 7, tty_file_.get()))) {
     int tty_number;
-    if (sscanf(tty_string, "tty%d\n", &tty_number) == 1) {
+    if (UNSAFE_TODO(sscanf(tty_string, "tty%d\n", &tty_number)) == 1) {
       active_tty_ = tty_number;
     }
   }

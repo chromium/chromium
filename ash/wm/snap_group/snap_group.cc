@@ -57,7 +57,7 @@ SnapGroupExitPoint GetWindowStateChangeExitPoint(WindowState* window_state) {
       return SnapGroupExitPoint::kWindowStateChangedSecondarySnapped;
     case WindowStateType::kPinned:
       return SnapGroupExitPoint::kWindowStateChangedPinned;
-    case WindowStateType::kTrustedPinned:
+    case WindowStateType::kLockedFullscreen:
       return SnapGroupExitPoint::kWindowStateChangedTrustedPinned;
     case WindowStateType::kPip:
       return SnapGroupExitPoint::kWindowStateChangedPip;
@@ -113,7 +113,7 @@ SnapGroup::SnapGroup(aura::Window* window1,
 
   // We manually add ourselves as a display observer so we can early remove
   // ourselves in `Shutdown()`.
-  display::Screen::GetScreen()->AddObserver(this);
+  display::Screen::Get()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
 }
 
@@ -129,7 +129,7 @@ void SnapGroup::Shutdown() {
   window_to_target_snap_position_map_.clear();
 
   Shell::Get()->activation_client()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display::Screen::Get()->RemoveObserver(this);
 
   // Restore the snapped window bounds that were adjusted to make room for
   // divider when snap group was created.
@@ -222,7 +222,7 @@ aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
   aura::Window* window2_root_window = window2_->GetRootWindow();
   if (window1_root_window != window2_root_window) {
     aura::Window* cursor_root_window = window_util::GetRootWindowAt(
-        display::Screen::GetScreen()->GetCursorScreenPoint());
+        display::Screen::Get()->GetCursorScreenPoint());
     return window1_root_window == cursor_root_window ? window1_root_window
                                                      : window2_root_window;
   }
@@ -301,7 +301,7 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
   bool did_parent_change = false;
   bool did_ungroup = false;
   ScopedWindowsMover mover(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(parent).id());
+      display::Screen::Get()->GetDisplayNearestWindow(parent).id());
   if (window->GetRootWindow() != to_be_moved_window->GetRootWindow()) {
     base::RecordAction(
         base::UserMetricsAction("SnapGroups_MoveSnapGroupToDisplay"));
@@ -563,7 +563,7 @@ void SnapGroup::StopObservingWindows() {
 void SnapGroup::UpdateGroupWindowsBounds(bool account_for_divider_width) {
   // Return early if in tablet mode, `SplitViewController` will handle window
   // bounds update.
-  if (Shell::Get()->IsInTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     return;
   }
 

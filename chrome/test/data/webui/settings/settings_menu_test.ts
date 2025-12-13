@@ -7,7 +7,7 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsMenuElement, SettingsRoutes} from 'chrome://settings/settings.js';
-import {resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
+import {AutofillSettingsReferrer, resetRouterForTesting, loadTimeData, MetricsBrowserProxyImpl, resetPageVisibilityForTesting, Router} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -177,5 +177,66 @@ suite('SettingsMenu', function() {
 
     await microtasksFinished();
     assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
+  });
+
+  test('autofillPageMenuClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+      'a[href=\'/autofill\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    entry.click();
+    const [histogramName, referrer] = await metricsBrowserProxy.whenCalled(
+        'recordAutofillSettingsReferrer');
+    assertEquals(
+        'Autofill.AutofillAndPasswordsSettingsPage.VisitReferrer',
+        histogramName);
+    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
+
+    await microtasksFinished();
+    assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
+  });
+
+  test('yourSavedInfoHiddenWhenFeatureDisabled', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: false});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertFalse(isVisible(entry));
+  });
+
+  test('yourSavedInfoMenuItemClick', async function() {
+    loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
+    resetRouterForTesting();
+    createSettingsMenu();
+    await flushTasks();
+
+    const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
+        'a[href=\'/yourSavedInfo\']');
+    assertTrue(!!entry);
+    assertTrue(isVisible(entry));
+
+    entry.click();
+    await microtasksFinished();
+    const [histogramName, referrer] =
+        await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
+    assertEquals(
+        'Autofill.YourSavedInfoSettingsPage.VisitReferrer', histogramName);
+    assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
+
+    const selector = settingsMenu.$.menu;
+    assertTrue(!!selector.selected);
+    assertEquals('/yourSavedInfo', selector.selected.toString());
+    assertEquals(
+        routes.YOUR_SAVED_INFO, Router.getInstance().getCurrentRoute());
   });
 });

@@ -14,9 +14,8 @@
 #include "base/observer_list.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/common/content_export.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace content {

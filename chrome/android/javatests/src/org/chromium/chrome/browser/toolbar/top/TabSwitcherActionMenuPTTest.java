@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import androidx.test.filters.LargeTest;
 
@@ -18,9 +18,11 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -29,7 +31,7 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
-import org.chromium.chrome.test.transit.page.PageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.TabSwitcherActionMenuFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
@@ -52,29 +54,57 @@ public class TabSwitcherActionMenuPTTest {
     @Test
     @LargeTest
     public void testOpenNewTab() {
-        WebPageStation page = mCtaTestRule.startOnBlankPage();
-
-        // Opening a new tab should display it on the screen.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        RegularNewTabPageStation ntp = actionMenu.selectNewTab();
+        mCtaTestRule.startOnBlankPage().openTabSwitcherActionMenu().selectNewTab();
 
         assertFalse(getTabModelSelector().isIncognitoSelected());
-        assertEquals(2, getCurrentTabModel().getCount());
-        assertFinalDestination(ntp);
+        assertEquals(2, getTabCountOnUiThread(getCurrentTabModel()));
     }
 
     @Test
     @LargeTest
     public void testOpenNewIncognitoTab() {
-        WebPageStation page = mCtaTestRule.startOnBlankPage();
+        mCtaTestRule.startOnBlankPage().openTabSwitcherActionMenu().selectNewIncognitoTabOrWindow();
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertEquals(0, mCtaTestRule.tabsCount(/* incognito= */ true));
+        } else {
+            assertEquals(1, mCtaTestRule.tabsCount(/* incognito= */ true));
+        }
+    }
 
-        // Opening a new incognito tab should display it on the screen.
-        TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        IncognitoNewTabPageStation incognitoNtp = actionMenu.selectNewIncognitoTab();
+    @Test
+    @LargeTest
+    public void testOpenNewTabFromIncognito() {
+        IncognitoNewTabPageStation incognitoNtp =
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openTabSwitcherActionMenu()
+                        .selectNewIncognitoTabOrWindow();
 
-        assertTrue(getTabModelSelector().isIncognitoSelected());
-        assertEquals(1, getCurrentTabModel().getCount());
-        assertFinalDestination(incognitoNtp);
+        RegularNewTabPageStation page =
+                incognitoNtp.openTabSwitcherActionMenu().selectNewTabOrWindow();
+
+        assertFalse(page.getTabModelSelector().isIncognitoSelected());
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            assertEquals(1, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
+        } else {
+            assertEquals(2, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
+        }
+    }
+
+    @Test
+    @LargeTest
+    public void testOpenNewIncognitoTabFromIncognito() {
+        IncognitoNewTabPageStation incognitoNtp =
+                mCtaTestRule
+                        .startOnBlankPage()
+                        .openTabSwitcherActionMenu()
+                        .selectNewIncognitoTabOrWindow();
+
+        IncognitoNewTabPageStation page =
+                incognitoNtp.openTabSwitcherActionMenu().selectNewIncognitoTab();
+
+        assertTrue(page.getTabModelSelector().isIncognitoSelected());
+        assertEquals(2, getTabCountOnUiThread(page.getActivity().getCurrentTabModel()));
     }
 
     @Test
@@ -86,13 +116,13 @@ public class TabSwitcherActionMenuPTTest {
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
         RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
-        assertEquals(0, getCurrentTabModel().getCount());
-        assertFinalDestination(tabSwitcher);
+        assertEquals(0, getTabCountOnUiThread(getCurrentTabModel()));
     }
 
     /** Regression test for crbug.com/1448791 */
     @Test
     @LargeTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testClosingAllRegularTabs_DoNotFinishActivity() {
         WebPageStation blankPage = mCtaTestRule.startOnBlankPage();
 
@@ -101,8 +131,8 @@ public class TabSwitcherActionMenuPTTest {
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);
         TabModel incognitoTabModel = getTabModelSelector().getModel(/* incognito= */ true);
-        assertEquals(2, regularTabModel.getCount());
-        assertEquals(1, incognitoTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(regularTabModel));
+        assertEquals(1, getTabCountOnUiThread(incognitoTabModel));
 
         // Close second regular tab opened.
         TabSwitcherActionMenuFacility actionMenu = ntp.openTabSwitcherActionMenu();
@@ -113,18 +143,18 @@ public class TabSwitcherActionMenuPTTest {
         RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         // Only the incognito tab should still remain.
-        assertEquals(0, regularTabModel.getCount());
-        assertEquals(1, incognitoTabModel.getCount());
-        assertFinalDestination(tabSwitcher);
+        assertEquals(0, getTabCountOnUiThread(regularTabModel));
+        assertEquals(1, getTabCountOnUiThread(incognitoTabModel));
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
+    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     @LargeTest
     public void testSwitchIntoAndOutOfIncognito() {
         // Open 1 regular and 1 incognito tab.
-        PageStation blankPage = mCtaTestRule.startOnBlankPage();
-        PageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
+        CtaPageStation blankPage = mCtaTestRule.startOnBlankPage();
+        CtaPageStation incognitoNtp = blankPage.openNewIncognitoTabFast();
 
         // Open action menu and switch out of incognito.
         TabSwitcherActionMenuFacility actionMenu = incognitoNtp.openTabSwitcherActionMenu();
@@ -133,9 +163,6 @@ public class TabSwitcherActionMenuPTTest {
         // Open action menu and switch to incognito.
         actionMenu = blankPage.openTabSwitcherActionMenu();
         incognitoNtp = actionMenu.selectSwitchToIncognito(IncognitoNewTabPageStation.newBuilder());
-
-        // Final destination should be incognito tab.
-        assertFinalDestination(incognitoNtp);
     }
 
     private TabModelSelector getTabModelSelector() {

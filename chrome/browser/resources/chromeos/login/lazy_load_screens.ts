@@ -14,7 +14,6 @@ assert(window.scheduler, 'Prioritized Task Scheduling API unavailable');
 // Add OOBE or LOGIN screens to the document.
 const isOobeFlow = loadTimeData.getBoolean('isOobeFlow');
 const flowSpecificScreensList = isOobeFlow ? oobeScreensList : loginScreensList;
-const lazyLoadingEnabled = loadTimeData.getBoolean('isOobeLazyLoadingEnabled');
 
 const isBootAnimation = loadTimeData.getBoolean('isBootAnimationEnabled');
 const animationTransitionTime = 900;
@@ -25,25 +24,7 @@ if (isBootAnimation) {
   }, {once: true});
 }
 
-// Right now we have only one priority screen and it is WelcomeScreen, that
-// means that there is no effect from async loading of screens on the login
-// page.
-if (lazyLoadingEnabled) {
-  addScreensAsync();
-} else {
-  addScreensSynchronously();
-}
-
-/**
- * Add screens to the document synchronously, blocking the main thread.
- */
-function addScreensSynchronously(): void {
-  addScreensToMainContainer(commonScreensList);
-  traceExecution(TraceEvent.COMMON_SCREENS_ADDED);
-  addScreensToMainContainer(flowSpecificScreensList);
-  traceExecution(TraceEvent.REMAINING_SCREENS_ADDED);
-  document.dispatchEvent(new CustomEvent('oobe-screens-loaded'));
-}
+addScreensAsync();
 
 /**
  * Add screens to the document asynchronously. Follows the same sequence logical

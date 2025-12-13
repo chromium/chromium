@@ -4,6 +4,9 @@
 
 package org.chromium.base.test.transit;
 
+import static org.junit.Assert.assertNotEquals;
+
+import android.app.Activity;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.ConditionalState.Phase;
@@ -137,5 +140,14 @@ public class TransitAsserts {
             i++;
         }
         return builder.toString();
+    }
+
+    /** Asserts that the given stations are in different Activities and Tasks. */
+    public static void assertInDifferentTasks(Station<?> station1, Station<?> station2) {
+        Activity activity1 = station1.getActivity();
+        Activity activity2 = station2.getActivity();
+
+        assertNotEquals(activity1, activity2);
+        assertNotEquals(activity1.getTaskId(), activity2.getTaskId());
     }
 }

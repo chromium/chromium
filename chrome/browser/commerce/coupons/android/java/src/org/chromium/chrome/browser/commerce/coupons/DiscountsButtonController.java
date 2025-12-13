@@ -10,7 +10,6 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
@@ -23,13 +22,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.function.Supplier;
+
 /** This class is responsible for providing UI resources for showing the Discounts action. */
 @NullMarked
 public class DiscountsButtonController extends BaseButtonDataProvider {
 
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private final Supplier<CommerceBottomSheetContentController>
+    private final Supplier<@Nullable CommerceBottomSheetContentController>
             mCommerceBottomSheetContentController;
 
     public DiscountsButtonController(
@@ -37,7 +38,8 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
             Supplier<@Nullable Tab> activeTabSupplier,
             ModalDialogManager modalDialogManager,
             BottomSheetController bottomSheetController,
-            Supplier<CommerceBottomSheetContentController> commerceBottomSheetContentController) {
+            Supplier<@Nullable CommerceBottomSheetContentController>
+                    commerceBottomSheetContentController) {
         super(
                 activeTabSupplier,
                 modalDialogManager,
@@ -65,7 +67,9 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
 
     @Override
     public void onClick(View view) {
-        mCommerceBottomSheetContentController.get().requestShowContent();
+        if (mCommerceBottomSheetContentController.get() != null) {
+            mCommerceBottomSheetContentController.get().requestShowContent();
+        }
     }
 
     @Override

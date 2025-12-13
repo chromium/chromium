@@ -489,9 +489,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     public void testTapContentAndExpandPanelInFullscreen() throws Exception {
         // Toggle tab to fulllscreen.
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
-                mActivityTestRule.getActivity().getActivityTab(),
-                true,
-                mActivityTestRule.getActivity());
+                mActivityTestRule.getActivityTab(), true, mActivityTestRule.getActivity());
 
         // Simulate a resolving search and assert that the panel peeks.
         simulateResolveSearch("search");
@@ -517,7 +515,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         simulateResolveSearch("search");
 
         // Toggle tab to fullscreen.
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
                 tab, true, mActivityTestRule.getActivity());
 
@@ -951,7 +949,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), ca);
         ChromeTabUtils.switchTabInCurrentTabModel(ca, 0);
 
-        int testTabId = ca.getActivityTab().getId();
+        int testTabId = mActivityTestRule.getActivityTab().getId();
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(),
                 ca,
@@ -962,7 +960,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         waitForTabs("CTA2", activity2, 1, testTabId);
 
         // Trigger on a word and wait for the selection to be established.
-        triggerNode(activity2.getActivityTab(), "search");
+        triggerNode(ThreadUtils.runOnUiThreadBlocking(() -> activity2.getActivityTab()), "search");
         CriteriaHelper.pollUiThread(
                 () -> {
                     String selection =

@@ -24,6 +24,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
@@ -165,6 +166,7 @@ void LocalHistoryZeroSuggestProvider::DeleteMatch(
   // due to the small percentage of suggestions getting deleted relative to the
   // number of suggestions shown and the async nature of this lookup.
   history::QueryOptions opts;
+  opts.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   opts.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
   opts.begin_time = base::Time::Now() - base::Days(90);  // Full history length.
   history_service->QueryHistory(
@@ -213,7 +215,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     return;
   }
 
-  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> results;
+  history::KeywordSearchTermVisitList results;
   const base::ElapsedTimer db_query_timer;
   auto enumerator = url_db->CreateKeywordSearchTermVisitEnumerator(
       template_url_service->GetDefaultSearchProvider()->id());

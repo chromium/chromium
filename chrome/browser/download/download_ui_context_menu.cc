@@ -22,11 +22,6 @@
 
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
-bool DownloadUiContextMenu::WantsContextMenu(DownloadUIModel* download_model) {
-  return !download_model->IsDangerous() || download_model->MightBeMalicious() ||
-         download_model->IsInsecure();
-}
-
 DownloadUiContextMenu::~DownloadUiContextMenu() {
   DetachFromDownloadItem();
 }
@@ -66,8 +61,6 @@ ui::SimpleMenuModel* DownloadUiContextMenu::GetMenuModel() {
   if (!download_) {
     return nullptr;
   }
-
-  DCHECK(WantsContextMenu(download_.get()));
 
   bool is_download = download_->GetDownloadItem() != nullptr;
 

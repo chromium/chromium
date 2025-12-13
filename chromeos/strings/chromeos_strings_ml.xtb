@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ഓറഞ്ചുകൾ</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
+<translation id="1292474106138697109">ക്ലാസ് ടൂളുകൾ ഡിസ്പ്ലേ</translation>
 <translation id="1300115153046603471">APN തരം ഡിഫോൾട്ടും <ph name="ATTACH" />-ഉം ആണ്.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">പരിവർത്തനം ചെയ്യുക</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
 <translation id="4300272766492248925">ആപ്പ് തുറക്കുക</translation>
 <translation id="430786093962686457">ഷിഫോൺ</translation>
+<translation id="4309762678330556039">ട്രാൻസ്ക്രിപ്ഷനുകൾ സ്വയമേവ സൃഷ്ടിച്ച് ഓഡിയോ തിരയുക. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാത്തപ്പോൾ പോലും നിങ്ങൾക്ക് റെക്കോർഡിംഗുകൾ സൃഷ്ടിക്കാം.</translation>
 <translation id="4310735698903592804">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, അടുത്തിടെയുള്ള വാൾപേപ്പറുകൾ</translation>
 <translation id="4320904097188876154">നിയോൺ പിങ്ക്</translation>
 <translation id="432961742358282111">നിർവ്വചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടാൻ വലത്-ക്ലിക്ക് ചെയ്യുക അല്ലെങ്കിൽ അമർത്തിപ്പിടിക്കുക. ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേക്കോ വലത്തേക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> കീ പരിശോധിച്ചു</translation>
 <translation id="5606865426897221650">ടാബ്</translation>
+<translation id="5612205513582918357"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് ക്ലാസ് ടൂളുകൾ നിങ്ങളുടെ സ്ക്രീൻ പങ്കിടുന്നു</translation>
 <translation id="5613201299517339763">നിങ്ങൾ സൈൻ ഔട്ട് ചെയ്തു</translation>
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5628106863521633649">ലഭ്യമായ ഭാഷകൾ</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ക്ലൗഡ് ഫ്ലോ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
-<translation id="6231648282154119906">നിങ്ങൾ തിരഞ്ഞെടുത്ത മെച്ചപ്പെടുത്തിയ പരിരക്ഷയുടെ ഭാഗമായി, സംശയകരമായ ഫയലുകൾ Google സുരക്ഷിത ബ്രൗസിംഗ് സ്വയമേവ സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6234024205316847054">ഔട്ട്ലൈനുകൾ കാണിക്കുക</translation>
 <translation id="6243280677745499710">നിലവിൽ സജ്ജീകരിച്ചിരിക്കുന്നത്</translation>

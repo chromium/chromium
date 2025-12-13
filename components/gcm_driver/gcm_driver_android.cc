@@ -23,7 +23,7 @@ using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace gcm {
 
@@ -42,8 +42,8 @@ GCMDriverAndroid::~GCMDriverAndroid() {
 
 void GCMDriverAndroid::OnRegisterFinished(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_app_id,
-    const JavaParamRef<jstring>& j_registration_id,
+    const JavaRef<jstring>& j_app_id,
+    const JavaRef<jstring>& j_registration_id,
     jboolean success) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
   std::string registration_id = ConvertJavaStringToUTF8(env, j_registration_id);
@@ -55,10 +55,9 @@ void GCMDriverAndroid::OnRegisterFinished(
   RegisterFinished(app_id, registration_id, result);
 }
 
-void GCMDriverAndroid::OnUnregisterFinished(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_app_id,
-    jboolean success) {
+void GCMDriverAndroid::OnUnregisterFinished(JNIEnv* env,
+                                            const JavaRef<jstring>& j_app_id,
+                                            jboolean success) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
   GCMClient::Result result =
       success ? GCMClient::SUCCESS : GCMClient::UNKNOWN_ERROR;
@@ -70,12 +69,12 @@ void GCMDriverAndroid::OnUnregisterFinished(
 
 void GCMDriverAndroid::OnMessageReceived(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_app_id,
-    const JavaParamRef<jstring>& j_sender_id,
-    const JavaParamRef<jstring>& j_message_id,
-    const JavaParamRef<jstring>& j_collapse_key,
-    const JavaParamRef<jbyteArray>& j_raw_data,
-    const JavaParamRef<jobjectArray>& j_data_keys_and_values) {
+    const JavaRef<jstring>& j_app_id,
+    const JavaRef<jstring>& j_sender_id,
+    const JavaRef<jstring>& j_message_id,
+    const JavaRef<jstring>& j_collapse_key,
+    const JavaRef<jbyteArray>& j_raw_data,
+    const JavaRef<jobjectArray>& j_data_keys_and_values) {
   std::string app_id = ConvertJavaStringToUTF8(env, j_app_id);
 
   int message_byte_size = 0;
@@ -269,3 +268,5 @@ void GCMDriverAndroid::RecordDecryptionFailure(const std::string& app_id,
 }
 
 }  // namespace gcm
+
+DEFINE_JNI(GCMDriver)

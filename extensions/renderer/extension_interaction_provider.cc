@@ -69,7 +69,8 @@ ExtensionInteractionProvider::Scope::ScopedWorkerInteraction::
                             bool created_from_token)
     : v8_context_(v8_context), created_from_token_(created_from_token) {
   ExtensionInteractionData* per_context_data =
-      GetPerContextData<ExtensionInteractionData>(v8_context, kCreateIfMissing);
+      GetPerContextData<ExtensionInteractionData>(
+          v8_context, CreatePerContextData::kCreateIfMissing);
   DCHECK(per_context_data);
   if (created_from_token_)
     per_context_data->token_interaction_count++;
@@ -79,8 +80,8 @@ ExtensionInteractionProvider::Scope::ScopedWorkerInteraction::
 ExtensionInteractionProvider::Scope::ScopedWorkerInteraction::
     ~ScopedWorkerInteraction() {
   ExtensionInteractionData* per_context_data =
-      GetPerContextData<ExtensionInteractionData>(v8_context_,
-                                                  kDontCreateIfMissing);
+      GetPerContextData<ExtensionInteractionData>(
+          v8_context_, CreatePerContextData::kDontCreateIfMissing);
   // If |v8_context_| was invalidated (e.g. because of JS running), bail out.
   if (!per_context_data)
     return;
@@ -106,8 +107,8 @@ bool ExtensionInteractionProvider::HasActiveExtensionInteraction(
   // Service Worker based context:
   if (worker_thread_util::IsWorkerThread()) {
     ExtensionInteractionData* per_context_data =
-        GetPerContextData<ExtensionInteractionData>(v8_context,
-                                                    kDontCreateIfMissing);
+        GetPerContextData<ExtensionInteractionData>(
+            v8_context, CreatePerContextData::kDontCreateIfMissing);
     if (per_context_data && (per_context_data->interaction_count > 0 ||
                              per_context_data->token_interaction_count > 0)) {
       return true;
@@ -128,8 +129,8 @@ ExtensionInteractionProvider::GetCurrentToken(
     v8::Local<v8::Context> v8_context) const {
   if (worker_thread_util::IsWorkerThread()) {
     ExtensionInteractionData* per_context_data =
-        GetPerContextData<ExtensionInteractionData>(v8_context,
-                                                    kDontCreateIfMissing);
+        GetPerContextData<ExtensionInteractionData>(
+            v8_context, CreatePerContextData::kDontCreateIfMissing);
     const bool has_extension_api_interaction =
         per_context_data && per_context_data->interaction_count > 0;
     // Only create token for Service Workers when we have an interaction taking

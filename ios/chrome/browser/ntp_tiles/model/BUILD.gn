@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "ios_custom_links_manager_factory.h",
+    "ios_custom_links_manager_factory.mm",
     "ios_most_visited_sites_factory.cc",
     "ios_most_visited_sites_factory.h",
     "ios_popular_sites_factory.h",
@@ -19,6 +21,7 @@ source_set("model") {
     "//components/ntp_tiles",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",

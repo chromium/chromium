@@ -1,6 +1,6 @@
 Name: Paging-Compose
 Short Name: paging-compose-android
-URL: https://developer.android.com/jetpack/androidx/releases/paging#3.4.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/paging/paging-compose-android/3.4.0-SNAPSHOT/paging-compose-android-3.4.0-20251213.041943-1.aar
 Version: 3.4.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Compose integration with Paging
+
+See also: https://developer.android.com/jetpack/androidx/releases/paging#3.4.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

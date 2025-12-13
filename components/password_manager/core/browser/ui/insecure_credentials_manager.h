@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_MANAGER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_INSECURE_CREDENTIALS_MANAGER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -20,14 +19,13 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/strong_alias.h"
-#include "build/build_config.h"
-#include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/ui/credential_utils.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 namespace password_manager {
 
 struct CredentialUIEntry;
+
 class LeakCheckCredential;
 
 // This class provides clients with saved insecure credentials and possibility
@@ -49,7 +47,6 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   explicit InsecureCredentialsManager(SavedPasswordsPresenter* presenter);
   ~InsecureCredentialsManager() override;
 
-#if !BUILDFLAG(IS_ANDROID)
   // Computes reused credentials in a separate thread and then passes the result
   // to OnReuseCheckDone.
   void StartReuseCheck(base::OnceClosure on_check_done = base::DoNothing());
@@ -57,7 +54,6 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // Computes weak credentials in a separate thread and then passes the result
   // to OnWeakCheckDone.
   void StartWeakCheck(base::OnceClosure on_check_done = base::DoNothing());
-#endif
 
   // Marks all saved credentials which have same username & password as
   // insecure.

@@ -11,9 +11,18 @@ namespace {
 const int kWindowTilePixels = WindowSizer::kWindowTilePixels;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/445541616): Reenable the test.
+#define MAYBE_DefaultSizeCase DISABLED_DefaultSizeCase
+#define MAYBE_PersistedBoundsCase DISABLED_PersistedBoundsCase
+#else
+#define MAYBE_DefaultSizeCase DefaultSizeCase
+#define MAYBE_PersistedBoundsCase PersistedBoundsCase
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // Test that the window is sized appropriately for the first run experience
 // where the default window bounds calculation is invoked.
-TEST(WindowSizerTest, DefaultSizeCase) {
+TEST(WindowSizerTest, MAYBE_DefaultSizeCase) {
   {  // 4:3 monitor case, 1024x768, no taskbar
     gfx::Rect window_bounds =
         WindowSizerTestUtil().WithMonitorBounds(p1024x768).GetWindowBounds();
@@ -169,7 +178,7 @@ TEST(WindowSizerTest, LastWindowBoundsCase) {
 }
 
 // Test that the window opened is sized appropriately given persisted sizes.
-TEST(WindowSizerTest, PersistedBoundsCase) {
+TEST(WindowSizerTest, MAYBE_PersistedBoundsCase) {
   {  // normal, in the middle of the screen somewhere.
     gfx::Rect initial_bounds(kWindowTilePixels, kWindowTilePixels, 500, 400);
     gfx::Rect window_bounds = WindowSizerTestUtil()

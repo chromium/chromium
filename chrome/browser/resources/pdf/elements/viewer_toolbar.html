@@ -1,5 +1,5 @@
 <!-- #html_wrapper_imports_start
-<if expr="enable_pdf_ink2 or enable_ink">
+<if expr="enable_pdf_ink2">
 import {AnnotationMode} from '../constants.js';
 </if>
 #html_wrapper_imports_end -->
@@ -7,11 +7,8 @@ import {AnnotationMode} from '../constants.js';
 <div id="toolbar">
   <div id="start">
     <cr-icon-button id="sidenavToggle" iron-icon="pdf:menu"
-        title="$i18n{menu}" aria-label="$i18n{menu}"
+        title="$i18n{sidebarLabel}" aria-label="$i18n{sidebarLabel}"
         aria-expanded="${this.getAriaExpanded_()}"
-<if expr="enable_ink">
-        ?disabled="${this.isInInk1AnnotationMode_()}"
-</if>
         @click="${this.onSidenavToggleClick_}">
     </cr-icon-button>
     <span id="title">${this.docTitle}</span>
@@ -49,9 +46,6 @@ import {AnnotationMode} from '../constants.js';
     </cr-icon-button>
     <cr-icon-button id="rotate" iron-icon="pdf:rotate-left"
         suppress-rtl-flip
-<if expr="enable_ink">
-        ?disabled="${this.isInInk1AnnotationMode_()}"
-</if>
         aria-label="$i18n{tooltipRotateCCW}" title="$i18n{tooltipRotateCCW}"
         @click="${this.onRotateClick_}">
     </cr-icon-button>
@@ -60,19 +54,21 @@ import {AnnotationMode} from '../constants.js';
       <span id="annotate-controls">
         <span class="vertical-separator"></span>
         ${this.pdfTextAnnotationsEnabled_ ? html`
-          <!-- TODO(crbug.com/402547554): Add aria-label and i18n string -->
           <cr-icon-button id="text-annotate" iron-icon="pdf-ink:text-annotate"
               class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
               @click="${this.onTextAnnotationClick_}"
               ?disabled="${!this.annotationAvailable}"
-              title="Text annotation">
+              aria-pressed="${this.getAriaPressed_(AnnotationMode.TEXT)}"
+              aria-label="$i18n{ink2TextAnnotation}"
+              title="$i18n{ink2TextAnnotation}">
           </cr-icon-button>
         ` : ''}
         <cr-icon-button id="annotate" iron-icon="pdf-ink:annotate"
             class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
             @click="${this.onAnnotationClick_}"
-            aria-label="$i18n{ink2Draw}"
             ?disabled="${!this.annotationAvailable}"
+            aria-pressed="${this.getAriaPressed_(AnnotationMode.DRAW)}"
+            aria-label="$i18n{ink2Draw}"
             title="$i18n{ink2Draw}"></cr-icon-button>
         <span class="vertical-separator"></span>
         <cr-icon-button id="undo" ?disabled="${!this.computeEnableUndo_()}"
@@ -89,15 +85,6 @@ import {AnnotationMode} from '../constants.js';
 </if>
   </div>
   <div id="end">
-  <if expr="enable_ink">
-    ${this.showInkAnnotationButton_() ? html`<cr-icon-button id="annotate"
-          iron-icon="cr:create"
-          class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
-          @click="${this.onAnnotationClick_}"
-          aria-label="$i18n{tooltipAnnotate}"
-          ?disabled="${!this.annotationAvailable}"
-          title="$i18n{tooltipAnnotate}"></cr-icon-button>` : ''}
-  </if>
 <if expr="enable_pdf_save_to_drive">
     ${this.pdfSaveToDriveEnabled ? html`
     <viewer-save-to-drive-controls id="save-to-drive"
@@ -106,7 +93,9 @@ import {AnnotationMode} from '../constants.js';
 <if expr="enable_pdf_ink2">
         .hasInk2Edits="${this.hasInk2Edits}"
 </if>
-        .isFormFieldFocused="${this.isFormFieldFocused_()}">
+        .isFormFieldFocused="${this.isFormFieldFocused_()}"
+        .progress="${this.saveToDriveProgress}"
+        .state="${this.saveToDriveState}">
     </viewer-save-to-drive-controls>` : ''}
 </if>
     <viewer-download-controls id="downloads"
@@ -133,9 +122,6 @@ import {AnnotationMode} from '../constants.js';
 <cr-action-menu id="menu" @open-changed="${this.onMoreOpenChanged_}">
   <button id="two-page-view-button" class="dropdown-item"
       @click="${this.toggleTwoPageViewClick_}" role="checkbox"
-<if expr="enable_ink">
-      ?disabled="${this.isInInk1AnnotationMode_()}"
-</if>
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
       <cr-icon icon="pdf:check"
@@ -171,14 +157,3 @@ import {AnnotationMode} from '../constants.js';
     $i18n{propertiesDialogTitle}
   </button>
 </cr-action-menu>
-
-<if expr="enable_ink">
-  ${this.showAnnotationsModeDialog_ ? html`
-    <viewer-annotations-mode-dialog
-        two-up-view-enabled="${this.twoUpViewEnabled}"
-        rotated="${this.rotated}" @close="${this.onDialogClose_}">
-    </viewer-annotations-mode-dialog>` : ''}
-  ${this.showAnnotationsBar_() ? html`
-    <viewer-annotations-bar annotation-mode="${this.annotationMode}">
-    </viewer-annotations-bar>` : ''}
-</if>

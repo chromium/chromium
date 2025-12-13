@@ -1,0 +1,65 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../dom/abort/resources/run-async-gc.js"></script>
+
+<script>
+  let popup;
+  let performanceWeakRef;
+  const { promise, resolve } = Promise.withResolvers();
+
+  function onLongTimeoutComplete() {}
+
+  function onPopupClicked() {
+    return new Promise((resolve) => {
+      popup.close();
+      popup = null;
+      setTimeout(resolve, 30000);
+    });
+  }
+
+  async function onPopupClosed() {
+    await runAsyncGC();
+    resolve();
+  }
+
+  // Regression test for crbug.com/438396763, based on the repro steps in
+  // crbug.com/353997473. This tests that the SoftNavigationContext created when
+  // clicking on a popup window button does not leak the WindowPerformance object
+  // of the popup window.
+  //
+  // It works as follows:
+  //   1. The test creates new popup window.
+  //   2. When loaded, the popup window initiates a click on its "close" button.
+  //      This creates a new soft nav context.
+  //   3. The button handler calls onPopupClicked, which schedules a long timeout.
+  //      This will propagate the context from (2) to the callback, which keeps it
+  //      alive until the callback runs.
+  //   4. The button handler also creates a promise reaction which won't run until
+  //      the long timeout fires, and that reaction is tied to the same soft nav
+  //      context.
+  //   5. Once the popup closes (pagehide), async GC is scheduled on the main
+  //      page, at which point the test proceeds and checks via WeakRef if the
+  //      performance object has been collected.
+  //
+  //      Because SoftNavigationContext needs to hold a reference to
+  //      WindowPerformance in order to add performance entries,
+  //      the soft nav context remaining alive due to the references from
+  //      (3) or (4) or both is an opportunity for window.performance to leak.
+  //      The leak will not happen if the context correctly releases such
+  //      references to it once the frame it belongs to is detached.
+  //
+  //      In addition to the WindowPerformance leak, the detached window object
+  //      itself would remain alive (via the JavaScript wrapper object for
+  //      window.performance) - hence the filename of this test.
+  promise_test(async () => {
+    (function () {
+      popup = window.open("resources/popup.html");
+      performanceWeakRef = new WeakRef(popup.performance);
+      assert_not_equals(performanceWeakRef.deref(), undefined);
+    })();
+
+    await promise;
+    assert_equals(performanceWeakRef.deref(), undefined);
+  }, "A soft navigation context should not leak the WindowPerformance object when propagating across frames and the frame is detached");
+</script>

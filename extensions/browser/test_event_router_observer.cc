@@ -32,6 +32,16 @@ void TestEventRouterObserver::WaitForEventWithName(const std::string& name) {
   }
 }
 
+void TestEventRouterObserver::WaitForDispatchedEventWithName(
+    const std::string& name) {
+  while (!base::Contains(dispatched_events_, name)) {
+    // Create a new `RunLoop` since reuse is not supported.
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+    run_loop_.reset();
+  }
+}
+
 void TestEventRouterObserver::OnWillDispatchEvent(const Event& event) {
   CHECK(!event.event_name.empty());
   events_[event.event_name] = event.DeepCopy();

@@ -31,6 +31,7 @@ source_set("views") {
   deps = [
     "//components/ui_devtools",
     "//skia",
+    "//ui/base/interaction",
     "//ui/views",
   ]
 
@@ -45,7 +46,7 @@ source_set("views") {
     ]
     deps += [
       "//ui/aura",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
   if (is_mac) {
@@ -75,6 +76,7 @@ source_set("unit_tests") {
     "//components/ui_devtools:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base/interaction",
     "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
@@ -85,7 +87,7 @@ source_set("unit_tests") {
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
-      "//ui/wm:wm",
+      "//ui/wm",
     ]
   }
 

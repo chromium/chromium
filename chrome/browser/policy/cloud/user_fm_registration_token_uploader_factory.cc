@@ -11,22 +11,11 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
 namespace policy {
-
-namespace {
-
-auto* GetCloudPolicyManager(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  return profile->GetUserCloudPolicyManagerAsh();
-#else
-  return profile->GetUserCloudPolicyManager();
-#endif
-}
-
-}  // namespace
 
 // static
 UserFmRegistrationTokenUploaderFactory*
@@ -54,7 +43,7 @@ std::unique_ptr<KeyedService>
 UserFmRegistrationTokenUploaderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  auto* policy_manager = GetCloudPolicyManager(profile);
+  policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
 
   if (!policy_manager) {
     return nullptr;

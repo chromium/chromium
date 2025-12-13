@@ -1,0 +1,13 @@
+\bavenida\b	av
+\bavenue\b	av
+\bstreet\b	c
+\bcalle\b	c
+\bnorth\b	n
+\broute\b	r
+\bsouth\b	s
+\bavda\b	av
+\beast\b	e
+\bpath\b	r
+\broad\b	r
+\bruta\b	r
+\bwest\b	w

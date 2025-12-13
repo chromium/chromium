@@ -5,14 +5,17 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span_reader.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -35,13 +38,118 @@
 #include "net/test/test_doh_server.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "third_party/boringssl/src/include/openssl/tls1.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
+#include "chrome/browser/ash/login/screens/error_screen.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/users/test_users.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/base/net_errors.h"
+#endif
 
 namespace policy {
 
+namespace {
+
+// Returns an SSLServerConfig that causes the test server to reject any TLS
+// handshake unless it specifies the three TLS 1.3 cipher names in the expected
+// order for CNSA, which is different from the default order. This effectively
+// causes the connection to fail unless the PreferSlowCiphers policy is
+// correctly configured for "cnsa".
+net::SSLServerConfig GetServerConfigForPreferSlowCiphersTest() {
+  const auto kExpectedCipherNamesWithPolicy = std::to_array<const char*>(
+      {"TLS_AES_256_GCM_SHA384", "TLS_AES_128_GCM_SHA256",
+       "TLS_CHACHA20_POLY1305_SHA256"});
+
+  net::SSLServerConfig ssl_config;
+  ssl_config.version_min = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  ssl_config.version_max = net::SSL_PROTOCOL_VERSION_TLS1_3;
+  // Make the test server only accept the expected TLS 1.3 ciphers in the
+  // order specified by the policy, or otherwise reject the handshake.
+  ssl_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        // Each cipher is encoded as a two-byte, big-endian integer.
+        CHECK(client_hello->cipher_suites_len % 2 == 0);
+        // SAFETY: BoringSSL API guarantees that `client_hello->cipher_suites`
+        // and `client_hello->ciphers_suites_len` describe a valid span.
+        auto cipher_suites_reader = base::SpanReader{UNSAFE_BUFFERS(base::span{
+            client_hello->cipher_suites, client_hello->cipher_suites_len})};
+        uint16_t value;
+        std::vector<std::string> cipher_names;
+        while (cipher_suites_reader.ReadU16BigEndian(value)) {
+          // Skip values we don't recognize as any TLS 1.3 cipher.
+          const SSL_CIPHER* cipher = SSL_get_cipher_by_value(value);
+          if (!cipher || SSL_CIPHER_get_min_version(cipher) != TLS1_3_VERSION) {
+            continue;
+          }
+          cipher_names.emplace_back(SSL_CIPHER_standard_name(cipher));
+        }
+        return !std::ranges::search(cipher_names,
+                                    kExpectedCipherNamesWithPolicy)
+                    .empty();
+      });
+  return ssl_config;
+}
+
+bool GetLocalStateBooleanPref(const std::string& pref_name) {
+  return g_browser_process->local_state()->GetBoolean(pref_name);
+}
+
+std::optional<bool> GetManagedBooleanPref(PrefService* prefs,
+                                          const std::string_view pref_name) {
+  if (prefs->IsManagedPreference(pref_name)) {
+    return prefs->GetBoolean(pref_name);
+  }
+  return std::nullopt;
+}
+
+std::optional<bool> GetLocalStateManagedBooleanPref(
+    const std::string_view pref_name) {
+  return GetManagedBooleanPref(g_browser_process->local_state(), pref_name);
+}
+
+std::optional<std::string> GetManagedStringPref(
+    PrefService* prefs,
+    const std::string_view pref_name) {
+  if (prefs->IsManagedPreference(pref_name)) {
+    return prefs->GetString(pref_name);
+  }
+  return std::nullopt;
+}
+
+std::optional<std::string> GetLocalStateManagedStringPref(
+    const std::string_view pref_name) {
+  return GetManagedStringPref(g_browser_process->local_state(), pref_name);
+}
+
+}  // namespace
+
 class SSLPolicyTest : public PolicyTest {
  public:
-  SSLPolicyTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  SSLPolicyTest() = default;
+  ~SSLPolicyTest() override = default;
+
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
+    PolicyTest::TearDownOnMainThread();
+  }
 
  protected:
   struct LoadResult {
@@ -53,25 +161,6 @@ class SSLPolicyTest : public PolicyTest {
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_OK, ssl_config);
     https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
     return https_server_.Start();
-  }
-
-  bool StartTestServer(
-      const net::EmbeddedTestServer::ServerCertificateConfig& cert_config,
-      const net::SSLServerConfig& ssl_config) {
-    https_server_.SetSSLConfig(cert_config, ssl_config);
-    https_server_.ServeFilesFromSourceDirectory("chrome/test/data");
-    return https_server_.Start();
-  }
-
-  bool GetBooleanPref(const std::string& pref_name) {
-    return g_browser_process->local_state()->GetBoolean(pref_name);
-  }
-
-  std::optional<bool> GetManagedBooleanPref(const std::string& pref_name) {
-    if (g_browser_process->local_state()->IsManagedPreference(pref_name)) {
-      return GetBooleanPref(pref_name);
-    }
-    return std::nullopt;
   }
 
   LoadResult LoadPage(std::string_view path) {
@@ -98,8 +187,7 @@ class SSLPolicyTest : public PolicyTest {
                     .ExtractBool());
   }
 
- private:
-  net::EmbeddedTestServer https_server_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PostQuantumEnabledPolicy) {
@@ -109,8 +197,9 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PostQuantumEnabledPolicy) {
 
   // Should be able to load a page from the test server because policy is in
   // the default state and feature is enabled.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            std::nullopt);
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      std::nullopt);
   LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
@@ -123,8 +212,9 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PostQuantumEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // Page loads should now fail.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            false);
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      false);
   result = LoadPage("/title3.html");
   EXPECT_FALSE(result.success);
 
@@ -136,8 +226,9 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PostQuantumEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // Page load should now succeed.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            true);
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      true);
   result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
@@ -151,9 +242,11 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
 
   // Should be able to load a page from the test server because policy is in
   // the default state and feature is enabled.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            std::nullopt);
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      std::nullopt);
+  EXPECT_EQ(GetLocalStateManagedBooleanPref(
+                prefs::kDevicePostQuantumKeyAgreementEnabled),
             std::nullopt);
   LoadResult result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
@@ -169,9 +262,11 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   }
 
   // Page loads should now fail.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            std::nullopt);
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      std::nullopt);
+  EXPECT_EQ(GetLocalStateManagedBooleanPref(
+                prefs::kDevicePostQuantumKeyAgreementEnabled),
             false);
   result = LoadPage("/title3.html");
   EXPECT_FALSE(result.success);
@@ -188,9 +283,11 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   }
 
   // Page loads should still fail since the device policy takes precedence.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            true);
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      true);
+  EXPECT_EQ(GetLocalStateManagedBooleanPref(
+                prefs::kDevicePostQuantumKeyAgreementEnabled),
             false);
   result = LoadPage("/title3.html");
   EXPECT_FALSE(result.success);
@@ -205,9 +302,11 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   }
 
   // Page load should now succeed.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            std::nullopt);
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      std::nullopt);
+  EXPECT_EQ(GetLocalStateManagedBooleanPref(
+                prefs::kDevicePostQuantumKeyAgreementEnabled),
             true);
   result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
@@ -225,15 +324,471 @@ IN_PROC_BROWSER_TEST_F(SSLPolicyTest, DevicePostQuantumEnabledPolicy) {
   }
 
   // Page load should still succeed since the device policy takes precedence.
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
-            false);
-  EXPECT_EQ(GetManagedBooleanPref(prefs::kDevicePostQuantumKeyAgreementEnabled),
+  EXPECT_EQ(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled),
+      false);
+  EXPECT_EQ(GetLocalStateManagedBooleanPref(
+                prefs::kDevicePostQuantumKeyAgreementEnabled),
             true);
   result = LoadPage("/title2.html");
   EXPECT_TRUE(result.success);
   EXPECT_EQ(u"Title Of Awesomeness", result.title);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowKexAlgorithmsPolicy) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // Should fail to load a page from the test server because, by default, we
+  // don't negotiate ML-KEM-1024.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+
+  // Set the policy to cnsa2 to prefer ML-KEM-1024.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now succeed.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "cnsa2");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Set the policy to an unrecognized value; this falls back to the defaults.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("bogus"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now fail.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "bogus");
+  result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest,
+                       PostQuantumDisabledOverridesPreferSlowKexAlgorithms) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  PolicyMap policies;
+  SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
+  SetPolicy(&policies, key::kPostQuantumKeyAgreementEnabled,
+            base::Value(false));
+  UpdateProviderPolicy(policies);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // Should fail to load a page from the test server because setting
+  // PostQuantumKeyAgreementEnabled to disabled takes precedence over the
+  // PreferSlowKexAlgorithms policy.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "cnsa2");
+  EXPECT_FALSE(
+      GetLocalStateManagedBooleanPref(prefs::kPostQuantumKeyAgreementEnabled)
+          .value());
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
+
+IN_PROC_BROWSER_TEST_F(SSLPolicyTest, PreferSlowCiphersPolicy) {
+  ASSERT_TRUE(StartTestServer(GetServerConfigForPreferSlowCiphersTest()));
+
+  // Should fail to load a page from the test server because the default
+  // cipher order doesn't match and the test server rejects the handshake.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers),
+            std::nullopt);
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+
+  // Set the policy to cnsa to prefer the TLS 1.3 ciphers in the expected order.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("cnsa"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now succeed.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers), "cnsa");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(u"Title Of Awesomeness", result.title);
+
+  // Set the policy to an unrecognized value; this falls back to the defaults.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("bogus"));
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  // Page load should now fail.
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers), "bogus");
+  result = LoadPage("/title2.html");
+  EXPECT_FALSE(result.success);
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Tests for the device login screen policies on ChromeOS, using a SAML login
+// flow for ease of testing. SAML-related test code is adapted from
+// //chrome/browser/ash/login/saml/saml_browsertest.cc.
+class SSLDeviceLoginScreenPolicyTest : public ash::OobeBaseTest {
+ public:
+  SSLDeviceLoginScreenPolicyTest() {
+    // Delay starting the SAML test server to customize the server behavior for
+    // each test.
+    fake_saml_idp_.set_auto_start_saml_servers(false);
+    // Prevent the default FakeGaia configuration from overwriting SAML configs.
+    fake_gaia_.set_initialize_configuration(false);
+  }
+
+  ~SSLDeviceLoginScreenPolicyTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ash::OobeBaseTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kOobeSkipPostLogin);
+    command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
+  }
+
+  void SetUpOnMainThread() override {
+    ash::OobeBaseTest::SetUpOnMainThread();
+    login_profile_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetSigninBrowserContext());
+    ASSERT_TRUE(login_profile_);
+    policy_helper_.InstallOwnerKey();
+  }
+
+  void TearDownOnMainThread() override {
+    login_profile_ = nullptr;
+    ash::OobeBaseTest::TearDownOnMainThread();
+  }
+
+  bool StartFakeSamlServerWithConfig(const net::SSLServerConfig& ssl_config) {
+    fake_saml_idp_.saml_server()->SetSSLConfig(
+        ash::FakeSamlIdpMixin::GetServerCertConfig(), ssl_config);
+    return fake_saml_idp_.StartSamlServersNow();
+  }
+
+  std::optional<std::string> GetLoginProfileManagedStringPref(
+      const std::string_view pref_name) {
+    return GetManagedStringPref(login_profile_->GetPrefs(), pref_name);
+  }
+
+  void RefreshDevicePoliciesAndWaitForPrefChange(
+      const std::string_view pref_name) {
+    PrefService* prefs = login_profile_->GetPrefs();
+    ASSERT_TRUE(prefs);
+
+    PrefChangeRegistrar registrar;
+    base::test::TestFuture<std::string_view> pref_changed_future;
+    registrar.Init(prefs);
+    registrar.Add(pref_name,
+                  base::BindRepeating(
+                      pref_changed_future.GetRepeatingCallback(), pref_name));
+    policy_helper_.RefreshDevicePolicy();
+    EXPECT_EQ(pref_name, pref_changed_future.Take());
+  }
+
+  // If `expected_net_error` is std::nullopt, then SAML login is expected to
+  // succeed. Otherwise this expects to see an error screen when attempting to
+  // load the SAML page.
+  void SetUpAndAttemptSamlLogin(
+      std::optional<net::Error> expected_net_error = std::nullopt) {
+    fake_gaia_.fake_gaia()->RegisterSamlUser(account_id_.GetUserEmail(),
+                                             fake_saml_idp_.GetSamlPageUrl());
+    fake_gaia_.fake_gaia()->SetConfigurationHelper(account_id_.GetUserEmail(),
+                                                   "fake-auth-SID-cookie",
+                                                   "fake-auth-LSID-cookie");
+    fake_gaia_.SetupFakeGaiaForLogin(account_id_.GetUserEmail(),
+                                     account_id_.GetGaiaId(),
+                                     FakeGaiaMixin::kFakeRefreshToken);
+    fake_saml_idp_.SetLoginHTMLTemplate("saml_login.html");
+
+    ash::OobeUI* oobe_ui = ash::LoginDisplayHost::default_host()->GetOobeUI();
+    ash::test::OobeScreenWatcher<ash::ErrorScreenView> error_screen_watcher(
+        oobe_ui);
+
+    // Wait for the Gaia signin UI to load (in a webview).
+    std::unique_ptr<ash::test::GaiaPageActor> gaia_ui =
+        ash::test::AwaitGaiaSigninUI();
+
+    std::optional<content::TestNavigationObserver>
+        navigation_net_error_observer;
+    if (expected_net_error.has_value()) {
+      // Observe the OOBE UI and its children, including the signin webview, for
+      // the expected net::Error.
+      content::WebContents* oobe_web_contents =
+          ash::LoginDisplayHost::default_host()->GetOobeWebContents();
+      navigation_net_error_observer.emplace(oobe_web_contents,
+                                            *expected_net_error);
+      for (content::WebContents* wc :
+           oobe_web_contents->GetInnerWebContents()) {
+        navigation_net_error_observer->WatchWebContents(wc);
+      }
+    }
+
+    // Submit the user's email to load the SAML page.
+    gaia_ui->SubmitFullAuthEmail(account_id_);
+
+    if (expected_net_error.has_value()) {
+      navigation_net_error_observer->WaitForNavigationFinished();
+      EXPECT_FALSE(navigation_net_error_observer->last_navigation_succeeded());
+      EXPECT_EQ(navigation_net_error_observer->last_net_error_code(),
+                *expected_net_error);
+      const GURL& error_nav_url =
+          navigation_net_error_observer->last_navigation_url();
+      GURL::Replacements remove_query_str;
+      remove_query_str.ClearQuery();
+      EXPECT_EQ(error_nav_url.ReplaceComponents(remove_query_str),
+                fake_saml_idp_.GetSamlPageUrl());
+
+      if (!error_screen_watcher.has_target_screen_been_shown()) {
+        ash::OobeScreenWaiter(ash::ErrorScreenView::kScreenId).Wait();
+      }
+      EXPECT_TRUE(error_screen_watcher.has_target_screen_been_shown());
+      // The ErrorScreen sees issues with SAML page loading as "offline".
+      // We don't currently see the ash::NetworkError::ERROR_REASON_FRAME_ERROR
+      // that has been passed to ErrorScreen.
+      EXPECT_EQ(oobe_ui->GetErrorScreen()->GetErrorState(),
+                ash::NetworkError::ERROR_STATE_OFFLINE);
+      return;
+    }
+
+    auto saml_waiter = CreateGaiaPageEventWaiter("samlPageLoaded");
+    // The back button appears when the UI is ready.
+    WaitForGaiaPageBackButtonUpdate();
+    saml_waiter->Wait();
+    // Fill in the SAML IdP form and submit.
+    SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
+    SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
+    SigninFrameJS().TapOn("Submit");
+    ash::test::WaitForPrimaryUserSessionStart();
+    EXPECT_FALSE(error_screen_watcher.has_target_screen_been_shown());
+  }
+
+ protected:
+  AccountId account_id_ = AccountId::FromUserEmailGaiaId(
+      ash::saml_test_users::kFirstUserCorpExampleComEmail,
+      FakeGaiaMixin::kFakeUserGaiaId);
+  ash::CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+  DevicePolicyCrosTestHelper policy_helper_;
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
+  ash::FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, &fake_gaia_};
+  raw_ptr<Profile> login_profile_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(SSLDeviceLoginScreenPolicyTest,
+                       DeviceLoginScreenPreferSlowKexAlgorithmsPolicy) {
+  // Set up the SAML server so it only allows clients supporting ML-KEM-1024.
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  ASSERT_TRUE(StartFakeSamlServerWithConfig(ssl_config));
+
+  // Check the initial state (no device or user policy).
+  ASSERT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+  ASSERT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+
+  // Set the device login screen policy to cnsa2 to prefer ML-KEM-1024.
+  policy_helper_.device_policy()
+      ->payload()
+      .mutable_deviceloginscreenpreferslowkexalgorithms()
+      ->set_value("cnsa2");
+  RefreshDevicePoliciesAndWaitForPrefChange(prefs::kPreferSlowKexAlgorithms);
+  content::FlushNetworkServiceInstanceForTesting();
+
+  // The pref is now set to the correct value in the login profile, and the
+  // local state is unaffected.
+  EXPECT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "cnsa2");
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+
+  // Login should succeed.
+  SetUpAndAttemptSamlLogin();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SSLDeviceLoginScreenPolicyTest,
+    PreferSlowKexAlgorithmsDefaultOnLoginScreen_HandshakeFails) {
+  // Set up the SAML server so it only allows clients supporting ML-KEM-1024.
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  ASSERT_TRUE(StartFakeSamlServerWithConfig(ssl_config));
+
+  // Without the value "cnsa2" for the device login screen policy, SAML login
+  // should not work because we cannot negotiate any group for key exchange.
+  ASSERT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            std::nullopt);
+  SetUpAndAttemptSamlLogin(net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
+}
+
+IN_PROC_BROWSER_TEST_F(SSLDeviceLoginScreenPolicyTest,
+                       DeviceLoginScreenPreferSlowCiphersPolicy) {
+  // Set up the SAML server so it only allows clients with the CNSA cipher list
+  // order.
+  ASSERT_TRUE(
+      StartFakeSamlServerWithConfig(GetServerConfigForPreferSlowCiphersTest()));
+
+  // Check the initial state (no device or user policy).
+  ASSERT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowCiphers),
+            std::nullopt);
+  ASSERT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers),
+            std::nullopt);
+
+  // Set the device login screen policy to cnsa to prefer the TLS 1.3 ciphers in
+  // the expected order.
+  policy_helper_.device_policy()
+      ->payload()
+      .mutable_deviceloginscreenpreferslowciphers()
+      ->set_value("cnsa");
+  RefreshDevicePoliciesAndWaitForPrefChange(prefs::kPreferSlowCiphers);
+
+  // The pref is now set to the correct value in the login profile, and the
+  // local state is unaffected.
+  EXPECT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowCiphers),
+            "cnsa");
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers),
+            std::nullopt);
+
+  // Login should succeed.
+  SetUpAndAttemptSamlLogin();
+}
+
+IN_PROC_BROWSER_TEST_F(SSLDeviceLoginScreenPolicyTest,
+                       PreferSlowCiphersDefaultOnLoginScreen_HandshakeFails) {
+  // Set up the SAML server so it only allows clients with the CNSA cipher list
+  // order.
+  ASSERT_TRUE(
+      StartFakeSamlServerWithConfig(GetServerConfigForPreferSlowCiphersTest()));
+
+  // Without the value "cnsa" for the device login screen policy, SAML login
+  // should not work because the test server rejects the handshake.
+  ASSERT_EQ(GetLoginProfileManagedStringPref(prefs::kPreferSlowCiphers),
+            std::nullopt);
+  SetUpAndAttemptSamlLogin(net::ERR_SSL_VERSION_OR_CIPHER_MISMATCH);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+// Tests the interaction between features::kCryptographyComplianceCnsa and the
+// policies. The test parameter indicates whether the feature is enabled.
+class SSLPolicyTestWithCnsaFeature : public SSLPolicyTest,
+                                     public testing::WithParamInterface<bool> {
+ public:
+  SSLPolicyTestWithCnsaFeature() {
+    features_.InitWithFeatureState(features::kCryptographyComplianceCnsa,
+                                   IsCnsaFeatureEnabled());
+  }
+
+  bool IsCnsaFeatureEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
+                         SSLPolicyTestWithCnsaFeature,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SSLPolicyTestWithCnsaFeature,
+                       CryptographyComplianceFeatureKeyExchange) {
+  net::SSLServerConfig ssl_config;
+  ssl_config.curves_for_testing = {NID_ML_KEM_1024};
+  ASSERT_TRUE(StartTestServer(ssl_config));
+
+  // If the policies disable CNSA behavior, the base::Feature can override and
+  // enable it.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("default"));
+#if BUILDFLAG(IS_CHROMEOS)
+    SetPolicy(&policies, key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+              base::Value("default"));
+#endif
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "default");
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_EQ(result.success, IsCnsaFeatureEnabled());
+
+  // If the policy enables CNSA behavior, it is enabled regardless of the
+  // base::Feature.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowKexAlgorithms, base::Value("cnsa2"));
+#if BUILDFLAG(IS_CHROMEOS)
+    SetPolicy(&policies, key::kDeviceLoginScreenPreferSlowKexAlgorithms,
+              base::Value("cnsa2"));
+#endif
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowKexAlgorithms),
+            "cnsa2");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+}
+
+IN_PROC_BROWSER_TEST_P(SSLPolicyTestWithCnsaFeature,
+                       CryptographyComplianceFeatureCiphers) {
+  ASSERT_TRUE(StartTestServer(GetServerConfigForPreferSlowCiphersTest()));
+
+  // If the policy disables CNSA behavior, the base::Feature can override and
+  // enable it.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("default"));
+#if BUILDFLAG(IS_CHROMEOS)
+    SetPolicy(&policies, key::kDeviceLoginScreenPreferSlowCiphers,
+              base::Value("default"));
+#endif
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers),
+            "default");
+  LoadResult result = LoadPage("/title2.html");
+  EXPECT_EQ(result.success, IsCnsaFeatureEnabled());
+
+  // If the policy enables CNSA behavior, it is enabled regardless of the
+  // base::Feature.
+  {
+    PolicyMap policies;
+    SetPolicy(&policies, key::kPreferSlowCiphers, base::Value("cnsa"));
+#if BUILDFLAG(IS_CHROMEOS)
+    SetPolicy(&policies, key::kDeviceLoginScreenPreferSlowCiphers,
+              base::Value("cnsa"));
+#endif
+    UpdateProviderPolicy(policies);
+    content::FlushNetworkServiceInstanceForTesting();
+  }
+
+  EXPECT_EQ(GetLocalStateManagedStringPref(prefs::kPreferSlowCiphers), "cnsa");
+  result = LoadPage("/title2.html");
+  EXPECT_TRUE(result.success);
+}
 
 class ECHPolicyTest : public SSLPolicyTest {
  public:
@@ -325,7 +880,7 @@ class ECHPolicyTest : public SSLPolicyTest {
 
 IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   // By default, the policy does not inhibit ECH.
-  EXPECT_TRUE(GetBooleanPref(prefs::kEncryptedClientHelloEnabled));
+  EXPECT_TRUE(GetLocalStateBooleanPref(prefs::kEncryptedClientHelloEnabled));
   LoadResult result = LoadPage(GetURL("/a"));
   EXPECT_TRUE(result.success);
   EXPECT_EQ(base::ASCIIToUTF16(kECHSuccessTitle), result.title);
@@ -337,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(ECHPolicyTest, ECHEnabledPolicy) {
   content::FlushNetworkServiceInstanceForTesting();
 
   // ECH should no longer be enabled.
-  EXPECT_FALSE(GetBooleanPref(prefs::kEncryptedClientHelloEnabled));
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kEncryptedClientHelloEnabled));
   result = LoadPage(GetURL("/b"));
   EXPECT_TRUE(result.success);
   EXPECT_EQ(base::ASCIIToUTF16(kECHFailureTitle), result.title);
@@ -403,7 +958,7 @@ class TLS13EarlyDataPolicyTest : public SSLPolicyTest,
       const net::test_server::HttpRequest& request) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("Connection", "close");
-    if (request.GetURL().path() == kEarlyDataCheckPath) {
+    if (request.GetURL().GetPath() == kEarlyDataCheckPath) {
       response->set_content_type("text/plain; charset=utf-8");
       if (request.ssl_info->early_data_accepted) {
         response->set_content(kEarlyDataAcceptedTitle);
@@ -425,7 +980,7 @@ INSTANTIATE_TEST_SUITE_P(, TLS13EarlyDataPolicyTest, ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
                        TLS13EarlyDataPolicyNoOverride) {
-  EXPECT_FALSE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
 
   NavigateToTestPage();
 
@@ -444,7 +999,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest,
   PolicyMap policies;
   SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(true));
   UpdateProviderPolicy(policies);
-  EXPECT_TRUE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  EXPECT_TRUE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
   content::FlushNetworkServiceInstanceForTesting();
 
   NavigateToTestPage();
@@ -457,7 +1012,7 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyTest, TLS13EarlyDataPolicyDisable) {
   PolicyMap policies;
   SetPolicy(&policies, key::kTLS13EarlyDataEnabled, base::Value(false));
   UpdateProviderPolicy(policies);
-  EXPECT_FALSE(GetBooleanPref(prefs::kTLS13EarlyDataEnabled));
+  EXPECT_FALSE(GetLocalStateBooleanPref(prefs::kTLS13EarlyDataEnabled));
 
   NavigateToTestPage();
 

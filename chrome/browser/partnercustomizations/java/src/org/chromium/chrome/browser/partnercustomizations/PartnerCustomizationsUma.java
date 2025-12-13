@@ -19,7 +19,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -30,13 +29,13 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
- * Centralizes UMA data collection for partner customizations and loading.
- * Each of these UMA instances correspond to a {@link PartnerBrowserCustomizations#initializeAsync}
- * execution. If createInitialTab is called, it's associated with whichever UMA started most
- * recently. Then that UMA logs the interaction with customization and won't log again in any future
- * instance.
+ * Centralizes UMA data collection for partner customizations and loading. Each of these UMA
+ * instances correspond to a {@link PartnerBrowserCustomizations#initializeAsync} execution. If
+ * createInitialTab is called, it's associated with whichever UMA started most recently. Then that
+ * UMA logs the interaction with customization and won't log again in any future instance.
  */
 @NullMarked
 class PartnerCustomizationsUma {

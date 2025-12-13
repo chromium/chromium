@@ -17,10 +17,9 @@ namespace content_capture {
 // the received message to Java and switches among the OnscreenContentProvider.
 class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
  public:
-  OnscreenContentProviderAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobject,
-      content::WebContents* web_contents);
+  OnscreenContentProviderAndroid(JNIEnv* env,
+                                 const base::android::JavaRef<jobject>& jobject,
+                                 content::WebContents* web_contents);
   ~OnscreenContentProviderAndroid() override;
 
   // ContentCaptureConsumer
@@ -35,13 +34,19 @@ class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
   void DidRemoveSession(const ContentCaptureSession& session) override;
   void DidUpdateTitle(const ContentCaptureFrame& main_frame) override;
   void DidUpdateFavicon(const ContentCaptureFrame& main_frame) override;
+  void DidUpdateSensitivityScore(const GURL& url,
+                                 float sensitivity_score) override;
+  void DidUpdateLanguageDetails(const GURL& url,
+                                const std::string& detected_language,
+                                float language_confidence) override;
+  void ClearContentCaptureMetadata() override;
   bool ShouldCapture(const GURL& url) override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void OnWebContentsChanged(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+      const base::android::JavaRef<jobject>& jweb_contents);
   void Destroy(JNIEnv* env);
 
  private:

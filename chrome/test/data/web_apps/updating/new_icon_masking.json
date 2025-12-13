@@ -1,0 +1,14 @@
+{
+  "id": "/web_apps/updating/",
+  "name": "Web app update with masking",
+  "icons": [
+    {
+      "src": "green-256.png",
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "new_icon_page_masking.html",
+  "display": "standalone"
+}

@@ -33,7 +33,6 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -259,6 +258,7 @@ class CORE_EXPORT InspectorDOMAgent final
       std::optional<protocol::DOM::PhysicalAxes> physical_axes,
       std::optional<protocol::DOM::LogicalAxes> logical_axes,
       std::optional<bool> queries_scroll_state,
+      std::optional<bool> queries_anchored,
       std::optional<int>* container_node_id) override;
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,
@@ -298,6 +298,8 @@ class CORE_EXPORT InspectorDOMAgent final
                         const AtomicString& value);
   void DidRemoveDOMAttr(Element*, const QualifiedName&);
   void StyleAttributeInvalidated(const HeapVector<Member<Element>>& elements);
+  void DidModifyAdoptedStyleSheets(Node*);
+  void AdoptedStyleSheetsInvalidated(Node*);
   void CharacterDataModified(CharacterData*);
   void DidInvalidateStyleAttr(Node*);
   void DidPushShadowRoot(Element* host, ShadowRoot*);
@@ -310,6 +312,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
   void UpdateScrollableFlag(Node* node, std::optional<bool>);
+  void UpdateAffectedByStartingStylesFlag(Node* node, std::optional<bool>);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;
@@ -413,6 +416,7 @@ class CORE_EXPORT InspectorDOMAgent final
   InspectorRevalidateDOMTask* RevalidateTask();
 
   bool isNodeScrollable(Node*);
+  bool AffectedByStartingStyles(Node*);
 
   v8::Isolate* isolate_;  // null after Dispose().
   Member<InspectedFrames> inspected_frames_;
@@ -429,7 +433,6 @@ class CORE_EXPORT InspectorDOMAgent final
   HashSet<int> distributed_nodes_requested_;
   HashMap<int, int> cached_child_count_;
   HeapHashSet<WeakMember<Node>> forced_popovers_;
-  HeapHashSet<WeakMember<Node>> popovers_currently_being_hidden_;
   int last_node_id_;
   Member<Document> document_;
   using SearchResults =

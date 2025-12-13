@@ -1,0 +1,45 @@
+Tests CDP Emulation.getScreenInfos() API.
+screenInfos: [
+    [0] : {
+        availHeight : 600
+        availLeft : 0
+        availTop : 0
+        availWidth : 800
+        colorDepth : 24
+        devicePixelRatio : 1
+        height : 600
+        id : <string>
+        isExtended : true
+        isInternal : false
+        isPrimary : true
+        label : 1st
+        left : 0
+        orientation : {
+            angle : 0
+            type : landscapePrimary
+        }
+        top : 0
+        width : 800
+    }
+    [1] : {
+        availHeight : 800
+        availLeft : 800
+        availTop : 0
+        availWidth : 600
+        colorDepth : 24
+        devicePixelRatio : 1
+        height : 800
+        id : <string>
+        isExtended : true
+        isInternal : false
+        isPrimary : false
+        label : 2nd
+        left : 800
+        orientation : {
+            angle : 0
+            type : portraitPrimary
+        }
+        top : 0
+        width : 600
+    }
+]

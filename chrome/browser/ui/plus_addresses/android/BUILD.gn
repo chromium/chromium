@@ -8,7 +8,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [
     ":jni_headers",
-    "//components/plus_addresses:plus_address_java_enums",
+    "//components/plus_addresses/core/browser:plus_address_java_enums",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
@@ -17,15 +17,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetView.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewBinder.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationProperties.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBinder.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]
   deps = [
@@ -39,7 +30,7 @@ android_library("java") {
     "//chrome/browser/ui/android/layouts:java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/plus_addresses/resources/strings:strings_grd",
+    "//components/plus_addresses/core/browser/resources/strings:strings_grd",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -54,15 +45,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color/refresh_plus_address_icon_tint_list.xml",
-    "java/res/drawable/proposed_plus_address_background.xml",
     "java/res/layout/all_plus_addresses_bottom_sheet.xml",
-    "java/res/layout/plus_address_creation_error_state.xml",
-    "java/res/layout/plus_address_creation_normal_state.xml",
-    "java/res/layout/plus_address_creation_prompt.xml",
     "java/res/layout/plus_profile_info_view.xml",
-    "java/res/values-night/colors.xml",
-    "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [
@@ -75,9 +59,6 @@ android_resources("java_resources") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
-    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
     "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
   ]
 }
@@ -87,11 +68,6 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetModuleTest.java",
     "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationModuleTest.java",
-    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java",
   ]
   deps = [
     ":java",
@@ -128,10 +104,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.ui.plus_addresses"
 
-  sources = [
-    "javatests/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetRenderTest.java",
-    "javatests/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationRenderTest.java",
-  ]
+  sources = [ "javatests/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetRenderTest.java" ]
 
   deps = [
     ":java",
@@ -164,7 +137,7 @@ android_library("javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/hamcrest:hamcrest_library_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java_test_support",

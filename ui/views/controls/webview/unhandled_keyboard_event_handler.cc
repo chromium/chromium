@@ -6,7 +6,6 @@
 
 #include "components/input/native_web_keyboard_event.h"
 #include "ui/content_accelerators/accelerator_util.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/views/focus/focus_manager.h"
 
 namespace views {

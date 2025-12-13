@@ -18,6 +18,8 @@
 
 namespace content {
 
+class PerWebUIBrowserInterfaceBroker;
+
 // Test instance of WebUI that tracks the data passed to
 // CallJavascriptFunctionUnsafe().
 class TestWebUI : public WebUI {
@@ -119,6 +121,7 @@ class TestWebUI : public WebUI {
   raw_ptr<RenderFrameHost, AcrossTasksDanglingUntriaged> render_frame_host_ =
       nullptr;
   std::unique_ptr<WebUIController> controller_;
+  std::unique_ptr<PerWebUIBrowserInterfaceBroker> broker_;
 
   // Observers to be notified on all javascript calls.
   base::ObserverList<JavascriptCallObserver> javascript_call_observers_;

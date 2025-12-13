@@ -10,6 +10,8 @@
   (regex (user-homedir-path #"/Library/Preferences/com.apple.coreaudio.*"))
   (subpath "/Library/Audio/Plug-Ins")
   (subpath "/Library/QuickTime")
+  ; /Tunings needed for Spatial Audio (AirPods head tracking).
+  (subpath "/System/Library/Audio/Tunings")
   (subpath "/System/Library/Components")
   (subpath "/System/Library/Extensions")
   (subpath (user-homedir-path "/Library/Audio/Plug-Ins"))
@@ -34,6 +36,10 @@
   (global-name "com.apple.audio.SystemSoundServer-OSX")
   (global-name "com.apple.audio.VDCAssistant")
   (xpc-service-name "com.apple.audio.SandboxHelper")
+  ; Needed for AVSampleBufferAudioRenderer creation.
+  (global-name "com.apple.coremedia.routingcontext.xpc")
+  ; Required for Spatial Audio (AirPods head tracking).
+  (global-name "com.apple.relatived.tempest")
 )
 
 ; Needed by ScreenCaptureKit.

@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Zobrazení aplikace: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Rozšíření obsahuje soubor klíče <ph name="KEY_PATH" />. Tuto akci pravděpodobně provést nechcete.</translation>
 <translation id="5486326529110362464">Musí existovat vstupní hodnota pro soukromý klíč</translation>
+<translation id="5707185214361380026">Načtení rozšíření z následujícího umístění se nezdařilo:</translation>
 <translation id="5972529113578162692">Administrátor tohoto zařízení vyžaduje, aby bylo rozšíření <ph name="EXTENSION_NAME" /> nainstalováno. Toto rozšíření nelze odinstalovat.</translation>
 <translation id="6027032947578871493">Neznámý produkt <ph name="PRODUCT_ID" /> od dodavatele <ph name="VENDOR_NAME" /> (sériové číslo <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> od dodavatele <ph name="VENDOR_ID" /></translation>
+<translation id="6220413761270491930">Při načítání rozšíření došlo k chybě</translation>
 <translation id="6322279351188361895">Čtení soukromého klíče se nezdařilo.</translation>
 <translation id="6391538222494443604">Vstupní adresář musí existovat.</translation>
 <translation id="641087317769093025">Rozšíření se nepodařilo rozbalit</translation>

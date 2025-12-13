@@ -92,7 +92,7 @@ static_library("core") {
     "//components/offline_pages/task",
     "//crypto",
     "//net",
-    "//sql:sql",
+    "//sql",
     "//url",
   ]
 }
@@ -125,7 +125,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/keyed_service/core",
     "//components/offline_pages/task:test_support",
-    "//sql:sql",
+    "//sql",
     "//testing/gmock",
     "//testing/gtest",
     "//url",
@@ -182,7 +182,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/offline_pages/task:test_support",
-    "//sql:sql",
+    "//sql",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",

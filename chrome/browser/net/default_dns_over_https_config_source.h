@@ -33,6 +33,7 @@ class DefaultDnsOverHttpsConfigSource : public DnsOverHttpsConfigSource {
   // DnsOverHttpsConfigSource:
   std::string GetDnsOverHttpsMode() const override;
   std::string GetDnsOverHttpsTemplates() const override;
+  bool AutomaticModeFallbackToDohEnabled() const override;
   bool IsConfigManaged() const override;
   void SetDohChangeCallback(base::RepeatingClosure callback) override;
 

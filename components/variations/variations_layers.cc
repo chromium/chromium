@@ -33,12 +33,14 @@ void LogInvalidLayerReason(InvalidLayerReason reason) {
 const Layer::LayerMember* FindActiveMemberBySlot(uint32_t chosen_slot,
                                                  const Layer& layer_proto) {
   for (const Layer::LayerMember& member : layer_proto.members()) {
-    if (!member.id())
+    if (!member.id()) {
       continue;
+    }
 
     for (const Layer::LayerMember::SlotRange& slot : member.slots()) {
-      if (slot.start() <= chosen_slot && chosen_slot <= slot.end())
+      if (slot.start() <= chosen_slot && chosen_slot <= slot.end()) {
         return &member;
+      }
     }
   }
   return nullptr;
@@ -173,9 +175,6 @@ VariationsLayers::VariationsLayers(const VariationsSeed& seed,
   std::map<uint32_t, int> counts_by_id;
   for (const Layer& layer_proto : seed.layers()) {
     ++counts_by_id[layer_proto.id()];
-    if (layer_proto.entropy_mode() == Layer::LIMITED) {
-      seed_has_limited_layer_ = true;
-    }
     // Avoid multiple logs if one ID is used multiple times.
     if (counts_by_id[layer_proto.id()] == 2) {
       LogInvalidLayerReason(InvalidLayerReason::LayerIDNotUnique);
@@ -202,20 +201,28 @@ VariationsLayers::~VariationsLayers() = default;
 
 // static
 bool VariationsLayers::AreSlotBoundsValid(const Layer& layer_proto) {
+  std::vector<std::pair<uint32_t, uint32_t>> all_slot_ranges;
+  all_slot_ranges.reserve(layer_proto.members_size());
   for (const auto& member : layer_proto.members()) {
     uint32_t next_slot_after_processed_ranges = 0;
     for (const auto& range : member.slots()) {
-      // Ranges should be non-overlapping. We also require them to be in
-      // increasing order so that we can easily validate that they are not
-      // overlapping.
-      if (range.start() < next_slot_after_processed_ranges) {
-        return false;
-      }
-
       static_assert(std::is_same<decltype(range.start()), uint32_t>::value,
                     "range start of a layer member must be an unsigned number");
       static_assert(std::is_same<decltype(range.end()), uint32_t>::value,
                     "range end of a layer member must be an unsigned number");
+
+      // Ranges should be non-overlapping. We also require them to be in
+      // increasing order so that we can easily validate that they are not
+      // overlapping.
+      //
+      // TODO: crbug.com/428216544 - `next_slot_after_processed_ranges` may not
+      // be necessary. Verify whether there is any real dependency on the order
+      // of the slot ranges within a layer member.
+
+      if (range.start() < next_slot_after_processed_ranges) {
+        return false;
+      }
+
       // Since `range.start()` and `range.end()` are both unsigned (uint32_t),
       // there is no need to check that they are non-negative.
       if (range.end() >= layer_proto.num_slots()) {
@@ -225,6 +232,8 @@ bool VariationsLayers::AreSlotBoundsValid(const Layer& layer_proto) {
         return false;
       }
 
+      all_slot_ranges.emplace_back(range.start(), range.end());
+
       // Note this won't overflow because the above if-clauses ensures
       // `range.end() < layer_proto.num_slots()`. Therefore `range.end()` is not
       // the max representable uint32_t. Will CHECK if it expectedly overflows.
@@ -232,6 +241,15 @@ bool VariationsLayers::AreSlotBoundsValid(const Layer& layer_proto) {
           base::CheckAdd(range.end(), 1).ValueOrDie();
     }
   }
+
+  // Check that *all* of the slot ranges in the *layer* are non-overlapping.
+  std::sort(all_slot_ranges.begin(), all_slot_ranges.end());
+  for (size_t i = 1; i < all_slot_ranges.size(); ++i) {
+    if (all_slot_ranges[i - 1].second >= all_slot_ranges[i].first) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -262,9 +280,20 @@ bool VariationsLayers::IsReferencingLayerMemberId(
   // `layer_member_id` (singular) field should NOT be given. However, for
   // correctness, the legacy field is still checked in case the client needs to
   // process a proto with the legacy field.
-  // TODO(crbug/TBA): remove check of the legacy field after it's fully
-  // deprecated.
+  // TODO: crbug.com/417695924 - remove check of the legacy field after it's
+  // fully deprecated.
   return layer_member_id == layer_member_reference.layer_member_id();
+}
+
+// TODO: crbug.com/417695924 - Remove once layer_member_ids field is launched.
+// static
+google::protobuf::RepeatedField<uint32_t>
+VariationsLayers::FallbackLayerMemberIds(const LayerMemberReference& ref) {
+  google::protobuf::RepeatedField<uint32_t> fallback_ids;
+  if (ref.has_layer_member_id() && ref.layer_member_id() != 0) {
+    fallback_ids.Add(ref.layer_member_id());
+  }
+  return fallback_ids;
 }
 
 bool VariationsLayers::IsLayerActive(uint32_t layer_id) const {

@@ -43,16 +43,17 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/url_constants.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/content_features.h"
@@ -114,6 +115,7 @@ int CountApps(const WebAppRegistrar::AppSet& app_set) {
 }  // namespace
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 
 // TODO(dmurph): Make this test run from the default FakeWebAppProvider like all
@@ -953,7 +955,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
   constexpr char kExpectedIwaStoragePartitionDomain[] =
       "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
-  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL start_url(base::StrCat({webapps::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
@@ -962,7 +964,7 @@ TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -992,7 +994,7 @@ TEST_F(
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   isolated_web_app->SetInstallState(
       proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE);
@@ -1012,7 +1014,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
   constexpr char kExpectedIwaStoragePartitionDomain[] =
       "i1kr80qqyjuuVC4UFPN7ovBngVoA2HbXGtTXtmQn6/H4=";
-  GURL start_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL start_url(base::StrCat({webapps::kIsolatedAppScheme,
                                url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(start_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
@@ -1023,7 +1025,7 @@ TEST_F(WebAppRegistrarTest, SaveAndGetInMemoryControlledFramePartitionConfig) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   RegisterAppUnsafe(std::move(isolated_web_app));
 
@@ -1108,7 +1110,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1133,7 +1135,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1157,7 +1159,7 @@ TEST_F(WebAppRegistrarTest,
   web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
 
   RegisterAppUnsafe(std::move(web_app));
@@ -1309,14 +1311,7 @@ TEST_F(WebAppRegistrarTest, AppsDoNotOverlapIfNestedScope) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-class WebAppRegistrarTest_ScopeExtensions : public WebAppRegistrarTest {
- public:
-  WebAppRegistrarTest_ScopeExtensions() = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppEnableScopeExtensions};
-};
+using WebAppRegistrarTest_ScopeExtensions = WebAppRegistrarTest;
 
 TEST_F(WebAppRegistrarTest_ScopeExtensions, IsUrlInAppExtendedScope) {
   StartWebAppProvider();
@@ -1523,6 +1518,311 @@ TEST_F(WebAppRegistrarTest, InnerAndOuterScopeIntentPicker) {
                           Pair(outer_app_id, "ABC_Outer")));
 }
 
+TEST_F(WebAppRegistrarTest, GetAllAppsControllingUrl_ScopeExtensions) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPwaNavigationCapturingWithScopeExtensions);
+
+  StartWebAppProvider();
+
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/start"));
+  web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
+  web_app_info->scope = GURL("https://example.com/app/");
+  web_app_info->validated_scope_extensions = {
+      ScopeExtensionInfo::CreateForOrigin(
+          url::Origin::Create(GURL("https://example.org")))};
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info));
+
+  const GURL url_in_scope("https://example.com/app/page.html");
+  const GURL url_in_extension("https://example.org/page.html");
+  const GURL url_outside("https://example.net/page.html");
+
+  auto controlling_apps_in_scope =
+      registrar().GetAllAppsControllingUrl(url_in_scope);
+  EXPECT_EQ(1u, controlling_apps_in_scope.size());
+  EXPECT_EQ(app_id, controlling_apps_in_scope.begin()->first);
+
+  auto controlling_apps_in_extension =
+      registrar().GetAllAppsControllingUrl(url_in_extension);
+  EXPECT_EQ(1u, controlling_apps_in_extension.size());
+  EXPECT_EQ(app_id, controlling_apps_in_extension.begin()->first);
+
+  auto controlling_apps_outside =
+      registrar().GetAllAppsControllingUrl(url_outside);
+  EXPECT_TRUE(controlling_apps_outside.empty());
+}
+
+TEST_F(WebAppRegistrarTest, GetTrustedIconsIfPopulatedSingleNoSize) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  apps::IconInfo trusted_icon;
+  trusted_icon.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon.square_size_px = 128;
+  trusted_icon.url = GURL("https://abc.com/icon.jpg");
+  web_app->SetTrustedIcons({trusted_icon});
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(trusted_icon));
+  EXPECT_EQ(trusted_icon,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/512));
+}
+
+TEST_F(WebAppRegistrarTest, EmptyTrustedOrManifestIcons) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  // Explicitly ensure that there are no manifest or trusted icons.
+  web_app->SetManifestIcons({});
+  web_app->SetTrustedIcons({});
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id), IsEmpty());
+  EXPECT_EQ(std::nullopt,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/128));
+}
+
+TEST_F(WebAppRegistrarTest, NoTrustedIconsFallbackToManifest) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  // Explicitly ensure that there are no trusted icons, but manifest icons are
+  // populated.
+  web_app->SetTrustedIcons({});
+
+  apps::IconInfo manifest_icon;
+  manifest_icon.purpose = apps::IconInfo::Purpose::kAny;
+  manifest_icon.square_size_px = 128;
+  manifest_icon.url = GURL("https://abc.com/icon.jpg");
+  web_app->SetManifestIcons({manifest_icon});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  // There are no trusted app icons, but `manifest_icon` is used as the
+  // fallback.
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(manifest_icon));
+  EXPECT_EQ(manifest_icon,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/64));
+}
+
+TEST_F(WebAppRegistrarTest, NoTrustedIconsFallbackToManifestMultipleIcons) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+
+  // Explicitly ensure that there are no trusted icons, but manifest icons are
+  // populated.
+  web_app->SetTrustedIcons({});
+
+  apps::IconInfo manifest_icon1;
+  manifest_icon1.purpose = apps::IconInfo::Purpose::kAny;
+  manifest_icon1.square_size_px = 128;
+  manifest_icon1.url = GURL("https://abc.com/icon.jpg");
+  apps::IconInfo manifest_icon2;
+  manifest_icon2.purpose = apps::IconInfo::Purpose::kMaskable;
+  manifest_icon2.square_size_px = 256;
+  manifest_icon2.url = GURL("https://abc.com/icon2.jpg");
+
+  web_app->SetManifestIcons({manifest_icon1, manifest_icon2});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  // There are no trusted app icons, but `manifest_icon2` is used as the
+  // fallback, since that is closest to the input_size.
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(manifest_icon1, manifest_icon2));
+  EXPECT_EQ(manifest_icon2,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/512));
+}
+
+TEST_F(WebAppRegistrarTest, MultipleTrustedIconsUseBiggestClosestToSize) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  web_app->SetManifestIcons({});
+
+  apps::IconInfo trusted_icon1;
+  trusted_icon1.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon1.square_size_px = 256;
+  trusted_icon1.url = GURL("https://abc.com/icon.jpg");
+  apps::IconInfo trusted_icon2;
+  trusted_icon2.purpose = apps::IconInfo::Purpose::kMaskable;
+  trusted_icon2.square_size_px = 512;
+  trusted_icon2.url = GURL("https://abc.com/icon2.jpg");
+  apps::IconInfo trusted_icon3;
+  trusted_icon3.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon3.square_size_px = 96;
+  trusted_icon3.url = GURL("https://abc.com/icon3.jpg");
+  web_app->SetTrustedIcons({trusted_icon1, trusted_icon2, trusted_icon3});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(trusted_icon1, trusted_icon2, trusted_icon3));
+  // `trusted_icon1` is used, since it is the biggest icon with size closer to
+  // the input size.
+  EXPECT_EQ(trusted_icon1,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/128));
+}
+
+TEST_F(WebAppRegistrarTest, MultipleTrustedIconsUseSmallerCloserToSize) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  web_app->SetManifestIcons({});
+
+  apps::IconInfo trusted_icon1;
+  trusted_icon1.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon1.square_size_px = 128;
+  trusted_icon1.url = GURL("https://abc.com/icon.jpg");
+  apps::IconInfo trusted_icon2;
+  trusted_icon2.purpose = apps::IconInfo::Purpose::kMaskable;
+  trusted_icon2.square_size_px = 256;
+  trusted_icon2.url = GURL("https://abc.com/icon2.jpg");
+  apps::IconInfo trusted_icon3;
+  trusted_icon3.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon3.square_size_px = 96;
+  trusted_icon3.url = GURL("https://abc.com/icon3.jpg");
+  web_app->SetTrustedIcons({trusted_icon1, trusted_icon2, trusted_icon3});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(trusted_icon1, trusted_icon2, trusted_icon3));
+  // `trusted_icon2` is used, since it is the largest icon with size closer to
+  // the input size but smaller than the input size.
+  EXPECT_EQ(trusted_icon2,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/512));
+}
+
+TEST_F(WebAppRegistrarTest, AllIconSizesHigherThanInputSize) {
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  web_app->SetManifestIcons({});
+
+  apps::IconInfo trusted_icon1;
+  trusted_icon1.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon1.square_size_px = 128;
+  trusted_icon1.url = GURL("https://abc.com/icon.jpg");
+  apps::IconInfo trusted_icon2;
+  trusted_icon2.purpose = apps::IconInfo::Purpose::kMaskable;
+  trusted_icon2.square_size_px = 256;
+  trusted_icon2.url = GURL("https://abc.com/icon2.jpg");
+  apps::IconInfo trusted_icon3;
+  trusted_icon3.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon3.square_size_px = 96;
+  trusted_icon3.url = GURL("https://abc.com/icon3.jpg");
+  web_app->SetTrustedIcons({trusted_icon1, trusted_icon2, trusted_icon3});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(trusted_icon1, trusted_icon2, trusted_icon3));
+  // `trusted_icon3` is used, since it is the smallest icon with size closer to
+  // the input size but larger than the input size.
+  EXPECT_EQ(trusted_icon3,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/64));
+}
+
+TEST_F(WebAppRegistrarTest, NoSizesProvidedNoMetadata) {
+  // Crash fix for
+  StartWebAppProvider();
+  auto web_app = test::CreateWebApp(GURL("https://abc.com"),
+                                    WebAppManagement::kUserInstalled);
+  web_app->SetName("ABC");
+  web_app->SetScope(GURL("https://abc.com/"));
+  web_app->SetInstallState(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION);
+  web_app->SetManifestIcons({});
+
+  apps::IconInfo trusted_icon1;
+  trusted_icon1.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon1.url = GURL("https://abc.com/icon.jpg");
+  apps::IconInfo trusted_icon2;
+  trusted_icon2.purpose = apps::IconInfo::Purpose::kAny;
+  trusted_icon2.url = GURL("https://abc.com/icon2.jpg");
+  web_app->SetTrustedIcons({trusted_icon1, trusted_icon2});
+
+  const webapps::AppId app_id = web_app->app_id();
+  RegisterAppUnsafe(std::move(web_app));
+
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
+              ElementsAre(trusted_icon1, trusted_icon2));
+  EXPECT_EQ(std::nullopt,
+            registrar().GetSingleTrustedAppIconForSecuritySurfaces(
+                app_id, /*input_size=*/128));
+}
+
+TEST_F(WebAppRegistrarTest, TrustedIconMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // Set up the registry with 10 apps, and set trusted icons on 5 of them.
+  Registry test_registry =
+      CreateRegistryForTesting("https://example.com/path", 10);
+  int i = 0;
+  apps::IconInfo icon_info(GURL("https://www.example.com/icon.png"),
+                           icon_size::k48);
+  for (auto& apps : test_registry) {
+    if (i % 2 == 0) {
+      apps.second->SetTrustedIcons({icon_info});
+    }
+    i++;
+  }
+
+  PopulateRegistry(std::move(test_registry));
+  StartWebAppProvider();
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.InstalledCount.HasTrustedIcons"),
+      base::BucketsAre(base::Bucket(/*min=*/5,
+                                    /*count=*/1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.InstalledCount.HasNoTrustedIcons"),
+      base::BucketsAre(base::Bucket(/*min=*/5,
+                                    /*count=*/1)));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 
 class WebAppRegistrarAshTest : public WebAppTest {
@@ -1622,7 +1922,7 @@ class WebAppRegistrarDisplayModeTest
       constexpr char kIwaHostname[] =
           "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
       start_url =
-          GURL(base::StrCat({chrome::kIsolatedAppScheme,
+          GURL(base::StrCat({webapps::kIsolatedAppScheme,
                              url::kStandardSchemeSeparator, kIwaHostname}));
     }
     auto web_app = test::CreateWebApp(start_url);
@@ -1638,7 +1938,7 @@ class WebAppRegistrarDisplayModeTest
       web_app->SetIsolationData(
           IsolationData::Builder(
               IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-              base::Version("1.0.0"))
+              *IwaVersion::Create("1.0.0"))
               .Build());
     }
 
@@ -1913,7 +2213,7 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
 
   constexpr char kIwaHostname[] =
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
-  GURL app_url(base::StrCat({chrome::kIsolatedAppScheme,
+  GURL app_url(base::StrCat({webapps::kIsolatedAppScheme,
                              url::kStandardSchemeSeparator, kIwaHostname}));
   auto isolated_web_app = test::CreateWebApp(app_url);
   const webapps::AppId app_id = isolated_web_app->app_id();
@@ -1922,7 +2222,7 @@ TEST_P(WebAppRegistrarParameterizedTest, Filter_IsIsolatedApp) {
   isolated_web_app->SetIsolationData(
       IsolationData::Builder(
           IwaStorageOwnedBundle{"random_name", /*dev_mode=*/false},
-          base::Version("1.0.0"))
+          *IwaVersion::Create("1.0.0"))
           .Build());
   isolated_web_app->SetDisplayMode(DisplayMode::kBrowser);
   isolated_web_app->SetUserDisplayMode(mojom::UserDisplayMode::kBrowser);

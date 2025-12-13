@@ -52,3 +52,5 @@ ScopedJavaLocalRef<jobject> FormDataAndroidBridgeImpl::GetOrCreateJavaPeer(
 }
 
 }  // namespace autofill
+
+DEFINE_JNI(FormData)

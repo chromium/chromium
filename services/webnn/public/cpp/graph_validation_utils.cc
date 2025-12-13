@@ -446,12 +446,12 @@ base::expected<OperandDescriptor, std::string> ValidateArgMinMaxAndInferOutput(
             input, context_properties.data_type_limits.arg_min_max_input)));
   }
 
-  if (!context_properties.data_type_limits.arg_min_max_output.Has(
+  if (!context_properties.data_type_limits.arg_min_max_output.data_types.Has(
           output_data_type)) {
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedOpOutputTypeError(
-                   output_data_type,
-                   context_properties.data_type_limits.arg_min_max_output)));
+                   output_data_type, context_properties.data_type_limits
+                                         .arg_min_max_output.data_types)));
   }
 
   ASSIGN_OR_RETURN(std::vector<uint32_t> output_shape,
@@ -947,14 +947,14 @@ ValidateScaleZeroPointOperandShapeIsCompatibleWithInput(
     base::span<const uint32_t> zero_point_shape,
     std::string_view label) {
   // Check whether `scale_shape` is a subsample of `input_shape`.
-  if (scale_shape.size() > input_shape.size()) {
+  if (scale_shape.size() != input_shape.size()) {
     return base::unexpected(ErrorWithLabel(
-        label, "The rank of scale is larger than the rank of input."));
+        label, "The rank of scale is not equal to the rank of input."));
   }
 
   for (size_t i = 0; i < scale_shape.size(); ++i) {
-    auto scale_dim = scale_shape[scale_shape.size() - i - 1];
-    auto input_dim = input_shape[input_shape.size() - i - 1];
+    auto scale_dim = scale_shape[i];
+    auto input_dim = input_shape[i];
     // The block_size should be an integer where block_size = dim_input /
     // dim_scale along the axis.
     if (input_dim % scale_dim != 0) {
@@ -1074,6 +1074,14 @@ base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
     return base::unexpected(ErrorWithLabel(
         label, NotSupportedInputArgumentError(
                    input, context_properties.data_type_limits.expand_input)));
+  }
+
+  if (!context_properties.data_type_limits.expand_input.ranks.Supports(
+          new_shape.size())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedOpOutputRankError(
+                   static_cast<uint32_t>(new_shape.size()),
+                   context_properties.data_type_limits.expand_input.ranks)));
   }
 
   std::optional<std::vector<uint32_t>> output_shape =
@@ -3003,9 +3011,11 @@ base::expected<void, std::string> ValidateTensor(
 
   // TODO(crbug.com/356905054): Consider adding `DataTypeLimits` specific to
   // `MLTensor` rather than using `input`.
-  if (!context_properties.data_type_limits.input.Has(descriptor.data_type())) {
+  if (!context_properties.data_type_limits.input.data_types.Has(
+          descriptor.data_type())) {
     return base::unexpected(NotSupportedMLTensorTypeError(
-        descriptor.data_type(), context_properties.data_type_limits.input));
+        descriptor.data_type(),
+        context_properties.data_type_limits.input.data_types));
   }
 
   const size_t byte_length = descriptor.PackedByteLength();

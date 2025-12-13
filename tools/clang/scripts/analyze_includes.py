@@ -17,7 +17,9 @@ $ analyze_includes.py --target=chrome --revision=$(git rev-parse --short HEAD) \
 Windows due to crbug.com/1223741#c9)
 
 The script takes roughly half an hour on a fast machine for the chrome build
-target, which is considered fast enough for batch job purposes for now.
+target, which is considered fast enough for batch job purposes for now. It can
+be sped up significantly by using multiple processes with the --proccesses option,
+but it will also use significantly more memory as a result (OOM is a risk).
 
 If --json-out is not provided, the script exits after printing some statistics
 to stdout. This is significantly faster than generating the full JSON data. For
@@ -28,7 +30,10 @@ build_size 270237664463
 """
 
 import argparse
+import concurrent.futures
+import functools
 import json
+import math
 import os
 import pathlib
 import re
@@ -36,6 +41,7 @@ import sys
 import unittest
 from collections import defaultdict
 from datetime import datetime, timezone
+from itertools import islice
 
 
 def parse_build(build_log, root_filter=None):
@@ -52,19 +58,24 @@ def parse_build(build_log, root_filter=None):
   # invocations depending on -D flags. For such cases, includes[file] will be
   # the union of those includes.
 
-  # Normalize paths.
-  normalized = {}
-
+  @functools.cache
   def norm(fn):
-    if fn not in normalized:
-      x = fn.replace('\\\\', '\\')
-      # Use Path.resolve() rather than path.realpath() to get the canonical
-      # upper/lower-case version of the path on Windows.
-      p = pathlib.Path(os.path.join(build_dir, x)).resolve()
-      x = os.path.relpath(p)
-      x = x.replace(os.path.sep, '/')
-      normalized[fn] = x
-    return normalized[fn]
+    x = fn.replace('\\\\', '\\')
+    # Use Path.resolve() rather than path.realpath() to get the canonical
+    # upper/lower-case version of the path on Windows.
+    p = pathlib.Path(os.path.join(build_dir, x)).resolve()
+    x = os.path.relpath(p)
+    return x.replace(os.path.sep, '/')
+
+  @functools.cache
+  def parse_include_line(line):
+    m = INCLUDE_RE.match(line)
+
+    if m:
+      depth = len(m.group(1))
+      filename = norm(m.group(2))
+
+      return filename, depth
 
   # ninja: Entering directory `out/foo'
   ENTER_DIR_RE = re.compile(r'ninja: Entering directory `(.*?)\'$')
@@ -81,14 +92,15 @@ def parse_build(build_log, root_filter=None):
   skipping_root = False
 
   for line in build_log:
-    m = INCLUDE_RE.match(line)
-    if m:
+    # TODO(https://crbug.com/435303792): Ignore precompiled modules (.pcm) until
+    # an appropriate way to calculate their size for include analysis is found.
+    if (parsed := parse_include_line(line)) and not parsed[0].endswith('.pcm'):
       if skipping_root:
         continue
       prev_depth = len(file_stack) - 1
-      depth = len(m.group(1))
-      filename = norm(m.group(2))
-      includes.setdefault(filename, set())
+      filename, depth = parsed
+      if filename not in includes:
+        includes[filename] = set()
 
       if depth > prev_depth:
         if sys.platform != 'win32':
@@ -99,15 +111,14 @@ def parse_build(build_log, root_filter=None):
           print('missing include under', file_stack[0])
           continue
       else:
-        for _ in range(prev_depth - depth + 1):
-          file_stack.pop()
+        del file_stack[-(prev_depth - depth + 1):]
 
       includes[file_stack[-1]].add(filename)
       file_stack.append(filename)
       continue
 
-    m = COMPILE_RE.match(line)
-    if m:
+    # Clang module compile .modulemap files, so skip that from include analysis.
+    if (m := COMPILE_RE.match(line)) and not m.group(2).endswith('.modulemap'):
       skipping_root = False
       filename = norm(m.group(2))
       if root_filter and not root_filter.match(filename):
@@ -118,8 +129,7 @@ def parse_build(build_log, root_filter=None):
       includes.setdefault(filename, set())
       continue
 
-    m = ENTER_DIR_RE.match(line)
-    if m:
+    if (m := ENTER_DIR_RE.match(line)):
       build_dir = m.group(1)
       continue
 
@@ -220,6 +230,18 @@ class TestParseBuild(unittest.TestCase):
     self.assertEqual(roots, set(['a.cc', 'c.cc']))
     self.assertEqual(includes['a.cc'], set(['a.h']))
     self.assertEqual(includes['c.cc'], set(['c.h']))
+
+  def test_modules(self):
+    x = [
+        'ninja: Entering directory `out/foo\'',
+        '[123/234] clang -x c++ -Xclang -emit-module -c ../../a.modulemap -o a.pcm',
+        '[124/234] clang -fmodule-file=a.pcm -c ../../a.cc -o a.o',
+        '. a.pcm',
+        '. ../../a.h',
+    ]
+    (roots, includes) = parse_build(x)
+    self.assertEqual(roots, {'a.cc'})
+    self.assertEqual(includes, {'a.cc': {'a.h'}, 'a.h': set()})
 
 
 def post_order_nodes(root, child_nodes):
@@ -325,6 +347,25 @@ def compute_doms(root, includes):
   return {n: dom_set(n) for n in vertex}
 
 
+def compute_added_sizes(args):
+  """Helper to compute added sizes from the given root."""
+
+  roots, includes, sizes = args
+  added_sizes = {node: 0 for node in includes}
+
+  for root in roots:
+    doms = compute_doms(root, includes)
+
+    for node in doms:
+      if node not in sizes:
+        # Skip the (src,dst) pseudo nodes.
+        continue
+      for dom in doms[node]:
+        added_sizes[dom] += sizes[node]
+
+  return added_sizes
+
+
 class TestComputeDoms(unittest.TestCase):
   def test_basic(self):
     includes = {}
@@ -379,40 +420,51 @@ class TestComputeDoms(unittest.TestCase):
     self.assertEqual(doms['r'], set(['r']))
 
 
-def trans_size(root, includes, sizes):
-  """Compute the transitive size of a file, i.e. the size of the file itself and
-  all its transitive includes."""
-  return sum([sizes[n] for n in post_order_nodes(root, includes)])
-
-
 def log(*args, **kwargs):
   """Log output to stderr."""
   print(*args, file=sys.stderr, **kwargs)
 
 
-def analyze(target, revision, build_log_file, json_file, root_filter):
+# TODO: Use itertools.batched after updating the Python version on bots to 3.12.
+def batched(iterable, n):
+  # batched('ABCDEFG', 2) → AB CD EF G
+  if n < 1:
+    raise ValueError('n must be at least one')
+  iterator = iter(iterable)
+  while batch := tuple(islice(iterator, n)):
+    yield batch
+
+
+def analyze(target, revision, build_log_file, json_file, root_filter, processes=1):
   log('Parsing build log...')
   (roots, includes) = parse_build(build_log_file, root_filter)
 
   log('Getting file sizes...')
   sizes = {name: os.path.getsize(name) for name in includes}
 
-  log('Computing transitive sizes...')
-  trans_sizes = {n: trans_size(n, includes, sizes) for n in includes}
+  log('Computing transitive sizes and prevalence...')
+  build_size = 0
+  trans_sizes = {name: 0 for name in includes}
+  prevalence = {name: 0 for name in includes}
 
-  build_size = sum([trans_sizes[n] for n in roots])
+  for n in includes:
+    for node in post_order_nodes(n, includes):
+      # Compute the transitive size of a file, i.e. the size of the
+      # file itself and all its transitive includes.
+      trans_sizes[n] += sizes[node]
+
+      if n in roots:
+        prevalence[node] += 1
+
+    # Total build size is the sum of the transitive size of all roots.
+    if n in roots:
+      build_size += trans_sizes[n]
 
   print('build_size', build_size)
 
   if json_file is None:
     log('--json-out not set; exiting.')
     return 0
-
-  log('Counting prevalence...')
-  prevalence = {name: 0 for name in includes}
-  for r in roots:
-    for n in post_order_nodes(r, includes):
-      prevalence[n] += 1
 
   # Map from file to files that include it.
   log('Building reverse include map...')
@@ -433,15 +485,24 @@ def analyze(target, revision, build_log_file, json_file, root_filter):
       augmented_includes[src].add((src, dst))
       augmented_includes[(src, dst)] = {dst}
 
-  added_sizes = {node: 0 for node in augmented_includes}
-  for r in roots:
-    doms = compute_doms(r, augmented_includes)
-    for node in doms:
-      if node not in sizes:
-        # Skip the (src,dst) pseudo nodes.
-        continue
-      for dom in doms[node]:
-        added_sizes[dom] += sizes[node]
+  if processes > 1:
+    added_sizes = {node: 0 for node in augmented_includes}
+
+    # Break up the list of roots into chunks based on the number of processes and pass them
+    # to each worker. Giving each worker a complete chunk of roots to work on rather than
+    # having workers pull as they go minimizes contention and gives better parallelization.
+    chunk_size = math.ceil(float(len(roots)) / processes)
+    chunked = list(batched(roots, chunk_size))
+
+    with concurrent.futures.ProcessPoolExecutor(max_workers=processes) as pool:
+      for computed_added_sizes in pool.map(
+        compute_added_sizes,
+        ((chunk, augmented_includes, sizes) for chunk in chunked),
+      ):
+        for dom, size in computed_added_sizes.items():
+          added_sizes[dom] += size
+  else:
+    added_sizes = compute_added_sizes((roots, augmented_includes, sizes))
 
   # Assign a number to each filename for tighter JSON representation.
   names = []
@@ -467,7 +528,7 @@ def analyze(target, revision, build_log_file, json_file, root_filter):
           'files': names,
           'roots': [nr(x) for x in sorted(roots)],
           'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
-          'included_by': [[nr(x) for x in included_by[n]] for n in names],
+          'included_by': [[nr(x) for x in sorted(included_by[n])] for n in names],
           'sizes': [sizes[n] for n in names],
           'tsizes': [trans_sizes[n] for n in names],
           'asizes': [added_sizes[n] for n in names],
@@ -498,6 +559,12 @@ def main():
       help='Write full analysis data to a JSON file (- for stdout).')
   parser.add_argument('--root-filter',
                       help='Regex to filter which root files are analyzed.')
+  parser.add_argument('--processes',
+                      action="store",
+                      type=int,
+                      default=1,
+                      help="Use multiple processes to speed up the analysis - "
+                           "note that this scales memory usage significantly")
   args = parser.parse_args()
 
   if args.json_out and not (args.target and args.revision):
@@ -511,7 +578,7 @@ def main():
     return 1
 
   analyze(args.target, args.revision, args.build_log, args.json_out,
-          root_filter)
+          root_filter, processes=args.processes)
 
 
 if __name__ == '__main__':

@@ -19,6 +19,8 @@
 #include "chrome/browser/updater/browser_updater_client_util.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 
+namespace updater {
+
 namespace {
 const int kPrivilegedHelperConnectionFailed = -10000;
 }
@@ -79,3 +81,5 @@ void BrowserUpdaterHelperClientMac::SetupSystemUpdaterDone(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(result);
 }
+
+}  // namespace updater

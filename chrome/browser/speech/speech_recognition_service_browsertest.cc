@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest,
 #else
   usleep(100000);
 #endif
-  ASSERT_GT(static_cast<int>(recognition_results_.size()), 3);
+  ASSERT_GT(recognition_results_.size(), 3u);
   ASSERT_EQ(recognition_results_.back(), "Hey Google Hey Google");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();

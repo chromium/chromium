@@ -4,15 +4,18 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
+#include <array>
+
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace {
 
-// See comments on lookup_table_addresses_ in the header.
-constexpr uint8_t nBitTo8BitlookupTable[] = {
+// See comments on lookup_table_spans_ in the header.
+constexpr auto nBitTo8BitlookupTable = std::to_array<uint8_t>({
     // clang-format off
     // 1 bit
     0, 255,
@@ -40,7 +43,7 @@ constexpr uint8_t nBitTo8BitlookupTable[] = {
     203, 205, 207, 209, 211, 213, 215, 217, 219, 221, 223, 225, 227, 229, 231,
     233, 235, 237, 239, 241, 243, 245, 247, 249, 251, 253, 255,
     // clang-format on
-};
+});
 
 }  // namespace
 
@@ -56,7 +59,6 @@ BMPImageReader::BMPImageReader(ImageDecoder* parent,
       img_data_offset_(img_data_offset),
       is_in_ico_(is_in_ico) {
   // Clue-in decodeBMP() that we need to detect the correct info header size.
-  UNSAFE_TODO(memset(&info_header_, 0, sizeof(info_header_)));
 }
 
 BMPImageReader::~BMPImageReader() = default;
@@ -545,10 +547,9 @@ bool BMPImageReader::DecodeAlternateFormat() {
           parent_->GetAuxImage(), parent_->GetMaxDecodedBytes(),
           img_data_offset_);
     } else {
-      alternate_decoder_ = CreatePngImageDecoder(
-          parent_->GetAlphaOption(), ImageDecoder::kDefaultBitDepth,
-          parent_->GetColorBehavior(), parent_->GetMaxDecodedBytes(),
-          img_data_offset_);
+      alternate_decoder_ = std::make_unique<PngImageDecoder>(
+          parent_->GetAlphaOption(), parent_->GetColorBehavior(),
+          parent_->GetMaxDecodedBytes(), img_data_offset_);
     }
     alternate_decoder_->SetData(data_.get(), parent_->IsAllDataReceived());
   }
@@ -581,11 +582,11 @@ bool BMPImageReader::ProcessEmbeddedColorProfile() {
   }
 
   // Parse the profile.
-  auto owned_buffer = std::make_unique<char[]>(info_header_.profile_size);
-  const char* buffer = fast_reader_.GetConsecutiveData(
-      info_header_.profile_data, info_header_.profile_size, owned_buffer.get());
-  auto profile = ColorProfile::Create(base::as_bytes(
-      UNSAFE_TODO(base::span(buffer, info_header_.profile_size))));
+  auto owned_buffer =
+      base::HeapArray<uint8_t>::WithSize(info_header_.profile_size);
+  base::span<const uint8_t> buffer = fast_reader_.GetConsecutiveData(
+      info_header_.profile_data, info_header_.profile_size, owned_buffer);
+  auto profile = ColorProfile::Create(buffer);
   if (!profile) {
     return parent_->SetFailed();
   }
@@ -609,8 +610,8 @@ bool BMPImageReader::ProcessBitmasks() {
     // 24/32 bits: MSB <- [AAAAAAAA] RRRRRRRR GGGGGGGG BBBBBBBB -> LSB
     const int num_bits = (info_header_.bit_count == 16) ? 5 : 8;
     for (int i = 0; i <= 2; ++i) {
-      UNSAFE_TODO(bit_masks_[i]) = ((uint32_t{1} << (num_bits * (3 - i))) - 1) ^
-                                   ((uint32_t{1} << (num_bits * (2 - i))) - 1);
+      bit_masks_[i] = ((uint32_t{1} << (num_bits * (3 - i))) - 1) ^
+                      ((uint32_t{1} << (num_bits * (2 - i))) - 1);
     }
   } else if (!HasRGBMasksInHeader()) {
     // For HasRGBMasksInHeader() bitmaps, this was already done when we read the
@@ -687,31 +688,29 @@ bool BMPImageReader::ProcessBitmasks() {
     // specify a bogus alpha channel in bits that don't exist in the pixel
     // data (for example, bits 25-31 in a 24-bit RGB format).
     if (info_header_.bit_count < 32) {
-      UNSAFE_TODO(bit_masks_[i]) &=
-          ((uint32_t{1} << info_header_.bit_count) - 1);
+      bit_masks_[i] &= ((uint32_t{1} << info_header_.bit_count) - 1);
     }
 
     // For empty masks (common on the alpha channel, especially after the
     // trimming above), quickly clear the shift and LUT address and
     // continue, to avoid an infinite loop in the counting code below.
-    uint32_t temp_mask = UNSAFE_TODO(bit_masks_[i]);
+    uint32_t temp_mask = bit_masks_[i];
     if (!temp_mask) {
-      UNSAFE_TODO(bit_shifts_right_[i]) = 0;
-      UNSAFE_TODO(lookup_table_addresses_[i]) = nullptr;
+      bit_shifts_right_[i] = 0;
+      lookup_table_spans_[i] = base::span<const uint8_t>();
       continue;
     }
 
     // Make sure bitmask does not overlap any other bitmasks.
     for (int j = 0; j < i; ++j) {
-      if (temp_mask & UNSAFE_TODO(bit_masks_[j])) {
+      if (temp_mask & bit_masks_[j]) {
         return parent_->SetFailed();
       }
     }
 
     // Count offset into pixel data.
-    for (UNSAFE_TODO(bit_shifts_right_[i]) = 0; !(temp_mask & 1);
-         temp_mask >>= 1) {
-      ++UNSAFE_TODO(bit_shifts_right_[i]);
+    for (bit_shifts_right_[i] = 0; !(temp_mask & 1); temp_mask >>= 1) {
+      ++bit_shifts_right_[i];
     }
 
     // Count size of mask.
@@ -728,14 +727,15 @@ bool BMPImageReader::ProcessBitmasks() {
     // Since RGBABuffer tops out at 8 bits per channel, adjust the shift
     // amounts to use the most significant 8 bits of the channel.
     if (num_bits >= 8) {
-      UNSAFE_TODO(bit_shifts_right_[i]) += (num_bits - 8);
+      bit_shifts_right_[i] += (num_bits - 8);
       num_bits = 0;
     }
 
-    // Calculate LUT address.
-    UNSAFE_TODO(lookup_table_addresses_[i]) =
-        num_bits ? (UNSAFE_TODO(nBitTo8BitlookupTable + (1 << num_bits) - 2))
-                 : nullptr;
+    // Calculate LUT span.
+    lookup_table_spans_[i] =
+        num_bits ? base::span(nBitTo8BitlookupTable)
+                       .subspan((1u << num_bits) - 2, 1u << num_bits)
+                 : base::span<const uint8_t>();
   }
 
   // We've now decoded all the non-image data we care about.  Skip anything
@@ -964,7 +964,7 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         // RLE8 has one color index that gets repeated; RLE4 has two
         // color indexes in the upper and lower 4 bits of the byte,
         // which are alternated.
-        wtf_size_t color_indexes[2] = {code, code};
+        std::array<wtf_size_t, 2> color_indexes = {code, code};
         if (info_header_.compression == RLE4) {
           color_indexes[0] = (color_indexes[0] >> 4) & 0xf;
           color_indexes[1] &= 0xf;
@@ -972,8 +972,8 @@ BMPImageReader::ProcessingResult BMPImageReader::ProcessRLEData() {
         for (wtf_size_t which = 0; coord_.x() < end_x;) {
           // Some images specify color values past the end of the
           // color table; set these pixels to black.
-          if (UNSAFE_TODO(color_indexes[which]) < color_table_.size()) {
-            SetI(UNSAFE_TODO(color_indexes[which]));
+          if (color_indexes[which] < color_table_.size()) {
+            SetI(color_indexes[which]);
           } else {
             SetRGBA(0, 0, 0, 255);
           }

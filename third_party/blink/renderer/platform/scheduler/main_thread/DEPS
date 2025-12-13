@@ -1,6 +1,7 @@
 include_rules = [
   "+base/cpu_reduction_experiment.h",
   "+cc",
+  "+components/performance_manager/scenario_api",
   "+components/viz/common",
 ]
 
@@ -16,8 +17,7 @@ specific_include_rules = {
     "+base/task/sequence_manager/enqueue_order.h"
   ],
   "main_thread_scheduler_impl.cc": [
-    "+base/android/self_compaction_manager.h",
-    "+components/performance_manager/scenario_api/performance_scenarios.h"
+    "+base/android/self_compaction_manager.h"
   ],
   "memory_purge_manager.cc": [
     "+base/android/self_compaction_manager.h"
@@ -27,8 +27,5 @@ specific_include_rules = {
   ],
   "main_thread_unittest.cc": [
     "+base/message_loop/message_pump_type.h",
-  ],
-  "main_thread_scheduler_impl.h": [
-    "+base/threading/scoped_thread_priority.h",
   ],
 }

@@ -18,6 +18,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_end2end_tests",
+        "module_scheme": "gtest",
         "name": "angle_end2end_tests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -72,6 +74,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_end2end_tests",
+        "module_scheme": "gtest",
         "name": "angle_end2end_tests iPhone 14 18.2",
         "resultdb": {
           "enable": true,
@@ -126,6 +130,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_white_box_tests",
+        "module_scheme": "gtest",
         "name": "angle_white_box_tests iPhone 14 17.5",
         "resultdb": {
           "enable": true,
@@ -180,6 +186,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//third_party/angle/src/tests:angle_white_box_tests",
+        "module_scheme": "gtest",
         "name": "angle_white_box_tests iPhone 14 18.2",
         "resultdb": {
           "enable": true,

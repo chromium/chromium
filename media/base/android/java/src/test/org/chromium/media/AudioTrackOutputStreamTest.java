@@ -4,13 +4,14 @@
 
 package org.chromium.media;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import android.media.AudioFormat;
 import android.media.AudioTrack;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,14 +30,13 @@ import java.util.concurrent.TimeUnit;
 
 /** Tests for AudioTrackOutputStream. */
 @RunWith(BaseRobolectricTestRunner.class)
-// Need sdk > Q for robolectric 4.6.
-@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
+@Config(manifest = Config.NONE)
 public class AudioTrackOutputStreamTest {
     static class ObservableAudioTrack extends AudioTrack {
         private final List<Byte> mReceivedData = new ArrayList<Byte>();
         private boolean mPartialWrite = true;
 
-        public ObservableAudioTrack(
+        ObservableAudioTrack(
                 int streamType,
                 int sampleRateInHz,
                 int channelConfig,
@@ -85,13 +85,13 @@ public class AudioTrackOutputStreamTest {
         private CountDownLatch mDoneSignal;
         private ObservableAudioTrack mAudioTrack;
 
-        public DataProvider(int bufferCount) {
-            assert bufferCount > 0;
+        DataProvider(int bufferCount) {
+            assertThat(bufferCount).isGreaterThan(0);
             mDoneSignal = new CountDownLatch(bufferCount + 1);
         }
 
         public void updateBufferCount(int bufferCount) {
-            assert bufferCount > 0;
+            assertThat(bufferCount).isGreaterThan(0);
             mDoneSignal = new CountDownLatch(bufferCount + 1);
         }
 

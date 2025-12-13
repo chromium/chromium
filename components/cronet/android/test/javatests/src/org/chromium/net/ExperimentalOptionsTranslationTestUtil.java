@@ -78,12 +78,12 @@ public class ExperimentalOptionsTranslationTestUtil {
             }
             String fullKey = currentPath.isEmpty() ? key : currentPath + "." + key;
             if (expectedValue instanceof JSONObject) {
-                assertWithMessage("key is '" + fullKey + "'")
+                assertWithMessage("key is '%s'", fullKey)
                         .that(actualValue)
                         .isInstanceOf(JSONObject.class);
                 assertJsonEquals((JSONObject) expectedValue, (JSONObject) actualValue, fullKey);
             } else {
-                assertWithMessage("key is '" + fullKey + "'")
+                assertWithMessage("key is '%s'", fullKey)
                         .that(actualValue)
                         .isEqualTo(expectedValue);
             }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/shell_integration.h"
 
 #include <stddef.h>
 
@@ -20,23 +21,30 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/version_info/channel.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "url/gurl.h"
+#include "base/test/scoped_path_override.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/test/base/scoped_channel_override.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 using ::testing::ElementsAre;
 
@@ -272,7 +280,7 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
     const char* const categories;
     const char* const mime_type;
     bool nodisplay;
-    const char* const expected_output;
+    std::string expected_output;
   };
   const auto test_cases = std::to_array<TestCases>({
       // Real-world case.
@@ -378,7 +386,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Terminal=false\n"
        "Type=Application\n"
        "Name=Paint\n"
-       "MimeType=image/png;image/jpg\n"
+       "MimeType=image/png;image/jpg;" +
+           shell_integration_linux::GetDirectLaunchMimeTypeHandler() + "\n"
        "Exec=/opt/google/chrome/google-chrome --app=https://paint.app/ %U\n"
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
@@ -398,6 +407,23 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
        "Icon=chrome-https__paint.app\n"
        "Categories=Image\n"
        "StartupWMClass=paint.app\n"},
+
+      // Test setting mime type with static scheme handlers.
+      {"https://test.app", "Test App", "chrome-https__test.app", "App",
+       "image/png;image/jpeg", false,
+
+       "#!/usr/bin/env xdg-open\n"
+       "[Desktop Entry]\n"
+       "Version=1.0\n"
+       "Terminal=false\n"
+       "Type=Application\n"
+       "Name=Test App\n"
+       "MimeType=image/png;image/jpeg;" +
+           shell_integration_linux::GetDirectLaunchMimeTypeHandler() + "\n"
+       "Exec=/opt/google/chrome/google-chrome --app=https://test.app/ %U\n"
+       "Icon=chrome-https__test.app\n"
+       "Categories=App\n"
+       "StartupWMClass=test.app\n"},
   });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
@@ -687,3 +713,40 @@ TEST(ShellIntegrationTest, GetDesktopEntryStringValueFromFromDesktopFile) {
 }
 
 }  // namespace shell_integration_linux
+
+namespace shell_integration {
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// A test fixture that allows for overriding the channel on Linux.
+class ShellIntegrationLinuxTest : public testing::Test {};
+
+TEST_F(ShellIntegrationLinuxTest, GetDirectLaunchUrlScheme) {
+  // Test each channel on Linux.
+  {
+    chrome::ScopedChannelOverride channel_override(
+        chrome::ScopedChannelOverride::Channel::kStable);
+    EXPECT_EQ("google-chrome", GetDirectLaunchUrlScheme());
+  }
+  {
+    chrome::ScopedChannelOverride channel_override(
+        chrome::ScopedChannelOverride::Channel::kBeta);
+    EXPECT_EQ("google-chrome-beta", GetDirectLaunchUrlScheme());
+  }
+  {
+    chrome::ScopedChannelOverride channel_override(
+        chrome::ScopedChannelOverride::Channel::kDev);
+    EXPECT_EQ("google-chrome-dev", GetDirectLaunchUrlScheme());
+  }
+  {
+    chrome::ScopedChannelOverride channel_override(
+        chrome::ScopedChannelOverride::Channel::kCanary);
+    EXPECT_EQ("google-chrome-canary", GetDirectLaunchUrlScheme());
+  }
+}
+#else   // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST(ShellIntegrationLinuxTest, GetDirectLaunchUrlSchemeUnbranded) {
+  EXPECT_EQ("chromium", GetDirectLaunchUrlScheme());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+}  // namespace shell_integration

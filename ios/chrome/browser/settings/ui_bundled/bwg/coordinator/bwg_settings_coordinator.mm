@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
 @implementation BWGSettingsCoordinator {
   // View controller presented by this coordinator.
@@ -35,7 +37,9 @@
 - (void)start {
   CommandDispatcher* commandDispatcher = self.browser->GetCommandDispatcher();
   _mediator = [[BWGSettingsMediator alloc]
-      initWithPrefService:self.profile->GetPrefs()];
+      initWithAuthService:AuthenticationServiceFactory::GetForProfile(
+                              self.profile)
+              prefService:self.profile->GetPrefs()];
   _mediator.applicationHandler =
       HandlerForProtocol(commandDispatcher, ApplicationCommands);
 
@@ -43,6 +47,7 @@
       [[BWGSettingsViewController alloc] initWithStyle:ChromeTableViewStyle()];
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
+
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
 }

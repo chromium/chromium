@@ -1,10 +1,6 @@
 // Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 
@@ -125,7 +121,7 @@ ErrorOr<T> ParseProtoContents(const std::string& http_text) {
 
 // Gets base64 encoded query parameter from the URL.
 ErrorOr<std::string> GetQueryParameter(const GURL& url) {
-  std::string value = url.path();
+  std::string value = url.GetPath();
   if (value.find(kApiServerQueryPath) != 0) {
     // This situation will never happen if check for the query path is
     // done before calling this function.
@@ -145,12 +141,12 @@ ErrorOr<std::string> GetQueryParameter(const GURL& url) {
 
 // Returns whether the |url| points to a GET or POST query, or neither.
 RequestType GetRequestTypeFromURL(const GURL& url) {
-  if (url.host() != kApiServerDomain ||
-      url.path().find(kApiServerQueryPath) != 0) {
+  if (url.GetHost() != kApiServerDomain ||
+      url.GetPath().find(kApiServerQueryPath) != 0) {
     return RequestType::kNone;
   }
 
-  std::string path = url.path().substr(strlen(kApiServerQueryPath));
+  std::string path = url.GetPath().substr(strlen(kApiServerQueryPath));
   return path == ":get" || path == ":get/" ? RequestType::kQueryProtoPOST
                                            : RequestType::kQueryProtoGET;
 }
@@ -874,8 +870,9 @@ bool ServerUrlLoader::InterceptAutofillRequest(
     content::URLLoaderInterceptor::RequestParams* params) {
   const network::ResourceRequest& resource_request = params->url_request;
   const GURL& request_url = resource_request.url;
-  bool api_query_request = (request_url.host() == kApiServerDomain &&
-                            request_url.path().find(kApiServerQueryPath) == 0);
+  bool api_query_request =
+      (request_url.GetHost() == kApiServerDomain &&
+       request_url.GetPath().find(kApiServerQueryPath) == 0);
   if (api_query_request) {
     // Check what the set behavior type is.
     //   For Production Server, return false to say don't intercept.

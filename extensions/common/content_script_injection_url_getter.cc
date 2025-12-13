@@ -61,7 +61,7 @@ GURL ContentScriptInjectionUrlGetter::Get(
                             "ContentScriptInjectionUrlGetter::Get/"
                             "should_consider_origin: origin-always");
         result = base::Contains(kAllowedSchemesToMatchOriginAsFallback,
-                                document_url.scheme());
+                                document_url.GetScheme());
         break;
       }
     }

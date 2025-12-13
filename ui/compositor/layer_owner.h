@@ -29,7 +29,8 @@ class COMPOSITOR_EXPORT LayerOwner {
     virtual ~Observer() = default;
   };
 
-  explicit LayerOwner(std::unique_ptr<Layer> layer = nullptr);
+  explicit LayerOwner();
+  explicit LayerOwner(std::unique_ptr<Layer> layer);
 
   LayerOwner(const LayerOwner&) = delete;
   LayerOwner& operator=(const LayerOwner&) = delete;

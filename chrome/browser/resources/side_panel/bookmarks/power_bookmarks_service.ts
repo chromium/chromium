@@ -554,7 +554,7 @@ export class PowerBookmarksService {
   private async findBookmarkImageUrl_(bookmark: BookmarksTreeNode) {
     this.inactiveImageServiceRequests_.delete(bookmark.id);
 
-    if (!bookmark.url || !loadTimeData.getBoolean('urlImagesEnabled')) {
+    if (!bookmark.url) {
       return;
     }
 

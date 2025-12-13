@@ -26,6 +26,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
+import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -36,6 +37,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -253,6 +255,8 @@ public class AccessibilityState {
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
     private static int sFontWeightAdjustment;
+    private static int sTextCursorBlinkInterval =
+            AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     private static float sAnimatorDurationScale;
 
     // Observers for various System, Activity, and Settings states relevant to accessibility.
@@ -489,6 +493,13 @@ public class AccessibilityState {
         return sAnimatorDurationScale;
     }
 
+    /** Returns the current TEXT_CURSOR_BLINK_INTERVAL from the users OS accessibility settings. */
+    @CalledByNative
+    public static int getTextCursorBlinkInterval() {
+        if (!sExtraStateInitialized) updateExtraState();
+        return sTextCursorBlinkInterval;
+    }
+
     /** Returns whether the user settings specify preferred reduced motion. */
     @CalledByNative
     public static boolean prefersReducedMotion() {
@@ -523,6 +534,17 @@ public class AccessibilityState {
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.Global.ANIMATOR_DURATION_SCALE,
                         1f);
+
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate != null && context instanceof Activity) {
+            ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
+            sTextCursorBlinkInterval =
+                    aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(viewConfiguration);
+        } else {
+            sTextCursorBlinkInterval =
+                    AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+        }
 
         int highTextContrastEnabled =
                 Settings.Secure.getInt(
@@ -1038,7 +1060,7 @@ public class AccessibilityState {
         contentResolver.unregisterContentObserver(sTextContrastObserver);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             UiModeManager uiModeManager =
-                (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
+                    (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
             if (uiModeManager != null && sContrastChangeListener != null) {
                 uiModeManager.removeContrastChangeListener(sContrastChangeListener);
             }
@@ -1053,6 +1075,7 @@ public class AccessibilityState {
         sHighContrastEnabled = false;
         sAnimatorDurationScale = 1f;
         sAccessibilityManager = null;
+        sTextCursorBlinkInterval = AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
     }
 
     private static void processServicesChange() {
@@ -1065,6 +1088,7 @@ public class AccessibilityState {
         AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());
+        AccessibilityStateJni.get().onTextCursorBlinkIntervalChanged(getTextCursorBlinkInterval());
     }
 
     private static class ServicesObserver extends ContentObserver {
@@ -1093,6 +1117,8 @@ public class AccessibilityState {
         void onDisplayInversionEnabledChanged(boolean enabled);
 
         void onContrastLevelChanged(boolean highContrastEnabled);
+
+        void onTextCursorBlinkIntervalChanged(int textCursorBlinkInterval);
 
         void recordAccessibilityServiceInfoHistograms();
     }

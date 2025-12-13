@@ -11,7 +11,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/pref_names.h"
-#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

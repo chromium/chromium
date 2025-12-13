@@ -43,6 +43,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
 
   static override get properties() {
     return {
+      enableHighlights: {
+        type: Boolean,
+        reflect: true,
+      },
       hasActionedText: {
         type: Boolean,
         reflect: true,
@@ -71,6 +75,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   protected accessor hideHighlightedLines: boolean = true;
   // The currently selected lines.
   protected accessor highlightedLines: HighlightedLine[] = [];
+  protected accessor enableHighlights: boolean = true;
 
   // The lens text response corresponding to the full image response.
   private fullTextResponse: TextResponse|null = null;
@@ -111,6 +116,8 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     timeoutId: -1,
     timeoutElapsedOrCleared: false,
   };
+  // The currently selected region.
+  private selectedRegion: CenterRotatedBox|null = null;
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -126,10 +133,16 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     this.listenerIds = [
       this.browserProxy.callbackRouter.textReceived.addListener(
           this.onTextReceived.bind(this)),
+      this.browserProxy.callbackRouter.regionTextReceived.addListener(
+          this.onRegionTextReceived.bind(this)),
       this.browserProxy.callbackRouter.clearAllSelections.addListener(
           this.onClearRegionSelection.bind(this)),
       this.browserProxy.callbackRouter.clearRegionSelection.addListener(
           this.onClearRegionSelection.bind(this)),
+      this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
+          this.setSelection.bind(this)),
+      this.browserProxy.callbackRouter.onOverlayReshown.addListener(
+          this.onOverlayReshown.bind(this)),
     ];
 
     this.setTextReceivedTimeout();
@@ -228,6 +241,17 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     }, this.translateTimeout.timeout);
   }
 
+  disableHighlights() {
+    this.enableHighlights = false;
+  }
+
+  private onOverlayReshown() {
+    this.onClearRegionSelection();
+    this.fullTextResponse = null;
+    this.regionTextResponse = null;
+    this.enableHighlights = false;
+  }
+
   private onClearRegionSelection() {
     this.isSelectingRegion = false;
     this.hasActionedText = false;
@@ -307,7 +331,7 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     });
   }
 
-  private onRegionTextReceived(text: Text) {
+  private onRegionTextReceived(text: Text, isInjectedImage: boolean) {
     // If the user is currently selecting a new region, ignore any text received
     // for the old region.
     if (this.isSelectingRegion) {
@@ -361,9 +385,17 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
         this.regionTextResponse.paragraphNumbers.length ===
         this.regionTextResponse.receivedWords.length);
 
-    this.highlightedLines = createHighlightedLines(
-        this.regionTextResponse, 0,
-        this.regionTextResponse.receivedWords.length - 1);
+    // If the text is from an injected image, its possible that the dimensions
+    // of the text are not correct. So use the full text response to create the
+    // highlighted lines. This is because of how the geometry of the injected
+    // image is calculated and sent to Lens. See crbug.com/422555788.
+    if (isInjectedImage && this.selectedRegion && this.fullTextResponse) {
+      this.tryRenderInjectedImageHighlights();
+    } else if (!isInjectedImage) {
+      this.highlightedLines = createHighlightedLines(
+          this.regionTextResponse, 0,
+          this.regionTextResponse.receivedWords.length - 1);
+    }
     this.hideHighlightedLines = false;
 
     // Used to notify the post selection renderer so that, if a region has
@@ -388,11 +420,6 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
   }
 
   private onTextReceived(text: Text) {
-    if (this.fullTextResponse) {
-      this.onRegionTextReceived(text);
-      return;
-    }
-
     // Reset all old text.
     this.fullTextResponse = {
       contentLanguage: '',
@@ -431,6 +458,16 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     // Used to notify the post selection renderer so that, if a region has
     // already been selected, text in the region can be detected.
     this.fire('finished-receiving-text');
+
+    // It's possible that the full text response is received after the region
+    // text response. In this case, the highlighted lines will not be updated
+    // until the user selects a new region. This only ever happens for injected
+    // images as interaction requests are sent before the full text response
+    // is received.
+    if (this.regionTextResponse && this.selectedRegion &&
+        !this.isSelectingRegion && this.highlightedLines.length === 0) {
+      this.tryRenderInjectedImageHighlights();
+    }
   }
 
   onCopyDetectedText(
@@ -539,6 +576,10 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
         .join('');
   }
 
+  private setSelection(box: CenterRotatedBox) {
+    this.selectedRegion = box;
+  }
+
   /** @return The CSS styles string for the given highlighted line. */
   protected getHighlightedLineStyle(line: HighlightedLine): string {
     // Put into an array instead of a long string to keep this code readable.
@@ -560,6 +601,25 @@ export class SimplifiedTextLayerElement extends CrLitElement implements
     this.translateTimeout.timeoutElapsedOrCleared = false;
     this.translateTimeout.timeoutId = -1;
   }
+
+  private tryRenderInjectedImageHighlights() {
+    assert(this.fullTextResponse);
+    assert(this.selectedRegion);
+    const selection = findWordsInRegion(
+        this.fullTextResponse.receivedWords, this.selectedRegion,
+        this.selectionOverlayRect);
+
+    // If no words were found in the region, return early.
+    if (selection.startIndex === -1 || selection.endIndex === -1) {
+      this.highlightedLines = [];
+      this.hideHighlightedLines = true;
+      return;
+    }
+
+    this.highlightedLines = createHighlightedLines(
+        this.fullTextResponse, selection.startIndex, selection.endIndex);
+    this.hideHighlightedLines = false;
+}
 
   getElementForTesting(): Element {
     return this;

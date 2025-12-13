@@ -60,11 +60,12 @@
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/resources/vector_icons.h"
+#include "components/plus_addresses/core/browser/resources/vector_icons.h"
 #endif
 
 namespace autofill::popup_cell_utils {
@@ -73,6 +74,7 @@ namespace {
 
 // The default icon size used in the suggestion drop down.
 constexpr int kIconSize = 16;
+constexpr int kPersonCheckIconSize = 20;
 constexpr int kRecoveryPasswordIconSize = 20;
 constexpr int kChromeRefreshIconSize = 20;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -85,6 +87,9 @@ constexpr int kGoogleWalletIconSize = 20;
 
 // The additional height of the row in case it has two lines of text.
 constexpr int kAutofillPopupAdditionalDoubleRowHeight = 16;
+
+// The additional height of the row in case it has three lines of text.
+constexpr int kAutofillPopupAdditionalTripleRowHeight = 24;
 
 // The additional padding of the row in case it has three lines of text.
 constexpr int kAutofillPopupAdditionalVerticalPadding = 16;
@@ -109,14 +114,9 @@ constexpr SkColor kMonochromeIconBgColor = SkColorSetARGB(255, 237, 242, 250);
 // The text color of the letter monochrome icons.
 constexpr SkColor kMonochromeIconTextColor = SkColorSetARGB(255, 71, 71, 71);
 
-constexpr auto kSuggestionTypesWithDoubleHeight =
-    DenseSet<SuggestionType>({SuggestionType::kBackupPasswordEntry,
-                              SuggestionType::kTroubleSigningInEntry});
-
-// Returns the name of the network for payment method icons, empty string
-// otherwise.
+// Returns the name of the network for payment method icons, for home/work
+// address a11y labels and empty string otherwise.
 std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
-  // Networks for which icons are currently shown.
   switch (icon) {
     case Suggestion::Icon::kCardAmericanExpress:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_AMEX);
@@ -145,17 +145,23 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
     case Suggestion::Icon::kIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_GENERIC);
+    case Suggestion::Icon::kHome:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_HOME_PROFILE_ICON_ACCESSIBILITY_LABEL);
+    case Suggestion::Icon::kWork:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_WORK_PROFILE_ICON_ACCESSIBILITY_LABEL);
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kBnpl:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kVehicle:
     case Suggestion::Icon::kEdit:
     case Suggestion::Icon::kEmail:
     case Suggestion::Icon::kError:
+    case Suggestion::Icon::kFlight:
     case Suggestion::Icon::kGlobe:
     case Suggestion::Icon::kGoogle:
     case Suggestion::Icon::kGoogleMonochrome:
@@ -163,9 +169,6 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGoogleWallet:
     case Suggestion::Icon::kGoogleWalletMonochrome:
-    case Suggestion::Icon::kHome:
-    case Suggestion::Icon::kHttpsInvalid:
-    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIdCard:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
@@ -174,15 +177,14 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
+    case Suggestion::Icon::kPersonCheck:
     case Suggestion::Icon::kPlusAddress:
     case Suggestion::Icon::kQuestionMark:
     case Suggestion::Icon::kRecoveryPassword:
     case Suggestion::Icon::kSaveAndFill:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
-    case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kWork:
     case Suggestion::Icon::kAndroidMessages:
       return std::u16string();
   }
@@ -288,6 +290,65 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
   return table;
 }
 
+bool IsPaymentMethodSuggestion(const Suggestion& suggestion) {
+  switch (suggestion.type) {
+    case SuggestionType::kCreditCardEntry:
+    case SuggestionType::kVirtualCreditCardEntry:
+    case SuggestionType::kIbanEntry:
+    case SuggestionType::kBnplEntry:
+    case SuggestionType::kSaveAndFillCreditCardEntry:
+      return true;
+    case SuggestionType::kAllLoyaltyCardsEntry:
+    case SuggestionType::kAllSavedPasswordsEntry:
+    case SuggestionType::kFreeformFooter:
+    case SuggestionType::kManageAddress:
+    case SuggestionType::kManageAutofillAi:
+    case SuggestionType::kManageCreditCard:
+    case SuggestionType::kManageIban:
+    case SuggestionType::kManageLoyaltyCard:
+    case SuggestionType::kManagePlusAddress:
+    case SuggestionType::kScanCreditCard:
+    case SuggestionType::kSeePromoCodeDetails:
+    case SuggestionType::kUndoOrClear:
+    case SuggestionType::kViewPasswordDetails:
+    case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kAccountStoragePasswordEntry:
+    case SuggestionType::kAddressEntry:
+    case SuggestionType::kAddressEntryOnTyping:
+    case SuggestionType::kAddressFieldByFieldFilling:
+    case SuggestionType::kAutocompleteEntry:
+    case SuggestionType::kComposeResumeNudge:
+    case SuggestionType::kComposeProactiveNudge:
+    case SuggestionType::kComposeDisable:
+    case SuggestionType::kComposeGoToSettings:
+    case SuggestionType::kComposeNeverShowOnThisSiteAgain:
+    case SuggestionType::kComposeSavedStateNotification:
+    case SuggestionType::kDatalistEntry:
+    case SuggestionType::kDevtoolsTestAddressByCountry:
+    case SuggestionType::kDevtoolsTestAddressEntry:
+    case SuggestionType::kDevtoolsTestAddresses:
+    case SuggestionType::kFillExistingPlusAddress:
+    case SuggestionType::kFillPassword:
+    case SuggestionType::kGeneratePasswordEntry:
+    case SuggestionType::kInsecureContextPaymentDisabledMessage:
+    case SuggestionType::kLoyaltyCardEntry:
+    case SuggestionType::kMerchantPromoCodeEntry:
+    case SuggestionType::kMixedFormMessage:
+    case SuggestionType::kPasswordEntry:
+    case SuggestionType::kBackupPasswordEntry:
+    case SuggestionType::kTroubleSigningInEntry:
+    case SuggestionType::kPasswordFieldByFieldFilling:
+    case SuggestionType::kSeparator:
+    case SuggestionType::kTitle:
+    case SuggestionType::kIdentityCredential:
+    case SuggestionType::kWebauthnCredential:
+    case SuggestionType::kFillAutofillAi:
+    case SuggestionType::kOneTimePasswordEntry:
+    case SuggestionType::kWebauthnSignInWithAnotherDevice:
+      return false;
+  }
+}
+
 }  // namespace
 
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
@@ -321,6 +382,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kError:
       return ui::ImageModel::FromVectorIcon(vector_icons::kErrorIcon,
                                             ui::kColorSysError, kIconSize);
+    case Suggestion::Icon::kFlight:
+      return ImageModelFromVectorIcon(vector_icons::kFlightIcon,
+                                      kChromeRefreshIconSize);
     case Suggestion::Icon::kGlobe:
       return ImageModelFromVectorIcon(kGlobeIcon, kIconSize);
     case Suggestion::Icon::kGoogle:
@@ -337,14 +401,6 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return ImageModelFromVectorIcon(vector_icons::kEmailIcon, kIconSize);
 #endif
-    case Suggestion::Icon::kHttpWarning:
-      // For the http warning message, get the icon images from VectorIcon,
-      // which is the same as the security indicator icons in the location bar.
-      return ImageModelFromVectorIcon(omnibox::kHttpIcon, kIconSize);
-    case Suggestion::Icon::kHttpsInvalid:
-      return ui::ImageModel::FromVectorIcon(vector_icons::kNotSecureWarningIcon,
-                                            ui::kColorAlertHighSeverity,
-                                            kIconSize);
     case Suggestion::Icon::kIdCard:
       return ImageModelFromVectorIcon(vector_icons::kIdCardIcon,
                                       kChromeRefreshIconSize);
@@ -365,6 +421,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #else
       return ImageModelFromVectorIcon(vector_icons::kEditIcon, kIconSize);
 #endif
+    case Suggestion::Icon::kPersonCheck:
+      return ImageModelFromVectorIcon(vector_icons::kPersonCheckIcon,
+                                      kPersonCheckIconSize);
     case Suggestion::Icon::kPlusAddress:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromVectorIcon(plus_addresses::kPlusAddressLogoSmallIcon,
@@ -411,10 +470,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return std::nullopt;
 #endif
     case Suggestion::Icon::kIban:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kScanCreditCard:
-    case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kCardGeneric:
     case Suggestion::Icon::kCardAmericanExpress:
     case Suggestion::Icon::kCardDiners:
@@ -453,7 +510,31 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 
   add_if_not_empty(GetIconAccessibleName(suggestion.icon));
   text.push_back(suggestion.main_text.value);
-  if (!suggestion.minor_texts.empty()) {
+
+  const bool is_vcn =
+      suggestion.type == SuggestionType::kVirtualCreditCardEntry;
+  const bool is_iban = suggestion.type == SuggestionType::kIbanEntry;
+  const bool has_subtext =
+      !suggestion.labels.empty() && !suggestion.labels[0][0].value.empty();
+
+  std::u16string badge_text;
+  if (is_vcn) {
+    badge_text = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  } else if (is_iban) {
+    badge_text =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_SUGGESTION_OPTION_VALUE);
+  }
+
+  // A badge is applied as a label view for the following cases:
+  // - A virtual card that does not have a product description or nickname.
+  // - An IBAN that does not have a nickname.
+  bool badge_used_as_minor_text = false;
+  if ((is_vcn && !suggestion.minor_texts.empty()) ||
+      (is_iban && !has_subtext)) {
+    add_if_not_empty(badge_text);
+    badge_used_as_minor_text = true;
+  } else if (!suggestion.minor_texts.empty()) {
     std::vector<std::u16string> text_values;
     for (const auto& minor_text : suggestion.minor_texts) {
       text_values.push_back(minor_text.value);
@@ -462,11 +543,26 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
     add_if_not_empty(sublabel);
   }
 
+  bool badge_added_to_labels = false;
   for (const std::vector<Suggestion::Text>& row : suggestion.labels) {
+    std::vector<std::u16string> row_values;
     for (const Suggestion::Text& label : row) {
       // `label_text` is not populated for footers or autocomplete entries.
-      add_if_not_empty(label.value);
+      if (!label.value.empty()) {
+        row_values.push_back(label.value);
+      }
     }
+    // If a badge is present and not used as minor text, apply it as a
+    // label view for these specific cases:
+    // - Virtual card that has a product description or nickname.
+    // - IBAN that has a nickname.
+    if (!badge_text.empty() && !badge_used_as_minor_text &&
+        !badge_added_to_labels) {
+      row_values.push_back(badge_text);
+      badge_added_to_labels = true;
+    }
+
+    add_if_not_empty(base::JoinString(row_values, u" "));
   }
 
   // `additional_label` is only populated in a passwords context.
@@ -561,33 +657,38 @@ void AddSuggestionContentToView(
     std::vector<std::unique_ptr<views::View>> subtext_views,
     std::unique_ptr<views::View> icon,
     PopupRowContentView& content_view) {
+  bool should_show_new_fop_format =
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableNewFopDisplayDesktop) &&
+      IsPaymentMethodSuggestion(suggestion);
   // Adjust the row height based on the number of subtexts (lines of text).
   int row_height = views::MenuConfig::instance().touchable_menu_height;
-  if (!subtext_views.empty() ||
-      kSuggestionTypesWithDoubleHeight.contains(suggestion.type) ||
-      (suggestion.type == SuggestionType::kCreditCardEntry &&
-       base::FeatureList::IsEnabled(
-           autofill::features::kAutofillEnableNewFopDisplayDesktop))) {
+  if (!subtext_views.empty() || should_show_new_fop_format) {
     row_height += kAutofillPopupAdditionalDoubleRowHeight;
   }
-  content_view.SetMinimumCrossAxisSize(row_height);
 
   // If there are three rows in total, add extra padding to avoid cramming.
   DCHECK_LE(subtext_views.size(), 2u);
   if (subtext_views.size() == 2u) {
-    content_view.SetInsideBorderInsets(
-        gfx::Insets(content_view.GetInsideBorderInsets())
-            .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
-                            kAutofillPopupAdditionalVerticalPadding));
+    if (should_show_new_fop_format) {
+      row_height += kAutofillPopupAdditionalTripleRowHeight;
+    } else {
+      content_view.SetInsideBorderInsets(
+          gfx::Insets(content_view.GetInsideBorderInsets())
+              .set_top_bottom(kAutofillPopupAdditionalVerticalPadding,
+                              kAutofillPopupAdditionalVerticalPadding));
+    }
   }
+
+  content_view.SetMinimumCrossAxisSize(row_height);
 
   // The leading icon.
   if (suggestion.is_loading) {
     views::Throbber* throbber =
         content_view.AddChildView(std::make_unique<views::Throbber>());
     if (icon) {
-      // Prevent that the layout is shifted when transitioning from throbber to
-      // icon and vice versa when there is a width difference.
+      // Prevent that the layout is shifted when transitioning from throbber
+      // to icon and vice versa when there is a width difference.
       const int size_delta =
           icon->GetMinimumSize().width() - throbber->GetMinimumSize().width();
       throbber->SetProperty(views::kMarginsKey,

@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -46,8 +47,9 @@ class NET_EXPORT WebSocketEventInterface {
   virtual void OnCreateURLRequest(URLRequest* request) = 0;
 
   // Called when OnConnected is called on the URLRequest for handshaking.
-  virtual void OnURLRequestConnected(URLRequest* request,
-                                     const TransportInfo& info) = 0;
+  virtual int OnURLRequestConnected(URLRequest* request,
+                                    const TransportInfo& info,
+                                    CompletionOnceCallback callback) = 0;
 
   // Called in response to an AddChannelRequest. This means that a response has
   // been received from the remote server.

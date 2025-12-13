@@ -5,17 +5,31 @@
 #ifndef CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_TESTUTILS_H_
 #define CHROME_BROWSER_UPDATER_BROWSER_UPDATER_CLIENT_TESTUTILS_H_
 
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/updater/update_service.h"
 
+namespace base {
+class ScopedClosureRunner;
+}
+
 namespace updater {
+
+base::ScopedClosureRunner OverrideService(
+    UpdateService::Result result,
+    const std::vector<UpdateService::AppState>& states);
 
 base::RepeatingCallback<scoped_refptr<UpdateService>()> MakeFakeService(
     UpdateService::Result result,
     const std::vector<UpdateService::AppState>& states);
+
+void LoadAppStates();
+
+std::string GetAppId();
+base::FilePath GetExpectedEcp();
 
 }  // namespace updater
 

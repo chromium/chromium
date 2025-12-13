@@ -7,7 +7,7 @@
 
 #include <windows.h>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_runner.h"
 #include "ui/gl/gl_export.h"
 

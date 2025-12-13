@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 
 #include <algorithm>
@@ -18,12 +13,12 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -74,7 +69,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
-#include "ui/gfx/icon_util.h"  // For Iconutil::kLargeIconSize.
+#include "ui/gfx/win/icon_util.h"  // For Iconutil::kLargeIconSize.
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -262,10 +257,9 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 
     // Calculate the circular mask that will be used to display the avatar
     // image.
-    SkPath circular_mask;
-    circular_mask.addCircle(SkIntToScalar(canvas_size_.width() / 2),
-                            SkIntToScalar(canvas_size_.height() / 2),
-                            SkIntToScalar(canvas_size_.width() / 2));
+    const SkPath circular_mask =
+        SkPath::Circle(canvas_size_.width() / 2, canvas_size_.height() / 2,
+                       canvas_size_.width() / 2);
     canvas->ClipPath(circular_mask, true);
   }
 #endif
@@ -408,7 +402,7 @@ class AvatarEmbeddedImageSource : public gfx::CanvasImageSource {
     canvas->DrawImageInt(image_.AsImageSkia(), 0, 0);
 
     // Setting a clippath makes subsequent avatar drawing cropped in a circle.
-    SkPath avatar_bound = SkPath().addOval(
+    const SkPath avatar_bound = SkPath::Oval(
         SkRect::MakeXYWH(avatar_position_.x(), avatar_position_.y(),
                          /*w=*/avatar_size_, /*h=*/avatar_size_));
     canvas->ClipPath(avatar_bound, /*do_anti_alias=*/true);
@@ -466,13 +460,6 @@ constexpr size_t kDefaultAvatarIconsCount = 1;
 constexpr size_t kDefaultAvatarIconsCount = 27;
 #else
 constexpr size_t kDefaultAvatarIconsCount = 56;
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-// The first 8 icons are generic.
-constexpr size_t kGenericAvatarIconsCount = 8;
-#else
-constexpr size_t kGenericAvatarIconsCount = 0;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -610,11 +597,13 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
     return gfx::Image();
   }
 
+  // TODO(pkasting): This should use a `ColorProvider` instead.
+  const bool dark_mode =
+      ui::NativeTheme::GetInstanceForNativeUi()->preferred_color_scheme() ==
+      ui::NativeTheme::PreferredColorScheme::kDark;
+  const SkColor bg_color = dark_mode ? SK_ColorBLACK : SK_ColorWHITE;
   PlaceholderAvatarIconParams icon_params =
-      GetPlaceholderAvatarIconParamsVisibleAgainstColor(
-          ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-              ? SK_ColorBLACK
-              : SK_ColorWHITE);
+      GetPlaceholderAvatarIconParamsVisibleAgainstColor(bg_color);
   // Get a higher res than 16px so it looks good after cropping to a circle.
   gfx::Image icon = entry->GetAvatarIcon(
       kAvatarIconSize, /*download_high_res=*/false, icon_params);
@@ -628,10 +617,6 @@ gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
 // Helper methods for accessing, transforming and drawing avatar icons.
 size_t GetDefaultAvatarIconCount() {
   return kDefaultAvatarIconsCount;
-}
-
-size_t GetGenericAvatarIconCount() {
-  return kGenericAvatarIconsCount;
 }
 
 size_t GetPlaceholderAvatarIndex() {

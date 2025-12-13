@@ -5,10 +5,8 @@
 #import "ios/chrome/browser/sessions/model/tab_group_util.h"
 
 #import "base/notreached.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/tab_groups/tab_group_id.h"
-#import "ios/chrome/browser/sessions/model/session_tab_group.h"
 
 using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
@@ -26,16 +24,6 @@ DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group) {
       .visual_data = visual_data,
       .tab_group_id =
           tab_group_util::TabGroupIdFromStorage(group.tab_group_id())};
-}
-
-DeserializedGroup FromSerializedValue(SessionTabGroup* group) {
-  TabGroupVisualData visual_data =
-      tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(group.title),
-                                     group.colorId, group.collapsedState);
-  return DeserializedGroup{.range_start = static_cast<int>(group.rangeStart),
-                           .range_count = static_cast<int>(group.rangeCount),
-                           .visual_data = visual_data,
-                           .tab_group_id = group.tabGroupId};
 }
 
 ios::proto::TabGroupColorId ColorForStorage(

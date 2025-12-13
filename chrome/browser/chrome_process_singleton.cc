@@ -83,8 +83,11 @@ void ChromeProcessSingleton::InitializeFeatures() {
   //
   // It is expected that this will overall improve the behavior of ALPF on
   // Windows, which should decrease startup time for ordinary browser processes.
+  //
+  // SAFETY: `::GetCommandLineW()` returns a pointer that is guaranteed to be
+  // non-null and NUL-terminated.
   if (is_singleton_instance_ &&
-      (UNSAFE_TODO(wcsstr(::GetCommandLineW(), L"/prefetch:")) == nullptr) &&
+      (UNSAFE_BUFFERS(wcsstr(::GetCommandLineW(), L"/prefetch:")) == nullptr) &&
       base::FeatureList::IsEnabled(features::kOverridePrefetchOnSingleton)) {
     OVERRIDE_PREFETCH_PARAMETER prefetch_parameter = {};
     prefetch_parameter.Value = app_launch_prefetch::GetPrefetchBucket(

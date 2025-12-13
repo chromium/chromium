@@ -17,6 +17,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/registry.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
@@ -85,6 +86,8 @@ bool IsUEFISecureBootCapable() {
 }
 
 bool IsTPM20Supported() {
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+
   // Using dynamic loading instead of using linker support for delay
   // loading to prevent failed loads being treated as a fatal failure which
   // can happen in rare cases due to missing or corrupted DLL file.
@@ -113,7 +116,9 @@ bool HardwareEvaluationResult::IsEligible() const {
 
 HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
   static constexpr int64_t kMinTotalDiskSpace = 64 * 1024 * 1024;
-  static constexpr uint64_t kMinTotalPhysicalMemory = 4 * 1024 * 1024;
+  // TODO(crbug.com/429140103): This was migrated as-is to 4MiB in ByteCount but
+  // the legacy code potentially intended 4GiB, needs investigation.
+  static constexpr ByteCount kMinTotalPhysicalMemory = MiB(4);
 
   static const HardwareEvaluationResult evaluate_win11_upgrade_eligibility =
       [] {
@@ -126,10 +131,10 @@ HardwareEvaluationResult EvaluateWin11HardwareRequirements() {
             SysInfo::AmountOfPhysicalMemory() >= kMinTotalPhysicalMemory;
 
         FilePath system_path;
-        result.disk =
-            PathService::Get(DIR_SYSTEM, &system_path) &&
-            SysInfo::AmountOfTotalDiskSpace(
-                FilePath(system_path.GetComponents()[0])) >= kMinTotalDiskSpace;
+        result.disk = PathService::Get(DIR_SYSTEM, &system_path) &&
+                      SysInfo::AmountOfTotalDiskSpace(
+                          FilePath(system_path.GetComponents()[0]))
+                              .value_or(-1) >= kMinTotalDiskSpace;
 
         result.firmware = IsUEFISecureBootCapable();
 

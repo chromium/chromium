@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# This file contains bundle definitions, which are groupings of targets that can
-# be referenced by other bundles or by builders. Bundles cannot be used in
-# //testing/buildbot
+"""Bundle declarations
 
-load("//lib/targets.star", "targets")
+Bundles are groupings of tests and/or compile targets that can be referenced by
+builders or other bundles. Bundles cannot be referenced in //testing/buildbot.
+"""
+
+load("@chromium-luci//targets.star", "targets")
 
 # No bundle definitions should be above
 # TODO: b/402830227 - Once the AyeAye analyzer correctly includes the closing
@@ -285,6 +287,14 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
+        targets.bundle(
+            targets = "webview_trichrome_64_cts_tests_suite",
+            variants = [
+                "WEBVIEW_TRICHROME_FULL_CTS_TESTS",
+                "WEBVIEW_TRICHROME_INSTANT_CTS_TESTS",
+            ],
+        ),
+        "android_ci_only_fieldtrial_webview_tests",
     ],
 )
 
@@ -318,13 +328,17 @@ targets.bundle(
         "minidump_uploader_test",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
         "webview_ui_instrumentation_tests",
+        # TODO(crbug.com/424259075): Replace this bundle with
+        # android_ci_only_fieldtrial_webview_tests (or appropriate cts tests)
+        # once those tests are working on android 16.
+        "webview_ui_test_app_test_apk_no_field_trial",
     ],
 )
 
 targets.bundle(
     name = "android_ar_gtests",
     targets = [
-        "monochrome_public_test_ar_apk",
+        "chrome_public_test_ar_apk",
         # Name is vr_*, but actually has AR tests.
         "vr_android_unittests",
     ],
@@ -342,6 +356,38 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "android_canary_emulator_fyi_gtests",
+    targets = [
+        "android_specific_chromium_gtests",  # Already includes gl_gtests.
+        "chrome_profile_generator_tests",
+        "chromium_gtests",
+        "android_emulator_specific_chrome_public_tests",
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "fieldtrial_android_tests",
+        "jni_zero_sample_apk_test",
+        "linux_flavor_specific_chromium_gtests",
+        "minidump_uploader_test",
+        "system_webview_shell_instrumentation_tests",  # Not an experimental test
+        "webview_ui_instrumentation_tests",
+        "webview_ui_test_app_test_apk_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "android_canary_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "android_rel_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
 )
 
 targets.bundle(
@@ -400,7 +446,7 @@ targets.bundle(
 # Android desktop FYI tests that run on AVDs or devices. Specific emulator or
 # device mixins should be added where this is used.
 targets.bundle(
-    name = "android_desktop_fyi_tests",
+    name = "android_desktop_fyi_gtests",
     targets = [
         "android_browsertests",
         "android_smoke_tests",
@@ -408,6 +454,7 @@ targets.bundle(
         "chrome_public_test_apk",
     ],
     mixins = [
+        "force-desktop-android",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",
@@ -426,37 +473,48 @@ targets.bundle(
     },
 )
 
-# Android desktop tests that run on a Linux host.
-targets.bundle(
-    name = "android_desktop_junit_tests",
-    targets = [
-        "chrome_junit_tests",
-    ],
-    mixins = [
-        "has_native_resultdb_integration",
-        "junit-swarming-emulator",
-        "linux-jammy",
-        "x86-64",
-    ],
-)
-
 # Android desktop tests that run on AVDs or devices. Specific emulator or
 # device mixins should be added where this is used.
 targets.bundle(
-    name = "android_desktop_tests",
+    name = "android_desktop_gtests",
     targets = [
         "android_browsertests",
+        "chrome_public_test_apk",
+        "chrome_public_test_apk_desktop",
         "chrome_public_unit_test_apk",
         "extensions_unittests",
+        "media_unittests",
         "unit_tests",
         "video_encode_accelerator_tests",
     ],
     mixins = [
+        "force-desktop-android",
         "has_native_resultdb_integration",
         "linux-jammy",
         "x86-64",
     ],
     per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            args = [
+                # Tests on devices with large form factor are typically slower.
+                # Double the timeout threshold to reduce test flakiness.
+                # TODO(crbug.com/444753297): Remove this config.
+                "--timeout-scale=2.0",
+            ],
+            # Due to the capacity concern, this suite will run as ci_only.
+            ci_only = True,
+            swarming = targets.swarming(
+                shards = 30,
+            ),
+        ),
+        "chrome_public_test_apk_desktop": targets.mixin(
+            args = [
+                # Tests on devices with large form factor are typically slower.
+                # Double the timeout threshold to reduce test flakiness.
+                # TODO(crbug.com/444753297): Remove this config.
+                "--timeout-scale=2.0",
+            ],
+        ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
@@ -473,6 +531,40 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "android_desktop_isolated_script_tests",
+    targets = [
+        "android_chrome_wpt_tests",
+    ],
+    mixins = [
+        "android_desktop_wpt_args",
+        "has_native_resultdb_integration",
+        "linux-jammy",
+        "x86-64",
+    ],
+    per_test_modifications = {
+        "android_chrome_wpt_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+# Android desktop tests that run on a Linux host.
+targets.bundle(
+    name = "android_desktop_junit_tests",
+    targets = [
+        "chrome_junit_tests",
+    ],
+    mixins = [
+        "has_native_resultdb_integration",
+        "junit-swarming-emulator",
+        "linux-jammy",
+        "x86-64",
+    ],
 )
 
 targets.bundle(
@@ -545,10 +637,12 @@ targets.bundle(
 )
 
 # Test suites that need to run on hardware that is close to real Android device.
-# See https://crbug.com/40204012#comment5 for details.
 targets.bundle(
     name = "android_hardware_specific_gtests",
     targets = [
+        # https://crbug.com/466313164#comment3
+        "android_webview_unittests",
+        # https://crbug.com/40204012#comment5
         "cc_unittests",
         "viz_unittests",
     ],
@@ -632,22 +726,12 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "android_monochrome_smoke_tests",
-    targets = [
-        "monochrome_public_bundle_smoke_test",
-        "monochrome_public_smoke_test",
-    ],
-)
-
-targets.bundle(
     name = "android_oreo_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "android_wpr_record_replay_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -663,7 +747,6 @@ targets.bundle(
     targets = [
         "android_ar_gtests",
         "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
         "android_oreo_standard_gtests",
         "android_smoke_tests",
     ],
@@ -696,10 +779,8 @@ targets.bundle(
     targets = [
         "android_emulator_specific_chrome_public_tests",
         "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "android_wpr_record_replay_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -715,7 +796,6 @@ targets.bundle(
     targets = [
         "android_ar_gtests",
         "vr_android_specific_chromium_tests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "chromium_tracing_gtests",
         "android_pie_standard_gtests",
@@ -731,7 +811,6 @@ targets.bundle(
     name = "android_pie_rel_emulator_gtests",
     targets = [
         "android_emulator_specific_chrome_public_tests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chromium_gtests",
@@ -750,7 +829,6 @@ targets.bundle(
         # TODO(crbug.com/40142574): Deprecate this when all the test suites below
         # it are re-enabled.
         "android_pie_rel_reduced_capacity_gtests",
-        "android_monochrome_smoke_tests",
         "android_smoke_tests",
         # "android_specific_chromium_gtests",  # Already includes gl_gtests.
         # "chromium_gtests",
@@ -857,6 +935,7 @@ targets.bundle(
         "android_browsertests",
         "android_sync_integration_tests",
         "android_webview_unittests",
+        "base_unittests_android_death_tests",
         "content_shell_test_apk",
         "mojo_test_apk",
         "ui_android_unittests",
@@ -947,13 +1026,6 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
-)
-
-targets.bundle(
-    name = "android_wpr_record_replay_tests",
-    targets = [
-        "chrome_java_test_wpr_tests",
-    ],
 )
 
 targets.bundle(
@@ -1355,8 +1427,10 @@ targets.bundle(
             targets = "chromeos_chrome_all_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
-                # jacuzzi is slow. So that we use more number of shards.
-                "skylab-shards-30",
+                "tfc-exclude-public",
+                # jacuzzi is slow. So that we use run fewer tests per shard.
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1366,6 +1440,8 @@ targets.bundle(
             targets = "chromeos_chrome_criticalstaging_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1375,6 +1451,9 @@ targets.bundle(
             targets = "chromeos_chrome_disabled_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-run-public",
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1384,6 +1463,9 @@ targets.bundle(
         # be tried to be replaced with 'chromeos_system_friendly_gtests'.
         targets.bundle(
             targets = "chromeos_device_only_gtests",
+            mixins = [
+                "skylab-rdb-gtest",
+            ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],
@@ -1412,6 +1494,9 @@ targets.bundle(
             targets = "chromeos_chrome_all_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-exclude-public",
+                "skylab-50-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1421,6 +1506,8 @@ targets.bundle(
             targets = "chromeos_chrome_criticalstaging_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "skylab-50-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1430,6 +1517,9 @@ targets.bundle(
             targets = "chromeos_chrome_disabled_tast_tests",
             mixins = [
                 "chromeos-tast-public-builder",
+                "tfc-run-public",
+                "skylab-20-tests-per-shard",
+                "skylab-rdb-tast",
             ],
             variants = [
                 "CROS_PUBLIC_LKGM",
@@ -1439,6 +1529,9 @@ targets.bundle(
         # be tried to be replaced with 'chromeos_system_friendly_gtests'.
         targets.bundle(
             targets = "chromeos_device_only_gtests",
+            mixins = [
+                "skylab-rdb-gtest",
+            ],
             variants = [
                 "CROS_PUBLIC_LKGM",
             ],
@@ -1534,7 +1627,7 @@ targets.bundle(
     name = "chromium_android_webkit_gtests",
     targets = [
         "blink_heap_unittests",
-        "webkit_unit_tests",
+        "blink_unittests",
     ],
 )
 
@@ -1723,8 +1816,8 @@ targets.bundle(
         "media_base_junit_tests",
         "module_installer_junit_tests",
         "net_junit_tests",
+        "one_time_tokens_junit_tests",
         "paint_preview_junit_tests",
-        "password_check_junit_tests",
         "password_manager_junit_tests",
         "services_junit_tests",
         "touch_to_fill_junit_tests",
@@ -1747,6 +1840,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "base_junit_tests": targets.per_test_modification(
@@ -1757,6 +1851,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "build_junit_tests": targets.per_test_modification(
@@ -1767,6 +1862,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "chrome_java_test_pagecontroller_junit_tests": targets.per_test_modification(
@@ -1777,6 +1873,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "chrome_junit_tests": targets.per_test_modification(
@@ -1787,6 +1884,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "components_junit_tests": targets.per_test_modification(
@@ -1797,6 +1895,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "content_junit_tests": targets.per_test_modification(
@@ -1807,6 +1906,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "device_junit_tests": targets.per_test_modification(
@@ -1817,6 +1917,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "junit_unit_tests": targets.per_test_modification(
@@ -1827,6 +1928,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "keyboard_accessory_junit_tests": targets.per_test_modification(
@@ -1837,6 +1939,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "media_base_junit_tests": targets.per_test_modification(
@@ -1847,6 +1950,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "module_installer_junit_tests": targets.per_test_modification(
@@ -1857,6 +1961,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "net_junit_tests": targets.per_test_modification(
@@ -1867,6 +1972,18 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
+            ],
+        ),
+        "one_time_tokens_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_q",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+                "pie-x86-emulator",
+                "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "paint_preview_junit_tests": targets.per_test_modification(
@@ -1877,16 +1994,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
-            ],
-        ),
-        "password_check_junit_tests": targets.per_test_modification(
-            remove_mixins = [
-                "chromium_pixel_2_q",
-                "emulator-4-cores",
-                "nougat-x86-emulator",
-                "oreo-x86-emulator",
-                "pie-x86-emulator",
-                "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "password_manager_junit_tests": targets.per_test_modification(
@@ -1897,6 +2005,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "services_junit_tests": targets.per_test_modification(
@@ -1907,6 +2016,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "touch_to_fill_junit_tests": targets.per_test_modification(
@@ -1917,6 +2027,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "ui_junit_tests": targets.per_test_modification(
@@ -1927,6 +2038,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_client_junit_tests": targets.per_test_modification(
@@ -1937,6 +2049,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_shell_apk_h2o_junit_tests": targets.per_test_modification(
@@ -1947,6 +2060,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
         "webapk_shell_apk_junit_tests": targets.per_test_modification(
@@ -1957,6 +2071,7 @@ targets.bundle(
                 "oreo-x86-emulator",
                 "pie-x86-emulator",
                 "10-x86-emulator",
+                "16-x64-emulator",
             ],
         ),
     },
@@ -2027,6 +2142,16 @@ targets.bundle(
         "non_android_and_cast_and_chromeos_chromium_gtests",
         "non_android_chromium_gtests_no_nacl",
         "vr_platform_specific_chromium_gtests",
+    ],
+)
+
+# Use this for targets for which we only need the bare minimum coverage on
+# Linux.
+targets.bundle(
+    name = "chromium_linux_gtests_once",
+    targets = [
+        "trees_in_viz_blink_platform_unittests",
+        "trees_in_viz_cc_unittests",
     ],
 )
 
@@ -2432,7 +2557,6 @@ targets.bundle(
     name = "cronet_common_compile_targets",
     additional_compile_targets = [
         "cronet_package",
-        "cronet_perf_test_apk",
         "cronet_sample_test_apk",
         "cronet_smoketests_missing_native_library_instrumentation_apk",
         "cronet_smoketests_platform_only_instrumentation_apk",
@@ -2533,42 +2657,14 @@ targets.bundle(
     },
 )
 
+# The same as gpu_dawn_isolated_scripts, but with suites removed that are
+# run on the standalone Dawn builders.
 targets.bundle(
-    name = "dawn_chromeos_release_telemetry_tests_volteer_skylab",
+    name = "dawn_chromium_isolated_scripts",
     targets = [
-        # TODO(crbug.com/340815322): Add gpu_dawn_webgpu_compat_cts once
-        # compat works properly on ChromeOS.
-        targets.bundle(
-            targets = "gpu_dawn_webgpu_cts",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "dawn_chromeos_release_tests_volteer_skylab",
-    targets = [
-        # gtests
-        targets.bundle(
-            targets = "gpu_common_gtests_passthrough",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_dawn_gtests_with_validation",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
+        "gpu_dawn_common_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+        "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
     ],
 )
 
@@ -2693,7 +2789,7 @@ targets.bundle(
     ],
     per_test_modifications = {
         "enterprise_companion_integration_tests": [
-            "updater-default-pool",
+            "updater-tests-pool",
         ],
         "enterprise_companion_tests": [
             "updater-default-pool",
@@ -2709,10 +2805,10 @@ targets.bundle(
     ],
     per_test_modifications = {
         "enterprise_companion_integration_tests": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
         "enterprise_companion_tests": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
     },
 )
@@ -2744,7 +2840,7 @@ targets.bundle(
         "android_browsertests_no_fieldtrial": targets.mixin(
             ci_only = True,
             swarming = targets.swarming(
-                shards = 3,
+                shards = 6,
             ),
         ),
     },
@@ -2824,8 +2920,8 @@ targets.bundle(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_2",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
         targets.bundle(
@@ -2835,8 +2931,8 @@ targets.bundle(
                 "disable_field_trial_config_for_earl_grey",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_2",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
     ],
@@ -3061,6 +3157,14 @@ targets.bundle(
     targets = [
         "fuchsia_sizes",
     ],
+    per_test_modifications = {
+        "fuchsia_sizes": targets.mixin(
+            args = [
+                "--sizes-path",
+                "tools/fuchsia/size_tests/fyi_sizes_smoketest.json",
+            ],
+        ),
+    },
 )
 
 targets.bundle(
@@ -3400,6 +3504,27 @@ targets.bundle(
                     "--no-xvfb",
                 ],
             ),
+            "skia_gold_test",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_common_gtests_passthrough_swiftshader",
+    targets = [
+        "gl_tests_passthrough",
+        "gl_unittests",
+    ],
+    per_test_modifications = {
+        "gl_tests_passthrough": targets.mixin(
+            args = [
+                "--use-gl=angle",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "gl_unittests": [
             "skia_gold_test",
         ],
     },
@@ -4182,21 +4307,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
-    targets = [
-        # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
-        # enabled here, but are removed for various reasons. See the definition
-        # for gpu_fyi_chromeos_release_gtests for more information.
-        targets.bundle(
-            targets = "gpu_common_gtests_passthrough",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -4209,51 +4319,9 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
-    targets = [
-        targets.bundle(
-            targets = "gpu_common_and_optional_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webcodecs_telemetry_test",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webrtc_telemetry_test",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        targets.bundle(
-            targets = "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
     name = "gpu_fyi_lacros_release_gtests",
     targets = [
-        "gpu_memory_buffer_impl_tests_suite",
+        "mappable_buffer_tests_suite",
     ],
 )
 
@@ -4295,7 +4363,7 @@ targets.bundle(
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
-        "gpu_memory_buffer_impl_tests_suite",
+        "mappable_buffer_tests_suite",
         "gpu_vulkan_gtests",
     ],
 )
@@ -4508,32 +4576,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_memory_buffer_impl_tests_suite",
-    targets = [
-        "gpu_memory_buffer_impl_tests",
-    ],
-    per_test_modifications = {
-        "gpu_memory_buffer_impl_tests": targets.mixin(
-            args = [
-                "--enable-gpu",
-                "--use-gpu-in-tests",
-                "--gtest_filter=*GpuMemoryBufferImplTest*",
-            ],
-            lacros_args = [
-                "--ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
-)
-
-targets.bundle(
     name = "gpu_nexus5x_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -4567,7 +4609,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_2_telemetry_tests",
+    name = "gpu_pixel_02_telemetry_tests",
     targets = [
         "gpu_validating_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -4577,7 +4619,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_4_telemetry_tests",
+    name = "gpu_pixel_04_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
@@ -4592,7 +4634,7 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "gpu_pixel_6_telemetry_tests",
+    name = "gpu_pixel_06_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_passthrough_ganesh_telemetry_tests",
@@ -4608,6 +4650,18 @@ targets.bundle(
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_validating_ganesh_telemetry_tests",
         "gpu_webgl_conformance_validating_graphite_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_pixel_10_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webrtc_telemetry_test",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
     ],
 )
 
@@ -4908,13 +4962,12 @@ targets.bundle(
 
 targets.bundle(
     name = "ios18_sdk_simulator_tests",
-    # TODO(crbug.com/427470154): Revert back to run normal iOS18 tests after WWDC is over.
     targets = [
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_5",
             ],
         ),
         targets.bundle(
@@ -4923,27 +4976,41 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_5",
             ],
         ),
         targets.bundle(
-            targets = "ios_passing_eg2_tests",
+            targets = "ios_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_5",
             ],
         ),
         targets.bundle(
-            targets = "ios_passing_screen_size_dependent_tests",
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
-                "SIM_IPHONE_SE_3RD_GEN_26_0",
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_5",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_18_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_5",
+                "SIM_IPHONE_15_18_5",
+                "SIM_IPHONE_SE_3RD_GEN_18_5",
             ],
         ),
     ],
@@ -4955,8 +5022,8 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -4965,8 +5032,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -4976,8 +5043,8 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
@@ -4987,16 +5054,16 @@ targets.bundle(
                 "record_failed_tests",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
-                "SIM_IPHONE_SE_3RD_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_2",
             ],
         ),
     ],
@@ -5004,34 +5071,40 @@ targets.bundle(
 
 targets.bundle(
     name = "ios26_sdk_simulator_tests",
-    # TODO(crbug.com/427470154): Revert back to run normal iOS26 tests after WWDC is over
     targets = [
         targets.bundle(
-            targets = "ios_failing_eg2_cq_tests",
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
             mixins = [
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
-            targets = "ios_failing_eg2_tests",
+            targets = "ios_eg2_tests",
             mixins = [
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
             ],
         ),
         targets.bundle(
-            targets = "ios_failing_screen_size_dependent_tests",
+            targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_26_0",
-                "SIM_IPHONE_14_26_0",
-                "SIM_IPHONE_SE_3RD_GEN_26_0",
+                "SIM_IPAD_AIR_6TH_GEN_26_2",
+                "SIM_IPHONE_16_26_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_2",
             ],
         ),
     ],
@@ -5087,7 +5160,7 @@ targets.bundle(
         targets.bundle(
             targets = "ios_blink_tests",
             variants = [
-                "SIM_IPHONE_15_26_0",
+                "SIM_IPHONE_15_26_2",
             ],
         ),
     ],
@@ -5283,7 +5356,7 @@ targets.bundle(
         targets.bundle(
             targets = "clang_tot_gtests",
             variants = [
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
     ],
@@ -5291,6 +5364,7 @@ targets.bundle(
 
 # This suite is a union of ios_simulator_tests and
 # ios_simulator_full_configs_tests.
+# TODO(crbug.com/442375894): Add back ios26 variants after ARM migration is complete.
 targets.bundle(
     name = "ios_code_coverage_tests",
     targets = [
@@ -5299,6 +5373,7 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5309,8 +5384,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5321,8 +5398,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5330,8 +5409,10 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                #"SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+                #"SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -5384,7 +5465,7 @@ targets.bundle(
         "ios_chrome_integration_eg2tests_module": [
             targets.mixin(
                 swarming = targets.swarming(
-                    shards = 8,
+                    shards = 9,
                 ),
             ),
             "ios_parallel_simulators",
@@ -5438,153 +5519,13 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "ios_failing_eg2_cq_tests",
-    targets = [
-        "ios_chrome_integration_eg2tests_module",
-        "ios_web_shell_eg2tests_module",
-    ],
-    per_test_modifications = {
-        "ios_chrome_integration_eg2tests_module": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 8,
-                ),
-            ),
-            "ios_parallel_simulators",
-        ],
-    },
-)
-
-targets.bundle(
-    name = "ios_failing_eg2_tests",
-    targets = [
-        "ios_chrome_bookmarks_eg2tests_module",
-        "ios_chrome_settings_eg2tests_module",
-        "ios_chrome_signin_eg2tests_module",
-        "ios_chrome_ui_eg2tests_module",
-        "ios_chrome_web_eg2tests_module",
-    ],
-    per_test_modifications = {
-        "ios_chrome_bookmarks_eg2tests_module": targets.mixin(
-            swarming = targets.swarming(
-                shards = 3,
-            ),
-        ),
-        "ios_chrome_settings_eg2tests_module": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 4,
-                ),
-            ),
-            "ios_parallel_simulators",
-        ],
-        "ios_chrome_signin_eg2tests_module": targets.mixin(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "ios_chrome_ui_eg2tests_module": [
-            targets.mixin(
-                swarming = targets.swarming(
-                    shards = 12,
-                ),
-            ),
-            "ios_parallel_simulators",
-        ],
-        "ios_chrome_web_eg2tests_module": targets.mixin(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
-    name = "ios_failing_screen_size_dependent_tests",
-    targets = [
-        "ios_web_inttests",
-        "ios_web_unittests",
-    ],
-)
-
-targets.bundle(
-    name = "ios_m1_simulator_tests",
-    targets = [
-        targets.bundle(
-            targets = "ios_common_tests",
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_screen_size_dependent_tests",
-            variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_PRO_MAX_17_5",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPHONE_15_PRO_MAX_18_2",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "ios_passing_eg2_tests",
-    targets = [
-        "ios_chrome_smoke_eg2tests_module",
-    ],
-)
-
-targets.bundle(
-    name = "ios_passing_screen_size_dependent_tests",
-    targets = [
-        "base_unittests",
-        "components_unittests",
-        "gfx_unittests",
-        "ios_chrome_unittests",
-        "ios_web_view_inttests",
-        "ios_web_view_unittests",
-        "skia_unittests",
-        "ui_base_unittests",
-    ],
-)
-
-targets.bundle(
     name = "ios_screen_size_dependent_tests",
     targets = [
         "base_unittests",
         "components_unittests",
         "gfx_unittests",
         "ios_chrome_unittests",
+        "ios_credential_provider_extension_unittests",
         "ios_web_inttests",
         "ios_web_unittests",
         "ios_web_view_inttests",
@@ -5595,6 +5536,8 @@ targets.bundle(
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
+# TODO(crbug.com/441038354): combine simulators for the same test target once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
     targets = [
@@ -5604,8 +5547,25 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_PLUS_17_5",
                 "SIM_IPHONE_14_PLUS_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_16_PLUS_26_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "mac_15_vm_optional",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_2",
             ],
         ),
         targets.bundle(
@@ -5614,9 +5574,17 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                "SIM_IPHONE_16_26_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "mac_15_vm_optional",
+            ],
+            variants = [
                 "SIM_IPHONE_15_18_2",
             ],
         ),
@@ -5626,10 +5594,8 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5638,15 +5604,22 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
 )
 
+# TODO(crbug.com/441038354): comebine simulators into the same test targets once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_noncq_tests",
     targets = [
@@ -5658,6 +5631,7 @@ targets.bundle(
             variants = [
                 "SIM_IPHONE_SE_3RD_GEN_17_5",
                 "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
         ),
         targets.bundle(
@@ -5670,6 +5644,16 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+                "record_failed_tests",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
             ],
         ),
         targets.bundle(
@@ -5681,28 +5665,28 @@ targets.bundle(
             variants = [
                 "SIM_IPAD_PRO_6TH_GEN_17_5",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
-            mixins = [
-                "mac_15_vm_optional",
-            ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPAD_PRO_7TH_GEN_18_2",
-                "SIM_IPHONE_14_PLUS_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_26_0",
                 "SIM_IPHONE_14_PLUS_18_2",
-                "SIM_IPHONE_SE_3RD_GEN_17_5",
+                "SIM_IPHONE_16_26_0",
                 "SIM_IPHONE_SE_3RD_GEN_18_2",
+                "SIM_IPHONE_SE_3RD_GEN_26_0",
             ],
         ),
     ],
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.
+# TODO(crbug.com/441038354): comebine simulators for the same test target once
+# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_tests",
     targets = [
@@ -5712,8 +5696,13 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5723,17 +5712,32 @@ targets.bundle(
                 "mac_15_vm_optional",
             ],
             variants = [
-                "SIM_IPHONE_14_17_5",
                 "SIM_IPHONE_15_18_2",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPHONE_16_26_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            mixins = [
+                "mac_15_vm_optional",
+            ],
+            variants = [
+                "SIM_IPHONE_15_18_2",
+                "SIM_IPAD_PRO_7TH_GEN_18_2",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPHONE_15_18_2",
-                "SIM_IPAD_PRO_7TH_GEN_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -5751,7 +5755,7 @@ targets.bundle(
         "ios_chrome_integration_eg2tests_module": [
             targets.mixin(
                 swarming = targets.swarming(
-                    shards = 9,
+                    shards = 10,
                 ),
             ),
         ],
@@ -5767,14 +5771,14 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_vm_unittests",
             variants = [
-                "SIM_IPAD_10TH_GEN_18_2",
-                "SIM_IPHONE_14_18_2",
+                "SIM_IPAD_10TH_GEN_26_0",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -5793,10 +5797,10 @@ targets.bundle(
         targets.bundle(
             targets = "ios_common_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5805,10 +5809,10 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
@@ -5817,19 +5821,19 @@ targets.bundle(
                 "xcodebuild_sim_runner",
             ],
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
         targets.bundle(
             targets = "ios_screen_size_dependent_tests",
             variants = [
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
                 "SIM_IPAD_AIR_6TH_GEN_18_2",
-                "SIM_IPHONE_14_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_26_0",
                 "SIM_IPHONE_15_18_2",
+                "SIM_IPHONE_16_26_0",
             ],
         ),
     ],
@@ -6186,8 +6190,34 @@ targets.bundle(
     per_test_modifications = {
         "interactive_ui_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 6,
+                shards = 7,
             ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "mappable_buffer_tests_suite",
+    targets = [
+        "mappable_buffer_tests",
+    ],
+    per_test_modifications = {
+        "mappable_buffer_tests": targets.mixin(
+            args = [
+                "--enable-gpu",
+                "--use-gpu-in-tests",
+                "--gtest_filter=*MappableBufferTest*",
+            ],
+            lacros_args = [
+                "--ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+            linux_args = [
+                "--no-xvfb",
+            ],
         ),
     },
 )
@@ -6197,35 +6227,6 @@ targets.bundle(
     targets = [
         "mojo_python_unittests",
     ],
-)
-
-targets.bundle(
-    name = "monochrome_public_apk_checker_isolated_script",
-    targets = [
-        "monochrome_public_apk_checker",
-    ],
-    per_test_modifications = {
-        "monochrome_public_apk_checker": targets.per_test_modification(
-            mixins = targets.mixin(
-                swarming = targets.swarming(
-                    dimensions = {
-                        "os": "Ubuntu-22.04",
-                        "cpu": "x86-64",
-                        "device_os": None,
-                        "device_os_flavor": None,
-                        "device_playstore_version": None,
-                        "device_type": None,
-                    },
-                ),
-            ),
-            remove_mixins = [
-                "chromium_nexus_5x_oreo",
-                "chromium_pixel_2_pie",
-                "marshmallow",
-                "oreo_mr1_fleet",
-            ],
-        ),
-    },
 )
 
 targets.bundle(
@@ -6314,18 +6315,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "oreo_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
-targets.bundle(
     name = "perfetto_gtests",
     targets = [
         "base_unittests",
@@ -6405,7 +6394,6 @@ targets.bundle(
         "android_isolated_scripts",
         "chromium_junit_tests_scripts",
         "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
         "telemetry_android_minidump_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts_android",
     ],
@@ -6452,8 +6440,6 @@ targets.bundle(
     name = "rust_common_gtests",
     targets = [
         "base_unittests",
-        "mojo_rust_integration_unittests",
-        "mojo_rust_unittests",
         "rust_gtest_interop_unittests",
         "test_cpp_including_rust_unittests",
         "test_serde_json_lenient",
@@ -6754,77 +6740,12 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "trees_in_viz_fyi_blink_web_tests",
-    targets = [
-        "blink_web_tests",
-    ],
-    mixins = [
-        targets.mixin(
-            args = [
-                "--flag-specific=trees-in-viz",
-            ],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "trees_in_viz_fyi_gtests",
-    targets = [
-        "blink_unittests",
-        "blink_platform_unittests",
-        "browser_tests",
-        "cc_unittests",
-        "content_browsertests",
-    ],
-    mixins = [
-        targets.mixin(
-            args = [
-                "--enable-features=TreesInViz",
-            ],
-        ),
-    ],
-    per_test_modifications = {
-        "blink_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_unittests.filter",
-            ],
-        ),
-        "blink_platform_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
-            ],
-        ),
-        "browser_tests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.browser_tests.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 16,
-            ),
-        ),
-        "cc_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.cc_unittests.filter",
-            ],
-        ),
-        "content_browsertests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.content_browsertests.filter",
-            ],
-            swarming = targets.swarming(
-                shards = 8,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
     name = "tvos_rel_tests",
     targets = [
         targets.bundle(
             targets = "tvos_tests",
             variants = [
-                "SIM_APPLE_TV_4K_3RD_GENERATION_18_5",
+                "SIM_APPLE_TV_4K_3RD_GENERATION_26_0",
             ],
         ),
     ],
@@ -6834,14 +6755,22 @@ targets.bundle(
     name = "tvos_tests",
     targets = [
         "base_unittests",
+        "components_browsertests",
         "components_unittests",
         "content_unittests",
+        "media_unittests",
     ],
     per_test_modifications = {
         "base_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.base_unittests.filter",
+            ],
+        ),
+        "components_browsertests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.use_blink.components_browsertests.filter;testing/buildbot/filters/tvos.components_browsertests.filter",
             ],
         ),
         "components_unittests": targets.mixin(
@@ -6853,7 +6782,13 @@ targets.bundle(
         "content_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.content_unittests.filter;testing/buildbot/filters/tvos.content_unittests.filter",
+            ],
+        ),
+        "media_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.media_unittests.filter",
             ],
         ),
     },
@@ -6883,7 +6818,7 @@ targets.bundle(
             "updater-default-pool",
         ],
         "updater_tests_system": [
-            "updater-mac-pool",
+            "updater-tests-pool",
         ],
     },
 )
@@ -6896,6 +6831,12 @@ targets.bundle(
     ],
     per_test_modifications = {
         "updater_tests": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                    hard_timeout_sec = 7200,
+                ),
+            ),
             "integrity_high",
             "updater-default-pool",
         ],

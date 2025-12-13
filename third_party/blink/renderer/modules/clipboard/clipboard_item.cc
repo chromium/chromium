@@ -8,14 +8,26 @@
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
+
+// The time threshold to consider an operation as "delayed" for UseCounter
+// purposes.
+constexpr base::TimeDelta kClipboardOperation5SecDelay = base::Seconds(5);
+constexpr base::TimeDelta kClipboardOperation1MinDelay = base::Minutes(1);
+constexpr base::TimeDelta kClipboardOperation10MinDelay = base::Minutes(10);
 
 class UnionToBlobResolverFunction final
     : public ThenCallable<V8UnionBlobOrString,
@@ -31,7 +43,8 @@ class UnionToBlobResolverFunction final
     } else if (union_value->IsString()) {
       // ClipboardItem::getType() returns a Blob, so we need to convert the
       // string to a Blob here.
-      return Blob::Create(union_value->GetAsString().Span8(), mime_type_);
+      StringUtf8Adaptor utf8_text(union_value->GetAsString());
+      return Blob::Create(base::as_byte_span(utf8_text), mime_type_);
     }
     return nullptr;
   }
@@ -59,7 +72,10 @@ ClipboardItem* ClipboardItem::Create(
 ClipboardItem::ClipboardItem(
     const HeapVector<
         std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
-        representations) {
+        representations,
+    absl::uint128 sequence_number)
+    : sequence_number_(sequence_number),
+      creation_time_(base::TimeTicks::Now()) {
   for (const auto& representation : representations) {
     String web_custom_format =
         Clipboard::ParseWebCustomFormat(representation.first);
@@ -99,12 +115,15 @@ Vector<String> ClipboardItem::types() const {
   return types;
 }
 
-ScriptPromise<Blob> ClipboardItem::getType(
-    ScriptState* script_state,
-    const String& type,
-    ExceptionState& exception_state) const {
+ScriptPromise<Blob> ClipboardItem::getType(ScriptState* script_state,
+                                           const String& type,
+                                           ExceptionState& exception_state) {
   for (const auto& item : representations_) {
     if (type == item.first) {
+      if (RuntimeEnabledFeatures::ClipboardItemGetTypeCounterEnabled()) {
+        CaptureTelemetry(ExecutionContext::From(script_state), type);
+      }
+
       return item.second.Unwrap().Then(
           script_state,
           MakeGarbageCollected<UnionToBlobResolverFunction>(type));
@@ -134,6 +153,77 @@ bool ClipboardItem::supports(const String& type) {
 void ClipboardItem::Trace(Visitor* visitor) const {
   visitor->Trace(representations_);
   ScriptWrappable::Trace(visitor);
+}
+
+void ClipboardItem::CaptureTelemetry(ExecutionContext* context,
+                                     const String& type) {
+  if (!context) {
+    return;
+  }
+  LocalDOMWindow& window = *To<LocalDOMWindow>(context);
+  SystemClipboard* system_clipboard =
+      window.GetFrame() ? window.GetFrame()->GetSystemClipboard() : nullptr;
+  if (system_clipboard) {
+    absl::uint128 seqno = system_clipboard->SequenceNumber();
+    if (seqno != sequence_number_) {
+      // Case 1: Clipboard changed between read() and getType()
+      UseCounter::Count(context,
+                        WebFeature::kClipboardChangedBetweenReadAndGetType);
+
+      // Case 2: Clipboard changed between two getType() calls
+      if (!last_get_type_calls_.empty()) {
+        UseCounter::Count(context,
+                          WebFeature::kClipboardChangedBetweenGetTypes);
+      }
+    }
+  }
+  // Case 3: Time difference between read() and getType() calls is more
+  // than threshold
+  const base::TimeTicks current_time = base::TimeTicks::Now();
+  const base::TimeDelta time_diff = current_time - creation_time_;
+  if (time_diff >= kClipboardOperation5SecDelay &&
+      time_diff < kClipboardOperation1MinDelay) {
+    UseCounter::Count(
+        context,
+        WebFeature::kClipboardReadAndGetTypeTimeDiffIsBetween5SecAnd1Min);
+  } else if (time_diff >= kClipboardOperation1MinDelay &&
+             time_diff < kClipboardOperation10MinDelay) {
+    UseCounter::Count(
+        context,
+        WebFeature::kClipboardReadAndGetTypeTimeDiffIsBetween1MinAnd10Min);
+  } else if (time_diff > kClipboardOperation10MinDelay) {
+    UseCounter::Count(
+        context, WebFeature::kClipboardReadAndGetTypeTimeDiffIsMoreThan10Min);
+  }
+
+  // Case 4: Time difference between two getType() calls for the same
+  // types is more than threshold
+  auto it = last_get_type_calls_.find(type);
+  if (it != last_get_type_calls_.end()) {
+    const base::TimeDelta type_time_diff = current_time - it->value;
+    if (type_time_diff >= kClipboardOperation5SecDelay &&
+        type_time_diff < kClipboardOperation1MinDelay) {
+      UseCounter::Count(
+          context,
+          WebFeature::kClipboardGetTypeTimeDiffOfSameTypeIsBetween5SecAnd1Min);
+    } else if (type_time_diff >= kClipboardOperation1MinDelay &&
+               type_time_diff < kClipboardOperation10MinDelay) {
+      UseCounter::Count(
+          context,
+          WebFeature::kClipboardGetTypeTimeDiffOfSameTypeIsBetween1MinAnd10Min);
+    } else if (type_time_diff > kClipboardOperation10MinDelay) {
+      UseCounter::Count(
+          context,
+          WebFeature::kClipboardGetTypeTimeDiffOfSameTypeIsMoreThan10Min);
+    }
+  } else {
+    // Update the last call time for this type
+    last_get_type_calls_.Set(type, current_time);
+  }
+
+  if (!window.document()->hasFocus()) {
+    UseCounter::Count(context, WebFeature::kClipboardGetTypeWindowNotInFocus);
+  }
 }
 
 }  // namespace blink

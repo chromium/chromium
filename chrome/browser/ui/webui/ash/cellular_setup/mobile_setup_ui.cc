@@ -310,7 +310,7 @@ void MobileSetupHandler::HandleGetDeviceInfo(const base::Value::List& args) {
     return;
   }
 
-  std::string path = web_ui()->GetWebContents()->GetURL().path();
+  std::string path = web_ui()->GetWebContents()->GetURL().GetPath();
   if (path.empty()) {
     return;
   }
@@ -360,7 +360,7 @@ void MobileSetupHandler::DefaultNetworkChanged(
     return;
   }
 
-  std::string path = web_ui()->GetWebContents()->GetURL().path().substr(1);
+  std::string path = web_ui()->GetWebContents()->GetURL().GetPath().substr(1);
   if (path.empty()) {
     return;
   }
@@ -382,7 +382,7 @@ void MobileSetupHandler::NetworkConnectionStateChanged(
     return;
   }
 
-  std::string path = web_ui()->GetWebContents()->GetURL().path().substr(1);
+  std::string path = web_ui()->GetWebContents()->GetURL().GetPath().substr(1);
   if (path.empty() || path != network->path()) {
     return;
   }

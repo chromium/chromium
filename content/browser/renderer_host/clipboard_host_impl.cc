@@ -9,17 +9,22 @@
 #include <set>
 #include <utility>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/pickle.h"
+#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/optional_util.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
@@ -34,6 +39,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/drop_data.h"
+#include "crypto/hmac.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "skia/ext/skia_utils_base.h"
@@ -155,16 +161,36 @@ ClipboardHostImpl::~ClipboardHostImpl() {
   }
 }
 
-void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
-                                          GetSequenceNumberCallback callback) {
-  std::move(callback).Run(
-      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-          clipboard_buffer));
+absl::uint128 ClipboardHostImpl::GetSequenceNumberImpl(
+    ui::ClipboardBuffer clipboard_buffer) {
+  const ui::ClipboardSequenceNumberToken seqno =
+      ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(clipboard_buffer);
+  const base::UnguessableToken& salt =
+      static_cast<StoragePartitionImpl*>(
+          render_frame_host().GetProcess()->GetStoragePartition())
+          ->GetPartitionUUIDPerStorageKey(render_frame_host().GetStorageKey());
+
+  // Generate a per-partition sequence number derived from the overall
+  // clipboard sequence number, using HMAC-SHA256 with the domain-string
+  // "clipboard-change-id-", that is:
+  //   HMAC_SHA256(seqno, "clipboard-change-id-"||uuid)
+  const std::array result = crypto::hmac::SignSha256(
+      seqno.value().AsBytes(), base::as_byte_span(base::StrCat(
+                                   {"clipboard-change-id-", salt.ToString()})));
+
+  const base::span result_span(result);
+  return absl::MakeUint128(
+      base::U64FromLittleEndian(result_span.first<8>()),
+      base::U64FromLittleEndian(result_span.subspan<8, 8>()));
 }
 
-void ClipboardHostImpl::ReadAvailableTypes(
-    ui::ClipboardBuffer clipboard_buffer,
-    ReadAvailableTypesCallback callback) {
+void ClipboardHostImpl::GetSequenceNumber(ui::ClipboardBuffer clipboard_buffer,
+                                          GetSequenceNumberCallback callback) {
+  std::move(callback).Run(GetSequenceNumberImpl(clipboard_buffer));
+}
+
+std::vector<std::u16string> ClipboardHostImpl::ReadAvailableTypesImpl(
+    ui::ClipboardBuffer clipboard_buffer) {
   std::vector<std::u16string> types;
   auto* clipboard = ui::Clipboard::GetForCurrentThread();
   auto data_endpoint = CreateDataEndpoint();
@@ -203,7 +229,13 @@ void ClipboardHostImpl::ReadAvailableTypes(
                                     &types);
     }
   }
-  std::move(callback).Run(types);
+  return types;
+}
+
+void ClipboardHostImpl::ReadAvailableTypes(
+    ui::ClipboardBuffer clipboard_buffer,
+    ReadAvailableTypesCallback callback) {
+  std::move(callback).Run(ReadAvailableTypesImpl(clipboard_buffer));
 }
 
 void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
@@ -774,12 +806,21 @@ void ClipboardHostImpl::OnCopyAllowedResult(
 
 std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
-  if (!render_frame_host().GetMainFrame()->GetLastCommittedURL().is_valid()) {
+  auto* render_frame_host_main_frame = render_frame_host().GetMainFrame();
+  auto source_url = render_frame_host_main_frame->GetLastCommittedURL();
+  if (!source_url.is_valid()) {
     return nullptr;
   }
 
+  if (auto maybe_url = GetContentClient()
+                           ->browser()
+                           ->MaybeOverrideSourceURLForClipboardAccess(
+                               render_frame_host_main_frame, source_url)) {
+    source_url = *maybe_url;
+  }
+
   return std::make_unique<ui::DataTransferEndpoint>(
-      render_frame_host().GetMainFrame()->GetLastCommittedURL(),
+      source_url,
       ui::DataTransferEndpointOptions{
           .notify_if_restricted =
               render_frame_host().HasTransientUserActivation(),
@@ -818,12 +859,35 @@ void ClipboardHostImpl::AddSourceDataToClipboardWriter() {
 }
 
 void ClipboardHostImpl::OnClipboardDataChanged() {
-  if (!listening_to_clipboard_) {
+  if (!listening_to_clipboard_ || !clipboard_listener_) {
     return;
   }
-  if (clipboard_listener_) {
-    clipboard_listener_->OnClipboardDataChanged();
+
+  auto change_id = GetSequenceNumberImpl(ui::ClipboardBuffer::kCopyPaste);
+  if (change_id == last_change_id_) {
+    // We already sent an event with this change ID.
+    return;
   }
+
+  // Static list of allowed standard MIME types
+  // https://w3c.github.io/clipboard-apis/#mandatory-data-types-x
+  auto types = base::STLSetIntersection<std::vector<std::u16string>>(
+      base::flat_set<std::u16string>{
+          ui::kMimeTypePng16,
+          ui::kMimeTypeHtml16,
+          ui::kMimeTypePlainText16,
+      },
+      base::MakeFlatSet<std::u16string>(
+          ReadAvailableTypesImpl(ui::ClipboardBuffer::kCopyPaste)));
+
+  if (change_id != GetSequenceNumberImpl(ui::ClipboardBuffer::kCopyPaste)) {
+    // Clipboard changed meanwhile. There will be another notification anyway,
+    // no need to retry here.
+    return;
+  }
+
+  clipboard_listener_->OnClipboardDataChanged(
+      types, last_change_id_.emplace(change_id));
 }
 
 void ClipboardHostImpl::RegisterClipboardListener(

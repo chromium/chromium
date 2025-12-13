@@ -28,6 +28,7 @@
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -142,12 +143,10 @@ class ArcMetricsServiceTest : public testing::Test {
 
  private:
   void CreateFakeWindows() {
-    fake_arc_window_.reset(aura::test::CreateTestWindowWithId(
-        /*id=*/0, nullptr));
+    fake_arc_window_ = aura::test::CreateTestWindow({.bounds = {100, 100}});
     fake_arc_window_->SetProperty(chromeos::kAppTypeKey,
                                   chromeos::AppType::ARC_APP);
-    fake_non_arc_window_.reset(aura::test::CreateTestWindowWithId(
-        /*id=*/1, nullptr));
+    fake_non_arc_window_ = aura::test::CreateTestWindow({.bounds = {100, 100}});
   }
 
   content::BrowserTaskEnvironment task_environment_{
@@ -156,7 +155,8 @@ class ArcMetricsServiceTest : public testing::Test {
                                          /*register_screen=*/true};
 
   TestingPrefServiceSimple local_state_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<user_prefs::TestBrowserContextWithPrefs> context_;

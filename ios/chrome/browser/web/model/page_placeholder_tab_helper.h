@@ -62,6 +62,7 @@ class PagePlaceholderTabHelper
 
   void AddPlaceholder();
   void RemovePlaceholder();
+  void FetchPlaceholderIfNecessary();
 
   // Adds the given `snapshot` image to the `web_state_`'s view. The
   // `web_state_`'s view must be visible, and it must be in a view hierarchy
@@ -69,7 +70,7 @@ class PagePlaceholderTabHelper
   void DisplaySnapshotImage(UIImage* snapshot);
 
   // Display image in a placeholder after retrieval from SnapshotTabHelper.
-  void OnImageRetrieved(UIImage* image);
+  void OnImageRetrieved(int request_id, UIImage* image);
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;
@@ -82,6 +83,17 @@ class PagePlaceholderTabHelper
 
   // true if placeholder must be displayed during the next navigation.
   bool add_placeholder_for_next_navigation_ = false;
+
+  // true if placeholder is being fetched.
+  bool placeholder_fetch_in_progress_ = false;
+
+  // Integer incremented each time AddPlaceholderForNextNavigation()
+  // is called. Used to track that OnImageRetrieved(...) is for the
+  // expected request.
+  int placeholder_request_id_ = 0;
+
+  // Cached snapshot.
+  UIImage* cached_placeholder_image_;
 
   base::WeakPtrFactory<PagePlaceholderTabHelper> weak_factory_;
 };

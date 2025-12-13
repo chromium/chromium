@@ -14,16 +14,17 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
-#include "base/hash/md5.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "crypto/hash.h"
 #include "url/url_util.h"
 
 namespace coverage {
@@ -184,13 +185,15 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   result->Set("hostTest", test);
   result->Set("hostURL", url);
 
-  std::string md5 = base::MD5String(HostString(host, test));
+  std::string sha256 =
+      base::HexEncode(crypto::hash::Sha256(HostString(host, test)));
+
   // Parameterized tests contain a "/" character which is not a valid file path.
   // Replace these with "_" to enable a valid file path.
   std::string file_name;
   base::ReplaceChars(test, "/", "_", &file_name);
   std::string coverage =
-      base::StrCat({file_name, ".", md5, uuid_, ".cov.json"});
+      base::StrCat({file_name, ".", sha256, uuid_, ".cov.json"});
   base::FilePath path = store.AppendASCII("tests").AppendASCII(coverage);
 
   result->Set("result", std::move(entries));
@@ -370,8 +373,9 @@ void DevToolsListener::DispatchProtocolMessage(
   if (VLOG_IS_ON(2))
     VLOG(2) << SpanToStringPiece(message);
 
-  std::optional<base::Value> value =
-      base::JSONReader::Read(SpanToStringPiece(message));
+  std::optional<base::Value> value = base::JSONReader::Read(
+      SpanToStringPiece(message), base::JSON_PARSE_CHROMIUM_EXTENSIONS,
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(value.has_value()) << "Cannot parse as JSON: "
                            << SpanToStringPiece(message);
 

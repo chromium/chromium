@@ -20,6 +20,10 @@
 // The mutator for this view controller to communicate to the mediator.
 @property(nonatomic, weak) id<EnhancedCalendarMutator> mutator;
 
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithConfiguration:(ButtonStackConfiguration*)configuration
+    NS_UNAVAILABLE;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ENHANCED_CALENDAR_UI_ENHANCED_CALENDAR_VIEW_CONTROLLER_H_

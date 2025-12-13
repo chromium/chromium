@@ -509,7 +509,7 @@ class NetworkContextConfigurationBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+        loader_factory(), simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
 
     if (expect_success) {
@@ -535,8 +535,8 @@ class NetworkContextConfigurationBrowserTest
 
     live_during_shutdown_simple_loader_
         ->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-            loader_factory(), live_during_shutdown_simple_loader_helper_
-                                  ->GetCallbackDeprecated());
+            loader_factory(),
+            live_during_shutdown_simple_loader_helper_->GetCallback());
 
     // Don't actually care about controlling the response, just need to wait
     // until it sees the request, to make sure that a URLRequest has been
@@ -564,7 +564,7 @@ class NetworkContextConfigurationBrowserTest
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+        loader_factory(), simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     if (simple_loader_helper.response_body()) {
       *header_value_out = *simple_loader_helper.response_body();
@@ -604,7 +604,7 @@ class NetworkContextConfigurationBrowserTest
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
 
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+        loader_factory(), simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     EXPECT_EQ(net::OK, simple_loader->NetError());
   }
@@ -713,10 +713,22 @@ class NetworkContextConfigurationBrowserTest
     // Make sure |network_context()| is working as expected. Use '/echoheader'
     // instead of '/echo' to avoid a disk_cache bug.
     // See https://crbug.com/792255.
-    int net_error = content::LoadBasicRequest(
-        network_context(), embedded_test_server()->GetURL("/echoheader"),
-        net::LOAD_BYPASS_PROXY);
-    EXPECT_THAT(net_error, net::test::IsOk());
+    auto request = std::make_unique<network::ResourceRequest>();
+    request->url = embedded_test_server()->GetURL("/echoheader");
+    request->load_flags = net::LOAD_BYPASS_PROXY;
+    content::SimpleURLLoaderTestHelper simple_loader_helper;
+    std::unique_ptr<network::SimpleURLLoader> simple_loader =
+        network::SimpleURLLoader::Create(std::move(request),
+                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+    // Choice of URLLoaderFactory doesn't matter here, other than that it's
+    // trusted so can bypass proxies, since this is just to make sure the
+    // network service has fully started up.
+    simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+        g_browser_process->system_network_context_manager()
+            ->GetURLLoaderFactory(),
+        simple_loader_helper.GetCallback());
+    simple_loader_helper.WaitForCallback();
+    EXPECT_THAT(simple_loader->NetError(), net::test::IsOk());
 
     // Crash the NetworkService process. Existing interfaces should receive
     // error notifications at some point.
@@ -779,7 +791,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   EXPECT_EQ(200, simple_loader->ResponseInfo()->headers->response_code());
@@ -872,7 +884,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, BasicRequest) {
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   ASSERT_TRUE(simple_loader->ResponseInfo());
@@ -912,7 +924,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   ASSERT_TRUE(simple_loader_helper.response_body());
@@ -934,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Cache) {
       network::SimpleURLLoader::Create(std::move(request2),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader2->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper2.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper2.GetCallback());
   simple_loader_helper2.WaitForCallback();
   ASSERT_TRUE(simple_loader_helper2.response_body());
   if (GetHttpCacheType() == StorageType::kNone) {
@@ -965,7 +977,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CacheIsolation) {
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   ASSERT_TRUE(simple_loader_helper.response_body());
@@ -988,7 +1000,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, CacheIsolation) {
                                              TRAFFIC_ANNOTATION_FOR_TESTS);
         simple_loader2->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
             GetLoaderFactoryForContextType(network_context_type),
-            simple_loader_helper2.GetCallbackDeprecated());
+            simple_loader_helper2.GetCallback());
         simple_loader_helper2.WaitForCallback();
         EXPECT_FALSE(simple_loader_helper2.response_body());
         EXPECT_EQ(net::ERR_CONNECTION_REFUSED, simple_loader2->NetError());
@@ -1026,7 +1038,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_DiskCache) {
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   EXPECT_EQ(net::OK, simple_loader->NetError());
@@ -1092,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   // The request should only succeed if there is an on-disk cache.
@@ -1124,10 +1136,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       network::BlockingDnsLookup(network_context(), host_port_pair,
                                  std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result.error);
-  ASSERT_TRUE(result.resolved_addresses.has_value());
-  ASSERT_EQ(1u, result.resolved_addresses->size());
-  EXPECT_EQ(kAddress,
-            result.resolved_addresses.value()[0].ToStringWithoutPort());
+  ASSERT_EQ(1u, result.resolved_addresses.size());
+  EXPECT_EQ(kAddress, result.resolved_addresses[0].ToStringWithoutPort());
   // Make a cache-only request for the same hostname, for each other network
   // context, and make sure no result is returned.
   ForEachOtherContext(
@@ -1155,10 +1165,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
       network::BlockingDnsLookup(network_context(), host_port_pair,
                                  std::move(params), network_anonymization_key);
   EXPECT_EQ(net::OK, result.error);
-  ASSERT_TRUE(result.resolved_addresses.has_value());
-  ASSERT_EQ(1u, result.resolved_addresses->size());
-  EXPECT_EQ(kAddress,
-            result.resolved_addresses.value()[0].ToStringWithoutPort());
+  ASSERT_EQ(1u, result.resolved_addresses.size());
+  EXPECT_EQ(kAddress, result.resolved_addresses[0].ToStringWithoutPort());
 }
 
 // Visits a URL with an HSTS header, and makes sure it is respected.
@@ -1183,7 +1191,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_Hsts) {
       network::SimpleURLLoader::Create(std::move(request),
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   EXPECT_EQ(net::OK, simple_loader->NetError());
@@ -1217,7 +1225,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, PRE_Hsts) {
   simple_loader = network::SimpleURLLoader::Create(
       std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper2.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper2.GetCallback());
   simple_loader_helper2.WaitForCallback();
   EXPECT_FALSE(simple_loader_helper2.response_body());
   EXPECT_EQ(exected_ssl_url, simple_loader->GetFinalURL());
@@ -1273,7 +1281,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, Hsts) {
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+        loader_factory(), simple_loader_helper.GetCallback());
     simple_loader_helper.WaitForCallback();
     EXPECT_FALSE(simple_loader_helper.response_body());
 
@@ -1465,7 +1473,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
   if (GetParam().network_context_type == NetworkContextType::kSafeBrowsing) {
     // Safebrowsing ignores referrers so the requests succeed.
@@ -1647,7 +1655,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest, UploadFile) {
   simple_loader->AttachFileForUpload(path, "text/html");
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   ASSERT_TRUE(simple_loader->ResponseInfo());
@@ -1693,7 +1701,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationFixedPortBrowserTest,
                                        TRAFFIC_ANNOTATION_FOR_TESTS);
 
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+      loader_factory(), simple_loader_helper.GetCallback());
   simple_loader_helper.WaitForCallback();
 
   EXPECT_EQ(net::OK, simple_loader->NetError());
@@ -1921,7 +1929,7 @@ class NetworkContextConfigurationProxySettingsBrowserTest
                                            TRAFFIC_ANNOTATION_FOR_TESTS);
 
       simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-          loader_factory(), simple_loader_helper.GetCallbackDeprecated());
+          loader_factory(), simple_loader_helper.GetCallback());
       loaders.emplace_back(std::move(simple_loader));
     }
     expected_connections_run_loop.Run();
@@ -2042,7 +2050,7 @@ class NetworkContextConfigurationReportingAndNelBrowserTest
     request_state->loader = network::SimpleURLLoader::Create(
         std::move(request), TRAFFIC_ANNOTATION_FOR_TESTS);
     request_state->loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        loader_factory(), request_state->helper.GetCallbackDeprecated());
+        loader_factory(), request_state->helper.GetCallback());
     return request_state;
   }
 

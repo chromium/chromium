@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.browserservices.trustedwebactivityui.controller;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
@@ -22,6 +23,7 @@ import org.chromium.components.security_state.SecurityStateModel;
  * Updates the browser controls state based on whether the browser is in TWA mode, the page's
  * security level, and desktop windowing state.
  */
+@NullMarked
 public class TrustedWebActivityBrowserControlsVisibilityManager {
     static final @BrowserControlsState int DEFAULT_BROWSER_CONTROLS_STATE =
             BrowserControlsState.BOTH;

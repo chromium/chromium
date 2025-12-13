@@ -61,8 +61,6 @@ class PLATFORM_EXPORT LengthBox {
            bottom_ == o.bottom_;
   }
 
-  bool operator!=(const LengthBox& o) const { return !(*this == o); }
-
   bool NonZero() const {
     return !(left_.IsZero() && right_.IsZero() && top_.IsZero() &&
              bottom_.IsZero());

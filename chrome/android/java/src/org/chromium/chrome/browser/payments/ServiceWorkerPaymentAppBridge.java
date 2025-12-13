@@ -29,23 +29,23 @@ import java.util.Map;
 @NullMarked
 public class ServiceWorkerPaymentAppBridge {
     /** The interface for checking whether there is an installed SW payment app. */
-    public static interface HasServiceWorkerPaymentAppsCallback {
+    public interface HasServiceWorkerPaymentAppsCallback {
         /**
          * Called to return checking result.
          *
          * @param hasPaymentApps Indicates whether there is an installed SW payment app.
          */
-        public void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps);
+        void onHasServiceWorkerPaymentAppsResponse(boolean hasPaymentApps);
     }
 
     /** The interface for getting all installed SW payment apps' information. */
-    public static interface GetServiceWorkerPaymentAppsInfoCallback {
+    public interface GetServiceWorkerPaymentAppsInfoCallback {
         /**
          * Called to return installed SW payment apps' information.
          *
          * @param appsInfo Contains all installed SW payment apps' information.
          */
-        public void onGetServiceWorkerPaymentAppsInfo(Map<String, Pair<String, Bitmap>> appsInfo);
+        void onGetServiceWorkerPaymentAppsInfo(Map<String, Pair<String, Bitmap>> appsInfo);
     }
 
     /* package */ ServiceWorkerPaymentAppBridge() {}

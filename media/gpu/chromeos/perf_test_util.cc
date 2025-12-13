@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/chromeos/perf_test_util.h"
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -39,8 +35,8 @@ void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
   base::File metrics_output_file(
       base::FilePath(metrics_file_path),
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  const int bytes_written = metrics_output_file.WriteAtCurrentPos(
-      metrics_str.data(), metrics_str.length());
+  const int bytes_written = UNSAFE_TODO(metrics_output_file.WriteAtCurrentPos(
+      metrics_str.data(), metrics_str.length()));
   ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
   LOG(INFO) << "Wrote performance metrics to: " << metrics_file_path;
 }

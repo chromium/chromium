@@ -46,6 +46,43 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Android FYI Release (Pixel 10)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.gpu.fyi",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "base_config"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb",
+                  "download_xr_test_apks"
+                ],
+                "build_config": "Release",
+                "config": "main_builder",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "GPU FYI Android arm64 Builder",
+                "project": "chromium"
+              },
+              "run_tests_serially": true
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Android FYI Release (Pixel 6)",
               "project": "chromium"
             },
@@ -164,6 +201,11 @@
         },
         {
           "bucket": "ci",
+          "builder": "Android FYI Release (Pixel 10)",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
           "builder": "Android FYI Release (Pixel 6)",
           "project": "chromium"
         },
@@ -179,6 +221,10 @@
           "group": "tryserver.chromium.android"
         },
         {
+          "builder": "gpu-fyi-try-android-pixel-10-64",
+          "group": "tryserver.chromium.android"
+        },
+        {
           "builder": "gpu-fyi-try-android-pixel-6-64",
           "group": "tryserver.chromium.android"
         },
@@ -191,7 +237,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Android arm64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/GPU FYI Android arm64 Builder/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

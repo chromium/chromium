@@ -36,7 +36,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.Tab;
@@ -46,12 +45,14 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabViewManager;
 import org.chromium.chrome.browser.tab.TabViewProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
+import java.util.function.Supplier;
 
 /** Unit tests for PageViewObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -168,7 +169,7 @@ public final class PageViewObserverTest {
     @Test
     public void updateUrl_noPaint_doesNotReportStart() {
         PageViewObserver observer = createPageViewObserver();
-        updateUrlNoPaint(mTab, STARTING_URL, observer);
+        startNavigation(mTab, STARTING_URL, observer);
         verify(mEventTracker, times(0)).addWebsiteEvent(argThat(isStartEvent(STARTING_FQDN)));
         reportPaint(mTab, STARTING_URL, observer);
         verify(mEventTracker, times(1)).addWebsiteEvent(argThat(isStartEvent(STARTING_FQDN)));
@@ -484,6 +485,7 @@ public final class PageViewObserverTest {
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     private PageViewObserver createPageViewObserver() {
         PageViewObserver observer =
                 new PageViewObserver(
@@ -504,12 +506,21 @@ public final class PageViewObserverTest {
     }
 
     private void updateUrl(Tab tab, GURL url, TabObserver tabObserver) {
-        updateUrlNoPaint(tab, url, tabObserver);
+        startNavigation(tab, url, tabObserver);
         reportPaint(tab, url, tabObserver);
     }
 
-    private void updateUrlNoPaint(Tab tab, GURL url, TabObserver tabObserver) {
-        tabObserver.onUpdateUrl(tab, url);
+    private void startNavigation(Tab tab, GURL url, TabObserver tabObserver) {
+        NavigationHandle navigationHandle =
+                NavigationHandle.createForTesting(
+                        url,
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ false,
+                        0,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false);
+        tabObserver.onDidStartNavigationInPrimaryMainFrame(tab, navigationHandle);
     }
 
     private void reportPaint(Tab tab, GURL url, TabObserver tabObserver) {

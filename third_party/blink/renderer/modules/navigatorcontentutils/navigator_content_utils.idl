@@ -20,9 +20,8 @@
 
 // https://html.spec.whatwg.org/C/#custom-handlers
 
-[
-    ImplementedAs=NavigatorContentUtils
-] partial interface Navigator {
-    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] void registerProtocolHandler(DOMString scheme, USVString url);
-    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] void unregisterProtocolHandler(DOMString scheme, USVString url);
+interface mixin NavigatorContentUtils {
+    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] undefined registerProtocolHandler(DOMString scheme, USVString url);
+    [RuntimeEnabled=NavigatorContentUtils, RaisesException, SecureContext] undefined unregisterProtocolHandler(DOMString scheme, USVString url);
 };
+Navigator includes NavigatorContentUtils;

@@ -11,9 +11,9 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "build/build_config.h"
-#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
@@ -29,6 +29,8 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 
 // Creates and configures a `webrtc::AudioProcessing` audio processing module
 // (APM), based on the provided parameters and on features and field trials.
+// `residual_echo_estimator_model` is an optional estimator for the echo
+// canceler. If specified, it must outlive the webrtc::AudioProcessing object.
 // Returns a pair consisting of:
 // - A configured `webrtc::AudioProcessing` instance (or nullptr if
 //   `settings.NeedWebrtcAudioProcessing()` is false).
@@ -37,7 +39,9 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 //   if loopback AEC is not enabled (default).
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 std::pair<webrtc::scoped_refptr<webrtc::AudioProcessing>, base::TimeDelta>
-CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings);
+CreateWebRtcAudioProcessingModule(
+    const AudioProcessingSettings& settings,
+    const tflite::FlatBufferModel* residual_echo_estimator_model);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

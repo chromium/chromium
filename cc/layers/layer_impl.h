@@ -86,6 +86,12 @@ class CC_EXPORT LayerImpl {
 
   int id() const { return layer_id_; }
 
+  int stable_id_for_shared_quad_state() const {
+    return stable_id_for_shared_quad_state_;
+  }
+
+  static int GetNextStableIdForSharedQuadState();
+
   // Whether this layer is on the active tree, return false if it's on the
   // pending tree.
   bool IsActive() const;
@@ -525,9 +531,7 @@ class CC_EXPORT LayerImpl {
   // When |will_always_push_properties| is true, the layer will not itself set
   // its SetNeedsPushProperties() state, as it expects to be always pushed to
   // the active tree regardless.
-  LayerImpl(LayerTreeImpl* layer_impl,
-            int id,
-            bool will_always_push_properties = false);
+  LayerImpl(LayerTreeImpl* layer_impl, int id);
 
   // Get the color and size of the layer's debug border.
   virtual void GetDebugBorderProperties(SkColor4f* color, float* width) const;
@@ -546,18 +550,16 @@ class CC_EXPORT LayerImpl {
   static float GetPreferredRasterScale(
       gfx::Vector2dF raster_space_scale_factor);
 
-  // Appends a solid-color quad with color `color`.
-  void AppendSolidQuad(viz::CompositorRenderPass* render_pass,
-                       AppendQuadsData* append_quads_data,
-                       SkColor4f color);
-
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
   gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
 
   const int layer_id_;
   const raw_ptr<LayerTreeImpl> layer_tree_impl_;
-  const bool will_always_push_properties_ : 1;
+
+  // This id shares namespace with RenderSurfaceImpl, and is only used to
+  // set the SharedQuadState::layer_id_.
+  const int stable_id_for_shared_quad_state_;
 
   // Properties synchronized from the associated Layer.
   gfx::Size bounds_;

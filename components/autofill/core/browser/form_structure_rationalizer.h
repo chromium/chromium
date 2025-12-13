@@ -8,7 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/raw_ref.h"
+#include "base/compiler_specific.h"
+#include "base/memory/raw_span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -27,7 +28,7 @@ class FormStructureRationalizer {
   // `fields` must outlive the FormStructureRationalizer and must not be null.
   // The rationalizer only modifies elements of `fields`, not the vector itself.
   explicit FormStructureRationalizer(
-      std::vector<std::unique_ptr<AutofillField>>* fields);
+      base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND);
   ~FormStructureRationalizer();
   FormStructureRationalizer(const FormStructureRationalizer&) = delete;
   FormStructureRationalizer& operator=(const FormStructureRationalizer&) =
@@ -103,9 +104,15 @@ class FormStructureRationalizer {
   // 2 and 3.
   void RationalizeRepeatedStreetAddressFields(LogManager* log_manager);
 
-  // Rewrites sequence of visible (zip, zip) fields into (zip_prefix,
-  // zip_suffix).
+  // Rewrites sequence of visible (zip, zip) fields into
+  // (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX) if a small max_length
+  // value is set for both fields or the second zip field type is
+  // ADDRESS_HOME_ZIP_SUFFIX.
   void RationalizeRepeatedZipCodeFields(LogManager* log_manager);
+
+  // Rewrites all ADDRESS_HOME_ZIP_SUFFIX fields into ADDRESS_HOME_ZIP
+  // if previous field is not ADDRESS_HOME_ZIP_PREFIX.
+  void RationalizeZipCodeSuffixFields(LogManager* log_manager);
 
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street
@@ -141,7 +148,7 @@ class FormStructureRationalizer {
 
   // A vector of all the input fields in the form. The reference is const but
   // the fields are mutable by design.
-  const raw_ref<const std::vector<std::unique_ptr<AutofillField>>> fields_;
+  base::raw_span<const std::unique_ptr<AutofillField>> fields_;
 };
 
 }  // namespace autofill

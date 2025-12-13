@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/cr.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
 import '../simple_confirmation_dialog.js';

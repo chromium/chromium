@@ -63,6 +63,8 @@ source_set("dns") {
     "dns_udp_tracker.h",
     "dns_util.cc",
     "dns_util.h",
+    "filtering_details_url_generator.cc",
+    "filtering_details_url_generator.h",
     "host_cache.cc",
     "host_resolver.cc",
     "host_resolver_cache.cc",
@@ -139,6 +141,8 @@ source_set("dns") {
     sources += [
       "dns_config_service_android.cc",
       "dns_config_service_android.h",
+      "platform_dns_query_executor_android.cc",
+      "platform_dns_query_executor_android.h",
     ]
   } else if (is_linux) {
     sources += [
@@ -428,12 +432,14 @@ source_set("tests") {
     "dns_transaction_unittest.cc",
     "dns_udp_tracker_unittest.cc",
     "dns_util_unittest.cc",
+    "filtering_details_url_generator_unittest.cc",
     "host_cache_unittest.cc",
     "host_resolver_cache_unittest.cc",
     "host_resolver_internal_result_unittest.cc",
     "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",
     "host_resolver_service_endpoint_request_unittest.cc",
+    "host_resolver_system_task_unittest.cc",
     "https_record_rdata_unittest.cc",
     "httpssvc_metrics_unittest.cc",
     "loopback_only_unittest.cc",
@@ -453,7 +459,10 @@ source_set("tests") {
   }
 
   if (is_android) {
-    sources += [ "dns_config_service_android_unittest.cc" ]
+    sources += [
+      "dns_config_service_android_unittest.cc",
+      "platform_dns_query_executor_android_unittest.cc",
+    ]
   } else if (is_linux) {
     sources += [ "dns_config_service_linux_unittest.cc" ]
   } else if (is_posix) {

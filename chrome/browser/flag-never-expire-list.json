@@ -54,6 +54,7 @@
   "enable-gpu-rasterization",
   "enable-gpu-service-logging",
   "enable-hardware-secure-decryption",
+  "enable-hardware-secure-decryption-fallback",
   "enable-input-event-logging",
   "enable-isolated-web-app-dev-mode",
   "enable-javascript-harmony",
@@ -74,6 +75,7 @@
   "enable-site-per-process",
   "enable-touchscreen-calibration",
   "enable-ui-devtools",
+  "enable-unsafe-webgpu",
   "enable-virtual-keyboard",
   "enable-vulkan",
   "enable-web-authentication-testing-api",
@@ -106,6 +108,7 @@
   "ignore-previews-blocklist",
   "in-product-help-demo-mode-choice",
   "in-product-help-use-client-config",
+  "incognito-screenshot",
   "instant-tethering",
   "ios-breadcrumbs",
   "list-all-display-modes",
@@ -160,6 +163,7 @@
   "use-stork-smds-server-address",
   "use-sync-sandbox",
   "use-wallpaper-staging-url",
+  "variations-seed-corpus",
   "wait-threshold-seconds-for-capabilities-api",
   "wallet-service-use-sandbox",
   "wallpaper-fast-refresh",
@@ -168,6 +172,5 @@
   "webrtc-hw-encoding",
   "webtransport-developer-mode",
   "webxr-runtime",
-  "webxr-shared-buffers",
   "windows-system-tracing"
 ]

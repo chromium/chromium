@@ -51,6 +51,7 @@ blink_modules_sources("webgpu") {
     "gpu_error.h",
     "gpu_external_texture.cc",
     "gpu_external_texture.h",
+    "gpu_heap_property.h",
     "gpu_internal_error.cc",
     "gpu_internal_error.h",
     "gpu_map_mode.h",
@@ -110,7 +111,7 @@ blink_modules_sources("webgpu") {
     "//services/metrics/public/cpp:ukm_builders",
     "//skia",
     "//skia:skcms",
-    "//third_party/blink/renderer/modules/webcodecs:webcodecs",
+    "//third_party/blink/renderer/modules/webcodecs",
   ]
 
   if (use_dawn) {

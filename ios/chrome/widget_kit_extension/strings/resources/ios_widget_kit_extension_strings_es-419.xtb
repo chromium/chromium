@@ -3,7 +3,7 @@
 <translationbundle lang="es-419">
 <translation id="1149198577555059081">Buscar o escribir URL</translation>
 <translation id="1324575488877808473">Abre Chrome para ver los sitios más visitados aquí.</translation>
-<translation id="1861587787412926934">Predeterminado</translation>
+<translation id="1861587787412926934">Predeterminada</translation>
 <translation id="2378341468609349249">Buscar contraseñas</translation>
 <translation id="2513892053093488070">Búsqueda por voz</translation>
 <translation id="2535710892645968259">Comienza a disfrutar el juego del dinosaurio de Chrome desde la pantalla de bloqueo.</translation>
@@ -14,8 +14,9 @@
 <translation id="3464120926993669599">Búsqueda en el modo Incógnito</translation>
 <translation id="3501428580460217920">Realiza búsquedas o navega en una nueva pestaña de incógnito en Chrome.</translation>
 <translation id="3528874492835415837">Buscar o escribir URL</translation>
+<translation id="3606473512813866845">Cuenta de Google</translation>
 <translation id="3798529146539130967">Realiza búsquedas en Chrome usando tu voz.</translation>
-<translation id="405442954313519726">Realiza una búsqueda o navega en una pestaña nueva, en el modo Incógnito, usando tu voz o con un código QR.</translation>
+<translation id="405442954313519726">Realiza una búsqueda o navega en una pestaña nueva, en el modo Incógnito, usando la voz o con un código QR.</translation>
 <translation id="4557098988773644458">Comenzar el juego del dinosaurio de Chrome</translation>
 <translation id="4678859075583681103">Inicia una nueva búsqueda o abre los sitios más visitados desde la página principal de tu iPhone.</translation>
 <translation id="4962772945748414465">Abrir WEB_PLACEHOLDER</translation>
@@ -30,7 +31,7 @@
 <translation id="6400175403219850910">Administrador de contraseñas</translation>
 <translation id="6663288906398689853">Búsqueda</translation>
 <translation id="6691821786147477657">Inicia una nueva búsqueda o abre los sitios más visitados desde la página principal de tu iPad.</translation>
-<translation id="6721566127904256183">Los sitios que más visitas estarán aquí.</translation>
+<translation id="6721566127904256183">Los sitios más visitados aparecerán aquí.</translation>
 <translation id="6804899947889706382">Buscar o escribir una URL</translation>
 <translation id="6855322554930231468">Búsqueda</translation>
 <translation id="6973491011026415905">Buscar contraseñas en el Administrador</translation>
@@ -45,7 +46,7 @@ escribir una URL</translation>
 <translation id="8171952085734471362">Búsqueda en el modo Incógnito</translation>
 <translation id="8310150944719146950">Cuenta</translation>
 <translation id="8564942608461410346">Realiza búsquedas en Chrome con tu motor de búsqueda favorito.</translation>
-<translation id="8858765528951093286">Se quitó la cuenta que se usaba con el widget. Para seleccionar una cuenta diferente, presiona Modificar widget.</translation>
+<translation id="8858765528951093286">Se quitó la cuenta que se usaba con el widget. Para seleccionar una cuenta diferente, presiona Editar widget.</translation>
 <translation id="9175676375569833962">Buscar
 contraseñas</translation>
 </translationbundle>

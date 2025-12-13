@@ -20,9 +20,9 @@ class PrefHashCalculator {
     INVALID_ENCRYPTED,
   };
 
-  // Constructs a PrefHashCalculator using |seed|, |device_id|.
+  // Constructs a PrefHashCalculator using |seed_|, |device_id_|.
   // The same parameters must be used in order to
-  // successfully validate generated hashes. |_device_id| may be empty.
+  // successfully validate generated hashes. |device_id_| may be empty.
   PrefHashCalculator(const std::string& seed, const std::string& device_id);
 
   PrefHashCalculator(const PrefHashCalculator&) = delete;
@@ -71,6 +71,17 @@ class PrefHashCalculator {
       const os_crypt_async::Encryptor* encryptor) const;
 
  private:
+  // HMAC concat(|device_id_|, |path|, |value|) with key |seed_|. Returns a
+  // hex-encoded signature value, which HmacVerify() accepts as |signature|.
+  std::string HmacSign(std::string_view path, std::string_view value) const;
+  [[nodiscard]] bool HmacVerify(std::string_view path,
+                                std::string_view value,
+                                std::string_view signature) const;
+
+  // Hash concat(|seed_|, |path|, |value|) and return the hash bytes as a
+  // std::string, unencoded.
+  std::string Hash(std::string_view path, std::string_view value) const;
+
   ValidationResult Validate(const std::string& path,
                             const std::string& value_as_string,
                             const std::string& hash) const;

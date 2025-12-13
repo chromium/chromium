@@ -14,7 +14,6 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
@@ -23,7 +22,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_context.h"
 
 namespace performance_manager::user_tuning {
 

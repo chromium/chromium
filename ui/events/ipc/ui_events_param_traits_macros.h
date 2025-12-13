@@ -7,9 +7,9 @@
 
 #include "base/component_export.h"
 #include "base/pickle.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
 #include "ipc/param_traits_macros.h"
+#include "ipc/param_traits_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/scroll_types.h"
 

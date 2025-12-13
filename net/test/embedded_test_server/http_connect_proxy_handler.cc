@@ -70,7 +70,7 @@ class HttpConnectProxyHandler::ConnectTunnel {
     // If unable to connect, write a bad gateway error to `socket_` before
     // deleting `this`.
     if (result != OK) {
-      DVLOG(1) << "Failed to establish tunnel connection.";
+      VLOG(1) << "Failed to establish tunnel connection.";
 
       BasicHttpResponse response;
       response.set_code(HttpStatusCode::HTTP_BAD_GATEWAY);

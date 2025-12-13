@@ -5,8 +5,10 @@
 import 'chrome://resources/cr_components/theme_color_picker/theme_color_picker.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
+import 'chrome://resources/cr_elements/cr_tooltip/cr_tooltip.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
@@ -79,6 +81,8 @@ export class ProfileCustomizationAppElement extends
       selectedAvatar_: {type: Object},
 
       isLocalProfileCreation_: {type: Boolean},
+
+      shouldShowDefaultProfileName_: {type: Boolean},
     };
   }
 
@@ -92,13 +96,16 @@ export class ProfileCustomizationAppElement extends
   private confirmedAvatar_: AvatarIcon|null = null;
   protected accessor isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
+  protected accessor shouldShowDefaultProfileName_: boolean =
+      loadTimeData.getBoolean('shouldShowDefaultProfileName');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
 
   override firstUpdated() {
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
-    if (!this.isLocalProfileCreation_) {
+    // set profileName_ for local profiles in friction reduction experiment.
+    if (!this.isLocalProfileCreation_ || this.shouldShowDefaultProfileName_) {
       this.profileName_ = loadTimeData.getString('profileName');
     }
     this.addWebUiListener(
@@ -136,6 +143,12 @@ export class ProfileCustomizationAppElement extends
     this.welcomeTitle_ = this.isLocalProfileCreation_ ?
         this.i18n('localProfileCreationTitle') :
         this.i18n('profileCustomizationTitle');
+  }
+
+  protected getNameInputPlaceHolder_(): string {
+    return this.shouldShowDefaultProfileName_ ?
+        '' :
+        this.i18n('profileCustomizationInputPlaceholder');
   }
 
   protected shouldShowCancelButton_(): boolean {

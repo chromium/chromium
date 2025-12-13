@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -200,9 +199,8 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
 
   // The display orientation. This determines whether menu is in
   // landscape/portrait mode.
-  const bool is_portrait_mode = !display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(window)
-                                     .is_landscape();
+  const bool is_portrait_mode =
+      !display::Screen::Get()->GetDisplayNearestWindow(window).is_landscape();
   const gfx::Size preferred_size = is_portrait_mode
                                        ? kMultitaskButtonPortraitSize
                                        : kMultitaskButtonLandscapeSize;
@@ -367,7 +365,7 @@ bool MultitaskMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
     // Update the visual appearance of the split buttons. The callbacks will be
     // updated in `PartialButtonPressed()`.
     partial_button_->UpdateButtons(/*is_portrait_mode=*/
-                                   !display::Screen::GetScreen()
+                                   !display::Screen::Get()
                                         ->GetDisplayNearestWindow(window_)
                                         .is_landscape(),
                                    is_reversed_);
@@ -434,7 +432,7 @@ void MultitaskMenuView::HalfButtonPressed(SnapDirection direction) {
 void MultitaskMenuView::PartialButtonPressed(SnapDirection direction) {
   wm::GetActivationClient(window_->GetRootWindow())->ActivateWindow(window_);
   const bool is_primary_display_layout = chromeos::IsDisplayLayoutPrimary(
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window_));
+      display::Screen::Get()->GetDisplayNearestWindow(window_));
   const bool is_primary_partial_split =
       (is_primary_display_layout && direction == SnapDirection::kPrimary) ||
       (!is_primary_display_layout && direction == SnapDirection::kSecondary);

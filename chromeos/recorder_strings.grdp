@@ -297,6 +297,9 @@ Download the transcription model (up to 100MB) to get these transcriptions.
   <message desc="Description of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION">
     Automatically create transcriptions, get recording summaries using Google AI, and search audio. Create recordings even when you’re not connected to the internet.
   </message>
+  <message desc="Description of the welcome step in the onboarding dialog excluding GenAI features." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_DESCRIPTION_WITHOUT_GEN_AI_FEATURES">
+    Automatically create transcriptions and search audio. You can create recordings even when you’re not connected to the internet.
+  </message>
   <message desc="Header of the welcome step in the onboarding dialog." name="IDS_RECORDER_ONBOARDING_DIALOG_WELCOME_HEADER">
     Easily record and share your audio
   </message>

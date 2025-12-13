@@ -1,0 +1,6 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+authentication_test_files =
+    [ "modules/authentication/microsoft_auth_module_test.ts" ]

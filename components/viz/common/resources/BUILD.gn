@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/viz/viz.gni")
+
+viz_component("shared_image_format") {
+  output_name = "viz_shared_image_format"
+
+  defines = [ "IS_VIZ_SHARED_IMAGE_FORMAT_IMPL" ]
+
+  sources = [
+    "shared_image_format.cc",
+    "shared_image_format.h",
+    "shared_image_format_utils.cc",
+    "shared_image_format_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/viz/public/mojom/compositing/internal:singleplanar_format",
+  ]
+  deps = [
+    "//base",
+    "//skia",
+    "//third_party/angle:includes",
+    "//ui/gfx:buffer_types",
+    "//ui/gfx/geometry",
+  ]
+}

@@ -87,6 +87,18 @@ export class SettingsToggleButtonElement extends
       icon: String,
 
       subLabelIcon: String,
+
+      /**
+       * If true, the host element does not get a click event handler and the
+       * client is responsible for determining their own click logic. Thus when
+       * true, clicking on the setting row does not toggle the setting pref.
+       * Note, this boolean is only used on ready() callback, and any changes
+       * after that have no effect.
+       */
+      noToggleOnHostClick: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -105,11 +117,17 @@ export class SettingsToggleButtonElement extends
   declare learnMoreUrl: string;
   declare subLabelWithLink: string;
   declare subLabelIcon: string;
+  declare noToggleOnHostClick: boolean;
 
   override ready() {
     super.ready();
 
-    this.addEventListener('click', this.onHostClick_);
+    // If the settings toggle is noToggleOnHostClick then do not update the
+    // setting pref on click. Instead let parent code use a custom click
+    // handler as needed.
+    if (!this.noToggleOnHostClick) {
+      this.addEventListener('click', this.onHostClick_);
+    }
   }
 
   private fire_(eventName: string, detail?: any) {
@@ -156,6 +174,7 @@ export class SettingsToggleButtonElement extends
    * which don't bubble).
    */
   private onHostClick_(e: Event) {
+    assert(!this.noToggleOnHostClick);
     e.stopPropagation();
     if (this.controlDisabled()) {
       return;

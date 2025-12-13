@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/cocoa/history_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
@@ -19,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -26,6 +22,7 @@
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -52,14 +49,17 @@ class MockTRS : public sessions::TabRestoreServiceImpl {
   MOCK_CONST_METHOD0(entries, const sessions::TabRestoreService::Entries&());
 };
 
-sessions::tab_restore::Tab* CreateSessionTab(SessionID::id_type id,
-                                             const std::string& url,
-                                             const std::string& title) {
+sessions::tab_restore::Tab* CreateSessionTab(
+    SessionID::id_type id,
+    const std::string& url,
+    const std::string& title,
+    std::optional<tab_groups::TabGroupVisualData> visual_data = std::nullopt) {
   auto* tab = new sessions::tab_restore::Tab;
   tab->id = SessionID::FromSerializedValue(id);
   tab->current_navigation_index = 0;
   tab->navigations.push_back(
       sessions::ContentTestHelper::CreateNavigation(url, title));
+  tab->group_visual_data = visual_data;
   return tab;
 }
 
@@ -196,6 +196,8 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
 
  private:
   CocoaTestHelper cocoa_test_helper_;
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kShowTabGroupsMacSystemMenu};
 
  protected:
   std::unique_ptr<MockBridge> bridge_;
@@ -227,10 +229,10 @@ class HistoryMenuBridgeLifetimeTest : public testing::Test {
 void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
   // Make sure the items belong to both original and incognito mode are visible.
   NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
-  for (size_t i = 0; i < std::size(always_visible_items); i++) {
+  for (NSInteger tag : always_visible_items) {
     // Create a fake item with tag.
     NSMenuItem* item = [[NSMenuItem alloc] init];
-    item.tag = always_visible_items[i];
+    item.tag = tag;
     EXPECT_TRUE(test->ShouldMenuItemBeVisible(item));
   }
 
@@ -243,10 +245,10 @@ void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
       HistoryMenuBridge::kVisitedTitle,
       HistoryMenuBridge::kShowFullSeparator,
       IDC_SHOW_HISTORY};
-  for (size_t i = 0; i < std::size(regular_visible_items); i++) {
+  for (NSInteger tag : regular_visible_items) {
     // Create a fake item with tag.
     NSMenuItem* item = [[NSMenuItem alloc] init];
-    item.tag = regular_visible_items[i];
+    item.tag = tag;
     EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
   }
 }
@@ -505,6 +507,11 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
   EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
   EXPECT_NSEQ(@"foo", [[submenu1 itemAtIndex:2] title]);
   EXPECT_NSEQ(@"bar", [[submenu1 itemAtIndex:3] title]);
+
+  // Do not show group indicator because it's from the group submenu.
+  EXPECT_EQ(nil, [[submenu1 itemAtIndex:2] attributedTitle]);
+  EXPECT_EQ(nil, [[submenu1 itemAtIndex:3] attributedTitle]);
+
   EXPECT_EQ(31, hist1->tabs[0]->session_id.id());
   EXPECT_EQ(32, hist1->tabs[1]->session_id.id());
 
@@ -716,6 +723,41 @@ TEST_F(HistoryMenuBridgeLifetimeTest, EmptyTabRestoreService) {
   EXPECT_EQ(0, [menu numberOfItems]);
 
   bridge.reset();
+}
+
+TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsInGroup) {
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+
+  tab_groups::TabGroupVisualData visual_data(
+      std::u16string(), tab_groups::TabGroupColorId::kGrey);
+  auto entries{CreateSessionEntries({
+      CreateSessionTab(24, "http://google.com", "Google"),
+      CreateSessionTab(42, "http://apple.com", "Apple", visual_data),
+  })};
+
+  using ::testing::ReturnRef;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
+
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  ASSERT_EQ(2U, [[menu itemArray] count]);
+
+  // Verify tab1 doesn't have a group indicator.
+  NSMenuItem* item1 = [menu itemAtIndex:0];
+  MockBridge::HistoryItem* hist1 = bridge_->HistoryItemForMenuItem(item1);
+  EXPECT_TRUE(hist1);
+  EXPECT_EQ(24, hist1->session_id.id());
+  EXPECT_EQ(std::nullopt, hist1->tab_group_color_id);
+  EXPECT_EQ(nil, item1.attributedTitle);
+
+  // Verify tab2 has a grey group indicator.
+  NSMenuItem* item2 = [menu itemAtIndex:1];
+  MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist2);
+  EXPECT_EQ(42, hist2->session_id.id());
+  EXPECT_EQ(tab_groups::TabGroupColorId::kGrey, hist2->tab_group_color_id);
+  EXPECT_NE(nil, item2.attributedTitle);
 }
 
 }  // namespace

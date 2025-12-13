@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_WIN_SCOPED_SAFEARRAY_H_
 #define BASE_WIN_SCOPED_SAFEARRAY_H_
 
@@ -16,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/win/variant_conversions.h"
 
@@ -75,7 +71,7 @@ class BASE_EXPORT ScopedSafearray {
     size_t size() const { return array_size_; }
 
     pointer begin() { return array_; }
-    pointer end() { return array_ + array_size_; }
+    pointer end() { return UNSAFE_TODO(array_ + array_size_); }
     const_pointer begin() const { return array_; }
     const_pointer end() const { return array_ + array_size_; }
 
@@ -88,7 +84,7 @@ class BASE_EXPORT ScopedSafearray {
     reference at(size_t index) {
       DCHECK_NE(array_, nullptr);
       DCHECK_LT(index, array_size_);
-      return array_[index];
+      return UNSAFE_TODO(array_[index]);
     }
     const_reference at(size_t index) const {
       return const_cast<LockScope<ElementVartype>*>(this)->at(index);

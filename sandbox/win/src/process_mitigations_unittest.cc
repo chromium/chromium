@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/process_mitigations.h"
 
 #include <windows.h>
@@ -15,7 +10,8 @@
 #include <ktmw32.h>
 #include <ntstatus.h>
 
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
+#include "base/files/file.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
@@ -536,7 +532,8 @@ SBOX_TESTS_COMMAND int CheckWin10FontLoad(int argc, wchar_t** argv) {
     return SBOX_TEST_NOT_FOUND;
   font_data.resize(len);
 
-  int read = file.Read(0, &font_data[0], base::checked_cast<int>(len));
+  int read =
+      UNSAFE_TODO(file.Read(0, &font_data[0], base::checked_cast<int>(len)));
   file.Close();
 
   if (read != len)
@@ -574,13 +571,13 @@ SBOX_TESTS_COMMAND int TestChildProcess(int argc, wchar_t** argv) {
     return SBOX_TEST_INVALID_PARAMETER;
 
   bool process_finishes = true;
-  std::wstring arg2 = argv[1];
+  std::wstring arg2 = UNSAFE_TODO(argv[1]);
   if (arg2.compare(L"false") == 0)
     process_finishes = false;
 
   int desired_exit_code = 0;
   if (argc == 3) {
-    desired_exit_code = wcstoul(argv[2], nullptr, 0);
+    desired_exit_code = UNSAFE_TODO(wcstoul(argv[2], nullptr, 0));
   }
 
   std::wstring cmd = argv[0];
@@ -922,7 +919,7 @@ TEST(ProcessMitigationsTest, CheckWin10MsSignedPolicyAndDllLoadSuccess) {
 // - JobLevel <= JobLevel::kLimitedUser which also triggers setting
 //   PROC_THREAD_ATTRIBUTE_CHILD_PROCESS_POLICY to
 //   PROCESS_CREATION_CHILD_PROCESS_RESTRICTED in
-//   BrokerServicesBase::SpawnTarget (on >= WIN10_TH2).
+//   BrokerServicesBase::SpawnTargetAsync (on >= WIN10_TH2).
 //------------------------------------------------------------------------------
 
 // This test validates that we can spawn a child process if

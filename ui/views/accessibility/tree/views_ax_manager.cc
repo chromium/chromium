@@ -60,12 +60,11 @@ void ViewsAXManager::Enable() {
   // ordering of two base::Singletons.
   cache_->SetDelegate(this);
 
-  if (!display::Screen::GetScreen()) {
+  if (!display::Screen::Get()) {
     return;
   }
 
-  const display::Display& display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& display = display::Screen::Get()->GetPrimaryDisplay();
   aura::Window* root_window = nullptr;
   for (aura::WindowTreeHost* host :
        aura::Env::GetInstance()->window_tree_hosts()) {
@@ -357,7 +356,7 @@ void ViewsAXManager::SendPendingUpdate() {
 
   // We must now serialize any changes that were not associated with an event.
   ui::AXTreeUpdate update;
-  for (auto& id : pending_data_changes_copy) {
+  for (auto id : pending_data_changes_copy) {
     auto* aura_obj = cache_->Get(id);
     if (!aura_obj) {
       continue;
@@ -403,7 +402,7 @@ void ViewsAXManager::PerformHitTest(const ui::AXActionData& original_action) {
   ui::AXActionData action = original_action;
   // Get the display nearest the point.
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(action.target_point);
+      display::Screen::Get()->GetDisplayNearestPoint(action.target_point);
 
   // Require a window in `display`; prefer it also be focused.
   aura::Window* root_window = nullptr;

@@ -75,7 +75,7 @@ void HTMLTableColElement::ParseAttribute(
       if (GetLayoutObject() && GetLayoutObject()->IsLayoutTableCol()) {
         auto* col = To<LayoutBox>(GetLayoutObject());
         int new_width = Width().ToInt();
-        if (new_width != col->Size().width) {
+        if (new_width != col->StitchedSize().width) {
           col->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
               layout_invalidation_reason::kAttributeChanged);
         }

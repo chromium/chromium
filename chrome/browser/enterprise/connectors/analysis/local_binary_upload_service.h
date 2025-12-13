@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace enterprise_connectors {
 
@@ -51,7 +52,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // a vector<>, the move ctor is used instead of the copy ctor (which is
   // deleted).
   struct RequestInfo {
-    RequestInfo(std::unique_ptr<Request> request, base::OnceClosure closure);
+    RequestInfo(std::unique_ptr<BinaryUploadRequest> request,
+                base::OnceClosure closure);
     RequestInfo(const RequestInfo& other) = delete;
     RequestInfo(RequestInfo&& other) noexcept;
     RequestInfo& operator=(const RequestInfo& other) = delete;
@@ -59,7 +61,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
     ~RequestInfo() noexcept;
 
     base::TimeTicks started_at;
-    std::unique_ptr<Request> request;
+    std::unique_ptr<BinaryUploadRequest> request;
     std::unique_ptr<base::OneShotTimer> timer;
   };
 
@@ -67,9 +69,11 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   ~LocalBinaryUploadService() override;
 
   // Send the given file contents to local partners for deep scanning.
-  void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
-  void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
-  void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
+  void MaybeUploadForDeepScanning(
+      std::unique_ptr<BinaryUploadRequest> request) override;
+  void MaybeAcknowledge(std::unique_ptr<BinaryUploadAck> ack) override;
+  void MaybeCancelRequests(
+      std::unique_ptr<BinaryUploadCancelRequests> cancel) override;
   base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 
   size_t GetActiveRequestCountForTesting() const {
@@ -139,9 +143,10 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void ResetClient(const content_analysis::sdk::Client::Config& config);
 
   // Starts a local content analysis for the analysis request given by `id`.
-  void DoLocalContentAnalysis(Request::Id id,
-                              Result result,
-                              Request::Data data);
+  void DoLocalContentAnalysis(
+      Request::Id id,
+      enterprise_connectors::ScanRequestUploadResult result,
+      Request::Data data);
 
   // Handles a response from the agent for a given request.
   // `data` is not used directly by this function, but is needed to keep a
@@ -155,13 +160,12 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Starts a local content analysis ack request.
   void DoSendAck(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Ack> ack);
+      std::unique_ptr<BinaryUploadAck> ack);
 
   // Starts a local content analysis cancel request.
   void DoSendCancel(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-          cancel);
+      std::unique_ptr<BinaryUploadCancelRequests> cancel);
 
   // Handles a response from the agent for a given ask or cancel.
   void HandleAckResponse(
@@ -169,13 +173,13 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
       int status);
   void HandleCancelResponse(
       scoped_refptr<ContentAnalysisSdkManager::WrappedClient> wrapped,
-      std::unique_ptr<safe_browsing::BinaryUploadService::CancelRequests>
-          cancel,
+      std::unique_ptr<BinaryUploadCancelRequests> cancel,
       int status);
 
   // In tests, this method can be overridden to know when a cancel request
   // has been sent to the agent.
-  virtual void OnCancelRequestSent(std::unique_ptr<CancelRequests> cancel) {}
+  virtual void OnCancelRequestSent(
+      std::unique_ptr<BinaryUploadCancelRequests> cancel) {}
 
   // Find the request that corresponds to the given response.
   Request::Id FindRequestByToken(
@@ -193,7 +197,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // Finish the request given by `id` and inform caller of the the resulting
   // verdict.
   void FinishRequest(Request::Id id,
-                     Result result,
+                     enterprise_connectors::ScanRequestUploadResult result,
                      ContentAnalysisResponse response);
 
   // Send a cancel request to the agent if there are no more active requests
@@ -228,7 +232,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
 
   void RecordRequestMetrics(
       const RequestInfo& info,
-      Result result,
+      enterprise_connectors::ScanRequestUploadResult result,
       const enterprise_connectors::ContentAnalysisResponse& response);
 
   raw_ptr<Profile> profile_;
@@ -245,7 +249,8 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   // action are sent, a cancel request can be sent.  This is to ensure that
   // chrome does not send requests for analysis for a given action after a
   // cancel request has been sent.
-  std::set<std::unique_ptr<CancelRequests>> pending_cancel_requests_;
+  std::set<std::unique_ptr<BinaryUploadCancelRequests>>
+      pending_cancel_requests_;
 
   // Timer used to retry connection to agent.
   base::OneShotTimer connection_retry_timer_;

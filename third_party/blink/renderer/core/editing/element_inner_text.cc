@@ -430,7 +430,6 @@ void ElementInnerTextCollector::ProcessOptionElement(
 
 void ElementInnerTextCollector::ProcessOptGroupElement(
     const HTMLOptGroupElement& optgroup) {
-  CHECK(HTMLSelectElement::SelectParserRelaxationEnabled(&optgroup));
   // Note: We should emit newline for OPTGROUP even if it has no OPTION.
   // e.g. <div>a<select><optgroup></select>b</div>.innerText == "a\nb"
   result_.EmitRequiredLineBreak(1);
@@ -458,52 +457,25 @@ void ElementInnerTextCollector::ProcessOptGroupElement(
 
 void ElementInnerTextCollector::ProcessSelectElement(
     const HTMLSelectElement& select_element) {
-  if (HTMLSelectElement::SelectParserRelaxationEnabled(&select_element)) {
-    // TODO(crbug.com/40271842): Consider Handling display:none on various
-    // elements here, especially options.
-    Element* descendant = ElementTraversal::FirstChild(select_element);
-    while (descendant) {
-      if (visitor_) {
-        visitor_->WillVisit(*descendant, result_.length());
-      }
-      // TODO(crbug.com/389573453): Consider handling <hr> elements here.
-      if (auto* option = DynamicTo<HTMLOptionElement>(descendant)) {
-        ProcessOptionElement(*option);
-        descendant = ElementTraversal::NextSkippingChildren(*descendant,
-                                                            &select_element);
-      } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(descendant)) {
-        ProcessOptGroupElement(*optgroup);
-        descendant = ElementTraversal::NextSkippingChildren(*descendant,
-                                                            &select_element);
-      } else {
-        descendant = ElementTraversal::Next(*descendant, &select_element);
-      }
-    }
-    return;
-  }
-  for (const Node& child : NodeTraversal::ChildrenOf(select_element)) {
+  // TODO(crbug.com/40271842): Consider Handling display:none on various
+  // elements here, especially options.
+  Element* descendant = ElementTraversal::FirstChild(select_element);
+  while (descendant) {
     if (visitor_) {
-      visitor_->WillVisit(child, result_.length());
+      visitor_->WillVisit(*descendant, result_.length());
     }
-    if (auto* option_element = DynamicTo<HTMLOptionElement>(child)) {
-      ProcessOptionElement(*option_element);
-      continue;
+    // TODO(crbug.com/389573453): Consider handling <hr> elements here.
+    if (auto* option = DynamicTo<HTMLOptionElement>(descendant)) {
+      ProcessOptionElement(*option);
+      descendant =
+          ElementTraversal::NextSkippingChildren(*descendant, &select_element);
+    } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(descendant)) {
+      ProcessOptGroupElement(*optgroup);
+      descendant =
+          ElementTraversal::NextSkippingChildren(*descendant, &select_element);
+    } else {
+      descendant = ElementTraversal::Next(*descendant, &select_element);
     }
-    if (!IsA<HTMLOptGroupElement>(child)) {
-      continue;
-    }
-    // Note: We should emit newline for OPTGROUP even if it has no OPTION.
-    // e.g. <div>a<select><optgroup></select>b</div>.innerText == "a\nb"
-    result_.EmitRequiredLineBreak(1);
-    for (const Node& maybe_option : NodeTraversal::ChildrenOf(child)) {
-      if (visitor_) {
-        visitor_->WillVisit(maybe_option, result_.length());
-      }
-      if (auto* option_element = DynamicTo<HTMLOptionElement>(maybe_option)) {
-        ProcessOptionElement(*option_element);
-      }
-    }
-    result_.EmitRequiredLineBreak(1);
   }
 }
 

@@ -46,14 +46,8 @@ TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, MainAction) {
   handler_.PerformMainAction(infobar_.get());
 }
 
-TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, EditDeclined) {
-  handler_.CancelModal(infobar_.get(), /*fromEditModal=*/YES);
-  EXPECT_EQ(mock_delegate().user_decision(),
-            autofill::AutofillClient::AddressPromptUserDecision::kEditDeclined);
-}
-
 TEST_F(SaveAddressProfileInfobarModalInteractionHandlerTest, Cancel) {
-  handler_.CancelModal(infobar_.get(), /*fromEditModal=*/NO);
+  handler_.CancelModal(infobar_.get());
   EXPECT_EQ(mock_delegate().user_decision(),
             autofill::AutofillClient::AddressPromptUserDecision::kDeclined);
 }

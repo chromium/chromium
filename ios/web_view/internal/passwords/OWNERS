@@ -1,0 +1,2 @@
+# KeyedService factories are co-owned to facilitate //components API refactors.
+per-file *factory*=file://components/password_manager/OWNERS

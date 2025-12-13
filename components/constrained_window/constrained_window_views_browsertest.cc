@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest-spi.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"

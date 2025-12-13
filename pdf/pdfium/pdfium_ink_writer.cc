@@ -13,9 +13,8 @@
 #include "base/memory/raw_ref.h"
 #include "pdf/pdf_ink_constants.h"
 #include "pdf/pdf_ink_conversions.h"
-#include "pdf/pdf_ink_transform.h"
 #include "pdf/pdf_transform.h"
-#include "pdf/pdfium/pdfium_rotation.h"
+#include "pdf/pdfium/pdfium_ink_transform.h"
 #include "third_party/ink/src/ink/brush/brush_coat.h"
 #include "third_party/ink/src/ink/brush/brush_tip.h"
 #include "third_party/ink/src/ink/geometry/mesh.h"
@@ -39,8 +38,7 @@ class ModeledShapeOutlinesIterator {
     uint32_t group_index;
     // Guaranteeded to be non-empty.
     // TODO(367764863) Rewrite to base::raw_span.
-    RAW_PTR_EXCLUSION base::span<const ink::PartitionedMesh::VertexIndexPair>
-        outline;
+    RAW_PTR_EXCLUSION base::span<const ink::VertexIndexPair> outline;
   };
 
   explicit ModeledShapeOutlinesIterator(const ink::PartitionedMesh& shape)
@@ -69,9 +67,8 @@ class ModeledShapeOutlinesIterator {
   uint32_t outline_index_ = 0;
 };
 
-gfx::PointF GetVertexPosition(
-    base::span<const ink::Mesh> meshes,
-    const ink::PartitionedMesh::VertexIndexPair& vertex_index_pair) {
+gfx::PointF GetVertexPosition(base::span<const ink::Mesh> meshes,
+                              const ink::VertexIndexPair& vertex_index_pair) {
   ink::Point vertex_position =
       meshes[vertex_index_pair.mesh_index].VertexPosition(
           vertex_index_pair.vertex_index);
@@ -125,17 +122,7 @@ std::vector<ScopedFPDFPageObject> WriteShapeToNewPathsOnPage(
     FPDF_PAGE page) {
   CHECK(page);
 
-  // Get the intersection between the page's MediaBox and CropBox, to find
-  // the translation offset for the shape's transform.
-  FS_RECTF bounding_box;
-  auto result = FPDF_GetPageBoundingBox(page, &bounding_box);
-  CHECK(result);
-  const gfx::Vector2dF offset(bounding_box.left, bounding_box.bottom);
-
-  const gfx::Transform transform = GetCanonicalToPdfTransform(
-      {FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page)},
-      GetPageRotation(page).value_or(PageRotation::kRotate0), offset);
-
+  const gfx::Transform transform = GetCanonicalToPdfTransformForPage(page);
   std::vector<ScopedFPDFPageObject> results;
   ModeledShapeOutlinesIterator it(shape);
   for (std::optional<ModeledShapeOutlinesIterator::OutlineData> outline_data =
@@ -152,26 +139,23 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
   const SkColor color = GetSkColorFromInkBrush(brush);
   CHECK_EQ(SkColorGetA(color), SK_AlphaOPAQUE);
 
-  CHECK_EQ(brush.CoatCount(), 1u);
-  const ink::BrushCoat& coat = brush.GetCoats()[0];
-  // third_party/ink/src/ink/brush/brush_tip.h says this can have a value up to
-  // 2.0f, but that should never be the case, as //pdf code never sets it that
-  // high.
-  CHECK_LE(coat.tip.opacity_multiplier, 1.0f);
+  // Ink says this can have a value up to 2.0f, but that should never be the
+  // case, as //pdf code never sets it that high.
+  const float opacity_multiplier = GetOpacityMultiplierFromBrush(brush);
+  CHECK_LE(opacity_multiplier, 1.0f);
 
-  bool result = FPDFPageObj_SetFillColor(path, SkColorGetR(color),
-                                         SkColorGetG(color), SkColorGetB(color),
-                                         coat.tip.opacity_multiplier * 255);
+  bool result =
+      FPDFPageObj_SetFillColor(path, SkColorGetR(color), SkColorGetG(color),
+                               SkColorGetB(color), opacity_multiplier * 255);
   CHECK(result);
 }
 
 }  // namespace
 
-std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_DOCUMENT document,
-                                               FPDF_PAGE page,
+std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_PAGE page,
                                                const ink::Stroke& stroke) {
   std::vector<FPDF_PAGEOBJECT> results;
-  if (!document || !page) {
+  if (!page) {
     return results;
   }
 

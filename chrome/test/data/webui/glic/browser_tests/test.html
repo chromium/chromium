@@ -1,0 +1,35 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file acts as a test loader for
+chrome/browser/glic/test_support/glic_api_test.h. It is loaded in the
+webview, and allows running custom test functions.
+-->
+
+<!DOCTYPE html>
+<style>
+body,
+html {
+  height: 100%;
+  background: grey;
+}
+</style>
+<title>Test Page</title>
+<head><meta name="author" content="George"/></head>
+
+<script>
+  // Load the script provided by the C++ test fixture.
+  const src = new URLSearchParams(location.search).get("testsrc");
+  const script = document.createElement('script');
+  script.src = src;
+  script.type = 'module';
+  document.head.appendChild(script);
+</script>
+
+<body>
+  <p>This is a test page</p>
+</body>

@@ -354,6 +354,12 @@ void DisplayLockContext::DidStyleChildren() {
   element_->MarkAncestorsWithChildNeedsReattachLayoutTree();
 }
 
+bool DisplayLockContext::ShouldActivateForScreenReader() const {
+  return document_->GetStyleEngine().SkippedContainerRecalc() &&
+         IsActivatable(DisplayLockActivationReason::kAccessibility) &&
+         IsScreenReaderActive();
+}
+
 void DisplayLockContext::DidLayoutChildren() {
   // Since we did layout on children already, we'll clear this.
   child_layout_was_blocked_ = false;
@@ -511,8 +517,8 @@ void DisplayLockContext::ScheduleStateChangeEventIfNeeded() {
         ->GetTaskRunner(TaskType::kMiscPlatformAPI)
         ->PostTask(
             FROM_HERE,
-            WTF::BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
-                          WrapPersistent(this)));
+            BindOnce(&DisplayLockContext::DispatchStateChangeEventIfNeeded,
+                     WrapPersistent(this)));
     state_change_task_pending_ = true;
   }
 }
@@ -1288,7 +1294,7 @@ bool DisplayLockContext::DescendantIsAnchorTargetFromOutsideDisplayLock() {
       for (const PhysicalBoxFragment& fragment :
            ancestor_box->PhysicalFragments()) {
         // Early out if there are no anchor targets in the subtree.
-        if (!fragment.HasAnchorQuery()) {
+        if (!fragment.HasChildAnchors()) {
           return false;
         }
         // Early out if there are not OOF children.
@@ -1386,7 +1392,8 @@ void DisplayLockContext::RestoreScrollOffsetIfStashed() {
   // Restore the offset and reset the value.
   if (auto* area = GetScrollableArea(element_)) {
     area->SetScrollOffset(*stashed_scroll_offset_,
-                          mojom::blink::ScrollType::kAnchoring);
+                          mojom::blink::ScrollType::kAnchoring,
+                          cc::ScrollSourceType::kStationaryScroll);
     stashed_scroll_offset_.reset();
   }
 }

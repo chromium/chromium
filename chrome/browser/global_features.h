@@ -11,6 +11,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/buildflags.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace system_permission_settings {
 class PlatformHandle;
@@ -19,7 +20,12 @@ class PlatformHandle;
 namespace whats_new {
 class WhatsNewRegistry;
 }  // namespace whats_new
+
+namespace default_browser {
+class DefaultBrowserManager;
+}  // namespace default_browser
 #endif
+
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
@@ -29,13 +35,28 @@ class GlicSyntheticTrialManager;
 #endif
 
 class ApplicationLocaleStorage;
+class AudioProcessMlModelForwarder;
+class BrowserProcess;
 
 namespace installer_downloader {
 class InstallerDownloaderController;
 }
 
+namespace optimization_guide {
+class OptimizationGuideGlobalFeature;
+}  // namespace optimization_guide
+
+namespace safe_browsing {
+class ApplicationAdvancedProtectionStatusDetector;
+}  // namespace safe_browsing
+
+#if !BUILDFLAG(IS_ANDROID)
+class GlobalBrowserCollection;
+class StartupLaunchManager;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // This class owns the core controllers for features that are globally
-// scoped on desktop. It can be subclassed by tests to perform
+// scoped on desktop and Android. It can be subclassed by tests to perform
 // dependency injection.
 class GlobalFeatures {
  public:
@@ -50,10 +71,44 @@ class GlobalFeatures {
       base::RepeatingCallback<std::unique_ptr<GlobalFeatures>()>;
   static void ReplaceGlobalFeaturesForTesting(GlobalFeaturesFactory factory);
 
-  // Called exactly once to initialize features.
-  void Init();
+  // Each of these is called exactly once to initialize features.
+  // `PreBrowserProcessInit()` happens very early in
+  // `BrowserProcessImpl::Init()` - in particular, it must happen before a
+  // `ProfileManager` is created. `PostBrowserProcessInit()` happens further
+  // down near the very end of `BrowserProcessImpl::Init()` after a
+  // `ProfileManager` is allowed to exist. As with anything in
+  // `BrowserProcessImpl::Init()`, both of these functions are called before
+  // threads are created.
+  void PreBrowserProcessInit();
+  void PostBrowserProcessInit();
 
-  // Called exactly once when the browser starts to shutdown.
+  // Only initializes core features. Used in unittests to create partial
+  // features for TestingBrowserProcess.
+  //
+  // TODO(crbug.com/463444220) Merge implementation back into
+  // PreBrowserProcessInit() and PostBrowserProcessInit() once unit tests stop
+  // creating TestingBrowserProcess.
+  void PreBrowserProcessInitCore();
+  void PostBrowserProcessInitCore();
+
+  // Each of these is called exactly once when the browser starts to shutdown,
+  // in the named browser shutdown lifecycle phases. Importantly,
+  // `PostMainMessageLoopRun()` must be called before the `ProfileManager` is
+  // destroyed, and `PostDestroyThreads()` must be called after the
+  // `ProfileManager` and `ResourceCoordinatorParts` are destroyed.
+  //
+  // In unit tests, it is recommended that you call
+  // TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting() for
+  // convenience instead of calling these methods directly.
+  void PostMainMessageLoopRun();
+  void PostDestroyThreads();
+
+  // Legacy method used in some tests. New code and non-test code should not use
+  // this.
+  //
+  // TODO(crbug.com/467395900): Remove this function and its remaining uses and
+  // replace them with
+  // TestingBrowserProcess::TearDownGlobalFeaturesForTesting().
   void Shutdown();
 
   // Public accessors for features, e.g.
@@ -66,6 +121,10 @@ class GlobalFeatures {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   whats_new::WhatsNewRegistry* whats_new_registry() {
     return whats_new_registry_.get();
+  }
+
+  default_browser::DefaultBrowserManager* default_browser_manager() {
+    return default_browser_manager_.get();
   }
 #endif
 
@@ -94,6 +153,29 @@ class GlobalFeatures {
   }
 #endif
 
+  optimization_guide::OptimizationGuideGlobalFeature*
+  optimization_guide_global_feature() {
+    return optimization_guide_global_feature_.get();
+  }
+
+  AudioProcessMlModelForwarder* audio_process_ml_model_forwarder() {
+    return audio_process_ml_model_forwarder_.get();
+  }
+
+  safe_browsing::ApplicationAdvancedProtectionStatusDetector*
+  application_advanced_protection_status_detector() {
+    return application_advanced_protection_status_detector_.get();
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  GlobalBrowserCollection* global_browser_collection() {
+    return global_browser_collection_.get();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  static ui::UserDataFactoryWithOwner<BrowserProcess>&
+  GetUserDataFactoryForTesting();
+
  protected:
   GlobalFeatures();
 
@@ -108,6 +190,8 @@ class GlobalFeatures {
 #endif
 
  private:
+  static ui::UserDataFactoryWithOwner<BrowserProcess>& GetUserDataFactory();
+
   // Features will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
 
@@ -115,6 +199,9 @@ class GlobalFeatures {
       system_permissions_platform_handle_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<whats_new::WhatsNewRegistry> whats_new_registry_;
+
+  std::unique_ptr<default_browser::DefaultBrowserManager>
+      default_browser_manager_;
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -130,6 +217,21 @@ class GlobalFeatures {
   std::unique_ptr<installer_downloader::InstallerDownloaderController>
       installer_downloader_controller_;
 #endif
+
+  std::unique_ptr<optimization_guide::OptimizationGuideGlobalFeature>
+      optimization_guide_global_feature_;
+
+  // Must be outlived by `optimization_guide_global_feature_`.
+  std::unique_ptr<AudioProcessMlModelForwarder>
+      audio_process_ml_model_forwarder_;
+
+  std::unique_ptr<safe_browsing::ApplicationAdvancedProtectionStatusDetector>
+      application_advanced_protection_status_detector_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlobalBrowserCollection> global_browser_collection_;
+  std::unique_ptr<StartupLaunchManager> startup_launch_manager_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_GLOBAL_FEATURES_H_

@@ -135,7 +135,7 @@ fn vectored_read() {
 
 #[test]
 fn chain_growing_buffer() {
-    let mut buff = [' ' as u8; 10];
+    let mut buff = [b' '; 10];
     let mut vec = b"wassup".to_vec();
 
     let mut chained = (&mut buff[..]).chain_mut(&mut vec).chain_mut(Vec::new()); // Required for potential overflow because remaining_mut for Vec is isize::MAX - vec.len(), but for chain_mut is usize::MAX

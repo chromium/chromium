@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/hash.h"
 #include "net/android/cert_verify_result_android.h"
 #include "net/android/network_library.h"
@@ -133,7 +134,7 @@ android::CertVerifyStatusAndroid AttemptVerificationAfterAIAFetch(
     std::vector<std::string>* verified_chain) {
   std::vector<std::string> cert_bytes;
   for (const auto& cert : certs) {
-    cert_bytes.push_back(cert->der_cert().AsString());
+    cert_bytes.emplace_back(base::as_string_view(cert->der_cert()));
   }
 
   bool is_issued_by_known_root;
@@ -257,7 +258,8 @@ bool VerifyFromAndroidTrustManager(
     int flags,
     scoped_refptr<CertNetFetcher> cert_net_fetcher,
     CertVerifyResult* verify_result) {
-  android::CertVerifyStatusAndroid status;
+  android::CertVerifyStatusAndroid status =
+      android::CERT_VERIFY_STATUS_ANDROID_FAILED;
   std::vector<std::string> verified_chain;
 
   android::VerifyX509CertChain(
@@ -307,6 +309,12 @@ bool VerifyFromAndroidTrustManager(
       verify_result->verified_cert = std::move(verified_cert);
     else
       verify_result->cert_status |= CERT_STATUS_INVALID;
+  } else if (!IsCertStatusError(verify_result->cert_status)) {
+    // If the verified chain is empty and the return status was OK, that's
+    // actually an error. But don't add the cert_status flag if the chain is
+    // empty and it already was marked as an error, since that would hide the
+    // actual error reason.
+    verify_result->cert_status |= CERT_STATUS_INVALID;
   }
 
   // Extract the public key hashes and check whether or not any are known
@@ -330,18 +338,15 @@ bool VerifyFromAndroidTrustManager(
   }
 
   // Reverse the hash list, to maintain the leaf->root ordering.
-  std::reverse(verify_result->public_key_hashes.begin(),
-               verify_result->public_key_hashes.end());
+  std::ranges::reverse(verify_result->public_key_hashes);
 
   return true;
 }
 
 void GetChainDEREncodedBytes(X509Certificate* cert,
                              std::vector<std::string>* chain_bytes) {
-  chain_bytes->reserve(1 + cert->intermediate_buffers().size());
-  chain_bytes->emplace_back(
-      net::x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()));
-  for (const auto& handle : cert->intermediate_buffers()) {
+  chain_bytes->reserve(cert->cert_buffers().size());
+  for (const auto& handle : cert->cert_buffers()) {
     chain_bytes->emplace_back(
         net::x509_util::CryptoBufferAsStringPiece(handle.get()));
   }

@@ -58,8 +58,8 @@ HistorySyncSessionDurationsMetricsRecorder::
 }
 
 void HistorySyncSessionDurationsMetricsRecorder::OnSessionStarted() {
-  total_session_timer_ = std::make_unique<base::ElapsedTimer>();
-  history_sync_state_timer_ = std::make_unique<base::ElapsedTimer>();
+  total_session_timer_.emplace();
+  history_sync_state_timer_.emplace();
 }
 
 void HistorySyncSessionDurationsMetricsRecorder::OnSessionEnded(
@@ -100,10 +100,17 @@ void HistorySyncSessionDurationsMetricsRecorder::OnStateChanged(
   if (history_sync_state_timer_) {
     LogHistorySyncDuration(history_sync_status_,
                            history_sync_state_timer_->Elapsed());
-    history_sync_state_timer_ = std::make_unique<base::ElapsedTimer>();
+    history_sync_state_timer_.emplace();
   }
 
   history_sync_status_ = new_history_sync_status;
+}
+
+void HistorySyncSessionDurationsMetricsRecorder::OnSyncShutdown(
+    SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
 }
 
 HistorySyncSessionDurationsMetricsRecorder::HistorySyncStatus

@@ -22,6 +22,8 @@
 
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 
+#include "base/notreached.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/renderer/core/dom/document_encoding_data.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -46,17 +49,117 @@ static inline void TransformTextStringToXHTMLDocumentString(String& text) {
   text.Replace('&', "&amp;");
   text.Replace('<', "&lt;");
   text =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
-      "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
-      "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
-      "<head><title/></head>\n"
-      "<body>\n"
-      "<pre>" +
-      text +
-      "</pre>\n"
-      "</body>\n"
-      "</html>\n";
+      StrCat({"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+              "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" "
+              "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n"
+              "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+              "<head><title/></head>\n"
+              "<body>\n"
+              "<pre>",
+              text,
+              "</pre>\n"
+              "</body>\n"
+              "</html>\n"});
+}
+
+namespace {
+void AddXSLTConsoleWarning(Document& document, const String& message) {
+  if (auto* window = document.domWindow()) {
+    window->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+                                  ConsoleMessage::Source::kDeprecation,
+                                  ConsoleMessage::Level::kWarning, message),
+                              /*discard_duplicates=*/true);
+  }
+}
+}  // namespace
+
+// static
+// The different options:
+// - Directly controlling the runtime enabled feature (true or false), e.g.,
+//   via `--enable-blink-features`.
+// - (The bindings code, e.g., for XSLTProcessor, uses this runtime enabled
+//   feature.)
+// - Setting the base::Feature (true, false, or default), e.g., via
+//   `--enable-features`.
+// - (Finch-configurations will affect the state of the base::Feature.)
+// - Setting the XSLTSpecialTrial runtime enabled feature (true or false). This
+//   only sets the console warning message, and does not directly affect the
+//   enabled/disabled state of XSLT.
+// - (Eventually) There will be a deprecation trial, which must be done via
+//   runtime enabled features (true or false). That will be done on the existing
+//   "XSLT" runtime enabled feature flag. True (opted into trial) means to
+//   re-enable the feature, and false means default behavior.
+// - (Eventually) There will be an enterprise policy (called something like
+//   "XSLT") which takes values (true, false, default). The default setting
+//   gives default behavior, while true forces XSLT enabled, and false forces
+//   XSLT disabled.
+bool XSLTProcessor::XSLTEnabled() {
+  // First check the state of the base::Feature, since it takes precedence.
+  // If the feature is overridden manually or via Finch, return its value.
+  std::optional<bool> feature =
+      base::FeatureList::GetStateIfOverridden(features::kXSLT);
+  if (feature.has_value()) {
+    // The base::Feature has been set, so use that state directly.
+    return feature.value();
+  }
+  // The base::Feature was set to Default. Fall back to the runtime enabled
+  // feature. True means enabled.
+  return RuntimeEnabledFeatures::XSLTEnabled();
+}
+
+void XSLTProcessor::ReportXSLTDisabled(Document& document,
+                                       ExceptionState* exception_state) {
+  CHECK(!XSLTEnabled());
+  if (RuntimeEnabledFeatures::XSLTSpecialTrialEnabled()) {
+    // Special trial run of XSLT removal (pre-stable channels, via Finch).
+    AddXSLTConsoleWarning(
+        document,
+        "Usage of XSLTProcessor or XSLT Processing Instructions was detected. "
+        "These features have been deprecated by all browsers, and a special "
+        "early trial of complete removal is underway in this browser.\n"
+        "--> If you are a *user* experiencing a problem, please report the "
+        "issue directly to the operator of the website.\n"
+        "--> If you are a site owner, and you think this trial is causing an "
+        "unexpected issue, please report a bug at "
+        "https://issues.chromium.org/issues/"
+        "new?component=1456730&template=2210866");
+  } else {
+    // Normal case - XSLT is disabled.
+    AddXSLTConsoleWarning(
+        document,
+        "XSLTProcessor and XSLT Processing Instructions have been "
+        "removed in this browser. See "
+        "https://chromestatus.com/feature/4709671889534976.");
+  }
+  if (exception_state) {
+    exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                       "XSLT is disabled");
+  }
+}
+
+XSLTProcessor::XSLTProcessor(PassKey,
+                             Document& document,
+                             WebFeature feature,
+                             ExceptionState& exception_state)
+    : document_(&document) {
+  if (!XSLTEnabled()) {
+    // Ordinarily we will not get here, since in this case the runtime enabled
+    // feature will be disabled, which removes the XSLTProcessor from IDL.
+    // However, there are corner cases, such as that Finch has disabled XSLT
+    // via the base::Feature, but the user has explicitly set the runtime
+    // enabled feature back to true with `--enable-blink-features`.
+    ReportXSLTDisabled(document, &exception_state);
+    return;
+  }
+  // XSLT is still enabled. Use count, report the deprecation, and add an
+  // explicit console message here for visibility, due to crbug.com/40069336.
+  document.CountDeprecation(feature);
+  AddXSLTConsoleWarning(
+      document,
+      "XSLTProcessor and XSLT Processing Instructions have been "
+      "deprecated by all browsers. These features will be removed from "
+      "this browser soon. See "
+      "https://chromestatus.com/feature/4709671889534976.");
 }
 
 XSLTProcessor::~XSLTProcessor() = default;
@@ -118,7 +221,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
     document_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kXml,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        String("Document encoding not valid: ") + source_encoding));
+        StrCat({"Document encoding not valid: ", source_encoding})));
   }
   document->SetContent(document_source);
   return document;

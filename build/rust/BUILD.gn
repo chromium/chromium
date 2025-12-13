@@ -34,18 +34,15 @@ if (toolchain_has_rust) {
         "//third_party/rust/cxx/v1/cxx.h",
       ]
 
-      defines = [ "RUST_CXX_NO_EXCEPTIONS" ]
-
       # We cannot depend on base/base_export.h because base depends on us.
       if (is_component_build) {
         if (is_win) {
-          defines += [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
+          defines = [ "CXX_RS_EXPORT=__declspec(dllexport)" ]
         } else {
-          defines +=
-              [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
+          defines = [ "CXX_RS_EXPORT=__attribute__((visibility(\"default\")))" ]
         }
       } else {
-        defines += [ "CXX_RS_EXPORT=" ]
+        defines = [ "CXX_RS_EXPORT=" ]
       }
 
       deps = [
@@ -98,8 +95,8 @@ config("panic_immediate_abort") {
   visibility = [ "//build/rust/std/rules:*" ]
   if (is_official_build) {
     rustflags = [
-      "--cfg",
-      "feature=\"panic_immediate_abort\"",
+      "-Zunstable-options",
+      "-Cpanic=immediate-abort",
     ]
   }
 }

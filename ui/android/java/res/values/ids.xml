@@ -15,4 +15,7 @@ found in the LICENSE file.
 
     <!-- Widgets -->
     <item type="id" name="chip_cancel_btn" />
+
+    <!-- OutlineOverlay -->
+    <item type="id" name="outline_overlay_drawable" />
 </resources>

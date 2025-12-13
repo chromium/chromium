@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 #include "third_party/blink/renderer/core/css/offscreen_font_selector.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -19,6 +18,7 @@
 namespace blink {
 
 class Font;
+class FontFace;
 
 class CORE_EXPORT FontFaceSetWorker final
     : public FontFaceSet,

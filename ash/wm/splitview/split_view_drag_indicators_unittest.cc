@@ -468,8 +468,8 @@ TEST_F(SplitViewDragIndicatorsTest, PreviewAreaVisibilityDefaultSnapRatio) {
   UpdateDisplay("900x600");
   constexpr int screen_width = 900;
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, -1, gfx::Rect(100, 100, 500, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {100, 100, 500, 500}}));
 
   // Snap `window` to 1/3 to set its snap ratio to 1/3.
   const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY,
@@ -530,9 +530,9 @@ TEST_F(ClamshellMultiDisplaySplitViewDragIndicatorsTest,
   std::unique_ptr<aura::Window> window1(CreateTestWindow());
   std::unique_ptr<aura::Window> window2(CreateTestWindow());
   const display::Display landscape_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]);
   const display::Display portrait_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[1]);
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[1]);
   ToggleOverview();
   // Overview starts with no split view drag indicator.
   auto* indicators = overview_session_->GetGridWithRootWindow(root_windows[0])

@@ -10,13 +10,13 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.widget.ImageViewCompat;
 
@@ -57,13 +57,6 @@ class BookmarkBarButton extends LinearLayout {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
-        mLastEventMetaState = event.getMetaState();
-        return super.onKeyUp(keyCode, event);
-    }
-
-    @Override
     @SuppressLint("ClickableViewAccessibility")
     public boolean onTouchEvent(MotionEvent event) {
         // NOTE: Update `mLastEventMetaState` in anticipation of a potential click.
@@ -72,8 +65,8 @@ class BookmarkBarButton extends LinearLayout {
     }
 
     /**
-     * Sets the callback to notify of bookmark bar button click events. The callback is provided the
-     * meta state of the most recent key/touch event.
+     * Sets the callback to notify of bookmark bar button click events (mouse clicks and finger
+     * taps). The callback is provided the meta state of the most recent key/touch event.
      *
      * @param callback the callback to notify.
      */
@@ -126,6 +119,15 @@ class BookmarkBarButton extends LinearLayout {
      */
     public void setTitle(@Nullable String title) {
         mTitle.setText(title);
+    }
+
+    /**
+     * Sets the text appearance of the title.
+     *
+     * @param resId The style resource identifier.
+     */
+    public void setTitleTextAppearance(@StyleRes int resId) {
+        mTitle.setTextAppearance(resId);
     }
 
     /**

@@ -456,7 +456,14 @@ source_set("sql_query_proto_to_string") {
     "fuzz/sql_query_proto_to_string.cc",
     "fuzz/sql_query_proto_to_string.h",
   ]
-  deps = [ ":sqlite3_lpm_fuzzer_input" ]
+  deps = [
+    ":sqlite3_lpm_fuzzer_input",
+    "//base",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # LPM-based fuzzer test.
@@ -468,6 +475,7 @@ fuzzer_test("sqlite3_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    "//base",
     "//third_party/libprotobuf-mutator",
   ]
   additional_configs = [ ":sqlite_warnings" ]
@@ -487,6 +495,7 @@ fuzzer_test("sqlite3_fts3_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    "//base",
     "//third_party/libprotobuf-mutator",
   ]
   additional_configs = [
@@ -513,6 +522,7 @@ fuzzer_test("sqlite3_select_printf_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    "//base",
     "//third_party/libprotobuf-mutator",
   ]
   libfuzzer_options = [ "max_len=111000" ]
@@ -526,6 +536,7 @@ fuzzer_test("sqlite3_select_strftime_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    "//base",
     "//third_party/libprotobuf-mutator",
   ]
   libfuzzer_options = [ "max_len=111000" ]
@@ -539,6 +550,7 @@ fuzzer_test("sqlite3_select_expr_lpm_fuzzer") {
   ]
   deps = [
     ":sqlite3_lpm_fuzzer_core",
+    "//base",
     "//third_party/libprotobuf-mutator",
   ]
   libfuzzer_options = [

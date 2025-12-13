@@ -380,8 +380,8 @@ bool WebPluginContainerImpl::IsMouseLocked() {
 bool WebPluginContainerImpl::LockMouse(bool request_unadjusted_movement) {
   if (Page* page = element_->GetDocument().GetPage()) {
     bool res = page->GetPointerLockController().RequestPointerLock(
-        element_, WTF::BindOnce(&WebPluginContainerImpl::HandleLockMouseResult,
-                                WrapWeakPersistent(this)));
+        element_, BindOnce(&WebPluginContainerImpl::HandleLockMouseResult,
+                           WrapWeakPersistent(this)));
     if (res) {
       mouse_lock_lost_listener_ =
           MakeGarbageCollected<MouseLockLostListener>(this);

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/win/src/policy_engine_processor.h"
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include "base/compiler_specific.h"
 
 namespace sandbox {
 
@@ -67,7 +64,7 @@ PolicyResult PolicyProcessor::Evaluate(uint32_t options,
   // after the action depending on kPolUseOREval.
 
   for (size_t ix = 0; ix != count; ++ix) {
-    PolicyOpcode& opcode = policy_->opcodes[ix];
+    PolicyOpcode& opcode = UNSAFE_TODO(policy_->opcodes[ix]);
     // Skipping block.
     if (skip_group) {
       if (SkipOpcode(opcode, &context, &skip_group))

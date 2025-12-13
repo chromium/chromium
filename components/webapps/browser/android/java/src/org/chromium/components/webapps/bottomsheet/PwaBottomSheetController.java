@@ -19,7 +19,6 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.UnownedUserData;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,10 +29,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.webapps.AddToHomescreenProperties;
-import org.chromium.components.webapps.AddToHomescreenViewDelegate;
-import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappInstallSource;
@@ -42,6 +38,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,8 +47,7 @@ import java.util.ArrayList;
 /** This class controls the Bottom Sheet PWA install functionality. */
 @JNINamespace("webapps")
 @NullMarked
-public class PwaBottomSheetController
-        implements UnownedUserData, AddToHomescreenViewDelegate, View.OnClickListener {
+public class PwaBottomSheetController implements View.OnClickListener {
     private final Context mContext;
 
     /** A pointer to the native version of this class. It's lifetime is controlled by this class. */
@@ -178,24 +174,6 @@ public class PwaBottomSheetController
         mContext = context;
     }
 
-    // AddToHomescreenViewDelegate:
-
-    @Override
-    public void onAddToHomescreen(String title, @AppType int type) {
-        onAddToHomescreen();
-    }
-
-    @Override
-    public boolean onAppDetailsRequested() {
-        return false;
-    }
-
-    @Override
-    public void onViewDismissed() {
-        // The bottom sheet observer OnSheetStateChanged() method is used instead to track when the
-        // sheet is dismissed.
-    }
-
     private void createWebContentsObserver(WebContents webContents) {
         assert mWebContentsObserver == null;
         mWebContentsObserver =
@@ -250,7 +228,7 @@ public class PwaBottomSheetController
         mScreenshotAdapter = new ScreenshotsAdapter(mContext, shouldPadForDialogContent);
         PwaInstallBottomSheetView view =
                 new PwaInstallBottomSheetView(mContext, mScreenshotAdapter);
-        mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view, this);
+        mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view);
         mModel =
                 new PropertyModel.Builder(AddToHomescreenProperties.ALL_KEYS)
                         .with(AddToHomescreenProperties.ICON, new Pair<>(icon, isAdaptiveIcon))

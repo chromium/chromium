@@ -10,7 +10,7 @@
 #include "components/cbor/writer.h"
 #include "crypto/evp.h"
 #include "device/fido/cbor_extract.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"

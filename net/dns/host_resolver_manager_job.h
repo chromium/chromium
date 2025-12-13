@@ -33,6 +33,7 @@
 namespace net {
 
 class ResolveContext;
+class HostResolverInternalResult;
 class HostResolverMdnsTask;
 class HostResolverNat64Task;
 
@@ -150,6 +151,31 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   }
 
  private:
+  // Explains why a Job didn't attempt HTTPS query.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(HttpsNotAttemptedReason)
+  enum class HttpsNotAttemptedReason {
+    // The reason is unknown. This is the last resort option and should be
+    // avoided as much as possible.
+    kUnknown = 0,
+    // Querying HTTPS is disabled.
+    kQueryingHttpsDisabled = 1,
+    // Built-in DNS resolver is disabled.
+    kBuiltInResolverDisabled = 2,
+    // No DnsClient.
+    kNoDnsClient = 3,
+    // DnsTask wasn't scheduled because it hadn't been working for a while.
+    kFallbackFromInsecureTransactionPreferred = 4,
+    // Insecure DnsTask was not allowed to query HTTPS.
+    kInsecureDnsTaskDisabled = 5,
+    // DnsTask was executed but fell back to the system task.
+    kFallbackToSystemTaskAfterDnsTask = 6,
+    kMaxValue = kFallbackToSystemTaskAfterDnsTask,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:HttpsNotAttemptedReason)
+
   // Keeps track of the highest priority.
   class PriorityTracker {
    public:
@@ -256,10 +282,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void OnMdnsImmediateFailure(int rv);
 
   void StartNat64Task();
-  void OnNat64TaskComplete();
+  void OnNat64TaskComplete(std::unique_ptr<HostResolverInternalResult> result);
 
   void RecordJobHistograms(const HostCache::Entry& results,
                            std::optional<TaskType> task_type);
+
+  void RecordJobHttpsHistograms();
 
   void MaybeCacheResult(const HostCache::Entry& results,
                         base::TimeDelta ttl,
@@ -330,6 +358,13 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Result of DnsTask.
   int dns_task_error_ = OK;
 
+  // Set to true when this Job executed DnsTask.
+  bool dns_task_executed_ = false;
+
+  // Set to whether DnsTask disabled HTTPS query. Set only when DnsTask
+  // succeeds.
+  bool dns_task_https_disabled_ = false;
+
   raw_ptr<const base::TickClock> tick_clock_;
   base::TimeTicks start_time_;
 
@@ -340,6 +375,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // Resolves the host using the system DNS resolver, which can be overridden
   // for tests.
   std::unique_ptr<HostResolverSystemTask> system_task_;
+
+  // Set to true when this Job falls back to the system DNS task after DNS task.
+  bool fallback_to_system_task_after_dns_task_ = false;
 
   // Resolves the host using a DnsTransaction.
   std::unique_ptr<HostResolverDnsTask> dns_task_;

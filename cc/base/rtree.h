@@ -17,7 +17,9 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -150,7 +152,10 @@ class RTree {
   void GetAllBoundsRecursive(const Node<T>& node,
                              std::map<T, gfx::Rect>* results) const;
 
-  // This is the count of data elements (rather than total nodes in the tree)
+  NOINLINE void AddCrashKeysForTreeSizeAndCrash(size_t node_count) const;
+
+  // This is the count of data elements (rather than total nodes in the
+  // tree)
   size_t num_data_elements_ = 0u;
   std::vector<Node<T>> nodes_;
   Branch<T> root_;
@@ -213,6 +218,18 @@ void RTree<T>::Build(size_t item_count,
         static_cast<size_t>((std::pow(branch_count, depth) - 1) /
                             (branch_count - 1)) +
         kMinChildren;
+
+    // TODO(crbug.com/447555058): This check merely exists to replicate the
+    // check in Vector<RTree<T>::Node<T>>::reserve(). This check should never
+    // fail but, inexplicably, is failing for some users. If additional debug
+    // data shows this bug is non-actionable, this code should be removed. Until
+    // then, the perf impact should be minimal, since it is comparing a value in
+    // a register to a const.
+    if (node_count > nodes_.max_size()) [[unlikely]] {
+      AddCrashKeysForTreeSizeAndCrash(node_count);
+      NOTREACHED();
+    }
+
     nodes_.reserve(node_count);
     root_ = BuildRecursive(&branches, 0);
   }
@@ -421,6 +438,33 @@ void RTree<T>::GetAllBoundsRecursive(const Node<T>& node,
       GetAllBoundsRecursive(*child.subtree, results);
     }
   }
+}
+
+// See comment in RTree<T>::Build. For triage: This is not a new bug. Previous
+// crashes may have been filed under DisplayItemList::Finalize(). This function
+// was written to collect these crashes with additional telemetry for
+// investigation. Please be sure that calling this function is causing a novel
+// crash before reverting/removing it.
+template <typename T>
+void RTree<T>::AddCrashKeysForTreeSizeAndCrash(size_t node_count) const {
+  double branches_log = log(num_data_elements_);
+  double depth = branches_log / log(kMaxChildren);
+  double branch_pow = std::pow(kMaxChildren, depth);
+  size_t node_count_recalculated =
+      static_cast<size_t>((branch_pow - 1) / (kMaxChildren - 1)) + kMinChildren;
+
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "initial_calcd_node_count",
+                            base::NumberToString(node_count));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalc_ln_data_elements",
+                            base::NumberToString(branches_log));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_depth",
+                            base::NumberToString(depth));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_branch_pow",
+                            base::NumberToString(branch_pow));
+  SCOPED_CRASH_KEY_STRING32("Bug447555058", "recalculated_node_count",
+                            base::NumberToString(node_count_recalculated));
+
+  NOTREACHED();
 }
 
 }  // namespace cc

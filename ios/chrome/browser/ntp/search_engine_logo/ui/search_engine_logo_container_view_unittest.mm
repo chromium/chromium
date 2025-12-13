@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -20,9 +21,8 @@ class SearchEngineLogoContainerViewTest : public PlatformTest {
   SearchEngineLogoContainerViewTest() {
     search_engine_logo_container_view_ = [[SearchEngineLogoContainerView alloc]
         initWithFrame:CGRectMake(0, 0, 300, 300)];
-    shrunk_google_logo_ =
-        [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"google_logo"]];
-    [search_engine_logo_container_view_ setShrunkLogoView:shrunk_google_logo_];
+    shrunk_google_logo_ = search_engine_logo_container_view_.shrunkLogoView;
+    shrunk_google_logo_.image = [UIImage imageNamed:@"google_logo"];
   }
 
   SearchEngineLogoContainerView* search_engine_logo_container_view() {
@@ -48,12 +48,13 @@ TEST_F(SearchEngineLogoContainerViewTest, SetLogoViewTest) {
   EXPECT_LT(logo_view_index, doodle_logo_index);
 }
 
-// Verifies that `style` setter correctly updates the views' opacity.
+// Verifies that `logoState` setter correctly updates the views' opacity.
 TEST_F(SearchEngineLogoContainerViewTest, ShowingDoodleTest) {
   EXPECT_EQ(search_engine_logo_container_view().shrunkLogoView.alpha, 1.0);
   EXPECT_EQ(search_engine_logo_container_view().doodleLogo.alpha, 0.0);
-  search_engine_logo_container_view().style =
-      SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE;
+  [search_engine_logo_container_view()
+      setLogoState:SearchEngineLogoState::kDoodle
+          animated:NO];
   EXPECT_EQ(search_engine_logo_container_view().shrunkLogoView.alpha, 0.0);
   EXPECT_EQ(search_engine_logo_container_view().doodleLogo.alpha, 1.0);
 }

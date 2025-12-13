@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -113,7 +113,7 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testModelNotifiesAboutTabDataChangedByProvider() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
 
         mSheetDataPieces.addObserver(mMockItemListObserver);
         mCoordinator.registerDataProvider(testProvider);
@@ -150,7 +150,7 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testSplitsTabDataToList() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
@@ -203,7 +203,7 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testUsesTitleElementForEmptyState() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,
@@ -221,7 +221,7 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Test
     public void testShowsNoCreditCardsMessageBelowPromoCodes() {
-        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final Provider<AccessorySheetData> testProvider = new Provider<>();
         final AccessorySheetData testData =
                 new AccessorySheetData(
                         AccessoryTabType.CREDIT_CARDS,

@@ -75,7 +75,8 @@ struct NET_EXPORT_PRIVATE SimpleFileEOF {
   uint64_t final_magic_number = 0;
   uint32_t flags = 0;
   uint32_t data_crc32 = 0;
-  // |stream_size| is only used in the EOF record for stream 0.
+  // |stream_size| is only used in the EOF record for stream 0. The value must
+  // smaller than int32 max.
   uint32_t stream_size = 0;
 
   // Avoid implicit padding so `std::has_unique_object_representations_v<>` will

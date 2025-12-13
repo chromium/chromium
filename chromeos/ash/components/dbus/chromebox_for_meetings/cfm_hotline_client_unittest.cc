@@ -67,9 +67,8 @@ class CfmHotlineClientTest : public testing::Test {
                                dbus::ObjectPath(::cfm::broker::kServicePath)))
         .WillOnce(Return(mock_proxy_.get()));
 
-    EXPECT_CALL(
-        *mock_proxy_.get(),
-        DoConnectToSignal(::cfm::broker::kServiceInterfaceName, _, _, _))
+    EXPECT_CALL(*mock_proxy_.get(),
+                ConnectToSignal(::cfm::broker::kServiceInterfaceName, _, _, _))
         .WillRepeatedly(Invoke(this, &CfmHotlineClientTest::ConnectToSignal));
 
     CfmHotlineClient::Initialize(mock_bus_.get());
@@ -86,7 +85,7 @@ class CfmHotlineClientTest : public testing::Test {
 
   void CallMethod(dbus::MethodCall* method_call,
                   int timeout_ms,
-                  dbus::ObjectProxy::ResponseCallback* callback) {
+                  dbus::ObjectProxy::ResponseCallback callback) {
     dbus::Response* response = nullptr;
 
     if (!responses_.empty()) {
@@ -96,7 +95,7 @@ class CfmHotlineClientTest : public testing::Test {
     }
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response));
+        FROM_HERE, base::BindOnce(std::move(callback), response));
   }
 
   void EmitServiceRequestedSignal(const std::string& interface_name) {
@@ -119,12 +118,12 @@ class CfmHotlineClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       dbus::ObjectProxy::SignalCallback signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     EXPECT_EQ(interface_name, ::cfm::broker::kServiceInterfaceName);
     signal_callbacks_[signal_name] = signal_callback;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, true /* success */));
   }
 
@@ -144,7 +143,7 @@ class CfmHotlineClientTest : public testing::Test {
 TEST_F(CfmHotlineClientTest, BootstrapMojoSuccessTest) {
   responses_.push_back(dbus::Response::CreateEmpty());
 
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
       .WillOnce(Invoke(this, &CfmHotlineClientTest::CallMethod));
 
   base::MockCallback<CfmHotlineClient::BootstrapMojoConnectionCallback>
@@ -158,7 +157,7 @@ TEST_F(CfmHotlineClientTest, BootstrapMojoSuccessTest) {
 }
 
 TEST_F(CfmHotlineClientTest, BootstrapMojoFailureTest) {
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
       .WillOnce(Invoke(this, &CfmHotlineClientTest::CallMethod));
 
   base::MockCallback<CfmHotlineClient::BootstrapMojoConnectionCallback>

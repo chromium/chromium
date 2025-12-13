@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/payments/chrome_payments_autofill_client.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,29 +15,42 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
+#include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/functional/callback.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/mock_touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
-#include "chrome/browser/ui/autofill/payments/autofill_message_controller.h"
+#include "chrome/browser/ui/autofill/mock_autofill_message_controller.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
+#include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/ui_features.h"  // nogncheck
+#include "components/autofill/core/browser/payments/desktop_bnpl_strategy.h"
 #endif                                      // BUILDFLAG(IS_ANDROID)
 
 using ::autofill::test::CreateLoyaltyCard;
@@ -44,15 +58,27 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Matcher;
 using ::testing::Ne;
 using ::testing::NotNull;
+using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
+
+Matcher<payments::BnplIssuerContext> EqualsBnplIssuerContext(
+    BnplIssuer::IssuerId issuer_id,
+    payments::BnplIssuerEligibilityForPage eligibility) {
+  return AllOf(Field(&payments::BnplIssuerContext::issuer,
+                     Property(&BnplIssuer::issuer_id, Eq(issuer_id))),
+               Field(&payments::BnplIssuerContext::eligibility, eligibility));
+}
+
 class MockAutofillSaveCardBottomSheetBridge
     : public AutofillSaveCardBottomSheetBridge {
  public:
@@ -96,14 +122,12 @@ class MockAutofillSnackbarControllerImpl
                base::OnceClosure,
                std::optional<base::OnceClosure>),
               (override));
-};
-
-class MockAutofillMessageController : public AutofillMessageController {
- public:
-  explicit MockAutofillMessageController(content::WebContents* web_contents)
-      : AutofillMessageController(web_contents) {}
-
-  MOCK_METHOD(void, Show, (std::unique_ptr<AutofillMessageModel>), (override));
+  MOCK_METHOD(void,
+              ShowPaymentsSnackbar,
+              (AutofillSnackbarType type,
+               const CreditCard& filled_card,
+               base::OnceClosure),
+              (override));
 };
 #else  //! BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
@@ -158,6 +182,10 @@ class ChromePaymentsAutofillClientTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     ChromeAutofillClient::CreateForWebContents(web_contents());
+#if BUILDFLAG(IS_ANDROID)
+    MockPaymentMethodAccessoryController::GetOrCreate(web_contents())
+        ->RegisterFillingSourceObserver(mock_filling_source_observer_.Get());
+#endif
     auto mock_virtual_card_bubble_controller =
         std::make_unique<MockVirtualCardEnrollBubbleController>(web_contents());
     const auto* user_data_key =
@@ -220,7 +248,7 @@ class ChromePaymentsAutofillClientTest
 
   MockAutofillMessageController* InjectMockAutofillMessageController() {
     std::unique_ptr<MockAutofillMessageController> mock =
-        std::make_unique<MockAutofillMessageController>(web_contents());
+        std::make_unique<MockAutofillMessageController>();
     MockAutofillMessageController* pointer = mock.get();
     chrome_payments_client()->SetAutofillMessageControllerForTesting(
         std::move(mock));
@@ -260,6 +288,10 @@ class ChromePaymentsAutofillClientTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      mock_filling_source_observer_;
+#endif
 };
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -375,8 +407,8 @@ TEST_F(ChromePaymentsAutofillClientTest,
   std::u16string expected_description;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   expected_description =
-      u"To pay faster next time, save your card, encrypted security code, and "
-      u"billing address in your Google Account";
+      u"Pay faster when your card is saved. Card details are encrypted in "
+      u"your Google Account.";
 #endif
 
   // Verify that `AutofillSaveCardUiInfo` has the correct attributes that
@@ -553,6 +585,85 @@ TEST_F(
                                                 /*max_strikes=*/false);
 }
 
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_BnplCard_ShowsBnplSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+  card.set_issuer_id(kBnplAffirmIssuerId);
+  card.set_is_bnpl_card(true);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(
+      *snackbar_controller,
+      ShowPaymentsSnackbar(AutofillSnackbarType::kBnpl, options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller, Show(AutofillSnackbarType::kBnpl, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_VirtualCard_ShowsVirtualCardSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kVirtualCard);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(*snackbar_controller,
+              ShowPaymentsSnackbar(AutofillSnackbarType::kVirtualCard,
+                                   options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kVirtualCard, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       OnCardDataAvailable_ShowsCardInfoRetrievalSnackbar) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  CreditCard card = test::GetCreditCard();
+  card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
+
+  FilledCardInformationBubbleOptions options;
+  options.filled_card = card;
+
+  EXPECT_CALL(*snackbar_controller,
+              ShowPaymentsSnackbar(AutofillSnackbarType::kCardInfoRetrieval,
+                                   options.filled_card, _))
+      .WillOnce([=](AutofillSnackbarType type, const CreditCard& card,
+                    base::OnceClosure callback) {
+        snackbar_controller
+            ->AutofillSnackbarControllerImpl::ShowPaymentsSnackbar(
+                type, card, std::move(callback));
+      });
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kCardInfoRetrieval, _));
+
+  chrome_payments_client()->OnCardDataAvailable(options);
+}
+
 // Test that calling `ShowLoyaltyCards` passes the correct lists of loyalty
 // cards.
 TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillLoyaltyCard) {
@@ -647,6 +758,52 @@ TEST_F(ChromePaymentsAutofillClientTest,
                                                        {CreateLoyaltyCard()});
 }
 
+TEST_F(ChromePaymentsAutofillClientTest, ShowTouchToFillBnplIssuers) {
+  MockTouchToFillPaymentMethodController* ttf_payment_method_controller =
+      InjectMockTouchToFillPaymentMethodController();
+  const std::vector<payments::BnplIssuerContext> issuer_context = {
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(),
+          payments::BnplIssuerEligibilityForPage::kIsEligible)};
+
+  EXPECT_CALL(*ttf_payment_method_controller,
+              ShowBnplIssuers(ElementsAre(EqualsBnplIssuerContext(
+                                  issuer_context[0].issuer.issuer_id(),
+                                  issuer_context[0].eligibility)),
+                              /*app_locale=*/"en-US", _, _));
+
+  chrome_payments_client()->ShowTouchToFillBnplIssuers(
+      issuer_context, /*app_locale=*/"en-US",
+      /*selected_issuer_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+}
+
+TEST_F(ChromePaymentsAutofillClientTest, OnPurchaseAmountExtracted) {
+  MockTouchToFillPaymentMethodController* ttf_payment_method_controller =
+      InjectMockTouchToFillPaymentMethodController();
+  std::optional<int64_t> extracted_amount = 12345;
+  std::optional<std::string> app_locale = "en-US";
+  const std::vector<payments::BnplIssuerContext> issuer_context = {
+      payments::BnplIssuerContext(
+          test::GetTestLinkedBnplIssuer(),
+          payments::BnplIssuerEligibilityForPage::kIsEligible)};
+
+  EXPECT_CALL(
+      *ttf_payment_method_controller,
+      OnPurchaseAmountExtracted(ElementsAre(EqualsBnplIssuerContext(
+                                    issuer_context[0].issuer.issuer_id(),
+                                    issuer_context[0].eligibility)),
+                                extracted_amount,
+                                /*is_amount_supported_by_any_issuer=*/true,
+                                /*app_locale=*/app_locale, _, _));
+
+  chrome_payments_client()->OnPurchaseAmountExtracted(
+      issuer_context, extracted_amount,
+      /*is_amount_supported_by_any_issuer=*/true, app_locale,
+      /*selected_issuer_callback=*/base::DoNothing(),
+      /*cancel_callback=*/base::DoNothing());
+}
+
 #else   // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/410047802): Disable test on Linux TSan due to flakiness/issue.
@@ -721,11 +878,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
 // Test that there is always an PaymentsWindowManager present if attempted
 // to be retrieved.
 TEST_F(ChromePaymentsAutofillClientTest, GetPaymentsWindowManager) {
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_EQ(chrome_payments_client()->GetPaymentsWindowManager(), nullptr);
-  } else {
     EXPECT_NE(chrome_payments_client()->GetPaymentsWindowManager(), nullptr);
-  }
 }
 
 TEST_F(ChromePaymentsAutofillClientTest, RiskDataCaching_DataCached) {
@@ -739,6 +892,36 @@ TEST_F(ChromePaymentsAutofillClientTest, RiskDataCaching_DataCached) {
   EXPECT_CALL(callback2, Run).Times(0);
 
   chrome_payments_client()->LoadRiskData(callback2.Get());
+}
+
+// Test that BNPL strategy is created and returned correctly.
+TEST_F(ChromePaymentsAutofillClientTest, GetBnplStrategy) {
+  payments::BnplStrategy* strategy =
+      chrome_payments_client()->GetBnplStrategy();
+  ASSERT_NE(strategy, nullptr);
+
+  // Test that the same instance is returned on subsequent calls.
+  EXPECT_EQ(strategy, chrome_payments_client()->GetBnplStrategy());
+}
+
+// Test that BNPL UI delegate is created and returned correctly.
+TEST_F(ChromePaymentsAutofillClientTest, GetBnplUiDelegate) {
+  payments::BnplUiDelegate* ui_delegate =
+      chrome_payments_client()->GetBnplUiDelegate();
+  ASSERT_NE(ui_delegate, nullptr);
+
+  // Test that the same instance is returned on subsequent calls.
+  EXPECT_EQ(ui_delegate, chrome_payments_client()->GetBnplUiDelegate());
+}
+
+// Test that `DisablePaymentsAutofill` correctly disables the client's support
+// for autofill payment methods.
+TEST_F(ChromePaymentsAutofillClientTest, DisablePaymentsAutofill) {
+  EXPECT_TRUE(chrome_payments_client()->IsAutofillPaymentMethodsEnabled());
+
+  chrome_payments_client()->DisablePaymentsAutofill();
+
+  EXPECT_FALSE(chrome_payments_client()->IsAutofillPaymentMethodsEnabled());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

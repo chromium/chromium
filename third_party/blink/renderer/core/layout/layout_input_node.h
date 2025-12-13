@@ -87,7 +87,7 @@ class CORE_EXPORT LayoutInputNode {
   bool IsFlexItem() const { return IsBlock() && box_->IsFlexItem(); }
   bool IsFlexibleBox() const { return IsBlock() && box_->IsFlexibleBox(); }
   bool IsGrid() const { return IsBlock() && box_->IsLayoutGrid(); }
-  bool IsMasonry() const { return IsBlock() && box_->IsLayoutMasonry(); }
+  bool IsGridLanes() const { return IsBlock() && box_->IsLayoutGridLanes(); }
   bool ShouldBeConsideredAsReplaced() const {
     return box_->ShouldBeConsideredAsReplaced();
   }
@@ -290,10 +290,6 @@ class CORE_EXPORT LayoutInputNode {
 
   bool operator==(const LayoutInputNode& other) const {
     return box_ == other.box_ && type_ == other.type_;
-  }
-
-  bool operator!=(const LayoutInputNode& other) const {
-    return !(*this == other);
   }
 
 #if DCHECK_IS_ON()

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/common/crash_keys.h"
 
 #include <deque>
@@ -15,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -126,9 +122,9 @@ ScopedPrinterInfo::ScopedPrinterInfo(const std::string& printer_name,
   CHECK_LE(data.size(), std::size(printer_info_keys));
   for (size_t i = 0; i < std::size(printer_info_keys); ++i) {
     if (i < data.size()) {
-      printer_info_keys[i].Set(data[i]);
+      UNSAFE_TODO(printer_info_keys[i]).Set(data[i]);
     } else {
-      printer_info_keys[i].Clear();
+      UNSAFE_TODO(printer_info_keys[i]).Clear();
     }
   }
   if (data.empty()) {

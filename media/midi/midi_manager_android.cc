@@ -18,7 +18,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/midi/midi_jni_headers/MidiManagerAndroid_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using midi::mojom::PortState;
 using midi::mojom::Result;
 
@@ -117,9 +117,8 @@ void MidiManagerAndroid::OnReceivedData(MidiInputPortAndroid* port,
   ReceiveMidiData(i->second, data, size, timestamp);
 }
 
-void MidiManagerAndroid::OnInitialized(
-    JNIEnv* env,
-    const JavaParamRef<jobjectArray>& devices) {
+void MidiManagerAndroid::OnInitialized(JNIEnv* env,
+                                       const JavaRef<jobjectArray>& devices) {
   for (auto raw_device : devices.ReadElements<jobject>()) {
     AddDevice(std::make_unique<MidiDeviceAndroid>(env, raw_device, this));
   }
@@ -137,12 +136,12 @@ void MidiManagerAndroid::OnInitializationFailed(JNIEnv* env) {
 }
 
 void MidiManagerAndroid::OnAttached(JNIEnv* env,
-                                    const JavaParamRef<jobject>& raw_device) {
+                                    const JavaRef<jobject>& raw_device) {
   AddDevice(std::make_unique<MidiDeviceAndroid>(env, raw_device, this));
 }
 
 void MidiManagerAndroid::OnDetached(JNIEnv* env,
-                                    const JavaParamRef<jobject>& raw_device) {
+                                    const JavaRef<jobject>& raw_device) {
   for (auto& device : devices_) {
     if (device->HasRawDevice(env, raw_device)) {
       for (auto& port : device->input_ports()) {
@@ -200,3 +199,5 @@ void MidiManagerAndroid::AddDevice(std::unique_ptr<MidiDeviceAndroid> device) {
 }
 
 }  // namespace midi
+
+DEFINE_JNI(MidiManagerAndroid)

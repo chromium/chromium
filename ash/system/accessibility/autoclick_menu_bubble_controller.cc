@@ -101,7 +101,7 @@ void AutoclickMenuBubbleController::SetPosition(
   // TODO(396681078): Confirm the preventive fix, clean up logging, and swap to
   // a valid display if needed.
   const display::Display target_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           bubble_widget_->GetNativeWindow());
   if (!target_display.is_valid() ||
       !Shell::GetRootWindowControllerWithDisplayId(target_display.id())) {

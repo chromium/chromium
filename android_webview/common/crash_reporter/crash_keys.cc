@@ -20,9 +20,6 @@ const char kContextLossReason[] = "context-loss-reason";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
-extern const char kWeblayerWebViewCompatMode[] =
-    "WEBLAYER_WEB_VIEW_COMPAT_MODE";
-
 // clang-format off
 const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageName,
@@ -170,8 +167,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // sandbox/linux
     "seccomp-sigsys",
-
-    kWeblayerWebViewCompatMode,
+    "seccomp-sigsys-ioctl",
 
     // Used to report switches/feature flags overridden in the DevUI
     "commandline-enabled-feature-*",
@@ -217,6 +213,12 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "SIFactory-SharedBwThreads",
     "SIFactory-Usage",
     "SIFactory-Size",
+
+    // crbug.com/453113611
+    "SubprocessMetricsProvider-histogram",
+
+    // crbug.com/456871291
+    "BadHistogramArgs-name",
 
     nullptr};
 // clang-format on

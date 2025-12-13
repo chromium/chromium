@@ -166,7 +166,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
     }
 
     private @Nullable String getSecondaryButtonText() {
-        if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
+        if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING || isManaged()) {
             return null;
         }
 
@@ -176,7 +176,7 @@ public class SafetyHubSafeBrowsingModuleMediator implements SafetyHubModuleMedia
     }
 
     private View.@Nullable OnClickListener getSecondaryButtonListener() {
-        if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING && !isManaged()) {
+        if (mSafeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING || isManaged()) {
             return null;
         }
 

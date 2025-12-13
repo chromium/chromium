@@ -23,6 +23,22 @@ reviewer.
 
 <enums>
 
+<!-- LINT.IfChange(FacilitatedPayments.A2AFlowExitedReason) -->
+
+<enum name="FacilitatedPayments.A2AFlowExitedReason">
+  <int value="0" label="The domain of the website is not allowlisted"/>
+  <int value="1" label="The user has opted out of the payflow"/>
+  <int value="2" label="The user has no supported payment apps available"/>
+  <int value="3"
+      label="The FOP selector either wasn't shown, or was dismissed without
+             user action"/>
+  <int value="4" label="The FOP selector was dismissed by a user action"/>
+  <int value="5" label="Another type of FOP is selected"/>
+  <int value="6" label="The A2A payment flag is not enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:A2AFlowExitedReason) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.EwalletFlowExitedReason) -->
 
 <enum name="FacilitatedPayments.EwalletFlowExitedReason">
@@ -46,6 +62,7 @@ reviewer.
   <int value="12" label="The FOP selector was closed by the user"/>
   <int value="13" label="Foldable devices not supported"/>
   <int value="14" label="Max strikes reached"/>
+  <int value="15" label="Another type of FOP is selected"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:EwalletFlowExitedReason) -->
@@ -57,6 +74,7 @@ reviewer.
   <int value="3" label="Tngd"/>
   <int value="4" label="PromptPay"/>
   <int value="5" label="Momo"/>
+  <int value="6" label="Dana"/>
 </enum>
 
 <!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
@@ -75,6 +93,17 @@ reviewer.
   <int value="2" label="Abandoned"/>
 </enum>
 
+<!-- LINT.IfChange(FacilitatedPayments.PaymentLinkFopSelectorAction) -->
+
+<enum name="FacilitatedPayments.PaymentLinkFopSelectorAction">
+  <int value="0" label="eWallet selected."/>
+  <int value="1" label="Payment app selected."/>
+  <int value="2" label="Turn off payment prompt link clicked."/>
+  <int value="3" label="Manage payment methods option selected."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h:PaymentLinkFopSelectorAction) -->
+
 <!-- LINT.IfChange(FacilitatedPayments.Pix.AccountLinking.FlowExitedReason) -->
 
 <enum name="FacilitatedPayments.Pix.AccountLinking.FlowExitedReason">
@@ -82,9 +111,29 @@ reviewer.
   <int value="1" label="Screen was closed not by the user"/>
   <int value="2" label="Screen was closed by the user"/>
   <int value="3" label="User clicked the No Thanks button"/>
+  <int value="4" label="Wallet is not installed"/>
+  <int value="5" label="Wallet version is not supported"/>
+  <int value="6"
+      label="User opted out of the flow using the Settings page pref"/>
+  <int value="7" label="No screen lock or biometric setup"/>
+  <int value="8"
+      label="User's account was determined to be ineligible by the server"/>
+  <int value="9" label="User switched to a different tab"/>
+  <int value="10" label="User navigated to a different website"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixAccountLinkingFlowExitedReason) -->
+
+<!-- LINT.IfChange(FacilitatedPayments.PixCodeValidationResult) -->
+
+<enum name="FacilitatedPayments.PixCodeValidationResult">
+  <int value="0" label="Dynamic"/>
+  <int value="1" label="Static"/>
+  <int value="2" label="Invalid"/>
+  <int value="3" label="Validator failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixCodeValidationResult) -->
 
 <!-- LINT.IfChange(FacilitatedPayments.PixFlowExitedReason) -->
 
@@ -110,6 +159,11 @@ reviewer.
   <int value="13" label="The purchase action could not be invoked"/>
   <int value="14" label="Autofilling payment methods disabled"/>
   <int value="15" label="Merchant is not allowlisted"/>
+  <int value="16" label="Pix code was copied within an iframe"/>
+  <int value="17" label="Pix code was copied in an inactive frame"/>
+  <int value="18"
+      label="Pix code was copied in CCT with Gboard as the default IME"/>
+  <int value="19" label="Static code was copied and is not supported"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/facilitated_payments/core/metrics/facilitated_payments_metrics.h:PixFlowExitedReason) -->

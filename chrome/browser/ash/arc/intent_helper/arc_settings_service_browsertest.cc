@@ -46,7 +46,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/test/browser_test.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -200,7 +200,9 @@ int CountProxyBroadcasts(
       DCHECK(count < extras.size())
           << "The expected proxy broadcast count is smaller than "
              "the actual count.";
-      EXPECT_EQ(*base::JSONReader::Read(broadcast.extras), *extras[count]);
+      EXPECT_EQ(*base::JSONReader::Read(broadcast.extras,
+                                        base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+                *extras[count]);
       count++;
     }
   }
@@ -668,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(ArcSettingsServiceTest,
                        ProxyBypassListStringRepresentationTest) {
   fake_intent_helper_instance_->clear_broadcasts();
 
-  net::ProxyBypassRules chrome_proxy_bypass_rules;
+  net::ProxyHostMatchingRules chrome_proxy_bypass_rules;
   chrome_proxy_bypass_rules.AddRuleFromString("test1.org");
   chrome_proxy_bypass_rules.AddRuleFromString("test2.org");
 

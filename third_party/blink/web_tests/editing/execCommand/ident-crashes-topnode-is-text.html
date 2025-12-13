@@ -3,7 +3,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 function runTest() {
-    window.getSelection().setBaseAndExtent(start, 0, null, 0);
+    window.getSelection().setBaseAndExtent(start, 0, start, 0);
     document.execCommand("Indent");
 
     document.writeln('execCommand("Indent") was crashing if the top element to be formatted is actually not an element.<br>');

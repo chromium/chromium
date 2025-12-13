@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,9 +42,12 @@ public class TabThumbnailCondition extends UiThreadCondition {
 
     @Override
     public String buildDescription() {
+        int tabIndex =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mTabModelSelector.getModel(mTab.isOffTheRecord()).indexOf(mTab));
         return (mTab.isOffTheRecord() ? "Incognito" : "Regular")
                 + " tab "
-                + mTabModelSelector.getModel(mTab.isOffTheRecord()).indexOf(mTab)
+                + tabIndex
                 + (mEtc1 ? " etc1" : " jpeg")
                 + " thumbnail cached to disk";
     }

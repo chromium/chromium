@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
@@ -102,7 +103,8 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests tapping the first tile and scroll to tap the last tile.
-- (void)testTappingAndScrollingMostVisitedTiles {
+// TODO(crbug.com/440575187): This test is flaky.
+- (void)FLAKY_testTappingAndScrollingMostVisitedTiles {
   [self addNumberOfMostVisitedTiles:kCarouselCapacity];
 
   // Test tapping the first tile.
@@ -124,7 +126,8 @@ id<GREYMatcher> CarouselMatcher() {
 #pragma mark - Context Menu
 
 // Tests deleting most visited tiles from context menu.
-- (void)testDeleteMostVisitedTiles {
+// TODO(crbug.com/440566014): This test is flaky.
+- (void)FLAKY_testDeleteMostVisitedTiles {
   // Visit page 1 and 2 multiple times.
   [self addNumberOfMostVisitedTiles:2];
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(Page(1)));
@@ -185,7 +188,13 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests the "Copy URL" action of carousel context menu.
+// TODO(crbug.com/435096812): Reenable this test.
 - (void)testMostVisitedTileCopyURL {
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+    }
+  }
   [self addNumberOfMostVisitedTiles:1];
   Page page1 = Page(1);
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
@@ -199,7 +208,13 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests the "Share" action of the carousel context menu.
+// TODO(crbug.com/435093465): Reenable this test.
 - (void)testMostVisitedShare {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+    }
+  }
   [self addNumberOfMostVisitedTiles:1];
   Page page1 = Page(1);
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
@@ -222,7 +237,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self focusOmniboxFromWebPageZero];
   [self longPressMostVisitedTile:tile1];
 
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:page1ServerURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:page1ServerURL];
 }
 
 // Tests the "Open in New Incognito Tab" action of the carousel context menu.
@@ -235,8 +250,7 @@ id<GREYMatcher> CarouselMatcher() {
   [self focusOmniboxFromWebPageZero];
   [self longPressMostVisitedTile:tile1];
 
-  [ChromeEarlGrey
-      verifyOpenInIncognitoActionWithURL:page1ServerURL.GetContent()];
+  [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:page1ServerURL];
 }
 
 #pragma mark - Helpers
@@ -282,6 +296,11 @@ id<GREYMatcher> CarouselMatcher() {
 /// Long press on `tile` and select delete in the context menu.
 - (void)deleteMostVisitedTile:(id<GREYMatcher>)tile {
   [self longPressMostVisitedTile:tile];
+
+#if TARGET_OS_SIMULATOR
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+#endif
   // Tap on remove.
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::ContextMenuItemWithAccessibilityLabelId(

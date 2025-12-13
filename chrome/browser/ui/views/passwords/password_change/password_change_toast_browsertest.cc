@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/password_manager/password_change_delegate_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/password_change_ui_controller.h"
@@ -36,9 +37,13 @@ class PasswordChangeToastBrowserTest : public UiBrowserTest {
     tabs::TabInterface* tab_interface = browser()->GetActiveTabInterface();
     ASSERT_TRUE(tab_interface);
 
+    password_manager::PasswordForm form;
+    form.url = GURL(kTestChangePasswordUrl);
+    form.signon_realm = GURL(kTestChangePasswordUrl).GetWithEmptyPath().spec();
+    form.username_value = kTestUsername;
+    form.password_value = kTestPassword;
     delegate_ = std::make_unique<PasswordChangeDelegateImpl>(
-        GURL(kTestChangePasswordUrl), kTestUsername, kTestPassword,
-        tab_interface);
+        GURL(kTestChangePasswordUrl), std::move(form), tab_interface);
 
     ui_controller_ = delegate_->ui_controller();
 

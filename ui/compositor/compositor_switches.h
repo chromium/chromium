@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_COMPOSITOR_SWITCHES_H_
 #define UI_COMPOSITOR_COMPOSITOR_SWITCHES_H_
 
-#include "base/feature_list.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace switches {

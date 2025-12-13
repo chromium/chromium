@@ -48,6 +48,11 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OmniboxPedalsRenderTest {
+    // 1: Initial version.
+    // 2: Updated refine button assets with vector drawables.
+    // 3: Default to bottom-anchored focused omnibox
+    private static final int RENDER_TEST_REVISION = 3;
+
     @ParameterAnnotations.ClassParameter
     private static final List<ParameterSet> sClassParams =
             List.of(
@@ -58,6 +63,7 @@ public class OmniboxPedalsRenderTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
+                    .setRevision(RENDER_TEST_REVISION)
                     .build();
 
     @Rule

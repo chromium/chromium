@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.content;
 import android.net.Uri;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -41,14 +42,14 @@ public class WebAppLaunchParams {
             boolean newNavigationStarted,
             String targetUrl,
             String packageName,
-            List<Uri> fileUris) {
+            @Nullable List<Uri> fileUris) {
         this.newNavigationStarted = newNavigationStarted;
         this.targetUrl = targetUrl;
         this.packageName = packageName;
         this.fileUris = getFileUrisArray(fileUris);
     }
 
-    private String[] getFileUrisArray(List<Uri> urisList) {
+    private String[] getFileUrisArray(@Nullable List<Uri> urisList) {
         if (urisList == null) {
             return new String[0];
         }

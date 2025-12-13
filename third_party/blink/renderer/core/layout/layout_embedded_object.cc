@@ -26,14 +26,17 @@
 
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/embedded_object_painter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -109,6 +112,25 @@ PhysicalNaturalSizingInfo LayoutEmbeddedObject::GetNaturalDimensions() const {
     }
   }
   return LayoutEmbeddedContent::GetNaturalDimensions();
+}
+
+PhysicalRect LayoutEmbeddedObject::ReplacedContentRectFrom(
+    const PhysicalRect& base_content_rect) const {
+  NOT_DESTROYED();
+
+  // SVG documents in <object>/<embed> elements should behave like images,
+  // respecting CSS properties like object-fit and object-position.
+  // To achieve this, we apply the base class' replaced element sizing logic
+  // with pixel snapping.
+  // TODO(crbug.com/41302806): Only works for same-origin content (LocalFrame).
+  if (RuntimeEnabledFeatures::SVGEmbeddedAsReplacedElementEnabled() &&
+      GetFrameOwnerElement() && GetFrameOwnerElement()->contentDocument() &&
+      GetFrameOwnerElement()->contentDocument()->IsSVGDocument()) {
+    return PreSnappedRectForPersistentSizing(
+        LayoutReplaced::ReplacedContentRectFrom(base_content_rect));
+  }
+
+  return LayoutEmbeddedContent::ReplacedContentRectFrom(base_content_rect);
 }
 
 }  // namespace blink

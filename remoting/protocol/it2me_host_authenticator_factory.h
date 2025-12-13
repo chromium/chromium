@@ -45,6 +45,8 @@ class It2MeHostAuthenticatorFactory : public AuthenticatorFactory {
       const std::string& local_jid,
       const std::string& remote_jid) override;
 
+  std::unique_ptr<AuthenticatorFactory> Clone() const override;
+
  private:
   HostAuthenticationConfig auth_config_;
   std::string local_cert_;

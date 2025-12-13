@@ -6,7 +6,6 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation AutofillAgentDelegate {
   __weak id<SnackbarCommands> _commandHandler;
@@ -29,10 +28,6 @@
                                 buttonText:buttonText
                              messageAction:messageAction
                           completionAction:completionAction];
-}
-
-- (BOOL)isKeyboardAccessoryUpgradeEnabled {
-  return IsKeyboardAccessoryUpgradeEnabled();
 }
 
 @end

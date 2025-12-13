@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -84,7 +80,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory_MappedMemory) {
   void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, sizeof(kData),
                                           GL_WRITE_ONLY);
   ASSERT_TRUE(data);
-  memcpy(data, kData, sizeof(kData));
+  UNSAFE_TODO(memcpy(data, kData, sizeof(kData)));
   glUnmapBufferSubDataCHROMIUM(data);
   EXPECT_LT(old_size, gl_.GetSharedMemoryBytesAllocated());
 
@@ -135,7 +131,7 @@ TEST_F(SetAggressivelyFreeResourcesTest, FreeAllMemory) {
   void* data = glMapBufferSubDataCHROMIUM(GL_ARRAY_BUFFER, 0, sizeof(kData),
                                           GL_WRITE_ONLY);
   ASSERT_TRUE(data);
-  memcpy(data, kData, sizeof(kData));
+  UNSAFE_TODO(memcpy(data, kData, sizeof(kData)));
   glUnmapBufferSubDataCHROMIUM(data);
 
   glEndQueryEXT(GL_COMMANDS_ISSUED_CHROMIUM);

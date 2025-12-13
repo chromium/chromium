@@ -142,11 +142,6 @@ BlinkPlatformImpl::BlinkPlatformImpl() : BlinkPlatformImpl(nullptr) {}
 BlinkPlatformImpl::BlinkPlatformImpl(
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner)
     : io_thread_task_runner_(std::move(io_thread_task_runner)),
-      media_stream_video_source_video_task_runner_(
-          base::FeatureList::IsEnabled(
-              blink::features::kUseThreadPoolForMediaStreamVideoTaskRunner)
-              ? base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits{})
-              : io_thread_task_runner_),
       browser_interface_broker_proxy_(
           base::MakeRefCounted<ThreadSafeBrowserInterfaceBrokerProxyImpl>()) {}
 
@@ -250,7 +245,7 @@ size_t BlinkPlatformImpl::MaxDecodedImageBytes() {
   // that 1.6GB of reported physical memory on a 2GB device is enough to set the
   // limit at 16M pixels, which is a desirable value since 4K*4K is a relatively
   // common texture size.
-  return base::SysInfo::AmountOfPhysicalMemory() / 25;
+  return base::SysInfo::AmountOfPhysicalMemory().InBytes() / 25;
 #else
   size_t max_decoded_image_byte_limit = kNoDecodedImageByteLimit;
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
@@ -278,7 +273,7 @@ scoped_refptr<base::SingleThreadTaskRunner> BlinkPlatformImpl::GetIOTaskRunner()
 
 scoped_refptr<base::SequencedTaskRunner>
 BlinkPlatformImpl::GetMediaStreamVideoSourceVideoTaskRunner() const {
-  return media_stream_video_source_video_task_runner_;
+  return io_thread_task_runner_;
 }
 
 std::unique_ptr<blink::Platform::NestedMessageLoopRunner>

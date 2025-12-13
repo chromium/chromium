@@ -26,6 +26,11 @@ struct DomNode {
   std::string document_identifier;
 
   bool operator==(const DomNode& other) const = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const DomNode& node) {
+    return H::combine(std::move(h), node.node_id, node.document_identifier);
+  }
 };
 
 using PageTarget = std::variant<gfx::Point, DomNode>;

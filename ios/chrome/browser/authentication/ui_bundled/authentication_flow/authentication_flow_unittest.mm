@@ -25,6 +25,7 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
@@ -103,13 +104,13 @@ class AuthenticationFlowTest : public PlatformTest,
       managed_profile1_ = CreateProfile(
           *GetApplicationContext()
                ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(GaiaId(managed_identity1_.gaiaID)));
+               ->FindProfileNameForGaiaID(managed_identity1_.gaiaId));
       managed_browser1_ =
           std::make_unique<TestBrowser>(managed_profile1_.get());
       managed_profile2_ = CreateProfile(
           *GetApplicationContext()
                ->GetAccountProfileMapper()
-               ->FindProfileNameForGaiaID(GaiaId(managed_identity2_.gaiaID)));
+               ->FindProfileNameForGaiaID(managed_identity2_.gaiaId));
       managed_browser2_ =
           std::make_unique<TestBrowser>(managed_profile2_.get());
     }
@@ -137,7 +138,7 @@ class AuthenticationFlowTest : public PlatformTest,
     builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(
-            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::TestSyncService>();
             }));
     builder.SetPrefService(CreatePrefService());
@@ -173,6 +174,10 @@ class AuthenticationFlowTest : public PlatformTest,
                                          anchorRect:CGRectNull];
     in_profile_performer_mock_ =
         OCMStrictClassMock([AuthenticationFlowInProfilePerformer class]);
+    if (performer_mock_) {
+      EXPECT_OCMOCK_VERIFY((id)performer_mock_);
+      [(id)performer_mock_ stopMocking];
+    }
     performer_mock_ = OCMStrictClassMock([AuthenticationFlowPerformer class]);
 
     // Once AuthenticationFlow is started, it'll create its performer. Replace
@@ -181,7 +186,6 @@ class AuthenticationFlowTest : public PlatformTest,
     OCMExpect([performer_mock_ initWithDelegate:[OCMArg any]
                            changeProfileHandler:[OCMArg any]])
         .andReturn(performer_mock_);
-
     if (shouldHandOverToFlowInProfile) {
       // Once the flow progresses into AuthenticationFlowInProfile, that class
       // creates its own performer. For simplicity, reuse the same mock object
@@ -189,29 +193,23 @@ class AuthenticationFlowTest : public PlatformTest,
       // the mock can call back into it.
       OCMExpect([(id)in_profile_performer_mock_ alloc])
           .andReturn(in_profile_performer_mock_);
-      OCMExpect([in_profile_performer_mock_
-                    initWithInProfileDelegate:[OCMArg any]
-                         changeProfileHandler:[OCMArg any]])
-          .andDo(^(NSInvocation* invocation) {
-            __unsafe_unretained id argument;
-            [invocation getArgument:&argument atIndex:2];
-            authentication_flow_in_profile_ = argument;
-          })
+      OCMExpect(
+          [in_profile_performer_mock_
+              initWithInProfileDelegate:AssignValueToVariable(
+                                            authentication_flow_in_profile_)
+                   changeProfileHandler:[OCMArg any]])
           .andReturn(in_profile_performer_mock_);
     }
 
     signin_ui::SigninCompletionCallback sign_in_completion =
-        ^(SigninCoordinatorResult result) {
+        ^(signin_ui::CancelationReason cancelationReason) {
           run_loop_->Quit();
-          switch (result) {
-            case SigninCoordinatorResult::SigninCoordinatorResultSuccess:
+          switch (cancelationReason) {
+            case signin_ui::CancelationReason::kNotCanceled:
               signin_result_ = signin::Tribool::kTrue;
               break;
-            case SigninCoordinatorResult::SigninCoordinatorResultInterrupted:
-            case SigninCoordinatorResult::SigninCoordinatorResultCanceledByUser:
-            case SigninCoordinatorResult::SigninCoordinatorResultDisabled:
-            case SigninCoordinatorResult::SigninCoordinatorUINotAvailable:
-            case SigninCoordinatorResult::SigninCoordinatorProfileSwitch:
+            case signin_ui::CancelationReason::kUserCanceled:
+            case signin_ui::CancelationReason::kFailed:
               signin_result_ = signin::Tribool::kFalse;
               break;
           }
@@ -224,8 +222,8 @@ class AuthenticationFlowTest : public PlatformTest,
               ChangeProfileContinuation continuation = base::BindOnce(
                   [](signin_ui::SigninCompletionCallback sign_in_completion,
                      SceneState* sceneState, base::OnceClosure closure) {
-                    sign_in_completion(SigninCoordinatorResult::
-                                           SigninCoordinatorResultSuccess);
+                    sign_in_completion(
+                        signin_ui::CancelationReason::kNotCanceled);
                     std::move(closure).Run();
                   },
                   sign_in_completion);
@@ -537,16 +535,15 @@ TEST_P(AuthenticationFlowTest,
 // Tests that the managed confirmation dialog is only show once per account,
 // when signing in from the Account Menu.
 TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIdentityDiscAccountMenu);
-
   // First signin, show the dialog.
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Second signin from the account menu, don't show the dialog.
   SignOutPersonalProfile();
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu,
+  SignIn(managed_identity1_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount,
          /*adds_history_screen_post_profile_switch=*/false);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
@@ -558,7 +555,8 @@ TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
 
   // Signin with a different account, show the dialog again.
   SignOutPersonalProfile();
-  SignIn(managed_identity2_, signin_metrics::AccessPoint::kAccountMenu);
+  SignIn(managed_identity2_,
+         signin_metrics::AccessPoint::kAccountMenuSwitchAccount);
   EXPECT_EQ(2, managed_confirmation_dialog_shown_count_);
 }
 
@@ -583,10 +581,11 @@ TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
   // There is no unsynced data in this case, so no confirmation should be
   // shown - the next step is fetching the managed status.
   // Don't bother continuing the flow beyond that step for this test.
+  OCMExpect([performer_mock_ interrupt]);
   OCMExpect([performer_mock_ fetchManagedStatus:personal_profile_.get()
                                     forIdentity:identity2_])
       .andDo(^(NSInvocation*) {
-        run_loop_->Quit();
+        [authentication_flow_ interrupt];
       });
 
   [authentication_flow_ startSignIn];
@@ -613,6 +612,7 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
       });
   // There is unsynced data, so a confirmation should be shown.
   // Don't bother continuing the flow beyond that step for this test.
+  OCMExpect([performer_mock_ interrupt]);
   OCMExpect(
       [performer_mock_
           showLeavingPrimaryAccountConfirmationWithBaseViewController:[OCMArg
@@ -628,7 +628,7 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
                                                            anchorRect:CGRect()])
       .ignoringNonObjectArgs()  // Don't care about the CGRect values.
       .andDo(^(NSInvocation*) {
-        run_loop_->Quit();
+        [authentication_flow_ interrupt];
       });
 
   [authentication_flow_ startSignIn];

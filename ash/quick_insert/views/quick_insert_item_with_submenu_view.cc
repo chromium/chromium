@@ -18,6 +18,7 @@
 #include "ash/style/typography.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/vector_icons/vector_icons.h"
@@ -35,6 +36,7 @@
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 

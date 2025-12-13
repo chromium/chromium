@@ -181,8 +181,9 @@ SelectFileDialogLinuxGtk::DialogState::~DialogState() = default;
 
 SelectFileDialogLinuxGtk::SelectFileDialogLinuxGtk(
     Listener* listener,
-    std::unique_ptr<ui::SelectFilePolicy> policy)
-    : SelectFileDialogLinux(listener, std::move(policy)) {}
+    std::unique_ptr<ui::SelectFilePolicy> policy,
+    GtkUiPlatform* platform)
+    : SelectFileDialogLinux(listener, std::move(policy)), platform_(platform) {}
 
 SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
   // `OnFileChooserDestroy()` mutates `dialogs_`, so make a copy to avoid
@@ -196,6 +197,7 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
     dialogs.push_back(pair.first);
   }
   for (GtkWidget* dialog : dialogs) {
+    CHECK(dialog);
     GtkWindowDestroy(dialog);
     OnFileChooserDestroy(dialog);
   }
@@ -220,7 +222,7 @@ void SelectFileDialogLinuxGtk::OnWindowDestroying(aura::Window* window) {
     GtkWidget* dialog = pair.first;
     auto& state = pair.second;
     if (state.parent == window) {
-      ClearAuraTransientParent(dialog, window);
+      ClearAuraTransientParent(dialog, window, platform_);
       window->RemoveObserver(this);
       state.parent = nullptr;
       return;
@@ -310,7 +312,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
 
   if (!GtkCheckVersion(4))
     gtk_widget_show_all(dialog);
-  gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog));
+  platform_->ShowGtkWindow(GTK_WINDOW(dialog));
 }
 
 void SelectFileDialogLinuxGtk::AddFilters(GtkFileChooser* chooser) {
@@ -412,7 +414,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenHelper(
   GtkWidget* dialog = GtkFileChooserDialogNew(
       title.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_OPEN, GetCancelLabel(),
       GTK_RESPONSE_CANCEL, GetOpenLabel(), GTK_RESPONSE_ACCEPT);
-  SetGtkTransientForAura(dialog, parent);
+  SetGtkTransientForAura(dialog, parent, platform_);
   AddFilters(GTK_FILE_CHOOSER(dialog));
 
   if (!default_path.empty()) {
@@ -452,7 +454,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, accept_button_label.c_str(),
       GTK_RESPONSE_ACCEPT);
-  SetGtkTransientForAura(dialog, parent);
+  SetGtkTransientForAura(dialog, parent, platform_);
   GtkFileChooser* chooser = GTK_FILE_CHOOSER(dialog);
   if (type == SELECT_UPLOAD_FOLDER || type == SELECT_EXISTING_FOLDER)
     gtk_file_chooser_set_create_folders(chooser, FALSE);
@@ -510,7 +512,7 @@ GtkWidget* SelectFileDialogLinuxGtk::CreateSaveAsDialog(
       title_string.c_str(), nullptr, GTK_FILE_CHOOSER_ACTION_SAVE,
       GetCancelLabel(), GTK_RESPONSE_CANCEL, GetSaveLabel(),
       GTK_RESPONSE_ACCEPT);
-  SetGtkTransientForAura(dialog, parent);
+  SetGtkTransientForAura(dialog, parent, platform_);
 
   AddFilters(GTK_FILE_CHOOSER(dialog));
   if (!default_path.empty()) {
@@ -617,7 +619,8 @@ void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
   // `state.parent` can be nullptr when closing the host window
   // while opening the file-picker.
   if (state.parent) {
-    ClearAuraTransientParent(dialog, state.parent);
+    CHECK(dialog);
+    ClearAuraTransientParent(dialog, state.parent, platform_);
     state.parent->RemoveObserver(this);
   }
   state.signals.clear();

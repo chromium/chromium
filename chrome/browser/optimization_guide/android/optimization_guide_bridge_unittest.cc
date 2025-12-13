@@ -183,3 +183,5 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationOnDemand) {
 
 }  // namespace android
 }  // namespace optimization_guide
+
+DEFINE_JNI(OptimizationGuideBridgeNativeUnitTest)

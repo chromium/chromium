@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_menus_provider.h"
 
+@class CommandDispatcher;
+
 namespace collaboration::messaging {
 class MessagingBackendService;
 }  // namespace collaboration::messaging
@@ -51,6 +53,9 @@ class WebStateList;
 
 /// Helper for Web navigation.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationBrowserAgent;
+
+/// Command dispatcher.
+@property(nonatomic, weak) CommandDispatcher* commandDispatcher;
 
 /// Inits with the `messagingService` to observe tab group changes.
 - (instancetype)initWithMessagingService:

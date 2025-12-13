@@ -13,7 +13,7 @@ found in the LICENSE file.
     <!-- Scan card -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/scan_card_button"
-        style="@style/Widget.Material3.Button.TonalButton.Icon"
+        style="@style/Widget.Material3Expressive.Button.TonalButton"
         android:layout_width="match_parent"
         android:layout_height="@dimen/local_card_scanner_height"
         android:text="@string/autofill_scan_credit_card_button"
@@ -157,7 +157,9 @@ found in the LICENSE file.
                 tools:ignore="Autofill,LabelFor" />
         </LinearLayout>
 
+<!--        TODO(crbug.com/439911511): Legacy CVV container.-->
         <FrameLayout
+            android:id="@+id/cvc_legacy_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1">
@@ -207,6 +209,24 @@ found in the LICENSE file.
                     tools:ignore="Autofill,LabelFor" />
             </LinearLayout>
         </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/credit_card_security_code_label_material"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:hint="@string/autofill_optional_tag"
+            android:visibility="gone">
+
+            <org.chromium.chrome.browser.autofill.editors.EditTextNoAutofillView
+                android:id="@+id/cvc_material"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionNext"
+                android:inputType="number"
+                tools:ignore="Autofill,LabelFor" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ImageView
             android:id="@+id/cvc_hint_image"

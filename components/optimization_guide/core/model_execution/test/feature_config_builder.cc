@@ -7,7 +7,7 @@
 #include <initializer_list>
 
 #include "base/strings/string_util.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/test/substitution_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
@@ -16,6 +16,7 @@
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
@@ -74,7 +75,7 @@ proto::RedactRules SimpleRedactRule(const std::string& regex,
 proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig() {
   proto::OnDeviceModelExecutionFeatureConfig config;
   config.set_feature(
-      ToModelExecutionFeatureProto(ModelBasedCapabilityKey::kCompose));
+      ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kCompose));
   auto& input_config = *config.mutable_input_config();
   input_config.set_request_base_name(proto::ComposeRequest().GetTypeName());
 
@@ -144,6 +145,16 @@ proto::SubstitutedString FormatTestMessage() {
        ->mutable_media_field()
        ->mutable_proto_field() = ProtoField({Msg::kMediaFieldNumber});
   return result;
+}
+
+proto::OnDeviceModelExecutionFeatureConfig SimpleTestFeatureConfig() {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.set_feature(
+      ToModelExecutionFeatureProto(mojom::OnDeviceFeature::kTest));
+  *config.mutable_input_config() =
+      TestInputConfig(FormatTestMessage(), FormatTestMessage());
+  *config.mutable_output_config() = ResponseHolderOutputConfig();
+  return config;
 }
 
 }  // namespace optimization_guide

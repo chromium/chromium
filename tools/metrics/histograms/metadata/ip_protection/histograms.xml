@@ -1,0 +1,737 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of IpProtection histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesReceived2"
+    units="bytes" expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total bytes received over the network for an HttpJob request that would be
+    covered by IP Protection based on match with respect to the masked domain
+    list alone. This is irrespective of token and proxy availability. Any bypass
+    logic (e.g. first party to top level frame) will be considered, if set.
+    These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
+    is measured when the HttpJob is completed.
+
+    There is no previous version of this metric. It is numbered to be in sync
+    with similar metrics. Unlike PrefilterBytesRead, this metric accounts for
+    all HTTP stream bytes (not just the content body), counts bytes for aborted
+    jobs, and network bytes in 304 Not Modified exchanges (rather than cached
+    content bodies).
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.AllowListMatch.BytesSent2"
+    units="bytes" expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request that would be
+    covered by IP Protection based on match with respect to the masked domain
+    list alone. This is irrespective of token and proxy availability. Any bypass
+    logic (e.g. first party to top level frame) will be considered, if set.
+    These bytes will be recorded even if `EnableIpPrivacyProxy` is `false`. This
+    is measured when the HttpJob is completed.
+
+    This version improves on BytesSent by counting bytes for aborted jobs and
+    network bytes in 304 Not Modified exchanges.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.HttpJob.IpProtection.AllowListMatch.PrefilterBytesRead.Net"
+    units="bytes" expires_after="2026-01-07">
+  <owner>aakallam@chromium.org</owner>
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total prefilter (e.g., before decompression) bytes read for an HttpJob
+    request that would be covered by IP Protection and served from the network
+    based on match with respect to the masked domain list alone. This is
+    irrespective of token and proxy availability. Any bypass logic (e.g. first
+    party to top level frame) will be considered, if set. These bytes will be
+    recorded even if `EnableIpPrivacyProxy` is `false`. This is measured when
+    the HttpJob is completed.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.BytesSent" units="bytes"
+    expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request that is covered by
+    IP Protection. These bytes will be recorded even if the IP Protection proxy
+    is configured as `direct://` (i.e. an IP Protection proxy is configured but
+    doesn't actually proxy any traffic).
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.BytesSent2" units="bytes"
+    expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request that is covered by
+    IP Protection. These bytes will be recorded even if the IP Protection proxy
+    is configured as `direct://` (i.e. an IP Protection proxy is configured but
+    doesn't actually proxy any traffic). It is also recorded if IP Protection
+    failed and we fell back to going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.Fallback.BytesSent" units="bytes"
+    expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total bytes sent over the network for an HttpJob request that is covered by
+    IP Protection. These bytes will only be recorded if IP Protection failed and
+    we fell back to going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.Fallback.PrefilterBytesRead.Net"
+    units="bytes" expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total prefilter (e.g., before decompression) bytes read for an HttpJob
+    request that is covered by IP Protection and served from the network. These
+    bytes will only be recorded if IP Protection failed and we fell back to
+    going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.Fallback.TotalTimeNotCached2"
+    units="ms" expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to complete an HttpJob that attempted IP Protection, from
+    starting the transaction until we are done reading, for jobs not served from
+    the cache. This time is only recorded if IP Protection failed and we fell
+    back to going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.JobResult"
+    enum="IpProtectionJobResult" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics (internal: go/ipp-e2e-slos) -->
+
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Result of a UrlRequestHttpJob with respect to IP Protection: not protected,
+    successfully protected, or fallback on protection failure. This does not
+    measure the result of the request to the destination, so for example a 500
+    from the destination is still considered success.
+
+    When either of the `MaskedDomainList` or `EnableIpPrivacyProxy` features are
+    disabled, this will always be `kProtectionNotAttempted`.
+
+    This histogram is emitted for every request handled by `UrlRequestHttpJob`
+    that is not aborted.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.JobResult.{Chain}"
+    enum="IpProtectionJobResult" expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Result of a UrlRequestHttpJob with respect to IP Protection: successfully
+    protected or fallback on protection failure. This is not logged when IP
+    Protection is not attempted. This does not measure the result of the request
+    to the destination, so for example a 500 from the destination is still
+    considered success. When either of the `MaskedDomainList` or
+    `EnableIpPrivacyProxy` features are disabled, this will not be logged.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1"/>
+    <variant name="Chain2"/>
+    <variant name="Chain3"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net" units="bytes"
+    expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total prefilter (e.g., before decompression) bytes read for an HttpJob
+    request that is covered by IP Protection and served from the network. These
+    bytes will be recorded even if the IP Protection proxy is configured as
+    `direct://` (i.e. an IP Protection proxy is configured but doesn't actually
+    proxy any traffic).
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.PrefilterBytesRead.Net2"
+    units="bytes" expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Total prefilter (e.g., before decompression) bytes read for an HttpJob
+    request that is covered by IP Protection and served from the network. These
+    bytes will be recorded even if the IP Protection proxy is configured as
+    `direct://` (i.e. an IP Protection proxy is configured but doesn't actually
+    proxy any traffic). It is also recorded if IP Protection failed and we fell
+    back to going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached" units="ms"
+    expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to complete an HttpJob that is covered by IP Protection, from
+    starting the transaction until we are done reading, for jobs not served from
+    the cache. This time will be recorded even if the IP Protection proxy is
+    configured as `direct://` (i.e. an IP Protection proxy is configured but
+    doesn't actually proxy any traffic).
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached.{Chain}"
+    units="ms" expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Similar to Net.HttpJob.IpProtection.TotalTimeNotCached, but only chains with
+    the given chain_id, as provided in the GetProxyInfo RPC response.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain1"/>
+    <variant name="Chain2"/>
+    <variant name="Chain3"/>
+  </token>
+</histogram>
+
+<histogram name="Net.HttpJob.IpProtection.TotalTimeNotCached3" units="ms"
+    expires_after="2026-06-21">
+  <owner>dschinazi@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to complete an HttpJob that attempted IP Protection, from
+    starting the transaction until we are done reading, for jobs not served from
+    the cache. This time will be recorded even if the IP Protection proxy is
+    configured as `direct://` (i.e. an IP Protection proxy is configured but
+    doesn't actually proxy any traffic). It is also recorded if IP Protection
+    failed and we fell back to going direct.
+  </summary>
+</histogram>
+
+<histogram name="Net.IpProtection.CanFalloverToNextProxy2.Error.{Chain}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-04-26">
+  <owner>rsailer@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the error code passed to CanFalloverToNextProxy() for IP Protection
+    proxy chains. This function is called when a proxy fails, and the error code
+    is used to determine whether to try the next proxy in the chain or not.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1"/>
+    <variant name="Chain2"/>
+    <variant name="Chain3"/>
+  </token>
+</histogram>
+
+<histogram name="Net.IpProtection.StreamCreationError.{Chain}"
+    enum="NetErrorCodes" expires_after="2026-06-21">
+  <owner>ortuno@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The net error code when creating a stream for a given IP Protection proxy
+    chain fails.
+  </summary>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1.HTTPS"/>
+    <variant name="Chain1.QUIC"/>
+    <variant name="Chain2.HTTPS"/>
+    <variant name="Chain2.QUIC"/>
+  </token>
+</histogram>
+
+<histogram name="Net.IpProtection.StreamCreation{Result}Time.{Chain}"
+    units="ms" expires_after="2026-06-21">
+  <owner>ortuno@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time it takes to create a stream for a given IP Protection proxy chain. This
+    is measured from when the attempt to create the stream starts until
+    {Result}.
+  </summary>
+  <token key="Result">
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Chain">
+    <variant name="Chain0"/>
+    <variant name="Chain1.HTTPS"/>
+    <variant name="Chain1.QUIC"/>
+    <variant name="Chain2.HTTPS"/>
+    <variant name="Chain2.QUIC"/>
+  </token>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.EmptyTokenCache2"
+    enum="IpProtectionProxyLayer" expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records which token cache (if any) was empty when calling
+    `IpProtectionConfigCache::AreAuthTokensAvailable()`. This metric is NOT
+    emitted if the cache has never been filled.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.GeoChangeTokenPresence"
+    enum="BooleanAvailable" expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    This histogram is emitted to when changing to a new geo, and tracks whether
+    the token cache already contains tokens for the new geo.
+
+    `IpProtectionConfigCache::SetCurrentGeo(geo_id)` is called when a geo is
+    observed in the `IpProtectionProxyListManager` or
+    `IpProtectionTokenCacheManager`. This metric is useful to help understand if
+    token caching by geo is useful in providing tokens for when a geo shifts
+    back to a previous geo that is contained within the cache.
+
+    If the value is `Available`, it means that when the geo change was observed,
+    the token cache contained some number of tokens for the new geo from a
+    previous refill.
+
+    If the value is `Not Available`, it means that the a new geo was observed,
+    but there was no tokens already in the cache that matched this new geo.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled and a platform-dependent sign-in
+    is complete.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.GetAuthTokenResult"
+    enum="BooleanSuccess" expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The result of a call to `IpProtectionConfigCache::GetAuthToken()`, which
+    will not happen unless `IpProtectionConfigCache::AreAuthTokensAvailable()`
+    is true. If this fails, it is because the cache was empty when a new
+    connection to a proxy was initiated.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.GetAuthTokenResultForGeo"
+    enum="IpProtectionGetAuthTokenResultForGeo" expires_after="2026-01-07">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    This metric tracks the effectiveness of token caching in IpProtection,
+    especially during network transitions or non-ideal conditions. It records
+    the outcome of `IpProtectionConfigCache::GetAuthToken()` requests, focusing
+    on token availability and its alignment with the current or a previously
+    cached geographical location. The four possible outcomes indicate successful
+    token retrieval (for current or other geo), or unavailability with or
+    without other cached tokens. This metric is only measured when geo caching
+    is enabled.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled as well as the feature parameter,
+    IpPrivacyCacheTokensByGeo. Some kind of platform-dependent signin is also
+    required.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.GetProxyListResult"
+    enum="IpProtectionGetProxyListResult" expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Whether a call to `IpProtectionConfigCache::GetProxyList()` resulted in
+    obtaining a proxy list. This is measured in
+    `IpProtectionProxyListManagerImpl::OnGotProxyList`.
+
+    If a proxy list was obtained, this histogram also records whether it had at
+    least one valid entry. (It is possible to obtain an empty list from the
+    server, or the list from the server could contain only invalid entries that
+    are rejected by the client.)
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.OAuthTokenFetchTime" units="ms"
+    expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the elapsed time for successful requests by IpProtectionConfigGetter
+    for an OAuth token.
+  </summary>
+</histogram>
+
+<histogram
+    name="NetworkService.IpProtection.ProxyAllowList.FlatbufferBuildTime"
+    units="ms" expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time it takes to build the MaskedDomainList flatbuffer data
+    structure. This is recorded once for each successful call to
+    `BuildFromProto`.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateSuccess"
+    enum="BooleanSuccess" expires_after="2026-05-10">
+  <owner>aakallam@chromium.org</owner>
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the result of an attempt to update the MaskedDomainListManager with
+    the contents of the Masked Domain List when it is received from Component
+    Updater.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.ProxyChainFallback"
+    enum="IpProtectionProxyChainId" expires_after="2026-03-08">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Logged when a proxy chain failure is detected in the proxy delegate's
+    `OnFallback` method, with values defined by the `chain_id` value given in
+    the GetProxyInfo RPC response.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.ProxyListRefreshTime" units="ms"
+    expires_after="2026-01-07">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Time taken to successfully refresh the IP Protection proxy list, measured
+    from IpProtectionProxyListManagerImpl::RefreshProxyList to
+    IpProtectionProxyListManagerImpl::OnGotProxyList.
+
+    A successful refresh is anything where OnGotProxyList receives a non-nullopt
+    proxy_list, which may include cases where an empty proxy list or a proxy
+    list with only unsuitable entries was fetched over the network. Outright
+    failures and refreshes which were inhibited due to client-side rate limiting
+    will not be measured.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.ProxyResolution"
+    enum="IpProtectionProxyResolutionResult" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics (internal: go/ipp-e2e-slos) -->
+
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The result of determining whether a request should be proxied (as
+    implemented in IpProtectionProxyDelegate::ClassifyRequest). The enum values
+    are in the order the checks occur, so for example, if the MaskedDomainList
+    feature is disabled, &quot;The MDL is not populated&quot; value will be
+    emitted because that is checked first. If that feature is enabled and the
+    request does not match the MDL, then the &quot;The request did not match the
+    MDL&quot; value will be recorded. &quot;The IP Protection setting is
+    disabled&quot; value will be recorded if the feature is enabled and the
+    request matched the MDL, but IP Protection was disabled via user settings or
+    enterprise policy, and so on.
+
+    This histogram is emitted for every request that undergoes proxy resolution.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.QuicProxiesFailed"
+    units="requests" expires_after="2026-03-08">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Recorded when a connection to a QUIC proxy for IP Protection failed and the
+    HTTPS fallback succeeds, recording the number of requests begun before this
+    failure occurred. In this situation, Chrome falls back to exclusively HTTPS
+    proxies until the network changes, so this metric provides a way to
+    determine what proportion of clients are experiencing this failure, and how
+    quickly they experience the failure. Note that the metric counts requests
+    *begun*, so this value may be greater than one even if the first request
+    fails. This metric is not recorded for clients not configured to use QUIC to
+    connect to IP Protection proxies.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TokenBatchGenerationTime"
+    units="ms" expires_after="2026-03-08">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time taken for a successful attempt to generate auth tokens.
+    This only measures the time across a single attempt (not across retries,
+    which may be delayed by a variable backoff).
+
+    This measures the whole token batch generation process, from an
+    IpProtectionTokenCacheManagerImpl's perspective, from just before calling
+    IpProtectionConfigGetter::TryGetAuthTokens until OnGotAuthTokens. Note that
+    if OnGotAuthTokens receives a non-nullopt but empty vector of tokens this is
+    considered a success by this metric.
+
+    Note that if multiple token caches exist (one for each proxy layer), the
+    attempts in each token cache are timed independently, but they will all feed
+    into the same histogram.
+
+    This histogram will only be emitted if the MaskedDomainList and
+    EnableIpPrivacyProxy features are enabled. Some kind of platform-dependent
+    signin is also required.
+  </summary>
+</histogram>
+
+<histogram
+    name="NetworkService.IpProtection.TokenBatchGenerationTime.{BlindSignAuthPhase}"
+    units="ms" expires_after="2026-04-12">
+  <owner>jtoohill@google.com</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time taken for the {BlindSignAuthPhase} step of generating auth
+    tokens. This only measures the time across a single attempt (not across
+    retries, which may be delayed by a variable backoff).
+
+    Note that if multiple token caches exist (one for each proxy layer), the
+    attempts in each token cache are timed independently, but they will all feed
+    into the same histogram.
+
+    This histogram will be emitted during a GetTokens call into the BSA library,
+    which is only called if the MaskedDomainList and EnableIpPrivacyProxy
+    features are enabled. Some kind of platform-dependent signin is also
+    required.
+  </summary>
+<!-- LINT.IfChange(BlindSignAuthPhase) -->
+
+  <token key="BlindSignAuthPhase">
+    <variant name="AuthAndSign"/>
+    <variant name="GenerateBlindedTokenRequests"/>
+    <variant name="GetInitialData"/>
+    <variant name="UnblindTokens"/>
+  </token>
+<!-- LINT.ThenChange(/components/ip_protection/common/ip_protection_telemetry.h:BlindSignAuthPhase) -->
+
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
+    expires_after="2026-03-08">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the elapsed time for successful requests by IpProtectionConfigGetter
+    for blind-signed tokens from BSA.
+
+    This metric only measures part of the Chrome-specific blind-signing
+    implementation and does not encompass the full token batch generation
+    process. See NetworkService.IpProtection.TokenBatchGenerationTime for a
+    generic measurement of the full token batch generation process.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TokenDemandDuringBatchGeneration"
+    units="tokens" expires_after="2026-04-05">
+  <owner>jtoohill@google.com</owner>
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    An upper bound on the number of tokens that might have been spent while a
+    call to TryGetAuthTokens was in flight. This includes both tokens that were
+    successfully spent from the cache, and requests that were not proxied
+    because the cache was empty. Emitted when TryGetAuthTokens finishes.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TryGetAuthTokensErrors"
+    enum="IpProtectionTokenBatchRequestError" expires_after="2026-05-10">
+  <owner>linxinan@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    This histogram is emitted when any error returned by GetTokens call into the
+    BSA library. The error message is hashed into unsigned 32 bit integer. For
+    more information on the possible errors from BSA see
+    https://docs.google.com/document/d/1zv3AqLkALZGsvCKYd1M3UytNpyY0ecK55LdsioubmC4.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.TryGetAuthTokensResult2"
+    enum="IpProtectionTokenBatchRequestResult" expires_after="2026-05-24">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    The result of handling a request by the network process to the browser
+    process for a batch of blind-signed auth tokens.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenCount.{Event}"
+    units="tokens" expires_after="2026-03-22">
+  <owner>awillia@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the number of IP Protection auth tokens involved in a specific event
+    for {ProxyLayer}. The histogram indicates that {Event}. Recorded when tokens
+    are successfully issued, spent, expired, or orphaned. Expected counts are
+    typically 1 for Spent, and potentially higher for other events (up to batch
+    size or cache size).
+  </summary>
+  <token key="ProxyLayer">
+    <variant name="ProxyA"/>
+    <variant name="ProxyB"/>
+  </token>
+  <token key="Event">
+    <variant name="Expired" summary="Token removed from cache due to expiry."/>
+    <variant name="Issued" summary="Tokens successfully fetched and cached."/>
+    <variant name="Orphaned"
+        summary="Tokens discarded (neither spent nor expired) on network
+                 context destruction."/>
+    <variant name="Recycled"
+        summary="Previously orphaned tokens added to the cache"/>
+    <variant name="Spent" summary="Token used for a proxy connection."/>
+  </token>
+</histogram>
+
+<histogram name="NetworkService.IpProtection.{ProxyLayer}.TokenExpirationRate"
+    units="tokens" expires_after="2026-05-10">
+  <owner>awillia@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Number of auth tokens for {ProxyLayer} that expired before they were used,
+    as a rate per hour, up to 100,000. This value is measured approximately
+    every 5 minutes.
+  </summary>
+  <token key="ProxyLayer">
+    <variant name="ProxyA"/>
+    <variant name="ProxyB"/>
+  </token>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.DiskUsage" units="KB"
+    expires_after="2026-05-17">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the on-disk size of each MDL, when stored on disk (in the flatbuffer
+    format). A single execution of the browser may generate multiple MDLs, such
+    as for multiple experiments; each of these will be a distinct record. This
+    record is emitted when the flatbuffer MDL is generated. The generated
+    flatbuffer MDL may be cached and reused for multiple network service
+    instances, or may be re-generated for each one.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.EstimatedMemoryUsage"
+    units="KB" expires_after="2025-12-14">
+  <owner>aakallam@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the estimated memory usage of the MaskedDomainListManager every time
+    the Masked Domain List is updated.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.FirstUpdateTime" units="ms"
+    expires_after="2026-01-11">
+  <owner>aakallam@chromium.org</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Delay between a MaskedDomainListManager being constructed and its
+    UpdateMaskedDomainList method first being called (measured on entry).
+
+    This effectively measures the duration for which the MDL is not populated
+    and thus requests' eligibilities for IP Protection remain unknown.
+
+    This histogram is only emitted when the MaskedDomainList feature is enabled.
+    The histogram will not be emitted if the MDL never becomes available. It is
+    emitted at most once per Network Service startup.
+
+    This histogram can easily overflow its maximum (10 second) bucket if the
+    component that stores the MDL data is not already available on disk. This
+    histogram is primarily focused on the (more typical) case where such data is
+    already available.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.MatchesTime"
+    units="microseconds" expires_after="2026-05-24">
+  <owner>djmitche@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Records the time required to call the `Matches` method on the MDL. This is a
+    sync call that accesses a large data structure so it may require additional
+    optimization.
+
+    Note that clients without high-resolution clocks will report 0 for very
+    short times.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.MaskedDomainList.Size2" units="KB"
+    expires_after="2026-04-26">
+  <owner>aakallam@chromium.org</owner>
+  <owner>src/components/ip_protection/OWNERS</owner>
+  <summary>
+    Record the size of the Masked Domain List proto in KB. Emitted when the raw
+    proto bytes are received from Component Updater and parsed. The previous
+    version of this histogram sometimes recorded the value in MB and was not
+    usable.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -131,7 +131,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // Methods for painting.
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags& flags) override;
+             const cc::PaintFlags& flags) override;
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
   std::optional<media::VideoFrame::ID> CurrentFrameId() const override;
   media::PaintCanvasVideoRenderer* GetPaintCanvasVideoRenderer() override;
@@ -172,9 +172,6 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   uint64_t AudioDecodedByteCount() const override;
   uint64_t VideoDecodedByteCount() const override;
 
-  // WebRTC doesn't need TAO checks, as the timing is already available through
-  // getStats().
-  bool PassedTimingAllowOriginCheck() const override { return true; }
   bool HasAvailableVideoFrame() const override;
   bool HasReadableVideoFrame() const override;
 
@@ -264,7 +261,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // Callback used to detect and propagate a render error.
   void OnAudioRenderErrorCallback();
 
-  void SendLogMessage(const WTF::String& message) const;
+  void SendLogMessage(const String& message) const;
 
   void StopForceBeginFrames(TimerBase*);
 

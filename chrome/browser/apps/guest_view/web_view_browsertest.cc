@@ -3216,24 +3216,11 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
   auto* guest_main_frame =
       GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
   ASSERT_TRUE(guest_main_frame);
-
-  auto close_menu_and_stop_run_loop = [](base::OnceClosure closure,
-                                         RenderViewContextMenu* context_menu) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&RenderViewContextMenuBase::Cancel,
-                                  base::Unretained(context_menu)));
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(closure));
-  };
-
-  base::RunLoop run_loop;
-  RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
-      base::BindOnce(close_menu_and_stop_run_loop, run_loop.QuitClosure()));
-
+  ContextMenuShownObserver context_menu_shown_observer =
+      ContextMenuShownObserver();
   OpenContextMenu(guest_main_frame);
-
-  // Wait for the context menu to be visible.
-  run_loop.Run();
+  context_menu_shown_observer.Wait();
+  EXPECT_EQ(true, context_menu_shown_observer.shown());
 }
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, MediaAccessAPIAllow_TestAllow) {
@@ -3431,13 +3418,12 @@ class MockHidDelegate : public ChromeHidDelegate {
     chooser_controller_->set_view(mock_chooser_view_.get());
 
     EXPECT_CALL(*mock_chooser_view_.get(), OnOptionsInitialized)
-        .WillOnce(
-            testing::Invoke([this] { chooser_controller_->Select({0}); }));
+        .WillOnce([this] { chooser_controller_->Select({0}); });
   }
 
  private:
-  std::unique_ptr<HidChooserController> chooser_controller_;
   std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+  std::unique_ptr<HidChooserController> chooser_controller_;
 };
 
 class WebHidWebViewTest : public WebViewTest {
@@ -3836,7 +3822,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDownloadRequestWithCookie(
     return nullptr;
   }
 
-  std::string cookie_to_expect = request.GetURL().query();
+  std::string cookie_to_expect = request.GetURL().GetQuery();
   const auto cookie_header_it = request.headers.find("cookie");
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
 
@@ -3972,7 +3958,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadCookieIsolation) {
     ASSERT_TRUE(
         base::ReadFileToString(download->GetTargetFilePath(), &content));
     // Note that the contents of the file is the value of the cookie.
-    EXPECT_EQ(content, download->GetURL().query());
+    EXPECT_EQ(content, download->GetURL().GetQuery());
     cookies.insert(content);
   }
 
@@ -5078,7 +5064,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
   const extensions::Extension* extension =
-      registry->enabled_extensions().GetByID(guest_url.host());
+      registry->enabled_extensions().GetByID(guest_url.GetHost());
   EXPECT_EQ(extensions::mojom::ContextType::kUnprivilegedExtension,
             process_map->GetMostLikelyContextType(
                 extension, guest_process->GetDeprecatedID(), &guest_url));
@@ -5162,9 +5148,6 @@ IN_PROC_BROWSER_TEST_P(WebViewTest,
   // - It is a "regular" extension API function that goes through the request /
   //   response flow in ExtensionFunctionDispatcher, unlike extension message
   //   APIs.
-  // *TODO(crbug.com/40263329): The exact set of APIs and type of
-  // context this is is a bit fuzzy. In practice, it's basically the same set
-  // as is exposed to content scripts.
   static constexpr char kGetAcceptLanguages[] =
       R"(new Promise(resolve => {
            chrome.i18n.getAcceptLanguages((languages) => {

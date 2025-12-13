@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "fuchsia"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "site_isolation.origin_keyed_processes_enabled",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

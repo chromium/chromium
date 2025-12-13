@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -62,10 +58,10 @@ bool ValidSecurityCapabilities(
   for (DWORD index = 0; index < security_capabilities->CapabilityCount;
        ++index) {
     if (!capabilities[index].Equal(
-            security_capabilities->Capabilities[index].Sid)) {
+            UNSAFE_TODO(security_capabilities->Capabilities[index]).Sid)) {
       return false;
     }
-    if (security_capabilities->Capabilities[index].Attributes !=
+    if (UNSAFE_TODO(security_capabilities->Capabilities[index]).Attributes !=
         SE_GROUP_ENABLED) {
       return false;
     }

@@ -9,14 +9,12 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/source_destination_matcher_ash.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -450,8 +448,8 @@ std::string FileTransferAnalysisDelegate::email() const {
   return GetProfileEmail(profile_);
 }
 
-std::string FileTransferAnalysisDelegate::url() const {
-  return "";
+const GURL& FileTransferAnalysisDelegate::url() const {
+  return GURL::EmptyGURL();
 }
 
 const GURL& FileTransferAnalysisDelegate::tab_url() const {
@@ -471,6 +469,10 @@ FileTransferAnalysisDelegate::referrer_chain() const {
 google::protobuf::RepeatedPtrField<std::string>
 FileTransferAnalysisDelegate::frame_url_chain() const {
   return {};
+}
+
+content::WebContents* FileTransferAnalysisDelegate::web_contents() const {
+  return nullptr;
 }
 
 void FileTransferAnalysisDelegate::OnGotFileURLs(

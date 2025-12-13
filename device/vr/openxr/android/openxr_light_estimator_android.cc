@@ -122,19 +122,23 @@ OpenXrLightEstimatorAndroidFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrLightEstimatorAndroidFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
   return {device::mojom::XRSessionFeature::LIGHT_ESTIMATION};
 }
 
-void OpenXrLightEstimatorAndroidFactory::ProcessSystemProperties(
+void OpenXrLightEstimatorAndroidFactory::CheckAndUpdateEnabledState(
     const OpenXrExtensionEnumeration* extension_enum,
     XrInstance instance,
     XrSystemId system) {
+  if (!AreAllRequestedExtensionsSupported(extension_enum)) {
+    SetEnabled(false);
+    return;
+  }
+
   XrSystemLightEstimationPropertiesANDROID light_estimation_properties{
       XR_TYPE_SYSTEM_LIGHT_ESTIMATION_PROPERTIES_ANDROID};
 
@@ -147,7 +151,7 @@ void OpenXrLightEstimatorAndroidFactory::ProcessSystemProperties(
     lighting_supported = light_estimation_properties.supportsLightEstimation;
   }
 
-  SetSystemPropertiesSupport(lighting_supported);
+  SetEnabled(lighting_supported);
 }
 
 std::unique_ptr<OpenXrLightEstimator>
@@ -155,7 +159,7 @@ OpenXrLightEstimatorAndroidFactory::CreateLightEstimator(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     XrSpace mojo_space) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrLightEstimatorAndroid>(extension_helper,

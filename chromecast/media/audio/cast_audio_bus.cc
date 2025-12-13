@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/cast_audio_bus.h"
 
+#include <algorithm>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 
 namespace chromecast {
@@ -20,7 +17,7 @@ CastAudioBus::CastAudioBus(int channels, int frames) : frames_(frames) {
   data_.reset(new float[channels * frames]);
   channel_data_.reserve(channels);
   for (int i = 0; i < channels; ++i)
-    channel_data_.push_back(data_.get() + i * frames);
+    channel_data_.push_back(UNSAFE_TODO(data_.get() + i * frames));
 }
 
 CastAudioBus::~CastAudioBus() = default;

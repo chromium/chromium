@@ -40,6 +40,7 @@ namespace {
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::GetBookmarkBarNode;
 using bookmarks_helper::ServerBookmarksEqualityChecker;
+using bookmarks_helper::StoreType;
 using syncer::DataType;
 using testing::AllOf;
 using testing::Contains;
@@ -258,9 +259,19 @@ sync_pb::DeviceInfoSpecifics CreateDeviceInfoSpecifics(
   return specifics;
 }
 
-class SingleClientSyncInvalidationsTest : public SyncTest {
+class SingleClientSyncInvalidationsTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
   }
 
   // Injects a test DeviceInfo entity to the fake server.
@@ -288,9 +299,23 @@ class SingleClientSyncInvalidationsTest : public SyncTest {
         GetClient(0)->GetGaiaIdHashForPrimaryAccount());
     return prefs.GetCacheGuid();
   }
+
+  StoreType GetStoreType() const {
+    return GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly
+               ? StoreType::kAccountStore
+               : StoreType::kLocalOrSyncableStore;
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         SingleClientSyncInvalidationsTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        SendInterestedDataTypesAndFCMTokenAsPartOfDeviceInfo) {
   ASSERT_TRUE(SetupSync());
 
@@ -317,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        ShouldPropagateInvalidationHints) {
   ASSERT_TRUE(SetupSync());
 
@@ -356,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
       Contains(Not(IsEmpty())));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        ShouldPopulateFCMRegistrationTokens) {
   const std::u16string kTitle = u"title";
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
@@ -371,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
   // Commit a new bookmark to check if the next commit message has FCM
   // registration tokens.
-  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle);
+  AddFolder(0, GetBookmarkBarNode(0, GetStoreType()), 0, kTitle);
   ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
@@ -388,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
               ElementsAre(kRemoteFCMRegistrationToken));
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SingleClientSyncInvalidationsTest,
     ShouldNotPopulateFCMRegistrationTokensForInterestedDataTypes) {
   const std::u16string kTitle = u"title";
@@ -405,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Commit a new bookmark to check if the next commit message has FCM
   // registration tokens.
-  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle);
+  AddFolder(0, GetBookmarkBarNode(0, GetStoreType()), 0, kTitle);
   ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
@@ -424,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(
               IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        ShouldProvideNotificationsEnabledInGetUpdates) {
   ASSERT_TRUE(SetupSync());
 
@@ -458,12 +483,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 
 // PRE_* tests aren't supported on Android browser tests.
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        ShouldNotSendAdditionalGetUpdates) {
   const std::vector<sync_pb::SyncEntity> server_device_infos_before =
       fake_server_->GetSyncEntitiesByDataType(syncer::DEVICE_INFO);
@@ -487,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
       ->GetDeviceInfoTracker()
       ->ForcePulseForTest();
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // Wait until DeviceInfo is updated.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
@@ -497,13 +522,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   // Perform an additional sync cycle to be sure that there will be at least one
   // more GetUpdates request if it was triggered.
   const std::u16string kTitle1 = u"Title 1";
-  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle1);
+  AddFolder(0, GetBookmarkBarNode(0, GetStoreType()), 0, kTitle1);
   ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle1, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
   const std::u16string kTitle2 = u"Title 2";
-  AddFolder(0, GetBookmarkBarNode(0), 0, kTitle2);
+  AddFolder(0, GetBookmarkBarNode(0, GetStoreType()), 0, kTitle2);
   ASSERT_TRUE(
       ServerBookmarksEqualityChecker({{kTitle1, GURL()}, {kTitle2, GURL()}},
                                      /*cryptographer=*/nullptr)
@@ -512,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   EXPECT_EQ(0u, observer.num_nudged_get_updates_for_data_type());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PRE_ShouldReceiveInvalidationSentBeforeSetupClients) {
   // Initialize and enable sync to simulate browser restart when sync is
   // enabled. This is required to receive an invalidation when browser is not
@@ -520,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        ShouldReceiveInvalidationSentBeforeSetupClients) {
   const base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
 
@@ -533,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
           .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PRE_PersistBookmarkInvalidation) {
   ASSERT_TRUE(SetupSync());
 
@@ -554,19 +579,20 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
               Not(IsEmpty()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PersistBookmarkInvalidation) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
-  GetSyncService(0)->TriggerRefresh({syncer::BOOKMARKS});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown, {syncer::BOOKMARKS});
   EXPECT_TRUE(NotificationHintChecker(syncer::BOOKMARKS).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PRE_PersistDeviceInfoInvalidation) {
   const std::string kRemoteDeviceCacheGuid = "other_cache_guid";
   const std::string kRemoteFCMRegistrationToken = "other_fcm_token";
@@ -591,20 +617,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
               Not(IsEmpty()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        PersistDeviceInfoInvalidation) {
   ASSERT_TRUE(SetupClients());
-  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   // TODO(crbug.com/40239360): Persisted invaldiations are loaded in
   // DataTypeWorker::ctor(), but sync cycle is not scheduled. New sync cycle
   // has to be triggered right after we loaded persisted invalidations.
-  GetSyncService(0)->TriggerRefresh({syncer::DEVICE_INFO});
+  GetSyncService(0)->TriggerRefresh(
+      syncer::SyncService::TriggerRefreshSource::kUnknown,
+      {syncer::DEVICE_INFO});
   EXPECT_TRUE(NotificationHintChecker(syncer::DEVICE_INFO).Wait());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        EnableAndDisableADataType) {
   ASSERT_TRUE(SetupSync());
 
@@ -615,8 +643,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
                   .Wait());
 
   // Disable BOOKMARKS.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   // The local device should eventually be committed to the server. BOOKMARKS
   // should not be included in interested types, as it was disabled.
   EXPECT_TRUE(
@@ -627,8 +655,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
   // Create a bookmark on the server.
   InjectSyncedBookmark(GetFakeServer());
   // Enable BOOKMARKS again.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kBookmarks));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kBookmarks));
   // The local device should eventually be committed to the server. BOOKMARKS
   // should now be included in interested types.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
@@ -648,7 +676,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
 #else
 #define MAYBE_SignoutAndSignin SignoutAndSignin
 #endif
-IN_PROC_BROWSER_TEST_F(SingleClientSyncInvalidationsTest,
+IN_PROC_BROWSER_TEST_P(SingleClientSyncInvalidationsTest,
                        MAYBE_SignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 

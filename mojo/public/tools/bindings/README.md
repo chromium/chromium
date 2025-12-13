@@ -411,6 +411,26 @@ interface Foo {
 Anything which is a valid struct field type (see [Structs](#Structs)) is also a
 valid request or response argument type. The type notation is the same for both.
 
+#### Result response
+
+In addition to the normal response types, there is a `result<T,E>` response
+type, where T is the success type and E is the error type. An example usage
+would be:
+
+```
+interface Foo {
+  // A success would return an int32, whereas an error would return an E.
+  MyMethod() => result<int32, Error>;
+}
+```
+
+`result<T,E>` is intended to represent higher level logical errors, which
+include things like invalid user input, unexpected state on the receiving
+end (e.g.: if a dependency is in a bad state).
+
+**Note:** `result<T,E>` can only used in the return expression. It cannot
+be used as a parameter type.
+
 ### Attributes
 
 Mojom definitions may have their meaning altered by **attributes**, specified
@@ -606,6 +626,12 @@ interesting attributes supported today.
   the stack for the duration of the dispatch. This can aid in crash debugging
   if other factors such as inlining or code folding end up obscuring the message
   information. This generates extra code, so it is not the default behavior.
+
+* **`[VendorSpecified]`**: The `VendorSpecified` attribute can be used on any of
+  the mojo entities, such as structs, unions, interfaces, constants, and enums,
+  in which downstream vendors can customize the code generation requirements for
+  their respective products.  The attribute is a string value that can be
+  referenced in a templating system and can be used for conditional generation.
 
 ## Generated Code For Target Languages
 
@@ -1089,7 +1115,9 @@ ParameterList = <empty> | NonEmptyParameterList
 NonEmptyParameterList = Parameter
                       | Parameter "," NonEmptyParameterList
 Parameter = AttributeSection TypeSpec Name Ordinal
-Response = <empty> | "=>" "(" ParameterList ")"
+Response = <empty>
+         | "=>" "(" ParameterList ")"
+         | "=>" "result<" Typename "," Typename ">"
 
 TypeSpec = TypeName "?" | TypeName
 TypeName = BasicTypeName

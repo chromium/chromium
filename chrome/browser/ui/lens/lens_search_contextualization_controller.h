@@ -11,6 +11,7 @@
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "pdf/buildflags.h"
@@ -35,8 +36,15 @@ namespace optimization_guide {
 struct AIPageContentResult;
 }  // namespace optimization_guide
 
+namespace viz {
+struct CopyOutputBitmapWithMetadata;
+}  // namespace viz
+
 using GetIsContextualSearchboxCallback =
     lens::mojom::LensSidePanelPageHandler::GetIsContextualSearchboxCallback;
+
+// Callback type alias for the when the page context eligibility is fetched.
+using LensSearchPageContextEligibilityCallback = base::OnceCallback<void(bool)>;
 
 namespace lens {
 
@@ -63,6 +71,12 @@ using PdfPartialPageTextRetrievedCallback =
 // to allow requests to be made after the latest page context has been sent to
 // the server.
 using OnPageContextUpdatedCallback = base::OnceCallback<void()>;
+
+// Callback type alias for when the screenshot is taken.
+using OnScreenshotTakenCallback =
+    base::OnceCallback<void(const SkBitmap&,
+                            const std::vector<gfx::Rect>&,
+                            std::optional<uint32_t>)>;
 
 // Controller responsible for handling contextualization logic for Lens flows.
 // This includes grabbing content related to the page and issuing Lens requests
@@ -126,6 +140,15 @@ class LensSearchContextualizationController {
   // number of pages. `pdf_page_count` is only used for PDFs.
   void RecordDocumentMetrics(std::optional<uint32_t> pdf_page_count);
 
+  // Updates the query flow with the new page content bytes and/or screenshot. A
+  // request will only be sent if the bytes are different from the previous
+  // bytes sent or the screenshot is different from the previous screenshot.
+  void UpdatePageContext(std::vector<lens::PageContent> page_contents,
+                         lens::MimeType primary_content_type,
+                         std::optional<uint32_t> pdf_page_count,
+                         const SkBitmap& bitmap,
+                         std::optional<uint32_t> most_visible_page);
+
   // Posts a task to the background thread to calculate the OCR DOM similarity
   // and then records the result. Only records the similarity once per session.
   // Only records the similarity if the OCR text and page content are available.
@@ -145,9 +168,73 @@ class LensSearchContextualizationController {
   void SetPageContent(std::vector<lens::PageContent> page_contents,
                       lens::MimeType primary_content_type);
 
+  // Starts the screenshot flow. This will take a screenshot,
+  // fetch image bounds, and then run the callback provided with this data.
+  void StartScreenshotFlow(OnScreenshotTakenCallback callback);
+
+  // Returns whether the page is context eligible based on the URL and frame
+  // metadata provided. Calls the provided callback with the result. This
+  // function makes a call to the page context eligibility API on whether the
+  // latest contextualized data is eligible to be sent. This is in contrast to
+  // `GetCurrentPageContextEligibility` which returns the latest cached state.
+  void IsPageContextEligible(
+      const GURL& main_frame_url,
+      std::vector<optimization_guide::FrameMetadata> frame_metadata,
+      LensSearchPageContextEligibilityCallback callback);
+
+  // Override these methods to be able to track calls made to the page context
+  // eligibility API.
+  virtual void CreatePageContextEligibilityAPI();
+
+  // Returns whether the page is context eligible based on the latest cached
+  // state. If the page context eligibility API has not been loaded, this will
+  // return false.
+  virtual bool GetCurrentPageContextEligibility();
+
+  // Returns the primary content type of the current page.
+  lens::MimeType primary_content_type() { return primary_content_type_; }
+
   bool IsActive() const { return state_ == State::kActive; }
 
+  // Returns the most recent viewport screenshot.
+  const SkBitmap& viewport_screenshot() { return viewport_screenshot_; }
+
+  void set_viewport_screenshot_for_testing(const SkBitmap& bitmap) {
+    viewport_screenshot_ = bitmap;
+  }
+
+ protected:
+  // The page context eligibility API if it has been fetched. Can be nullptr.
+  // This is marked protected so that it can be accessed by the test
+  // implementation of this class.
+  raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
+
  private:
+  struct PageContextEligibilityParams {
+   public:
+    PageContextEligibilityParams(
+        const GURL& main_frame_url,
+        std::vector<optimization_guide::FrameMetadata> frame_metadata);
+    ~PageContextEligibilityParams();
+
+    GURL main_frame_url;
+    std::vector<optimization_guide::FrameMetadata> frame_metadata;
+  };
+
+  // Called when the page context eligibility API is loaded.
+  void OnPageContextEligibilityAPILoaded(
+      optimization_guide::PageContextEligibility* page_context_eligibility);
+
+  // Called when the initial page context eligibility is fetched. This should be
+  // used for the initial check as the APC may not have been received yet. For
+  // subsequent checks, use `OnPageContextEligibilityFetched`.
+  void OnInitialPageContextEligibilityFetched(
+      const SkBitmap& bitmap,
+      const std::vector<gfx::Rect>& all_bounds,
+      std::optional<uint32_t> pdf_current_page,
+      OnPageContextUpdatedCallback callback,
+      bool is_page_context_eligible);
+
   // Begin updating page contextualization by potentially taking a new
   // screenshot.
   void UpdatePageContextualization(std::vector<lens::PageContent> page_contents,
@@ -161,16 +248,6 @@ class LensSearchContextualizationController {
       lens::MimeType primary_content_type,
       std::optional<uint32_t> pdf_page_count,
       const SkBitmap& bitmap);
-
-  // Updates the query flow with the new page content bytes and/or screenshot. A
-  // request will only be sent if the bytes are different from the previous
-  // bytes sent or the screenshot is different from the previous screenshot.
-  void UpdatePageContextualizationPart3(
-      std::vector<lens::PageContent> page_contents,
-      lens::MimeType primary_content_type,
-      std::optional<uint32_t> pdf_page_count,
-      const SkBitmap& bitmap,
-      std::optional<uint32_t> pdf_current_page);
 
   // Gets the inner text for contextualization if flag enabled. Otherwise skip
   // to MaybeGetAnnotatedPageContent().
@@ -198,7 +275,16 @@ class LensSearchContextualizationController {
   void OnAnnotatedPageContentReceived(
       std::vector<lens::PageContent> page_contents,
       PageContentRetrievedCallback callback,
-      std::optional<optimization_guide::AIPageContentResult> apc);
+      optimization_guide::AIPageContentResultOrError apc);
+
+  // Callback for when the page context eligibility is fetched. This should only
+  // be used after the APC has been received. For the initial check before the
+  // APC is received, use `OnInitialPageContextEligibilityFetched`.
+  void OnPageContextEligibilityFetched(
+      std::vector<lens::PageContent> page_contents,
+      PageContentRetrievedCallback callback,
+      std::optional<optimization_guide::AIPageContentResult> result,
+      bool is_page_context_eligible);
 
 #if BUILDFLAG(ENABLE_PDF)
   // Gets the PDF bytes from the IPC call to the PDF renderer if the PDF
@@ -240,12 +326,25 @@ class LensSearchContextualizationController {
       int attempt_id,
       const SkBitmap& bitmap,
       const std::vector<gfx::Rect>& bounds,
-      OnPageContextUpdatedCallback callback,
+      OnScreenshotTakenCallback callback,
       std::optional<uint32_t> pdf_current_page);
 
+  // Callback for when the screenshot is captured for a contextual update.
+  void OnScreenshotCapturedForUpdate(
+      int attempt_id,
+      base::OnceCallback<void(const SkBitmap&)> callback,
+      const viz::CopyOutputBitmapWithMetadata& result);
+
+  // Handles the screenshot after it has been taken for the contextual flow.
+  void OnScreenshotTakenForContextual(OnPageContextUpdatedCallback callback,
+                                      const SkBitmap& bitmap,
+                                      const std::vector<gfx::Rect>& all_bounds,
+                                      std::optional<uint32_t> pdf_current_page);
+
   // Fetches the bounding boxes of all images within the current viewport.
-  void FetchViewportImageBoundingBoxes(OnPageContextUpdatedCallback callback,
-                                       const SkBitmap& bitmap);
+  void FetchViewportImageBoundingBoxes(
+      OnScreenshotTakenCallback callback,
+      const viz::CopyOutputBitmapWithMetadata& result);
 
   // Creates the mojo bounding boxes for the significant regions.
   std::vector<lens::mojom::CenterRotatedBoxPtr> ConvertSignificantRegionBoxes(
@@ -257,7 +356,7 @@ class LensSearchContextualizationController {
           chrome_render_frame,
       int attempt_id,
       const SkBitmap& bitmap,
-      OnPageContextUpdatedCallback callback,
+      OnScreenshotTakenCallback callback,
       const std::vector<gfx::Rect>& bounds);
 
   // Callback to record the size of the innerText once it is fetched.
@@ -321,6 +420,25 @@ class LensSearchContextualizationController {
 
   // Whether the OCR DOM similarity has been recorded in the current session.
   bool ocr_dom_similarity_recorded_in_session_ = false;
+
+  // Whether the page context eligibility API has been loaded in the current tab
+  // session.
+  bool has_page_context_eligibility_api_loaded_ = false;
+
+  // Stored page context eligibility parameters to be used once the API is
+  // loaded. This is only used if the API is not yet loaded when
+  // IsPageContextEligible() is called and `page_context_eligibility_callback_`
+  // is set.
+  std::optional<PageContextEligibilityParams>
+      pending_context_eligibility_params_;
+
+  // A stored context eligibility callback to be called once the page context
+  // eligibility API is loaded.
+  LensSearchPageContextEligibilityCallback page_context_eligibility_callback_;
+
+  // A monotonically increasing id. This is used to differentiate between
+  // different screenshot attempts.
+  int screenshot_attempt_id_ = 0;
 
   // Owns this.
   const raw_ptr<LensSearchController> lens_search_controller_;

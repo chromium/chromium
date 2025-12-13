@@ -13,13 +13,16 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/fullscreen_control/fullscreen_features.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -48,6 +51,13 @@ bool IsTabFullscreenType(ExclusiveAccessBubbleType type) {
 }
 
 }  // namespace
+
+constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
+    UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
+    .default_options = {
+        UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
 
 ExclusiveAccessBubbleViews::ExclusiveAccessBubbleViews(
     ExclusiveAccessBubbleViewsContext* context,
@@ -226,6 +236,23 @@ void ExclusiveAccessBubbleViews::UpdateBounds() {
   }
 }
 
+namespace {
+
+std::optional<std::u16string> OriginDisplayName(Profile* profile,
+                                                const url::Origin& origin) {
+  if (origin.opaque() ||
+      !base::FeatureList::IsEnabled(features::kFullscreenBubbleShowOrigin)) {
+    return std::nullopt;
+  }
+
+  return UrlIdentity::CreateFromUrl(profile, origin.GetURL(),
+                                    kUrlIdentityAllowedTypes,
+                                    kUrlIdentityOptions)
+      .name;
+}
+
+}  // namespace
+
 void ExclusiveAccessBubbleViews::UpdateViewContent(
     ExclusiveAccessBubbleType bubble_type) {
   DCHECK(params_.has_download ||
@@ -251,12 +278,17 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
     accelerator = base::i18n::ToLower(accelerator);
 #endif
   }
+
   // This string *may* contain the name of the key surrounded in pipe characters
   // ('|'), which should be drawn graphically as a key, not displayed literally.
   // `accelerator` is the name of the key to exit fullscreen mode.
   view_->UpdateContent(exclusive_access_bubble::GetInstructionTextForType(
-      params_.type, accelerator, params_.origin, params_.has_download,
-      notify_overridden_));
+      params_.type, accelerator,
+      OriginDisplayName(bubble_view_context_->GetExclusiveAccessManager()
+                            ->context()
+                            ->GetProfile(),
+                        params_.origin),
+      params_.has_download, notify_overridden_));
 }
 
 bool ExclusiveAccessBubbleViews::IsVisible() const {
@@ -298,7 +330,7 @@ gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;
 
   int top_container_bottom = widget_bounds.y();
-#if !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS)
   if (bubble_view_context_->IsImmersiveModeEnabled()) {
     // Skip querying the top container height in CrOS non-immersive fullscreen
     // because:

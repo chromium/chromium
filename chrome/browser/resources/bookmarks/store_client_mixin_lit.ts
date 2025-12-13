@@ -34,8 +34,6 @@ export const StoreClientMixinLit =
         }
 
         updateFromStore(): void {
-          // TODO(b/296282541) assert that store is initialized instead of
-          // performing a runtime check.
           if (Store.getInstance().isInitialized()) {
             this.onStateChanged(this.getState());
           }
@@ -67,7 +65,6 @@ export interface StoreClientMixinLitInterface extends
 
   /**
    * Helper to dispatch an asynchronous action to the store.
-   * TODO(b/296440261) remove `dispatchAsync` in favor of promises.
    */
   dispatchAsync(action: DeferredAction<Action>): void;
 

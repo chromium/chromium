@@ -33,7 +33,7 @@ s! {
         pub guard_size: size_t,
         pub sched_policy: i32,
         pub sched_priority: i32,
-        __reserved: [c_char; 16],
+        __reserved: Padding<[c_char; 16]>,
     }
 
     pub struct passwd {
@@ -115,9 +115,7 @@ s! {
     pub struct pthread_spinlock_t {
         __private: i64,
     }
-}
 
-s_no_extra_traits! {
     pub struct pthread_mutex_t {
         value: c_int,
         __reserved: [c_char; 36],
@@ -142,78 +140,6 @@ s_no_extra_traits! {
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for pthread_mutex_t {
-            fn eq(&self, other: &pthread_mutex_t) -> bool {
-                self.value == other.value
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for pthread_mutex_t {}
-
-        impl hash::Hash for pthread_mutex_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.value.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_cond_t {
-            fn eq(&self, other: &pthread_cond_t) -> bool {
-                self.value == other.value
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for pthread_cond_t {}
-
-        impl hash::Hash for pthread_cond_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.value.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_rwlock_t {
-            fn eq(&self, other: &pthread_rwlock_t) -> bool {
-                self.numLocks == other.numLocks
-                    && self.writerThreadId == other.writerThreadId
-                    && self.pendingReaders == other.pendingReaders
-                    && self.pendingWriters == other.pendingWriters
-                    && self.attr == other.attr
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for pthread_rwlock_t {}
-
-        impl hash::Hash for pthread_rwlock_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.numLocks.hash(state);
-                self.writerThreadId.hash(state);
-                self.pendingReaders.hash(state);
-                self.pendingWriters.hash(state);
-                self.attr.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-    }
-}
-
 // These constants must be of the same type of sigaction.sa_flags
 pub const SA_NOCLDSTOP: c_int = 0x00000001;
 pub const SA_NOCLDWAIT: c_int = 0x00000002;
@@ -225,7 +151,7 @@ pub const SA_SIGINFO: c_int = 0x00000004;
 
 pub const RTLD_GLOBAL: c_int = 0x00100;
 pub const RTLD_NOW: c_int = 2;
-pub const RTLD_DEFAULT: *mut c_void = 0i64 as *mut c_void;
+pub const RTLD_DEFAULT: *mut c_void = ptr::null_mut();
 
 pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
     value: 0,

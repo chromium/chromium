@@ -1,0 +1,2 @@
+AXLiveRegionChanged on AXGroup AXSubrole=AXApplicationAlert
+AXLiveRegionCreated on AXGroup AXSubrole=AXApplicationAlert

@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace content {
 class WebContents;
@@ -23,6 +24,8 @@ class SharingHubBubbleView;
 // Responsible for showing and hiding an associated dialog bubble.
 class SharingHubBubbleController {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIconElementId);
+
   static SharingHubBubbleController* CreateOrGetFromWebContents(
       content::WebContents* web_contents);
 

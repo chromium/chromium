@@ -8,7 +8,8 @@
 
 namespace blink {
 
-EXTPolygonOffsetClamp::EXTPolygonOffsetClamp(WebGLRenderingContextBase* context)
+EXTPolygonOffsetClamp::EXTPolygonOffsetClamp(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_polygon_offset_clamp");

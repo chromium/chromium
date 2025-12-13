@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">поморанџе</translation>
 <translation id="1275718070701477396">Изабрано је</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
+<translation id="1292474106138697109">Приказ Алатки у разреду</translation>
 <translation id="1300115153046603471">Тип назива приступне тачке је подразумевани и <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Конверзија</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">Најпопуларнији садржај помоћи</translation>
 <translation id="2277631741861284101">Лако снимајте и делите звук</translation>
 <translation id="2279051792571591988">Врати на подразумевано</translation>
-<translation id="2286454467119466181">Једноставан</translation>
+<translation id="2286454467119466181">Једноставно</translation>
 <translation id="2287186687001756809">Слика није доступна. Да бисте додали слике, идите на <ph name="LINK" /></translation>
 <translation id="2294577623958216786">Актуелни распоред је подешен на <ph name="SUNRISE" />–<ph name="SUNSET" />. Да бисте аутоматски ажурирали распоред заласка и изласка сунца, укључите приступ локацији система.</translation>
 <translation id="2305172810646967500">црним</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
 <translation id="4300272766492248925">Отвори апликацију</translation>
 <translation id="430786093962686457">шифона</translation>
+<translation id="4309762678330556039">Аутоматски правите транскрипције и претражујте звук. Можете да правите снимке чак и када нисте повезани на интернет.</translation>
 <translation id="4310735698903592804">Недавне позадине које омогућава Google AI</translation>
 <translation id="4320904097188876154">флуоресцентно розе</translation>
 <translation id="432961742358282111">Кликните десним тастером или притисните и задржите да бисте добили дефиниције, преводе или конверзије јединица. Користите тастер са стрелицом налево или надесно да бисте управљали овом функцијом.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5600027863942488546">Тастер <ph name="KEY_NAME" /> је тестиран</translation>
 <translation id="5606865426897221650">Картица</translation>
+<translation id="5612205513582918357">Алатке у разреду деле екран са: <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Одјављени сте</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5628106863521633649">Доступни језици</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Ток у клауду</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Нису доступни скенери</translation>
-<translation id="6231648282154119906">Google безбедно прегледање ће аутоматски скенирати сумњиве фајлове у склопу побољшане заштите коју одаберете</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6234024205316847054">Прикажи контуре</translation>
 <translation id="6243280677745499710">Тренутно подешена</translation>

@@ -72,6 +72,14 @@ void RecordPrivateNetworkAccessFeature(ExecutionContext* execution_context,
     return;
   }
   execution_context->CountUse(WebFeature::kPrivateNetworkAccessWithinWorker);
+
+  if (execution_context->IsDedicatedWorkerGlobalScope()) {
+    execution_context->CountUse(
+        WebFeature::kLocalNetworkAccessWithinDedicatedWorker);
+  } else if (execution_context->IsSharedWorkerGlobalScope()) {
+    execution_context->CountUse(
+        WebFeature::kLocalNetworkAccessWithinSharedWorker);
+  }
 }
 
 void ResourceLoadObserverForWorker::DidReceiveResponse(

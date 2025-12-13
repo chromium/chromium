@@ -25,7 +25,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -173,7 +172,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   signin::IdentityManager* identity_manager() const override { return nullptr; }
 
-  // These methods correspond to fields in `BinaryUploadService::Request`.
+  // These methods correspond to fields in `BinaryUploadRequest`.
   int user_action_requests_count() const override {
     return user_action_requests_count_;
   }
@@ -184,7 +183,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   std::string email() const override { return "test@user.com"; }
 
-  std::string url() const override { return kTestUrl; }
+  const GURL& url() const override { return tab_url(); }
 
   const GURL& tab_url() const override {
     static GURL url(kTestUrl);
@@ -205,6 +204,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
       const override {
     return {};
   }
+
+  content::WebContents* web_contents() const override { return nullptr; }
 
  private:
   const raw_ref<const enterprise_connectors::AnalysisSettings> settings_;
@@ -243,6 +244,9 @@ void PrintTo(const RequestHandlerResult& request_handler_result,
       break;
     case FinalContentAnalysisResult::SUCCESS:
       *os << "SUCCESS";
+      break;
+    case FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD:
+      *os << "FORCE_SAVE_TO_CLOUD";
       break;
   }
   *os << "), tag: \"" << request_handler_result.tag << "\")";
@@ -362,9 +366,9 @@ class FilesRequestHandlerTest : public BaseTest {
 
   void FakeFileUploadCallback(
       bool is_cloud_analysis,
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<BinaryUploadRequest> request,
       test::FakeFilesRequestHandler::FakeFileRequestCallback callback) {
     EXPECT_FALSE(path.empty());
     if (is_cloud_analysis) {

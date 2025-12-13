@@ -36,7 +36,8 @@ class MockUkmDatabase : public UkmDatabase {
   MOCK_METHOD2(RunReadOnlyQueries,
                void(QueryList&& queries, QueryCallback callback));
 
-  MOCK_METHOD1(DeleteEntriesOlderThan, void(base::Time time));
+  MOCK_METHOD2(CleanupOldEntries,
+               void(base::Time ukm_time_limit, base::Time uma_time_limit));
   MOCK_METHOD2(CleanupItems,
                void(const std::string& profile_id,
                     std::vector<CleanupItem> cleanup_items));

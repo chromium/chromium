@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/supports_user_data.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
 #include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -18,6 +18,8 @@ class WebContents;
 enum class Visibility;
 }  // namespace content
 
+class Browser;
+
 namespace views {
 class Widget;
 }  // namespace views
@@ -26,6 +28,9 @@ namespace lens {
 
 class LensRegionSearchController : public content::WebContentsObserver {
  public:
+  using RegionSelectionFlowClosedCallback = base::OnceCallback<void()>;
+  using BoundsCallback = base::RepeatingCallback<void(const gfx::Rect&)>;
+
   LensRegionSearchController();
   ~LensRegionSearchController() override;
 
@@ -38,6 +43,17 @@ class LensRegionSearchController : public content::WebContentsObserver {
              bool use_fullscreen_capture,
              bool is_google_default_search_provider,
              lens::AmbientSearchEntryPoint entry_point);
+
+  // Starts a region selection flow. If the user successfully selects a
+  // region, the bounds are returned via the |bounds_callback|. If the
+  // flow is closed, |region_selection_flow_closed_callback| is called.
+  // To support multiple region selections, `is_multi_capture` should be set to
+  // true.
+  void StartForRegionSelection(
+      content::WebContents* web_contents,
+      bool is_multi_capture,
+      BoundsCallback bounds_callback,
+      RegionSelectionFlowClosedCallback region_selection_flow_closed_callback);
 
   // Closes the UI overlay and user education bubble if currently being shown.
   // The closed reason for this method is defaulted to the close button being
@@ -65,10 +81,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
-  // The function handling the metrics recording and resizing that happens when
-  // the capture has been completed.
-  void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
-
   // Returns whether the overlay and instruction bubble are both visible. If
   // either of the UI elements is not visible, returns false.
   bool IsOverlayUIVisibleForTesting();
@@ -78,11 +90,30 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // UI.
   void SetWebContentsForTesting(content::WebContents* web_contents);
 
+  void OnCaptureCompleted(const image_editor::ScreenshotCaptureResult& result);
+
  private:
+  // Helper methods for starting and handling the capture flow.
+  void StartCaptureInternal(Browser* browser, bool use_fullscreen_capture);
+  void OnRegionSelectionCompleted(
+      const image_editor::RegionSelectionResult& result);
+  void HandleCaptureSuccessForSearch(const gfx::Image& image,
+                                     const gfx::Rect& screen_bounds);
+  void HandleCaptureFailure();
+
   void RecordCaptureResult(lens::LensRegionSearchCaptureResult result);
 
   void RecordRegionSizeRelatedMetrics(gfx::Rect screen_bounds,
                                       gfx::Size region_size);
+
+  // Callback to be called when the region selection flow is closed.
+  RegionSelectionFlowClosedCallback region_selection_flow_closed_callback_;
+
+  // Callback to be called when the region selection is complete.
+  BoundsCallback bounds_callback_;
+
+  // Whether to allow multiple regions to be captured.
+  bool is_multi_capture_ = false;
 
   // Variable for tracking the default search provider as to launch the image
   // results in correct search engine. This value is set every time the capture
@@ -95,6 +126,10 @@ class LensRegionSearchController : public content::WebContentsObserver {
 
   bool in_capture_mode_ = false;
 
+  // Whether the controller is in the process of closing. This is used to
+  // prevent re-entrancy in CloseWithReason().
+  bool is_closing_ = false;
+
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
 
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
@@ -102,34 +137,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   base::WeakPtr<LensRegionSearchController> weak_this_;
 
   base::WeakPtrFactory<LensRegionSearchController> weak_factory_{this};
-};
-
-// Class to associate region search controller data with Profile across
-// navigation. Used to support region search via keyboard shortcut.
-class LensRegionSearchControllerData : public base::SupportsUserData::Data {
- public:
-  LensRegionSearchControllerData();
-  ~LensRegionSearchControllerData() override;
-  LensRegionSearchControllerData(const LensRegionSearchControllerData&) =
-      delete;
-  LensRegionSearchControllerData& operator=(
-      const LensRegionSearchControllerData&) = delete;
-
-  static constexpr char kDataKey[] = "lens_region_search_controller_data";
-  std::unique_ptr<LensRegionSearchController> lens_region_search_controller;
-};
-
-// Class to associate region search captured data with Profile across
-// navigation. Used to support region search on a static WebUI page.
-class RegionSearchCapturedData : public base::SupportsUserData::Data {
- public:
-  RegionSearchCapturedData();
-  ~RegionSearchCapturedData() override;
-  RegionSearchCapturedData(const RegionSearchCapturedData&) = delete;
-  RegionSearchCapturedData& operator=(const RegionSearchCapturedData&) = delete;
-
-  static constexpr char kDataKey[] = "region_search_data";
-  gfx::Image image;
 };
 }  // namespace lens
 #endif  // CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_CONTROLLER_H_

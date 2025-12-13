@@ -9,20 +9,23 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager.TabGroupCreationDialogManagerFactory;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /** Handles the flow of creating a new tab group through the UI. */
 @NullMarked
@@ -71,9 +74,13 @@ public class TabGroupCreationUiDelegate {
         TabGroupModelFilter filter = mFilterSupplier.get();
         assumeNonNull(filter);
         TabCreator tabCreator = filter.getTabModel().getTabCreator();
+
+        Profile profile = filter.getTabModel().getProfile();
+        UrlConstantResolver urlConstantResolver = UrlConstantResolverFactory.getForProfile(profile);
+
         @Nullable Tab tab =
                 tabCreator.createNewTab(
-                        new LoadUrlParams(UrlConstants.NTP_URL),
+                        new LoadUrlParams(urlConstantResolver.getNtpUrl()),
                         TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                         null);
         if (tab != null) {

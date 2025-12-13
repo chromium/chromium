@@ -37,9 +37,9 @@ ByteBufferWithIOBuffer::ByteBufferWithIOBuffer(
     : io_buffer_(std::move(io_buffer)), io_buffer_len_(io_buffer_len) {
   // An intermediate ScopedJavaLocalRef is needed here to release the local
   // reference created by env->NewDirectByteBuffer().
-  base::android::ScopedJavaLocalRef<jobject> java_buffer(
+  auto java_buffer = base::android::ScopedJavaLocalRef<jobject>::Adopt(
       env, env->NewDirectByteBuffer(io_buffer_->data(), io_buffer_len_));
-  byte_buffer_.Reset(env, java_buffer.obj());
+  byte_buffer_.Reset(env, java_buffer);
 }
 
 ByteBufferWithIOBuffer::~ByteBufferWithIOBuffer() = default;

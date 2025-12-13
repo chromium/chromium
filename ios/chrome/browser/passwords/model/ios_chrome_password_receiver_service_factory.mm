@@ -31,8 +31,9 @@ IOSChromePasswordReceiverServiceFactory::GetInstance() {
 // static
 password_manager::PasswordReceiverService*
 IOSChromePasswordReceiverServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<password_manager::PasswordReceiverService*>(
-      GetInstance()->GetServiceForBrowserState(profile, /*create=*/true));
+  return GetInstance()
+      ->GetServiceForProfileAs<password_manager::PasswordReceiverService>(
+          profile, /*create=*/true);
 }
 
 IOSChromePasswordReceiverServiceFactory::
@@ -49,11 +50,10 @@ IOSChromePasswordReceiverServiceFactory::
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   // Since Password Manager doesn't work for non-standard profiles, the
   // PasswordReceiverService also shouldn't be created for such profiles.
-  CHECK(!context->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord());
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -65,7 +65,7 @@ IOSChromePasswordReceiverServiceFactory::BuildServiceInstanceFor(
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
   return std::make_unique<password_manager::PasswordReceiverServiceImpl>(
-      profile->GetPrefs(), std::move(sync_bridge),
+      std::move(sync_bridge),
       IOSChromeProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS)
           .get(),

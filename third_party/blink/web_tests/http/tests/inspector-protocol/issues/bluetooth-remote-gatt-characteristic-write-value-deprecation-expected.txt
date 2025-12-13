@@ -1,0 +1,21 @@
+Tests that BluetoothRemoteGATTCharacteristic.writeValue() deprecation issues are reported
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 28
+                    lineNumber : 8
+                    scriptId : <string>
+                    url :
+                }
+                type : WebBluetoothRemoteCharacteristicWriteValue
+            }
+        }
+    }
+}
+

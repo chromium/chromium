@@ -41,16 +41,13 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     assert nativeCPPClass != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
     assert b != null : "Parameter \"b\" was null. Add @Nullable to it?";
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_addStructB(
-        nativeCPPClass,
-        caller,
-        b);
+    GEN_JNI.org_jni_1zero_SampleForTests_addStructB(nativeCPPClass, caller, b);
   }
 
   @Override
   public void classUnderSamePackageTest(SampleUnderSamePackage arg) {
     assert arg != null : "Parameter \"arg\" was null. Add @Nullable to it?";
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_classUnderSamePackageTest(arg);
+    GEN_JNI.org_jni_1zero_SampleForTests_classUnderSamePackageTest(arg);
   }
 
   @Override
@@ -58,42 +55,36 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     assert nativeCPPClass != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
     assert bytes != null : "Parameter \"bytes\" was null. Add @Nullable to it?";
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_destroy(
-        nativeCPPClass,
-        caller,
-        bytes);
+    GEN_JNI.org_jni_1zero_SampleForTests_destroy(nativeCPPClass, caller, bytes);
   }
 
   @Override
   public Class getClass(Class env) {
     assert env != null : "Parameter \"env\" was null. Add @Nullable to it?";
-    return (Class) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass(env);
+    return (Class) GEN_JNI.org_jni_1zero_SampleForTests_getClass(env);
   }
 
   @Override
   public double getDoubleFunction(SampleForTests ret) {
     assert ret != null : "Parameter \"ret\" was null. Add @Nullable to it?";
-    return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getDoubleFunction(
-        ret);
+    return (double) GEN_JNI.org_jni_1zero_SampleForTests_getDoubleFunction(ret);
   }
 
   @Override
   public float getFloatFunction() {
-    return (float) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFloatFunction();
+    return (float) GEN_JNI.org_jni_1zero_SampleForTests_getFloatFunction();
   }
 
   @Override
   public Object getNonPODDatatype(SampleForTests jcaller) {
     assert jcaller != null : "Parameter \"jcaller\" was null. Add @Nullable to it?";
-    return (Object) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getNonPODDatatype(
-        jcaller);
+    return (Object) GEN_JNI.org_jni_1zero_SampleForTests_getNonPODDatatype(jcaller);
   }
 
   @Override
   public Throwable getThrowable(Throwable arg0) {
     assert arg0 != null : "Parameter \"arg0\" was null. Add @Nullable to it?";
-    return (Throwable) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_getThrowable(
-        arg0);
+    return (Throwable) GEN_JNI.org_jni_1zero_SampleForTests_getThrowable(arg0);
   }
 
   @Override
@@ -103,7 +94,7 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     assert bytes != null : "Parameter \"bytes\" was null. Add @Nullable to it?";
     assert convertedType != null : "Parameter \"convertedType\" was null. Add @Nullable to it?";
     assert nonConvertedArray != null : "Parameter \"nonConvertedArray\" was null. Add @Nullable to it?";
-    return (long) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_init(
+    return (long) GEN_JNI.org_jni_1zero_SampleForTests_init(
         caller,
         param,
         bytes,
@@ -115,21 +106,19 @@ public class SampleForTestsJni implements SampleForTests.Natives {
   public void iterateAndDoSomethingWithStructB(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(
-        nativeCPPClass,
-        caller);
+    GEN_JNI.org_jni_1zero_SampleForTests_iterateAndDoSomethingWithStructB(nativeCPPClass, caller);
   }
 
   @Override
   public List listTest2(Set items) {
     assert items != null : "Parameter \"items\" was null. Add @Nullable to it?";
-    return (List) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_listTest2(items);
+    return (List) GEN_JNI.org_jni_1zero_SampleForTests_listTest2(items);
   }
 
   @Override
   public Map mapTest2(Map arg0) {
     assert arg0 != null : "Parameter \"arg0\" was null. Add @Nullable to it?";
-    return (Map) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_mapTest2(arg0);
+    return (Map) GEN_JNI.org_jni_1zero_SampleForTests_mapTest2(arg0);
   }
 
   @Override
@@ -137,19 +126,14 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     assert nativeCPPClass != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
     assert strings != null : "Parameter \"strings\" was null. Add @Nullable to it?";
-    return (int) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_method(
-        nativeCPPClass,
-        caller,
-        strings);
+    return (int) GEN_JNI.org_jni_1zero_SampleForTests_method(nativeCPPClass, caller, strings);
   }
 
   @Override
   public double methodOtherP0(long nativePtr, SampleForTests caller) {
     assert nativePtr != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
-    return (double) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodOtherP0(
-        nativePtr,
-        caller);
+    return (double) GEN_JNI.org_jni_1zero_SampleForTests_methodOtherP0(nativePtr, caller);
   }
 
   @Override
@@ -161,34 +145,25 @@ public class SampleForTestsJni implements SampleForTests.Natives {
     assert l != null : "Parameter \"l\" was null. Add @Nullable to it?";
     assert f != null : "Parameter \"f\" was null. Add @Nullable to it?";
     assert d != null : "Parameter \"d\" was null. Add @Nullable to it?";
-    return (boolean[]) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_primitiveArrays(
-        b,
-        c,
-        s,
-        i,
-        l,
-        f,
-        d);
+    return (boolean[]) GEN_JNI.org_jni_1zero_SampleForTests_primitiveArrays(b, c, s, i, l, f, d);
   }
 
   @Override
   public String returnAString(long nativeCPPClass, SampleForTests caller) {
     assert nativeCPPClass != 0;
     assert caller != null : "Parameter \"caller\" was null. Add @Nullable to it?";
-    return (String) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_returnAString(
-        nativeCPPClass,
-        caller);
+    return (String) GEN_JNI.org_jni_1zero_SampleForTests_returnAString(nativeCPPClass, caller);
   }
 
   @Override
   public int returnFromEnum() {
-    return (int) GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_returnFromEnum();
+    return (int) GEN_JNI.org_jni_1zero_SampleForTests_returnFromEnum();
   }
 
   @Override
   public void setNonPODDatatype(SampleForTests obj, Rect rect) {
     assert obj != null : "Parameter \"obj\" was null. Add @Nullable to it?";
     assert rect != null : "Parameter \"rect\" was null. Add @Nullable to it?";
-    GEN_JNI.this_is_a_package_prefix_org_jni_1zero_SampleForTests_setNonPODDatatype(obj, rect);
+    GEN_JNI.org_jni_1zero_SampleForTests_setNonPODDatatype(obj, rect);
   }
 }

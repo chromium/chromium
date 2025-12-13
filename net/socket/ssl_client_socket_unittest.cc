@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <ranges>
@@ -18,7 +19,6 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -36,7 +36,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "crypto/rsa_private_key.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
@@ -96,6 +95,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bio.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
@@ -109,6 +109,8 @@ using net::test::IsOk;
 using testing::_;
 using testing::Bool;
 using testing::Combine;
+using testing::ElementsAreArray;
+using testing::Not;
 using testing::Return;
 using testing::Values;
 using testing::ValuesIn;
@@ -692,12 +694,20 @@ class SSLClientSocketTest : public PlatformTest, public WithTaskEnvironment {
   // Starts the embedded test server with the specified parameters. Returns true
   // on success.
   bool StartEmbeddedTestServer(
-      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      base::span<const EmbeddedTestServer::ServerCertificateConfig>
+          cert_configs,
       const SSLServerConfig& server_config) {
     embedded_test_server_ =
         std::make_unique<EmbeddedTestServer>(EmbeddedTestServer::TYPE_HTTPS);
-    embedded_test_server_->SetSSLConfig(cert_config, server_config);
+    embedded_test_server_->SetSSLConfig(cert_configs, server_config);
     return FinishStartingEmbeddedTestServer();
+  }
+
+  bool StartEmbeddedTestServer(
+      const EmbeddedTestServer::ServerCertificateConfig& cert_config,
+      const SSLServerConfig& server_config) {
+    return StartEmbeddedTestServer(base::span_from_ref(cert_config),
+                                   server_config);
   }
 
   bool FinishStartingEmbeddedTestServer() {
@@ -1165,8 +1175,9 @@ class ZeroRTTResponse : public test_server::HttpResponse {
 
 std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     const test_server::HttpRequest& request) {
-  if (request.GetURL().path() != "/zerortt" || !request.ssl_info)
+  if (request.GetURL().GetPath() != "/zerortt" || !request.ssl_info) {
     return nullptr;
+  }
 
   return std::make_unique<ZeroRTTResponse>(
       request.ssl_info->early_data_received);
@@ -2704,11 +2715,11 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
   // Encoding of SCT List containing 'test'.
   std::string_view sct_ext("\x00\x06\x00\x04test", 8);
 
-  SSLServerConfig server_config = GetServerConfig();
-  server_config.signed_cert_timestamp_list =
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.tls_signed_cert_timestamp_list =
       std::vector<uint8_t>(sct_ext.begin(), sct_ext.end());
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  SSLServerConfig server_config = GetServerConfig();
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, server_config));
 
   int rv;
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
@@ -2729,7 +2740,7 @@ TEST_P(SSLClientSocketVersionTest, ConnectSignedCertTimestampsTLSExtension) {
 // Tests that Trust Anchor IDs are sent when configured via SSLConfig.
 TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
   SSLConfig ssl_config;
-  ssl_config.trust_anchor_ids = {0x03, 0x01, 0x02, 0x03};
+  ssl_config.trust_anchor_ids = std::vector<uint8_t>{0x03, 0x01, 0x02, 0x03};
 
   bool ran_callback = false;
   SSLServerConfig server_config = GetServerConfig();
@@ -2737,28 +2748,56 @@ TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
       base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
         const uint8_t* data;
         size_t len = 0;
-        EXPECT_TRUE(SSL_early_callback_ctx_extension_get(
-            client_hello, TLSEXT_TYPE_trust_anchors, &data, &len));
-        // The TLS extension should contain the configured trust anchor IDs
-        // list, plus a 2-byte length prefix.
-        if (len != ssl_config.trust_anchor_ids.size() + 2) {
-          // Ideally this would be ASSERT_EQ(len,
-          // ssl_config.trust_anchor_ids.size() + 2), but we can't ASSERT in a
-          // function with a return value.
+        if (!SSL_early_callback_ctx_extension_get(
+                client_hello, TLSEXT_TYPE_trust_anchors, &data, &len) ||
+            len < 2) {
           return false;
         }
-        EXPECT_EQ(
-            base::span(ssl_config.trust_anchor_ids),
-            // SAFETY:
-            // https://commondatastorage.googleapis.com/chromium-boringssl-docs/ssl.h.html#SSL_early_callback_ctx_extension_get
-            // The comment of `SSL_early_callback_ctx_extension_get` says
-            // that `data` is set to extension contents, and `len` is the
-            // length of the extension contents.
-            //
-            // Earlier, we checked that ssl_config.trust_anchor_ids.size() + 2
-            // == len.
-            UNSAFE_BUFFERS(
-                base::span(data + 2, ssl_config.trust_anchor_ids.size())));
+        // SAFETY: `SSL_early_callback_ctx_extension_get` sets `data` and `len`
+        // to a valid span.
+        auto extension = UNSAFE_BUFFERS(base::span(data, len));
+        // The TLS extension should contain the configured trust anchor IDs
+        // list, plus a 2-byte length prefix.
+        EXPECT_EQ(extension[0], 0u);
+        EXPECT_EQ(extension[1], ssl_config.trust_anchor_ids->size());
+        EXPECT_EQ(base::span(*ssl_config.trust_anchor_ids),
+                  extension.subspan(2u));
+        ran_callback = true;
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  EXPECT_THAT(rv, IsOk());
+  EXPECT_TRUE(ran_callback);
+}
+
+// Tests that an empty Trust Anchor ID list is sent when configured.
+TEST_P(SSLClientSocketVersionTest, ConnectWithEmptyTrustAnchorIDs) {
+  SSLConfig ssl_config;
+  ssl_config.trust_anchor_ids.emplace();
+
+  bool ran_callback = false;
+  SSLServerConfig server_config = GetServerConfig();
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        const uint8_t* data;
+        size_t len = 0;
+        if (!SSL_early_callback_ctx_extension_get(
+                client_hello, TLSEXT_TYPE_trust_anchors, &data, &len) ||
+            len < 2) {
+          return false;
+        }
+        // SAFETY: `SSL_early_callback_ctx_extension_get` sets `data` and `len`
+        // to a valid span.
+        auto extension = UNSAFE_BUFFERS(base::span(data, len));
+        // The TLS extension should contain the configured trust anchor IDs
+        // list (empty), plus a 2-byte length prefix.
+        EXPECT_EQ(extension.size(), 2u);
+        EXPECT_EQ(extension[0], 0u);
+        EXPECT_EQ(extension[1], 0u);
         ran_callback = true;
         return true;
       });
@@ -2777,12 +2816,20 @@ TEST_P(SSLClientSocketVersionTest, ConnectWithTrustAnchorIDs) {
 // the server serves), and properly retrieves the server's Trust Anchor IDs from
 // the handshake on error.
 TEST_P(SSLClientSocketVersionTest, ConnectToServerWithTrustAnchorIDs) {
-  SSLServerConfig server_config;
-  SSLConfig client_config;
-  server_config.intermediate_trust_anchor_id = {0x01, 0x02, 0x03};
+  EmbeddedTestServer::ServerCertificateConfig tai_config;
+  tai_config.intermediate = EmbeddedTestServer::IntermediateType::kNone;
+  tai_config.trust_anchor_id = {0x01, 0x02, 0x03};
 
-  ASSERT_TRUE(StartEmbeddedTestServer(
-      EmbeddedTestServer::CERT_OK_BY_INTERMEDIATE, server_config));
+  EmbeddedTestServer::ServerCertificateConfig default_config;
+  default_config.intermediate =
+      EmbeddedTestServer::IntermediateType::kInHandshake;
+
+  SSLServerConfig server_config;
+
+  ASSERT_TRUE(
+      StartEmbeddedTestServer({tai_config, default_config}, server_config));
+
+  SSLConfig client_config;
 
   // If the client doesn't advertise any trust anchor IDs on the connection,
   // then the server should provide a full chain (with the intermediate).
@@ -3053,6 +3100,92 @@ TEST_P(SSLClientSocketVersionTest, SessionResumption) {
   ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
   ASSERT_THAT(rv, IsOk());
   ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+}
+
+// Tests that when the session cache is flushed during a connection handshake,
+// that session does not get cached, and that connections started after the
+// flush are still cached.
+TEST_P(SSLClientSocketVersionTest, FlushSessionCacheDuringHandshake) {
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, GetServerConfig()));
+
+  // First, perform a full handshake.
+  SSLConfig ssl_config;
+  int rv;
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  SSLInfo ssl_info;
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+
+  // TLS 1.2 with False Start and TLS 1.3 cause the ticket to arrive later, so
+  // use the socket to ensure the session ticket has been picked up.
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  sock_.reset();
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Start a 2nd connection with a FakeBlockingStreamSocket, but block it
+  // before it completes.
+  HostPortPair second_host("b.com", 443);
+  auto real_transport = std::make_unique<TCPClientSocket>(
+      addr(), nullptr, nullptr, NetLog::Get(), NetLogSource());
+  auto transport =
+      std::make_unique<FakeBlockingStreamSocket>(std::move(real_transport));
+  FakeBlockingStreamSocket* raw_transport = transport.get();
+  TestCompletionCallback callback;
+  ASSERT_THAT(callback.GetResult(transport->Connect(callback.callback())),
+              IsOk());
+  auto sock2 =
+      CreateSSLClientSocket(std::move(transport), second_host, ssl_config);
+  raw_transport->BlockReadResult();
+  EXPECT_THAT(sock2->Connect(callback.callback()), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Flush the session cache while the 2nd connection is pending.
+  ssl_client_session_cache_->Flush();
+  // The 1st connection's session should be removed.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 0u);
+
+  // Continue the 2nd connection. It should complete successfully, but not be
+  // added to session cache.
+  raw_transport->UnblockReadResult();
+  EXPECT_THAT(callback.WaitForResult(), IsOk());
+  ASSERT_TRUE(sock2->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock2.get()), IsOk());
+  EXPECT_EQ(ssl_client_session_cache_->size(), 0u);
+
+  // Connecting again with the 2nd host should not resume.
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, second_host, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  // The new session should be cached.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 1u);
+
+  // Since the session cache was cleared, handshake with the same host as the
+  // 1st connection doesn't resume either.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_FULL, ssl_info.handshake_type);
+  EXPECT_THAT(MakeHTTPRequest(sock_.get()), IsOk());
+  // Both new sessions should be cached.
+  EXPECT_EQ(ssl_client_session_cache_->size(), 2u);
+
+  // Session resumption should work for sessions cached after the flush.
+  ASSERT_TRUE(CreateAndConnectSSLClientSocket(ssl_config, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
+
+  ASSERT_TRUE(
+      CreateAndConnectSSLClientSocketWithHost(ssl_config, second_host, &rv));
+  ASSERT_THAT(rv, IsOk());
+  ASSERT_TRUE(sock_->GetSSLInfo(&ssl_info));
+  EXPECT_EQ(SSLInfo::HANDSHAKE_RESUME, ssl_info.handshake_type);
 }
 
 namespace {
@@ -3429,9 +3562,9 @@ TEST_F(SSLClientSocketTest, SHA1) {
   // Disable RSA key exchange, to ensure the server does not pick a non-signing
   // cipher.
   server_config.require_ecdhe = true;
-  server_config.signature_algorithm_for_testing = SSL_SIGN_RSA_PKCS1_SHA1;
-  ASSERT_TRUE(
-      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+  EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.signature_algorithm_for_testing = SSL_SIGN_ECDSA_SHA1;
+  ASSERT_TRUE(StartEmbeddedTestServer(cert_config, server_config));
 
   // SHA-1 server signatures are always disabled.
   int rv;
@@ -3887,12 +4020,30 @@ TEST_F(SSLClientSocketTest, ClearSessionCacheOnClientCertDatabaseChange) {
   EXPECT_TRUE(sock_->IsConnected());
 
   EXPECT_EQ(1U, context_->ssl_client_session_cache()->size());
+  const uint64_t generation_number_0 =
+      context_->ssl_client_session_cache()->generation_number();
 
   CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0U, context_->GetClientCertificateCachedServersForTesting().size());
   EXPECT_EQ(0U, context_->ssl_client_session_cache()->size());
+
+  const uint64_t generation_number_1 =
+      context_->ssl_client_session_cache()->generation_number();
+  EXPECT_NE(generation_number_0, generation_number_1);
+
+  // Simulate another ClientCertStoreChanged while the client auth cache is
+  // empty.
+  CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
+  base::RunLoop().RunUntilIdle();
+
+  // Since there were no entries in the SSLClientAuthCache, the database
+  // changed event should not have triggered a SSLClientSessionCache flush nor
+  // an observer OnSSLConfigForServersChanged call (which is verified since the
+  // StrictMock has no more expectations left to satisfy.)
+  EXPECT_EQ(generation_number_1,
+            context_->ssl_client_session_cache()->generation_number());
 
   context_->RemoveObserver(&observer);
 }
@@ -5534,11 +5685,8 @@ TEST_P(SSLClientSocketReadTest, IdleAfterRead) {
   bssl::UniquePtr<EVP_PKEY> pkey =
       key_util::LoadEVP_PKEYFromPEM(certs_dir.AppendASCII("ok_cert.pem"));
   ASSERT_TRUE(pkey);
-  std::unique_ptr<crypto::RSAPrivateKey> key =
-      crypto::RSAPrivateKey::CreateFromKey(pkey.get());
-  ASSERT_TRUE(key);
   std::unique_ptr<SSLServerContext> server_context =
-      CreateSSLServerContext(cert.get(), *key.get(), GetServerConfig());
+      CreateSSLServerContext(cert.get(), pkey.get(), GetServerConfig());
 
   // Complete the SSL handshake on both sides.
   std::unique_ptr<SSLClientSocket> client(CreateSSLClientSocket(
@@ -5621,17 +5769,11 @@ TEST_F(SSLClientSocketTest, SSLOverSSLBadCertificate) {
   ASSERT_THAT(client_callback.GetResult(client_rv), IsOk());
 
   // Set up a pair of SSL servers.
-  std::unique_ptr<crypto::RSAPrivateKey> ok_key =
-      crypto::RSAPrivateKey::CreateFromKey(ok_pkey.get());
-  ASSERT_TRUE(ok_key);
   std::unique_ptr<SSLServerContext> ok_server_context =
-      CreateSSLServerContext(ok_cert.get(), *ok_key.get(), SSLServerConfig());
+      CreateSSLServerContext(ok_cert.get(), ok_pkey.get(), SSLServerConfig());
 
-  std::unique_ptr<crypto::RSAPrivateKey> expired_key =
-      crypto::RSAPrivateKey::CreateFromKey(expired_pkey.get());
-  ASSERT_TRUE(expired_key);
   std::unique_ptr<SSLServerContext> expired_server_context =
-      CreateSSLServerContext(expired_cert.get(), *expired_key.get(),
+      CreateSSLServerContext(expired_cert.get(), expired_pkey.get(),
                              SSLServerConfig());
 
   // Complete the proxy SSL handshake with ok_cert.pem. This should succeed.
@@ -6324,7 +6466,10 @@ TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
     SCOPED_TRACE(enabled);
 
     SSLContextConfig config;
-    config.post_quantum_key_agreement_enabled = enabled;
+    if (!enabled) {
+      std::erase_if(config.supported_named_groups,
+                    std::mem_fn(&SSLNamedGroupInfo::IsPostQuantum));
+    }
     ssl_config_service_->UpdateSSLConfigAndNotify(config);
     int rv;
     ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
@@ -6333,6 +6478,69 @@ TEST_F(SSLClientSocketTest, PostQuantumKeyExchange) {
     } else {
       EXPECT_THAT(rv, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
     }
+  }
+}
+
+// Test that the compliance policy that reorders the cipher preference for TLS
+// 1.3 can be configured.
+TEST_F(SSLClientSocketTest, Tls13CipherPreferAes256) {
+  std::vector<std::string> cipher_names;
+  SSLServerConfig server_config;
+  server_config.version_min = SSL_PROTOCOL_VERSION_TLS1_3;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  // Set a callback that copies the ordered list of TLS 1.3 cipher names out of
+  // the ClientHello.
+  server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting([&](const SSL_CLIENT_HELLO* client_hello) {
+        cipher_names.clear();
+        // Each cipher is encoded as a two-byte, big-endian integer.
+        CHECK(client_hello->cipher_suites_len % 2 == 0);
+        // SAFETY: BoringSSL API guarantees that `client_hello->cipher_suites`
+        // and `client_hello->ciphers_suites_len` describe a valid span.
+        auto cipher_suites_reader = base::SpanReader{UNSAFE_BUFFERS(base::span{
+            client_hello->cipher_suites, client_hello->cipher_suites_len})};
+        uint16_t value;
+        while (cipher_suites_reader.ReadU16BigEndian(value)) {
+          // Skip values we don't recognize as any TLS 1.3 cipher.
+          const SSL_CIPHER* cipher = SSL_get_cipher_by_value(value);
+          if (!cipher || SSL_CIPHER_get_min_version(cipher) != TLS1_3_VERSION) {
+            continue;
+          }
+          cipher_names.emplace_back(SSL_CIPHER_standard_name(cipher));
+        }
+        return true;
+      });
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
+
+  // The compliance policy prefers AES-256-GCM over AES-128-GCM over anything
+  // else.
+  const auto kExpectedCipherNamesWithPolicy = std::to_array<const char*>(
+      {"TLS_AES_256_GCM_SHA384", "TLS_AES_128_GCM_SHA256",
+       "TLS_CHACHA20_POLY1305_SHA256"});
+
+  SSLContextConfig config;
+  config.version_min = SSL_PROTOCOL_VERSION_TLS1_3;
+  config.version_max = SSL_PROTOCOL_VERSION_TLS1_3;
+  {
+    // Compliance policy not configured. The default list differs from the
+    // expected ciphers under the policy.
+    config.tls13_cipher_prefer_aes_256 = false;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(cipher_names,
+                Not(ElementsAreArray(kExpectedCipherNamesWithPolicy)));
+  }
+  {
+    // Compliance policy configured. Resulting ciphers should match expectation.
+    config.tls13_cipher_prefer_aes_256 = true;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+    int rv;
+    ASSERT_TRUE(CreateAndConnectSSLClientSocket(SSLConfig(), &rv));
+    EXPECT_THAT(rv, IsOk());
+    EXPECT_THAT(cipher_names, ElementsAreArray(kExpectedCipherNamesWithPolicy));
   }
 }
 

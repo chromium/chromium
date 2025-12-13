@@ -48,11 +48,33 @@ class CacheAliasSearchPrefetchURLLoader
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:SearchPrefetchCacheAliasFallbackReasonEnum)
 
+  // For investigating the cache miss cases, tentatively introduce a DryRun
+  // mode.
+  // TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+  // investigation is done.
+  enum class Mode {
+    // Uses a stored url to help the resource request to locate the
+    // corresponding prefetched response.
+    kNormal = 0,
+    // Request's URL remains the same. It entirely relies on HttpCache to locate
+    // the prefetched response. Ideally the two modes should have the same
+    // success rate, thanks to NoVarySearch disk cache support.
+    kDryRun = 1,
+  };
+
+  // Creates a DryRun mode CacheAliasSearchPrefetchURLLoader for debugging.
+  // TODO(https://crbug.com/413557424): Remove the DryRun mode once the
+  // investigation is done.
+  CacheAliasSearchPrefetchURLLoader(
+      Profile* profile,
+      const net::NetworkTrafficAnnotationTag& network_traffic_annotation);
+
   // Creates and stores state needed to do the cache lookup.
   CacheAliasSearchPrefetchURLLoader(
       Profile* profile,
       const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-      const GURL& prefetch_url);
+      const GURL& prefetch_url,
+      Mode mode = Mode::kNormal);
 
   ~CacheAliasSearchPrefetchURLLoader() override;
 
@@ -110,6 +132,8 @@ class CacheAliasSearchPrefetchURLLoader
   // Starts the cache only request to |prefetch_url_|.
   void StartLoadCachedPrefetchResponse();
 
+  const Mode mode_;
+
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};
@@ -127,7 +151,8 @@ class CacheAliasSearchPrefetchURLLoader
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 
-  // The URL for the prefetch response stored in cache.
+  // The URL for the prefetch response stored in cache. Will be an invalid URL
+  // when `this` is running in the DryRun mode.
   const GURL prefetch_url_;
 
   // Set when RestartDirect() is called.

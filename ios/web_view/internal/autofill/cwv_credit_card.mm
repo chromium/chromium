@@ -62,6 +62,10 @@
   return base::SysUTF8ToNSString(_internalCard.bank_name());
 }
 
+- (NSString*)cardNameForDisplay {
+  return base::SysUTF16ToNSString(_internalCard.CardNameForAutofillDisplay());
+}
+
 #pragma mark - NSObject
 
 - (NSString*)debugDescription {

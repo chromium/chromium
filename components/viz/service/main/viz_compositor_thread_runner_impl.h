@@ -6,10 +6,13 @@
 #define COMPONENTS_VIZ_SERVICE_MAIN_VIZ_COMPOSITOR_THREAD_RUNNER_IMPL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "build/build_config.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -54,6 +57,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
       base::RepeatingClosure* wake_up_closure) override;
   void SetIOThreadId(base::PlatformThreadId io_thread_id) override {}
   void SetGpuMainThreadId(base::PlatformThreadId gpu_main_thread_id) override {}
+  void NotifyWorkloadIncrease() override;
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params,
                               GpuServiceImpl* gpu_service) override;
   void RequestBeginFrameForGpuService(bool toggle) override;
@@ -63,6 +67,7 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
       base::flat_set<base::PlatformThreadId> thread_ids,
       base::RepeatingClosure* wake_up_closure,
       base::WaitableEvent* event);
+  void NotifyWorkloadIncreaseOnCompositorThread();
   void WakeUpOnCompositorThread();
   void CreateFrameSinkManagerOnCompositorThread(
       mojom::FrameSinkManagerParamsPtr params,
@@ -70,6 +75,8 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   void RequestBeginFrameForGpuServiceOnCompositorThread(bool toggle);
   void TearDownOnCompositorThread();
 
+  std::optional<base::TaskMonitoringScopedBoostPriority>
+      scenario_priority_boost_;
   std::unique_ptr<VizCompositorThreadType> thread_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

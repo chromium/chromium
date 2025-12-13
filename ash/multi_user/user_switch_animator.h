@@ -18,7 +18,7 @@
 
 namespace ash {
 
-class MultiUserWindowManagerImpl;
+class MultiUserWindowManager;
 
 // A class which performs transitions animations between users. Upon creation,
 // the animation gets started and upon destruction the animation gets finished
@@ -37,7 +37,7 @@ class ASH_EXPORT UserSwitchAnimator {
 
   // Creates a UserSwitchAnimator to animate between the current user and the
   // user associated with |new_account_id|.
-  UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
+  UserSwitchAnimator(MultiUserWindowManager* owner,
                      const AccountId& new_account_id,
                      base::TimeDelta animation_speed);
 
@@ -102,7 +102,7 @@ class ASH_EXPORT UserSwitchAnimator {
   void BuildUserToWindowsListMap();
 
   // The owning window manager.
-  raw_ptr<MultiUserWindowManagerImpl> owner_;
+  raw_ptr<MultiUserWindowManager> owner_;
 
   // The new user to set.
   AccountId new_account_id_;

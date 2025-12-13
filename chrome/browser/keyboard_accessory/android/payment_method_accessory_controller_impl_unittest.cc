@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/test_valuables_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -100,7 +101,7 @@ class PaymentMethodAccessoryControllerTestBase
 
     test_api(autofill_manager())
         .set_credit_card_access_manager(
-            std::make_unique<TestAccessManager>(&autofill_manager(), nullptr));
+            std::make_unique<TestAccessManager>(&autofill_manager()));
     PaymentMethodAccessoryControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_mf_controller_.AsWeakPtr(), &paydm(),
         &valuables_data_manager(), &autofill_manager(), &autofill_driver());
@@ -342,7 +343,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kVirtualCard);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
       unmasked_card, cvc);
 
   EXPECT_CALL(filling_source_observer_,
@@ -469,7 +470,7 @@ TEST_F(PaymentMethodAccessoryControllerTest,
   // Update the record type and add it to the unmasked cards cache.
   unmasked_card.set_record_type(CreditCard::RecordType::kFullServerCard);
   std::u16string cvc = u"123";
-  autofill_manager().GetCreditCardAccessManager().CacheUnmaskedCardInfo(
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
       unmasked_card, cvc);
 
   EXPECT_CALL(filling_source_observer_,
@@ -788,6 +789,55 @@ TEST_F(PaymentMethodAccessoryControllerTest, FillLoyaltyCardNumber) {
                                loyalty_card_info.value().text_to_fill()));
 
   controller()->OnFillingTriggered(field_id, loyalty_card_info.value());
+}
+
+TEST_F(PaymentMethodAccessoryControllerTest,
+       RefreshSuggestionsWithCachedBnplCard) {
+  CreditCard bnpl_card = test::GetVirtualCard();
+  bnpl_card.set_issuer_id(kBnplAffirmIssuerId);
+  bnpl_card.SetNickname(BnplIssuerIdToDisplayName(
+      ConvertToBnplIssuerIdEnum(bnpl_card.issuer_id())));
+  bnpl_card.set_is_bnpl_card(true);
+  bnpl_card.set_guid("bnpl-card-guid");
+  bnpl_card.set_virtual_card_enrollment_state(
+      CreditCard::VirtualCardEnrollmentState::kUnspecified);
+
+  std::u16string cvc = u"123";
+  autofill_manager().GetCreditCardAccessManager()->CacheUnmaskedCardInfo(
+      bnpl_card, cvc);
+  paydm().AddCreditCard(bnpl_card);
+
+  EXPECT_CALL(filling_source_observer_,
+              Run(controller(), IsFillingSourceAvailable(true)));
+  ASSERT_TRUE(controller());
+  controller()->RefreshSuggestions();
+
+  std::u16string card_number_for_display = bnpl_card.FullDigitsForDisplay();
+  std::u16string card_number_for_fill =
+      bnpl_card.GetRawInfo(CREDIT_CARD_NUMBER);
+  std::u16string unmasked_a11y = card_number_for_fill + u" " + u"Affirm";
+
+  EXPECT_EQ(
+      controller()->GetSheetData(),
+      PaymentMethodAccessorySheetDataBuilder()
+          .AddUserInfo(bnpl_card.issuer_id())
+          .AppendField(
+              /*suggestion_type=*/AccessorySuggestionType::kCreditCardNumber,
+              /*display_text=*/card_number_for_display,
+              /*text_to_fill=*/card_number_for_fill,
+              /*a11y_description=*/unmasked_a11y,
+              /*id=*/std::string(),
+              /*is_obfuscated=*/false,
+              /*selectable=*/true)
+          .AppendSimpleField(
+              AccessorySuggestionType::kCreditCardExpirationMonth,
+              bnpl_card.Expiration2DigitMonthAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardExpirationYear,
+                             bnpl_card.Expiration4DigitYearAsString())
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardNameFull,
+                             bnpl_card.GetRawInfo(CREDIT_CARD_NAME_FULL))
+          .AppendSimpleField(AccessorySuggestionType::kCreditCardCvc, cvc)
+          .Build());
 }
 
 }  // namespace autofill

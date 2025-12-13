@@ -338,7 +338,7 @@ public class TranslateBridge {
         void moveAcceptLanguage(
                 Profile profile, @JniType("std::string") String language, int offset);
 
-        void setLanguageOrder(Profile profile, String[] codes);
+        void setLanguageOrder(Profile profile, @JniType("std::vector<std::string>") String[] codes);
 
         boolean isBlockedLanguage(Profile profile, @JniType("std::string") String language);
 

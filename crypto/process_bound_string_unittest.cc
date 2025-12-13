@@ -63,18 +63,7 @@ TEST(ProcessBound, Move) {
   EXPECT_EQ(str2.value(), "hello");
 }
 
-class ProcessBoundFeatureTest : public ::testing::Test,
-                                public ::testing::WithParamInterface<
-                                    /*kProcessBoundStringEncryption*/ bool> {
- public:
-  ProcessBoundFeatureTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        crypto::features::kProcessBoundStringEncryption, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using ProcessBoundEncryptionTest = ::testing::Test;
 
 // Only Windows supports real encryption at the moment. On other platforms, the
 // underlying decrypted buffer is returned and since it was never decrypted,
@@ -85,46 +74,25 @@ class ProcessBoundFeatureTest : public ::testing::Test,
 // Reading into freed memory upsets sanitizers.
 #if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
     !defined(MEMORY_SANITIZER)
-TEST_P(ProcessBoundFeatureTest, Encryption) {
+TEST_F(ProcessBoundEncryptionTest, Encryption) {
   [[maybe_unused]] const char* data;
   {
     crypto::ProcessBound<std::string> process_bound(std::string("hello"));
     crypto::SecureString secure = process_bound.secure_value();
     constexpr std::array<uint8_t, 5> kPlainText = {'h', 'e', 'l', 'l', 'o'};
-    if (GetParam()) {
-      EXPECT_THAT(process_bound.maybe_encrypted_data_,
-                  ::testing::Not(ContainsSubsequence(kPlainText)));
-    } else {
-      EXPECT_THAT(process_bound.maybe_encrypted_data_,
-                  ContainsSubsequence(kPlainText));
-    }
+    EXPECT_THAT(process_bound.maybe_encrypted_data_,
+                ::testing::Not(ContainsSubsequence(kPlainText)));
     EXPECT_STREQ(secure.c_str(), "hello");
     data = secure.data();
   }
 // In debug builds, frees are poisoned after the SecureString allocator has
 // zeroed it, so this check can only take place for release builds.
 #if defined(NDEBUG)
-  if (GetParam()) {
-    EXPECT_EQ(data[0], '\x00');
-  }
+  EXPECT_EQ(data[0], '\x00');
 #endif  // defined(NDEBUG)
 }
 #endif  // !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) &&
         // !defined(MEMORY_SANITIZER)
 #endif  // #if BUILDFLAG(IS_WIN)
-
-// On all other platforms, make sure the basic functionality works when
-// encryption is both enabled and disabled.
-TEST_P(ProcessBoundFeatureTest, Basic) {
-  crypto::ProcessBound<std::string> process_bound(std::string("hello"));
-  EXPECT_STREQ("hello", process_bound.value().c_str());
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ProcessBoundFeatureTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "Enabled" : "Disabled";
-                         });
 
 }  // namespace crypto

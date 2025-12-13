@@ -94,6 +94,10 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
     case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE);
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // String is not needed here because the Android (Clank) flow sets it on
+    // the Java side and on the desktop side, the select issuer dialog is used
+    // for the progress screen in this scenario.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -115,6 +119,10 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // String is not needed here because the Android (Clank) flow sets it on
+    // the Java side and on the desktop side, the select issuer dialog is used
+    // for the progress screen in this scenario.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -135,6 +143,10 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
         kCardInfoRetrievalEnrolledUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // String is not needed here because the Android (Clank) flow sets it on
+    // the Java side and on the desktop side, the select issuer dialog is used
+    // for the progress screen in this scenario.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -159,6 +171,10 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
     case AutofillProgressDialogType::kBnplFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_PROGRESS_DIALOG_LOADING_MESSAGE);
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // String is not needed here because the Android (Clank) flow sets it on
+    // the Java side and on the desktop side, the select issuer dialog is used
+    // for the progress screen in this scenario.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }
@@ -180,6 +196,10 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_BNPL_FETCH_VCN_PROGRESS_DIALOG_CONFIRMATION_MESSAGE);
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
+    case AutofillProgressDialogType::kBnplAmountExtractionProgressUi:
+    // String is not needed here because the Android (Clank) flow sets it on
+    // the Java side and on the desktop side, the select issuer dialog is used
+    // for the progress screen in this scenario.
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
   }

@@ -398,9 +398,9 @@ void SharedStorage::UpdateDocumentSharedStorage(
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageUpdate(
           std::move(method),
-          WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                        WrapPersistent(resolver), WrapWeakPersistent(this),
-                        setter_method, GlobalScope::kWindow, start_time));
+          blink::BindOnce(&OnSharedStorageUpdateFinished,
+                          WrapPersistent(resolver), WrapWeakPersistent(this),
+                          setter_method, GlobalScope::kWindow, start_time));
 }
 
 void SharedStorage::BatchUpdateDocumentSharedStorage(
@@ -413,10 +413,10 @@ void SharedStorage::BatchUpdateDocumentSharedStorage(
   GetSharedStorageDocumentService(execution_context)
       ->SharedStorageBatchUpdate(
           std::move(methods), std::move(optional_with_lock),
-          WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                        WrapPersistent(resolver), WrapWeakPersistent(this),
-                        SharedStorageSetterMethod::kBatchUpdate,
-                        GlobalScope::kWindow, start_time));
+          blink::BindOnce(&OnSharedStorageUpdateFinished,
+                          WrapPersistent(resolver), WrapWeakPersistent(this),
+                          SharedStorageSetterMethod::kBatchUpdate,
+                          GlobalScope::kWindow, start_time));
 }
 
 ScriptPromise<IDLAny> SharedStorage::set(ScriptState* script_state,
@@ -452,7 +452,7 @@ ScriptPromise<IDLAny> SharedStorage::set(
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->document() && window->document()->IsPrerendering()) {
-      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
           &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
           WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
           WrapPersistent(resolver), SharedStorageSetterMethod::kSet,
@@ -466,10 +466,10 @@ ScriptPromise<IDLAny> SharedStorage::set(
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
             method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kSet,
-                          GlobalScope::kSharedStorageWorklet, start_time));
+            blink::BindOnce(&OnSharedStorageUpdateFinished,
+                            WrapPersistent(resolver), WrapPersistent(this),
+                            SharedStorageSetterMethod::kSet,
+                            GlobalScope::kSharedStorageWorklet, start_time));
   }
 
   return promise;
@@ -508,7 +508,7 @@ ScriptPromise<IDLAny> SharedStorage::append(
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->document() && window->document()->IsPrerendering()) {
-      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
           &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
           WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
           WrapPersistent(resolver), SharedStorageSetterMethod::kAppend,
@@ -522,10 +522,10 @@ ScriptPromise<IDLAny> SharedStorage::append(
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
             method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kAppend,
-                          GlobalScope::kSharedStorageWorklet, start_time));
+            blink::BindOnce(&OnSharedStorageUpdateFinished,
+                            WrapPersistent(resolver), WrapPersistent(this),
+                            SharedStorageSetterMethod::kAppend,
+                            GlobalScope::kSharedStorageWorklet, start_time));
   }
 
   return promise;
@@ -562,7 +562,7 @@ ScriptPromise<IDLAny> SharedStorage::Delete(
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->document() && window->document()->IsPrerendering()) {
-      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
           &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
           WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
           WrapPersistent(resolver), SharedStorageSetterMethod::kDelete,
@@ -576,10 +576,10 @@ ScriptPromise<IDLAny> SharedStorage::Delete(
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
             method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kDelete,
-                          GlobalScope::kSharedStorageWorklet, start_time));
+            blink::BindOnce(&OnSharedStorageUpdateFinished,
+                            WrapPersistent(resolver), WrapPersistent(this),
+                            SharedStorageSetterMethod::kDelete,
+                            GlobalScope::kSharedStorageWorklet, start_time));
   }
 
   return promise;
@@ -614,7 +614,7 @@ ScriptPromise<IDLAny> SharedStorage::clear(
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->document() && window->document()->IsPrerendering()) {
-      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
           &SharedStorage::UpdateDocumentSharedStorage, WrapWeakPersistent(this),
           WrapWeakPersistent(execution_context), method->TakeMojomMethod(),
           WrapPersistent(resolver), SharedStorageSetterMethod::kClear,
@@ -628,10 +628,10 @@ ScriptPromise<IDLAny> SharedStorage::clear(
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageUpdate(
             method->TakeMojomMethod(),
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kClear,
-                          GlobalScope::kSharedStorageWorklet, start_time));
+            blink::BindOnce(&OnSharedStorageUpdateFinished,
+                            WrapPersistent(resolver), WrapPersistent(this),
+                            SharedStorageSetterMethod::kClear,
+                            GlobalScope::kSharedStorageWorklet, start_time));
   }
 
   return promise;
@@ -702,7 +702,7 @@ ScriptPromise<IDLAny> SharedStorage::batchUpdate(
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     if (window->document() && window->document()->IsPrerendering()) {
-      window->document()->AddPostPrerenderingActivationStep(WTF::BindOnce(
+      window->document()->AddPostPrerenderingActivationStep(blink::BindOnce(
           &SharedStorage::BatchUpdateDocumentSharedStorage,
           WrapWeakPersistent(this), WrapWeakPersistent(execution_context),
           optional_with_lock, std::move(mojom_methods),
@@ -716,10 +716,10 @@ ScriptPromise<IDLAny> SharedStorage::batchUpdate(
     GetSharedStorageWorkletServiceClient(execution_context)
         ->SharedStorageBatchUpdate(
             std::move(mojom_methods), optional_with_lock,
-            WTF::BindOnce(&OnSharedStorageUpdateFinished,
-                          WrapPersistent(resolver), WrapPersistent(this),
-                          SharedStorageSetterMethod::kBatchUpdate,
-                          GlobalScope::kSharedStorageWorklet, start_time));
+            blink::BindOnce(&OnSharedStorageUpdateFinished,
+                            WrapPersistent(resolver), WrapPersistent(this),
+                            SharedStorageSetterMethod::kBatchUpdate,
+                            GlobalScope::kSharedStorageWorklet, start_time));
   }
 
   return promise;
@@ -800,7 +800,7 @@ ScriptPromise<IDLString> SharedStorage::get(ScriptState* script_state,
   std::string histogram_name = execution_context->IsWindow()
                                    ? "Storage.SharedStorage.Document.Timing.Get"
                                    : "Storage.SharedStorage.Worklet.Timing.Get";
-  auto callback = WTF::BindOnce(
+  auto callback = blink::BindOnce(
       [](ScriptPromiseResolver<IDLString>* resolver,
          SharedStorage* shared_storage, base::TimeTicks start_time,
          const std::string& histogram_name,
@@ -864,7 +864,7 @@ ScriptPromise<IDLUnsignedLong> SharedStorage::length(
       CheckSharedStoragePermissionsPolicy(*execution_context, exception_state));
 
   GetSharedStorageWorkletServiceClient(execution_context)
-      ->SharedStorageLength(WTF::BindOnce(
+      ->SharedStorageLength(blink::BindOnce(
           [](ScriptPromiseResolver<IDLUnsignedLong>* resolver,
              SharedStorage* shared_storage, base::TimeTicks start_time,
              bool success, const String& error_message, uint32_t length) {
@@ -912,7 +912,7 @@ ScriptPromise<IDLDouble> SharedStorage::remainingBudget(
       CheckSharedStoragePermissionsPolicy(*execution_context, exception_state));
 
   GetSharedStorageWorkletServiceClient(execution_context)
-      ->SharedStorageRemainingBudget(WTF::BindOnce(
+      ->SharedStorageRemainingBudget(blink::BindOnce(
           [](ScriptPromiseResolver<IDLDouble>* resolver,
              SharedStorage* shared_storage, base::TimeTicks start_time,
              bool success, const String& error_message, double bits) {

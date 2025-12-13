@@ -17,7 +17,8 @@ ClientDownloadRequest::DownloadType GetDownloadType(
 
   // TODO(nparker): Put all of this logic into the FileTypePolicies
   // protobuf.
-  if (base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".apk"))) {
+  if (base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".apk")) ||
+      base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".apkm"))) {
     return ClientDownloadRequest::ANDROID_APK;
   }
   if (base::EqualsCaseInsensitiveASCII(ext, FILE_PATH_LITERAL(".crx"))) {

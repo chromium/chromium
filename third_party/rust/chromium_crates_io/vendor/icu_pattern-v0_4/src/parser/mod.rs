@@ -28,8 +28,6 @@ macro_rules! handle_literal {
     ($self:ident, $quoted:expr, $next_state:expr) => {{
         let range = $self.advance_state($self.idx, $next_state);
         if !range.is_empty() {
-            #[allow(clippy::indexing_slicing)]
-            // TODO(#1668) Clippy exceptions need docs or fixing.
             return Ok(Some(ParsedPatternItem::Literal {
                 content: Cow::Borrowed(&$self.input[range]),
                 quoted: $quoted,
@@ -336,8 +334,6 @@ impl<'p, P> Parser<'p, P> {
             match self.state {
                 ParserState::Placeholder if *b == b'}' => {
                     let range = self.advance_state(self.idx, ParserState::Default);
-                    #[allow(clippy::indexing_slicing)]
-                    // TODO(#1668) Clippy exceptions need docs or fixing.
                     return self.input[range]
                         .parse()
                         .map(|ret| Some(ParsedPatternItem::Placeholder(ret)))
@@ -388,8 +384,6 @@ impl<'p, P> Parser<'p, P> {
                 let range = self.start_idx..self.len;
                 if !range.is_empty() {
                     self.start_idx = self.len;
-                    #[allow(clippy::indexing_slicing)]
-                    // TODO(#1668) Clippy exceptions need docs or fixing.
                     Ok(Some(ParsedPatternItem::Literal {
                         content: Cow::Borrowed(&self.input[range]),
                         quoted: false,

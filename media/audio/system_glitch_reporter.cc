@@ -12,24 +12,75 @@ namespace media {
 namespace {
 // Logs once every 10s, assuming 10ms buffers.
 constexpr static int kCallbacksPerLogPeriod = 1000;
+
+enum class MetricType {
+  kNumGlitches,
+  kTotalDuration,
+  kLargestDuration,
+  kEarlyDetected
+};
+
+// Helper function to get the metric name.
+const char* GetMetricName(SystemGlitchReporter::StreamType stream_type,
+                          MetricType metric_type) {
+  switch (stream_type) {
+    case SystemGlitchReporter::StreamType::kCapture:
+      switch (metric_type) {
+        case MetricType::kNumGlitches:
+          return "Media.Audio.Capture.Glitches2";
+        case MetricType::kTotalDuration:
+          return "Media.Audio.Capture.LostFramesInMs2";
+        case MetricType::kLargestDuration:
+          return "Media.Audio.Capture.LargestGlitchMs2";
+        case MetricType::kEarlyDetected:
+          return "Media.Audio.Capture.EarlyGlitchDetected";
+      }
+    case SystemGlitchReporter::StreamType::kRender:
+      switch (metric_type) {
+        case MetricType::kNumGlitches:
+          return "Media.Audio.Render.Glitches2";
+        case MetricType::kTotalDuration:
+          return "Media.Audio.Render.LostFramesInMs2";
+        case MetricType::kLargestDuration:
+          return "Media.Audio.Render.LargestGlitchMs2";
+        case MetricType::kEarlyDetected:
+          return "Media.Audio.Render.EarlyGlitchDetected";
+      }
+    case SystemGlitchReporter::StreamType::kLoopback:
+      switch (metric_type) {
+        case MetricType::kNumGlitches:
+          return "Media.Audio.Loopback.Glitches2";
+        case MetricType::kTotalDuration:
+          return "Media.Audio.Loopback.LostFramesInMs2";
+        case MetricType::kLargestDuration:
+          return "Media.Audio.Loopback.LargestGlitchMs2";
+        case MetricType::kEarlyDetected:
+          return "Media.Audio.Loopback.EarlyGlitchDetected";
+      }
+    case SystemGlitchReporter::StreamType::kLoopbackReference:
+      switch (metric_type) {
+        case MetricType::kNumGlitches:
+          return "Media.Audio.LoopbackReference.Glitches2";
+        case MetricType::kTotalDuration:
+          return "Media.Audio.LoopbackReference.LostFramesInMs2";
+        case MetricType::kLargestDuration:
+          return "Media.Audio.LoopbackReference.LargestGlitchMs2";
+        case MetricType::kEarlyDetected:
+          return "Media.Audio.LoopbackReference.EarlyGlitchDetected";
+      }
+  }
+}
 }  // namespace
 
 SystemGlitchReporter::SystemGlitchReporter(StreamType stream_type)
-    : num_glitches_detected_metric_name_(stream_type == StreamType::kCapture
-                                             ? "Media.Audio.Capture.Glitches2"
-                                             : "Media.Audio.Render.Glitches2"),
+    : num_glitches_detected_metric_name_(
+          GetMetricName(stream_type, MetricType::kNumGlitches)),
       total_glitch_duration_metric_name_(
-          stream_type == StreamType::kCapture
-              ? "Media.Audio.Capture.LostFramesInMs2"
-              : "Media.Audio.Render.LostFramesInMs2"),
+          GetMetricName(stream_type, MetricType::kTotalDuration)),
       largest_glitch_duration_metric_name_(
-          stream_type == StreamType::kCapture
-              ? "Media.Audio.Capture.LargestGlitchMs2"
-              : "Media.Audio.Render.LargestGlitchMs2"),
+          GetMetricName(stream_type, MetricType::kLargestDuration)),
       early_glitch_detected_metric_name_(
-          stream_type == StreamType::kCapture
-              ? "Media.Audio.Capture.EarlyGlitchDetected"
-              : "Media.Audio.Render.EarlyGlitchDetected") {}
+          GetMetricName(stream_type, MetricType::kEarlyDetected)) {}
 
 SystemGlitchReporter::~SystemGlitchReporter() = default;
 

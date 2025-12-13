@@ -45,7 +45,6 @@ export enum PrintSettingsUiBucket {
   PRINT_SETTINGS_UI_MAX_BUCKET = 6
 }
 
-// <if expr="is_chromeos">
 /**
  * Launch printer settings usage metric buckets.
  */
@@ -62,7 +61,6 @@ export enum PrintPreviewLaunchSourceBucket {
   // Max value.
   PRINT_PREVIEW_LAUNCH_SOURCE_MAX_BUCKET = 3,
 }
-// </if>
 
 /* A context for recording a value in a specific UMA histogram. */
 export class MetricsContext {
@@ -99,7 +97,6 @@ export class MetricsContext {
         PrintSettingsUiBucket.PRINT_SETTINGS_UI_MAX_BUCKET);
   }
 
-  // <if expr="is_chromeos">
   /**
    * Get `MetricsContext` for `PrintPreview.PrinterSettingsLaunchSource`
    * histogram.
@@ -109,5 +106,4 @@ export class MetricsContext {
         'PrintPreview.PrinterSettingsLaunchSource',
         PrintPreviewLaunchSourceBucket.PRINT_PREVIEW_LAUNCH_SOURCE_MAX_BUCKET);
   }
-  // </if>
 }

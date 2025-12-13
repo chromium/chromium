@@ -147,7 +147,6 @@ where
     ///
     /// Keep in mind that `&[Self]` and `&[u8]` may have different lengths.
     #[inline]
-    #[allow(clippy::wrong_self_convention)] // https://github.com/rust-lang/rust-clippy/issues/7219
     fn slice_as_bytes(slice: &[Self]) -> &[u8] {
         unsafe {
             slice::from_raw_parts(slice as *const [Self] as *const u8, mem::size_of_val(slice))
@@ -356,6 +355,8 @@ pub unsafe trait VarULE: 'static {
     }
 
     /// Allocate on the heap as a `Box<T>`
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     #[inline]
     #[cfg(feature = "alloc")]
     fn to_boxed(&self) -> alloc::boxed::Box<Self> {

@@ -48,13 +48,13 @@ class PaymentHandlerHost {
   // owned by the Java PaymentHandlerHost.
   static base::WeakPtr<payments::PaymentHandlerHost> FromJavaPaymentHandlerHost(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& payment_handler_host);
+      const base::android::JavaRef<jobject>& payment_handler_host);
 
   // The |listener| must implement PaymentRequestUpdateEventListener. The
   // |web_contents| should be from the same browser context as the payment
   // handler and are used for logging in developr tools.
-  PaymentHandlerHost(const base::android::JavaParamRef<jobject>& web_contents,
-                     const base::android::JavaParamRef<jobject>& listener);
+  PaymentHandlerHost(const base::android::JavaRef<jobject>& web_contents,
+                     const base::android::JavaRef<jobject>& listener);
 
   PaymentHandlerHost(const PaymentHandlerHost&) = delete;
   PaymentHandlerHost& operator=(const PaymentHandlerHost&) = delete;
@@ -72,7 +72,7 @@ class PaymentHandlerHost {
   // details. The |response_buffer| should be a serialization of a valid
   // PaymentRequestDetailsUpdate.java object.
   void UpdateWith(JNIEnv* env,
-                  const base::android::JavaParamRef<jobject>& response_buffer);
+                  const base::android::JavaRef<jobject>& response_buffer);
 
   // Notifies the payment handler that the merchant ignored the payment
   // method change event.

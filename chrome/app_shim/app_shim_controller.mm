@@ -17,7 +17,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
+#include "base/functional/callback_helpers.h"
 #include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -55,6 +55,7 @@
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/browser/remote_cocoa.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -171,7 +172,13 @@ class ScopedSynchronizeThreads {
   raw_ptr<base::WaitableEvent> operation_finished_;
 };
 
+AppShimController::TestDelegate* g_test_delegate = nullptr;
+
 }  // namespace
+
+void AppShimController::SetDelegateForTesting(TestDelegate* delegate) {
+  g_test_delegate = delegate;
+}
 
 AppShimController::Params::Params() = default;
 AppShimController::Params::Params(const Params& other) = default;
@@ -282,8 +289,8 @@ void AppShimController::PreInitFeatureState(
       std::move(feature_list),
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
        "DcheckIsFatal", "DisallowSpaceCharacterInURLHostParsing",
-       "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
-       "MojoIpczMemV2", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
+       "UseIDNAContextJRules", "MojoBindingsInlineSLS",
+       "MojoInlineMessagePayloads", "MojoIpcz", "MojoIpczMemV2",
        "UseAdHocSigningForWebAppShims",
        "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
        "UseMachVouchers"});
@@ -371,6 +378,10 @@ bool AppShimController::FindOrLaunchChrome() {
         LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
       }
     }
+    if (chrome_to_connect_to_.terminated) {
+      LOG(FATAL) << "Process with PID " << chrome_pid
+                 << " has already terminated.";
+    }
 
     return true;
   }
@@ -412,6 +423,10 @@ bool AppShimController::FindOrLaunchChrome() {
       base::FeatureList::IsEnabled(features::kAppShimLaunchChromeSilently);
   if (silent_chrome_launch) {
     browser_command_line.AppendSwitch(switches::kNoStartupWindow);
+  }
+
+  if (g_test_delegate) {
+    g_test_delegate->PopulateChromeCommandLine(browser_command_line);
   }
 
   base::mac::LaunchApplication(
@@ -458,6 +473,10 @@ NSRunningApplication* AppShimController::FindChromeFromSingletonLock(
     LOG(WARNING) << "Singleton lock pid " << pid << " invalid.";
     return nil;
   }
+  if (process_from_lock.terminated) {
+    LOG(WARNING) << "Singleton lock pid " << pid << " already terminated.";
+    return nil;
+  }
 
   // Check the process' bundle id. As above, the specified pid could have been
   // reused by some other process.
@@ -477,7 +496,12 @@ void AppShimController::PollForChromeReady(
   // If the Chrome process we planned to connect to is not running anymore,
   // quit.
   if (chrome_to_connect_to_ && chrome_to_connect_to_.terminated) {
-    LOG(FATAL) << "Running chrome instance terminated before connecting.";
+    if (chrome_launched_by_app_) {
+      LOG(FATAL) << "Running chrome instance launched by shim terminated "
+                    "before connecting.";
+    } else {
+      LOG(FATAL) << "Running chrome instance terminated before connecting.";
+    }
   }
 
   // If we launched a Chrome process and it has terminated, then that most
@@ -501,13 +525,14 @@ void AppShimController::PollForChromeReady(
   {
     mojo::PlatformChannelEndpoint endpoint;
     NSString* browser_bundle_id =
-        base::apple::ObjCCast<NSString>([NSBundle.mainBundle
+        base::apple::ObjCCast<NSString>([base::apple::MainBundle()
             objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
     CHECK(browser_bundle_id);
     const std::string server_name = base::StringPrintf(
         "%s.%s.%s", base::SysNSStringToUTF8(browser_bundle_id).c_str(),
         app_mode::kAppShimBootstrapNameFragment,
-        base::MD5String(params_.user_data_dir.value()).c_str());
+        base::HexEncode(crypto::hash::Sha256(params_.user_data_dir.value()))
+            .c_str());
     endpoint = ConnectToBrowser(server_name);
     if (endpoint.is_valid()) {
       LOG(INFO) << "Connected to " << server_name;
@@ -948,6 +973,7 @@ void AppShimController::BindChildHistogramFetcherFactory(
 
 bool AppShimController::WebAppIsAdHocSigned() const {
   NSNumber* isAdHocSigned =
-      NSBundle.mainBundle.infoDictionary[app_mode::kCrAppModeIsAdHocSignedKey];
+      base::apple::MainBundle()
+          .infoDictionary[app_mode::kCrAppModeIsAdHocSignedKey];
   return isAdHocSigned.boolValue;
 }

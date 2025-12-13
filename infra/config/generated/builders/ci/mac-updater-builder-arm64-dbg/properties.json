@@ -145,7 +145,8 @@
           "group": "tryserver.chromium.updater"
         }
       ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-updater-builder-arm64-dbg/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/mac-updater-builder-arm64-dbg/targets",
+      "targets_spec_directory_relative_to_source_dir": true
     }
   },
   "$build/siso": {

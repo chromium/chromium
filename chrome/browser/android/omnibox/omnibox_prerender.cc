@@ -30,7 +30,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxPrerender_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using predictors::AutocompleteActionPredictor;
 using predictors::AutocompleteActionPredictorFactory;
 
@@ -40,8 +40,8 @@ OmniboxPrerender::OmniboxPrerender(JNIEnv* env,
 
 OmniboxPrerender::~OmniboxPrerender() = default;
 
-jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
-                                const jni_zero::JavaParamRef<jobject>& obj) {
+static jlong JNI_OmniboxPrerender_Init(JNIEnv* env,
+                                       const jni_zero::JavaRef<jobject>& obj) {
   OmniboxPrerender* omnibox = new OmniboxPrerender(env, obj);
   return reinterpret_cast<intptr_t>(omnibox);
 }
@@ -63,13 +63,12 @@ void OmniboxPrerender::InitializeForProfile(JNIEnv* env,
   AutocompleteActionPredictorFactory::GetForProfile(profile);
 }
 
-void OmniboxPrerender::PrerenderMaybe(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& j_url,
-    const JavaParamRef<jstring>& j_current_url,
-    jlong jsource_match,
-    Profile* profile,
-    const JavaParamRef<jobject>& j_tab) {
+void OmniboxPrerender::PrerenderMaybe(JNIEnv* env,
+                                      const JavaRef<jstring>& j_url,
+                                      const JavaRef<jstring>& j_current_url,
+                                      jlong jsource_match,
+                                      Profile* profile,
+                                      const JavaRef<jobject>& j_tab) {
   AutocompleteResult* autocomplete_result =
       reinterpret_cast<AutocompleteResult*>(jsource_match);
   std::u16string url_string =
@@ -170,3 +169,5 @@ void OmniboxPrerender::DoPreconnect(const AutocompleteMatch& match,
         predictors::AutocompleteActionPredictor::IsPreconnectable(match));
   }
 }
+
+DEFINE_JNI(OmniboxPrerender)

@@ -12,13 +12,13 @@ import androidx.preference.Preference;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DoNotBatch;
@@ -46,6 +46,8 @@ public class PreloadPagesSettingsFragmentTest {
     private static final String ASSERT_PRELOAD_PAGES_STATE_NATIVE =
             "Incorrect Preload Pages state from native.";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<PreloadPagesSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(PreloadPagesSettingsFragment.class);
@@ -57,11 +59,6 @@ public class PreloadPagesSettingsFragmentTest {
     private PreloadPagesSettingsFragment mPreloadPagesSettingsFragment;
     private RadioButtonGroupPreloadPagesSettings mPreloadPagesPreference;
     private Preference mManagedDisclaimerText;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     private void startSettings() {
         mTestRule.startSettingsActivity();
@@ -186,7 +183,9 @@ public class PreloadPagesSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mPreloadPagesSettingsFragment.getContext(),
-                                    ExtendedPreloadingSettingsFragment.class);
+                                    ExtendedPreloadingSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 
@@ -202,7 +201,9 @@ public class PreloadPagesSettingsFragmentTest {
                     Mockito.verify(mSettingsNavigation)
                             .startSettings(
                                     mPreloadPagesSettingsFragment.getContext(),
-                                    StandardPreloadingSettingsFragment.class);
+                                    StandardPreloadingSettingsFragment.class,
+                                    null,
+                                    true);
                 });
     }
 

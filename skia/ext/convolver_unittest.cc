@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/convolver.h"
 
 #include <stdint.h>
@@ -18,6 +13,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -54,7 +50,7 @@ void TestImpulseConvolution(const unsigned char* data, int width, int height) {
                  filter_x.num_values() * 4, &output[0], false);
 
   // Output should exactly match input.
-  EXPECT_EQ(0, memcmp(data, &output[0], byte_count));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(data, &output[0], byte_count)));
 }
 
 // Fills the destination filter with a box filter averaging every two pixels
@@ -82,10 +78,10 @@ TEST(Convolver, Impulse) {
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
       for (int channel = 0; channel < 3; channel++) {
-        memset(input_ptr, 0, byte_count);
-        input_ptr[(y * width + x) * 4 + channel] = 0xff;
+        UNSAFE_TODO(memset(input_ptr, 0, byte_count));
+        UNSAFE_TODO(input_ptr[(y * width + x) * 4 + channel]) = 0xff;
         // Always set the alpha channel or it will attempt to "fix" it for us.
-        input_ptr[(y * width + x) * 4 + 3] = 0xff;
+        UNSAFE_TODO(input_ptr[(y * width + x) * 4 + 3]) = 0xff;
         TestImpulseConvolution(input_ptr, width, height);
       }
     }
@@ -250,8 +246,8 @@ void VerifySIMD(unsigned int source_width,
   unsigned char* src_ptr = static_cast<unsigned char*>(source.getPixels());
   for (int y = 0; y < source.height(); y++) {
     for (unsigned int x = 0; x < source.rowBytes(); x++)
-      src_ptr[x] = rand() % 255;
-    src_ptr += source.rowBytes();
+      UNSAFE_TODO(src_ptr[x]) = rand() % 255;
+    UNSAFE_TODO(src_ptr += source.rowBytes());
   }
 
   // Test both cases with different has_alpha.
@@ -294,9 +290,9 @@ void VerifySIMD(unsigned int source_width,
 
     // Comparing result.
     for (unsigned int i = 0; i < dest_height; i++) {
-      EXPECT_FALSE(memcmp(r1, r2, dest_width * 4)); // RGBA always
-      r1 += result_c.rowBytes();
-      r2 += result_sse.rowBytes();
+      UNSAFE_TODO(EXPECT_FALSE(memcmp(r1, r2, dest_width * 4)));  // RGBA always
+      UNSAFE_TODO(r1 += result_c.rowBytes());
+      UNSAFE_TODO(r2 += result_sse.rowBytes());
     }
   }
 }
@@ -501,10 +497,9 @@ TEST(Convolver, SetUpGaussianConvolutionFilter) {
           &specified_filter_length, &filter_offset, &filter_length);
   EXPECT_TRUE(smoothing_kernel);
   std::vector<float> fp_smoothing_kernel(filter_length);
-  std::transform(smoothing_kernel,
-                 smoothing_kernel + filter_length,
-                 fp_smoothing_kernel.begin(),
-                 ConvolutionFilter1D::FixedToFloat);
+  std::transform(
+      smoothing_kernel, UNSAFE_TODO(smoothing_kernel + filter_length),
+      fp_smoothing_kernel.begin(), ConvolutionFilter1D::FixedToFloat);
   // Should sum-up to 1 (nearly), and all values whould be in ]0, 1[.
   EXPECT_NEAR(std::accumulate(
       fp_smoothing_kernel.begin(), fp_smoothing_kernel.end(), 0.0f),
@@ -519,10 +514,8 @@ TEST(Convolver, SetUpGaussianConvolutionFilter) {
           &specified_filter_length, &filter_offset, &filter_length);
   EXPECT_TRUE(gradient_kernel);
   std::vector<float> fp_gradient_kernel(filter_length);
-  std::transform(gradient_kernel,
-                 gradient_kernel + filter_length,
-                 fp_gradient_kernel.begin(),
-                 ConvolutionFilter1D::FixedToFloat);
+  std::transform(gradient_kernel, UNSAFE_TODO(gradient_kernel + filter_length),
+                 fp_gradient_kernel.begin(), ConvolutionFilter1D::FixedToFloat);
   // Should sum-up to 0, and all values whould be in ]-1.5, 1.5[.
   EXPECT_NEAR(std::accumulate(
       fp_gradient_kernel.begin(), fp_gradient_kernel.end(), 0.0f),

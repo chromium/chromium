@@ -50,7 +50,7 @@
 
 - (void)configureNTPViewController;
 
-- (void)restoreNTPState;
+- (void)restoreNTPScrollPosition;
 
 @end
 

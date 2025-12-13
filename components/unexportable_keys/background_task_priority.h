@@ -14,6 +14,7 @@ namespace unexportable_keys {
 
 // Ordered list of priorities supported by the unexportable key task manager.
 // The priorities are ordered from the lowest one to the highest one.
+// LINT.IfChange
 enum class BackgroundTaskPriority {
   // For non-urgent work, that will only execute if there's nothing else to do.
   kBestEffort = 0,
@@ -28,6 +29,7 @@ enum class BackgroundTaskPriority {
 
   kMaxValue = kUserBlocking
 };
+// LINT.ThenChange(/components/unexportable_keys/mojom/unexportable_key_service.mojom)
 
 constexpr size_t kNumTaskPriorities =
     static_cast<size_t>(BackgroundTaskPriority::kMaxValue) + 1;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tabs/tabs_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 MojoTabNetworkState
@@ -45,37 +47,41 @@ bool EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
 MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
     NativeTabAlertState input) {
   switch (input) {
-    case NativeTabAlertState::MEDIA_RECORDING:
+    case NativeTabAlertState::kMediaRecording:
       return MojoTabAlertState::kMediaRecording;
-    case NativeTabAlertState::TAB_CAPTURING:
+    case NativeTabAlertState::kTabCapturing:
       return MojoTabAlertState::kTabCapturing;
-    case NativeTabAlertState::AUDIO_PLAYING:
+    case NativeTabAlertState::kAudioPlaying:
       return MojoTabAlertState::kAudioPlaying;
-    case NativeTabAlertState::AUDIO_MUTING:
+    case NativeTabAlertState::kAudioMuting:
       return MojoTabAlertState::kAudioMuting;
-    case NativeTabAlertState::BLUETOOTH_CONNECTED:
+    case NativeTabAlertState::kBluetoothConnected:
       return MojoTabAlertState::kBluetoothConnected;
-    case NativeTabAlertState::BLUETOOTH_SCAN_ACTIVE:
+    case NativeTabAlertState::kBluetoothScanActive:
       return MojoTabAlertState::kBluetoothScanActive;
-    case NativeTabAlertState::USB_CONNECTED:
+    case NativeTabAlertState::kUsbConnected:
       return MojoTabAlertState::kUsbConnected;
-    case NativeTabAlertState::HID_CONNECTED:
+    case NativeTabAlertState::kHidConnected:
       return MojoTabAlertState::kHidConnected;
-    case NativeTabAlertState::SERIAL_CONNECTED:
+    case NativeTabAlertState::kSerialConnected:
       return MojoTabAlertState::kSerialConnected;
-    case NativeTabAlertState::PIP_PLAYING:
+    case NativeTabAlertState::kPipPlaying:
       return MojoTabAlertState::kPipPlaying;
-    case NativeTabAlertState::DESKTOP_CAPTURING:
+    case NativeTabAlertState::kDesktopCapturing:
       return MojoTabAlertState::kDesktopCapturing;
-    case NativeTabAlertState::VR_PRESENTING_IN_HEADSET:
+    case NativeTabAlertState::kVrPresentingInHeadset:
       return MojoTabAlertState::kVrPresentingInHeadset;
-    case NativeTabAlertState::AUDIO_RECORDING:
+    case NativeTabAlertState::kAudioRecording:
       return MojoTabAlertState::kAudioRecording;
-    case NativeTabAlertState::VIDEO_RECORDING:
+    case NativeTabAlertState::kVideoRecording:
       return MojoTabAlertState::kVideoRecording;
-    case NativeTabAlertState::GLIC_ACCESSING:
+    case mojo::NativeTabAlertState::kActorAccessing:
+      return MojoTabAlertState::kActorAccessing;
+    case mojo::NativeTabAlertState::kActorWaitingOnUser:
+      return MojoTabAlertState::kActorWaitingOnUser;
+    case NativeTabAlertState::kGlicAccessing:
       return MojoTabAlertState::kGlicAccessing;
-    case NativeTabAlertState::GLIC_SHARING:
+    case NativeTabAlertState::kGlicSharing:
       return MojoTabAlertState::kGlicSharing;
   }
   NOTREACHED();
@@ -86,52 +92,58 @@ bool EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
     NativeTabAlertState* out) {
   switch (in) {
     case MojoTabAlertState::kMediaRecording:
-      *out = NativeTabAlertState::MEDIA_RECORDING;
+      *out = NativeTabAlertState::kMediaRecording;
       return true;
     case MojoTabAlertState::kTabCapturing:
-      *out = NativeTabAlertState::TAB_CAPTURING;
+      *out = NativeTabAlertState::kTabCapturing;
       return true;
     case MojoTabAlertState::kAudioPlaying:
-      *out = NativeTabAlertState::AUDIO_PLAYING;
+      *out = NativeTabAlertState::kAudioPlaying;
       return true;
     case MojoTabAlertState::kAudioMuting:
-      *out = NativeTabAlertState::AUDIO_MUTING;
+      *out = NativeTabAlertState::kAudioMuting;
       return true;
     case MojoTabAlertState::kBluetoothConnected:
-      *out = NativeTabAlertState::BLUETOOTH_CONNECTED;
+      *out = NativeTabAlertState::kBluetoothConnected;
       return true;
     case MojoTabAlertState::kBluetoothScanActive:
-      *out = NativeTabAlertState::BLUETOOTH_SCAN_ACTIVE;
+      *out = NativeTabAlertState::kBluetoothScanActive;
       return true;
     case MojoTabAlertState::kUsbConnected:
-      *out = NativeTabAlertState::USB_CONNECTED;
+      *out = NativeTabAlertState::kUsbConnected;
       return true;
     case MojoTabAlertState::kHidConnected:
-      *out = NativeTabAlertState::HID_CONNECTED;
+      *out = NativeTabAlertState::kHidConnected;
       return true;
     case MojoTabAlertState::kSerialConnected:
-      *out = NativeTabAlertState::SERIAL_CONNECTED;
+      *out = NativeTabAlertState::kSerialConnected;
       return true;
     case MojoTabAlertState::kPipPlaying:
-      *out = NativeTabAlertState::PIP_PLAYING;
+      *out = NativeTabAlertState::kPipPlaying;
       return true;
     case MojoTabAlertState::kDesktopCapturing:
-      *out = NativeTabAlertState::DESKTOP_CAPTURING;
+      *out = NativeTabAlertState::kDesktopCapturing;
       return true;
     case MojoTabAlertState::kVrPresentingInHeadset:
-      *out = NativeTabAlertState::VR_PRESENTING_IN_HEADSET;
+      *out = NativeTabAlertState::kVrPresentingInHeadset;
       return true;
     case MojoTabAlertState::kAudioRecording:
-      *out = NativeTabAlertState::AUDIO_RECORDING;
+      *out = NativeTabAlertState::kAudioRecording;
       return true;
     case MojoTabAlertState::kVideoRecording:
-      *out = NativeTabAlertState::VIDEO_RECORDING;
+      *out = NativeTabAlertState::kVideoRecording;
+      return true;
+    case MojoTabAlertState::kActorAccessing:
+      *out = NativeTabAlertState::kActorAccessing;
+      return true;
+    case MojoTabAlertState::kActorWaitingOnUser:
+      *out = NativeTabAlertState::kActorWaitingOnUser;
       return true;
     case MojoTabAlertState::kGlicAccessing:
-      *out = NativeTabAlertState::GLIC_ACCESSING;
+      *out = NativeTabAlertState::kGlicAccessing;
       return true;
     case MojoTabAlertState::kGlicSharing:
-      *out = NativeTabAlertState::GLIC_SHARING;
+      *out = NativeTabAlertState::kGlicSharing;
       return true;
   }
   NOTREACHED();

@@ -32,7 +32,7 @@ public class BoundedLinearLayout extends LinearLayout {
     private final TypedValue mMaxWidthLandscape = new TypedValue();
     private final TypedValue mMaxWidthPortrait = new TypedValue();
 
-    private final int mMaxHeight;
+    private int mMaxHeight;
 
     private boolean mIgnoreWidthConstraints;
     private boolean mIgnoreHeightConstraints;
@@ -64,6 +64,12 @@ public class BoundedLinearLayout extends LinearLayout {
         mIgnoreWidthConstraints = ignoreWidthConstraints;
         mIgnoreHeightConstraints = ignoreHeightConstraint;
         ViewUtils.requestLayout(this, "BoundedLinearLayout.setIgnoreConstraints");
+    }
+
+    /** Set the maximum height, overriding the default maximum height. */
+    public void setMaxHeight(int maxHeight) {
+        mMaxHeight = maxHeight <= 0 ? NOT_SPECIFIED : maxHeight;
+        ViewUtils.requestLayout(this, "BoundedLinearLayout.setMaxHeight");
     }
 
     @Override

@@ -17,8 +17,8 @@
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher_impl.h"
+#include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/file_system_provider/throttled_file_system.h"
-#include "chrome/browser/chromeos/extensions/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -35,13 +35,12 @@ namespace {
 // aborted.
 constexpr base::TimeDelta kDefaultMountTimeout = base::Minutes(10);
 
-extensions::file_system_provider::ServiceWorkerLifetimeManager*
-GetServiceWorkerLifetimeManager(Profile* profile) {
+ServiceWorkerLifetimeManager* GetServiceWorkerLifetimeManager(
+    Profile* profile) {
   if (!chromeos::features::IsUploadOfficeToCloudEnabled()) {
     return nullptr;
   }
-  return extensions::file_system_provider::ServiceWorkerLifetimeManager::Get(
-      profile);
+  return ServiceWorkerLifetimeManager::Get(profile);
 }
 
 IconSet DefaultIconSet(const extensions::ExtensionId& extension_id) {
@@ -103,8 +102,6 @@ ExtensionProvider::CreateProvidedFileSystem(
     return std::make_unique<ThrottledFileSystem>(
         std::make_unique<ProvidedFileSystem>(profile, file_system_info));
   }
-  // TODO(b/317137739): Check the file system has a CLOUD source before
-  // creating a CloudFileSystem.
   // Cache type is only set when the
   // `FileSystemProviderCloudFileSystemEnabled` and
   // `FileSystemProviderContentCache` feature flags are enabled and the

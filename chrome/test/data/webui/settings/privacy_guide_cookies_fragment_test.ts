@@ -3,25 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideCookiesFragmentElement, SettingsCollapseRadioButtonElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
-
-function getIdForButton(cookieStartsBlock3PIncognito: boolean) {
-  if (loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled')) {
-    return cookieStartsBlock3PIncognito ? '#block3pcs' : '#allow3pcs' ;
-  }
-  return cookieStartsBlock3PIncognito ? '#block3P' : '#block3PIncognito';
-}
 
 async function assertCookieMetrics({
   cookieStartsBlock3PIncognito,
@@ -49,8 +41,10 @@ async function assertCookieMetrics({
       new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
 
   if (changeSetting) {
-    fragment.shadowRoot!
-        .querySelector<HTMLElement>(getIdForButton(cookieStartsBlock3PIncognito))!.click();
+    const buttonId = cookieStartsBlock3PIncognito ? '#block3pcs' : '#allow3pcs';
+    const button = fragment.shadowRoot!.querySelector<HTMLElement>(buttonId);
+    assertTrue(!!button);
+    button.click();
     flush();
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
@@ -140,7 +134,7 @@ suite('CookiesFragment', function() {
   test('fragmentUpdatesFromCookieChanges', function() {
     const radioButtonGroup =
         fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
-            '#cookiesRadioGroupAlwaysBlock3pcsIncognito');
+            '#cookiesRadioGroup');
     assertTrue(!!radioButtonGroup);
 
     fragment.set(
@@ -175,117 +169,5 @@ suite('CookiesFragment', function() {
     assertEquals(
         loadTimeData.getString('privacyGuideCookiesCardBlockTpcBlockSubheader'),
         block3pcsLabel.label);
-  });
-});
-
-// TODO(crbug.com/370008370): Remove once AlwaysBlock3pcsIncognito launched.
-suite('CookiesFragmentAlwaysBlock3pcsIncognitoDisabled', function() {
-  let fragment: PrivacyGuideCookiesFragmentElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isAlwaysBlock3pcsIncognitoEnabled: false,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    assertTrue(!!window.trustedTypes);
-    document.body.innerHTML = window.trustedTypes.emptyHTML;
-
-    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-
-    fragment = document.createElement('privacy-guide-cookies-fragment');
-    fragment.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(fragment);
-
-    return flushTasks();
-  });
-
-
-  test('cookiesMetrics3PIncognitoTo3PIncognito', function() {
-    return assertCookieMetrics({
-      cookieStartsBlock3PIncognito: true,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO,
-      fragment,
-      testMetricsBrowserProxy,
-    });
-  });
-
-  test('cookiesMetrics3PIncognitoTo3P', function() {
-    return assertCookieMetrics({
-      cookieStartsBlock3PIncognito: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P,
-      fragment,
-      testMetricsBrowserProxy,
-    });
-  });
-
-  test('cookiesMetrics3PTo3PIncognito', function() {
-    return assertCookieMetrics({
-      cookieStartsBlock3PIncognito: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO,
-      fragment,
-      testMetricsBrowserProxy,
-    });
-  });
-
-  test('cookiesMetrics3PTo3P', function() {
-    return assertCookieMetrics({
-      cookieStartsBlock3PIncognito: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P,
-      fragment,
-      testMetricsBrowserProxy,
-    });
-  });
-
-  test('fragmentUpdatesFromCookieChanges', function() {
-    const radioButtonGroup =
-        fragment.shadowRoot!.querySelector<SettingsRadioGroupElement>(
-            '#cookiesRadioGroup');
-    assertTrue(!!radioButtonGroup);
-
-    fragment.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-    assertEquals(
-        Number(radioButtonGroup.selected),
-        ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY);
-
-    fragment.set(
-        'prefs.generated.third_party_cookie_blocking_setting.value',
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-    assertEquals(
-        Number(radioButtonGroup.selected),
-        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY);
-  });
-
-  test('showsBlock3PIncognitoAndBlock3pcsLabels', function() {
-    const block3PIncognitoLabel =
-        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
-            '#block3PIncognito');
-    assertTrue(!!block3PIncognitoLabel);
-    assertEquals(
-        loadTimeData.getString(
-            'privacyGuideCookiesCardBlockTpcIncognitoSubheader'),
-        block3PIncognitoLabel.label);
-
-    const block3PLabel =
-        fragment.shadowRoot!.querySelector<SettingsCollapseRadioButtonElement>(
-            '#block3P');
-    assertTrue(!!block3PLabel);
-    assertEquals(
-        loadTimeData.getString('privacyGuideCookiesCardBlockTpcSubheader'),
-        block3PLabel.label);
   });
 });

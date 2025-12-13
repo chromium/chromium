@@ -1,0 +1,39 @@
+caption: Specifies a list of SaaS domains that will be reported for managed browser
+desc: |-
+  This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> reporting of SaaS domain visits and content transfers for a managed browser.
+
+  When the policy is set, the URLs matching SaaS domains will be used to generate report and uploaded. Unmatched URLs will be ignored.
+
+  When the policy is not set or set to an empty list, no report will be generated.
+
+  The matching patterns use a similar format to those for the '<ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph>' policy, which are documented at https://support.google.com/chrome/a?p=url_blocklist_filter_format. With a few exceptions below:
+
+   * URL host must match the hostname or be a subdomain of the hostname of one of the domains from the SaaS sites list.
+
+   * URL path must start with the path from the matched SaaS sites list entry.
+
+   * The URL scheme, port, query are disregarded during the matching process.
+
+  This policy value is populated by the cloud policy infrastructure and admins can't set it directly.
+example_value:
+- google.com
+- example.com/path
+default: []
+features:
+  dynamic_refresh: true
+  per_profile: false
+  cloud_only: true
+future_on:
+- chrome.*
+owners:
+- janzarzycki@google.com
+- igorruvinov@chromium.org
+- file://components/enterprise/browser/reporting/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+tags:
+- admin-sharing
+- google-sharing
+type: list

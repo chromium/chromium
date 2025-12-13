@@ -12,8 +12,10 @@
 #include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
@@ -22,6 +24,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
+#include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -101,8 +104,7 @@ class TrustStoreWinTest : public testing::Test {
         X509_ASN_ENCODING, CRYPTO_BUFFER_data(cert->cert_buffer()),
         CRYPTO_BUFFER_len(cert->cert_buffer())));
 
-    CERT_ENHKEY_USAGE usage;
-    UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
+    CERT_ENHKEY_USAGE usage = {};
     if (!CertSetEnhancedKeyUsage(os_cert.get(), &usage)) {
       return false;
     }
@@ -409,6 +411,109 @@ TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
                          CertWithTrustEq(net::PlatformTrustStore::CertWithTrust(
                              base::ToVector(b_by_f_->der_cert()),
                              bssl::CertificateTrust::ForDistrusted()))));
+}
+
+// Verifies that TrustStoreWin automatically synchronizes with the Windows
+// certificate stores when certificates are added or removed at the system
+// level. This ensures dynamic updates without restarting the process.
+//
+// WARNING: This test modifies the OS trust store. If it fails to clean up
+// after itself, your system may be left in an insecure state. To verify it
+// cleaned up after itself, make sure certificates that begin with
+// "Chromium Test Cert" are not trusted by Windows.
+//
+// This is a manual test and is intentionally excluded from automated
+// builders and normal local runs. The test name is prefixed with "MANUAL_"
+// so that it is skipped by default in net/test/net_test_suite.cc. It only
+// runs when the --run-manual flag is provided.
+//
+// Example:
+//   net_unittests --gtest_filter=TrustStoreWinTest.MANUAL_* --run-manual
+//
+// Run this after substantial changes to the Windows trust store integration
+// to validate end-to-end synchronization behavior.
+TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
+  // Create a test certificate using CertBuilder with a random private key
+  // that gets discarded after the test, making it safer if cleanup fails.
+  auto cert_builder = std::make_unique<net::CertBuilder>(nullptr, nullptr);
+  cert_builder->SetSubjectCommonName(base::StrCat(
+      {"Chromium Test Cert - ", net::CertBuilder::MakeRandomHexString(12)}));
+
+  cert_builder->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+
+  // Set validity period for the certificate
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  base::Time not_after = base::Time::Now() + base::Days(30);
+  cert_builder->SetValidity(not_before, not_after);
+
+  // Parse the generated certificate for use with TrustStoreWin
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> test_cert =
+      bssl::ParsedCertificate::Create(
+          cert_builder->DupCertBuffer(),
+          x509_util::DefaultParseCertificateOptions(), &errors);
+  ASSERT_TRUE(test_cert) << "Failed to parse generated test certificate: "
+                         << errors.ToDebugString();
+
+  // Create a real TrustStoreWin that connects to actual Windows system stores
+  auto trust_store_win = std::make_unique<TrustStoreWin>();
+  trust_store_win->InitializeStores();
+
+  // Open the same system ROOT store that TrustStoreWin uses internally.
+  // We need a separate handle with write access to add/remove test
+  // certificates, while TrustStoreWin uses read-only collection stores that
+  // aggregate multiple Windows system store locations.
+  DWORD flags = CERT_SYSTEM_STORE_CURRENT_USER | CERT_STORE_OPEN_EXISTING_FLAG;
+  crypto::ScopedHCERTSTORE system_root_store(CertOpenStore(
+      CERT_STORE_PROV_SYSTEM_REGISTRY_W, 0, NULL, flags, L"ROOT"));
+
+  if (!system_root_store.get()) {
+    EXPECT_NE(nullptr, system_root_store.get());
+  }
+
+  // Load the certificate.
+  crypto::ScopedPCCERT_CONTEXT test_cert_context(CertCreateCertificateContext(
+      X509_ASN_ENCODING, CRYPTO_BUFFER_data(test_cert->cert_buffer()),
+      CRYPTO_BUFFER_len(test_cert->cert_buffer())));
+
+  if (!test_cert_context.get()) {
+    EXPECT_NE(nullptr, test_cert_context.get());
+  }
+
+  // Verify certificate is NOT trusted initially.
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
+      << "Certificate should not be trusted initially";
+
+  // Add certificate to the actual Windows system ROOT store.
+  BOOL add_result = CertAddCertificateContextToStore(
+      system_root_store.get(), test_cert_context.get(), CERT_STORE_ADD_NEW,
+      nullptr);
+
+  if (!add_result) {
+    GTEST_SKIP() << "Could not add certificate to system store, error: "
+                 << GetLastError();
+  }
+
+  // Test auto-sync: Certificate should be immediately trusted without restart.
+  EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
+            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
+      << "Auto-sync should allow immediate detection of newly added "
+         "certificate";
+
+  // Cleanup: Remove the test certificate.
+  crypto::ScopedPCCERT_CONTEXT cert_to_delete(CertFindCertificateInStore(
+      system_root_store.get(), X509_ASN_ENCODING, 0, CERT_FIND_EXISTING,
+      test_cert_context.get(), nullptr));
+
+  if (cert_to_delete.get()) {
+    CertDeleteCertificateFromStore(cert_to_delete.release());
+  }
+
+  // Verify cleanup: Certificate should no longer be trusted.
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win->GetTrust(test_cert.get()).ToDebugString())
+      << "Certificate should not be trusted after removal";
 }
 
 }  // namespace

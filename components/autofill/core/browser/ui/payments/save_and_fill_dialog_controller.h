@@ -6,9 +6,20 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill {
+
+enum class SaveAndFillDialogState {
+  // Local version of the Save and Fill dialog.
+  kLocalDialog,
+  // Pending state where a throbber is shown while waiting for the preflight
+  // call response.
+  kPendingDialog,
+  // Upload version of the Save and Fill dialog.
+  kUploadDialog,
+};
 
 // Interface that exposes controller functionality to
 // SaveAndFillDialogView.
@@ -36,13 +47,20 @@ class SaveAndFillDialogController {
       size_t old_cursor_position,
       size_t& new_cursor_position) const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  virtual bool IsUploadSaveAndFill() const = 0;
+
+  // Returns the current state of the Save and Fill dialog. This state
+  // can be a local card save, an upload card save, or a pending state while
+  // waiting for the preflight response.
+  virtual SaveAndFillDialogState GetDialogState() const = 0;
   virtual bool IsValidCreditCardNumber(
       std::u16string_view input_text) const = 0;
   virtual bool IsValidCvc(std::u16string_view input_text) const = 0;
   virtual bool IsValidExpirationDate(
       std::u16string_view expiration_date) const = 0;
   virtual bool IsValidNameOnCard(std::u16string_view input_text) const = 0;
+
+  // Returns empty vector if no legal message should be shown.
+  virtual const LegalMessageLines& GetLegalMessageLines() const = 0;
 
   // Dismisses the dialog by destroying its view and associated widget.
   virtual void Dismiss() = 0;

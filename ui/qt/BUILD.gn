@@ -142,6 +142,7 @@ component("qt") {
   deps = [
     ":qt_interface",
     "//base",
+    "//cc/paint",
     "//printing/buildflags",
     "//ui/base/ime/linux",
     "//ui/color",
@@ -158,6 +159,10 @@ component("qt") {
   }
 
   sources = [
+    "native_theme_qt.cc",
+    "native_theme_qt.h",
+    "os_settings_provider_qt.cc",
+    "os_settings_provider_qt.h",
     "qt_ui.cc",
     "qt_ui.h",
   ]

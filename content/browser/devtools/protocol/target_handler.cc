@@ -35,6 +35,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/url_constants.h"
 
@@ -109,6 +110,9 @@ std::unique_ptr<Target::TargetInfo> BuildTargetInfo(
   if (!host->GetOpenerFrameId().empty()) {
     target_info->SetOpenerFrameId(host->GetOpenerFrameId());
   }
+  if (!host->GetParentFrameId().empty()) {
+    target_info->SetParentFrameId(host->GetParentFrameId());
+  }
   if (host->GetBrowserContext()) {
     target_info->SetBrowserContextId(host->GetBrowserContext()->UniqueId());
   }
@@ -152,6 +156,8 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
       return "integrity failure";
 #endif
+    case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
+      return "evicted for memory";
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
@@ -223,6 +229,8 @@ class BrowserToPageConnector {
 
     base::Value::Dict add_binding_params;
     add_binding_params.Set("name", binding_name);
+    // Expose to the default execution context only.
+    add_binding_params.Set("executionContextName", "");
     SendProtocolMessageToPage("Runtime.addBinding",
                               base::Value(std::move(add_binding_params)));
 
@@ -230,14 +238,13 @@ class BrowserToPageConnector {
         base::StringPrintf(kInitializerScript, binding_name.c_str());
 
     base::Value::Dict params;
-    params.Set("scriptSource", initializer_script);
-    SendProtocolMessageToPage("Page.addScriptToEvaluateOnLoad",
+    params.Set("source", initializer_script);
+    params.Set("worldName", "");
+    // Run the initializer script immediately on the current page. This is
+    // needed to expose the binding to the current page.
+    params.Set("runImmediately", true);
+    pending_request_id_ = SendProtocolMessageToPage("Page.addScriptToEvaluateOnNewDocument",
                               base::Value(std::move(params)));
-
-    base::Value::Dict evaluate_params;
-    evaluate_params.Set("expression", initializer_script);
-    pending_request_id_ = SendProtocolMessageToPage(
-        "Runtime.evaluate", base::Value(std::move(evaluate_params)));
     GetInstanceMap()[page_host_.get()].reset(this);
   }
 
@@ -260,8 +267,7 @@ class BrowserToPageConnector {
     message_dict.Set("method", method);
     message_dict.Set("params", std::move(params));
     base::Value message(std::move(message_dict));
-    std::string json_message;
-    base::JSONWriter::Write(message, &json_message);
+    std::string json_message = base::WriteJson(message).value_or("");
     page_host_->DispatchProtocolMessage(page_host_client_.get(),
                                         base::as_byte_span(json_message));
     return id;
@@ -272,8 +278,8 @@ class BrowserToPageConnector {
     std::string_view message_sp(reinterpret_cast<const char*>(message.data()),
                                 message.size());
     if (agent_host == page_host_.get()) {
-      std::optional<base::Value::Dict> value =
-          base::JSONReader::ReadDict(message_sp);
+      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+          message_sp, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (!value) {
         return;
       }
@@ -537,9 +543,10 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     DCHECK(!flatten_protocol_);
 
     if (throttle_ || worker_throttle_) {
-      std::optional<base::Value::Dict> value =
-          base::JSONReader::ReadDict(std::string_view(
-              reinterpret_cast<const char*>(message.data()), message.size()));
+      std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+          std::string_view(reinterpret_cast<const char*>(message.data()),
+                           message.size()),
+          base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       const std::string* method;
       if (value && (method = value->FindString(kMethod)) &&
           *method == kResumeMethod) {
@@ -1161,9 +1168,6 @@ Response TargetHandler::AttachToBrowserTarget(std::string* out_session_id) {
 
 Response TargetHandler::DetachFromTarget(std::optional<std::string> session_id,
                                          std::optional<std::string> target_id) {
-  if (access_mode_ == AccessMode::kAutoAttachOnly) {
-    return Response::ServerError(kNotAllowedError);
-  }
   Session* session = nullptr;
   Response response =
       FindSession(std::move(session_id), std::move(target_id), &session);
@@ -1227,13 +1231,17 @@ Response TargetHandler::ActivateTarget(const std::string& target_id) {
 
 Response TargetHandler::CloseTarget(const std::string& target_id,
                                     bool* out_success) {
-  if (access_mode_ == AccessMode::kAutoAttachOnly) {
-    return Response::ServerError(kNotAllowedError);
-  }
   scoped_refptr<DevToolsAgentHost> agent_host =
       DevToolsAgentHost::GetForId(target_id);
   if (!agent_host) {
     return Response::InvalidParams(kTargetNotFound);
+  }
+  if (access_mode_ == AccessMode::kAutoAttachOnly) {
+    // Only allow to close the targets that we are attached to.
+    if (target_id != owner_target_id_ &&
+        !base::Contains(auto_attached_sessions_, agent_host.get())) {
+      return Response::ServerError(kNotAllowedError);
+    }
   }
   if (!agent_host->Close()) {
     return Response::InvalidParams("Specified target doesn't support closing");
@@ -1300,6 +1308,16 @@ Response TargetHandler::CreateTarget(
   }
 
   if (hidden.value_or(false)) {
+    // Hidden target can be created only when remote debugging is enabled.
+    DevToolsManagerDelegate* delegate =
+        DevToolsManager::GetInstance()->delegate();
+    if (!delegate || delegate
+                         ->RemoteDebuggingTargets(
+                             DevToolsManagerDelegate::TargetType::kFrame)
+                         .empty()) {
+      return protocol::Response::ServerError(
+          "Hidden target can be created only when remote debugging is enabled");
+    }
     if (for_tab.value_or(false)) {
       return protocol::Response::InvalidParams(
           "Hidden target cannot be created for tab");
@@ -1502,7 +1520,8 @@ void TargetHandler::CreateBrowserContext(
 }
 
 protocol::Response TargetHandler::GetBrowserContexts(
-    std::unique_ptr<protocol::Array<protocol::String>>* browser_context_ids) {
+    std::unique_ptr<protocol::Array<protocol::String>>* browser_context_ids,
+    std::optional<std::string>* default_browser_context_id) {
   if (access_mode_ != AccessMode::kBrowser) {
     return Response::ServerError(kNotAllowedError);
   }
@@ -1517,6 +1536,11 @@ protocol::Response TargetHandler::GetBrowserContexts(
   *browser_context_ids = std::make_unique<protocol::Array<protocol::String>>();
   for (auto* context : contexts) {
     (*browser_context_ids)->emplace_back(context->UniqueId());
+  }
+
+  BrowserContext* default_context = delegate->GetDefaultBrowserContext();
+  if (default_context) {
+    *default_browser_context_id = default_context->UniqueId();
   }
   return Response::Success();
 }
@@ -1602,6 +1626,52 @@ void TargetHandler::AddWorkerThrottle(
           std::move(throttle_handle));
     }
   }
+}
+
+Response TargetHandler::GetDevToolsTarget(
+    const std::string& target_id,
+    std::optional<std::string>* out_target_id) {
+  if (access_mode_ != AccessMode::kBrowser) {
+    return protocol::Response::ServerError(kNotAllowedError);
+  }
+  scoped_refptr<DevToolsAgentHostImpl> agent_host =
+      DevToolsAgentHostImpl::GetForId(target_id);
+
+  if (!agent_host) {
+    return protocol::Response::InvalidParams(kTargetNotFound);
+  }
+
+  if (scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+          agent_host->GetDevToolsAgentHost()) {
+    *out_target_id = devtools_agent_host->GetId();
+  }
+
+  return protocol::Response::Success();
+}
+
+Response TargetHandler::OpenDevTools(const std::string& target_id,
+                                     std::optional<std::string> panel_id,
+                                     std::string* out_target_id) {
+  if (access_mode_ != AccessMode::kBrowser) {
+    return protocol::Response::ServerError(kNotAllowedError);
+  }
+  scoped_refptr<DevToolsAgentHostImpl> agent_host =
+      DevToolsAgentHostImpl::GetForId(target_id);
+
+  if (!agent_host) {
+    return protocol::Response::InvalidParams(kTargetNotFound);
+  }
+
+  scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+      agent_host->OpenDevTools(
+          content::DevToolsManagerDelegate::DevToolsOptions(panel_id));
+  if (!devtools_agent_host) {
+    return protocol::Response::ServerError("Failed to create DevTools window");
+  }
+
+  *out_target_id = devtools_agent_host->GetId();
+
+  return protocol::Response::Success();
 }
 
 }  // namespace content::protocol

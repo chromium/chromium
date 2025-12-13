@@ -23,6 +23,40 @@
         }
       },
       {
+        "id": "KeyboardEvent",
+        "type": "object",
+        "description": "An object that resembles a web KeyboardEvent object, with the addition of a unique ID property.",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "altKey": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "string"
+          },
+          "ctrlKey": {
+            "type": "boolean"
+          },
+          "key": {
+            "type": "string"
+          },
+          "keyCode": {
+            "type": "number"
+          },
+          "metaKey": {
+            "type": "boolean"
+          },
+          "repeat": {
+            "type": "boolean"
+          },
+          "shiftKey": {
+            "type": "boolean"
+          }
+        }
+      },
+      {
         "id": "ScreenRect",
         "type": "object",
         "description": "Bounding rectangle in global screen coordinates.",
@@ -260,7 +294,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay"],
+        "enum": ["dictationContextChecking", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay"],
         "description": "Subset of accessibility features."
       },
       {
@@ -1162,6 +1196,29 @@
             "description": "Whether or not the DragEventRewriter should be enabled."
           }
         ]
+      },
+      {
+        "name": "enableSpokenFeedbackMv3KeyHandling",
+        "type": "function",
+        "description": "Used by the ChromeVox extension to enable key handling for the Manifest V3 version of the extension.",
+        "parameters": []
+      },
+      {
+        "name": "processPendingSpokenFeedbackEvent",
+        "type": "function",
+        "description": "Used by the ChromeVox extension to process a pending spoken feedback event.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The ID of the key event."
+          },
+          {
+            "name": "propagate",
+            "type": "boolean",
+            "description": "Whether or not to propagate the key."
+          }
+        ]
       }
     ],
     "events": [
@@ -1390,6 +1447,28 @@
             "name": "enabled",
             "type": "boolean",
             "description": "True if FaceGaze should start sending gesture detection information, false if FaceGaze should stop."
+          }
+        ]
+      },
+      {
+        "name": "onKeyDown",
+        "type": "function",
+        "description": "Fired when a key is pressed.",
+        "parameters": [
+          {
+            "name": "event",
+            "$ref": "KeyboardEvent"
+          }
+        ]
+      },
+      {
+        "name": "onKeyUp",
+        "type": "function",
+        "description": "Fired when a key is released.",
+        "parameters": [
+          {
+            "name": "event",
+            "$ref": "KeyboardEvent"
           }
         ]
       }

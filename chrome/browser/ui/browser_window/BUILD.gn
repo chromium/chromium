@@ -11,17 +11,22 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_desktop_android)
 # dependencies this interface should not depend on anything else in //chrome.
 source_set("browser_window") {
   sources = [
+    "public/browser_collection_observer.h",
     "public/browser_window_interface.h",
     "public/browser_window_interface_iterator.h",
+    "public/global_browser_collection.h",
+    "public/profile_browser_collection.h",
   ]
   public_deps = [ "//content/public/browser" ]
   deps = [ "//ui/base/unowned_user_data" ]
 
   if (!is_android) {
     sources += [
+      "public/browser_collection.h",
       "public/browser_window_features.h",
       "public/desktop_browser_window_capabilities.h",
       "public/desktop_browser_window_capabilities_delegate.h",
+      "public/embedder_browser_window_features.h",
     ]
     public_deps += [
       "//base",
@@ -32,26 +37,34 @@ source_set("browser_window") {
   }
 }
 
-# Android targets need to be guarded by is_android because:
-# (1) Android GNI files may assert is_android, and
-# (2) The rest of this file can be included in non-Android builds.
-if (is_android) {
-  import("//build/config/android/rules.gni")
-  import("//chrome/android/features/android_library_factory_tmpl.gni")
+source_set("create_browser_window") {
+  sources = [ "public/create_browser_window.h" ]
 
-  # Public Java interfaces
-  android_library("java") {
+  public_deps = [
+    "//chrome/browser/ui/browser_window",
+    "//ui/base/mojom:ui_base_types",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
     sources = [
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTask.java",
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskFeature.java",
-      "public/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTracker.java",
+      "internal/create_browser_window_browsertest.cc",
+      "internal/global_browser_collection_browsertest.cc",
+      "internal/profile_browser_collection_browsertest.cc",
+      "public/browser_window_interface_iterator_browsertest.cc",
     ]
-    deps = [ "//build/android:build_java" ]
-  }
-
-  # Public Java factory
-  android_library_factory("factory_java") {
-    deps = [ ":java" ]
-    sources = [ "internal/android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskTrackerFactory.java" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":browser_window",
+      ":create_browser_window",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
   }
 }

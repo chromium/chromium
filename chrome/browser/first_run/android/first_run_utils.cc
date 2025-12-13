@@ -27,3 +27,5 @@ static jboolean JNI_FirstRunUtils_GetCctTosDialogEnabled(JNIEnv* env) {
   return static_cast<first_run::TosDialogBehavior>(behavior) !=
          first_run::TosDialogBehavior::SKIP;
 }
+
+DEFINE_JNI(FirstRunUtils)

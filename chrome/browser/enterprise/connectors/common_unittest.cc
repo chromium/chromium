@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/enterprise/connectors/common.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +19,8 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_download_item.h"
 #include "content/public/test/navigation_simulator.h"
@@ -30,6 +28,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/range/range.h"
 
 namespace enterprise_connectors {
 
@@ -156,10 +155,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockLargeFile) {
     })",
                                  bool_setting());
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
-  EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE));
+  EXPECT_EQ(allowed(), ResultShouldAllowDataUse(
+                           settings(), ScanRequestUploadResult::kFileTooLarge));
 }
 
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
@@ -173,9 +170,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest,
                                  bool_setting());
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED));
+            ResultShouldAllowDataUse(settings(),
+                                     ScanRequestUploadResult::kFileEncrypted));
 }
 
 TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
@@ -189,9 +185,8 @@ TEST_P(EnterpriseConnectorsResultShouldAllowDataUseTest, BlockUploadFailure) {
 
   test::SetAnalysisConnector(profile()->GetPrefs(), FILE_ATTACHED, pref);
   EXPECT_EQ(allowed(),
-            ResultShouldAllowDataUse(
-                settings(),
-                safe_browsing::BinaryUploadService::Result::UPLOAD_FAILURE));
+            ResultShouldAllowDataUse(settings(),
+                                     ScanRequestUploadResult::kUploadFailure));
 }
 
 class ContentAnalysisResponseCustomMessageTest
@@ -229,8 +224,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, ValidUrlCustomMessage) {
   ContentAnalysisResponse response =
       CreateContentAnalysisResponse(triggered_rules(), kTestUrl);
   RequestHandlerResult result = CalculateRequestHandlerResult(
-      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
-      response);
+      settings(), ScanRequestUploadResult::kSuccess, response);
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
@@ -258,8 +252,7 @@ TEST_P(ContentAnalysisResponseCustomMessageTest, InvalidUrlCustomMessage) {
   ContentAnalysisResponse response =
       CreateContentAnalysisResponse(triggered_rules(), kTestInvalidUrl);
   RequestHandlerResult result = CalculateRequestHandlerResult(
-      settings(), safe_browsing::BinaryUploadService::Result::SUCCESS,
-      response);
+      settings(), ScanRequestUploadResult::kSuccess, response);
   std::u16string custom_message =
       GetCustomRuleString(result.custom_rule_message);
   std::vector<std::pair<gfx::Range, GURL>> custom_ranges =
@@ -342,6 +335,7 @@ class CollectFrameUrlsTest : public BaseTest {
 
  protected:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kEnterpriseIframeDlpRulesSupport);
     BaseTest::SetUp();
 
     // Create test web contents as we need to navigate to a URL to get a valid
@@ -364,6 +358,7 @@ class CollectFrameUrlsTest : public BaseTest {
   content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::WebContents> web_contents_;
   // Needed for frame tree and navigation operations.
   content::RenderViewHostTestEnabler rvh_test_enabler_;
@@ -411,16 +406,48 @@ TEST_F(CollectFrameUrlsTest, NestedFramesWithUninterestingUrl) {
       CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD);
 
   // Verify that the URL chain is listed in the right order and chain size
-  // histogram is recorded properly.
-  ASSERT_EQ(3, frame_urls.size());
+  // histogram is recorded properly. The uninteresting URL and the tab URL
+  // should not be included in the chain.
+  ASSERT_EQ(2, frame_urls.size());
   EXPECT_EQ(child_frame_url2.spec(), frame_urls[0]);
   EXPECT_EQ(child_frame_url1.spec(), frame_urls[1]);
-  EXPECT_EQ(kTestUrl, frame_urls[2]);
 
+  // We still include the tab URL in the histogram chain size.
   histogram_tester.ExpectTotalCount(
       "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 1);
   histogram_tester.ExpectBucketCount(
       "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 3, 1);
+}
+
+TEST_F(CollectFrameUrlsTest, TabUrlOnly) {
+  base::HistogramTester histogram_tester;
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrls(web_contents(), DeepScanAccessPoint::DOWNLOAD);
+
+  // The URL chain should be empty since there are no iframes.
+  EXPECT_EQ(0, frame_urls.size());
+
+  // The histogram should have a value of 1 to account for the tab's URL.
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 1, 1);
+}
+
+TEST_F(CollectFrameUrlsTest, NoWebContents) {
+  base::HistogramTester histogram_tester;
+
+  google::protobuf::RepeatedPtrField<std::string> frame_urls =
+      CollectFrameUrls(nullptr, DeepScanAccessPoint::DOWNLOAD);
+
+  // Since there are no tabs, there should not be any URLs recorded.
+  EXPECT_EQ(0, frame_urls.size());
+
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 1);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.IframeDlpRulesSupport.Download.UrlChainSize", 0, 1);
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

@@ -1,0 +1,89 @@
+import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# Public version of the mojom parser. Code outside this directory should
+# depend on this target.
+rust_static_library("mojom_parser") {
+  crate_root = "lib_pub.rs"
+  sources = [ "lib_pub.rs" ]
+
+  # FOR_RELEASE: Figure this out better
+  public_deps = [
+    ":mojom_parser_core",
+    ":parsing_attribute",
+  ]
+}
+
+# Internal version of the parser. Blindly exports everything,
+# for use in testing and proc macros.
+rust_static_library("mojom_parser_core") {
+  crate_root = "lib_core.rs"
+  sources = [
+    "api.rs",
+    "ast.rs",
+    "deparse_values.rs",
+    "errors.rs",
+    "lib_core.rs",
+    "pack.rs",
+    "parse_messages.rs",
+    "parse_primitives.rs",
+    "parse_values.rs",
+    "parsing_trait.rs",
+  ]
+  deps = [ "//third_party/rust/anyhow/v1:lib" ]
+
+  visibility = [ ":*" ]
+}
+
+rust_macro("parsing_attribute") {
+  crate_root = "parsing_attribute.rs"
+  sources = [ "parsing_attribute.rs" ]
+  deps = [
+    ":mojom_parser_core",
+    "//third_party/rust/proc_macro2/v1:lib",
+    "//third_party/rust/quote/v1:lib",
+    "//third_party/rust/syn/v2:lib",
+  ]
+  visibility = [ ":*" ]
+}
+
+mojom("parser_unittests") {
+  testonly = true
+  sources = [ "test_util/parser_unittests.test-mojom" ]
+  generate_rust = true
+  visibility = [ ":*" ]
+}
+
+rust_static_library("mojom_parser_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "test/lib.rs"
+  sources = [
+    "test/lib.rs",
+    "test/test_mojomparse.rs",
+    "test/test_parser.rs",
+  ]
+
+  deps = [
+    ":mojom_parser",
+    ":mojom_parser_core",
+    ":parser_unittests_rust",
+    ":validation_parser",
+    "//testing/rust_gtest_interop",
+    "//third_party/rust/anyhow/v1:lib",
+  ]
+}
+
+rust_static_library("validation_parser") {
+  testonly = true
+  allow_unsafe = true
+
+  crate_root = "test_util/cxx.rs"
+  sources = [ "test_util/cxx.rs" ]
+  cxx_bindings = [ "test_util/cxx.rs" ]
+
+  deps = [ "//mojo/public/cpp/bindings/tests:mojo_public_bindings_test_utils" ]
+
+  visibility = [ ":*" ]
+}

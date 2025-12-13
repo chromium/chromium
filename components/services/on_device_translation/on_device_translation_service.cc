@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/types/pass_key.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
-#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/services/on_device_translation/translate_kit_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -32,6 +32,12 @@ class TranslateKitTranslator : public mojom::Translator {
                  TranslateCallback translate_callback) override {
     CHECK(translator_);
     std::move(translate_callback).Run(translator_->Translate(input));
+  }
+
+  void SplitSentences(const std::string& input,
+                      SplitSentencesCallback callback) override {
+    CHECK(translator_);
+    std::move(callback).Run(translator_->SplitSentences(input));
   }
 
  private:

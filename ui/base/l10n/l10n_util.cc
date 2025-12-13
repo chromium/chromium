@@ -21,7 +21,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/span.h"
-#include "base/files/file_util.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"

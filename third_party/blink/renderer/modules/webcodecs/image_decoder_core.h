@@ -17,7 +17,7 @@ namespace blink {
 class SegmentReader;
 
 // A wrapper around a blink::ImageDecoder which is designed to be called on a
-// specific sequence via WTF::SequenceBound.
+// specific sequence via SequenceBound.
 class MODULES_EXPORT ImageDecoderCore {
  public:
   // See ImageDecoder::CreateByMimeType() for parameter definitions.

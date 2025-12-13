@@ -5,6 +5,7 @@
 #include "extensions/browser/api/power/power_api.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/power/activity_reporter_delegate.h"

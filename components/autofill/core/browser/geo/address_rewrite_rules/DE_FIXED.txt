@@ -1,0 +1,169 @@
+\b([a-z]+)(strasse|str|weg|allee|all|chaussee|gasse|kreis)\b	\1 \2
+\bfederal\s+republic\s+of\s+germany\b	de
+\bbundesrepublik\s+deutschland\b	de
+\bfreie\s+hansestadt\s+bremen\b	hb
+\bmecklenburg\s+vorpommern\b	mv
+\bnorth\s+rhine\s+westphalia\b	nw
+\brhineland\s+palatinate\b	rp
+\bnordrhein\s+westfalen\b	nw
+\bnordwestmecklenburg\b	nwm
+\bsachsische\s+schweiz\b	sachs schw
+\bschleswig\s+holstein\b	sh
+\bbaden\s+wurttemberg\b	bw
+\bennepe\s+ruhrkreis\b	ennepe ruhrkr
+\bjohann\s+sebastian\b	joh seb
+\bhochschwarzwald\b	hochschwarz
+\bmarkgraflerland\b	markgraflerl
+\brheinland\s+pfalz\b	rp
+\bsachsiche\s+saale\b	sachs saale
+\bharlinger\s+land\b	harlingerl
+\bmittelholstein\b	mittelholst
+\boberwesterwald\b	oberwesterw
+\bsachsen\s+anhalt\b	s
+\bsachsen\s+anhalt\b	sachs anh
+\bthuringer\s+wald\b	thuringer w
+\bbundesstrasse\b	b
+\beuropastrasse\b	e
+\bheiligen\s+blut\b	hl blut
+\blandesstrasse\b	l
+\bmittelfranken\b	mittelfr
+\bniederlausitz\b	nl
+\bniedersachsen\b	ni
+\bnordfriesland\b	nordfriesl
+\bosterzgebirge\b	osterzgeb
+\breinhardswald\b	reinhardsw
+\bsachs\s+schweiz\b	sachs schw
+\bsaxony\s+anhalt\b	s
+\bstaatsstrasse\b	s
+\bthuringerwald\b	thuringerw
+\bweserbergland\b	weserbergl
+\bdithmarschen\b	dithm
+\bhochschwarzw\b	hochschwarz
+\bhohenzollern\b	hohenz
+\bkreisstrasse\b	i
+\blower\s+saxony\b	ni
+\bniederbayern\b	nb
+\bunterfranken\b	ufr
+\bbergstrasse\b	bergstr
+\bbrandenburg\b	bb
+\bdeutschland\b	de
+\bmecklenburg\b	meckl
+\bniedersachs\b	ni
+\boberfranken\b	ofr
+\boberlausitz\b	ol
+\bostholstein\b	ostholst
+\brheinhessen\b	rheinhess
+\bschwarzwald\b	schwarzw
+\bwurttemberg\b	wurtt
+\berzgebirge\b	erzgeb
+\bfrankische\b	frank
+\bgrafschaft\b	grafsch
+\bhotzenwald\b	hotzenw
+\bkyffhauser\b	kyffh
+\boberbayern\b	ob
+\boberfanken\b	oberfr
+\bschaumburg\b	schaumb
+\bschwabisch\b	schwab
+\bsiegerland\b	siegerl
+\bwesterwald\b	westerw
+\bbundesstr\b	b
+\bdillkreis\b	dillkr
+\bfriesland\b	friesl
+\bherzogtum\b	hxgt
+\bjeverland\b	jeverl
+\blandesstr\b	l
+\blauenburg\b	lauenb
+\blausitzer\b	lausitz
+\bniederbay\b	nb
+\boberpfalz\b	opf
+\boldenburg\b	oldb
+\brheinland\b	rhld
+\bsauerland\b	sauerl
+\bschurwald\b	schurw
+\bspreewald\b	spreew
+\bthuringen\b	th
+\bthuringia\b	th
+\buckermark\b	uckerm
+\bwestfalen\b	westf
+\bautobahn\b	a
+\benzkreis\b	enzkr
+\beuropean\b	e
+\bgemeinde\b	gm
+\bhannover\b	han
+\bholstein\b	holst
+\bnordbahn\b	nordb
+\bodenwald\b	odw
+\bprignitz\b	prign
+\bsaarland\b	sl
+\bschwaben\b	schwab
+\bvogtland\b	vogtl
+\baltmark\b	altm
+\bauf\s+der\b	a d
+\bbavaria\b	by
+\bcologne\b	koln
+\bemsland\b	emsl
+\bgebirge\b	geb
+\bgermany\b	de
+\bhamburg\b	hh
+\bkolonie\b	kol
+\boberbay\b	ob
+\bsachsen\b	sa
+\bstrasse\b	str
+\bunterfr\b	ufr
+\bvor\s+dem\b	v d
+\bvor\s+der\b	v d
+\bvorwerk\b	vw
+\ban\s+dem\b	a d
+\ban\s+den\b	a d
+\ban\s+der\b	a d
+\banhalt\b	anh
+\bbayern\b	by
+\bberlin\b	be
+\bbezirk\b	bz
+\bbremen\b	hb
+\bhessen\b	he
+\bin\s+dem\b	i d
+\bin\s+den\b	i d
+\bin\s+der\b	i d
+\boberpf\b	opf
+\brheinl\b	rhld
+\bsaxony\b	sa
+\bsudost\b	se
+\ballee\b	all
+\bhesse\b	he
+\bkreis\b	kr
+\bodenw\b	odw
+\brhein\b	rh
+\bsachs\b	sa
+\bsanct\b	s
+\bsankt\b	s
+\bbeim\b	b
+\bhess\b	he
+\bland\b	l
+\bnord\b	n
+\bthur\b	th
+\buber\b	u
+\bvorm\b	v
+\bwald\b	w
+\bwest\b	w
+\bauf\b	a
+\bbay\b	by
+\bbei\b	b
+\bbez\b	bz
+\bdem\b	d
+\bder\b	d
+\bgem\b	gm
+\bnes\b	i
+\bost\b	o
+\bovp\b	i
+\bsud\b	s
+\bvor\b	v
+\bam\b	a
+\ban\b	a
+\bim\b	i
+\bin\b	i
+\bld\b	l
+\bnu\b	i
+\bsn\b	sa
+\bst\b	s
+\bk\b	i

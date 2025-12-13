@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "components/webui/flags/feature_entry_macros.h"
@@ -72,8 +73,9 @@ class ChromeLabsButtonTest : public TestWithBrowserView {
         chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
 
     browser_view()
-        ->toolbar()
-        ->pinned_toolbar_actions_container()
+        ->browser()
+        ->GetFeatures()
+        .pinned_toolbar_actions_controller()
         ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
   }
 
@@ -133,8 +135,9 @@ TEST_F(ChromeLabsButtonTest, ShouldButtonShowEphemerallyTest) {
   // Reset the value set during setup to ensure the button doesn't artificially
   // show ephemerally during this test.
   browser_view()
-      ->toolbar()
-      ->pinned_toolbar_actions_container()
+      ->browser()
+      ->GetFeatures()
+      .pinned_toolbar_actions_controller()
       ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, false);
 
   EXPECT_EQ(browser_view()->toolbar()->GetChromeLabsButton(), nullptr);

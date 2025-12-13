@@ -8,10 +8,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/integrators/glic/autofill_annotations_provider_impl.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
@@ -79,14 +81,19 @@ void ContentAutofillDriverFactory::BindAutofillDriver(
     return;
   }
 
-  if (auto* driver = factory->DriverForFrame(render_frame_host))
+  if (auto* driver = factory->DriverForFrame(render_frame_host)) {
     driver->BindPendingReceiver(std::move(pending_receiver));
+  }
 }
 
 ContentAutofillDriverFactory::ContentAutofillDriverFactory(
     content::WebContents* web_contents,
     ContentAutofillClient* client)
-    : content::WebContentsObserver(web_contents), client_(*client) {}
+    : content::WebContentsObserver(web_contents), client_(*client) {
+  optimization_guide::AutofillAnnotationsProviderImpl::SetFor(
+      web_contents,
+      std::make_unique<optimization_guide::AutofillAnnotationsProviderImpl>());
+}
 
 ContentAutofillDriverFactory::~ContentAutofillDriverFactory() {
   for (auto& observer : observers()) {
@@ -146,8 +153,9 @@ ContentAutofillDriver* ContentAutofillDriverFactory::DriverForFrame(
 void ContentAutofillDriverFactory::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   auto it = driver_map_.find(render_frame_host);
-  if (it == driver_map_.end())
+  if (it == driver_map_.end()) {
     return;
+  }
 
   ContentAutofillDriver* driver = it->second.get();
   DCHECK(driver);
@@ -242,15 +250,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
                                   : AutofillDriver::LifecycleState::kInactive);
 }
 
-std::vector<ContentAutofillDriver*>
-ContentAutofillDriverFactory::GetExistingDrivers(
-    base::PassKey<ScopedAutofillManagersObservation>) {
-  std::vector<ContentAutofillDriver*> drivers;
-  drivers.reserve(driver_map_.size());
-  for (const auto& [rfh, driver] : driver_map_) {
-    drivers.push_back(driver.get());
-  }
-  return drivers;
+std::vector<AutofillDriver*>
+ContentAutofillDriverFactory::GetExistingDrivers() {
+  return base::ToVector(driver_map_, [](const auto& p) -> AutofillDriver* {
+    return p.second.get();
+  });
 }
 
 }  // namespace autofill

@@ -100,6 +100,15 @@
     "toggle-menu",
     "hide-menu",
     "show-menu",
+    // command for scroll
+    {name: "page-up", Symbol: "kPage_Up"},
+    {name: "page-down", Symbol: "kPage_Down"},
+    "page-left",
+    "page-right",
+    "page-block-start",
+    "page-block-end",
+    "page-inline-start",
+    "page-inline-end",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used
@@ -240,5 +249,19 @@
     "-internal-print-header",
     "-internal-print-footer",
     "-internal-print-page-number",
+
+    // ElementInternals.type
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
+    "button",
+    "reset",
+    "submit",
+
+    // <style> type attribute
+    // Note that "text/css" is obsolete but not going away any time soon and "module"
+    // is still being specified.
+    // https://html.spec.whatwg.org/#obsolete-but-conforming-features:attr-style-type
+    // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ShadowDOM/explainer.md
+    "text/css",
+    "module",
   ],
 }

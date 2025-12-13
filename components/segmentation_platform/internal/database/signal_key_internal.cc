@@ -9,6 +9,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -120,6 +121,18 @@ std::ostream& operator<<(std::ostream& os,
 std::ostream& operator<<(std::ostream& os, const SignalKeyInternal& key) {
   return os << "{" << key.prefix << ":" << key.time_range_end_sec << ":"
             << key.time_range_start_sec << "}";
+}
+
+bool operator==(const SignalKeyInternal::Prefix& a,
+                const SignalKeyInternal::Prefix& b) {
+  return a.kind == b.kind &&
+         std::string_view(a.padding) == std::string_view(b.padding) &&
+         a.name_hash == b.name_hash;
+}
+
+bool operator==(const SignalKeyInternal& a, const SignalKeyInternal& b) {
+  return a.prefix == b.prefix && a.time_range_end_sec == b.time_range_end_sec &&
+         a.time_range_start_sec == b.time_range_start_sec;
 }
 
 }  // namespace segmentation_platform

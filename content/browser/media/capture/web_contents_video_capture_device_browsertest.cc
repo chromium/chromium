@@ -37,6 +37,10 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gl/gl_switches.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "content/public/common/content_features.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
@@ -428,8 +432,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 // MSAN is feasible or not
 // TODO(crbug.com/328658521): It is also flaky on macOS.
 // TODO(crbug.com/372481179): Failing on win-asan.
-#if defined(MEMORY_SANITIZER) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/440535492): Flaky on Win dbg. Re-enable this test.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_WIN) && (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
 #define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
 #else
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash

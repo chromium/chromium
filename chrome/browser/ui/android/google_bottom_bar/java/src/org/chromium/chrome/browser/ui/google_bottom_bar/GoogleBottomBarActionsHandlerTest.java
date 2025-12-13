@@ -48,12 +48,9 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowPackageManager;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lens.LensController;
@@ -70,37 +67,17 @@ import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link BottomBarConfig}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
-        shadows = {ShadowLog.class, GoogleBottomBarActionsHandlerTest.ShadowLensController.class})
+        shadows = {ShadowLog.class})
 public class GoogleBottomBarActionsHandlerTest {
     private static final String TEST_URI = "https://www.test.com/";
 
     private final GURL mGURL = new GURL(TEST_URI);
-
-    @Implements(LensController.class)
-    public static class ShadowLensController {
-        public static boolean sIsAvailable;
-
-        public static LensController sController;
-
-        public static LensController getInstance() {
-            if (sController == null) {
-                sController = mock(LensController.class);
-            }
-            doReturn(sIsAvailable).when(sController).isLensEnabled(any());
-            return sController;
-        }
-
-        @Resetter
-        public static void reset() {
-            sIsAvailable = false;
-            sController = null;
-        }
-    }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -111,6 +88,7 @@ public class GoogleBottomBarActionsHandlerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Tab mTab;
     @Mock private Supplier<Tab> mTabSupplier;
+    @Mock private LensController mLensController;
 
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -124,6 +102,7 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @Before
     public void setup() {
+        LensController.setInstanceForTesting(mLensController);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mGoogleBottomBarActionsHandler =
                 new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
@@ -140,7 +119,6 @@ public class GoogleBottomBarActionsHandlerTest {
 
     @After
     public void tearDown() {
-        ShadowLensController.reset();
         if (mHistogramWatcher != null) {
             mHistogramWatcher.assertExpected();
             mHistogramWatcher.close();
@@ -611,12 +589,12 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
-        ShadowLensController.sIsAvailable = false;
+        doReturn(false).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(ShadowLensController.getInstance(), never()).startLens(any(), any());
+        verify(mLensController, never()).startLens(any(), any());
     }
 
     @Test
@@ -624,13 +602,12 @@ public class GoogleBottomBarActionsHandlerTest {
         mHistogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         BUTTON_CLICKED_HISTOGRAM, GoogleBottomBarButtonEvent.SEARCHBOX_LENS);
-        ShadowLensController.sIsAvailable = true;
+        doReturn(true).when(mLensController).isLensEnabled(any());
 
         Context context = mActivity;
         mGoogleBottomBarActionsHandler.onSearchboxLensTap(new View(context));
 
-        verify(ShadowLensController.getInstance())
-                .startLens(any(), mLensIntentParamsArgumentCaptor.capture());
+        verify(mLensController).startLens(any(), mLensIntentParamsArgumentCaptor.capture());
         LensIntentParams params = mLensIntentParamsArgumentCaptor.getValue();
         assertEquals(LensEntryPoint.GOOGLE_BOTTOM_BAR, params.getLensEntryPoint());
     }

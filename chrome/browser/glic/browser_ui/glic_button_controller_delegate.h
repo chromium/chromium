@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BUTTON_CONTROLLER_DELEGATE_H_
 #define CHROME_BROWSER_GLIC_BROWSER_UI_GLIC_BUTTON_CONTROLLER_DELEGATE_H_
 
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
-
 namespace glic {
 
 // Delegate class for the glic button controller to update
@@ -20,8 +16,8 @@ class GlicButtonControllerDelegate {
   // Set the show state of the button
   virtual void SetGlicShowState(bool show) = 0;
 
-  // Sets the icon of the button
-  virtual void SetGlicIcon(const gfx::VectorIcon& icon) = 0;
+  // Update the button when glic panel shows or hides.
+  virtual void SetGlicPanelIsOpen(bool open) = 0;
 };
 
 }  // namespace glic

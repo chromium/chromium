@@ -15,14 +15,14 @@ Are you a Google employee? See
 <!-- LINT.IfChange -->
 
 * A 64-bit Mac capable of running the required version of Xcode.
-* [Xcode](https://developer.apple.com/xcode) 16.0 or higher.
+* [Xcode](https://developer.apple.com/xcode) 26.0 or higher.
 
 <!-- LINT.ThenChange(//ios/build/chrome_build.gni) -->
 
-Note: after installing Xcode, you need to launch it and to let it install
-the iOS simulator. This is required as part of the build, see [this discussion](
-https://groups.google.com/a/chromium.org/g/chromium-dev/c/98d6MyLoYHM/m/A_HyOGxPAgAJ)
-on chromium-dev.
+Note: after installing Xcode, you need to install
+the iOS simulator. This is required as part of the build, see
+[this document](https://developer.apple.com/documentation/xcode/downloading-and-installing-additional-xcode-components)
+to add iOS Platform Support.
 
 ## Install `depot_tools`
 
@@ -120,6 +120,8 @@ $ autoninja -C out/Debug-iphonesimulator gn_all
 
 (`autoninja` is a wrapper that automatically provides optimal values for the
 arguments passed to `ninja`.)
+
+Tips: See [Siso tips](../siso_tips.md).
 
 Note: The `setup-gn.py` script needs to run every time one of the `BUILD.gn`
 files is updated (either by you or after rebasing). If you forget to run it,
@@ -468,7 +470,7 @@ hooks as needed.
 
 ## Tips, tricks, and troubleshooting
 
-Remember that the XCode project you interact with while working on Chromium is a
+Remember that the Xcode project you interact with while working on Chromium is a
 build artifact, generated from the `BUILD.gn` files. Do not use it to add new
 files; instead see the procedures for [working with
 files](working_with_files.md).

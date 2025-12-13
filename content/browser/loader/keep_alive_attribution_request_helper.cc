@@ -13,7 +13,6 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
@@ -34,7 +33,6 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 
@@ -116,11 +114,6 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
     const std::optional<std::string>& devtools_request_id,
     const std::optional<AttributionSuitableContext>& context,
     WeakDocumentPtr weak_document_ptr) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kAttributionReportingInBrowserMigration)) {
-    return nullptr;
-  }
-
   const bool is_navigation_tied =
       eligibility ==
       network::mojom::AttributionReportingEligibility::kNavigationSource;

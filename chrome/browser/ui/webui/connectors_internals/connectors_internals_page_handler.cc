@@ -154,9 +154,7 @@ void ConnectorsInternalsPageHandler::DeleteDeviceTrustKey(
 
 void ConnectorsInternalsPageHandler::GetClientCertificateState(
     GetClientCertificateStateCallback callback) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-#elif BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
+#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
   auto* profile_certificate_provisioning_service =
       client_certificates::CertificateProvisioningServiceFactory::GetForProfile(
           profile_);

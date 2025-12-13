@@ -22,16 +22,15 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IdentityCredential* Create(
-      const String& token,
-      bool is_auto_selected = false,
-      const String& config_url = WTF::g_empty_string);
+  static IdentityCredential* Create(const ScriptValue& token,
+                                    bool is_auto_selected = false,
+                                    const String& config_url = g_empty_string);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolverBase* resolver,
                                          const KURL& provider_url);
 
-  explicit IdentityCredential(const String& token,
+  explicit IdentityCredential(const ScriptValue& token,
                               bool is_auto_selected,
                               const String& config_url);
 
@@ -39,7 +38,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   bool IsIdentityCredential() const override;
 
   // IdentityCredential.idl
-  const String& token() const { return token_; }
+  ScriptValue token(ScriptState* script_state) const;
   const bool& isAutoSelected() const { return is_auto_selected_; }
   const String& configURL() const { return config_url_; }
 
@@ -48,8 +47,10 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
       const IdentityCredentialDisconnectOptions* options,
       ExceptionState&);
 
+  void Trace(Visitor* visitor) const override;
+
  private:
-  const String token_;
+  ScriptValue token_value_;
   const bool is_auto_selected_{false};
   const String config_url_;
 };

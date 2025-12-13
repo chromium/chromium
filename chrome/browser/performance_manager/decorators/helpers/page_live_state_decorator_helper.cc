@@ -30,6 +30,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -137,16 +139,18 @@ class ActiveTabObserver : public TabStripModelObserver,
  public:
   ActiveTabObserver() {
     BrowserList::AddObserver(this);
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      AddBrowserTabStripObservation(browser);
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this](BrowserWindowInterface* browser) {
+          AddBrowserTabStripObservation(browser);
+          return true;
+        });
   }
 
   ~ActiveTabObserver() override { BrowserList::RemoveObserver(this); }
 
  private:
-  void AddBrowserTabStripObservation(Browser* browser) {
-    browser->tab_strip_model()->AddObserver(this);
+  void AddBrowserTabStripObservation(BrowserWindowInterface* browser) {
+    browser->GetTabStripModel()->AddObserver(this);
   }
 
   // TabStripModelObserver:

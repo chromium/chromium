@@ -21,7 +21,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -255,23 +254,34 @@ void DesktopSessionAgent::Start(
                      std::move(callback)));
 }
 
-void DesktopSessionAgent::OnMouseCursor(webrtc::MouseCursor* cursor) {
+void DesktopSessionAgent::OnMouseCursor(
+    std::unique_ptr<webrtc::MouseCursor> cursor) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<webrtc::MouseCursor> owned_cursor(cursor);
-
   if (desktop_session_event_handler_) {
-    desktop_session_event_handler_->OnMouseCursorChanged(*owned_cursor);
+    desktop_session_event_handler_->OnMouseCursorChanged(*cursor);
   }
 
-  video_capturers_.SetMouseCursor(*owned_cursor);
+  video_capturers_.SetMouseCursor(*cursor);
 }
 
 void DesktopSessionAgent::OnMouseCursorPosition(
     const webrtc::DesktopVector& position) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  video_capturers_.SetMouseCursorPosition(position);
+  if (!host_cursor_rendered_by_client_) {
+    video_capturers_.SetMouseCursorPosition(position);
+  }
+}
+
+void DesktopSessionAgent::OnMouseCursorFractionalPosition(
+    const protocol::FractionalCoordinate& position) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (desktop_session_event_handler_) {
+    desktop_session_event_handler_->OnMouseCursorFractionalPositionChanged(
+        position);
+  }
 }
 
 void DesktopSessionAgent::OnClipboardEvent(
@@ -412,8 +422,10 @@ void DesktopSessionAgent::InjectMouseEvent(const protocol::MouseEvent& event) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   CHECK(started_);
 
-  video_capturers_.SetComposeEnabled(event.has_delta_x() ||
-                                     event.has_delta_y());
+  if (!host_cursor_rendered_by_client_) {
+    video_capturers_.SetComposeEnabled(event.has_delta_x() ||
+                                       event.has_delta_y());
+  }
 
   // InputStub implementations must verify events themselves, so we don't need
   // verification here. This matches HostEventDispatcher.
@@ -509,6 +521,21 @@ void DesktopSessionAgent::BeginFileWrite(const base::FilePath& file_path,
                                                    std::move(callback));
 }
 
+void DesktopSessionAgent::SetHostCursorRenderedByClient() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (host_cursor_rendered_by_client_) {
+    return;
+  }
+
+  host_cursor_rendered_by_client_ = true;
+  // Hide the host cursor from the desktop frames.
+  video_capturers_.SetComposeEnabled(false);
+  if (mouse_shape_pump_) {
+    mouse_shape_pump_->SetSendCursorPositionToClient(true);
+  }
+}
+
 void DesktopSessionAgent::OnDesktopEnvironmentCreated(
     const ScreenResolution& resolution,
     StartCallback callback,
@@ -530,8 +557,15 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
   // Hook up the input filter.
   input_tracker_ =
       std::make_unique<protocol::InputEventTracker>(input_injector_.get());
-  remote_input_filter_ =
-      std::make_unique<RemoteInputFilter>(input_tracker_.get());
+  // TODO: crbug.com/456252029 - Verify that `remote_input_filter_` is a no-op
+  // then remove it.
+  remote_input_filter_ = std::make_unique<RemoteInputFilter>(
+      input_tracker_.get(),
+      // Unretained() is safe because `remote_input_filter_` will be destroyed
+      // before `input_tracker_`, after which the callback will no longer be
+      // called.
+      base::BindRepeating(&protocol::InputEventTracker::ReleaseAll,
+                          base::Unretained(input_tracker_.get())));
 
 #if BUILDFLAG(IS_WIN)
   // LocalInputMonitorWin filters out an echo of the injected input before it
@@ -557,6 +591,12 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
       desktop_environment_->CreateMouseCursorMonitor(),
       /*CursorShapeStub*/ nullptr);
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
+  if (host_cursor_rendered_by_client_) {
+    // Just always send cursor positions to the "client", i.e. the network
+    // process. The MouseShapePump in the network process will decide whether
+    // they should actually be sent to the client.
+    mouse_shape_pump_->SetSendCursorPositionToClient(true);
+  }
 
   // Unretained is sound because callback will never be invoked after
   // |keyboard_layout_monitor_| is destroyed.

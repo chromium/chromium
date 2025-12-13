@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 
 #include <utility>
 
@@ -13,15 +13,16 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extensions_client.h"
@@ -33,6 +34,8 @@
 #include "extensions/common/user_script.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 

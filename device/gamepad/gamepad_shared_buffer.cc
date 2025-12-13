@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/gamepad/gamepad_shared_buffer.h"
+
+#include "base/compiler_specific.h"
 
 namespace device {
 
@@ -21,7 +18,7 @@ GamepadSharedBuffer::GamepadSharedBuffer() {
   void* mem = shared_memory_mapping_.memory();
   DCHECK(mem);
   hardware_buffer_ = new (mem) GamepadHardwareBuffer();
-  memset(&(hardware_buffer_->data), 0, sizeof(Gamepads));
+  UNSAFE_TODO(memset(&(hardware_buffer_->data), 0, sizeof(Gamepads)));
 }
 
 GamepadSharedBuffer::~GamepadSharedBuffer() = default;

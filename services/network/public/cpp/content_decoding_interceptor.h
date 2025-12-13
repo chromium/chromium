@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/net_errors.h"
 #include "net/filter/source_stream_type.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -44,7 +45,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
     kDownload,
     kNavigationPreload,
     kSignedExchange,
-    kMaxValue = kSignedExchange,
+    kDevTools,
+    kMaxValue = kDevTools,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/network/histograms.xml:ContentDecodingInterceptorClientType)
 
@@ -152,6 +154,24 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
       network::mojom::URLLoaderClientEndpointsPtr& endpoints,
       mojo::ScopedDataPipeConsumerHandle& body,
       DataPipePair data_pipe_pair);
+
+  // Requests the network service to decode a data stream with the specified
+  // content encodings. This method is intended for use by the browser process.
+  //
+  // This method creates a new data pipe (`new_producer`, `new_consumer`), swaps
+  // the caller's `body` with `new_consumer`, and sends the original `body` and
+  // `new_producer` along with the `types` of encoding to apply to the network
+  // service. The network service will read the data from the `body`, and write
+  // the decoded data into `new_producer`.
+  //
+  // The `callback` is invoked with net::OK on successful decoding or an net
+  // error code if an error occurs.
+  static void DecodeOnNetworkService(
+      mojom::NetworkService& network_service,
+      const std::vector<net::SourceStreamType>& types,
+      mojo::ScopedDataPipeConsumerHandle& body,
+      ClientType client_type,
+      base::OnceCallback<void(net::Error)> callback);
 
   // A capability class used as a key to restrict calls to
   // SetIsNetworkServiceRunningInTheCurrentProcess.

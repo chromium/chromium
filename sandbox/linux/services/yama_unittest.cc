@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <errno.h>
 #include <fcntl.h>
 #include <sys/ptrace.h>
@@ -114,8 +109,9 @@ TEST(Yama, GetStatus) {
   EXPECT_EQ(static_cast<bool>(status1 & Yama::STATUS_PRESENT),
             Yama::IsPresent());
 
-  fprintf(stdout, "Yama present: %s - enforcing: %s\n",
-          Yama::IsPresent() ? "Y" : "N", Yama::IsEnforcing() ? "Y" : "N");
+  UNSAFE_TODO(fprintf(stdout, "Yama present: %s - enforcing: %s\n",
+                      Yama::IsPresent() ? "Y" : "N",
+                      Yama::IsEnforcing() ? "Y" : "N"));
 }
 
 SANDBOX_TEST(Yama, RestrictPtraceSucceedsWhenYamaPresent) {

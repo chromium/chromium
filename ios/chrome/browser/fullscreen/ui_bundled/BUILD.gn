@@ -43,8 +43,6 @@ source_set("coordinators") {
 
 source_set("internal") {
   sources = [
-    "fullscreen_browser_observer.h",
-    "fullscreen_browser_observer.mm",
     "fullscreen_constants.h",
     "fullscreen_constants.mm",
     "fullscreen_content_adjustment_util.h",
@@ -75,7 +73,6 @@ source_set("internal") {
     ":ui",
     "//base",
     "//ios/chrome/browser/broadcaster/ui_bundled",
-    "//ios/chrome/browser/find_in_page/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
@@ -113,7 +110,6 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "fullscreen_browser_observer_unittest.mm",
     "fullscreen_mediator_unittest.mm",
     "fullscreen_model_unittest.mm",
     "fullscreen_ui_updater_unittest.mm",
@@ -155,6 +151,7 @@ source_set("eg2_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//components/omnibox/browser:pref_names",
     "//components/translate/core/browser:translate_pref_names",
     "//ios/chrome/browser/fullscreen/ui_bundled/test:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

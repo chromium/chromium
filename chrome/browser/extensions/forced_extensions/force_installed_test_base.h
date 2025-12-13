@@ -11,8 +11,11 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace sync_preferences {
 class TestingPrefServiceSyncable;

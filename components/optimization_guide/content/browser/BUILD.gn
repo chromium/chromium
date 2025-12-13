@@ -10,6 +10,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("browser") {
   sources = [
+    "autofill_annotations_provider.cc",
+    "autofill_annotations_provider.h",
+    "media_transcript_provider.cc",
+    "media_transcript_provider.h",
+    "page_content_metadata_observer.cc",
+    "page_content_metadata_observer.h",
     "page_content_proto_provider.cc",
     "page_content_proto_provider.h",
     "page_content_proto_util.cc",
@@ -29,11 +35,17 @@ static_library("browser") {
     "//components/optimization_guide/core:page_content",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser",
+    "//content/public/common",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  if (is_android) {
+    sources += [ "page_content_proto_provider_bridge.cc" ]
+    public_deps += [ "android:jni_headers" ]
+  }
 }
 
 source_set("page_context_eligibility_api") {
@@ -59,9 +71,24 @@ static_library("page_context_eligibility") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_autofill_annotations_provider.cc",
+    "mock_autofill_annotations_provider.h",
+    "mock_media_transcript_provider.cc",
+    "mock_media_transcript_provider.h",
+  ]
+  public_deps = [
+    ":browser",
+    "//testing/gmock",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "media_transcript_provider_unittest.cc",
     "page_content_proto_util_unittest.cc",
     "page_context_eligibility_unittest.cc",
     "page_text_dump_result_unittest.cc",
@@ -71,6 +98,7 @@ source_set("unit_tests") {
   deps = [
     ":browser",
     ":page_context_eligibility",
+    ":test_support",
     "//components/optimization_guide/core:test_support",
     "//content/test:test_support",
     "//testing/gmock",

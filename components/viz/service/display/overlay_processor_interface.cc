@@ -97,16 +97,6 @@ void OverlayProcessorInterface::RecordOverlayDamageRectHistograms(
   }
 }
 
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::
-    OutputSurfaceOverlayPlane() = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::OutputSurfaceOverlayPlane(
-    const OutputSurfaceOverlayPlane&) = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane&
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::operator=(
-    const OutputSurfaceOverlayPlane&) = default;
-OverlayProcessorInterface::OutputSurfaceOverlayPlane::
-    ~OutputSurfaceOverlayPlane() = default;
-
 std::unique_ptr<OverlayProcessorInterface>
 OverlayProcessorInterface::CreateOverlayProcessor(
     OutputSurface* output_surface,
@@ -133,7 +123,11 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   DCHECK(display_controller);
   DCHECK(display_controller->skia_dependency());
   return std::make_unique<OverlayProcessorWin>(
-      capabilities.dc_support_level, debug_settings,
+      capabilities.dc_support_level,
+      display_controller->skia_dependency()
+          ->GetGpuDriverBugWorkarounds()
+          .disable_direct_composition_letterbox_video_optimization,
+      debug_settings,
       std::make_unique<DCLayerOverlayProcessor>(
           capabilities.allowed_yuv_overlay_count,
           display_controller->skia_dependency()
@@ -192,39 +186,68 @@ bool OverlayProcessorInterface::DisableSplittingQuads() const {
   return false;
 }
 
-OverlayProcessorInterface::OutputSurfaceOverlayPlane
-OverlayProcessorInterface::ProcessOutputSurfaceAsOverlay(
-    const gfx::Size& viewport_size,
-    const gfx::Size& resource_size,
-    const SharedImageFormat si_format,
-    const gfx::ColorSpace& color_space,
-    bool has_alpha,
-    float opacity,
-    const gpu::Mailbox& mailbox) {
-  OutputSurfaceOverlayPlane overlay_plane;
+// static
+OverlayCandidate OverlayProcessorInterface::CreatePrimaryPlane(
+    const PrimaryPlaneParams& params) {
+  OverlayCandidate overlay_plane;
+  overlay_plane.is_root_render_pass = true;
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  overlay_plane.transform = gfx::Transform();
+#else
   overlay_plane.transform = gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE;
-  overlay_plane.uv_rect = gfx::RectF(
-      0.f, 0.f,
-      viewport_size.width() / static_cast<float>(resource_size.width()),
-      viewport_size.height() / static_cast<float>(resource_size.height()));
-  overlay_plane.resource_size = resource_size;
-  overlay_plane.format = si_format;
-  overlay_plane.color_space = color_space;
-  overlay_plane.enable_blending = has_alpha;
-  overlay_plane.opacity = opacity;
-  overlay_plane.mailbox = mailbox;
+#endif
+  overlay_plane.is_opaque = params.is_opaque;
+  overlay_plane.opacity = 1.0f;
   overlay_plane.priority_hint = gfx::OverlayPriorityHint::kRegular;
   overlay_plane.rounded_corners = gfx::RRectF();
 
   // Adjust transformation and display_rect based on display rotation.
-  overlay_plane.display_rect =
-      gfx::RectF(viewport_size.width(), viewport_size.height());
+  overlay_plane.display_rect = gfx::RectF(params.viewport_size);
+  overlay_plane.resource_size_in_pixels = params.resource_size_in_pixels;
+  overlay_plane.uv_rect = gfx::RectF(
+      0.f, 0.f,
+      overlay_plane.display_rect.width() /
+          static_cast<float>(overlay_plane.resource_size_in_pixels.width()),
+      overlay_plane.display_rect.height() /
+          static_cast<float>(overlay_plane.resource_size_in_pixels.height()));
 
 #if BUILDFLAG(ALWAYS_ENABLE_BLENDING_FOR_PRIMARY)
   // On Chromecast, always use RGBA as the scanout format for the primary plane.
-  overlay_plane.enable_blending = true;
+  overlay_plane.is_opaque = false;
 #endif
+
+#if BUILDFLAG(IS_OZONE)
+  overlay_plane.format = params.si_format;
+  overlay_plane.color_space = params.color_space;
+  overlay_plane.mailbox = params.overlay_testing_mailbox;
+#endif
+
+  if (params.supports_hdr) {
+    overlay_plane.hdr_metadata.extended_range.emplace();
+    // TODO(crbug.com/40263227): Track the actual brightness of the
+    // content. For now, assume that all HDR content is 1,000 nits.
+    overlay_plane.hdr_metadata.extended_range->desired_headroom =
+        gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
+  }
+
   return overlay_plane;
+}
+
+void OverlayProcessorInterface::ProcessForOverlays(
+    DisplayResourceProvider* resource_provider,
+    AggregatedRenderPassList* render_passes,
+    const SkM44& output_color_matrix,
+    SurfaceDamageRectList surface_damage_rect_list,
+    const PrimaryPlaneParams& primary_plane_params,
+    CandidateList* overlay_candidates,
+    gfx::Rect* damage_rect,
+    std::vector<gfx::Rect>* content_bounds) {
+  // By default, call the other overload with empty filter maps.
+  ProcessForOverlays(resource_provider, render_passes, output_color_matrix,
+                     /*render_pass_filters=*/{},
+                     /*render_pass_backdrop_filters=*/{},
+                     surface_damage_rect_list, primary_plane_params,
+                     overlay_candidates, damage_rect, content_bounds);
 }
 
 void OverlayProcessorInterface::ScheduleOverlays(

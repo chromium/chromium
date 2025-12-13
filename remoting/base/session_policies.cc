@@ -41,6 +41,8 @@ std::ostream& operator<<(std::ostream& os,
      << ", host_udp_port_range: " << session_policies.host_udp_port_range
      << ", allow_file_transfer: " << session_policies.allow_file_transfer
      << ", allow_uri_forwarding: " << session_policies.allow_uri_forwarding
+     << ", allow_webauthn_forwarding: "
+     << session_policies.allow_webauthn_forwarding
      << ", maximum_session_duration: "
      << session_policies.maximum_session_duration
      << ", curtain_required: " << session_policies.curtain_required

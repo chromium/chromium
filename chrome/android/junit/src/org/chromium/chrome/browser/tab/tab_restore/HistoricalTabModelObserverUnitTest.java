@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -78,6 +80,7 @@ public class HistoricalTabModelObserverUnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
 
         mObserver = new HistoricalTabModelObserver(mTabGroupModelFilter, mHistoricalTabSaver);
         verify(mTabGroupModelFilter).addObserver(mObserver);
@@ -554,8 +557,9 @@ public class HistoricalTabModelObserverUnitTest {
             @Nullable String title,
             @TabGroupColorId int color,
             MockTab[] tabList) {
-        assert tabList.length != 0;
+        assertThat(tabList).isNotEmpty();
 
+        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(Arrays.asList(tabList));
         when(mTabGroupModelFilter.getTabCountForGroup(tabGroupId)).thenReturn(tabList.length);
         when(mTabGroupModelFilter.tabGroupExists(tabGroupId)).thenReturn(true);
         for (MockTab tab : tabList) {

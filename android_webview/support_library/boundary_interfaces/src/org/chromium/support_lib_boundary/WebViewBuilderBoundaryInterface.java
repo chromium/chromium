@@ -10,6 +10,7 @@ import android.webkit.WebView;
 import androidx.annotation.IntDef;
 
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -32,8 +33,8 @@ import java.util.function.Consumer;
 @NullMarked
 public interface WebViewBuilderBoundaryInterface {
     @Retention(RetentionPolicy.SOURCE)
-    public @interface Baseline {
-        public int DEFAULT = 0;
+    @interface Baseline {
+        int DEFAULT = 0;
     }
 
     @Target(ElementType.TYPE_USE)
@@ -41,17 +42,20 @@ public interface WebViewBuilderBoundaryInterface {
         ConfigField.BASELINE,
         ConfigField.JAVASCRIPT_INTERFACE,
         ConfigField.RESTRICT_JAVASCRIPT_INTERFACE,
+        ConfigField.PROFILE_NAME,
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ConfigField {
         int BASELINE = 0;
         int JAVASCRIPT_INTERFACE = 1;
         int RESTRICT_JAVASCRIPT_INTERFACE = 2;
+        int PROFILE_NAME = 3;
     }
 
     class Config implements Consumer<BiConsumer<@ConfigField Integer, Object>> {
         public int baseline = Baseline.DEFAULT;
         public boolean restrictJavascriptInterface;
+        public @Nullable String profileName;
 
         List<Object> mJavascriptInterfaceObjects = new ArrayList<>();
         Map<String, Boolean> mJavascriptInterfaceNames = new LinkedHashMap<>();
@@ -85,6 +89,9 @@ public interface WebViewBuilderBoundaryInterface {
                         new ArrayList<String>(mJavascriptInterfaceNames.keySet()),
                         mJavascriptInterfaceOriginPatterns
                     });
+            if (profileName != null) {
+                chromiumConfig.accept(ConfigField.PROFILE_NAME, profileName);
+            }
         }
     }
 

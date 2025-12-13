@@ -16,9 +16,11 @@
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_types.h"
-#include "third_party/microsoft_webauthn/webauthn.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-data-view.h"
+#include "third_party/microsoft_webauthn/src/webauthn.h"
 
 namespace device {
 
@@ -86,6 +88,10 @@ std::optional<FidoTransportProtocol> FromWinTransportsMask(
 COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinTransportsMask(
     const base::flat_set<FidoTransportProtocol>& transports);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::vector<const wchar_t*> ToWinCredentialHints(
+    base::span<const blink::mojom::Hint> hints);
 
 }  // namespace device
 

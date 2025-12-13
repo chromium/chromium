@@ -101,15 +101,12 @@ ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
 }
 
 std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
-    web::BrowserState* context) {
-  DCHECK(context);
-  DCHECK(!context->IsOffTheRecord());
+    ProfileIOS* profile) {
+  DCHECK(!profile->IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
     return nullptr;
   }
 
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
-  DCHECK(profile);
   const base::FilePath profile_path = profile->GetStatePath();
   auto* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);
@@ -123,17 +120,11 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
-  params->profile_id = params->profile_id =
-      base::NumberToString(base::PersistentHash(profile_path.value()));
+  params->profile_id = profile->GetProfileName();
   params->history_service = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
-  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
-  if (base::FeatureList::IsEnabled(
-          features::kSegmentationPlatformUserVisibleTaskRunner)) {
-    priority = base::TaskPriority::USER_VISIBLE;
-  }
-  params->task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock(), priority});
+  params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   params->storage_dir =
       profile_path.Append(kSegmentationPlatformStorageDirName);
   params->db_provider = protodb_provider;
@@ -145,7 +136,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
-          profile->GetPrefs());
+          profile->GetPrefs(), GetApplicationContext()->GetLocalState());
   params->configs =
       GetSegmentationPlatformConfig(home_modules_card_registry.get());
   params->model_provider = std::make_unique<ModelProviderFactoryImpl>(
@@ -267,18 +258,18 @@ SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+SegmentationPlatformServiceFactory::TestingFactory
 SegmentationPlatformServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildSegmentationPlatformService);
+  return base::BindOnce(&BuildSegmentationPlatformService);
 }
 
 std::unique_ptr<KeyedService>
 SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildSegmentationPlatformService(context);
+    ProfileIOS* profile) const {
+  return BuildSegmentationPlatformService(profile);
 }
 
-void SegmentationPlatformServiceFactory::RegisterBrowserStatePrefs(
+void SegmentationPlatformServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
 }

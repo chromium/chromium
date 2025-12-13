@@ -202,7 +202,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   ~H265Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
-  void SetStream(int32_t id, const DecoderBuffer& decoder) override;
+  void SetStream(int32_t id, scoped_refptr<DecoderBuffer> decoder) override;
   [[nodiscard]] bool Flush() override;
   void Reset() override;
   [[nodiscard]] DecodeResult Decode() override;
@@ -212,7 +212,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   uint8_t GetBitDepth() const override;
   VideoChromaSampling GetChromaSampling() const override;
   VideoColorSpace GetVideoColorSpace() const override;
-  std::optional<gfx::HDRMetadata> GetHDRMetadata() const override;
+  gfx::HDRMetadata GetHDRMetadata() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -306,9 +306,6 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Parser in use.
   H265Parser parser_;
 
-  // Most recent call to SetStream().
-  raw_ptr<const uint8_t, DanglingUntriaged> current_stream_ = nullptr;
-  size_t current_stream_size_ = 0;
 
   // Decrypting config for the most recent data passed to SetStream().
   std::unique_ptr<DecryptConfig> current_decrypt_config_;
@@ -319,7 +316,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
 
   // Keep track of when SetStream() is called so that
   // H265Accelerator::SetStream() can be called.
-  bool current_stream_has_been_changed_ = false;
+  bool decoder_buffer_has_been_changed_ = false;
+
+  // Most recent call to SetStream().
+  scoped_refptr<media::DecoderBuffer> decoder_buffer_;
 
   // DPB in use.
   H265DPB dpb_;
@@ -390,7 +390,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // Video color space of input bitstream.
   VideoColorSpace picture_color_space_;
   // HDR metadata in the bitstream.
-  std::optional<gfx::HDRMetadata> hdr_metadata_;
+  gfx::HDRMetadata hdr_metadata_;
 
   const std::unique_ptr<H265Accelerator> accelerator_;
 };

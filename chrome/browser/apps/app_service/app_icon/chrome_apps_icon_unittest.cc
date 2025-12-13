@@ -7,7 +7,6 @@
 
 #include "base/barrier_callback.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
@@ -57,7 +56,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     ASSERT_TRUE(params.ConfigureByTestDataDirectory(
         data_dir().AppendASCII("app_list")));
     InitializeExtensionService(std::move(params));
-    service_->Init();
+    service()->Init();
 
     // Let any async services complete their set-up.
     base::RunLoop().RunUntilIdle();
@@ -201,6 +200,12 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
     OverrideAppServiceProxyInnerIconLoader(fake_icon_loader_.get());
   }
 
+  void TearDown() override {
+    fake_icon_loader_.reset();
+    proxy_ = nullptr;
+    ChromeAppsIconFactoryTest::TearDown();
+  }
+
   void OverrideAppServiceProxyInnerIconLoader(apps::IconLoader* icon_loader) {
     app_service_proxy().OverrideInnerIconLoaderForTesting(icon_loader);
   }
@@ -247,7 +252,7 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
   AppServiceProxy& app_service_proxy() { return *proxy_; }
 
  private:
-  raw_ptr<AppServiceProxy> proxy_;
+  raw_ptr<AppServiceProxy> proxy_ = nullptr;
   std::unique_ptr<apps::FakeIconLoader> fake_icon_loader_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };

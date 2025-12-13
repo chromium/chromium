@@ -9,6 +9,7 @@
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/guest_contents/common/guest_contents.mojom.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace content {
@@ -19,7 +20,8 @@ namespace guest_contents {
 
 // Implements the mojom::GuestContentsHost interface available in the browser
 // process on a WebUIController.
-class GuestContentsHostImpl : public mojom::GuestContentsHost {
+class GuestContentsHostImpl : public mojom::GuestContentsHost,
+                              public content::WebContentsObserver {
  public:
   // The binder function used by WebUIController to create an implementation of
   // mojom::GuestContentsHost for the outer WebContents.
@@ -29,6 +31,9 @@ class GuestContentsHostImpl : public mojom::GuestContentsHost {
 
  private:
   explicit GuestContentsHostImpl(content::WebContents* outer_web_contents);
+
+  // content::WebContentsObserver:
+  void WebContentsDestroyed() override;
 
   // mojom::GuestContentsHost:
   void Attach(const blink::LocalFrameToken& token_of_frame_to_swap,

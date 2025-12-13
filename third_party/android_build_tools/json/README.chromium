@@ -1,6 +1,7 @@
 Name: Android's org.json implementation
 Short Name: org.json
 Version: fac974ff3c27a5d77ee5338ae9594787119eb3e4
+Update Mechanism: Static (https://crbug.com/422372974)
 License: Apache-2.0
 License File: LICENSE
 Security Critical: No

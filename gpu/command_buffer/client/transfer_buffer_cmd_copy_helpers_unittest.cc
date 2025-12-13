@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/client/transfer_buffer_cmd_copy_helpers.h"
 
+#include <type_traits>
+
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -30,6 +28,7 @@ class FakeScopedTransferBufferPtr {
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
   bool valid() const { return valid_; }
   void* address() { return buffer_.data(); }
+  base::span<uint8_t> data() { return buffer_; }
 
  private:
   bool valid_;
@@ -39,6 +38,28 @@ class FakeScopedTransferBufferPtr {
 
 constexpr uint32_t MaxCopyCount(uint32_t buffer_size) {
   return ComputeMaxCopyCount<char, short, float, size_t>(buffer_size);
+}
+
+template <typename T>
+void ExpectEqualCopy(base::span<const uint8_t> transfer_buffer_data,
+                     uint32_t transfer_buffer_offset,
+                     const std::vector<T>& expected,
+                     uint32_t element_offset,
+                     uint32_t elements_to_compare) {
+  base::span<const uint8_t> expected_bytes = {};
+  // A bytewise comparison of floats is done, necessitating the use of
+  // `base::allow_nonunique_obj_t`.
+  if constexpr (!std::has_unique_object_representations_v<T>) {
+    expected_bytes = base::as_byte_span(base::allow_nonunique_obj, expected);
+  } else {
+    expected_bytes = base::as_byte_span(expected);
+  }
+
+  size_t byte_offset = element_offset * sizeof(T);
+  size_t bytes_to_compare = elements_to_compare * sizeof(T);
+  EXPECT_EQ(
+      transfer_buffer_data.subspan(transfer_buffer_offset, bytes_to_compare),
+      expected_bytes.subspan(byte_offset, bytes_to_compare));
 }
 
 }  // namespace
@@ -81,20 +102,14 @@ class TransferBufferCmdCopyHelpersTest : public testing::Test {
         [&](std::array<uint32_t, 4>& byte_offsets, uint32_t copy_offset,
             uint32_t copy_count) {
           // Check that each sub-copy is correct
-          const uint8_t* buffer =
-              reinterpret_cast<uint8_t*>(transfer_buffer.address());
-          EXPECT_EQ(memcmp(&buffer[byte_offsets[0]], &expected.a[copy_offset],
-                           copy_count * sizeof(char)),
-                    0);
-          EXPECT_EQ(memcmp(&buffer[byte_offsets[1]], &expected.b[copy_offset],
-                           copy_count * sizeof(short)),
-                    0);
-          EXPECT_EQ(memcmp(&buffer[byte_offsets[2]], &expected.c[copy_offset],
-                           copy_count * sizeof(float)),
-                    0);
-          EXPECT_EQ(memcmp(&buffer[byte_offsets[3]], &expected.d[copy_offset],
-                           copy_count * sizeof(size_t)),
-                    0);
+          ExpectEqualCopy(transfer_buffer.data(), byte_offsets[0], expected.a,
+                          copy_offset, copy_count);
+          ExpectEqualCopy(transfer_buffer.data(), byte_offsets[1], expected.b,
+                          copy_offset, copy_count);
+          ExpectEqualCopy(transfer_buffer.data(), byte_offsets[2], expected.c,
+                          copy_offset, copy_count);
+          ExpectEqualCopy(transfer_buffer.data(), byte_offsets[3], expected.d,
+                          copy_offset, copy_count);
         },
         expected.a.data(), expected.b.data(), expected.c.data(),
         expected.d.data()));

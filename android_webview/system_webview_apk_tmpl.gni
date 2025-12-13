@@ -29,6 +29,14 @@ template("system_webview_apk_or_module_tmpl") {
          "If trichrome library is used, static_library_provider must be set " +
              "so that a dep can be added on the library APK.")
 
+  if (!_is_trichrome) {
+    if (!defined(mergeable_android_manifests)) {
+      mergeable_android_manifests = []
+    }
+    mergeable_android_manifests +=
+        [ "//android_webview/AndroidManifest_standalone_webview.xml" ]
+  }
+
   _include_64_bit_webview =
       android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                    invoker.include_64_bit_webview)
@@ -43,11 +51,16 @@ template("system_webview_apk_or_module_tmpl") {
     assert(_include_32_bit_webview || _include_64_bit_webview)
   }
 
+  # is_64_bit_browser: controls the bitness of the renderer process, and the
+  # bitness of the nonembedded service processes. It doesn't control the browser
+  # process bitness because browser process bitness needs to match app process.
+  _is_64_bit_browser =
+      android_64bit_target_cpu && defined(invoker.is_64_bit_browser) &&
+      invoker.is_64_bit_browser
   if (_is_trichrome) {
-    _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
     _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   } else {
-    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   }
 
   if (defined(invoker.version_code)) {
@@ -66,11 +79,12 @@ template("system_webview_apk_or_module_tmpl") {
   }
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
+
   jinja_template(_android_manifest_target_name) {
     input = "//android_webview/nonembedded/java/AndroidManifest.xml"
     output = _android_manifest
     _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
-                    (!_is_trichrome || !_is_64_bit_browser)
+                    !_is_64_bit_browser
     variables = [
       "force_32_bit=$_force_32_bit",
       "manifest_package=$_manifest_package",
@@ -123,9 +137,6 @@ template("system_webview_apk_or_module_tmpl") {
     _is_bundle_module = _target_type == "android_app_bundle_module"
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
-    if (!defined(min_sdk_version) && _is_trichrome) {
-      min_sdk_version = 29
-    }
     if (defined(expected_android_manifest)) {
       if (android_64bit_target_cpu) {
         _version_code_offset = chrome_32_version_code
@@ -175,9 +186,9 @@ template("system_webview_apk_or_module_tmpl") {
     _include_primary_support = false
     _include_secondary_support = false
 
-    if (!_is_trichrome) {
-      shared_resources = true
+    app_as_shared_lib = true
 
+    if (!_is_trichrome) {
       if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
           (android_64bit_target_cpu && _include_64_bit_webview)) {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
@@ -189,8 +200,6 @@ template("system_webview_apk_or_module_tmpl") {
       }
       deps += [ "//third_party/icu:icu_assets" ]
     } else {
-      app_as_shared_lib = true
-
       # Include placeholder libraries to ensure we are treated as the desired
       # architecture.
       if (android_64bit_target_cpu) {

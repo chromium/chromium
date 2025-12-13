@@ -7,7 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h"
 #import "content/shell/browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h"
-#import "ui/gfx/native_widget_types.h"
+#import "ui/gfx/native_ui_types.h"
 
 @implementation ShellBluetoothChooserCoordinator
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController

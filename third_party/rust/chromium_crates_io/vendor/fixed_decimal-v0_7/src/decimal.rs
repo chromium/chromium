@@ -175,7 +175,7 @@ impl UnsignedDecimal {
             if i != 0 || d != 0 {
                 i += 1;
                 match X.checked_sub(i) {
-                    #[allow(clippy::indexing_slicing)] // X - i < X
+                    #[expect(clippy::indexing_slicing)] // X - i < X
                     Some(v) => mem[v] = d,
                     // This error should be obsolete after X is made generic
                     None => return Err(ParseError::Limit),
@@ -191,7 +191,7 @@ impl UnsignedDecimal {
             result.magnitude = magnitude as i16;
             result.upper_magnitude = result.magnitude;
             debug_assert!(i <= X);
-            #[allow(clippy::indexing_slicing)] // X - i < X
+            #[expect(clippy::indexing_slicing)] // X - i < X
             result.digits.extend_from_slice(&mem[(X - i)..]);
         }
         #[cfg(debug_assertions)]
@@ -1815,7 +1815,7 @@ impl UnsignedDecimal {
     ///
     /// Example: `debug_assert!(self.check_invariants())`
     #[cfg(debug_assertions)]
-    #[allow(clippy::indexing_slicing)]
+    #[expect(clippy::indexing_slicing)]
     fn check_invariants(&self) {
         // magnitude invariants:
         debug_assert!(
@@ -1974,7 +1974,7 @@ impl UnsignedDecimal {
         // The string without the exponent (or sign)
         // We do the bulk of the calculation on this string,
         // and extract the exponent at the end
-        #[allow(clippy::indexing_slicing)] // exponent_index comes from enumerate
+        #[expect(clippy::indexing_slicing)] // exponent_index comes from enumerate
         let no_exponent_str = &no_sign_str[..exponent_index];
 
         // If there was no dot, truncate the dot index
@@ -2052,7 +2052,7 @@ impl UnsignedDecimal {
         }
 
         // Constructing DecimalFixed.digits
-        #[allow(clippy::indexing_slicing)]
+        #[expect(clippy::indexing_slicing)]
         // leftmost_digit  and rightmost_digit_end come from Iterator::position and Iterator::rposition.
         let v: SmallVec<[u8; 8]> = no_exponent_str[leftmost_digit..rightmost_digit_end]
             .iter()
@@ -2068,7 +2068,7 @@ impl UnsignedDecimal {
         if has_exponent {
             let mut pow = 0;
             let mut pos_neg = 1;
-            #[allow(clippy::indexing_slicing)]
+            #[expect(clippy::indexing_slicing)]
             // exponent_index is exist, then exponent_index + 1 will equal at most no_sign_str.len().
             for digit in &no_sign_str[exponent_index + 1..] {
                 if *digit == b'-' {
@@ -2538,7 +2538,7 @@ fn test_from_str() {
         },
     ];
     for cas in &cases {
-        println!("cas: {:?}", cas);
+        println!("cas: {cas:?}");
         let fd = UnsignedDecimal::from_str(cas.input_str).unwrap();
         assert_eq!(
             fd.magnitude_range(),

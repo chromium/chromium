@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -22,7 +20,7 @@ import org.chromium.url.GURL;
  * <p>TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
  */
 @NullMarked
-public abstract class TabCreator {
+public interface TabCreator {
 
     /**
      * Creates a new tab and posts to UI.
@@ -32,7 +30,7 @@ public abstract class TabCreator {
      * @param parent the parent tab, if present.
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams, @TabLaunchType int type, @Nullable Tab parent);
 
     /**
@@ -44,7 +42,7 @@ public abstract class TabCreator {
      * @param position the requested position (index in the tab model)
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             @TabLaunchType int type,
             @Nullable Tab parent,
@@ -60,7 +58,7 @@ public abstract class TabCreator {
      * @param position the requested position (index in the tab model)
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab createNewTab(
+    @Nullable Tab createNewTab(
             LoadUrlParams loadUrlParams,
             String title,
             @TabLaunchType int type,
@@ -74,19 +72,22 @@ public abstract class TabCreator {
      * @param state The tab state that the tab can be restored from.
      * @param id The id to give the new tab.
      * @param index The index for where to place the tab.
+     * @return The newly created tab or null if no tab was created. No tab may be created due to a
+     *     problem with the data, the current model, or just because this creator implementation
+     *     doesn't create tabs.
      */
-    public abstract Tab createFrozenTab(TabState state, int id, int index);
+    @Nullable Tab createFrozenTab(TabState state, int id, int index);
 
     /**
-     * Creates a new tab and loads the specified URL in it. This is a convenience method for
-     * {@link #createNewTab} with the default {@link LoadUrlParams} and no parent tab.
+     * Creates a new tab and loads the specified URL in it. This is a convenience method for {@link
+     * #createNewTab} with the default {@link LoadUrlParams} and no parent tab.
      *
      * @param url the URL to open.
-     * @param type the type of action that triggered that launch. Determines how the tab is
-     *             opened (for example, in the foreground or background).
+     * @param type the type of action that triggered that launch. Determines how the tab is opened
+     *     (for example, in the foreground or background).
      * @return The new tab or null if no tab was created.
      */
-    public abstract @Nullable Tab launchUrl(String url, @TabLaunchType int type);
+    @Nullable Tab launchUrl(String url, @TabLaunchType int type);
 
     /**
      * Creates a Tab to host the given WebContents.
@@ -102,64 +103,13 @@ public abstract class TabCreator {
      *     the user in a new window).
      * @return The new Tab or null if a Tab was not created successfully.
      */
-    public abstract @Nullable Tab createTabWithWebContents(
+    @Nullable Tab createTabWithWebContents(
             @Nullable Tab parent,
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
             GURL url,
             boolean addTabToModel);
-
-    /**
-     * Creates a Tab to host the given WebContents and adds it to the TabModel.
-     *
-     * @param parent The parent Tab, if present.
-     * @param webContents The web contents to create a Tab around.
-     * @param type The TabLaunchType describing how this Tab was created.
-     * @return The new Tab or null if a Tab was not created successfully.
-     */
-    public final @Nullable Tab createTabWithWebContents(
-            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type) {
-        return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
-    }
-
-    /**
-     * Creates a Tab to host the given WebContents and adds it to the TabModel.
-     *
-     * @param parent The parent Tab, if present.
-     * @param shouldPin Whether the newly created tab should be pinned.
-     * @param webContents The web contents to create a Tab around.
-     * @param type The TabLaunchType describing how this Tab was created.
-     * @return The new Tab or null if a Tab was not created successfully.
-     */
-    public final @Nullable Tab createTabWithWebContents(
-            @Nullable Tab parent,
-            boolean shouldPin,
-            WebContents webContents,
-            @TabLaunchType int type) {
-        return createTabWithWebContents(
-                parent,
-                shouldPin,
-                webContents,
-                type,
-                webContents.getVisibleUrl(),
-                /* addTabToModel= */ true);
-    }
-
-    /**
-     * Creates a Tab to host the given WebContents and adds it to the TabModel.
-     *
-     * @param parent The parent Tab, if present.
-     * @param webContents The web contents to create a Tab around.
-     * @param type The TabLaunchType describing how this Tab was created.
-     * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
-     * @return The new Tab or null if a Tab was not created successfully.
-     */
-    public final @Nullable Tab createTabWithWebContents(
-            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
-        return createTabWithWebContents(
-                parent, /* shouldPin= */ false, webContents, type, url, /* addTabToModel= */ true);
-    }
 
     /**
      * Creates a {@link Tab} with the same history stack as {@param parent}.
@@ -169,25 +119,13 @@ public abstract class TabCreator {
      *     or {@code FROM_HISTORY_NAVIGATION_BACKGROUND}.
      * @return The {@link Tab} which was created.
      */
-    public @Nullable abstract Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
+    @Nullable Tab createTabWithHistory(Tab parent, @TabLaunchType int type);
 
     /** Creates a new tab and loads the NTP. */
-    public final void launchNtp() {
-        launchNtp(TabLaunchType.FROM_CHROME_UI);
-    }
-
-    /** Creates a new tab and loads the NTP. */
-    public final void launchNtp(@TabLaunchType int type) {
-        try {
-            TraceEvent.begin("TabCreator.launchNtp");
-            launchUrl(UrlConstants.NTP_URL, type);
-        } finally {
-            TraceEvent.end("TabCreator.launchNtp");
-        }
-    }
+    void launchNtp(@TabLaunchType int type);
 
     /** Semi-tag interface to denote dependency and provide a setter for {@link TabModel}. */
-    public interface NeedsTabModel {
+    interface NeedsTabModel {
         void setTabModel(TabModel tabModel);
     }
 
@@ -195,7 +133,7 @@ public abstract class TabCreator {
      * Semi-tag interface to denote dependency and provide a setter for {@link
      * TabModelOrderController}.
      */
-    public interface NeedsTabModelOrderController {
+    interface NeedsTabModelOrderController {
         void setTabModelOrderController(TabModelOrderController tabModelOrderController);
     }
 }

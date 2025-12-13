@@ -9,12 +9,14 @@
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/informed_restore_app_image_view.h"
 #include "ash/wm/window_restore/informed_restore_constants.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 

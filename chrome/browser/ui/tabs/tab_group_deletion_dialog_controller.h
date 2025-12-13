@@ -112,6 +112,7 @@ class DeletionDialogController : public TabStripModelObserver {
   // Gets the dialog state for tests. Allows for calling the callbacks without
   // going through views code.
   void SimulateOkButtonForTesting() { OnDialogOk(); }
+  void SimulateCancelButtonForTesting() { OnDialogCancel(); }
 
   void CreateDialogFromBrowser(BrowserWindowInterface* browser,
                                std::unique_ptr<ui::DialogModel> dialog_model);

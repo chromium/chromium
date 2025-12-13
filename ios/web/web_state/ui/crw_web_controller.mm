@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web/web_state/ui/crw_web_controller.h"
 
 #import <WebKit/WebKit.h>
+
+#import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
@@ -25,15 +22,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
+#import "build/config/ios/buildflags.h"
 #import "ios/web/common/annotations_utils.h"
 #import "ios/web/common/crw_edit_menu_builder.h"
 #import "ios/web/common/crw_input_view_provider.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
-#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/common/url_util.h"
 #import "ios/web/download/crw_web_view_download.h"
-#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/history_state_util.h"
 #import "ios/web/js_features/scroll_helper/scroll_helper_java_script_feature.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
@@ -59,6 +55,7 @@
 #import "ios/web/security/crw_ssl_status_updater.h"
 #import "ios/web/util/content_type_util.h"
 #import "ios/web/util/wk_web_view_util.h"
+#import "ios/web/web_state/crw_data_controls_delegate.h"
 #import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/crw_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_web_controller_container_view.h"
@@ -74,6 +71,10 @@
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "url/gurl.h"
 
+#if !BUILDFLAG(IOS_IS_APP_EXTENSION)
+#import "ios/web/common/uikit_ui_util.h"  // nogncheck
+#endif
+
 using web::NavigationManager;
 using web::NavigationManagerImpl;
 using web::WebState;
@@ -85,11 +86,73 @@ char const kFullScreenStateHistogram[] = "IOS.Fullscreen.State";
 // Disables logic to update CRWWebController's `_currentURLLoadWasTriggered`
 // when setting a WKWebView's interaction state.
 BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
-             "IOSSessionRestoreLoadTriggerKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns the bounds of the screen (or at least of one screen).
+CGRect GetScreenBounds() {
+#if !BUILDFLAG(IOS_IS_APP_EXTENSION)
+  // GetAnyKeyWindow() is not available when building an app extension.
+  if (UIWindow* window = GetAnyKeyWindow()) {
+    return window.bounds;
+  }
+#endif
+
+  // Fall back to UIScreen's -mainScreen if no key window is available.
+  return UIScreen.mainScreen.bounds;
+}
+
+// For readability.
+using ConstBytesSpan = base::span<const uint8_t>;
+
+// Returns whether `span` starts by `prefix`.
+bool StartsWith(ConstBytesSpan span, ConstBytesSpan prefix) {
+  return span.size() >= prefix.size() && span.first(prefix.size()) == prefix;
+}
+
+// Old versions of chrome wrapped `interactionState` in a keyed archiver,
+// which was unnecessary (as it is an NSData* which can be serialized as
+// is).
+//
+// This helper function checks whether the NSData* starts by the keyed
+// archiver signature ("bplist00") and if this is the case, unwraps the
+// `interactionState` from the archive.
+//
+// Returns whether the operation was a success sets `interactionState`
+// to the extracted value.
+BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
+  constexpr std::string_view kArchiveHeader = "bplist00";
+  const auto data_span = base::apple::NSDataToSpan(data);
+  if (!StartsWith(data_span, base::as_byte_span(kArchiveHeader))) {
+    *interactionState = data;
+    return YES;
+  }
+
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+  if (!unarchiver || error) {
+    DLOG(WARNING) << "Error creating unarchiver for session state data: "
+                  << base::SysNSStringToUTF8([error description]);
+    return NO;
+  }
+
+  unarchiver.requiresSecureCoding = YES;
+  NSData* unarchived =
+      [unarchiver decodeObjectOfClass:[NSData class]
+                               forKey:NSKeyedArchiveRootObjectKey];
+  if (!unarchived) {
+    DLOG(WARNING) << "Error decoding interactionState.";
+    return NO;
+  }
+
+  *interactionState = unarchived;
+  return YES;
+}
+
 }  // namespace
 
-@interface CRWWebController () <CRWWKNavigationHandlerDelegate,
+@interface CRWWebController () <CRWDataControlsDelegate,
+                                CRWWKNavigationHandlerDelegate,
                                 CRWEditMenuBuilder,
                                 CRWInputViewProvider,
                                 CRWSSLStatusUpdaterDataSource,
@@ -148,7 +211,7 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 
 // If `contentView_` contains a web view, this is the web view it contains.
 // If not, it's nil. When setting the property, it performs basic setup.
-@property(weak, nonatomic) WKWebView* webView;
+@property(weak, nonatomic) CRWWebView* webView;
 // The scroll view of `webView`.
 @property(weak, nonatomic, readonly) UIScrollView* webScrollView;
 
@@ -240,7 +303,6 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
     web::BrowserState* browserState = _webStateImpl->GetBrowserState();
     _certVerificationController = [[CRWCertVerificationController alloc]
         initWithBrowserState:browserState];
-    web::JavaScriptFindInPageManagerImpl::CreateForWebState(_webStateImpl);
 
     if (!browserState->IsOffTheRecord()) {
       web::AnnotationsTextManager::CreateForWebState(_webStateImpl);
@@ -345,7 +407,7 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 
 #pragma mark - Private properties accessors
 
-- (void)setWebView:(WKWebView*)webView {
+- (void)setWebView:(CRWWebView*)webView {
   DCHECK_NE(_webView, webView);
 
   // Unwind the old web view.
@@ -820,32 +882,11 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
 }
 
 - (BOOL)setSessionStateData:(NSData*)data {
-  NSData* interactionState = data;
-
-  // Old versions of chrome wrapped interactionState in a keyed unarchiver.
-  // This step was unnecessary. Rather than migrate all blobs over, simply
-  // check for an unarchiver here. NSKeyed data will start with 'bplist00',
-  // which differs from the header of a WebKit session coding (0x00000002).
-  // This logic can be removed after this change has gone live for a while.
-  constexpr char kArchiveHeader[] = "bplist00";
-  if (data.length > strlen(kArchiveHeader) &&
-      memcmp(data.bytes, kArchiveHeader, strlen(kArchiveHeader)) == 0) {
-    NSError* error = nil;
-    NSKeyedUnarchiver* unarchiver =
-        [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
-    if (!unarchiver || error) {
-      DLOG(WARNING) << "Error creating unarchiver for session state data: "
-                    << base::SysNSStringToUTF8([error description]);
-      return NO;
-    }
-    unarchiver.requiresSecureCoding = NO;
-    interactionState =
-        [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
-    if (!interactionState) {
-      DLOG(WARNING) << "Error decoding interactionState.";
-      return NO;
-    }
+  NSData* interactionState = nil;
+  if (!ExtractInteractionState(data, &interactionState)) {
+    return NO;
   }
+
   [self ensureWebViewCreated];
   DCHECK_EQ(self.webView.backForwardList.currentItem, nil);
   self.navigationHandler.blockUniversalLinksOnNextDecidePolicy = true;
@@ -1322,7 +1363,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
                                       navigationManager:navManager];
     [_SSLStatusUpdater setDelegate:self];
   }
-  NSString* host = base::SysUTF8ToNSString(_documentURL.host());
+  NSString* host = base::SysUTF8ToNSString(_documentURL.GetHost());
   BOOL hasOnlySecureContent = [self.webView hasOnlySecureContent];
   base::apple::ScopedCFTypeRef<SecTrustRef> trust;
   trust.reset([self.webView serverTrust], base::scoped_policy::RETAIN);
@@ -1356,8 +1397,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   } else {
     // Use the screen size because the application's key window and the
     // container may still be nil.
-    _containerView.frame = GetAnyKeyWindow() ? GetAnyKeyWindow().bounds
-                                             : UIScreen.mainScreen.bounds;
+    _containerView.frame = GetScreenBounds();
   }
 
   DCHECK(!CGRectIsEmpty(_containerView.frame));
@@ -1407,7 +1447,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 }
 
 // Returns a new autoreleased web view created with given configuration.
-- (WKWebView*)webViewWithConfiguration:(WKWebViewConfiguration*)config {
+- (CRWWebView*)webViewWithConfiguration:(WKWebViewConfiguration*)config {
   // Do not attach the context menu controller immediately as the JavaScript
   // delegate must be specified.
   web::UserAgentType defaultUserAgent = web::UserAgentType::AUTOMATIC;
@@ -1421,7 +1461,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 
   return web::BuildWKWebView(CGRectZero, config,
                              self.webStateImpl->GetBrowserState(),
-                             userAgentType, self, self);
+                             userAgentType, self, self, self);
 }
 
 // Wraps the web view in a CRWWebViewContentView and adds it to the container
@@ -1436,6 +1476,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     fullScreenState =
         CrFullscreenStateFromWKFullscreenState(self.webView.fullscreenState);
   }
+
   CRWWebViewContentView* webViewContentView =
       [[CRWWebViewContentView alloc] initWithWebView:self.webView
                                           scrollView:self.webScrollView
@@ -1705,9 +1746,9 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
           web::features::kCrashOnUnexpectedURLChange)) {
     if (_documentURL.DeprecatedGetOriginAsURL() !=
         newURL.DeprecatedGetOriginAsURL()) {
-      if (!_documentURL.host().empty() &&
-          (base::Contains(newURL.username(), _documentURL.host()) ||
-           base::Contains(newURL.password(), _documentURL.host()))) {
+      if (!_documentURL.GetHost().empty() &&
+          (base::Contains(newURL.GetUsername(), _documentURL.GetHost()) ||
+           base::Contains(newURL.GetPassword(), _documentURL.GetHost()))) {
         NOTREACHED();
       }
     }
@@ -1861,6 +1902,44 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   return self.navigationHandler;
 }
 
+#pragma mark - CRWDataControlsDelegate
+
+- (void)shouldAllowCopyWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowCopy(webState,
+                                             base::BindOnce(^(bool allowed) {
+                                               completionHandler(allowed);
+                                             }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
+- (void)shouldAllowPasteWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowPaste(webState,
+                                              base::BindOnce(^(bool allowed) {
+                                                completionHandler(allowed);
+                                              }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
+- (void)shouldAllowCutWithDecisionHandler:(void (^)(BOOL))completionHandler {
+  web::WebState* webState = self.webStateImpl;
+  if (webState && webState->GetDelegate()) {
+    webState->GetDelegate()->ShouldAllowCut(webState,
+                                            base::BindOnce(^(bool allowed) {
+                                              completionHandler(allowed);
+                                            }));
+  } else {
+    completionHandler(YES);
+  }
+}
+
 #pragma mark -  CRWEditMenuBuilder
 
 - (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
@@ -1918,7 +1997,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   [self removeWebView];
 
   [_containerView displayWebViewContentView:webViewContentView];
-  [self setWebView:static_cast<WKWebView*>(webViewContentView.webView)];
+  [self setWebView:static_cast<CRWWebView*>(webViewContentView.webView)];
 }
 
 - (void)resetInjectedWebViewContentView {

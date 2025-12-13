@@ -63,7 +63,7 @@
         --cr-section-two-line-min-height: 48px;
       }
 
-      #basic-tab settings-checkbox + settings-checkbox {
+      #basicTab settings-checkbox + settings-checkbox {
         --settings-checkbox-margin-top: 12px;
       }
 
@@ -99,7 +99,7 @@
         margin: 0 16px;
       }
 
-      #footer-description {
+      #footerDescription {
         color: var(--cr-secondary-text-color);
         padding: 16px;
       }
@@ -162,7 +162,7 @@
       <div slot="body">
         <cr-page-selector id="pages" selected="[[selectedTabIndex_]]"
             on-iron-select="updateClearButtonState_">
-          <div id="basic-tab">
+          <div id="basicTab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
@@ -231,7 +231,7 @@
               </div>
             </div>
           </div>
-          <div id="advanced-tab">
+          <div id="advancedTab">
             <div class="row time-range-row">
               <span class="time-range-label" aria-hidden="true">
                 $i18n{clearTimeRange}
@@ -326,28 +326,29 @@
           restamp>
         <div slot="footer">
           <settings-sync-account-control sync-status="[[syncStatus]]"
-              prefs="{{prefs}}" hide-buttons hide-banner>
+              prefs="{{prefs}}" hide-buttons hide-banner
+              access-point="[[accessPointEnum_.SETTINGS]]">
           </settings-sync-account-control>
           <div class="divider"></div>
-          <div id="footer-description" on-click="onSyncDescriptionLinkClicked_">
-            <span id="signin-info"
+          <div id="footerDescription" on-click="onSyncDescriptionLinkClicked_">
+            <span id="signinInfo"
                 hidden="[[!showSigninInfo_(
                     syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataSignedIn}
             </span>
-            <span id="sync-info"
+            <span id="syncInfo"
                 hidden="[[!showSyncInfo_(
                     syncStatus.signedInState, isClearPrimaryAccountAllowed_)]]">
               $i18nRaw{clearBrowsingDataWithSync}
             </span>
-            <span id="sync-paused-info" hidden="[[!isSyncPaused_]]">
+            <span id="syncPausedInfo" hidden="[[!isSyncPaused_]]">
               $i18nRaw{clearBrowsingDataWithSyncPaused}
             </span>
-            <span id="sync-passphrase-error-info"
+            <span id="syncPassphraseErrorInfo"
                 hidden="[[!hasPassphraseError_]]">
               $i18nRaw{clearBrowsingDataWithSyncPassphraseError}
             </span>
-            <span id="sync-other-error-info" hidden="[[!hasOtherSyncError_]]">
+            <span id="syncOtherErrorInfo" hidden="[[!hasOtherSyncError_]]">
               $i18nRaw{clearBrowsingDataWithSyncError}
             </span>
           </div>

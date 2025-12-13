@@ -16,7 +16,6 @@ include_rules = [
 specific_include_rules = {
   "(.*test\.cc|.*test_mac\.mm)": [
     "+chrome/browser/extensions/extension_browsertest.h",
-    "+chrome/browser/extensions/load_error_reporter.h",
     "+chrome/browser/extensions/test_extension_environment.h",
     "+chrome/browser/profiles/profile.h",
     "+chrome/browser/profiles/profile_manager.h",

@@ -6,13 +6,13 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_view.h"
@@ -28,6 +28,7 @@ using base::UTF8ToUTF16;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
 using std::u16string;
+using testing::_;
 using testing::ByMove;
 using testing::FieldsAre;
 using testing::Return;
@@ -61,6 +62,7 @@ class BnplTosControllerImplTest : public Test {
             ->GetPaymentsDataManager())
         .SetAccountInfoForPayments(account_info_);
 
+    // Set `issuer_` to be unlinked by default.
     issuer_ = BnplIssuer(/*instrument_id=*/std::nullopt,
                          BnplIssuer::IssuerId::kBnplAffirm,
                          std::vector<BnplIssuer::EligiblePriceRange>{});
@@ -69,11 +71,20 @@ class BnplTosControllerImplTest : public Test {
             "{ \"line\" : [ { \"template\": \"This is a legal message with"
             "{0}.\", \"template_parameter\": [ { \"display_text\": "
             "\"a link\", \"url\": \"http://www.example.com/\" "
-            "} ] }] }")
+            "} ] }] }",
+            base::JSON_PARSE_CHROMIUM_EXTENSIONS)
             ->GetDict(),
         &legal_message_lines_, true);
+  }
 
-    BnplTosModel model;
+  void TearDown() override { view_ = nullptr; }
+
+  BnplTosView* View() { return controller_->view_.get(); }
+
+  u16string IssuerName() { return controller_->model_.issuer.GetDisplayName(); }
+
+  void ShowBnplTos() {
+    payments::BnplTosModel model;
     model.issuer = issuer_;
     model.legal_message_lines = legal_message_lines_;
 
@@ -83,11 +94,14 @@ class BnplTosControllerImplTest : public Test {
     EXPECT_EQ(View(), view_);
   }
 
-  void TearDown() override { view_ = nullptr; }
-
-  BnplTosView* View() { return controller_->view_.get(); }
-
-  u16string IssuerName() { return controller_->model_.issuer.GetDisplayName(); }
+  void SetExternallyLinkedIssuer() {
+    issuer_ = BnplIssuer(
+        /*instrument_id=*/123, BnplIssuer::IssuerId::kBnplKlarna,
+        std::vector<BnplIssuer::EligiblePriceRange>{},
+        /*action_required=*/
+        autofill::DenseSet(
+            {autofill::PaymentInstrument::ActionRequired::kAcceptTos}));
+  }
 
   base::test::TaskEnvironment task_environment_;
   MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>>
@@ -104,17 +118,20 @@ class BnplTosControllerImplTest : public Test {
 };
 
 TEST_F(BnplTosControllerImplTest, ShowView_MultipleTimes) {
-  // Show() was already called once during Setup().
+  ShowBnplTos();
+
   MockCallback<OnceCallback<std::unique_ptr<BnplTosView>()>>
       new_create_view_callback_;
 
   EXPECT_CALL(new_create_view_callback_, Run()).Times(0);
-  controller_->Show(new_create_view_callback_.Get(), BnplTosModel(),
+  controller_->Show(new_create_view_callback_.Get(), payments::BnplTosModel(),
                     accept_callback_.Get(), cancel_callback_.Get());
 }
 
 TEST_F(BnplTosControllerImplTest, Dismiss) {
-  // The view should start out as being shown.
+  ShowBnplTos();
+
+  // The view should be shown.
   EXPECT_TRUE(View() != nullptr);
   // Avoid dangling pointer.
   view_ = nullptr;
@@ -125,6 +142,8 @@ TEST_F(BnplTosControllerImplTest, Dismiss) {
 }
 
 TEST_F(BnplTosControllerImplTest, OnUserAccepted) {
+  ShowBnplTos();
+
   EXPECT_CALL(accept_callback_, Run());
   controller_->OnUserAccepted();
 
@@ -133,6 +152,8 @@ TEST_F(BnplTosControllerImplTest, OnUserAccepted) {
 }
 
 TEST_F(BnplTosControllerImplTest, OnUserCancelled) {
+  ShowBnplTos();
+
   // Avoid dangling pointer.
   view_ = nullptr;
 
@@ -144,31 +165,52 @@ TEST_F(BnplTosControllerImplTest, OnUserCancelled) {
 }
 
 TEST_F(BnplTosControllerImplTest, GetOkButtonLabel) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetOkButtonLabel(),
             GetStringUTF16(IDS_AUTOFILL_BNPL_TOS_OK_BUTTON_LABEL));
 }
 
 TEST_F(BnplTosControllerImplTest, GetCancelButtonLabel) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetCancelButtonLabel(),
             GetStringUTF16(IDS_AUTOFILL_BNPL_TOS_CANCEL_BUTTON_LABEL));
 }
 
 TEST_F(BnplTosControllerImplTest, GetTitle) {
+  ShowBnplTos();
+
+  EXPECT_EQ(
+      controller_->GetTitle(),
+      GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_UNLINKED_TITLE, IssuerName()));
+}
+
+TEST_F(BnplTosControllerImplTest, GetTitle_ExternallyLinkedIssuer) {
+  SetExternallyLinkedIssuer();
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetTitle(),
-            GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_TITLE, IssuerName()));
+            GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_LINKED_TITLE, IssuerName()));
 }
 
 TEST_F(BnplTosControllerImplTest, GetReviewText) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetReviewText(),
             GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_REVIEW_TEXT, IssuerName()));
 }
 
 TEST_F(BnplTosControllerImplTest, GetApproveText) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetApproveText(),
             GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_APPROVE_TEXT, IssuerName()));
 }
 
 TEST_F(BnplTosControllerImplTest, GetLinkText) {
+  ShowBnplTos();
+
   std::vector<size_t> offsets;
   u16string text =
       GetStringFUTF16(IDS_AUTOFILL_BNPL_TOS_LINK_TEXT, IssuerName(),
@@ -176,20 +218,27 @@ TEST_F(BnplTosControllerImplTest, GetLinkText) {
 
   EXPECT_THAT(
       controller_->GetLinkText(),
-      FieldsAre(text,
+      FieldsAre(text, /*bold_range=*/_,
+                /*offset=*/
                 gfx::Range(offsets[1], offsets[1] + kWalletLinkText.length()),
                 GURL(kWalletUrlString)));
 }
 
 TEST_F(BnplTosControllerImplTest, GetLegalMessageLines) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetLegalMessageLines(), legal_message_lines_);
 }
 
 TEST_F(BnplTosControllerImplTest, GetAccountInfo) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetAccountInfo().email, account_info_.email);
 }
 
 TEST_F(BnplTosControllerImplTest, GetIssuerId) {
+  ShowBnplTos();
+
   EXPECT_EQ(controller_->GetIssuerId(), issuer_.issuer_id());
 }
 

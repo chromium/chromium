@@ -905,7 +905,7 @@ impl<'a, B: ReadBytes> BitStreamLtr<'a, B> {
     }
 }
 
-impl<'a, B: ReadBytes> private::FetchBitsLtr for BitStreamLtr<'a, B> {
+impl<B: ReadBytes> private::FetchBitsLtr for BitStreamLtr<'_, B> {
     #[inline(always)]
     fn fetch_bits(&mut self) -> io::Result<()> {
         self.bits = u64::from(self.reader.read_u8()?) << 56;
@@ -935,7 +935,7 @@ impl<'a, B: ReadBytes> private::FetchBitsLtr for BitStreamLtr<'a, B> {
     }
 }
 
-impl<'a, B: ReadBytes> ReadBitsLtr for BitStreamLtr<'a, B> {}
+impl<B: ReadBytes> ReadBitsLtr for BitStreamLtr<'_, B> {}
 
 /// `BitReaderLtr` reads bits from most-significant to least-significant from any `&[u8]`.
 ///
@@ -954,7 +954,7 @@ impl<'a> BitReaderLtr<'a> {
     }
 }
 
-impl<'a> private::FetchBitsLtr for BitReaderLtr<'a> {
+impl private::FetchBitsLtr for BitReaderLtr<'_> {
     #[inline]
     fn fetch_bits_partial(&mut self) -> io::Result<()> {
         let mut buf = [0u8; std::mem::size_of::<u64>()];
@@ -1007,9 +1007,9 @@ impl<'a> private::FetchBitsLtr for BitReaderLtr<'a> {
     }
 }
 
-impl<'a> ReadBitsLtr for BitReaderLtr<'a> {}
+impl ReadBitsLtr for BitReaderLtr<'_> {}
 
-impl<'a> FiniteBitStream for BitReaderLtr<'a> {
+impl FiniteBitStream for BitReaderLtr<'_> {
     fn bits_left(&self) -> u64 {
         (8 * self.buf.len() as u64) + u64::from(self.n_bits_left)
     }
@@ -1354,7 +1354,7 @@ impl<'a, B: ReadBytes> BitStreamRtl<'a, B> {
     }
 }
 
-impl<'a, B: ReadBytes> private::FetchBitsRtl for BitStreamRtl<'a, B> {
+impl<B: ReadBytes> private::FetchBitsRtl for BitStreamRtl<'_, B> {
     #[inline(always)]
     fn fetch_bits(&mut self) -> io::Result<()> {
         self.bits = u64::from(self.reader.read_u8()?);
@@ -1384,7 +1384,7 @@ impl<'a, B: ReadBytes> private::FetchBitsRtl for BitStreamRtl<'a, B> {
     }
 }
 
-impl<'a, B: ReadBytes> ReadBitsRtl for BitStreamRtl<'a, B> {}
+impl<B: ReadBytes> ReadBitsRtl for BitStreamRtl<'_, B> {}
 
 /// `BitReaderRtl` reads bits from least-significant to most-significant from any `&[u8]`.
 ///
@@ -1403,7 +1403,7 @@ impl<'a> BitReaderRtl<'a> {
     }
 }
 
-impl<'a> private::FetchBitsRtl for BitReaderRtl<'a> {
+impl private::FetchBitsRtl for BitReaderRtl<'_> {
     #[inline]
     fn fetch_bits_partial(&mut self) -> io::Result<()> {
         let mut buf = [0u8; std::mem::size_of::<u64>()];
@@ -1456,9 +1456,9 @@ impl<'a> private::FetchBitsRtl for BitReaderRtl<'a> {
     }
 }
 
-impl<'a> ReadBitsRtl for BitReaderRtl<'a> {}
+impl ReadBitsRtl for BitReaderRtl<'_> {}
 
-impl<'a> FiniteBitStream for BitReaderRtl<'a> {
+impl FiniteBitStream for BitReaderRtl<'_> {
     fn bits_left(&self) -> u64 {
         (8 * self.buf.len() as u64) + u64::from(self.n_bits_left)
     }
@@ -1828,7 +1828,7 @@ mod tests {
         let mut bs = BitReaderLtr::new(&buf);
 
         let decoded: Vec<u8> =
-            (0..text.len()).into_iter().map(|_| bs.read_codebook(&codebook).unwrap().0).collect();
+            (0..text.len()).map(|_| bs.read_codebook(&codebook).unwrap().0).collect();
 
         assert_eq!(text, std::str::from_utf8(&decoded).unwrap());
     }
@@ -2124,7 +2124,7 @@ mod tests {
         let mut bs = BitReaderRtl::new(&buf);
 
         let decoded: Vec<u8> =
-            (0..text.len()).into_iter().map(|_| bs.read_codebook(&codebook).unwrap().0).collect();
+            (0..text.len()).map(|_| bs.read_codebook(&codebook).unwrap().0).collect();
 
         assert_eq!(text, std::str::from_utf8(&decoded).unwrap());
     }

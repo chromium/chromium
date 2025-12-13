@@ -1,0 +1,35 @@
+description = "Generate browser tests for a diff from trunk"
+prompt = """
+Please generate browser tests that cover all new C++ code paths added by this
+diff:
+
+```diff
+!{git diff --cached origin/main '*.h' '*.cc' ':!*test.cc'}
+```
+
+Steps:
+1. Look for files ending in `_browsertest.cc` in each relevant directory to
+   house the new tests.
+2. Read each test file to understand existing test cases, fixtures, helper
+   methods, and mocks. To familiarize yourself with browser test APIs, you
+   should also read:
+    * `//content/public/test/browser_test_base.h`
+    * `//content/public/test/browser_test_utils.h`
+    * `//content/public/test/content_browser_test.h`
+3. Decide where test coverage should go:
+    * Cosmetic changes or internal refactoring don't require test changes.
+    * Sometimes, it's easier to add assertions to existing test cases instead
+      of devising new ones (for example, checking a new member on a class).
+    * Updating existing tests might also be necessary to capture changes to
+      production logic.
+4. Add or update the cases in each test file:
+    * Any new test cases should resemble existing cases.
+    * Do not modify production code.
+    * To test boolean expressions, always use `ASSERT_TRUE(...)` instead of
+      `ASSERT_EQ(true, ...)` (and likewise for preferring `ASSERT_FALSE(...)`,
+      `EXPECT_TRUE(...)`, and `EXPECT_FALSE(...)`).
+    * Consult `//third_party/googletest/src/docs/reference/assertions.md` for
+      details about assertions.
+5. Run `git cl format`.
+6. Validate the new changes with `//tools/autotest.py`.
+"""

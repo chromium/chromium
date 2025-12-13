@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "glic_background_mode_manager\.cc": [
+    "+ash/accelerators/accelerator_controller_impl.h",
+    "+ash/shell.h",
+  ],
+  "glic_background_mode_manager_interactive_uitest\.cc": [
+    "+ash/shell.h",
+  ],
+}

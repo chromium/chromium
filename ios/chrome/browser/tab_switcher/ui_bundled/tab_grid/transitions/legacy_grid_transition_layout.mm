@@ -64,7 +64,7 @@
 @implementation LegacyGridTransitionActiveItem
 @dynamic cell;
 @synthesize size = _size;
-@synthesize isAppearing = _isAppearing;
+@synthesize shouldUseBVCSnapshot = _shouldUseBVCSnapshot;
 
 + (instancetype)itemWithCell:(UIView<LegacyGridToTabTransitionView>*)cell
                       center:(CGPoint)center

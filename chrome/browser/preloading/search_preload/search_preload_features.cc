@@ -11,7 +11,10 @@
 
 namespace features {
 
-BASE_FEATURE(kDsePreload2, "DsePreload2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDsePreload2, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kDsePreload2UsePreloadServingMetrics{
+    &kDsePreload2, "kDsePreload2UsePreloadServingMetrics", false};
 
 const base::FeatureParam<size_t> kDsePreload2DeviceMemoryThresholdMiB{
     &kDsePreload2, "kDsePreload2DeviceMemoryThresholdMiB",
@@ -25,9 +28,7 @@ const base::FeatureParam<size_t> kDsePreload2MaxPrefetch{
 const base::FeatureParam<base::TimeDelta> kDsePreload2PrefetchTtl{
     &kDsePreload2, "kDsePreload2PrefetchTtl", base::Milliseconds(60000)};
 
-BASE_FEATURE(kDsePreload2OnPress,
-             "DsePreload2OnPress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDsePreload2OnPress, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kDsePreload2OnPressMouseDown{
     &kDsePreload2, "kDsePreload2OnPressMouseDown", true};
@@ -36,9 +37,7 @@ const base::FeatureParam<bool> kDsePreload2OnPressUpOrDownArrowButton{
 const base::FeatureParam<bool> kDsePreload2OnPressTouchDown{
     &kDsePreload2, "kDsePreload2OnPressTouchDown", true};
 
-BASE_FEATURE(kDsePreload2OnPressIncognito,
-             "DsePreload2OnPressIncognito",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDsePreload2OnPressIncognito, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
              "kDsePreload2OnSuggestNonDefalutMatch",
@@ -46,7 +45,7 @@ BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
 
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2) &&
-         static_cast<size_t>(base::SysInfo::AmountOfPhysicalMemoryMB()) >=
+         static_cast<size_t>(base::SysInfo::AmountOfPhysicalMemory().InMiB()) >=
              kDsePreload2DeviceMemoryThresholdMiB.Get();
 }
 

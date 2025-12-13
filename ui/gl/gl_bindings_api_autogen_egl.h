@@ -191,6 +191,9 @@ EGLBoolean eglPostSubBufferNVFn(EGLDisplay dpy,
                                 EGLint y,
                                 EGLint width,
                                 EGLint height) override;
+EGLBoolean eglPresentationTimeANDROIDFn(EGLDisplay dpy,
+                                        EGLSurface surface,
+                                        EGLnsecsANDROID time) override;
 EGLenum eglQueryAPIFn(void) override;
 EGLBoolean eglQueryContextFn(EGLDisplay dpy,
                              EGLContext ctx,

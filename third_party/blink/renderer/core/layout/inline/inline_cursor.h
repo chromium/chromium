@@ -59,9 +59,6 @@ class CORE_EXPORT InlineCursorPosition {
   bool operator==(const InlineCursorPosition& other) const {
     return item_ == other.item_;
   }
-  bool operator!=(const InlineCursorPosition& other) const {
-    return !operator==(other);
-  }
 
   // True if the current position is a text. It is error to call at end.
   bool IsText() const { return item_->IsText(); }
@@ -255,9 +252,6 @@ class CORE_EXPORT InlineCursor {
   InlineCursor() = default;
 
   bool operator==(const InlineCursor& other) const;
-  bool operator!=(const InlineCursor& other) const {
-    return !operator==(other);
-  }
 
   // True if this cursor has the root to traverse. Only the default constructor
   // creates a cursor without the root.
@@ -330,38 +324,6 @@ class CORE_EXPORT InlineCursor {
   PhysicalRect CurrentLocalSelectionRectForText(
       const LayoutSelectionStatus& selection_status) const;
   PhysicalRect CurrentLocalSelectionRectForReplaced() const;
-
-  // Return a rectangle (or just an offset) relatively to containing
-  // LayoutBlockFlow, as if all the container fragments were stitched together
-  // in the block direction (aka. "flow thread coordinate space").
-  //
-  // Example:
-  // <div style="columns:2; orphans:1; widows:1; width:20px; line-height:20px;">
-  //   <div id="container">line1 line2 line3 line4 line5 line6</div>
-  // </div>
-  //
-  // The text will end up on six lines. The first three lines will end up in the
-  // first column, and the last three lines will end up in the second column. So
-  // we get two box fragments generated for #container - one for each column.
-  //
-  // The offsets returned from these methods will be
-  // (OffsetInContainerFragment() values in parentheses):
-  //
-  // line1: 0,0   (0,0)
-  // line2: 0,20  (0,20)
-  // line3: 0,40  (0,40)
-  // line4: 0,60  (0,0)
-  // line5: 0,80  (0,20)
-  // line6: 0,100 (0,40)
-  //
-  // We need this functionality, because we're still using the legacy layout
-  // engine to calculate offsets relatively to some ancestor.
-  PhysicalRect CurrentRectInBlockFlow() const;
-  PhysicalOffset CurrentOffsetInBlockFlow() const {
-    DCHECK_EQ(Current().OffsetInContainerFragment(),
-              Current().RectInContainerFragment().offset);
-    return CurrentRectInBlockFlow().offset;
-  }
 
   // Return the rectangle of the current item, relatively to the first container
   // fragment. Used by block fragmentation.

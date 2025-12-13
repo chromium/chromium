@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] media attribute on SVG <style> elements should reflect correctly
+  assert_equals: missing media reflects as empty string IDL attribute on the style element expected "" but got "all"
+Harness: the test ran to completion.
+

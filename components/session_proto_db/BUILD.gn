@@ -18,7 +18,7 @@ source_set("session_proto_db") {
 
   deps = [
     ":core",
-    "//base:base",
+    "//base",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/core",
     "//components/leveldb_proto",
@@ -37,7 +37,7 @@ if (use_blink) {
       ":core",
       ":session_proto_db",
       ":session_proto_db_test_proto",
-      "//base:base",
+      "//base",
       "//base/test:test_support",
       "//components/commerce/core:persisted_state_db_content_proto",
       "//components/leveldb_proto:test_support",

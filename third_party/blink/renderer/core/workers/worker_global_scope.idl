@@ -57,9 +57,6 @@
     // WindowOrWorkerGlobalScope mixin
     // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
     [Replaceable] readonly attribute DOMString origin;
-
-    // TrustedTypes API: http://github.com/w3c/trusted-types
-    readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 
 WorkerGlobalScope includes UniversalGlobalScope;

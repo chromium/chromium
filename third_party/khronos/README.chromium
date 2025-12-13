@@ -3,6 +3,7 @@ Short Name: khronos_headers
 URL: http://www.khronos.org/registry
 Version: N/A
 Date: 2018-07-25
+Update Mechanism: Manual
 GLES Date: 2018-07-25
 EGL Date: 2022-03-23
 License: MIT, X11, SGI-B-2.0

@@ -12,6 +12,7 @@ declare_args() {
   # bundle_data target that copy Icon-*.png files in the application bundle.
   ios_application_icons_target_legacy =
       "//ios/chrome/app/resources:chromium_icons_legacy"
+  ios_application_icons_target = "//ios/chrome/app/resources:chromium_icons"
 
   # Label of the target providing image assets for the launchscreen.  This
   # target must be an asset catalog that contains at least two imagesets, one

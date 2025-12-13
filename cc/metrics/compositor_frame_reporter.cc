@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <deque>
 #include <memory>
@@ -17,6 +18,8 @@
 
 #include "base/check.h"
 #include "base/debug/alias.h"
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -28,6 +31,7 @@
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
+#include "cc/base/features.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
@@ -35,6 +39,7 @@
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/latency_ukm_reporter.h"
+#include "cc/metrics/submit_info.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_frame_reporter.pbzero.h"
 #include "ui/events/types/event_type.h"
@@ -46,16 +51,28 @@ using StageType = CompositorFrameReporter::StageType;
 using FrameReportType = CompositorFrameReporter::FrameReportType;
 using BlinkBreakdown = CompositorFrameReporter::BlinkBreakdown;
 using VizBreakdown = CompositorFrameReporter::VizBreakdown;
+using TreesInVizBreakdown = CompositorFrameReporter::TreesInVizBreakdown;
 using FrameFinalState = FrameInfo::FrameFinalState;
 
 constexpr int kStageTypeCount = static_cast<int>(StageType::kStageTypeCount);
+
+// We need double the VizBreakdown count to accommodate TreesInViz and regular
+// mode
 constexpr int kAllBreakdownCount =
-    static_cast<int>(VizBreakdown::kBreakdownCount) +
-    static_cast<int>(BlinkBreakdown::kBreakdownCount);
+    (static_cast<int>(VizBreakdown::kBreakdownCount) * 2) +
+    static_cast<int>(BlinkBreakdown::kBreakdownCount) +
+    static_cast<int>(TreesInVizBreakdown::kTreesInVizBreakdownCount);
 
 constexpr int kVizBreakdownInitialIndex = kStageTypeCount;
-constexpr int kBlinkBreakdownInitialIndex =
+// The first set of VizBreakdowns is for normal mode, second set for TreesInViz.
+constexpr int kVizBreakdownForTreesInVizModeInitialIndex =
     kVizBreakdownInitialIndex + static_cast<int>(VizBreakdown::kBreakdownCount);
+constexpr int kBlinkBreakdownInitialIndex =
+    kVizBreakdownInitialIndex +
+    (static_cast<int>(VizBreakdown::kBreakdownCount) * 2);
+constexpr int kTreesInVizBreakdownInitialIndex =
+    kBlinkBreakdownInitialIndex +
+    static_cast<int>(BlinkBreakdown::kBreakdownCount);
 
 // For each possible FrameSequenceTrackerType there will be a UMA histogram
 // plus one for general case.
@@ -108,16 +125,18 @@ std::string GetCompositorLatencyHistogramName(
     FrameSequenceTrackerType frame_sequence_tracker_type,
     StageType stage_type,
     std::optional<VizBreakdown> viz_breakdown,
-    std::optional<BlinkBreakdown> blink_breakdown) {
+    std::optional<BlinkBreakdown> blink_breakdown,
+    std::optional<TreesInVizBreakdown> trees_in_viz_breakdown) {
   DCHECK_LE(frame_sequence_tracker_type, FrameSequenceTrackerType::kMaxType);
   const char* tracker_type_name =
       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(
           frame_sequence_tracker_type);
   DCHECK(tracker_type_name);
-  return base::StrCat({"CompositorLatency2.", tracker_type_name,
-                       *tracker_type_name ? "." : "",
-                       CompositorFrameReporter::GetStageName(
-                           stage_type, viz_breakdown, blink_breakdown)});
+  return base::StrCat(
+      {"CompositorLatency2.", tracker_type_name, *tracker_type_name ? "." : "",
+       CompositorFrameReporter::GetStageName(stage_type, viz_breakdown,
+                                             blink_breakdown,
+                                             trees_in_viz_breakdown)});
 }
 
 // Helper function to record UMA histogram for an EventLatency metric. There
@@ -197,7 +216,7 @@ void TraceScrollJankMetrics(const EventMetrics::List& events_metrics,
 // For measuring the queuing issues with GenerationToBrowserMain we are only
 // looking at scrolling events. So we will not create a histogram that
 // encompasses all EventMetrics::EventType options.
-constexpr int kMaxGestureScrollHistogramIndex = 5;
+constexpr int kMaxGestureScrollHistogramIndex = 6;
 int GetGestureScrollIndex(EventMetrics::EventType type) {
   switch (type) {
     case EventMetrics::EventType::kFirstGestureScrollUpdate:
@@ -210,53 +229,12 @@ int GetGestureScrollIndex(EventMetrics::EventType type) {
       return 3;
     case EventMetrics::EventType::kInertialGestureScrollUpdate:
       return 4;
+    case EventMetrics::EventType::kInertialGestureScrollEnd:
+      return 5;
     default:
-      // We are only interested in 5 categories of EventType for scroll input
+      // We are only interested in 6 categories of EventType for scroll input
       NOTREACHED();
   }
-}
-
-// For measuring the ratio of scrolling event generation, as well as arrival in
-// the Renderer. Compared to the active VSync at the time of their arrival.
-constexpr int kMaxVSyncRatioHistogramIndex =
-    kMaxGestureScrollHistogramIndex *
-    static_cast<int>(
-        CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount);
-const char* GetVSyncRatioTypeName(
-    CompositorFrameReporter::VSyncRatioType type) {
-  switch (type) {
-    case CompositorFrameReporter::VSyncRatioType::
-        kArrivedInRendererVsVSyncRatioAfterVSync:
-      return "ArrivedInRendererVsVSyncRatio.AfterVSync";
-    case CompositorFrameReporter::VSyncRatioType::
-        kArrivedInRendererVsVSyncRatioBeforeVSync:
-      return "ArrivedInRendererVsVSyncRatio.BeforeVSync";
-    case CompositorFrameReporter::VSyncRatioType::
-        kGenerationVsVsyncRatioAfterVSync:
-      return "GenerationVsVsyncRatio.AfterVSync";
-    case CompositorFrameReporter::VSyncRatioType::
-        kGenerationVsVsyncRatioBeforeVSync:
-      return "GenerationVsVsyncRatio.BeforeVSync";
-    case CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount:
-      NOTREACHED();
-  }
-}
-
-void ReportVSyncRatioMetric(const std::string& base_histogram_name,
-                            int gesture_scroll_index,
-                            CompositorFrameReporter::VSyncRatioType type,
-                            int percentage) {
-  const std::string vsync_ratio_type_name = GetVSyncRatioTypeName(type);
-  const std::string histogram_name =
-      base::JoinString({base_histogram_name, vsync_ratio_type_name}, ".");
-  STATIC_HISTOGRAM_POINTER_GROUP(
-      histogram_name,
-      gesture_scroll_index +
-          static_cast<int>(type) * kMaxGestureScrollHistogramIndex,
-      kMaxVSyncRatioHistogramIndex, Add(percentage),
-      base::LinearHistogram::FactoryGet(
-          histogram_name, 1, 100, 101,
-          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -435,19 +413,30 @@ void CompositorFrameReporter::ProcessedVizBreakdown::Iterator::
 CompositorFrameReporter::ProcessedVizBreakdown::ProcessedVizBreakdown(
     base::TimeTicks viz_start_time,
     const viz::FrameTimingDetails& viz_breakdown) {
-  if (viz_start_time.is_null())
+  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
+  if (!trees_in_viz_mode && viz_start_time.is_null()) {
     return;
+  }
 
   // Check if `viz_breakdown` is set. Testing indicates that sometimes the
   // received_compositor_frame_timestamp can be earlier than the given
   // `viz_start_time`. Avoid reporting negative times.
   if (viz_breakdown.received_compositor_frame_timestamp.is_null() ||
-      viz_breakdown.received_compositor_frame_timestamp < viz_start_time) {
+      (!trees_in_viz_mode &&
+       viz_breakdown.received_compositor_frame_timestamp < viz_start_time)) {
     return;
   }
-  list_[static_cast<int>(VizBreakdown::kSubmitToReceiveCompositorFrame)] =
-      std::make_pair(viz_start_time,
-                     viz_breakdown.received_compositor_frame_timestamp);
+
+  if (trees_in_viz_mode) {
+    list_[static_cast<int>(VizBreakdown::kSubmitToReceiveCompositorFrame)] =
+        std::make_pair(viz_breakdown.submit_compositor_frame,
+                       viz_breakdown.received_compositor_frame_timestamp);
+
+  } else {
+    list_[static_cast<int>(VizBreakdown::kSubmitToReceiveCompositorFrame)] =
+        std::make_pair(viz_start_time,
+                       viz_breakdown.received_compositor_frame_timestamp);
+  }
 
   if (viz_breakdown.draw_start_timestamp.is_null())
     return;
@@ -495,6 +484,132 @@ CompositorFrameReporter::ProcessedVizBreakdown::CreateIterator(
     bool skip_swap_start_to_swap_end_if_breakdown_available) const {
   return Iterator(this, skip_swap_start_to_swap_end_if_breakdown_available &&
                             buffer_ready_available_);
+}
+
+// CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
+
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::Iterator(
+    const ProcessedTreesInVizBreakdown* owner)
+    : owner_(owner) {
+  DCHECK(owner_);
+  SkipBreakdownsIfNecessary();
+}
+
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::~Iterator() =
+    default;
+
+bool CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::IsValid()
+    const {
+  return index_ < std::size(owner_->list_);
+}
+
+void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
+    Advance() {
+  DCHECK(IsValid());
+  index_++;
+  SkipBreakdownsIfNecessary();
+}
+
+TreesInVizBreakdown
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetBreakdown()
+    const {
+  DCHECK(IsValid());
+  return static_cast<TreesInVizBreakdown>(index_);
+}
+
+base::TimeTicks
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetStartTime()
+    const {
+  DCHECK(HasValue());
+  return owner_->list_[index_]->first;
+}
+
+base::TimeTicks
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetEndTime()
+    const {
+  DCHECK(HasValue());
+  return owner_->list_[index_]->second;
+}
+
+base::TimeDelta
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::GetDuration()
+    const {
+  DCHECK(HasValue());
+  return owner_->list_[index_]->second - owner_->list_[index_]->first;
+}
+
+bool CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::HasValue()
+    const {
+  DCHECK(IsValid());
+  return owner_->list_[index_].has_value();
+}
+
+void CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator::
+    SkipBreakdownsIfNecessary() {
+  while (IsValid() && (!HasValue())) {
+    index_++;
+  }
+}
+
+// CompositorFrameReporter::ProcessedBlinkBreakdown ============================
+
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::
+    ProcessedTreesInVizBreakdown(base::TimeTicks activate_time,
+                                 base::TimeTicks trees_in_viz_branch_time,
+                                 base::TimeTicks trees_in_viz_viz_time,
+                                 const viz::FrameTimingDetails& viz_breakdown) {
+  // Check if `viz_breakdown` is set, avoid reporting negative times.
+  // See VizBreakdown().
+  if (viz_breakdown.received_compositor_frame_timestamp.is_null()) {
+    return;
+  }
+
+  // New stages introduced by CC.
+  list_[static_cast<int>(TreesInVizBreakdown::kEndActivateToDrawLayers)] =
+      std::make_pair(activate_time,              // end activate to
+                     trees_in_viz_branch_time);  // branch time
+  list_[static_cast<int>(
+      TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree)] =
+      std::make_pair(trees_in_viz_branch_time,  // branch time to
+                     trees_in_viz_viz_time);    // send over wire
+
+  // CC -> Viz mojo time
+  list_[static_cast<int>(
+      TreesInVizBreakdown::kSendUpdateDisplayTreeToReceiveUpdateDisplayTree)] =
+      std::make_pair(
+          trees_in_viz_viz_time,                     // send over wire to
+          viz_breakdown.start_update_display_tree);  // receive over wire.
+
+  // New stages introduced in Viz.
+  list_[static_cast<int>(
+      TreesInVizBreakdown::
+          kReceiveUpdateDisplayTreeToStartPrepareToDraw)] =  // receive over the
+                                                             // wire to start
+                                                             // prepare to draw
+      std::make_pair(viz_breakdown.start_update_display_tree,
+                     viz_breakdown.start_prepare_to_draw);
+  list_[static_cast<int>(
+      TreesInVizBreakdown::
+          kStartPrepareToDrawToStartDrawLayers)] =  // start prepare to draw to
+                                                    // start draw layers
+      std::make_pair(viz_breakdown.start_prepare_to_draw,
+                     viz_breakdown.start_draw_layers);
+  list_[static_cast<int>(
+      TreesInVizBreakdown::
+          kStartDrawLayersToSubmitCompositorFrame)] =  // start draw layers to
+                                                       // submit cf
+      std::make_pair(viz_breakdown.start_draw_layers,
+                     viz_breakdown.submit_compositor_frame);
+
+  return;
+}
+
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::
+    ~ProcessedTreesInVizBreakdown() = default;
+
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::Iterator
+CompositorFrameReporter::ProcessedTreesInVizBreakdown::CreateIterator() const {
+  return Iterator(this);
 }
 
 // CompositorFrameReporter =====================================================
@@ -545,12 +660,20 @@ CompositorFrameReporter::CompositorFrameReporter(
 const char* CompositorFrameReporter::GetStageName(
     StageType stage_type,
     std::optional<VizBreakdown> viz_breakdown,
-    std::optional<BlinkBreakdown> blink_breakdown) {
+    std::optional<BlinkBreakdown> blink_breakdown,
+    std::optional<TreesInVizBreakdown> trees_in_viz_breakdown) {
   DCHECK(!viz_breakdown ||
          stage_type ==
-             StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
+             StageType::kSubmitCompositorFrameToPresentationCompositorFrame ||
+         stage_type ==
+             StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame);
   DCHECK(!blink_breakdown ||
          stage_type == StageType::kSendBeginMainFrameToCommit);
+  DCHECK(
+      !trees_in_viz_breakdown ||
+      (stage_type == StageType::kEndActivateToSubmitUpdateDisplayTree ||
+       stage_type ==
+           StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame));
   switch (stage_type) {
     case StageType::kBeginImplFrameToSendBeginMainFrame:
       return "BeginImplFrameToSendBeginMainFrame";
@@ -626,9 +749,106 @@ const char* CompositorFrameReporter::GetStageName(
         case VizBreakdown::kBreakdownCount:
           NOTREACHED();
       }
+    case StageType::kEndActivateToSubmitUpdateDisplayTree:
+      if (!trees_in_viz_breakdown) {
+        return "EndActivateToSubmitUpdateDisplayTree";
+      }
+      switch (*trees_in_viz_breakdown) {
+        case TreesInVizBreakdown::kEndActivateToDrawLayers:
+          return "EndActivateToSubmitUpdateDisplayTree."
+                 "EndActivateToDrawLayers";
+        case TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree:
+          return "EndActivateToSubmitUpdateDisplayTree."
+                 "DrawLayersToSubmitUpdateDisplayTree";
+        case TreesInVizBreakdown::
+            kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
+        case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
+        case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
+        case TreesInVizBreakdown::kStartDrawLayersToSubmitCompositorFrame:
+        case TreesInVizBreakdown::kTreesInVizBreakdownCount:
+          NOTREACHED();
+      }
+    case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+      if (!trees_in_viz_breakdown) {
+        if (!viz_breakdown) {
+          return "SubmitUpdateDisplayTreeToPresentationCompositorFrame";
+        }
+        switch (*viz_breakdown) {
+          case VizBreakdown::kSubmitToReceiveCompositorFrame:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "SubmitToReceiveCompositorFrame";
+          case VizBreakdown::kReceivedCompositorFrameToStartDraw:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "ReceivedCompositorFrameToStartDraw";
+          case VizBreakdown::kStartDrawToSwapStart:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "StartDrawToSwapStart";
+          case VizBreakdown::kSwapStartToSwapEnd:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "SwapStartToSwapEnd";
+          case VizBreakdown::kSwapEndToPresentationCompositorFrame:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "SwapEndToPresentationCompositorFrame";
+          case VizBreakdown::kSwapStartToBufferAvailable:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "SwapStartToBufferAvailable";
+          case VizBreakdown::kBufferAvailableToBufferReady:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "BufferAvailableToBufferReady";
+          case VizBreakdown::kBufferReadyToLatch:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "BufferReadyToLatch";
+          case VizBreakdown::kLatchToSwapEnd:
+            return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                   "LatchToSwapEnd";
+          case VizBreakdown::kBreakdownCount:
+            NOTREACHED();
+        }
+      }
+      switch (*trees_in_viz_breakdown) {
+        case TreesInVizBreakdown::kEndActivateToDrawLayers:
+        case TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree:
+          NOTREACHED();
+        case TreesInVizBreakdown::
+            kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
+          return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                 "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+        case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
+          return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                 "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
+        case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
+          return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                 "StartPrepareToDrawToStartDrawLayers";
+        case TreesInVizBreakdown::kStartDrawLayersToSubmitCompositorFrame:
+          return "SubmitUpdateDisplayTreeToPresentationCompositorFrame."
+                 "StartDrawLayersToSubmitCompositorFrame";
+        case TreesInVizBreakdown::kTreesInVizBreakdownCount:
+          NOTREACHED();
+      }
+
     case StageType::kTotalLatency:
       return "TotalLatency";
     case StageType::kStageTypeCount:
+      NOTREACHED();
+  }
+}
+
+const char* CompositorFrameReporter::GetTreesInVizBreakdownName(
+    TreesInVizBreakdown breakdown) {
+  switch (breakdown) {
+    case TreesInVizBreakdown::kEndActivateToDrawLayers:
+      return "EndActivateToDrawLayers";
+    case TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree:
+      return "DrawLayersToSendUpdateDisplayTree";
+    case TreesInVizBreakdown::kSendUpdateDisplayTreeToReceiveUpdateDisplayTree:
+      return "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+    case TreesInVizBreakdown::kReceiveUpdateDisplayTreeToStartPrepareToDraw:
+      return "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
+    case TreesInVizBreakdown::kStartPrepareToDrawToStartDrawLayers:
+      return "StartPrepareToDrawToStartDrawLayers";
+    case TreesInVizBreakdown::kStartDrawLayersToSubmitCompositorFrame:
+      return "StartDrawLayersToSubmitCompositorFrame";
+    case TreesInVizBreakdown::kTreesInVizBreakdownCount:
       NOTREACHED();
   }
 }
@@ -713,6 +933,7 @@ void CompositorFrameReporter::StartStage(
   EndCurrentStage(start_time);
   current_stage_.stage_type = stage_type;
   current_stage_.start_time = start_time;
+
   switch (stage_type) {
     case StageType::kSendBeginMainFrameToCommit:
       DCHECK(blink_start_time_.is_null());
@@ -722,9 +943,64 @@ void CompositorFrameReporter::StartStage(
       DCHECK(viz_start_time_.is_null());
       viz_start_time_ = start_time;
       break;
+    case StageType::kEndActivateToSubmitUpdateDisplayTree: {
+      TreesInVizTimestamps timestamps =
+          trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
+      DCHECK(timestamps.trees_in_viz_activate_time_.is_null());
+      timestamps.trees_in_viz_activate_time_ = start_time;
+      trees_in_viz_timestamps_ = timestamps;
+      break;
+    }
+    case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame: {
+      TreesInVizTimestamps timestamps =
+          trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
+      DCHECK(timestamps.trees_in_viz_viz_start_time_.is_null());
+      DCHECK(!timestamps.trees_in_viz_branch_time_.is_null());
+      DCHECK(timestamps.trees_in_viz_branch_time_ <=
+             start_time);  // branch time expected to happen before we sent
+                           // the update to Viz.
+      timestamps.trees_in_viz_viz_start_time_ = start_time;
+      trees_in_viz_timestamps_ = timestamps;
+      break;
+    }
     default:
       break;
   }
+}
+
+void CompositorFrameReporter::SetTreesInVizBranchTime(
+    base::TimeTicks timestamp) {
+  // We expect trees_in_viz_timestamps_to be set most of the time because the
+  // reporter is expected to move through the activate stage prior to
+  // the TreesInViz branch point.
+  // TODO(crbug.com/445500514): Sometimes, activation stage does not occur
+  // because the CFR represents a partial update and in this case we make a new
+  // TreesInVizTimestamps value.
+  TreesInVizTimestamps timestamps =
+      trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
+  timestamps.trees_in_viz_branch_time_ = timestamp;
+  trees_in_viz_timestamps_ = timestamps;
+}
+
+void CompositorFrameReporter::StartStageUpdateDisplayTree(
+    SubmitInfo& submit_info) {
+  // TODO(crbug.com/445970842):
+  // If main the main frame has been aborted, the impl_frame_finish_time() might
+  // be after the UpdateLayerTree has already been sent over. Investigate this
+  // call site to ensure impl_frame_finish_time is the correct activation time
+  // for the TreesInViz path.
+  base::TimeTicks activate_time =
+      std::min(impl_frame_finish_time(), submit_info.time);
+  StartStage(StageType::kEndActivateToSubmitUpdateDisplayTree,
+             activate_time.is_min() ? base::TimeTicks::Now() : activate_time);
+  SetTreesInVizBranchTime(submit_info.time);
+}
+
+void CompositorFrameReporter::StartStagePresentationCompositorFrame(
+    SubmitInfo& submit_info) {
+  SetTreesInVizBranchTime(submit_info.time);
+  StartStage(StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+             submit_info.trees_in_viz_submit_time);
 }
 
 void CompositorFrameReporter::TerminateFrame(
@@ -749,6 +1025,8 @@ void CompositorFrameReporter::OnFinishImplFrame(base::TimeTicks timestamp,
   waiting_for_main_ = waiting_for_main;
 }
 
+// TODO(crbug.com/445970842): If impl_frame_finish_time_ is set, do not
+// override it.
 void CompositorFrameReporter::OnAbortBeginMainFrame(base::TimeTicks timestamp) {
   DCHECK(!main_frame_abort_time_.has_value());
   main_frame_abort_time_ = timestamp;
@@ -788,12 +1066,14 @@ void CompositorFrameReporter::SetVizBreakdown(
 
 void CompositorFrameReporter::AddEventsMetrics(
     EventMetrics::List events_metrics) {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   events_metrics_.insert(events_metrics_.end(),
                          std::make_move_iterator(events_metrics.begin()),
                          std::make_move_iterator(events_metrics.end()));
 }
 
 EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   EventMetrics::List result = std::move(events_metrics_);
   events_metrics_.clear();
   return result;
@@ -805,6 +1085,7 @@ void CompositorFrameReporter::set_normalized_invalidated_area(
 }
 
 EventMetrics::List CompositorFrameReporter::TakeMainBlockedEventsMetrics() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
   auto mid = std::partition(events_metrics_.begin(), events_metrics_.end(),
                             [](std::unique_ptr<EventMetrics>& metrics) {
                               DCHECK(metrics);
@@ -824,6 +1105,14 @@ void CompositorFrameReporter::DidSuccessfullyPresentFrame() {
 }
 
 void CompositorFrameReporter::TerminateReporter() {
+  // Remove all `EventMetrics` which didn't cause a frame update so that they
+  // wouldn't affect UMA metrics like EventLatency.TotalLatency. It's safe to do
+  // here because the scroll jank metric, which needs to be informed about
+  // non-damaging `EventMetrics`, has already been reported in
+  // `ReportScrollJankMetrics()`, so there's no more need to keep the
+  // non-damaging event metrics around.
+  DropEventMetricsWhichDidNotCauseFrameUpdate();
+
   if (frame_termination_status_ == FrameTerminationStatus::kUnknown)
     TerminateFrame(FrameTerminationStatus::kUnknown, Now());
 
@@ -833,6 +1122,18 @@ void CompositorFrameReporter::TerminateReporter() {
   if (!processed_viz_breakdown_)
     processed_viz_breakdown_ = std::make_unique<ProcessedVizBreakdown>(
         viz_start_time_, viz_breakdown_);
+
+  if (!processed_trees_in_viz_breakdown_) {
+    // TODO(crbug.com/445500514): Should be possible to report breakdowns for
+    // partial updates.
+    TreesInVizTimestamps cc_timestamps =
+        trees_in_viz_timestamps_.value_or(TreesInVizTimestamps{});
+    processed_trees_in_viz_breakdown_ =
+        std::make_unique<ProcessedTreesInVizBreakdown>(
+            cc_timestamps.trees_in_viz_activate_time_,
+            cc_timestamps.trees_in_viz_branch_time_,
+            cc_timestamps.trees_in_viz_viz_start_time_, viz_breakdown_);
+  }
 
   DCHECK_EQ(current_stage_.start_time, base::TimeTicks());
   const FrameInfo frame_info = GenerateFrameInfo();
@@ -900,8 +1201,9 @@ void CompositorFrameReporter::TerminateReporter() {
 }
 
 void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
-  if (current_stage_.start_time == base::TimeTicks())
+  if (current_stage_.start_time == base::TimeTicks()) {
     return;
+  }
   current_stage_.end_time = end_time;
   stage_history_.push_back(current_stage_);
   current_stage_.start_time = base::TimeTicks();
@@ -916,7 +1218,8 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
   if (global_trackers_.latency_ukm_reporter) {
     global_trackers_.latency_ukm_reporter->ReportCompositorLatencyUkm(
         report_types_, stage_history_, active_trackers_,
-        *processed_blink_breakdown_, *processed_viz_breakdown_);
+        *processed_blink_breakdown_, *processed_viz_breakdown_,
+        *processed_trees_in_viz_breakdown_);
   }
 
   if (!should_report_histograms_)
@@ -988,13 +1291,20 @@ void CompositorFrameReporter::ReportStageHistogramWithBreakdown(
   ReportCompositorLatencyHistogram(
       frame_sequence_tracker_type, stage.stage_type,
       /*viz_breakdown=*/std::nullopt,
-      /*blink_breakdown=*/std::nullopt, stage_delta);
+      /*blink_breakdown=*/std::nullopt,
+      /*trees_in_viz_breakdown=*/std::nullopt, stage_delta);
   switch (stage.stage_type) {
     case StageType::kSendBeginMainFrameToCommit:
       ReportCompositorLatencyBlinkBreakdowns(frame_sequence_tracker_type);
       break;
+    case StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame:
+      ReportCompositorLatencyTreesInVizBreakdowns(frame_sequence_tracker_type);
+      ReportCompositorLatencyVizBreakdowns(frame_sequence_tracker_type,
+                                           stage.stage_type);
+      break;
     case StageType::kSubmitCompositorFrameToPresentationCompositorFrame:
-      ReportCompositorLatencyVizBreakdowns(frame_sequence_tracker_type);
+      ReportCompositorLatencyVizBreakdowns(frame_sequence_tracker_type,
+                                           stage.stage_type);
       break;
     default:
       break;
@@ -1008,20 +1318,94 @@ void CompositorFrameReporter::ReportCompositorLatencyBlinkBreakdowns(
        it.Advance()) {
     ReportCompositorLatencyHistogram(
         frame_sequence_tracker_type, StageType::kSendBeginMainFrameToCommit,
-        /*viz_breakdown=*/std::nullopt, it.GetBreakdown(), it.GetLatency());
+        /*viz_breakdown=*/std::nullopt, it.GetBreakdown(),
+        /*trees_in_viz_breakdown=*/std::nullopt, it.GetLatency());
   }
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyVizBreakdowns(
-    FrameSequenceTrackerType frame_sequence_tracker_type) const {
+    FrameSequenceTrackerType frame_sequence_tracker_type,
+    StageType stage_type) const {
   DCHECK(processed_viz_breakdown_);
   for (auto it = processed_viz_breakdown_->CreateIterator(false); it.IsValid();
        it.Advance()) {
     ReportCompositorLatencyHistogram(
-        frame_sequence_tracker_type,
-        StageType::kSubmitCompositorFrameToPresentationCompositorFrame,
-        it.GetBreakdown(), /*blink_breakdown=*/std::nullopt, it.GetDuration());
+        frame_sequence_tracker_type, stage_type, it.GetBreakdown(),
+        /*blink_breakdown=*/std::nullopt,
+        /*trees_in_viz_breakdown*/ std::nullopt, it.GetDuration());
   }
+}
+
+void CompositorFrameReporter::ReportCompositorLatencyTreesInVizBreakdowns(
+    FrameSequenceTrackerType frame_sequence_tracker_type) const {
+  DCHECK(processed_trees_in_viz_breakdown_);
+  for (auto it = processed_trees_in_viz_breakdown_->CreateIterator();
+       it.IsValid(); it.Advance()) {
+    if (it.GetBreakdown() == TreesInVizBreakdown::kEndActivateToDrawLayers ||
+        it.GetBreakdown() ==
+            TreesInVizBreakdown::kDrawLayersToSubmitUpdateDisplayTree) {
+      ReportCompositorLatencyHistogram(
+          frame_sequence_tracker_type,
+          StageType::kEndActivateToSubmitUpdateDisplayTree,
+          /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
+          it.GetBreakdown(), it.GetDuration());
+    } else {
+      ReportCompositorLatencyHistogram(
+          frame_sequence_tracker_type,
+          StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+          /*viz_breakdown=*/std::nullopt, /*blink_breakdown=*/std::nullopt,
+          it.GetBreakdown(), it.GetDuration());
+    }
+  }
+}
+
+// To accommodate TreesInViz and normal modes in parallel, we need to
+// separately bucket the viz breakdowns because histogram exports cache metric
+// names. The viz substage categories are mutually-exclusive.
+//
+// Metric histograms should look something like this:
+//
+// /---------------------\
+// | Stage1              | <- Start with Stage breakdowns
+// | Stage2              |
+// | ...                 |
+// | VizSubstage1        | <- Allocated for Viz substages for normal path,
+// | VizSubstage2        | SubmitCompositorFrameToPresentationCompositorFrame
+// | ...                 |
+// | VizSubstage1        | <- Repeat the substages for breakdowns of
+// | VizSubstage2        | SubmitUpdateDisplayTreeToPresentationCompositorFrame
+// | ---                 |
+// | BlinkSubstage1      | <- Blink substages valid for both modes
+// | BlinkSubstage2      |
+// | ...                 |
+// | TreesInVizSubStage1 | <- TreesInViz cc-specific substages
+// | TreesInVizSubstage2 |
+// \---------------------/
+//
+static int GetSubstageIndex(
+    StageType stage_type,
+    std::optional<VizBreakdown> viz_breakdown,
+    std::optional<BlinkBreakdown> blink_breakdown,
+    std::optional<TreesInVizBreakdown> trees_in_viz_breakdown) {
+  if (blink_breakdown) {
+    return kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown);
+  }
+
+  if (viz_breakdown) {
+    if (stage_type ==
+        StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame) {
+      return kVizBreakdownForTreesInVizModeInitialIndex +
+             static_cast<int>(*viz_breakdown);
+    }
+    return kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown);
+  }
+
+  if (trees_in_viz_breakdown) {
+    return kTreesInVizBreakdownInitialIndex +
+           static_cast<int>(*trees_in_viz_breakdown);
+  }
+
+  return static_cast<int>(stage_type);
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyHistogram(
@@ -1029,22 +1413,28 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     StageType stage_type,
     std::optional<VizBreakdown> viz_breakdown,
     std::optional<BlinkBreakdown> blink_breakdown,
+    std::optional<TreesInVizBreakdown> trees_in_viz_breakdown,
     base::TimeDelta time_delta) const {
   DCHECK(!viz_breakdown ||
          stage_type ==
-             StageType::kSubmitCompositorFrameToPresentationCompositorFrame);
+             StageType::kSubmitCompositorFrameToPresentationCompositorFrame ||
+         stage_type ==
+             StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame);
   DCHECK(!blink_breakdown ||
          stage_type == StageType::kSendBeginMainFrameToCommit);
+  DCHECK(
+      !trees_in_viz_breakdown ||
+      (stage_type == StageType::kEndActivateToSubmitUpdateDisplayTree ||
+       stage_type ==
+           StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame));
   const int frame_sequence_tracker_type_index =
       static_cast<int>(frame_sequence_tracker_type);
-  const int stage_type_index =
-      blink_breakdown
-          ? kBlinkBreakdownInitialIndex + static_cast<int>(*blink_breakdown)
-      : viz_breakdown
-          ? kVizBreakdownInitialIndex + static_cast<int>(*viz_breakdown)
-          : static_cast<int>(stage_type);
+
+  const int stage_type_index = GetSubstageIndex(
+      stage_type, viz_breakdown, blink_breakdown, trees_in_viz_breakdown);
+
   const int histogram_index =
-      stage_type_index * kFrameSequenceTrackerTypeCount +
+      (stage_type_index * kFrameSequenceTrackerTypeCount) +
       frame_sequence_tracker_type_index;
 
   CHECK_LT(stage_type_index, kStagesWithBreakdownCount);
@@ -1053,7 +1443,8 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
   CHECK_GE(histogram_index, 0);
 
   auto histogram_name = GetCompositorLatencyHistogramName(
-      frame_sequence_tracker_type, stage_type, viz_breakdown, blink_breakdown);
+      frame_sequence_tracker_type, stage_type, viz_breakdown, blink_breakdown,
+      trees_in_viz_breakdown);
 
   // Note: There's a 1:1 mapping between `histogram_index` and the name
   // returned by `GetCompositorLatencyHistogramName()` which allows the use
@@ -1068,9 +1459,27 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
           base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
+void CompositorFrameReporter::DropEventMetricsWhichDidNotCauseFrameUpdate() {
+  DCHECK(!dropped_non_damaging_events_metrics_);
+  // First re-arrange `events_metrics_` so that:
+  //   1. [`events_metrics_.begin()`, `first_to_erase`) only contains metrics
+  //      which caused a frame update.
+  //   2. [`first_to_erase`, `events_metrics_.end()`) contains metrics which
+  //      didn't cause a frame update.
+  auto first_to_erase =
+      std::remove_if(events_metrics_.begin(), events_metrics_.end(),
+                     [](const std::unique_ptr<EventMetrics>& metrics) {
+                       return !metrics->caused_frame_update();
+                     });
+  // Then delete the metrics which didn't cause a frame update.
+  events_metrics_.erase(first_to_erase, events_metrics_.end());
+  dropped_non_damaging_events_metrics_ = true;
+}
+
 void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   const StageData& total_latency_stage = stage_history_.back();
   DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
+  DCHECK(dropped_non_damaging_events_metrics_);
 
   if (global_trackers_.latency_ukm_reporter) {
     global_trackers_.latency_ukm_reporter->ReportEventLatencyUkm(
@@ -1082,6 +1491,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
 
   for (const auto& event_metrics : events_metrics_) {
     DCHECK(event_metrics);
+    DCHECK(event_metrics->caused_frame_update());
     auto* scroll_metrics = event_metrics->AsScroll();
     auto* pinch_metrics = event_metrics->AsPinch();
 
@@ -1146,7 +1556,6 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
       }
 
       if (scroll_metrics) {
-        auto& original_args = scroll_metrics->begin_frame_args();
         const base::TimeTicks browser_main_timestamp =
             event_metrics->GetDispatchStageTimestamp(
                 EventMetrics::DispatchStage::kArrivedInBrowserMain);
@@ -1169,52 +1578,12 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
                     bucketing->max, bucketing->count,
                     base::HistogramBase::kUmaTargetedHistogramFlag));
           }
-          if (original_args.IsValid()) {
-            const base::TimeDelta generation_to_vsync_delta =
-                original_args.frame_time - generated_timestamp;
-            const double generation_to_vsync_ratio =
-                100.f * generation_to_vsync_delta / original_args.interval;
-            if (generation_to_vsync_delta.is_negative()) {
-              ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
-                                     CompositorFrameReporter::VSyncRatioType::
-                                         kGenerationVsVsyncRatioBeforeVSync,
-                                     std::ceil(generation_to_vsync_ratio * -1));
-            } else {
-              ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
-                                     CompositorFrameReporter::VSyncRatioType::
-                                         kGenerationVsVsyncRatioAfterVSync,
-                                     std::ceil(generation_to_vsync_ratio));
-            }
-          }
 
 #if BUILDFLAG(IS_ANDROID)
           ReportTopControlsMetric(histogram_base_name, top_controls_moved_,
                                   total_latency, event_metrics->type(),
                                   event_metrics->GetHistogramBucketing());
 #endif  // BUILDFLAG(IS_ANDROID)
-        }
-
-        const base::TimeTicks arrived_in_renderer_timestamp =
-            event_metrics->GetDispatchStageTimestamp(
-                EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-        if (original_args.IsValid() &&
-            !arrived_in_renderer_timestamp.is_null()) {
-          const base::TimeDelta arrived_after_vsync_delta =
-              arrived_in_renderer_timestamp - original_args.frame_time;
-          const double arrived_after_vsync_ratio =
-              100.f * arrived_after_vsync_delta / original_args.interval;
-          if (arrived_after_vsync_delta.is_negative()) {
-            ReportVSyncRatioMetric(
-                histogram_base_name, gesture_scroll_index,
-                CompositorFrameReporter::VSyncRatioType::
-                    kArrivedInRendererVsVSyncRatioBeforeVSync,
-                std::ceil(arrived_after_vsync_ratio * -1));
-          } else {
-            ReportVSyncRatioMetric(histogram_base_name, gesture_scroll_index,
-                                   CompositorFrameReporter::VSyncRatioType::
-                                       kArrivedInRendererVsVSyncRatioAfterVSync,
-                                   std::ceil(arrived_after_vsync_ratio));
-          }
         }
       }
 
@@ -1243,7 +1612,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   if (!latencies.empty()) {
     DCHECK(global_trackers_.event_latency_tracker);
     global_trackers_.event_latency_tracker->ReportEventLatency(
-        std::move(latencies));
+        args_, std::move(latencies));
   }
 }
 
@@ -1330,7 +1699,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
             HasCompositorThreadAnimation(active_trackers_));
 
         bool has_smooth_input_main = false;
+        DCHECK(dropped_non_damaging_events_metrics_);
         for (const auto& event_metrics : events_metrics_) {
+          DCHECK(event_metrics->caused_frame_update());
           has_smooth_input_main |= event_metrics->HasSmoothInputEvent();
         }
         reporter->set_has_smooth_input_main(has_smooth_input_main);
@@ -1432,13 +1803,38 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
       }
     }
+
+    if (stage.stage_type ==
+        StageType::kSubmitUpdateDisplayTreeToPresentationCompositorFrame) {
+      DCHECK(processed_trees_in_viz_breakdown_);
+      for (auto it = processed_trees_in_viz_breakdown_->CreateIterator();
+           it.IsValid(); it.Advance()) {
+        base::TimeTicks start_time = it.GetStartTime();
+        base::TimeTicks end_time = it.GetEndTime();
+        if (start_time >= end_time) {
+          continue;
+        }
+        const char* breakdown_name =
+            GetTreesInVizBreakdownName(it.GetBreakdown());
+        TRACE_EVENT_BEGIN(kTraceCategory,
+                          perfetto::StaticString{breakdown_name}, trace_track,
+                          start_time);
+        TRACE_EVENT_END(kTraceCategory, trace_track, end_time);
+      }
+    }
+
     TRACE_EVENT_END(kTraceCategory, trace_track, stage.end_time);
   }
 
   TRACE_EVENT_END(kTraceCategory, trace_track, frame_termination_time_);
 }
 
-void CompositorFrameReporter::ReportScrollJankMetrics() const {
+void CompositorFrameReporter::ReportScrollJankMetrics() {
+  ReportScrollJankV1Metrics();
+  ReportScrollJankV4Metrics();
+}
+
+void CompositorFrameReporter::ReportScrollJankV1Metrics() {
   int32_t fling_input_count = 0;
   int32_t normal_input_count = 0;
   float total_predicted_delta = 0;
@@ -1450,32 +1846,36 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
   // TODO(crbug.com/402148798): Deprecate usage of latest_event.
-  ScrollUpdateEventMetrics* earliest_event = nullptr;
   base::TimeTicks earliest_event_generation_ts = base::TimeTicks::Max();
   ScrollUpdateEventMetrics* latest_event = nullptr;
   base::TimeTicks latest_event_generation_ts = base::TimeTicks::Min();
   base::TimeTicks last_coalesced_ts = base::TimeTicks::Min();
   for (auto& event : events_metrics_) {
-    TRACE_EVENT("input", "GestureType", "gesture", event->type());
+    EventMetrics::EventType event_type = event->type();
+    bool caused_frame_update = event->caused_frame_update();
+    base::TimeTicks generation_ts = event->GetDispatchStageTimestamp(
+        EventMetrics::DispatchStage::kGenerated);
+    TRACE_EVENT("input", "GestureType", "gesture", event_type, "generation_ts",
+                generation_ts, "caused_frame_update", caused_frame_update);
+    if (!caused_frame_update) {
+      continue;
+    }
     auto* scroll_update = event->AsScrollUpdate();
     if (!scroll_update) {
       continue;
     }
     total_predicted_delta += scroll_update->predicted_delta();
-    base::TimeTicks generation_ts = scroll_update->GetDispatchStageTimestamp(
-        EventMetrics::DispatchStage::kGenerated);
     // Earliest is always applied, event when the scroll update failed to
     // successfully produce a scroll.
     if (!had_earliest_gesture_scroll ||
         generation_ts < earliest_event_generation_ts) {
-      earliest_event = scroll_update;
       earliest_event_generation_ts = generation_ts;
       had_earliest_gesture_scroll = true;
     }
 
     // We check the type first, as if this `is_scroll_start` we need to save the
     // `latest_event`. Otherwise UKMs will not be emitted.
-    switch (scroll_update->type()) {
+    switch (event_type) {
       case EventMetrics::EventType::kFirstGestureScrollUpdate:
         is_scroll_start = true;
         [[fallthrough]];
@@ -1532,13 +1932,27 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
   }
   if (global_trackers_.scroll_jank_dropped_frame_tracker) {
     global_trackers_.scroll_jank_dropped_frame_tracker
-        ->ReportLatestPresentationData(*earliest_event, *latest_event,
-                                       last_coalesced_ts, end_timestamp,
-                                       args_.interval);
+        ->ReportLatestPresentationData(*latest_event, last_coalesced_ts,
+                                       end_timestamp, args_.interval);
   }
   if (global_trackers_.scroll_jank_ukm_reporter) {
     global_trackers_.scroll_jank_ukm_reporter
         ->UpdateLatestFrameAndEmitPredictorJank(end_timestamp);
+  }
+}
+
+void CompositorFrameReporter::ReportScrollJankV4Metrics() {
+  // In order for the fast scroll and fling continuity rules of the scroll jank
+  // v4 metric to work correctly, they need to be informed about `EventMetrics`
+  // that didn't cause frame updates.
+  DCHECK(!dropped_non_damaging_events_metrics_);
+
+  if (auto* scroll_jank_v4_processor =
+          global_trackers_.scroll_jank_v4_processor) {
+    scroll_jank_v4_processor->ProcessEventsMetricsForPresentedFrame(
+        events_metrics_,
+        /* presentation_ts= */ viz_breakdown_.presentation_feedback.timestamp,
+        args_);
   }
 }
 
@@ -1565,8 +1979,11 @@ void CompositorFrameReporter::ReportPaintMetric() const {
       /*maximum=*/(6 * kConversionFactor) + 1, /*bucket_count=*/50);
 }
 
+// TODO(crbug.com/454006102): Report EventLatency for TreesInViz mode
 void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
+  DCHECK(dropped_non_damaging_events_metrics_);
   for (const auto& event_metrics : events_metrics_) {
+    DCHECK(event_metrics->caused_frame_update());
     EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
         event_metrics.get(), frame_termination_time_, &args_, &stage_history_,
         processed_viz_breakdown_.get(),

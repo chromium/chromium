@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"

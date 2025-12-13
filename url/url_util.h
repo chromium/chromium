@@ -60,7 +60,7 @@ COMPONENT_EXPORT(URL) bool AllowNonStandardSchemesForAndroidWebView();
 // URI syntax" (https://tools.ietf.org/html/rfc3986#section-3).
 
 COMPONENT_EXPORT(URL)
-void AddStandardScheme(const char* new_scheme, SchemeType scheme_type);
+void AddStandardScheme(std::string_view new_scheme, SchemeType scheme_type);
 
 // Returns the list of schemes registered for "standard" URLs.  Note, this
 // should not be used if you just need to check if your protocol is standard
@@ -73,28 +73,28 @@ std::vector<std::string> GetStandardSchemes();
 // Adds an application-defined scheme to the internal list of schemes allowed
 // for referrers.
 COMPONENT_EXPORT(URL)
-void AddReferrerScheme(const char* new_scheme, SchemeType scheme_type);
+void AddReferrerScheme(std::string_view new_scheme, SchemeType scheme_type);
 
 // Adds an application-defined scheme to the list of schemes that do not trigger
 // mixed content warnings.
-COMPONENT_EXPORT(URL) void AddSecureScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddSecureScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetSecureSchemes();
 
 // Adds an application-defined scheme to the list of schemes that normal pages
 // cannot link to or access (i.e., with the same security rules as those applied
 // to "file" URLs).
-COMPONENT_EXPORT(URL) void AddLocalScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddLocalScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetLocalSchemes();
 
 // Adds an application-defined scheme to the list of schemes that cause pages
 // loaded with them to not have access to pages loaded with any other URL
 // scheme.
-COMPONENT_EXPORT(URL) void AddNoAccessScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddNoAccessScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetNoAccessSchemes();
 
 // Adds an application-defined scheme to the list of schemes that can be sent
 // CORS requests.
-COMPONENT_EXPORT(URL) void AddCorsEnabledScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddCorsEnabledScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCorsEnabledSchemes();
 
 // Adds an application-defined scheme to the list of web schemes that can be
@@ -102,17 +102,17 @@ COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCorsEnabledSchemes();
 // to differentiate them from schemes that can store data but are not used on
 // web (e.g. application's internal schemes) or schemes that are used on web but
 // cannot store data.
-COMPONENT_EXPORT(URL) void AddWebStorageScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddWebStorageScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetWebStorageSchemes();
 
 // Adds an application-defined scheme to the list of schemes that can bypass the
 // Content-Security-Policy (CSP) checks.
-COMPONENT_EXPORT(URL) void AddCSPBypassingScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddCSPBypassingScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetCSPBypassingSchemes();
 
 // Adds an application-defined scheme to the list of schemes that are strictly
 // empty documents, allowing them to commit synchronously.
-COMPONENT_EXPORT(URL) void AddEmptyDocumentScheme(const char* new_scheme);
+COMPONENT_EXPORT(URL) void AddEmptyDocumentScheme(std::string_view new_scheme);
 COMPONENT_EXPORT(URL) const std::vector<std::string>& GetEmptyDocumentSchemes();
 
 // Adds a scheme with a predefined default handler.
@@ -121,7 +121,8 @@ COMPONENT_EXPORT(URL) const std::vector<std::string>& GetEmptyDocumentSchemes();
 // described in the Custom Handler specification.
 // https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
 COMPONENT_EXPORT(URL)
-void AddPredefinedHandlerScheme(const char* new_scheme, const char* handler);
+void AddPredefinedHandlerScheme(std::string_view new_scheme,
+                                std::string_view handler);
 COMPONENT_EXPORT(URL)
 std::vector<std::pair<std::string, std::string>> GetPredefinedHandlerSchemes();
 
@@ -146,27 +147,21 @@ COMPONENT_EXPORT(URL) void LockSchemeRegistries();
 // input (if any). The |compare| scheme must be a valid canonical scheme or
 // the result of the comparison is undefined.
 COMPONENT_EXPORT(URL)
-bool FindAndCompareScheme(const char* str,
-                          int str_len,
+bool FindAndCompareScheme(std::string_view str,
                           const char* compare,
                           Component* found_scheme);
+inline bool FindAndCompareScheme(const char* str,
+                                 int str_len,
+                                 const char* compare,
+                                 Component* found_scheme) {
+  return FindAndCompareScheme(
+      std::string_view(str, static_cast<size_t>(str_len)), compare,
+      found_scheme);
+}
 COMPONENT_EXPORT(URL)
-bool FindAndCompareScheme(const char16_t* str,
-                          int str_len,
+bool FindAndCompareScheme(std::u16string_view str,
                           const char* compare,
                           Component* found_scheme);
-inline bool FindAndCompareScheme(const std::string& str,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
-                              compare, found_scheme);
-}
-inline bool FindAndCompareScheme(const std::u16string& str,
-                                 const char* compare,
-                                 Component* found_scheme) {
-  return FindAndCompareScheme(str.data(), static_cast<int>(str.size()),
-                              compare, found_scheme);
-}
 
 // Returns true if the given scheme identified by |scheme| within |spec| is in
 // the list of known standard-format schemes (see AddStandardScheme).
@@ -227,15 +222,13 @@ COMPONENT_EXPORT(URL) bool HostIsIPAddress(std::string_view host);
 // output and parsed structures will still be filled and will be consistent,
 // but they will not represent a loadable URL.
 COMPONENT_EXPORT(URL)
-bool Canonicalize(const char* spec,
-                  int spec_len,
+bool Canonicalize(std::string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
                   Parsed* output_parsed);
 COMPONENT_EXPORT(URL)
-bool Canonicalize(const char16_t* spec,
-                  int spec_len,
+bool Canonicalize(std::u16string_view spec,
                   bool trim_path_end,
                   CharsetConverter* charset_converter,
                   CanonOutput* output,
@@ -252,20 +245,16 @@ bool Canonicalize(const char16_t* spec,
 // Returns true if the output is valid, false if the input could not produce
 // a valid URL.
 COMPONENT_EXPORT(URL)
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char* relative,
-                     int relative_length,
+                     std::string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed);
 COMPONENT_EXPORT(URL)
-bool ResolveRelative(const char* base_spec,
-                     int base_spec_len,
+bool ResolveRelative(std::string_view base_spec,
                      const Parsed& base_parsed,
-                     const char16_t* relative,
-                     int relative_length,
+                     std::u16string_view relative,
                      CharsetConverter* charset_converter,
                      CanonOutput* output,
                      Parsed* output_parsed);
@@ -275,16 +264,14 @@ bool ResolveRelative(const char* base_spec,
 //
 // Returns true if the resulting URL is valid.
 COMPONENT_EXPORT(URL)
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char>& replacements,
                        CharsetConverter* charset_converter,
                        CanonOutput* output,
                        Parsed* out_parsed);
 COMPONENT_EXPORT(URL)
-bool ReplaceComponents(const char* spec,
-                       int spec_len,
+bool ReplaceComponents(std::string_view spec,
                        const Parsed& parsed,
                        const Replacements<char16_t>& replacements,
                        CharsetConverter* charset_converter,

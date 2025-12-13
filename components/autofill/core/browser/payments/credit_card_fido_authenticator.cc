@@ -6,16 +6,17 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
+#include "base/android/android_info.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
-#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -31,8 +32,8 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/fido_types.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/fido_types.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
@@ -46,11 +47,11 @@ constexpr int kWebAuthnTimeoutMs = 3 * 60 * 1000;  // 3 minutes
 constexpr char kGooglePaymentsRpid[] = "google.com";
 constexpr char kGooglePaymentsRpName[] = "Google Payments";
 
-std::vector<uint8_t> Base64ToBytes(std::string base64) {
+std::vector<uint8_t> Base64ToBytes(std::string_view base64) {
   return base::Base64Decode(base64).value_or(std::vector<uint8_t>());
 }
 
-base::Value BytesToBase64(const std::vector<uint8_t> bytes) {
+base::Value BytesToBase64(base::span<const uint8_t> bytes) {
   return base::Value(base::Base64Encode(bytes));
 }
 }  // namespace
@@ -61,11 +62,7 @@ CreditCardFidoAuthenticator::CreditCardFidoAuthenticator(AutofillDriver* driver,
       autofill_client_(client),
       payments_network_interface_(
           client->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface()),
-      user_is_verifiable_callback_received_(
-          base::WaitableEvent::ResetPolicy::AUTOMATIC,
-          base::WaitableEvent::InitialState::NOT_SIGNALED) {
-  user_is_opted_in_ = IsUserOptedIn();
-}
+      user_is_opted_in_(IsUserOptedIn()) {}
 
 CreditCardFidoAuthenticator::~CreditCardFidoAuthenticator() {
   UpdateUserPref();
@@ -84,7 +81,7 @@ void CreditCardFidoAuthenticator::Authenticate(
   authenticator()->Cancel();
 
   if (IsValidRequestOptions(request_options)) {
-    current_flow_ = AUTHENTICATION_FLOW;
+    current_flow_ = Flow::kAuthenticationFlow;
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else if (requester_) {
     requester_->OnFIDOAuthenticationComplete(
@@ -102,11 +99,11 @@ void CreditCardFidoAuthenticator::Register(std::string card_authorization_token,
   card_authorization_token_ = card_authorization_token;
   if (!creation_options.empty()) {
     if (IsValidCreationOptions(creation_options)) {
-      current_flow_ = OPT_IN_WITH_CHALLENGE_FLOW;
-      MakeCredential(ParseCreationOptions(creation_options));
+      current_flow_ = Flow::kOptInWithChallengeFlow;
+      MakeCredential(ParseCreationOptions(std::move(creation_options)));
     }
   } else {
-    current_flow_ = OPT_IN_FETCH_CHALLENGE_FLOW;
+    current_flow_ = Flow::kOptInFetchChallengeFlow;
     OptChange();
   }
 }
@@ -125,8 +122,8 @@ void CreditCardFidoAuthenticator::Authorize(
     // If user is already opted-in, then a new card is trying to be
     // authorized. Otherwise, a user with a credential on file is trying to
     // opt-in.
-    current_flow_ = user_is_opted_in_ ? FOLLOWUP_AFTER_CVC_AUTH_FLOW
-                                      : OPT_IN_WITH_CHALLENGE_FLOW;
+    current_flow_ = user_is_opted_in_ ? Flow::kFollowupAfterCvcAuthFlow
+                                      : Flow::kOptInWithChallengeFlow;
     autofill_metrics::LogWebauthnEnrollmentPromptOffered(/*offered=*/true);
     GetAssertion(ParseRequestOptions(std::move(request_options)));
   } else {
@@ -138,7 +135,7 @@ void CreditCardFidoAuthenticator::OptOut() {
   // Cancel any previous pending WebAuthn requests.
   authenticator()->Cancel();
 
-  current_flow_ = OPT_OUT_FLOW;
+  current_flow_ = Flow::kOptOutFlow;
   card_authorization_token_ = std::string();
   OptChange();
 }
@@ -155,8 +152,8 @@ void CreditCardFidoAuthenticator::IsUserVerifiable(
   // Because Android N key is better than P key and can provide additional PIN
   // device unlock, payments servers accept WebAuthn credentials for Android N
   // key so that Android P+ devices can use N key to do the FIDO authentication.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_P) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_P) {
     std::move(callback).Run(false);
     return;
   }
@@ -188,7 +185,7 @@ UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
     // denotes that user intended to opt in from settings page. We will opt user
     // in and hide the checkbox in the next checkout flow.
     // For intent to opt in, we also update |user_is_opted_in_| here so that
-    // |current_flow_| can be correctly set to OPT_IN_WITH_CHALLENGE_FLOW when
+    // |current_flow_| can be correctly set to kOptInWithChallengeFlow when
     // calling Authorize() later.
     user_is_opted_in_ = false;
     return UserOptInIntention::kIntentToOptIn;
@@ -214,7 +211,7 @@ UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
 void CreditCardFidoAuthenticator::CancelVerification() {
   authenticator()->Cancel();
 
-  current_flow_ = NONE_FLOW;
+  current_flow_ = Flow::kNoneFlow;
   // Full card request may not exist when this function is called. The full card
   // request is created in OnDidGetAssertion() but the flow can be cancelled
   // before than.
@@ -252,14 +249,14 @@ void CreditCardFidoAuthenticator::OnWebauthnOfferDialogUserResponse(
     // If user declined, log user decision. User may have initially accepted the
     // dialog, but then chose to cancel while the challenge was being fetched.
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
-        current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW
+        current_flow_ == Flow::kOptInFetchChallengeFlow
             ? autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedAfterAccepting
             : autofill_metrics::WebauthnOptInPromoUserDecisionMetric::
                   kDeclinedImmediately);
     payments_network_interface_->CancelRequest();
     card_authorization_token_ = std::string();
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     if (auto* strike_database = GetOrCreateFidoAuthenticationStrikeDatabase()) {
       strike_database->AddStrikes(FidoAuthenticationStrikeDatabase::
                                       kStrikesToAddWhenOptInOfferDeclined);
@@ -312,14 +309,14 @@ void CreditCardFidoAuthenticator::GetAssertion(
   // ready to show the OS level authentication dialog. If dialog is already
   // closed, then the offer was declined during the fetching challenge process,
   // and thus returned early.
-  if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
+  if (current_flow_ == Flow::kOptInWithChallengeFlow) {
     if (autofill_client_->GetPaymentsAutofillClient()->CloseWebauthnDialog()) {
       // Now that the dialog has closed and will proceed to a WebAuthn prompt,
       // the user must have accepted the dialog without cancelling.
       autofill_metrics::LogWebauthnOptInPromoUserDecision(
           autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
     } else {
-      current_flow_ = NONE_FLOW;
+      current_flow_ = Flow::kNoneFlow;
       return;
     }
   }
@@ -343,7 +340,7 @@ void CreditCardFidoAuthenticator::MakeCredential(
     autofill_metrics::LogWebauthnOptInPromoUserDecision(
         autofill_metrics::WebauthnOptInPromoUserDecisionMetric::kAccepted);
   } else {
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 #endif
@@ -359,18 +356,18 @@ void CreditCardFidoAuthenticator::OptChange(
   request_details.app_locale = payments_data_manager().app_locale();
 
   switch (current_flow_) {
-    case OPT_IN_WITH_CHALLENGE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
+    case Flow::kOptInWithChallengeFlow:
+    case Flow::kOptInFetchChallengeFlow:
       request_details.reason =
-          payments::OptChangeRequestDetails::ENABLE_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kEnableFidoAuth;
       break;
-    case OPT_OUT_FLOW:
+    case Flow::kOptOutFlow:
       request_details.reason =
-          payments::OptChangeRequestDetails::DISABLE_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kDisableFidoAuth;
       break;
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
+    case Flow::kFollowupAfterCvcAuthFlow:
       request_details.reason =
-          payments::OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
+          payments::OptChangeRequestDetails::Reason::kAddCardForFidoAuth;
       break;
     default:
       NOTREACHED();
@@ -407,7 +404,7 @@ void CreditCardFidoAuthenticator::OptChange(
                      weak_ptr_factory_.GetWeakPtr()));
 
   // Logging call if user was attempting to change their opt-in state.
-  if (current_flow_ != FOLLOWUP_AFTER_CVC_AUTH_FLOW) {
+  if (current_flow_ != Flow::kFollowupAfterCvcAuthFlow) {
     autofill_metrics::LogWebauthnOptChangeCalled(opt_change_metric);
   }
 }
@@ -435,7 +432,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     // Treat failure to perform user verification as a strong signal not to
     // offer opt-in in the future.
-    if (current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW) {
+    if (current_flow_ == Flow::kOptInWithChallengeFlow) {
       if (auto* strike_database =
               GetOrCreateFidoAuthenticationStrikeDatabase()) {
         strike_database->AddStrikes(
@@ -446,7 +443,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
       UpdateUserPref();
     }
 
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 
@@ -456,10 +453,10 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
 void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
     payments::OptChangeResponseDetails& response) {
-  DCHECK(current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW ||
-         current_flow_ == OPT_OUT_FLOW ||
-         current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW ||
-         current_flow_ == FOLLOWUP_AFTER_CVC_AUTH_FLOW);
+  DCHECK(current_flow_ == Flow::kOptInFetchChallengeFlow ||
+         current_flow_ == Flow::kOptOutFlow ||
+         current_flow_ == Flow::kOptInWithChallengeFlow ||
+         current_flow_ == Flow::kFollowupAfterCvcAuthFlow);
 
   // Update user preference to keep in sync with server.
   user_is_opted_in_ = response.user_is_opted_in.value_or(user_is_opted_in_);
@@ -468,25 +465,26 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
   // preference yet. Otherwise the toggle will be visibly turned off, which may
   // seem confusing.
   bool is_settings_page = card_authorization_token_.empty();
-  if (!is_settings_page || current_flow_ != OPT_IN_FETCH_CHALLENGE_FLOW)
+  if (!is_settings_page || current_flow_ != Flow::kOptInFetchChallengeFlow) {
     UpdateUserPref();
+  }
 
   // End the flow if the server responded with an error.
   if (result != payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
 #if !BUILDFLAG(IS_ANDROID)
-    if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW) {
+    if (current_flow_ == Flow::kOptInFetchChallengeFlow) {
       autofill_client_->GetPaymentsAutofillClient()
           ->UpdateWebauthnOfferDialogWithError();
     }
 #endif
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
     return;
   }
 
   // If response contains |creation_options| or |request_options| and the last
   // opt-in attempt did not include a challenge, then invoke WebAuthn
   // registration/verification prompt. Otherwise end the flow.
-  if (current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW) {
+  if (current_flow_ == Flow::kOptInFetchChallengeFlow) {
     if (response.fido_creation_options.has_value()) {
       Register(card_authorization_token_,
                std::move(response.fido_creation_options.value()));
@@ -495,7 +493,7 @@ void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
                 std::move(response.fido_request_options.value()));
     }
   } else {
-    current_flow_ = NONE_FLOW;
+    current_flow_ = Flow::kNoneFlow;
   }
 }
 
@@ -503,8 +501,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
     const payments::FullCardRequest& full_card_request,
     const CreditCard& card,
     const std::u16string& cvc) {
-  DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
-  current_flow_ = NONE_FLOW;
+  DCHECK_EQ(Flow::kAuthenticationFlow, current_flow_);
+  current_flow_ = Flow::kNoneFlow;
 
   if (!requester_)
     return;
@@ -516,8 +514,8 @@ void CreditCardFidoAuthenticator::OnFullCardRequestSucceeded(
 void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
     CreditCard::RecordType card_type,
     payments::FullCardRequest::FailureType failure_type) {
-  DCHECK_EQ(AUTHENTICATION_FLOW, current_flow_);
-  current_flow_ = NONE_FLOW;
+  DCHECK_EQ(Flow::kAuthenticationFlow, current_flow_);
+  current_flow_ = Flow::kNoneFlow;
 
   if (!requester_)
     return;
@@ -528,74 +526,69 @@ void CreditCardFidoAuthenticator::OnFullCardRequestFailed(
 
 blink::mojom::PublicKeyCredentialRequestOptionsPtr
 CreditCardFidoAuthenticator::ParseRequestOptions(
-    const base::Value::Dict& request_options) {
+    base::Value::Dict request_options) {
   auto options = blink::mojom::PublicKeyCredentialRequestOptions::New();
   options->extensions =
       blink::mojom::AuthenticationExtensionsClientInputs::New();
 
-  const auto* rpid = request_options.FindString("relying_party_id");
-  options->relying_party_id = rpid ? *rpid : std::string(kGooglePaymentsRpid);
+  std::string* const rpid = request_options.FindString("relying_party_id");
+  options->relying_party_id = rpid ? std::move(*rpid) : kGooglePaymentsRpid;
 
-  const auto* challenge = request_options.FindString("challenge");
-  DCHECK(challenge);
-  options->challenge = Base64ToBytes(*challenge);
+  options->challenge =
+      Base64ToBytes(CHECK_DEREF(request_options.FindString("challenge")));
 
   const std::optional<int> timeout = request_options.FindInt("timeout_millis");
   options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
   options->user_verification = device::UserVerificationRequirement::kRequired;
 
-  const auto* key_info_list = request_options.FindList("key_info");
-  DCHECK(key_info_list);
-  for (const base::Value& key_info : *key_info_list) {
-    options->allow_credentials.push_back(ParseCredentialDescriptor(key_info));
-  }
+  options->allow_credentials =
+      base::ToVector(CHECK_DEREF(request_options.FindList("key_info")),
+                     [&](const base::Value& key_info) {
+                       return ParseCredentialDescriptor(key_info);
+                     });
 
   return options;
 }
 
 blink::mojom::PublicKeyCredentialCreationOptionsPtr
 CreditCardFidoAuthenticator::ParseCreationOptions(
-    const base::Value::Dict& creation_options) {
+    base::Value::Dict creation_options) {
   auto options = blink::mojom::PublicKeyCredentialCreationOptions::New();
 
-  const auto* rpid = creation_options.FindString("relying_party_id");
-  options->relying_party.id = rpid ? *rpid : kGooglePaymentsRpid;
+  std::string* const rpid = creation_options.FindString("relying_party_id");
+  options->relying_party.id = rpid ? std::move(*rpid) : kGooglePaymentsRpid;
 
-  const auto* relying_party_name =
+  std::string* const relying_party_name =
       creation_options.FindString("relying_party_name");
-  options->relying_party.name =
-      relying_party_name ? *relying_party_name : kGooglePaymentsRpName;
+  options->relying_party.name = relying_party_name
+                                    ? std::move(*relying_party_name)
+                                    : kGooglePaymentsRpName;
 
-  const CoreAccountInfo account_info =
+  CoreAccountInfo account_info =
       payments_data_manager().GetAccountInfoForPaymentsServer();
   const std::string& gaia_id_str = account_info.gaia.ToString();
-  options->user.id = options->user.id =
+  options->user.id =
       std::vector<uint8_t>(gaia_id_str.begin(), gaia_id_str.end());
-  options->user.name = account_info.email;
   options->user.display_name = autofill_client_->GetIdentityManager()
                                    ->FindExtendedAccountInfo(account_info)
                                    .given_name;
+  options->user.name = std::move(account_info.email);
+  options->challenge =
+      Base64ToBytes(CHECK_DEREF(creation_options.FindString("challenge")));
 
-  const auto* challenge = creation_options.FindString("challenge");
-  DCHECK(challenge);
-  options->challenge = Base64ToBytes(*challenge);
-
-  const auto* identifier_list =
-      creation_options.FindList("algorithm_identifier");
-  if (identifier_list) {
+  if (const base::ListValue* identifier_list =
+          creation_options.FindList("algorithm_identifier")) {
     for (const base::Value& algorithm_identifier : *identifier_list) {
-      device::PublicKeyCredentialParams::CredentialInfo parameter;
-      parameter.type = device::CredentialType::kPublicKey;
-      parameter.algorithm = algorithm_identifier.GetInt();
-      options->public_key_parameters.push_back(parameter);
+      options->public_key_parameters.emplace_back(
+          device::CredentialType::kPublicKey, algorithm_identifier.GetInt());
     }
   }
 
   const std::optional<int> timeout = creation_options.FindInt("timeout_millis");
   options->timeout = base::Milliseconds(timeout.value_or(kWebAuthnTimeoutMs));
 
-  const auto* attestation =
+  const std::string* attestation =
       creation_options.FindString("attestation_conveyance_preference");
   if (!attestation || base::EqualsCaseInsensitiveASCII(*attestation, "NONE")) {
     options->attestation = device::AttestationConveyancePreference::kNone;
@@ -615,8 +608,8 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
 
   // List of keys that Payments already knows about, and so should not make a
   // new credential.
-  const auto* excluded_keys_list = creation_options.FindList("key_info");
-  if (excluded_keys_list) {
+  if (const base::ListValue* excluded_keys_list =
+          creation_options.FindList("key_info")) {
     for (const base::Value& key_info : *excluded_keys_list) {
       options->exclude_credentials.push_back(
           ParseCredentialDescriptor(key_info));
@@ -629,10 +622,8 @@ CreditCardFidoAuthenticator::ParseCreationOptions(
 device::PublicKeyCredentialDescriptor
 CreditCardFidoAuthenticator::ParseCredentialDescriptor(
     const base::Value& key_info) {
-  std::vector<uint8_t> credential_id;
-  const auto* id = key_info.GetDict().FindString("credential_id");
-  DCHECK(id);
-  credential_id = Base64ToBytes(*id);
+  std::vector<uint8_t> credential_id = Base64ToBytes(
+      CHECK_DEREF(key_info.GetDict().FindString("credential_id")));
 
   base::flat_set<device::FidoTransportProtocol> authenticator_transports;
   const auto* transports =
@@ -648,8 +639,8 @@ CreditCardFidoAuthenticator::ParseCredentialDescriptor(
   }
 
   return device::PublicKeyCredentialDescriptor(
-      device::CredentialType::kPublicKey, credential_id,
-      authenticator_transports);
+      device::CredentialType::kPublicKey, std::move(credential_id),
+      std::move(authenticator_transports));
 }
 
 base::Value::Dict CreditCardFidoAuthenticator::ParseAssertionResponse(
@@ -700,13 +691,13 @@ void CreditCardFidoAuthenticator::LogWebauthnResult(
     blink::mojom::AuthenticatorStatus status) {
   autofill_metrics::WebauthnFlowEvent event;
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW:
+    case Flow::kAuthenticationFlow:
       event = autofill_metrics::WebauthnFlowEvent::kImmediateAuthentication;
       break;
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
+    case Flow::kFollowupAfterCvcAuthFlow:
       event = autofill_metrics::WebauthnFlowEvent::kAuthenticationAfterCvc;
       break;
-    case OPT_IN_WITH_CHALLENGE_FLOW:
+    case Flow::kOptInWithChallengeFlow:
       event = card_authorization_token_.empty()
                   ? autofill_metrics::WebauthnFlowEvent::kSettingsPageOptIn
                   : autofill_metrics::WebauthnFlowEvent::kCheckoutOptIn;
@@ -740,7 +731,7 @@ void CreditCardFidoAuthenticator::UpdateUserPref() {
 void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
     blink::mojom::GetAssertionAuthenticatorResponsePtr assertion_response) {
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW: {
+    case Flow::kAuthenticationFlow: {
       base::Value::Dict response =
           ParseAssertionResponse(std::move(assertion_response));
       full_card_request_ =
@@ -755,32 +746,29 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
       full_card_request_->GetFullCardViaFIDO(
           *card_, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
           weak_ptr_factory_.GetWeakPtr(), std::move(response),
-          last_committed_primary_main_frame_origin, context_token_);
+          std::move(last_committed_primary_main_frame_origin), context_token_);
       // Return here to skip the OptChange call.
       return;
     }
-
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+    case Flow::kFollowupAfterCvcAuthFlow: {
       // The user-facing portion of the authorization is complete, which should
       // be reported so that the form can be filled.
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
       break;
     }
-
-    case OPT_IN_WITH_CHALLENGE_FLOW: {
+    case Flow::kOptInWithChallengeFlow: {
 #if BUILDFLAG(IS_ANDROID)
-      // For Android, opt-in flow (OPT_IN_WITH_CHALLENGE_FLOW) also delays form
+      // For Android, opt-in flow (kOptInWithChallengeFlow) also delays form
       // filling.
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/true);
 #endif
       break;
     }
-
-    case NONE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
-    case OPT_OUT_FLOW: {
+    case Flow::kNoneFlow:
+    case Flow::kOptInFetchChallengeFlow:
+    case Flow::kOptOutFlow: {
       NOTREACHED();
     }
   }
@@ -793,7 +781,7 @@ void CreditCardFidoAuthenticator::HandleGetAssertionSuccess(
 
 void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
   switch (current_flow_) {
-    case AUTHENTICATION_FLOW: {
+    case Flow::kAuthenticationFlow: {
       // End the flow if there was an authentication error.
       if (requester_) {
         requester_->OnFIDOAuthenticationComplete(
@@ -801,14 +789,12 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
       }
       break;
     }
-
-    case FOLLOWUP_AFTER_CVC_AUTH_FLOW: {
+    case Flow::kFollowupAfterCvcAuthFlow: {
       if (requester_)
         requester_->OnFidoAuthorizationComplete(/*did_succeed=*/false);
       break;
     }
-
-    case OPT_IN_WITH_CHALLENGE_FLOW: {
+    case Flow::kOptInWithChallengeFlow: {
       // Treat failure to perform user verification as a strong signal not to
       // offer opt-in in the future.
 #if BUILDFLAG(IS_ANDROID)
@@ -829,13 +815,13 @@ void CreditCardFidoAuthenticator::HandleGetAssertionFailure() {
       break;
     }
 
-    case NONE_FLOW:
-    case OPT_IN_FETCH_CHALLENGE_FLOW:
-    case OPT_OUT_FLOW: {
+    case Flow::kNoneFlow:
+    case Flow::kOptInFetchChallengeFlow:
+    case Flow::kOptOutFlow: {
       NOTREACHED();
     }
   }
-  current_flow_ = NONE_FLOW;
+  current_flow_ = Flow::kNoneFlow;
 }
 
 webauthn::InternalAuthenticator* CreditCardFidoAuthenticator::authenticator() {

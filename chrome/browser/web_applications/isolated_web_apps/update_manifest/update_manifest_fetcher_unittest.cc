@@ -12,7 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
-#include "components/webapps/isolated_web_apps/update_channel.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -27,11 +27,12 @@
 namespace web_app {
 namespace {
 
+using base::test::ErrorIs;
+using base::test::ValueIs;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::IsEmpty;
-using testing::IsFalse;
-using testing::IsTrue;
+using testing::Property;
 
 constexpr std::string_view kValidManifestUrl =
     "https://example.com/valid_update_manifest.json";
@@ -104,17 +105,18 @@ TEST_F(UpdateManifestFetcherTest, FetchesValidManifest) {
   fetcher.FetchUpdateManifest(future.GetCallback());
   auto update_manifest = future.Take();
 
-  ASSERT_THAT(update_manifest.has_value(), IsTrue());
   EXPECT_THAT(
-      update_manifest->versions(),
-      ElementsAre(
-          UpdateManifest::VersionEntry{GURL("https://other.com/bundle.swbn"),
-                                       base::Version("1.2.3"),
-                                       {*UpdateChannel::Create("default")}},
-          UpdateManifest::VersionEntry{
-              GURL("https://example.com/foo/bundle.swbn"),
-              base::Version("3.2.1"),
-              {*UpdateChannel::Create("default")}}));
+      update_manifest,
+      ValueIs(Property("versions", &UpdateManifest::versions,
+                       ElementsAre(
+                           UpdateManifest::VersionEntry{
+                               GURL("https://other.com/bundle.swbn"),
+                               *IwaVersion::Create("1.2.3"),
+                               {*UpdateChannel::Create("default")}},
+                           UpdateManifest::VersionEntry{
+                               GURL("https://example.com/foo/bundle.swbn"),
+                               *IwaVersion::Create("3.2.1"),
+                               {*UpdateChannel::Create("default")}}))));
 }
 
 TEST_F(UpdateManifestFetcherTest, SucceedsWhenManifestHasNoVersions) {
@@ -142,9 +144,8 @@ TEST_F(UpdateManifestFetcherTest, FailsWhenManifestIsInvalid) {
   fetcher.FetchUpdateManifest(future.GetCallback());
   auto update_manifest = future.Take();
 
-  ASSERT_THAT(update_manifest.has_value(), IsFalse());
-  EXPECT_THAT(update_manifest.error(),
-              Eq(UpdateManifestFetcher::Error::kInvalidManifest));
+  EXPECT_THAT(update_manifest,
+              ErrorIs(Eq(UpdateManifestFetcher::Error::kInvalidManifest)));
 }
 
 TEST_F(UpdateManifestFetcherTest, FailsWhenJsonIsInvalid) {
@@ -158,9 +159,8 @@ TEST_F(UpdateManifestFetcherTest, FailsWhenJsonIsInvalid) {
   fetcher.FetchUpdateManifest(future.GetCallback());
   auto update_manifest = future.Take();
 
-  ASSERT_THAT(update_manifest.has_value(), IsFalse());
-  EXPECT_THAT(update_manifest.error(),
-              Eq(UpdateManifestFetcher::Error::kInvalidJson));
+  EXPECT_THAT(update_manifest,
+              ErrorIs(Eq(UpdateManifestFetcher::Error::kInvalidJson)));
 }
 
 TEST_F(UpdateManifestFetcherTest, FailedDownload) {
@@ -174,9 +174,8 @@ TEST_F(UpdateManifestFetcherTest, FailedDownload) {
   fetcher.FetchUpdateManifest(future.GetCallback());
   auto update_manifest = future.Take();
 
-  ASSERT_THAT(update_manifest.has_value(), IsFalse());
-  EXPECT_THAT(update_manifest.error(),
-              Eq(UpdateManifestFetcher::Error::kDownloadFailed));
+  EXPECT_THAT(update_manifest,
+              ErrorIs(Eq(UpdateManifestFetcher::Error::kDownloadFailed)));
 }
 
 }  // namespace

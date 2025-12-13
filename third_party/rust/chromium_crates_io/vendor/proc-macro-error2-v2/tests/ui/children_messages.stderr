@@ -1,0 +1,23 @@
+error: main macro message
+ --> tests/ui/children_messages.rs:3:20
+  |
+3 | children_messages!(one, two, three, four);
+  |                    ^^^
+
+error: child message
+ --> tests/ui/children_messages.rs:3:25
+  |
+3 | children_messages!(one, two, three, four);
+  |                         ^^^
+
+error: main syn::Error
+ --> tests/ui/children_messages.rs:3:30
+  |
+3 | children_messages!(one, two, three, four);
+  |                              ^^^^^
+
+error: child syn::Error
+ --> tests/ui/children_messages.rs:3:37
+  |
+3 | children_messages!(one, two, three, four);
+  |                                     ^^^^

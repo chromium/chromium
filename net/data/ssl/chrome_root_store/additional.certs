@@ -4621,3 +4621,1040 @@ FefWrrnyAh2qVqkAd/lJ7oUjFuBEY/+eg7Bq8fuJa3coWa4kgPgp/7xfVOVnPt3P
 zJfmxHioB7EtWB8BOTY9ZFJZXGDNZqqM0IrIHDsbUJLwPeFJOrFCUVwVcscwh5FI
 c2IYWCY6wNpb4E8FkrY=
 -----END CERTIFICATE-----
+
+SHA-256 hash: b10b6f00e609509e8700f6d34687a2bfce38ea05a8fdf1cdc40c3a2a0d0d0e45
+Subject: "CN=WR1, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R1, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:d9:e2:c2:d2:04:8a:04:74:b6:27:a2:6d:08:68:a7
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R1
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WR1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:cf:6e:36:16:8a:b7:2b:ee:46:98:03:1d:53:70:
+                    0f:77:ee:a3:4b:a0:72:be:8f:23:2d:c2:47:c6:8f:
+                    5c:8d:f9:3d:e6:1a:8e:ee:33:22:0d:c9:11:48:b8:
+                    b0:62:ce:f4:69:0d:72:02:7d:de:d5:26:0f:c3:6e:
+                    9b:cf:7e:0e:d7:20:cf:c6:90:3b:a3:82:06:da:3a:
+                    9d:ff:6c:56:bf:dc:e9:61:94:45:e4:69:bc:4f:0f:
+                    c9:13:c0:ad:61:44:72:20:81:d0:0f:2b:9e:68:6a:
+                    62:6a:8f:8a:22:57:79:69:2b:e2:24:33:7e:76:63:
+                    2c:5d:bc:51:69:7e:23:07:b1:ff:76:81:f1:ee:b8:
+                    58:b5:6b:35:15:ef:a1:e6:48:28:39:97:31:d9:07:
+                    1f:95:a7:9e:ae:cf:98:bc:9e:8d:8a:03:e1:b0:97:
+                    4d:50:6f:93:4c:4a:1f:f8:db:7d:f1:90:99:15:7f:
+                    e3:96:ed:ee:31:81:ea:72:3d:52:1d:df:25:64:a5:
+                    0b:70:aa:9e:e8:a8:b9:47:c8:a7:5a:10:25:60:6f:
+                    42:e1:d7:3f:e7:8f:0c:f0:c2:83:46:33:20:e6:4b:
+                    77:04:76:a1:68:a7:5d:15:18:ef:d8:28:77:35:ad:
+                    0e:ad:46:e4:62:6e:e2:aa:f8:cc:ef:37:7e:0f:26:
+                    b3:07
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                66:69:49:D4:DE:2A:9C:91:03:CF:89:0E:24:B8:0E:30:03:6E:88:2E
+            X509v3 Authority Key Identifier:
+                keyid:E4:AF:2B:26:71:1A:2B:48:27:85:2F:52:66:2C:EF:F0:89:13:71:3E
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r1.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r1.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: sha256WithRSAEncryption
+         4e:e6:b3:08:11:20:91:60:27:f9:51:90:4d:02:18:ee:b8:c1:
+         89:d5:22:84:97:e6:d6:df:e6:4e:3a:3b:29:04:7e:de:20:f1:
+         e2:8d:8b:d3:aa:1e:17:44:37:c2:92:98:a5:08:08:fd:37:8c:
+         a9:49:58:31:64:26:65:b5:8f:13:43:d7:f2:97:ec:54:01:39:
+         13:9b:55:3a:38:77:e1:b3:40:27:00:cf:56:7b:19:54:9c:33:
+         37:79:f0:e4:11:90:ee:cc:51:b2:91:73:21:c3:3f:a9:b6:d3:
+         a4:d7:97:7f:d2:08:e1:6b:24:db:e4:ef:e8:54:95:15:95:0b:
+         df:fd:2e:1e:b6:9d:6e:bb:83:5a:34:50:e0:86:7b:99:8a:8a:
+         88:4a:a4:d3:c7:69:39:9f:93:98:1c:f0:ca:41:06:cb:5f:c8:
+         5d:b7:ab:6f:a0:29:d5:24:a7:9f:6f:91:23:bb:7a:37:f7:ea:
+         3c:2a:f0:c0:58:e9:f2:48:35:1b:a7:ad:44:04:c6:05:a3:d8:
+         0b:1f:86:8c:93:05:3d:7f:a4:f7:b0:25:be:88:f7:ff:df:12:
+         be:a7:5e:80:b3:d8:10:f8:ef:c5:47:25:1e:98:8a:2c:3e:b7:
+         34:c9:95:6a:b5:50:75:d2:0b:ea:43:af:4d:ee:64:d2:99:f1:
+         46:74:7e:9a:77:46:1c:84:1c:ef:b4:cb:6d:c6:45:7a:36:b9:
+         e8:fc:a7:95:2a:a6:7a:be:7b:f1:ce:c2:06:b3:ea:a3:50:55:
+         98:fc:96:50:af:af:ea:c1:ae:ce:ce:cc:ab:b4:10:6b:15:6c:
+         e3:bd:74:70:8f:cc:a4:fa:75:a2:fc:4c:56:dd:7b:10:d2:b1:
+         2e:4d:f8:2e:91:0a:00:a5:66:ab:09:f3:6c:71:d1:8e:15:cd:
+         78:20:bd:f3:85:c3:3b:02:c4:a7:42:b8:33:31:e5:f1:93:96:
+         25:00:1a:90:27:55:94:50:be:3f:20:37:18:fd:89:5f:f4:0b:
+         a2:a5:8d:1c:6b:8d:f5:cf:6f:2c:e6:c3:84:75:6c:fc:bf:ba:
+         e4:37:be:39:d9:e7:8e:91:46:23:dc:71:b6:c3:72:46:cc:9a:
+         1d:d1:40:7f:9c:fb:ba:53:a8:5c:35:e4:1c:20:9e:8f:f1:21:
+         b3:97:68:71:17:8d:b7:5e:96:db:16:c7:fc:40:6e:8a:b2:6b:
+         3b:31:44:da:bb:40:2f:19:2c:97:54:dd:12:33:9f:20:a5:ce:
+         25:f5:2a:41:e5:48:e7:e8:40:ed:5f:a7:d7:e0:3f:9f:b3:69:
+         83:44:be:e4:e0:f2:b5:68:79:5d:6e:78:71:c3:75:76:b2:67:
+         30:ae:78:b6:da:33:87:47
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf9niwtIEigR0tieibQhopzANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjEwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQDPbjYWircr7kaYAx1TcA937qNLoHK+jyMtwkfGj1yN+T3mGo7uMyINyRFI
+uLBizvRpDXICfd7VJg/DbpvPfg7XIM/GkDujggbaOp3/bFa/3OlhlEXkabxPD8kT
+wK1hRHIggdAPK55oamJqj4oiV3lpK+IkM352YyxdvFFpfiMHsf92gfHuuFi1azUV
+76HmSCg5lzHZBx+Vp56uz5i8no2KA+Gwl01Qb5NMSh/4233xkJkVf+OW7e4xgepy
+PVId3yVkpQtwqp7oqLlHyKdaECVgb0Lh1z/njwzwwoNGMyDmS3cEdqFop10VGO/Y
+KHc1rQ6tRuRibuKq+MzvN34PJrMHAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBRmaUnU3iqckQPPiQ4kuA4wA26ILjAfBgNVHSMEGDAWgBTk
+rysmcRorSCeFL1JmLO/wiRNxPjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IxLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IxLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEATuazCBEgkWAn+VGQTQIY7rjBidUihJfm1t/mTjo7KQR+
+3iDx4o2L06oeF0Q3wpKYpQgI/TeMqUlYMWQmZbWPE0PX8pfsVAE5E5tVOjh34bNA
+JwDPVnsZVJwzN3nw5BGQ7sxRspFzIcM/qbbTpNeXf9II4Wsk2+Tv6FSVFZUL3/0u
+HradbruDWjRQ4IZ7mYqKiEqk08dpOZ+TmBzwykEGy1/IXberb6Ap1SSnn2+RI7t6
+N/fqPCrwwFjp8kg1G6etRATGBaPYCx+GjJMFPX+k97Alvoj3/98SvqdegLPYEPjv
+xUclHpiKLD63NMmVarVQddIL6kOvTe5k0pnxRnR+mndGHIQc77TLbcZFeja56Pyn
+lSqmer578c7CBrPqo1BVmPyWUK+v6sGuzs7Mq7QQaxVs4710cI/MpPp1ovxMVt17
+ENKxLk34LpEKAKVmqwnzbHHRjhXNeCC984XDOwLEp0K4MzHl8ZOWJQAakCdVlFC+
+PyA3GP2JX/QLoqWNHGuN9c9vLObDhHVs/L+65De+OdnnjpFGI9xxtsNyRsyaHdFA
+f5z7ulOoXDXkHCCej/Ehs5docReNt16W2xbH/EBuirJrOzFE2rtALxksl1TdEjOf
+IKXOJfUqQeVI5+hA7V+n1+A/n7Npg0S+5ODytWh5XW54ccN1drJnMK54ttozh0c=
+-----END CERTIFICATE-----
+
+SHA-256 hash: e6fe22bf45e4f0d3b85c59e02c0f495418e1eb8d3210f788d48cd5e1cb547cd4
+Subject: "CN=WR2, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R1, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f0:05:a0:7c:4c:de:d1:00:ad:9d:66:a5:10:7b:98
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R1
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WR2
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:a9:ff:9c:7f:45:1e:70:a8:53:9f:ca:d9:e5:0d:
+                    de:46:57:57:7d:bc:8f:9a:5a:ac:46:f1:84:9a:bb:
+                    91:db:c9:fb:2f:01:fb:92:09:00:16:5e:a0:1c:f8:
+                    c1:ab:f9:78:2f:4a:cc:d8:85:a2:d8:59:3c:0e:d3:
+                    18:fb:b1:f5:24:0d:26:ee:b6:5b:64:76:7c:14:c7:
+                    2f:7a:ce:a8:4c:b7:f4:d9:08:fc:df:87:23:35:20:
+                    a8:e2:69:e2:8c:4e:3f:b1:59:fa:60:a2:1e:b3:c9:
+                    20:53:19:82:ca:36:53:6d:60:4d:e9:00:91:fc:76:
+                    8d:5c:08:0f:0a:c2:dc:f1:73:6b:c5:13:6e:0a:4f:
+                    7a:c2:f2:02:1c:2e:b4:63:83:da:31:f6:2d:75:30:
+                    b2:fb:ab:c2:6e:db:a9:c0:0e:b9:f9:67:d4:c3:25:
+                    57:74:eb:05:b4:e9:8e:b5:de:28:cd:cc:7a:14:e4:
+                    71:03:cb:4d:61:2e:61:57:c5:19:a9:0b:98:84:1a:
+                    e8:79:29:d9:b2:8d:2f:ff:57:6a:66:e0:ce:ab:95:
+                    a8:29:96:63:70:12:67:1e:3a:e1:db:b0:21:71:d7:
+                    7c:9e:fd:aa:17:6e:fe:2b:fb:38:17:14:d1:66:a7:
+                    af:9a:b5:70:cc:c8:63:81:3a:8c:c0:2a:a9:76:37:
+                    ce:e3
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                DE:1B:1E:ED:79:15:D4:3E:37:24:C3:21:BB:EC:34:39:6D:42:B2:30
+            X509v3 Authority Key Identifier:
+                keyid:E4:AF:2B:26:71:1A:2B:48:27:85:2F:52:66:2C:EF:F0:89:13:71:3E
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r1.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r1.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: sha256WithRSAEncryption
+         45:75:8b:e5:1f:3b:44:13:96:1a:ab:58:f1:35:c9:6f:3d:d2:
+         d0:33:4a:86:33:ba:57:51:4f:ee:c4:34:da:16:12:4c:bf:13:
+         9f:0d:d4:54:e9:48:79:c0:30:3c:94:25:f2:1a:f4:ba:32:94:
+         b6:33:72:0b:85:ee:09:11:25:34:94:e1:6f:42:db:82:9b:7b:
+         7f:2a:9a:a9:ff:7f:a9:d2:de:4a:20:cb:b3:fb:03:03:b8:f8:
+         07:05:da:59:92:2f:18:46:98:ce:af:72:be:24:26:b1:1e:00:
+         4d:bd:08:ad:93:41:44:0a:bb:c7:d5:01:85:bf:93:57:e3:df:
+         74:12:53:0e:11:25:d3:9b:dc:de:cb:27:6e:b3:c2:b9:33:62:
+         39:c2:e0:35:e1:5b:a7:09:2e:19:cb:91:2a:76:5c:f1:df:ca:
+         23:84:40:a5:6f:ff:9a:41:e0:b5:ef:32:d1:85:ae:af:25:09:
+         f0:62:c5:6e:c2:c8:6e:32:fd:b8:da:e2:ce:4a:91:4a:f3:85:
+         55:4e:b1:75:d6:48:33:2f:6f:84:d9:12:5c:9f:d4:71:98:63:
+         25:8d:69:5c:0a:6b:7d:f2:41:bd:e8:bb:8f:e4:22:d7:9d:65:
+         45:e8:4c:0a:87:da:e9:60:66:88:0e:1f:c7:e1:4e:56:c5:76:
+         ff:b4:7a:57:69:f2:02:22:09:26:41:1d:da:74:a2:e5:29:f3:
+         c4:9a:e5:5d:d6:aa:7a:fd:e1:b7:2b:66:38:fb:e8:29:66:ba:
+         ef:a0:13:2f:f8:73:7e:f0:da:40:11:1c:5d:dd:8f:a6:fc:be:
+         db:be:56:f8:32:9c:1f:41:41:6d:7e:b6:c5:eb:c6:8b:36:b7:
+         17:8c:9d:cf:19:7a:34:9f:21:93:c4:7e:74:35:d2:aa:fd:4c:
+         6d:14:f5:c9:b0:79:5b:49:3c:f3:bf:17:48:e8:ef:9a:26:13:
+         0c:87:f2:73:d6:9c:c5:52:6b:63:f7:32:90:78:a9:6b:eb:5e:
+         d6:93:a1:bf:bc:18:3d:8b:59:f6:8a:c6:05:5e:52:18:e2:66:
+         e0:da:c1:dc:ad:5a:25:aa:f4:45:fc:f1:0b:78:a4:af:b0:f2:
+         73:a4:30:a8:34:c1:53:7f:42:96:e5:48:41:eb:90:46:0c:06:
+         dc:cb:92:c6:5e:f3:44:44:43:46:29:46:a0:a6:fc:b9:8e:39:
+         27:39:b1:5a:e2:b1:ad:fc:13:ff:8e:fc:26:e1:d4:fe:84:f1:
+         50:5a:8e:97:6b:2d:2a:79:fb:40:64:ea:f3:3d:bd:5b:e1:a0:
+         04:b0:97:48:1c:42:f5:ea:5a:1c:cd:26:c8:51:ff:14:99:67:
+         89:72:5f:1d:ec:ad:5a:dd
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf/AFoHxM3tEArZ1mpRB7mDANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCp/5x/RR5wqFOfytnlDd5GV1d9vI+aWqxG8YSau5HbyfsvAfuSCQAWXqAc
++MGr+XgvSszYhaLYWTwO0xj7sfUkDSbutltkdnwUxy96zqhMt/TZCPzfhyM1IKji
+aeKMTj+xWfpgoh6zySBTGYLKNlNtYE3pAJH8do1cCA8Kwtzxc2vFE24KT3rC8gIc
+LrRjg9ox9i11MLL7q8Ju26nADrn5Z9TDJVd06wW06Y613ijNzHoU5HEDy01hLmFX
+xRmpC5iEGuh5KdmyjS//V2pm4M6rlagplmNwEmceOuHbsCFx13ye/aoXbv4r+zgX
+FNFmp6+atXDMyGOBOozAKql2N87jAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBTeGx7teRXUPjckwyG77DQ5bUKyMDAfBgNVHSMEGDAWgBTk
+rysmcRorSCeFL1JmLO/wiRNxPjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IxLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IxLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEARXWL5R87RBOWGqtY8TXJbz3S0DNKhjO6V1FP7sQ02hYS
+TL8Tnw3UVOlIecAwPJQl8hr0ujKUtjNyC4XuCRElNJThb0Lbgpt7fyqaqf9/qdLe
+SiDLs/sDA7j4BwXaWZIvGEaYzq9yviQmsR4ATb0IrZNBRAq7x9UBhb+TV+PfdBJT
+DhEl05vc3ssnbrPCuTNiOcLgNeFbpwkuGcuRKnZc8d/KI4RApW//mkHgte8y0YWu
+ryUJ8GLFbsLIbjL9uNrizkqRSvOFVU6xddZIMy9vhNkSXJ/UcZhjJY1pXAprffJB
+vei7j+Qi151lRehMCofa6WBmiA4fx+FOVsV2/7R6V2nyAiIJJkEd2nSi5SnzxJrl
+Xdaqev3htytmOPvoKWa676ATL/hzfvDaQBEcXd2Ppvy+275W+DKcH0FBbX62xevG
+iza3F4ydzxl6NJ8hk8R+dDXSqv1MbRT1ybB5W0k8878XSOjvmiYTDIfyc9acxVJr
+Y/cykHipa+te1pOhv7wYPYtZ9orGBV5SGOJm4NrB3K1aJar0RfzxC3ikr7Dyc6Qw
+qDTBU39CluVIQeuQRgwG3MuSxl7zRERDRilGoKb8uY45JzmxWuKxrfwT/478JuHU
+/oTxUFqOl2stKnn7QGTq8z29W+GgBLCXSBxC9epaHM0myFH/FJlniXJfHeytWt0=
+-----END CERTIFICATE-----
+
+SHA-256 hash: 2fe357db13751ff9160e87354975b3407498f41c9bd16a48657866e6e5a9b4c7
+Subject: "CN=WR3, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R1, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f0:05:a9:15:68:d6:3a:bc:22:86:16:84:aa:4b:5a
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R1
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WR3
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:8f:34:75:87:af:84:72:14:8d:07:10:91:6f:03:
+                    ac:f1:d4:08:35:9a:19:f2:9b:18:89:34:6c:98:8f:
+                    7a:d4:dd:ea:05:e8:de:1b:7c:8c:54:12:ba:79:8a:
+                    fb:18:0d:0d:7c:9c:f3:bd:38:e4:a8:5e:c6:33:cb:
+                    46:89:6f:46:a0:e9:37:63:8d:dc:cc:d5:97:4e:32:
+                    ad:7b:1d:23:05:b9:f5:7b:49:43:98:d0:bc:57:c7:
+                    53:78:18:b1:ed:a7:54:b2:7c:86:be:f0:54:45:bc:
+                    87:ba:99:59:1d:f4:b8:db:00:fb:81:4f:46:2b:62:
+                    5e:b1:3a:a5:2a:17:23:ac:a2:be:c5:8e:e5:5e:fd:
+                    71:1e:7d:a4:b4:23:7d:04:52:b2:34:d2:df:99:ac:
+                    87:c6:4c:59:5f:f8:e6:4f:8e:75:92:c2:b2:30:46:
+                    92:d0:b6:0d:c7:e4:89:67:ff:3f:54:94:27:65:e3:
+                    01:c8:4a:2c:84:2f:65:5f:cd:ad:5c:fd:a6:ad:41:
+                    5b:dc:4c:3f:17:96:91:7d:a9:d8:3c:53:2a:1c:d0:
+                    e6:d4:77:e6:43:4a:c2:b7:f8:48:a2:cd:ad:63:b5:
+                    25:6b:96:72:1d:81:45:6f:86:69:c4:e4:e6:78:4c:
+                    31:e6:a1:7f:a7:01:73:0a:87:ef:87:89:72:cc:d3:
+                    c5:8d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                C7:81:F5:FD:8E:88:D9:00:3C:4D:63:A2:50:31:24:A0:CE:23:FE:23
+            X509v3 Authority Key Identifier:
+                keyid:E4:AF:2B:26:71:1A:2B:48:27:85:2F:52:66:2C:EF:F0:89:13:71:3E
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r1.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r1.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: sha256WithRSAEncryption
+         9c:8d:43:94:94:33:48:a7:16:6f:25:d7:ac:94:ac:80:a3:28:
+         e8:a1:bb:e1:33:2a:86:cb:93:83:ae:da:d0:55:f4:db:be:76:
+         f9:e8:89:6f:96:2c:38:97:3c:0d:53:87:6a:5c:29:3a:f6:ee:
+         3d:d9:79:06:e0:04:80:82:b8:55:ae:e5:f6:3d:c9:f4:cd:7f:
+         12:37:96:8c:64:cc:dd:1a:2c:ce:60:49:1a:ef:36:a3:3e:84:
+         5a:2e:6a:ef:9c:5e:17:ea:27:26:68:76:1e:6f:7c:6b:fc:89:
+         00:8f:e6:38:35:ea:e4:ba:1f:61:c4:3d:01:f7:ca:3f:d6:4c:
+         66:ef:98:c1:6f:bf:a8:7a:b2:5f:62:61:68:e9:ed:be:5e:e2:
+         f1:2f:a5:d5:8f:02:70:a1:2a:33:53:45:2b:8b:38:10:16:0f:
+         44:58:d9:0d:ac:0e:1d:7e:df:49:c8:5b:48:c5:4f:9f:93:6e:
+         d3:89:6b:53:ac:6e:7e:e6:6a:46:8b:04:43:0d:a8:d1:40:32:
+         cc:3a:32:03:9d:8d:5f:32:53:5a:bd:46:d8:55:60:ff:40:3d:
+         85:da:d0:ff:a7:de:f4:6d:f5:eb:bc:ca:c4:da:97:12:bb:3a:
+         32:91:ed:b4:4a:2e:19:ba:66:d9:fb:73:ae:67:2f:ae:e6:31:
+         4d:fc:5c:e0:6d:86:c0:18:b7:2c:52:e8:cc:da:72:d3:8d:a0:
+         0d:f5:c1:cc:3c:a7:d6:cb:5a:5a:cc:bb:f9:09:f3:32:54:79:
+         f4:5c:fa:8c:13:a4:e5:1e:0b:4f:e9:9a:d3:e2:a3:9d:f4:61:
+         32:1e:53:da:e7:26:eb:d1:e4:bc:d4:2d:0d:99:55:6b:5b:4b:
+         52:5c:ec:d3:32:c4:75:04:9e:85:30:a3:67:a4:98:b0:6b:76:
+         6c:c5:4a:e9:db:ed:c7:37:32:08:fd:10:0d:41:67:35:70:b0:
+         83:0d:76:fa:61:92:90:0b:a3:e0:e4:62:f2:43:11:a6:72:fc:
+         50:48:e4:35:b7:70:f4:a2:f5:79:86:c4:0b:70:f4:18:fb:9e:
+         d9:89:36:00:68:71:92:67:1d:9b:50:68:3a:9d:39:91:8c:3f:
+         36:7a:a0:87:b4:15:f0:32:b2:05:35:07:6e:31:f4:a5:79:4b:
+         88:eb:12:39:8f:82:2e:1d:5e:4c:cf:83:a3:aa:d2:8e:a1:a7:
+         0d:07:94:5f:29:59:98:f0:a6:ba:f7:9a:c3:7f:08:56:70:5a:
+         6b:a1:22:cf:aa:67:81:9d:6e:e8:e7:8e:ff:55:33:7e:19:b2:
+         4e:6d:27:d0:6f:bd:25:9d:ca:4b:63:2a:d3:c8:ac:36:05:c7:
+         2e:78:65:1c:96:a9:86:91
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf/AFqRVo1jq8IoYWhKpLWjANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCPNHWHr4RyFI0HEJFvA6zx1Ag1mhnymxiJNGyYj3rU3eoF6N4bfIxUErp5
+ivsYDQ18nPO9OOSoXsYzy0aJb0ag6TdjjdzM1ZdOMq17HSMFufV7SUOY0LxXx1N4
+GLHtp1SyfIa+8FRFvIe6mVkd9LjbAPuBT0YrYl6xOqUqFyOsor7FjuVe/XEefaS0
+I30EUrI00t+ZrIfGTFlf+OZPjnWSwrIwRpLQtg3H5Iln/z9UlCdl4wHISiyEL2Vf
+za1c/aatQVvcTD8XlpF9qdg8Uyoc0ObUd+ZDSsK3+Eiiza1jtSVrlnIdgUVvhmnE
+5OZ4TDHmoX+nAXMKh++HiXLM08WNAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBTHgfX9jojZADxNY6JQMSSgziP+IzAfBgNVHSMEGDAWgBTk
+rysmcRorSCeFL1JmLO/wiRNxPjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IxLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IxLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEAnI1DlJQzSKcWbyXXrJSsgKMo6KG74TMqhsuTg67a0FX0
+2752+eiJb5YsOJc8DVOHalwpOvbuPdl5BuAEgIK4Va7l9j3J9M1/EjeWjGTM3Ros
+zmBJGu82oz6EWi5q75xeF+onJmh2Hm98a/yJAI/mODXq5LofYcQ9AffKP9ZMZu+Y
+wW+/qHqyX2JhaOntvl7i8S+l1Y8CcKEqM1NFK4s4EBYPRFjZDawOHX7fSchbSMVP
+n5Nu04lrU6xufuZqRosEQw2o0UAyzDoyA52NXzJTWr1G2FVg/0A9hdrQ/6fe9G31
+67zKxNqXErs6MpHttEouGbpm2ftzrmcvruYxTfxc4G2GwBi3LFLozNpy042gDfXB
+zDyn1staWsy7+QnzMlR59Fz6jBOk5R4LT+ma0+KjnfRhMh5T2ucm69HkvNQtDZlV
+a1tLUlzs0zLEdQSehTCjZ6SYsGt2bMVK6dvtxzcyCP0QDUFnNXCwgw12+mGSkAuj
+4ORi8kMRpnL8UEjkNbdw9KL1eYbEC3D0GPue2Yk2AGhxkmcdm1BoOp05kYw/Nnqg
+h7QV8DKyBTUHbjH0pXlLiOsSOY+CLh1eTM+Do6rSjqGnDQeUXylZmPCmuveaw38I
+VnBaa6Eiz6pngZ1u6OeO/1UzfhmyTm0n0G+9JZ3KS2Mq08isNgXHLnhlHJaphpE=
+-----END CERTIFICATE-----
+
+SHA-256 hash: dc9416c2f855126d6de977677538f2f967ff4998e90dfa435a17219be077fc06
+Subject: "CN=WR4, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R1, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f0:05:b4:da:75:b8:6a:5a:c6:1f:e4:30:77:13:cd
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R1
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WR4
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:af:4e:51:bf:ce:50:a4:eb:8e:3d:91:a5:bf:0c:
+                    2a:22:aa:8a:74:a4:8c:32:68:df:0a:40:66:ec:57:
+                    6d:2c:af:46:f8:db:d2:6b:44:c4:0b:25:3f:fb:b0:
+                    84:4b:b1:77:6b:55:c0:39:ef:be:55:f5:74:3f:16:
+                    55:4f:52:cc:85:41:a5:87:13:18:1a:41:a7:f6:3d:
+                    9c:4d:56:46:1f:4f:d4:93:e7:b6:bd:51:b5:7e:35:
+                    39:5d:72:79:b1:be:8a:0b:9a:98:70:fd:31:6f:96:
+                    7a:6a:da:b3:35:e7:29:47:8a:af:25:1a:a8:10:a5:
+                    1f:7f:e8:02:ee:a2:59:96:0d:53:8f:14:48:00:95:
+                    37:7d:42:81:16:f6:02:cc:b8:6d:e5:3b:7d:65:b6:
+                    c7:a7:65:64:f5:94:24:12:d9:14:55:4b:15:e3:ed:
+                    c4:77:da:55:e0:48:4b:24:d5:9c:f9:ed:e4:65:80:
+                    27:f2:7c:0b:d4:25:4b:4c:b7:df:36:b2:83:51:d9:
+                    dc:ce:54:e2:a3:f7:39:62:78:5a:db:75:f0:59:87:
+                    16:47:42:7e:c8:26:e1:9c:71:d8:89:9c:a4:d3:79:
+                    b0:63:c4:c8:54:71:41:e4:eb:6c:a5:3b:b8:1e:2e:
+                    d6:f7:24:c5:1b:6e:7b:d2:60:3d:94:01:c9:60:ce:
+                    bc:25
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                9B:C8:11:BC:3D:AA:36:B9:31:8C:4E:8F:44:D5:57:32:2F:C3:C0:61
+            X509v3 Authority Key Identifier:
+                keyid:E4:AF:2B:26:71:1A:2B:48:27:85:2F:52:66:2C:EF:F0:89:13:71:3E
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r1.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r1.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: sha256WithRSAEncryption
+         87:69:c3:f5:60:f9:b2:4c:d4:2c:0c:66:21:db:71:55:96:45:
+         f3:fe:70:b7:98:9f:20:c5:00:51:13:55:c1:97:0b:f6:eb:8e:
+         be:b3:53:ef:9a:55:87:2d:d8:e1:da:bd:3e:d0:43:c8:89:a0:
+         4d:c2:17:ae:aa:7c:10:b9:50:1d:b3:06:47:6a:27:0b:5c:b9:
+         85:18:a8:47:71:86:d4:9f:2a:18:17:b7:07:50:d0:ce:7d:2a:
+         a3:91:a4:af:1e:22:8a:3f:dd:ea:dc:a8:1b:17:f3:74:0b:ed:
+         3d:14:3e:93:a3:da:5d:af:0b:59:d8:63:a5:2f:ff:58:58:0e:
+         e8:c5:ce:29:ee:aa:4e:27:15:9a:3e:b8:5d:8c:23:a0:34:18:
+         36:e6:07:b4:25:8f:16:b5:bc:8a:60:9d:dd:1d:79:1f:ed:ca:
+         94:29:cc:ec:5b:d0:c9:d3:6b:d3:82:cf:52:df:cb:60:cf:06:
+         64:70:49:c9:4a:b5:a1:7b:c4:e5:12:96:92:8c:35:3e:d1:e9:
+         ba:6d:fd:f2:e1:b2:57:37:fe:be:ef:b4:d6:2f:e6:74:34:29:
+         b1:bf:c8:fc:f4:15:f4:10:09:8a:7f:44:d9:c7:d8:2e:50:2c:
+         36:5f:55:69:4a:14:8a:0f:6a:ba:54:be:8e:49:dd:86:d3:92:
+         41:c5:ad:c3:ad:98:2e:e1:a8:ff:22:3d:70:5e:14:63:8a:bd:
+         95:68:0d:3b:b2:fd:21:55:47:42:8f:78:a0:2a:cb:d6:04:4c:
+         28:03:6d:16:46:9c:2c:31:02:c0:0b:85:48:ab:ee:85:ae:c3:
+         6a:76:3b:85:9e:d8:a8:5e:87:90:d9:49:cd:30:3a:63:d5:11:
+         36:af:4c:c6:a2:61:31:e4:dd:91:e7:f3:fa:cd:40:77:f4:18:
+         d1:ed:8c:1c:68:1b:13:ea:0d:77:86:b0:4d:da:c4:c5:2d:81:
+         d8:4a:7b:c1:c4:a2:d6:80:37:e2:92:1a:26:04:2e:5a:ef:05:
+         ae:87:02:b3:3b:2a:73:ea:09:59:3a:f0:d9:54:20:7b:dc:60:
+         51:95:0c:64:b4:56:6c:5e:23:dc:52:8f:b1:55:60:57:ee:e0:
+         f7:94:4d:12:31:a1:0b:53:3c:2d:ab:3c:c3:0e:53:fa:e0:4f:
+         30:bb:12:42:4d:81:44:77:30:7f:20:d1:db:4f:76:24:59:5d:
+         1a:e0:3c:31:40:2b:18:df:e7:1d:30:df:59:a6:0b:20:f0:94:
+         87:00:61:a5:83:a3:2a:78:b8:78:f2:eb:69:da:bb:00:6d:90:
+         a0:65:6c:cd:9c:20:25:ea:8b:5c:90:5f:f8:8e:a7:cb:31:5d:
+         d9:ce:4e:5c:c1:ba:e4:d7
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf/AFtNp1uGpaxh/kMHcTzTANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjQwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCvTlG/zlCk6449kaW/DCoiqop0pIwyaN8KQGbsV20sr0b429JrRMQLJT/7
+sIRLsXdrVcA5775V9XQ/FlVPUsyFQaWHExgaQaf2PZxNVkYfT9ST57a9UbV+NTld
+cnmxvooLmphw/TFvlnpq2rM15ylHiq8lGqgQpR9/6ALuolmWDVOPFEgAlTd9QoEW
+9gLMuG3lO31ltsenZWT1lCQS2RRVSxXj7cR32lXgSEsk1Zz57eRlgCfyfAvUJUtM
+t982soNR2dzOVOKj9zlieFrbdfBZhxZHQn7IJuGccdiJnKTTebBjxMhUcUHk62yl
+O7geLtb3JMUbbnvSYD2UAclgzrwlAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBSbyBG8Pao2uTGMTo9E1VcyL8PAYTAfBgNVHSMEGDAWgBTk
+rysmcRorSCeFL1JmLO/wiRNxPjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IxLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IxLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEAh2nD9WD5skzULAxmIdtxVZZF8/5wt5ifIMUAURNVwZcL
+9uuOvrNT75pVhy3Y4dq9PtBDyImgTcIXrqp8ELlQHbMGR2onC1y5hRioR3GG1J8q
+GBe3B1DQzn0qo5Gkrx4iij/d6tyoGxfzdAvtPRQ+k6PaXa8LWdhjpS//WFgO6MXO
+Ke6qTicVmj64XYwjoDQYNuYHtCWPFrW8imCd3R15H+3KlCnM7FvQydNr04LPUt/L
+YM8GZHBJyUq1oXvE5RKWkow1PtHpum398uGyVzf+vu+01i/mdDQpsb/I/PQV9BAJ
+in9E2cfYLlAsNl9VaUoUig9qulS+jkndhtOSQcWtw62YLuGo/yI9cF4UY4q9lWgN
+O7L9IVVHQo94oCrL1gRMKANtFkacLDECwAuFSKvuha7DanY7hZ7YqF6HkNlJzTA6
+Y9URNq9MxqJhMeTdkefz+s1Ad/QY0e2MHGgbE+oNd4awTdrExS2B2Ep7wcSi1oA3
+4pIaJgQuWu8FrocCszsqc+oJWTrw2VQge9xgUZUMZLRWbF4j3FKPsVVgV+7g95RN
+EjGhC1M8Las8ww5T+uBPMLsSQk2BRHcwfyDR2092JFldGuA8MUArGN/nHTDfWaYL
+IPCUhwBhpYOjKni4ePLradq7AG2QoGVszZwgJeqLXJBf+I6nyzFd2c5OXMG65Nc=
+-----END CERTIFICATE-----
+
+SHA-256 hash: ae0fc852280f1b87cedaf73cfb84cf106efec88e8294253af352ed4034460d7b
+Subject: "CN=WR5, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R2, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f4:e5:c9:14:96:b0:f2:a1:89:05:ed:50:1e:62:a3
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R2
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WR5
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                RSA Public-Key: (2048 bit)
+                Modulus:
+                    00:9b:d5:5c:98:85:c1:56:ed:4b:69:4e:a3:73:22:
+                    2c:ba:b4:e2:64:d2:62:6e:a5:cd:1d:27:2d:4f:77:
+                    be:96:c1:e8:32:9b:e3:d9:6d:09:1e:f0:3f:60:9d:
+                    81:bd:da:86:2f:c0:62:b7:0c:a4:ed:c8:5c:bc:a9:
+                    5d:88:c5:60:16:2a:61:0d:5f:19:57:81:4c:13:eb:
+                    2e:b0:19:f6:e5:db:86:59:18:9b:21:14:3d:e8:fd:
+                    63:16:13:b6:e8:70:25:d5:4f:95:6f:46:f0:8c:46:
+                    be:b7:23:80:35:90:52:ec:4e:45:0b:24:16:28:6b:
+                    9b:2e:5c:28:73:00:02:c7:74:2a:30:76:8f:89:ee:
+                    b5:c2:f9:d2:4d:1a:11:d3:ba:f2:72:7f:3f:6a:7b:
+                    42:3c:6b:bc:a5:0d:b6:b4:16:20:f1:c3:30:12:a7:
+                    5d:1d:02:b4:99:7f:5b:31:3a:6c:b6:d5:3e:21:a2:
+                    bc:68:93:de:9b:9f:67:36:8b:61:77:3f:17:96:b2:
+                    45:8b:4e:c9:f1:26:18:c1:eb:73:b0:aa:4b:b4:d6:
+                    40:bf:43:f1:c1:ca:c9:74:4c:55:3b:cc:54:80:f8:
+                    30:33:e1:14:c7:cb:bb:05:64:aa:d1:2e:bc:7c:28:
+                    89:78:83:06:e9:b7:02:48:e3:8b:a1:86:b9:55:a8:
+                    40:dd
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                4C:5B:19:C2:8F:1A:7F:55:6F:AA:10:29:FA:02:8B:C7:3C:2A:22:3C
+            X509v3 Authority Key Identifier:
+                keyid:BB:FF:CA:8E:23:9F:4F:99:CA:DB:E2:68:A6:A5:15:27:17:1E:D9:0E
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r2.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r2.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: sha256WithRSAEncryption
+         c1:c0:50:db:85:d8:49:34:e5:9e:84:35:1a:42:3b:89:b6:4c:
+         8a:9a:9d:9a:44:3d:d1:4a:68:04:f1:f9:0e:ae:c4:9c:33:07:
+         83:3d:bc:f8:06:82:12:3c:c7:1a:0f:38:ab:86:bb:0b:1f:e0:
+         5f:e4:67:23:22:a6:a9:6f:4f:3c:00:63:11:87:d0:20:d6:b6:
+         e1:f0:0c:56:50:ea:e8:ec:14:3e:93:c3:5a:97:30:bf:4f:1b:
+         d4:a9:6b:5a:dc:ae:17:50:12:3b:1b:5c:e0:81:ed:dc:8b:b1:
+         be:4e:04:25:79:d1:90:85:41:82:2e:eb:b0:39:4a:a2:41:f5:
+         b0:70:a1:26:7b:0f:14:7e:03:ce:d5:46:dd:69:d5:38:5b:a3:
+         cb:a4:ad:48:43:1a:11:75:b1:8a:a7:f3:53:ee:14:e1:84:e0:
+         7d:3a:e4:55:ec:59:18:74:5b:99:75:3e:4b:91:62:e9:53:f0:
+         18:5b:cd:44:09:3c:82:8c:5c:bf:3a:c6:7a:87:c0:04:0a:4a:
+         a5:4d:43:aa:5f:9e:a8:b4:68:6c:90:07:51:ee:74:d1:57:d5:
+         55:62:e2:7a:bd:8c:46:8c:4a:1e:7f:b2:ac:3b:77:14:6e:80:
+         25:63:0f:92:e4:72:08:99:2e:7f:0a:02:39:0d:97:14:0c:92:
+         68:c8:78:45:00:31:75:61:59:a9:51:a9:aa:8b:3b:37:ab:4c:
+         76:f5:4f:cf:b4:ec:d3:87:18:54:13:ab:84:76:0e:74:5d:ba:
+         c8:80:c6:6f:f6:dc:8f:ba:50:7a:e8:51:81:8a:7e:b2:a6:6a:
+         fb:43:e8:3f:71:43:6f:07:3e:07:b5:96:d0:c0:6b:b0:a2:af:
+         72:b5:7d:ca:0c:e4:47:c6:31:92:d0:3e:1a:6d:d4:25:3c:9c:
+         17:45:1b:b3:81:c4:26:fe:a7:1c:16:b2:d0:80:c6:7c:b4:70:
+         53:99:01:75:66:84:6e:63:f6:4c:4b:ca:1b:f3:a0:c6:37:09:
+         6f:e8:44:a1:52:9d:fa:cb:3a:6e:e2:d7:d5:d7:bf:0e:f5:8c:
+         76:31:4f:e5:ad:bb:3d:c0:93:de:0c:75:51:4d:37:76:31:19:
+         ff:b8:c5:9d:19:f0:39:e3:47:0a:d4:59:4d:79:19:dd:05:07:
+         5b:1a:da:3b:d8:ad:e3:6d:06:f7:4d:46:be:8b:37:71:16:de:
+         39:b0:94:b5:cb:a5:f7:f5:1b:f4:28:a5:a8:2d:fe:7d:84:be:
+         a5:0b:bc:ed:83:fc:62:60:a3:ce:86:26:fe:4d:12:c2:d7:e2:
+         1c:95:c1:ae:de:6c:7a:05:a4:2b:30:f8:d0:de:46:f7:59:5f:
+         b6:77:b8:4f:5e:8f:ab:0b
+-----BEGIN CERTIFICATE-----
+MIIFCzCCAvOgAwIBAgIQf/TlyRSWsPKhiQXtUB5iozANBgkqhkiG9w0BAQsFADBH
+MQswCQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExM
+QzEUMBIGA1UEAxMLR1RTIFJvb3QgUjIwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIw
+MTQwMDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNl
+cnZpY2VzMQwwCgYDVQQDEwNXUjUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQCb1VyYhcFW7UtpTqNzIiy6tOJk0mJupc0dJy1Pd76Wwegym+PZbQke8D9g
+nYG92oYvwGK3DKTtyFy8qV2IxWAWKmENXxlXgUwT6y6wGfbl24ZZGJshFD3o/WMW
+E7bocCXVT5VvRvCMRr63I4A1kFLsTkULJBYoa5suXChzAALHdCowdo+J7rXC+dJN
+GhHTuvJyfz9qe0I8a7ylDba0FiDxwzASp10dArSZf1sxOmy21T4horxok96bn2c2
+i2F3PxeWskWLTsnxJhjB63Owqku01kC/Q/HBysl0TFU7zFSA+DAz4RTHy7sFZKrR
+Lrx8KIl4gwbptwJI44uhhrlVqEDdAgMBAAGjgf4wgfswDgYDVR0PAQH/BAQDAgGG
+MB0GA1UdJQQWMBQGCCsGAQUFBwMBBggrBgEFBQcDAjASBgNVHRMBAf8ECDAGAQH/
+AgEAMB0GA1UdDgQWBBRMWxnCjxp/VW+qECn6AovHPCoiPDAfBgNVHSMEGDAWgBS7
+/8qOI59Pmcrb4mimpRUnFx7ZDjA0BggrBgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKG
+GGh0dHA6Ly9pLnBraS5nb29nL3IyLmNydDArBgNVHR8EJDAiMCCgHqAchhpodHRw
+Oi8vYy5wa2kuZ29vZy9yL3IyLmNybDATBgNVHSAEDDAKMAgGBmeBDAECATANBgkq
+hkiG9w0BAQsFAAOCAgEAwcBQ24XYSTTlnoQ1GkI7ibZMipqdmkQ90UpoBPH5Dq7E
+nDMHgz28+AaCEjzHGg84q4a7Cx/gX+RnIyKmqW9PPABjEYfQINa24fAMVlDq6OwU
+PpPDWpcwv08b1KlrWtyuF1ASOxtc4IHt3Iuxvk4EJXnRkIVBgi7rsDlKokH1sHCh
+JnsPFH4DztVG3WnVOFujy6StSEMaEXWxiqfzU+4U4YTgfTrkVexZGHRbmXU+S5Fi
+6VPwGFvNRAk8goxcvzrGeofABApKpU1Dql+eqLRobJAHUe500VfVVWLier2MRoxK
+Hn+yrDt3FG6AJWMPkuRyCJkufwoCOQ2XFAySaMh4RQAxdWFZqVGpqos7N6tMdvVP
+z7Ts04cYVBOrhHYOdF26yIDGb/bcj7pQeuhRgYp+sqZq+0PoP3FDbwc+B7WW0MBr
+sKKvcrV9ygzkR8YxktA+Gm3UJTycF0Ubs4HEJv6nHBay0IDGfLRwU5kBdWaEbmP2
+TEvKG/OgxjcJb+hEoVKd+ss6buLX1de/DvWMdjFP5a27PcCT3gx1UU03djEZ/7jF
+nRnwOeNHCtRZTXkZ3QUHWxraO9it420G901Gvos3cRbeObCUtcul9/Ub9CilqC3+
+fYS+pQu87YP8YmCjzoYm/k0SwtfiHJXBrt5segWkKzD40N5G91lftne4T16Pqws=
+-----END CERTIFICATE-----
+
+SHA-256 hash: 1dfc1605fbad358d8bc844f76d15203fac9ca5c1a79fd4857ffaf2864fbebf96
+Subject: "CN=WE1, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R4, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f3:19:77:97:2c:22:4a:76:15:5d:13:b6:d6:85:e3
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WE1
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:6f:cd:3a:fe:67:57:47:4c:21:03:85:40:c2:47:
+                    5d:bb:58:47:0f:40:c1:5c:17:85:c6:19:37:e7:d5:
+                    7c:ed:86:4b:9b:81:d9:d7:1a:13:a5:0a:03:f8:98:
+                    c4:c6:e8:9e:ff:10:59:8f:2c:26:98:f5:e6:26:25:
+                    bb:0f:02:fa:56
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                90:77:92:35:67:C4:FF:A8:CC:A9:E6:7B:D9:80:79:7B:CC:93:F9:38
+            X509v3 Authority Key Identifier:
+                keyid:80:4C:D6:EB:74:FF:49:36:A3:D5:D8:FC:B5:3E:C5:6A:F0:94:1D:8C
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r4.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r4.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:65:02:31:00:e7:02:ab:51:d6:f7:43:95:ce:75:fe:d1:11:
+         94:d5:cc:40:41:7a:26:be:d8:0c:f3:32:2d:3d:90:ae:15:0f:
+         23:48:12:52:8f:3e:64:79:13:af:f5:a6:2c:02:6e:55:b1:02:
+         30:26:89:cc:68:01:62:e7:89:ab:7e:17:e8:14:d6:44:7e:e3:
+         4c:49:0e:bf:6c:80:62:34:b8:b2:a1:7e:3a:16:88:50:bc:a7:
+         88:a0:9f:7d:73:1e:ec:52:41:4d:ee:e2:56
+-----BEGIN CERTIFICATE-----
+MIICnzCCAiWgAwIBAgIQf/MZd5csIkp2FV0TttaF4zAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjQwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNXRTEwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARvzTr+
+Z1dHTCEDhUDCR127WEcPQMFcF4XGGTfn1XzthkubgdnXGhOlCgP4mMTG6J7/EFmP
+LCaY9eYmJbsPAvpWo4H+MIH7MA4GA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggr
+BgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU
+kHeSNWfE/6jMqeZ72YB5e8yT+TgwHwYDVR0jBBgwFoAUgEzW63T/STaj1dj8tT7F
+avCUHYwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzAChhhodHRwOi8vaS5wa2ku
+Z29vZy9yNC5jcnQwKwYDVR0fBCQwIjAgoB6gHIYaaHR0cDovL2MucGtpLmdvb2cv
+ci9yNC5jcmwwEwYDVR0gBAwwCjAIBgZngQwBAgEwCgYIKoZIzj0EAwMDaAAwZQIx
+AOcCq1HW90OVznX+0RGU1cxAQXomvtgM8zItPZCuFQ8jSBJSjz5keROv9aYsAm5V
+sQIwJonMaAFi54mrfhfoFNZEfuNMSQ6/bIBiNLiyoX46FohQvKeIoJ99cx7sUkFN
+7uJW
+-----END CERTIFICATE-----
+
+SHA-256 hash: 9c3f2fd11c57d7c649ad5a0932c0f0d29756f6a0a1c74c43e1e89a62d64cd320
+Subject: "CN=WE2, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R4, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f3:2d:6b:40:9d:15:d5:96:5b:05:87:3a:7c:72:e0
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WE2
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:35:7e:1f:f2:14:ed:90:7d:e1:9e:2a:34:43:86:
+                    c1:d5:96:e8:27:70:df:9e:04:cb:a9:ca:86:79:0b:
+                    08:4d:46:8a:c2:74:a4:bb:d9:bf:ee:fd:23:d7:38:
+                    f3:4b:ef:54:17:e1:be:e7:ca:55:25:a8:0c:30:ac:
+                    2d:5d:4e:a1:51
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                75:BE:C4:77:AE:89:F6:44:37:7D:CF:B1:68:1F:1D:1A:EB:DC:34:59
+            X509v3 Authority Key Identifier:
+                keyid:80:4C:D6:EB:74:FF:49:36:A3:D5:D8:FC:B5:3E:C5:6A:F0:94:1D:8C
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r4.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r4.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:64:02:30:0b:bd:b8:36:55:c8:35:a3:d2:d9:7d:39:73:d3:
+         f7:f7:82:b8:09:d1:81:6f:e5:64:45:db:de:aa:c0:0e:45:12:
+         8f:ac:93:e8:1f:60:ec:2e:7e:44:2c:22:94:91:ec:ac:02:30:
+         2f:df:0c:90:76:4c:2d:69:61:d5:4f:fd:98:98:18:84:db:34:
+         ea:98:ec:9b:cd:88:62:ff:d2:65:e5:33:6a:9a:0c:ed:23:49:
+         38:2f:51:bf:91:d0:12:a2:c9:38:38:da
+-----BEGIN CERTIFICATE-----
+MIICnjCCAiWgAwIBAgIQf/Mta0CdFdWWWwWHOnxy4DAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjQwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNXRTIwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAQ1fh/y
+FO2QfeGeKjRDhsHVlugncN+eBMupyoZ5CwhNRorCdKS72b/u/SPXOPNL71QX4b7n
+ylUlqAwwrC1dTqFRo4H+MIH7MA4GA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggr
+BgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU
+db7Ed66J9kQ3fc+xaB8dGuvcNFkwHwYDVR0jBBgwFoAUgEzW63T/STaj1dj8tT7F
+avCUHYwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzAChhhodHRwOi8vaS5wa2ku
+Z29vZy9yNC5jcnQwKwYDVR0fBCQwIjAgoB6gHIYaaHR0cDovL2MucGtpLmdvb2cv
+ci9yNC5jcmwwEwYDVR0gBAwwCjAIBgZngQwBAgEwCgYIKoZIzj0EAwMDZwAwZAIw
+C724NlXINaPS2X05c9P394K4CdGBb+VkRdveqsAORRKPrJPoH2DsLn5ELCKUkeys
+AjAv3wyQdkwtaWHVT/2YmBiE2zTqmOybzYhi/9Jl5TNqmgztI0k4L1G/kdASosk4
+ONo=
+-----END CERTIFICATE-----
+
+SHA-256 hash: 9f819a4c876e12dc84e6fe0e37c1a69b137094b453fa98449398f4b71f4d0092
+Subject: "CN=WE3, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R4, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f3:2d:6d:bd:5e:dd:54:ca:4e:4b:67:95:72:91:43
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WE3
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:8c:72:71:5c:66:e5:04:54:96:79:1b:c1:c2:81:
+                    65:90:33:36:73:3c:c0:2f:b4:b9:54:06:2a:5a:34:
+                    27:95:91:35:09:aa:7a:bf:92:c9:8d:18:e8:56:92:
+                    e2:4f:aa:6d:67:5a:6d:41:51:ac:0a:c3:75:c6:27:
+                    b2:02:b7:c5:42
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                36:B6:2C:CE:A3:B4:D0:40:90:45:F3:8B:45:81:C1:C8:E3:19:D4:6D
+            X509v3 Authority Key Identifier:
+                keyid:80:4C:D6:EB:74:FF:49:36:A3:D5:D8:FC:B5:3E:C5:6A:F0:94:1D:8C
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r4.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r4.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:65:02:31:00:82:6e:b7:32:b8:68:ec:a0:2b:98:c9:b4:5c:
+         cd:ad:70:5f:6c:c2:75:be:32:51:19:77:d3:d0:6e:18:ed:98:
+         61:1a:c2:bc:f2:ce:a1:54:a0:42:35:99:cf:8f:3b:0c:db:02:
+         30:43:ed:68:35:0d:4e:55:2d:ee:e5:0f:aa:a6:93:ac:6b:cf:
+         1f:ef:3c:36:61:95:2e:33:37:27:3e:52:f7:a5:d8:30:40:e8:
+         b7:08:4f:0f:61:6a:26:fe:eb:0d:76:3f:ae
+-----BEGIN CERTIFICATE-----
+MIICnzCCAiWgAwIBAgIQf/Mtbb1e3VTKTktnlXKRQzAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjQwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNXRTMwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASMcnFc
+ZuUEVJZ5G8HCgWWQMzZzPMAvtLlUBipaNCeVkTUJqnq/ksmNGOhWkuJPqm1nWm1B
+UawKw3XGJ7ICt8VCo4H+MIH7MA4GA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggr
+BgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU
+NrYszqO00ECQRfOLRYHByOMZ1G0wHwYDVR0jBBgwFoAUgEzW63T/STaj1dj8tT7F
+avCUHYwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzAChhhodHRwOi8vaS5wa2ku
+Z29vZy9yNC5jcnQwKwYDVR0fBCQwIjAgoB6gHIYaaHR0cDovL2MucGtpLmdvb2cv
+ci9yNC5jcmwwEwYDVR0gBAwwCjAIBgZngQwBAgEwCgYIKoZIzj0EAwMDaAAwZQIx
+AIJutzK4aOygK5jJtFzNrXBfbMJ1vjJRGXfT0G4Y7ZhhGsK88s6hVKBCNZnPjzsM
+2wIwQ+1oNQ1OVS3u5Q+qppOsa88f7zw2YZUuMzcnPlL3pdgwQOi3CE8PYWom/usN
+dj+u
+-----END CERTIFICATE-----
+
+SHA-256 hash: d0c97e56c7b0ba812d944ad771f7799b5d4144a2327a4e416554f7ee2aa0aeae
+Subject: "CN=WE4, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R4, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f3:2d:70:bb:d1:a7:30:9b:57:32:50:0a:c9:9a:ae
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WE4
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:c1:aa:09:fd:3c:dc:18:36:3e:db:eb:69:ad:7f:
+                    75:72:47:a1:c8:6c:2c:fd:28:bb:f5:60:51:77:c1:
+                    ab:bc:ec:d2:21:f6:35:d2:5e:70:24:59:dd:fc:5b:
+                    13:39:3d:d1:5f:3b:d0:fb:cc:90:1d:6a:97:ff:a8:
+                    f4:85:53:10:6c
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                6D:E7:D4:65:B4:38:57:56:95:CD:E5:B4:77:5A:36:0A:DE:7D:52:A6
+            X509v3 Authority Key Identifier:
+                keyid:80:4C:D6:EB:74:FF:49:36:A3:D5:D8:FC:B5:3E:C5:6A:F0:94:1D:8C
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r4.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r4.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:64:02:30:37:cf:34:3e:33:c6:94:ca:07:f0:53:56:53:93:
+         c1:e5:bf:e5:69:a6:6a:47:01:b9:03:4b:08:b2:43:8c:ce:1c:
+         f3:6d:d8:b7:d1:85:24:09:e1:45:4d:f3:3d:15:42:94:02:30:
+         46:76:60:39:6b:87:f8:09:da:d1:e9:71:40:91:b7:ee:51:7f:
+         d7:97:b7:78:e6:a1:aa:1d:98:3b:82:88:3a:2c:8e:7e:8c:34:
+         35:71:dd:05:31:d3:ba:3f:59:0a:f2:5d
+-----BEGIN CERTIFICATE-----
+MIICnjCCAiWgAwIBAgIQf/MtcLvRpzCbVzJQCsmarjAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjQwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNXRTQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAATBqgn9
+PNwYNj7b62mtf3VyR6HIbCz9KLv1YFF3wau87NIh9jXSXnAkWd38WxM5PdFfO9D7
+zJAdapf/qPSFUxBso4H+MIH7MA4GA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggr
+BgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU
+befUZbQ4V1aVzeW0d1o2Ct59UqYwHwYDVR0jBBgwFoAUgEzW63T/STaj1dj8tT7F
+avCUHYwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzAChhhodHRwOi8vaS5wa2ku
+Z29vZy9yNC5jcnQwKwYDVR0fBCQwIjAgoB6gHIYaaHR0cDovL2MucGtpLmdvb2cv
+ci9yNC5jcmwwEwYDVR0gBAwwCjAIBgZngQwBAgEwCgYIKoZIzj0EAwMDZwAwZAIw
+N880PjPGlMoH8FNWU5PB5b/laaZqRwG5A0sIskOMzhzzbdi30YUkCeFFTfM9FUKU
+AjBGdmA5a4f4CdrR6XFAkbfuUX/Xl7d45qGqHZg7gog6LI5+jDQ1cd0FMdO6P1kK
+8l0=
+-----END CERTIFICATE-----
+
+SHA-256 hash: 847409e63526f162753ac49f75218efaafa7d5c94ade9095ce72e7f6b6e3ac99
+Subject: "CN=WE5, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R3, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f4:e5:cb:ec:d9:81:f2:ad:fa:08:91:3c:ef:ab:14
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R3
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=WE5
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:88:0c:8d:e1:3a:e4:24:06:93:85:77:d6:1c:c0:
+                    ec:1f:50:df:16:08:a4:90:a5:0e:3c:ca:ee:dc:e8:
+                    24:ed:0b:f3:83:88:3b:ae:75:eb:b7:e6:6f:1e:3b:
+                    4f:20:12:2b:b7:ec:b8:1e:ab:37:d7:fb:b5:ab:7e:
+                    c7:5b:19:fe:a2
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication, TLS Web Client Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                D4:65:CB:38:C7:25:3C:28:6B:E9:7E:43:C3:A1:A1:B8:E4:4C:68:A0
+            X509v3 Authority Key Identifier:
+                keyid:C1:F1:26:BA:A0:2D:AE:85:81:CF:D3:F1:2A:12:BD:B8:0A:67:FD:BC
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r3.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r3.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:65:02:30:42:38:89:c6:9e:b1:7a:6c:18:53:ae:87:ea:5f:
+         46:98:f2:7f:35:7a:84:96:aa:79:03:34:f3:d2:f8:e2:8d:1c:
+         e9:c2:fa:13:a3:4e:ae:7a:f1:41:b3:e8:a9:e6:ff:c6:02:31:
+         00:b0:9d:15:48:1a:6f:a8:25:08:ea:cb:40:18:ea:0e:5d:5d:
+         a1:af:d1:79:0e:8f:5d:e4:70:30:35:8f:9c:24:8a:1f:16:00:
+         9b:5a:12:21:c1:12:fd:51:34:c5:c5:e5:74
+-----BEGIN CERTIFICATE-----
+MIICnzCCAiWgAwIBAgIQf/Tly+zZgfKt+giRPO+rFDAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjMwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNXRTUwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAASIDI3h
+OuQkBpOFd9YcwOwfUN8WCKSQpQ48yu7c6CTtC/ODiDuudeu35m8eO08gEiu37Lge
+qzfX+7WrfsdbGf6io4H+MIH7MA4GA1UdDwEB/wQEAwIBhjAdBgNVHSUEFjAUBggr
+BgEFBQcDAQYIKwYBBQUHAwIwEgYDVR0TAQH/BAgwBgEB/wIBADAdBgNVHQ4EFgQU
+1GXLOMclPChr6X5Dw6GhuORMaKAwHwYDVR0jBBgwFoAUwfEmuqAtroWBz9PxKhK9
+uApn/bwwNAYIKwYBBQUHAQEEKDAmMCQGCCsGAQUFBzAChhhodHRwOi8vaS5wa2ku
+Z29vZy9yMy5jcnQwKwYDVR0fBCQwIjAgoB6gHIYaaHR0cDovL2MucGtpLmdvb2cv
+ci9yMy5jcmwwEwYDVR0gBAwwCjAIBgZngQwBAgEwCgYIKoZIzj0EAwMDaAAwZQIw
+QjiJxp6xemwYU66H6l9GmPJ/NXqElqp5AzTz0vjijRzpwvoTo06uevFBs+ip5v/G
+AjEAsJ0VSBpvqCUI6stAGOoOXV2hr9F5Do9d5HAwNY+cJIofFgCbWhIhwRL9UTTF
+xeV0
+-----END CERTIFICATE-----
+
+SHA-256 hash: 812c212e9e45dc5005c7f47411183f5fb2ff1baee184d3354b2e93d78c280164
+Subject: "CN=AE1, O=Google Trust Services, C=US"
+Issuer: "CN=GTS Root R4, O=Google Trust Services LLC, C=US"
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7f:f4:e5:ce:36:a6:a1:fa:5e:e1:91:6c:08:d3:9b:7c
+    Signature Algorithm: ecdsa-with-SHA384
+        Issuer: C=US, O=Google Trust Services LLC, CN=GTS Root R4
+        Validity
+            Not Before: Dec 13 09:00:00 2023 GMT
+            Not After : Feb 20 14:00:00 2029 GMT
+        Subject: C=US, O=Google Trust Services, CN=AE1
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:7d:0a:5c:db:19:c0:d9:0c:d2:79:bf:e2:68:fc:
+                    45:e2:17:fa:be:4d:59:1b:89:1d:ca:c0:39:6f:8c:
+                    ed:c0:47:a1:2f:88:2b:f5:cc:34:86:f5:9b:51:8d:
+                    0c:30:57:f1:d8:01:64:db:94:60:b9:e0:56:a3:8b:
+                    e6:49:80:6a:aa
+                ASN1 OID: prime256v1
+                NIST CURVE: P-256
+        X509v3 extensions:
+            X509v3 Key Usage: critical
+                Digital Signature, Certificate Sign, CRL Sign
+            X509v3 Extended Key Usage:
+                TLS Web Server Authentication
+            X509v3 Basic Constraints: critical
+                CA:TRUE, pathlen:0
+            X509v3 Subject Key Identifier:
+                48:89:60:F9:A3:7D:0C:EA:00:24:A2:DC:9F:07:CE:46:88:A8:32:3A
+            X509v3 Authority Key Identifier:
+                keyid:80:4C:D6:EB:74:FF:49:36:A3:D5:D8:FC:B5:3E:C5:6A:F0:94:1D:8C
+
+            Authority Information Access:
+                CA Issuers - URI:http://i.pki.goog/r4.crt
+
+            X509v3 CRL Distribution Points:
+
+                Full Name:
+                  URI:http://c.pki.goog/r/r4.crl
+
+            X509v3 Certificate Policies:
+                Policy: 2.23.140.1.2.1
+
+    Signature Algorithm: ecdsa-with-SHA384
+         30:66:02:31:00:99:d3:28:77:7e:39:f3:e9:c1:1c:33:60:f0:
+         a3:43:6f:10:4a:db:b8:28:e5:43:e7:8d:16:e0:97:f4:30:78:
+         e0:20:5c:70:3c:84:5c:e8:09:83:29:f1:09:52:ce:3c:2b:02:
+         31:00:f9:57:f6:d0:41:e5:28:16:27:3f:58:41:4b:3d:75:08:
+         86:75:31:35:da:cd:5f:b0:10:bd:44:a7:8e:56:0d:1d:7f:3d:
+         bd:fe:43:32:db:be:2b:a3:91:ab:64:dc:c3:1e
+-----BEGIN CERTIFICATE-----
+MIICljCCAhugAwIBAgIQf/Tlzjamofpe4ZFsCNObfDAKBggqhkjOPQQDAzBHMQsw
+CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU
+MBIGA1UEAxMLR1RTIFJvb3QgUjQwHhcNMjMxMjEzMDkwMDAwWhcNMjkwMjIwMTQw
+MDAwWjA7MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZp
+Y2VzMQwwCgYDVQQDEwNBRTEwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAAR9Clzb
+GcDZDNJ5v+Jo/EXiF/q+TVkbiR3KwDlvjO3AR6EviCv1zDSG9ZtRjQwwV/HYAWTb
+lGC54Faji+ZJgGqqo4H0MIHxMA4GA1UdDwEB/wQEAwIBhjATBgNVHSUEDDAKBggr
+BgEFBQcDATASBgNVHRMBAf8ECDAGAQH/AgEAMB0GA1UdDgQWBBRIiWD5o30M6gAk
+otyfB85GiKgyOjAfBgNVHSMEGDAWgBSATNbrdP9JNqPV2Py1PsVq8JQdjDA0Bggr
+BgEFBQcBAQQoMCYwJAYIKwYBBQUHMAKGGGh0dHA6Ly9pLnBraS5nb29nL3I0LmNy
+dDArBgNVHR8EJDAiMCCgHqAchhpodHRwOi8vYy5wa2kuZ29vZy9yL3I0LmNybDAT
+BgNVHSAEDDAKMAgGBmeBDAECATAKBggqhkjOPQQDAwNpADBmAjEAmdMod3458+nB
+HDNg8KNDbxBK27go5UPnjRbgl/QweOAgXHA8hFzoCYMp8QlSzjwrAjEA+Vf20EHl
+KBYnP1hBSz11CIZ1MTXazV+wEL1Ep45WDR1/Pb3+QzLbviujkatk3MMe
+-----END CERTIFICATE-----

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:layout_marginBottom="20dp">
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/tips_notifications_bottom_sheet_title_padding"
+        android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+        android:orientation="horizontal"
+        android:clickable="true"
+        android:focusable="true">
+        <ImageButton
+            android:id="@+id/details_page_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize"
+            android:src="@drawable/ic_arrow_back_24dp"
+            app:tint="@macro/default_icon_color"
+            android:background="?attr/actionBarItemBackground"
+            android:contentDescription="@string/tips_promo_bottom_sheet_back_button_description"/>
+        <TextView
+            android:id="@+id/details_page_title_text"
+            android:accessibilityHeading="true"
+            android:focusable="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/tips_notifications_bottom_sheet_step_content_margin_start"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:singleLine="true"
+            style="@style/TextAppearance.Headline"/>
+    </LinearLayout>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none"
+        tools:ignore="UselessParent,MergeRootFrame">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/steps_container"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_marginBottom="@dimen/tips_notifications_bottom_sheet_step_vertical_padding"
+                android:orientation="vertical"
+                android:clickable="true"
+                android:focusable="true"/>
+
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/tips_promo_details_settings_button" style="@style/FilledButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/tips_notifications_bottom_sheet_horizontal_margin"
+                android:padding="@dimen/tips_notifications_bottom_sheet_button_padding"/>
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

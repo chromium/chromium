@@ -8,7 +8,7 @@ found in the LICENSE file.
 
 <histograms>
 
-<histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2025-11-30">
+<histogram name="Toast.FailedToShow" enum="ToastId" expires_after="2026-05-30">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -20,7 +20,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="Toast.FrequencyPrefChanged" enum="ToastAlertLevel"
-    expires_after="2025-11-30">
+    expires_after="2026-05-30">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -32,7 +32,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="Toast.TriggeredToShow" enum="ToastId"
-    expires_after="2025-12-28">
+    expires_after="2026-05-30">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -44,7 +44,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="Toast.{ToastName}.Dismissed" enum="ToastCloseReason"
-    expires_after="2025-12-21">
+    expires_after="2026-05-30">
   <owner>agale@chromium.org</owner>
   <owner>stluong@chromium.org</owner>
   <owner>chrome-performance-ui-sea@google.com</owner>
@@ -60,22 +60,6 @@ found in the LICENSE file.
     <variant name="LinkCopied" summary="link copied"/>
     <variant name="LinkToHighlightCopied" summary="link to highlight"/>
     <variant name="NonMilestoneUpdate" summary="non-milestone update"/>
-  </token>
-</histogram>
-
-<histogram name="Toast.{ToastName}.DismissMenuClicked"
-    enum="ToastDismissMenuEntries" expires_after="2025-09-28">
-  <owner>agale@chromium.org</owner>
-  <owner>stluong@chromium.org</owner>
-  <owner>chrome-performance-ui-sea@google.com</owner>
-  <summary>
-    Logs the dismiss menu item a user clicked to dismiss the {ToastName} toast.
-    This is used to gain insight on which toasts a user dismisses.
-  </summary>
-  <token key="ToastName">
-    <variant name="ImageCopied" summary="image copied"/>
-    <variant name="LinkCopied" summary="link copied"/>
-    <variant name="LinkToHighlightCopied" summary="link to highlight"/>
   </token>
 </histogram>
 

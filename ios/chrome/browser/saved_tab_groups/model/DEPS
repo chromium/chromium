@@ -24,6 +24,7 @@ specific_include_rules = {
     "+components/collaboration/internal/collaboration_finder_impl.h",
     "+components/saved_tab_groups",
     "+ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h",
+    "+ios/chrome/browser/data_sharing/model/personal_collaboration_data/personal_collaboration_data_service_factory.h",
   ]
 }
 

@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "components/input/web_input_event_builders_android.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace input {
 

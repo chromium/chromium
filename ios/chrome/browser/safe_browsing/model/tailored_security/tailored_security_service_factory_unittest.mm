@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/tailored_security_service_factory.h"
 
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -15,6 +16,7 @@ class TailoredSecurityServiceFactoryTest : public PlatformTest {
       : profile_(TestProfileIOS::Builder().Build()) {}
 
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<ProfileIOS> profile_;
 };
 

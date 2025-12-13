@@ -29,6 +29,29 @@ class MockMultipleRequestPaymentsNetworkInterface
                                std::unique_ptr<base::Value::Dict>,
                                std::vector<std::pair<int, int>>)>),
       (override));
+
+  MOCK_METHOD(
+      RequestId,
+      CreateCard,
+      (const UploadCardRequestDetails&,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const std::string&)>),
+      (override));
+
+  MOCK_METHOD(
+      RequestId,
+      GetVirtualCardEnrollmentDetails,
+      (const GetDetailsForEnrollmentRequestDetails&,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                               const GetDetailsForEnrollmentResponseDetails&)>),
+      (override));
+
+  MOCK_METHOD(
+      RequestId,
+      UpdateVirtualCardEnrollment,
+      (const UpdateVirtualCardEnrollmentRequestDetails&,
+       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>),
+      (override));
 };
 
 }  // namespace autofill::payments

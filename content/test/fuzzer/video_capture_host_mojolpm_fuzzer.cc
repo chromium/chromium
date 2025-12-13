@@ -48,7 +48,8 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
 
-const char* kCmdline[] = {"video_capture_host_mojolpm_fuzzer", nullptr};
+constexpr const char* kCmdline[] = {"video_capture_host_mojolpm_fuzzer",
+                                    nullptr};
 
 // Describe all the devices (as descriptors).
 const uint32_t kNumDeviceDescriptors = 4;

@@ -30,10 +30,12 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.net.URLEncoder;
 
@@ -58,6 +60,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
     private TestWebMessageListener mListener;
+    private boolean mPageDeletedMessagePending;
 
     public NavigationListenerTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -196,7 +199,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         mActivityTestRule.executeJavaScriptAndWaitForResult(
                 mAwContents, mContentsClient, "location.href = '404.html'; ");
 
-        data = getNextMessageIgnoreFCP(mListener);
+        data = getNextMessageIgnoreFCP();
         String navigationId = new JSONObject(data.getAsString()).getString("id");
         assertNavigationMessage(
                 data,
@@ -213,7 +216,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         // The previous page can be stored into the BFCache. If the BFCache
         // is not enabled, the original page will be deleted.
         if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_BACK_FORWARD_CACHE)) {
-            data = getNextMessageIgnoreFCP(mListener);
+            data = getNextMessageIgnoreFCP();
             Assert.assertEquals(page3ReplyProxy, data.mReplyProxy);
             assertNavigationMessageType(data, "PAGE_DELETED");
         }
@@ -774,6 +777,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
         "enable-features=EnableNavigationListener",
         "disable-features=WebViewBackForwardCache"
     })
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
     public void testNavigationHistoryNavigationBFCacheDisabled() throws Throwable {
         // Navigation #1: Set up the listener and navigate to `url`. This will create a new page and
         // an associated JsReplyProxy.
@@ -884,6 +888,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
     @LargeTest
     @Feature({"AndroidWebView", "NavigationListener"})
     @CommandLineFlags.Add({"enable-features=EnableNavigationListener"})
+    @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/458118167
     public void testNavigationHistoryNavigationBFCacheEnabled_ListenerDisablesBFCache()
             throws Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
@@ -971,7 +976,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 mAwContents, "foo", new String[] {"*"}, new TestWebMessageListener());
 
         // The `url` Page gets deleted as it's evicted from BFCache.
-        TestWebMessageListener.Data data = getNextMessageIgnoreFCP(mListener);
+        TestWebMessageListener.Data data = getNextMessageIgnoreFCP();
         assertNavigationMessageType(data, "PAGE_DELETED");
         Assert.assertEquals(page2ReplyProxy, data.mReplyProxy);
 
@@ -1105,8 +1110,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
             boolean previousPageDeleted,
             boolean loadEnds)
             throws Throwable {
-        TestWebMessageListener.Data data = getNextMessageIgnoreFCP(mListener);
+        TestWebMessageListener.Data data = getNextMessageIgnoreFCP();
         JsReplyProxy previousPageReplyProxy = data.mReplyProxy;
+        mPageDeletedMessagePending = previousPageDeleted;
         assertNavigationMessage(
                 data,
                 "NAVIGATION_STARTED",
@@ -1120,15 +1126,9 @@ public class NavigationListenerTest extends AwParameterizedTest {
 
         String navigationId = new JSONObject(data.getAsString()).getString("id");
 
-        if (previousPageDeleted) {
-            data = getNextMessageIgnoreFCP(mListener);
-            assertNavigationMessageType(data, "PAGE_DELETED");
-            Assert.assertEquals(previousPageReplyProxy, data.mReplyProxy);
-        }
+        data = getNextMessageMaybePageDeleted(previousPageReplyProxy, /* ignoreFCP= */ true);
 
-        data = mListener.waitForOnPostMessage();
         assertNavigationId(data, navigationId);
-
         assertNavigationCompletedMessage(
                 data,
                 url,
@@ -1150,10 +1150,10 @@ public class NavigationListenerTest extends AwParameterizedTest {
         }
 
         if (loadEnds) {
-            data = mListener.waitForOnPostMessage();
+            data = getNextMessageMaybePageDeleted(previousPageReplyProxy, /* ignoreFCP= */ false);
             assertNavigationMessageType(data, "DOM_CONTENT_LOADED");
 
-            data = mListener.waitForOnPostMessage();
+            data = getNextMessageMaybePageDeleted(previousPageReplyProxy, /* ignoreFCP= */ false);
             assertNavigationMessageType(data, "PAGE_LOAD_END");
             Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
 
@@ -1164,22 +1164,47 @@ public class NavigationListenerTest extends AwParameterizedTest {
             mActivityTestRule.executeJavaScriptAndWaitForResult(
                     mAwContents, mContentsClient, "await new Promise(requestAnimationFrame)");
             if (!mListener.hasNoMoreOnPostMessage()) {
-                data = mListener.waitForOnPostMessage();
+                data =
+                        getNextMessageMaybePageDeleted(
+                                previousPageReplyProxy, /* ignoreFCP= */ false);
                 assertNavigationMessageType(data, "FIRST_CONTENTFUL_PAINT");
                 Assert.assertEquals(currentPageReplyProxy, data.mReplyProxy);
             }
         }
 
+        // Last chance to get the message for page deleted.
+        if (mPageDeletedMessagePending) {
+            data = mListener.waitForOnPostMessage();
+            assertNavigationMessageType(data, "PAGE_DELETED");
+            Assert.assertEquals(previousPageReplyProxy, data.mReplyProxy);
+            mPageDeletedMessagePending = false;
+        }
+
         return currentPageReplyProxy;
     }
 
-    private TestWebMessageListener.Data getNextMessageIgnoreFCP(TestWebMessageListener listener)
-            throws Throwable {
-        TestWebMessageListener.Data data = listener.waitForOnPostMessage();
+    private TestWebMessageListener.Data getNextMessageIgnoreFCP() throws Throwable {
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
         if ("FIRST_CONTENTFUL_PAINT".equals(new JSONObject(data.getAsString()).getString("type"))) {
             // An FCP message from a previous navigation only arrived now. Ignore it and get the
             // next message.
-            data = listener.waitForOnPostMessage();
+            data = mListener.waitForOnPostMessage();
+        }
+        return data;
+    }
+
+    // PageDeletions can be asynchronous, so they can come in an unpredictable order.
+    private TestWebMessageListener.Data getNextMessageMaybePageDeleted(
+            JsReplyProxy previousPageReplyProxy, boolean ignoreFCP) throws Throwable {
+        TestWebMessageListener.Data data =
+                ignoreFCP ? getNextMessageIgnoreFCP() : mListener.waitForOnPostMessage();
+        if ("PAGE_DELETED".equals(new JSONObject(data.getAsString()).getString("type"))) {
+            Assert.assertTrue(mPageDeletedMessagePending);
+            Assert.assertEquals(previousPageReplyProxy, data.mReplyProxy);
+            mPageDeletedMessagePending = false;
+
+            // Now that the delete has been satisfied, get the next message.
+            data = ignoreFCP ? getNextMessageIgnoreFCP() : mListener.waitForOnPostMessage();
         }
         return data;
     }

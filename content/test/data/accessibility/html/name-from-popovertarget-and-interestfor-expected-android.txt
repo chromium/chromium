@@ -1,0 +1,4 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.widget.Button clickable collapsed focusable interesting content_description='popover description' expanded_state=1
+++++android.widget.Button clickable focusable interesting content_description='popover description'

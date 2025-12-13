@@ -62,11 +62,11 @@ bool IsFilesApp(base::optional_ref<const ui::DataTransferEndpoint> data_dst) {
   // TODO(b/207576430): Once Files Extension is removed, remove this condition.
   bool is_files_extension =
       url.has_scheme() && url.SchemeIs(extensions::kExtensionScheme) &&
-      url.has_host() && url.host() == extension_misc::kFilesManagerAppId;
-  bool is_files_swa = url.has_scheme() &&
-                      url.SchemeIs(content::kChromeUIScheme) &&
-                      url.has_host() &&
-                      url.host() == ash::file_manager::kChromeUIFileManagerHost;
+      url.has_host() && url.GetHost() == extension_misc::kFilesManagerAppId;
+  bool is_files_swa =
+      url.has_scheme() && url.SchemeIs(content::kChromeUIScheme) &&
+      url.has_host() &&
+      url.GetHost() == ash::file_manager::kChromeUIFileManagerHost;
 
   return is_files_extension || is_files_swa;
 }

@@ -29,9 +29,9 @@ class LanguageDetectionModelServiceFactory
   LanguageDetectionModelServiceFactory();
   ~LanguageDetectionModelServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_LANGUAGE_DETECTION_MODEL_LANGUAGE_DETECTION_MODEL_SERVICE_FACTORY_H_

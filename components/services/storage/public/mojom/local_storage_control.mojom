@@ -12,9 +12,8 @@ import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 // Controls the state of Local Storage within a partition. This is a privileged
 // interface and must not be brokered to untrusted clients.
 //
-// Currently this is consumed and implemented in the browser process, but the
-// implementation will eventually live in the storage service which may run
-// out-of-process.
+// Currently this is consumed in the browser process and implemented in the
+// storage service.
 interface LocalStorageControl {
   // Binds a blink.mojom.StorageArea `receiver` for a specific `storage_key`.
   BindStorageArea(blink.mojom.StorageKey storage_key,

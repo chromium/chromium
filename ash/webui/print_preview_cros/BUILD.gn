@@ -12,18 +12,18 @@ static_library("print_preview_cros") {
 
   deps = [
     ":url_constants",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/print_preview_cros/backend",
     "//ash/webui/print_preview_cros/mojom",
-    "//ash/webui/print_preview_cros/resources:resources",
+    "//ash/webui/print_preview_cros/resources",
     "//ash/webui/web_applications",
     "//chromeos/strings/",
     "//content/public/browser",
-    "//printing/mojom:mojom",
+    "//printing/mojom",
     "//ui/base",
-    "//ui/web_dialogs:web_dialogs",
+    "//ui/web_dialogs",
     "//ui/webui",
     "//ui/webui/resources",
   ]

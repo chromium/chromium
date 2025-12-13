@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/feature_list.h"
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h"
 
 // Returns whether What's New was used in the overflow menu. This is used to

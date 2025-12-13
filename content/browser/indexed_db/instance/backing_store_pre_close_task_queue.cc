@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/browser/indexed_db/status.h"

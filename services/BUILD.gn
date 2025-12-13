@@ -5,7 +5,6 @@
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//services/screen_ai/buildflags/features.gni")
-import("//services/video_effects/args.gni")
 import("//testing/test.gni")
 
 if (is_android) {
@@ -73,13 +72,24 @@ test("services_unittests") {
       bundle_deps =
           [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
     }
+    if (is_android) {
+      deps += [
+        # The java target is added explicitly because the unit tests below
+        # require connection to the Java classes. Without a direct dependency,
+        # the unit tests will encounter a ClassNotFoundException error at
+        # runtime.
+        "//services/on_device_model/android:java",
+        "//services/on_device_model/android:native_java_unittests_java",
+        "//services/on_device_model/android:unit_tests",
+      ]
+    }
   }
 
   if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
     deps += [ "//base:base_profiler_test_support_library" ]
   }
 
-  if (is_chromeos || is_linux || is_fuchsia) {
+  if (is_linux) {
     deps += [ "//services/accessibility:tests" ]
   }
 
@@ -90,7 +100,6 @@ test("services_unittests") {
   if (is_android) {
     deps += [
       "//components/signin/public/android:java",
-      "//services/data_decoder/public/cpp/android:safe_json_java",
       "//services/device:java",
       "//services/media_session/public/cpp/android:media_session_java",
       "//services/tracing:tracing_test_helper_java",
@@ -115,10 +124,6 @@ test("services_unittests") {
       "//services/passage_embeddings:tests",
       "//services/video_capture:tests",
     ]
-  }
-
-  if (enable_video_effects) {
-    deps += [ "//services/video_effects:tests" ]
   }
 
   if (is_fuchsia) {
@@ -182,6 +187,7 @@ if (is_android) {
       "//services/device/public/mojom:mojom_java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
+      "//third_party/google-truth:google_truth_java",
     ]
   }
 
@@ -208,6 +214,7 @@ if (is_android) {
       "//skia/public/mojom:mojom_java",
       "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/google-truth:google_truth_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",

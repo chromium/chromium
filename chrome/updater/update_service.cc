@@ -4,29 +4,12 @@
 
 #include "chrome/updater/update_service.h"
 
+#include <cstdint>
 #include <ostream>
 
 #include "base/version.h"
 
 namespace updater {
-
-UpdateService::UpdateState::UpdateState() = default;
-UpdateService::UpdateState::UpdateState(const UpdateState&) = default;
-UpdateService::UpdateState& UpdateService::UpdateState::operator=(
-    const UpdateState&) = default;
-UpdateService::UpdateState::UpdateState(UpdateState&&) = default;
-UpdateService::UpdateState& UpdateService::UpdateState::operator=(
-    UpdateState&&) = default;
-UpdateService::UpdateState::~UpdateState() = default;
-
-UpdateService::AppState::AppState() = default;
-UpdateService::AppState::AppState(const AppState&) = default;
-UpdateService::AppState& UpdateService::AppState::operator=(const AppState&) =
-    default;
-UpdateService::AppState::AppState(UpdateService::AppState&&) = default;
-UpdateService::AppState& UpdateService::AppState::operator=(AppState&&) =
-    default;
-UpdateService::AppState::~AppState() = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state) {
@@ -42,6 +25,10 @@ std::ostream& operator<<(std::ostream& os,
         return "update available";
       case UpdateService::UpdateState::State::kDownloading:
         return "downloading";
+      case UpdateService::UpdateState::State::kDecompressing:
+        return "decompressing";
+      case UpdateService::UpdateState::State::kPatching:
+        return "patching";
       case UpdateService::UpdateState::State::kInstalling:
         return "installing";
       case UpdateService::UpdateState::State::kUpdated:
@@ -54,8 +41,8 @@ std::ostream& operator<<(std::ostream& os,
   };
 
   auto version_formatter = [update_state] {
-    return update_state.next_version.IsValid()
-               ? update_state.next_version.GetString()
+    return base::Version(update_state.next_version).IsValid()
+               ? update_state.next_version
                : "";
   };
 
@@ -73,6 +60,8 @@ std::ostream& operator<<(std::ostream& os,
         return "service";
       case UpdateService::ErrorCategory::kUpdateCheck:
         return "update check";
+      case UpdateService::ErrorCategory::kUnknown:
+        return "unknown";
       case UpdateService::ErrorCategory::kInstaller:
         return "installer";
     }
@@ -83,7 +72,8 @@ std::ostream& operator<<(std::ostream& os,
             << ", next_version: " << version_formatter()
             << ", downloaded_bytes: " << update_state.downloaded_bytes
             << ", total_bytes: " << update_state.total_bytes
-            << ", install_progress: " << update_state.install_progress
+            << ", install_progress: "
+            << static_cast<int16_t>(update_state.install_progress)
             << ", error_category: " << error_category_formatter()
             << ", error_code: " << update_state.error_code
             << ", extra_code1: " << update_state.extra_code1 << "}";
@@ -91,10 +81,12 @@ std::ostream& operator<<(std::ostream& os,
 
 bool operator==(const UpdateService::UpdateState& lhs,
                 const UpdateService::UpdateState& rhs) {
+  const base::Version lhs_next_version = base::Version(lhs.next_version);
+  const base::Version rhs_next_version = base::Version(rhs.next_version);
   const bool versions_equal =
-      (lhs.next_version.IsValid() && rhs.next_version.IsValid() &&
-       lhs.next_version == rhs.next_version) ||
-      (!lhs.next_version.IsValid() && !rhs.next_version.IsValid());
+      (lhs_next_version.IsValid() && rhs_next_version.IsValid() &&
+       lhs_next_version == rhs_next_version) ||
+      (!lhs_next_version.IsValid() && !rhs_next_version.IsValid());
   return versions_equal && lhs.app_id == rhs.app_id && lhs.state == rhs.state &&
          lhs.downloaded_bytes == rhs.downloaded_bytes &&
          lhs.total_bytes == rhs.total_bytes &&

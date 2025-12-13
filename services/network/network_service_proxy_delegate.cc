@@ -9,7 +9,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
+#include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/features.h"
+#include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
@@ -155,24 +158,27 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
   }
 }
 
-net::Error NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
+base::expected<net::HttpRequestHeaders, net::Error>
+NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
-    net::HttpRequestHeaders* extra_headers) {
+    size_t proxy_index,
+    OnBeforeTunnelRequestCallback callback) {
+  net::HttpRequestHeaders extra_headers;
   if (IsInProxyConfig(proxy_chain)) {
-    MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
+    MergeRequestHeaders(&extra_headers, proxy_config_->connect_tunnel_headers);
   }
-  return net::OK;
+  return extra_headers;
 }
 
 net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
-    size_t chain_index,
-    const net::HttpResponseHeaders& response_headers) {
+    size_t proxy_index,
+    const net::HttpResponseHeaders& response_headers,
+    net::CompletionOnceCallback callback) {
   if (observer_) {
     // Copy the response headers since mojo expects a ref counted object.
     observer_->OnTunnelHeadersReceived(
-        proxy_chain, chain_index,
+        proxy_chain, proxy_index,
         base::MakeRefCounted<net::HttpResponseHeaders>(
             response_headers.raw_headers()));
   }

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 class Profile;

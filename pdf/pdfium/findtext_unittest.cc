@@ -26,8 +26,9 @@ namespace {
 
 class FindTextTestClient : public TestClient {
  public:
-  explicit FindTextTestClient(bool expected_case_sensitive)
-      : expected_case_sensitive_(expected_case_sensitive) {}
+  FindTextTestClient(bool expected_case_sensitive, bool use_skia_renderer)
+      : TestClient(use_skia_renderer),
+        expected_case_sensitive_(expected_case_sensitive) {}
   FindTextTestClient(const FindTextTestClient&) = delete;
   FindTextTestClient& operator=(const FindTextTestClient&) = delete;
   ~FindTextTestClient() override = default;
@@ -78,7 +79,8 @@ void ExpectInitialSearchResults(FindTextTestClient& client, int count) {
 using FindTextTest = PDFiumTestBase;
 
 TEST_P(FindTextTest, FindText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -88,7 +90,8 @@ TEST_P(FindTextTest, FindText) {
 }
 
 TEST_P(FindTextTest, FindHyphenatedText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -98,7 +101,8 @@ TEST_P(FindTextTest, FindHyphenatedText) {
 }
 
 TEST_P(FindTextTest, FindLineBreakText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
@@ -108,7 +112,8 @@ TEST_P(FindTextTest, FindLineBreakText) {
 }
 
 TEST_P(FindTextTest, FindSimpleQuotationMarkText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
   ASSERT_TRUE(engine);
@@ -118,7 +123,8 @@ TEST_P(FindTextTest, FindSimpleQuotationMarkText) {
 }
 
 TEST_P(FindTextTest, FindFancyQuotationMarkText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("bug_142627.pdf"));
   ASSERT_TRUE(engine);
@@ -130,7 +136,8 @@ TEST_P(FindTextTest, FindFancyQuotationMarkText) {
 }
 
 TEST_P(FindTextTest, FindHiddenCroppedText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
   ASSERT_TRUE(engine);
@@ -141,7 +148,8 @@ TEST_P(FindTextTest, FindHiddenCroppedText) {
 }
 
 TEST_P(FindTextTest, FindVisibleCroppedText) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
   ASSERT_TRUE(engine);
@@ -152,7 +160,8 @@ TEST_P(FindTextTest, FindVisibleCroppedText) {
 }
 
 TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  FindTextTestClient client(/*expected_case_sensitive=*/true,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world_cropped.pdf"));
   ASSERT_TRUE(engine);
@@ -166,7 +175,8 @@ TEST_P(FindTextTest, FindVisibleCroppedTextRepeatedly) {
 }
 
 TEST_P(FindTextTest, SelectFindResult) {
-  FindTextTestClient client(/*expected_case_sensitive=*/true);
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/true,
+                                      /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -191,7 +201,8 @@ TEST_P(FindTextTest, SelectFindResult) {
 }
 
 TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
-  FindTextTestClient client(/*expected_case_sensitive=*/false);
+  FindTextTestClient client(/*expected_case_sensitive=*/false,
+                            /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -234,7 +245,8 @@ TEST_P(FindTextTest, SelectFindResultAndSwitchToTwoUpView) {
 using FindTextDrawSelectionTest = PDFiumDrawSelectionTestBase;
 
 TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
-  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false,
+                                      /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -243,20 +255,19 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
   engine->PluginSizeUpdated({500, 500});
 
   constexpr int kPageIndex = 0;
-  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
 
   engine->StartFind(u"o", /*case_sensitive=*/false);
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_1.png");
 
@@ -264,15 +275,14 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResult) {
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
 
   EXPECT_EQ("e", engine->GetSelectedText());
-  // TODO(crbug.com/410777432): Both the find result and the text selection
-  // should be highlighted.
   DrawSelectionAndCompareWithPlatformExpectations(
-      *engine, kPageIndex, "hello_world_selection_1.png");
+      *engine, kPageIndex, "hello_world_draw_find_result_2.png");
 }
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
-  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false);
+  NiceMock<FindTextTestClient> client(/*expected_case_sensitive=*/false,
+                                      /*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =
       InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
   ASSERT_TRUE(engine);
@@ -283,13 +293,13 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
   engine->PluginSizeUpdated({500, 500});
 
   constexpr int kPageIndex = 0;
-  DrawSelectionAndCompare(*engine, kPageIndex, "hello_world_blank.png");
+  DrawAndExpectBlank(*engine, kPageIndex,
+                     /*expected_visible_page_size=*/gfx::Size(266, 266));
 
   engine->StartFind(u"o", /*case_sensitive=*/false);
   EXPECT_TRUE(engine->SelectFindResult(/*forward=*/true));
 
-  // TODO(crbug.com/410777432): Should be empty.
-  EXPECT_EQ("o", engine->GetSelectedText());
+  EXPECT_THAT(engine->GetSelectedText(), testing::IsEmpty());
   DrawSelectionAndCompareWithPlatformExpectations(
       *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 
@@ -298,9 +308,8 @@ TEST_P(FindTextDrawSelectionTest, DrawFindResultInAnnotationMode) {
                /*end_page_index=*/kPageIndex, /*end_char_index=*/2);
 
   EXPECT_EQ("e", engine->GetSelectedText());
-  // TODO(crbug.com/410777432): Only the find result should be highlighted.
   DrawSelectionAndCompareWithPlatformExpectations(
-      *engine, kPageIndex, "hello_world_selection_1.png");
+      *engine, kPageIndex, "hello_world_draw_find_result_0.png");
 }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 

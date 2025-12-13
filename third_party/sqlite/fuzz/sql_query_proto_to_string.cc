@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "third_party/sqlite/fuzz/icu_codes.pb.h"
 #include "third_party/sqlite/fuzz/sql_queries.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
@@ -22,7 +23,7 @@ using namespace sql_query_grammar;
 #define CONV_FN(TYPE, VAR_NAME) std::string TYPE##ToString(const TYPE& VAR_NAME)
 
 #define RETURN_IF_DISABLED_QUERY(TYPE)     \
-  if (disabled_queries_.count(#TYPE) != 0) \
+  if (disabled_queries_->count(#TYPE) != 0) \
     return "";
 
 namespace sql_fuzzer {
@@ -54,7 +55,7 @@ constexpr uint32_t kMaxSavePointNumber = 10;
 constexpr uint32_t kMaxViewNumber = 5;
 constexpr uint32_t kMaxTriggerNumber = 10;
 
-std::set<std::string> disabled_queries_;
+static base::NoDestructor<std::set<std::string>> disabled_queries_;
 }  // namespace
 
 CONV_FN(Expr, expr);
@@ -2726,7 +2727,7 @@ CONV_FN(SQLQueries, sql_queries) {
 }
 
 void SetDisabledQueries(std::set<std::string> disabled_queries) {
-  disabled_queries_ = disabled_queries;
+  *disabled_queries_ = disabled_queries;
 }
 
 }  // namespace sql_fuzzer

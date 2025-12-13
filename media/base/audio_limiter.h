@@ -10,10 +10,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/moving_window.h"
-#include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
 namespace media {
+
+class AudioBus;
 
 // Simple limiter which reduces gain from an input in order to prevent the
 // output from exceeding the [-1.0, 1.0] range. This limiter uses a fixed attack

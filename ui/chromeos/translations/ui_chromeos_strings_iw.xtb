@@ -35,6 +35,7 @@
 <translation id="1249250836236328755">ז'אנר</translation>
 <translation id="1254593899333212300">חיבור אינטרנט ישיר</translation>
 <translation id="1272293450992660632">ערכי קוד האימות לא תואמים.</translation>
+<translation id="1279040297980392566">בהמתנה לסיום הסריקה. אפשר לנסות שוב אחר כך.</translation>
 <translation id="1280820357415527819">בחיפוש אחר רשתות סלולריות</translation>
 <translation id="1293556467332435079">קבצים</translation>
 <translation id="1297922636971898492">‏Google Drive אינו זמין כעת. ההעלאה תופעל מחדש באופן אוטומטי לאחר ש-Google Drive יחזור לפעול.</translation>
@@ -353,7 +354,6 @@
 <translation id="3811494700605067549">בחרת קובץ אחד</translation>
 <translation id="3817579325494460411">לא צוין</translation>
 <translation id="3819448694985509187">קוד האימות שגוי. נותר לך עוד ניסיון אחד.</translation>
-<translation id="3822559385185038546">‏שרת ה-proxy הזה נאכף על ידי מנהל המערכת</translation>
 <translation id="3830674330436234648">לא ניתן להפעיל</translation>
 <translation id="383652340667548381">סרבית</translation>
 <translation id="3839045880592694915">למודם אין הרשאה להתחבר לספק שלך. למידע נוסף, אפשר לפנות לספק.</translation>
@@ -422,7 +422,7 @@
 <translation id="4398096759193130964">אפשר לשחזר את הפריטים או לגרור אותם לתיקייה חדשה מחוץ לאשפה</translation>
 <translation id="4401287888955153199">חילוץ הכול</translation>
 <translation id="4410695710508688828">פעולת החילוץ נכשלה. <ph name="ERROR_MESSAGE" /></translation>
-<translation id="4414834425328380570">הקובץ '<ph name="FILE_NAME" />' יימחק ולא תהיה אפשרות לשחזר אותו.</translation>
+<translation id="4414834425328380570">הקובץ "<ph name="FILE_NAME" />" יימחק ולא תהיה אפשרות לשחזר אותו.</translation>
 <translation id="4418686080762064601">יצירת קיצור דרך לקבצים</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
 <translation id="4432921877815220091">רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, הפעלה בסיום הגדרת המכשיר, בניהול האדמין</translation>
@@ -576,7 +576,7 @@
 <translation id="5438282218546237410">אין תוצאות עבור <ph name="SEARCH_TERM" />.</translation>
 <translation id="5447680084201416734">אין מספיק נפח אחסון פנוי.</translation>
 <translation id="5449551289610225147">סיסמה לא חוקית</translation>
-<translation id="5459064203055649751">כבר קיים קובץ בשם '<ph name="FILENAME" />'. רוצה להחליף אותו בקובץ שבחרת להעביר?</translation>
+<translation id="5459064203055649751">כבר קיים קובץ בשם ‘<ph name="FILENAME" />'. רוצה להחליף אותו בקובץ שבחרת להעביר?</translation>
 <translation id="5463231940765244860">הזנת הקוד</translation>
 <translation id="5469868506864199649">איטלקית</translation>
 <translation id="5473333559083690127">יש להזין שוב את קוד האימות החדש</translation>
@@ -597,6 +597,7 @@
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5602622065581044566">בולגרית עם מקלדת פונטית</translation>
 <translation id="5605830556594064952">‏ארה"ב - Dvorak</translation>
+<translation id="560739212255190568">‏האדמין הגדיר כללים לשינוי שרת ה-proxy בנוסף לאכיפת שרת ה-proxy הבא</translation>
 <translation id="5618330573454123917">‏קובץ זה מיועד למחשב שיכול להפעיל תוכנות Macintosh. הוא לא מתאים למכשיר שלך, שבו פועלת מערכת ההפעלה ChromeOS. <ph name="BEGIN_LINK_HELP" />לרשותך מידע נוסף<ph name="END_LINK_HELP" /> על פתיחת קבצים ב-ChromeOS.</translation>
 <translation id="5625294776298156701">‏טמילית עם מקלדת Tamil99</translation>
 <translation id="5633226425545095130">לאחר העברת הפריט הזה, הוא ישותף עם כל מי שיכול לראות את התיקייה המשותפת '<ph name="DESTINATION_NAME" />'.</translation>
@@ -880,7 +881,7 @@
 <translation id="7781829728241885113">אתמול</translation>
 <translation id="7788080748068240085">כדי לשמור את "<ph name="FILE_NAME" />" באופן לא מקוון, יש לפנות נפח נוסף של <ph name="TOTAL_FILE_SIZE" /> :<ph name="MARKUP_1" />
         <ph name="MARKUP_2" />ניתן לבטל הצמדה של קבצים שאין צורך לגשת אליהם יותר במצב אופליין<ph name="MARKUP_3" />
-        <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה 'הורדות'<ph name="MARKUP_5" /></translation>
+        <ph name="MARKUP_4" />ניתן למחוק קבצים מהתיקייה "הורדות"<ph name="MARKUP_5" /></translation>
 <translation id="7794058097940213561">פרמוט המכשיר</translation>
 <translation id="7799329977874311193">‏מסמך HTML</translation>
 <translation id="7801354353640549019">‏מכשירי Chromebook</translation>
@@ -996,6 +997,7 @@
 <translation id="8540608333167683902">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="8545476925160229291">אנגלית (ארה"ב)</translation>
 <translation id="854655314928502177">‏כתובת האתר לגילוי אוטומטי של שרת proxy באינטרנט:</translation>
+<translation id="8547747809824590510">‏האדמין הגדיר כללים לשינוי שרת ה-proxy</translation>
 <translation id="8549186985808798022">איטלקית</translation>
 <translation id="8551494947769799688">לטבית</translation>
 <translation id="8560515948038859357">קנטונזית</translation>
@@ -1056,6 +1058,7 @@
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
+<translation id="9079844694307518094">‏האדמין אוכף את שרת ה-proxy הבא</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>
@@ -1079,6 +1082,7 @@
 <translation id="9213073329713032541">ההתקנה התחילה בהצלחה.</translation>
 <translation id="9219103736887031265">תמונות</translation>
 <translation id="9219908252191632183">נוף ירח</translation>
+<translation id="931652069802536959">הרשת חסומה בעקבות המדיניות</translation>
 <translation id="938470336146445890">יש להתקין אישור משתמש.</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="943972244133411984">שונה על ידי</translation>

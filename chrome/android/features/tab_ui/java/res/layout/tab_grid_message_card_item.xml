@@ -11,7 +11,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/tab_list_selected_margin"
     android:orientation="horizontal"
-    android:background="@drawable/card_with_corners_background">
+    android:background="@drawable/card_background_corners_16dp">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/icon"
         android:visibility="gone"
@@ -28,6 +28,7 @@ found in the LICENSE file.
         android:layout_gravity="start|center_vertical"
         android:layout_marginVertical="@dimen/message_card_description_vertical_margin"
         android:layout_weight="1"
+        android:screenReaderFocusable="true"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
     <org.chromium.ui.widget.ButtonCompat

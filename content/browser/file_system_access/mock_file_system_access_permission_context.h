@@ -112,6 +112,16 @@ class MockFileSystemAccessPermissionContext
               (override));
 
   MOCK_METHOD(void,
+              NotifyEntryModified,
+              (const url::Origin& origin, const PathInfo& path),
+              (override));
+
+  MOCK_METHOD(void,
+              NotifyEntryRemoved,
+              (const url::Origin& origin, const PathInfo& new_path),
+              (override));
+
+  MOCK_METHOD(void,
               OnFileCreatedFromShowSaveFilePicker,
               (const GURL& file_picker_binding_context,
                const storage::FileSystemURL& url),

@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {

@@ -1442,15 +1442,13 @@ TEST_F(CacheStorageManagerTest, DropReferenceAndMemoryPressure) {
   // Moderate memory pressure should not destroy unreferenced cache objects
   // since reading data back in from disk can be expensive.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(cache);
 
   // Critical memory pressure should destroy unreferenced cache objects.
   base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(cache)

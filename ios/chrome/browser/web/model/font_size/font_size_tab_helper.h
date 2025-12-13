@@ -69,8 +69,8 @@ class FontSizeTabHelper : public web::WebFramesManager::Observer,
   // Remove any stored zoom levels from `pref_service`.
   static void ClearUserZoomPrefs(PrefService* pref_service);
 
-  static void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry);
+  // Register the Profile's preferences.
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
   friend class web::WebStateUserData<FontSizeTabHelper>;

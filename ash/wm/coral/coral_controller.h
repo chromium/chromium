@@ -15,7 +15,6 @@
 #include "base/token.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "components/desks_storage/core/desk_model.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace aura {

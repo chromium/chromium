@@ -21,7 +21,6 @@
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,8 +30,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/test/browser_test.h"
@@ -41,6 +42,9 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_approval.h"
+#include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
@@ -50,11 +54,9 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/supervised_user/parent_permission_dialog_view.h"
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/supervised_user/core/common/features.h"
@@ -66,6 +68,14 @@
 #include "chrome/browser/supervised_user/chromeos/parent_access_extension_approvals_manager.h"
 #include "chrome/browser/ui/webui/ash/parent_access/fake_parent_access_dialog.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
+#include "components/enterprise/browser/promotion/promotion_prefs.h"
+#include "components/enterprise/promotion_types.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -128,6 +138,46 @@ class WebstoreInstallListener : public WebstorePrivateApi::Delegate {
   std::string error_;
   base::RunLoop loop_;
 };
+
+#if !BUILDFLAG(IS_ANDROID)
+class FakePromotionEligibilityChecker
+    : public enterprise_promotion::PromotionEligibilityChecker {
+ public:
+  explicit FakePromotionEligibilityChecker(
+      enterprise_management::GetUserEligiblePromotionsResponse response)
+      : enterprise_promotion::PromotionEligibilityChecker("",
+                                                          nullptr,
+                                                          nullptr,
+                                                          "",
+                                                          false),
+        response_(std::move(response)) {}
+
+  // The only logic: immediately run the callback with our stored response.
+  void MaybeCheckPromotionEligibility(
+      PromotionEligibilityCallback callback) override {
+    std::move(callback).Run(response_);
+  }
+
+ private:
+  enterprise_management::GetUserEligiblePromotionsResponse response_;
+};
+
+class FailIfCalledPromotionEligibilityChecker
+    : public enterprise_promotion::PromotionEligibilityChecker {
+ public:
+  FailIfCalledPromotionEligibilityChecker()
+      : enterprise_promotion::PromotionEligibilityChecker("",
+                                                          nullptr,
+                                                          nullptr,
+                                                          "",
+                                                          false) {}
+
+  void MaybeCheckPromotionEligibility(
+      PromotionEligibilityCallback callback) override {
+    ADD_FAILURE() << "Network check should not be called when cache is valid.";
+  }
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -789,5 +839,61 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
             GetAllowlist()->GetExtensionAllowlistState(kExtensionId));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class WebstorePrivateEnterprisePromotionApiTest : public ExtensionApiTest {
+ public:
+  WebstorePrivateEnterprisePromotionApiTest() = default;
+};
+
+IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
+                       DeterminesAndSavesPromotionEligibility) {
+  enterprise_management::GetUserEligiblePromotionsResponse mock_response;
+  mock_response.mutable_promotions()->set_policy_page_promotion(
+      enterprise_management::CHROME_ENTERPRISE_CORE);
+  auto function = base::MakeRefCounted<
+      WebstorePrivateShouldShowEnterprisePromotionBannerFunction>();
+  function->SetFakePromotionEligibilityCheckerForTesting(
+      std::make_unique<FakePromotionEligibilityChecker>(
+          std::move(mock_response)));
+
+  std::optional<base::Value> result =
+      utils::RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
+
+  ASSERT_TRUE(result);
+  EXPECT_EQ("CHROME_ENTERPRISE_CORE", result->GetString());
+  EXPECT_EQ(static_cast<int>(enterprise::PromotionType::kChromeEnterpriseCore),
+            profile()->GetPrefs()->GetInteger(
+                enterprise_promotion::kEnterprisePromotionEligibility));
+}
+
+IN_PROC_BROWSER_TEST_F(WebstorePrivateEnterprisePromotionApiTest,
+                       ReturnsCachedPromotionEligibility) {
+  PrefService* prefs = profile()->GetPrefs();
+  prefs->SetInteger(
+      enterprise_promotion::kEnterprisePromotionEligibility,
+      static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium));
+  base::Time future_expiration = base::Time::Now() + base::Hours(1);
+  prefs->SetTime(pref_names::kEnterprisePromotionExpirationTime,
+                 future_expiration);
+  auto function = base::MakeRefCounted<
+      WebstorePrivateShouldShowEnterprisePromotionBannerFunction>();
+  // It should return saved prefs and NEVER call this checker.
+  function->SetFakePromotionEligibilityCheckerForTesting(
+      std::make_unique<FailIfCalledPromotionEligibilityChecker>());
+
+  std::optional<base::Value> result =
+      utils::RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
+
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(result->is_string());
+  EXPECT_EQ("CHROME_ENTERPRISE_PREMIUM", result->GetString());
+  EXPECT_EQ(
+      static_cast<int>(enterprise::PromotionType::kChromeEnterprisePremium),
+      prefs->GetInteger(enterprise_promotion::kEnterprisePromotionEligibility));
+  EXPECT_EQ(future_expiration,
+            prefs->GetTime(pref_names::kEnterprisePromotionExpirationTime));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

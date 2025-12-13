@@ -5,6 +5,7 @@
 #include "base/win/win_util.h"
 
 #include <windows.h>
+#include <winternl.h>
 
 #include <aclapi.h>
 #include <combaseapi.h>
@@ -29,6 +30,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -119,8 +121,8 @@ HRESULT GetSidIntegrityLevel(PSID sid, MANDATORY_LEVEL* level) {
   }
   static constexpr SID_IDENTIFIER_AUTHORITY kMandatoryLabelAuth =
       SECURITY_MANDATORY_LABEL_AUTHORITY;
-  if (UNSAFE_TODO(std::memcmp(authority, &kMandatoryLabelAuth,
-                              sizeof(SID_IDENTIFIER_AUTHORITY)))) {
+  if (base::byte_span_from_ref(*authority) !=
+      base::byte_span_from_ref(kMandatoryLabelAuth)) {
     return E_FAIL;
   }
   PUCHAR count = ::GetSidSubAuthorityCount(sid);
@@ -252,26 +254,26 @@ std::optional<std::vector<std::wstring>> CommandLineToArgv(
 [[nodiscard]] bool IsServicePresentNonAdmin(const std::wstring& service_name) {
   ScopedScHandle scm(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT | GENERIC_READ));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
-  return service.IsValid() || (::GetLastError() == ERROR_ACCESS_DENIED);
+  return service.is_valid() || (::GetLastError() == ERROR_ACCESS_DENIED);
 }
 
 [[nodiscard]] bool IsServicePresentAdmin(const std::wstring& service_name) {
   ScopedScHandle scm(::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(),
                     SERVICE_QUERY_CONFIG | SERVICE_CHANGE_CONFIG));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return ::GetLastError() == ERROR_ACCESS_DENIED;
   }
 
@@ -364,6 +366,55 @@ CSecurityDesc GetAdminDaclSecurityDescriptor(ACCESS_MASK accessmask) {
   sd.SetDacl(dacl);
   sd.MakeAbsolute();
   return sd;
+}
+
+std::optional<std::wstring> AddCurrentUserAllowedAce(
+    const std::wstring& sddl,
+    ACCESS_MASK required_permissions,
+    UINT8 required_ace_flags) {
+  CAccessToken token;
+  CSid sid;
+  if (!token.GetEffectiveToken(TOKEN_QUERY) || !token.GetUser(&sid)) {
+    VLOG(2) << "Failed to get current user sid: " << std::hex
+            << HRESULTFromLastError();
+    return {};
+  }
+
+  CSecurityDesc sd;
+  if (!sd.FromString(sddl.c_str())) {
+    return {};
+  }
+  CDacl dacl;
+  if (!sd.GetDacl(&dacl)) {
+    VLOG(2) << "Failed to get dacl: " << std::hex << HRESULTFromLastError();
+    return {};
+  }
+
+  int ace_count = dacl.GetAceCount();
+  for (int i = 0; i < ace_count; ++i) {
+    CSid sid_entry;
+    ACCESS_MASK existing_permissions = 0;
+    BYTE existing_ace_flags = 0;
+    dacl.GetAclEntry(i, &sid_entry, &existing_permissions, NULL,
+                     &existing_ace_flags);
+    if (sid_entry == sid &&
+        required_permissions == (existing_permissions & required_permissions) &&
+        required_ace_flags == (existing_ace_flags & ~INHERITED_ACE)) {
+      return sddl;
+    }
+  }
+
+  if (!dacl.AddAllowedAce(sid, required_permissions, required_ace_flags)) {
+    VLOG(2) << "Failed to add ace: " << std::hex << HRESULTFromLastError();
+    return {};
+  }
+
+  sd.SetDacl(dacl);
+  CString new_sddl;
+  if (!sd.ToString(&new_sddl)) {
+    return {};
+  }
+  return std::wstring(new_sddl);
 }
 
 std::wstring GetAppClientsKey(const std::string& app_id) {
@@ -747,7 +798,7 @@ std::wstring BuildExeCommandLine(
 
 bool IsServiceRunning(const std::wstring& service_name) {
   ScopedScHandle scm(::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     LOG(ERROR) << "::OpenSCManager failed. service_name: " << service_name
                << ", error: " << std::hex << HRESULTFromLastError();
     return false;
@@ -755,7 +806,7 @@ bool IsServiceRunning(const std::wstring& service_name) {
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_STATUS));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     LOG(ERROR) << "::OpenService failed. service_name: " << service_name
                << ", error: " << std::hex << HRESULTFromLastError();
     return false;
@@ -860,7 +911,7 @@ base::ScopedClosureRunner SignalShutdownEvent(UpdaterScope scope) {
 
   base::win::ScopedHandle shutdown_event_handle(
       ::CreateEvent(&attr.sa, true, false, attr.name.c_str()));
-  if (!shutdown_event_handle.IsValid()) {
+  if (!shutdown_event_handle.is_valid()) {
     VLOG(1) << __func__ << "Could not create the shutdown event: " << std::hex
             << HRESULTFromLastError();
     return {};
@@ -878,7 +929,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope) {
 
   base::win::ScopedHandle event_handle(
       ::OpenEvent(EVENT_ALL_ACCESS, false, attr.name.c_str()));
-  if (!event_handle.IsValid()) {
+  if (!event_handle.is_valid()) {
     return false;
   }
 
@@ -1082,13 +1133,13 @@ void ForEachServiceWithPrefix(
 [[nodiscard]] bool DeleteService(const std::wstring& service_name) {
   ScopedScHandle scm(::OpenSCManager(
       nullptr, nullptr, SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(), DELETE));
-  bool is_service_deleted = !service.IsValid();
+  bool is_service_deleted = !service.is_valid();
   if (!is_service_deleted) {
     is_service_deleted =
         ::DeleteService(service.Get())
@@ -1224,10 +1275,10 @@ bool MigrateLegacyUpdaters(
         continue;
       }
 
-      registration.version = base::Version(base::SysWideToUTF8(pv));
-      if (!registration.version.IsValid()) {
+      if (!base::Version(base::SysWideToUTF8(pv)).IsValid()) {
         continue;
       }
+      registration.version = base::SysWideToUTF8(pv);
 
       base::win::RegKey client_state_key;
       if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
@@ -1281,9 +1332,8 @@ bool MigrateLegacyUpdaters(
                 ERROR_SUCCESS) {
               registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
             }
-            VLOG(2) << "Cohort values: " << registration.cohort << ", "
-                    << registration.cohort_name << ", "
-                    << registration.cohort_hint;
+            VLOG(2) << "Cohort values: " << cohort << ", " << cohort_name
+                    << ", " << cohort_hint;
           }
         }
       }
@@ -1390,16 +1440,6 @@ std::vector<DWORD> FindProcessesInSession(const std::wstring& process_name,
   return pids;
 }
 
-// Returns the first instance found of explorer.exe.
-std::optional<DWORD> GetExplorerPid() {
-  std::vector<DWORD> pids =
-      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
-  if (pids.empty()) {
-    return {};
-  }
-  return pids[0];
-}
-
 // Returns an impersonation token for the user running process_id.
 HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
     std::optional<DWORD> process_id) {
@@ -1408,7 +1448,7 @@ HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
   }
   base::win::ScopedHandle process(::OpenProcess(
       PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, *process_id));
-  if (!process.IsValid()) {
+  if (!process.is_valid()) {
     return base::unexpected(HRESULTFromLastError());
   }
   ScopedKernelHANDLE process_token;
@@ -1428,6 +1468,15 @@ HResultOr<ScopedKernelHANDLE> GetImpersonationToken(
 }
 
 }  // namespace
+
+std::optional<DWORD> GetExplorerPid() {
+  std::vector<DWORD> pids =
+      FindProcessesInSession(L"EXPLORER.EXE", GetActiveSessionId());
+  if (pids.empty()) {
+    return {};
+  }
+  return pids[0];
+}
 
 HResultOr<ScopedKernelHANDLE> GetLoggedOnUserToken() {
   return GetImpersonationToken(GetExplorerPid());
@@ -1535,13 +1584,13 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
 [[nodiscard]] bool IsServiceEnabled(const std::wstring& service_name) {
   ScopedScHandle scm(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT | GENERIC_READ));
-  if (!scm.IsValid()) {
+  if (!scm.is_valid()) {
     return false;
   }
 
   ScopedScHandle service(
       ::OpenService(scm.Get(), service_name.c_str(), SERVICE_QUERY_CONFIG));
-  if (!service.IsValid()) {
+  if (!service.is_valid()) {
     return false;
   }
 
@@ -1554,6 +1603,66 @@ std::optional<base::FilePath> GetBundledEnterpriseCompanionExecutablePath(
                               kMaxQueryConfigBufferBytes,
                               &bytes_needed_ignored) &&
          (service_config->dwStartType != SERVICE_DISABLED);
+}
+
+HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
+  CHECK(process_id);
+
+  base::win::ScopedHandle process_handle(::OpenProcess(
+      PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, false, process_id));
+  if (!process_handle.is_valid()) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  static const auto nt_query_information_process =
+      reinterpret_cast<decltype(&::NtQueryInformationProcess)>(::GetProcAddress(
+          ::GetModuleHandle(L"ntdll.dll"), "NtQueryInformationProcess"));
+  if (!nt_query_information_process) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  // Get the PEB address.
+  // https://learn.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb
+  PROCESS_BASIC_INFORMATION info = {};
+  if (!NT_SUCCESS(nt_query_information_process(process_handle.Get(),
+                                               ProcessBasicInformation, &info,
+                                               sizeof(info), nullptr))) {
+    return base::unexpected(E_FAIL);
+  }
+  BYTE* peb = reinterpret_cast<BYTE*>(info.PebBaseAddress);
+  if (!peb) {
+    return base::unexpected(E_FAIL);
+  }
+  SIZE_T bytes_read = 0;
+  DWORD_PTR dw = 0;
+
+  // Get the address of the process parameters.
+  // SAFETY: the `ProcessParameters` offset into the PEB is always valid.
+  if (!::ReadProcessMemory(
+          process_handle.Get(),
+          UNSAFE_BUFFERS(peb + offsetof(PEB, ProcessParameters)), &dw,
+          sizeof(dw), &bytes_read)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  // Read all the parameters.
+  RTL_USER_PROCESS_PARAMETERS params = {};
+  if (!::ReadProcessMemory(process_handle.Get(), reinterpret_cast<PVOID>(dw),
+                           &params, sizeof(params), &bytes_read)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+
+  // Read the command line parameter.
+  const int max_cmd_line_len =
+      std::min(static_cast<int>(params.CommandLine.MaximumLength), 4096);
+  std::wstring cmd_line(max_cmd_line_len, L'\0');
+  if (!::ReadProcessMemory(process_handle.Get(), params.CommandLine.Buffer,
+                           cmd_line.data(), max_cmd_line_len, &bytes_read)) {
+    return base::unexpected(HRESULTFromLastError());
+  }
+  cmd_line.resize(bytes_read / sizeof(wchar_t));
+
+  return cmd_line;
 }
 
 void LogComCaller(base::cstring_view caller_func) {
@@ -1586,7 +1695,12 @@ void LogComCaller(base::cstring_view caller_func) {
   }
 
   VLOG(2) << caller_func
-          << ": COM client pid for this COM server: " << process.Pid();
+          << ": COM client for this COM server has PID: " << process.Pid()
+          << ", and has command line: " << [&] {
+               const HResultOr<std::wstring> cmd_line =
+                   GetCommandLineForPid(process.Pid());
+               return cmd_line.has_value() ? *cmd_line : std::wstring();
+             }();
 }
 
 }  // namespace updater

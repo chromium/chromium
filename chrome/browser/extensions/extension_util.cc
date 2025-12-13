@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,10 +30,12 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/icons/extension_icon_set.h"
@@ -50,10 +51,7 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/ui/browser.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::util {
 

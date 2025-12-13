@@ -11,11 +11,11 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/tabs/fade_footer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -94,6 +94,10 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // pre-emptive crossfade to a placeholder should start if a new image is not
   // available, or `std::nullopt` to disable crossfades entirely.
   static std::optional<double> GetPreviewImageCrossfadeStart();
+
+ protected:
+  // views::View:
+  void AddedToWidget() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardFadeFooterInteractiveUiTest,

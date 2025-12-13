@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/suggestions/suggestions_context.h"
 
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/common/dense_set.h"
+
 namespace autofill {
 
 SuggestionsContext::SuggestionsContext() = default;

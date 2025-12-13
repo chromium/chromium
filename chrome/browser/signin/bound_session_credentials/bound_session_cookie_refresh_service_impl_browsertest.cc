@@ -20,6 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,10 +32,17 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/btm_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/btm_service_test_utils.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -49,22 +58,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using net::CanonicalCookie;
-using testing::AllOf;
-using testing::AssertionFailure;
-using testing::AssertionResult;
-using testing::AssertionSuccess;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::IsEmpty;
-using testing::Not;
-using testing::Pointee;
-using testing::UnorderedElementsAre;
+using ::net::CanonicalCookie;
+using ::testing::AllOf;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Gt;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::Pointee;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
 constexpr std::string_view kDomain = "google.com";
 constexpr std::string_view kSubdomain = "accounts.google.com";
+constexpr std::string_view kBouncerDomain = "bounce.com";
+constexpr std::string_view kOtherDomain = "other.com";
 constexpr std::string_view KTriggerRegistrationPath = "/TriggerRegistration";
 constexpr base::cstring_view kChallenge = "test_challenge";
 
@@ -146,12 +159,14 @@ std::vector<std::string> GetTwoCookiesAttributesLines(
 
 std::unique_ptr<net::test_server::HttpResponse>
 HandleTriggerRegistrationRequest(
-    const std::vector<std::string>& registration_header_values,
+    const std::vector<std::string>& registration_paths,
     const net::test_server::HttpRequest& request) {
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  for (const std::string& header_value : registration_header_values) {
-    response->AddCustomHeader("Sec-Session-Google-Registration-List",
-                              header_value);
+  for (const std::string& registration_path : registration_paths) {
+    response->AddCustomHeader(
+        "Sec-Session-Google-Registration-List",
+        base::StringPrintf(kSessionRegistrationHeaderFormat.c_str(),
+                           registration_path.c_str(), kChallenge.c_str()));
   }
   response->set_code(net::HTTP_OK);
   return response;
@@ -248,7 +263,6 @@ class FakeServer {
     // `registration_domain` might be different from `domain`.
     std::string registration_domain;
     std::string registration_path;
-    bool is_wsbeta_registration = false;
     std::string rotation_path;
     std::string session_id;
     std::string cookie_name1 = "1P_test_cookie";
@@ -472,6 +486,56 @@ std::unique_ptr<FakeServerHost> CreateAndInitializeHealthyFakeServerHost(
   return fake_server_host;
 }
 
+void SetBlockThirdPartyCookies(Profile* profile, bool value) {
+  profile->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(
+          value ? content_settings::CookieControlsMode::kBlockThirdParty
+                : content_settings::CookieControlsMode::kOff));
+}
+
+testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
+                                           const GURL& initial_url,
+                                           const GURL& bounce_url,
+                                           const GURL& final_url) {
+  if (!ui_test_utils::NavigateToURLWithDisposition(
+          browser, initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+              ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
+    return testing::AssertionFailure()
+           << "Failed to navigate to " << initial_url;
+  }
+  content::WebContents* web_contents =
+      browser->GetTabStripModel()->GetActiveWebContents();
+
+  if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
+    return testing::AssertionFailure()
+           << "Failed to navigate to " << bounce_url;
+  }
+
+  content::CookieChangeObserver cookie_observer(web_contents);
+  testing::AssertionResult js_result =
+      content::ExecJs(web_contents, "document.cookie = 'bounce=stateful';",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  if (!js_result) {
+    return js_result;
+  }
+  cookie_observer.Wait();
+
+  content::BtmRedirectChainObserver final_observer(
+      content::BtmService::Get(web_contents->GetBrowserContext()), final_url);
+  if (!content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                            final_url)) {
+    return testing::AssertionFailure() << "Failed to navigate to " << final_url;
+  }
+
+  // End redirect chain by closing the tab.
+  web_contents->Close();
+  final_observer.Wait();
+
+  return testing::AssertionSuccess();
+}
+
 }  // namespace
 
 class BoundSessionCookieRefreshServiceImplBrowserTest
@@ -480,7 +544,10 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
  public:
   void SetUp() override {
     embedded_https_test_server().SetCertHostnames(
-        {std::string(kDomain), std::string(kSubdomain)});
+        {std::string(kDomain), std::string(kSubdomain),
+         std::string(kBouncerDomain), std::string(kOtherDomain)});
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir());
     CHECK(embedded_https_test_server().InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -606,22 +673,16 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
     server_hosts_ =
         CreateAndInitializeFakeServerHosts(embedded_https_test_server());
 
-    std::vector<std::string> registration_header_values;
+    std::vector<std::string> registration_paths;
     for (const auto& server_host : server_hosts_) {
-      std::string value = base::StringPrintf(
-          kSessionRegistrationHeaderFormat.c_str(),
-          server_host->params().registration_path.c_str(), kChallenge.c_str());
-      if (server_host->params().is_wsbeta_registration) {
-        value += ";wsbeta";
-      }
-      registration_header_values.push_back(std::move(value));
+      registration_paths.push_back(server_host->params().registration_path);
     }
 
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &net::test_server::HandlePrefixedRequest,
         std::string(KTriggerRegistrationPath),
         base::BindRepeating(&HandleTriggerRegistrationRequest,
-                            registration_header_values)));
+                            registration_paths)));
 
     embedded_test_server_handle_ =
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
@@ -692,6 +753,54 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
   EXPECT_EQ(new_throttler_params[0]->domain, kDomain);
   EXPECT_EQ(new_throttler_params[0]->path, "/");
   EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
+}
+
+// Verifies that a bound session is deleted when the user cleares site data.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       ClearBrowsingDataDeletesSession) {
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  // Clear all site data.
+  content::BrowsingDataRemover* remover =
+      browser()->profile()->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(),
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+  observer.BlockUntilCompletion();
+
+  // The session should have been terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+}
+
+// Verifies that unrelated BTM deletions do not terminate a bound session.
+// Regression test for https://crbug.com/445561475.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       BtmDeletionDoesNotDeleteSession) {
+  // Enable third-party cookie blocking to activate the BTM deletion.
+  SetBlockThirdPartyCookies(browser()->profile(), true);
+
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  // Perform a stateful bounce to make the storage eligible for BTM deletion.
+  ASSERT_TRUE(SimulateBtmBounce(
+      browser(), embedded_https_test_server().GetURL(kDomain, "/empty.html"),
+      embedded_https_test_server().GetURL(kBouncerDomain, "/title1.html"),
+      embedded_https_test_server().GetURL(kOtherDomain, "/empty.html")));
+
+  // Trigger BTM deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  content::BtmService::Get(browser()->profile())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  EXPECT_THAT(deleted_sites.Get(), SizeIs(Gt(0)));
+
+  // The session should not be terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
 }
 
 class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
@@ -862,58 +971,4 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(service()->GetBoundSessionThrottlerParams(),
               UnorderedElementsAre(HasDomainAndPath(kDomain, "/"),
                                    HasDomainAndPath(kSubdomain, "/")));
-}
-
-// Integration test for wsbeta registrations with a disabled feature flag.
-class BoundSessionCookieRefreshServiceImplWsbetaBrowserTest
-    : public BoundSessionCookieRefreshServiceImplBrowserTest {
- public:
-  BoundSessionCookieRefreshServiceImplWsbetaBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kEnableBoundSessionCredentialsWsbetaBypass},
-        /*disabled_features=*/{switches::kEnableBoundSessionCredentials});
-  }
-
-  void SetUpOnMainThread() override {
-    ASSERT_FALSE(switches::IsBoundSessionCredentialsEnabled(
-        browser()->profile()->GetPrefs()));
-    ASSERT_TRUE(service());
-    BoundSessionCookieRefreshServiceImplBrowserTest::SetUpOnMainThread();
-  }
-
- protected:
-  std::vector<std::unique_ptr<FakeServerHost>>
-  CreateAndInitializeFakeServerHosts(
-      net::test_server::EmbeddedTestServer& embedded_test_server) override {
-    std::vector<std::unique_ptr<FakeServerHost>> result;
-
-    auto fake_server_host = CreateAndInitializeHealthyFakeServerHost(
-        FakeServer::Params{.domain = std::string(kDomain),
-                           .registration_domain = std::string(kDomain),
-                           .registration_path = "/RegisterSession",
-                           .is_wsbeta_registration = true,  // important bit
-                           .rotation_path = "/RotateBoundCookies",
-                           .session_id = "007"},
-        embedded_test_server);
-
-    result.push_back(std::move(fake_server_host));
-    return result;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplWsbetaBrowserTest,
-                       PRE_WsbetaSessionIsRegisteredAndPersisted) {
-  EXPECT_TRUE(service()->GetBoundSessionThrottlerParams().empty());
-  RegisterNewSession();
-  // Tests that a session was registered successfully.
-  EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
-}
-
-IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplWsbetaBrowserTest,
-                       WsbetaSessionIsRegisteredAndPersisted) {
-  // Tests that a session was initialized on startup successfully.
-  EXPECT_FALSE(service()->GetBoundSessionThrottlerParams().empty());
 }

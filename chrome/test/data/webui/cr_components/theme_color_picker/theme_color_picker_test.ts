@@ -65,23 +65,21 @@ suite('CrComponentsThemeColorPickerTest', () => {
     [false, LIGHT_BASELINE_BLUE_COLOR],
   ] as Array<[boolean, Color]>)
       .forEach(([isDarkMode, defaultColor]) => {
-        test(
-            `render DarkMode ${isDarkMode} default color`, async () => {
-              initializeElement();
-              const theme: Theme = createTheme(isDarkMode);
+        test(`render DarkMode ${isDarkMode} default color`, async () => {
+          initializeElement();
+          const theme: Theme = createTheme(isDarkMode);
 
-              callbackRouter.setTheme(theme);
-              await callbackRouter.$.flushForTesting();
+          callbackRouter.setTheme(theme);
+          await callbackRouter.$.flushForTesting();
 
-              const defaultColorElement =
-                  $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
-              assertDeepEquals(
-                  defaultColor.foreground, defaultColorElement.foregroundColor);
-              assertDeepEquals(
-                  defaultColor.background, defaultColorElement.backgroundColor);
-              assertDeepEquals(
-                  defaultColor.base, defaultColorElement.baseColor);
-            });
+          const defaultColorElement =
+              $$<ThemeColorElement>(colorsElement, '#defaultColor')!;
+          assertDeepEquals(
+              defaultColor.foreground, defaultColorElement.foregroundColor);
+          assertDeepEquals(
+              defaultColor.background, defaultColorElement.backgroundColor);
+          assertDeepEquals(defaultColor.base, defaultColorElement.baseColor);
+        });
       });
 
   ([
@@ -388,11 +386,10 @@ suite('CrComponentsThemeColorPickerTest', () => {
     assertEquals(1, checkedColors.length);
     assertEquals(colorsElement.$.customColor, checkedColors[0]);
     assertEquals(
-        colorsElement.$.customColorContainer.getAttribute('aria-checked'),
-        'true');
+        colorsElement.$.customColor.getAttribute('aria-checked'), 'true');
     indexedColors = colorsElement.shadowRoot.querySelectorAll('[tabindex="0"]');
     assertEquals(1, indexedColors.length);
-    assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
+    assertEquals(colorsElement.$.customColor, indexedColors[0]);
   });
 
   [false, true].forEach(hasBackgroundImage => {

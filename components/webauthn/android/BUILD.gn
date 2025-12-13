@@ -11,6 +11,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatureMap.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManSupportProvider.java",
   ]
@@ -20,6 +21,7 @@ java_cpp_enum("java_enums_srcjar") {
   sources = [
     "//content/browser/webauth/authenticator_request_outcome_enums.h",
     "cred_man_support.h",
+    "webauthn_client_android.h",
     "webauthn_mode.h",
   ]
   visibility = [ ":*" ]
@@ -43,20 +45,23 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/FidoIntentSender.java",
-    "java/src/org/chromium/components/webauthn/GetCredentialResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/GetMatchingCredentialIdsDelegate.java",
     "java/src/org/chromium/components/webauthn/GmsCoreGetCredentialsHelper.java",
     "java/src/org/chromium/components/webauthn/GmsCoreUtils.java",
     "java/src/org/chromium/components/webauthn/GpmBrowserOptionsHelper.java",
     "java/src/org/chromium/components/webauthn/IdentityCredentialsHelper.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
-    "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
     "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
+    "java/src/org/chromium/components/webauthn/RequestMetrics.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatureMap.java",
+    "java/src/org/chromium/components/webauthn/WebauthnFeatures.java",
     "java/src/org/chromium/components/webauthn/WebauthnLogger.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
+    "java/src/org/chromium/components/webauthn/WebauthnRequestCallback.java",
+    "java/src/org/chromium/components/webauthn/WebauthnRequestResponse.java",
     "java/src/org/chromium/components/webauthn/cred_man/AppCredManRequestDecorator.java",
     "java/src/org/chromium/components/webauthn/cred_man/BrowserCredManRequestDecorator.java",
     "java/src/org/chromium/components/webauthn/cred_man/CredManCreateCredentialRequestHelper.java",
@@ -79,6 +84,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/ukm/android:java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
@@ -92,12 +98,14 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public/common:common_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
+    "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
+    "//url/mojom:url_mojom_scheme_host_port_java",
   ]
 
   resources_package = "org.chromium.components.webauthn"
@@ -112,17 +120,15 @@ static_library("test_support") {
   ]
   deps = [
     ":android",
-    "//base:base",
+    "//base",
     "//testing/gmock",
   ]
 }
 
 android_library("test_support_java") {
   testonly = true
-  sources = [
-    "java/src/org/chromium/components/webauthn/Fido2ApiTestHelper.java",
-    "java/src/org/chromium/components/webauthn/MockFido2CredentialRequest.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/components/webauthn/Fido2ApiTestHelper.java" ]
   deps = [
     ":java",
     "//base:base_java_test_support",
@@ -132,9 +138,10 @@ android_library("test_support_java") {
     "//mojo/public/mojom/base:base_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
+    "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//url:gurl_java",
     "//url/mojom:url_mojom_gurl_java",
     "//url/mojom:url_mojom_origin_java",
@@ -156,6 +163,7 @@ source_set("android") {
     "webauthn_cred_man_delegate.h",
     "webauthn_cred_man_delegate_factory.cc",
     "webauthn_cred_man_delegate_factory.h",
+    "webauthn_feature_map.cc",
     "webauthn_mode.h",
     "webauthn_mode_provider.cc",
   ]
@@ -164,6 +172,7 @@ source_set("android") {
     "//base",
     "//components/cbor",
     "//components/ukm/android:ukm_recorder",
+    "//components/webauthn:features",
     "//components/webauthn/core/browser",
     "//components/webauthn/json",
     "//content/public/browser",
@@ -194,10 +203,12 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/components/webauthn/AuthenticatorImplTest.java",
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
+    "junit/src/org/chromium/components/webauthn/Fido2ApiRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/GmsCoreGetCredentialsHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/IdentityCredentialsHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/WebauthnModeProviderRobolectricTest.java",
+    "junit/src/org/chromium/components/webauthn/WebauthnRequestCallbackRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManCreateCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManGetCredentialRequestHelperRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/cred_man/CredManHelperRobolectricTest.java",
@@ -221,16 +232,19 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/password_manager/core/browser:password_manager_java_enums",
     "//components/payments/content/android:junit_test_support",
     "//content/public/android:content_java",
     "//mojo/public/mojom/base:base_java",
     "//net/android:net_java",
     "//services/device/public/java:device_feature_list_java",
-    "//third_party/android_deps:com_google_guava_guava_java",
+    "//third_party/android_deps:guava_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/common:common_java",
-    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
+    "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

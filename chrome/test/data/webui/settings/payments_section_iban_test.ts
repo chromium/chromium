@@ -156,8 +156,8 @@ suite('PaymentsSectionIban', function() {
         assertTrue(!!ibanItemLabel);
         assertTrue(!!ibanItemSubLabel);
         assertEquals(
-            'BA39 **** **** **** 1234', ibanItemLabel.textContent!.trim());
-        assertEquals('My doctor\'s IBAN', ibanItemSubLabel.textContent!.trim());
+            'BA39 **** **** **** 1234', ibanItemLabel.textContent.trim());
+        assertEquals('My doctor\'s IBAN', ibanItemSubLabel.textContent.trim());
       });
 
   test('verifyIbanSummarySublabelWithNickname', async function() {
@@ -179,9 +179,9 @@ suite('PaymentsSectionIban', function() {
 
     assertTrue(!!ibanItemLabel);
     assertTrue(!!ibanItemSubLabel);
-    assertEquals('My doctor\'s IBAN', ibanItemLabel.textContent!.trim());
+    assertEquals('My doctor\'s IBAN', ibanItemLabel.textContent.trim());
     assertEquals(
-        'BA39 **** **** **** 1234', ibanItemSubLabel.textContent!.trim());
+        'BA39 **** **** **** 1234', ibanItemSubLabel.textContent.trim());
   });
 
   test('verifySavingNewIBAN', async function() {

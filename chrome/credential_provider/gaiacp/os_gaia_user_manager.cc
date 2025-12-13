@@ -24,7 +24,7 @@ namespace credential_provider {
 namespace {
 
 // Gets current sid for gaia user, it can be different from the stored one.
-HRESULT GetCurrentGaiaSid(const int& size, wchar_t* current_sid) {
+HRESULT GetCurrentGaiaSid(std::wstring* current_sid) {
   LOGFN(VERBOSE);
   DCHECK(current_sid);
 
@@ -53,8 +53,8 @@ HRESULT GetCurrentGaiaSid(const int& size, wchar_t* current_sid) {
     return hr;
   }
 
-  errno_t err = UNSAFE_TODO(wcscpy_s(current_sid, size, sid.c_str()));
-  return err == 0 ? S_OK : E_FAIL;
+  *current_sid = sid;
+  return S_OK;
 }
 
 // Compares gaia user sid saved during installation against current one.
@@ -100,14 +100,14 @@ HRESULT IsGaiaUserSidDifferent(bool* is_sid_different) {
     return hr;
   }
 
-  wchar_t current_sid[kWindowsSidBufferLength];
-  hr = GetCurrentGaiaSid(std::size(current_sid), current_sid);
+  std::wstring current_sid;
+  hr = GetCurrentGaiaSid(&current_sid);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "GetCurrentGaiaSid hr=" << putHR(hr);
     return hr;
   }
 
-  if (UNSAFE_TODO(wcscmp(stored_sid, current_sid)) != 0) {
+  if (stored_sid != current_sid) {
     *is_sid_different = true;
   }
   return hr;
@@ -126,14 +126,14 @@ HRESULT StoreCurrentGaiaSid() {
   }
 
   // Store current sid in LSA so the next time they will be the same.
-  wchar_t sid_string[kWindowsSidBufferLength];
-  hr = GetCurrentGaiaSid(std::size(sid_string), sid_string);
+  std::wstring sid_string;
+  hr = GetCurrentGaiaSid(&sid_string);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "GetCurrentGaiaSid hr=" << putHR(hr);
     return hr;
   }
 
-  hr = policy->StorePrivateData(kLsaKeyGaiaSid, sid_string);
+  hr = policy->StorePrivateData(kLsaKeyGaiaSid, sid_string.c_str());
   if (FAILED(hr)) {
     LOGFN(ERROR) << "StorePrivateData for gaia user sid hr=" << putHR(hr);
     return hr;
@@ -216,14 +216,14 @@ HRESULT OSGaiaUserManager::CreateGaiaUser(PSID* sid) {
     return hr;
   }
 
-  wchar_t sid_string[kWindowsSidBufferLength];
-  hr = GetCurrentGaiaSid(std::size(sid_string), sid_string);
+  std::wstring sid_string;
+  hr = GetCurrentGaiaSid(&sid_string);
   if (FAILED(hr)) {
     LOGFN(ERROR) << "GetCurrentGaiaSid hr=" << putHR(hr);
     return hr;
   }
 
-  if (!::ConvertStringSidToSid(sid_string, sid)) {
+  if (!::ConvertStringSidToSid(sid_string.c_str(), sid)) {
     hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "ConvertStringSidToSid sid=" << sid_string
                  << " hr=" << putHR(hr);

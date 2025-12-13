@@ -581,14 +581,16 @@ TEST_F(SeatTest, PressedKeys) {
   seat.OnKeyEvent(press_a.AsKeyEvent());
   seat.DidProcessEvent(&press_a);
   base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
+  pressed_keys[PhysicalCode(ui::CodeFromNative(&press_a))].emplace(
+      press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press B, then A & B should be in the map.
   seat.WillProcessEvent(&press_b);
   seat.OnKeyEvent(press_b.AsKeyEvent());
   seat.DidProcessEvent(&press_b);
-  pressed_keys[ui::CodeFromNative(&press_b)].emplace(press_b.code(), false);
+  pressed_keys[PhysicalCode(ui::CodeFromNative(&press_b))].emplace(
+      press_b.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release A, with the normal order where DidProcessEvent is after OnKeyEvent,
@@ -642,7 +644,8 @@ TEST_F(SeatTest, MultiRewriteEventsFromInvalidSource) {
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)].emplace(press_a.code(), false);
+  pressed_keys[PhysicalCode(ui::CodeFromNative(&press_a))].emplace(
+      press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press A, but it was remapped to B. Should not be added to pressed_keys map.
@@ -678,7 +681,8 @@ TEST_F(SeatTest, MultiRewriteEventsFromValidSource) {
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
-  auto& key_state_set = pressed_keys[ui::CodeFromNative(&press_a)];
+  auto& key_state_set =
+      pressed_keys[PhysicalCode(ui::CodeFromNative(&press_a))];
   key_state_set.emplace(press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
@@ -724,7 +728,8 @@ TEST_F(SeatTest, MouseMultiRewriteEventsFromValidSource) {
   seat.WillProcessEvent(&press_back);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   base::flat_map<PhysicalCode, base::flat_set<KeyState>> pressed_keys;
-  auto& key_state_set = pressed_keys[ash::mojom::CustomizableButton::kBack];
+  auto& key_state_set =
+      pressed_keys[PhysicalCode(ash::mojom::CustomizableButton::kBack)];
   key_state_set.emplace(press_a.code(), false);
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 

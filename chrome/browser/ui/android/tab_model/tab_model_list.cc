@@ -65,7 +65,7 @@ void TabModelList::HandlePopupNavigation(NavigateParams* params) {
 
   // NOTE: If this fails contact dtrainor@.
   DCHECK(tab);
-  TabModel* model = FindTabModelWithId(tab->GetWindowId());
+  TabModel* model = FindTabModelWithWindowSessionId(tab->GetWindowId());
   if (model) {
     model->HandlePopupNavigation(tab, params);
   }
@@ -106,7 +106,7 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
   return nullptr;
 }
 
-TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
+TabModel* TabModelList::FindTabModelWithWindowSessionId(SessionID desired_id) {
   for (TabModel* model : models()) {
     if (model->GetSessionId() == desired_id) {
       return model;
@@ -117,7 +117,7 @@ TabModel* TabModelList::FindTabModelWithId(SessionID desired_id) {
 }
 
 TabModel* TabModelList::FindNativeTabModelForJavaObject(
-    const base::android::ScopedJavaLocalRef<jobject>& jtab_model) {
+    const base::android::JavaRef<jobject>& jtab_model) {
   JNIEnv* env = base::android::AttachCurrentThread();
   for (TabModel* model : models()) {
     if (env->IsSameObject(jtab_model.obj(), model->GetJavaObject().obj())) {

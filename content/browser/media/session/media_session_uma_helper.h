@@ -25,7 +25,7 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
   enum class EnterPictureInPictureType {
     // EnterPictureInPicture was called for the default handler provided by
     // MediaSessionImpl.
-    kDefaultHandler = 0,
+    kDefaultManual = 0,
 
     // EnterPictureInPicture was called for an enterpictureinpicture handler
     // provided by the website.
@@ -35,7 +35,11 @@ class CONTENT_EXPORT MediaSessionUmaHelper {
     // provided by the website.
     kRegisteredAutomatic = 2,
 
-    kMaxValue = kRegisteredAutomatic,
+    // EnterAutoPictureInPicture was called for the default handler provided by
+    // MediaSessionImpl.
+    kDefaultAutomatic = 3,
+
+    kMaxValue = kDefaultAutomatic,
   };
 
   MediaSessionUmaHelper();

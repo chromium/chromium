@@ -7,9 +7,9 @@
 #import "base/check.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/authentication/consistency_promo_signin/ui/consistency_layout_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser/consistency_account_chooser_table_view_controller_action_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_layout_delegate.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
@@ -48,7 +48,7 @@ constexpr CGFloat kContentMargin = 16.;
     [subView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [subView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
   ]];
-  [self didMoveToParentViewController:self.tableViewController];
+  [self.tableViewController didMoveToParentViewController:self];
 }
 
 - (void)viewDidLayoutSubviews {

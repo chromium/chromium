@@ -33,6 +33,7 @@ source_set("impl") {
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//components/signin/public/identity_manager",
     "//components/sync/base",
     "//components/sync/service",
@@ -51,6 +52,7 @@ source_set("test_support") {
   public_deps = [
     ":batch_upload",
     "//chrome/browser/ui/profiles",
+    "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
   ]
@@ -70,6 +72,7 @@ source_set("unit_tests") {
     ":batch_upload",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser/signin",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
@@ -94,6 +97,7 @@ source_set("browser_tests") {
     "//chrome/browser/signin",
     "//chrome/browser/ui",
     "//chrome/browser/ui/profiles",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/common",
     "//chrome/test:test_support_ui",
     "//components/signin/public/base",

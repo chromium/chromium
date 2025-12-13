@@ -23,10 +23,12 @@ import android.widget.ViewFlipper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -45,6 +47,7 @@ import java.util.ArrayList;
 @Config(manifest = Config.NONE)
 public class RestoreTabsCoordinatorUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private RestoreTabsMediator mMediator;
     @Mock private Profile mProfile;
@@ -60,7 +63,6 @@ public class RestoreTabsCoordinatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();

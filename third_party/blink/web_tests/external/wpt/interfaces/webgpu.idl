@@ -25,7 +25,11 @@ interface GPUSupportedLimits {
     readonly attribute unsigned long maxSampledTexturesPerShaderStage;
     readonly attribute unsigned long maxSamplersPerShaderStage;
     readonly attribute unsigned long maxStorageBuffersPerShaderStage;
+    readonly attribute unsigned long maxStorageBuffersInVertexStage;
+    readonly attribute unsigned long maxStorageBuffersInFragmentStage;
     readonly attribute unsigned long maxStorageTexturesPerShaderStage;
+    readonly attribute unsigned long maxStorageTexturesInVertexStage;
+    readonly attribute unsigned long maxStorageTexturesInFragmentStage;
     readonly attribute unsigned long maxUniformBuffersPerShaderStage;
     readonly attribute unsigned long long maxUniformBufferBindingSize;
     readonly attribute unsigned long long maxStorageBufferBindingSize;
@@ -129,6 +133,8 @@ enum GPUFeatureName {
     "subgroups",
     "texture-formats-tier1",
     "texture-formats-tier2",
+    "primitive-index",
+    "texture-component-swizzle",
 };
 
 [Exposed=(Window, Worker), SecureContext]
@@ -227,6 +233,7 @@ interface GPUTexture {
     readonly attribute GPUTextureDimension dimension;
     readonly attribute GPUTextureFormat format;
     readonly attribute GPUFlagsConstant usage;
+    readonly attribute (GPUTextureViewDimension or undefined) textureBindingViewDimension;
 };
 GPUTexture includes GPUObjectBase;
 
@@ -239,6 +246,7 @@ dictionary GPUTextureDescriptor
     required GPUTextureFormat format;
     required GPUTextureUsageFlags usage;
     sequence<GPUTextureFormat> viewFormats = [];
+    GPUTextureViewDimension textureBindingViewDimension;
 };
 
 enum GPUTextureDimension {
@@ -272,6 +280,9 @@ dictionary GPUTextureViewDescriptor
     GPUIntegerCoordinate mipLevelCount;
     GPUIntegerCoordinate baseArrayLayer = 0;
     GPUIntegerCoordinate arrayLayerCount;
+
+    // Requires "texture-component-swizzle" feature.
+    DOMString swizzle = "rgba";
 };
 
 enum GPUTextureViewDimension {

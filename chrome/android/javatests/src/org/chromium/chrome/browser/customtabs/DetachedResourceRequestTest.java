@@ -10,6 +10,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsCallback;
@@ -32,6 +33,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -324,6 +326,85 @@ public class DetachedResourceRequestTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS,
+        ChromeFeatureList.CCT_MULTIPLE_PARALLEL_REQUESTS
+    })
+    public void testMultipleParallelRequestCompletionSuccessCallbacks() throws Exception {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.ParallelRequestStatusOnStart", 1);
+        final CallbackHelper cb = new CallbackHelper();
+        setUpTestServerWithListener(
+                new EmbeddedTestServer.ConnectionListener() {
+                    @Override
+                    public void readFromSocket(long socketId) {
+                        cb.notifyCalled();
+                    }
+                });
+        ArrayList<Uri> urls =
+                new ArrayList<>(
+                        Arrays.asList(
+                                Uri.parse(mServer.getURL("/nocontent?a=1")),
+                                Uri.parse(mServer.getURL("/nocontent?a=2")),
+                                Uri.parse(mServer.getURL("/nocontent?a=3"))));
+        final CallbackHelper url1StartedCallback = new CallbackHelper();
+        final CallbackHelper url1FinishedCallback = new CallbackHelper();
+        final CallbackHelper url2StartedCallback = new CallbackHelper();
+        final CallbackHelper url2FinishedCallback = new CallbackHelper();
+        final CallbackHelper url3StartedCallback = new CallbackHelper();
+        final CallbackHelper url3FinishedCallback = new CallbackHelper();
+
+        CustomTabsCallback customTabsCallback =
+                new CustomTabsCallback() {
+                    @Override
+                    public void extraCallback(String callbackName, Bundle args) {
+                        if (CustomTabsConnection.ON_DETACHED_REQUEST_REQUESTED.equals(
+                                callbackName)) {
+                            Uri url = args.getParcelable("url");
+                            int status = args.getInt("status");
+                            Assert.assertEquals(
+                                    CustomTabsConnection.ParallelRequestStatus.SUCCESS, status);
+                            if (url.equals(urls.get(0))) {
+                                url1StartedCallback.notifyCalled();
+                            } else if (url.equals(urls.get(1))) {
+                                url2StartedCallback.notifyCalled();
+                            } else if (url.equals(urls.get(2))) {
+                                url3StartedCallback.notifyCalled();
+                            }
+                        } else if (CustomTabsConnection.ON_DETACHED_REQUEST_COMPLETED.equals(
+                                callbackName)) {
+                            Uri url = args.getParcelable("url");
+                            int status = args.getInt("net_error");
+                            Assert.assertEquals(NetError.OK, status);
+                            if (url.equals(urls.get(0))) {
+                                url1FinishedCallback.notifyCalled();
+                            } else if (url.equals(urls.get(1))) {
+                                url2FinishedCallback.notifyCalled();
+                            } else if (url.equals(urls.get(2))) {
+                                url3FinishedCallback.notifyCalled();
+                            }
+                        }
+                    }
+                };
+        var sessionHolder = prepareSession(ORIGIN, customTabsCallback);
+
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> mConnection.onHandledIntent(sessionHolder, prepareIntent(urls, ORIGIN)));
+        CustomTabsTestUtils.warmUpAndWait();
+        url1StartedCallback.waitForOnly();
+        url2StartedCallback.waitForOnly();
+        url3StartedCallback.waitForOnly();
+        cb.waitForCallback(0, urls.size());
+        url1FinishedCallback.waitForOnly();
+        url2FinishedCallback.waitForOnly();
+        url3FinishedCallback.waitForOnly();
+        histogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
     public void testCanStartResourcePrefetch() throws Exception {
         var sessionHolder = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
@@ -409,6 +490,9 @@ public class DetachedResourceRequestTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_REPORT_PARALLEL_REQUEST_STATUS)
+    @DisableIf.Build(
+            sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
+            message = "crbug.com/350394860")
     public void testCanBlockThirdPartyCookies() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
@@ -576,12 +660,12 @@ public class DetachedResourceRequestTest {
         // Launching a CCT and loading a URL takes more time than usual. Gives a longer timeout.
         // See crbug.com/40737671.
         mContext.startActivity(intent);
-        callback.waitForRequest(0, 1, 10, TimeUnit.SECONDS);
-        callback.waitForCompletion(0, 1, 10, TimeUnit.SECONDS);
+        callback.waitForRequest(0, 1, 20, TimeUnit.SECONDS);
+        callback.waitForCompletion(0, 1, 20, TimeUnit.SECONDS);
 
         mContext.startActivity(intent);
-        callback.waitForRequest(1, 1, 10, TimeUnit.SECONDS);
-        callback.waitForCompletion(1, 1, 10, TimeUnit.SECONDS);
+        callback.waitForRequest(1, 1, 20, TimeUnit.SECONDS);
+        callback.waitForCompletion(1, 1, 20, TimeUnit.SECONDS);
     }
 
     private void testCanStartParallelRequest(boolean afterNative) throws Exception {
@@ -744,6 +828,15 @@ public class DetachedResourceRequestTest {
         Intent intent = new Intent();
         intent.setData(Uri.parse("http://www.example.com"));
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_URL_KEY, url);
+        intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_REFERRER_KEY, referrer);
+        return intent;
+    }
+
+    private static Intent prepareIntent(ArrayList<Uri> urls, Uri referrer) {
+        Intent intent = new Intent();
+        intent.setData(Uri.parse("http://www.example.com"));
+        intent.putParcelableArrayListExtra(
+                CustomTabsConnection.PARALLEL_REQUEST_URL_LIST_KEY, urls);
         intent.putExtra(CustomTabsConnection.PARALLEL_REQUEST_REFERRER_KEY, referrer);
         return intent;
     }

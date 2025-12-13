@@ -55,7 +55,7 @@ class PeriodicSyncManager final : public ScriptWrappable {
   void GetRegistrationsCallback(
       ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
       mojom::blink::BackgroundSyncError error,
-      WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
+      Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
   void UnregisterCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
                           mojom::blink::BackgroundSyncError error);
 

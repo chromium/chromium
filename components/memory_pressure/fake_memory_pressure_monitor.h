@@ -13,8 +13,6 @@ namespace test {
 class FakeMemoryPressureMonitor
     : public ::memory_pressure::MultiSourceMemoryPressureMonitor {
  public:
-  using MemoryPressureLevel =
-      ::memory_pressure::MultiSourceMemoryPressureMonitor::MemoryPressureLevel;
   using DispatchCallback =
       ::memory_pressure::MultiSourceMemoryPressureMonitor::DispatchCallback;
 
@@ -25,14 +23,15 @@ class FakeMemoryPressureMonitor
   FakeMemoryPressureMonitor& operator=(const FakeMemoryPressureMonitor&) =
       delete;
 
-  void SetAndNotifyMemoryPressure(MemoryPressureLevel level);
+  void SetAndNotifyMemoryPressure(base::MemoryPressureLevel level);
 
   // base::MemoryPressureMonitor overrides:
-  MemoryPressureLevel GetCurrentPressureLevel() const override;
+  base::MemoryPressureLevel GetCurrentPressureLevel(
+      base::MemoryPressureMonitorTag tag) const override;
 
  private:
-  MemoryPressureLevel memory_pressure_level_{
-      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE};
+  base::MemoryPressureLevel memory_pressure_level_{
+      base::MEMORY_PRESSURE_LEVEL_NONE};
 };
 
 }  // namespace test

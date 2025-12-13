@@ -29,13 +29,28 @@
 
 namespace ash {
 
+namespace {
+VideoConferenceManagerAsh* g_instance = nullptr;
+}  // namespace
+
+// static
+VideoConferenceManagerAsh* VideoConferenceManagerAsh::Get() {
+  return g_instance;
+}
+
 VideoConferenceManagerAsh::VideoConferenceManagerAsh() {
+  CHECK(!g_instance);
+  g_instance = this;
+
   if (ash::features::IsVideoConferenceEnabled()) {
     GetTrayController()->Initialize(this);
   }
 }
 
-VideoConferenceManagerAsh::~VideoConferenceManagerAsh() = default;
+VideoConferenceManagerAsh::~VideoConferenceManagerAsh() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+}
 
 void VideoConferenceManagerAsh::RegisterCppClient(
     crosapi::mojom::VideoConferenceManagerClient* client,
@@ -91,10 +106,10 @@ void VideoConferenceManagerAsh::ReturnToApp(const base::UnguessableToken& id) {
 
 void VideoConferenceManagerAsh::SetSystemMediaDeviceStatus(
     crosapi::mojom::VideoConferenceMediaDevice device,
-    bool disabled) {
+    bool enabled) {
   for (auto& [_, client_wrapper] : client_id_to_wrapper_) {
     client_wrapper.SetSystemMediaDeviceStatus(
-        device, disabled, base::BindOnce([](bool success) {
+        device, enabled, base::BindOnce([](bool success) {
           if (!success) {
             LOG(ERROR)
                 << "VideoConferenceClient::SetSystemMediaDeviceStatus was "

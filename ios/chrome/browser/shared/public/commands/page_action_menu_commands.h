@@ -10,7 +10,8 @@
 // Commands relating to the page action menu.
 @protocol PageActionMenuCommands
 
-// Presents the page action menu.
+// Presents the page action menu from the location bar, registering the
+// source.
 - (void)showPageActionMenu;
 
 // Dismisses the page action menu with a completion block.

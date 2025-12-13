@@ -33,7 +33,7 @@ import {cast} from '../assert_extras.js';
 import type {Constructor} from '../common/types.js';
 
 import {getTemplate} from './cups_edit_printer_dialog.html.js';
-import {getBaseName, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
+import {getDisplayPpd, getErrorText, isNameAndAddressValid, isNetworkProtocol, isPPDInfoValid} from './cups_printer_dialog_util.js';
 import type {CupsPrinterInfo, CupsPrintersBrowserProxy, ManufacturersInfo, ModelsInfo, PrinterPpdMakeModel, PrinterSetupResult} from './cups_printers_browser_proxy.js';
 import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 
@@ -232,7 +232,7 @@ export class SettingsCupsEditPrinterDialogElement extends
             this.onGetPrinterPpdManufacturerAndModelFailed_.bind(this));
     this.browserProxy_.getCupsPrinterManufacturersList().then(
         this.manufacturerListChanged_.bind(this));
-    this.userPPD_ = getBaseName(this.pendingPrinter_.printerPPDPath);
+    this.userPPD_ = getDisplayPpd(this.pendingPrinter_.printerPPDPath);
   }
 
   override onActiveNetworksChanged(networks: NetworkStateProperties[]): void {
@@ -462,7 +462,7 @@ export class SettingsCupsEditPrinterDialogElement extends
       // A new valid PPD file should be treated as a saveable change.
       this.onPrinterInfoChange_();
     }
-    this.userPPD_ = getBaseName(path);
+    this.userPPD_ = getDisplayPpd(path);
   }
 
   /**
@@ -569,6 +569,20 @@ export class SettingsCupsEditPrinterDialogElement extends
   private isInputFieldReadonly_(): boolean {
     return !this.isOnline_ ||
         (this.pendingPrinter_ && this.pendingPrinter_.isManaged);
+  }
+
+  /**
+   * @return Returns true if the printer is managed and both manufacturer and
+   * model fields are empty.
+   */
+  private shouldHideMakeAndModel_(): boolean {
+    // If the printer is not managed, we should not hide the fields.
+    if (!this.pendingPrinter_ || !this.pendingPrinter_.isManaged) {
+      return false;
+    }
+    // Hide the fields if both are empty.
+    return !this.pendingPrinter_.ppdManufacturer &&
+        !this.pendingPrinter_.ppdModel;
   }
 }
 

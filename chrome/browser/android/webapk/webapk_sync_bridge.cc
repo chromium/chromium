@@ -320,17 +320,14 @@ void WebApkSyncBridge::RegisterDoneInitializingCallback(
 }
 
 void WebApkSyncBridge::MergeSyncDataForTesting(
-    std::vector<std::vector<std::string>> app_vector,
-    std::vector<int> last_used_days_vector) {
+    std::vector<std::vector<std::string>> app_vector) {
   CHECK(database_.is_opened());
-  CHECK(app_vector.size() == last_used_days_vector.size());
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       syncer::DataTypeStore::WriteBatch::CreateMetadataChangeList();
   std::unique_ptr<webapk::RegistryUpdateData> registry_update =
       std::make_unique<webapk::RegistryUpdateData>();
 
-  int i = 0;
   for (auto const& app : app_vector) {
     std::unique_ptr<sync_pb::WebApkSpecifics> specifics =
         std::make_unique<sync_pb::WebApkSpecifics>();
@@ -347,12 +344,11 @@ void WebApkSyncBridge::MergeSyncDataForTesting(
     icon_info->set_url(icon_url);
     icon_info->set_purpose(icon_purpose);
 
-    base::Time time = base::Time::Now() - base::Days(last_used_days_vector[i]);
     specifics->set_last_used_time_windows_epoch_micros(
-        time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+        base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+
     registry_update->apps_to_create.push_back(
         WebApkProtoFromSpecifics(specifics.get(), false));
-    i++;
   }
 
   database_.Write(
@@ -460,10 +456,7 @@ std::vector<WebApkRestoreData> WebApkSyncBridge::GetRestorableAppsShortcutInfo()
         AppWasUsedRecently(&proto->sync_data())) {
       auto restore_info = CreateShortcutInfoFromSpecifics(proto->sync_data());
       if (restore_info) {
-        results.emplace_back(WebApkRestoreData(
-            appId, std::move(restore_info),
-            base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(
-                proto->sync_data().last_used_time_windows_epoch_micros()))));
+        results.emplace_back(appId, std::move(restore_info));
       }
     }
   }
@@ -515,6 +508,11 @@ std::string WebApkSyncBridge::GetClientTag(
 std::string WebApkSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
+}
+
+bool WebApkSyncBridge::IsEntityDataValid(
+    const syncer::EntityData& entity_data) const {
+  return !entity_data.specifics.web_apk().manifest_id().empty();
 }
 
 void WebApkSyncBridge::ApplyDisableSyncChanges(

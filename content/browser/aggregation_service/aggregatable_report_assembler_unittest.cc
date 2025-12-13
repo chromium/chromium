@@ -32,7 +32,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::Return;
 
 // Will be used to verify the sequence of expected function calls.
@@ -258,9 +257,9 @@ TEST_F(AggregatableReportAssemblerTest,
 
     EXPECT_CALL(*fetcher(), GetPublicKey)
         .Times(AggregatableReportAssembler::kMaxSimultaneousRequests)
-        .WillRepeatedly(Invoke([&](const GURL& url, FetchCallback callback) {
+        .WillRepeatedly([&](const GURL& url, FetchCallback callback) {
           pending_callbacks.push_back(std::move(callback));
-        }));
+        });
 
     EXPECT_CALL(callback(), Run).Times(0);
 

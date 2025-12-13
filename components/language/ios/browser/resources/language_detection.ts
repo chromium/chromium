@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // Mark: Private properties
 
 /**
- * The cache of the text content that was extracted from the page
+ * The cache of the text content that was extracted from the page.
  */
 let bufferedTextContent: string|null;
 
 /**
  * The number of active requests that have populated the cache. This is
- * incremented every time a call to `__gCrWeb.languageDetection.detectLanguage`
+ * incremented every time a call to `__gCrWeb.getRegisteredApi('languageDetection').getFunction('detectLanguage')`
  * populates the buffer. This is decremented every time there is a call to
  * retrieve the buffer. The buffer is purged when this goes down to 0.
  */
@@ -158,9 +158,9 @@ function retrieveBufferedTextContent(): string|null {
   return textContent;
 }
 
-// Mark: Public API
+const languageDetectionApi = new CrWebApi();
 
-gCrWebLegacy.languageDetection = {
-  detectLanguage,
-  retrieveBufferedTextContent,
-};
+languageDetectionApi.addFunction('detectLanguage', detectLanguage);
+languageDetectionApi.addFunction('retrieveBufferedTextContent', retrieveBufferedTextContent);
+
+gCrWeb.registerApi('languageDetection', languageDetectionApi);

@@ -34,7 +34,7 @@ bool IsExperimentEnabled(const webapps::AppId& app_id) {
 // a scope extension or not.
 bool IsValidScopeExtension(const GURL& url) {
   return url.is_valid() && url.IsStandard() && url.has_host() &&
-         !base::StartsWith(url.host(), ".");
+         !base::StartsWith(url.GetHost(), ".");
 }
 
 std::vector<std::string> GetListFromFinchParam(const std::string& finch_param) {
@@ -117,8 +117,9 @@ int ChromeOsWebAppExperiments::GetExtendedScopeScore(
     const GURL scope_origin = scope.origin.GetURL();
     int score;
     if (scope.has_origin_wildcard) {
-      score =
-          url.DomainIs(scope_origin.host()) ? scope_origin.spec().length() : 0;
+      score = url.DomainIs(scope_origin.GetHost())
+                  ? scope_origin.spec().length()
+                  : 0;
     } else {
       score = base::StartsWith(url_spec, scope_origin.spec(),
                                base::CompareCase::SENSITIVE)
@@ -168,7 +169,7 @@ void ChromeOsWebAppExperiments::MaybeOverrideManifest(
 
   const auto pwa_start_url_origin = url::Origin::Create(manifest->start_url);
   std::string pwa_start_url_path =
-      manifest->start_url.GetWithoutFilename().path();
+      manifest->start_url.GetWithoutFilename().GetPath();
 
   const auto microsoft365_manifest_urls = GetListFromFinchParam(
       chromeos::features::kMicrosoft365ManifestUrls.Get());
@@ -177,7 +178,7 @@ void ChromeOsWebAppExperiments::MaybeOverrideManifest(
     GURL microsoft365_manifest_url = GURL(url_string);
 
     if (pwa_start_url_origin.IsSameOriginWith(microsoft365_manifest_url) &&
-        pwa_start_url_path == microsoft365_manifest_url.path()) {
+        pwa_start_url_path == microsoft365_manifest_url.GetPath()) {
       manifest->id =
           GURL(pwa_start_url_origin.GetURL().spec() + kMicrosoft365ManifestId);
     }

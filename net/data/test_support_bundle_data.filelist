@@ -102,6 +102,7 @@ data/ssl/certificates/google.pem_pkcs7.p7b
 data/ssl/certificates/google.single.der
 data/ssl/certificates/google.single.pem
 data/ssl/certificates/google_diginotar.pem
+data/ssl/certificates/google_wildcard.pem
 data/ssl/certificates/intermediate_ca_cert.pem
 data/ssl/certificates/invalid_key_usage_cert.der
 data/ssl/certificates/key_usage_p256.key
@@ -114,7 +115,6 @@ data/ssl/certificates/key_usage_rsa_both.pem
 data/ssl/certificates/key_usage_rsa_digitalsignature.pem
 data/ssl/certificates/key_usage_rsa_keyencipherment.pem
 data/ssl/certificates/key_usage_rsa_no_extension.pem
-data/ssl/certificates/leaf_from_known_root.pem
 data/ssl/certificates/lets-encrypt-dst-x3-root.pem
 data/ssl/certificates/lets-encrypt-isrg-x1-root.pem
 data/ssl/certificates/localhost_cert.pem

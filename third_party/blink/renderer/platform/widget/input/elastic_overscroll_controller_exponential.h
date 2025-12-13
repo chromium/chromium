@@ -23,12 +23,15 @@ class PLATFORM_EXPORT ElasticOverscrollControllerExponential
       const ElasticOverscrollControllerExponential&) = delete;
   ~ElasticOverscrollControllerExponential() override = default;
 
-  void DidEnterMomentumAnimatedState() override;
+  void DidEnterMomentumAnimatedState(OverscrollEntry& entry) override;
   gfx::Vector2d StretchAmountForTimeDelta(
+      const OverscrollEntry& entry,
       const base::TimeDelta& delta) const override;
   gfx::Vector2d StretchAmountForAccumulatedOverscroll(
+      const OverscrollEntry& entry,
       const gfx::Vector2dF& accumulated_overscroll) const override;
   gfx::Vector2d AccumulatedOverscrollForStretchAmount(
+      const OverscrollEntry& entry,
       const gfx::Vector2dF& delta) const override;
 };
 

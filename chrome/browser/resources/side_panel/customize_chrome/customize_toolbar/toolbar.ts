@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';

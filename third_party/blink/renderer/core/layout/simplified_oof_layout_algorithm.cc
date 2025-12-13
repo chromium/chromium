@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -13,6 +14,7 @@ SimplifiedOofLayoutAlgorithm::SimplifiedOofLayoutAlgorithm(
     const LayoutAlgorithmParams& params,
     const PhysicalBoxFragment& last_fragmentainer)
     : LayoutAlgorithm(params) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK(last_fragmentainer.IsFragmentainerBox());
   DCHECK(params.space.HasKnownFragmentainerBlockSize());
 

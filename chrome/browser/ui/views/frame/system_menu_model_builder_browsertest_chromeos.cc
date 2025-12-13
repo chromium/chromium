@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/public/cpp/autotest_desks_api.h"
 #include "base/containers/contains.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -61,16 +63,22 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   app_browser->SetLockedForOnTask(false);
 
+  // Create a new desk so we can verify desk menu options visibility.
+  ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
+
   // Retrieve system menu.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Verify system menu command availability.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_FORWARD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_RELOAD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_TASK_MANAGER, menu));
+  EXPECT_TRUE(ContainsCommandIdInMenu(
+      chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
 
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
@@ -81,16 +89,22 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderWithOnTaskTest,
       web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
   app_browser->SetLockedForOnTask(true);
 
+  // Create a new desk so we can verify desk menu options visibility.
+  ASSERT_TRUE(ash::AutotestDesksApi().CreateNewDesk());
+
   // Retrieve system menu.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Verify system menu command availability.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_FORWARD, menu));
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_RELOAD, menu));
   EXPECT_FALSE(ContainsCommandIdInMenu(IDC_TASK_MANAGER, menu));
+  EXPECT_FALSE(ContainsCommandIdInMenu(
+      chromeos::MoveToDesksMenuModel::kMenuCommandId, menu));
 }
 
 class SystemMenuModelBuilderMultiUserTest : public ash::LoginManagerTest {
@@ -125,10 +139,9 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
 
   // Open the settings window and record the |settings_browser|.
   auto* manager = SettingsWindowManager::GetInstance();
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   manager->ShowOSSettings(profile);
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   auto* settings_browser = manager->FindBrowserForProfile(profile);
   ASSERT_TRUE(settings_browser);
@@ -136,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderMultiUserTest,
   // Retrieve the system menu so we can verify command availability.
   const BrowserView* const browser_view =
       BrowserView::GetBrowserViewForBrowser(settings_browser);
-  const ui::MenuModel* const menu = browser_view->frame()->GetSystemMenuModel();
+  const ui::MenuModel* const menu =
+      browser_view->browser_widget()->GetSystemMenuModel();
 
   // Standard WebUI commands are available.
   EXPECT_TRUE(ContainsCommandIdInMenu(IDC_BACK, menu));

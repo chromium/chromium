@@ -51,7 +51,16 @@ PannerHandler::PannerHandler(AudioNode& node,
       orientation_x_(&orientation_x),
       orientation_y_(&orientation_y),
       orientation_z_(&orientation_z),
-      listener_handler_(&node.context()->listener()->Handler()) {
+      listener_handler_(&node.context()->listener()->Handler()),
+      panner_x_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      panner_y_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      panner_z_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      orientation_x_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      orientation_y_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      orientation_z_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      azimuth_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      elevation_values_(GetDeferredTaskHandler().RenderQuantumFrames()),
+      total_gain_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();
   AddOutput(kMaximumOutputChannels);
 
@@ -222,112 +231,89 @@ void PannerHandler::Process(uint32_t frames_to_process) {
 void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
                                                 const AudioBus* source,
                                                 uint32_t frames_to_process) {
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
   const unsigned render_quantum_frames =
       GetDeferredTaskHandler().RenderQuantumFrames();
-  CHECK_EQ(render_quantum_frames, render_quantum_frames_expected);
-  CHECK_LE(frames_to_process, render_quantum_frames_expected);
-
-  float panner_x[render_quantum_frames_expected];
-  float panner_y[render_quantum_frames_expected];
-  float panner_z[render_quantum_frames_expected];
-  float orientation_x[render_quantum_frames_expected];
-  float orientation_y[render_quantum_frames_expected];
-  float orientation_z[render_quantum_frames_expected];
-  std::array<double, render_quantum_frames_expected> azimuth;
-  std::array<double, render_quantum_frames_expected> elevation;
-  float total_gain[render_quantum_frames_expected];
+  DCHECK_LE(frames_to_process, render_quantum_frames);
 
   position_x_->CalculateSampleAccurateValues(
-      base::span(panner_x).first(frames_to_process));
+      panner_x_values_.as_span().first(frames_to_process));
   position_y_->CalculateSampleAccurateValues(
-      base::span(panner_y).first(frames_to_process));
+      panner_y_values_.as_span().first(frames_to_process));
   position_z_->CalculateSampleAccurateValues(
-      base::span(panner_z).first(frames_to_process));
+      panner_z_values_.as_span().first(frames_to_process));
   orientation_x_->CalculateSampleAccurateValues(
-      base::span(orientation_x).first(frames_to_process));
+      orientation_x_values_.as_span().first(frames_to_process));
   orientation_y_->CalculateSampleAccurateValues(
-      base::span(orientation_y).first(frames_to_process));
+      orientation_y_values_.as_span().first(frames_to_process));
   orientation_z_->CalculateSampleAccurateValues(
-      base::span(orientation_z).first(frames_to_process));
+      orientation_z_values_.as_span().first(frames_to_process));
 
-  const float* listener_x = listener_handler_->GetPositionXValues(
-      render_quantum_frames);
-  const float* listener_y = listener_handler_->GetPositionYValues(
-      render_quantum_frames);
-  const float* listener_z = listener_handler_->GetPositionZValues(
-      render_quantum_frames);
-  const float* forward_x = listener_handler_->GetForwardXValues(
-      render_quantum_frames);
-  const float* forward_y = listener_handler_->GetForwardYValues(
-      render_quantum_frames);
-  const float* forward_z = listener_handler_->GetForwardZValues(
-      render_quantum_frames);
-  const float* up_x = listener_handler_->GetUpXValues(
-      render_quantum_frames);
-  const float* up_y = listener_handler_->GetUpYValues(
-      render_quantum_frames);
-  const float* up_z = listener_handler_->GetUpZValues(
-      render_quantum_frames);
+  const float* listener_x =
+      listener_handler_->GetPositionXValues(render_quantum_frames);
+  const float* listener_y =
+      listener_handler_->GetPositionYValues(render_quantum_frames);
+  const float* listener_z =
+      listener_handler_->GetPositionZValues(render_quantum_frames);
+  const float* forward_x =
+      listener_handler_->GetForwardXValues(render_quantum_frames);
+  const float* forward_y =
+      listener_handler_->GetForwardYValues(render_quantum_frames);
+  const float* forward_z =
+      listener_handler_->GetForwardZValues(render_quantum_frames);
+  const float* up_x = listener_handler_->GetUpXValues(render_quantum_frames);
+  const float* up_y = listener_handler_->GetUpYValues(render_quantum_frames);
+  const float* up_z = listener_handler_->GetUpZValues(render_quantum_frames);
 
   UNSAFE_TODO({
     // Compute the azimuth, elevation, and total gains for each position.
     for (unsigned k = 0; k < frames_to_process; ++k) {
-      gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
-      gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
-                                 orientation_z[k]);
+      gfx::Point3F panner_position(panner_x_values_[k], panner_y_values_[k],
+                                   panner_z_values_[k]);
+      gfx::Vector3dF orientation(orientation_x_values_[k],
+                                 orientation_y_values_[k],
+                                 orientation_z_values_[k]);
       gfx::Point3F listener_position(listener_x[k], listener_y[k],
                                      listener_z[k]);
       gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
       gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
 
-      CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
-                                listener_position, listener_forward,
-                                listener_up);
+      CalculateAzimuthElevation(&azimuth_values_[k], &elevation_values_[k],
+                                panner_position, listener_position,
+                                listener_forward, listener_up);
 
-      total_gain[k] = CalculateDistanceConeGain(panner_position, orientation,
-                                                listener_position);
+      total_gain_values_[k] = CalculateDistanceConeGain(
+          panner_position, orientation, listener_position);
     }
     // Update cached values in case automations end.
     if (frames_to_process > 0) {
-      cached_azimuth_ = azimuth[frames_to_process - 1];
-      cached_elevation_ = elevation[frames_to_process - 1];
-      cached_distance_cone_gain_ = total_gain[frames_to_process - 1];
+      cached_azimuth_ = azimuth_values_[frames_to_process - 1];
+      cached_elevation_ = elevation_values_[frames_to_process - 1];
+      cached_distance_cone_gain_ = total_gain_values_[frames_to_process - 1];
     }
   });
-  panner_->PanWithSampleAccurateValues(azimuth, elevation, source, destination,
-                                       frames_to_process,
-                                       InternalChannelInterpretation());
-  destination->CopyWithSampleAccurateGainValuesFrom(*destination, total_gain,
-                                                    frames_to_process);
+  panner_->PanWithSampleAccurateValues(
+      azimuth_values_.as_span().first(frames_to_process),
+      elevation_values_.as_span().first(frames_to_process), source, destination,
+      frames_to_process, InternalChannelInterpretation());
+  destination->CopyWithSampleAccurateGainValuesFrom(
+      *destination, total_gain_values_.Data(), frames_to_process);
 }
 
 void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
-  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
-           render_quantum_frames_expected);
-  float values[render_quantum_frames_expected];
-
   DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
   position_x_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      panner_x_values_.as_span().first(frames_to_process));
   position_y_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      panner_y_values_.as_span().first(frames_to_process));
   position_z_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      panner_z_values_.as_span().first(frames_to_process));
   orientation_x_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      orientation_x_values_.as_span().first(frames_to_process));
   orientation_y_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      orientation_y_values_.as_span().first(frames_to_process));
   orientation_z_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      orientation_z_values_.as_span().first(frames_to_process));
 }
 
 void PannerHandler::Initialize() {

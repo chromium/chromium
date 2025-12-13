@@ -7,9 +7,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "services/webnn/ort/device_allocator.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/scoped_ort_types.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/webnn_context_impl.h"
 
@@ -23,21 +25,45 @@ namespace ort {
 // for creating a `GraphImplOrt` which uses ONNX Runtime for inference.
 class ContextImplOrt final : public WebNNContextImpl {
  public:
+  // Constructs a new `ContextImplOrt`. Must be called on `owning_task_runner`.
+  static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      base::WeakPtr<WebNNContextProviderImpl> context_provider,
+      const EpWorkarounds& ep_workarounds,
+      mojom::CreateContextOptionsPtr options,
+      mojom::Device device_type,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      scoped_refptr<Environment> env,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+      gpu::SharedImageManager* shared_image_manager,
+      scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+      ScopedTrace scoped_trace);
+
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 WebNNContextProviderImpl* context_provider,
+                 base::WeakPtr<WebNNContextProviderImpl> context_provider,
+                 const EpWorkarounds& ep_workarounds,
                  mojom::CreateContextOptionsPtr options,
+                 mojom::Device device_type,
+                 mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+                 mojo::ScopedDataPipeProducerHandle read_tensor_producer,
                  scoped_refptr<Environment> env,
-                 scoped_refptr<SessionOptions> session_options);
+                 std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+                 scoped_refptr<gpu::MemoryTracker> memory_tracker,
+                 scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+                 gpu::SharedImageManager* shared_image_manager,
+                 scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplOrt(const WebNNContextImpl&) = delete;
   ContextImplOrt& operator=(const ContextImplOrt&) = delete;
 
-  ~ContextImplOrt() override;
 
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  static ContextProperties GetContextProperties();
+  static ContextProperties GetContextProperties(bool resample2d_limit_to_nchw);
 
   scoped_refptr<Environment> env() const { return env_; }
 
@@ -45,11 +71,12 @@ class ContextImplOrt final : public WebNNContextImpl {
     return session_options_;
   }
 
-  bool is_external_data_supported() const {
-    return is_external_data_supported_;
-  }
+  void HandleContextLostOrCrash(const std::string& error_message,
+                                OrtErrorCode error_code);
 
  private:
+  ~ContextImplOrt() override;
+
   void CreateGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
@@ -59,10 +86,15 @@ class ContextImplOrt final : public WebNNContextImpl {
       base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
-  void CreateTensorImpl(
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override;
+
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      CreateTensorImplCallback callback) override;
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   scoped_refptr<Environment> env_;
 
@@ -70,7 +102,9 @@ class ContextImplOrt final : public WebNNContextImpl {
   // context.
   scoped_refptr<SessionOptions> session_options_;
 
-  const bool is_external_data_supported_;
+  // The device allocator used for device tensor creation. May be nullptr if
+  // device tensor is not supported.
+  scoped_refptr<DeviceAllocator> device_allocator_;
 
   base::WeakPtrFactory<ContextImplOrt> weak_factory_{this};
 };

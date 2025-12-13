@@ -22,7 +22,7 @@
 #include "ui/display/types/display_constants.h"
 
 namespace ash {
-class NonClientFrameViewAsh;
+class FrameViewAsh;
 class WideFrameView;
 }  // namespace ash
 
@@ -193,7 +193,7 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // views::WidgetDelegate:
   void WindowClosing() override;
   bool CanMaximize() const override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
@@ -293,8 +293,8 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   void EnsureCompositorIsLockedForOrientationChange();
 
   ash::WindowState* GetWindowState();
-  ash::NonClientFrameViewAsh* GetFrameView();
-  const ash::NonClientFrameViewAsh* GetFrameView() const;
+  ash::FrameViewAsh* GetFrameView();
+  const ash::FrameViewAsh* GetFrameView() const;
 
   void EnsurePendingScale(bool commit_immediately);
 

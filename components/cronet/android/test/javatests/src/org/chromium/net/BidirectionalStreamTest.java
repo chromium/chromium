@@ -30,8 +30,8 @@ import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.build.BuildConfig;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.BoolFlag;
-import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.Flags;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
@@ -47,6 +47,7 @@ import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NetworkExceptionImpl;
 import org.chromium.net.impl.TestLogger;
 import org.chromium.net.impl.UrlResponseInfoImpl;
+import org.chromium.net.impl.UserAgentTestUtil;
 
 import java.nio.ByteBuffer;
 import java.util.AbstractMap;
@@ -55,6 +56,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -295,6 +298,34 @@ public class BidirectionalStreamTest {
         mTestRule.assertResponseEquals(urlResponseInfo, callback.getResponseInfoWithChecks());
         checkResponseInfo(
                 callback.getResponseInfoWithChecks(), Http2TestServer.getEchoMethodUrl(), 200, "");
+    }
+
+    @Test
+    @SmallTest
+    public void testRejectedExecutorShouldHaveCronetMetricsAvailable() throws Exception {
+        TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback();
+        // Create stream.
+        BidirectionalStream stream =
+                mCronetEngine
+                        .newBidirectionalStreamBuilder(
+                                Http2TestServer.getEchoMethodUrl(),
+                                callback,
+                                new Executor() {
+                                    @Override
+                                    public void execute(Runnable task) {
+                                        throw new RejectedExecutionException();
+                                    }
+                                })
+                        .setHttpMethod("GET")
+                        .build();
+        stream.start();
+        while (!stream.isDone()) {
+            // Since the executor rejects callback then the terminal callbacks will never be
+            // executed. This means that we don't have any reasonable way to know when the request
+            // has finished other than busy looping.
+            Thread.sleep(100);
+        }
+        // There's no way to figure out why the request has silently died other than logcat :(
     }
 
     @Test
@@ -1170,8 +1201,7 @@ public class BidirectionalStreamTest {
         assertThat(callback.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback.mResponseAsString)
                 .isEqualTo(
-                        new CronetEngine.Builder(mTestRule.getTestFramework().getContext())
-                                .getDefaultUserAgent());
+                        UserAgentTestUtil.getDefaultUserAgent(mTestRule.implementationUnderTest()));
     }
 
     @Test
@@ -1676,7 +1706,7 @@ public class BidirectionalStreamTest {
         BidirectionalStream stream = builder.setHttpMethod("GET").build();
         stream.start();
         callback.blockForDone();
-        assertThat(ResponseStep.ON_SUCCEEDED).isEqualTo(callback.mResponseStep);
+        assertThat(callback.mResponseStep).isEqualTo(ResponseStep.ON_SUCCEEDED);
         assertThat(stream.isDone()).isTrue();
         assertThat(callback.getResponseInfoWithChecks()).isNotNull();
         // Check that error thrown from 'onSucceeded' callback is not reported.

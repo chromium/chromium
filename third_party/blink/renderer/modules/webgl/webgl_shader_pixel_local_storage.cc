@@ -22,13 +22,17 @@ const char* WebGLShaderPixelLocalStorage::ExtensionName() {
 }
 
 WebGLShaderPixelLocalStorage::WebGLShaderPixelLocalStorage(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext* execution_context)
     : WebGLExtension(context),
       coherent_(context->ExtensionsUtil()->SupportsExtension(
           "GL_ANGLE_shader_pixel_local_storage_coherent")) {
-  context->EnableExtensionIfSupported("OES_draw_buffers_indexed");
-  context->EnableExtensionIfSupported("EXT_color_buffer_float");
-  context->EnableExtensionIfSupported("EXT_color_buffer_half_float");
+  context->EnableExtensionIfSupported("OES_draw_buffers_indexed",
+                                      execution_context);
+  context->EnableExtensionIfSupported("EXT_color_buffer_float",
+                                      execution_context);
+  context->EnableExtensionIfSupported("EXT_color_buffer_half_float",
+                                      execution_context);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_shader_pixel_local_storage");
   context->ContextGL()->GetIntegerv(GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE,

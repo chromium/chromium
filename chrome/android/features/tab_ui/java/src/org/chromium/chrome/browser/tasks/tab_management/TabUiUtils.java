@@ -11,11 +11,14 @@ import android.content.Context;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -153,6 +156,8 @@ public class TabUiUtils {
      */
     public static boolean updateTabGroupColor(
             TabGroupModelFilter filter, Token tabGroupId, @TabGroupColorId int newGroupColor) {
+        if (!filter.tabGroupExists(tabGroupId)) return false;
+
         int curGroupColor = filter.getTabGroupColor(tabGroupId);
         if (curGroupColor != newGroupColor) {
             filter.setTabGroupColor(tabGroupId, newGroupColor);
@@ -172,6 +177,8 @@ public class TabUiUtils {
     public static boolean updateTabGroupTitle(
             TabGroupModelFilter filter, Token tabGroupId, String newGroupTitle) {
         assert newGroupTitle != null && !newGroupTitle.isEmpty();
+        if (!filter.tabGroupExists(tabGroupId)) return false;
+
         String curGroupTitle = filter.getTabGroupTitle(tabGroupId);
         if (!newGroupTitle.equals(curGroupTitle)) {
             filter.setTabGroupTitle(tabGroupId, newGroupTitle);
@@ -422,8 +429,8 @@ public class TabUiUtils {
             return;
         }
 
-        for (int i = 0; i < tabList.getCount(); i++) {
-            if (tabList.getTabAtChecked(i).getTabHasSensitiveContent()) {
+        for (Tab tab : tabList) {
+            if (tab.getTabHasSensitiveContent()) {
                 contentSensitivitySetter.onResult(/* result= */ true);
                 RecordHistogram.recordBooleanHistogram(histogram, /* sample= */ true);
                 return;
@@ -493,4 +500,39 @@ public class TabUiUtils {
         }
         return timestamp;
     }
+
+    /**
+     * Applies the backplate and adjusts the layout for the empty state view on XR devices.
+     *
+     * @param rootView The view containing the empty state UI.
+     */
+    public static void applyXrEmptyStateBackplate(View rootView) {
+        if (!DeviceInfo.isXr()) {
+            return;
+        }
+
+        View emptyStateContainer =
+                rootView.findViewById(R.id.empty_state_container);
+        View emptyStateIllustration =
+                rootView.findViewById(R.id.empty_state_icon);
+
+        if (emptyStateContainer instanceof ScrollView) {
+            ScrollView scrollView = (ScrollView) emptyStateContainer;
+            FrameLayout.LayoutParams scrollParams =
+                    (FrameLayout.LayoutParams) scrollView.getLayoutParams();
+            scrollParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
+            scrollParams.height = FrameLayout.LayoutParams.WRAP_CONTENT;
+            scrollParams.gravity = Gravity.CENTER;
+            scrollView.setLayoutParams(scrollParams);
+        }
+
+        if (emptyStateIllustration != null
+                && emptyStateIllustration.getParent() instanceof View) {
+            View container = (View) emptyStateIllustration.getParent();
+            container.setBackgroundResource(
+                    R.drawable.xr_empty_state_backplate);
+        }
+    }
+
+
 }

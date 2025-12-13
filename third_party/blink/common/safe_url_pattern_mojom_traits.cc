@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/common/safe_url_pattern_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 bool EnumTraits<blink::mojom::Modifier, ::liburlpattern::Modifier>::FromMojom(

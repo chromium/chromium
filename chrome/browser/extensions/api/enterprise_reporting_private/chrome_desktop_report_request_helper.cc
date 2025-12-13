@@ -32,8 +32,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
-#include "crypto/apple_keychain.h"
-#include "crypto/mac_security_services_lock.h"
+#include "crypto/apple/scoped_keychain_user_interaction_allowed.h"
+#include "crypto/apple/security_framework_lock.h"
 #endif
 
 namespace extensions {
@@ -167,12 +167,12 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
   password->clear();
 
   OSStatus status;
-  crypto::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
+  crypto::apple::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
       FALSE, &status);
   if (status != noErr)
     return status;
 
-  base::AutoLock lock(crypto::GetMacSecurityServicesLock());
+  base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
   UInt32 password_length = 0;
   void* password_data = nullptr;
   base::apple::ScopedCFTypeRef<SecKeychainItemRef> item_ref;

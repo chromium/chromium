@@ -38,6 +38,7 @@ class FormSaverImpl : public FormSaver {
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
           matches,
       const std::u16string& old_password) override;
+  void UpdateWithoutPostProcessing(PasswordForm pending) override;
   void UpdateReplace(
       PasswordForm pending,
       const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
@@ -53,7 +54,7 @@ class FormSaverImpl : public FormSaver {
   // form handler or origin handler which could embed FormSaver.
 
   // Cached pointer to the PasswordStoreInterface.
-  const raw_ptr<PasswordStoreInterface> store_;
+  const raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
 };
 
 }  // namespace password_manager

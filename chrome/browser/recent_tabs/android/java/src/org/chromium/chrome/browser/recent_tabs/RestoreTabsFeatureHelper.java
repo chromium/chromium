@@ -9,12 +9,10 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,9 +24,11 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /** A class of helper methods that assist in the restore tabs workflow. */
 @NullMarked
@@ -64,7 +64,8 @@ public class RestoreTabsFeatureHelper {
             TabCreatorManager tabCreatorManager,
             BottomSheetController bottomSheetController,
             Supplier<Integer> gtsTabListModelSizeSupplier,
-            Callback<Integer> scrollGTSToRestoredTabsCallback) {
+            Callback<Integer> scrollGTSToRestoredTabsCallback,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (profile == null || profile.isOffTheRecord()) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NULL_PROFILE);
@@ -120,7 +121,8 @@ public class RestoreTabsFeatureHelper {
                     tabCreatorManager,
                     bottomSheetController,
                     gtsTabListModelSizeSupplier,
-                    scrollGTSToRestoredTabsCallback);
+                    scrollGTSToRestoredTabsCallback,
+                    modalDialogManagerSupplier);
             mDelegate.showPromo(sessions);
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.SHOWN);
@@ -143,7 +145,8 @@ public class RestoreTabsFeatureHelper {
             TabCreatorManager tabCreatorManager,
             BottomSheetController bottomSheetController,
             Supplier<Integer> gtsTabListModelSizeSupplier,
-            Callback<Integer> scrollGTSToRestoredTabsCallback) {
+            Callback<Integer> scrollGTSToRestoredTabsCallback,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mDelegate =
                 (mDelegateForTesting != null)
                         ? mDelegateForTesting
@@ -157,7 +160,8 @@ public class RestoreTabsFeatureHelper {
                                                 activity,
                                                 profile,
                                                 tabCreatorManager,
-                                                bottomSheetController);
+                                                bottomSheetController,
+                                                modalDialogManagerSupplier);
                                 mController.showHomeScreen(
                                         assumeNonNull(mForeignSessionHelper),
                                         sessions,
@@ -203,13 +207,11 @@ public class RestoreTabsFeatureHelper {
     }
 
     void updateTrackerIfFirstStartIsRecent(Profile profile, Tracker tracker) {
-        if (ChromeFeatureList.sAndroidShowRestoreTabsPromoOnFreBypassedKillSwitch.isEnabled()) {
-            long firstInitialized =
-                    ChromeSharedPreferences.getInstance()
-                            .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
-            if (firstInitialized == -1L || isTimestampRecent(firstInitialized)) {
-                tracker.notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
-            }
+        long firstInitialized =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
+        if (firstInitialized == -1L || isTimestampRecent(firstInitialized)) {
+            tracker.notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
         }
     }
 

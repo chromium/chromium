@@ -14,6 +14,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"

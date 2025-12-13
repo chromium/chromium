@@ -23,8 +23,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
@@ -101,6 +99,12 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       int http_status_code,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) override;
+  bool TestDidAddMessageToConsole(
+      blink::mojom::ConsoleMessageLevel log_level,
+      const std::u16string& message,
+      int32_t line_no,
+      const std::u16string& source_id,
+      const std::optional<std::u16string>& untrusted_stack_trace) override;
   void TestSetFaviconURL(
       const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) override;
   void TestUpdateFaviconURL(

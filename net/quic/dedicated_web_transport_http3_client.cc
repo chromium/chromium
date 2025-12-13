@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/address_list.h"
 #include "net/base/port_util.h"
+#include "net/base/request_priority.h"
 #include "net/base/url_util.h"
 #include "net/http/http_network_session.h"
 #include "net/log/net_log_values.h"
@@ -45,9 +46,7 @@ constexpr int kCustomCertificateMaxValidityDays = 14;
 constexpr base::TimeDelta kMaxCloseTimeout = base::Seconds(2);
 
 // Enables custom congestion control for WebTransport over HTTP/3.
-BASE_FEATURE(kWebTransportCongestionControl,
-             "WebTransportCongestionControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kWebTransportCongestionControl, base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<quic::CongestionControlType>::Option
     kWebTransportCongestionControlAlgorithms[] = {
         {quic::kCubicBytes, "CUBIC"},
@@ -61,10 +60,11 @@ constexpr base::FeatureParam<quic::CongestionControlType>
         /*default_value=*/quic::kCubicBytes,
         &kWebTransportCongestionControlAlgorithms};
 
-std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
+std::set<std::string> HostsFromSchemeHostPorts(
+    const std::set<url::SchemeHostPort>& scheme_host_ports) {
   std::set<std::string> hosts;
-  for (const auto& origin : origins) {
-    hosts.insert(origin.host());
+  for (const auto& scheme_host_port : scheme_host_ports) {
+    hosts.insert(scheme_host_port.host());
   }
   return hosts;
 }
@@ -93,9 +93,11 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
   if (parameters.server_certificate_fingerprints.empty()) {
-    std::set<std::string> hostnames_to_allow_unknown_roots = HostsFromOrigins(
-        context->quic_context()->params()->origins_to_force_quic_on);
-    if (context->quic_context()->params()->webtransport_developer_mode) {
+    std::set<std::string> hostnames_to_allow_unknown_roots =
+        HostsFromSchemeHostPorts(
+            context->quic_context()->params()->origins_to_force_quic_on);
+    if (context->quic_context()->params()->force_quic_everywhere ||
+        context->quic_context()->params()->webtransport_developer_mode) {
       hostnames_to_allow_unknown_roots.insert("");
     }
     return std::make_unique<ProofVerifierChromium>(
@@ -242,10 +244,11 @@ class DedicatedWebTransportHttp3ClientSession
     return stream_ptr;
   }
 
-  void OnDatagramProcessed(std::optional<quic::MessageStatus> status) override {
+  void OnDatagramProcessed(
+      std::optional<quic::DatagramStatus> status) override {
     client_->OnDatagramProcessed(
-        status.has_value() ? std::optional<quic::MessageStatus>(*status)
-                           : std::optional<quic::MessageStatus>());
+        status.has_value() ? std::optional<quic::DatagramStatus>(*status)
+                           : std::optional<quic::DatagramStatus>());
   }
 
  private:
@@ -470,6 +473,12 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
       case CONNECT_STATE_RESOLVE_HOST_COMPLETE:
         rv = DoResolveHostComplete(rv);
         break;
+      case CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS:
+        rv = DoLocalNetworkAccessCheck();
+        break;
+      case CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS_COMPLETE:
+        rv = DoLocalNetworkAccessCheckComplete(rv);
+        break;
       case CONNECT_STATE_CONNECT:
         DCHECK_EQ(rv, OK);
         rv = DoConnect();
@@ -502,11 +511,18 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
 int DedicatedWebTransportHttp3Client::DoInit() {
   if (!url_.is_valid())
     return ERR_INVALID_URL;
-  if (url_.scheme_piece() != url::kHttpsScheme)
+  if (url_.scheme() != url::kHttpsScheme) {
     return ERR_DISALLOWED_URL_SCHEME;
+  }
 
-  if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme_piece()))
+  if (!IsPortAllowedForScheme(url_.EffectiveIntPort(), url_.scheme())) {
     return ERR_UNSAFE_PORT;
+  }
+
+  if (!application_protocols_.empty() &&
+      !webtransport::ValidateSubprotocolList(application_protocols_)) {
+    return ERR_INVALID_ARGUMENT;
+  }
 
   // TODO(vasilvv): check if QUIC is disabled by policy.
 
@@ -537,7 +553,7 @@ int DedicatedWebTransportHttp3Client::DoCheckProxy() {
       url_, /* method */ "CONNECT", anonymization_key_, &proxy_info_,
       base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
                      base::Unretained(this)),
-      &proxy_resolution_request_, net_log_);
+      &proxy_resolution_request_, net_log_, DEFAULT_PRIORITY);
 }
 
 int DedicatedWebTransportHttp3Client::DoCheckProxyComplete(int rv) {
@@ -565,7 +581,27 @@ int DedicatedWebTransportHttp3Client::DoResolveHostComplete(int rv) {
   if (rv != OK)
     return rv;
 
-  DCHECK(resolve_host_request_->GetAddressResults());
+  DCHECK(!resolve_host_request_->GetAddressResults().empty());
+  next_connect_state_ = CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS;
+  return OK;
+}
+
+int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheck() {
+  next_connect_state_ = CONNECT_STATE_CHECK_LOCAL_NETWORK_ACCESS_COMPLETE;
+  IPEndPoint server_address =
+      resolve_host_request_->GetAddressResults().front();
+  visitor_->OnLocalNetworkAccessCheck(
+      server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
+                                     base::Unretained(this)));
+  return ERR_IO_PENDING;
+}
+
+int DedicatedWebTransportHttp3Client::DoLocalNetworkAccessCheckComplete(
+    int rv) {
+  if (rv != OK) {
+    return rv;
+  }
+
   next_connect_state_ = CONNECT_STATE_CONNECT;
   return OK;
 }
@@ -584,7 +620,7 @@ int DedicatedWebTransportHttp3Client::DoConnect() {
   socket_->UseNonBlockingIO();
 
   IPEndPoint server_address =
-      *resolve_host_request_->GetAddressResults()->begin();
+      resolve_host_request_->GetAddressResults().front();
   visitor_->OnBeforeConnect(server_address);
   return socket_->ConnectAsync(
       server_address, base::BindOnce(&DedicatedWebTransportHttp3Client::DoLoop,
@@ -598,7 +634,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   packet_reader_ = nullptr;
 
   IPEndPoint server_address =
-      *resolve_host_request_->GetAddressResults()->begin();
+      resolve_host_request_->GetAddressResults().front();
   quic::QuicConnectionId connection_id =
       quic::QuicUtils::CreateRandomConnectionId(
           quic_context_->random_generator());
@@ -615,8 +651,8 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
   session_ = std::make_unique<DedicatedWebTransportHttp3ClientSession>(
       InitializeQuicConfig(*quic_context_->params()), supported_versions_,
       connection.release(),
-      quic::QuicServerId(url_.host(), url_.EffectiveIntPort()), &crypto_config_,
-      this);
+      quic::QuicServerId(url_.GetHost(), url_.EffectiveIntPort()),
+      &crypto_config_, this);
   if (!original_supported_versions_.empty()) {
     session_->set_client_original_supported_versions(
         original_supported_versions_);
@@ -743,8 +779,8 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   }
 
   quiche::HttpHeaderBlock headers;
-  DCHECK_EQ(url_.scheme(), url::kHttpsScheme);
-  headers[":scheme"] = url_.scheme();
+  DCHECK_EQ(url_.GetScheme(), url::kHttpsScheme);
+  headers[":scheme"] = url_.GetScheme();
   headers[":method"] = "CONNECT";
   headers[":authority"] = GetHostAndOptionalPort(url_);
   headers[":path"] = url_.PathForRequest();
@@ -987,7 +1023,7 @@ void DedicatedWebTransportHttp3Client::OnConnectionClosed(
 }
 
 void DedicatedWebTransportHttp3Client::OnDatagramProcessed(
-    std::optional<quic::MessageStatus> status) {
+    std::optional<quic::DatagramStatus> status) {
   visitor_->OnDatagramProcessed(status);
 }
 

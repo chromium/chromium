@@ -8,8 +8,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.app.Activity;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -43,6 +41,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -103,7 +102,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     private static class ReturnTokenIdentityCredentialsDelegate
             extends IdentityCredentialsDelegate {
         @Override
-        public Promise<DigitalCredential> get(Activity activity, String origin, String request) {
+        public Promise<DigitalCredential> get(WindowAndroid window, String origin, String request) {
             return Promise.fulfilled(
                     new DigitalCredential("protocol", "{\"token\" : \"test_token\"}".getBytes()));
         }
@@ -132,7 +131,9 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
         mTestServer = mActivityTestRule.getTestServer();
         DigitalIdentityProvider.setDelegateForTesting(new ReturnTokenIdentityCredentialsDelegate());
 
-        mPage = mActivityTestRule.startOnTestServerUrl(TEST_PAGE);
+        // startOnTestServerUrl is flaky. Using startOnBlankPage() instead with loadUrl()
+        mActivityTestRule.startOnBlankPage();
+        mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(TEST_PAGE));
 
         mModalDialogManager = getActivity().getModalDialogManager();
     }

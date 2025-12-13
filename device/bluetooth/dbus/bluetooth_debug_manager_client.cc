@@ -55,12 +55,10 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
     dbus::MessageWriter writer(&method_call);
     writer.AppendBool(enable);
 
-    object_proxy_->CallMethodWithErrorCallback(
+    object_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothDebugManagerClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -74,12 +72,10 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
     // Convert enable to uint8_t as the dbus method takes a byte.
     writer.AppendByte((uint8_t)enable);
 
-    object_proxy_->CallMethodWithErrorCallback(
+    object_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothDebugManagerClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -106,12 +102,10 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
     writer.AppendByte(bluez_level);
     writer.AppendByte(kernel_level);
 
-    object_proxy_->CallMethodWithErrorCallback(
+    object_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothDebugManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+        base::BindOnce(&BluetoothDebugManagerClientImpl::OnMethodResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -141,25 +135,25 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
                                  base::DoNothing());
   }
 
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
-    DCHECK(response);
-    std::move(callback).Run();
-  }
-
-  // Called when a response for a failed method call is received.
-  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
-    // Error response has optional error message argument.
-    std::string error_name;
-    std::string error_message;
-    if (response) {
-      dbus::MessageReader reader(response);
-      error_name = response->GetErrorName();
-      reader.PopString(&error_message);
-    } else {
-      error_name = kNoResponseError;
+  void OnMethodResponse(base::OnceClosure callback,
+                        ErrorCallback error_callback,
+                        dbus::Response* response,
+                        dbus::ErrorResponse* error_response) {
+    if (!response) {
+      std::string error_name;
+      std::string error_message;
+      if (error_response) {
+        dbus::MessageReader reader(error_response);
+        error_name = error_response->GetErrorName();
+        reader.PopString(&error_message);
+      } else {
+        error_name = kNoResponseError;
+      }
+      std::move(error_callback).Run(error_name, error_message);
+      return;
     }
-    std::move(error_callback).Run(error_name, error_message);
+
+    std::move(callback).Run();
   }
 
   raw_ptr<dbus::ObjectProxy> object_proxy_;

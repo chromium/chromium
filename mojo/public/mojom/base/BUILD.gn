@@ -7,7 +7,6 @@ import("//third_party/protobuf/proto_library.gni")
 
 mojom_component("base") {
   generate_java = true
-  generate_rust = true
   sources = [
     "absl_status.mojom",
     "application_state.mojom",
@@ -15,6 +14,8 @@ mojom_component("base") {
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
+    "byte_count.mojom",
+    "byte_size.mojom",
     "byte_string.mojom",
     "empty.mojom",
     "error.mojom",
@@ -44,6 +45,7 @@ mojom_component("base") {
     "uuid.mojom",
     "values.mojom",
     "version.mojom",
+    "work_in_progress.mojom",
   ]
 
   if (is_win) {
@@ -101,6 +103,48 @@ mojom_component("base") {
     {
       types = [
         {
+          mojom = "mojo_base.mojom.ByteCount"
+          cpp = "::base::ByteCount"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_count_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSize"
+          cpp = "::base::ByteSize"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteSizeDelta"
+          cpp = "::base::ByteSizeDelta"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_size_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "mojo_base.mojom.ByteString"
           cpp = "std::string"
         },
@@ -135,6 +179,15 @@ mojom_component("base") {
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Empty"
+          cpp = "::std::monostate"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/empty_mojom_traits.h" ]
     },
     {
       types = [
@@ -435,7 +488,7 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.MemoryPressureLevel"
-          cpp = "::base::MemoryPressureListener::MemoryPressureLevel"
+          cpp = "::base::MemoryPressureLevel"
         },
       ]
       traits_headers =
@@ -658,6 +711,16 @@ mojom_component("base") {
           converter = "JsErrorConverter"
           mojom = "mojo_base.mojom.JsError"
           ts = "Object"
+        },
+      ]
+    },
+    {
+      source = "string16_converter.ts"
+      types = [
+        {
+          converter = "String16Converter"
+          mojom = "mojo_base.mojom.String16"
+          ts = "string"
         },
       ]
     },

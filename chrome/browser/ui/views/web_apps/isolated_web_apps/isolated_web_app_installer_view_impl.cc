@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,9 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/web_applications/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/icons/icon_masker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -97,11 +100,19 @@ ui::ImageModel CreateImageModelFromBundleMetadata(
     const SignedWebBundleMetadata& metadata) {
   // WebAppInfoImageSource only stores images at specific sizes. Request the
   // smallest size that's bigger than kIconSize.
-  int app_icon_size = 32;
   gfx::ImageSkia icon_image(std::make_unique<WebAppInfoImageSource>(
-                                app_icon_size, metadata.icons().any),
-                            gfx::Size(app_icon_size, app_icon_size));
+                                kIconSize, metadata.image_info().bitmaps),
+                            gfx::Size(kIconSize, kIconSize));
   return ui::ImageModel::FromImageSkia(icon_image);
+}
+
+// As per `PopulateTrustedIconBitmaps()` and `web_app::SizesToGenerate()`,
+// `kIconSize` is guaranteed to exist in `bitmaps`.
+SkBitmap GetIconBitmapFromBundleMetadataToUseInDialog(
+    const SignedWebBundleMetadata& metadata) {
+  auto* bitmap = base::FindOrNull(metadata.image_info().bitmaps, kIconSize);
+  CHECK(bitmap);
+  return *bitmap;
 }
 
 // Implicitly converts an id or raw string to a string. Used as an argument to
@@ -183,6 +194,8 @@ class InfoPane : public views::BoxLayoutView {
 };
 BEGIN_METADATA(InfoPane)
 END_METADATA
+
+}  // namespace
 
 // The contents view used for all installer screens. This will handle rendering
 // common UI elements like icon, title, subtitle, and an optional View for the
@@ -295,8 +308,6 @@ class InstallerDialogView : public views::BoxLayoutView {
 BEGIN_METADATA(InstallerDialogView)
 END_METADATA
 
-}  // namespace
-
 class DisabledView : public InstallerDialogView {
   METADATA_HEADER(DisabledView, InstallerDialogView)
 
@@ -358,6 +369,7 @@ class ShowMetadataView : public InstallerDialogView {
     std::vector<std::pair<int, std::u16string>> info = {
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_NAME_LABEL, u""},
         {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL, u""},
+        {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL, u""},
     };
     info_pane_ = SetContentsView(std::make_unique<InfoPane>(info),
                                  IDS_IWA_INSTALLER_DETAILS_SCREENREADER_NAME);
@@ -520,11 +532,19 @@ void IsolatedWebAppInstallerViewImpl::ShowMetadataScreen(
        bundle_metadata.app_name()},
       {IDS_IWA_INSTALLER_SHOW_METADATA_APP_VERSION_LABEL,
        base::UTF8ToUTF16(bundle_metadata.version().GetString())},
-  };
+      {IDS_IWA_INSTALLER_SHOW_METADATA_APP_ENTERPRISE_NAME_LABEL,
+       base::UTF8ToUTF16(bundle_metadata.enterprise_name().value_or(""))}};
   show_metadata_view_->UpdateInfoPaneContents(data);
   show_metadata_view_->SetTitle(bundle_metadata.app_name());
   show_metadata_view_->SetIcon(
       CreateImageModelFromBundleMetadata(bundle_metadata));
+  if (bundle_metadata.image_info().is_maskable && !icon_masked_) {
+    web_app::MaskIconOnOs(
+        GetIconBitmapFromBundleMetadataToUseInDialog(bundle_metadata),
+        base::BindOnce(
+            &IsolatedWebAppInstallerViewImpl::OnIconMaskedUpdateAppIcon,
+            weak_ptr_factory_.GetWeakPtr(), show_metadata_view_));
+  }
   ShowChildView(show_metadata_view_);
 }
 
@@ -532,6 +552,13 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallScreen(
     const SignedWebBundleMetadata& bundle_metadata) {
   install_view_->SetTitle(bundle_metadata.app_name());
   install_view_->SetIcon(CreateImageModelFromBundleMetadata(bundle_metadata));
+  if (bundle_metadata.image_info().is_maskable && !icon_masked_) {
+    web_app::MaskIconOnOs(
+        GetIconBitmapFromBundleMetadataToUseInDialog(bundle_metadata),
+        base::BindOnce(
+            &IsolatedWebAppInstallerViewImpl::OnIconMaskedUpdateAppIcon,
+            weak_ptr_factory_.GetWeakPtr(), install_view_));
+  }
   ShowChildView(install_view_);
 }
 
@@ -546,6 +573,13 @@ void IsolatedWebAppInstallerViewImpl::ShowInstallSuccessScreen(
                                      bundle_metadata.app_name());
   install_success_view_->SetIcon(
       CreateImageModelFromBundleMetadata(bundle_metadata));
+  if (bundle_metadata.image_info().is_maskable && !icon_masked_) {
+    web_app::MaskIconOnOs(
+        GetIconBitmapFromBundleMetadataToUseInDialog(bundle_metadata),
+        base::BindOnce(
+            &IsolatedWebAppInstallerViewImpl::OnIconMaskedUpdateAppIcon,
+            weak_ptr_factory_.GetWeakPtr(), install_success_view_));
+  }
   ShowChildView(install_success_view_);
 }
 
@@ -679,6 +713,17 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
   return widget;
+}
+
+void IsolatedWebAppInstallerViewImpl::OnIconMaskedUpdateAppIcon(
+    InstallerDialogView* view,
+    SkBitmap masked_bitmap) {
+  CHECK(!icon_masked_);
+  CHECK(!masked_bitmap.drawsNothing());
+  CHECK(view);
+  view->SetIcon(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFrom1xBitmap(std::move(masked_bitmap))));
+  icon_masked_ = true;
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {

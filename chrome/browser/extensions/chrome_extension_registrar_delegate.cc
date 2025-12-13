@@ -21,9 +21,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/external_install_manager.h"
-#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/installed_loader.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -40,7 +39,10 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/install_flag.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/pending_extension_manager.h"
+#include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/crash_keys.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -60,6 +62,8 @@
 #include "chrome/browser/extensions/sync/extension_sync_service.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using extensions::mojom::ManifestLocation;
 
@@ -128,7 +132,8 @@ void ChromeExtensionRegistrarDelegate::PreAddExtension(
 void ChromeExtensionRegistrarDelegate::OnAddNewOrUpdatedExtension(
     const Extension* extension) {
   if (InstallVerifier::NeedsVerification(*extension, profile_)) {
-    InstallVerifier::Get(profile_)->VerifyExtension(extension->id());
+    InstallVerifierFactory::GetForBrowserContext(profile_)->VerifyExtension(
+        extension->id());
   }
 }
 
@@ -202,7 +207,8 @@ void ChromeExtensionRegistrarDelegate::PostDeactivateExtension(
 
 void ChromeExtensionRegistrarDelegate::PreUninstallExtension(
     scoped_refptr<const Extension> extension) {
-  InstallVerifier::Get(profile_)->Remove(extension->id());
+  InstallVerifierFactory::GetForBrowserContext(profile_)->Remove(
+      extension->id());
 }
 
 void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
@@ -604,7 +610,7 @@ void ChromeExtensionRegistrarDelegate::UninstallExtensionOnFileThread(
 void ChromeExtensionRegistrarDelegate::OnUnpackedReloadFailure(
     const Extension* extension,
     const base::FilePath& file_path,
-    const std::string& error) {
+    const std::u16string& error) {
   if (!error.empty()) {
     extension_registrar_->OnUnpackedExtensionReloadFailed(file_path);
   }
@@ -616,28 +622,19 @@ void ChromeExtensionRegistrarDelegate::RecordInstallHistograms(
       extensions::profile_util::ProfileCanUseNonComponentExtensions(profile_);
 
   if (!registry_->GetInstalledExtension(extension->id())) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType", extension->GetType(),
-                              100);
     if (is_user_profile) {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType.User",
                                 extension->GetType(), 100);
+      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
+                                extension->location(), 100);
+      InstalledLoader::RecordPermissionMessagesHistogram(extension, "Install",
+                                                         profile_);
     } else {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType.NonUser",
                                 extension->GetType(), 100);
-    }
-    UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource",
-                              extension->location());
-    if (is_user_profile) {
-      UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.User2",
-                                extension->location(), 100);
-    } else {
       UMA_HISTOGRAM_ENUMERATION("Extensions.InstallSource.NonUser2",
                                 extension->location(), 100);
     }
-    // TODO(crbug.com/40878021): Address Install metrics below in a follow-up
-    // CL.
-    InstalledLoader::RecordPermissionMessagesHistogram(extension, "Install",
-                                                       is_user_profile);
   }
 }
 

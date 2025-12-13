@@ -11,17 +11,20 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/extension_info_generator.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/pack_extension_job.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/load_error_reporter.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::api {
 
@@ -30,7 +33,8 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // These constants here are only temporarily during Android desktop
   // development and we can move these constants to an anonymous namespace once
   // we finish it.
-  static constexpr char kNoSuchExtensionError[] = "No such extension.";
+  static constexpr char kNoSuchExtensionError[] =
+      "No such extension found for call to '*'.";
   static constexpr char kRequiresUserGestureError[] =
       "This action requires a user gesture.";
   static constexpr char kCouldNotShowSelectFileDialogError[] =
@@ -87,19 +91,19 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // migration.
   using GetManifestErrorCallback =
       base::OnceCallback<void(const base::FilePath& file_path,
-                              const std::string& error,
+                              const std::u16string& error,
                               size_t line_number,
                               const std::string& manifest)>;
-  // Takes in an |error| string and tries to parse it as a manifest error (with
-  // line number), asynchronously calling |callback| with the results.
-  void GetManifestError(const std::string& error,
+  // Takes in an `error` string and tries to parse it as a manifest error (with
+  // line number), asynchronously calling `callback` with the results.
+  void GetManifestError(const std::u16string& error,
                         const base::FilePath& extension_path,
                         GetManifestErrorCallback callback);
 
   // Creates a developer::LoadError from the provided data.
   developer_private::LoadError CreateLoadError(
       const base::FilePath& file_path,
-      const std::string& error,
+      const std::u16string& error,
       size_t line_number,
       const std::string& manifest,
       const DeveloperPrivateAPI::UnpackedRetryId& retry_guid);
@@ -113,6 +117,10 @@ class DeveloperPrivateAPIFunction : public ExtensionFunction {
   // Returns the extension with the given `id` from the registry, only checking
   // enabled extensions.
   const Extension* GetEnabledExtensionById(const ExtensionId& id);
+
+  // Called when there is no extension that exists for a specified ID in a
+  // function. Logs the function name and returns an error.
+  ResponseValue LogNoSuchExtensionFoundAndReturn();
 };
 
 class DeveloperPrivateAutoUpdateFunction : public DeveloperPrivateAPIFunction {
@@ -248,7 +256,7 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
   // LoadErrorReporter::Observer:
   void OnLoadFailure(content::BrowserContext* browser_context,
                      const base::FilePath& file_path,
-                     const std::string& error) override;
+                     const std::u16string& error) override;
 
  protected:
   ~DeveloperPrivateReloadFunction() override;
@@ -259,7 +267,7 @@ class DeveloperPrivateReloadFunction : public DeveloperPrivateAPIFunction,
  private:
   // Callback once we parse a manifest error from a failed reload.
   void OnGotManifestError(const base::FilePath& file_path,
-                          const std::string& error,
+                          const std::u16string& error,
                           size_t line_number,
                           const std::string& manifest);
 
@@ -311,11 +319,11 @@ class DeveloperPrivateLoadUnpackedFunction
   // Called when `file_path` load is completed
   void OnLoadComplete(const Extension* extension,
                       const base::FilePath& file_path,
-                      const std::string& error);
+                      const std::u16string& error);
 
   // Called when `file_path` load encounters a manifest parsing `error`.
   void OnGotManifestError(const base::FilePath& file_path,
-                          const std::string& error,
+                          const std::u16string& error,
                           size_t line_number,
                           const std::string& manifest);
 
@@ -585,6 +593,44 @@ class DeveloperPrivateUpdateSiteAccessFunction
   void OnSiteSettingsUpdated();
 };
 
+class DeveloperPrivateRemoveMultipleExtensionsFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.removeMultipleExtensions",
+                             DEVELOPERPRIVATE_REMOVEMULTIPLEEXTENSIONS)
+  DeveloperPrivateRemoveMultipleExtensionsFunction();
+
+  DeveloperPrivateRemoveMultipleExtensionsFunction(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+  DeveloperPrivateRemoveMultipleExtensionsFunction& operator=(
+      const DeveloperPrivateRemoveMultipleExtensionsFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateRemoveMultipleExtensionsFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The IDs of the extensions to be uninstalled.
+  std::vector<ExtensionId> extension_ids_;
+
+  raw_ptr<Profile> profile_;
+
+  // If true, immediately accept the blocked action dialog by running the
+  // callback.
+  std::optional<bool> accept_bubble_for_testing_;
+};
+
 class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
     : public DeveloperPrivateAPIFunction {
  public:
@@ -616,10 +662,10 @@ class DeveloperPrivatePackDirectoryFunction
 
   DeveloperPrivatePackDirectoryFunction();
 
-  // ExtensionPackJob::Client implementation.
+  // PackExtensionJob::Client implementation.
   void OnPackSuccess(const base::FilePath& crx_file,
                      const base::FilePath& key_file) override;
-  void OnPackFailure(const std::string& error,
+  void OnPackFailure(const std::u16string& error,
                      ExtensionCreator::ErrorType error_type) override;
 
  protected:
@@ -709,6 +755,46 @@ class DeveloperPrivateRepairExtensionFunction
   void OnReinstallComplete(bool success,
                            const std::string& error,
                            webstore_install::Result result);
+};
+
+class DeveloperPrivateUploadExtensionToAccountFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("developerPrivate.uploadExtensionToAccount",
+                             DEVELOPERPRIVATE_UPLOADEXTENSIONTOACCOUNT)
+  DeveloperPrivateUploadExtensionToAccountFunction();
+
+  DeveloperPrivateUploadExtensionToAccountFunction(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+  DeveloperPrivateUploadExtensionToAccountFunction& operator=(
+      const DeveloperPrivateUploadExtensionToAccountFunction&) = delete;
+
+  void accept_bubble_for_testing(bool accept_bubble) {
+    accept_bubble_for_testing_ = accept_bubble;
+  }
+
+ private:
+  ~DeveloperPrivateUploadExtensionToAccountFunction() override;
+
+  ResponseAction Run() override;
+
+  // Verify that the extension to be uploaded exists and that there's a signed
+  // in user. Returns the extension if successful, otherwise returns an error.
+  base::expected<const Extension*, std::string> VerifyExtensionAndSigninState();
+
+  // A callback function to run when the user accepts the action dialog.
+  void OnDialogAccepted();
+
+  // A callback function to run when the user cancels the action dialog.
+  void OnDialogCancelled();
+
+  // The ID of the extension to be uploaded.
+  ExtensionId extension_id_;
+
+  raw_ptr<Profile> profile_;
+
+  // If true, immediately accepts the keep dialog by running the callback.
+  std::optional<bool> accept_bubble_for_testing_;
 };
 
 }  // namespace extensions::api

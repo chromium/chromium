@@ -178,8 +178,8 @@ ScoredHistoryMatch::ScoredHistoryMatch(
   base::OffsetAdjuster::Adjustments adjustments;
   GURL gurl = row.url();
   std::u16string cleaned_up_url_for_matching =
-      string_cleaning::CleanUpUrlForMatching(gurl, &adjustments);
-  std::u16string title = string_cleaning::CleanUpTitleForMatching(row.title());
+      omnibox::CleanUpUrlForMatching(gurl, &adjustments);
+  std::u16string title = omnibox::CleanUpTitleForMatching(row.title());
   int term_num = 0;
   for (const auto& term : terms_vector) {
     TermMatches url_term_matches =
@@ -313,8 +313,9 @@ ScoredHistoryMatch::ScoredHistoryMatch(
     // (because the URL-that-you-typed will go first and everything
     // else will be assigned one minus the previous score, as coded
     // at the end of HistoryURLProvider::DoAutocomplete().
-    if (base::UTF8ToUTF16(gurl.host()) == terms_vector[0])
+    if (base::UTF8ToUTF16(gurl.GetHost()) == terms_vector[0]) {
       hup_like_score = HistoryURLProvider::kScoreForBestInlineableResult;
+    }
 
     // HistoryURLProvider has the function PromoteOrCreateShorterSuggestion()
     // that's meant to promote prefixes of the best match (if they've

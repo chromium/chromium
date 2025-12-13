@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"

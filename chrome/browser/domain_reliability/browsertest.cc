@@ -4,8 +4,10 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
@@ -24,7 +26,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
-#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/net_errors.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -222,9 +223,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   GURL upload_url = test_server()->GetURL(kUploadPath);
 
   {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    base::test::TestFuture<void> future;
     GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
-        test_server()->GetOrigin(), upload_url);
+        test_server()->GetOrigin(), upload_url, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   // Trigger an error.
@@ -232,8 +234,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), error_url));
 
   {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    GetNetworkContext()->ForceDomainReliabilityUploadsForTesting();
+    base::test::TestFuture<void> future;
+    GetNetworkContext()->ForceDomainReliabilityUploadsForTesting(
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   run_loop.Run();
@@ -241,7 +245,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, Upload) {
   EXPECT_EQ(1, request_count);
   EXPECT_NE("", last_request_content);
 
-  auto body = base::JSONReader::Read(last_request_content);
+  auto body = base::JSONReader::Read(last_request_content,
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(body);
   ASSERT_TRUE(body->is_dict());
 
@@ -262,17 +267,21 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, UploadAtShutdown) {
 
   GURL upload_url = test_server()->GetURL("/hung");
   {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    base::test::TestFuture<void> future;
     GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
-        url::Origin::Create(GURL("https://localhost/")), upload_url);
+        url::Origin::Create(GURL("https://localhost/")), upload_url,
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://localhost/")));
 
   {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    GetNetworkContext()->ForceDomainReliabilityUploadsForTesting();
+    base::test::TestFuture<void> future;
+    GetNetworkContext()->ForceDomainReliabilityUploadsForTesting(
+        future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   // At this point, there is an upload pending. If everything goes well, the
@@ -288,9 +297,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
 
   GURL hung_url = test_server()->GetURL("/hung");
   {
-    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    base::test::TestFuture<void> future;
     GetNetworkContext()->AddDomainReliabilityContextForTesting(  // IN-TEST
-        url::Origin::Create(hung_url), hung_url);
+        url::Origin::Create(hung_url), hung_url, future.GetCallback());
+    EXPECT_TRUE(future.Wait());
   }
 
   // Use a SimpleURLLoader so we can leak the mojo pipe, ensuring that URLLoader
@@ -303,7 +313,10 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, RequestAtShutdown) {
   auto* storage_partition = browser()->profile()->GetDefaultStoragePartition();
   simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       storage_partition->GetURLLoaderFactoryForBrowserProcess().get(),
-      base::BindOnce([](std::unique_ptr<std::string> body) {}));
+      // TODO(crbug.com/40258809): Can simplify this to `base::DoNothing()` once
+      // the version of DownloadToStringOfUnboundedSizeUntilCrashAndDie() that
+      // takes a BodyAsStringCallbackDeprecated is removed.
+      base::DoNothingAs<void(std::optional<std::string>)>());
 
   simple_loader.release();
 }

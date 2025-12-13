@@ -5,9 +5,12 @@
 #include "chrome/browser/notifications/notification_platform_bridge_linux.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <set>
 #include <sstream>
+#include <string>
+#include <tuple>
 #include <unordered_map>
 #include <unordered_set>
 #include <utility>
@@ -22,6 +25,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -37,6 +41,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/termination_notification.h"
@@ -49,9 +54,12 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/dbus/properties/types.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/check_for_service_and_start.h"
+#include "components/dbus/utils/connect_to_signal.h"
+#include "components/dbus/utils/read_value.h"
+#include "components/dbus/utils/variant.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -243,7 +251,8 @@ void ForwardNotificationOperation(NotificationOperation operation,
       is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
-                     action_index, reply, by_user, base::DoNothing()));
+                     action_index, reply, by_user, /*is_suspicious=*/false,
+                     base::DoNothing()));
 }
 
 bool WriteImageFile(scoped_refptr<base::RefCountedMemory> image,
@@ -275,72 +284,6 @@ NotificationTempFiles WriteNotificationResourceFiles(
   result.dir = base::SequenceBound<base::ScopedTempDir>(
       base::SequencedTaskRunner::GetCurrentDefault(), std::move(temp_dir));
   return result;
-}
-
-template <typename... Args, typename... Rets>
-void CallMethod(dbus::ObjectProxy* proxy,
-                const std::string& interface,
-                const std::string& method,
-                base::OnceCallback<void(bool, Rets...)> callback,
-                const Args&... args) {
-  dbus::MethodCall dbus_call(interface, method);
-  dbus::MessageWriter writer(&dbus_call);
-  (args.Write(&writer), ...);
-  proxy->CallMethod(
-      &dbus_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(
-          [](const std::string& interface, const std::string& method,
-             base::OnceCallback<void(bool, Rets...)> cb,
-             dbus::Response* response) {
-            bool success = false;
-            std::tuple<Rets...> rets;
-            if (response) {
-              dbus::MessageReader reader(response);
-              success = true;
-              std::apply(
-                  [&](auto&&... args) {
-                    ((success = success && args.Read(&reader)), ...);
-                  },
-                  rets);
-              if (reader.HasMoreData()) {
-                LOG(ERROR) << interface << "." << method
-                           << ": Failed to read all response parameters.";
-                success = false;
-              }
-            }
-            std::apply(
-                [&](auto&&... args) {
-                  std::move(cb).Run(success, std::move(args)...);
-                },
-                std::move(rets));
-          },
-          interface, method, std::move(callback)));
-}
-
-template <typename... Ts>
-void ConnectToSignal(
-    dbus::ObjectProxy* proxy,
-    const std::string& interface,
-    const std::string& signal_name,
-    base::RepeatingCallback<void(Ts...)> signal_callback,
-    dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
-  CHECK_DEREF(proxy).ConnectToSignal(
-      interface, signal_name,
-      base::BindRepeating(
-          [](const std::string& interface, const std::string& signal_name,
-             base::RepeatingCallback<void(Ts...)> cb, dbus::Signal* signal) {
-            dbus::MessageReader reader(signal);
-            DbusParameters<Ts...> params;
-            if (!params.Read(&reader)) {
-              LOG(ERROR) << interface << "." << signal_name
-                         << ": Failed to read signal parameters.";
-              return;
-            }
-            std::apply([&](auto&&... args) { cb.Run(std::move(args)...); },
-                       params.value());
-          },
-          interface, signal_name, std::move(signal_callback)),
-      std::move(on_connected_callback));
 }
 
 }  // namespace
@@ -554,7 +497,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         bus_->GetObjectProxy(kFreedesktopNotificationsName,
                              dbus::ObjectPath(kFreedesktopNotificationsPath));
 
-    CallMethod(
+    dbus_utils::CallMethod<"", "as">(
         notification_proxy_, kFreedesktopNotificationsName,
         kMethodGetCapabilities,
         base::BindOnce(
@@ -562,17 +505,18 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             weak_factory_.GetWeakPtr()));
   }
 
-  void OnGetCapabilitiesResponse(bool success,
-                                 DbusArray<DbusString> capabilities) {
+  void OnGetCapabilitiesResponse(
+      dbus_utils::CallMethodResult<std::vector<std::string>> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (!success) {
+    if (!result.has_value()) {
       OnConnectionInitializationFinished(
           ConnectionInitializationStatusCode::MISSING_REQUIRED_CAPABILITIES);
       return;
     }
 
-    for (auto& item : capabilities.value()) {
-      capabilities_.insert(item.value());
+    auto& [capabilities] = result.value();
+    for (auto& item : capabilities) {
+      capabilities_.insert(std::move(item));
     }
     if (!base::Contains(capabilities_, kCapabilityBody) ||
         !base::Contains(capabilities_, kCapabilityActions)) {
@@ -583,7 +527,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     body_images_supported_ =
         base::Contains(capabilities_, kCapabilityBodyImages);
 
-    CallMethod(
+    dbus_utils::CallMethod<"", "ssss">(
         notification_proxy_, kFreedesktopNotificationsName,
         "GetServerInformation",
         base::BindOnce(
@@ -591,15 +535,16 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             weak_factory_.GetWeakPtr()));
   }
 
-  void OnGetServerInfoResponse(bool success,
-                               DbusString server_name,
-                               DbusString vendor,
-                               DbusString server_version,
-                               DbusString spec_version) {
+  void OnGetServerInfoResponse(
+      dbus_utils::
+          CallMethodResult<std::string, std::string, std::string, std::string>
+              result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    if (success) {
-      server_name_ = server_name.value();
-      server_version_ = base::Version(server_version.value());
+    if (result.has_value()) {
+      auto& [server_name, vendor, server_version, spec_version] =
+          result.value();
+      server_name_ = std::move(server_name);
+      server_version_ = base::Version(std::move(server_version));
     }
 
     connected_signals_barrier_ = base::BarrierClosure(
@@ -608,7 +553,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
                           weak_factory_.GetWeakPtr(),
                           ConnectionInitializationStatusCode::SUCCESS));
 
-    ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalActivationToken,
         base::BindRepeating(
@@ -617,7 +562,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalActionInvoked,
         base::BindRepeating(
@@ -626,7 +571,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    ConnectToSignal(
+    dbus_utils::ConnectToSignal<"uu">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalNotificationClosed,
         base::BindRepeating(
@@ -635,7 +580,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
 
-    ConnectToSignal(
+    dbus_utils::ConnectToSignal<"us">(
         notification_proxy_, kFreedesktopNotificationsName,
         kSignalNotificationReplied,
         base::BindRepeating(
@@ -644,7 +589,6 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnSignalConnected,
                        weak_factory_.GetWeakPtr()));
   }
-
   void OnFilesWrittenForDisplay(
       NotificationHandler::Type notification_type,
       const std::string& profile_id,
@@ -662,14 +606,14 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     data->files = std::move(files);
 
-    DbusString app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
+    std::string app_name(l10n_util::GetStringUTF8(IDS_PRODUCT_NAME));
 
-    DbusString app_icon(
+    std::string app_icon(
         data->files.has_logo
             ? "file://" + data->files.dir_path.Append("logo.png").value()
             : "");
 
-    DbusString summary(
+    std::string summary(
         base::UTF16ToUTF8(CreateNotificationTitle(*notification)));
 
     std::string context_display_text;
@@ -754,7 +698,7 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
 
     // Even-indexed elements in this vector are action IDs passed back to
     // us in OnActionInvoked().  Odd-indexed ones contain the button text.
-    std::vector<DbusString> actions;
+    std::vector<std::string> actions;
     std::optional<std::u16string> inline_reply_placeholder;
     if (base::Contains(capabilities_, kCapabilityActions)) {
       const bool has_support_for_inline_reply =
@@ -800,17 +744,17 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       }
     }
 
-    DbusDictionary hints;
+    std::map<std::string, dbus_utils::Variant> hints;
 
     uint8_t urgency =
         notification->never_timeout() &&
                 ShouldMarkPersistentNotificationsAsCritical(server_name_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
-    hints.PutAs("urgency", DbusByte(urgency));
+    hints.emplace("urgency", dbus_utils::Variant::Wrap<"y">(urgency));
 
     if (notification->silent()) {
-      hints.PutAs("suppress-sound", DbusBoolean(true));
+      hints.emplace("suppress-sound", dbus_utils::Variant::Wrap<"b">(true));
     }
 
     std::unique_ptr<base::Environment> env = base::Environment::Create();
@@ -819,23 +763,27 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     DCHECK(base::EndsWith(desktop_file.value(), kDesktopFileSuffix,
                           base::CompareCase::SENSITIVE));
     desktop_file = desktop_file.RemoveFinalExtension();
-    hints.PutAs("desktop-entry", DbusString(desktop_file.value()));
+    hints.emplace("desktop-entry",
+                  dbus_utils::Variant::Wrap<"s">(desktop_file.value()));
 
     if (data->files.has_icon) {
       const base::FilePath icon_path = data->files.dir_path.Append("icon.png");
-      hints.PutAs("image_path", DbusString(icon_path.value()));
-      hints.PutAs("image-path", DbusString(icon_path.value()));
+      hints.emplace("image_path",
+                    dbus_utils::Variant::Wrap<"s">(icon_path.value()));
+      hints.emplace("image-path",
+                    dbus_utils::Variant::Wrap<"s">(icon_path.value()));
     }
 
     if (has_support_for_kde_origin_name && !context_display_text.empty()) {
-      hints.PutAs(kCapabilityXKdeOriginName,
-                  DbusString(std::move(context_display_text)));
+      hints.emplace(
+          kCapabilityXKdeOriginName,
+          dbus_utils::Variant::Wrap<"s">(std::move(context_display_text)));
     }
 
     if (inline_reply_placeholder.has_value()) {
-      hints.PutAs(
-          kCapabilityXKdeReplyPlaceholderText,
-          DbusString(base::UTF16ToUTF8(inline_reply_placeholder.value())));
+      hints.emplace(kCapabilityXKdeReplyPlaceholderText,
+                    dbus_utils::Variant::Wrap<"s">(
+                        base::UTF16ToUTF8(inline_reply_placeholder.value())));
     }
 
     const int32_t kExpireTimeoutDefault = -1;
@@ -846,29 +794,31 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
             ? kExpireTimeoutDefault
             : kExpireTimeout;
 
-    CallMethod(
+    dbus_utils::CallMethod<"susssasa{sv}i", "u">(
         notification_proxy_, kFreedesktopNotificationsName, kMethodNotify,
         base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnNotifyResponse,
                        weak_factory_.GetWeakPtr(), notification->id(),
                        profile_id, is_incognito),
-        std::move(app_name), DbusUint32(dbus_id), std::move(app_icon),
-        std::move(summary), DbusString(std::move(body_str)),
-        DbusArray<DbusString>(std::move(actions)), std::move(hints),
-        DbusInt32(expire_timeout));
+        std::move(app_name), dbus_id, std::move(app_icon), std::move(summary),
+        std::move(body_str), std::move(actions), std::move(hints),
+        expire_timeout);
   }
 
   void OnNotifyResponse(const std::string& notification_id,
                         const std::string& profile_id,
                         bool is_incognito,
-                        bool success,
-                        DbusUint32 dbus_id) {
+                        dbus_utils::CallMethodResult<uint32_t> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     NotificationData* data =
         FindNotificationData(notification_id, profile_id, is_incognito);
     if (!data) {
       return;
     }
-    data->dbus_id = success ? dbus_id.value() : 0;
+    data->dbus_id = 0;
+    if (result.has_value()) {
+      auto& [dbus_id] = result.value();
+      data->dbus_id = dbus_id;
+    }
     if (!data->dbus_id) {
       // There was some sort of error with creating the notification.
       notifications_.erase(data);
@@ -883,9 +833,11 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
       NotificationData* data = pair.first;
       if (data->notification_id == notification_id &&
           data->profile_id == profile_id) {
-        CallMethod(notification_proxy_, kFreedesktopNotificationsName,
-                   kMethodCloseNotification, base::BindOnce([](bool) {}),
-                   DbusUint32(data->dbus_id));
+        dbus_utils::CallMethod<"u", "">(
+            notification_proxy_, kFreedesktopNotificationsName,
+            kMethodCloseNotification,
+            base::BindOnce([](dbus_utils::CallMethodResult<>) {}),
+            data->dbus_id);
         to_erase.push_back(data);
       }
     }
@@ -924,19 +876,29 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     return nullptr;
   }
 
-  void OnActivationToken(DbusUint32 dbus_id, DbusString token) {
+  void OnActivationToken(dbus_utils::ConnectToSignalResultSig<"us"> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    base::nix::SetActivationToken(token.value());
+    if (!result.has_value()) {
+      LOG(ERROR) << "Error parsing ActivationToken signal";
+      return;
+    }
+    auto& [dbus_id, token] = result.value();
+    base::nix::SetActivationToken(token);
   }
 
-  void OnActionInvoked(DbusUint32 dbus_id, DbusString dbus_action) {
+  void OnActionInvoked(dbus_utils::ConnectToSignalResultSig<"us"> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    if (!result.has_value()) {
+      LOG(ERROR) << "Error parsing ActionInvoked signal";
+      return;
+    }
+    auto& [dbus_id, dbus_action] = result.value();
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }
 
-    const std::string& action = dbus_action.value();
+    const std::string& action = dbus_action;
     if (action == kDefaultButtonId) {
       ForwardNotificationOperation(
           NotificationOperation::kClick, data->notification_type,
@@ -974,9 +936,15 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     }
   }
 
-  void OnNotificationReplied(DbusUint32 dbus_id, DbusString reply) {
+  void OnNotificationReplied(
+      dbus_utils::ConnectToSignalResultSig<"us"> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    if (!result.has_value()) {
+      LOG(ERROR) << "Error parsing NotificationReplied signal";
+      return;
+    }
+    auto& [dbus_id, reply] = result.value();
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }
@@ -984,13 +952,18 @@ class NotificationPlatformBridgeLinuxImpl : public NotificationPlatformBridge {
     ForwardNotificationOperation(
         NotificationOperation::kClick, data->notification_type,
         data->origin_url, data->notification_id, /*action_index=*/std::nullopt,
-        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply.value()),
-        data->profile_id, data->is_incognito);
+        /*by_user=*/std::nullopt, base::UTF8ToUTF16(reply), data->profile_id,
+        data->is_incognito);
   }
 
-  void OnNotificationClosed(DbusUint32 dbus_id, DbusUint32 reason) {
+  void OnNotificationClosed(dbus_utils::ConnectToSignalResultSig<"uu"> result) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    NotificationData* data = FindNotificationDataWithDBusId(dbus_id.value());
+    if (!result.has_value()) {
+      LOG(ERROR) << "Error parsing NotificationClosed signal";
+      return;
+    }
+    auto& [dbus_id, reason] = result.value();
+    NotificationData* data = FindNotificationDataWithDBusId(dbus_id);
     if (!data) {
       return;
     }

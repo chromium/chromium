@@ -419,7 +419,7 @@ pub(crate) mod printing {
     use crate::stmt::{Block, Local, Stmt, StmtMacro};
     use crate::token;
     use proc_macro2::TokenStream;
-    use quote::{ToTokens, TokenStreamExt};
+    use quote::{ToTokens, TokenStreamExt as _};
 
     #[cfg_attr(docsrs, doc(cfg(feature = "printing")))]
     impl ToTokens for Block {

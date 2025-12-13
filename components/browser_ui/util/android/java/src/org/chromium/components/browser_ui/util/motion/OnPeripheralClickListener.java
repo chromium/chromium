@@ -44,7 +44,7 @@ public final class OnPeripheralClickListener implements View.OnTouchListener {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if (!MotionEventUtils.isMouseEvent(event)) {
+        if (!MotionEventUtils.isPointerEvent(event)) {
             return false;
         }
 

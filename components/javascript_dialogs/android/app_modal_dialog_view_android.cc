@@ -22,7 +22,7 @@
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -110,7 +110,7 @@ void AppModalDialogViewAndroid::AcceptAppModalDialog() {
 
 void AppModalDialogViewAndroid::DidAcceptAppModalDialog(
     JNIEnv* env,
-    const JavaParamRef<jstring>& prompt,
+    const JavaRef<jstring>& prompt,
     bool should_suppress_js_dialogs) {
   std::u16string prompt_text =
       base::android::ConvertJavaStringToUTF16(env, prompt);
@@ -150,8 +150,8 @@ AppModalDialogViewAndroid::~AppModalDialogViewAndroid() {
 }
 
 // static
-ScopedJavaLocalRef<jobject> JNI_JavascriptAppModalDialog_GetCurrentModalDialog(
-    JNIEnv* env) {
+static ScopedJavaLocalRef<jobject>
+JNI_JavascriptAppModalDialog_GetCurrentModalDialog(JNIEnv* env) {
   AppModalDialogController* controller =
       AppModalDialogQueue::GetInstance()->active_dialog();
   if (!controller || !controller->view())
@@ -163,3 +163,5 @@ ScopedJavaLocalRef<jobject> JNI_JavascriptAppModalDialog_GetCurrentModalDialog(
 }
 
 }  // namespace javascript_dialogs
+
+DEFINE_JNI(JavascriptAppModalDialog)

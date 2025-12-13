@@ -19,7 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/AutoSigninFirstRunDialog_jni.h"
@@ -127,3 +127,5 @@ void AutoSigninFirstRunDialogAndroid::OnVisibilityChanged(
     Java_AutoSigninFirstRunDialog_dismissDialog(env, dialog_jobject_);
   }
 }
+
+DEFINE_JNI(AutoSigninFirstRunDialog)

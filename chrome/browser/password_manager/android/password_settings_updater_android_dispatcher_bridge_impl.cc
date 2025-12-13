@@ -8,7 +8,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_settings_updater_android_receiver_bridge.h"
 #include "components/password_manager/core/browser/password_manager_setting.h"
@@ -37,14 +36,12 @@ base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
 // static
 std::unique_ptr<PasswordSettingsUpdaterAndroidDispatcherBridge>
 PasswordSettingsUpdaterAndroidDispatcherBridge::Create() {
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
   return std::make_unique<PasswordSettingsUpdaterAndroidDispatcherBridgeImpl>();
 }
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
     PasswordSettingsUpdaterAndroidDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
-  CHECK(password_manager_android_util::AreMinUpmRequirementsMet());
 }
 
 PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
@@ -79,3 +76,5 @@ void PasswordSettingsUpdaterAndroidDispatcherBridgeImpl::
 }
 
 }  // namespace password_manager
+
+DEFINE_JNI(PasswordSettingsUpdaterDispatcherBridge)

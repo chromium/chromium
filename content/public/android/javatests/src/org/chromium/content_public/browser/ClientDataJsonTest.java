@@ -4,11 +4,9 @@
 
 package org.chromium.content_public.browser;
 
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static com.google.common.truth.Truth.assertThat;
 
-import static org.chromium.base.test.util.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
 
 import android.util.JsonReader;
 import android.util.JsonToken;
@@ -66,30 +64,23 @@ public class ClientDataJsonTest {
 
         assertParsesJson(output);
         // Test that the output has the expected fields.
-        assertThat(output, containsString("\"type\":\"payment.get\""));
-        assertThat(output, containsString("\"challenge\":\"AAAA\""));
-        assertThat(output, containsString(String.format("\"origin\":\"%s\"", ORIGIN)));
-        assertThat(output, containsString("\"crossOrigin\":false"));
-        assertThat(output, containsString(String.format("\"rpId\":\"%s\"", RELYING_PARTY_ID)));
+        assertThat(output).contains("\"type\":\"payment.get\"");
+        assertThat(output).contains("\"challenge\":\"AAAA\"");
+        assertThat(output).contains(String.format("\"origin\":\"%s\"", ORIGIN));
+        assertThat(output).contains("\"crossOrigin\":false");
+        assertThat(output).contains(String.format("\"rpId\":\"%s\"", RELYING_PARTY_ID));
         // The topOrigin is formatted with no trailing slash.
-        assertThat(output, containsString("\"topOrigin\":\"https://www.chromium.test\""));
-        assertThat(output, containsString("\"payeeOrigin\":\"https://test.example\""));
-        assertThat(output, not(containsString("paymentEntitiesLogos")));
-        assertThat(output, containsString(String.format("\"value\":\"%s\"", payment.total.value)));
-        assertThat(
-                output,
-                containsString(String.format("\"currency\":\"%s\"", payment.total.currency)));
-        assertThat(
-                output,
-                containsString(String.format("\"icon\":\"%s\"", payment.instrument.icon.url)));
-        assertThat(
-                output,
-                containsString(
-                        String.format("\"displayName\":\"%s\"", payment.instrument.displayName)));
-        assertThat(
-                output,
-                containsString(String.format("\"details\":\"%s\"", payment.instrument.details)));
-        assertThat(output, containsString(String.format("\"browserBoundPublicKey\":\"AQIDBA\"")));
+        assertThat(output).contains("\"topOrigin\":\"https://www.chromium.test\"");
+        assertThat(output).contains("\"payeeOrigin\":\"https://test.example\"");
+        assertThat(output).doesNotContain("paymentEntitiesLogos");
+        assertThat(output).contains(String.format("\"value\":\"%s\"", payment.total.value));
+        assertThat(output).contains(String.format("\"currency\":\"%s\"", payment.total.currency));
+        assertThat(output).contains(String.format("\"icon\":\"%s\"", payment.instrument.icon.url));
+        assertThat(output)
+                .contains(String.format("\"displayName\":\"%s\"", payment.instrument.displayName));
+        assertThat(output)
+                .contains(String.format("\"details\":\"%s\"", payment.instrument.details));
+        assertThat(output).contains(String.format("\"browserBoundPublicKey\":\"AQIDBA\""));
     }
 
     @Test
@@ -107,11 +98,11 @@ public class ClientDataJsonTest {
                         TOP_ORIGIN);
 
         assertParsesJson(output);
-        assertThat(output, containsString("\"type\":\"webauthn.create\""));
-        assertThat(output, containsString("\"challenge\":\"AAAA\""));
-        assertThat(output, containsString(String.format("\"origin\":\"%s\"", ORIGIN)));
-        assertThat(output, containsString("\"crossOrigin\":false"));
-        assertThat(output, containsString("\"payment\":{\"browserBoundPublicKey\":\"AQIDBA\"}"));
+        assertThat(output).contains("\"type\":\"webauthn.create\"");
+        assertThat(output).contains("\"challenge\":\"AAAA\"");
+        assertThat(output).contains(String.format("\"origin\":\"%s\"", ORIGIN));
+        assertThat(output).contains("\"crossOrigin\":false");
+        assertThat(output).contains("\"payment\":{\"browserBoundPublicKey\":\"AQIDBA\"}");
     }
 
     @Test
@@ -131,7 +122,7 @@ public class ClientDataJsonTest {
 
         assertParsesJson(output);
         // Test that the output does not contain the details field.
-        assertThat(output, not(containsString("\"details\":")));
+        assertThat(output).doesNotContain("\"details\":");
     }
 
     @Test
@@ -150,7 +141,7 @@ public class ClientDataJsonTest {
                         TOP_ORIGIN);
 
         assertParsesJson(output);
-        assertThat(output, containsString("\"paymentEntitiesLogos\":[]"));
+        assertThat(output).contains("\"paymentEntitiesLogos\":[]");
     }
 
     @Test
@@ -173,10 +164,34 @@ public class ClientDataJsonTest {
                         TOP_ORIGIN);
 
         assertParsesJson(output);
-        assertThat(
-                output,
-                containsString(
-                        "\"paymentEntitiesLogos\":[{\"url\":\"https://www.example.test/logo_one.png\",\"label\":\"logo_one_label\"}]"));
+        assertThat(output)
+                .contains(
+                        "\"paymentEntitiesLogos\":[{\"url\":\"https://www.example.test/logo_one.png\",\"label\":\"logo_one_label\"}]");
+    }
+
+    @Test
+    @SmallTest
+    public void testBuildClientDataJsonWithAnEmptyLogo() {
+        // An empty logo indicates that a logo was specified but could not be downloaded. See
+        // https://w3c.github.io/secure-payment-confirmation/#sctn-steps-to-check-if-a-payment-can-be-made
+        PaymentOptions payment = createSamplePaymentOptions();
+        payment.paymentEntitiesLogos =
+                new ShownPaymentEntityLogo[] {
+                    shownPaymentEntityLogo(/* urlString= */ "", "logo_one_label")
+                };
+        String output =
+                ClientDataJson.buildClientDataJson(
+                        ClientDataRequestType.PAYMENT_GET,
+                        ORIGIN,
+                        CHALLENGE_BYTES,
+                        /* isCrossOrigin= */ true,
+                        payment,
+                        RELYING_PARTY_ID,
+                        TOP_ORIGIN);
+
+        assertParsesJson(output);
+        assertThat(output)
+                .contains("\"paymentEntitiesLogos\":[{\"url\":\"\",\"label\":\"logo_one_label\"}]");
     }
 
     @Test
@@ -201,10 +216,9 @@ public class ClientDataJsonTest {
                         TOP_ORIGIN);
 
         assertParsesJson(output);
-        assertThat(
-                output,
-                containsString(
-                        "\"paymentEntitiesLogos\":[{\"url\":\"https://www.example.test/logo_one.png\",\"label\":\"logo_one_label\"},{\"url\":\"https://www.example.test/logo_two.png\",\"label\":\"logo_two_label\"}]"));
+        assertThat(output)
+                .contains(
+                        "\"paymentEntitiesLogos\":[{\"url\":\"https://www.example.test/logo_one.png\",\"label\":\"logo_one_label\"},{\"url\":\"https://www.example.test/logo_two.png\",\"label\":\"logo_two_label\"}]");
     }
 
     private void assertParsesJson(String serializedJson) {

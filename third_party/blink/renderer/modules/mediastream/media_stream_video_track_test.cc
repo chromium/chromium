@@ -6,9 +6,12 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame.h"
@@ -26,6 +30,7 @@
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
@@ -47,10 +52,11 @@ namespace media_stream_video_track_test {
 
 using base::test::RunOnceClosure;
 using ::testing::_;
+using ::testing::AnyNumber;
 using ::testing::Eq;
 using ::testing::InSequence;
-using ::testing::Invoke;
 using ::testing::Mock;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::Return;
@@ -58,6 +64,7 @@ using ::testing::StrEq;
 using ::testing::Values;
 
 using ContentHintType = WebMediaStreamTrack::ContentHintType;
+using VideoFrameStats = MediaStreamTrackPlatform::VideoFrameStats;
 
 const uint8_t kBlackValue = 0x00;
 const uint8_t kColorValue = 0xAB;
@@ -108,9 +115,9 @@ class MediaStreamVideoTrackTest
                                        MockMediaStreamVideoSink* sink) {
     base::RunLoop run_loop;
     base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-    EXPECT_CALL(*sink, OnEncodedVideoFrame)
-        .WillOnce(
-            Invoke([&](base::TimeTicks) { std::move(quit_closure).Run(); }));
+    EXPECT_CALL(*sink, OnEncodedVideoFrame).WillOnce([&](base::TimeTicks) {
+      std::move(quit_closure).Run();
+    });
     mock_source()->DeliverEncodedVideoFrame(frame);
     run_loop.Run();
   }
@@ -272,9 +279,9 @@ TEST_F(MediaStreamVideoTrackTest, ResetCallbackOnThread) {
   base::RunLoop run_loop;
   bool correct = false;
   sink.ConnectToTrackWithCallback(
-      track, WTF::BindRepeating(&CheckThreadVideoFrameReceiver,
-                                base::Owned(new CheckThreadHelper(
-                                    run_loop.QuitClosure(), &correct))));
+      track, blink::BindRepeating(&CheckThreadVideoFrameReceiver,
+                                  base::Owned(new CheckThreadHelper(
+                                      run_loop.QuitClosure(), &correct))));
   sink.DisconnectFromTrack();
   run_loop.Run();
   EXPECT_TRUE(correct) << "Not called on correct thread.";
@@ -556,8 +563,7 @@ TEST_F(MediaStreamVideoTrackTest, FrameStatsIncrementsForEnabledTracks) {
   EXPECT_FALSE(native_track->max_frame_rate().has_value());
 
   // Initially, no fames have been delivered.
-  MediaStreamTrackPlatform::VideoFrameStats stats =
-      native_track->GetVideoFrameStats();
+  VideoFrameStats stats = native_track->GetVideoFrameStats();
   EXPECT_EQ(stats.deliverable_frames, 0u);
   EXPECT_EQ(stats.discarded_frames, 0u);
   EXPECT_EQ(stats.dropped_frames, 0u);
@@ -907,110 +913,6 @@ TEST_P(MediaStreamVideoTrackTest, PropagatesContentHintType) {
   sink.DisconnectFromTrack();
 }
 
-TEST_F(MediaStreamVideoTrackTest,
-       DeliversFramesWithCurrentSubCaptureTargetVersion) {
-  InitializeSource();
-  MockMediaStreamVideoSink sink;
-
-  // Track is initialized with sub-capture-target version 5.
-  EXPECT_CALL(*mock_source(), GetSubCaptureTargetVersion).WillOnce(Return(5));
-  WebMediaStreamTrack track = CreateTrack();
-  sink.ConnectToTrack(track);
-  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
-      &sink, sink.GetNotifyFrameDroppedCB());
-
-  scoped_refptr<media::VideoFrame> frame =
-      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  // Frame with current sub-capture-target version should be delivered.
-  frame->metadata().sub_capture_target_version = 5;
-  EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
-  DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
-
-  sink.DisconnectFromTrack();
-}
-
-TEST_F(MediaStreamVideoTrackTest,
-       DropsOldFramesWhenInitializedWithNewerSubCaptureTargetVersion) {
-  InitializeSource();
-  MockMediaStreamVideoSink sink;
-
-  // Track is initialized with sub-capture-target version 5.
-  EXPECT_CALL(*mock_source(), GetSubCaptureTargetVersion).WillOnce(Return(5));
-  WebMediaStreamTrack track = CreateTrack();
-  sink.ConnectToTrack(track);
-  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
-      &sink, sink.GetNotifyFrameDroppedCB());
-
-  scoped_refptr<media::VideoFrame> frame =
-      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  // Old sub-capture-target version delivered after construction.
-  frame->metadata().sub_capture_target_version = 4;
-  base::RunLoop run_loop;
-  EXPECT_CALL(sink,
-              OnNotifyFrameDropped(media::VideoCaptureFrameDropReason::
-                                       kSubCaptureTargetVersionNotCurrent))
-      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  mock_source()->DeliverVideoFrame(std::move(frame));
-  run_loop.Run();
-
-  sink.DisconnectFromTrack();
-}
-
-TEST_F(MediaStreamVideoTrackTest,
-       DropsOldFramesAfterSubCaptureTargetVersionChanges) {
-  InitializeSource();
-  MockMediaStreamVideoSink sink;
-
-  // Track is initialized with sub-capture-target version 5.
-  EXPECT_CALL(*mock_source(), GetSubCaptureTargetVersion).WillOnce(Return(5));
-  WebMediaStreamTrack track = CreateTrack();
-  sink.ConnectToTrack(track);
-  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
-      &sink, sink.GetNotifyFrameDroppedCB());
-
-  // Crop version updated to 6.
-  mock_source()->DeliverNewSubCaptureTargetVersion(6);
-
-  scoped_refptr<media::VideoFrame> frame =
-      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  frame->metadata().sub_capture_target_version =
-      5;  // No longer current version.
-  base::RunLoop run_loop;
-  EXPECT_CALL(sink,
-              OnNotifyFrameDropped(media::VideoCaptureFrameDropReason::
-                                       kSubCaptureTargetVersionNotCurrent))
-      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  mock_source()->DeliverVideoFrame(std::move(frame));
-  run_loop.Run();
-
-  sink.DisconnectFromTrack();
-}
-
-TEST_F(MediaStreamVideoTrackTest,
-       DeliversNewFramesAfterSubCaptureTargetVersionChanges) {
-  InitializeSource();
-  MockMediaStreamVideoSink sink;
-
-  // Track is initialized with sub-capture-target version 5.
-  EXPECT_CALL(*mock_source(), GetSubCaptureTargetVersion).WillOnce(Return(5));
-  WebMediaStreamTrack track = CreateTrack();
-  sink.ConnectToTrack(track);
-  MediaStreamVideoTrack::From(track)->SetSinkNotifyFrameDroppedCallback(
-      &sink, sink.GetNotifyFrameDroppedCB());
-
-  // Crop version updated to 6.
-  mock_source()->DeliverNewSubCaptureTargetVersion(6);
-
-  scoped_refptr<media::VideoFrame> frame =
-      media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
-  // Frame with current sub-capture-target version should be delivered.
-  frame->metadata().sub_capture_target_version = 6;
-  EXPECT_CALL(sink, OnNotifyFrameDropped).Times(0);
-  DeliverVideoFrameAndWaitForRenderer(std::move(frame), &sink);
-
-  sink.DisconnectFromTrack();
-}
-
 class MediaStreamVideoTrackEncodedTest : public MediaStreamVideoTrackTest {
  public:
   void InitializeSource() override {
@@ -1067,9 +969,9 @@ TEST_F(MediaStreamVideoTrackEncodedTest, TransferOneEncodedVideoFrame) {
   sink.ConnectEncodedToTrack(track);
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(sink, OnEncodedVideoFrame).WillOnce(Invoke([&](base::TimeTicks) {
+  EXPECT_CALL(sink, OnEncodedVideoFrame).WillOnce([&](base::TimeTicks) {
     std::move(quit_closure).Run();
-  }));
+  });
   mock_source()->DeliverEncodedVideoFrame(
       base::MakeRefCounted<MockEncodedVideoFrame>());
   run_loop.Run();
@@ -1409,6 +1311,289 @@ TEST_F(MediaStreamVideoTrackRefreshFrameTimerTest,
   test::RunDelayedTasks(base::Hertz(kMinFrameRate));
 
   EXPECT_FALSE(video_track->IsRefreshFrameTimerRunningForTesting());
+}
+
+class MediaStreamVideoTrackCaptureVersionTest
+    : public MediaStreamVideoTrackTest {
+ public:
+  using CaptureVersionCb = MockFunction<void()>;
+  ~MediaStreamVideoTrackCaptureVersionTest() override = default;
+
+  void SetUp() override {
+    MediaStreamVideoTrackTest::SetUp();
+
+    InitializeSource();
+    track_ = CreateTrack();
+    sink_.ConnectToTrack(track_);
+    native_track_ = MediaStreamVideoTrack::From(track_);
+
+    native_track_->SetSinkNotifyFrameDroppedCallback(
+        &sink_, sink_.GetNotifyFrameDroppedCB());
+  }
+
+  void TearDown() override {
+    sink_.DisconnectFromTrack();
+    native_track_->StopAndNotify(base::DoNothing());
+    native_track_ = nullptr;
+
+    MediaStreamVideoTrackTest::TearDown();
+  }
+
+ protected:
+  static base::OnceClosure AsClosure(CaptureVersionCb& cb) {
+    return blink::BindOnce(&CaptureVersionCb::Call, base::Unretained(&cb));
+  }
+
+  static scoped_refptr<media::VideoFrame> MakeFrame(
+      media::CaptureVersion capture_version = media::CaptureVersion()) {
+    scoped_refptr<media::VideoFrame> frame =
+        media::VideoFrame::CreateBlackFrame(gfx::Size(600, 400));
+    frame->metadata().capture_version = capture_version;
+    return frame;
+  }
+
+  // Adds a callback for the given `capture_version`.
+  // Returns a reference to that mock, in case the expectation needs to be
+  // modified at a later time.
+  CaptureVersionCb& AddCaptureVersionCallback(
+      media::CaptureVersion capture_version) {
+    native_track_->AddCaptureVersionCallback(capture_version,
+                                             AsClosure(callbacks_[cb_count_]));
+    return callbacks_[cb_count_++];
+  }
+
+  CaptureVersionCb& AddCaptureVersionCallback(uint32_t source,
+                                              uint32_t sub_capture) {
+    return AddCaptureVersionCallback(
+        media::CaptureVersion(source, sub_capture));
+  }
+
+  void AddCaptureVersionCallbackAndAwaitPropagation(
+      media::CaptureVersion capture_version) {
+    // Add the callback.
+    AddCaptureVersionCallback(capture_version);
+
+    // Deliver a frame as a way of synchronizing with the other thread.
+    // Note that we avoid EXPECT_CALL here, as this utility might be
+    // used from a DEATH-test.
+    base::RunLoop run_loop;
+    ON_CALL(sink_, OnVideoFrame)
+        .WillByDefault(RunOnceClosure(run_loop.QuitClosure()));
+    mock_source()->DeliverVideoFrame(MakeFrame(media::CaptureVersion()));
+    run_loop.Run();
+  }
+
+  void VerifyAndClearExpectations() {
+    for (CaptureVersionCb& callback : callbacks_) {
+      testing::Mock::VerifyAndClearExpectations(&callback);
+    }
+  }
+
+  // Expects Call() to be invoked Times(1) on `expected_callbacks` and Times(0)
+  // on all other callbacks.
+  void ExpectCalls(const std::vector<CaptureVersionCb*>& expected_callbacks) {
+    for (CaptureVersionCb& callback : callbacks_) {
+      const int times = base::Contains(expected_callbacks, &callback) ? 1 : 0;
+      EXPECT_CALL(callback, Call()).Times(times);
+    }
+  }
+
+  void DeliverFrame(media::CaptureVersion capture_version) {
+    DeliverVideoFrameAndWaitForRenderer(MakeFrame(capture_version), &sink_);
+  }
+
+  void DeliverFrame(uint32_t source, uint32_t sub_capture) {
+    DeliverFrame(media::CaptureVersion(source, sub_capture));
+  }
+
+  void TryDeliverVideoFrameAndWaitForDrop(
+      media::CaptureVersion capture_version) {
+    base::RunLoop run_loop;
+    base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+    EXPECT_CALL(sink_, OnNotifyFrameDropped)
+        .WillOnce(RunOnceClosure(std::move(quit_closure)));
+    mock_source()->DeliverVideoFrame(MakeFrame(capture_version));
+    run_loop.Run();
+  }
+
+  void TryDeliverVideoFrameAndWaitForDrop(uint32_t source,
+                                          uint32_t sub_capture) {
+    TryDeliverVideoFrameAndWaitForDrop(
+        media::CaptureVersion(source, sub_capture));
+  }
+
+  VideoFrameStats GetFrameStatsChange() {
+    VideoFrameStats prev = last_frame_stats_;
+    last_frame_stats_ = native_track_->GetVideoFrameStats();
+    VideoFrameStats stats;
+    stats.deliverable_frames =
+        last_frame_stats_.deliverable_frames - prev.deliverable_frames;
+    stats.discarded_frames =
+        last_frame_stats_.discarded_frames - prev.discarded_frames;
+    stats.dropped_frames =
+        last_frame_stats_.dropped_frames - prev.dropped_frames;
+    return stats;
+  }
+
+  bool IsExactlyOneFrameDelivered() {
+    const VideoFrameStats change = GetFrameStatsChange();
+    return change.deliverable_frames == 1u && change.discarded_frames == 0u &&
+           change.dropped_frames == 0u;
+  }
+
+  bool IsExactlyOneFrameDropped() {
+    const VideoFrameStats change = GetFrameStatsChange();
+    return change.deliverable_frames == 0u && change.discarded_frames == 0u &&
+           change.dropped_frames == 1u;
+  }
+
+  MockMediaStreamVideoSink sink_;
+  WebMediaStreamTrack track_;
+  raw_ptr<MediaStreamVideoTrack> native_track_;
+  std::array<CaptureVersionCb, 20> callbacks_;
+  size_t cb_count_ = 0;
+
+  VideoFrameStats last_frame_stats_;
+};
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest,
+       CorrectCaptureVersionCallbacksInvoked) {
+  const uint32_t kSource = 333;
+  const uint32_t kSubCapture = 666;
+
+  // Older callbacks invoked.
+  auto& old_1 = AddCaptureVersionCallback(kSource - 1, kSubCapture);
+  auto& old_2 = AddCaptureVersionCallback(kSource - 1, kSubCapture - 1);
+  auto& old_3 = AddCaptureVersionCallback(kSource, kSubCapture - 1);
+
+  // Current callbacks invoked.
+  auto& current = AddCaptureVersionCallback(kSource, kSubCapture);
+
+  // Newer callbacks not invoked. (The named callbacks will be invoked later
+  // in the test, and therefore a reference to them is kept.)
+  auto& new_1 = AddCaptureVersionCallback(kSource, kSubCapture + 1);
+  auto& new_2 = AddCaptureVersionCallback(kSource, kSubCapture + 2);
+  auto& new_3 = AddCaptureVersionCallback(kSource + 1, kSubCapture);
+  auto& new_4 = AddCaptureVersionCallback(kSource + 1, kSubCapture + 1);
+  AddCaptureVersionCallback(kSource + 1, kSubCapture + 2);
+  AddCaptureVersionCallback(kSource + 2, kSubCapture);
+  AddCaptureVersionCallback(kSource + 2, kSubCapture + 1);
+
+  // The following frame triggers the callback associated with the given
+  // capture-version and older ones, and on none of the newer ones.
+  ExpectCalls({&old_1, &old_2, &old_3, &current});
+  DeliverFrame(media::CaptureVersion(kSource, kSubCapture));
+
+  // The following frame is newer. It triggers the back on those callbacks
+  // *which were not yet invoked*, and which are <= the new capture-version.
+  VerifyAndClearExpectations();
+  ExpectCalls({&new_1, &new_2, &new_3, &new_4});
+  DeliverFrame(media::CaptureVersion(kSource + 1, kSubCapture + 1));
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, CallbackInvokedOnce) {
+  const media::CaptureVersion capture_version(/*source=*/11,
+                                              /*sub_capture*/ 22);
+
+  auto& current = AddCaptureVersionCallback(capture_version);
+  EXPECT_CALL(current, Call()).Times(1);
+
+  DeliverFrame(capture_version);
+  DeliverFrame(capture_version);
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, RemovedCallbackNotInvoked) {
+  const media::CaptureVersion capture_version(/*source=*/11,
+                                              /*sub_capture*/ 22);
+
+  auto& current = AddCaptureVersionCallback(capture_version);
+  EXPECT_CALL(current, Call()).Times(0);
+  native_track_->RemoveCaptureVersionCallback(capture_version);
+
+  DeliverFrame(capture_version);
+}
+
+// Mostly equivalent to `DeliverFrameWithSameVersion`, but checks the important
+// common base case where the capture version has never been incremented.
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, DeliverBasicFrame) {
+  DeliverFrame(media::CaptureVersion());
+  EXPECT_TRUE(IsExactlyOneFrameDelivered());
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, DeliverFrameWithSameVersion) {
+  for (size_t i = 0; i < 5; ++i) {
+    DeliverFrame(media::CaptureVersion(/*source=*/123, /*sub_capture=*/456));
+    EXPECT_TRUE(IsExactlyOneFrameDelivered());
+  }
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, DeliverFramesWithNewerVersion) {
+  const uint32_t kSource = 333;
+  const uint32_t kSubCapture = 666;
+  DeliverFrame(media::CaptureVersion(kSource, kSubCapture));
+  ASSERT_TRUE(IsExactlyOneFrameDelivered());
+
+  DeliverFrame(media::CaptureVersion(kSource, kSubCapture + 1));
+  EXPECT_TRUE(IsExactlyOneFrameDelivered());
+
+  DeliverFrame(media::CaptureVersion(kSource + 1, kSubCapture));
+  EXPECT_TRUE(IsExactlyOneFrameDelivered());
+
+  DeliverFrame(media::CaptureVersion(kSource + 1, kSubCapture + 1));
+  EXPECT_TRUE(IsExactlyOneFrameDelivered());
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest, DropFramesWithOlderVersion) {
+  const uint32_t kSource = 333;
+  const uint32_t kSubCapture = 666;
+  DeliverFrame(media::CaptureVersion(kSource, kSubCapture));
+  ASSERT_TRUE(IsExactlyOneFrameDelivered());
+
+  TryDeliverVideoFrameAndWaitForDrop(kSource - 1, kSubCapture - 1);
+  EXPECT_TRUE(IsExactlyOneFrameDropped());
+
+  TryDeliverVideoFrameAndWaitForDrop(kSource - 1, kSubCapture);
+  EXPECT_TRUE(IsExactlyOneFrameDropped());
+
+  TryDeliverVideoFrameAndWaitForDrop(kSource, kSubCapture - 1);
+  EXPECT_TRUE(IsExactlyOneFrameDropped());
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest,
+       CannotAddCaptureVersionCallbackZeroValue) {
+  CaptureVersionCb callback;
+  EXPECT_CHECK_DEATH(native_track_->AddCaptureVersionCallback(
+      media::CaptureVersion(), AsClosure(callback)));
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest,
+       CannotRemoveCaptureVersionCallbackZeroValue) {
+  EXPECT_CHECK_DEATH(
+      native_track_->RemoveCaptureVersionCallback(media::CaptureVersion()));
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest,
+       CannotAddCaptureVersionCallbackTwice) {
+  const media::CaptureVersion capture_version(/*source=*/123,
+                                              /*sub_capture=*/456);
+
+  // The first time does *not* cause a CHECK_DEATH.
+  AddCaptureVersionCallbackAndAwaitPropagation(capture_version);
+
+  // Must wait for the task to propagate to the other thread.
+  EXPECT_CHECK_DEATH(
+      AddCaptureVersionCallbackAndAwaitPropagation(capture_version));
+}
+
+TEST_F(MediaStreamVideoTrackCaptureVersionTest,
+       RemoveCaptureVersionCallbackOfNeverAddedCallbackHandledGracefully) {
+  const media::CaptureVersion capture_version(/*source=*/123,
+                                              /*sub_capture=*/456);
+  native_track_->RemoveCaptureVersionCallback(capture_version);
+
+  // To avoid false positives, ensure a rendezvous with the FrameDeliverer by
+  // delivering a frame.
+  DeliverFrame(capture_version);
 }
 
 }  // namespace media_stream_video_track_test

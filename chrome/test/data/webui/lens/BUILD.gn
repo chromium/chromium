@@ -9,6 +9,7 @@ build_webui_tests("build") {
   files = [
     "ghost_loader/ghost_loader_state_test.ts",
     "ghost_loader/test_ghost_loader_browser_proxy.ts",
+    "side_panel/composebox_test.ts",
     "overlay/cubic_bezier_test.ts",
     "overlay/find_words_in_region_test.ts",
     "overlay/object_selection_test.ts",
@@ -24,10 +25,10 @@ build_webui_tests("build") {
     "overlay/region_selection_test.ts",
     "overlay/searchbox_test.ts",
     "overlay/selection_overlay_test.ts",
+    "overlay/reshow_overlay_test.ts",
     "overlay/simplified_selection_test.ts",
     "overlay/test_language_browser_proxy.ts",
     "overlay/test_overlay_browser_proxy.ts",
-    "overlay/text_selection_test.ts",
     "overlay/translate_button_test.ts",
     "side_panel/error_page_test.ts",
     "side_panel/ghost_loader_state_test.ts",
@@ -62,6 +63,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/lens/overlay:build_ts",
+    "//ui/webui/resources/cr_components/composebox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

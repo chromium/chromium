@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_ROW_BREAK_TOKEN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_TABLE_TABLE_ROW_BREAK_TOKEN_DATA_H_
 
-#include "third_party/blink/renderer/core/layout/block_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 
 namespace blink {
 
-struct TableRowBreakTokenData final : BlockBreakTokenData {
-  TableRowBreakTokenData(const BlockBreakTokenData* break_token_data,
-                         LayoutUnit previous_consumed_row_block_size)
-      : BlockBreakTokenData(kTableRowBreakTokenData, break_token_data),
+struct TableRowBreakTokenData final : BreakTokenAlgorithmData {
+  explicit TableRowBreakTokenData(LayoutUnit previous_consumed_row_block_size)
+      : BreakTokenAlgorithmData(kTableRowData),
         previous_consumed_row_block_size(previous_consumed_row_block_size) {}
 
   // Similar to |consumed_block_size| however it will stop increasing once it
@@ -23,7 +22,7 @@ struct TableRowBreakTokenData final : BlockBreakTokenData {
 
 template <>
 struct DowncastTraits<TableRowBreakTokenData> {
-  static bool AllowFrom(const BlockBreakTokenData& token_data) {
+  static bool AllowFrom(const BreakTokenAlgorithmData& token_data) {
     return token_data.IsTableRowType();
   }
 };

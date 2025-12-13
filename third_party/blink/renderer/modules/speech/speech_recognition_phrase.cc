@@ -7,7 +7,7 @@
 namespace blink {
 
 SpeechRecognitionPhrase* SpeechRecognitionPhrase::Create(
-    const WTF::String& phrase,
+    const String& phrase,
     float boost,
     ExceptionState& exception_state) {
   if (boost < 0 || boost > 10) {
@@ -19,7 +19,7 @@ SpeechRecognitionPhrase* SpeechRecognitionPhrase::Create(
   return MakeGarbageCollected<SpeechRecognitionPhrase>(phrase, boost);
 }
 
-SpeechRecognitionPhrase::SpeechRecognitionPhrase(const WTF::String& phrase,
+SpeechRecognitionPhrase::SpeechRecognitionPhrase(const String& phrase,
                                                  float boost)
     : phrase_(phrase), boost_(boost) {}
 

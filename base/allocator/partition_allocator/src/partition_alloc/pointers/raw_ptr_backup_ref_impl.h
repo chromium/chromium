@@ -13,7 +13,6 @@
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
-#include "partition_alloc/partition_alloc_base/cxx20_is_constant_evaluated.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
@@ -39,7 +38,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
 // Note that `RawPtrBackupRefImpl` itself is not thread-safe. If multiple
 // threads modify the same raw_ptr object without synchronization, a data race
 // will occur.
-template <bool AllowDangling = false, bool DisableBRP = false>
+template <bool AllowDangling = false>
 struct RawPtrBackupRefImpl {
   // These are needed for correctness, or else we may end up manipulating
   // ref-count where we shouldn't, thus affecting the BRP's integrity. Unlike
@@ -52,11 +51,6 @@ struct RawPtrBackupRefImpl {
 
  private:
   PA_ALWAYS_INLINE static bool UseBrp(uintptr_t address) {
-    // BRP is temporarily disabled for Pointers annotated with
-    // DisableBRP.
-    if constexpr (DisableBRP) {
-      return false;
-    }
     return partition_alloc::IsManagedByPartitionAllocBRPPool(address);
   }
 
@@ -153,7 +147,7 @@ struct RawPtrBackupRefImpl {
   // Wraps a pointer.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtr(T* ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return ptr;
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(ptr));
@@ -188,7 +182,7 @@ struct RawPtrBackupRefImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr void ReleaseWrappedPtr(T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return;
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
@@ -214,7 +208,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForDereference(
       T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr;
     }
 #if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
@@ -237,7 +231,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* SafelyUnwrapPtrForExtraction(
       T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr;
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
@@ -263,7 +257,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForComparison(
       T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr;
     }
     // This may be used for unwrapping an end-of-allocation pointer to be used
@@ -335,15 +329,18 @@ struct RawPtrBackupRefImpl {
   // Advance the wrapped pointer by `delta_elems`.
   // `is_in_pointer_modification` means that the result is intended to modify
   // the pointer (as opposed to creating a new one).
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` before the
+  // end of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Advance(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr + delta_elems;
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+    if (std::is_constant_evaluated()) {
+      return PA_UNSAFE_BUFFERS(wrapped_ptr + delta_elems);
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     // When modifying the pointer, we have to make sure it doesn't migrate to a
@@ -352,24 +349,29 @@ struct RawPtrBackupRefImpl {
     // properly. Do it anyway if extra OOB checks are enabled.
     if (PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS) ||
         is_in_pointer_modification) {
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
       return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
-          unpoisoned_ptr, unpoisoned_ptr + delta_elems);
+          unpoisoned_ptr, PA_UNSAFE_BUFFERS(unpoisoned_ptr + delta_elems));
     }
-    return unpoisoned_ptr + delta_elems;
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(unpoisoned_ptr + delta_elems);
   }
 
   // Retreat the wrapped pointer by `delta_elems`.
   // `is_in_pointer_modification` means that the result is intended to modify
   // the pointer (as opposed to creating a new one).
+  // PRECONDITIONS: `wrapped_ptr` must be at least `delta_elems` after
+  // the start of the range.
   template <
       typename T,
       typename Z,
       typename =
           std::enable_if_t<partition_alloc::internal::is_offset_type<Z>, void>>
-  PA_ALWAYS_INLINE static constexpr T*
+  PA_UNSAFE_BUFFER_USAGE PA_ALWAYS_INLINE static constexpr T*
   Retreat(T* wrapped_ptr, Z delta_elems, bool is_in_pointer_modification) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
-      return wrapped_ptr - delta_elems;
+    if (std::is_constant_evaluated()) {
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+      return PA_UNSAFE_BUFFERS(wrapped_ptr - delta_elems);
     }
     T* unpoisoned_ptr = UnpoisonPtr(wrapped_ptr);
     // When modifying the pointer, we have to make sure it doesn't migrate to a
@@ -378,23 +380,25 @@ struct RawPtrBackupRefImpl {
     // properly. Do it anyway if extra OOB checks are enabled.
     if (PA_BUILDFLAG(BACKUP_REF_PTR_EXTRA_OOB_CHECKS) ||
         is_in_pointer_modification) {
+      // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
       return VerifyAndPoisonPointerAfterAdvanceOrRetreat(
-          unpoisoned_ptr, unpoisoned_ptr - delta_elems);
+          unpoisoned_ptr, PA_UNSAFE_BUFFERS(unpoisoned_ptr - delta_elems));
     }
-    return unpoisoned_ptr - delta_elems;
+    // SAFETY: Preconditions enforced by PA_UNSAFE_BUFFER_USAGE.
+    return PA_UNSAFE_BUFFERS(unpoisoned_ptr - delta_elems);
   }
 
   template <typename T>
   PA_ALWAYS_INLINE static constexpr ptrdiff_t GetDeltaElems(T* wrapped_ptr1,
                                                             T* wrapped_ptr2) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr1 - wrapped_ptr2;
     }
 
     T* unpoisoned_ptr1 = UnpoisonPtr(wrapped_ptr1);
     T* unpoisoned_ptr2 = UnpoisonPtr(wrapped_ptr2);
 #if PA_BUILDFLAG(ENABLE_POINTER_SUBTRACTION_CHECK)
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return unpoisoned_ptr1 - unpoisoned_ptr2;
     }
     uintptr_t address1 = partition_alloc::UntagPtr(unpoisoned_ptr1);
@@ -418,7 +422,7 @@ struct RawPtrBackupRefImpl {
   // This method increments the reference count of the allocation slot.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* Duplicate(T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr;
     }
     return WrapRawPtr(wrapped_ptr);
@@ -434,7 +438,7 @@ struct RawPtrBackupRefImpl {
   // to create a new raw_ptr<T> from another raw_ptr<T> of a different flavor.
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* WrapRawPtrForDuplication(T* ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return ptr;
     } else {
       return WrapRawPtr(ptr);
@@ -444,7 +448,7 @@ struct RawPtrBackupRefImpl {
   template <typename T>
   PA_ALWAYS_INLINE static constexpr T* UnsafelyUnwrapPtrForDuplication(
       T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return wrapped_ptr;
     } else {
       return UnpoisonPtr(wrapped_ptr);
@@ -454,7 +458,7 @@ struct RawPtrBackupRefImpl {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER)
   template <typename T>
   static constexpr void Trace(uint64_t owner_id, T* wrapped_ptr) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return;
     }
 
@@ -468,7 +472,7 @@ struct RawPtrBackupRefImpl {
   }
 
   static constexpr void Untrace(uint64_t owner_id) {
-    if (partition_alloc::internal::base::is_constant_evaluated()) {
+    if (std::is_constant_evaluated()) {
       return;
     }
 

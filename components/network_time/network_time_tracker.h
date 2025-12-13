@@ -13,9 +13,8 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -100,18 +99,50 @@ class NetworkTimeTracker {
 
   class NetworkTimeObserver : public base::CheckedObserver {
    public:
+    explicit NetworkTimeObserver(NetworkTimeTracker* tracker);
+
+    NetworkTimeObserver(const NetworkTimeObserver&) = delete;
+    NetworkTimeObserver& operator=(const NetworkTimeObserver&) = delete;
+
+    // Called when the network time changes.
     virtual void OnNetworkTimeChanged(
         const TimeTracker::TimeTrackerState state) = 0;
+
+    // Called when the NetworkTimeTracker is destroyed. This allows the observer
+    // to remove itself from the NetworkTimeTracker's observer list, and clear
+    // its pointer to the NetworkTimeTracker. This method may be overridden,
+    // but if so, the parent class method must be called to ensure the above
+    // contract is upheld.
+    virtual void OnNetworkTimeTrackerDestroyed(NetworkTimeTracker* tracker);
+
+   protected:
+    ~NetworkTimeObserver() override;
+
+   private:
+    raw_ptr<NetworkTimeTracker> tracker_;
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  // Constructor.  Arguments may be stubbed out for tests. |url_loader_factory|
-  // must be non-null unless the kNetworkTimeServiceQuerying is disabled.
-  // Otherwise, time is available only if |UpdateNetworkTime| is called.
-  // If |fetch_behavior| is not nullopt, it will control the behavior of the
-  // NetworkTimeTracker, if it is nullopt, it will be controlled via a feature
-  // parameter.
+  // Constructor. Arguments may be stubbed out for tests.
+  //
+  // * The |pref_service| may be passed as nullptr to the constructor, deferring
+  //   its provision to the Initialize() method.
+  //
+  // * The |url_loader_factory| may be passed as nullptr to the constructor and
+  //   the Initialize() method, if |kNetworkTimeServiceQuerying| is disabled.
+  //   In this case, explicitly calling UpdateNetworkTime() will be the only
+  //   way to set network time.
+  //
+  // * If |fetch_behavior| is not nullopt, it will control the behavior of the
+  //   NetworkTimeTracker, if it is nullopt, it will be controlled via a feature
+  //   parameter.
+  //
+  // The NetworkTimeTracker requires |pref_service| to be provided either in
+  // the constructor or via the Initialize() method (it is an error to call
+  // Initialize() with a nullptr |pref_service| or to call it after having
+  // already provided a non-nullptr |pref_service| to the constructor). The
+  // |url_loader_factory| pointer provided with the |pref_service| will be used.
   NetworkTimeTracker(
       std::unique_ptr<base::Clock> clock,
       std::unique_ptr<const base::TickClock> tick_clock,
@@ -125,6 +156,19 @@ class NetworkTimeTracker {
 
   ~NetworkTimeTracker();
 
+  // Returns true if the NetworkTimeTracker has been fully initialized, i.e. if
+  // it has been constructed or Initialize()-ed with a non-null PrefService*.
+  bool is_initialized() const { return pref_service_ != nullptr; }
+
+  // Sets the PrefService and SharedURLLoaderFactory to be used by the
+  // NetworkTimeTracker, if not provided in the constructor. This will start
+  // the NetworkTimeTracker. |pref_service| must not be nullptr.
+  // |url_loader_factory| may be nullptr, if |kNetworkTimeServiceQuerying| is
+  // disabled.
+  void Initialize(
+      PrefService* pref_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
   // Sets |network_time| to an estimate of the true time.  Returns
   // NETWORK_TIME_AVAILABLE if time is available. If |uncertainty| is
   // non-NULL, it will be set to an estimate of the error range.
@@ -134,11 +178,11 @@ class NetworkTimeTracker {
   // reason.
   //
   // Network time may be available on startup if deserialized from a pref.
-  // Failing that, a call to |UpdateNetworkTime| is required to make time
-  // available to callers of |GetNetworkTime|.  Subsequently, network time may
+  // Failing that, a call to UpdateNetworkTime() is required to make time
+  // available to callers of GetNetworkTime().  Subsequently, network time may
   // become unavailable if |NetworkTimeTracker| has reason to believe it is no
   // longer accurate.  Consumers should even be prepared to handle the case
-  // where calls to |GetNetworkTime| never once succeeds.
+  // where calls to GetNetworkTime() never once succeeds.
   NetworkTimeResult GetNetworkTime(base::Time* network_time,
                                    base::TimeDelta* uncertainty) const;
 

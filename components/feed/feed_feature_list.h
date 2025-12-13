@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -128,6 +127,14 @@ BASE_DECLARE_FEATURE(kFeedStreaming);
 // Feature that removes feed header.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedHeaderRemoval);
+
+// Feature that enables feed audio overviews.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kFeedAudioOverviews);
+
+// Feature that enables opening Incognito windows.
+COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
+BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindow);
 
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 bool IsWebFeedEnabledForLocale(const std::string& country);

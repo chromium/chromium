@@ -32,21 +32,19 @@ namespace ios_web_view {
 
 WebViewURLRequestContextGetter::WebViewURLRequestContextGetter(
     const base::FilePath& base_path,
-    web::BrowserState* browser_state,
     net::NetLog* net_log,
-    const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner)
+    const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner,
+    std::unique_ptr<net::SystemCookieStore> system_cookie_store,
+    std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler>
+        protocol_handler)
     : base_path_(base_path),
       net_log_(net_log),
       network_task_runner_(network_task_runner),
       proxy_config_service_(
           new net::ProxyConfigServiceIOS(NO_TRAFFIC_ANNOTATION_YET)),
-      protocol_handler_(
-          web::URLDataManagerIOSBackend::CreateProtocolHandler(browser_state)),
-      is_shutting_down_(false) {
-  auto pair = web::CreateSystemCookieStore(browser_state);
-  system_cookie_store_ = std::move(pair.first);
-  cookie_store_handle_ = std::move(pair.second);
-}
+      system_cookie_store_(std::move(system_cookie_store)),
+      protocol_handler_(std::move(protocol_handler)),
+      is_shutting_down_(false) {}
 
 WebViewURLRequestContextGetter::~WebViewURLRequestContextGetter() = default;
 

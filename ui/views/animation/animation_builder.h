@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -50,6 +51,9 @@ class AnimationAbortHandle;
 class VIEWS_EXPORT AnimationBuilder {
  public:
   class Observer : public ui::LayerAnimationObserver {
+    // TODO(crbug.com/428196026): Remove this macro once it gets fixed.
+    ADVANCED_MEMORY_SAFETY_CHECKS();
+
    public:
     Observer();
     Observer(const Observer&) = delete;

@@ -31,7 +31,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
@@ -122,11 +121,6 @@ bool FEConvolveMatrix::ParametersValid() const {
     return false;
   if (target_offset_.y() < 0 || target_offset_.y() >= kernel_size_.height())
     return false;
-  if (!RuntimeEnabledFeatures::
-          SvgFeConvolveMatrixZeroDivisorBehaviorEnabled() &&
-      !divisor_) {
-    return false;
-  }
   return true;
 }
 

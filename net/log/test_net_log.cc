@@ -4,6 +4,12 @@
 
 #include "net/log/test_net_log.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
+#include "base/json/json_writer.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "net/log/net_log_capture_mode.h"
@@ -108,6 +114,17 @@ void RecordingNetLogObserver::SetThreadsafeAddEntryCallback(
     base::RepeatingClosure add_entry_callback) {
   base::AutoLock lock(lock_);
   add_entry_callback_ = add_entry_callback;
+}
+
+std::string RecordingNetLogObserver::GetJson() const {
+  base::Value::List list;
+  for (const auto& entry : entry_list_) {
+    list.Append(entry.ToDict());
+  }
+
+  std::optional<std::string> out = base::WriteJson(list);
+  CHECK(out);
+  return std::move(out).value();
 }
 
 }  // namespace net

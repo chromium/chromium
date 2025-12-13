@@ -253,6 +253,8 @@ class ASH_EXPORT SessionControllerImpl : public SessionController {
   // `RemoveScopedScreenLockBlocker()` in its dtor.
   class ScopedScreenLockBlockerImpl;
 
+  // Marks the session as Kiosk mode.
+  void SetIsRunningInAppMode();
   // Marks the session as a demo session for Demo Mode.
   void SetIsDemoSession();
   void SetSessionState(session_manager::SessionState state);

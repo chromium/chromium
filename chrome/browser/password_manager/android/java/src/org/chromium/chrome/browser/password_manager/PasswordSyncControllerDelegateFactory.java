@@ -6,13 +6,10 @@ package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
 
-import android.content.Context;
-
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 
 /**
  * This factory returns an implementation for the {@link PasswordSyncControllerDelegate}. The
@@ -47,20 +44,6 @@ public abstract class PasswordSyncControllerDelegateFactory {
      */
     public @Nullable PasswordSyncControllerDelegate createDelegate() {
         return null;
-    }
-
-    /**
-     * Creates and returns new instance of the downstream implementation provided by subclasses.
-     *
-     * Downstream should override this method with actual implementation.
-     *
-     * @return An implementation of the {@link PasswordSyncControllerDelegate} if one exists.
-     */
-    protected PasswordSyncControllerDelegate doCreateDelegate(Context context)
-            throws BackendException {
-        throw new BackendException(
-                "Downstream implementation is not present.",
-                AndroidBackendErrorType.BACKEND_NOT_AVAILABLE);
     }
 
     public static void setFactoryInstanceForTesting(

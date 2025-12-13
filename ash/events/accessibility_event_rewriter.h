@@ -7,14 +7,18 @@
 
 #include <map>
 #include <memory>
+#include <queue>
 #include <set>
 
 #include "ash/ash_export.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_rewriter.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ui {
 class EventRewriterAsh;
@@ -33,6 +37,25 @@ class ASH_EXPORT AccessibilityEventRewriter
     : public ui::EventRewriter,
       public input_method::InputMethodManager::Observer {
  public:
+  // The maximum number of pending key events.
+  // Provides us a generous buffer in case key event handling is slow to process
+  // or if keys are pressed rapidly.
+  inline static const int kMaxPendingEvents = 40;
+
+  // Stores objects necessary to either cancel or propagate key events.
+  struct PendingEventInfo {
+    PendingEventInfo(unsigned int id,
+                     std::unique_ptr<ui::Event> event,
+                     ui::EventRewriter::Continuation continuation);
+    ~PendingEventInfo();
+    PendingEventInfo(const PendingEventInfo&) = delete;
+    PendingEventInfo& operator=(const PendingEventInfo&) = delete;
+
+    unsigned int id;
+    std::unique_ptr<ui::Event> event;
+    ui::EventRewriter::Continuation continuation;
+  };
+
   AccessibilityEventRewriter(ui::EventRewriterAsh* event_rewriter_ash,
                              AccessibilityEventRewriterDelegate* delegate);
   AccessibilityEventRewriter(const AccessibilityEventRewriter&) = delete;
@@ -43,6 +66,22 @@ class ASH_EXPORT AccessibilityEventRewriter
   // Continue dispatch of events that were unhandled by the ChromeVox extension.
   // NOTE: These events may be delivered out-of-order from non-ChromeVox events.
   void OnUnhandledSpokenFeedbackEvent(std::unique_ptr<ui::Event> event) const;
+
+  // Either propagates or cancels a stored key event for ChromeVox.
+  void ProcessPendingSpokenFeedbackEvent(unsigned int id, bool propagate);
+
+  void SendEventHelper(const ui::EventRewriter::Continuation continuation,
+                       const ui::Event* event) const;
+
+  // Enables or disables key event handling for ChromeVox in mv3. Note that
+  // the enable call, e.g. SetSpokenFeedbackMv3KeyHandlingEnabled(true), comes
+  // from the ChromeVox extension once it's ready to start receiving key events.
+  // The disable call, e.g. SetSpokenFeedbackMv3KeyHandlingEnabled(false), comes
+  // from the AccessibilityController when ChromeVox is ready to teardown.
+  // This ensures that we only queue events if we know that we will get a
+  // response from the extension. Otherwise, we run the risk of getting
+  // unhandled events or queuing events that never make it to the extension.
+  void SetSpokenFeedbackMv3KeyHandlingEnabled(bool enabled);
 
   // Sets what |key_codes| are captured for a given Switch Access command.
   void SetKeyCodesForSwitchAccessCommand(
@@ -71,6 +110,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
  private:
   friend class ChromeVoxAccessibilityEventRewriterTest;
+  friend class ChromeVoxMv3AccessibilityEventRewriterTest;
   friend class MouseKeysAccessibilityEventRewriterTest;
 
   // Internal helpers to rewrite an event for a given accessibility feature.
@@ -97,6 +137,14 @@ class ASH_EXPORT AccessibilityEventRewriter
   void InputMethodChanged(input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
+
+  // Propagates all pending spoken feedback events and resets
+  // next_pending_event_id_.
+  void SendAllPendingSpokenFeedbackEvents();
+
+  base::WeakPtr<AccessibilityEventRewriter> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Continuation saved for OnUnhandledSpokenFeedbackEvent().
   Continuation chromevox_continuation_;
@@ -128,10 +176,25 @@ class ASH_EXPORT AccessibilityEventRewriter
   // Whether to try and rewrite positional keys for ChromeVox.
   bool try_rewriting_positional_keys_for_chromevox_ = true;
 
+  bool chromevox_mv3_key_handling_enabled_ = false;
+
+  // Attached to pending key events as unique IDs.
+  unsigned int next_pending_event_id_ = 0;
+
+  // Pending key events. These events are either canceled or propagated after
+  // the ChromeVox extension decides what to do with each event.
+  std::queue<PendingEventInfo> pending_key_events_;
+
+  // The callback for in-flight async request to send all pending events.
+  // Used to cancel the request if a new request is received.
+  base::CancelableOnceCallback<void()> send_all_pending_events_callback_;
+
   // Used to monitor input method changes.
   base::ScopedObservation<input_method::InputMethodManager,
                           input_method::InputMethodManager::Observer>
       observation_{this};
+
+  base::WeakPtrFactory<AccessibilityEventRewriter> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

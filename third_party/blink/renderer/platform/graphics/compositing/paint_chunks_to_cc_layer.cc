@@ -300,7 +300,7 @@ class ConversionContext {
   }
 
   // Starts an effect state by adjusting clip and transform state, applying
-  // the effect as a SaveLayer[Alpha]Op (whose bounds will be updated in
+  // the effect as a SaveLayer[Alpha,Filter]Op (whose bounds will be updated in
   // EndEffect()), and updating the current state.
   [[nodiscard]] ScrollTranslationAction StartEffect(
       const EffectPaintPropertyNode&);
@@ -674,15 +674,13 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   }
 
   bool has_filter = !!effect.Filter();
+  bool has_backdrop_filter = !!effect.BackdropFilter();
   bool has_opacity = effect.Opacity() != 1.f;
-  // TODO(crbug.com/1334293): Normally backdrop filters should be composited and
-  // effect.BackdropFilter() should be null, but compositing can be disabled in
-  // rare cases such as PaintPreview. For now non-composited backdrop filters
-  // are not supported and are ignored.
   bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver;
   // We always create separate effect nodes for normal effects and filter
   // effects, so we can handle them separately.
-  DCHECK(!has_filter || !(has_opacity || has_other_effects));
+  DCHECK(!has_filter ||
+         !(has_opacity || has_other_effects || has_backdrop_filter));
 
   // Apply effects.
   size_t save_layer_id = kNotFound;
@@ -692,7 +690,25 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlphaf(effect.Opacity());
-      save_layer_id = push<cc::SaveLayerOp>(flags);
+      if (has_backdrop_filter) {
+        save_layer_id = push<cc::SaveLayerFiltersOp>(
+            effect.BackdropFilterBounds().getBounds(),
+            std::array<sk_sp<cc::PaintFilter>, 0>{},
+            cc::RenderSurfaceFilters::BuildImageFilter(
+                effect.BackdropFilter()->AsCcFilterOperations()),
+            flags);
+      } else {
+        save_layer_id = push<cc::SaveLayerOp>(flags);
+      }
+    } else if (has_backdrop_filter) {
+      cc::PaintFlags flags;
+      flags.setAlphaf(effect.Opacity());
+      save_layer_id = push<cc::SaveLayerFiltersOp>(
+          effect.BackdropFilterBounds().getBounds(),
+          std::array<sk_sp<cc::PaintFilter>, 0>{},
+          cc::RenderSurfaceFilters::BuildImageFilter(
+              effect.BackdropFilter()->AsCcFilterOperations()),
+          flags);
     } else {
       save_layer_id = push<cc::SaveLayerAlphaOp>(effect.Opacity());
     }
@@ -1165,6 +1181,9 @@ class LayerPropertiesUpdater {
   TouchAction ShouldDisableCursorControl();
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateXrTargetRegion(const HitTestData&);
+#endif
 
   void UpdateScrollHitTestData(const PaintChunk&);
   void AddNonCompositedScroll(const PaintChunk&);
@@ -1191,6 +1210,9 @@ class LayerPropertiesUpdater {
   const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
 
   cc::Region wheel_event_region_;
+#if BUILDFLAG(IS_ANDROID)
+  Vector<cc::ElementId> xr_hit_test_order_;
+#endif
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
 
@@ -1261,6 +1283,13 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
         chunk_to_layer_mapper_.MapVisualRect(wheel_event_rect));
   }
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void LayerPropertiesUpdater::UpdateXrTargetRegion(
+    const HitTestData& hit_test_data) {
+  xr_hit_test_order_.AppendVector(hit_test_data.xr_regions);
+}
+#endif
 
 void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
   const HitTestData& hit_test_data = *chunk.hit_test_data;
@@ -1506,9 +1535,17 @@ LayerPropertiesUpdater::PaintedSelectionBoundToLayerSelectionBound(
   cc::LayerSelectionBound layer_bound;
   layer_bound.type = bound.type;
 
-  // This is similar to ComputeViewportSelectionBound() but is a bit simpler.
-  // Use the end point expanded by 1 as the sample rect to check visibility.
+  // This is similar to ComputeViewportSelectionBound(). Use the end point
+  // moved 1 pixel towards the start point and expanded by 1 as the sample
+  // rect to check visibility.
   gfx::Rect sample(bound.edge_end, gfx::Size());
+  if (RuntimeEnabledFeatures::SelectionHandleWithBottomClippedEnabled()) {
+    auto offset = [](int start, int end) {
+      return start < end ? -1 : start > end ? 1 : 0;
+    };
+    sample.Offset(offset(bound.edge_start.x(), bound.edge_end.x()),
+                  offset(bound.edge_start.y(), bound.edge_end.y()));
+  }
   sample.Outset(1);
   // The bound is treated as visible if the sample rect mapped to layer is
   // not empty.
@@ -1550,6 +1587,9 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.hit_test_data) {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
+#if BUILDFLAG(IS_ANDROID)
+        UpdateXrTargetRegion(*chunk.hit_test_data);
+#endif
         UpdateScrollHitTestData(chunk);
       }
       UpdatePreviousNonCompositedScrolls(chunk);
@@ -1570,6 +1610,12 @@ void LayerPropertiesUpdater::Update() {
   if (!selection_only_) {
     layer_.SetTouchActionRegion(std::move(touch_action_region_));
     layer_.SetWheelEventRegion(std::move(wheel_event_region_));
+
+#if BUILDFLAG(IS_ANDROID)
+    layer_.SetXrHitTestOrder(std::vector<cc::ElementId>(
+        xr_hit_test_order_.begin(), xr_hit_test_order_.end()));
+#endif
+
     layer_.SetCaptureBounds(std::move(capture_bounds_));
 
     std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;

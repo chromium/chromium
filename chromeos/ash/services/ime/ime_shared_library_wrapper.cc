@@ -5,7 +5,6 @@
 #include "chromeos/ash/services/ime/ime_shared_library_wrapper.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"

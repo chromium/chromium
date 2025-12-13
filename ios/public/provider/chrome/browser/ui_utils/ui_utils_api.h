@@ -7,21 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-class Browser;
-@protocol LogoVendor;
-
-namespace web {
-class WebState;
-}
-
 namespace ios {
 namespace provider {
 
 // Initializes UI global state for the provider.
 void InitializeUI();
-
-// Creates a new LogoVendor instance.
-id<LogoVendor> CreateLogoVendor(Browser* browser, web::WebState* web_state);
 
 // Returns a UIImageView to be used with CreateAnimatedImageFromData().
 UIImageView* CreateAnimatedImageView();

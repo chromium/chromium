@@ -4,6 +4,8 @@
 
 #include "ash/system/hotspot/hotspot_detailed_view.h"
 
+#include <optional>
+
 #include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -16,6 +18,7 @@
 #include "base/test/task_environment.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
@@ -66,9 +69,12 @@ class HotspotDetailedViewTest : public AshTestBase {
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     widget_->SetContentsView(hotspot_detailed_view.release());
+    normal_duration_.emplace(
+        gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   }
 
   void TearDown() override {
+    normal_duration_.reset();
     widget_.reset();
 
     AshTestBase::TearDown();
@@ -153,6 +159,7 @@ class HotspotDetailedViewTest : public AshTestBase {
   FakeDetailedViewDelegate detailed_view_delegate_;
   raw_ptr<HotspotDetailedView, DanglingUntriaged> hotspot_detailed_view_ =
       nullptr;
+  std::optional<gfx::ScopedAnimationDurationScaleMode> normal_duration_;
 };
 
 TEST_F(HotspotDetailedViewTest, PressingSettingsButtonOpensSettings) {

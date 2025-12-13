@@ -61,7 +61,7 @@ void DevicePosture::EnsureServiceConnection() {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
   service->AddListenerAndGetCurrentPosture(
       receiver_.BindNewPipeAndPassRemote(task_runner),
-      WTF::BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
+      BindOnce(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
 void DevicePosture::AddedEventListener(const AtomicString& event_type,

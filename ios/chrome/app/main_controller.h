@@ -12,7 +12,6 @@
 
 @class AppState;
 @protocol BrowserProviderInterface;
-@class MetricsMediator;
 
 // The main controller of the application, owned by the MainWindow nib. Also
 // serves as the delegate for the app. Owns all the various top-level
@@ -25,10 +24,6 @@
 // Contains information about the application state, for example whether the
 // safe mode is activated.
 @property(nonatomic, weak) AppState* appState;
-
-// This metrics mediator is used to check and update the metrics accordingly to
-// to the user preferences.
-@property(nonatomic, weak) MetricsMediator* metricsMediator;
 
 // The BrowserProviderInterface for the foreground scene, or for any background
 // connected scene if there's no foreground scene. If there are none of these,

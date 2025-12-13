@@ -17,7 +17,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_util.h"
+#include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
@@ -47,8 +47,9 @@ void MaybeIgnoreAbusiveNotificationAutoRevocation(
       threat_type != SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     return;
   }
-  safety_hub_util::SetRevokedAbusiveNotificationPermission(hcsm.get(), url,
-                                                           /*is_ignored=*/true);
+  AbusiveNotificationPermissionsManager::
+      SetRevokedAbusiveNotificationPermission(hcsm.get(), url,
+                                              /*is_ignored=*/true);
 }
 
 SafeBrowsingBlockingPage*
@@ -57,7 +58,6 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
     content::WebContents* web_contents,
     const GURL& main_frame_url,
     const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-    bool should_trigger_reporting,
     std::optional<base::TimeTicks> blocked_page_shown_timestamp) {
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -77,7 +77,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
           BaseBlockingPage::IsMainPageResourceLoadPending(unsafe_resources),
           is_extended_reporting_opt_in_allowed,
           web_contents->GetBrowserContext()->IsOffTheRecord(),
-          IsExtendedReportingEnabledBypassDeprecationFlag(*prefs),
+          IsExtendedReportingEnabled(*prefs),
           IsExtendedReportingPolicyManaged(*prefs),
           IsEnhancedProtectionEnabled(*prefs), is_proceed_anyway_disabled,
           false,  // should_open_links_in_new_tab
@@ -102,7 +102,7 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       ui_manager, web_contents, main_frame_url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager,
                              blocked_page_shown_timestamp),
-      display_options, should_trigger_reporting,
+      display_options,
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(

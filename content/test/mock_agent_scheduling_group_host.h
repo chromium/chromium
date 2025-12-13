@@ -9,8 +9,6 @@
 
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host_factory.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_test_sink.h"
 
 namespace content {
 
@@ -20,12 +18,8 @@ class MockAgentSchedulingGroupHost : public AgentSchedulingGroupHost {
  public:
   explicit MockAgentSchedulingGroupHost(RenderProcessHost& process);
 
-  IPC::TestSink& sink() { return sink_; }
 
  private:
-  // Stores IPC messages that would have been sent to the renderer-side
-  // AgentSchedulingGroup.
-  IPC::TestSink sink_;
 };
 
 class MockAgentSchedulingGroupHostFactory

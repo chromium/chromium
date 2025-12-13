@@ -8,8 +8,10 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <typeinfo>
 
 #include "base/check_op.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
@@ -110,7 +112,10 @@ ProgressWnd::ProgressWnd(WTL::CMessageLoop* message_loop, HWND parent)
 
 ProgressWnd::~ProgressWnd() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!IsWindow());
+  if (IsWindow()) {
+    // TODO(crbug.com/447657543): replace with a check when the bug is fixed.
+    base::debug::DumpWithoutCrashing();
+  }
   cur_state_ = States::STATE_END;
 }
 
@@ -220,6 +225,12 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
       break;
     case IDC_CLOSE:
       switch (cur_state_) {
+        case States::STATE_CHECKING_FOR_UPDATE:
+        case States::STATE_WAITING_TO_DOWNLOAD:
+        case States::STATE_DOWNLOADING:
+        case States::STATE_WAITING_TO_INSTALL:
+        case States::STATE_INSTALLING:
+        case States::STATE_PAUSED:
         case States::STATE_COMPLETE_SUCCESS:
         case States::STATE_COMPLETE_ERROR:
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
@@ -227,8 +238,6 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         default:
           NOTREACHED();
       }
-    default:
-      NOTREACHED();
   }
 
   handled = true;

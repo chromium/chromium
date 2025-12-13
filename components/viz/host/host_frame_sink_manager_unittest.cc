@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -68,7 +70,18 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
   // mojom::FrameSinkManager:
   MOCK_METHOD2(RegisterFrameSinkId,
                void(const FrameSinkId& frame_sink_id, bool report_activation));
-  MOCK_METHOD1(InvalidateFrameSinkId, void(const FrameSinkId& frame_sink_id));
+  void InvalidateFrameSinkId(const FrameSinkId& frame_sink_id,
+                             InvalidateFrameSinkIdCallback callback) override {
+    MockInvalidateFrameSinkId(frame_sink_id);
+    if (run_invalidate_frame_sink_callback_) {
+      std::move(callback).Run();
+    } else {
+      CHECK(!invalidate_callback_);
+      invalidate_callback_ = std::move(callback);
+    }
+  }
+  MOCK_METHOD1(MockInvalidateFrameSinkId,
+               void(const FrameSinkId& frame_sink_id));
   MOCK_METHOD2(SetFrameSinkDebugLabel,
                void(const FrameSinkId& frame_sink_id,
                     const std::string& debug_label));
@@ -100,6 +113,19 @@ class MockFrameSinkManagerImpl : public TestFrameSinkManagerImpl {
               Throttle,
               (const std::vector<FrameSinkId>& ids, base::TimeDelta interval),
               (override));
+
+  void set_run_invalidate_frame_sink_callback(bool run) {
+    run_invalidate_frame_sink_callback_ = run;
+  }
+
+  void RunInvalidateFrameSinkCallback() {
+    EXPECT_TRUE(invalidate_callback_);
+    std::move(invalidate_callback_).Run();
+  }
+
+ private:
+  bool run_invalidate_frame_sink_callback_ = true;
+  InvalidateFrameSinkIdCallback invalidate_callback_;
 };
 
 }  // namespace
@@ -210,8 +236,8 @@ TEST_F(HostFrameSinkManagerTest, CreateCompositorFrameSinks) {
   host().RegisterFrameSinkHierarchy(kFrameSinkParent1, kFrameSinkChild1);
 
   // Destroy the CompositorFrameSink.
-  EXPECT_CALL(impl(), InvalidateFrameSinkId(kFrameSinkChild1));
-  host().InvalidateFrameSinkId(kFrameSinkChild1, &host_client_);
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkChild1));
+  host().InvalidateFrameSinkId(kFrameSinkChild1, &host_client_, {});
   FlushHostAndVerifyExpectations();
 
   // Unregister should work after the CompositorFrameSink is destroyed.
@@ -261,14 +287,14 @@ TEST_F(HostFrameSinkManagerTest, CreateRootCompositorFrameSinks) {
   EXPECT_TRUE(FrameSinkDataExists(kFrameSinkChild1));
 
   // Data for |kFrameSinkChild1| should be deleted when everything is destroyed.
-  EXPECT_CALL(impl(), InvalidateFrameSinkId(kFrameSinkChild1));
-  host().InvalidateFrameSinkId(kFrameSinkChild1, &host_client_);
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkChild1));
+  host().InvalidateFrameSinkId(kFrameSinkChild1, &host_client_, {});
   EXPECT_FALSE(FrameSinkDataExists(kFrameSinkChild1));
 
   // Data for |kFrameSinkParent1| should be deleted when everything is
   // destroyed.
-  EXPECT_CALL(impl(), InvalidateFrameSinkId(kFrameSinkParent1));
-  host().InvalidateFrameSinkId(kFrameSinkParent1, &host_client_);
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkParent1));
+  host().InvalidateFrameSinkId(kFrameSinkParent1, &host_client_, {});
   EXPECT_FALSE(FrameSinkDataExists(kFrameSinkParent1));
   FlushHostAndVerifyExpectations();
 }
@@ -408,7 +434,7 @@ TEST_F(HostFrameSinkManagerTest, DeletedHitTestQuery) {
   // Continue to send hit-test data to HitTestQuery associated with
   // kFrameSinkChild1.
 
-  host().InvalidateFrameSinkId(kFrameSinkParent1, &host_client_);
+  host().InvalidateFrameSinkId(kFrameSinkParent1, &host_client_, {});
   // Invalidating kFrameSinkChild1 would delete the corresponding HitTestQuery,
   // so further msgs to that HitTestQuery should be dropped.
   EXPECT_FALSE(DisplayHitTestQueryExists(kFrameSinkParent1));
@@ -474,6 +500,55 @@ TEST_F(HostFrameSinkManagerTest, ContextLossRecreateNonRoot) {
   FlushHostAndVerifyExpectations();
 }
 
+TEST_F(HostFrameSinkManagerTest, InvalidateFrameSinkIdCallback) {
+  EXPECT_CALL(impl(), RegisterFrameSinkId(kFrameSinkParent1, true));
+  RegisterFrameSinkIdWithFakeClient(kFrameSinkParent1,
+                                    ReportFirstSurfaceActivation::kYes);
+  FlushHostAndVerifyExpectations();
+
+  bool callback_called = false;
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkParent1));
+
+  host().InvalidateFrameSinkId(
+      kFrameSinkParent1, &host_client_,
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
+  FlushHostAndVerifyExpectations();
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(FrameSinkDataExists(kFrameSinkParent1));
+}
+
+TEST_F(HostFrameSinkManagerTest,
+       InvalidateFrameSinkIdCallbackOnConnectionError) {
+  bool callback_called = false;
+  EXPECT_CALL(impl(), RegisterFrameSinkId(kFrameSinkParent1, true));
+  RegisterFrameSinkIdWithFakeClient(kFrameSinkParent1,
+                                    ReportFirstSurfaceActivation::kYes);
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
+  EXPECT_CALL(impl(), CreateCompositorFrameSink(kFrameSinkParent1, _, _, _, _));
+  host().CreateCompositorFrameSink(
+      kFrameSinkParent1, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      compositor_frame_sink_client.BindInterfaceRemote());
+  FlushHostAndVerifyExpectations();
+
+  // Now invalidate, but skip running the callback.
+  impl().set_run_invalidate_frame_sink_callback(false);
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkParent1));
+  host().InvalidateFrameSinkId(
+      kFrameSinkParent1, &host_client_,
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
+  FlushHostAndVerifyExpectations();
+  EXPECT_FALSE(FrameSinkDataExists(kFrameSinkParent1));
+  EXPECT_FALSE(callback_called);
+
+  // Simulate disconnect by directly calling the disconnect handler.
+  host().OnConnectionLost();
+  EXPECT_TRUE(callback_called);
+
+  // Mojo expects its callback to be run and not dropped.
+  impl().RunInvalidateFrameSinkCallback();
+}
+
 TEST_F(HostFrameSinkManagerTest, ThrottleFramePainting) {
   const std::vector<FrameSinkId> frame_sink_ids{
       FrameSinkId(1, 1), FrameSinkId(2, 2), FrameSinkId(3, 3)};
@@ -500,9 +575,30 @@ TEST_F(HostFrameSinkManagerTest, RegisterWithExistingClient) {
   FlushHostAndVerifyExpectations();
 
   // Invalidate the new client. The associated frame sink is now destroyed.
-  EXPECT_CALL(impl(), InvalidateFrameSinkId(kFrameSinkChild1));
-  host().InvalidateFrameSinkId(kFrameSinkChild1, &new_client_);
+  EXPECT_CALL(impl(), MockInvalidateFrameSinkId(kFrameSinkChild1));
+  host().InvalidateFrameSinkId(kFrameSinkChild1, &new_client_, {});
   FlushHostAndVerifyExpectations();
+}
+
+TEST_F(HostFrameSinkManagerTest, OnConnectionLostResetsVizTouchState) {
+  // Simulate Viz sending the shared memory region.
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(sizeof(VizTouchState));
+  ASSERT_TRUE(mapped_region.IsValid());
+  GetFrameSinkManagerClient()->OnVizTouchStateAvailable(
+      std::move(mapped_region.region));
+
+  // Initially, the mapping should be valid.
+  EXPECT_TRUE(host().GetVizTouchStatePtr());
+
+  // Simulate GPU crash.
+  KillGpu();
+  base::RunLoop run_loop;
+  host().SetConnectionLostCallback(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // The mapping should now be invalid.
+  EXPECT_FALSE(host().GetVizTouchStatePtr());
 }
 
 }  // namespace viz

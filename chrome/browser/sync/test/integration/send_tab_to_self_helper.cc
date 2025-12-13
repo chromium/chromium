@@ -4,7 +4,7 @@
 
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
 
-#include <map>
+#include <numeric>
 #include <sstream>
 
 #include "base/check_op.h"
@@ -213,12 +213,11 @@ SendTabToSelfMultiDeviceActiveChecker::
 bool SendTabToSelfMultiDeviceActiveChecker::IsExitConditionSatisfied(
     std::ostream* os) {
   *os << "Waiting for multiple devices to be active.";
-  const std::map<syncer::DeviceInfo::FormFactor, int> device_count_by_type =
-      tracker_->CountActiveDevicesByType();
-  int total = 0;
-  for (const auto& [type, count] : device_count_by_type) {
-    total += count;
-  }
+  const absl::flat_hash_map<syncer::DeviceInfo::FormFactor, int>
+      device_count_by_type = tracker_->CountActiveDevicesByType();
+  const int total = std::accumulate(
+      device_count_by_type.begin(), device_count_by_type.end(), 0,
+      [](int sum, const auto& pair) { return sum + pair.second; });
   return total > 1;
 }
 

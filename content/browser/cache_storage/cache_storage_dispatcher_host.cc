@@ -613,9 +613,7 @@ class CacheStorageDispatcherHost::CacheImpl
       return;
     }
 
-    auto buf = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
-    if (data.size())
-      UNSAFE_TODO(memcpy(buf->data(), data.data(), data.size()));
+    auto buf = base::MakeRefCounted<net::VectorIOBuffer>(data);
 
     cache->WriteSideData(std::move(callback), url, expected_response_time,
                          trace_id, std::move(buf), data.size());

@@ -16,11 +16,6 @@
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/system_alert_handler.h"
-#import "ui/display/screen.h"
-
-#if DCHECK_IS_ON()
-#import "ui/display/screen_base.h"
-#endif
 
 namespace {
 
@@ -28,10 +23,13 @@ namespace {
 // ensure that +setUpForTestCase is called exactly once per unique XCTestCase
 // and is reset in +tearDown.
 bool g_needs_set_up_for_test_case = true;
-std::unique_ptr<display::ScopedNativeScreen> g_screen;
 }  // namespace
 
 @implementation BaseEarlGreyTestCase
+
++ (BOOL)loadMinimalAppUI {
+  return NO;
+}
 
 + (BOOL)forceRestartAndWipe {
   return YES;
@@ -67,13 +65,18 @@ std::unique_ptr<display::ScopedNativeScreen> g_screen;
 - (void)setUp {
   [super setUp];
 
-  g_screen = std::make_unique<display::ScopedNativeScreen>();
+  // No need to continue after failure. The app is re-launched between tests.
+  self.continueAfterFailure = NO;
 
   // Before starting a new test, relaunch the app and wipe the profile.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   if ([BaseEarlGreyTestCase forceRestartAndWipe]) {
     config.relaunch_policy = RelaunchPolicy::ForceRelaunchByKilling;
     config.additional_args.push_back(std::string("-EGTestWipeProfile"));
+  }
+
+  if ([[self class] loadMinimalAppUI]) {
+    config.additional_args.push_back(std::string("-load-minimal-app-ui"));
   }
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
@@ -96,17 +99,7 @@ std::unique_ptr<display::ScopedNativeScreen> g_screen;
 }
 
 + (void)tearDown {
-#if DCHECK_IS_ON()
-  // Make sure that all display observers are removed at the end of each
-  // test.
-  if (display::Screen::HasScreen()) {
-    display::ScreenBase* screen =
-        static_cast<display::ScreenBase*>(display::Screen::GetScreen());
-    DCHECK(!screen->HasDisplayObservers());
-  }
-#endif
   g_needs_set_up_for_test_case = true;
-  g_screen.reset();
   [super tearDown];
 }
 

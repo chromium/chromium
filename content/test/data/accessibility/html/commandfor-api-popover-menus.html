@@ -1,0 +1,46 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+-->
+
+<!-- Non-visible menulist should show collapsed menuitem and button -->
+<button command=show-menu commandfor=closedmenu></button>
+<menubar>
+  <menuitem command=toggle-menu commandfor=closedmenu>First item</menuitem>
+  <menuitem>No command item</menuitem>
+  <menuitem command=--custom-command commandfor=closedmenu>Custom command item</menuitem>
+</menubar>
+<menulist id=closedmenu></menulist>
+
+<!-- Visible menulist should show expanded menuitem and button (see script
+below) -->
+<button command=show-menu commandfor=openedmenu></button>
+<menubar>
+  <menuitem command=toggle-menu commandfor=openedmenu>First item</menuitem>
+</menubar>
+<menulist id=openedmenu></menulist>
+
+<!-- Submenu menuitem shows collapsed state -->
+<menubar>
+  <menuitem command=toggle-menu commandfor=submenu1>First item</menuitem>
+</menubar>
+<menulist id=submenu1>
+  <menuitem>Submenu1 first item</menuitem>
+  <menuitem command=toggle-menu commandfor=submenu2>Submenu1 second item</menuitem>
+</menulist>
+<menulist id=submenu2>
+  <menuitem>Submenu2 first item</menuitem>
+</menulist>
+
+<script>
+  openedmenu.showPopover();
+  submenu1.showPopover();
+</script>

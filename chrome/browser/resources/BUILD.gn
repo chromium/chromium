@@ -6,6 +6,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//content/browser/devtools/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
@@ -39,6 +40,7 @@ group("resources") {
       "bookmarks:resources",
       "certificate_manager:resources",
       "commerce/product_specifications:resources",
+      "contextual_tasks:resources",
       "data_sharing:resources",
       "downloads:resources",
       "feedback:resources",
@@ -46,6 +48,7 @@ group("resources") {
       "history:resources",
       "inspect:resources",
       "key_value_pair_viewer_shared:resources",
+      "legion_internals:resources",
       "lens/overlay:resources",
       "lens/shared:resources",
       "management:resources",
@@ -60,6 +63,7 @@ group("resources") {
       "privacy_sandbox:resources",
       "privacy_sandbox/internals:resources",
       "profile_internals:resources",
+      "reload_button:resources",
       "search_engine_choice:resources",
       "settings:resources",
       "settings_shared:resources",
@@ -78,8 +82,10 @@ group("resources") {
       "tab_group_home:resources",
       "tab_search:resources",
       "web_app_internals:resources",
+      "webui_browser:resources",
       "webui_gallery:resources",
       "whats_new:resources",
+      "//components/browser_apis/tab_strip/resources",
     ]
     if (is_chrome_branded) {
       public_deps += [ "media_router/cast_feedback:resources" ]
@@ -121,6 +127,7 @@ group("resources") {
       "browser_switch:resources",
       "on_device_translation_internals:resources",
       "signin/history_sync_optin:resources",
+      "updater:resources",
     ]
   }
 
@@ -171,6 +178,7 @@ group("resources") {
     public_deps += [
       "glic:resources",
       "glic/fre:resources",
+      "glic/shared:resources",
     ]
   }
 
@@ -294,7 +302,7 @@ group("dev_ui_resources") {
     "//components/download/resources/download_internals:resources",
     "//components/history_clusters/history_clusters_internals/resources",
     "//components/metrics/debug:resources",
-    "//components/ntp_tiles/webui/resources:resources",
+    "//components/ntp_tiles/webui/resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources:dev_ui_components_resources",
@@ -309,10 +317,6 @@ group("dev_ui_resources") {
     "//content/browser/webrtc/resources",
   ]
 
-  if (is_chromeos) {
-    public_deps += [ "//chromeos/ash/components/kiosk/vision/webui:resources" ]
-  }
-
   if (enable_vr) {
     public_deps += [ "//content/browser/resources/webxr_internals:resources" ]
   }
@@ -320,6 +324,7 @@ group("dev_ui_resources") {
   if (is_android) {
     public_deps += [
       "//chrome/browser/resources/feed_internals:resources",
+      "//chrome/browser/resources/notifications_internals:resources",
       "//chrome/browser/resources/webapks:resources",
     ]
   } else {
@@ -340,6 +345,10 @@ group("dev_ui_resources") {
 
   if (enable_session_service) {
     public_deps += [ "tab_strip_internals:resources" ]
+  }
+
+  if (enable_devtools_frontend) {
+    public_deps += [ "//content/browser/devtools:devtools_resources" ]
   }
 }
 
@@ -389,6 +398,7 @@ repack("dev_ui_paks") {
   if (is_android) {
     sources += [
       "$root_gen_dir/chrome/feed_internals_resources.pak",
+      "$root_gen_dir/chrome/notifications_internals_resources.pak",
       "$root_gen_dir/chrome/webapks_resources.pak",
     ]
   } else {
@@ -409,6 +419,11 @@ repack("dev_ui_paks") {
 
   if (enable_session_service) {
     sources += [ "$root_gen_dir/chrome/tab_strip_internals_resources.pak" ]
+  }
+
+  if (enable_devtools_frontend) {
+    sources +=
+        [ "$root_gen_dir/content/browser/devtools/devtools_resources.pak" ]
   }
 
   deps = [ ":dev_ui_resources" ]

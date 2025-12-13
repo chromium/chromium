@@ -9,6 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

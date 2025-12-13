@@ -48,7 +48,6 @@
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -78,10 +77,12 @@ void LayoutReplaced::WillBeDestroyed() {
   LayoutBox::WillBeDestroyed();
 }
 
-void LayoutReplaced::StyleDidChange(StyleDifference diff,
-                                    const ComputedStyle* old_style) {
+void LayoutReplaced::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutBox::StyleDidChange(diff, old_style);
+  LayoutBox::StyleDidChange(diff, old_style, style_change_context);
 
   // Replaced elements can have border-radius clips without clipping overflow;
   // the overflow clipping case is already covered in LayoutBox::StyleDidChange
@@ -388,15 +389,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     const auto writing_direction = line_style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          line_box.ContainerFragment().Size());
-    PhysicalRect physical_rect;
-    if (RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled()) {
-      physical_rect = line_box.CurrentRectInFirstContainerFragment();
-    } else {
-      physical_rect = line_box.Current().RectInContainerFragment();
-      // The caller expects it to be in the "stitched" coordinate space.
-      physical_rect.offset +=
-          OffsetInStitchedFragments(line_box.ContainerFragment());
-    }
+    PhysicalRect physical_rect = line_box.CurrentRectInFirstContainerFragment();
     const LogicalRect logical_rect = converter.ToLogical(physical_rect);
     return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }
@@ -420,8 +413,11 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
   if (block_direction_position < top)
     return PositionBeforeThis();  // coordinates are above
 
-  if (block_direction_position >= bottom)
-    return PositionBeforeThis();  // coordinates are below
+  if (block_direction_position >= bottom) {
+    return RuntimeEnabledFeatures::ReplacedElementCursorPositioningFixEnabled()
+               ? PositionAfterThis()
+               : PositionBeforeThis();  // coordinates are below
+  }
 
   if (GetNode()) {
     const bool is_at_left_side =
@@ -458,7 +454,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
   }
 
   // We're a block-level replaced element.  Just return our own dimensions.
-  return PhysicalRect(PhysicalOffset(), Size());
+  return PhysicalRect(PhysicalOffset(), StitchedSize());
 }
 
 bool LayoutReplaced::RespectsCSSOverflow() const {

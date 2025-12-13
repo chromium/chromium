@@ -7,7 +7,8 @@
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 
 ContextualPanelModelService::ContextualPanelModelService(
-    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>> models)
     : models_(models) {}
 
 ContextualPanelModelService::~ContextualPanelModelService() {}
@@ -16,7 +17,8 @@ void ContextualPanelModelService::Shutdown() {
   models_.clear();
 }
 
-const std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>>&
+const std::map<ContextualPanelItemType,
+               raw_ptr<ContextualPanelModel, DanglingUntriaged>>&
 ContextualPanelModelService::models() {
   return models_;
 }

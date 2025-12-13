@@ -5,15 +5,22 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_CHROME_PERMISSIONS_CLIENT_H_
 #define CHROME_BROWSER_PERMISSIONS_CHROME_PERMISSIONS_CLIENT_H_
 
+#include <optional>
+
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 class ChromePermissionsClient : public permissions::PermissionsClient {
  public:
@@ -50,7 +57,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
                                 const GURL& origin) override;
   void GetUkmSourceId(ContentSettingsType permission_type,
                       content::BrowserContext* browser_context,
-                      content::WebContents* web_contents,
+                      content::RenderFrameHost* render_frame_host,
                       const GURL& requesting_origin,
                       GetUkmSourceIdCallback callback) override;
   permissions::IconId GetOverrideIconId(
@@ -74,9 +81,7 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
           pepc_prompt_position,
       ContentSetting initial_permission_status,
       base::OnceCallback<void()> hats_shown_callback,
-      std::optional<
-          permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
-          preview_parameters) override;
+      PromptOptions prompt_options) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   permissions::PermissionIgnoredReason DetermineIgnoreReason(
@@ -84,22 +89,17 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
 #endif
 
   void OnPromptResolved(
-      permissions::RequestType request_type,
+      const permissions::PermissionRequest* request,
       permissions::PermissionAction action,
-      const GURL& origin,
       permissions::PermissionPromptDisposition prompt_disposition,
       permissions::PermissionPromptDispositionReason prompt_disposition_reason,
-      permissions::PermissionRequestGestureType gesture_type,
       std::optional<QuietUiReason> quiet_ui_reason,
       base::TimeDelta prompt_display_duration,
       std::optional<
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      content::WebContents* web_contents,
-      std::optional<
-          permissions::PermissionHatsTriggerHelper::PreviewParametersForHats>
-          preview_parameters) override;
+      content::WebContents* web_contents) override;
   std::optional<bool> HadThreeConsecutiveNotificationPermissionDenies(
       content::BrowserContext* browser_context) override;
   std::optional<bool> HasPreviouslyAutoRevokedPermission(
@@ -148,16 +148,18 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
   bool CanRequestDevicePermission(ContentSettingsType type) const override;
   bool IsPermissionBlockedByDevicePolicy(
       content::WebContents* web_contents,
-      ContentSetting setting,
+      PermissionSetting setting,
       const content_settings::SettingInfo& info,
       ContentSettingsType type) const override;
   bool IsPermissionAllowedByDevicePolicy(
       content::WebContents* web_contents,
-      ContentSetting setting,
+      PermissionSetting setting,
       const content_settings::SettingInfo& info,
       ContentSettingsType type) const override;
   bool IsSystemDenied(ContentSettingsType type) const override;
   bool CanPromptSystemPermission(ContentSettingsType type) const override;
+  bool IsActorOperatingOnWebContents(
+      content::WebContents* web_contents) const override;
 
  private:
   friend base::NoDestructor<ChromePermissionsClient>;

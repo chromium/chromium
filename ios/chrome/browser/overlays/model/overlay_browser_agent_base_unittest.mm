@@ -75,8 +75,9 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     FakeOverlayBrowserAgent::CreateForBrowser(browser_.get());
     // Set up the infobar OverlayPresenter.
-    OverlayPresenter::FromBrowser(browser_.get(), kModality)
-        ->SetPresentationContext(&presentation_context_);
+    overlay_presenter_ =
+        OverlayPresenter::FromBrowser(browser_.get(), kModality);
+    overlay_presenter_->SetPresentationContext(&presentation_context_);
     // Add and active a WebState over which to present overlays.
     browser_->GetWebStateList()->InsertWebState(
         std::make_unique<web::FakeWebState>(),
@@ -85,8 +86,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
   }
 
   ~OverlayBrowserAgentBaseTest() override {
-    OverlayPresenter::FromBrowser(browser_.get(), kModality)
-        ->SetPresentationContext(nullptr);
+    overlay_presenter_->SetPresentationContext(nullptr);
   }
 
   // Returns the mock callback receiver for the browser agent.
@@ -106,8 +106,9 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
-  raw_ptr<web::WebState> web_state_ = nullptr;
   std::unique_ptr<Browser> browser_;
+  raw_ptr<OverlayPresenter> overlay_presenter_ = nullptr;
+  raw_ptr<web::WebState, DanglingUntriaged> web_state_ = nullptr;
   FakeOverlayPresentationContext presentation_context_;
 };
 

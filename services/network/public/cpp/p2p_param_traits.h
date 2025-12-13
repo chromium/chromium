@@ -10,7 +10,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
@@ -55,6 +55,7 @@ IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(webrtc::AsyncSocketPacketOptions)
   IPC_STRUCT_TRAITS_MEMBER(dscp)
+  IPC_STRUCT_TRAITS_MEMBER(ect_1)
   IPC_STRUCT_TRAITS_MEMBER(packet_id)
   IPC_STRUCT_TRAITS_MEMBER(packet_time_params)
 IPC_STRUCT_TRAITS_END()

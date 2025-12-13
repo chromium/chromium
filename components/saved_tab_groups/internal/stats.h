@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <unordered_set>
+#include <vector>
 
 #include "base/uuid.h"
 #include "components/saved_tab_groups/public/types.h"

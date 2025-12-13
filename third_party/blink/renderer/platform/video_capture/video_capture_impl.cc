@@ -414,7 +414,7 @@ bool VideoCaptureImpl::ProcessBuffer(
 #endif
 
       // Premapping of |gmb_handle.region| occurs in |buffer_context| when there
-      // is no GPU connection and inside GpuMemoryBufferImplDXGI when there is a
+      // is no GPU connection and inside MappableBufferDXGI when there is a
       // GPU connection.
       // Reset premapping in |buffer_context| to prevent concurrent mappings
       // that can occur when the GPU connection is lost and re-established.
@@ -432,7 +432,7 @@ bool VideoCaptureImpl::ProcessBuffer(
           gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 #elif BUILDFLAG(IS_MAC)
       video_frame_init_data.is_webgpu_compatible =
-          media::IOSurfaceIsWebGPUCompatible(gmb_handle.io_surface.get());
+          media::IOSurfaceIsWebGPUCompatible(gmb_handle.io_surface().get());
 #elif BUILDFLAG(IS_WIN)
       video_frame_init_data.is_webgpu_compatible =
           gmb_handle.type == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
@@ -559,7 +559,7 @@ bool VideoCaptureImpl::BindVideoFrameOnMediaTaskRunner(
 #if BUILDFLAG(IS_APPLE)
     usage |= gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
 #endif
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     // These SharedImages may be used for zero-copy of VideoFrames into WebGPU.
     usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
 #endif
@@ -618,7 +618,7 @@ struct VideoCaptureImpl::ClientInfo {
   media::VideoCaptureParams params;
   VideoCaptureStateUpdateCB state_update_cb;
   VideoCaptureDeliverFrameCB deliver_frame_cb;
-  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
+  VideoCaptureVersionCB capture_version_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
 };
 
@@ -694,8 +694,8 @@ void VideoCaptureImpl::StartCapture(
       std::move(video_capture_callbacks.state_update_cb);
   client_info.deliver_frame_cb =
       std::move(video_capture_callbacks.deliver_frame_cb);
-  client_info.sub_capture_target_version_cb =
-      std::move(video_capture_callbacks.sub_capture_target_version_cb);
+  client_info.capture_version_cb =
+      std::move(video_capture_callbacks.capture_version_cb);
   client_info.frame_dropped_cb =
       std::move(video_capture_callbacks.frame_dropped_cb);
 
@@ -1021,12 +1021,12 @@ void VideoCaptureImpl::OnFrameDropped(
   }
 }
 
-void VideoCaptureImpl::OnNewSubCaptureTargetVersion(
-    uint32_t sub_capture_target_version) {
+void VideoCaptureImpl::OnNewCaptureVersion(
+    const media::CaptureVersion& capture_version) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   for (const auto& client : clients_) {
-    client.second.sub_capture_target_version_cb.Run(sub_capture_target_version);
+    client.second.capture_version_cb.Run(capture_version);
   }
 }
 

@@ -70,8 +70,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool IsFeatureEnabled(const std::string& name) {
   if (name == kAppPreloadServiceEnableTestApps.name) {
     return base::FeatureList::IsEnabled(kAppPreloadServiceEnableTestApps);
-  } else if (name == ash::features::kHelpAppWelcomeTips.name) {
-    return base::FeatureList::IsEnabled(ash::features::kHelpAppWelcomeTips);
   } else if (name == chromeos::features::kCloudGamingDevice.name) {
     return base::FeatureList::IsEnabled(chromeos::features::kCloudGamingDevice);
   } else if (!name.empty()) {

@@ -34,7 +34,7 @@ class OnDeviceTailModelServiceFactory : public ProfileKeyedServiceFactoryIOS {
   //
   // Returns nullptr if `OptimizationGuideKeyedService` is null.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_ON_DEVICE_TAIL_MODEL_SERVICE_FACTORY_H_

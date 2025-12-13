@@ -61,7 +61,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // Called when contents from the loaded file have been localized.
   void DidLoadAndLocalizeFile(const std::string& file,
-                              std::vector<std::unique_ptr<std::string>> data,
+                              std::vector<std::string> data,
                               std::optional<std::string> load_error);
 
   const mojom::HostID& host_id() const { return host_id_; }

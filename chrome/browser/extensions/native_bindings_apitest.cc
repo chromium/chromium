@@ -14,7 +14,6 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -210,16 +209,15 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, DeclarativeEvents) {
   // The extension's page action should currently be hidden.
   ExtensionAction* action =
       ExtensionActionManager::Get(profile())->GetExtensionAction(*extension);
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   EXPECT_FALSE(action->GetIsVisible(tab_id));
   EXPECT_TRUE(action->GetDeclarativeIcon(tab_id).IsEmpty());
 
   // Navigating to example.com should show the page action.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html")));
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL(
+                        "example.com", "/native_bindings/simple.html")));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_FALSE(action->GetDeclarativeIcon(tab_id).IsEmpty());
@@ -279,16 +277,14 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebRequest) {
   ASSERT_TRUE(extension);
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html")));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(
+      web_contents, embedded_test_server()->GetURL(
+                        "example.com", "/native_bindings/simple.html")));
 
   GURL expected_url = embedded_test_server()->GetURL(
       "example.com", "/native_bindings/simple2.html");
-  EXPECT_EQ(expected_url, browser()
-                              ->tab_strip_model()
-                              ->GetActiveWebContents()
-                              ->GetLastCommittedURL());
+  EXPECT_EQ(expected_url, web_contents->GetLastCommittedURL());
 }
 
 // Tests the context menu API, which includes calling sendRequest with an
@@ -322,8 +318,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ContextMenusTest) {
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
   std::unique_ptr<TestRenderViewContextMenu> menu(
       TestRenderViewContextMenu::Create(web_contents,
                                         GURL("https://www.example.com")));
@@ -368,9 +363,10 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
            });
          });)");
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL(
-                     "example.com", "/native_bindings/simple.html")));
+  ASSERT_TRUE(
+      NavigateToURL(GetActiveWebContents(),
+                    embedded_test_server()->GetURL(
+                        "example.com", "/native_bindings/simple.html")));
 
   ExtensionTestMessageListener listener("callback");
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
@@ -379,10 +375,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, ErrorsInCallbackTest) {
 
 // Tests that bindings are available in WebUI pages.
 IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest, WebUIBindings) {
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://extensions")));
 
   EXPECT_TRUE(ApiExists(web_contents, "chrome.developerPrivate"));
   EXPECT_TRUE(ApiExists(web_contents,
@@ -708,13 +702,14 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
 
   // Content script.
   ResultCatcher catcher;
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), test_website));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, test_website));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Extension page.
   ResultCatcher extension_resource_catcher;
-  ASSERT_TRUE(content::NavigateToURL(
-      GetActiveWebContents(),
+  ASSERT_TRUE(NavigateToURL(
+      web_contents,
       GURL(extension->GetResourceURL("extension_resource_page.html"))));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
@@ -741,9 +736,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
 
-  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), test_website));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, test_website));
 
   EXPECT_TRUE(ApiExists(web_contents, "chrome.runtime"));
   EXPECT_TRUE(ApiExists(web_contents, "browser.runtime"));
@@ -754,10 +748,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
 // Tests that the `browser` namespace is not available in WebUI.
 IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest, WebUIBindings) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://extensions")));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://extensions")));
 
   EXPECT_TRUE(ObjectIsDefined(web_contents, "chrome"));
   EXPECT_FALSE(ObjectIsDefined(web_contents, "browser"));
@@ -770,9 +762,8 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsBrowserNamespaceTest,
   ASSERT_TRUE(StartEmbeddedTestServer());
   const GURL& test_website =
       embedded_test_server()->GetURL("a.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_website));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, test_website));
 
   EXPECT_TRUE(ObjectIsDefined(web_contents, "chrome"));
   EXPECT_FALSE(ObjectIsDefined(web_contents, "browser"));
@@ -909,9 +900,8 @@ IN_PROC_BROWSER_TEST_P(DeveloperModeNativeBindingsApiTest,
   const GURL extension_url = extension->GetResourceURL("page.html");
 
   // Navigate to the extension page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
-  content::WebContents* existing_tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  auto* existing_tab = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(existing_tab, extension_url));
   ASSERT_EQ(extension_url, existing_tab->GetLastCommittedURL());
 
   ScriptResultQueue result_queue;

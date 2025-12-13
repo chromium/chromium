@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -26,7 +27,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.components.browser_ui.test.BrowserUiDummyFragmentActivity;
+import org.chromium.components.browser_ui.test.BrowserUiTestFragmentActivity;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -40,7 +41,8 @@ public class TileViewBinderTest {
     private TileView mTileView;
     private ImageView mIconView;
     private TextView mTitleView;
-    private ImageView mBadgeView;
+    private ImageView mOfflineBadgeView;
+    private ImageView mPinnedShortcutBadgeView;
     private PropertyModel mModel;
 
     private Resources mResources;
@@ -51,7 +53,7 @@ public class TileViewBinderTest {
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(BrowserUiDummyFragmentActivity.class).setup().get();
+        mActivity = Robolectric.buildActivity(BrowserUiTestFragmentActivity.class).setup().get();
 
         mTileView = new TileView(mActivity, null);
         LayoutInflater.from(mActivity).inflate(R.layout.tile_view_modern, mTileView, true);
@@ -61,7 +63,8 @@ public class TileViewBinderTest {
 
         mIconView = mTileView.findViewById(R.id.tile_view_icon);
         mTitleView = mTileView.findViewById(R.id.tile_view_title);
-        mBadgeView = mTileView.findViewById(R.id.offline_badge);
+        mOfflineBadgeView = mTileView.findViewById(R.id.offline_badge);
+        mPinnedShortcutBadgeView = mTileView.findViewById(R.id.pinned_shortcut_badge);
 
         mResources = mActivity.getResources();
 
@@ -121,12 +124,30 @@ public class TileViewBinderTest {
 
     @Test
     @SmallTest
-    public void testBadgeVisiblePropertySet() {
-        mModel.set(TileViewProperties.BADGE_VISIBLE, true);
-        Assert.assertEquals(View.VISIBLE, mBadgeView.getVisibility());
+    public void testOfflineBadgeVisiblePropertySet() {
+        mModel.set(TileViewProperties.OFFLINE_BADGE_VISIBLE, true);
+        Assert.assertEquals(View.VISIBLE, mOfflineBadgeView.getVisibility());
 
-        mModel.set(TileViewProperties.BADGE_VISIBLE, false);
-        Assert.assertEquals(View.GONE, mBadgeView.getVisibility());
+        mModel.set(TileViewProperties.OFFLINE_BADGE_VISIBLE, false);
+        Assert.assertEquals(View.GONE, mOfflineBadgeView.getVisibility());
+    }
+
+    @Test
+    @SmallTest
+    public void testPinnedShortcutBadgeVisiblePropertySet() {
+        // By default, the badge is not visible and the title text is horizontally centered.
+        Assert.assertEquals(View.GONE, mPinnedShortcutBadgeView.getVisibility());
+        Assert.assertEquals(Gravity.TOP | Gravity.CENTER_HORIZONTAL, mTitleView.getGravity());
+
+        // When the badge is visible, the title text is start-aligned.
+        mModel.set(TileViewProperties.PINNED_SHORTCUT_BADGE_VISIBLE, true);
+        Assert.assertEquals(View.VISIBLE, mPinnedShortcutBadgeView.getVisibility());
+        Assert.assertEquals(Gravity.TOP | Gravity.START, mTitleView.getGravity());
+
+        // When the badge is hidden again, the title text is back to be horizontally centered.
+        mModel.set(TileViewProperties.PINNED_SHORTCUT_BADGE_VISIBLE, false);
+        Assert.assertEquals(View.GONE, mPinnedShortcutBadgeView.getVisibility());
+        Assert.assertEquals(Gravity.TOP | Gravity.CENTER_HORIZONTAL, mTitleView.getGravity());
     }
 
     @Test

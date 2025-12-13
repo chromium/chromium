@@ -4,7 +4,7 @@
 
 #include "extensions/browser/mock_screen.h"
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace extensions {
 

@@ -8,6 +8,7 @@
  * for permissions granted via the File System Access API, under Site Settings.
  */
 import './file_system_site_entry_item.js';
+import '../settings_page/settings_subpage.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -17,6 +18,7 @@ import {BaseMixin} from '../base_mixin.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './file_system_site_details.html.js';
@@ -29,8 +31,9 @@ declare global {
   }
 }
 
-const FileSystemSiteDetailsElementBase = WebUiListenerMixin(BaseMixin(
-    RouteObserverMixin(SiteSettingsMixin(I18nMixin(PolymerElement)))));
+const FileSystemSiteDetailsElementBase =
+    WebUiListenerMixin(BaseMixin(RouteObserverMixin(
+        SettingsViewMixin(SiteSettingsMixin(I18nMixin(PolymerElement))))));
 
 export class FileSystemSiteDetailsElement extends
     FileSystemSiteDetailsElementBase {
@@ -48,7 +51,7 @@ export class FileSystemSiteDetailsElement extends
        * Use the string representing the origin or extension name as the page
        * title of the settings-subpage parent.
        */
-      pageTitle: {
+      pageTitle_: {
         type: String,
         notify: true,
       },
@@ -64,7 +67,7 @@ export class FileSystemSiteDetailsElement extends
       grantsPerOrigin: Object,
     };
   }
-  declare pageTitle: string;
+  declare private pageTitle_: string;
   declare private origin_: string;
   declare grantsPerOrigin: OriginFileSystemGrants;
 
@@ -82,7 +85,9 @@ export class FileSystemSiteDetailsElement extends
   /**
    * RouteObserverMixin
    */
-  override currentRouteChanged(route: Route) {
+  override currentRouteChanged(route: Route, oldRoute?: Route) {
+    super.currentRouteChanged(route, oldRoute);
+
     if (route !== routes.SITE_SETTINGS_FILE_SYSTEM_WRITE_DETAILS) {
       return;
     }
@@ -95,7 +100,7 @@ export class FileSystemSiteDetailsElement extends
         Router.getInstance().navigateToPreviousRoute();
       }
       this.origin_ = site;
-      this.pageTitle = this.origin_;
+      this.pageTitle_ = this.origin_;
     });
     this.populateList_();
   }
@@ -123,6 +128,11 @@ export class FileSystemSiteDetailsElement extends
    */
   private onRevokeGrant_(e: CustomEvent<FileSystemGrant>) {
     this.browserProxy.revokeFileSystemGrant(this.origin_, e.detail.filePath);
+  }
+
+  // SettingsViewMixin implementation.
+  override focusBackButton() {
+    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
   }
 }
 

@@ -63,6 +63,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
       const std::vector<views::FrameButton>& leading_buttons,
       const std::vector<views::FrameButton>& trailing_buttons);
 
+  // Retrieves the given frame button, if present.
+  const views::Button* GetFrameButton(views::FrameButton which) const;
+
   gfx::Rect GetBoundsForTabStripRegion(const gfx::Size& tabstrip_minimum_size,
                                        int total_width) const;
   gfx::Rect GetBoundsForWebAppFrameToolbar(
@@ -138,7 +141,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
  protected:
   // Whether a specific button should be inserted on the leading or trailing
   // side.
-  enum ButtonAlignment { ALIGN_LEADING, ALIGN_TRAILING };
+  enum class ButtonAlignment { kAlignLeading, kAlignTrailing };
 
   struct TopAreaPadding {
     int leading;

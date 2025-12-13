@@ -4,17 +4,18 @@
 
 #include "components/signin/public/base/signin_client.h"
 
+#include "components/signin/public/base/bound_session_oauth_multilogin_delegate.h"
+
 void SigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
-    signin_metrics::ProfileSignout signout_source_metric,
-    bool has_sync_account) {
+    signin_metrics::ProfileSignout signout_source_metric) {
   // Allow sign out to continue.
   std::move(on_signout_decision_reached)
       .Run(is_clear_primary_account_allowed_for_testing_.value_or(
           SignoutDecision::ALLOW));
 }
 
-bool SigninClient::IsClearPrimaryAccountAllowed(bool has_sync_account) const {
+bool SigninClient::IsClearPrimaryAccountAllowed() const {
   return is_clear_primary_account_allowed_for_testing_.value_or(
              SignoutDecision::ALLOW) == SignoutDecision::ALLOW;
 }
@@ -31,5 +32,10 @@ bool SigninClient::is_clear_primary_account_allowed_for_testing() const {
 
 std::unique_ptr<signin::BoundSessionOAuthMultiLoginDelegate>
 SigninClient::CreateBoundSessionOAuthMultiloginDelegate() const {
+  return nullptr;
+}
+
+network::mojom::DeviceBoundSessionManager*
+SigninClient::GetDeviceBoundSessionManager() const {
   return nullptr;
 }

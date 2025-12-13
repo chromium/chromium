@@ -29,7 +29,7 @@ void WebAppSettingsNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
   // Check the current url is chrome://app-settings
-  if (handle.GetURL().host_piece() != chrome::kChromeUIWebAppSettingsHost) {
+  if (handle.GetURL().host() != chrome::kChromeUIWebAppSettingsHost) {
     return;
   }
 

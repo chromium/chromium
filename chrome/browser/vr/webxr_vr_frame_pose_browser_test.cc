@@ -19,15 +19,15 @@ namespace {
 const float kIPD = 0.2f;
 
 struct Frame {
-  std::vector<device_test::mojom::ViewDataPtr> views;
-  device_test::mojom::PoseFrameDataPtr pose;
-  device_test::mojom::DeviceConfigPtr config;
+  std::vector<device::ViewData> views;
+  std::optional<gfx::Transform> pose;
+  device::DeviceConfig config;
 };
 
 class MyXRMock : public MockXRDeviceHookBase {
  public:
   void ProcessSubmittedFrameUnlocked(
-      std::vector<device_test::mojom::ViewDataPtr> views) final;
+      const std::vector<device::ViewData>& views) final;
   void WaitGetDeviceConfig(
       device_test::mojom::XRTestHook::WaitGetDeviceConfigCallback callback)
       final {
@@ -43,41 +43,35 @@ class MyXRMock : public MockXRDeviceHookBase {
   base::Lock frame_data_lock;
   std::vector<Frame> submitted_frames GUARDED_BY(frame_data_lock);
 
-  device_test::mojom::DeviceConfigPtr GetDeviceConfig() {
+  device::DeviceConfig GetDeviceConfig() {
     // Stateless helper function may be called on any thread.
-    auto config = device_test::mojom::DeviceConfig::New();
-    config->interpupillary_distance = kIPD;
-    config->projection_left =
-        device_test::mojom::ProjectionRaw::New(0.1f, 0.2f, 0.3f, 0.4f);
-    config->projection_right =
-        device_test::mojom::ProjectionRaw::New(0.5f, 0.6f, 0.7f, 0.8f);
-    return config;
+    return {.interpupillary_distance = kIPD};
   }
 
  private:
-  device_test::mojom::PoseFrameDataPtr last_immersive_frame_data
+  std::optional<gfx::Transform> last_immersive_frame_data
       GUARDED_BY(frame_data_lock);
   std::atomic_int frame_id_ = 0;
 };
 
-unsigned int ParseColorFrameId(const device_test::mojom::ColorPtr& color) {
+uint32_t ParseColorFrameId(const device::Color& color) {
   // Corresponding math in test_webxr_poses.html.
-  unsigned int frame_id = static_cast<unsigned int>(color->r) + 256 * color->g +
-                          256 * 256 * color->b;
+  uint32_t frame_id =
+      static_cast<uint32_t>(color.r) + 256 * color.g + 256 * 256 * color.b;
   return frame_id;
 }
 
 void MyXRMock::ProcessSubmittedFrameUnlocked(
-    std::vector<device_test::mojom::ViewDataPtr> views) {
+    const std::vector<device::ViewData>& views) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   base::AutoLock lock(frame_data_lock);
   // Since we clear the entire context to a single color, every view in the
   // frame has the same color (see onImmersiveXRFrameCallback in
   // test_webxr_poses.html).
-  unsigned int frame_id = ParseColorFrameId(views[0]->color);
-  DLOG(ERROR) << "Frame Submitted: " << GetFrameCount() << " " << frame_id;
+  uint32_t frame_id = ParseColorFrameId(views[0].color);
+  DVLOG(3) << "Frame Submitted: " << GetFrameCount() << " " << frame_id;
   submitted_frames.push_back(
-      {std::move(views), last_immersive_frame_data.Clone(), GetDeviceConfig()});
+      {views, last_immersive_frame_data, GetDeviceConfig()});
 
   ASSERT_TRUE(last_immersive_frame_data)
       << "Frame submitted without any frame data provided";
@@ -85,19 +79,17 @@ void MyXRMock::ProcessSubmittedFrameUnlocked(
   // We expect a waitGetPoses, then 2 submits (one for each eye), so after 2
   // submitted frames don't use the same frame_data again.
   if (GetFrameCount() % 2 == 0) {
-    last_immersive_frame_data = nullptr;
+    last_immersive_frame_data = std::nullopt;
   }
 }
 
 void MyXRMock::WaitGetMagicWindowPose(
     device_test::mojom::XRTestHook::WaitGetMagicWindowPoseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
-  auto pose = device_test::mojom::PoseFrameData::New();
-
   // Almost identity matrix - enough different that we can identify if magic
   // window poses are used instead of presenting poses.
-  pose->device_to_origin =
-      gfx::Transform::RowMajor(1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+  gfx::Transform pose;
+  pose.set_rc(1, 1, -1);
   std::move(callback).Run(std::move(pose));
 }
 
@@ -106,22 +98,19 @@ void MyXRMock::WaitGetPresentingPose(
   DCHECK_CALLED_ON_VALID_SEQUENCE(mock_device_sequence_);
   DLOG(ERROR) << "WaitGetPresentingPose: " << frame_id_;
 
-  auto pose = device_test::mojom::PoseFrameData::New();
-
-  // Start with identity matrix.
-  pose->device_to_origin = gfx::Transform();
+  gfx::Transform pose;
 
   // Add a translation so each frame gets a different transform, and so its easy
   // to identify what the expected pose is.
-  pose->device_to_origin->Translate3d(0, 0, frame_id_);
+  pose.Translate3d(0, 0, frame_id_);
 
   frame_id_++;
   {
     base::AutoLock lock(frame_data_lock);
-    last_immersive_frame_data = pose.Clone();
+    last_immersive_frame_data = pose;
   }
 
-  std::move(callback).Run(std::move(pose));
+  std::move(callback).Run(pose);
 }
 
 std::string GetMatrixAsString(const gfx::Transform& m) {
@@ -135,7 +124,7 @@ std::string GetMatrixAsString(const gfx::Transform& m) {
 }
 
 std::string GetPoseAsString(const Frame& frame) {
-  return GetMatrixAsString(*(frame.pose->device_to_origin));
+  return GetMatrixAsString(*(frame.pose));
 }
 
 }  // namespace
@@ -179,21 +168,21 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPoses) {
   // right eyes.
   // 2. The pose that WebXR used for rendering the submitted frame should be the
   // one that we expected.
-  std::set<unsigned int> seen_left;
-  std::set<unsigned int> seen_right;
-  unsigned int max_frame_id = 0;
+  std::set<uint32_t> seen_left;
+  std::set<uint32_t> seen_right;
+  uint32_t max_frame_id = 0;
   for (const auto& frame : my_mock.submitted_frames) {
     for (const auto& data : frame.views) {
       // The test page encodes the frame id as the clear color.
-      unsigned int frame_id = ParseColorFrameId(data->color);
+      uint32_t frame_id = ParseColorFrameId(data.color);
 
       // Validate that each frame is only seen once for each eye.
       DLOG(ERROR) << "Frame id: " << frame_id;
-      if (data->eye == device_test::mojom::Eye::LEFT) {
+      if (data.eye == device::XrEye::kLeft) {
         ASSERT_TRUE(seen_left.find(frame_id) == seen_left.end())
             << "Frame for left eye submitted more than once";
         seen_left.insert(frame_id);
-      } else if (data->eye == device_test::mojom::Eye::RIGHT) {
+      } else if (data.eye == device::XrEye::kRight) {
         ASSERT_TRUE(seen_right.find(frame_id) == seen_right.end())
             << "Frame for right eye submitted more than once";
         seen_right.insert(frame_id);

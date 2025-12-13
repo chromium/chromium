@@ -60,7 +60,6 @@ namespace autofillPrivate {
     CREDIT_CARD_TYPE,
     CREDIT_CARD_VERIFICATION_CODE,
     COMPANY_NAME,
-    FIELD_WITH_DEFAULT_VALUE,
     MERCHANT_EMAIL_SIGNUP,
     MERCHANT_PROMO_CODE,
     PASSWORD,
@@ -125,7 +124,6 @@ namespace autofillPrivate {
     ADDRESS_HOME_APT_TYPE,
     ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
     SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
-    PASSPORT_NAME_TAG,
     PASSPORT_NUMBER,
     PASSPORT_ISSUING_COUNTRY,
     PASSPORT_EXPIRATION_DATE,
@@ -133,12 +131,10 @@ namespace autofillPrivate {
     LOYALTY_MEMBERSHIP_PROGRAM,
     LOYALTY_MEMBERSHIP_PROVIDER,
     LOYALTY_MEMBERSHIP_ID,
-    VEHICLE_OWNER_TAG,
     VEHICLE_LICENSE_PLATE,
     VEHICLE_VIN,
     VEHICLE_MAKE,
     VEHICLE_MODEL,
-    DRIVERS_LICENSE_NAME_TAG,
     DRIVERS_LICENSE_REGION,
     DRIVERS_LICENSE_NUMBER,
     DRIVERS_LICENSE_EXPIRATION_DATE,
@@ -150,8 +146,18 @@ namespace autofillPrivate {
     NATIONAL_ID_CARD_EXPIRATION_DATE,
     NATIONAL_ID_CARD_ISSUE_DATE,
     NATIONAL_ID_CARD_ISSUING_COUNTRY,
+    KNOWN_TRAVELER_NUMBER,
+    KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
+    REDRESS_NUMBER,
     ADDRESS_HOME_ZIP_PREFIX,
     ADDRESS_HOME_ZIP_SUFFIX,
+    FLIGHT_RESERVATION_FLIGHT_NUMBER,
+    FLIGHT_RESERVATION_TICKET_NUMBER,
+    FLIGHT_RESERVATION_CONFIRMATION_CODE,
+    FLIGHT_RESERVATION_PASSENGER_NAME,
+    FLIGHT_RESERVATION_DEPARTURE_AIRPORT,
+    FLIGHT_RESERVATION_ARRIVAL_AIRPORT,
+    FLIGHT_RESERVATION_DEPARTURE_DATE,
     MAX_VALID_FIELD_TYPE
   };
 
@@ -164,7 +170,9 @@ namespace autofillPrivate {
     // to user's account.
     ACCOUNT,
     ACCOUNT_HOME,
-    ACCOUNT_WORK
+    ACCOUNT_WORK,
+    // The address is stored locally. Not synced at all.
+    ACCOUNT_NAME_EMAIL
   };
 
   // The type of data that can be stored for an attribute type.
@@ -368,6 +376,10 @@ namespace autofillPrivate {
     // dynamically, because the "<entity type>" string might need declension in
     // some languages.
     DOMString deleteEntityTypeString;
+    // Whether the entity type can be stored on Google Wallet servers.
+    // Note that an entity type might support Wallet and local storage
+    // as well. (e.g. Vehicle).
+    boolean supportsWalletStorage;
   };
 
   // Contains date information: month, day and year.
@@ -412,10 +424,15 @@ namespace autofillPrivate {
   dictionary EntityInstanceWithLabels {
     // The guid of the entity instance.
     DOMString guid;
-    // The enitity instance label.
+    // Contains the entity type name and other relevant information about the
+    // entity type.
+    EntityType type;
+    // The entity instance label.
     DOMString entityInstanceLabel;
-    // The enitity instance sublabel.
+    // The entity instance sublabel.
     DOMString entityInstanceSubLabel;
+    // Whether the entity is stored on Google Wallet servers.
+    boolean storedInWallet;
   };
 
   // A Pay Over Time Issuer entry which can be displayed in the autofill
@@ -450,11 +467,13 @@ namespace autofillPrivate {
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback LoadEntityInstancesCallback = void(EntityInstanceWithLabels[] entries);
   callback GetEntityInstanceByGuid = void(EntityInstance entityInstance);
-  callback GetAllEntityTypesCallback = void(EntityType[] entityTypes);
+  callback GetWritableEntityTypesCallback = void(EntityType[] entityTypes);
   callback GetAllAttributeTypesForEntityTypeNameCallback =
       void(AttributeType[] attributeTypes);
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
   callback SetAutofillAiOptInStatusCallback = void(boolean success);
+  callback GetWalletablePassDetectionOptInStatusCallback = void(boolean optedIn);
+  callback SetWalletablePassDetectionOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
@@ -588,9 +607,9 @@ namespace autofillPrivate {
     static void getEntityInstanceByGuid(
         DOMString guid, GetEntityInstanceByGuid callback);
 
-    // Returns a list of all possible entity types. Used for the user to decide
+    // Returns a list of writable entity types. Used for the user to decide
     // what entity instance to add.
-    static void getAllEntityTypes(GetAllEntityTypesCallback callback);
+    static void getWritableEntityTypes(GetWritableEntityTypesCallback callback);
 
     // Returns a list of all possible attribute types that can be set on an
     // entity instance with the respective entity type name. Used for
@@ -607,6 +626,15 @@ namespace autofillPrivate {
     static void setAutofillAiOptInStatus(
       boolean optedIn,
       SetAutofillAiOptInStatusCallback callback);
+
+    // Gets the walletable pass detection opt-in status for the current user.
+    static void getWalletablePassDetectionOptInStatus(
+      GetWalletablePassDetectionOptInStatusCallback callback);
+
+    // Sets the walletable pass detection opt-in status for the current user.
+    static void setWalletablePassDetectionOptInStatus(
+      boolean optedIn,
+      SetWalletablePassDetectionOptInStatusCallback callback);
   };
 
   interface Events {

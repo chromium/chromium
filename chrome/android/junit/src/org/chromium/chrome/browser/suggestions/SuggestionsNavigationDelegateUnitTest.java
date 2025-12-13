@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -41,6 +42,7 @@ import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,6 +59,7 @@ public class SuggestionsNavigationDelegateUnitTest {
     @Mock private NativePageHost mHost;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -66,7 +69,7 @@ public class SuggestionsNavigationDelegateUnitTest {
     public void setUp() {
         mSuggestionsNavigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
+                        mActivity, mProfile, mHost, mTabModelSelector, mTab, mMultiInstanceManager);
 
         lenient().when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
     }
@@ -160,11 +163,14 @@ public class SuggestionsNavigationDelegateUnitTest {
 
     private TabModel createTabModelFromList(List<GURL> urlList) {
         TabModel tabModel = mock(TabModel.class);
+        List<Tab> tabs = new ArrayList<>();
         for (int i = 0; i < urlList.size(); ++i) {
             Tab tab = mock(Tab.class);
             lenient().doReturn(urlList.get(i)).when(tab).getUrl();
             lenient().doReturn(tab).when(tabModel).getTabAt(i);
+            tabs.add(tab);
         }
+        lenient().doAnswer(invocation -> tabs.iterator()).when(tabModel).iterator();
         lenient().doReturn(urlList.size()).when(tabModel).getCount();
         TabRemover tabRemover = mock(TabRemover.class);
         lenient().doReturn(tabRemover).when(tabModel).getTabRemover();

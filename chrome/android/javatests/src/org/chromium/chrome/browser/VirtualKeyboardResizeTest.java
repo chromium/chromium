@@ -27,8 +27,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -113,7 +111,6 @@ public class VirtualKeyboardResizeTest {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(show));
                 },
@@ -562,7 +559,6 @@ public class VirtualKeyboardResizeTest {
     /** Test that in overlays-content mode, the keyboard doesn't cause any transient resizes. */
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventOverlaysContent() throws Throwable {
         startMainActivityWithURL(
@@ -595,7 +591,6 @@ public class VirtualKeyboardResizeTest {
     /** Test that in resizes-visual mode, the keyboard doesn't cause any transient resizes. */
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN)
     @DisabledTest(message = "crbug.com/414804967")
     public void testNoSpuriousResizeEventResizesVisual() throws Throwable {
         startMainActivityWithURL(

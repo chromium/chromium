@@ -54,19 +54,19 @@ class Translator final : public ScriptWrappable {
 
   // translator.idl implementation
   ScriptPromise<IDLString> translate(ScriptState* script_state,
-                                     const WTF::String& input,
+                                     const String& input,
                                      TranslatorTranslateOptions* options,
                                      ExceptionState& exception_state);
 
   // translator.idl implementation
   ReadableStream* translateStreaming(ScriptState* script_state,
-                                     const WTF::String& input,
+                                     const String& input,
                                      TranslatorTranslateOptions* options,
                                      ExceptionState& exception_state);
 
   ScriptPromise<IDLDouble> measureInputUsage(
       ScriptState* script_state,
-      const WTF::String& input,
+      const String& input,
       TranslatorTranslateOptions* options,
       ExceptionState& exception_state);
 

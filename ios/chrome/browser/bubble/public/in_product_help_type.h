@@ -16,8 +16,6 @@ enum class InProductHelpType : NSInteger {
   kDiscoverFeedMenu,
   /// Home customization menu entrypoint.
   kHomeCustomizationMenu,
-  /// Follow help bubble while browsing a site.
-  kFollowWhileBrowsing,
   /// Help bubble to let the user know that they can change the default mode
   /// (Desktop/Mobile) of the websites.
   kDefaultSiteView,
@@ -47,6 +45,8 @@ enum class InProductHelpType : NSInteger {
   kSwitchAccountsWithNTPAccountParticleDisc,
   /// Help bubble for page action menu.
   kPageActionMenu,
+  /// Help bubble for Reader Mode options menu.
+  kReaderModeOptions,
 };
 
 #endif  // IOS_CHROME_BROWSER_BUBBLE_PUBLIC_IN_PRODUCT_HELP_TYPE_H_

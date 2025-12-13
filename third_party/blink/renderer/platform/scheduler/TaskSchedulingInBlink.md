@@ -24,8 +24,8 @@ The main scheduling unit in Blink is a task. A task is a `base::OnceClosure`
 posted via `TaskRunner::PostTask` or `TaskRunner::PostDelayedTask` interface.
 The regular method of creating closures, `base::BindOnce/Repeating`,
 [is banned](#binding-tasks). Blink should use one of the followings:
-- `WTF::Bind`: for tasks which are posted to the same thread.
-- `CrossThreadBind`:
+- `blink::BindOnce/Repeating`: for tasks which are posted to the same thread.
+- `blink::CrossThreadBindOnce/Repeating`:
     [for tasks which are posted to a different thread](#off-main-thread-scheduling).
 
 At the moment Blink Scheduler treats tasks as an atomic unit — if a task has
@@ -180,12 +180,12 @@ more details.
 
 Many data structures in Blink are bound to a particular thread (e.g. Strings,
 garbage-collected classes, etc), so it’s not safe to pass a pointer to them to
-another thread. To enforce this, `base::Bind` is banned in Blink and `WTF::Bind`
-and `CrossThreadBind` are provided as alternatives. `WTF::Bind` should be used
-to post tasks to the same thread and closures returned by it DCHECK that
-they run on the same thread. `CrossThreadBind` applies `CrossThreadCopier`
-to its arguments and creates a deep copy, so the resulting closure can run
-on a different thread.
+another thread. To enforce this, `base::Bind*` is banned in Blink and
+`blink::Bind*` and `blink::CrossThreadBind*` are provided as alternatives.
+`blink::Bind*` should be used to post tasks to the same thread and closures
+returned by it DCHECK that they run on the same thread.
+`blink::CrossThreadBind*` applies `CrossThreadCopier` to its arguments and
+creates a deep copy, so the resulting closure can run on a different thread.
 
 
 ## TODO(altimin): Document idle tasks

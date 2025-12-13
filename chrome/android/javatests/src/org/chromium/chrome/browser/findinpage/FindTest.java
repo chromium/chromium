@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -257,7 +258,7 @@ public class FindTest {
     public void testFullscreen() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
                 tab, true, mActivityTestRule.getActivity());
         waitForFindInPageVisibility(false);
@@ -377,7 +378,12 @@ public class FindTest {
     @Feature({"FindInPage"})
     public void testFindNextPreviousIncognitoTab() {
         String query = "pitts";
-        mActivityTestRule.newIncognitoTabFromMenu();
+        var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
+        var incognitoActivity = incognitoPage.getActivity();
+        var prevActivity = mActivityTestRule.getActivity();
+        // TODO(crbug.com/439491767): Remove this workaround in favor of accessing the activity
+        // through the page.
+        mActivityTestRule.getActivityTestRule().setActivity(incognitoPage.getActivity());
         loadTestAndVerifyFindInPage(query, "1/7");
         // TODO(jaydeepmehta): Verify number of results and match against boxes drawn.
         TouchCommon.singleClickView(
@@ -386,6 +392,10 @@ public class FindTest {
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().findViewById(R.id.find_prev_button));
         waitForFindResults("1/7");
+        if (incognitoActivity != prevActivity) {
+            ApplicationTestUtils.finishActivity(incognitoActivity);
+            mActivityTestRule.getActivityTestRule().setActivity(prevActivity);
+        }
     }
 
     /** Verify Find in Page text isnt restored on Incognito Tabs. */
@@ -393,7 +403,12 @@ public class FindTest {
     @MediumTest
     @Feature({"FindInPage"})
     public void testFipTextNotRestoredIncognitoTab() throws InterruptedException {
-        mActivityTestRule.newIncognitoTabFromMenu();
+        var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
+        var incognitoActivity = incognitoPage.getActivity();
+        var prevActivity = mActivityTestRule.getActivity();
+        // TODO(crbug.com/439491767): Remove this workaround in favor of accessing the activity
+        // through the page.
+        mActivityTestRule.getActivityTestRule().setActivity(incognitoActivity);
         loadTestAndVerifyFindInPage("pitts", "1/7");
         // close the fip
         final View v = mActivityTestRule.getActivity().findViewById(R.id.close_find_button);
@@ -407,6 +422,11 @@ public class FindTest {
         final EditText e = getFindQueryText();
         String myText = e.getText().toString();
         Assert.assertTrue("expected empty string : " + myText, myText.isEmpty());
+
+        if (incognitoActivity != prevActivity) {
+            ApplicationTestUtils.finishActivity(incognitoActivity);
+            mActivityTestRule.getActivityTestRule().setActivity(prevActivity);
+        }
     }
 
     /** Verify pasted text in the FindQuery text box doesn't retain formatting */
@@ -496,8 +516,7 @@ public class FindTest {
                     Criteria.checkThat(
                             mActivityTestRule
                                     .getKeyboardDelegate()
-                                    .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(), getFindQueryText()),
+                                    .isKeyboardShowing(getFindQueryText()),
                             Matchers.is(imePresent));
                 });
     }

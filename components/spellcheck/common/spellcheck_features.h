@@ -30,29 +30,12 @@ class ScopedDisableBrowserSpellCheckerForTesting {
   const bool previous_value_;
 };
 
-// If the kWinDelaySpellcheckServiceInit feature flag is enabled, don't
-// initialize the spellcheck dictionaries when the SpellcheckService is
-// instantiated. With this flag set: (1) Completing the initialization of the
-// spellcheck service is on-demand, invoked by calling
-// SpellcheckService::InitializeDictionaries with a callback to indicate when
-// the operation completes. (2) The call to create the spellcheck service in
-// ChromeBrowserMainParts::PreMainMessageLoopRunImpl will be skipped. Chromium
-// will still by default instantiate the spellcheck service on startup for
-// custom dictionary synchronization, but will not load Windows spellcheck
-// dictionaries. The command line for launching the browser with Windows hybrid
-// spellchecking enabled but no initialization of the spellcheck service is:
-//    chrome
-//    --enable-features=WinDelaySpellcheckServiceInit
-// and if instantiation of the spellcheck service needs to be completely
-// disabled:
-//     chrome
-//    --enable-features=WinDelaySpellcheckServiceInit
-//    --disable-sync-types="Dictionary"
-BASE_DECLARE_FEATURE(kWinDelaySpellcheckServiceInit);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsAndroidSpellCheckFeatureEnabled();
+
+BASE_DECLARE_FEATURE(kAndroidGrammarCheck);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)

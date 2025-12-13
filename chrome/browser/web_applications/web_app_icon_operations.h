@@ -41,17 +41,26 @@ struct IconUrlWithSize {
 
 using IconUrlSizeSet = base::flat_set<IconUrlWithSize>;
 
+// These options allow the caller to skip downloading categories of icons. This
+// is useful if the caller already knows those icons will not be used, allowing
+// us to skip using (and waiting for) the network and wasting resources.
+//
+// Specifically, this is used during app update, where the caller can check to
+// see if there are any changes from the existing install before bothering to
+// download options (as the caller can simply use the existing ones on disk
+// instead).
+struct IconUrlExtractionOptions {
+  bool product_icons = true;
+  bool shortcut_menu_item_icons = true;
+  bool file_handling_icons = true;
+  bool home_tab_icons = true;
+};
+
 // Form a list of icons and their sizes to download: Remove icons with invalid
 // urls.
 IconUrlSizeSet GetValidIconUrlsToDownload(
-    const WebAppInstallInfo& web_app_info);
-
-// Form a list of other icons and their sizes to download: Remove icons with
-// invalid urls. This only includes icons that are not specified in the icon
-// fields in the manifest, but are specified elsewhere, like inside the
-// shortcuts, file_handlers or home_tab entries in the manifest.
-IconUrlSizeSet GetValidIconUrlsNotFromManifestIconField(
-    const WebAppInstallInfo& web_app_info);
+    const WebAppInstallInfo& web_app_info,
+    IconUrlExtractionOptions options = IconUrlExtractionOptions());
 
 }  // namespace web_app
 

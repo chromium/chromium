@@ -56,6 +56,10 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"darkColorTitle", IDS_READING_MODE_DARK_COLOR_LABEL},
       {"yellowColorTitle", IDS_READING_MODE_YELLOW_COLOR_LABEL},
       {"blueColorTitle", IDS_READING_MODE_BLUE_COLOR_LABEL},
+      {"highContrastColorTitle", IDS_READING_MODE_HIGH_CONTRAST_COLOR_LABEL},
+      {"lowContrastColorTitle", IDS_READING_MODE_LOW_CONTRAST_COLOR_LABEL},
+      {"sepiaLightColorTitle", IDS_READING_MODE_SEPIA_LIGHT_COLOR_LABEL},
+      {"sepiaDarkColorTitle", IDS_READING_MODE_SEPIA_DARK_COLOR_LABEL},
       {"fontResetTitle", IDS_READING_MODE_FONT_RESET},
       {"fontResetTooltip", IDS_READING_MODE_FONT_RESET_TOOLTIP},
       {"autoHighlightTitle", IDS_READING_MODE_AUTO_HIGHLIGHT_LABEL},
@@ -63,6 +67,19 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"phraseHighlightTitle", IDS_READING_MODE_PHRASE_HIGHLIGHT_LABEL},
       {"sentenceHighlightTitle", IDS_READING_MODE_SENTENCE_HIGHLIGHT_LABEL},
       {"noHighlightTitle", IDS_READING_MODE_OFF_HIGHLIGHT_LABEL},
+      {"lineFocusWindowHeading", IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING},
+      {"lineFocusOneLineTitle",
+       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_1_LINE_LABEL},
+      {"lineFocusThreeLineTitle",
+       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_3_LINE_LABEL},
+      {"lineFocusFiveLineTitle",
+       IDS_READING_MODE_LINE_FOCUS_HIGHLIGHT_5_LINE_LABEL},
+      {"lineFocusLineHeading", IDS_READING_MODE_LINE_FOCUS_LINE_HEADING},
+      {"lineFocusStaticLineTitle",
+       IDS_READING_MODE_LINE_FOCUS_STATIC_LINE_LABEL},
+      {"lineFocusCursorLineTitle",
+       IDS_READING_MODE_LINE_FOCUS_CURSOR_LINE_LABEL},
+      {"lineFocusOffTitle", IDS_READING_MODE_LINE_FOCUS_OFF_LABEL},
       {"turnHighlightOff", IDS_READING_MODE_TURN_HIGHLIGHT_OFF},
       {"turnHighlightOn", IDS_READING_MODE_TURN_HIGHLIGHT_ON},
       {"lineSpacingStandardTitle", IDS_READING_MODE_SPACING_COMBOBOX_STANDARD},
@@ -93,8 +110,13 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_INCREASE_FONT_SIZE_BUTTON_LABEL},
       {"decreaseFontSizeLabel",
        IDS_READING_MODE_DECREASE_FONT_SIZE_BUTTON_LABEL},
+      {"increaseFontSizeAnnouncement",
+       IDS_READING_MODE_INCREASE_FONT_SIZE_ANNOUNCEMENT},
+      {"decreaseFontSizeAnnouncement",
+       IDS_READING_MODE_DECREASE_FONT_SIZE_ANNOUNCEMENT},
       {"disableLinksLabel", IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL},
       {"enableLinksLabel", IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL},
+      {"imagesLabel", IDS_READING_MODE_IMAGES_LABEL},
       {"disableImagesLabel", IDS_READING_MODE_DISABLE_IMAGES_BUTTON_LABEL},
       {"enableImagesLabel", IDS_READING_MODE_ENABLE_IMAGES_BUTTON_LABEL},
       {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
@@ -142,6 +164,11 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"languageMenuDownloadFailed",
        IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
       {"cantUseReadAloud", IDS_READING_MODE_CANT_USE_READ_ALOUD},
+      {"lineFocusLabel", IDS_READING_MODE_LINE_FOCUS_LABEL},
+      {"sidePanelLabel", IDS_READING_MODE_SIDE_PANEL_LABEL},
+      {"fullScreenLabel", IDS_READING_MODE_FULL_SCREEN_LABEL},
+      {"fullPageLabel", IDS_READING_MODE_VIEW_FULL_PAGE_LABEL},
+      {"viewLabel", IDS_READING_MODE_VIEW_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
@@ -158,7 +185,8 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
   source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   webui::EnableTrustedTypesCSP(source);
   source->AddResourcePaths(kSidePanelReadAnythingResources);
-  source->AddResourcePath("", IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
+  source->AddResourcePath("",
+                          IDR_SIDE_PANEL_READ_ANYTHING_APP_READ_ANYTHING_HTML);
   source->AddResourcePaths(kSidePanelSharedResources);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
@@ -187,13 +215,6 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
 ReadAnythingUntrustedUI::~ReadAnythingUntrustedUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingUntrustedUI)
-
-void ReadAnythingUntrustedUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
 
 void ReadAnythingUntrustedUI::BindInterface(
     mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>

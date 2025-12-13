@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -28,6 +29,16 @@ public class TextMessagePreference extends ChromeBasePreference {
         super(context, attrs);
         setSelectable(false);
         setSingleLineTitle(false);
+    }
+
+    @Override
+    public @BackgroundStyle int getCustomBackgroundStyle() {
+        return BackgroundStyle.CARD;
+    }
+
+    @Override
+    public int getCustomBackgroundColor() {
+        return Color.TRANSPARENT;
     }
 
     @Override

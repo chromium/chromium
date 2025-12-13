@@ -1,7 +1,8 @@
 Name: blink HTMLTokenizer
 Short Name: blink
-URL: http://www.chromium.org/blink
+URL: Internal
 Version: commit 2e924d852a814dee5efde8deb412a70a4d90c5c7
+Update Mechanism: Static.HardFork (https://crbug.com/422326565)
 License: BSD-2-Clause
 License File: LICENSE
 Security Critical: yes

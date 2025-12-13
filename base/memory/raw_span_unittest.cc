@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/341324165): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/raw_span.h"
 
+#include "base/compiler_specific.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,20 +38,20 @@ TEST(RawSpan, ConvertFromSpan) {
 TEST(RawSpan, UnderstandsDanglingAttribute) {
   // Test passes if it doesn't trip Dangling Ptr Detectors.
   int* arr = new int[3];
-  base::raw_span<int, DisableDanglingPtrDetection> span(arr, 3u);
+  base::raw_span<int, DisableDanglingPtrDetection> UNSAFE_TODO(span(arr, 3u));
   delete[] span.data();
 }
 
 TEST(RawSpan, ExtractAsDangling) {
   // Test passes if it doesn't trip Dangling Ptr Detectors.
   int* arr = new int[3];
-  base::raw_span<int> span(arr, 3u);
+  base::raw_span<int> UNSAFE_TODO(span(arr, 3u));
   delete[] base::ExtractAsDanglingSpan(span).data();
 }
 
 TEST(RawSpan, SameSlotAssignmentWhenDangling) {
   int* arr = new int[3];
-  base::raw_span<int, DisableDanglingPtrDetection> span(arr, 3u);
+  base::raw_span<int, DisableDanglingPtrDetection> UNSAFE_TODO(span(arr, 3u));
   delete[] arr;  // Make the pointer dangle.
 
   // This test is designed to test for crbug.com/347461704, but as #comment13

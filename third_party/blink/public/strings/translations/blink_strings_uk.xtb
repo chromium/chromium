@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">Скоротіть текст до такої кількості символів або менше: <ph name="MAX_CHARACTERS" /> (наразі використано символів: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тиждень <ph name="WEEKNUMBER" />, <ph name="YEAR" /> р.</translation>
 <translation id="2277199496770840904">Композиція <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">URL-адреса джерела даних</translation>
 <translation id="2507943997699731163">Заповніть це поле.</translation>
 <translation id="2613802280814924224">Введіть дійсне значення. Найближче дійсне значення: <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Надіслати</translation>

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/testing/fake_mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/transport/ecn_marking.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace blink {
 
@@ -27,8 +28,8 @@ class IpcPacketSocketFactoryTest : public testing::Test {
         &P2PSocketDispatcher::From(*mojo_binding_context_),
         TRAFFIC_ANNOTATION_FOR_TESTS, false);
 
-    socket_.reset(socket_factory_->CreateUdpSocket(
-        webrtc::SocketAddress("127.0.0.1", 0), 0, 0));
+    socket_ = socket_factory_->CreateUdpSocket(
+        WebRtcEnvironment(), webrtc::SocketAddress("127.0.0.1", 0), 0, 0);
     ASSERT_NE(socket_, nullptr);
   }
 

@@ -11,7 +11,7 @@ from .base import (get_free_port,
                    cmd_arg,
                    browser_command)
 from ..executors.executormarionette import (MarionetteTestharnessExecutor,  # noqa: F401
-                                            MarionetteRefTestExecutor,  # noqa: F401
+                                            MarionetteRefTestExecutorAndroid,  # noqa: F401
                                             MarionetteCrashtestExecutor,  # noqa: F401
                                             MarionetteWdspecExecutor)  # noqa: F401
 from .base import (Browser,
@@ -30,7 +30,7 @@ __wptrunner__ = {"product": "firefox_android",
                  "browser": {None: "FirefoxAndroidBrowser",
                              "wdspec": "FirefoxAndroidWdSpecBrowser"},
                  "executor": {"testharness": "MarionetteTestharnessExecutor",
-                              "reftest": "MarionetteRefTestExecutor",
+                              "reftest": "MarionetteRefTestExecutorAndroid",
                               "crashtest": "MarionetteCrashtestExecutor",
                               "wdspec": "MarionetteWdspecExecutor"},
                  "browser_kwargs": "browser_kwargs",
@@ -197,6 +197,12 @@ class ProfileCreator(FirefoxProfileCreator):
 
         if self.test_type == "wdspec":
             profile.set_preferences({"remote.prefs.recommended": True})
+            profile.set_preferences({
+                "geo.provider.network.url": "https://web-platform.test:8444/webdriver/tests/support/http_handlers/geolocation_override.py"
+            })
+        else:
+            # Except for wdspec dispatch wheel scroll as widget event by default.
+            profile.set_preferences({"remote.events.async.wheel.enabled": True})
 
         profile.set_preferences({"fission.autostart": True})
         if self.disable_fission:
@@ -265,7 +271,8 @@ class FirefoxAndroidBrowser(Browser):
                           "lsan_max_stack_depth": test.lsan_max_stack_depth,
                           "mozleak_allowed": self.leak_check and test.mozleak_allowed,
                           "mozleak_thresholds": self.leak_check and test.mozleak_threshold,
-                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/"}
+                          "special_powers": self.specialpowers_path and test.url_base == "/_mozilla/",
+                          "testdriver": test.test_type == "testharness"}
         return self._settings
 
     def start(self, **kwargs):
@@ -364,7 +371,8 @@ class FirefoxAndroidBrowser(Browser):
                                  # that doesn't work on Android; instead they are in the profile
                                  "extensions": [],
                                  "supports_devtools": False,
-                                 "supports_window_resize": False}
+                                 "supports_window_resize": False,
+                                 "testdriver": self._settings["testdriver"]}
 
     def check_crash(self, process, test):
         if not os.environ.get("MINIDUMP_STACKWALK", "") and self.stackwalk_binary:

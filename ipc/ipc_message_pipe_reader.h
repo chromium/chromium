@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "ipc/ipc.mojom.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
@@ -52,8 +50,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   class Delegate {
    public:
     virtual void OnPeerPidReceived(int32_t peer_pid) = 0;
-    virtual void OnMessageReceived(const Message& message) = 0;
-    virtual void OnBrokenDataReceived() = 0;
     virtual void OnPipeError() = 0;
     virtual void OnAssociatedInterfaceRequest(
         mojo::GenericPendingAssociatedReceiver receiver) = 0;
@@ -88,10 +84,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
   // Return true if the MessagePipe is alive.
   bool IsValid() { return sender_.is_bound(); }
 
-  // Sends an IPC::Message to the other end of the pipe. Safe to call from any
-  // thread.
-  bool Send(std::unique_ptr<Message> message);
-
   // Requests an associated interface from the other end of the pipe.
   void GetRemoteInterface(mojo::GenericPendingAssociatedReceiver receiver);
 
@@ -105,7 +97,6 @@ class COMPONENT_EXPORT(IPC) MessagePipeReader : public mojom::Channel {
  private:
   // mojom::Channel:
   void SetPeerPid(int32_t peer_pid) override;
-  void Receive(MessageView message_view) override;
   void GetAssociatedInterface(
       mojo::GenericPendingAssociatedReceiver receiver) override;
 

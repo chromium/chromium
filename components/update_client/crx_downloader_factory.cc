@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -45,6 +46,7 @@ class CrxDownloaderFactoryChromium : public CrxDownloaderFactory {
 
   // Overrides for CrxDownloaderFactory.
   scoped_refptr<CrxDownloader> MakeCrxDownloader(
+      const std::string& prod_id,
       bool background_download_enabled) const override;
 
  private:
@@ -59,17 +61,19 @@ class CrxDownloaderFactoryChromium : public CrxDownloaderFactory {
 };
 
 scoped_refptr<CrxDownloader> CrxDownloaderFactoryChromium::MakeCrxDownloader(
+    const std::string& prod_id,
     bool background_download_enabled) const {
   scoped_refptr<CrxDownloader> url_fetcher_downloader =
-      base::MakeRefCounted<UrlFetcherDownloader>(nullptr,
-                                                 network_fetcher_factory_);
+      base::MakeRefCounted<UrlFetcherDownloader>(
+          nullptr, network_fetcher_factory_, prod_id);
   if (background_download_enabled) {
 #if BUILDFLAG(IS_MAC)
     return base::MakeRefCounted<BackgroundDownloader>(
         url_fetcher_downloader, background_downloader_shared_session_,
         background_sequence_);
 #elif BUILDFLAG(IS_WIN)
-    return base::MakeRefCounted<BackgroundDownloader>(url_fetcher_downloader);
+    return base::MakeRefCounted<BackgroundDownloader>(url_fetcher_downloader,
+                                                      prod_id);
 #endif
   }
 

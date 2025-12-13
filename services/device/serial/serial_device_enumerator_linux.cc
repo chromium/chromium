@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "services/device/serial/serial_device_enumerator_linux.h"
 
 #include <stdint.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -114,8 +110,9 @@ void SerialDeviceEnumeratorLinux::OnDeviceAdded(ScopedUdevDevicePtr device) {
                                                 base::BlockingType::MAY_BLOCK);
 
   const char* subsystem = udev_device_get_subsystem(device.get());
-  if (!subsystem || strcmp(subsystem, "tty") != 0)
+  if (!subsystem || UNSAFE_TODO(strcmp(subsystem, "tty")) != 0) {
     return;
+  }
 
   const char* syspath_str = udev_device_get_syspath(device.get());
   if (!syspath_str)

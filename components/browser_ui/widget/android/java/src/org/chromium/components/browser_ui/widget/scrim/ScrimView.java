@@ -44,6 +44,8 @@ public class ScrimView extends View {
         mClient = client;
         setFocusable(false);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+        setContextClickable(true);
+        setOnContextClickListener(view -> true);
 
         setAlpha(0.0f);
         setVisibility(View.GONE);

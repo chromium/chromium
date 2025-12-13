@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -30,6 +32,19 @@ TEST(AddressRewriterTest, LastRule) {
   EXPECT_EQ(last_rule.Rewrite(u"3"), last_rule.Rewrite(u"4"));
   // Checks if last rule works when previous rewrite is larger than last rule.
   EXPECT_EQ(large_rewrite.Rewrite(u"2"), large_rewrite.Rewrite(u"short"));
+}
+
+TEST(AddressRewriterTest, AutofillFixRewriterRulesEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAutofillFixRewriterRules);
+  AddressRewriter de_fixed =
+      AddressRewriter::ForCountryCode(AddressCountryCode("de"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegelstrasse"), de_fixed.Rewrite(u"hegel str"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegelstr"), de_fixed.Rewrite(u"hegel str"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegel str"), de_fixed.Rewrite(u"hegel str"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegelall"), de_fixed.Rewrite(u"hegel all"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegelallee"), de_fixed.Rewrite(u"hegel all"));
+  EXPECT_EQ(de_fixed.Rewrite(u"hegel all"), de_fixed.Rewrite(u"hegel all"));
 }
 
 TEST(AddressRewriterTest, AD) {

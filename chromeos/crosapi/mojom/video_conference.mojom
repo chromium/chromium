@@ -138,9 +138,9 @@ interface VideoConferenceManagerClient {
   // Opens and focuses media app corresponding to the |id|.
   ReturnToApp@1(mojo_base.mojom.UnguessableToken id) => (bool success);
 
-  // Informs client of system device's disable status
+  // Informs client of system device's enable status
   SetSystemMediaDeviceStatus@2(VideoConferenceMediaDevice device,
-                               bool disabled) => (bool success);
+                               bool enabled) => (bool success);
 
   // Stops screen sharings from all media apps.
   [MinVersion=1]

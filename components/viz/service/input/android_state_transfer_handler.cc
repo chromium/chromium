@@ -7,12 +7,11 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/debug/crash_logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
+#include "components/input/features.h"
+#include "components/viz/service/input/input_on_viz_state_processing_result.h"
 #include "ui/events/android/events_android_utils.h"
 #include "ui/events/android/motion_event_android_factory.h"
-#include "ui/events/android/motion_event_android_native.h"
 
 namespace viz {
 
@@ -23,6 +22,30 @@ base::TimeTicks GetEventDowntime(const base::android::ScopedInputEvent& event) {
       AMotionEvent_getDownTime(event.a_input_event()) /
       base::Time::kNanosecondsPerMillisecond);
 }
+
+// LINT.IfChange(VizSequenceDroppedReason)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VizSequenceDroppedReason {
+  kOlderSequenceInQueue = 0,
+  kMaxValue = kOlderSequenceInQueue,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:VizSequenceDroppedReason)
+
+// LINT.IfChange(DroppedSequenceEventAndDownTimeDelta)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DroppedSequenceEventAndDownTimeDelta {
+  kEventTimeLessThanDownTime = 0,
+  kEventTimeEqualsDownTime = 1,
+  kEventTimeGreaterThanDownTime = 2,
+  kMaxValue = kEventTimeGreaterThanDownTime,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:DroppedSequenceEventAndDownTimeDelta)
 
 }  // namespace
 
@@ -43,8 +66,9 @@ AndroidStateTransferHandler::TransferState::TransferState(
 }
 
 AndroidStateTransferHandler::AndroidStateTransferHandler(
-    AndroidStateTransferHandlerClient& client)
-    : client_(client) {}
+    AndroidStateTransferHandlerClient& client,
+    VizTouchStateHandler* viz_touch_state_handler)
+    : client_(client), viz_touch_state_handler_(viz_touch_state_handler) {}
 
 AndroidStateTransferHandler::~AndroidStateTransferHandler() = default;
 
@@ -60,12 +84,22 @@ void AndroidStateTransferHandler::StateOnTouchTransfer(
        (state->down_time_ms <
         pending_transferred_states_.back().transfer_state->down_time_ms));
 
-  CHECK(!state_received_out_of_order);
+  if (state_received_out_of_order) {
+    // We don't expect to receive `StateOnTouchTransfer` mojo calls coming out
+    // of order. But it's possible the timestamps provided by Android platform
+    // are the issue.
+    TRACE_EVENT_INSTANT("viz", "OutOfOrderTransferStateDropped");
+    EmitStateProcessingResultHistogram(
+        InputOnVizStateProcessingResult::kDroppedOutOfOrderDownTime);
+    return;
+  }
 
   MaybeDropEventsFromEarlierSequences(state);
 
   pending_transferred_states_.emplace(rir_support, std::move(state));
   if (pending_transferred_states_.size() > kMaxPendingTransferredStates) {
+    EmitStateProcessingResultHistogram(
+        InputOnVizStateProcessingResult::kDroppedTooManyPendingStates);
     pending_transferred_states_.pop();
   }
 
@@ -104,21 +138,6 @@ bool AndroidStateTransferHandler::OnMotionEvent(
 
   const int action = AMotionEvent_getAction(input_event.a_input_event()) &
                      AMOTION_EVENT_ACTION_MASK;
-
-  static auto* const input_type_crash_key = base::debug::AllocateCrashKeyString(
-      "431139615-InputType", base::debug::CrashKeySize::Size32);
-  if (input_type_crash_key) {
-    base::debug::SetCrashKeyString(input_type_crash_key,
-                                   base::NumberToString(action));
-  }
-
-  static auto* const input_ts_crash_key = base::debug::AllocateCrashKeyString(
-      "431139615-InputTs", base::debug::CrashKeySize::Size64);
-  if (input_ts_crash_key) {
-    base::debug::SetCrashKeyString(
-        input_ts_crash_key,
-        base::NumberToString(base::TimeTicks::Now().ToUptimeMillis()));
-  }
 
   // Viz only handles touch events, actions like button press/release are not
   // supported and should ideally not be arriving.
@@ -194,6 +213,8 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
   while (!pending_transferred_states_.empty() &&
          (pending_transferred_states_.front().transfer_state->down_time_ms <
           event_down_time)) {
+    EmitStateProcessingResultHistogram(
+        InputOnVizStateProcessingResult::kDroppedUnusedOlderStates);
     pending_transferred_states_.pop();
   }
 
@@ -206,11 +227,30 @@ bool AndroidStateTransferHandler::CanStartProcessingVizEvents(
   // processed before next sequence starts.
   if (event_down_time == state.transfer_state->down_time_ms) {
     if (state.transfer_state->browser_would_have_handled) {
-      client_->TransferInputBackToBrowser();
+      viz_touch_state_handler_->UpdateLastTransferredBackDownTimeMs(
+          state.transfer_state->down_time_ms.ToUptimeMillis());
+      if (client_->TransferInputBackToBrowser()) {
+        EmitStateProcessingResultHistogram(
+            InputOnVizStateProcessingResult::
+                kTransferBackToBrowserSuccessfully);
+      } else {
+        EmitStateProcessingResultHistogram(
+            InputOnVizStateProcessingResult::
+                kDroppedTransferBackToBrowserFailed);
+      }
       ignore_remaining_touch_sequence_ = true;
+    } else {
+      // Reset the last_transferred_back_down_time_ms since Viz is handling
+      // this new sequence.
+      viz_touch_state_handler_->UpdateLastTransferredBackDownTimeMs(0);
+      EmitStateProcessingResultHistogram(
+          InputOnVizStateProcessingResult::kProcessedSuccessfully);
     }
     state_for_curr_sequence_.emplace(std::move(state));
     pending_transferred_states_.pop();
+    if (input::features::kForwardEventsSeenOnBrowserToViz.Get()) {
+      HandleFirstDownEvent();
+    }
     return true;
   }
   return false;
@@ -221,8 +261,35 @@ void AndroidStateTransferHandler::MaybeDropEventsFromEarlierSequences(
   if (events_buffer_.empty()) {
     return;
   }
+
   while (!events_buffer_.empty() &&
          GetEventDowntime(events_buffer_.front()) < state->down_time_ms) {
+    const int action =
+        AMotionEvent_getAction(events_buffer_.front().a_input_event()) &
+        AMOTION_EVENT_ACTION_MASK;
+    if (action == AMOTION_EVENT_ACTION_DOWN) {
+      base::UmaHistogramEnumeration(
+          "Android.InputOnViz.Viz.SequenceDroppedReason",
+          VizSequenceDroppedReason::kOlderSequenceInQueue);
+      const int64_t event_time_nanos =
+          AMotionEvent_getEventTime(events_buffer_.front().a_input_event());
+      const int64_t down_time_nanos =
+          AMotionEvent_getDownTime(events_buffer_.front().a_input_event());
+
+      DroppedSequenceEventAndDownTimeDelta delta;
+      if (event_time_nanos < down_time_nanos) {
+        delta =
+            DroppedSequenceEventAndDownTimeDelta::kEventTimeLessThanDownTime;
+      } else if (event_time_nanos == down_time_nanos) {
+        delta = DroppedSequenceEventAndDownTimeDelta::kEventTimeEqualsDownTime;
+      } else {
+        delta =
+            DroppedSequenceEventAndDownTimeDelta::kEventTimeGreaterThanDownTime;
+      }
+      base::UmaHistogramEnumeration(
+          "Android.InputOnViz.Viz.DroppedSequences.EventAndDownTimeDelta",
+          delta);
+    }
     events_buffer_.pop();
   }
 }
@@ -240,6 +307,19 @@ void AndroidStateTransferHandler::EmitPendingTransfersHistogram() {
   base::UmaHistogramCustomCounts(histogram_name,
                                  pending_transferred_states_.size(), /*min=*/1,
                                  /*exclusive_max=*/10, /*buckets=*/10u);
+}
+
+void AndroidStateTransferHandler::HandleFirstDownEvent() {
+  CHECK(state_for_curr_sequence_.has_value());
+  CHECK(input::features::kForwardEventsSeenOnBrowserToViz.Get());
+
+  if (!state_for_curr_sequence_->rir_support) {
+    return;
+  }
+  CHECK(state_for_curr_sequence_->transfer_state->down_event);
+  state_for_curr_sequence_->rir_support->OnTouchEvent(
+      *(state_for_curr_sequence_->transfer_state->down_event->get()),
+      /* emit_histograms= */ true);
 }
 
 void AndroidStateTransferHandler::HandleTouchEvent(
@@ -275,6 +355,11 @@ void AndroidStateTransferHandler::HandleTouchEvent(
 
   std::optional<ui::MotionEventAndroid::EventTimes> event_times = std::nullopt;
   if (action == AMOTION_EVENT_ACTION_DOWN) {
+    if (input::features::kForwardEventsSeenOnBrowserToViz.Get()) {
+      // Ignore the down event sent by system, since the down event received on
+      // Browser is transferred to Viz and processed along with state.
+      return;
+    }
     event_times = ui::MotionEventAndroid::EventTimes();
     // AMotionEvent_getDownTime returns down time in nanoseconds precision.
     event_times->latest = base::TimeTicks::FromJavaNanoTime(

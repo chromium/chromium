@@ -117,6 +117,34 @@ MATCHER_P2(HasUrlAndMatchingSourceId,
   return matched;
 }
 
+MATCHER_P2(HasDestinationUrlAndMatchingDestinationSourceId,
+           matcher,
+           ukm_recorder_ptr,
+           "has destination_url that " +
+               testing::DescribeMatcher<GURL>(matcher, negation) +
+               " and destination_source_id with a corresponding source URL "
+               "that also " +
+               testing::DescribeMatcher<GURL>(matcher, negation)) {
+  bool matched = true;
+  if (!testing::ExplainMatchResult(matcher, arg.destination_url,
+                                   result_listener)) {
+    *result_listener << "destination_url was " << arg.destination_url;
+    matched = false;
+  }
+  const GURL url_for_source_id =
+      ukm_recorder_ptr->GetSourceForSourceId(arg.destination_source_id)->url();
+  if (!testing::ExplainMatchResult(matcher, url_for_source_id,
+                                   result_listener)) {
+    if (!matched) {
+      *result_listener << " and ";
+    }
+    *result_listener << "destination_source_id had corresponding URL "
+                     << url_for_source_id;
+    matched = false;
+  }
+  return matched;
+}
+
 // Matches the URL for the `source_id` property of `BtmPageVisitInfo` or
 // `BtmServerRedirectInfo`, as recorded by `ukm_recorder`.
 MATCHER_P2(HasSourceIdForUrl,

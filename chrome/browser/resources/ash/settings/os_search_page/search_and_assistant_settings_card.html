@@ -31,19 +31,6 @@
     </cr-link-row>
   </template>
 
-  <!-- Google Assistant -->
-  <template is="dom-if" if="[[isAssistantAllowed_]]">
-    <cr-link-row
-        id="assistantRow"
-        start-icon="os-settings:assistant"
-        class="hr"
-        label="$i18n{searchGoogleAssistant}"
-        sub-label="[[getAssistantEnabledDisabledLabel_(
-            prefs.settings.voice_interaction.enabled.value)]]"
-        on-click="onGoogleAssistantClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-  </template>
   <settings-toggle-button id="contentRecommendationsToggle"
       class="hr"
       icon="os-settings:content-recommend"
@@ -181,7 +168,6 @@
   </template>
 
   <template is="dom-if" if="[[isScannerSettingsToggleVisible_]]">
-    <!-- TODO: crbug.com/404069127 - Add a learn more link. -->
     <!-- \`restamp\` is needed to ensure that deep links work correctly if
          \`isScannerAllowedByEnterprisePolicy_\` changes. -->
     <template is="dom-if" restamp if="[[!isScannerAllowedByEnterprisePolicy_]]">

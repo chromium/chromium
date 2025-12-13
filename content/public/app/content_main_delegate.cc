@@ -94,4 +94,14 @@ ContentUtilityClient* ContentMainDelegate::CreateContentUtilityClient() {
   return new ContentUtilityClient();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool ContentMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
+  return true;
+}
+#endif
+
+bool ContentMainDelegate::IsInitFeatureListEarly() {
+  return false;
+}
+
 }  // namespace content

@@ -109,9 +109,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
    public:
     explicit IterationSource(HeapVector<Member<FontFace>>&& font_faces)
         : index_(0), font_faces_(std::move(font_faces)) {}
-    bool FetchNextItem(ScriptState* script_state,
-                       FontFace*& value,
-                       ExceptionState& exception_state) override;
+    bool FetchNextItem(ScriptState* script_state, FontFace*& value) override;
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(font_faces_);
@@ -155,8 +153,7 @@ class CORE_EXPORT FontFaceSet : public EventTarget,
 
  private:
   FontFaceSetIterable::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
+      ScriptState*) override;
 
   void HandlePendingEventsAndPromises();
   void FireLoadingEvent();

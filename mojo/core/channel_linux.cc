@@ -23,6 +23,7 @@
 #include <cstring>
 #include <limits>
 #include <memory>
+#include <optional>
 
 #include "base/bits.h"
 #include "base/files/scoped_file.h"
@@ -47,16 +48,7 @@
 #include "mojo/buildflags.h"
 #include "mojo/core/embedder/features.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
-#endif
-
-#ifndef EFD_ZERO_ON_WAKE
-#define EFD_ZERO_ON_WAKE O_NOFOLLOW
-#endif
-
-namespace mojo {
-namespace core {
+namespace mojo::core {
 
 // DataAvailableNotifier is a simple interface which allows us to
 // substitute how we notify the reader that we've made data available,
@@ -95,18 +87,19 @@ constexpr int kMemFDSeals = F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW;
 
 std::atomic_bool g_params_set{false};
 std::atomic_bool g_use_shared_mem{false};
-std::atomic_bool g_use_zero_on_wake{false};
 std::atomic_uint32_t g_shared_mem_pages{4};
 
 struct UpgradeOfferMessage {
   constexpr static int kEventFdNotifier = 1;
-  constexpr static int kEventFdZeroWakeNotifier = 2;
+
+  // Obsolete. New clients reject offers with this version.
+  // constexpr static int kEventFdZeroWakeNotifier = 2;
 
   constexpr static int kDefaultVersion = kEventFdNotifier;
   constexpr static int kDefaultPages = 4;
 
   static bool IsValidVersion(int version) {
-    return (version == kEventFdNotifier || version == kEventFdZeroWakeNotifier);
+    return version == kEventFdNotifier;
   }
 
   int version = kDefaultVersion;
@@ -170,21 +163,13 @@ class EventFDNotifier : public DataAvailableNotifier,
   static constexpr int kEfdFlags = EFD_CLOEXEC | EFD_NONBLOCK;
 
   static std::unique_ptr<EventFDNotifier> CreateWriteNotifier() {
-    static bool zero_on_wake_supported = []() -> bool {
-      base::ScopedFD fd(
-          syscall(__NR_eventfd2, 0, kEfdFlags | EFD_ZERO_ON_WAKE));
-      return fd.is_valid();
-    }();
-
-    bool use_zero_on_wake = zero_on_wake_supported && g_use_zero_on_wake;
-    int extra_flags = use_zero_on_wake ? EFD_ZERO_ON_WAKE : 0;
-    int fd = syscall(__NR_eventfd2, 0, kEfdFlags | extra_flags);
+    int fd = syscall(__NR_eventfd2, 0, kEfdFlags);
     if (fd < 0) {
       PLOG(ERROR) << "Unable to create an eventfd";
       return nullptr;
     }
 
-    return WrapFD(base::ScopedFD(fd), use_zero_on_wake);
+    return WrapFD(base::ScopedFD(fd));
   }
 
   // The EventFD read notifier MUST be created on the IOThread. Luckily you're
@@ -193,13 +178,11 @@ class EventFDNotifier : public DataAvailableNotifier,
   static std::unique_ptr<EventFDNotifier> CreateReadNotifier(
       base::ScopedFD efd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake) {
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
     DCHECK(io_task_runner->RunsTasksInCurrentSequence());
     DCHECK(cb);
 
-    return WrapFDWithCallback(std::move(efd), std::move(cb), io_task_runner,
-                              zero_on_wake);
+    return WrapFDWithCallback(std::move(efd), std::move(cb), io_task_runner);
   }
 
   static bool KernelSupported() {
@@ -213,11 +196,6 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   // DataAvailableNotifier impl:
   bool Clear() override {
-    // When using EFD_ZERO_ON_WAKE we don't have to do anything.
-    if (zero_on_wake_) {
-      return true;
-    }
-
     uint64_t value = 0;
     ssize_t res = HANDLE_EINTR(
         read(fd_.get(), reinterpret_cast<void*>(&value), sizeof(value)));
@@ -257,36 +235,29 @@ class EventFDNotifier : public DataAvailableNotifier,
 
   int fd() { return fd_.get(); }
 
-  bool zero_on_wake() const { return zero_on_wake_; }
-
  private:
-  explicit EventFDNotifier(base::ScopedFD fd, bool zero_on_wake)
-      : zero_on_wake_(zero_on_wake), fd_(std::move(fd)) {}
+  explicit EventFDNotifier(base::ScopedFD fd) : fd_(std::move(fd)) {}
   explicit EventFDNotifier(
       base::ScopedFD fd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake)
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
       : DataAvailableNotifier(std::move(cb)),
-        zero_on_wake_(zero_on_wake),
         fd_(std::move(fd)),
         io_task_runner_(io_task_runner) {
     WaitForEventFDOnIOThread();
   }
 
-  static std::unique_ptr<EventFDNotifier> WrapFD(base::ScopedFD fd,
-                                                 bool zero_on_wake) {
+  static std::unique_ptr<EventFDNotifier> WrapFD(base::ScopedFD fd) {
     return base::WrapUnique<EventFDNotifier>(
-        new EventFDNotifier(std::move(fd), zero_on_wake));
+        new EventFDNotifier(std::move(fd)));
   }
 
   static std::unique_ptr<EventFDNotifier> WrapFDWithCallback(
       base::ScopedFD fd,
       base::RepeatingClosure cb,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-      bool zero_on_wake) {
-    return base::WrapUnique<EventFDNotifier>(new EventFDNotifier(
-        std::move(fd), std::move(cb), io_task_runner, zero_on_wake));
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+    return base::WrapUnique<EventFDNotifier>(
+        new EventFDNotifier(std::move(fd), std::move(cb), io_task_runner));
   }
 
   void WaitForEventFDOnIOThread() {
@@ -296,7 +267,6 @@ class EventFDNotifier : public DataAvailableNotifier,
         base::IOWatcher::FdWatchMode::kRead, *this);
   }
 
-  bool zero_on_wake_ = false;
   base::ScopedFD fd_;
   std::unique_ptr<base::IOWatcher::FdWatch> watch_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -598,33 +568,31 @@ ChannelLinux::ChannelLinux(
 ChannelLinux::~ChannelLinux() = default;
 
 void ChannelLinux::Write(MessagePtr message) {
-  if (!shared_mem_writer_ || message->has_handles() || reject_writes_) {
-    // Let the ChannelPosix deal with this.
-    return ChannelPosix::Write(std::move(message));
+  if (shared_mem_writer_ && !message->has_handles() && !reject_writes_) {
+    base::AutoLock lock(memfd_write_lock_);
+    SharedBuffer::Error write_result =
+        write_buffer_->TryWrite(message->data(), message->data_num_bytes());
+    if (write_result != SharedBuffer::Error::kGeneralError) {
+      if (write_result != SharedBuffer::Error::kControlCorruption) {
+        // Notify about successful write.
+        write_notifier_->Notify();
+      } else {
+        // On control corruption stop using shared memory for writes in the
+        // future.
+        reject_writes_ = true;
+
+        // Theoretically we could fall back to only using PosixChannel::Write
+        // but if this situation happens it's likely something else is going
+        // horribly wrong.
+        io_task_runner_->PostTask(
+            FROM_HERE, base::BindOnce(&ChannelLinux::OnWriteError, this,
+                                      Channel::Error::kReceivedMalformedData));
+      }
+      return;
+    }
   }
-
-  // Can we use the fast shared memory buffer?
-  SharedBuffer::Error write_result =
-      write_buffer_->TryWrite(message->data(), message->data_num_bytes());
-  if (write_result == SharedBuffer::Error::kGeneralError) {
-    // We can handle this with the posix channel.
-    return ChannelPosix::Write(std::move(message));
-  } else if (write_result == SharedBuffer::Error::kControlCorruption) {
-    // We will no longer be issuing writes via shared memory, and we will
-    // dispatch a write error.
-    reject_writes_ = true;
-
-    // Theoretically we could fall back to only using PosixChannel::Write
-    // but if this situation happens it's likely something else is going
-    // horribly wrong.
-    io_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&ChannelLinux::OnWriteError, this,
-                                  Channel::Error::kReceivedMalformedData));
-    return;
-  }
-
-  //  The write with shared memory was successful.
-  write_notifier_->Notify();
+  // Fall back to ChannelPosix outside of the memfd_write_lock_.
+  ChannelPosix::Write(std::move(message));
 }
 
 void ChannelLinux::OfferSharedMemUpgrade() {
@@ -657,13 +625,19 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
+      if (!is_for_ipcz()) {
+        LOG(ERROR) << "Rejecting UPGRADE_OFFER for non-ipcz transport";
+        RejectUpgradeOffer();
+        return true;
+      }
+
       if (handles.size() != 2) {
         LOG(ERROR) << "Received an UPGRADE_OFFER without two FDs";
         RejectUpgradeOffer();
         return true;
       }
 
-      if (read_buffer_ || read_notifier_) {
+      if (shared_read_buffer_ || read_notifier_) {
         LOG(ERROR) << "Received an UPGRADE_OFFER on already upgraded channel";
         return true;
       }
@@ -688,14 +662,11 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
       }
 
       std::unique_ptr<DataAvailableNotifier> read_notifier;
-      if (msg->version == UpgradeOfferMessage::kEventFdNotifier ||
-          msg->version == UpgradeOfferMessage::kEventFdZeroWakeNotifier) {
-        bool zero_on_wake =
-            msg->version == UpgradeOfferMessage::kEventFdZeroWakeNotifier;
+      if (msg->version == UpgradeOfferMessage::kEventFdNotifier) {
         read_notifier = EventFDNotifier::CreateReadNotifier(
             handles[1].TakeFD(),
             base::BindRepeating(&ChannelLinux::SharedMemReadReady, this),
-            io_task_runner_, zero_on_wake);
+            io_task_runner_);
       }
 
       if (!read_notifier) {
@@ -712,9 +683,9 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
         return true;
       }
 
-      read_buffer_ = std::move(read_sb);
+      shared_read_buffer_ = std::move(read_sb);
 
-      read_buf_.resize(read_buffer_->usable_len());
+      read_buf_.resize(shared_read_buffer_->usable_len());
       AcceptUpgradeOffer();
 
       // And if we haven't offered ourselves just go ahead and do it now.
@@ -723,6 +694,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
     }
 
     case Message::MessageType::UPGRADE_ACCEPT: {
+      base::AutoLock lock(memfd_write_lock_);
       if (!write_buffer_ || !write_notifier_ || !write_notifier_->is_valid()) {
         LOG(ERROR) << "Received unexpected UPGRADE_ACCEPT";
 
@@ -738,7 +710,7 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
     }
 
     case Message::MessageType::UPGRADE_REJECT: {
-      // We can free our resources.
+      base::AutoLock lock(memfd_write_lock_);
       shared_mem_writer_ = false;
       write_buffer_.reset();
       write_notifier_.reset();
@@ -754,13 +726,13 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
 }
 
 void ChannelLinux::SharedMemReadReady() {
-  CHECK(read_buffer_);
-  if (read_buffer_->TryLockForReading()) {
+  CHECK(shared_read_buffer_);
+  if (shared_read_buffer_->TryLockForReading()) {
     read_notifier_->Clear();
     bool read_fail = false;
     do {
       uint32_t bytes_read = 0;
-      SharedBuffer::Error read_res = read_buffer_->TryReadLocked(
+      SharedBuffer::Error read_res = shared_read_buffer_->TryReadLocked(
           read_buf_.data(), read_buf_.size(), &bytes_read);
       if (read_res == SharedBuffer::Error::kControlCorruption) {
         // This is an error we cannot recover from.
@@ -792,6 +764,12 @@ void ChannelLinux::SharedMemReadReady() {
           break;
         }
 
+        if (!DispatchDelayedMessages()) {
+          LOG(ERROR) << "Error dispatching queued messages";
+          read_fail = true;
+          OnError(Error::kReceivedMalformedData);
+        }
+
         // The next message will start after read_size_hint bytes the writer
         // guarantees that we wrote a full message and we've guaranteed that the
         // message was dispatched correctly so we know where the next message
@@ -799,7 +777,7 @@ void ChannelLinux::SharedMemReadReady() {
         data_offset += read_size_hint;
       }
     } while (!read_fail);
-    read_buffer_->UnlockForReading();
+    shared_read_buffer_->UnlockForReading();
   }
 }
 
@@ -808,10 +786,30 @@ void ChannelLinux::OnWriteError(Error error) {
   ChannelPosix::OnWriteError(error);
 }
 
+void ChannelLinux::RejectUpgradeOffer() {
+  if (is_for_ipcz()) {
+    ChannelPosix::Write(
+        Message::CreateIpczMessage({}, {}, Message::MessageType::UPGRADE_REJECT,
+                                   IncrementLastSentChannelSequenceNumber()));
+  } else {
+    ChannelPosix::RejectPreIpczUpgradeOffer();
+  }
+}
+
+void ChannelLinux::AcceptUpgradeOffer() {
+  CHECK(is_for_ipcz());
+  ChannelPosix::Write(
+      Message::CreateIpczMessage({}, {}, Message::MessageType::UPGRADE_ACCEPT,
+                                 IncrementLastSentChannelSequenceNumber()));
+}
+
 void ChannelLinux::ShutDownOnIOThread() {
-  reject_writes_ = true;
-  read_notifier_.reset();
-  write_notifier_.reset();
+  {
+    base::AutoLock lock(memfd_write_lock_);
+    reject_writes_ = true;
+    read_notifier_.reset();
+    write_notifier_.reset();
+  }
 
   ChannelPosix::ShutDownOnIOThread();
 }
@@ -820,50 +818,45 @@ void ChannelLinux::StartOnIOThread() {
   ChannelPosix::StartOnIOThread();
 }
 
-void ChannelLinux::OfferSharedMemUpgradeInternal() {
+std::optional<std::vector<PlatformHandle>> ChannelLinux::SetupMemFdForWrite() {
   if (reject_writes_) {
-    return;
+    return std::nullopt;
   }
 
+  base::AutoLock lock(memfd_write_lock_);
   if (write_buffer_ || write_notifier_) {
     LOG(ERROR) << "Upgrade attempted on an already upgraded channel";
-    return;
+    return std::nullopt;
   }
 
   const size_t kSize = num_pages_ * base::GetPageSize();
   base::ScopedFD memfd = CreateSealedMemFD(kSize);
   if (!memfd.is_valid()) {
     PLOG(ERROR) << "Unable to create memfd";
-    return;
+    return std::nullopt;
   }
 
   bool properly_sealed = ValidateFDIsProperlySealedMemFD(memfd);
   if (!properly_sealed) {
     // We will not attempt an offer, something has gone wrong.
     LOG(ERROR) << "FD was not properly sealed we cannot offer upgrade.";
-    return;
+    return std::nullopt;
   }
 
   std::unique_ptr<SharedBuffer> write_buffer =
       SharedBuffer::Create(memfd, kSize);
   if (!write_buffer || !write_buffer->is_valid()) {
     PLOG(ERROR) << "Unable to map shared memory";
-    return;
+    return std::nullopt;
   }
 
   write_buffer->Initialize();
 
-  auto notifier_version = UpgradeOfferMessage::kEventFdNotifier;
   std::unique_ptr<EventFDNotifier> write_notifier =
       EventFDNotifier::CreateWriteNotifier();
   if (!write_notifier) {
     PLOG(ERROR) << "Failed to create eventfd write notifier";
-    return;
-  }
-
-  if (write_notifier->zero_on_wake()) {
-    // The notifier was created using EFD_ZERO_ON_WAKE
-    notifier_version = UpgradeOfferMessage::kEventFdZeroWakeNotifier;
+    return std::nullopt;
   }
 
   std::vector<PlatformHandle> fds;
@@ -873,15 +866,25 @@ void ChannelLinux::OfferSharedMemUpgradeInternal() {
   write_notifier_ = std::move(write_notifier);
   write_buffer_ = std::move(write_buffer);
 
+  return fds;
+}
+
+void ChannelLinux::OfferSharedMemUpgradeInternal() {
+  std::optional<std::vector<PlatformHandle>> handles = SetupMemFdForWrite();
+  if (!handles) {
+    return;
+  }
+
   UpgradeOfferMessage offer_msg;
   offer_msg.num_pages = num_pages_;
-  offer_msg.version = notifier_version;
-  MessagePtr msg = Message::CreateMessage(sizeof(UpgradeOfferMessage),
-                                          /*num handles=*/fds.size(),
-                                          Message::MessageType::UPGRADE_OFFER);
-  msg->SetHandles(std::move(fds));
-  memcpy(msg->mutable_payload(), &offer_msg, sizeof(offer_msg));
-
+  offer_msg.version = UpgradeOfferMessage::kEventFdNotifier;
+  MessagePtr msg;
+  DCHECK(is_for_ipcz());
+  auto data = base::span(reinterpret_cast<const uint8_t*>(&offer_msg),
+                         sizeof(UpgradeOfferMessage));
+  msg = Message::CreateIpczMessage(data, std::move(*handles),
+                                   Message::MessageType::UPGRADE_OFFER,
+                                   IncrementLastSentChannelSequenceNumber());
   ChannelPosix::Write(std::move(msg));
 }
 
@@ -902,16 +905,6 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
       return false;
     }
 
-#if BUILDFLAG(IS_ANDROID)
-    // Finally, if running on Android it must have API version of at
-    // least 29 (Q). The reason for this was SELinux seccomp policies prior to
-    // that API version wouldn't allow moving a memfd.
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <
-        base::android::SdkVersion::SDK_VERSION_Q) {
-      return false;
-    }
-#endif
-
     // Do we have memfd_create support, we check by seeing if we get an
     // -ENOSYS or an -EINVAL. We also support -EPERM because of seccomp
     // rules this is another possible outcome.
@@ -925,21 +918,17 @@ bool ChannelLinux::KernelSupportsUpgradeRequirements() {
 
 // static
 bool ChannelLinux::UpgradesEnabled() {
-  if (!g_params_set.load())
+  if (!g_params_set.load()) {
     return g_use_shared_mem.load();
-
-  return base::FeatureList::IsEnabled(kMojoLinuxChannelSharedMem);
+  }
+  return base::FeatureList::IsEnabled(kMojoUseEventFd);
 }
 
 // static
-void ChannelLinux::SetSharedMemParameters(bool enabled,
-                                          uint32_t num_pages,
-                                          bool use_zero_on_wake) {
+void ChannelLinux::SetSharedMemParameters(bool enabled, uint32_t num_pages) {
   g_params_set.store(true);
   g_use_shared_mem.store(enabled);
   g_shared_mem_pages.store(num_pages);
-  g_use_zero_on_wake.store(use_zero_on_wake);
 }
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core

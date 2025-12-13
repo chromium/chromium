@@ -31,47 +31,22 @@
 #include "third_party/blink/public/web/web_dom_message_event.h"
 
 #include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
-#include "third_party/blink/renderer/core/messaging/message_port.h"
 
 namespace blink {
 
 WebDOMMessageEvent::WebDOMMessageEvent(
-    const WebSerializedScriptValue& message_data,
-    const WebString& origin,
-    const WebFrame* source_frame,
-    const WebDocument& target_document,
-    std::vector<MessagePortChannel> channels)
+    const WebSerializedScriptValue& message_data)
     : WebDOMMessageEvent(MessageEvent::Create()) {
-  DOMWindow* window = nullptr;
-  if (source_frame)
-    window = WebFrame::ToCoreFrame(*source_frame)->DomWindow();
-  GCedMessagePortArray* ports = nullptr;
-  if (!target_document.IsNull()) {
-    Document* core_document = target_document;
-    ports = MessagePort::EntanglePorts(*core_document->GetExecutionContext(),
-                                       std::move(channels));
-  }
   // TODO(esprehn): Chromium always passes empty string for lastEventId, is that
   // right?
   Unwrap<MessageEvent>()->initMessageEvent(
-      event_type_names::kMessage, false, false, message_data, origin,
-      "" /*lastEventId*/, window, ports, nullptr /*user_activation*/,
-      mojom::blink::DelegatedCapability::kNone);
-}
-
-WebString WebDOMMessageEvent::Origin() const {
-  return WebString(ConstUnwrap<MessageEvent>()->origin());
+      event_type_names::kMessage, false, false, message_data, nullptr,
+      MessageEvent::kMessageIsSameOrigin, "" /*lastEventId*/, nullptr, {},
+      nullptr /*user_activation*/, mojom::blink::DelegatedCapability::kNone);
 }
 
 }  // namespace blink

@@ -10,6 +10,7 @@
 #import <utility>
 #import <vector>
 
+#import "base/barrier_closure.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -18,7 +19,9 @@
 #import "base/values.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
+#import "components/enterprise/browser/identifiers/profile_id_service.h"
 #import "components/enterprise/browser/reporting/common_pref_names.h"
+#import "components/enterprise/browser/reporting/report_scheduler.h"
 #import "components/policy/core/browser/policy_conversions.h"
 #import "components/policy/core/browser/webui/json_generation.h"
 #import "components/policy/core/browser/webui/machine_level_user_cloud_policy_status_provider.h"
@@ -39,9 +42,12 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector.h"
+#import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_factory_ios.h"
+#import "ios/chrome/browser/policy/model/reporting/cloud_profile_reporting_service_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -213,12 +219,36 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
                                ->GetBrowserPolicyConnector()
                                ->chrome_browser_cloud_management_controller()
                                ->report_scheduler();
+  auto* profile_reporting_service =
+      enterprise_reporting::CloudProfileReportingServiceFactoryIOS::
+          GetForProfile(ProfileIOS::FromWebUIIOS(web_ui()));
+  auto* profile_report_scheduler =
+      profile_reporting_service ? profile_reporting_service->report_scheduler()
+                                : nullptr;
+
+  int report_count = 0;
   if (report_scheduler) {
-    report_scheduler->UploadFullReport(
-        base::BindOnce(&PolicyUIHandler::OnReportUploaded,
-                       weak_factory_.GetWeakPtr(), callback_id));
-  } else {
+    report_count++;
+  }
+  if (profile_report_scheduler) {
+    report_count++;
+  }
+
+  if (report_count == 0) {
+    // Nothing to upload, return immediately.
     OnReportUploaded(callback_id);
+    return;
+  }
+
+  // Upload 1 or 2 reports depending on which type(s) of reporting are enabled.
+  const auto on_report_uploaded = base::BarrierClosure(
+      report_count, base::BindOnce(&PolicyUIHandler::OnReportUploaded,
+                                   weak_factory_.GetWeakPtr(), callback_id));
+  if (report_scheduler) {
+    report_scheduler->UploadFullReport(on_report_uploaded);
+  }
+  if (profile_report_scheduler) {
+    profile_report_scheduler->UploadFullReport(on_report_uploaded);
   }
 }
 
@@ -335,6 +365,13 @@ base::flat_set<std::string> PolicyUIHandler::GetDeviceAffiliationIds() {
   return GetApplicationContext()
       ->GetBrowserPolicyConnector()
       ->GetDeviceAffiliationIds();
+}
+
+std::optional<std::string> PolicyUIHandler::GetProfileId() {
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui());
+  auto* profile_id_service =
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile);
+  return profile_id_service ? profile_id_service->GetProfileId() : std::nullopt;
 }
 
 void PolicyUIHandler::OnReportUploaded(const std::string& callback_id) {

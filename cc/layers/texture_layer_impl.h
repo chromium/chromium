@@ -60,6 +60,10 @@ class CC_EXPORT TextureLayerImpl : public LayerImpl {
 
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback);
+  void ClearTransferableResource() {
+    SetTransferableResource(viz::TransferableResource(),
+                            viz::ReleaseCallback());
+  }
   bool NeedSetTransferableResource() const;
 
   void SetInInvisibleLayerTree() override;

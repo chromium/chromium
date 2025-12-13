@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ಕಿತ್ತಳೆಗಳು</translation>
 <translation id="1275718070701477396">ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1290331692326790741">ದುರ್ಬಲ ಸಿಗ್ನಲ್</translation>
+<translation id="1292474106138697109">ಕ್ಲಾಸ್ ಟೂಲ್‌ಗಳ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="1300115153046603471">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಮತ್ತು <ph name="ATTACH" /> ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">ಪರಿವರ್ತಿಸಿ</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ಚಿತ್ರಗಳು</translation>
 <translation id="4300272766492248925">ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="430786093962686457">ಷಿಫಾನ್</translation>
+<translation id="4309762678330556039">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್‌ಗಳನ್ನು ರಚಿಸಿ ಮತ್ತು ಆಡಿಯೋವನ್ನು ಹುಡುಕಿ. ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲದಿದ್ದರೂ ಸಹ ನೀವು ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ರಚಿಸಬಹುದು.</translation>
 <translation id="4310735698903592804">Google AI ನಿಂದ ಚಾಲಿತವಾಗಿರುವ ಇತ್ತೀಚಿನ ವಾಲ್‌ಪೇಪರ್‌ಗಳು</translation>
 <translation id="4320904097188876154">ನಿಯಾನ್ ಗುಲಾಬಿ</translation>
 <translation id="432961742358282111">ವ್ಯಾಖ್ಯಾನಗಳು, ಅನುವಾದಗಳು ಅಥವಾ ಘಟಕದ ಪರಿವರ್ತನೆಗಳನ್ನು ಪಡೆಯಲು ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಅಥವಾ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ. ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಲೆಫ್ಟ್ ಅಥವಾ ರೈಟ್ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">ಇನ್ನಷ್ಟು ಆಯ್ಕೆಗಳು</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ಕೀ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="5606865426897221650">ಟ್ಯಾಬ್</translation>
+<translation id="5612205513582918357">ಕ್ಲಾಸ್ ಟೂಲ್‌ಗಳು ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು <ph name="RECEIVER_NAME" /> ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳುತ್ತಿವೆ</translation>
 <translation id="5613201299517339763">ನೀವು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5628106863521633649">ಲಭ್ಯವಿರುವ ಭಾಷೆಗಳು</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">ಕ್ಲೌಡ್ ಫ್ಲೋ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
-<translation id="6231648282154119906">ನೀವು ಆಯ್ಕೆಮಾಡಿದ ವರ್ಧಿತ ಸುರಕ್ಷತೆಯ ಭಾಗವಾಗಿ Google Safe Browsing ಮೂಲಕ ಅನುಮಾನಾಸ್ಪದ ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="6232017090690406397">ಬ್ಯಾಟರಿ</translation>
 <translation id="6234024205316847054">ಔಟ್‌ಲೈನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6243280677745499710">ಪ್ರಸ್ತುತವಾಗಿ ಹೊಂದಿಸಿರುವುದು</translation>

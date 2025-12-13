@@ -60,7 +60,6 @@ class CodePointIterator {
     }
 
     bool operator==(const Utf16& other) const { return data_ == other.data_; }
-    bool operator!=(const Utf16& other) const { return !(*this == other); }
 
     UChar32 operator*() const;
     void operator++();
@@ -118,10 +117,6 @@ class CodePointIterator {
   bool operator==(const CodePointIterator& other) const {
     DCHECK_EQ(is_8bit_, other.is_8bit_);
     return utf16_ == other.utf16_;
-  }
-
-  bool operator!=(const CodePointIterator& other) const {
-    return !(*this == other);
   }
 
  private:

@@ -76,14 +76,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   double ComputeNumber(const CSSLengthResolver&) const;
   double ComputePercentage(const CSSLengthResolver&) const;
   double ComputeValueInCanonicalUnit(const CSSLengthResolver&) const;
-  std::optional<double> GetValueIfKnown() const {
-    std::optional<double> val = expression_->GetValueIfKnown();
-    if (val.has_value()) {
-      return ClampToPermittedRange(CSSValueClampingUtils::ClampDouble(*val));
-    } else {
-      return val;
-    }
-  }
+  std::optional<double> GetValueIfKnown() const;
 
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;

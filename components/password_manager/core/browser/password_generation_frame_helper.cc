@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
@@ -26,6 +27,7 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
 
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
@@ -69,8 +71,8 @@ void PasswordGenerationFrameHelper::PrefetchSpec(const GURL& origin) {
 
 void PasswordGenerationFrameHelper::ProcessPasswordRequirements(
     const FormData& form,
-    const base::flat_map<autofill::FieldGlobalId,
-                         AutofillType::ServerPrediction>& predictions) {
+    const base::flat_map<autofill::FieldGlobalId, AutofillServerPrediction>&
+        predictions) {
   // IsGenerationEnabled is called multiple times and it is sufficient to
   // log debug data once.
   if (!IsGenerationEnabled(/*log_debug_data=*/false)) {
@@ -129,16 +131,6 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
     }
     return false;
   }
-
-#if BUILDFLAG(IS_ANDROID)
-  if (client_->GetPasswordFeatureManager()->ShouldUpdateGmsCore()) {
-    if (logger) {
-      logger->LogMessage(
-          Logger::STRING_GENERATION_DISABLED_CHROME_DOES_NOT_SYNC_PASSWORDS);
-    }
-    return false;
-  }
-#endif
 
   if (client_->GetPasswordFeatureManager()->IsGenerationEnabled()) {
     return true;

@@ -10,9 +10,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/printing/web_api/in_progress_jobs_storage_chromeos.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/permission_result.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -60,11 +61,10 @@ class WebPrintingServiceChromeOS
 
   void OnPermissionDecidedForGetPrinters(
       GetPrintersCallback,
-      blink::mojom::PermissionStatus permission_status);
+      content::PermissionResult permission_result);
 
-  void OnPrintersRetrieved(
-      GetPrintersCallback callback,
-      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
+  void OnPrintersRetrieved(GetPrintersCallback callback,
+                           std::vector<chromeos::Printer> printers);
 
   void OnPrinterAttributesRetrieved(
       const std::string& printer_id,
@@ -76,7 +76,7 @@ class WebPrintingServiceChromeOS
       std::unique_ptr<PrintSettings> pjt_attributes,
       PrintCallback callback,
       const std::string& printer_id,
-      std::optional<PrinterSemanticCapsAndDefaults> printer_attributes);
+      const std::optional<PrinterSemanticCapsAndDefaults>& printer_attributes);
 
   void OnPdfReadAndFlattened(
       std::unique_ptr<PrintSettings> settings,

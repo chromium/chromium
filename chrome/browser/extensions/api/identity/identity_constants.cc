@@ -4,6 +4,10 @@
 
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace identity_constants {

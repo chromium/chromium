@@ -69,7 +69,7 @@ void ChromeSerializedNavigationDriver::Sanitize(
 #if BUILDFLAG(IS_ANDROID)
   // Rewrite the old new tab URL to the new NTP URL.
   if (navigation->virtual_url().SchemeIs(content::kChromeUIScheme) &&
-      navigation->virtual_url().host_piece() == chrome::kChromeUINewTabHost) {
+      navigation->virtual_url().host() == chrome::kChromeUINewTabHost) {
     ChangeDestination(GURL(chrome::kChromeUINativeNewTabURL), navigation);
   }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -17,14 +17,14 @@ class ScopedMediaStreamTracer {
  public:
   // It uses `this` object as a trace id as each ScopedMediaStreamTracer
   // represent the unique event.
-  explicit ScopedMediaStreamTracer(const WTF::String& event_name);
+  explicit ScopedMediaStreamTracer(const String& event_name);
   ~ScopedMediaStreamTracer();
 
   // Finish the trace. This method should be called only once.
   void End();
 
  private:
-  const WTF::String event_name_;
+  const String event_name_;
   bool finished_ = false;
 };
 

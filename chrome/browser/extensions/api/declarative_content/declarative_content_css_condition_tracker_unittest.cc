@@ -17,11 +17,14 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

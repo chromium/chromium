@@ -74,7 +74,7 @@ pub trait ZeroVecLike<T: ?Sized> {
         if let Some(first) = self.zvl_get(0) {
             let mut prev = first;
             for i in 1..self.zvl_len() {
-                #[allow(clippy::unwrap_used)] // looping over the valid indices
+                #[expect(clippy::unwrap_used)] // looping over the valid indices
                 let curr = self.zvl_get(i).unwrap();
                 if Self::get_cmp_get(prev, curr) != Ordering::Less {
                     return false;
@@ -295,7 +295,7 @@ where
         T::from_unaligned(self.with_mut(|v| v.remove(index)))
     }
     fn zvl_replace(&mut self, index: usize, value: &T) -> T {
-        #[allow(clippy::indexing_slicing)]
+        #[expect(clippy::indexing_slicing)]
         let unaligned = self.with_mut(|vec| {
             debug_assert!(index < vec.len());
             mem::replace(&mut vec[index], value.to_unaligned())
@@ -330,7 +330,7 @@ where
         self.as_maybe_borrowed()
     }
 
-    #[allow(clippy::indexing_slicing)] // documented panic
+    #[expect(clippy::indexing_slicing)] // documented panic
     fn zvl_permute(&mut self, permutation: &mut [usize]) {
         assert_eq!(permutation.len(), self.zvl_len());
 
@@ -467,7 +467,7 @@ where
     fn zvl_remove(&mut self, index: usize) -> Box<T> {
         let vec = self.make_mut();
         debug_assert!(index < vec.len());
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         let old = vec.get(index).unwrap().to_boxed();
         vec.remove(index);
         old
@@ -475,7 +475,7 @@ where
     fn zvl_replace(&mut self, index: usize, value: &T) -> Box<T> {
         let vec = self.make_mut();
         debug_assert!(index < vec.len());
-        #[allow(clippy::unwrap_used)]
+        #[expect(clippy::unwrap_used)]
         let old = vec.get(index).unwrap().to_boxed();
         vec.replace(index, value);
         old
@@ -513,7 +513,7 @@ where
         }
     }
 
-    #[allow(clippy::unwrap_used)] // documented panic
+    #[expect(clippy::unwrap_used)] // documented panic
     fn zvl_permute(&mut self, permutation: &mut [usize]) {
         assert_eq!(permutation.len(), self.zvl_len());
 

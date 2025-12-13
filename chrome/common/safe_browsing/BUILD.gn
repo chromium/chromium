@@ -4,13 +4,8 @@
 
 import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
-import("//third_party/protobuf/proto_library.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
-
-proto_library("proto") {
-  sources = [ "crx_info.proto" ]
-}
 
 if (safe_browsing_mode != 0) {
   source_set("archive_analyzer_results") {
@@ -118,7 +113,6 @@ source_set("safe_browsing") {
     sources = [
       "ipc_protobuf_message_macros.h",
       "ipc_protobuf_message_null_macros.h",
-      "protobuf_message_log_macros.h",
       "protobuf_message_read_macros.h",
       "protobuf_message_write_macros.h",
     ]
@@ -138,9 +132,9 @@ source_set("safe_browsing") {
     }
 
     public_deps = [
-      ":proto",
       "//base:i18n",
       "//chrome/common:mojo_bindings",
+      "//components/safe_browsing/core/common/proto:crx_info_proto",
       "//components/safe_browsing/core/common/proto:csd_proto",
       "//crypto",
       "//ipc",

@@ -1,0 +1,37 @@
+caption: List of URL patterns for which <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> are blocked
+desc: |-
+  URL patterns are matched against the URL of the page being inspected. If a match is found, the <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> are blocked. For information on the URL format, see https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+  The <ph name="DEVELOPER_TOOLS_AVAILABILITY_ALLOWLIST_POLICY_NAME">DeveloperToolsAvailabilityAllowlist</ph> policy takes precedence over <ph name="DEVELOPER_TOOLS_AVAILABILITY_BLOCKLIST_POLICY_NAME">DeveloperToolsAvailabilityBlocklist</ph>.
+
+  Unmatched URLs will follow the <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME">DeveloperToolsAvailability</ph> policy.
+
+  This policy also applies to <ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph> opened for extensions and web applications.
+
+  This policy is limited to 1,000 entries.
+
+example_value:
+- 'https://example.com'
+- example.com
+- https://ssl.server.com
+- hosting.com/bad_path
+- https://server:8080/path
+- .exact.hostname.com
+- '*'
+- file://*
+future_on:
+- chrome.*
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://extensions/OWNERS
+- mickaczmarczyk@google.com
+schema:
+  items:
+    type: string
+  type: array
+tags:
+- filtering
+type: list

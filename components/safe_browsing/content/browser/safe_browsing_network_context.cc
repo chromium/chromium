@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"

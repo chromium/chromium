@@ -83,7 +83,7 @@ public interface RenderFrameHost {
      *
      * @return A list of RenderFramesHosts including the current frame and all descendents.
      */
-    public List<RenderFrameHost> getAllRenderFrameHosts();
+    List<RenderFrameHost> getAllRenderFrameHosts();
 
     /**
      * Returns whether the feature policy allows the feature in this frame.
@@ -175,13 +175,13 @@ public interface RenderFrameHost {
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**
-     * Runs security checks associated with a Web Authentication MakeCredential request for the the
+     * Runs security checks associated with a Web Authentication MakeCredential request for the
      * given relying party ID, an effective origin and whether MakeCredential is making the payment
      * credential. See performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|.
      *
      * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
      * the callback is an object containing (1) the status code indicating the result of the
-     * GetAssertion request security checks, and (2) whether the effectiveOrigin is a cross-origin
+     * MakeCredential request security checks, and (2) whether the effectiveOrigin is a cross-origin
      * with any frame in this frame's ancestor chain.
      *
      * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
@@ -192,6 +192,21 @@ public interface RenderFrameHost {
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            Callback<WebAuthSecurityChecksResults> callback);
+
+    /**
+     * Runs security checks associated with a Web Authentication Report request for the given
+     * relying party ID and an effective origin. See performGetAssertionWebAuthSecurityChecks for
+     * more on |effectiveOrigin|.
+     *
+     * <p>This operation may trigger network fetches and thus it takes a `Callback`. The argument to
+     * the callback is an object containing (1) the status code indicating the result of the Report
+     * request security checks, and (2) whether the effectiveOrigin is a cross-origin with any frame
+     * in this frame's ancestor chain.
+     */
+    void performReportWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**
@@ -242,4 +257,12 @@ public interface RenderFrameHost {
      */
     void executeJavaScriptInIsolatedWorld(
             String script, int worldId, @Nullable JavaScriptCallback callback);
+
+    /**
+     * @return whether hit test data is available for this Frame.
+     */
+    boolean hasHitTestDataForTesting();
+
+    /** Opens view-source tab for the document last committed in this RenderFrameHost. */
+    void viewSource();
 }

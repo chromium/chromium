@@ -34,13 +34,12 @@ namespace {
 using base::test::EqualsProto;
 using testing::Not;
 
-const char kKey[] = "key";
-const ClientTagHash kHash = ClientTagHash::FromHashed("hash");
-const char kId[] = "id";
-const char kName[] = "name";
-const char kValue1[] = "value1";
-const char kValue2[] = "value2";
-const char kValue3[] = "value3";
+constexpr char kKey[] = "key";
+constexpr char kId[] = "id";
+constexpr char kName[] = "name";
+constexpr char kValue1[] = "value1";
+constexpr char kValue2[] = "value2";
+constexpr char kValue3[] = "value3";
 
 sync_pb::EntitySpecifics GenerateSpecifics(const std::string& name,
                                            const std::string& value) {
@@ -163,17 +162,17 @@ class ProcessorEntityTest : public ::testing::Test {
   ProcessorEntityTest() : ctime_(base::Time::Now() - base::Seconds(1)) {}
 
   std::unique_ptr<ProcessorEntity> CreateNew() {
-    return ProcessorEntity::CreateNew(kKey, kHash, "", ctime_);
+    return ProcessorEntity::CreateNew(kKey, hash(), "", ctime_);
   }
 
   std::unique_ptr<ProcessorEntity> CreateNewWithEmptyStorageKey() {
-    return ProcessorEntity::CreateNew("", kHash, "", ctime_);
+    return ProcessorEntity::CreateNew("", hash(), "", ctime_);
   }
 
   std::unique_ptr<ProcessorEntity> CreateSynced() {
     std::unique_ptr<ProcessorEntity> entity = CreateNew();
     UpdateResponseData update =
-        GenerateUpdate(*entity, kHash, kId, kName, kValue1, ctime_, 1);
+        GenerateUpdate(*entity, hash(), kId, kName, kValue1, ctime_, 1);
     entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                        /*unique_position=*/std::nullopt);
     DCHECK(!entity->IsUnsynced());
@@ -183,10 +182,10 @@ class ProcessorEntityTest : public ::testing::Test {
   std::unique_ptr<ProcessorEntity> CreateSyncedWithUniquePosition() {
     std::unique_ptr<ProcessorEntity> entity = CreateNew();
     UpdateResponseData update =
-        GenerateUpdate(*entity, kHash, kId, kName, kValue1, ctime_, 1);
+        GenerateUpdate(*entity, hash(), kId, kName, kValue1, ctime_, 1);
     entity->RecordAcceptedRemoteUpdate(
         update, /*trimmed_specifics=*/{},
-        /*unique_position=*/GenerateUniquePosition(kHash));
+        /*unique_position=*/GenerateUniquePosition(hash()));
     CHECK(!entity->IsUnsynced());
     return entity;
   }
@@ -196,8 +195,12 @@ class ProcessorEntityTest : public ::testing::Test {
     return ProcessorEntity::CreateFromMetadata(kKey,
                                                std::move(entity_metadata));
   }
+  const ClientTagHash& hash() const { return hash_; }
+  base::Time ctime() const { return ctime_; }
 
+ private:
   const base::Time ctime_;
+  const ClientTagHash hash_{ClientTagHash::FromHashed("hash")};
 };
 
 // Test the state of the default new entity.
@@ -205,13 +208,13 @@ TEST_F(ProcessorEntityTest, DefaultEntity) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
 
   EXPECT_EQ(kKey, entity->storage_key());
-  EXPECT_EQ(kHash.value(), entity->metadata().client_tag_hash());
+  EXPECT_EQ(hash().value(), entity->metadata().client_tag_hash());
   EXPECT_EQ("", entity->metadata().server_id());
   EXPECT_FALSE(entity->metadata().is_deleted());
   EXPECT_EQ(0, entity->metadata().sequence_number());
   EXPECT_EQ(0, entity->metadata().acked_sequence_number());
   EXPECT_EQ(kUncommittedVersion, entity->metadata().server_version());
-  EXPECT_EQ(TimeToProtoTime(ctime_), entity->metadata().creation_time());
+  EXPECT_EQ(TimeToProtoTime(ctime()), entity->metadata().creation_time());
   EXPECT_EQ(0, entity->metadata().modification_time());
   EXPECT_TRUE(entity->metadata().specifics_hash().empty());
   EXPECT_TRUE(entity->metadata().base_specifics_hash().empty());
@@ -227,7 +230,7 @@ TEST_F(ProcessorEntityTest, DefaultEntity) {
 // Test creating and commiting a new local item.
 TEST_F(ProcessorEntityTest, NewLocalItem) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -266,10 +269,10 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
 
   const EntityData& data = *request.entity;
   EXPECT_EQ("", data.id);
-  EXPECT_EQ(kHash, data.client_tag_hash);
+  EXPECT_EQ(hash(), data.client_tag_hash);
   EXPECT_EQ(kName, data.name);
   EXPECT_EQ(kValue1, data.specifics.preference().value());
-  EXPECT_EQ(TimeToProtoTime(ctime_), TimeToProtoTime(data.creation_time));
+  EXPECT_EQ(TimeToProtoTime(ctime()), TimeToProtoTime(data.creation_time));
   EXPECT_EQ(entity->metadata().modification_time(),
             TimeToProtoTime(data.modification_time));
   EXPECT_FALSE(data.is_deleted());
@@ -301,9 +304,10 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
 }
 
 TEST_F(ProcessorEntityTest, ShouldStoreUniquePositionForNewLocalItem) {
-  const sync_pb::UniquePosition unique_position = GenerateUniquePosition(kHash);
+  const sync_pb::UniquePosition unique_position =
+      GenerateUniquePosition(hash());
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{}, unique_position);
   EXPECT_TRUE(entity->metadata().has_unique_position());
   EXPECT_THAT(entity->metadata().unique_position(),
@@ -325,7 +329,7 @@ TEST_F(ProcessorEntityTest, ShouldStoreUniquePositionForNewLocalItem) {
 TEST_F(ProcessorEntityTest,
        ShouldIgnoreCommitResponseWithInvalidServerVersion) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -335,7 +339,7 @@ TEST_F(ProcessorEntityTest,
   entity->InitializeCommitRequestData(&request);
   entity->ReceiveCommitResponse(GenerateAckData(request, kId, 2), false);
 
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   ASSERT_EQ(2, entity->metadata().server_version());
@@ -355,7 +359,7 @@ TEST_F(ProcessorEntityTest, NewServerItem) {
 
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
-      GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
+      GenerateUpdate(*entity, hash(), kId, kName, kValue1, mtime, 10);
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
 
@@ -379,11 +383,12 @@ TEST_F(ProcessorEntityTest, NewServerItem) {
 }
 
 TEST_F(ProcessorEntityTest, ShouldStoreUniquePositionForNewServerItem) {
-  const sync_pb::UniquePosition unique_position = GenerateUniquePosition(kHash);
+  const sync_pb::UniquePosition unique_position =
+      GenerateUniquePosition(hash());
 
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   UpdateResponseData update = GenerateUpdate(
-      *entity, kHash, kId, kName, kValue1, /*mtime=*/base::Time::Now(), 10);
+      *entity, hash(), kId, kName, kValue1, /*mtime=*/base::Time::Now(), 10);
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      unique_position);
 
@@ -400,7 +405,7 @@ TEST_F(ProcessorEntityTest, NewServerItem_EmptyStorageKey) {
 
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
-      GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
+      GenerateUpdate(*entity, hash(), kId, kName, kValue1, mtime, 10);
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
   entity->SetStorageKey(kKey);
@@ -413,7 +418,7 @@ TEST_F(ProcessorEntityTest, NewServerTombstone) {
 
   const base::Time mtime = base::Time::Now();
   UpdateResponseData tombstone =
-      GenerateTombstone(*entity, kHash, kId, kName, mtime, 1);
+      GenerateTombstone(*entity, hash(), kId, kName, mtime, 1);
   entity->RecordAcceptedRemoteUpdate(tombstone, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
 
@@ -442,7 +447,7 @@ TEST_F(ProcessorEntityTest, ServerTombstone) {
   // A deletion update one version later.
   const base::Time mtime = base::Time::Now();
   UpdateResponseData tombstone =
-      GenerateTombstone(*entity, kHash, kId, kName, mtime, 2);
+      GenerateTombstone(*entity, hash(), kId, kName, mtime, 2);
   entity->RecordAcceptedRemoteUpdate(tombstone, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
 
@@ -468,7 +473,7 @@ TEST_F(ProcessorEntityTest, ShouldResetUniquePositionOnServerUpdate) {
   ASSERT_TRUE(entity->metadata().has_unique_position());
 
   UpdateResponseData update = GenerateUpdate(
-      *entity, kHash, kId, kName, kValue1, /*mtime=*/base::Time::Now(), 10);
+      *entity, hash(), kId, kName, kValue1, /*mtime=*/base::Time::Now(), 10);
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
 
@@ -482,7 +487,7 @@ TEST_F(ProcessorEntityTest, LocalChange) {
   const std::string specifics_hash_v0 = entity->metadata().specifics_hash();
 
   // Make a local change with different specifics.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -535,7 +540,7 @@ TEST_F(ProcessorEntityTest, ShouldStoreNewUniquePositionOnLocalUpdate) {
   ASSERT_THAT(entity->metadata().unique_position(),
               Not(EqualsProto(new_unique_position)));
 
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{}, new_unique_position);
   EXPECT_THAT(entity->metadata().unique_position(),
               EqualsProto(new_unique_position));
@@ -545,7 +550,7 @@ TEST_F(ProcessorEntityTest, ShouldResetUniquePositionOnLocalUpdate) {
   std::unique_ptr<ProcessorEntity> entity = CreateSyncedWithUniquePosition();
   ASSERT_TRUE(entity->metadata().has_unique_position());
 
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   EXPECT_FALSE(entity->metadata().has_unique_position());
@@ -589,9 +594,9 @@ TEST_F(ProcessorEntityTest, LocalDeletion) {
 
   const EntityData& data = *request.entity;
   EXPECT_EQ(kId, data.id);
-  EXPECT_EQ(kHash, data.client_tag_hash);
+  EXPECT_EQ(hash(), data.client_tag_hash);
   EXPECT_EQ("", data.name);
-  EXPECT_EQ(TimeToProtoTime(ctime_), TimeToProtoTime(data.creation_time));
+  EXPECT_EQ(TimeToProtoTime(ctime()), TimeToProtoTime(data.creation_time));
   EXPECT_EQ(entity->metadata().modification_time(),
             TimeToProtoTime(data.modification_time));
   EXPECT_TRUE(data.is_deleted());
@@ -666,7 +671,7 @@ TEST_F(ProcessorEntityTest, LocalUndeletion) {
   ASSERT_EQ(1, entity->metadata().sequence_number());
 
   // Undelete the entity with different specifics.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -715,7 +720,7 @@ TEST_F(ProcessorEntityTest, ShouldStoreUniquePositionForLocalUndeletion) {
   // Undelete the entity with unique position.
   const sync_pb::UniquePosition unique_position =
       GenerateUniquePosition(ClientTagHash::FromHashed("new_hash"));
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{}, unique_position);
 
   EXPECT_THAT(entity->metadata().unique_position(),
@@ -729,7 +734,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   const std::string specifics_hash_v0 = entity->metadata().specifics_hash();
 
   // Make the first change.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   const std::string specifics_hash_v1 = entity->metadata().specifics_hash();
@@ -744,7 +749,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
   entity->InitializeCommitRequestData(&request_v1);
 
   // Make the second change.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue3),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue3),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   const std::string specifics_hash_v2 = entity->metadata().specifics_hash();
@@ -800,7 +805,7 @@ TEST_F(ProcessorEntityTest, LocalChangesInterleaved) {
 TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   // Create new local change. Make sure initial id is empty.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -809,7 +814,7 @@ TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
   EXPECT_TRUE(request.entity->id.empty());
 
   // Before receiving commit response make local modification to the entity.
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue2),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue2),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   entity->ReceiveCommitResponse(GenerateAckData(request, kId, 1), false);
@@ -827,7 +832,7 @@ TEST_F(ProcessorEntityTest, NewLocalChangeUpdatedId) {
 TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
   // Create new entity and preserver its metadata.
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
   sync_pb::EntityMetadata entity_metadata = entity->metadata();
@@ -836,7 +841,7 @@ TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
   // to SetCommitData.
   entity = RestoreFromMetadata(std::move(entity_metadata));
   std::unique_ptr<EntityData> entity_data =
-      GenerateEntityData(kHash, kName, kValue2);
+      GenerateEntityData(hash(), kName, kValue2);
   entity->SetCommitData(std::move(entity_data));
 
   // No verification is necessary. SetCommitData shouldn't DCHECK.
@@ -847,7 +852,7 @@ TEST_F(ProcessorEntityTest, RestoredLocalChangeWithUpdatedSpecifics) {
 // should be ignored but the server IDs should be updated.
 TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             /*trimmed_specifics=*/{},
                             /*unique_position=*/std::nullopt);
 
@@ -861,7 +866,7 @@ TEST_F(ProcessorEntityTest, LocalCreationConflictsWithServerTombstone) {
   // Before anything gets committed, we receive a remote tombstone, but local
   // would usually win so the remote update is ignored.
   UpdateResponseData tombstone =
-      GenerateTombstone(*entity, kHash, kId, kName, base::Time::Now(), 2);
+      GenerateTombstone(*entity, hash(), kId, kName, base::Time::Now(), 2);
   entity->RecordIgnoredRemoteUpdate(tombstone);
 
   EXPECT_EQ(kId, entity->metadata().server_id());
@@ -883,7 +888,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnRemoteUpdates) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   const base::Time mtime = base::Time::Now();
   UpdateResponseData update =
-      GenerateUpdate(*entity, kHash, kId, kName, kValue1, mtime, 10);
+      GenerateUpdate(*entity, hash(), kId, kName, kValue1, mtime, 10);
   sync_pb::EntitySpecifics specifics_for_caching =
       GenerateSpecifics(kName, kValue2);
   entity->RecordAcceptedRemoteUpdate(update, specifics_for_caching,
@@ -897,7 +902,7 @@ TEST_F(ProcessorEntityTest, UpdatesSpecificsCacheOnLocalUpdates) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   sync_pb::EntitySpecifics specifics_for_caching =
       GenerateSpecifics(kName, kValue2);
-  entity->RecordLocalUpdate(GenerateEntityData(kHash, kName, kValue1),
+  entity->RecordLocalUpdate(GenerateEntityData(hash(), kName, kValue1),
                             specifics_for_caching,
                             /*unique_position=*/std::nullopt);
   EXPECT_EQ(
@@ -919,7 +924,7 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalUpdate(
       GenerateSharedTabGroupDataEntityData(
-          kHash, "guid",
+          hash(), "guid",
           CollaborationMetadata::ForLocalChange(
               /*changed_by=*/kCreatorUserId, CollaborationId("collaboration"))),
       /*trimmed_specifics=*/{},
@@ -951,7 +956,7 @@ TEST_F(ProcessorEntityTest, ShouldCreateAndCommitNewLocalSharedItem) {
   // Verify that creator is not updated on the next local update.
   entity->RecordLocalUpdate(
       GenerateSharedTabGroupDataEntityData(
-          kHash, "guid",
+          hash(), "guid",
           CollaborationMetadata::ForLocalChange(
               /*changed_by=*/kUpdaterUserId, CollaborationId("collaboration"))),
       /*trimmed_specifics=*/{},
@@ -989,7 +994,7 @@ TEST_F(ProcessorEntityTest, ShouldCreateNewRemoteSharedItem) {
       ->set_obfuscated_gaia_id(kUpdaterUserId);
 
   UpdateResponseData update = GenerateSharedTabGroupDataUpdate(
-      *entity, kHash, kId, "guid", mtime, /*version=*/10,
+      *entity, hash(), kId, "guid", mtime, /*version=*/10,
       CollaborationMetadata::FromRemoteProto(collaboration_remote_proto));
   entity->RecordAcceptedRemoteUpdate(update, /*trimmed_specifics=*/{},
                                      /*unique_position=*/std::nullopt);
@@ -1013,7 +1018,7 @@ TEST_F(ProcessorEntityTest, ShouldPopulateCollaborationForTombstones) {
   std::unique_ptr<ProcessorEntity> entity = CreateNew();
   entity->RecordLocalUpdate(
       GenerateSharedTabGroupDataEntityData(
-          kHash, "guid",
+          hash(), "guid",
           CollaborationMetadata::ForLocalChange(
               /*changed_by=*/GaiaId(), CollaborationId("collaboration"))),
       /*trimmed_specifics=*/{},

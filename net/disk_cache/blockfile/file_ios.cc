@@ -69,8 +69,8 @@ class FileBackgroundIO : public disk_cache::BackgroundIO {
 
   raw_ptr<disk_cache::FileIOCallback> callback_;
 
-  raw_ptr<disk_cache::File> file_;
-  base::raw_span<uint8_t> buffer_;
+  raw_ptr<disk_cache::File, DanglingUntriaged> file_;
+  base::raw_span<uint8_t, DanglingUntriaged> buffer_;
   size_t offset_;
 };
 

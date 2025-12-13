@@ -1,0 +1,58 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=1
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=0
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=0
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=1
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=0
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=0
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=1
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=0
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=0
+=== End accessibility tree ===
+AXSelectedChildrenChanged on AXTabGroup
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=0 <<<<<< CHANGED
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=1 <<<<<< CHANGED
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=0
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=0
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=1
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=0
+=== End accessibility tree ===
+AXSelectedChildrenChanged on AXTabGroup
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Tabs Events'
+++AXGroup AXDescription='Ready'
+++++AXTabGroup
+++++++AXGroup
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 1' AXValue=0
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 2' AXValue=0 <<<<<< CHANGED
+++++++++AXRadioButton AXSubrole=AXTabButton AXDescription='Tab 3' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===

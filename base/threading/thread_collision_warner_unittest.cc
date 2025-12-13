@@ -12,6 +12,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if !DCHECK_IS_ON()

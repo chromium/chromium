@@ -163,24 +163,7 @@ impl<T: Buf> Buf for Take<T> {
         }
 
         const LEN: usize = 16;
-        let mut slices: [IoSlice<'a>; LEN] = [
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-            IoSlice::new(&[]),
-        ];
+        let mut slices: [IoSlice<'a>; LEN] = [IoSlice::new(&[]); LEN];
 
         let cnt = self
             .inner

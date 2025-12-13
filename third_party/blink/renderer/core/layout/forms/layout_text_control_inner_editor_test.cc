@@ -144,7 +144,7 @@ TEST_F(LayoutTextControlInnerEditorTest, EnableDynamic) {
 
   ta->SetBooleanAttribute(html_names::kDisabledAttr, false);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_GT(inner_editor->Size().height, LayoutUnit());
+  EXPECT_GT(inner_editor->StitchedSize().height, LayoutUnit());
 }
 
 }  // namespace blink

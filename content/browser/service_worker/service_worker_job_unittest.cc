@@ -284,6 +284,7 @@ void ServiceWorkerJobTest::RunUnregisterJob(
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
       scope, key, /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(expected_status, run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -572,7 +573,7 @@ TEST_P(ServiceWorkerJobTest, UnregisterImmediate) {
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
       scope, GetTestStorageKey(scope),
-      /*is_immediate=*/true,
+      /*is_immediate=*/true, ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
 
@@ -841,13 +842,13 @@ TEST_P(ServiceWorkerJobTest, AbortAll_Unregister) {
       base::BarrierClosure(2, run_loop.QuitClosure());
   job_coordinator()->Unregister(
       scope1, GetTestStorageKey(scope1),
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
   job_coordinator()->Unregister(
       scope2, GetTestStorageKey(scope2),
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
@@ -876,6 +877,7 @@ TEST_P(ServiceWorkerJobTest, AbortAll_RegUnreg) {
 
   job_coordinator()->Unregister(
       options.scope, key, /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kErrorAbort,
                          barrier_closure));
 
@@ -2217,7 +2219,7 @@ TEST_P(ServiceWorkerUpdateJobTest, Update_UninstallingRegistration) {
   base::RunLoop run_loop;
   job_coordinator()->Unregister(
       scope, GetTestStorageKey(scope),
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       SaveUnregistration(blink::ServiceWorkerStatusCode::kOk,
                          run_loop.QuitClosure()));
 

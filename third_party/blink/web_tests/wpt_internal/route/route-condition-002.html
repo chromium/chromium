@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>if(navigation)</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#navigation-if-function">
+<!-- Assuming here that "route" is part of the test path. -->
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": [ "*route*" ]
+      },
+      {
+        "name": "r2",
+        "pattern": [ "should-not-match" ]
+      },
+      {
+        "name": "r3",
+        "pattern": { "protocol": "http*" }
+      }
+    ]
+  }
+</script>
+<div class="tests">
+  <div id="elm1" style="background:if(navigation(r1):lime; else:red);"></div>
+  <div id="elm2" style="background:if(navigation(r2):red; else:lime);"></div>
+  <div id="elm3" style="background:if(not navigation(r3):red; else:lime);"></div>
+  <div id="elm4" style="background:if(navigation(at:r1):lime; else:red);"></div>
+  <div id="elm5" style="background:if(navigation(not (at:r2)):lime; else:red);"></div>
+  <div id="elm6" style="background:if(navigation((r2) or (r3)):lime; else:red);"></div>
+  <div id="elm7" style="background:if(navigation(url-pattern('*route*')):lime; else:red);"></div>
+  <div id="elm8" style="background:if(navigation(url-pattern('should-not-match')):red; else:lime);"></div>
+  <div id="elm9" style="background:if(navigation((url-pattern('should-not-match')) or (r3)):lime; else:red);"></div>
+  <div id="elm10" style="background:if(navigation((url-pattern('should-not-match')) or (url-pattern('*route*'))):lime; else:red);"></div>
+</div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  const lime = "rgb(0, 255, 0)";
+  document.querySelectorAll(".tests > div").forEach((elm) => {
+    test(()=> {
+      assert_equals(getComputedStyle(elm).backgroundColor, lime);
+    }, "Should match " + elm.id);
+  });
+</script>

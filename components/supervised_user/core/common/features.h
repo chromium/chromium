@@ -42,28 +42,59 @@ BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
 
-// Manages kSupervisedUserSafeSites exclusively within managed user pref store,
-// while keeping the default value neutral.
-BASE_DECLARE_FEATURE(kAlignSafeSitesValueWithBrowserDefault);
-
-// Allows reading SafeSites setting without extra supervised user guard. Can be
-// enabled iff kAlignSafeSitesValueWithBrowserDefault is also enabled.
-BASE_DECLARE_FEATURE(kDecoupleSafeSitesFromMainSwitch);
-
 #if BUILDFLAG(IS_ANDROID)
-// Allows the URL classification mode without credentials, if the profile is not
-// managed by the family link System.
-BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
+// The flags below are used to control the local supervision feature on
+// Android. To read them, use accessors declared below.
+//
+// - kPropagateDeviceContentFiltersToSupervisedUser,
+// kAllowNonFamilyLinkUrlFilterMode and
+// are kSupervisedUserInterstitialWithoutApprovals the three main switches for
+// local supervision. They work best when enabled together.
+// kPropagateDeviceContentFiltersToSupervisedUser is the main switch that
+// enables the feature, kAllowNonFamilyLinkUrlFilterMode gives access to feature
+// for signed out users, and kSupervisedUserInterstitialWithoutApprovals enables
+// interstitial UI optimized for local supervision.
+//
+// - kSupervisedUserLocalSupervisionPreview is a convenience feature that
+// enables all of the above features if the experimental platform supports them.
+// When this feature is enabled and the platform supports local supervision,
+// none of the three features are ever read. This allows offering local
+// supervision as dogfood feature. Use
+// kSupervisedUserLocalSupervisionPreviewBuildVersionMajor parameters to adjust
+// the platform build version if needed.
+//
+// - kSupervisedUserBrowserContentFiltersKillSwitch and
+// kSupervisedUserSearchContentFiltersKillSwitch are subswitches of
+// kPropagateDeviceContentFiltersToSupervisedUser that control individual
+// content filter settings.
+// - kSupervisedUserOverrideLocalSupervision is a convenience feature that will
+// disable effects of Android Parental Controls if the user is a Family Link
+// account. With the flag disabled, the browser strictly expects that at most
+// only of of Family Link or Android Parental Controls apply, and terminates the
+// browser otherwise.
 
-// Propagates the device settings about content filters to the supervised user
-// content filters.
+BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
 BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
-// Kill switches for the respective content filters.
 BASE_DECLARE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch);
 BASE_DECLARE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch);
-
-// Enabled the supervised user interstitial without approvals section.
 BASE_DECLARE_FEATURE(kSupervisedUserInterstitialWithoutApprovals);
+BASE_DECLARE_FEATURE(kSupervisedUserLocalSupervisionPreview);
+BASE_DECLARE_FEATURE(
+    kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts);
+
+// The major version of the build that supports local supervision.
+extern const base::FeatureParam<std::string>
+    kSupervisedUserLocalSupervisionPreviewBuildVersionMajor;
+
+// Returns true when the browser reads the values of content filters for
+// local supervision. This is the main gate to local supervision.
+bool UseLocalSupervision();
+// Indicates if supervised user interstitial should be optimized for local
+// supervision, without parent information and approval features.
+bool UseInterstitialForLocalSupervision();
+// Allows non-signed in users to use url classification feature of local
+// supervision.
+bool ClassifyUrlWithoutCredentialsForLocalSupervision();
 #endif
 
 // Returns whether the V3 version of the URL filter interstitial is

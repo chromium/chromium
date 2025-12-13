@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_DBUS_CHROME_FEATURES_SERVICE_PROVIDER_H_
 
 #include "base/feature_list.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
@@ -76,6 +76,9 @@ class ChromeFeaturesServiceProvider
   // this dbus method.
   void GetFeatureParams(dbus::MethodCall* method_call,
                         dbus::ExportedObject::ResponseSender response_sender);
+  void IsBruschettaEnabled(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender);
   void IsCrostiniEnabled(dbus::MethodCall* method_call,
                          dbus::ExportedObject::ResponseSender response_sender);
   void IsCryptohomeDistributedModelEnabled(

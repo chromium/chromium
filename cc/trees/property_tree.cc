@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -20,10 +21,12 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/base/features.h"
+#include "cc/base/math_util.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/scroll_elasticity_utils.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "cc/trees/viewport_property_ids.h"
@@ -31,6 +34,7 @@
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -175,6 +179,7 @@ void TransformTree::clear() {
   cached_data_.push_back(TransformCachedNodeData());
   sticky_position_data_.clear();
   anchor_position_scroll_data_.clear();
+  drawn_elastic_overscroll_.clear();
 
 #if DCHECK_IS_ON()
   DCHECK(TransformTree() == *this);
@@ -395,6 +400,60 @@ bool TransformTree::CombineInversesBetween(int source_id,
   bool all_are_invertible = dest_to_source.GetInverse(&source_to_dest);
   transform->PreConcat(source_to_dest);
   return all_are_invertible;
+}
+
+bool TransformTree::SetDrawnElasticOverscroll(
+    ElementId id,
+    const gfx::Vector2dF& elastic_overscroll) {
+  if (elastic_overscroll.IsZero()) {
+    return drawn_elastic_overscroll_.erase(id) != 0;
+  }
+  gfx::Vector2dF& current_overscroll = drawn_elastic_overscroll_[id];
+  bool changed = current_overscroll != elastic_overscroll;
+  current_overscroll = elastic_overscroll;
+  return changed;
+}
+
+gfx::Vector2dF TransformTree::GetDrawnElasticOverscroll(ElementId id) const {
+  auto it = drawn_elastic_overscroll_.find(id);
+  if (it == drawn_elastic_overscroll_.end()) {
+    return gfx::Vector2dF();
+  }
+  return it->second;
+}
+
+std::pair<ElementId, gfx::Vector2dF>
+TransformTree::FindDrawnElasticOverscrollFromTransformId(
+    int transform_id,
+    const ViewportPropertyIds* viewport_property_ids) const {
+  // TODO(crbug.com/465422599): Optimize this to use the `ElementId` directly
+  // from the `TransformNode` to do a direct lookup instead of doing a search.
+  // This will require updating the scroll translation transform node to use the
+  // same compositor element id as the scroll node.
+  const auto& scroll_tree = property_trees()->scroll_tree();
+  if (viewport_property_ids &&
+      transform_id == viewport_property_ids->overscroll_elasticity_transform) {
+    if (const ScrollNode* scroll_node =
+            scroll_tree.Node(viewport_property_ids->inner_scroll)) {
+      if (auto it = drawn_elastic_overscroll_.find(scroll_node->element_id);
+          it != drawn_elastic_overscroll_.end()) {
+        return {it->first, it->second};
+      }
+    }
+  } else {
+    // Iterate over the small set of elastic overscroll elements instead of all
+    // scroll nodes.
+    for (const auto& [element_id, stretch_amount] : drawn_elastic_overscroll_) {
+      if (const ScrollNode* scroll_node =
+              scroll_tree.FindNodeFromElementId(element_id)) {
+        if (scroll_node->transform_id == transform_id) {
+          return {element_id, stretch_amount};
+        }
+      }
+    }
+  }
+
+  return {ElementId{}, gfx::Vector2dF{}};
 }
 
 // This function should match the offset we set for sticky position layer in
@@ -627,14 +686,15 @@ void TransformTree::UndoOverscroll(
   if (clip_id == kInvalidPropertyNodeId)
     return;
 
-  const TransformNode* overscroll_node = Node(transform_id);
   const gfx::Vector2dF overscroll_offset =
-      overscroll_node->scroll_offset().OffsetFromOrigin();
+      FindDrawnElasticOverscrollFromTransformId(transform_id,
+                                                viewport_property_ids)
+          .second;
   if (overscroll_offset.IsZero())
     return;
 
   position_adjustment +=
-      gfx::ScaleVector2d(overscroll_offset, 1.f / page_scale_factor());
+      MathUtil::ScaleVectorByInverse(overscroll_offset, page_scale_factor());
 
   ClipTree& clip_tree = property_trees()->clip_tree_mutable();
   ClipNode* clip_node = clip_tree.Node(clip_id);
@@ -649,6 +709,62 @@ void TransformTree::UndoOverscroll(
   clip_node->clip.Outset(outsets);
   clip_tree.set_needs_update(true);
 }
+
+namespace {
+[[maybe_unused]] void ApplyElasticOverscrollStretch(
+    const ScrollTree& scroll_tree,
+    float page_scale_factor,
+    const std::pair<ElementId, gfx::Vector2dF>& elastic_overscroll,
+    gfx::Transform* transform) {
+  const ScrollNode* scroll_node =
+      scroll_tree.FindNodeFromElementId(elastic_overscroll.first);
+
+  // Early out if node is invalid, bounds are empty, or there is no overscroll.
+  if (!scroll_node || scroll_tree.container_bounds(scroll_node->id).IsEmpty() ||
+      elastic_overscroll.second.IsZero()) {
+    return;
+  }
+
+  // The inner viewport container size takes into account the size change as a
+  // result of the top controls, see ScrollTree::container_bounds.
+  const gfx::Size scroller_size = scroll_tree.container_bounds(scroll_node->id);
+
+  // On Android, elastic overscroll is implemented by stretching the content
+  // from the overscrolled edge by applying a stretch transform.
+  const gfx::Vector2dF scale_factor(
+      1.f + std::abs(elastic_overscroll.second.x()) / scroller_size.width(),
+      1.f + std::abs(elastic_overscroll.second.y()) / scroller_size.height());
+
+  // If overscrolling to the right, stretch from right.
+  gfx::PointF pivot;
+  if (elastic_overscroll.second.x() > 0.f) {
+    pivot.set_x(scroller_size.width());
+  }
+
+  // If overscrolling off the bottom, stretch from bottom.
+  if (elastic_overscroll.second.y() > 0.f) {
+    pivot.set_y(scroller_size.height());
+  }
+
+  // Convert pivot to content space if this is the inner viewport.
+  if (scroll_node->scrolls_inner_viewport) {
+    pivot = MathUtil::ScalePointByInverse(pivot, page_scale_factor);
+  }
+
+  // Apply transform: Translate(Pivot) -> Scale -> Translate(-Pivot).
+  transform->Translate(pivot.OffsetFromOrigin());
+  transform->Scale(scale_factor.x(), scale_factor.y());
+  transform->Translate(-pivot.OffsetFromOrigin());
+}
+[[maybe_unused]] void ApplyElasticOverscrollTranslate(
+    const ScrollTree&,
+    float,
+    const std::pair<ElementId, gfx::Vector2dF>& elastic_overscroll,
+    gfx::Transform* transform) {
+  transform->Translate(-elastic_overscroll.second.x(),
+                       -elastic_overscroll.second.y());
+}
+}  // namespace
 
 void TransformTree::UpdateLocalTransform(
     TransformNode* node,
@@ -670,10 +786,36 @@ void TransformTree::UpdateLocalTransform(
   }
   gfx::Vector2dF position_adjustment(0.f, y_adjustment);
 
-  if (node->should_undo_overscroll)
+  // Android does a stretch effect instead of translation - since we cannot do
+  // a simple translation to undo the root elastic overscroll effect -
+  // on Android we simply skip this.
+#if !BUILDFLAG(IS_ANDROID)
+  if (node->should_undo_overscroll) {
     UndoOverscroll(node, position_adjustment, viewport_property_ids);
-  transform.Translate(position_adjustment -
-                      node->scroll_offset().OffsetFromOrigin());
+  }
+#endif
+  transform.Translate(position_adjustment);
+
+  const std::pair<ElementId, gfx::Vector2dF> elastic_overscroll =
+      FindDrawnElasticOverscrollFromTransformId(node->id,
+                                                viewport_property_ids);
+
+  if (!elastic_overscroll.second.IsZero()) {
+    const auto& scroll_tree = property_trees()->scroll_tree();
+#if BUILDFLAG(IS_ANDROID)
+
+    ApplyElasticOverscrollStretch(scroll_tree, page_scale_factor(),
+                                  elastic_overscroll, &transform);
+#else
+    ApplyElasticOverscrollTranslate(scroll_tree, page_scale_factor(),
+                                    elastic_overscroll, &transform);
+#endif
+  }
+
+  // Apply scroll translate after elastic stretch so that the origin for
+  // stretching from the bottom / right is correct.
+  transform.Translate(-node->scroll_offset().OffsetFromOrigin());
+
   transform.Translate(StickyPositionOffset(node));
   if (node->anchor_position_scroll_data_id >= 0) {
     transform.Translate(AnchorPositionOffset(node, node->id - 1, update_data));
@@ -875,23 +1017,27 @@ bool TransformTree::HasNodesAffectedBySafeAreaBottom() const {
 }
 
 const gfx::Transform& TransformTree::FromScreen(int node_id) const {
-  DCHECK(static_cast<int>(cached_data_.size()) > node_id);
+  DCHECK(static_cast<int>(cached_data_.size()) > node_id &&
+         node_id != kInvalidPropertyNodeId);
   return cached_data_[node_id].from_screen;
 }
 
 void TransformTree::SetFromScreen(int node_id,
                                   const gfx::Transform& transform) {
-  DCHECK(static_cast<int>(cached_data_.size()) > node_id);
+  DCHECK(static_cast<int>(cached_data_.size()) > node_id &&
+         node_id != kInvalidPropertyNodeId);
   cached_data_[node_id].from_screen = transform;
 }
 
 const gfx::Transform& TransformTree::ToScreen(int node_id) const {
-  DCHECK(static_cast<int>(cached_data_.size()) > node_id);
+  DCHECK(static_cast<int>(cached_data_.size()) > node_id &&
+         node_id != kInvalidPropertyNodeId);
   return cached_data_[node_id].to_screen;
 }
 
 void TransformTree::SetToScreen(int node_id, const gfx::Transform& transform) {
-  DCHECK(static_cast<int>(cached_data_.size()) > node_id);
+  DCHECK(static_cast<int>(cached_data_.size()) > node_id &&
+         node_id != kInvalidPropertyNodeId);
   cached_data_[node_id].to_screen = transform;
   cached_data_[node_id].is_showing_backface = transform.IsBackFaceVisible();
 }
@@ -905,7 +1051,8 @@ bool TransformTree::operator==(const TransformTree& other) const {
              other.device_transform_scale_factor() &&
          nodes_affected_by_outer_viewport_bounds_delta_ ==
              other.nodes_affected_by_outer_viewport_bounds_delta() &&
-         cached_data_ == other.cached_data();
+         cached_data_ == other.cached_data() &&
+         drawn_elastic_overscroll_ == other.drawn_elastic_overscroll();
 }
 #endif
 
@@ -1507,6 +1654,21 @@ ScrollTree& ScrollTree::operator=(const ScrollTree& from) {
   PropertyTree::operator=(from);
   scrolling_contents_cull_rects_ = from.scrolling_contents_cull_rects_;
   currently_scrolling_node_id_ = kInvalidPropertyNodeId;
+
+  // Remove obsolete overscroll amounts.
+  // TODO(crbug.com/430266889): If we have an entry in the map whose node has
+  // been removed, there must either be an active overscroll on this node
+  // or an ongoing animation of overscroll on this node which should also be
+  // cleaned up.
+  base::EraseIf(elastic_overscroll_, [&](const auto& pair) {
+    const ScrollNode* node = FindNodeFromElementId(pair.first);
+    if (!node) {
+      return true;
+    }
+    return !scroll_elasticity_utils::ShouldAllowOverscrollEffect(*node, *this,
+                                                                 nullptr);
+  });
+
   // Maps for ScrollOffsets/SyncedScrollOffsets are intentionally omitted here
   // since we can not directly copy them. Pushing of these updates from main
   // currently depends on Layer properties for scroll offset animation changes
@@ -1985,6 +2147,67 @@ bool ScrollTree::SetScrollOffset(ElementId id,
   return false;
 }
 
+bool ScrollTree::SetElasticOverscroll(
+    const ScrollNode& scroll_node,
+    const gfx::Vector2dF& elastic_overscroll) {
+  if (elastic_overscroll.IsZero()) {
+    return elastic_overscroll_.erase(scroll_node.element_id) != 0;
+  }
+  gfx::Vector2dF& current_overscroll =
+      elastic_overscroll_[scroll_node.element_id];
+  bool changed = current_overscroll != elastic_overscroll;
+  current_overscroll = elastic_overscroll;
+  return changed;
+}
+
+gfx::Vector2dF ScrollTree::GetElasticOverscroll(
+    const ScrollNode& scroll_node) const {
+  return GetElasticOverscrollFromElementId(scroll_node.element_id);
+}
+
+gfx::Vector2dF ScrollTree::GetElasticOverscrollFromElementId(
+    ElementId id) const {
+  auto it = elastic_overscroll_.find(id);
+  if (it == elastic_overscroll_.end()) {
+    return gfx::Vector2dF();
+  }
+  return it->second;
+}
+
+std::pair<ElementId, gfx::Vector2dF>
+ScrollTree::FindElasticOverscrollFromTransformId(
+    int transform_id,
+    const ViewportPropertyIds* viewport_property_ids) const {
+  // TODO(crbug.com/465422599): Optimize this to use the `ElementId` directly
+  // from the `TransformNode` to do a direct lookup instead of doing a search.
+  // This will require updating the scroll translation transform node to use the
+  // same compositor element id as the scroll node.
+  const auto& scroll_tree = property_trees()->scroll_tree();
+  if (viewport_property_ids &&
+      transform_id == viewport_property_ids->overscroll_elasticity_transform) {
+    if (const ScrollNode* scroll_node =
+            scroll_tree.Node(viewport_property_ids->inner_scroll)) {
+      if (auto it = elastic_overscroll_.find(scroll_node->element_id);
+          it != elastic_overscroll_.end()) {
+        return {it->first, it->second};
+      }
+    }
+  } else {
+    // Iterate over the small set of elastic overscroll elements instead of all
+    // scroll nodes.
+    for (const auto& [element_id, stretch_amount] : elastic_overscroll_) {
+      if (const ScrollNode* scroll_node =
+              scroll_tree.FindNodeFromElementId(element_id)) {
+        if (scroll_node->transform_id == transform_id) {
+          return {element_id, stretch_amount};
+        }
+      }
+    }
+  }
+
+  return {ElementId{}, gfx::Vector2dF{}};
+}
+
 void ScrollTree::SetScrollingContentsCullRect(ElementId id,
                                               const gfx::Rect& cull_rect) {
   scrolling_contents_cull_rects_[id] = cull_rect;
@@ -2095,10 +2318,11 @@ void ScrollTree::SetScrollCallbacks(base::WeakPtr<ScrollCallbacks> callbacks) {
 void ScrollTree::NotifyDidCompositorScroll(
     ElementId scroll_element_id,
     const gfx::PointF& scroll_offset,
+    ScrollSourceType type,
     const std::optional<TargetSnapAreaElementIds>& snap_target_ids) {
   DCHECK(property_trees()->is_main_thread());
   if (callbacks_) {
-    callbacks_->DidCompositorScroll(scroll_element_id, scroll_offset,
+    callbacks_->DidCompositorScroll(scroll_element_id, scroll_offset, type,
                                     snap_target_ids);
   }
 }
@@ -2415,7 +2639,7 @@ void PropertyTrees::ResetAllChangeTracking() {
 
 std::unique_ptr<base::trace_event::TracedValue> PropertyTrees::AsTracedValue()
     const {
-  auto value = base::WrapUnique(new base::trace_event::TracedValue);
+  auto value = std::make_unique<base::trace_event::TracedValue>();
   AsValueInto(value.get());
   return value;
 }

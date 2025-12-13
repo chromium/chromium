@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/BackgroundSyncNetworkObserver_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
@@ -80,3 +80,5 @@ void BackgroundSyncNetworkObserverAndroid::RegisterWithNetworkConnectionTracker(
     network::NetworkConnectionTracker* network_connection_tracker) {}
 
 }  // namespace content
+
+DEFINE_JNI(BackgroundSyncNetworkObserver)

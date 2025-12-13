@@ -23,6 +23,7 @@ struct UnsafeResourceLocator {
   // that issue might need to be fixed first.
 
   // Equivalent to GlobalRenderFrameHostId.
+  // This is the underlying value type of content::ChildProcessId.
   using RenderProcessId = int;
   using RenderFrameToken = std::optional<base::UnguessableToken>;
   // This is the underlying value type of content::FrameTreeNodeId.

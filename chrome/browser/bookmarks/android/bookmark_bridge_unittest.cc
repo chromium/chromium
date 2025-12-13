@@ -46,7 +46,7 @@
 #include "url/gurl.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 using bookmarks::ManagedBookmarkService;
@@ -95,11 +95,11 @@ class BookmarkBridgeTest : public testing::Test {
 
   BookmarkBridge* bookmark_bridge() { return bookmark_bridge_.get(); }
 
-  ReadingListManager* local_or_syncable_reading_list_manager() {
+  reading_list::ReadingListManager* local_or_syncable_reading_list_manager() {
     return bookmark_bridge_->GetLocalOrSyncableReadingListManagerForTesting();
   }
 
-  ReadingListManager* account_reading_list_manager() {
+  reading_list::ReadingListManager* account_reading_list_manager() {
     return bookmark_bridge_
         ->GetAccountReadingListManagerIfAvailableForTesting();
   }
@@ -349,7 +349,6 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
   EXPECT_TRUE(bookmark_bridge()->GetAccountReadingListFolder(env).is_null());
 }
 
-// TODO(crbug.com/41481802): Also enable bookmark account folders here.
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
 
@@ -450,18 +449,14 @@ TEST_F(BookmarkBridgeTest, GetUnreadCountLocalOrSyncable) {
   local_or_syncable_reading_list_manager()->Add(GURL("http://bar.com"), "bar");
 
   JNIEnv* const env = AttachCurrentThread();
-  ASSERT_EQ(2, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      2, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 
   local_or_syncable_reading_list_manager()->SetReadStatus(url, true);
-  ASSERT_EQ(1, bookmark_bridge()->GetUnreadCount(
-                   env, JavaParamRef<jobject>(
-                            env, bookmark_bridge()
-                                     ->GetLocalOrSyncableReadingListFolder(env)
-                                     .obj())));
+  ASSERT_EQ(
+      1, bookmark_bridge()->GetUnreadCount(
+             env, bookmark_bridge()->GetLocalOrSyncableReadingListFolder(env)));
 }
 
 TEST_F(BookmarkBridgeTest, SetReadStatus) {

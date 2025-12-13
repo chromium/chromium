@@ -29,24 +29,21 @@ class PrintPreviewDataService {
   PrintPreviewDataService(const PrintPreviewDataService&) = delete;
   PrintPreviewDataService& operator=(const PrintPreviewDataService&) = delete;
 
-  // Get the data entry from PrintPreviewDataStore. `index` is zero-based or
+  // Gets the data entry from PrintPreviewDataStore. `index` is zero-based or
   // `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX` to represent complete preview
-  // data. Use `index` to retrieve a specific preview page data. `data` is set
-  // to NULL if the requested page is not yet available.
-  void GetDataEntry(int32_t preview_ui_id,
-                    int index,
-                    scoped_refptr<base::RefCountedMemory>* data) const;
+  // data. Use `index` to retrieve a specific preview page data.
+  // Returns nullptr if the requested page is not yet available.
+  scoped_refptr<base::RefCountedMemory> GetDataEntry(int32_t preview_ui_id,
+                                                     int index) const;
 
-  // Set/Update the data entry in PrintPreviewDataStore. `index` is zero-based
+  // Sets/Updates the data entry in PrintPreviewDataStore. `index` is zero-based
   // or `printing::COMPLETE_PREVIEW_DOCUMENT_INDEX` to represent complete
   // preview data. Use `index` to set/update a specific preview page data.
-  // NOTE: PrintPreviewDataStore owns the data. Do not refcount `data` before
-  // calling this function. It will be refcounted in PrintPreviewDataStore.
   void SetDataEntry(int32_t preview_ui_id,
                     int index,
                     scoped_refptr<base::RefCountedMemory> data);
 
-  // Remove the corresponding PrintPreviewUI entry from the map.
+  // Removes the corresponding PrintPreviewUI entry from the map.
   void RemoveEntry(int32_t preview_ui_id);
 
  private:

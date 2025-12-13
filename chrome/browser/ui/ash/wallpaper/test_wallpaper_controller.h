@@ -96,10 +96,6 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetClient(ash::WallpaperControllerClient* client) override;
   void SetDriveFsDelegate(
       std::unique_ptr<ash::WallpaperDriveFsDelegate> drivefs_delegate) override;
-  void Init(const base::FilePath& user_data,
-            const base::FilePath& wallpapers,
-            const base::FilePath& custom_wallpapers,
-            const base::FilePath& device_policy_wallpaper) override;
   bool CanSetUserWallpaper(const AccountId& account_id) const override;
   void SetCustomWallpaper(const AccountId& account_id,
                           const base::FilePath& file_path,

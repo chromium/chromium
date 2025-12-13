@@ -26,14 +26,6 @@ Overview
     associated context is scheduled. The value of the timer can be obtained
     using GetQueryObjectuivEXT.
 
-    GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM can be used as the target to
-    QueryCounterEXT to obtain the timestamp in microseconds at which the
-    QueryCounterEXT is reached on the service-side command buffer. This is
-    useful to know by what time all the commands prior to the QueryCounterEXT
-    have been issued to the underlying driver (but have not necessarily
-    completed). The timestamp value can be obtained using
-    GetQueryObjectui64vEXT.
-
 New Procedures and Functions
 
     void BeginQueryEXT(enum target, uint id);

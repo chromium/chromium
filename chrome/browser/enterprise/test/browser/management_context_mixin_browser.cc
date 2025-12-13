@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/test/browser/management_context_mixin_browser.h"
 
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/test/test_constants.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -18,11 +19,15 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/policy/android/cloud_management_shared_preferences.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace enterprise::test {
 
 ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     InProcessBrowserTestMixinHost* host,
-    InProcessBrowserTest* test_base,
+    PlatformBrowserTest* test_base,
     ManagementContext management_context)
     : ManagementContextMixin(host, test_base, std::move(management_context)) {
   // Fake the OS' device ID.
@@ -32,6 +37,10 @@ ManagementContextMixinBrowser::ManagementContextMixinBrowser(
     management_context_.is_cloud_machine_managed = true;
     browser_dm_token_storage_.SetEnrollmentToken(kEnrollmentToken);
     browser_dm_token_storage_.SetDMToken(kBrowserDmToken);
+#if BUILDFLAG(IS_ANDROID)
+    policy::android::SaveDmTokenInSharedPreferences(
+        std::string(kBrowserDmToken));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -44,8 +53,7 @@ void ManagementContextMixinBrowser::ManageCloudUser() {
   policy_data->set_request_token(kProfileDmToken);
   policy_data->set_device_id(kProfileClientId);
 
-  browser()
-      ->profile()
+  profile()
       ->GetCloudPolicyManager()
       ->core()
       ->store()
@@ -55,8 +63,8 @@ void ManagementContextMixinBrowser::ManageCloudUser() {
   client->SetDMToken(kProfileDmToken);
   client->SetClientId(kProfileClientId);
 
-  browser()->profile()->GetCloudPolicyManager()->Connect(
-      g_browser_process->local_state(), std::move(client));
+  profile()->GetCloudPolicyManager()->Connect(g_browser_process->local_state(),
+                                              std::move(client));
 }
 
 void ManagementContextMixinBrowser::SetUpOnMainThread() {

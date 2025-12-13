@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: Failed to execute 'createExportableTensor' on 'MLContext': Invalid operand data type: float32
+Found 1 FAIL, 0 TIMEOUT, 13 NOTRUN.
+[FAIL] interop float16 / export big tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'createExportableTensor' on 'MLContext': Tensor size is too large."
+[NOTRUN] interop float32 / export tensor
+[NOTRUN] interop float32 / export wrong tensor
+[NOTRUN] interop float32 / export big tensor
+[NOTRUN] interop float32 / export then destroy buffer
+[NOTRUN] interop float32 / export then destroy tensor
+[NOTRUN] interop float32 / write tensor after export
+[NOTRUN] interop float32 / export twice
+[NOTRUN] interop float32 / dispatch gpu twice
+[NOTRUN] interop float32 / webnn dispatch only
+[NOTRUN] interop float32 / dispatch from webgpu then webnn
+[NOTRUN] interop float32 / destroy context after export
+[NOTRUN] interop float32 / destroy device after export
+[NOTRUN] interop float32 / destroy device before export
+Harness: the test ran to completion.
+

@@ -40,3 +40,5 @@ void JniDelegateImpl::EraseFeatureParamCachedValues(
 }
 
 }  // namespace cached_flags
+
+DEFINE_JNI(CachedFlagUtils)

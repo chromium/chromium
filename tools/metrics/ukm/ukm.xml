@@ -261,8 +261,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Accessibility.CanvasHasNonTrivialFallback">
-  <owner>aleventhal@chromium.org</owner>
-  <owner>aleventhal@google.com</owner>
+  <owner>lucasradaelli@google.com</owner>
   <summary>
     Recorded once for any page that had a canvas element with non-trivial
     fallback content beyond plain text. Only recorded if a11y is turned on (~10%
@@ -406,6 +405,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.Distillation">
+  <owner>lwinston@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <summary>
+    Records a distillation success / failure after a new page has been opened
+    with reading mode.
+  </summary>
+  <metric name="DistillationStatus" enum="ReadAnythingDistillationStatus">
+    <summary>
+      The status of the distillation
+    </summary>
+  </metric>
+</event>
+
 <event name="Accessibility.ReadAnything.EmptyState">
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -428,8 +441,49 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.SidePanel">
+  <owner>gusmartin@google.com</owner>
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records Read Anything side panel events
+  </summary>
+  <metric name="Closed" enum="Boolean">
+    <summary>
+      A flag set to true when the Read Anything side panel is closed for a given
+      source ID.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EntryPoint" enum="SidePanelOpenTrigger">
+    <summary>
+      Records the UI entry point that the user clicked to open the Read Anything
+      side panel.
+    </summary>
+  </metric>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      A flag set to true when the Read Anything side panel is shown for a given
+      source ID.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Accessibility.Renderer">
-  <owner>aleventhal@chromium.org</owner>
+  <owner>lucasradaelli@google.com</owner>
   <owner>nektar@chromium.org</owner>
   <summary>
     Tracks the amount of time sending accessibility events from web renderers.
@@ -685,6 +739,59 @@ be describing additional metrics about the same event.
     event to allow it to be recorded on all pages (i.e. not only pages that have
     loaded non-zero ad byte), and to allow a potentially different sampling.
     Both iframe and img ads are covered.
+  </summary>
+  <metric name="AverageViewportAdDensity">
+    <summary>
+      The estimated average viewport ad density. Each density value is
+      calculated as the area of (iframe and img) ads within the viewport * 100 /
+      viewport area, where each overlapping area is counted once. And this
+      returns the average of the densities accumulated over the page load time
+      rounded to the nearest integer.
+    </summary>
+  </metric>
+  <metric name="KurtosisViewportAdDensity">
+    <summary>
+      The estimated kurtosis of the viewport ad density. Each density value is
+      calculated as the area of (iframe and img) ads within the viewport * 100 /
+      viewport area, where each overlapping area is counted once. And this
+      returns the kurtosis of the densities accumulated over the page load time
+      rounded to the nearest exponential bucket integer with bucket spacing 1.3.
+      For negative values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+  <metric name="SkewnessViewportAdDensity">
+    <summary>
+      The estimated skewness of the viewport ad density. Each density value is
+      calculated as the area of (iframe and img) ads within the viewport * 100 /
+      viewport area, where each overlapping area is counted once. And this
+      returns the skewness of the densities accumulated over the page load time
+      rounded to the nearest exponential bucket integer with bucket spacing 1.3.
+      For negative values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+  <metric name="VarianceViewportAdDensity">
+    <summary>
+      The estimated variance of the viewport ad density. Each density value is
+      calculated as the area of (iframe and img) ads within the viewport * 100 /
+      viewport area, where each overlapping area is counted once. And this
+      returns the variance of the densities accumulated over the page load time
+      rounded to the nearest exponential bucket integer with bucket spacing 1.3.
+      For negative values, the bucketing will be taken on its magnitude part.
+    </summary>
+  </metric>
+</event>
+
+<event name="AdPageLoadCustomSampling4" singular="True">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Recorded when the page is being destroyed/navigated away or when the app
+    enters the background on mobile. This is separate from the `AdPageLoad`
+    event to allow it to be recorded on all pages (i.e. not only pages that have
+    loaded non-zero ad byte), and to allow a potentially different sampling.
+    Both iframe and img ads are covered. Ads obscured by non-ad content are
+    excluded.
   </summary>
   <metric name="AverageViewportAdDensity">
     <summary>
@@ -2281,6 +2388,123 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.AiAmountExtractionComplete" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the final result of the AI-based checkout amount extraction process.
+    Recorded once per page load, either when the model execution completes
+    (successfully, with failure, or with invalid data) or when the client-side
+    timeout is reached.
+  </summary>
+  <metric name="Result" enum="AiAmountExtractionResult">
+    <summary>
+      The result of the AI amount extraction.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.AmountExtractionComplete" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>longsheng@google.com</owner>
+  <summary>
+    Records the result of the amount extraction process. This process is to
+    search for the final checkout amount from the merchants' checkout page and
+    respond to the browser process. This event starts from the moment amount
+    extraction is initiated in the browser process to when a response is
+    received. Logged when the search is finished.
+  </summary>
+  <metric name="FailureLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the amount extraction is
+      triggered to when an empty result of the search is returned to the browser
+      process.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Result" enum="AmountExtractionResult">
+    <summary>
+      An enum that records the result of the amount extraction: success, failure
+      or timeout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SuccessLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the amount extraction is
+      triggered to when a non-empty result of the search is returned to the
+      browser process.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.BnplSuggestionAccepted" singular="true">
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when a BNPL autofill suggestion was accepted on the current page.
+  </summary>
+  <metric name="Accepted" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="Autofill.BnplSuggestionShown" singular="true">
+  <owner>wilsonlow@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded when a BNPL suggestion was added to the payments autofill dropdown
+    and shown to the user.
+  </summary>
+  <metric name="Shown" enum="Boolean">
+    <summary>
+      Only ever set to true, thus serving as a counter.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Autofill.CardUploadDecision">
   <owner>sebsg@chromium.org</owner>
   <metric name="UploadDecision">
@@ -2386,39 +2610,10 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="SharedAutofill" enum="Boolean">
     <summary>
-      Missing shared-autofill feature prevented a cross-origin credit-card field
-      from being filled. Shared-autofill is a policy-controlled feature by which
-      a frame can allow a child-frame to be autofilled across origin.
-    </summary>
-  </metric>
-</event>
-
-<event name="Autofill.DeveloperEngagement">
-  <owner>osaul@google.com</owner>
-  <summary>
-    Recorded when we parse a form to log whether developer has used autocomplete
-    markup or UPI-VPA hints. The value is a bitmask of
-    |DeveloperEngagementMetric|.
-  </summary>
-  <metric name="DeveloperEngagement"/>
-  <metric name="FormSignature">
-    <summary>
-      The signature of the form (mod 1021). This is the hash identifier used to
-      denote this form for query and voting purposes. See
-      components/autofill/core/common/signatures.cc for more details.
-    </summary>
-  </metric>
-  <metric name="FormTypes">
-    <summary>
-      Type of form. Stored as bitvector. A set ith bit implies enum
-      FormTypeNameForLogging's ith type was detected. Multiple types are
-      possible.
-    </summary>
-  </metric>
-  <metric name="IsForCreditCard">
-    <summary>
-      True for credit card forms, false for address/profile forms. See
-      |FormStructure::IsCompleteCreditCardForm()|.
+      Disabled policy-controlled feature &quot;autofill&quot; prevented a
+      cross-origin credit-card field from being filled. With
+      &quot;autofill&quot;, a frame can allow a child-frame to be autofilled
+      across origin.
     </summary>
   </metric>
 </event>
@@ -2445,7 +2640,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="OverallType" enum="AutofillFieldType">
     <summary>
-      Field's overall |FieldType|. See: autofill::FieldType
+      Field's first overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType2" enum="AutofillFieldType">
+    <summary>
+      Field's second overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType3" enum="AutofillFieldType">
+    <summary>
+      Field's third overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="OverallType4" enum="AutofillFieldType">
+    <summary>
+      Field's fourth overall `FieldType`. See `AutofillType::GetTypes()`.
     </summary>
   </metric>
 </event>
@@ -2588,7 +2798,22 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="FieldOverallType">
     <summary>
-      Field's overall |FieldType|. See |AutofillField.GetStorableType()|.
+      Field's first overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType2">
+    <summary>
+      Field's second overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType3">
+    <summary>
+      Field's third overall `FieldType`. See `AutofillType::GetTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldOverallType4">
+    <summary>
+      Field's fourth overall `FieldType`. See `AutofillType::GetTypes()`.
     </summary>
   </metric>
   <metric name="FieldSignature">
@@ -2600,7 +2825,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldTypeGroup">
     <summary>
-      Field's |FieldTypeGroup|. See |AutofillType.group()|.
+      Field's first `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup2">
+    <summary>
+      Field's second `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup3">
+    <summary>
+      Field's third `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup4">
+    <summary>
+      Field's fourth `FieldTypeGroup`. See `AutofillType::GetGroups()`.
     </summary>
   </metric>
   <metric name="FormSignature">
@@ -2840,7 +3080,22 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldTypeGroup">
     <summary>
-      Field's |FieldTypeGroup|. See |AutofillType.group()|.
+      Field's first `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup2">
+    <summary>
+      Field's second `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup3">
+    <summary>
+      Field's third `FieldTypeGroup`. See `AutofillType::GetGroups()`.
+    </summary>
+  </metric>
+  <metric name="FieldTypeGroup4">
+    <summary>
+      Field's fourth `FieldTypeGroup`. See `AutofillType::GetGroups()`.
     </summary>
   </metric>
   <metric name="FormSignature">
@@ -3444,7 +3699,32 @@ be describing additional metrics about the same event.
   </summary>
   <metric name="AiFieldType">
     <summary>
-      The server AI type of the field as classified by autofill's ML model.
+      The first server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType2">
+    <summary>
+      The second server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType3">
+    <summary>
+      The third server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="AiFieldType4">
+    <summary>
+      The fourth server AI type of the field as classified by Autofill's ML
+      model.
+    </summary>
+  </metric>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
     </summary>
   </metric>
   <metric name="EventType">
@@ -3471,7 +3751,26 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FieldType">
     <summary>
-      The type of the field as classified by autofill.
+      The first `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType2">
+    <summary>
+      The second `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType3">
+    <summary>
+      The third `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
+    </summary>
+  </metric>
+  <metric name="FieldType4">
+    <summary>
+      The fourth `FieldType` as classified by Autofill. See
+      `AutofillType::GetAutofillAiTypes()`.
     </summary>
   </metric>
   <metric name="FormatStringSource">
@@ -3526,6 +3825,12 @@ be describing additional metrics about the same event.
       The number of fields at form submission that are autofilled. This will
       include fields that are autofilled by any source except Autocomplete,
       including AutofillAi.
+    </summary>
+  </metric>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
     </summary>
   </metric>
   <metric name="FillingAcceptance">
@@ -3587,6 +3892,63 @@ be describing additional metrics about the same event.
     <summary>
       Has value 1 if the user is opted in into Autofill AI suggestions and
       filling and 0 otherwise.
+    </summary>
+  </metric>
+  <metric name="PerfectFilling">
+    <summary>
+      Has value 1 if the user didn't edit any field manually at submission time
+      and 0 otherwise.
+    </summary>
+  </metric>
+</event>
+
+<event name="AutofillAi.UserPromptMetrics">
+  <owner>jihadghanna@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>brunobraga@google.com</owner>
+  <summary>
+    Records when an AutofillAi prompt is shown to the user, such as saving or
+    updating entities.
+  </summary>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
+    </summary>
+  </metric>
+  <metric name="FormSessionIdentifier">
+    <summary>
+      A random variable assigned to a specific instance of a HTML form in a
+      specific renderer. This should be globally unique and suitable for
+      counting distinct forms. Two different users would have different values.
+      A single user loading the same form in two different tabs would have two
+      different values. This is used to link the fields to a form in
+      AutofillAi.KeyMetrics.
+    </summary>
+  </metric>
+  <metric name="FormSignature">
+    <summary>
+      The signature of the form (mod 1021). This is the hash identifier used to
+      denote this form. See components/autofill/core/common/signatures.cc for
+      more details.
+    </summary>
+  </metric>
+  <metric name="PromptType">
+    <summary>
+      Describes the type of prompt shown to the user. This could be for example
+      a save or update entity prompt.
+    </summary>
+  </metric>
+  <metric name="Result">
+    <summary>
+      The decision made by the user after being shown a prompt. This could be
+      for example, accepted, declined or ignored.
+    </summary>
+  </metric>
+  <metric name="StorageType">
+    <summary>
+      Describes to which storage the data will be saved if the user accepts the
+      prompt, such locally or in the wallet server.
     </summary>
   </metric>
 </event>
@@ -3795,8 +4157,8 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM (Federated Credential Management) API.
     Recorded when a FedCmMetrics object is destroyed, typically when cleaning up
-    a FederatedAuthRequestImpl object which is created and associated with a
-    call to the FedCM API.
+    a RequestImpl object which is created and associated with a call to the
+    FedCM API.
   </summary>
   <metric name="AccountLabel.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
@@ -3842,6 +4204,13 @@ be describing additional metrics about the same event.
       sample per FedCM API with auto re-authn enabled: some failures could occur
       before this metric is recorded. Records at the time the API call is
       completed.
+    </summary>
+  </metric>
+  <metric name="AutoReauthn.BlockedByEmbedder" enum="Boolean">
+    <summary>
+      Records whether auto-reauthn was disabled by an embedder (e.g. due to an
+      active actor task). Records at most one sample per FedCM API with auto
+      re-authn enabled: some failures could occur before this metric is recorded
     </summary>
   </metric>
   <metric name="AutoReauthn.BlockedByPreventSilentAccess" enum="Boolean">
@@ -3922,6 +4291,12 @@ be describing additional metrics about the same event.
       dialog close. Records at the time the API call is completed.
     </summary>
   </metric>
+  <metric name="DidShowUI" enum="Boolean">
+    <summary>
+      Records whether the FedCM dialog was shown. Recorded once per API call
+      when the request is fulfilled (either resolved or rejected).
+    </summary>
+  </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
     <summary>
       Records the type of frame that invokes disconnect(). Records once for each
@@ -3969,6 +4344,13 @@ be describing additional metrics about the same event.
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
       category. Records at the time the API call is completed.
+    </summary>
+  </metric>
+  <metric name="HasNonce" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter.
+      Records towards the beginning of the call, except for some cases where the
+      call is immediately rejected.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">
@@ -4229,8 +4611,8 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM (Federated Credential Management) API.
     Recorded when a FedCmMetrics object is destroyed, typically when cleaning up
-    a FederatedAuthRequestImpl object which is created and associated with a
-    call to the FedCM API.
+    a RequestImpl object which is created and associated with a call to the
+    FedCM API.
 
     This event uses the specific WEB_IDENTITY ukm_source_id which is generated
     from the identity provider's origin.
@@ -4300,6 +4682,13 @@ be describing additional metrics about the same event.
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
       category. Records at the time the API call is completed.
+    </summary>
+  </metric>
+  <metric name="HasNonce" enum="BooleanHit">
+    <summary>
+      Records a 1 whenever a FedCM API call includes the nonce parameter.
+      Records towards the beginning of the call, except for some cases where the
+      call is immediately rejected.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">
@@ -5966,132 +6355,6 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="BTM.ShortVisit">
-  <owner>navtracking-team@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    Records metrics related to user engagement. Recorded when the user stays on
-    a page for 10 seconds or less, and either (or both) of the previous and
-    following pages are not same-site to the current page.
-  </summary>
-  <metric name="AccessedStorage">
-    <summary>
-      Whether or not the page accessed storage, such as cookies or localStorage.
-    </summary>
-  </metric>
-  <metric name="EntranceHadUserGesture">
-    <summary>
-      Whether or not the navigation to the page was initiated by a user gesture
-      (i.e., the value returned by NavigationHandle::HasUserGesture()).
-    </summary>
-  </metric>
-  <metric name="EntrancePageTransition">
-    <summary>
-      The type of transition to the page (i.e., the value returned by
-      NavigationHandle::GetPageTransition()).
-    </summary>
-  </metric>
-  <metric name="EntranceWasRendererInitiated">
-    <summary>
-      Whether or not the navigation to the page was initiated by the renderer
-      process (i.e., the value returned by
-      NavigationHandle::IsRendererInitiated()).
-    </summary>
-  </metric>
-  <metric name="ExitHadUserGesture">
-    <summary>
-      Whether or not the navigation away from the page was initiated by a user
-      gesture (i.e., the value returned by NavigationHandle::HasUserGesture()).
-    </summary>
-  </metric>
-  <metric name="ExitPageTransition">
-    <summary>
-      The type of transition away from the page (i.e., the value returned by
-      NavigationHandle::GetPageTransition()).
-    </summary>
-  </metric>
-  <metric name="ExitWasRendererInitiated">
-    <summary>
-      Whether or not the navigation away from the page was initiated by the
-      renderer process (i.e., the value returned by
-      NavigationHandle::IsRendererInitiated()).
-    </summary>
-  </metric>
-  <metric name="HadKeyDownEvent">
-    <summary>
-      Whether or not the keydown event was fired while the user was on the page.
-    </summary>
-  </metric>
-  <metric name="NextSiteSame">
-    <summary>
-      Whether or not the next-visited page was same-site to the briefly-visited
-      page.
-    </summary>
-  </metric>
-  <metric name="PreviousAndNextSiteSame">
-    <summary>
-      Whether or not the previously-visited page was same-site to the
-      next-visited page (or -1 for the first visit in a new tab, which has no
-      previous site).
-    </summary>
-  </metric>
-  <metric name="PreviousSiteSame">
-    <summary>
-      Whether or not the previously-visited page was same-site to the
-      briefly-visited page (or -1 for the first visit in a new tab, which has no
-      previous site).
-    </summary>
-  </metric>
-  <metric name="ShortVisitId">
-    <summary>
-      A randomly-generated 32-bit id to connect this event with the
-      BTM.ShortVisitNeighbor events emitted for the same visit.
-    </summary>
-  </metric>
-  <metric name="SiteEngagement" enum="SiteEngagementLevel">
-    <summary>
-      The level of site engagement returned by the SiteEngagementService.
-    </summary>
-  </metric>
-  <metric name="TimeSinceLastInteraction">
-    <summary>
-      If the BTM database has a record of past user interaction on the
-      briefly-visited page's site, then the time that has elapsed since then,
-      bucketed according to ukm::GetSemanticBucketMinForDurationTiming(); if no
-      record, then -1. If the BTM Service is disabled, then -2. If the last
-      record of interaction has a timestamp in the future, then -3.
-    </summary>
-  </metric>
-  <metric name="VisitDuration">
-    <summary>
-      The integer number of seconds (0...10) the user spent on the page before
-      initiating the navigation away.
-    </summary>
-  </metric>
-</event>
-
-<event name="BTM.ShortVisitNeighbor">
-  <owner>navtracking-team@google.com</owner>
-  <owner>dc-komics@google.com</owner>
-  <summary>
-    Emitted at the same time as a BTM.ShortVisit event, but for the pages
-    visited before and after the current page.
-  </summary>
-  <metric name="IsPreceding">
-    <summary>
-      True iff this is the page visited *before* the page with the
-      BTM.ShortVisit event.
-    </summary>
-  </metric>
-  <metric name="ShortVisitId">
-    <summary>
-      A randomly-generated 32-bit id to connect this event with the
-      BTM.ShortVisit and other BTM.ShortVisitNeighbor event emitted for the same
-      visit.
-    </summary>
-  </metric>
-</event>
-
 <event name="ChargeEventHistory">
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -7736,11 +7999,25 @@ be describing additional metrics about the same event.
     <summary>
       True if the cookie was accessed by port which was mismatched.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SchemeMismatch" enum="Boolean">
     <summary>
       True if the cookie was accessed by scheme which was mismatched.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -8735,6 +9012,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Extensions.ExtensionUsage">
+  <owner>howardcha@google.com</owner>
+  <owner>webstore-eng@google.com</owner>
+  <summary>
+    Records user actions related to an extension, providing usage metrics for
+    the Chrome Web Store. Tracked actions include pinning, unpinning, enabling,
+    disabling, context menu access, and toolbar icon clicks.
+  </summary>
+  <metric name="Action" enum="ExtensionUsageAction">
+    <summary>
+      The action the user took on the extension.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Extensions.MV2ExtensionHandledInSoftDisable">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>emiliapaz@chromium.org</owner>
@@ -8948,7 +9247,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.Ewallet.FopSelectorResult">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged when the eWallet FoP selector UI is closed.
@@ -8976,7 +9274,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.Ewallet.FopSelectorShown">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after the eWallet FoP selector UI is shown.
@@ -9004,7 +9301,6 @@ be describing additional metrics about the same event.
 <event name="FacilitatedPayments.PaymentLinkDetected">
   <owner>junhuihe@google.com</owner>
   <owner>qihuizhao@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a given payment link in a certain page for an
@@ -9022,9 +9318,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.FopSelectorResult">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged when the FoP selector UI for Pix is closed.
@@ -9038,9 +9332,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.FopSelectorShown">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after the FoP selector UI is shown.
@@ -9054,9 +9346,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.Pix.InitiatePurchaseActionResult">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after getting response from the
@@ -9077,9 +9367,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="FacilitatedPayments.PixCodeCopied">
-  <owner>vishwasuppoor@google.com</owner>
   <owner>siashah@google.com</owner>
-  <owner>rouslan@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     An event that is logged after a likely Pix code is copied to the clipboard
@@ -9110,31 +9398,6 @@ be describing additional metrics about the same event.
     <summary>
       The number of Iframes that were blocked by the supervised user filtering
       logic in this page load. Exponentially bucketed.
-    </summary>
-  </metric>
-</event>
-
-<event name="FamilyLinkUser.ReauthenticationInterstitial">
-  <owner>chrome-kids-eng@google.com</owner>
-  <summary>
-    These metrics are logged when an unauthenticated Family Link user tries to
-    navigate to YouTube in the main frame, prompting a re-authentication
-    interstitial.
-  </summary>
-  <metric name="InterstitialShown" enum="BooleanHit">
-    <summary>
-      Recorded when the re-authentication interstitial is displayed.
-    </summary>
-  </metric>
-  <metric name="ReauthenticationCompleted" enum="BooleanHit">
-    <summary>
-      Recorded when users successfully re-authenticates and can continue
-      navigation, and vice-versa for failed reauthentication.
-    </summary>
-  </metric>
-  <metric name="ReauthenticationStarted" enum="BooleanHit">
-    <summary>
-      Recorded when users initiate re-authentication from the interstitial.
     </summary>
   </metric>
 </event>
@@ -9191,7 +9454,7 @@ be describing additional metrics about the same event.
 
 <event name="Feedback.HappinessTrackingSurvey">
   <owner>zhouzj@google.com</owner>
-  <owner>fjacky@google.com</owner>
+  <owner>msramek@google.com</owner>
   <summary>
     Recorded when a user completes a HaTS survey.
   </summary>
@@ -9336,6 +9599,14 @@ be describing additional metrics about the same event.
       https://fetch.spec.whatwg.org/#http-redirect-fetch.
     </summary>
   </metric>
+  <metric name="NumRetries">
+    <summary>
+      The number of retries a fetch keepalive request loader has experienced so
+      far when the event is logged.
+
+      Note that the maximum value is 10.
+    </summary>
+  </metric>
   <metric name="PreviousStage" enum="FetchKeepAliveRequestStage">
     <summary>
       An enum representing the previous stage of the fetch keepalive request
@@ -9356,6 +9627,20 @@ be describing additional metrics about the same event.
     <summary>
       An integer representing the extended error code of the request when it
       reaches the kRequestFailed stage. This comes from
+      network::URLLoaderCompletionStatus.extended_error_code.
+    </summary>
+  </metric>
+  <metric name="RequestRetried.ErrorCode">
+    <summary>
+      An integer representing the error code of the request when it reaches the
+      kRequestRetried stage. This comes from
+      network::URLLoaderCompletionStatus.error_code.
+    </summary>
+  </metric>
+  <metric name="RequestRetried.ExtendedErrorCode">
+    <summary>
+      An integer representing the extended error code of the request when it
+      reaches the kRequestRetried stage. This comes from
       network::URLLoaderCompletionStatus.extended_error_code.
     </summary>
   </metric>
@@ -9428,6 +9713,14 @@ be describing additional metrics about the same event.
     <summary>
       The time difference (in milliseconds) between the
       &quot;RequestFailed&quot; stage and the &quot;LoaderCreated&quot; stage.
+
+      Only set when the stage is reached.
+    </summary>
+  </metric>
+  <metric name="TimeDelta.RequestRetried">
+    <summary>
+      The time difference (in milliseconds) between the
+      &quot;RequestRetried&quot; stage and the &quot;LoaderCreated&quot; stage.
 
       Only set when the stage is reached.
     </summary>
@@ -9557,121 +9850,6 @@ be describing additional metrics about the same event.
     <summary>
       Whether FileSystemObserver usage change caused quota to be exceeded.
     </summary>
-  </metric>
-</event>
-
-<event name="FingerprintingProtection" singular="True">
-  <owner>rizvis@google.com</owner>
-  <owner>theslasa@google.com</owner>
-  <owner>trishalfonso@google.com</owner>
-  <summary>
-    Recorded for page loads where fingerprinting protection filtering policy was
-    evaluated.
-  </summary>
-  <metric name="ActivationDecision">
-    <summary>
-      Enum that records the policy decision to activate subresource filtering
-      for a page load. 0 = Unknown, 1 = Activated, 2 = Disabled, 3 = Deprecated
-      value, 4 = URL allowlisted, 5 = Activation conditions not met. 'Activated'
-      indicates that subresource filtering was activated. All other reasons
-      indicate that subresource filtering was not activated.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="AllowlistSource">
-    <summary>
-      Enum that records the source of the fingerprinting protection filtering
-      allowlist entry. 0 = Unknown, 1 = UserBypass, 2 = Enterprise. Recorded
-      only when `ActivationDecision` is &quot;URL allowlisted&quot;
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="DryRun">
-    <summary>
-      Records `1` if the fingerprinting protection filtering was activated in
-      dry-run mode. In dry-run mode, fingerprinting protection filtering policy
-      is evaluated against resources loaded on the page, but subresource
-      blocking is not actually applied.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="FingerprintingProtectionException" singular="True">
-  <owner>trishalfonso@google.com</owner>
-  <owner>rizvis@google.com</owner>
-  <owner>thesalsa@google.com</owner>
-  <owner>tanub@google.com</owner>
-  <summary>
-    Recorded per navigation where the Fingerprinting Protection Filter (FPF) is
-    enabled and an exception mechanism allows the current first-party site to
-    bypass filtering.
-  </summary>
-  <metric name="Source" enum="FingerprintingProtectionExceptionSource">
-    <summary>
-      Indicates the source from which the exception originates. Exceptions are
-      only emitted when `ActivationDecision` is &quot;URL allowlisted&quot; -
-      never in dry_run mode.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-</event>
-
-<event name="FingerprintingProtectionUsage" singular="True">
-  <owner>rizvis@google.com</owner>
-  <owner>thesalsa@google.com</owner>
-  <summary>
-    Recorded to track heuristics for refreshes where Fingerprinting Protection
-    was enabled.
-  </summary>
-  <metric name="RefreshCount">
-    <summary>
-      The number of times the user refreshed the current page (without
-      navigating elsewhere).
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
-  </metric>
-  <metric name="SiteEngagementLevel" enum="SiteEngagementLevel">
-    <summary>
-      The site engagement level of the page where this event was triggered.
-    </summary>
-    <aggregation>
-      <history>
-        <statistics>
-          <enumeration/>
-        </statistics>
-      </history>
-    </aggregation>
   </metric>
 </event>
 
@@ -11189,6 +11367,49 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="EndActivateToSubmitUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when an activation is complete to the next
+      SubmitUpdateDisplayTree, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="EndActivateToSubmitUpdateDisplayTree.DrawLayersToSubmitUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when DrawLayers starts to when the
+      UpdateDisplayTree is sent to the display compositor, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="EndActivateToSubmitUpdateDisplayTree.EndActivateToDrawLayers">
+    <summary>
+      [TreesInViz only] The time from when an activation is complete to the
+      start time of DrawLayers, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="EndCommitToActivation">
     <summary>
       The time from when a commit is complete to the beginning of the next
@@ -11557,6 +11778,219 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="SubmitUpdateDisplayTreeToPresentationCompositorFrame">
+    <summary>
+      [TreesInViz only] The time from when an UpdateDisplayTree is submitted to
+      the display compositor to when it is presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferAvailableToBufferReady">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is available to
+      when the GPU has finished drawing to it, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.BufferReadyToLatch">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is ready to be
+      displayed to when the buffer is latched on for presentation, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.LatchToSwapEnd">
+    <summary>
+      [TreesInViz] The time from when the target framebuffer is latched on to
+      when the swap ends, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceivedCompositorFrameToStartDraw">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is received to when it
+      starts to draw, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.ReceiveUpdateDisplayTreeToStartPrepareToDraw">
+    <summary>
+      [TreesInViz only] The time from when the display compositor receives an
+      UpdateDisplayTree to when it starts to prepare to draw the frame, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SendUpdateDisplayTreeToReceiveUpdateDisplayTree">
+    <summary>
+      [TreesInViz only] The time from when an UpdateDisplayTree is submitted to
+      the display compositor to when it is received by the display compositor,
+      in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawLayersToSubmitCompositorFrame">
+    <summary>
+      [TreesInViz only] The time from when the display compositor starts to draw
+      layers to when the compositor frame is submitted, in microseconds..
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartDrawToSwapStart">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is started to draw to
+      when it starts swap, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.StartPrepareToDrawToStartDrawLayers">
+    <summary>
+      [TreesInViz only] The time from when the display compositor starts
+      preparing to draw the frame to when it starts to draw layers, in
+      microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SubmitToReceiveCompositorFrame">
+    <summary>
+      [TreesInViz] The time from when a compositor frame is submitted to when it
+      is received, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapEndToPresentationCompositorFrame">
+    <summary>
+      [TreesInViz] The time from when a compositor frame ends swap to when it is
+      presented, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToBufferAvailable">
+    <summary>
+      [TreesInViz] The time from when the compositor frame starts to swap to
+      when the target framebuffer becomes available, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric
+      name="SubmitUpdateDisplayTreeToPresentationCompositorFrame.SwapStartToSwapEnd">
+    <summary>
+      [TreesInViz] The time from when a compositor frame starts swap to when it
+      ends swap, in microseconds.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="TotalLatency">
     <summary>
       The total time starting from BeginImplFrame to when
@@ -11714,14 +12148,13 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="HistoryApi.AdvanceMethod">
+<event name="HistoryApi.PushState">
   <owner>yaoxia@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
-    Records usage of `window.history` methods that advance the history position
-    (`pushState()`, `forward()`, and `go()` with positive values), capturing
-    details about user activation and ad-related information. Recorded when
-    these specific methods are invoked.
+    Records usage of `window.history.pushState` method, capturing details about
+    user activation and ad-related information. Recorded when this method is
+    invoked.
   </summary>
   <metric name="FromAd" enum="Boolean">
     <summary>
@@ -11747,11 +12180,6 @@ be describing additional metrics about the same event.
     will be recorded once per visit to the HistoryClusters UI and logged when
     the UI is closed or navigated away from.
   </summary>
-  <metric name="FinalState" enum="HistoryClustersFinalState">
-    <summary>
-      The final state, or outcome, of an interaction on the HistoryClusters UI.
-    </summary>
-  </metric>
   <metric name="InitialState" enum="HistoryClustersInitialState">
     <summary>
       The initial state that describes how an interaction with the
@@ -12037,55 +12465,6 @@ be describing additional metrics about the same event.
       An enum value representing the decision the user made when shown an
       interstitial (proceed, don't proceed, etc.). The enum is defined in
       |HttpsOnlyModeBlockingPage|.
-    </summary>
-  </metric>
-</event>
-
-<event name="Identifiability">
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>caraitto@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <owner>pauljensen@chromium.org</owner>
-  <summary>
-    Identifiability metrics are used to measure the diversity of web clients as
-    observed by individual web sites.
-
-    Browser or device fingerprinting uses differences in behaviors of web APIs
-    as identifiers. The values collected under this event indicate the level of
-    identifiability of these differences.
-
-    Metrics recorded under this event are keyed based on parameters determined
-    at runtime. Hence the metrics described in this file are not exhaustive.
-
-    See
-    //third_party/blink/public/common/privacy_budget/identifiability/identifiability_metric_builder.h
-    for details on how the metrics hash is determined.
-  </summary>
-  <metric name="GeneratorVersion.926">
-    <summary>
-      An integer identifying the &quot;generator&quot; version for this record.
-      Some identifiability study samples are derived from multiple factors which
-      are run though a digest function to derive the int64_t value. If the set
-      of factors change or the method of combining them changes, then the
-      resulting statistics cannot be aggregated with those from a prior version.
-
-      The name suffix (.926) was chosen so that the resulting metric hash as
-      determined by base::HashMetricName() has all 8 LSBs set to 0. Such a
-      metric hash does not collide with any other metric hash generated by
-      blink::IdentifiabilityMetricBuilder().
-    </summary>
-  </metric>
-  <metric name="StudyGeneration.626">
-    <summary>
-      An integer identifying the study &quot;generation.&quot; In case the study
-      parameters need to be tweaked to the point where results cannot be
-      aggregated across study parameter sets, this value can be changed to
-      partition the results.
-
-      The name suffix (.626) was chosen so that the resulting metric hash as
-      determined by base::HashMetricName() has all 8 LSBs set to 0. Such a
-      metric hash does not collide with any other metric hash generated by
-      blink::IdentifiabilityMetricBuilder().
     </summary>
   </metric>
 </event>
@@ -12503,6 +12882,28 @@ be describing additional metrics about the same event.
       kReaderModeEligible, kReaderModeNotEligibleContentOnly,
       kReaderModeNotEligibleContentLength,
       kReaderModeNotEligibleContentAndLength.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="IOS.ReaderMode.ReaderModeShown.AccessPoint" singular="true">
+  <owner>fernandex@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <summary>
+    Records when Reading Mode UI was successfully displayed to the user.
+    Recorded for iOS interactions only.
+  </summary>
+  <metric name="AccessPoint" enum="ReaderModeAccessPoint">
+    <summary>
+      The access point that triggered the Reading Mode UI that is shown for the
+      current page.
     </summary>
     <aggregation>
       <history>
@@ -12954,6 +13355,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="ContentAreaContextMenuText">
+    <summary>
+      Time to first interaction when overlay invoked through the selected text
+      context menu.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="FindInPage">
     <summary>
       Time to first interaction when overlay invoked through the find in page
@@ -13330,6 +13744,24 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="LoginDetectionV2IdentityProvider" singular="True">
+  <owner>yigu@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <owner>web-identity-eng@chromium.org</owner>
+  <summary>
+    Records the OAuth provider info about login detected for sites based on
+    different heuristics. Recorded once per page load when OAuth login was
+    detected on page load. Note: the first version of LoginDetection recorded
+    all pageload types including password logins and no logins etc.
+  </summary>
+  <metric name="Page.LoginType" enum="LoginDetectionType">
+    <summary>
+      An enum for representing the different ways of user login to a site. At
+      this moment only OAuth logins are recorded in UKM.
+    </summary>
+  </metric>
+</event>
+
 <event name="LookalikeUrl.NavigationSuggestion" singular="True">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
@@ -13396,8 +13828,17 @@ be describing additional metrics about the same event.
     picture-in-picture window without responding to the prompt, or when we
     decide to not show the prompt at all. When the prompt is shown, this records
     their selection (or &quot;Ignored&quot; if they did not select an option).
-    When the prompt is not shown, records why it was not shown.
+    When the prompt is not shown, records why it was not shown. Note that
+    although &quot;Not shown because incognito&quot; is part of the
+    MediaAutoPictureInPicturePromptResult enum, UKMs are not collected in
+    incognito.
   </summary>
+  <metric name="BrowserInitiated" enum="MediaAutoPictureInPicturePromptResult">
+    <summary>
+      Prompt result for entering picture in picture automatically due to browser
+      initiated auto picture in picture.
+    </summary>
+  </metric>
   <metric name="MediaPlayback" enum="MediaAutoPictureInPicturePromptResult">
     <summary>
       Prompt result for entering picture in picture automatically due to
@@ -13641,6 +14082,12 @@ be describing additional metrics about the same event.
   <metric name="RebuffersCount">
     <summary>
       Integer count of the number of times playback experienced rebuffering.
+    </summary>
+  </metric>
+  <metric name="RendererType" enum="MediaRendererType">
+    <summary>
+      Type of media::Renderer used for the playback. In most cases we do not
+      support dynamically changing RendererType during one playback.
     </summary>
   </metric>
   <metric name="VideoCodec" enum="VideoCodec">
@@ -16854,24 +17301,52 @@ be describing additional metrics about the same event.
       Whether at least one zero-prefix Contextual Search suggestion was shown in
       the Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixLensActionShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix Lens Action suggestion was shown in the
       Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixSearchShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix Search suggestion was shown in the
       Omnibox session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ZeroPrefixUrlShown" enum="Boolean">
     <summary>
       Whether at least one zero-prefix URL suggestion was shown in the Omnibox
       session.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -17073,18 +17548,11 @@ be describing additional metrics about the same event.
       did not complete successfully.
     </summary>
   </metric>
-  <metric name="RegisteredOptimizationTargets">
-    <summary>
-      A bitmask of the optimization targets that were registered at the start of
-      the page load where each flipped bit corresponds to its int value in
-      |optimization_guide::proto::OptimizationTarget|.
-    </summary>
-  </metric>
   <metric name="RegisteredOptimizationTypes">
     <summary>
       A bitmask of the optimization types that were registered at the start of
       the page load where each flipped bit corresponds to its int value in
-      |optimization_guide::proto::OptimizationTarget|.
+      |optimization_guide::proto::OptimizationType|.
     </summary>
   </metric>
 </event>
@@ -17122,9 +17590,19 @@ be describing additional metrics about the same event.
       frames in the page.
     </summary>
   </metric>
+  <metric name="Mode" enum="AIPageContentMode">
+    <summary>
+      The mode used for page content extraction.
+    </summary>
+  </metric>
   <metric name="NodeCount">
     <summary>
       Number of nodes in the page content.
+    </summary>
+  </metric>
+  <metric name="OnCriticalPath" enum="Boolean">
+    <summary>
+      Whether the page content extraction was on the critical path.
     </summary>
   </metric>
   <metric name="TotalSize">
@@ -17256,6 +17734,29 @@ be describing additional metrics about the same event.
         <index fields="profile.country"/>
         <statistics>
           <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PageLifecycleMetricsOnNewPageCommit" singular="True">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Metrics for the previous page's PageLifecycle events on the new page's
+    commit. This event is saved on the new page that is about to commit.
+  </summary>
+  <metric name="PageLifecycleEventsTotalProcessingTime">
+    <summary>
+      Measures the total duration in milliseconds to run event handlers for the
+      previous page's lifecycle events (e.g., pagehide, visibilitychange) upon
+      the new page's commit.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
         </statistics>
       </history>
     </aggregation>
@@ -18144,6 +18645,13 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric
+      name="PaintTimingBeforeSoftNavigation.NavigationToLargestContentfulPaint2">
+    <summary>
+      Similar to PaintTiming.NavigationToLargestContentfulPaint2, except that it
+      is recorded before the first soft navigation.
+    </summary>
+  </metric>
   <metric name="ParseTiming.NavigationToParseStart">
     <summary>
       Measures the time in milliseconds from navigation timing's navigation
@@ -18346,6 +18854,20 @@ be describing additional metrics about the same event.
       Records a 1 for every page on which a user has modified a password text
       field - regardless of how many password fields a page contains or the user
       modifies.
+    </summary>
+  </metric>
+</event>
+
+<event name="PaidContentPageLoad" singular="True">
+  <owner>gklassen@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
+  <summary>
+    Records the paid content state of the page. This event is only recorded for
+    pages that have paid content metadata.
+  </summary>
+  <metric name="HasPaidContent" enum="PaidContentState">
+    <summary>
+      The paid content state of the page.
     </summary>
   </metric>
 </event>
@@ -18746,6 +19268,61 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.ChangeFlowOutcome" singular="True">
+  <owner>otara@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Metrics related to the outcome of the password change flow. Recorded when
+    the flow is stopped.
+  </summary>
+  <metric name="CoarseFinalPasswordChangeStatus"
+      enum="CoarseFinalPasswordChangeState">
+    <summary>
+      Records the state at which the password change flow was stopped, either
+      successful, failed or interrupted.
+
+      This mirrors CoarseFinalPasswordChangeStatus in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
+<event name="PasswordManager.ChangeRecovery" singular="True">
+  <owner>otara@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Metrics related to the recovery flow of the password change feature. Records
+    users enter and exit the recovery flow.
+  </summary>
+  <metric name="PasswordChangeRecoveryFlow"
+      enum="PasswordChangeRecoveryFlowState">
+    <summary>
+      Records the start and the end of the password recovery flow. We will
+      consider the start to be an interaction with a &quot;Trouble signing
+      in&quot; button in the password autofill dropdown or a proactive recovery
+      popup that we show if we detect a failed log-in attempt. The end of the
+      flow is considered to be an updated primary password (the backup password
+      becomes the primary password). This happens after the user accepts the
+      &quot;update password&quot; bubble
+
+      This mirrors PasswordChangeRecoveryFlow in UMA.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="PasswordManager.ChangeSubmission" singular="True">
   <owner>fiorellab@google.com</owner>
   <owner>vsemeniuk@google.com</owner>
@@ -18753,11 +19330,13 @@ be describing additional metrics about the same event.
     Metrics related to password change submission flow. Recorded when password
     are saved by password change submission trajectory.
   </summary>
-  <metric name="LogInWithPasswordChangeSubmission" enum="Boolean">
+  <metric name="LogInWithPasswordChangeSubmission"
+      enum="LogInWithChangedPasswordOutcome">
     <summary>
-      Records whether or not a login is successful using a password previously
-      saved through password change submission flow. It is recorded at the
-      moment of detecting a succesful or failed log in.
+      Records whether or not a login is successful using either the primary or
+      the backup password previously saved through password change submission
+      flow. It is recorded at the moment of detecting a succesful or failed log
+      in.
 
       This mirrors LogInWithPasswordChangeSubmission in UMA.
     </summary>
@@ -19015,8 +19594,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentApp.CheckoutEvents">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Records checkout events as well as completion status for the invoked payment
     app when its origin is shown inside the payment handler modal window. This
@@ -19040,8 +19619,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.CheckoutEvents">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <metric name="CompletionStatus">
     <summary>
       How the Payment Request ended. Values defined in the CompletionStatus enum
@@ -19058,8 +19637,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PaymentRequest.TransactionAmount">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
+  <owner>smcgruer@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <metric name="Category">
     <summary>
       Tranaction size can be zero, micro, or regular. Values defined in the
@@ -19677,7 +20256,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Permission">
-  <owner>timloh@chromium.org</owner>
+  <owner>permissions-dev@chromium.org</owner>
   <summary>
     Metrics for a user's permission actions, logged when a permission prompt is
     resolved or when a permission is revoked. Grouped (microphone+camera)
@@ -19688,11 +20267,36 @@ be describing additional metrics about the same event.
       An enum of type PermissionAction. One of GRANTED, DENIED, DISMISSED or
       IGNORED.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="Gesture">
     <summary>
       An enum of type PermissionRequestGestureType, whether the prompt was
       initiated by a user gesture.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="InitialGeolocationAccuracySelection">
+    <summary>
+      An enum of type GeolocationAccuracy (see
+      https://source.chromium.org/search?q=class:%5CbGeolocationAccuracy%5Cb).
+      This is only emitted for geolocation permission prompts with
+      precise/approximate options (corresponding to
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS). In that case, it is either
+      0 (kPrecise) or 1 (kApproximate) and represents the preselected accuracy
+      option in the prompt.
     </summary>
   </metric>
   <metric name="OsPromptScreen" enum="ElementAnchoredBubbleVariant">
@@ -19705,6 +20309,11 @@ be describing additional metrics about the same event.
     <summary>
       An enum of type ElementAnchoredBubbleVariant. The screen that directs the
       user to the OS Settings, if applicable.
+    </summary>
+  </metric>
+  <metric name="PermissionAiRelevanceModel" enum="PermissionAiRelevanceModel">
+    <summary>
+      Version of the AI model used for the permission relevance prediction.
     </summary>
   </metric>
   <metric name="PermissionAutoRevocationHistory"
@@ -19728,6 +20337,13 @@ be describing additional metrics about the same event.
       Beware that this is not the same as the ContentSettingsType enum (casted
       to int). An enum of type ContentSettingsType.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="PredictionsApiResponse.GrantLikelihood"
       enum="PredictionGrantLikelihood">
@@ -19766,6 +20382,18 @@ be describing additional metrics about the same event.
     <summary>
       An enum of type PermissionPromptDispositionReason. The reason why the
       particular prompt disposition was used, if any.
+    </summary>
+  </metric>
+  <metric name="PromptOptions">
+    <summary>
+      An enum of type UkmPromptOptions (see
+      https://source.chromium.org/search?q=class:%5CbPermissionAction%5Cb). This
+      is only emitted if the permission prompt supports additional prompt
+      options, which currently is the case only for geolocation permission
+      prompts when the ApproximateGeolocationPermission is enabled. In that
+      case, this is either 1 (APPROXIMATE_LOCATION) or 2 (PRECISE_LOCATION) and
+      specifies whether the prompt selection was &quot;approximate&quot; or
+      &quot;precise&quot; at the time when the action was taken.
     </summary>
   </metric>
   <metric name="SatisfiedAdaptiveTriggers">
@@ -21521,6 +22149,27 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SafetyHub.AbusiveNotificationPermissionRevocation.Interactions">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Recorded when the user takes a Safety Hub action after an abusive
+    notification is auto-revoked.
+  </summary>
+  <metric name="InteractionType"
+      enum="SafetyCheckUnusedSitePermissionsModuleInteractions">
+    <summary>
+      The type of action that the user has taken after being shown an abusive
+      notification auto-revocation in Safety Hub.
+    </summary>
+  </metric>
+  <metric name="RevocationSource" enum="NotificationRevocationSource">
+    <summary>
+      The reason for auto-revocation.
+    </summary>
+  </metric>
+</event>
+
 <event
     name="SafetyHub.DisruptiveNotificationRevocations.FalsePositiveInteraction">
   <owner>olesiamarukhnno@google.com</owner>
@@ -22107,6 +22756,13 @@ be describing additional metrics about the same event.
       or sum of a UMA/UKM metric.
     </summary>
   </metric>
+  <metric name="ActualResult10">
+    <summary>
+      The 10th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
   <metric name="ActualResult2">
     <summary>
       The 2nd UMA or UKM metrics related to the features affected by the ML
@@ -22138,6 +22794,27 @@ be describing additional metrics about the same event.
   <metric name="ActualResult6">
     <summary>
       The 6th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult7">
+    <summary>
+      The 7th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult8">
+    <summary>
+      The 8th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult9">
+    <summary>
+      The 9th UMA or UKM metrics related to the features affected by the ML
       model, with or without aggregation, after running the features as
       instructed by the ML model. No encoding is used.
     </summary>
@@ -23777,6 +24454,45 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="SplitView.Created">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a new split view is created.
+  </summary>
+  <metric name="SplitEventId">
+    <summary>
+      An ID corresponding to the event that will enable joining both tabs in the
+      split together.
+    </summary>
+  </metric>
+  <metric name="SplitViewLayout" enum="SplitViewLayout">
+    <summary>
+      The orientation of the split which can be horizontal or vertical.
+    </summary>
+  </metric>
+</event>
+
+<event name="SplitView.Updated">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Recorded when a split view is updated which could mean a navigation happened
+    within a split view or another tab is swapped into a split.
+  </summary>
+  <metric name="SplitEventId">
+    <summary>
+      An ID corresponding to the event that will enable joining both tabs in the
+      split together.
+    </summary>
+  </metric>
+  <metric name="SplitViewLayout" enum="SplitViewLayout">
+    <summary>
+      The orientation of the split which can be horizontal or vertical.
+    </summary>
+  </metric>
+</event>
+
 <event name="SubresourceFilter" singular="True">
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -23882,6 +24598,21 @@ be describing additional metrics about the same event.
   <metric name="HasOccurred" enum="Boolean">
     <summary>
       A boolean signaling that the event has occurred; only records true values.
+    </summary>
+  </metric>
+</event>
+
+<event name="Tab.StateChange">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@chromium.org</owner>
+  <summary>
+    A tab's state has changed. Only recorded for loaded tabs with WebContents.
+  </summary>
+  <metric name="IsPinned" enum="Boolean">
+    <summary>
+      Whether the tab is currently pinned. This is stored only for tabs which
+      are pinned, i.e. this metric will always be true.
     </summary>
   </metric>
 </event>
@@ -25335,6 +26066,216 @@ be describing additional metrics about the same event.
       True if this page visit was initiated by user input. For renderer
       navigations, only true if the code can trace back to the original input
       event - there are cases where this known not to be possible.
+    </summary>
+  </metric>
+</event>
+
+<event name="V8.GC.FullCycle">
+  <owner>etiennep@chromium.org</owner>
+  <summary>
+    Records information on memory and timing of a full GC cycle, reported at the
+    end of the cycle.
+  </summary>
+  <metric name="Duration.MainThread">
+    <summary>
+      Main thread only duration of the whole garbage collection of the unified
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Atomic">
+    <summary>
+      Main thread duration of the atomic pause of the garbage collection of the
+      unified heap. This is rounded down to the nearest exponential bucket (with
+      a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Atomic.Cpp">
+    <summary>
+      Main thread duration of the atomic pause of the garbage collection of the
+      managed C++ heap. This is rounded down to the nearest exponential bucket
+      (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.MainThread.Cpp">
+    <summary>
+      Main thread only duration of a whole garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.SinceLastMarkCompact">
+    <summary>
+      Time between the start of the full garbage collection and the end of
+      previous full cycle. This is rounded down to the nearest exponential
+      bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.Total">
+    <summary>
+      Overall duration of a whole garbage collection of the unified heap. This
+      is rounded down to the nearest exponential bucket (with a bucket ratio of
+      1.3).
+    </summary>
+  </metric>
+  <metric name="Duration.Total.Cpp">
+    <summary>
+      Overall duration of a whole garbage collection of the managed C++ heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Baseline">
+    <summary>
+      Amount of global consumed memory right after the previous full garbage
+      collection cycle, used as baseline for limit computation. This is rounded
+      down to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Current">
+    <summary>
+      Amount of global consumed memory right before the current full garbage
+      collection cycle. This is rounded down to the nearest exponential bucket
+      (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.DeltaCurrent">
+    <summary>
+      Delta between the current and baseline amount of global consumed memory
+      for the current full garbage collection cycle. This is rounded down to the
+      nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.DeltaLimit">
+    <summary>
+      Delta between the limit and baseline amount of global consumed memory for
+      the current full garbage collection cycle. This is rounded down to the
+      nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Global.ConsumedBytes.Limit">
+    <summary>
+      Allocation limit on golbal consumed memory used before the current full
+      garbage collection cycle. This is rounded down to the nearest exponential
+      bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="IsLoading" enum="Boolean">
+    <summary>
+      Indicates whether the cylce started while loading state was true.
+    </summary>
+  </metric>
+  <metric name="Memory.BytesFreed">
+    <summary>
+      Amount of allocated memory freed by the garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Memory.BytesFreed.Cpp">
+    <summary>
+      Amount of allocated memory freed by the garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesAfter">
+    <summary>
+      Amount of used memory after the garbage collection of the unified heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesAfter.Cpp">
+    <summary>
+      Amount of used memory after the garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesBefore">
+    <summary>
+      Amount of used memory before the full garbage collection of the unified
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesBefore.Cpp">
+    <summary>
+      Amount of used memory before the full garbage collection of the managed
+      C++ heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesFreed">
+    <summary>
+      Amount of used memory freed by the garbage collection of the unified heap.
+      This is rounded down to the nearest exponential bucket (with a bucket
+      ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Objects.BytesFreed.Cpp">
+    <summary>
+      Amount of used memory freed by the garbage collection of the managed C++
+      heap. This is rounded down to the nearest exponential bucket (with a
+      bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Baseline">
+    <summary>
+      Amount of old generation consumed memory right after the previous full
+      garbage collection cycle, used as baseline for limit computation. This is
+      rounded down to the nearest exponential bucket (with a bucket ratio of
+      1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Current">
+    <summary>
+      Amount of old generation consumed memory right before the current full
+      garbage collection cycle. This is rounded down to the nearest exponential
+      bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.DeltaCurrent">
+    <summary>
+      Delta between the current and baseline amount of old generation consumed
+      memory for the current full garbage collection cycle. This is rounded down
+      to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.DeltaLimit">
+    <summary>
+      Delta between the limit and baseline amount of old generation consumed
+      memory for the current full garbage collection cycle. This is rounded down
+      to the nearest exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="OldGeneration.ConsumedBytes.Limit">
+    <summary>
+      Allocation limit on old generation consumed memory used before the current
+      full garbage collection cycle. This is rounded down to the nearest
+      exponential bucket (with a bucket ratio of 1.3).
+    </summary>
+  </metric>
+  <metric name="Priority" enum="GarbageCollectionPriority">
+    <summary>
+      The priority the current full garbage collection cycle was running at.
+    </summary>
+  </metric>
+  <metric name="Reason" enum="GarbageCollectionReason">
+    <summary>
+      Reason the current full garbage collection cycle was started.
+    </summary>
+  </metric>
+  <metric name="Reason.IncrementalMarking" enum="GarbageCollectionReason">
+    <summary>
+      Reason incremental marking was started before the current full garbage
+      collection cycle if any.
+    </summary>
+  </metric>
+  <metric name="ReduceMemory" enum="Boolean">
+    <summary>
+      Indictaes whether ReduceMemoryFootprint flag was set.
     </summary>
   </metric>
 </event>
@@ -27249,6 +28190,41 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="WebApp.WebInstall">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Recorded when a site attempts to install another site that isn't the current
+    document via Web Install API.
+  </summary>
+  <metric name="ResultByInstalledApp" enum="WebInstallApiResult">
+    <summary>
+      Records the result of the Web Install API for the URL of the target site
+      that we attempted to install as a web app via the API.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="ResultByRequestingPage" enum="WebInstallApiResult">
+    <summary>
+      Records the result of the Web Install API for the URL of the requesting
+      page that invoked the API.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="WebAuthn.ConditionalUiGetCall">
   <owner>kenrb@chromium.org</owner>
   <owner>chrome-webauthn@google.com</owner>
@@ -27421,29 +28397,6 @@ be describing additional metrics about the same event.
       Records the similarities and differences between the storage key of the
       frame accessing the window proxy and the frame referenced by the window
       proxy.
-    </summary>
-  </metric>
-</event>
-
-<event name="Worker.ClientAdded">
-  <owner>cfredric@google.com</owner>
-  <summary>
-    Recorded when a client connects to an existing SharedWorker or
-    ServiceWorker; records the source IDs of the client (which may be a document
-    or another worker), and the type of the worker being connected to. In the
-    case of a ServiceWorker, this is recorded for each worker-client pair that
-    could communicate (whether or not they actually do) and this is only
-    recorded once the client is execution ready. Note also that emission can be
-    caused by the creation of a new ServiceWorker or a new ServiceWorker client.
-  </summary>
-  <metric name="ClientSourceId">
-    <summary>
-      The UKM source ID of the connecting client, as an integer.
-    </summary>
-  </metric>
-  <metric name="WorkerType" enum="WorkerType">
-    <summary>
-      The type of the worker that was connected to.
     </summary>
   </metric>
 </event>

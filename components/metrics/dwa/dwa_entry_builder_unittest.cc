@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace dwa {
+namespace {
 
 // Tests that calling `SetMetric` repeatedly on an `DwaEntryBuilder` updates the
 // value stored for the metric.
@@ -95,4 +96,5 @@ TEST(DwaEntryBuilderTest, SanitizeContent) {
   }
 }
 
+}  // namespace
 }  // namespace dwa

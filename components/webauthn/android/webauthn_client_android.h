@@ -22,6 +22,25 @@ class DiscoverableCredentialMetadata;
 
 namespace webauthn {
 
+// The type of mediation that is being used for a WebAuthn GetAssertion request.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webauthn
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
+enum class AssertionMediationType {
+  kModal = 0,
+  kConditional = 1,
+  kImmediatePasskeysOnly = 3,
+  kImmediateWithPasswords = 4,
+};
+
+// Reason codes for non-credential completion of the request.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webauthn
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
+enum class NonCredentialReturnReason {
+  kImmediateNoCredentials = 0,
+  kUserDismissed = 1,
+  kError = 2,
+};
+
 class WebAuthnClientAndroid {
  public:
   virtual ~WebAuthnClientAndroid();
@@ -33,15 +52,19 @@ class WebAuthnClientAndroid {
   static WebAuthnClientAndroid* GetClient();
 
   // Called when a Web Authentication request is received that can be handled
-  // by the browser. This provides the callback that will complete the request
-  // if and when a user selects a credential from a selection dialog.
+  // by the browser. This provides callbacks that will complete the request if
+  // and when a user selects a credential from a selection dialog.
   virtual void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
-      const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-      bool is_conditional_request,
+      std::vector<device::DiscoverableCredentialMetadata> credentials,
+      AssertionMediationType mediation_type,
       base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
-          getAssertionCallback,
-      base::RepeatingCallback<void()> hybridCallback) = 0;
+          passkey_callback,
+      base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
+          password_callback,
+      base::RepeatingClosure hybrid_closure,
+      base::RepeatingCallback<void(NonCredentialReturnReason)>
+          non_credential_callback) = 0;
 
   // Closes an outstanding conditional UI request, so passkeys will no longer be
   // displayed through autofill.

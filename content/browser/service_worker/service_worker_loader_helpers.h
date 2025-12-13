@@ -93,13 +93,20 @@ CONTENT_EXPORT bool IsPathRestrictionSatisfiedWithoutHeader(
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings();
 
 // Check if `client_url` is eligible for Synsthtic Response.
-// Exposes one method which accepts `allowed_urls` for testing.
+// Exposes one method which accepts `allowed_url` for testing.
 bool IsEligibleForSyntheticResponse(BrowserContext* browser_context,
                                     const GURL& client_url);
-CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(
+CONTENT_EXPORT bool IsEligibleForSyntheticResponseForTesting(  // IN-TEST
+    BrowserContext* browser_context,
     const GURL& client_url,
-    const std::string& allowed_urls);
-
+    const std::string& allowed_url,
+    const std::string& denied_url_params);
+bool IsEligibleForSyntheticResponseInternal(
+    BrowserContext* browser_context,
+    const GURL& client_url,
+    const std::string& allowed_url,
+    const base::flat_set<std::string>& denied_url_params);
+bool IsSyntheticResponseDryRunModeEnabled();
 }  // namespace service_worker_loader_helpers
 
 }  // namespace content

@@ -15,7 +15,8 @@
     requestId: beforeRedirect.requestId,
     headers: [
       {name: 'X-Devtools-Test', value: 'foo'},
-      {name: 'Cookie', value: 'bar=bazz'}
+      {name: 'Cookie', value: 'bar=bazz'},
+      {name: 'Referer', value: 'http://google.com'},
     ]
   });
   const afterRedirect = (await dp.Fetch.onceRequestPaused()).params;

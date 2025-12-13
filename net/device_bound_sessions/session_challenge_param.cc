@@ -6,13 +6,15 @@
 
 #include <algorithm>
 
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
 namespace {
-// Sec-Session-Challenge header defined in
+// Secure-Session-Challenge header defined in
 // https://github.com/WICG/dbsc/blob/main/README.md#high-level-overview
-constexpr char kSessionChallengeHeaderName[] = "Sec-Session-Challenge";
+constexpr char kSessionChallengeHeaderName[] = "Secure-Session-Challenge";
+
 constexpr char kSessionIdKey[] = "id";
 }  // namespace
 

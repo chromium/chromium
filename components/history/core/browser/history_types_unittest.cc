@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/history/core/browser/history_types.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/history/core/browser/history_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace history {
@@ -28,7 +25,7 @@ void CheckHistoryResultConsistency(const QueryResults& result) {
 
     bool found = false;
     for (size_t match = 0; match < match_count; match++) {
-      if (matches[match] == i) {
+      if (UNSAFE_TODO(matches[match]) == i) {
         found = true;
         break;
       }
@@ -70,8 +67,8 @@ TEST(HistoryQueryResult, DeleteRange) {
   size_t match_count;
   const size_t* matches = results.MatchesForURL(url1, &match_count);
   ASSERT_EQ(2U, match_count);
-  EXPECT_TRUE((matches[0] == 0 && matches[1] == 1) ||
-              (matches[0] == 1 && matches[1] == 0));
+  UNSAFE_TODO(EXPECT_TRUE((matches[0] == 0 && matches[1] == 1) ||
+                          (matches[0] == 1 && matches[1] == 0)));
 
   // Check the second one.
   matches = results.MatchesForURL(url2, &match_count);

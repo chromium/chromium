@@ -23,8 +23,12 @@ static_library("component_extension_content_settings") {
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//extensions/common",
-    "//url:url",
+    "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -39,4 +43,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

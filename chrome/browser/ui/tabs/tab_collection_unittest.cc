@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group_desktop.h"
@@ -647,7 +648,8 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
             tab_groups::TabGroupVisualData());
     tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
     AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
-    tab_strip_collection->AddTabGroup(std::move(group_one), 6);
+    tab_strip_collection->InsertTabCollectionAt(std::move(group_one), 6, false,
+                                                std::nullopt);
 
     // Add one more tab.
     AppendTab(unpinned_collection, std::make_unique<tabs::TabModel>(
@@ -684,6 +686,110 @@ class TabStripCollectionTest : public TabCollectionBaseTest {
 
     EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(8),
               GetTabInCollectionStorage(unpinned_storage, 3ul));
+  }
+
+  void PerformComplexSetup() {
+    // Makes a collection with the following structure, with R for the root.
+    // R
+    // ├── U
+    // │   ├── T
+    // │   ├── T
+    // │   ├── G
+    // │   │   └── S
+    // │   │       ├── T
+    // │   │       └── T
+    // │   ├── T
+    // │   └── T
+    // └── P
+    //     └── S
+    //         ├── T
+    //         └── T
+
+    tabs::TabStripCollection* tab_strip_collection = GetCollection();
+    tabs::PinnedTabCollection* pinned_collection =
+        tab_strip_collection->pinned_collection();
+    tabs::UnpinnedTabCollection* unpinned_collection =
+        tab_strip_collection->unpinned_collection();
+
+    // 2 pinned tabs.
+    AddTabsToPinnedContainer(pinned_collection, GetTabStripModel(), 2);
+
+    // A split with 2 pinned tabs.
+    std::vector<tabs::TabInterface*> pinned_split_tabs;
+    pinned_split_tabs.push_back(
+        tab_strip_collection->GetTabAtIndexRecursive(0));
+    pinned_split_tabs.push_back(
+        tab_strip_collection->GetTabAtIndexRecursive(1));
+    split_tabs::SplitTabId pinned_split_id =
+        split_tabs::SplitTabId::GenerateNew();
+    tab_strip_collection->CreateSplit(
+        pinned_split_id, pinned_split_tabs,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                       0.5));
+
+    // 2 unpinned tabs.
+    AddTabsToUnpinnedContainer(unpinned_collection, GetTabStripModel(), 2);
+
+    // A group with 2 tabs.
+    TabGroupDesktop::Factory factory(profile());
+
+    std::unique_ptr<tabs::TabGroupTabCollection> group_one =
+        std::make_unique<tabs::TabGroupTabCollection>(
+            factory, tab_groups::TabGroupId::GenerateNew(),
+            tab_groups::TabGroupVisualData());
+    tabs::TabGroupTabCollection* group_one_ptr = group_one.get();
+    AddTabsToGroupContainer(group_one_ptr, GetTabStripModel(), 2);
+    // GetCollection()->AddCollection(std::move(group_one),
+    tab_strip_collection->InsertTabCollectionAt(std::move(group_one), 4, 0,
+                                                std::nullopt);
+
+    // A split in the group with 2 tabs.
+    std::vector<tabs::TabInterface*> grouped_split_tabs;
+    grouped_split_tabs.push_back(
+        tab_strip_collection->GetTabAtIndexRecursive(4));
+    grouped_split_tabs.push_back(
+        tab_strip_collection->GetTabAtIndexRecursive(5));
+    split_tabs::SplitTabId grouped_split_id =
+        split_tabs::SplitTabId::GenerateNew();
+    tab_strip_collection->CreateSplit(
+        grouped_split_id, grouped_split_tabs,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kVertical,
+                                       0.5));
+
+    // 2 more unpinned tabs.
+    AddTabsToUnpinnedContainer(unpinned_collection, GetTabStripModel(), 2);
+
+    tabs::TabCollectionStorage* pinned_split_storage =
+        tab_strip_collection->GetSplitTabCollection(pinned_split_id)
+            ->GetTabCollectionStorageForTesting();
+    tabs::TabCollectionStorage* unpinned_storage =
+        unpinned_collection->GetTabCollectionStorageForTesting();
+    tabs::TabCollectionStorage* grouped_split_storage =
+        tab_strip_collection->GetSplitTabCollection(grouped_split_id)
+            ->GetTabCollectionStorageForTesting();
+
+    EXPECT_EQ(tab_strip_collection->TabCountRecursive(), 8ul);
+
+    // GetTabAtIndex checks
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(0),
+              GetTabInCollectionStorage(pinned_split_storage, 0ul));
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(1),
+              GetTabInCollectionStorage(pinned_split_storage, 1ul));
+
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(2),
+              GetTabInCollectionStorage(unpinned_storage, 0ul));
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(3),
+              GetTabInCollectionStorage(unpinned_storage, 1ul));
+
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(4),
+              GetTabInCollectionStorage(grouped_split_storage, 0ul));
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(5),
+              GetTabInCollectionStorage(grouped_split_storage, 1ul));
+
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(6),
+              GetTabInCollectionStorage(unpinned_storage, 3ul));
+    EXPECT_EQ(tab_strip_collection->GetTabAtIndexRecursive(7),
+              GetTabInCollectionStorage(unpinned_storage, 4ul));
   }
 
   void TestAddTabRecursive(size_t index,
@@ -744,15 +850,17 @@ TEST_F(TabStripCollectionTest, GroupOperations) {
   //     tab_strip_collection->AddTabGroup(std::move(group_two), 2), "");
 
   // Add group to unpinned container.
+  tab_strip_collection->InsertTabCollectionAt(std::move(group_two), 5, false,
+                                              std::nullopt);
   EXPECT_EQ(group_two_ptr,
-            tab_strip_collection->AddTabGroup(std::move(group_two), 5));
+            tab_strip_collection->GetTabGroupCollection(group_two_id));
   EXPECT_EQ(group_two_ptr,
             tab_strip_collection->GetTabGroupCollection(group_two_id));
   EXPECT_EQ(1ul,
             tab_strip_collection->unpinned_collection()->GetIndexOfCollection(
                 group_two_ptr));
   EXPECT_EQ(group_two_ptr,
-            tab_strip_collection->RemoveGroup(group_two_ptr).get());
+            tab_strip_collection->RemoveTabCollection(group_two_ptr).get());
   EXPECT_EQ(nullptr, tab_strip_collection->GetTabGroupCollection(group_two_id));
 }
 
@@ -884,7 +992,7 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
   // 0p 3p 4u 5u 6ug 7ug 8u
   std::unique_ptr<tabs::SplitTabCollection> removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
   EXPECT_EQ(2ul, pinned_collection->TabCountRecursive());
   EXPECT_FALSE(
@@ -892,8 +1000,8 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
 
   // Insert back into pinned container
   // 0p 1ps 2ps 3p 4u 5u 6ug 7ug 8u
-  tab_strip_collection->InsertSplitTabAt(std::move(removed_split_collection), 1,
-                                         true, std::nullopt);
+  tab_strip_collection->InsertTabCollectionAt(
+      std::move(removed_split_collection), 1, true, std::nullopt);
   EXPECT_TRUE(
       tab_strip_collection->GetSplitTabCollection(split->GetSplitTabId()));
   EXPECT_EQ(4ul, pinned_collection->TabCountRecursive());
@@ -903,10 +1011,10 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
 
   removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
-  tab_strip_collection->InsertSplitTabAt(std::move(removed_split_collection), 3,
-                                         false, std::nullopt);
+  tab_strip_collection->InsertTabCollectionAt(
+      std::move(removed_split_collection), 3, false, std::nullopt);
   EXPECT_EQ(7ul, unpinned_collection->TabCountRecursive());
   EXPECT_TRUE(
       tab_strip_collection->GetSplitTabCollection(split->GetSplitTabId()));
@@ -915,11 +1023,11 @@ TEST_F(TabStripCollectionTest, RemoveAndInsertSplit) {
   // 0p 3p 4u 5u 6ug 1gs 2gs 7ug 8u
   removed_split_collection =
       base::WrapUnique(static_cast<tabs::SplitTabCollection*>(
-          tab_strip_collection->RemoveSplit(split).release()));
+          tab_strip_collection->RemoveTabCollection(split).release()));
 
-  tab_strip_collection->InsertSplitTabAt(std::move(removed_split_collection), 5,
-                                         false,
-                                         group_collection->GetTabGroupId());
+  tab_strip_collection->InsertTabCollectionAt(
+      std::move(removed_split_collection), 5, false,
+      group_collection->GetTabGroupId());
   EXPECT_EQ(7ul, unpinned_collection->TabCountRecursive());
   EXPECT_EQ(4ul, group_collection->TabCountRecursive());
   EXPECT_TRUE(
@@ -1268,4 +1376,86 @@ TEST_F(TabStripCollectionTest, ValidateData) {
   ASSERT_EQ(group_one_ptr->ChildCount(), 0ul);
   // TODO(crbug.com/332586827): Re-enable death testing.
   // EXPECT_DEATH_IF_SUPPORTED(tab_strip_collection->ValidateData(), "");
+}
+
+TEST_F(TabStripCollectionTest, TabIteratorFromTabInNestedCollection) {
+  PerformComplexSetup();
+
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+
+  // Test iterating from a tab in the grouped split.
+  tabs::TabInterface* tab_in_grouped_split =
+      tab_strip_collection->GetTabAtIndexRecursive(5);
+  tabs::TabCollection::TabIterator it(tab_in_grouped_split);
+  ASSERT_NE(it, tab_strip_collection->end());
+  EXPECT_EQ(*it, tab_in_grouped_split);
+
+  ++it;
+  EXPECT_EQ(*it, tab_strip_collection->GetTabAtIndexRecursive(6));
+  ++it;
+  EXPECT_EQ(*it, tab_strip_collection->GetTabAtIndexRecursive(7));
+  ++it;
+  EXPECT_EQ(it, tab_strip_collection->end());
+
+  // Test iterating from a tab in the pinned split.
+  tabs::TabInterface* tab_in_pinned_split =
+      tab_strip_collection->GetTabAtIndexRecursive(1);
+  tabs::TabCollection::TabIterator it2(tab_in_pinned_split);
+  ASSERT_NE(it2, tab_strip_collection->end());
+  EXPECT_EQ(*it2, tab_in_pinned_split);
+
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(2));
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(3));
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(4));
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(5));
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(6));
+  ++it2;
+  EXPECT_EQ(*it2, tab_strip_collection->GetTabAtIndexRecursive(7));
+  ++it2;
+  EXPECT_EQ(it2, tab_strip_collection->end());
+}
+
+TEST_F(TabStripCollectionTest, TabIteratorFromTab) {
+  // Setup for the main collections.
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+
+  // Test with a tab in the middle of the tab strip.
+  tabs::TabInterface* tab = tab_strip_collection->GetTabAtIndexRecursive(5);
+  tabs::TabCollection::TabIterator it(tab);
+  ASSERT_NE(it, tab_strip_collection->end());
+  EXPECT_EQ(*it, tab);
+
+  // Test iterating from the tab.
+  ++it;
+  EXPECT_EQ(*it, tab_strip_collection->GetTabAtIndexRecursive(6));
+  ++it;
+  EXPECT_EQ(*it, tab_strip_collection->GetTabAtIndexRecursive(7));
+  ++it;
+  EXPECT_EQ(*it, tab_strip_collection->GetTabAtIndexRecursive(8));
+  ++it;
+  EXPECT_EQ(it, tab_strip_collection->end());
+
+  // Test with the first tab.
+  tabs::TabInterface* first_tab =
+      tab_strip_collection->GetTabAtIndexRecursive(0);
+  tabs::TabCollection::TabIterator first_it(first_tab);
+  ASSERT_NE(first_it, tab_strip_collection->end());
+  EXPECT_EQ(*first_it, first_tab);
+  ++first_it;
+  EXPECT_EQ(*first_it, tab_strip_collection->GetTabAtIndexRecursive(1));
+
+  // Test with the last tab.
+  tabs::TabInterface* last_tab =
+      tab_strip_collection->GetTabAtIndexRecursive(8);
+  tabs::TabCollection::TabIterator last_it(last_tab);
+  ASSERT_NE(last_it, tab_strip_collection->end());
+  EXPECT_EQ(*last_it, last_tab);
+  ++last_it;
+  EXPECT_EQ(last_it, tab_strip_collection->end());
 }

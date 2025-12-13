@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel="match" href="text-shrink-consistent-ref.html">
+<meta name="flags" content="ahem">
+<link rel="stylesheet" href="/fonts/ahem.css">
+<style>
+.target {
+  white-space: pre;
+  width: 80px;
+  margin-bottom: 10px;
+  font: 20px/normal Ahem;
+}
+
+.scale {
+  text-shrink: consistent scale;
+  border: 1px solid green;
+}
+.scaleinline {
+  text-shrink: consistent scale-inline;
+}
+.fontsize {
+  text-shrink: consistent font-size;
+  border: 1px solid green;
+}
+</style>
+<body>
+<div class="target scale">ABCDEFGH
+ABCD</div>
+
+<div class="target scaleinline">ABCDEFGH
+ABCD</div>
+
+<div class="target fontsize">ABCD
+ABCDEFGH</div>
+
+</body>

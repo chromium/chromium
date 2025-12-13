@@ -273,3 +273,5 @@ void SerialChooserDialogAndroid::Cancel() {
   controller_->Cancel();
   std::move(on_close_).Run();
 }
+
+DEFINE_JNI(SerialChooserDialog)

@@ -9,7 +9,7 @@ import {DisableTouchpadMode} from 'chrome://os-settings/lazy_load.js';
 import type {CrLinkRowElement, SettingsDropdownMenuElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {createRouterForTesting, CrSettingsPrefs, DevicePageBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -75,9 +75,6 @@ suite('<settings-cursor-and-touchpad-page>', () => {
   async function setUpNavigationTest(
       hasMouse: boolean, hasTouchpad: boolean,
       hasPointingStick: boolean): Promise<void> {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: true,
-    });
     const testRouter = createRouterForTesting();
     Router.resetInstanceForTesting(testRouter);
     await initPage();
@@ -138,49 +135,9 @@ suite('<settings-cursor-and-touchpad-page>', () => {
     assertFalse(cursorColorEnabledPref.value);
   });
 
-  // Only run this test when input device setting split feature flag is
-  // disabled.
-  test(
-      'should focus pointerSubpageButton button when returning from Pointers subpage',
-      async () => {
-        loadTimeData.overrideValues({
-          enableInputDeviceSettingsSplit: false,
-        });
-        const testRouter = createRouterForTesting();
-        Router.resetInstanceForTesting(testRouter);
-        const selector = '#pointerSubpageButton';
-        const route = routes.POINTERS;
-        await initPage();
-        flush();
-        const router = Router.getInstance();
-
-        const subpageButton =
-            page.shadowRoot!.querySelector<HTMLElement>(selector);
-        assert(subpageButton);
-
-        subpageButton.click();
-        assertEquals(route, router.currentRoute);
-        assertNotEquals(
-            subpageButton, page.shadowRoot!.activeElement,
-            `${selector} should not be focused`);
-
-        const popStateEventPromise = eventToPromise('popstate', window);
-        router.navigateToPreviousRoute();
-        await popStateEventPromise;
-        await waitAfterNextRender(page);
-
-        assertEquals(routes.A11Y_CURSOR_AND_TOUCHPAD, router.currentRoute);
-        assertEquals(
-            subpageButton, page.shadowRoot!.activeElement,
-            `${selector} should be focused`);
-      });
-
   test(
       'should focus pointerSubpageButton button when returning from touchpad subpage',
       async () => {
-        loadTimeData.overrideValues({
-          enableInputDeviceSettingsSplit: true,
-        });
         const testRouter = createRouterForTesting();
         Router.resetInstanceForTesting(testRouter);
         const selector = '#pointerSubpageButton';
@@ -532,6 +489,8 @@ suite('<settings-cursor-and-touchpad-page>', () => {
           controlElement.value = String(alternateValue);
           controlElement.dispatchEvent(new CustomEvent('change'));
           break;
+        default:
+          assertNotReachedCase(type);
       }
 
       // Ensure pref is set to the alternate value.
@@ -602,53 +561,32 @@ suite('<settings-cursor-and-touchpad-page>', () => {
         `Element should be focused for settingId=${setting}'`);
   });
 
-  test(
-      'face control feature does not show if the feature flag is disabled',
-      async () => {
-        loadTimeData.overrideValues({
-          isAccessibilityFaceGazeEnabled: false,
-        });
+  test('face control feature shows', async () => {
+    loadTimeData.overrideValues({isKioskModeActive: false});
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertEquals(null, faceGazePageRow);
-      });
+    await initPage();
+    const faceGazePageRow = getFaceGazePageRow();
+    assertTrue(!!faceGazePageRow);
+    assertTrue(isVisible(faceGazePageRow));
 
-  test(
-      'face control feature shows if the feature flag is enabled', async () => {
-        loadTimeData.overrideValues({
-          isKioskModeActive: false,
-          isAccessibilityFaceGazeEnabled: true,
-        });
+    assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
+  });
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertTrue(!!faceGazePageRow);
-        assertTrue(isVisible(faceGazePageRow));
+  test('can reach face control settings from row', async () => {
+    loadTimeData.overrideValues({isKioskModeActive: false});
 
-        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
-      });
+    await initPage();
+    const faceGazePageRow = getFaceGazePageRow();
+    assertTrue(!!faceGazePageRow);
+    assertTrue(isVisible(faceGazePageRow));
 
-  test(
-      'can reach face control settings from row when feature flag is enabled',
-      async () => {
-        loadTimeData.overrideValues({
-          isKioskModeActive: false,
-          isAccessibilityFaceGazeEnabled: true,
-        });
+    assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
 
-        await initPage();
-        const faceGazePageRow = getFaceGazePageRow();
-        assertTrue(!!faceGazePageRow);
-        assertTrue(isVisible(faceGazePageRow));
-
-        assertFalse(page.prefs.settings.a11y.face_gaze.enabled.value);
-
-        // Clicking on it should update the route.
-        faceGazePageRow.click();
-        assertEquals(
-            routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
-      });
+    // Clicking on it should update the route.
+    faceGazePageRow.click();
+    assertEquals(
+        routes.MANAGE_FACEGAZE_SETTINGS, Router.getInstance().currentRoute);
+  });
 
   test('Mouse keys feature disabled.', async () => {
     loadTimeData.overrideValues({

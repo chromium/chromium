@@ -1,12 +1,8 @@
 include_rules = [
   '+components/android_autofill',
-  '+components/credential_management',
+  '+components/autofill/content',
   '+components/plus_addresses',
   '+components/webauthn',
-  '+third_party/libaddressinput/chromium/addressinput_util.h',
-  '+third_party/libaddressinput/chromium/chrome_address_validator.h',
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',
-  '+third_party/libaddressinput/chromium/chrome_storage_impl.h',
   '+third_party/libaddressinput/messages.h',
-  '+third_party/libaddressinput/src/cpp/include/libaddressinput',
 ]

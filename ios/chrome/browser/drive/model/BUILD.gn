@@ -46,6 +46,7 @@ source_set("drive_upload_task") {
     ":metrics",
     "//base",
     "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:system_identity",
     "//net",
     "//url",
@@ -97,6 +98,7 @@ source_set("drive_list") {
     "drive_list.h",
     "drive_list.mm",
   ]
+  deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
   public_deps = [ "//base" ]
 }
 
@@ -115,18 +117,6 @@ source_set("drive_service_factory") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",
-  ]
-}
-
-source_set("manage_storage_url_util") {
-  sources = [
-    "manage_storage_url_util.h",
-    "manage_storage_url_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//url",
   ]
 }
 

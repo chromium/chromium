@@ -4,6 +4,7 @@
 
 #include "components/webauthn/json/value_conversions.h"
 
+#include <algorithm>
 #include <iterator>
 #include <optional>
 #include <ranges>
@@ -13,18 +14,20 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "device/fido/attestation_object.h"
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/fido_user_verification_requirement.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 namespace webauthn {
@@ -168,14 +171,7 @@ base::Value ToValue(
 
 base::Value ToValue(
     const device::UserVerificationRequirement& user_verification_requirement) {
-  switch (user_verification_requirement) {
-    case device::UserVerificationRequirement::kDiscouraged:
-      return base::Value("discouraged");
-    case device::UserVerificationRequirement::kPreferred:
-      return base::Value("preferred");
-    case device::UserVerificationRequirement::kRequired:
-      return base::Value("required");
-  }
+  return base::Value(device::ToString(user_verification_requirement));
 }
 
 base::Value ToValue(
@@ -236,9 +232,9 @@ base::Value ToValue(const device::LargeBlobSupport large_blob) {
     case device::LargeBlobSupport::kNotRequested:
       NOTREACHED();
     case device::LargeBlobSupport::kRequired:
-      return base::Value("required");
+      return base::Value(device::kExtensionLargeBlobSupportRequired);
     case device::LargeBlobSupport::kPreferred:
-      return base::Value("preferred");
+      return base::Value(device::kExtensionLargeBlobSupportPreferred);
   }
 }
 
@@ -369,6 +365,35 @@ base::Value ToValue(const std::vector<blink::mojom::Hint>& hints) {
   return base::Value(std::move(ret));
 }
 
+base::Value::Dict ToValue(
+    const blink::mojom::AllAcceptedCredentialsOptions& options) {
+  base::Value::Dict value;
+  value.Set("userId", Base64UrlEncode(options.user_id));
+
+  base::Value::List accepted_credential_ids;
+  accepted_credential_ids.reserve(options.all_accepted_credentials_ids.size());
+  for (const auto& credential_id : options.all_accepted_credentials_ids) {
+    accepted_credential_ids.Append(Base64UrlEncode(credential_id));
+  }
+  value.Set("allAcceptedCredentialIds", std::move(accepted_credential_ids));
+  return value;
+}
+
+base::Value::Dict ToValue(
+    const blink::mojom::CurrentUserDetailsOptions& options) {
+  base::Value::Dict value;
+  value.Set("userId", Base64UrlEncode(options.user_id));
+  value.Set("name", options.name);
+  value.Set("displayName", options.display_name);
+  return value;
+}
+
+int adjustTimeout(int timeout) {
+  const int minTimeoutMs = device::kMinRequestTimeout.InMilliseconds();
+  const int maxTimeoutMs = device::kMaxRequestTimeout.InMilliseconds();
+  return std::max(minTimeoutMs, std::min(maxTimeoutMs, timeout));
+}
+
 }  // namespace
 
 base::Value ToValue(
@@ -400,6 +425,12 @@ base::Value ToValue(
 
   if (!options->attestation_formats.empty()) {
     value.Set("attestationFormats", ToValue(options->attestation_formats));
+  }
+
+  if (options->timeout) {
+    int timeout =
+        adjustTimeout(base::TimeDelta(*options->timeout).InMilliseconds());
+    value.Set("timeout", timeout);
   }
 
   base::Value::Dict extensions;
@@ -496,6 +527,12 @@ base::Value ToValue(
     value.Set("hints", ToValue(options->hints));
   }
 
+  if (options->timeout) {
+    int timeout =
+        adjustTimeout(base::TimeDelta(*options->timeout).InMilliseconds());
+    value.Set("timeout", timeout);
+  }
+
   base::Value::Dict extensions;
 
   if (options->extensions->appid) {
@@ -567,6 +604,25 @@ base::Value ToValue(
   }
 
   return base::Value(std::move(value));
+}
+
+base::Value ToValue(
+    const blink::mojom::PublicKeyCredentialReportOptionsPtr& options) {
+  if (options->all_accepted_credentials) {
+    base::Value::Dict value = ToValue(*options->all_accepted_credentials);
+    value.Set("rpId", options->relying_party_id);
+    return base::Value(std::move(value));
+  } else if (options->current_user_details) {
+    base::Value::Dict value = ToValue(*options->current_user_details);
+    value.Set("rpId", options->relying_party_id);
+    return base::Value(std::move(value));
+  } else if (options->unknown_credential_id) {
+    base::Value::Dict value;
+    value.Set("rpId", options->relying_party_id);
+    value.Set("credentialId", Base64UrlEncode(*options->unknown_credential_id));
+    return base::Value(std::move(value));
+  }
+  NOTREACHED();
 }
 
 std::optional<blink::mojom::PRFValuesPtr> ParsePRFResults(

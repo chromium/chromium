@@ -38,9 +38,9 @@ suite('AdvancedItemTest', function() {
     // Check that the default option is selected.
     const select = item.shadowRoot.querySelector('select')!;
     assertEquals(0, select.selectedIndex);
-    assertEquals('Standard', select.options[0]!.textContent!.trim());
-    assertEquals('Recycled', select.options[1]!.textContent!.trim());
-    assertEquals('Special', select.options[2]!.textContent!.trim());
+    assertEquals('Standard', select.options[0]!.textContent.trim());
+    assertEquals('Recycled', select.options[1]!.textContent.trim());
+    assertEquals('Special', select.options[2]!.textContent.trim());
 
     // Don't show input or checkbox.
     assertTrue(

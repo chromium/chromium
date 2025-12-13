@@ -20,44 +20,46 @@ cast_test_group("starboard_renderer_tests") {
 }
 
 source_set("starboard") {
+  public = [
+    "media_pipeline_backend_starboard.h",
+    "starboard_audio_decoder.h",
+    "starboard_decoder.h",
+    "starboard_video_decoder.h",
+    "starboard_video_plane.h",
+  ]
   sources = [
     "cast_media_starboard.cc",
     "media_pipeline_backend_starboard.cc",
-    "media_pipeline_backend_starboard.h",
     "starboard_audio_decoder.cc",
-    "starboard_audio_decoder.h",
     "starboard_decoder.cc",
-    "starboard_decoder.h",
     "starboard_video_decoder.cc",
-    "starboard_video_decoder.h",
     "starboard_video_plane.cc",
-    "starboard_video_plane.h",
     "starboard_volume_control.cc",
   ]
-  deps = [
+  public_deps = [
     ":drm_util",
-    ":mime_utils",
     ":starboard_api_wrapper",
-    ":starboard_resampler",
     "//base",
-    "//chromecast/base",
     "//chromecast/public",
     "//chromecast/public/media",
-    "//chromecast/starboard/chromecast/starboard_adapter",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
-    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
+  ]
+  deps = [
+    ":mime_utils",
+    ":starboard_resampler",
+    "//chromecast/base",
+    "//chromecast/starboard/chromecast/starboard_adapter",
+    "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//ui/display",
     "//ui/gfx/geometry",
   ]
 }
 
 source_set("starboard_resampler") {
-  sources = [
-    "starboard_resampler.cc",
-    "starboard_resampler.h",
-  ]
-  deps = [
+  public = [ "starboard_resampler.h" ]
+  sources = [ "starboard_resampler.cc" ]
+  public_deps = [
     "//base",
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
@@ -66,11 +68,9 @@ source_set("starboard_resampler") {
 }
 
 source_set("drm_util") {
-  sources = [
-    "drm_util.cc",
-    "drm_util.h",
-  ]
-  deps = [
+  public = [ "drm_util.h" ]
+  sources = [ "drm_util.cc" ]
+  public_deps = [
     ":starboard_api_wrapper",
     "//chromecast/public/media",
     "//media",
@@ -79,11 +79,9 @@ source_set("drm_util") {
 
 source_set("mock_starboard_api_wrapper") {
   testonly = true
-  sources = [
-    "mock_starboard_api_wrapper.cc",
-    "mock_starboard_api_wrapper.h",
-  ]
-  deps = [
+  public = [ "mock_starboard_api_wrapper.h" ]
+  sources = [ "mock_starboard_api_wrapper.cc" ]
+  public_deps = [
     ":starboard_api_wrapper",
     "//testing/gmock",
   ]
@@ -116,6 +114,7 @@ cast_source_set("starboard_api_wrapper") {
       sources += [ "starboard_api_wrapper_14.cc" ]
     }
     deps += [
+      "//chromecast/common:timing_tracker",
       "//chromecast/starboard/chromecast/starboard_adapter",
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
     ]
@@ -173,6 +172,7 @@ test("starboard_media_unittests") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:mocks",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//media",

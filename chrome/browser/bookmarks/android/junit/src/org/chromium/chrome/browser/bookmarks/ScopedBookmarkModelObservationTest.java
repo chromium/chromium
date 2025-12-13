@@ -130,8 +130,8 @@ public class ScopedBookmarkModelObservationTest {
     @SmallTest
     public void testBookmarkNodeAddedToObservedFolder() {
         final int index = 10;
-        when(mModel.getChildAt(mFolderId, index)).thenAnswer(i -> mItem.getId());
-        mUnderlyingObserver.bookmarkNodeAdded(mFolder, index);
+        when(mModel.getChildAt(mFolderId, index)).thenReturn(mItemId);
+        mUnderlyingObserver.bookmarkNodeAdded(mFolder, index, /* addedByUser= */ false);
         verify(mObserver).onBookmarkItemAdded(mObservationId, mItem, index);
         verifyNoMoreInteractions(mObserver);
     }
@@ -140,14 +140,14 @@ public class ScopedBookmarkModelObservationTest {
     @SmallTest
     public void testBookmarkNodeAddedToUnobservedFolder() {
         final int index = 10;
-        mUnderlyingObserver.bookmarkNodeAdded(mUnobservedFolder, index);
+        mUnderlyingObserver.bookmarkNodeAdded(mUnobservedFolder, index, /* addedByUser= */ false);
         verifyNoMoreInteractions(mObserver);
     }
 
     @Test
     @SmallTest
     public void testBookmarkNodeChangedWithinObservedFolder() {
-        final int index = mModel.getChildIds(mFolderId).indexOf(mItem.getId());
+        final int index = getIds(mFolderItems).indexOf(mItemId);
         mUnderlyingObserver.bookmarkNodeChanged(mItem);
         verify(mObserver).onBookmarkItemUpdated(mObservationId, mItem, index);
         verifyNoMoreInteractions(mObserver);

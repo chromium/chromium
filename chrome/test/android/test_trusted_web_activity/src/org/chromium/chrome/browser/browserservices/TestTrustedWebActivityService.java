@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.app.Notification;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 
@@ -14,6 +15,9 @@ import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TokenStore;
 import androidx.browser.trusted.TrustedWebActivityCallbackRemote;
 import androidx.browser.trusted.TrustedWebActivityService;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /** A TrustedWebActivityService to be used in TrustedWebActivityClientTest. */
 public class TestTrustedWebActivityService extends TrustedWebActivityService {
@@ -32,6 +36,12 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     private static final String START_LOCATION_COMMAND_NAME = "startLocation";
     private static final String STOP_LOCATION_COMMAND_NAME = "stopLocation";
     private static final String EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK = "onNewLocationAvailable";
+
+    private static final String COMMAND_CHECK_CONTACT_PERMISSION = "checkContactPermission";
+    private static final String CONTACT_PERMISSION_RESULT = "contactPermissionResult";
+    private static final String COMMAND_FETCH_CONTACTS = "fetchContacts";
+    private static final String COMMAND_FETCH_CONTACT_ICON = "fetchContactIcon";
+
     private static final String EXTRA_COMMAND_SUCCESS = "success";
 
     private final TokenStore mTokenStore = new InMemoryStore();
@@ -109,6 +119,40 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
                 mResponseName = args.getString(SET_RESPONSE_NAME);
                 mResponseBundle = args.getBundle(SET_RESPONSE_BUNDLE);
                 runCallback(callback, SET_RESPONSE_RESPONSE, null);
+                break;
+            case COMMAND_CHECK_CONTACT_PERMISSION:
+                if (callback == null) break;
+
+                Bundle contactPermission = new Bundle();
+                contactPermission.putBoolean(CONTACT_PERMISSION_RESULT, true);
+                runCallback(callback, COMMAND_CHECK_CONTACT_PERMISSION, contactPermission);
+                break;
+            case COMMAND_FETCH_CONTACTS:
+                if (callback == null) break;
+
+                Bundle contact = new Bundle();
+                contact.putString("id", "id123");
+                contact.putString("name", "Tomoki Sakurai");
+                contact.putStringArrayList(
+                        "email", new ArrayList<>(Arrays.asList("stomoki@example.com")));
+                contact.putStringArrayList("tel", new ArrayList<>(Arrays.asList("012-3456-7890")));
+                contact.putParcelableArrayList("address", new ArrayList<>());
+
+                Bundle contactsResult = new Bundle();
+                contactsResult.putParcelableArrayList(
+                        "contacts", new ArrayList<>(Arrays.asList(contact)));
+                runCallback(callback, COMMAND_FETCH_CONTACTS, contactsResult);
+                break;
+            case COMMAND_FETCH_CONTACT_ICON:
+                if (callback == null) break;
+
+                Uri uri = Uri.EMPTY;
+
+                Bundle iconResult = new Bundle();
+
+                iconResult.putParcelable("icon", uri);
+
+                runCallback(callback, COMMAND_FETCH_CONTACT_ICON, iconResult);
                 break;
             default:
                 if (mResponseBundle != null) {

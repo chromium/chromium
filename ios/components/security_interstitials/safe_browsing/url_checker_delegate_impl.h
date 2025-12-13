@@ -5,7 +5,7 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 

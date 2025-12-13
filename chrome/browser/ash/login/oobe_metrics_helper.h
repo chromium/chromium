@@ -10,11 +10,20 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 
+class PrefService;
+
+namespace metrics {
+class MetricsService;
+}
+
 namespace ash {
+
+class LoginDisplayHostCommon;
 
 // Handles metrics for OOBE.
 class OobeMetricsHelper {
@@ -24,6 +33,17 @@ class OobeMetricsHelper {
   // change one without changing the other). Entries should be never modified
   // or deleted. Only additions possible.
   enum class ScreenShownStatus { kSkipped = 0, kShown = 1, kMaxValue = kShown };
+
+  // This enum is tied directly to a UMA enum defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should be never modified
+  // or deleted. Only additions possible.
+  enum class OobeNotCompletedTrigger {
+    kPerformOobeCompletedAction = 0,
+    kGaiaScreen = 1,
+    kExistingUserController = 2,
+    kMaxValue = kExistingUserController
+  };
 
   // The type of flow completed when pre-login OOBE is completed.
   enum class CompletedPreLoginOobeFlowType {
@@ -80,7 +100,21 @@ class OobeMetricsHelper {
     virtual void OnChoobeResumed() {}
   };
 
-  OobeMetricsHelper();
+  // For common use.
+  //
+  // `local_state` instance must be non-null and must outlive |this|.
+  // `metrics_service` instance can be null in tests.
+  OobeMetricsHelper(PrefService* local_state,
+                    ::metrics::MetricsService* metrics_service);
+
+  // Workaround of the timing issue for short term.
+  using LocalStateGetterCallback = base::RepeatingCallback<PrefService*()>;
+  using MetricsServiceGetterCallback =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+  OobeMetricsHelper(base::PassKey<LoginDisplayHostCommon>,
+                    LocalStateGetterCallback local_state_getter,
+                    MetricsServiceGetterCallback metrics_service_callback);
+
   ~OobeMetricsHelper();
   OobeMetricsHelper(const OobeMetricsHelper& other) = delete;
   OobeMetricsHelper& operator=(const OobeMetricsHelper&) = delete;
@@ -137,11 +171,15 @@ class OobeMetricsHelper {
 
   void RecordChromeVersion();
 
+  void RecordOobeNotCompletedErrorTrigger(OobeNotCompletedTrigger trigger);
+
   void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer);
 
  private:
+  void Initialize();
+
   void RecordUpdatedStepShownStatus(OobeScreenId screen,
                                     ScreenShownStatus status);
   void RecordUpdatedStepCompletionTime(OobeScreenId screen,
@@ -159,6 +197,9 @@ class OobeMetricsHelper {
   base::CallbackListSubscription stats_reporting_subscription_;
 
   base::ObserverList<Observer> observers_;
+
+  LocalStateGetterCallback local_state_getter_;
+  MetricsServiceGetterCallback metrics_service_getter_;
 };
 
 }  // namespace ash

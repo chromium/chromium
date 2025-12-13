@@ -11,7 +11,10 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 struct ManagementPolicyRequestLog {
   std::string all_headers;

@@ -24,9 +24,6 @@ found in the LICENSE file.
         <item name="android:scaleY">@fraction/material_switch_scale_fraction</item>
         <item name="android:minHeight">@dimen/switch_pre_scale_min_height</item>
     </style>
-    <style name="Widget.BrowserUI.Switch.Incognito">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.BrowserUI.Switch.Incognito</item>
-    </style>
     <!-- TextInputLayout style -->
     <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
         <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
@@ -36,6 +33,20 @@ found in the LICENSE file.
     <style name="ThemeOverlay.BrowserUI.TextInputLayout" parent="">
         <item name="editTextStyle">@style/Widget.BrowserUI.TextInputEditText</item>
         <item name="autoCompleteTextViewStyle">@style/Widget.BrowserUI.AutoCompleteTextView</item>
+    </style>
+    <style name="Widget.Chromium.Settings.TextInputLayout.OutlinedBox"
+        parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="android:theme">@style/ThemeOverlay.Chromium.Settings.TextInput</item>
+    </style>
+
+    <style name="Widget.Chromium.Settings.AutoCompleteTextView.OutlinedBox"
+        parent="Widget.Material3.AutoCompleteTextView.OutlinedBox">
+        <item name="android:theme">@style/ThemeOverlay.Chromium.Settings.TextInput</item>
+    </style>
+
+    <style name="ThemeOverlay.Chromium.Settings.TextInput" parent="">
+        <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
+        <item name="hintTextAppearance">@style/TextAppearance.TextSmall.Accent1</item>
     </style>
     <style name="Widget.BrowserUI.TextInputEditText" parent="Widget.Design.TextInputEditText">
         <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
@@ -61,11 +72,17 @@ found in the LICENSE file.
     <style name="AppMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay">
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearance">@style/TextAppearance.DensityAdaptive.TextLarge.Primary</item>
     </style>
 
-    <style name="AlertDialogButtonStyle" parent="Widget.Material3.Button.TextButton.Dialog">
-        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+    <style name="AlertDialogButtonStyle" parent="Widget.Material3Expressive.Button.TextButton.Dialog">
+        <item name="android:textAppearance">@style/TextAppearance.TextAccentMediumThick.Primary</item>
+    </style>
+
+    <style name="TimePickerDialogButtonStyle" parent="AlertDialogButtonStyle">
+        <!-- Arbitrary value to force the button bar orientation to vertical. -->
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
     </style>
 
     <!-- Styled to match BlackHeadline but setup to override values in the app compat parent theme.
@@ -99,11 +116,65 @@ found in the LICENSE file.
         <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
     </style>
 
+    <!-- TODO(crbug.com/419879223): Move closer to the app menu code once we don't need to apply these using themes. -->
+    <!-- App menu styles. -->
     <!-- Styling for an app menu item row. -->
     <style name="AppMenuItem">
         <item name="android:paddingStart">16dp</item>
         <item name="android:paddingEnd">16dp</item>
         <item name="android:background">?attr/listChoiceBackgroundIndicator</item>
+    </style>
+
+    <!-- Styling for an icon in an app menu icon row. -->
+    <style name="OverflowMenuButton" parent="Widget.Material3Expressive.Button.IconButton.Standard">
+        <!-- Perfect square. -->
+        <item name="android:layout_width">?android:attr/listPreferredItemHeightSmall</item>
+        <item name="android:layout_height">?android:attr/listPreferredItemHeightSmall</item>
+        <!-- Position the button at the center within the wrapper. -->
+        <item name="android:layout_gravity">center</item>
+        <!-- Ensure each button's content block (text + icon) is centered
+        vertically and horizontally within each cell. -->
+        <item name="android:gravity">center</item>
+        <!-- Place each button at the start of its content block (text + icon),
+         which is already centered within its own cell. -->
+        <item name="iconGravity">textStart</item>
+        <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
+        <item name="iconSize">24dp</item>
+        <item name="iconTint">@color/default_icon_color_tint_list</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
+    <!-- Expressive styling for an icon in an app menu icon row. -->
+    <style name="OverflowMenuButton.Expressive" parent="Widget.Material3Expressive.Button.IconButton.Tonal">
+        <item name="materialSizeOverlay">?attr/iconRowButtonSizeOverlay</item>
+        <item name="backgroundTint">@color/tonal_button_bg_list</item>
+        <item name="iconTint">@color/tonal_button_icon_tint_list</item>
+    </style>
+
+    <style name="SizeOverlay.BrowserUI.IconRowButton" parent="SizeOverlay.Material3Expressive.Button.IconButton.Small">
+        <item name="containerIconSize">?attr/listItemIconSize</item>
+    </style>
+
+    <style name="SizeOverlay.BrowserUI.IconRowButton.DesktopDensity">
+        <item name="containerPaddingStart">8dp</item>
+        <item name="containerPaddingEnd">8dp</item>
+        <item name="containerPaddingTop">8dp</item>
+        <item name="containerPaddingBottom">8dp</item>
+        <item name="containerInsetTop">0dp</item>
+        <item name="containerInsetBottom">0dp</item>
+        <item name="containerInsetLeft">0dp</item>
+        <item name="containerInsetRight">0dp</item>
+    </style>
+
+    <style name="SizeOverlay.BrowserUI.ColorButton" parent="SizeOverlay.Material3Expressive.Button.IconButton.Xsmall" />
+
+    <style name="SizeOverlay.BrowserUI.ColorButton.DesktopDensity">
+        <item name="containerInsetTop">6dp</item>
+        <item name="containerInsetBottom">6dp</item>
+        <item name="containerInsetLeft">6dp</item>
+        <item name="containerInsetRight">6dp</item>
+        <item name="containerShapeChecked">?attr/shapeAppearanceCornerSmall</item>
+        <item name="containerShapePressed">?attr/shapeAppearanceCornerExtraSmall</item>
     </style>
 
     <!-- Checkbox styles. -->
@@ -116,7 +187,7 @@ found in the LICENSE file.
     <item name="android:background">@macro/default_bg_color</item>
     </style>
 
-    <style name="Base.ModernToolbar" parent="Widget.Material3.Toolbar">
+    <style name="Base.ModernToolbar" parent="Widget.Material3Expressive.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
         <item name="titleTextColor">@macro/default_text_color</item>
         <item name="windowActionBarOverlay">true</item>
@@ -129,6 +200,22 @@ found in the LICENSE file.
     </style>
 
     <!-- Text styles -->
+
+    <!-- Density adaptive text styles -->
+    <style name="TextAppearance.DensityAdaptive.TextLarge" parent="TextAppearance">
+        <item name="android:textSize">?attr/textLargeSize</item>
+        <item name="leading">?attr/textLargeLeading</item>
+    </style>
+
+    <style name="TextAppearance.DensityAdaptive.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.DensityAdaptive.TextLarge.Primary.Baseline.Light"
+        parent="TextAppearance.DensityAdaptive.TextLarge">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+
     <!-- Primary text styles -->
     <style name="TextAppearance.Headline.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
@@ -144,11 +231,6 @@ found in the LICENSE file.
 
     <style name="TextAppearance.TextLarge.Primary">
         <item name="android:textColor">@color/default_text_color_list</item>
-    </style>
-
-    <style name="TextAppearance.TextLarge.Primary.Bold">
-        <item name="android:textColor">@color/default_text_color_list</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextAppearance.TextMediumThick.Primary">

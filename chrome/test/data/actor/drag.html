@@ -6,10 +6,10 @@
     <style>
       body {
         /* Make page scrollable. */
-        width: 300vh;
+        width: 300vw;
         height: 300vh;
       }
-      range {
+      #range {
         width: 400px;
       }
       #offscreenRange {
@@ -25,12 +25,18 @@
         left: 500px;
         top: 300px;
       }
+      #pointerLogger {
+        width: 30px;
+        height: 30px;
+        background-color: burlywood;
+      }
     </style>
   </head>
   <body>
     <input id="range" type="range" min="0" max="100" value="0">
     <div id="dragLogger"></div>
     <input id="offscreenRange" type="range" min="0" max="100" value="0">
+    <div id="pointerLogger"></div>
     <script>
       let event_log = [];
       let log_handler =
@@ -40,6 +46,16 @@
       el.addEventListener('mousedown', log_handler);
       el.addEventListener('mousemove', log_handler);
       el.addEventListener('mouseup', log_handler);
+
+      let pointer_log = [];
+      let pointer_handler = e => pointer_log.push(`${e.type}[${e.clientX},${e.clientY}]: ${e.buttons}`);
+      const pl = document.getElementById('pointerLogger');
+      pl.addEventListener('pointerdown', pointer_handler);
+      pl.addEventListener('pointermove', pointer_handler);
+      pl.addEventListener('pointerup', pointer_handler);
+      pl.addEventListener('gotpointercapture', pointer_handler);
+
+      pl.addEventListener('pointerdown', e=> pl.setPointerCapture(e.pointerId));
     </script>
   </body>
 </html>

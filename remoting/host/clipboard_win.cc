@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/clipboard.h"
 
 #include <windows.h>
@@ -14,12 +9,14 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_hglobal.h"
 #include "remoting/base/constants.h"
@@ -189,8 +186,9 @@ void ClipboardWin::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
 
   LPWSTR text_global_locked =
       reinterpret_cast<LPWSTR>(::GlobalLock(text_global));
-  memcpy(text_global_locked, text.data(), text.size() * sizeof(WCHAR));
-  text_global_locked[text.size()] = (WCHAR)0;
+  UNSAFE_TODO(
+      memcpy(text_global_locked, text.data(), text.size() * sizeof(WCHAR)));
+  UNSAFE_TODO(text_global_locked[text.size()]) = (WCHAR)0;
   ::GlobalUnlock(text_global);
 
   clipboard.SetData(CF_UNICODETEXT, text_global);

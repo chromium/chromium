@@ -1,0 +1,11 @@
+Name: array-init
+URL: https://crates.io/crates/array-init
+Version: 2.1.0
+Revision: 60635047ab2800832319829840c68df03c39945b
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/array-init-v2/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Safe wrapper for initializing fixed-size arrays

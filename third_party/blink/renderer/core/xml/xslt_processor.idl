@@ -30,10 +30,10 @@
 // their interface definition remains the closest thing to a spec:
 // https://hg.mozilla.org/mozilla-central/file/012853bd80b7/dom/webidl/XSLTProcessor.webidl
 
-[ Exposed=Window ] interface XSLTProcessor {
-    [CallWith=Document, MeasureAs=XSLTProcessor] constructor();
+[ Exposed=Window, RuntimeEnabled=XSLT ] interface XSLTProcessor {
+    [RaisesException, CallWith=Document] constructor();
 
-    void importStylesheet(Node style);
+    undefined importStylesheet(Node style);
     // TODO(foolip): In Gecko, the transformTo*() methods throw an exception in
     // case of error instead of returning null.
     DocumentFragment? transformToFragment(Node source, Document output);
@@ -41,11 +41,11 @@
 
     // TODO(foolip): In Gecko, it's possible to set and get back any parameter
     // value, not just DOMString.
-    void setParameter(DOMString? namespaceURI, DOMString localName, DOMString value);
+    undefined setParameter(DOMString? namespaceURI, DOMString localName, DOMString value);
     DOMString? getParameter(DOMString? namespaceURI, DOMString localName);
-    void removeParameter(DOMString? namespaceURI, DOMString localName);
-    void clearParameters();
+    undefined removeParameter(DOMString? namespaceURI, DOMString localName);
+    undefined clearParameters();
 
-    void reset();
+    undefined reset();
 
 };

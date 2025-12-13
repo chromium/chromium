@@ -36,7 +36,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/navigation/reload_type.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/ui/context_menu_params.h"
@@ -77,19 +76,17 @@
 namespace {
 
 BOOL gChromeContextMenuEnabled = NO;
-BOOL gUseOptimizedSessionStorage = NO;
 BOOL gWebInspectorEnabled = NO;
 BOOL gSkipAccountStorageCheckEnabled = NO;
-
-// A key used in NSCoder to store the session storage object.
-// TODO(crbug.com/40945317): remove once the feature has been launched and
-// all session migrated to the new format.
-NSString* const kSessionStorageKey = @"sessionStorage";
 
 // Keys used to store CWVWebViewProtobufStorage and its properties.
 NSString* const kProtobufStorageKey = @"protobufStorage";
 NSString* const kStorageKey = @"storage";
 NSString* const kSessionKey = @"session";
+
+// Policy to use when realizing the deserialized WebState.
+constexpr web::WebState::RealizationPolicy kRealizationPolicy =
+    web::WebState::RealizationPolicy::kEnforceNoAttachedData;
 
 // Converts base::Value expected to be a dictionary or list to NSDictionary or
 // NSArray, respectively.
@@ -164,7 +161,7 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 }  // namespace
 
 // Used to serialize the protobuf message and the WebStateID.
-@interface CWVWebViewProtobufStorage : NSObject <NSCoding>
+@interface CWVWebViewProtobufStorage : NSObject <NSSecureCoding>
 
 - (instancetype)initWithProto:(web::proto::WebStateStorage)storage
                    webStateID:(web::WebStateID)webStateID
@@ -178,16 +175,11 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 - (std::unique_ptr<web::WebState>)createWebState:
     (web::BrowserState*)browserState;
 
-// The protobuf representation.
-@property(nonatomic, readonly) const web::proto::WebStateStorage& storage;
-
-// The web state identifier.
-@property(nonatomic, readonly) web::WebStateID webStateID;
-
 @end
 
 @implementation CWVWebViewProtobufStorage {
   web::proto::WebStateStorage _storage;
+  web::WebStateID _webStateID;
 }
 
 - (instancetype)initWithProto:(web::proto::WebStateStorage)storage
@@ -235,20 +227,25 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 
 - (std::unique_ptr<web::WebState>)createWebState:
     (web::BrowserState*)browserState {
-  return web::WebState::CreateWithStorage(
-      browserState, self.webStateID, _storage.metadata(),
+  auto webState = web::WebState::CreateWithStorage(
+      browserState, _webStateID, _storage.metadata(),
       base::ReturnValueOnce(std::make_optional(std::move(_storage))),
       base::ReturnValueOnce<NSData*>(nil));
+  webState->ForceRealizedWithPolicy(kRealizationPolicy);
+  return webState;
 }
 
 - (const web::proto::WebStateStorage&)storage {
   return _storage;
 }
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 @end
 
-// Helper used to manage the serialization of CWVWebView's WebState
-// with either the legacy or the optimised session serialization code.
+// Helper used to manage the serialization of CWVWebView's WebState.
 @interface CWVWebViewSerializationHelper : NSObject
 
 // Designated initializer.
@@ -277,12 +274,8 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 @implementation CWVWebViewSerializationHelper {
   web::BrowserState* _browserState;
 
-  // Cached protobuf message. Only used if the optimised serialisation is used.
+  // Cached protobuf message.
   CWVWebViewProtobufStorage* _cachedProtobufStorage;
-
-  // Cached session storage. Only used if the legacy serialisation code is used.
-  // TODO(crbug.com/40945317): Remove when the feature has launched.
-  CRWSessionStorage* _cachedSessionStorage;
 }
 
 - (instancetype)initWithConfiguration:(CWVWebViewConfiguration*)configuration {
@@ -294,83 +287,32 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 }
 
 - (std::unique_ptr<web::WebState>)createWebStateWithCoder:(NSCoder*)coder {
-  // To support partial rollout and roll back of the feature, try to load
-  // the data from `coder` in either the legacy or optimised format. This
-  // also allow migrating the storage in-place.
   _cachedProtobufStorage =
-      base::apple::ObjCCastStrict<CWVWebViewProtobufStorage>(
-          [coder decodeObjectForKey:kProtobufStorageKey]);
+      base::apple::ObjCCastStrict<CWVWebViewProtobufStorage>([coder
+          decodeObjectOfClass:[CWVWebViewProtobufStorage class]
+                       forKey:kProtobufStorageKey]);
 
-  _cachedSessionStorage = base::apple::ObjCCastStrict<CRWSessionStorage>(
-      [coder decodeObjectForKey:kSessionStorageKey]);
-
-  // If data can't be loaded in either format, return a brand new WebState.
-  // Since sending a message to nil is well-defined in Objective-C, this
-  // also cover the case when `coder` is nil.
-  if (!_cachedProtobufStorage && !_cachedSessionStorage) {
+  // If data can't be loaded, return a brand new WebState. Since sending
+  // a message to nil is well-defined in Objective-C, this also cover
+  // the case when `coder` is nil.
+  if (!_cachedProtobufStorage) {
     const web::WebState::CreateParams createParams(_browserState);
     return web::WebState::Create(createParams);
   }
-
-  // Support for legacy session serialisation code path.
-  // TODO(crbug.com/40945317): Remove when the feature has launched.
-  if (!gUseOptimizedSessionStorage) {
-    if (!_cachedSessionStorage) {
-      _cachedSessionStorage = [[CRWSessionStorage alloc]
-             initWithProto:_cachedProtobufStorage.storage
-          uniqueIdentifier:_cachedProtobufStorage.webStateID
-          stableIdentifier:[[NSUUID UUID] UUIDString]];
-
-      _cachedProtobufStorage = nil;
-    }
-    DCHECK(_cachedSessionStorage);
-
-    const web::WebState::CreateParams createParams(_browserState);
-    return web::WebState::CreateWithStorageSession(
-        createParams, _cachedSessionStorage,
-        base::ReturnValueOnce<NSData*>(nil));
-  }
-
-  if (!_cachedProtobufStorage) {
-    web::proto::WebStateStorage storage;
-    [_cachedSessionStorage serializeToProto:storage];
-
-    _cachedProtobufStorage = [[CWVWebViewProtobufStorage alloc]
-        initWithProto:std::move(storage)
-           webStateID:_cachedSessionStorage.uniqueIdentifier];
-    _cachedSessionStorage = nil;
-  }
-  DCHECK(_cachedProtobufStorage);
 
   return [_cachedProtobufStorage createWebState:_browserState];
 }
 
 - (void)encodeWebState:(web::WebState*)webState toCoder:(NSCoder*)coder {
-  // TODO(crbug.com/40945317): Remove when the feature has launched.
-  if (!gUseOptimizedSessionStorage) {
-    if (webState) {
-      [self updateStateFromWebState:webState];
-    }
-
-    [coder encodeObject:_cachedSessionStorage forKey:kSessionStorageKey];
-    [self clearStateForWebStateIfPossible:webState];
-    return;
-  }
-
   if (webState && webState->IsRealized()) {
     [self updateStateFromWebState:webState];
   }
+
   [coder encodeObject:_cachedProtobufStorage forKey:kProtobufStorageKey];
   [self clearStateForWebStateIfPossible:webState];
 }
 
 - (void)updateStateFromWebState:(web::WebState*)webState {
-  // TODO(crbug.com/40945317): Remove when the feature has launched.
-  if (!gUseOptimizedSessionStorage) {
-    _cachedSessionStorage = webState->BuildSessionStorage();
-    return;
-  }
-
   DCHECK(webState->IsRealized());
   web::proto::WebStateStorage storage;
   webState->SerializeToProto(storage);
@@ -380,13 +322,6 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 }
 
 - (void)clearStateForWebStateIfPossible:(web::WebState*)webState {
-  // TODO(crbug.com/40945317): Remove when the feature has launched.
-  if (!gUseOptimizedSessionStorage) {
-    if (webState) {
-      _cachedSessionStorage = nil;
-    }
-  }
-
   if (webState && webState->IsRealized()) {
     _cachedProtobufStorage = nil;
   }
@@ -474,11 +409,11 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
 }
 
 + (BOOL)useOptimizedSessionStorage {
-  return gUseOptimizedSessionStorage;
+  return YES;
 }
 
 + (void)setUseOptimizedSessionStorage:(BOOL)newValue {
-  gUseOptimizedSessionStorage = newValue;
+  // Ignored.
 }
 
 + (BOOL)webInspectorEnabled {

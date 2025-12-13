@@ -5,7 +5,6 @@
 #include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
 #include "base/i18n/time_formatting.h"
 #include "base/notreached.h"
 #include "base/strings/to_string.h"
@@ -201,6 +200,8 @@ void ManifestUpdateCheckCommand::ParseManifestAndCreateWebAppInfo(
   WebAppInstallInfoConstructOptions construct_options;
   construct_options.fail_all_if_any_fail = true;
   construct_options.record_icon_results_on_update = true;
+  construct_options.use_manifest_icons_as_trusted =
+      lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.
@@ -299,16 +300,17 @@ void ManifestUpdateCheckCommand::LoadExistingAppIcons(
 
 void ManifestUpdateCheckCommand::StashExistingAppIcons(
     base::OnceClosure next_step_callback,
-    IconBitmaps icon_bitmaps) {
+    WebAppIconManager::WebAppBitmaps icon_bitmaps) {
   DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
 
-  if (icon_bitmaps.empty()) {
+  if (icon_bitmaps.manifest_icons.empty()) {
     CompleteCommandAndSelfDestruct(
         ManifestUpdateCheckResult::kIconReadFromDiskFailed);
     return;
   }
 
-  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
+  existing_app_icon_bitmaps_ = std::move(icon_bitmaps.manifest_icons);
+  existing_app_icon_trusted_bitmaps_ = std::move(icon_bitmaps.trusted_icons);
   std::move(next_step_callback).Run();
 }
 
@@ -406,8 +408,7 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   DCHECK(manifest_data_changes_.app_icon_identity_change);
 
   const WebApp& web_app = GetWebApp();
-  if (CanWebAppSilentlyUpdateIdentity(web_app) ||
-      base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
+  if (CanWebAppSilentlyUpdateIdentity(web_app)) {
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 
@@ -478,7 +479,7 @@ void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
       /*icon_change=*/
       manifest_data_changes_.app_icon_identity_change.has_value(),
       /*old_title=*/base::UTF8ToUTF16(GetWebApp().untranslated_name()),
-      /*new_title=*/new_install_info_->title,
+      /*new_title=*/new_install_info_->title.value(),
       /*old_icon=*/*before_icon,
       /*new_icon=*/*after_icon, web_contents_.get(),
       base::BindOnce(
@@ -533,7 +534,10 @@ void ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded() {
     // struct to make this a single assignment and less likely to miss fields as
     // they get added in future.
     new_install_info_->manifest_icons = web_app.manifest_icons();
+    new_install_info_->trusted_icons = web_app.trusted_icons();
     new_install_info_->icon_bitmaps = existing_app_icon_bitmaps_;
+    new_install_info_->trusted_icon_bitmaps =
+        existing_app_icon_trusted_bitmaps_;
     new_install_info_->is_generated_icon = web_app.is_generated_icon();
     new_install_info_->generated_icon_fix = web_app.generated_icon_fix();
     manifest_data_changes_.app_icon_identity_change.reset();

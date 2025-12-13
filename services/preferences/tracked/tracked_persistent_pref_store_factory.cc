@@ -96,7 +96,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
   // destroyed. (https://crbug.com/721245)
   if (base::StartsWith(
           config->unprotected_pref_filename.DirName().BaseName().value(),
-          base::ScopedTempDir::GetTempDirPrefix(),
+          base::ScopedTempDir::GetDefaultTempDirPrefix(),
           base::CompareCase::INSENSITIVE_ASCII)) {
     temp_scoped_dir_cleaner =
         base::MakeRefCounted<TempScopedDirRegistryCleaner>();

@@ -42,9 +42,6 @@ class CORE_EXPORT AnchorSpecifierValue
   }
 
   bool operator==(const AnchorSpecifierValue&) const;
-  bool operator!=(const AnchorSpecifierValue& other) const {
-    return !operator==(other);
-  }
 
   unsigned GetHash() const;
 

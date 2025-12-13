@@ -17,8 +17,8 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
@@ -33,7 +33,7 @@ static int kAutofillWalletOfferSyncBridgeUserDataKey = 0;
 
 std::string GetClientTagFromSpecifics(
     const sync_pb::AutofillOfferSpecifics& specifics) {
-  return syncer::GetUnhashedClientTagFromAutofillOfferSpecifics(specifics);
+  return GetUnhashedClientTagFromAutofillOfferSpecifics(specifics);
 }
 
 std::string GetStorageKeyFromSpecifics(
@@ -48,7 +48,7 @@ std::string GetStorageKeyFromSpecifics(
 void AutofillWalletOfferSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillWalletOfferSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletOfferSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -61,7 +61,7 @@ void AutofillWalletOfferSyncBridge::CreateForWebDataServiceAndBackend(
 syncer::DataTypeSyncBridge* AutofillWalletOfferSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletOfferSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillWalletOfferSyncBridgeUserDataKey));
 }
 

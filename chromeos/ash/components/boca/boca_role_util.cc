@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -26,8 +27,6 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   // registered. Need to revisit if this is the best place for this pref to be
   // set.
   registry->RegisterBooleanPref(kRemoteAdmin, false);
-  registry->RegisterDictionaryPref(
-      ash::prefs::kClassManagementToolsNavRuleSetting);
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsCaptionEnablementSetting, false);
   registry->RegisterBooleanPref(
@@ -38,8 +37,15 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       ash::prefs::kClassManagementToolsViewScreenEligibilitySetting, true);
   registry->RegisterBooleanPref(
       ash::prefs::kClassManagementToolsNetworkRestrictionSetting, true);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kClassManagementToolsNavRuleSetting);
+
   registry->RegisterIntegerPref(
-      ash::prefs::kClassManagementToolsOOBEAccessCountSetting, 0);
+      ash::prefs::kClassManagementToolsOOBEAccessCountSetting, 0,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kClassManagementToolsKioskReceiverCodes,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 bool IsEnabled(const user_manager::User* user) {

@@ -16,7 +16,7 @@
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_battery_view.h"
 #include "ash/game_dashboard/game_dashboard_button.h"
 #include "ash/game_dashboard/game_dashboard_constants.h"
@@ -50,6 +50,7 @@
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/unified/feature_tile.h"
+#include "ash/test/test_widget_delegates.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -66,6 +67,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
+#include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_header.h"
@@ -77,14 +79,16 @@
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/test_widget_builder.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -784,8 +788,9 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     EXPECT_EQ(test_api_->GetToolbarSnapLocation(), desired_location);
   }
 
-  void CreateAnArcAppInFullscreen(std::unique_ptr<chromeos::CaptionButtonModel>
-                                      caption_button_model = nullptr) {
+  void CreateAnArcAppAndToggleFullscreen(
+      std::unique_ptr<chromeos::CaptionButtonModel> caption_button_model =
+          nullptr) {
     // Create an ARC game window.
     SetAppBounds(gfx::Rect(50, 50, 800, 700));
     CreateGameWindow(/*is_arc_window=*/true,
@@ -799,7 +804,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     if (caption_button_model) {
       // Override the caption button model and ensure the values referencing the
       // model are updated.
-      auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+      auto* frame_view = FrameViewAsh::Get(game_window_.get());
       ASSERT_TRUE(frame_view);
       frame_view->SetCaptionButtonModel(std::move(caption_button_model));
     }
@@ -809,7 +814,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     // not visible.
     ASSERT_FALSE(test_api_->GetGameDashboardButtonRevealController());
     ToggleFullScreen(window_state, /*delegate=*/nullptr);
-    auto* frame_view = NonClientFrameViewAsh::Get(game_window_.get());
+    auto* frame_view = FrameViewAsh::Get(game_window_.get());
     chromeos::FrameCaptionButtonContainerView::TestApi test_api(
         frame_view->GetHeaderView()->caption_button_container());
     test_api.EndAnimations();
@@ -1419,7 +1424,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_LandscapeNonTogglable) {
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
   // Create an ARC game window in fullscreen that can be resized via the size
   // button in the frame header.
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
 
   // Open the Game Dashboard menu with the accelerator.
   AcceleratorControllerImpl* controller =
@@ -1438,7 +1443,7 @@ TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenTogglable) {
 // description within the screen size row.
 TEST_F(GameDashboardContextTest, ScreenSizeRowSubtitle_FullscreenNonTogglable) {
   // Create an ARC game window in fullscreen that can't be resized.
-  CreateAnArcAppInFullscreen(
+  CreateAnArcAppAndToggleFullscreen(
       /*caption_button_model=*/std::make_unique<NonResizableButtonModel>());
 
   // Open the Game Dashboard menu with the accelerator.
@@ -1890,6 +1895,28 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen) {
   ASSERT_TRUE(button_widget->IsVisible());
 }
 
+TEST_F(GameDashboardContextTest, GameDashboardButtonInFullscreen) {
+  // Create an ARC game window in fullscreen.
+  views::Widget* widget =
+      views::test::TestWidgetBuilder()
+          .SetBounds(kScreenBounds)
+          .SetDelegate(CreateTestWidgetBuilderDelegate())
+          .SetWindowProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP)
+          .SetShowState(ui::mojom::WindowShowState::kFullscreen)
+          .BuildOwnedByNativeWidget();
+  game_window_ = base::WrapUnique(widget->GetNativeWindow());
+  game_window_->SetProperty(kAppIDKey, TestGameDashboardDelegate::kGameAppId);
+  test_api_ = std::make_unique<GameDashboardContextTestApi>(
+      GameDashboardController::Get()->GetGameDashboardContext(
+          game_window_.get()),
+      GetEventGenerator());
+
+  // Verify window is in full screen and GameDashboardButton is hidden.
+  auto* window_state = WindowState::Get(game_window_.get());
+  ASSERT_TRUE(window_state->IsFullscreen());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
+}
+
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
   // Create an ARC game window.
   SetAppBounds(gfx::Rect(50, 50, 800, 700));
@@ -1930,7 +1957,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreenWithMainMenu) {
 
 TEST_F(GameDashboardContextTest,
        GameDashboardButtonFullscreen_MouseOverAndTouchGesture) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -1981,7 +2008,7 @@ TEST_F(GameDashboardContextTest,
 }
 
 TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
-  CreateAnArcAppInFullscreen();
+  CreateAnArcAppAndToggleFullscreen();
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -2001,6 +2028,21 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_TouchEvent) {
   event_generator->PressTouch(app_bounds.right_center());
   event_generator->ReleaseTouch();
   ASSERT_FALSE(button_widget->IsVisible());
+}
+
+// Verifies that destroying the game window while in fullscreen mode does not
+// cause a crash. This is a regression test for crbug.com/449107622.
+TEST_F(GameDashboardContextTest, NoCrashOnWindowDestroyInFullscreen) {
+  // Create an ARC game window and put it in fullscreen.
+  CreateAnArcAppAndToggleFullscreen();
+
+  // Verify that the reveal controller is created.
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+
+  // Destroy the window. If the test completes without crashing, it's a success.
+  CloseGameWindow();
+
+  SUCCEED() << "Window destroyed in fullscreen without crashing.";
 }
 
 TEST_F(GameDashboardContextTest,
@@ -2039,8 +2081,8 @@ TEST_F(GameDashboardContextTest,
 // are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
   // Prevent short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -2088,8 +2130,8 @@ TEST_F(GameDashboardContextTest, UIVisibilityWithWindowSnapAnimation) {
 // widgets are not visible.
 TEST_F(GameDashboardContextTest, UIVisibilityWithWindowFloatAnimation) {
   // Do not short-circuit animations in this test.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
@@ -3053,13 +3095,13 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
 
   // App is launched in desktop mode in Setup and switch to the tablet mode.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   EXPECT_TRUE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
@@ -3067,7 +3109,7 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
 
   // No toast shown when there is no game window.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
 
@@ -3078,7 +3120,7 @@ TEST_P(GameTypeGameDashboardContextTest, TabletMode) {
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
   // Switch back to the desktop mode and this feature is resumed.
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true);
   EXPECT_FALSE(
       ToastManager::Get()->IsToastShown(game_dashboard::kTabletToastId));
@@ -3192,7 +3234,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
   const auto* overview_controller = OverviewController::Get();
 
   // 1. Clamshell -> overview -> tablet-> exit overview.
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/false);
@@ -3203,25 +3245,25 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewModeWithTabletMode) {
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
 
   // 2. Tablet -> overview -> exit overview -> clamshell.
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   ExitOverview();
   ASSERT_FALSE(overview_controller->InOverviewSession());
   VerifyFeaturesEnabled(/*expect_enabled=*/false);
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   VerifyFeaturesEnabled(/*expect_enabled=*/true, /*toolbar_visible=*/true);
 
   // 3. Tablet -> overview -> clamshell -> exit overview.
   ash::TabletModeControllerTestApi().EnterTabletMode();
-  ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_TRUE(display::Screen::Get()->InTabletMode());
   EnterOverview();
   ASSERT_TRUE(overview_controller->InOverviewSession());
   ash::TabletModeControllerTestApi().LeaveTabletMode();
-  ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+  ASSERT_FALSE(display::Screen::Get()->InTabletMode());
   ASSERT_TRUE(overview_controller->InOverviewSession());
   VerifyFeaturesEnabled(/*expect_enabled=*/false, /*toolbar_visible=*/false);
   ExitOverview();

@@ -5,18 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_TEXT_BUTTON_ITEM_H_
 #define IOS_CHROME_BROWSER_SHARED_UI_TABLE_VIEW_CELLS_TABLE_VIEW_TEXT_BUTTON_ITEM_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 // TableViewTextButtonItem contains the model for
 // TableViewTextButtonCell.
 @interface TableViewTextButtonItem : TableViewItem
-
-// Text being displayed above the button.
-@property(nonatomic, readwrite, copy) NSString* text;
-
-// Text being displayed above the button alignment.
-@property(nonatomic, readwrite, assign) NSTextAlignment textAlignment;
 
 // Text for cell button.
 @property(nonatomic, readwrite, copy) NSString* buttonText;
@@ -51,16 +45,9 @@
 // NO.
 @property(nonatomic, assign) BOOL showsActivityIndicator;
 
-// Activity Indicator color. If nil, the activity indicator will be of a solid
-// white color.
-@property(nonatomic, strong) UIColor* activityIndicatorColor;
-
 // Whether the Item's button should display a checkmark image indicating action
 // has been completed. Default is NO.
 @property(nonatomic, assign) BOOL showsCheckmark;
-
-// Checkmark image color. If nil, defaults to kBlue700Color.
-@property(nonatomic, strong) UIColor* checkmarkColor;
 
 // Accessibility label that will assigned to the button.
 @property(nonatomic, copy) NSString* buttonAccessibilityLabel;
@@ -69,10 +56,7 @@
 
 // TableViewTextButtonCell contains a textLabel and a UIbutton
 // laid out vertically and centered.
-@interface TableViewTextButtonCell : TableViewCell
-
-// Cell text information.
-@property(nonatomic, strong) UILabel* textLabel;
+@interface TableViewTextButtonCell : LegacyTableViewCell
 
 // Action button. Note: Set action method in the TableView datasource method.
 @property(nonatomic, strong) UIButton* button;

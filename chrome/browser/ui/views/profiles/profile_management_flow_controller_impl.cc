@@ -11,16 +11,30 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service.h"
+#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
+namespace {
+
+void ShowLoginErrorForBrowser(const SigninUIError& error, Browser* browser) {
+  if (!browser) {
+    // TODO(crbug.com/40242414): Make sure we do something or log an error if
+    // opening a browser window was not possible.
+    return;
+  }
+  LoginUIServiceFactory::GetForProfile(browser->profile())
+      ->DisplayLoginResult(browser, error, /*from_profile_picker=*/false);
+}
+
+}  // namespace
 
 ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ProfilePickerWebContentsHost* host,
@@ -33,7 +47,6 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(
         StepSwitchFinishedCallback step_switch_finished_callback,
@@ -47,14 +60,17 @@ void ProfileManagementFlowControllerImpl::
   if (step_needs_registration) {
     RegisterStep(
         Step::kAccountSelection,
-        ProfileManagementStepController::CreateForDiceSignIn(
+        ProfileManagementStepController::CreateForSignIn(
             host(),
-            std::make_unique<ProfilePickerDiceSignInProvider>(
+            std::make_unique<ProfilePickerSignInProvider>(
                 host(), access_point, initial_email, std::move(profile_path)),
             base::BindOnce(
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
                 // Binding as Unretained as `this`
                 // outlives the step controllers.
+                base::Unretained(this)),
+            base::BindOnce(
+                &ProfileManagementFlowControllerImpl::HandleSigninError,
                 base::Unretained(this))));
   }
 
@@ -68,7 +84,6 @@ void ProfileManagementFlowControllerImpl::
                std::move(step_switch_finished_callback),
                CreateSwitchToStepPopCallback(pop_back_step));
 }
-#endif
 
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
@@ -76,11 +91,10 @@ ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   return ProfileManagementStepController::CreateForPostSignInFlow(
-      host(), CreateSignedInFlowController(signed_in_profile, account_info,
-                                           std::move(contents)));
+      host(), CreatePostSignInAdapter(signed_in_profile, account_info,
+                                      std::move(contents)));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreateSamlStep(
     Profile* signed_in_profile,
@@ -131,7 +145,27 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   // before this the account selection's is released.
   UnregisterStep(Step::kAccountSelection);
 }
-#endif
+
+void ProfileManagementFlowControllerImpl::HandleSigninError(
+    Profile* profile,
+    content::WebContents* contents,
+    const SigninUIError& error) {
+  CHECK_EQ(Step::kAccountSelection, current_step());
+  CHECK(!error.IsOk());
+
+  RegisterStep(
+      Step::kFinishFlow,
+      ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
+          host(),
+          base::BindOnce(
+              &ProfileManagementFlowControllerImpl::FinishFlowAndRunInBrowser,
+              base::Unretained(this), profile,
+              PostHostClearedCallback(
+                  base::BindOnce(&ShowLoginErrorForBrowser,
+                                 error)))));
+  SwitchToStep(Step::kFinishFlow, /*reset_state=*/true);
+  return;
+}
 
 void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(
     PostHostClearedCallback post_host_cleared_callback) {

@@ -19,23 +19,6 @@ namespace segmentation_platform {
 
 namespace {
 
-// List of sub-segments for cross device segment.
-enum class CrossDeviceUserBin {
-  kUnknown = 0,
-  kNoCrossDeviceUsage = 1,
-  kCrossDeviceMobile = 2,
-  kCrossDeviceDesktop = 3,
-  kCrossDeviceTablet = 4,
-  kCrossDeviceMobileAndDesktop = 5,
-  kCrossDeviceMobileAndTablet = 6,
-  kCrossDeviceDesktopAndTablet = 7,
-  kCrossDeviceAllDeviceTypes = 8,
-  kCrossDeviceOther = 9,
-  kMaxValue = kCrossDeviceOther
-};
-
-#define RANK(x) static_cast<int>(x)
-
 using proto::SegmentId;
 
 // Default parameters for cross device model.
@@ -48,34 +31,24 @@ constexpr int kCrossDeviceUserSegmentSelectionTTLDays = 7;
 
 // InputFeatures.
 
-constexpr std::array<float, 1> kCrossDeviceFeatureDefaultValue{0};
-
-constexpr std::array<MetadataWriter::UMAFeature, 4>
-    kCrossDeviceUserUMAFeatures = {
-        MetadataWriter::UMAFeature::FromValueHistogram(
-            "Sync.DeviceCount2",
-            28,
-            proto::Aggregation::LATEST_OR_DEFAULT,
-            kCrossDeviceFeatureDefaultValue.size(),
-            kCrossDeviceFeatureDefaultValue.data()),
-        MetadataWriter::UMAFeature::FromValueHistogram(
-            "Sync.DeviceCount2.Phone",
-            28,
-            proto::Aggregation::LATEST_OR_DEFAULT,
-            kCrossDeviceFeatureDefaultValue.size(),
-            kCrossDeviceFeatureDefaultValue.data()),
-        MetadataWriter::UMAFeature::FromValueHistogram(
-            "Sync.DeviceCount2.Desktop",
-            28,
-            proto::Aggregation::LATEST_OR_DEFAULT,
-            kCrossDeviceFeatureDefaultValue.size(),
-            kCrossDeviceFeatureDefaultValue.data()),
-        MetadataWriter::UMAFeature::FromValueHistogram(
-            "Sync.DeviceCount2.Tablet",
-            28,
-            proto::Aggregation::LATEST_OR_DEFAULT,
-            kCrossDeviceFeatureDefaultValue.size(),
-            kCrossDeviceFeatureDefaultValue.data())};
+constexpr FeaturePair<CrossDeviceUserSegment::Feature>
+    kCrossDeviceUserFeatures[] = {
+        {CrossDeviceUserSegment::kFeatureDeviceCount,
+         features::LatestOrDefaultValue("Sync.DeviceCount2",
+                                        /*bucket_count=*/28,
+                                        /*default_value=*/0)},
+        {CrossDeviceUserSegment::kFeatureDeviceCountPhone,
+         features::LatestOrDefaultValue("Sync.DeviceCount2.Phone",
+                                        /*bucket_count=*/28,
+                                        /*default_value=*/0)},
+        {CrossDeviceUserSegment::kFeatureDeviceCountDesktop,
+         features::LatestOrDefaultValue("Sync.DeviceCount2.Desktop",
+                                        /*bucket_count=*/28,
+                                        /*default_value=*/0)},
+        {CrossDeviceUserSegment::kFeatureDeviceCountTablet,
+         features::LatestOrDefaultValue("Sync.DeviceCount2.Tablet",
+                                        /*bucket_count=*/28,
+                                        /*default_value=*/0)}};
 
 }  // namespace
 
@@ -106,21 +79,23 @@ CrossDeviceUserSegment::GetModelConfig() {
       kCrossDeviceUserSignalStorageLength);
 
   // Set features.
-  writer.AddUmaFeatures(kCrossDeviceUserUMAFeatures.data(),
-                        kCrossDeviceUserUMAFeatures.size());
+  writer.AddFeatures<Feature>(kCrossDeviceUserFeatures);
 
   //  Set OutputConfig.
   writer.AddOutputConfigForBinnedClassifier(
-      /*bins=*/{{1, kNoCrossDeviceUsage},
-                {2, kCrossDeviceMobile},
-                {3, kCrossDeviceDesktop},
-                {4, kCrossDeviceTablet},
-                {5, kCrossDeviceMobileAndDesktop},
-                {6, kCrossDeviceMobileAndTablet},
-                {7, kCrossDeviceDesktopAndTablet},
-                {8, kCrossDeviceAllDeviceTypes},
-                {9, kCrossDeviceOther}},
-      /*underflow_label=*/kNoCrossDeviceUsage);
+      /*bins=*/{{kLabelNoCrossDeviceUsage, "NoCrossDeviceUsage"},
+                {kLabelCrossDeviceMobile, "CrossDeviceMobile"},
+                {kLabelCrossDeviceDesktop, "CrossDeviceDesktop"},
+                {kLabelCrossDeviceTablet, "CrossDeviceTablet"},
+                {kLabelCrossDeviceMobileAndDesktop,
+                 "CrossDeviceMobileAndDesktop"},
+                {kLabelCrossDeviceMobileAndTablet,
+                 "CrossDeviceMobileAndTablet"},
+                {kLabelCrossDeviceDesktopAndTablet,
+                 "CrossDeviceDesktopAndTablet"},
+                {kLabelCrossDeviceAllDeviceTypes, "CrossDeviceAllDeviceTypes"},
+                {kLabelCrossDeviceOther, "CrossDeviceOther"}},
+      /*underflow_label=*/"NoCrossDeviceUsage");
   writer.AddPredictedResultTTLInOutputConfig(
       /*top_label_to_ttl_list=*/{}, kCrossDeviceUserSegmentSelectionTTLDays,
       /*time_unit=*/proto::TimeUnit::DAY);
@@ -133,16 +108,16 @@ void CrossDeviceUserSegment::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // Invalid inputs.
-  if (inputs.size() != kCrossDeviceUserUMAFeatures.size()) {
+  if (inputs.size() != Feature::kFeatureCount) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
-  CrossDeviceUserBin segment = CrossDeviceUserBin::kNoCrossDeviceUsage;
+  Label segment = kLabelNoCrossDeviceUsage;
 
-  float phone_count = inputs[1];
-  float desktop_count = inputs[2];
-  float tablet_count = inputs[3];
+  float phone_count = inputs[kFeatureDeviceCountPhone];
+  float desktop_count = inputs[kFeatureDeviceCountDesktop];
+  float tablet_count = inputs[kFeatureDeviceCountTablet];
 
 // Check for current device type and subtract it from the device count
 // calculation.
@@ -157,34 +132,34 @@ void CrossDeviceUserSegment::ExecuteModelWithInput(
   }
 #endif
 
-  const bool multi_device_active = inputs[0] >= 2;
+  const bool multi_device_active = inputs[kFeatureDeviceCount] >= 2;
   const bool phone_active = phone_count >= 1;
   const bool desktop_active = desktop_count >= 1;
   const bool tablet_active = tablet_count >= 1;
 
   if (multi_device_active) {
     if (phone_active && desktop_active && tablet_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceAllDeviceTypes;
+      segment = kLabelCrossDeviceAllDeviceTypes;
     } else if (phone_active && desktop_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceMobileAndDesktop;
+      segment = kLabelCrossDeviceMobileAndDesktop;
     } else if (phone_active && tablet_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceMobileAndTablet;
+      segment = kLabelCrossDeviceMobileAndTablet;
     } else if (desktop_active && tablet_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceDesktopAndTablet;
+      segment = kLabelCrossDeviceDesktopAndTablet;
     } else if (phone_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceMobile;
+      segment = kLabelCrossDeviceMobile;
     } else if (desktop_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceDesktop;
+      segment = kLabelCrossDeviceDesktop;
     } else if (tablet_active) {
-      segment = CrossDeviceUserBin::kCrossDeviceTablet;
+      segment = kLabelCrossDeviceTablet;
     } else {
-      segment = CrossDeviceUserBin::kCrossDeviceOther;
+      segment = kLabelCrossDeviceOther;
     }
   } else {
-    segment = segment = CrossDeviceUserBin::kNoCrossDeviceUsage;
+    segment = kLabelNoCrossDeviceUsage;
   }
 
-  float result = RANK(segment);
+  float result = segment;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), ModelProvider::Response(1, result)));

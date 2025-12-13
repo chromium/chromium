@@ -6,25 +6,42 @@
 
 #import "base/feature_list.h"
 #import "base/notreached.h"
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/first_run/ui_bundled/best_features/coordinator/best_features_screen_coordinator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/features.h"
+#import "ios/chrome/browser/regional_capabilities/model/regional_capabilities_service_factory.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider+protected.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_type.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
-#import "ios/chrome/browser/search_engine_choice/ui_bundled/search_engine_choice_ui_util.h"
+#import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_ui_util.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
 
 namespace {
+// Adds the Default Browser promo to the FRE based on
+// kSkipDefaultBrowserPromoInFirstRun.
+void AddDBPromoScreen(NSMutableArray* screens, ProfileIOS* profile) {
+  regional_capabilities::RegionalCapabilitiesService*
+      regional_capabilities_service =
+          ios::RegionalCapabilitiesServiceFactory::GetForProfile(profile);
+
+  // Do not display the Default Browser promo if a user is in the EEA and
+  // kSkipDefaultBrowserPromoInFirstRun is enabled. Otherwise, display the
+  // Default Browser promo.
+  if (!(regional_capabilities_service->IsInEeaCountry() &&
+        base::FeatureList::IsEnabled(
+            first_run::kSkipDefaultBrowserPromoInFirstRun))) {
+    [screens addObject:@(kDefaultBrowserPromo)];
+  }
+}
 
 // Helper function to add the Best Features, Default Browser Promo, and Address
 // Bar screens when kUpdatedFirstRunSequence is disabled.
-void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
+void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens,
+                                      ProfileIOS* profile) {
   using enum first_run::BestFeaturesScreenVariationType;
   first_run::BestFeaturesScreenVariationType bestFeaturesType =
       first_run::GetBestFeaturesScreenVariationType();
@@ -33,19 +50,19 @@ void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens) {
     case kGeneralScreenWithPasswordItemAfterDBPromo:
     case kShoppingUsersWithFallbackAfterDBPromo:
     case kSignedInUsersOnlyAfterDBPromo:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       [screens addObject:@(kBestFeatures)];
       break;
     case kGeneralScreenBeforeDBPromo:
       [screens addObject:@(kBestFeatures)];
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       break;
     case kAddressBarPromoInsteadOfBestFeaturesScreen:
       // TODO(crbug.com/402429544): Add address bar promo screen.
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       break;
     case kDisabled:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       break;
   }
 }
@@ -70,10 +87,10 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
       }
       // Only add best features screen if feature
       // kUpdatedFirstRunSequence is disabled for now.
-      AddDBPromoAndBestFeaturesScreens(screens);
+      AddDBPromoAndBestFeaturesScreens(screens, profile);
       break;
     case first_run::UpdatedFRESequenceVariationType::kDBPromoFirst:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kHistorySync)];
       break;
@@ -82,11 +99,11 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
         [screens addObject:@(kSignIn)];
         [screens addObject:@(kHistorySync)];
       }
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       break;
     case first_run::UpdatedFRESequenceVariationType::
         kDBPromoFirstAndRemoveSignInSync:
-      [screens addObject:@(kDefaultBrowserPromo)];
+      AddDBPromoScreen(screens, profile);
       if (hasIdentities) {
         [screens addObject:@(kSignIn)];
         [screens addObject:@(kHistorySync)];

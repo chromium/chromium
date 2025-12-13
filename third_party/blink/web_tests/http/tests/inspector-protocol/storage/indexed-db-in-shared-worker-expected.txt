@@ -1,0 +1,6 @@
+Tests that IndexedDB protocol commands work in a shared worker.
+Database TestDB_Shared found: true
+Value object properties:
+  - id: 1
+  - value: SharedWorkerValue
+

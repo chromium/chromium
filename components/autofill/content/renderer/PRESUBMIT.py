@@ -42,7 +42,7 @@ def CheckNoBannedFunctions(input_api, output_api):
                             f'{f.LocalPath()}:{line_num}: {match.group(0)}: '
                             f'{explanation} (see '
                             f'//components/autofill/content/renderer/README.md)'
-                            f'Or append // nocheck if you have to.'
+                            f'. Or append // nocheck if you have to.'
                         )
                     )
     return errors

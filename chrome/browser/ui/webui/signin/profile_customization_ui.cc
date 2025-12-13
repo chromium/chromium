@@ -67,6 +67,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationSkipLabel",
        IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL},
       {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
+      {"profileCustomizationInputTitle", IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE},
       {"profileCustomizationInputPlaceholder",
        IDS_PROFILE_CUSTOMIZATION_INPUT_PLACEHOLDER},
       {"profileCustomizationInputErrorMessage",
@@ -108,8 +109,13 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean("isLocalProfileCreation",
                      GetProfileCustomizationStyle(url) ==
                          ProfileCustomizationStyle::kLocalProfileCreation);
+  source->AddBoolean(
+      "shouldShowDefaultProfileName",
+      base::FeatureList::IsEnabled(
+          switches::
+              kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
 
-  if (url.query() == "debug") {
+  if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(base::DoNothing());

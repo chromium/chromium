@@ -136,6 +136,10 @@ class AppShimHost : public chrome::mojom::AppShimHost,
   // Returns kNullProcessId if no process has connected to this host yet.
   base::ProcessId GetAppShimPid() const;
 
+  // Returns a weak pointer from a factory that is invalidated when a new launch
+  // is initiated or when the bootstrap connects.
+  base::WeakPtr<AppShimHost> GetLaunchWeakPtr();
+
  protected:
   void ChannelError(uint32_t custom_reason, const std::string& description);
 

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "components/sessions/core/session_id.h"
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 
 namespace web_app {
@@ -27,7 +27,8 @@ class BrowserTabMenuModelDelegate : public TabMenuModelDelegate {
   BrowserTabMenuModelDelegate(
       SessionID session_id,
       const Profile* profile,
-      const web_app::AppBrowserController* app_controller);
+      const web_app::AppBrowserController* app_controller,
+      tab_groups::TabGroupSyncService* tgss);
   ~BrowserTabMenuModelDelegate() override;
 
   BrowserTabMenuModelDelegate(const BrowserTabMenuModelDelegate&) = delete;
@@ -36,11 +37,14 @@ class BrowserTabMenuModelDelegate : public TabMenuModelDelegate {
 
  private:
   // TabMenuModelDelegate:
-  std::vector<Browser*> GetOtherBrowserWindows(bool is_app) override;
+  std::vector<BrowserWindowInterface*> GetOtherBrowserWindows(
+      bool is_app) override;
+  tab_groups::TabGroupSyncService* GetTabGroupSyncService() override;
 
   const SessionID session_id_;
   const raw_ptr<const Profile> profile_;
   const raw_ptr<const web_app::AppBrowserController> app_controller_;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
 };
 
 }  // namespace chrome

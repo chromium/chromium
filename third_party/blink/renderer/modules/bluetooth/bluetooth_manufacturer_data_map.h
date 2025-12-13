@@ -22,11 +22,11 @@ class BluetoothManufacturerDataMap final
 
  public:
   // Uses `WebBluetoothCompanyPtr` (wrapper for uint16_t) as the key to avoid
-  // collisions with WTF::HashMap's reserved empty/deleted slot hash values.
+  // collisions with HashMap's reserved empty/deleted slot hash values.
   // This allows us to utilize the full range of uint16_t (0x0000 to 0xffff) for
   // valid manufacturer UUIDs.
   using MapType =
-      HashMap<mojom::blink::WebBluetoothCompanyPtr, WTF::Vector<unsigned char>>;
+      HashMap<mojom::blink::WebBluetoothCompanyPtr, Vector<unsigned char>>;
 
   explicit BluetoothManufacturerDataMap(const MapType&);
 
@@ -39,11 +39,10 @@ class BluetoothManufacturerDataMap final
 
  private:
   PairSyncIterable<BluetoothManufacturerDataMap>::IterationSource*
-  CreateIterationSource(ScriptState*, ExceptionState&) override;
+  CreateIterationSource(ScriptState*) override;
   bool GetMapEntry(ScriptState*,
                    const uint16_t& key,
-                   NotShared<DOMDataView>& value,
-                   ExceptionState&) override;
+                   NotShared<DOMDataView>& value) override;
 
   MapType parameter_map_;
 };

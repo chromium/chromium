@@ -6,9 +6,9 @@
 #define COMPONENTS_VIZ_CLIENT_CLIENT_RESOURCE_PROVIDER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -22,13 +22,10 @@
 #include "third_party/khronos/GLES2/gl2.h"
 
 namespace gpu {
-namespace raster {
-class RasterInterface;
-}
+class SharedImageInterface;
 }  // namespace gpu
 
 namespace viz {
-class RasterContextProvider;
 
 // This class is used to give an integer name (ResourceId) to a gpu or software
 // resource (shipped as a TransferableResource), in order to use that name in
@@ -76,9 +73,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
 
   ~ClientResourceProvider();
 
-  static gpu::SyncToken GenerateSyncTokenHelper(
-      gpu::raster::RasterInterface* ri);
-
   // Prepares resources to be transfered to the parent, moving them to
   // mailboxes and serializing meta-data into TransferableResources.
   // Resources are not removed from the ResourceProvider, but are marked as
@@ -86,7 +80,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   void PrepareSendToParent(
       const std::vector<ResourceId>& resource_ids,
       std::vector<TransferableResource>* transferable_resources,
-      RasterContextProvider* context_provider);
+      gpu::SharedImageInterface* shared_image_interface);
 
   // Receives resources from the parent, moving them from mailboxes. ResourceIds
   // passed are in the child namespace.
@@ -101,8 +95,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   // have been evicted. When `evicted_callback` is called the client should
   // invoke `RemoveImportedResources` to unlock the resource. Allowing the
   // resource to be released when it is returned from the parent. When
-  // `main_thread_release_callback` is provided, and
-  // `features::kBatchMainThreadReleaseCallbacks` is enabled, the callback will
+  // `main_thread_release_callback` is provided, the callback will
   // be invoked on `main_thread_task_runner_` when it has been returned.
   ResourceId ImportResource(const TransferableResource& resource,
                             ReleaseCallback impl_release_callback,
@@ -152,12 +145,6 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
  private:
   struct ImportedResource;
 
-  void PrepareSendToParentInternal(
-      const std::vector<ResourceId>& export_ids,
-      std::vector<TransferableResource>* list,
-      base::OnceCallback<void(std::vector<GLbyte*>* tokens)>
-          verify_sync_tokens);
-
   // Validates the memory impact of resources that are locked once we are both
   // evicted and no longer visible. This will also notify clients of eviction
   // via any `RemoveImportedResources`. If resources have been already returned
@@ -178,7 +165,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::flat_map<ResourceId, ImportedResource> imported_resources_;
+  std::unordered_map<ResourceId, ImportedResource> imported_resources_;
   // The ResourceIds in ClientResourceProvider start from 1 to avoid
   // conflicts with id from DisplayResourceProvider.
   ResourceIdGenerator id_generator_;

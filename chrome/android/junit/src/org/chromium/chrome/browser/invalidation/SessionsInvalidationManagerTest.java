@@ -25,7 +25,6 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,8 +36,6 @@ public class SessionsInvalidationManagerTest {
     @Mock private ResumableDelayedTaskRunner mResumableDelayedTaskRunner;
 
     @Mock private Profile mProfile;
-
-    @Mock private ForeignSessionHelper mForeignSessionHelper;
 
     private Activity mActivity;
 

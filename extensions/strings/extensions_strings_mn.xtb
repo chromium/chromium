@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">Энэхүү өргөтгөлд <ph name="KEY_PATH" /> түлхүүр файл багтана. Та магадгүй энэ үйлдлийг хийх хүсэлгүй байж болох юм.</translation>
 <translation id="5486326529110362464">Хувийн түлхүүрт оролтын утга байх ёстой.</translation>
+<translation id="5707185214361380026">:-ээс өргөтгөлийг ачаалах ажиллагаа амжилтгүй боллоо.</translation>
 <translation id="5972529113578162692">Энэ машины администратор нь <ph name="EXTENSION_NAME" />-ийг суулгахыг шаарддаг бөгөөд суулгалтыг устгах боломжгүй байдаг.</translation>
 <translation id="6027032947578871493"><ph name="VENDOR_NAME" />-ийн тодорхойгүй бүтээгдэхүүн <ph name="PRODUCT_ID" /> (серийн дугаар <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="VENDOR_ID" /> борлуулагчийн <ph name="PRODUCT_NAME" /></translation>
+<translation id="6220413761270491930">Өргөтгөлийг ачаалахад алдаа гарлаа</translation>
 <translation id="6322279351188361895">Хувийн түлхүүрийг унших явцад алдаа гарсан байна.</translation>
 <translation id="6391538222494443604">Оролтын хадгалалтын сантай байх ёстой.</translation>
 <translation id="641087317769093025">Өргөтгөлийг задалж чадсангүй.</translation>

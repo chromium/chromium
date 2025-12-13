@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 #include <wrl/client.h>
@@ -16,10 +11,10 @@
 #include <map>
 #include <set>
 #include <string>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -29,7 +24,6 @@
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -46,6 +40,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "skia/ext/skia_utils_win.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -241,7 +236,7 @@ size_t g_live_node_count_ = 0;
 // tool holding references).
 size_t g_ghost_node_count_ = 0;
 
-typedef std::unordered_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
+typedef absl::flat_hash_set<AXPlatformNodeWin*> AXPlatformNodeWinSet;
 // Set of all AXPlatformNodeWin objects that were the target of an
 // alert event.
 AXPlatformNodeWinSet& GetAlertTargets() {
@@ -588,7 +583,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateClickablePointArray() {
   SafeArrayAccessData(clickable_point_array,
                       reinterpret_cast<void**>(&double_array));
   double_array[0] = center.x();
-  double_array[1] = center.y();
+  UNSAFE_TODO(double_array[1]) = center.y();
   SafeArrayUnaccessData(clickable_point_array);
 
   return clickable_point_array;
@@ -703,8 +698,7 @@ gfx::NativeViewAccessible AXPlatformNodeWin::GetNativeViewAccessible() {
 
 void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   TRACE_EVENT("accessibility", "NotifyAccessibilityEvent",
-              perfetto::Flow::FromPointer(this), "event_type",
-              base::NumberToString(static_cast<int32_t>(event_type)));
+              perfetto::Flow::FromPointer(this));
   AXPlatformNodeBase::NotifyAccessibilityEvent(event_type);
   // Menu items fire selection events but Windows screen readers work reliably
   // with focus events. Remap here.
@@ -753,8 +747,7 @@ void AXPlatformNodeWin::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   if (std::optional<DWORD> native_event = MojoEventToMSAAEvent(event_type)) {
     HWND hwnd = GetDelegate()->GetTargetForNativeAccessibilityEvent();
     if (hwnd) {
-      TRACE_EVENT("accessibility", "NotifyWinEvent", "native_event",
-                  base::StringPrintf("0x%04lX", native_event.value()));
+      TRACE_EVENT("accessibility", "NotifyWinEvent");
       ::NotifyWinEvent(*native_event, hwnd, OBJID_CLIENT, -GetUniqueId());
     }
   }
@@ -1283,6 +1276,10 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
     case ax::mojom::Role::kMenuItemRadio:
       return {UIALocalizationStrategy::kDeferToControlType,
               UIA_RadioButtonControlTypeId, L"menuitemradio"};
+
+    case ax::mojom::Role::kMenuItemSeparator:
+      return {UIALocalizationStrategy::kDeferToControlType,
+              UIA_SeparatorControlTypeId, L"separator"};
 
     case ax::mojom::Role::kMenuListPopup:
       return {UIALocalizationStrategy::kSupply, UIA_ListControlTypeId, L"list"};
@@ -1922,7 +1919,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accState(VARIANT var_id, VARIANT* state) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ACC_STATE);
   AXPlatformNodeWin* target;
   COM_OBJECT_VALIDATE_VAR_ID_1_ARG_AND_GET_TARGET(var_id, state, target);
-  OnPropertiesUsed();
+  AXPlatform::GetInstance().OnMinimalPropertiesUsed();
 
   state->vt = VT_I4;
   state->lVal = target->MSAAState();
@@ -2142,8 +2139,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
     *targets =
         static_cast<IUnknown**>(CoTaskMemAlloc(count * sizeof(IUnknown*)));
     for (LONG i = 0; i < count; ++i) {
-      (*targets)[i] = static_cast<IAccessible*>(alert_targets[i]);
-      (*targets)[i]->AddRef();
+      UNSAFE_TODO((*targets)[i]) = static_cast<IAccessible*>(alert_targets[i]);
+      UNSAFE_TODO((*targets)[i]->AddRef());
     }
     return S_OK;
   }
@@ -2167,8 +2164,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
   for (AXPlatformNode* target : enumerated_targets) {
     if (target) {
       AXPlatformNodeWin* win_target = static_cast<AXPlatformNodeWin*>(target);
-      (*targets)[index] = static_cast<IAccessible*>(win_target);
-      (*targets)[index]->AddRef();
+      UNSAFE_TODO((*targets)[index]) = static_cast<IAccessible*>(win_target);
+      UNSAFE_TODO((*targets)[index]->AddRef());
       if (++index >= count) {
         break;
       }
@@ -2265,7 +2262,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relations(LONG max_relations,
   count = std::min(count, max_relations);
   *n_relations = count;
   for (LONG i = 0; i < count; i++) {
-    hr = get_relation(i, &relations[i]);
+    hr = get_relation(i, &UNSAFE_TODO(relations[i]));
     if (!SUCCEEDED(hr))
       return hr;
   }
@@ -4205,7 +4202,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_selectedCells(IUnknown*** cells,
 
   for (size_t i = 0; i < selected.size(); ++i) {
     auto* node_win = static_cast<AXPlatformNodeWin*>(selected[i]);
-    node_win->QueryInterface(IID_PPV_ARGS(&(*cells)[i]));
+    node_win->QueryInterface(IID_PPV_ARGS(&UNSAFE_TODO((*cells)[i])));
   }
   return S_OK;
 }
@@ -4257,7 +4254,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnHeaderCells(
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(IID_PPV_ARGS(&(*cell_accessibles)[index]));
+      node_win->QueryInterface(
+          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
       ++index;
     }
   }
@@ -4310,7 +4308,8 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowHeaderCells(
     AXPlatformNodeWin* node_win =
         static_cast<AXPlatformNodeWin*>(GetDelegate()->GetFromNodeID(node_id));
     if (node_win) {
-      node_win->QueryInterface(IID_PPV_ARGS(&(*cell_accessibles)[index]));
+      node_win->QueryInterface(
+          IID_PPV_ARGS(&UNSAFE_TODO((*cell_accessibles)[index])));
       ++index;
     }
   }
@@ -5866,8 +5865,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
   result.Set("y", base::Value(bounds.y()));
   result.Set("width", base::Value(bounds.width()));
   result.Set("height", base::Value(bounds.height()));
-  std::string json_result;
-  base::JSONWriter::Write(result, &json_result);
+  std::string json_result = base::WriteJson(result).value_or("");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -5905,13 +5903,10 @@ IFACEMETHODIMP AXPlatformNodeWin::QueryService(REFGUID guidService,
                                                REFIID riid,
                                                void** object) {
   TRACE_EVENT("accessibility", "QueryService",
-              perfetto::Flow::FromPointer(this), "guidService",
-              base::WideToASCII(base::win::WStringFromGUID(guidService)),
-              "riid", base::WideToASCII(base::win::WStringFromGUID(riid)));
+              perfetto::Flow::FromPointer(this));
   COM_OBJECT_VALIDATE_1_ARG(object);
 
-  if (riid == IID_IAccessible2 || riid == IID_IAccessible2_2 ||
-      riid == IID_IAccessible2_3 || riid == IID_IAccessible2_4) {
+  if (riid == IID_IAccessible2) {
     OnPropertiesUsed();
   }
 
@@ -6759,6 +6754,9 @@ int AXPlatformNodeWin::MSAARole() {
     case ax::mojom::Role::kMenuItemCheckBox:
     case ax::mojom::Role::kMenuItemRadio:
       return ROLE_SYSTEM_MENUITEM;
+
+    case ax::mojom::Role::kMenuItemSeparator:
+      return ROLE_SYSTEM_SEPARATOR;
 
     case ax::mojom::Role::kMenuListPopup:
       return ROLE_SYSTEM_LIST;
@@ -7792,8 +7790,7 @@ ULONG AXPlatformNodeWin::InternalRelease() {
 
 void AXPlatformNodeWin::OnReferenced() {
   TRACE_EVENT_INSTANT("accessibility", "OnReferenced",
-                      perfetto::Flow::FromPointer(this), "UniqueId",
-                      base::NumberToString(GetUniqueId()));
+                      perfetto::Flow::FromPointer(this));
 }
 
 void AXPlatformNodeWin::OnDereferenced() {
@@ -8114,14 +8111,13 @@ std::optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
 }
 
 // static
-std::tuple<size_t, size_t, size_t, size_t> AXPlatformNodeWin::GetCounts() {
+AXPlatformNodeWin::Counts AXPlatformNodeWin::GetCounts() {
   return {GetInstanceCount(), g_dormant_node_count_, g_live_node_count_,
           g_ghost_node_count_};
 }
 
 // static
-std::tuple<size_t, size_t, size_t, size_t>
-AXPlatformNodeWin::ResetCountsForTesting() {
+AXPlatformNodeWin::Counts AXPlatformNodeWin::ResetCountsForTesting() {
   return {ResetInstanceCountForTesting(),
           std::exchange(g_dormant_node_count_, 0),
           std::exchange(g_live_node_count_, 0),
@@ -8292,7 +8288,7 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
   *selected = static_cast<LONG*>(CoTaskMemAlloc(sizeof(LONG) * count));
 
   for (LONG i = 0; i < count; i++)
-    (*selected)[i] = results[i];
+    UNSAFE_TODO((*selected)[i]) = results[i];
   return S_OK;
 }
 
@@ -8323,6 +8319,14 @@ bool AXPlatformNodeWin::HasEventListenerForEvent(EVENTID event_id) {
   }
 
   return fragment_root->HasEventListenerForEvent(event_id);
+}
+
+bool AXPlatformNodeWin::AlwaysFireUIAEvent(EVENTID event_id) {
+  // On reload we create a new RootWebArea before the UIA clients re-registers
+  // its UIA event listeners. Early AsyncContentLoaded events would be
+  // incorrectly suppressed, so always allow this event on the RootWebArea.
+  return GetRole() == ax::mojom::Role::kRootWebArea &&
+         event_id == UIA_AsyncContentLoadedEventId;
 }
 
 bool AXPlatformNodeWin::HasEventListenerForProperty(PROPERTYID property_id) {

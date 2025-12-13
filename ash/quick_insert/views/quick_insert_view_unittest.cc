@@ -1911,7 +1911,7 @@ TEST_F(QuickInsertViewTest, BoundsDefaultAlignedWithAnchor) {
 
   QuickInsertView* view = GetQuickInsertViewFromWidget(*widget);
   // Should be entirely on screen.
-  EXPECT_TRUE(display::Screen::GetScreen()
+  EXPECT_TRUE(display::Screen::Get()
                   ->GetDisplayMatching(kDefaultAnchorBounds)
                   .work_area()
                   .Contains(view->GetBoundsInScreen()));
@@ -1928,7 +1928,7 @@ TEST_F(QuickInsertViewTest, BoundsDefaultAlignedWithAnchor) {
 TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearTopLeftOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.origin(), {0, 10});
   anchor_bounds.Offset(80, 120);
 
@@ -1951,7 +1951,7 @@ TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearTopLeftOfScreen) {
 TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearBottomLeftOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.bottom_left(), {0, 10});
   anchor_bounds.Offset(80, -80);
 
@@ -1974,7 +1974,7 @@ TEST_F(QuickInsertViewTest, BoundsAlignedWithAnchorNearBottomLeftOfScreen) {
 TEST_F(QuickInsertViewTest, BoundsBelowAnchorForAnchorNearTopRightOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.top_right(), {0, 10});
   anchor_bounds.Offset(-20, 20);
 
@@ -1991,7 +1991,7 @@ TEST_F(QuickInsertViewTest, BoundsBelowAnchorForAnchorNearTopRightOfScreen) {
 TEST_F(QuickInsertViewTest, BoundsAboveAnchorForAnchorNearBottomRightOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.bottom_right(), {0, 10});
   anchor_bounds.Offset(-20, -20);
 
@@ -2010,7 +2010,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedBelowSelectionNearTopOfScreen) {
       .mode = QuickInsertModeType::kHasSelection,
   });
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect anchor_bounds(20, 20, 100, 20);
 
   auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
@@ -2027,7 +2027,7 @@ TEST_F(QuickInsertViewTest, BoundsLeftAlignedAboveSelectionNearBottomOfScreen) {
       .mode = QuickInsertModeType::kHasSelection,
   });
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect anchor_bounds(20, screen_work_area.bottom() - 30, 100, 20);
 
   auto widget = QuickInsertWidget::Create(&delegate, anchor_bounds);
@@ -2045,15 +2045,14 @@ TEST_F(QuickInsertViewTest, BoundsOnScreenForEmptyAnchorBounds) {
   widget->Show();
 
   const QuickInsertView* view = GetQuickInsertViewFromWidget(*widget);
-  EXPECT_TRUE(
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().Contains(
-          view->GetBoundsInScreen()));
+  EXPECT_TRUE(display::Screen::Get()->GetPrimaryDisplay().work_area().Contains(
+      view->GetBoundsInScreen()));
 }
 
 TEST_F(QuickInsertViewTest, MainContentBelowSearchFieldNearTopOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.top_center(), {0, 10});
   anchor_bounds.Offset(0, 80);
 
@@ -2068,7 +2067,7 @@ TEST_F(QuickInsertViewTest, MainContentBelowSearchFieldNearTopOfScreen) {
 TEST_F(QuickInsertViewTest, MainContentAboveSearchFieldNearBottomOfScreen) {
   FakeQuickInsertViewDelegate delegate;
   const gfx::Rect screen_work_area =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   gfx::Rect anchor_bounds(screen_work_area.bottom_center(), {0, 10});
   anchor_bounds.Offset(0, -80);
 

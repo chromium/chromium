@@ -209,9 +209,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
 
-  // Sets the value for `pref::kExplicitBrowserSignin` pref based on the access
-  // point when signing in.
-  void ComputeExplicitBrowserSignin(
+  // Sets the values for various sign-in prefs based on the sign-in access point
+  // and feature enabled states.
+  void SetExplicitBrowserSigninPrefs(
       const signin::PrimaryAccountChangeEvent& event_details,
       ScopedPrefCommit& scoped_pref_commit);
 

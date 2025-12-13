@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/ext/benchmarking_canvas.h"
 
 #include <array>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -116,10 +112,10 @@ base::Value AsValue(const SkMatrix& matrix) {
 
 base::Value AsValue(SkColor color) {
   base::Value::Dict val;
-  val.Set("a", int{SkColorGetA(color)});
-  val.Set("r", int{SkColorGetR(color)});
-  val.Set("g", int{SkColorGetG(color)});
-  val.Set("b", int{SkColorGetB(color)});
+  val.Set("a", static_cast<int>(SkColorGetA(color)));
+  val.Set("r", static_cast<int>(SkColorGetR(color)));
+  val.Set("g", static_cast<int>(SkColorGetG(color)));
+  val.Set("b", static_cast<int>(SkColorGetB(color)));
 
   return base::Value(std::move(val));
 }
@@ -132,7 +128,7 @@ base::Value AsValue(SkCanvas::PointMode mode) {
   static const char* gModeStrings[] = { "Points", "Lines", "Polygon" };
   DCHECK_LT(static_cast<size_t>(mode), std::size(gModeStrings));
 
-  return base::Value(gModeStrings[mode]);
+  return base::Value(UNSAFE_TODO(gModeStrings[mode]));
 }
 
 base::Value AsValue(const SkColorFilter& filter) {
@@ -149,7 +145,7 @@ base::Value AsValue(const SkColorFilter& filter) {
   if (filter.asAColorMatrix(color_matrix)) {
     base::Value::List color_matrix_val;
     for (unsigned i = 0; i < 20; ++i) {
-      color_matrix_val.Append(AsValue(color_matrix[i]));
+      color_matrix_val.Append(AsValue(UNSAFE_TODO(color_matrix[i])));
     }
 
     val.Set("color_matrix", std::move(color_matrix_val));
@@ -182,7 +178,7 @@ base::Value AsValue(const SkPaint& paint) {
     static const char* gStyleStrings[] = { "Fill", "Stroke", "StrokeFill" };
     DCHECK_LT(static_cast<size_t>(paint.getStyle()),
               std::size(gStyleStrings));
-    val.Set("Style", gStyleStrings[paint.getStyle()]);
+    val.Set("Style", UNSAFE_TODO(gStyleStrings[paint.getStyle()]));
   }
 
   if (paint.asBlendMode() != default_paint.asBlendMode()) {
@@ -207,7 +203,7 @@ base::Value AsValue(const SkPaint& paint) {
 }
 
 base::Value SaveLayerFlagsAsValue(SkCanvas::SaveLayerFlags flags) {
-  return base::Value(int{flags});
+  return base::Value(static_cast<int>(flags));
 }
 
 base::Value AsValue(SkClipOp op) {
@@ -220,7 +216,7 @@ base::Value AsValue(SkClipOp op) {
                                     };
   size_t index = static_cast<size_t>(op);
   DCHECK_LT(index, std::size(gOpStrings));
-  return base::Value(gOpStrings[index]);
+  return base::Value(UNSAFE_TODO(gOpStrings[index]));
 }
 
 base::Value AsValue(const SkRegion& region) {
@@ -251,7 +247,7 @@ base::Value AsValue(const SkPath& path) {
       { "winding", "even-odd", "inverse-winding", "inverse-even-odd" };
   size_t index = static_cast<size_t>(path.getFillType());
   DCHECK_LT(index, std::size(gFillStrings));
-  val.Set("fill-type", gFillStrings[index]);
+  val.Set("fill-type", UNSAFE_TODO(gFillStrings[index]));
   val.Set("convex", path.isConvex());
   val.Set("is-rect", path.isRect(nullptr));
   val.Set("bounds", AsValue(path.getBounds()));
@@ -281,10 +277,11 @@ base::Value AsValue(const SkPath& path) {
     base::Value::Dict verb_val;
     base::Value::List pts_val;
 
-    for (int i = 0; i < gPtsPerVerb[verb]; ++i)
-      pts_val.Append(AsValue(points[i + gPtOffsetPerVerb[verb]]));
+    for (int i = 0; i < UNSAFE_TODO(gPtsPerVerb[verb]); ++i) {
+      pts_val.Append(AsValue(UNSAFE_TODO(points[i + gPtOffsetPerVerb[verb]])));
+    }
 
-    verb_val.Set(gVerbStrings[verb], std::move(pts_val));
+    verb_val.Set(UNSAFE_TODO(gVerbStrings[verb]), std::move(pts_val));
 
     if (SkPath::kConic_Verb == verb)
       verb_val.Set("weight", AsValue(iter.conicWeight()));
@@ -301,7 +298,7 @@ base::Value AsListValue(const T array[], size_t count) {
   base::Value::List val;
 
   for (size_t i = 0; i < count; ++i)
-    val.Append(AsValue(array[i]));
+    val.Append(AsValue(UNSAFE_TODO(array[i])));
 
   return base::Value(std::move(val));
 }

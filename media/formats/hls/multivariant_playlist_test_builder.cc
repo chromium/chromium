@@ -62,20 +62,21 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
 
   // Validate rendition group expectations
   // Begin by constructing a table of group_id -> group
-  base::flat_map<std::string, scoped_refptr<RenditionGroup>>
+  base::flat_map<std::optional<std::string>, scoped_refptr<RenditionGroup>>
       audio_rendition_groups;
   for (const auto& variant : playlist.GetVariants()) {
-    const auto& group = variant.GetAudioRenditionGroup();
+    const auto& group = variant.GetAudioRenditionGroup().GetGroupForTesting();
     if (group == nullptr) {
       continue;
     }
 
-    auto iter = audio_rendition_groups.find(group->GetId());
+    auto iter = audio_rendition_groups.find(group->GetIdForTesting());
     if (iter != audio_rendition_groups.end()) {
       // The same ID should always refer to the same group.
       DCHECK(iter->second.get() == group.get());
     } else {
-      audio_rendition_groups.insert(std::make_pair(group->GetId(), group));
+      audio_rendition_groups.insert(
+          std::make_pair(group->GetIdForTesting(), group));
     }
   }
 
@@ -95,8 +96,8 @@ void MultivariantPlaylistTestBuilder::VerifyExpectations(
     const auto& group = *group_iter->second;
 
     const auto rendition_iter = std::ranges::find(
-        group.GetRenditions(), expectation.name, &Rendition::GetName);
-    ASSERT_NE(rendition_iter, group.GetRenditions().end())
+        group.GetRenditionsForTesting(), expectation.name, &Rendition::GetName);
+    ASSERT_NE(rendition_iter, group.GetRenditionsForTesting().end())
         << expectation.from.ToString();
     expectation.func.Run(expectation.from, *rendition_iter);
   }

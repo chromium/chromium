@@ -31,7 +31,8 @@ const char kTestConfigContents[] = R"(
 })";
 
 TEST(GaiaConfigTest, ShouldGetURLIfExists) {
-  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(
+      kTestConfigContents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -41,7 +42,8 @@ TEST(GaiaConfigTest, ShouldGetURLIfExists) {
 }
 
 TEST(GaiaConfigTest, ShouldReturnNullIfURLDoesNotExists) {
-  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(
+      kTestConfigContents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -50,7 +52,8 @@ TEST(GaiaConfigTest, ShouldReturnNullIfURLDoesNotExists) {
 }
 
 TEST(GaiaConfigTest, ShouldGetAPIKeyIfExists) {
-  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(
+      kTestConfigContents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -60,7 +63,8 @@ TEST(GaiaConfigTest, ShouldGetAPIKeyIfExists) {
 }
 
 TEST(GaiaConfigTest, ShouldReturnNullIfAPIKeyDoesNotExists) {
-  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(
+      kTestConfigContents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));
@@ -69,7 +73,8 @@ TEST(GaiaConfigTest, ShouldReturnNullIfAPIKeyDoesNotExists) {
 }
 
 TEST(GaiaConfigTest, ShouldSerializeContentsToCommandLineSwitch) {
-  std::optional<base::Value> dict = base::JSONReader::Read(kTestConfigContents);
+  std::optional<base::Value> dict = base::JSONReader::Read(
+      kTestConfigContents, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict.has_value());
 
   GaiaConfig config(std::move(dict->GetDict()));

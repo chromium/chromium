@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_id.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
@@ -15,9 +16,9 @@
 using ColorProviderUtilsTest = ::testing::Test;
 
 TEST_F(ColorProviderUtilsTest, ConvertColorProviderColorIdToCSSColorId) {
-  EXPECT_EQ(std::string("--color-primary-background"),
+  EXPECT_EQ("--color-primary-background",
             ui::ConvertColorProviderColorIdToCSSColorId(
-                std::string(ui::ColorIdName(ui::kColorPrimaryBackground))));
+                ui::ColorIdName(ui::kColorPrimaryBackground)));
 }
 
 TEST_F(ColorProviderUtilsTest, ConvertSkColorToCSSColor) {

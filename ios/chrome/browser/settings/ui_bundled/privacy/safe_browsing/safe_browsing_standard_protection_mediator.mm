@@ -87,6 +87,9 @@ const CGFloat kSymbolSize = 20;
 @property(nonatomic, strong, null_resettable)
     TableViewSwitchItem* passwordLeakCheckItem;
 
+// The item related to the switch for the extended safe browsing.
+@property(nonatomic, strong) SyncSwitchItem* safeBrowsingExtendedItem;
+
 // Header that has shield icon.
 @property(nonatomic, strong) SafeBrowsingHeaderItem* shieldIconHeader;
 
@@ -125,10 +128,12 @@ const CGFloat kSymbolSize = 20;
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingEnabled];
     _safeBrowsingStandardProtectionPreference.observer = self;
-    _safeBrowsingExtendedReportingPreference = [[PrefBackedBoolean alloc]
-        initWithPrefService:userPrefService
-                   prefName:prefs::kSafeBrowsingScoutReportingEnabled];
-    _safeBrowsingExtendedReportingPreference.observer = self;
+    if (!safe_browsing::IsExtendedReportingDeprecated()) {
+      _safeBrowsingExtendedReportingPreference = [[PrefBackedBoolean alloc]
+          initWithPrefService:userPrefService
+                     prefName:prefs::kSafeBrowsingScoutReportingEnabled];
+      _safeBrowsingExtendedReportingPreference.observer = self;
+    }
     _passwordLeakCheckPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:password_manager::prefs::
@@ -142,7 +147,9 @@ const CGFloat kSymbolSize = 20;
   _identityManagerObserver = nil;
   [_safeBrowsingEnhancedProtectionPreference stop];
   [_safeBrowsingStandardProtectionPreference stop];
-  [_safeBrowsingExtendedReportingPreference stop];
+  if (!safe_browsing::IsExtendedReportingDeprecated()) {
+    [_safeBrowsingExtendedReportingPreference stop];
+  }
   [_passwordLeakCheckPreference stop];
 }
 
@@ -151,34 +158,44 @@ const CGFloat kSymbolSize = 20;
 - (ItemArray)safeBrowsingStandardProtectionItems {
   if (!_safeBrowsingStandardProtectionItems) {
     NSMutableArray* items = [NSMutableArray array];
-    if (self.userPrefService->IsManagedPreference(
-            prefs::kSafeBrowsingEnabled)) {
-      TableViewInfoButtonItem* safeBrowsingManagedExtendedReportingItem = [self
-          tableViewInfoButtonItemType:
-              ItemTypeSafeBrowsingManagedExtendedReporting
-                         textStringID:
-                             IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
-                       detailStringID:
-                           IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
-                               status:
-                                   self.safeBrowsingStandardProtectionPreference
-                                       .value];
-      [items addObject:safeBrowsingManagedExtendedReportingItem];
-    } else {
-      SyncSwitchItem* safeBrowsingExtendedReportingItem = [self
-          switchItemWithItemType:ItemTypeSafeBrowsingExtendedReporting
-                    textStringID:
-                        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
-                  detailStringID:
-                      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
-                    defaultState:safe_browsing::IsExtendedReportingEnabled(
-                                     *self.userPrefService)
-                         enabled:self.inSafeBrowsingStandardProtection];
-      safeBrowsingExtendedReportingItem.accessibilityIdentifier =
-          kSafeBrowsingExtendedReportingCellId;
-      [items addObject:safeBrowsingExtendedReportingItem];
+    if (!safe_browsing::IsExtendedReportingDeprecated()) {
+      if (self.userPrefService->IsManagedPreference(
+              prefs::kSafeBrowsingEnabled)) {
+        TableViewInfoButtonItem* safeBrowsingManagedExtendedReportingItem = [self
+            tableViewInfoButtonItemType:
+                ItemTypeSafeBrowsingManagedExtendedReporting
+                           textStringID:
+                               IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE
+                         detailStringID:
+                             IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY
+                                 status:
+                                     self.safeBrowsingStandardProtectionPreference
+                                         .value];
+        [items addObject:safeBrowsingManagedExtendedReportingItem];
+      } else {
+        SyncSwitchItem* switchItem = [[SyncSwitchItem alloc]
+            initWithType:ItemTypeSafeBrowsingExtendedReporting];
+        switchItem.text = l10n_util::GetNSString(
+            IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_TITLE);
+        switchItem.detailText = l10n_util::GetNSString(
+            IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_EXTENDED_REPORTING_SUMMARY);
+        switchItem.on =
+            safe_browsing::IsExtendedReportingEnabled(*self.userPrefService);
+        switchItem.enabled = self.inSafeBrowsingStandardProtection;
+        switchItem.target = self;
+        switchItem.selector = @selector(safeBrowsingExtendedSwitchToggled:);
+        switchItem.accessibilityIdentifier =
+            kSafeBrowsingExtendedReportingCellId;
+
+        self.safeBrowsingExtendedItem = switchItem;
+
+        [items addObject:switchItem];
+      }
     }
-    [items addObject:self.passwordLeakCheckItem];
+    if (!base::FeatureList::IsEnabled(
+            safe_browsing::kMovePasswordLeakDetectionToggleIos)) {
+      [items addObject:self.passwordLeakCheckItem];
+    }
 
     _safeBrowsingStandardProtectionItems = items;
   }
@@ -229,6 +246,10 @@ const CGFloat kSymbolSize = 20;
         initWithType:ItemTypePasswordLeakCheckSwitch];
     passwordLeakCheckItem.text = l10n_util::GetNSString(
         IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_TITLE);
+    passwordLeakCheckItem.detailText = l10n_util::GetNSString(
+        IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
+    passwordLeakCheckItem.target = self;
+    passwordLeakCheckItem.selector = @selector(passwordLeakSwitchToggled:);
     passwordLeakCheckItem.accessibilityIdentifier =
         kSafeBrowsingStandardProtectionPasswordLeakCellId;
     [self configureLeakCheckItem:passwordLeakCheckItem];
@@ -284,6 +305,8 @@ const CGFloat kSymbolSize = 20;
   managedItem.detailText = l10n_util::GetNSString(detailStringID);
   managedItem.statusText = status ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+  managedItem.target = self;
+  managedItem.selector = @selector(itemInfoButtonTapped:);
   if (!status) {
     managedItem.iconTintColor = [UIColor colorNamed:kGrey300Color];
 
@@ -295,22 +318,6 @@ const CGFloat kSymbolSize = 20;
         IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
   }
   return managedItem;
-}
-
-// Creates an item with a switch toggle.
-- (SyncSwitchItem*)switchItemWithItemType:(NSInteger)itemType
-                             textStringID:(int)textStringID
-                           detailStringID:(int)detailStringID
-                             defaultState:(BOOL)defaultState
-                                  enabled:(BOOL)enabled {
-  SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
-  switchItem.text = l10n_util::GetNSString(textStringID);
-  if (detailStringID) {
-    switchItem.detailText = l10n_util::GetNSString(detailStringID);
-  }
-  switchItem.on = defaultState;
-  switchItem.enabled = enabled;
-  return switchItem;
 }
 
 // Updates switches' on and enabled status.
@@ -359,27 +366,23 @@ const CGFloat kSymbolSize = 20;
       base::apple::ObjCCastStrict<TableViewSwitchItem>(item);
   leakCheckItem.enabled = self.inSafeBrowsingStandardProtection;
   leakCheckItem.on = [self passwordLeakCheckItemOnState];
-  leakCheckItem.detailText = l10n_util::GetNSString(
-      IDS_IOS_SAFE_BROWSING_STANDARD_PROTECTION_LEAK_CHECK_FRIENDLIER_SUMMARY);
 }
 
-#pragma mark - SafeBrowsingStandardProtectionViewControllerDelegate
+// Called when toggling the password leak switch.
+- (void)passwordLeakSwitchToggled:(UISwitch*)sender {
+  self.passwordLeakCheckItem.on = sender.on;
+  self.passwordLeakCheckPreference.value = sender.on;
+}
 
-- (void)toggleSwitchItem:(TableViewItem*)item withValue:(BOOL)value {
-  SyncSwitchItem* syncSwitchItem = base::apple::ObjCCast<SyncSwitchItem>(item);
-  syncSwitchItem.on = value;
-  ItemType type = static_cast<ItemType>(item.type);
-  switch (type) {
-    case ItemTypeSafeBrowsingExtendedReporting:
-      self.safeBrowsingExtendedReportingPreference.value = value;
-      break;
-    case ItemTypePasswordLeakCheckSwitch:
-      self.passwordLeakCheckPreference.value = value;
-      break;
-    default:
-      // Not a switch.
-      NOTREACHED();
-  }
+// Called when toggling the safe browsing switch.
+- (void)safeBrowsingExtendedSwitchToggled:(UISwitch*)sender {
+  self.safeBrowsingExtendedItem.on = sender.on;
+  self.safeBrowsingExtendedReportingPreference.value = sender.on;
+}
+
+// Called when tapping the info button.
+- (void)itemInfoButtonTapped:(UIButton*)button {
+  [self.consumer showManagedUIInfoForButton:button];
 }
 
 #pragma mark - BooleanObserver

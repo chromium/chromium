@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabpersistence/FlatBufferTabStateSerializer.java",
+    "android/java/src/org/chromium/chrome/browser/tabpersistence/TabMetadataFileManager.java",
     "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateDirectory.java",
     "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateFileManager.java",
     "android/java/src/org/chromium/chrome/browser/tabpersistence/TabStateSerializer.java",
@@ -18,6 +19,7 @@ android_library("java") {
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/flatbuffers:flatbuffers_java",

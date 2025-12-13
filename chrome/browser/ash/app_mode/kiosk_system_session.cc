@@ -10,34 +10,27 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "base/check.h"
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
-#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_service_factory.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 namespace ash {
 
@@ -50,20 +43,6 @@ void StartFloatingAccessibilityMenu() {
   if (accessibility_controller) {
     accessibility_controller->ShowFloatingMenuIfEnabled();
   }
-}
-
-bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  CHECK(extension_registry);
-
-  const extensions::Extension* primary_app =
-      extension_registry->GetInstalledExtension(app_id);
-  if (!primary_app) {
-    return false;
-  }
-
-  return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
 }
 
 }  // namespace
@@ -79,8 +58,7 @@ KioskSystemSession::KioskSystemSession(
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>(local_state)),
-      periodic_metrics_service_(
-          std::make_unique<PeriodicMetricsService>(&local_state)),
+      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()),
       device_weekly_scheduled_suspend_controller_(
           std::make_unique<DeviceWeeklyScheduledSuspendController>(
               &local_state)),
@@ -97,7 +75,9 @@ KioskSystemSession::KioskSystemSession(
       InitForIwaKiosk(app_name);
       break;
     case KioskAppType::kArcvmApp:
-      NOTREACHED();
+      // TODO(crbug.com/418950414): Implement kiosk system session for ARCVM
+      // kiosk. Decide if KioskBrowserSession and metrics are needed.
+      NOTIMPLEMENTED() << "No KioskSystemSession init for Arcvm kiosk";
   }
 }
 
@@ -108,26 +88,24 @@ void KioskSystemSession::InitForChromeAppKiosk() {
   browser_session_.InitForChromeAppKiosk(app_id);
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-  InitCommon(IsOfflineEnabledForApp(app_id, profile()));
+  InitCommon();
 }
 
 void KioskSystemSession::InitForWebKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
-  InitCommon(/*is_offline_enabled=*/true);
+  InitCommon();
 }
 
 void KioskSystemSession::InitForIwaKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForIwaKiosk(app_name);
-  InitCommon(/*is_offline_enabled=*/true);
+  InitCommon();
 }
 
-void KioskSystemSession::InitCommon(bool is_offline_enabled) {
+void KioskSystemSession::InitCommon() {
   StartFloatingAccessibilityMenu();
-
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(is_offline_enabled);
+  periodic_metrics_service_->StartRecordingPeriodicMetrics();
 }
 
 void KioskSystemSession::ShuttingDown() {
@@ -147,9 +125,7 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
 }
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged()) {
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
     local_state_->SetBoolean(::prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }

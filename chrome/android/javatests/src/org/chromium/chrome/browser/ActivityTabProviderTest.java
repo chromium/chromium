@@ -96,11 +96,13 @@ public class ActivityTabProviderTest {
                 () -> {
                     mActivity = mActivityTestRule.getActivity();
                     mProvider = mActivity.getActivityTabProvider();
-                    mProvider.addObserver(
-                            tab -> {
-                                mActivityTab = tab;
-                                mActivityTabChangedHelper.notifyCalled();
-                            });
+                    mProvider
+                            .asObservable()
+                            .addObserver(
+                                    tab -> {
+                                        mActivityTab = tab;
+                                        mActivityTabChangedHelper.notifyCalled();
+                                    });
                 });
         mActivityTabChangedHelper.waitForCallback(0);
         assertEquals(
@@ -113,7 +115,8 @@ public class ActivityTabProviderTest {
      * @return The {@link Tab} that the active model currently has selected.
      */
     private Tab getModelSelectedTab() {
-        return mActivity.getTabModelSelector().getCurrentTab();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getTabModelSelector().getCurrentTab());
     }
 
     /**
@@ -127,7 +130,7 @@ public class ActivityTabProviderTest {
         CallbackHelper helper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mProvider.addObserver(tab -> helper.notifyCalled());
+                    mProvider.asObservable().addObserver(tab -> helper.notifyCalled());
                 });
         helper.waitForCallback(0);
 
@@ -211,6 +214,7 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTriggerOnLastTabClosed() throws TimeoutException {
         // Have a tab open in incognito model. This should not be in the way getting the event
         // triggered when closing the last tab in normal mode.

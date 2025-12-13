@@ -16,7 +16,6 @@ import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -39,6 +38,8 @@ import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.util.function.Supplier;
 
 /**
  * A custom {@link OneshotSupplier} for a {@link TabGroupUi}. The supplied value will remain null
@@ -70,7 +71,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
             mSetter = setter;
             mActivityTabProvider = activityTabProvider;
             mTabModelSelector = tabModelSelector;
-            activityTabProvider.addObserver(mActivityTabObserver);
+            activityTabProvider.asObservable().addObserver(mActivityTabObserver);
         }
 
         void destroy() {
@@ -78,7 +79,7 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
                 mCallbackController.destroy();
                 mCallbackController = null;
             }
-            mActivityTabProvider.removeObserver(mActivityTabObserver);
+            mActivityTabProvider.asObservable().removeObserver(mActivityTabObserver);
             // Trigger a null new tab selection to effectively unregister the observer from the old
             // tab.
             mActivityTabObserver.onResult(null);

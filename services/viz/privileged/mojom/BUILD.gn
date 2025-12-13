@@ -35,7 +35,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//components/viz/common:common",
+    "//components/viz/common",
     "//media/capture/mojom:video_capture",
     "//services/service_manager/public/cpp",
     "//services/viz/privileged/mojom/compositing",

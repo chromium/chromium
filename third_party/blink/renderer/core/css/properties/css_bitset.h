@@ -49,7 +49,6 @@ class CORE_EXPORT CSSBitsetBase {
   CSSBitsetBase& operator=(const CSSBitsetBase& o) = default;
 
   bool operator==(const CSSBitsetBase& o) const { return chunks_ == o.chunks_; }
-  bool operator!=(const CSSBitsetBase& o) const { return !(*this == o); }
 
   inline uint64_t HighPriorityBits() const {
     return chunks_.data()[0] & HighPriorityBitMask();
@@ -130,9 +129,6 @@ class CORE_EXPORT CSSBitsetBase {
 
     inline bool operator==(const Iterator& o) const {
       return index_ == o.index_;
-    }
-    inline bool operator!=(const Iterator& o) const {
-      return index_ != o.index_;
     }
 
    private:

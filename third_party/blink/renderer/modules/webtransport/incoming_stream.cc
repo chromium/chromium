@@ -103,8 +103,7 @@ void IncomingStream::InitWithExistingReadableStream(
       data_pipe_.get(),
       MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&IncomingStream::OnHandleReady,
-                         WrapWeakPersistent(this)));
+      BindRepeating(&IncomingStream::OnHandleReady, WrapWeakPersistent(this)));
   ReadableStream::InitByteStream(
       script_state_, stream,
       MakeGarbageCollected<UnderlyingByteSource>(script_state_, this),

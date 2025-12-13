@@ -12,7 +12,7 @@ import os
 import re
 import sys
 import copy
-from typing import List, Dict, Set, Union
+from typing import List, Dict, Iterable, Set, Union
 from pathlib import Path
 import hashlib
 import shlex
@@ -32,6 +32,7 @@ REPOSITORY_ROOT = os.path.abspath(
 sys.path.insert(0, REPOSITORY_ROOT)
 
 import components.cronet.tools.utils as cronet_utils
+import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
 import build.gn_helpers
 
 CRONET_LICENSE_NAME = "external_cronet_license"
@@ -241,6 +242,11 @@ def initialize_globals(import_channel: str):
                                                              True)],
   }
 
+  additional_args = {
+      "{}{}".format(key, suffix): value
+      for key, value in additional_args.items()
+      for suffix in gn_utils.POSSIBLE_SUFFIXES
+  }
 
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
@@ -277,42 +283,6 @@ android_protobuf_src = 'external/protobuf/src'
 # put all args on a new line for better diffs.
 NEWLINE = ' " +\n         "'
 
-# Compiler flags which are passed through to the blueprint.
-cflag_allowlist = [
-    # needed for zlib:zlib
-    "-mpclmul",
-    # needed for zlib:zlib
-    "-mssse3",
-    # needed for zlib:zlib
-    "-msse3",
-    # needed for zlib:zlib
-    "-msse4.2",
-    # flags to reduce binary size
-    "-O1",
-    "-O2",
-    "-O3",
-    "-Oz",
-    "-g1",
-    "-g2",
-    "-fdata-sections",
-    "-ffunction-sections",
-    "-fvisibility=hidden",
-    "-fvisibility-inlines-hidden",
-    "-fstack-protector",
-    "-mno-outline",
-    "-mno-outline-atomics",
-    "-fno-asynchronous-unwind-tables",
-    "-fno-unwind-tables",
-]
-
-# Linker flags which are passed through to the blueprint.
-ldflag_allowlist = [
-    # flags to reduce binary size
-    "-Wl,--as-needed",
-    "-Wl,--gc-sections",
-    "-Wl,--icf=all",
-]
-
 
 def get_linker_script_ldflag(script_path):
   return f'-Wl,--script,{tree_path}/{script_path}'
@@ -325,6 +295,7 @@ _RUST_FLAGS_TO_REMOVE = [
     "--edition",  # Added to the appropriate field, must be removed from flags.
     "--sysroot",  # Use AOSP's stdlib so we don't need any hacks for sysroot.
     "-Cembed-bitcode=no",  # Not compatible with Thin-LTO which is added by Soong.
+    "-Clinker-plugin-lto",  # Not compatible with AOSP due to Clang and Rust version difference.
     "--cfg",  # Added to the appropriate field.
     "--extern",  # Soong automatically adds that for us when we use proc_macro
     "@",  # Used by build_script outputs to have rustc load flags from a file.
@@ -504,9 +475,20 @@ def add_rustversion_deps(module, _):
 _builtin_deps = {
     '//buildtools/third_party/libunwind:libunwind':
     always_disable,
-    # This is a binary module that generates C++ binding files, Skip this
-    # dependency completely as we construct the modules differently.
-    '//third_party/rust/cxxbridge_cmd/v1:cxxbridge':
+    # rustc_print_cfg is used to print rustc compiler default assumption
+    # for a specific CPU architecture (e.g. target_feature="ssse3"). Those
+    # features only changes from one CPU architecture to another. It's used
+    # when generating the cxxbindings and build scripts (build scripts is a
+    # rust concept, it's an rust binary that generates flags used to compile
+    # other rust binaries).
+    # For CXXBindings, we use AOSP's binary which already have the configuration
+    # specified depending on which arch it's building for.
+    # For build scripts, we generate those on Chromium side in a JSON file and
+    # inject them in the pipeline.
+    #
+    # From the above reasoning, we can safely assume that we should not need
+    # to build this target at all.
+    '//build/rust/gni_impl:rustc_print_cfg':
     always_disable,
     '//net/data/ssl/chrome_root_store:gen_root_store_inc':
     always_disable,
@@ -550,9 +532,7 @@ _builtin_deps = {
     add_androidx_test_runner_java_deps,
     '//third_party/android_sdk:android_test_base_java':
     add_android_test_base_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_test_framework_java':
-    add_accessibility_test_framework_java_deps,
-    '//third_party/accessibility_test_framework:accessibility_core_java':
+    '//third_party/android_deps:com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java':
     add_accessibility_test_framework_java_deps,
     '//third_party/android_deps:espresso_java':
     add_espresso_java_deps,
@@ -582,10 +562,11 @@ _builtin_deps = {
     '//third_party/rust/rustversion/v1:lib__proc_macro':
     add_rustversion_deps,
 }
+
 builtin_deps = {
     "{}{}".format(key, suffix): value
     for key, value in _builtin_deps.items()
-    for suffix in ["", gn_utils.TESTING_SUFFIX]
+    for suffix in gn_utils.POSSIBLE_SUFFIXES
 }
 
 # Same as _builtin_deps but will only apply what is explicitly specified.
@@ -692,13 +673,13 @@ class Module:
       self.static_libs = set()
       self.whole_static_libs = set()
       self.header_libs = set()
-      self.cflags = set()
+      self.cflags = list()
       self.stl = None
-      self.cppflags = set()
+      self.cppflags = list()
       self.include_dirs = set()
       self.generated_headers = set()
       self.export_generated_headers = set()
-      self.ldflags = set()
+      self.ldflags = list()
       self.compile_multilib = None
       self.stem = ""
       self.edition = ""
@@ -715,19 +696,26 @@ class Module:
       self._output_field(nested_out, 'static_libs')
       self._output_field(nested_out, 'whole_static_libs')
       self._output_field(nested_out, 'header_libs')
-      self._output_field(nested_out, 'cflags')
+      # While sorting is a requirement for a deterministic output, sorting these flags correctly is
+      # challenging. Sorting requires knowing the boundaries of each flag, but we cannot simply
+      # assume flags are defined by whitespace, a leading - character, or something else.
+      # With that in mind, we choose instead not to sort and instead we rely on GN's ordering of
+      # these flags (and we assume that that ordering is deterministic).
+      self._output_field(nested_out, 'cflags', sort=False)
       self._output_field(nested_out, 'stl')
-      self._output_field(nested_out, 'cppflags')
+      # The reasoning for disabling sort is the same as cflags.
+      self._output_field(nested_out, 'cppflags', sort=False)
       self._output_field(nested_out, 'include_dirs')
       self._output_field(nested_out, 'generated_headers')
       self._output_field(nested_out, 'export_generated_headers')
-      self._output_field(nested_out, 'ldflags')
+      # The reasoning for disabling sort is the same as cflags.
+      self._output_field(nested_out, 'ldflags', sort=False)
       self._output_field(nested_out, 'compile_multilib')
       self._output_field(nested_out, 'stem')
       self._output_field(nested_out, "edition")
       self._output_field(nested_out, 'cfgs')
       self._output_field(nested_out, 'features')
-      self._output_field(nested_out, 'flags', False)
+      self._output_field(nested_out, 'flags', sort=False)
       self._output_field(nested_out, 'rustlibs')
       self._output_field(nested_out, 'proc_macros')
 
@@ -742,11 +730,10 @@ class Module:
                       name,
                       sort=True,
                       list_to_multiline_string=False):
-      value = getattr(self, name)
       return write_blueprint_key_value(
           output,
           name,
-          value,
+          getattr(self, name),
           sort=sort,
           list_to_multiline_string=list_to_multiline_string)
 
@@ -772,7 +759,7 @@ class Module:
     self.export_static_lib_headers = set()
     self.export_header_lib_headers = set()
     self.defaults = set()
-    self.cflags = set()
+    self.cflags = list()
     self.include_dirs = set()
     self.local_include_dirs = set()
     self.header_libs = set()
@@ -796,7 +783,7 @@ class Module:
     self.min_sdk_version = None
     self.proto = dict()
     self.linker_scripts = set()
-    self.ldflags = set()
+    self.ldflags = list()
     # The genrule_XXX below are properties that must to be propagated back
     # on the module(s) that depend on the genrule.
     self.genrule_headers = set()
@@ -806,7 +793,7 @@ class Module:
     self.version_script = None
     self.test_suites = set()
     self.test_config = None
-    self.cppflags = set()
+    self.cppflags = list()
     self.rtti = False
     # Name of the output. Used for setting .so file name for libcronet
     self.libs = set()
@@ -843,13 +830,14 @@ class Module:
     self.jni_zero_target_type = None
     self.unstable = ""
     self.path = ""
-    self.post_processed = False
     # In the case of Java "top-level" modules, this points to the corresponding
     # "unfiltered" module. The top-level module is just a dependency holder;
     # it's the unfiltered module that does the actual compiling. For more
     # details, see `create_java_module()`.
     self.java_unfiltered_module = None
-    self.transitive_generated_headers_modules = collections.defaultdict(set)
+    self.cargo_env_compat = None
+    self.cargo_pkg_version = None
+    self.whole_program_vtables = False
 
   def variant(self, arch_name):
     return self if arch_name == 'common' else self.target[arch_name]
@@ -879,7 +867,12 @@ class Module:
     self._output_field(output, 'export_static_lib_headers')
     self._output_field(output, 'export_header_lib_headers')
     self._output_field(output, 'defaults')
-    self._output_field(output, 'cflags')
+    # While sorting is a requirement for a deterministic output, sorting these flags correctly is
+    # challenging. Sorting requires knowing the boundaries of each flag, but we cannot simply
+    # assume flags are defined by whitespace, a leading - character, or something else.
+    # With that in mind, we choose instead not to sort and instead we rely on GN's ordering of
+    # these flags (and we assume that that ordering is deterministic).
+    self._output_field(output, 'cflags', sort=False)
     self._output_field(output, 'include_dirs')
     self._output_field(output, 'local_include_dirs')
     self._output_field(output, 'header_libs')
@@ -895,8 +888,10 @@ class Module:
     self._output_field(output, 'test_config')
     self._output_field(output, 'proto')
     self._output_field(output, 'linker_scripts')
-    self._output_field(output, 'ldflags')
-    self._output_field(output, 'cppflags')
+    # The reasoning for disabling sort is the same as cflags.
+    self._output_field(output, 'ldflags', sort=False)
+    # The reasoning for disabling sort is the same as cflags.
+    self._output_field(output, 'cppflags', sort=False)
     self._output_field(output, 'unstable')
     self._output_field(output, 'path')
     self._output_field(output, 'libs')
@@ -925,6 +920,10 @@ class Module:
     self._output_field(output, 'wrapper_src')
     self._output_field(output, 'handle_static_inline')
     self._output_field(output, 'static_inline_library')
+    self._output_field(output, 'cargo_env_compat')
+    self._output_field(output, 'cargo_pkg_version')
+    if self.whole_program_vtables:
+      self._output_field(output, 'whole_program_vtables')
     if self.rtti:
       self._output_field(output, 'rtti')
     target_out = []
@@ -966,11 +965,10 @@ class Module:
                     name,
                     sort=True,
                     list_to_multiline_string=False):
-    value = getattr(self, name)
     return write_blueprint_key_value(
         output,
         name,
-        value,
+        getattr(self, name),
         sort=sort,
         list_to_multiline_string=list_to_multiline_string)
 
@@ -1205,11 +1203,12 @@ def get_protoc_module_name(gn):
   # not currently the case - libprotobuf-cpp-lite links against AOSP libc++,
   # while Cronet links against its own libc++ from Chromium. Therefore we cannot
   # use the AOSP protobuf library - we have to use the Chromium one.
-  protoc_gn_target_name = gn.get_target('//third_party/protobuf:protoc').name
+  protoc_gn_target_name = gn.get_target(
+      '//third_party/protobuf:protoc__toolchain_clang').name
   return label_to_module_name(protoc_gn_target_name)
 
 
-def create_rust_cxx_modules(_, target):
+def create_rust_cxx_modules(blueprint, gn, target, is_test_target):
   """Generate genrules for a CXX GN target
 
     GN actions are used to dynamically generate files during the build. The
@@ -1226,11 +1225,25 @@ def create_rust_cxx_modules(_, target):
     Returns:
         The source and headers genrule modules.
   """
+
+  def _find_cxx_bridge_binary(deps: Set[str]) -> str:
+    for dep in deps:
+      if re.search(
+          r"^//third_party/rust/cxxbridge_cmd/v.*:cxxbridge__toolchain.*(__testing)?$",
+          dep):
+        return dep
+    raise Exception(
+        f"Failed to find a dependency on cxxbridge host binary! Target name: {target.name}, deps: {deps}",
+    )
+
+  cxx_bridge_module_name = create_modules_from_target(
+      blueprint, gn, _find_cxx_bridge_binary(target.deps), target.type,
+      is_test_target)[0].name
   header_genrule = Module("cc_genrule",
                           label_to_module_name(target.name) + "_header",
                           target.name)
-  header_genrule.tools = {"cxxbridge"}
-  header_genrule.cmd = "$(location cxxbridge) $(in) --header > $(out)"
+  header_genrule.tools = {cxx_bridge_module_name}
+  header_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) --header > $(out)"
   header_genrule.srcs = {gn_utils.label_to_path(src) for src in target.sources}
   # The output of the cc_genrule is the input + ".h" suffix, this is because
   # the input to a CXX genrule is just one source file.
@@ -1241,8 +1254,8 @@ def create_rust_cxx_modules(_, target):
 
   cc_genrule = Module("cc_genrule", label_to_module_name(target.name),
                       target.name)
-  cc_genrule.tools = {"cxxbridge"}
-  cc_genrule.cmd = "$(location cxxbridge) $(in) > $(out)"
+  cc_genrule.tools = {cxx_bridge_module_name}
+  cc_genrule.cmd = f"$(location {cxx_bridge_module_name}) $(in) > $(out)"
   cc_genrule.srcs = {gn_utils.label_to_path(src) for src in target.sources}
   cc_genrule.genrule_srcs = {f":{cc_genrule.name}"}
   # The output of the cc_genrule is the input + ".cc" suffix, this is because
@@ -1344,9 +1357,10 @@ def create_proto_modules(blueprint, gn, target, is_test_target):
   cmd = ['$(location %s)' % protoc_module_name]
   cmd += ['--proto_path=%s/%s' % (tree_path, target.proto_in_dir)]
 
-  for proto_path in target.proto_paths:
+  sorted_proto_paths = sorted(target.proto_paths)
+  for proto_path in sorted_proto_paths:
     cmd += [f'--proto_path={tree_path}/{proto_path}']
-  if buildtools_protobuf_src in target.proto_paths:
+  if buildtools_protobuf_src in sorted_proto_paths:
     cmd += ['--proto_path=%s' % android_protobuf_src]
 
   sources = {gn_utils.label_to_path(src) for src in target.sources}
@@ -1456,13 +1470,13 @@ def create_gcc_preprocess_modules(blueprint, target):
                              bp_module_name + '_preprocess', target.name)
   # -E: stop after preprocessing.
   # -P: disable line markers, i.e. '#line 309'
-  preprocess_module.cflags.update(['-E', '-P', '-DANDROID'])
+  preprocess_module.cflags.extend(['-E', '-P', '-DANDROID'])
   preprocess_module.srcs.add(':' + rename_module.name)
   defines = [
       '-D' + target.args[i + 1] for i, arg in enumerate(target.args)
       if arg == '--define'
   ]
-  preprocess_module.cflags.update(defines)
+  preprocess_module.cflags.extend(defines)
   blueprint.add_module(preprocess_module)
 
   # Generates srcjar using soong_zip
@@ -1705,6 +1719,15 @@ class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
     super()._sanitize_args()
 
 
+class WriteGenerateAllowlistFromHistogramsFileSanitizer(BaseActionSanitizer):
+
+  def _sanitize_args(self):
+    self._set_value_arg('--output_dir', '.')
+    self._set_value_arg('--file', '$(out)')
+    self._update_value_arg('--input', self._sanitize_filepath_with_location_tag)
+    super()._sanitize_args()
+
+
 class WriteBuildFlagHeaderSanitizer(BaseActionSanitizer):
 
   def _sanitize_args(self):
@@ -1726,7 +1749,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
     super().__init__(target, arch)
     self.binary_to_target = {
         "clang_x64/transport_security_state_generator":
-        f"{MODULE_PREFIX}net_tools_transport_security_state_generator_transport_security_state_generator__testing",
+        f"{MODULE_PREFIX}net_tools_transport_security_state_generator_transport_security_state_generator__toolchain_clang__testing",
     }
     self.binary = self.binary_to_target[self.target.args[0]]
 
@@ -1801,7 +1824,7 @@ class JniGeneratorSanitizer(BaseActionSanitizer):
       # from those genrule can simply call into the original class as it exists outside
       # of cronet's jar.
       # Only jarjar platform code
-      self._append_arg('--package-prefix', 'android.net.connectivity')
+      self._append_arg('--package-prefix', 'android.net.http.internal')
     super()._sanitize_args()
 
   def get_outputs(self):
@@ -1904,7 +1927,7 @@ class JniRegistrationGeneratorSanitizer(BaseActionSanitizer):
     self._delete_value_arg('--package-prefix-filter', throw_if_absent=False)
     if not self.is_test_target:
       # Only jarjar platform code
-      self._append_arg('--package-prefix', 'android.net.connectivity')
+      self._append_arg('--package-prefix', 'android.net.http.internal')
     super()._sanitize_args()
 
   def get_cmd(self):
@@ -2081,6 +2104,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
     return PerfettoWriteBuildFlagHeaderSanitizer(target, arch)
   if target.script == "//base/write_build_date_header.py":
     return WriteBuildDateHeaderSanitizer(target, arch)
+  if target.script == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py":
+    return WriteGenerateAllowlistFromHistogramsFileSanitizer(target, arch)
   if target.script == "//build/util/version.py":
     return VersionSanitizer(target, arch)
   if target.script == "//build/android/gyp/java_cpp_enum.py":
@@ -2437,6 +2462,23 @@ def get_bindgen_flags(args: List[str]) -> List[str]:
   return bindgen_flags
 
 
+def _create_extract_rust_files_target(bindgen_module, blueprint):
+  module = Module("cc_genrule", bindgen_module.name + "__extract_rust_files",
+                  f"Extract rust files from {bindgen_module.name}")
+  module.srcs = [f":{bindgen_module.name}"]
+  module.cmd = [
+      f'for f in $(locations :{bindgen_module.name}); do',
+      'if [[ "$$f" == *.rs ]]; then', 'cp "$$f" $(out);', 'fi;', 'done'
+  ]
+  module.out = [f"{bindgen_module.source_stem}.rs"]
+  module.device_supported = bindgen_module.device_supported
+  module.host_supported = bindgen_module.host_supported
+  module.host_cross_supported = bindgen_module.host_cross_supported
+  module.target['host'].compile_multilib = '64'
+  module.apex_available = [tethering_apex]
+  blueprint.add_module(module)
+  return module
+
 def create_bindgen_module(blueprint: Blueprint, target,
                           module_name: str) -> Module:
   module = Module("rust_bindgen", "lib" + module_name, target.name)
@@ -2496,6 +2538,7 @@ def create_generated_headers_export_module(blueprint: Blueprint,
   module.defaults = [cc_defaults_module]
   module.host_supported = cc_genrule_module.host_supported
   module.host_cross_supported = cc_genrule_module.host_cross_supported
+  module.device_supported = cc_genrule_module.device_supported
   blueprint.add_module(module)
   return module
 
@@ -2555,66 +2598,155 @@ def create_jni_zero_proxy_only_module(jni_zero_generator_module):
   return proxy_only_module
 
 
+def _is_cflag_allowed(cflag):
+  if cflag.startswith("-Wno-"):
+    # Allow all -Wno- flags as those demote errors to warning.
+    return True
+  return all(not cflag.startswith(denied_prefix) for denied_prefix in [
+      # Soong handles this according to the module's attributes.
+      "--sysroot=",
+      # Soong handles this according to the architecture.
+      "--target=",
+      "--warning-suppression-mappings=",
+      # Remove all promotions of warning to errors. The code is developed in
+      # chromium, and the checks should be there.
+      "-W",
+      # Soong handles this according to the module's attributes.
+      "-isystem",
+      # Best handled by Soong according to the build configuration.
+      '-fcrash-diagnostics-dir=',
+      # Enabled by default in Soong.
+      '-flto',
+      # Enabled by default in Soong.
+      '-fsplit-lto-unit',
+      # Enabled by a special attribute instead.
+      '-fwhole-program-vtables',
+      # LLVM in AOSP fails when this is added. It's mostly used to warn
+      # against non-standard compiler extensions. It's forbidden by Soong as it's
+      # in the list of the IllegalFlags: http://ac/build/soong/cc/config/global.go?l=405-413
+      '-pedantic',
+      # Same as above.
+      '-w',
+      # This is used by a clang-plugin to show errors / warning for unsafe buffers during
+      # compilation. We don't care about static analysis errors / warnings as they're
+      # shown on the Chromium side. The reason why we're excluding this flag is because
+      # it introduces build breakages as clang's toolchain does not understand the
+      # pragma enabled by this define.
+      '-DUNSAFE_BUFFERS_BUILD',
+      '-Wunsafe-buffer-usage',
+      '-Wno-error=unsafe-buffer-usage',
+  ])
+
 def _get_cflags(cflags, defines):
-  cflags = {flag for flag in cflags if flag in cflag_allowlist}
+  cflags = [flag for flag in cflags if _is_cflag_allowed(flag)]
+
+  # Android _may_ set a platform default for _LIBCPP_HARDENING_MODE. If that
+  # conflicts with the level specified on this target, we'll get build errors.
+  #
+  # Allow Android's default to apply to builds where we don't specify one, but
+  # prefer our default for builds that do.
+  libcpp_hardening_flag = "_LIBCPP_HARDENING_MODE"
+  if any(define.startswith(libcpp_hardening_flag) for define in defines):
+    cflags.append(f"-U{libcpp_hardening_flag}")
+
   # Consider proper allowlist or denylist if needed
-  cflags |= set("-D%s" % define.replace("\"", "\\\"") for define in defines)
+  cflags.extend(
+      sorted(["-D%s" % define.replace("\"", "\\\"") for define in defines]))
   return cflags
 
 
 def _set_linker_script(module, libs):
   for lib in libs:
     if lib.endswith(".lds"):
-      module.ldflags.add(get_linker_script_ldflag(gn_utils.label_to_path(lib)))
+      module.ldflags.append(
+          get_linker_script_ldflag(gn_utils.label_to_path(lib)))
 
 
-def create_concatenated_generated_headers_module(bp_module_name,
-                                                 headers_modules, blueprint,
-                                                 gn_target_name):
-  """Aggregates the output of multiple generated_headers genrules into a single
-  one. This is created to shorten the command-line length of the build command
-  as to not exceed the allowed length. Instead of exposing each generated header
-  individually, they're combined into a single target and only that target is
-  exposed.
-
-  Args:
-    bp_module_name: Name of the aggregated module generated.
-    headers_modules: Set of generated headers modules that will be aggregated.
-    gn_target_name: Name of the original GN target. This is usually the name
-    of the cc_library_static that is being processed.
-
-  Returns:
-    A Soong Module that aggregates all of the headers.
-  """
-  module = Module("cc_genrule", bp_module_name, gn_target_name)
-  module.cmd = [
-      "python $(location components/cronet/gn2bp/headers_copy.py) --gen-dir $(genDir) --headers"
+def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
+  cpp_stds = [
+      cflag.removeprefix('-std=') for cflag in cflags
+      if cflag.startswith('-std=')
   ]
-  module.tool_files.add("components/cronet/gn2bp/headers_copy.py")
-  for headers_module_name in sorted(headers_modules):
-    headers_module_str = f":{headers_module_name}"
-    headers_module = blueprint.modules[headers_module_name]
-    module.tool_files.add(headers_module_str)
-    module.export_include_dirs.update(headers_module.export_include_dirs)
-    module.cmd.append(f"$(locations {headers_module_str})")
-    # We have to copy-over some .cc files due to some C++ code doing #include "file.cc". See
-    # crbug.com/421139881 for more information.
-    module.out.update([
-        output for output in headers_module.out
-        if output.endswith(".h") or output.endswith(".cc")
-    ])
-  module.apex_available.add(tethering_apex)
-  blueprint.add_module(module)
-  return module
+  if cpp_stds:
+    # There can be multiple cpp std in cflags list. Return the last one as this will
+    # override any previous version.
+    return cpp_stds[-1]
+  return None
 
 
-def configure_cc_module(module, cflags, defines, ldflags, libs):
-  module.cflags.update(_get_cflags(cflags, defines))
-  module.ldflags.update({
-      flag
-      for flag in ldflags
-      if flag in ldflag_allowlist or flag.startswith("-Wl,-wrap,")
-  })
+def _extract_linker_script(ldflags):
+  new_ldflags = []
+  linker_script = None
+  for flag in ldflags:
+    if flag.startswith("-Wl,--version-script="):
+      # Everything after the = is the path and delete all leading ../
+      linker_path = re.sub('^(\.\./)+', '', flag.split("=", maxsplit=2)[1])
+      assert linker_script is None, f"Found two different linker script for a single target! First script: {linker_script}, Second script: {linker_path}"
+      linker_script = linker_path
+    else:
+      new_ldflags.append(flag)
+  return new_ldflags, linker_script
+
+
+def _create_linker_script_filegroup(linker_script_path):
+  filegroup_name = linker_script_path.replace('/', '_').replace('.', '_')
+  filegroup_module = Module("filegroup",
+                            f"{MODULE_PREFIX}{filegroup_name}_filegroup",
+                            f"Created to reference {linker_script_path}")
+  filegroup_module.srcs = [linker_script_path]
+  # TODO(aymanm): Change the default for build_file_path to be top-level.
+  filegroup_module.build_file_path = ""
+  return filegroup_module
+
+
+def _is_allowed_ldflag(flag):
+  return all(not flag.startswith(denied_prefix) for denied_prefix in [
+      # Already applied by Soong according to module's attributes.
+      "--sysroot=",
+      # Already applied by Soong.
+      "--target=",
+      # Throws an error for some unknown reason?
+      "--unwindlib=",
+      # Tries to write to disk which is disallowed by Soong. It also
+      # simply controls the caching behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-cache-dir=",
+      # Controls the caching behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-cache-policy=",
+      # Controls the threading behaviour of thinLTO which is
+      # not essential.
+      "-Wl,--thinlto-jobs=",
+      # Applied by Soong by default
+      "-flto=",
+      # Throws an error currently because GNU_PROPERTY_AARCH64_FEATURE_1_BTI is
+      # not defined in some object files. This requires further investigation
+      # to enable. It's fine to disable for now as it has never been enabled in
+      # HttpEngine.
+      "-Wl,-z,force-bti",
+      # Soong handles this automatically based on the lunch options.
+      "-Wl,-z,max-page-size=",
+      # Let Soong handle the stripping of debug library according to the
+      # lunch configuration.
+      "-Wl,--strip-debug",
+      # Android is experimenting with XOM(crbug.com/379071663) which conflicts with
+      # rosegment flag. Disable this flag until XOM has landed, and we have
+      # an attribute which we can use to enable --no-rosegment.
+      "-Wl,--no-rosegment",
+  ])
+
+
+def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
+                        blueprint):
+  module.cflags = _get_cflags(cflags, defines)
+  ldflags, linker_script = _extract_linker_script(ldflags)
+  module.ldflags = [flag for flag in ldflags if _is_allowed_ldflag(flag)]
+  if linker_script:
+    # Unfortunately, Soong does not allow accessing linker scripts from parent
+    # path. So create a filegroup at the top-level Android.bp and reference it instead.
+    filegroup_module = _create_linker_script_filegroup(linker_script)
+    blueprint.add_module(filegroup_module)
+    module.version_script = f":{filegroup_module.name}"
   _set_linker_script(module, libs)
   for lib in libs:
     # Generally library names should be mangled as 'libXXX', unless they
@@ -2626,11 +2758,28 @@ def configure_cc_module(module, cflags, defines, ldflags, libs):
       module.shared_libs.add(android_lib)
   # TODO: implement proper cflag parsing.
   for flag in cflags:
-    if '-std=' in flag:
-      module.cpp_std = flag[len('-std='):]
     if '-fexceptions' in flag:
-      module.cppflags.add('-fexceptions')
+      module.cppflags.append('-fexceptions')
+  cpp_std = _get_cpp_std(cflags)
+  if cpp_std:
+    assert main_module.cpp_std is None or main_module.cpp_std == cpp_std, f"Found different CPP version across different architectures!, target name: {main_module.name}, first cpp version: {main_module.cpp_std}, current cpp version: {cpp_std}"
+    # The -std= compiler option has a dedicated property in Android.bp, called cpp_std. That property
+    # can only be set at module top level; it cannot be set per-target. However in GN
+    # cflags are arch-specific, so we will find -std= when running on the
+    # arch-specific module. Hence we need to go back to the main module and set it there.
+    main_module.cpp_std = cpp_std
 
+
+def _create_rust_build_script_output_copy_genrule(module_name,
+                                                  path_to_directory, files):
+  module = Module(
+      "genrule", module_name,
+      "Copies generated Rust build script files somewhere the dependent code can find them"
+  )
+  module.srcs = [f"{path_to_directory}/{file_name}" for file_name in files]
+  module.cmd = "cp $(in) $(genDir)"
+  module.out = files
+  return module
 
 def set_module_include_dirs(module, cflags, include_dirs):
   for flag in cflags:
@@ -2722,20 +2871,51 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
   if target.type == "action" and parent_gn_type == "java_library":
     bp_module_name += "__java"
 
-  if target.type in ["rust_library", "rust_proc_macro"]:
+  target_types_to_hash_module_name = [
+    "rust_executable",
+    "rust_library",
+    "rust_proc_macro",
+  ]
+  if target.type in target_types_to_hash_module_name:
     # "lib{crate_name}" must be a prefix of the module name, this is a Soong
     # restriction.
     # https://cs.android.com/android/_/android/platform/build/soong/+/31934a55a8a1f9e4d56d68810f4a646f12ab6eb5:rust/library.go;l=724;drc=fdec8723d574daf54b956cc0f6dc879087da70a6;bpv=0;bpt=0
     # Use the hash of the module_name instead of the entire name otherwise we will
     # exceed the maximum file name length (b/376452102).
     bp_module_hash = hashlib.sha256(
-        bp_module_name.encode('utf-8')).hexdigest()[:16]
+        bp_module_name.encode('utf-8')).hexdigest()[:4]
     bp_module_name = f"lib{target.crate_name}__{bp_module_hash}"
 
   if bp_module_name in blueprint.modules:
     return (blueprint.modules[bp_module_name], )
 
   log.info('create modules for %s (%s)', target.name, target.type)
+
+  if gn2bp_common.is_rust_build_script(target.script):
+    # Build scripts are generated via `generate_build_scripts_output.py`. See the header
+    # of that script for more details.
+    generated_files = [
+        output.split("/")[-1] for output in target.outputs
+        if output.endswith(".rs") and not output.endswith("/cargo_flags.rs")
+    ]
+    if len(generated_files) == 0:
+      # No files were generated by this build script. Just ignore it and return None.
+      return (None, )
+    # The `generated_outputs` is hardcoded as we assume that the `generate_build_scripts_output.py` script has executed
+    # and generated all the necessary files in that destination. This creates some kind of hard dependencies between
+    # those two scripts.
+    # TODO(b/447593242): Find a better way to indicate to GN2BP that generate_build_scripts_output has generated those files.
+    # TODO(b/447592983): Use architecture-specific fields instead of harcoding arm64.
+    # Rust code typically consumes generated files using the following pattern:
+    # include!(concat!(env!("OUT_DIR"), "/somefile.rs"));
+    # Because this uses OUT_DIR the generated files will not be found if we just leave this
+    # in the source tree - we need to copy them to the output directory. Hence this genrule.
+    module = _create_rust_build_script_output_copy_genrule(
+        bp_module_name,
+        f"{target.rust_source_dir}/gn2bp_rust_build_script_outputs/arm64",
+        generated_files)
+    blueprint.add_module(module)
+    return (module, )
 
   if target.type == 'executable':
     if target.testonly:
@@ -2784,7 +2964,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     modules = (module, )
   elif target.type == 'action_foreach':
     if target.script == "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py":
-      modules = create_rust_cxx_modules(blueprint, target)
+      modules = create_rust_cxx_modules(blueprint, gn, target, is_test_target)
     else:
       modules = create_action_foreach_modules(blueprint, gn, target,
                                               is_test_target)
@@ -2821,13 +3001,13 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
 
     if target.type in gn_utils.LINKER_UNIT_TYPES:
       configure_cc_module(module, target.cflags, target.defines, target.ldflags,
-                          target.libs)
+                          target.libs, module, blueprint)
       set_module_include_dirs(module, target.cflags, target.include_dirs)
       # TODO: set_module_xxx is confusing, apply similar function to module and target in better way.
       for arch_name, arch in target.get_archs().items():
         # TODO(aymanm): Make libs arch-specific.
         configure_cc_module(module.target[arch_name], arch.cflags, arch.defines,
-                            arch.ldflags, arch.libs)
+                            arch.ldflags, arch.libs, module, blueprint)
         # -Xclang -target-feature -Xclang +mte are used to enable MTE (Memory Tagging Extensions).
         # Flags which does not start with '-' could not be in the cflags so enabling MTE by
         # -march and -mcpu Feature Modifiers. MTE is only available on arm64. This is needed for
@@ -2856,6 +3036,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
     if module.type in ["rust_proc_macro", "rust_binary", "rust_ffi_static"]:
       module.crate_name = target.crate_name
       module.crate_root = gn_utils.label_to_path(target.crate_root)
+      if target.rust_package_version:
+        module.cargo_env_compat = True
+        module.cargo_pkg_version = target.rust_package_version
       module.min_sdk_version = cronet_utils.MIN_SDK_VERSION_FOR_AOSP
       module.apex_available = [tethering_apex]
       for arch_name, arch in target.get_archs().items():
@@ -2870,7 +3053,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       module.target['host'].compile_multilib = '64'
 
     if module.type in ("rust_bindgen", "rust_ffi_static", "cc_genrule",
-                       "cc_library_static", "cc_binary"):
+                       "cc_library_static", "cc_binary", "rust_binary"):
       # If we don't add this, then some types of AOSP builds fail due to an
       # issue with proc_macro2 - see https://crbug.com/392704960.
       # Note: technically we only need this on modules that ultimately depend
@@ -2886,6 +3069,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
       # Don't try to inject library/source dependencies into genrules or
       # filegroups because they are not compiled in the traditional sense.
       module.defaults = [cc_defaults_module]
+
+    if module.type == 'cc_library_static':
+      module.export_generated_headers = module.generated_headers
 
     if module.type == 'cc_library_shared':
       output_name = target.output_name
@@ -2917,13 +3103,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                                arch_name)
         continue
 
-      # This is like the builtin_deps with always_disable except that it matches
-      # a string.
-      if "_build_script" in dep_name:
-        continue
-
       for dep_module in create_modules_from_target(blueprint, gn, dep_name,
                                                    target.type, is_test_target):
+        if dep_module is None:
+          continue
+
         # TODO: Proper dependency check for genrule.
         # Currently, only propagating genrule dependencies.
         # Also, currently, all the dependencies are propagated upwards.
@@ -2968,21 +3152,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           ]:
             if module.type != 'cc_library_static':
               module_target.whole_static_libs.add(dep_module.name)
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules[arch_name])
-            # Deduplicating attributes from arch-specific ones into "common" is done on a
-            # per-target basis: matching values from attributes are deduplicated via 'common' if they're present in all
-            # architectures supported by a target. This leads to a deduplication which is
-            # stable on a "per-target basis", but not "globally": being a common
-            # attribute for a target X does not guarantee that it will also be for a target Y that depends on X
-            # (Y could support more architecture than X).
-            # A common scenario is a target that also build for hosts, but depend on targets
-            # which do not: this dependency will not be present for arch_name == host,
-            # but will be there for others. Now, due to the "deduplication mismatch"
-            # mentioned above, module_target will be oblivious to the common attributes
-            # which should be propagated into the arch-specific variants.
-            module.transitive_generated_headers_modules[arch_name].update(
-                dep_module.transitive_generated_headers_modules["common"])
+            else:
+              module_target.generated_headers.update(
+                  dep_module.generated_headers)
             module_target.shared_libs.update(dep_module.shared_libs)
             module_target.header_libs.update(dep_module.header_libs)
           elif module.type in ('rust_ffi_static', 'rust_bindgen'):
@@ -2998,7 +3170,20 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                 f"Cannot add {dep_module.name} ({dep_module.type}) to {module.name} ({module.type})"
             )
         elif dep_module.type == "rust_bindgen":
-          module.srcs.add(":" + dep_module.name)
+          if module.type.startswith("rust"):
+            # Soong does not support using `rust_bindgen` modules directly as an input because
+            # it produces more than a single output (b/467420029). Create an intermediate
+            # genrule that copies that rust file and use it instead.
+            intermediate_target = _create_extract_rust_files_target(
+                dep_module, blueprint).name
+            module.srcs.add(":" + intermediate_target)
+            if module.crate_root and module.crate_root.startswith("out/"):
+              # Sometimes the crate_root is an output of another module which is indicated
+              # by a path starting with "out/". The only case where this happens at the moment
+              # is when a rust_library is created for the rust_bindgen output.
+              module.crate_root = f":{intermediate_target}"
+          else:
+            module.srcs.add(":" + dep_module.name)
           if module_target.type == "cc_library_static":
             # This is a bindgen _static_fns GN target. We need to translate that
             # to the Soong rust_bindgen "static inline library" concept.
@@ -3031,8 +3216,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
           if module.type.startswith("cc_"):
             module.srcs.add(f":{dep_module.name}-ndk-source")
             module.generated_headers.add(f"{dep_module.name}-ndk-source")
-            module.transitive_generated_headers_modules[arch_name].add(
-                f"{dep_module.name}-ndk-source")
+            module.export_generated_headers.add(f"{dep_module.name}-ndk-source")
           elif module.type.startswith("java_"):
             module.srcs.add(f":{dep_module.name}-java-source")
           elif module.type.startswith("rust_"):
@@ -3057,8 +3241,7 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
                   create_generated_headers_export_module(blueprint,
                                                          dep_module).name)
             else:
-              module.transitive_generated_headers_modules[arch_name].update(
-                  dep_module.genrule_headers)
+              module_target.generated_headers.update(dep_module.genrule_headers)
           module_target.srcs.update(dep_module.genrule_srcs)
           module_target.shared_libs.update(dep_module.genrule_shared_libs)
           module_target.header_libs.update(dep_module.genrule_header_libs)
@@ -3179,49 +3362,11 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
               'Unsupported arch-specific dependency %s of target %s with type %s'
               % (dep_module.name, target.name, dep_module.type))
 
-    for arch_name, arch_generated_headers in module.transitive_generated_headers_modules.items(
-    ):
-      # We are capable of concatenating only internal dependencies (We don't know
-      # what the output of external dependencies are).
-      external_dependencies = {
-          header_module
-          for header_module in arch_generated_headers
-          if header_module not in blueprint.modules.keys()
-      }
-      # Headers that are not generated via gn2bp should not be concatenated (e.g. aidl_interface).
-      # Remove those from the set sent to `create_concatenated_generated_headers_module` while
-      # keeping them in the transitive headers set to be propagated upward.
-      headers_to_concatenate = arch_generated_headers - external_dependencies
-      module.variant(arch_name).generated_headers.update(external_dependencies)
-      if len(headers_to_concatenate) == 0:
-        continue
-
-      concatenated_hdrs_module = create_concatenated_generated_headers_module(
-          f"{bp_module_name}__concatenated_headers_{arch_name}",
-          headers_to_concatenate, blueprint, gn_target_name)
-      concatenated_hdrs_module.host_supported = (arch_name == 'host'
-                                                 or (arch_name == 'common'
-                                                     and module.host_supported))
-      # Disable cross host support for concatenated headers. By default all cc_genrule
-      # modules disables this. However, this module is created manually which follows
-      # a different codepath.
-      if concatenated_hdrs_module.host_supported:
-        concatenated_hdrs_module.host_cross_supported = False
-      module.variant(arch_name).generated_headers.add(
-          concatenated_hdrs_module.name)
-
     if module.is_java_top_level_module():
       # The Java top-level module is not the one doing the actual compiling; the
       # unfiltered module is, so it should get the srcs.
       module.java_unfiltered_module.srcs = module.srcs
       module.srcs = ()
-
-    # post_processing has to be applied here as we need to ensure that the modules have the
-    # correct properties in order to propagate them upward the tree. A common example is the
-    # merging of intermediate headers into a single cc_genrule, the merging copies the `export_include_dirs`
-    # of the descendant modules. However, if we apply the post_processing after we're done then it won't be
-    # copied to the merged modules.
-    apply_post_processing(module)
 
   return modules
 
@@ -3279,10 +3424,14 @@ def create_cc_defaults_module():
       # Stops warning about unknown options. This usually happens when
       # Chromium uses a newer version of Clang that supports a flag which
       # Android's clang does not know about.
-      '-Wno-unknown-warning-option'
+      '-Wno-unknown-warning-option',
+      # Required to correctly compile quiche tests.
+      # TODO(crbug.com/433273929): Remove once fixed.
+      "-Wno-nonnull",
   ]
   defaults.build_file_path = ""
   defaults.include_build_directory = False
+  defaults.whole_program_vtables = True
   defaults.c_std = 'gnu11'
   # Chromium builds do not add a dependency for headers found inside the
   # sysroot, so they are added globally via defaults.
@@ -3310,12 +3459,12 @@ def create_cc_defaults_module():
 
 
 def apply_post_processing(module):
-  if module.post_processed:
-    return
   for key, add_val in additional_args.get(module.name, []):
     curr = getattr(module, key)
     if add_val and isinstance(add_val, set) and isinstance(curr, set):
       curr.update(add_val)
+    elif isinstance(curr, list):
+      curr.extend(add_val)
     elif isinstance(add_val, str) and (not curr or isinstance(curr, str)):
       setattr(module, key, add_val)
     elif isinstance(add_val, bool) and (not curr or isinstance(curr, bool)):
@@ -3360,11 +3509,6 @@ def create_blueprint_for_targets(gn, targets, test_targets):
 
   # Merge in additional hardcoded arguments.
   for module in blueprint.modules.values():
-    # post_processing is applied here again after we have finished creating all the modules as
-    # some modules shortcut the `create_modules_from_target` which means that the previous
-    # post processing does not apply to them. Re-apply the post-processing here.
-    # It's safe to reapply the post processing more than once as it appends to sets or
-    # overwrite previous values.
     apply_post_processing(module)
 
   return blueprint
@@ -3662,9 +3806,8 @@ def main():
       description='Generate Android.bp from a GN description.')
   parser.add_argument(
       '--desc',
-      help=
-      'GN description (e.g., gn desc out --format=json --all-toolchains "//*".'
-      + 'You can specify multiple --desc options for different target_cpu',
+      help='GN description (e.g., gn desc out --format=json "//*".' +
+      'You can specify multiple --desc options for different target_cpu',
       required=True,
       action='append')
   parser.add_argument('--repo_root',

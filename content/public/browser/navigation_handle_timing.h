@@ -9,6 +9,8 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/base/load_timing_internal_info.h"
+#include "net/http/alternate_protocol_usage.h"
 
 namespace content {
 
@@ -18,6 +20,17 @@ namespace content {
 // the design doc for details.
 // https://docs.google.com/document/d/16oqu9lyPbfgZIjQsRaCfaKE8r1Cdlb3d4GVSdth4AN8/edit?usp=sharing
 struct CONTENT_EXPORT NavigationHandleTiming {
+  // Represents details about the network session used for the navigation.
+  struct SessionDetails {
+    // Session source information.
+    std::optional<net::SessionSource> session_source;
+    // The state of the advertised alternative service for the navigation.
+    net::AdvertisedAltSvcState advertised_alt_svc_state =
+        net::AdvertisedAltSvcState::kUnknown;
+    // Whether QUIC is enabled in the HttpNetworkSession for the navigation.
+    bool http_network_session_quic_enabled = false;
+  };
+
   NavigationHandleTiming();
   NavigationHandleTiming(const NavigationHandleTiming& timing);
   NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
@@ -156,6 +169,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
 
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
+
+  // Details about the network session used for the navigation, if available.
+  std::optional<SessionDetails> session_details;
 };
 
 }  // namespace content

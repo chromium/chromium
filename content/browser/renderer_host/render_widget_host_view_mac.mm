@@ -82,7 +82,7 @@
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/menus/cocoa/text_services_context_menu.h"
 
 using blink::WebInputEvent;
@@ -99,7 +99,6 @@ namespace {
 // costly, and if the text input state is changing rapidly there is no need to
 // update it immediately.
 BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
-             "DelayUpdateWindowsAfterTextInputStateChanged",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -219,7 +218,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   // Guess that the initial screen we will be on is the screen of the current
   // window (since that's the best guess that we have, and is usually right).
   // https://crbug.com/357443
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   screen_infos_ = screen->GetScreenInfosNearestDisplay(
       screen->GetDisplayNearestWindow(gfx::NativeWindow(NSApp.keyWindow)).id());
   original_screen_infos_ = screen_infos_;
@@ -227,7 +226,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
   browser_compositor_ = std::make_unique<BrowserCompositorMac>(
-      this, this, host()->is_hidden(), frame_sink_id);
+      this, this, host()->IsHidden(), frame_sink_id);
   DCHECK(![GetInProcessNSView() window]);
 
   host()->SetView(this);
@@ -305,9 +304,8 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
     // To workaround that case, this code removes the observer first, which is a
     // safe no-op if the bridge is already not an observer.
     // TODO(crbug.com/40179941): Maybe recreate `in_process_ns_view_bridge_`?
-    display::Screen::GetScreen()->RemoveObserver(
-        in_process_ns_view_bridge_.get());
-    display::Screen::GetScreen()->AddObserver(in_process_ns_view_bridge_.get());
+    display::Screen::Get()->RemoveObserver(in_process_ns_view_bridge_.get());
+    display::Screen::Get()->AddObserver(in_process_ns_view_bridge_.get());
     return;
   }
 
@@ -339,8 +337,7 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   // End local display::Screen observation via `in_process_ns_view_bridge_`;
   // the remote NSWindow's display::Screen information will be sent by Mojo.
   // TODO(crbug.com/40179941): Maybe just destroy `in_process_ns_view_bridge_`?
-  display::Screen::GetScreen()->RemoveObserver(
-      in_process_ns_view_bridge_.get());
+  display::Screen::Get()->RemoveObserver(in_process_ns_view_bridge_.get());
 
   // Popup windows will specify an invalid |parent_ns_view_id|, because popups
   // have their own NSWindows (of which they are the content NSView).
@@ -497,7 +494,7 @@ void RenderWidgetHostViewMac::WasUnOccluded() {
 
 void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
     blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
-  DCHECK(host_->is_hidden());
+  DCHECK(host_->IsHidden());
 
   // SetRenderWidgetHostIsHidden may cause a state transition that switches to
   // a new instance of DelegatedFrameHost and calls WasShown, which causes
@@ -528,7 +525,7 @@ void RenderWidgetHostViewMac::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
         blink::mojom::RecordContentToVisibleTimeRequestPtr
             visible_time_request) {
-  DCHECK(!host_->is_hidden());
+  DCHECK(!host_->IsHidden());
   DCHECK(visible_time_request);
 
   // No state transition here so don't use
@@ -547,18 +544,28 @@ void RenderWidgetHostViewMac::
 
 void RenderWidgetHostViewMac::
     CancelSuccessfulPresentationTimeRequestForHostAndDelegate() {
-  DCHECK(!host_->is_hidden());
+  DCHECK(!host_->IsHidden());
   host()->CancelSuccessfulPresentationTimeRequest();
   browser_compositor_->GetDelegatedFrameHost()
       ->CancelSuccessfulPresentationTimeRequest();
 }
 
 void RenderWidgetHostViewMac::WasOccluded() {
-  if (host()->is_hidden())
+  if (host()->IsHidden()) {
     return;
+  }
 
   host()->WasHidden();
   browser_compositor_->SetRenderWidgetHostIsHidden(true);
+
+  // Headless mode forces focus change propagation inside Focus(), since there
+  // is no NSWindow to deliver the normal focus change notifications. As a
+  // result, when view is hidden, we must explicitly clear its focus state to
+  // keep focus behavior consistent and avoid leaving the view marked as focused
+  // wrongly.
+  if (IsHeadless() && HasFocus()) {
+    OnFirstResponderChanged(/*is_first_responder=*/false);
+  }
 }
 
 void RenderWidgetHostViewMac::SetSize(const gfx::Size& size) {
@@ -569,6 +576,13 @@ void RenderWidgetHostViewMac::SetSize(const gfx::Size& size) {
 
 void RenderWidgetHostViewMac::SetBounds(const gfx::Rect& rect) {
   ns_view_->SetBounds(rect);
+
+  // Check if running with no associated NSWindow and force bounds change
+  // propagation. This occurs while running headless and causes problems with
+  // RenderDocument. See more details here: http://crbug.com/444226873.
+  if (IsHeadless()) {
+    OnWindowFrameInScreenChanged(rect);
+  }
 }
 
 gfx::NativeView RenderWidgetHostViewMac::GetNativeView() {
@@ -587,6 +601,20 @@ void RenderWidgetHostViewMac::Focus() {
 
   base::AutoReset<bool> is_getting_focus_bit(&is_getting_focus_, true);
   ns_view_->MakeFirstResponder();
+
+  // Check if running with no associated NSWindow and force focus change
+  // propagation. This occurs while running headless and causes problems with
+  // RenderDocument. See more details here: http://crbug.com/444244102.
+  // Here notification callback is invoked asynchronously because focus and
+  // activation notifications are nested so synchronous invocation does not
+  // always result in the correct state.
+  if (IsHeadless()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&RenderWidgetHostViewMac::OnFirstResponderChanged,
+                       weak_factory_.GetWeakPtr(),
+                       /*is_first_responder=*/true));
+  }
 }
 
 bool RenderWidgetHostViewMac::HasFocus() {
@@ -626,6 +654,7 @@ input::CursorManager* RenderWidgetHostViewMac::GetCursorManager() {
 void RenderWidgetHostViewMac::OnOldViewDidNavigatePreCommit() {
   CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
   browser_compositor_->DidNavigateMainFramePreCommit();
+  gesture_provider_.ResetDetection();
 }
 
 void RenderWidgetHostViewMac::OnNewViewDidNavigatePostCommit() {
@@ -648,6 +677,7 @@ void RenderWidgetHostViewMac::DidEnterBackForwardCache() {
   //
   // Called after to prevent prematurely evict the BFCached surface.
   host()->ForceFirstFrameAfterNavigationTimeout();
+  mouse_wheel_phase_handler_.DidEnterBackForwardCache();
 }
 
 void RenderWidgetHostViewMac::ActivatedOrEvictedFromBackForwardCache() {
@@ -757,7 +787,7 @@ void RenderWidgetHostViewMac::OnSelectionBoundsChanged(
   gfx_caret_rect += window_frame_in_screen_dip_.OffsetFromOrigin();
 
   // Note that UAZoomChangeFocus wants unflipped screen coordinates.
-  NSRect caret_rect = NSRectFromCGRect(gfx_caret_rect.ToCGRect());
+  NSRect caret_rect = gfx_caret_rect.ToCGRect();
   UAZoomChangeFocus(&caret_rect, &caret_rect, kUAZoomFocusTypeInsertionPoint);
 }
 
@@ -860,13 +890,13 @@ void RenderWidgetHostViewMac::UpdateScreenInfo() {
 
   // During auto-resize it is the responsibility of the caller to ensure that
   // the NSView and RenderWidgetHostImpl are kept in sync.
-  if (host()->auto_resize_enabled())
-    return;
-
-  if (host()->delegate())
-    host()->delegate()->SendScreenRects();
-  else
-    host()->SendScreenRects();
+  if (!host()->auto_resize_enabled()) {
+    if (host()->delegate()) {
+      host()->delegate()->SendScreenRects();
+    } else {
+      host()->SendScreenRects();
+    }
+  }
 
   // Update with the latest display list from the remote process if needed.
   bool current_display_changed = false;
@@ -997,7 +1027,7 @@ void RenderWidgetHostViewMac::SpeakSelection() {
 }
 
 void RenderWidgetHostViewMac::SetWindowFrameInScreen(const gfx::Rect& rect) {
-  DCHECK(GetInProcessNSView() && ![GetInProcessNSView() window])
+  DCHECK(IsHeadless())
       << "This method should only be called in headless browser!";
   OnWindowFrameInScreenChanged(rect);
 
@@ -1024,7 +1054,8 @@ uint32_t RenderWidgetHostViewMac::GetCaptureSequenceNumber() const {
 void RenderWidgetHostViewMac::CopyFromSurface(
     const gfx::Rect& src_subrect,
     const gfx::Size& dst_size,
-    base::OnceCallback<void(const SkBitmap&)> callback) {
+    base::OnceCallback<void(const viz::CopyOutputBitmapWithMetadata&)>
+        callback) {
   base::WeakPtr<RenderWidgetHostImpl> popup_host;
   base::WeakPtr<DelegatedFrameHost> popup_frame_host;
   if (popup_child_host_view_) {
@@ -1045,6 +1076,11 @@ void RenderWidgetHostViewMac::CopyFromSurface(
 void RenderWidgetHostViewMac::EnsureSurfaceSynchronizedForWebTest() {
   ++latest_capture_sequence_number_;
   browser_compositor_->ForceNewSurfaceId();
+}
+
+ui::FilteredGestureProvider*
+RenderWidgetHostViewMac::GetFilteredGestureProviderForTesting() {
+  return &gesture_provider_;
 }
 
 void RenderWidgetHostViewMac::OnDidUpdateVisualPropertiesComplete(
@@ -1292,7 +1328,7 @@ void RenderWidgetHostViewMac::FocusedNodeChanged(
   // Don't do anything if it's an editable node, as this will be handled by
   // OnSelectionBoundsChanged instead.
   if (UAZoomEnabled() && !is_editable_node) {
-    NSRect bounds = NSRectFromCGRect(node_bounds_in_screen.ToCGRect());
+    NSRect bounds = node_bounds_in_screen.ToCGRect();
     UAZoomChangeFocus(&bounds, nullptr, kUAZoomFocusTypeOther);
   }
 }
@@ -1306,6 +1342,10 @@ void RenderWidgetHostViewMac::ClearFallbackSurfaceForCommitPending() {
 void RenderWidgetHostViewMac::ResetFallbackToFirstNavigationSurface() {
   browser_compositor_->GetDelegatedFrameHost()
       ->ResetFallbackToFirstNavigationSurface();
+}
+
+void RenderWidgetHostViewMac::OnUnconfirmedTapConvertedToTap() {
+  gesture_provider_.OnUnconfirmedTapConvertedToTap();
 }
 
 bool RenderWidgetHostViewMac::RequestRepaintOnNewSurface() {
@@ -1452,7 +1492,7 @@ void RenderWidgetHostViewMac::DidOverscroll(
   ns_view_->DidOverscroll(blink::mojom::DidOverscrollParams::New(
       params.accumulated_overscroll, params.latest_overscroll_delta,
       params.current_fling_velocity, params.causal_event_viewport_point,
-      params.overscroll_behavior));
+      params.overscroll_behavior, params.source_device));
 }
 
 std::unique_ptr<SyntheticGestureTarget>
@@ -1659,7 +1699,7 @@ MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {
 void RenderWidgetHostViewMac::ShowSharePicker(
     const std::string& title,
     const std::string& text,
-    const std::string& url,
+    const GURL& url,
     const std::vector<std::string>& file_paths,
     blink::mojom::ShareService::ShareCallback callback) {
   ns_view_->ShowSharingServicePicker(title, text, url, file_paths,
@@ -1856,7 +1896,7 @@ void RenderWidgetHostViewMac::RouteOrProcessWheelEvent(
   ui::LatencyInfo latency_info;
   latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_UI_COMPONENT);
   mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
-      web_event, ShouldRouteEvents());
+      web_event, ShouldRouteEvents(), /*is_fling_capable=*/true);
   if (web_event.phase == blink::WebMouseWheelEvent::kPhaseEnded) {
     // A wheel end event is scheduled and will get dispatched if momentum
     // phase doesn't start in 100ms. Don't sent the wheel end event
@@ -1883,8 +1923,10 @@ void RenderWidgetHostViewMac::ForwardMouseEvent(
 void RenderWidgetHostViewMac::ForwardWheelEvent(
     const blink::WebMouseWheelEvent& const_web_event) {
   blink::WebMouseWheelEvent web_event = const_web_event;
-  mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(web_event,
-                                                                 false);
+  mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
+      web_event,
+      /*should_route_event=*/false,
+      /*is_fling_capable=*/true);
 }
 
 void RenderWidgetHostViewMac::PinchEvent(blink::WebGestureEvent event,
@@ -2402,6 +2444,10 @@ RenderWidgetHostViewMac::MaybeUpdateScreenInfosForHiDPI() {
     return {true, current_display_changed};
   }
   return {false, false};
+}
+
+bool RenderWidgetHostViewMac::IsHeadless() const {
+  return GetInProcessNSView() && ![GetInProcessNSView() window];
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {

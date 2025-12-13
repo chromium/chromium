@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -59,13 +60,17 @@
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
+#include "content/browser/devtools/dedicated_worker_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/handler_helpers.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
+#include "content/browser/devtools/service_worker_devtools_agent_host.h"
+#include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -416,8 +421,11 @@ class StorageHandler::QuotaManagerObserver
   mojo::Receiver<storage::mojom::QuotaManagerObserver> receiver_{this};
 };
 
-StorageHandler::StorageHandler(DevToolsAgentHostClient* client)
-    : DevToolsDomainHandler(Storage::Metainfo::domainName), client_(client) {}
+StorageHandler::StorageHandler(DevToolsAgentHostImpl* host,
+                               DevToolsAgentHostClient* client)
+    : DevToolsDomainHandler(Storage::Metainfo::domainName),
+      host_(host),
+      client_(client) {}
 
 StorageHandler::~StorageHandler() {
   DCHECK(!cache_storage_observer_);
@@ -540,7 +548,7 @@ void StorageHandler::ClearCookies(
                      std::move(callback)));
 }
 
-Response StorageHandler::GetStorageKeyForFrame(
+Response StorageHandler::GetStorageKeyForFrameInternal(
     const std::string& frame_id,
     std::string* serialized_storage_key) {
   if (!frame_host_) {
@@ -558,6 +566,61 @@ Response StorageHandler::GetStorageKeyForFrame(
         "serialized");
   }
   *serialized_storage_key = rfh->GetStorageKey().Serialize();
+  return Response::Success();
+}
+
+// TODO(crbug.com/445966299): This method is deprecated and
+// will be removed once all clients, including the DevTools frontend, have
+// migrated to using GetStorageKey.
+Response StorageHandler::GetStorageKeyForFrame(
+    const std::string& frame_id,
+    std::string* serialized_storage_key) {
+  return GetStorageKeyForFrameInternal(frame_id, serialized_storage_key);
+}
+
+Response StorageHandler::GetStorageKey(std::optional<std::string> frame_id,
+                                       std::string* serialized_storage_key) {
+  if (frame_id.has_value()) {
+    return GetStorageKeyForFrameInternal(frame_id.value(),
+                                         serialized_storage_key);
+  }
+
+  if (!host_) {
+    return Response::InvalidParams("DevToolsAgentHost not found");
+  }
+
+  std::optional<blink::StorageKey> storage_key;
+
+  const std::string& type = host_->GetType();
+
+  if (type == content::DevToolsAgentHost::kTypeServiceWorker) {
+    auto* service_worker_agent_host =
+        static_cast<content::ServiceWorkerDevToolsAgentHost*>(host_.get());
+    storage_key = service_worker_agent_host->GetStorageKey();
+  } else if (type == content::DevToolsAgentHost::kTypeDedicatedWorker) {
+    auto* dedicated_worker_agent_host =
+        static_cast<content::DedicatedWorkerDevToolsAgentHost*>(host_.get());
+    storage_key = dedicated_worker_agent_host->GetStorageKey();
+  } else if (type == content::DevToolsAgentHost::kTypeSharedWorker) {
+    auto* shared_worker_agent_host =
+        static_cast<content::SharedWorkerDevToolsAgentHost*>(host_.get());
+    storage_key = shared_worker_agent_host->GetStorageKey();
+  } else {
+    return Response::InvalidParams(
+        "Target is not a supported worker type for storage inspection.");
+  }
+
+  if (!storage_key.has_value()) {
+    return Response::ServerError(
+        "Could not determine storage key for the target.");
+  }
+  if (storage_key->origin().opaque()) {
+    return Response::ServerError(
+        "Target corresponds to an opaque origin and its storage key cannot be "
+        "serialized");
+  }
+
+  *serialized_storage_key = storage_key.value().Serialize();
   return Response::Success();
 }
 

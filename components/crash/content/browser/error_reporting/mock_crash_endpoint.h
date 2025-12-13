@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_MOCK_CRASH_ENDPOINT_H_
 #define COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_MOCK_CRASH_ENDPOINT_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <ostream>
@@ -26,10 +27,25 @@ struct HttpRequest;
 // Installs a mock crash server endpoint.
 class MockCrashEndpoint {
  public:
-  struct Report {
-    Report(std::string query_value, std::string content_value);
-    std::string query;
-    std::string content;
+  class Report {
+   public:
+    Report(std::multimap<std::string, std::string> query_params,
+           std::string content);
+    Report(const Report&);
+    ~Report();
+
+    static Report ParseQuery(std::string_view query, std::string content);
+
+    std::optional<std::string_view> GetQueryParam(
+        const std::string& param) const;
+    const std::multimap<std::string, std::string>& query_params() const {
+      return query_params_;
+    }
+    const std::string_view content() const { return content_; }
+
+   private:
+    std::multimap<std::string, std::string> query_params_;
+    std::string content_;
   };
 
   explicit MockCrashEndpoint(net::test_server::EmbeddedTestServer* test_server);

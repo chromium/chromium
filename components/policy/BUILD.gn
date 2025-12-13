@@ -4,7 +4,6 @@
 
 import("//build/apple/convert_plist.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/features.gni")
 import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")

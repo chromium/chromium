@@ -22,11 +22,11 @@
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController;
 
-// ConfirmationAlertActionHandler.
-- (void)confirmationAlertDismissAction;
+// Dismisses the promo.
+- (void)dismissPromo;
 
 // Display promo after tracker is ready.
-- (void)displayPromoCallback:(BOOL)isFirstShownPromo;
+- (void)displayPromoCallback;
 
 // Display the given promo.
 - (void)displayPromo:(PromoDisplayData)promoData;

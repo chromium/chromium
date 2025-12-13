@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
@@ -17,6 +18,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request_context_getter.h"
+#include "remoting/client/cli/logging_audio_stream_consumer.h"
 #include "remoting/client/cli/logging_frame_consumer.h"
 #include "remoting/client/common/logging.h"
 #include "remoting/client/common/remoting_client.h"
@@ -83,11 +85,13 @@ int main(int argc, char const* argv[]) {
     base::RunLoop run_loop;
 
     remoting::LoggingFrameConsumer frame_consumer;
+    remoting::LoggingAudioStreamConsumer audio_consumer;
 
     remoting::RemotingClient remoting_client(
         base::BindPostTask(io_task_executor.task_runner(),
                            run_loop.QuitClosure()),
-        &frame_consumer, url_loader_factory_owner.GetURLLoaderFactory());
+        &frame_consumer, audio_consumer.GetWeakPtr(),
+        url_loader_factory_owner.GetURLLoaderFactory());
 
     CLIENT_LOG << "Starting session for support host: " << code;
     remoting_client.StartSession(code, {access_token, user_email});

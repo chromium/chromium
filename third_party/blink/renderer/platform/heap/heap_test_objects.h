@@ -128,7 +128,7 @@ class IntegerObject : public GarbageCollected<IntegerObject> {
     return other.Value() == Value();
   }
 
-  unsigned GetHash() { return WTF::GetHash(x_); }
+  unsigned GetHash() { return blink::GetHash(x_); }
 
  private:
   int x_;

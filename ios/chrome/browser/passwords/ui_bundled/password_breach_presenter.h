@@ -10,14 +10,14 @@
 // Object presenting the feature.
 @protocol PasswordBreachPresenter <NSObject>
 
-// Presents more information related to the feature.
-- (void)presentLearnMore;
-
 // Informs the presenter that the feature should dismiss.
 - (void)stop;
 
 // Informs the presenter that the Password Checkup homepage should be opened.
 - (void)openPasswordCheckup;
+
+// Informs the presenter that the Password Manager page should be opened.
+- (void)openPasswordManager;
 
 @end
 

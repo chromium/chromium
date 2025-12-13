@@ -30,7 +30,9 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "third_party/ashmem/ashmem.h"
+#include <linux/ashmem.h>
+
+#include "base/android/linker/ashmem.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -132,15 +134,14 @@ size_t AlignToPageSize(size_t size) {
 
 #if BUILDFLAG(IS_ANDROID)
 bool UseAshmemUnpinningForDiscardableMemory() {
-  if (!ashmem_device_is_supported()) {
+  if (!AshmemDeviceIsSupported()) {
     return false;
   }
 
-  // If we are participating in the discardable memory backing trial, only
-  // enable ashmem unpinning when we are in the corresponding trial group.
   if (base::DiscardableMemoryBackingFieldTrialIsEnabled()) {
-    return base::GetDiscardableMemoryBackingFieldTrialGroup() ==
-           base::DiscardableMemoryTrialGroup::kAshmem;
+    // With the DiscardableMemoryTrial neither kEmulatedSharedMemory nor
+    // kMadvFree support unpinning.
+    return false;
   }
   return true;
 }
@@ -543,7 +544,7 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::LockPages(
   if (region.IsValid()) {
     if (UseAshmemUnpinningForDiscardableMemory()) {
       int pin_result =
-          ashmem_pin_region(region.GetPlatformHandle(), offset, length);
+          AshmemPinRegion(region.GetPlatformHandle(), offset, length);
       if (pin_result == ASHMEM_WAS_PURGED) {
         return PURGED;
       }
@@ -565,7 +566,7 @@ void DiscardableSharedMemory::UnlockPages(
   if (region.IsValid()) {
     if (UseAshmemUnpinningForDiscardableMemory()) {
       int unpin_result =
-          ashmem_unpin_region(region.GetPlatformHandle(), offset, length);
+          AshmemUnpinRegion(region.GetPlatformHandle(), offset, length);
       DCHECK_EQ(0, unpin_result);
     }
   }

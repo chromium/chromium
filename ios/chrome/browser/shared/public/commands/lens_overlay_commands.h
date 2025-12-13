@@ -11,6 +11,15 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 
 @protocol LensImageMetadata;
+@protocol LensOverlayResultsPagePresenting;
+@class LensResultPageViewController;
+@class LensOverlayContainerViewController;
+
+// Factory block for creating an object that conforms to the
+// LensOverlayResultsPagePresenting protocol.
+typedef id<LensOverlayResultsPagePresenting> (^LensResultsPresenterFactory)(
+    LensOverlayContainerViewController* baseViewController,
+    LensResultPageViewController* resultsViewController);
 
 /// Commands related to Lens Overlay.
 @protocol LensOverlayCommands
@@ -24,10 +33,13 @@
 /// Responds to a search image with Lens request by creating a new Lens UI with
 /// the given image. The overlay will be shown over the specified
 /// initial presentation base.
+/// The `presenterFactory` allows the caller to provide a custom presenter for
+/// the results page. If nil, a default presenter will be used.
 /// The completion is called once the UI is presented.
 - (void)searchImageWithLens:(UIImage*)image
                  entrypoint:(LensOverlayEntrypoint)entrypoint
     initialPresentationBase:(UIViewController*)initialPresentationBase
+    resultsPresenterFactory:(LensResultsPresenterFactory)presenterFactory
                  completion:(void (^)(BOOL))completion;
 
 /// Responds to a search image with Lens request by creating a new Lens UI with

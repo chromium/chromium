@@ -509,7 +509,7 @@ TEST_F(FeatureAccessCheckerTest, KioskModeCheckFailIfInKioskMode) {
   user_manager::ScopedUserManager scoped_user_manager(
       std::make_unique<user_manager::FakeUserManager>(&pref_service_));
 
-  chromeos::SetUpFakeKioskSession();
+  chromeos::SetUpFakeChromeAppKioskSession();
 
   EXPECT_THAT(
       base::ToVector(FeatureAccessChecker(config, &pref_, GetIdentityManager(),

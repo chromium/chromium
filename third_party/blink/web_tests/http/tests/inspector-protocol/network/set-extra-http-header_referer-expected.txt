@@ -1,0 +1,32 @@
+Tests setting referer via Network.setExtraHTTPHeaders.
+
+Test case: {"referer":"http://google.com"}:
+Direct navigation:
+HTTP_REFERER: http://google.com/
+Redirect:
+HTTP_REFERER: http://google.com/
+
+Test case: {"rEfErEr":"http://google.com"}:
+Direct navigation:
+HTTP_REFERER: http://google.com/
+Redirect:
+HTTP_REFERER: http://google.com/
+
+Test case: {"referer":"some invalid url"}:
+Direct navigation:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+Redirect:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+
+Test case: {"referer":1}:
+Direct navigation:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+Redirect:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+
+Test case: {}:
+Direct navigation:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+Redirect:
+HTTP_REFERER: http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+

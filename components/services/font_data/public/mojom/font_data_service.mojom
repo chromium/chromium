@@ -29,13 +29,20 @@ struct VariationPosition {
     uint16 coordinateCount;
 };
 
+struct TypefaceFile {
+    mojo_base.mojom.ReadOnlyFile file_handle;
+    // Represents a unique identifier for a font_file that the receiver of this
+    // result can use to avoid remapping the same file multiple times.
+    uint64 id;
+  };
+
 // Represents the different type of data that can recreate the typeface.
 union TypefaceData {
   // Font data mapped to a shared memory region.
   mojo_base.mojom.ReadOnlySharedMemoryRegion region;
 
   // A file handle to the font.
-  mojo_base.mojom.ReadOnlyFile font_file;
+  TypefaceFile font_file;
 };
 
 struct MatchFamilyNameResult {

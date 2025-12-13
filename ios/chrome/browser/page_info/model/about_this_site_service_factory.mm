@@ -39,7 +39,7 @@ AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+    ProfileIOS* profile) const {
   const bool is_about_this_site_language_supported =
       page_info::IsAboutThisSiteFeatureEnabled(
           GetApplicationContext()->GetApplicationLocaleStorage()->Get());
@@ -50,8 +50,6 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   if (!is_about_this_site_language_supported) {
     return nullptr;
   }
-
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   auto* optimization_guide =
       OptimizationGuideServiceFactory::GetForProfile(profile);

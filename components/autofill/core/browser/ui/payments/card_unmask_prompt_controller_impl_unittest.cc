@@ -65,12 +65,15 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
 
 class TestCardUnmaskPromptView : public CardUnmaskPromptView {
  public:
-  TestCardUnmaskPromptView(CardUnmaskPromptController* controller)
+  explicit TestCardUnmaskPromptView(
+      base::WeakPtr<CardUnmaskPromptController> controller)
       : controller_(controller) {}
   void Show() override {}
   void Dismiss() override {
     // Notify the controller that the view was dismissed.
-    controller_->OnUnmaskDialogClosed();
+    if (controller_) {
+      controller_->OnUnmaskDialogClosed();
+    }
   }
   void ControllerGone() override { controller_ = nullptr; }
   void DisableAndWaitForVerification() override {}
@@ -78,7 +81,7 @@ class TestCardUnmaskPromptView : public CardUnmaskPromptView {
                              bool allow_retry) override {}
 
  private:
-  raw_ptr<CardUnmaskPromptController> controller_ = nullptr;
+  base::WeakPtr<CardUnmaskPromptController> controller_;
 };
 
 class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
@@ -177,7 +180,7 @@ class CardUnmaskPromptControllerImplGenericTest : public testing::Test {
  private:
   CardUnmaskPromptView* CreateCardUnmaskPromptView() {
     test_unmask_prompt_view_ =
-        std::make_unique<TestCardUnmaskPromptView>(controller_.get());
+        std::make_unique<TestCardUnmaskPromptView>(controller_->GetWeakPtr());
     return test_unmask_prompt_view_.get();
   }
 };

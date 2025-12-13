@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::NavigationController;
 using content::NavigationEntry;
@@ -98,7 +99,7 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
   // elements and update AutocompletePopup to look for keywords using the path.
   // See http://b/issue?id=863583.
   if (!(url.SchemeIs(url::kHttpScheme) || url.SchemeIs(url::kHttpsScheme)) ||
-      (url.path().length() > 1)) {
+      (url.GetPath().length() > 1)) {
     return std::u16string();
   }
 

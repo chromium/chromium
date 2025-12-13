@@ -127,12 +127,16 @@ int VRBrowserRendererThread::GetNextRequestId() {
 
 void VRBrowserRendererThread::OnWebXrTimeoutImminent() {
   OnSpinnerVisibilityChanged(true);
-  scheduler_ui_->OnWebXrTimeoutImminent();
+  if (scheduler_ui_) {
+    scheduler_ui_->OnWebXrTimeoutImminent();
+  }
 }
 
 void VRBrowserRendererThread::OnWebXrTimedOut() {
   OnSpinnerVisibilityChanged(true);
-  scheduler_ui_->OnWebXrTimedOut();
+  if (scheduler_ui_) {
+    scheduler_ui_->OnWebXrTimedOut();
+  }
 }
 
 void VRBrowserRendererThread::UpdateOverlayState() {

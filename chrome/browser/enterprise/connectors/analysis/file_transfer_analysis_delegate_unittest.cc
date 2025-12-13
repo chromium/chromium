@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/enterprise/connectors/analysis/file_transfer_analysis_delegate.h"
 
 #include <map>
@@ -33,10 +32,7 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/common/chrome_paths.h"
@@ -44,6 +40,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -720,10 +718,6 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
                                       /*machine_scope*/ false);
     cloud_policy_client_ = std::make_unique<policy::MockCloudPolicyClient>();
     cloud_policy_client_->SetDMToken(kDmToken);
-    extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
-        ->SetTestingFactory(
-            profile_, base::BindRepeating(
-                          &safe_browsing::BuildSafeBrowsingPrivateEventRouter));
     RealtimeReportingClientFactory::GetInstance()->SetTestingFactory(
         profile_,
         base::BindRepeating(&safe_browsing::BuildRealtimeReportingClient));
@@ -732,7 +726,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     identity_test_environment_ =
         std::make_unique<signin::IdentityTestEnvironment>();
     identity_test_environment_->MakePrimaryAccountAvailable(
-        kUserName, signin::ConsentLevel::kSync);
+        kUserName, signin::ConsentLevel::kSignin);
     RealtimeReportingClientFactory::GetForProfile(profile())
         ->SetIdentityManagerForTesting(
             identity_test_environment_->identity_manager());
@@ -801,9 +795,9 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   }
 
   void FakeFileUploadCallback(
-      safe_browsing::BinaryUploadService::Result result,
+      ScanRequestUploadResult result,
       const base::FilePath& path,
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      std::unique_ptr<BinaryUploadRequest> request,
       test::FakeFilesRequestHandler::FakeFileRequestCallback callback) {
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(request->device_token(), kDmToken);
@@ -817,7 +811,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), path,
-                       safe_browsing::BinaryUploadService::Result::SUCCESS,
+                       ScanRequestUploadResult::kSuccess,
                        ConnectorStatusCallback(path)),
         kResponseDelay);
   }
@@ -991,6 +985,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1001,7 +997,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1014,6 +1010,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1045,6 +1042,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
   {
     // Check reporting.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1055,7 +1054,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1068,6 +1067,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
+    run_loop.Run();
   }
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
@@ -1106,6 +1106,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
   {
     // Check reporting.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1116,7 +1118,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1129,6 +1131,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_url, destination_directory_url_);
+    run_loop.Run();
   }
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
@@ -1146,6 +1149,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
   {
     // Check reporting of bypass.
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvent(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1156,7 +1161,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*sha*/
         "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdict*/ response.results()[0],
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
@@ -1169,6 +1174,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*user_justification*/ kUserJustification);
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
+    run_loop.Run();
   }
 }
 
@@ -1322,6 +1328,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1332,7 +1340,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1345,6 +1353,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_url);
+  run_loop.Run();
 
   // No checks for GetAnalysisResultAfterScan, because it's not allowed to be
   // called for report-only mode.
@@ -1377,6 +1386,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectDangerousDeepScanningResult(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1388,7 +1399,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*thread_type*/ "DANGEROUS",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
@@ -1398,6 +1409,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       /*scan_id*/ scan_id);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1436,6 +1448,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   // When resumable upload is in use and the policy does not block encrypted
   // files by default, the file's metadata is uploaded for scanning.
   validator.ExpectSensitiveDataEvent(
@@ -1448,7 +1462,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
       /*sha*/
       "701FCEA8B2112FFAB257A8A8DFD3382ABCF047689AB028D42903E3B3AA488D9A",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ ZipMimeTypes(),
       /*size*/ 20015,
@@ -1461,6 +1475,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_url, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1512,6 +1527,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
 
   // Check reporting.
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1522,7 +1539,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*sha*/
       "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdict*/ response.results()[0],
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
@@ -1535,6 +1552,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1591,6 +1609,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1603,7 +1623,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       {response.results()[0], response.results()[0], response.results()[0]},
       /*mimetype*/ DocMimeTypes(),
@@ -1619,6 +1639,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1659,6 +1680,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1670,7 +1693,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       {"ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73",
        "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73"},
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       {result, result},
       /*mimetype*/ DocMimeTypes(),
@@ -1685,6 +1708,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1749,6 +1773,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
   storage::FileSystemURL source_url = PathToFileSystemURL(paths[0]);
 
   test::EventReportValidator validator(cloud_policy_client());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
   validator.ExpectSensitiveDataEvents(
       /*url*/ "",
       /*tab_url*/ "",
@@ -1759,7 +1785,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*sha256s*/
       expected_shas,
       /*trigger*/
-      extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+      kFileTransferDataTransferEventTrigger,
       /*dlp_verdicts*/
       expected_dlp_verdicts,
       /*mimetype*/ DocMimeTypes(),
@@ -1773,6 +1799,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       /*user_justification*/ std::nullopt);
 
   ScanUpload(source_directory_url_, destination_directory_url_);
+  run_loop.Run();
 
   EXPECT_TRUE(file_transfer_analysis_delegate_
                   ->GetAnalysisResultAfterScan(source_directory_url_)
@@ -1852,6 +1879,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     }
 
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1862,7 +1891,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*sha256s*/
         expected_shas,
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdicts*/
         expected_dlp_verdicts,
         /*mimetype*/ DocMimeTypes(),
@@ -1876,6 +1905,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*user_justification*/ std::nullopt);
 
     ScanUpload(source_directory_url_, destination_directory_url_);
+    run_loop.Run();
   }
 
   auto warned_files = file_transfer_analysis_delegate_->GetWarnedFiles();
@@ -1932,6 +1962,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
     }
 
     test::EventReportValidator validator(cloud_policy_client());
+    base::RunLoop run_loop;
+    validator.SetDoneClosure(run_loop.QuitClosure());
     validator.ExpectSensitiveDataEvents(
         /*url*/ "",
         /*tab_url*/ "",
@@ -1942,7 +1974,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*sha256s*/
         expected_shas,
         /*trigger*/
-        extensions::SafeBrowsingPrivateEventRouter::kTriggerFileTransfer,
+        kFileTransferDataTransferEventTrigger,
         /*dlp_verdicts*/
         expected_dlp_verdicts,
         /*mimetype*/ DocMimeTypes(),
@@ -1956,6 +1988,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
         /*user_justification*/ kUserJustification);
 
     file_transfer_analysis_delegate_->BypassWarnings(kUserJustification);
+    run_loop.Run();
   }
 
   // Should now no longer block bypassed files.

@@ -2,13 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "reference_drivers/socket_transport.h"
-
 #include <fcntl.h>
 #include <poll.h>
 #include <stdio.h>
@@ -26,11 +19,13 @@
 
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/handle_eintr.h"
+#include "reference_drivers/socket_transport.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
 #include "util/safe_math.h"
+#include "util/unsafe_buffers.h"
 
 namespace ipcz::reference_drivers {
 
@@ -233,7 +228,8 @@ std::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
   size_t next_descriptor = 0;
   for (const FileDescriptor& fd : message.descriptors) {
     ABSL_ASSERT(fd.is_valid());
-    reinterpret_cast<int*>(CMSG_DATA(cmsg))[next_descriptor++] = fd.get();
+    IPCZ_UNSAFE_TODO(
+        reinterpret_cast<int*>(CMSG_DATA(cmsg))[next_descriptor++]) = fd.get();
   }
 
   for (;;) {
@@ -353,7 +349,7 @@ void SocketTransport::RunIOThread() {
           const int* fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
           descriptors.resize(num_fds);
           for (size_t i = 0; i < num_fds; ++i) {
-            descriptors[i] = FileDescriptor(fds[i]);
+            descriptors[i] = FileDescriptor(IPCZ_UNSAFE_TODO(fds[i]));
           }
         }
       }

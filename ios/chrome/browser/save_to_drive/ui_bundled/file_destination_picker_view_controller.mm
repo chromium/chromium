@@ -8,7 +8,10 @@
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_action_delegate.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -16,7 +19,7 @@
 
 namespace {
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 // Names of icons used for items in the file destination picker.
 NSString* const kFilesAppWithBackgroundImage =
     @"apple_files_app_with_background";
@@ -120,7 +123,8 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
       [[UIView alloc] initWithFrame:CGRectMake(0, 0, 0, CGFLOAT_MIN)];
   self.tableView.showsVerticalScrollIndicator = NO;
   self.tableView.showsHorizontalScrollIndicator = NO;
-  RegisterTableViewCell<TableViewImageCell>(self.tableView);
+  [self.tableView setSeparatorInset:UIEdgeInsetsMake(0, kSeparatorInset, 0, 0)];
+  [TableViewCellContentConfiguration registerCellForTableView:self.tableView];
   // Constrain table view height to its content height.
   _tableViewHeightConstraint = [self.tableView.heightAnchor
       constraintEqualToConstant:self.tableView.contentSize.height +
@@ -184,17 +188,22 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(ItemIdentifier)itemIdentifier {
-  TableViewImageCell* cell =
-      DequeueTableViewCell<TableViewImageCell>(tableView);
+  UITableViewCell* cell =
+      [TableViewCellContentConfiguration dequeueTableViewCell:tableView];
   const bool selected = ItemIsSelected(itemIdentifier);
   FileDestination destination = ItemFileDestination(itemIdentifier);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  cell.imageView.image =
+  TableViewCellContentConfiguration* configuration =
+      [[TableViewCellContentConfiguration alloc] init];
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  ColorfulSymbolContentConfiguration* imageConfiguration =
+      [[ColorfulSymbolContentConfiguration alloc] init];
+  imageConfiguration.symbolImage =
       destination == FileDestination::kFiles
           ? [UIImage imageNamed:kFilesAppWithBackgroundImage]
           : [UIImage imageNamed:kDriveAppWithBackgroundImage];
+  configuration.leadingConfiguration = imageConfiguration;
 #endif
-  cell.textLabel.text =
+  configuration.title =
       destination == FileDestination::kFiles
           ? l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_FILES)
           : l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
@@ -203,10 +212,9 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
   if ([self.actionDelegate shouldBlockDownloadToFile] &&
       destination == FileDestination::kFiles) {
     cell.userInteractionEnabled = NO;
-    cell.textLabel.enabled = NO;
-    cell.detailTextLabel.text =
+    configuration.textDisabled = YES;
+    configuration.subtitle =
         l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION);
-    cell.detailTextLabel.enabled = NO;
   }
 
   cell.accessoryType = selected ? UITableViewCellAccessoryCheckmark
@@ -219,8 +227,7 @@ void SetUnhighlightedBackgroundColorForCell(UITableViewCell* cell) {
                 ? kFileDestinationPickerDownloadRestrictionFilesAccessibilityIdentifier
                 : kFileDestinationPickerFilesAccessibilityIdentifier
           : kFileDestinationPickerDriveAccessibilityIdentifier;
-  cell.useCustomSeparator = NO;
-  [self.tableView setSeparatorInset:UIEdgeInsetsMake(0, kSeparatorInset, 0, 0)];
+  cell.contentConfiguration = configuration;
   return cell;
 }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
@@ -259,19 +260,21 @@ void TabGroupSyncDelegateDesktop::UpdateLocalTabGroup(
 std::vector<LocalTabGroupID>
 TabGroupSyncDelegateDesktop::GetLocalTabGroupIds() {
   std::vector<LocalTabGroupID> local_group_ids;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      // Skip browsers for other profiles.
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &local_group_ids](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
 
-    if (browser->tab_strip_model() &&
-        browser->tab_strip_model()->SupportsTabGroups()) {
-      std::vector<LocalTabGroupID> local_groups =
-          browser->tab_strip_model()->group_model()->ListTabGroups();
-      std::ranges::copy(local_groups, std::back_inserter(local_group_ids));
-    }
-  }
+        if (const TabStripModel* const tab_strip_model =
+                browser->GetTabStripModel();
+            tab_strip_model && tab_strip_model->SupportsTabGroups()) {
+          std::vector<LocalTabGroupID> local_groups =
+              tab_strip_model->group_model()->ListTabGroups();
+          std::ranges::copy(local_groups, std::back_inserter(local_group_ids));
+        }
+        return true;
+      });
 
   return local_group_ids;
 }
@@ -284,45 +287,48 @@ std::vector<LocalTabID> TabGroupSyncDelegateDesktop::GetLocalTabIdsForTabGroup(
 
 std::set<LocalTabID> TabGroupSyncDelegateDesktop::GetSelectedTabs() {
   std::set<LocalTabID> selected_tab_ids;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      // Skip browsers for other profiles.
-      continue;
-    }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, &selected_tab_ids](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
+        }
 
-    if (browser->tab_strip_model()) {
-      tabs::TabInterface* active_tab =
-          browser->tab_strip_model()->GetActiveTab();
-      if (active_tab) {
-        selected_tab_ids.insert(active_tab->GetHandle().raw_value());
-      }
-    }
-  }
+        if (const TabStripModel* const tab_strip_model =
+                browser->GetTabStripModel()) {
+          tabs::TabInterface* active_tab = tab_strip_model->GetActiveTab();
+          if (active_tab) {
+            selected_tab_ids.insert(active_tab->GetHandle().raw_value());
+          }
+        }
+        return true;
+      });
 
   return selected_tab_ids;
 }
 
 std::u16string TabGroupSyncDelegateDesktop::GetTabTitle(
     const LocalTabID& local_tab_id) {
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->profile() != profile_) {
-      // Skip browsers for other profiles.
-      continue;
-    }
-
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    if (tab_strip_model) {
-      for (int i = 0; i < tab_strip_model->count(); ++i) {
-        tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
-        if (tab->GetHandle().raw_value() == local_tab_id) {
-          return tab->GetContents() ? tab->GetContents()->GetTitle()
-                                    : std::u16string();
+  std::u16string result;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, local_tab_id, &result](BrowserWindowInterface* browser) {
+        if (browser->GetProfile() != profile_) {
+          return true;
         }
-      }
-    }
-  }
 
-  return std::u16string();
+        if (const TabStripModel* const tab_strip_model =
+                browser->GetTabStripModel()) {
+          for (tabs::TabInterface* tab : *tab_strip_model) {
+            if (tab->GetHandle().raw_value() == local_tab_id) {
+              result = tab->GetContents() ? tab->GetContents()->GetTitle()
+                                          : std::u16string();
+              return false;
+            }
+          }
+        }
+        return true;
+      });
+
+  return result;
 }
 
 std::unique_ptr<SavedTabGroup>
@@ -358,11 +364,11 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
     const std::map<tabs::TabInterface*, base::Uuid>& tab_guid_mapping,
     const SavedTabGroup& saved_group) {
   std::vector<int> tab_indices;
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    if (base::Contains(tab_guid_mapping, tab_strip_model->GetTabAtIndex(i)) &&
-        !tab_strip_model->GetTabGroupForTab(i).has_value()) {
+  for (int i = 0; tabs::TabInterface* tab : *tab_strip_model) {
+    if (base::Contains(tab_guid_mapping, tab) && !tab->GetGroup().has_value()) {
       tab_indices.push_back(i);
     }
+    ++i;
   }
 
   TabGroupId tab_group_id = TabGroupId::GenerateNew();

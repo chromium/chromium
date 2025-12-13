@@ -11,11 +11,18 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/split_tab_visual_data.h"
@@ -51,6 +58,20 @@ SplitTabMenuModel::CommandId GetCommandIdEnum(int command_id) {
   return static_cast<SplitTabMenuModel::CommandId>(
       command_id - ExistingBaseSubMenuModel::kMinSplitTabMenuModelCommandId);
 }
+
+BrowserWindowInterface* GetBrowserWithTabStripModel(
+    TabStripModel* tab_strip_model) {
+  BrowserWindowInterface* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [tab_strip_model, &result](BrowserWindowInterface* browser) {
+        if (browser->GetTabStripModel() == tab_strip_model) {
+          result = browser;
+        }
+        return !result;
+      });
+  return result;
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabMenuModel,
@@ -68,7 +89,10 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
       tab_strip_model_(tab_strip_model),
       menu_source_(menu_source),
       split_tab_index_(split_tab_index) {
-  AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
+  AddItemWithStringIdAndIcon(
+      GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
+      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
+                                     ui::SimpleMenuModel::kDefaultIconSize));
   AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
 
   if (menu_source == MenuSource::kMiniToolbar) {
@@ -98,16 +122,24 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
     NOTREACHED() << "Unknown close menu item option";
   }
 
-  AddItemWithStringIdAndIcon(
-      GetCommandIdInt(CommandId::kExitSplit), IDS_SPLIT_TAB_SEPARATE_VIEWS,
-      ui::ImageModel::FromVectorIcon(kOpenInFullIcon, ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize));
+  AddItem(GetCommandIdInt(CommandId::kReversePosition), std::u16string());
+
   SetElementIdentifierAt(
       GetIndexOfCommandId(GetCommandIdInt(CommandId::kReversePosition)).value(),
       kReversePositionMenuItem);
   SetElementIdentifierAt(
       GetIndexOfCommandId(GetCommandIdInt(CommandId::kExitSplit)).value(),
       kExitSplitMenuItem);
+
+  // Only render feedback in the toolbar button menu.
+  if (menu_source == MenuSource::kToolbarButton &&
+      tab_strip_model->profile()->GetPrefs()->GetBoolean(
+          prefs::kUserFeedbackAllowed)) {
+    AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
+    AddItemWithStringIdAndIcon(GetCommandIdInt(CommandId::kSendFeedback),
+                               IDS_SPLIT_TAB_SEND_FEEDBACK,
+                               ui::ImageModel::FromVectorIcon(kReportIcon));
+  }
 }
 
 SplitTabMenuModel::~SplitTabMenuModel() = default;
@@ -189,6 +221,9 @@ void SplitTabMenuModel::ExecuteCommand(int command_id, int event_flags) {
     case CommandId::kExitSplit:
       tab_strip_model_->RemoveSplit(split_id);
       break;
+    case CommandId::kSendFeedback:
+      SendFeedback();
+      break;
   }
 
   base::UmaHistogramEnumeration(
@@ -229,4 +264,12 @@ void SplitTabMenuModel::CloseTabAtIndex(int index) {
   tab_strip_model_->CloseWebContentsAt(
       index, TabCloseTypes::CLOSE_USER_GESTURE |
                  TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+}
+
+void SplitTabMenuModel::SendFeedback() {
+  BrowserWindowInterface* const browser =
+      GetBrowserWithTabStripModel(tab_strip_model_);
+  CHECK(browser);
+  chrome::ShowFeedbackPage(browser, feedback::kFeedbackSourceSplitView, "", "",
+                           "split_view", "");
 }

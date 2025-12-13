@@ -6,6 +6,7 @@
 
 #include <linux-drm-syncobj-v1-server-protocol.h>
 
+#include "base/functional/callback_helpers.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 
@@ -56,7 +57,7 @@ void GetSurface(struct wl_client* client,
   CreateResourceWithImpl<MockLinuxDrmSyncobjSurface>(
       client, &wp_linux_drm_syncobj_surface_v1_interface,
       kMockLinuxDrmSyncobjSurfaceVersion, &kMockLinuxDrmSyncobjSurfaceImpl, id,
-      surface);
+      base::DoNothing(), surface);
 }
 
 const struct wp_linux_drm_syncobj_timeline_v1_interface
@@ -69,7 +70,8 @@ void ImportTimeline(struct wl_client* client,
   CreateResourceWithImpl<TestLinuxDrmSyncobjTimeline>(
       client, &wp_linux_drm_syncobj_timeline_v1_interface,
       kTestLinuxDrmSyncobjTimelineVersion, &kTestLinuxDrmSyncobjTimelineImpl,
-      id, GetUserDataAs<TestWpLinuxDrmSyncobjManagerV1>(resource), fd);
+      id, base::DoNothing(),
+      GetUserDataAs<TestWpLinuxDrmSyncobjManagerV1>(resource), fd);
 }
 
 }  // namespace

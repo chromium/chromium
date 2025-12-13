@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "base/types/optional_util.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -24,14 +24,13 @@ namespace network {
 
 namespace {
 
-// Attempts URL canonicalization, but if unable, returns `host` without change.
-std::string MaybeCanonicalizeHost(std::string host) {
+// Attempts URL canonicalization, but if unable, leaves `host_port_pair` alone.
+void TryToCanonicalizeHost(net::HostPortPair& host_port_pair) {
   url::CanonHostInfo info;
-  std::string canonicalized = net::CanonicalizeHost(host, &info);
-  if (info.family == url::CanonHostInfo::BROKEN) {
-    return host;
-  } else {
-    return canonicalized;
+  std::string canonicalized =
+      net::CanonicalizeHost(host_port_pair.host(), &info);
+  if (info.family != url::CanonHostInfo::BROKEN) {
+    host_port_pair.set_host(canonicalized);
   }
 }
 
@@ -49,8 +48,8 @@ ResolveHostRequest::ResolveHostRequest(
 
   if (host->is_host_port_pair()) {
     // net::HostResolver expects canonicalized hostnames.
-    net::HostPortPair host_port_pair = host->get_host_port_pair();
-    host_port_pair.set_host(MaybeCanonicalizeHost(host_port_pair.host()));
+    net::HostPortPair& host_port_pair = host->get_host_port_pair();
+    TryToCanonicalizeHost(host_port_pair);
     internal_request_ = resolver->CreateRequest(
         host_port_pair, network_anonymization_key,
         net::NetLogWithSource::Make(
@@ -69,10 +68,10 @@ ResolveHostRequest::~ResolveHostRequest() {
   control_handle_receiver_.reset();
 
   if (response_client_.is_bound()) {
-    response_client_->OnComplete(
-        net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt);
+    response_client_->OnComplete(net::ERR_NAME_NOT_RESOLVED,
+                                 net::ResolveErrorInfo(net::ERR_FAILED),
+                                 /*resolved_addresses=*/{},
+                                 /*alternative_endpoints=*/{});
     response_client_.reset();
   }
 }
@@ -94,8 +93,7 @@ int ResolveHostRequest::Start(
   mojo::Remote<mojom::ResolveHostClient> response_client(
       std::move(pending_response_client));
   if (rv != net::ERR_IO_PENDING) {
-    response_client->OnComplete(rv, GetResolveErrorInfo(),
-                                base::OptionalFromPtr(GetAddressResults()),
+    response_client->OnComplete(rv, GetResolveErrorInfo(), GetAddressResults(),
                                 GetAlternativeEndpoints());
     return rv;
   }
@@ -133,8 +131,7 @@ void ResolveHostRequest::OnComplete(int error) {
   control_handle_receiver_.reset();
   SignalNonAddressResults();
   response_client_->OnComplete(error, GetResolveErrorInfo(),
-                               base::OptionalFromPtr(GetAddressResults()),
-                               GetAlternativeEndpoints());
+                               GetAddressResults(), GetAlternativeEndpoints());
 
   response_client_.reset();
   // Invoke completion callback last as it may delete |this|.
@@ -150,28 +147,23 @@ net::ResolveErrorInfo ResolveHostRequest::GetResolveErrorInfo() const {
   return internal_request_->GetResolveErrorInfo();
 }
 
-const net::AddressList* ResolveHostRequest::GetAddressResults() const {
+net::AddressList ResolveHostRequest::GetAddressResults() const {
   if (cancelled_) {
-    return nullptr;
+    return net::AddressList();
   }
 
   DCHECK(internal_request_);
   return internal_request_->GetAddressResults();
 }
 
-std::optional<net::HostResolverEndpointResults>
-ResolveHostRequest::GetAlternativeEndpoints() const {
+net::HostResolverEndpointResults ResolveHostRequest::GetAlternativeEndpoints()
+    const {
   if (cancelled_) {
-    return std::nullopt;
+    return {};
   }
 
   DCHECK(internal_request_);
-  const net::HostResolverEndpointResults* endpoints =
-      internal_request_->GetEndpointResults();
-
-  if (!endpoints) {
-    return std::nullopt;
-  }
+  auto endpoints = internal_request_->GetEndpointResults();
 
   // `endpoints` contains both alternative endpoints (from HTTPS/SVCB) and
   // authority endpoints (from A/AAAA directly). The authority endpoints are
@@ -180,17 +172,11 @@ ResolveHostRequest::GetAlternativeEndpoints() const {
   // TODO(crbug.com/40203587): This is the opposite of the design taken
   // everywhere else in the DNS logic, where we aimed to migrate `AddressList`
   // to `HostResolverEndpointResult`.
-  //
-  // TODO(crbug.com/40256843): The rest of the Mojo interface uses the
-  // non-standard `endpoint_results_with_metadata` naming. Rename everything to
-  // match the specification.
   net::HostResolverEndpointResults alternative_endpoints;
   std::ranges::copy_if(
-      *endpoints, std::back_inserter(alternative_endpoints),
+      endpoints, std::back_inserter(alternative_endpoints),
       [](const auto& endpoint) { return endpoint.metadata.IsAlternative(); });
-  return alternative_endpoints.empty()
-             ? std::nullopt
-             : std::make_optional(alternative_endpoints);
+  return alternative_endpoints;
 }
 
 void ResolveHostRequest::SignalNonAddressResults() {
@@ -199,15 +185,14 @@ void ResolveHostRequest::SignalNonAddressResults() {
   }
   DCHECK(internal_request_);
 
-  if (internal_request_->GetTextResults() &&
-      !internal_request_->GetTextResults()->empty()) {
-    response_client_->OnTextResults(*internal_request_->GetTextResults());
+  if (!internal_request_->GetTextResults().empty()) {
+    response_client_->OnTextResults(
+        base::ToVector(internal_request_->GetTextResults()));
   }
 
-  if (internal_request_->GetHostnameResults() &&
-      !internal_request_->GetHostnameResults()->empty()) {
+  if (!internal_request_->GetHostnameResults().empty()) {
     response_client_->OnHostnameResults(
-        *internal_request_->GetHostnameResults());
+        base::ToVector(internal_request_->GetHostnameResults()));
   }
 }
 

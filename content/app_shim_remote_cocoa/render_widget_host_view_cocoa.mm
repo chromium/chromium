@@ -56,7 +56,7 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -180,6 +180,10 @@ void ExtractUnderlines(NSAttributedString* string,
     BOOL automaticQuoteSubstitutionEnabled;
 @property(getter=isAutomaticDashSubstitutionEnabled)
     BOOL automaticDashSubstitutionEnabled;
+
+// Tracks the window for which the "onWindowDidResignKey" notification was
+// deferred.
+@property(weak, nonatomic, class) NSWindow* deferredResignKeyWindow;
 
 - (void)keyEvent:(NSEvent*)theEvent wasKeyEquivalent:(BOOL)equiv;
 - (void)windowDidChangeScreenOrBackingProperties:(NSNotification*)notification;
@@ -362,6 +366,9 @@ void ExtractUnderlines(NSAttributedString* string,
 @synthesize textInputType = _textInputType;
 @synthesize textInputFlags = _textInputFlags;
 @synthesize spellCheckerForTesting = _spellCheckerForTesting;
+
+// Static storage for the class property deferredResignKeyWindow
+static NSWindow* __weak _deferredResignKeyWindow;
 
 + (void)initialize {
   RenderWidgetHostViewMacEditCommandHelper::AddEditingSelectorsToClass(self);
@@ -660,7 +667,7 @@ void ExtractUnderlines(NSAttributedString* string,
   _availableTextChangeCounter++;
   _textSelectionRange = range;
   _substitutionWasApplied = NO;
-  [NSSpellChecker.sharedSpellChecker dismissCorrectionIndicatorForView:self];
+  [self.spellChecker dismissCorrectionIndicatorForView:self];
   if (_shouldRequestTextSubstitutions && !_substitutionWasApplied &&
       _textSelectionRange.is_empty()) {
     _shouldRequestTextSubstitutions = NO;
@@ -1305,7 +1312,6 @@ void ExtractUnderlines(NSAttributedString* string,
   // only the last setMarkedText will be processed.
   ui::DomCode domCode = ui::KeycodeConverter::NativeKeycodeToDomCode(keyCode);
   _isReconversionTriggered =
-      base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix) &&
       _hasMarkedText && domCode == ui::DomCode::ARROW_LEFT &&
       _markedTextSelectedRange.location == 0 && _markedRange.location != 0 &&
       _markedRange.location != NSNotFound;
@@ -1643,7 +1649,13 @@ void ExtractUnderlines(NSAttributedString* string,
                                   name:NSWindowDidResignKeyNotification
                                 object:oldWindow];
     [notificationCenter removeObserver:self
+                                  name:NSWindowWillCloseNotification
+                                object:oldWindow];
+    [notificationCenter removeObserver:self
                                   name:@"ChromeWillOrderFrontCharacterPalette"
+                                object:nil];
+    [notificationCenter removeObserver:self
+                                  name:NSApplicationDidResignActiveNotification
                                 object:nil];
   }
   if (newWindow) {
@@ -1674,8 +1686,16 @@ void ExtractUnderlines(NSAttributedString* string,
                                name:NSWindowDidResignKeyNotification
                              object:newWindow];
     [notificationCenter addObserver:self
+                           selector:@selector(windowWillClose:)
+                               name:NSWindowWillCloseNotification
+                             object:newWindow];
+    [notificationCenter addObserver:self
                            selector:@selector(characterPaletteWillOrderFront:)
                                name:@"ChromeWillOrderFrontCharacterPalette"
+                             object:nil];
+    [notificationCenter addObserver:self
+                           selector:@selector(applicationDidResignActive:)
+                               name:NSApplicationDidResignActiveNotification
                              object:nil];
   }
 
@@ -1688,7 +1708,7 @@ void ExtractUnderlines(NSAttributedString* string,
   // properties change to propagate when it does not ensures that screen infos
   // are properly updated when running headless.
   // See // https://crbug.com/375425824.
-  auto* screen = display::Screen::GetScreen();
+  auto* screen = display::Screen::Get();
   const display::ScreenInfos newScreenInfos =
       screen->GetScreenInfosNearestDisplay(
           screen->GetDisplayNearestView(gfx::NativeView(self)).id());
@@ -1752,6 +1772,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)windowDidBecomeKey:(NSNotification*)notification {
   DCHECK([self window]);
   DCHECK_EQ([self window], [notification object]);
+  [self performDeferredResignKeyWindow];
   if ([_responderDelegate respondsToSelector:@selector(windowDidBecomeKey)])
     [_responderDelegate windowDidBecomeKey];
   if ([self window].isKeyWindow)
@@ -1766,10 +1787,40 @@ void ExtractUnderlines(NSAttributedString* string,
   // message, since it just means that a menu extra (on the "system status bar")
   // was activated; we'll get another |-windowDidResignKey| if we ever really
   // lose key window status.
-  if ([NSApp isActive] && ([NSApp keyWindow] == [self window]))
+  if ([NSApp isActive] && ([NSApp keyWindow] == [self window])) {
+    // Defer processing when the window is still reported as key. This occurs
+    // in:
+    // 1. Menu extra activation (system status bar items)
+    // 2. Window switching via system notifications
+    //
+    // We cannot immediately determine if this is a transient state or true
+    // resignation, so we defer until either another window becomes key or the
+    // application resigns active status, at which point we can process
+    // correctly.
+    RenderWidgetHostViewCocoa.deferredResignKeyWindow = notification.object;
     return;
+  }
+  RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
 
   _host->OnWindowIsKeyChanged(false);
+  if (base::FeatureList::IsEnabled(
+          features::kCancelCompositionWhenWindowLosesFocus)) {
+    // Cancel any ongoing composition when the window loses focus.
+    [self cancelComposition];
+  }
+}
+
+- (void)windowWillClose:(NSNotification*)notification {
+  // Clear deferred window if it's the one being closed. The __weak pointer
+  // could remain valid between windowWillClose: and deallocation. If
+  // performDeferredResignKeyWindow is called during this gap, it would post
+  // NSWindowDidResignKeyNotification for a closing window. Explicit nil
+  // prevents this race condition.
+  if (RenderWidgetHostViewCocoa.deferredResignKeyWindow &&
+      RenderWidgetHostViewCocoa.deferredResignKeyWindow ==
+          notification.object) {
+    RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
+  }
 }
 
 - (BOOL)becomeFirstResponder {
@@ -1811,6 +1862,32 @@ void ExtractUnderlines(NSAttributedString* string,
   [self cancelComposition];
 
   return YES;
+}
+
+- (void)applicationDidResignActive:(NSNotification*)notification {
+  [self performDeferredResignKeyWindow];
+}
+
+- (void)performDeferredResignKeyWindow {
+  // It's now time to decide whether the previously deferred
+  // "windowDidResignKey" notification should be executed. If so, we repost
+  // the notification to allow observers to update accordingly and ensure the
+  // web contents enter the correct state.
+  if (RenderWidgetHostViewCocoa.deferredResignKeyWindow &&
+      RenderWidgetHostViewCocoa.deferredResignKeyWindow != [NSApp keyWindow]) {
+    [[NSNotificationCenter defaultCenter]
+        postNotificationName:NSWindowDidResignKeyNotification
+                      object:RenderWidgetHostViewCocoa.deferredResignKeyWindow];
+  }
+  RenderWidgetHostViewCocoa.deferredResignKeyWindow = nil;
+}
+
++ (NSWindow*)deferredResignKeyWindow {
+  return _deferredResignKeyWindow;
+}
+
++ (void)setDeferredResignKeyWindow:(NSWindow*)window {
+  _deferredResignKeyWindow = window;
 }
 
 - (BOOL)isAutomaticQuoteSubstitutionEnabled {
@@ -2091,7 +2168,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
 
   uint32_t index = UINT32_MAX;
   _host->SyncGetCharacterIndexAtPoint(rootPoint, &index);
-  // |index| could be WTF::notFound (-1) and its value is different from
+  // |index| could be blink::kNotFound (-1) and its value is different from
   // NSNotFound so we need to convert it.
   if (index == UINT32_MAX)
     return NSNotFound;
@@ -2124,7 +2201,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // The returned rectangle is in WebKit coordinates (upper left origin), so
   // flip the coordinate system.
   NSRect viewFrame = [self frame];
-  NSRect rect = NSRectFromCGRect(gfxRect.ToCGRect());
+  NSRect rect = gfxRect.ToCGRect();
   rect.origin.y = NSHeight(viewFrame) - NSMaxY(rect);
 
   // Convert into screen coordinates for return.
@@ -2261,8 +2338,6 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   BOOL isAttributedString = [string isKindOfClass:[NSAttributedString class]];
   NSString* imText = isAttributedString ? [string string] : string;
   int length = [imText length];
-  const BOOL fixLiveConversion =
-      base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix);
 
   // |markedRange_| will get set on a callback from ImeSetComposition().
   _markedTextSelectedRange = newSelRange;
@@ -2275,14 +2350,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // characters.
   if (length > 0) {
     _hasMarkedText = YES;
-    if (!fixLiveConversion) {
-      length = [string length];
-    }
     if (replacementRange.location != NSNotFound) {
       // If the replacement range is valid, the range should be replaced with
       // the new text.
       _markedRange = NSMakeRange(replacementRange.location, length);
-    } else if (fixLiveConversion && _markedRange.location == NSNotFound) {
+    } else if (_markedRange.location == NSNotFound) {
       // If no replacement range and no marked range, the current selection
       // should be replaced.
       _markedRange = NSMakeRange(_textSelectionRange.start(), length);
@@ -2292,7 +2364,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
       _markedRange.length = length;
     }
 
-    if (fixLiveConversion && newSelRange.location != NSNotFound &&
+    if (newSelRange.location != NSNotFound &&
         _markedRange.location <= std::numeric_limits<uint32_t>::max()) {
       CHECK_NE(_markedRange.location, static_cast<NSUInteger>(NSNotFound));
       CHECK_LE(newSelRange.location, std::numeric_limits<uint32_t>::max());
@@ -2307,7 +2379,7 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   } else {
     // An empty text means the composition is about to be cancelled,
     // collapse the selection to the beginning of the current marked range.
-    if (fixLiveConversion && _hasMarkedText) {
+    if (_hasMarkedText) {
       CHECK_LE(_markedRange.location, std::numeric_limits<uint32_t>::max())
           << "_markedRange.location is too large.";
       _textSelectionRange =

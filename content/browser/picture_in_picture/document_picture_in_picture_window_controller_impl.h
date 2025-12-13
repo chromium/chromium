@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_DOCUMENT_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
-#include <map>
 #include <set>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/media_player_id.h"
@@ -85,14 +85,20 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
 
   class ChildContentsObserver : public WebContentsObserver {
    public:
-    // Will post `force_close_cb` when `web_contents` navigates, or at similar
-    // times when the PiP session should end. `contents_destroyed_cb` will be
-    // called in-line (not posted) when our WebContents has been destroyed and
-    // the pointer should be discarded.
+    // Will post `force_close_cb` when `web_contents` navigates, or at
+    // similar times when the PiP session should
+    // end. `contents_visible_cb` will be called when the child
+    // WebContents becomes visible for the first and is ready to
+    // provide a window ID.  `contents_destroyed_cb` will be called
+    // in-line (not posted) when our WebContents has been destroyed
+    // and the pointer should be discarded.
     ChildContentsObserver(WebContents* web_contents,
                           base::OnceClosure force_close_cb,
+                          base::OnceClosure contents_visible_cb,
                           base::OnceClosure contents_destroyed_cb);
     ~ChildContentsObserver() override;
+
+    void OnVisibilityChanged(Visibility visibility) override;
 
     // Watch for navigations in the child contents, so that we can close the PiP
     // window if it navigates away.  Some navigations (e.g., same-document) are
@@ -109,10 +115,15 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
     // Called, via post, to request that the pip session end.
     base::OnceClosure force_close_cb_;
 
+    base::OnceClosure contents_visible_cb_;
+
     // Called, without posting, when the raw ptr to our WebContents is about to
     // be invalidated.
     base::OnceClosure contents_destroyed_cb_;
   };
+
+  // Called the first time the child contents becomes visible
+  void OnChildContentsFirstVisible();
 
   raw_ptr<WebContents> opener_web_contents_ = nullptr;
 

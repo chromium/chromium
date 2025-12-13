@@ -7,7 +7,7 @@
  */
 
 import {getSurroundingText} from '//ios/web/js_features/context_menu/resources/surrounding_text.js';
-import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // The minimum opacity for an element to be considered as opaque. Elements
@@ -644,10 +644,11 @@ window.addEventListener('message', function(message) {
   }
 });
 
-// Call contextMenuAllFrames on gCrWebLegacy directly to prevent code
-// duplication that using export/import would create.
-gCrWebLegacy.contextMenuAllFrames = {
-  findElementAtPointInPageCoordinates,
-  // For testing only:
-  getSurroundingText,
-};
+const contextMenuAllFrames = new CrWebApi();
+
+contextMenuAllFrames.addFunction(
+    'findElementAtPointInPageCoordinates', findElementAtPointInPageCoordinates);
+// For testing only
+contextMenuAllFrames.addFunction('getSurroundingText', getSurroundingText);
+
+gCrWeb.registerApi('contextMenuAllFrames', contextMenuAllFrames);

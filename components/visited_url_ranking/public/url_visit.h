@@ -13,7 +13,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
@@ -238,18 +237,6 @@ struct URLVisitAggregate {
   // The matching decorations for a URL visit aggregate. One of these will be
   // selected to display on various UI surfaces.
   std::vector<Decoration> decorations;
-};
-
-// Helper to visit each variant of URLVisitVariant.
-// Usage:
-//   std::visit(URLVisitVariantHelper{
-//         [](Variant1& variant1) {},
-//         [](Variant2& variant1) {},
-//         [](Variant3& variant1) {},
-//      variant_data);
-template <class... Ts>
-struct URLVisitVariantHelper : Ts... {
-  using Ts::operator()...;
 };
 
 }  // namespace visited_url_ranking

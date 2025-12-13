@@ -6,16 +6,12 @@ assert(is_chromeos)
 
 static_library("multi_user") {
   sources = [
-    "multi_profile_support.cc",
-    "multi_profile_support.h",
     "multi_user_context_menu.h",
     "multi_user_context_menu_chromeos.cc",
     "multi_user_util.cc",
     "multi_user_util.h",
-    "multi_user_window_manager_helper.cc",
-    "multi_user_window_manager_helper.h",
-    "multi_user_window_manager_stub.cc",
-    "multi_user_window_manager_stub.h",
+    "multi_user_window_manager_browser_adaptor.cc",
+    "multi_user_window_manager_browser_adaptor.h",
   ]
 
   public_deps = [
@@ -35,10 +31,12 @@ static_library("multi_user") {
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/notification",
     "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/system_web_apps/apps",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//components/account_id",
@@ -58,30 +56,13 @@ static_library("multi_user") {
   ]
 }
 
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "test_multi_user_window_manager.cc",
-    "test_multi_user_window_manager.h",
-  ]
-
-  deps = [
-    ":multi_user",
-    "//ash/public/cpp",
-    "//base",
-    "//chrome/browser/ui",
-    "//components/account_id",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "multi_profile_support_unittest.cc",
     "multi_user_context_menu_chromeos_unittest.cc",
     "multi_user_util_chromeos_unittest.cc",
+    "multi_user_window_manager_browser_adaptor_unittest.cc",
   ]
 
   deps = [
@@ -90,6 +71,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",

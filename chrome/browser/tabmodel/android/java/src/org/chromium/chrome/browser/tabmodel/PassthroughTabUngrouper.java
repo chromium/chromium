@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.tabmodel;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
@@ -16,6 +15,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * Passthrough implementation of the {@link TabUngrouper} interface that forwards calls directly

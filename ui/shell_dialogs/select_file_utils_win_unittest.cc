@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/shell_dialogs/select_file_utils_win.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,7 +42,8 @@ TEST(SelectFileUtilsWin, RemoveEnvVarFromFileName) {
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("i=%zu", i));
     std::wstring sanitized = ui::RemoveEnvVarFromFileName<wchar_t>(
-        std::wstring(test_cases[i].filename), std::wstring(L"%"));
-    EXPECT_EQ(std::wstring(test_cases[i].sanitized_filename), sanitized);
+        std::wstring(UNSAFE_TODO(test_cases[i]).filename), std::wstring(L"%"));
+    EXPECT_EQ(std::wstring(UNSAFE_TODO(test_cases[i]).sanitized_filename),
+              sanitized);
   }
 }

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
@@ -61,6 +62,8 @@ constexpr CGFloat kLogoSize = 22;
   if (self) {
     CHECK(viewController, base::NotFatalUntil::M145);
     CHECK(browser, base::NotFatalUntil::M145);
+    CHECK_EQ(browser->type(), Browser::Type::kRegular,
+             base::NotFatalUntil::M145);
     self.shouldUseDefaultDismissal = NO;
     _promoType = promoType;
     _tracker = feature_engagement::TrackerFactory::GetForProfile(self.profile);
@@ -105,12 +108,6 @@ constexpr CGFloat kLogoSize = 22;
   _signinCoordinator = nil;
 }
 
-// Handles sign-in coordinator completion by cleaning and dismissing the promo.
-- (void)signinCoordinatorCompletion {
-  [self stopSigninCoordinator];
-  [self.delegate dismissNonModalSignInPromo:self];
-}
-
 // Notifies the feature engagement tracker that the promo has been dismissed.
 - (void)notifyFeatureEngagementDismissed {
   if (self.bannerWasPresented) {
@@ -152,12 +149,12 @@ constexpr CGFloat kLogoSize = 22;
   NSString* buttonLabel =
       l10n_util::GetNSString(IDS_IOS_NON_MODAL_SIGNIN_PROMO_SIGNIN_BUTTON);
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* icon = MakeSymbolMulticolor(
       CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kLogoSize));
 #else
   UIImage* icon = CustomSymbolWithPointSize(kChromeProductSymbol, kLogoSize);
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 
   NSString* subtitle;
 
@@ -255,6 +252,17 @@ constexpr CGFloat kLogoSize = 22;
     // Double tap. Ignore
     return;
   }
+
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  if (!signin::SigninIsPossible(authService)) {
+    // The promo is not scheduled if the user is signed-in or if sign-in is
+    // disabled. Still, due to asynchronicity, the state could have changed in
+    // the meantime, so we need to check again before displaying the sign-in
+    // coordinator.
+    [self cleanupUIAndDismiss];
+    return;
+  }
   _infobarUntapped = NO;
   // Log sign-in action when user taps the sign-in button
   LogNonModalSignInPromoAction(NonModalSignInPromoAction::kAccept, _promoType);
@@ -287,14 +295,17 @@ constexpr CGFloat kLogoSize = 22;
                                            DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
   _signinCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult result, id<SystemIdentity> identity) {
-        [weakSelf actionCallback];
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf actionCallbackWithCoordinator:coordinator];
       };
   [_signinCoordinator start];
 }
 
-- (void)actionCallback {
+- (void)actionCallbackWithCoordinator:(SigninCoordinator*)coordinator {
+  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
   [self stopSigninCoordinator];
+  [self.delegate dismissNonModalSignInPromo:self];
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {

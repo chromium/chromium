@@ -32,17 +32,13 @@ std::unique_ptr<viz::CompositorFrame> TestFrameFactory::CreateCompositorFrame(
                       gfx::Transform());
 
   frame->render_pass_list.push_back(std::move(render_pass));
-
-  for (viz::ResourceId id : latest_frame_resources_) {
-    frame->resource_list.push_back(
-        resource_manager.PrepareResourceForExport(id));
-  }
+  frame->resource_list = latest_frame_resources_;
 
   return frame;
 }
 
 void TestFrameFactory::SetFrameResources(
-    std::vector<viz::ResourceId> frame_resources) {
+    std::vector<viz::TransferableResource> frame_resources) {
   latest_frame_resources_ = std::move(frame_resources);
 }
 

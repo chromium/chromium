@@ -217,7 +217,7 @@ AutofillProfile CreateAutofillProfile(ProfileType type) {
 }
 
 AutofillProfile CreateUniqueAutofillProfile() {
-  AutofillProfile profile(AddressCountryCode("US"));
+  AutofillProfile profile(autofill::AddressCountryCode("US"));
   autofill::test::SetProfileInfoWithGuid(
       &profile, base::Uuid::GenerateRandomV4().AsLowercaseString().c_str(),
       "First", "Middle", "Last", "email@domain.tld", "Company", "123 Main St",

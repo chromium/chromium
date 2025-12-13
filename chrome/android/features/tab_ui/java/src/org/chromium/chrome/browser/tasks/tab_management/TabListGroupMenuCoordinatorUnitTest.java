@@ -32,10 +32,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -57,7 +54,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabListGroupMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
 public class TabListGroupMenuCoordinatorUnitTest {
     private static final int TAB_ID = 123;
     private static final String COLLABORATION_ID1 = "A";
@@ -139,7 +135,6 @@ public class TabListGroupMenuCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID)
     public void testBuildMenuItems_WithIcons() {
         ModelList modelList = new ModelList();
         when(mServiceStatus.isAllowedToJoin()).thenReturn(false);

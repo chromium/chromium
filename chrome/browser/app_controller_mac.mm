@@ -14,6 +14,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -62,6 +63,7 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/shortcuts/chrome_webloc_file.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/task_manager/task_manager_metrics_recorder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -73,6 +75,7 @@
 #include "chrome/browser/ui/browser_mac.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/cocoa/apps/quit_with_apps_controller_mac.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
@@ -82,6 +85,7 @@
 #import "chrome/browser/ui/cocoa/history_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 #import "chrome/browser/ui/cocoa/share_menu_controller.h"
+#import "chrome/browser/ui/cocoa/tab_group_menu_bridge.h"
 #import "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -92,6 +96,7 @@
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -105,6 +110,7 @@
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/handoff/handoff_manager.h"
 #include "components/handoff/handoff_utility.h"
+#include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -121,7 +127,7 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme_mac.h"
 #include "ui/native_theme/native_theme_observer.h"
 #include "url/gurl.h"
@@ -189,8 +195,7 @@ Browser* ActivateBrowser(Profile* profile) {
 // The profile can be `nullptr` and in that case the last-used profile will be
 // used.
 void LaunchBrowserStartup(Profile* profile) {
-  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
-      StartupProfileMode::kProfilePicker) {
+  if (ProfilePicker::GetStartupMode() == StartupProfileMode::kProfilePicker) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
     return;
@@ -300,14 +305,19 @@ void ConfigureNSAppForKioskMode() {
 // Returns the list of windows for all browser windows (excluding apps).
 NSSet<NSWindow*>* GetBrowserWindows() {
   NSMutableSet<NSWindow*>* result = [NSMutableSet set];
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // When focusing Chrome, don't focus any browser windows associated with
-    // an app (https://crbug.com/40626510).
-    if (browser->is_type_app()) {
-      continue;
-    }
-    [result addObject:browser->window()->GetNativeWindow().GetNativeNSWindow()];
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [result](BrowserWindowInterface* browser_window_interface) {
+        // When focusing Chrome, don't focus any browser windows associated with
+        // an app (https://crbug.com/40626510).
+        if (browser_window_interface->GetType() ==
+            BrowserWindowInterface::TYPE_APP) {
+          return true;
+        }
+        [result addObject:browser_window_interface->GetWindow()
+                              ->GetNativeWindow()
+                              .GetNativeNSWindow()];
+        return true;
+      });
   return result;
 }
 
@@ -363,7 +373,14 @@ void FocusWindowSetOnCurrentSpace(NSSet<NSWindow*>* windows) {
   }
 
   if (frontmost_window) {
-    [frontmost_window makeKeyAndOrderFront:nil];
+    // Use deminiaturize when the window is minimized to avoid the issue where
+    // the window suddenly appears before the animation starts during
+    // restoration.
+    if (frontmost_window.miniaturized) {
+      [frontmost_window deminiaturize:nil];
+    } else {
+      [frontmost_window makeKeyAndOrderFront:nil];
+    }
     [NSApp activateIgnoringOtherApps:YES];
   }
 }
@@ -377,8 +394,7 @@ base::FilePath GetStartupProfilePathMac() {
   StartupProfilePathInfo profile_path_info = GetStartupProfilePath(
       /*cur_dir=*/base::FilePath(), *base::CommandLine::ForCurrentProcess(),
       /*ignore_profile_picker=*/true);
-  DCHECK_EQ(StartupProfileModeFromReason(profile_path_info.reason),
-            StartupProfileMode::kBrowserWindow);
+  DCHECK_EQ(profile_path_info.mode, StartupProfileMode::kBrowserWindow);
   return profile_path_info.path;
 }
 
@@ -655,6 +671,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   std::unique_ptr<HistoryMenuBridge> _historyMenuBridge;
 
+  std::unique_ptr<TabGroupMenuBridge> _tabGroupMenuBridge;
+
   // The profile menu, which appears right before the Help menu. It is only
   // available when multiple profiles is enabled.
   ProfileMenuController* __strong _profileMenuController;
@@ -758,6 +776,14 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       // NSMenuItems.
       [AppController.sharedController updateMenuItemKeyEquivalents];
     }];
+
+    // Notify BrowserList to keep the application running so it doesn't go away
+    // when all the browser windows get closed. This is done as early as
+    // possible to make sure we even keep the application alive if some other
+    // subsystem creates and destroys a ScopedKeepAlive before the application
+    // finishes launching.
+    _keepAlive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
   }
   return self;
 }
@@ -913,7 +939,9 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     return NO;
   }
 
-  size_t num_browsers = chrome::GetTotalBrowserCount();
+  const BOOL should_terminate =
+      !KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+          KeepAliveOrigin::BROWSER);
 
   // Initiate a shutdown (via chrome::CloseAllBrowsersAndQuit()) if we aren't
   // already shutting down.
@@ -922,7 +950,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     chrome::CloseAllBrowsersAndQuit();
   }
 
-  return num_browsers == 0 ? YES : NO;
+  return should_terminate;
 }
 
 - (void)stopTryingToTerminateApplication:(NSApplication*)app {
@@ -944,7 +972,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (BOOL)runConfirmQuitPanel {
   // If there are no windows, quit immediately.
-  if (BrowserList::GetInstance()->empty() &&
+  if (!GetLastActiveBrowserWindowInterfaceWithAnyProfile() &&
       !AppWindowRegistryUtil::IsAppWindowVisibleInAnyProfile(0)) {
     return YES;
   }
@@ -966,7 +994,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 // Called when the app is shutting down. Clean-up as appropriate.
 - (void)applicationWillTerminate:(NSNotification*)aNotification {
   // There better be no browser windows left at this point.
-  CHECK_EQ(0u, chrome::GetTotalBrowserCount());
+  CHECK(!KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::BROWSER));
 
   // Tell BrowserList not to keep the browser process alive. Once all the
   // browsers get dealloc'd, it will stop the RunLoop and fall back into main().
@@ -987,6 +1016,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   // `_historyMenuBridge` has a dependency on `_lastProfile`, so that’s why it’s
   // deleted first.
   _historyMenuBridge.reset();
+
+  _tabGroupMenuBridge.reset();
 
   // It's safe to delete |_lastProfile| now.
   [self setLastProfile:nullptr];
@@ -1141,11 +1172,6 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     // Store the notification as it will be reposted when the dialog is closed.
     return;
   }
-
-  // Notify BrowserList to keep the application running so it doesn't go away
-  // when all the browser windows get closed.
-  _keepAlive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::APP_CONTROLLER, KeepAliveRestartOption::DISABLED);
 
   [self setUpdateCheckInterval];
 
@@ -1414,6 +1440,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         // Profile-level items that affect how the profile's UI looks should
         // only be available while there is a Profile opened.
         case IDC_SHOW_FULL_URLS:
+        case IDC_SHOW_AI_MODE_OMNIBOX_BUTTON:
         case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
         case IDC_SHOW_SEARCH_TOOLS:
           enable = hasLoadedProfile;
@@ -1614,9 +1641,9 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
       break;
     case IDC_HELP_PAGE_VIA_MENU:
       if (Browser* browser = ActivateBrowser(profile))
-        chrome::ShowHelp(browser, chrome::HELP_SOURCE_MENU);
+        chrome::ShowHelp(browser, chrome::HelpSource::kMenu);
       else
-        chrome::OpenHelpWindow(profile, chrome::HELP_SOURCE_MENU);
+        chrome::OpenHelpWindow(profile, chrome::HelpSource::kMenu);
       break;
     case IDC_OPTIONS:
       [self showPreferences:sender];
@@ -1694,8 +1721,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 
   // Open the profile picker (for multi-profile users) or a new window.
-  if (StartupProfileModeFromReason(ProfilePicker::GetStartupModeReason()) ==
-      StartupProfileMode::kProfilePicker) {
+  if (ProfilePicker::GetStartupMode() == StartupProfileMode::kProfilePicker) {
     ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
   } else {
@@ -1978,6 +2004,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     _historyMenuBridge->OnProfileWillBeDestroyed();
   }
 
+  _tabGroupMenuBridge.reset();
+
   _profilePrefRegistrar.reset();
 
   NSMenuItem* bookmarkItem = [NSApp.mainMenu itemWithTag:IDC_BOOKMARKS_MENU];
@@ -2031,6 +2059,16 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
   _historyMenuBridge = std::make_unique<HistoryMenuBridge>(_lastProfile);
   _historyMenuBridge->BuildMenu();
+
+  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+    auto* tab_group_service =
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(_lastProfile);
+    if (tab_group_service) {
+      _tabGroupMenuBridge =
+          std::make_unique<TabGroupMenuBridge>(_lastProfile, tab_group_service);
+      _tabGroupMenuBridge->BuildMenu();
+    }
+  }
 
   chrome::BrowserCommandController::
       UpdateSharedCommandsForIncognitoAvailability(
@@ -2464,7 +2502,13 @@ void RunInProfileSafely(const base::FilePath& profile_dir,
 }
 
 void AllowApplicationToTerminate() {
-  [AppController.sharedController allowApplicationToTerminate];
+  if (NSApp) {
+    [AppController.sharedController allowApplicationToTerminate];
+  } else {
+    // Some test processes don't initialize NSApp, in which case accessing
+    // sharedController would crash.
+    CHECK_IS_TEST();
+  }
 }
 
 // static

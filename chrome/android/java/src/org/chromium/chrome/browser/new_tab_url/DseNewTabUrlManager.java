@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -60,10 +59,7 @@ public class DseNewTabUrlManager {
 
     /** Returns whether the feature NewTabSearchEngineUrlAndroid is enabled. */
     public static boolean isNewTabSearchEngineUrlAndroidEnabled() {
-        return ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.IS_EEA_CHOICE_COUNTRY, false)
-                || (OmniboxFeatures.sOmniboxMobileParityUpdate.isEnabled()
-                        && OmniboxFeatures.sOmniboxParityEnableFeedOnlyForGoogle.getValue());
+        return true;
     }
 
     /**

@@ -131,6 +131,7 @@ public abstract class WebContentsObserver {
 
     /**
      * Called when an error occurs while loading a document that fails to load.
+     *
      * @param isInPrimaryMainFrame Whether the navigation occurred in the primary main frame.
      * @param errorCode Error code for the occurring error.
      * @param failingUrl The url that was loading when the error occurred.
@@ -185,13 +186,6 @@ public abstract class WebContentsObserver {
             Page page, GlobalRenderFrameHostId rfhId, @LifecycleState int rfhLifecycleState) {}
 
     /**
-     * Notifies that the first contentful paint happened on the primary main frame.
-     *
-     * @param page The Page where the first contentful paint happened.
-     */
-    public void firstContentfulPaintInPrimaryMainFrame(Page page) {}
-
-    /**
      * Notifies that a navigation entry has been committed.
      *
      * @param details Details of committed navigation entry.
@@ -214,19 +208,31 @@ public abstract class WebContentsObserver {
     public void onBackgroundColorChanged() {}
 
     /**
-     * Called when media started playing. Unlike the native version, this does not identify which
-     * player because we don't have a type for it, but nothing currently needs it anyway.
+     * Called when media started playing.
+     *
+     * <p>There may be multiple media elements in a single {@code Webcontents}, each of which has a
+     * unique session id. The id can be used to keep track of independent sessions from the same
+     * page.
+     *
+     * <p>See also: {@code WebContentsObserver::MediaPlayerInfo} in {@code web_contents_observer.h}.
+     *
+     * @param id a session id, also passed to {@code mediaStoppedPlaying()} when the session stops.
+     * @param hasAudio whether the session has audio.
+     * @param hasVideo whether the session has video.
      */
-    public void mediaStartedPlaying() {}
+    public void mediaStartedPlaying(int id, boolean hasAudio, boolean hasVideo) {}
 
     /**
-     * Called when media stopped playing.  Unlike the native version, this does not identify which
-     * player because we don't have a type for it, but nothing currently needs it anyway.
+     * Called when media stopped playing.
+     *
+     * @param id the session id that was passed to {@code mediaStartedPlaying()} for this session
+     *     when playback started.
      */
-    public void mediaStoppedPlaying() {}
+    public void mediaStoppedPlaying(int id) {}
 
     /**
      * Called when Media in the Web Contents leaves or enters fullscreen mode.
+     *
      * @param isFullscreen whether fullscreen is being entered or left.
      */
     public void hasEffectivelyFullscreenVideoChange(boolean isFullscreen) {}
@@ -272,8 +278,8 @@ public abstract class WebContentsObserver {
     public void onWebContentsFocused() {}
 
     /**
-     * This method is invoked when a RenderWidgetHost for a WebContents loses focus. This may
-     * be immediately followed by onWebContentsFocused if focus was moving between two
+     * This method is invoked when a RenderWidgetHost for a WebContents loses focus. This may be
+     * immediately followed by onWebContentsFocused if focus was moving between two
      * RenderWidgetHosts within the same WebContents.
      */
     public void onWebContentsLostFocus() {}
@@ -283,6 +289,9 @@ public abstract class WebContentsObserver {
 
     /** Called when a MediaSession is created for the WebContents. */
     public void mediaSessionCreated(MediaSession mediaSession) {}
+
+    /** Called when the WebContents is discarded. */
+    public void wasDiscarded() {}
 
     /**
      * Called when {@link #getWebContents()} is being destroyed.

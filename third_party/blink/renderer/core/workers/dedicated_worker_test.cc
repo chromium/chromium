@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -29,6 +28,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -406,6 +407,22 @@ DedicatedWorkerThreadForTest* DedicatedWorkerTest::GetWorkerThread() {
   return worker_messaging_proxy_->GetDedicatedWorkerThread();
 }
 
+void DedicatedWorkerTest::RunOnWorkerThread(
+    CrossThreadOnceFunction<void(ExecutionContext*)> task) {
+  base::RunLoop run_loop;
+  PostCrossThreadTaskAndReply(
+      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(
+          [](CrossThreadOnceFunction<void(ExecutionContext*)> task,
+             DedicatedWorkerThreadForTest* worker_thread) {
+            auto* execution_context = worker_thread->GlobalScope();
+            std::move(task).Run(execution_context);
+          },
+          std::move(task), CrossThreadUnretained(GetWorkerThread())),
+      CrossThreadOnceClosure(run_loop.QuitClosure()));
+  run_loop.Run();
+}
+
 void DedicatedWorkerTest::StartWorker(
     std::unique_ptr<GlobalScopeCreationParams> params) {
   WorkerMessagingProxy()->StartWorker(std::move(params));
@@ -606,27 +623,27 @@ TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerGlobalScope) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             AtomicString* event_type, WTF::CrossThreadOnceClosure quit_1,
-             WTF::CrossThreadOnceClosure quit_2) {
+             AtomicString* event_type, CrossThreadOnceClosure quit_1,
+             CrossThreadOnceClosure quit_2) {
             auto* global_scope = worker_thread->GlobalScope();
             auto* wait = MakeGarbageCollected<WaitForEvent>();
             wait->AddEventListener(global_scope, event_type_names::kMessage);
             wait->AddEventListener(global_scope,
                                    event_type_names::kMessageerror);
-            wait->AddCompletionClosure(WTF::BindOnce(
+            wait->AddCompletionClosure(BindOnce(
                 [](WaitForEvent* wait, AtomicString* event_type,
-                   WTF::CrossThreadOnceClosure quit_closure) {
+                   CrossThreadOnceClosure quit_closure) {
                   *event_type = wait->GetLastEvent()->type();
                   std::move(quit_closure).Run();
                 },
-                WrapPersistent(wait), WTF::Unretained(event_type),
+                WrapPersistent(wait), Unretained(event_type),
                 std::move(quit_2)));
             std::move(quit_1).Run();
           },
           CrossThreadUnretained(GetWorkerThread()),
           CrossThreadUnretained(&event_type),
-          WTF::CrossThreadOnceClosure(run_loop_1.QuitClosure()),
-          WTF::CrossThreadOnceClosure(run_loop_2.QuitClosure())));
+          CrossThreadOnceClosure(run_loop_1.QuitClosure()),
+          CrossThreadOnceClosure(run_loop_2.QuitClosure())));
 
   // Wait for the first run loop to quit, which signals that the event listeners
   // are registered. Then post the message and wait to be notified of the
@@ -661,8 +678,8 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             WTF::CrossThreadOnceClosure quit,
-             const SecurityOrigin* security_origin, const KURL& script_url) {
+             CrossThreadOnceClosure quit, const SecurityOrigin* security_origin,
+             const KURL& script_url) {
             // Check the worker's top level frame security origin.
             auto* worker_global_scope =
                 static_cast<WorkerGlobalScope*>(worker_thread->GlobalScope());
@@ -691,7 +708,7 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
             std::move(quit).Run();
           },
           CrossThreadUnretained(GetWorkerThread()),
-          WTF::CrossThreadOnceClosure(run_loop.QuitClosure()),
+          CrossThreadOnceClosure(run_loop.QuitClosure()),
           CrossThreadUnretained(WorkerObject()
                                     ->GetExecutionContext()
                                     ->GetSecurityContext()
@@ -725,27 +742,27 @@ TEST_F(DedicatedWorkerTest,
       *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
       CrossThreadBindOnce(
           [](DedicatedWorkerThreadForTest* worker_thread,
-             AtomicString* event_type, WTF::CrossThreadOnceClosure quit_1,
-             WTF::CrossThreadOnceClosure quit_2) {
+             AtomicString* event_type, CrossThreadOnceClosure quit_1,
+             CrossThreadOnceClosure quit_2) {
             auto* global_scope = worker_thread->GlobalScope();
             auto* wait = MakeGarbageCollected<WaitForEvent>();
             wait->AddEventListener(global_scope, event_type_names::kMessage);
             wait->AddEventListener(global_scope,
                                    event_type_names::kMessageerror);
-            wait->AddCompletionClosure(WTF::BindOnce(
+            wait->AddCompletionClosure(BindOnce(
                 [](WaitForEvent* wait, AtomicString* event_type,
-                   WTF::CrossThreadOnceClosure quit_closure) {
+                   CrossThreadOnceClosure quit_closure) {
                   *event_type = wait->GetLastEvent()->type();
                   std::move(quit_closure).Run();
                 },
-                WrapPersistent(wait), WTF::Unretained(event_type),
+                WrapPersistent(wait), Unretained(event_type),
                 std::move(quit_2)));
             std::move(quit_1).Run();
           },
           CrossThreadUnretained(worker_thread),
           CrossThreadUnretained(&event_type),
-          WTF::CrossThreadOnceClosure(run_loop_1.QuitClosure()),
-          WTF::CrossThreadOnceClosure(run_loop_2.QuitClosure())));
+          CrossThreadOnceClosure(run_loop_1.QuitClosure()),
+          CrossThreadOnceClosure(run_loop_2.QuitClosure())));
 
   // Wait for the first run loop to quit, which signals that the event listeners
   // are registered. Then post the message and wait to be notified of the

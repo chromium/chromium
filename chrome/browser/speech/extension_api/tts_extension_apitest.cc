@@ -365,11 +365,15 @@ class TtsApiTest : public ExtensionApiTest,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only support MV3 / service worker.
 INSTANTIATE_TEST_SUITE_P(
     PersistentBackground,
     TtsApiTest,
     ::testing::Values(FeaturesTestParam{
         .context_type = ContextType::kPersistentBackground}));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(
     ServiceWorker,
     TtsApiTest,
@@ -578,6 +582,10 @@ IN_PROC_BROWSER_TEST_P(TtsApiServiceWorkerTest, SpeakError) {
 // TTS Engine tests.
 //
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/432798510): Port to desktop Android. The speech does not seem
+// to finish before test shutdown causes a DCHECK in ~TtsUtteranceImpl. Also,
+// some tests use chrome.app.getDetails() which is not supported on Android.
 IN_PROC_BROWSER_TEST_P(TtsApiTest, RegisterEngine) {
   mock_platform_impl_.set_should_fake_get_voices(true);
 
@@ -652,6 +660,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, NoNetworkSpeechEngineWhenOffline) {
   // Test should fail when offline.
   ASSERT_FALSE(RunExtensionTest("tts_engine/network_speech_engine"));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // http://crbug.com/122474
 IN_PROC_BROWSER_TEST_P(TtsApiTest, EngineApi) {
@@ -660,14 +669,6 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, EngineApi) {
 
 IN_PROC_BROWSER_TEST_P(TtsApiTest, UpdateVoicesApi) {
   ASSERT_TRUE(RunExtensionTest("tts_engine/update_voices_api")) << message_;
-}
-
-IN_PROC_BROWSER_TEST_P(TtsApiTest, PRE_VoicesAreCached) {
-  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 1"));
-  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 2"));
-  ASSERT_TRUE(RunExtensionTest("tts_engine/call_update_voices")) << message_;
-  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 1"));
-  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 2"));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -753,6 +754,17 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, LanguageStatusRequestEmitsEvent) {
   ASSERT_TRUE(validate_requestor_param_listener.WaitUntilSatisfied());
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/40200835): Port to desktop Android when PRE_ steps are
+// supported.
+IN_PROC_BROWSER_TEST_P(TtsApiTest, PRE_VoicesAreCached) {
+  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 1"));
+  EXPECT_FALSE(HasVoiceWithName("Dynamic Voice 2"));
+  ASSERT_TRUE(RunExtensionTest("tts_engine/call_update_voices")) << message_;
+  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 1"));
+  EXPECT_TRUE(HasVoiceWithName("Dynamic Voice 2"));
+}
+
 IN_PROC_BROWSER_TEST_P(TtsApiTest, VoicesAreCached) {
   // Make sure the dynamically loaded voices are available even though
   // the extension didn't "run". Note that the voices might not be available
@@ -766,6 +778,7 @@ IN_PROC_BROWSER_TEST_P(TtsApiTest, VoicesAreCached) {
     waiter.Wait();
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(TtsApiTest, OnSpeakWithAudioStream) {

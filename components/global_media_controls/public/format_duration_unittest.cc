@@ -33,4 +33,11 @@ TEST_F(FormatDurationTest, FormatDurationWithoutHours) {
   EXPECT_EQ(u"0:00", GetFormattedDuration(zero_duration));
 }
 
+TEST_F(FormatDurationTest, FormatNonIntegerTimes) {
+  // `GetFormattedDuration()` should always round to the floor.
+  EXPECT_EQ(u"0:05", GetFormattedDuration(base::Milliseconds(5200)));
+  EXPECT_EQ(u"0:13", GetFormattedDuration(base::Milliseconds(13500)));
+  EXPECT_EQ(u"0:19", GetFormattedDuration(base::Milliseconds(19999)));
+}
+
 }  // namespace global_media_controls

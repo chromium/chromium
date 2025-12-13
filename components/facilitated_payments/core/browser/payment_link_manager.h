@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ref.h"
@@ -19,6 +20,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/strike_databases/payment_link_suggestion_strike_database.h"
+#include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 #include "components/facilitated_payments/core/validation/payment_link_validator.h"
@@ -35,6 +37,36 @@ class Ewallet;
 }
 
 namespace payments::facilitated {
+
+// The different types of FOP that can be selected by the user.
+enum FopType {
+  // An external payment app that is not integrated with GPay.
+  kExternalPaymentApp = 0,
+  // A GPay payment instrument, such as an eWallet.
+  kGPayInstrument = 1,
+};
+
+// Contains information about the FOP selected by the user.
+// Based on the fop_type, different fields in this struct will be populated.
+// If fop_type is kGPayInstrument, instrument_id will be set.
+// If fop_type is kExternalPaymentApp, package_name and activity_name will be
+// set.
+struct SelectedFopData {
+  explicit SelectedFopData(int64_t instrument_id)
+      : fop_type(kGPayInstrument), instrument_id(instrument_id) {}
+
+  SelectedFopData(const std::string& package_name,
+                  const std::string& activity_name)
+      : fop_type(kExternalPaymentApp),
+        instrument_id(0),
+        package_name(package_name),
+        activity_name(activity_name) {}
+
+  const FopType fop_type;
+  const int64_t instrument_id;
+  const std::string package_name;
+  const std::string activity_name;
+};
 
 class FacilitatedPaymentsClient;
 class FacilitatedPaymentsInitiatePaymentResponseDetails;
@@ -83,8 +115,15 @@ class PaymentLinkManager {
   // `RenderFrameHost` has been destroyed.
   FacilitatedPaymentsApiClient* GetApiClient();
 
+  // Called when user selects any FOP to pay with.
+  void OnFopSelected(SelectedFopData selected_fop_data);
+
   // Called when user selects the eWallet account to pay with.
   void OnEwalletAccountSelected(int64_t selected_instrument_id);
+
+  // Called when user selects a payment app to pay with.
+  void OnPaymentAppSelected(std::string_view package_name,
+                            std::string_view activity_name);
 
   // Invoked when risk data is fetched. The call to fetch the risk data was
   // made at `start_time`. `risk_data` is the fetched risk data.
@@ -115,9 +154,8 @@ class PaymentLinkManager {
   void OnTransactionResult(base::TimeTicks start_time,
                            PurchaseActionResult result);
 
-  // TODO(crbug.com/420735186): Rename to OnUiScreenEvent.
   // Called by the view to communicate UI events.
-  void OnUiEvent(UiEvent ui_event_type);
+  void OnUiScreenEvent(UiEvent ui_event_type);
 
   // Updates the `ui_state_` value and triggers dismissal.
   void DismissPrompt();
@@ -126,7 +164,8 @@ class PaymentLinkManager {
   void ShowPaymentLinkPrompt(
       base::span<const autofill::Ewallet> ewallet_suggestions,
       std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
-      base::OnceCallback<void(int64_t)> on_ewallet_account_selected);
+      base::OnceCallback<void(payments::facilitated::SelectedFopData)>
+          on_fop_selected);
 
   // Updates the `ui_state_` value and triggers showing the progress screen.
   void ShowProgressScreen();
@@ -144,6 +183,10 @@ class PaymentLinkManager {
   // Retrieves the strike database for payment link suggestion. This can return
   // nullptr so check before using.
   PaymentLinkSuggestionStrikeDatabase* GetOrCreateStrikeDatabase();
+
+  // Returns payment link FOP selector type based on the availability of payment
+  // apps and eWallets.
+  PaymentLinkFopSelectorTypes GetPaymentLinkFopSelectorType();
 
   // A list of eWallets that support the payment link provided in
   // TriggerPaymentLinkPushPayment().
@@ -197,6 +240,14 @@ class PaymentLinkManager {
   // True indicates that the eWallet selected by the user is bound to the
   // device. This field is used for logging purposes.
   bool is_device_bound_for_logging_ = false;
+
+  // True indicates that there is at least one payment app that is available for
+  // payment.
+  bool is_payment_app_available_ = false;
+
+  // True indicates that there is at least one eWallet that is available for
+  // payment.
+  bool is_ewallet_available_ = false;
 
   // A timer to make UI changes.
   base::OneShotTimer ui_timer_;

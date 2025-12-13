@@ -384,11 +384,6 @@ std::unique_ptr<DawnImageRepresentation> GLTextureImageBacking::ProduceDawn(
     wgpu::BackendType backend_type,
     std::vector<wgpu::TextureFormat> view_formats,
     scoped_refptr<SharedContextState> context_state) {
-  if (!factory()) {
-    DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
-    return nullptr;
-  }
-
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
   if (backend_type == wgpu::BackendType::OpenGLES) {
     std::unique_ptr<GLTextureImageRepresentationBase> image;

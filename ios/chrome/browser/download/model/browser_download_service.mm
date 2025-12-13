@@ -14,8 +14,7 @@
 #import "ios/chrome/browser/download/model/safari_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper.h"
 #import "ios/chrome/browser/download/ui/features.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
+#import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/download/download_controller.h"
@@ -41,10 +40,7 @@ void BrowserDownloadService::OnDownloadCreated(
     web::WebState* web_state,
     std::unique_ptr<web::DownloadTask> task) {
   // When a prerendered page tries to download a file, cancel the download.
-  PrerenderService* prerender_service = PrerenderServiceFactory::GetForProfile(
-      ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
-  if (prerender_service &&
-      prerender_service->IsWebStatePrerendered(web_state)) {
+  if (PrerenderTabHelper::FromWebState(web_state)) {
     return;
   }
 

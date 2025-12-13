@@ -6,12 +6,13 @@
 
 #include "chrome/browser/ui/views/tabs/tab_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "ui/views/view_utils.h"
 
 FakeTabSlotController::FakeTabSlotController(
     TabStripController* tab_strip_controller)
     : tab_strip_controller_(tab_strip_controller) {}
 
-const ui::ListSelectionModel& FakeTabSlotController::GetSelectionModel() const {
+ui::ListSelectionModel FakeTabSlotController::GetSelectionModel() const {
   return selection_model_;
 }
 
@@ -23,19 +24,19 @@ void FakeTabSlotController::ToggleTabGroupCollapsedState(
     const tab_groups::TabGroupId group,
     ToggleTabGroupCollapsedStateOrigin origin) {}
 
-bool FakeTabSlotController::IsActiveTab(const Tab* tab) const {
-  return active_tab_ == tab;
+bool FakeTabSlotController::IsActiveTab(const TabSlotView* tab) const {
+  return active_tab_ == views::AsViewClass<Tab>(tab);
 }
 
-bool FakeTabSlotController::IsTabSelected(const Tab* tab) const {
+bool FakeTabSlotController::IsTabSelected(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsTabPinned(const Tab* tab) const {
+bool FakeTabSlotController::IsTabPinned(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsTabFirst(const Tab* tab) const {
+bool FakeTabSlotController::IsTabFirst(const TabSlotView* tab) const {
   return false;
 }
 
@@ -73,10 +74,6 @@ bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {
   return false;
 }
 
-int FakeTabSlotController::GetBackgroundOffset() const {
-  return 0;
-}
-
 int FakeTabSlotController::GetStrokeThickness() const {
   return 0;
 }
@@ -91,11 +88,6 @@ bool FakeTabSlotController::HasVisibleBackgroundTabShapes() const {
 
 SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
-}
-
-SkColor FakeTabSlotController::GetTabForegroundColor(TabActive active) const {
-  return active == TabActive::kActive ? tab_fg_color_active_
-                                      : tab_fg_color_inactive_;
 }
 
 std::optional<int> FakeTabSlotController::GetCustomBackgroundId(

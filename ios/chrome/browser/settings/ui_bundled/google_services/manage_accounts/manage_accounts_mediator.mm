@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/identity_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
@@ -72,19 +74,22 @@
 
 #pragma mark - AccountsModelIdentityDataSource
 
-- (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID {
+- (id<SystemIdentity>)identityWithGaiaID:(const GaiaId&)gaiaID {
   return _accountManagerService->GetIdentityOnDeviceWithGaiaID(gaiaID);
 }
 
 - (UIImage*)identityAvatarWithSizeForIdentity:(id<SystemIdentity>)identity
                                          size:(IdentityAvatarSize)size {
-  return _accountManagerService->GetIdentityAvatarWithIdentity(
-      identity, IdentityAvatarSize::TableViewIcon);
+  return GetApplicationContext()
+      ->GetIdentityAvatarProvider()
+      ->GetIdentityAvatar(identity, IdentityAvatarSize::TableViewIcon);
 }
 
 - (IdentityViewItem*)primaryIdentityViewItem {
-  return [self identityViewItemForIdentity:_authService->GetPrimaryIdentity(
-                                               signin::ConsentLevel::kSignin)];
+  id<SystemIdentity> identity =
+      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  CHECK(identity, base::NotFatalUntil::M147);
+  return [self identityViewItemForIdentity:identity];
 }
 
 - (std::vector<IdentityViewItem*>)identityViewItems {
@@ -102,7 +107,7 @@
 
 #pragma mark - ManageAccountsMutator
 
-- (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
+- (void)requestRemoveIdentityWithGaiaID:(const GaiaId&)gaiaID
                                itemView:(UIView*)itemView {
   [self.delegate handleRemoveIdentity:[self identityWithGaiaID:gaiaID]
                              itemView:itemView];
@@ -121,6 +126,12 @@
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(info.gaia);
+  if (!identity) {
+    DUMP_WILL_BE_NOTREACHED();
+    // If the user is signed-out, the view may currently be dismissed. No need
+    // to update the view.
+    return;
+  }
   [self handleIdentityUpdated:identity];
 }
 
@@ -141,19 +152,19 @@
 #pragma mark - Private
 
 - (void)handleIdentityUpdated:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   [self.consumer
       updateIdentityViewItem:[self identityViewItemForIdentity:identity]];
 }
 
 - (IdentityViewItem*)identityViewItemForIdentity:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   IdentityViewItem* identityViewItem = [[IdentityViewItem alloc] init];
   identityViewItem.userEmail = identity.userEmail;
   identityViewItem.userFullName = identity.userFullName;
-  identityViewItem.gaiaID = identity.gaiaID;
+  identityViewItem.gaiaID = identity.gaiaId;
   identityViewItem.managed = [self isIdentityKnownToBeManaged:identity];
-  IdentityAvatarSize avatarSize = IsIdentityDiscAccountMenuEnabled()
-                                      ? IdentityAvatarSize::Regular
-                                      : IdentityAvatarSize::TableViewIcon;
+  IdentityAvatarSize avatarSize = IdentityAvatarSize::Regular;
   identityViewItem.avatar = [self identityAvatarWithSizeForIdentity:identity
                                                                size:avatarSize];
   identityViewItem.accessibilityIdentifier = identity.userEmail;
@@ -167,6 +178,7 @@
 // called asynchronously when the management status if retrieved and the
 // identity is managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();
@@ -175,6 +187,7 @@
   __weak __typeof(self) weakSelf = self;
   FetchManagedStatusForIdentity(identity, base::BindOnce(^(bool managed) {
                                   if (managed) {
+                                    CHECK(identity, base::NotFatalUntil::M147);
                                     [weakSelf handleIdentityUpdated:identity];
                                   }
                                 }));

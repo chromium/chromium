@@ -13,7 +13,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_log_store.h"
 #include "components/metrics/metrics_log_uploader.h"
@@ -25,8 +24,16 @@ namespace ukm {
 class UkmService;
 }
 
+namespace regional_capabilities {
+class CountryIdHolder;
+}
+
 namespace metrics::dwa {
 class DwaService;
+}
+
+namespace metrics::private_metrics {
+class PumaService;
 }
 
 namespace network_time {
@@ -36,8 +43,6 @@ class NetworkTimeTracker;
 namespace variations {
 class SyntheticTrialRegistry;
 }
-
-class IdentifiabilityStudyState;
 
 namespace metrics {
 
@@ -75,9 +80,8 @@ class MetricsServiceClient {
   // Returns the DwaService instance that this client is associated with.
   virtual metrics::dwa::DwaService* GetDwaService();
 
-  // Returns the IdentifiabilityStudyState instance that this client is
-  // associated with. Might be nullptr.
-  virtual IdentifiabilityStudyState* GetIdentifiabilityStudyState();
+  // Returns the PumaService instance that this client is associated with.
+  virtual metrics::private_metrics::PumaService* GetPumaService();
 
   // Returns the StructuredMetricsService instance that this client is
   // associated with.
@@ -253,6 +257,11 @@ class MetricsServiceClient {
   // Not all platforms support per-user consent. If per-user consent is not
   // supported, this function should return std::nullopt.
   virtual std::optional<std::string> GetCurrentUserId() const;
+
+  // Returns the country ID associated with the profile used for metrics.
+  // Returns std::nullopt if it's not available.
+  virtual std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting();
 
  private:
   base::RepeatingClosure update_running_services_;

@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace autofill {
 

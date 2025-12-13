@@ -13,9 +13,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -85,17 +85,17 @@ public class PermissionDialogMediator
         mDialogDelegate = delegate;
         mModalDialogManager = manager;
 
-        boolean isGeolocationConntentSetting =
+        boolean isGeolocationContentSetting =
                 mDialogDelegate.getContentSettingsTypes().length == 1
                         && mDialogDelegate.getContentSettingsTypes()[0]
-                                == ContentSettingsType.GEOLOCATION;
+                                == ContentSettingsType.GEOLOCATION_WITH_OPTIONS;
         boolean isApproximateGeolocationEnabled =
                 PermissionsAndroidFeatureMap.isEnabled(
                         PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
 
         LinearLayout locationPrecisionContainer = view.findViewById(R.id.custom_view_container);
 
-        if (isGeolocationConntentSetting
+        if (isGeolocationContentSetting
                 && isApproximateGeolocationEnabled
                 && locationPrecisionContainer != null) {
 
@@ -103,6 +103,7 @@ public class PermissionDialogMediator
                     new LocationPrecisionChooserController(
                             view.getContext(),
                             locationPrecisionContainer,
+                            mDialogDelegate.getInitialGeolocationAccuracySelection(),
                             this::onLocationAccuracyRadioButtonSelected);
             mLocationPrecisionChooserController.show();
         } else {
@@ -117,8 +118,10 @@ public class PermissionDialogMediator
         mState = State.PROMPT_OPEN;
     }
 
-    private void onLocationAccuracyRadioButtonSelected(int accuracy) {
-        // TODO(crbug.com/410752554): Handle the selected location accuracy.
+    private void onLocationAccuracyRadioButtonSelected(@LocationAccuracy int locationAccuracy) {
+        if (mDialogDelegate != null) {
+            mDialogDelegate.onGeolocationAccuracySelected(locationAccuracy);
+        }
     }
 
     /** Update the current displaying dialog. */
@@ -197,7 +200,7 @@ public class PermissionDialogMediator
                                 ModalDialogProperties.TITLE,
                                 context.getString(
                                         R.string.overlay_detected_dialog_title,
-                                        BuildInfo.getInstance().hostPackageLabel))
+                                        ApkInfo.getHostPackageLabel()))
                         .with(
                                 ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                 context.getString(R.string.overlay_detected_dialog_message))
@@ -224,7 +227,7 @@ public class PermissionDialogMediator
             assert mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT
                     || mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_EPHEMERAL_GRANT;
 
-            onPermissionDialogResult(ContentSettingValues.ALLOW);
+            onPermissionDialogResult(ContentSetting.ALLOW);
             if (mState == State.REQUEST_ANDROID_PERMISSIONS_FOR_PERSISTENT_GRANT) {
                 mDialogDelegate.onAccept();
             } else {
@@ -244,7 +247,7 @@ public class PermissionDialogMediator
         if (mDialogDelegate == null) {
             mState = State.NOT_SHOWING;
         } else {
-            onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            onPermissionDialogResult(ContentSetting.DEFAULT);
             // The user accepted the site-level prompt but denied the app-level prompt.
             // No content setting should be set.
             mDialogDelegate.onDismiss(DismissalType.AUTODISMISS_OS_DENIED);
@@ -285,7 +288,7 @@ public class PermissionDialogMediator
             } else if (dismissalCause == DialogDismissalCause.ACTION_ON_CONTENT) {
                 type = DismissalType.CLOSE_BUTTON_CLICKED;
             }
-            onPermissionDialogResult(ContentSettingValues.DEFAULT);
+            onPermissionDialogResult(ContentSetting.DEFAULT);
             mDialogDelegate.onDismiss(type);
             onPermissionDialogEnded();
         }
@@ -330,7 +333,7 @@ public class PermissionDialogMediator
     /** Handle negative button clicked state, after dialog is dismissed */
     protected void handleDismissNegativeButtonClickedState() {
         // Run the necessary delegate callback immediately and will schedule the next dialog.
-        onPermissionDialogResult(ContentSettingValues.BLOCK);
+        onPermissionDialogResult(ContentSetting.BLOCK);
         assumeNonNull(mDialogDelegate).onDeny();
         onPermissionDialogEnded();
     }
@@ -371,7 +374,7 @@ public class PermissionDialogMediator
     }
 
     /** Notify that user has just completed a permissions prompt flow with a result */
-    protected void onPermissionDialogResult(@ContentSettingValues int result) {
+    protected void onPermissionDialogResult(@ContentSetting int result) {
         if (mCoordinatorDelegate != null) {
             mCoordinatorDelegate.onPermissionDialogResult(result);
         }

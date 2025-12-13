@@ -32,6 +32,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/task/single_thread_task_runner.h"
 #include "encrypted_media_utils.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
@@ -539,10 +540,10 @@ ScriptPromise<IDLUndefined> MediaKeySession::generateRequest(
   media::EmeInitDataType init_data_type =
       EncryptedMediaUtils::ConvertToInitDataType(init_data_type_string);
   if (init_data_type == media::EmeInitDataType::UNKNOWN) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                      "The initialization data type '" +
-                                          init_data_type_string +
-                                          "' is not supported.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        StrCat({"The initialization data type '", init_data_type_string,
+                "' is not supported."}));
     return EmptyPromise();
   }
 
@@ -966,8 +967,7 @@ void MediaKeySession::ActionTimerFired(TimerBase*) {
 
 // Queue a task to fire a simple event named keymessage at the new object.
 void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
-                                       const unsigned char* message,
-                                       size_t message_length) {
+                                       base::span<const uint8_t> message) {
   DVLOG(MEDIA_KEY_SESSION_LOG_LEVEL) << __func__ << "(" << this << ")";
 
   // Verify that 'message' not fired before session initialization is complete.
@@ -984,20 +984,20 @@ void MediaKeySession::OnSessionMessage(media::CdmMessageType message_type,
   MediaKeyMessageEventInit* init = MediaKeyMessageEventInit::Create();
   switch (message_type) {
     case media::CdmMessageType::LICENSE_REQUEST:
-      init->setMessageType("license-request");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRequest);
       break;
     case media::CdmMessageType::LICENSE_RENEWAL:
-      init->setMessageType("license-renewal");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRenewal);
       break;
     case media::CdmMessageType::LICENSE_RELEASE:
-      init->setMessageType("license-release");
+      init->setMessageType(V8MediaKeyMessageType::Enum::kLicenseRelease);
       break;
     case media::CdmMessageType::INDIVIDUALIZATION_REQUEST:
-      init->setMessageType("individualization-request");
+      init->setMessageType(
+          V8MediaKeyMessageType::Enum::kIndividualizationRequest);
       break;
   }
-  init->setMessage(
-      DOMArrayBuffer::Create(UNSAFE_TODO(base::span(message, message_length))));
+  init->setMessage(DOMArrayBuffer::Create(message));
 
   MediaKeyMessageEvent* event =
       MediaKeyMessageEvent::Create(event_type_names::kMessage, init);

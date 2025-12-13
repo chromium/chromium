@@ -119,13 +119,10 @@ constexpr CGFloat kCornerRadius = 10;
       [NSLayoutConstraint activateConstraints:_regularConstraints];
     }
 
-    if (@available(iOS 17, *)) {
-      [self
-          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
-                       withTarget:self
-                           action:@selector
-                           (updateConstraintsForFontSizeChange)];
-    }
+    [self
+        registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                     withTarget:self
+                         action:@selector(updateConstraintsForFontSizeChange)];
   }
   return self;
 }
@@ -161,22 +158,6 @@ constexpr CGFloat kCornerRadius = 10;
         [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   }
 }
-
-#pragma mark - UIView
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-  // Update constraints for user's preferredContentSize.
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self updateConstraintsForFontSizeChange];
-  }
-}
-#endif
 
 #pragma mark - Private
 

@@ -10,6 +10,7 @@
 #include "ash/hud_display/hud_properties.h"
 #include "base/functional/bind.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/text_constants.h"
@@ -69,7 +70,7 @@ void HUDTabButton::PaintButtonContents(gfx::Canvas* canvas) {
   const SkScalar right_edge = width();
   const SkScalar bottom_edge = height();
 
-  SkPath path;
+  SkPathBuilder path;
 
   // Draw left vertical line and arc
   if (style_ == Style::RIGHT) {
@@ -112,7 +113,7 @@ void HUDTabButton::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
   flags.setColor(kHUDDefaultColor);
-  canvas->DrawPath(path, flags);
+  canvas->DrawPath(path.detach(), flags);
 }
 
 BEGIN_METADATA(HUDTabStrip)

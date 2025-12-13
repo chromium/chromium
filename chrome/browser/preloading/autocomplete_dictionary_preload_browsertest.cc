@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
@@ -40,25 +41,18 @@ class AutocompleteDictionaryPreloadBrowserTest
 
  protected:
   bool HasPreloadedSharedDictionaryInfo() {
-    bool result = false;
-    base::RunLoop run_loop;
+    base::test::TestFuture<bool> future;
     browser()
         ->profile()
         ->GetDefaultStoragePartition()
         ->GetNetworkContext()
-        ->HasPreloadedSharedDictionaryInfoForTesting(
-            base::BindLambdaForTesting([&](bool value) {
-              result = value;
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-    return result;
+        ->HasPreloadedSharedDictionaryInfoForTesting(future.GetCallback());
+    return future.Get();
   }
 
   void SendMemoryPressureToNetworkService() {
     content::GetNetworkService()->OnMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
+        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
     // To make sure that OnMemoryPressure has been received by the network
     // service, send a GetNetworkList IPC and wait for the result.
     base::RunLoop run_loop;

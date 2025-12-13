@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CAST_STREAMING_RENDERER_RESOURCE_PROVIDER_IMPL_H_
 #define COMPONENTS_CAST_STREAMING_RENDERER_RESOURCE_PROVIDER_IMPL_H_
 
-#include <map>
 #include <memory>
 
 #include "base/functional/callback.h"

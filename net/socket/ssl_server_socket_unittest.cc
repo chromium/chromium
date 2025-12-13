@@ -42,7 +42,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/evp.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
@@ -67,7 +67,6 @@
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
-#include "net/ssl/ssl_private_key.h"
 #include "net/ssl/ssl_server_config.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/cert_test_util.h"
@@ -375,11 +374,6 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     server_private_key_ = ReadTestKey("unittest.key.bin");
     ASSERT_TRUE(server_private_key_);
 
-    std::unique_ptr<crypto::RSAPrivateKey> key =
-        ReadTestKey("unittest.key.bin");
-    ASSERT_TRUE(key);
-    server_ssl_private_key_ = WrapOpenSSLPrivateKey(bssl::UpRef(key->key()));
-
     // Certificate provided by the host doesn't need authority.
     client_ssl_config_.allowed_bad_certs.emplace_back(
         server_cert_, CERT_STATUS_AUTHORITY_INVALID);
@@ -397,17 +391,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
     channel_1_.reset();
     channel_2_.reset();
     server_context_ = CreateSSLServerContext(
-        server_cert_.get(), *server_private_key_, server_ssl_config_);
-  }
-
-  void CreateContextSSLPrivateKey() {
-    client_socket_.reset();
-    server_socket_.reset();
-    channel_1_.reset();
-    channel_2_.reset();
-    server_context_.reset();
-    server_context_ = CreateSSLServerContext(
-        server_cert_.get(), server_ssl_private_key_, server_ssl_config_);
+        server_cert_.get(), server_private_key_.get(), server_ssl_config_);
   }
 
   static HostPortPair GetHostAndPort() { return HostPortPair("unittest", 0); }
@@ -439,13 +423,12 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
         ImportCertFromFile(GetTestCertsDirectory(), cert_file_name);
     ASSERT_TRUE(client_cert);
 
-    std::unique_ptr<crypto::RSAPrivateKey> key =
-        ReadTestKey(private_key_file_name);
+    bssl::UniquePtr<EVP_PKEY> key = ReadTestKey(private_key_file_name);
     ASSERT_TRUE(key);
 
     client_context_->SetClientCertificate(
         GetHostAndPort(), std::move(client_cert),
-        WrapOpenSSLPrivateKey(bssl::UpRef(key->key())));
+        WrapOpenSSLPrivateKey(std::move(key)));
   }
 
   void ConfigureClientCertsForServer() {
@@ -469,16 +452,14 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   }
 #endif  // BUILDFLAG(ENABLE_CLIENT_CERTIFICATES)
 
-  std::unique_ptr<crypto::RSAPrivateKey> ReadTestKey(std::string_view name) {
+  bssl::UniquePtr<EVP_PKEY> ReadTestKey(std::string_view name) {
     base::FilePath certs_dir(GetTestCertsDirectory());
     base::FilePath key_path = certs_dir.AppendASCII(name);
-    std::string key_string;
-    if (!base::ReadFileToString(key_path, &key_string))
+    std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(key_path);
+    if (!pkcs8.has_value()) {
       return nullptr;
-    std::unique_ptr<crypto::RSAPrivateKey> key(
-        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(
-            base::as_byte_span(key_string)));
-    return key;
+    }
+    return crypto::evp::PrivateKeyFromBytes(*pkcs8);
   }
 
   void PumpServerToClient() {
@@ -519,8 +500,7 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   std::unique_ptr<SSLServerContext> server_context_;
   std::unique_ptr<SSLClientSocket> client_socket_;
   std::unique_ptr<SSLServerSocket> server_socket_;
-  std::unique_ptr<crypto::RSAPrivateKey> server_private_key_;
-  scoped_refptr<SSLPrivateKey> server_ssl_private_key_;
+  bssl::UniquePtr<EVP_PKEY> server_private_key_;
   scoped_refptr<X509Certificate> server_cert_;
 };
 
@@ -1204,135 +1184,6 @@ TEST_F(SSLServerSocketTest, RequireEcdheFlag) {
   server_ssl_config_.require_ecdhe = true;
 
   ASSERT_NO_FATAL_FAILURE(CreateContext());
-  ASSERT_NO_FATAL_FAILURE(CreateSockets());
-
-  TestCompletionCallback connect_callback;
-  int client_ret = client_socket_->Connect(connect_callback.callback());
-
-  TestCompletionCallback handshake_callback;
-  int server_ret = server_socket_->Handshake(handshake_callback.callback());
-
-  client_ret = connect_callback.GetResult(client_ret);
-  server_ret = handshake_callback.GetResult(server_ret);
-
-  ASSERT_THAT(client_ret, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-  ASSERT_THAT(server_ret, IsError(ERR_SSL_VERSION_OR_CIPHER_MISMATCH));
-}
-
-// This test executes Connect() on SSLClientSocket and Handshake() on
-// SSLServerSocket to make sure handshaking between the two sockets is
-// completed successfully. The server key is represented by SSLPrivateKey.
-TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKey) {
-  ASSERT_NO_FATAL_FAILURE(CreateContextSSLPrivateKey());
-  ASSERT_NO_FATAL_FAILURE(CreateSockets());
-
-  TestCompletionCallback handshake_callback;
-  int server_ret = server_socket_->Handshake(handshake_callback.callback());
-
-  TestCompletionCallback connect_callback;
-  int client_ret = client_socket_->Connect(connect_callback.callback());
-
-  client_ret = connect_callback.GetResult(client_ret);
-  server_ret = handshake_callback.GetResult(server_ret);
-
-  ASSERT_THAT(client_ret, IsOk());
-  ASSERT_THAT(server_ret, IsOk());
-
-  // Make sure the cert status is expected.
-  SSLInfo ssl_info;
-  ASSERT_TRUE(client_socket_->GetSSLInfo(&ssl_info));
-  EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID, ssl_info.cert_status);
-
-  // The default cipher suite should be ECDHE and an AEAD.
-  uint16_t cipher_suite =
-      SSLConnectionStatusToCipherSuite(ssl_info.connection_status);
-  const char* key_exchange;
-  const char* cipher;
-  const char* mac;
-  bool is_aead;
-  bool is_tls13;
-  SSLCipherSuiteToStrings(&key_exchange, &cipher, &mac, &is_aead, &is_tls13,
-                          cipher_suite);
-  EXPECT_TRUE(is_aead);
-}
-
-namespace {
-
-// Helper that wraps an underlying SSLPrivateKey to allow the test to
-// do some work immediately before a `Sign()` operation is performed.
-class SSLPrivateKeyHook : public SSLPrivateKey {
- public:
-  SSLPrivateKeyHook(scoped_refptr<SSLPrivateKey> private_key,
-                    base::RepeatingClosure on_sign)
-      : private_key_(std::move(private_key)), on_sign_(std::move(on_sign)) {}
-
-  // SSLPrivateKey implementation.
-  std::string GetProviderName() override {
-    return private_key_->GetProviderName();
-  }
-  std::vector<uint16_t> GetAlgorithmPreferences() override {
-    return private_key_->GetAlgorithmPreferences();
-  }
-  void Sign(uint16_t algorithm,
-            base::span<const uint8_t> input,
-            SignCallback callback) override {
-    on_sign_.Run();
-    private_key_->Sign(algorithm, input, std::move(callback));
-  }
-
- private:
-  ~SSLPrivateKeyHook() override = default;
-
-  const scoped_refptr<SSLPrivateKey> private_key_;
-  const base::RepeatingClosure on_sign_;
-};
-
-}  // namespace
-
-// Verifies that if the client disconnects while during private key signing then
-// the disconnection is correctly reported to the `Handshake()` completion
-// callback, with `ERR_CONNECTION_CLOSED`.
-// This is a regression test for crbug.com/1449461.
-TEST_F(SSLServerSocketTest,
-       HandshakeServerSSLPrivateKeyDisconnectDuringSigning_ReturnsError) {
-  auto on_sign = base::BindLambdaForTesting([&]() {
-    client_socket_->Disconnect();
-    ASSERT_FALSE(client_socket_->IsConnected());
-  });
-  server_ssl_private_key_ = base::MakeRefCounted<SSLPrivateKeyHook>(
-      std::move(server_ssl_private_key_), on_sign);
-  ASSERT_NO_FATAL_FAILURE(CreateContextSSLPrivateKey());
-  ASSERT_NO_FATAL_FAILURE(CreateSockets());
-
-  TestCompletionCallback handshake_callback;
-  int server_ret = server_socket_->Handshake(handshake_callback.callback());
-  ASSERT_EQ(server_ret, net::ERR_IO_PENDING);
-
-  TestCompletionCallback connect_callback;
-  client_socket_->Connect(connect_callback.callback());
-
-  // If resuming the handshake after private-key signing is not handled
-  // correctly as per crbug.com/1449461 then the test will hang and timeout
-  // at this point, due to the server-side completion callback not being
-  // correctly invoked.
-  server_ret = handshake_callback.GetResult(server_ret);
-  EXPECT_EQ(server_ret, net::ERR_CONNECTION_CLOSED);
-}
-
-// Verifies that non-ECDHE ciphers are disabled when using SSLPrivateKey as the
-// server key.
-TEST_F(SSLServerSocketTest, HandshakeServerSSLPrivateKeyRequireEcdhe) {
-  // Disable all ECDHE suites on the client side.
-  SSLContextConfig config;
-  config.disabled_cipher_suites.assign(kEcdheCiphers.data(),
-                                       base::span<const uint16_t>(kEcdheCiphers)
-                                           .subspan(std::size(kEcdheCiphers))
-                                           .data());
-  // TLS 1.3 always works with SSLPrivateKey.
-  config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
-  ssl_config_service_->UpdateSSLConfigAndNotify(config);
-
-  ASSERT_NO_FATAL_FAILURE(CreateContextSSLPrivateKey());
   ASSERT_NO_FATAL_FAILURE(CreateSockets());
 
   TestCompletionCallback connect_callback;

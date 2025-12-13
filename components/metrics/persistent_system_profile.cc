@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/metrics/persistent_system_profile.h"
 
 #include <set>
@@ -15,6 +10,7 @@
 
 #include "base/atomicops.h"
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
@@ -22,6 +18,7 @@
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/strings/string_view_util.h"
 #include "components/variations/active_field_trials.h"
 
 namespace metrics {
@@ -106,31 +103,36 @@ bool PersistentSystemProfile::RecordAllocator::Write(RecordType type,
   // Allocate space and write records until everything has been stored.
   do {
     if (end_offset_ == alloc_size_) {
-      if (!AddSegment(remaining_size))
+      if (!AddSegment(remaining_size)) {
         return false;
+      }
     }
     // Write out as much of the data as possible. `data` and `remaining_size`
     // are updated in place.
-    if (!WriteData(type, &data, &remaining_size))
+    if (!WriteData(type, &data, &remaining_size)) {
       return false;
+    }
   } while (remaining_size > 0);
 
   return true;
 }
 
 bool PersistentSystemProfile::RecordAllocator::HasMoreData() const {
-  if (alloc_reference_ == 0 && !NextSegment())
+  if (alloc_reference_ == 0 && !NextSegment()) {
     return false;
+  }
 
   char* block =
       allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
                                    base::PersistentMemoryAllocator::kSizeAny);
-  if (!block)
+  if (!block) {
     return false;
+  }
 
   RecordHeader header;
-  header.as_atomic = base::subtle::Acquire_Load(
-      reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_));
+  header.as_atomic =
+      base::subtle::Acquire_Load(reinterpret_cast<base::subtle::Atomic32*>(
+          UNSAFE_TODO(block + end_offset_)));
   return header.as_parts.type != kUnusedSpace;
 }
 
@@ -176,8 +178,9 @@ bool PersistentSystemProfile::RecordAllocator::AddSegment(size_t min_size) {
   size_t new_alloc_size = 0;
   uint32_t ref =
       allocator_->Allocate(size, kTypeIdSystemProfile, &new_alloc_size);
-  if (!ref)
+  if (!ref) {
     return false;  // Allocator must be full.
+  }
   allocator_->MakeIterable(ref);
 
   alloc_reference_ = ref;
@@ -191,8 +194,9 @@ bool PersistentSystemProfile::RecordAllocator::WriteData(RecordType type,
   char* block =
       allocator_->GetAsArray<char>(alloc_reference_, kTypeIdSystemProfile,
                                    base::PersistentMemoryAllocator::kSizeAny);
-  if (!block)
+  if (!block) {
     return false;  // It's bad if there is no accessible block.
+  }
 
   const size_t max_write_size = std::min(
       kMaxRecordSize, alloc_size_ - end_offset_ - sizeof(RecordHeader));
@@ -211,17 +215,18 @@ bool PersistentSystemProfile::RecordAllocator::WriteData(RecordType type,
   DCHECK_GE(alloc_size_, end_offset_);
   if (end_offset_ < alloc_size_) {
     // An empty record header has to be next before this one gets written.
-    base::subtle::NoBarrier_Store(
-        reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_), 0);
+    base::subtle::NoBarrier_Store(reinterpret_cast<base::subtle::Atomic32*>(
+                                      UNSAFE_TODO(block + end_offset_)),
+                                  0);
   }
-  memcpy(block + offset + sizeof(header), *data, write_size);
+  UNSAFE_TODO(memcpy(block + offset + sizeof(header), *data, write_size));
   base::subtle::Release_Store(
-      reinterpret_cast<base::subtle::Atomic32*>(block + offset),
+      reinterpret_cast<base::subtle::Atomic32*>(UNSAFE_TODO(block + offset)),
       header.as_atomic);
 
   // Account for what was stored and prepare for follow-on records with any
   // remaining data.
-  *data += write_size;
+  UNSAFE_TODO(*data += write_size);
   *data_size -= write_size;
 
   return true;
@@ -242,8 +247,9 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
 
   // Get and validate the record header.
   RecordHeader header;
-  header.as_atomic = base::subtle::Acquire_Load(
-      reinterpret_cast<base::subtle::Atomic32*>(block + end_offset_));
+  header.as_atomic =
+      base::subtle::Acquire_Load(reinterpret_cast<base::subtle::Atomic32*>(
+          UNSAFE_TODO(block + end_offset_)));
   bool continued = !!header.as_parts.continued;
   if (header.as_parts.type == kUnusedSpace) {
     *type = kUnusedSpace;
@@ -272,7 +278,7 @@ bool PersistentSystemProfile::RecordAllocator::ReadData(
   }
 
   // Append the record data to the output string.
-  record->append(block + end_offset_ + sizeof(header), read_size);
+  record->append(UNSAFE_TODO(block + end_offset_ + sizeof(header)), read_size);
   end_offset_ += CalculateRecordSize(read_size);
   DCHECK_GE(alloc_size_, end_offset_);
 
@@ -310,24 +316,28 @@ void PersistentSystemProfile::SetSystemProfile(
     bool complete) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (allocators_.empty() || serialized_profile.empty())
+  if (allocators_.empty() || serialized_profile.empty()) {
     return;
+  }
 
   for (auto& allocator : allocators_) {
     // Don't overwrite a complete profile with an incomplete one.
-    if (!complete && allocator.has_complete_profile())
+    if (!complete && allocator.has_complete_profile()) {
       continue;
+    }
     // System profile always starts fresh.
     allocator.Reset();
     // Write out the serialized profile.
     allocator.Write(kSystemProfileProto, serialized_profile);
     // Indicate if this is a complete profile.
-    if (complete)
+    if (complete) {
       allocator.set_complete_profile();
+    }
   }
 
-  if (complete)
+  if (complete) {
     all_have_complete_profile_ = true;
+  }
 }
 
 void PersistentSystemProfile::SetSystemProfile(
@@ -335,12 +345,14 @@ void PersistentSystemProfile::SetSystemProfile(
     bool complete) {
   // Avoid serialization if passed profile is not complete and all allocators
   // already have complete ones.
-  if (!complete && all_have_complete_profile_)
+  if (!complete && all_have_complete_profile_) {
     return;
+  }
 
   std::string serialized_profile;
-  if (!profile.SerializeToString(&serialized_profile))
+  if (!profile.SerializeToString(&serialized_profile)) {
     return;
+  }
   SetSystemProfile(serialized_profile, complete);
 }
 
@@ -353,8 +365,7 @@ void PersistentSystemProfile::AddFieldTrial(std::string_view trial,
   pickler.WriteString(trial);
   pickler.WriteString(group);
 
-  WriteToAll(kFieldTrialInfo,
-             std::string_view(pickler.data_as_char(), pickler.size()));
+  WriteToAll(kFieldTrialInfo, base::as_string_view(pickler));
 }
 
 void PersistentSystemProfile::RemoveFieldTrial(std::string_view trial) {
@@ -365,8 +376,7 @@ void PersistentSystemProfile::RemoveFieldTrial(std::string_view trial) {
   pickler.WriteString(trial);
   pickler.WriteString(kFieldTrialDeletionSentinel);
 
-  WriteToAll(kFieldTrialInfo,
-             std::string_view(pickler.data_as_char(), pickler.size()));
+  WriteToAll(kFieldTrialInfo, base::as_string_view(pickler));
 }
 // static
 bool PersistentSystemProfile::HasSystemProfile(
@@ -388,11 +398,13 @@ bool PersistentSystemProfile::GetSystemProfile(
       return false;
   } while (type != kSystemProfileProto);
 
-  if (!system_profile)
+  if (!system_profile) {
     return true;
+  }
 
-  if (!system_profile->ParseFromString(record))
+  if (!system_profile->ParseFromString(record)) {
     return false;
+  }
 
   MergeUpdateRecords(memory_allocator, system_profile);
 

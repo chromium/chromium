@@ -257,7 +257,7 @@ class V8ValueConverterForTest final : public WebV8ValueConverter {
         }
 
         result.Set(std::string(*name_utf8, name_utf8.length()),
-                   base::Value::FromUniquePtrValue(std::move(child)));
+                   std::move(*child));
       }
       return std::make_unique<base::Value>(std::move(result));
     }
@@ -308,8 +308,8 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   base::DiscardableMemoryAllocator::SetInstance(
       discardable_memory_allocator_.get());
 
-  // FeatureList must be initialized before WTF::Partitions::Initialize(),
-  // because WTF::Partitions::Initialize() uses base::FeatureList to obtain
+  // FeatureList must be initialized before Partitions::Initialize(),
+  // because Partitions::Initialize() uses base::FeatureList to obtain
   // PartitionOptions.
   // NOTE: InitScopedFeatureListForTesting() deliberately removes
   // `--enable-features` and `--disable-features` from the command line of the
@@ -332,12 +332,12 @@ ScopedUnittestsEnvironmentSetup::ScopedUnittestsEnvironmentSetup(int argc,
   dummy_platform_ = std::make_unique<Platform>();
   Platform::SetCurrentPlatformForTesting(dummy_platform_.get());
 
-  WTF::Partitions::Initialize();
+  Partitions::Initialize();
   InitializeWtf();
   Length::Initialize();
 
-  // This must be called after WTF::Initialize(), because ThreadSpecific<>
-  // used in this function depends on WTF::IsMainThread().
+  // This must be called after blink::InitializeWtf(), because ThreadSpecific<>
+  // used in this function depends on blink::IsMainThread().
   Platform::CreateMainThreadForTesting();
 
   testing_platform_support_ = std::make_unique<TestingPlatformSupport>();

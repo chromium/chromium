@@ -4,8 +4,10 @@
 
 #include "content/browser/renderer_host/navigation_transitions/navigation_entry_screenshot_manager.h"
 
+#include "base/strings/to_string.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/renderer_host/navigation_transitions/navigation_transition_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -34,19 +36,15 @@ class NavigationEntryScreenshotManagerTest
   NavigationEntryScreenshotManagerTest()
       : task_environment_(std::make_unique<content::BrowserTaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::IO)),
-        memory_(GetParam().ram_mb) {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kBackForwardTransitions,
-          {
-              {"percentage-of-ram-to-use", "1"},
-          }}},
-        {});
-  }
+        memory_(base::MiB(GetParam().ram_mb)),
+        min_required_physical_rm_mb_auto_reset_(
+            NavigationTransitionConfig::SetMinRequiredPhysicalRamMbForTesting(
+                0)) {}
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
   base::test::ScopedAmountOfPhysicalMemoryOverride memory_;
+  base::AutoReset<int> min_required_physical_rm_mb_auto_reset_;
 };
 
 TEST_P(NavigationEntryScreenshotManagerTest, MaxCacheSize) {
@@ -74,8 +72,8 @@ INSTANTIATE_TEST_SUITE_P(
                      TestScreen::kDefaultScreenBounds.size().Area64()) *
                      kBytesPerPixel,
                  1600 * 900 * kBytesPerPixel},
-        TestCase{500, 5 * kMB, 1600 * 900 * kBytesPerPixel},
-        TestCase{1000, 10 * kMB, 10 * kMB}),
+        TestCase{1000, 5 * kMB, 1600 * 900 * kBytesPerPixel},
+        TestCase{2000, 10 * kMB, 10 * kMB}),
     [](const testing::TestParamInfo<TestCase>& info) {
       return base::ToString(info.param.ram_mb);
     });

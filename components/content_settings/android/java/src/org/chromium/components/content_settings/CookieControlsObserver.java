@@ -23,17 +23,6 @@ public interface CookieControlsObserver {
             @CookieBlocking3pcdStatus int blockingStatus,
             long expiration) {}
 
-    /**
-     * Called when the tracking protection status for the current site changes.
-     *
-     * @param controlsVisible Whether the tracking protection controls should be visible.
-     * @param protectionsOn Whether tracking protection is enabled.
-     * @param expiration Expiration of the exception for this site.
-     * @param features A list of tracking protection features and status info for each.
-     */
-    default void onTrackingProtectionStatusChanged(
-            boolean controlsVisible, boolean protectionsOn, long expiration) {}
-
     /** Called when we should surface a visual indicator due to potential site breakage. */
     default void onHighlightCookieControl(boolean shouldHighlight) {}
 

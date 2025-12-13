@@ -13,7 +13,8 @@
 #include "base/functional/callback.h"
 
 namespace gpu {
-class ClientSharedImageInterface;
+class SharedImageInterface;
+class GpuChannelHost;
 }  // namespace gpu
 
 namespace blink {
@@ -22,8 +23,8 @@ class WebGraphicsSharedImageInterfaceProviderImpl
     : public WebGraphicsSharedImageInterfaceProvider,
       public gpu::GpuChannelLostObserver {
  public:
-  explicit WebGraphicsSharedImageInterfaceProviderImpl(
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface);
+  static std::unique_ptr<WebGraphicsSharedImageInterfaceProviderImpl> TryCreate(
+      scoped_refptr<gpu::GpuChannelHost> gpu_channel);
 
   WebGraphicsSharedImageInterfaceProviderImpl(
       const WebGraphicsSharedImageInterfaceProviderImpl&) = delete;
@@ -44,12 +45,15 @@ class WebGraphicsSharedImageInterfaceProviderImpl
   void GpuChannelLostOnWorkerThread();
 
  private:
+  explicit WebGraphicsSharedImageInterfaceProviderImpl(
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
+
   base::OnceClosure task_gpu_channel_lost_on_worker_thread_;
 
-  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_;
 
   // GpuChannelLost observed by CanvasResourceProviders
-  WTF::Vector<BitmapGpuChannelLostObserver*> observer_list_;
+  Vector<BitmapGpuChannelLostObserver*> observer_list_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

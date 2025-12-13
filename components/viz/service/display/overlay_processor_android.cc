@@ -145,7 +145,7 @@ void OverlayProcessorAndroid::OverlayPresentationComplete() {
 }
 
 void OverlayProcessorAndroid::CheckOverlaySupportImpl(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates) {
   // For pre-SurfaceControl Android we should not have output surface as overlay
   // plane.
@@ -188,6 +188,17 @@ void OverlayProcessorAndroid::CheckOverlaySupportImpl(
 gfx::Rect OverlayProcessorAndroid::GetOverlayDamageRectForOutputSurface(
     const OverlayCandidate& overlay) const {
   return ToEnclosedRect(overlay.display_rect);
+}
+
+void OverlayProcessorAndroid::InsertPrimaryPlane(
+    OverlayCandidate primary_plane,
+    OverlayCandidateList& candidates) {
+  // `OverlayProcessorAndroid` will never have a primary plane.
+  NOTREACHED();
+}
+
+bool OverlayProcessorAndroid::ShouldCreatePrimaryPlane() const {
+  return false;
 }
 
 void OverlayProcessorAndroid::TakeOverlayCandidates(

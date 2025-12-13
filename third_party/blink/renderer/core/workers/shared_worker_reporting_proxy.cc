@@ -34,21 +34,39 @@ void SharedWorkerReportingProxy::CountFeature(WebFeature feature) {
 }
 
 void SharedWorkerReportingProxy::ReportException(const String& error_message,
-                                                 SourceLocation*,
+                                                 const SourceLocation* location,
                                                  int exception_id) {
   DCHECK(!IsMainThread());
-  // TODO(crbug.com/412384494): Implement the "runtime script errors" algorithm
-  // in the HTML spec:
-  // "For shared workers, if the error is still not handled afterwards, the
-  // error may be reported to a developer console."
-  // https://html.spec.whatwg.org/C/#runtime-script-errors-2
+  // Exceptions during the script evaluation phase are reported to the clients,
+  // but runtime errors after evaluation are not.
+  // See:
+  // https://html.spec.whatwg.org/C/#worker-processing-model
+  // and https://html.spec.whatwg.org/C/#runtime-script-errors-2
+  if (script_evaluated_) {
+    return;
+  }
+
+  // TODO(https://crbug.com/438606270): This is a heuristic to distinguish parse
+  // errors from runtime errors during evaluation. "SyntaxError" indicates a
+  // script parsing failure, which should dispatch a generic `Event`. Other
+  // errors that occur during script evaluation are considered runtime errors
+  // and should dispatch a detailed `ErrorEvent`. This should be replaced with a
+  // more robust mechanism if one becomes available.
+  const bool is_eval_error = !error_message.Contains("SyntaxError");
+
+  PostCrossThreadTask(
+      *main_thread_task_runner_, FROM_HERE,
+      CrossThreadBindOnce(
+          &WebSharedWorkerImpl::ReportException, CrossThreadUnretained(worker_),
+          error_message, location->Url(), location->LineNumber(),
+          location->ColumnNumber(), exception_id, is_eval_error));
 }
 
 void SharedWorkerReportingProxy::ReportConsoleMessage(
     mojom::ConsoleMessageSource,
     mojom::ConsoleMessageLevel,
     const String& message,
-    SourceLocation*) {
+    const SourceLocation*) {
   DCHECK(!IsMainThread());
   // Not supported in SharedWorker.
 }
@@ -71,6 +89,8 @@ void SharedWorkerReportingProxy::DidFailToFetchModuleScript() {
 
 void SharedWorkerReportingProxy::DidEvaluateTopLevelScript(bool success) {
   DCHECK(!IsMainThread());
+  CHECK(!script_evaluated_);
+  script_evaluated_ = true;
   PostCrossThreadTask(
       *main_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&WebSharedWorkerImpl::DidEvaluateTopLevelScript,

@@ -66,6 +66,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/macros.h"
+#include "absl/base/nullability.h"
 #include "absl/base/optimization.h"
 #include "absl/meta/type_traits.h"
 #include "absl/utility/utility.h"
@@ -75,7 +76,7 @@ ABSL_NAMESPACE_BEGIN
 
 // Defined in functional/any_invocable.h
 template <class Sig>
-class AnyInvocable;
+class ABSL_NULLABILITY_COMPATIBLE AnyInvocable;
 
 namespace internal_any_invocable {
 
@@ -158,10 +159,18 @@ using ForwardedParameterType = typename ForwardedParameter<T>::type;
 // A discriminator when calling the "manager" function that describes operation
 // type-erased operation should be invoked.
 //
+// "dispose" specifies that the manager should perform a destroy.
+//
 // "relocate_from_to" specifies that the manager should perform a move.
 //
-// "dispose" specifies that the manager should perform a destroy.
-enum class FunctionToCall : bool { relocate_from_to, dispose };
+// "relocate_from_to_and_query_rust" is identical to "relocate_from_to" for C++
+// managers, but instructs Rust managers to perform a special operation that
+// can be detected by the caller.
+enum class FunctionToCall : unsigned char {
+  dispose,
+  relocate_from_to,
+  relocate_from_to_and_query_rust,
+};
 
 // The portion of `AnyInvocable` state that contains either a pointer to the
 // target object or the object itself in local storage
@@ -242,6 +251,7 @@ void LocalManagerNontrivial(FunctionToCall operation,
 
   switch (operation) {
     case FunctionToCall::relocate_from_to:
+    case FunctionToCall::relocate_from_to_and_query_rust:
       // NOTE: Requires that the left-hand operand is already empty.
       ::new (static_cast<void*>(&to->storage)) T(std::move(from_object));
       ABSL_FALLTHROUGH_INTENDED;
@@ -276,6 +286,7 @@ inline void RemoteManagerTrivial(FunctionToCall operation,
                                  TypeErasedState* const to) noexcept {
   switch (operation) {
     case FunctionToCall::relocate_from_to:
+    case FunctionToCall::relocate_from_to_and_query_rust:
       // NOTE: Requires that the left-hand operand is already empty.
       to->remote = from->remote;
       return;
@@ -302,6 +313,7 @@ void RemoteManagerNontrivial(FunctionToCall operation,
 
   switch (operation) {
     case FunctionToCall::relocate_from_to:
+    case FunctionToCall::relocate_from_to_and_query_rust:
       // NOTE: Requires that the left-hand operand is already empty.
       to->remote.target = from->remote.target;
       return;

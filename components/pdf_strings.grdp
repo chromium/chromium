@@ -22,6 +22,9 @@
     <message name="IDS_PDF_PASSWORD_INVALID" desc="Error message when an invalid password is entered">
       Incorrect password
     </message>
+    <message name="IDS_PDF_SIDEBAR_LABEL" desc="Label for the thumbnails and bookmarks sidebar menu button">
+      Toggle sidebar
+    </message>
 
     <message name="IDS_PDF_PAGE_LOADING" desc="A message displayed on the PDF page while page is loading.">
       Loading...
@@ -192,35 +195,7 @@
     <message name="IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL" desc="aria-label describing a thumbnail by its corresponding PDF page number">
       Thumbnail for page <ph name="THUMBNAIL_PAGE"><ex>1</ex>$1</ph>
     </message>
-    <if expr="is_chromeos or enable_pdf_ink2">
-      <message name="IDS_PDF_ANNOTATION_ANNOTATE" desc="Button tooltip for entering the 'Annotation mode' which allows writing, drawing and highlighting of the PDF document">
-        Annotate
-      </message>
-      <message name="IDS_PDF_ANNOTATION_UNAVAILABLE" desc="Button tooltip to explain that 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available">
-        Annotation not available
-      </message>
-      <message name="IDS_PDF_ANNOTATION_EDIT_IN_DEFAULT_VIEW" desc="Title of a dialog asking the user if they want to annotate the document in default view">
-        Edit annotations in default view?
-      </message>
-      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE" desc="Text in a dialog informing the user that rotation will be reset to default if they continue to annotation mode">
-        When you edit annotations, this document will return to its original rotation
-      </message>
-      <message name="IDS_PDF_ANNOTATION_RESET_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that the view will reset to single page if they continue to annotation mode">
-        When you edit annotations, this document will return to single page view
-      </message>
-      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE_AND_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that rotation will be reset to default and the view will reset to single page if they continue to annotation mode">
-        When you edit annotations, this document will return to single page view and its original rotation
-      </message>
-      <message name="IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE" desc="Button tooltip to indicate why 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available due to the document being too large">
-        Document is too large to be annotated
-      </message>
-      <message name="IDS_PDF_ANNOTATION_DOCUMENT_PROTECTED" desc="Button tooltip to indicate why 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available due to the document being protected (for example, by password)">
-        Protected documents cannot be annotated
-      </message>
-      <message name="IDS_PDF_ANNOTATION_DOCUMENT_ROTATED" desc="Button tooltip to indicate why 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available when the document is rotated">
-        Cannot annotate when rotated
-      </message>
-
+    <if expr="enable_pdf_ink2">
       <message name="IDS_PDF_ANNOTATION_PEN" desc="Button tooltip for selecting a tool that draws like a 'Pen' on top of the PDF document">
         Pen
       </message>
@@ -236,9 +211,6 @@
       <message name="IDS_PDF_ANNOTATION_REDO" desc="Button tooltip for redoing an annotation edit (drawing a stroke, erasing a stroke)">
         Redo
       </message>
-      <message name="IDS_PDF_ANNOTATION_EXPAND" desc="Button tooltip for expanding the color palette to show more colors">
-        Expand
-      </message>
 
       <message name="IDS_PDF_ANNOTATION_COLOR_BLACK" desc="Button tooltip for selecting the Black color for drawing on top of the PDF document or for text color for adding text annotations to the document">
         Black
@@ -252,62 +224,17 @@
       <message name="IDS_PDF_ANNOTATION_COLOR_GREEN" desc="Button tooltip for selecting the Green color for drawing on top of the PDF document">
         Green
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_CYAN" desc="Button tooltip for selecting the Cyan color for drawing on top of the PDF document">
-        Cyan
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_PURPLE" desc="Button tooltip for selecting the Purple color for drawing on top of the PDF document">
-        Purple
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_BROWN" desc="Button tooltip for selecting the Brown color for drawing on top of the PDF document">
-        Brown
-      </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_WHITE" desc="Button tooltip for selecting the White color for drawing on top of the PDF document or for text color for adding text annotations to the document.">
         White
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_CRIMSON" desc="Button tooltip for selecting the Crimson color for drawing on top of the PDF document">
-        Crimson
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_AMBER" desc="Button tooltip for selecting the Amber color for drawing on top of the PDF document">
-        Amber
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_AVOCADO_GREEN" desc="Button tooltip for selecting the Avocado Green color for drawing on top of the PDF document">
-        Avocado Green
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_COBALT_BLUE" desc="Button tooltip for selecting the Cobalt Blue color for drawing on top of the PDF document">
-        Cobalt Blue
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_DEEP_PURPLE" desc="Button tooltip for selecting the Deep Purple color for drawing on top of the PDF document">
-        Deep Purple
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_DARK_BROWN" desc="Button tooltip for selecting the Dark Brown color for drawing on top of the PDF document">
-        Dark Brown
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_DARK_GREY" desc="Button tooltip for selecting the Dark Grey color for drawing on top of the PDF document">
-        Dark Grey
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_HOT_PINK" desc="Button tooltip for selecting the Hot Pink color for drawing on top of the PDF document">
-        Hot Pink
       </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_ORANGE" desc="Button tooltip for selecting the Orange color for drawing on top of the PDF document">
         Orange
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_LIME" desc="Button tooltip for selecting the Lime color for drawing on top of the PDF document">
-        Lime
-      </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_BLUE" desc="Button tooltip for selecting the Blue color for drawing on top of the PDF document">
         Blue
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_VIOLET" desc="Button tooltip for selecting the Violet color for drawing on top of the PDF document">
-        Violet
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_TEAL" desc="Button tooltip for selecting the Teal color for drawing on top of the PDF document">
-        Teal
-      </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_GREY" desc="Button tooltip for selecting the Light Grey color for drawing on top of the PDF document or for text color for adding text annotations to the document">
         Light Grey
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_PINK" desc="Button tooltip for selecting the Light Pink color for drawing on top of the PDF document">
-        Light Pink
       </message>
       <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_ORANGE" desc="Button tooltip for selecting the Light Orange color for drawing on top of the PDF document">
         Light Orange
@@ -318,40 +245,6 @@
       <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_BLUE" desc="Button tooltip for selecting the Light Blue color for drawing on top of the PDF document">
         Light Blue
       </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_LAVENDER" desc="Button tooltip for selecting the Lavender color for drawing on top of the PDF document">
-        Lavender
-      </message>
-      <message name="IDS_PDF_ANNOTATION_COLOR_LIGHT_TEAL" desc="Button tooltip for selecting the Light Teal color for drawing on top of the PDF document">
-        Light Teal
-      </message>
-
-      <message name="IDS_PDF_ANNOTATION_SIZE1" desc="Button tooltip for selecting the pen size '1' (the smallest size) for drawing on top of the PDF document">
-        Size 1
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE2" desc="Button tooltip for selecting the pen size '2' for drawing on top of the PDF document">
-        Size 2
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE3" desc="Button tooltip for selecting the pen size '3' for drawing on top of the PDF document">
-        Size 3
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE4" desc="Button tooltip for selecting the pen size '4' for drawing on top of the PDF document">
-        Size 4
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE8" desc="Button tooltip for selecting the pen size '8' for drawing on top of the PDF document">
-        Size 8
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE12" desc="Button tooltip for selecting the pen size '12' for drawing on top of the PDF document">
-        Size 12
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE16" desc="Button tooltip for selecting the pen size '16' for drawing on top of the PDF document">
-        Size 16
-      </message>
-      <message name="IDS_PDF_ANNOTATION_SIZE20" desc="Button tooltip for selecting the pen size '20' (the largest size) for drawing on top of the PDF document">
-        Size 20
-      </message>
-    </if>
-
-    <if expr="enable_pdf_ink2">
       <message name="IDS_PDF_INK2_DRAW" desc="The button label for entering 'annotation mode' in the PDF viewer, which allows for drawing and erasing strokes.">
         Draw
       </message>
@@ -498,6 +391,48 @@
     <if expr="enable_pdf_save_to_drive">
       <message name="IDS_PDF_TOOLTIP_SAVE_TO_DRIVE" desc="Button tooltip for saving a PDF document to Google Drive">
         Save to Google Drive
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_CANCEL_UPLOAD_BUTTON_LABEL" desc="Label for the button that will cancel the upload.">
+        Cancel upload
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_CONNECTION_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to a connection error.">
+        Check your internet connection
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_ERROR_TITLE" desc="Title of the dialog that appears when a file fails to upload to Google Drive due to a connection error.">
+        Upload unsuccessful
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_MANAGE_STORAGE_BUTTON_LABEL" desc="Label for the manage storage button in the Save to Drive dialog.">
+        Manage storage
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_OPEN_IN_DRIVE_BUTTON_LABEL" desc="Label for the open in Drive button in the Save to Drive dialog.">
+        Open in Drive
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_RETRY_BUTTON_LABEL" desc="Label for the retry button in the Save to Drive dialog.">
+        Retry
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SESSION_TIMEOUT_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to their Google Drive session timing out.">
+        Session timed out
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_STORAGE_FULL_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to their Google Drive storage being full.">
+        Your Google Drive storage is full
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_MESSAGE" desc="A message telling the user can find their newly uploaded file in the bolded folder name in Google Drive. 'Save from Chrome' is a folder name example.">
+        Saved to your <ph name="FOLDER_NAME">&lt;b&gt;$1<ex>Save from Chrome</ex>&lt;/b&gt;</ph> folder
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_TITLE" desc="Title of the dialog that appears when a file is successfully uploaded to Google Drive.">
+        Upload successful
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UNKNOWN_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to an unknown error.">
+        Something unexpected happened. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about Drive uploads<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOAD_STATUS_DONE" desc="When a download is finished, let the user know.">
+        Done
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOAD_STATUS_WITH_SEPARATOR" desc="The upload status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+        <ph name="STATUS">$1<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">$2<ex>4 seconds left</ex></ph>
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOADING_TITLE" desc="Title of the dialog that appears when a file is being uploaded to Google Drive.">
+        Uploading to Google Drive...
       </message>
     </if>
   </if>

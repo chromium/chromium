@@ -5,6 +5,8 @@
 #include "components/safe_browsing/core/browser/db/v4_get_hash_protocol_manager.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/base64url.h"
@@ -770,19 +772,15 @@ void V4GetHashProtocolManager::MergeResults(
 // SafeBrowsing request responses are handled here.
 void V4GetHashProtocolManager::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
 
-  std::string data;
-  if (response_body)
-    data = *response_body;
-
   OnURLLoaderCompleteInternal(url_loader, url_loader->NetError(), response_code,
-                              data);
+                              std::move(response_body).value_or(""));
 }
 
 void V4GetHashProtocolManager::OnURLLoaderCompleteInternal(

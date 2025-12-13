@@ -36,10 +36,7 @@ import {getTemplate} from './other_google_data_dialog.html.js';
 export interface SettingsOtherGoogleDataDialogElement {
   $: {
     dialog: CrDialogElement,
-    googleSearchHistoryLink: CrLinkRowElement,
     passwordManagerLink: CrLinkRowElement,
-    myActivityLink: CrLinkRowElement,
-    nonGoogleSearchHistoryLink: HTMLElement,
   };
 }
 
@@ -142,6 +139,19 @@ export class SettingsOtherGoogleDataDialogElement extends
         'Settings.DeleteBrowsingData.GoogleSearchHistoryLinkClick');
   }
 
+  private onGeminiAppsActivityClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('myActivityGeminiAppsUrl'));
+
+    this.metricsBrowserProxy_.recordAction(
+        'Settings.DeleteBrowsingData.GeminiAppsActivityLinkClick');
+  }
+
+  private onGeminiPersonalContextClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('geminiPersonalContextUrl'));
+  }
+
   private shouldShowMyActivityLink_() {
     return isSignedIn(this.syncStatus_);
   }
@@ -150,18 +160,10 @@ export class SettingsOtherGoogleDataDialogElement extends
     return isSignedIn(this.syncStatus_) && this.isGoogleDse_;
   }
 
-  private getMyActivityLinkCssClass_() {
-    if (!this.isGoogleDse_) {
-      return 'middle-link-row';
-    }
-    return 'last-link-row';
-  }
-
-  private getPasswordsLinkCssClass_() {
-    if (this.isGoogleDse_ && !isSignedIn(this.syncStatus_)) {
-      return 'only-link-row';
-    }
-    return 'first-link-row';
+  private shouldShowGeminiAppsActivityLink_() {
+    return isSignedIn(this.syncStatus_) &&
+        loadTimeData.getBoolean('showGlicSettings') &&
+        loadTimeData.getBoolean('enableBrowsingHistoryActorIntegrationM1');
   }
 }
 

@@ -17,7 +17,6 @@ import {FocusRowMixin} from 'chrome://resources/ash/common/cr_elements/focus_row
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -216,7 +215,7 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
   private computeResultText_(): string {
     // The C++ layer stores the text result as an array of 16 bit char codes,
     // so it must be converted to a JS String.
-    return mojoString16ToString(this.searchResult.text);
+    return this.searchResult.text;
   }
 
   /**
@@ -680,8 +679,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:apps-parental-controls';
       case SearchResultIcon.kAppsGrid:
         return 'os-settings:apps';
-      case SearchResultIcon.kAssistant:
-        return 'os-settings:assistant';
       case SearchResultIcon.kAudio:
         return 'os-settings:device-audio';
       case SearchResultIcon.kAuthKey:

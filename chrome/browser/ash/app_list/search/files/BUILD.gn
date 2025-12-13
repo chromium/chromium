@@ -104,6 +104,7 @@ source_set("unit_tests") {
     "//chromeos/ui/base",
     "//components/prefs",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//storage/browser",
     "//testing/gmock",

@@ -78,9 +78,9 @@ void GeolocationPermissionContextSystem::OnSystemPermissionUpdated(
     LocationSystemPermissionStatus new_status) {
   system_permission_ = new_status;
   for (permissions::Observer& obs : permission_observers_) {
-    obs.OnPermissionChanged(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsTypeSet(ContentSettingsType::GEOLOCATION));
+    obs.OnPermissionChanged(ContentSettingsPattern::Wildcard(),
+                            ContentSettingsPattern::Wildcard(),
+                            ContentSettingsTypeSet(content_settings_type()));
   }
 }
 

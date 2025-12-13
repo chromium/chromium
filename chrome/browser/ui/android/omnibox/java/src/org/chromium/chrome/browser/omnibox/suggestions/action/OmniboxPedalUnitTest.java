@@ -26,6 +26,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 
 import java.util.List;
 
@@ -89,7 +90,9 @@ public class OmniboxPedalUnitTest {
                                         "",
                                         "",
                                         null,
-                                        R.style.TextAppearance_ChipText) {
+                                        R.style.TextAppearance_ChipText,
+                                        /* showAsActionButton= */ false,
+                                        WindowOpenDisposition.CURRENT_TAB) {
                                     @Override
                                     public void execute(OmniboxActionDelegate d) {}
                                 }));
@@ -162,7 +165,7 @@ public class OmniboxPedalUnitTest {
     @Test
     public void executePedal_viewChromeHistory() {
         new OmniboxPedal(0, "hint", "", OmniboxPedalId.VIEW_CHROME_HISTORY).execute(mDelegate);
-        verify(mDelegate, times(1)).loadPageInCurrentTab(UrlConstants.HISTORY_URL);
+        verify(mDelegate, times(1)).loadPageInCurrentTab(UrlConstants.NATIVE_HISTORY_URL);
         verifyNoMoreInteractions(mDelegate);
     }
 

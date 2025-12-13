@@ -41,7 +41,10 @@ void FakeConnectionFactory::Prepare(uint32_t allocator_flags) {
   auto session = allocator_->CreateSession("test", /*component=*/1, "ice_ufrag",
                                            "ice_password");
   session->set_generation(0);
-  session->SignalPortReady.connect(this, &FakeConnectionFactory::OnPortReady);
+  session->SubscribePortReady(
+      this,
+      [this](webrtc::PortAllocatorSession* session,
+             webrtc::PortInterface* port) { OnPortReady(session, port); });
   session->StartGettingPorts();
   sessions_.push_back(std::move(session));
 }

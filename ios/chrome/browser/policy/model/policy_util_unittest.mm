@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/policy_util.h"
 
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "testing/platform_test.h"
 
@@ -14,7 +15,7 @@ using PolicyUtilTest = PlatformTest;
 TEST_F(PolicyUtilTest, ReturnsFalseWhenNoApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_FALSE(IsApplicationManagedByMDM());
+  EXPECT_FALSE(policy::PlatformManagementService::GetInstance()->IsManaged());
   EXPECT_FALSE(HasPlatformPolicies());
 }
 
@@ -23,7 +24,7 @@ TEST_F(PolicyUtilTest, ReturnsFalseWhenNoApplicationConfigFromPlatform) {
 TEST_F(PolicyUtilTest, ReturnsFalseWhenEmptyApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:@{} forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_TRUE(IsApplicationManagedByMDM());
+  EXPECT_TRUE(policy::PlatformManagementService::GetInstance()->IsManaged());
   EXPECT_FALSE(HasPlatformPolicies());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
@@ -34,7 +35,7 @@ TEST_F(PolicyUtilTest, ReturnsTrueWhenApplicationConfigFromPlatform) {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
   [userDefaults setObject:dict forKey:kPolicyLoaderIOSConfigurationKey];
-  EXPECT_TRUE(IsApplicationManagedByMDM());
+  EXPECT_TRUE(policy::PlatformManagementService::GetInstance()->IsManaged());
   EXPECT_TRUE(HasPlatformPolicies());
   [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }

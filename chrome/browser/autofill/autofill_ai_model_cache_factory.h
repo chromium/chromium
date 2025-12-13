@@ -37,6 +37,7 @@ class AutofillAiModelCacheFactory : public ProfileKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace autofill

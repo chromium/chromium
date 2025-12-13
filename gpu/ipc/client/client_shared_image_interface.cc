@@ -26,7 +26,7 @@ ClientSharedImageInterface::ClientSharedImageInterface(
     : gpu_channel_(std::move(channel)),
       proxy_(proxy),
       shared_memory_pool_(
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
           base::MakeRefCounted<base::UnsafeSharedMemoryPool>()
 #else
           nullptr
@@ -56,11 +56,6 @@ void ClientSharedImageInterface::UpdateSharedImage(
   proxy_->UpdateSharedImage(sync_token, std::move(acquire_fence), mailbox);
 }
 
-void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
-                                                  const Mailbox& mailbox) {
-  proxy_->PresentSwapChain(sync_token, mailbox);
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     zx::eventpair service_handle,
@@ -84,6 +79,15 @@ SyncToken ClientSharedImageInterface::GenVerifiedSyncToken() {
 
 void ClientSharedImageInterface::VerifySyncToken(gpu::SyncToken& sync_token) {
   proxy_->VerifySyncToken(sync_token);
+}
+
+bool ClientSharedImageInterface::CanVerifySyncToken(
+    const gpu::SyncToken& sync_token) {
+  return proxy_->CanVerifySyncToken(sync_token);
+}
+
+void ClientSharedImageInterface::VerifyFlush() {
+  return proxy_->VerifyFlush();
 }
 
 void ClientSharedImageInterface::WaitSyncToken(
@@ -255,41 +259,24 @@ void ClientSharedImageInterface::UpdateSharedImage(
     const Mailbox& mailbox) {
   proxy_->UpdateSharedImage(sync_token, std::move(d3d_shared_fence), mailbox);
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 void ClientSharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion memory_region,
     base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_WIN)
   CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+#elif BUILDFLAG(IS_ANDROID)
+  CHECK_EQ(buffer_handle.type,
+           gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
+#endif
   CHECK(memory_region.IsValid());
   proxy_->CopyNativeGmbToSharedMemoryAsync(
       std::move(buffer_handle), std::move(memory_region), std::move(callback));
 }
-#endif  // BUILDFLAG(IS_WIN)
-
-ClientSharedImageInterface::SwapChainSharedImages
-ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
-                                            const gfx::Size& size,
-                                            const gfx::ColorSpace& color_space,
-                                            GrSurfaceOrigin surface_origin,
-                                            SkAlphaType alpha_type,
-                                            gpu::SharedImageUsageSet usage,
-                                            std::string_view debug_label) {
-  DCHECK(gpu::IsValidClientUsage(usage));
-  auto mailboxes = proxy_->CreateSwapChain(format, size, color_space,
-                                           surface_origin, alpha_type, usage);
-  AddMailbox(mailboxes.front_buffer);
-  AddMailbox(mailboxes.back_buffer);
-  SyncToken sync_token = GenUnverifiedSyncToken();
-  SharedImageMetadata metadata(format, size, color_space, surface_origin,
-                               alpha_type, usage);
-  SharedImageInfo info(metadata, debug_label);
-  return ClientSharedImageInterface::SwapChainSharedImages(
-      base::MakeRefCounted<ClientSharedImage>(
-          mailboxes.front_buffer, info, sync_token, holder_, gfx::EMPTY_BUFFER),
-      base::MakeRefCounted<ClientSharedImage>(
-          mailboxes.back_buffer, info, sync_token, holder_, gfx::EMPTY_BUFFER));
-}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
                                                     const Mailbox& mailbox) {
@@ -357,6 +344,20 @@ Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {
   CHECK_GE(mailboxes_[mailbox], 0);
   mailboxes_[mailbox]++;
   return mailbox;
+}
+
+bool ClientSharedImageInterface::IsLost() const {
+  return gpu_channel_->IsLost();
+}
+
+bool ClientSharedImageInterface::AddGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  return gpu_channel_->AddObserverIfNotAlreadyLost(observer);
+}
+
+void ClientSharedImageInterface::RemoveGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  gpu_channel_->RemoveObserver(observer);
 }
 
 const SharedImageCapabilities& ClientSharedImageInterface::GetCapabilities() {

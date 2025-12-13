@@ -23,7 +23,7 @@
 #include "ui/gfx/mojom/presentation_feedback.mojom.h"
 #include "ui/gfx/mojom/presentation_feedback_mojom_traits.h"
 #include "ui/gfx/mojom/traits_test_service.mojom.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/selection_bound.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -142,9 +142,11 @@ TEST_F(StructTraitsTest, Transform) {
   auto input =
       gfx::Transform::RowMajor(r0c0, r0c1, r0c2, r0c3, r1c0, r1c1, r1c2, r1c3,
                                r2c0, r2c1, r2c2, r2c3, r3c0, r3c1, r3c2, r3c3);
+  EXPECT_TRUE(input.IsFullMatrixForTesting());
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   gfx::Transform output;
   remote->EchoTransform(input, &output);
+  EXPECT_TRUE(output.IsFullMatrixForTesting());
   EXPECT_EQ(r0c0, output.rc(0, 0));
   EXPECT_EQ(r0c1, output.rc(0, 1));
   EXPECT_EQ(r0c2, output.rc(0, 2));
@@ -161,6 +163,67 @@ TEST_F(StructTraitsTest, Transform) {
   EXPECT_EQ(r3c1, output.rc(3, 1));
   EXPECT_EQ(r3c2, output.rc(3, 2));
   EXPECT_EQ(r3c3, output.rc(3, 3));
+}
+
+TEST_F(StructTraitsTest, Transform_NonFull) {
+  const gfx::Vector2dF scale(2.f, 3.f);
+  const gfx::Vector2dF translate(10.f, 20.f);
+  gfx::AxisTransform2d axis =
+      gfx::AxisTransform2d::FromScaleAndTranslation(scale, translate);
+
+  gfx::Transform input = gfx::Transform(axis);
+  EXPECT_FALSE(input.IsFullMatrixForTesting());
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  gfx::Transform output;
+  remote->EchoTransform(input, &output);
+  EXPECT_FALSE(output.IsFullMatrixForTesting());
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, Transform_FullMatrixIdentity) {
+  const float r0c0 = 1.f;
+  const float r0c1 = 0.f;
+  const float r0c2 = 0.f;
+  const float r0c3 = 0.f;
+  const float r1c0 = 0.f;
+  const float r1c1 = 1.f;
+  const float r1c2 = 0.f;
+  const float r1c3 = 0.f;
+  const float r2c0 = 0.f;
+  const float r2c1 = 0.f;
+  const float r2c2 = 1.f;
+  const float r2c3 = 0.f;
+  const float r3c0 = 0.f;
+  const float r3c1 = 0.f;
+  const float r3c2 = 0.f;
+  const float r3c3 = 1.f;
+  auto input =
+      gfx::Transform::RowMajor(r0c0, r0c1, r0c2, r0c3, r1c0, r1c1, r1c2, r1c3,
+                               r2c0, r2c1, r2c2, r2c3, r3c0, r3c1, r3c2, r3c3);
+  EXPECT_TRUE(input.IsFullMatrixForTesting());
+  EXPECT_TRUE(input.IsIdentity());
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  gfx::Transform output;
+  remote->EchoTransform(input, &output);
+  // Mojo optimized transform representation.
+  EXPECT_FALSE(output.IsFullMatrixForTesting());
+  EXPECT_TRUE(output.IsIdentity());
+  EXPECT_EQ(input, output);
+}
+
+TEST_F(StructTraitsTest, Transform_Axis2dIdentity) {
+  gfx::Transform input;
+  // By default Transform is constructed as identity matrix with
+  // Axis2d representation.
+  EXPECT_FALSE(input.IsFullMatrixForTesting());
+  EXPECT_TRUE(input.IsIdentity());
+  mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
+  gfx::Transform output;
+  remote->EchoTransform(input, &output);
+  // Mojo maintains optimized transform representation.
+  EXPECT_FALSE(output.IsFullMatrixForTesting());
+  EXPECT_TRUE(output.IsIdentity());
+  EXPECT_EQ(input, output);
 }
 
 TEST_F(StructTraitsTest, AcceleratedWidget) {
@@ -362,7 +425,7 @@ TEST_F(StructTraitsTest, HDRMetadata) {
   // Include agtm.
   const size_t agtm_size = 4;
   const uint8_t agtm_data[agtm_size] = {0xde, 0xad, 0xbe, 0xef};
-  input.agtm.emplace(agtm_data, agtm_size);
+  input.setSerializedAgtm(SkData::MakeWithCopy(agtm_data, agtm_size));
   EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);

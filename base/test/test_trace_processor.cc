@@ -12,6 +12,7 @@
 #include "base/test/chrome_track_event.descriptor.h"
 #include "base/test/perfetto_sql_stdlib.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/trace_event_impl.h"
 #include "base/trace_event/trace_log.h"
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
@@ -131,8 +132,7 @@ void TestTraceProcessor::StartTrace(const TraceConfig& config,
   // explicitly specialize the custom backend to prevent tests from connecting
   // to a system backend.
   if (backend == perfetto::kUnspecifiedBackend) {
-    if (base::trace_event::TraceLog::GetInstance()
-            ->IsPerfettoInitializedByTraceLog()) {
+    if (base::trace_event::IsPerfettoInitializedForTesting()) {
       backend = perfetto::kInProcessBackend;
     } else {
       backend = perfetto::kCustomBackend;

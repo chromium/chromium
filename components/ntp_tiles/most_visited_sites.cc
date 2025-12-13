@@ -16,13 +16,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics.h"
+#include "base/notimplemented.h"
 #include "base/observer_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/ntp_tiles/constants.h"
-#include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/features.h"
 #include "components/ntp_tiles/icon_cacher.h"
 #include "components/ntp_tiles/metrics.h"
@@ -60,7 +60,7 @@ namespace {
 // to be of use for them.
 // A cleaner way could be checking the history for redirects but this requires
 // the page to be visited on the device.
-const char* kKnownGenericPagePrefixes[] = {
+constexpr const char* kKnownGenericPagePrefixes[] = {
     "m.", "mobile.",  // Common prefixes among popular sites.
     "edition.",       // Used among news papers (CNN, Independent, ...)
     "www.",           // Usually no-www domains redirect to www or vice-versa.
@@ -181,19 +181,18 @@ MostVisitedSites::MostVisitedSites(
     scoped_refptr<history::TopSites> top_sites,
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links_manager,
+    std::unique_ptr<EnterpriseShortcutsManager> enterprise_shortcuts_manager,
     std::unique_ptr<IconCacher> icon_cacher,
-    bool is_default_chrome_app_migrated,
-    bool is_custom_links_mixable)
+    bool is_default_chrome_app_migrated)
     : prefs_(prefs),
       identity_manager_(identity_manager),
       supervised_user_service_(supervised_user_service),
       top_sites_(top_sites),
       popular_sites_(std::move(popular_sites)),
       custom_links_manager_(std::move(custom_links_manager)),
+      enterprise_shortcuts_manager_(std::move(enterprise_shortcuts_manager)),
       icon_cacher_(std::move(icon_cacher)),
       is_default_chrome_app_migrated_(is_default_chrome_app_migrated),
-      is_custom_links_mixable_(is_custom_links_mixable),
-      max_num_sites_(0u),
       is_observing_(false) {
   DCHECK(prefs_);
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -234,6 +233,8 @@ bool MostVisitedSites::DoesSourceExist(TileSource source) const {
       return supervised_user_service_ != nullptr;
     case TileSource::CUSTOM_LINKS:
       return custom_links_manager_ != nullptr;
+    case TileSource::ENTERPRISE_SHORTCUTS:
+      return enterprise_shortcuts_manager_ != nullptr;
   }
   NOTREACHED();
 }
@@ -246,11 +247,19 @@ void MostVisitedSites::SetHomepageClient(
 
 void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
                                                   size_t max_num_sites) {
+  AddMostVisitedURLsObserver(observer, max_num_sites, std::nullopt);
+}
+
+void MostVisitedSites::AddMostVisitedURLsObserver(
+    Observer* observer,
+    size_t max_num_sites,
+    std::optional<size_t> max_num_non_custom_sites) {
   observers_.AddObserver(observer);
 
   // All observer must provide the same |max_num_sites| value.
   DCHECK(max_num_sites_ == 0u || max_num_sites_ == max_num_sites);
   max_num_sites_ = max_num_sites;
+  max_num_non_custom_sites_ = max_num_non_custom_sites;
 
   // Starts observing the following sources when the first observer is added.
   if (!is_observing_) {
@@ -272,6 +281,14 @@ void MostVisitedSites::AddMostVisitedURLsObserver(Observer* observer,
           custom_links_manager_->RegisterCallbackForOnChanged(
               base::BindRepeating(&MostVisitedSites::OnCustomLinksChanged,
                                   base::Unretained(this)));
+    }
+
+    if (enterprise_shortcuts_manager_) {
+      enterprise_shortcuts_subscription_ =
+          enterprise_shortcuts_manager_->RegisterCallbackForOnChanged(
+              base::BindRepeating(
+                  &MostVisitedSites::OnEnterpriseShortcutsChanged,
+                  base::Unretained(this)));
     }
   }
 
@@ -303,17 +320,25 @@ void MostVisitedSites::InitializeCustomLinks() {
     return;
   }
 
-  if (is_custom_links_mixable_) {
+  if (IsTopSitesEnabled()) {
     // Custom Tiles can mix with other tiles: Initialize as empty list.
     if (custom_links_manager_->Initialize(NTPTilesVector())) {
       custom_links_action_count_ = 0;
     }
   } else {
     // Custom Tiles are stand-alone: Require other tiles to exist, and
-    // if so, convert them to Custom Tiles.
-    if (current_tiles_.has_value() &&
-        custom_links_manager_->Initialize(current_tiles_.value())) {
-      custom_links_action_count_ = 0;
+    // if so, convert them to Custom Tiles. Do not include enterprise shortcuts
+    // since Custom Tiles should only store personal shortcuts.
+    if (current_tiles_.has_value()) {
+      NTPTilesVector personal_tiles;
+      for (const auto& tile : current_tiles_.value()) {
+        if (tile.source != TileSource::ENTERPRISE_SHORTCUTS) {
+          personal_tiles.push_back(tile);
+        }
+      }
+      if (custom_links_manager_->Initialize(personal_tiles)) {
+        custom_links_action_count_ = 0;
+      }
     }
   }
 }
@@ -328,24 +353,35 @@ void MostVisitedSites::UninitializeCustomLinks() {
   BuildCurrentTiles(/* is_user_triggered= */ true);
 }
 
-bool MostVisitedSites::IsCustomLinksInitialized() {
+bool MostVisitedSites::IsCustomLinksInitialized() const {
   return custom_links_manager_ && IsCustomLinksEnabled() &&
          custom_links_manager_->IsInitialized();
 }
 
-bool MostVisitedSites::IsExclusivelyCustomLinks() {
-  return !is_custom_links_mixable_ && IsCustomLinksInitialized();
-}
-
-void MostVisitedSites::EnableCustomLinks(bool enable) {
-  if (is_custom_links_enabled_ != enable) {
-    is_custom_links_enabled_ = enable;
+void MostVisitedSites::EnableTileTypes(
+    const MostVisitedSites::EnableTileTypesOptions& options) {
+  // Mixing of personal types is only supported on mobile.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (options.enable_top_sites && options.enable_custom_links) {
+    NOTIMPLEMENTED();
+  }
+#endif
+  if (enabled_tile_types_ != options) {
+    enabled_tile_types_ = options;
     BuildCurrentTiles(/* is_user_triggered= */ true);
   }
 }
 
+bool MostVisitedSites::IsTopSitesEnabled() const {
+  return enabled_tile_types_.enable_top_sites;
+}
+
 bool MostVisitedSites::IsCustomLinksEnabled() const {
-  return is_custom_links_enabled_;
+  return enabled_tile_types_.enable_custom_links;
+}
+
+bool MostVisitedSites::IsEnterpriseShortcutsEnabled() const {
+  return enabled_tile_types_.enable_enterprise_shortcuts;
 }
 
 void MostVisitedSites::SetShortcutsVisible(bool visible) {
@@ -420,6 +456,40 @@ size_t MostVisitedSites::GetCustomLinkNum() {
   return custom_links_manager_->GetLinks().size();
 }
 
+void MostVisitedSites::RestoreEnterpriseShortcutsDefaults() {
+  if (!enterprise_shortcuts_manager_ || !IsEnterpriseShortcutsEnabled()) {
+    return;
+  }
+  enterprise_shortcuts_manager_->RestorePolicyLinks();
+  BuildCurrentTiles(/* is_user_triggered= */ true);
+}
+
+bool MostVisitedSites::UpdateEnterpriseShortcut(const GURL& url,
+                                                const std::u16string& title) {
+  return ApplyEnterpriseShortcutsAction(base::BindOnce(
+      &EnterpriseShortcutsManager::UpdateLink,
+      base::Unretained(enterprise_shortcuts_manager_.get()), url, title));
+}
+
+bool MostVisitedSites::ReorderEnterpriseShortcut(const GURL& url,
+                                                 size_t new_pos) {
+  return ApplyEnterpriseShortcutsAction(base::BindOnce(
+      &EnterpriseShortcutsManager::ReorderLink,
+      base::Unretained(enterprise_shortcuts_manager_.get()), url, new_pos));
+}
+
+bool MostVisitedSites::DeleteEnterpriseShortcut(const GURL& url) {
+  return ApplyEnterpriseShortcutsAction(base::BindOnce(
+      &EnterpriseShortcutsManager::DeleteLink,
+      base::Unretained(enterprise_shortcuts_manager_.get()), url));
+}
+
+bool MostVisitedSites::UndoEnterpriseShortcutAction() {
+  return ApplyEnterpriseShortcutsAction(
+      base::BindOnce(&EnterpriseShortcutsManager::UndoAction,
+                     base::Unretained(enterprise_shortcuts_manager_.get())));
+}
+
 void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
   if (add_url) {
     base::RecordAction(base::UserMetricsAction("Suggestions.Site.Removed"));
@@ -464,6 +534,7 @@ double MostVisitedSites::GetSuggestionScore(const GURL& url) const {
 void MostVisitedSites::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kNumPersonalTiles, 0);
+  registry->RegisterBooleanPref(prefs::kMostVisitedHomeModuleEnabled, true);
 }
 
 // static
@@ -472,7 +543,7 @@ void MostVisitedSites::ResetProfilePrefs(PrefService* prefs) {
 }
 
 size_t MostVisitedSites::GetMaxNumSites() const {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // The "Add new" button (for custom tiles) is not a Tile; don't include.
   return max_num_sites_;
 #else
@@ -496,8 +567,8 @@ void MostVisitedSites::InitiateTopSitesQuery(bool is_user_triggered) {
 void MostVisitedSites::OnMostVisitedURLsAvailable(
     bool is_user_triggered,
     const history::MostVisitedURLList& visited_list) {
-  // Ignore the event if tiles are exclusively provided by custom links.
-  if (IsExclusivelyCustomLinks()) {
+  // Ignore the event if top sites should not be queried.
+  if (!ShouldQueryTopSites()) {
     return;
   }
 
@@ -536,11 +607,11 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
 
 void MostVisitedSites::BuildCurrentTiles(bool is_user_triggered) {
   ReloadCustomLinksCache();
-  if (IsExclusivelyCustomLinks()) {
+  if (ShouldQueryTopSites()) {
+    InitiateTopSitesQuery(is_user_triggered);
+  } else {
     SaveTilesAndNotify(is_user_triggered, NTPTilesVector(),
                        std::map<SectionType, NTPTilesVector>());
-  } else {
-    InitiateTopSitesQuery(is_user_triggered);
   }
 }
 
@@ -600,7 +671,7 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
       continue;
     }
 
-    const std::string& host = popular_site.url.host();
+    const std::string& host = popular_site.url.GetHost();
     if (IsHostOrMobilePageKnown(hosts_to_skip, host)) {
       continue;
     }
@@ -620,6 +691,29 @@ NTPTilesVector MostVisitedSites::CreatePopularSitesTiles(
                        base::Unretained(this), popular_site.url));
   }
   return popular_sites_tiles;
+}
+
+NTPTilesVector MostVisitedSites::GetEnterpriseShortcutTiles() {
+  CHECK(enterprise_shortcuts_manager_);
+  const std::vector<EnterpriseShortcut>& shortcuts =
+      enterprise_shortcuts_manager_->GetLinks();
+  NTPTilesVector new_tiles;
+  for (EnterpriseShortcut shortcut : shortcuts) {
+    // Skip shortcut if it was hidden by the user.
+    if (shortcut.is_hidden_by_user) {
+      continue;
+    }
+    NTPTile tile;
+    tile.title = shortcut.title;
+    tile.url = shortcut.url;
+    tile.source = TileSource::ENTERPRISE_SHORTCUTS;
+#if !BUILDFLAG(IS_ANDROID)
+    tile.allow_user_edit = shortcut.allow_user_edit;
+    tile.allow_user_delete = shortcut.allow_user_delete;
+#endif  // !BUILDFLAG(IS_ANDROID)
+    new_tiles.push_back(std::move(tile));
+  }
+  return new_tiles;
 }
 
 void MostVisitedSites::OnHomepageTitleDetermined(
@@ -651,7 +745,7 @@ NTPTilesVector MostVisitedSites::InsertHomeTile(
 
     // If there's a tile has the same host name with homepage, insert the tile
     // to the first position of the list. This is also a deduplication.
-    if (tile.url.host() == homepage_url.host() && !homepage_tile_added) {
+    if (tile.url.GetHost() == homepage_url.GetHost() && !homepage_tile_added) {
       tile.source = TileSource::HOMEPAGE;
       homepage_tile_added = true;
       new_tiles.insert(new_tiles.begin(), std::move(tile));
@@ -705,8 +799,26 @@ bool MostVisitedSites::ApplyCustomLinksAction(
   return success;
 }
 
+bool MostVisitedSites::ApplyEnterpriseShortcutsAction(
+    base::OnceCallback<bool()> enterprise_shortcuts_action) {
+  if (!enterprise_shortcuts_manager_ || !IsEnterpriseShortcutsEnabled()) {
+    return false;
+  }
+
+  bool success = std::move(enterprise_shortcuts_action).Run();
+  if (success) {
+    BuildCurrentTiles(/* is_user_triggered= */ true);
+  }
+  return success;
+}
+
 void MostVisitedSites::OnCustomLinksChanged() {
   DCHECK(custom_links_manager_);
+  BuildCurrentTiles(/* is_user_triggered= */ true);
+}
+
+void MostVisitedSites::OnEnterpriseShortcutsChanged() {
+  DCHECK(enterprise_shortcuts_manager_);
   BuildCurrentTiles(/* is_user_triggered= */ true);
 }
 
@@ -786,8 +898,12 @@ NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
   NTPTilesVector out_tiles(custom_links_cache_.GetList());
 
   // Insert |tiles| if there are aren't enough non-custom links.
-  size_t max_num_tiles_without_custom = GetMaxNumSites();
-  if (out_tiles.size() < max_num_tiles_without_custom) {
+  size_t num_tiles = GetMaxNumSites();
+  if (max_num_non_custom_sites_.has_value()) {
+    num_tiles = std::min(num_tiles,
+                         out_tiles.size() + max_num_non_custom_sites_.value());
+  }
+  if (out_tiles.size() < num_tiles) {
     // Exclude |tiles| elements with |url| found in |custom_links_cache_|.
     std::copy_if(tiles.begin(), tiles.end(), std::back_inserter(out_tiles),
                  [&](const NTPTile& tile) -> bool {
@@ -796,8 +912,21 @@ NTPTilesVector MostVisitedSites::ImposeCustomLinks(NTPTilesVector tiles) {
     // Note that |out_tiles| truncation only happens under the "if" clause.
     // So if |out_tiles| started with more than GetMaxNumSites() custom links,
     // then no truncation takes place.
-    out_tiles.resize(std::min(out_tiles.size(), max_num_tiles_without_custom));
+    out_tiles.resize(std::min(out_tiles.size(), num_tiles));
   }
+
+  return out_tiles;
+}
+
+NTPTilesVector MostVisitedSites::ImposeEnterpriseShortcuts(
+    NTPTilesVector tiles) {
+  if (!IsEnterpriseShortcutsEnabled()) {
+    return tiles;
+  }
+  NTPTilesVector out_tiles = GetEnterpriseShortcutTiles();
+  // Insert |tiles| after enterprise shortcuts.
+  out_tiles.insert(out_tiles.end(), std::make_move_iterator(tiles.begin()),
+                   std::make_move_iterator(tiles.end()));
 
   return out_tiles;
 }
@@ -814,18 +943,20 @@ void MostVisitedSites::SaveTilesAndNotify(
                                    : new_tiles;
 
   if (fixed_tiles.size() != new_tiles.size()) {
-    metrics::RecordsMigratedDefaultAppDeleted(
-        DeletedTileType::kMostVisitedSite);
+    metrics::RecordsMigratedDefaultAppDeleted(TileType::kTopSites);
   }
 
   fixed_tiles = ImposeCustomLinks(std::move(fixed_tiles));
+  fixed_tiles = ImposeEnterpriseShortcuts(std::move(fixed_tiles));
+
   if (!current_tiles_.has_value() || (*current_tiles_ != fixed_tiles)) {
     current_tiles_.emplace(std::move(fixed_tiles));
 
     int num_personal_tiles = 0;
     for (const auto& tile : *current_tiles_) {
       if (tile.source != TileSource::POPULAR &&
-          tile.source != TileSource::POPULAR_BAKED_IN) {
+          tile.source != TileSource::POPULAR_BAKED_IN &&
+          tile.source != TileSource::ENTERPRISE_SHORTCUTS) {
         num_personal_tiles++;
       }
     }
@@ -845,7 +976,7 @@ void MostVisitedSites::SaveTilesAndNotify(
 bool MostVisitedSites::IsNtpTileFromPreinstalledApp(GURL url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   return url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&
-         extension_misc::IsPreinstalledAppId(url.host());
+         extension_misc::IsPreinstalledAppId(url.GetHost());
 #else
   return false;
 #endif
@@ -856,7 +987,7 @@ bool MostVisitedSites::WasNtpAppMigratedToWebApp(PrefService* prefs, GURL url) {
   const base::Value::List& migrated_apps =
       prefs->GetList(webapps::kWebAppsMigratedPreinstalledApps);
   for (const auto& val : migrated_apps) {
-    if (val.is_string() && val.GetString() == url.host()) {
+    if (val.is_string() && val.GetString() == url.GetHost()) {
       return true;
     }
   }
@@ -908,7 +1039,7 @@ void MostVisitedSites::TopSitesLoaded(TopSites* top_sites) {}
 
 void MostVisitedSites::TopSitesChanged(TopSites* top_sites,
                                        ChangeReason change_reason) {
-  if (!IsExclusivelyCustomLinks()) {
+  if (ShouldQueryTopSites()) {
     // Call InitiateTopSitesQuery() instead of BuildCurrentTiles() to skip
     // unneeded |custom_links_cache_| update.
     bool is_user_triggered =
@@ -926,11 +1057,16 @@ bool MostVisitedSites::ShouldAddHomeTile() const {
            top_sites_->IsBlocked(homepage_client_->GetHomepageUrl()));
 }
 
+bool MostVisitedSites::ShouldQueryTopSites() const {
+  return IsTopSitesEnabled() ||
+         (IsCustomLinksEnabled() && !IsCustomLinksInitialized());
+}
+
 void MostVisitedSites::AddToHostsAndTotalCount(const NTPTilesVector& new_tiles,
                                                std::set<std::string>* hosts,
                                                size_t* total_tile_count) const {
   for (const auto& tile : new_tiles) {
-    hosts->insert(tile.url.host());
+    hosts->insert(tile.url.GetHost());
   }
   *total_tile_count += new_tiles.size();
   DCHECK_LE(*total_tile_count, GetMaxNumSites());

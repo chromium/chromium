@@ -8,25 +8,26 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/logging.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/gaia_auth_fetcher_ios_ns_url_session_bridge.h"
-#import "ios/web/public/browser_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 GaiaAuthFetcherIOS::GaiaAuthFetcherIOS(
     GaiaAuthConsumer* consumer,
     gaia::GaiaSource source,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    web::BrowserState* browser_state)
+    ProfileIOS* profile)
     : GaiaAuthFetcher(consumer, source, url_loader_factory),
-      browser_state_(browser_state),
-      bridge_(new GaiaAuthFetcherIOSNSURLSessionBridge(this, browser_state_)) {}
+      bridge_(std::make_unique<GaiaAuthFetcherIOSNSURLSessionBridge>(this,
+                                                                     profile)) {
+}
 
 GaiaAuthFetcherIOS::~GaiaAuthFetcherIOS() {}
 
 void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
     const std::string& body,
     const std::string& body_content_type,
-    const std::string& headers,
+    const net::HttpRequestHeaders& headers,
     const GURL& gaia_gurl,
     network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
@@ -45,7 +46,7 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   }
 
   DVLOG(2) << "Gaia fetcher URL: " << gaia_gurl.spec();
-  DVLOG(2) << "Gaia fetcher headers: " << headers;
+  DVLOG(2) << "Gaia fetcher headers: " << headers.ToString();
   DVLOG(2) << "Gaia fetcher body: " << body;
 
   // The fetch requires cookies and WKWebView is being used. The only way to do
@@ -53,7 +54,8 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   // WKWebView.
   SetPendingFetch(true);
   bool should_use_xml_http_request = IsMultiloginUrl(gaia_gurl);
-  bridge_->Fetch(gaia_gurl, headers, body, should_use_xml_http_request);
+  bridge_->Fetch(gaia_gurl, headers.ToString(), body,
+                 should_use_xml_http_request);
 }
 
 void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,

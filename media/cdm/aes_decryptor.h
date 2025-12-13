@@ -7,10 +7,8 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -24,6 +22,7 @@
 #include "media/base/decryptor.h"
 #include "media/base/media_export.h"
 #include "media/cdm/json_web_key.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -128,8 +127,8 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
   // Key ID <-> SessionIdDecryptionKeyMap map.
   using KeyIdToSessionKeysMap =
-      std::unordered_map<std::string,
-                         std::unique_ptr<SessionIdDecryptionKeyMap>>;
+      absl::flat_hash_map<std::string,
+                          std::unique_ptr<SessionIdDecryptionKeyMap>>;
 
   ~AesDecryptor() override;
 
@@ -169,8 +168,7 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   // AesDecryptor only supports temporary sessions, ClearKeyPersistentSessionCdm
   // uses this class to also support persistent sessions, so save the
   // CdmSessionType for each session.
-  std::map<std::string, CdmSessionType> open_sessions_;
-
+  absl::flat_hash_map<std::string, CdmSessionType> open_sessions_;
   CallbackRegistry<EventCB::RunType> event_callbacks_;
 };
 

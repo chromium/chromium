@@ -9,8 +9,6 @@
 #import <string>
 #import <vector>
 
-#import "base/functional/callback.h"
-
 class Browser;
 class ProfileIOS;
 

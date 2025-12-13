@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/filters/ffmpeg_glue.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -29,7 +25,15 @@ namespace media {
 enum { kBufferSize = 32 * 1024 };
 
 static int AVIOReadOperation(void* opaque, uint8_t* buf, int buf_size) {
-  return reinterpret_cast<FFmpegURLProtocol*>(opaque)->Read(buf_size, buf);
+  // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
+  // against it.
+  if (buf_size < 0) {
+    return AVERROR(EIO);
+  }
+  // SAFETY: Buffer from FFMpeg. `buf` points to `buf_size` bytes.
+  auto buffer =
+      UNSAFE_BUFFERS(base::span(buf, base::checked_cast<size_t>(buf_size)));
+  return reinterpret_cast<FFmpegURLProtocol*>(opaque)->Read(buffer);
 }
 
 static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {
@@ -189,24 +193,26 @@ bool FFmpegGlue::OpenContext(bool is_local_file) {
   }
 
   // Rely on ffmpeg's parsing if we're able to successfully open the file.
-  if (strcmp(format_context_->iformat->name, "mov,mp4,m4a,3gp,3g2,mj2") == 0)
+  std::string_view format_name = format_context_->iformat->name;
+  if (format_name == "mov,mp4,m4a,3gp,3g2,mj2") {
     container_ = container_names::MediaContainerName::kContainerMOV;
-  else if (strcmp(format_context_->iformat->name, "flac") == 0)
+  } else if (format_name == "flac") {
     container_ = container_names::MediaContainerName::kContainerFLAC;
-  else if (strcmp(format_context_->iformat->name, "matroska,webm") == 0)
+  } else if (format_name == "matroska,webm") {
     container_ = container_names::MediaContainerName::kContainerWEBM;
-  else if (strcmp(format_context_->iformat->name, "ogg") == 0)
+  } else if (format_name == "ogg") {
     container_ = container_names::MediaContainerName::kContainerOgg;
-  else if (strcmp(format_context_->iformat->name, "wav") == 0)
+  } else if (format_name == "wav") {
     container_ = container_names::MediaContainerName::kContainerWAV;
-  else if (strcmp(format_context_->iformat->name, "aac") == 0)
+  } else if (format_name == "aac") {
     container_ = container_names::MediaContainerName::kContainerAAC;
-  else if (strcmp(format_context_->iformat->name, "mp3") == 0)
+  } else if (format_name == "mp3") {
     container_ = container_names::MediaContainerName::kContainerMP3;
-  else if (strcmp(format_context_->iformat->name, "amr") == 0)
+  } else if (format_name == "amr") {
     container_ = container_names::MediaContainerName::kContainerAMR;
-  else if (strcmp(format_context_->iformat->name, "avi") == 0)
+  } else if (format_name == "avi") {
     container_ = container_names::MediaContainerName::kContainerAVI;
+  }
 
   // For a successfully opened file, we will get a container we've compiled in.
   CHECK_NE(container_, container_names::MediaContainerName::kContainerUnknown);

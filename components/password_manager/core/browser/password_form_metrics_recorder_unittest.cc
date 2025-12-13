@@ -10,6 +10,7 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -99,24 +100,19 @@ class PasswordFormMetricsRecorderTest : public PlatformTest {
 // interaction with the offer to generate passwords.
 TEST_F(PasswordFormMetricsRecorderTest, Generation) {
   static constexpr struct {
-    bool generation_available;
     bool has_generated_password;
     PasswordFormMetricsRecorder::SubmitResult submission;
   } kTests[] = {
-      {false, false, PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted},
-      {true, false, PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted},
-      {true, true, PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted},
-      {false, false, PasswordFormMetricsRecorder::SubmitResult::kFailed},
-      {true, false, PasswordFormMetricsRecorder::SubmitResult::kFailed},
-      {true, true, PasswordFormMetricsRecorder::SubmitResult::kFailed},
-      {false, false, PasswordFormMetricsRecorder::SubmitResult::kPassed},
-      {true, false, PasswordFormMetricsRecorder::SubmitResult::kPassed},
-      {true, true, PasswordFormMetricsRecorder::SubmitResult::kPassed},
+      {false, PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted},
+      {true, PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted},
+      {false, PasswordFormMetricsRecorder::SubmitResult::kFailed},
+      {true, PasswordFormMetricsRecorder::SubmitResult::kFailed},
+      {false, PasswordFormMetricsRecorder::SubmitResult::kPassed},
+      {true, PasswordFormMetricsRecorder::SubmitResult::kPassed},
   };
 
   for (const auto& test : kTests) {
     SCOPED_TRACE(testing::Message()
-                 << "generation_available=" << test.generation_available
                  << ", has_generated_password=" << test.has_generated_password
                  << ", submission=" << static_cast<int64_t>(test.submission));
 
@@ -129,9 +125,6 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
     {
       auto recorder = CreatePasswordFormMetricsRecorder(
           /*is_main_frame_secure*/ true, &pref_service_);
-      if (test.generation_available) {
-        recorder->MarkGenerationAvailable();
-      }
       if (test.has_generated_password) {
         recorder->SetGeneratedPasswordStatus(
             PasswordFormMetricsRecorder::GeneratedPasswordStatus::
@@ -196,26 +189,6 @@ TEST_F(PasswordFormMetricsRecorderTest, Generation) {
         case PasswordFormMetricsRecorder::SubmitResult::kPassed:
           histogram_tester.ExpectBucketCount(
               "PasswordGeneration.SubmissionEvent",
-              metrics_util::PASSWORD_SUBMITTED, 1);
-          break;
-      }
-    }
-
-    if (!test.has_generated_password && test.generation_available) {
-      switch (test.submission) {
-        case PasswordFormMetricsRecorder::SubmitResult::kNotSubmitted:
-          histogram_tester.ExpectBucketCount(
-              "PasswordGeneration.SubmissionAvailableEvent",
-              metrics_util::PASSWORD_NOT_SUBMITTED, 1);
-          break;
-        case PasswordFormMetricsRecorder::SubmitResult::kFailed:
-          histogram_tester.ExpectBucketCount(
-              "PasswordGeneration.SubmissionAvailableEvent",
-              metrics_util::PASSWORD_SUBMISSION_FAILED, 1);
-          break;
-        case PasswordFormMetricsRecorder::SubmitResult::kPassed:
-          histogram_tester.ExpectBucketCount(
-              "PasswordGeneration.SubmissionAvailableEvent",
               metrics_util::PASSWORD_SUBMITTED, 1);
           break;
       }

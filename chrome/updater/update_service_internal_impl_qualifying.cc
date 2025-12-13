@@ -20,6 +20,8 @@
 #include "chrome/updater/branded_constants.h"
 #include "chrome/updater/check_for_updates_task.h"
 #include "chrome/updater/configurator.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/event_history.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
@@ -74,6 +76,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
             this,
             base::BindOnce(
                 &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
+                QualifyStartEvent().WriteAsyncAndReturnEndEvent(),
                 std::move(callback))));
   }
 
@@ -97,10 +100,9 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // by registering a higher version of the qualification app. This is because
     // the qualification app update will not happen if the update check period
     // is set to zero.
-    registration.version =
-        base::Version(config_->NextCheckDelay().is_zero()
-                          ? kQualificationUpdatesSuppressedVersion
-                          : kQualificationInitialVersion);
+    registration.version = config_->NextCheckDelay().is_zero()
+                               ? kQualificationUpdatesSuppressedVersion
+                               : kQualificationInitialVersion;
     base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_)
         ->RegisterApp(registration,
                       base::BindOnce(&UpdateServiceInternalQualifyingImpl::
@@ -147,9 +149,12 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
                                 kQualificationInitialVersion)) == 1);
   }
 
-  void QualificationDone(base::OnceClosure callback, bool qualified) {
+  void QualificationDone(QualifyEndEvent event,
+                         base::OnceClosure callback,
+                         bool qualified) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << "Qualification complete, qualified = " << qualified;
+    event.SetQualified(qualified).WriteAsync();
     local_prefs_->SetQualified(qualified);
     local_prefs_->GetPrefService()->CommitPendingWrite();
     if (qualified) {

@@ -68,7 +68,7 @@ class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebuggerCommonImpl {
   void ReportConsoleMessage(ExecutionContext*,
                             mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
-                            const WTF::String& message,
+                            const String& message,
                             SourceLocation*) override;
 
   // V8InspectorClient implementation.
@@ -94,7 +94,7 @@ class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebuggerCommonImpl {
   void consoleClear(int context_group_id) override;
 
   int paused_context_group_id_;
-  WTF::HashMap<int, WorkerThread*> worker_threads_;
+  HashMap<int, WorkerThread*> worker_threads_;
 };
 
 }  // namespace blink

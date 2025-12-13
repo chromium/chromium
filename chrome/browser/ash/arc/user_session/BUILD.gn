@@ -34,6 +34,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

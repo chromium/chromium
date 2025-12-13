@@ -38,13 +38,30 @@ found in the LICENSE file.
                 android:layout_weight="3"
                 android:visibility="invisible" />
 
-            <ImageView
-                android:id="@+id/fre_logo"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/fre_product_logo" />
+                android:importantForAccessibility="no">
+                <ImageView
+                    android:id="@+id/fre_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/fre_product_logo"
+                    android:importantForAccessibility="no" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/signin_animation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    app:lottie_rawRes="@raw/signin_spin" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/title"

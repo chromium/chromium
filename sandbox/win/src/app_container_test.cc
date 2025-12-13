@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <windows.h>
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -28,6 +24,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/win/access_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
@@ -37,6 +35,7 @@
 #include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
+#include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/common/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,11 +81,12 @@ void CheckToken(const std::optional<base::win::AccessToken>& token,
   ASSERT_EQ(capabilities.size(), security_capabilities->CapabilityCount)
       << TokenTypeToName(impersonation);
   for (size_t index = 0; index < capabilities.size(); ++index) {
-    EXPECT_EQ(capabilities[index].GetAttributes(),
-              security_capabilities->Capabilities[index].Attributes)
+    EXPECT_EQ(
+        capabilities[index].GetAttributes(),
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Attributes)
         << TokenTypeToName(impersonation);
     EXPECT_TRUE(capabilities[index].GetSid().Equal(
-        security_capabilities->Capabilities[index].Sid))
+        UNSAFE_TODO(security_capabilities->Capabilities[index]).Sid))
         << TokenTypeToName(impersonation);
   }
 }
@@ -218,12 +218,16 @@ class AppContainerTest : public ::testing::Test {
     wchar_t prog_name[MAX_PATH] = {};
     ASSERT_NE(DWORD{0}, ::GetModuleFileNameW(nullptr, prog_name, MAX_PATH));
 
-    PROCESS_INFORMATION process_info = {};
     DWORD last_error = 0;
-    ResultCode result = broker_services_->SpawnTarget(
-        prog_name, prog_name, std::move(policy_), &last_error, &process_info);
+    ResultCode result;
+    base::test::TaskEnvironment task_environment;
+    base::test::TestFuture<base::win::ScopedProcessInformation, DWORD,
+                           ResultCode>
+        test_future;
+    broker_services_->SpawnTargetAsync(prog_name, prog_name, std::move(policy_),
+                                       test_future.GetCallback());
+    std::tie(scoped_process_info_, last_error, result) = test_future.Take();
     ASSERT_EQ(SBOX_ALL_OK, result) << "Last Error: " << last_error;
-    scoped_process_info_.Set(process_info);
   }
 
   AppContainerBase* container() {

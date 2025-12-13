@@ -45,7 +45,7 @@ class MockVideoFrameHandler : public mojom::VideoFrameHandler {
   MOCK_METHOD1(DoOnBufferRetired, void(int32_t));
   MOCK_METHOD1(OnError, void(media::VideoCaptureError));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
-  MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
+  MOCK_METHOD1(OnNewCaptureVersion, void(const media::CaptureVersion&));
   MOCK_METHOD0(OnFrameWithEmptyRegionCapture, void());
   MOCK_METHOD1(OnLog, void(const std::string&));
   MOCK_METHOD0(OnStarted, void());

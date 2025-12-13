@@ -12,7 +12,6 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/apps/app_service",
   "+chrome/browser/ash/accessibility",
-  "+chrome/browser/ash/eol",
   "+chrome/browser/ash/login/help_app_launcher.h",
   "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/login_manager_test.h",
@@ -20,7 +19,6 @@ include_rules = [
   "+chrome/browser/ash/login/test",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
   "+chrome/browser/ash/system_web_apps/apps/personalization_app",
   "+chrome/browser/chromeos/extensions/vpn_provider",
@@ -32,10 +30,10 @@ include_rules = [
   "+chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/managed_ui.h",
   "+chrome/browser/ui/scoped_tabbed_browser_displayer.h",
-  "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/browser/ui/singleton_tabs.h",
   "+chrome/browser/ui/tabs",
   "+chrome/browser/ui/webui/access_code_cast",
@@ -44,14 +42,19 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/browser/ui/webui/ash/set_time",
   "+chrome/browser/upgrade_detector",
-  "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/test",
+
+  # TODO(crbug.com/454737637): Temporarily added for partial rollback.
+  # Remove with relanding.
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
 ]
 
 specific_include_rules = {
   "system_tray_client_impl_(browser|unit)test\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+    "+chrome/browser/ui/ash/new_window/chrome_new_window_client.h",
+    "+chrome/browser/ui/settings_window_manager_chromeos.h",
   ],
 }

@@ -25,8 +25,8 @@ rootWebArea htmlTag='#document'
 ++++++++graphicsObject htmlTag='use' name='Circle (From second use element's title)'
 ++++++++++group ignored
 ++++++svgRoot className='name-symbol-title' htmlTag='svg'
-++++++++group htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
-++++++++group htmlTag='svg' name='Rectangle Symbol (From symbol's title)'
+++++++++group htmlTag='symbol' name='Rectangle Symbol (From symbol's title)'
+++++++++group htmlTag='symbol' name='Rectangle Symbol (From symbol's title)'
 ++++++genericContainer ignored invisible
 ++++++++staticText ignored invisible
 ++++++svgRoot className='description-aria-describedby' htmlTag='svg'
@@ -50,5 +50,5 @@ rootWebArea htmlTag='#document'
 ++++++++graphicsObject description='Circle (From second use element's title)' htmlTag='use' name='Circle 2' descriptionFrom=title
 ++++++++++group ignored
 ++++++svgRoot className='desc-symbol-desc' htmlTag='svg'
-++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement
-++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='svg' descriptionFrom=svgDescElement
+++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='symbol' descriptionFrom=svgDescElement
+++++++++group description='Rectangle Symbol (From symbol's desc)' htmlTag='symbol' descriptionFrom=svgDescElement

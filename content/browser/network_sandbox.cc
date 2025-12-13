@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -25,6 +26,7 @@
 
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -234,15 +236,22 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   static constexpr DWORD kInheritance =
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
 
+  // For cache dir only, ACL the parent above the "Cache_Data" directory to
+  // ensure that rename/delete operations can take place correctly.
+  base::FilePath directory_to_acl = directory->path();
+
+  if (directory_to_acl.BaseName() == base::FilePath(kCacheDataDirectoryName)) {
+    directory_to_acl = directory_to_acl.DirName();
+  }
   // If LPAC capability already has access to the directory then avoid
   // granting access again. This is a performance optimization.
-  if (HasAccessToPath(directory->path(), ac_sids, kAccessMask, kInheritance)) {
+  if (HasAccessToPath(directory_to_acl, ac_sids, kAccessMask, kInheritance)) {
     return true;
   }
 
   // Grant recursive access to directory. This also means new files in the
   // directory will inherit the ACE.
-  return base::win::GrantAccessToPath(directory->path(), ac_sids, kAccessMask,
+  return base::win::GrantAccessToPath(directory_to_acl, ac_sids, kAccessMask,
                                       kInheritance, /*recursive=*/true);
 #else
   if (directory->IsOpenForTransferRequired()) {
@@ -252,6 +261,68 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
 
   return true;
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+// Logs the system error code to UMA. The name of the histogram will be
+// `histogram_base_name` suffixed with either ".Windows" or ".Posix" depending
+// on the platform (Fuchsia counts as "Posix" here because it uses `errno`).
+// Both variants must be added to "histograms.xml":
+//
+// ```
+// <histogram name="NetworkService.****Error.Posix"
+//     enum="PopularOSErrno" expires_after="">
+//   <owner></owner>
+//   <owner></owner>
+//   <summary>
+//     The system error code ...
+//
+//     Logged when ...
+//
+//     Only logged for non-Windows platforms.
+//   </summary>
+// </histogram>
+//
+// <histogram name="NetworkService.****Error.Windows"
+//     enum="WinGetLastError" expires_after="">
+//   <owner></owner>
+//   <owner></owner>
+//   <summary>
+//     The system error code ...
+//
+//     Logged when ...
+//
+//     Only logged on Windows.
+//   </summary>
+// </histogram>
+// ```
+void LogSystemErrorCode(std::string_view histogram_base_name) {
+  std::string_view suffix = ".Posix";
+  if constexpr (BUILDFLAG(IS_WIN)) {
+    suffix = ".Windows";
+  }
+  base::UmaHistogramSparse(base::StrCat({histogram_base_name, suffix}),
+                           logging::GetLastSystemErrorCode());
+}
+
+// Creates the directory `path`, which must not be std::nullopt, and then grants
+// sandbox access in line with `sandbox_params`. If an error occurs it is logged
+// using `directory_name_for_logging` as the name to use to describe the
+// directory.
+void CreateAndGrantAccessLoggingError(
+    const SandboxParameters& sandbox_params,
+    network::TransferableDirectory& path,
+    std::string_view directory_name_for_histogram) {
+  // The path must exist for the cache ACL to be set. Create if needed.
+  if (base::CreateDirectory(path.path())) {
+    if (!MaybeGrantAccessToDataPath(sandbox_params, &path)) {
+      PLOG(ERROR) << "Failed to grant sandbox access to "
+                  << directory_name_for_histogram << " directory "
+                  << path.path();
+      LogSystemErrorCode(
+          base::StrCat({"NetworkService.GrantAccessToDataPathError.",
+                        directory_name_for_histogram}));
+    }
+  }
 }
 
 // See the description in the header file.
@@ -315,22 +386,23 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
                     << params->file_paths->http_cache_directory->path();
       }
     }
+
+    // This is only used if disk caching is enabled.
+    if (params->file_paths->no_vary_search_directory) {
+      SCOPED_UMA_HISTOGRAM_TIMER(
+          "NetworkService.TimeToGrantNoVarySearchAccess");
+      CreateAndGrantAccessLoggingError(
+          sandbox_params, params->file_paths->no_vary_search_directory.value(),
+          "NoVarySearch");
+    }
   }
   if (params->file_paths->shared_dictionary_directory &&
       params->shared_dictionary_enabled) {
     SCOPED_UMA_HISTOGRAM_TIMER(
         "NetworkService.TimeToGrantSharedDictionaryAccess");
-    // The path must exist for the cache ACL to be set. Create if needed.
-    if (base::CreateDirectory(
-            params->file_paths->shared_dictionary_directory->path())) {
-      if (!MaybeGrantAccessToDataPath(
-              sandbox_params,
-              &*params->file_paths->shared_dictionary_directory)) {
-        PLOG(ERROR) << "Failed to grant sandbox access to shared dictionary "
-                       "directory "
-                    << params->file_paths->shared_dictionary_directory->path();
-      }
-    }
+    CreateAndGrantAccessLoggingError(
+        sandbox_params, params->file_paths->shared_dictionary_directory.value(),
+        "SharedDictionary");
   }
 
   // No data directory, so rest of the files and databases are in memory.

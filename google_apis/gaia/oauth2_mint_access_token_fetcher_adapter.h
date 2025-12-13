@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"

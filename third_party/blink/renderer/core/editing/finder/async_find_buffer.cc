@@ -5,6 +5,7 @@
 
 #include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/finder/find_buffer.h"
 
@@ -84,9 +85,9 @@ void AsyncFindBuffer::NextIteration(RangeInFlatTree* search_range,
            ->GetTaskRunner(TaskType::kInternalFindInPage)
            .get(),
       FROM_HERE,
-      WTF::BindOnce(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
-                    WrapWeakPersistent(search_range), search_text, options,
-                    std::move(completeCallback)));
+      blink::BindOnce(&AsyncFindBuffer::Run, WrapWeakPersistent(this),
+                      WrapWeakPersistent(search_range), search_text, options,
+                      std::move(completeCallback)));
 }
 
 }  // namespace blink

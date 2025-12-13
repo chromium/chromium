@@ -4,6 +4,9 @@
 
 #include "chrome/browser/enterprise/platform_auth/platform_auth_navigation_throttle.h"
 
+#include "base/feature_list.h"
+#include "build/buildflag.h"
+#include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -11,6 +14,26 @@
 #include "net/http/http_request_headers.h"
 
 namespace enterprise_auth {
+namespace {
+
+#if BUILDFLAG(IS_MAC)
+// This is for testing purposes. At the moment we have to pretend to be Safari
+// while requesting resources from okta.com domain. Eventually, before the
+// release and once Okta implements the change on their side, this will become
+// obsolete and can be removed.
+void SpoofUserAgent(content::NavigationHandle* navigation_handle) {
+  navigation_handle->SetRequestHeader(
+      "User-Agent",
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) "
+      "AppleWebKit/605.1.15 "
+      "(KHTML, like Gecko) Version/13.0.3 Safari/605.1.15");
+}
+
+constexpr char kOktaDomain[] = "okta.com";
+#endif
+
+}  // namespace
+
 // static
 void PlatformAuthNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
@@ -35,6 +58,15 @@ PlatformAuthNavigationThrottle::~PlatformAuthNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 PlatformAuthNavigationThrottle::WillStartRequest() {
+#if BUILDFLAG(IS_MAC)
+  // TODO: crbug.com/461709143 - Cleanup user agent spoofing when starting a
+  // request.
+  if (base::FeatureList::IsEnabled(enterprise_auth::kOktaSSO) &&
+      navigation_handle()->GetURL().DomainIs(kOktaDomain)) {
+    SpoofUserAgent(navigation_handle());
+  }
+#endif
+
   // The manager is enabled when both the feature and policy are enabled. This
   // value is set in `ResourceRequest::TrustedParams`, which can only be
   // modified at the start of a request (not during redirects).
@@ -45,6 +77,15 @@ PlatformAuthNavigationThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 PlatformAuthNavigationThrottle::WillRedirectRequest() {
+#if BUILDFLAG(IS_MAC)
+  // TODO: crbug.com/461709143 - Cleanup user agent spoofing when redirecting a
+  // request.
+  if (base::FeatureList::IsEnabled(enterprise_auth::kOktaSSO) &&
+      navigation_handle()->GetURL().DomainIs(kOktaDomain)) {
+    SpoofUserAgent(navigation_handle());
+  }
+#endif
+
   for (auto header : attached_headers_) {
     navigation_handle()->RemoveRequestHeader(header);
   }
@@ -60,22 +101,14 @@ const char* PlatformAuthNavigationThrottle::GetNameForLogging() {
 content::NavigationThrottle::ThrottleCheckResult
 PlatformAuthNavigationThrottle::FetchHeaders() {
   fetch_headers_callback_ran_ = false;
-
-  // `PlatformAuthProviderManager` may be in the middle of an asynchronous state
-  // change, such as becoming disabled or updating its supported IdP origins, in
-  // which case the auth data fetch may still succeed.
-  if (!PlatformAuthProviderManager::GetInstance().IsEnabledFor(
-          navigation_handle()->GetURL())) {
-    return content::NavigationThrottle::PROCEED;
-  }
-
   PlatformAuthProviderManager::GetInstance().GetData(
       navigation_handle()->GetURL(),
       base::BindOnce(&PlatformAuthNavigationThrottle::FetchHeadersCallback,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // If the header fetch callback already ran it likely means that headers could
-  // not be fetched and `PlatformAuthProviderManager::GetData()` returned
+  // not be fetched or the auth manager is not enabled for the current URL. In
+  // either case,`PlatformAuthProviderManager::GetData()` returned
   // synchronously, so no need to defer.
   if (fetch_headers_callback_ran_) {
     return content::NavigationThrottle::PROCEED;
@@ -87,6 +120,8 @@ PlatformAuthNavigationThrottle::FetchHeaders() {
 
 void PlatformAuthNavigationThrottle::FetchHeadersCallback(
     net::HttpRequestHeaders auth_headers) {
+  DCHECK(attached_headers_.empty());
+  attached_headers_.reserve(auth_headers.GetHeaderVector().size());
   net::HttpRequestHeaders::Iterator it(auth_headers);
   while (it.GetNext()) {
     attached_headers_.push_back(it.name());

@@ -19,6 +19,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 
@@ -511,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
   auto total_attribute_count = [](const ui::AXNodeData& node_data) {
     return node_data.string_attributes.size() +
            node_data.int_attributes.size() + node_data.float_attributes.size() +
-           node_data.bool_attributes->Size() +
+           node_data.bool_attributes.Size() +
            node_data.intlist_attributes.size() +
            node_data.stringlist_attributes.size() +
            node_data.html_attributes.size();
@@ -761,8 +762,9 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest, Metadata) {
       /* timeout= */ {}, WebContents::AXTreeSnapshotPolicy::kAll);
   waiter.Wait();
 
+  ASSERT_TRUE(waiter.snapshot().tree_data.metadata.has_value());
   EXPECT_THAT(
-      waiter.snapshot().tree_data.metadata,
+      *waiter.snapshot().tree_data.metadata,
       testing::ElementsAre(
           "<title>Hello World</title>", "<meta charset=\"utf-8\"></meta>",
           "<link ref=\"canonical\" href=\"https://abc.com\"></link>",

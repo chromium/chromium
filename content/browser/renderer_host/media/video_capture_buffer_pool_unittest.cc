@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // Unit test for VideoCaptureBufferPool.
 
 #include "media/capture/video/video_capture_buffer_pool.h"
@@ -19,11 +14,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -102,7 +99,7 @@ class VideoCaptureBufferPoolTest
     ~Buffer() { pool_->RelinquishProducerReservation(id()); }
     int id() const { return id_; }
     size_t mapped_size() { return buffer_handle_->mapped_size(); }
-    void* data() { return buffer_handle_->data(); }
+    void* data() { return buffer_handle_->data().data(); }
 
    private:
     const int id_;
@@ -201,11 +198,11 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
 
   // Touch the memory.
   if (buffer1->data() != nullptr)
-    memset(buffer1->data(), 0x11, buffer1->mapped_size());
+    UNSAFE_TODO(memset(buffer1->data(), 0x11, buffer1->mapped_size()));
   if (buffer2->data() != nullptr)
-    memset(buffer2->data(), 0x44, buffer2->mapped_size());
+    UNSAFE_TODO(memset(buffer2->data(), 0x44, buffer2->mapped_size()));
   if (buffer3->data() != nullptr)
-    memset(buffer3->data(), 0x77, buffer3->mapped_size());
+    UNSAFE_TODO(memset(buffer3->data(), 0x77, buffer3->mapped_size()));
 
   // Fourth buffer should fail.  Buffer pool utilization should be at 100%.
   ASSERT_FALSE(ReserveBuffer(size_lo, pixel_format)) << "Pool should be empty";
@@ -322,13 +319,13 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
 
   // Touch the memory.
   if (buffer2->data() != nullptr)
-    memset(buffer2->data(), 0x22, buffer2->mapped_size());
+    UNSAFE_TODO(memset(buffer2->data(), 0x22, buffer2->mapped_size()));
   if (buffer4->data() != nullptr)
-    memset(buffer4->data(), 0x55, buffer4->mapped_size());
+    UNSAFE_TODO(memset(buffer4->data(), 0x55, buffer4->mapped_size()));
   buffer2.reset();
 
   if (buffer4->data() != nullptr)
-    memset(buffer4->data(), 0x77, buffer4->mapped_size());
+    UNSAFE_TODO(memset(buffer4->data(), 0x77, buffer4->mapped_size()));
   buffer4.reset();
 }
 
@@ -457,11 +454,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
 namespace {
 
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
-  gfx::GpuMemoryBufferHandle result;
-  result.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  result.io_surface =
-      gfx::CreateIOSurface(kDefaultTextureSize, gfx::BufferFormat::BGRA_8888);
-  return result;
+  return gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(
+      kDefaultTextureSize, viz::SinglePlaneFormat::kBGRA_8888));
 }
 
 }  // namespace
@@ -481,10 +475,10 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
   EXPECT_NE(buffer_id0, kInvalidId);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
   EXPECT_FALSE(IOSurfaceIsInUse(
-      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface.get()));
+      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface().get()));
   pool_->HoldForConsumers(buffer_id0, 1);
   EXPECT_TRUE(IOSurfaceIsInUse(
-      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface.get()));
+      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface().get()));
   pool_->RelinquishProducerReservation(buffer_id0);
   // We should get a new buffer for handle1.
   int buffer_id1 = kInvalidId;

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Dialog;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -17,10 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -30,23 +35,25 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Dialog to ask the user to enter a new custom passphrase. */
+@NullMarked
 public class PassphraseCreationDialogFragment extends DialogFragment
         implements ProfileDependentSetting {
     public interface Listener {
         void onPassphraseCreated(String passphrase);
     }
 
-    private Profile mProfile;
+    private @Nullable Profile mProfile;
     private EditText mEnterPassphrase;
     private EditText mConfirmPassphrase;
 
     @Override
-    public void setProfile(@NonNull Profile profile) {
+    public void setProfile(Profile profile) {
         mProfile = profile;
     }
 
+    @Initializer
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.sync_custom_passphrase, null);
@@ -80,8 +87,9 @@ public class PassphraseCreationDialogFragment extends DialogFragment
     }
 
     private SpannableString getInstructionsText() {
+        assert mProfile != null : "Profile should be non-null.";
         boolean shouldReplaceSyncSettingsWithAccountSettings =
-                !SyncServiceFactory.getForProfile(mProfile).hasSyncConsent();
+                !assumeNonNull(SyncServiceFactory.getForProfile(mProfile)).hasSyncConsent();
         return SpanApplier.applySpans(
                 getString(
                         shouldReplaceSyncSettingsWithAccountSettings
@@ -119,6 +127,8 @@ public class PassphraseCreationDialogFragment extends DialogFragment
     }
 
     private void tryToSubmitPassphrase() {
+        RecordUserAction.record("Sync_SaveNewPassphraseClicked");
+
         String passphrase = mEnterPassphrase.getText().toString();
         String confirmPassphrase = mConfirmPassphrase.getText().toString();
 
@@ -135,7 +145,7 @@ public class PassphraseCreationDialogFragment extends DialogFragment
         }
 
         // The passphrase is not empty and matches.
-        ((Listener) getTargetFragment()).onPassphraseCreated(passphrase);
-        getDialog().dismiss();
+        assumeNonNull((Listener) getTargetFragment()).onPassphraseCreated(passphrase);
+        assumeNonNull(getDialog()).dismiss();
     }
 }

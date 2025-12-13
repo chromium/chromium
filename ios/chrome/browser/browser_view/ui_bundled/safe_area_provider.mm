@@ -36,12 +36,10 @@
   return self.rootView.safeAreaInsets;
 }
 
-#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
 - (NSDirectionalEdgeInsets)directionalEdgeInsetsForLayoutRegion:
     (UIViewLayoutRegion*)layoutRegion API_AVAILABLE(ios(26.0)) {
   return [self.rootView directionalEdgeInsetsForLayoutRegion:layoutRegion];
 }
-#endif
 
 #pragma mark - Private properties
 

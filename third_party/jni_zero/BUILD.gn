@@ -35,18 +35,13 @@ generate_jar_jni("system_jni") {
 # This is the public target that we intend others to use.
 component("jni_zero") {
   public = [
+    "common_apis.h",
     "default_conversions.h",
     "jni_zero.h",
-
-    # TODO(bugs.webrtc.org/42225138): Move back to sources as
-    # soon as WebRTC removes the jni_generator_helper.h which at
-    # the moment needs to read jni_zero::internal::kJniStackMarkerValue.
-    "jni_zero_internal.h",
   ]
 
   sources = [
     "common_apis.cc",
-    "common_apis.h",
     "default_conversions.cc",
     "java_refs.cc",
     "java_refs.h",
@@ -54,11 +49,16 @@ component("jni_zero") {
     "jni_methods.h",
     "jni_wrappers.h",
     "jni_zero.cc",
+    "jni_zero_internal.h",
     "logging.cc",
     "logging.h",
     "type_conversions.h",
   ]
   configs += [ ":jni_include_dir" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   defines = []
   if (enable_jni_multiplexing) {

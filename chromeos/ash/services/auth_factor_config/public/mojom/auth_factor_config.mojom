@@ -71,7 +71,6 @@ interface AuthFactorConfig {
   // Checks whether the user can configure |factor|. Is false if the factor is
   // not supported or e.g. a policy forces |factor| to be enabled/disabled.
   IsEditable(string auth_token, AuthFactor factor) => (bool editable);
-
 };
 
 // Returned from various operations that change ("configure") something about
@@ -98,6 +97,18 @@ interface RecoveryFactorEditor {
   Configure(string auth_token, bool enabled) => (ConfigureResult result);
 };
 
+// A value describing the complexity of a pin.
+enum PinComplexity {
+  kOk,
+  kInvalidTokenError,
+  // These values correspond to the values of the `LocalAuthFactorsComplexity`
+  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
+  kErrNone,
+  kErrLow,
+  kErrMedium,
+  kErrHigh,
+};
+
 // Interface for methods specific to pin authentication. Served from chrome
 // ash, intended to be consumed by the following webuis:
 // * chrome://os-settings
@@ -105,20 +116,33 @@ interface RecoveryFactorEditor {
 interface PinFactorEditor {
   // Set the user pin to the desired value.
   SetPin(string auth_token, string pin) => (ConfigureResult result);
+
   // Update an already set user pin to the desired value. This method will
   // only update a cryptohome pin if already present, for prefs-based pins and
   // empty pins, it's a no-op.
   UpdatePin(string auth_token, string pin) => (ConfigureResult result);
+
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
+
   // Returns the type of the pin factor, or nullopt if it has none.
   GetConfiguredPinFactor(string auth_token) => (AuthFactor? pin_factor);
+
+  // Returns a value describing the complexity of the provided pin value.
+  CheckPinComplexity(string auth_token, string pin) =>
+      (PinComplexity complexity);
 };
 
 // A value describing the complexity of a password.
 enum PasswordComplexity {
   kOk,
   kTooShort,
+  // These values correspond to the values of the LocalAuthFactorsComplexity
+  // policy (components/policy/resources/templates/policy_definitions/Signin/LocalAuthFactorsComplexity.yaml).
+  kErrNone,
+  kErrLow,
+  kErrMedium,
+  kErrHigh,
 };
 
 // Interface for methods specific to password authentication. Served from chrome

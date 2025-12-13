@@ -28,10 +28,10 @@ class AutocompleteScoringModelServiceFactory
   AutocompleteScoringModelServiceFactory();
   ~AutocompleteScoringModelServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   // Returns nullptr if `OptimizationGuideKeyedService` is null.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 }  // namespace ios

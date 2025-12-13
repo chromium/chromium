@@ -38,7 +38,8 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -229,9 +230,11 @@ class NightLightTest : public NoSessionAshTestBase,
     // Start with ambient color pref disabled.
     SetAmbientColorPrefEnabled(false);
 
-    // `GeolocationController` uses `SimpleGeolocationProvider` singleton
+    // `GeolocationController` uses `SystemLocationProvider` singleton
     // instance, which is initialized by `AshTestHelper`.
-    SimpleGeolocationProvider::GetInstance()
+    SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
+        ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory_);
   }
 

@@ -25,7 +25,7 @@ namespace blink {
 InspectorStyleResolver::InspectorStyleResolver(
     Element* element,
     PseudoId element_pseudo_id,
-    const AtomicString& view_transition_name)
+    const AtomicString& pseudo_argument)
     : element_(element) {
   DCHECK(element_);
 
@@ -40,7 +40,7 @@ InspectorStyleResolver::InspectorStyleResolver(
   StyleResolver& style_resolver = element_->GetDocument().GetStyleResolver();
 
   matched_rules_ = style_resolver.PseudoCSSRulesForElement(
-      element_, element_pseudo_id, view_transition_name,
+      element_, element_pseudo_id, pseudo_argument,
       StyleResolver::kAllCSSRules);
 
   // At this point, the pseudo-element id for scroll marker groups has been
@@ -59,6 +59,7 @@ InspectorStyleResolver::InspectorStyleResolver(
         element_pseudo_id == kPseudoIdBefore ||
         element_pseudo_id == kPseudoIdAfter ||
         element_pseudo_id == kPseudoIdPickerIcon ||
+        element_pseudo_id == kPseudoIdInterestHint ||
         element_pseudo_id == kPseudoIdMarker ||
         element_pseudo_id == kPseudoIdBackdrop ||
         element_pseudo_id == kPseudoIdColumn ||
@@ -148,23 +149,23 @@ InspectorStyleResolver::InspectorStyleResolver(
 
 void InspectorStyleResolver::AddPseudoElementRules(
     PseudoId pseudo_id,
-    const AtomicString& view_transition_name) {
+    const AtomicString& pseudo_argument) {
   StyleResolver& style_resolver = element_->GetDocument().GetStyleResolver();
   // If the pseudo-element doesn't exist, exclude UA rules to avoid cluttering
   // all elements.
   unsigned rules_to_include =
-      element_->GetStyledPseudoElement(pseudo_id, view_transition_name)
+      element_->GetStyledPseudoElement(pseudo_id, pseudo_argument)
           ? StyleResolver::kAllCSSRules
           : StyleResolver::kAllButUACSSRules;
   RuleIndexList* matched_rules = style_resolver.PseudoCSSRulesForElement(
-      element_, pseudo_id, view_transition_name, rules_to_include);
+      element_, pseudo_id, pseudo_argument, rules_to_include);
   if (matched_rules && matched_rules->size()) {
     InspectorCSSMatchedRules* match =
         MakeGarbageCollected<InspectorCSSMatchedRules>();
     match->element = element_;
     match->matched_rules = matched_rules;
     match->pseudo_id = pseudo_id;
-    match->view_transition_name = view_transition_name;
+    match->pseudo_argument = pseudo_argument;
     pseudo_element_rules_.push_back(match);
   }
 }

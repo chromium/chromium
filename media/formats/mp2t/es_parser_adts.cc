@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/mp2t/es_parser_adts.h"
 
 #include <stddef.h>
@@ -14,9 +9,9 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
 #include "media/base/channel_layout.h"
@@ -30,20 +25,20 @@
 
 namespace media {
 
-static int ExtractAdtsFrameSize(const uint8_t* adts_header) {
-  return ((static_cast<int>(adts_header[5]) >> 5) |
-          (static_cast<int>(adts_header[4]) << 3) |
-          ((static_cast<int>(adts_header[3]) & 0x3) << 11));
+static size_t ExtractAdtsFrameSize(base::span<const uint8_t> adts_header) {
+  return ((static_cast<size_t>(adts_header[5]) >> 5) |
+          (static_cast<size_t>(adts_header[4]) << 3) |
+          ((static_cast<size_t>(adts_header[3]) & 0x3) << 11));
 }
 
-static int AdtsHeaderSize(const uint8_t* adts_header) {
+static size_t AdtsHeaderSize(base::span<const uint8_t> adts_header) {
   // protection absent bit: set to 1 if there is no CRC and 0 if there is CRC
   return (adts_header[1] & 0x1) ? kADTSHeaderSizeNoCrc : kADTSHeaderSizeWithCrc;
 }
 
 // Return true if buf corresponds to an ADTS syncword.
 // |buf| size must be at least 2.
-static bool isAdtsSyncWord(const uint8_t* buf) {
+static bool isAdtsSyncWord(base::span<const uint8_t> buf) {
   // The first 12 bits must be 1.
   // The layer field (2 bits) must be set to 0.
   return (buf[0] == 0xff) && ((buf[1] & 0xf6) == 0xf0);
@@ -53,38 +48,34 @@ namespace mp2t {
 
 struct EsParserAdts::AdtsFrame {
   // Pointer to the ES data.
-  raw_ptr<const uint8_t> data;
+  base::raw_span<const uint8_t> data;
 
   // Frame size;
-  int size;
-  int header_size;
+  size_t header_size;
 
   // Frame offset in the ES queue.
   int64_t queue_offset;
 };
 
 bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
-  int es_size = es_queue_->Data().size();
-  const uint8_t* es = es_queue_->Data().data();
-
-  int max_offset = es_size - kADTSHeaderMinSize;
-  if (max_offset <= 0)
+  base::span<const uint8_t> es = es_queue_->Data();
+  if (es.size() <= kADTSHeaderMinSize) {
     return false;
+  }
 
-  for (int offset = 0; offset < max_offset; offset++) {
-    const uint8_t* cur_buf = &es[offset];
+  const size_t max_offset = es.size() - kADTSHeaderMinSize;
+  for (size_t offset = 0; offset < max_offset; offset++) {
+    auto cur_buf = es.subspan(offset);
     if (!isAdtsSyncWord(cur_buf))
       continue;
 
-    int frame_size = ExtractAdtsFrameSize(cur_buf);
+    const size_t frame_size = ExtractAdtsFrameSize(cur_buf);
     if (frame_size < kADTSHeaderMinSize) {
       // Too short to be an ADTS frame.
       continue;
     }
-    int header_size = AdtsHeaderSize(cur_buf);
-
-    int remaining_size = es_size - offset;
-    if (remaining_size < frame_size) {
+    const size_t header_size = AdtsHeaderSize(cur_buf);
+    if (cur_buf.size() < frame_size) {
       // Not a full frame: will resume when we have more data.
       es_queue_->Pop(offset);
       return false;
@@ -92,23 +83,20 @@ bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
 
     // Check whether there is another frame
     // |size| apart from the current one.
-    if (remaining_size >= frame_size + 2 &&
-        !isAdtsSyncWord(&cur_buf[frame_size])) {
+    if (cur_buf.size() >= frame_size + 2 &&
+        !isAdtsSyncWord(cur_buf.subspan(frame_size))) {
       continue;
     }
 
     es_queue_->Pop(offset);
-    adts_frame->data = es_queue_->Data().data();
-    es_size = es_queue_->Data().size();
+    adts_frame->data = es_queue_->Data().first(frame_size);
     adts_frame->queue_offset = es_queue_->head();
-    adts_frame->size = frame_size;
     adts_frame->header_size = header_size;
-    DVLOG(LOG_LEVEL_ES)
-        << "ADTS syncword @ pos=" << adts_frame->queue_offset
-        << " frame_size=" << adts_frame->size;
-    DVLOG(LOG_LEVEL_ES)
-        << "ADTS header: "
-        << base::HexEncode(adts_frame->data, kADTSHeaderMinSize);
+    DVLOG(LOG_LEVEL_ES) << "ADTS syncword @ pos=" << adts_frame->queue_offset
+                        << " frame_size=" << adts_frame->data.size();
+    DVLOG(LOG_LEVEL_ES) << "ADTS header: "
+                        << base::HexEncode(adts_frame->data.first(
+                               static_cast<size_t>(kADTSHeaderMinSize)));
     return true;
   }
 
@@ -118,7 +106,7 @@ bool EsParserAdts::LookForAdtsFrame(AdtsFrame* adts_frame) {
 
 void EsParserAdts::SkipAdtsFrame(const AdtsFrame& adts_frame) {
   DCHECK_EQ(adts_frame.queue_offset, es_queue_->head());
-  es_queue_->Pop(adts_frame.size);
+  es_queue_->Pop(adts_frame.data.size());
 }
 
 EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
@@ -148,16 +136,16 @@ void EsParserAdts::CalculateSubsamplesForAdtsFrame(
     std::vector<SubsampleEntry>* subsamples) {
   DCHECK(subsamples);
   subsamples->clear();
-  int data_size = adts_frame.size - adts_frame.header_size;
-  int residue = data_size % 16;
-  int clear_bytes = adts_frame.header_size;
-  int encrypted_bytes = 0;
+  size_t data_size = adts_frame.data.size() - adts_frame.header_size;
+  size_t residue = data_size % 16;
+  size_t clear_bytes = adts_frame.header_size;
+  size_t encrypted_bytes = 0;
   if (data_size <= 16) {
     clear_bytes += data_size;
     residue = 0;
   } else {
     clear_bytes += 16;
-    encrypted_bytes = adts_frame.size - clear_bytes - residue;
+    encrypted_bytes = adts_frame.data.size() - clear_bytes - residue;
   }
   SubsampleEntry subsample(clear_bytes, encrypted_bytes);
   subsamples->push_back(subsample);
@@ -173,9 +161,10 @@ bool EsParserAdts::ParseFromEsQueue() {
   AdtsFrame adts_frame;
   while (LookForAdtsFrame(&adts_frame)) {
     // Update the audio configuration if needed.
-    DCHECK_GE(adts_frame.size, kADTSHeaderMinSize);
-    if (!UpdateAudioConfiguration(adts_frame.data, adts_frame.size))
+    DCHECK_GE(adts_frame.data.size(), kADTSHeaderMinSize);
+    if (!UpdateAudioConfiguration(adts_frame.data)) {
       return false;
+    }
 
     // Get the PTS & the duration of this access unit.
     TimingDesc current_timing_desc =
@@ -197,10 +186,8 @@ bool EsParserAdts::ParseFromEsQueue() {
 
     // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
     // type and allow multiple audio tracks. See https://crbug.com/341581.
-    auto adts_frame_span = base::span(
-        adts_frame.data.get(), base::checked_cast<size_t>(adts_frame.size));
     scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-        StreamParserBuffer::CopyFrom(adts_frame_span, is_key_frame,
+        StreamParserBuffer::CopyFrom(adts_frame.data, is_key_frame,
                                      DemuxerStream::AUDIO, kMp2tAudioTrackId);
     stream_parser_buffer->set_timestamp(current_pts);
     stream_parser_buffer->SetDecodeTimestamp(
@@ -237,14 +224,14 @@ void EsParserAdts::ResetInternal() {
   last_audio_decoder_config_ = AudioDecoderConfig();
 }
 
-bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
-                                            int size) {
-  int orig_sample_rate;
+bool EsParserAdts::UpdateAudioConfiguration(
+    base::span<const uint8_t> adts_header) {
+  size_t orig_sample_rate;
   ChannelLayout channel_layout;
   std::vector<uint8_t> extra_data;
-  if (adts_parser_.ParseFrameHeader(adts_header, size, nullptr,
-                                    &orig_sample_rate, &channel_layout, nullptr,
-                                    nullptr, &extra_data) <= 0) {
+  if (adts_parser_.ParseFrameHeader(adts_header, nullptr, &orig_sample_rate,
+                                    &channel_layout, nullptr, nullptr,
+                                    &extra_data) <= 0) {
     return false;
   }
 
@@ -253,7 +240,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
   // to SBR doubling the AAC sample rate.)
   // TODO(damienv) : Extend sample rate cap to 96kHz for Level 5 content.
   const int extended_samples_per_second =
-      sbr_in_mimetype_ ? std::min(2 * orig_sample_rate, 48000)
+      sbr_in_mimetype_ ? std::min<int>(2 * orig_sample_rate, 48000)
                        : orig_sample_rate;
   AudioDecoderConfig audio_decoder_config(
       AudioCodec::kAAC, kSampleFormatS16, channel_layout,

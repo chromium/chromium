@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
@@ -34,15 +35,21 @@ using protocol::Response;
 namespace {
 
 BrowserWindow* GetBrowserWindow(int window_id) {
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (b->session_id().id() == window_id)
-      return b->window();
-  }
-  return nullptr;
+  BrowserWindow* result = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [window_id, &result](BrowserWindowInterface* browser_window_interface) {
+        if (browser_window_interface->GetSessionID().id() == window_id) {
+          result =
+              browser_window_interface->GetBrowserForMigrationOnly()->window();
+          return false;
+        }
+        return true;
+      });
+  return result;
 }
 
 std::unique_ptr<protocol::Browser::Bounds> GetBrowserWindowBounds(
-    BrowserWindow* window) {
+    ui::BaseWindow* window) {
   std::string window_state = "normal";
   if (window->IsMinimized())
     window_state = "minimized";
@@ -86,20 +93,29 @@ Response BrowserHandler::GetWindowForTarget(
   if (!host)
     return Response::ServerError("No target with given id");
   content::WebContents* web_contents = host->GetWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return Response::ServerError("No web contents in the target");
-
-  Browser* browser = nullptr;
-  for (Browser* b : *BrowserList::GetInstance()) {
-    int tab_index = b->tab_strip_model()->GetIndexOfWebContents(web_contents);
-    if (tab_index != TabStripModel::kNoTab)
-      browser = b;
   }
-  if (!browser)
-    return Response::ServerError("Browser window not found");
 
-  BrowserWindow* window = browser->window();
-  *out_window_id = browser->session_id().id();
+  BrowserWindowInterface* found_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [web_contents,
+       &found_browser](BrowserWindowInterface* browser_window_interface) {
+        int tab_index =
+            browser_window_interface->GetTabStripModel()->GetIndexOfWebContents(
+                web_contents);
+        if (tab_index != TabStripModel::kNoTab) {
+          found_browser = browser_window_interface;
+          return false;
+        }
+        return true;
+      });
+  if (!found_browser) {
+    return Response::ServerError("Browser window not found");
+  }
+
+  ui::BaseWindow* window = found_browser->GetWindow();
+  *out_window_id = found_browser->GetSessionID().id();
   *out_bounds = GetBrowserWindowBounds(window);
   return Response::Success();
 }
@@ -152,7 +168,7 @@ Response BrowserHandler::SetWindowBounds(
     }
     window->GetExclusiveAccessContext()->EnterFullscreen(
         url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-        display::kInvalidDisplayId);
+        FullscreenTabParams());
   } else if (window_state == "maximized") {
     if (window->IsMinimized() || window->IsFullscreen()) {
       return Response::ServerError(
@@ -215,10 +231,17 @@ protocol::Response BrowserHandler::SetContentsSize(int window_id,
         "Contents 'height' must be a positive value");
   }
 
-  contents_size.set_width(width.value_or(contents_size.width()));
-  contents_size.set_height(height.value_or(contents_size.height()));
-
-  window->SetContentsSize(contents_size);
+  // We cannot just call BrowserView::SetContentsSize() here because it will
+  // constrain the browser window to the current screen work area which is not
+  // desirable.
+  const int width_diff = width ? width.value() - contents_size.width() : 0;
+  const int height_diff = height ? height.value() - contents_size.height() : 0;
+  if (width_diff || height_diff) {
+    gfx::Rect bounds = window->GetBounds();
+    bounds.set_width(bounds.width() + width_diff);
+    bounds.set_height(bounds.height() + height_diff);
+    window->SetBounds(bounds);
+  }
 
   return Response::Success();
 }
@@ -248,8 +271,9 @@ protocol::Response BrowserHandler::ExecuteBrowserCommand(
   if (command_id_map.count(command_id) == 0) {
     return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
   }
-  if (!chrome::ExecuteCommand(BrowserList::GetInstance()->GetLastActive(),
-                              command_id_map[command_id])) {
+  if (!chrome::ExecuteCommand(
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile(),
+          command_id_map[command_id])) {
     return Response::InvalidRequest(
         "Browser command not supported. BrowserCommandId: " + command_id);
   }

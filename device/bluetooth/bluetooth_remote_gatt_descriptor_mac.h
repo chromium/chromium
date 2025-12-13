@@ -5,14 +5,12 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 
-#include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
-
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
 namespace device {
 

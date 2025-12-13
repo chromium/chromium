@@ -163,8 +163,9 @@ void LoginManagerMixin::SetUpLocalState() {
     ScopedListPrefUpdate users_pref(g_browser_process->local_state(),
                                     "LoggedInUsers");
     base::Value email_value(user.account_id.GetUserEmail());
-    if (!base::Contains(users_pref.Get(), email_value))
+    if (!base::Contains(users_pref.Get(), email_value)) {
       users_pref->Append(std::move(email_value));
+    }
 
     ScopedDictPrefUpdate user_type_update(g_browser_process->local_state(),
                                           "UserType");

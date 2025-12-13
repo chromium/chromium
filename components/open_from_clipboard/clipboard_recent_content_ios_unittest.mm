@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/open_from_clipboard/clipboard_recent_content_ios.h"
+#import "components/open_from_clipboard/clipboard_recent_content_ios.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/task_environment.h"
+#import "base/test/task_environment.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;

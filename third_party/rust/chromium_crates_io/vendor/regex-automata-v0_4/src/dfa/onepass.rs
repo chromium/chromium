@@ -722,6 +722,8 @@ impl<'a> InternalBuilder<'a> {
             }
         }
         self.shuffle_states();
+        self.dfa.starts.shrink_to_fit();
+        self.dfa.table.shrink_to_fit();
         Ok(self.dfa)
     }
 
@@ -926,7 +928,7 @@ impl<'a> InternalBuilder<'a> {
 ///
 /// A one-pass DFA can be built from an NFA that is one-pass. An NFA is
 /// one-pass when there is never any ambiguity about how to continue a search.
-/// For example, `a*a` is not one-pass becuase during a search, it's not
+/// For example, `a*a` is not one-pass because during a search, it's not
 /// possible to know whether to continue matching the `a*` or to move on to
 /// the single `a`. However, `a*b` is one-pass, because for every byte in the
 /// input, it's always clear when to move on from `a*` to `b`.
@@ -2408,7 +2410,7 @@ impl core::fmt::Debug for DFA {
             }
             write!(f, "{:06?}", sid.as_usize())?;
             if !pateps.is_empty() {
-                write!(f, " ({:?})", pateps)?;
+                write!(f, " ({pateps:?})")?;
             }
             write!(f, ": ")?;
             debug_state_transitions(f, self, sid)?;
@@ -2939,7 +2941,7 @@ impl core::fmt::Debug for Slots {
     fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         write!(f, "S")?;
         for slot in self.iter() {
-            write!(f, "-{:?}", slot)?;
+            write!(f, "-{slot:?}")?;
         }
         Ok(())
     }
@@ -3050,23 +3052,21 @@ impl core::fmt::Display for BuildError {
             Word(_) => write!(f, "NFA contains Unicode word boundary"),
             TooManyStates { limit } => write!(
                 f,
-                "one-pass DFA exceeded a limit of {:?} for number of states",
-                limit,
+                "one-pass DFA exceeded a limit of {limit:?} \
+                 for number of states",
             ),
             TooManyPatterns { limit } => write!(
                 f,
-                "one-pass DFA exceeded a limit of {:?} for number of patterns",
-                limit,
+                "one-pass DFA exceeded a limit of {limit:?} \
+                 for number of patterns",
             ),
             UnsupportedLook { look } => write!(
                 f,
-                "one-pass DFA does not support the {:?} assertion",
-                look,
+                "one-pass DFA does not support the {look:?} assertion",
             ),
             ExceededSizeLimit { limit } => write!(
                 f,
-                "one-pass DFA exceeded size limit of {:?} during building",
-                limit,
+                "one-pass DFA exceeded size limit of {limit:?} during building",
             ),
             NotOnePass { msg } => write!(
                 f,
@@ -3089,7 +3089,7 @@ mod tests {
         let predicate = |err: &str| err.contains("conflicting transition");
 
         let err = DFA::new(r"a*[ab]").unwrap_err().to_string();
-        assert!(predicate(&err), "{}", err);
+        assert!(predicate(&err), "{err}");
     }
 
     #[test]
@@ -3099,7 +3099,7 @@ mod tests {
         };
 
         let err = DFA::new(r"(^|$)a").unwrap_err().to_string();
-        assert!(predicate(&err), "{}", err);
+        assert!(predicate(&err), "{err}");
     }
 
     #[test]
@@ -3109,7 +3109,7 @@ mod tests {
         };
 
         let err = DFA::new_many(&[r"^", r"$"]).unwrap_err().to_string();
-        assert!(predicate(&err), "{}", err);
+        assert!(predicate(&err), "{err}");
     }
 
     // This test is meant to build a one-pass regex with the maximum number of

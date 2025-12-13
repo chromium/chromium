@@ -57,10 +57,14 @@ class OpenXrController {
   std::optional<GamepadButton> GetButton(OpenXrButtonType type) const;
   std::optional<Gamepad> GetWebXRGamepad() const;
 
+  XrSpace GetInputSpace(mojom::XRInputSourceSpaceType space_type) const;
+
   std::optional<gfx::Transform> GetMojoFromGripTransform(
       XrTime predicted_display_time,
       XrSpace local_space,
       bool* emulated_position) const;
+
+  std::optional<gfx::Transform> GetMojoFromJoint(XrHandJointEXT joint) const;
 
   // Returns true if this controller can supply HandTracking data.
   bool IsHandTrackingEnabled() const;

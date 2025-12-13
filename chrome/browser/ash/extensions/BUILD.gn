@@ -8,6 +8,8 @@ assert(is_chromeos)
 
 static_library("extensions") {
   sources = [
+    "authentication_screen_extensions_external_loader.cc",
+    "authentication_screen_extensions_external_loader.h",
     "default_app_order.cc",
     "default_app_order.h",
     "device_local_account_management_policy_provider.cc",
@@ -38,11 +40,8 @@ static_library("extensions") {
     "media_player_api.h",
     "media_player_event_router.cc",
     "media_player_event_router.h",
-    "signin_screen_extensions_external_loader.cc",
-    "signin_screen_extensions_external_loader.h",
     "signin_screen_policy_provider.cc",
     "signin_screen_policy_provider.h",
-    "url_constants.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -63,9 +62,11 @@ static_library("extensions") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/input_method/japanese",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api/input_ime",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos:app_icon_resources",
@@ -73,6 +74,7 @@ static_library("extensions") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",
@@ -102,6 +104,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "scoped_app_window.cc",
+    "scoped_app_window.h",
     "test_external_cache.cc",
     "test_external_cache.h",
   ]
@@ -158,6 +162,7 @@ source_set("browser_tests") {
 
   sources = [
     "accessibility_features_apitest.cc",
+    "authentication_screen_extensions_external_loader_browsertest.cc",
     "default_keyboard_extension_browser_test.cc",
     "default_keyboard_extension_browser_test.h",
     "incoming_native_messaging_apitest.cc",
@@ -171,12 +176,14 @@ source_set("browser_tests") {
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/keyboard",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/prefs",
     "//content/public/browser",
     "//content/test:test_support",

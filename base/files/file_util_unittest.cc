@@ -1963,6 +1963,28 @@ TEST_F(FileUtilTest, DeleteContentUri) {
   EXPECT_FALSE(PathExists(uri_path));
 }
 
+TEST_F(FileUtilTest, WriteFileContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+
+  FilePath dir_vp =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath file_vp = dir_vp.Append("file.txt");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  ASSERT_FALSE(PathExists(file_vp));
+  EXPECT_TRUE(WriteFile(file_vp, "x"));
+  ASSERT_TRUE(PathExists(file_vp));
+
+  FilePath file_content_uri = *ResolveToContentUri(file_vp);
+
+  EXPECT_TRUE(WriteFile(file_content_uri, "foo"));
+
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_content_uri, &info));
+  ASSERT_EQ(info.size, 3u);
+}
+
 TEST_F(FileUtilTest, ResolveToContentUri) {
   FilePath dir = temp_dir_.GetPath().Append("dir");
   CreateDirectory(dir);
@@ -3263,8 +3285,26 @@ TEST_F(FileUtilTest, FILEToFile) {
 
 TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
+  EXPECT_TRUE(DeleteFile(temp_dir));
+}
+
+TEST_F(FileUtilTest, CreateNewTempDirectoryPrefixTest) {
+  FilePath temp_dir;
+  ASSERT_TRUE(
+      CreateNewTempDirectory(FILE_PATH_LITERAL("test_dir_prefix"), &temp_dir));
+  EXPECT_TRUE(PathExists(temp_dir));
+
+  const FilePath::StringType matcher =
+#if BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("test_dir_prefix*");
+#else   // BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("*.test_dir_prefix.*");
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_THAT(temp_dir.value(),
+              ::testing::HasSubstr(FILE_PATH_LITERAL("test_dir_prefix")));
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
 
@@ -3274,7 +3314,7 @@ TEST_F(FileUtilTest, TempDirectoryParentTest) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
 
   FilePath expected_parent_dir;
@@ -3296,6 +3336,21 @@ TEST_F(FileUtilTest, CreateNewTemporaryDirInDirTest) {
   EXPECT_TRUE(temp_dir_.GetPath().IsParent(new_dir));
   EXPECT_TRUE(DeleteFile(new_dir));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(FileUtilTest, GetSecureTempDirectory) {
+  FilePath temp_dir;
+  ASSERT_TRUE(GetSecureTempDirectory(&temp_dir));
+
+  FilePath expected_temp_dir;
+  if (internal::IsUserDefaultAdmin()) {
+    EXPECT_TRUE(PathService::Get(DIR_SYSTEM_TEMP, &expected_temp_dir));
+  } else {
+    EXPECT_TRUE(GetTempDir(&expected_temp_dir));
+  }
+  EXPECT_EQ(temp_dir, expected_temp_dir);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(FileUtilTest, GetShmemTempDirTest) {
@@ -5055,8 +5110,7 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSocket) {
 TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
   // This test verifies the special case where we have a regular file with zero
   // length that might actually have contents (such as a seq_file).
-  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline",
-                           "/proc/self/environ", "/proc/self/auxv"}) {
+  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline"}) {
     FilePath proc_file_from(file);
     File from(proc_file_from, File::FLAG_OPEN | File::FLAG_READ);
     ASSERT_TRUE(from.IsValid()) << "could not open " << file;
@@ -5082,6 +5136,36 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
+
+// Validates that a new file can be created with the same name as a recently
+// deleted one. This behavior became the default on Windows at some point during
+// Windows 10's lifetime. See FILE_DISPOSITION_POSIX_SEMANTICS:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-_file_disposition_information_ex#remarks
+// Note that as of Windows 11 25H this behavior still only seems to apply to
+// deleting a file using the path and not setting the file dispositions
+// directly.
+TEST_F(FileUtilTest, CreatingFileWithSameNameAfterDelete) {
+  static constexpr FilePath::CharType kFileBaseName[] =
+      FILE_PATH_LITERAL("file");
+  const FilePath file_path = temp_dir_.GetPath().Append(kFileBaseName);
+  const auto byte_span = byte_span_from_cstring("CONTENT");
+  const auto file_flags =
+      File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE;
+
+  File first_file(file_path, file_flags);
+  ASSERT_TRUE(first_file.IsValid());
+  ASSERT_THAT(first_file.Write(0, byte_span),
+              testing::Optional(byte_span.size()));
+
+  ASSERT_TRUE(DeleteFile(file_path));
+
+  File second_file(file_path, file_flags);
+  ASSERT_TRUE(second_file.IsValid());
+
+  // `second_file` is a completely new file. It doesn't have the same content as
+  // `first_file`.
+  ASSERT_EQ(second_file.GetLength(), 0);
+}
 
 }  // namespace
 

@@ -208,7 +208,7 @@ public final class PeriodicBackgroundSyncTest {
 
     @SuppressWarnings("MissingFail")
     private void assertTitleBecomes(String expectedTitle) throws InterruptedException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, expectedTitle);
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);

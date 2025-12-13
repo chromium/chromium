@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_auto_fill_status_manager.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
@@ -119,7 +120,7 @@ NSString* GetTurnOffCaptionTitleString() {
     _subtitleText = l10n_util::GetNSString(
         IDS_IOS_SETTINGS_PASSWORDS_PASSKEYS_IN_OTHER_APPS_SUBTITLE);
 
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
     _bannerName = kGoogleSettingsPasswordsInOtherAppsBannerImage;
 #else
     _bannerName = kChromiumSettingsPasswordsInOtherAppsBannerImage;
@@ -276,12 +277,10 @@ NSString* GetTurnOffCaptionTitleString() {
   imageHeightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   imageHeightConstraint.active = YES;
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateImageOnTraitChange)];
-  }
+  NSArray<UITrait>* traits =
+      TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateImageOnTraitChange)];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -338,20 +337,6 @@ NSString* GetTurnOffCaptionTitleString() {
   [super willMoveToParentViewController:parent];
   [self.navigationController setToolbarHidden:YES animated:YES];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  if (self.traitCollection.verticalSizeClass !=
-      previousTraitCollection.verticalSizeClass) {
-    [self updateImageOnTraitChange];
-  }
-}
-#endif
 
 #pragma mark - Accessors
 
@@ -676,20 +661,9 @@ NSString* GetTurnOffCaptionTitleString() {
 
 #pragma mark - UITextViewDelegate
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self didTapActionButton];
-  // Return NO as the app is handling the opening of the settings page.
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   __weak __typeof(self) weakSelf = self;
   return [UIAction actionWithHandler:^(UIAction* action) {
     [weakSelf didTapActionButton];

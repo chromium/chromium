@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents.h"
 
 #include <dispatch/dispatch.h>
 
@@ -16,16 +12,19 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
-#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
 
 namespace content {
 
@@ -76,6 +75,7 @@ base::FilePath ResolvePath(const base::FilePath& path) {
   }
   return result;
 }
+
 }  // namespace
 
 FilePathWatcherFSEvents::FilePathWatcherFSEvents()
@@ -160,8 +160,16 @@ void FilePathWatcherFSEvents::FSEventsCallback(
   CFArrayRef cf_event_paths = base::apple::CFCast<CFArrayRef>(event_paths);
   std::map<FSEventStreamEventId, ChangeEvent> events;
 
+  // SAFETY: Creating spans from external C API arrays is a justified exception
+  // to buffer safety rules. These arrays are provided by macOS FSEvents API
+  // with guaranteed validity for exactly `num_events` elements during this
+  // callback's execution.
+  UNSAFE_BUFFERS(
+      base::span<const FSEventStreamEventFlags> flags_span(flags, num_events));
+  UNSAFE_BUFFERS(base::span<const FSEventStreamEventId> event_ids_span(
+      event_ids, num_events));
   for (size_t i = 0; i < num_events; i++) {
-    const FSEventStreamEventFlags event_flags = flags[i];
+    const FSEventStreamEventFlags event_flags = flags_span[i];
 
     // Ignore this sentinel event, per FSEvents guidelines:
     // (https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags/kfseventstreameventflaghistorydone).
@@ -173,7 +181,7 @@ void FilePathWatcherFSEvents::FSEventsCallback(
       is_root_changed_event = true;
     }
 
-    const FSEventStreamEventId event_id = event_ids[i];
+    const FSEventStreamEventId event_id = event_ids_span[i];
     if (event_id) {
       root_change_at = std::min(root_change_at, event_id);
     }

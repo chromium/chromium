@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/heap_array.h"
+#include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/storage_block-inl.h"
@@ -173,14 +174,14 @@ class NET_EXPORT_PRIVATE EntryImpl
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  int32_t GetDataSize(int index) const override;
+  int64_t GetDataSize(int index) const override;
   int ReadData(int index,
-               int offset,
+               int64_t offset,
                IOBuffer* buf,
                int buf_len,
                CompletionOnceCallback callback) override;
   int WriteData(int index,
-                int offset,
+                int64_t offset,
                 IOBuffer* buf,
                 int buf_len,
                 CompletionOnceCallback callback,

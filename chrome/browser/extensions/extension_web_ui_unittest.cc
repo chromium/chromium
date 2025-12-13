@@ -17,7 +17,6 @@
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/common/extensions/api/chrome_url_overrides.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_callback.h"
@@ -28,6 +27,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/chrome_url_overrides.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
@@ -57,6 +57,32 @@ std::unique_ptr<KeyedService> BuildOverrideRegistrar(
     content::BrowserContext* context) {
   return std::make_unique<ExtensionWebUIOverrideRegistrar>(context);
 }
+
+class TestOverrideRegistrarObserver
+    : public ExtensionWebUIOverrideRegistrar::Observer {
+ public:
+  TestOverrideRegistrarObserver() = default;
+  ~TestOverrideRegistrarObserver() override = default;
+
+  void OnExtensionOverrideAdded(const Extension& extension) override {
+    loaded_extensions_.push_back(extension.id());
+  }
+
+  void OnExtensionOverrideRemoved(const Extension& extension) override {
+    unloaded_extensions_.push_back(extension.id());
+  }
+
+  const std::vector<ExtensionId>& loaded_extensions() const {
+    return loaded_extensions_;
+  }
+  const std::vector<ExtensionId>& unloaded_extensions() const {
+    return unloaded_extensions_;
+  }
+
+ private:
+  std::vector<ExtensionId> loaded_extensions_;
+  std::vector<ExtensionId> unloaded_extensions_;
+};
 
 }  // namespace
 
@@ -190,6 +216,58 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&changed_url,
                                                              profile_.get()));
   EXPECT_EQ(kBookmarksUrl, changed_url);
+}
+
+TEST_F(ExtensionWebUITest, OverrideRegistrarObserver) {
+  TestOverrideRegistrarObserver observer;
+  ExtensionWebUIOverrideRegistrar* override_registrar =
+      ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
+          profile_.get());
+  override_registrar->AddObserver(&observer);
+
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder("ext1")
+          .SetManifestKey(
+              api::chrome_url_overrides::ManifestKeys::kChromeUrlOverrides,
+              base::Value::Dict().Set("bookmarks", "1.html"))
+          .Build());
+  const ExtensionId id = extension->id();
+
+  registrar()->AddExtension(extension.get());
+
+  ASSERT_EQ(1u, observer.loaded_extensions().size());
+  EXPECT_EQ(id, observer.loaded_extensions()[0]);
+  EXPECT_TRUE(observer.unloaded_extensions().empty());
+
+  registrar()->DisableExtension(id, {disable_reason::DISABLE_USER_ACTION});
+
+  ASSERT_EQ(1u, observer.loaded_extensions().size());
+  ASSERT_EQ(1u, observer.unloaded_extensions().size());
+  EXPECT_EQ(id, observer.unloaded_extensions()[0]);
+  override_registrar->RemoveObserver(&observer);
+}
+
+TEST_F(ExtensionWebUITest, OverrideRegistrarObserverNoOverride) {
+  TestOverrideRegistrarObserver observer;
+  ExtensionWebUIOverrideRegistrar* override_registrar =
+      ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
+          profile_.get());
+  override_registrar->AddObserver(&observer);
+
+  scoped_refptr<const Extension> extension(
+      ExtensionBuilder("No override").Build());
+
+  registrar()->AddExtension(extension.get());
+
+  EXPECT_TRUE(observer.loaded_extensions().empty());
+  EXPECT_TRUE(observer.unloaded_extensions().empty());
+
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
+
+  EXPECT_TRUE(observer.loaded_extensions().empty());
+  EXPECT_TRUE(observer.unloaded_extensions().empty());
+  override_registrar->RemoveObserver(&observer);
 }
 
 TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {

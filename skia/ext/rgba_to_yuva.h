@@ -5,6 +5,8 @@
 #ifndef SKIA_EXT_RGBA_TO_YUVA_H_
 #define SKIA_EXT_RGBA_TO_YUVA_H_
 
+#include "base/containers/span.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -19,12 +21,13 @@ namespace skia {
 // `dst_region`. If a default-constructed `dst_region` is passed in, the entire
 // destination image will be written to. If `clear_destination` is true, the
 // entire destination image will be cleared with black before the blit.
+// If `src_image` is null, draw black rect to the `dst_region` instead.
 SK_API void BlitRGBAToYUVA(SkImage* src_image,
-                           SkSurface* dst_surfaces[SkYUVAInfo::kMaxPlanes],
+                           base::span<SkSurface* const> dst_surfaces,
                            const SkYUVAInfo& dst_yuva_info,
                            const SkRect& dst_region = SkRect::MakeEmpty(),
-                           bool clear_destination = false);
-
+                           bool clear_destination = false,
+                           const SkRect& src_region = SkRect::MakeEmpty());
 }  // namespace skia
 
 #endif  // SKIA_EXT_RGBA_TO_YUVA_H_

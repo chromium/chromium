@@ -99,22 +99,25 @@ public class NativePageTest {
     public void testNativePageType_Pdf() {
         String url1 = "chrome-native://pdf/link?url=xyz";
         String url2 = "chrome-native://pdf/link?url=abc";
+
+        GURL gurl1 = new GURL(url1);
+
         NativePage candidatePage = mock(NativePage.class);
         doReturn(url1).when(candidatePage).getUrl();
         Assert.assertEquals(
                 "Candidate page should be reused when url matches",
                 NativePageType.CANDIDATE,
-                NativePage.nativePageType(url1, candidatePage, false, true));
+                NativePage.nativePageType(gurl1, candidatePage, false, true));
 
         doReturn(url2).when(candidatePage).getUrl();
         Assert.assertEquals(
                 "Candidate page should not be reused when url does not match",
                 NativePageType.PDF,
-                NativePage.nativePageType(url1, candidatePage, false, true));
+                NativePage.nativePageType(gurl1, candidatePage, false, true));
 
         Assert.assertEquals(
                 "Native page should not be created without associated pdf download",
                 NativePageType.NONE,
-                NativePage.nativePageType(url1, candidatePage, false, false));
+                NativePage.nativePageType(gurl1, candidatePage, false, false));
     }
 }

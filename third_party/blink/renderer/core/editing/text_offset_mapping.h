@@ -51,9 +51,6 @@ class CORE_EXPORT TextOffsetMapping final {
     InlineContents() = default;
 
     bool operator==(const InlineContents& other) const;
-    bool operator!=(const InlineContents& other) const {
-      return !operator==(other);
-    }
 
     const LayoutBlockFlow* GetEmptyBlock() const;
     const LayoutObject& FirstLayoutObject() const;
@@ -115,9 +112,6 @@ class CORE_EXPORT TextOffsetMapping final {
       bool operator==(const Iterator& other) const {
         return current_ == other.current_;
       }
-      bool operator!=(const Iterator& other) const {
-        return !operator==(other);
-      }
 
      private:
       InlineContents current_;
@@ -156,9 +150,6 @@ class CORE_EXPORT TextOffsetMapping final {
 
       bool operator==(const Iterator& other) const {
         return current_ == other.current_;
-      }
-      bool operator!=(const Iterator& other) const {
-        return !operator==(other);
       }
 
      private:

@@ -13,15 +13,14 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/screen.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
@@ -56,8 +55,7 @@ void MakeSectionBold(views::StyledLabel* label,
       style.custom_font = label->GetFontList().Derive(
           0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
     }
-    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary);
+    style.override_color_id = cros_tokens::kTextColorPrimary;
     return style;
   };
 
@@ -125,7 +123,7 @@ void AuthErrorBubble::ShowAuthError(base::WeakPtr<views::View> anchor_view,
   // Display a hint to switch keyboards if there are other active input
   // methods in clamshell mode.
   if (ime_controller->GetVisibleImes().size() > 1 &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     error_text += u" ";
     bold_start = error_text.length();
     std::u16string shortcut =

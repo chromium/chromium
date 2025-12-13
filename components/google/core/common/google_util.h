@@ -11,10 +11,16 @@
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
+
 class GURL;
 
 // This namespace provides various helpers around handling Google-related URLs.
 namespace google_util {
+
+// TODO(crbug.com/435419641): Remove this feature flag once it is stable.
+// Feature flag to consider /viewer/ URLs as search URL.
+BASE_DECLARE_FEATURE(kIsViewerGoogleSearchUrl);
 
 // The Google Search mode of a page. This corresponds to the tab (e.g. web
 // result, image results, video results, etc.) the user is on. Used in UKM

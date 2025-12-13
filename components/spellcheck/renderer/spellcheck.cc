@@ -35,6 +35,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/public/web/web_text_checking_completion.h"
 #include "third_party/blink/public/web/web_text_checking_result.h"
 #include "third_party/blink/public/web/web_text_decoration_type.h"
@@ -120,11 +121,14 @@ class SpellCheck::SpellcheckRequest {
   SpellcheckRequest(
       const std::u16string& text,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion,
-      base::WeakPtr<SpellCheckProvider> provider)
+      base::WeakPtr<SpellCheckProvider> provider,
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+          should_force_refresh)
       : text_(text),
         completion_(std::move(completion)),
         start_ticks_(base::TimeTicks::Now()),
-        provider_(provider) {
+        provider_(provider),
+        should_force_refresh_(should_force_refresh) {
     DCHECK(completion_);
   }
 
@@ -138,6 +142,10 @@ class SpellCheck::SpellcheckRequest {
   base::TimeTicks start_ticks() { return start_ticks_; }
 
   SpellCheckProvider* provider() { return provider_.get(); }
+  blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+  should_force_refresh() {
+    return should_force_refresh_;
+  }
 
  private:
   std::u16string text_;  // Text to be checked in this task.
@@ -149,6 +157,9 @@ class SpellCheck::SpellcheckRequest {
   base::TimeTicks start_ticks_;
 
   base::WeakPtr<SpellCheckProvider> provider_;
+
+  blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
+      should_force_refresh_;
 };
 
 
@@ -446,7 +457,9 @@ void SpellCheck::RequestTextChecking(
     pending_request_param_->completion()->DidCancelCheckingText();
 
   pending_request_param_ = std::make_unique<SpellcheckRequest>(
-      text, std::move(completion), std::move(provider));
+      text, std::move(completion), std::move(provider),
+      /*should_force_refresh=*/
+      blink::WebTextCheckClient::ShouldForceRefreshTextCheckService::kNo);
   // We will check this text after we finish loading the hunspell dictionary.
   if (InitializeIfNeeded())
     return;
@@ -528,7 +541,6 @@ void SpellCheck::CreateTextCheckingResults(
     const std::vector<std::u16string>& replacements =
         spellcheck_result.replacements;
     SpellCheckResult::Decoration decoration = spellcheck_result.decoration;
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // Ignore words that are in a script not supported by any of the enabled
     // spellcheck languages.
@@ -597,10 +609,10 @@ void SpellCheck::CreateTextCheckingResults(
     }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-    results.push_back(
-        WebTextCheckingResult(static_cast<WebTextDecorationType>(decoration),
-                              line_offset + spellcheck_result.location,
-                              spellcheck_result.length, replacements_filtered));
+    results.push_back(WebTextCheckingResult(
+        static_cast<WebTextDecorationType>(decoration),
+        line_offset + spellcheck_result.location, spellcheck_result.length,
+        replacements_filtered, spellcheck_result.should_hide_suggestion_menu));
   }
 
   *textcheck_results = std::move(results);

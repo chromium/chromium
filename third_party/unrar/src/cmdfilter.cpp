@@ -20,6 +20,12 @@ bool CommandData::CheckArgs(StringList *Args,bool Dir,const std::wstring &CheckN
   Args->Rewind();
   while (Args->GetString(CurMask))
   {
+#ifdef _WIN_ALL
+    // 2025.09.11: Unix allows DOS slashes as a part of file name, so we do not
+    // convert it for Unix. In Windows we wish -xdir\file and -xdir/file both
+    // to exclude the file.
+    UnixSlashToDos(CurMask,CurMask);
+#endif    
     wchar LastMaskChar=GetLastChar(CurMask);
     bool DirMask=IsPathDiv(LastMaskChar); // Mask for directories only.
 

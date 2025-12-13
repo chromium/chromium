@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,6 +27,7 @@
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_types.h"
 
 namespace history {
 
@@ -585,12 +585,15 @@ void ExpireHistoryBackend::ExpireURLsForVisits(const VisitVector& visits,
 
     // Check if there are any other visits for this URL and update the time
     // (the time change may not actually be synced to disk below when we're
-    // archiving).
+    // archiving). This includes 404 visits (see crbug.com/430618428 for
+    // context).
     VisitRow last_visit;
-    if (main_db_->GetMostRecentVisitForURL(url_row.id(), &last_visit))
+    if (main_db_->GetMostRecentVisitForURL(
+            url_row.id(), &last_visit, VisitQuery404sPolicy::kInclude404s)) {
       url_row.set_last_visit(last_visit.visit_time);
-    else
+    } else {
       url_row.set_last_visit(base::Time());
+    }
 
     // Don't delete URLs with visits still in the DB, or pinned.
     bool is_pinned =

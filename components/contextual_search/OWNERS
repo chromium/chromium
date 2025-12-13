@@ -1,4 +1,7 @@
-file://chrome/browser/android/contextualsearch/OWNERS
+hujasonx@google.com
+jennserrano@google.com
+mahmadi@chromium.org
+sophiechang@chromium.org
+tiborg@chromium.org
 
-per-file *.mojom=set noparent
-per-file *.mojom=file://ipc/SECURITY_OWNERS
+file://components/lens/OWNERS

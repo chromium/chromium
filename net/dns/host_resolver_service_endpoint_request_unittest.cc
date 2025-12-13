@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -166,7 +167,7 @@ class Requester : public ServiceEndpointRequest::Delegate {
     finished_result_ = rv;
 
     if (request_) {
-      finished_endpoints_ = request_->GetEndpointResults();
+      finished_endpoints_ = base::ToVector(request_->GetEndpointResults());
     }
   }
 

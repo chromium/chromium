@@ -105,7 +105,7 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mDownloader.initialize(
-                            page.webContentsElement.get(),
+                            page.webContentsElement.value(),
                             new CSPChecker() {
                                 @Override
                                 public void allowConnectToSource(

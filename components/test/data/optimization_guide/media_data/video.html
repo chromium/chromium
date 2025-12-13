@@ -1,0 +1,36 @@
+<html>
+<head>
+  <title>Test page showing a video</title>
+</head>
+<body>
+<video id="video" src="video.webm"></video>
+</body>
+<script>
+  const video = document.getElementById('video');
+
+  // These functions will be called by the browser test.
+  function play() {
+    video.play();
+  }
+
+  function pause() {
+    video.pause();
+  }
+
+  function setupMetadata() {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: "test title",
+      artist: "test artist",
+      album: "test album",
+    });
+  }
+
+  function setupPosition() {
+    navigator.mediaSession.setPositionState({
+      duration: 10.0,
+      position: 5.0,
+      playbackRate: 1.0
+    });
+  }
+</script>
+</html>

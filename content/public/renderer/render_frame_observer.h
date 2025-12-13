@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/time/time.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/performance/performance_timeline_constants.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
@@ -30,6 +30,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "v8/include/v8-forward.h"
@@ -43,6 +44,7 @@ class WebFormElement;
 class WebString;
 class WebURLRequest;
 class WebWorkerFetchContext;
+enum class BFCacheStateChange;
 enum class DetachReason;
 struct JavaScriptFrameworkDetectionResult;
 }  // namespace blink
@@ -119,7 +121,8 @@ class CONTENT_EXPORT RenderFrameObserver {
       blink::WebDocumentLoader* document_loader) {}
 
   // Called when a RenderFrame's page lifecycle state gets updated.
-  virtual void DidSetPageLifecycleState(bool restoring_from_bfcache) {}
+  virtual void DidSetPageLifecycleState(
+      blink::BFCacheStateChange bfcache_change) {}
 
   // These match the Blink API notifications. These will not be called for the
   // initial empty document, since that already exists before an observer for a
@@ -236,6 +239,9 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Notification when the renderer uses subresources.
   // It is called when there is a subresouce load. The reported values via
   // arguments are cumulative. They are NOT a difference from the previous call.
+  //
+  // TODO(crbug.com/404425954): `DidObserveSubresourceLoad()` is going to be
+  // deprecated. Use `SetSubresourceLoadCallback()` in `RenderFrame` instead.
   virtual void DidObserveSubresourceLoad(
       const blink::SubresourceLoadMetrics& subresource_load_metrics) {}
 
@@ -254,7 +260,8 @@ class CONTENT_EXPORT RenderFrameObserver {
   // - Initiated with the window.history or window.navigation APIs.
   // - Accompanied with a DOM modification of the <main> element during the same
   // or a descendant task.
-  virtual void DidObserveSoftNavigation(blink::SoftNavigationMetrics metrics) {}
+  virtual void DidObserveSoftNavigation(
+      blink::SoftNavigationMetricsForReporting metrics) {}
 
   // Reports that visible elements in the frame shifted (bit.ly/lsm-explainer).
   // This is called once for each animation frame containing any layout shift,
@@ -268,6 +275,10 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
+  //
+  // TODO(crbug.com/404425954): `DidStartResponse()`, `DidCompleteResponse()`,
+  // `DidCancelResponse()` are going to be deprecated. Use callback setters in
+  // `RenderFrame` instead.
   virtual void DidStartResponse(
       const url::SchemeHostPort& final_response_url,
       int request_id,
@@ -282,18 +293,24 @@ class CONTENT_EXPORT RenderFrameObserver {
   // Reports that a resource was loaded from the blink memory cache.
   // |request_id| uniquely identifies this resource within this render frame.
   // |from_archive| indicates if the resource originated from a MHTML archive.
-  virtual void DidLoadResourceFromMemoryCache(const GURL& response_url,
-                                              int request_id,
-                                              int64_t encoded_body_length,
-                                              const std::string& mime_type,
-                                              bool from_archive) {}
+  //
+  // TODO(crbug.com/404425954): `DidLoadResourceFromMemoryCache()` is going to
+  // be deprecated. Use `SetLoadFromMemoryCacheCallback()` in `RenderFrame`
+  // instead.
+  virtual void DidLoadResourceFromMemoryCache(
+      const GURL& response_url,
+      int request_id,
+      base::ByteCount encoded_body_length,
+      const std::string& mime_type,
+      bool from_archive) {}
 
   // Notification when the renderer observes data used during the page load.
   // This is used for page load metrics. |received_data_length| is the received
   // network bytes. |resource_id| uniquely identifies the resource within this
   // render frame.
-  virtual void DidReceiveTransferSizeUpdate(int resource_id,
-                                            int received_data_length) {}
+  virtual void DidReceiveTransferSizeUpdate(
+      int resource_id,
+      base::ByteCount received_data_length) {}
 
   // Called when the focused element has changed to |element|.
   virtual void FocusedElementChanged(const blink::WebElement& element) {}
@@ -325,11 +342,10 @@ class CONTENT_EXPORT RenderFrameObserver {
   virtual void OnMainFrameViewportRectangleChanged(
       const gfx::Rect& main_frame_viewport_rect) {}
 
-  // Called when an image ad rectangle changed. An empty `image_ad_rect` is used
-  // to signal the removal of the rectangle. Only invoked on the main frame.
-  virtual void OnMainFrameImageAdRectangleChanged(
-      int element_id,
-      const gfx::Rect& image_ad_rect) {}
+  // Called when an ad element's geometry changed. An empty `ad_rect` is used to
+  // signal the removal of the element. Only invoked on the main frame.
+  virtual void OnMainFrameAdRectangleChanged(int element_id,
+                                             const gfx::Rect& ad_rect) {}
 
   // Overlay-popup-ad violates The Better Ads Standards
   // (https://www.betterads.org/standards/). This method will be called when an

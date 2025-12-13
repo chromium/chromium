@@ -4,50 +4,54 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/event_broadcaster.h"
 
+#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_batched_observer.h"
+
 namespace tabs_api {
 
 // A decoder which takes the incoming event type and directs them to the proper
 // callback.
 class EventVisitor {
  public:
-  explicit EventVisitor(
-      const mojo::AssociatedRemote<tabs_api::mojom::TabsObserver>* target)
-      : target_(target) {}
+  EventVisitor() = default;
 
-  void operator()(const mojom::OnTabsCreatedEventPtr& event) {
-    (*target_)->OnTabsCreated(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnTabsCreatedEventPtr& event) {
+    return mojom::TabsEvent::NewTabsCreatedEvent(event.Clone());
   }
 
-  void operator()(const mojom::OnTabsClosedEventPtr& event) {
-    (*target_)->OnTabsClosed(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnTabsClosedEventPtr& event) {
+    return mojom::TabsEvent::NewTabsClosedEvent(event.Clone());
   }
 
-  void operator()(const mojom::OnTabMovedEventPtr& event) {
-    (*target_)->OnTabMoved(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnNodeMovedEventPtr& event) {
+    return mojom::TabsEvent::NewNodeMovedEvent(event.Clone());
   }
 
-  void operator()(const mojom::OnTabDataChangedEventPtr& event) {
-    (*target_)->OnTabDataChanged(event.Clone());
+  mojom::TabsEventPtr operator()(const mojom::OnDataChangedEventPtr& event) {
+    return mojom::TabsEvent::NewDataChangedEvent(event.Clone());
   }
 
-  void operator()(const mojom::OnTabGroupCreatedEventPtr& event) {
-    (*target_)->OnTabGroupCreated(event.Clone());
+  mojom::TabsEventPtr operator()(
+      const mojom::OnCollectionCreatedEventPtr& event) {
+    return mojom::TabsEvent::NewCollectionCreatedEvent(event.Clone());
   }
-
-  void operator()(const mojom::OnTabGroupVisualsChangedEventPtr& event) {
-    (*target_)->OnTabGroupVisualsChanged(event.Clone());
-  }
-
- private:
-  raw_ptr<const mojo::AssociatedRemote<tabs_api::mojom::TabsObserver>> target_;
 };
 
+std::vector<mojom::TabsEventPtr> Transform(
+    const std::vector<events::Event>& events) {
+  std::vector<mojom::TabsEventPtr> transformed;
+  EventVisitor transformer;
+  for (auto& event : events) {
+    transformed.push_back(std::visit(transformer, event));
+  }
+  return transformed;
+}
+
 void EventBroadcaster::Broadcast(
-    const mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver>& targets,
-    const events::Event& event) {
-  for (auto& target : targets) {
-    EventVisitor visitor(&target);
-    std::visit(visitor, event);
+    const base::ObserverList<observation::TabStripApiBatchedObserver>&
+        observers,
+    const std::vector<events::Event>& events) {
+  for (auto& observer : observers) {
+    observer.OnTabEvents(Transform(events));
   }
 }
 

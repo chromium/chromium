@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.customtabs;
 
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.util.SparseBooleanArray;
 
@@ -18,7 +22,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -58,13 +61,15 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceFileInfo.TabStateFileInfo;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
-import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager;
+import org.chromium.chrome.browser.tabpersistence.TabMetadataFileManager.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel.MockTabModelDelegate;
 import org.chromium.url.GURL;
 
 import java.io.File;
@@ -127,20 +132,20 @@ public class CustomTabTabPersistencePolicyTest {
     @MediumTest
     public void testExistingMetadataFileDeletedIfNoRestore() throws Exception {
         File baseStateDirectory = TabStateDirectory.getOrCreateBaseStateDirectory();
-        Assert.assertNotNull(baseStateDirectory);
+        assertNotNull(baseStateDirectory);
 
         CustomTabTabPersistencePolicy policy = new CustomTabTabPersistencePolicy(7, false);
         File stateDirectory = policy.getOrCreateStateDirectory();
-        Assert.assertNotNull(stateDirectory);
+        assertNotNull(stateDirectory);
 
         String stateFileName = policy.getMetadataFileName();
         File existingStateFile = new File(stateDirectory, stateFileName);
-        Assert.assertTrue(existingStateFile.createNewFile());
+        assertTrue(existingStateFile.createNewFile());
 
-        Assert.assertTrue(existingStateFile.exists());
+        assertTrue(existingStateFile.exists());
         policy.performInitialization(mSequencedTaskRunner);
         policy.waitForInitializationToFinish();
-        Assert.assertFalse(existingStateFile.exists());
+        assertFalse(existingStateFile.exists());
     }
 
     /** Test the logic that gets all the live tab and task IDs. */
@@ -148,7 +153,7 @@ public class CustomTabTabPersistencePolicyTest {
     @Feature("TabPersistentStore")
     @SmallTest
     @UiThreadTest
-    public void testGettingTabAndTaskIds() throws Throwable {
+    public void testGettingTabAndTaskIds() {
         Set<Integer> tabIds = new HashSet<>();
         Set<Integer> taskIds = new HashSet<>();
         CustomTabTabPersistencePolicy.getAllLiveTabAndTaskIds(tabIds, taskIds);
@@ -193,21 +198,18 @@ public class CustomTabTabPersistencePolicyTest {
     @MediumTest
     public void testCleanupTask() throws Throwable {
         File baseStateDirectory = TabStateDirectory.getOrCreateBaseStateDirectory();
-        Assert.assertNotNull(baseStateDirectory);
+        assertNotNull(baseStateDirectory);
 
         CustomTabTabPersistencePolicy policy = new CustomTabTabPersistencePolicy(2, false);
         File stateDirectory = policy.getOrCreateStateDirectory();
-        Assert.assertNotNull(stateDirectory);
+        assertNotNull(stateDirectory);
 
         final AtomicReference<TabPersistenceFileInfo> tabDataToDelete = new AtomicReference<>();
         final CallbackHelper callbackSignal = new CallbackHelper();
         Callback<TabPersistenceFileInfo> tabDataToDeleteCallback =
-                new Callback<>() {
-                    @Override
-                    public void onResult(TabPersistenceFileInfo tabData) {
-                        tabDataToDelete.set(tabData);
-                        callbackSignal.notifyCalled();
-                    }
+                (TabPersistenceFileInfo tabData) -> {
+                    tabDataToDelete.set(tabData);
+                    callbackSignal.notifyCalled();
                 };
 
         // Test when no files have been created.
@@ -219,7 +221,7 @@ public class CustomTabTabPersistencePolicyTest {
         File tab999File =
                 TabStateFileManager.getTabStateFile(
                         stateDirectory, 999, false, /* isFlatbuffer= */ false);
-        Assert.assertTrue(tab999File.createNewFile());
+        assertTrue(tab999File.createNewFile());
         policy.cleanupUnusedFiles(tabDataToDeleteCallback);
         callbackSignal.waitForCallback(1);
         assertThat(
@@ -245,35 +247,36 @@ public class CustomTabTabPersistencePolicyTest {
                         () -> {
                             TabModelSelectorImpl selectorImpl =
                                     buildTestTabModelSelector(new int[] {111, 222, 333}, null);
-                            return TabPersistentStore.saveTabModelSelectorMetadata(
+                            return TabPersistentStoreImpl.extractTabMetadataFromSelector(
                                     selectorImpl, null);
                         });
         FileOutputStream fos = null;
-        File metadataFile = new File(stateDirectory, TabPersistentStore.getMetadataFileName("3"));
+        File metadataFile =
+                new File(stateDirectory, TabMetadataFileManager.getMetadataFileName("3"));
         try {
-            TabPersistentStore.saveListToFile(metadataFile, data);
+            TabMetadataFileManager.saveListToFile(metadataFile, data);
         } finally {
             StreamUtil.closeQuietly(fos);
         }
         File tab111File =
                 TabStateFileManager.getTabStateFile(
                         stateDirectory, 111, false, /* isFlatbuffer= */ false);
-        Assert.assertTrue(tab111File.createNewFile());
+        assertTrue(tab111File.createNewFile());
         File tab222File =
                 TabStateFileManager.getTabStateFile(
                         stateDirectory, 222, false, /* isFlatbuffer= */ false);
-        Assert.assertTrue(tab222File.createNewFile());
+        assertTrue(tab222File.createNewFile());
         File tab333File =
                 TabStateFileManager.getTabStateFile(
                         stateDirectory, 333, false, /* isFlatbuffer= */ false);
-        Assert.assertTrue(tab333File.createNewFile());
+        assertTrue(tab333File.createNewFile());
         policy.cleanupUnusedFiles(tabDataToDeleteCallback);
         callbackSignal.waitForCallback(3);
         assertThat(tabDataToDelete.get().getMetadataFiles(), Matchers.emptyIterable());
 
         // Set the age of the metadata file to be past the expiration threshold and ensure it along
         // with the associated tab files are marked for deletion.
-        Assert.assertTrue(metadataFile.setLastModified(1234));
+        assertTrue(metadataFile.setLastModified(1234));
         policy.cleanupUnusedFiles(tabDataToDeleteCallback);
         callbackSignal.waitForCallback(4);
         assertThat(
@@ -293,23 +296,23 @@ public class CustomTabTabPersistencePolicyTest {
     @MediumTest
     public void testMetadataTimestampRefreshed() throws Exception {
         File baseStateDirectory = TabStateDirectory.getOrCreateBaseStateDirectory();
-        Assert.assertNotNull(baseStateDirectory);
+        assertNotNull(baseStateDirectory);
 
         CustomTabTabPersistencePolicy policy = new CustomTabTabPersistencePolicy(2, true);
         File stateDirectory = policy.getOrCreateStateDirectory();
-        Assert.assertNotNull(stateDirectory);
+        assertNotNull(stateDirectory);
 
         File metadataFile = new File(stateDirectory, policy.getMetadataFileName());
-        Assert.assertTrue(metadataFile.createNewFile());
+        assertTrue(metadataFile.createNewFile());
 
         long previousTimestamp =
                 System.currentTimeMillis() - CustomTabFileUtils.STATE_EXPIRY_THRESHOLD;
-        Assert.assertTrue(metadataFile.setLastModified(previousTimestamp));
+        assertTrue(metadataFile.setLastModified(previousTimestamp));
 
         policy.performInitialization(mSequencedTaskRunner);
         policy.waitForInitializationToFinish();
 
-        Assert.assertTrue(metadataFile.lastModified() > previousTimestamp);
+        assertTrue(metadataFile.lastModified() > previousTimestamp);
     }
 
     private CustomTabActivity buildTestCustomTabActivity(
@@ -362,7 +365,7 @@ public class CustomTabTabPersistencePolicyTest {
 
             @Override
             public @NonNull String getMetadataFileName() {
-                return TabPersistentStore.getMetadataFileName("cct_testing0");
+                return TabMetadataFileManager.getMetadataFileName("cct_testing0");
             }
 
             @Override
@@ -389,18 +392,15 @@ public class CustomTabTabPersistencePolicyTest {
 
     private TabModelSelectorImpl buildTestTabModelSelector(
             int[] normalTabIds, int[] incognitoTabIds) {
-        MockTabModel.MockTabModelDelegate tabModelDelegate =
-                new MockTabModel.MockTabModelDelegate() {
-                    @Override
-                    public MockTab createTab(int id, boolean incognito) {
-                        Profile profile = incognito ? mIncognitoProfile : mProfile;
-                        return new MockTab(id, profile) {
-                            @Override
-                            public GURL getUrl() {
-                                return new GURL("https://www.google.com");
-                            }
-                        };
-                    }
+        MockTabModelDelegate tabModelDelegate =
+                (int id, boolean incognito) -> {
+                    Profile profile = incognito ? mIncognitoProfile : mProfile;
+                    return new MockTab(id, profile) {
+                        @Override
+                        public GURL getUrl() {
+                            return new GURL("https://www.google.com");
+                        }
+                    };
                 };
         final MockTabModel normalTabModel = new MockTabModel(mProfile, tabModelDelegate);
         if (normalTabIds != null) {

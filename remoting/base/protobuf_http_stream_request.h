@@ -13,12 +13,7 @@
 #include "base/timer/timer.h"
 #include "remoting/base/protobuf_http_request_base.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
-
-namespace google {
-namespace protobuf {
-class MessageLite;
-}  // namespace protobuf
-}  // namespace google
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace remoting {
 

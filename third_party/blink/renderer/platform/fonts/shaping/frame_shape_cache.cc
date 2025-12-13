@@ -6,8 +6,15 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+// Google Spreadsheet creates 320K nodes and shapes in a single frame for
+// a sheet including 160K rows. It consumed about 700MB and was never purged.
+// The size limit reduces memory consumption. See crbug.com/429425735.
+constexpr wtf_size_t kMaximumNodeCacheEntries = 32768;
+constexpr wtf_size_t kMaximumShapeCacheEntries = 32768;
 
 FrameShapeCache::FrameShapeCache() {
   // `80` and `180` were chosen for Speedometer3 Charts-chartjs.
@@ -48,16 +55,12 @@ E* FrameShapeCache::FindOrCreateEntry(const String& text,
     // old entries.
   }
   wtf_size_t list_index = result.stored_value->value.list_index;
-  // On cache hit,
-  // - Do nothing if it's created in the initial frame
-  // - Do nothing if it's touched in the current frame.
-  // - Otherwise, update `generation`, and move the LRU list entry to the front.
   if (list_index != kNotFound) {
+    // On cache hit, update `generation`, and move the LRU list entry to
+    // the front.
     auto it = lru_list.MakeIterator(list_index);
-    if (it->generation != frame_generation_) {
-      it->generation = frame_generation_;
-      lru_list.MoveTo(it, lru_list.cbegin());
-    }
+    it->generation = frame_generation_;
+    lru_list.MoveTo(it, lru_list.cbegin());
   }
   return &result.stored_value->value;
 }
@@ -65,10 +68,6 @@ E* FrameShapeCache::FindOrCreateEntry(const String& text,
 wtf_size_t FrameShapeCache::ListIndexForNewEntry(const String& text,
                                                  TextDirection direction,
                                                  LruList& lru_list) {
-  if (frame_generation_ == kInitialFrame) {
-    // Do not create an LRU list entry during the initial frame.
-    return kNotFound;
-  }
   lru_list.push_front(ListKey{{text, direction}, frame_generation_});
   return lru_list.begin().GetIndex();
 }
@@ -76,12 +75,30 @@ wtf_size_t FrameShapeCache::ListIndexForNewEntry(const String& text,
 template <typename E>
 void FrameShapeCache::RemoveOldEntries(HeapHashMap<KeyType, E>& map,
                                        LruList& lru_list) {
-  while (!lru_list.empty()) {
-    auto& value = lru_list.back();
-    DCHECK_NE(value.generation, kInitialFrame);
-    if (value.generation == frame_generation_) {
-      return;
+  if (frame_generation_ == kInitialFrame) {
+    return;
+  }
+  for (auto it = lru_list.begin(); it != lru_list.end();) {
+    auto& value = *it;
+    if (value.generation == kInitialFrame ||
+        value.generation == frame_generation_) {
+      ++it;
+      continue;
     }
+    map.erase(value.key);
+    it = lru_list.erase(it);
+  }
+}
+
+template <typename E>
+void FrameShapeCache::LimitCacheSize(HeapHashMap<KeyType, E>& map,
+                                     LruList& lru_list,
+                                     wtf_size_t limit) {
+  if (map.size() <= limit) {
+    return;
+  }
+  while (lru_list.size() > limit / 2) {
+    auto& value = lru_list.back();
     map.erase(value.key);
     lru_list.pop_back();
   }
@@ -93,7 +110,7 @@ FrameShapeCache::NodeEntry* FrameShapeCache::FindOrCreateNodeEntry(
   NodeEntry* entry =
       FindOrCreateEntry(text, direction, node_map_, node_lru_list_);
   const PlainTextNode* node = entry->node;
-  if (node && entry->list_index != WTF::kNotFound) {
+  if (node && entry->list_index != kNotFound) {
     // Touch ShapeResult cache entries for words in the hit node.
     for (const auto& item : node->ItemList()) {
       ShapeEntry* shape_entry =
@@ -113,6 +130,7 @@ void FrameShapeCache::RegisterNodeEntry(const String& text,
   entry->node = node;
   entry->list_index = ListIndexForNewEntry(text, direction, node_lru_list_);
   added_new_entries_ = true;
+  LimitCacheSize(node_map_, node_lru_list_, kMaximumNodeCacheEntries);
 }
 
 FrameShapeCache::ShapeEntry* FrameShapeCache::FindOrCreateShapeEntry(
@@ -128,6 +146,7 @@ void FrameShapeCache::RegisterShapeEntry(const PlainTextItem& item,
   entry->list_index =
       ListIndexForNewEntry(item.Text(), item.Direction(), shape_lru_list_);
   added_new_entries_ = true;
+  LimitCacheSize(shape_map_, shape_lru_list_, kMaximumShapeCacheEntries);
 }
 
 void FrameShapeCache::NodeEntry::Trace(Visitor* visitor) const {

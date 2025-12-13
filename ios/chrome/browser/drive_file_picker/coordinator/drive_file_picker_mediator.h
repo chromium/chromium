@@ -9,12 +9,16 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
 
+class DriveFilePickerCollection;
+class DriveFilePickerImageFetcher;
 @protocol DriveFilePickerMediatorDelegate;
 @class DriveFilePickerMetricsHelper;
 @protocol DriveFilePickerConsumer;
 @protocol DriveFilePickerCommands;
+struct DriveFilePickerOptions;
 @protocol SystemIdentity;
 
 namespace drive {
@@ -29,60 +33,44 @@ namespace web {
 class WebState;
 }
 
-namespace image_fetcher {
-class ImageDataFetcher;
-}
-
 class ChromeAccountManagerService;
 
 // Mediator of the Drive file picker.
 @interface DriveFilePickerMediator : NSObject <DriveFilePickerMutator>
 
-// A delegate to browse a given drive folder or search in drive.
+// Dependencies.
 @property(nonatomic, weak) id<DriveFilePickerMediatorDelegate> delegate;
-
 @property(nonatomic, weak) id<DriveFilePickerConsumer> consumer;
-
-// Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
+@property(nonatomic, assign) raw_ptr<drive::DriveService> driveService;
+@property(nonatomic, assign) raw_ptr<signin::IdentityManager> identityManager;
+@property(nonatomic, assign) raw_ptr<ChromeAccountManagerService>
+    accountManagerService;
+@property(nonatomic, assign) raw_ptr<DriveFilePickerImageFetcher> imageFetcher;
+@property(nonatomic, weak) DriveFilePickerMetricsHelper* metricsHelper;
 
-// Whether the mediator is active (a.k.a at the top of the navigation stack).
+// Whether the mediator is active (a.k.a the associated consumer is at the top
+// of the navigation stack and should be updated accordingly).
 @property(nonatomic, assign, getter=isActive) BOOL active;
 
+// Pending options. This will take effect when the mediator is set to active.
+@property(nonatomic, assign) std::optional<DriveFilePickerOptions>
+    pendingOptions;
+
 // Initializes the mediator with a given `webState`.
-- (instancetype)
-         initWithWebState:(web::WebState*)webState
-                 identity:(id<SystemIdentity>)identity
-                    title:(NSString*)title
-            imagesPending:(NSMutableSet<NSString*>*)imagesPending
-               imageCache:(NSCache<NSString*, UIImage*>*)imageCache
-           collectionType:(DriveFilePickerCollectionType)collectionType
-         folderIdentifier:(NSString*)folderIdentifier
-                   filter:(DriveFilePickerFilter)filter
-      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-         sortingDirection:(DriveItemsSortingOrder)sortingDirection
-             driveService:(drive::DriveService*)driveService
-          identityManager:(signin::IdentityManager*)identityManager
-    accountManagerService:(ChromeAccountManagerService*)accountManagerService
-             imageFetcher:
-                 (std::unique_ptr<image_fetcher::ImageDataFetcher>)imageFetcher
-            metricsHelper:(DriveFilePickerMetricsHelper*)metricsHelper
+- (instancetype)initWithWebState:(web::WebState*)webState
+                      collection:
+                          (std::unique_ptr<DriveFilePickerCollection>)collection
+                         options:(DriveFilePickerOptions)options
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Disconnects from the model layer.
+// Disconnects from the model layer. It is an error for the mediator to be
+// deallocated without first calling `-disconnect`.
 - (void)disconnect;
 
-// Sets the identity to `selectedIdentity`.
-- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
-
-// Sets a pending filter or sorting criteria. This will take effect when the
-// mediator is set to active.
-- (void)setPendingFilter:(DriveFilePickerFilter)filter
-         sortingCriteria:(DriveItemsSortingType)sortingCriteria
-        sortingDirection:(DriveItemsSortingOrder)sortingDirection
-     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes;
+// Sets the collection browsed by the mediator to `collection`.
+- (void)setCollection:(std::unique_ptr<DriveFilePickerCollection>)collection;
 
 @end
 

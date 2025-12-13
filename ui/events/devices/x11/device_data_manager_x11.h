@@ -6,13 +6,14 @@
 #define UI_EVENTS_DEVICES_X11_DEVICE_DATA_MANAGER_X11_H_
 
 #include <array>
-#include <bitset>
 #include <functional>
 #include <map>
 #include <memory>
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
@@ -276,8 +277,6 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   void DisableDevice(x11::Input::DeviceId deviceid);
   void EnableDevice(x11::Input::DeviceId deviceid);
 
-  bool IsDeviceEnabled(x11::Input::DeviceId device_id) const;
-
   // Returns true if |native_event| should be blocked.
   bool IsEventBlocked(const x11::Event& xev);
 
@@ -295,14 +294,14 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   struct ScrollInfo {
     struct AxisInfo {
       // The scroll valuator number of this scroll axis.
-      int number;
+      int number = -1;
       // The scroll increment; a value of n indicates n movement equals one
       // traditional scroll unit.
-      double increment;
+      double increment = 0.0;
       // Current scroll position; used to find the difference between events.
-      double position;
+      double position = 0.0;
       // If true then scroll has been seen in this direction.
-      bool seen;
+      bool seen = false;
     };
 
     AxisInfo vertical, horizontal;
@@ -321,7 +320,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   DeviceDataManagerX11();
   ~DeviceDataManagerX11() override;
 
-  void InitializeValuatorsForTest(int deviceid,
+  void InitializeValuatorsForTest(x11::Input::DeviceId deviceid,
                                   int start_valuator,
                                   int end_valuator,
                                   double min_value,
@@ -330,13 +329,13 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // Updates a device based on a Valuator class info.
   DataType UpdateValuatorClassDevice(
       const x11::Input::DeviceClass::Valuator& valuator_class_info,
-      x11::Atom* atoms,
-      uint16_t deviceid);
+      const base::flat_map<x11::Atom, DataType>& atom_to_data_type,
+      x11::Input::DeviceId deviceid);
 
   // Updates a device based on a Scroll class info.
   void UpdateScrollClassDevice(
       const x11::Input::DeviceClass::Scroll& scroll_class_info,
-      uint16_t deviceid);
+      x11::Input::DeviceId deviceid);
 
   // Normalize the scroll amount according to the increment size.
   // *value /= increment
@@ -350,41 +349,41 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   void SelectDeviceEvents(x11::Input::XIEventMask event_mask);
 
   static const int kMaxXIEventType = 32;
-  static const int kMaxSlotNum = 10;
 
   // A quick lookup table for determining if events from the pointer device
   // should be processed.
-  std::bitset<kMaxDeviceNum> cmt_devices_;
-  std::bitset<kMaxDeviceNum> touchpads_;
-  std::bitset<kMaxDeviceNum> stylus_;
+  base::flat_set<x11::Input::DeviceId> cmt_devices_;
+  base::flat_set<x11::Input::DeviceId> touchpads_;
+  base::flat_set<x11::Input::DeviceId> stylus_;
 
   // List of the master pointer devices.
   std::vector<x11::Input::DeviceId> master_pointers_;
 
   // A quick lookup table for determining if events from the XI device
   // should be blocked.
-  std::bitset<kMaxDeviceNum> blocked_devices_;
+  base::flat_set<x11::Input::DeviceId> blocked_devices_;
 
   // The set of keys allowed while the keyboard is blocked.
   std::unique_ptr<std::set<KeyboardCode>> blocked_keyboard_allowed_keys_;
 
   // Number of valuators on the specific device.
-  std::array<int, kMaxDeviceNum> valuator_count_;
+  base::flat_map<x11::Input::DeviceId, int> valuator_count_;
 
   // Index table to find valuator number, min and max for DataType on the
   // specific device by valuator_lookup_[device_id][data_type].
-  std::array<std::vector<ValuatorInfo>, kMaxDeviceNum> valuator_lookup_;
+  base::flat_map<x11::Input::DeviceId, std::vector<ValuatorInfo>>
+      valuator_lookup_;
 
   // Indicates if the user has disabled high precision scrolling support.
   bool high_precision_scrolling_disabled_;
 
   // Index table to find the horizontal and vertical scroll valuator
   // numbers, scroll increments and scroll position.
-  std::array<ScrollInfo, kMaxDeviceNum> scroll_data_;
+  base::flat_map<x11::Input::DeviceId, ScrollInfo> scroll_data_;
 
   // Index table to find the DataType for valuator on the specific device
   // by data_type_lookup_[device_id][valuator].
-  std::array<std::vector<int>, kMaxDeviceNum> data_type_lookup_;
+  base::flat_map<x11::Input::DeviceId, std::vector<int>> data_type_lookup_;
 
   // Table to keep track of the last seen value for the specified valuator for
   // a specified slot of a device. Defaults to 0 if the valuator for that slot
@@ -393,7 +392,7 @@ class EVENTS_DEVICES_X11_EXPORT DeviceDataManagerX11
   // event. So it is necessary to remember these valuators so that chrome
   // doesn't think X/device doesn't know about the valuators. We currently
   // use this only on touchscreen devices.
-  std::array<std::array<std::vector<double>, kMaxSlotNum>, kMaxDeviceNum>
+  base::flat_map<x11::Input::DeviceId, base::flat_map<int, std::vector<double>>>
       last_seen_valuator_;
 
   // Map that stores meta-data for blocked keyboards. This is needed to restore

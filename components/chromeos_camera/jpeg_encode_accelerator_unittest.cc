@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/chromeos_camera/jpeg_encode_accelerator.h"
 
 #include <stddef.h>
@@ -17,6 +22,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/path_service.h"
@@ -31,6 +37,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/chromeos_camera/gpu_jpeg_encode_accelerator_factory.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/test_data_util.h"
 #include "media/gpu/buildflags.h"
@@ -322,11 +329,11 @@ class JpegClient : public JpegEncodeAccelerator::Client {
   // JpegClient doesn't own |test_aligned_images_|.
   // The resolutions of these images are all aligned. HW Accelerator must
   // support them.
-  const std::vector<TestImage*>& test_aligned_images_;
+  const raw_ref<const std::vector<TestImage*>> test_aligned_images_;
 
   // JpegClient doesn't own |test_unaligned_images_|.
   // The resolutions of these images may be unaligned.
-  const std::vector<TestImage*>& test_unaligned_images_;
+  const raw_ref<const std::vector<TestImage*>> test_unaligned_images_;
 
   // A map that stores HW encoding start timestamp for each output buffer id.
   std::map<int, base::TimeTicks> buffer_id_to_start_time_;
@@ -336,7 +343,7 @@ class JpegClient : public JpegEncodeAccelerator::Client {
 
   // Used to notify another thread about the state. JpegClient does not own
   // this.
-  media::test::ClientStateNotification<ClientState>* note_;
+  raw_ptr<media::test::ClientStateNotification<ClientState>> note_;
 
   // EXIF data size for testing.
   size_t exif_size_;
@@ -422,11 +429,11 @@ void JpegClient::VideoFrameReady(int32_t buffer_id, size_t hw_encoded_size) {
       hw_encode_end - buffer_id_to_start_time_[buffer_id];
 
   TestImage* test_image;
-  if (buffer_id < static_cast<int32_t>(test_aligned_images_.size())) {
-    test_image = test_aligned_images_[buffer_id];
+  if (buffer_id < static_cast<int32_t>(test_aligned_images_->size())) {
+    test_image = (*test_aligned_images_)[buffer_id];
   } else {
     test_image =
-        test_unaligned_images_[buffer_id - test_aligned_images_.size()];
+        (*test_unaligned_images_)[buffer_id - test_aligned_images_->size()];
   }
 
   if (hw_out_frame_ && !hw_out_frame_->IsMappable()) {
@@ -558,13 +565,14 @@ void JpegClient::NotifyError(int32_t buffer_id,
 
 TestImage* JpegClient::GetTestImage(int32_t bitstream_buffer_id) {
   DCHECK_LT(static_cast<size_t>(bitstream_buffer_id),
-            test_aligned_images_.size() + test_unaligned_images_.size());
+            test_aligned_images_->size() + test_unaligned_images_->size());
   TestImage* image_file;
-  if (bitstream_buffer_id < static_cast<int32_t>(test_aligned_images_.size())) {
-    image_file = test_aligned_images_[bitstream_buffer_id];
+  if (bitstream_buffer_id <
+      static_cast<int32_t>(test_aligned_images_->size())) {
+    image_file = (*test_aligned_images_)[bitstream_buffer_id];
   } else {
-    image_file = test_unaligned_images_[bitstream_buffer_id -
-                                        test_aligned_images_.size()];
+    image_file = (*test_unaligned_images_)[bitstream_buffer_id -
+                                           test_aligned_images_->size()];
   }
 
   return image_file;
@@ -676,7 +684,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
   PrepareMemory(bitstream_buffer_id);
 
   auto input_buffer = gbm_buffer_manager_->CreateGbmBuffer(
-      test_image->visible_size, gfx::BufferFormat::YUV_420_BIPLANAR,
+      test_image->visible_size, viz::MultiPlaneFormat::kNV12,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
       gpu::kNullSurfaceHandle, nullptr);
   ASSERT_EQ(input_buffer->Map(), true);
@@ -697,7 +705,7 @@ void JpegClient::StartEncodeDmaBuf(int32_t bitstream_buffer_id) {
   LOG_ASSERT(input_frame.get());
 
   auto output_buffer = gbm_buffer_manager_->CreateGbmBuffer(
-      gfx::Size(kJpegMaxSize, 1), gfx::BufferFormat::R_8,
+      gfx::Size(kJpegMaxSize, 1), viz::SinglePlaneFormat::kR_8,
       gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE, gpu::kNullSurfaceHandle,
       nullptr);
   ASSERT_EQ(output_buffer->Map(), true);

@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/foundations/test_autofill_client.h"
+#import "components/autofill/core/common/autofill_test_utils.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/form_field_data.h"
@@ -161,8 +162,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
   // Check that the submitted form has the values "typed" in each field.
-  EXPECT_TRUE(
-      FormData::DeepEqual(*autofill_manager.submitted_form(), form_data2));
+  EXPECT_EQ(*autofill_manager.submitted_form(), form_data2);
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2"),
                           Property(&FormFieldData::value, u"value3")));
@@ -197,7 +197,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   form_data.set_fields({form_field_data});
 
   // Simulate autofilling the form.
-  autofill_driver->DidFillAutofillFormData(form_data, base::TimeTicks::Now());
+  autofill_driver->DidAutofillForm(form_data);
 
   // Simulate form removal.
   autofill_driver->FormsRemoved(/*removed_forms=*/{form_data.renderer_id()},
@@ -207,8 +207,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // AutofillManager.
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_TRUE(
-      FormData::DeepEqual(*autofill_manager.submitted_form(), form_data));
+  EXPECT_EQ(*autofill_manager.submitted_form(), form_data);
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value")));
 
@@ -289,8 +288,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Validate that the formless form was detected as submitted and sent to
   // AutofillManager.
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_TRUE(
-      FormData::DeepEqual(*autofill_manager.submitted_form(), form_data));
+  EXPECT_EQ(*autofill_manager.submitted_form(), form_data);
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value1"),
                           Property(&FormFieldData::value, u"value2")));
@@ -380,8 +378,8 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // FieldDataManager.
   auto& autofill_manager = main_frame_manager();
   ASSERT_TRUE(autofill_manager.submitted_form());
-  EXPECT_TRUE(
-      FormData::DeepEqual(form_data, *autofill_manager.submitted_form()));
+  EXPECT_EQ(test::WithoutValues(form_data),
+            test::WithoutValues(*autofill_manager.submitted_form()));
   EXPECT_THAT(autofill_manager.submitted_form()->fields(),
               ElementsAre(Property(&FormFieldData::value, u"value2")));
 }

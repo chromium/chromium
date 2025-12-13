@@ -16,10 +16,16 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
+#include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "services/network/network_context.h"
+#include "services/network/private_network_access_checker.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/ip_address_space_util.h"
+#include "services/network/public/cpp/private_network_access_check_result.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom-data-view.h"
 #include "services/network/public/mojom/web_transport.mojom.h"
 
 namespace network {
@@ -28,9 +34,11 @@ namespace {
 
 net::WebTransportParameters CreateParameters(
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
-        fingerprints) {
+        fingerprints,
+    std::vector<std::string> application_protocols) {
   net::WebTransportParameters params;
   params.enable_web_transport_http3 = true;
+  params.application_protocols = std::move(application_protocols);
 
   for (const auto& fingerprint : fingerprints) {
     params.server_certificate_fingerprints.push_back(
@@ -401,17 +409,26 @@ WebTransport::WebTransport(
     const net::NetworkAnonymizationKey& key,
     const std::vector<mojom::WebTransportCertificateFingerprintPtr>&
         fingerprints,
+    const std::vector<std::string>& application_protocols,
     NetworkContext* context,
-    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
-    : transport_(net::CreateWebTransportClient(url,
-                                               origin,
-                                               this,
-                                               key,
-                                               context->url_request_context(),
-                                               CreateParameters(fingerprints))),
+    mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_observer,
+    mojom::ClientSecurityStatePtr client_security_state)
+    : transport_(net::CreateWebTransportClient(
+          url,
+          origin,
+          this,
+          key,
+          context->url_request_context(),
+          CreateParameters(fingerprints, std::move(application_protocols)))),
+      url_(url),
+      origin_(origin),
       context_(context),
       receiver_(this),
-      handshake_client_(std::move(handshake_client)) {
+      handshake_client_(std::move(handshake_client)),
+      url_loader_network_observer_(std::move(url_loader_network_observer)),
+      client_security_state_(std::move(client_security_state)) {
   handshake_client_.set_disconnect_handler(
       base::BindOnce(&WebTransport::Dispose, base::Unretained(this)));
 
@@ -568,6 +585,61 @@ void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
   transport_->CloseIfNonceMatches(nonce);
 }
 
+void WebTransport::OnLocalNetworkAccessCheck(
+    const net::IPEndPoint& server_address,
+    net::CompletionOnceCallback callback) {
+  if (!base::FeatureList::IsEnabled(
+          features::kLocalNetworkAccessChecksWebTransport)) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  // required_ip_address_space is always kUnknown as WebTransport is always
+  // https, so there is no need for mixed content check bypasses.
+  //
+  // WebTransport has no `url_load_options` available for overriding in
+  // content/public/browser/content_browser_client.h.
+  PrivateNetworkAccessChecker checker(
+      url_,
+      origin_,
+      /*required_ip_address_space=*/network::mojom::IPAddressSpace::kUnknown,
+      client_security_state_.get(), /*url_load_options=*/0);
+
+  PrivateNetworkAccessCheckResult check_result = checker.Check(server_address);
+  std::optional<mojom::CorsError> cors_error =
+      PrivateNetworkAccessCheckResultToCorsError(check_result);
+  if (!cors_error.has_value()) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  if (url_loader_network_observer_ &&
+      check_result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
+    url_loader_network_observer_->OnLocalNetworkAccessPermissionRequired(
+        // WebTransport connections are not cached, so just pass kDirect.
+        mojom::TransportType::kDirect,
+        base::BindOnce(
+            [](base::WeakPtr<WebTransport> weak_self,
+               net::CompletionOnceCallback callback,
+               mojom::LocalNetworkAccessResult result) {
+              if (!weak_self) {
+                // Checking the weak ptr not to call the `callback` after
+                // `this` is destructed. This is needed because the
+                // observer's pipe may outlive `this` and the owner
+                // `WebTransport`.
+                return;
+              }
+              std::move(callback).Run(
+                  result == mojom::LocalNetworkAccessResult::kGranted
+                      ? net::OK
+                      : net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
+            },
+            weak_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    std::move(callback).Run(net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS);
+  }
+}
+
 void WebTransport::OnBeforeConnect(const net::IPEndPoint& server_address) {
   if (torn_down_ || closing_) {
     return;
@@ -591,6 +663,7 @@ void WebTransport::OnConnected(
   handshake_client_->OnConnectionEstablished(
       receiver_.BindNewPipeAndPassRemote(),
       client_.BindNewPipeAndPassReceiver(), std::move(response_headers),
+      transport_->session()->GetNegotiatedSubprotocol(),
       StatsToMojom(transport_->session()->GetSessionStats()));
 
   handshake_client_.reset();
@@ -757,11 +830,11 @@ void WebTransport::OnCanCreateNewOutgoingUnidirectionalStream() {
 }
 
 void WebTransport::OnDatagramProcessed(
-    std::optional<quic::MessageStatus> status) {
+    std::optional<quic::DatagramStatus> status) {
   DCHECK(!datagram_callbacks_.empty());
 
   std::move(datagram_callbacks_.front())
-      .Run(status == quic::MESSAGE_STATUS_SUCCESS);
+      .Run(status == quic::DATAGRAM_STATUS_SUCCESS);
   datagram_callbacks_.pop();
 }
 
@@ -789,6 +862,12 @@ void WebTransport::TearDown() {
 }
 
 void WebTransport::Dispose() {
+  // For tab close scenario: Send explicit connection close
+  // frame to ensure proper termination before cleanup.
+  if (transport_ && !torn_down_ && transport_->session()) {
+    transport_->Close(std::nullopt);
+  }
+
   receiver_.reset();
 
   context_->Remove(this);

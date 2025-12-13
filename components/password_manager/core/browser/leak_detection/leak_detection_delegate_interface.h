@@ -6,11 +6,16 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_DELEGATE_INTERFACE_H_
 
 #include "base/types/strong_alias.h"
+#include "build/build_config.h"
 #include "url/gurl.h"
 
 namespace password_manager {
 
+#if !BUILDFLAG(IS_ANDROID)
 class LeakCheckCredential;
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+struct PasswordForm;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -54,13 +59,12 @@ class LeakDetectionDelegateInterface {
   // |url| and |username| are taken from Start() for presentation in the UI.
   // Pass parameters by value because the caller can be destroyed here.
   virtual void OnLeakDetectionDone(bool is_leaked,
-                                   GURL url,
-                                   std::u16string username,
-                                   std::u16string password) = 0;
+                                   PasswordForm credentials) = 0;
 
   virtual void OnError(LeakDetectionError error) = 0;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Delegate for BulkLeakCheck. Gets the updates during processing the list.
 class BulkLeakCheckDelegateInterface {
  public:
@@ -85,6 +89,7 @@ class BulkLeakCheckDelegateInterface {
   // BulkLeakCheck can be deleted from this call safely.
   virtual void OnError(LeakDetectionError error) = 0;
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager
 

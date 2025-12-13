@@ -700,13 +700,13 @@ impl Captures {
     /// let replacement = "year=$year, month=$month, day=$day";
     ///
     /// // This matches the first pattern.
-    /// let hay = "On 14-03-2010, I became a Tenneessee lamb.";
+    /// let hay = "On 14-03-2010, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let result = caps.interpolate_string(hay, replacement);
     /// assert_eq!("year=2010, month=03, day=14", result);
     ///
     /// // And this matches the second pattern.
-    /// let hay = "On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = "On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let result = caps.interpolate_string(hay, replacement);
     /// assert_eq!("year=2010, month=03, day=14", result);
@@ -748,14 +748,14 @@ impl Captures {
     /// let replacement = "year=$year, month=$month, day=$day";
     ///
     /// // This matches the first pattern.
-    /// let hay = "On 14-03-2010, I became a Tenneessee lamb.";
+    /// let hay = "On 14-03-2010, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let mut dst = String::new();
     /// caps.interpolate_string_into(hay, replacement, &mut dst);
     /// assert_eq!("year=2010, month=03, day=14", dst);
     ///
     /// // And this matches the second pattern.
-    /// let hay = "On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = "On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let mut dst = String::new();
     /// caps.interpolate_string_into(hay, replacement, &mut dst);
@@ -808,13 +808,13 @@ impl Captures {
     /// let replacement = b"year=$year, month=$month, day=$day";
     ///
     /// // This matches the first pattern.
-    /// let hay = b"On 14-03-2010, I became a Tenneessee lamb.";
+    /// let hay = b"On 14-03-2010, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let result = caps.interpolate_bytes(hay, replacement);
     /// assert_eq!(&b"year=2010, month=03, day=14"[..], result);
     ///
     /// // And this matches the second pattern.
-    /// let hay = b"On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = b"On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let result = caps.interpolate_bytes(hay, replacement);
     /// assert_eq!(&b"year=2010, month=03, day=14"[..], result);
@@ -856,14 +856,14 @@ impl Captures {
     /// let replacement = b"year=$year, month=$month, day=$day";
     ///
     /// // This matches the first pattern.
-    /// let hay = b"On 14-03-2010, I became a Tenneessee lamb.";
+    /// let hay = b"On 14-03-2010, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let mut dst = vec![];
     /// caps.interpolate_bytes_into(hay, replacement, &mut dst);
     /// assert_eq!(&b"year=2010, month=03, day=14"[..], dst);
     ///
     /// // And this matches the second pattern.
-    /// let hay = b"On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = b"On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// let mut dst = vec![];
     /// caps.interpolate_bytes_into(hay, replacement, &mut dst);
@@ -918,7 +918,7 @@ impl Captures {
     /// let mut cache = re.create_cache();
     /// let mut caps = re.create_captures();
     ///
-    /// let hay = "On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = "On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// assert!(caps.is_match());
     /// let (full, [year, month, day]) = caps.extract(hay);
@@ -974,7 +974,7 @@ impl Captures {
     /// let mut cache = re.create_cache();
     /// let mut caps = re.create_captures();
     ///
-    /// let hay = b"On 2010-03-14, I became a Tenneessee lamb.";
+    /// let hay = b"On 2010-03-14, I became a Tennessee lamb.";
     /// re.captures(&mut cache, hay, &mut caps);
     /// assert!(caps.is_match());
     /// let (full, [year, month, day]) = caps.extract_bytes(hay);
@@ -1227,7 +1227,7 @@ impl<'a> core::fmt::Debug for CapturesDebugMap<'a> {
             fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
                 write!(f, "{}", self.0)?;
                 if let Some(name) = self.1 {
-                    write!(f, "/{:?}", name)?;
+                    write!(f, "/{name:?}")?;
                 }
                 Ok(())
             }
@@ -1606,6 +1606,9 @@ impl GroupInfo {
             }
         }
         group_info.fixup_slot_ranges()?;
+        group_info.slot_ranges.shrink_to_fit();
+        group_info.name_to_index.shrink_to_fit();
+        group_info.index_to_name.shrink_to_fit();
         Ok(GroupInfo(Arc::new(group_info)))
     }
 
@@ -1751,7 +1754,7 @@ impl GroupInfo {
     /// use regex_automata::{nfa::thompson::NFA, PatternID};
     ///
     /// let nfa = NFA::new(r"(a)(?P<foo>b)(c)(d)(?P<bar>e)")?;
-    /// // The first is the implicit group that is always unnammed. The next
+    /// // The first is the implicit group that is always unnamed. The next
     /// // 5 groups are the explicit groups found in the concrete syntax above.
     /// let expected = vec![None, None, Some("foo"), None, None, Some("bar")];
     /// let got: Vec<Option<&str>> =
@@ -2433,7 +2436,7 @@ impl core::fmt::Display for GroupInfoError {
 
         match self.kind {
             TooManyPatterns { ref err } => {
-                write!(f, "too many patterns to build capture info: {}", err)
+                write!(f, "too many patterns to build capture info: {err}")
             }
             TooManyGroups { pattern, minimum } => {
                 write!(

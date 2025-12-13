@@ -155,8 +155,7 @@ std::string ZeroconfPrinterId(const ServiceDescription& service,
   md5.Update(metadata.usb_MDL);
   md5.Update(metadata.ty);
   md5.Update(metadata.rp);
-  return base::StringPrintf("zeroconf-%s",
-                            base::ToLowerASCII(base::HexEncode(md5.Finish())));
+  return base::StringPrintf("zeroconf-%s", base::HexEncodeLower(md5.Finish()));
 }
 
 // Attempt to fill |detected_printer| using the information in
@@ -402,14 +401,14 @@ class ZeroconfPrinterDetectorImpl : public ZeroconfPrinterDetector {
   // Requires that printers_lock_ be held.
   std::vector<DetectedPrinter> GetPrintersLocked() {
     printers_lock_.AssertAcquired();
-    std::map<std::string, DetectedPrinter> unified;
+    std::map<std::string_view, DetectedPrinter> unified;
     // The order in which we look through these maps defines priority -- earlier
     // service types in this list will be used preferentially over later ones.
     // This depends on the fact that map::insert will fail if the entry already
     // exists.
     for (const char* service_type : kServiceNames) {
       for (const auto& entry : printers_[service_type]) {
-        unified.insert({entry.first, entry.second});
+        unified.emplace(entry.first, entry.second);
       }
     }
     std::vector<DetectedPrinter> ret;

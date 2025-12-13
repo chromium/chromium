@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 
 #include <inttypes.h>
@@ -27,9 +26,7 @@ namespace {
 
 // TODO(b/375264422): Temporary to debug potential shader cache entries
 // mismatch.
-BASE_FEATURE(kGrShaderCacheLoad,
-             "GrShaderCacheLoad",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrShaderCacheLoad, base::FEATURE_ENABLED_BY_DEFAULT);
 
 std::string MakeString(const SkData* data) {
   return std::string(static_cast<const char*>(data->data()), data->size());
@@ -44,9 +41,7 @@ sk_sp<SkData> MakeData(const std::string& str) {
 GrShaderCache::GrShaderCache(size_t max_cache_size_bytes, Client* client)
     : cache_size_limit_(max_cache_size_bytes),
       store_(Store::NO_AUTO_EVICT),
-      client_(client),
-      enable_vk_pipeline_cache_(
-          base::FeatureList::IsEnabled(features::kEnableVkPipelineCache)) {
+      client_(client) {
   if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
     base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         this, "GrShaderCache",
@@ -178,7 +173,7 @@ void GrShaderCache::CacheClientIdOnDisk(int32_t client_id) {
 }
 
 void GrShaderCache::PurgeMemory(
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   base::AutoLock auto_lock(lock_);
   size_t original_limit = cache_size_limit_;
 
@@ -253,13 +248,11 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
     need_store_pipeline_cache = need_store_pipeline_cache_;
   }
 
-  if (enable_vk_pipeline_cache_ && need_store_pipeline_cache) {
+  if (need_store_pipeline_cache) {
+    gr_context->storeVkPipelineCacheData();
     {
-      gr_context->storeVkPipelineCacheData();
-      {
-        base::AutoLock auto_lock(lock_);
-        need_store_pipeline_cache_ = false;
-      }
+      base::AutoLock auto_lock(lock_);
+      need_store_pipeline_cache_ = false;
     }
   }
 }

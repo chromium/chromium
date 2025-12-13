@@ -17,12 +17,18 @@
 #include <list>
 
 #include "base/containers/flat_map.h"
+#include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/soda/soda_installer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class RenderFrameHost;
 }  // namespace content
+
+namespace optimization_guide {
+class ModelBrokerClient;
+}  // namespace optimization_guide
 
 namespace speech {
 
@@ -69,26 +75,22 @@ class OnDeviceSpeechRecognitionImpl
   bool CanRenderFrameHostUseOnDeviceSpeechRecognition();
 
 #if !BUILDFLAG(IS_ANDROID)
-  void InstallLanguageInternal(
-      const std::vector<std::string>& languages,
-      OnDeviceSpeechRecognitionImpl::InstallCallback callback);
-  void ProcessLanguageInstallationUpdate(const std::string& language,
+  void ProcessLanguageInstallationUpdate(std::string_view language,
                                          bool installation_success);
   base::Value GetOnDeviceLanguagesDownloadedValue();
   void SetOnDeviceLanguagesDownloadedContentSetting(
       base::Value on_device_languages_downloaded);
-  bool HasOnDeviceLanguageDownloaded(const std::string& language);
-  void SetOnDeviceLanguageDownloaded(const std::string&);
+  bool HasOnDeviceLanguageDownloaded(std::string_view language);
+  void SetOnDeviceLanguageDownloaded(std::string_view);
 
   // Mask on-device speech recognition availability by requiring a call to
   // installOnDevice() for a language before the language is available to the
   // origin.
   media::mojom::AvailabilityStatus GetMaskedAvailabilityStatus(
-      const std::string& language);
+      std::string_view language);
 
-  // Returns a delay when installing on-device speech recognition language packs
-  // to safeguard against fingerprinting resulting from timing the installation.
-  base::TimeDelta GetDownloadDelay(const std::vector<std::string>& languages);
+  void OnModelClientAvailable(
+      base::WeakPtr<optimization_guide::ModelClient> client);
 
   // A set of languages that have been downloaded for the current document. This
   // is used for origins that cannot persist content settings, e.g. opaque
@@ -97,6 +99,8 @@ class OnDeviceSpeechRecognitionImpl
 
   base::flat_map<std::set<std::string>, std::list<InstallCallback>>
       language_installation_callbacks_;
+
+  std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   mojo::Receiver<media::mojom::OnDeviceSpeechRecognition> receiver_{this};

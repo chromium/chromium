@@ -130,7 +130,8 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, GetRequestContent) {
 TEST_P(UpdateVirtualCardEnrollmentRequestTest, ParseResponse) {
   if (std::get<0>(GetParam()) == VirtualCardEnrollmentRequestType::kEnroll) {
     std::optional<base::Value> response =
-        base::JSONReader::Read("{ \"enroll_result\": \"ENROLL_SUCCESS\" }");
+        base::JSONReader::Read("{ \"enroll_result\": \"ENROLL_SUCCESS\" }",
+                               base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response.has_value());
     GetRequest()->ParseResponse(response->GetDict());
 
@@ -142,7 +143,8 @@ TEST_P(UpdateVirtualCardEnrollmentRequestTest, ParseResponse) {
             VirtualCardEnrollmentRequestType::kUnenroll);
   // Unenroll is only available from the settings page.
   if (std::get<1>(GetParam()) == VirtualCardEnrollmentSource::kSettingsPage) {
-    std::optional<base::Value> response = base::JSONReader::Read("{}");
+    std::optional<base::Value> response =
+        base::JSONReader::Read("{}", base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(response.has_value());
     GetRequest()->ParseResponse(response->GetDict());
 

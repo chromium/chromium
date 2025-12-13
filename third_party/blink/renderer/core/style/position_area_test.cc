@@ -28,8 +28,8 @@ struct ToPhysicalTestCase {
 
 ToPhysicalTestCase to_physical_test_cases[] = {
     {
-        {PositionAreaRegion::kAll, PositionAreaRegion::kAll, PositionAreaRegion::kTop,
-         PositionAreaRegion::kCenter},
+        {PositionAreaRegion::kAll, PositionAreaRegion::kAll,
+         PositionAreaRegion::kTop, PositionAreaRegion::kCenter},
         {PositionAreaRegion::kTop, PositionAreaRegion::kCenter,
          PositionAreaRegion::kLeft, PositionAreaRegion::kRight},
         horizontal_tb_ltr,
@@ -38,14 +38,14 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     {
         {PositionAreaRegion::kXStart, PositionAreaRegion::kXStart,
          PositionAreaRegion::kYStart, PositionAreaRegion::kYStart},
-        {PositionAreaRegion::kTop, PositionAreaRegion::kTop, PositionAreaRegion::kRight,
-         PositionAreaRegion::kRight},
+        {PositionAreaRegion::kTop, PositionAreaRegion::kTop,
+         PositionAreaRegion::kRight, PositionAreaRegion::kRight},
         horizontal_tb_rtl,
         horizontal_tb_ltr,
     },
     {
-        {PositionAreaRegion::kXSelfEnd, PositionAreaRegion::kXSelfEnd,
-         PositionAreaRegion::kYSelfEnd, PositionAreaRegion::kYSelfEnd},
+        {PositionAreaRegion::kSelfXEnd, PositionAreaRegion::kSelfXEnd,
+         PositionAreaRegion::kSelfYEnd, PositionAreaRegion::kSelfYEnd},
         {PositionAreaRegion::kBottom, PositionAreaRegion::kBottom,
          PositionAreaRegion::kLeft, PositionAreaRegion::kLeft},
         horizontal_tb_ltr,
@@ -53,11 +53,13 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     },
     {
         // block-axis (containing block) / inline-axis (containing block) since
-        // both are neutral. First span becomes physical "center right" because
-        // of vertical-rl / ltr. Second becomes "center bottom" because of
-        // horizontal-tb / rtl.
+        // both are neutral. Since the writing-direction is 'vertical-rl / ltr',
+        // the first span becomes physical 'center right' because 'block-start'
+        // is 'right', the second becomes "center bottom" because 'inline-end'
+        // is 'bottom'.
+        // See: https://drafts.csswg.org/css-writing-modes/#logical-to-physical
         {PositionAreaRegion::kStart, PositionAreaRegion::kCenter,
-         PositionAreaRegion::kCenter, PositionAreaRegion::kSelfEnd},
+         PositionAreaRegion::kCenter, PositionAreaRegion::kEnd},
         {PositionAreaRegion::kCenter, PositionAreaRegion::kBottom,
          PositionAreaRegion::kCenter, PositionAreaRegion::kRight},
         vertical_rl_ltr,
@@ -65,12 +67,14 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     },
     {
         // block-axis (self) / inline-axis (self) since both are neutral. First
-        // span becomes physical "right" because of vertical-lr. Second becomes
-        // "bottom" because of rtl.
+        // span becomes physical 'left' because 'block-start' is 'left' for
+        // 'vertical-lr / rtl'. Similarly, the second becomes 'top' for
+        // 'inline-end'.
+        // See: https://drafts.csswg.org/css-writing-modes/#logical-to-physical
         {PositionAreaRegion::kSelfStart, PositionAreaRegion::kSelfStart,
          PositionAreaRegion::kSelfEnd, PositionAreaRegion::kSelfEnd},
-        {PositionAreaRegion::kBottom, PositionAreaRegion::kBottom,
-         PositionAreaRegion::kRight, PositionAreaRegion::kRight},
+        {PositionAreaRegion::kTop, PositionAreaRegion::kTop,
+         PositionAreaRegion::kLeft, PositionAreaRegion::kLeft},
         horizontal_tb_ltr,
         vertical_lr_rtl,
     },

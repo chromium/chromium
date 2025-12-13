@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -23,17 +23,19 @@ namespace ash {
 namespace {
 
 // Key under "kiosk" dictionary to store the last launch error.
-constexpr char kKeyLaunchError[] = "launch_error";
+constexpr std::string_view kKeyLaunchError = "launch_error";
 
 // Key under "kiosk" dictionary to store the last cryptohome error.
-constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
+constexpr std::string_view kKeyCryptohomeFailure = "cryptohome_failure";
+
+// Key under "kiosk" dictionary to store whether the user cancelled the last
+// launch.
+constexpr std::string_view kUserCancelledLaunchKey = "user_cancelled_launch";
 
 // Error from the last kiosk launch.
 std::optional<KioskAppLaunchError::Error> s_last_error = std::nullopt;
 
 }  // namespace
-
-const char kKioskLaunchErrorHistogram[] = "Kiosk.Launch.Error";
 
 // static
 std::string KioskAppLaunchError::GetErrorMessage(Error error) {
@@ -85,39 +87,46 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
 }
 
 // static
-void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
+void KioskAppLaunchError::Save(PrefService& local_state,
+                               KioskAppLaunchError::Error error) {
   s_last_error = error;
 
-  PrefService* local_state = g_browser_process->local_state();
   {
     ScopedDictPrefUpdate dict_update(
-        local_state, KioskChromeAppManager::kKioskDictionaryName);
-    dict_update->SetByDottedPath(kKeyLaunchError, static_cast<int>(error));
+        &local_state, KioskChromeAppManager::kKioskDictionaryName);
+    dict_update->Set(kKeyLaunchError, static_cast<int>(error));
   }
 
   // Make sure that the kiosk launch error gets written to disk before the
   // browser is killed.
-  local_state->CommitPendingWrite();
+  local_state.CommitPendingWrite();
 }
 
 // static
 void KioskAppLaunchError::SaveCryptohomeFailure(
+    PrefService& local_state,
     const AuthFailure& auth_failure) {
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state,
+  ScopedDictPrefUpdate dict_update(&local_state,
                                    KioskChromeAppManager::kKioskDictionaryName);
   dict_update->SetByDottedPath(kKeyCryptohomeFailure, auth_failure.reason());
 }
 
 // static
-KioskAppLaunchError::Error KioskAppLaunchError::Get() {
+void KioskAppLaunchError::SaveUserCancelledLaunch(PrefService& local_state) {
+  ScopedDictPrefUpdate dict_update(&local_state,
+                                   KioskChromeAppManager::kKioskDictionaryName);
+  dict_update->SetByDottedPath(kUserCancelledLaunchKey, true);
+}
+
+// static
+KioskAppLaunchError::Error KioskAppLaunchError::Get(
+    const PrefService& local_state) {
   if (s_last_error) {
     return *s_last_error;
   }
   s_last_error = Error::kNone;
-  PrefService* local_state = g_browser_process->local_state();
   const base::Value::Dict& dict =
-      local_state->GetDict(KioskChromeAppManager::kKioskDictionaryName);
+      local_state.GetDict(KioskChromeAppManager::kKioskDictionaryName);
 
   std::optional<int> error = dict.FindInt(kKeyLaunchError);
   if (error.has_value()) {
@@ -129,9 +138,15 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
 }
 
 // static
-void KioskAppLaunchError::RecordMetricAndClear() {
-  PrefService* local_state = g_browser_process->local_state();
-  ScopedDictPrefUpdate dict_update(local_state,
+bool KioskAppLaunchError::DidUserCancelLaunch(const PrefService& local_state) {
+  const base::Value::Dict& dict =
+      local_state.GetDict(KioskChromeAppManager::kKioskDictionaryName);
+  return dict.FindBool(kUserCancelledLaunchKey).value_or(false);
+}
+
+// static
+void KioskAppLaunchError::RecordMetricAndClear(PrefService& local_state) {
+  ScopedDictPrefUpdate dict_update(&local_state,
                                    KioskChromeAppManager::kKioskDictionaryName);
 
   std::optional<int> error = dict_update->FindInt(kKeyLaunchError);
@@ -152,6 +167,8 @@ void KioskAppLaunchError::RecordMetricAndClear() {
         AuthFailure::NUM_FAILURE_REASONS);
   }
   dict_update->Remove(kKeyCryptohomeFailure);
+
+  dict_update->Remove(kUserCancelledLaunchKey);
 }
 
 }  // namespace ash

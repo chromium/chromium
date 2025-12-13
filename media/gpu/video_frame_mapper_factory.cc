@@ -37,7 +37,7 @@ std::unique_ptr<VideoFrameMapper> VideoFrameMapperFactory::CreateMapper(
     VideoPixelFormat format,
     VideoFrame::StorageType storage_type,
     bool force_linear_buffer_mapper) {
-  if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+  if (storage_type == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     return GpuMemoryBufferVideoFrameMapper::Create(format);
   }
 

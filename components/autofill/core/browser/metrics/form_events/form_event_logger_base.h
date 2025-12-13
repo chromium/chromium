@@ -32,20 +32,30 @@ namespace autofill::autofill_metrics {
 // the presence of server and/or local data.
 class FormEventLoggerBase {
  public:
+  enum class FormIdentificationTime {
+    // After local heuristics (regexes, autocomplete attribute, ML model).
+    kAfterLocalHeuristics = 0,
+    // After loading server predictions.
+    kAfterServerPredictions = 1,
+    kMaxValue = kAfterServerPredictions
+  };
+
   FormEventLoggerBase(std::string form_type_name,
                       BrowserAutofillManager* owner);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
 
-  void OnDidPollSuggestions(FieldGlobalId field_id);
+  void OnDidIdentifyForm(const FormStructure& form,
+                         FormIdentificationTime identification_time);
 
-  void OnDidParseForm(const FormStructure& form);
-
-  virtual void OnDidShowSuggestions(const FormStructure& form,
-                                    const AutofillField& field,
-                                    base::TimeTicks form_parsed_timestamp,
-                                    bool off_the_record,
-                                    base::span<const Suggestion> suggestions);
+  // Derived classes should call the protected overload of
+  // OnDidShowSuggestions().
+  virtual void OnDidShowSuggestions(
+      const FormStructure& form,
+      const AutofillField& field,
+      base::TimeTicks form_parsed_timestamp,
+      bool off_the_record,
+      base::span<const Suggestion> suggestions) = 0;
 
   void OnDidRefill(const FormStructure& form);
 
@@ -69,10 +79,6 @@ class FormEventLoggerBase {
   // The function must not be called from the destructor, since this makes it
   // impossible to dispatch virtual functions into the derived classes.
   virtual void OnDestroyed();
-
-  // Adds the appropriate form types based on `type` to
-  // `field_by_field_filled_form_types_` after a filling operation.
-  void OnFilledByFieldByFieldFilling(SuggestionType type);
 
   // See BrowserAutofillManager::SuggestionContext for the definitions of the
   // AblationGroup parameters.
@@ -99,15 +105,28 @@ class FormEventLoggerBase {
     return fast_checkout_run_id_;
   }
 
+  // Used for testing purposes to help verify that the correct subclass is
+  // constructed.
+  std::string GetFormTypeNameForTesting() const { return form_type_name_; }
+
  protected:
   virtual ~FormEventLoggerBase();
 
   AutofillClient& client();
   AutofillDriver& driver();
 
-  virtual void RecordPollSuggestions() = 0;
   virtual void RecordParseForm() = 0;
   virtual void RecordShowSuggestions() = 0;
+
+  // Overload of the public OnDidShowSuggestions() that additionally takes the
+  // relevant `field_type` of `field`. To be called by derived class's
+  // implementation of the pure virtual overload of OnDidShowSuggestions().
+  void OnDidShowSuggestions(const FormStructure& form,
+                            const AutofillField& field,
+                            FieldType field_type,
+                            base::TimeTicks form_parsed_timestamp,
+                            bool off_the_record,
+                            base::span<const Suggestion> suggestions);
 
   // Shared logic of `OnEdited[NonFilled|Autofilled]Field`, called irrespective
   // of the autofill state of the field represented by `field_global_id`.
@@ -194,15 +213,10 @@ class FormEventLoggerBase {
   // Returns a vector of strings for all parsed form types.
   std::vector<std::string_view> GetParsedFormTypesAsStringViews() const;
 
-  // Returns a set of all parsed form types and form types of field-by-field
-  // filling operations.
-  DenseSet<FormTypeNameForLogging> GetParsedAndFieldByFieldFormTypes() const;
-
   // Constructor parameters.
   std::string form_type_name_;
 
   // State variables.
-  bool has_parsed_form_ = false;
   bool has_logged_interacted_ = false;
   bool has_logged_user_hide_suggestions_ = false;
   bool has_logged_suggestions_shown_ = false;
@@ -221,9 +235,6 @@ class FormEventLoggerBase {
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   std::optional<base::TimeDelta> time_from_interaction_to_submission_;
 
-  // The ID of the last field that was polled for suggestions.
-  FieldGlobalId last_polled_field_id_;
-
   // Used to count consecutive modifications on the same field as one change.
   FieldGlobalId last_field_global_id_modified_by_user_;
   // Keeps counts of Autofill fills and form elements that were modified by the
@@ -235,14 +246,11 @@ class FormEventLoggerBase {
   // Unique ID of a Fast Checkout run. Used for metrics.
   std::optional<int64_t> fast_checkout_run_id_;
 
-  // Form types of the parsed forms for logging purposes.
-  DenseSet<FormTypeNameForLogging> parsed_form_types_;
+  // Form types of the identified forms, for logging purposes.
+  DenseSet<FormTypeNameForLogging> identified_form_types_;
 
   // Form types of the submitted form.
   DenseSet<FormTypeNameForLogging> submitted_form_types_;
-
-  // Form types of field-by-field filling operations.
-  DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
 
   // A list of field types for which suggestions were shown and not accepted so
   // far. At any time, no field should be in both

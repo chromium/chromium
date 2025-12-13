@@ -19,6 +19,7 @@
 #include "media/base/media_util.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/common/mojo_pipe_read_write_util.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 using media::mojo_pipe_read_write_util::IsPipeReadWriteError;
 
@@ -134,16 +135,15 @@ void MojoDecoderBufferReader::ReadDecoderBuffer(
   DCHECK(media_buffer);
 
   if (MediaTraceIsEnabled() && !media_buffer->end_of_stream()) {
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+    TRACE_EVENT_BEGIN(
         "media,gpu", "MojoDecoderBufferReader::Read",
-        media_buffer->timestamp().InMicroseconds());
+        perfetto::Track(media_buffer->timestamp().InMicroseconds()));
     read_cb = base::BindOnce(
         [](ReadCB read_cb, scoped_refptr<DecoderBuffer> buffer) {
-          TRACE_EVENT_NESTABLE_ASYNC_END2(
-              "media,gpu", "MojoDecoderBufferReader::Read",
-              buffer->timestamp().InMicroseconds(), "timestamp",
-              buffer->timestamp().InMicroseconds(), "read_bytes",
-              buffer->size());
+          TRACE_EVENT_END("media,gpu",
+                          perfetto::Track(buffer->timestamp().InMicroseconds()),
+                          "timestamp", buffer->timestamp().InMicroseconds(),
+                          "read_bytes", buffer->size());
           std::move(read_cb).Run(std::move(buffer));
         },
         std::move(read_cb));
@@ -390,9 +390,9 @@ mojom::DecoderBufferPtr MojoDecoderBufferWriter::WriteDecoderBuffer(
     return mojo_buffer;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media,gpu",
-                                    "MojoDecoderBufferWriter::Write",
-                                    media_buffer->timestamp().InMicroseconds());
+  TRACE_EVENT_BEGIN(
+      "media,gpu", "MojoDecoderBufferWriter::Write",
+      perfetto::Track(media_buffer->timestamp().InMicroseconds()));
   // Queue writing the buffer's data into our DataPipe.
   pending_buffers_.push_back(std::move(media_buffer));
 
@@ -459,10 +459,10 @@ void MojoDecoderBufferWriter::ProcessPendingWrites() {
     DCHECK_GT(actually_written_bytes, 0u);
     bytes_written_ += actually_written_bytes;
     if (actually_written_bytes == bytes_to_write.size()) {
-      TRACE_EVENT_NESTABLE_ASYNC_END2(
-          "media,gpu", "MojoDecoderBufferWriter::Write",
-          buffer->timestamp().InMicroseconds(), "timestamp",
-          buffer->timestamp().InMicroseconds(), "write_bytes", bytes_written_);
+      TRACE_EVENT_END("media,gpu",
+                      perfetto::Track(buffer->timestamp().InMicroseconds()),
+                      "timestamp", buffer->timestamp().InMicroseconds(),
+                      "write_bytes", bytes_written_);
       pending_buffers_.pop_front();
       bytes_written_ = 0;
     }
@@ -483,11 +483,10 @@ void MojoDecoderBufferWriter::OnPipeError(MojoResult result) {
              << ", num_bytes(written)=" << bytes_written_;
     if (MediaTraceIsEnabled()) {
       for (const auto& buffer : pending_buffers_) {
-        TRACE_EVENT_NESTABLE_ASYNC_END2(
-            "media,gpu", "MojoDecoderBufferWriter::Write",
-            buffer->timestamp().InMicroseconds(), "timestamp",
-            buffer->timestamp().InMicroseconds(), "write_bytes",
-            bytes_written_);
+        TRACE_EVENT_END("media,gpu",
+                        perfetto::Track(buffer->timestamp().InMicroseconds()),
+                        "timestamp", buffer->timestamp().InMicroseconds(),
+                        "write_bytes", bytes_written_);
       }
     }
     pending_buffers_.clear();

@@ -141,7 +141,7 @@ impl CaseMap<'_> {
 
         let trie_index = ZeroVec::alloc_from_slice(trie_index);
 
-        #[allow(clippy::unwrap_used)] // datagen only
+        #[expect(clippy::unwrap_used)] // datagen only
         let trie_data = trie_data
             .iter()
             .map(|&i| {

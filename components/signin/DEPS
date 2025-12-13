@@ -7,7 +7,8 @@ include_rules = [
   "+components/image_fetcher/core",
   "+components/keyed_service/core",
   "+components/os_crypt/async",
-  "+components/plus_addresses",
+  "+components/plus_addresses/core/browser",
+  "+components/plus_addresses/core/common",
   "+components/prefs",
   "+components/sync_preferences",
   # Subdirectories of //components/signin must explicitly allow deps on each

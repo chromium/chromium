@@ -22,3 +22,11 @@ include_rules = [
     "+third_party/blink/renderer/platform/wtf",
     "+ui/display/types/display_constants.h",
 ]
+
+specific_include_rules = {
+    # This should be removed once the usage is migrated to C++11 atomics.
+    # See crbug.com/40175832 for details.
+    "media_stream_audio_test.cc": [
+        "+base/atomicops.h"
+    ],
+}

@@ -12,13 +12,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/android/chrome_jni_headers/TaskTabHelper_jni.h"
 #include "chrome/browser/android/tab_android.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -122,8 +123,9 @@ int64_t TaskTabHelper::GetParentRootTaskId() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-jlong JNI_TaskTabHelper_GetTaskId(JNIEnv* env,
-                                  const JavaParamRef<jobject>& jweb_contents) {
+static jlong JNI_TaskTabHelper_GetTaskId(
+    JNIEnv* env,
+    const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
       TaskTabHelper::GetCurrentTaskId(
           content::WebContents::FromJavaWebContents(jweb_contents));
@@ -133,9 +135,9 @@ jlong JNI_TaskTabHelper_GetTaskId(JNIEnv* env,
   return -1;
 }
 
-jlong JNI_TaskTabHelper_GetRootTaskId(
+static jlong JNI_TaskTabHelper_GetRootTaskId(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   sessions::NavigationTaskId* navigation_task_id =
       TaskTabHelper::GetCurrentTaskId(
           content::WebContents::FromJavaWebContents(jweb_contents));
@@ -149,3 +151,7 @@ jlong JNI_TaskTabHelper_GetRootTaskId(
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TaskTabHelper);
 
 }  // namespace tasks
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TaskTabHelper)
+#endif

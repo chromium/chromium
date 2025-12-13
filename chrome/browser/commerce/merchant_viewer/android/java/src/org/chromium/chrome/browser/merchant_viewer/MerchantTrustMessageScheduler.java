@@ -13,7 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -31,14 +31,14 @@ public class MerchantTrustMessageScheduler {
 
     private final MessageDispatcher mMessageDispatcher;
     private final MerchantTrustMetrics mMetrics;
-    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
     private Handler mEnqueueMessageTimer;
     private @Nullable Pair<MerchantTrustMessageContext, PropertyModel> mScheduledMessage;
 
     public MerchantTrustMessageScheduler(
             MessageDispatcher messageDispatcher,
             MerchantTrustMetrics metrics,
-            ObservableSupplier<@Nullable Tab> tabSupplier) {
+            NullableObservableSupplier<Tab> tabSupplier) {
         mEnqueueMessageTimer = new Handler(ThreadUtils.getUiThreadLooper());
         mMessageDispatcher = messageDispatcher;
         mMetrics = metrics;

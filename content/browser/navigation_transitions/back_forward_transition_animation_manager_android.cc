@@ -157,7 +157,6 @@ BackForwardTransitionAnimationManagerAndroid::GetCurrentAnimationStage() {
 
 void BackForwardTransitionAnimationManagerAndroid::SetFavicon(
     const SkBitmap& favicon) {
-  CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   auto* entry = web_contents_view_android_->web_contents()
                     ->GetController()
                     .GetLastCommittedEntry();

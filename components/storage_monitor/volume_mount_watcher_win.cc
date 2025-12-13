@@ -22,6 +22,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -109,7 +110,8 @@ bool IsLogicalVolumeStructure(LPARAM data) {
 
 // Gets the total volume of the |mount_point| in bytes.
 uint64_t GetVolumeSize(const base::FilePath& mount_point) {
-  int64_t size = base::SysInfo::AmountOfTotalDiskSpace(mount_point);
+  int64_t size =
+      base::SysInfo::AmountOfTotalDiskSpace(mount_point).value_or(-1);
   return std::max(size, static_cast<int64_t>(0));
 }
 
@@ -240,7 +242,7 @@ void EjectDeviceInThreadPool(
       volume_name.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE,
       nullptr, OPEN_EXISTING, 0, nullptr));
 
-  if (!volume_handle.IsValid()) {
+  if (!volume_handle.is_valid()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), StorageMonitor::EJECT_FAILURE));

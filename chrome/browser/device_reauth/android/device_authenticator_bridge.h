@@ -39,10 +39,10 @@ enum class BiometricsAvailability {
   kNotEnrolled = 5,
   kSecurityUpdateRequired = 6,
   // Deprecated: kAndroidVersionNotSupported = 7,
-  kRequired = 8,
-  kRequiredButHasError = 9,
+  // Deprecated: kRequired = 8,
+  // Deprecated: kRequiredButHasError = 9,
 
-  kMaxValue = kRequiredButHasError,
+  kMaxValue = kSecurityUpdateRequired,
 };
 
 }  // namespace device_reauth

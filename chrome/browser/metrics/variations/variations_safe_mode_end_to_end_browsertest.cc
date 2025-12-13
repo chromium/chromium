@@ -45,12 +45,26 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/wait.h>
 #endif
 
 namespace variations {
+namespace {
+
+constexpr char kSafeSeedFilename[] = "VariationsSafeSeedV2";
+constexpr char kSeedFilename[] = "VariationsSeedV2";
+
+void WriteSeedFile(const base::FilePath& path,
+                   const StoredSeedInfo& stored_seed_info) {
+  std::string parsed_seed_info;
+  ASSERT_TRUE(stored_seed_info.SerializeToString(&parsed_seed_info));
+  std::string compressed_seed_info =
+      SeedReaderWriter::CompressForSeedFileForTesting(parsed_seed_info);
+  ASSERT_TRUE(base::WriteFile(path, compressed_seed_info));
+}
 
 class VariationsSafeModeEndToEndBrowserTestHelper
     : public InProcessBrowserTest {
@@ -220,23 +234,27 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedSafeSeedEndToEnd) {
   if (GetParam() == variations::kSeedFilesGroup) {
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
-    // Since the signature is still in Local State, we need to write it there.
-    // TODO(crbug.com/380465790): Write signature to Seed File once it is moved
-    // there.
-    local_state->SetString(kSafeSeedPrefKeys.base64_signature_key,
-                           kTestSeedData.base64_signature);
-    local_state->SetString(kRegularSeedPrefKeys.base64_signature_key,
-                           kCrashingSeedData.base64_signature);
-    local_state->CommitPendingWrite();
+
+    std::string crashing_seed_uncompressed_data;
+    ASSERT_TRUE(base::Base64Decode(kCrashingSeedData.base64_uncompressed_data,
+                                   &crashing_seed_uncompressed_data));
+    StoredSeedInfo stored_seed_info;
+    stored_seed_info.set_data(crashing_seed_uncompressed_data);
+    stored_seed_info.set_signature(kCrashingSeedData.base64_signature);
+
+    std::string test_seed_uncompressed_data;
+    ASSERT_TRUE(base::Base64Decode(kTestSeedData.base64_uncompressed_data,
+                                   &test_seed_uncompressed_data));
+    StoredSeedInfo stored_safe_seed_info;
+    stored_safe_seed_info.set_data(test_seed_uncompressed_data);
+    stored_safe_seed_info.set_signature(kTestSeedData.base64_signature);
+
     ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
     ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
     // Write the seeds to the Seed Files.
-    // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
-    ASSERT_TRUE(
-        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
-                        kTestSeedData.GetCompressedData()));
-    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
-                                kCrashingSeedData.GetCompressedData()));
+    WriteSeedFile(user_data_dir().AppendASCII(kSafeSeedFilename),
+                  stored_safe_seed_info);
+    WriteSeedFile(user_data_dir().AppendASCII(kSeedFilename), stored_seed_info);
   } else {
     // GetParam() == variations::kControlGroup
     // TODO(crbug.com/379869158): Remove after Seed File experiment is complete.
@@ -278,23 +296,19 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   if (GetParam() == variations::kSeedFilesGroup) {
     auto local_state = LoadLocalState(local_state_file());
     local_state->SetInteger(prefs::kVariationsCrashStreak, initial_crash_count);
-    // TODO(crbug.com/380465790): Write signature to Seed File once it is moved
-    // there.
-    local_state->SetString(kSafeSeedPrefKeys.base64_signature_key,
-                           kCrashingSeedData.base64_signature);
-    local_state->SetString(kRegularSeedPrefKeys.base64_signature_key,
-                           kCrashingSeedData.base64_signature);
-    local_state->CommitPendingWrite();
+    std::string seed_uncompressed_data;
+    ASSERT_TRUE(base::Base64Decode(kCrashingSeedData.base64_uncompressed_data,
+                                   &seed_uncompressed_data));
+    StoredSeedInfo stored_seed_info;
+    stored_seed_info.set_data(seed_uncompressed_data);
+    stored_seed_info.set_signature(kCrashingSeedData.base64_signature);
+
     ASSERT_EQ(local_state->GetString(prefs::kVariationsCompressedSeed), "");
     ASSERT_EQ(local_state->GetString(prefs::kVariationsSafeCompressedSeed), "");
     // Write the seeds to the Seed Files.
-    // TODO(crbug.com/380465790, crbug.com/369108446): Update seed file name.
-    auto seed_compressed_data = kCrashingSeedData.GetCompressedData();
-    ASSERT_TRUE(
-        base::WriteFile(user_data_dir().AppendASCII("VariationsSafeSeedV1"),
-                        seed_compressed_data));
-    ASSERT_TRUE(base::WriteFile(user_data_dir().AppendASCII("VariationsSeedV1"),
-                                seed_compressed_data));
+    WriteSeedFile(user_data_dir().AppendASCII(kSafeSeedFilename),
+                  stored_seed_info);
+    WriteSeedFile(user_data_dir().AppendASCII(kSeedFilename), stored_seed_info);
   } else {
     // GetParam() == variations::kControlGroup
     // TODO(crbug.com/391565578): Remove after Seed File experiment is complete.
@@ -320,4 +334,5 @@ TEST_P(VariationsSafeModeEndToEndBrowserTest, ExtendedNullSeedEndToEnd) {
   RunAndExpectSuccessfulSubTest(sub_test);
 }
 
+}  // namespace
 }  // namespace variations

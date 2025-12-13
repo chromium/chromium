@@ -36,6 +36,8 @@ extern const char kForceVariationIds[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kForceDisableVariationIds[];
 COMPONENT_EXPORT(VARIATIONS)
+extern const char kVariationsSeedCorpus[];
+COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsSeedVersion[];
 COMPONENT_EXPORT(VARIATIONS)
 extern const char kVariationsOverrideCountry[];

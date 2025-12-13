@@ -6,13 +6,16 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 #include "components/js_injection/browser/navigation_web_message_sender.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -250,8 +253,11 @@ JsCommunicationHost::GetWebMessageHostFactories() {
 
 void JsCommunicationHost::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  base::ElapsedTimer timer;
   NotifyFrameForWebMessageListener(render_frame_host);
   NotifyFrameForAllDocumentStartJavaScripts(render_frame_host);
+  base::UmaHistogramTimes("Android.WebView.JsInjection.RenderFrameCreatedTime",
+                          timer.Elapsed());
 }
 
 void JsCommunicationHost::RenderFrameDeleted(

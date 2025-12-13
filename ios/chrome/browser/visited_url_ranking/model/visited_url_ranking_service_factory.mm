@@ -54,8 +54,7 @@ VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   std::map<visited_url_ranking::Fetcher,
            std::unique_ptr<visited_url_ranking::URLVisitDataFetcher>>
       data_fetchers;

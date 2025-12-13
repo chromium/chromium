@@ -340,6 +340,74 @@ suite('AllBuilds', function() {
     assertFalse(!!testElement.shadowRoot!.querySelector(
         '#priceEmailNotificationsToggle'));
   });
+
+  test('priceEmailNotificationsToggleShownForSignedInUsersWithFlag', function() {
+    loadTimeData.overrideValues({
+      'changePriceEmailNotificationsEnabled': true,
+      // Flag is enabled.
+      'replaceSyncPromosWithSignInPromos': true,
+    });
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+  });
+
+  test('priceEmailNotificationsToggleShownForSyncingUsersWithFlag', function() {
+    loadTimeData.overrideValues({
+      'changePriceEmailNotificationsEnabled': true,
+      // Flag is enabled.
+      'replaceSyncPromosWithSignInPromos': true,
+    });
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+  });
+
+  test('priceEmailNotificationsToggleHiddenForSignedInUsersWithoutFlag', function() {
+    loadTimeData.overrideValues({
+      'changePriceEmailNotificationsEnabled': true,
+      // Flag is disabled.
+      'replaceSyncPromosWithSignInPromos': false,
+    });
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertFalse(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+  });
+
+  test('priceEmailNotificationsToggleShownForSyncingUsersWithoutFlag', function() {
+    loadTimeData.overrideValues({
+      'changePriceEmailNotificationsEnabled': true,
+      // Flag is disabled.
+      'replaceSyncPromosWithSignInPromos': false,
+    });
+    buildTestElement();  // Rebuild the element after modifying loadTimeData.
+
+    testElement.syncStatus = {
+      signedInState: SignedInState.SYNCING,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    assertTrue(!!testElement.shadowRoot!.querySelector(
+        '#priceEmailNotificationsToggle'));
+  });
 });
 
 // <if expr="_google_chrome">

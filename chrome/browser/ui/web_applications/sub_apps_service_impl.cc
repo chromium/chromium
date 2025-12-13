@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_deref.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/concurrent_callbacks.h"
 #include "base/i18n/message_formatter.h"
@@ -301,7 +303,7 @@ void SubAppsServiceImpl::CollectInstallData(
   for (const auto& [manifest_id, url_to_load] : requested_installs) {
     // Check if app is the parent app itself
     if (manifest_id == parent_manifest_id) {
-      add_call_info_.at(add_call_id)
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id))
           .results.emplace_back(SubAppsServiceAddResult::New(
               ConvertUrlToPath(manifest_id),
               blink::mojom::SubAppsServiceResultCode::kFailure));
@@ -311,7 +313,7 @@ void SubAppsServiceImpl::CollectInstallData(
     // Check if app is already installed as a sub app
     if (provider->registrar_unsafe().WasInstalledBySubApp(
             GenerateAppIdFromManifestId(manifest_id, parent_manifest_id))) {
-      add_call_info_.at(add_call_id)
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id))
           .results.emplace_back(SubAppsServiceAddResult::New(
               ConvertUrlToPath(manifest_id),
               blink::mojom::SubAppsServiceResultCode::kSuccess));
@@ -338,7 +340,8 @@ void SubAppsServiceImpl::ProcessInstallData(
     int add_call_id,
     std::vector<std::pair<webapps::ManifestId,
                           std::unique_ptr<WebAppInstallInfo>>> install_data) {
-  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+  AddCallInfo& add_call_info =
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
 
   for (auto& [manifest_id, install_info] : install_data) {
@@ -365,7 +368,8 @@ void SubAppsServiceImpl::ProcessInstallData(
 }
 
 void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
-  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+  AddCallInfo& add_call_info =
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
   if (add_call_info.install_infos.empty()) {
     FinishAddCall(add_call_id, {});
@@ -415,7 +419,8 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
           ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS,
           /*dismissed_prompt_was_quiet=*/false);
 
-  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+  AddCallInfo& add_call_info =
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
   for (const std::unique_ptr<web_app::WebAppInstallInfo>& install_info :
        add_call_info.install_infos) {
@@ -428,7 +433,8 @@ void SubAppsServiceImpl::ProcessDialogResponse(int add_call_id,
 }
 
 void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
-  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+  AddCallInfo& add_call_info =
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
   // Schedule install for each install_info that was collected
   WebAppProvider* provider = GetWebAppProvider(render_frame_host());
@@ -455,7 +461,8 @@ void SubAppsServiceImpl::ScheduleSubAppInstalls(int add_call_id) {
 void SubAppsServiceImpl::FinishAddCall(
     int add_call_id,
     std::vector<SubAppInstallResult> install_results) {
-  AddCallInfo& add_call_info = add_call_info_.at(add_call_id);
+  AddCallInfo& add_call_info =
+      CHECK_DEREF(base::FindOrNull(add_call_info_, add_call_id));
 
   for (const auto& [manifest_id, app_id, result_code] : install_results) {
     add_call_info.results.emplace_back(SubAppsServiceAddResult::New(

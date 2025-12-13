@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
@@ -148,7 +149,8 @@ ScriptPromise<IDLUndefined> WritableStreamDefaultController::AbortSteps(
   // https://streams.spec.whatwg.org/#ws-default-controller-private-abort
   //  1. Let result be the result of performing this.[[abortAlgorithm]], passing
   //     reason.
-  const auto result = abort_algorithm_->Run(script_state, 1, &reason);
+  const auto result =
+      abort_algorithm_->Run(script_state, base::span_from_ref(reason));
 
   //  2. Perform ! WritableStreamDefaultControllerClearAlgorithms(this).
   ClearAlgorithms(this);
@@ -404,7 +406,8 @@ double WritableStreamDefaultController::GetChunkSize(
   if (!return_value.has_value()) {
     //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
     //         controller, returnValue.[[Value]]).
-    ErrorIfNeeded(script_state, controller, try_catch.Exception());
+    ErrorIfNeeded(script_state, controller,
+                  TryRethrowScope::TakeException(try_catch));
 
     //      b. Return 1.
     return 1;
@@ -443,8 +446,8 @@ void WritableStreamDefaultController::Write(
     if (try_catch.HasCaught()) {
       //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
       //         controller, enqueueResult.[[Value]]).
-
-      ErrorIfNeeded(script_state, controller, try_catch.Exception());
+      ErrorIfNeeded(script_state, controller,
+                    TryRethrowScope::TakeException(try_catch));
 
       //      b. Return.
       return;
@@ -589,7 +592,7 @@ void WritableStreamDefaultController::ProcessClose(
   //  5. Let sinkClosePromise be the result of performing
   //     controller.[[closeAlgorithm]].
   const auto sinkClosePromise =
-      controller->close_algorithm_->Run(script_state, 0, nullptr);
+      controller->close_algorithm_->Run(script_state, {});
 
   //  6. Perform ! WritableStreamDefaultControllerClearAlgorithms(controller).
   ClearAlgorithms(controller);
@@ -653,8 +656,8 @@ void WritableStreamDefaultController::ProcessWrite(
 
   //  3. Let sinkWritePromise be the result of performing
   //     controller.[[writeAlgorithm]], passing in chunk.
-  const auto sinkWritePromise =
-      controller->write_algorithm_->Run(script_state, 1, &chunk);
+  const auto sinkWritePromise = controller->write_algorithm_->Run(
+      script_state, base::span_from_ref(chunk));
 
   sinkWritePromise.Then(script_state, controller->resolve_function_.Get(),
                         controller->reject_function_.Get());

@@ -37,7 +37,7 @@ const StyleValues kDefaultStyle = {
 const StyleValues kSignInChooseryStyle = {
     24., /* avatarLeadingMargin */
     40., /* avatarSize */
-    0.,  /* managementIconTrailingMargin */
+    16., /* managementIconTrailingMargin */
     4.,  /* titleOffset */
     7.,  /* minimumTopMargin */
     7.,  /* minimumBottomMargin */

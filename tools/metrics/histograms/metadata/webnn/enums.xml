@@ -36,6 +36,18 @@ DeviceTypeUma in //services/webnn/webnn_context_provider_impl.cc.
   <int value="2" label="Npu"/>
 </enum>
 
+<!-- LINT.IfChange(ExecutionProviderStatusUma) -->
+
+<enum name="ExecutionProviderStatusUma">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="EP version too low"/>
+  <int value="2" label="Not installed"/>
+  <int value="3" label="Ensure ready failed"/>
+  <int value="4" label="Ready for use"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/webnn/host/execution_provider_initializer.cc:ExecutionProviderStatusUma) -->
+
 <!--
 The values in MLGraphOperatorUma enum type map to those in the enum class
 MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.cc.
@@ -135,7 +147,28 @@ MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_bui
   <int value="90" label="Where"/>
   <int value="91" label="Reverse"/>
   <int value="92" label="NotEqual"/>
+  <int value="93" label="RoundEven"/>
+  <int value="94" label="IsNaN"/>
+  <int value="95" label="IsInfinite"/>
 </enum>
+
+<!-- LINT.IfChange(WinAppRuntimeInstallStateUma) -->
+
+<enum name="WinAppRuntimeInstallStateUma">
+  <int value="0" label="Windows Version Too Old"/>
+  <int value="1" label="Activation Failure"/>
+  <int value="2" label="Completed"/>
+  <int value="3" label="Error"/>
+  <int value="4" label="Canceled"/>
+  <int value="5" label="Paused"/>
+  <int value="6" label="Paused Low Battery"/>
+  <int value="7" label="Paused WiFi Recommended"/>
+  <int value="8" label="Paused WiFi Required"/>
+  <int value="9" label="Runtime Already Present"/>
+  <int value="10" label="Installation Failed To Start"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webnn/win_app_runtime_installer.cc:WinAppRuntimeInstallStateUma) -->
 
 </enums>
 

@@ -6,6 +6,7 @@ include_rules = [
   "+components/security_state/ios",
   "+components/ukm",
   "+components/ukm/ios",
+  "+components/test/ios",
   "+ios/web/public",
   "+ios/web/common",
   "+services/metrics/public",

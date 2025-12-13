@@ -8,12 +8,14 @@ mod check;
 pub(super) mod error;
 mod file;
 pub(super) mod fs;
+mod guard;
 mod ifndef;
 pub(super) mod include;
 mod names;
 mod namespace;
 mod nested;
 pub(super) mod out;
+mod pragma;
 mod write;
 
 use self::cfg::UnsupportedCfgEvaluator;
@@ -150,7 +152,7 @@ pub(super) fn generate(syntax: File, opt: &Opt) -> Result<GeneratedCode> {
     let ref mut cfg_errors = Set::new();
     for bridge in syntax.modules {
         let mut cfg = CfgExpr::Unconditional;
-        attrs::parse(
+        let _ = attrs::parse(
             errors,
             bridge.attrs,
             attrs::Parser {

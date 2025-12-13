@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//media/media_options.gni")
 import("//remoting/remoting_options.gni")
 
@@ -20,7 +19,7 @@ static_library("transport") {
     ":errors",
     "//base",
     "//net",
-    "//remoting/base:base",
+    "//remoting/base",
   ]
 }
 
@@ -70,6 +69,10 @@ static_library("protocol") {
     "connection_to_host.h",
     "content_description.cc",
     "content_description.h",
+    "coordinate_conversion.cc",
+    "coordinate_conversion.h",
+    "coordinate_converter.cc",
+    "coordinate_converter.h",
     "credentials_type.h",
     "data_channel_manager.cc",
     "data_channel_manager.h",
@@ -138,6 +141,7 @@ static_library("protocol") {
     "message_serialization.h",
     "monitored_video_stub.cc",
     "monitored_video_stub.h",
+    "mouse_cursor_monitor.h",
     "mouse_input_filter.cc",
     "mouse_input_filter.h",
     "named_message_pipe_handler.cc",
@@ -169,6 +173,8 @@ static_library("protocol") {
     "port_allocator.h",
     "port_allocator_factory.cc",
     "port_allocator_factory.h",
+    "pseudo_tcp.cc",
+    "pseudo_tcp.h",
     "pseudotcp_adapter.cc",
     "pseudotcp_adapter.h",
     "pseudotcp_channel_factory.cc",
@@ -243,7 +249,7 @@ static_library("protocol") {
     "//components/webrtc:net_address_utils",
     "//components/webrtc:thread_wrapper",
     "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//net",
     "//remoting/base",
     "//remoting/base:authorization",
@@ -255,7 +261,7 @@ static_library("protocol") {
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/abseil-cpp:absl",
     "//third_party/boringssl",
     "//third_party/libyuv",
@@ -312,7 +318,7 @@ static_library("protocol") {
     ]
 
     deps += [
-      "//media:media",
+      "//media",
       "//remoting/codec:encoder",
     ]
   }
@@ -368,16 +374,16 @@ static_library("test_support") {
   ]
 
   deps = [
-    "//base:base",
-    "//net:net",
+    "//base",
+    "//net",
+    "//net/traffic_annotation",
     "//net/traffic_annotation:test_support",
-    "//net/traffic_annotation:traffic_annotation",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/base:errors",
     "//remoting/base:session_policies",
     "//remoting/codec:encoder",
-    "//remoting/signaling:signaling",
-    "//testing/gtest:gtest",
+    "//remoting/signaling",
+    "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",
   ]
 }
@@ -398,6 +404,8 @@ source_set("unit_tests") {
     "connection_tester.cc",
     "connection_tester.h",
     "content_description_unittest.cc",
+    "coordinate_conversion_test.cc",
+    "coordinate_converter_unittest.cc",
     "data_channel_manager_unittest.cc",
     "fractional_input_filter_unittest.cc",
     "frame_stats_unittest.cc",
@@ -416,6 +424,7 @@ source_set("unit_tests") {
     "negotiating_authenticator_unittest.cc",
     "network_settings_unittest.cc",
     "pairing_registry_unittest.cc",
+    "pseudo_tcp_unittest.cc",
     "pseudotcp_adapter_unittest.cc",
     "sdp_message_unittest.cc",
     "session_authz_authenticator_unittest.cc",
@@ -447,7 +456,7 @@ source_set("unit_tests") {
     "//base",
     "//components/webrtc:thread_wrapper",
     "//net:test_support",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/base:session_policies",
     "//remoting/base:test_support",
     "//remoting/codec:encoder",
@@ -455,7 +464,7 @@ source_set("unit_tests") {
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
     "//remoting/proto/remoting/v1:network_traversal_proto",
     "//remoting/signaling:test_support",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libjingle_xmpp:rtc_xmllite",

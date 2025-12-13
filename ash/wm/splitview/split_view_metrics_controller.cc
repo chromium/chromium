@@ -109,7 +109,7 @@ int NumRootWindowsInSplitViewRecording() {
 }
 
 bool InTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
@@ -202,7 +202,7 @@ SplitViewMetricsController::SplitViewMetricsController(
   aura::Env::GetInstance()->AddObserver(this);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           split_view_controller->root_window());
   orientation_ = GetDeviceOrientation(display);
   ResetTimeAndCounter();
@@ -425,7 +425,7 @@ void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   // Note: The display id saved in window_info has no value. Need to use the
   // restore bounds/
   if (!window_info->current_bounds.has_value() ||
-      !display::Screen::GetScreen()
+      !display::Screen::Get()
            ->GetDisplayNearestWindow(split_view_controller_->root_window())
            .work_area()
            .Contains(window_info->current_bounds.value())) {

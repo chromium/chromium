@@ -7,22 +7,19 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
@@ -47,11 +44,12 @@ ConnectorsManager::ConnectorsManager(PrefService* pref_service,
     : ConnectorsManagerBase(pref_service, config, observe_prefs) {
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Start observing tab strip models for all browsers.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  for (Browser* browser : *browser_list) {
-    OnBrowserAdded(browser);
-  }
-  browser_list->AddObserver(this);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        OnBrowserAdded(browser_window_interface->GetBrowserForMigrationOnly());
+        return true;
+      });
+  BrowserList::GetInstance()->AddObserver(this);
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
   if (observe_prefs) {
@@ -64,25 +62,17 @@ ConnectorsManager::ConnectorsManager(PrefService* pref_service,
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 ConnectorsManager::~ConnectorsManager() {
-  BrowserList* browser_list = BrowserList::GetInstance();
-  browser_list->RemoveObserver(this);
-  for (Browser* browser : *browser_list) {
-    OnBrowserRemoved(browser);
-  }
+  BrowserList::GetInstance()->RemoveObserver(this);
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this](BrowserWindowInterface* browser_window_interface) {
+        OnBrowserRemoved(
+            browser_window_interface->GetBrowserForMigrationOnly());
+        return true;
+      });
 }
 #else
 ConnectorsManager::~ConnectorsManager() = default;
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-
-bool ConnectorsManager::IsAnalysisConnectorEnabled(
-    AnalysisConnector connector) const {
-  if (analysis_connector_settings_.count(connector) == 0 &&
-      prefs()->HasPrefPath(AnalysisConnectorPref(connector))) {
-    CacheAnalysisConnectorPolicy(connector);
-  }
-
-  return analysis_connector_settings_.count(connector);
-}
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
@@ -90,30 +80,9 @@ bool ConnectorsManager::IsConnectorEnabledForLocalAgent(
   if (!IsAnalysisConnectorEnabled(connector)) {
     return false;
   }
-  return analysis_connector_settings_.at(connector)[0].is_local_analysis();
+  return analysis_connector_settings_.at(connector)[0]->is_local_analysis();
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
-
-std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
-    const GURL& url,
-    AnalysisConnector connector) {
-  if (!IsAnalysisConnectorEnabled(connector)) {
-    return std::nullopt;
-  }
-
-  if (analysis_connector_settings_.count(connector) == 0)
-    CacheAnalysisConnectorPolicy(connector);
-
-  // If the connector is still not in memory, it means the pref is set to an
-  // empty list or that it is not a list.
-  if (analysis_connector_settings_.count(connector) == 0)
-    return std::nullopt;
-
-  // While multiple services can be set by the connector policies, only the
-  // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
-      url, GetDataRegion(connector));
-}
 
 #if BUILDFLAG(IS_CHROMEOS)
 std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
@@ -135,7 +104,10 @@ std::optional<AnalysisSettings> ConnectorsManager::GetAnalysisSettings(
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return analysis_connector_settings_[connector][0].GetAnalysisSettings(
+  auto* analysis_connector_settings = static_cast<AnalysisServiceSettings*>(
+      analysis_connector_settings_[connector][0].get());
+
+  return analysis_connector_settings->GetAnalysisSettings(
       context, source_url, destination_url, GetDataRegion(connector));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -181,9 +153,11 @@ void ConnectorsManager::CacheAnalysisConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
-  for (const base::Value& service_settings : policy_value)
-    analysis_connector_settings_[connector].emplace_back(
-        service_settings, *service_provider_config_);
+  for (const base::Value& service_settings : policy_value) {
+    analysis_connector_settings_[connector].push_back(
+        std::make_unique<AnalysisServiceSettings>(service_settings,
+                                                  *service_provider_config_));
+  }
 }
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -200,119 +174,11 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-void ConnectorsManager::SetTelemetryObserverCallback(
-    base::RepeatingCallback<void()> callback) {
-  telemetry_observer_callback_ = callback;
-}
-
 void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   MaybeCloseLocalContentAnalysisAgentConnection();
 #endif
-}
-
-bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          .ShouldBlockUntilVerdict();
-    }
-  }
-  return false;
-}
-
-std::optional<std::u16string> ConnectorsManager::GetCustomMessage(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0).GetCustomMessage(
-          tag);
-    }
-  }
-  return std::nullopt;
-}
-
-std::optional<GURL> ConnectorsManager::GetLearnMoreUrl(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector).at(0).GetLearnMoreUrl(
-          tag);
-    }
-  }
-  return std::nullopt;
-}
-
-bool ConnectorsManager::GetBypassJustificationRequired(
-    AnalysisConnector connector,
-    const std::string& tag) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0)
-      CacheAnalysisConnectorPolicy(connector);
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      return analysis_connector_settings_.at(connector)
-          .at(0)
-          .GetBypassJustificationRequired(tag);
-    }
-  }
-  return false;
-}
-
-std::vector<std::string> ConnectorsManager::GetAnalysisServiceProviderNames(
-    AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {analysis_connector_settings_.at(connector)
-                  .at(0)
-                  .service_provider_name()};
-    }
-  }
-
-  return {};
-}
-
-std::vector<const AnalysisConfig*> ConnectorsManager::GetAnalysisServiceConfigs(
-    AnalysisConnector connector) {
-  if (IsAnalysisConnectorEnabled(connector)) {
-    if (analysis_connector_settings_.count(connector) == 0) {
-      CacheAnalysisConnectorPolicy(connector);
-    }
-
-    if (analysis_connector_settings_.count(connector) &&
-        !analysis_connector_settings_.at(connector).empty()) {
-      // There can only be one provider right now, but the system is designed to
-      // support multiples, so return a vector.
-      return {
-          analysis_connector_settings_.at(connector).at(0).GetAnalysisConfig()};
-    }
-  }
-
-  return {};
 }
 
 DataRegion ConnectorsManager::GetDataRegion(AnalysisConnector connector) const {
@@ -360,17 +226,6 @@ void ConnectorsManager::StartObservingPref(AnalysisConnector connector) {
                       &ConnectorsManager::OnPrefChanged),
                   base::Unretained(this), connector));
   }
-}
-
-
-const ConnectorsManager::AnalysisConnectorsSettings&
-ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
-  return analysis_connector_settings_;
-}
-
-const base::RepeatingCallback<void()>
-ConnectorsManager::GetTelemetryObserverCallbackForTesting() const {
-  return telemetry_observer_callback_;
 }
 
 }  // namespace enterprise_connectors

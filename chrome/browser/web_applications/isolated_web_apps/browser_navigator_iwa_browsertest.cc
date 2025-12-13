@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/notreached.h"
 #include "base/test/gmock_expected_support.h"
@@ -14,9 +13,11 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_browsertest.h"
@@ -24,11 +25,10 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -37,8 +37,10 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/custom_handlers/protocol_handler.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -49,55 +51,20 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace {
 
 GURL GetGoogleURL() {
   return GURL("http://www.google.com/");
 }
 
-class ExternalProtocolHandlerDelegate
-    : public ExternalProtocolHandler::Delegate {
- public:
-  ExternalProtocolHandlerDelegate() {
-    ExternalProtocolHandler::SetDelegateForTesting(this);
-  }
-  ~ExternalProtocolHandlerDelegate() override {
-    ExternalProtocolHandler::SetDelegateForTesting(nullptr);
-  }
-
-  // ExternalProtocolHandler::Delegate:
-  ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
-                                                    Profile* profile) override {
-    return ExternalProtocolHandler::BLOCK;
-  }
-  void BlockRequest() override { future.SetValue(); }
-  scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
-      const GURL& url) override {
-    NOTREACHED();
-  }
-  void RunExternalProtocolDialog(
-      const GURL& url,
-      content::WebContents* web_contents,
-      ui::PageTransition page_transition,
-      bool has_user_gesture,
-      const std::optional<url::Origin>& initiating_origin,
-      const std::u16string& program_name) override {
-    NOTREACHED();
-  }
-  void LaunchUrlWithoutSecurityCheck(
-      const GURL& url,
-      content::WebContents* web_contents) override {
-    NOTREACHED();
-  }
-  void FinishedProcessingCheck() override { NOTREACHED(); }
-
-  base::test::TestFuture<void> future;
-};
-
 class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
  public:
   BrowserNavigatorIwaTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
+    scoped_feature_list_.InitWithFeatures({features::kIsolatedWebApps}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -136,6 +103,10 @@ class BrowserNavigatorIwaTest : public BrowserNavigatorTest {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2_;
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
@@ -153,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   params1.disposition = WindowOpenDisposition::CURRENT_TAB;
   ui_test_utils::NavigateToURL(&params1);
 
-  Browser* iwa_browser = params1.browser;
+  Browser* iwa_browser = params1.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(iwa_browser, browser());
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
@@ -195,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
   ui_test_utils::NavigateToURL(&params3);
 
   // Navigating a tab outside of the app's scope should create a new browser.
-  Browser* new_iwa_browser = params3.browser;
+  Browser* new_iwa_browser = params3.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(iwa_browser, new_iwa_browser);
   EXPECT_NE(browser(), new_iwa_browser);
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
@@ -210,14 +181,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
       new_iwa_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
 
   // 4. When navigating a tab from an isolated-app: to an http: origin, then,
-  //    - On ChromeOS, the navigation should be intercepted and instead be
-  //      opened in a new tab in a non-IWA browser window.
-  //    - On other platforms, the navigation should be intercepted and instead
-  //      be opened in the default browser (as in, e.g., Firefox).
-
-  auto protocol_handler_delegate =
-      std::make_unique<ExternalProtocolHandlerDelegate>();
-
+  //    the navigation should be intercepted and instead be opened in the
+  //    default browser.
   NavigateParams params4 = MakeNavigateParams(iwa_browser);
   params4.url = GetGoogleURL();
   params4.transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
@@ -237,7 +202,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
       url_info1_->origin().GetURL().Resolve("/other-page.html"),
       iwa_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
-#if BUILDFLAG(IS_CHROMEOS)
   // A new tab should have been opened in the non-app browser.
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_TRUE(browser()
@@ -247,15 +211,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, NavigateCurrentTab) {
                   .IsAboutBlank());
   EXPECT_EQ(GetGoogleURL(),
             browser()->tab_strip_model()->GetWebContentsAt(1)->GetURL());
-#else
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  EXPECT_TRUE(browser()
-                  ->tab_strip_model()
-                  ->GetWebContentsAt(0)
-                  ->GetURL()
-                  .IsAboutBlank());
-  EXPECT_TRUE(protocol_handler_delegate->future.Wait());
-#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -265,9 +220,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   {
     // Eliminate all prompts/guards along the way.
     ExternalProtocolHandler::PermitLaunchUrl();
-    ExternalProtocolHandler::SetBlockState("meow", url_info2_->origin(),
-                                           ExternalProtocolHandler::DONT_BLOCK,
-                                           profile());
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->SetProtocolLinkPreference(url_info1_->app_id(), "meow");
     base::test::TestFuture<void> future;
     web_app::WebAppProvider::GetForWebApps(profile())
         ->scheduler()
@@ -292,7 +246,45 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocol) {
   observer.Wait();
 
   ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
-      chrome::FindBrowserWithTab(observer.web_contents()),
+      tabs::TabInterface::GetFromContents(observer.web_contents())
+          ->GetBrowserWindowInterface(),
+      url_info1_->app_id()));
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorIwaTest, WindowOpenProtocolSelf) {
+  ASSERT_NO_FATAL_FAILURE(InstallBundles());
+
+  {
+    // Eliminate all prompts/guards along the way.
+    ExternalProtocolHandler::PermitLaunchUrl();
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->SetProtocolLinkPreference(url_info1_->app_id(), "meow");
+    base::test::TestFuture<void> future;
+    web_app::WebAppProvider::GetForWebApps(profile())
+        ->scheduler()
+        .UpdateProtocolHandlerUserApproval(url_info1_->app_id(), "meow",
+                                           web_app::ApiApprovalState::kAllowed,
+                                           future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  // Open a protocol url from an app frame.
+  auto* rfh = web_app::OpenIsolatedWebApp(profile(), url_info1_->app_id());
+
+  GURL remapped_url =
+      custom_handlers::ProtocolHandler::CreateProtocolHandler(
+          "meow",
+          url_info1_->origin().GetURL().Resolve("/index.html?params=%s"))
+          .TranslateUrl(GURL("meow://hru"));
+
+  ui_test_utils::UrlLoadObserver observer(remapped_url);
+  ASSERT_THAT(content::EvalJs(rfh, "window.open('meow://hru', '_self')"),
+              content::EvalJsResult::IsOk());
+  observer.Wait();
+
+  ASSERT_TRUE(web_app::AppBrowserController::IsForWebApp(
+      tabs::TabInterface::GetFromContents(observer.web_contents())
+          ->GetBrowserWindowInterface(),
       url_info1_->app_id()));
 }
 #endif
@@ -348,7 +340,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNavigatorIwaNewTabTest, NavigateNewTab) {
   params3.disposition = GetParam();
   ui_test_utils::NavigateToURL(&params3);
 
-  Browser* new_iwa_browser = params3.browser;
+  Browser* new_iwa_browser = params3.browser->GetBrowserForMigrationOnly();
   EXPECT_NE(new_iwa_browser, iwa_browser);
   EXPECT_NE(new_iwa_browser, browser());
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());

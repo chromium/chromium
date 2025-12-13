@@ -5,11 +5,14 @@
 #ifndef GPU_IPC_SERVICE_GPU_WATCHDOG_THREAD_H_
 #define GPU_IPC_SERVICE_GPU_WATCHDOG_THREAD_H_
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/sequence_checker.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -17,7 +20,7 @@
 #include "build/chromecast_buildflags.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "gpu/ipc/service/gpu_ipc_service_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/progress_reporter.h"
 
 namespace gpu {
@@ -177,7 +180,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   void Disarm();
   void InProgress();
   bool IsArmed();
-  base::subtle::Atomic32 ReadArmDisarmCounter();
+  int ReadArmDisarmCounter();
   void OnWatchdogTimeout();
   bool SlowWatchdogThread();
   bool WatchedThreadNeedsMoreThreadTime(bool no_gpu_hang_detected);
@@ -213,11 +216,12 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // The watchdog continues when it's not on the TTY of our host X11 server.
   bool ContinueOnNonHostX11ServerTty();
 
-  // This counter is only written on the gpu thread, and read on both threads.
-  volatile base::subtle::Atomic32 arm_disarm_counter_ = 0;
+  // This counter is only read from the watchdog thread and may be incremented
+  // on the watched thread and possibly other threads.
+  std::atomic_int arm_disarm_counter_ = 0;
   // The counter number read in the last OnWatchdogTimeout() on the watchdog
   // thread.
-  int32_t last_arm_disarm_counter_ = 0;
+  int last_arm_disarm_counter_ = 0;
 
   // Timeout on the watchdog thread to check if gpu hangs.
   base::TimeDelta watchdog_timeout_;

@@ -9,10 +9,10 @@
 
 #include <memory>
 #include <optional>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/types/id_type.h"
 #include "cc/base/list_container.h"
@@ -70,9 +70,9 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
-              const cc::FilterOperations& filters,
-              const cc::FilterOperations& backdrop_filters,
-              const std::optional<SkPath>& backdrop_filter_bounds,
+              const cc::FilterOperations& pass_filters,
+              const cc::FilterOperations& pass_backdrop_filters,
+              const std::optional<SkPath>& pass_backdrop_filter_bounds,
               SubtreeCaptureId capture_id,
               gfx::Size subtree_capture_size,
               ViewTransitionElementResourceId resource_id,
@@ -82,7 +82,9 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
               bool generate_mipmap,
               bool per_quad_damage);
 
-  void AsValueInto(base::trace_event::TracedValue* dict) const;
+  void AsValueInto(base::trace_event::TracedValue* dict,
+                   const std::unordered_map<ResourceId, size_t>&
+                       resource_id_to_index_map) const;
 
   template <typename DrawQuadType>
   DrawQuadType* CreateAndAppendDrawQuad() {
@@ -113,6 +115,21 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // that is not contained in |damage_rect|. Only the root render pass in a
   // CompositorFrame should have per quad damage.
   bool has_per_quad_damage = false;
+
+  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
+  // Post-processing filters, applied to the pixels in the render pass' texture.
+  cc::FilterOperations filters;
+
+  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
+  // Post-processing filters, applied to the pixels showing through the
+  // backdrop of the render pass, from behind it.
+  cc::FilterOperations backdrop_filters;
+
+  // TODO(crbug.com/444264038): Move these to RenderPassDrawQuadInternal.
+  // Clipping bounds for backdrop filter. If defined, is in a coordinate space
+  // equivalent to render pass physical pixels after applying
+  // `RenderPassDrawQuad::filter_scale`.
+  std::optional<SkPath> backdrop_filter_bounds;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use

@@ -25,7 +25,7 @@ const char* PageNode::ToString(PageType type) {
 const char* PageNode::ToString(PageNode::LoadingState loading_state) {
   switch (loading_state) {
     case LoadingState::kLoadingNotStarted:
-      return "kLoadingNotStated";
+      return "kLoadingNotStarted";
     case LoadingState::kLoading:
       return "kLoading";
     case LoadingState::kLoadingTimedOut:

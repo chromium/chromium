@@ -293,7 +293,7 @@ class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
   const bool should_block_power_saving_;
 
   // Set of render process hosts that |this| is registered as an observer on.
-  std::unordered_set<int> render_process_id_set_;
+  std::unordered_set<ChildProcessId> render_process_id_set_;
 
   // Used to bulk up updates that we send to javascript.
   // The class owns the value/dictionary and command name of an update.

@@ -207,7 +207,7 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
   // Don't allow external URLs with the CURRENT_TAB disposition be opened in
   // this guest view, change the disposition to NEW_FOREGROUND_TAB.
   if ((!params.url.SchemeIs(extensions::kExtensionScheme) ||
-       params.url.host() != options_page_.host()) &&
+       params.url.GetHost() != options_page_.GetHost()) &&
       params.disposition == WindowOpenDisposition::CURRENT_TAB) {
     return extension_options_guest_delegate_->OpenURLInNewTab(
         content::OpenURLParams(params.url, params.referrer,

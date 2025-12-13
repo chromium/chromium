@@ -4,9 +4,11 @@
 
 #include "components/policy/test_support/request_handler_for_client_cert_provisioning.h"
 
+#include "base/strings/string_view_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/test_support/embedded_policy_test_server_test_base.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/keypair.h"
+#include "crypto/test_support.h"
 #include "device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -93,11 +95,9 @@ TEST_F(RequestHandlerForClientCertProvisioningTest,
       client_certificate_provisioning_request =
           device_management_request
               .mutable_client_certificate_provisioning_request();
-  auto private_key = crypto::RSAPrivateKey::Create(2048);
-  std::vector<uint8_t> pk;
-  ASSERT_TRUE(private_key->ExportPublicKey(&pk));
+  const auto key = crypto::test::FixedRsa2048PublicKeyForTesting();
   client_certificate_provisioning_request->set_public_key(
-      std::string(pk.begin(), pk.end()));
+      base::as_string_view(key.ToSubjectPublicKeyInfo()));
   client_certificate_provisioning_request->mutable_download_cert_request();
   SetPayload(device_management_request);
 

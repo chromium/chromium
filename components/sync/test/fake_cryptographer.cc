@@ -15,7 +15,7 @@ namespace syncer {
 
 namespace {
 
-const char kSeparator[] = "@@";
+constexpr char kSeparator[] = "@@";
 
 }  // namespace
 

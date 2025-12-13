@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -136,6 +138,34 @@ TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest, OnTabModelAddedAndRemoved) {
 
   TabModelList::RemoveTabModel(&tab_model);
   EXPECT_FALSE(pref_change_handler_->IsObservingTabModelForTesting());
+}
+
+TEST_F(SafeBrowsingPrefChangeHandlerAndroidTest,
+       MaybeShowEnhancedProtectionSettingChangeNotificationResetsPref) {
+  TestTabModel tab_model(profile());
+  pref_change_handler_->AddTabModelListObserver();
+  pref_change_handler_->SetTabModelForTesting(&tab_model);
+  TabModelList::AddTabModel(&tab_model);
+  EXPECT_TRUE(pref_change_handler_->IsObservingTabModelForTesting());
+
+  // Create a WebContents and add it to the model.
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  tab_model.SetWebContentsList({web_contents.get()});
+
+  // Set the pref to true.
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally, true);
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally));
+
+  pref_change_handler_->MaybeShowEnhancedProtectionSettingChangeNotification();
+
+  // Verify that the pref is now false.
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      prefs::kSafeBrowsingSyncedEnhancedProtectionSetLocally));
+
+  TabModelList::RemoveTabModel(&tab_model);
 }
 
 }  // namespace safe_browsing

@@ -20,21 +20,21 @@ MockMediaStreamVideoSink::~MockMediaStreamVideoSink() {}
 blink::VideoCaptureDeliverFrameCB
 MockMediaStreamVideoSink::GetDeliverFrameCB() {
   return base::BindPostTaskToCurrentDefault(
-      WTF::BindRepeating(&MockMediaStreamVideoSink::DeliverVideoFrame,
-                         weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&MockMediaStreamVideoSink::DeliverVideoFrame,
+                           weak_factory_.GetWeakPtr()));
 }
 
 EncodedVideoFrameCB MockMediaStreamVideoSink::GetDeliverEncodedVideoFrameCB() {
   return base::BindPostTaskToCurrentDefault(
-      WTF::BindRepeating(&MockMediaStreamVideoSink::DeliverEncodedVideoFrame,
-                         weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&MockMediaStreamVideoSink::DeliverEncodedVideoFrame,
+                           weak_factory_.GetWeakPtr()));
 }
 
 VideoCaptureNotifyFrameDroppedCB
 MockMediaStreamVideoSink::GetNotifyFrameDroppedCB() {
   return base::BindPostTaskToCurrentDefault(
-      WTF::BindRepeating(&MockMediaStreamVideoSink::NotifyFrameDropped,
-                         weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&MockMediaStreamVideoSink::NotifyFrameDropped,
+                           weak_factory_.GetWeakPtr()));
 }
 
 void MockMediaStreamVideoSink::DeliverVideoFrame(

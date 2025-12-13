@@ -22,6 +22,8 @@ import org.chromium.components.messages.MessageWrapper;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Supplier;
+
 /** Glue code between C++ and Java for passing SurveyUiDelegate. */
 @JNINamespace("hats")
 @NullMarked
@@ -43,12 +45,16 @@ class SurveyUiDelegateBridge implements SurveyUiDelegate {
         if (tabModelSelector == null) return null;
 
         populateDefaultValuesForMessageWrapper(messageWrapper, windowAndroid);
+        // TODO(crbug.com/453007852): When ObservableSupplier<E> extends Supplier<@Nullable E>,
+        // remove cast to Supplier<@Nullable Boolean>,
         MessageSurveyUiDelegate delegate =
                 new MessageSurveyUiDelegate(
                         messageWrapper.getMessageProperties(),
                         messageDispatcher,
                         tabModelSelector,
-                        SurveyClientFactory.getInstance().getCrashUploadPermissionSupplier());
+                        (Supplier<@Nullable Boolean>)
+                                SurveyClientFactory.getInstance()
+                                        .getCrashUploadPermissionSupplier());
 
         return new SurveyUiDelegateBridge(nativePointer, delegate);
     }

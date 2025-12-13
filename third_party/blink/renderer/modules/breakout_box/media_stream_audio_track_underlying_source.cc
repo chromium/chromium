@@ -68,7 +68,7 @@ class AudioBufferPoolImpl
     // Copy the data over.
     const std::vector<uint8_t*>& dest_data = buffer->channel_data();
     for (int ch = 0; ch < audio_bus.channels(); ++ch) {
-      const float* src_channel = audio_bus.channel(ch);
+      const float* src_channel = audio_bus.channel(ch).data();
       UNSAFE_TODO(memcpy(dest_data[ch], src_channel,
                          sizeof(float) * audio_bus.frames()));
     }

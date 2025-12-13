@@ -104,7 +104,8 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] WatchHangsInScope {
 // HangWatchStates for deadline overruns. This happens at a regular interval on
 // a separate thread. Only one instance of HangWatcher can exist at a time
 // within a single process. This instance must outlive all monitored threads.
-class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
+class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate,
+                                public base::MemoryPressureListener {
  public:
   // Describes the type of a process for logging purposes.
   enum class ProcessType {
@@ -283,8 +284,7 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   THREAD_CHECKER(constructing_thread_checker_);
 
   // Invoked on memory pressure signal.
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+  void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) override;
 
   // Returns a ScopedCrashKeyString that sets the crash key with the time since
   // last critical memory pressure signal.
@@ -399,7 +399,8 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   raw_ptr<const base::TickClock> tick_clock_;
 
   // Registration to receive memory pressure signals.
-  base::MemoryPressureListener memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // The last time at which a critical memory pressure signal was received, or
   // null if no signal was ever received. Atomic because it's set and read from

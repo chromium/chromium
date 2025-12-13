@@ -20,7 +20,8 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
-#import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
+#import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -31,10 +32,6 @@ using password_manager::CredentialLeakType;
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong) PasswordBreachViewController* viewController;
-
-// Popover used to show learn more info, not nil when presented.
-@property(nonatomic, strong)
-    PopoverLabelViewController* learnMoreViewController;
 
 // Main mediator for this coordinator.
 @property(nonatomic, strong) PasswordBreachMediator* mediator;
@@ -50,7 +47,9 @@ using password_manager::CredentialLeakType;
 
 @end
 
-@implementation PasswordBreachCoordinator
+@implementation PasswordBreachCoordinator {
+  UINavigationController* _navigationController;
+}
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
@@ -67,20 +66,30 @@ using password_manager::CredentialLeakType;
 
 - (void)start {
   self.viewController = [[PasswordBreachViewController alloc] init];
-  self.viewController.modalPresentationStyle = UIModalPresentationFormSheet;
-  self.viewController.modalInPresentation = YES;
+
+  _navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.viewController];
+
+  _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalInPresentation = YES;
 
   auto recorder = std::make_unique<
       password_manager::metrics_util::LeakDialogMetricsRecorder>(
       self.ukm_source_id, password_manager::GetLeakDialogType(self.leakType));
+
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  CHECK(authenticationService);
+
   self.mediator =
       [[PasswordBreachMediator alloc] initWithConsumer:self.viewController
                                              presenter:self
                                       metrics_recorder:std::move(recorder)
-                                              leakType:self.leakType];
+                                              leakType:self.leakType
+                                 authenticationService:authenticationService];
   self.viewController.actionHandler = self.mediator;
 
-  [self.baseViewController presentViewController:self.viewController
+  [self.baseViewController presentViewController:_navigationController
                                         animated:YES
                                       completion:nil];
 }
@@ -88,7 +97,7 @@ using password_manager::CredentialLeakType;
 - (void)stop {
   [self.mediator disconnect];
   self.mediator = nil;
-  [self.viewController.presentingViewController
+  [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
   self.viewController = nil;
@@ -97,33 +106,27 @@ using password_manager::CredentialLeakType;
 
 #pragma mark - PasswordBreachPresenter
 
-- (void)presentLearnMore {
-  NSString* message =
-      l10n_util::GetNSString(IDS_PASSWORD_MANAGER_LEAK_HELP_MESSAGE);
-  self.learnMoreViewController =
-      [[PopoverLabelViewController alloc] initWithMessage:message];
-  [self.viewController presentViewController:self.learnMoreViewController
-                                    animated:YES
-                                  completion:nil];
-  self.learnMoreViewController.popoverPresentationController.barButtonItem =
-      self.viewController.helpButton;
-  self.learnMoreViewController.popoverPresentationController
-      .permittedArrowDirections = UIPopoverArrowDirectionUp;
-}
-
 - (void)openPasswordCheckup {
   id<ApplicationCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  password_manager::LogPasswordCheckReferrer(
-      password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordManager.ManagePasswordsReferrer",
-      password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
   base::RecordAction(
       base::UserMetricsAction("MobilePasswordBreachOpenPasswordCheckup"));
 
   [handler dismissModalsAndShowPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kPasswordBreachDialog];
+}
+
+- (void)openPasswordManager {
+  id<SettingsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordBreachDialog);
+  base::RecordAction(
+      base::UserMetricsAction("MobilePasswordBreachOpenPasswordManager"));
+
+  [handler
+      showSavedPasswordsSettingsFromViewController:self.baseViewController];
 }
 
 @end

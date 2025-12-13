@@ -15,10 +15,11 @@ namespace ash {
 
 namespace {
 
-constexpr std::array<int, 3> kSwitchableContainers = {
+constexpr std::array<int, 4> kSwitchableContainers = {
     kShellWindowId_AlwaysOnTopContainer,
     kShellWindowId_FloatContainer,
     kShellWindowId_PipContainer,
+    kShellWindowId_LiveCaptionContainer,
 };
 
 std::vector<int> GetSwitchableContainerIds() {

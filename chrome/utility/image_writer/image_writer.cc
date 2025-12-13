@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/image_writer/image_writer.h"
 
 #include <string.h>
 
+#include <algorithm>
+#include <optional>
+
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
@@ -26,10 +25,14 @@
 
 namespace image_writer {
 
+namespace {
+
 // Since block devices like large sequential access and IPC is expensive we're
 // doing work in 1MB chunks.
-const int kBurningBlockSize = 1 << 20;  // 1 MB
-const int kMemoryAlignment = 4096;
+constexpr size_t kBurningBlockSize = 1 << 20;  // 1 MB
+constexpr size_t kMemoryAlignment = 4096;
+
+}  // namespace
 
 ImageWriter::ImageWriter(ImageWriterHandler* handler,
                          const base::FilePath& image_path,
@@ -125,40 +128,42 @@ void ImageWriter::WriteChunk() {
   }
 
   // DASD buffers require memory alignment on some systems.
-  std::unique_ptr<char, base::AlignedFreeDeleter> buffer(static_cast<char*>(
-      base::AlignedAlloc(kBurningBlockSize, kMemoryAlignment)));
-  memset(buffer.get(), 0, kBurningBlockSize);
+  base::AlignedHeapArray<uint8_t> buffer =
+      base::AlignedUninit<uint8_t>(kBurningBlockSize, kMemoryAlignment);
+  std::ranges::fill(buffer, 0);
 
-  int bytes_read = image_file_.Read(bytes_processed_, buffer.get(),
-                                    kBurningBlockSize);
+  const std::optional<size_t> bytes_read =
+      image_file_.Read(bytes_processed_, buffer.as_span());
+  if (!bytes_read) {
+    Error(error::kReadImage);
+    return;
+  }
 
-  if (bytes_read > 0) {
-    // Always attempt to write a whole block, as writing DASD requires sector-
-    // aligned writes to devices.
-    int bytes_to_write = bytes_read + (kMemoryAlignment - 1) -
-                         (bytes_read - 1) % kMemoryAlignment;
-    DCHECK_EQ(0, bytes_to_write % kMemoryAlignment);
-    int bytes_written =
-        device_file_.Write(bytes_processed_, buffer.get(), bytes_to_write);
-
-    if (bytes_written < bytes_read) {
-      Error(error::kWriteImage);
-      return;
-    }
-
-    bytes_processed_ += bytes_read;
-    PostProgress(bytes_processed_);
-
-    PostTask(base::BindOnce(&ImageWriter::WriteChunk, AsWeakPtr()));
-  } else if (bytes_read == 0) {
+  if (*bytes_read == 0) {
     // End of file.
     device_file_.Flush();
     running_ = false;
     handler_->SendSucceeded();
-  } else {
-    // Unable to read entire file.
-    Error(error::kReadImage);
+    return;
   }
+
+  // Always attempt to write a whole block, as writing DASD requires sector-
+  // aligned writes to devices.
+  const size_t bytes_to_write = *bytes_read + (kMemoryAlignment - 1) -
+                                (*bytes_read - 1) % kMemoryAlignment;
+  DCHECK_EQ(0u, bytes_to_write % kMemoryAlignment);
+  std::optional<size_t> bytes_written =
+      device_file_.Write(bytes_processed_, buffer.first(bytes_to_write));
+
+  if (!bytes_written || *bytes_written < *bytes_read) {
+    Error(error::kWriteImage);
+    return;
+  }
+
+  bytes_processed_ += base::checked_cast<int64_t>(*bytes_read);
+  PostProgress(bytes_processed_);
+
+  PostTask(base::BindOnce(&ImageWriter::WriteChunk, AsWeakPtr()));
 }
 
 void ImageWriter::VerifyChunk() {
@@ -166,46 +171,47 @@ void ImageWriter::VerifyChunk() {
     return;
   }
 
-  auto image_buffer = base::HeapArray<char>::Uninit(kBurningBlockSize);
+  auto image_buffer = base::HeapArray<uint8_t>::Uninit(kBurningBlockSize);
   // DASD buffers require memory alignment on some systems.
-  std::unique_ptr<char, base::AlignedFreeDeleter> device_buffer(
-      static_cast<char*>(
-          base::AlignedAlloc(kBurningBlockSize, kMemoryAlignment)));
+  base::AlignedHeapArray<uint8_t> device_buffer =
+      base::AlignedUninit<uint8_t>(kBurningBlockSize, kMemoryAlignment);
 
-  int bytes_read = image_file_.Read(bytes_processed_, image_buffer.data(),
-                                    kBurningBlockSize);
-
-  if (bytes_read > 0) {
-    if (device_file_.Read(bytes_processed_,
-                          device_buffer.get(),
-                          kBurningBlockSize) < bytes_read) {
-      LOG(ERROR) << "Failed to read " << bytes_read << " bytes of "
-                 << "device at offset " << bytes_processed_;
-      Error(error::kReadDevice);
-      return;
-    }
-
-    if (memcmp(image_buffer.data(), device_buffer.get(), bytes_read) != 0) {
-      LOG(ERROR) << "Write verification failed when comparing " << bytes_read
-                 << " bytes at " << bytes_processed_;
-      Error(error::kVerificationFailed);
-      return;
-    }
-
-    bytes_processed_ += bytes_read;
-    PostProgress(bytes_processed_);
-
-    PostTask(base::BindOnce(&ImageWriter::VerifyChunk, AsWeakPtr()));
-  } else if (bytes_read == 0) {
-    // End of file.
-    handler_->SendSucceeded();
-    running_ = false;
-  } else {
+  const std::optional<size_t> bytes_read =
+      image_file_.Read(bytes_processed_, image_buffer.as_span());
+  if (!bytes_read) {
     // Unable to read entire file.
     LOG(ERROR) << "Failed to read " << kBurningBlockSize << " bytes of image "
                << "at offset " << bytes_processed_;
     Error(error::kReadImage);
+    return;
   }
+
+  if (*bytes_read == 0) {
+    // End of file.
+    handler_->SendSucceeded();
+    running_ = false;
+    return;
+  }
+
+  if (device_file_.Read(bytes_processed_, device_buffer.as_span()) <
+      *bytes_read) {
+    LOG(ERROR) << "Failed to read " << *bytes_read << " bytes of "
+               << "device at offset " << bytes_processed_;
+    Error(error::kReadDevice);
+    return;
+  }
+
+  if (image_buffer.first(*bytes_read) != device_buffer.first(*bytes_read)) {
+    LOG(ERROR) << "Write verification failed when comparing " << *bytes_read
+               << " bytes at " << bytes_processed_;
+    Error(error::kVerificationFailed);
+    return;
+  }
+
+  bytes_processed_ += base::checked_cast<int64_t>(*bytes_read);
+  PostProgress(bytes_processed_);
+
+  PostTask(base::BindOnce(&ImageWriter::VerifyChunk, AsWeakPtr()));
 }
 
 }  // namespace image_writer

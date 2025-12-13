@@ -52,7 +52,8 @@ Document* DOMParser::parseFromString(const V8UnionStringOrTrustedHTML* str,
                                      const V8SupportedType& type,
                                      ExceptionState& exception_state) {
   String compliant_str = TrustedTypesCheckForHTML(
-      str, window_, "DOMParser", "parseFromString", exception_state);
+      str, window_, trusted_types_names::kDOMParser,
+      trusted_types_names::kParseFromString, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }

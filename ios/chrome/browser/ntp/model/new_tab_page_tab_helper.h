@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
@@ -13,7 +13,6 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
-@class NewTabPageState;
 @protocol NewTabPageTabHelperDelegate;
 
 namespace web {
@@ -40,20 +39,11 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   bool ShouldShowStartSurface() const;
   void SetShowStartSurface(bool show_start_surface);
 
-  // Returns true when the current web_state is an NTP and the underlying
-  // controllers have been created.
-  bool IsActive() const;
+  // Saves the NTP scroll position for when users navigate back to it.
+  void SetNTPScrollPosition(CGFloat scroll_position);
 
-  // Saves the NTP state for when users navigate back to it.
-  void SetNTPState(NewTabPageState* ntpState);
-
-  // Returns the saved state of the associated NTP.
-  NewTabPageState* GetNTPState();
-
- private:
-  friend class web::WebStateUserData<NewTabPageTabHelper>;
-
-  explicit NewTabPageTabHelper(web::WebState* web_state);
+  // Returns the saved scroll position of the associated NTP.
+  CGFloat GetNTPScrollPosition();
 
   // web::WebStateObserver overrides:
   void WebStateDestroyed(web::WebState* web_state) override;
@@ -65,8 +55,21 @@ class NewTabPageTabHelper : public web::WebStateObserver,
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
 
+ private:
+  // For access to IsActive(...) method.
+  friend bool IsVisibleURLNewTabPage(web::WebState*);
+  friend class web::WebStateUserData<NewTabPageTabHelper>;
+
+  explicit NewTabPageTabHelper(web::WebState* web_state);
+
   // Enable or disable the tab helper.
   void SetActive(bool active);
+
+  // Returns true when the current web_state is an NTP and the underlying
+  // controllers have been created. Should not be accessed directly instead
+  // use the helper function IsVisibleURLNewTabPage(...) which handles the
+  // case where the WebState is unrealized and the tab helper not created.
+  bool IsActive() const;
 
   // Used to present and dismiss the NTP.
   __weak id<NewTabPageTabHelperDelegate> delegate_ = nil;
@@ -81,8 +84,10 @@ class NewTabPageTabHelper : public web::WebStateObserver,
   // Surface.
   BOOL show_start_surface_ = false;
 
-  // The saved state of the associated NTP.
-  NewTabPageState* ntp_state_ = nil;
+  // The saved scroll position of the associated NTP. We don't know what the top
+  // position of the NTP is in advance, so we use `-CGFLOAT_MAX` to indicate
+  // that it's scrolled to top.
+  CGFloat scroll_position_ = -CGFLOAT_MAX;
 };
 
 #endif  // IOS_CHROME_BROWSER_NTP_MODEL_NEW_TAB_PAGE_TAB_HELPER_H_

@@ -63,7 +63,7 @@ class TranslateInfobarModalOverlayMediatorTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<FakeTranslateInfoBarDelegate> translate_delegate_;
+  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> translate_delegate_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;

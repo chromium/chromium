@@ -22,7 +22,7 @@ void CheckAddedParameters(const std::string& url_string,
   GURL result(url_string);
   safe_search_api::ForceGoogleSafeSearch(GURL(url_string), &result);
 
-  EXPECT_EQ(expected_query_parameters, result.query());
+  EXPECT_EQ(expected_query_parameters, result.GetQuery());
 }
 
 TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/file_system/file_system_usage_cache.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -206,9 +202,12 @@ bool FileSystemUsageCache::Read(const base::FilePath& usage_file_path,
     return false;
   }
 
-  if (header[0] != kUsageFileHeader[0] || header[1] != kUsageFileHeader[1] ||
-      header[2] != kUsageFileHeader[2] || header[3] != kUsageFileHeader[3])
+  if (header[0] != kUsageFileHeader[0] ||
+      UNSAFE_TODO(header[1]) != kUsageFileHeader[1] ||
+      UNSAFE_TODO(header[2]) != kUsageFileHeader[2] ||
+      UNSAFE_TODO(header[3]) != kUsageFileHeader[3]) {
     return false;
+  }
 
   *dirty_out = dirty;
   *usage_out = usage;
@@ -267,7 +266,8 @@ bool FileSystemUsageCache::ReadBytes(const base::FilePath& file_path,
   if (is_incognito_) {
     if (!base::Contains(incognito_usages_, file_path))
       return false;
-    memcpy(buffer.data(), incognito_usages_[file_path].data(), buffer.size());
+    UNSAFE_TODO(memcpy(buffer.data(), incognito_usages_[file_path].data(),
+                       buffer.size()));
     return true;
   }
   base::File* file = GetFile(file_path);
@@ -282,7 +282,8 @@ bool FileSystemUsageCache::WriteBytes(const base::FilePath& file_path,
   if (is_incognito_) {
     if (!base::Contains(incognito_usages_, file_path))
       incognito_usages_[file_path] = std::vector<uint8_t>(buffer.size());
-    memcpy(incognito_usages_[file_path].data(), buffer.data(), buffer.size());
+    UNSAFE_TODO(memcpy(incognito_usages_[file_path].data(), buffer.data(),
+                       buffer.size()));
     return true;
   }
   base::File* file = GetFile(file_path);

@@ -4,6 +4,7 @@
 
 #include "components/browsing_topics/test_util.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -140,6 +141,7 @@ bool BrowsingTopicsEligibleForURLVisit(history::HistoryService* history_service,
   bool topics_eligible;
 
   history::QueryOptions options;
+  options.policy_for_404_visits = history::VisitQuery404sPolicy::kExclude404s;
   options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
 
   base::RunLoop run_loop;

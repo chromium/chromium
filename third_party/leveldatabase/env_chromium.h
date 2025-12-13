@@ -147,9 +147,6 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
   // instance that performs direct filesystem access.
   ChromiumEnv();
 
-  // Temporary debugging ctor.
-  explicit ChromiumEnv(bool log_lock_errors);
-
   // Constructs a ChromiumEnv instance with a custom FilesystemProxy instance.
   explicit ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem);
 
@@ -191,10 +188,6 @@ class LEVELDB_EXPORT ChromiumEnv : public leveldb::Env {
 
  private:
   void RemoveBackupFiles(const base::FilePath& dir);
-
-  // When `log_lock_errors_` is true, this env will emit extra metrics for
-  // locking failures. TODO(crbug.com/340398745): remove this.
-  bool log_lock_errors_ = false;
 
   // `FilesystemProxy` is thread-safe.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_;

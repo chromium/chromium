@@ -185,16 +185,25 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 
   base::WeakPtr<web::WebState> weakWebState = webState->GetWeakPtr();
   __weak __typeof(self) weakSelf = self;
-  ProceduralBlockWithBlockWithItemArray provider =
-      ^(ProceduralBlockWithItemArray completion) {
-        [weakSelf addItemWithCompletion:completion forWebState:weakWebState];
-      };
-  // Use a deferred element so that the item is displayed depending on the text
-  // selection and updated on selection change.
-  UIDeferredMenuElement* deferredMenuElement =
-      [UIDeferredMenuElement elementWithProvider:provider];
-  edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
-                                    /*primary*/ YES);
+
+  if (ShouldShowEditMenuItemsSynchronously()) {
+    UIAction* action = [self actionWithHandler:^(UIAction* a) {
+      [weakSelf fetchSelectionForWebState:weakWebState];
+    }];
+    edit_menu::AddElementToChromeMenu(builder, action,
+                                      /*primary*/ YES);
+  } else {
+    ProceduralBlockWithBlockWithItemArray provider =
+        ^(ProceduralBlockWithItemArray completion) {
+          [weakSelf addItemWithCompletion:completion forWebState:weakWebState];
+        };
+    // Use a deferred element so that the item is displayed depending on the
+    // text selection and updated on selection change.
+    UIDeferredMenuElement* deferredMenuElement =
+        [UIDeferredMenuElement elementWithProvider:provider];
+    edit_menu::AddElementToChromeMenu(builder, deferredMenuElement,
+                                      /*primary*/ YES);
+  }
 
   auto childrenTransformBlock =
       ^NSArray<UIMenuElement*>*(NSArray<UIMenuElement*>* oldElements) {
@@ -215,6 +224,38 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
 }
 
 #pragma mark - private
+
+// Returns the action to trigger the partial translate feature. Calls `handler`
+// on activation.
+- (UIAction*)actionWithHandler:(void (^)(UIAction*))handler {
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
+  NSString* partialTranslateId = @"chromecommand.partialTranslate";
+  return [UIAction actionWithTitle:title
+                             image:CustomSymbolWithPointSize(
+                                       kTranslateSymbol, kSymbolActionPointSize)
+                        identifier:partialTranslateId
+                           handler:handler];
+}
+
+- (void)fetchSelectionForWebState:(base::WeakPtr<web::WebState>)weakWebState {
+  if (!weakWebState) {
+    return;
+  }
+  web::WebState* webState = weakWebState.get();
+  if (![self canHandlePartialTranslateSelectionInWebState:webState]) {
+    return;
+  }
+  GURL pageURL = webState->GetLastCommittedURL();
+  WebSelectionTabHelper* tabHelper =
+      WebSelectionTabHelper::FromWebState(webState);
+  __weak __typeof(self) weakSelf = self;
+  tabHelper->GetSelectedText(base::BindOnce(^(WebSelectionResponse* response) {
+    if (weakSelf && response.valid) {
+      [weakSelf receivedWebSelectionResponse:response forPageURL:pageURL];
+    }
+  }));
+}
 
 // If the partial translate fails, try to switch to normal page translate.
 - (void)switchToFullTranslateWithError:(PartialTranslateError)error
@@ -377,19 +418,11 @@ const NSUInteger kPartialTranslateCharactersLimit = 1000;
     completion(@[]);
     return;
   }
-  NSString* title =
-      l10n_util::GetNSString(IDS_IOS_PARTIAL_TRANSLATE_EDIT_MENU_ENTRY);
-  NSString* partialTranslateId = @"chromecommand.partialTranslate";
   GURL pageURLCopy = pageURL;
-  UIAction* action =
-      [UIAction actionWithTitle:title
-                          image:CustomSymbolWithPointSize(
-                                    kTranslateSymbol, kSymbolActionPointSize)
-                     identifier:partialTranslateId
-                        handler:^(UIAction* a) {
-                          [weakSelf receivedWebSelectionResponse:response
-                                                      forPageURL:pageURLCopy];
-                        }];
+  UIAction* action = [self actionWithHandler:^(UIAction* a) {
+    [weakSelf receivedWebSelectionResponse:response forPageURL:pageURLCopy];
+  }];
+
   completion(@[ action ]);
 }
 

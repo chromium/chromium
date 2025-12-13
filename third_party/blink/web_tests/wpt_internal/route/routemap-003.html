@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<title>Set new URL, add @navigation rule</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<script type="routemap">
+  {
+    "routes": [
+      {
+        "name": "r1",
+        "pattern": [ "match-later" ]
+      }
+    ]
+  }
+</script>
+<style id="sheetElm">
+  #target {
+    width: 7px;
+  }
+</style>
+<div id="target"></div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  test(()=> {
+    assert_equals(getComputedStyle(target).width, "7px");
+  }, "Initially no match");
+
+  promise_test(async t => {
+    history.pushState(0, null, "match-later");
+    sheetElm.sheet.insertRule("@navigation (r1) { #target { width: 100px; } }", 1);
+    window.onpageshow = t.step_func_done(() => {
+      assert_equals(getComputedStyle(target).width, "100px");
+    });
+  }, "New URL, add navigation rule");
+
+  promise_test(async t => {
+    sheetElm.sheet.deleteRule(1);
+    document.body.offsetTop;
+    assert_equals(getComputedStyle(target).width, "7px");
+  }, "Remove navigation rule");
+
+  promise_test(async t => {
+    sheetElm.sheet.insertRule("@navigation (r1) { #target { width: 200px; } }", 1);
+    document.body.offsetTop;
+    assert_equals(getComputedStyle(target).width, "200px");
+  }, "Add navigation rule again");
+</script>

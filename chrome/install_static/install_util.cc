@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
@@ -359,7 +360,7 @@ const IID& GetElevatorIid() {
 
 std::wstring GetElevationServiceName() {
   std::wstring name = GetElevationServiceDisplayName();
-  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  std::erase_if(name, isspace);
   return name;
 }
 
@@ -379,7 +380,7 @@ const IID& GetTracingServiceIid() {
 
 std::wstring GetTracingServiceName() {
   std::wstring name = GetTracingServiceDisplayName();
-  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  std::erase_if(name, isspace);
   return name;
 }
 
@@ -402,6 +403,10 @@ const wchar_t* GetBrowserProgIdPrefix() {
 
 const wchar_t* GetBrowserProgIdDescription() {
   return InstallDetails::Get().mode().browser_prog_id_description;
+}
+
+const char* GetDirectLaunchUrlScheme() {
+  return InstallDetails::Get().mode().direct_launch_url_scheme;
 }
 
 const wchar_t* GetPDFProgIdPrefix() {
@@ -627,18 +632,18 @@ void GetExecutableVersionDetails(const std::wstring& exe_path,
   DWORD dummy = 0;
   DWORD length = ::GetFileVersionInfoSize(exe_path.c_str(), &dummy);
   if (length) {
-    std::unique_ptr<char[]> data(new char[length]);
-    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.get())) {
-      GetValueFromVersionResource(data.get(), L"ProductVersion", version);
+    auto data = base::HeapArray<char>::Uninit(length);
+    if (::GetFileVersionInfo(exe_path.c_str(), dummy, length, data.data())) {
+      GetValueFromVersionResource(data.data(), L"ProductVersion", version);
 
       std::wstring official_build;
-      GetValueFromVersionResource(data.get(), L"Official Build",
+      GetValueFromVersionResource(data.data(), L"Official Build",
                                   &official_build);
       if (official_build != L"1")
         version->append(L"-devel");
-      GetValueFromVersionResource(data.get(), L"ProductShortName",
+      GetValueFromVersionResource(data.data(), L"ProductShortName",
                                   product_name);
-      GetValueFromVersionResource(data.get(), L"SpecialBuild", special_build);
+      GetValueFromVersionResource(data.data(), L"SpecialBuild", special_build);
     }
   }
   *channel_name = GetChromeChannelName(/*with_extended_stable=*/true);
@@ -677,7 +682,7 @@ bool IsExtendedStableChannel() {
 
 std::string WideToUTF8(const std::wstring& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::string();
   }
   int size = ::WideCharToMultiByte(CP_UTF8, 0, &source[0],
@@ -695,7 +700,7 @@ std::string WideToUTF8(const std::wstring& source) {
 
 std::wstring UTF8ToWide(const std::string& source) {
   if (source.empty() ||
-      static_cast<int>(source.size()) > std::numeric_limits<int>::max()) {
+      source.size() > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return std::wstring();
   }
   int size = ::MultiByteToWideChar(CP_UTF8, 0, &source[0],

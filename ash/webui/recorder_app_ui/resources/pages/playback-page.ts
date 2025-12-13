@@ -639,7 +639,6 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderMenu() {
-    // TODO: b/344789992 - Implements show detail.
     return html`
       <cra-menu ${ref(this.menu)} anchor="show-menu" id="menu">
         <cra-menu-item

@@ -2,9 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 group("password_manager") {
   public_deps = [
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/password_manager/factories:backend_factory",
-    "//chrome/browser/password_manager/factories:factories",
   ]
+}
+
+if (!is_android) {
+  static_library("startup_import") {
+    sources = [
+      "startup_passwords_import_service.cc",
+      "startup_passwords_import_service.h",
+      "startup_passwords_import_service_factory.cc",
+      "startup_passwords_import_service_factory.h",
+      "startup_passwords_importer.cc",
+      "startup_passwords_importer.h",
+    ]
+
+    deps = [
+      ":password_manager",
+      "//base",
+      "//chrome/browser/affiliations",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:channel_info",
+      "//chrome/common:non_code_constants",
+      "//components/affiliations/core/browser:affiliations",
+      "//components/keyed_service/core",
+      "//components/password_manager/core/browser/import:csv",
+      "//components/password_manager/core/browser/import:importer",
+      "//components/password_manager/core/browser/password_store:password_store_interface",
+      "//components/password_manager/core/browser/ui",
+      "//content/public/browser",
+    ]
+  }
 }

@@ -164,7 +164,7 @@ CameraAppUIDelegate::WifiConfig FromMojoWifiConfig(
 }
 
 bool HasExternalScreen() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (!display.IsInternal()) {
       return true;
     }
@@ -256,7 +256,7 @@ void CameraAppHelperImpl::HandleCameraResult(
 }
 
 void CameraAppHelperImpl::IsTabletMode(IsTabletModeCallback callback) {
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void CameraAppHelperImpl::StartPerfEventTrace(const std::string& event) {
@@ -273,7 +273,7 @@ void CameraAppHelperImpl::SetTabletMonitor(
     mojo::PendingRemote<TabletModeMonitor> monitor,
     SetTabletMonitorCallback callback) {
   tablet_mode_monitor_ = mojo::Remote<TabletModeMonitor>(std::move(monitor));
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void CameraAppHelperImpl::SetScreenStateMonitor(
@@ -343,7 +343,7 @@ void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
 }
 
 void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }

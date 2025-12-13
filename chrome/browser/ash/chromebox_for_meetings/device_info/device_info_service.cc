@@ -15,7 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/version_info/version_info.h"
@@ -234,7 +234,7 @@ void DeviceInfoService::GetSysInfo(GetSysInfoCallback callback) {
   }
 
   sys_info->browser_version = version_info::GetVersionNumber();
-  sys_info->channel_name = version_info::GetChannelString(chrome::GetChannel());
+  sys_info->channel_name = version_info::GetChannelString(ash::GetChannel());
 
   std::move(callback).Run(std::move(sys_info));
 }

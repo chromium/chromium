@@ -7,13 +7,11 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/login_shelf_button.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tray_utils.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/strings/grit/components_strings.h"
@@ -22,6 +20,8 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -87,8 +87,12 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
+  SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColorId());
+
   // Set up the icon.
   icon_ = AddChildView(std::make_unique<views::ImageView>());
+  icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kWarningOutlineIcon, cros_tokens::kColorPrimary));
   icon_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(0, 0,
@@ -100,6 +104,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
   title_ = AddChildView(std::make_unique<views::Label>());
   title_->SetMultiLine(true);
   title_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title_->SetEnabledColor(cros_tokens::kTextColorPrimary);
   title_->SetAutoColorReadabilityEnabled(false);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosHeadline1,
                                         *title_);
@@ -127,6 +132,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       PillButton::Type::kDefaultWithoutIcon,
       /*icon=*/nullptr);
   cancel_button->SetID(static_cast<int>(ButtonId::kCancel));
+  cancel_button->SetEnabledTextColors(cros_tokens::kColorPrimary);
   cancel_ = button_container->AddChildView(std::move(cancel_button));
 
   auto confirm_button = std::make_unique<PillButton>(
@@ -135,6 +141,7 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
       l10n_util::GetStringUTF16(IDS_ASH_SHUTDOWN_CONFIRM_BUTTON),
       PillButton::Type::kDefaultWithoutIcon, /*icon=*/nullptr);
   confirm_button->SetID(static_cast<int>(ButtonId::kShutdown));
+  confirm_button->SetEnabledTextColors(cros_tokens::kColorPrimary);
   confirm_ = button_container->AddChildView(std::move(confirm_button));
 
   CreateBubble();
@@ -173,26 +180,6 @@ ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
   if (cancel_callback_) {
     std::move(cancel_callback_).Run();
   }
-}
-
-void ShelfShutdownConfirmationBubble::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  auto* color_provider = AshColorProvider::Get();
-
-  SkColor icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kWarningOutlineIcon, icon_color));
-
-  SkColor label_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary);
-  title_->SetEnabledColor(label_color);
-
-  SkColor button_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonLabelColor);
-  cancel_->SetEnabledTextColors(button_color);
-  confirm_->SetEnabledTextColors(button_color);
-  SetBackgroundColor(ShelfConfig::Get()->GetDefaultShelfColor(GetWidget()));
 }
 
 std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()

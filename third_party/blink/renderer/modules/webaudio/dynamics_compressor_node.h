@@ -26,9 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_DYNAMICS_COMPRESSOR_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_DYNAMICS_COMPRESSOR_NODE_H_
 
-#include <atomic>
-#include <memory>
-
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
@@ -38,7 +35,6 @@
 namespace blink {
 
 class BaseAudioContext;
-class DynamicsCompressor;
 class DynamicsCompressorOptions;
 
 class MODULES_EXPORT DynamicsCompressorNode final : public AudioNode {

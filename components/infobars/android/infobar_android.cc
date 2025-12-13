@@ -15,7 +15,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/infobars/android/jni_headers/InfoBar_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace infobars {
@@ -76,3 +75,5 @@ void InfoBarAndroid::CloseJavaInfoBar() {
 }
 
 }  // namespace infobars
+
+DEFINE_JNI(InfoBar)

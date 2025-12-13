@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_VIDEO_TRACK_UNDERLYING_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BREAKOUT_BOX_MEDIA_STREAM_VIDEO_TRACK_UNDERLYING_SINK_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_video_source.h"

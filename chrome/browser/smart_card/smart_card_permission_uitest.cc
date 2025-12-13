@@ -35,9 +35,9 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
     kPermissionDecision);
 
 class SmartCardPermissionUiTest
-    : public InteractiveBrowserTestT<policy::PolicyTest> {
+    : public InteractiveBrowserTestMixin<policy::PolicyTest> {
  public:
-  void TearDown() override { InteractiveBrowserTestT::TearDown(); }
+  void TearDown() override { InteractiveBrowserTestMixin::TearDown(); }
 
   auto SetSmartCardConnectAllowedFor(const GURL& origin_url) {
     return Do([this, origin_url]() {
@@ -155,13 +155,13 @@ class SmartCardPermissionUiTest
 
  private:
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT::SetUpOnMainThread();
+    InteractiveBrowserTestMixin::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    InteractiveBrowserTestT::SetUpCommandLine(command_line);
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
     // Disables the disregarding of potentially unintended input events.
     command_line->AppendSwitch(
         views::switches::kDisableInputEventActivationProtectionForTesting);

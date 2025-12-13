@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,9 +64,16 @@ void MutateSomeSettings(
   }
 }
 
-class TwoClientExtensionSettingsSyncTest : public SyncTest {
+class TwoClientExtensionSettingsSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientExtensionSettingsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionSettingsSyncTest() : SyncTest(TWO_CLIENT) {
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+  }
   ~TwoClientExtensionSettingsSyncTest() override = default;
 
   bool UseVerifier() override {
@@ -73,13 +81,24 @@ class TwoClientExtensionSettingsSyncTest : public SyncTest {
     return true;
   }
 
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // TODO(https://crbug.com/40804030): Remove when these tests use only MV3
   // extensions.
   extensions::ScopedTestMV2Enabler mv2_enabler_;
 };
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
+INSTANTIATE_TEST_SUITE_P(,
+                         TwoClientExtensionSettingsSyncTest,
+                         GetSyncTestModes(),
+                         testing::PrintToStringParamName());
+
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
                        ExtensionsStartWithSameSettings) {
   ASSERT_TRUE(SetupClients());
   const std::string extension0 = InstallExtensionForAllProfiles(0);
@@ -97,7 +116,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
       extension2, base::Value::Dict().Set("foo", "bar").Set("baz", "qux"));
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 
   MutateSomeSettings(0, extension0, extension1, extension2);
@@ -109,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
+IN_PROC_BROWSER_TEST_P(TwoClientExtensionSettingsSyncTest,
                        ExtensionsStartWithDifferentSettings) {
   ASSERT_TRUE(SetupClients());
   const std::string extension0 = InstallExtensionForAllProfiles(0);
@@ -136,7 +154,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionSettingsSyncTest,
   SetExtensionSettings(test()->GetProfile(1), extension2, settings2);
 
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(AwaitQuiescence());
   ASSERT_TRUE(AllExtensionSettingsSameAsVerifier());
 
   MutateSomeSettings(2, extension0, extension1, extension2);

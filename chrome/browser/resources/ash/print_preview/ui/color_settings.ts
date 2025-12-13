@@ -39,14 +39,14 @@ export class PrintPreviewColorSettingsElement extends
   }
 
   static get observers() {
-    return ['onColorSettingChange_(settings.color.value)'];
+    return ['onColorSettingChange_(settings.color.*)'];
   }
 
   disabled: boolean;
   private disabled_: boolean;
 
-  private onColorSettingChange_(newValue: boolean) {
-    this.selectedValue = newValue ? 'color' : 'bw';
+  private onColorSettingChange_() {
+    this.selectedValue = this.getSettingValue('color') ? 'color' : 'bw';
   }
 
   /**

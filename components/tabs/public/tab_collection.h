@@ -9,6 +9,7 @@
 #include <list>
 #include <memory>
 #include <optional>
+#include <set>
 #include <unordered_set>
 #include <variant>
 #include <vector>
@@ -16,9 +17,11 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
+#include "base/observer_list.h"
 #include "base/types/pass_key.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace tabs_api {
 class MojoTreeBuilder;
@@ -27,6 +30,8 @@ class MojoTreeBuilder;
 namespace tabs {
 
 class TabInterface;
+class TabCollectionObserver;
+class DirectChildWalker;
 
 DECLARE_HANDLE_FACTORY(TabCollection);
 
@@ -56,6 +61,7 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
     TabIterator(base::PassKey<TabCollection>,
                 const tabs::TabCollection* root,
                 bool is_end = false);
+    explicit TabIterator(TabInterface* tab);
     TabIterator(const TabIterator& iterator);
     ~TabIterator();
 
@@ -117,11 +123,19 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   // - UNPINNED:  A container for unpinned tabs.
   // - GROUP:     A container to grouped tabs.
   // - SPLIT:     A container for split tabs.
+  // LINT.IfChange(TYPE)
   enum class Type { TABSTRIP, PINNED, UNPINNED, GROUP, SPLIT };
+  // LINT.ThenChange(chrome/browser/ui/views/tabs/vertical/tab_collection_node.h:TYPE)
 
   ~TabCollection() override;
   TabCollection(const TabCollection&) = delete;
   TabCollection& operator=(const TabCollection&) = delete;
+
+  void AddObserver(TabCollectionObserver* observer) const;
+
+  void RemoveObserver(TabCollectionObserver* observer) const;
+
+  bool HasObserver(TabCollectionObserver* observer) const;
 
   // Returns true is the tab collection contains the collection. This is a
   // non-recursive check.
@@ -212,23 +226,72 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   // should not try to call this internally and set its parent.
   void OnReparented(TabCollection* new_parent);
 
+  const ChildrenVector& GetChildren() const { return impl_->GetChildren(); }
   const ChildrenVector& GetChildren(
       base::PassKey<tabs_api::MojoTreeBuilder> pass_key) const {
     return GetChildren();
   }
 
+  virtual const ChildrenVector& GetChildren(
+      base::PassKey<DirectChildWalker> pass_key) const;
+
+  using NodeHandle = std::variant<Handle, TabHandle>;
+  using NodeHandles = std::vector<NodeHandle>;
+
+  // The parent collection and direct index within the parent collection for a
+  // child node. This uniquely determines the position of a node in the tree.
+  struct Position {
+    TabCollection::Handle parent_handle;
+    size_t index;
+  };
+
+  // Recursively searches the tab hierarchy to find the insertion position for
+  // the tabs and collections being moved. Note that this position is different
+  // from the position assuming the nodes are not present in the tab collection
+  // hierarchy.
+  std::optional<TabCollection::Position> FindMovePositionRecursive(
+      size_t destination_index,
+      TabCollection* dst_collection,
+      size_t& curr_insertion_index,
+      const std::set<tabs::TabInterface*>& tabs_moved,
+      const std::set<tabs::TabCollection*>& collections_moved);
+
+  // These methods recursively notifies observers that nodes were either
+  // added, removed or moved in the hierarchy. `stop_notification_root` is used
+  // to terminate recursion in the case of move operation. This is because add
+  // and remove notifications are only valid in the destination and source
+  // subtree. From the common ancestor onwards, move notifications should be
+  // sent.
+  void NotifyOnChildrenAdded(base::PassKey<TabCollection> pass_key,
+                             const NodeHandles& handles,
+                             const Position& insertion_position,
+                             TabCollection* stop_notification_root,
+                             bool insert_from_detached);
+
+  void NotifyOnChildrenRemoved(base::PassKey<TabCollection> pass_key,
+                               const Position& position,
+                               const NodeHandles& handles,
+                               TabCollection* stop_notification_root);
+
+  void NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
+                          const NodeHandle& handle,
+                          const Position& src_position,
+                          const Position& dst_position,
+                          TabCollection* stop_notification_root);
+
+  void DispatchPendingNotifications();
+
  protected:
   explicit TabCollection(Type type,
                          std::unordered_set<Type> supported_child_collections,
-                         bool supports_tabs);
+                         bool supports_tabs,
+                         bool send_notifications_immediately = true);
 
   // Returns the pass key to be used by derived classes as operations such as
   // setting the parent of a tab can only be performed by a `TabCollection`.
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
-
-  const ChildrenVector& GetChildren() const { return impl_->GetChildren(); }
 
   // Total number of tabs in the collection.
   size_t recursive_tab_count_ = 0;
@@ -239,11 +302,22 @@ class TabCollection : public SupportsHandles<TabCollectionHandleFactory> {
   std::unordered_set<Type> supported_child_collections_;
   bool supports_tabs_;
 
+  // Mutable to allow adding/removing `TabCollectionObserver`'s through a const
+  // TabCollection inorder to avoid updates to the collection.
+  mutable base::ObserverList<TabCollectionObserver> observers_;
+
+  // batched notifications to allow for delayed propagation.
+  std::vector<base::OnceClosure> pending_notifications_;
+
+  bool notify_immediately_ = true;
+
   // Underlying implementation for the storage of children.
   std::unique_ptr<TabCollectionStorage> impl_;
 };
 
 using TabCollectionHandle = TabCollection::Handle;
+using TabCollectionNodeHandle = TabCollection::NodeHandle;
+using TabCollectionNodes = TabCollection::NodeHandles;
 
 }  // namespace tabs
 

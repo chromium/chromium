@@ -33,26 +33,40 @@ class HTMLOListElement final : public HTMLElement {
  public:
   explicit HTMLOListElement(Document&);
 
-  int StartConsideringItemCount() const {
-    return has_explicit_start_ ? start_ : (is_reversed_ ? ItemCount() : 1);
+  int64_t InitialCounter() const {
+    if (!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled()) {
+      return has_explicit_start_
+                 ? start_
+                 : (is_reversed_ ? InitialCounterForReversed() : 1);
+    }
+    if (has_explicit_start_) {
+      // We don't apply a counter value of the list item if we have an explicit
+      // start value.
+      return static_cast<int64_t>(start_) + (is_reversed_ ? 1 : -1);
+    }
+    return is_reversed_ ? InitialCounterForReversed() : 0;
   }
   int start() const { return has_explicit_start_ ? start_ : 1; }
   void setStart(int);
 
   bool IsReversed() const { return is_reversed_; }
 
-  void ItemCountChanged() { should_recalculate_item_count_ = true; }
+  void ItemCountChanged() { should_recalculate_initial_counter_ = true; }
 
  private:
   void UpdateItemValues();
 
-  unsigned ItemCount() const {
-    if (should_recalculate_item_count_)
-      const_cast<HTMLOListElement*>(this)->RecalculateItemCount();
-    return item_count_;
+  int InitialCounterForReversed() const {
+    DCHECK(!RuntimeEnabledFeatures::CSSListCounterAccountingEnabled() ||
+           is_reversed_);
+    if (should_recalculate_initial_counter_) {
+      const_cast<HTMLOListElement*>(this)
+          ->RecalculateInitialCounterForReversed();
+    }
+    return initial_counter_for_reversed_;
   }
 
-  void RecalculateItemCount();
+  void RecalculateInitialCounterForReversed();
 
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
@@ -61,12 +75,12 @@ class HTMLOListElement final : public HTMLElement {
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) override;
 
-  int start_;
-  unsigned item_count_;
+  int start_ = 0xBADBEEF;
+  int initial_counter_for_reversed_ = 0;
 
-  bool has_explicit_start_ : 1;
-  bool is_reversed_ : 1;
-  bool should_recalculate_item_count_ : 1;
+  bool has_explicit_start_ : 1 = false;
+  bool is_reversed_ : 1 = false;
+  bool should_recalculate_initial_counter_ : 1 = false;
 };
 
 }  // namespace blink

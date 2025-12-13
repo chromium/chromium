@@ -35,7 +35,6 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /** Pushes label updates to UI for tabs. */
 @NullMarked
@@ -84,8 +83,8 @@ public class TabLabeller extends TabObjectLabeller {
         if (tabGroupId == null) return Collections.emptyList();
         LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
         EitherGroupId eitherGroupId = EitherGroupId.createLocalId(localTabGroupId);
-        Optional<Integer> messageType = Optional.of(PersistentNotificationType.DIRTY_TAB);
-        return mMessagingBackendService.getMessagesForGroup(eitherGroupId, messageType);
+        return mMessagingBackendService.getMessagesForGroup(
+                eitherGroupId, PersistentNotificationType.DIRTY_TAB);
     }
 
     @Override

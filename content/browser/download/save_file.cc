@@ -40,9 +40,9 @@ download::DownloadInterruptReason SaveFile::Initialize() {
   return reason;
 }
 
-download::DownloadInterruptReason SaveFile::AppendDataToFile(const char* data,
-                                                             size_t data_len) {
-  return file_.AppendDataToFile(data, data_len);
+download::DownloadInterruptReason SaveFile::AppendDataToFile(
+    base::span<const uint8_t> data) {
+  return file_.AppendDataToFile(data);
 }
 
 download::DownloadInterruptReason SaveFile::Rename(
@@ -89,6 +89,12 @@ int64_t SaveFile::BytesSoFar() const {
 
 std::string SaveFile::DebugString() const {
   return file_.DebugString();
+}
+
+void SaveFile::RunQuarantineCallback() {
+  if (!info_->quarantine_callback.is_null()) {
+    std::move(info_->quarantine_callback).Run();
+  }
 }
 
 }  // namespace content

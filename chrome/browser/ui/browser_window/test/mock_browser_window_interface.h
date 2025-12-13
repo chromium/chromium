@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_MOCK_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_MOCK_BROWSER_WINDOW_INTERFACE_H_
 
+#include "base/callback_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -13,26 +14,29 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
   MockBrowserWindowInterface();
   ~MockBrowserWindowInterface() override;
 
-  MOCK_METHOD(views::WebView*, GetWebView, (), (override));
   MOCK_METHOD(Profile*, GetProfile, (), (override));
+  MOCK_METHOD(const Profile*, GetProfile, (), (const override));
   MOCK_METHOD(void,
               OpenGURL,
               (const GURL& gurl, WindowOpenDisposition disposition),
               (override));
   MOCK_METHOD(const SessionID&, GetSessionID, (), (const override));
   MOCK_METHOD(TabStripModel*, GetTabStripModel, (), (override));
+  MOCK_METHOD(const TabStripModel*, GetTabStripModel, (), (const, override));
   MOCK_METHOD(bool, IsTabStripVisible, (), (override));
   MOCK_METHOD(bool, ShouldHideUIForFullscreen, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterBrowserDidClose,
               (BrowserDidCloseCallback callback),
               (override));
-  MOCK_METHOD(views::View*, TopContainer, (), (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterBrowserCloseCancelled,
+              (BrowserCloseCancelledCallback callback),
+              (override));
   MOCK_METHOD(base::WeakPtr<BrowserWindowInterface>,
               GetWeakPtr,
               (),
               (override));
-  MOCK_METHOD(views::View*, LensOverlayView, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterActiveTabDidChange,
               (ActiveTabChangeCallback callback),
@@ -51,6 +55,10 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetWebContentsModalDialogHostForWindow,
               (),
               (override));
+  MOCK_METHOD(web_modal::WebContentsModalDialogHost*,
+              GetWebContentsModalDialogHostForTab,
+              (tabs::TabInterface * tab_interface),
+              (override));
   MOCK_METHOD(bool, IsActive, (), (const, override));
   MOCK_METHOD(base::CallbackListSubscription,
               RegisterDidBecomeActive,
@@ -64,27 +72,20 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
               GetExclusiveAccessManager,
               (),
               (override));
-  MOCK_METHOD(ImmersiveModeController*,
-              GetImmersiveModeController,
-              (),
-              (override));
   MOCK_METHOD(BrowserActions*, GetActions, (), (override));
   MOCK_METHOD(Type, GetType, (), (const, override));
-  MOCK_METHOD(const web_app::AppBrowserController*,
-              GetAppBrowserController,
-              (),
-              (const, override));
-  MOCK_METHOD(web_app::AppBrowserController*,
-              GetAppBrowserController,
-              (),
-              (override));
   MOCK_METHOD(std::vector<tabs::TabInterface*>,
               GetAllTabInterfaces,
               (),
               (override));
   MOCK_METHOD(Browser*, GetBrowserForMigrationOnly, (), (override));
+  MOCK_METHOD(const Browser*,
+              GetBrowserForMigrationOnly,
+              (),
+              (const, override));
   MOCK_METHOD(bool, IsTabModalPopupDeprecated, (), (const, override));
   MOCK_METHOD(ui::BaseWindow*, GetWindow, (), (override));
+  MOCK_METHOD(const ui::BaseWindow*, GetWindow, (), (const override));
   MOCK_METHOD(DesktopBrowserWindowCapabilities*, capabilities, (), (override));
   MOCK_METHOD(const DesktopBrowserWindowCapabilities*,
               capabilities,

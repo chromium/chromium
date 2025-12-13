@@ -117,9 +117,9 @@ function processDt(dt: Element): BookmarkNode|null {
       return dt.children[1]?.tagName === 'DL' ?
           processH3AndDL(firstChild as HTMLElement, dt.children[1]) :
           null;
+    default:
+      return null;
   }
-
-  return null;
 }
 
 // Extracts the bookmarks and folders from the page and represents them as a

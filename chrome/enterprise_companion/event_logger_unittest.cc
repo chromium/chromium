@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"

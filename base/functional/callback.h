@@ -22,7 +22,6 @@
 #include "base/functional/callback_tags.h"
 #include "base/functional/function_ref.h"
 #include "base/notreached.h"
-#include "base/types/always_false.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -255,7 +254,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() & {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "need to convert a base::OnceCallback to base::FunctionRef? "
         "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
@@ -264,7 +263,7 @@ class TRIVIAL_ABI OnceCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() && {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "using base::BindOnce() is not necessary with base::FunctionRef; is it "
         "possible to use a capturing lambda directly? If not, please bring up "
         "this use case on #cxx (Slack) or cxx@chromium.org.");
@@ -463,7 +462,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() & {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "need to convert a base::RepeatingCallback to base::FunctionRef? "
         "Please bring up this use case on #cxx (Slack) or cxx@chromium.org.");
   }
@@ -472,7 +471,7 @@ class TRIVIAL_ABI RepeatingCallback<R(Args...)> {
   // NOLINTNEXTLINE(google-explicit-constructor)
   operator FunctionRef<Signature>() && {
     static_assert(
-        AlwaysFalse<Signature>,
+        false,
         "using base::BindRepeating() is not necessary with base::FunctionRef; "
         "is it possible to use a capturing lambda directly? If not, please "
         "bring up this use case on #cxx (Slack) or cxx@chromium.org.");

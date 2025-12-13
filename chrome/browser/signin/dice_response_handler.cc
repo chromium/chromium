@@ -85,28 +85,6 @@ enum DiceTokenFetchResult {
   kDiceTokenFetchResultCount
 };
 
-// If any of existing accounts is already bound, returns its binding key.
-// Otherwise, returns an empty key indicating that a new key needs to be
-// generated.
-std::vector<uint8_t> GetWrappedBindingKeyToReuse(
-    const signin::IdentityManager& identity_manager) {
-  CHECK(identity_manager.AreRefreshTokensLoaded());
-  std::vector<CoreAccountInfo> accounts =
-      identity_manager.GetAccountsWithRefreshTokens();
-  for (const auto& account : accounts) {
-    std::vector<uint8_t> account_binding_key =
-        identity_manager.GetWrappedBindingKeyOfRefreshTokenForAccount(
-            account.account_id);
-    if (!account_binding_key.empty()) {
-      // All bound tokens are supposed to use the same key, so return the first
-      // non-empty key. Having two different keys should be considered a bug.
-      return account_binding_key;
-    }
-  }
-
-  return {};
-}
-
 void RecordDiceResponseHeader(DiceResponseHeader header) {
   base::UmaHistogramEnumeration(kDiceResponseHeaderHistogram, header,
                                 kDiceResponseHeaderCount);
@@ -207,8 +185,7 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
   // generated.
   gaia_auth_fetcher_->StartAuthCodeForOAuth2TokenExchange(
       authorization_code_,
-      embedder_support::GetUserAgentMetadata(g_browser_process->local_state())
-          .SerializeBrandFullVersionList(),
+      embedder_support::GetUserAgentMetadata().SerializeBrandFullVersionList(),
       binding_registration_token_);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_closure_.callback(),
@@ -411,8 +388,7 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
       identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
       !signin::IsImplicitBrowserSigninOrExplicitDisabled(
           identity_manager_, signin_client_->GetPrefs()) ||
-      !signin_client_->IsClearPrimaryAccountAllowed(
-          /*has_sync_account=*/false);
+      !signin_client_->IsClearPrimaryAccountAllowed();
 
   CoreAccountId primary_account =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -547,7 +523,7 @@ DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
   // If `registration_token_helper_` doesn't exist, create it.
   if (!registration_token_helper_) {
     std::vector<uint8_t> wrapped_binding_key_to_reuse =
-        GetWrappedBindingKeyToReuse(*identity_manager_);
+        identity_manager_->GetWrappedBindingKey();
     if (!wrapped_binding_key_to_reuse.empty()) {
       // Ignore the value of `supported_algorithms` in favor of an existing
       // binding key.

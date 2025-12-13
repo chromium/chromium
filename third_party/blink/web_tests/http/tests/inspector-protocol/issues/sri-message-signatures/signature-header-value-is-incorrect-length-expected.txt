@@ -1,0 +1,19 @@
+Verifies issue creation for a `Signature` header whose value is the incorrect length.
+Issue reported: {
+    issue : {
+        code : SRIMessageSignatureIssue
+        details : {
+            sriMessageSignatureIssueDetails : {
+                error : SignatureHeaderValueIsIncorrectLength
+                integrityAssertions : [
+                ]
+                request : {
+                    requestId : <string>
+                    url : http://127.0.0.1:8000/inspector-protocol/resources/sri-message-signature-test.php?signature=signature%3D%3ABADBEEF%3A&input=signature%3D%28%22unencoded-digest%22%3Bsf%29%3Bkeyid%3D%22JrQLj5P%2F89iXES9%2BvFgrIy29clF9CC%2FoPPsw3c5D0bs%3D%22%3Btag%3D%22sri%22
+                }
+                signatureBase :
+            }
+        }
+    }
+}
+

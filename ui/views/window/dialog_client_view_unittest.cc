@@ -605,10 +605,10 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_ClickAfterShown) {
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
-  cancel_button.NotifyClick(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
+                     ui::EventTimeForNow() + GetDoubleClickInterval(),
+                     ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 
@@ -642,8 +642,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TapAfterShown) {
   EXPECT_FALSE(widget()->IsClosed());
 
   ui::GestureEvent tap_event2(
-      0, 0, 0,
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
+      0, 0, 0, ui::EventTimeForNow() + GetDoubleClickInterval(),
       ui::GestureEventDetails(ui::EventType::kGestureTap));
   cancel_button.NotifyClick(tap_event2);
   EXPECT_TRUE(widget()->IsClosed());
@@ -665,10 +664,10 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_TouchAfterShown) {
   cancel_button.NotifyClick(touch_event);
   EXPECT_FALSE(widget()->IsClosed());
 
-  ui::TouchEvent touch_event2(
-      ui::EventType::kTouchPressed, gfx::PointF(), gfx::PointF(),
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::PointerDetails(ui::EventPointerType::kTouch));
+  ui::TouchEvent touch_event2(ui::EventType::kTouchPressed, gfx::PointF(),
+                              gfx::PointF(),
+                              ui::EventTimeForNow() + GetDoubleClickInterval(),
+                              ui::PointerDetails(ui::EventPointerType::kTouch));
   cancel_button.NotifyClick(touch_event2);
   EXPECT_TRUE(widget()->IsClosed());
 }
@@ -692,8 +691,7 @@ TEST_F(DesktopDialogClientViewTest,
                    static_cast<int>(ui::mojom::DialogButton::kOk));
   SizeAndLayoutWidget();
   widget()->Show();
-  task_environment()->FastForwardBy(
-      base::Milliseconds(GetDoubleClickInterval() * 2));
+  task_environment()->FastForwardBy(GetDoubleClickInterval() * 2);
 
   // Create another widget on top, change window's bounds, click event to the
   // old widget should be ignored.
@@ -707,10 +705,10 @@ TEST_F(DesktopDialogClientViewTest,
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
-  cancel_button.NotifyClick(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow() + GetDoubleClickInterval(),
+                     ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
   widget1->CloseNow();
 }
@@ -723,8 +721,7 @@ TEST_F(DesktopDialogClientViewTest,
                    static_cast<int>(ui::mojom::DialogButton::kOk));
   SizeAndLayoutWidget();
   widget()->Show();
-  task_environment()->FastForwardBy(
-      base::Milliseconds(GetDoubleClickInterval() * 2));
+  task_environment()->FastForwardBy(GetDoubleClickInterval() * 2);
 
   // Create another widget on top, close the top window, click event to the old
   // widget should be ignored.
@@ -738,10 +735,10 @@ TEST_F(DesktopDialogClientViewTest,
   cancel_button.NotifyClick(mouse_event);
   EXPECT_FALSE(widget()->IsClosed());
 
-  cancel_button.NotifyClick(ui::MouseEvent(
-      ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-      ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-      ui::EF_NONE, ui::EF_NONE));
+  cancel_button.NotifyClick(
+      ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow() + GetDoubleClickInterval(),
+                     ui::EF_NONE, ui::EF_NONE));
   EXPECT_TRUE(widget()->IsClosed());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -753,8 +750,7 @@ TEST_F(DialogClientViewTest,
                    static_cast<int>(ui::mojom::DialogButton::kOk));
   SizeAndLayoutWidget();
   widget()->Show();
-  task_environment()->FastForwardBy(
-      base::Milliseconds(GetDoubleClickInterval() * 2));
+  task_environment()->FastForwardBy(GetDoubleClickInterval() * 2);
 
   UniqueWidgetPtr widget1(std::make_unique<Widget>());
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_TOOLTIP);
@@ -778,8 +774,7 @@ TEST_F(DialogClientViewTest, IgnorePossiblyUnintendedClicks_RepeatedClicks) {
                    static_cast<int>(ui::mojom::DialogButton::kOk));
 
   const base::TimeTicks kNow = ui::EventTimeForNow();
-  const base::TimeDelta kShortClickInterval =
-      base::Milliseconds(GetDoubleClickInterval());
+  const base::TimeDelta kShortClickInterval = GetDoubleClickInterval();
 
   // Should ignore clicks right after the dialog is shown.
   ui::MouseEvent mouse_event(ui::EventType::kMousePressed, gfx::Point(),
@@ -1027,7 +1022,7 @@ class InteractionTest : public DialogClientViewTest,
   std::unique_ptr<ui::KeyEvent> KeyEventDelayed() {
     return std::make_unique<ui::KeyEvent>(
         ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
-        ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()));
+        ui::EventTimeForNow() + GetDoubleClickInterval());
   }
 
   std::unique_ptr<ui::MouseEvent> MouseEventNow() {
@@ -1039,8 +1034,8 @@ class InteractionTest : public DialogClientViewTest,
   std::unique_ptr<ui::MouseEvent> MouseEventDelayed() {
     return std::make_unique<ui::MouseEvent>(
         ui::EventType::kMousePressed, gfx::PointF(), gfx::PointF(),
-        ui::EventTimeForNow() + base::Milliseconds(GetDoubleClickInterval()),
-        ui::EF_NONE, ui::EF_NONE);
+        ui::EventTimeForNow() + GetDoubleClickInterval(), ui::EF_NONE,
+        ui::EF_NONE);
   }
 };
 

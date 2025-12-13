@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/download/download_bubble_row_view_info.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
@@ -217,6 +216,7 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
       return;
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED:
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE:
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE:
     case download::DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS:
@@ -244,6 +244,8 @@ void DownloadBubbleRowViewInfo::PopulateForInterrupted(
       has_subpage_ = true;
       return;
     }
+
+    case download::DOWNLOAD_DANGER_TYPE_FORCE_SAVE_TO_GDRIVE:
     case download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK: {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
       if (enterprise_connectors::ShouldPromptReviewForDownload(

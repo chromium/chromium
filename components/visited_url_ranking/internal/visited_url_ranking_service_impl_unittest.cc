@@ -112,7 +112,7 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
     auto data_fetcher = std::make_unique<MockURLVisitDataFetcher>();
     EXPECT_CALL(*data_fetcher, FetchURLVisitData(_, _, _))
         .Times(1)
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [data](const FetchOptions& options, const FetcherConfig& config,
                    URLVisitDataFetcher::FetchResultCallback callback) {
               std::map<URLMergeKey, URLVisitAggregate::URLVisitVariant>
@@ -124,7 +124,7 @@ class VisitedURLRankingServiceImplTest : public testing::Test {
               }
               std::move(callback).Run(
                   {FetchResult::Status::kSuccess, std::move(variant_data_map)});
-            }));
+            });
 
     return data_fetcher;
   }
@@ -314,7 +314,7 @@ TEST_F(VisitedURLRankingServiceImplTest,
       std::make_unique<MockURLVisitAggregatesTransformer>();
   EXPECT_CALL(*mock_bookmark_transformer, Transform(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](std::vector<URLVisitAggregate> aggregates,
              const FetchOptions& options,
              URLVisitAggregatesTransformer::OnTransformCallback callback) {
@@ -329,7 +329,7 @@ TEST_F(VisitedURLRankingServiceImplTest,
             std::move(callback).Run(
                 URLVisitAggregatesTransformer::Status::kSuccess,
                 std::move(aggregates));
-          }));
+          });
 
   std::map<Fetcher, std::unique_ptr<URLVisitDataFetcher>> data_fetchers = {};
   std::vector<URLVisitAggregate::TabData> tab_data_entries;
@@ -407,13 +407,13 @@ TEST_F(VisitedURLRankingServiceImplTest,
       std::make_unique<MockURLVisitAggregatesTransformer>();
   EXPECT_CALL(*mock_segmentation_metrics_transformer, Transform(_, _, _))
       .Times(1)
-      .WillOnce(testing::Invoke(
+      .WillOnce(
           [](std::vector<URLVisitAggregate> aggregates,
              const FetchOptions& options,
              URLVisitAggregatesTransformer::OnTransformCallback callback) {
             std::move(callback).Run(
                 URLVisitAggregatesTransformer::Status::kError, {});
-          }));
+          });
 
   std::map<URLVisitAggregatesTransformType,
            std::unique_ptr<URLVisitAggregatesTransformer>>
@@ -493,14 +493,14 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordAction) {
       events;
   EXPECT_CALL(*database_client_, AddEvent(testing::_))
       .Times(2)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&events](
               const segmentation_platform::DatabaseClient::StructuredEvent&
                   structured_event) {
             events.push_back(
                 std::make_pair(structured_event.event_id,
                                structured_event.metric_hash_to_value));
-          }));
+          });
   segmentation_platform::TrainingRequestId test_request_id =
       segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
   service_impl_->RecordAction(ScoredURLUserAction::kSeen, kSampleSearchUrl,
@@ -547,14 +547,14 @@ TEST_F(VisitedURLRankingServiceImplTest, RecordActionTimeout) {
       events;
   EXPECT_CALL(*database_client_, AddEvent(testing::_))
       .Times(1)
-      .WillRepeatedly(testing::Invoke(
+      .WillRepeatedly(
           [&events](
               const segmentation_platform::DatabaseClient::StructuredEvent&
                   structured_event) {
             events.push_back(
                 std::make_pair(structured_event.event_id,
                                structured_event.metric_hash_to_value));
-          }));
+          });
   segmentation_platform::TrainingRequestId test_request_id =
       segmentation_platform::TrainingRequestId::FromUnsafeValue(0);
   service_impl_->RecordAction(ScoredURLUserAction::kSeen, kSampleSearchUrl,

@@ -18,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
@@ -43,6 +42,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
+#include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
@@ -94,6 +94,11 @@ bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
 const base::Value::List* g_configs_for_testing = nullptr;
 FileUtilsWrapper* g_file_utils_for_testing = nullptr;
+
+std::vector<ExternalInstallOptions>& GetParsedConfigsForTesting() {
+  static base::NoDestructor<std::vector<ExternalInstallOptions>> instance;
+  return *instance;
+}
 
 const char kHistogramMigrationDisabledReason[] =
     "WebApp.Preinstalled.DisabledReason";
@@ -426,6 +431,19 @@ SynchronizeDecision GetSynchronizeDecision(
     }
   }
 
+  if (options.only_uninstall_and_replace_when_compatible().has_value() &&
+      UserUninstalledPreinstalledWebAppPrefs(profile->GetPrefs())
+          .DoesAppIdExist(
+              *options.only_uninstall_and_replace_when_compatible())) {
+    // TODO(https://crbug.com/454418950): Migrate the user uninstalled state to
+    // the new app somehow, either here or elsewhere in the code.
+    return {.type = SynchronizeDecision::kIgnore,
+            .reason = DisabledReason::kIgnoreReplacingAppUninstalledByUser,
+            .log = base::StrCat(
+                {options.install_url.spec(),
+                 " ignore because app to replace was uninstalled."})};
+  }
+
   // Only install if device has a built-in touch screen with stylus support.
   if (options.disable_if_touchscreen_with_stylus_not_supported) {
     std::optional<bool> has_stylus = HasStylusEnabledTouchscreen();
@@ -683,6 +701,14 @@ PreinstalledWebAppManager::SetConfigsForTesting(
 }
 
 // static
+base::AutoReset<std::vector<ExternalInstallOptions>>
+PreinstalledWebAppManager::SetParsedConfigsForTesting(
+    std::vector<ExternalInstallOptions> configs) {
+  return base::AutoReset<std::vector<ExternalInstallOptions>>(
+      &GetParsedConfigsForTesting(), std::move(configs));
+}
+
+// static
 base::AutoReset<FileUtilsWrapper*>
 PreinstalledWebAppManager::SetFileUtilsForTesting(
     FileUtilsWrapper* file_utils) {
@@ -746,6 +772,11 @@ void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
   LoadAndSynchronize(std::move(callback));
 }
 
+void PreinstalledWebAppManager::SetPreinstalledAppForUpdatingForTesting(
+    PreinstalledAppForUpdating preinstalled_app_for_updating) {
+  preinstalled_app_for_updating_ = preinstalled_app_for_updating;
+}
+
 void PreinstalledWebAppManager::LoadAndSynchronize(
     SynchronizeCallback callback) {
   base::OnceClosure load_and_synchronize = base::BindOnce(
@@ -762,7 +793,8 @@ void PreinstalledWebAppManager::LoadAndSynchronize(
   device_data_initialized_event_->Post(concurrent.CreateClosure());
   // Make sure ExtensionSystem is ready to know if default apps new installation
   // will be performed.
-  extensions::OnExtensionSystemReady(profile_, concurrent.CreateClosure());
+  provider_->extensions_manager().OnExtensionSystemReady(
+      concurrent.CreateClosure());
   std::move(concurrent).Done(std::move(load_and_synchronize));
 }
 
@@ -772,6 +804,11 @@ void PreinstalledWebAppManager::Load(ConsumeInstallOptions callback) {
 
   if (!preinstalling_enabled) {
     std::move(callback).Run({});
+    return;
+  }
+
+  if (!GetParsedConfigsForTesting().empty()) {
+    std::move(callback).Run(GetParsedConfigsForTesting());
     return;
   }
 

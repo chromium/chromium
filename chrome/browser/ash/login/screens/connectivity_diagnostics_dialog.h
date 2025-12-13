@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_CONNECTIVITY_DIAGNOSTICS_DIALOG_H_
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash {
 

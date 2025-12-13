@@ -77,9 +77,6 @@ using signin_metrics::PromoAction;
       [[GoogleServicesSettingsViewController alloc]
           initWithStyle:ChromeTableViewStyle()];
   viewController.presentationDelegate = self;
-  viewController.forcedSigninEnabled =
-      self.authService->GetServiceStatus() ==
-      AuthenticationService::ServiceStatus::SigninForcedByPolicy;
   self.viewController = viewController;
   self.mediator = [[GoogleServicesSettingsMediator alloc]
       initWithIdentityManager:IdentityManagerFactory::GetForProfile(
@@ -90,7 +87,6 @@ using signin_metrics::PromoAction;
   self.mediator.authService = self.authService;
   self.mediator.commandHandler = self;
   viewController.modelDelegate = self.mediator;
-  viewController.serviceDelegate = self.mediator;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   viewController.applicationHandler =
@@ -117,11 +113,8 @@ using signin_metrics::PromoAction;
 
 // Callback for the sign-out confirmation button.
 // Dismisses the alert coordinator and sign-out.
-- (void)
-    onSignoutConfirmationTappedWithTargetRect:(CGRect)targetRect
-                                   completion:
-                                       (signin_ui::SignoutCompletionCallback)
-                                           completion {
+- (void)onSignoutConfirmationTappedWithCompletion:
+    (signin_ui::SignoutCompletionCallback)completion {
   [self dismissSignoutCoordinator];
   [self signOutWithCompletion:completion];
 }
@@ -142,36 +135,38 @@ using signin_metrics::PromoAction;
       self.viewController);
 }
 
-#pragma mark - GoogleServicesSettingsCommandHandler
+#pragma mark - GoogleServicesSettingsCommandHandler - helper
 
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
+                          warning:(BOOL)warning
                        completion:
                            (signin_ui::SignoutCompletionCallback)completion {
-  DCHECK(completion);
-  BOOL shouldClearDataOnSignOut =
-      self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
-
+  if (self.signOutCoordinator) {
+    // Showing the sign-out button may be asynchronous because we need to check
+    // whether there are any unsynced data. This can lead to the user
+    // triple-tapping on the "Allow chrome sign-in" toggle. If so, let’s keep
+    // the first sign-out coordinator.
+    return;
+  }
+  CGRect inCoordinateTargetRect =
+      [self.viewController.view convertRect:targetRect fromView:nil];
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                            title:nil
                          message:nil
-                            rect:targetRect
+                            rect:inCoordinateTargetRect
                             view:self.viewController.view];
 
   // Because setting `title` to nil automatically forces the title-style text on
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
-  if (shouldClearDataOnSignOut) {
-    // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause tabs
-    // to be closed, see `MainControllerAuthenticationServiceDelegate::
+  if (warning) {
+    // Signing out may also cause tabs to be closed, see
+    // `MainControllerAuthenticationServiceDelegate::
     //    ClearBrowsingDataForSignedinPeriod`.
-    NSString* clearDataMessage =
-        IsIdentityDiscAccountMenuEnabled()
-            ? l10n_util::GetNSString(
-                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT)
-            : l10n_util::GetNSString(
-                  IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
+    NSString* clearDataMessage = l10n_util::GetNSString(
+        IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
         initWithString:clearDataMessage
             attributes:@{
@@ -187,8 +182,7 @@ using signin_metrics::PromoAction;
                            IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON)
                 action:^{
                   [weakSelf
-                      onSignoutConfirmationTappedWithTargetRect:targetRect
-                                                     completion:completion];
+                      onSignoutConfirmationTappedWithCompletion:completion];
                 }
                  style:UIAlertActionStyleDestructive];
 
@@ -199,6 +193,44 @@ using signin_metrics::PromoAction;
                                      }
                                       style:UIAlertActionStyleCancel];
   [self.signOutCoordinator start];
+}
+
+#pragma mark - GoogleServicesSettingsCommandHandler
+
+- (void)maybeShowSignOutFromTargetRect:(CGRect)targetRect
+                            completion:(signin_ui::SignoutCompletionCallback)
+                                           completion {
+  DCHECK(completion);
+  BOOL shouldClearDataOnSignOut =
+      self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
+  if (shouldClearDataOnSignOut ||
+      signin::DifferentUserIsSignedInInAnotherScene(self.sceneState)) {
+    // Either `shouldClearDataOnSignOut` holds, or another scene is signed-in
+    // with another account. In both case, we must ask the user to confirm and
+    // warn them there is a possibility of loss of unsynced data.
+    [self showSignOutFromTargetRect:targetRect
+                            warning:YES
+                         completion:completion];
+    return;
+  }
+  if (!self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // We don’t need to ask the user to confirm as they are not signed-in in any
+    // active scene.
+    completion(/*success=*/YES, self.sceneState);
+    return;
+  }
+
+  // Finally, check for unsynced data in the current profile.
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForProfile(self.profile);
+  __weak __typeof(self) weakSelf = self;
+  auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
+    [weakSelf showSignOutFromTargetRect:targetRect
+                                warning:!set.empty()
+                             completion:completion];
+  });
+  signin::FetchUnsyncedDataForSignOutOrProfileSwitching(syncService,
+                                                        std::move(callback));
 }
 
 // Signs the user out of Chrome, only clears data for managed accounts.

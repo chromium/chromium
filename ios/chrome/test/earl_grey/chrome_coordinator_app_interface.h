@@ -44,9 +44,13 @@
 + (void)startEnhancedSafeBrowsingPromoCoordinator;
 + (void)startLensPromoCoordinator;
 + (void)startHistoryCoordinator;
++ (void)startNewTabPageCoordinator;
 + (void)startPopupMenuCoordinator;
 + (void)startOmniboxCoordinator;
++ (void)startQRScannerLegacyCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;
++ (void)startSnackbarCoordinator;
++ (void)startReadingListCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;

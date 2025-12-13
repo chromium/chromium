@@ -10,7 +10,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
@@ -124,7 +123,8 @@ ValueStore::ReadResult LeveldbValueStore::Get() {
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
     std::string key = it->key().ToString();
     std::optional<base::Value> value = base::JSONReader::Read(
-        std::string_view(it->value().data(), it->value().size()));
+        std::string_view(it->value().data(), it->value().size()),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       return ReadResult(Status(CORRUPTION,
                                Delete(key).ok() ? VALUE_RESTORE_DELETE_SUCCESS

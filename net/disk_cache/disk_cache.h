@@ -17,6 +17,7 @@
 
 #include "base/files/file.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -26,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/disk_cache/cache_file.h"
 
 namespace base {
 class FilePath;
@@ -37,9 +39,10 @@ class ApplicationStatusListener;
 }  // namespace base
 
 namespace net {
+class CacheEncryptionDelegate;
 class IOBuffer;
 class NetLog;
-}
+}  // namespace net
 
 namespace disk_cache {
 
@@ -106,6 +109,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    BackendResultCallback callback);
 
 // Note: this is permitted to return nullptr when things are in process of
@@ -125,6 +129,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    BackendResultCallback callback,
                    ApplicationStatusListenerGetter app_status_listener_getter);
 #endif
@@ -146,6 +151,7 @@ CreateCacheBackend(net::CacheType type,
                    int64_t max_bytes,
                    ResetHandling reset_handling,
                    net::NetLog* net_log,
+                   net::CacheEncryptionDelegate* cache_encryption_delegate,
                    base::OnceClosure post_cleanup_callback,
                    BackendResultCallback callback);
 
@@ -308,17 +314,19 @@ class NET_EXPORT Backend {
   // GetEntryInMemoryData has the following behavior:
   // - If the data is not available at this time for any reason, returns 0.
   // - Otherwise, returns a value that was with very high probability
-  //   given to SetEntryInMemoryData(|key|) (and with a very low probability
+  //   given to Entry::SetEntryInMemoryData() (and with a very low probability
   //   to a different key that collides in the in-memory index).
   //
   // Due to the probability of collisions, including those that can be induced
   // by hostile 3rd parties, this interface should not be used to make decisions
   // that affect correctness (especially security).
   virtual uint8_t GetEntryInMemoryData(const std::string& key);
-  virtual void SetEntryInMemoryData(const std::string& key, uint8_t data);
 
   // Returns the maximum length an individual stream can have.
   virtual int64_t MaxFileSize() const = 0;
+
+  // Called when the browser is detected to be idle.
+  virtual void OnBrowserIdle();
 
  private:
   const net::CacheType cache_type_;
@@ -347,36 +355,40 @@ class NET_EXPORT Entry {
   virtual base::Time GetLastUsed() const = 0;
 
   // Returns the size of the cache data with the given index.
-  virtual int32_t GetDataSize(int index) const = 0;
+  virtual int64_t GetDataSize(int index) const = 0;
 
-  // Copies cached data into the given buffer of length |buf_len|. Returns the
+  // Copies cached data into the given buffer of length `buf_len`. Returns the
   // number of bytes read or a network error code. If this function returns
   // ERR_IO_PENDING, the completion callback will be called on the current
-  // thread when the operation completes, and a reference to |buf| will be
+  // thread when the operation completes, and a reference to `buf` will be
   // retained until the callback is called. Note that as long as the function
   // does not complete immediately, the callback will always be invoked, even
   // after Close has been called; in other words, the caller may close this
   // entry without having to wait for all the callbacks, and still rely on the
   // cleanup performed from the callback code.
+  // Note that `offset` larger than int32 max is supported only by Simple Cache
+  // backend. It will return ERR_INVALID_ARGUMENT for other backends.
   virtual int ReadData(int index,
-                       int offset,
+                       int64_t offset,
                        IOBuffer* buf,
                        int buf_len,
                        CompletionOnceCallback callback) = 0;
 
-  // Copies data from the given buffer of length |buf_len| into the cache.
+  // Copies data from the given buffer of length `buf_len` into the cache.
   // Returns the number of bytes written or a network error code. If this
   // function returns ERR_IO_PENDING, the completion callback will be called
   // on the current thread when the operation completes, and a reference to
-  // |buf| will be retained until the callback is called. Note that as long as
+  // `buf` will be retained until the callback is called. Note that as long as
   // the function does not complete immediately, the callback will always be
   // invoked, even after Close has been called; in other words, the caller may
   // close this entry without having to wait for all the callbacks, and still
   // rely on the cleanup performed from the callback code.
   // If truncate is true, this call will truncate the stored data at the end of
   // what we are writing here.
+  // Note that `offset` larger than int32 max is supported only by Simple Cache
+  // backend. It will return ERR_INVALID_ARGUMENT for other backends.
   virtual int WriteData(int index,
-                        int offset,
+                        int64_t offset,
                         IOBuffer* buf,
                         int buf_len,
                         CompletionOnceCallback callback,
@@ -479,6 +491,13 @@ class NET_EXPORT Entry {
   // object that refers to the same physical disk entry.
   // Note: This method is deprecated.
   virtual net::Error ReadyForSparseIO(CompletionOnceCallback callback) = 0;
+
+  // Sets data associated with this entry.
+  // This data is persisted and loaded into memory when the backend index is
+  // initialized. It can be retrieved via Backend::GetEntryInMemoryData()
+  // without opening the entry.
+  // See Backend::GetEntryInMemoryData() for important usage information.
+  virtual void SetEntryInMemoryData(uint8_t data);
 
   // Used in tests to set the last used time. Note that backend might have
   // limited precision. Also note that this call may modify the last modified
@@ -649,7 +668,9 @@ class BackendFileOperations {
   virtual bool DirectoryExists(const base::FilePath& path) = 0;
 
   // Opens a file with the given path and flags. Returns the opened file.
-  virtual base::File OpenFile(const base::FilePath& path, uint32_t flags) = 0;
+  // Implementations must ensure the returned `CacheFile` object is not null.
+  virtual std::unique_ptr<CacheFile> OpenFile(const base::FilePath& path,
+                                              uint32_t flags) = 0;
 
   // Deletes a file with the given path and returns whether that succeeded.
   virtual bool DeleteFile(const base::FilePath& path,
@@ -684,6 +705,9 @@ class BackendFileOperations {
   // this method is called, no methods (except for the destructor) on this
   // object must not be called.
   virtual std::unique_ptr<UnboundBackendFileOperations> Unbind() = 0;
+
+  // Returns whether the cache entries are encrypted on disk.
+  virtual bool IsEncrypted() const = 0;
 };
 
 // BackendFileOperations which is not yet bound to a sequence.
@@ -714,7 +738,7 @@ class BackendFileOperationsFactory
 
 // A trivial BackendFileOperations implementation which uses corresponding
 // base functions.
-class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
+class NET_EXPORT TrivialFileOperations : public BackendFileOperations {
  public:
   TrivialFileOperations();
   ~TrivialFileOperations() override;
@@ -723,7 +747,8 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   bool CreateDirectory(const base::FilePath& path) override;
   bool PathExists(const base::FilePath& path) override;
   bool DirectoryExists(const base::FilePath& path) override;
-  base::File OpenFile(const base::FilePath& path, uint32_t flags) override;
+  std::unique_ptr<CacheFile> OpenFile(const base::FilePath& path,
+                                      uint32_t flags) override;
   bool DeleteFile(const base::FilePath& path, DeleteFileMode mode) override;
   bool ReplaceFile(const base::FilePath& from_path,
                    const base::FilePath& to_path,
@@ -735,6 +760,7 @@ class NET_EXPORT TrivialFileOperations final : public BackendFileOperations {
   void CleanupDirectory(const base::FilePath& path,
                         base::OnceCallback<void(bool)> callback) override;
   std::unique_ptr<UnboundBackendFileOperations> Unbind() override;
+  bool IsEncrypted() const override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -9,9 +9,7 @@
 namespace privacy_sandbox {
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPrivacySandboxAdsNoticeCCT,
-             "PrivacySandboxAdsNoticeCCT",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxAdsNoticeCCT, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxAdsNoticeCCTAppIdName[] = "app-id";
 const char kAndroidGoogleSearchAppIdName[] =
@@ -22,9 +20,7 @@ const base::FeatureParam<std::string> kPrivacySandboxAdsNoticeCCTAppId{
     kAndroidGoogleSearchAppIdName};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-BASE_FEATURE(kPrivacySandboxSettings4,
-             "PrivacySandboxSettings4",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxSettings4, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxSettings4ConsentRequiredName[] = "consent-required";
 const char kPrivacySandboxSettings4NoticeRequiredName[] = "notice-required";
@@ -76,108 +72,52 @@ const base::FeatureParam<bool>
         true};
 
 BASE_FEATURE(kOverridePrivacySandboxSettingsLocalTesting,
-             "OverridePrivacySandboxSettingsLocalTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDisablePrivacySandboxPrompts,
-             "DisablePrivacySandboxPrompts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisablePrivacySandboxPrompts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnforcePrivacySandboxAttestations,
-             "EnforcePrivacySandboxAttestations",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
-             "DefaultAllowPrivacySandboxAttestations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-BASE_FEATURE(kDefaultAllowPrivacySandboxAttestations,
-             "DefaultAllowPrivacySandboxAttestations",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 const char kPrivacySandboxEnrollmentOverrides[] =
     "privacy-sandbox-enrollment-overrides";
 
 BASE_FEATURE(kAttributionDebugReportingCookieDeprecationTesting,
-             "AttributionDebugReportingCookieDeprecationTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPrivacySandboxAttestationsLoadFromAPKAsset,
-             "PrivacySandboxAttestationsLoadFromAPKAsset",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPrivateAggregationDebugReportingCookieDeprecationTesting,
-             "PrivateAggregationDebugReportingCookieDeprecationTesting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAggregationDebugReportingIgnoreSiteExceptions,
-             "PrivateAggregationDebugReportingIgnoreSiteExceptions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxInternalsDevUI,
-             "PrivacySandboxInternalsDevUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxInternalsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRelatedWebsiteSetsDevUI,
-             "RelatedWebsiteSetsDevUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedWebsiteSetsDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAlwaysBlock3pcsIncognito,
-             "AlwaysBlock3pcsIncognito",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRelatedWebsiteSetsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kFingerprintingProtectionUx,
-             "FingerprintingProtectionUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRollBackModeB, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIpProtectionUx,
-             "IpProtectionUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kActUserBypassUx,
-             "ActUserBypassUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionContentSettingIn3pcUx,
-             "TrackingProtectionContentSettingIn3pcUx",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionContentSettingFor3pcb,
-             "TrackingProtectionContentSettingFor3pcb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacySandboxRelatedWebsiteSetsUi,
-             "PrivacySandboxRelatedWebsiteSetsUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kTrackingProtectionUserBypassPwa,
-             "TrackingProtectionUserBypassPwa",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrackingProtectionUserBypassPwaTrigger,
-             "TrackingProtectionUserBypassPwaTrigger",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDisplayWildcardInContentSettings,
-             "DisplayWildcardInContentSettings",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
+const char kRollBackModeBForcedName[] = "force";
+const base::FeatureParam<bool> kRollBackModeBForced{
+    &kRollBackModeB, kRollBackModeBForcedName, false};
 
 BASE_FEATURE(kPsDualWritePrefsToNoticeStorage,
-             "PsDualWritePrefsToNoticeStorage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateStateTokensDevUI,
-             "PrivateStateTokensDevUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateStateTokensDevUI, base::FEATURE_DISABLED_BY_DEFAULT);
+
 
 BASE_FEATURE(kPrivacySandboxActivityTypeStorage,
-             "PrivacySandboxActivityTypeStorage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPrivacySandboxActivityTypeStorageLastNLaunchesName[] =
@@ -203,33 +143,15 @@ const base::FeatureParam<bool>
         kPrivacySandboxActivityTypeStorageSkipPreFirstTabName, false};
 
 BASE_FEATURE(kPrivacySandboxAdTopicsContentParity,
-             "PrivacySandboxAdTopicsContentParity",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxNoticeQueue,
-             "PrivacySandboxNoticeQueue",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacySandboxSentimentSurvey,
-             "PrivacySandboxSentimentSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxSentimentSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kPrivacySandboxSentimentSurveyTriggerId{
     &kPrivacySandboxSentimentSurvey, "sentiment-survey-trigger-id", ""};
 
 BASE_FEATURE(kPrivacySandboxAdsApiUxEnhancements,
-             "PrivacySandboxAdsApiUxEnhancements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivacySandboxAllowPromptForBlocked3PCookies,
-             "PrivacySandboxAllowPromptForBlocked3PCookies",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacySandboxMigratePrefsToSchemaV2,
-             "PrivacySandboxMigratePrefsToSchemaV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPrivacySandboxNoticeFramework,
-             "PrivacySandboxNoticeFramework",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivacySandboxNoticeFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace privacy_sandbox

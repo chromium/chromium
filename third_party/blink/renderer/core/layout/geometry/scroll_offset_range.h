@@ -26,6 +26,21 @@ struct PhysicalScrollRange {
            (!y_min || offset.top >= *y_min) && (!y_max || offset.top <= *y_max);
   }
 
+  void Move(const PhysicalOffset& offset) {
+    if (x_min) {
+      *x_min += offset.left;
+    }
+    if (x_max) {
+      *x_max += offset.left;
+    }
+    if (y_min) {
+      *y_min += offset.top;
+    }
+    if (y_max) {
+      *y_max += offset.top;
+    }
+  }
+
   bool operator==(const PhysicalScrollRange& other) const {
     return x_min == other.x_min && x_max == other.x_max &&
            y_min == other.y_min && y_max == other.y_max;

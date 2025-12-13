@@ -27,6 +27,9 @@ ContactInfoSpecifics::AddressType RecordTypeToAddressType(
   switch (record_type) {
     case AutofillProfile::RecordType::kLocalOrSyncable:
       // Local profiles are not synced through CONTACT_INFO.
+      // For that reason there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
       NOTREACHED();
     case AutofillProfile::RecordType::kAccount:
       return ContactInfoSpecifics::REGULAR;
@@ -34,6 +37,11 @@ ContactInfoSpecifics::AddressType RecordTypeToAddressType(
       return ContactInfoSpecifics::HOME;
     case AutofillProfile::RecordType::kAccountWork:
       return ContactInfoSpecifics::WORK;
+    case AutofillProfile::RecordType::kAccountNameEmail:
+      // Since there is an early return in
+      // `ContactInfoSyncBridge::AutofillProfileChanged`,
+      // the program won't enter this case.
+      NOTREACHED();
   }
 }
 
@@ -212,14 +220,6 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   specifics.set_use_date_unix_epoch_seconds(
       (profile.usage_history().use_date() - base::Time::UnixEpoch())
           .InSeconds());
-  if (auto use_date2 = profile.usage_history().use_date(2)) {
-    specifics.set_use_date2_unix_epoch_seconds(
-        (*use_date2 - base::Time::UnixEpoch()).InSeconds());
-  }
-  if (auto use_date3 = profile.usage_history().use_date(3)) {
-    specifics.set_use_date3_unix_epoch_seconds(
-        (*use_date3 - base::Time::UnixEpoch()).InSeconds());
-  }
   specifics.set_date_modified_unix_epoch_seconds(
       (profile.usage_history().modification_date() - base::Time::UnixEpoch())
           .InSeconds());
@@ -255,6 +255,10 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.mutable_address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.mutable_address_zip(), ADDRESS_HOME_ZIP);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    s.Set(specifics.mutable_address_zip_prefix(), ADDRESS_HOME_ZIP_PREFIX);
+    s.Set(specifics.mutable_address_zip_suffix(), ADDRESS_HOME_ZIP_SUFFIX);
+  }
   s.Set(specifics.mutable_address_country(), ADDRESS_HOME_COUNTRY);
   s.Set(specifics.mutable_address_street_address(),
         ADDRESS_HOME_STREET_ADDRESS);
@@ -349,18 +353,6 @@ AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
   profile.usage_history().set_use_date(
       base::Time::UnixEpoch() +
       base::Seconds(specifics.use_date_unix_epoch_seconds()));
-  if (specifics.has_use_date2_unix_epoch_seconds()) {
-    profile.usage_history().set_use_date(
-        base::Time::UnixEpoch() +
-            base::Seconds(specifics.use_date2_unix_epoch_seconds()),
-        2);
-  }
-  if (specifics.has_use_date3_unix_epoch_seconds()) {
-    profile.usage_history().set_use_date(
-        base::Time::UnixEpoch() +
-            base::Seconds(specifics.use_date3_unix_epoch_seconds()),
-        3);
-  }
   profile.usage_history().set_modification_date(
       base::Time::UnixEpoch() +
       base::Seconds(specifics.date_modified_unix_epoch_seconds()));
@@ -395,6 +387,10 @@ AutofillProfile CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
   s.Set(specifics.address_state(), ADDRESS_HOME_STATE);
   s.Set(specifics.address_zip(), ADDRESS_HOME_ZIP);
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    s.Set(specifics.address_zip_prefix(), ADDRESS_HOME_ZIP_PREFIX);
+    s.Set(specifics.address_zip_suffix(), ADDRESS_HOME_ZIP_SUFFIX);
+  }
   s.Set(specifics.address_street_address(), ADDRESS_HOME_STREET_ADDRESS);
   s.Set(specifics.address_sorting_code(), ADDRESS_HOME_SORTING_CODE);
   s.Set(specifics.address_dependent_locality(),
@@ -438,6 +434,7 @@ bool AreContactInfoSpecificsValid(
   return base::Uuid::ParseLowercase(specifics.guid()).is_valid();
 }
 
+// LINT.IfChange(TrimContactInfoSpecificsData)
 sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
     const sync_pb::ContactInfoSpecifics& contact_info_specifics) {
   sync_pb::ContactInfoSpecifics trimmed_specifics =
@@ -447,8 +444,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   trimmed_specifics.clear_address_type();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_use_date_unix_epoch_seconds();
-  trimmed_specifics.clear_use_date2_unix_epoch_seconds();
-  trimmed_specifics.clear_use_date3_unix_epoch_seconds();
   trimmed_specifics.clear_date_modified_unix_epoch_seconds();
   trimmed_specifics.clear_language_code();
   trimmed_specifics.clear_profile_label();
@@ -510,6 +505,14 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   }
   if (d.Delete(trimmed_specifics.mutable_address_zip())) {
     trimmed_specifics.clear_address_zip();
+  }
+  if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    if (d.Delete(trimmed_specifics.mutable_address_zip_prefix())) {
+      trimmed_specifics.clear_address_zip_prefix();
+    }
+    if (d.Delete(trimmed_specifics.mutable_address_zip_suffix())) {
+      trimmed_specifics.clear_address_zip_suffix();
+    }
   }
   if (d.Delete(trimmed_specifics.mutable_address_country())) {
     trimmed_specifics.clear_address_country();
@@ -593,5 +596,6 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
 
   return trimmed_specifics;
 }
+// LINT.ThenChange(//components/sync/protocol/contact_info_specifics.proto:ContactInfoSpecifics)
 
 }  // namespace autofill

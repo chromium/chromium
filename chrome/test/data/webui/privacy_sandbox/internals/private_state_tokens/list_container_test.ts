@@ -30,7 +30,7 @@ suite('ListContainerTest', () => {
 
   test('check expand collapse', async () => {
     assertEquals(
-        'Expand All', container.$.expandCollapseButton.textContent!.trim());
+        'Expand All', container.$.expandCollapseButton.textContent.trim());
     const renderedItems =
         container.shadowRoot.querySelectorAll('private-state-tokens-list-item');
     assertEquals(3, renderedItems.length);
@@ -52,7 +52,7 @@ suite('ListContainerTest', () => {
 
     // Verify that all items were opened when button clicked
     assertEquals(
-        'Collapse All', container.$.expandCollapseButton.textContent!.trim());
+        'Collapse All', container.$.expandCollapseButton.textContent.trim());
     assertTrue(expandedContent0.opened);
 
     assertTrue(expandedContent1.opened);
@@ -62,7 +62,7 @@ suite('ListContainerTest', () => {
 
     // Verify that all items close when button clicked again
     assertEquals(
-        'Expand All', container.$.expandCollapseButton.textContent!.trim());
+        'Expand All', container.$.expandCollapseButton.textContent.trim());
     assertFalse(expandedContent0.opened);
 
     assertFalse(expandedContent1.opened);

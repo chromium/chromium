@@ -21,7 +21,7 @@ struct Environment {
   Environment() {
     CHECK(base::i18n::InitializeICU());
     mojo::core::Init();
-    WTF::Partitions::Initialize();
+    blink::Partitions::Initialize();
     blink::InitializeWtf();
   }
   // used by ICU integration.
@@ -46,13 +46,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Test mojom conversion path.
     std::vector<uint8_t> mojom_serialized =
         blink::mojom::StorageKey::Serialize(&*maybe_storage_key);
-    WTF::Vector<uint8_t> mojom_serialized_as_wtf;
+    blink::Vector<uint8_t> mojom_serialized_as_wtf;
     mojom_serialized_as_wtf.AppendRange(mojom_serialized.begin(),
                                         mojom_serialized.end());
     blink::BlinkStorageKey mojom_blink_storage_key;
     CHECK(blink::mojom::blink::StorageKey::Deserialize(
         mojom_serialized_as_wtf, &mojom_blink_storage_key));
-    WTF::Vector<uint8_t> mojom_blink_serialized =
+    blink::Vector<uint8_t> mojom_blink_serialized =
         blink::mojom::blink::StorageKey::Serialize(&mojom_blink_storage_key);
     std::vector<uint8_t> mojom_blink_serialized_as_std(
         mojom_blink_serialized.begin(), mojom_blink_serialized.end());

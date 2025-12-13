@@ -229,6 +229,8 @@ impl<T: VarULE + ?Sized, F: VarZeroVecFormat> VarZeroSlice<T, F> {
     }
 
     /// Obtain an owned `Vec<Box<T>>` out of this
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     #[cfg(feature = "alloc")]
     pub fn to_vec(&self) -> alloc::vec::Vec<alloc::boxed::Box<T>> {
         self.as_components().to_vec()
@@ -459,7 +461,7 @@ unsafe impl<T: VarULE + ?Sized + 'static, F: VarZeroVecFormat> VarULE for VarZer
 impl<T: VarULE + ?Sized, F: VarZeroVecFormat> Index<usize> for VarZeroSlice<T, F> {
     type Output = T;
     fn index(&self, index: usize) -> &Self::Output {
-        #[allow(clippy::panic)] // documented
+        #[expect(clippy::panic)] // documented
         match self.get(index) {
             Some(x) => x,
             None => panic!(

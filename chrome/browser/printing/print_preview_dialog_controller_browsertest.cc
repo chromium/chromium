@@ -53,23 +53,18 @@ using content::WebContentsObserver;
 
 namespace {
 
-void PluginsLoadedCallback(
-    base::OnceClosure quit_closure,
-    const std::vector<content::WebPluginInfo>& /* info */) {
-  std::move(quit_closure).Run();
-}
-
 void CheckPdfPluginForRenderFrame(content::RenderFrameHost* frame) {
   static const base::FilePath kPdfInternalPluginPath(
       ChromeContentClient::kPDFInternalPluginPath);
 
-  content::WebPluginInfo pdf_internal_plugin_info;
-  ASSERT_TRUE(content::PluginService::GetInstance()->GetPluginInfoByPath(
-      kPdfInternalPluginPath, &pdf_internal_plugin_info));
+  std::optional<content::WebPluginInfo> pdf_internal_plugin_info =
+      content::PluginService::GetInstance()->GetPluginInfoByPathForTesting(
+          kPdfInternalPluginPath);
+  ASSERT_TRUE(pdf_internal_plugin_info.has_value());
 
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_TRUE(filter->IsPluginAvailable(frame->GetBrowserContext(),
-                                        pdf_internal_plugin_info));
+                                        pdf_internal_plugin_info.value()));
 }
 
 }  // namespace
@@ -247,17 +242,12 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
                        MAYBE_PdfPluginDisabled) {
   // Make sure plugins are loaded.
-  {
-    base::RunLoop run_loop;
-    content::PluginService::GetInstance()->GetPlugins(
-        base::BindOnce(&PluginsLoadedCallback, run_loop.QuitClosure()));
-    run_loop.Run();
-  }
+  content::PluginService::GetInstance()->GetPlugins();
   // Get the PDF plugin info.
-  content::WebPluginInfo pdf_external_plugin_info;
-  ASSERT_TRUE(content::PluginService::GetInstance()->GetPluginInfoByPath(
-      base::FilePath(ChromeContentClient::kPDFExtensionPluginPath),
-      &pdf_external_plugin_info));
+  std::optional<content::WebPluginInfo> pdf_external_plugin_info =
+      content::PluginService::GetInstance()->GetPluginInfoByPathForTesting(
+          base::FilePath(ChromeContentClient::kPDFExtensionPluginPath));
+  ASSERT_TRUE(pdf_external_plugin_info.has_value());
 
   // Disable the PDF plugin.
   SetAlwaysOpenPdfExternallyForTests();
@@ -265,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewDialogControllerBrowserTest,
   // Make sure it is actually disabled for webpages.
   ChromePluginServiceFilter* filter = ChromePluginServiceFilter::GetInstance();
   EXPECT_FALSE(filter->IsPluginAvailable(initiator()->GetBrowserContext(),
-                                         pdf_external_plugin_info));
+                                         pdf_external_plugin_info.value()));
 
   PrintPreview();
 

@@ -49,7 +49,7 @@ class CustomElementReactionFactory {
   static CustomElementReaction& CreateFormStateRestore(
       CustomElementDefinition& definition,
       const V8ControlValue* value,
-      const WTF::String& mode);
+      const String& mode);
 };
 
 }  // namespace blink

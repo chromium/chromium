@@ -131,21 +131,20 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
 
-    // TODO(crbug.com/342205162): Require native for ProfileDataCache creation.
-    /**
-     * @deprecated Use the constructor below which accepts {@link IdentityManager}
-     */
     @VisibleForTesting
-    @Deprecated
-    ProfileDataCache(Context context, @Px int imageSize, @Nullable BadgeConfig badgeConfig) {
-
+    ProfileDataCache(
+            Context context,
+            IdentityManager identityManager,
+            @Px int imageSize,
+            @Nullable BadgeConfig badgeConfig) {
+        // TODO(crbug.com/341948846): Remove AccountInfoService and update
+        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
+        // accounts
+        assert identityManager != null;
         mContext = context;
         mImageSize = imageSize;
         mDefaultBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        // TODO(crbug.com/341948846): Remove AccountInfoService and update
-        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
-        // accounts
         Promise<AccountInfoService> accountInfoServicePromise =
                 AccountInfoServiceProvider.getPromise();
         if (accountInfoServicePromise.isFulfilled()) {
@@ -153,31 +152,6 @@ public class ProfileDataCache implements AccountInfoService.Observer {
         } else {
             accountInfoServicePromise.then(this::populateCache);
         }
-    }
-
-    @VisibleForTesting
-    ProfileDataCache(
-            Context context,
-            IdentityManager identityManager,
-            @Px int imageSize,
-            @Nullable BadgeConfig badgeConfig) {
-        this(context, imageSize, badgeConfig);
-        // TODO(crbug.com/341948846): Remove AccountInfoService and update
-        // populateCache/populateCacheForAllAccounts to use identityManager to get the list of
-        // accounts
-        assert identityManager != null;
-    }
-
-    /**
-     * @param context Context of the application to extract resources from.
-     * @return A {@link ProfileDataCache} object with default image size(R.dimen.user_picture_size)
-     *     and no badge.
-     */
-    public static ProfileDataCache createWithDefaultImageSizeAndNoBadge(Context context) {
-        return new ProfileDataCache(
-                context,
-                context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
-                /* badgeConfig= */ null);
     }
 
     /**
@@ -217,9 +191,10 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * @return A {@link ProfileDataCache} object with the given image size and no badge.
      */
     public static ProfileDataCache createWithoutBadge(
-            Context context, @DimenRes int imageSizeRedId) {
+            Context context, IdentityManager identityManager, @DimenRes int imageSizeRedId) {
         return new ProfileDataCache(
                 context,
+                identityManager,
                 context.getResources().getDimensionPixelSize(imageSizeRedId),
                 /* badgeConfig= */ null);
     }
@@ -294,7 +269,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
     /**
      * Sets a default {@link BadgeConfig} and then populates the cache with the new Badge.
      *
-     * @param BadgeConfig The badge configuration. If null then the current badge is removed.
+     * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
      *     <p>TODO(crbug.com/40798208): replace usages of this method with the per-account config
@@ -315,7 +290,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * Badge.
      *
      * @param accountEmail The account email for which to set this badge.
-     * @param BadgeConfig The badge configuration. If null then the current badge is removed.
+     * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
      *     <p>TODO(crbug.com/40274844): Replace accountEmail with CoreAccountId or CoreAccountInfo.

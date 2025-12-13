@@ -102,7 +102,7 @@ void DispatchFocusChange(
   bounds_in_screen.Offset(0, GetChromeWindowHeightOffsetInDip(active_window));
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestView(active_window);
+      display::Screen::Get()->GetDisplayNearestView(active_window);
   bounds_in_screen.Offset(display.bounds().x(), display.bounds().y());
 
   accessibility_manager->OnViewFocusedInArc(bounds_in_screen);

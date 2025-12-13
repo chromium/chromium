@@ -229,7 +229,11 @@ std::optional<NaturalSizingInfo> SVGImage::GetNaturalDimensions(
       layout_root->UnscaledNaturalSizingInfo(
           override_viewspec ? override_viewspec->ViewBox() : nullptr);
 
-  if (!natural_sizing_info.has_width || !natural_sizing_info.has_height) {
+  // Intrinsic dimensions and aspect ratio should be calculated from the SVG's
+  // width, height and viewBox, regardless of the value of preserveAspectRatio.
+  // For compatibility, the old behavior is preserved behind a runtime flag.
+  if (!RuntimeEnabledFeatures::SvgSizingWithPreserveAspectRatioNoneEnabled() &&
+      (!natural_sizing_info.has_width || !natural_sizing_info.has_height)) {
     // We're not using an intrinsic aspect ratio to resolve a missing
     // intrinsic width or height when preserveAspectRatio is none.
     // (Ref: crbug.com/584172)
@@ -698,8 +702,8 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // loaded by a top-level document.
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client_, *agent_group_scheduler_, Data(),
-      WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
-                    weak_ptr_factory_.GetWeakPtr()),
+      blink::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
+                      weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, color_maps,
       IsolatedSVGDocumentHost::ProcessingMode::kAnimated);
 

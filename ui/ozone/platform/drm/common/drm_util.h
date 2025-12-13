@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 #define UI_OZONE_PLATFORM_DRM_COMMON_DRM_UTIL_H_
 
@@ -21,8 +16,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/display/display_features.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
@@ -153,6 +150,8 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
 
 int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format);
 
+int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format);
+
 gfx::Size GetMaximumCursorSize(const DrmWrapper& drm);
 
 ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
@@ -234,8 +233,9 @@ uint64_t GetDrmValueForInternalType(const InternalType& internal_state,
       << internal_state << ">).";
 
   for (int i = 0; i < property.count_enums; ++i) {
-    if (drm_enum == property.enums[i].name)
-      return property.enums[i].value;
+    if (drm_enum == UNSAFE_TODO(property.enums[i]).name) {
+      return UNSAFE_TODO(property.enums[i]).value;
+    }
   }
 
   NOTREACHED() << "Failed to extract DRM value for property '" << property.name

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
@@ -34,6 +35,7 @@ class ModelObserverTracker
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget target,
       const std::optional<optimization_guide::proto::Any>& model_metadata,
+      scoped_refptr<base::SequencedTaskRunner> model_task_runner,
       optimization_guide::OptimizationTargetModelObserver* observer) override {
     registered_model_observers_.insert_or_assign(
         target, std::make_pair(model_metadata, observer));

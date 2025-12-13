@@ -21,7 +21,6 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "media/base/audio_bus.h"
 #include "media/base/channel_layout.h"
 #include "media/base/media_export.h"
 #include "media/base/sample_format.h"
@@ -35,6 +34,7 @@ class StructPtr;
 
 namespace media {
 class AudioBufferMemoryPool;
+class AudioBus;
 
 namespace mojom {
 class AudioBuffer;
@@ -311,23 +311,25 @@ class MEDIA_EXPORT AudioBufferMemoryPool
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
-  explicit AudioBufferMemoryPool(int alignment = AudioBus::kChannelAlignment);
+  AudioBufferMemoryPool();
+  explicit AudioBufferMemoryPool(int alignment);
   AudioBufferMemoryPool(const AudioBufferMemoryPool&) = delete;
   AudioBufferMemoryPool& operator=(const AudioBufferMemoryPool&) = delete;
 
   size_t GetPoolSizeForTesting();
-  int GetChannelAlignment() { return alignment_; }
+  int GetChannelAlignment() const { return alignment_; }
 
-  struct ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
+  class ExternalMemoryFromPool : public AudioBuffer::ExternalMemory {
    public:
-    ExternalMemoryFromPool(
-        scoped_refptr<AudioBufferMemoryPool> pool,
-        std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory,
-        size_t size);
+    ExternalMemoryFromPool(scoped_refptr<AudioBufferMemoryPool> pool,
+                           base::AlignedHeapArray<uint8_t> memory);
     ExternalMemoryFromPool(ExternalMemoryFromPool&&);
     ~ExternalMemoryFromPool() override;
 
-    std::unique_ptr<uint8_t, base::AlignedFreeDeleter> memory_;
+   private:
+    friend class AudioBufferMemoryPool;
+
+    base::AlignedHeapArray<uint8_t> memory_;
     scoped_refptr<AudioBufferMemoryPool> pool_;
   };
 

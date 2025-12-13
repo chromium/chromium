@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.browser.customtabs.CustomContentAction;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -20,6 +19,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Factory for creating {@link ContextMenuPopulator}s. */
 @NullMarked

@@ -65,8 +65,7 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kEcheSWA,
-                              features::kEcheNetworkConnectionState},
+        /*enabled_features=*/{features::kEcheSWA},
         /*disabled_features=*/{});
 
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
@@ -735,38 +734,6 @@ TEST_F(RecentAppsInteractionHandlerTest,
             handler().ui_state());
 }
 
-TEST_F(RecentAppsInteractionHandlerTest,
-       UiStateChangedToVisibleWhenRecentAppBeAdded) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheNetworkConnectionState});
-
-  SetEcheFeatureState(FeatureState::kEnabledByUser);
-  SetPhoneHubNotificationsFeatureState(FeatureState::kEnabledByUser);
-  SetConnectionStatus(ConnectionStatus::kConnectionStatusConnected);
-  SetAppsAccessStatus(true);
-  SetNotificationAccess(true);
-
-  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
-            handler().ui_state());
-
-  const base::Time now = base::Time::Now();
-  const char16_t app_visible_name1[] = u"Fake App";
-  const char package_name1[] = "com.fakeapp";
-  const int64_t expected_user_id1 = 1;
-  auto app_metadata1 = Notification::AppMetadata(
-      app_visible_name1, package_name1, /*color_icon=*/gfx::Image(),
-      /*monochrome_icon_mask=*/std::nullopt,
-      /*icon_color=*/std::nullopt,
-      /*icon_is_monochrome=*/true, expected_user_id1,
-      proto::AppStreamabilityStatus::STREAMABLE);
-  handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
-
-  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
-            handler().ui_state());
-}
-
 TEST_F(RecentAppsInteractionHandlerTest, DisableAppsAccess) {
   GenerateDefaultAppMetadata();
 
@@ -925,36 +892,6 @@ TEST_F(RecentAppsInteractionHandlerTest, OnConnectionStatusChanged) {
       ConnectionStatus::kConnectionStatusDisconnected);
   EXPECT_EQ(handler().connection_status_for_testing(),
             ConnectionStatus::kConnectionStatusConnected);
-}
-
-TEST_F(RecentAppsInteractionHandlerTest,
-       OnConnectionStatusChangedFlagDisabled) {
-  feature_list_.Reset();
-  feature_list_.InitWithFeatures(
-      /*enabled_features=*/{features::kEcheSWA},
-      /*disabled_features=*/{features::kEcheNetworkConnectionState});
-
-  // Start in the Disconnected state. When flag is disabled, the state should
-  // never change.
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
-
-  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnecting);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
-
-  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusConnected);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
-
-  NotifyConnectionStatusChanged(ConnectionStatus::kConnectionStatusFailed);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
-
-  NotifyConnectionStatusChanged(
-      ConnectionStatus::kConnectionStatusDisconnected);
-  EXPECT_EQ(handler().connection_status_for_testing(),
-            ConnectionStatus::kConnectionStatusDisconnected);
 }
 
 TEST_F(RecentAppsInteractionHandlerTest, GetUiStateFromConnectionStatus) {

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_LICENSE_CHECKER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -44,7 +45,7 @@ class PluginVmLicenseChecker {
       std::string_view access_token);
 
   void FetchAccessToken();
-  void HandleStringResponse(std::unique_ptr<std::string> response_body);
+  void HandleStringResponse(std::optional<std::string> response_body);
   void CallEndpointWithAccessToken(GoogleServiceAuthError error,
                                    signin::AccessTokenInfo access_token_info);
 

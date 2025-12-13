@@ -22,6 +22,7 @@
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/ozone/public/native_pixmap_usage.h"
 
 namespace ui {
 
@@ -46,10 +47,11 @@ class FlatlandSysmemBufferManager {
   // Initialize() again.
   void Shutdown();
 
-  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(VkDevice vk_device,
-                                                      gfx::Size size,
-                                                      gfx::BufferFormat format,
-                                                      gfx::BufferUsage usage);
+  scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
+      VkDevice vk_device,
+      gfx::Size size,
+      viz::SharedImageFormat format,
+      NativePixmapUsageSet usage);
 
   // TODO(crbug.com/42050538): Instead of an additional
   // |register_with_flatland_allocator| bool, we can rely on |usage| to decide
@@ -59,7 +61,7 @@ class FlatlandSysmemBufferManager {
       zx::eventpair service_handle,
       zx::channel sysmem_token,
       gfx::Size size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage,
       size_t min_buffer_count,
       bool register_with_flatland_allocator);

@@ -44,14 +44,15 @@
 #include "absl/functional/function_ref.h"
 #include "absl/strings/cord_buffer.h"
 #include "absl/strings/escaping.h"
+#include "absl/strings/internal/append_and_overwrite.h"
 #include "absl/strings/internal/cord_data_edge.h"
 #include "absl/strings/internal/cord_internal.h"
 #include "absl/strings/internal/cord_rep_btree.h"
 #include "absl/strings/internal/cord_rep_crc.h"
 #include "absl/strings/internal/cord_rep_flat.h"
 #include "absl/strings/internal/cordz_update_tracker.h"
-#include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/match.h"
+#include "absl/strings/resize_and_overwrite.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
@@ -161,8 +162,10 @@ static CordRep* absl_nonnull CordRepFromString(std::string&& src) {
 // --------------------------------------------------------------------
 // Cord::InlineRep functions
 
-inline void Cord::InlineRep::set_data(const char* absl_nonnull data, size_t n) {
+inline void Cord::InlineRep::set_data(const char* absl_nullable data,
+                                      size_t n) {
   static_assert(kMaxInline == 15, "set_data is hard-coded for a length of 15");
+  assert(data != nullptr || n == 0);
   data_.set_inline_data(data, n);
 }
 
@@ -1053,18 +1056,20 @@ void CopyCordToString(const Cord& src, std::string* absl_nonnull dst) {
   if (!src.contents_.is_tree()) {
     src.contents_.CopyTo(dst);
   } else {
-    absl::strings_internal::STLStringResizeUninitialized(dst, src.size());
-    src.CopyToArraySlowPath(&(*dst)[0]);
+    StringResizeAndOverwrite(*dst, src.size(),
+                             [&src](char* buf, size_t buf_size) {
+                               src.CopyToArraySlowPath(buf);
+                               return buf_size;
+                             });
   }
 }
 
 void AppendCordToString(const Cord& src, std::string* absl_nonnull dst) {
-  const size_t cur_dst_size = dst->size();
-  const size_t new_dst_size = cur_dst_size + src.size();
-  absl::strings_internal::STLStringResizeUninitializedAmortized(dst,
-                                                                new_dst_size);
-  char* append_ptr = &(*dst)[cur_dst_size];
-  src.CopyToArrayImpl(append_ptr);
+  strings_internal::StringAppendAndOverwrite(
+      *dst, src.size(), [&src](char* buf, size_t buf_size) {
+        src.CopyToArrayImpl(buf);
+        return buf_size;
+      });
 }
 
 void Cord::CopyToArraySlowPath(char* absl_nonnull dst) const {

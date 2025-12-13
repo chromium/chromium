@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_collection.h"
@@ -29,6 +30,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/views/widget/native_widget.h"
@@ -37,8 +39,6 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace tabs {
-
-DEFINE_HANDLE_FACTORY(TabInterface);
 
 namespace {
 
@@ -81,6 +81,9 @@ TabModel::TabModel(std::unique_ptr<content::WebContents> contents,
   // one place, which is here.
   TabHelpers::AttachTabHelpers(contents_);
   tab_features_ = std::make_unique<TabFeatures>();
+  const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
+  CHECK(session_id.is_valid());
+  SetSessionId(session_id.id());
 
   // Once tabs are pulled into a standalone module, TabFeatures and its
   // initialization will need to be delegated back to the main module.
@@ -107,11 +110,9 @@ void TabModel::OnAddedToModel(TabStripModel* owning_model) {
     did_enter_foreground_callback_list_.Notify(this);
   }
 
-  // Being detached is equivalent to being in the background. So after
-  // detachment, if the tab is in the foreground, we must send a notification.
-  if (IsVisible()) {
-    did_become_visible_callback_list_.Notify(this);
-  }
+  // Set up visibility observers.
+  WebContentsObserver::Observe(contents_);
+  OnVisibilityChanged(contents_->GetVisibility());
 }
 
 void TabModel::OnRemovedFromModel() {
@@ -133,6 +134,9 @@ void TabModel::OnRemovedFromModel() {
   // mechanisms that were handling that.
   // TODO(tbergquist): Decide whether to stick with this approach or not.
   blocked_ = false;
+
+  // Remove visibility observers.
+  WebContentsObserver::Observe(nullptr);
 }
 
 TabCollection* TabModel::GetParentCollection(
@@ -178,9 +182,12 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
   group_changed_callback_list_.Notify(this, group_);
 }
 
-void TabModel::WillEnterBackground(base::PassKey<TabStripModel>) {
-  will_enter_background_callback_list_.Notify(this);
+void TabModel::WillBecomeHidden(base::PassKey<TabStripModel>) {
   will_become_hidden_callback_list_.Notify(this);
+}
+
+void TabModel::WillDeactivate(base::PassKey<TabStripModel>) {
+  will_deactivate_callback_list_.Notify(this);
 }
 
 void TabModel::WillDetach(base::PassKey<TabStripModel>,
@@ -219,11 +226,11 @@ base::CallbackListSubscription TabModel::RegisterDidActivate(
 
 base::CallbackListSubscription TabModel::RegisterWillDeactivate(
     TabInterface::WillDeactivateCallback callback) {
-  return will_enter_background_callback_list_.Add(std::move(callback));
+  return will_deactivate_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::IsVisible() const {
-  return contents_->GetVisibility() != content::Visibility::HIDDEN;
+  return visible_;
 }
 
 bool TabModel::IsSelected() const {
@@ -299,6 +306,10 @@ bool TabModel::IsPinned() const {
   return pinned_;
 }
 
+bool TabModel::IsBlocked() const {
+  return blocked_;
+}
+
 bool TabModel::IsSplit() const {
   return split_.has_value();
 }
@@ -330,8 +341,17 @@ void TabModel::OnTabStripModelChanged(
 
   if (selection.new_contents == GetContents()) {
     did_enter_foreground_callback_list_.Notify(this);
-    did_become_visible_callback_list_.Notify(this);
     return;
+  }
+}
+
+void TabModel::OnVisibilityChanged(content::Visibility visibility) {
+  const bool new_visible =
+      contents_->GetVisibility() != content::Visibility::HIDDEN;
+  const bool became_visible = new_visible && !visible_;
+  visible_ = new_visible;
+  if (became_visible) {
+    did_become_visible_callback_list_.Notify(this);
   }
 }
 
@@ -409,7 +429,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("web_contents", GetContents());
   dict.Add("pinned", IsPinned());
   dict.Add("split", IsSplit());
-  dict.Add("blocked", blocked());
+  dict.Add("blocked", IsBlocked());
 }
 
 std::unique_ptr<content::WebContents> TabModel::DiscardContents(
@@ -420,6 +440,11 @@ std::unique_ptr<content::WebContents> TabModel::DiscardContents(
       std::move(contents_owned_);
   contents_owned_ = std::move(contents);
   contents_ = contents_owned_.get();
+
+  const SessionID session_id = sessions::SessionTabHelper::IdForTab(contents_);
+  CHECK(session_id.is_valid());
+  SetSessionId(session_id.id());
+
   TabLookupFromWebContents::CreateForWebContents(contents_, this);
   return old_contents;
 }

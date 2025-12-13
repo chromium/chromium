@@ -18,7 +18,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -44,7 +43,7 @@ public class PdfPageIphController {
 
     /**
      * Creates and initializes the controller. Registers an {@link ActivityTabTabObserver} that
-     * attempts to show the pdf download IPH when the download button is not in the omnibox.
+     * attempts to show the pdf download IPH.
      *
      * @param activity The current activity.
      * @param windowAndroid The window associated with the activity.
@@ -121,12 +120,6 @@ public class PdfPageIphController {
 
     private void showDownloadIph(Profile profile) {
         boolean isTablet = DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
-        // Do now show IPH if the download button is shown in the toolbar.
-        if (isTablet
-                && mIsBrowserApp
-                && !ChromeFeatureList.sHideTabletToolbarDownloadButton.isEnabled()) {
-            return;
-        }
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         String featureName = FeatureConstants.IPH_PDF_PAGE_DOWNLOAD;
         if (!tracker.wouldTriggerHelpUi(featureName)) {

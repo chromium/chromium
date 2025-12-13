@@ -31,6 +31,13 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Lite version of {@link GeneratedMessage}.
  *
+ * <p>Users should generally ignore this class and use the MessageLite interface instead.
+ *
+ * <p>This class is intended to only be extended by protoc created gencode. It is not intended or
+ * supported to extend this class, and any protected methods may be removed without it being
+ * considered a breaking change as long as all supported gencode does not depend on the changed
+ * methods.
+ *
  * @author kenton@google.com Kenton Varda
  */
 public abstract class GeneratedMessageLite<
@@ -1214,9 +1221,14 @@ public abstract class GeneratedMessageLite<
     }
 
     @Override
+    public boolean internalMessageIsImmutable(Object message) {
+      return message instanceof MessageLite;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    public MessageLite.Builder internalMergeFrom(MessageLite.Builder to, MessageLite from) {
-      return ((Builder) to).mergeFrom((GeneratedMessageLite) from);
+    public void internalMergeFrom(Object to, Object from) {
+      ((Builder) to).mergeFrom((GeneratedMessageLite) from);
     }
 
     @Override

@@ -19,7 +19,6 @@ google/protobuf/compiler/cpp/options.h
 google/protobuf/compiler/csharp/csharp_generator.h
 google/protobuf/compiler/csharp/names.h
 google/protobuf/compiler/importer.h
-google/protobuf/compiler/java/context.h
 google/protobuf/compiler/java/doc_comment.h
 google/protobuf/compiler/java/generator.h
 google/protobuf/compiler/java/helpers.h
@@ -106,6 +105,8 @@ google/protobuf/message_lite.h
 google/protobuf/metadata.h
 google/protobuf/metadata_lite.h
 google/protobuf/micro_string.h
+google/protobuf/os_macros_restore.inc
+google/protobuf/os_macros_undef.inc
 google/protobuf/parse_context.h
 google/protobuf/port.h
 google/protobuf/port_def.inc
@@ -192,6 +193,7 @@ upb/mini_table/message.h
 upb/mini_table/sub.h
 upb/port/atomic.h
 upb/port/def.inc
+upb/port/sanitizers.h
 upb/port/undef.inc
 upb/port/vsnprintf_compat.h
 upb/reflection/common.h
@@ -220,9 +222,13 @@ upb/util/def_to_proto.h
 upb/util/required_fields.h
 upb/wire/byte_size.h
 upb/wire/decode.h
+upb/wire/decode_fast/combinations.h
+upb/wire/decode_fast/data.h
+upb/wire/decode_fast/select.h
 upb/wire/encode.h
 upb/wire/eps_copy_input_stream.h
 upb/wire/reader.h
 upb/wire/types.h
+upb/wire/writer.h
 utf8_range.h
 utf8_validity.h

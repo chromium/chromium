@@ -12,6 +12,10 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace device {
 
 class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
@@ -24,11 +28,14 @@ class DEVICE_GAMEPAD_EXPORT GamepadMonitor : public GamepadConsumer,
 
   ~GamepadMonitor() override;
 
-  static void Create(mojo::PendingReceiver<mojom::GamepadMonitor> receiver);
+  static void Create(content::RenderFrameHost* host,
+                     mojo::PendingReceiver<mojom::GamepadMonitor> receiver);
 
   // GamepadConsumer implementation.
   void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) override;
   void OnGamepadDisconnected(uint32_t index, const Gamepad& gamepad) override;
+  void OnGamepadRawInputChanged(uint32_t index,
+                                const Gamepad& gamepad) override;
 
   // mojom::GamepadMonitor implementation.
   void GamepadStartPolling(GamepadStartPollingCallback callback) override;

@@ -10,7 +10,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/timer/timer.h"
@@ -103,9 +102,7 @@ class DriveFsHost::MountState : public DriveFsSession {
         delegate->GetLostAndFoundDirectoryName(),
         base::FeatureList::IsEnabled(ash::features::kDriveFsMirroring),
         delegate->IsVerboseLoggingEnabled(),
-        base::FeatureList::IsEnabled(ash::features::kDriveFsShowCSEFiles)
-            ? mojom::CSESupport::kListing
-            : mojom::CSESupport::kNone,
+        mojom::CSESupport::kListing,
         ash::features::IsLauncherContinueSectionWithRecentsEnabled(),
         ash::features::IsShowSharingUserInLauncherContinueSectionEnabled(),
     };

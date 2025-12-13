@@ -11,6 +11,10 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace extensions {
 
 // Sets up web contents modal dialogs for ExtensionViewHost.
@@ -27,14 +31,15 @@ class ExtensionViewHostWebModalHandler
   ~ExtensionViewHostWebModalHandler() override;
 
   // web_modal::WebContentsModalDialogManagerDelegate
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
   bool IsWebContentsVisible(content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost
   gfx::NativeView GetHostView() const override;
   gfx::Point GetDialogPosition(const gfx::Size& size) override;
   gfx::Size GetMaximumDialogSize() override;
+  bool ShouldConstrainDialogBoundsByHost() override;
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 

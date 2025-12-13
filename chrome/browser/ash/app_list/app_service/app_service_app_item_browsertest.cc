@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
                        ActivateAppRecordsNewInstallHistogram) {
   base::HistogramTester histograms;
   {
-    ASSERT_FALSE(display::Screen::GetScreen()->InTabletMode());
+    ASSERT_FALSE(display::Screen::Get()->InTabletMode());
 
     // Simulate a user-installed chrome app item.
     std::unique_ptr<AppServiceAppItem> app_item =
@@ -276,10 +276,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceSystemWebAppItemBrowserTest, Activate) {
                              /*sync_item=*/nullptr, app_update);
   app_item.SetChromePosition(app_item.CalculateDefaultPositionForTest());
 
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   app_item.PerformActivate(ui::EF_NONE);
-  browser_opened.Wait();
+  browser_created_observer.Wait();
 
   // Verify that a launch no longer occurs.
   web_app::WebAppLaunchProcess::SetOpenApplicationCallbackForTesting(

@@ -29,6 +29,7 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
+#import "components/autofill/ios/form_util/renderer_id_test_util.h"
 #import "components/autofill/ios/form_util/test_form_activity_observer.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -91,6 +92,7 @@ constexpr NSString* kTestHTMLFormWithIframes =
   test_field_data.set_name(u"text");
   test_field_data.set_form_control_type(FormControlType::kInputText);
   test_field_data.set_host_frame(LocalFrameToken(*host_frame));
+  test_field_data.set_host_form_id(test_form_data.renderer_id());
   test_field_data.set_renderer_id(FieldRendererId(2));
   test_field_data.set_id_attribute(u"text");
   // user_edited is true when the sources of inputs are not being tracked.
@@ -819,19 +821,21 @@ INSTANTIATE_TEST_SUITE_P(
 // in the isolated world enabled.
 // TODO(crbug.com/359538514): Remove this fixture and move test back to
 // FormActivityTabHelperTest once isolated world for Autofill is launched.
-class FormSubmittedHookTest : public WithFeatureOverride,
-                              public FormActivityTabHelperTest {
+class FormSubmittedHookTest : public FormActivityTabHelperTest {
  public:
-  FormSubmittedHookTest()
-      : WithFeatureOverride(kAutofillIsolatedWorldForJavascriptIos),
-        FormActivityTabHelperTest() {
+  FormSubmittedHookTest() : FormActivityTabHelperTest() {
     web::FakeWebClient* web_client =
         static_cast<web::FakeWebClient*>(GetWebClient());
+
+    renderer_id_feature_ =
+        autofill::test::CreateRendererIdTestJavaScriptFeature();
+
     web_client->SetJavaScriptFeatures({
         FormUtilJavaScriptFeature::GetInstance(),
         feature_container_.form_handlers_java_script_feature(),
         feature_container_.autofill_java_script_feature(),
         ProgrammaticFormSubmissionHandlerJavaScriptFeature::GetInstance(),
+        renderer_id_feature_.get(),
     });
   }
 
@@ -860,25 +864,29 @@ class FormSubmittedHookTest : public WithFeatureOverride,
   //  the statically stored instances once Autofill in the isolated
   //  world is launched.
   TestAutofillJavaScriptFeatureContainer feature_container_;
+
+  std::unique_ptr<web::JavaScriptFeature> renderer_id_feature_;
 };
 
 // Validate that programmatic form submissions are detected and sent to
 // observers of the tab helper.
-TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
+TEST_F(FormSubmittedHookTest, TestFormSubmittedHook) {
   LoadHtml(kTestHTMLForm);
 
   WebFrame* main_frame = WaitForMainFrame();
   ASSERT_TRUE(main_frame);
 
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
-      ->SetAutofillIsolatedContentWorld(main_frame, IsParamFeatureEnabled());
+      ->SetAutofillIsolatedContentWorld(main_frame, true);
 
   web::test::ExecuteJavaScriptForFeature(
       web_state(),
       @"var form = document.forms[0];"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(form);"
+       "__gCrWeb.getRegisteredApi('renderer_id_test').getFunction('"
+       "setUniqueIDIfNeeded')(form);"
        "var input = document.getElementById('text');"
-       "__gCrWeb.fill.setUniqueIDIfNeeded(input);",
+       "__gCrWeb.getRegisteredApi('renderer_id_test').getFunction('"
+       "setUniqueIDIfNeeded')(input);",
       feature_container_.autofill_java_script_feature());
 
   ASSERT_FALSE(observer_->submit_document_info());
@@ -908,8 +916,7 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHook) {
 
 // Validate that programmatic form submissions are detected and sent to
 // observers of the tab helper.
-TEST_P(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
-
+TEST_F(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
   LoadHtml(kTestHTMLFormWithIframes);
 
   WebFrame* main_frame = WaitForMainFrame();
@@ -917,13 +924,12 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
 
   // Set feature flags in both worlds.
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
-      ->SetAutofillIsolatedContentWorld(main_frame, IsParamFeatureEnabled());
+      ->SetAutofillIsolatedContentWorld(main_frame, true);
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillAcrossIframes(main_frame, true);
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillIsolatedContentWorld(
-          WaitForMainFrame(web::ContentWorld::kPageContentWorld),
-          IsParamFeatureEnabled());
+          WaitForMainFrame(web::ContentWorld::kPageContentWorld), true);
   AutofillFormFeaturesJavaScriptFeature::GetInstance()
       ->SetAutofillAcrossIframes(
           WaitForMainFrame(web::ContentWorld::kPageContentWorld), true);
@@ -950,5 +956,4 @@ TEST_P(FormSubmittedHookTest, TestFormSubmittedHookAcrossIframes) {
                          VariantWith<RemoteFrameToken>(IsTrue()))));
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(FormSubmittedHookTest);
 }  // namespace autofill

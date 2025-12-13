@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"

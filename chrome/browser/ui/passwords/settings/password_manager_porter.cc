@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -24,9 +25,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-
-#if BUILDFLAG(IS_WIN)
-#endif
 
 namespace {
 

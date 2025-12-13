@@ -35,13 +35,8 @@ component("service") {
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",
-    "gpu_memory_buffer_factory.cc",
-    "gpu_memory_buffer_factory.h",
     "gpu_watchdog_thread.cc",
     "gpu_watchdog_thread.h",
-    "image_decode_accelerator_stub.cc",
-    "image_decode_accelerator_stub.h",
-    "image_decode_accelerator_worker.h",
     "image_transport_surface.h",
     "raster_command_buffer_stub.cc",
     "raster_command_buffer_stub.h",
@@ -81,7 +76,7 @@ component("service") {
     # implicitly depended upon by gpu/config/gpu_crash_keys.h but deps (even
     # public ones) are not transitive for static libraries.
     "//components/crash/core/common:crash_key",
-    "//components/viz/common:shared_image_format",
+    "//components/viz/common/resources:shared_image_format",
     "//gpu/command_buffer/common",
     "//gpu/command_buffer/service",
     "//gpu/command_buffer/service:gles2",
@@ -96,8 +91,6 @@ component("service") {
     sources += [
       "dcomp_texture_win.cc",
       "dcomp_texture_win.h",
-      "gpu_memory_buffer_factory_dxgi.cc",
-      "gpu_memory_buffer_factory_dxgi.h",
       "image_transport_surface_win.cc",
     ]
     libs += [
@@ -108,8 +101,6 @@ component("service") {
   }
   if (is_apple) {
     sources += [
-      "gpu_memory_buffer_factory_io_surface.cc",
-      "gpu_memory_buffer_factory_io_surface.h",
       "image_transport_surface_overlay_mac.h",
       "image_transport_surface_overlay_mac.mm",
     ]
@@ -117,8 +108,8 @@ component("service") {
     if (is_mac) {
       sources += [ "image_transport_surface_mac.mm" ]
       deps += [
-        "//ui/display:display",
-        "//ui/display/types:types",
+        "//ui/display",
+        "//ui/display/types",
       ]
       lib_dirs = [ "$mac_sdk_path/usr/lib" ]
       frameworks = [
@@ -145,13 +136,9 @@ component("service") {
       "arc_shared_image_interface.cc",
       "arc_shared_image_interface.h",
     ]
+    deps += [ "//chromeos/ash/experiences/arc:arc_features" ]
   }
   if (use_ozone) {
-    sources += [
-      "gpu_memory_buffer_factory_native_pixmap.cc",
-      "gpu_memory_buffer_factory_native_pixmap.h",
-    ]
-
     deps += [ "//ui/ozone" ]
   }
   if (is_fuchsia) {
@@ -170,18 +157,4 @@ component("service") {
   if (skia_use_dawn) {
     deps += [ "//third_party/dawn/include/dawn:cpp_headers" ]
   }
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [ "gpu_memory_buffer_factory_test_template.h" ]
-  public_deps = [
-    ":service",
-    "//testing/gtest:gtest",
-  ]
-  deps = [
-    "//base/test:test_support",
-    "//gpu/ipc/common",
-    "//ui/gl:test_support",
-  ]
 }

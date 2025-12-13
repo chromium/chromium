@@ -12,6 +12,7 @@
 #include "net/http/http_status_code.h"
 #include "net/log/test_net_log.h"
 #include "net/log/test_net_log_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/binary_http/binary_http_message.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_data_writer.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_gateway.h"
@@ -196,7 +197,7 @@ class TestObliviousHttpRequestHandler : public testing::Test {
     return handler;
   }
 
-  std::string DecryptRequest(std::string cipher_text) {
+  std::string DecryptRequest(std::string_view cipher_text) {
     auto request = ohttp_gateway_->DecryptObliviousHttpRequest(cipher_text);
     EXPECT_TRUE(request.ok()) << request.status();
     return std::string(request->GetPlaintextData());
@@ -211,13 +212,12 @@ class TestObliviousHttpRequestHandler : public testing::Test {
         loader_factory()->IsPending(relay_url.spec(), &pending_request));
 
     ASSERT_TRUE(pending_request->request_body);
-    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
+    const std::vector<network::DataElement>& elements =
+        *pending_request->request_body->elements();
+    ASSERT_EQ(1u, elements.size());
 
-    std::string request_body =
-        std::string(pending_request->request_body->elements()
-                        ->at(0)
-                        .As<network::DataElementBytes>()
-                        .AsStringPiece());
+    std::string_view request_body =
+        elements[0].As<network::DataElementBytes>().AsStringView();
 
     auto request = ohttp_gateway_->DecryptObliviousHttpRequest(request_body);
     ASSERT_TRUE(request.ok()) << request.status();
@@ -494,12 +494,11 @@ TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
             {net::HttpRequestHeaders::kContentType, "message/ohttp-req"},
         }));
     ASSERT_TRUE(pending_request->request_body);
-    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
-
-    std::string body = std::string(pending_request->request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
+    const std::vector<network::DataElement>& elements =
+        *pending_request->request_body->elements();
+    ASSERT_EQ(1u, elements.size());
+    std::string_view body =
+        elements[0].As<network::DataElementBytes>().AsStringView();
     std::string plain_text_body = DecryptRequest(body);
 
     auto maybe_request = quiche::BinaryHttpRequest::Create(plain_text_body);
@@ -704,12 +703,11 @@ TEST_F(TestObliviousHttpRequestHandler, PadsUpToNextPowerOfTwo) {
     const network::ResourceRequest* pending_request;
     ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
     ASSERT_TRUE(pending_request->request_body);
-    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
-
-    std::string body = std::string(pending_request->request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
+    const std::vector<network::DataElement>& elements =
+        *pending_request->request_body->elements();
+    ASSERT_EQ(1u, elements.size());
+    std::string_view body =
+        elements[0].As<network::DataElementBytes>().AsStringView();
     std::string plain_text_body = DecryptRequest(body);
 
     EXPECT_EQ(256u, plain_text_body.size());
@@ -739,12 +737,11 @@ TEST_F(TestObliviousHttpRequestHandler, DoesntPadsIfAlreadyPowerOfTwo) {
     const network::ResourceRequest* pending_request;
     ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
     ASSERT_TRUE(pending_request->request_body);
-    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
-
-    std::string body = std::string(pending_request->request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
+    const std::vector<network::DataElement>& elements =
+        *pending_request->request_body->elements();
+    ASSERT_EQ(1u, elements.size());
+    std::string_view body =
+        elements[0].As<network::DataElementBytes>().AsStringView();
     std::string plain_text_body = DecryptRequest(body);
 
     EXPECT_EQ(512u, plain_text_body.size());
@@ -822,13 +819,11 @@ TEST_F(TestObliviousHttpRequestHandler,
     const network::ResourceRequest* pending_request;
     ASSERT_TRUE(loader_factory()->IsPending(kRelayURL, &pending_request));
     ASSERT_TRUE(pending_request->request_body);
-    ASSERT_EQ(1u, pending_request->request_body->elements()->size());
-
-    std::string body = std::string(pending_request->request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
-
+    const std::vector<network::DataElement>& elements =
+        *pending_request->request_body->elements();
+    ASSERT_EQ(1u, elements.size());
+    std::string_view body =
+        elements[0].As<network::DataElementBytes>().AsStringView();
     std::string plain_text_body = DecryptRequest(body);
     size_t body_size = plain_text_body.size();
     sizes_seen.insert(body_size);

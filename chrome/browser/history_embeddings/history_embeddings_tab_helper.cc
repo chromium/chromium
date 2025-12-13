@@ -231,7 +231,7 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
     // Callback is a member method instead of inline to enable cancellation via
     // weak pointer in `CancelExtraction()`.
     history_service->GetMostRecentVisitsForGurl(
-        history_url_.value(), 1,
+        history_url_.value(), 1, history::VisitQuery404sPolicy::kExclude404s,
         base::BindOnce(
             &HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData,
             weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
@@ -241,7 +241,7 @@ void HistoryEmbeddingsTabHelper::ExtractPassages(
 
 void HistoryEmbeddingsTabHelper::ExtractPassagesWithHistoryData(
     content::WeakDocumentPtr weak_render_frame_host,
-    history::QueryURLResult result) {
+    history::QueryURLAndVisitsResult result) {
   // `visits` can be empty for navigations that don't result in a
   // visit being added to the DB, e.g. navigations to
   // "chrome://" URLs.

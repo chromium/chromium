@@ -190,8 +190,10 @@ TEST_F(RootWindowControllerTest, MoveWindows_Basic) {
   // will not crash.
   aura::WindowTracker tracker;
   DeleteOnBlurDelegate delete_on_blur_delegate;
-  aura::Window* d2 = CreateTestWindowInShellWithDelegate(
-      &delete_on_blur_delegate, 0, gfx::Rect(50, 50, 100, 100));
+  aura::Window* d2 =
+      CreateTestWindowInShell({.delegate = &delete_on_blur_delegate,
+                               .bounds = {50, 50, 100, 100},
+                               .window_id = 0});
   delete_on_blur_delegate.SetWindow(d2);
   aura::client::GetFocusClient(root_windows[0])->FocusWindow(d2);
   tracker.Add(d2);
@@ -348,7 +350,7 @@ TEST_F(RootWindowControllerTest, MoveWindows_LockWindowsInUnified) {
 TEST_F(RootWindowControllerTest, MoveWindows_MaintainMRUordering) {
   UpdateDisplay("600x500,300x250");
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const display::Display primary_display = screen->GetPrimaryDisplay();
   const display::Display secondary_display = GetSecondaryDisplay();
 
@@ -847,12 +849,10 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, RestoreWorkspaceAfterLogin) {
       keyboard::test::KeyboardBoundsFromRootBounds(root_window->bounds(), 100));
   contents_window->Show();
 
-  gfx::Rect before =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  gfx::Rect before = display::Screen::Get()->GetPrimaryDisplay().work_area();
 
   if (!controller->IsKeyboardOverscrollEnabled()) {
-    gfx::Rect after =
-        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    gfx::Rect after = display::Screen::Get()->GetPrimaryDisplay().work_area();
     EXPECT_LT(after, before);
   }
 
@@ -860,8 +860,7 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, RestoreWorkspaceAfterLogin) {
   SessionInfo info;
   info.state = session_manager::SessionState::ACTIVE;
   Shell::Get()->session_controller()->SetSessionInfo(info);
-  EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().work_area(),
-            before);
+  EXPECT_EQ(display::Screen::Get()->GetPrimaryDisplay().work_area(), before);
 }
 
 // Ensure that system modal dialogs do not block events targeted at the virtual
@@ -929,7 +928,7 @@ TEST_F(VirtualKeyboardRootWindowControllerTest,
        EnsureCaretInWorkAreaWithMultipleDisplays) {
   UpdateDisplay("600x500,600x500");
   const int64_t primary_display_id =
-      display::Screen::GetScreen()->GetPrimaryDisplay().id();
+      display::Screen::Get()->GetPrimaryDisplay().id();
   const int64_t secondary_display_id = GetSecondaryDisplay().id();
   ASSERT_NE(primary_display_id, secondary_display_id);
 
@@ -1013,9 +1012,9 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ZOrderTest) {
   // Normal window is partially occluded by the virtual keyboard.
   aura::test::TestWindowDelegate delegate;
   std::unique_ptr<aura::Window> normal(
-      CreateTestWindowInShellWithDelegateAndType(
-          &delegate, aura::client::WINDOW_TYPE_NORMAL, 0,
-          gfx::Rect(0, 0, window_width, window_height)));
+      CreateTestWindowInShell({.delegate = &delegate,
+                               .bounds = {window_width, window_height},
+                               .window_id = 0}));
   normal->set_owned_by_parent(false);
   normal->Show();
   TargetHitTestEventHandler normal_handler;
@@ -1032,9 +1031,11 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ZOrderTest) {
 
   // Menu overlaps virtual keyboard.
   aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> menu(CreateTestWindowInShellWithDelegateAndType(
-      &delegate2, aura::client::WINDOW_TYPE_MENU, 0,
-      gfx::Rect(window_width, 0, window_width, window_height)));
+  std::unique_ptr<aura::Window> menu(CreateTestWindowInShell(
+      {.delegate = &delegate2,
+       .bounds = {window_width, 0, window_width, window_height},
+       .window_type = aura::client::WINDOW_TYPE_MENU,
+       .window_id = 0}));
   menu->set_owned_by_parent(false);
   menu->Show();
   TargetHitTestEventHandler menu_handler;
@@ -1099,8 +1100,8 @@ TEST_F(VirtualKeyboardRootWindowControllerTest, ClickDoesNotFocusKeyboard) {
 
   // Create a test window in the background with the same size as the screen.
   aura::test::EventCountDelegate delegate;
-  std::unique_ptr<aura::Window> background_window(
-      CreateTestWindowInShellWithDelegate(&delegate, 0, root_window->bounds()));
+  std::unique_ptr<aura::Window> background_window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = root_window->bounds()}));
   background_window->Focus();
   EXPECT_TRUE(background_window->IsVisible());
   EXPECT_TRUE(background_window->HasFocus());

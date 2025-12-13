@@ -12,6 +12,8 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -76,6 +78,29 @@ std::optional<bool> ProfilePrefsAuthPolicyConnector::GetRecoveryMandatoryState(
     return std::nullopt;
   }
   return pref->GetValue()->GetBool();
+}
+
+std::optional<LocalAuthFactorsComplexity>
+ProfilePrefsAuthPolicyConnector::GetLocalAuthFactorsComplexity(
+    const AccountId& account) {
+  const PrefService* pref_service = GetPrefsForUser(account);
+  if (!pref_service->HasPrefPath(prefs::kLocalAuthFactorsComplexity)) {
+    return std::nullopt;
+  }
+  int val = pref_service->GetInteger(prefs::kLocalAuthFactorsComplexity);
+  return static_cast<LocalAuthFactorsComplexity>(val);
+}
+
+std::optional<AuthFactorsSet>
+ProfilePrefsAuthPolicyConnector::AllowedLocalAuthFactors(
+    const AccountId& account) {
+  const PrefService* pref_service = GetPrefsForUser(account);
+  if (!pref_service->HasPrefPath(prefs::kLocalAuthFactors)) {
+    return std::nullopt;
+  }
+  const base::Value::List* allowed_auth_factors =
+      &pref_service->GetList(prefs::kLocalAuthFactors);
+  return GetAuthFactorsSetFromPolicyList(allowed_auth_factors);
 }
 
 bool ProfilePrefsAuthPolicyConnector::IsAuthFactorManaged(

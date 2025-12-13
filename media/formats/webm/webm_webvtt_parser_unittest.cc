@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_webvtt_parser.h"
 
 #include <stdint.h>
 
 #include <array>
 
+#include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,8 +22,8 @@ static Cue EncodeCue(const std::string& id,
                      const std::string& settings,
                      const std::string& content) {
   const std::string result = id + '\n' + settings + '\n' + content;
-  const uint8_t* const buf = reinterpret_cast<const uint8_t*>(result.data());
-  return Cue(buf, buf + result.length());
+  const base::span<const uint8_t> buf = base::as_byte_span(result);
+  return Cue(buf.data(), buf.subspan(result.length()).data());
 }
 
 static void DecodeCue(const Cue& cue,

@@ -6,8 +6,6 @@
 
 #include <atomic>
 
-namespace chrome {
-
 namespace {
 
 std::atomic<DelayLoadCallbackFunction> g_delay_load_callback_function(nullptr);
@@ -31,12 +29,10 @@ void SetDelayLoadHookCallback(DelayLoadCallbackFunction callback_function) {
   g_delay_load_callback_function = callback_function;
 }
 
-}  // namespace chrome
-
 // Set the delay load hook to the function above.
 //
 // |__pfnDliNotifyHook2| gets called automatically by delay load runtime
 // at several points throughout delay loading, providing application the
 // ability to modify delayload behavior. See
 // https://learn.microsoft.com/en-us/cpp/build/reference/understanding-the-helper-function
-extern "C" const PfnDliHook __pfnDliNotifyHook2 = chrome::DelayLoadNotifyHook;
+extern "C" const PfnDliHook __pfnDliNotifyHook2 = DelayLoadNotifyHook;

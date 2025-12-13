@@ -10,7 +10,13 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.content_settings.ContentSetting;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 /** Utility class for testing AutoPictureInPictureTabHelper C++ logic via JNI. */
 @JNINamespace("picture_in_picture")
@@ -42,10 +48,18 @@ public class AutoPictureInPictureTabHelperTestUtils {
     public static void waitForAutoPictureInPictureState(
             WebContents webContents, boolean expectedInPip, String failureMessage) {
         CriteriaHelper.pollUiThread(
-                () ->
-                        AutoPictureInPictureTabHelperTestUtilsJni.get()
-                                        .isInAutoPictureInPicture(webContents)
-                                == expectedInPip,
+                () -> {
+                    if (webContents == null || webContents.isDestroyed()) {
+                        // If WebContents is gone, it cannot be in auto-PiP.
+                        // This satisfies the condition if we expect PiP to be false.
+                        return !expectedInPip;
+                    }
+                    boolean isInAutoPip =
+                            AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                    .isInAutoPictureInPicture(webContents);
+
+                    return isInAutoPip == expectedInPip;
+                },
                 failureMessage);
     }
 
@@ -93,16 +107,59 @@ public class AutoPictureInPictureTabHelperTestUtils {
     }
 
     /**
-     * Sets a mock audio focus state for the given {@link WebContents} for testing purposes.
+     * Overrides the is using camera or microphone value for the given {@link WebContents} for
+     * testing purposes.
      *
      * @param webContents The WebContents to modify.
-     * @param hasFocus The mock audio focus state to set.
+     * @param isUsingCameraOrMicrophone The mock value to set.
      */
-    public static void setHasAudioFocusForTesting(WebContents webContents, boolean hasFocus) {
+    public static void setIsUsingCameraOrMicrophone(
+            WebContents webContents, boolean isUsingCameraOrMicrophone) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         AutoPictureInPictureTabHelperTestUtilsJni.get()
-                                .setHasAudioFocusForTesting(webContents, hasFocus));
+                                .setIsUsingCameraOrMicrophone(
+                                        webContents, isUsingCameraOrMicrophone));
+    }
+
+    /**
+     * Sets the content setting for a given URL and waits for it to be applied.
+     *
+     * @param profile The profile to set the content setting for.
+     * @param contentSettingsType The content setting type to set.
+     * @param url The URL to set the content setting for.
+     * @param value The content setting value to set.
+     */
+    public static void setPermission(
+            Profile profile,
+            @ContentSettingsType.EnumType int contentSettingsType,
+            String url,
+            @ContentSetting int value) {
+        PermissionInfo info =
+                new PermissionInfo(
+                        contentSettingsType,
+                        url,
+                        /* embedder= */ null,
+                        /* isEmbargoed= */ false,
+                        SessionModel.DURABLE);
+        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, value));
+
+        // Wait for the setting to be updated.
+        CriteriaHelper.pollUiThread(() -> info.getContentSetting(profile) == value);
+    }
+
+    /**
+     * Gets the number of times the auto-pip dismiss prompt has been shown for the given URL.
+     *
+     * @param webContents The WebContents to check.
+     * @param url The URL to check.
+     * @return The number of times the dismiss prompt has been shown.
+     */
+    public static int getDismissCountForTesting(WebContents webContents, String url) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AutoPictureInPictureTabHelperTestUtilsJni.get()
+                                .getDismissCountForTesting(webContents, new GURL(url)));
     }
 
     @NativeMethods
@@ -120,7 +177,12 @@ public class AutoPictureInPictureTabHelperTestUtils {
                 @JniType("content::WebContents*") WebContents webContents,
                 boolean hasHighEngagement);
 
-        void setHasAudioFocusForTesting(
-                @JniType("content::WebContents*") WebContents webContents, boolean hasFocus);
+        void setIsUsingCameraOrMicrophone(
+                @JniType("content::WebContents*") WebContents webContents,
+                boolean isUsingCameraOrMicrophone);
+
+        int getDismissCountForTesting(
+                @JniType("content::WebContents*") WebContents webContents,
+                @JniType("GURL") GURL url);
     }
 }

@@ -8,6 +8,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/key_systems_support_registration.h"
+#include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 

@@ -211,8 +211,8 @@ void PowerStatusHelper::QueryNextStatus() {
 
   // Remember that overlapping calls are not allowed by BatteryMonitor, and are
   // treated as a connection error.  Unretained since we own |battery_monitor_|.
-  battery_monitor_->QueryNextStatus(WTF::BindOnce(
-      &PowerStatusHelper::OnBatteryStatus, WTF::Unretained(this)));
+  battery_monitor_->QueryNextStatus(
+      BindOnce(&PowerStatusHelper::OnBatteryStatus, Unretained(this)));
 }
 
 }  // namespace blink

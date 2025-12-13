@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/common/chrome_features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/gfx/skia_util.h"
@@ -315,6 +316,16 @@ std::string IconsWithSizeAny::ToString() const {
   return ToDebugValue().DebugString();
 }
 
+DialogImageInfo::DialogImageInfo() = default;
+DialogImageInfo::~DialogImageInfo() = default;
+DialogImageInfo::DialogImageInfo(const DialogImageInfo& dialog_image_info) =
+    default;
+DialogImageInfo& DialogImageInfo::operator=(
+    const DialogImageInfo& dialog_image_info) = default;
+DialogImageInfo::DialogImageInfo(DialogImageInfo&& dialog_image_info) = default;
+DialogImageInfo& DialogImageInfo::operator=(
+    DialogImageInfo&& dialog_image_info) = default;
+
 // WebAppInstallInfo
 
 // static
@@ -412,6 +423,26 @@ void WebAppInstallInfo::SetManifestIdAndStartUrl(
   start_url_ = start_url;
 }
 
+DialogImageInfo WebAppInstallInfo::GetIconBitmapsForSecureSurfaces() const {
+  DialogImageInfo image_info;
+  if (!base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon) ||
+      trusted_icon_bitmaps.empty()) {
+    image_info.bitmaps = icon_bitmaps.any;
+    return image_info;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  if (!trusted_icon_bitmaps.empty() && !trusted_icon_bitmaps.maskable.empty()) {
+    image_info.bitmaps = trusted_icon_bitmaps.maskable;
+    image_info.is_maskable = true;
+    return image_info;
+  }
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+  image_info.bitmaps = trusted_icon_bitmaps.any;
+  return image_info;
+}
+
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,
                   icon_sizes1.monochrome) == std::tie(icon_sizes2.any,
@@ -431,6 +462,11 @@ bool operator==(const WebAppShortcutsMenuItemInfo& shortcut_info1,
                   shortcut_info1.maskable, shortcut_info1.monochrome) ==
          std::tie(shortcut_info2.name, shortcut_info2.url, shortcut_info2.any,
                   shortcut_info2.maskable, shortcut_info2.monochrome);
+}
+
+bool operator==(const DialogImageInfo& info1, const DialogImageInfo& info2) {
+  return std::tie(info1.bitmaps, info1.is_maskable) ==
+         std::tie(info2.bitmaps, info2.is_maskable);
 }
 
 }  // namespace web_app

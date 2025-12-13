@@ -29,7 +29,7 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
       const StyleRecalcContext&) override;
   void Trace(Visitor* visitor) const override;
 
-  const Vector<AtomicString>& ViewTransitionClassList() const;
+  const Vector<AtomicString> ViewTransitionClassList() const;
 
   // Returns true if this pseudo-element is bound to a transition using
   // `tracker`.
@@ -38,6 +38,12 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
   const Vector<AtomicString>& GetViewTransitionNames() const;
 
   const Vector<AtomicString> GetContainedViewTransitionNames() const;
+
+  const AtomicString& GetContainingGroupName(const AtomicString& target) const;
+
+  const AtomicString& view_transition_name() const {
+    return GetPseudoArgument();
+  }
 
  protected:
   Vector<AtomicString> view_transition_class_;

@@ -14,6 +14,9 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/top_sites.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

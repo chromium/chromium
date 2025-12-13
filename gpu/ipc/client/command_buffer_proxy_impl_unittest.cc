@@ -29,7 +29,6 @@
 #include "url/gurl.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Matcher;
 using ::testing::Return;
@@ -70,7 +69,7 @@ class MockGpuControlClient : public GpuControlClient {
   MOCK_METHOD0(OnGpuControlLostContext, void());
   MOCK_METHOD0(OnGpuControlLostContextMaybeReentrant, void());
   MOCK_METHOD2(OnGpuControlErrorMessage, void(const char*, int32_t));
-  MOCK_METHOD1(OnGpuSwitched, void(gl::GpuPreference));
+  MOCK_METHOD0(OnGpuSwitched, void());
   MOCK_METHOD1(OnGpuControlReturnData, void(base::span<const uint8_t>));
 };
 
@@ -115,7 +114,7 @@ class CommandBufferProxyImplTest
     // not actually talking to the service in these tests.
     EXPECT_CALL(mock_gpu_channel_, CreateCommandBuffer(_, _, _, _, _, _, _, _))
         .Times(1)
-        .WillOnce(Invoke(
+        .WillOnce(
             [&](mojom::CreateCommandBufferParamsPtr params, int32_t routing_id,
                 base::UnsafeSharedMemoryRegion shared_state,
                 mojo::PendingAssociatedReceiver<mojom::CommandBuffer> receiver,
@@ -134,10 +133,12 @@ class CommandBufferProxyImplTest
                 mock_command_buffer->Bind(std::move(receiver));
               *result = ContextResult::kSuccess;
               return true;
-            }));
+            });
 
-    proxy->Initialize(nullptr, SchedulingPriority::kNormal,
-                      ContextCreationAttribs(), GURL());
+    proxy->Initialize(SchedulingPriority::kNormal,
+                      mojom::ContextCreationAttribs::NewGles(
+                          mojom::GLESCreationAttribs::New()),
+                      GURL());
     // Use an arbitrary valid shm_id. The command buffer doesn't use this
     // directly, but not setting it triggers DCHECKs.
     proxy->SetGetBuffer(1 /* shm_id */);
@@ -193,13 +194,13 @@ TEST_P(CommandBufferProxyImplTest, OrderingBarriersAreCoalescedWithFlush) {
 
   EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
             EXPECT_EQ(3u, requests.size());
             ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
             ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
             ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 50);
-          }));
+          });
 
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
@@ -224,13 +225,13 @@ TEST_P(CommandBufferProxyImplTest, FlushPendingWorkFlushesOrderingBarriers) {
 
   EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
             EXPECT_EQ(3u, requests.size());
             ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
             ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
             ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
-          }));
+          });
 
   proxy1->OrderingBarrier(10);
   proxy2->OrderingBarrier(20);
@@ -259,13 +260,13 @@ TEST_P(CommandBufferProxyImplTest, EnsureWorkVisibleFlushesOrderingBarriers) {
     // First we expect to see a FlushDeferredRequests call.
     EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
         .Times(1)
-        .WillOnce(Invoke(
+        .WillOnce(
             [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
               EXPECT_EQ(3u, requests.size());
               ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 10);
               ExpectOrderingBarrier(*requests[1], proxy2->route_id(), 20);
               ExpectOrderingBarrier(*requests[2], proxy1->route_id(), 30);
-            }));
+            });
 
     if (!features::IsSyncPointGraphValidationEnabled()) {
       // Next we expect a full `Flush()`.
@@ -310,7 +311,7 @@ TEST_P(CommandBufferProxyImplTest,
   // FlushPendingWork call below.
   EXPECT_CALL(mock_gpu_channel_, FlushDeferredRequests(_, _))
       .Times(1)
-      .WillOnce(Invoke(
+      .WillOnce(
           [&](std::vector<mojom::DeferredRequestPtr> requests, int32_t id) {
             EXPECT_EQ(2u, requests.size());
             ExpectOrderingBarrier(*requests[0], proxy1->route_id(), 20);
@@ -319,7 +320,7 @@ TEST_P(CommandBufferProxyImplTest,
             auto& request = *requests[1]->params->get_command_buffer_request();
             ASSERT_TRUE(request.params->is_destroy_transfer_buffer());
             EXPECT_EQ(3, request.params->get_destroy_transfer_buffer());
-          }));
+          });
 
   proxy1->FlushPendingWork();
 

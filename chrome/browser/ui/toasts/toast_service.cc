@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/actor/resources/grit/actor_common_resources.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -32,18 +34,33 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/data_sharing/public/features.h"
 #include "components/omnibox/browser/vector_icons.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/menus/simple_menu_model.h"
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "components/plus_addresses/resources/vector_icons.h"
+#include "components/plus_addresses/core/browser/resources/vector_icons.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+namespace {
+const gfx::VectorIcon& GetTaskInProgressIcon() {
+#if BUILDFLAG(ENABLE_GLIC)
+  if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
+    return glic::GlicVectorIconManager::GetVectorIcon(
+        IDR_ACTOR_AUTO_BROWSE_ICON);
+  }
+#endif
+  return kScreensaverAutoIcon;
+}
+}  // namespace
 
 ToastService::ToastService(BrowserWindowInterface* browser_window_interface) {
   toast_registry_ = std::make_unique<ToastRegistry>();
@@ -106,13 +123,12 @@ void ToastService::RegisterToasts(
   // updated.
   toast_registry_->RegisterToast(
       ToastId::kNonMilestoneUpdate,
-      ToastSpecification::Builder(kLinkChromeRefreshIcon,
-                                  IDS_LINK_COPIED_TOAST_BODY)
+      ToastSpecification::Builder(kBrowserLogoIcon,
+                                  IDS_NON_MILESTONE_UPDATE_TOAST_BODY)
           .AddGlobalScoped()
           .Build());
 
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
-      base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
     toast_registry_->RegisterToast(
         ToastId::kAddedToComparisonTable,
         ToastSpecification::Builder(omnibox::kProductSpecificationsAddedIcon,
@@ -251,21 +267,28 @@ void ToastService::RegisterToasts(
                                     IDS_DATA_SHARING_TOAST_BLOCK_LEAVE)
             .AddGlobalScoped()
             .Build());
-  }
 
-  if (toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {
+    // The version has been updated and shared tab groups is enabled again.
     toast_registry_->RegisterToast(
-        ToastId::kClosePinnedTab,
-        ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
-            .SetToastAsActionable()
+        ToastId::kTabGroupSharingVersionUpToDate,
+        ToastSpecification::Builder(
+            kTabGroupSharingIcon,
+            IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE)
+            .AddGlobalScoped()
             .Build());
   }
+
+  toast_registry_->RegisterToast(
+      ToastId::kClosePinnedTab,
+      ToastSpecification::Builder(kKeepIcon, IDS_CLOSE_PINNED_TAB_TOAST_BODY)
+          .SetToastAsActionable()
+          .Build());
 
   if (features::kGlicActorUiToast.Get()) {
     toast_registry_->RegisterToast(
         ToastId::kGeminiWorkingOnTask,
-        ToastSpecification::Builder(kScreensaverAutoIcon,
-                                    IDS_GEMINI_WORKING_ON_TASK_BODY)
+        ToastSpecification::Builder(GetTaskInProgressIcon(),
+                                    IDS_TASK_IN_PROGRESS_TOAST_BODY)
             .AddCloseButton()
             .Build());
   }
@@ -284,5 +307,23 @@ void ToastService::RegisterToasts(
                                },
                                base::Unretained(browser_window_interface)))
           .AddGlobalScoped()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kEmailVerified,
+      ToastSpecification::Builder(vector_icons::kEmailIcon, IDS_EMAIL_VERIFIED)
+          .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kGlicShareImageFailed,
+      ToastSpecification::Builder(vector_icons::kInfoRefreshIcon,
+                                  IDS_GLIC_SHARE_IMAGE_FAILED_TOAST_BODY)
+          .AddCloseButton()
+          .Build());
+
+  toast_registry_->RegisterToast(
+      ToastId::kCopiedToClipboard,
+      ToastSpecification::Builder(kInfoIcon, IDS_COPIED_TO_CLIPBOARD_TOAST_BODY)
           .Build());
 }  // RegisterToasts() end.

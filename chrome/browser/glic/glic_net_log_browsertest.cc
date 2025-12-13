@@ -5,9 +5,10 @@
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/glic/glic_keyed_service.h"
-#include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -29,22 +30,11 @@ namespace {
 const char kTestGlicURL[] = "about:blank?main-page";
 const char kTestGlicFreURL[] = "about:blank?fre-page";
 
-// TODO(b/421426722): Update "missing" to the network annotation's unique ID.
-constexpr char kGlicAnnotationUniqueId[] = "missing";
-
-constexpr int kGlicAnnotationUniqueIdHashCode =
-    COMPUTE_NETWORK_TRAFFIC_ANNOTATION_ID_HASH(kGlicAnnotationUniqueId);
-
 }  // namespace
 
 class GlicNetLogBrowserTest : public InProcessBrowserTest {
  public:
-  GlicNetLogBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                              features::kGlicRollout},
-        /*disabled_features=*/{});
-  }
+  GlicNetLogBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Load blank page in glic guest view
@@ -55,7 +45,8 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
   net::RecordingNetLogObserver& net_log_observer() { return net_log_observer_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  GlicTestEnvironment glic_test_env_{
+      {.fre_status = glic::prefs::FreStatus::kNotStarted}};
   net::RecordingNetLogObserver net_log_observer_;
 };
 
@@ -63,8 +54,6 @@ class GlicNetLogBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
   Profile* profile = browser()->profile();
 
-  SigninWithPrimaryAccount(profile);
-  SetModelExecutionCapability(profile, true);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
 
   auto* glic_service =
@@ -81,15 +70,15 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
     std::optional<int> traffic_annotation =
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
-           traffic_annotation.value() == kGlicAnnotationUniqueIdHashCode;
+           traffic_annotation.value() ==
+               net::internal::ComputeAnnotationHash("glic_fre_web_ui");
   });
 
-  EXPECT_NE(it, entries.end())
-      << "NetLog did not contain URL_REQUEST_START_JOB for "
-      << kGlicAnnotationUniqueId;
+  ASSERT_NE(it, entries.end())
+      << "NetLog did not contain URL_REQUEST_START_JOB for Glic FRE WeUI";
   EXPECT_EQ(true, it->params.FindBool("dummy_request"));
   const std::string* url = it->params.FindString("url");
-  EXPECT_NE(nullptr, url);
+  ASSERT_TRUE(url);
   EXPECT_THAT(*url, testing::StartsWith(kTestGlicFreURL));
 }
 
@@ -97,8 +86,6 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicFreRequestOnOpenUI) {
 IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
   Profile* profile = browser()->profile();
 
-  SigninWithPrimaryAccount(profile);
-  SetModelExecutionCapability(profile, true);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
   ASSERT_FALSE(GlicEnabling::IsReadyForProfile(profile));
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);
@@ -117,15 +104,15 @@ IN_PROC_BROWSER_TEST_F(GlicNetLogBrowserTest, LogGlicRequestOnOpenUI) {
     std::optional<int> traffic_annotation =
         entry.params.FindInt("traffic_annotation");
     return traffic_annotation.has_value() &&
-           traffic_annotation.value() == kGlicAnnotationUniqueIdHashCode;
+           traffic_annotation.value() ==
+               net::internal::ComputeAnnotationHash("glic_web_ui");
   });
 
-  EXPECT_NE(it, entries.end())
-      << "NetLog did not contain URL_REQUEST_START_JOB for "
-      << kGlicAnnotationUniqueId;
+  ASSERT_NE(it, entries.end())
+      << "NetLog did not contain URL_REQUEST_START_JOB for Glic WebUI";
   EXPECT_EQ(true, it->params.FindBool("dummy_request"));
   const std::string* url = it->params.FindString("url");
-  EXPECT_NE(nullptr, url);
+  ASSERT_TRUE(url);
   EXPECT_THAT(*url, testing::StartsWith(kTestGlicURL));
 }
 

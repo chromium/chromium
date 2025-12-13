@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
-#include "components/password_manager/core/browser/undo_password_change_controller.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
@@ -67,6 +66,12 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 #endif  // BUILDFLAG(IS_ANDROID)
   void ShowSuggestions(
       const autofill::TriggeringField& triggering_field) override;
+  void SelectSuggestion(const autofill::Suggestion& suggestion) override;
+  void AcceptSuggestion(
+      const autofill::Suggestion& suggestion,
+      const AutofillSuggestionDelegate::SuggestionMetadata& metadata) override;
+  std::optional<autofill::Suggestion>
+  GetWebauthnSignInWithAnotherDeviceSuggestion() const override;
 
   // AutofillSuggestionDelegate implementation.
   std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
@@ -89,17 +94,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
   // Removes the credentials previously saved via OnAddPasswordFormMapping.
   void DeleteFillData();
-
-  // Handles a request from the renderer to show a popup with the suggestions
-  // from the password manager.
-  void OnShowPasswordSuggestions(
-      autofill::FieldRendererId element_id,
-      autofill::AutofillSuggestionTriggerSource trigger_source,
-      base::i18n::TextDirection text_direction,
-      const std::u16string& typed_username,
-      ShowWebAuthnCredentials show_webauthn_credentials,
-      ShowIdentityCredentials show_identity_credentials,
-      const gfx::RectF& bounds);
 
   // If there are relevant credentials for the current frame show them and
   // return true. Otherwise, return false.
@@ -137,20 +131,11 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
-  // Called when password manager thinks the login attempt failed.
-  // This might trigger a proactive recovery flow if credential has a backup
-  // password.
-  void OnLoginPotentiallyFailed(const PasswordForm& login_form);
-
 #if defined(UNIT_TEST)
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username) {
     return PreviewSuggestion(username,
                              autofill::SuggestionType::kPasswordEntry);
-  }
-
-  UndoPasswordChangeController& undo_password_change_controller() {
-    return undo_password_change_controller_;
   }
 #endif  // defined(UNIT_TEST)
 
@@ -231,14 +216,21 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   // Hides the popup.
   void HidePopup();
 
-  // Completion of `OnShowPasswordSuggestions`, which can sometimes be deferred.
-  void ContinueShowingPasswordSuggestions(
-      autofill::FieldRendererId element_id,
-      base::i18n::TextDirection text_direction,
-      const std::u16string& typed_username,
-      ShowWebAuthnCredentials show_webauthn_credentials,
-      ShowIdentityCredentials show_identity_credentials,
-      const gfx::RectF& bounds);
+  // Finishes `ShowSuggestions`, which can be deferred by `WaitForPasskeys`.
+  void ContinueShowingSuggestions(const autofill::TriggeringField& field);
+
+  // Returns true if `WaitForPasskeys` should attempt to fetch passkeys before
+  // continue showing suggestions with `ContinueShowingSuggestions`.
+  bool ShouldWaitForPasskeys(const autofill::TriggeringField& field);
+
+  // Requests Passkeys and starts a timer. If the timer runs out before passkeys
+  // are available, `ContinueShowingSuggestions` displays suggestions. If there
+  // are passkeys available in time, continues with `OnPasskeysReady`.
+  void WaitForPasskeys(const autofill::TriggeringField& field);
+
+  // Called when passkeys become available. If the `wait_for_passkeys_timer_`
+  // has not run out yet, it will invoke `ContinueShowingSuggestions`.
+  void OnPasskeysReady(const autofill::TriggeringField& field);
 
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::u16string& username_filter,
@@ -246,6 +238,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
       ShowPasswordSuggestions show_password_suggestions,
       ShowWebAuthnCredentials show_webauthn_credentials,
       ShowIdentityCredentials show_identity_credentials);
+
+  // Returns the bounds from the provided field and transforms them if it hasn't
+  // already happened in the driver.
+  gfx::RectF GetBounds(const autofill::TriggeringField& field);
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
@@ -299,8 +295,6 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
   std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
       cross_domain_confirmation_controller_;
 #endif
-
-  UndoPasswordChangeController undo_password_change_controller_;
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

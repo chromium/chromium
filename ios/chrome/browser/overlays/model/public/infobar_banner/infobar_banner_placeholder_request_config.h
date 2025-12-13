@@ -26,7 +26,7 @@ class InfobarBannerPlaceholderRequestConfig
   // OverlayUserData:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
-  raw_ptr<infobars::InfoBar> infobar_ = nullptr;
+  raw_ptr<infobars::InfoBar, DanglingUntriaged> infobar_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_INFOBAR_BANNER_PLACEHOLDER_REQUEST_CONFIG_H_

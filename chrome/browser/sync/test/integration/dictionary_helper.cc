@@ -15,6 +15,7 @@
 #include "chrome/browser/sync/test/integration/dictionary_load_observer.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/sync/test/fake_server.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,29 +41,26 @@ class DictionarySyncIntegrationTestHelper {
 namespace dictionary_helper {
 namespace {
 
+void LoadDictionary(SpellcheckCustomDictionary* dictionary) {
+  if (dictionary->IsLoaded()) {
+    return;
+  }
+  base::RunLoop run_loop;
+  DictionaryLoadObserver observer(dictionary, run_loop.QuitClosure());
+  dictionary->Load();
+  run_loop.Run();
+  ASSERT_TRUE(dictionary->IsLoaded());
+}
+
+}  // namespace
+
 SpellcheckCustomDictionary* GetDictionary(int index) {
   return SpellcheckServiceFactory::GetForContext(
              sync_datatype_helper::test()->GetProfile(index))
       ->GetCustomDictionary();
 }
 
-void LoadDictionary(SpellcheckCustomDictionary* dictionary) {
-  if (dictionary->IsLoaded()) {
-    return;
-  }
-  base::RunLoop run_loop;
-  DictionaryLoadObserver observer(
-      content::GetDeferredQuitTaskForRunLoop(&run_loop));
-  dictionary->AddObserver(&observer);
-  dictionary->Load();
-  run_loop.Run();
-  dictionary->RemoveObserver(&observer);
-  ASSERT_TRUE(dictionary->IsLoaded());
-}
-
-}  // namespace
-
-const std::set<std::string>& GetDictionaryWords(int profile_index) {
+std::set<std::string> GetDictionaryWords(int profile_index) {
   return GetDictionary(profile_index)->GetWords();
 }
 
@@ -98,6 +96,28 @@ bool RemoveWord(int index, const std::string& word) {
   bool result = DictionarySyncIntegrationTestHelper::ApplyChange(
       GetDictionary(index), &dictionary_change);
   return result;
+}
+
+void InjectWordToFakeServer(const std::string& word,
+                            fake_server::FakeServer* fake_server) {
+  sync_pb::EntitySpecifics specifics;
+  specifics.mutable_dictionary()->set_word(word);
+  fake_server->InjectEntity(
+      syncer::PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
+          /*non_unique_name=*/word,
+          /*client_tag=*/word, specifics,
+          /*creation_time=*/0, /*last_modified_time=*/0));
+}
+
+bool HasWordInFakeServer(const std::string& word,
+                         fake_server::FakeServer* fake_server) {
+  for (const sync_pb::SyncEntity& entity :
+       fake_server->GetSyncEntitiesByDataType(syncer::DICTIONARY)) {
+    if (entity.specifics().dictionary().word() == word) {
+      return true;
+    }
+  }
+  return false;
 }
 
 DictionaryChecker::DictionaryChecker(

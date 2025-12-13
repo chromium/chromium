@@ -122,20 +122,6 @@ TEST(TouchEventStreamValidator, EmptyEvent) {
   EXPECT_FALSE(error_msg.empty());
 }
 
-TEST(TouchEventStreamValidator, InvalidEventType) {
-  TouchEventStreamValidator validator;
-  WebTouchEvent event(WebInputEvent::Type::kGestureScrollBegin,
-                      WebInputEvent::kNoModifiers,
-                      WebInputEvent::GetStaticTimeStampForTests());
-  std::string error_msg;
-
-  event.touches_length = 1;
-  event.touches[0].state = WebTouchPoint::State::kStatePressed;
-
-  EXPECT_FALSE(validator.Validate(event, &error_msg));
-  EXPECT_FALSE(error_msg.empty());
-}
-
 TEST(TouchEventStreamValidator, InvalidPointStates) {
   TouchEventStreamValidator validator;
   std::string error_msg;

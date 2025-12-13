@@ -1,0 +1,51 @@
+<!--
+@BLINK-ALLOW:ariaCurrent*
+@WAIT-FOR:Done
+-->
+<!DOCTYPE html>
+<style>
+  .carousel {
+    overflow: auto;
+    columns: 1;
+    height: 200px;
+
+    &>div {
+      height: 100%;
+    }
+  }
+
+  .wrapper {
+    scroll-target-group: auto;
+
+    &>a:target-current {
+      color: green;
+    }
+  }
+</style>
+<div class="wrapper">
+  <a href="#one">One</a>
+  <a href="#two">Two</a>
+  <a href="#three">Three</a>
+</div>
+<div id="scroller" class="carousel">
+  <div id="one">One</div>
+  <div id="two">Two</div>
+  <div id="three">Three</div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const a11ySyncTimeMs = 1000;
+    document.documentElement.offsetTop;
+    scroller.scrollLeft = 1000;
+    document.documentElement.offsetTop;
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.documentElement.offsetTop;
+          // Signal the end of the test.
+          document.title = "Done";
+        });
+      });
+    }, a11ySyncTimeMs);
+  });
+</script>

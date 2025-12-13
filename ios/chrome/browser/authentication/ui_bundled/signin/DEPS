@@ -3,7 +3,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "reauth_coordinator\.mm": [
+  "signin_reauth_coordinator\.mm": [
     "+absl/functional/overload.h",
+  ],
+  "signin_utils\.mm": [
+    "+ios/chrome/browser/promos_manager/model/constants.h",
   ],
 }

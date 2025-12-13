@@ -41,9 +41,9 @@ class FormFieldDataAndroidBridge {
   // to the Java object is null, this is a no-op.
   virtual void UpdateValue(std::u16string_view value) = 0;
 
-  // Updates the visibility member variable of the Java `FormFieldData` to
-  // `visible`. If the reference to the Java object is null, this is a no-op.
-  virtual void UpdateVisible(bool visible) = 0;
+  // Updates the focusable member variable of the Java `FormFieldData` to
+  // `focusable`. If the reference to the Java object is null, this is a no-op.
+  virtual void UpdateFocusable(bool focusable) = 0;
 };
 
 }  // namespace autofill

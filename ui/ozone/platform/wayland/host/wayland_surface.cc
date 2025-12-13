@@ -5,7 +5,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
-#include <chrome-color-management-client-protocol.h>
 #include <content-type-v1-client-protocol.h>
 #include <fractional-scale-v1-client-protocol.h>
 #include <linux-drm-syncobj-v1-client-protocol.h>
@@ -30,7 +29,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/fractional_scale_manager.h"
@@ -43,9 +42,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_syncobj_timeline.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_management_surface.h"
+#include "ui/ozone/platform/wayland/host/wayland_wp_color_manager.h"
 
 namespace ui {
 
@@ -203,22 +201,17 @@ bool WaylandSurface::Initialize() {
     }
   }
 
-  if (auto* zcr_color_manager = connection_->zcr_color_manager()) {
-    zcr_color_management_surface_ =
-        std::make_unique<WaylandZcrColorManagementSurface>(
-            zcr_color_manager->CreateColorManagementSurface(surface())
-                .release(),
-            connection_);
-    if (!zcr_color_management_surface_) {
-      LOG(ERROR) << "Failed to create zcr_color_management_surface.";
-      return false;
-    }
-    zcr_color_management_surface_->SetDefaultColorSpace();
+  if (auto* wp_color_manager = connection_->wp_color_manager()) {
+    wp_color_management_surface_ =
+        std::make_unique<WaylandWpColorManagementSurface>(
+            this, connection_,
+            wp_color_manager->CreateColorManagementSurface(surface()),
+            wp_color_manager->CreateColorManagementFeedbackSurface(surface()));
   } else {
     static bool log_once = false;
     if (!log_once) {
       log_once = true;
-      LOG(WARNING) << "Server doesn't support zcr_color_management_surface.";
+      LOG(WARNING) << "Server doesn't support wp_color_management_surface_v1.";
     }
   }
 
@@ -263,7 +256,7 @@ bool WaylandSurface::AttachBuffer(WaylandBufferHandle* buffer_handle) {
   }
 
   pending_state_.buffer_size_px = buffer_handle->size();
-  pending_state_.buffer = buffer_handle->buffer();
+  pending_state_.buffer = buffer_handle->AsWeakPtr();
   pending_state_.buffer_id = buffer_handle->id();
   pending_state_.sync_method = buffer_handle->sync_method();
 
@@ -541,16 +534,22 @@ std::optional<bool> WaylandSurface::ApplyPendingState() {
     // (0, 0). If this changes, then the calculation in DamageBuffer will also
     // need to be updated.
     // Note: should the offset be non-zero, use wl_surface_offset() to set it.
-    wl_surface_attach(surface_.get(), pending_state_.buffer, 0, 0);
+    wl_surface_attach(
+        surface_.get(),
+        pending_state_.buffer ? pending_state_.buffer->buffer() : nullptr, 0,
+        0);
     needs_commit = true;
   }
   pending_state_.acquire_fence = gfx::GpuFenceHandle();
 
   // Setting Color Space of surface.
   // Should be called infrequently: only when color space is changing to a
-  // a different one.
-  if (pending_state_.color_space != state_.color_space) {
-    zcr_color_management_surface_->SetColorSpace(pending_state_.color_space);
+  // different one.
+  if (wp_color_management_surface_ &&
+      (pending_state_.color_space != state_.color_space ||
+       pending_state_.hdr_metadata != state_.hdr_metadata)) {
+    wp_color_management_surface_->SetColorSpace(pending_state_.color_space,
+                                                pending_state_.hdr_metadata);
     needs_commit = true;
   }
 
@@ -823,6 +822,7 @@ WaylandSurface::State& WaylandSurface::State::operator=(
   opaque_region_px = other.opaque_region_px;
   input_region_px = other.input_region_px;
   color_space = other.color_space;
+  hdr_metadata = other.hdr_metadata;
   buffer_id = other.buffer_id;
   buffer = other.buffer;
   buffer_size_px = other.buffer_size_px;
@@ -925,24 +925,17 @@ void WaylandSurface::RemoveEnteredOutput(uint32_t output_id) {
     root_window_->OnLeftOutput();
 }
 
-void WaylandSurface::set_color_space(gfx::ColorSpace color_space) {
-  if (!connection_->zcr_color_manager()) {
-    return;
-  }
-  if (!color_space.IsValid() && pending_state_.contains_video) {
+void WaylandSurface::SetImageDescription(const gfx::ColorSpace& color_space,
+                                         const gfx::HDRMetadata& hdr_metadata) {
+  if (color_space.IsValid() || !pending_state_.contains_video) {
+    pending_state_.color_space = color_space;
+  } else {
     // Not all video content contains colorspace information.
     // In this case, default to Rec709.
     // Maybe use Rec601 for SD video if it becomes an issue.
-    color_space = gfx::ColorSpace::CreateREC709();
+    pending_state_.color_space = gfx::ColorSpace::CreateREC709();
   }
-  if (!color_space.IsValid()) {
-    return;
-  }
-
-  auto wayland_zcr_color_space =
-      connection_->zcr_color_manager()->GetColorSpace(color_space);
-  if (wayland_zcr_color_space != nullptr)
-    pending_state_.color_space = wayland_zcr_color_space;
+  pending_state_.hdr_metadata = hdr_metadata;
 }
 
 }  // namespace ui

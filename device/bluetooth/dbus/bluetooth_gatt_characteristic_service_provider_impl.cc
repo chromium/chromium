@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_impl.h"
 
 #include <cstddef>
 
+#include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -326,17 +323,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
-
-  std::vector<uint8_t> value;
-  if (!reader.PopArrayOfBytes(&bytes, &length)) {
+  base::span<const uint8_t> bytes;
+  if (!reader.PopArrayOfBytes(&bytes)) {
     LOG(WARNING) << "Error reading value parameter. WriteValue called with "
                     "incorrect parameters: "
                  << method_call->ToString();
   }
-  if (bytes)
-    value.assign(bytes, bytes + length);
 
   std::map<std::string, dbus::MessageReader> options;
   dbus::ObjectPath device_path;
@@ -358,7 +350,7 @@ void BluetoothGattCharacteristicServiceProviderImpl::WriteValue(
 
   DCHECK(delegate_);
   delegate_->SetValue(
-      device_path, value,
+      device_path, base::ToVector(bytes),
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
           weak_ptr_factory_.GetWeakPtr(), method_call,
@@ -377,16 +369,12 @@ void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
   DCHECK(OnOriginThread());
 
   dbus::MessageReader reader(method_call);
-  const uint8_t* bytes = nullptr;
-  size_t length = 0;
+  base::span<const uint8_t> bytes;
 
-  std::vector<uint8_t> value;
-  if (!reader.PopArrayOfBytes(&bytes, &length)) {
+  if (!reader.PopArrayOfBytes(&bytes)) {
     LOG(WARNING) << "Error reading value parameter. PrepareWriteValue called "
                  << "with incorrect parameters: " << method_call->ToString();
   }
-  if (bytes)
-    value.assign(bytes, bytes + length);
 
   std::map<std::string, dbus::MessageReader> options;
   dbus::ObjectPath device_path;
@@ -417,7 +405,7 @@ void BluetoothGattCharacteristicServiceProviderImpl::PrepareWriteValue(
 
   DCHECK(delegate_);
   delegate_->PrepareSetValue(
-      device_path, value, offset, has_subsequent_write,
+      device_path, base::ToVector(bytes), offset, has_subsequent_write,
       base::BindOnce(
           &BluetoothGattCharacteristicServiceProviderImpl::OnWriteValue,
           weak_ptr_factory_.GetWeakPtr(), method_call,

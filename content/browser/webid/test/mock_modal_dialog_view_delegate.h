@@ -25,7 +25,7 @@ class MockModalDialogViewDelegate : public IdentityRegistryDelegate {
   MOCK_METHOD(void, OnClose, (), (override));
   MOCK_METHOD(bool,
               OnResolve,
-              (GURL, const std::optional<std::string>&, const std::string&),
+              (GURL, const std::optional<std::string>&, const base::Value&),
               (override));
 };
 

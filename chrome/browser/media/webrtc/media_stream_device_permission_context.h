@@ -49,8 +49,7 @@ class MediaStreamDevicePermissionContext
  private:
 #if BUILDFLAG(IS_ANDROID)
   // ContentSettingPermissionContextBase:
-  void UpdateTabContext(const permissions::PermissionRequestID& id,
-                        const GURL& requesting_origin,
+  void UpdateTabContext(const permissions::PermissionRequestData& request_data,
                         bool allowed) override;
 
   void OnAndroidPermissionDecided(

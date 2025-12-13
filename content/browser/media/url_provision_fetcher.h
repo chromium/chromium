@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 #define CONTENT_BROWSER_MEDIA_URL_PROVISION_FETCHER_H_
 
+#include <optional>
+#include <string>
+
 #include "media/base/provision_fetcher.h"
 
 namespace network {
@@ -32,7 +35,7 @@ class URLProvisionFetcher : public media::ProvisionFetcher {
                 ProvisionFetcher::ResponseCB response_cb) override;
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;

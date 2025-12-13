@@ -21,6 +21,7 @@ namespace {
 
 constexpr int kResizeHandleButtonMargin = 4;
 constexpr int kResizeHandleButtonSize = 16;
+constexpr double kResizeHandleOpacity = 0x61;
 
 }  // namespace
 
@@ -102,7 +103,9 @@ void ResizeHandleButton::SetQuadrant(
 }
 
 void ResizeHandleButton::UpdateImageForQuadrant() {
-  const SkColor color = GetColorProvider()->GetColor(kColorPipWindowForeground);
+  const SkColor color =
+      SkColorSetA(GetColorProvider()->GetColor(kColorPipWindowForeground),
+                  kResizeHandleOpacity);
   gfx::ImageSkia icon =
       gfx::CreateVectorIcon(kResizeHandleIcon, kResizeHandleButtonSize, color);
   switch (current_quadrant_) {

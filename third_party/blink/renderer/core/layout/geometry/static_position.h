@@ -27,13 +27,24 @@ struct CORE_EXPORT LogicalStaticPosition {
   enum BlockEdge { kBlockStart, kBlockCenter, kBlockEnd };
   enum LogicalAlignmentDirection { kBlock, kInline };
 
+  LogicalStaticPosition() = default;
+  explicit LogicalStaticPosition(LogicalOffset offset) : offset(offset) {}
+  LogicalStaticPosition(LogicalOffset offset,
+                        InlineEdge inline_edge,
+                        BlockEdge block_edge,
+                        LogicalAlignmentDirection align_self_direction)
+      : offset(offset),
+        inline_edge(inline_edge),
+        block_edge(block_edge),
+        align_self_direction(align_self_direction) {}
+
   inline PhysicalStaticPosition ConvertToPhysical(
       const WritingModeConverter& converter) const;
 
   LogicalOffset offset;
-  InlineEdge inline_edge;
-  BlockEdge block_edge;
-  LogicalAlignmentDirection align_self_direction;
+  InlineEdge inline_edge = kInlineStart;
+  BlockEdge block_edge = kBlockStart;
+  LogicalAlignmentDirection align_self_direction = kBlock;
 };
 
 // Similar to `LogicalStaticPosition` but in the physical coordinate space.

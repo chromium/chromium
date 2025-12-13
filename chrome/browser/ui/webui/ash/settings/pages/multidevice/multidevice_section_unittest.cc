@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
+#include <string>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
@@ -54,6 +55,10 @@ class MockWebUIDataSource : public content::WebUIDataSource {
   void AddResourcePath(std::string_view path, int resource_id) override {}
   void AddResourcePaths(base::span<const webui::ResourcePath> paths) override {}
   void SetDefaultResource(int resource_id) override {}
+  void SetResourcePathToResponse(std::string_view path,
+                                 std::string_view content) override {}
+  void PopulateWebUIResources(
+      base::flat_map<std::string, std::string>& map) const override {}
   void SetRequestFilter(const WebUIDataSource::ShouldHandleRequestCallback&
                             should_handle_request_callback,
                         const WebUIDataSource::HandleRequestCallback&

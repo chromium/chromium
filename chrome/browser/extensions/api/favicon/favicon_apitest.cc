@@ -5,7 +5,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
@@ -37,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(FaviconApiTest, MAYBE_Extension) {
   // Cache the favicon by loading a test page, then fetch the favicon.
   GURL page_url = embedded_test_server()->GetURL(
       "www.example.com", "/extensions/favicon/test_file.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), page_url));
 
   ASSERT_TRUE(
       RunExtensionTest("favicon/extension", {.extension_url = "test.html"}))

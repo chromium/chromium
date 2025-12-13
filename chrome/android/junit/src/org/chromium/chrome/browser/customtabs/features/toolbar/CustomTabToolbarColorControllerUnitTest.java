@@ -39,19 +39,17 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.theme.SurfaceColorUpdateUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.util.ColorUtils;
 
 @RunWith(BaseRobolectricTestRunner.class)
@@ -219,7 +217,6 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testDesktopWindowingModeMinUi_SetBrowserDefaultTheme() {
         // prepare web app in desktop windowing
@@ -228,7 +225,7 @@ public class CustomTabToolbarColorControllerUnitTest {
         mColorController = createController();
 
         // expected theme is the browser default
-        @ColorInt int expectedColor = SurfaceColorUpdateUtils.getDefaultThemeColor(mContext, false);
+        @ColorInt int expectedColor = ChromeColors.getDefaultThemeColor(mContext, false);
         @BrandedColorScheme
         int expectedColorScheme =
                 ColorUtils.shouldUseLightForegroundOnBackground(expectedColor)
@@ -246,7 +243,6 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testFullscreenModeMinUi_SetThemeFromProvider() {
         // prepare a web app in min ui mode

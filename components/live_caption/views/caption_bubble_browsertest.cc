@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/cfi_buildflags.h"
+#include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -70,6 +70,11 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
     pref_service_.registry()->RegisterStringPref(
         prefs::kLiveTranslateTargetLanguageCode, kEnglishLanguage);
     UiBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchASCII("--force-device-scale-factor", "1.01");
+    UiBrowserTest::SetUpCommandLine(command_line);
   }
 
   void TearDownOnMainThread() override {
@@ -136,9 +141,7 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
     IgnoreNetworkServiceCrashes();
   }
 
- private:
-  views::Widget* GetWidgetForScreenshot() const { return bubble_->GetWidget(); }
-
+ protected:
   // This method adds one more piece of text to the bubble and then
   // performs scroll to the start and scroll to the end (for testing only).
   // It schedules asynchronous call to itself for the next piece of text,
@@ -200,6 +203,9 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
   raw_ptr<CaptionBubble> bubble_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
+
+ private:
+  views::Widget* GetWidgetForScreenshot() const { return bubble_->GetWidget(); }
 };
 
 // Test that calls ShowUi("default").
@@ -211,6 +217,21 @@ class CaptionBubbleBrowserTest : public UiBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(CaptionBubbleBrowserTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleBrowserTest, InvokeUi_NoWiggleOnResize) {
+  ShowUi("NoWiggleOnResize");
+  views::Widget* widget = bubble_->GetWidget();
+  gfx::Point initial_origin = widget->GetWindowBoundsInScreen().origin();
+
+  model_->SetPartialText("A new line of text.");
+  model_->CommitPartialText();
+
+  base::RunLoop().RunUntilIdle();
+
+  gfx::Point new_origin = widget->GetWindowBoundsInScreen().origin();
+  EXPECT_EQ(initial_origin, new_origin);
+  DismissUi();
 }
 
 }  // namespace

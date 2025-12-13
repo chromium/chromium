@@ -21,7 +21,7 @@ public interface TabModelActionListener {
     /** An enum representing the type of dialog that was shown. */
     @IntDef({DialogType.NONE, DialogType.SYNC, DialogType.COLLABORATION})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface DialogType {
+    @interface DialogType {
         /** No dialog was shown. */
         int NONE = 0;
 

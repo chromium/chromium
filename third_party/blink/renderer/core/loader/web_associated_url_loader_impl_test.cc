@@ -78,8 +78,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         full_url, file_path, response);
   }
 
-  KURL RegisterMockedUrl(const std::string& url_root,
-                         const WTF::String& filename) {
+  KURL RegisterMockedUrl(const std::string& url_root, const String& filename) {
     WebURLResponse response;
     response.SetMimeType("text/html");
     KURL url = ToKURL(url_root + filename.Utf8());

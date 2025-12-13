@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
@@ -34,6 +33,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
@@ -95,7 +95,12 @@ class StubDownload : public BruschettaDownload {
 class BruschettaInstallerTest : public testing::TestWithParam<int>,
                                 protected guest_os::FakeVmServicesHelper {
  public:
-  BruschettaInstallerTest() : fake_20gb_memory(20ULL * 1024 * 1024) {}
+  BruschettaInstallerTest()
+      : fake_20gb_memory(
+            // TODO(crbug.com/429140103): This was migrated as-is to 20TiB in
+            // ByteCount, but the legacy code potentially intended 20GiB, needs
+            // investigation.
+            base::GiB(20 * 1024)) {}
   BruschettaInstallerTest(const BruschettaInstallerTest&) = delete;
   BruschettaInstallerTest& operator=(const BruschettaInstallerTest&) = delete;
   ~BruschettaInstallerTest() override = default;
@@ -146,7 +151,7 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
     ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
 
     installer_ = std::make_unique<BruschettaInstallerImpl>(
-        &profile_, *local_state_.Get(),
+        &profile_, *TestingBrowserProcess::GetGlobal()->GetTestingLocalState(),
         base::BindOnce(&BruschettaInstallerTest::CloseCallback,
                        base::Unretained(this)));
 
@@ -603,7 +608,6 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   base::RunLoop run_loop_, run_loop_2_;
 

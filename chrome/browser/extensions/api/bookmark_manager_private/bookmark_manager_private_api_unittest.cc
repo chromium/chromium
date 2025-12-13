@@ -19,6 +19,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "extensions/browser/api_test_utils.h"
+#include "ui/shell_dialogs/select_file_policy.h"
 
 namespace extensions {
 
@@ -37,10 +38,10 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
     params.enable_bookmark_model = true;
     InitializeExtensionService(std::move(params));
 
-    browser_window_ = std::make_unique<TestBrowserWindow>();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams browser_params(profile(), true);
     browser_params.type = Browser::TYPE_NORMAL;
-    browser_params.window = browser_window_.get();
+    browser_params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(browser_params);
 
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
@@ -56,7 +57,6 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
   void TearDown() override {
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();
-    browser_window_.reset();
     ExtensionServiceTestBase::TearDown();
   }
 
@@ -68,7 +68,6 @@ class BookmarkManagerPrivateApiUnitTest : public ExtensionServiceTestBase {
  private:
   GURL url_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
   std::string node_id_;
 };
@@ -181,6 +180,100 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
   EXPECT_EQ("Cannot open URL \"chrome://history/\" in an incognito window.",
             api_test_utils::RunFunctionAndReturnError(new_window_function.get(),
                                                       args, profile()));
+}
+
+// Mock SelectFileDialog to track ListenerDestroyed calls.
+class MockSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  explicit MockSelectFileDialog(Listener* listener)
+      : ui::SelectFileDialog(listener,
+                             std::unique_ptr<ui::SelectFilePolicy>()) {}
+
+  void ListenerDestroyed() override {
+    listener_destroyed_called_ = true;
+    listener_ = nullptr;
+  }
+
+  bool listener_destroyed_called() const { return listener_destroyed_called_; }
+
+ private:
+  ~MockSelectFileDialog() override = default;
+
+  bool IsRunning(gfx::NativeWindow parent_window) const override {
+    return false;
+  }
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      const GURL* caller) override {}
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+  bool listener_destroyed_called_ = false;
+};
+
+// Testable wrapper that exposes protected members for testing.
+class TestableImportFunction : public BookmarkManagerPrivateImportFunction {
+ public:
+  using BookmarkManagerPrivateImportFunction::CleanupFileDialog;
+  using BookmarkManagerPrivateImportFunction::select_file_dialog_;
+
+ protected:
+  ~TestableImportFunction() override = default;
+};
+
+// Test fixture specifically for IOFunction tests.
+class BookmarkManagerPrivateIOFunctionTest : public ExtensionServiceTestBase {
+ public:
+  void SetUp() override {
+    ExtensionServiceTestBase::SetUp();
+    ExtensionServiceInitParams params;
+    params.enable_bookmark_model = true;
+    InitializeExtensionService(std::move(params));
+  }
+
+  // Helper to set up function with mock dialog for testing cleanup behavior.
+  void SetupFunctionWithMockDialog(
+      scoped_refptr<TestableImportFunction>* function,
+      scoped_refptr<MockSelectFileDialog>* dialog) {
+    *function = base::MakeRefCounted<TestableImportFunction>();
+    *dialog = base::MakeRefCounted<MockSelectFileDialog>(function->get());
+    (*function)->AddRef();  // Balance Release() in CleanupFileDialog.
+    (*function)->select_file_dialog_ = *dialog;
+  }
+};
+
+// Tests that CleanupFileDialog calls ListenerDestroyed before resetting dialog.
+TEST_F(BookmarkManagerPrivateIOFunctionTest,
+       CleanupFileDialogCallsListenerDestroyed) {
+  scoped_refptr<TestableImportFunction> function;
+  scoped_refptr<MockSelectFileDialog> dialog;
+  SetupFunctionWithMockDialog(&function, &dialog);
+
+  EXPECT_FALSE(dialog->listener_destroyed_called());
+
+  function->CleanupFileDialog();
+
+  EXPECT_TRUE(dialog->listener_destroyed_called());
+  EXPECT_FALSE(function->select_file_dialog_);
+}
+
+// Tests that FileSelectionCanceled calls ListenerDestroyed before cleanup.
+TEST_F(BookmarkManagerPrivateIOFunctionTest,
+       FileSelectionCanceledCallsListenerDestroyed) {
+  scoped_refptr<TestableImportFunction> function;
+  scoped_refptr<MockSelectFileDialog> dialog;
+  SetupFunctionWithMockDialog(&function, &dialog);
+
+  EXPECT_FALSE(dialog->listener_destroyed_called());
+
+  function->FileSelectionCanceled();
+
+  EXPECT_TRUE(dialog->listener_destroyed_called());
+  EXPECT_FALSE(function->select_file_dialog_);
 }
 
 }  // namespace extensions

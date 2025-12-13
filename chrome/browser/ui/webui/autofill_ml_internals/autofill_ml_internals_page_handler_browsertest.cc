@@ -13,7 +13,7 @@ class AutofillMlInternalsPageHandlerTest : public testing::Test {
   AutofillMlInternalsPageHandlerTest() = default;
 
  protected:
-  autofill::MLLogRouter log_router_;
+  autofill::MlLogRouter log_router_;
 };
 
 TEST_F(AutofillMlInternalsPageHandlerTest, RegisterAndUnregister) {

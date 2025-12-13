@@ -16,8 +16,8 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "url/gurl.h"
@@ -35,15 +35,21 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
-class OnDeviceModelServiceController;
 
 class ModelExecutionManager final {
  public:
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Used to provide alternative fetcher implementations.
+    virtual std::unique_ptr<ModelExecutionFetcher> CreateLegionFetcher() = 0;
+  };
+
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<OnDeviceModelServiceController>
-          on_device_model_service_controller,
+      std::unique_ptr<Delegate> delegate,
       OptimizationGuideLogger* optimization_guide_logger,
       base::WeakPtr<ModelQualityLogsUploaderService>
           model_quality_uploader_service);
@@ -62,33 +68,8 @@ class ModelExecutionManager final {
       const google::protobuf::MessageLite& request_metadata,
       std::optional<base::TimeDelta> timeout,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
+      ModelExecutionServiceType service_type,
       OptimizationGuideModelExecutionResultCallback callback);
-
-  // Returns the eligibility status of the on device model for `feature`, which
-  // indicates if the on-device session can be created.
-  optimization_guide::OnDeviceModelEligibilityReason
-  GetOnDeviceModelEligibility(
-      optimization_guide::ModelBasedCapabilityKey feature);
-
-  // Returns the `SamplingParamsConfig` for `feature`.
-  std::optional<optimization_guide::SamplingParamsConfig>
-  GetSamplingParamsConfig(optimization_guide::ModelBasedCapabilityKey feature);
-  // Returns the metadata proto for `feature`.
-  std::optional<const proto::Any> GetFeatureMetadata(
-      optimization_guide::ModelBasedCapabilityKey feature);
-
-  // Starts a new session for `feature`.
-  std::unique_ptr<OptimizationGuideModelExecutor::Session> StartSession(
-      ModelBasedCapabilityKey feature,
-      const std::optional<SessionConfigParams>& config_params);
-
-  // Returns the capabilities for the on-device model, or empty capabilities if
-  // no model is available.
-  on_device_model::Capabilities GetOnDeviceCapabilities();
-
-  OnDeviceModelServiceController* GetOnDeviceModelServiceController() {
-    return on_device_model_service_controller_.get();
-  }
 
   // Records a fake model execution response to be returned when ExecuteModel is
   // called for the given feature.
@@ -99,9 +80,21 @@ class ModelExecutionManager final {
   void Shutdown();
 
  private:
+  // Identifies a ModelExecutionFetcher.
+  using FetcherId = size_t;
+
+  // All active executions for a certain feature.
+  using ActiveFeatureExecutions =
+      std::map<FetcherId, std::unique_ptr<ModelExecutionFetcher>>;
+
+  // Creates a new ModelExecutionFetcher.
+  std::unique_ptr<ModelExecutionFetcher> CreateModelExecutionFetcher(
+      ModelExecutionServiceType service_type);
+
   // Invoked when the model execution result is available.
   void OnModelExecuteResponse(
       ModelBasedCapabilityKey feature,
+      FetcherId fetcher_id,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback,
       base::expected<const proto::ExecuteResponse,
@@ -124,8 +117,14 @@ class ModelExecutionManager final {
   // The endpoint for the model execution service.
   const GURL model_execution_service_url_;
 
+  // Provides alternative fetcher implementations.
+  std::unique_ptr<Delegate> delegate_;
+
+  // The next available `FetcherId`. Assigned in increasing order.
+  FetcherId next_model_execution_fetcher_id = 0;
+
   // The active fetchers per ModelExecutionFeature.
-  std::map<ModelBasedCapabilityKey, ModelExecutionFetcher>
+  std::map<ModelBasedCapabilityKey, ActiveFeatureExecutions>
       active_model_execution_fetchers_;
 
   // Model execution results to override in tests.
@@ -138,10 +137,6 @@ class ModelExecutionManager final {
   // Unowned IdentityManager for fetching access tokens. Could be null for
   // incognito profiles.
   const raw_ptr<signin::IdentityManager> identity_manager_;
-
-  // Controller for the on-device service.
-  scoped_refptr<OnDeviceModelServiceController>
-      on_device_model_service_controller_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

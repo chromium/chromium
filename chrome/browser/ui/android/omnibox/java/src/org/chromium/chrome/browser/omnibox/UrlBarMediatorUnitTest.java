@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 
@@ -27,7 +28,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
-import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -37,9 +38,7 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link UrlBarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowOmniboxResourceProvider.class})
+@Config(manifest = Config.NONE)
 public class UrlBarMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Callback<String> mMockUrlTextListener;
@@ -52,6 +51,8 @@ public class UrlBarMediatorUnitTest {
 
     @Before
     public void setUp() {
+        OmniboxResourceProvider.setUrlBarPrimaryTextColorForTesting(Color.LTGRAY);
+        OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         mContext = ContextUtils.getApplicationContext();
         mModel = new PropertyModel(UrlBarProperties.ALL_KEYS);
         mMediator =
@@ -329,6 +330,32 @@ public class UrlBarMediatorUnitTest {
         Assert.assertEquals("Hint 1", mModel.get(UrlBarProperties.HINT_TEXT));
         mMediator.setUrlBarHintText("Incognito Hint");
         Assert.assertEquals("Incognito Hint", mModel.get(UrlBarProperties.HINT_TEXT));
+    }
+
+    @Test
+    public void hintVisibility() {
+        UrlBarData baseData =
+                UrlBarData.create(
+                        new GURL("http://www.example.com"),
+                        spannable("www.example.com"),
+                        0,
+                        14,
+                        "Blah");
+        mMediator.setUrlBarHintText("Hint 1");
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        mMediator.onUrlFocusChange(true);
+        mMediator.onTextChanged("");
+
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+
+        mMediator.onTextChanged("f");
+        Assert.assertFalse(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+        mMediator.setUrlBarData(UrlBarData.EMPTY, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
+
+        mMediator.onUrlFocusChange(false);
+        Assert.assertTrue(mModel.get(UrlBarProperties.SHOW_HINT_TEXT));
     }
 
     @Test

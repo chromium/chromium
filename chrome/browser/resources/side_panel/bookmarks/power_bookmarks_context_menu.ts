@@ -12,7 +12,7 @@ import '//resources/cr_elements/icons.html.js';
 import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -163,8 +163,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       });
     }
 
-    if (loadTimeData.getBoolean('splitViewEnabled') && bookmarkCount === 1 &&
-        this.bookmarks_[0].url) {
+    if (bookmarkCount === 1 && this.bookmarks_[0].url) {
       menuItems.push({
         id: MenuItemId.OPEN_SPLIT_VIEW,
         label: loadTimeData.getString('menuOpenSplitView'),
@@ -394,6 +393,11 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
           }));
         }
         break;
+      case MenuItemId.DIVIDER:
+      case MenuItemId.EDIT:
+        break;
+      default:
+        assertNotReachedCase(event.model.item.id);
     }
     this.$.menu.close();
   }

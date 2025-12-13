@@ -80,7 +80,8 @@ DedicatedWorker* DedicatedWorker::Create(
   }
 
   String compliant_url = TrustedTypesCheckForScriptURL(
-      url, context, "Worker", "constructor", exception_state);
+      url, context, trusted_types_names::kWorker,
+      trusted_types_names::kConstructor, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
@@ -269,6 +270,7 @@ void DedicatedWorker::Start() {
     // The same as in OnScriptLoadStartFailed, reset factory_client_ and return.
     // This leaves the worker in a state the same as if script loading failed.
     factory_client_.reset();
+    context_proxy_->DidFailToFetchScript();
     return;
   }
 
@@ -403,9 +405,6 @@ void DedicatedWorker::OnFinished(
         back_forward_cache_controller_host) {
   DCHECK(GetExecutionContext()->IsContextThread());
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnFinished");
-  TRACE_EVENT_NESTABLE_ASYNC_END0("blink.worker",
-                                  "LegacyDedicatedWorker Specific Setup",
-                                  TRACE_ID_LOCAL(this));
   if (classic_script_loader_->Canceled()) {
     // Do nothing.
   } else if (classic_script_loader_->Failed()) {
@@ -465,14 +464,14 @@ void DedicatedWorker::ContinueStart(
         ->GetTaskRunner(TaskType::kInternalDefault)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::BindOnce(&DedicatedWorker::ContinueStartInternal,
-                          WrapWeakPersistent(this), script_url,
-                          std::move(worker_main_script_load_params),
-                          std::move(referrer_policy),
-                          std::move(response_content_security_policies),
-                          std::move(back_forward_cache_controller_host),
-                          std::move(coep_reporting_observer),
-                          std::move(dip_reporting_observer)),
+            BindOnce(&DedicatedWorker::ContinueStartInternal,
+                     WrapWeakPersistent(this), script_url,
+                     std::move(worker_main_script_load_params),
+                     std::move(referrer_policy),
+                     std::move(response_content_security_policies),
+                     std::move(back_forward_cache_controller_host),
+                     std::move(coep_reporting_observer),
+                     std::move(dip_reporting_observer)),
             base::Milliseconds(features::kDedicatedWorkerStartDelayInMs.Get()));
     return;
   }

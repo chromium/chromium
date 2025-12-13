@@ -20,9 +20,11 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 #include "chromeos/ash/experiences/arc/metrics/stability_metrics_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -72,6 +74,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
     network_config_helper_ =
@@ -81,9 +84,11 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     ash::StatsReportingController::Initialize(&local_state_);
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     BrowserWithTestWindowTest::SetUp();
     arc_service_manager_->set_browser_context(profile());
@@ -131,10 +136,12 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
 
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
 
     ash::StatsReportingController::Shutdown();
     network_handler_test_helper_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
@@ -170,6 +177,7 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
       network_config_helper_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   FakeIntentHelperInstance intent_helper_instance_;

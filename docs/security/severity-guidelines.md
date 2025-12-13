@@ -54,7 +54,9 @@ if there is evidence of active exploitation.
 
 Example bugs:
 
-* Memory corruption in the browser process ([319125](https://crbug.com/319125#c10)).
+* Memory corruption in the browser process
+  ([319125](https://crbug.com/319125#c10)) which is directly or indirectly
+  reachable from web content.
 * Memory corruption in an unsandboxed GPU process when it is reachable directly from web
   content without compromising the renderer.
   ([1420130](https://crbug.com/1420130), [1427865](https://crbug.com/1427865)).
@@ -172,9 +174,20 @@ Low severity (S3) vulnerabilities are usually bugs that would normally be a
 higher severity, but which have extreme mitigating factors or highly limited
 scope.
 
-They are normally assigned Priority **P2**. Milestones can be assigned to low
-severity bugs on a case-by-case basis, but they are not normally merged to
-stable or beta branches.
+They are normally initially assigned Priority **P3**. Milestones can be assigned
+to low severity bugs on a case-by-case basis, but they are not normally merged
+to Stable or Beta branches.
+
+After a bug has been at low severity (S3) for 30 days:
+
+* It becomes exempt from the usual rule requiring security bugs to be assigned
+  to a developer.
+* It will be made visible to everyone in edit-bug-access@chromium.org (i.e.,
+  all chromium committers), rather than just the security team.
+
+This policy is intended to strike a balance between ensuring bugs are triaged
+and fixed in a timely manner and ensuring that low severity bugs are visible for
+opportunistic fixes by engineers who happen to be working in the affected area.
 
 Example bugs:
 

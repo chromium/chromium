@@ -42,17 +42,6 @@ bool StructTraits<gfx::mojom::HdrMetadataExtendedRangeDataView,
   return true;
 }
 
-bool StructTraits<gfx::mojom::HdrMetadataAgtmDataView, gfx::HdrMetadataAgtm>::
-    Read(gfx::mojom::HdrMetadataAgtmDataView data,
-         gfx::HdrMetadataAgtm* output) {
-  ArrayDataView<uint8_t> payload;
-  data.GetPayloadDataView(&payload);
-  if (!payload.is_null()) {
-    output->payload = SkData::MakeWithCopy(payload.data(), payload.size());
-  }
-  return true;
-}
-
 bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
     gfx::mojom::HDRMetadataDataView data,
     gfx::HDRMetadata* output) {
@@ -68,9 +57,14 @@ bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
   if (!data.ReadExtendedRange(&output->extended_range)) {
     return false;
   }
-  if (!data.ReadAgtm(&output->agtm)) {
-    return false;
+
+  ArrayDataView<uint8_t> agtm_data;
+  data.GetAgtmSerializedDataView(&agtm_data);
+  if (!agtm_data.is_null()) {
+    output->setSerializedAgtm(
+        SkData::MakeWithCopy(agtm_data.data(), agtm_data.size()));
   }
+
   return true;
 }
 

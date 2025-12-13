@@ -442,7 +442,6 @@ class DlpContentManager : public DlpContentObserver,
 
   // Keeps track of the contents for which the user allowed the action after
   // being shown a warning for each type of restriction.
-  // TODO(crbug.com/1264803): Change to DlpConfidentialContentsCache
   DlpConfidentialContentsCache user_allowed_contents_cache_;
 
   // List of the currently running screen shares.

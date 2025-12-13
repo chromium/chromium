@@ -10,7 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "gpu/ipc/common/gpu_ipc_common_export.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "ui/gl/android/scoped_java_surface_control.h"
 

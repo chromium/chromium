@@ -189,6 +189,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   PasswordIssueContentItem* passwordItem =
       [[PasswordIssueContentItem alloc] initWithType:ItemTypePassword];
   passwordItem.password = password;
+  passwordItem.titleLineBreakMode = NSLineBreakByTruncatingHead;
   passwordItem.accessibilityTraits |= UIAccessibilityTraitButton;
   passwordItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return passwordItem;
@@ -281,19 +282,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (UITableViewCell*)tableView:(UITableView*)tableView
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
-    case ItemTypePassword: {
-      TableViewURLCell* urlCell =
-          base::apple::ObjCCastStrict<TableViewURLCell>(cell);
-      urlCell.textLabel.lineBreakMode = NSLineBreakByTruncatingHead;
-      // Load the favicon from cache.
-      [self loadFaviconAtIndexPath:indexPath forCell:cell];
-      break;
-    }
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypePassword) {
+    // Load the favicon from cache.
+    [self loadFaviconAtIndexPath:indexPath];
   }
-  return cell;
+
+  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -385,26 +380,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Asynchronously loads favicon for given index path. The loads are cancelled
 // upon cell reuse automatically.
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-                       forCell:(UITableViewCell*)cell {
+- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   DCHECK(item);
-  DCHECK(cell);
 
   TableViewURLItem* URLItem =
       base::apple::ObjCCastStrict<TableViewURLItem>(item);
-  TableViewURLCell* URLCell =
-      base::apple::ObjCCastStrict<TableViewURLCell>(cell);
 
-  NSString* itemIdentifier = URLItem.uniqueIdentifier;
+  if (URLItem.faviconAttributes) {
+    return;
+  }
+
+  __weak UITableView* tableView = self.tableView;
+
   [self.imageDataSource
       faviconForPageURL:URLItem.URL
-             completion:^(FaviconAttributes* attributes) {
-               // Only set favicon if the cell hasn't been reused.
-               if ([URLCell.cellUniqueIdentifier
-                       isEqualToString:itemIdentifier]) {
-                 DCHECK(attributes);
-                 [URLCell.faviconView configureWithAttributes:attributes];
+             completion:^(FaviconAttributes* attributes, bool cached) {
+               URLItem.faviconAttributes = attributes;
+               if (!cached && attributes.faviconImage) {
+                 [tableView reconfigureRowsAtIndexPaths:@[ indexPath ]];
                }
              }];
 }

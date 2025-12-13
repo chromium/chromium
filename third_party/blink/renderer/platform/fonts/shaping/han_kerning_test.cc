@@ -170,6 +170,7 @@ TEST_F(HanKerningTest, FontDataSizeError) {
 
 TEST_F(HanKerningTest, ResetFeatures) {
   Font* noto_cjk = CreateNotoCjk();
+  const FontDescription& font_description = noto_cjk->GetFontDescription();
   const SimpleFontData* noto_cjk_data = noto_cjk->PrimaryFont();
   EXPECT_TRUE(noto_cjk_data);
   FontFeatureRanges features;
@@ -179,12 +180,32 @@ TEST_F(HanKerningTest, ResetFeatures) {
   const String text(u"国）（国");
   {
     FontFeatureRangesSaver features_saver(&features);
-    HanKerning han_kerning(text, 0, text.length(), *noto_cjk_data,
-                           noto_cjk->GetFontDescription(),
-                           HanKerning::Options(), &features);
+    HanKerning han_kerning(text, 0, text.length(), font_description);
+    han_kerning.AppendFontFeatures(text, 0, text.length(), *noto_cjk_data,
+                                   font_description.LocaleOrDefault(),
+                                   HanKerning::Options(), features);
     EXPECT_EQ(features.size(), 2u);
   }
   EXPECT_EQ(features.size(), 1u);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(HanKerningTest, YuGothicUI) {
+  const FontFamily family(AtomicString("Yu Gothic UI"),
+                          FontFamily::Type::kFamilyName);
+  const scoped_refptr<LayoutLocale> locale =
+      LayoutLocale::CreateForTesting(AtomicString("ja"));
+  for (int weight = 100; weight <= 900; weight += 100) {
+    FontDescription font_description;
+    font_description.SetFamily(family);
+    font_description.SetWeight(FontSelectionValue(weight));
+    Font* font = MakeGarbageCollected<Font>(font_description);
+    const SimpleFontData* primary_font = font->PrimaryFont();
+    HanKerning::FontData han_kerning_data(*primary_font, *locale,
+                                          /*is_horizontal*/ true);
+    EXPECT_FALSE(han_kerning_data.has_alternate_spacing);
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace blink

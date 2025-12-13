@@ -26,7 +26,6 @@
 #include "components/favicon/android/jni_headers/LargeIconBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -72,11 +71,11 @@ void LargeIconBridge::Destroy(JNIEnv* env) {
 
 jboolean LargeIconBridge::GetLargeIconForURL(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_browser_context,
-    const JavaParamRef<jobject>& j_page_url,
+    const JavaRef<jobject>& j_browser_context,
+    const JavaRef<jobject>& j_page_url,
     jint min_source_size_px,
     jint desired_source_size_px,
-    const JavaParamRef<jobject>& j_callback) {
+    const JavaRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(j_browser_context);
   if (!browser_context)
@@ -104,11 +103,11 @@ jboolean LargeIconBridge::GetLargeIconForURL(
 void LargeIconBridge::
     GetLargeIconOrFallbackStyleFromGoogleServerSkippingLocalCache(
         JNIEnv* env,
-        const base::android::JavaParamRef<jobject>& j_browser_context,
-        const base::android::JavaParamRef<jobject>& j_page_url,
+        const base::android::JavaRef<jobject>& j_browser_context,
+        const base::android::JavaRef<jobject>& j_page_url,
         jboolean should_trim_page_url_path,
         jint j_network_annotation_hash_code,
-        const base::android::JavaParamRef<jobject>& j_callback) {
+        const base::android::JavaRef<jobject>& j_callback) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(j_browser_context);
   if (!browser_context) {
@@ -135,8 +134,8 @@ void LargeIconBridge::
 
 void LargeIconBridge::TouchIconFromGoogleServer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_browser_context,
-    const base::android::JavaParamRef<jobject>& j_icon_url) {
+    const base::android::JavaRef<jobject>& j_browser_context,
+    const base::android::JavaRef<jobject>& j_icon_url) {
   content::BrowserContext* browser_context =
       content::BrowserContextFromJavaHandle(j_browser_context);
   if (!browser_context) {
@@ -161,3 +160,5 @@ void LargeIconBridge::OnGoogleFaviconServerResponse(
 }
 
 }  // namespace favicon
+
+DEFINE_JNI(LargeIconBridge)

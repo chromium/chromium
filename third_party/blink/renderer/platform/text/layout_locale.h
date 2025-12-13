@@ -41,9 +41,6 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   bool operator==(const LayoutLocale& other) const {
     return string_ == other.string_;
   }
-  bool operator!=(const LayoutLocale& other) const {
-    return string_ != other.string_;
-  }
 
   const AtomicString& LocaleString() const { return string_; }
   static const AtomicString& LocaleString(const LayoutLocale* locale) {

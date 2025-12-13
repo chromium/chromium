@@ -8,17 +8,16 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/extensions/extensions_dialogs.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_view_controller.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -34,6 +33,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_registry.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
+#include "extensions/browser/permissions/site_permissions_helper.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
@@ -239,10 +240,10 @@ void ExtensionsMenuMainPageViewInteractiveUITest::ClickSiteSettingToggle() {
 
 ExtensionsMenuMainPageView*
 ExtensionsMenuMainPageViewInteractiveUITest::main_page() {
-  ExtensionsMenuViewController* menu_controller =
-      menu_coordinator()->GetControllerForTesting();
-  DCHECK(menu_controller);
-  return menu_controller->GetMainPageViewForTesting();
+  ExtensionsMenuViewPlatformDelegateViews* menu_delegate =
+      menu_coordinator()->GetDelegateForTesting();
+  DCHECK(menu_delegate);
+  return menu_delegate->GetMainPageViewForTesting();
 }
 
 std::vector<ExtensionMenuItemView*>
@@ -578,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 }
 
 class ExtensionsMenuMainPageViewInteractiveTest
-    : public InteractiveBrowserTestT<extensions::ExtensionBrowserTest> {
+    : public InteractiveBrowserTestMixin<extensions::ExtensionBrowserTest> {
  public:
   ExtensionsMenuMainPageViewInteractiveTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -658,8 +659,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     return Steps(
         CheckView(kExtensionMenuItemViewElementId,
                   [&extension](ExtensionMenuItemView* menu_item) {
-                    return menu_item->view_controller()->GetId() ==
-                           extension.id();
+                    return menu_item->view_model()->GetId() == extension.id();
                   }),
         NameDescendantViewByType<ExtensionsMenuButton>(
             kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -744,7 +744,7 @@ class ExtensionsMenuMainPageViewInteractiveTest
     ExtensionsMenuMainPageView* main_page =
         extensions_container()
             ->GetExtensionsMenuCoordinatorForTesting()
-            ->GetControllerForTesting()
+            ->GetDelegateForTesting()
             ->GetMainPageViewForTesting();
     if (!main_page) {
       return nullptr;
@@ -754,14 +754,14 @@ class ExtensionsMenuMainPageViewInteractiveTest
 
     auto iter = std::ranges::find(menu_items, extension_id,
                                   [](ExtensionMenuItemView* view) {
-                                    return view->view_controller()->GetId();
+                                    return view->view_model()->GetId();
                                   });
     return (iter == menu_items.end()) ? nullptr : *iter;
   }
 
  protected:
   void SetUpOnMainThread() override {
-    InteractiveBrowserTestT<
+    InteractiveBrowserTestMixin<
         extensions::ExtensionBrowserTest>::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -820,8 +820,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Open the extension's context menu.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionMenuItemViewElementId),
 
@@ -856,8 +855,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       OpenExtensionsMenu(),
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -892,8 +890,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       OpenExtensionsMenu(),
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kMenuItemActionButton),
@@ -904,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                                           1);
         histogram_tester.ExpectBucketCount(
             "Extensions.Toolbar.InvocationSource",
-            ToolbarActionViewController::InvocationSource::kMenuEntry, 1);
+            ToolbarActionViewModel::InvocationSource::kMenuEntry, 1);
       }));
 
   // TODO(crbug.com/40684492): Add a test for command invocation once
@@ -933,8 +930,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // entry.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -976,8 +972,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -1017,8 +1012,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // kExtensionMenuItemViewElementId match should be extension A.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension_A](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension_A->id();
+                  return menu_item->view_model()->GetId() == extension_A->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -1067,8 +1061,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -1118,8 +1111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Open the extension's context menu from the extensions menu.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       OpenContextMenu(extension->id(), kExtensionMenuItemViewElementId),
 
@@ -1172,8 +1164,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Trigger the extension's action by clicking on its menu entry.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<ExtensionsMenuButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemActionButton),
@@ -1209,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
                     {.allow_in_incognito = true});
 
   RunTestSequence(InContext(
-      incognito_browser->window()->GetElementContext(),
+      BrowserElements::From(incognito_browser)->GetContext(),
       Steps(InstrumentTab(kTab), OpenExtensionsMenu(),
             // Verify toggle visibility entry in context menu is disabled.
             CheckResult(
@@ -1269,8 +1260,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
       // Revoke site access for the extension by toggling the extension off.
       CheckView(kExtensionMenuItemViewElementId,
                 [extension](ExtensionMenuItemView* menu_item) {
-                  return menu_item->view_controller()->GetId() ==
-                         extension->id();
+                  return menu_item->view_model()->GetId() == extension->id();
                 }),
       NameDescendantViewByType<views::ToggleButton>(
           kExtensionMenuItemViewElementId, kExtensionMenuItemToggle),
@@ -1413,25 +1403,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveTest,
 
   auto extension =
       InstallExtensionWithHostPermissions("All Urls Extension", "<all_urls>");
+  // Automatically accept the reload page dialog that appears when changing site
+  // access.
+  auto reload_page_dialog_reset =
+      extensions::ReloadPageDialogController::AcceptDialogForTesting(true);
 
   RunTestSequence(
       InstrumentTab(kTab),
       NavigateWebContents(
           kTab, embedded_test_server()->GetURL("example.com", "/title1.html")),
-      // Automatically accept the reload page dialog that appears when
-      // changing site access.
-      Do([&]() {
-        content::WebContents* web_contents =
-            browser()->tab_strip_model()->GetActiveWebContents();
-        extensions::ExtensionActionRunner::GetForWebContents(web_contents)
-            ->accept_bubble_for_testing(true);
-      }),
 
       OpenExtensionsMenu(),
       CheckView(
           kExtensionMenuItemViewElementId,
           [extension](ExtensionMenuItemView* menu_item) {
-            return menu_item->view_controller()->GetId();
+            return menu_item->view_model()->GetId();
           },
           extension->id()),
       NameDescendantViewByType<HoverButton>(kExtensionMenuItemViewElementId,

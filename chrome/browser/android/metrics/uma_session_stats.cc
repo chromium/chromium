@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/puma_histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
@@ -34,9 +35,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::UserMetricsAction;
+using base::android::ConvertJavaStringToUTF8;
+using base::android::JavaRef;
 
 namespace {
 // Used to keep the state of whether we should consider metric consent enabled.
@@ -71,6 +72,22 @@ enum class ChromeActivityCounter : int32_t {
 };
 }  // namespace
 
+// Provides access control to the RegisterExternalExperiments() API via a pass
+// key. Note: This is intentionally not exposed in the header since it should
+// only be used by JNI_UmaSessionStats_RegisterExternalExperiment().
+class UmaSessionStatsExternalExperimentRegistrar {
+ public:
+  static void RegisterExternalExperiments(
+      const std::vector<int>& experiment_ids,
+      variations::SyntheticTrialRegistry::OverrideMode override_mode) {
+    g_browser_process->metrics_service()
+        ->GetSyntheticTrialRegistry()
+        ->RegisterExternalExperiments(
+            base::PassKey<UmaSessionStatsExternalExperimentRegistrar>(),
+            experiment_ids, override_mode);
+  }
+};
+
 void UmaSessionStats::UmaResumeSession(JNIEnv* env) {
   DCHECK(g_browser_process);
   if (++active_session_count_ == 1) {
@@ -94,8 +111,9 @@ void UmaSessionStats::UmaResumeSession(JNIEnv* env) {
 
     ukm::UkmService* ukm_service =
         g_browser_process->GetMetricsServicesManager()->GetUkmService();
-    if (ukm_service)
+    if (ukm_service) {
       ukm_service->OnAppEnterForeground();
+    }
 
     AndroidSessionDurationsServiceFactory::OnAppEnterForeground(
         session_time_tracker_.session_start_time());
@@ -120,8 +138,9 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env) {
     }
     ukm::UkmService* ukm_service =
         g_browser_process->GetMetricsServicesManager()->GetUkmService();
-    if (ukm_service)
+    if (ukm_service) {
       ukm_service->OnAppEnterBackground();
+    }
 
     AndroidSessionDurationsServiceFactory::OnAppEnterBackground(duration);
 
@@ -129,6 +148,18 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env) {
     // Otherwise, |ProvideCurrentSessionData()| may report a small timeslice of
     // background session time toward the previous log.
     session_time_tracker_.BeginBackgroundSession();
+  }
+}
+
+void UmaSessionStats::FlushSession(JNIEnv* env) {
+  metrics::MetricsService* metrics = g_browser_process->metrics_service();
+  if (metrics) {
+    metrics->Flush();
+  }
+  ukm::UkmService* ukm_service =
+      g_browser_process->GetMetricsServicesManager()->GetUkmService();
+  if (ukm_service) {
+    ukm_service->Flush(metrics::MetricsLogsEventManager::CreateReason::kFlush);
   }
 }
 
@@ -197,8 +228,9 @@ void UmaSessionStats::EmitAndResetCounters() {
 void UmaSessionStats::SessionTimeTracker::AccumulateBackgroundSessionTime() {
   // No time spent in background since the last call to
   // |AccumulateBackgroundSessionTime()|.
-  if (background_session_start_time_.is_null())
+  if (background_session_start_time_.is_null()) {
     return;
+  }
 
   base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta duration = now - background_session_start_time_;
@@ -208,8 +240,9 @@ void UmaSessionStats::SessionTimeTracker::AccumulateBackgroundSessionTime() {
 }
 
 void UmaSessionStats::SessionTimeTracker::ReportBackgroundSessionTime() {
-  if (background_session_accumulated_time_.is_zero())
+  if (background_session_accumulated_time_.is_zero()) {
     return;
+  }
 
   // This histogram is used in analysis to determine if an uploaded log
   // represents background activity. For this reason, this histogram may be
@@ -239,6 +272,12 @@ base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
                              base::Milliseconds(1), base::Hours(24), 50);
+
+  // Records true each time Session.TotalDuration is supposed to be recorded
+  // in a PUMA histogram. Allowing for the count to be collected.
+  base::PumaHistogramBoolean(
+      base::PumaType::kRc,
+      "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", true);
   return duration;
 }
 
@@ -325,7 +364,7 @@ static void JNI_UmaSessionStats_UpdateMetricsServiceState(
 
 static void JNI_UmaSessionStats_RegisterExternalExperiment(
     JNIEnv* env,
-    const JavaParamRef<jintArray>& jexperiment_ids,
+    const JavaRef<jintArray>& jexperiment_ids,
     jboolean override_existing_ids) {
   std::vector<int> experiment_ids;
   // A null |jexperiment_ids| is the same as an empty list.
@@ -339,9 +378,8 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
           ? variations::SyntheticTrialRegistry::kOverrideExistingIds
           : variations::SyntheticTrialRegistry::kDoNotOverrideExistingIds;
 
-  g_browser_process->metrics_service()
-      ->GetSyntheticTrialRegistry()
-      ->RegisterExternalExperiments(experiment_ids, override_mode);
+  UmaSessionStatsExternalExperimentRegistrar::RegisterExternalExperiments(
+      experiment_ids, override_mode);
 }
 
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
@@ -391,3 +429,5 @@ static jlong JNI_UmaSessionStats_Init(JNIEnv* env) {
   // We should have only one UmaSessionStats instance.
   return reinterpret_cast<intptr_t>(UmaSessionStats::GetInstance());
 }
+
+DEFINE_JNI(UmaSessionStats)

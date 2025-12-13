@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -1257,11 +1258,19 @@ std::optional<size_t> BrowserAccessibility::GetIndexInParent() const {
 
 gfx::AcceleratedWidget
 BrowserAccessibility::GetTargetForNativeAccessibilityEvent() {
-  AXPlatformTreeManagerDelegate* root_delegate =
-      manager()->GetDelegateFromRootManager();
-  if (!root_delegate)
+  // Views trees can use their manager's delegate because it always maps to a
+  // native widget, but web trees need the root manager's delegate so nested
+  // iframes get the right target.
+  AXPlatformTreeManagerDelegate* delegate =
+      features::IsAccessibilityTreeForViewsEnabled() && !IsWebContent()
+          ? manager()->delegate()
+          : manager()->GetDelegateFromRootManager();
+
+  if (!delegate) {
     return gfx::kNullAcceleratedWidget;
-  return root_delegate->AccessibilityGetAcceleratedWidget();
+  }
+
+  return delegate->AccessibilityGetAcceleratedWidget();
 }
 
 AXPlatformNode* BrowserAccessibility::GetTableCaption() const {
@@ -1412,6 +1421,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kScrollLeft:
     case ax::mojom::Action::kScrollRight:
       manager_->Scroll(*this, data.action);
+      return true;
+    case ax::mojom::Action::kRequestLayoutBasedAction:
+      manager_->RequestLayoutBasedAction(*this);
       return true;
     default:
       return false;
@@ -1676,7 +1688,6 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kArticle:
       return GetLocalizedString(IDS_AX_ROLE_ARTICLE);
     case ax::mojom::Role::kAudio:
-      // Android returns IDS_AX_MEDIA_AUDIO_ELEMENT, but the string is the same.
       return GetLocalizedString(IDS_AX_ROLE_AUDIO);
     case ax::mojom::Role::kBanner:
       return GetLocalizedString(IDS_AX_ROLE_BANNER);
@@ -1783,6 +1794,8 @@ std::u16string BrowserAccessibility::GetLocalizedStringForRoleDescription()
     case ax::mojom::Role::kMenuItemCheckBox:
       return {};
     case ax::mojom::Role::kMenuItemRadio:
+      return {};
+    case ax::mojom::Role::kMenuItemSeparator:
       return {};
     case ax::mojom::Role::kMeter:
       return GetLocalizedString(IDS_AX_ROLE_METER);
@@ -1997,27 +2010,30 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
     const std::vector<int>& marker_ends =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
+    CHECK_EQ(marker_types.size(), highlight_types.size());
     CHECK_EQ(marker_types.size(), marker_starts.size());
     CHECK_EQ(marker_types.size(), marker_ends.size());
 
     for (size_t i = 0; i < marker_types.size(); ++i) {
-      bool is_spelling_error =
+      const bool is_highlight =
+          marker_types[i] &
+          static_cast<int32_t>(ax::mojom::MarkerType::kHighlight);
+      const bool is_spelling_error =
           (marker_types[i] &
            static_cast<int32_t>(ax::mojom::MarkerType::kSpelling)) ||
-          ((marker_types[i] &
-            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+          (is_highlight &&
            highlight_types[i] ==
                static_cast<int32_t>(ax::mojom::HighlightType::kSpellingError));
-      bool is_grammar_error =
+      const bool is_grammar_error =
           (marker_types[i] &
            static_cast<int32_t>(ax::mojom::MarkerType::kGrammar)) ||
-          ((marker_types[i] &
-            static_cast<int32_t>(ax::mojom::MarkerType::kHighlight)) &&
+          (is_highlight &&
            highlight_types[i] ==
                static_cast<int32_t>(ax::mojom::HighlightType::kGrammarError));
 
-      if (!is_spelling_error && !is_grammar_error)
+      if (!is_spelling_error && !is_grammar_error && !is_highlight) {
         continue;
+      }
 
       TextAttributeList start_attributes;
       if (is_spelling_error && is_grammar_error)
@@ -2027,6 +2043,11 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
         start_attributes.push_back(std::make_pair("invalid", "spelling"));
       else if (is_grammar_error)
         start_attributes.push_back(std::make_pair("invalid", "grammar"));
+      else if (is_highlight) {
+        // If there's a highlight with a different type (i.e. not spelling or
+        // grammar error), it's added as ("mark","true").
+        start_attributes.push_back(std::make_pair("mark", "true"));
+      }
 
       int start_offset = marker_starts[i];
       int end_offset = marker_ends[i];

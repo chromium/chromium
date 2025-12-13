@@ -4,7 +4,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/browser/proto/password_requirements_shard.pb.h"
@@ -204,7 +203,6 @@ TEST(PasswordRequirementsSpecFetcherTest, FetchData) {
 
   for (const auto& test : tests) {
     SCOPED_TRACE(test.test_name);
-    base::HistogramTester histogram_tester;
 
     base::test::TaskEnvironment environment(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
@@ -240,9 +238,6 @@ TEST(PasswordRequirementsSpecFetcherTest, FetchData) {
     ASSERT_TRUE(callback_called);
     EXPECT_EQ(test.expected_spec->SerializeAsString(),
               returned_spec.SerializeAsString());
-    histogram_tester.ExpectUniqueSample(
-        "PasswordManager.RequirementsSpecFetcher.Result", test.expected_result,
-        1u);
   }
 }
 

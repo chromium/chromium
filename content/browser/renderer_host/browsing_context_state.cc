@@ -16,7 +16,6 @@
 
 namespace features {
 BASE_FEATURE(kNewBrowsingContextStateOnBrowsingContextGroupSwap,
-             "NewBrowsingContextStateOnBrowsingContextGroupSwap",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BrowsingContextStateImplementationType GetBrowsingContextMode() {
@@ -366,6 +365,10 @@ void BrowsingContextState::SetIsAdFrame(bool is_ad_frame) {
         },
         /*group_to_skip=*/nullptr, /*outer_delegate_proxy=*/nullptr);
   }
+}
+
+bool BrowsingContextState::IsAdFrame() const {
+  return replication_state_->is_ad_frame;
 }
 
 void BrowsingContextState::ActiveFrameCountIsZero(

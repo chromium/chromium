@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -149,7 +150,7 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
     UrlLoaderList::iterator it,
     const GURL& url,
     NetworkFetchCallback callback,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 

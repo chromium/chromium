@@ -37,7 +37,7 @@ public class LogcatExtractionRunnable implements Runnable {
      * @param minidump The minidump file that needs logcat output to be attached.
      * @param logcatExtractor to allow injecting extractor for testing.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     protected LogcatExtractionRunnable(File minidump, LogcatCrashExtractor logcatExtractor) {
         mMinidumpFile = minidump;
         mLogcatExtractor = logcatExtractor;

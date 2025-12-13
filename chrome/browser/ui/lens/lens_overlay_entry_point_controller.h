@@ -20,6 +20,10 @@
 class BrowserWindowInterface;
 class CommandUpdater;
 
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}  // namespace optimization_guide
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -125,6 +129,11 @@ class LensOverlayEntryPointController : public FullscreenObserver,
 
   // URL matcher for entrypoints with EDU promos.
   std::unique_ptr<LensUrlMatcher> edu_url_matcher_;
+
+  // Optimization guide decider used for determining EDU action chip
+  // eligibility.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_{nullptr};
 };
 
 }  // namespace lens

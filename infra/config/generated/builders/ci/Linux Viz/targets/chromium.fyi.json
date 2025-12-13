@@ -20,6 +20,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
+        "module_name": "//content/test:content_browsertests",
+        "module_scheme": "gtest",
         "name": "vulkan_swiftshader_content_browsertests",
         "swarming": {
           "dimensions": {
@@ -45,6 +47,8 @@
           ],
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
+        "module_name": "//:blink_web_tests",
+        "module_scheme": "webtest",
         "name": "vulkan_swiftshader_blink_web_tests",
         "resultdb": {
           "enable": true,

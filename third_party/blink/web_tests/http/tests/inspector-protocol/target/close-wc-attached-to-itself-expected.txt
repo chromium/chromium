@@ -1,0 +1,6 @@
+Tests that closing a web contents that is attached to itself doesn't crash.
+[
+    [0] : attached
+]
+Target closed.
+

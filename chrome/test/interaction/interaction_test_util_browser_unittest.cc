@@ -26,7 +26,11 @@
 
 class InteractionTestUtilBrowserTest : public views::ViewsTestBase {
  public:
-  InteractionTestUtilBrowserTest() = default;
+  InteractionTestUtilBrowserTest() {
+    test_util_.AddSimulator(
+        std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+    InteractionTestUtilBrowser::PopulateSimulators(test_util_);
+  }
   ~InteractionTestUtilBrowserTest() override = default;
 
   std::unique_ptr<views::Widget> CreateWidget() {
@@ -71,7 +75,7 @@ class InteractionTestUtilBrowserTest : public views::ViewsTestBase {
 
  protected:
   std::unique_ptr<views::LayoutProvider> layout_provider_;
-  InteractionTestUtilBrowser test_util_;
+  ui::test::InteractionTestUtil test_util_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<views::View> contents_ = nullptr;
 };

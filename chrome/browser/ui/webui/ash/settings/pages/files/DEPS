@@ -11,15 +11,18 @@ include_rules = [
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
-  "+chrome/browser/ui/webui/ash/settings/test_support",
   "+chrome/browser/ui/webui/ash/smb_shares",
-  "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",
   "+chrome/grit",
-  "+chrome/test",
 ]
+
+specific_include_rules = {
+  '.*_(browser|unit)test\\.cc': [
+     "+chrome/test",
+     "+chrome/browser/ui/browser.h",
+     "+chrome/browser/ui/webui/ash/settings/test_support",
+  ],
+}

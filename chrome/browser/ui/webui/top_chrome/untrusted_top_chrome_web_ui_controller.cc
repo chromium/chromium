@@ -20,3 +20,8 @@ UntrustedTopChromeWebUIController::UntrustedTopChromeWebUIController(
 
 UntrustedTopChromeWebUIController::~UntrustedTopChromeWebUIController() =
     default;
+
+content::WebUIController::TrustPolicy
+UntrustedTopChromeWebUIController::GetTrustPolicy() {
+  return content::WebUIController::kUntrusted;
+}

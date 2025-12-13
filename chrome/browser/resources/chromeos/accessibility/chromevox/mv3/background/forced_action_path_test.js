@@ -14,6 +14,22 @@ ChromeVoxForcedActionPathTest = class extends ChromeVoxE2ETest {
     await super.setUpDeferred();
     globalThis.Gesture = chrome.accessibilityPrivate.Gesture;
     globalThis.keyboardHandler = BackgroundKeyboardHandler.instance;
+
+    this.lastPropagate_ = undefined;
+
+    // Swap in a mock for this function. In normal circumstances, the browser
+    // will have a queue of pending events when this function is called.
+    // However, this invariant is invalidated in this test suite since we are
+    // calling directly into the BackgroundKeyboardHandler key handlers.
+    chrome.accessibilityPrivate.processPendingSpokenFeedbackEvent =
+        (id, propagate) => {
+          this.lastPropagate_ = propagate;
+        };
+  }
+
+  /** @param {boolean} propagated */
+  assertLastKeyPropagated(propagated) {
+    assertEquals(propagated, this.lastPropagate_);
   }
 
   /**
@@ -236,19 +252,25 @@ AX_TEST_F('ChromeVoxForcedActionPathTest', 'SingleKey', async function() {
   let keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.LEFT));
+  this.assertLastKeyPropagated(false);
   this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.LEFT));
+  this.assertLastKeyPropagated(false);
   await keyPressReceived;
   assertFalse(finished);
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.RIGHT));
+  this.assertLastKeyPropagated(false);
   this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.RIGHT));
+  this.assertLastKeyPropagated(false);
   await keyPressReceived;
   assertFalse(finished);
   keyPressReceived = new Promise(
       resolve => ForcedActionPath.postKeyDownEventCallbackForTesting = resolve);
   this.callOnKeyDown(TestUtils.createMockInternalKey(KeyCode.SPACE));
+  this.assertLastKeyPropagated(true);
   this.callOnKeyUp(TestUtils.createMockInternalKey(KeyCode.SPACE));
+  this.assertLastKeyPropagated(true);
   await keyPressReceived;
   assertTrue(finished);
 });

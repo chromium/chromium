@@ -53,11 +53,32 @@ bool SignInWithUI(Browser* browser,
     base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
 
 // Waits for the history sync optin dialog to get displayed, then executes
-// javascript to click on confirm button. Returns false if dialog wasn't
-// dismissed before |timeout|.
+// javascript to click on confirm button.
+// When `wait_for_dismiss` is true, the method returns true if dialog is
+// dismissed before `timeout`, false otheriwise.
+// When `wait_for_dismiss` is false, the method returns true if the history
+// sync optin service completes successfully a flow and is reset before `timeout`
+// false otherwise.
+// Note: The case with `wait_for_dismiss` set to false, works only for impressions
+// of the dialog via the corresponding history sync optin service.
 [[nodiscard]] bool ConfirmHistorySyncOptinDialog(
     Browser* browser,
-    base::TimeDelta timeout = kSyncConfirmationDialogTimeout);
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout,
+    bool wait_for_dismiss = true);
+
+// Waits for the history sync optin dialog to get displayed, then executes
+// javascript to click on reject button.
+// When `wait_for_dismiss` is true, the method returns true if dialog is
+// dismissed before `timeout`, false otheriwise.
+// When `wait_for_dismiss` is false, the method returns true if the history
+// sync optin service completes successfully a flow and is reset before `timeout`
+// false otherwise.
+// Note: The case with `wait_for_dismiss` set to false, works only for impressions
+// of the dialog via the corresponding history sync optin service.
+[[nodiscard]] bool RejectHistorySyncOptinDialog(
+    Browser* browser,
+    base::TimeDelta timeout = kSyncConfirmationDialogTimeout,
+    bool wait_for_dismiss = true);
 
 // Waits for sync confirmation dialog to get displayed, then executes javascript
 // to click on settings button. Returns false if dialog wasn't dismissed before

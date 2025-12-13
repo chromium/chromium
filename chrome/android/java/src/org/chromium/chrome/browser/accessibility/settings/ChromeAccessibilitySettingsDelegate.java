@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.accessibility.settings;
 
-
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -98,8 +98,45 @@ public class ChromeAccessibilitySettingsDelegate implements AccessibilitySetting
     }
 
     @Override
+    public BooleanPreferenceDelegate getTouchpadOverscrollHistoryNavigationAccessibilityDelegate() {
+        return new ChromeBooleanPreferenceDelegate(
+                getBrowserContextHandle(),
+                Pref.ACCESSIBILITY_TOUCHPAD_OVERSCROLL_HISTORY_NAVIGATION);
+    }
+
+    @Override
     public BooleanPreferenceDelegate getReaderAccessibilityDelegate() {
         return new ChromeBooleanPreferenceDelegate(
                 getBrowserContextHandle(), Pref.READER_FOR_ACCESSIBILITY);
+    }
+
+    /**
+     * Returns whether the material slider should be used for the page zoom preference.
+     *
+     * @return True if the slider should be used, false otherwise.
+     */
+    @Override
+    public boolean shouldUseSlider() {
+        return ChromeFeatureList.sAndroidSettingsContainment.isEnabled();
+    }
+
+    /**
+     * Checks if the caret browsing feature is currently enabled for the associated profile.
+     *
+     * @return True if caret browsing is enabled, false otherwise.
+     */
+    @Override
+    public boolean isCaretBrowsingEnabled() {
+        return AccessibilitySettingsBridge.isCaretBrowsingEnabled(mProfile);
+    }
+
+    /**
+     * Sets the enabled state of the caret browsing feature for the associated profile.
+     *
+     * @param enabled True to enable caret browsing, false to disable it.
+     */
+    @Override
+    public void setCaretBrowsingEnabled(boolean enabled) {
+        AccessibilitySettingsBridge.setCaretBrowsingEnabled(mProfile, enabled);
     }
 }

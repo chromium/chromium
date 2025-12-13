@@ -409,6 +409,34 @@ std::u16string PointerToString(T* ptr) {
   }
 }
 
+template <typename T>
+concept ClassHasToString = requires(T t) {
+  { t.ToString() } -> std::same_as<std::string>;
+};
+
+template <typename T>
+concept ClassHasFromString = requires(T t, std::string_view sv) {
+  { T::FromString(sv) } -> std::same_as<std::optional<T>>;
+};
+
+template <ClassHasToString T>
+struct TypeConverter<T>
+    : BaseTypeConverter<ClassHasFromString<T>, !ClassHasFromString<T>> {
+  static std::u16string ToString(ui::metadata::ArgType<T> source_value) {
+    return base::UTF8ToUTF16(source_value.ToString());
+  }
+
+  static std::optional<T> FromString(const std::u16string& source_value) {
+    if constexpr (ClassHasFromString<T>) {
+      return T::FromString(base::UTF16ToUTF8(source_value));
+    }
+
+    return std::nullopt;
+  }
+
+  static ValidStrings GetValidStrings() { return {}; }
+};
+
 }  // namespace metadata
 }  // namespace ui
 

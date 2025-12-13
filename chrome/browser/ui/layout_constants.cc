@@ -81,11 +81,7 @@ int GetLayoutConstant(LayoutConstant constant) {
     case LOCATION_BAR_TRAILING_ICON_SIZE:
       return 20;
     case NEW_TAB_BUTTON_LEADING_MARGIN:
-      return features::IsTabSearchMoving() &&
-                     !features::HasTabstripComboButtonWithBackground() &&
-                     !features::HasTabSearchToolbarButton()
-                 ? 4
-                 : 0;
+      return 0;
     case STAR_RATING_ICON_SIZE:
       return 14;
     case TAB_AFTER_TITLE_PADDING:
@@ -110,11 +106,6 @@ int GetLayoutConstant(LayoutConstant constant) {
     case TAB_STACK_DISTANCE:
       return touch_ui ? 4 : 6;
     case TABSTRIP_TOOLBAR_OVERLAP:
-      // Because tab scrolling puts the tabstrip on a separate layer,
-      // changing paint order, this overlap isn't compatible with scrolling.
-      if (base::FeatureList::IsEnabled(tabs::kScrollableTabStrip)) {
-        return 0;
-      }
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:
       return touch_ui ? 48 : 34;
@@ -132,12 +123,24 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 0 : 2;
     case TOOLBAR_STANDARD_SPACING:
       return touch_ui ? 12 : 9;
+    case TOOLBAR_HEIGHT_SIDE_PANEL_INSET:
+      return 8;
     case PAGE_INFO_ICON_SIZE:
       return 20;
     case DOWNLOAD_ICON_SIZE:
       return 20;
+    case MAIN_BACKGROUND_REGION_CORNER_RADIUS:
     case TOOLBAR_CORNER_RADIUS:
+    case VERTICAL_TAB_CORNER_RADIUS:
       return 8;
+    case VERTICAL_TAB_HEIGHT:
+      return 30;
+    case VERTICAL_TAB_STRIP_HORIZONTAL_PADDING:
+      return 12;
+    case VERTICAL_TAB_STRIP_BOTTOM_BUTTON_PADDING:
+      return 4;
+    case VERTICAL_TAB_PINNED_BORDER_THICKNESS:
+      return 1;
     default:
       break;
   }

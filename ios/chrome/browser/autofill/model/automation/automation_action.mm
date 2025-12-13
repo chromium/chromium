@@ -415,7 +415,8 @@
   [self executeJavaScript:
             base::SysNSStringToUTF8([NSString
                 stringWithFormat:
-                    @"__gCrWeb.fill.setInputElementValue(\"%s\", target);",
+                    @"__gCrWeb.getRegisteredApi('fill_test_api')."
+                    @"getFunction('setInputElementValue')(\"%s\", target);",
                     value.c_str()])
                  onTarget:selector];
 }

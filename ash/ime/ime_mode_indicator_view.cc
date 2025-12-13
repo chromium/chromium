@@ -41,7 +41,7 @@ class ModeIndicatorFrameView : public views::BubbleFrameView {
  private:
   // views::BubbleFrameView overrides:
   gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const override {
-    return display::Screen::GetScreen()
+    return display::Screen::Get()
         ->GetDisplayNearestPoint(rect.CenterPoint())
         .bounds();
   }
@@ -100,8 +100,8 @@ void ImeModeIndicatorView::Init() {
   SetAnchorRect(cursor_bounds_);
 }
 
-std::unique_ptr<views::NonClientFrameView>
-ImeModeIndicatorView::CreateNonClientFrameView(views::Widget* widget) {
+std::unique_ptr<views::FrameView> ImeModeIndicatorView::CreateFrameView(
+    views::Widget* widget) {
   auto frame = std::make_unique<ModeIndicatorFrameView>();
   // arrow adjustment in BubbleDialogDelegateView is unnecessary because arrow
   // of this bubble is always center.

@@ -14,13 +14,13 @@
 #import "components/ntp_tiles/ntp_tile_impression.h"
 #import "components/ntp_tiles/tile_visual_type.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
-#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/public/set_up_list_utils.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_metrics.h"
@@ -34,7 +34,7 @@ const float kMaxModuleEngagementIndex = 50;
 }
 
 @implementation ContentSuggestionsMetricsRecorder {
-  raw_ptr<PrefService> _localState;
+  raw_ptr<PrefService, DanglingUntriaged> _localState;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {
@@ -85,7 +85,6 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
-    case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
@@ -105,7 +104,16 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementShopCardIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
-    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kAppBundlePromo:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementAppBundlePromoIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kDefaultBrowser:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementDefaultBrowserIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;
@@ -133,8 +141,6 @@ const float kMaxModuleEngagementIndex = 50;
     case NTPCollectionShortcutTypeWhatsNew:
       base::RecordAction(base::UserMetricsAction(kShowWhatsNewAction));
       break;
-    case NTPCollectionShortcutTypeCount:
-      NOTREACHED();
   }
 }
 
@@ -176,7 +182,7 @@ const float kMaxModuleEngagementIndex = 50;
   base::RecordAction(base::UserMetricsAction(kShowMostVisitedAction));
 }
 
-- (void)recordMostVisitedTileShown:(ContentSuggestionsMostVisitedItem*)item
+- (void)recordMostVisitedTileShown:(MostVisitedItem*)item
                            atIndex:(NSInteger)index {
   ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
       index, item.source, item.titleSource,
@@ -184,7 +190,7 @@ const float kMaxModuleEngagementIndex = 50;
       [self getIconTypeFromAttributes:item.attributes], item.URL));
 }
 
-- (void)recordMostVisitedTileOpened:(ContentSuggestionsMostVisitedItem*)item
+- (void)recordMostVisitedTileOpened:(MostVisitedItem*)item
                             atIndex:(NSInteger)index {
   base::RecordAction(base::UserMetricsAction(kMostVisitedAction));
 

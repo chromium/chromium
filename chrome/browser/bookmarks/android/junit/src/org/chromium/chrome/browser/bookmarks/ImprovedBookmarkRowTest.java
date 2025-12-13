@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -44,8 +45,10 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -343,5 +346,25 @@ public class ImprovedBookmarkRowTest {
 
         mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, false);
         assertEquals(View.GONE, localBookmarkImageView.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    public void testDragShadowVisuals_FeatureEnabled_Visual() {
+        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ true);
+
+        assertFalse(
+                "ClipToOutline should be false to allow shadow drawing.", row.getClipToOutline());
+        assertNotNull(
+                "OutlineProvider should be set when feature is enabled.", row.getOutlineProvider());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    public void testDragShadowVisuals_FeatureEnabled_Compact() {
+        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ false);
+
+        assertFalse("Compact rows should also allow shadow drawing.", row.getClipToOutline());
+        assertNotNull("Compact rows should have an outline provider.", row.getOutlineProvider());
     }
 }

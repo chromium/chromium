@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/layout/absolute_utils.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
@@ -49,14 +50,10 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/layout_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
@@ -82,14 +79,8 @@ namespace {
 // returned, and there are inline children, an anonymous block wrapper needs to
 // be created.
 bool AllowsInlineChildren(const LayoutBlockFlow& block) {
-  bool is_multicol;
-  if (RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-    is_multicol = block.IsMulticolContainer();
-  } else {
-    is_multicol = IsA<LayoutMultiColumnFlowThread>(block);
-  }
   const auto* inner_editor = DynamicTo<LayoutTextControlInnerEditor>(block);
-  return !is_multicol && !block.IsScrollMarkerGroup() &&
+  return !block.IsMulticolContainer() && !block.IsScrollMarkerGroup() &&
          !(inner_editor && inner_editor->IsMultiline());
 }
 
@@ -100,7 +91,6 @@ bool IsInnerEditorChild(const LayoutBlockFlow& block) {
 }  // anonymous namespace
 
 struct SameSizeAsLayoutBlockFlow : public LayoutBlock {
-  Member<void*> member;
   Member<void*> inline_node_data;
 };
 
@@ -153,8 +143,8 @@ void LayoutBlockFlow::AddChildBeforeDescendant(
     LayoutObject* new_child,
     LayoutObject* before_descendant) {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled());
   DCHECK_NE(before_descendant->Parent(), this);
+
   LayoutObject* before_descendant_container = before_descendant->Parent();
   while (before_descendant_container->Parent() != this) {
     before_descendant_container = before_descendant_container->Parent();
@@ -206,21 +196,8 @@ void LayoutBlockFlow::AddChildBeforeDescendant(
 void LayoutBlockFlow::AddChild(LayoutObject* new_child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
-
-  if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
-    if (before_child == flow_thread)
-      before_child = flow_thread->FirstChild();
-    DCHECK(!before_child || before_child->IsDescendantOf(flow_thread));
-    flow_thread->AddChild(new_child, before_child);
-    return;
-  }
-
   if (before_child && before_child->Parent() != this) {
-    if (RuntimeEnabledFeatures::LayoutAddChildBeforeDescendantFixEnabled()) {
-      AddChildBeforeDescendant(new_child, before_child);
-    } else {
-      AddChildBeforeDescendantDeprecated(new_child, before_child);
-    }
+    AddChildBeforeDescendant(new_child, before_child);
     return;
   }
 
@@ -230,12 +207,8 @@ void LayoutBlockFlow::AddChild(LayoutObject* new_child,
   // children as blocks.
   // So, if our children are currently inline and a block child has to be
   // inserted, we move all our inline children into anonymous block boxes.
-  const bool child_is_inline_level =
-      new_child->IsInline() ||
-      (LayoutObject::RequiresAnonymousTableWrappers(new_child) &&
-       LayoutTable::ShouldCreateInlineAnonymous(*this));
-  bool child_is_block_level =
-      !child_is_inline_level && !new_child->IsFloatingOrOutOfFlowPositioned();
+  const bool child_is_block_level =
+      !new_child->IsInline() && !new_child->IsFloatingOrOutOfFlowPositioned();
 
   if (ChildrenInline()) {
     if (child_is_block_level) {
@@ -303,49 +276,61 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     LayoutBox::RemoveChild(old_child);
     return;
   }
-  const bool is_inner_editor_child = IsAnonymous() && IsInnerEditorChild(*this);
 
   // If this child is a block, and if our previous and next siblings are both
   // anonymous blocks with inline content, then we can go ahead and fold the
-  // inline content back together. If only one of the siblings is such an
-  // anonymous blocks, check if the other sibling (and any of *its* siblings)
-  // are floating or out-of-flow positioned. In that case, they should be moved
-  // into the anonymous block.
-  LayoutObject* prev = old_child->PreviousSibling();
-  LayoutObject* next = old_child->NextSibling();
-  bool merged_anonymous_blocks = false;
-  if (prev && next && !old_child->IsInline()) {
-    auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
-    auto* next_block_flow = DynamicTo<LayoutBlockFlow>(next);
-    if (prev_block_flow && next_block_flow &&
-        prev_block_flow->MergeSiblingContiguousAnonymousBlock(
-            next_block_flow)) {
-      merged_anonymous_blocks = true;
-      next = nullptr;
-    } else if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
-      // The previous sibling is anonymous. Scan the next siblings and reparent
-      // any floating or out-of-flow positioned objects into the end of the
-      // previous anonymous block.
-      while (next && next->IsFloatingOrOutOfFlowPositioned()) {
-        LayoutObject* sibling = next->NextSibling();
-        MoveChildTo(prev_block_flow, next, nullptr, false);
-        next = sibling;
+  // inline content back together.
+  if (!old_child->IsInline()) {
+    auto* prev_block_flow =
+        DynamicTo<LayoutBlockFlow>(old_child->PreviousSibling());
+    auto* next_block_flow =
+        DynamicTo<LayoutBlockFlow>(old_child->NextSibling());
+    if (prev_block_flow && next_block_flow) {
+      prev_block_flow->MergeSiblingContiguousAnonymousBlock(next_block_flow);
+    }
+  }
+
+  // If the old_child is block-level we need to check if any adjacent siblings
+  // are floating or out-of-flow positioned, and if so reparent them into the
+  // inline-level anonymous block.
+  //
+  // This logic is the complement to these reparenting methods:
+  //  - ReparentPrecedingFloatingOrOutOfFlowSiblings
+  //  - ReparentSubsequentFloatingOrOutOfFlowSiblings
+  {
+    LayoutObject* prev = old_child->PreviousSibling();
+    LayoutObject* next = old_child->NextSibling();
+    if (prev && next && !old_child->IsInline()) {
+      auto* prev_block_flow = DynamicTo<LayoutBlockFlow>(prev);
+      if (prev_block_flow && IsMergeableAnonymousBlock(prev_block_flow)) {
+        // The previous sibling is an anonymous block-flow. Scan the next
+        // siblings and reparent any floating or out-of-flow positioned objects
+        // into the end of the previous anonymous block-flow.
+        while (next && next->IsFloatingOrOutOfFlowPositioned()) {
+          LayoutObject* sibling = next->NextSibling();
+          MoveChildTo(prev_block_flow, next, nullptr, false);
+          next = sibling;
+        }
       }
-    } else if (next_block_flow && IsMergeableAnonymousBlock(next_block_flow)) {
-      // The next sibling is anonymous. Scan the previous siblings and reparent
-      // any floating or out-of-flow positioned objects into the start of the
-      // next anonymous block.
-      while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
-        LayoutObject* sibling = prev->PreviousSibling();
-        MoveChildTo(next_block_flow, prev, next_block_flow->FirstChild(),
-                    false);
-        prev = sibling;
+
+      auto* next_block_flow = DynamicTo<LayoutBlockFlow>(prev->NextSibling());
+      if (next_block_flow && IsMergeableAnonymousBlock(next_block_flow)) {
+        // The next sibling is an anonymous block-flow. Scan the previous
+        // siblings and reparent any floating or out-of-flow positioned objects
+        // into the start of the next anonymous block-flow.
+        while (prev && prev->IsFloatingOrOutOfFlowPositioned()) {
+          LayoutObject* sibling = prev->PreviousSibling();
+          MoveChildTo(next_block_flow, prev, next_block_flow->FirstChild(),
+                      false);
+          prev = sibling;
+        }
       }
     }
   }
 
   LayoutBlock::RemoveChild(old_child);
 
+  const bool is_inner_editor_child = IsAnonymous() && IsInnerEditorChild(*this);
   if (is_inner_editor_child && !BeingDestroyed()) {
     if (old_child->IsBR() && FirstChild()) {
       // We removed a LayoutBR from `this`. If this still contains LayoutTexts,
@@ -357,22 +342,20 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
                           /* full_remove_insert */ true);
       }
     }
-    if (!FirstChild() && Parent()) {
-      Parent()->RemoveChild(this);
+    if (!FirstChild()) {
       Destroy();
     }
     return;
   }
 
-  LayoutObject* child = prev ? prev : next;
-  auto* child_block_flow = DynamicTo<LayoutBlockFlow>(child);
-  if (child_block_flow && !child_block_flow->PreviousSibling() &&
-      !child_block_flow->NextSibling()) {
+  if (FirstChild() == LastChild()) {
     // If the removal has knocked us down to containing only a single anonymous
-    // box we can go ahead and pull the content right back up into our
-    // box.
-    if (merged_anonymous_blocks || IsMergeableAnonymousBlock(child_block_flow))
-      CollapseAnonymousBlockChild(child_block_flow);
+    // box we can go ahead and pull the content right back up into our box.
+    if (auto* child_block_flow = DynamicTo<LayoutBlockFlow>(FirstChild())) {
+      if (IsMergeableAnonymousBlock(child_block_flow)) {
+        CollapseAnonymousBlockChild(child_block_flow);
+      }
+    }
   }
 
   if (FirstChild() && !BeingDestroyed() &&
@@ -382,18 +365,6 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
     // inline without the need for anonymous blocks, then do that.
     MakeChildrenInlineIfPossible();
   }
-}
-
-void LayoutBlockFlow::MoveAllChildrenIncludingFloatsTo(
-    LayoutBlock* to_block,
-    bool full_remove_insert) {
-  NOT_DESTROYED();
-  auto* to_block_flow = To<LayoutBlockFlow>(to_block);
-
-  DCHECK(full_remove_insert ||
-         to_block_flow->ChildrenInline() == ChildrenInline());
-
-  MoveAllChildrenTo(to_block_flow, full_remove_insert);
 }
 
 void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
@@ -421,7 +392,7 @@ void LayoutBlockFlow::ChildBecameFloatingOrOutOfFlow(LayoutBox* child) {
     return;
   }
   auto* next = DynamicTo<LayoutBlockFlow>(child->NextSibling());
-  if (next && next->IsAnonymousBlockFlow()) {
+  if (next && next->IsAnonymousBlockFlow() && !next->IsViewTransitionRoot()) {
     MoveChildTo(next, child, next->FirstChild(), false);
   }
 }
@@ -479,9 +450,7 @@ bool LayoutBlockFlow::MergeSiblingContiguousAnonymousBlock(
   bool full_remove_insert = sibling_that_may_be_deleted->HasLayer() ||
                             HasLayer() ||
                             sibling_that_may_be_deleted->IsInsideMulticol();
-  sibling_that_may_be_deleted->MoveAllChildrenIncludingFloatsTo(
-      this, full_remove_insert);
-  // Delete the now-empty block's lines and nuke it.
+  sibling_that_may_be_deleted->MoveAllChildrenTo(this, full_remove_insert);
   sibling_that_may_be_deleted->Destroy();
   return true;
 }
@@ -679,7 +648,7 @@ bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
     object_to_check = parent;
   }
   return object_to_check->HasNonVisibleOverflow() &&
-         object_to_check->StyleRef().TextOverflow() != ETextOverflow::kClip;
+         !object_to_check->StyleRef().TextOverflow().IsClip();
 }
 
 Node* LayoutBlockFlow::NodeForHitTest() const {
@@ -754,9 +723,10 @@ void LayoutBlockFlow::DirtyLinesFromChangedChild(LayoutObject* child) {
 
 bool LayoutBlockFlow::AllowsColumns() const {
   NOT_DESTROYED();
-  // Ruby elements manage child insertion in a special way, and would mess up
-  // insertion of the flow thread. The flow thread needs to be a direct child of
-  // the multicol block (|this|).
+  // TODO(crbug.com/40414064): Ruby elements manage child insertion in a special
+  // way, and this would come in conflict with the legacy multicol
+  // implementation. However, that implementation is now gone, and it should be
+  // safe to enable multicol for ruby.
   if (IsRuby())
     return false;
 
@@ -770,29 +740,17 @@ bool LayoutBlockFlow::AllowsColumns() const {
   if (IsMathML())
     return false;
 
+  if (IsA<HTMLImageElement>(GetNode())) {
+    // We may create a LayoutBlockFlow for the ALT text of a broken image. Such
+    // a block should not become a multicol container.
+    return false;
+  }
+
   return true;
 }
 
-// TODO(crbug.com/371802475): Remove the parameter.
-void LayoutBlockFlow::UpdateForMulticol(const ComputedStyle* old_style) {
+void LayoutBlockFlow::UpdateForMulticol() {
   NOT_DESTROYED();
-  bool specifies_columns = StyleRef().SpecifiesColumns();
-
-  if (MultiColumnFlowThread()) {
-    DCHECK(!RuntimeEnabledFeatures::FlowThreadLessEnabled());
-    DCHECK(old_style);
-    if (specifies_columns != old_style->SpecifiesColumns()) {
-      // If we're no longer to be multicol/paged, destroy the flow thread. Also
-      // destroy it when switching between multicol and paged, since that
-      // affects the column set structure (multicol containers may have
-      // spanners, paged containers may not).
-      MultiColumnFlowThread()->EvacuateAndDestroy();
-      SetIsMulticolContainer(false);
-      DCHECK(!MultiColumnFlowThread());
-    }
-    return;
-  }
-
   auto ShouldBeMulticol = [this]() -> bool {
     if (!StyleRef().SpecifiesColumns() || !AllowsColumns()) {
       return false;
@@ -824,34 +782,6 @@ void LayoutBlockFlow::UpdateForMulticol(const ComputedStyle* old_style) {
 
   if (IsListItem()) {
     UseCounter::Count(GetDocument(), WebFeature::kMultiColAndListItem);
-  }
-
-  if (!RuntimeEnabledFeatures::FlowThreadLessEnabled()) {
-    if (!should_be_multicol) {
-      return;
-    }
-
-    auto* flow_thread =
-        LayoutMultiColumnFlowThread::CreateAnonymous(GetDocument(), StyleRef());
-    AddChild(flow_thread);
-    if (IsLayoutNGObject()) {
-      // For simplicity of layout algorithm, we assume flow thread having block
-      // level children only.
-      // For example, we can handle them in same way:
-      //   <div style="columns:3">abc<br>def<br>ghi<br></div>
-      //   <div style="columns:3"><div>abc<br>def<br>ghi<br></div></div>
-      flow_thread->SetChildrenInline(false);
-    }
-
-    // Check that addChild() put the flow thread as a direct child, and didn't
-    // do fancy things.
-    DCHECK_EQ(flow_thread->Parent(), this);
-
-    flow_thread->Populate();
-
-    DCHECK(!multi_column_flow_thread_);
-    multi_column_flow_thread_ = flow_thread;
-    return;
   }
 
   // Descendants are inside multicol if this is now a multicol container, or if

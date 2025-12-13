@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("legion") {
+  sources = []
+
+  deps = [
+    "//base",
+    "//components/legion",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "secure_session_async_impl_browsertest.cc",
+      "websocket_client_browsertest.cc",
+    ]
+
+    deps = [
+      ":legion",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/legion",
+      "//components/legion:proto",
+      "//components/legion:proto_extras",
+      "//components/legion/crypto",
+      "//components/legion/crypto:test_support",
+      "//content/test:test_support",
+      "//third_party/oak:oak_proto",
+      "//third_party/oak:oak_proto_extras",
+      "//third_party/oak:oak_proto_test_extras",
+    ]
+  }
+}

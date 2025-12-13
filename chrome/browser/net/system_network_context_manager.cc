@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/net/system_network_context_manager.h"
 
 #include <algorithm>
@@ -17,11 +12,13 @@
 #include "base/build_time.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
@@ -33,6 +30,7 @@
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
+#include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_factory.h"
 #include "chrome/browser/net/convert_explicitly_allowed_network_ports_pref.h"
 #include "chrome/browser/net/default_dns_over_https_config_source.h"
@@ -48,15 +46,16 @@
 #include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/encryption/cache/utils.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_log_proxy_source.h"
-#include "components/network_session_configurator/common/network_features.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/net/omnibox_autofocus_http_headers.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
@@ -339,7 +338,7 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
     }
 
     for (size_t i = 0; i < ct_log.previous_operators_length; i++) {
-      const auto& op = ct_log.previous_operators[i];
+      const auto& op = UNSAFE_TODO(ct_log.previous_operators[i]);
       network::mojom::PreviousOperatorEntryPtr previous_operator =
           network::mojom::PreviousOperatorEntry::New();
       previous_operator->name = op.name;
@@ -362,9 +361,7 @@ namespace features {
 // this feature is disabled any failed launches in the current browser session
 // will still result in sandbox being disabled for the lifetime of the running
 // browser.
-BASE_FEATURE(kPersistFailedLaunchState,
-             "PersistFailedLaunchState",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistFailedLaunchState, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 class SystemNetworkContextManager::NetworkProcessLaunchWatcher
@@ -838,8 +835,9 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
 
   int max_connections_per_proxy =
       local_state_->GetInteger(prefs::kMaxConnectionsPerProxy);
-  if (max_connections_per_proxy != -1) {
-    network_service->SetMaxConnectionsPerProxyChain(max_connections_per_proxy);
+  if (max_connections_per_proxy >= 0) {
+    network_service->SetMaxConnectionsPerProxyChain(
+        base::saturated_cast<uint32_t>(max_connections_per_proxy));
   }
 
   network_service_network_context_.reset();
@@ -919,8 +917,30 @@ void SystemNetworkContextManager::DisableQuic() {
 void SystemNetworkContextManager::
     AddCookieEncryptionManagerToNetworkContextParams(
         network::mojom::NetworkContextParams* network_context_params) {
+  if (!cookie_encryption_provider_) {
+    cookie_encryption_provider_ =
+        std::make_unique<CookieEncryptionProviderImpl>(
+            g_browser_process->os_crypt_async());
+  }
   network_context_params->cookie_encryption_provider =
-      cookie_encryption_provider_.BindNewRemote();
+      cookie_encryption_provider_->BindNewRemote();
+}
+
+void SystemNetworkContextManager::
+    AddCacheEncryptionProviderToNetworkContextParams(
+        network::mojom::NetworkContextParams* network_context_params) {
+  if (!cache_encryption_provider_) {
+    cache_encryption_provider_ =
+        std::make_unique<enterprise_encryption::CacheEncryptionProviderImpl>(
+            g_browser_process->os_crypt_async());
+  }
+
+  mojo::PendingRemote<network::mojom::CacheEncryptionProvider>
+      cache_encryption_provider_remote =
+          cache_encryption_provider_->BindNewRemote();
+
+  network_context_params->encryption_provider =
+      std::move(cache_encryption_provider_remote);
 }
 
 void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
@@ -931,6 +951,7 @@ void SystemNetworkContextManager::AddSSLConfigToNetworkContextParams(
 void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
   variations::UpdateCorsExemptHeaderForVariations(network_context_params);
+  variations::UpdateCorsExemptHeaderForOmniboxAutofocus(network_context_params);
   GoogleURLLoaderThrottle::UpdateCorsExemptHeader(network_context_params);
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
   request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
@@ -970,7 +991,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
 #if BUILDFLAG(IS_WIN)
   if (command_line.HasSwitch(switches::kUseSystemProxyResolver)) {
-    network_context_params->windows_system_proxy_resolver =
+    network_context_params->system_proxy_resolver =
         ChromeMojoProxyResolverWin::CreateWithSelfOwnedReceiver();
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1015,8 +1036,10 @@ SystemNetworkContextManager::GetNetExportFileWriter() {
 }
 
 void SystemNetworkContextManager::UpdateTrustAnchorIDs(
-    std::vector<std::vector<uint8_t>> trust_anchor_ids) {
-  ssl_config_service_manager_.UpdateTrustAnchorIDs(std::move(trust_anchor_ids));
+    std::vector<std::vector<uint8_t>> trust_anchor_ids,
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
+  ssl_config_service_manager_.UpdateTrustAnchorIDs(
+      std::move(trust_anchor_ids), std::move(mtc_trust_anchor_ids));
 }
 
 // static

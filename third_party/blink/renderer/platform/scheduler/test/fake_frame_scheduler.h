@@ -37,6 +37,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       : FrameSchedulerImpl(/*main_thread_scheduler=*/nullptr,
                            /*parent_page_scheduler=*/nullptr,
                            /*delegate=*/delegate,
+                           LocalFrameToken(),
                            /*is_in_embedded_frame_tree=*/false,
                            /*frame_type=*/frame_type),
         page_scheduler_(page_scheduler),
@@ -132,7 +133,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
   }
   PageScheduler* GetPageScheduler() const override { return page_scheduler_; }
   WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const WTF::String& name,
+      const String& name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override {
     return WebScopedVirtualTimePauser();
   }
@@ -141,7 +142,7 @@ class FakeFrameScheduler : public FrameSchedulerImpl {
       bool is_web_history_inert_commit,
       FrameScheduler::NavigationType navigation_type,
       DidCommitProvisionalLoadParams params) override {}
-  void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
+  void OnFirstMeaningfulPaint() override {}
   // |source_location| is nullptr when JS is not running.
   // |handle| is nullptr when sticky feature starts to be used.
   void OnStartedUsingNonStickyFeature(

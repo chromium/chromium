@@ -1439,28 +1439,6 @@ form) on members of unions due to
 
 The following C++20 library features are not allowed in the Chromium codebase.
 
-### std::atomic_ref <sup>[banned]</sup>
-
-```c++
-struct S { int a; int b; };
-S not_atomic;
-std::atomic_ref<S> is_atomic(not_atomic);
-```
-
-**Description:** Allows atomic access to objects that might not themselves be
-atomic types. While any atomic_ref to an object exists, the object must be
-accessed exclusively through atomic_ref instances.
-
-**Documentation:**
-[`std::atomic_ref`](https://en.cppreference.com/w/cpp/atomic/atomic_ref)
-
-**Notes:**
-*** promo
-Banned due to being [unimplemented in libc++](https://reviews.llvm.org/D72240).
-
-[Migration bug](https://crbug.com/1422701) (once this is allowed)
-***
-
 ### std::bind_front <sup>[banned]</sup>
 
 ```c++
@@ -1988,7 +1966,7 @@ const std::string& MyString() {
 type T that behaves as an object of type T but never calls T's destructor.
 
 **Documentation:**
-[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_desctructor.h)
+[no_destructor.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/no_destructor.h)
 
 **Notes:**
 *** promo

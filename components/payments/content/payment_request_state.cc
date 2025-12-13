@@ -27,12 +27,13 @@
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_app.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_response_helper.h"
 #include "components/payments/content/service_worker_payment_app.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
+#include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/payment_request_data_util.h"
 #include "components/payments/core/payments_experimental_features.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -156,13 +157,18 @@ PaymentRequestState::CreateInternalAuthenticator() const {
   return GetPaymentRequestDelegate()->CreateInternalAuthenticator();
 }
 
-scoped_refptr<PaymentManifestWebDataService>
-PaymentRequestState::GetPaymentManifestWebDataService() const {
-  return GetPaymentRequestDelegate()->GetPaymentManifestWebDataService();
+scoped_refptr<WebPaymentsWebDataService>
+PaymentRequestState::GetWebPaymentsWebDataService() const {
+  return GetPaymentRequestDelegate()->GetWebPaymentsWebDataService();
 }
 
 bool PaymentRequestState::IsOffTheRecord() const {
   return GetPaymentRequestDelegate()->IsOffTheRecord();
+}
+
+bool PaymentRequestState::PrefsCanMakePayment() const {
+  return GetPaymentRequestDelegate()->GetPrefService()->GetBoolean(
+      kCanMakePaymentEnabled);
 }
 
 void PaymentRequestState::OnPaymentAppCreated(std::unique_ptr<PaymentApp> app) {

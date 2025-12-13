@@ -21,10 +21,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
-#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 class GURL;
 
@@ -62,7 +61,7 @@ class V4UpdateProtocolManager {
       V4UpdateCallback update_callback,
       ExtendedReportingLevelCallback extended_reporting_level_callback);
 
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Schedule the next update without backoff.
   void ScheduleNextUpdate(std::unique_ptr<StoreStateMap> store_state_map);

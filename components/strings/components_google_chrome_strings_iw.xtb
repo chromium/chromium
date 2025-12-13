@@ -32,16 +32,16 @@
         ולבטל את הבחירה באפשרות '<ph name="NO_PREFETCH_DESCRIPTION" />'.
         אם פעולה זו אינה פותרת את הבעיה, מומלץ לבחור שוב באפשרות זו
         לקבלת ביצועים משופרים.</translation>
-<translation id="6855094794438142393">‏יש לעבור אל
-          תפריט Chrome ‏&gt;
+<translation id="6581867098636731226">‏צריך להיכנס אל
+          תפריט Chrome‏ &gt;
           <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
+          ‏&gt;
+          <ph name="SYSTEM_TITLE" />
+          ‏&gt;
           <ph name="PROXIES_TITLE" />
-          &gt;
-          הגדרות LAN
-          ולבטל את הבחירה באפשרות "שימוש בשרת עבור רשת LAN".</translation>
+          ‏&gt;
+          Network &amp; internet (רשת ואינטרנט) &gt; Proxy (שרת proxy)
+          ולבטל את הבחירה באפשרות Automatically detect settings (זיהוי אוטומטי של ההגדרות).</translation>
 <translation id="7230956101631259640">‏מוצג דף מאובטח של Chrome</translation>
 <translation id="8232971017369963250">‏Chrome קיים הודות לפרויקט הקוד הפתוח של <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">‏Chrome קיים גם הודות ל<ph name="BEGIN_LINK_OSS" />תוכנת קוד פתוח<ph name="END_LINK_OSS" /> אחרת.</translation>

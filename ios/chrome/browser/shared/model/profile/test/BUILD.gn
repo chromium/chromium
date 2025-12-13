@@ -14,7 +14,6 @@ source_set("test") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/keyed_service/ios",
     "//components/policy/core/common",
     "//components/profile_metrics",
     "//components/supervised_user/core/browser",
@@ -28,11 +27,13 @@ source_set("test") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/test:test_support",
     "//ios/web/public/thread",
     "//net:test_support",
+    "//services/network/public/cpp",
   ]
 }
 

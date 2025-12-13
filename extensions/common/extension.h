@@ -115,8 +115,8 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
 
     // `FOR_LOGIN_SCREEN` means that this extension was force-installed through
     // policy for the login screen. Extensions created with this flag will have
-    // type `TYPE_LOGIN_SCREEN_EXTENSION` (with limited API capabilities)
-    // instead of the usual `TYPE_EXTENSION`.
+    // type `Type::kLoginScreenExtension` (with limited API capabilities)
+    // instead of the usual `Type::kExtension`.
     FOR_LOGIN_SCREEN = 1 << 13,
 
     // `WITHHOLD_PERMISSIONS` indicates that on installation the user indicated
@@ -136,7 +136,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
                                          mojom::ManifestLocation location,
                                          const base::Value::Dict& value,
                                          int flags,
-                                         std::string* error);
+                                         std::u16string* error);
 
   // In a few special circumstances, we want to create an Extension and give it
   // an explicit id. Most consumers should just use the other Create() method.
@@ -145,7 +145,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
                                          const base::Value::Dict& value,
                                          int flags,
                                          const ExtensionId& explicit_id,
-                                         std::string* error);
+                                         std::u16string* error);
 
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;

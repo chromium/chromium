@@ -27,6 +27,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <typeinfo>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -42,6 +43,7 @@ struct _tagpropertykey;
 using PROPERTYKEY = _tagpropertykey;
 struct tagPOINTER_DEVICE_INFO;
 using POINTER_DEVICE_INFO = tagPOINTER_DEVICE_INFO;
+typedef struct _UNICODE_STRING UNICODE_STRING;
 
 namespace base {
 
@@ -76,7 +78,7 @@ BASE_EXPORT bool SetBooleanValueForPropertyStore(
 BASE_EXPORT bool SetStringValueForPropertyStore(
     IPropertyStore* property_store,
     const PROPERTYKEY& property_key,
-    const wchar_t* property_string_value);
+    base::wcstring_view property_string_value);
 
 // Sets the CLSID value for a given key in a given IPropertyStore.
 BASE_EXPORT bool SetClsidForPropertyStore(IPropertyStore* property_store,
@@ -86,7 +88,7 @@ BASE_EXPORT bool SetClsidForPropertyStore(IPropertyStore* property_store,
 // Sets the application id in given IPropertyStore. The function is used to tag
 // application/Chrome shortcuts, and set app details for Chrome windows.
 BASE_EXPORT bool SetAppIdForPropertyStore(IPropertyStore* property_store,
-                                          const wchar_t* app_id);
+                                          base::wcstring_view app_id);
 
 // Adds the specified |command| using the specified |name| to the AutoRun key.
 // |root_key| could be HKCU or HKLM or the root of any user hive.
@@ -366,6 +368,23 @@ BASE_EXPORT bool SetProcessTimerThrottleState(HANDLE process,
 // Returns the serial number of the device.  Needs to be called from a COM
 // enabled thread.
 BASE_EXPORT std::optional<std::wstring> GetSerialNumber();
+
+// Converts a native UNICODE_STRING to a wstring_view.
+// Note the UNICODE_STRING must be in scope as long as the wstring_view is
+// valid.
+BASE_EXPORT std::wstring_view UnicodeStringToView(const UNICODE_STRING& ustr);
+
+// Converts a wstring_view to a native UNICODE_STRING.
+// Returns false if the string can't be stored in the UNICODE_STRING buffer.
+// Note the wstring_view must be in scope as long as the UNICODE_STRING is
+// valid.
+BASE_EXPORT bool ViewToUnicodeString(std::wstring_view str,
+                                     UNICODE_STRING& ustr);
+
+// Enables strict handle checking for the current process.
+// See
+// https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_strict_handle_check_policy.
+BASE_EXPORT bool EnableStrictHandleCheckingForCurrentProcess();
 
 // Allows changing the domain enrolled state for the life time of the object.
 // The original state is restored upon destruction.

@@ -98,7 +98,7 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
   // The WebState this instance is observing.
   raw_ptr<web::WebState> web_state_;
 
-  raw_ptr<Observer> observer_;
+  raw_ptr<Observer, DanglingUntriaged> observer_;
 };
 
 }  // namespace translate

@@ -24,10 +24,12 @@ const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
   if (GetMetricsSubSampler().ShouldSample(0.001)) {
     base::UmaHistogramEnumeration("Net.TaskRunner.RequestPriority", priority);
   }
-  if (priority == RequestPriority::HIGHEST &&
-      internal::GetTaskRunnerGlobals().high_priority_task_runner) {
-    return internal::GetTaskRunnerGlobals().high_priority_task_runner;
+
+  if (internal::GetTaskRunnerGlobals().task_runners[priority]) {
+    return internal::GetTaskRunnerGlobals().task_runners[priority];
   }
+  // Fall back to the default task runner if the embedder does not inject one,
+  // for example, when the NetworkServiceTaskScheduler feature is disabled.
   return base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 

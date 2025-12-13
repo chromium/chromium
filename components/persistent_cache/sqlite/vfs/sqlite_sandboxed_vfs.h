@@ -35,7 +35,7 @@ namespace persistent_cache {
 //  // Register the file set for use by any sql::Database in this process
 //  // that uses the `SqliteSandboxedVfsDelegate`.
 //  auto unregister_runner = SqliteSandboxedVfsDelelegate::GetInstance()
-//    ->RegisterSandboxedFiles(vfs_file_set.Copy());
+//    ->RegisterSandboxedFiles(vfs_file_set);
 //
 //  // Create an `sql::Database` which uses the
 //  // `SqliteSandboxedVfsDelegate`.

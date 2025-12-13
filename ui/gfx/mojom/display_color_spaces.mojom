@@ -4,8 +4,8 @@
 
 module gfx.mojom;
 
+import "services/viz/public/mojom/compositing/shared_image_format.mojom";
 import "skia/public/mojom/skcolorspace_primaries.mojom";
-import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 import "ui/gfx/mojom/hdr_static_metadata.mojom";
 
@@ -22,7 +22,7 @@ struct DisplayColorSpaces {
   // cross-product of (SRGB, WCG, HDR) x (opaque, transparent). The order
   // corresponds to the order in gfx::DisplayColorSpaces.
   array<ColorSpace, 6> color_spaces;
-  array<BufferFormat, 6> buffer_formats;
+  array<viz.mojom.SharedImageFormat, 6> formats;
 
   // The primaries of the display.
   skia.mojom.SkColorSpacePrimaries primaries;

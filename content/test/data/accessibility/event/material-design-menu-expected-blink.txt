@@ -1,0 +1,237 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Menu Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Menu Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu htmlTag='md-menu' <<<<<< CHANGED
+++++++++++++genericContainer htmlTag='div'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 1' <<<<<< CHANGED
+++++++++++++++++++++++++genericContainer htmlTag='md-item' <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div' <<<<<< CHANGED
+++++++++++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 2' <<<<<< CHANGED
+++++++++++++++++++++++++genericContainer htmlTag='md-item' <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div' <<<<<< CHANGED
+++++++++++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 3' <<<<<< CHANGED
+++++++++++++++++++++++++genericContainer htmlTag='md-item' <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer htmlTag='div' <<<<<< CHANGED
+++++++++++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+++++++++++++++++++++++++++genericContainer ignored <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Menu Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu htmlTag='md-menu'
+++++++++++++genericContainer htmlTag='div'
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 1'
+++++++++++++++++++++++++genericContainer htmlTag='md-item'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 2'
+++++++++++++++++++++++++genericContainer htmlTag='md-item'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++menuItem htmlTag='li' name='Menu Item 3'
+++++++++++++++++++++++++genericContainer htmlTag='md-item'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++genericContainer ignored
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Menu Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='div'
+++++++++++genericContainer htmlTag='md-filled-button'
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer htmlTag='div'
+++++++++++++genericContainer ignored invisible
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++button htmlTag='button' name='Open Menu'
+++++++++++++++genericContainer ignored
+++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored
+++++++++++++++++++staticText name='Open Menu'
+++++++++++++++++++++inlineTextBox name='Open Menu'
+++++++++++menu ignored invisible <<<<<< CHANGED
+++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++menuItem ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+++++++++++++++++++genericContainer ignored invisible <<<<<< CHANGED
+=== End accessibility tree ===

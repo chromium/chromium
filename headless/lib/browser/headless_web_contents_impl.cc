@@ -21,6 +21,8 @@
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/headless/console_message_logger/headless_console_message_logger.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/navigation_controller.h"
@@ -39,6 +41,7 @@
 #include "headless/lib/browser/headless_browser_context_impl.h"
 #include "headless/lib/browser/headless_browser_impl.h"
 #include "headless/lib/browser/headless_browser_main_parts.h"
+#include "headless/lib/browser/headless_platform_delegate.h"
 #include "headless/public/switches.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
@@ -61,9 +64,7 @@ namespace features {
 
 // Enables prerendering (Speculation Rules API) in the headless mode. This is
 // enabled by default but kept as a kill-switch.
-BASE_FEATURE(kPrerender2InHeadlessMode,
-             "Prerender2InHeadlessMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kPrerender2InHeadlessMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -250,18 +251,19 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
   void EnterFullscreenModeForTab(
       content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override {
-    SetFullscreenModeForTab(
-        content::WebContents::FromRenderFrameHost(requesting_frame),
-        /*fullscreen=*/true);
+    headless_web_contents_->SetWindowState(HeadlessWindowState::kFullscreen);
   }
 
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override {
-    SetFullscreenModeForTab(web_contents, /*fullscreen=*/false);
+    if (IsFullscreenForTabOrPending(web_contents)) {
+      headless_web_contents_->SetWindowState(HeadlessWindowState::kNormal);
+    }
   }
 
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override {
-    return is_fullscreen_;
+    return headless_web_contents_->GetWindowState() ==
+           HeadlessWindowState::kFullscreen;
   }
 
   blink::mojom::DisplayMode GetDisplayMode(
@@ -276,40 +278,20 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
     headless_web_contents_->SetBounds(bounds);
   }
 
+  bool DidAddMessageToConsole(content::WebContents* source,
+                              blink::mojom::ConsoleMessageLevel log_level,
+                              const std::u16string& message,
+                              int32_t line_no,
+                              const std::u16string& source_id) override {
+    LogConsoleMessage(log_level, message, line_no,
+                      /*is_builtin_component=*/false, source_id);
+    return true;
+  }
+
  private:
   HeadlessBrowserImpl* browser() { return headless_web_contents_->browser(); }
 
-  void SetFullscreenModeForTab(content::WebContents* web_contents,
-                               bool fullscreen) {
-    if (is_fullscreen_ == fullscreen) {
-      return;
-    }
-
-    is_fullscreen_ = fullscreen;
-
-    content::RenderWidgetHost* rwh =
-        web_contents->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget();
-    CHECK(rwh);
-
-    if (content::RenderWidgetHostView* view = rwh->GetView()) {
-      if (fullscreen) {
-        before_fullscreen_bounds_ = view->GetViewBounds();
-        gfx::Rect bounds = rwh->GetScreenInfo().rect;
-        view->SetBounds(bounds);
-      } else {
-        CHECK(before_fullscreen_bounds_);
-        view->SetBounds(before_fullscreen_bounds_.value());
-        before_fullscreen_bounds_.reset();
-      }
-    }
-
-    rwh->SynchronizeVisualProperties();
-  }
-
   raw_ptr<HeadlessWebContentsImpl> headless_web_contents_;  // Not owned.
-
-  bool is_fullscreen_ = false;
-  std::optional<gfx::Rect> before_fullscreen_bounds_;
 };
 
 namespace {
@@ -331,7 +313,8 @@ class HeadlessWebContentsImpl::PendingFrame final
     has_damage_ = ack.has_damage;
   }
 
-  void OnReadbackComplete(const SkBitmap& bitmap) {
+  void OnReadbackComplete(const viz::CopyOutputBitmapWithMetadata& result) {
+    const SkBitmap& bitmap = result.bitmap;
     TRACE_EVENT2(
         "headless", "HeadlessWebContentsImpl::PendingFrame::OnReadbackComplete",
         "sequence_number", sequence_number_, "success", !bitmap.drawsNothing());
@@ -400,7 +383,7 @@ void HeadlessWebContentsImpl::InitializeWindow(
   static int window_id = 1;
   window_id_ = window_id++;
 
-  browser()->PlatformInitializeWebContents(this);
+  browser()->InitializeWebContents(this);
   SetVisible(/*visible=*/true);
   SetBounds(bounds);
   SetWindowState(window_state);
@@ -522,7 +505,7 @@ void HeadlessWebContentsImpl::BeginFrame(
       frame_timeticks, deadline, interval, viz::BeginFrameArgs::NORMAL);
   args.animate_only = animate_only;
 
-  ui::Compositor* compositor = browser()->PlatformGetCompositor(this);
+  ui::Compositor* compositor = browser()->GetCompositor(this);
   CHECK(compositor);
   compositor->IssueExternalBeginFrame(
       args, /*force=*/true,
@@ -536,7 +519,31 @@ void HeadlessWebContentsImpl::OnVisibilityChanged() {
 
 void HeadlessWebContentsImpl::OnBoundsChanged(const gfx::Rect& old_bounds) {
   const gfx::Rect bounds = headless_window_->bounds();
-  browser()->PlatformSetWebContentsBounds(this, bounds);
+  browser()->SetWebContentsBounds(this, bounds);
+}
+
+void HeadlessWebContentsImpl::OnWindowStateChanged(
+    HeadlessWindowState old_window_state) {
+  if (headless_window_->window_state() == HeadlessWindowState::kMinimized) {
+    SetFocus(/*focus=*/false);
+    restore_minimized_window_focus_ = true;
+  } else if (restore_minimized_window_focus_) {
+    CHECK_EQ(old_window_state, HeadlessWindowState::kMinimized);
+    restore_minimized_window_focus_ = false;
+    SetFocus(/*focus=*/true);
+  }
+}
+
+void HeadlessWebContentsImpl::SetFocus(bool focus) {
+  if (content::RenderWidgetHost* rwh = web_contents_->GetPrimaryMainFrame()
+                                           ->GetRenderViewHost()
+                                           ->GetWidget()) {
+    if (focus) {
+      rwh->Focus();
+    } else {
+      rwh->Blur();
+    }
+  }
 }
 
 // HeadlessWebContents::Builder ----------------------------------------------

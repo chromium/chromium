@@ -36,10 +36,6 @@ void FakeProxy::QueueImageDecode(int request_id,
                                  const DrawImage& image,
                                  bool speculative) {}
 
-bool FakeProxy::SpeculativeDecodeRequestInFlight() const {
-  return false;
-}
-
 void FakeProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {}
 
 void FakeProxy::SetPaintWorkletLayerPainter(

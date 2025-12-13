@@ -9,11 +9,19 @@
 
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/history/ui_bundled/stub_history_coordinator_delegate.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
+#import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_component_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
+#import "ios/chrome/browser/qr_scanner/coordinator/qr_scanner_legacy_coordinator.h"
+#import "ios/chrome/browser/reading_list/ui_bundled/reading_list_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -21,6 +29,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/snackbar_coordinator.h"
+#import "ios/chrome/browser/snackbar/ui_bundled/stub_snackbar_coordinator_delegate.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/enhanced_safe_browsing_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/lens_promo_coordinator.h"
 #import "ios/chrome/browser/tips_notifications/coordinator/search_what_you_see_promo_coordinator.h"
@@ -111,6 +122,8 @@
   if (_rootViewController) {
     return _rootViewController;
   }
+  [[ChromeEarlGreyAppInterface keyWindow]
+      setOverrideUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   _rootViewController = [[UIViewController alloc] init];
   _rootViewController.modalPresentationStyle = UIModalPresentationFullScreen;
   _rootViewController.view.backgroundColor = [UIColor whiteColor];
@@ -132,6 +145,7 @@
   UrlLoadingBrowserAgent::RemoveFromBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
   [self insertInitialWebstate];
+  chrome_test_util::SetMainBrowserOverride(self.browser);
 }
 
 - (void)useTestBrowser {
@@ -143,6 +157,7 @@
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(_browser.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(_browser.get());
   [self insertInitialWebstate];
+  chrome_test_util::SetMainBrowserOverride(self.browser);
 }
 
 - (void)setCoordinator:(ChromeCoordinator*)coordinator {
@@ -197,6 +212,7 @@
 }
 
 + (void)reset {
+  chrome_test_util::SetMainBrowserOverride(nullptr);
   [self stopCoordinator];
   [self.helper reset];
 }
@@ -252,6 +268,37 @@
   [self.helper.coordinator start];
 }
 
++ (void)startNewTabPageCoordinator {
+  Browser* browser = self.helper.browser;
+  StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser);
+  BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser);
+  DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
+
+  // Insert a New Tab Page.
+  std::unique_ptr<web::FakeWebState> webState =
+      std::make_unique<web::FakeWebState>();
+  webState->SetBrowserState((web::BrowserState*)(browser->GetProfile()));
+  webState->SetVisibleURL(GURL("chrome://newtab"));
+  NewTabPageTabHelper::CreateForWebState(webState.get());
+  browser->GetWebStateList()->InsertWebState(
+      std::move(webState),
+      WebStateList::InsertionParams::Automatic().Activate());
+
+  NewTabPageCoordinator* coordinator = [[NewTabPageCoordinator alloc]
+       initWithBrowser:browser
+      componentFactory:[[NewTabPageComponentFactory alloc] init]];
+  coordinator.baseViewController = self.helper.rootViewController;
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+
+  coordinator.viewController.modalPresentationStyle =
+      UIModalPresentationFullScreen;
+  [self.helper.rootViewController
+      presentViewController:coordinator.viewController
+                   animated:NO
+                 completion:nil];
+}
+
 + (void)startPopupMenuCoordinator {
   // The IOSLanguageDetectionTabHelper is required by the PopupMenu.
   PrefService* prefs = self.helper.browser->GetProfile()->GetPrefs();
@@ -267,6 +314,7 @@
 }
 
 + (void)startOmniboxCoordinator {
+  AutocompleteBrowserAgent::CreateForBrowser(self.helper.browser);
   OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
@@ -274,8 +322,32 @@
   [self.helper.coordinator start];
 }
 
++ (void)startQRScannerLegacyCoordinator {
+  QRScannerLegacyCoordinator* coordinator =
+      [[QRScannerLegacyCoordinator alloc] initWithBrowser:self.helper.browser];
+  coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
 + (void)startSearchWhatYouSeePromoCoordinator {
   self.helper.coordinator = [[SearchWhatYouSeePromoCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
+  [self.helper.coordinator start];
+}
+
++ (void)startSnackbarCoordinator {
+  self.helper.mockObject = [[StubSnackbarCoordinatorDelegate alloc] init];
+  self.helper.coordinator = [[SnackbarCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser
+                        delegate:self.helper.mockObject];
+  [self.helper.coordinator start];
+}
+
++ (void)startReadingListCoordinator {
+  self.helper.coordinator = [[ReadingListCoordinator alloc]
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser];
   [self.helper.coordinator start];

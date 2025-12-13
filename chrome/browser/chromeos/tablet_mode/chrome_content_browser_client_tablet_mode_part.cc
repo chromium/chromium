@@ -6,14 +6,11 @@
 
 #include <string_view>
 
-#include "base/feature_list.h"
-#include "chrome/browser/browser_features.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_controller.h"
@@ -57,22 +54,25 @@ void OverrideWebPreferencesForTabletMode(
     content::WebContents* contents,
     blink::web_pref::WebPreferences* web_prefs) {
   // Enable some mobile-like behaviors when in tablet mode on Chrome OS.
-  if (!display::Screen::GetScreen()->HasScreen() ||
-      !display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->HasScreen() ||
+      !display::Screen::Get()->InTabletMode()) {
     return;
   }
 
   // Do this only for webcontents displayed in browsers and are not of hosted
   // apps.
-  auto* browser = chrome::FindBrowserWithTab(contents);
-  if (!browser || browser->is_type_app() || browser->is_type_app_popup())
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetBrowserForTab(contents);
+  if (!browser || browser->GetType() == ash::BrowserType::kApp ||
+      browser->GetType() == ash::BrowserType::kAppPopup) {
     return;
+  }
 
-  if (IsInternalPage(contents))
+  if (IsInternalPage(contents)) {
     return;
+  }
 
-  web_prefs->double_tap_to_zoom_enabled =
-      base::FeatureList::IsEnabled(features::kDoubleTapToZoomInTabletMode);
+  web_prefs->double_tap_to_zoom_enabled = false;
   web_prefs->text_autosizing_enabled = true;
   web_prefs->shrinks_viewport_contents_to_fit = true;
   web_prefs->main_frame_resizes_are_orientation_changes = true;
@@ -89,10 +89,10 @@ bool UseDefaultFontSize(const GURL& url) {
     return true;
 
   if (url.SchemeIs(content::kChromeUIScheme))
-    return chrome::IsSystemWebUIHost(url.host_piece());
+    return chrome::IsSystemWebUIHost(url.host());
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {
-    std::string_view extension_id = url.host_piece();
+    std::string_view extension_id = url.host();
     return extension_misc::IsSystemUIApp(extension_id);
   }
   return false;

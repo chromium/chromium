@@ -162,10 +162,6 @@ class CORE_EXPORT HTMLImageElement
     return is_legacy_format_or_unoptimized_image_;
   }
 
-  // Keeps track of whether the image comes from an ad.
-  void SetIsAdRelated();
-  bool IsAdRelated() const override { return is_ad_related_; }
-
   // Keeps track whether this image is an LCP element.
   // If the element is reused for loading another image, this flag might be
   // retained so use with caution.
@@ -216,8 +212,6 @@ class CORE_EXPORT HTMLImageElement
   void AdjustStyle(ComputedStyleBuilder&) override;
 
  private:
-  bool AreAuthorShadowsAllowed() const override { return false; }
-
   void ParseAttribute(const AttributeModificationParams&) override;
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
@@ -260,7 +254,6 @@ class CORE_EXPORT HTMLImageElement
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLayout() override;
-  void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
   Member<HTMLImageLoader> image_loader_;
   Member<ViewportChangeListener> listener_;
@@ -282,14 +275,6 @@ class CORE_EXPORT HTMLImageElement
   bool is_predicted_lcp_element_ : 1;
 
   HashSet<String> creator_scripts_;
-
-  bool image_ad_use_counter_recorded_ = false;
-
-  // The last rectangle reported to the `PageTimingMetricsSender`.
-  // `last_reported_ad_rect_` is empty if there's no report before, or if the
-  // last report was used to signal the removal of this element (i.e. both cases
-  // will be handled the same way).
-  gfx::Rect last_reported_ad_rect_;
 };
 
 }  // namespace blink

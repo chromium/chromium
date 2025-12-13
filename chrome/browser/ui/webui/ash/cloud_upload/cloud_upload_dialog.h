@@ -10,6 +10,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
@@ -28,8 +29,9 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace ash {
@@ -126,9 +128,10 @@ class CloudOpenTask : public BrowserListObserver,
   // wasn't already one to be used as the modal parent. This is triggered by
   // ShowDialog().
   void OnBrowserAdded(Browser* browser) override;
+
   // Use this to check if the Files app window the dialog is modal to has
   // closed.
-  void OnBrowserClosing(Browser* browser) override;
+  void OnBrowserDidClose(BrowserWindowInterface* browser_window_interface);
 
   FRIEND_TEST_ALL_PREFIXES(FileHandlerDialogBrowserTest,
                            OnSetupDialogCompleteOpensFileTasks);
@@ -264,8 +267,13 @@ class CloudOpenTask : public BrowserListObserver,
   OfficeFilesTransferRequired transfer_required_ =
       OfficeFilesTransferRequired::kNotRequired;
   bool need_new_files_app_ = false;
-  raw_ptr<BrowserDelegate> files_app_browser_;
+  // TODO(crbug.com/440001206): Clients should fetch BrowserDelegate refs
+  // dynamically or handle BrowserDelegate destruction events directly.
+  raw_ptr<BrowserDelegate, DanglingUntriaged> files_app_browser_;
   bool files_app_closed_ = false;
+
+  // Subscription for files app browser closed callback.
+  base::CallbackListSubscription files_app_close_subscription_;
 };
 
 // Returns True if OneDrive is the selected `cloud_provider` but either ODFS

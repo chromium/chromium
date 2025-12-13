@@ -66,6 +66,8 @@ component("features") {
     "model_execution/feature_keys.h",
     "model_execution/model_execution_prefs.cc",
     "model_execution/model_execution_prefs.h",
+    "model_execution/on_device_features.cc",
+    "model_execution/on_device_features.h",
     "optimization_guide_constants.cc",
     "optimization_guide_constants.h",
     "optimization_guide_enums.h",
@@ -89,7 +91,7 @@ component("features") {
     "//google_apis",
     "//net",
     "//services/preferences/public/cpp",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
     "//ui/base",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -182,16 +184,21 @@ source_set("core_util") {
     "//ui/accessibility:ax_enums_mojo",
     "//url",
   ]
-  visibility = [ "./*" ]
+  visibility = [
+    "./*",
+    "//services/on_device_model/android/*",
+  ]
 }
 
 source_set("model_execution") {
   # TODO: crbug.com/421262905 - Should not need these without model_execution
   sources = [
+    "model_execution/on_device_capability.cc",
+    "model_execution/on_device_capability.h",
     "model_execution/optimization_guide_model_execution_error.cc",
     "model_execution/optimization_guide_model_execution_error.h",
-    "model_execution/performance_class.cc",
-    "model_execution/performance_class.h",
+    "model_execution/remote_model_executor.cc",
+    "model_execution/remote_model_executor.h",
     "model_quality/model_execution_logging_wrappers.h",
     "model_quality/model_quality_log_entry.cc",
     "model_quality/model_quality_log_entry.h",
@@ -199,17 +206,17 @@ source_set("model_execution") {
     "model_quality/model_quality_logs_uploader_service.h",
     "model_quality/model_quality_util.cc",
     "model_quality/model_quality_util.h",
-    "optimization_guide_model_executor.cc",
-    "optimization_guide_model_executor.h",
-    "optimization_guide_on_device_capability_provider.h",
   ]
   deps = [
     ":core_util",
     ":features",
     "//base",
+    "//base/version_info",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom",
+    "//components/policy/core/common",
     "//components/prefs",
     "//components/variations/net",
     "//services/network/public/cpp",
@@ -220,20 +227,23 @@ source_set("model_execution") {
     sources += [
       "model_execution/aqa_response_parser.cc",
       "model_execution/aqa_response_parser.h",
-      "model_execution/execute_remote_fn.cc",
-      "model_execution/execute_remote_fn.h",
       "model_execution/fieldwise_response_parser.cc",
       "model_execution/fieldwise_response_parser.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
       "model_execution/model_broker_client.cc",
       "model_execution/model_broker_client.h",
+      "model_execution/model_broker_impl.cc",
+      "model_execution/model_broker_impl.h",
+      "model_execution/model_broker_state.cc",
+      "model_execution/model_broker_state.h",
       "model_execution/model_execution_features.cc",
       "model_execution/model_execution_features.h",
       "model_execution/model_execution_features_controller.cc",
       "model_execution/model_execution_features_controller.h",
-      "model_execution/model_execution_fetcher.cc",
       "model_execution/model_execution_fetcher.h",
+      "model_execution/model_execution_fetcher_impl.cc",
+      "model_execution/model_execution_fetcher_impl.h",
       "model_execution/model_execution_manager.cc",
       "model_execution/model_execution_manager.h",
       "model_execution/model_execution_util.cc",
@@ -266,6 +276,8 @@ source_set("model_execution") {
       "model_execution/on_device_model_service_controller.h",
       "model_execution/on_device_model_validator.cc",
       "model_execution/on_device_model_validator.h",
+      "model_execution/performance_class.cc",
+      "model_execution/performance_class.h",
       "model_execution/redactor.cc",
       "model_execution/redactor.h",
       "model_execution/repetition_checker.cc",
@@ -290,6 +302,8 @@ source_set("model_execution") {
       "model_execution/simple_response_parser.h",
       "model_execution/substitution.cc",
       "model_execution/substitution.h",
+      "model_execution/usage_tracker.cc",
+      "model_execution/usage_tracker.h",
       "model_execution/value_converter.cc",
       "model_execution/value_converter.h",
       output_proto_descriptors_cc_file,
@@ -303,7 +317,7 @@ source_set("model_execution") {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/optimization_guide/public/mojom",
       "//components/prefs",
-      "//components/signin/public/identity_manager:identity_manager",
+      "//components/signin/public/identity_manager",
       "//components/variations/net",
       "//components/version_info",
       "//google_apis",
@@ -313,6 +327,17 @@ source_set("model_execution") {
       "//third_party/re2",
       "//third_party/tflite:buildflags",
     ]
+    if (is_android) {
+      sources += [
+        "model_execution/android/model_broker_android.cc",
+        "model_execution/android/model_broker_android.h",
+      ]
+      deps += [
+        "//services/on_device_model:on_device_model_service",
+        "//services/on_device_model/android",
+        "//services/on_device_model/android:mojom",
+      ]
+    }
   }
 }
 
@@ -351,10 +376,13 @@ static_library("prediction") {
     "delivery/model_enums.h",
     "delivery/model_info.cc",
     "delivery/model_info.h",
+    "delivery/model_provider_registry.cc",
+    "delivery/model_provider_registry.h",
     "delivery/model_store_metadata_entry.cc",
     "delivery/model_store_metadata_entry.h",
     "delivery/model_util.cc",
     "delivery/model_util.h",
+    "delivery/optimization_guide_model_provider.cc",
     "delivery/optimization_guide_model_provider.h",
     "delivery/optimization_target_model_observer.h",
     "delivery/prediction_manager.cc",
@@ -373,12 +401,12 @@ static_library("prediction") {
     "delivery/prediction_model_store.h",
     "delivery/profile_download_service_tracker.h",
   ]
+  public_deps = [ "//components/download/public/background_service:public" ]
   deps = [
     ":core_util",
     ":features",
     "//components/component_updater",
     "//components/crx_file",
-    "//components/download/public/background_service:public",
     "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
@@ -416,7 +444,7 @@ static_library("filters_test_support") {
     ":filters",
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -441,7 +469,7 @@ static_library("hints_test_support") {
     "//components/leveldb_proto",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
     "//url",
   ]
 }
@@ -465,8 +493,6 @@ static_library("delivery_test_support") {
 static_library("model_execution_test_support") {
   testonly = true
   sources = [
-    "mock_optimization_guide_on_device_capability_provider.cc",
-    "mock_optimization_guide_on_device_capability_provider.h",
     "model_quality/test_model_quality_logs_uploader_service.cc",
     "model_quality/test_model_quality_logs_uploader_service.h",
   ]
@@ -486,16 +512,16 @@ static_library("model_execution_test_support") {
   ]
   if (build_with_model_execution) {
     sources += [
-      "mock_optimization_guide_model_executor.cc",
-      "mock_optimization_guide_model_executor.h",
       "model_execution/test/fake_model_assets.cc",
       "model_execution/test/fake_model_assets.h",
       "model_execution/test/fake_model_broker.cc",
       "model_execution/test/fake_model_broker.h",
-      "model_execution/test/fake_remote.cc",
-      "model_execution/test/fake_remote.h",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
+      "model_execution/test/mock_on_device_capability.cc",
+      "model_execution/test/mock_on_device_capability.h",
+      "model_execution/test/mock_remote_model_executor.cc",
+      "model_execution/test/mock_remote_model_executor.h",
       "model_execution/test/request_builder.cc",
       "model_execution/test/request_builder.h",
       "model_execution/test/response_holder.cc",
@@ -509,7 +535,7 @@ static_library("model_execution_test_support") {
       "//components/optimization_guide/public/mojom",
       "//components/prefs:test_support",
       "//services/on_device_model/public/cpp:types",
-      "//services/on_device_model/public/cpp/test_support:test_support",
+      "//services/on_device_model/public/cpp/test_support",
     ]
   }
 }
@@ -597,7 +623,7 @@ source_set("hints_unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences:test_support",
     "//components/ukm:test_support",
-    "//components/unified_consent:unified_consent",
+    "//components/unified_consent",
     "//components/variations:test_support",
     "//google_apis",
     "//services/metrics/public/cpp:ukm_builders",
@@ -641,7 +667,6 @@ source_set("delivery_unit_tests") {
 source_set("model_execution_unit_tests") {
   testonly = true
   sources = [
-    "model_execution/performance_class_unittest.cc",
     "model_quality/model_quality_log_entry_unittest.cc",
     "model_quality/model_quality_logs_uploader_service_unittest.cc",
     "model_quality/model_quality_util_unittest.cc",
@@ -655,7 +680,10 @@ source_set("model_execution_unit_tests") {
     "//base",
     "//base/test:test_proto",
     "//base/test:test_support",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/variations:test_support",
@@ -672,7 +700,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/model_broker_client_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",
-      "model_execution/model_execution_fetcher_unittest.cc",
+      "model_execution/model_execution_fetcher_impl_unittest.cc",
       "model_execution/model_execution_manager_unittest.cc",
       "model_execution/multimodal_message_unittest.cc",
       "model_execution/on_device_asset_manager_unittest.cc",
@@ -685,6 +713,7 @@ source_set("model_execution_unit_tests") {
       "model_execution/on_device_model_service_controller_unittest.cc",
       "model_execution/on_device_model_validator_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
+      "model_execution/performance_class_unittest.cc",
       "model_execution/redactor_unittest.cc",
       "model_execution/repetition_checker_unittest.cc",
       "model_execution/response_parser_factory_unittest.cc",
@@ -705,6 +734,13 @@ source_set("model_execution_unit_tests") {
       "//services/on_device_model/public/mojom",
       "//third_party/tflite:buildflags",
     ]
+    if (is_android) {
+      sources += [ "model_execution/android/model_broker_android_unittest.cc" ]
+      deps += [
+        "//services/on_device_model/android",
+        "//services/on_device_model/android:test_support",
+      ]
+    }
   }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

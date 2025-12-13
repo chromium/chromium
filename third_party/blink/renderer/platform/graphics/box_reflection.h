@@ -70,10 +70,6 @@ inline bool operator==(const BoxReflection& a, const BoxReflection& b) {
          a.MaskBounds() == b.MaskBounds();
 }
 
-inline bool operator!=(const BoxReflection& a, const BoxReflection& b) {
-  return !(a == b);
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_BOX_REFLECTION_H_

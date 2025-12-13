@@ -17,6 +17,7 @@ component("linux_ui") {
     "linux_ui_delegate_stub.h",
     "linux_ui_getter.h",
     "nav_button_provider.h",
+    "primary_paste_pref_observer.h",
     "status_icon_linux.h",
     "window_button_order_observer.h",
     "window_frame_provider.h",
@@ -54,7 +55,7 @@ component("linux_ui_factory") {
   deps = [
     "//base",
     "//ui/base",
-    "//ui/base/ime/linux:linux",
+    "//ui/base/ime/linux",
     "//ui/events:dom_keyboard_layout",
     "//ui/gfx",
     "//ui/native_theme",

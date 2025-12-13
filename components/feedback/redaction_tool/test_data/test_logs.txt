@@ -27,3 +27,10 @@ md 0x4000 16
 [      46.376] 0x00004010: a783c08c 07851609 16f9a023 00ef8526
 [      46.380] 0x00004020: 995209f0 93e30491 0537ff54 25834045
 [      46.387] 0x00004030: 051320c5 00ef20c5 759311b0 09370ff5
+# Bluetooth device names
+[    7.494529] input: sof-rt5682 Headset Jack as /devices/pci0000:00/0000:00:1f.3/tgl_mx98373_rt5682/sound/card0/input12
+[   11.390985] input: MX 2S Keyboard as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input18
+[   11.391455] input: MX 2S Mouse as /devices/virtual/misc/uhid/0005:046D:B019.0004/input/input19
+[   11.929997] input: Edman Paes dos Anjos’s Keyboard as /devices/virtual/misc/uhid/0005:05AC:0255.000B/input/input29
+[   11.930845] apple 0005:05AC:0255.000B: input,hidraw8: BLUETOOTH HID v0.50 Keyboard [Edman Paes dos Anjos’s Keyboard] on (MAC OUI=c4:75:ab IFACE=24)
+[   12.345678] some_device: input,hidraw0: BLUETOOTH HID v1.11 Mouse [Jane Doe's Mouse] on (MAC OUI=12:34:56 IFACE=78)

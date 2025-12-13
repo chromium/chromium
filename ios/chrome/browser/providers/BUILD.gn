@@ -8,6 +8,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/add_to_calendar:chromium_add_to_calendar",
     "//ios/chrome/browser/providers/additional_features:chromium_additional_features",
     "//ios/chrome/browser/providers/app_distribution:chromium_app_distribution",
+    "//ios/chrome/browser/providers/app_store_bundle:chromium_app_store_bundle",
     "//ios/chrome/browser/providers/app_utils:chromium_app_utils",
     "//ios/chrome/browser/providers/application_mode_fetcher:chromium_application_mode_fetcher",
     "//ios/chrome/browser/providers/branded_images:chromium_branded_images",
@@ -16,15 +17,15 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/context_menu:chromium_context_menu",
     "//ios/chrome/browser/providers/discover_feed:chromium_discover_feed",
     "//ios/chrome/browser/providers/drive:chromium_drive",
-    "//ios/chrome/browser/providers/follow:chromium_follow",
     "//ios/chrome/browser/providers/font:chromium_font",
     "//ios/chrome/browser/providers/fullscreen:chromium_fullscreen",
+    "//ios/chrome/browser/providers/glow_effect:chromium_glow_effect",
     "//ios/chrome/browser/providers/google_one:chromium_google_one",
+    "//ios/chrome/browser/providers/intelligence:chromium_intelligence",
     "//ios/chrome/browser/providers/keyboard:chromium_keyboard",
     "//ios/chrome/browser/providers/lens:chromium_lens",
     "//ios/chrome/browser/providers/lottie:chromium_lottie_animation",
     "//ios/chrome/browser/providers/mailto_handler:chromium_mailto_handler",
-    "//ios/chrome/browser/providers/material:chromium_material_branding",
     "//ios/chrome/browser/providers/memory_experimenter:chromium_memory_experimenter",
     "//ios/chrome/browser/providers/mini_map:chromium_mini_map",
     "//ios/chrome/browser/providers/omaha:chromium_omaha",
@@ -37,6 +38,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/push_notification:chromium_push_notification",
     "//ios/chrome/browser/providers/raccoon:chromium_raccoon",
     "//ios/chrome/browser/providers/risk_data:chromium_risk_data",
+    "//ios/chrome/browser/providers/safari_data_import:chromium_safari_data_import",
     "//ios/chrome/browser/providers/share_kit:chromium_share_kit",
     "//ios/chrome/browser/providers/signin:chromium_choice",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
@@ -51,10 +53,5 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/url_rewriters:chromium_url_rewriters",
     "//ios/chrome/browser/providers/user_feedback:chromium_user_feedback",
     "//ios/chrome/browser/providers/voice_search:chromium_voice_search",
-
-    # The provider API needs to provide MaterialDesignComponent API (as the
-    # internal provider provides an alternate implementation).
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
   ]
 }

@@ -81,8 +81,7 @@ ElementFragmentAnchor* ElementFragmentAnchor::TryCreate(const KURL& url,
   if (!should_scroll)
     return nullptr;
 
-  HTMLDetailsElement::ExpandDetailsAncestors(*anchor_node);
-  DisplayLockUtilities::RevealHiddenUntilFoundAncestors(*anchor_node);
+  DisplayLockUtilities::RevealAutoExpandableAncestors(*anchor_node);
 
   return MakeGarbageCollected<ElementFragmentAnchor>(*anchor_node, frame);
 }
@@ -115,8 +114,8 @@ bool ElementFragmentAnchor::Invoke() {
 
   if (element_to_scroll) {
     ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-    options->setBlock("start");
-    options->setInlinePosition("nearest");
+    options->setBlock(V8ScrollLogicalPosition::Enum::kStart);
+    options->setInlinePosition(V8ScrollLogicalPosition::Enum::kNearest);
     ScrollElementIntoViewWithOptions(element_to_scroll, options);
   }
 
@@ -141,7 +140,7 @@ void ElementFragmentAnchor::Installed() {
   if (needs_focus_) {
     // Attempts to focus the anchor if we couldn't focus above. This can cause
     // script to run so we can't do it from Invoke.
-    frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
+    frame_->GetDocument()->EnqueueAnimationFrameTask(BindOnce(
         &ElementFragmentAnchor::ApplyFocusIfNeeded, WrapPersistent(this)));
   }
 

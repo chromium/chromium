@@ -13,7 +13,6 @@
 
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -90,6 +89,17 @@ void CompareHandleType(const base::win::ScopedHandle& handle,
   ASSERT_TRUE(type_name);
   EXPECT_TRUE(
       base::EqualsCaseInsensitiveASCII(type_name.value(), expected_type));
+}
+
+void ExpectEnvironmentBlock(const std::vector<std::wstring>& vars,
+                            const std::wstring& block) {
+  std::wstring expected;
+  for (const auto& var : vars) {
+    expected += var;
+    expected.push_back('\0');
+  }
+  expected.push_back('\0');
+  EXPECT_EQ(expected, block);
 }
 
 }  // namespace
@@ -196,6 +206,40 @@ TEST(WinUtils, ContainsNulCharacter) {
   EXPECT_TRUE(ContainsNulCharacter(str));
   str += L"XYZ";
   EXPECT_TRUE(ContainsNulCharacter(str));
+}
+
+TEST(WinUtils, FilterEnvironment) {
+  const wchar_t empty[] = L"";
+  const wchar_t a2b3c4[] = L"A=2\0B=3\0C=4\0";
+  const wchar_t xy1z[] = L"X\0Y=1\0Z\0";
+
+  auto res = FilterEnvironment(empty, {});
+  ExpectEnvironmentBlock({}, res);
+
+  res = FilterEnvironment(a2b3c4, {});
+  ExpectEnvironmentBlock({}, res);
+
+  res = FilterEnvironment(a2b3c4, {L"B"});
+  ExpectEnvironmentBlock({L"B=3"}, res);
+
+  res = FilterEnvironment(empty, {L"B"});
+  ExpectEnvironmentBlock({}, res);
+
+  // D should be ignored, but B should still appear.
+  res = FilterEnvironment(a2b3c4, {L"B", L"D"});
+  ExpectEnvironmentBlock({L"B=3"}, res);
+
+  // D should be ignored.
+  res = FilterEnvironment(a2b3c4, {L"D"});
+  ExpectEnvironmentBlock({}, res);
+
+  // Once again D should be ignored but this time A and C should match.
+  res = FilterEnvironment(a2b3c4, {L"D", L"A", L"C"});
+  ExpectEnvironmentBlock({L"A=2", L"C=4"}, res);
+
+  // Check that the parser works if the '=' character is missing.
+  res = FilterEnvironment(xy1z, {L"X", L"Z"});
+  ExpectEnvironmentBlock({L"X", L"Z"}, res);
 }
 
 }  // namespace sandbox

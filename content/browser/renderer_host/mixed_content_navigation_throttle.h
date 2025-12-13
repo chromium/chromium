@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_NAVIGATION_THROTTLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MIXED_CONTENT_NAVIGATION_THROTTLE_H_
 
-#include "base/gtest_prod_util.h"
 #include "content/browser/renderer_host/mixed_content_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_handle.h"

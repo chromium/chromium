@@ -712,32 +712,6 @@ class SpellcheckServiceWindowsHybridBrowserTest
       : SpellcheckServiceBrowserTest(/* use_browser_spell_checker=*/true) {}
 };
 
-IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTest,
-                       WindowsHybridSpellcheck) {
-  // This test specifically covers the case where spellcheck delayed
-  // initialization is not enabled, so return early if it is. Other tests
-  // cover the case where delayed initialization is enabled.
-  if (base::FeatureList::IsEnabled(spellcheck::kWinDelaySpellcheckServiceInit))
-    return;
-
-  ASSERT_TRUE(spellcheck::UseBrowserSpellChecker());
-
-  // Note that the base class forces dictionary sync to not be performed, which
-  // on its own would have created a SpellcheckService object. So testing here
-  // that we are still instantiating the SpellcheckService as a browser startup
-  // task to support hybrid spellchecking.
-  SpellcheckService* service = static_cast<SpellcheckService*>(
-      SpellcheckServiceFactory::GetInstance()->GetServiceForBrowserContext(
-          GetContext(), /* create */ false));
-  ASSERT_NE(nullptr, service);
-
-  // The list of Windows spellcheck languages should have been populated by at
-  // least one language. This assures that the spellcheck context menu will
-  // include Windows spellcheck languages that lack Hunspell support.
-  EXPECT_TRUE(service->dictionaries_loaded());
-  EXPECT_FALSE(service->windows_spellcheck_dictionary_map_.empty());
-}
-
 class SpellcheckServiceWindowsHybridBrowserTestDelayInit
     : public SpellcheckServiceBrowserTest {
  public:
@@ -745,10 +719,6 @@ class SpellcheckServiceWindowsHybridBrowserTestDelayInit
       : SpellcheckServiceBrowserTest(/* use_browser_spell_checker=*/true) {}
 
   void SetUp() override {
-    // Don't initialize the SpellcheckService on browser launch.
-    feature_list_.InitAndEnableFeature(
-        spellcheck::kWinDelaySpellcheckServiceInit);
-
     // Add command line switch that forces first run state, to test whether
     // primary preferred language has its spellcheck dictionary enabled by
     // default for non-Hunspell languages.
@@ -838,10 +808,9 @@ IN_PROC_BROWSER_TEST_F(SpellcheckServiceWindowsHybridBrowserTestDelayInit,
                        WindowsHybridSpellcheckDelayInit) {
   ASSERT_TRUE(spellcheck::UseBrowserSpellChecker());
 
-  // Note that the base class forces dictionary sync to not be performed, and
-  // the kWinDelaySpellcheckServiceInit flag is set, which together should
-  // prevent creation of a SpellcheckService object on browser startup. So
-  // testing here that this is indeed the case.
+  // The base class forces dictionary sync to be skipped, so the
+  // SpellcheckService object should not have been created on browser startup
+  // because. Verify this is the case.
   SpellcheckService* service = static_cast<SpellcheckService*>(
       SpellcheckServiceFactory::GetInstance()->GetServiceForBrowserContext(
           GetContext(), /* create */ false));

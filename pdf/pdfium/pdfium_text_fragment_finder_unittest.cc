@@ -17,10 +17,14 @@ namespace chrome_pdf {
 
 namespace {
 
-using ::testing::NiceMock;
-
 class SearchStringTestClient : public TestClient {
  public:
+  explicit SearchStringTestClient(bool use_skia_renderer)
+      : TestClient(use_skia_renderer) {}
+  SearchStringTestClient(const SearchStringTestClient&) = delete;
+  SearchStringTestClient& operator=(const SearchStringTestClient&) = delete;
+  ~SearchStringTestClient() override = default;
+
   std::vector<SearchStringResult> SearchString(const std::u16string& needle,
                                                const std::u16string& haystack,
                                                bool case_sensitive) override {
@@ -32,15 +36,31 @@ class SearchStringTestClient : public TestClient {
 
 }  // namespace
 
-using PDFiumTextFragmentFinderTest = PDFiumTestBase;
+class PDFiumTextFragmentFinderTest : public PDFiumTestBase {
+ public:
+  PDFiumTextFragmentFinderTest() : client_(/*use_skia_renderer=*/GetParam()) {}
+
+  [[nodiscard]] PDFiumEngine* CreateEngine(
+      const base::FilePath::CharType* test_filename) {
+    engine_ = InitializeEngine(&client_, test_filename);
+    return engine_.get();
+  }
+
+  void TearDown() override {
+    engine_.reset();
+    PDFiumTestBase::TearDown();
+  }
+
+ private:
+  SearchStringTestClient client_;
+  std::unique_ptr<PDFiumEngine> engine_;
+};
 
 TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"Google"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -49,16 +69,14 @@ TEST_P(PDFiumTextFragmentFinderTest, OnlyTextStart) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 9);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"spanner,database"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -68,16 +86,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndEnd) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"how,-many"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -86,16 +102,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartAndTextSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 4141);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"this,api,-and"});
   ASSERT_EQ(highlights.size(), 1u);
   const auto& range = highlights[0];
@@ -107,16 +121,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextStartEndAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 704);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"is-,Google"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -125,16 +137,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixAndTextStart) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 489);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({"of-,Google,-'s"});
   ASSERT_EQ(highlights.size(), 1u);
 
@@ -143,16 +153,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 2072);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"time-,api,implementation"});
   ASSERT_EQ(highlights.size(), 1u);
@@ -164,16 +172,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartAndEnd) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 840);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"and-,applications,old,-timestamps"});
   ASSERT_EQ(highlights.size(), 1u);
@@ -184,16 +190,14 @@ TEST_P(PDFiumTextFragmentFinderTest, TextPrefixStartEndAndSuffix) {
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 3591);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"Google", "is-,Google", "of-,Google,-'s",
                                 "and-,applications,old,-timestamps"});
@@ -206,34 +210,32 @@ TEST_P(PDFiumTextFragmentFinderTest, MultipleTextFragments) {
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 9);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[1];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 489);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[2];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 2072);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[3];
   EXPECT_EQ(range.GetText(), kExpectedString2);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString2.size()));
   EXPECT_EQ(range.char_index(), 3591);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights =
       finder.FindTextFragments({"link", "1-,link,-with", "page,-in",
                                 "second-,page", "second-,page,in,-document"});
@@ -247,39 +249,37 @@ TEST_P(PDFiumTextFragmentFinderTest, MultiPage) {
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[1];
   EXPECT_EQ(range.GetText(), kExpectedString1);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString1.size()));
   EXPECT_EQ(range.char_index(), 27);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[2];
   EXPECT_EQ(range.GetText(), kExpectedString2);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString2.size()));
   EXPECT_EQ(range.char_index(), 7);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 
   range = highlights[3];
   EXPECT_EQ(range.GetText(), kExpectedString3);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString3.size()));
   EXPECT_EQ(range.char_index(), 59);
-  EXPECT_EQ(range.page_index(), 0);
+  EXPECT_EQ(range.page_index(), 0u);
 
   range = highlights[4];
   EXPECT_EQ(range.GetText(), kExpectedString4);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString4.size()));
   EXPECT_EQ(range.char_index(), 7);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
 
   // Start is not present in PDF.
   auto highlights = finder.FindTextFragments({"apples"});
@@ -315,24 +315,20 @@ TEST_P(PDFiumTextFragmentFinderTest, FragmentNotInPDF) {
 }
 
 TEST_P(PDFiumTextFragmentFinderTest, EmptyList) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("spanner.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("spanner.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   const auto highlights = finder.FindTextFragments({});
   EXPECT_TRUE(highlights.empty());
 }
 
 TEST_P(PDFiumTextFragmentFinderTest,
        TextStartAndEnd_FindsCorrectInstanceOfStart) {
-  NiceMock<SearchStringTestClient> client;
-  std::unique_ptr<PDFiumEngine> engine =
-      InitializeEngine(&client, FILE_PATH_LITERAL("link_annots.pdf"));
+  PDFiumEngine* engine = CreateEngine(FILE_PATH_LITERAL("link_annots.pdf"));
   ASSERT_TRUE(engine);
 
-  PDFiumTextFragmentFinder finder(engine.get());
+  PDFiumTextFragmentFinder finder(engine);
   // "second" appears on both pages of the PDF.
   const auto highlights = finder.FindTextFragments({"second,document"});
   ASSERT_EQ(highlights.size(), 1u);
@@ -343,7 +339,7 @@ TEST_P(PDFiumTextFragmentFinderTest,
   EXPECT_EQ(range.GetText(), kExpectedString);
   EXPECT_EQ(range.char_count(), static_cast<int>(kExpectedString.size()));
   EXPECT_EQ(range.char_index(), 0);
-  EXPECT_EQ(range.page_index(), 1);
+  EXPECT_EQ(range.page_index(), 1u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumTextFragmentFinderTest, testing::Bool());

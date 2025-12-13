@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"

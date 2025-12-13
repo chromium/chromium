@@ -155,14 +155,15 @@ class HistoryServiceTest : public testing::Test {
 
   // Fills the query_url_result_ structures with the information about the given
   // URL and whether the operation succeeded or not.
-  bool QueryURL(const GURL& url) {
+  bool QueryURLAndVisits(const GURL& url) {
     base::RunLoop run_loop;
-    history_service_->QueryURL(
-        url, true,
-        base::BindLambdaForTesting([&](history::QueryURLResult result) {
-          query_url_result_ = std::move(result);
-          run_loop.Quit();
-        }),
+    history_service_->QueryURLAndVisits(
+        url, VisitQuery404sPolicy::kInclude404s,
+        base::BindLambdaForTesting(
+            [&](history::QueryURLAndVisitsResult result) {
+              query_url_result_ = std::move(result);
+              run_loop.Quit();
+            }),
         &tracker_);
     run_loop.Run();  // Will be exited in SaveURLAndQuit.
     return query_url_result_.success;
@@ -236,8 +237,8 @@ class HistoryServiceTest : public testing::Test {
   // For history requests.
   base::CancelableTaskTracker tracker_;
 
-  // For saving URL info after a call to QueryURL
-  history::QueryURLResult query_url_result_;
+  // For saving URL info after a call to QueryURLAndVisits
+  history::QueryURLAndVisitsResult query_url_result_;
 };
 
 // Simple test that removes a bookmark. This test exercises the code paths in
@@ -250,7 +251,8 @@ TEST_F(HistoryServiceTest, RemoveNotification) {
 
   history_service_->AddPage(url, base::Time::Now(), 0, 1, GURL(),
                             RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            SOURCE_BROWSED, false);
+                            SOURCE_BROWSED, VisitResponseCodeCategory::kNot404,
+                            false);
 
   // This won't actually delete the URL, rather it'll empty out the visits.
   // This triggers blocking on the BookmarkModel.
@@ -263,8 +265,9 @@ TEST_F(HistoryServiceTest, AddPage) {
   const GURL test_url("http://www.google.com/");
   history_service_->AddPage(
       test_url, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
-      ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+      ui::PAGE_TRANSITION_MANUAL_SUBFRAME, history::SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   EXPECT_TRUE(
@@ -273,8 +276,9 @@ TEST_F(HistoryServiceTest, AddPage) {
   // Add the page once from the main frame (should unhide it).
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
   EXPECT_EQ(2, query_url_result_.row.visit_count());  // Added twice.
   EXPECT_EQ(0, query_url_result_.row.typed_count());  // Never typed.
   EXPECT_FALSE(
@@ -290,11 +294,12 @@ TEST_F(HistoryServiceTest, AddRedirect) {
   // to have a non-NULL page ID scope.
   history_service_->AddPage(first_redirects.back(), base::Time::Now(), 1, 0,
                             GURL(), first_redirects, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, true);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, true);
 
   // The first page should be added once with a link visit type (because we set
   // LINK when we added the original URL, and a referrer of nowhere (0).
-  EXPECT_TRUE(QueryURL(first_redirects[0]));
+  EXPECT_TRUE(QueryURLAndVisits(first_redirects[0]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
   int64_t first_visit = query_url_result_.visits[0].visit_id;
@@ -306,7 +311,7 @@ TEST_F(HistoryServiceTest, AddRedirect) {
 
   // The second page should be a server redirect type with a referrer of the
   // first page.
-  EXPECT_TRUE(QueryURL(first_redirects[1]));
+  EXPECT_TRUE(QueryURLAndVisits(first_redirects[1]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
   int64_t second_visit = query_url_result_.visits[0].visit_id;
@@ -332,16 +337,16 @@ TEST_F(HistoryServiceTest, AddRedirect) {
       second_redirects,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_CLIENT_REDIRECT),
-      history::SOURCE_BROWSED, true);
+      history::SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, true);
 
   // The last page (source of the client redirect) should NOT have an
   // additional visit added, because it was a client redirect (normally it
   // would). We should only have 1 left over from the first sequence.
-  EXPECT_TRUE(QueryURL(second_redirects[0]));
+  EXPECT_TRUE(QueryURLAndVisits(second_redirects[0]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
 
   // The final page should be set as a client redirect from the previous visit.
-  EXPECT_TRUE(QueryURL(second_redirects[1]));
+  EXPECT_TRUE(QueryURLAndVisits(second_redirects[1]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
@@ -359,8 +364,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url("http://intranet_host/path");
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -374,8 +380,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url2("http://intranet_host/different_path");
   history_service_->AddPage(test_url2, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url2));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url2));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -386,8 +393,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url3("http://intranet_host/");
   history_service_->AddPage(test_url3, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url3));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url3));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -398,8 +406,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url4("https://intranet_host/");
   history_service_->AddPage(test_url4, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url4));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url4));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -410,8 +419,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   const GURL test_url5("http://intranet_host/another_path");
   history_service_->AddPage(
       test_url5, base::Time::Now(), 0, 0, GURL(), history::RedirectList(),
-      ui::PAGE_TRANSITION_AUTO_BOOKMARK, history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url5));
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK, history::SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url5));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -422,8 +432,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
   // Original URL.
   history_service_->AddPage(test_url, base::Time::Now(), 0, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
   EXPECT_EQ(2, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
   ASSERT_EQ(2U, query_url_result_.visits.size());
@@ -436,8 +447,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://third1.com/")};
   history_service_->AddPage(redirects1.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects1, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(redirects1.front()));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(redirects1.front()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -450,8 +462,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://intranet2/path")};
   history_service_->AddPage(redirects2.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects2, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(redirects2.back()));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(redirects2.back()));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -464,8 +477,9 @@ TEST_F(HistoryServiceTest, MakeIntranetURLsTyped) {
                                       GURL("http://third3.com/")};
   history_service_->AddPage(redirects3.back(), base::Time::Now(), 0, 0, GURL(),
                             redirects3, ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(redirects3[1]));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(redirects3[1]));
   EXPECT_EQ(1, query_url_result_.row.visit_count());
   EXPECT_EQ(0, query_url_result_.row.typed_count());
   ASSERT_EQ(1U, query_url_result_.visits.size());
@@ -482,8 +496,9 @@ TEST_F(HistoryServiceTest, Typed) {
   const GURL test_url("http://www.google.com/");
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
 
   // We should have the same typed & visit count.
   EXPECT_EQ(1, query_url_result_.row.visit_count());
@@ -492,19 +507,20 @@ TEST_F(HistoryServiceTest, Typed) {
   // Add the page again not typed.
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
 
   // The second time should not have updated the typed count.
   EXPECT_EQ(2, query_url_result_.row.visit_count());
   EXPECT_EQ(1, query_url_result_.row.typed_count());
 
   // Add the page again as a generated URL.
-  history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
-                            history::RedirectList(),
-                            ui::PAGE_TRANSITION_GENERATED,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+  history_service_->AddPage(
+      test_url, base::Time::Now(), context_id, 0, GURL(),
+      history::RedirectList(), ui::PAGE_TRANSITION_GENERATED,
+      history::SOURCE_BROWSED, VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
 
   // This should have worked like a link click.
   EXPECT_EQ(3, query_url_result_.row.visit_count());
@@ -513,8 +529,9 @@ TEST_F(HistoryServiceTest, Typed) {
   // Add the page again as a reload.
   history_service_->AddPage(test_url, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_RELOAD,
-                            history::SOURCE_BROWSED, false);
-  EXPECT_TRUE(QueryURL(test_url));
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
+  EXPECT_TRUE(QueryURLAndVisits(test_url));
 
   // This should not have incremented any visit counts.
   EXPECT_EQ(3, query_url_result_.row.visit_count());
@@ -534,7 +551,7 @@ TEST_F(HistoryServiceTest, SetTitle) {
   history_service_->SetPageTitle(existing_url, existing_title);
 
   // Make sure the title got set.
-  EXPECT_TRUE(QueryURL(existing_url));
+  EXPECT_TRUE(QueryURLAndVisits(existing_url));
   EXPECT_EQ(existing_title, query_url_result_.row.title());
 
   // set a title on a nonexistent page
@@ -543,7 +560,7 @@ TEST_F(HistoryServiceTest, SetTitle) {
   history_service_->SetPageTitle(nonexistent_url, nonexistent_title);
 
   // Make sure nothing got written.
-  EXPECT_FALSE(QueryURL(nonexistent_url));
+  EXPECT_FALSE(QueryURLAndVisits(nonexistent_url));
   EXPECT_EQ(std::u16string(), query_url_result_.row.title());
 
   // TODO(brettw) this should also test redirects, which get the title of the
@@ -555,21 +572,23 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
 
   ASSERT_TRUE(history_service_.get());
 
-  const GURL url0("http://www.google.com/url0/");
-  const GURL url1("http://www.google.com/url1/");
-  const GURL url2("http://www.google.com/url2/");
-  const GURL url3("http://www.google.com/url3/");
-  const GURL url4("http://www.google.com/url4/");
+  const GURL url0("http://www.google0.com/");
+  const GURL url1("http://www.google1.com/");
+  const GURL url2("http://www.google2.com/");
+  const GURL url3("http://www.google3.com/");
+  const GURL url4("http://www.google4.com/");
 
   const ContextID context_id = 1;
 
   // Add two pages.
   history_service_->AddPage(url0, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
   history_service_->AddPage(url1, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 1);
@@ -581,7 +600,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Add another page.
   history_service_->AddPage(url2, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 2);
@@ -594,7 +614,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Revisit url2, making it the top URL.
   history_service_->AddPage(url2, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 3);
@@ -607,7 +628,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   // Revisit url1, making it the top URL.
   history_service_->AddPage(url1, base::Time::Now(), context_id, 0, GURL(),
                             history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 4);
@@ -621,7 +643,8 @@ TEST_F(HistoryServiceTest, MostVisitedURLs) {
   history::RedirectList redirects = {url3, url4};
   history_service_->AddPage(url4, base::Time::Now(), context_id, 0, GURL(),
                             redirects, ui::PAGE_TRANSITION_TYPED,
-                            history::SOURCE_BROWSED, false);
+                            history::SOURCE_BROWSED,
+                            VisitResponseCodeCategory::kNot404, false);
 
   QueryMostVisitedURLs();
   histogram_tester.ExpectTotalCount("History.QueryMostVisitedURLsTime", 5);
@@ -841,17 +864,29 @@ TEST_F(HistoryServiceTest, HistoryDBTaskCanceled) {
 // Helper to add a page at specified point of time.
 void AddPageAtTime(HistoryService* history,
                    const std::string& url_spec,
-                   base::Time time_in_the_past) {
-  const GURL url(url_spec);
-  history->AddPage(url, time_in_the_past, 0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
+                   base::Time time_in_the_past,
+                   bool is_404 = false) {
+  HistoryAddPageArgs add_page_args;
+  add_page_args.url = GURL(url_spec);
+  add_page_args.time = time_in_the_past;
+  add_page_args.transition = ui::PAGE_TRANSITION_LINK;
+  add_page_args.visit_source = history::SOURCE_BROWSED;
+  add_page_args.hidden = is_404;
+  add_page_args.response_code_category =
+      is_404 ? VisitResponseCodeCategory::k404
+             : VisitResponseCodeCategory::kNot404;
+  add_page_args.context_annotations =
+      std::make_optional<VisitContextAnnotations::OnVisitFields>(
+          {.response_code = is_404 ? 404 : 200});
+  history->AddPage(add_page_args);
 }
 
 void AddPageInThePast(HistoryService* history,
                       const std::string& url_spec,
-                      int days_back) {
+                      int days_back,
+                      bool is_404 = false) {
   base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
-  AddPageAtTime(history, url_spec, time_in_the_past);
+  AddPageAtTime(history, url_spec, time_in_the_past, is_404);
 }
 
 // Helper to add a synced page at a specified day in the past.
@@ -861,7 +896,8 @@ void AddSyncedPageInThePast(HistoryService* history,
   base::Time time_in_the_past = base::Time::Now() - base::Days(days_back);
   history->AddPage(GURL(url_spec), time_in_the_past, 0, 0, GURL(),
                    history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                   history::SOURCE_SYNCED, false);
+                   history::SOURCE_SYNCED, VisitResponseCodeCategory::kNot404,
+                   false);
 }
 
 // Helper to add a page with specified days back in the past.
@@ -876,26 +912,12 @@ base::Time GetTimeInThePast(base::Time base_time,
          base::Minutes(minutes) + base::Seconds(seconds);
 }
 
-// Helper to contain a callback and run loop logic.
-int GetMonthlyHostCountHelper(HistoryService* history,
-                              base::CancelableTaskTracker* tracker) {
-  base::RunLoop run_loop;
-  int count = 0;
-  history->CountUniqueHostsVisitedLastMonth(
-      base::BindLambdaForTesting([&](HistoryCountResult result) {
-        count = result.count;
-        run_loop.Quit();
-      }),
-      tracker);
-  run_loop.Run();
-  return count;
-}
-
 std::pair<DomainDiversityResults, DomainDiversityResults>
 GetDomainDiversityHelper(HistoryService* history,
                          base::Time begin_time,
                          base::Time end_time,
                          DomainMetricBitmaskType metric_type_bitmask,
+                         VisitQuery404sPolicy policy_for_404_visits,
                          base::CancelableTaskTracker* tracker) {
   base::RunLoop run_loop;
   base::TimeDelta dst_rounding_offset = base::Hours(4);
@@ -910,7 +932,7 @@ GetDomainDiversityHelper(HistoryService* history,
 
   std::pair<DomainDiversityResults, DomainDiversityResults> results;
   history->GetDomainDiversity(
-      end_time, number_of_days, metric_type_bitmask,
+      end_time, number_of_days, metric_type_bitmask, policy_for_404_visits,
       base::BindLambdaForTesting([&](std::pair<DomainDiversityResults,
                                                DomainDiversityResults> result) {
         results = result;
@@ -942,28 +964,6 @@ void TestDomainMetricSet(const DomainMetricSet& metric_set,
   TestDomainMetric(metric_set.seven_day_metric, expected_seven_day_metric);
   TestDomainMetric(metric_set.twenty_eight_day_metric,
                    expected_twenty_eight_day_metric);
-}
-
-// Counts hosts visited in the last month.
-TEST_F(HistoryServiceTest, CountMonthlyVisitedHosts) {
-  HistoryService* history = history_service_.get();
-  ASSERT_TRUE(history);
-
-  AddPageInThePast(history, "http://www.google.com/", 0);
-  EXPECT_EQ(1, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "http://www.google.com/foo", 1);
-  AddPageInThePast(history, "https://www.google.com/foo", 5);
-  AddPageInThePast(history, "https://www.gmail.com/foo", 10);
-  // Expect 2 because only host part of URL counts.
-  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "https://www.gmail.com/foo", 31);
-  // Count should not change since URL added is older than a month.
-  EXPECT_EQ(2, GetMonthlyHostCountHelper(history, &tracker_));
-
-  AddPageInThePast(history, "https://www.yahoo.com/foo", 29);
-  EXPECT_EQ(3, GetMonthlyHostCountHelper(history, &tracker_));
 }
 
 TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
@@ -1007,7 +1007,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
       history, query_time, query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   EXPECT_EQ(0u, local_res.size());
   EXPECT_EQ(0u, all_res.size());
 
@@ -1016,7 +1016,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityShortBasetimeRange) {
       history, GetTimeInThePast(query_time, 4, 0), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(4u, local_res.size());
   ASSERT_EQ(4u, all_res.size());
@@ -1064,7 +1064,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLongBasetimeRange) {
       history, GetTimeInThePast(query_time, 10, 12), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
           history::kEnableLast28DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   // Only up to seven days will be considered.
   ASSERT_EQ(7u, local_res.size());
   ASSERT_EQ(7u, all_res.size());
@@ -1103,7 +1103,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   auto [local_res, all_res] = GetDomainDiversityHelper(
       history, GetTimeInThePast(query_time, 7, 12), query_time,
       history::kEnableLast1DayMetric | history::kEnableLast7DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
   ASSERT_EQ(7u, local_res.size());
   ASSERT_EQ(7u, all_res.size());
 
@@ -1126,7 +1126,7 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   std::tie(local_res, all_res) = GetDomainDiversityHelper(
       history, GetTimeInThePast(query_time, 6, 12), query_time,
       history::kEnableLast28DayMetric | history::kEnableLast7DayMetric,
-      &tracker_);
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(6u, local_res.size());
   ASSERT_EQ(6u, all_res.size());
@@ -1146,18 +1146,101 @@ TEST_F(HistoryServiceTest, GetDomainDiversityBitmaskTest) {
   TestDomainMetricSet(all_res[5], -1, 1, 2);
 }
 
+TEST_F(HistoryServiceTest, GetDomainDiversity404sTest) {
+  // Allow 404 visits to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
+  HistoryService* history = history_service_.get();
+  ASSERT_TRUE(history);
+
+  base::Time query_time = base::Time::Now();
+
+  // Add a few visits, including a 404.
+  AddPageAtTime(history, "http://www.google.com/",
+                GetTimeInThePast(query_time, /*days_back=*/28,
+                                 /*hours_since_midnight=*/6));
+  AddPageAtTime(history, "http://www.youtube.com/",
+                GetTimeInThePast(query_time, 7, 6));
+  AddPageAtTime(history, "http://www.chromium.com/",
+                GetTimeInThePast(query_time, 1, 4), /*is_404=*/true);
+  // Add an old non-404 visit for the same URL as the 404 visit, to unhide the
+  // URL without adding a non-404 visit to our metric window.
+  AddPageAtTime(history, "http://www.chromium.com/",
+                GetTimeInThePast(query_time, 60, 1));
+
+  // Query including 404 visits.
+  auto [local_res, all_res] = GetDomainDiversityHelper(
+      history, GetTimeInThePast(query_time, 7, 12), query_time,
+      history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
+          history::kEnableLast28DayMetric,
+      VisitQuery404sPolicy::kInclude404s, &tracker_);
+  ASSERT_EQ(7u, local_res.size());
+  ASSERT_EQ(7u, all_res.size());
+
+  // The 404 visit should be counted.
+  TestDomainMetricSet(local_res[0], 1, 2, 3);
+  TestDomainMetricSet(local_res[1], 0, 1, 2);
+  TestDomainMetricSet(local_res[2], 0, 1, 2);
+  TestDomainMetricSet(local_res[3], 0, 1, 2);
+  TestDomainMetricSet(local_res[4], 0, 1, 2);
+  TestDomainMetricSet(local_res[5], 0, 1, 2);
+  TestDomainMetricSet(local_res[6], 1, 1, 2);
+
+  TestDomainMetricSet(all_res[0], 1, 2, 3);
+  TestDomainMetricSet(all_res[1], 0, 1, 2);
+  TestDomainMetricSet(all_res[2], 0, 1, 2);
+  TestDomainMetricSet(all_res[3], 0, 1, 2);
+  TestDomainMetricSet(all_res[4], 0, 1, 2);
+  TestDomainMetricSet(all_res[5], 0, 1, 2);
+  TestDomainMetricSet(all_res[6], 1, 1, 2);
+
+  // Query excluding 404 visits.
+  std::tie(local_res, all_res) = GetDomainDiversityHelper(
+      history, GetTimeInThePast(query_time, 7, 12), query_time,
+      history::kEnableLast1DayMetric | history::kEnableLast7DayMetric |
+          history::kEnableLast28DayMetric,
+      VisitQuery404sPolicy::kExclude404s, &tracker_);
+  ASSERT_EQ(7u, local_res.size());
+  ASSERT_EQ(7u, all_res.size());
+
+  // The 404 visit should not be counted, but the others should be.
+  TestDomainMetricSet(local_res[0], 0, 1, 2);
+  TestDomainMetricSet(local_res[1], 0, 1, 2);
+  TestDomainMetricSet(local_res[2], 0, 1, 2);
+  TestDomainMetricSet(local_res[3], 0, 1, 2);
+  TestDomainMetricSet(local_res[4], 0, 1, 2);
+  TestDomainMetricSet(local_res[5], 0, 1, 2);
+  TestDomainMetricSet(local_res[6], 1, 1, 2);
+
+  TestDomainMetricSet(all_res[0], 0, 1, 2);
+  TestDomainMetricSet(all_res[1], 0, 1, 2);
+  TestDomainMetricSet(all_res[2], 0, 1, 2);
+  TestDomainMetricSet(all_res[3], 0, 1, 2);
+  TestDomainMetricSet(all_res[4], 0, 1, 2);
+  TestDomainMetricSet(all_res[5], 0, 1, 2);
+  TestDomainMetricSet(all_res[6], 1, 1, 2);
+}
+
 // Gets unique local and synced domains visited and the last visited domain
 // within a time range.
 TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
+  // Allow 404 visits to be saved to History.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
   base::Time base_time = base::Time::Now();
   HistoryService* history = history_service_.get();
   ASSERT_TRUE(history);
 
   // Add local visits to history database at specific days back.
-  AddPageInThePast(history, "http://www.test1.com/", 1);
+  AddPageInThePast(history, "http://www.test1.com/", 1, /*is_404=*/true);
   AddPageInThePast(history, "http://www.test2.com/test", 2);
   AddPageInThePast(history, "http://www.test2.com/", 3);
   AddPageInThePast(history, "http://www.test3.com/", 4);
+  // Add an old non-404 visit for the same URL as the 404 visit, to unhide the
+  // URL without adding a non-404 visit to our metric window.
+  AddPageInThePast(history, "http://www.test1.com/", 88);
 
   // Add synced visits to history database at specific days back.
   AddSyncedPageInThePast(history, "http://www.test3.com/", 3);
@@ -1169,8 +1252,24 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(10),
-        /*end_time=*/base_time - base::Days(5), future.GetCallback(),
-        &tracker_);
+        /*end_time=*/base_time - base::Days(5),
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(0u, result.locally_visited_domains.size());
+    EXPECT_EQ(0u, result.all_visited_domains.size());
+  }
+
+  {
+    // DomainsVisitedResult should be empty when no domains in range had non-404
+    // visits and `policy_for_404_visits` is set to exclude 404s.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(1),
+        /*end_time=*/base_time, VisitQuery404sPolicy::kExclude404s,
+        future.GetCallback(), &tracker_);
 
     DomainsVisitedResult result = future.Take();
 
@@ -1180,20 +1279,39 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
   {
     // DomainsVisitedResult should include unique domains in range in
-    // reverse-chronological order.
+    // reverse-chronological order. Should include domains that only had 404
+    // visits when `policy_for_404_visits` is set to include 404s.
     base::test::TestFuture<DomainsVisitedResult> future;
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(2), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult({"test1.com", "test2.com"});
-    std::vector<std::string> expectedSyncedResult({"test1.com", "test2.com"});
+    std::vector<std::string> expected_local_result({"test1.com", "test2.com"});
+    std::vector<std::string> expected_synced_result({"test1.com", "test2.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
+  }
+
+  {
+    // DomainsVisitedResult should exclude domains that only had 404 visits in
+    // the specified range when `policy_for_404_visits` is set to exclude 404s.
+    base::test::TestFuture<DomainsVisitedResult> future;
+
+    history->GetUniqueDomainsVisited(
+        /*begin_time=*/base_time - base::Days(2), /*end_time=*/base_time,
+        VisitQuery404sPolicy::kExclude404s, future.GetCallback(), &tracker_);
+
+    std::vector<std::string> expected_local_result({"test2.com"});
+    std::vector<std::string> expected_synced_result({"test2.com"});
+
+    DomainsVisitedResult result = future.Take();
+
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 
   {
@@ -1202,17 +1320,17 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(4), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult(
+    std::vector<std::string> expected_local_result(
         {"test1.com", "test2.com", "test3.com"});
-    std::vector<std::string> expectedSyncedResult(
+    std::vector<std::string> expected_synced_result(
         {"test1.com", "test2.com", "test3.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 
   {
@@ -1221,17 +1339,17 @@ TEST_F(HistoryServiceTest, GetUniqueDomainsVisited) {
 
     history->GetUniqueDomainsVisited(
         /*begin_time=*/base_time - base::Days(5), /*end_time=*/base_time,
-        future.GetCallback(), &tracker_);
+        VisitQuery404sPolicy::kInclude404s, future.GetCallback(), &tracker_);
 
-    std::vector<std::string> expectedLocalResult(
+    std::vector<std::string> expected_local_result(
         {"test1.com", "test2.com", "test3.com"});
-    std::vector<std::string> expectedSyncedResult(
+    std::vector<std::string> expected_synced_result(
         {"test1.com", "test2.com", "test3.com", "test4.com"});
 
     DomainsVisitedResult result = future.Take();
 
-    EXPECT_EQ(expectedLocalResult, result.locally_visited_domains);
-    EXPECT_EQ(expectedSyncedResult, result.all_visited_domains);
+    EXPECT_EQ(expected_local_result, result.locally_visited_domains);
+    EXPECT_EQ(expected_synced_result, result.all_visited_domains);
   }
 }
 
@@ -1285,7 +1403,8 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
                    GetTimeInThePast(query_time, /*days_back=*/1,
                                     /*hours_since_midnight=*/12),
                    0, 0, GURL(), history::RedirectList(),
-                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED, false);
+                   ui::PAGE_TRANSITION_LINK, history::SOURCE_BROWSED,
+                   VisitResponseCodeCategory::kNot404, false);
 
   // Add a synced visit, as it would be created by HISTORY sync. The API to do
   // this isn't exposed in HistoryService (only HistoryBackend).
@@ -1308,9 +1427,10 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
     run_loop.Run();
   }
 
-  auto [local_res, all_res] = GetDomainDiversityHelper(
-      history, GetTimeInThePast(query_time, 1, 0), query_time,
-      history::kEnableLast1DayMetric, &tracker_);
+  auto [local_res, all_res] =
+      GetDomainDiversityHelper(history, GetTimeInThePast(query_time, 1, 0),
+                               query_time, history::kEnableLast1DayMetric,
+                               VisitQuery404sPolicy::kInclude404s, &tracker_);
 
   ASSERT_EQ(1u, local_res.size());
   ASSERT_EQ(1u, all_res.size());
@@ -1322,6 +1442,10 @@ TEST_F(HistoryServiceTest, GetDomainDiversityLocalVsSynced) {
 }
 
 TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
+  // Allow 404s to be saved to history.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(history::kVisitedLinksOn404);
+
   HistoryService* history = history_service_.get();
   ASSERT_TRUE(history);
 
@@ -1335,12 +1459,33 @@ TEST_F(HistoryServiceTest, GetMostRecentVisitsForGurl) {
   AddPageInThePast(history, "http://www.google.com/", 2);
   // Should not return older visits.
   AddPageInThePast(history, "http://www.google.com/", 6);
+  // Should include or ignore 404s based on `policy_for_404_visits`.
+  AddPageInThePast(history, "http://www.google.com/", 2, /*is_404=*/true);
 
-  base::test::TestFuture<QueryURLResult> future;
+  base::test::TestFuture<QueryURLAndVisitsResult> future;
   history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      VisitQuery404sPolicy::kInclude404s,
                                       future.GetCallback(), &tracker_);
-  const auto result = future.Take();
+  auto result = future.Take();
   EXPECT_EQ(result.row.id(), 1);
+  // We specified that 404s should be included, so the 404 visit should be
+  // returned.
+  EXPECT_THAT(result.visits,
+              testing::ElementsAre(
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 3)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 7)),
+                  testing::AllOf(testing::Field(&VisitRow::url_id, 1),
+                                 testing::Field(&VisitRow::visit_id, 5))));
+
+  history->GetMostRecentVisitsForGurl(GURL("http://www.google.com/"), 3,
+                                      VisitQuery404sPolicy::kExclude404s,
+                                      future.GetCallback(), &tracker_);
+  result = future.Take();
+  EXPECT_EQ(result.row.id(), 1);
+  // We specified that 404s should be excluded, so the non-404 visit from 3 days
+  // ago should get returned instead instead of the 404 from 2 days ago.
   EXPECT_THAT(result.visits,
               testing::ElementsAre(
                   testing::AllOf(testing::Field(&VisitRow::url_id, 1),
@@ -1379,7 +1524,7 @@ class OrderingHistoryServiceTest : public HistoryServiceTest {
 
     // Set up the HistoryService.
     history_service_ = std::make_unique<history::HistoryService>(
-        nullptr, std::move(visit_delegate));
+        nullptr, std::move(visit_delegate), nullptr, nullptr);
     if (!history_service_->Init(
             TestHistoryDatabaseParamsForPath(history_dir_))) {
       history_service_.reset();
@@ -1420,8 +1565,10 @@ TEST_F(OrderingHistoryServiceTest, EnsureCorrectOrder) {
   HistoryAddPageArgs request(
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
       std::nullopt, GURL(),
-      /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false,
-      true, /*is_ephemeral=*/false, std::nullopt, top_level_url, frame_url);
+      /*redirects=*/{}, ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED,
+      VisitResponseCodeCategory::kNot404, false, true,
+      VisitContextEphemerality::kNotEphemeral, std::nullopt, top_level_url,
+      frame_url);
 
   // Simulate a user clicking on our VistedLink.
   history_service_->AddPage(request);

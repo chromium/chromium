@@ -7,8 +7,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
@@ -16,7 +16,7 @@ namespace optimization_guide {
 class OnDeviceModelAdaptationController final : public ModelController {
  public:
   OnDeviceModelAdaptationController(
-      ModelBasedCapabilityKey feature,
+      mojom::OnDeviceFeature feature,
       base::WeakPtr<ModelController> controller,
       const on_device_model::AdaptationAssetPaths& asset_paths);
   ~OnDeviceModelAdaptationController() override;
@@ -42,8 +42,6 @@ class OnDeviceModelAdaptationController final : public ModelController {
   void ResetRemote() { model_remote_.reset(); }
 
  private:
-  ModelBasedCapabilityKey feature_;
-
   base::WeakPtr<ModelController> controller_;
 
   on_device_model::AdaptationAssetPaths asset_paths_;

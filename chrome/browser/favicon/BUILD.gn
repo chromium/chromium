@@ -20,6 +20,7 @@ source_set("favicon") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
+    "//chrome/browser/history",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
@@ -40,6 +41,9 @@ source_set("favicon") {
     "//ui/resources",
   ]
   if (is_chromeos) {
-    deps += [ "//ash/constants:constants" ]
+    deps += [ "//ash/constants" ]
+  }
+  if (is_mac || is_win || is_linux || is_chromeos) {
+    deps += [ "//components/webapps/isolated_web_apps:scheme" ]
   }
 }

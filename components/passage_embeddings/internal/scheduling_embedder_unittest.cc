@@ -27,7 +27,6 @@ namespace passage_embeddings {
 namespace {
 
 using testing::ElementsAre;
-using testing::Invoke;
 
 using ComputePassagesEmbeddingsFuture =
     base::test::TestFuture<std::vector<std::string>,
@@ -91,13 +90,12 @@ TEST_F(SchedulingEmbedderTest, InvokesService) {
   SchedulingEmbedder::GetEmbeddingsResultCallback result_callback;
 
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
-      .WillOnce(Invoke(
-          [&](std::vector<std::string> passages, PassagePriority priority,
-              SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
-            requested_passages = std::move(passages);
-            passage_priority = priority;
-            result_callback = std::move(callback);
-          }));
+      .WillOnce([&](std::vector<std::string> passages, PassagePriority priority,
+                    SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+        requested_passages = std::move(passages);
+        passage_priority = priority;
+        result_callback = std::move(callback);
+      });
 
   embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
                                       {"test passage 1"},
@@ -123,8 +121,8 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
 
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
       .WillOnce(
-          Invoke([](std::vector<std::string> passages, PassagePriority priority,
-                    SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+          [](std::vector<std::string> passages, PassagePriority priority,
+             SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
             std::vector<mojom::PassageEmbeddingsResultPtr> results;
             results.push_back(mojom::PassageEmbeddingsResult::New(
                 std::vector<float>{1.0f, 0.0f}));
@@ -132,7 +130,7 @@ TEST_F(SchedulingEmbedderTest, TranslatesServiceOutput) {
                 std::vector<float>{0.0f, 1.0f}));
             std::move(callback).Run(std::move(results),
                                     ComputeEmbeddingsStatus::kSuccess);
-          }));
+          });
 
   ComputePassagesEmbeddingsFuture future;
   Embedder::TaskId task_id = embedder->ComputePassagesEmbeddings(
@@ -171,9 +169,9 @@ TEST_F(SchedulingEmbedderTest, UserInitiatedJobTakesPriority) {
       };
 
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
-      .WillOnce(Invoke(save_call_parameters))
-      .WillOnce(Invoke(save_call_parameters))
-      .WillOnce(Invoke(save_call_parameters));
+      .WillOnce(save_call_parameters)
+      .WillOnce(save_call_parameters)
+      .WillOnce(save_call_parameters);
 
   // Submit a passive priority task.
   embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
@@ -228,13 +226,12 @@ TEST_F(SchedulingEmbedderTest, TryCancel) {
   SchedulingEmbedder::GetEmbeddingsResultCallback result_callback;
 
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
-      .WillOnce(Invoke(
-          [&requested_passages, &result_callback](
-              std::vector<std::string> passages, PassagePriority priority,
-              SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
-            requested_passages = std::move(passages);
-            result_callback = std::move(callback);
-          }));
+      .WillOnce([&requested_passages, &result_callback](
+                    std::vector<std::string> passages, PassagePriority priority,
+                    SchedulingEmbedder::GetEmbeddingsResultCallback callback) {
+        requested_passages = std::move(passages);
+        result_callback = std::move(callback);
+      });
 
   embedder->ComputePassagesEmbeddings(PassagePriority::kPassive,
                                       {"test passage 1"},
@@ -273,8 +270,8 @@ TEST_F(SchedulingEmbedderTest, RecordsHistograms) {
         callbacks.push_back(std::move(callback));
       };
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
-      .WillOnce(Invoke(record_callback))
-      .WillOnce(Invoke(record_callback));
+      .WillOnce(record_callback)
+      .WillOnce(record_callback);
 
   ComputePassagesEmbeddingsFuture future1;
   embedder->ComputePassagesEmbeddings(
@@ -363,8 +360,8 @@ TEST_F(SchedulingEmbedderTest, LimitsJobCount) {
         callbacks.push_back(std::move(callback));
       };
   EXPECT_CALL(get_embeddings_stub_, GetEmbeddings)
-      .WillOnce(Invoke(record_callback))
-      .WillOnce(Invoke(record_callback));
+      .WillOnce(record_callback)
+      .WillOnce(record_callback);
 
   ComputePassagesEmbeddingsFuture future1;
   embedder->ComputePassagesEmbeddings(

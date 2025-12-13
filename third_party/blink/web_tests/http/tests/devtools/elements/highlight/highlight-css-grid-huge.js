@@ -38,7 +38,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   // But don't dump it since that would make the test time out.
   await new Promise(resolve => {
     ElementsTestRunner.nodeWithId('huge-grid', async function(node) {
-      await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id);
+      await TestRunner.OverlayAgent.invoke_getHighlightObjectForTest({nodeId: node.id});
       resolve();
     });
   });

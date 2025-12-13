@@ -8,6 +8,7 @@ source_set("common") {
   sources = [
     "constants.cc",
     "constants.h",
+    "manifest_id_constants.h",
     "web_app_id.h",
   ]
 }

@@ -17,7 +17,7 @@ When an unsafe usage is detected, Clang prints a warning similar to
 error: unsafe buffer access [-Werror,-Wunsafe-buffer-usage]
 ```
 and directs developers to this file for more information. Several common
-[Techniques](#container-based-ecosystem) for fixing these issues are presented
+[Techniques](#container_based-ecosystem) for fixing these issues are presented
 later in this document.
 
 Clang documentation includes a guide to working with unsafe-buffer-usage
@@ -66,8 +66,8 @@ Empty lines are ignored.
 The `#` character introduces a comment until the end of the line.
 
 Lines starting with `.` declare which checks are to be enforced, as
-a comma-separated list of values. Currently allowed values are `buffers`
-and `libc`.
+a comma-separated list of values. Currently allowed values are `buffers`,
+`libc`, and `unique_ptr`.
 
 All other lines specify which paths are to be included/excluded.
 

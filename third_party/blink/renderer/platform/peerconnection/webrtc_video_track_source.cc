@@ -27,9 +27,7 @@ namespace {
 // Enables premapping of GMBs if the consumer wants mapped frames.
 // This helps with webrtc encode time measurements reducing unnecessary
 // adaptations.
-BASE_FEATURE(kWebrtcVideoTrackSourcePremap,
-             "WebrtcVideoTrackSourcePremap",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kWebrtcVideoTrackSourcePremap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr int kMaxPendingFrames = 5;
 
@@ -125,11 +123,10 @@ WebRtcVideoTrackSource::WebRtcVideoTrackSource(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> shared_resources)
     : AdaptedVideoTrackSource(/*required_alignment=*/1),
-      adapter_resources_(
-          shared_resources
-              ? shared_resources
-              : base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
-                    gpu_factories)),
+      adapter_resources_(shared_resources
+                             ? shared_resources
+                             : WebRtcVideoFrameAdapter::SharedResources::Create(
+                                   gpu_factories)),
       is_screencast_(is_screencast),
       needs_denoising_(needs_denoising),
       feedback_callback_(std::move(feedback_callback)),
@@ -214,9 +211,9 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webrtc"), "MappingParams",
               "require_mapped_frame",
               adapter_resources_->GetFeedback().require_mapped_frame,
-              "HasMappableGmb", current_frame->HasMappableGpuBuffer(),
+              "HasMappableGmb", current_frame->HasMappableSharedImage(),
               "AsyncMappingIsNonBlocking",
-              current_frame->HasMappableGpuBuffer() &&
+              current_frame->HasMappableSharedImage() &&
                   current_frame->AsyncMappingIsNonBlocking());
   // Map the GMB here if we know that the mapped image is required downstream.
   // If the feedback has reached the capturer, this is a no-op as the frame is
@@ -224,7 +221,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // thus not inflating the encode time metrics.
   if (base::FeatureList::IsEnabled(kWebrtcVideoTrackSourcePremap) &&
       adapter_resources_->GetFeedback().require_mapped_frame &&
-      current_frame->HasMappableGpuBuffer() &&
+      current_frame->HasMappableSharedImage() &&
       current_frame->AsyncMappingIsNonBlocking()) {
     using CallbackWithFrame =
         base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;
@@ -499,8 +496,19 @@ void WebRtcVideoTrackSource::DeliverFrame(
         update_rect->height()});
   }
 
-  if (ShouldSetColorSpace(frame->ColorSpace())) {
-    frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
+  if (frame->ColorSpace().IsValid() &&
+      base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
+    if (frame->format() == media::PIXEL_FORMAT_ARGB ||
+        frame->format() == media::PIXEL_FORMAT_ABGR ||
+        frame->format() == media::PIXEL_FORMAT_XRGB ||
+        frame->format() == media::PIXEL_FORMAT_XBGR) {
+      // RGB frames can't be encoded directly, there will be conversion in the
+      // encoder, which will produce Rec601.
+      frame_builder.set_color_space(
+          GfxToWebRtcColorSpace(gfx::ColorSpace::CreateREC601()));
+    } else {
+      frame_builder.set_color_space(GfxToWebRtcColorSpace(frame->ColorSpace()));
+    }
   }
   OnFrame(frame_builder.build());
 
@@ -508,17 +516,6 @@ void WebRtcVideoTrackSource::DeliverFrame(
   accumulated_update_rect_ = gfx::Rect();
 }
 
-bool WebRtcVideoTrackSource::ShouldSetColorSpace(
-    const gfx::ColorSpace& color_space) {
-  if (!base::FeatureList::IsEnabled(media::kWebRTCColorAccuracy)) {
-    return false;
-  }
-
-  // The remote end will assume REC601 if not instructed otherwise, so there's
-  // no need to pass this information on the wire.
-  return color_space.IsValid() &&
-         color_space != gfx::ColorSpace::CreateREC601();
-}
 
 void WebRtcVideoTrackSource::Dispose() {
   callback_proxy_->Reset();

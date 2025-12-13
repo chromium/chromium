@@ -351,14 +351,18 @@ enum BadMessageReason {
   MDDH_SET_PREFERRED_SINK_ID_WITHOUT_FEATURE = 323,
   MH_MULTIPLE_MIDI_SESSIONS = 324,
   RFHI_INVALID_NET_ERROR_CODE = 325,
-  MSDH_DISABLED_FEATURE_IS_SET = 326,
+  MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED = 326,
   RFH_SAME_DOC_INSECURE_REQUEST_POLICY_CHANGE = 327,
   RFH_SAME_DOC_INSECURE_NAV_SET_CHANGE = 328,
   RFH_ORIGIN_TO_COMMIT_MISMATCH = 329,
+  RFH_CRASH_REPORT_STORAGE_SIZE_TOO_LARGE = 330,
+  RFH_CRASH_REPORT_STORAGE_ALREADY_INITIALIZED = 331,
+  RFH_INVALID_DOCUMENT_SEQUENCE_NUMBER = 332,
+
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
   // reason. After making changes, you MUST update enums.xml by running:
-  // "python tools/metrics/histograms/update_bad_message_reasons.py"
+  // "python3 tools/metrics/histograms/update_bad_message_reasons.py"
   BAD_MESSAGE_MAX
 };
 

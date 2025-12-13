@@ -69,20 +69,21 @@ using base::UserMetricsAction;
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
   std::unique_ptr<PlaceholderServiceObserverBridge> _placeholderServiceObserver;
 
-  // Whether it's the lens overlay omnibox.
-  BOOL _isLensOverlay;
+  // The context in which the omnibox is presented.
+  OmniboxPresentationContext _presentationContext;
 }
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
                           tracker:(feature_engagement::Tracker*)tracker
-                    isLensOverlay:(BOOL)isLensOverlay {
+              presentationContext:
+                  (OmniboxPresentationContext)presentationContext {
   self = [super init];
   if (self) {
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
     _isIncognito = isIncognito;
     _tracker = tracker;
-    _isLensOverlay = isLensOverlay;
+    _presentationContext = presentationContext;
   }
   return self;
 }
@@ -374,6 +375,11 @@ using base::UserMetricsAction;
       }));
 }
 
+- (BOOL)shouldUseLensForCopiedImage {
+  return ios::provider::IsLensSupported() &&
+         base::FeatureList::IsEnabled(kEnableLensInOmniboxCopiedImage);
+}
+
 - (void)lensCopiedImage {
   __weak __typeof(self) weakSelf = self;
   ClipboardRecentContent::GetInstance()->GetRecentImageFromClipboard(
@@ -465,16 +471,16 @@ using base::UserMetricsAction;
   // before this one completes.
   self.latestFaviconURL = pageURL;
   __weak __typeof(self) weakSelf = self;
-  auto handleFaviconResult = ^void(FaviconAttributes* faviconCacheResult) {
-    if (weakSelf.latestFaviconURL != pageURL ||
-        !faviconCacheResult.faviconImage ||
-        faviconCacheResult.usesDefaultImage) {
-      return;
-    }
-    if (completion) {
-      completion(faviconCacheResult.faviconImage);
-    }
-  };
+  auto handleFaviconResult =
+      ^void(FaviconAttributes* faviconCacheResult, bool cached) {
+        if (weakSelf.latestFaviconURL != pageURL ||
+            !faviconCacheResult.faviconImage) {
+          return;
+        }
+        if (completion) {
+          completion(faviconCacheResult.faviconImage);
+        }
+      };
 
   // Download the favicon.
   // The code below mimics that in OmniboxPopupMediator.
@@ -527,7 +533,8 @@ using base::UserMetricsAction;
 
 // Returns the size of the favicon.
 - (CGFloat)faviconSize {
-  if (_isLensOverlay) {
+  if (_presentationContext == OmniboxPresentationContext::kLensOverlay ||
+      _presentationContext == OmniboxPresentationContext::kComposebox) {
     return kDesiredSmallFaviconSizePt;
   } else {
     return kMinFaviconSizePt;

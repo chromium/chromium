@@ -13,6 +13,7 @@ include_rules = [
   "+components/language_detection/core",
   "+components/leveldb_proto",
   "+components/metrics",
+  "+components/one_time_tokens/core/browser",
   "+components/optimization_guide",
   "+components/optimization_guide/core",
   "+components/password_manager/core/browser/features/password_features.h",
@@ -24,6 +25,7 @@ include_rules = [
   "+components/security_interstitials/core/pref_names.h",
   "+components/security_state",
   "+components/signin/public",
+  "+components/strike_database",
   "+components/strings",
   "+components/sync",
   "+components/sync_preferences",
@@ -69,13 +71,11 @@ specific_include_rules = {
     "+components/ukm",
   ],
   "(test_)?credit_card_fido_authenticator\.(cc|h)": [
-    "+device/fido/authenticator_selection_criteria.h",
-    "+device/fido/fido_constants.h",
-    "+device/fido/fido_types.h",
+    "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
   "(test_)?internal_authenticator\.h": [
-    "+device/fido/fido_constants.h",
+    "+device/fido/public",
     "+third_party/blink/public/mojom/webauthn",
   ],
   "autofill_driver\.h": [

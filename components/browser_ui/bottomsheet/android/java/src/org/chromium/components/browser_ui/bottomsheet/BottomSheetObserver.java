@@ -47,4 +47,7 @@ public interface BottomSheetObserver {
      * @param newContent The new {@link BottomSheetContent}, or null if the sheet has no content.
      */
     void onSheetContentChanged(@Nullable BottomSheetContent newContent);
+
+    /** Called when the sheet background color override is changed. */
+    default void onSheetBackgroundColorOverrideChanged() {}
 }

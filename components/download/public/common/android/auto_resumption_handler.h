@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
@@ -35,8 +36,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
     ~Config() = default;
 
     int auto_resumption_size_limit;
-    bool is_auto_resumption_enabled_in_native;
   };
+  using TaskNotifyCallback = base::OnceCallback<void(DownloadItem*)>;
 
   // Creates the singleton instance of AutoResumptionHandler.
   static void Create(
@@ -65,7 +66,8 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
           downloads);
   bool IsActiveNetworkMetered() const;
   void OnStartScheduledTask(DownloadTaskType type,
-                            TaskFinishedCallback callback);
+                            TaskFinishedCallback task_finished_callback,
+                            TaskNotifyCallback task_notify_callback);
   bool OnStopScheduledTask(DownloadTaskType type);
 
   void OnDownloadStarted(download::DownloadItem* item);
@@ -114,6 +116,17 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
       downloads_to_retry_;
 
   bool recompute_task_params_scheduled_ = false;
+
+  // Whether download manager and database have been initialized, which would
+  // invoke SetResumableDownloads().
+  bool is_resumable_downloads_initialized_ = false;
+
+  // Whether a background task was launched that has been waiting for download
+  // manager and database to be initialized.
+  bool is_waiting_for_resumable_downloads_ = false;
+
+  // Callback to notify the task when the first download starts resuming.
+  TaskNotifyCallback task_notify_callback_;
 
   base::WeakPtrFactory<AutoResumptionHandler> weak_factory_{this};
 };

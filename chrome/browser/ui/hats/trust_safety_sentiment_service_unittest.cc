@@ -13,12 +13,12 @@
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
-#include "components/privacy_sandbox/tracking_protection_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
@@ -635,8 +635,7 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   managed_provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_BLOCK), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
+      base::Value(ContentSetting::CONTENT_SETTING_BLOCK), /*constraints=*/{});
   content_settings::TestUtils::OverrideProvider(
       content_settings, std::move(managed_provider),
       content_settings::ProviderType::kPolicyProvider);

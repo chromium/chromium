@@ -37,9 +37,7 @@
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_share_group.h"
 #include "ui/gl/gl_surface.h"
@@ -94,9 +92,7 @@ GpuFeatureInfo GLManager::g_gpu_feature_info;
 
 GLManager::Options::Options() = default;
 
-GLManager::GLManager()
-    : gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {
+GLManager::GLManager() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   InitializeGpuPreferencesForTestingFromCommandLine(command_line,
@@ -168,18 +164,8 @@ void GLManager::InitializeWithWorkaroundsImpl(
 
   share_group_ = share_group ? share_group : new gl::GLShareGroup;
 
-  const bool bind_generates_resource = false;
-
-  ContextCreationAttribs attribs;
-  attribs.context_type = options.context_type;
-  attribs.bind_generates_resource = bind_generates_resource;
-
   translator_cache_ =
       std::make_unique<gles2::ShaderTranslatorCache>(gpu_preferences_);
-  discardable_manager_ =
-      std::make_unique<ServiceDiscardableManager>(gpu_preferences_);
-  passthrough_discardable_manager_ =
-      std::make_unique<PassthroughDiscardableManager>(gpu_preferences_);
 
   if (!context_group) {
     GpuFeatureInfo gpu_feature_info;
@@ -189,18 +175,17 @@ void GLManager::InitializeWithWorkaroundsImpl(
     // not unexpectedly use the wrong command decoder
     context_group = new gles2::ContextGroup(
         gpu_preferences_, /*memory_tracker=*/nullptr, translator_cache_.get(),
-        &completeness_cache_, feature_info, bind_generates_resource,
+        &completeness_cache_, feature_info,
         /*progress_reporter=*/nullptr, gpu_feature_info,
-        discardable_manager_.get(), passthrough_discardable_manager_.get(),
         &shared_image_manager_);
   }
 
   command_buffer_.reset(
       new CommandBufferCheckLostContext(options.context_lost_allowed));
 
-  decoder_.reset(::gpu::gles2::GLES2Decoder::Create(
-      command_buffer_.get(), command_buffer_->service(), &outputter_,
-      context_group));
+  decoder_ = ::gpu::gles2::GLES2Decoder::Create(command_buffer_.get(),
+                                                command_buffer_->service(),
+                                                &outputter_, context_group);
   if (options.force_shader_name_hashing) {
     decoder_->SetForceShaderNameHashingForTest(true);
   }
@@ -215,19 +200,23 @@ void GLManager::InitializeWithWorkaroundsImpl(
     context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
         share_group_.get(), base_context_->get(), decoder_->AsWeakPtr()));
     ASSERT_TRUE(context_->Initialize(
-        surface.get(),
-        GenerateGLContextAttribsForDecoder(attribs, context_group)));
+        surface.get(), GenerateGLContextAttribsForDecoder(
+                           options.context_type, gl::GpuPreference::kLowPower,
+                           context_group)));
   } else {
     if (real_gl_context) {
       context_ = scoped_refptr<gl::GLContext>(new gpu::GLContextVirtual(
           share_group_.get(), real_gl_context, decoder_->AsWeakPtr()));
       ASSERT_TRUE(context_->Initialize(
-          surface.get(),
-          GenerateGLContextAttribsForDecoder(attribs, context_group)));
+          surface.get(), GenerateGLContextAttribsForDecoder(
+                             options.context_type, gl::GpuPreference::kLowPower,
+                             context_group)));
     } else {
       context_ = gl::init::CreateGLContext(
           share_group_.get(), surface.get(),
-          GenerateGLContextAttribsForDecoder(attribs, context_group));
+          GenerateGLContextAttribsForDecoder(options.context_type,
+                                             gl::GpuPreference::kLowPower,
+                                             context_group));
       g_gpu_feature_info.ApplyToGLContext(context_.get());
     }
   }
@@ -241,9 +230,9 @@ void GLManager::InitializeWithWorkaroundsImpl(
   //   api->glRequestExtensionANGLEFn("GL_EXT_texture_format_BGRA8888");
   // }
 
-  auto result =
-      decoder_->Initialize(context_->default_surface(), context_.get(), true,
-                           ::gpu::gles2::DisallowedFeatures(), attribs);
+  auto result = decoder_->Initialize(
+      context_->default_surface(), context_.get(), /*offscreen=*/true,
+      options.context_type, /*lose_context_when_out_of_memory=*/false);
   if (result != gpu::ContextResult::kSuccess)
     return;
   // Client side Capabilities queries return reference, service side return
@@ -260,12 +249,9 @@ void GLManager::InitializeWithWorkaroundsImpl(
   transfer_buffer_.reset(new TransferBuffer(gles2_helper_.get()));
 
   // Create the object exposing the OpenGL API.
-  const bool support_client_side_arrays = true;
   gles2_implementation_.reset(new gles2::GLES2Implementation(
       gles2_helper_.get(), std::move(client_share_group),
-      transfer_buffer_.get(), bind_generates_resource,
-      options.lose_context_when_out_of_memory, support_client_side_arrays,
-      this));
+      transfer_buffer_.get(), options.lose_context_when_out_of_memory, this));
 
   ASSERT_EQ(gles2_implementation_->Initialize(limits),
             gpu::ContextResult::kSuccess)

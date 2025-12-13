@@ -225,6 +225,11 @@ void AnnotationTray::HideBubble(const TrayBubbleView* bubble_view) {
   CloseBubble();
 }
 
+std::u16string AnnotationTray::GetAccessibleNameForBubble() {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_BUBBLE_ACCESSIBLE_TITLE);
+}
+
 void AnnotationTray::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   const uint64_t color =
@@ -259,10 +264,8 @@ void AnnotationTray::SetTrayEnabled(bool enabled) {
     return;
 
   // For disabled state, set icon color to kIconColorPrimary with 30% opacity.
-  SkColor disabled_icon_color =
-      SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
-                      AshColorProvider::ContentLayerType::kIconColorPrimary),
-                  0x4D);
+  SkColor disabled_icon_color = SkColorSetA(
+      GetColorProvider()->GetColor(cros_tokens::kIconColorPrimary), 0x4D);
   image_view_->SetImage(ui::ImageModel::FromVectorIcon(
       kPaletteTrayIconProjectorIcon, disabled_icon_color));
   image_view_->SetTooltipText(l10n_util::GetStringUTF16(

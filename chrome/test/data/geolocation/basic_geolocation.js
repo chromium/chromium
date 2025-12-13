@@ -75,3 +75,7 @@ function geoGetLastError() {
 function geoAccessNavigatorGeolocation() {
   return "" + typeof(navigator.geolocation);
 }
+function requestPermissionAndRespond() {
+  navigator.geolocation.getCurrentPosition((()=>{}));
+  return sendResultToTest('requested');
+}

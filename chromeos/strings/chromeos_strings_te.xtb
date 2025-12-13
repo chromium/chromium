@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">నారింజలు</translation>
 <translation id="1275718070701477396">ఎంచుకోబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
+<translation id="1292474106138697109">క్లాస్ టూల్స్ డిస్‌ప్లే</translation>
 <translation id="1300115153046603471">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం, <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">మార్చండి</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">టాప్ సహాయక కంటెంట్</translation>
 <translation id="2277631741861284101">మీ ఆడియోను సులభంగా రికార్డ్ చేయండి, షేర్ చేయండి</translation>
 <translation id="2279051792571591988">ఆటోమేటిక్ సెట్టింగ్‌లను రీస్టోర్ చేయండి</translation>
-<translation id="2286454467119466181">సరళం</translation>
+<translation id="2286454467119466181">సాధారణ</translation>
 <translation id="2287186687001756809">ఇమేజ్ అందుబాటులో లేదు. ఫోటోలను జోడించడానికి, <ph name="LINK" />కు వెళ్లండి</translation>
 <translation id="2294577623958216786">ప్రస్తుత షెడ్యూల్‌ను <ph name="SUNRISE" />-<ph name="SUNSET" />‌కు సెట్ చేయడం జరిగింది. సన్‌సెట్, సన్‌రైజ్ షెడ్యూల్‌ను ఆటోమేటిక్‌గా అప్‌డేట్ చేయడానికి, సిస్టమ్ లొకేషన్ యాక్సెస్‌ను ఆన్ చేయండి.</translation>
 <translation id="2305172810646967500">నలుపు రంగు</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
 <translation id="4300272766492248925">యాప్‌ను తెరువు</translation>
 <translation id="430786093962686457">షిఫాన్</translation>
+<translation id="4309762678330556039">ఆటోమేటిక్‌గా మాటల టైపింగ్‌లను క్రియేట్ చేయండి, ఆడియోను సెర్చ్ చేయండి. మీరు ఇంటర్నెట్‌కు కనెక్ట్ కానప్పటికీ రికార్డింగ్‌లను క్రియేట్ చేయవచ్చు.</translation>
 <translation id="4310735698903592804">ఇటీవలి వాల్‌పేపర్‌లు Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతున్నాయి</translation>
 <translation id="4320904097188876154">నియాన్ గులాబి రంగు</translation>
 <translation id="432961742358282111">నిర్వచనాలను, అనువాదాలను, లేదా యూనిట్ కన్వర్షన్‌లను పొందడానికి రైట్-క్లిక్ చేయండి లేదా నొక్కి, పట్టుకోండి. ఈ ఫీచర్‌ను మేనేజ్ చేయడానికి ఎడమ వైపు బాణం లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
@@ -941,7 +943,7 @@
 <translation id="5108781503443873320">పోలినవి:</translation>
 <translation id="5130848777448318809">గుఱ్ఱం పిల్లలు</translation>
 <translation id="5137451382116112100">పూర్తిగా</translation>
-<translation id="5139813694804168398">అంతరాయం కలిగించవద్దు</translation>
+<translation id="5139813694804168398">డిస్టర్బ్ చేయవద్దు</translation>
 <translation id="5140788690559353412">మీ స్కూల్ ఖాతాకు యాక్సెస్‌ను కోల్పోయినప్పుడు, మీరు Gmail, Docs, Slides, ఇంకా మరిన్నింటితో అనుబంధించిన ఈమెయిల్‌ను, Google Drive ఫైల్స్‌ను ఇక యాక్సెస్ చేయలేరు.</translation>
 <translation id="5142961317498132443">ప్రమాణీకరణ</translation>
 <translation id="5144311987923128508">నిర్ధారించండి బటన్ ఇప్పుడు డిజేబుల్ చేయబడింది</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> కీని పరీక్షించారు</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">క్లాస్ టూల్స్ మీ స్క్రీన్‌ను <ph name="RECEIVER_NAME" />‌కు షేర్ చేస్తోంది</translation>
 <translation id="5613201299517339763">మీరు సైన్ అవుట్ అయ్యారు</translation>
 <translation id="5620281292257375798">అంతర్గతం మాత్రమే</translation>
 <translation id="5628106863521633649">అందుబాటులో ఉన్న భాషలు</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">క్లౌడ్ ఫ్లో</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
-<translation id="6231648282154119906">మీరు ఎంచుకున్న మెరుగైన రక్షణలో భాగంగా అనుమానాస్పద ఫైల్స్ Google సురక్షిత బ్రౌజింగ్ ద్వారా ఆటోమేటిక్‌గా స్కాన్ చేయబడతాయి</translation>
 <translation id="6232017090690406397">బ్యాటరీ</translation>
 <translation id="6234024205316847054">అవుట్‌లైన్‌లను చూపించండి</translation>
 <translation id="6243280677745499710">ప్రస్తుతం సెట్ చేసినది</translation>
@@ -1544,7 +1546,7 @@
 <translation id="7799817062559422778">లైట్ మోడ్</translation>
 <translation id="7802764839223122985">కీ ఏదీ నొక్కబడలేదు. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">వద్దు</translation>
-<translation id="7805768142964895445">స్థితి</translation>
+<translation id="7805768142964895445">స్టేటస్</translation>
 <translation id="7811024689617730980">1 నుండి 31 వరకు ఆటోమేటిక్ రీసెట్ కోసం ఒక రోజును ఎంచుకోండి</translation>
 <translation id="7813073042185856802">పర్వతం</translation>
 <translation id="7819857487979277519">PSK (WPA లేదా RSN)</translation>
@@ -1555,7 +1557,7 @@
 <translation id="7847923465436619066">మాటల టైపింగ్ భాష సెలెక్టర్</translation>
 <translation id="7849030488395653706">నార్తర్న్ లైట్‌లు</translation>
 <translation id="7849737607196682401">జరీ</translation>
-<translation id="7850320739366109486">అంతరాయం కలిగించవద్దు</translation>
+<translation id="7850320739366109486">డిస్టర్బ్ చేయవద్దు</translation>
 <translation id="7850847810298646851">వాల్‌పేపర్ Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
 <translation id="785170686607360576">ట్యూలిప్</translation>
 <translation id="7856267634822906833">బ్లూటూత్ టచ్‌స్క్రీన్</translation>

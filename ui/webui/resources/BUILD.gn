@@ -87,9 +87,11 @@ generate_grd("build_grd") {
 
     if (!is_android) {
       public_deps += [
+        "cr_components/composebox:build_grdp",
         "cr_components/history:build_grdp",
         "cr_components/history_clusters:build_grdp",
         "cr_components/history_embeddings:build_grdp",
+        "cr_components/search:build_grdp",
         "cr_components/searchbox:build_grdp",
         "cr_components/searchbox/icons:build_grdp",
       ]
@@ -97,8 +99,10 @@ generate_grd("build_grd") {
         "$target_gen_dir/cr_components/history/resources.grdp",
         "$target_gen_dir/cr_components/history_clusters/resources.grdp",
         "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
-        "$target_gen_dir/cr_components/searchbox/resources.grdp",
+        "$target_gen_dir/cr_components/composebox/resources.grdp",
+        "$target_gen_dir/cr_components/search/resources.grdp",
         "$target_gen_dir/cr_components/searchbox/icons/resources.grdp",
+        "$target_gen_dir/cr_components/searchbox/resources.grdp",
       ]
 
       if (is_chrome_branded) {

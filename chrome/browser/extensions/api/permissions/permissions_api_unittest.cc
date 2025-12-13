@@ -17,10 +17,6 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/permissions_test_util.h"
-#include "chrome/browser/extensions/permissions/permissions_updater.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +25,10 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/permissions/active_tab_permission_granter.h"
+#include "extensions/browser/permissions/permissions_test_util.h"
+#include "extensions/browser/permissions/permissions_updater.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
@@ -783,10 +783,10 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
   void SetUp() override {
     PermissionsAPIUnitTest::SetUp();
 
-    browser_window_ = std::make_unique<TestBrowserWindow>();
+    auto browser_window = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
-    params.window = browser_window_.get();
+    params.window = browser_window.release();
     browser_ = Browser::DeprecatedCreateOwnedForTesting(params);
 
     std::unique_ptr<content::WebContents> web_contents =
@@ -802,14 +802,12 @@ class PermissionsAPIHostAccessRequestsUnitTest : public PermissionsAPIUnitTest {
     web_contents_tester_ = nullptr;
     browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(/*index=*/0);
     browser_.reset();
-    browser_window_.reset();
     PermissionsAPIUnitTest::TearDown();
   }
 
   Browser* browser() { return browser_.get(); }
 
  private:
-  std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<content::WebContentsTester> web_contents_tester_;

@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -35,6 +34,7 @@
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::win::RegKey;
@@ -179,9 +179,9 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   EXPECT_EQ(InstallerState::USER_LEVEL, installer_state.level());
   EXPECT_EQ(InstallerState::SINGLE_INSTALL_OR_UPDATE,
             installer_state.operation());
-  EXPECT_TRUE(UNSAFE_TODO(
-      wcsstr(installer_state.target_path().value().c_str(),
-             install_static::GetChromeInstallSubDirectory().c_str())));
+  EXPECT_THAT(
+      installer_state.target_path().value(),
+      testing::HasSubstr(install_static::GetChromeInstallSubDirectory()));
   EXPECT_FALSE(installer_state.verbose_logging());
   EXPECT_EQ(installer_state.state_key(),
             install_static::GetClientStateKeyPath());
@@ -198,9 +198,9 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   EXPECT_EQ(InstallerState::SYSTEM_LEVEL, installer_state.level());
   EXPECT_EQ(InstallerState::SINGLE_INSTALL_OR_UPDATE,
             installer_state.operation());
-  EXPECT_TRUE(UNSAFE_TODO(
-      wcsstr(installer_state.target_path().value().c_str(),
-             install_static::GetChromeInstallSubDirectory().c_str())));
+  EXPECT_THAT(
+      installer_state.target_path().value(),
+      testing::HasSubstr(install_static::GetChromeInstallSubDirectory()));
   EXPECT_TRUE(installer_state.verbose_logging());
   EXPECT_EQ(installer_state.state_key(),
             install_static::GetClientStateKeyPath());

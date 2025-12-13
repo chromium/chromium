@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">ஆரஞ்சுகள்</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
+<translation id="1292474106138697109">வகுப்புக் கருவிகள் காட்சி</translation>
 <translation id="1300115153046603471">இந்த APN இயல்பு மற்றும் <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">மாற்றம்</translation>
@@ -335,7 +336,7 @@
 <translation id="2276999893457278469">சிறந்த உதவி உள்ளடக்கம்</translation>
 <translation id="2277631741861284101">ஆடியோவை எளிதாக ரெக்கார்டு செய்து பகிருங்கள்</translation>
 <translation id="2279051792571591988">இயல்புநிலைகளை மீட்டெடு</translation>
-<translation id="2286454467119466181">எளிதானது</translation>
+<translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">படங்கள் எதுவுமில்லை. படங்களைச் சேர்க்க, <ph name="LINK" /> தளத்திற்குச் செல்லவும்</translation>
 <translation id="2294577623958216786">தற்போதைய கால அட்டவணை <ph name="SUNRISE" />-<ph name="SUNSET" /> என்று அமைக்கப்பட்டுள்ளது. சூரிய அஸ்தமனம் மற்றும் சூரிய உதயத்திற்கான கால அட்டவணையைத் தானாக மாற்ற, சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2305172810646967500">கருப்பு</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
 <translation id="4300272766492248925">பயன்பாட்டைத் திற</translation>
 <translation id="430786093962686457">சிஃபான்</translation>
+<translation id="4309762678330556039">தானாகவே டிரான்ஸ்கிரிப்ஷன்களை உருவாக்கலாம், ஆடியோவைத் தேடலாம். இணைய இணைப்பு இல்லாதபோதும் ரெக்கார்டிங்குகளை உருவாக்கலாம்.</translation>
 <translation id="4310735698903592804">சமீபத்தில் Google AI உருவாக்கிய வால்பேப்பர்கள்</translation>
 <translation id="4320904097188876154">நியான் இளஞ்சிவப்பு</translation>
 <translation id="432961742358282111">விளக்கங்கள், மொழிபெயர்ப்புகள், யூனிட் கன்வெர்ஷன்கள் ஆகியவற்றைப் பெற, வலது கிளிக் செய்யவும் அல்லது அழுத்திப் பிடித்திருக்கவும். இந்த அம்சத்தை நிர்வகிக்க, இடது அல்லது வலது அம்புக்குறி பட்டன்களைப் பயன்படுத்தவும்.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> பட்டன் சோதனை செய்யப்பட்டது</translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">வகுப்புக் கருவிகள் உங்கள் திரையை <ph name="RECEIVER_NAME" /> உடன் பகிர்கிறது</translation>
 <translation id="5613201299517339763">வெளியேறிவிட்டீர்கள்</translation>
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
 <translation id="5628106863521633649">கிடைக்கும் மொழிகள்</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">கிளவுடு ஃப்ளோ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">ஸ்கேனர்கள் எதுவுமில்லை</translation>
-<translation id="6231648282154119906">நீங்கள் தேர்வுசெய்த மேம்பட்ட பாதுகாப்பின் ஒரு பகுதியாக Google பாதுகாப்பு உலாவல் மூலம் சந்தேகத்திற்குரிய ஃபைல்கள் தானாகவே ஸ்கேன் செய்யப்படும்</translation>
 <translation id="6232017090690406397">பேட்டரி</translation>
 <translation id="6234024205316847054">அவுட்லைன்களைக் காட்டு</translation>
 <translation id="6243280677745499710">தற்போது அமைக்கப்பட்டுள்ளது</translation>

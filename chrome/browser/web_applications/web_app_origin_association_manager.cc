@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/web_applications/web_app_origin_association_task.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
-#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_service.h"
 
 namespace web_app {
 
@@ -58,16 +57,6 @@ webapps::WebAppOriginAssociationFetcher&
 WebAppOriginAssociationManager::GetFetcherForTest() {
   DCHECK(fetcher_);
   return *fetcher_;
-}
-
-const mojo::Remote<webapps::mojom::WebAppOriginAssociationParser>&
-WebAppOriginAssociationManager::GetParser() {
-  if (!parser_ || !parser_.is_bound()) {
-    parser_ = webapps::LaunchWebAppOriginAssociationParser();
-    parser_.reset_on_disconnect();
-  }
-
-  return parser_;
 }
 
 webapps::WebAppOriginAssociationFetcher&

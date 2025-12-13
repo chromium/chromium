@@ -15,7 +15,6 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -32,12 +31,13 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A controller that listens to and visually represents cancelable tab closures.
  *
- * <p>Each time a tab is undoably closed via {@link TabModelObserver#tabPendingClosure(Tab)}, this
- * controller saves that tab id and title to the stack of SnackbarManager. It will then let
+ * <p>Each time a tab is undoably closed via {@link TabModelObserver#onTabClosurePending()},' this
+ * controller saves the tab ids and title to the stack of SnackbarManager. It will then let
  * SnackbarManager to show a snackbar representing the top entry in of stack. Each added entry
  * resets the timeout that tracks when to commit the undoable actions.
  *
@@ -88,12 +88,6 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
-                    public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
-                        if (disableUndo(true)) return;
-                        queueUndoBar(new TabClosureEvent(List.of(tab), /* isAllTabs= */ false));
-                    }
-
-                    @Override
                     public void tabClosureUndone(Tab tab) {
                         if (disableUndo(false)) return;
                         dropFromQueue(List.of(tab));
@@ -121,7 +115,7 @@ public class TabUndoBarController extends UndoBarController {
                     }
 
                     @Override
-                    public void multipleTabsPendingClosure(
+                    public void onTabClosePending(
                             List<Tab> tabs,
                             boolean isAllTabs,
                             @TabClosingSource int closingSource) {

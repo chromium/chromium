@@ -11,7 +11,6 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 
 namespace ash::assistant {
 
@@ -29,33 +28,14 @@ void ScopedAssistantBrowserDelegate::SetOpenNewEntryPointClosure(
   open_new_entry_point_closure_ = std::move(closure);
 }
 
-void ScopedAssistantBrowserDelegate::SetMediaControllerManager(
-    mojo::Receiver<media_session::mojom::MediaControllerManager>* receiver) {
-  media_controller_manager_receiver_ = receiver;
-}
-
-void ScopedAssistantBrowserDelegate::RequestMediaControllerManager(
-    mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-        receiver) {
-  if (media_controller_manager_receiver_) {
-    media_controller_manager_receiver_->reset();
-    media_controller_manager_receiver_->Bind(std::move(receiver));
-  }
-}
-
 void ScopedAssistantBrowserDelegate::OpenUrl(GURL url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 base::expected<bool, AssistantBrowserDelegate::Error>
 ScopedAssistantBrowserDelegate::IsNewEntryPointEligibleForPrimaryProfile() {
-  if (!ash::assistant::features::IsNewEntryPointEnabled()) {
-    return base::unexpected(
-        AssistantBrowserDelegate::Error::kNewEntryPointNotEnabled);
-  }
-
   return true;
 }
 

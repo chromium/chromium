@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_BUCKET_PATH_WATCHER_H_
 
 #include "base/thread_annotations.h"
-#include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"

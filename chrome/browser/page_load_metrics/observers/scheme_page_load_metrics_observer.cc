@@ -31,8 +31,8 @@ SchemePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   // Capture committed transition type.
   transition_ = navigation_handle->GetPageTransition();
-  if (navigation_handle->GetURL().scheme() == url::kHttpScheme ||
-      navigation_handle->GetURL().scheme() == url::kHttpsScheme) {
+  if (navigation_handle->GetURL().GetScheme() == url::kHttpScheme ||
+      navigation_handle->GetURL().GetScheme() == url::kHttpsScheme) {
     return CONTINUE_OBSERVING;
   }
   return STOP_OBSERVING;
@@ -56,11 +56,11 @@ SchemePageLoadMetricsObserver::OnHidden(
 
 void SchemePageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (GetDelegate().GetUrl().scheme() == url::kHttpScheme) {
+  if (GetDelegate().GetUrl().GetScheme() == url::kHttpScheme) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.Scheme.HTTP.ParseTiming.NavigationToParseStart",
         timing.parse_timing->parse_start.value());
-  } else if (GetDelegate().GetUrl().scheme() == url::kHttpsScheme) {
+  } else if (GetDelegate().GetUrl().GetScheme() == url::kHttpsScheme) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.Scheme.HTTPS.ParseTiming.NavigationToParseStart",
         timing.parse_timing->parse_start.value());
@@ -69,14 +69,14 @@ void SchemePageLoadMetricsObserver::OnParseStart(
 
 void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  DCHECK(GetDelegate().GetUrl().scheme() == url::kHttpScheme ||
-         GetDelegate().GetUrl().scheme() == url::kHttpsScheme);
+  DCHECK(GetDelegate().GetUrl().GetScheme() == url::kHttpScheme ||
+         GetDelegate().GetUrl().GetScheme() == url::kHttpsScheme);
 
   base::TimeDelta fcp = timing.paint_timing->first_contentful_paint.value();
   base::TimeDelta parse_start_to_fcp =
       fcp - timing.parse_timing->parse_start.value();
 
-  if (GetDelegate().GetUrl().scheme() == url::kHttpScheme) {
+  if (GetDelegate().GetUrl().GetScheme() == url::kHttpScheme) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.Scheme.HTTP.PaintTiming."
         "NavigationToFirstContentfulPaint",
@@ -99,12 +99,12 @@ void SchemePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
 
 void SchemePageLoadMetricsObserver::OnFirstMeaningfulPaintInMainFrameDocument(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (GetDelegate().GetUrl().scheme() == url::kHttpScheme) {
+  if (GetDelegate().GetUrl().GetScheme() == url::kHttpScheme) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.Scheme.HTTP.Experimental.PaintTiming."
         "NavigationToFirstMeaningfulPaint",
         timing.paint_timing->first_meaningful_paint.value());
-  } else if (GetDelegate().GetUrl().scheme() == url::kHttpsScheme) {
+  } else if (GetDelegate().GetUrl().GetScheme() == url::kHttpsScheme) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.Scheme.HTTPS.Experimental.PaintTiming."
         "NavigationToFirstMeaningfulPaint",

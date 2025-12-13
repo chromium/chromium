@@ -148,8 +148,9 @@ void CancelProfileDeletion(const base::FilePath& path) {
 // Schedule a profile for deletion if it isn't already scheduled.
 // Returns whether the profile has been newly scheduled.
 bool ScheduleProfileDirectoryForDeletion(const base::FilePath& path) {
-  if (base::Contains(ProfilesToDelete(), path))
+  if (base::Contains(ProfilesToDelete(), path)) {
     return false;
+  }
   ProfilesToDelete()[path] = ProfileDeletionStage::SCHEDULING;
   return true;
 }

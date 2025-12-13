@@ -19,8 +19,10 @@
     <module name="EmptyStatement"/>
     <module name="InnerAssignment"/>
     <module name="OneStatementPerLine"/>
+    <module name="RedundantModifier">
+      <property name="tokens" value="INTERFACE_DEF, METHOD_DEF"/>
+    </module>
     <module name="StringLiteralEquality"/>
-    <module name="UnusedLocalVariable"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>
@@ -45,6 +47,7 @@
       <property name="tokens" value="INTERFACE_DEF, CLASS_DEF"/>
       <property name="scope" value="public"/>
       <property name="allowedAnnotations" value="NativeMethods"/>
+      <property name="allowMissingParamTags" value="true"/>
       <message key="javadoc.missing" value="Public classes and interfaces require JavaDoc comments."/>
     </module>
     <module name="JavadocMethod">
@@ -97,13 +100,13 @@
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
-      <property name="severity" value="error"/>
-      <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="LocalVariableName">
-      <property name="severity" value="error"/>
-      <property name="format" value="^m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*)$"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="^(m|s|((([ms][a-z0-9])|([a-ln-rt-z]))[a-zA-Z0-9]*))$"/>
       <message key="name.invalidPattern" value="Local variables should be camel-cased (e.g. int minWidth = 4)."/>
     </module>
     <module name="FallThrough">
@@ -111,7 +114,8 @@
       <property name="reliefPattern" value=".*"/>
     </module>
     <module name="NoFinalizer">
-      <property name="severity" value="info"/>
+      <property name="severity" value="warning"/>
+      <message key="avoid.finalizer.method" value="Use of finalize() is banned. https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Finalizers" />
     </module>
     <module name="NeedBraces">
       <property name="severity" value="warning"/>
@@ -232,7 +236,7 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="ParamComments"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/(,|\))|(,|\() */\*\*? ?\w+ ?\*/(?!\s+InvocationHandler\b)"/>
       <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
     </module>
     <module name="RegexpSinglelineJava">
@@ -258,7 +262,7 @@
       <property name="severity" value="warning"/>
       <property name="format" value="[Ww]indow(Compat)?.setDecorFitsSystemWindows"/>
       <property name="ignoreComments" value="true"/>
-      <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
+      <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="ElevationOverlayProvider"/>
@@ -274,6 +278,20 @@
       <property name="ignoreComments" value="true"/>
       <property name="message" value="Android context menu has been proven not compatible well with theme changes. Use Chrome's ListMenu instead. See crbug.com/339864862."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="IntDefsNotEnums"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="\benum [A-Z].*\{"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Use an @IntDef / @StringDef / @LongDef / custom class rather than an enum. See https://chromium.googlesource.com/chromium/src/+/main/styleguide/java/java.md#Enums" />
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="NoNonNull"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="@NonNull\b"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Values are @NonNull by default. Use @NonNull only in the context of nullable generic parameters (ignore if this is the case)." />
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
@@ -284,7 +302,7 @@
   <module name="RegexpMultiline">
     <property name="id" value="ContextGetString"/>
     <property name="severity" value="warning"/>
-    <property name="format" value="ontext\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
+    <property name="format" value="(c|ontext)\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
     <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
   </module>
   <module name="RegexpMultiline">
@@ -292,5 +310,11 @@
     <property name="severity" value="warning"/>
     <property name="format" value="@Config\([^)]*minSdk\s*="/>
     <property name="message" value="@Config(minSdk=...) parameterizes tests across every SDK level >= the given one. Use @Config(sdk=Build.VERSION_CODES.FOO) or @Config(sdk='{'Build.VERSION_CODES.A, Build.VERSION_CODES.B, ...})"/>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="WrongNullable"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="import (javax|androidx).annotation.Nullable;[\s\S]*import org.chromium.build.annotations.NullMarked;"/>
+    <property name="message" value="Use org.chromium.build.annotations.Nullable instead of androidx / javax @Nullable."/>
   </module>
 </module>

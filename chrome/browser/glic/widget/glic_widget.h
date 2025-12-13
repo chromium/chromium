@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -17,25 +18,47 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 
+class BrowserWindowInterface;
+
 namespace glic {
+// Distance the detached window should be from the top and the right of the
+// display when opened unassociated to a browser.
+inline constexpr static int kDefaultDetachedTopRightDistance = 48;
+
+class GlicView;
 
 extern void* kGlicWidgetIdentifier;
 
 // Glic panel widget.
 class GlicWidget : public views::Widget, public ThemeServiceObserver {
  public:
-  GlicWidget(const Widget&) = delete;
-  GlicWidget& operator=(const Widget&) = delete;
+  GlicWidget(const GlicWidget&) = delete;
+  GlicWidget& operator=(const GlicWidget&) = delete;
   ~GlicWidget() override;
 
+  // Returns the initial size for the single instance floating window.
   static gfx::Size GetInitialSize();
 
-  // Create a widget with the given bounds.
-  static std::unique_ptr<GlicWidget> Create(
-      Profile* profile,
-      const gfx::Rect& initial_bounds,
-      base::WeakPtr<ui::AcceleratorTarget> accelerator_delegate,
+  static gfx::Rect GetInitialBounds(BrowserWindowInterface* browser,
+                                    gfx::Size target_size);
+
+  // Return `current_size` or the default minimum size if not provided.
+  // The return value is clamped to fit between the minimum and maximum sizes.
+  static gfx::Size ClampSize(std::optional<gfx::Size> current_size,
+                             const GlicWidget* glic_widget);
+
+  // True if |bounds| is an allowed position the Widget can be shown in.
+  static bool IsWidgetLocationAllowed(const gfx::Rect& bounds);
+
+  static std::unique_ptr<views::WidgetDelegate> CreateWidgetDelegate(
+      std::unique_ptr<GlicView> contents_view,
       bool user_resizable);
+
+  // Create a widget with the given bounds.
+  static std::unique_ptr<GlicWidget> Create(views::WidgetDelegate* delegate,
+                                            Profile* profile,
+                                            const gfx::Rect& initial_bounds,
+                                            bool user_resizable);
 
   // Get the most-overlapping display.
   display::Display GetDisplay();
@@ -53,6 +76,9 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
   gfx::Rect VisibleToWidgetBounds(gfx::Rect visible_bounds);
   gfx::Rect WidgetToVisibleBounds(gfx::Rect widget_bounds);
 
+  base::WeakPtr<GlicWidget> GetWeakPtr();
+  GlicView* GetGlicView();
+
  private:
   GlicWidget(ThemeService* theme_service, InitParams params);
 
@@ -66,6 +92,8 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
 
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
+
+  base::WeakPtrFactory<GlicWidget> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

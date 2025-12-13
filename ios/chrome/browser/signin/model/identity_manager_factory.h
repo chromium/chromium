@@ -30,10 +30,10 @@ class IdentityManagerFactory : public ProfileKeyedServiceFactoryIOS {
   IdentityManagerFactory();
   ~IdentityManagerFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
+      ProfileIOS* profile) const override;
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };
 

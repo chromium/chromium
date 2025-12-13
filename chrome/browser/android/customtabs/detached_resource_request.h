@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_CUSTOMTABS_DETACHED_RESOURCE_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -78,7 +79,7 @@ class DetachedResourceRequest {
                           const net::RedirectInfo& redirect_info,
                           const network::mojom::URLResponseHead& response_head,
                           std::vector<std::string>* to_be_removed_headers);
-  void OnResponseCallback(std::unique_ptr<std::string> response_body);
+  void OnResponseCallback(std::optional<std::string> response_body);
 
   const GURL url_;
   const GURL site_for_referrer_;

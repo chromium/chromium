@@ -4,6 +4,8 @@
 
 import("//ui/base/ui_features.gni")
 
+assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
+
 source_set("actions_headers") {
   sources = [ "chrome_action_id.h" ]
 
@@ -25,7 +27,7 @@ source_set("actions") {
   ]
 }
 
-if (!is_ios && !is_android) {
+if (!is_android) {
   executable("dump_actions") {
     testonly = true
 

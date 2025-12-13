@@ -86,7 +86,7 @@ public class TabContentManagerTest {
         mActivityTestRule.loadUrlInNewTab(testHttpsUrl1);
 
         // Sometimes loadUrlInNewTab returns before the tab is actually loaded. Confirm again.
-        final Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab currentTab = mActivityTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(() -> !currentTab.isLoading());
 
         final CallbackHelper helper = new CallbackHelper();

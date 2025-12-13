@@ -14,6 +14,7 @@ testing/data/Ahem.ttf
 testing/data/Ahem.woff2
 testing/data/GoogleSans-Regular.ttf
 testing/data/MaterialIcons-Regular.woff2
+testing/data/Revalia.woff
 testing/data/add-frame-in-unload-main.html
 testing/data/add-frame-in-unload-subframe.html
 testing/data/add_frame_in_unload.html
@@ -133,6 +134,7 @@ testing/data/fractional-scroll-fixed-position.html
 testing/data/fragment_middle_click.html
 testing/data/frame-a-b-c.html
 testing/data/frame.html
+testing/data/frame_another.html
 testing/data/frame_owner_properties.html
 testing/data/frame_timing_1.html
 testing/data/frame_timing_2.html
@@ -311,8 +313,8 @@ testing/data/navigation-api/onnavigate-window-stop.html
 testing/data/no_scale_for_you.html
 testing/data/no_viewport_tag.html
 testing/data/nodeimage.html
-testing/data/non_UTF8.wasm
 testing/data/non-scrollable.html
+testing/data/non_UTF8.wasm
 testing/data/non_user_input_text_update.html
 testing/data/not_an_image.ico
 testing/data/notifications/100x100.png
@@ -431,6 +433,12 @@ testing/data/rtl-iframe-inner.html
 testing/data/rtl-iframe.html
 testing/data/rtl-overview-mode.html
 testing/data/scale_oscillate.html
+testing/data/script/nested-script.js
+testing/data/script/not-parser-blocked-async-nested-script.html
+testing/data/script/parser-blocked-defer-nested-script.html
+testing/data/script/parser-blocked-external-nested-script.html
+testing/data/script/parser-blocked-inline-nested-script.html
+testing/data/script/parser-blocked-module-nested-script.html
 testing/data/script_priority.html
 testing/data/scroll-event-handler-window.html
 testing/data/scroll-event-handler.html

@@ -301,12 +301,8 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
 
       // IPH that limit session rate in other ways. These should probably be
       // revisited in the future.
-      {&feature_engagement::kIPHDesktopCustomizeChromeFeature,
+      {&feature_engagement::kIPHDesktopCustomizeChromeExperimentFeature,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
-      {&feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-       IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
-      {&feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
-       IPHFailureReason::kWrongSessionImpact, "crbug.com/1443063"},
       {&feature_engagement::kIPHMemorySaverModeFeature,
        IPHFailureReason::kWrongSessionRate, "crbug.com/1443063"},
       {&feature_engagement::kIPHPriceTrackingInSidePanelFeature, std::nullopt,

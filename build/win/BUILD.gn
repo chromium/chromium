@@ -62,6 +62,7 @@ if (is_win) {
       # vs_toolchain script that runs as part of toolchain configuration.
       data += [
         "$root_out_dir/msvcp140${vcrt_suffix}.dll",
+        "$root_out_dir/msvcp140${vcrt_suffix}_atomic_wait.dll",
         "$root_out_dir/vccorlib140${vcrt_suffix}.dll",
         "$root_out_dir/vcruntime140${vcrt_suffix}.dll",
       ]

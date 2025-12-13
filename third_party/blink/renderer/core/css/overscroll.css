@@ -1,0 +1,8 @@
+::-internal-overscroll-area-parent(*) {
+  display: block;
+  inset: 0;
+  overflow: auto;
+  pointer-events: none;
+  scrollbar-width: none;
+  position: absolute;
+}

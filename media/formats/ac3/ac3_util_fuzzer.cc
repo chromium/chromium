@@ -13,7 +13,7 @@
 namespace media {
 
 void ParseTotalAc3SampleCountNeverCrashes(base::span<const uint8_t> buffer) {
-  Ac3Util::ParseTotalAc3SampleCount(buffer.data(), buffer.size());
+  Ac3Util::ParseTotalAc3SampleCount(buffer);
 }
 
 FUZZ_TEST(Ac3UtilTest, ParseTotalAc3SampleCountNeverCrashes)
@@ -21,7 +21,7 @@ FUZZ_TEST(Ac3UtilTest, ParseTotalAc3SampleCountNeverCrashes)
         fuzztest::NonEmpty(fuzztest::Arbitrary<std::vector<uint8_t>>()));
 
 void ParseTotalEac3SampleCountNeverCrashes(base::span<const uint8_t> buffer) {
-  Ac3Util::ParseTotalEac3SampleCount(buffer.data(), buffer.size());
+  Ac3Util::ParseTotalEac3SampleCount(buffer);
 }
 
 FUZZ_TEST(Ac3UtilTest, ParseTotalEac3SampleCountNeverCrashes)

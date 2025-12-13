@@ -18,8 +18,8 @@ generate_jni("jni_headers") {
 
 java_cpp_strings("constants_srcjar") {
   visibility = [ ":*" ]
-  template = "SupervisedUserConstants.java.tmpl"
   sources = [ "//components/supervised_user/core/common/supervised_user_shared_constants.cc" ]
+  class_name = "org.chromium.components.supervised_user.SupervisedUserConstants"
 }
 
 android_library("content_filters_observer_bridge_java") {

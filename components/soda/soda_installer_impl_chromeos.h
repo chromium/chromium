@@ -36,17 +36,17 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
 
   // Where the SODA language pack DLC was installed for a given language.
   // Cached on completed installation. Empty if not installed yet.
-  base::FilePath GetLanguagePath(const std::string& language) const override;
+  base::FilePath GetLanguagePath(std::string_view language) const override;
 
   // SodaInstaller:
-  void InstallLanguage(const std::string& language,
+  void InstallLanguage(std::string_view language,
                        PrefService* global_prefs) override;
-  void UninstallLanguage(const std::string& language,
+  void UninstallLanguage(std::string_view language,
                          PrefService* global_prefs) override;
   std::vector<std::string> GetAvailableLanguages() const override;
   std::vector<std::string> GetLiveCaptionEnabledLanguages() const override;
   std::string GetLanguageDlcNameForLocale(
-      const std::string& locale) const override;
+      std::string_view locale) const override;
 
  private:
   // SodaInstaller:
@@ -59,7 +59,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstallerImplChromeOS
   // DLC is automatically purged from disk.
   void UninstallSoda(PrefService* global_prefs) override;
 
-  void InstallLanguageInternal(const std::string& language);
+  void InstallLanguageInternal(std::string_view language);
 
   void SetSodaBinaryPath(base::FilePath new_path);
   void SetLanguagePath(const LanguageCode language, base::FilePath new_path);

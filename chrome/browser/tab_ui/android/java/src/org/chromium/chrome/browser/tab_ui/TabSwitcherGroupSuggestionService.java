@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import static java.util.Comparator.comparingInt;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.ValueChangedCallback;
-import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -34,6 +34,8 @@ import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestions
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponse;
 import org.chromium.components.visited_url_ranking.url_grouping.UserResponseMetadata;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,11 +45,88 @@ import java.util.Map;
 /** Orchestrates fetching and showing tab group suggestions in the Tab Switcher. */
 @NullMarked
 public class TabSwitcherGroupSuggestionService {
-    public static final String USER_ACTION_PREFIX = "TabSwitcher.GroupSuggest";
-
     /* Tab gaps equal to this or beyond will not be permitted to be shown. */
     private static final int TAB_GAP_LIMIT = 2;
-    private static final int NUM_TABS_IN_FORCED_SUGGESTION = 3;
+    private static final int NUM_TABS_IN_FORCED_SUGGESTION = 14;
+    private static final String SUGGESTION_UI_HISTOGRAM_NAME =
+            "GroupSuggestionsService.SuggestionUiEvent";
+
+    /**
+     * Events related to the group suggestion service UI.
+     *
+     * <p>These values are persisted in histograms. See "SuggestionUiEvent" in
+     * src/tools/metrics/histograms/metadata/visited_url_ranking/enums.xml.
+     */
+    @IntDef({
+        SuggestionUiEvent.UNKNOWN,
+        SuggestionUiEvent.TAB_SWITCHER_OPENED,
+        SuggestionUiEvent.REQUEST_STARTED,
+        SuggestionUiEvent.REQUEST_NO_RESULT,
+        SuggestionUiEvent.REQUEST_HAS_SUGGESTION,
+        SuggestionUiEvent.REQUEST_HAS_MULTIPLE_SUGGESTIONS,
+        SuggestionUiEvent.INVALIDATED_DUE_TO_GAP,
+        SuggestionUiEvent.INVALIDATED_DUE_TO_NO_SELECTED_TAB,
+        SuggestionUiEvent.INVALIDATED_DUE_TO_TAB_STATE,
+        SuggestionUiEvent.INVALIDATED_DUE_TO_EMPTY_SUGGESTION,
+        SuggestionUiEvent.INVALIDATED_DUE_TO_PINNED_TAB,
+        SuggestionUiEvent.SHOWN,
+        SuggestionUiEvent.IGNORED,
+        SuggestionUiEvent.REJECTED,
+        SuggestionUiEvent.ACCEPTED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SuggestionUiEvent {
+        int UNKNOWN = 0;
+
+        /** The user opened the tab switcher. */
+        int TAB_SWITCHER_OPENED = 1;
+
+        /** A request for suggestions was started. */
+        int REQUEST_STARTED = 2;
+
+        /** The request for suggestions yielded no results. */
+        int REQUEST_NO_RESULT = 3;
+
+        /** The request for suggestions yielded a single suggestion. */
+        int REQUEST_HAS_SUGGESTION = 4;
+
+        /** The request for suggestions yielded multiple suggestions. */
+        int REQUEST_HAS_MULTIPLE_SUGGESTIONS = 5;
+
+        /** The suggestion was invalidated due to a gap between tabs in the suggestion. */
+        int INVALIDATED_DUE_TO_GAP = 6;
+
+        /**
+         * The suggestion was invalidated due to the selected tab not being in the group suggestion.
+         */
+        int INVALIDATED_DUE_TO_NO_SELECTED_TAB = 7;
+
+        /**
+         * The suggestion was invalidated due to a tab in the suggestion being frozen, closing, or
+         * the tab ID not being present in the UI model.
+         */
+        int INVALIDATED_DUE_TO_TAB_STATE = 8;
+
+        /** The suggestion was invalidated due to having null or empty fields. */
+        int INVALIDATED_DUE_TO_EMPTY_SUGGESTION = 9;
+
+        /** The suggestion was invalidated due to a pinned tab being included. */
+        int INVALIDATED_DUE_TO_PINNED_TAB = 10;
+
+        /** The suggestion was shown to the user. */
+        int SHOWN = 11;
+
+        /** The user ignored the suggestion. */
+        int IGNORED = 12;
+
+        /** The user rejected the suggestion. */
+        int REJECTED = 13;
+
+        /** The user accepted the suggestion. */
+        int ACCEPTED = 14;
+
+        int MAX_VALUE = ACCEPTED;
+    }
 
     /** Observes lifecycle events for tab group suggestions. */
     public interface SuggestionLifecycleObserver {
@@ -100,7 +179,8 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void tabPendingClosure(Tab tab, @TabClosingSource int closingSource) {
+                public void onTabClosePending(
+                        List<Tab> tabs, boolean isAllTabs, @TabClosingSource int closingSource) {
                     clearSuggestions();
                 }
             };
@@ -168,14 +248,13 @@ public class TabSwitcherGroupSuggestionService {
 
         mGroupSuggestionsService = GroupSuggestionsServiceFactory.getForProfile(profile);
 
-        mOnTabGroupModelFilterChanged.onResult(
-                assumeNonNull(
-                        mCurrentTabGroupModelFilterSupplier.addObserver(
-                                mOnTabGroupModelFilterChanged)));
+        mCurrentTabGroupModelFilterSupplier.addSyncObserverAndCallIfNonNull(
+                mOnTabGroupModelFilterChanged);
     }
 
     public void destroy() {
         mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
     }
 
     private void onTabGroupModelFilterChanged(
@@ -197,15 +276,20 @@ public class TabSwitcherGroupSuggestionService {
         clearSuggestions();
         if (filter == null || isIncognitoMode(filter)) return;
 
+        recordGroupSuggestionHistogram(SuggestionUiEvent.REQUEST_STARTED);
         CachedSuggestions cachedSuggestions =
                 mGroupSuggestionsService.getCachedSuggestions(mWindowId);
 
-        if (cachedSuggestions == null) return;
+        if (cachedSuggestions == null) {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.REQUEST_NO_RESULT);
+            return;
+        }
         GroupSuggestions groupSuggestions = cachedSuggestions.groupSuggestions;
 
         if (groupSuggestions == null
                 || groupSuggestions.groupSuggestions == null
                 || groupSuggestions.groupSuggestions.isEmpty()) {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.INVALIDATED_DUE_TO_EMPTY_SUGGESTION);
             return;
         }
 
@@ -213,15 +297,12 @@ public class TabSwitcherGroupSuggestionService {
                 cachedSuggestions.userResponseMetadataCallback;
 
         List<GroupSuggestion> groupSuggestionsList = groupSuggestions.groupSuggestions;
-
-        // Mark all suggestions except the first one as "not shown".
-        for (int i = 1; i < groupSuggestionsList.size(); i++) {
-            GroupSuggestion groupSuggestion = groupSuggestionsList.get(i);
-            userResponseCallback.onResult(
-                    new UserResponseMetadata(groupSuggestion.suggestionId, UserResponse.NOT_SHOWN));
+        if (groupSuggestionsList.size() == 1) {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.REQUEST_HAS_SUGGESTION);
+        } else {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.REQUEST_HAS_MULTIPLE_SUGGESTIONS);
         }
 
-        if (groupSuggestionsList.isEmpty()) return;
         GroupSuggestion suggestion = groupSuggestionsList.get(0);
 
         TabModel tabModel = filter.getTabModel();
@@ -229,8 +310,8 @@ public class TabSwitcherGroupSuggestionService {
         List<Tab> tabsSortedByIndex = getTabsSortedByIndex(tabModel, tabIdsToIndices, suggestion);
 
         if (tabsSortedByIndex == null || !canShowSuggestion(tabIdsToIndices, tabsSortedByIndex)) {
-            RecordUserAction.record(
-                    TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Invalidated");
+            userResponseCallback.onResult(
+                    new UserResponseMetadata(suggestion.suggestionId, UserResponse.NOT_SHOWN));
             return;
         }
 
@@ -244,10 +325,11 @@ public class TabSwitcherGroupSuggestionService {
 
     private static Map<@TabId Integer, Integer> getTabIdToIndicesMap(TabModel tabModel) {
         Map<@TabId Integer, Integer> tabIdsToIndices = new HashMap<>();
-        for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
+        int index = 0;
+        for (Tab tab : tabModel) {
             assert tab != null;
-            tabIdsToIndices.put(tab.getId(), i);
+            tabIdsToIndices.put(tab.getId(), index);
+            index++;
         }
         return tabIdsToIndices;
     }
@@ -264,12 +346,16 @@ public class TabSwitcherGroupSuggestionService {
                     || tab.isFrozen()
                     || tab.isClosing()
                     || !tabIdsToIndices.containsKey(tabId)) {
+                recordGroupSuggestionHistogram(SuggestionUiEvent.INVALIDATED_DUE_TO_TAB_STATE);
                 return null;
             }
             tabs.add(tab);
             isAnyTabSelected |= tab.isActivated();
         }
-        if (!isAnyTabSelected) return null;
+        if (!isAnyTabSelected) {
+            recordGroupSuggestionHistogram(SuggestionUiEvent.INVALIDATED_DUE_TO_NO_SELECTED_TAB);
+            return null;
+        }
 
         tabs.sort(comparingInt(tab -> tabIdsToIndices.get(tab.getId())));
         return tabs;
@@ -279,6 +365,11 @@ public class TabSwitcherGroupSuggestionService {
             Map<@TabId Integer, Integer> tabIdsToIndices, List<Tab> tabsSortedByIndex) {
         int prevIndex = TabModel.INVALID_TAB_INDEX;
         for (Tab tab : tabsSortedByIndex) {
+            if (tab.getIsPinned()) {
+                recordGroupSuggestionHistogram(SuggestionUiEvent.INVALIDATED_DUE_TO_PINNED_TAB);
+                return false;
+            }
+
             @TabId int tabId = tab.getId();
 
             assert tabIdsToIndices.containsKey(tabId);
@@ -286,6 +377,7 @@ public class TabSwitcherGroupSuggestionService {
 
             // No gap of over 1 tab in length is allowed.
             if (prevIndex != TabModel.INVALID_TAB_INDEX && currIndex > prevIndex + TAB_GAP_LIMIT) {
+                recordGroupSuggestionHistogram(SuggestionUiEvent.INVALIDATED_DUE_TO_GAP);
                 return false;
             }
 
@@ -303,6 +395,12 @@ public class TabSwitcherGroupSuggestionService {
     /** Clears tab group suggestions if present. */
     public void clearSuggestions() {
         mSuggestionLifecycleObserverHandler.onSuggestionIgnored();
+    }
+
+    /** Records a histogram for a {@link SuggestionUiEvent}. */
+    public static void recordGroupSuggestionHistogram(@SuggestionUiEvent int suggestionUiEvent) {
+        RecordHistogram.recordEnumeratedHistogram(
+                SUGGESTION_UI_HISTOGRAM_NAME, suggestionUiEvent, SuggestionUiEvent.MAX_VALUE);
     }
 
     /** Forces a tab group suggestion for testing purposes. */

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestImportManager} from '/common/testing/test_import_manager.js';
+
 import {OffscreenCommandType} from './offscreen_command_type.js';
 
 /*
@@ -26,6 +28,10 @@ export class Messenger {
 
   // Tracks registered message handlers.
   private registry_: Map<OffscreenCommandType, Messenger.Handler>;
+
+  // Tracks resolvers for waitForHandled.
+  private handlerResolvers_: Map<OffscreenCommandType, Array<() => void>> =
+      new Map();
 
   constructor(context: Messenger.Context) {
     this.context_ = context;
@@ -122,8 +128,23 @@ export class Messenger {
 
   // Registers a command handler.
   static registerHandler(
-      command: OffscreenCommandType, handler: Messenger.Handler) {
+      command: OffscreenCommandType, handler: Messenger.Handler): void {
     Messenger.instance!.registry_.set(command, handler);
+  }
+
+  /**
+   * Test-only helper that returns a promise that resolves after the given
+   * command handler has run.
+   */
+  static waitForHandled(command: OffscreenCommandType): Promise<void> {
+    return new Promise(resolve => {
+      const resolvers = Messenger.instance!.handlerResolvers_.get(command);
+      if (resolvers) {
+        resolvers.push(resolve);
+      } else {
+        Messenger.instance!.handlerResolvers_.set(command, [resolve]);
+      }
+    });
   }
 
   // Gets the handler for a given command.
@@ -140,6 +161,14 @@ export class Messenger {
       message: any|undefined, sendResponse: (response?: any) => void): boolean {
     const command = message['command'];
     const result = Messenger.getHandler(command)?.(message);
+
+    const resolvers = this.handlerResolvers_.get(command);
+    if (resolvers) {
+      for (const resolver of resolvers) {
+        resolver();
+      }
+      this.handlerResolvers_.delete(command);
+    }
 
     // If handler is async, return true to allow async sendResponse.
     if (result instanceof Promise) {
@@ -221,3 +250,5 @@ export namespace Messenger {
     return await decompress(bytes.buffer);
   }
 }
+
+TestImportManager.exportForTesting(Messenger);

@@ -9,7 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
@@ -34,7 +34,7 @@
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "ash/wm/test/test_non_client_frame_view_ash.h"
+#include "ash/wm/test/test_frame_view_ash.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -60,11 +60,11 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/views_test_utils.h"
@@ -81,7 +81,7 @@ chromeos::HeaderView* GetHeaderView(aura::Window* window) {
   // like it does in production code. Here we force a layout, otherwise the
   // client view will remain the size of the widget, and dragging it will give
   // us HTCLIENT.
-  auto* frame = NonClientFrameViewAsh::Get(window);
+  auto* frame = FrameViewAsh::Get(window);
   DCHECK(frame);
   views::test::RunScheduledLayout(frame);
   return frame->GetHeaderView();
@@ -193,8 +193,8 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 
   // Enter overview, both windows should animate when entering overview, since
   // both are visible to the user.
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   ToggleOverview();
   EXPECT_TRUE(floated_window->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(maximized_window->layer()->GetAnimator()->is_animating());
@@ -211,8 +211,8 @@ TEST_F(WindowFloatTest, FloatWindowAnimatesInOverview) {
 TEST_F(WindowFloatTest, FloatToMaximizeWindowAnimates) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
   WindowState::Get(window.get())->OnWMEvent(&maximize_event);
   // `WindowState::SetBoundsDirectCrossFade` still starts an animation if the
@@ -368,7 +368,7 @@ TEST_F(WindowFloatTest, DragToOtherDisplayThenMaximize) {
       header_view->GetBoundsInScreen().CenterPoint());
   const gfx::Point point(1600, 400);
   Shell::Get()->cursor_manager()->SetDisplay(
-      display::Screen::GetScreen()->GetDisplayNearestPoint(point));
+      display::Screen::Get()->GetDisplayNearestPoint(point));
   event_generator->DragMouseTo(point);
 
   // Tests that the floated window is on the secondary display and remained
@@ -1156,7 +1156,7 @@ TEST_F(WindowFloatTest, BoundsForUnresizableWindow) {
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
   const gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+      display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Rect window_bounds = window->GetBoundsInScreen();
   EXPECT_EQ(window_size, window_bounds.size());
   EXPECT_NEAR(window_bounds.bottom(), work_area_bounds.bottom(), 10);
@@ -1345,8 +1345,8 @@ TEST_F(TabletWindowFloatTest, TabletClamshellTransitionAnimation) {
   // stacked on top and visible.
   wm::ActivateWindow(normal_window.get());
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Tests that on entering tablet mode, both windows are animating since both
   // are visible before and after the transition.
@@ -1385,8 +1385,8 @@ TEST_F(TabletWindowFloatTest, MinimumSizeChangeOnTablet) {
   auto window =
       CreateAppWindow(gfx::Rect(500, 500), chromeos::AppType::SYSTEM_APP,
                       kShellWindowId_DeskContainerA, new TestWidgetDelegateAsh);
-  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
-      NonClientFrameViewAsh::Get(window.get()));
+  auto* custom_frame =
+      static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window.get()));
   wm::ActivateWindow(window.get());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
   ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
@@ -1432,14 +1432,14 @@ TEST_F(TabletWindowFloatTest, CanBrowsersFloat) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   const int work_area_width =
-      display::Screen::GetScreen()->GetPrimaryDisplay().work_area().width();
+      display::Screen::Get()->GetPrimaryDisplay().work_area().width();
   const int maximum_float_width =
       (work_area_width - chromeos::wm::kSplitviewDividerShortSideLength) / 2 -
       chromeos::wm::kFloatedWindowPaddingDp * 2;
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(500, 500)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {500, 500}}));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
@@ -1476,8 +1476,8 @@ TEST_F(TabletWindowFloatTest, TabletPositioningLandscape) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {300, 300}}));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
 
@@ -1500,8 +1500,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsEnterTablet) {
   UpdateDisplay("800x600");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(850, 850)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {850, 850}}));
   window_delegate.set_minimum_size(gfx::Size(500, 500));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
@@ -1519,8 +1519,8 @@ TEST_F(TabletWindowFloatTest, FloatWindowUnfloatsDisplayChange) {
   UpdateDisplay("1800x1000");
 
   aura::test::TestWindowDelegate window_delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &window_delegate, /*id=*/-1, gfx::Rect(300, 300)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &window_delegate, .bounds = {300, 300}}));
   window_delegate.set_minimum_size(gfx::Size(400, 400));
   window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::BROWSER);
   wm::ActivateWindow(window.get());
@@ -1772,8 +1772,8 @@ TEST_F(TabletWindowFloatTest, TuckedWindowVisibility) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
-  ui::ScopedAnimationDurationScaleMode test_duration_mode(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration_mode(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   // Fling to tuck the window in the bottom right. Test that the window is
   // invisible once the animation is finished.
@@ -1802,8 +1802,8 @@ TEST_F(TabletWindowFloatTest, UntuckedWindowVisibility) {
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();
 
   // Long duration for tuck animation, to allow it to be interrupted.
-  ui::ScopedAnimationDurationScaleMode test_duration(
-      ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
+  gfx::ScopedAnimationDurationScaleMode test_duration(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   // Fling to tuck the window. Press the untuck handle before the window
   // finishes the tuck animation. Test that the window is visible.
@@ -2050,7 +2050,7 @@ TEST_F(TabletWindowFloatTest, TuckHandleTapTarget) {
 // Tests that the tuck handle is offscreen in overview mode.
 TEST_F(TabletWindowFloatTest, TuckHandleOffscreenInOverview) {
   const gfx::Rect display_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   std::unique_ptr<aura::Window> window = CreateFloatedWindow();

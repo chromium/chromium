@@ -105,7 +105,6 @@ export const LoginScreenMixin = dedupingMixin(
          * @param api Screen API.
          */
         private registerScreenApi(name: string, api: Record<string, Function>) {
-          // TODO(b/260015147) - Improve this.
           if (globalThis.login === undefined) {
             globalThis.login = {};
           }
@@ -127,7 +126,6 @@ export interface LoginScreenMixinInterface extends OobeBaseMixinInterface {
 }
 
 declare global {
-  // TODO(b/260015147) - Improve this.
   /* eslint-disable-next-line no-var */
   var login: Record<string, Record<string, Function>>;
 }

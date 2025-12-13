@@ -4,7 +4,10 @@
 
 #include "services/viz/public/cpp/compositing/transferable_resource_mojom_traits.h"
 
+#include <utility>
+
 #include "build/build_config.h"
+#include "gpu/ipc/common/exported_shared_image_mojom_traits.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/resource_id_mojom_traits.h"
@@ -14,6 +17,19 @@
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
+
+// static
+bool StructTraits<viz::mojom::MetadataOverrideDataView,
+                  viz::TransferableResource::MetadataOverride>::
+    Read(viz::mojom::MetadataOverrideDataView data,
+         viz::TransferableResource::MetadataOverride* out) {
+  out->is_overlay_candidate = data.is_overlay_candidate();
+  if (!data.ReadColorSpace(&out->color_space) ||
+      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type)) {
+    return false;
+  }
+  return true;
+}
 
 // static
 viz::mojom::SynchronizationType
@@ -159,14 +175,14 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   viz::ResourceId id;
 
   gpu::SyncToken sync_token;
-  gpu::Mailbox memory_buffer_id;
-  if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
-      !data.ReadMemoryBufferId(&memory_buffer_id) ||
+  gpu::ExportedSharedImage exported_shared_image;
+  viz::TransferableResource::MetadataOverride metadata_override;
+
+  if (!data.ReadSharedImage(&exported_shared_image) ||
       !data.ReadSyncToken(&sync_token) ||
-      !data.ReadColorSpace(&out->color_space) ||
+      !data.ReadMetadataOverride(&metadata_override) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) || !data.ReadId(&id) ||
       !data.ReadSynchronizationType(&out->synchronization_type) ||
-      !data.ReadOrigin(&out->origin) || !data.ReadAlphaType(&out->alpha_type) ||
       !data.ReadResourceSource(&out->resource_source)) {
     return false;
   }
@@ -177,11 +193,10 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
 #endif
 
   out->id = id;
-  out->is_software = data.is_software();
-  out->set_memory_buffer_id(memory_buffer_id);
+  out->set_shared_image(
+      gpu::ClientSharedImage::ImportUnowned(std::move(exported_shared_image)));
   out->set_sync_token(sync_token);
-  out->set_texture_target(data.texture_target());
-  out->is_overlay_candidate = data.is_overlay_candidate();
+  out->set_metadata_override(metadata_override);
   out->is_low_latency_rendering = data.is_low_latency_rendering();
   out->needs_detiling = data.needs_detiling();
 

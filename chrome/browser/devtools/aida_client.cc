@@ -21,10 +21,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/service/variations_service_utils.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 
 constexpr auto kLoggingDisallowedCountries =
@@ -54,9 +54,7 @@ constexpr auto kAidaSupportedCountries =
          "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg", "vi",
          "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
 
-AidaClient::AidaClient(Profile* profile)
-    : profile_(*profile),
-      aida_scope_(GaiaConstants::kAidaOAuth2Scope) {}
+AidaClient::AidaClient(Profile* profile) : profile_(*profile) {}
 
 AidaClient::~AidaClient() = default;
 
@@ -147,10 +145,6 @@ AidaClient::ScopedOverride AidaClient::OverrideCountryForTesting(
       base::BindOnce([]() { GetCountryCodeOverride().reset(); }));
 }
 
-void AidaClient::OverrideAidaScopeForTesting(const std::string& aida_scope) {
-  aida_scope_ = aida_scope;
-}
-
 void AidaClient::RemoveAccessToken() {
   access_token_.clear();
 }
@@ -170,7 +164,7 @@ void AidaClient::PrepareRequestOrFail(
   CoreAccountId account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   access_token_fetcher_ = identity_manager->CreateAccessTokenFetcherForAccount(
-      account_id, "AIDA client", signin::ScopeSet{aida_scope_},
+      account_id, signin::OAuthConsumerId::kDevtoolsAida,
       base::BindOnce(&AidaClient::AccessTokenFetchFinished,
                      base::Unretained(this), std::move(callback)),
       signin::AccessTokenFetcher::Mode::kImmediate);

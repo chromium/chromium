@@ -33,8 +33,8 @@ class CSSOMUtils {
 
   static bool HasGridRepeatValue(const CSSValueList* value_list);
 
-  static bool IsMasonryColumnDirectionValue(
-      const CSSValue* masonry_direction_values);
+  static bool IsGridLanesColumnDirectionValue(
+      const CSSValue* grid_lanes_direction_values);
 
   // Returns the name of a grid area based on the position (`row`, `column`).
   // e.g. with the following grid definition:
@@ -68,13 +68,13 @@ class CSSOMUtils {
       const CSSValue* template_column_values,
       const CSSValue* template_area_values);
   // Returns a `CSSValueList` containing the computed value for
-  // the `masonry` shorthand, based on provided `masonry-template-tracks`,
-  // `grid-template-areas`, `masonry-direction`, and `masonry-fill`.
-  static CSSValueList* ComputedValueForMasonryShorthand(
-      const CSSValue* masonry_template_tracks_values,
+  // the `grid-lanes` shorthand, based on provided `grid-template-tracks`,
+  // `grid-template-areas`, `grid-lanes-direction`, and `grid-lanes-fill`.
+  static CSSValueList* ComputedValueForGridLanesShorthand(
+      const CSSValue* grid_template_tracks_values,
       const CSSValue* template_area_values,
-      const CSSValue* masonry_direction_values,
-      const CSSValue* masonry_fill_values);
+      const CSSValue* grid_lanes_direction_values,
+      const CSSValue* grid_lanes_fill_values);
 };
 
 }  // namespace blink

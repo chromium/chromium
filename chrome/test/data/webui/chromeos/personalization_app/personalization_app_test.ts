@@ -483,7 +483,7 @@ suite('wallpaper subpage', () => {
       const dailyRefreshRegex =
           /^Daily Refresh\: fake_google_photos_photo_id_\d$/;
       await waitUntil(
-          () => dailyRefreshRegex.test(imageTitle.textContent!.trim()),
+          () => dailyRefreshRegex.test(imageTitle.textContent.trim()),
           () => `Expected Daily refresh text to match regex ` +
               `${dailyRefreshRegex.source} but received:\n` +
               `${imageTitle.outerHTML}`,

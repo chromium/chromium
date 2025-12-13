@@ -436,7 +436,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
       "Sync.DataTypeEntityConflictResolution.PREFERENCE",
-      ConflictResolution::kIgnoreLocalEncryption, /*expected_bucket_count=*/1);
+      ConflictResolution::kIgnoreLocalNoOpUpdate, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(2U, db()->data_change_count());
   ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
@@ -470,7 +470,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ProcessSingleUpdate(std::move(update));
   histogram_tester.ExpectUniqueSample(
       "Sync.DataTypeEntityConflictResolution.PREFERENCE",
-      ConflictResolution::kIgnoreRemoteEncryption, /*expected_bucket_count=*/1);
+      ConflictResolution::kIgnoreRemoteNoOpUpdate, /*expected_bucket_count=*/1);
 
   EXPECT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
@@ -505,6 +505,8 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ASSERT_EQ(0U, ProcessorEntityCount());
   UpdateResponseData update = GeneratePrefUpdate("", "");
   ASSERT_TRUE(bridge()->SupportsGetStorageKey());
+  ASSERT_TRUE(bridge()->GetStorageKey(update.entity).empty());
+  ASSERT_FALSE(bridge()->IsEntityDataValid(update.entity));
   // Bridge will generate an empty storage key.
   ProcessSingleUpdate(std::move(update));
   // Update should be filtered out.
@@ -833,6 +835,43 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerForSharedTest,
   EXPECT_TRUE(entity->metadata().has_unique_position());
   EXPECT_THAT(entity->metadata().unique_position(),
               EqualsProto(new_unique_position));
+}
+
+class ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest
+    : public ClientTagBasedRemoteUpdateHandlerTest {
+ public:
+  void SetUp() override {
+    ClientTagBasedRemoteUpdateHandlerTest::SetUp();
+    bridge()->SetSupportsIncrementalUpdates(false);
+  }
+};
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerForNonIncrementalTest,
+       ShouldNotReuploadEntitesOnReencryption) {
+  sync_pb::DataTypeState data_type_state = GenerateDataTypeState();
+  data_type_state.set_encryption_key_name("encryption_key_name");
+
+  sync_pb::GarbageCollectionDirective gc_directive;
+  gc_directive.set_version_watermark(1);
+
+  // Simulate a full remote update with enabled encryption.
+  ProcessSingleUpdate(data_type_state, GeneratePrefUpdate(kKey1, kValue1),
+                      gc_directive);
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(0U, entity_tracker()->GetUnsyncedDataCount());
+
+  // Simulate a full remote update with disabled encryption (e.g. if encryption
+  // was disabled for the data type). One is an update, the other is a creation.
+  data_type_state.set_encryption_key_name("");
+  UpdateResponseDataList updates;
+  updates.push_back(GeneratePrefUpdate(kKey1, kValue1));
+  updates.push_back(GeneratePrefUpdate(kKey2, kValue2));
+  remote_update_handler()->ProcessIncrementalUpdate(
+      data_type_state, std::move(updates), gc_directive);
+  ASSERT_EQ(2U, ProcessorEntityCount());
+
+  // Both entities should not be unsynced (i.e. re-uploaded).
+  EXPECT_EQ(0U, entity_tracker()->GetUnsyncedDataCount());
 }
 
 }  // namespace

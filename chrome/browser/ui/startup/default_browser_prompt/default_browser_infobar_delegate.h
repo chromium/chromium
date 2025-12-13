@@ -38,20 +38,6 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   ~DefaultBrowserInfoBarDelegate() override;
 
  private:
-  // Possible user interactions with the default browser info bar.
-  // Do not modify the ordering as it is important for UMA.
-  enum InfoBarUserInteraction {
-    // The user clicked the "OK" (i.e., "Set as default") button.
-    ACCEPT_INFO_BAR = 0,
-    // The cancel button is deprecated.
-    // CANCEL_INFO_BAR = 1,
-    // The user did not interact with the info bar.
-    IGNORE_INFO_BAR = 2,
-    // The user explicitly closed the infobar.
-    DISMISS_INFO_BAR = 3,
-    NUM_INFO_BAR_USER_INTERACTION_TYPES
-  };
-
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -70,9 +56,6 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   // the default browser, confirming the dialog will attempt to pin Chrome
   // to the taskbar (only ever true on Windows, currently).
   const bool can_pin_to_taskbar_ = false;
-
-  // Indicates if the user interacted with the infobar.
-  bool action_taken_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_

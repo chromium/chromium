@@ -308,6 +308,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   GURL request_url = GetCanonicalizedUrl(net::GURLWithNSURL(request.URL));
   SafeBrowsingService* safe_browsing_service =
       client_->GetSafeBrowsingService();
+  client_->GetSafeBrowsingService();
   if (!safe_browsing_service->CanCheckUrl(request_url)) {
     return std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -380,7 +381,7 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
   // in trunk WebKit.
   if (!pending_main_frame_redirect_chain_.empty()) {
     bool matching_hosts =
-        pending_main_frame_query_->url.host() == response_url.host();
+        pending_main_frame_query_->url.GetHost() == response_url.GetHost();
     UMA_HISTOGRAM_BOOLEAN(
         "IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch", matching_hosts);
   }

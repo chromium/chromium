@@ -75,41 +75,6 @@ function getInViewPoint(element) {
   var top = Math.max(0, rect.top);
   var bottom = Math.min(window.innerHeight, rect.bottom);
 
-  // Find the view boundary of the element by checking itself and all of its
-  // ancestor's boundary.
-  while (element.parentElement != null &&
-         element.parentElement != document.body &&
-         element.parentElement.getClientRects().length > 0) {
-    var parentStyle = window.getComputedStyle(element.parentElement);
-    var overflow = parentStyle.getPropertyValue("overflow");
-    var overflowX = parentStyle.getPropertyValue("overflow-x");
-    var overflowY = parentStyle.getPropertyValue("overflow-y");
-    var parentRect = getParentRect(element);
-    // Only consider about overflow cases when the parent area overlaps with
-    // the element's area.
-    if (parentRect.right > left && parentRect.bottom > top &&
-        right > parentRect.left && bottom > parentRect.top) {
-      if (overflow == "auto" || overflow == "scroll" || overflow == "hidden") {
-        left = Math.max(left, parentRect.left);
-        right = Math.min(right, parentRect.right);
-        top = Math.max(top, parentRect.top);
-        bottom = Math.min(bottom, parentRect.bottom);
-      } else {
-        if (overflowX == "auto" || overflowX == "scroll" ||
-            overflowX == "hidden") {
-          left = Math.max(left, parentRect.left);
-          right = Math.min(right, parentRect.right);
-        }
-        if (overflowY == "auto" || overflowY == "scroll" ||
-            overflowY == "hidden") {
-          top = Math.max(top, parentRect.top);
-          bottom = Math.min(bottom, parentRect.bottom);
-        }
-      }
-    }
-    element = element.parentElement;
-  }
-
   var x = 0.5 * (left + right);
   var y = 0.5 * (top + bottom);
   return [x, y, left, top];

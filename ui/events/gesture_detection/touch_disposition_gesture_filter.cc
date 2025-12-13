@@ -316,6 +316,20 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
     CancelTapIfNecessary(packet);
   }
   int gesture_end_index = -1;
+
+  //  If we are in a scroll, there are no gestures, send an empty gesture scroll
+  //  update.
+  if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate) &&
+      needs_scroll_ending_event_ &&
+      packet.gesture_source() == GestureEventDataPacket::TOUCH_MOVE &&
+      packet.gesture_count() == 0) {
+    TRACE_EVENT("input", "EmptyGestureScrollUpdate");
+    SendGesture(CreateGesture(EventType::kGestureScrollUpdate,
+                              packet.unique_touch_event_id(),
+                              packet.tool_type(), packet),
+                packet);
+  }
+
   for (size_t i = 0; i < packet.gesture_count(); ++i) {
     const GestureEventData& gesture = packet.gesture(i);
     DCHECK_GE(gesture.details.type(), EventType::kGestureTypeStart);

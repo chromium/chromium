@@ -11,13 +11,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/common/content_export.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/application_status_listener.h"
-#endif
 
 class GURL;
 
@@ -56,8 +51,6 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   ~AttributionReportNetworkSender() override;
 
   // AttributionReportSender:
-  void SetInFirstBatch(bool in_first_batch) override;
-
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override;
@@ -104,21 +97,6 @@ class CONTENT_EXPORT AttributionReportNetworkSender
 
   // Used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  // Used for metric logging.
-  bool in_first_batch_ = true;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Callback invoked when the application state changes.
-  void OnApplicationStateChanged(base::android::ApplicationState state);
-
-  // Listener for changes in application state, unregisters itself when
-  // destroyed.
-  const std::unique_ptr<base::android::ApplicationStatusListener>
-      application_status_listener_;
-
-  base::android::ApplicationState app_state_;
-#endif
 };
 
 }  // namespace content

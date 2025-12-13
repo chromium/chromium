@@ -4,13 +4,10 @@
 
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 
-#include <utility>
-
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "url/origin.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace content {
 

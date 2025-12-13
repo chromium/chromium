@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -57,6 +58,17 @@ WebAppInstallFinalizer::FinalizeOptions GetFinalizerOptionForSyncInstall() {
         AreAppsLocallyInstalledBySync();
   }
   return finalize_options;
+}
+
+// On ChromeOS, always perform installation by fetching the manifest, while on
+// other platforms, always install from fallback based on whether trusted icons
+// are enabled.
+bool ShouldInstallFallbackNoManifestFetching() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -104,8 +116,7 @@ InstallFromSyncCommand::InstallFromSyncCommand(
                           webapps::InstallResultCode::
                               kCancelledOnWebAppProviderShuttingDown)),
       profile_(profile),
-      params_(params),
-      install_error_log_entry_(true, webapps::WebappInstallSource::SYNC) {
+      params_(params) {
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(AreAppsLocallyInstalledBySync());
 #endif
@@ -139,6 +150,12 @@ void InstallFromSyncCommand::StartWithLock(
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
+  if (ShouldInstallFallbackNoManifestFetching()) {
+    InstallFallback(
+        webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons);
+    return;
+  }
+
   url_loader_->LoadUrl(
       params_.start_url, &lock_->shared_web_contents(),
       webapps::WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
@@ -154,12 +171,7 @@ void InstallFromSyncCommand::SetFallbackTriggeredForTesting(
 
 void InstallFromSyncCommand::OnWebAppUrlLoadedGetWebAppInstallInfo(
     webapps::WebAppUrlLoaderResult result) {
-  GetMutableDebugValue().Set("WebAppUrlLoader::Result",
-                             ConvertUrlLoaderResultToString(result));
-  if (result != webapps::WebAppUrlLoaderResult::kUrlLoaded) {
-    install_error_log_entry_.LogUrlLoaderError(
-        "OnWebAppUrlLoaded", params_.start_url.spec(), result);
-  }
+  GetMutableDebugValue().Set("WebAppUrlLoader::Result", base::ToString(result));
 
   if (result == webapps::WebAppUrlLoaderResult::kRedirectedUrlLoaded) {
     InstallFallback(webapps::InstallResultCode::kInstallURLRedirected);
@@ -246,10 +258,6 @@ void InstallFromSyncCommand::
     expected_id_error.Set("app_id", generated_app_id);
     GetMutableDebugValue().Set("app_id_error", std::move(expected_id_error));
 
-    install_error_log_entry_.LogExpectedAppIdError(
-        "OnDidPerformInstallableCheck", params_.start_url.spec(),
-        generated_app_id, params_.app_id);
-
     InstallFallback(webapps::InstallResultCode::kExpectedAppIdCheckFailed);
     return;
   }
@@ -265,6 +273,10 @@ void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
     IconsMap icons_map,
     DownloadedIconsHttpResults icons_http_results) {
   PopulateProductIcons(fallback_install_info_.get(), &icons_map);
+  if (fallback_install_info_->is_generated_icon) {
+    GetMutableDebugValue().Set("fallback_is_generated_icon", true);
+  }
+  PopulateTrustedIconBitmaps(*fallback_install_info_.get(), icons_map);
   PopulateOtherIcons(fallback_install_info_.get(), icons_map);
 
   RecordDownloadedIconsHttpResultsCodeClass(
@@ -272,8 +284,11 @@ void InstallFromSyncCommand::OnIconsRetrievedForFallbackInfo(
   UMA_HISTOGRAM_ENUMERATION("WebApp.Icon.DownloadedResultOnSync", result);
   RecordDownloadedIconHttpStatusCodes(
       "WebApp.Icon.DownloadedHttpStatusCodeOnSync", icons_http_results);
-  install_error_log_entry_.LogDownloadedIconsErrors(
-      *fallback_install_info_.get(), result, icons_map, icons_http_results);
+  base::DictValue icon_errors =
+      LogDownloadedIconsErrors(result, icons_map, icons_http_results);
+  if (!icon_errors.empty()) {
+    GetMutableDebugValue().Set("icon_errors", std::move(icon_errors));
+  }
   FinalizeInstall(FinalizeMode::kFallbackWebAppInfo);
 }
 
@@ -345,22 +360,6 @@ void InstallFromSyncCommand::ReportResultAndDestroy(
   // a sync install is not a recordable install source.
   DCHECK(!webapps::InstallableMetrics::IsReportableInstallSource(
       webapps::WebappInstallSource::SYNC));
-  // TODO(crbug.com/40826246): migrate LogToInstallManager to take a
-  // base::Value::Dict
-  if (install_error_log_entry_.HasErrorDict()) {
-    command_manager()->LogToInstallManager(
-        install_error_log_entry_.TakeErrorDict());
-  }
-
-  if (manifest_to_install_info_job_) {
-    base::Value::Dict install_info_job_error_dict =
-        manifest_to_install_info_job_
-            ->GetManifestToWebAppInfoGenerationErrors();
-    if (!install_info_job_error_dict.empty()) {
-      command_manager()->LogToInstallManager(
-          std::move(install_info_job_error_dict));
-    }
-  }
 
   base::UmaHistogramEnumeration("Webapp.InstallResult.Sync", code);
   CompleteAndSelfDestruct(

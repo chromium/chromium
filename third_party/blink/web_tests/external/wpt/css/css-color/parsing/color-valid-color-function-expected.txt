@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "color(srgb calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
   assert_equals: serialization should be canonical expected "color(srgb calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(srgb 1.5 -0.5 0.5 / 0.5)"
 [FAIL] e.style['color'] = "color(srgb calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
@@ -36,6 +36,12 @@ Found 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: serialization should be canonical expected "color(display-p3 calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(display-p3 1.5 -0.5 0.5 / 0)"
 [FAIL] e.style['color'] = "color(display-p3 calc(50%) 50% 0.5)" should set the property value
   assert_equals: serialization should be canonical expected "color(display-p3 calc(50%) 0.5 0.5)" but got "color(display-p3 0.5 0.5 0.5)"
+[FAIL] e.style['color'] = "color(display-p3-linear calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3-linear calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(display-p3-linear 1.5 -0.5 0.5 / 0.5)"
+[FAIL] e.style['color'] = "color(display-p3-linear calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3-linear calc(150%) calc(-50%) calc(50%) / calc(-150%))" but got "color(display-p3-linear 1.5 -0.5 0.5 / 0)"
+[FAIL] e.style['color'] = "color(display-p3-linear calc(50%) 50% 0.5)" should set the property value
+  assert_equals: serialization should be canonical expected "color(display-p3-linear calc(50%) 0.5 0.5)" but got "color(display-p3-linear 0.5 0.5 0.5)"
 [FAIL] e.style['color'] = "color(xyz calc(0.5 + 1) calc(0.5 - 1) calc(0.5) / calc(-0.5 + 1))" should set the property value
   assert_equals: serialization should be canonical expected "color(xyz-d65 calc(1.5) calc(-0.5) calc(0.5) / calc(0.5))" but got "color(xyz-d65 1.5 -0.5 0.5 / 0.5)"
 [FAIL] e.style['color'] = "color(xyz calc(50% * 3) calc(-150% / 3) calc(50%) / calc(-50% * 3))" should set the property value

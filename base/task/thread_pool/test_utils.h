@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/post_job.h"
 #include "base/task/task_features.h"

@@ -27,8 +27,9 @@ class CredentialsCleanerRunnerFactory : public ProfileKeyedServiceFactoryIOS {
   CredentialsCleanerRunnerFactory();
   ~CredentialsCleanerRunnerFactory() override;
 
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_

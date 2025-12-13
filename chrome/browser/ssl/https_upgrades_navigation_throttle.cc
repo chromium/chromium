@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
+#include "components/security_interstitials/core/features.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -39,6 +40,10 @@ namespace {
 // showing the HTTPS-First Mode interstitial.
 base::TimeDelta g_fallback_delay = base::Seconds(3);
 
+// TODO(crbug.com/351990829): Consider setting the page title and favicon to be
+// more like interstitials.
+inline constexpr char kBlankPageHtml[] = "<html></html>";
+
 }  // namespace
 
 // static
@@ -56,45 +61,15 @@ void HttpsUpgradesNavigationThrottle::MaybeCreateAndAdd(
     return;
   }
 
-  PrefService* prefs = profile->GetPrefs();
   security_interstitials::https_only_mode::HttpInterstitialState
-      interstitial_state;
-  interstitial_state.enabled_by_pref =
-      prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
-    if (profile->IsIncognitoProfile() && prefs &&
-        prefs->GetBoolean(prefs::kHttpsFirstModeIncognito)) {
-      interstitial_state.enabled_by_incognito = true;
-    }
-  }
-
-  StatefulSSLHostStateDelegate* state =
-      static_cast<StatefulSSLHostStateDelegate*>(
-          profile->GetSSLHostStateDelegate());
-
-  if (IsBalancedModeEnabled(prefs) && state &&
-      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
-    interstitial_state.enabled_in_balanced_mode = true;
-  }
-
-  auto* storage_partition =
-      handle.GetWebContents()->GetPrimaryMainFrame()->GetStoragePartition();
+      interstitial_state =
+          ComputeInterstitialState(handle.GetWebContents(), handle.GetURL());
 
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile);
   if (hfm_service) {
     // Can be null in some cases, e.g. when using Ash sign-in profile.
     hfm_service->IncrementRecentNavigationCount();
-    interstitial_state.enabled_by_typically_secure_browsing =
-        hfm_service->IsInterstitialEnabledByTypicallySecureUserHeuristic();
-  }
-
-  // StatefulSSLHostStateDelegate can be null during tests.
-  if (state &&
-      state->IsHttpsEnforcedForUrl(handle.GetURL(), storage_partition) &&
-      !MustDisableSiteEngagementHeuristic(profile)) {
-    interstitial_state.enabled_by_engagement_heuristic = true;
   }
 
   bool https_upgrades_enabled =
@@ -161,21 +136,31 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
 
-      ukm::SourceId source_id =
-          ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
-                                 ukm::SourceIdType::NAVIGATION_ID);
-      std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-          blocking_page =
-              blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-                  contents, handle->GetURL(), interstitial_state_,
-                  /*url_type_param=*/std::nullopt,
-                  base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
-      std::string interstitial_html = blocking_page->GetHTMLContents();
-      security_interstitials::SecurityInterstitialTabHelper::
-          AssociateBlockingPage(handle, std::move(blocking_page));
-      return content::NavigationThrottle::ThrottleCheckResult(
-          content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-          std::move(interstitial_html));
+      if (base::FeatureList::IsEnabled(
+              security_interstitials::features::kHttpsFirstDialogUi)) {
+        // New dialog UI.
+        // Rewrite the response to a blank page. DidFinishNavigation will
+        // show the ABH dialog on top of this blank page.
+        return {content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+                kBlankPageHtml};
+      } else {
+        // Old full-page interstitial UI.
+        ukm::SourceId source_id =
+            ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
+                                   ukm::SourceIdType::NAVIGATION_ID);
+        std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+            blocking_page =
+                blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
+                    contents, handle->GetURL(), interstitial_state_,
+                    /*url_type_param=*/std::nullopt,
+                    base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
+        std::string interstitial_html = blocking_page->GetHTMLContents();
+        security_interstitials::SecurityInterstitialTabHelper::
+            AssociateBlockingPage(handle, std::move(blocking_page));
+        return content::NavigationThrottle::ThrottleCheckResult(
+            content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+            std::move(interstitial_html));
+      }
     }
 
     // Otherwise, just record metrics and continue.
@@ -227,17 +212,28 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     security_interstitials::https_only_mode::RecordInterstitialReason(
         interstitial_state_);
 
-    std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
-        blocking_page = blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
-            contents, handle->GetURL(), interstitial_state_,
-            /*url_type_param=*/std::nullopt,
-            base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
-    std::string interstitial_html = blocking_page->GetHTMLContents();
-    security_interstitials::SecurityInterstitialTabHelper::
-        AssociateBlockingPage(handle, std::move(blocking_page));
-    return content::NavigationThrottle::ThrottleCheckResult(
-        content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-        std::move(interstitial_html));
+    if (base::FeatureList::IsEnabled(
+            security_interstitials::features::kHttpsFirstDialogUi)) {
+      // New dialog UI.
+      // Rewrite the response to a blank page and cancel the navigation.
+      // HttpsOnlyModeTabHelper::DidFinishNavigation() will
+      // show the ABH dialog on top of this blank page.
+      return {content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+              kBlankPageHtml};
+    } else {
+      std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
+          blocking_page =
+              blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
+                  contents, handle->GetURL(), interstitial_state_,
+                  /*url_type_param=*/std::nullopt,
+                  base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
+      std::string interstitial_html = blocking_page->GetHTMLContents();
+      security_interstitials::SecurityInterstitialTabHelper::
+          AssociateBlockingPage(handle, std::move(blocking_page));
+      return content::NavigationThrottle::ThrottleCheckResult(
+          content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
+          std::move(interstitial_html));
+    }
   }
 
   // Otherwise, just record metrics and continue.

@@ -7,12 +7,15 @@
 
 #include <deque>
 
+#include "base/byte_count.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/no_destructor.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/sequence_checker.h"
 #include "base/task/delayed_task_handle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -71,7 +74,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     // unable to record the metric for any reason. It is called underneath a
     // lock, so it should be fast enough to avoid delays (the same lock is held
     // when unregistering metrics).
-    virtual std::optional<uint64_t> Measure() const = 0;
+    virtual std::optional<ByteCount> Measure() const = 0;
 
     const std::string& name() const LIFETIME_BOUND { return name_; }
 
@@ -231,7 +234,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // metric before any tasks are run are saved here. The "i"th entry corresponds
   // to the "i"th entry in |metrics_|. When there is no pending metrics task,
   // |values_before_| should be empty.
-  std::vector<std::optional<uint64_t>> values_before_ GUARDED_BY(lock());
+  std::vector<std::optional<ByteCount>> values_before_ GUARDED_BY(lock());
   bool supports_modern_trim_;
 };
 

@@ -26,9 +26,6 @@
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
-#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/android/browsing_data_model_android.h"
@@ -48,7 +45,6 @@
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -84,7 +80,7 @@ void OnBrowsingDataModelBuilt(JNIEnv* env,
 static void JNI_BrowsingDataBridge_ClearBrowsingData(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback,
     std::vector<int>& data_types_vector,
     jint time_period,
     std::vector<std::string>& excluding_domains,
@@ -165,7 +161,7 @@ static void EnableDialogAboutOtherFormsOfBrowsingHistory(
 static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& listener) {
+    const JavaRef<jobject>& listener) {
   TRACE_EVENT0(
       "browsing_data",
       "BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory");
@@ -180,7 +176,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
 static void JNI_BrowsingDataBridge_FetchImportantSites(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_FetchImportantSites");
   std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
       important_sites =
@@ -289,41 +285,11 @@ static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
 static void JNI_BrowsingDataBridge_BuildBrowsingDataModelFromDisk(
     JNIEnv* env,
     Profile* profile,
-    const JavaParamRef<jobject>& java_callback) {
+    const JavaRef<jobject>& java_callback) {
   BrowsingDataModel::BuildFromDisk(
       profile, ChromeBrowsingDataModelDelegate::CreateForProfile(profile),
       base::BindOnce(&OnBrowsingDataModelBuilt, env,
                      ScopedJavaGlobalRef<jobject>(java_callback)));
 }
 
-static void JNI_BrowsingDataBridge_TriggerHatsSurvey(
-    JNIEnv* env,
-    Profile* profile,
-    content::WebContents* web_contents,
-    jboolean quick_delete) {
-  HatsService* hats_service =
-      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
-
-  std::string trigger = quick_delete ? kHatsSurveyTriggerQuickDelete
-                                     : kHatsSurveyTriggerClearBrowsingData;
-  messages::MessageIdentifier message_id =
-      quick_delete
-          ? messages::MessageIdentifier::PROMPT_HATS_QUICK_DELETE
-          : messages::MessageIdentifier::PROMPT_HATS_CLEAR_BROWSING_DATA;
-
-  if (hats_service) {
-    hats_service->LaunchDelayedSurveyForWebContents(
-        trigger, web_contents,
-        /*timeout_ms=*/5000,
-        /*product_specific_bits_data=*/{},
-        /*product_specific_string_data=*/{},
-        HatsService::NavigationBehavior::ALLOW_ANY,
-        /*success_callback=*/base::DoNothing(),
-        /*failure_callback=*/base::DoNothing(),
-        /*supplied_trigger_id=*/std::nullopt,
-        HatsService::SurveyOptions(
-            l10n_util::GetStringUTF16(
-                IDS_QUICK_DELETE_PROMPT_SURVEY_CUSTOM_INVITATION),
-            message_id));
-  }
-}
+DEFINE_JNI(BrowsingDataBridge)

@@ -15,7 +15,7 @@
 #include "base/numerics/safe_math_shared_impl.h"  // IWYU pragma: export
 
 namespace base {
-namespace internal {
+namespace numerics_internal {
 
 template <typename T>
   requires std::is_arithmetic_v<T>
@@ -51,6 +51,46 @@ class CheckedNumeric {
   constexpr bool IsValid() const {
     return state_.is_valid() &&
            IsValueInRangeForNumericType<Dst>(state_.value());
+  }
+
+  // Returns true if all the following are true:
+  // - `this` is valid
+  // - the underlying value can be represented by the type of
+  //   `predicate`'s single parameter.
+  // - `predicate(underlying_value)` evaluates to true
+  //
+  // `predicate` must take a single argument of arithmetic by value and return
+  // a `bool`.
+  //
+  // Example:
+  //   CheckedNumeric<int> zero;
+  //   if (zero.IsValidAnd([] (int x) { return x == 0; })) { ... }
+  template <typename Predicate>
+    requires(std::is_arithmetic_v<ExtractPredicateParamType<Predicate>>)
+  constexpr bool IsValidAnd(Predicate&& predicate) const {
+    using Dst = ExtractPredicateParamType<Predicate>;
+    return IsValid<Dst>() &&
+           std::forward<Predicate>(predicate)(static_cast<Dst>(state_.value()));
+  }
+
+  // Returns true if any of the following are true:
+  // - `this` is invalid
+  // - the underlying value cannot be represented by the type of
+  //   `predicate`'s single parameter.
+  // - `predicate` evaluates to true
+  //
+  // `predicate` must take a single argument of arithmetic by value and return
+  // a `bool`.
+  //
+  // Example:
+  //   CheckedNumeric<int> out_of_range = std::numeric_limits<int>::max();
+  //   if (out_of_range.IsInvalidOr([] (int x) { return x > 1024; })) { ... }
+  template <typename Predicate>
+    requires(std::is_arithmetic_v<ExtractPredicateParamType<Predicate>>)
+  constexpr bool IsInvalidOr(Predicate&& predicate) const {
+    using Dst = ExtractPredicateParamType<Predicate>;
+    return !IsValid<Dst>() ||
+           std::forward<Predicate>(predicate)(static_cast<Dst>(state_.value()));
   }
 
   // AssignIfValid(Dst) - Assigns the underlying value if it is currently valid
@@ -350,25 +390,25 @@ L* operator-(L* lhs, StrictNumeric<R> rhs) {
   return reinterpret_cast<L*>(result);
 }
 
-}  // namespace internal
+}  // namespace numerics_internal
 
-using internal::CheckAdd;
-using internal::CheckAnd;
-using internal::CheckDiv;
-using internal::CheckedNumeric;
-using internal::CheckLsh;
-using internal::CheckMax;
-using internal::CheckMin;
-using internal::CheckMod;
-using internal::CheckMul;
-using internal::CheckOr;
-using internal::CheckRsh;
-using internal::CheckSub;
-using internal::CheckXor;
-using internal::IsValidForType;
-using internal::MakeCheckedNum;
-using internal::ValueOrDefaultForType;
-using internal::ValueOrDieForType;
+using numerics_internal::CheckAdd;
+using numerics_internal::CheckAnd;
+using numerics_internal::CheckDiv;
+using numerics_internal::CheckedNumeric;
+using numerics_internal::CheckLsh;
+using numerics_internal::CheckMax;
+using numerics_internal::CheckMin;
+using numerics_internal::CheckMod;
+using numerics_internal::CheckMul;
+using numerics_internal::CheckOr;
+using numerics_internal::CheckRsh;
+using numerics_internal::CheckSub;
+using numerics_internal::CheckXor;
+using numerics_internal::IsValidForType;
+using numerics_internal::MakeCheckedNum;
+using numerics_internal::ValueOrDefaultForType;
+using numerics_internal::ValueOrDieForType;
 
 }  // namespace base
 

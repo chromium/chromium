@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/js_injection/renderer/js_binding.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
@@ -61,13 +57,15 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
-                      array_buffer_->ByteLength());
+    return UNSAFE_TODO(
+        base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
+                   array_buffer_->ByteLength()));
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
     CHECK_GE(dest.size(), array_buffer_->ByteLength());
-    memcpy(dest.data(), array_buffer_->Data(), array_buffer_->ByteLength());
+    UNSAFE_TODO(memcpy(dest.data(), array_buffer_->Data(),
+                       array_buffer_->ByteLength()));
   }
 
  private:
@@ -161,9 +159,9 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
                 isolate, array_buffer_value->GetLength());
             CHECK(backing_store->ByteLength() ==
                   array_buffer_value->GetLength());
-            array_buffer_value->CopyInto(
+            array_buffer_value->CopyInto(UNSAFE_TODO(
                 base::span(static_cast<uint8_t*>(backing_store->Data()),
-                           backing_store->ByteLength()));
+                           backing_store->ByteLength())));
             return v8::ArrayBuffer::New(isolate, std::move(backing_store));
           }},
       message);
@@ -295,9 +293,8 @@ void JsBinding::AddEventListener(gin::Arguments* args) {
     return;
   }
 
-  v8::Local<v8::Context> context = args->GetHolderCreationContext();
   listeners_.push_back(
-      v8::Global<v8::Function>(context->GetIsolate(), listener));
+      v8::Global<v8::Function>(v8::Isolate::GetCurrent(), listener));
 }
 
 // RemoveEventListener() needs to match EventTarget's RemoveEventListener() in

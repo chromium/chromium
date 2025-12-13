@@ -8,6 +8,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "device/vr/android/cardboard/cardboard_image_transport.h"
@@ -224,7 +225,6 @@ void CardboardRenderLoop::CloseBindingsIfOpen() {
   session_controller_receiver_.reset();
   presentation_receiver_.reset();
   submit_client_.reset();
-  overlay_receiver_.reset();
 }
 
 void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
@@ -251,7 +251,6 @@ void CardboardRenderLoop::OnCardboardImageTransportReady(bool success) {
   mojom::XRRuntimeSessionResultPtr result =
       device::mojom::XRRuntimeSessionResult::New();
   result->controller = session_controller_receiver_.BindNewPipeAndPassRemote();
-  result->overlay = overlay_receiver_.BindNewPipeAndPassRemote();
 
   result->session = mojom::XRSession::New();
   auto* session = result->session.get();
@@ -316,18 +315,10 @@ void CardboardRenderLoop::CleanUp() {
 void CardboardRenderLoop::GetFrameData(
     mojom::XRFrameDataRequestOptionsPtr options,
     mojom::XRFrameDataProvider::GetFrameDataCallback callback) {
-  DCHECK(task_runner()->BelongsToCurrentThread());
-  CHECK(!texture_size_.IsEmpty());
-  DVLOG(3) << __func__;
   TRACE_EVENT1("gpu", "CardboardRenderLoop::GetFrameData", "frame",
                webxr_->PeekNextFrameIndex());
-
-  if (webxr_->HaveAnimatingFrame() && webxr_->GetAnimatingFrame()->frame_data) {
-    PrepareAnimatingFrameForContent();
-    auto* frame = webxr_->GetAnimatingFrame();
-    std::move(callback).Run(std::move(frame->frame_data));
-    return;
-  }
+  DCHECK(task_runner()->BelongsToCurrentThread());
+  CHECK(!texture_size_.IsEmpty());
 
   if (!CanStartNewAnimatingFrame()) {
     // We bind this as a post task so that whatever processing is run when we
@@ -346,41 +337,6 @@ void CardboardRenderLoop::GetFrameData(
     return;
   }
 
-  StartNewAnimatingFrame();
-  PrepareAnimatingFrameForContent();
-
-  CHECK(webxr_->HaveAnimatingFrame());
-  std::move(callback).Run(std::move(webxr_->GetAnimatingFrame()->frame_data));
-
-  if (pending_request_overlay_pose_) {
-    std::move(pending_request_overlay_pose_).Run();
-  }
-}
-
-void CardboardRenderLoop::PrepareAnimatingFrameForContent() {
-  CHECK(webxr_->HaveAnimatingFrame());
-  WebXrFrame* xr_frame = webxr_->GetAnimatingFrame();
-  TRACE_EVENT1("gpu", "CardboardRenderLoop::PrepareAnimatingFrameForContent",
-               "frame", xr_frame->index);
-
-  xr_frame->bounds_left = left_bounds_;
-  xr_frame->bounds_right = right_bounds_;
-
-  // We aren't modifying the texture that we give to the page, so we just pass
-  // in identity for the uv_transform.
-  WebXrSharedBuffer* shared_buffer = cardboard_image_transport_->TransferFrame(
-      webxr_.get(), texture_size_, gfx::Transform());
-  CHECK(shared_buffer);
-  xr_frame->frame_data->buffer_shared_image =
-      shared_buffer->shared_image->Export();
-  xr_frame->frame_data->buffer_sync_token = shared_buffer->sync_token;
-}
-
-void CardboardRenderLoop::StartNewAnimatingFrame() {
-  TRACE_EVENT1("gpu", "CardboardRenderLoop::StartNewAnimatingFrame", "frame",
-               webxr_->PeekNextFrameIndex());
-  DCHECK(task_runner()->BelongsToCurrentThread());
-  CHECK(!texture_size_.IsEmpty());
   if (is_paused_) {
     DVLOG(2) << __func__ << ": paused but frame data not restricted. Resuming.";
     Resume();
@@ -392,23 +348,18 @@ void CardboardRenderLoop::StartNewAnimatingFrame() {
 
   frame_data->render_info->frame_id = webxr_->StartFrameAnimating();
   WebXrFrame* xr_frame = webxr_->GetAnimatingFrame();
-  xr_frame->waiting_for_webxr = webxr_visible_;
-  xr_frame->waiting_for_overlay = overlay_visible_;
 
   xr_frame->time_pose = now;
+  xr_frame->bounds_left = left_bounds_;
+  xr_frame->bounds_right = right_bounds_;
 
-  // There are rare race conditions where we request an overlay frame before
-  // we receive a request for a page to send to the page. This could then create
-  // the animating frame, but the page could still send us a resize event that
-  // they would expect to take place before sending them a frame. As such, we
-  // separately create the shared buffer for the page once the page requests
-  // data (if it does).
-
-  // Since we never call "ProcessOrDefer" and instead essentially always
-  // "defer" our frames, we need to tell it how to follow up here.
-  xr_frame->deferred_start_processing =
-      base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
-                     weak_ptr_factory_.GetWeakPtr());
+  // We aren't modifying the texture that we give to the page, so we just pass
+  // in identity for the uv_transform.
+  WebXrSharedBuffer* shared_buffer = cardboard_image_transport_->TransferFrame(
+      webxr_.get(), texture_size_, gfx::Transform());
+  CHECK(shared_buffer);
+  frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+  frame_data->buffer_sync_token = shared_buffer->sync_token;
 
   // Get the head pose
   int64_t timestamp_ns = GetBootTimeNano() + kPredictionTimeWithoutVsyncNanos;
@@ -444,11 +395,9 @@ void CardboardRenderLoop::StartNewAnimatingFrame() {
 
   frame_data->time_delta = now - base::TimeTicks();
 
-  xr_frame->render_info = frame_data->render_info.Clone();
-  xr_frame->frame_data = std::move(frame_data);
-
   // TODO(crbug.com/40900872): Calculating
   // frame_data->rendering_time_ratio may be necessary for viewport scaling.
+  std::move(callback).Run(std::move(frame_data));
 }
 
 bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
@@ -482,12 +431,7 @@ bool CardboardRenderLoop::IsSubmitFrameExpected(int16_t frame_index) {
     return false;
   }
 
-  // Frame looks valid. Notify anyone who may be waiting for a WebXr Submit and
-  // then allow it to be processed.
-  if (on_webxr_submitted_) {
-    std::move(on_webxr_submitted_).Run();
-  }
-
+  // Frame looks valid.
   return true;
 }
 
@@ -501,31 +445,13 @@ void CardboardRenderLoop::SubmitFrameMissing(int16_t frame_index,
     return;
   }
 
-  auto* frame = webxr_->GetAnimatingFrame();
-  frame->webxr_submitted = false;
-  frame->waiting_for_webxr = false;
-
-  // If the overlay has submitted then we shouldn't be waiting on it, but we
-  // need to try to process this like any normal frame.
-  if (frame->overlay_submitted) {
-    frame->webxr_sync_token = sync_token;
-    webxr_->TryDeferredProcessing();
-    return;
-  }
-
-  // If the overlay hasn't submitted yet, but we know we're waiting on it, then
-  // just return. The frame will get processed once it submits.
-  if (frame->waiting_for_overlay) {
-    return;
-  }
-
-  // If we're not waiting for the overlay and it didn't submit anything, then
-  // we can recycle and finish this frame.
   webxr_->RecycleUnusedAnimatingFrame();
   cardboard_image_transport_->WaitSyncToken(sync_token);
   FinishFrame(frame_index);
 
-  MaybeStartNextFrame();
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
@@ -536,39 +462,45 @@ void CardboardRenderLoop::SubmitFrame(int16_t frame_index,
 
 void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
+    const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
                "frame", frame_index);
   DVLOG(2) << __func__ << ": frame=" << frame_index;
 
+  if (!layer_ids.empty()) {
+    presentation_receiver_.ReportBadMessage(
+        "Layers feature not enabled for this session");
+    return;
+  }
+
   if (!IsSubmitFrameExpected(frame_index)) {
     return;
   }
 
-  auto* frame = webxr_->GetAnimatingFrame();
-  frame->webxr_sync_token = sync_token;
-  frame->waiting_for_webxr = false;
-  frame->webxr_submitted = true;
-
-  // Note that we never actually call ProcessOrDefer here, as we simply set the
-  // callback for DeferredProcessing when building the frame.
-  webxr_->TryDeferredProcessing();
+  // Start processing the frame now if possible. If there's already a current
+  // processing frame, defer it until that frame calls TryDeferredProcessing.
+  webxr_->ProcessOrDefer(
+      base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
+                     weak_ptr_factory_.GetWeakPtr(), sync_token));
 }
 
-void CardboardRenderLoop::ProcessFrameDrawnIntoTexture() {
-  CHECK(webxr_->HaveProcessingFrame());
+void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
+    const gpu::SyncToken& sync_token) {
   cardboard_image_transport_->CreateGpuFenceForSyncToken(
-      webxr_->GetProcessingFrame()->webxr_sync_token,
+      sync_token,
       base::BindOnce(&CardboardRenderLoop::OnWebXrTokenSignaled, GetWeakPtr()));
 
-  MaybeStartNextFrame();
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
+  }
 }
 
 void CardboardRenderLoop::OnWebXrTokenSignaled(
     std::unique_ptr<gfx::GpuFence> gpu_fence) {
   cardboard_image_transport_->ServerWaitForGpuFence(std::move(gpu_fence));
-  RenderFrame();
+  RenderFrame(gfx::Transform());
 }
 
 void CardboardRenderLoop::TransitionProcessingFrameToRendering() {
@@ -596,7 +528,7 @@ void CardboardRenderLoop::TransitionProcessingFrameToRendering() {
   webxr_->TryDeferredProcessing();
 }
 
-void CardboardRenderLoop::RenderFrame() {
+void CardboardRenderLoop::RenderFrame(const gfx::Transform& uv_transform) {
   DVLOG(2) << __func__;
   CHECK(webxr_->HaveProcessingFrame());
   int16_t frame_index = webxr_->GetProcessingFrame()->index;
@@ -616,11 +548,9 @@ void CardboardRenderLoop::RenderFrame() {
         gpu_fence2->GetGpuFenceHandle().Clone());
   }
 
-  if (overlay_submit_callback_) {
-    std::move(overlay_submit_callback_).Run(true);
+  if (pending_getframedata_) {
+    std::move(pending_getframedata_).Run();
   }
-
-  MaybeStartNextFrame();
 }
 
 void CardboardRenderLoop::FinishRenderingFrame(WebXrFrame* frame) {
@@ -633,18 +563,6 @@ void CardboardRenderLoop::FinishRenderingFrame(WebXrFrame* frame) {
     frame->render_completion_fence = gl::GLFence::CreateForGpuFence();
   }
   ClearRenderingFrame(frame);
-}
-
-void CardboardRenderLoop::MaybeStartNextFrame() {
-  if (pending_getframedata_) {
-    std::move(pending_getframedata_).Run();
-    // The pending_getframedata call will run any pending_request_overlay_pose_.
-    return;
-  }
-
-  if (pending_request_overlay_pose_) {
-    std::move(pending_request_overlay_pose_).Run();
-  }
 }
 
 void CardboardRenderLoop::ClearRenderingFrame(WebXrFrame* frame) {
@@ -810,106 +728,6 @@ void CardboardRenderLoop::Resume() {
 
   CardboardHeadTracker_resume(head_tracker_.get());
   is_paused_ = false;
-}
-
-void CardboardRenderLoop::SubmitOverlayTexture(
-    int16_t frame_id,
-    gfx::GpuMemoryBufferHandle texture,
-    const gpu::SyncToken& sync_token,
-    const gfx::RectF& left_bounds,
-    const gfx::RectF& right_bounds,
-    SubmitOverlayTextureCallback overlay_submit_callback) {
-  DVLOG(3) << __func__;
-  TRACE_EVENT_INSTANT0("xr", "SubmitOverlay", TRACE_EVENT_SCOPE_THREAD);
-  DCHECK(overlay_visible_);
-
-  if (overlay_submit_callback_) {
-    std::move(overlay_submit_callback_).Run(true);
-  }
-
-  overlay_submit_callback_ = std::move(overlay_submit_callback);
-  if (!webxr_->HaveAnimatingFrame()) {
-    // We may stop presenting while there is a pending SubmitOverlayTexture
-    // outstanding.  If we get an overlay submit we weren't expecting, just
-    // ignore it.
-    std::move(overlay_submit_callback_).Run(false);
-    return;
-  }
-
-  if (texture.is_null()) {
-    std::move(overlay_submit_callback_).Run(false);
-    return;
-  }
-
-  CHECK(texture.type == gfx::ANDROID_HARDWARE_BUFFER);
-
-  auto* frame = webxr_->GetAnimatingFrame();
-  frame->waiting_for_overlay = false;
-  frame->overlay_submitted = true;
-  frame->overlay_handle = std::move(texture);
-  frame->overlay_bounds_left = left_bounds;
-  frame->overlay_bounds_right = right_bounds;
-
-  webxr_->TryDeferredProcessing();
-}
-
-void CardboardRenderLoop::RequestNextOverlayPose(
-    RequestNextOverlayPoseCallback callback) {
-  DVLOG(3) << __func__;
-  // We will only request poses while the overlay is visible.
-  DCHECK(overlay_visible_);
-  TRACE_EVENT_INSTANT0("xr", "RequestOverlayPose", TRACE_EVENT_SCOPE_THREAD);
-
-  if (webxr_->HaveAnimatingFrame()) {
-    std::move(callback).Run(webxr_->GetAnimatingFrame()->render_info->Clone());
-    return;
-  }
-
-  // If we cannot start a new animating frame, then defer until we can.
-  if (!CanStartNewAnimatingFrame()) {
-    // We bind this as a post task so that whatever processing is run when we
-    // attempt to get new frame data can complete before the pending
-    // GetFrameData call actually happens.
-    pending_request_overlay_pose_ = base::BindPostTask(
-        task_runner(),
-        base::BindOnce(&CardboardRenderLoop::RequestNextOverlayPose,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-
-  // Start a new frame
-  StartNewAnimatingFrame();
-  CHECK(webxr_->HaveAnimatingFrame());
-  std::move(callback).Run(webxr_->GetAnimatingFrame()->render_info->Clone());
-}
-
-void CardboardRenderLoop::SetOverlayAndWebXRVisibility(bool overlay_visible,
-                                                       bool webxr_visible) {
-  DVLOG(1) << __func__ << " overlay_visible=" << overlay_visible
-           << " webxr_visible=" << webxr_visible;
-  TRACE_EVENT_INSTANT2("xr", "SetOverlayAndWebXRVisibility",
-                       TRACE_EVENT_SCOPE_THREAD, "overlay", overlay_visible,
-                       "webxr", webxr_visible);
-  // Update state.
-  webxr_visible_ = webxr_visible;
-  overlay_visible_ = overlay_visible;
-  cardboard_image_transport_->SetOverlayAndWebXRVisibility(overlay_visible_,
-                                                           webxr_visible_);
-  if (webxr_->HaveAnimatingFrame()) {
-    auto* frame = webxr_->GetAnimatingFrame();
-    frame->waiting_for_webxr = frame->waiting_for_webxr && webxr_visible;
-    frame->waiting_for_overlay = frame->waiting_for_overlay && overlay_visible;
-  }
-
-  // Maybe composite and submit if we have a pending frame that is now valid to
-  // submit, because one of the things it was waiting on no longer intends to be
-  // or will allowed to be visible.
-  webxr_->TryDeferredProcessing();
-}
-
-void CardboardRenderLoop::RequestNotificationOnWebXrSubmitted(
-    RequestNotificationOnWebXrSubmittedCallback callback) {
-  on_webxr_submitted_ = std::move(callback);
 }
 
 }  // namespace device

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 
 #include <cstddef>
@@ -16,6 +11,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/files/file.h"
@@ -57,7 +53,6 @@
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::IsSupersetOf;
 using ::testing::Pair;
 using ::testing::Property;
@@ -275,7 +270,8 @@ class FileUploadDelegateTest : public ::testing::Test {
     ASSERT_TRUE(file.IsValid());
     ASSERT_THAT(file.error_details(), Eq(base::File::FILE_OK));
 
-    const int bytes_written = file.Write(0, kTestData, kTestDataSize);
+    const int bytes_written =
+        UNSAFE_TODO(file.Write(0, kTestData, kTestDataSize));
     EXPECT_THAT(bytes_written, Eq(static_cast<int>(kTestDataSize)));
   }
 
@@ -381,8 +377,8 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
 
   // Set up responses.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -390,7 +386,7 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStart) {
         response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   test::TestEvent<
       StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>>
@@ -415,8 +411,8 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
 
   // Set up responses.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
         response->AddCustomHeader(kUploadStatusHeader, "final");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -424,25 +420,25 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
         response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStart(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -450,7 +446,7 @@ TEST_F(FileUploadDelegateTest, FailedUploadStart) {
         response->AddCustomHeader(kUploadUrlHeader,
                                   GetServerURL(kResumableUrl).spec());
         response->set_code(::net::HTTP_INTERNAL_SERVER_ERROR);
-      }));
+      });
 
   access_token_manager_.SetTokenValid(kTokenValid);
   {
@@ -572,8 +568,8 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStep) {
   // Set up responses: query at offset = kMaxUploadBufferSize, and make one
   // upload.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -581,13 +577,13 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStep) {
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStep(kMaxUploadBufferSize, request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   test::TestEvent<
       StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
@@ -615,8 +611,8 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
   // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize),
   // and make one upload.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -625,13 +621,13 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadStepTillEnd) {
             kUploadSizeReceivedHeader,
             base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStep(kTestDataSize - kMaxUploadBufferSize, request);
         response->AddCustomHeader(kUploadStatusHeader, "final");
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   test::TestEvent<
       StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
@@ -656,8 +652,8 @@ TEST_F(FileUploadDelegateTest, UploadStepOutOfMemory) {
 
   // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize).
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -666,7 +662,7 @@ TEST_F(FileUploadDelegateTest, UploadStepOutOfMemory) {
             kUploadSizeReceivedHeader,
             base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   test::TestEvent<
       StatusOr<std::pair<int64_t /*uploaded*/, std::string /*session_token*/>>>
@@ -695,40 +691,40 @@ TEST_F(FileUploadDelegateTest, UploadStepFailures) {
 
   // Set up responses: query at offset = (kTestDataSize - kMaxUploadBufferSize).
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "unknown");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(
             kUploadSizeReceivedHeader,
             base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
                                   base::NumberToString(kDataGranularity));
         response->AddCustomHeader(kUploadSizeReceivedHeader, "12345Z");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader, "12345Z");
@@ -736,9 +732,9 @@ TEST_F(FileUploadDelegateTest, UploadStepFailures) {
             kUploadSizeReceivedHeader,
             base::NumberToString(kTestDataSize - kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -746,13 +742,13 @@ TEST_F(FileUploadDelegateTest, UploadStepFailures) {
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kMaxUploadBufferSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectStep(kMaxUploadBufferSize, request);
         response->AddCustomHeader(kUploadStatusHeader, "unknown");
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   {
     test::TestEvent<StatusOr<
@@ -856,8 +852,8 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
 
   // Set up responses: query at offset=total, and finalize.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadChunkGranularityHeader,
@@ -865,16 +861,16 @@ TEST_F(FileUploadDelegateTest, SuccessfulUploadFinish) {
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectFinish(request);
         response->AddCustomHeader(kUploadStatusHeader, "final");
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
         response->AddCustomHeader(kUploadIdHeader, kUploadId);
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;
   delegate->DoFinalize(
@@ -893,53 +889,53 @@ TEST_F(FileUploadDelegateTest, FinishFailures) {
 
   // Set up responses: query at offset=total, and finalize.
   EXPECT_CALL(mock_request_call_, Call(_, _))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "unknown");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadSizeReceivedHeader, "12345Z");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectFinish(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectQuery(request);
         response->AddCustomHeader(kUploadStatusHeader, "active");
         response->AddCustomHeader(kUploadSizeReceivedHeader,
                                   base::NumberToString(kTestDataSize));
         response->set_code(::net::HTTP_OK);
-      }))
-      .WillOnce(Invoke([this](const ::net::test_server::HttpRequest& request,
-                              ::net::test_server::BasicHttpResponse* response) {
+      })
+      .WillOnce([this](const ::net::test_server::HttpRequest& request,
+                       ::net::test_server::BasicHttpResponse* response) {
         ExpectFinish(request);
         response->AddCustomHeader(kUploadStatusHeader, "final");
         response->set_code(::net::HTTP_OK);
-      }));
+      });
 
   {
     test::TestEvent<StatusOr<std::string /*access_parameters*/>> finish_done;

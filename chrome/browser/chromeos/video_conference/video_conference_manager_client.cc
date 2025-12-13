@@ -7,21 +7,20 @@
 #include <utility>
 #include <vector>
 
-#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_manager_client_common.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_media_listener.h"
 #include "chrome/browser/chromeos/video_conference/video_conference_web_app.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -35,8 +34,21 @@ namespace {
 
 // Returns whether the `contents` is a WebApp.
 bool IsWebApp(content::WebContents* contents) {
-  return web_app::AppBrowserController::IsWebApp(
-      chrome::FindBrowserWithTab(contents));
+  ash::BrowserDelegate* browser = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingCreationTime,
+      [&](ash::BrowserDelegate& current) {
+        for (size_t index = 0; index < current.GetWebContentsCount(); ++index) {
+          content::WebContents* const tab = current.GetWebContentsAt(index);
+          if (tab == contents) {
+            browser = &current;
+            return ash::BrowserController::kBreakIteration;
+          }
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+
+  return browser && browser->IsWebApp();
 }
 
 // Returns the AppType of the `contents`.
@@ -65,7 +77,8 @@ crosapi::mojom::VideoConferenceAppType GetAppType(
 
 }  // namespace
 
-VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
+VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl(
+    ash::VideoConferenceManagerAsh* video_conference_manager_ash)
     : client_id_(base::UnguessableToken::Create()),
       status_(crosapi::mojom::VideoConferenceMediaUsageStatus::New(
           /*client_id=*/client_id_,
@@ -74,7 +87,8 @@ VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
           /*has_microphone_permission=*/false,
           /*is_capturing_camera=*/false,
           /*is_capturing_microphone=*/false,
-          /*is_capturing_screen=*/false)) {
+          /*is_capturing_screen=*/false)),
+      video_conference_manager_ash_(CHECK_DEREF(video_conference_manager_ash)) {
   media_listener_ = std::make_unique<
       VideoConferenceMediaListener>(/*media_usage_update_callback=*/
                                     base::BindRepeating(
@@ -93,21 +107,13 @@ VideoConferenceManagerClientImpl::VideoConferenceManagerClientImpl()
                                         base::Unretained(this)));
 
   // Register the C++ (non-mojo) client.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->RegisterCppClient(this, client_id_);
+  video_conference_manager_ash_->RegisterCppClient(this, client_id_);
 }
 
 VideoConferenceManagerClientImpl::~VideoConferenceManagerClientImpl() {
   // C++ clients are responsible for manually calling |UnregisterClient| on the
   // manager when disconnecting.
-  if (crosapi::CrosapiManager::IsInitialized()) {
-    crosapi::CrosapiManager::Get()
-        ->crosapi_ash()
-        ->video_conference_manager_ash()
-        ->UnregisterClient(client_id_);
-  }
+  video_conference_manager_ash_->UnregisterClient(client_id_);
 }
 
 void VideoConferenceManagerClientImpl::RemoveMediaApp(
@@ -211,11 +217,8 @@ void VideoConferenceManagerClientImpl::HandleMediaUsageUpdate() {
 void VideoConferenceManagerClientImpl::HandleDeviceUsedWhileDisabled(
     crosapi::mojom::VideoConferenceMediaDevice device,
     const std::u16string& app_name) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyDeviceUsedWhileDisabled(std::move(device), app_name,
-                                      base::DoNothing());
+  video_conference_manager_ash_->NotifyDeviceUsedWhileDisabled(
+      std::move(device), app_name, base::DoNothing());
 }
 
 void VideoConferenceManagerClientImpl::GetMediaApps(
@@ -300,10 +303,8 @@ void VideoConferenceManagerClientImpl::NotifyManager(
   });
 
   // Send updated media usage state to VcManager.
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyMediaUsageUpdate(std::move(status), std::move(callback));
+  video_conference_manager_ash_->NotifyMediaUsageUpdate(std::move(status),
+                                                        std::move(callback));
 }
 
 VideoConferencePermissions
@@ -329,10 +330,7 @@ VideoConferenceManagerClientImpl::GetAggregatedPermissions() {
 
 void VideoConferenceManagerClientImpl::SendClientUpdate(
     crosapi::mojom::VideoConferenceClientUpdatePtr update) {
-  crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->video_conference_manager_ash()
-      ->NotifyClientUpdate(std::move(update));
+  video_conference_manager_ash_->NotifyClientUpdate(std::move(update));
 }
 
 }  // namespace video_conference

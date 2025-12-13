@@ -12,28 +12,28 @@
 
 namespace autofill {
 
-class MLLogReceiver : public base::CheckedObserver {
+class MlLogReceiver : public base::CheckedObserver {
  public:
   virtual void ProcessLog(
-      const autofill_ml_internals::mojom::MLPredictionLog& log) = 0;
+      const autofill_ml_internals::mojom::MlPredictionLog& log) = 0;
 };
 
-class MLLogRouter : public KeyedService {
+class MlLogRouter : public KeyedService {
  public:
-  MLLogRouter();
-  MLLogRouter(const MLLogRouter&) = delete;
-  MLLogRouter& operator=(const MLLogRouter&) = delete;
-  ~MLLogRouter() override;
+  MlLogRouter();
+  MlLogRouter(const MlLogRouter&) = delete;
+  MlLogRouter& operator=(const MlLogRouter&) = delete;
+  ~MlLogRouter() override;
 
-  void ProcessLog(autofill_ml_internals::mojom::MLPredictionLogPtr log);
+  void ProcessLog(autofill_ml_internals::mojom::MlPredictionLogPtr log);
 
   bool HasReceivers() const;
 
-  void AddObserver(MLLogReceiver* receiver);
-  void RemoveObserver(MLLogReceiver* receiver);
+  void AddObserver(MlLogReceiver* receiver);
+  void RemoveObserver(MlLogReceiver* receiver);
 
  private:
-  base::ObserverList<MLLogReceiver, true> receivers_;
+  base::ObserverList<MlLogReceiver, true> receivers_;
 };
 
 }  // namespace autofill

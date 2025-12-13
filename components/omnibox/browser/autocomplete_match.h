@@ -153,6 +153,24 @@ enum class FeedbackType {
   kThumbsDown,
 };
 
+// Used with `stripped_destination_url` to dedupe matches. Matches with the same
+// URL but different types won't be deduped. This'll allow showing e.g. both a
+// "1+1" normal query and a "1+1 = 2" calculator suggestion simultaneously.
+enum class AutocompleteMatchDedupeType {
+  kNormal,
+  kCalculator,        // E.g. "1+1 = 2" matches.
+  kVerbatimProvider,  // Matches that come from the verbatim provider, which
+                      // does not include the verbatim SWYT match.
+  kHistoryEmbeddingAnswer,  // Matches with type `HISTORY_EMBEDDINGS_ANSWER`.
+  kAiMode,  // Matches that activate the DSE's AI Mode. AIM suggestions' URLs
+            // are discerned by a query param `udm=50`. But deduping doesn't
+            // consider extra query params; `google.com/?q=query&udm=50` and
+            // `google.com/?q=query` would usually be deduped. `kAiMode` allows
+            // matches with `udm=50` in their suggest template to not be deduped
+            // with matches without it. But this does not apply to `udm=50` in
+            // the actual match URL; nor to udm values other than 50.
+};
+
 // AutocompleteMatch ----------------------------------------------------------
 
 // A single result line with classified spans.  The autocomplete popup displays
@@ -322,7 +340,7 @@ struct AutocompleteMatch {
   // Update the clipboard match with the current clipboard data.
   void UpdateWithClipboardContent(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& j_callback);
+      const base::android::JavaRef<jobject>& j_callback);
 
   // Called when the match is updated with the clipboard content.
   void OnClipboardSuggestionContentUpdated(
@@ -331,15 +349,11 @@ struct AutocompleteMatch {
   // Update the Java object with clipboard content.
   void UpdateClipboardContent(JNIEnv* env);
   // Update the Java object with new destination URL.
-  void UpdateJavaDestinationUrl();
+  void UpdateJavaNavigationDetails();
   // Update the Java object with new Answer-in-Suggest.
   void UpdateJavaAnswer();
   // Update the Java object description.
   void UpdateJavaDescription();
-  // Update the pointer to corresponding Java tab object.
-  void UpdateMatchingJavaTab(const JavaObjectWeakGlobalRef& tab);
-  // Get the matching Java Tab object.
-  JavaObjectWeakGlobalRef GetMatchingJavaTab() const;
 #endif
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
@@ -548,6 +562,12 @@ struct AutocompleteMatch {
   // a button row.
   bool IsToolbelt() const;
 
+  // Checks if this match is a AI mode suggestion.
+  bool IsSearchAimSuggestion() const;
+
+  // Checks if this match has a Lens search action.
+  bool HasLensSearchAction() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).
@@ -556,7 +576,17 @@ struct AutocompleteMatch {
   // Returns true if this match has a keyword that puts the omnibox instantly
   // into keyword mode when the match is focused via keyboard, instead of
   // the usual waiting for activation of a visible keyword button.
-  bool HasInstantKeyword(TemplateURLService* template_url_service) const;
+  bool HasInstantKeyword(const TemplateURLService* template_url_service) const;
+
+  // Returns whether or not the row for this match should be hidden in the UI,
+  // based on its starter pack. This is currently used to hide suggestions in
+  // the 'Gemini' scope when the starter pack expansion feature is enabled.
+  //
+  // The match must remain in the `AutocompleteResult` set to maintain correct
+  // match indexing and focus tracking required by keyword features and
+  // `OmniboxEditModel::OpenMatch()`.
+  bool ShouldHideBasedOnStarterPack(
+      const TemplateURLService* template_url_service) const;
 
   // Gets data relevant to whether there should be any special keyword-related
   // UI shown for this match. If this match represents a selected keyword, i.e.
@@ -596,14 +626,10 @@ struct AutocompleteMatch {
       const TemplateURL* template_url,
       bool is_history_embeddings_enabled);
 
-  // Returns the TemplateURL associated with this match.  This may be NULL if
-  // the match has no keyword OR if the keyword no longer corresponds to a valid
-  // TemplateURL.  See comments on |keyword| below.
-  // If |allow_fallback_to_destination_host| is true and the keyword does
-  // not map to a valid TemplateURL, we'll then check for a TemplateURL that
-  // corresponds to the destination_url's hostname.
-  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service,
-                              bool allow_fallback_to_destination_host) const;
+  // Returns the `TemplateURL` associated with this match. This may be nullptr
+  // if the match has no keyword OR if the keyword no longer corresponds to a
+  // valid `TemplateURL`. See comments on `keyword` below.
+  TemplateURL* GetTemplateURL(TemplateURLService* template_url_service) const;
 
   // Gets the URL for the match image (whether it be an answer or entity). If
   // there isn't an image URL, returns an empty GURL (test with is_empty()).
@@ -851,9 +877,10 @@ struct AutocompleteMatch {
   // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
-  // Extra headers to add to the navigation. See `NavigateParams::extra_headers`
-  // for how headers should be represented.
-  std::string extra_headers;
+  // Extra headers to add to the navigation. Keys of the map represent the
+  // header name, and values represent header value, e.g.
+  //   extra_headers["Content-Type"] = "application/json";
+  std::map<std::string, std::string> extra_headers;
 
   // Optional image information. Used for some types of suggestions, such as
   // entity suggestions, that want to display an associated image, which will be
@@ -967,15 +994,11 @@ struct AutocompleteMatch {
   // Unset if it has not been computed yet.
   std::optional<bool> has_tab_match;
 
-  // Set with a keyword provider match if this match can show a keyword hint.
-  // For example, if this is a SearchProvider match for "www.amazon.com",
-  // |associated_keyword| could be a KeywordProvider match for "amazon.com".
-  //
-  // When this is set, the popup will show a ">" symbol at the right edge of the
-  // line for this match, and tab/shift-tab will toggle in and out of keyword
-  // mode without disturbing the rest of the popup.  See also
-  // OmniboxPopupModel::SetSelectedLineState().
-  std::unique_ptr<AutocompleteMatch> associated_keyword;
+  // Set to a `TemplateURL`'s keyword; e.g. 'youtube.com' or '@bookmarks'. Set
+  // by the `AutocompleteController`, not individual providers. This determines
+  // which keyword to activate if the user focuses this instant-keyword (e.g.
+  // '@bookmarks') or this match's keyword chip (e.g. 'youtube.com').
+  std::u16string associated_keyword;
 
   // The keyword of the TemplateURL the match originated from.  This is nonempty
   // for both explicit "keyword mode" matches as well as matches for the default
@@ -1110,9 +1133,6 @@ struct AutocompleteMatch {
   // See AutocompleteControllerAndroid for more details.
   mutable std::unique_ptr<base::android::ScopedJavaGlobalRef<jobject>>
       java_match_;
-
-  // When set, holds a weak reference to Java Tab object.
-  JavaObjectWeakGlobalRef matching_java_tab_{};
 
   base::WeakPtrFactory<AutocompleteMatch> weak_ptr_factory_{this};
 #endif

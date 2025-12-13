@@ -16,6 +16,22 @@
 
 namespace net {
 
+// Represents a given named group in TLS, used in supported_groups and
+// key_share.
+struct NET_EXPORT SSLNamedGroupInfo {
+  // NamedGroup enum codepoint for the group, from
+  // https://datatracker.ietf.org/doc/html/rfc8446#section-4.2.7.
+  uint16_t group_id = 0u;
+  // Whether the group should be sent in the key_share extension for the
+  // initial ClientHello.
+  bool send_key_share = false;
+
+  bool operator==(const SSLNamedGroupInfo&) const = default;
+
+  bool IsPostQuantum() const;
+};
+
+// Configuration options for SSL connections.
 struct NET_EXPORT SSLContextConfig {
   SSLContextConfig();
   SSLContextConfig(const SSLContextConfig&);
@@ -25,6 +41,25 @@ struct NET_EXPORT SSLContextConfig {
   SSLContextConfig& operator=(SSLContextConfig&&);
 
   bool operator==(const SSLContextConfig&) const;
+
+  // Returns a copy of the list of group IDs given by `supported_named_groups`.
+  // If `key_shares_only` is false, the returned vector is the list of groups to
+  // include in the supported_groups extension. If `key_shares_only` is true,
+  // only the groups that have `send_key_share == true` are included in the
+  // returned vector, which will be the list of groups to include in the
+  // key_share extension.
+  std::vector<uint16_t> GetSupportedGroups(bool key_shares_only = false) const;
+
+  // Helper function to select TLS Trust Anchor IDs to advertise in the TLS
+  // handshake, so that the server can serve a certificate that the client
+  // trusts. `server_advertised_trust_anchor_ids` is a list of Trust Anchor IDs,
+  // in binary representation, that the server has provided out-of-band (e.g. in
+  // a DNS record). The intersection with `trust_anchor_ids` is returned in wire
+  // format (a series of 8-bit length prefixed non-empty strings) such that it
+  // can be passed into BoringSSL.
+  std::vector<uint8_t> SelectTrustAnchorIDs(
+      const std::vector<std::vector<uint8_t>>&
+          server_advertised_trust_anchor_ids) const;
 
   // The minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined in ssl_config.h.)
@@ -43,8 +78,14 @@ struct NET_EXPORT SSLContextConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   std::vector<uint16_t> disabled_cipher_suites;
 
-  // Controls whether post-quantum key agreement in TLS connections is allowed.
-  bool post_quantum_key_agreement_enabled = true;
+  // This configures a compliance policy that sets the cipher order for
+  // TLS 1.3 to prefer AES-256-GCM over AES-128-GCM over ChaCha20-Poly1305.
+  bool tls13_cipher_prefer_aes_256 = false;
+
+  // Ordered list of NamedGroups that are supported, used to configure
+  // supported_groups and key_share. Set to `kDefaultSSLSupportedGroups` by
+  // default.
+  std::vector<SSLNamedGroupInfo> supported_named_groups;
 
   // Controls whether ECH is enabled.
   bool ech_enabled = true;
@@ -52,6 +93,10 @@ struct NET_EXPORT SSLContextConfig {
   // TLS Trust Anchor IDs that are configured as trusted, as a list of Trust
   // Anchor IDs in binary representation.
   absl::flat_hash_set<std::vector<uint8_t>> trust_anchor_ids;
+
+  // MTC TLS Trust Anchor IDs that are configured as trusted, as a list of
+  // Trust Anchor IDs in binary representation.
+  std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids;
 };
 
 // The interface for retrieving global SSL configuration.  This interface

@@ -4,6 +4,7 @@
 
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
@@ -12,12 +13,17 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/variations/variations_associated_data.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
 
 namespace {
+
+// Device identifiers for Google Titan.
+constexpr uint16_t kVendorGoogle = 0x18d1;
+constexpr uint16_t kProductTitan = 0x5026;
 
 #define VENDOR_PRODUCT_RULE(vid, pid)                       \
   {                                                         \
@@ -73,7 +79,7 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     // Mooltipass Arduino sketch
     VENDOR_PRODUCT_RULE(0x1209, 0x4322),
     // Titan
-    VENDOR_PRODUCT_RULE(0x18d1, 0x5026),
+    VENDOR_PRODUCT_RULE(kVendorGoogle, kProductTitan),
     // VASCO
     VENDOR_PRODUCT_RULE(0x1a44, 0x00bb),
     // OnlyKey
@@ -99,6 +105,9 @@ constexpr HidBlocklist::Entry kStaticEntries[] = {
     {true, /*vendorId=*/0x0b0e, false, 0, true, /*usagePage=*/0xff00, false, 0,
      true, /*reportId=*/0x05, HidBlocklist::ReportType::kReportTypeOutput},
 };
+
+constexpr auto kKnownSecurityKeys = std::to_array<HidBlocklist::VendorProduct>(
+    {{kVendorGoogle, kProductTitan}});
 
 bool IsValidBlocklistEntry(const HidBlocklist::Entry& entry) {
   // An entry with a product ID parameter must also specify a vendor ID.
@@ -268,6 +277,26 @@ std::vector<uint8_t> HidBlocklist::GetProtectedReportIds(
                         protected_ids);
   }
   return std::vector<uint8_t>(protected_ids.begin(), protected_ids.end());
+}
+
+// static
+bool HidBlocklist::IsKnownSecurityKey(uint16_t vendor_id, uint16_t product_id) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSecurityKeyHidInterfacesAreFido)) {
+    return false;
+  }
+  // HidDelegate::IsFidoAllowedForOrigin decides whether an origin is allowed to
+  // bypass the blocklist to access FIDO HID capabilities. Devices in
+  // kKnownSecurityKeys are considered FIDO for the purpose of this bypass, even
+  // if the device has no FIDO collection.
+  return base::Contains(kKnownSecurityKeys,
+                        VendorProduct{vendor_id, product_id});
+}
+
+// static
+base::span<const HidBlocklist::VendorProduct>
+HidBlocklist::GetKnownSecurityKeysForTesting() {
+  return kKnownSecurityKeys;
 }
 
 void HidBlocklist::PopulateWithServerProvidedValues() {

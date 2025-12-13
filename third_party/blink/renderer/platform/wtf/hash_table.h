@@ -45,13 +45,6 @@
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-// Templates in this file are instantiated many times with different types.
-// Adding the regular GC_PLUGIN_IGNORE annotations to fields in the templates
-// results in the annotation being duplicated many times, growing the debug
-// symbols, and regressing binary size. To avoid the binary size regression,
-// mark the file to ignore instead.
-GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
-
 #if !defined(DUMP_HASHTABLE_STATS)
 #define DUMP_HASHTABLE_STATS 0
 #endif
@@ -67,34 +60,34 @@ GC_PLUGIN_IGNORE_FILE("crbug.com/428987863")
 #if DUMP_HASHTABLE_STATS
 #if DUMP_HASHTABLE_STATS_PER_TABLE
 
-#define UPDATE_PROBE_COUNTS()                                    \
-  ++probeCount;                                                  \
-  HashTableStats::instance().recordCollisionAtCount(probeCount); \
-  ++perTableProbeCount;                                          \
-  stats_->recordCollisionAtCount(perTableProbeCount)
-#define UPDATE_ACCESS_COUNTS()                                                 \
-  HashTableStats::instance().numAccesses.fetch_add(1,                          \
-                                                   std::memory_order_relaxed); \
-  int probeCount = 0;                                                          \
-  stats_->numAccesses.fetch_add(1, std::memory_order_relaxed);                 \
-  int perTableProbeCount = 0
+#define UPDATE_PROBE_COUNTS()                                          \
+  ++stat_probe_count;                                                  \
+  HashTableStats::Instance().RecordCollisionAtCount(stat_probe_count); \
+  ++per_table_probe_count;                                             \
+  stats_->RecordCollisionAtCount(per_table_probe_count)
+#define UPDATE_ACCESS_COUNTS()                                  \
+  HashTableStats::Instance().num_accesses.fetch_add(            \
+      1, std::memory_order_relaxed);                            \
+  int stat_probe_count = 0;                                     \
+  stats_->num_accesses.fetch_add(1, std::memory_order_relaxed); \
+  int per_table_probe_count = 0
 #else
 #define UPDATE_PROBE_COUNTS() \
-  ++probeCount;               \
-  HashTableStats::instance().recordCollisionAtCount(probeCount)
-#define UPDATE_ACCESS_COUNTS()                                                 \
-  HashTableStats::instance().numAccesses.fetch_add(1,                          \
-                                                   std::memory_order_relaxed); \
-  int probeCount = 0
+  ++stat_probe_count;         \
+  HashTableStats::Instance().RecordCollisionAtCount(stat_probe_count)
+#define UPDATE_ACCESS_COUNTS()                       \
+  HashTableStats::Instance().num_accesses.fetch_add( \
+      1, std::memory_order_relaxed);                 \
+  int stat_probe_count = 0
 #endif
 #else
 #if DUMP_HASHTABLE_STATS_PER_TABLE
 #define UPDATE_PROBE_COUNTS() \
-  ++perTableProbeCount;       \
-  stats_->recordCollisionAtCount(perTableProbeCount)
-#define UPDATE_ACCESS_COUNTS()                                 \
-  stats_->numAccesses.fetch_add(1, std::memory_order_relaxed); \
-  int perTableProbeCount = 0
+  ++per_table_probe_count;    \
+  stats_->RecordCollisionAtCount(per_table_probe_count)
+#define UPDATE_ACCESS_COUNTS()                                  \
+  stats_->num_accesses.fetch_add(1, std::memory_order_relaxed); \
+  int per_able_probe_count = 0
 #else
 #define UPDATE_PROBE_COUNTS() \
   do {                        \
@@ -109,35 +102,25 @@ namespace blink {
 
 #if DUMP_HASHTABLE_STATS || DUMP_HASHTABLE_STATS_PER_TABLE
 struct WTF_EXPORT HashTableStats {
-  HashTableStats()
-      : numAccesses(0),
-        numRehashes(0),
-        numRemoves(0),
-        numReinserts(0),
-        maxCollisions(0),
-        numCollisions(0),
-        collisionGraph() {}
+  HashTableStats() = default;
 
   // The following variables are all atomically incremented when modified.
-  std::atomic_int numAccesses;
-  std::atomic_int numRehashes;
-  std::atomic_int numRemoves;
-  std::atomic_int numReinserts;
+  std::atomic_int num_accesses{0};
+  std::atomic_int num_rehashes{0};
+  std::atomic_int num_removes{0};
+  std::atomic_int num_reinserts{0};
 
   // The following variables are only modified in the recordCollisionAtCount
   // method within a mutex.
-  int maxCollisions;
-  int numCollisions;
-  std::array<int, 4096> collisionGraph;
+  int max_collisions = 0;
+  int num_collisions = 0;
+  std::array<int, 4096> collision_graph{};
 
-  void copy(const HashTableStats* other);
-  void recordCollisionAtCount(int count);
+  void Copy(const HashTableStats& other);
+  void RecordCollisionAtCount(int count);
   void DumpStats();
 
-  static HashTableStats& instance();
-
-  template <typename VisitorDispatcher>
-  void trace(VisitorDispatcher) const {}
+  static HashTableStats& Instance();
 
  private:
   void RecordCollisionAtCountWithoutLock(int count);
@@ -157,12 +140,12 @@ class HashTableStatsPtr<Allocator, false> final {
     return std::make_unique<HashTableStats>();
   }
 
-  static std::unique_ptr<HashTableStats> copy(
+  static std::unique_ptr<HashTableStats> Copy(
       const std::unique_ptr<HashTableStats>& other) {
     if (!other)
       return nullptr;
     std::unique_ptr<HashTableStats> obj = Create();
-    obj->copy(other.get());
+    obj->Copy(*other);
     return obj;
   }
 
@@ -182,11 +165,11 @@ class HashTableStatsPtr<Allocator, true> final {
     return new HashTableStats;
   }
 
-  static HashTableStats* copy(const HashTableStats* other) {
+  static HashTableStats* Copy(const HashTableStats* other) {
     if (!other)
       return nullptr;
     HashTableStats* obj = Create();
-    obj->copy(other);
+    obj->Copy(*other);
     return obj;
   }
 
@@ -229,16 +212,30 @@ struct WeakProcessingHashTableHelper;
 
 typedef enum { kHashItemKnownGood } HashItemKnownGoodTag;
 
+// Base class that is marked as stack allocated if Allocator is a garbage
+// collected allocator. Used as a base for hash table iterators to mark
+// iterators to garbage collected hash table as stack allocated.
+template <typename Allocator>
+class ConditionallyStackAllocatedHashTableIteratorBase;
+
+template <typename Allocator>
+  requires(Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
+  STACK_ALLOCATED();
+};
+
+template <typename Allocator>
+  requires(!Allocator::kIsGarbageCollected)
+class ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {};
+
 template <typename Key,
           typename Value,
           typename Extractor,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableConstIterator final {
-  STACK_ALLOCATED();
-
- private:
+class HashTableConstIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -372,14 +369,8 @@ class HashTableConstIterator final {
   bool operator==(const const_iterator& other) const {
     return position_ == other.position_;
   }
-  bool operator!=(const const_iterator& other) const {
-    return position_ != other.position_;
-  }
   bool operator==(const iterator& other) const {
     return *this == static_cast<const_iterator>(other);
-  }
-  bool operator!=(const iterator& other) const {
-    return *this != static_cast<const_iterator>(other);
   }
 
   std::ostream& PrintTo(std::ostream& stream) const {
@@ -422,10 +413,8 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTableIterator final {
-  STACK_ALLOCATED();
-
- private:
+class HashTableIterator final
+    : public ConditionallyStackAllocatedHashTableIteratorBase<Allocator> {
   typedef HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>
       HashTableType;
   typedef HashTableIterator<Key, Value, Extractor, Traits, KeyTraits, Allocator>
@@ -490,14 +479,8 @@ class HashTableIterator final {
   bool operator==(const iterator& other) const {
     return iterator_ == other.iterator_;
   }
-  bool operator!=(const iterator& other) const {
-    return iterator_ != other.iterator_;
-  }
   bool operator==(const const_iterator& other) const {
     return iterator_ == other;
-  }
-  bool operator!=(const const_iterator& other) const {
-    return iterator_ != other;
   }
 
   operator const_iterator() const { return iterator_; }
@@ -639,7 +622,7 @@ template <typename Key,
           typename Traits,
           typename KeyTraits,
           typename Allocator>
-class HashTable final {
+class GC_PLUGIN_IGNORE("crbug.com/428987863") HashTable final {
   DISALLOW_NEW();
 
  public:
@@ -1369,11 +1352,11 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Reinsert(
   DCHECK(!AccessForbidden());
   RegisterModification();
 #if DUMP_HASHTABLE_STATS
-  HashTableStats::instance().numReinserts.fetch_add(1,
-                                                    std::memory_order_relaxed);
+  HashTableStats::Instance().num_reinserts.fetch_add(1,
+                                                     std::memory_order_relaxed);
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  stats_->numReinserts.fetch_add(1, std::memory_order_relaxed);
+  stats_->num_reinserts.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   ValueType* table = table_;
@@ -1461,10 +1444,11 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase(
     const ValueType* pos) {
   RegisterModification();
 #if DUMP_HASHTABLE_STATS
-  HashTableStats::instance().numRemoves.fetch_add(1, std::memory_order_relaxed);
+  HashTableStats::Instance().num_removes.fetch_add(1,
+                                                   std::memory_order_relaxed);
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-  stats_->numRemoves.fetch_add(1, std::memory_order_relaxed);
+  stats_->num_removes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   EnterAccessForbiddenScope();
@@ -1493,11 +1477,11 @@ void HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::erase_if(
     if (!IsEmptyOrDeletedBucket(table_[i]) && pred(table_[i])) {
       DeleteBucket(table_[i]);
 #if DUMP_HASHTABLE_STATS
-      HashTableStats::instance().numRemoves.fetch_add(
+      HashTableStats::Instance().num_removes.fetch_add(
           1, std::memory_order_relaxed);
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
-      stats_->numRemoves.fetch_add(1, std::memory_order_relaxed);
+      stats_->num_removes.fetch_add(1, std::memory_order_relaxed);
 #endif
       ++deleted_count_;
       --key_count_;
@@ -1704,14 +1688,14 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::RehashTo(
     Value* entry) {
 #if DUMP_HASHTABLE_STATS
   if (table_size_ != 0) {
-    HashTableStats::instance().numRehashes.fetch_add(1,
-                                                     std::memory_order_relaxed);
+    HashTableStats::Instance().num_rehashes.fetch_add(
+        1, std::memory_order_relaxed);
   }
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   if (table_size_ != 0)
-    stats_->numRehashes.fetch_add(1, std::memory_order_relaxed);
+    stats_->num_rehashes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   HashTable new_hash_table(RawStorageTag{}, new_table, new_table_size);
@@ -1776,14 +1760,14 @@ Value* HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::Rehash(
 
 #if DUMP_HASHTABLE_STATS
   if (old_table_size != 0) {
-    HashTableStats::instance().numRehashes.fetch_add(1,
-                                                     std::memory_order_relaxed);
+    HashTableStats::Instance().num_rehashes.fetch_add(
+        1, std::memory_order_relaxed);
   }
 #endif
 
 #if DUMP_HASHTABLE_STATS_PER_TABLE
   if (old_table_size != 0)
-    stats_->numRehashes.fetch_add(1, std::memory_order_relaxed);
+    stats_->num_rehashes.fetch_add(1, std::memory_order_relaxed);
 #endif
 
   // The Allocator::kIsGarbageCollected check is not needed.  The check is just
@@ -1840,7 +1824,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
       ,
-      stats_(HashTableStatsPtr<Allocator>::copy(other.stats_))
+      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   DCHECK(!other.AccessForbidden());
@@ -1885,7 +1869,7 @@ HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>::HashTable(
 #endif
 #if DUMP_HASHTABLE_STATS_PER_TABLE
       ,
-      stats_(HashTableStatsPtr<Allocator>::copy(other.stats_))
+      stats_(HashTableStatsPtr<Allocator>::Copy(other.stats_))
 #endif
 {
   swap(other);
@@ -2289,24 +2273,12 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
 }
 
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-// All 4 combinations of ==, != and Const,non const.
+// Both combinations of Const, non const.
 template <typename T, typename U>
 inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
                        const HashTableIteratorAdapter<T, U>& b) {
@@ -2314,21 +2286,9 @@ inline bool operator==(const HashTableConstIteratorAdapter<T, U>& a,
 }
 
 template <typename T, typename U>
-inline bool operator!=(const HashTableConstIteratorAdapter<T, U>& a,
-                       const HashTableIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
-}
-
-template <typename T, typename U>
 inline bool operator==(const HashTableIteratorAdapter<T, U>& a,
                        const HashTableConstIteratorAdapter<T, U>& b) {
   return a.impl_ == b.impl_;
-}
-
-template <typename T, typename U>
-inline bool operator!=(const HashTableIteratorAdapter<T, U>& a,
-                       const HashTableConstIteratorAdapter<T, U>& b) {
-  return a.impl_ != b.impl_;
 }
 
 template <typename Collection1, typename Collection2>

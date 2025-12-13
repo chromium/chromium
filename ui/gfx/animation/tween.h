@@ -90,6 +90,10 @@ class ANIMATION_EXPORT Tween {
     // Moderate acceleration and soft deceleration. Used for elements that are
     // visible at the beginning and end of a transition.
     ACCEL_40_DECEL_100_3,
+    ACCEL_45_DECEL_88,     // A more dramatic version of EASE_IN_OUT that starts
+                           // very slowly, accelerates very rapidly, and then
+                           // decelerates very rapidly. This creates a snappy,
+                           // high-energy transition.
     ACCEL_80_DECEL_20,     // Slow in and fast out with ease.
     ACCEL_0_40_DECEL_100,  // Specialized curve with an emphasized deceleration
                            // drift.

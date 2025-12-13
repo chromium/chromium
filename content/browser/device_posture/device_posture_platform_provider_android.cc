@@ -79,3 +79,5 @@ void DevicePosturePlatformProviderAndroid::UpdateDisplayFeature(
 }
 
 }  // namespace content
+
+DEFINE_JNI(DevicePosturePlatformProviderAndroid)

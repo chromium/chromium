@@ -37,14 +37,7 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
   nearby::fastpair::StoredDiscoveryItem discovery_item;
   discovery_item.set_id(hex_model_id);
   discovery_item.set_trigger_id(hex_model_id);
-
-  if (ash::features::IsFastPairSavedDevicesNicknamesEnabled() &&
-      display_name.has_value()) {
-    discovery_item.set_title(display_name.value());
-  } else {
-    discovery_item.set_title(details.name());
-  }
-
+  discovery_item.set_title(display_name.value_or(details.name()));
   discovery_item.set_description(strings.initial_notification_description());
   discovery_item.set_type(nearby::fastpair::NearbyType::NEARBY_DEVICE);
   discovery_item.set_action_url_type(nearby::fastpair::ResolvedUrlType::APP);

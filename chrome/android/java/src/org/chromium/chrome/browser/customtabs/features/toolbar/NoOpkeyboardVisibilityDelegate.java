@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
-import android.content.Context;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,7 +26,7 @@ class NoOpkeyboardVisibilityDelegate extends KeyboardVisibilityDelegate {
     }
 
     @Override
-    public boolean isKeyboardShowing(Context context, View view) {
+    public boolean isKeyboardShowing(View view) {
         return false;
     }
 

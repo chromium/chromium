@@ -14,18 +14,22 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_instance_registry_helper.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
 class Browser;
 
+namespace ash {
+class BrowserDelegate;
+}
+
 // BrowserStatusMonitor monitors creation/deletion of Browser and its
 // TabStripModel to keep the shelf representation up to date as the
 // active tab changes.
-class BrowserStatusMonitor : public BrowserListObserver,
+class BrowserStatusMonitor : public ash::BrowserController::Observer,
                              public TabStripModelObserver {
  public:
   explicit BrowserStatusMonitor(ChromeShelfController* shelf_controller);
@@ -54,9 +58,9 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // UpdateBrowserItemState().
   void UpdateBrowserItemState();
 
-  // BrowserListObserver overrides:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
+  // ash::BrowserController::Observer overrides:
+  void OnBrowserCreated(ash::BrowserDelegate* browser) override;
+  void OnBrowserClosed(ash::BrowserDelegate* browser) override;
 
   // TabStripModelObserver overrides:
   void OnTabStripModelChanged(
@@ -66,13 +70,13 @@ class BrowserStatusMonitor : public BrowserListObserver,
 
  private:
   // Add a windowed browser-based app to the shelf.
-  void AddAppBrowserToShelf(Browser* browser);
+  void AddAppBrowserToShelf(ash::BrowserDelegate* browser_delegate);
 
   // Remove a windowed browser-based app from the shelf.
-  void RemoveAppBrowserFromShelf(Browser* browser);
+  void RemoveAppBrowserFromShelf(ash::BrowserDelegate* browser_delegate);
 
   // Check if an application is currently in the shelf by browser or app id.
-  bool IsAppBrowserInShelf(Browser* browser);
+  bool IsAppBrowserInShelf(BrowserWindowInterface* browser);
   bool IsAppBrowserInShelfWithAppId(const std::string& app_id);
 
   class LocalWebContentsObserver;
@@ -100,12 +104,12 @@ class BrowserStatusMonitor : public BrowserListObserver,
   void RemoveWebContentsObserver(content::WebContents* contents);
 
   // Sets the shelf id for browsers represented by the browser shortcut item.
-  void SetShelfIDForBrowserWindowContents(Browser* browser,
+  void SetShelfIDForBrowserWindowContents(ash::BrowserDelegate* browser,
                                           content::WebContents* web_contents);
 
   raw_ptr<ChromeShelfController> shelf_controller_;
 
-  std::map<Browser*, std::string> browser_to_app_id_map_;
+  std::map<raw_ptr<BrowserWindowInterface>, std::string> browser_to_app_id_map_;
   std::map<content::WebContents*, std::unique_ptr<LocalWebContentsObserver>>
       webcontents_to_observer_map_;
 
@@ -119,7 +123,7 @@ class BrowserStatusMonitor : public BrowserListObserver,
   // Browsers for which OnBrowserAdded() was called, but not OnBrowserRemoved().
   // Used to validate that OnBrowserAdded() is invoked before
   // OnTabStripModelChanged().
-  std::set<raw_ptr<Browser, SetExperimental>> known_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> known_browsers_;
   // Tabs that are removed from one browser and are getting reinserted into
   // another.
   std::set<raw_ptr<content::WebContents>> tabs_in_transit_;

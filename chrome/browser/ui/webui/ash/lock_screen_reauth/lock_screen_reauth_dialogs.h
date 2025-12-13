@@ -19,6 +19,10 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace ash {
 
 class LockScreenCaptivePortalDialog;
@@ -115,8 +119,8 @@ class LockScreenStartReauthDialog
   void UpdateState(NetworkError::ErrorReason reason) override;
 
   // ChromeWebModalDialogManagerDelegate:
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override;
+  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost(
+      content::WebContents* web_contents) override;
 
   // web_modal::WebContentsModalDialogHost:
   gfx::Size GetMaximumDialogSize() override;
@@ -151,7 +155,7 @@ class LockScreenStartReauthDialog
   bool should_reload_gaia_ = false;
 
   base::ScopedObservation<NetworkStateInformer, NetworkStateInformerObserver>
-      scoped_observation_{this};
+      network_state_scoped_observation_{this};
 
   std::unique_ptr<LockScreenNetworkDialog> lock_screen_network_dialog_;
   raw_ptr<Profile> profile_ = nullptr;

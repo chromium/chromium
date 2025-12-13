@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 
 namespace device {
 namespace mojom {
@@ -52,8 +52,8 @@ class UsbBlocklist final {
   void ResetToDefaultValuesForTest();
 
  private:
-  // friend LazyInstance to permit access to private constructor.
-  friend base::LazyInstanceTraitsBase<UsbBlocklist>;
+  // friend NoDestructor to permit access to private constructor.
+  friend class base::NoDestructor<UsbBlocklist>;
 
   UsbBlocklist();
 

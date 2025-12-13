@@ -34,6 +34,10 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using ::testing::Return;
 
 MATCHER_P(PermissionTypeMatcher, id, "") {
@@ -641,7 +645,7 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
   // Now drop the Service Worker registration which owns that notification.
   embedded_worker_test_helper->context()->UnregisterServiceWorker(
       origin, key,
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       base::BindOnce(
           &PlatformNotificationContextTest::DidUnregisterServiceWorker,
           base::Unretained(this), &unregister_status));
@@ -862,6 +866,14 @@ TEST_F(PlatformNotificationContextTest, SynchronizeNotifications) {
 }
 
 TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
   scoped_refptr<PlatformNotificationContextImpl> context =
       CreatePlatformNotificationContext();
@@ -1155,6 +1167,14 @@ TEST_F(PlatformNotificationContextTest, DeleteNotificationsWithTagFromBrowser) {
 }
 
 TEST_F(PlatformNotificationContextTest, GetOldestNotificationTime) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   base::HistogramTester histogram_tester;
 
   scoped_refptr<PlatformNotificationContextImpl> context =

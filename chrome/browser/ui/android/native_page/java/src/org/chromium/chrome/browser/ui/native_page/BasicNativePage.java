@@ -6,29 +6,34 @@ package org.chromium.chrome.browser.ui.native_page;
 
 import android.graphics.Rect;
 import android.view.View;
+import android.view.View.OnAttachStateChangeListener;
 import android.widget.FrameLayout.LayoutParams;
 
-import org.chromium.base.Callback;
-import org.chromium.base.supplier.DestroyableObservableSupplier;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
  * A basic implementation of a white {@link NativePage} that docks below the toolbar. This class
  * handles default behavior for background color, URL updates and margins.
  *
- * Sub-classes must call {@link #initWithView(View)} to finish setup.
+ * <p>Sub-classes must call {@link #initWithView(View)} to finish setup.
  */
 @NullMarked
-public abstract class BasicNativePage implements NativePage {
+public abstract class BasicNativePage implements NativePage, OnAttachStateChangeListener {
     private final NativePageHost mHost;
     private final int mBackgroundColor;
-    private @Nullable DestroyableObservableSupplier<Rect> mMarginSupplier;
-
-    @SuppressWarnings("NullAway.Init")
-    private Callback<Rect> mMarginObserver;
+    private @Nullable BackPressHandler mBackPressHandler;
+    private @Nullable BackPressHandlerRegistry mRegistry;
+    private final ObservableSupplierImpl<Rect> mBrowserControlsMarginsSupplier =
+            new ObservableSupplierImpl<>();
+    private @Nullable Destroyable mMarginsAdapter;
 
     private @Nullable View mView;
 
@@ -47,16 +52,11 @@ public abstract class BasicNativePage implements NativePage {
         assert mView == null : "initWithView() should only be called once";
         mView = view;
 
-        mMarginObserver = result -> updateMargins(result);
-        mMarginSupplier = mHost.createDefaultMarginSupplier();
-        mMarginSupplier.addObserver(mMarginObserver);
-
+        mMarginsAdapter = mHost.createDefaultMarginAdapter(mBrowserControlsMarginsSupplier);
         // Update margins immediately if available rather than waiting for a posted notification.
         // Waiting for a posted notification could allow a layout pass to occur before the margins
         // are set.
-        if (mMarginSupplier.get() != null) {
-            updateMargins(mMarginSupplier.get());
-        }
+        mBrowserControlsMarginsSupplier.addSyncObserverAndCallIfNonNull(this::updateMargins);
     }
 
     @Override
@@ -101,9 +101,26 @@ public abstract class BasicNativePage implements NativePage {
 
     @Override
     public void destroy() {
-        if (mMarginSupplier != null) {
-            mMarginSupplier.removeObserver(mMarginObserver);
-            mMarginSupplier.destroy();
+        if (mMarginsAdapter != null) {
+            mMarginsAdapter.destroy();
+        }
+
+        if (mBackPressHandler != null && getView() != null) {
+            getView().removeOnAttachStateChangeListener(this);
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(View view) {
+        if (mBackPressHandler != null && mRegistry != null) {
+            mRegistry.addHandler(mBackPressHandler, BackPressHandler.Type.NATIVE_PAGE);
+        }
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(View view) {
+        if (mBackPressHandler != null && mRegistry != null) {
+            mRegistry.removeHandler(mBackPressHandler);
         }
     }
 
@@ -129,5 +146,25 @@ public abstract class BasicNativePage implements NativePage {
 
     public @Nullable SmoothTransitionDelegate getSmoothTransitionDelegateForTesting() {
         return mSmoothTransitionDelegate;
+    }
+
+    /**
+     * Opts this page into centralized back press handling. The provided handler will be
+     * automatically registered and unregistered with the registry as the page's view is attached
+     * and detached.
+     *
+     * @param handler The BackPressHandler to be managed (e.g., a Coordinator).
+     * @param registry The system that manages back press handlers (e.g., BackPressManager).
+     */
+    protected void setBackPressHandler(
+            BackPressHandler handler, BackPressHandlerRegistry registry) {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
+            return;
+        }
+        assert mView != null : "setBackPressHandler must be called after initWithView()";
+        mBackPressHandler = handler;
+        mRegistry = registry;
+        getView().addOnAttachStateChangeListener(this);
     }
 }

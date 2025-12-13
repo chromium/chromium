@@ -8,10 +8,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -34,6 +36,15 @@
 
 namespace {
 
+bool IsActive(IconLabelBubbleView& icon) {
+  // The star is considered active if the icon's color matches the accent color.
+  // Sample the bit at the middle of the image (the icon is a single color).
+  auto* bitmap = icon.GetImage(views::Button::STATE_NORMAL).bitmap();
+  CHECK(bitmap);
+  return *bitmap->getAddr32(bitmap->height() / 2, bitmap->width() / 2) ==
+         views::GetCascadingAccentColor(&icon);
+}
+
 class StarViewTest : public InProcessBrowserTest {
  public:
   StarViewTest() = default;
@@ -43,10 +54,10 @@ class StarViewTest : public InProcessBrowserTest {
 
   ~StarViewTest() override = default;
 
-  PageActionIconView* GetStarIcon() {
+  IconLabelBubbleView* GetStarIcon() {
     return BrowserView::GetBrowserViewForBrowser(browser())
         ->toolbar_button_provider()
-        ->GetPageActionIconView(PageActionIconType::kBookmarkStar);
+        ->GetPageActionView(kActionBookmarkThisTab);
   }
 };
 
@@ -56,13 +67,13 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
       BookmarkModelFactory::GetForBrowserContext(browser()->profile());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
-  PageActionIconView* star_icon = GetStarIcon();
+  auto* star_icon = GetStarIcon();
   const GURL current_url =
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL();
 
   // The page should not initiall be bookmarked.
   EXPECT_FALSE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_FALSE(star_icon->GetActive());
+  EXPECT_FALSE(IsActive(*star_icon));
 
   ui::MouseEvent pressed_event(ui::EventType::kMousePressed, gfx::Point(),
                                gfx::Point(), ui::EventTimeForNow(),
@@ -77,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, BookmarksUrlOnPress) {
   static_cast<views::View*>(star_icon)->OnMouseReleased(released_event);
 
   EXPECT_TRUE(bookmark_model->IsBookmarked(current_url));
-  EXPECT_TRUE(star_icon->GetActive());
+  EXPECT_TRUE(IsActive(*star_icon));
 }
 
 // Verify that clicking the bookmark star a second time hides the bookmark
@@ -113,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(StarViewTest, HideOnSecondClick) {
 }
 
 IN_PROC_BROWSER_TEST_F(StarViewTest, InkDropHighlighted) {
-  PageActionIconView* star_icon = GetStarIcon();
+  auto* star_icon = GetStarIcon();
   views::test::InkDropHostTestApi ink_drop_test_api(
       views::InkDrop::Get(star_icon));
 

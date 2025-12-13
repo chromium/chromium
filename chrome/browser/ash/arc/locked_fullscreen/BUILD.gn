@@ -20,6 +20,7 @@ static_library("locked_fullscreen") {
     "//ash",
     "//base",
     "//chrome/browser/ash/arc:arc_util",
+    "//chrome/browser/ash/arc/session",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/concierge",
@@ -46,6 +47,7 @@ source_set("unit_tests") {
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc/session",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
   ]
 }

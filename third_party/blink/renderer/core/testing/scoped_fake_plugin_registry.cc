@@ -28,7 +28,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
   }
 
   // PluginRegistry
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
+  void GetPlugins(GetPluginsCallback callback) override {
     Vector<mojom::blink::PluginInfoPtr> plugins;
     {
       auto mime = mojom::blink::PluginMimeType::New();
@@ -77,7 +77,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
 ScopedFakePluginRegistry::ScopedFakePluginRegistry() {
   Platform::Current()->GetBrowserInterfaceBroker()->SetBinderForTesting(
       mojom::blink::PluginRegistry::Name_,
-      WTF::BindRepeating(&FakePluginRegistryImpl::Bind));
+      BindRepeating(&FakePluginRegistryImpl::Bind));
 }
 
 ScopedFakePluginRegistry::~ScopedFakePluginRegistry() {

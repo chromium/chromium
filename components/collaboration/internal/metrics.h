@@ -117,7 +117,45 @@ enum class CollaborationServiceFlowEvent {
   kDevicePolicyDisableSignin = 12,
   kManagedAccountSignin = 13,
   kAccountInfoNotReadyOnSignin = 14,
-  kMaxValue = kAccountInfoNotReadyOnSignin,
+
+  // Join flow metrics
+  kJoinCanceled = 15,
+  kJoinAccepted = 16,
+  kJoinOpenedNewGroup = 17,
+  kJoinOpenedExistingGroup = 18,
+  kJoinParsingFailure = 19,
+  kJoinFoundCollaborationWithoutTabGroup = 20,
+  kJoinReadNewGroupFailed = 21,
+  kJoinReadNewGroupSuccess = 22,
+  kJoinAddedUserToGroup = 23,
+  kJoinPreviewGroupFullError = 24,
+  kJoinPreviewFailure = 25,
+  kJoinPreviewSuccess = 26,
+  kJoinGroupExistsWhenJoined = 27,
+  kJoinTabGroupFetched = 28,
+  kJoinPeopleGroupFetched = 29,
+  kJoinPromoteTabGroup = 30,
+  kJoinTimeoutWaitingForServicesReady = 31,
+  kJoinTimeoutWaitingForSyncAndDataSharingGroup = 32,
+  kJoinReadNewGroupUserIsAlreadyMember = 33,
+  kJoinFailedAddingUserToGroup = 34,
+
+  // Share or manage flow metrics
+  kShareDialogShown = 35,
+  kManageDialogShown = 36,
+  kCollaborationGroupCreated = 37,
+  kUrlReadyToShare = 38,
+  kSyncedTabGroupNotFound = 39,
+  kCollaborationIdMissing = 40,
+  kCollaborationIdInvalid = 41,
+  kTabGroupMissingBeforeMigration = 42,
+  kMigrationFailure = 43,
+  kReadGroupFailed = 44,
+  kUrlCreationFailed = 45,
+  kCollaborationIdEmptyGroupToken = 46,
+  kCollaborationIdShareCanceled = 47,
+  kTabGroupShared = 48,
+  kMaxValue = kTabGroupShared,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/collaboration_service/enums.xml:CollaborationServiceFlowEvent)
 
@@ -127,7 +165,8 @@ enum class CollaborationServiceStep {
   kWaitingForServicesInitialization = 2,
   kLinkReadyAfterGroupCreation = 3,
   kTabGroupFetchedAfterPeopleGroupJoined = 4,
-  kMaxValue = kTabGroupFetchedAfterPeopleGroupJoined,
+  kFullJoinFlowSuccess = 5,
+  kMaxValue = kFullJoinFlowSuccess,
 };
 
 void RecordJoinEvent(data_sharing::Logger* logger,

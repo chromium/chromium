@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -255,7 +254,7 @@ INSTANTIATE_TEST_SUITE_P(UseDriveRecents,
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        QueryWithEmptyCache) {
   // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+  if (!UseDriveRecents()) {
     GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
                     "Recents disabled.";
   }
@@ -313,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCacheUpdate) {
   // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+  if (!UseDriveRecents()) {
     GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
                     "Recents disabled.";
   }
@@ -443,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCacheInvalidUpdate) {
   // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+  if (!UseDriveRecents()) {
     GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
                     "Recents disabled.";
   }
@@ -524,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
 IN_PROC_BROWSER_TEST_P(FileSuggestKeyedServiceBrowserTest,
                        RespondToItemSuggestCachePartiallyInvalidUpdate) {
   // TODO(http://b/349164737): Re-enable this test with forest feature enabled.
-  if (ash::features::IsForestFeatureEnabled() && !UseDriveRecents()) {
+  if (!UseDriveRecents()) {
     GTEST_SKIP() << "Skipping test body for Forest Feature enabled and Drive "
                     "Recents disabled.";
   }

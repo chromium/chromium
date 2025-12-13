@@ -41,7 +41,7 @@ const char kTestContactEmailPrefix[] = "email_";
 const char kTestContactPhonePrefix[] = "phone_";
 const char kTestDefaultDeviceName[] = "Josh's Chromebook";
 const char kTestProfileUserName[] = "test@google.com";
-const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
+constexpr const char* kTestPersonNames[] = {"BBB BBB", "CCC CCC", "AAA AAA"};
 
 // From nearby_share_contact_manager_impl.cc.
 constexpr base::TimeDelta kContactUploadPeriod = base::Hours(24);

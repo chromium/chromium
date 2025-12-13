@@ -13,16 +13,20 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace user_prefs {
-class PrefRegistrySyncable;
+class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
 }
 
 namespace invalidation {
 
 class IdentityProvider;
 class InvalidationListener;
+class LegacyTopicsCleaner;
 
 // A KeyedService that owns `InvalidationListener` instances for project numbers
 // (Pantheon project ids).
@@ -36,10 +40,13 @@ class ProfileInvalidationProvider : public KeyedService {
   // No-op constructor. Such provider won't return anything on
   // `GetInvalidationListener` call.
   ProfileInvalidationProvider();
-  // TODO(crbug.com/341377023): `identity_provider` is needed for legacy topics
-  // cleanup. Remove it once cleanup is done.
+  // TODO(crbug.com/341377023): `url_loader_factory`, `identity_provider` and
+  // `pref_service` are needed for legacy topics cleanup. Remove it once cleanup
+  // is done.
   ProfileInvalidationProvider(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<IdentityProvider> identity_provider,
+      PrefService* pref_service,
       InvalidationListenerFactory invalidation_listener_factory);
   ProfileInvalidationProvider(const ProfileInvalidationProvider& other) =
       delete;
@@ -53,14 +60,13 @@ class ProfileInvalidationProvider : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // Register prefs to be used by per-Profile instances of this class which
-  // store invalidation state in Profile prefs.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
  private:
   InvalidationListenerFactory invalidation_listener_factory_;
   std::map<int64_t, std::unique_ptr<InvalidationListener>>
       project_number_to_invalidation_listener_;
+
+  // Unsubscribes any remaining invalidation topics.
+  std::unique_ptr<invalidation::LegacyTopicsCleaner> legacy_topics_cleaner_;
 };
 
 }  // namespace invalidation

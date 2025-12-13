@@ -35,6 +35,7 @@ void PageActionModel::SetShowRequested(base::PassKey<PageActionController>,
 void PageActionModel::SetShouldShowSuggestionChip(
     base::PassKey<PageActionController>,
     bool show) {
+  did_show_chip_ = false;
   if (should_show_suggestion_chip_ == show) {
     return;
   }
@@ -108,12 +109,11 @@ void PageActionModel::SetActionItemProperties(
 }
 
 bool PageActionModel::GetVisible() const {
-  if (should_hide_) {
-    return false;
-  }
+  const bool hidden_by_omnibox =
+      is_suppressed_by_omnibox_ && !is_exempt_from_omnibox_suppression_;
 
-  return is_tab_active_ && action_item_enabled_ && action_item_visible_ &&
-         show_requested_ && !has_pinned_icon_;
+  return is_tab_active_ && !hidden_by_omnibox && action_item_enabled_ &&
+         action_item_visible_ && show_requested_ && !has_pinned_icon_;
 }
 
 bool PageActionModel::IsChipShowing() const {
@@ -124,8 +124,13 @@ bool PageActionModel::ShouldShowSuggestionChip() const {
   return should_show_suggestion_chip_;
 }
 
-bool PageActionModel::GetShouldAnimateChip() const {
+bool PageActionModel::GetShouldAnimateChipOut() const {
   return should_animate_;
+}
+
+bool PageActionModel::GetShouldAnimateChipIn() const {
+  // Only animate in if the chip was not shown yet.
+  return should_animate_ && !did_show_chip_;
 }
 
 bool PageActionModel::GetShouldAnnounceChip() const {
@@ -159,6 +164,11 @@ bool PageActionModel::GetActionActive() const {
   return action_active_;
 }
 
+PageActionColorSource PageActionModel::GetColorSource() const {
+  return color_source_.has_value() ? *color_source_
+                                   : PageActionColorSource::kForeground;
+}
+
 void PageActionModel::SetOverrideText(
     base::PassKey<PageActionController>,
     const std::optional<std::u16string>& override_text) {
@@ -181,11 +191,13 @@ void PageActionModel::SetOverrideAccessibleName(
 
 void PageActionModel::SetOverrideImage(
     base::PassKey<PageActionController>,
-    const std::optional<ui::ImageModel>& override_image) {
-  if (override_image_ == override_image) {
+    const std::optional<ui::ImageModel>& override_image,
+    PageActionColorSource color_source) {
+  if (override_image_ == override_image && color_source == color_source_) {
     return;
   }
   override_image_ = override_image;
+  color_source_ = color_source;
   NotifyChange();
 }
 
@@ -199,19 +211,29 @@ void PageActionModel::SetOverrideTooltip(
   NotifyChange();
 }
 
-void PageActionModel::SetShouldHidePageAction(
+void PageActionModel::SetIsSuppressedByOmnibox(
     base::PassKey<PageActionController>,
-    bool should_hide) {
-  if (should_hide_ == should_hide) {
+    bool is_suppressed) {
+  if (is_suppressed_by_omnibox_ == is_suppressed) {
     return;
   }
+  is_suppressed_by_omnibox_ = is_suppressed;
+  NotifyChange();
+}
 
-  should_hide_ = should_hide;
+void PageActionModel::SetExemptFromOmniboxSuppression(
+    base::PassKey<PageActionController>,
+    bool is_exempt) {
+  if (is_exempt_from_omnibox_suppression_ == is_exempt) {
+    return;
+  }
+  is_exempt_from_omnibox_suppression_ = is_exempt;
   NotifyChange();
 }
 
 void PageActionModel::SetIsChipShowing(base::PassKey<PageActionController>,
                                        bool is_chip_showing) {
+  did_show_chip_ |= is_chip_showing;
   if (is_chip_showing_ == is_chip_showing) {
     return;
   }

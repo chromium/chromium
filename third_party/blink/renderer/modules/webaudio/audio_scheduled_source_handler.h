@@ -135,6 +135,8 @@ class AudioScheduledSourceHandler : public AudioHandler {
   // stopped.  This should be at least one rendering quantum, but we add one
   // more quantum for good measure.  This doesn't need to be extra precise, just
   // more than one rendering quantum.  See `HandleStoppableSourceNode()`.
+  // TODO(crbug.com/40637820) Use the actual rendering quantum size instead of a
+  // hardcoded value.
   static constexpr int kExtraStopFrames = 256;
 
  private:

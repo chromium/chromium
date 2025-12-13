@@ -12,7 +12,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "ui/android/window_android.h"
 
@@ -107,3 +106,5 @@ void AcknowledgeGroupedCredentialSheetBridge::OnDismissed(JNIEnv* env,
       dismiss_reason_enum);
   std::move(closure_callback_).Run(dismiss_reason_enum);
 }
+
+DEFINE_JNI(AcknowledgeGroupedCredentialSheetBridge)

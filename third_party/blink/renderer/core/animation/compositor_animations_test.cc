@@ -40,7 +40,9 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
+#include "content/test/test_blink_web_unit_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
@@ -76,9 +78,12 @@
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -646,7 +651,8 @@ class LayoutObjectProxy : public LayoutObject {
   static void Dispose(LayoutObjectProxy* proxy) { proxy->Destroy(); }
 
   const char* GetName() const override { return nullptr; }
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const override {
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const override {
     return gfx::RectF();
   }
 
@@ -760,18 +766,18 @@ TEST_P(AnimationCompositorAnimationsTest,
   UpdateAllLifecyclePhasesForTest();
   const auto* style = GetDocument().GetStyleResolver().ResolveStyle(
       element_, StyleRecalcContext());
-  EXPECT_TRUE(style->NonInheritedVariables());
+  EXPECT_FALSE(style->NonInheritedVariables().IsEmpty());
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--foo"))
+                  .GetData(AtomicString("--foo"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--bar"))
+                  .GetData(AtomicString("--bar"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--loo"))
+                  .GetData(AtomicString("--loo"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->NonInheritedVariables()
-                  ->GetData(AtomicString("--x"))
+                  .GetData(AtomicString("--x"))
                   .value_or(nullptr));
   EXPECT_TRUE(style->GetVariableData(AtomicString("--y")));
   EXPECT_TRUE(style->GetVariableData(AtomicString("--z")));
@@ -2722,7 +2728,7 @@ class ScopedBackgroundColorPaintImageGenerator {
  public:
   explicit ScopedBackgroundColorPaintImageGenerator(LocalFrame* frame)
       : paint_image_generator_(
-        MakeGarbageCollected<FakeBackgroundColorPaintImageGenerator>()),
+            MakeGarbageCollected<FakeBackgroundColorPaintImageGenerator>()),
         frame_(frame) {
     frame_->SetBackgroundColorPaintImageGeneratorForTesting(
         paint_image_generator_);
@@ -2776,7 +2782,7 @@ class ScopedClipPathPaintImageGenerator {
   class FakeClipPathPaintImageGenerator : public ClipPathPaintImageGenerator {
     scoped_refptr<Image> Paint(float zoom,
                                const gfx::RectF& reference_box,
-                               const gfx::SizeF& clip_area_size,
+                               const gfx::RectF& clip_area_rect,
                                const Node& node) override {
       LayoutObject* layout_object = node.GetLayoutObject();
       layout_object->GetMutableForPainting().FirstFragment().EnsureId();
@@ -2790,6 +2796,11 @@ class ScopedClipPathPaintImageGenerator {
       // are violated. These additional constraints should be tested in
       // *_paint_definitiion_test.cc.
       return GetAnimation(element, PropertyHandle(GetCSSPropertyClipPath()));
+    }
+
+    std::optional<gfx::RectF> GetAnimationBoundingRect(
+        const LayoutObject& obj) override {
+      return gfx::RectF(InfiniteIntRect());
     }
 
     void Shutdown() override {}
@@ -2931,6 +2942,59 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
+}
+
+TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletForcedColorsMode) {
+  // Setting forced color mode suppresses background-color as a valid native
+  // paint worklet property.
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetInForcedColors(GetDocument(),
+                                        /*in_forced_colors=*/true);
+
+  std::unique_ptr<ScopedCompositeBGColorAnimationForTest>
+      scoped_composite_bgcolor_animation =
+          std::make_unique<ScopedCompositeBGColorAnimationForTest>(true);
+
+  // Normally, we don't get image generators set up in a testing environment.
+  // Construct fake ones to allow us to test that we are making the correct
+  // compositing decision.
+  ScopedBackgroundColorPaintImageGenerator background_image_generator(
+      GetDocument().GetFrame());
+
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        0% {
+          background-color: red;
+        }
+        100% {
+          background-color: green;
+        }
+      }
+
+      #target {
+        width: 20vw;
+        height: 20vw;
+        display: inline-block;
+        animation: anim 1s linear;
+      }
+    }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(Animation::NativePaintWorkletProperties::kNoPaintWorklet,
+            animation->GetNativePaintWorkletReasons());
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
 }
 
 TEST_P(AnimationCompositorAnimationsTest, BackgroundShorthand) {
@@ -3380,6 +3444,149 @@ TEST_P(AnimationCompositorAnimationsTest, StaticPropertiesPlusStartDelay) {
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
+       ProvisionallyStaticWithNeutralKeyframe) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize-from {
+        from {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      @keyframes resize-to {
+        to {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      #target1, #target2 {
+        height: 200px;
+        width: 200px;
+      }
+      #target1 {
+        animation: resize-from 1s;
+      }
+      #target2 {
+        animation: resize-to 1s;
+      }
+      #target1.tweak, #target2.tweak {
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="target1"></div>
+    <div id="target2"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  Animation* animation1 =
+      target1->GetElementAnimations()->Animations().begin()->key;
+  Animation* animation2 =
+      target2->GetElementAnimations()->Animations().begin()->key;
+
+  // Presently static as the underlying height and width match the keyframe
+  // values.
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation1->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation2->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  target1->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  target2->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Start ticking the animation on the main thread.
+  EXPECT_EQ(animation1->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_EQ(animation2->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       ProvisionallyStaticWithNeutralKeyframeInheritedProerty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize {
+        to {
+          height: 160px;
+          width: 160px;
+        }
+      }
+      #container {
+        font-size: 16px;
+      }
+      #container.tweak {
+        font-size: 10px;
+      }
+      #target {
+        height: 10em;
+        width: 10em;
+        animation: resize 1s;
+      }
+    </style>
+    <div id="container">
+      <div id="target"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+
+  // Presently static as the underlying values matches the keyframe values.
+  EXPECT_EQ(CompositorAnimations::kAnimationHasNoVisibleChange,
+            animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+
+  container->classList().add({"tweak"}, ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Start ticking the animation on the main thread.
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, NeutralKeyframeCompositeAdd) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes resize-from {
+        from {
+          height: 200px;
+          width: 200px;
+        }
+      }
+      #target {
+        height: 200px;
+        width: 200px;
+        animation: resize-from 1s;
+        animation-composition: add;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Animation* animation =
+      target->GetElementAnimations()->Animations().begin()->key;
+
+  // Not static due to composite mode.
+  EXPECT_EQ(animation->CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()) &
+                CompositorAnimations::kUnsupportedCSSProperty,
+            CompositorAnimations::kUnsupportedCSSProperty);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
        WebKitPrefixedPlusUnprefixedProperty) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -3410,6 +3617,199 @@ TEST_P(AnimationCompositorAnimationsTest,
                 GetDocument().View()->GetPaintArtifactCompositor()));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+}
+
+class CompositorAnimationTriggerTest : public SimTest {
+ public:
+  CompositorAnimationTriggerTest() {
+    scoped_composited_timeline_triggers_ =
+        std::make_unique<ScopedCompositorTimelineTriggerForTest>(true);
+  }
+  void SetUp() override {
+    was_threaded_animation_enabled_ =
+        content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(true);
+    SimTest::SetUp();
+  }
+
+  void TearDown() override {
+    SimTest::TearDown();
+
+    content::TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(
+        was_threaded_animation_enabled_);
+  }
+
+  cc::LayerTreeHostImpl* GetLayerTreeHostImpl() {
+    return static_cast<cc::SingleThreadProxy*>(
+               GetWebFrameWidget().LayerTreeHostForTesting()->proxy())
+        ->LayerTreeHostImplForTesting();
+  }
+
+  cc::AnimationHost* GetAnimationHostImpl() {
+    return static_cast<cc::AnimationHost*>(
+        GetLayerTreeHostImpl()->mutator_host());
+  }
+
+  Element* GetElement(String id) {
+    return GetDocument().getElementById(AtomicString(id));
+  }
+
+ private:
+  std::unique_ptr<ScopedCompositorTimelineTriggerForTest>
+      scoped_composited_timeline_triggers_;
+  bool was_threaded_animation_enabled_;
+};
+
+TEST_F(CompositorAnimationTriggerTest, AddTimelineTriggers) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes expand2 {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+      @keyframes expand3 {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+
+      .one {
+        timeline-trigger: --trigger view();
+        animation: expand .5s, expand;
+        animation-trigger: --trigger play;
+      }
+      .two {
+        timeline-trigger: --trigger view(), --trigger2 view();
+        animation: expand .5s, expand2 .4s;
+        animation-trigger: --trigger play --trigger2 pause;
+      }
+      .three {
+        timeline-trigger: --trigger view(), --trigger2 view(),
+                          --trigger3 view();
+        animation: expand .5s, expand2 .4s, expand3 .3s;
+        animation-trigger: --trigger play, --trigger2 play, --trigger3 play;
+      }
+
+      #target {
+        background: green;
+        height: 100px;
+        width: 100px;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+
+  cc::AnimationHost* host = GetAnimationHostImpl();
+  const cc::AnimationHost::IdToTriggerMap& triggers =
+      host->GetTriggersForTesting();
+
+  auto test_for_n_triggers = [&](int n) {
+    EXPECT_EQ(triggers.size(), n);
+    for (auto& it : triggers) {
+      const cc::AnimationTrigger* trigger = it.second.get();
+      EXPECT_TRUE(trigger->IsTimelineTrigger());
+      EXPECT_FALSE(trigger->IsEventTrigger());
+      // TODO(crbug.com/451238244): Test cc animations held by the trigger.
+    }
+  };
+
+  test_for_n_triggers(0);
+
+  target->classList().add({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(1);
+
+  target->classList().remove({"one"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+
+  target->classList().add({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(2);
+
+  target->classList().remove({"two"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+
+  target->classList().add({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(3);
+
+  target->classList().remove({"three"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  test_for_n_triggers(0);
+}
+
+TEST_F(CompositorAnimationTriggerTest, ChangeTimelineTrigger) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      @keyframes expand {
+        from { transform: scaleX(1); }
+        to { transform: scaleX(5); }
+      }
+
+      .source1 {
+        timeline-trigger: --trigger --timeline;
+      }
+      .source2 {
+        timeline-trigger: --trigger scroll();
+      }
+      .source3 {
+        timeline-trigger: --trigger view() contain 0%;
+      }
+
+      #target {
+        animation: expand .5s, expand;
+        animation-trigger: --trigger play;
+        background: green;
+        height: 100px;
+        width: 100px;
+        view-timeline: --timeline;
+      }
+    </style>
+    <div id="target" class="source1"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  Element* target = GetElement("target");
+
+  cc::AnimationHost* host = GetAnimationHostImpl();
+  const cc::AnimationHost::IdToTriggerMap& triggers =
+      host->GetTriggersForTesting();
+  scoped_refptr<cc::AnimationTrigger> trigger1 = triggers.begin()->second;
+
+  target->classList().remove({"source1"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(triggers.empty());
+
+  target->classList().add({"source2"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  scoped_refptr<cc::AnimationTrigger> trigger2 = triggers.begin()->second.get();
+  EXPECT_NE(trigger1, trigger2);
+  EXPECT_NE(trigger1->id(), trigger2->id());
+
+  target->classList().remove({"source2"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  EXPECT_TRUE(triggers.empty());
+
+  target->classList().add({"source3"}, ASSERT_NO_EXCEPTION);
+  Compositor().BeginFrame();
+  scoped_refptr<cc::AnimationTrigger> trigger3 = triggers.begin()->second.get();
+  EXPECT_NE(trigger1, trigger3);
+  EXPECT_NE(trigger1->id(), trigger2->id());
+  EXPECT_NE(trigger2, trigger3);
+  EXPECT_NE(trigger2->id(), trigger3->id());
 }
 
 }  // namespace blink

@@ -1,12 +1,14 @@
 Name: url_parse
-Version: unknown
-URL: https://hg.mozilla.org/mozilla-central/file/tip/netwerk/base/nsURLParsers.cpp
-License: MPLv2
+URL: https://github.com/mozilla-firefox/firefox.git
+Revision: c7df6606be1bfdf6d6cec37a4ff644a9841c3ec2
+Update Mechanism: Static.HardFork
+License: MPL-2.0
 License File: LICENSE.txt
+Update Mechanism: Static (https://crbug.com/419415029)
 Shipped: yes
 Security Critical: yes
 CPEPrefix: unknown
 
 Description:
 
-The file url_parse.cc is based on nsURLParsers.cc from Mozilla.
+The files `url_parse.*` were forked from Mozilla's nsURLParsers.cc in ~2013.

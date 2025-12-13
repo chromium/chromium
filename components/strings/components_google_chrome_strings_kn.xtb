@@ -30,16 +30,15 @@
         ಮತ್ತು "<ph name="NO_PREFETCH_DESCRIPTION" />" ಆಯ್ಕೆ ರದ್ದುಪಡಿಸಿ.
         ಒಂದು ವೇಳೆ ಇದು ಈ ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸದಿದ್ದರೆ, ಸುಧಾರಿತ ಕಾರ್ಯಾಚರಣೆಗೆ ಮತ್ತೊಮ್ಮೆ
         ಈ ಆಯ್ಕೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡುವಂತೆ ನಾವು ಶಿಫಾರಸು ಮಾಡುತ್ತೇವೆ.</translation>
-<translation id="6855094794438142393">ಇದಕ್ಕೆ ಹೋಗಿ
-          Chrome ಮೆನು &gt;
+<translation id="6581867098636731226">Chrome ಮೆನು &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
           &gt;
-          LAN ಸೆಟ್ಟಿಂಗ್‌ಗಳು
-          ಮತ್ತು "ನಿಮ್ಮ LAN ಗಾಗಿ ಪ್ರಾಕ್ಸಿ ಸರ್ವರ್ ಬಳಸಿ" ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ.</translation>
+          ನೆಟ್‌ವರ್ಕ್ ಮತ್ತು ಇಂಟರ್ನೆಟ್ &gt; ಪ್ರಾಕ್ಸಿ
+ಎಂಬಲ್ಲಿಗೆ ಹೋಗಿ ಮತ್ತು "ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಪತ್ತೆ ಮಾಡಿ" ಎಂಬುದರ ಆಯ್ಕೆ ರದ್ದುಮಾಡಿ</translation>
 <translation id="7230956101631259640">ನೀವು ಸುರಕ್ಷಿತ Chrome ಪುಟವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="8232971017369963250"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ಓಪನ್ ಸೋರ್ಸ್ ಪ್ರಾಜೆಕ್ಟ್‌ನಿಂದ Chrome ಅನ್ನು ಸಾಕಾರಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="8279509328145658601">ಇತರ <ph name="BEGIN_LINK_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್<ph name="END_LINK_OSS" /> ನಿಂದ Chrome ಅನ್ನು ಸಾಕಾರಗೊಳಿಸಲಾಗಿದೆ.</translation>

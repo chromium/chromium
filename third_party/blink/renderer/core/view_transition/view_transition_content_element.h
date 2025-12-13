@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_CONTENT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_CONTENT_ELEMENT_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"

@@ -66,6 +66,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected_macros.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
@@ -103,8 +104,6 @@
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
-#include "chrome/browser/ash/extensions/url_constants.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
@@ -118,7 +117,9 @@
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
-#endif
+#include "components/webapps/isolated_web_apps/scheme.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_ANDROID)
@@ -163,8 +164,7 @@ WebUIController* NewWebUI(WebUI* web_ui, const GURL& url) {
 // Returns a function that can be used to create the right type of WebUI for a
 // tab, based on its URL. Returns nullptr if the URL doesn't have WebUI
 // associated with it.
-WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
-                                             Profile* profile,
+WebUIFactoryFunction GetWebUIFactoryFunction(Profile* profile,
                                              const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
@@ -247,8 +247,7 @@ WebUI::TypeID ChromeWebUIControllerFactory::GetWebUIType(
     content::BrowserContext* browser_context,
     const GURL& url) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  WebUIFactoryFunction function =
-      GetWebUIFactoryFunction(nullptr, profile, url);
+  WebUIFactoryFunction function = GetWebUIFactoryFunction(profile, url);
   return function ? reinterpret_cast<WebUI::TypeID>(function) : WebUI::kNoWebUI;
 }
 
@@ -261,8 +260,8 @@ bool ChromeWebUIControllerFactory::UseWebUIForURL(
 std::unique_ptr<WebUIController>
 ChromeWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
                                                           const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  WebUIFactoryFunction function = GetWebUIFactoryFunction(web_ui, profile, url);
+  WebUIFactoryFunction function =
+      GetWebUIFactoryFunction(Profile::FromWebUI(web_ui), url);
   if (!function) {
     return nullptr;
   }
@@ -275,12 +274,14 @@ void ChromeWebUIControllerFactory::GetFaviconForURL(
     const GURL& page_url,
     const std::vector<int>& desired_sizes_in_pixel,
     favicon_base::FaviconResultsCallback callback) const {
-#if !BUILDFLAG(IS_ANDROID)
-  if (page_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  if (page_url.SchemeIs(webapps::kIsolatedAppScheme)) {
     ReadIsolatedWebAppFaviconsFromDisk(profile, page_url, std::move(callback));
     return;
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
   // Before determining whether page_url is an extension url, we must handle
   // overrides. This changes urls in |kChromeUIScheme| to extension urls, and
@@ -379,92 +380,96 @@ base::RefCountedMemory* ChromeWebUIControllerFactory::GetFaviconResourceBytes(
     return nullptr;
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIComponentsHost) {
+  if (page_url.host() == chrome::kChromeUIComponentsHost) {
     return ComponentsUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN)
-  if (page_url.host_piece() == chrome::kChromeUIConflictsHost) {
+  if (page_url.host() == chrome::kChromeUIConflictsHost) {
     return ConflictsUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif
 
-  if (page_url.host_piece() == chrome::kChromeUICrashesHost) {
+  if (page_url.host() == chrome::kChromeUICrashesHost) {
     return CrashesUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIFlagsHost) {
+  if (page_url.host() == chrome::kChromeUIFlagsHost) {
     return FlagsUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // The chrome://apps page is not available on Android or ChromeOS.
-  if (page_url.host_piece() == chrome::kChromeUIAppLauncherPageHost) {
+  if (page_url.host() == chrome::kChromeUIAppLauncherPageHost) {
     return webapps::AppHomeUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  if (page_url.host_piece() == chrome::kChromeUINewTabPageHost) {
+  if (page_url.host() == chrome::kChromeUINewTabPageHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (page_url.host_piece() == chrome::kChromeUIWhatsNewHost) {
+  if (page_url.host() == chrome::kChromeUIWhatsNewHost) {
     return WhatsNewUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Bookmarks are part of NTP on Android.
-  if (page_url.host_piece() == chrome::kChromeUIBookmarksHost) {
+  if (page_url.host() == chrome::kChromeUIBookmarksHost) {
     return BookmarksUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIHistoryHost) {
+  if (page_url.host() == chrome::kChromeUIHistoryHost) {
     return HistoryUI::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
+  if (page_url.host() == password_manager::kChromeUIPasswordManagerHost) {
     return PasswordManagerUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Android uses the native download manager.
-  if (page_url.host_piece() == chrome::kChromeUIDownloadsHost) {
+  if (page_url.host() == chrome::kChromeUIDownloadsHost) {
     return DownloadsUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Android doesn't use the Options/Settings pages.
-  if (page_url.host_piece() == chrome::kChromeUISettingsHost) {
+  if (page_url.host() == chrome::kChromeUISettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 
-  if (page_url.host_piece() == chrome::kChromeUIManagementHost) {
+  if (page_url.host() == chrome::kChromeUIManagementHost) {
     return ManagementUI::GetFaviconResourceBytes(scale_factor);
   }
 
   // Tab Search hosts the split tab NTP and so leveraging the NTP favicon.
-  if (page_url.host_piece() == chrome::kChromeUITabSearchHost) {
+  if (page_url.host() == chrome::kChromeUITabSearchHost) {
     return NewTabPageUI::GetFaviconResourceBytes(scale_factor);
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host_piece() == commerce::kChromeUICompareHost) {
+  if (page_url.host() == commerce::kChromeUICompareHost) {
     return commerce::ProductSpecificationsUI::GetFaviconResourceBytes(
         scale_factor);
+  }
+
+  if (page_url.host() == chrome::kChromeUIContextualTasksHost) {
+    return ContextualTasksUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (page_url.host_piece() == chrome::kChromeUIExtensionsHost) {
+  if (page_url.host() == chrome::kChromeUIExtensionsHost) {
     return extensions::ExtensionsUI::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (page_url.host_piece() == chrome::kChromeUIOSSettingsHost) {
+  if (page_url.host() == chrome::kChromeUIOSSettingsHost) {
     return settings_utils::GetFaviconResourceBytes(scale_factor);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)

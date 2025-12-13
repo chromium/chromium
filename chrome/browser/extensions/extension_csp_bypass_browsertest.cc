@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -46,10 +45,6 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
   }
 
  protected:
-  content::WebContents* web_contents() const {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
   const Extension* AddExtension(bool is_component, bool all_urls_permission) {
     TestExtensionDir dir;
 
@@ -88,7 +83,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
   bool CanLoadScript(const Extension* extension) {
     content::RenderFrameHost* render_frame_host =
-        web_contents()->GetPrimaryMainFrame();
+        GetActiveWebContents()->GetPrimaryMainFrame();
     std::string code = base::StringPrintf(
         R"(
         function canLoadScript() {
@@ -112,7 +107,7 @@ class ExtensionCSPBypassTest : public ExtensionBrowserTest {
 
   content::RenderFrameHost* GetFrameByName(const std::string& name) {
     return content::FrameMatchingPredicate(
-        web_contents()->GetPrimaryPage(),
+        GetActiveWebContents()->GetPrimaryPage(),
         base::BindRepeating(&content::FrameMatchesName, name));
   }
 
@@ -130,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, LoadWebAccessibleScript) {
 
   // chrome-extension:-URLs can always bypass CSP in normal pages.
   GURL non_webui_url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_webui_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), non_webui_url));
 
   EXPECT_TRUE(CanLoadScript(component_ext_with_permission));
   EXPECT_TRUE(CanLoadScript(component_ext_without_permission));
@@ -160,12 +155,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // "cross-origin.com" to make clear they are cross-origin.
   GURL test_url = embedded_test_server()->GetURL(
       "same-origin.com", "/extensions/csp/page_with_frame_csp.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), test_url));
 
   // First, verify that adding an iframe to the page from the main world will
   // fail. Add the frame. Its onload event fires even if it's blocked
   // (see https://crbug.com/365457), and reports back.
-  EXPECT_EQ(true, content::EvalJs(web_contents(), "addIframe();"));
+  EXPECT_EQ(true, content::EvalJs(GetActiveWebContents(), "addIframe();"));
 
   // Use WasFrameWithScriptLoaded() to check whether the target frame really
   // loaded.
@@ -178,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // which bypasses CSP, and adds the iframe.
   content::DOMMessageQueue message_queue;
   EXPECT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(GetActiveWebContents(),
                       "document.querySelector('#addIframeButton').click();"));
   std::string ack;
   EXPECT_TRUE(message_queue.WaitForMessage(&ack));
@@ -219,16 +214,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, FrameAncestors) {
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  content::WebContentsConsoleObserver console_observer(web_contents());
-  console_observer.SetPattern(
-      "Refused to frame * because an ancestor violates *");
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  console_observer.SetPattern("Framing '*' violates the following*");
 
   GURL popup_url = extension->GetResourceURL("popup.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), popup_url));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), popup_url));
 
   // The iframe must be blocked because of CSP.
   ASSERT_TRUE(console_observer.Wait());
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* main_frame =
+      GetActiveWebContents()->GetPrimaryMainFrame();
   content::RenderFrameHost* child_frame = ChildFrameAt(main_frame, 0);
   EXPECT_EQ(popup_url, main_frame->GetLastCommittedURL());
   EXPECT_EQ(iframe_url, child_frame->GetLastCommittedURL());

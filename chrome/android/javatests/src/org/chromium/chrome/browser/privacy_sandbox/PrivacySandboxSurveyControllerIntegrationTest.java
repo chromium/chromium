@@ -29,6 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.ui.hats.TestSurveyUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -130,13 +131,16 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     })
     public void sentimentSurveyAcceptSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getTabCreator(false).launchNtp();
-                });
+                () ->
+                        TabCreatorUtil.launchNtp(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)));
         waitForSurveyMessageToShow();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
+                    var unused =
+                            mSurveyMessage.get(MessageBannerProperties.ON_PRIMARY_ACTION).get();
                 });
         Assert.assertEquals(
                 "Last shown survey triggerId not match.",
@@ -154,9 +158,11 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     @RequiresRestart("State from previous test may prevent survey from surfacing")
     public void sentimentSurveyDismissSurvey() {
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.getActivity().getTabCreator(false).launchNtp();
-                });
+                () ->
+                        TabCreatorUtil.launchNtp(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabCreator(/* incognito= */ false)));
         waitForSurveyMessageToShow();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mMessageDispatcher.dismissMessage(mSurveyMessage, DismissReason.GESTURE));
@@ -177,7 +183,7 @@ public class PrivacySandboxSurveyControllerIntegrationTest {
     }
 
     private void waitForSurveyMessageToShow() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         CriteriaHelper.pollUiThread(() -> !tab.isLoading() && tab.isUserInteractable());
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

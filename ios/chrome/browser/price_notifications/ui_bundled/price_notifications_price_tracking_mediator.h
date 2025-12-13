@@ -28,6 +28,8 @@ namespace commerce {
 class ShoppingService;
 }  // namespace commerce
 
+class GaiaId;
+
 namespace image_fetcher {
 class ImageDataFetcher;
 }  // namespace image_fetcher
@@ -65,7 +67,7 @@ class WebState;
 @property(nonatomic, weak) id<PriceNotificationsAlertPresenter> presenter;
 
 // The GAIA ID of the user currently signed into Chrome;
-@property(nonatomic, copy) NSString* gaiaID;
+@property(nonatomic, assign) GaiaId gaiaID;
 
 @end
 

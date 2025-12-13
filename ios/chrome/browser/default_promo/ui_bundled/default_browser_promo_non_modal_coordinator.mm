@@ -158,11 +158,6 @@
 // Returns the default subtitle for the browser's non-modal window based on the
 // promo reason.
 - (NSString*)defaultBrowserNonModalSubtitleForPromoReason {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_DESCRIPTION);
-  }
-
   switch (_promoReason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return l10n_util::GetNSString(
@@ -181,11 +176,6 @@
 // Returns the default title for the browser's non-modal window based on the
 // promo reason.
 - (NSString*)defaultBrowserNonModalTitleForPromoReason {
-  if (!IsTailoredNonModalDBPromoEnabled()) {
-    return l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_NON_MODAL_OMNIBOX_NAVIGATION_TITLE);
-  }
-
   switch (_promoReason) {
     case NonModalDefaultBrowserPromoReason::PromoReasonOmniboxPaste:
       return l10n_util::GetNSString(

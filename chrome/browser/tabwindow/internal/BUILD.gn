@@ -40,7 +40,10 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java" ]
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerUtilsUnitTest.java",
+  ]
 
   deps = [
     ":java",
@@ -59,6 +62,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/multiwindow:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/saved_tab_groups/public:java",
+    "//components/tab_groups:tab_groups_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

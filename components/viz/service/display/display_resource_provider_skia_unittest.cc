@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/display_resource_provider_skia.h"
 
 #include <stddef.h>
@@ -20,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -80,7 +76,7 @@ class MockExternalUseClient : public ExternalUseClient {
 class DisplayResourceProviderSkiaTest : public testing::Test {
  public:
   DisplayResourceProviderSkiaTest() {
-    child_context_provider_ = TestContextProvider::Create();
+    child_context_provider_ = TestContextProvider::CreateGLES();
     child_context_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
   }
@@ -140,9 +136,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
 
@@ -202,9 +199,10 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
 
   // Transfer some resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
 
@@ -340,9 +338,10 @@ TEST_F(DisplayResourceProviderSkiaTest,
 
     // Transfer resources to the parent.
     std::vector<TransferableResource> list;
+
+    CHECK(child_context_provider_);
     child_resource_provider_->PrepareSendToParent(
-        {id1, id2}, &list,
-        static_cast<RasterContextProvider*>(child_context_provider_.get()));
+        {id1, id2}, &list, child_context_provider_->SharedImageInterface());
     ASSERT_EQ(2u, list.size());
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -446,9 +445,10 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceDestroyChild) {
 
     // Transfer resources to the parent.
     std::vector<TransferableResource> list;
+
+    CHECK(child_context_provider_);
     child_resource_provider_->PrepareSendToParent(
-        {id1, id2}, &list,
-        static_cast<RasterContextProvider*>(child_context_provider_.get()));
+        {id1, id2}, &list, child_context_provider_->SharedImageInterface());
     ASSERT_EQ(2u, list.size());
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -543,9 +543,10 @@ TEST_F(DisplayResourceProviderSkiaTest, ResourceFenceOutlivesResourceProvider) {
 
   // Transfer resources to the parent.
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
-      {id1, id2}, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      {id1, id2}, &list, child_context_provider_->SharedImageInterface());
   ASSERT_EQ(2u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id2));
@@ -624,12 +625,15 @@ TEST_F(DisplayResourceProviderSkiaTest,
         tran, base::BindOnce(&MockReleaseCallback::Released,
                              base::Unretained(&release)));
   }
-  std::vector<ResourceId> resource_ids_to_transfer(ids, ids + kTotalResources);
+  std::vector<ResourceId> resource_ids_to_transfer(
+      ids, UNSAFE_TODO(ids + kTotalResources));
 
   std::vector<TransferableResource> list;
+
+  CHECK(child_context_provider_);
   child_resource_provider_->PrepareSendToParent(
       resource_ids_to_transfer, &list,
-      static_cast<RasterContextProvider*>(child_context_provider_.get()));
+      child_context_provider_->SharedImageInterface());
   ASSERT_EQ(kTotalResources, list.size());
   for (const auto& id : ids)
     EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id));
@@ -643,7 +647,7 @@ TEST_F(DisplayResourceProviderSkiaTest,
       std::unique_ptr<DisplayResourceProvider::ScopedReadLockSharedImage>>
       read_locks;
   for (size_t i = 0; i < kLockedResources; i++) {
-    ResourceId mapped_resource_id = resource_map[ids[i]];
+    ResourceId mapped_resource_id = resource_map[UNSAFE_TODO(ids[i])];
     lock_set_->LockResource(mapped_resource_id, /*maybe_concurrent_reads=*/true,
                             /*is_video_plane=*/false);
   }
@@ -654,7 +658,7 @@ TEST_F(DisplayResourceProviderSkiaTest,
     DisplayResourceProvider::ScopedBatchReturnResources returner(
         resource_provider_.get());
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(ids, ids + kUsedResources));
+        child_id, ResourceIdSet(ids, UNSAFE_TODO(ids + kUsedResources)));
     EXPECT_EQ(0u, returned_to_child.size());
   }
   EXPECT_EQ(1u, returned_to_child.size());
@@ -667,12 +671,14 @@ TEST_F(DisplayResourceProviderSkiaTest,
     DisplayResourceProvider::ScopedBatchReturnResources returner(
         resource_provider_.get());
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(ids + kLockedResources, ids + kUsedResources));
+        child_id, ResourceIdSet(UNSAFE_TODO(ids + kLockedResources),
+                                UNSAFE_TODO(ids + kUsedResources)));
     // Can be called multiple times while batching is enabled.  This happens in
     // practice when the same surface is visited using different paths during
     // surface aggregation.
     resource_provider_->DeclareUsedResourcesFromChild(
-        child_id, ResourceIdSet(ids + kLockedResources, ids + kUsedResources));
+        child_id, ResourceIdSet(UNSAFE_TODO(ids + kLockedResources),
+                                UNSAFE_TODO(ids + kUsedResources)));
     lock_set_->UnlockResources(GenSyncToken());
     EXPECT_EQ(0u, returned_to_child.size());
   }

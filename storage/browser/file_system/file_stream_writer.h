@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 
 namespace base {

@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/audio/capture_service/message_parsing_utils.h"
 
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/compiler_specific.h"
 #include "chromecast/media/audio/capture_service/constants.h"
 #include "chromecast/media/audio/capture_service/packet_header.h"
+#include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromecast {
@@ -54,7 +51,7 @@ TEST_P(PacketHeaderTest, HandshakeMessage) {
 
   StreamInfo info_out;
   bool success =
-      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+      ReadHandshakeMessage(UNSAFE_TODO(data.data() + sizeof(uint16_t)),
                            data.size() - sizeof(uint16_t), &info_out);
   EXPECT_TRUE(success);
   EXPECT_EQ(info_out.stream_type, stream_info.stream_type);
@@ -75,7 +72,7 @@ TEST(MessageParsingUtilsTest, PcmAudioMessage) {
 
   int64_t timestamp_out = 0;
   bool success = ReadPcmAudioHeader(
-      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(float) - sizeof(uint16_t), kStreamInfo,
       &timestamp_out);
   EXPECT_TRUE(success);
@@ -96,12 +93,15 @@ TEST(MessageParsingUtilsTest, ValidPlanarFloat) {
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
   bool success = ReadDataToAudioBus(
-      kStreamInfo, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      kStreamInfo,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
-    EXPECT_FLOAT_EQ(audio_bus->channel(0)[f], .0f);
-    EXPECT_FLOAT_EQ(audio_bus->channel(1)[f], .5f);
+    EXPECT_FLOAT_EQ(channel_0[f], .0f);
+    EXPECT_FLOAT_EQ(channel_1[f], .5f);
   }
 }
 
@@ -122,12 +122,15 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt16) {
   StreamInfo stream_info = kStreamInfo;
   stream_info.sample_format = SampleFormat::INTERLEAVED_INT16;
   bool success = ReadDataToAudioBus(
-      stream_info, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      stream_info,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(int16_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
-    EXPECT_FLOAT_EQ(audio_bus->channel(0)[f], 1.0f);
-    EXPECT_FLOAT_EQ(audio_bus->channel(1)[f], -1.0f);
+    EXPECT_FLOAT_EQ(channel_0[f], 1.0f);
+    EXPECT_FLOAT_EQ(channel_1[f], -1.0f);
   }
 }
 
@@ -148,12 +151,15 @@ TEST(MessageParsingUtilsTest, ValidInterleavedInt32) {
   StreamInfo stream_info = kStreamInfo;
   stream_info.sample_format = SampleFormat::INTERLEAVED_INT32;
   bool success = ReadDataToAudioBus(
-      stream_info, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      stream_info,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(int32_t) - sizeof(uint16_t), audio_bus.get());
   EXPECT_TRUE(success);
+  auto channel_0 = audio_bus->channel(0);
+  auto channel_1 = audio_bus->channel(1);
   for (size_t f = 0; f < kFrames; f++) {
-    EXPECT_FLOAT_EQ(audio_bus->channel(0)[f], -1.0f);
-    EXPECT_FLOAT_EQ(audio_bus->channel(1)[f], 1.0f);
+    EXPECT_FLOAT_EQ(channel_0[f], -1.0f);
+    EXPECT_FLOAT_EQ(channel_1[f], 1.0f);
   }
 }
 
@@ -161,11 +167,11 @@ TEST(MessageParsingUtilsTest, InvalidTypeHandshake) {
   std::vector<char> data(sizeof(HandshakePacket), 0);
   StreamInfo stream_info = kStreamInfo;
   PopulateHandshakeMessage(data.data(), data.size(), stream_info);
-  *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct HandshakePacket, stream_type)) =
+  *(UNSAFE_TODO(reinterpret_cast<uint8_t*>(data.data()) +
+                offsetof(struct HandshakePacket, stream_type))) =
       static_cast<uint8_t>(StreamType::kLastType) + 1;
   bool success =
-      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+      ReadHandshakeMessage(UNSAFE_TODO(data.data() + sizeof(uint16_t)),
                            data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
 }
@@ -176,12 +182,12 @@ TEST(MessageParsingUtilsTest, InvalidTypePcmAudio) {
   PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()),
                          data.size() * sizeof(float), kStreamInfo.stream_type,
                          0);
-  *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct PcmPacketHeader, stream_type)) =
+  *(UNSAFE_TODO(reinterpret_cast<uint8_t*>(data.data()) +
+                offsetof(struct PcmPacketHeader, stream_type))) =
       static_cast<uint8_t>(StreamType::kLastType) + 1;
   int64_t timestamp_us;
   bool success = ReadPcmAudioHeader(
-      reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(float) - sizeof(uint16_t), kStreamInfo, &timestamp_us);
   EXPECT_FALSE(success);
 }
@@ -190,11 +196,11 @@ TEST(MessageParsingUtilsTest, InvalidCodec) {
   std::vector<char> data(sizeof(HandshakePacket), 0);
   StreamInfo stream_info = kStreamInfo;
   PopulateHandshakeMessage(data.data(), data.size(), stream_info);
-  *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct HandshakePacket, audio_codec)) =
+  *(UNSAFE_TODO(reinterpret_cast<uint8_t*>(data.data()) +
+                offsetof(struct HandshakePacket, audio_codec))) =
       static_cast<uint8_t>(AudioCodec::kLastCodec) + 1;
   bool success =
-      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+      ReadHandshakeMessage(UNSAFE_TODO(data.data() + sizeof(uint16_t)),
                            data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
 }
@@ -203,11 +209,11 @@ TEST(MessageParsingUtilsTest, InvalidFormat) {
   std::vector<char> data(sizeof(HandshakePacket), 0);
   StreamInfo stream_info = kStreamInfo;
   PopulateHandshakeMessage(data.data(), data.size(), stream_info);
-  *(reinterpret_cast<uint8_t*>(data.data()) +
-    offsetof(struct HandshakePacket, sample_format)) =
+  *(UNSAFE_TODO(reinterpret_cast<uint8_t*>(data.data()) +
+                offsetof(struct HandshakePacket, sample_format))) =
       static_cast<uint8_t>(SampleFormat::LAST_FORMAT) + 1;
   bool success =
-      ReadHandshakeMessage(data.data() + sizeof(uint16_t),
+      ReadHandshakeMessage(UNSAFE_TODO(data.data() + sizeof(uint16_t)),
                            data.size() - sizeof(uint16_t), &stream_info);
   EXPECT_FALSE(success);
 }
@@ -222,7 +228,8 @@ TEST(MessageParsingUtilsTest, InvalidDataLength) {
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
   bool success = ReadDataToAudioBus(
-      kStreamInfo, reinterpret_cast<char*>(data.data()) + sizeof(uint16_t),
+      kStreamInfo,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + sizeof(uint16_t)),
       data_size * sizeof(float) - sizeof(uint16_t), audio_bus.get());
   EXPECT_FALSE(success);
 }
@@ -231,13 +238,14 @@ TEST(MessageParsingUtilsTest, NotAlignedData) {
   size_t data_size =
       sizeof(PcmPacketHeader) / sizeof(float) + kFrames * kChannels + 1;
   std::vector<float> data(data_size, 1.0f);
-  PopulatePcmAudioHeader(reinterpret_cast<char*>(data.data()) + 1,
+  PopulatePcmAudioHeader(UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + 1),
                          data.size() * sizeof(float) - 1,
                          kStreamInfo.stream_type, 0);
 
   auto audio_bus = ::media::AudioBus::Create(kChannels, kFrames);
   bool success = ReadDataToAudioBus(
-      kStreamInfo, reinterpret_cast<char*>(data.data()) + 1 + sizeof(uint16_t),
+      kStreamInfo,
+      UNSAFE_TODO(reinterpret_cast<char*>(data.data()) + 1 + sizeof(uint16_t)),
       data_size * sizeof(float) - 1 - sizeof(uint16_t), audio_bus.get());
   EXPECT_FALSE(success);
 }

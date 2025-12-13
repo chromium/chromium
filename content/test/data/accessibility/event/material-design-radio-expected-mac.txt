@@ -1,0 +1,49 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=0
+++++AXRadioButton AXDescription='Option 2' AXValue=0
+++++AXRadioButton AXDescription='Option 3' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXRadioButton AXDescription='Option 1' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=1 <<<<<< CHANGED
+++++AXRadioButton AXDescription='Option 2' AXValue=0
+++++AXRadioButton AXDescription='Option 3' AXValue=0
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=1
+++++AXRadioButton AXDescription='Option 2' AXValue=0
+++++AXRadioButton AXDescription='Option 3' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXRadioButton AXDescription='Option 1' AXValue=0
+AXValueChanged on AXRadioButton AXDescription='Option 2' AXValue=1
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=0 <<<<<< CHANGED
+++++AXRadioButton AXDescription='Option 2' AXValue=1 <<<<<< CHANGED
+++++AXRadioButton AXDescription='Option 3' AXValue=0
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=0
+++++AXRadioButton AXDescription='Option 2' AXValue=1
+++++AXRadioButton AXDescription='Option 3' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXRadioButton AXDescription='Option 2' AXValue=0
+AXValueChanged on AXRadioButton AXDescription='Option 3' AXValue=1
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Radio Events'
+++AXGroup AXDescription='Ready'
+++++AXRadioButton AXDescription='Option 1' AXValue=0
+++++AXRadioButton AXDescription='Option 2' AXValue=0 <<<<<< CHANGED
+++++AXRadioButton AXDescription='Option 3' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===

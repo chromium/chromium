@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_H_
 
-#include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -14,29 +14,57 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
 class Label;
+class Widget;
 }  // namespace views
 
 namespace webid {
 
+class AccountSelectionBubbleView;
+
+class AccountSelectionBubbleDelegate : public views::BubbleDialogDelegate {
+ public:
+  AccountSelectionBubbleDelegate(
+      std::unique_ptr<AccountSelectionBubbleView> account_selection_bubble_view,
+      views::View* anchor_view);
+  ~AccountSelectionBubbleDelegate() override;
+
+  AccountSelectionBubbleDelegate(const AccountSelectionBubbleDelegate&) =
+      delete;
+  AccountSelectionBubbleDelegate& operator=(
+      const AccountSelectionBubbleDelegate&) = delete;
+
+  // views::BubbleDialogDelegate overrides:
+  gfx::Rect GetBubbleBounds() override;
+
+  // TODO (kylixrd): Investigate removal of these overrides.
+  // views::WidgetDelegate overrides:
+  views::Widget* GetWidget() override;
+  const views::Widget* GetWidget() const override;
+
+ private:
+  AccountSelectionBubbleView* GetAccountSelectionView();
+};
+
 // Bubble dialog that is used in the FedCM flow. It creates a dialog with an
 // account chooser for the user, and it changes the content of that dialog as
 // user moves through the FedCM flow steps.
-class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
+class AccountSelectionBubbleView : public views::BoxLayoutView,
                                    public AccountSelectionViewBase {
-  METADATA_HEADER(AccountSelectionBubbleView, views::BubbleDialogDelegateView)
+  METADATA_HEADER(AccountSelectionBubbleView, views::BoxLayoutView)
 
  public:
   AccountSelectionBubbleView(
       const content::RelyingPartyData& rp_data,
       const std::optional<std::u16string>& idp_title,
       blink::mojom::RpContext rp_context,
-      views::View* anchor_view,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FedCmAccountSelectionView* owner);
   ~AccountSelectionBubbleView() override;
@@ -67,8 +95,9 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 
-  // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
+  std::u16string dialog_title() const { return title_; }
+
+  gfx::Rect GetBubbleBounds(gfx::Rect proposed_bubble_bounds);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AccountSelectionBubbleViewTest,

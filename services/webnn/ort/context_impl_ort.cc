@@ -4,39 +4,99 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
-#include "services/webnn/ort/buffer_content_ort.h"
+#include "base/feature_list.h"
 #include "services/webnn/ort/graph_impl_ort.h"
+#include "services/webnn/ort/ort_data_type.h"
+#include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
-#include "services/webnn/queueable_resource_state.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 
 namespace webnn::ort {
 
+namespace {
+
+// The feature flag allows us to try using device allocator to create device
+// tensors for EPs, e.g. OpenVINO EP.
+BASE_FEATURE(kUseDeviceTensor, base::FEATURE_ENABLED_BY_DEFAULT);
+
+}  // namespace
+
+// static
+std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
+    mojo::PendingReceiver<mojom::WebNNContext> receiver,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    const EpWorkarounds& ep_workarounds,
+    mojom::CreateContextOptionsPtr options,
+    mojom::Device device_type,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+    scoped_refptr<Environment> env,
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+    ScopedTrace scoped_trace) {
+  DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
+  auto task_runner = owning_task_runner;
+  std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
+      new ContextImplOrt(std::move(receiver), std::move(context_provider),
+                         std::move(ep_workarounds), std::move(options),
+                         device_type, std::move(write_tensor_consumer),
+                         std::move(read_tensor_producer), std::move(env),
+                         std::move(gpu_sequence), std::move(memory_tracker),
+                         std::move(owning_task_runner), shared_image_manager,
+                         std::move(main_task_runner)),
+      OnTaskRunnerDeleter(std::move(task_runner)));
+  return context_impl;
+}
+
 ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
-    WebNNContextProviderImpl* context_provider,
+    base::WeakPtr<WebNNContextProviderImpl> context_provider,
+    const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
+    mojom::Device device_type,
+    mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+    mojo::ScopedDataPipeProducerHandle write_tensor_producer,
     scoped_refptr<Environment> env,
-    scoped_refptr<SessionOptions> session_options)
-    : WebNNContextImpl(std::move(receiver),
-                       context_provider,
-                       GetContextProperties(),
-                       std::move(options)),
+    std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+    scoped_refptr<gpu::MemoryTracker> memory_tracker,
+    scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+    gpu::SharedImageManager* shared_image_manager,
+    scoped_refptr<base::SingleThreadTaskRunner> main_task_runner)
+    : WebNNContextImpl(
+          std::move(receiver),
+          std::move(context_provider),
+          GetContextProperties(ep_workarounds.resample2d_limit_to_nchw),
+          std::move(options),
+          std::move(write_tensor_consumer),
+          std::move(write_tensor_producer),
+          std::move(gpu_sequence),
+          std::move(memory_tracker),
+          std::move(owning_task_runner),
+          shared_image_manager,
+          std::move(main_task_runner)),
       env_(std::move(env)),
-      session_options_(std::move(session_options)),
-      is_external_data_supported_(
-          env_->IsExternalDataSupported(this->options().device)) {}
+      session_options_(SessionOptions::Create(device_type, env_)) {
+  if (base::FeatureList::IsEnabled(kUseDeviceTensor)) {
+    device_allocator_ = DeviceAllocator::Create(this->options().device,
+                                                session_options_->get(), env_);
+  }
+}
 
 ContextImplOrt::~ContextImplOrt() = default;
 
 // static
-ContextProperties ContextImplOrt::GetContextProperties() {
+ContextProperties ContextImplOrt::GetContextProperties(
+    bool resample2d_limit_to_nchw) {
   // TODO(crbug.com/412844034): Investigate how to set the tensor byte length
   // limit and supported tensor ranks.
   static constexpr uint64_t kTensorByteLengthLimit =
@@ -67,17 +127,27 @@ ContextProperties ContextImplOrt::GetContextProperties() {
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts4To8Int32 = {
+      OperandDataType::kInt4, OperandDataType::kUint4, OperandDataType::kUint8,
+      OperandDataType::kInt8, OperandDataType::kInt32};
+
+  static constexpr SupportedDataTypes kFloat16To32Int32 = {
+      OperandDataType::kFloat16, OperandDataType::kFloat32,
+      OperandDataType::kInt32};
+
   return ContextProperties(
-      InputOperandLayout::kNchw, Resample2DAxes::kAny,
+      InputOperandLayout::kNchw,
+      resample2d_limit_to_nchw ? Resample2DAxes::kChannelsFirst
+                               : Resample2DAxes::kAny,
       BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
-      {/*input=*/SupportedDataTypes::All(),
-       /*constant=*/SupportedDataTypes::All(),
+      {/*input=*/{SupportedDataTypes::All(), kMaxRank},
+       /*constant=*/{SupportedDataTypes::All(), kMaxRank},
        /*arg_min_max_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
        // ONNX ArgMin/Max only supports int64 output, int32 output is supported
        // by inserting a cast operator.
-       /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
+       /*arg_min_max_output=*/{DataTypeConstraint::kInt32To64, kMaxRank},
        /*batch_normalization_input=*/
        {DataTypeConstraint::kFloat16To32, kMaxNonScalarRank},
        /*batch_normalization_mean=*/
@@ -94,9 +164,10 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*conv_transpose2d_bias=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/{kFloat16To32Int32To64, kMaxNonScalarRank},
-       /*dequantize_linear_input=*/{},
-       /*dequantize_linear_scale=*/{},
-       /*dequantize_linear_zero_point=*/{},
+       /*dequantize_linear_input=*/
+       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
+       /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*dequantize_linear_zero_point=*/{kInts4To8Int32, kMaxRank},
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/
@@ -129,6 +200,8 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*logical_xor_input=*/
        {DataTypeConstraint::kUint8, kMaxRank},
        /*logical_not_input=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*is_nan_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*is_infinite_input*/ {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*ceil_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
@@ -140,6 +213,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*log_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*neg_input=*/{DataTypeConstraint::kFloat16To32Int8To64, kMaxRank},
        /*reciprocal_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*round_even_input*/ {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sign_input=*/{DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sin_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*sqrt_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
@@ -164,32 +238,46 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::Exactly(2)},
        /*gemm_c=*/
        {DataTypeConstraint::kFloat16To32Ints32To64, SupportedRanks::UpTo(2)},
-       /*gru_input=*/{},
-       /*gru_bias=*/{},
-       /*gru_cell_input=*/{},
-       /*gru_cell_bias=*/{},
+       /*gru_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*gru_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_output_sequence=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*gru_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*hard_sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*hard_swish_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*instance_normalization_input=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
        /*instance_normalization_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
-       /*layer_normalization_input=*/{},
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
        /*leaky_relu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*linear_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*lstm_input=*/{},
-       /*lstm_bias=*/{},
-       /*lstm_cell_input=*/{},
-       /*lstm_cell_bias=*/{},
+       /*lstm_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*lstm_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_output_sequence=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+       /*lstm_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*matmul_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
        /*pad_input=*/
-       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxNonScalarRank},
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*average_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*l2_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 8}},
        /*max_pool2d_input=*/{kInts8Float16To32, {3, 8}},
        /*prelu_input=*/{DataTypeConstraint::kFloat16To32Ints32To64, kMaxRank},
-       /*quantize_linear_input=*/{},
-       /*quantize_linear_zero_point=*/{},
+       /*quantize_linear_input=*/{kFloat16To32Int32, kMaxRank},
+       /*quantize_linear_zero_point=*/
+       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
        /*reduce_l1_input=*/
        {kFloat16To32Int32To64, kMaxRank},
        /*reduce_l2_input=*/
@@ -233,7 +321,7 @@ ContextProperties ContextImplOrt::GetContextProperties() {
        /*sigmoid_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*slice_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
-       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*softmax_input=*/{DataTypeConstraint::kFloat16To32, kMaxNonScalarRank},
        /*softplus_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*softsign_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*split_input=*/
@@ -250,8 +338,17 @@ ContextProperties ContextImplOrt::GetContextProperties() {
 }
 
 base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   return weak_factory_.GetWeakPtr();
+}
+
+void ContextImplOrt::HandleContextLostOrCrash(const std::string& error_message,
+                                              OrtErrorCode error_code) {
+  // Currently, we decide to destroy all contexts and kill the GPU process for
+  // any error code.
+  // TODO(crbug.com/462937875): Handle errors differently when ORT can report a
+  // device-removal error code in the future.
+  DestroyAllContextsAndKillGpuProcess(error_message);
 }
 
 void ContextImplOrt::CreateGraphImpl(
@@ -268,26 +365,66 @@ void ContextImplOrt::CreateGraphImpl(
       std::move(constant_tensor_operands), this, std::move(callback));
 }
 
-void ContextImplOrt::CreateTensorImpl(
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplOrt::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-    mojom::TensorInfoPtr tensor_info,
-    CreateTensorImplCallback callback) {
+    mojom::TensorInfoPtr tensor_info) {
   // TODO(crbug.com/332350952): Implement constant tensors for ORT backend.
   if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    std::move(callback).Run(base::unexpected(
+    return base::unexpected(
         mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                          "Creation of constant tensors is not supported.")));
-    return;
+                          "Creation of constant tensors is not supported."));
   }
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
-  auto buffer_content =
-      std::make_unique<BufferContentOrt>(tensor_info->descriptor);
-  auto buffer_state =
-      base::MakeRefCounted<QueueableResourceState<BufferContentOrt>>(
-          std::move(buffer_content));
-  std::move(callback).Run(base::MakeRefCounted<TensorImplOrt>(
-      std::move(receiver), AsWeakPtr(), std::move(tensor_info),
-      std::move(buffer_state)));
+  OrtAllocator* allocator = nullptr;
+  bool can_access_on_cpu = true;
+  // Use the device allocator if it's present and should be used. Otherwise, use
+  // the default allocator which is CPU based and non-arena.
+  if (device_allocator_ && device_allocator_->ShouldUse(tensor_info)) {
+    allocator = device_allocator_->get();
+    can_access_on_cpu = device_allocator_->CanAccessOnCPU();
+  } else {
+    // `GetAllocatorWithDefaultOptions()` always returns the same pointer to the
+    // same default allocator and its returned value should NOT be freed.
+    CHECK_STATUS(ort_api->GetAllocatorWithDefaultOptions(&allocator));
+  }
+  CHECK(allocator);
+
+  ONNXTensorElementDataType ort_data_type =
+      WebnnToOnnxDataType(tensor_info->descriptor.data_type());
+  std::vector<int64_t> ort_shape =
+      WebnnToOnnxShape(tensor_info->descriptor.shape());
+
+  // TODO(crbug.com/453420646): Implement context lost handling for ORT tensor
+  // creation failures.
+  // TODO(crbug.com/445971854): Emit mojom::Error since CreateTensorAsOrtValue()
+  // could malloc and fail if OOM.
+  ScopedOrtValue tensor;
+  CHECK_STATUS(ort_api->CreateTensorAsOrtValue(
+      allocator, ort_shape.data(), ort_shape.size(), ort_data_type,
+      ScopedOrtValue::Receiver(tensor).get()));
+  CHECK(tensor.get());
+
+  size_t size;
+  CHECK_STATUS(ort_api->GetTensorSizeInBytes(tensor.get(), &size));
+
+  // Invalid values are rejected in GraphBuilder.
+  CHECK(base::IsValueInRangeForNumericType<int>(size));
+
+  return base::MakeRefCounted<TensorImplOrt>(
+      std::move(receiver), AsWeakPtr(), std::move(tensor_info), size,
+      std::move(tensor), can_access_on_cpu, device_allocator_);
+}
+
+base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+ContextImplOrt::CreateTensorFromSharedImageImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+    mojom::TensorInfoPtr tensor_info,
+    WebNNTensorImpl::RepresentationPtr representation) {
+  return base::unexpected(
+      mojom::Error::New(mojom::Error::Code::kNotSupportedError,
+                        "WebGPU Interop is not supported."));
 }
 
 }  // namespace webnn::ort

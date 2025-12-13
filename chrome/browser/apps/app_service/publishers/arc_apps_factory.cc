@@ -53,11 +53,8 @@ ArcAppsFactory::ArcAppsFactory()
 std::unique_ptr<KeyedService>
 ArcAppsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto arc_apps =
-      std::make_unique<ArcApps>(AppServiceProxyFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
-  arc_apps->Initialize();
-  return arc_apps;
+  return std::make_unique<ArcApps>(AppServiceProxyFactory::GetForProfile(
+      Profile::FromBrowserContext(context)));
 }
 
 }  // namespace apps

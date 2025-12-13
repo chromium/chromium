@@ -19,8 +19,8 @@ namespace blink {
 void FakeLocalFrameHost::Init(blink::AssociatedInterfaceProvider* provider) {
   provider->OverrideBinderForTesting(
       mojom::blink::LocalFrameHost::Name_,
-      WTF::BindRepeating(&FakeLocalFrameHost::BindFrameHostReceiver,
-                         WTF::Unretained(this)));
+      BindRepeating(&FakeLocalFrameHost::BindFrameHostReceiver,
+                    Unretained(this)));
 }
 
 void FakeLocalFrameHost::EnterFullscreen(
@@ -35,11 +35,11 @@ void FakeLocalFrameHost::FullscreenStateChanged(
     bool is_fullscreen,
     mojom::blink::FullscreenOptionsPtr options) {}
 
-void FakeLocalFrameHost::RegisterProtocolHandler(const WTF::String& scheme,
+void FakeLocalFrameHost::RegisterProtocolHandler(const String& scheme,
                                                  const ::blink::KURL& url,
                                                  bool user_gesture) {}
 
-void FakeLocalFrameHost::UnregisterProtocolHandler(const WTF::String& scheme,
+void FakeLocalFrameHost::UnregisterProtocolHandler(const String& scheme,
                                                    const ::blink::KURL& url,
                                                    bool user_gesture) {}
 
@@ -75,7 +75,7 @@ void FakeLocalFrameHost::EnforceInsecureRequestPolicy(
     mojom::InsecureRequestPolicy policy_bitmap) {}
 
 void FakeLocalFrameHost::EnforceInsecureNavigationsSet(
-    const WTF::Vector<uint32_t>& set) {}
+    const Vector<uint32_t>& set) {}
 
 void FakeLocalFrameHost::SuddenTerminationDisablerChanged(
     bool present,
@@ -109,11 +109,11 @@ void FakeLocalFrameHost::GoToEntryAtOffset(
     std::optional<blink::scheduler::TaskAttributionId>) {}
 
 void FakeLocalFrameHost::UpdateTitle(
-    const WTF::String& title,
+    const String& title,
     base::i18n::TextDirection title_direction) {}
 
 void FakeLocalFrameHost::UpdateApplicationTitle(
-    const WTF::String& application_title) {}
+    const String& application_title) {}
 
 void FakeLocalFrameHost::UpdateUserActivationState(
     mojom::blink::UserActivationUpdateType update_type,
@@ -132,22 +132,22 @@ void FakeLocalFrameHost::ForwardResourceTimingToParent(
 void FakeLocalFrameHost::DidDispatchDOMContentLoadedEvent() {}
 
 void FakeLocalFrameHost::RunModalAlertDialog(
-    const WTF::String& alert_message,
+    const String& alert_message,
     bool disable_third_party_subframe_suppresion,
     RunModalAlertDialogCallback callback) {
   std::move(callback).Run();
 }
 
 void FakeLocalFrameHost::RunModalConfirmDialog(
-    const WTF::String& alert_message,
+    const String& alert_message,
     bool disable_third_party_subframe_suppresion,
     RunModalConfirmDialogCallback callback) {
   std::move(callback).Run(true);
 }
 
 void FakeLocalFrameHost::RunModalPromptDialog(
-    const WTF::String& alert_message,
-    const WTF::String& default_value,
+    const String& alert_message,
+    const String& default_value,
     bool disable_third_party_subframe_suppresion,
     RunModalPromptDialogCallback callback) {
   std::move(callback).Run(true, g_empty_string);
@@ -160,7 +160,7 @@ void FakeLocalFrameHost::RunBeforeUnloadConfirm(
 }
 
 void FakeLocalFrameHost::UpdateFaviconURL(
-    WTF::Vector<blink::mojom::blink::FaviconURLPtr> favicon_urls) {}
+    Vector<blink::mojom::blink::FaviconURLPtr> favicon_urls) {}
 
 void FakeLocalFrameHost::DownloadURL(
     mojom::blink::DownloadURLParamsPtr params) {}
@@ -171,7 +171,7 @@ void FakeLocalFrameHost::FocusedElementChanged(
     const gfx::Rect& bounds_in_frame_widget,
     blink::mojom::FocusType focus_type) {}
 
-void FakeLocalFrameHost::TextSelectionChanged(const WTF::String& text,
+void FakeLocalFrameHost::TextSelectionChanged(const String& text,
                                               uint32_t offset,
                                               const gfx::Range& range) {}
 void FakeLocalFrameHost::ShowPopupMenu(
@@ -196,8 +196,8 @@ void FakeLocalFrameHost::ShowContextMenu(
 
 void FakeLocalFrameHost::DidLoadResourceFromMemoryCache(
     const KURL& url,
-    const WTF::String& http_method,
-    const WTF::String& mime_type,
+    const String& http_method,
+    const String& mime_type,
     network::mojom::blink::RequestDestination request_destination,
     bool include_credentials) {}
 
@@ -230,10 +230,10 @@ void FakeLocalFrameHost::GetKeepAliveHandleFactory(
 
 void FakeLocalFrameHost::DidAddMessageToConsole(
     mojom::ConsoleMessageLevel log_level,
-    const WTF::String& message,
+    const String& message,
     uint32_t line_no,
-    const WTF::String& source_id,
-    const WTF::String& untrusted_stack_trace) {}
+    const String& source_id,
+    const String& untrusted_stack_trace) {}
 
 void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
 
@@ -248,15 +248,15 @@ void FakeLocalFrameHost::BindFrameHostReceiver(
 
 void FakeLocalFrameHost::DidChangeSrcDoc(
     const blink::FrameToken& child_frame_token,
-    const WTF::String& srcdoc_value) {}
+    const String& srcdoc_value) {}
 
 void FakeLocalFrameHost::ReceivedDelegatedCapability(
     blink::mojom::DelegatedCapability delegated_capability) {}
 
 void FakeLocalFrameHost::SendFencedFrameReportingBeacon(
-    const WTF::String& event_data,
-    const WTF::String& event_type,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const String& event_data,
+    const String& event_type,
+    const Vector<blink::FencedFrame::ReportingDestination>& destinations,
     bool cross_origin_exposed) {}
 
 void FakeLocalFrameHost::SendFencedFrameReportingBeaconToCustomURL(
@@ -265,8 +265,8 @@ void FakeLocalFrameHost::SendFencedFrameReportingBeaconToCustomURL(
 
 void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type,
-    const WTF::String& event_data,
-    const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
+    const String& event_data,
+    const Vector<blink::FencedFrame::ReportingDestination>& destinations,
     bool once,
     bool cross_origin_exposed) {}
 
@@ -282,11 +282,11 @@ void FakeLocalFrameHost::ExemptUrlFromNetworkRevocationForTesting(
 }
 
 void FakeLocalFrameHost::SendLegacyTechEvent(
-    const WTF::String& type,
+    const String& type,
     mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}
 
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
-    const WTF::String& event_type) {}
+    const String& event_type) {}
 
 void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
@@ -298,7 +298,7 @@ void FakeLocalFrameHost::CreateFencedFrame(
 }
 
 void FakeLocalFrameHost::ForwardFencedFrameEventAndUserActivationToEmbedder(
-    const WTF::String& event_type) {
+    const String& event_type) {
   NOTREACHED() << "ForwardFencedFrameEventToEmbedder is tested above the unit "
                   "test layer";
 }
@@ -323,13 +323,17 @@ void FakeLocalFrameHost::RecordWindowProxyUsageMetrics(
     const blink::FrameToken& target_frame_token,
     blink::mojom::WindowProxyAccessType access_type) {}
 
+void FakeLocalFrameHost::InitializeCrashReportStorage(
+    uint64_t length,
+    InitializeCrashReportStorageCallback callback) {}
+
 void FakeLocalFrameHost::SetCrashReportStorageKey(
-    const WTF::String& key,
-    const WTF::String& value,
+    const String& key,
+    const String& value,
     SetCrashReportStorageKeyCallback callback) {}
 
 void FakeLocalFrameHost::RemoveCrashReportStorageKey(
-    const WTF::String& key,
+    const String& key,
     RemoveCrashReportStorageKeyCallback callback) {}
 
 void FakeLocalFrameHost::NotifyDocumentInteractive() {}

@@ -43,7 +43,7 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -518,8 +518,7 @@ ShelfAlignment AshMessagePopupCollection::GetAlignment() const {
 }
 
 display::Display AshMessagePopupCollection::GetCurrentDisplay() const {
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(
-      shelf_->GetWindow());
+  return display::Screen::Get()->GetDisplayNearestWindow(shelf_->GetWindow());
 }
 
 void AshMessagePopupCollection::UpdateWorkArea() {

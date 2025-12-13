@@ -4,15 +4,17 @@
 
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_crostini_tracker.h"
 
-#include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/flat_tree.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_force_close_watcher.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -22,14 +24,11 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
@@ -96,9 +95,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     return;
   }
 
-  // Handle browser windows.
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
+  if (ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     return;
   }
 
@@ -152,7 +149,7 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   }
 
   // Prevent Crostini window from showing up after user switch.
-  MultiUserWindowManagerHelper::GetWindowManager()->SetWindowOwner(
+  ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
       window, primary_account_id);
 
   // Move the Crostini app window to the right display if necessary.
@@ -162,13 +159,13 @@ void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
   }
 
   display::Display registered_display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(
-          display_id, &registered_display)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id,
+                                                       &registered_display)) {
     return;
   }
 
   display::Display current_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
 
   if (registered_display != current_display) {
     auto* state = ash::WindowState::Get(window);
@@ -227,9 +224,7 @@ std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     return std::string();
   }
 
-  // Handle browser windows.
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  if (browser) {
+  if (ash::BrowserController::GetInstance()->GetBrowserForWindow(window)) {
     return std::string();
   }
 

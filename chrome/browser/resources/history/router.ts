@@ -81,9 +81,11 @@ export class HistoryRouterElement extends CrLitElement {
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    if (changedProperties.has('selectedPage') &&
-        changedProperties.get('selectedPage')) {
-      this.selectedPageChanged_();
+    if ((changedProperties.has('queryState') &&
+         changedProperties.get('queryState')) ||
+        (changedProperties.has('selectedPage') &&
+         changedProperties.get('selectedPage'))) {
+      this.serializeUrl();
     }
   }
 
@@ -111,10 +113,6 @@ export class HistoryRouterElement extends CrLitElement {
       queryParams.set('after', this.queryState.after);
     }
     router.setQueryParams(queryParams);
-  }
-
-  private selectedPageChanged_() {
-    this.serializeUrl();
   }
 
   private onPathChanged_(newPath: string) {

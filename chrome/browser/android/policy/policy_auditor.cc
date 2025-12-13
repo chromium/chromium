@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/ssl_status.h"
@@ -11,11 +12,11 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/PolicyAuditor_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
-int JNI_PolicyAuditor_GetCertificateFailure(
+static int JNI_PolicyAuditor_GetCertificateFailure(
     JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   // This function is similar to
   // LocationBarModelImpl::GetSecurityLevelForWebContents, but has a custom
   // mapping for policy auditing.
@@ -64,3 +65,5 @@ int JNI_PolicyAuditor_GetCertificateFailure(
   }
   return NONE;
 }
+
+DEFINE_JNI(PolicyAuditor)

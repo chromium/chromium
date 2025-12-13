@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/hid/hid_connection_impl.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 
@@ -64,7 +60,8 @@ void HidConnectionImpl::OnInputReport(
   DCHECK_GE(size, 1u);
   std::vector<uint8_t> data;
   if (size > 1) {
-    data = std::vector<uint8_t>(buffer->data() + 1, buffer->data() + size);
+    data = std::vector<uint8_t>(UNSAFE_TODO(buffer->data() + 1),
+                                UNSAFE_TODO(buffer->data() + size));
   }
   client_->OnInputReport(/*report_id=*/buffer->data()[0], data);
 }
@@ -86,7 +83,8 @@ void HidConnectionImpl::OnRead(ReadCallback callback,
   }
   DCHECK(buffer);
 
-  std::vector<uint8_t> data(buffer->data() + 1, buffer->data() + size);
+  std::vector<uint8_t> data(UNSAFE_TODO(buffer->data() + 1),
+                            UNSAFE_TODO(buffer->data() + size));
   std::move(callback).Run(true, buffer->data()[0], data);
 }
 
@@ -129,7 +127,7 @@ void HidConnectionImpl::OnGetFeatureReport(
   }
   DCHECK(buffer);
 
-  std::vector<uint8_t> data(buffer->data(), buffer->data() + size);
+  std::vector<uint8_t> data(buffer->data(), UNSAFE_TODO(buffer->data() + size));
   std::move(callback).Run(true, data);
 }
 

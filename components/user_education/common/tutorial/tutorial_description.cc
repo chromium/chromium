@@ -31,14 +31,7 @@ TutorialDescription::Step::Step(ElementSpecifier element,
                                 ui::InteractionSequence::StepType step_type,
                                 HelpBubbleArrow arrow,
                                 ui::CustomElementEventType event_type)
-    : element_id_(std::holds_alternative<ui::ElementIdentifier>(element)
-                      ? std::get<ui::ElementIdentifier>(element)
-                      : ui::ElementIdentifier()),
-      element_name_(std::holds_alternative<std::string>(element)
-                        ? std::get<std::string>(element)
-                        : std::string()),
-      step_type_(step_type),
-      event_type_(event_type) {}
+    : element_(element), step_type_(step_type), event_type_(event_type) {}
 
 TutorialDescription::Step::Step(const TutorialDescription::Step&) = default;
 TutorialDescription::Step& TutorialDescription::Step::operator=(

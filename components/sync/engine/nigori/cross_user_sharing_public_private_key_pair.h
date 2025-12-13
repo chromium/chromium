@@ -22,9 +22,9 @@ class CrossUserSharingPublicPrivateKeyPair {
  public:
   // Generate a X25519 key pair.
   static CrossUserSharingPublicPrivateKeyPair GenerateNewKeyPair();
-  // Initialize the Public-private key-pair using `private_key`.
-  static std::optional<CrossUserSharingPublicPrivateKeyPair> CreateByImport(
-      base::span<const uint8_t> private_key);
+
+  explicit CrossUserSharingPublicPrivateKeyPair(
+      base::span<const uint8_t, X25519_PRIVATE_KEY_LEN> private_key);
 
   CrossUserSharingPublicPrivateKeyPair(
       const CrossUserSharingPublicPrivateKeyPair& other) = delete;
@@ -63,8 +63,6 @@ class CrossUserSharingPublicPrivateKeyPair {
 
  private:
   CrossUserSharingPublicPrivateKeyPair();
-  explicit CrossUserSharingPublicPrivateKeyPair(
-      base::span<const uint8_t> private_key);
 
   bssl::ScopedEVP_HPKE_KEY key_;
 };

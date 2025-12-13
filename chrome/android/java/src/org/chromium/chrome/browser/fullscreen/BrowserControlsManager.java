@@ -21,6 +21,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -131,6 +132,8 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     private boolean mHasTopControlsHeightAnimation;
     private boolean mHasBottomControlsHeightAnimation;
 
+    private boolean mDisableSyncMinHeightWithTotalHeight;
+
     private final Runnable mUpdateVisibilityRunnable =
             new Runnable() {
                 @Override
@@ -219,18 +222,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         mBrowserVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         mHtmlApiHandler.getPersistentFullscreenModeSupplier());
-        mBrowserVisibilityDelegate.addObserver(
-                (constraints) -> {
-                    if (constraints == BrowserControlsState.SHOWN) {
-                        setPositionsForTabToNonFullscreen();
-
-                        // If controls become locked, it's possible we've previously delayed
-                        // actually setting visibility until a touch event is over. In this case, we
-                        // need to trigger an update again now, which should go through due to
-                        // constraints.
-                        scheduleVisibilityUpdate();
-                    }
-                });
+        mBrowserVisibilityDelegate.addObserver(this::onConstraintsChanged);
     }
 
     /**
@@ -309,7 +301,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                     }
 
                     @Override
-                    public void onBrowserControlsConstraintsChanged(
+                    public void onOffsetTagsInfoChanged(
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
@@ -322,9 +314,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                                 new OffsetTagConstraints(
                                         0, 0, -(mTopControlsHeight + hairlineHeight), 0);
 
+                        onConstraintsChanged(constraints);
                         // Notify observers of changes before passing tags to native so observers
                         // can set their relevant fields in offsetTagsInfo.
-                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
+                        notifyOffsetTagsChanged(oldOffsetTagsInfo, offsetTagsInfo, constraints);
 
                         offsetTagsInfo
                                 .getConstraints()
@@ -365,6 +358,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                 break;
         }
 
+        if (doSyncMinHeightWithTotalHeight()) {
+            mTopControlsMinHeight = mTopControlsHeight;
+        }
+
         mRendererTopContentOffset = mTopControlsHeight;
         updateControlOffset();
         scheduleVisibilityUpdate();
@@ -385,7 +382,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
     /**
      * @return The currently selected tab for fullscreen.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @Nullable Tab getTab() {
         return mTab;
     }
@@ -431,7 +428,7 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
      *     BrowserControlsUtils#areBrowserControlsOffScreen(BrowserControlsStateProvider)} when both
      *     min-heights are 0.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean areBrowserControlsAtMinHeight() {
         return assertNonNull(mControlsAtMinHeight.get());
     }
@@ -530,6 +527,10 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
 
     @Override
     public void setTopControlsHeight(int topControlsHeight, int topControlsMinHeight) {
+        if (doSyncMinHeightWithTotalHeight()) {
+            topControlsMinHeight = topControlsHeight;
+        }
+
         if (mTopControlsHeight == topControlsHeight
                 && mTopControlsMinHeight == topControlsMinHeight) {
             return;
@@ -810,7 +811,9 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
             return;
         }
         final int desiredVisibility = shouldShowAndroidControls() ? View.VISIBLE : View.INVISIBLE;
-        if (mControlContainer.getView().getVisibility() == desiredVisibility) return;
+        if (mControlContainer.getView().getVisibility() == desiredVisibility) {
+            return;
+        }
         mControlContainer.getView().removeCallbacks(mUpdateVisibilityRunnable);
         mControlContainer.getView().postOnAnimation(mUpdateVisibilityRunnable);
     }
@@ -982,12 +985,50 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         }
     }
 
-    private void notifyConstraintsChanged(
+    private void onConstraintsChanged(@BrowserControlsState int constraints) {
+        if (constraints == BrowserControlsState.SHOWN) {
+            // When compositor can drive the animation to show controls, do not call
+            // setPositionsForTabToNonFullscreen to avoid control offset being forced
+            // set to 0 before the render-driven animation kicks in.
+            boolean allowRenderDrivenShowConstraint =
+                    ChromeFeatureList.sBrowserControlsRenderDrivenShowConstraint.isEnabled();
+            boolean renderDrivenShowConstraint =
+                    allowRenderDrivenShowConstraint && canAnimateNativeBrowserControls();
+            if (!renderDrivenShowConstraint) {
+                setPositionsForTabToNonFullscreen();
+            }
+
+            // TODO(https://crbug.com/449011189): Maybe cleanup
+            if (allowRenderDrivenShowConstraint) {
+                RecordHistogram.recordBooleanHistogram(
+                        "Android.BrowserControls.RenderDrivenShowConstraint",
+                        renderDrivenShowConstraint);
+            }
+
+            // If controls become locked, it's possible we've previously delayed
+            // actually setting visibility until a touch event is over. In this case, we
+            // need to trigger an update again now, which should go through due to
+            // constraints.
+            scheduleVisibilityUpdate();
+        }
+
+        // From https://crbug.com/452885338, https://crbug.com/461532432: When changing
+        // controls visibility when exiting fullscreen, the visibility change might not
+        // honor a redraw. We do this through forcing a relayout to avoid the toolbar
+        // remains hidden.
+        if ((constraints == BrowserControlsState.SHOWN || constraints == BrowserControlsState.BOTH)
+                && getAndroidControlsVisibility() != View.VISIBLE) {
+            mForceRelayoutOnVisibilityChange = true;
+            scheduleVisibilityUpdate();
+        }
+    }
+
+    private void notifyOffsetTagsChanged(
             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
             BrowserControlsOffsetTagsInfo offsetTagsInfo,
             @BrowserControlsState int constraints) {
         for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onControlsConstraintsChanged(
+            obs.onOffsetTagsInfoChanged(
                     oldOffsetTagsInfo,
                     offsetTagsInfo,
                     constraints,
@@ -1343,6 +1384,23 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         mBrowserVisibilityDelegate.destroy();
         if (mTabControlsObserver != null) mTabControlsObserver.destroy();
+    }
+
+    /**
+     * Disables locking the top control height. Used in TWAs with display modes that want
+     * flexibility on whether to show a custom tab bar (notably MINIMAL_UI and
+     * WINDOW_CONTROLS_OVERLAY).
+     */
+    public void disableSyncMinHeightWithTotalHeight() {
+        mDisableSyncMinHeightWithTotalHeight = true;
+    }
+
+    private boolean doSyncMinHeightWithTotalHeight() {
+        // When V2 flag is enabled, this logic is coordinated in TopControlsStacker.
+        if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2()) return false;
+        if (mDisableSyncMinHeightWithTotalHeight) return false;
+
+        return BrowserControlsUtils.doSyncMinHeightWithTotalHeight(mActivity);
     }
 
     @NullUnmarked

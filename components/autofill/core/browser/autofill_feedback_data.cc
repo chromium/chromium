@@ -37,6 +37,8 @@ std::string FillDataTypeToStr(FillDataType type) {
       return "AutofillAi";
     case FillDataType::kSingleFieldFillerLoyaltyCard:
       return "SingleFieldFillerLoyaltyCard";
+    case FillDataType::kOneTimePasswordValue:
+      return "OneTimePasswordValue";
   }
 }
 
@@ -51,7 +53,13 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
   field_data.Set("autocompleteAttribute", field->autocomplete_attribute());
   field_data.Set("labelAttribute", field->label());
   field_data.Set("placeholderAttribute", field->placeholder());
-  field_data.Set("fieldType", field->Type().ToStringView());
+  field_data.Set("fieldTypes", [&field] {
+    base::Value::List field_types;
+    for (FieldType field_type : field->Type().GetTypes()) {
+      field_types.Append(FieldTypeToString(field_type));
+    }
+    return field_types;
+  }());
   field_data.Set("heuristicType",
                  FieldTypeToStringView(field->heuristic_type()));
   field_data.Set("serverType", FieldTypeToStringView(field->server_type()));
@@ -81,8 +89,8 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
   std::string associated_country;
   base::Time last_autofill_event_timestamp = base::Time();
   bool had_trigger_event = false;
-  for (const auto& [form_id, form] : manager->form_structures()) {
-    for (const auto& field : form->fields()) {
+  manager->ForEachCachedForm([&](const FormStructure& form) {
+    for (const auto& field : form.fields()) {
       for (const auto& field_log_event : field->field_log_events()) {
         if (const TriggerFillFieldLogEvent* trigger_event =
                 std::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
@@ -95,7 +103,7 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
         }
       }
     }
-  }
+  });
   // Only include last autofill event metadata if the event occurred less than
   // `kAutofillEventTimeLimit` minutes ago.
   if (had_trigger_event &&
@@ -112,30 +120,29 @@ base::Value::Dict FetchAutofillFeedbackData(AutofillManager* manager,
                                             base::Value::Dict extra_logs) {
   base::Value::Dict dict;
   base::Value::List form_structures;
-  form_structures.reserve(manager->form_structures().size());
 
-  for (const auto& [form_id, form] : manager->form_structures()) {
+  manager->ForEachCachedForm([&](const FormStructure& form) {
     base::Value::Dict form_data;
     form_data.Set("formSignature",
-                  base::NumberToString(form->form_signature().value()));
+                  base::NumberToString(form.form_signature().value()));
     form_data.Set("rendererId",
-                  base::NumberToString(form->global_id().renderer_id.value()));
-    form_data.Set("hostFrame", form->global_id().frame_token.ToString());
+                  base::NumberToString(form.global_id().renderer_id.value()));
+    form_data.Set("hostFrame", form.global_id().frame_token.ToString());
     form_data.Set("sourceUrl",
-                  url::Origin::Create(form->source_url()).Serialize());
-    form_data.Set("mainFrameUrl", form->main_frame_origin().Serialize());
-    form_data.Set("idAttribute", form->id_attribute());
-    form_data.Set("nameAttribute", form->name_attribute());
+                  url::Origin::Create(form.source_url()).Serialize());
+    form_data.Set("mainFrameUrl", form.main_frame_origin().Serialize());
+    form_data.Set("idAttribute", form.id_attribute());
+    form_data.Set("nameAttribute", form.name_attribute());
 
     base::Value::List fields;
-    fields.reserve(form->fields().size());
-    for (const auto& field : form->fields()) {
+    fields.reserve(form.fields().size());
+    for (const auto& field : form.fields()) {
       fields.Append(BuildFieldDataLogs(field.get()));
     }
 
     form_data.Set("fields", std::move(fields));
     form_structures.Append(std::move(form_data));
-  }
+  });
 
   dict.Set("formStructures", std::move(form_structures));
 

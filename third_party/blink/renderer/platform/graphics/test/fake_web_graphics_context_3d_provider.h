@@ -10,13 +10,11 @@
 #include "cc/tiles/image_decode_cache.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
-#include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/webgpu_interface_stub.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/mock/GrMockTypes.h"
 
 namespace blink {
@@ -25,30 +23,9 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
  public:
   explicit FakeWebGraphicsContext3DProvider(
       gpu::gles2::GLES2Interface* gl,
-      cc::ImageDecodeCache* cache = nullptr,
-      GrDirectContext* gr_context = nullptr,
-      viz::TestContextProvider* raster_context_provider = nullptr)
+      cc::ImageDecodeCache* cache = nullptr)
       : gl_(gl),
-        image_decode_cache_(cache ? cache : &stub_image_decode_cache_),
-        raster_context_provider_(raster_context_provider) {
-    if (gr_context) {
-      gr_context_ = sk_ref_sp<GrDirectContext>(gr_context);
-    } else {
-      GrMockOptions mockOptions;
-      gr_context_ = GrDirectContext::MakeMock(&mockOptions);
-    }
-
-    if (!raster_context_provider_) {
-      // If there is no raster context provider, fall back to using a locally
-      // created raster interface. Unit tests that want to use something other
-      // than RasterImplementationGLES should pas a raster_context_provider.
-      raster_interface_ =
-          std::make_unique<gpu::raster::RasterImplementationGLES>(
-              gl_, nullptr, capabilities_);
-      test_shared_image_interface_ =
-          base::MakeRefCounted<gpu::TestSharedImageInterface>();
-    }
-
+        image_decode_cache_(cache ? cache : &stub_image_decode_cache_) {
     webgpu_interface_ = std::make_unique<gpu::webgpu::WebGPUInterfaceStub>();
 
     // enable all gpu features.
@@ -79,8 +56,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   }
 
   ~FakeWebGraphicsContext3DProvider() override = default;
-
-  GrDirectContext* GetGrContext() override { return gr_context_.get(); }
 
   const gpu::Capabilities& GetCapabilities() const override {
     return capabilities_;
@@ -140,10 +115,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   viz::RasterContextProvider* RasterContextProvider() const override {
     return raster_context_provider_;
   }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    return raster_context_provider_->GetGrGLTextureFormat(format);
-  }
 
  private:
   cc::StubDecodeCache stub_image_decode_cache_;
@@ -153,7 +124,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   raw_ptr<gpu::raster::RasterInterface, DanglingUntriaged>
       external_raster_interface_ = nullptr;
   std::unique_ptr<gpu::webgpu::WebGPUInterfaceStub> webgpu_interface_;
-  sk_sp<GrDirectContext> gr_context_;
   gpu::Capabilities capabilities_;
   gpu::GpuFeatureInfo gpu_feature_info_;
   WebglPreferences webgl_preferences_;

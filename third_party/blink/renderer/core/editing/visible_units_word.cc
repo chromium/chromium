@@ -125,6 +125,8 @@ PositionInFlatTree NextWordPositionInternal(
       if (offset == text.length() || text.length() == 0)
         return Position();
       TextBreakIterator* it = WordBreakIterator(text.Span16());
+      int punct_runner = -1;
+      bool found_space_before_punct = false;
       for (int runner = it->following(offset); runner != kTextBreakDone;
            runner = it->following(runner)) {
         // Move after line break
@@ -136,7 +138,26 @@ PositionInFlatTree NextWordPositionInternal(
           if (unicode::IsAlphanumeric(text[runner - 1])) {
             return SkipWhitespaceIfNeeded(text, runner);
           }
+          // Track punctuation that follows whitespace for Windows word boundary
+          // behavior. This enables stopping at punctuation after whitespace
+          // (e.g., "word ..." stops at "...") while preserving normal behavior
+          // for punctuation without whitespace (e.g., "word.more")
+          if (platform_word_behavior_ ==
+                  PlatformWordBehavior::kWordSkipSpaces &&
+              punct_runner == -1 && runner > 0 &&
+              IsWhitespace(text[runner - 1])) {
+            punct_runner = runner;
+            found_space_before_punct = true;
+          }
           continue;
+        }
+        // Windows-specific: Return accumulated punctuation boundary if it was
+        // preceded by whitespace. This fixes asymmetric word navigation where
+        // forward/backward movement would stop at different positions for
+        // patterns like "word ..." or "word !!!"
+        if (platform_word_behavior_ == PlatformWordBehavior::kWordSkipSpaces &&
+            punct_runner >= 0 && found_space_before_punct) {
+          return SkipWhitespaceIfNeeded(text, punct_runner);
         }
         // We stop searching in the following conditions:
         // 1. When the character preceding the break is
@@ -382,10 +403,7 @@ bool IsWordBreak(UChar ch) {
 }
 
 bool IsWordBoundary(UChar ch) {
-  return unicode::IsPunct(ch) ||
-         (RuntimeEnabledFeatures::TreatSymbolsAsWordBoundaryEnabled() &&
-          unicode::IsSymbol(ch)) ||
-         U16_IS_SURROGATE(ch);
+  return unicode::IsPunct(ch) || unicode::IsSymbol(ch) || U16_IS_SURROGATE(ch);
 }
 
 }  // namespace blink

@@ -79,7 +79,7 @@ std::optional<std::string> GetHash(const base::Value::Dict& event,
   crypto::obsolete::Md5 hasher = MakeMd5HasherForPolicyEventId();
   hasher.Update(base::as_byte_span(*event_json));
   hasher.Update(base::as_byte_span(*context_json));
-  return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
+  return base::HexEncodeLower(hasher.Finish());
 }
 
 }  // namespace

@@ -4,7 +4,7 @@
 
 #include "base/android/scoped_input_event.h"
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/check.h"
 #include "base/notreached.h"
 
@@ -16,8 +16,7 @@ namespace base::android {
 #endif
 
 ScopedInputEvent::ScopedInputEvent(const AInputEvent* event) {
-  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
-        SCOPED_INPUT_EVENT_MIN_API);
+  CHECK(base::android::android_info::sdk_int() >= SCOPED_INPUT_EVENT_MIN_API);
   CHECK(event);
   a_input_event_ = event;
 }

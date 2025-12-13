@@ -5,6 +5,7 @@
 #ifndef CC_MOJOM_PAINT_FLAGS_MOJOM_TRAITS_H_
 #define CC_MOJOM_PAINT_FLAGS_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "cc/mojom/paint_flags.mojom-shared.h"
 #include "cc/paint/paint_flags.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"

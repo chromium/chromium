@@ -32,7 +32,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
@@ -49,7 +48,6 @@
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
-#include "third_party/blink/renderer/core/frame/font_matching_metrics.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -66,6 +64,7 @@
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_script_url.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
+#include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/workers/custom_event_message.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/installed_scripts_manager.h"
@@ -166,6 +165,12 @@ FontFaceSet* WorkerGlobalScope::fonts() {
   return FontFaceSetWorker::From(*this);
 }
 
+DOMOrigin* WorkerGlobalScope::GetDOMOrigin(LocalDOMWindow*) const {
+  // No access check is required, as `WorkerGlobalScope` objects are not
+  // accessible cross-origin.
+  return DOMOrigin::Create(GetSecurityOrigin());
+}
+
 WorkerGlobalScope::~WorkerGlobalScope() {
   DCHECK(!ScriptController());
   InstanceCounters::DecrementCounter(
@@ -190,6 +195,14 @@ const KURL& WorkerGlobalScope::BaseURL() const {
   return Url();
 }
 
+UserAgentMetadata WorkerGlobalScope::GetUserAgentMetadata() const {
+  std::optional<UserAgentMetadata> optional_metadata;
+  if (CoreProbeSink* sink = probe::ToCoreProbeSink(GetExecutionContext())) {
+    probe::ApplyUserAgentMetadataOverride(sink, &optional_metadata);
+  }
+  return optional_metadata.value_or(ua_metadata_);
+}
+
 scheduler::WorkerScheduler* WorkerGlobalScope::GetScheduler() {
   DCHECK(IsContextThread());
   return GetThread()->GetScheduler();
@@ -199,9 +212,6 @@ void WorkerGlobalScope::Dispose() {
   DCHECK(IsContextThread());
   loading_virtual_time_pauser_ = WebScopedVirtualTimePauser();
   closing_ = true;
-  if (font_matching_metrics_) {
-    font_matching_metrics_->PublishAllMetrics();
-  }
   WorkerOrWorkletGlobalScope::Dispose();
 }
 
@@ -253,8 +263,8 @@ void WorkerGlobalScope::importScripts(
   // [...]
   for (const auto& url : urls) {
     url_strings.push_back(TrustedTypesCheckForScriptURL(
-        url, GetExecutionContext(), "WorkerGlobalScope", "importScripts",
-        exception_state));
+        url, GetExecutionContext(), trusted_types_names::kWorkerGlobalScope,
+        trusted_types_names::kImportScripts, exception_state));
     if (exception_state.HadException()) {
       return;
     }
@@ -267,7 +277,7 @@ void WorkerGlobalScope::importScripts(
 namespace {
 
 String NetworkErrorMessageAtImportScript(const KURL& url) {
-  return "The script at '" + url.ElidedString() + "' failed to load.";
+  return StrCat({"The script at '", url.ElidedString(), "' failed to load."});
 }
 
 }  // namespace
@@ -303,7 +313,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
     if (!url.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "The URL '" + url_string + "' is invalid.");
+          StrCat({"The URL '", url_string, "' is invalid."}));
       return;
     }
     if (!GetContentSecurityPolicy()->AllowScriptFromSource(
@@ -577,8 +587,10 @@ void WorkerGlobalScope::RunWorkerScript() {
     debugger->ExternalAsyncTaskFinished(*stack_id_);
 
   script_eval_state_ = ScriptEvalState::kEvaluated;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("blink.worker", "WorkerGlobalScope setup",
-                                  TRACE_ID_LOCAL(this));
+  if (auto* controller = GetThread()->GetWorkerInspectorController()) {
+    controller->WorkerScriptLoaded();
+  }
+  TRACE_EVENT_END("blink.worker", perfetto::Track::FromPointer(this));
 }
 
 void WorkerGlobalScope::ReceiveMessage(BlinkTransferableMessage message) {
@@ -698,8 +710,8 @@ WorkerGlobalScope::WorkerGlobalScope(
   // Workers should always maintain the default world of an isolate.
   CHECK(creation_params->is_default_world_of_isolate);
   TRACE_EVENT("blink.worker", "WorkerGlobalScope::WorkerGlobalScope");
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("blink.worker", "WorkerGlobalScope setup",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("blink.worker", "WorkerGlobalScope setup",
+                    perfetto::Track::FromPointer(this));
 
   InstanceCounters::IncrementCounter(
       InstanceCounters::kWorkerGlobalScopeCounter);
@@ -740,15 +752,6 @@ WorkerGlobalScope::WorkerGlobalScope(
   DCHECK(creation_params->worker_permissions_policy);
   GetSecurityContext().SetPermissionsPolicy(
       std::move(creation_params->worker_permissions_policy));
-
-  // UKM recorder is needed in the Dispose() method but sometimes it is not
-  // initialized by then because of a race problem.
-  // If the Identifiability Study is enabled, we need the UKM recorder in any
-  // case so it should not affect anything if we initialize it here.
-  // TODO(crbug.com/1370978): Check if there is another fix instead of
-  // initializing UKM Recorder here.
-  if (blink::IdentifiabilityStudySettings::Get()->IsActive())
-    UkmRecorder();
 }
 
 void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
@@ -840,14 +843,6 @@ bool WorkerGlobalScope::HasPendingActivity() const {
   return !ExecutionContext::IsContextDestroyed();
 }
 
-FontMatchingMetrics* WorkerGlobalScope::GetFontMatchingMetrics() {
-  if (!font_matching_metrics_) {
-    font_matching_metrics_ = std::make_unique<FontMatchingMetrics>(
-        this, GetTaskRunner(TaskType::kInternalDefault));
-  }
-  return font_matching_metrics_.get();
-}
-
 CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
   if (!code_cache_host_) {
     // We may not have a valid browser interface in tests. For ex:
@@ -858,7 +853,7 @@ CodeCacheHost* WorkerGlobalScope::GetCodeCacheHost() {
     mojo::Remote<mojom::blink::CodeCacheHost> remote;
     GetBrowserInterfaceBroker().GetInterface(
         remote.BindNewPipeAndPassReceiver());
-    code_cache_host_ = std::make_unique<CodeCacheHost>(std::move(remote));
+    code_cache_host_ = CodeCacheHost::Create(std::move(remote));
   }
   return code_cache_host_.get();
 }

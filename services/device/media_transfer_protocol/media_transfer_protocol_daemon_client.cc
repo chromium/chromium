@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -24,7 +25,8 @@ namespace device {
 namespace {
 
 const char kInvalidResponseMsg[] = "Invalid Response: ";
-uint32_t kMaxChunkSize = 1024 * 1024;  // D-Bus has message size limits.
+// D-Bus has message size limits.
+constexpr uint32_t kMaxChunkSize = 1024 * 1024;
 
 mojom::MtpFileEntry GetMojoMtpFileEntryFromProtobuf(const MtpFileEntry& entry) {
   return mojom::MtpFileEntry(
@@ -502,14 +504,13 @@ class MediaTransferProtocolDaemonClientImpl
       return;
     }
 
-    const uint8_t* data_bytes = nullptr;
-    size_t data_length = 0;
+    base::span<const uint8_t> data_bytes;
     dbus::MessageReader reader(response);
-    if (!reader.PopArrayOfBytes(&data_bytes, &data_length)) {
+    if (!reader.PopArrayOfBytes(&data_bytes)) {
       std::move(error_callback).Run();
       return;
     }
-    std::string data(reinterpret_cast<const char*>(data_bytes), data_length);
+    std::string data(base::as_string_view(data_bytes));
     std::move(callback).Run(data);
   }
 

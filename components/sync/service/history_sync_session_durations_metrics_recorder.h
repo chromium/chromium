@@ -38,6 +38,7 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(SyncService* sync) override;
+  void OnSyncShutdown(SyncService* sync) override;
 
  private:
   enum class HistorySyncStatus {
@@ -60,10 +61,10 @@ class HistorySyncSessionDurationsMetricsRecorder
 
   // Tracks the elapsed active session time while the browser is open. The timer
   // is absent if there's no active session.
-  std::unique_ptr<base::ElapsedTimer> total_session_timer_;
+  std::optional<base::ElapsedTimer> total_session_timer_;
   // Tracks the elapsed active session time in the current history-sync-enabled
   // state. Absent if there's no active session.
-  std::unique_ptr<base::ElapsedTimer> history_sync_state_timer_;
+  std::optional<base::ElapsedTimer> history_sync_state_timer_;
 };
 
 }  // namespace syncer

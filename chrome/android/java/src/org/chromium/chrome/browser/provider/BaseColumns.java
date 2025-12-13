@@ -14,11 +14,12 @@ public interface BaseColumns {
      *
      * <p>Type: INTEGER (long)
      */
-    public static final String ID = "_id";
+    String ID = "_id";
 
     /**
      * The count of rows in a directory.
-     * <P>Type: INTEGER</P>
+     *
+     * <p>Type: INTEGER
      */
-    public static final String COUNT = "_count";
+    String COUNT = "_count";
 }

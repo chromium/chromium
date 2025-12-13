@@ -110,7 +110,7 @@ class RequestThrottler {
      *
      * @param url URL the matched intent refers to.
      */
-    public void registerSuccess(String url) {
+    public void registerSuccess(@Nullable String url) {
         // (a) Back to the minimum delay.
         mDelayMs = MIN_DELAY;
         mLastRequestMs = -1;

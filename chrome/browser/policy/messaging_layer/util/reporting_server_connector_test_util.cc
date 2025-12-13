@@ -72,10 +72,15 @@ class FakeDelegate : public EncryptedReportingClient::Delegate {
 
 ReportingServerConnector::TestEnvironment::TestEnvironment()
     : store_(std::make_unique<::policy::MockCloudPolicyStore>()),
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+      extension_install_store_(
+          std::make_unique<::policy::MockCloudPolicyStore>()),
+#endif
       core_(std::make_unique<::policy::CloudPolicyCore>(
           ::policy::dm_protocol::kChromeDevicePolicyType,
           std::string(),
           store_.get(),
+          extension_install_store_.get(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           network::TestNetworkConnectionTracker::CreateGetter())) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -127,7 +132,8 @@ base::Value::Dict ReportingServerConnector::TestEnvironment::request_body(
       base::JSONReader::Read(request.request_body->elements()
                                  ->at(0)
                                  .As<network::DataElementBytes>()
-                                 .AsStringPiece());
+                                 .AsStringPiece(),
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   CHECK(body);
   CHECK(body->is_dict());
   return body->GetDict().Clone();
@@ -145,9 +151,9 @@ void ReportingServerConnector::TestEnvironment::
                                      StatusOr<base::Value::Dict> response) {
   const std::string& pending_request_url =
       (*url_loader_factory()->pending_requests())[0].request.url.spec();
-  std::string response_string = "";
+  std::string response_string;
   if (response.has_value()) {
-    base::JSONWriter::Write(response.value(), &response_string);
+    response_string = base::WriteJson(response.value()).value_or("");
   }
   url_loader_factory()->SimulateResponseForPendingRequest(pending_request_url,
                                                           response_string);

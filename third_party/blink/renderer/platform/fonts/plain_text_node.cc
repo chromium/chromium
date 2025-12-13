@@ -6,11 +6,11 @@
 
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -69,10 +69,7 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
       result_length = last_index;
     }
     if (buffer) {
-      // SAFETY: buffer->Characters()'s size is `length`, and `result_length`
-      // is less than `length`.
-      UNSAFE_BUFFERS(U16_APPEND(buffer->Characters(), result_length, length,
-                                normalized, error));
+      U16_APPEND(buffer->Span(), result_length, length, normalized, error);
       DCHECK(!error);
     }
   }
@@ -83,7 +80,147 @@ std::pair<String, bool> NormalizeSpacesAndMaybeBidiInternal(
   return {text.ToString(), maybe_bidi};
 }
 
+template <bool split_by_zws>
+bool IsWordDelimiter(UChar ch) {
+  // As of 2025 March, Google Docs always wraps text with BiDi control
+  // characters, and they are replaced with ZWS for HarfBuzzShaper.
+  // Assuming ZWS as a word delimiter improves hit rate of a shape cache.
+  return ch == uchar::kSpace || ch == uchar::kTab ||
+         (split_by_zws && ch == uchar::kZeroWidthSpace);
+}
+
+unsigned NextWordEndIndex(StringView text, unsigned start_index) {
+  const unsigned length = text.length();
+  if (start_index >= length) {
+    return 0;
+  }
+
+  if (start_index + 1u == length || IsWordDelimiter<true>(text[start_index])) {
+    return start_index + 1;
+  }
+
+  // 8Bit words end at IsWordDelimiter().
+  if (text.Is8Bit()) {
+    for (unsigned i = start_index + 1;; ++i) {
+      if (i == length || IsWordDelimiter<false>(text[i])) {
+        return i;
+      }
+    }
+  }
+
+  // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
+  unsigned end = start_index;
+  UChar32 ch = text.CodePointAtAndNext(end);
+  if (!Character::IsCJKIdeographOrSymbol(ch)) {
+    for (unsigned next_end = end; end < length; end = next_end) {
+      ch = text.CodePointAtAndNext(next_end);
+      if (IsWordDelimiter<true>(ch) ||
+          Character::IsCJKIdeographOrSymbolBase(ch)) {
+        return end;
+      }
+    }
+    return length;
+  }
+
+  // For CJK/Emoji words, delimit every character because these scripts do
+  // not delimit words by spaces, and delimiting only at IsWordDelimiter()
+  // worsen the cache efficiency.
+  bool has_any_script = !Character::IsCommonOrInheritedScript(ch);
+  for (unsigned next_end = end; end < length; end = next_end) {
+    ch = text.CodePointAtAndNext(next_end);
+    // Modifier check in order not to split Emoji sequences.
+    if (U_GET_GC_MASK(ch) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK) ||
+        ch == uchar::kZeroWidthJoiner || Character::IsEmojiComponent(ch) ||
+        Character::IsExtendedPictographic(ch)) {
+      continue;
+    }
+    // Avoid delimiting COMMON/INHERITED alone, which makes harder to
+    // identify the script.
+    if (Character::IsCJKIdeographOrSymbol(ch)) {
+      if (Character::IsCommonOrInheritedScript(ch)) {
+        continue;
+      }
+      if (!has_any_script) {
+        has_any_script = true;
+        continue;
+      }
+    }
+    return end;
+  }
+  return length;
+}
+
 }  // namespace
+
+struct CharacterRangeContext {
+  const StringView& text;
+  const bool is_rtl;
+  int from;
+  int to;
+  float current_x;
+  unsigned total_num_characters = 0;
+  std::optional<float> from_x;
+  std::optional<float> to_x;
+  float min_y = 0;
+  float max_y = 0;
+
+  void ComputeRangeIn(const ShapeResult& result, const gfx::RectF& ink_bounds);
+};
+
+void CharacterRangeContext::ComputeRangeIn(const ShapeResult& result,
+                                           const gfx::RectF& ink_bounds) {
+  result.EnsureGraphemes(
+      StringView(text, total_num_characters, result.NumCharacters()));
+  if (is_rtl) {
+    // Convert logical offsets to visual offsets, because results are in
+    // logical order while runs are in visual order.
+    if (!from_x && from >= 0 &&
+        static_cast<unsigned>(from) < result.NumCharacters()) {
+      from = result.NumCharacters() - from - 1;
+    }
+    if (!to_x && to >= 0 &&
+        static_cast<unsigned>(to) < result.NumCharacters()) {
+      to = result.NumCharacters() - to - 1;
+    }
+    current_x -= result.Width();
+  }
+  for (const auto& run : result.RunsOrParts()) {
+    if (!run) {
+      continue;
+    }
+    DCHECK_EQ(is_rtl, run->IsRtl());
+    int num_characters = run->NumCharacters();
+    if (!from_x && from >= 0 && from < num_characters) {
+      from_x = run->XPositionForVisualOffset(from, AdjustMidCluster::kToStart) +
+               current_x;
+    } else {
+      from -= num_characters;
+    }
+
+    if (!to_x && to >= 0 && to < num_characters) {
+      to_x = run->XPositionForVisualOffset(to, AdjustMidCluster::kToEnd) +
+             current_x;
+    } else {
+      to -= num_characters;
+    }
+
+    if (from_x || to_x) {
+      min_y = std::min(min_y, ink_bounds.y());
+      max_y = std::max(max_y, ink_bounds.bottom());
+    }
+
+    if (from_x && to_x) {
+      break;
+    }
+    current_x += run->Width();
+  }
+  if (is_rtl) {
+    current_x -= result.Width();
+  }
+  total_num_characters += result.NumCharacters();
+}
+
+// ================================================================
 
 void PlainTextItem::Trace(Visitor* visitor) const {
   visitor->Trace(shape_result_);
@@ -112,8 +249,7 @@ PlainTextNode::PlainTextNode(const TextRun& run,
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
     TextRun run_with_override(text_with_override, run.Direction(),
-                              /* directional_override */ false,
-                              normalize_space);
+                              /* directional_override */ false);
     SegmentText(run_with_override, /* bidi_overridden */ true, font,
                 supports_bidi);
   } else {
@@ -247,8 +383,7 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
   const wtf_size_t insertion_index = item_list_.size();
   StringView text_content(text_content_, start_offset, run_length);
   for (wtf_size_t index = 0; index < run_length;) {
-    wtf_size_t new_index =
-        CachingWordShapeIterator::NextWordEndIndex<true>(text_content, index);
+    wtf_size_t new_index = NextWordEndIndex(text_content, index);
     PlainTextItem item(start_offset + index, new_index - index, direction,
                        text_content_);
     if (IsLtr(direction)) {
@@ -261,8 +396,8 @@ void PlainTextNode::SegmentWord(wtf_size_t start_offset,
 }
 
 void PlainTextNode::Shape(const Font& font, FrameShapeCache* cache) {
-  ShapeResultSpacing<String> spacing(text_content_);
-  spacing.SetSpacingAndExpansion(font.GetFontDescription(), normalize_space_);
+  ShapeResultSpacing spacing(text_content_);
+  spacing.SetSpacing(font.GetFontDescription(), normalize_space_);
   for (auto& item : item_list_) {
     FrameShapeCache::ShapeEntry* entry = nullptr;
     if (cache) {
@@ -362,14 +497,14 @@ CharacterRange PlainTextNode::ComputeCharacterRange(
   int from = absolute_from;
   int to = absolute_to;
 
-  ShapeResultBuffer::CharacterRangeContext context{
-      text_content_, is_rtl, from, to, is_rtl ? total_width : 0};
+  CharacterRangeContext context{text_content_, is_rtl, from, to,
+                                is_rtl ? total_width : 0};
   for (const auto& item : item_list_) {
     const ShapeResult* result = item.GetShapeResult();
     if (!result) {
       continue;
     }
-    ShapeResultBuffer::ComputeRangeIn(*result, item.InkBounds(), context);
+    context.ComputeRangeIn(*result, item.InkBounds());
   }
 
   // The position in question might be just after the text.

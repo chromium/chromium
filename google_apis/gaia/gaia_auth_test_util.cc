@@ -5,8 +5,6 @@
 #include "google_apis/gaia/gaia_auth_test_util.h"
 
 #include "base/base64.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
 #include "google_apis/gaia/oauth2_mint_token_consent_result.pb.h"
@@ -52,30 +50,6 @@ std::string CreateListAccountsResponseInBinaryFormat(
   response.SerializeToString(&serialized_response);
 
   return base::Base64Encode(serialized_response);
-}
-
-std::string CreateListAccountsResponseInLegacyFormat(
-    const std::vector<gaia::CookieParams>& params) {
-  std::vector<std::string> response_body;
-
-  for (const auto& param : params) {
-    std::string response_part = base::StringPrintf(
-        "[\"b\", 0, \"n\", \"%s\", \"p\", 0, 0, 0, 0, %d, \"%s\"",
-        param.email.c_str(), param.valid ? 1 : 0,
-        param.gaia_id.ToString().c_str());
-
-    if (param.signed_out || !param.verified) {
-      response_part +=
-          base::StringPrintf(", null, null, null, %d, %d",
-                             param.signed_out ? 1 : 0, param.verified ? 1 : 0);
-    }
-
-    response_part += "]";
-    response_body.push_back(response_part);
-  }
-
-  return std::string("[\"f\", [") + base::JoinString(response_body, ", ") +
-         "]]";
 }
 
 }  // namespace gaia

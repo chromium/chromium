@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
@@ -41,6 +43,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -224,9 +227,6 @@ class PageSpecificSiteDataDialogInteractiveUiTest
   }
 
   const base::UserActionTester& user_actions() const { return *user_actions_; }
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
 
  protected:
   virtual void SetUpFeatureList() { feature_list_.InitWithFeatures({}, {}); }
@@ -253,8 +253,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        FirstPartyAllowed) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection,
                             &observer),
       // Name the first row in the first-party section.
@@ -291,8 +290,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        ThirdPartyBlocked) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Name the third-party cookies row.
@@ -327,8 +325,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        OnlyPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Find the third party section and name the row with partitioned only
@@ -359,8 +356,7 @@ IN_PROC_BROWSER_TEST_F(PageSpecificSiteDataDialogInteractiveUiTest,
                        MixedPartitionedBlockedThirdPartyCookies) {
   CookieChangeObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents(), 6);
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogThirdPartySection,
                             &observer),
       // Find the third party section and name the row with mixed storage
@@ -415,8 +411,16 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                 .SetStartCallback(base::BindOnce(
                     [](Profile* profile, webapps::AppId app_id,
                        ui::InteractionSequence* seq, ui::TrackedElement* el) {
-                      web_app::LaunchBrowserForWebAppInTab(
-                          profile, app_id, WindowOpenDisposition::CURRENT_TAB);
+                      web_app::WebAppProvider* provider =
+                          web_app::WebAppProvider::GetForLocalAppsUnchecked(
+                              profile);
+                      provider->scheduler().LaunchAppWithCustomParams(
+                          apps::AppLaunchParams(
+                              app_id,
+                              apps::LaunchContainer::kLaunchContainerTab,
+                              WindowOpenDisposition::CURRENT_TAB,
+                              apps::LaunchSource::kFromTest),
+                          base::DoNothing());
                     },
                     browser()->profile(), app_id))),
         WaitForWebContentsNavigation(section_id, target_app_url));
@@ -484,8 +488,7 @@ IN_PROC_BROWSER_TEST_F(
   auto app_id = web_app::test::InstallDummyWebApp(
       browser()->profile(), GetDummyAppName(), GetDummyAppUrl());
 
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       LaunchBrowserForWebAppInTabAndOpenDialog(app_id, kWebContentsElementId),
       // Name the first row in the Related Apps section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogRelatedAppsSection,
@@ -532,7 +535,8 @@ IN_PROC_BROWSER_TEST_F(
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAppWindowId);
 
   RunTestSequenceInContext(
-      app_browser->window()->GetElementContext(), InstrumentTab(kAppWindowId),
+      BrowserElements::From(app_browser)->GetContext(),
+      InstrumentTab(kAppWindowId),
       // Open the ... menu, web app info, cookies & site data, etc.
       PressButton(kToolbarAppMenuButtonElementId),
       WithView(kToolbarAppMenuButtonElementId,
@@ -656,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(
     MAYBE_AppNameIsDisplayedInsteadOfHostname) {
   Browser* iwa_browser = InstallAndLaunchIsolatedWebApp();
   RunTestSequenceInContext(
-      iwa_browser->window()->GetElementContext(),
+      BrowserElements::From(iwa_browser)->GetContext(),
       NavigateAndOpenDialog(iwa_browser,
                             kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
@@ -706,8 +710,7 @@ IN_PROC_BROWSER_TEST_F(
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAllPrivacySandboxAttestedForTesting(true);
 
-  RunTestSequenceInContext(
-      context(),
+  RunTestSequence(
       NavigateAndOpenDialog(kPageSpecificSiteDataDialogFirstPartySection),
       // Name the first row in the first-party section.
       InAnyContext(NameChildView(kPageSpecificSiteDataDialogFirstPartySection,

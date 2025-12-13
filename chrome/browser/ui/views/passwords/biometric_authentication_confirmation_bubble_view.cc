@@ -22,7 +22,7 @@
 BiometricAuthenticationConfirmationBubbleView::
     BiometricAuthenticationConfirmationBubbleView(
         content::WebContents* web_contents,
-        views::View* anchor_view)
+        views::BubbleAnchor anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),

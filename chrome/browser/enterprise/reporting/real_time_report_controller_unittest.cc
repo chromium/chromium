@@ -32,7 +32,6 @@
 using ::testing::_;
 using ::testing::ByMove;
 using ::testing::DoAll;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::WithArgs;
 
@@ -104,12 +103,12 @@ TEST_F(RealTimeReportControllerTest, ExtensionRequest) {
               Generate(RealTimeReportType::kExtensionRequest, _))
       .WillOnce(DoAll(
           WithArgs<1>(
-              Invoke([profile](const MockRealTimeReportGenerator::Data& data) {
+              [profile](const MockRealTimeReportGenerator::Data& data) {
                 EXPECT_EQ(profile,
                           static_cast<const ExtensionRequestReportGenerator::
                                           ExtensionRequestData&>(data)
                               .profile);
-              })),
+              }),
           Return(ByMove(std::move(reports)))));
   EXPECT_CALL(*report_uploader, Upload(_, _)).Times(2);
 
@@ -139,13 +138,13 @@ TEST_F(RealTimeReportControllerTest, LegacyTech) {
   EXPECT_CALL(*report_generator.get(),
               Generate(RealTimeReportType::kLegacyTech, _))
       .WillOnce(DoAll(
-          WithArgs<1>(Invoke([](const MockRealTimeReportGenerator::Data& data) {
+          WithArgs<1>([](const MockRealTimeReportGenerator::Data& data) {
             EXPECT_EQ(
                 kLegacyTechType,
                 static_cast<const LegacyTechReportGenerator::LegacyTechData&>(
                     data)
                     .type);
-          })),
+          }),
           Return(ByMove(std::move(reports)))));
   EXPECT_CALL(*report_uploader, Upload(_, _)).Times(1);
 

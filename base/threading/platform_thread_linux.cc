@@ -91,13 +91,10 @@ void SetThreadCgroupForThreadType(PlatformThreadId thread_id,
 
 namespace internal {
 
-const ThreadPriorityToNiceValuePairForTest
-    kThreadPriorityToNiceValueMapForTest[7] = {
-        {ThreadPriorityForTest::kRealtimeAudio, -10},
-        {ThreadPriorityForTest::kDisplay, -8},
-        {ThreadPriorityForTest::kNormal, 0},
-        {ThreadPriorityForTest::kUtility, 2},
-        {ThreadPriorityForTest::kBackground, 10},
+const ThreadTypeToNiceValuePairForTest kThreadTypeToNiceValueMapForTest[7] = {
+    {ThreadType::kRealtimeAudio, -10}, {ThreadType::kDisplayCritical, -8},
+    {ThreadType::kDefault, 0},         {ThreadType::kUtility, 2},
+    {ThreadType::kBackground, 10},
 };
 
 bool CanSetThreadTypeToRealtimeAudio() {
@@ -112,22 +109,19 @@ bool CanSetThreadTypeToRealtimeAudio() {
   return getrlimit(RLIMIT_RTPRIO, &rlim) != 0 && rlim.rlim_cur != 0;
 }
 
-bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
-                                     MessagePumpType pump_type_hint) {
+void SetCurrentThreadTypeImpl(ThreadType thread_type,
+                              MessagePumpType pump_type_hint) {
   const PlatformThreadId thread_id = PlatformThread::CurrentId();
 
   if (g_thread_type_delegate &&
       g_thread_type_delegate->HandleThreadTypeChange(thread_id, thread_type)) {
-    return true;
+    return;
   }
 
   internal::SetThreadType(getpid(), thread_id, thread_type, IsViaIPC(false));
-
-  return true;
 }
 
-std::optional<ThreadPriorityForTest>
-GetCurrentThreadPriorityForPlatformForTest() {
+std::optional<ThreadType> GetCurrentEffectiveThreadTypeForPlatformForTest() {
   int maybe_sched_rr = 0;
   struct sched_param maybe_realtime_prio = {0};
   if (pthread_getschedparam(pthread_self(), &maybe_sched_rr,
@@ -135,10 +129,20 @@ GetCurrentThreadPriorityForPlatformForTest() {
       maybe_sched_rr == SCHED_RR &&
       maybe_realtime_prio.sched_priority ==
           PlatformThreadLinux::kRealTimeAudioPrio.sched_priority) {
-    return std::make_optional(ThreadPriorityForTest::kRealtimeAudio);
+    return std::make_optional(ThreadType::kRealtimeAudio);
   }
   return std::nullopt;
 }
+
+PlatformPriorityOverride SetThreadTypeOverride(
+    PlatformThreadHandle thread_handle,
+    ThreadType thread_type) {
+  return false;
+}
+
+void RemoveThreadTypeOverrideImpl(
+    const PlatformPriorityOverride& priority_override_handle,
+    ThreadType thread_type) {}
 
 }  // namespace internal
 
@@ -267,12 +271,7 @@ void SetThreadTypeLinux(ProcessId process_id,
     DPLOG(ERROR) << "Failed to set realtime priority for thread " << thread_id;
   }
 
-  const int nice_setting = ThreadTypeToNiceValue(thread_type);
-  if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid.raw()),
-                  nice_setting)) {
-    DVPLOG(1) << "Failed to set nice value of thread (" << thread_id << ") to "
-              << nice_setting;
-  }
+  SetThreadNiceFromType(thread_id, thread_type);
 }
 
 int ThreadTypeToNiceValue(const ThreadType thread_type) {

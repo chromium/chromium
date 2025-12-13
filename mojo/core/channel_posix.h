@@ -41,8 +41,7 @@ class ChannelPosix : public Channel,
                               size_t num_handles,
                               const void* extra_header,
                               size_t extra_header_size,
-                              std::vector<PlatformHandle>* handles,
-                              bool* deferred) override;
+                              std::vector<PlatformHandle>* handles) override;
   bool GetReadPlatformHandlesForIpcz(
       size_t num_handles,
       std::vector<PlatformHandle>& handles) override;
@@ -62,8 +61,9 @@ class ChannelPosix : public Channel,
   );
   virtual void OnWriteError(Error error) LOCKS_EXCLUDED(write_lock_);
 
-  void RejectUpgradeOffer();
-  void AcceptUpgradeOffer();
+  // Keeps the functionality to reject upgrade offers for old (pre-ipcz) clients
+  // that ignored the advertised capabilities and offered an upgrade anyway.
+  void RejectPreIpczUpgradeOffer();
 
   // Keeps the Channel alive at least until explicit shutdown on the IO thread.
   scoped_refptr<Channel> self_;
@@ -91,17 +91,6 @@ class ChannelPosix : public Channel,
 #endif  // BUILDFLAG(IS_IOS)
               ;
   bool FlushOutgoingMessagesNoLock() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
-  bool WriteOutgoingMessagesWithWritev() EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
-
-  // FlushOutgoingMessagesWritevNoLock is equivalent to
-  // FlushOutgoingMessagesNoLock except it looks for opportunities to make
-  // only a single write syscall by using writev(2) instead of write(2). In
-  // most situations this is very straight forward; however, when a handle
-  // needs to be transferred we cannot use writev(2) and instead will fall
-  // back to the standard write.
-  bool FlushOutgoingMessagesWritevNoLock()
-      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
 
 #if BUILDFLAG(IS_IOS)
   bool CloseHandles(const int* fds, size_t num_fds)

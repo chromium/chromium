@@ -8,13 +8,16 @@ import android.content.Context;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
 import org.chromium.chrome.browser.hub.HubLayoutDependencyHolder;
 import org.chromium.chrome.browser.hub.NewTabAnimationUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
@@ -25,16 +28,20 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
+import java.util.function.Supplier;
+
 /**
  * {@link LayoutManagerChromePhone} is the specialization of {@link LayoutManagerChrome} for the
  * phone.
  */
+@NullMarked
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
     private final ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
-    private final ToolbarManager mToolbarManager;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
+    private final ToolbarManager mToolbarManager;
     private final ViewGroup mContentView;
     private Layout mSimpleAnimationLayout;
 
@@ -66,7 +73,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             ObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             ViewGroup contentView,
             ToolbarManager toolbarManager,
-            ObservableSupplier<Boolean> scrimVisibilitySupplier) {
+            ObservableSupplier<Boolean> scrimVisibilitySupplier,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier) {
         super(
                 host,
                 contentContainer,
@@ -79,6 +87,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
         mContentView = contentView;
         mToolbarManager = toolbarManager;
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
     }
 
     @Override
@@ -88,10 +97,11 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
+    @Initializer
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
-            ControlContainer controlContainer,
+            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
             ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
@@ -112,7 +122,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             mContentView,
                             mToolbarManager,
                             getBrowserControlsManager(),
-                            mScrimVisibilitySupplier);
+                            mScrimVisibilitySupplier,
+                            mTopInsetCoordinatorSupplier);
         } else {
             mSimpleAnimationLayout =
                     new SimpleAnimationLayout(context, this, renderHost, getContentContainer());

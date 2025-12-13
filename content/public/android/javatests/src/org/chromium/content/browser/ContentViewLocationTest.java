@@ -11,6 +11,7 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -170,6 +171,7 @@ public class ContentViewLocationTest {
     @Test
     @MediumTest
     @Feature({"Location"})
+    @Ignore("https://crbug.com/447442632")
     public void testWatchHideNewWatchShow() throws Throwable {
         startGeolocationWatchPosition();
         pollForPositionCallback();

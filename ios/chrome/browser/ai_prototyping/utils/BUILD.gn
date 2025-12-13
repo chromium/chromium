@@ -6,7 +6,29 @@ source_set("utils") {
   sources = [
     "ai_prototyping_constants.h",
     "ai_prototyping_constants.mm",
+    "page_context_util.h",
+    "page_context_util.mm",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "page_context_util_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto_gen",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/web/find_in_page",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }

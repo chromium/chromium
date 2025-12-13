@@ -55,6 +55,11 @@ TestShellDelegate::CreateClipboardHistoryControllerDelegate() const {
   return std::make_unique<TestClipboardHistoryControllerDelegateImpl>();
 }
 
+std::unique_ptr<ClipboardImageModelFactory>
+TestShellDelegate::CreateClipboardImageModelFactory() const {
+  return nullptr;
+}
+
 std::unique_ptr<CoralDelegate> TestShellDelegate::CreateCoralDelegate() const {
   return std::make_unique<TestCoralDelegate>();
 }

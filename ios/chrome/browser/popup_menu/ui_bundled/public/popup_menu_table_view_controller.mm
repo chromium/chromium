@@ -92,9 +92,8 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
-  self.styler.tableViewBackgroundColor = nil;
-  self.styler.cellBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   [super viewDidLoad];
+  self.tableView.backgroundColor = nil;
   self.tableView.contentInset = UIEdgeInsetsMake(kPopupMenuVerticalInsets, 0,
                                                  kPopupMenuVerticalInsets, 0);
   self.tableView.scrollIndicatorInsets = UIEdgeInsetsMake(
@@ -193,6 +192,7 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
+  cell.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   if (![self.cellsInMemory containsObject:cell]) {
     [cell addInteraction:[[ViewPointerInteraction alloc] init]];
     [self.cellsInMemory addObject:cell];

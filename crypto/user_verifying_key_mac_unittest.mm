@@ -4,19 +4,19 @@
 
 #include "crypto/user_verifying_key.h"
 
+#include <LocalAuthentication/LocalAuthentication.h>
+
 #include <iterator>
 #include <memory>
-
-#include <LocalAuthentication/LocalAuthentication.h>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/scoped_fake_apple_keychain_v2.h"
-#include "crypto/scoped_lacontext.h"
+#include "crypto/apple/fake_keychain_v2.h"
+#include "crypto/apple/scoped_fake_keychain_v2.h"
+#include "crypto/apple/scoped_lacontext.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crypto {
@@ -100,7 +100,7 @@ class UserVerifyingKeyMacTest : public testing::Test {
   }
 
  protected:
-  ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
+  crypto::apple::ScopedFakeKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
 
   base::test::TaskEnvironment task_environment_;
@@ -114,7 +114,7 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
     SCOPED_TRACE(use_lacontext);
     UserVerifyingKeyProvider::Config config = MakeConfig();
     if (use_lacontext) {
-      config.lacontext = ScopedLAContext([[LAContext alloc] init]);
+      config.lacontext = apple::ScopedLAContext([[LAContext alloc] init]);
     }
     provider_ = crypto::GetUserVerifyingKeyProvider(std::move(config));
 
@@ -148,7 +148,7 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
 }
 
 TEST_F(UserVerifyingKeyMacTest, SecureEnclaveAvailability) {
-  using UVMethod = FakeAppleKeychainV2::UVMethod;
+  using UVMethod = crypto::apple::FakeKeychainV2::UVMethod;
   struct {
     bool enclave_available;
     UVMethod uv_method;

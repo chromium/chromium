@@ -40,7 +40,8 @@ std::set<std::string> ParseFlagsFromCommandLine(
     return flags;
   }
 
-  auto flags_list = base::JSONReader::Read(encoded);
+  auto flags_list =
+      base::JSONReader::Read(encoded, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!flags_list) {
     LOG(WARNING) << "Failed to parse feature flags configuration";
     return flags;
@@ -65,7 +66,8 @@ std::map<std::string, std::string> ParseOriginListFlagsFromCommmandLine(
     return origin_list_flags;
   }
 
-  auto origin_list_flags_dict = base::JSONReader::Read(encoded);
+  auto origin_list_flags_dict =
+      base::JSONReader::Read(encoded, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!origin_list_flags_dict) {
     LOG(WARNING) << "Failed to parse origin list configuration";
     return origin_list_flags;
@@ -193,10 +195,11 @@ bool FeatureFlagsUpdate::DiffersFromCommandLine(
 }
 
 void FeatureFlagsUpdate::UpdateSessionManager() {
-  // TODO(crbug.com/832857): Introduce a CHECK to ensure primary user.
   // Early out so that switches for secondary users are not applied to the whole
-  // session. This could be removed when things like flags UI of secondary users
-  // are fixed properly and TODO above to add CHECK() is done.
+  // session.
+  // Note that this early return could be removed when things like flags UI of
+  // secondary users are fixed properly - in that case a CHECK should be added
+  // that the active user is the primary user.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::User* primary_user = user_manager->GetPrimaryUser();
   if (!primary_user || primary_user != user_manager->GetActiveUser())

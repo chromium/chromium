@@ -5,7 +5,6 @@
 #ifndef DBUS_DBUS_RESULT_H_
 #define DBUS_DBUS_RESULT_H_
 
-#include "base/functional/callback.h"
 #include "dbus/dbus_export.h"
 #include "dbus/message.h"
 

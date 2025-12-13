@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("complex_tasks") {
+  sources = [ "task_tab_helper.h" ]
+  public_deps = [
+    "//base",
+    "//components/sessions",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "task_tab_helper.cc" ]
+  deps = [
+    ":complex_tasks",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/search_engines",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/android:chrome_jni_headers" ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "task_tab_helper_unittest.cc" ]
+  deps = [
+    ":complex_tasks",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

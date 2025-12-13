@@ -16,9 +16,9 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
+class ImageSkia;
 struct VectorIcon;
 }  // namespace gfx
 

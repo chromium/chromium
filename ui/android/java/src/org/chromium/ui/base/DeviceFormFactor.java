@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -24,11 +25,19 @@ import org.chromium.ui.display.DisplayUtil;
 @NullMarked
 public class DeviceFormFactor {
     /**
-     * Desktop form factor.
+     * Desktop form factor. It's not guaranteed to have freeform windows.
      *
      * <p>As identified by <code>DeviceInfo.isDesktop() == true</code>.
      */
     public static final String DESKTOP = "Desktop";
+
+    /**
+     * Desktop form factor, guaranteed to have freeform windows.
+     *
+     * <p>As identified by <code>UiRestriction.isDesktopFreeform() == true</code>; to be used only
+     * for restricting multi-window tests on the desktop Android OS.
+     */
+    public static final String DESKTOP_FREEFORM = "DesktopFreeform";
 
     /**
      * Phone form factor.
@@ -56,10 +65,18 @@ public class DeviceFormFactor {
     public static final String TABLET_OR_DESKTOP = "TabletOrDesktop";
 
     /**
+     * Phone or tablet form factor, including {@code #LARGETABLET} below.
+     *
+     * <p>As identified by <code>isDesktop() == false</code>.
+     */
+    public static final String PHONE_OR_TABLET = "PhoneOrTablet";
+
+    /**
      * Minimum screen size in dp to be considered a tablet. Matches the value used by res/
      * directories. E.g.: res/values-sw600dp/values.xml
      */
-    public static final int MINIMUM_TABLET_WIDTH_DP = 600;
+    public static final int MINIMUM_TABLET_WIDTH_DP =
+            DeviceInfo.LARGE_DISPLAY_MIN_SCREEN_WIDTH_600_DP;
 
     /** Matches the value set in res/values-sw600dp/values.xml */
     @VisibleForTesting public static final int SCREEN_BUCKET_TABLET = 2;

@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -78,25 +79,10 @@ class CORE_EXPORT Blob : public ScriptWrappable,
               const String& content_type,
               ExceptionState&) const;
 
-  // To allow ExceptionState to be passed in last, manually enumerate the
-  // optional argument overloads.
-  Blob* slice(ExceptionState& exception_state) const {
-    return slice(0, std::numeric_limits<int64_t>::max(), String(),
-                 exception_state);
-  }
-  Blob* slice(int64_t start, ExceptionState& exception_state) const {
-    return slice(start, std::numeric_limits<int64_t>::max(), String(),
-                 exception_state);
-  }
-  Blob* slice(int64_t start,
-              int64_t end,
-              ExceptionState& exception_state) const {
-    return slice(start, end, String(), exception_state);
-  }
-
   ReadableStream* stream(ScriptState* script_state) const;
   ScriptPromise<IDLUSVString> text(ScriptState* script_state);
   ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState* script_state);
+  ScriptPromise<NotShared<DOMUint8Array>> bytes(ScriptState* script_state);
   String type() const { return blob_data_handle_->GetType(); }
   String Uuid() const { return blob_data_handle_->Uuid(); }
   // Returns the BlobDataHandle this `Blob` was created with. Note that the size

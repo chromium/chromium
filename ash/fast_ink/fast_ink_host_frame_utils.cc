@@ -34,21 +34,19 @@ namespace {
 // Get a UiResource to paint the texture. We try to reuse any
 // existing resources in `resource_manager` before creating a new resource.
 std::unique_ptr<UiResource> AcquireUiResource(
-    const gfx::Size& size,
     bool is_overlay_candidate,
     UiResourceManager* resource_manager,
-    gpu::Mailbox mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
-  CHECK(!mailbox.IsZero());
-  viz::ResourceId reusable_resource_id = resource_manager->FindResourceToReuse(
-      size, kFastInkSharedImageFormat, kFastInkUiSourceId);
-  std::unique_ptr<UiResource> resource;
-  if (reusable_resource_id != viz::kInvalidResourceId) {
-    resource = resource_manager->ReleaseAvailableResource(reusable_resource_id);
-    CHECK(mailbox == resource->mailbox());
+  CHECK(shared_image);
+  std::unique_ptr<UiResource> resource = resource_manager->GetResourceToReuse(
+      shared_image->size(), kFastInkSharedImageFormat, kFastInkUiSourceId);
+
+  if (resource) {
+    CHECK(shared_image == resource->client_shared_image());
   } else {
-    resource = CreateUiResource(size, kFastInkUiSourceId, is_overlay_candidate,
-                                mailbox, sync_token);
+    resource = CreateUiResource(kFastInkUiSourceId, is_overlay_candidate,
+                                shared_image, sync_token);
   }
 
   return resource;
@@ -77,15 +75,13 @@ void AppendQuad(const viz::TransferableResource& resource,
   viz::TextureDrawQuad* texture_quad =
       render_pass_out.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
-  gfx::RectF uv_crop(quad_rect);
-  uv_crop.Scale(1.f / buffer_size.width(), 1.f / buffer_size.height());
-
-  texture_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       /*needs_blending=*/true, resource.id, uv_crop.origin(),
-                       uv_crop.bottom_right(), SkColors::kTransparent,
-                       /*nearest=*/false,
-                       /*secure_output=*/false,
-                       gfx::ProtectedVideoType::kClear);
+  texture_quad->SetNew(
+      quad_state, quad_rect, quad_rect,
+      /*needs_blending=*/true, resource.id, gfx::PointF(quad_rect.origin()),
+      gfx::PointF(quad_rect.bottom_right()), SkColors::kTransparent,
+      /*nearest=*/false,
+      /*secure_output=*/false, gfx::ProtectedVideoType::kClear,
+      /*is_tex_coords_normalized=*/false);
 }
 
 }  // namespace
@@ -112,33 +108,27 @@ scoped_refptr<gpu::ClientSharedImage> CreateMappableSharedImage(
 }
 
 std::unique_ptr<UiResource> CreateUiResource(
-    const gfx::Size& size,
     UiSourceId ui_source_id,
     bool is_overlay_candidate,
-    gpu::Mailbox mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
-  DCHECK(!size.IsEmpty());
   DCHECK(ui_source_id > 0);
-  CHECK(!mailbox.IsZero());
+  CHECK(shared_image);
 
-  auto resource = std::make_unique<UiResource>();
+  auto context_provider = GetContextProvider();
 
-  resource->context_provider = GetContextProvider();
-
-  if (!resource->context_provider) {
+  if (!context_provider) {
     LOG(ERROR) << "Failed to acquire a context provider";
     return nullptr;
   }
 
-  // This UiResource is operating on a shared SharedImage.
-  resource->SetExternallyOwnedMailbox(mailbox);
-  resource->sync_token = sync_token;
+  auto resource = std::make_unique<UiResource>(
+      context_provider->SharedImageInterface(), shared_image);
 
+  resource->sync_token = sync_token;
   resource->damaged = true;
   resource->is_overlay_candidate = is_overlay_candidate;
-  resource->format = kFastInkSharedImageFormat;
   resource->ui_source_id = ui_source_id;
-  resource->resource_size = size;
   return resource;
 }
 
@@ -148,7 +138,6 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
     const gfx::Rect& total_damage_rect,
     bool auto_update,
     const aura::Window& host_window,
-    const gfx::Size& buffer_size,
     UiResourceManager* resource_manager,
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     gpu::SyncToken sync_token) {
@@ -163,33 +152,27 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
           .size();
 
   // NOTE: `shared_image` is guaranteed to be non-null by contract of this
-  // method, and ClientSharedImage::mailbox() is guaranteed to be non-zero by
-  // contract of *that* method.
+  // method.
   CHECK(shared_image);
-  auto mailbox = shared_image->mailbox();
 
   // In auto_update mode, we use hardware overlays to render the content.
-  auto resource = AcquireUiResource(buffer_size, auto_update, resource_manager,
-                                    mailbox, sync_token);
+  auto resource = AcquireUiResource(auto_update, resource_manager, shared_image,
+                                    sync_token);
 
   if (!resource) {
     return nullptr;
   }
 
   if (resource->damaged) {
-    DCHECK(resource->context_provider);
-    gpu::SharedImageInterface* sii =
-        resource->context_provider->SharedImageInterface();
-
-    sii->UpdateSharedImage(resource->sync_token, resource->mailbox());
-    resource->sync_token = sii->GenVerifiedSyncToken();
+    resource->shared_image_interface->UpdateSharedImage(
+        resource->sync_token, resource->client_shared_image()->mailbox());
+    resource->sync_token =
+        resource->shared_image_interface->GenVerifiedSyncToken();
     resource->damaged = false;
   }
 
-  viz::ResourceId frame_resource_id =
-      resource_manager->OfferResource(std::move(resource));
   viz::TransferableResource transferable_resource =
-      resource_manager->PrepareResourceForExport(frame_resource_id);
+      resource_manager->OfferAndPrepareResourceForExport(std::move(resource));
 
   gfx::Transform target_to_buffer_transform(window_to_buffer_transform);
   target_to_buffer_transform.Scale(1.f / device_scale_factor,
@@ -202,6 +185,8 @@ std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
 
   gfx::Rect quad_rect;
   gfx::Rect damage_rect;
+
+  const gfx::Size buffer_size = shared_image->size();
 
   // Continuously redraw the full output rectangle when in auto-update mode.
   // This is necessary in order to allow single buffered updates without having

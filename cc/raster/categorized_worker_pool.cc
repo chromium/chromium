@@ -127,16 +127,16 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
   // implement the SequencedTaskRunner interfaces.
   base::Lock lock_;
 
-  raw_ptr<TaskGraphRunner> task_graph_runner_;
+  raw_ptr<TaskGraphRunner> task_graph_runner_ GUARDED_BY(lock_);
   // Namespace used to schedule tasks in the task graph runner.
-  NamespaceToken namespace_token_;
+  NamespaceToken namespace_token_ GUARDED_BY(lock_);
   // List of tasks currently queued up for execution.
-  Task::Vector tasks_;
+  Task::Vector tasks_ GUARDED_BY(lock_);
   // Graph object used for scheduling tasks.
-  TaskGraph graph_;
+  TaskGraph graph_ GUARDED_BY(lock_);
   // Cached vector to avoid allocation when getting the list of complete
   // tasks.
-  Task::Vector completed_tasks_;
+  Task::Vector completed_tasks_ GUARDED_BY(lock_);
 };
 
 CategorizedWorkerPoolJob::CategorizedWorkerPoolJob() = default;

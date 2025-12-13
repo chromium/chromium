@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_strings.h"
 #include "content/public/browser/render_frame_host.h"
 
@@ -33,8 +33,8 @@ TestContentPaymentRequestDelegate::CreateInternalAuthenticator() const {
   return nullptr;
 }
 
-scoped_refptr<PaymentManifestWebDataService>
-TestContentPaymentRequestDelegate::GetPaymentManifestWebDataService() const {
+scoped_refptr<WebPaymentsWebDataService>
+TestContentPaymentRequestDelegate::GetWebPaymentsWebDataService() const {
   return nullptr;
 }
 
@@ -163,6 +163,11 @@ void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
 std::optional<base::UnguessableToken>
 TestContentPaymentRequestDelegate::GetChromeOSTWAInstanceId() const {
   return std::nullopt;
+}
+
+std::string TestContentPaymentRequestDelegate::
+    GetSecurePaymentConfirmationKeychainAccessGroup() const {
+  return "";
 }
 
 }  // namespace payments

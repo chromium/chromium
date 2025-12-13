@@ -40,6 +40,17 @@ enum class ProfilePickerAction {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerAction)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProfilePickerOpenAllProfilesButtonAction)
+enum class ProfilePickerOpenAllProfilesButtonAction {
+  kShown = 0,
+  kClicked = 1,
+  kMaxValue = kClicked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfilePickerOpenAllProfilesButtonAction)
+
 void RecordProfilePickerAction(ProfilePickerAction action);
 
 // The handler for Javascript messages related to the profile picker main view.
@@ -76,6 +87,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   friend class ProfilePickerCreationFlowBrowserTest;
   friend class ProfilePickerEnterpriseCreationFlowBrowserTest;
   friend class StartupBrowserCreatorPickerInfobarTest;
+  friend class StartupBrowserCreatorOpenUrlsInNextProfileCreatedTest;
   friend class SupervisedProfilePickerHideGuestModeTest;
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerHandlerInUserProfileTest,
                            HandleExtendedAccountInformation);
@@ -97,6 +109,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleLaunchSelectedProfile(bool open_settings,
                                    const base::Value::List& args);
   void HandleLaunchGuestProfile(const base::Value::List& args);
+  void HandleLaunchAllProfiles(const base::Value::List& args);
+  void HandleRecordOpenAllProfilesButtonShown(const base::Value::List& args);
   void HandleAskOnStartupChanged(const base::Value::List& args);
   void HandleRemoveProfile(const base::Value::List& args);
   void HandleGetProfileStatistics(const base::Value::List& args);
@@ -110,9 +124,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetProfileThemeInfo(const base::Value::List& args);
   void HandleGetAvailableIcons(const base::Value::List& args);
   void HandleContinueWithoutAccount(const base::Value::List& args);
+  void HandleGetProfileState(const base::Value::List& args);
 
   // Profile switch screen:
-  void HandleGetSwitchProfile(const base::Value::List& args);
   void HandleConfirmProfileSwitch(const base::Value::List& args);
   void HandleCancelProfileSwitch(const base::Value::List& args);
 
@@ -120,6 +134,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleRecordSignInPromoImpression(const base::Value::List& args);
 
   void OnLoadSigninFinished(bool success);
+  void OnResetPickerButtons(bool success);
   void GatherProfileStatistics(Profile* profile);
   void OnProfileStatisticsReceived(const base::FilePath& profile_path,
                                    profiles::ProfileCategoryStats result);
@@ -182,8 +197,6 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   // Creation time of the handler, to measure performance on startup. Only set
   // when the picker is shown on startup.
   base::TimeTicks creation_time_on_startup_;
-
-  bool main_view_initialized_ = false;
 
   // Keep alive used when displaying the profile statistics in the profile
   // deletion dialog. Released when the dialog or the Picker is closed, which

@@ -62,11 +62,23 @@ const VariationID kExperimentId = 123;
 // Adds an experiment to |study| with the specified |name| and |probability|.
 Study::Experiment* AddExperiment(const std::string& name,
                                  int probability,
+                                 std::optional<int> google_web_experiment_id,
                                  Study* study) {
   Study::Experiment* experiment = study->add_experiment();
   experiment->set_name(name);
   experiment->set_probability_weight(probability);
+  if (google_web_experiment_id.has_value()) {
+    experiment->set_google_web_visibility(Study::ANY);
+    experiment->set_google_web_experiment_id(google_web_experiment_id.value());
+  }
   return experiment;
+}
+
+// Adds an experiment to |study| with the specified |name| and |probability|.
+Study::Experiment* AddExperiment(const std::string& name,
+                                 int probability,
+                                 Study* study) {
+  return AddExperiment(name, probability, std::nullopt, study);
 }
 
 // Adds a Study to |seed| and populates it with test data associating command
@@ -106,7 +118,7 @@ std::string AssociatedStudyGroup(const base::Feature& feature) {
 // Create a filterable state for use in these tests.
 // This differs from |CreateDummyClientFilterableState()| by setting membership
 // of a specific google group (which some tests rely on).
-uint64_t kExampleGoogleGroup = 123456;
+constexpr uint64_t kExampleGoogleGroup = 123456;
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
   auto client_state = std::make_unique<ClientFilterableState>(
       base::BindOnce([] { return false; }), base::BindOnce([] {
@@ -166,6 +178,8 @@ class TestOverrideStringCallback {
 // chrome.
 class ChromeEnvironment {
  public:
+  ChromeEnvironment() : sticky_activation_manager_(/*local_state=*/nullptr) {}
+
   bool HasHighEntropy() { return true; }
   bool HasLimitedEntropy() { return true; }
 
@@ -185,15 +199,21 @@ class ChromeEnvironment {
     VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // components/variations/service/variations_service.cc
-    VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, layers, feature_list);
+    VariationsSeedProcessor(sticky_activation_manager_)
+        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
+                              layers, feature_list);
   }
+
+ private:
+  StickyActivationManager sticky_activation_manager_;
 };
 
 // WebViewEnvironment calls CreateTrialsFromSeed with arguments similar to
 // WebView.
 class WebViewEnvironment {
  public:
+  WebViewEnvironment() : sticky_activation_manager_(/*local_state=*/nullptr) {}
+
   bool HasHighEntropy() { return false; }
   bool HasLimitedEntropy() { return false; }
 
@@ -211,9 +231,13 @@ class WebViewEnvironment {
     VariationsLayers layers(seed, entropy_providers);
     // This should mimic the call through SetUpFieldTrials from
     // android_webview/browser/aw_feature_list_creator.cc
-    VariationsSeedProcessor().CreateTrialsFromSeed(
-        seed, *client_state, callback, entropy_providers, layers, feature_list);
+    VariationsSeedProcessor(sticky_activation_manager_)
+        .CreateTrialsFromSeed(seed, *client_state, callback, entropy_providers,
+                              layers, feature_list);
   }
+
+ private:
+  StickyActivationManager sticky_activation_manager_;
 };
 
 template <typename Environment>
@@ -227,8 +251,8 @@ class VariationsSeedProcessorTest : public ::testing::Test {
   ~VariationsSeedProcessorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
     // process singletons.
-    testing::ClearAllVariationIDs();
-    testing::ClearAllVariationParams();
+    test::ClearAllVariationIDs();
+    test::ClearAllVariationParams();
   }
 
   void CreateTrialsFromSeed(const VariationsSeed& seed) {
@@ -292,6 +316,7 @@ TYPED_TEST(VariationsSeedProcessorTest, AllowForceGroupAndVariationId) {
 
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study->mutable_experiment(1)->set_google_web_experiment_id(kExperimentId);
 
   this->CreateTrialsFromSeed(seed);
@@ -309,6 +334,7 @@ TYPED_TEST(VariationsSeedProcessorTest,
 
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   Study::Experiment* experiment1 = study->mutable_experiment(1);
   experiment1->set_google_web_experiment_id(kExperimentId);
   experiment1->set_google_web_visibility(Study::FIRST_PARTY);
@@ -418,6 +444,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
     VariationsSeed seed;
     Study* study = seed.add_study();
     study->set_name(kRepeated.name);
+    study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
     Study::Experiment* experiment = AddExperiment("Enabled", 1, study);
     experiment->mutable_feature_association()->add_enable_feature(
         kRepeated.name);
@@ -445,7 +472,7 @@ TYPED_TEST(VariationsSeedProcessorTest, FieldTrialOverride) {
                                    "Repeated", "Enabled"));
     EXPECT_TRUE(base::FeatureList::IsEnabled(kRepeated));
 
-    testing::ClearAllVariationIDs();
+    test::ClearAllVariationIDs();
   }
 }
 
@@ -600,7 +627,8 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActive) {
   AddExperiment("Default", 0, study3);
   study3->set_activation_type(Study::ACTIVATE_ON_QUERY);
 
-  VariationsSeedProcessor seed_processor;
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
   this->CreateTrialsFromSeed(seed);
 
   // Non-specified and ACTIVATE_ON_QUERY should not start active, but
@@ -636,6 +664,7 @@ TYPED_TEST(VariationsSeedProcessorTest, StartsActiveWithFlag) {
 TYPED_TEST(VariationsSeedProcessorTest, ForcingFlagAlreadyForced) {
   VariationsSeed seed;
   Study* study = CreateStudyWithFlagGroups(100, 0, 0, &seed);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   ASSERT_EQ(kNonFlagGroupName, study->experiment(0).name());
   Study::Experiment::Param* param = study->mutable_experiment(0)->add_param();
   param->set_name("x");
@@ -969,12 +998,14 @@ TYPED_TEST(VariationsSeedProcessorTest, LowEntropyStudyTest) {
   Study* study1 = seed.add_study();
   study1->set_name(kTrial1Name);
   study1->set_consistency(Study::PERMANENT);
+  study1->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study1->set_default_experiment_name(kDefaultName);
   AddExperiment(kGroup1Name, 50, study1);
   AddExperiment(kDefaultName, 50, study1);
   Study* study2 = seed.add_study();
   study2->set_name(kTrial2Name);
   study2->set_consistency(Study::PERMANENT);
+  study2->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study2->set_default_experiment_name(kDefaultName);
   AddExperiment(kGroup1Name, 50, study2);
   AddExperiment(kDefaultName, 50, study2);
@@ -1011,11 +1042,21 @@ TYPED_TEST(VariationsSeedProcessorTest, LimitedEntropyStudyTest) {
   slot->set_start(0);
   slot->set_end(99);
 
+  const base::Time today = base::Time::Now();
+  const base::Time tomorrow = today + base::Days(1);
+  const base::Time in_two_days = today + base::Days(2);
+
   Study* study = seed.add_study();
   study->set_name("MyStudy");
   study->set_consistency(Study::PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   study->set_default_experiment_name("Default");
-  AddExperiment("Group1", 50, study);
+  study->set_google_web_visibility_start_date(
+      static_cast<int64_t>(tomorrow.InSecondsFSinceUnixEpoch()));
+  study->set_google_web_visibility_end_date(
+      static_cast<int64_t>(in_two_days.InSecondsFSinceUnixEpoch()));
+
+  AddExperiment("Group1", 50, kExperimentId, study);
   AddExperiment(study->default_experiment_name(), 50, study);
   LayerMemberReference* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(layer->id());
@@ -1027,6 +1068,20 @@ TYPED_TEST(VariationsSeedProcessorTest, LimitedEntropyStudyTest) {
     // Expect the first group to be selected when using the limited entropy
     // provider from the setup (`kAlwaysUseFirstGroup`).
     EXPECT_EQ("Group1", base::FieldTrialList::FindFullName(study->name()));
+
+    // Validate that the time box for the experiment has been properly
+    // associated with the study and group. Query for the variation ID before
+    // during, and after the visibility window.
+    EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                             study->name(), "Group1",
+                                             today + base::Hours(1)));
+    EXPECT_EQ(
+        kExperimentId,
+        GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, study->name(),
+                             "Group1", tomorrow + base::Hours(1)));
+    EXPECT_EQ(EMPTY_ID, GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT,
+                                             study->name(), "Group1",
+                                             in_two_days + base::Hours(1)));
   } else {
     // The study should be dropped on clients without a limited entropy
     // provider.
@@ -1479,8 +1534,8 @@ TYPED_TEST(VariationsSeedProcessorTest,
   EXPECT_EQ(base::FieldTrialList::Find(study->name())->group_name(), "A");
 
   // Clear field trial states:
-  testing::ClearAllVariationIDs();
-  testing::ClearAllVariationParams();
+  test::ClearAllVariationIDs();
+  test::ClearAllVariationParams();
 
   // Give this study a new layer member constraint, and randomize it again:
   layer_membership->add_layer_member_ids(member_1->id());

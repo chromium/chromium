@@ -12,7 +12,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/nix/scoped_chrome_version_extra_override.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "components/dbus/xdg/request.h"
+#include "components/dbus/xdg/systemd_constants.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -23,23 +27,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 
 namespace dbus_xdg {
 
 namespace {
 
-constexpr char kServiceNameSystemd[] = "org.freedesktop.systemd1";
-constexpr char kObjectPathSystemd[] = "/org/freedesktop/systemd1";
-constexpr char kInterfaceSystemdManager[] = "org.freedesktop.systemd1.Manager";
-constexpr char kMethodStartTransientUnit[] = "StartTransientUnit";
-constexpr char kMethodGetUnit[] = "GetUnit";
+using internal::SystemdUnitStatus;
 
 constexpr char kFakeUnitPath[] = "/fake/unit/path";
-constexpr char kActiveState[] = "ActiveState";
-constexpr char kStateActive[] = "active";
-constexpr char kStateInactive[] = "inactive";
 
 std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
     const std::string& state) {
@@ -49,18 +45,14 @@ std::unique_ptr<dbus::Response> CreateActiveStateGetAllResponse(
   dbus::MessageWriter dict_entry_writer(nullptr);
   writer.OpenArray("{sv}", &array_writer);
   array_writer.OpenDictEntry(&dict_entry_writer);
-  dict_entry_writer.AppendString(kActiveState);
+  dict_entry_writer.AppendString(kSystemdActiveStateProp);
   dict_entry_writer.AppendVariantOfString(state);
   array_writer.CloseContainer(&dict_entry_writer);
   writer.CloseContainer(&array_writer);
   return response;
 }
 
-class SetSystemdScopeUnitNameForXdgPortalTest : public ::testing::Test {
- public:
-  void SetUp() override { ResetCachedStateForTesting(); }
-  void TearDown() override { ResetCachedStateForTesting(); }
-};
+using SetSystemdScopeUnitNameForXdgPortalTest = ::testing::Test;
 
 TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
   scoped_refptr<dbus::MockBus> bus =
@@ -71,7 +63,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInFlatpak) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -86,7 +78,7 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NotNecessaryInSnap) {
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -104,18 +96,18 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, NoSystemdService) {
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(false);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -133,14 +125,14 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -156,20 +148,20 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
                                    dbus::ObjectPath(kFakeUnitPath)))
       .WillOnce(Return(mock_dbus_unit_proxy.get()));
 
-  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_systemd_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Expect kMethodStartTransientUnit first.
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodStartTransientUnit);
 
         // Simulate a successful response
         auto response = dbus::Response::CreateEmpty();
-        std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([obj_path = kFakeUnitPath](
-                           dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+        std::move(callback).Run(response.get());
+      })
+      .WillOnce([obj_path = kFakeUnitPath](
+                    dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         // Then expect kMethodGetUnit. A valid path must be provided.
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodGetUnit);
@@ -178,22 +170,22 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitSuccess) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendObjectPath(dbus::ObjectPath(obj_path));
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
-  EXPECT_CALL(*mock_dbus_unit_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_unit_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), dbus::kPropertiesInterface);
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
         // Simulate a successful response with "active" state.
-        auto response = CreateActiveStateGetAllResponse(kStateActive);
-        std::move(*callback).Run(response.get());
-      }));
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateActive);
+        std::move(callback).Run(response.get());
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -211,14 +203,14 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -227,16 +219,16 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, StartTransientUnitFailure) {
                                    dbus::ObjectPath(kObjectPathSystemd)))
       .WillOnce(Return(mock_systemd_proxy.get()));
 
-  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_systemd_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Simulate a failure by invoking the callback with nullptr
-        std::move(*callback).Run(nullptr);
-      }));
+        std::move(callback).Run(nullptr);
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -255,14 +247,14 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -272,28 +264,28 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
       .Times(2)
       .WillRepeatedly(Return(mock_systemd_proxy.get()));
 
-  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_systemd_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodStartTransientUnit);
 
         // Simulate a successful response
         auto response = dbus::Response::CreateEmpty();
-        std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+        std::move(callback).Run(response.get());
+      })
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodGetUnit);
 
         // Simulate a failure response.
-        std::move(*callback).Run(nullptr);
-      }));
+        std::move(callback).Run(nullptr);
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -312,14 +304,14 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -335,19 +327,19 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
                                    dbus::ObjectPath(kFakeUnitPath)))
       .WillOnce(Return(mock_dbus_unit_proxy.get()));
 
-  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_systemd_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodStartTransientUnit);
 
         // Simulate a successful response
         auto response = dbus::Response::CreateEmpty();
-        std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([obj_path = kFakeUnitPath](
-                           dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+        std::move(callback).Run(response.get());
+      })
+      .WillOnce([obj_path = kFakeUnitPath](
+                    dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodGetUnit);
 
@@ -355,24 +347,24 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest,
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendObjectPath(dbus::ObjectPath(obj_path));
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
-  EXPECT_CALL(*mock_dbus_unit_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_unit_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Then expect kMethodGetUnit. A valid path must be provided.
         EXPECT_EQ(method_call->GetInterface(), dbus::kPropertiesInterface);
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
 
         // Simulate a successful response, but with inactive state.
-        auto response = CreateActiveStateGetAllResponse(kStateInactive);
-        std::move(*callback).Run(response.get());
-      }));
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateInactive);
+        std::move(callback).Run(response.get());
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 
@@ -390,17 +382,17 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
       *bus, GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  EXPECT_CALL(*mock_dbus_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendBool(true);
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
-  base::ScopedEnvironmentVariableOverride env_override("CHROME_VERSION_EXTRA",
-                                                       "beta");
+  base::test::ScopedChromeVersionExtraOverride env_override(
+      version_info::Channel::BETA);
 
   auto mock_systemd_proxy = base::MakeRefCounted<dbus::MockObjectProxy>(
       bus.get(), kServiceNameSystemd, dbus::ObjectPath(kObjectPathSystemd));
@@ -419,9 +411,9 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
                                    dbus::ObjectPath(kFakeUnitPath)))
       .WillOnce(Return(mock_dbus_unit_proxy.get()));
 
-  EXPECT_CALL(*mock_systemd_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([&](dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_systemd_proxy, CallMethod(_, _, _))
+      .WillOnce([&](dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         dbus::MessageReader reader(method_call);
         std::string unit_name;
         EXPECT_TRUE(reader.PopString(&unit_name));
@@ -452,11 +444,11 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
                                 [](char c) { return std::isalnum(c); }));
 
         auto response = dbus::Response::CreateEmpty();
-        std::move(*callback).Run(response.get());
-      }))
-      .WillOnce(Invoke([obj_path = kFakeUnitPath](
-                           dbus::MethodCall* method_call, int timeout_ms,
-                           dbus::ObjectProxy::ResponseCallback* callback) {
+        std::move(callback).Run(response.get());
+      })
+      .WillOnce([obj_path = kFakeUnitPath](
+                    dbus::MethodCall* method_call, int timeout_ms,
+                    dbus::ObjectProxy::ResponseCallback callback) {
         EXPECT_EQ(method_call->GetInterface(), kInterfaceSystemdManager);
         EXPECT_EQ(method_call->GetMember(), kMethodGetUnit);
 
@@ -464,24 +456,24 @@ TEST_F(SetSystemdScopeUnitNameForXdgPortalTest, UnitNameConstruction) {
         auto response = dbus::Response::CreateEmpty();
         dbus::MessageWriter writer(response.get());
         writer.AppendObjectPath(dbus::ObjectPath(obj_path));
-        std::move(*callback).Run(response.get());
-      }));
+        std::move(callback).Run(response.get());
+      });
 
-  EXPECT_CALL(*mock_dbus_unit_proxy, DoCallMethod(_, _, _))
-      .WillOnce(Invoke([](dbus::MethodCall* method_call, int timeout_ms,
-                          dbus::ObjectProxy::ResponseCallback* callback) {
+  EXPECT_CALL(*mock_dbus_unit_proxy, CallMethod(_, _, _))
+      .WillOnce([](dbus::MethodCall* method_call, int timeout_ms,
+                   dbus::ObjectProxy::ResponseCallback callback) {
         // Then expect kMethodGetUnit. A valid path must be provided.
         EXPECT_EQ(method_call->GetInterface(), dbus::kPropertiesInterface);
         EXPECT_EQ(method_call->GetMember(), dbus::kPropertiesGetAll);
 
         // Simulate a successful response
-        auto response = CreateActiveStateGetAllResponse(kStateActive);
-        std::move(*callback).Run(response.get());
-      }));
+        auto response = CreateActiveStateGetAllResponse(kSystemdStateActive);
+        std::move(callback).Run(response.get());
+      });
 
   std::optional<SystemdUnitStatus> status;
 
-  SetSystemdScopeUnitNameForXdgPortal(
+  internal::SetSystemdScopeUnitNameForXdgPortal(
       bus.get(), base::BindLambdaForTesting(
                      [&](SystemdUnitStatus result) { status = result; }));
 

@@ -53,7 +53,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::ByRef;
 using testing::ElementsAre;
-using testing::Invoke;
 using testing::IsEmpty;
 using testing::NiceMock;
 using testing::Not;
@@ -242,7 +241,8 @@ class CastActivityManagerTest : public testing::Test,
       mojom::MediaRouteProvider::CreateRouteCallback callback) {
     ExpectSingleRouteUpdate();
     // A launch session request is sent to the sink.
-    const std::optional<base::Value> json = base::JSONReader::Read(app_params);
+    const std::optional<base::Value> json = base::JSONReader::Read(
+        app_params, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     EXPECT_CALL(message_handler_,
                 LaunchSession(kChannelId, app_id, kDefaultLaunchTimeout,
                               testing::ElementsAre("WEB"),

@@ -145,7 +145,6 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "id,"
               "storage_key,"
               "host,"
-              "type,"
               "name,"
               "use_count,"
               "last_accessed,"
@@ -154,7 +153,7 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
               "quota,"
               "persistent,"
               "durability) "
-            "VALUES (?, ?, ?, 0, ?, ?, ?, ?, 0, 0, 0, 0)";
+            "VALUES (?, ?, ?, ?, ?, ?, ?, 0, 0, 0, 0)";
       // clang-format on
       sql::Statement statement;
       statement.Assign(
@@ -855,8 +854,6 @@ TEST_P(QuotaDatabaseTest, OpenCorruptedDatabase) {
     expecter.ExpectError(SQLITE_CORRUPT);
     auto db = CreateDatabase(/*is_incognito=*/false);
     ASSERT_TRUE(EnsureOpened(db.get()));
-    histograms.ExpectBucketCount("Quota.DatabaseSpecificError.Open",
-                                 sql::SqliteLoggedResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
 
     // Ensure no nested transactions after reentrant calls to EnsureOpened()
@@ -996,7 +993,6 @@ TEST_P(QuotaDatabaseTest, UpdateOrCreateBucket_CorruptedDatabase) {
     EXPECT_EQ(sqlite_error_code,
               static_cast<int>(sql::SqliteResultCode::kCorrupt));
   }
-  histograms.ExpectTotalCount("Quota.DatabaseSpecificError.GetBucket", 1);
 }
 
 TEST_P(QuotaDatabaseTest, Expiration) {

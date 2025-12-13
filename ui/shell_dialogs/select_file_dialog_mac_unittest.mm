@@ -15,7 +15,6 @@
 
 #import "base/apple/foundation_util.h"
 #include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -28,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 #define EXPECT_EQ_BOOL(a, b) \

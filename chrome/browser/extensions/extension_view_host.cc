@@ -12,7 +12,11 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

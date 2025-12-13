@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './code_section.js';
 import './shared_style.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -33,6 +33,8 @@ export interface ErrorPageDelegate {
 
   requestFileSource(args: chrome.developerPrivate.RequestFileSourceProperties):
       Promise<chrome.developerPrivate.RequestFileSourceResponse>;
+
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError): void;
 }
 
 /**
@@ -54,7 +56,8 @@ function getErrorSeverityText(
     item: ManifestError|RuntimeError, log: string, warn: string,
     error: string): string {
   if (item.type === chrome.developerPrivate.ErrorType.RUNTIME) {
-    switch ((item as RuntimeError).severity) {
+    const severity = (item as RuntimeError).severity;
+    switch (severity) {
       case chrome.developerPrivate.ErrorLevel.LOG:
         return log;
       case chrome.developerPrivate.ErrorLevel.WARN:
@@ -62,7 +65,7 @@ function getErrorSeverityText(
       case chrome.developerPrivate.ErrorLevel.ERROR:
         return error;
       default:
-        assertNotReached();
+        assertNotReachedCase(severity);
     }
   }
   assert(item.type === chrome.developerPrivate.ErrorType.MANIFEST);
@@ -241,6 +244,8 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
             runtimeError.stackTrace[0] :
             null;
         break;
+      default:
+        assertNotReachedCase(error.type);
     }
     assert(this.delegate);
     this.delegate.requestFileSource(args).then(code => this.code_ = code);
@@ -392,6 +397,34 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
 
   protected onReloadClick_() {
     this.reloadItem().catch((loadError) => this.fire('load-error', loadError));
+  }
+
+  /**
+   * Handle the 'View in DevTools' button click for a runtime error.
+   * If the error can be inspected (canInspect: true), opens DevTools for the
+   * error context. Otherwise, logs a warning that DevTools cannot be opened.
+   *
+   * @param e The click event containing the error index in the dataset.
+   */
+  protected onViewInDevToolsClick_(e: Event) {
+    if (!this.data || !this.entries_) {
+      return;
+    }
+
+    const target = e.currentTarget as HTMLElement;
+    const errorIndex = Number(target.dataset['errorIndex']);
+    const error =
+        this.entries_[errorIndex] as chrome.developerPrivate.RuntimeError;
+
+    if (error.canInspect) {
+      assert(this.delegate);
+      this.delegate.openDevToolsForError(error);
+      return;
+    }
+
+    // Cannot inspect this error - DevTools cannot be opened for this context.
+    console.warn('Cannot open DevTools for this error context.');
+    return;
   }
 }
 

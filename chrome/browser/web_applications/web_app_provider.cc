@@ -11,23 +11,27 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/run_loop.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/fetch_manifest_and_update_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/extensions_manager.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/generated_icon_fix_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -41,10 +45,13 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_database_factory.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 #include "chrome/browser/web_applications/web_app_profile_deletion_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -53,7 +60,11 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/webapps/common/manifest_id_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -69,13 +80,11 @@
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/rand_util.h"
 #include "chrome/browser/web_applications/commands/rewrite_diy_icons_command.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_creator.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "content/public/browser/browser_thread.h"
 #endif
 namespace webapps {
 enum class WebappInstallSource;
@@ -84,9 +93,7 @@ enum class WebappInstallSource;
 namespace web_app {
 
 #if BUILDFLAG(IS_MAC)
-BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate,
-             "DiyAppIconsMaskedOnMacUpdate",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kDiyAppIconsMaskedOnMacUpdate, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // static
@@ -109,8 +116,6 @@ WebAppProvider* WebAppProvider::GetForTest(Profile* profile) {
   // Running a nested base::RunLoop outside of tests causes a deadlock. Crash
   // immediately instead of deadlocking for easier debugging (especially for
   // TAST tests which use prod binaries).
-  CHECK_IS_TEST();
-
   WebAppProvider* provider = GetForLocalAppsUnchecked(profile);
   if (!provider) {
     return nullptr;
@@ -135,7 +140,8 @@ WebAppProvider* WebAppProvider::GetForWebContents(
   return WebAppProvider::GetForLocalAppsUnchecked(profile);
 }
 
-WebAppProvider::WebAppProvider(Profile* profile) : profile_(profile) {
+WebAppProvider::WebAppProvider(Profile* profile)
+    : clock_(base::DefaultClock::GetInstance()), profile_(profile) {
   DCHECK(AreWebAppsEnabled(profile_));
 
   // WebApp System must have only one instance in original profile.
@@ -315,6 +321,14 @@ NavigationCapturingLog& WebAppProvider::navigation_capturing_log() {
   return *navigation_capturing_log_;
 }
 
+base::Clock& WebAppProvider::clock() {
+  return *clock_;
+}
+
+void WebAppProvider::SetClockForTesting(base::Clock* clock) {
+  clock_ = clock;
+}
+
 void WebAppProvider::Shutdown() {
   command_scheduler_->Shutdown();
   // The `command_manager_` has already shut down at this point if the profile
@@ -331,7 +345,6 @@ void WebAppProvider::Shutdown() {
   manifest_update_manager_->Shutdown();
   iwa_update_manager_->Shutdown();
   install_manager_->Shutdown();
-  isolated_web_app_policy_manager_->Shutdown();
   web_app_policy_manager_->Shutdown();
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
@@ -345,6 +358,14 @@ base::WeakPtr<WebAppProvider> WebAppProvider::AsWeakPtr() {
 
 FakeWebAppProvider* WebAppProvider::AsFakeWebAppProviderForTesting() {
   return nullptr;
+}
+
+base::RepeatingClosure
+WebAppProvider::DisableDelayedPostStartupWorkForTesting() {
+  CHECK(!started_);
+  prevent_delayed_startup_tasks_for_testing_ = true;
+  return base::BindRepeating(&WebAppProvider::DoDelayedPostStartupWork,
+                             weak_ptr_factory_.GetWeakPtr());
 }
 
 void WebAppProvider::StartImpl() {
@@ -366,7 +387,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   iwa_update_manager_ = std::make_unique<IsolatedWebAppUpdateManager>(*profile);
   isolated_web_app_policy_manager_ =
       std::make_unique<IsolatedWebAppPolicyManager>(profile);
-  extensions_manager_ = std::make_unique<ExtensionsManager>(profile);
+  extensions_manager_ = ExtensionsManager::CreateForProfile(profile);
   generated_icon_fix_manager_ = std::make_unique<GeneratedIconFixManager>();
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
@@ -411,12 +432,9 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  // TODO(https://issuetracker.google.com/283816014): Replace SetSubsystems()
-  // with SetProvider().
-  sync_bridge_->SetSubsystems(database_factory_.get(), command_manager_.get(),
-                              command_scheduler_.get(), install_manager_.get());
-
   base::PassKey<WebAppProvider> pass_key;
+  sync_bridge_->SetProvider(pass_key, *this);
+  install_manager_->SetProvider(pass_key, *this);
   icon_manager_->SetProvider(pass_key, *this);
   install_finalizer_->SetProvider(pass_key, *this);
   manifest_update_manager_->SetProvider(pass_key, *this);
@@ -506,16 +524,15 @@ void WebAppProvider::OnSyncBridgeReady() {
   on_registry_ready_.Signal();
   is_registry_ready_ = true;
 
-#if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
-                           AsWeakPtr()),
-            base::Minutes(1));
+  if (prevent_delayed_startup_tasks_for_testing_) {  // IN-TEST
+    return;                                          // IN-TEST
   }
-#endif
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&WebAppProvider::DoDelayedPostStartupWork,
+                         AsWeakPtr()),
+          base::RandTimeDeltaUpTo(base::Minutes(20)));
 }
 
 void WebAppProvider::CheckIsConnected() const {
@@ -524,33 +541,67 @@ void WebAppProvider::CheckIsConnected() const {
                         "for on_registry_ready().";
 }
 
-#if BUILDFLAG(IS_MAC)
 void WebAppProvider::DoDelayedPostStartupWork() {
-  CHECK(base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate));
+  WebAppPrefGuardrails guardrails =
+      WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
+          *profile_->GetPrefs());
 
-  const WebAppRegistrar& registrar = registrar_unsafe();
-
-  for (const auto& app : registrar.GetApps()) {
-    // Skip apps that don't match our criteria
-    if (!registrar.AppMatches(app.app_id(),
-                              WebAppFilter::IsDiyWithOsShortcut())) {
-      continue;
+  const std::optional<PreinstalledAppForUpdating>& app_to_update =
+      preinstalled_web_app_manager().preinstalled_app_for_updating();
+  webapps::AppId preinstalled_app_id = GenerateAppIdFromManifestId(
+      app_to_update.value_or(PreinstalledAppForUpdating()).manifest_id);
+  if (base::FeatureList::IsEnabled(features::kWebAppPeriodicPreinstallUpdate) &&
+      app_to_update.has_value() &&
+      !guardrails.IsBlockedByGuardrails(preinstalled_app_id)) {
+    GURL::Replacements add_query;
+    add_query.SetQueryStr("usp=chrome_preinstall_update");
+    GURL install_url = app_to_update->install_url.ReplaceComponents(add_query);
+    // The unsafe registrar is checked to prevent wasting resources loading the
+    // install_url. If the app isn't installed, do not bother.
+    if (registrar_unsafe().AppMatches(preinstalled_app_id,
+                                      WebAppFilter::InstalledInChrome())) {
+      scheduler().FetchManifestAndUpdate(
+          install_url, app_to_update->manifest_id,
+          base::BindOnce(&WebAppProvider::OnDefaultAppUpdateComplete,
+                         weak_ptr_factory_.GetWeakPtr(), preinstalled_app_id));
     }
-
-    // Skip apps that are already masked
-    if (registrar.IsDiyAppIconsMarkedMaskedOnMac(app.app_id())) {
-      continue;
-    }
-
-    // Skip apps with open windows
-    if (ui_manager_->GetNumWindowsForApp(app.app_id()) != 0) {
-      continue;
-    }
-
-    // Schedule the command for eligible apps
-    scheduler().RewriteDiyIcons(app.app_id(), base::DoNothing());
   }
-}
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kDiyAppIconsMaskedOnMacUpdate)) {
+    const WebAppRegistrar& registrar = registrar_unsafe();
+
+    for (const auto& app : registrar.GetApps()) {
+      // Skip apps that don't match our criteria
+      if (!registrar.AppMatches(app.app_id(),
+                                WebAppFilter::IsDiyWithOsShortcut())) {
+        continue;
+      }
+
+      // Skip apps that are already masked
+      if (registrar.IsDiyAppIconsMarkedMaskedOnMac(app.app_id())) {
+        continue;
+      }
+
+      // Skip apps with open windows
+      if (ui_manager_->GetNumWindowsForApp(app.app_id()) != 0) {
+        continue;
+      }
+
+      // Schedule the command for eligible apps
+      scheduler().RewriteDiyIcons(app.app_id(), base::DoNothing());
+    }
+  }
 #endif
+}
+
+void WebAppProvider::OnDefaultAppUpdateComplete(
+    const webapps::AppId& app_id,
+    FetchManifestAndUpdateResult result) {
+  base::UmaHistogramEnumeration("WebApp.Preinstalled.UpdateOnStartup", result);
+  WebAppPrefGuardrails guardrails =
+      WebAppPrefGuardrails::GetForDefaultAppUpdateOnStartup(
+          *profile_->GetPrefs());
+  guardrails.RecordIgnore(app_id, clock().Now());
+}
 
 }  // namespace web_app

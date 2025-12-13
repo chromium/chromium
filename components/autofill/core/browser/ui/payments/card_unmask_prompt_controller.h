@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
@@ -17,8 +18,17 @@ class TimeDelta;
 
 namespace autofill {
 
+class CardUnmaskPromptView;
+
 class CardUnmaskPromptController {
  public:
+  // This should be OnceCallback<unique_ptr<CardUnmaskPromptView>> but there are
+  // tests which don't do the ownership correctly.
+  using CardUnmaskPromptViewFactory =
+      base::OnceCallback<CardUnmaskPromptView*()>;
+
+  virtual void ShowPrompt(CardUnmaskPromptViewFactory view_factory) = 0;
+
   // Interaction.
   virtual void OnUnmaskDialogClosed() = 0;
   virtual void OnUnmaskPromptAccepted(std::u16string_view cvc,

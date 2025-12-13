@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

@@ -53,8 +53,8 @@ TrackDefault* TrackDefault::Create(const V8TrackDefaultType& type,
     //      TypeError and abort these steps.
     for (const String& kind : kinds) {
       if (!AudioTrack::IsValidKindKeyword(kind)) {
-        exception_state.ThrowTypeError("Invalid audio track default kind '" +
-                                       kind + "'");
+        exception_state.ThrowTypeError(
+            StrCat({"Invalid audio track default kind '", kind, "'"}));
         return nullptr;
       }
     }
@@ -65,8 +65,8 @@ TrackDefault* TrackDefault::Create(const V8TrackDefaultType& type,
     //      TypeError and abort these steps.
     for (const String& kind : kinds) {
       if (!VideoTrack::IsValidKindKeyword(kind)) {
-        exception_state.ThrowTypeError("Invalid video track default kind '" +
-                                       kind + "'");
+        exception_state.ThrowTypeError(
+            StrCat({"Invalid video track default kind '", kind, "'"}));
         return nullptr;
       }
     }
@@ -77,8 +77,8 @@ TrackDefault* TrackDefault::Create(const V8TrackDefaultType& type,
     //      steps.
     for (const String& kind : kinds) {
       if (!TextTrack::IsValidKindKeyword(kind)) {
-        exception_state.ThrowTypeError("Invalid text track default kind '" +
-                                       kind + "'");
+        exception_state.ThrowTypeError(
+            StrCat({"Invalid text track default kind '", kind, "'"}));
         return nullptr;
       }
     }

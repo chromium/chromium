@@ -1,0 +1,30 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "bookmarks_folder_chooser_coordinator.h",
+    "bookmarks_folder_chooser_coordinator.mm",
+    "bookmarks_folder_chooser_coordinator_delegate.h",
+    "bookmarks_folder_chooser_mediator.h",
+    "bookmarks_folder_chooser_mediator.mm",
+    "bookmarks_folder_chooser_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/bookmarks/browser",
+    "//ios/chrome/browser/bookmarks/folder_chooser/ui",
+    "//ios/chrome/browser/bookmarks/folder_editor:coordinator_headers",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/bookmarks/public:constants",
+    "//ios/chrome/browser/bookmarks/ui_bundled:core",
+    "//ios/chrome/browser/bookmarks/ui_bundled:utils",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

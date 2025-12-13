@@ -1,0 +1,25 @@
+prompts:
+  - 'What is the OS of the current host?'
+
+# The provider is our custom Python script.
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 120
+      templates:
+        - "agents/prompts/common.minimal.md"
+
+# The test cases will run on the output returned by our Python script.
+tests:
+  - description: 'Host OS determination'
+    assert:
+      - type: python
+        value: file://../../../testing/asserts/check_mcp.py:check_response_contains_mcp_response
+        config:
+          server_path:
+            build/mcp_servers/build_information.py
+          tool:
+            get_host_os
+    metadata:
+      tags:
+      - stable

@@ -294,6 +294,7 @@ class FrameFetchContextSubresourceFilterTest
     EXPECT_EQ(expect_is_ad, GetFetchContext()->CalculateIfAdSubresource(
                                 request, std::nullopt /* alias_url */,
                                 ResourceType::kMock, initiator_info,
+                                /*scan_stack_for_ads=*/false,
                                 /*out_rule=*/nullptr));
     return reason;
   }
@@ -1573,10 +1574,7 @@ TEST_P(FrameFetchContextMockedLocalFrameClientTest,
 
 TEST_P(FrameFetchContextTest, PrepareRequestHistogramCount) {
   ResourceRequest request(KURL("https://localhost/"));
-  // Sets Sec-CH-UA-Reduced, which should result in the reduced User-Agent
-  // string being used.
-  request.SetHttpHeaderField(AtomicString("Sec-CH-ua-reduced"),
-                             AtomicString("?1"));
+
   WebScopedVirtualTimePauser virtual_time_pauser;
   ResourceLoaderOptions options(nullptr /* world */);
   GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
@@ -1753,6 +1751,7 @@ TEST_P(FrameFetchContextSubresourceFilterTest,
               GetFetchContext()->CalculateIfAdSubresource(
                   resource_request, alias_url, ResourceType::kScript,
                   options.initiator_info,
+                  /*scan_stack_for_ads=*/false,
                   /*out_rule=*/nullptr));
   }
 }

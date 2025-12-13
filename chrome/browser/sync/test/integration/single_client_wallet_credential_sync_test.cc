@@ -78,14 +78,18 @@ std::vector<std::unique_ptr<autofill::CreditCard>> GetServerCards(
 
 }  // namespace
 
-class SingleClientWalletCredentialSyncTest : public SyncTest {
+class SingleClientWalletCredentialSyncTest
+    : public SyncTest,
+      public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientWalletCredentialSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletCredentialData,
-                              autofill::features::
-                                  kAutofillEnableCvcStorageAndFilling},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        kSyncAutofillWalletCredentialData,
+        autofill::features::kAutofillEnableCvcStorageAndFilling};
+    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
+      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+    }
+    features_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
   }
 
   ~SingleClientWalletCredentialSyncTest() override = default;
@@ -94,6 +98,10 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
       const SingleClientWalletCredentialSyncTest&) = delete;
   SingleClientWalletCredentialSyncTest& operator=(
       const SingleClientWalletCredentialSyncTest&) = delete;
+
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return GetParam();
+  }
 
  protected:
   void WaitForNumberOfCards(size_t expected_count, PaymentsDataManager* paydm) {
@@ -154,9 +162,15 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
   base::test::ScopedFeatureList features_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    SingleClientWalletCredentialSyncTest,
+    GetSyncTestModes(),
+    testing::PrintToStringParamName());
+
 // Ensures that the `AUTOFILL_WALLET_CREDENTIAL` sync type is enabled by
 // default.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest, EnabledByDefault) {
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest, EnabledByDefault) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_CREDENTIAL));
@@ -166,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest, EnabledByDefault) {
 // below does not apply.
 #if !BUILDFLAG(IS_CHROMEOS)
 // Verify card and CVC data is synced when the user signs in.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        DownloadCardCredential) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -206,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 // Card and CVC data should get cleared from the database when the user signs
 // out and different data should get downstreamed when the user signs in with a
 // different account.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ClearOnSignOutAndDownstreamOnSignIn) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -313,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // Verify if 2 cards are synced down along with a single wallet credential
 // entity, the credential entity is attached to the correct card.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        CorrectCvcSyncAttachedToCardEntity) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData(
@@ -365,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // Verify that card and CVC data should get cleared from the database when the
 // user signs out.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest, ClearOnSignOut) {
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest, ClearOnSignOut) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
   ASSERT_TRUE(SetupSync());
@@ -387,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest, ClearOnSignOut) {
 
 // Verify that card and CVC data should get cleared from the database when the
 // user signs out from Transport mode.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ClearOnSignOutFromTransportMode) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -421,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // Verify that card and CVC data should get cleared from the database when the
 // sync for Payments is disabled.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ClearOnDisablePaymentsSync) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -437,16 +451,16 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
   // Disable sync for `kPayments`, the wallet and credential data should be
   // gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
   WaitForNumberOfCards(0, paydm);
 
   EXPECT_EQ(0uL, paydm->GetCreditCards().size());
 
   // Enable sync for `kPayments`, the wallet and credential data should come
   // back.
-  ASSERT_TRUE(
-      GetClient(0)->EnableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->EnableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   // Wait until Sync restores the card and it arrives at paydm.
   WaitForNumberOfCards(1, paydm);
@@ -456,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // Card and CVC data should get cleared from the database when the user enters
 // the sync paused state (e.g. persistent auth error).
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ClearOnSyncPaused) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -471,12 +485,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ExpectDefaultWalletCredentialValues(*paydm->GetCreditCards()[0]);
 
   // Enter sync paused state, the wallet and credential data should be gone.
-  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->EnterSignInPendingStateForPrimaryAccount();
+  }
+
   WaitForNumberOfCards(0, paydm);
 
   EXPECT_EQ(0uL, paydm->GetCreditCards().size());
 
-  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  if (GetSetupSyncMode() == SetupSyncMode::kSyncTheFeature) {
+    GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  } else {
+    GetClient(0)->ExitSignInPendingStateForPrimaryAccount();
+  }
+
   WaitForNumberOfCards(1, paydm);
 
   ASSERT_EQ(1uL, paydm->GetCreditCards().size());
@@ -486,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // CVC data is using incremental updates. Make sure existing data doesn't get
 // replaced when new data is synced down.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        NewSyncDataShouldBeIncremental) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData(
@@ -545,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 
 // Verify that card and CVC data should get cleared from the database when the
 // wallet sync is disabled.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ClearOnDisableWalletSync) {
   SetDefaultWalletCredentialOnFakeServer();
   GetFakeServer()->SetWalletData({CreateDefaultSyncWalletCard()});
@@ -560,8 +584,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ExpectDefaultWalletCredentialValues(*paydm->GetCreditCards()[0]);
 
   // Turn off payments sync, the wallet and credential data should be gone.
-  ASSERT_TRUE(
-      GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kPayments));
+  ASSERT_TRUE(GetClient(0)->DisableSelectableType(
+      syncer::UserSelectableType::kPayments));
 
   WaitForNumberOfCards(0, paydm);
 
@@ -571,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
 // Verify when the corresponding card of a CVC is deleted from pay.google.com
 // and wallet data sync is triggered, it will delete the orphaned CVC from local
 // DB and Chrome sync server.
-IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
+IN_PROC_BROWSER_TEST_P(SingleClientWalletCredentialSyncTest,
                        ReconcileServerCvcForWalletCards) {
   // Set a wallet card on the fake server. This card will be synced first to the
   // client.

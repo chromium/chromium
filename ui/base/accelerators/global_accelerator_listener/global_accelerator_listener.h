@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/command.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -27,6 +28,9 @@ class GlobalAcceleratorListener {
     // directly.
     virtual void ExecuteCommand(const std::string& accelerator_group_id,
                                 const std::string& command_id) = 0;
+
+   protected:
+    virtual ~Observer() = default;
   };
 
   GlobalAcceleratorListener(const GlobalAcceleratorListener&) = delete;
@@ -68,6 +72,7 @@ class GlobalAcceleratorListener {
   virtual void OnCommandsChanged(const std::string& accelerator_group_id,
                                  const std::string& profile_id,
                                  const CommandMap& commands,
+                                 gfx::AcceleratedWidget widget,
                                  Observer* observer) {}
 
   virtual bool IsRegistrationHandledExternally() const;

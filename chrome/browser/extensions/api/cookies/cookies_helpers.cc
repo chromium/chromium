@@ -21,12 +21,10 @@
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/cookies.h"
-#include "chrome/common/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 

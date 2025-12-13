@@ -5,7 +5,9 @@
 #include "components/origin_matcher/origin_matcher.h"
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "components/origin_matcher/features.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -53,9 +55,18 @@ OriginMatcher::OriginMatcher(const OriginMatcher& rhs) {
 
 OriginMatcher& OriginMatcher::operator=(const OriginMatcher& rhs) {
   rules_.clear();
-  for (const auto& rule : rhs.Serialize()) {
-    AddRuleFromString(rule);
+
+  if (base::FeatureList::IsEnabled(kOriginMatcherNewCopyAssignment)) {
+    rules_.reserve(rhs.rules_.size());
+    for (const auto& rule : rhs.rules_) {
+      rules_.push_back(rule->Clone());
+    }
+  } else {
+    for (const auto& rule : rhs.Serialize()) {
+      AddRuleFromString(rule);
+    }
   }
+
   return *this;
 }
 

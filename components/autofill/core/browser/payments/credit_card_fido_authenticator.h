@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -21,7 +20,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/fido_authentication_strike_database.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace autofill {
@@ -51,19 +50,19 @@ class CreditCardFidoAuthenticator
  public:
   // Useful for splitting metrics to correct sub-histograms and knowing which
   // Payments RPC's to send.
-  enum Flow {
+  enum class Flow {
     // No flow is in progress.
-    NONE_FLOW,
+    kNoneFlow,
     // Authentication flow.
-    AUTHENTICATION_FLOW,
+    kAuthenticationFlow,
     // Registration flow, including a challenge to sign.
-    OPT_IN_WITH_CHALLENGE_FLOW,
+    kOptInWithChallengeFlow,
     // Opt-in attempt flow, no challenge to sign.
-    OPT_IN_FETCH_CHALLENGE_FLOW,
+    kOptInFetchChallengeFlow,
     // Opt-out flow.
-    OPT_OUT_FLOW,
+    kOptOutFlow,
     // Authorization of a new card.
-    FOLLOWUP_AFTER_CVC_AUTH_FLOW,
+    kFollowupAfterCvcAuthFlow,
   };
   // The response of FIDO authentication, including necessary information needed
   // by the subclasses.
@@ -74,7 +73,7 @@ class CreditCardFidoAuthenticator
     // nullptr if authentication failed.
     raw_ptr<const CreditCard> card = nullptr;
     // The CVC of the fetched credit card. Can be empty string.
-    std::u16string cvc = std::u16string();
+    std::u16string cvc;
     // The type of the failure of the full card request.
     payments::FullCardRequest::FailureType failure_type =
         payments::FullCardRequest::UNKNOWN;
@@ -217,11 +216,11 @@ class CreditCardFidoAuthenticator
 
   // Converts |request_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialRequestOptionsPtr ParseRequestOptions(
-      const base::Value::Dict& request_options);
+      base::Value::Dict request_options);
 
   // Converts |creation_options| from JSON to mojom pointer.
   blink::mojom::PublicKeyCredentialCreationOptionsPtr ParseCreationOptions(
-      const base::Value::Dict& creation_options);
+      base::Value::Dict creation_options);
 
   // Helper function to parse |key_info| sub-dictionary found in
   // |request_options| and |creation_options|.
@@ -262,7 +261,7 @@ class CreditCardFidoAuthenticator
   std::optional<CreditCard> card_;
 
   // The current flow in progress.
-  Flow current_flow_ = NONE_FLOW;
+  Flow current_flow_ = Flow::kNoneFlow;
 
   // Token used for authorizing new cards. Helps tie CVC auth and FIDO calls
   // together in order to support FIDO-only unmasking on future attempts.
@@ -295,9 +294,6 @@ class CreditCardFidoAuthenticator
   // authentication.
   std::unique_ptr<FidoAuthenticationStrikeDatabase>
       fido_authentication_strike_database_;
-
-  // Signaled when callback for IsUserVerifiable() is invoked.
-  base::WaitableEvent user_is_verifiable_callback_received_;
 
   // The context token used for sharing context between different server
   // requests. Will be populated only for virtual card unmasking.

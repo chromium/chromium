@@ -26,17 +26,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_TEXT_CONTROL_ELEMENT_H_
 
+#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
+#include "third_party/blink/renderer/core/style/text_overflow_data.h"
 
 namespace blink {
 
 class ExceptionState;
 class V8SelectionMode;
+class FormControlRange;
 
 enum TextFieldSelectionDirection {
   kSelectionHasNoDirection,
@@ -157,6 +160,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // without serializing the text. `offset_map` can be nullptr.
   std::pair<wtf_size_t, bool> AnalyzeInnerEditorValue(
       HeapHashMap<Member<const Text>, unsigned>* offset_map) const;
+  // Returns a selection index value for the specified position.
+  unsigned IndexForPosition(const Position& editor_position) const;
 
   Node* CreatePlaceholderBreakElement() const;
   // Returns true if the specified node was created by
@@ -188,7 +193,38 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   void Trace(Visitor*) const override;
 
-  ETextOverflow ValueForTextOverflow() const;
+  TextOverflowData ValueForTextOverflow() const;
+
+  // Register/unregister ranges that need to be notified of value changes.
+  void RegisterFormControlRange(FormControlRange* range);
+  void UnregisterFormControlRange(FormControlRange* range);
+
+  // Use the pre-edit baseline to compute and apply the edit once an observable
+  // value mutation occurs, before 'input' listeners run.
+  void CommitFormControlRangeEdit();
+
+  // Handles programmatic value changes by diffing the previous contents against
+  // the current InnerEditorValue(), using a selection-bounded replace model.
+  // Used when edits bypass 'beforeinput'.
+  void CommitProgrammaticFormControlRangeEdit(const String& old_value,
+                                              unsigned old_sel_start,
+                                              unsigned old_sel_end);
+
+  // Update FormControlRanges by diffing the old and current values,
+  // constrained to the original selection range.
+  void ApplyFormControlRangeUpdate(const String& old_value,
+                                   unsigned old_sel_start,
+                                   unsigned old_sel_end);
+
+  // Controls whether the next SetValue() call skips its automatic
+  // FormControlRange update. When true, the default full-value diff is
+  // suppressed so callers (e.g. setRangeText) can perform their own targeted
+  // update. Cleared immediately after that SetValue() call.
+  void SetSkipNextSetValueAutoDiff(bool should_skip);
+
+  // Returns whether the next SetValue() call should skip its automatic
+  // FormControlRange update.
+  bool ShouldSkipNextSetValueAutoDiff() const;
 
  protected:
   TextControlElement(const QualifiedName&, Document&);
@@ -276,6 +312,17 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   // for suggested values too.
   bool PlaceholderShouldBeVisible() const;
 
+  // Notify observers of a single replace in this element’s value at
+  // `change_offset`: removed `deleted_count` and added `inserted_count`
+  // characters.
+  void NotifyFormControlRangesOfTextChange(unsigned change_offset,
+                                           unsigned deleted_count,
+                                           unsigned inserted_count) const;
+
+  // Capture the control’s pre-edit value and selection at 'beforeinput'.
+  // This baseline is held until the first observable value mutation.
+  void CaptureFormControlRangePreEdit();
+
   // Held directly instead of looked up by ID for speed.
   // Not only is the lookup faster, but for simple text inputs it avoids
   // creating a number of TreeScope data structures to track elements by ID.
@@ -293,6 +340,41 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   String suggested_value_;
   String value_before_set_suggested_value_;
+
+  // Snapshot taken at 'beforeinput' retained until the first observable change.
+  // Selection defines the edit region; that change is treated as one replace
+  // of the region (e.g. replacing "abc" with "xyz") rather than multiple
+  // small diffs, so ranges update consistently.
+  struct PendingUserEditSnapshot {
+    String old_value;
+    unsigned selection_start = 0;
+    unsigned selection_end = 0;
+  };
+
+  // Holds a pending user edit captured at 'beforeinput' until the first
+  // observable value mutation occurs.
+  std::optional<PendingUserEditSnapshot> pending_user_edit_;
+
+  // Holds FormControlRange instances that observe this text control.
+  HeapVector<Member<FormControlRange>> form_control_ranges_;
+
+  // RAII helper that temporarily skips SetValue()’s automatic FormControlRange
+  // full-value diff for this scope. The flag is restored on destruction.
+  class ScopedSkipValueAutoDiff final {
+   public:
+    explicit ScopedSkipValueAutoDiff(TextControlElement& element)
+        : auto_reset_(&element.skip_next_set_value_auto_diff_, true) {}
+    ScopedSkipValueAutoDiff(const ScopedSkipValueAutoDiff&) = delete;
+    ScopedSkipValueAutoDiff& operator=(const ScopedSkipValueAutoDiff&) = delete;
+
+   private:
+    base::AutoReset<bool> auto_reset_;
+  };
+
+  // Skip SetValue's automatic FormControlRange full-value diff on the next
+  // call. Used by setRangeText(), which issues its own precise, range-scoped
+  // update. Cleared immediately after that SetValue() call.
+  bool skip_next_set_value_auto_diff_ = false;
 
   // Indicate whether there is one scheduled selectionchange event.
   bool has_scheduled_selectionchange_event_ = false;

@@ -76,11 +76,7 @@ constexpr char kId4[] = "Id 4";
 class RemoteAppsApitest : public policy::DevicePolicyCrosBrowserTest,
                           public testing::WithParamInterface<std::string> {
  public:
-  RemoteAppsApitest() {
-    // Quick App is used for the current implementation of app pinning.
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kHomeButtonQuickAppAccess);
-  }
+  RemoteAppsApitest() = default;
 
   // DevicePolicyCrosBrowserTest:
   void SetUp() override {

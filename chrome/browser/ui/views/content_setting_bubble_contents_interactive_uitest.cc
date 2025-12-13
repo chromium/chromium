@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"

@@ -47,11 +47,13 @@ class AuthSessionRequest
 
   // Creates a AuthSessionRequest. `web_contents` is the WebContents to run,
   // `browser` is the browser window containing it, and `request` is the
-  // `ASWebAuthenticationSessionRequest` being serviced.
+  // `ASWebAuthenticationSessionRequest` being serviced. `matching_scheme` is
+  // provided as the scheme to match on macOS 14.3 and earlier, and is empty and
+  // unused otherwise.
   AuthSessionRequest(content::WebContents* web_contents,
                      Browser* browser,
                      ASWebAuthenticationSessionRequest* request,
-                     std::string scheme);
+                     const std::string& matching_scheme);
 
   // Create a Browser and a WebContents to run the request.
   static Browser* CreateBrowser(ASWebAuthenticationSessionRequest* request,
@@ -88,8 +90,9 @@ class AuthSessionRequest
   // The request being serviced.
   ASWebAuthenticationSessionRequest* __strong request_;
 
-  // The scheme being watched for, canonicalized.
-  std::string scheme_;
+  // The scheme being watched for, canonicalized. Used only on macOS 14.3 and
+  // earlier.
+  std::string matching_scheme_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

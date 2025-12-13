@@ -275,6 +275,7 @@ TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
   auto* target = ChildDocument().getElementById(AtomicString("target"));
 
   UpdateAllLifecyclePhasesForTest();
+  test::RunPendingTasks();
   EXPECT_FALSE(ChildDocument().View()->ShouldThrottleRenderingForTest());
   LockElement(*container, false);
   EXPECT_TRUE(ChildDocument().View()->ShouldThrottleRenderingForTest());

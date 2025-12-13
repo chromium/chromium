@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import androidx.browser.trusted.sharing.ShareData;
 
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras.ShortcutItem;
@@ -30,8 +31,10 @@ public class WebappInfo {
 
     /**
      * Construct a WebappInfo.
+     *
      * @param intent Intent containing info about the app.
      */
+    @Contract("null -> null; !null -> !null")
     public static @Nullable WebappInfo create(
             @Nullable BrowserServicesIntentDataProvider provider) {
         return (provider == null) ? null : new WebappInfo(provider);
@@ -65,11 +68,11 @@ public class WebappInfo {
         return getWebappExtras().scopeUrl;
     }
 
-    public String name() {
+    public @Nullable String name() {
         return getWebappExtras().name;
     }
 
-    public String shortName() {
+    public @Nullable String shortName() {
         return getWebappExtras().shortName;
     }
 

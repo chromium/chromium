@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -90,8 +89,10 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual void HandleClickEvent(MouseEvent&);
   virtual void HandleMouseDownEvent(MouseEvent&);
-  virtual ClickHandlingState* WillDispatchClick();
-  virtual void DidDispatchClick(Event&, const ClickHandlingState&);
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior.
+  virtual ClickHandlingState* LegacyPreActivationBehavior();
+  // https://html.spec.whatwg.org/C#input-activation-behavior.
+  virtual void RunInputActivationBehavior(Event&, const ClickHandlingState&);
   virtual void HandleKeydownEvent(KeyboardEvent&);
   virtual void HandleKeypressEvent(KeyboardEvent&);
   virtual void HandleKeyupEvent(KeyboardEvent&);
@@ -134,7 +135,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual bool NeedsShadowSubtree() const;
   virtual void DestroyShadowSubtree();
   virtual HTMLInputElement* UploadButton() const;
-  virtual WTF::String FileStatusText() const;
+  virtual String FileStatusText() const;
 
   virtual void MinOrMaxAttributeChanged();
   virtual void StepAttributeChanged();
@@ -146,7 +147,7 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
   virtual void ReadonlyAttributeChanged();
   virtual void RequiredAttributeChanged();
   virtual void ValueAttributeChanged();
-  virtual void DidSetValue(const WTF::String&, bool value_changed);
+  virtual void DidSetValue(const String&, bool value_changed);
   virtual void ListAttributeTargetChanged();
   virtual void CapsLockStateMayHaveChanged();
   virtual bool ShouldDrawCapsLockIndicator() const;

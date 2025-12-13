@@ -36,7 +36,7 @@ class ASH_EXPORT QuickInsertSubmenuView
   ~QuickInsertSubmenuView() override;
 
   // views::WidgetDelegateView:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

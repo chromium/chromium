@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Responsible for monitoring {@link Profile} and {@link Tab}, and provides extension action updates
- * to its delegate.
+ * Responsible for monitoring {@link Tab}, and provides extension action updates to its delegate.
  */
 @NullMarked
 public class ExtensionActionsUpdateHelper implements Destroyable {
@@ -47,35 +46,32 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         void onUpdateFinished();
     }
 
-    private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ActionsUpdateDelegate mActionsUpdateDelegate;
     private final ModelList mModels;
+    private final ExtensionActionsBridge mExtensionActionsBridge;
 
-    private final Callback<Profile> mProfileUpdatedCallback = this::onProfileUpdated;
-    private final Callback<Tab> mTabChangedCallback = this::onTabChanged;
+    private final Callback<@Nullable Tab> mTabChangedCallback = this::onTabChanged;
     private final ActionsObserver mActionsObserver = new ActionsObserver();
 
-    @Nullable private ExtensionActionsBridge mExtensionActionsBridge;
-    @Nullable private Profile mProfile;
     @Nullable private Tab mCurrentTab;
 
     public ExtensionActionsUpdateHelper(
             ModelList models,
-            ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ChromeAndroidTask task,
+            NullableObservableSupplier<Tab> currentTabSupplier,
             ActionsUpdateDelegate delegate) {
         mModels = models;
-        mProfileSupplier = profileSupplier;
         mCurrentTabSupplier = currentTabSupplier;
         mActionsUpdateDelegate = delegate;
+        mExtensionActionsBridge = ExtensionActionsBridge.get(task);
 
-        mProfileSupplier.addObserver(mProfileUpdatedCallback);
         mCurrentTabSupplier.addObserver(mTabChangedCallback);
+        mExtensionActionsBridge.addObserver(mActionsObserver);
     }
 
     private void maybeUpdateAllActions() {
-        if (mProfile == null || mExtensionActionsBridge == null || mCurrentTab == null) {
+        if (mCurrentTab == null) {
             mModels.clear();
             return;
         }
@@ -102,44 +98,13 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         mActionsUpdateDelegate.onUpdateFinished();
     }
 
-    private void onProfileUpdated(@Nullable Profile profile) {
-        if (profile == mProfile) {
-            return;
-        }
-
-        mActionsUpdateDelegate.onUpdateStarted();
-
-        if (mExtensionActionsBridge != null) {
-            mExtensionActionsBridge.removeObserver(mActionsObserver);
-        }
-        mExtensionActionsBridge = null;
-        mProfile = profile;
-
-        if (mProfile != null) {
-            mExtensionActionsBridge = ExtensionActionsBridge.get(mProfile);
-            if (mExtensionActionsBridge != null) {
-                mExtensionActionsBridge.addObserver(mActionsObserver);
-            }
-        }
-
-        // Force clearing buttons even if the actions for the new profile are not available yet
-        // because switching profiles usually results in a very different set of extension actions.
-        mModels.clear();
-
-        // If the current tab belongs to a different profile, onTabChanged will be called soon, so
-        // do not update actions now to avoid duplicated updates.
-        if (mCurrentTab != null && mCurrentTab.getProfile() != mProfile) {
-            return;
-        }
-
-        maybeUpdateAllActions();
-    }
-
     private void onTabChanged(@Nullable Tab tab) {
         if (tab == mCurrentTab) {
             return;
         }
 
+        // TODO(crbug.com/467472551): Move this to maybeUpdateAllActions().
+        // However, simply moving it there will cause a crash on clicking an action button.
         mActionsUpdateDelegate.onUpdateStarted();
 
         if (tab == null) {
@@ -151,19 +116,7 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         }
 
         mCurrentTab = tab;
-
-        // If the tab belongs to a different profile, onProfileUpdated will be called soon, so
-        // do not update actions now to avoid duplicated updates.
-        if (tab.getProfile() != mProfile) {
-            return;
-        }
-
         maybeUpdateAllActions();
-    }
-
-    /** Returns the profile. */
-    public @Nullable Profile getProfile() {
-        return mProfile;
     }
 
     /** Returns the current tab. */
@@ -171,23 +124,17 @@ public class ExtensionActionsUpdateHelper implements Destroyable {
         return mCurrentTab;
     }
 
-    /** Return the `ExtensionActionsBridge` that corresponds to `mProfile`. */
-    public @Nullable ExtensionActionsBridge getExtensionActionsBridge() {
+    /** Return the `ExtensionActionsBridge` that corresponds to the window. */
+    public ExtensionActionsBridge getExtensionActionsBridge() {
         return mExtensionActionsBridge;
     }
 
     @Override
     public void destroy() {
-        if (mExtensionActionsBridge != null) {
-            mExtensionActionsBridge.removeObserver(mActionsObserver);
-        }
-
-        mProfileSupplier.removeObserver(mProfileUpdatedCallback);
+        mExtensionActionsBridge.removeObserver(mActionsObserver);
         mCurrentTabSupplier.removeObserver(mTabChangedCallback);
 
         mCurrentTab = null;
-        mExtensionActionsBridge = null;
-        mProfile = null;
     }
 
     private class ActionsObserver implements ExtensionActionsBridge.Observer {

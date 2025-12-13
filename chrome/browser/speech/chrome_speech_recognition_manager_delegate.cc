@@ -125,13 +125,15 @@ ChromeSpeechRecognitionManagerDelegate::GetEventListener() {
 #if !BUILDFLAG(IS_ANDROID)
 void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-        recognition_receiver) {
+        recognition_receiver,
+    const std::string& language) {
 #if BUILDFLAG(ENABLE_SPEECH_SERVICE)
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
+          [](const std::string& language,
+             mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                  receiver) {
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
             auto* profile = ProfileManager::GetLastUsedProfileIfLoaded();
@@ -149,12 +151,11 @@ void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
             }
             // Reset the SODA uninstall timer when used by the Web Speech API.
             if (profile) {
-              PrefService* pref_service = profile->GetPrefs();
-              speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-                  pref_service, g_browser_process->local_state());
+              SodaInstaller::GetInstance()->SetUninstallTimer(
+                  g_browser_process->local_state(), language);
             }
           },
-          std::move(recognition_receiver)));
+          language, std::move(recognition_receiver)));
 #endif  // BUILDFLAG(ENABLE_SPEECH_SERVICE)
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

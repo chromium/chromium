@@ -96,43 +96,46 @@ class AppServiceWrapperTest : public ::testing::Test {
   AppServiceWrapperTest& operator=(const AppServiceWrapperTest&) = delete;
   ~AppServiceWrapperTest() override = default;
 
-  AppServiceWrapper& tested_wrapper() { return tested_wrapper_; }
+  AppServiceWrapper& tested_wrapper() { return *tested_wrapper_; }
   MockListener& test_listener() { return test_listener_; }
 
   // testing::Test:
   void SetUp() override {
-    testing::Test::SetUp();
-
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableDefaultApps);
 
+    arc_app_test_.PreProfileSetUp();
+    profile_ = std::make_unique<TestingProfile>();
+    tested_wrapper_ = std::make_unique<AppServiceWrapper>(profile_.get());
+
     auto* extension_system(static_cast<extensions::TestExtensionSystem*>(
-        extensions::ExtensionSystem::Get(&profile_)));
+        extensions::ExtensionSystem::Get(profile_.get())));
     auto* extension_service = extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
     extension_service->Init();
 
-    web_app::test::AwaitStartWebAppProviderAndSubsystems(&profile_);
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile_.get());
 
-    app_service_test_.SetUp(&profile_);
-    arc_test_.SetUp(&profile_);
+    app_service_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
     task_environment_.RunUntilIdle();
 
-    tested_wrapper_.AddObserver(&test_listener_);
+    tested_wrapper().AddObserver(&test_listener_);
 
     // Install Chrome.
     scoped_refptr<extensions::Extension> chrome = CreateExtension(
         app_constants::kChromeAppId, kExtensionNameChrome, kExtensionAppUrl);
-    extensions::ExtensionRegistrar::Get(&profile_)->AddComponentExtension(
-        chrome.get());
+    extensions::ExtensionRegistrar::Get(profile_.get())
+        ->AddComponentExtension(chrome.get());
     task_environment_.RunUntilIdle();
   }
 
   void TearDown() override {
-    tested_wrapper_.RemoveObserver(&test_listener_);
-    arc_test_.TearDown();
-
-    testing::Test::TearDown();
+    tested_wrapper().RemoveObserver(&test_listener_);
+    arc_app_test_.PreProfileTearDown();
+    tested_wrapper_.reset();
+    profile_.reset();
+    arc_app_test_.PostProfileTearDown();
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -142,10 +145,11 @@ class AppServiceWrapperTest : public ::testing::Test {
                             std::optional<std::string> url = std::nullopt) {
     if (app_id.app_type() == apps::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
-      arc_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
+      arc_app_test_.AddPackage(CreateArcAppPackage(package_name)->Clone());
       std::vector<arc::mojom::AppInfoPtr> apps;
       apps.emplace_back(CreateArcAppInfo(package_name, app_name));
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+      arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name,
+                                                                apps);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -153,7 +157,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     if (app_id.app_type() == apps::AppType::kChromeApp) {
       scoped_refptr<extensions::Extension> ext =
           CreateExtension(app_id.app_id(), app_name, url.value());
-      extensions::ExtensionRegistrar::Get(&profile_)->AddExtension(ext.get());
+      extensions::ExtensionRegistrar::Get(profile_.get())
+          ->AddExtension(ext.get());
       task_environment_.RunUntilIdle();
       return;
     }
@@ -161,7 +166,7 @@ class AppServiceWrapperTest : public ::testing::Test {
     if (app_id.app_type() == apps::AppType::kWeb) {
       DCHECK(url.has_value());
       const webapps::AppId installed_app_id = web_app::test::InstallDummyWebApp(
-          &profile_, app_name, GURL(url.value()),
+          profile_.get(), app_name, GURL(url.value()),
           webapps::WebappInstallSource::EXTERNAL_DEFAULT);
       EXPECT_EQ(installed_app_id, app_id.app_id());
       task_environment_.RunUntilIdle();
@@ -172,14 +177,14 @@ class AppServiceWrapperTest : public ::testing::Test {
   void SimulateAppUninstalled(const AppId& app_id) {
     if (app_id.app_type() == apps::AppType::kArc) {
       const std::string& package_name = app_id.app_id();
-      arc_test_.app_instance()->UninstallPackage(package_name);
+      arc_app_test_.app_instance()->UninstallPackage(package_name);
       task_environment_.RunUntilIdle();
       return;
     }
 
     if (app_id.app_type() == apps::AppType::kWeb) {
       base::RunLoop run_loop;
-      WebAppProvider::GetForTest(&profile_)
+      WebAppProvider::GetForTest(profile_.get())
           ->scheduler()
           .RemoveInstallManagementMaybeUninstall(
               app_id.app_id(), web_app::WebAppManagement::kDefault,
@@ -196,8 +201,9 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::AppType::kChromeApp ||
         app_id.app_type() == apps::AppType::kWeb) {
-      extensions::ExtensionRegistrar::Get(&profile_)->RemoveExtension(
-          app_id.app_id(), extensions::UnloadedExtensionReason::UNINSTALL);
+      extensions::ExtensionRegistrar::Get(profile_.get())
+          ->RemoveExtension(app_id.app_id(),
+                            extensions::UnloadedExtensionReason::UNINSTALL);
       task_environment_.RunUntilIdle();
       return;
     }
@@ -211,21 +217,23 @@ class AppServiceWrapperTest : public ::testing::Test {
       std::vector<arc::mojom::AppInfoPtr> apps;
       apps.emplace_back(CreateArcAppInfo(package_name, app_name))->suspended =
           disabled;
-      arc_test_.app_instance()->SendPackageAppListRefreshed(package_name, apps);
+      arc_app_test_.app_instance()->SendPackageAppListRefreshed(package_name,
+                                                                apps);
       task_environment_.RunUntilIdle();
       return;
     }
 
     if (app_id.app_type() == apps::AppType::kWeb) {
-      WebAppProvider::GetForTest(&profile_)->scheduler().SetAppIsDisabled(
-          app_id.app_id(), disabled, base::DoNothing());
+      WebAppProvider::GetForTest(profile_.get())
+          ->scheduler()
+          .SetAppIsDisabled(app_id.app_id(), disabled, base::DoNothing());
       task_environment_.RunUntilIdle();
       return;
     }
 
     if (app_id.app_type() == apps::AppType::kChromeApp ||
         app_id.app_type() == apps::AppType::kWeb) {
-      auto* registrar = extensions::ExtensionRegistrar::Get(&profile_);
+      auto* registrar = extensions::ExtensionRegistrar::Get(profile_.get());
       if (disabled) {
         registrar->DisableExtension(
             app_id.app_id(),
@@ -242,11 +250,11 @@ class AppServiceWrapperTest : public ::testing::Test {
   base::test::ScopedCommandLine scoped_command_line_;
   content::BrowserTaskEnvironment task_environment_;
 
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   apps::AppServiceTest app_service_test_;
-  ArcAppTest arc_test_;
+  ArcAppTest arc_app_test_;
 
-  AppServiceWrapper tested_wrapper_{&profile_};
+  std::unique_ptr<AppServiceWrapper> tested_wrapper_;
   MockListener test_listener_;
 };
 

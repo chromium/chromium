@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 
 #import <Foundation/Foundation.h>
@@ -14,7 +9,6 @@
 
 #import "base/containers/contains.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/ios_util.h"
 #import "base/run_loop.h"
@@ -25,6 +19,7 @@
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/reporter_running_ios.h"
 #import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/crashpad/crashpad/client/crash_report_database.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -225,6 +220,5 @@ TEST_F(MetricKitSubscriberTest, SaveDiagnosticReport) {
   result_data =
       [result_data decompressedDataUsingAlgorithm:NSDataCompressionAlgorithmZlib
                                             error:&error];
-  ASSERT_NE(result_data, nil);
-  EXPECT_EQ(memcmp([data bytes], [result_data bytes], data.length), 0);
+  EXPECT_NSEQ(data, result_data);
 }

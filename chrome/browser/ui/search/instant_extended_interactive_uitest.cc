@@ -9,14 +9,15 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -51,14 +52,15 @@ class InstantExtendedTest : public InProcessBrowserTest,
 
   void FocusOmnibox() {
     // If the omnibox already has focus, just notify OmniboxTabHelper.
-    if (omnibox()->model()->has_focus()) {
+    LocationBar* location_bar = browser()->window()->GetLocationBar();
+    if (location_bar->GetOmniboxController()->edit_model()->has_focus()) {
       content::WebContents* active_tab =
           browser()->tab_strip_model()->GetActiveWebContents();
       OmniboxTabHelper::FromWebContents(active_tab)
           ->OnFocusChanged(OMNIBOX_FOCUS_VISIBLE,
                            OMNIBOX_FOCUS_CHANGE_EXPLICIT);
     } else {
-      browser()->window()->GetLocationBar()->FocusLocation(false);
+      location_bar->FocusLocation(false);
     }
   }
 
@@ -73,9 +75,9 @@ class InstantExtendedTest : public InProcessBrowserTest,
     browser()
         ->window()
         ->GetLocationBar()
-        ->GetOmniboxView()
-        ->model()
-        ->OpenSelection();
+        ->GetOmniboxController()
+        ->edit_model()
+        ->OpenSelectionForTesting();
     observer.Wait();
   }
 

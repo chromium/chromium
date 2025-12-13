@@ -36,14 +36,17 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
+#include "ui/base/webui/jstemplate_builder.h"
 
 namespace content {
 
@@ -65,16 +68,67 @@ std::u16string GetJavascriptCallImpl(std::string_view function_name,
   return result;
 }
 
+// Populates `path_to_resource_map` with resources from `webui_data_source`.
+// This includes both IDR resources (mapped to resource IDs) and generated
+// resources (mapped to response bodies).
+void PopulateLocalResourceMap(
+    const WebUIDataSourceImpl& webui_data_source,
+    base::flat_map<std::string, blink::mojom::LocalResourceValuePtr>&
+        path_to_resource_map) {
+  // Add IDR resources.
+  for (const auto& [path, resource_id] : webui_data_source.path_to_idr_map()) {
+    path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResourceId(resource_id);
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kWebUIInProcessResourceLoadingV2)) {
+    return;
+  }
+
+  // Add generated resources.
+  base::flat_map<std::string, std::string> generated_resources;
+  webui_data_source.PopulateWebUIResources(generated_resources);
+
+  for (auto& [path, content] : generated_resources) {
+    // Ensures dynamic resources, e.g., string.m.js, do not have a resource id.
+    CHECK(path_to_resource_map.find(path) == path_to_resource_map.end());
+    path_to_resource_map[path] =
+        blink::mojom::LocalResourceValue::NewResponseBody(std::move(content));
+  }
+}
+
+// Returns true if the data source from `origin` should be included for a WebUI
+// with `current_origin`.
+// For performance, a WebUI page should only receives data from its own data
+// sources and shared resources.
+// TODO(crbug.com/459528908): Allow configuring this from URLDataSource.
+bool ShouldIncludeDataSource(const url::Origin& origin,
+                             const url::Origin& current_origin) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebUIInProcessResourceLoadingV2)) {
+    return true;
+  }
+
+  // `kChromeUIResourcesHost` covers both "chrome://resources" and
+  // "chrome-untrusted://resources".
+  // TODO(crbug.com/457618790): Allow serving "chrome://theme" resources to
+  // every WebUI.
+  return origin == current_origin || origin.host() == kChromeUIResourcesHost;
+}
+
 blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
-    URLDataManagerBackend* data_backend) {
+    URLDataManagerBackend* data_backend,
+    const url::Origin& current_origin) {
   auto loader_config = blink::mojom::LocalResourceLoaderConfig::New();
   base::flat_map<url::Origin, blink::mojom::LocalResourceSourcePtr>&
       loader_sources = loader_config->sources;
   for (auto const& [source_name, data_source] : data_backend->data_sources()) {
     // For a data source to be useful in the renderer process, it must have a
     // map from path to resource ID. Only WebUIDataSourceImpls have a map from
-    // path to resource ID. Most URLDataSources are not WebUIDataSourceImpls,
-    // e.g. favicon, image, etc.
+    // path to resource ID or a map from path to response.
+    // Most URLDataSources are not WebUIDataSourceImpls, e.g. favicon, image,
+    // etc.
     if (!data_source->IsWebUIDataSourceImpl()) {
       continue;
     }
@@ -85,6 +139,10 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
     if (origin.scheme() != kChromeUIScheme) {
       continue;
     }
+
+    if (!ShouldIncludeDataSource(origin, current_origin)) {
+      continue;
+    }
     auto loader_source = blink::mojom::LocalResourceSource::New();
     webui_data_source->EnsureLoadTimeDataDefaultsAdded();
     loader_source->headers =
@@ -92,9 +150,8 @@ blink::mojom::LocalResourceLoaderConfigPtr CreateLocalResourceLoaderConfig(
             ->raw_headers();
     loader_source->should_replace_i18n_in_js =
         data_source->source()->ShouldReplaceI18nInJS();
-    loader_source->path_to_resource_id_map.insert(
-        webui_data_source->path_to_idr_map().begin(),
-        webui_data_source->path_to_idr_map().end());
+    PopulateLocalResourceMap(*webui_data_source,
+                             loader_source->path_to_resource_map);
     loader_source->replacement_strings.insert(
         webui_data_source->source()->GetReplacements()->begin(),
         webui_data_source->source()->GetReplacements()->end());
@@ -143,6 +200,7 @@ WebUIImpl::~WebUIImpl() {
   // Note: Calling this might delete |web_content_| and |frame_host_|. The two
   // pointers are now potentially dangling.
   // See https://crbug.com/1308391
+  broker_.reset();
   controller_.reset();
 
   remote_.reset();
@@ -186,7 +244,8 @@ void WebUIImpl::SetRenderFrameHost(RenderFrameHost* render_frame_host) {
              RenderFrameHostImpl::LifecycleStateImpl::kSpeculative);
 }
 
-void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
+void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host,
+                                        const url::Origin& origin_to_commit) {
   controller_->WebUIRenderFrameCreated(render_frame_host);
 
 #if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
@@ -198,7 +257,8 @@ void WebUIImpl::WebUIRenderFrameCreated(RenderFrameHost* render_frame_host) {
 
   if (base::FeatureList::IsEnabled(features::kWebUIInProcessResourceLoading)) {
     CHECK(frame_host_);
-    frame_host_->UpdateLocalResourceLoader(GetLocalResourceLoaderConfig());
+    frame_host_->UpdateLocalResourceLoader(
+        GetLocalResourceLoaderConfig(origin_to_commit));
   }
 }
 
@@ -220,6 +280,30 @@ void WebUIImpl::SetUpMojoConnection() {
   frame_host_->GetFrameBindingsControl()->BindWebUI(
       remote_.BindNewEndpointAndPassReceiver(),
       receiver_.BindNewEndpointAndPassRemote());
+}
+
+WebUIBrowserInterfaceBrokerRegistry& GetRegistryFor(
+    WebUIController& controller) {
+  switch (controller.GetTrustPolicy()) {
+    case WebUIController::TrustPolicy::kTrusted:
+      return WebUIBrowserInterfaceBrokerRegistry::GetTrustedRegistry();
+    case WebUIController::TrustPolicy::kUntrusted:
+      return WebUIBrowserInterfaceBrokerRegistry::GetUntrustedRegistry();
+  }
+}
+
+void WebUIImpl::SetUpMojoInterfaceBroker() {
+  CHECK(GetController()) << "controller has not been set yet";
+
+  broker_ =
+      GetRegistryFor(*GetController()).CreateInterfaceBroker(*GetController());
+  if (broker_) {
+    RenderFrameHostImpl* rfh =
+        static_cast<RenderFrameHostImpl*>(GetRenderFrameHost());
+    // If this WebUIController has a per-WebUI interface broker, create the
+    // broker's remote and ask renderer to use it.
+    rfh->EnableMojoJsBindingsWithBroker(broker_->BindNewPipeAndPassRemote());
+  }
 }
 
 void WebUIImpl::TearDownMojoConnection() {
@@ -276,7 +360,8 @@ bool WebUIImpl::HasRenderFrameHost() const {
 }
 
 void WebUIImpl::SetController(std::unique_ptr<WebUIController> controller) {
-  DCHECK(controller);
+  CHECK(controller);
+  CHECK(!controller_) << "controller cannot be set twice";
   controller_ = std::move(controller);
 }
 
@@ -349,18 +434,19 @@ void WebUIImpl::DisallowJavascriptOnAllHandlers() {
 }
 
 blink::mojom::LocalResourceLoaderConfigPtr
-WebUIImpl::GetLocalResourceLoaderConfig() {
+WebUIImpl::GetLocalResourceLoaderConfig(const url::Origin& origin_to_commit) {
   URLDataManagerBackend* data_backend =
       URLDataManagerBackend::GetForBrowserContext(
           web_contents_->GetBrowserContext());
-  return CreateLocalResourceLoaderConfig(data_backend);
+  return CreateLocalResourceLoaderConfig(data_backend, origin_to_commit);
 }
 
 // static
 blink::mojom::LocalResourceLoaderConfigPtr
 WebUIImpl::GetLocalResourceLoaderConfigForTesting(
-    URLDataManagerBackend* data_backend) {
-  return CreateLocalResourceLoaderConfig(data_backend);
+    URLDataManagerBackend* data_backend,
+    const url::Origin& current_origin) {
+  return CreateLocalResourceLoaderConfig(data_backend, current_origin);
 }
 
 }  // namespace content

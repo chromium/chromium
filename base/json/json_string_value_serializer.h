@@ -14,6 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 
+// Use this class to work with code that takes `base::ValueSerializer`.
+// To just serialize a JSON string, use base/json/json_writer.h instead.
 class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
  public:
   // |json_string| is the string that will be the destination of the
@@ -47,6 +49,8 @@ class BASE_EXPORT JSONStringValueSerializer : public base::ValueSerializer {
   bool pretty_print_;  // If true, serialization will span multiple lines.
 };
 
+// Use this class to work with code that takes `base::ValueDeserializer`.
+// To just deserialize a JSON string, use base/json/json_reader.h instead.
 class BASE_EXPORT JSONStringValueDeserializer : public base::ValueDeserializer {
  public:
   // This retains a reference to the contents of |json_string|, so the data

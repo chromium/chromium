@@ -58,7 +58,7 @@ impl PikeVM {
     }
 
     pub(crate) fn create_cache(&self) -> PikeVMCache {
-        PikeVMCache::new(self)
+        PikeVMCache::none()
     }
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
@@ -93,7 +93,7 @@ impl PikeVMEngine {
         cache: &mut PikeVMCache,
         input: &Input<'_>,
     ) -> bool {
-        self.0.is_match(cache.0.as_mut().unwrap(), input.clone())
+        self.0.is_match(cache.get(&self.0), input.clone())
     }
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
@@ -103,7 +103,7 @@ impl PikeVMEngine {
         input: &Input<'_>,
         slots: &mut [Option<NonMaxUsize>],
     ) -> Option<PatternID> {
-        self.0.search_slots(cache.0.as_mut().unwrap(), input, slots)
+        self.0.search_slots(cache.get(&self.0), input, slots)
     }
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
@@ -113,11 +113,7 @@ impl PikeVMEngine {
         input: &Input<'_>,
         patset: &mut PatternSet,
     ) {
-        self.0.which_overlapping_matches(
-            cache.0.as_mut().unwrap(),
-            input,
-            patset,
-        )
+        self.0.which_overlapping_matches(cache.get(&self.0), input, patset)
     }
 }
 
@@ -129,16 +125,16 @@ impl PikeVMCache {
         PikeVMCache(None)
     }
 
-    pub(crate) fn new(builder: &PikeVM) -> PikeVMCache {
-        PikeVMCache(Some(builder.get().0.create_cache()))
-    }
-
     pub(crate) fn reset(&mut self, builder: &PikeVM) {
-        self.0.as_mut().unwrap().reset(&builder.get().0);
+        self.get(&builder.get().0).reset(&builder.get().0);
     }
 
     pub(crate) fn memory_usage(&self) -> usize {
         self.0.as_ref().map_or(0, |c| c.memory_usage())
+    }
+
+    fn get(&mut self, vm: &pikevm::PikeVM) -> &mut pikevm::Cache {
+        self.0.get_or_insert_with(|| vm.create_cache())
     }
 }
 
@@ -155,7 +151,7 @@ impl BoundedBacktracker {
     }
 
     pub(crate) fn create_cache(&self) -> BoundedBacktrackerCache {
-        BoundedBacktrackerCache::new(self)
+        BoundedBacktrackerCache::none()
     }
 
     #[cfg_attr(feature = "perf-inline", inline(always))]
@@ -235,9 +231,7 @@ impl BoundedBacktrackerEngine {
             // OK because we only permit access to this engine when we know
             // the haystack is short enough for the backtracker to run without
             // reporting an error.
-            self.0
-                .try_is_match(cache.0.as_mut().unwrap(), input.clone())
-                .unwrap()
+            self.0.try_is_match(cache.get(&self.0), input.clone()).unwrap()
         }
         #[cfg(not(feature = "nfa-backtrack"))]
         {
@@ -259,9 +253,7 @@ impl BoundedBacktrackerEngine {
             // OK because we only permit access to this engine when we know
             // the haystack is short enough for the backtracker to run without
             // reporting an error.
-            self.0
-                .try_search_slots(cache.0.as_mut().unwrap(), input, slots)
-                .unwrap()
+            self.0.try_search_slots(cache.get(&self.0), input, slots).unwrap()
         }
         #[cfg(not(feature = "nfa-backtrack"))]
         {
@@ -304,25 +296,10 @@ impl BoundedBacktrackerCache {
         }
     }
 
-    pub(crate) fn new(
-        builder: &BoundedBacktracker,
-    ) -> BoundedBacktrackerCache {
-        #[cfg(feature = "nfa-backtrack")]
-        {
-            BoundedBacktrackerCache(
-                builder.0.as_ref().map(|e| e.0.create_cache()),
-            )
-        }
-        #[cfg(not(feature = "nfa-backtrack"))]
-        {
-            BoundedBacktrackerCache(())
-        }
-    }
-
     pub(crate) fn reset(&mut self, builder: &BoundedBacktracker) {
         #[cfg(feature = "nfa-backtrack")]
         if let Some(ref e) = builder.0 {
-            self.0.as_mut().unwrap().reset(&e.0);
+            self.get(&e.0).reset(&e.0);
         }
     }
 
@@ -335,6 +312,14 @@ impl BoundedBacktrackerCache {
         {
             0
         }
+    }
+
+    #[cfg(feature = "nfa-backtrack")]
+    fn get(
+        &mut self,
+        bb: &backtrack::BoundedBacktracker,
+    ) -> &mut backtrack::Cache {
+        self.0.get_or_insert_with(|| bb.create_cache())
     }
 }
 
@@ -383,7 +368,7 @@ impl OnePassEngine {
             // that we either have at least one explicit capturing group or
             // there's a Unicode word boundary somewhere. If we don't have
             // either of these things, then the lazy DFA will almost certainly
-            // be useable and be much faster. The only case where it might
+            // be usable and be much faster. The only case where it might
             // not is if the lazy DFA isn't utilizing its cache effectively,
             // but in those cases, the underlying regex is almost certainly
             // not one-pass or is too big to fit within the current one-pass
@@ -408,7 +393,7 @@ impl OnePassEngine {
             let engine = match result {
                 Ok(engine) => engine,
                 Err(_err) => {
-                    debug!("OnePass failed to build: {}", _err);
+                    debug!("OnePass failed to build: {_err}");
                     return None;
                 }
             };
@@ -606,7 +591,7 @@ impl HybridEngine {
             let fwd = match result {
                 Ok(fwd) => fwd,
                 Err(_err) => {
-                    debug!("forward lazy DFA failed to build: {}", _err);
+                    debug!("forward lazy DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -622,7 +607,7 @@ impl HybridEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("reverse lazy DFA failed to build: {}", _err);
+                    debug!("reverse lazy DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -886,7 +871,7 @@ impl DFAEngine {
                 // Enabling this is necessary for ensuring we can service any
                 // kind of 'Input' search without error. For the full DFA, this
                 // can be quite costly. But since we have such a small bound
-                // on the size of the DFA, in practice, any multl-regexes are
+                // on the size of the DFA, in practice, any multi-regexes are
                 // probably going to blow the limit anyway.
                 .starts_for_each_pattern(true)
                 .byte_classes(info.config().get_byte_classes())
@@ -900,7 +885,7 @@ impl DFAEngine {
             let fwd = match result {
                 Ok(fwd) => fwd,
                 Err(_err) => {
-                    debug!("forward full DFA failed to build: {}", _err);
+                    debug!("forward full DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -924,7 +909,7 @@ impl DFAEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("reverse full DFA failed to build: {}", _err);
+                    debug!("reverse full DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -1132,7 +1117,7 @@ impl ReverseHybridEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("lazy reverse DFA failed to build: {}", _err);
+                    debug!("lazy reverse DFA failed to build: {_err}");
                     return None;
                 }
             };
@@ -1299,7 +1284,7 @@ impl ReverseDFAEngine {
             let rev = match result {
                 Ok(rev) => rev,
                 Err(_err) => {
-                    debug!("full reverse DFA failed to build: {}", _err);
+                    debug!("full reverse DFA failed to build: {_err}");
                     return None;
                 }
             };

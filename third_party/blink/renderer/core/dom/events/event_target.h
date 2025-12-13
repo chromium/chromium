@@ -43,10 +43,14 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
+namespace scheduler {
+class TaskAttributionInfo;
+}  // namespace scheduler
 
 class AddEventListenerOptionsResolved;
 class DOMWindow;
 class Event;
+class EventListenerOptions;
 class ExceptionState;
 class ExecutionContext;
 class LocalDOMWindow;
@@ -226,6 +230,7 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   // but they will only actually be web-exposed for interfaces that include
   // GlobalEventHandlers as a mixin in the idl.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(abort, kAbort)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationcancel, kAnimationcancel)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationiteration, kAnimationiteration)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
@@ -342,9 +347,10 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   virtual bool AddEventListenerInternal(const AtomicString& event_type,
                                         EventListener*,
                                         const AddEventListenerOptionsResolved*);
-  bool RemoveEventListenerInternal(const AtomicString& event_type,
-                                   const EventListener*,
-                                   const EventListenerOptions*);
+  bool RemoveEventListenerInternal(
+      const AtomicString& event_type,
+      const EventListener*,
+      const RegisteredEventListener::OptionsForMatching&);
 
   // Called when an event listener has been successfully added.
   virtual void AddedEventListener(const AtomicString& event_type,
@@ -382,7 +388,9 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
                          EventListenerVector*,
                          EventListenerVector*);
 
-  void DispatchEnqueuedEvent(Event*, ExecutionContext*);
+  void DispatchEnqueuedEvent(Event*,
+                             ExecutionContext*,
+                             scheduler::TaskAttributionInfo*);
 
   Member<EventTargetData> data_;
 

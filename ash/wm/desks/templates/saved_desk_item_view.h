@@ -13,6 +13,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/view_targeter_delegate.h"
 

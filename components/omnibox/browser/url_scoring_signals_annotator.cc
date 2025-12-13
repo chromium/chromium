@@ -68,7 +68,7 @@ void UrlScoringSignalsAnnotator::PopulateQueryUrlMatchingSignals(
     ScoringSignals* scoring_signals) {
   base::OffsetAdjuster::Adjustments adjustments;
   std::u16string cleaned_up_url =
-      string_cleaning::CleanUpUrlForMatching(url, &adjustments);
+      omnibox::CleanUpUrlForMatching(url, &adjustments);
 
   WordStarts url_word_starts;
   String16Set url_words =

@@ -162,7 +162,7 @@ TEST(ComClassesUtil, ValidateRegistrationRequest) {
   expected_request.brand_code = "brand_code";
   expected_request.brand_path = base::FilePath(L"brand_path");
   expected_request.ap = "ap";
-  expected_request.version = base::Version("1.2.3.4");
+  expected_request.version = "1.2.3.4";
   expected_request.existence_checker_path =
       base::FilePath(L"existence_checker_path");
   expected_request.install_id = "install_id";

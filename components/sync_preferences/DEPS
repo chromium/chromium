@@ -1,5 +1,6 @@
 include_rules = [
   "+ash/constants",
+  "+components/keyed_service/core",
   "+components/metrics/demographics",
   "+components/policy/core/browser",
   "+components/policy/core/common",
@@ -7,6 +8,7 @@ include_rules = [
   "+components/prefs",
   "+components/signin",
   "+components/sync",
+  "+components/sync_device_info",
   "+services/service_manager/public",
 
   # sync_preferences can be used on all platforms, including iOS. Do not allow
@@ -21,6 +23,7 @@ specific_include_rules = {
     "+components/browsing_data",
     "+components/commerce",
     "+components/content_settings",
+    "+components/desktop_to_mobile_promos",
     "+components/dom_distiller",
     "+components/language",
     "+components/metrics",
@@ -28,7 +31,9 @@ specific_include_rules = {
     "+components/omnibox",
     "+components/password_manager",
     "+components/payments",
-    "+components/plus_addresses",
+    "+components/plus_addresses/core/browser",
+    "+components/plus_addresses/core/common",
+    "+components/privacy_sandbox",
     "+components/safe_browsing",
     "+components/saved_tab_groups/public",
     "+components/search_engines",
@@ -36,5 +41,6 @@ specific_include_rules = {
     "+components/translate",
     "+components/variations",
     "+components/sharing_message",
+    "+components/sync_preferences/cross_device_pref_tracker",
   ]
 }

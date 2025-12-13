@@ -26,9 +26,7 @@
 
 namespace {
 
-// The size of the close button.
-const CGFloat kButtonImageSize = 28;
-const CGFloat kButtonSize = 44;
+const CGFloat kButtonImageSize = 18;
 
 typedef NSDiffableDataSourceSnapshot<NSString*, RecentActivityLogItem*>
     ActivityLogSnapshot;
@@ -71,31 +69,6 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 
   __weak __typeof(self) weakSelf = self;
 
-  // Configure a close button.
-  UIImage* closeImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kButtonImageSize), @[
-        [UIColor colorNamed:kCloseButtonColor],
-        [UIColor colorNamed:kSecondaryBackgroundColor]
-      ]);
-  UIButtonConfiguration* closeButtonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  closeButtonConfiguration.image = closeImage;
-  UIButton* closeButton = [UIButton
-      buttonWithConfiguration:closeButtonConfiguration
-                primaryAction:[UIAction actionWithHandler:^(UIAction* action) {
-                  [weakSelf didTapCloseButton];
-                }]];
-  closeButton.accessibilityIdentifier = kRecentActivityLogCloseButtonIdentifier;
-  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [closeButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
-
-  // Configure the menu button.
-  UIImage* menuImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kEllipsisCircleFillSymbol, kButtonImageSize),
-      @[
-        [UIColor colorNamed:kCloseButtonColor],
-        [UIColor colorNamed:kSecondaryBackgroundColor]
-      ]);
   UIAction* showAllActivity =
       [UIAction actionWithTitle:l10n_util::GetNSString(
                                     IDS_IOS_SHARE_KIT_MANAGE_ACTIVITY_LOG_TITLE)
@@ -106,23 +79,18 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
                         }];
   UIMenu* menu = [UIMenu menuWithChildren:@[ showAllActivity ]];
 
-  UIButtonConfiguration* menuButtonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  menuButtonConfiguration.image = menuImage;
-  UIButton* menuButton =
-      [UIButton buttonWithConfiguration:menuButtonConfiguration
-                          primaryAction:nil];
-  menuButton.menu = menu;
-  menuButton.showsMenuAsPrimaryAction = YES;
-  menuButton.accessibilityIdentifier = kRecentActivityLogMenuButtonIdentifier;
-  menuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [menuButton.widthAnchor constraintEqualToConstant:kButtonSize].active = YES;
+  self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                           target:self
+                           action:@selector(didTapCloseButton)];
+  self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
+      kRecentActivityLogCloseButtonIdentifier;
 
-  self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:closeButton];
-
-  self.navigationItem.leftBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:menuButton];
+  self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kMenuSymbol, kButtonImageSize)
+               menu:menu];
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kRecentActivityLogMenuButtonIdentifier;
 
   // Configure a table view.
   UITableView* tableView = self.tableView;
@@ -131,41 +99,26 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
   tableView.scrollEnabled = YES;
 
   RegisterTableViewCell<RecentActivityLogCell>(tableView);
-  RegisterTableViewCell<TableViewTextCell>(tableView);
 }
 
 #pragma mark - RecentActivityConsumer
 
 - (void)populateItems:(NSArray<RecentActivityLogItem*>*)items {
+  BOOL empty = items.count == 0;
+  self.tableView.backgroundView = empty ? [self emptyStateLabel] : nil;
+  if (empty) {
+    return;
+  }
+
   ActivityLogSnapshot* snapshot = [[ActivityLogSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ kRecentActivitySectionIdentifier ]];
-  if (items.count == 0) {
-    RecentActivityLogItem* emptyItem = [[RecentActivityLogItem alloc] init];
-    emptyItem.emptyItem = YES;
-    [snapshot appendItemsWithIdentifiers:@[ emptyItem ]];
-  } else {
-    [snapshot appendItemsWithIdentifiers:items];
-  }
+  [snapshot appendItemsWithIdentifiers:items];
 
   [self.dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - UITableViewDelegate
-
-- (BOOL)tableView:(UITableView*)tableView
-    shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath {
-  RecentActivityLogItem* item =
-      [_dataSource itemIdentifierForIndexPath:indexPath];
-  return !item.emptyItem;
-}
-
-- (BOOL)tableView:(UITableView*)tableView
-    canPerformPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  RecentActivityLogItem* item =
-      [_dataSource itemIdentifierForIndexPath:indexPath];
-  return !item.emptyItem;
-}
 
 - (void)tableView:(UITableView*)tableView
     performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -179,6 +132,20 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 #pragma mark - Private
+
+// Returns an empty state label.
+- (UILabel*)emptyStateLabel {
+  UILabel* emptyStateLabel = [[UILabel alloc] init];
+  emptyStateLabel.text = l10n_util::GetNSString(
+      IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_EMPTY_MESSAGE);
+  emptyStateLabel.textAlignment = NSTextAlignmentCenter;
+  emptyStateLabel.numberOfLines = 0;
+  emptyStateLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  emptyStateLabel.adjustsFontForContentSizeCategory = YES;
+  emptyStateLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+  return emptyStateLabel;
+}
 
 // Overrides the getter to the data store to allow the lazy initialization.
 - (ActivityLogDiffableDataSource*)dataSource {
@@ -218,15 +185,6 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
 - (UITableViewCell*)cellForTableView:(UITableView*)tableView
                            indexPath:(NSIndexPath*)indexPath
                       itemIdentifier:(RecentActivityLogItem*)itemIdentifier {
-  if (itemIdentifier.emptyItem) {
-    TableViewTextCell* cell =
-        DequeueTableViewCell<TableViewTextCell>(tableView);
-
-    cell.textLabel.text = l10n_util::GetNSString(
-        IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_EMPTY_MESSAGE);
-    return cell;
-  }
-
   RecentActivityLogCell* cell =
       DequeueTableViewCell<RecentActivityLogCell>(tableView);
   cell.titleLabel.text = itemIdentifier.title;
@@ -242,7 +200,7 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
   CrURL* crurl = [[CrURL alloc] initWithGURL:itemIdentifier.faviconURL];
   [_faviconDataSource
       faviconForPageURL:crurl
-             completion:^(FaviconAttributes* attributes) {
+             completion:^(FaviconAttributes* attributes, bool cached) {
                CHECK(attributes);
                // Only set favicon if the cell hasn't been reused.
                if ([cell.uniqueIdentifier isEqualToString:uniqueIdentifier]) {

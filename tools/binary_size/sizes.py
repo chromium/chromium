@@ -508,7 +508,20 @@ def main():
         status = result_types.UNKNOWN
       elif isolated_script_output['failures']:
         status = result_types.FAIL
-      result_sink_client.Post(test_name, status, None, None, None)
+
+      # Source comes from:
+      # infra/go/src/go.chromium.org/luci/resultdb/sink/proto/v1/test_result.proto
+      struct_test_dict = {
+          'coarseName': None,  # Not used for single tests.
+          'fineName': None,  # Not used for single tests.
+          'caseNameComponents': ['*fixture'],
+      }
+      result_sink_client.Post(test_name,
+                              status,
+                              None, # duration
+                              None, # test_log
+                              None, # test file
+                              test_id_structured=struct_test_dict)
 
   return rc
 

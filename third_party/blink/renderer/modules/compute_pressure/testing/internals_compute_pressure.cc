@@ -85,7 +85,7 @@ InternalsComputePressure::createVirtualPressureSource(
   auto* raw_pressure_manager_automation = web_pressure_manager_automation.get();
   raw_pressure_manager_automation->CreateVirtualPressureSource(
       ToMojoPressureSource(source.AsEnum()), ToMojoPressureMetadata(options),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -126,7 +126,7 @@ InternalsComputePressure::removeVirtualPressureSource(ScriptState* script_state,
   auto* raw_pressure_manager_automation = web_pressure_manager_automation.get();
   raw_pressure_manager_automation->RemoveVirtualPressureSource(
       ToMojoPressureSource(source.AsEnum()),
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,
@@ -159,7 +159,7 @@ InternalsComputePressure::updateVirtualPressureSource(
   raw_pressure_manager_automation->UpdateVirtualPressureSourceData(
       ToMojoPressureSource(source.AsEnum()),
       ToMojoPressureState(state.AsEnum()), own_contribution_estimate,
-      WTF::BindOnce(
+      BindOnce(
           // While we only really need |resolver|, we also take the
           // mojo::Remote<> so that it remains alive after this function exits.
           [](ScriptPromiseResolver<IDLUndefined>* resolver,

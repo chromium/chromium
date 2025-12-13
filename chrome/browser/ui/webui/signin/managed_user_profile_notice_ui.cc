@@ -37,6 +37,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/browser/extension_registry.h"
@@ -145,9 +146,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       "profileDisclosureTitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE);
   source->AddLocalizedString(
-      "profileOidcDisclosureTitle",
-      IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
-  source->AddLocalizedString(
       "profileDisclosureSubtitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE);
 
@@ -179,7 +177,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       "separateBrowsingDataTitle",
       IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);
   source->AddLocalizedString(
-      "valuePropositionTitle",
+      "valuePropTitle",
       IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE);
@@ -198,7 +196,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS);
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
-  source->AddBoolean("isOidcDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
   source->AddInteger("initialState",
                      ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -232,7 +229,7 @@ void ManagedUserProfileNoticeUI::Initialize(
               ? GetEnterpriseAccountDomain(*profile).value_or(std::string())
               : domain;
       update_data.Set(
-          "valuePropositionTitle",
+          "valuePropTitle",
           manager.empty()
               ? l10n_util::GetStringUTF16(
                     IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_REQUIRED_BY_ORG_TITLE)
@@ -261,10 +258,12 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kDisclosure);
     update_data.Set("isModalDialog", true);
-    update_data.Set("isOidcDialog", true);
     update_data.Set(
         "enterpriseProfileWelcomeTitle",
         l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
+    update_data.Set("profileDisclosureTitle",
+                    l10n_util::GetStringUTF16(
+                        IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE));
 
     update_data.Set("showLinkDataCheckbox", false);
   }
@@ -277,14 +276,20 @@ void ManagedUserProfileNoticeUI::Initialize(
   }
 
   if (create_param->account_info.IsManaged() != signin::Tribool::kTrue) {
-    update_data.Set("valuePropSubtitle",
-                    l10n_util::GetStringUTF16(
-                        IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
+    update_data.Set(
+        "valuePropSubtitle",
+        l10n_util::GetStringUTF16(
+            base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos)
+                ? IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE_WITH_BOOKMARKS
+                : IDS_ENTERPRISE_VALUE_PROPOSITION_CONSUMER_SUBTITLE));
     update_data.Set(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_CONSUMER_TITLE));
-  } else if (create_param->user_already_signed_in) {
+  } else if (create_param->user_already_signed_in ||
+             base::FeatureList::IsEnabled(
+                 switches::kEnforceManagementDisclaimer)) {
     update_data.Set(
         "separateBrowsingDataTitle",
         l10n_util::GetStringUTF16(
@@ -313,10 +318,14 @@ void ManagedUserProfileNoticeUI::Initialize(
         l10n_util::GetStringFUTF16(
             IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_DATA_CHOICE_ALREADY_SIGNED_IN_DETAILS,
             base::UTF8ToUTF16(domain)));
-    // Canceling when profile separation is enabled forces the user to signout.
-    update_data.Set(
-        "cancelLabel",
-        l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON));
+    if (type ==
+        ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation) {
+      update_data.Set("cancelLabel",
+                      l10n_util::GetStringUTF16(
+                          create_param->profile_creation_required_by_policy
+                              ? IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON
+                              : IDS_CANCEL));
+    }
   } else if (is_school_account) {
     update_data.Set("separateBrowsingDataTitle",
                     l10n_util::GetStringUTF16(

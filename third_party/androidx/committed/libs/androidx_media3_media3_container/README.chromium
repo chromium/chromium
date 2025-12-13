@@ -1,6 +1,6 @@
 Name: Media3 Container module
 Short Name: media3-container
-URL: https://developer.android.com/jetpack/androidx
+URL: https://dl.google.com/dl/android/maven2/androidx/media3/media3-container/1.2.0/media3-container-1.2.0.aar
 Version: 1.2.0
 Update Mechanism: Autoroll
 License: Apache-2.0

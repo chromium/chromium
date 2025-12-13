@@ -39,7 +39,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
 
   std::string_view json(reinterpret_cast<const char*>(data), size);
-  std::optional<base::Value> value = base::JSONReader::Read(json);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value || !value->is_dict())
     return 0;
 

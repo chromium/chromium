@@ -5,7 +5,7 @@
 #import "ios/chrome/test/app/password_test_util.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/test/app/mock_reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/mock_reauthentication_module.h"
 
 namespace chrome_test_util {
 
@@ -17,11 +17,11 @@ SetUpAndReturnMockReauthenticationModuleForPasswordManager() {
       mock_reauthentication_module);
 }
 
-std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
-SetUpAndReturnMockReauthenticationModuleForPasswordSuggestionBottomSheet() {
+std::unique_ptr<ScopedCredentialSuggestionBottomSheetReauthModuleOverride>
+SetUpAndReturnMockReauthenticationModuleForCredentialSuggestionBottomSheet() {
   MockReauthenticationModule* mock_reauthentication_module =
       [[MockReauthenticationModule alloc] init];
-  return ScopedPasswordSuggestionBottomSheetReauthModuleOverride::
+  return ScopedCredentialSuggestionBottomSheetReauthModuleOverride::
       MakeAndArmForTesting(mock_reauthentication_module);
 }
 

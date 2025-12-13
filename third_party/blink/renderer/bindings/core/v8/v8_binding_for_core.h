@@ -183,10 +183,6 @@ inline int64_t ToInt64(v8::Isolate* isolate,
                        v8::Local<v8::Value> value,
                        IntegerConversionConfiguration configuration,
                        ExceptionState& exception_state) {
-  // Clamping not supported for int64_t/long long int. See
-  // Source/wtf/MathExtras.h.
-  DCHECK_NE(configuration, kClamp);
-
   // Fast case. The value is a 32-bit integer.
   if (value->IsInt32()) [[likely]] {
     return value.As<v8::Int32>()->Value();
@@ -385,10 +381,6 @@ CORE_EXPORT bool IsInParallelAlgorithmRunnable(
     ScriptState* script_state);
 
 CORE_EXPORT void ApplyContextToException(ScriptState*,
-                                         v8::Local<v8::Value> exception,
-                                         const ExceptionContext&);
-CORE_EXPORT void ApplyContextToException(v8::Isolate*,
-                                         v8::Local<v8::Context>,
                                          v8::Local<v8::Value> exception,
                                          v8::ExceptionContext type,
                                          const char* class_name,

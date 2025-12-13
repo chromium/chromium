@@ -79,7 +79,7 @@ class DeskTemplateSemanticsTest : public testing::TestWithParam<std::string> {
 
 TEST_P(DeskTemplateSemanticsTest, PolicyTemplateSemanticallyEquivalentToProto) {
   auto expected_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(GetParam()));
+      std::string_view(GetParam()), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(expected_json.has_value());
   EXPECT_TRUE(expected_json->is_dict());

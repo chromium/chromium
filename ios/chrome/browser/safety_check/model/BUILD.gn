@@ -49,6 +49,7 @@ source_set("factory") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
   ]
 }
 
@@ -69,6 +70,7 @@ source_set("utils") {
   deps = [
     ":constants",
     "//base",
+    "//components/safety_check:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -90,11 +92,19 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safety_check:features",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
     "//ios/chrome/test:test_support",

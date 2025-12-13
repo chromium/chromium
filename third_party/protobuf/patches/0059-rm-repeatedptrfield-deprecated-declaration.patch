@@ -1,0 +1,12 @@
+diff --git a/src/google/protobuf/repeated_ptr_field.h b/src/google/protobuf/repeated_ptr_field.h
+index ab438885228fd..fc7adeb42ad0d 100644
+--- a/src/google/protobuf/repeated_ptr_field.h
++++ b/src/google/protobuf/repeated_ptr_field.h
+@@ -1032,7 +1032,6 @@ class ABSL_ATTRIBUTE_WARN_UNUSED RepeatedPtrField final
+ 
+ #ifndef PROTOBUF_FUTURE_REMOVE_REPEATED_PTR_FIELD_ARENA_CONSTRUCTOR
+   // TODO: make constructor private
+-  [[deprecated("Use Arena::Create<RepeatedPtrField<...>>(Arena*) instead")]]
+   explicit RepeatedPtrField(Arena* arena);
+ #endif
+

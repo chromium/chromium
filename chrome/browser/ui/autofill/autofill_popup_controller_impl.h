@@ -73,7 +73,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
 
   // AutofillSuggestionController:
   void OnSuggestionsChanged() override;
-  void AcceptSuggestion(int index) override;
+  void AcceptSuggestion(
+      int index,
+      AutofillMetrics::SuggestionAcceptedMethod accept_method) override;
   bool RemoveSuggestion(
       int list_index,
       AutofillMetrics::SingleEntryRemovalMethod removal_method) override;
@@ -81,8 +83,6 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   const std::vector<Suggestion>& GetSuggestions() const override;
   const Suggestion& GetSuggestionAt(int row) const override;
   FillingProduct GetMainFillingProduct() const override;
-  std::optional<AutofillClient::PopupScreenLocation> GetPopupScreenLocation()
-      const override;
   void Hide(SuggestionHidingReason reason) override;
   void ViewDestroyed() override;
   void Show(UiSessionId ui_session_id,
@@ -148,6 +148,9 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
 
   // Hides `view_` unless it is null and then deletes `this`.
   virtual void HideViewAndDie();
+
+  // Returns true if the suggestions are credit card suggestions.
+  bool HasCreditCardSuggestions() const;
 
  private:
   friend class AutofillPopupControllerImplTestApi;

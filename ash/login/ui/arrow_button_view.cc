@@ -8,10 +8,10 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/color_util.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
@@ -53,19 +53,21 @@ constexpr base::TimeDelta kTransformDelayDuration = base::Milliseconds(1000);
 
 void PaintLoadingArc(gfx::Canvas* canvas,
                      const gfx::Rect& bounds,
-                     double loading_fraction) {
+                     double loading_fraction,
+                     ui::ColorProvider* color_provider) {
   gfx::Rect oval = bounds;
   // Inset to make sure the whole arc is inside the visible rect.
   oval.Inset(gfx::Insets::VH(/*vertical=*/1, /*horizontal=*/1));
 
-  SkPath path;
-  path.arcTo(RectToSkRect(oval), /*startAngle=*/-90,
-             /*sweepAngle=*/360 * loading_fraction, /*forceMoveTo=*/true);
+  const SkPath path =
+      SkPathBuilder()
+          .arcTo(RectToSkRect(oval), /*startAngle=*/-90,
+                 /*sweepAngle=*/360 * loading_fraction, /*forceMoveTo=*/true)
+          .detach();
 
   cc::PaintFlags flags;
   // Use the same color as the arrow icon.
-  flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor));
+  flags.setColor(color_provider->GetColor(cros_tokens::kColorPrimary));
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
   canvas->DrawPath(path, flags);
@@ -106,7 +108,8 @@ void ArrowButtonView::PaintButtonContents(gfx::Canvas* canvas) {
   // Draw the arc of the loading animation.
   if (loading_animation_) {
     const gfx::Rect rect(GetContentsBounds());
-    PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue());
+    PaintLoadingArc(canvas, rect, loading_animation_->GetCurrentValue(),
+                    GetColorProvider());
   }
 }
 

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/fallback_crash_handler_launcher_win.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/windows_handle_util.h"
@@ -25,7 +21,7 @@ const size_t kCommandLineTailSize = 32;
 }  // namespace
 
 FallbackCrashHandlerLauncher::FallbackCrashHandlerLauncher() {
-  memset(&exception_pointers_, 0, sizeof(exception_pointers_));
+  UNSAFE_TODO(memset(&exception_pointers_, 0, sizeof(exception_pointers_)));
 }
 
 FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() = default;
@@ -38,8 +34,9 @@ bool FallbackCrashHandlerLauncher::Initialize(
                             PROCESS_DUP_HANDLE | PROCESS_TERMINATE;
   self_process_handle_.Set(
       OpenProcess(kAccessMask, TRUE, ::GetCurrentProcessId()));
-  if (!self_process_handle_.IsValid())
+  if (!self_process_handle_.is_valid()) {
     return false;
+  }
 
   // Setup the startup info for inheriting the self process handle into the
   // fallback crash handler.
@@ -83,8 +80,9 @@ DWORD FallbackCrashHandlerLauncher::LaunchAndWaitForHandler(
   // This program has crashed. Try and not use anything but the stack.
 
   // Append the current thread's ID to the command line in-place.
-  int chars_appended = wsprintf(&cmd_line_.back() - kCommandLineTailSize + 1,
-                                L"%d", GetCurrentThreadId());
+  int chars_appended =
+      wsprintf(UNSAFE_TODO(&cmd_line_.back() - kCommandLineTailSize + 1), L"%d",
+               GetCurrentThreadId());
   DCHECK_GT(static_cast<int>(kCommandLineTailSize), chars_appended);
 
   // Copy the exception pointers to our member variable, whose address is

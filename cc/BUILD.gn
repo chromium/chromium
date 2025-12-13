@@ -13,6 +13,27 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+cc_component("layer_selection_bound") {
+  # Without this separates from :cc, there will be a circular dependency:
+  # :cc -> cc/mojom:mojo_layer_trees -> :cc.
+  sources = [
+    "input/layer_selection_bound.cc",
+    "input/layer_selection_bound.h",
+  ]
+
+  public_deps = [
+    "//cc/base",
+    "//components/viz/common",
+  ]
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
+  defines = [ "CC_IMPLEMENTATION=1" ]
+}
+
 cc_component("cc") {
   sources = [
     "benchmarks/benchmark_instrumentation.cc",
@@ -47,8 +68,6 @@ cc_component("cc") {
     "input/hit_test_opaqueness.h",
     "input/input_handler.cc",
     "input/input_handler.h",
-    "input/layer_selection_bound.cc",
-    "input/layer_selection_bound.h",
     "input/main_thread_scrolling_reason.cc",
     "input/main_thread_scrolling_reason.h",
     "input/overscroll_behavior.h",
@@ -149,6 +168,7 @@ cc_component("cc") {
     "layers/texture_layer_client.h",
     "layers/texture_layer_impl.cc",
     "layers/texture_layer_impl.h",
+    "layers/tile_based_layer_impl.h",
     "layers/tile_display_layer_impl.cc",
     "layers/tile_display_layer_impl.h",
     "layers/tile_size_calculator.cc",
@@ -204,6 +224,7 @@ cc_component("cc") {
     "metrics/frame_sequence_tracker_collection.h",
     "metrics/frame_sorter.cc",
     "metrics/frame_sorter.h",
+    "metrics/histogram_macros.h",
     "metrics/latency_ukm_reporter.cc",
     "metrics/latency_ukm_reporter.h",
     "metrics/lcd_text_metrics_reporter.cc",
@@ -214,7 +235,24 @@ cc_component("cc") {
     "metrics/scroll_jank_dropped_frame_tracker.h",
     "metrics/scroll_jank_ukm_reporter.cc",
     "metrics/scroll_jank_ukm_reporter.h",
+    "metrics/scroll_jank_v4_decider.cc",
+    "metrics/scroll_jank_v4_decider.h",
+    "metrics/scroll_jank_v4_decision_queue.cc",
+    "metrics/scroll_jank_v4_decision_queue.h",
+    "metrics/scroll_jank_v4_frame.cc",
+    "metrics/scroll_jank_v4_frame.h",
+    "metrics/scroll_jank_v4_frame_stage.cc",
+    "metrics/scroll_jank_v4_frame_stage.h",
+    "metrics/scroll_jank_v4_histogram_emitter.cc",
+    "metrics/scroll_jank_v4_histogram_emitter.h",
+    "metrics/scroll_jank_v4_processor.cc",
+    "metrics/scroll_jank_v4_processor.h",
+    "metrics/scroll_jank_v4_result.h",
+    "metrics/scroll_jank_v4_tracing_recorder.cc",
+    "metrics/scroll_jank_v4_tracing_recorder.h",
     "metrics/shared_metrics_buffer.h",
+    "metrics/stub_compositor_frame_reporting_controller.cc",
+    "metrics/stub_compositor_frame_reporting_controller.h",
     "metrics/submit_info.cc",
     "metrics/submit_info.h",
     "metrics/ukm_dropped_frames_data.cc",
@@ -243,7 +281,6 @@ cc_component("cc") {
     "raster/raster_query_queue.h",
     "raster/raster_source.cc",
     "raster/raster_source.h",
-    "raster/scoped_grcontext_access.h",
     "raster/single_thread_task_graph_runner.cc",
     "raster/single_thread_task_graph_runner.h",
     "raster/staging_buffer_pool.cc",
@@ -366,6 +403,8 @@ cc_component("cc") {
     "trees/draw_property_utils.h",
     "trees/effect_node.cc",
     "trees/effect_node.h",
+    "trees/frame_data.cc",
+    "trees/frame_data.h",
     "trees/image_animation_controller.cc",
     "trees/image_animation_controller.h",
     "trees/latency_info_swap_promise.cc",
@@ -430,8 +469,11 @@ cc_component("cc") {
     "trees/render_frame_metadata.h",
     "trees/render_frame_metadata_observer.h",
     "trees/scoped_abort_remaining_swap_promises.h",
+    "trees/scroll_elasticity_utils.cc",
+    "trees/scroll_elasticity_utils.h",
     "trees/scroll_node.cc",
     "trees/scroll_node.h",
+    "trees/scroll_source_type.h",
     "trees/single_thread_proxy.cc",
     "trees/single_thread_proxy.h",
     "trees/sticky_position_constraint.cc",
@@ -459,6 +501,7 @@ cc_component("cc") {
   ]
 
   public_deps = [
+    ":layer_selection_bound",
     "//cc/base",
     "//cc/mojom:mojom_browser_controls",
     "//cc/mojom:mojom_layer_trees",
@@ -471,19 +514,18 @@ cc_component("cc") {
     "//build:chromeos_buildflags",
     "//components/metrics/dwa:dwa_builders",
     "//components/metrics/dwa/mojom",
-    "//components/miracle_parameter/common",
     "//components/viz/client",
     "//device/base/synchronization",
     "//gpu/command_buffer/client:gles2_interface",
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/ipc/client",
-    "//gpu/skia_bindings:skia_bindings",
+    "//gpu/skia_bindings",
     "//gpu/vulkan:buildflags",
     "//media",  # For VideoLayerImpl.
     "//mojo/public/cpp/bindings:struct_traits",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
-    "//services/tracing/public/cpp:cpp",
+    "//services/tracing/public/cpp",
     "//skia:skcms",
     "//third_party/blink/public/common/tokens:tokens_headers",
     "//ui/base:features",
@@ -514,6 +556,8 @@ cc_test_static_library("test_support") {
     "test/animation_test_common.h",
     "test/animation_timelines_test_common.cc",
     "test/animation_timelines_test_common.h",
+    "test/event_metrics_test_creator.cc",
+    "test/event_metrics_test_creator.h",
     "test/fake_compositor_delegate_for_input.cc",
     "test/fake_compositor_delegate_for_input.h",
     "test/fake_compositor_frame_reporting_controller.cc",
@@ -663,6 +707,8 @@ cc_test_static_library("test_support") {
     "test/test_ukm_recorder_factory.h",
     "test/transfer_cache_test_helper.cc",
     "test/transfer_cache_test_helper.h",
+    "trees/layer_tree_host_impl_test_base.cc",
+    "trees/layer_tree_host_impl_test_base.h",
   ]
 
   public_deps = [
@@ -780,6 +826,7 @@ cc_test("cc_unittests") {
     "layers/surface_layer_unittest.cc",
     "layers/texture_layer_impl_unittest.cc",
     "layers/texture_layer_unittest.cc",
+    "layers/tile_based_layer_impl_unittest.cc",
     "layers/tile_display_layer_impl_unittest.cc",
     "layers/touch_action_region_unittest.cc",
     "layers/ui_resource_layer_impl_unittest.cc",
@@ -798,9 +845,17 @@ cc_test("cc_unittests") {
     "metrics/frame_sequence_metrics_unittest.cc",
     "metrics/frame_sequence_tracker_unittest.cc",
     "metrics/frame_sorter_unittest.cc",
+    "metrics/histogram_macros_unittest.cc",
     "metrics/predictor_jank_tracker_unittest.cc",
     "metrics/scroll_jank_dropped_frame_tracker_unittest.cc",
     "metrics/scroll_jank_ukm_reporter_unittest.cc",
+    "metrics/scroll_jank_v4_decider_unittest.cc",
+    "metrics/scroll_jank_v4_decision_queue_unittest.cc",
+    "metrics/scroll_jank_v4_frame_stage_unittest.cc",
+    "metrics/scroll_jank_v4_frame_unittest.cc",
+    "metrics/scroll_jank_v4_histogram_emitter_unittest.cc",
+    "metrics/scroll_jank_v4_processor_unittest.cc",
+    "metrics/scroll_jank_v4_tracing_recorder_unittest.cc",
     "metrics/ukm_manager_unittest.cc",
     "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
@@ -844,6 +899,7 @@ cc_test("cc_unittests") {
     "slim/test_layer_tree_client.h",
     "slim/test_layer_tree_impl.cc",
     "slim/test_layer_tree_impl.h",
+    "test/event_metrics_test_creator_unittest.cc",
     "tiles/checker_image_tracker_unittest.cc",
     "tiles/decoded_image_tracker_unittest.cc",
     "tiles/gpu_image_decode_cache_unittest.cc",
@@ -857,8 +913,10 @@ cc_test("cc_unittests") {
     "tiles/tile_priority_unittest.cc",
     "trees/damage_tracker_unittest.cc",
     "trees/draw_properties_unittest.cc",
+    "trees/frame_data_unittest.cc",
     "trees/image_animation_controller_unittest.cc",
     "trees/layer_tree_frame_sink_unittest.cc",
+    "trees/layer_tree_host_impl_trees_in_viz_unittest.cc",
     "trees/layer_tree_host_impl_unittest.cc",
     "trees/layer_tree_host_pixeltest_blending.cc",
     "trees/layer_tree_host_pixeltest_filters.cc",
@@ -958,6 +1016,7 @@ cc_test("cc_unittests") {
     "//ui/gfx/geometry",
     "//ui/gl",
     "//ui/gl:test_support",
+    "//ui/native_theme",
   ]
 
   data = [ "//components/test/data/viz/" ]

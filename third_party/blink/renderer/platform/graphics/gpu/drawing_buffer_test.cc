@@ -68,11 +68,12 @@ class DrawingBufferTest : public Test {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
-    Platform::GraphicsInfo graphics_info;
-    graphics_info.using_gpu_compositing = true;
+    Platform::WebGLContextInfo context_info;
+    context_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
-        gl_, initial_size, DrawingBuffer::kPreserve, use_multisampling);
+        std::move(provider), /*shared_image_interface_provider_for_sw=*/nullptr,
+        context_info, gl_, initial_size, DrawingBuffer::kPreserve,
+        use_multisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(false);
   }
@@ -234,13 +235,16 @@ TEST_F(DrawingBufferTest, VerifySharedImagesReleasedAfterReleaseCallback) {
 
   EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
   std::move(release_callback1).Run(gpu::SyncToken(), true /* lostResource */);
+  resource1 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 3u);
 
   std::move(release_callback2).Run(gpu::SyncToken(), true /* lostResource */);
+  resource2 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 2u);
 
   // The resource is not marked lost so it's recycled after the callback.
   std::move(release_callback3).Run(gpu::SyncToken(), false /* lostResource */);
+  resource3 = viz::TransferableResource();
   EXPECT_EQ(sii->shared_image_count(), 2u);
 
   drawing_buffer_->BeginDestruction();
@@ -355,24 +359,13 @@ class DrawingBufferImageChromiumTest : public DrawingBufferTest,
     auto provider =
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
 
-    provider->GetMutableGpuFeatureInfo()
-        .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-        gpu::kGpuFeatureStatusEnabled;
-
-    // DrawingBuffer requests MappableSharedImages with usage SCANOUT, whereas
-    // TestSII by default creates backing SharedMemory GMBs that don't support
-    // this usage. Configure the TestSII to instead use test GMBs that have
-    // relaxed usage validation.
-    auto* sii = static_cast<gpu::TestSharedImageInterface*>(
-        provider->SharedImageInterface());
-    sii->UseTestGMBInSharedImageCreationWithBufferUsage();
     GLES2InterfaceForTests* gl_ =
         static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
     EXPECT_CALL(*gl_, CreateAndTexStorage2DSharedImageCHROMIUMMock(_)).Times(1);
-    Platform::GraphicsInfo graphics_info;
-    graphics_info.using_gpu_compositing = true;
+    Platform::WebGLContextInfo context_info;
+    context_info.using_gpu_compositing = true;
     drawing_buffer_ = DrawingBufferForTests::Create(
-        std::move(provider), /*sii_provider_for_sw=*/nullptr, graphics_info,
+        std::move(provider), /*sii_provider_for_sw=*/nullptr, context_info,
         gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
     CHECK(drawing_buffer_);
     SetAndSaveRestoreState(true);
@@ -405,8 +398,8 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.is_overlay_candidate);
-  EXPECT_EQ(initial_size, resource.size);
+  EXPECT_TRUE(resource.GetIsOverlayCandidate());
+  EXPECT_EQ(initial_size, resource.GetSize());
   testing::Mock::VerifyAndClearExpectations(gl_);
   VerifyStateWasRestored();
   gpu::Mailbox mailbox2 = gl_->last_imported_shared_image();
@@ -429,6 +422,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   // Return the exported resource. Now it should get destroyed too.
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
+  resource = viz::TransferableResource();
   VerifyStateWasRestored();
   EXPECT_EQ(1u, sii->shared_image_count());
   EXPECT_FALSE(sii->CheckSharedImageExists(mailbox1));
@@ -441,8 +435,8 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(alternate_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.is_overlay_candidate);
-  EXPECT_EQ(alternate_size, resource.size);
+  EXPECT_TRUE(resource.GetIsOverlayCandidate());
+  EXPECT_EQ(alternate_size, resource.GetSize());
   gpu::Mailbox mailbox4 = gl_->last_imported_shared_image();
   EXPECT_EQ(2u, sii->shared_image_count());
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox3));
@@ -465,6 +459,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   // Return the exported resource. Now it will be destroyed too.
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
+  resource = viz::TransferableResource();
   VerifyStateWasRestored();
   EXPECT_EQ(1u, sii->shared_image_count());
   EXPECT_FALSE(sii->CheckSharedImageExists(mailbox3));
@@ -477,8 +472,8 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.is_overlay_candidate);
-  EXPECT_EQ(initial_size, resource.size);
+  EXPECT_TRUE(resource.GetIsOverlayCandidate());
+  EXPECT_EQ(initial_size, resource.GetSize());
   testing::Mock::VerifyAndClearExpectations(gl_);
   gpu::Mailbox mailbox6 = gl_->last_imported_shared_image();
   EXPECT_EQ(2u, sii->shared_image_count());
@@ -493,8 +488,8 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
   EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource,
                                                            &release_callback));
   EXPECT_EQ(initial_size, sii->MostRecentSize());
-  EXPECT_TRUE(resource.is_overlay_candidate);
-  EXPECT_EQ(initial_size, resource.size);
+  EXPECT_TRUE(resource.GetIsOverlayCandidate());
+  EXPECT_EQ(initial_size, resource.GetSize());
   std::move(release_callback).Run(gpu::SyncToken(), false /* lostResource */);
   EXPECT_EQ(2u, sii->shared_image_count());
   EXPECT_TRUE(sii->CheckSharedImageExists(mailbox5));
@@ -502,6 +497,7 @@ TEST_F(DrawingBufferImageChromiumTest, VerifyResizingReallocatesImages) {
 
   drawing_buffer_->BeginDestruction();
   testing::Mock::VerifyAndClearExpectations(sii);
+  resource = viz::TransferableResource();
   EXPECT_EQ(0u, sii->shared_image_count());
 }
 
@@ -602,22 +598,20 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
         std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
     DrawingBuffer::PreserveDrawingBuffer preserve = DrawingBuffer::kPreserve;
 
-    Platform::GraphicsInfo graphics_info;
-    graphics_info.using_gpu_compositing = true;
+    Platform::WebGLContextInfo context_info;
+    context_info.using_gpu_compositing = true;
     bool premultiplied_alpha = false;
     bool want_alpha_channel = true;
     bool want_depth_buffer = cases[i].request_depth;
     bool want_stencil_buffer = cases[i].request_stencil;
     bool want_antialiasing = false;
-    bool using_swap_chain = false;
     bool desynchronized = false;
     scoped_refptr<DrawingBuffer> drawing_buffer = DrawingBuffer::Create(
-        std::move(provider), graphics_info, using_swap_chain, nullptr,
-        gfx::Size(10, 10), premultiplied_alpha, want_alpha_channel,
-        want_depth_buffer, want_stencil_buffer, want_antialiasing,
-        desynchronized, preserve, DrawingBuffer::kWebGL1,
-        DrawingBuffer::kAllowChromiumImage, PredefinedColorSpace::kSRGB,
-        gl::GpuPreference::kHighPerformance);
+        std::move(provider), context_info, nullptr, gfx::Size(10, 10),
+        premultiplied_alpha, want_alpha_channel, want_depth_buffer,
+        want_stencil_buffer, want_antialiasing, desynchronized, preserve,
+        Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+        PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
 
     // When we request a depth or a stencil buffer, we will get both.
     EXPECT_EQ(cases[i].request_depth || cases[i].request_stencil,
@@ -692,14 +686,14 @@ TEST_F(DrawingBufferTest,
   static_assert(size_t{kWidth} * kHeight > kMaxSize);
 
   gfx::Size too_big_size(kWidth, kHeight);
-  Platform::GraphicsInfo graphics_info;
-  graphics_info.using_gpu_compositing = true;
+  Platform::WebGLContextInfo context_info;
+  context_info.using_gpu_compositing = true;
   scoped_refptr<DrawingBuffer> too_big_drawing_buffer = DrawingBuffer::Create(
-      nullptr, graphics_info, false /* using_swap_chain */, nullptr,
-      too_big_size, false, false, false, false, false,
-      /*desynchronized=*/false, DrawingBuffer::kDiscard, DrawingBuffer::kWebGL1,
-      DrawingBuffer::kAllowChromiumImage, PredefinedColorSpace::kSRGB,
-      gl::GpuPreference::kHighPerformance);
+      nullptr, context_info, nullptr, too_big_size, false, false, false, false,
+      false,
+      /*desynchronized=*/false, DrawingBuffer::kDiscard,
+      Platform::kWebGL1ContextType, DrawingBuffer::kAllowChromiumImage,
+      PredefinedColorSpace::kSRGB, gl::GpuPreference::kHighPerformance);
   EXPECT_EQ(too_big_drawing_buffer, nullptr);
   drawing_buffer_->BeginDestruction();
 }
@@ -711,20 +705,16 @@ TEST_F(DrawingBufferImageChromiumTest,
   auto provider =
       std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
 
-  provider->GetMutableGpuFeatureInfo()
-      .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] =
-      gpu::kGpuFeatureStatusEnabled;
-
   GLES2InterfaceForTests* gl_ =
       static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
 
-  Platform::GraphicsInfo graphics_info;
-  graphics_info.using_gpu_compositing = true;
+  Platform::WebGLContextInfo context_info;
+  context_info.using_gpu_compositing = true;
 
   scoped_refptr<DrawingBufferForTests> drawing_buffer =
       DrawingBufferForTests::Create(
           std::move(provider),
-          /*shared_image_interface_provider_for_sw=*/nullptr, graphics_info,
+          /*shared_image_interface_provider_for_sw=*/nullptr, context_info,
           gl_, initial_size, DrawingBuffer::kPreserve, kDisableMultisampling,
           /*desynchronized=*/true);
 

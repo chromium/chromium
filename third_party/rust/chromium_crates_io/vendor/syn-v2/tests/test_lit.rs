@@ -9,7 +9,9 @@
 )]
 
 #[macro_use]
-mod macros;
+mod snapshot;
+
+mod debug;
 
 use proc_macro2::{Delimiter, Group, Literal, Span, TokenStream, TokenTree};
 use quote::ToTokens;

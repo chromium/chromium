@@ -38,7 +38,7 @@ class SpecialStoragePolicy;
 // `content::StoragePartition::GetOrCreateSharedStorageManager()`.
 // Provides the database connection. Wrapper around
 // `AsyncSharedStorageDatabase`.
-class SharedStorageManager {
+class SharedStorageManager : public base::MemoryPressureListener {
  public:
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
@@ -73,7 +73,7 @@ class SharedStorageManager {
   SharedStorageManager(const SharedStorageManager&) = delete;
   SharedStorageManager& operator=(const SharedStorageManager&) = delete;
 
-  virtual ~SharedStorageManager();
+  ~SharedStorageManager() override;
 
   AsyncSharedStorageDatabase* database() { return database_.get(); }
 
@@ -96,9 +96,12 @@ class SharedStorageManager {
   }
 
   // Called when the system is under memory pressure.
+  void HandleMemoryPressure(base::OnceCallback<void()> callback,
+                            base::MemoryPressureLevel memory_pressure_level);
+
+  // base::MemoryPressureListener:
   void OnMemoryPressure(
-      base::OnceCallback<void()> callback,
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
 
   // Tallies database errors, watching for consecutive ones. If the threshold
   // `max_allowed_consecutive_operation_errors_` is exceeded, then the database
@@ -365,7 +368,8 @@ class SharedStorageManager {
   int operation_sql_error_count_ = 0;
 
   // Listens for the system being under memory pressure.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
 
   // Callback to be run at the end of `OnDatabaseDestroyed()`.
   base::OnceCallback<void(bool)> on_db_destroyed_callback_for_testing_;

@@ -5,9 +5,9 @@
 #include "components/file_access/scoped_file_access_delegate.h"
 
 #include <memory>
+
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/test/mock_callback.h"

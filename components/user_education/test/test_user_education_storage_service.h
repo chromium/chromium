@@ -42,11 +42,14 @@ class TestUserEducationStorageService : public UserEducationStorageService {
   void SaveProductMessagingData(
       const ProductMessagingData& product_messaging_data) override;
   void ResetProductMessagingData() override;
-  std::optional<KeyedNtpPromoData> ReadNtpPromoData(
+  std::optional<NtpPromoData> ReadNtpPromoData(
       const NtpPromoIdentifier& id) const override;
   void SaveNtpPromoData(const NtpPromoIdentifier& id,
-                        const KeyedNtpPromoData& data) override;
-  void ResetNtpPromoData() override;
+                        const NtpPromoData& data) override;
+  void ResetNtpPromoData(const NtpPromoIdentifier& id) override;
+  NtpPromoPreferences ReadNtpPromoPreferences() override;
+  void SaveNtpPromoPreferences(const NtpPromoPreferences& data) override;
+  void ResetNtpPromoPreferences() override;
 
  private:
   std::map<const base::Feature*, FeaturePromoData> promo_data_;
@@ -54,7 +57,8 @@ class TestUserEducationStorageService : public UserEducationStorageService {
   FeaturePromoPolicyData policy_data_;
   std::map<const base::Feature*, NewBadgeData> new_badge_data_;
   ProductMessagingData product_messaging_data_;
-  NtpPromoData ntp_promo_data_;
+  KeyedNtpPromoDataMap ntp_promo_data_;
+  NtpPromoPreferences ntp_promo_prefs_;
 };
 
 }  // namespace user_education::test

@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "content/child/blink_platform_impl.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -117,7 +116,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& request_url) const override;
   bool IsolateStartsInBackground() override;
   blink::WebString DefaultLocale() override;
-  void SuddenTerminationChanged(bool enabled) override;
+  void SetSuddenTerminationAllowed(bool allowed) override;
   viz::FrameSinkId GenerateFrameSinkId() override;
   bool IsLockedToSite() const override;
   bool IsThreadedAnimationEnabled() override;
@@ -140,8 +139,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebAudioLatencyHint& latency_hint,
       std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback* callback) override;
-  bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
-                           base::span<const char> audio_file_data) override;
+  std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
+      base::span<const char> audio_file_data) override;
   scoped_refptr<media::AudioCapturerSource> NewAudioCapturerSource(
       blink::WebLocalFrame* web_frame,
       const media::AudioSourceParameters& params) override;
@@ -177,10 +176,16 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   bool AllowsLoopbackInPeerConnection() override;
   blink::WebVideoCaptureImplManager* GetVideoCaptureImplManager() override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
-  CreateOffscreenGraphicsContext3DProvider(
-      const blink::Platform::ContextAttributes& attributes,
+  CreateWebGLGraphicsContextProvider(
+      bool prefer_low_power_gpu,
+      bool fail_if_major_performance_caveat,
+      blink::Platform::WebGLContextType context_type,
       const blink::WebURL& document_url,
-      blink::Platform::GraphicsInfo* gl_info) override;
+      blink::Platform::WebGLContextInfo* gl_info) override;
+  std::unique_ptr<blink::WebGraphicsContext3DProvider>
+  CreateRasterGraphicsContextProvider(
+      const blink::WebURL& document_url,
+      blink::Platform::RasterContextType context_type) override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
   CreateSharedOffscreenGraphicsContext3DProvider() override;
   std::unique_ptr<blink::WebGraphicsContext3DProvider>
@@ -238,6 +243,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void SetActiveURL(const blink::WebURL& url,
                     const blink::WebString& top_url) override;
   SkBitmap* GetSadPageBitmap() override;
+  blink::mojom::PerformanceTier GetCpuPerformanceTier() override;
   std::unique_ptr<blink::WebV8ValueConverter> CreateWebV8ValueConverter()
       override;
   bool DisallowV8FeatureFlagOverrides() const override;
@@ -253,9 +259,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   void SetPrivateMemoryFootprint(
       uint64_t private_memory_footprint_bytes) override;
   bool IsUserLevelMemoryPressureSignalEnabled() override;
-  std::pair<base::TimeDelta, base::TimeDelta>
-  InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() override;
 #endif  // BUILDFLAG(IS_ANDROID)
+  void OnV8HeapLastResortGC() override;
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.
@@ -269,19 +274,16 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
  private:
   bool CheckPreparsedJsCachingEnabled() const;
 
-  void Collect3DContextInformation(blink::Platform::GraphicsInfo* gl_info,
-                                   const gpu::GPUInfo& gpu_info) const;
+  void CollectWebGLContextInfo(blink::Platform::WebGLContextInfo* gl_info,
+                               const gpu::GPUInfo& gpu_info) const;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   std::unique_ptr<blink::WebSandboxSupport> sandbox_support_;
 #endif
 
-  // This counter keeps track of the number of times sudden termination is
-  // enabled or disabled. It starts at 0 (enabled) and for every disable
-  // increments by 1, for every enable decrements by 1. When it reaches 0,
-  // we tell the browser to enable fast termination.
-  int sudden_termination_disables_;
+  // Number of active process-level sudden termination disablers.
+  int sudden_termination_disables_ = 0;
 
   // If true, the renderer process is locked to a site.
   bool is_locked_to_site_;

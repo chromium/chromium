@@ -24,7 +24,8 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,7 +37,7 @@ public class ScrollCaptureManagerTest {
     @Mock private Tab mTab;
     @Mock private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;
 
-    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private ScrollCaptureManager mScrollCaptureManager;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -45,7 +46,7 @@ public class ScrollCaptureManagerTest {
     public void setUp() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabSupplier = new ObservableSupplierImpl<>();
+                    mTabSupplier = ObservableSuppliers.createNullable();
                     mScrollCaptureManager =
                             new ScrollCaptureManager(
                                     mTabSupplier, mScrollCaptureManagerDelegateMock);

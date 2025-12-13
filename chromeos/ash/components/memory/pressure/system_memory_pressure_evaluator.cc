@@ -67,20 +67,18 @@ void SystemMemoryPressureEvaluator::OnMemoryPressure(
     memory_pressure::ReclaimTarget target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::MemoryPressureListener::MemoryPressureLevel listener_level;
+  base::MemoryPressureLevel listener_level;
   memory_pressure::ReclaimTarget new_reclaim_target;
 
   if (level == ResourcedClient::PressureLevel::CRITICAL) {
-    listener_level =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL;
+    listener_level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
 
     // Only update the received target if pressure level is critical.
     new_reclaim_target = target;
   } else if (level == ResourcedClient::PressureLevel::MODERATE) {
-    listener_level =
-        base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE;
+    listener_level = base::MEMORY_PRESSURE_LEVEL_MODERATE;
   } else {
-    listener_level = base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE;
+    listener_level = base::MEMORY_PRESSURE_LEVEL_NONE;
   }
 
   // Store the new reclaim target.
@@ -94,20 +92,18 @@ void SystemMemoryPressureEvaluator::OnMemoryPressure(
   SetCurrentVote(listener_level);
   bool notify = true;
 
-  if (current_vote() ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (current_vote() == base::MEMORY_PRESSURE_LEVEL_NONE) {
     last_moderate_notification_ = base::TimeTicks();
-    notify = false;
-  } else if (current_vote() ==
-             base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE) {
+    // Only notify when transitioning to no pressure.
+    notify = old_vote != base::MEMORY_PRESSURE_LEVEL_NONE;
+  } else if (current_vote() == base::MEMORY_PRESSURE_LEVEL_MODERATE) {
     // In the case of MODERATE memory pressure we may be in this state for quite
     // some time so we limit the rate at which we dispatch notifications.
     if (old_vote == current_vote()) {
       if (base::TimeTicks::Now() - last_moderate_notification_ <
           kModerateMemoryPressureCooldownTime) {
         notify = false;
-      } else if (old_vote ==
-                 base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      } else if (old_vote == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
         // Reset the moderate notification time if we just crossed back.
         last_moderate_notification_ = base::TimeTicks::Now();
         notify = false;

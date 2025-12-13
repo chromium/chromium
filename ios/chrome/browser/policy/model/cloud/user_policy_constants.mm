@@ -7,7 +7,6 @@
 namespace policy {
 
 BASE_FEATURE(kShowUserPolicyNotificationAtStartupIfNeeded,
-             "ShowUserPolicyNotificationAtStartupIfNeeded",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace policy

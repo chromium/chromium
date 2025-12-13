@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/time/time.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/record_parsed.h"

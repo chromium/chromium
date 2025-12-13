@@ -110,7 +110,11 @@ def GenerateFieldContent(element_name, field_info, content, lines, indent,
     content = field_info.get('default', None)
   type = field_info['type']
   if type in ('int', 'enum', 'class'):
-    lines.append('%s%s,' % (indent, content))
+    if isinstance(content, bool):
+      # Re-format Python `True` and `False` as C++ `true` and `false`.
+      lines.append('%s%s,' % (indent, str(content).lower()))
+    else:
+      lines.append('%s%s,' % (indent, content))
   elif type == 'string':
     _GenerateString(content, lines, indent)
   elif type == 'string16':

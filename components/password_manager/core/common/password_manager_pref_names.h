@@ -69,36 +69,12 @@ inline constexpr char kDeletingUndecryptablePasswordsEnabled[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
-// The timestamp at which the UPM password access loss warning was last
-// shown to the user at the time of Chrome startup in microseconds since Windows
-// epoch. This is needed to ensure that the UI is prompted only once per given
-// time interval (currently seven days).
-inline constexpr char kPasswordAccessLossWarningShownAtStartupTimestamp[] =
-    "password_access_loss_warning_shown_at_startup_timestamp";
-
-// The timestamp at which the UPM password access loss warning was last
-// shown to the user in microseconds since Windows epoch. This is needed to
-// ensure that the UI is prompted only once per given time interval (currently
-// one day).
-inline constexpr char kPasswordAccessLossWarningShownTimestamp[] =
-    "password_access_loss_warning_shown_timestamp";
-
-// Boolean pref indicating if the one-time notice for account storage was shown.
-// The notice informs passwords will start being saved to the signed-in account.
-inline constexpr char kAccountStorageNoticeShown[] =
-    "password_manager.account_storage_notice_shown";
-
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API. This pref is not synced. Its value is set
 // by fetching the latest value from Google Mobile Services. Except for
 // migration steps, it should not be modified in Chrome.
 inline constexpr char kAutoSignInEnabledGMS[] =
     "profile.auto_sign_in_enabled_gms";
-
-// A cache of whether the profile LoginDatabase is empty, so that can be checked
-// early on startup.
-inline constexpr char kEmptyProfileStoreLoginDatabase[] =
-    "password_manager.empty_profile_store_login_database";
 
 // Boolean controlling whether the password manager offers to save passwords.
 // If false, the password manager will not save credentials, but it will still
@@ -110,22 +86,6 @@ inline constexpr char kEmptyProfileStoreLoginDatabase[] =
 // mapped to `kCredentialEnableService` will be applied.
 inline constexpr char kOfferToSavePasswordsEnabledGMS[] =
     "profile.save_passwords_enabed_gms";
-
-// Boolean value indicating whether the regular prefs that apply to the local
-// password store were migrated to UPM settings. It will be set to true
-// automatically if there is nothing to migrate.
-inline constexpr char kSettingsMigratedToUPMLocal[] =
-    "profile.settings_migrated_to_upm_local";
-
-// Integer value which indicates the version used to migrate passwords from
-// built in storage to Google Mobile Services.
-inline constexpr char kCurrentMigrationVersionToGoogleMobileServices[] =
-    "current_migration_version_to_google_mobile_services";
-
-// Timestamps of when credentials from the GMS Core to the built in storage were
-// last time migrated, in milliseconds since UNIX epoch.
-inline constexpr char kTimeOfLastMigrationAttempt[] =
-    "time_of_last_migration_attempt";
 #endif
 
 // The total amount of passwords available in Password Manager account store.
@@ -149,33 +109,6 @@ inline constexpr char kPasswordRemovalReasonForProfile[] =
     "password_removal_reason_for_profile";
 
 #if BUILDFLAG(IS_ANDROID)
-// Integer pref indicating whether the client is ready to use UPM for local
-// passwords and settings and split password stores for syncing users.
-// The preconditions for the pref to be set to true:
-// - M2: For users syncing passwords, the profile store contents have been
-// moved to the account store. For the users who are not syncing passwords, the
-// login database is empty and prefs are default.
-// - M3: For the users who are not syncing passwords, the passwords have been
-// successfully copied to GMS Core. The settings will be migrated as well, but
-// their migration doesn't impact this pref.
-//
-// Do not renumber UseUpmLocalAndSeparateStoresState, values are persisted.
-// Values are also used for metrics recording.
-enum class UseUpmLocalAndSeparateStoresState {
-  kOff = 0,
-  kOffAndMigrationPending = 1,
-  kOn = 2,
-  kMaxValue = kOn
-};
-inline constexpr char kPasswordsUseUPMLocalAndSeparateStores[] =
-    "passwords_use_upm_local_and_separate_stores";
-
-// Boolean value indicating if the user should not get UPM experience because
-// of user-unresolvable errors received on communication with Google Mobile
-// Services.
-inline constexpr char kUnenrolledFromGoogleMobileServicesDueToErrors[] =
-    "unenrolled_from_google_mobile_services_due_to_errors";
-
 // Timestamp at which the last UPM error message was shown to the user in
 // milliseconds since UNIX epoch (used in Java).
 // This is needed to ensure that the UI is prompted only once per given
@@ -196,24 +129,6 @@ inline constexpr char kLocalPasswordHashDataList[] =
 // in a row. The counter resets when the user applies password generation.
 inline constexpr char kPasswordGenerationBottomSheetDismissCount[] =
     "password_generation_bottom_sheet_dismiss_count";
-
-// Whether the post password migration sheet should be shown at startup.
-inline constexpr char kShouldShowPostPasswordMigrationSheetAtStartup[] =
-    "should_show_post_password_migration_sheet_at_startup";
-
-// Whether the auto-exported CSV should be deleted. Normally, it's deleted
-// immediately after export, but if that fails, this pref is used as a signal
-// that deletion should be retried.
-inline constexpr char kUpmAutoExportCsvNeedsDeletion[] =
-    "profile.upm_auto_export_csv_needs_deletion";
-
-// Whether the passwords who couldn't be migrated to UPM have been
-// saved as a CSV. The user can then choose to export the CSV out of Chrome
-// via a separate flow. The pref is also set to true if there were no
-// saved passwords. The value is used as a signal that the login db
-// can stop being used.
-inline constexpr char kUpmUnmigratedPasswordsExported[] =
-    "profile.upm_unmigrated_passwords_exported";
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -331,14 +246,6 @@ inline constexpr char kBiometricAuthenticationBeforeFilling[] =
 // in the Password Manager UI.
 inline constexpr char kPasswordManagerPromoCardsList[] =
     "password_manager.password_promo_cards_list";
-
-// A cache of whether the profile LoginDatabase has autofillable credentials.
-inline constexpr char kAutofillableCredentialsProfileStoreLoginDatabase[] =
-    "password_manager.autofillable_credentials_profile_store_login_database";
-
-// A cache of whether the account LoginDatabase has autofillable credentials.
-inline constexpr char kAutofillableCredentialsAccountStoreLoginDatabase[] =
-    "password_manager.autofillable_credentials_account_store_login_database";
 #endif
 
 // Boolean pref indicating whether password sharing is enabled. Enables both
@@ -365,6 +272,26 @@ inline constexpr char kProfileStoreMigratedToOSCryptAsync[] =
     "password_manager.profile_store_migrated_to_os_crypt_async";
 inline constexpr char kAccountStoreMigratedToOSCryptAsync[] =
     "password_manager.account_store_migrated_to_os_crypt_async";
+
+// Timestamp when the last cleaning of backup passwords was performed for a
+// respective password store.
+inline constexpr char kAccountStoreBackupPasswordCleaningLastTimestamp[] =
+    "password_manager.account_store_backup_password_cleaning_last_timestamp";
+inline constexpr char kProfileStoreBackupPasswordCleaningLastTimestamp[] =
+    "password_manager.profile_store_backup_password_cleaning_last_timestamp";
+
+// Timestamps of last time password change has failed, was canceled or dismissed
+// by the user. It's used to throttle password change offering.
+inline constexpr char kLastNegativePasswordChangeTimestamp[] =
+    "password_manager.last_negative_password_change_timestamp";
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+// List of urls for which password manager is disabled/blocked.
+inline constexpr char kPasswordManagerBlocklist[] =
+    "password_manager.password_manager_blocklist";
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
 
 }  // namespace password_manager::prefs
 

@@ -56,6 +56,7 @@ void PDFExtensionTestBase::SetUpOnMainThread() {
   extensions::ExtensionApiTest::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  RegisterTestServerRequestHandler();
   content::SetupCrossSiteRedirector(embedded_test_server());
   embedded_test_server()->StartAcceptingConnections();
 
@@ -205,6 +206,10 @@ WebContents* PDFExtensionTestBase::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
+void PDFExtensionTestBase::ResetFeatureList() {
+  feature_list_.Reset();
+}
+
 content::WebContents* PDFExtensionTestBase::GetEmbedderWebContents() {
   content::WebContents* contents = GetActiveWebContents();
 
@@ -319,6 +324,9 @@ void PDFExtensionTestBase::SimulateMouseClickAt(
 bool PDFExtensionTestBase::UseOopif() const {
   return false;
 }
+
+// This is intentionally empty.
+void PDFExtensionTestBase::RegisterTestServerRequestHandler() {}
 
 std::vector<base::test::FeatureRefAndParams>
 PDFExtensionTestBase::GetEnabledFeatures() const {

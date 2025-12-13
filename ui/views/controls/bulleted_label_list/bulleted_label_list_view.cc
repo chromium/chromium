@@ -44,10 +44,9 @@ void BulletView::OnPaint(gfx::Canvas* canvas) {
   SkScalar radius = std::min(height(), width()) / 8.0;
   gfx::Point top_center = GetLocalBounds().top_center();
 
-  SkPath path;
-  path.addCircle(top_center.x(),
-                 static_cast<size_t>(top_center.y()) + (line_height_dp_ / 2),
-                 radius);
+  const SkPath path = SkPath::Circle(
+      top_center.x(),
+      static_cast<size_t>(top_center.y()) + (line_height_dp_ / 2), radius);
 
   cc::PaintFlags flags;
   flags.setStyle(cc::PaintFlags::kFill_Style);

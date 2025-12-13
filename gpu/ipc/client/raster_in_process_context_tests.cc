@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/in_process_gpu_thread_holder.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 
@@ -41,15 +40,10 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     if (!RasterInProcessContext::SupportedInTest())
       return nullptr;
 
-    ContextCreationAttribs attributes;
-    attributes.enable_gpu_rasterization = true;
-    attributes.enable_gles2_interface = false;
-    attributes.enable_raster_interface = true;
-
     auto context = std::make_unique<RasterInProcessContext>();
-    auto result = context->Initialize(
-        gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
-        /*gr_shader_cache=*/nullptr, /*use_shader_cache_shm_count=*/nullptr);
+    auto result = context->Initialize(gpu_thread_holder_.GetTaskExecutor(),
+                                      /*gr_shader_cache=*/nullptr,
+                                      /*use_shader_cache_shm_count=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
   }
@@ -78,17 +72,11 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
     GTEST_SKIP();
   }
 
-  // Check for GPU and driver support
-  if (!context_->GetCapabilities().gpu_rasterization) {
-    GTEST_SKIP();
-  }
-
   // Create shared image and allocate storage.
   auto* sii = context_->GetSharedImageInterface();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                              gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
       {kSharedImageFormat, kBufferSize, color_space, flags, "TestLabel"},
       kNullSurfaceHandle);

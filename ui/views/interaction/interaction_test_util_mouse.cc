@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -23,7 +22,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)

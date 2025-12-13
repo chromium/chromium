@@ -21,6 +21,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
+#include "content/public/browser/user_level_memory_pressure_metrics.h"
 #include "content/public/common/process_type.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 
@@ -99,6 +101,17 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
     // in the browser when the process is killed. Always true if the killed
     // process is a spare renderer.
     bool has_spare_renderer = false;
+
+    // Information about the last spare renderer creation.
+    // This is populated when a renderer or GPU process terminates.
+    std::optional<content::LastSpareRendererCreationInfo>
+        last_spare_renderer_creation_info;
+
+    // Information about memory pressure metrics.
+    // Only available on experiment with feature
+    // kUserLevelMemoryPressureSignalMetricsOnly on.
+    std::optional<content::UserLevelMemoryPressureMetrics>
+        memory_pressure_metrics;
   };
 
   // ChildExitObserver client interface.
@@ -132,7 +145,7 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
   void ChildReceivedCrashSignal(base::ProcessId pid, int signo) override;
 
   // content::RenderProcessHostCreationObserver implementation.
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
  private:
   // content::BrowserChildProcessObserver implementation:

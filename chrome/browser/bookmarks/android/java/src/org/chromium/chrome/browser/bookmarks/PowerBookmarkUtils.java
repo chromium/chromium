@@ -32,8 +32,6 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 
 /** Utilities for use in power bookmarks. */
-// TODO(crbug.com/40234642): We should add a JNI layer for the native version of these utilities in
-//                price_tracking_utils and use those instead.
 @NullMarked
 public class PowerBookmarkUtils {
     private static @Nullable Boolean sPriceTrackingEligibleForTesting;
@@ -64,7 +62,7 @@ public class PowerBookmarkUtils {
 
         ShoppingService.ProductInfo info = service.getAvailableProductInfoForUrl(tab.getUrl());
 
-        return info != null && info.productClusterId.isPresent();
+        return info != null && info.productClusterId != null;
     }
 
     /**
@@ -136,7 +134,7 @@ public class PowerBookmarkUtils {
                             null,
                             Snackbar.TYPE_NOTIFICATION,
                             Snackbar.UMA_PRICE_TRACKING_FAILURE);
-            snackbar.setSingleLine(false);
+            snackbar.setDefaultLines(false);
             snackbarManager.showSnackbar(snackbar);
             callback.onResult(false);
             return;
@@ -187,7 +185,7 @@ public class PowerBookmarkUtils {
                                                                 .price_tracking_error_snackbar_action),
                                                 null);
                     }
-                    snackbar.setSingleLine(false);
+                    snackbar.setDefaultLines(false);
                     snackbarManager.showSnackbar(snackbar);
                     callback.onResult(success);
                 };

@@ -19,16 +19,15 @@
 
 namespace omnibox {
 
-namespace {
-constexpr int kAIModeAllowed = 0;
-}  // namespace
-
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       kKeywordSpaceTriggeringEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       kShowGoogleLensShortcut, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      kShowAiModeOmniboxButton, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       kShowSearchTools, true, user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -43,6 +42,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(omnibox::kDismissedHistoryScopePromo, false);
   registry->RegisterBooleanPref(omnibox::kDismissedHistoryEmbeddingsScopePromo,
                                 false);
+  registry->RegisterBooleanPref(kBottomOmniboxEverUsed, false);
 
   registry->RegisterIntegerPref(kShownCountGeminiIph, 0);
   registry->RegisterIntegerPref(kShownCountEnterpriseSearchAggregatorIph, 0);
@@ -51,7 +51,14 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kShownCountHistoryScopePromo, 0);
   registry->RegisterIntegerPref(kShownCountHistoryEmbeddingsScopePromo, 0);
   registry->RegisterIntegerPref(kFocusedSrpWebCount, 0);
-  registry->RegisterIntegerPref(omnibox::kAIModeSettings, kAIModeAllowed);
+
+  registry->RegisterIntegerPref(kAimHintLastImpressionDay, 0);
+  registry->RegisterIntegerPref(kAimHintDailyImpressionsCount, 0);
+  registry->RegisterIntegerPref(kAimHintTotalImpressions, 0);
+}
+
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kIsOmniboxInBottomPosition, false);
 }
 
 void SetUserPreferenceForZeroSuggestCachedResponse(
@@ -83,10 +90,6 @@ std::string GetUserPreferenceForZeroSuggestCachedResponse(
       prefs->GetDict(omnibox::kZeroSuggestCachedResultsWithURL);
   auto* value_ptr = dictionary.FindString(page_url);
   return value_ptr ? *value_ptr : std::string();
-}
-
-bool IsAimAllowedByPolicy(const PrefService* prefs) {
-  return prefs->GetInteger(omnibox::kAIModeSettings) == omnibox::kAIModeAllowed;
 }
 
 }  // namespace omnibox

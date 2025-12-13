@@ -40,6 +40,13 @@ CWV_EXPORT
 // differ from the final download URL if there were redirects.
 @property(nonatomic, readonly) NSURL* originalURL;
 
+// The URL that the download request attempted to fetch after redirection.
+// This may differ from the Original download URL if there were redirects.
+@property(nonatomic, readonly) NSURL* redirectedURL;
+
+// The host of the frame that initiated the download (if available).
+@property(nonatomic, readonly) NSString* originatingHost;
+
 // Total number of expected bytes (a best-guess upper-bound). Returns
 // CWVDownloadSizeUnknown if the total size is unknown.
 @property(nonatomic, readonly) int64_t totalBytes;

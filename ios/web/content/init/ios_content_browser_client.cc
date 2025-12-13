@@ -35,7 +35,7 @@ bool IOSContentBrowserClient::IsHandledURL(const GURL& url) {
       url::kFileScheme,
   };
   for (const char* supported_protocol : kProtocolList) {
-    if (url.scheme_piece() == supported_protocol) {
+    if (url.scheme() == supported_protocol) {
       return true;
     }
   }
@@ -58,11 +58,6 @@ std::string IOSContentBrowserClient::GetProduct() {
 
 std::string IOSContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
-}
-
-std::string IOSContentBrowserClient::GetUserAgentBasedOnPolicy(
-    content::BrowserContext* context) {
-  return GetUserAgent();
 }
 
 blink::UserAgentMetadata IOSContentBrowserClient::GetUserAgentMetadata() {

@@ -5,6 +5,7 @@
 #include "ui/message_center/views/notification_background_painter.h"
 
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -26,13 +27,14 @@ gfx::Size NotificationBackgroundPainter::GetMinimumSize() const {
 
 void NotificationBackgroundPainter::Paint(gfx::Canvas* canvas,
                                           const gfx::Size& size) {
-  SkPath path;
-  SkScalar radii[8] = {top_radius_,    top_radius_,    top_radius_,
-                       top_radius_,    bottom_radius_, bottom_radius_,
-                       bottom_radius_, bottom_radius_};
+  const SkVector radii[4] = {{top_radius_, top_radius_},
+                             {top_radius_, top_radius_},
+                             {bottom_radius_, bottom_radius_},
+                             {bottom_radius_, bottom_radius_}};
   gfx::Rect rect(size);
   rect.Inset(insets_);
-  path.addRoundRect(gfx::RectToSkRect(rect), radii);
+  const SkPath path =
+      SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/event_logs_upload_manager.h"
 
 #include <windows.h>
@@ -16,6 +11,7 @@
 #include <memory>
 #include <unordered_map>
 
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
@@ -235,9 +231,10 @@ bool EventLogReader::HasValidQueryResults() {
     PEVT_VARIANT query_statuses = &status_buffer[0];
 
     for (DWORD i = 0; i < query_names->Count; ++i) {
-      if (query_statuses->UInt32Arr[i] != ERROR_SUCCESS) {
+      if (UNSAFE_TODO(query_statuses->UInt32Arr[i]) != ERROR_SUCCESS) {
         LOGFN(ERROR) << "Query path " << query_names->StringArr[0]
-                     << " has error status " << query_statuses->UInt32Arr[i];
+                     << " has error status "
+                     << UNSAFE_TODO(query_statuses->UInt32Arr[i]);
         return false;
       }
     }

@@ -15,7 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_name_set.h"

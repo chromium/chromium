@@ -1098,7 +1098,8 @@ TEST_F(LocalDeskDataManagerTest, IngoresUpdateForNonExistantTemplate) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());
@@ -1118,7 +1119,8 @@ TEST_F(LocalDeskDataManagerTest, DoesNotUpdateWhenRestoreContentIsTheSame) {
 
 TEST_F(LocalDeskDataManagerTest, DoesNotOverwriteOnDifferentPolicy) {
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
-      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate));
+      std::string_view(desk_test_util::kAdminTemplatePolicyWithOneTemplate),
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   EXPECT_TRUE(parsed_json.has_value());
   EXPECT_TRUE(parsed_json->is_list());

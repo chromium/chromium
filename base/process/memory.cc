@@ -18,6 +18,10 @@
 #include "build/build_config.h"
 #include "partition_alloc/buildflags.h"
 
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include "partition_alloc/shim/allocator_shim.h"  // nogncheck
+#endif
+
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 #include "partition_alloc/page_allocator.h"  // nogncheck
 #endif
@@ -28,33 +32,7 @@
 #include <unistd.h>
 #endif  // BUILDFLAG(IS_WIN)
 
-namespace base {
-
-// Defined in memory_mac.mm for macOS + use_partition_alloc_as_malloc=false.
-// In case of use_partition_alloc_as_malloc=true, no need to route the call to
-// the system default calloc of macOS.
-#if !BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
-  const size_t alloc_size = num_items * size;
-
-  // Overflow check
-  if (size && ((alloc_size / size) != num_items)) {
-    *result = nullptr;
-    return false;
-  }
-
-  if (!UncheckedMalloc(alloc_size, result)) {
-    return false;
-  }
-
-  memset(*result, 0, alloc_size);
-  return true;
-}
-
-#endif  // !BUILDFLAG(IS_APPLE) || PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-namespace internal {
+namespace base::internal {
 bool ReleaseAddressSpaceReservation() {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
   return partition_alloc::ReleaseReservation();
@@ -62,6 +40,4 @@ bool ReleaseAddressSpaceReservation() {
   return false;
 #endif
 }
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

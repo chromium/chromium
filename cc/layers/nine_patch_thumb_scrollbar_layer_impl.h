@@ -44,15 +44,15 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
                    viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
 
-  void SetThumbThickness(int thumb_thickness);
-  void SetThumbLength(int thumb_length);
-  void SetTrackStart(int track_start);
-  void SetTrackLength(int track_length);
+  void SetThumbThickness(int32_t thumb_thickness);
+  void SetMinimumThumbLength(int32_t minimum_thumb_length);
+  void SetTrackStart(int32_t track_start);
+  void SetTrackLength(int32_t track_length);
 
-  int thumb_thickness() const { return thumb_thickness_; }
-  int thumb_length() const { return thumb_length_; }
-  int track_start() const { return track_start_; }
-  int track_length() const { return track_length_; }
+  int32_t thumb_thickness() const { return thumb_thickness_; }
+  int32_t minimum_thumb_length() const { return minimum_thumb_length_; }
+  int32_t track_start() const { return track_start_; }
+  int32_t track_length() const { return track_length_; }
 
   void SetImageBounds(const gfx::Size& bounds);
   void SetAperture(const gfx::Rect& aperture);
@@ -81,10 +81,10 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
                                    bool is_left_side_vertical_scrollbar);
 
   // ScrollbarLayerImplBase implementation.
-  int ThumbThickness() const override;
-  int ThumbLength() const override;
+  int32_t ThumbThickness() const override;
+  int32_t MinimumThumbLength() const override;
   float TrackLength() const override;
-  int TrackStart() const override;
+  int32_t TrackStart() const override;
   bool IsThumbResizable() const override;
 
  private:
@@ -99,10 +99,10 @@ class CC_EXPORT NinePatchThumbScrollbarLayerImpl
   UIResourceId thumb_ui_resource_id_ = 0;
   UIResourceId track_and_buttons_ui_resource_id_ = 0;
 
-  int thumb_thickness_ = 0;
-  int thumb_length_ = 0;
-  int track_start_ = 0;
-  int track_length_ = 0;
+  int32_t thumb_thickness_ = 0;
+  int32_t minimum_thumb_length_ = 0;
+  int32_t track_start_ = 0;
+  int32_t track_length_ = 0;
 
   gfx::Size image_bounds_;
   gfx::Rect aperture_;

@@ -304,7 +304,7 @@ void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
     const std::string& app_locale,
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillWalletMetadataSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletMetadataSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -318,7 +318,7 @@ AutofillWalletMetadataSyncBridge*
 AutofillWalletMetadataSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletMetadataSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillWalletMetadataSyncBridgeUserDataKey));
 }
 

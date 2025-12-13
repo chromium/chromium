@@ -7,12 +7,12 @@
 #include <string>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_options.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
@@ -123,7 +122,7 @@ bool OfferNotificationBubbleControllerImpl::IsIconVisible() const {
 
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
     PaymentsUiClosedReason closed_reason) {
-  set_bubble_view(nullptr);
+  ResetBubbleViewAndInformBubbleManager();
   promo_code_button_clicked_ = false;
   UpdatePageActionIcon();
 }
@@ -142,25 +141,35 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
     return;
   }
 
-  offer_ = offer;
+  if (!MaySetUpBubble()) {
+    return;
+  }
 
   // Hides the old bubble. Sets bubble_state_ to show icon here since we are
   // going to show another bubble anyway.
   HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
+
+  SetupOfferNotification(offer, card);
+
+  if (options.show_notification_automatically) {
+    QueueOrShowBubble();
+  } else {
+    HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
+  }
+}
+
+void OfferNotificationBubbleControllerImpl::SetupOfferNotification(
+    AutofillOfferData offer,
+    const CreditCard* card) {
+  was_bubble_shown_ = false;
+  offer_ = std::move(offer);
 
   DCHECK(IsIconVisible());
 
   if (card) {
     card_ = *card;
   }
-
   is_user_gesture_ = false;
-
-  if (options.show_notification_automatically) {
-    Show();
-  } else {
-    HideBubbleAndClearTimestamp(/*should_show_icon=*/true);
-  }
 }
 
 void OfferNotificationBubbleControllerImpl::ReshowBubble() {
@@ -171,7 +180,7 @@ void OfferNotificationBubbleControllerImpl::ReshowBubble() {
 
   is_user_gesture_ = true;
 
-  Show();
+  QueueOrShowBubble(/*force_show=*/true);
 }
 
 void OfferNotificationBubbleControllerImpl::DismissNotification() {
@@ -180,23 +189,41 @@ void OfferNotificationBubbleControllerImpl::DismissNotification() {
 
 void OfferNotificationBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
+  if (IsBubbleManagerEnabled()) {
+    if (visibility == content::Visibility::HIDDEN) {
+      if (bubble_state_ != BubbleState::kShowingIcon) {
+        bubble_state_ = BubbleState::kHidden;
+      }
+
+      // BubbleManager will hide the bubble.
+      bubble_shown_timestamp_ = std::nullopt;
+    }
+    return;
+  }
+
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
-    Show();
+    QueueOrShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubbleAndClearTimestamp(bubble_state_ == BubbleState::kShowingIcon);
   }
-  UpdatePageAction();
+  UpdatePageActionIcon();
 }
 
-PageActionIconType
-OfferNotificationBubbleControllerImpl::GetPageActionIconType() {
-  return PageActionIconType::kPaymentsOfferNotification;
+#if !BUILDFLAG(IS_ANDROID)
+std::optional<actions::ActionId>
+OfferNotificationBubbleControllerImpl::GetActionIdForPageAction() {
+  return kActionOffersAndRewardsForPage;
 }
+
+bool OfferNotificationBubbleControllerImpl::ShouldShowPageAction() {
+  return IsIconVisible();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   bubble_state_ = BubbleState::kShowingIconAndBubble;
-  UpdatePageAction();
+  UpdatePageActionIcon();
 
   // Don't show bubble yet if web content is not active (bubble will instead be
   // shown when web content become visible and active).
@@ -205,10 +232,10 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  set_bubble_view(browser->window()
-                      ->GetAutofillBubbleHandler()
-                      ->ShowOfferNotificationBubble(web_contents(), this,
-                                                    is_user_gesture_));
+  SetBubbleView(*browser->window()
+                     ->GetAutofillBubbleHandler()
+                     ->ShowOfferNotificationBubble(web_contents(), this,
+                                                   is_user_gesture_));
   DCHECK(bubble_view());
 
   // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
@@ -222,6 +249,15 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
+}
+
+BubbleType OfferNotificationBubbleControllerImpl::GetBubbleType() const {
+  return BubbleType::kOfferNotification;
+}
+
+base::WeakPtr<BubbleControllerBase>
+OfferNotificationBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
@@ -238,39 +274,26 @@ void OfferNotificationBubbleControllerImpl::HideBubbleAndClearTimestamp(
     bool should_show_icon) {
   bubble_state_ =
       should_show_icon ? BubbleState::kShowingIcon : BubbleState::kHidden;
-  UpdatePageAction();
   UpdatePageActionIcon();
-  HideBubble();
+  HideBubble(/*initiated_by_bubble_manager=*/false);
   bubble_shown_timestamp_ = std::nullopt;
 }
 
-void OfferNotificationBubbleControllerImpl::UpdatePageAction() {
+void OfferNotificationBubbleControllerImpl::UpdatePageActionIcon() {
   // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!IsPageActionMigrated(PageActionIconType::kPaymentsOfferNotification)) {
+  AutofillBubbleControllerBase::UpdatePageActionIcon();
+
+  if (!IsPageActionMigrated(*GetPageActionIconType()) ||
+      web_contents()->IsBeingDestroyed()) {
     return;
   }
-  // TODO(crbug.com/403255843): AutofillBubbleControllerBase relies on
-  // WebContents visibility changes, meaning this can get triggered during
-  // destruction. Ideally, the controller would track a TabInterface to prevent
-  // updates mid-destruction.
-  if (!tab_interface_->GetTabFeatures()) {
-    return;
-  }
-  bool should_show_icon = bubble_state_ != BubbleState::kHidden;
-  constexpr actions::ActionId action_id = kActionOffersAndRewardsForPage;
-  auto* const page_action_controller =
-      tab_interface_->GetTabFeatures()->page_action_controller();
-  if (should_show_icon) {
-    page_action_controller->Show(action_id);
-  } else {
-    page_action_controller->Hide(action_id);
-  }
+  actions::ActionId action_id = *GetActionIdForPageAction();
   auto* action = actions::ActionManager::Get().FindAction(
       action_id, tab_interface_->GetBrowserWindowInterface()
                      ->GetActions()
                      ->root_action_item());
-  action->SetEnabled(should_show_icon);
+  action->SetEnabled(ShouldShowPageAction());
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

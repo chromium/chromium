@@ -18,15 +18,17 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creation_controller.h"
 #include "chrome/browser/enterprise/signin/managed_profile_creator.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 class ProfileAttributesEntry;
+class ProfileBrowserCollection;
 
 namespace signin {
 class IdentityManager;
@@ -38,7 +40,7 @@ class IdentityManager;
 class ProfileManagementDisclaimerService
     : public KeyedService,
       public signin::IdentityManager::Observer,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   explicit ProfileManagementDisclaimerService(Profile* profile);
   ~ProfileManagementDisclaimerService() override;
@@ -54,13 +56,19 @@ class ProfileManagementDisclaimerService
   // detailed description of the `callback` parameter.
   // The caller must ensure that we are not already creating a managed profile
   // for another account using `GetAccountBeingConsideredForManagementIfAny()`.
-  void EnsureManagedProfileForAccount(
+  // Virtual for testing purposes.
+  virtual void EnsureManagedProfileForAccount(
       const CoreAccountId& account_id,
       signin_metrics::AccessPoint access_point,
       base::OnceCallback<void(Profile*, bool)> callback);
 
   // Returns an empty `CoreAccountId` if no profile creation is in progress.
   const CoreAccountId& GetAccountBeingConsideredForManagementIfAny() const;
+
+  // Stop the current process if possible. Returns true if the process was
+  // stopped. The process can be stopped if there is no dialog shown and if
+  // the current process was not started by `EnsureManagedProfileForAccount`.
+  bool StopCurrentProcessIfPossible();
 
   void SetProfileSeparationPoliciesForTesting(
       std::optional<policy::ProfileSeparationPolicies> value) {
@@ -72,6 +80,7 @@ class ProfileManagementDisclaimerService
   }
 
   base::ScopedClosureRunner DisableManagementDisclaimerUntilReset();
+  [[nodiscard]] base::ScopedClosureRunner AutoAcceptManagementDisclaimerUntilReset();
 
  private:
   struct ResetableState {
@@ -82,6 +91,7 @@ class ProfileManagementDisclaimerService
 
     // Timeout for waiting for full information to be available.
     base::OneShotTimer extended_account_info_wait_timeout;
+    base::OneShotTimer refresh_token_wait_timeout;
 
     std::unique_ptr<ManagedProfileCreationController>
         profile_creation_controller;
@@ -91,6 +101,7 @@ class ProfileManagementDisclaimerService
     base::WeakPtr<Profile> profile_to_continue_in;
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
+    bool cancelable = true;
 
     // Callbacks to be executed the user chooses which profile to be managed and
     // whether management is required by policy. The first parameter is the
@@ -129,13 +140,20 @@ class ProfileManagementDisclaimerService
     enable_management_disclaimer_ = enabled;
   }
 
+  void MaybeResetAcceptManagementDisclaimer(bool auto_accept_management);
+
+  void OnRegisteredForPolicy(bool is_from_cached_registration_result,
+                             bool is_managed_account);
+
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override;
 
-  // BrowserListObserver:
-  void OnBrowserSetLastActive(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   const raw_ref<Profile> profile_;
   std::unique_ptr<ResetableState> state_;
@@ -143,14 +161,20 @@ class ProfileManagementDisclaimerService
       profile_separation_policies_for_testing_;
   std::optional<signin::SigninChoice> user_choice_for_testing_;
 
+  int active_auto_accept_count_ = 0;
+  bool auto_accept_management_ = false;
   bool enable_management_disclaimer_ = true;
+  SigninPrefs signin_prefs_;
+
+  std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
+      policy_fetch_tracker_by_account_id_;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observation_{this};
 
-  base::ScopedObservation<BrowserList, BrowserListObserver>
-      scoped_browser_list_observation_{this};
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      scoped_browser_collection_observation_{this};
 
   base::WeakPtrFactory<ProfileManagementDisclaimerService> weak_ptr_factory_{
       this};

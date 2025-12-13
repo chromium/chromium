@@ -25,9 +25,6 @@
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -55,8 +52,14 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
@@ -200,6 +203,9 @@ MediaStreamRequestResult CheckIfRequestApproved(
           ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
           : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
       application_name);
+  // TODO(crbug.com/405218400): Show a message box on desktop Android.
+  // chrome::ShowQuestionMessageBoxSync() is a stub on Android that always
+  // returns no.
   const chrome::MessageBoxResult mb_result = chrome::ShowQuestionMessageBoxSync(
       parent_window,
       l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE,
@@ -247,13 +253,22 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       pending_request->is_allowlisted_extension ||
       IsBuiltInFeedbackUI(pending_request->request.security_origin);
 
+  if (!screen_capture_enabled) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::StreamDevicesSet(),
+             MediaStreamRequestResult::CAPTURE_NOT_ENABLED, /*ui=*/nullptr);
+    return;
+  }
+
   const bool origin_is_secure =
       network::IsUrlPotentiallyTrustworthy(
           pending_request->request.security_origin) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kAllowHttpScreenCapture);
 
-  if (!screen_capture_enabled || !origin_is_secure) {
+  if (!origin_is_secure) {
+    // TODO(crbug.com/453600255): Use result INVALID_SECURITY_ORIGIN instead of
+    // INVALID_STATE once all new enum values are added.
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
              MediaStreamRequestResult::INVALID_STATE,
@@ -261,14 +276,17 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     return;
   }
 
-  const MediaStreamRequestResult request_result =
-      CheckIfRequestApproved(web_contents, pending_request->request, extension,
-                             pending_request->is_allowlisted_extension);
-  if (request_result != MediaStreamRequestResult::OK) {
-    std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(), request_result,
-             /*ui=*/nullptr);
-    return;
+  if (!request_approved_for_test_) {
+    // May spawn a modal dialog synchronously.
+    const MediaStreamRequestResult request_result = CheckIfRequestApproved(
+        web_contents, pending_request->request, extension,
+        pending_request->is_allowlisted_extension);
+    if (request_result != MediaStreamRequestResult::OK) {
+      std::move(pending_request->callback)
+          .Run(blink::mojom::StreamDevicesSet(), request_result,
+               /*ui=*/nullptr);
+      return;
+    }
   }
 
   if (!content::WebContents::FromRenderFrameHost(
@@ -277,7 +295,7 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
               pending_request->request.render_frame_id))) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
              /*ui=*/nullptr);
     return;
   }
@@ -351,7 +369,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST,
              /*ui=*/nullptr);
     return;
   }
@@ -363,7 +381,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (allowed_capture_level == AllowedScreenCaptureLevel::kDisallowed) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
              /*ui=*/nullptr);
     return;
   }
@@ -380,7 +398,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
     if (allowed_capture_level < AllowedScreenCaptureLevel::kDesktop) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               MediaStreamRequestResult::PERMISSION_DENIED,
+               MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
                /*ui=*/nullptr);
       return;
     }
@@ -402,9 +420,6 @@ void DesktopCaptureAccessHandler::HandleRequest(
 
   // Resolve DesktopMediaID for the specified device id.
   content::DesktopMediaID media_id;
-  // TODO(http://crbug.com/304341): Replace "main RenderFrame" IDs with the
-  // request's actual RenderFrame IDs once the desktop capture extension API
-  // implementation is fixed.
   content::WebContents* const web_contents_for_stream =
       content::WebContents::FromRenderFrameHost(
           content::RenderFrameHost::FromID(request.render_process_id,
@@ -412,23 +427,29 @@ void DesktopCaptureAccessHandler::HandleRequest(
   content::RenderFrameHost* const main_frame =
       web_contents_for_stream ? web_contents_for_stream->GetPrimaryMainFrame()
                               : nullptr;
-  if (main_frame) {
-    // This function would have already returned if this vector was empty.
-    CHECK(!request.requested_video_device_ids.empty());
-    media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            request.requested_video_device_ids.front(),
-            main_frame->GetProcess()->GetDeprecatedID(),
-            main_frame->GetRoutingID(),
-            url::Origin::Create(request.security_origin),
-            content::kRegistryStreamTypeDesktop);
+  if (!main_frame) {
+    std::move(pending_request->callback)
+        .Run(blink::mojom::StreamDevicesSet(),
+             MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
+             /*ui=*/nullptr);
+    return;
   }
+
+  // This function would have already returned if this vector was empty.
+  CHECK(!request.requested_video_device_ids.empty());
+  media_id =
+      content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
+          request.requested_video_device_ids.front(),
+          main_frame->GetProcess()->GetDeprecatedID(),
+          main_frame->GetRoutingID(),
+          url::Origin::Create(request.security_origin),
+          content::kRegistryStreamTypeDesktop);
 
   // Received invalid device id.
   if (media_id.type == content::DesktopMediaID::TYPE_NONE) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::INVALID_STATE,
+             MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY,
              /*ui=*/nullptr);
     return;
   }
@@ -436,7 +457,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
   if (!IsMediaTypeAllowed(allowed_capture_level, media_id.type)) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_BY_POLICY,
              /*ui=*/nullptr);
     return;
   }
@@ -459,7 +480,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
               media_id.web_contents_id.main_render_frame_id))) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::TAB_CAPTURE_FAILURE,
+             MediaStreamRequestResult::CAPTURED_TAB_DESTROYED,
              /*ui=*/nullptr);
     return;
   }
@@ -496,7 +517,7 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
     if (!pending_request->picker) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),
-               MediaStreamRequestResult::INVALID_STATE,
+               MediaStreamRequestResult::NOT_SUPPORTED,
                /*ui=*/nullptr);
       return;
     }
@@ -595,6 +616,18 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
       pending_request.request.window_audio_preference;
   picker_params.restricted_by_policy =
       (capture_level != AllowedScreenCaptureLevel::kUnrestricted);
+#if BUILDFLAG(IS_ANDROID)
+  picker_params.capture_this_tab =
+      pending_request.request.video_type ==
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+  picker_params.exclude_self_browser_surface =
+      pending_request.request.exclude_self_browser_surface;
+  picker_params.exclude_monitor_type_surfaces =
+      pending_request.request.exclude_monitor_type_surfaces;
+  picker_params.allowed_capture_level = capture_level;
+  picker_params.includable_web_contents_filter = includable_web_contents_filter;
+#endif
+
   pending_request.picker->Show(picker_params, std::move(source_lists),
                                std::move(done_callback));
 
@@ -758,7 +791,7 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
   if (!is_dlp_allowed) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::PERMISSION_DENIED,
+             MediaStreamRequestResult::DLP_PERMISSION_DENIED,
              /*ui=*/nullptr);
     return;
   }
@@ -767,3 +800,7 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
                 capture_audio);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+void DesktopCaptureAccessHandler::SetRequestApprovedForTest(bool approved) {
+  request_approved_for_test_ = approved;
+}

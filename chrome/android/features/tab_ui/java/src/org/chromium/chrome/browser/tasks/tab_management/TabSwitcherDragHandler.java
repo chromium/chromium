@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -28,6 +27,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.interpolators.Interpolators;
+
+import java.util.function.Supplier;
 
 /**
  * Manages initiating tab drag and drop and handles the events that are received during drag and
@@ -92,7 +93,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
     /**
      * Sets an object to handle tab drag events.
      *
-     * @param DragHandlerDelegate Instance of {@link DragHandlerDelegate}
+     * @param dragHandlerDelegate Instance of {@link DragHandlerDelegate}
      */
     public void setDragHandlerDelegate(DragHandlerDelegate dragHandlerDelegate) {
         mDragHandlerDelegate = dragHandlerDelegate;

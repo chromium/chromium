@@ -6,18 +6,14 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_SERVICE_VIDEO_CAPTURE_DEVICE_LAUNCHER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "media/base/scoped_async_trace.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/cpp/buildflags.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
-
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-#include "services/video_effects/public/mojom/video_effects_service.mojom-forward.h"
-#endif
 
 namespace content {
 
@@ -35,20 +31,13 @@ class CONTENT_EXPORT ServiceVideoCaptureDeviceLauncher
   ~ServiceVideoCaptureDeviceLauncher() override;
 
   // VideoCaptureDeviceLauncher implementation.
-  void LaunchDeviceAsync(
-      const std::string& device_id,
-      blink::mojom::MediaStreamType stream_type,
-      const media::VideoCaptureParams& params,
-      base::WeakPtr<media::VideoFrameReceiver> receiver,
-      base::OnceClosure connection_lost_cb,
-      Callbacks* callbacks,
-      base::OnceClosure done_cb,
-#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor,
-#endif
-      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
-          readonly_video_effects_manager) override;
+  void LaunchDeviceAsync(const std::string& device_id,
+                         blink::mojom::MediaStreamType stream_type,
+                         const media::VideoCaptureParams& params,
+                         base::WeakPtr<media::VideoFrameReceiver> receiver,
+                         base::OnceClosure connection_lost_cb,
+                         Callbacks* callbacks,
+                         base::OnceClosure done_cb) override;
   void AbortLaunch() override;
 
  private:

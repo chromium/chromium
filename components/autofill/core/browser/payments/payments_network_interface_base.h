@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_BASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_NETWORK_INTERFACE_BASE_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -77,7 +78,7 @@ class PaymentsNetworkInterfaceBase {
   void InitializeResourceRequest();
 
   // Callback from `simple_url_loader_`.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
   void OnSimpleLoaderCompleteInternal(int response_code,
                                       const std::string& data);
 

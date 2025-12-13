@@ -12,7 +12,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/commerce/android/shopping_service_jni/ShoppingServiceFactory_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -21,7 +21,7 @@ const char kShoppingServiceBridgeKey[] = "shopping-service-jni-bridge-key";
 
 namespace commerce {
 
-ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
+static ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
     JNIEnv* env,
     Profile* profile) {
   CHECK(profile);
@@ -43,3 +43,5 @@ ScopedJavaLocalRef<jobject> JNI_ShoppingServiceFactory_GetForProfile(
 }
 
 }  // namespace commerce
+
+DEFINE_JNI(ShoppingServiceFactory)

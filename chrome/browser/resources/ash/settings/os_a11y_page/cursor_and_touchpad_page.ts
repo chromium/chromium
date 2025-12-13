@@ -321,7 +321,6 @@ export class SettingsCursorAndTouchpadPageElement extends
   private showFaceGazeRow_: boolean;
   private showShelfNavigationButtonsSettings_: boolean;
   private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
-  private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
   private hasMouse_: boolean;
@@ -358,15 +357,11 @@ export class SettingsCursorAndTouchpadPageElement extends
   override ready(): void {
     super.ready();
 
-    if (loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
-      this.addFocusConfig(routes.DEVICE, '#pointerSubpageButton');
-      this.addFocusConfig(routes.PER_DEVICE_TOUCHPAD, '#pointerSubpageButton');
-      this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#pointerSubpageButton');
-      this.addFocusConfig(
-          routes.PER_DEVICE_POINTING_STICK, '#pointerSubpageButton');
-    } else {
-      this.addFocusConfig(routes.POINTERS, '#pointerSubpageButton');
-    }
+    this.addFocusConfig(routes.DEVICE, '#pointerSubpageButton');
+    this.addFocusConfig(routes.PER_DEVICE_TOUCHPAD, '#pointerSubpageButton');
+    this.addFocusConfig(routes.PER_DEVICE_MOUSE, '#pointerSubpageButton');
+    this.addFocusConfig(
+        routes.PER_DEVICE_POINTING_STICK, '#pointerSubpageButton');
     this.addFocusConfig(
         routes.MANAGE_FACEGAZE_SETTINGS, '#faceGazeSubpageButton');
   }
@@ -397,25 +392,14 @@ export class SettingsCursorAndTouchpadPageElement extends
   }
 
   /**
-   * If enableInputDeviceSettingsSplit feature flag is enabled:
    * If there is only touchpad connected, navigate to touchpad subpage.
    * If there is only mouse connected, navigate to mouse subpage.
    * If there is only pointing stick connected, navigate to pointing stick
    * subpage. If there are more than one types device connected, navigate to
    * device subpage. If there is no mouse or touchpad or pointing stick
    * connected, navigate to device subpage.
-   *
-   * If enableInputDeviceSettingsSplit feature flag is disabled:
-   * Navigate to pointers page.
    */
   onNavigateToSubpageClick(): void {
-    if (!loadTimeData.getBoolean('enableInputDeviceSettingsSplit')) {
-      Router.getInstance().navigateTo(
-          routes.POINTERS,
-          /* dynamicParams= */ undefined, /* removeSearch= */ true);
-      return;
-    }
-
     if (this.hasMouse_ && !this.hasTouchpad_ && !this.hasPointingStick_) {
       Router.getInstance().navigateTo(
           routes.PER_DEVICE_MOUSE,
@@ -443,8 +427,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   }
 
   private computeShowFaceGazeRow_(): boolean {
-    return !this.isKioskModeActive_ &&
-        loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+    return !this.isKioskModeActive_;
   }
 
   /**

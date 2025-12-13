@@ -4,6 +4,9 @@
 
 #import "ios/chrome/app/background_refresh/background_refresh_metrics.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+
 const char kInitStageDuringBackgroundRefreshHistogram[] =
     "IOS.BackgroundRefresh.InitStage";
 
@@ -12,3 +15,31 @@ const char kBGTaskSchedulerErrorHistogram[] =
 
 const char kLaunchTypeForBackgroundRefreshHistogram[] =
     "IOS.BackgroundRefresh.LaunchType";
+
+const char kExecutionDurationHistogram[] =
+    "IOS.BackgroundRefresh.ExecutionDuration";
+
+const char kExecutionDurationTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.ExecutionDuration.Timeout";
+
+const char kActiveProviderCountAtTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.Timeout.ActiveProviderCount";
+
+const char kTotalProviderCountAtTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.Timeout.TotalProviderCount";
+
+const char kStartupWaitDurationCompletedHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.Completed";
+
+const char kStartupWaitDurationTimeoutHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.Timeout";
+
+const char kStartupWaitDurationNeverStartedHistogram[] =
+    "IOS.BackgroundRefresh.StartupWait.NeverStarted";
+
+void RecordProviderExecutionDuration(NSString* provider_identifier,
+                                     base::TimeDelta duration) {
+  std::string histogram_name = "IOS.BackgroundRefresh.Provider.Duration.";
+  histogram_name += base::SysNSStringToUTF8(provider_identifier);
+  base::UmaHistogramMediumTimes(histogram_name, duration);
+}

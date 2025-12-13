@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webauthn/json/value_conversions.h"
 
 #include <cstdint>
@@ -15,19 +10,22 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "device/fido/authenticator_selection_criteria.h"
-#include "device/fido/cable/cable_discovery_data.h"
-#include "device/fido/features.h"
-#include "device/fido/fido_constants.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_descriptor.h"
-#include "device/fido/public_key_credential_params.h"
-#include "device/fido/public_key_credential_rp_entity.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/cable_discovery_data.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_rp_entity.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
@@ -47,6 +45,7 @@ using blink::mojom::MakeCredentialAuthenticatorResponse;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
+using blink::mojom::PublicKeyCredentialReportOptions;
 using blink::mojom::PublicKeyCredentialRequestOptions;
 using blink::mojom::PublicKeyCredentialRequestOptionsPtr;
 using blink::mojom::RemoteDesktopClientOverride;
@@ -58,7 +57,8 @@ using blink::mojom::RemoteDesktopClientOverridePtr;
 constexpr bool kUpdateRobolectricTests = false;
 
 void PrintJava(const char* name, base::span<const uint8_t> data) {
-  fprintf(stderr, "private static final byte[] %s = new byte[] {", name);
+  UNSAFE_TODO(
+      fprintf(stderr, "private static final byte[] %s = new byte[] {", name));
   for (size_t i = 0; i < data.size(); i++) {
     const uint8_t byte = data[i];
     if (i) {
@@ -74,8 +74,7 @@ void PrintJava(const char* name, base::span<const uint8_t> data) {
 }
 
 std::vector<uint8_t> ToByteVector(std::string_view in) {
-  const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
-  return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
+  return base::ToVector(base::as_byte_span(in));
 }
 
 constexpr char kAppId[] = "https://example.test/appid.json";
@@ -83,7 +82,7 @@ static const std::vector<uint8_t> kChallenge = ToByteVector("test challenge");
 constexpr char kOrigin[] = "https://login.example.test/";
 constexpr char kRpId[] = "example.test";
 constexpr char kRpName[] = "Example LLC";
-static const base::TimeDelta kTimeout = base::Seconds(30);
+static const base::TimeDelta kTimeout = base::Seconds(300);
 constexpr char kUserDisplayName[] = "Example User";
 static const std::vector<uint8_t> kUserId = ToByteVector("test user id");
 constexpr char kUserName[] = "user@example.test";
@@ -157,7 +156,62 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"attestation":"direct","attestationFormats":["attfmt1","attfmt2"],"authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+      R"({"attestation":"direct","attestationFormats":["attfmt1","attfmt2"],"authenticatorSelection":{"authenticatorAttachment":"platform","residentKey":"required","userVerification":"required"},"challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"extensions":{"appIdExclude":"https://example.test/appid.json","credBlob":"dGVzdCBjcmVkIGJsb2I","credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":true,"hmacCreateSecret":true,"largeBlob":{"support":"required"},"minPinLength":true,"payment":{"isPayment":true},"prf":{"eval":{"first":"AQIDBA","second":"BQYHCA"}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"timeout":300000,"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+}
+
+TEST(WebAuthenticationJSONConversionTest,
+     PublicKeyCredentialCreationOptionsToValue_TimeoutClamped) {
+  // Exercise all supported fields.
+  auto prf_values = blink::mojom::PRFValues::New(
+      std::nullopt, std::vector<uint8_t>({1, 2, 3, 4}),
+      std::vector<uint8_t>{5, 6, 7, 8});
+  auto options = PublicKeyCredentialCreationOptions::New(
+      device::PublicKeyCredentialRpEntity(kRpId, kRpName),
+      device::PublicKeyCredentialUserEntity(kUserId, kUserName,
+                                            kUserDisplayName),
+      kChallenge, GetPublicKeyCredentialParameters(), base::Seconds(2),
+      /*exclude_credentials=*/
+      std::vector<device::PublicKeyCredentialDescriptor>(),
+      /*authenticator_selection_criteria=*/std::nullopt,
+      /*hints=*/
+      std::vector<blink::mojom::Hint>(),
+      device::AttestationConveyancePreference::kDirect,
+      /*hmac_create_secret=*/false,
+      /*prf_enable=*/false,
+      /*prf_input=*/nullptr, blink::mojom::ProtectionPolicy::UV_REQUIRED,
+      /*enforce_protection_policy=*/false,
+      /*appid_exclude=*/std::nullopt,
+      /*cred_props=*/true, device::LargeBlobSupport::kNotRequested,
+      /*is_payment_credential_creation=*/false,
+      /*cred_blob=*/std::nullopt,
+      /*min_pin_length_requested=*/false,
+      /*remote_desktop_client_override=*/nullptr,
+      /*supplemental_pub_keys=*/nullptr,
+      /*payment_browser_bound_key_parameters=*/std::nullopt,
+      /*attestation_formats=*/std::vector<std::string>(),
+      /*is_conditional=*/false);
+
+  {
+    // Test with 2-second timeout, less than the minimum.
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"attestation":"direct","challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[],"extensions":{"credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":false},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"timeout":180000,"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+  }
+  {
+    // Test with 10-day timeout, more than the maximum.
+    options->timeout = base::Days(10);
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"attestation":"direct","challenge":"dGVzdCBjaGFsbGVuZ2U","excludeCredentials":[],"extensions":{"credProps":true,"credentialProtectionPolicy":"userVerificationRequired","enforceCredentialProtectionPolicy":false},"pubKeyCredParams":[{"alg":-7,"type":"public-key"},{"alg":-257,"type":"public-key"}],"rp":{"id":"example.test","name":"Example LLC"},"timeout":72000000,"user":{"displayName":"Example User","id":"dGVzdCB1c2VyIGlk","name":"user@example.test"}})");
+  }
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -171,7 +225,6 @@ TEST(WebAuthenticationJSONConversionTest,
 
   // Exercise all supported fields.
   auto options = PublicKeyCredentialRequestOptions::New(
-      blink::mojom::Mediation::MODAL, /*requested_credential_type_flags=*/0,
       kChallenge, std::nullopt, kTimeout, kRpId, GetCredentialList(),
       /*hints=*/
       std::vector<blink::mojom::Hint>({
@@ -208,7 +261,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"rpId":"example.test","userVerification":"required"})");
+      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","cableAuthentication":[{"authenticatorEid":"AAAAAAAAAAAAAAAAAAAAAA","clientEid":"AAAAAAAAAAAAAAAAAAAAAA","sessionPreKey":"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA","version":1}],"getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"rpId":"example.test","timeout":300000,"userVerification":"required"})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -604,6 +657,51 @@ TEST(WebAuthenticationJSONConversionTest,
     EXPECT_EQ(response->authenticator_attachment,
               device::AuthenticatorAttachment::kAny);
     EXPECT_FALSE(response->user_handle);
+  }
+}
+
+TEST(WebAuthenticationJSONConversionTest,
+     PublicKeyCredentialReportOptionsToValue) {
+  {
+    // CurrentUserDetails
+    auto current_user_details = blink::mojom::CurrentUserDetailsOptions::New(
+        kUserId, kUserName, kUserDisplayName);
+    auto options = PublicKeyCredentialReportOptions::New(
+        kRpId, std::nullopt, nullptr, std::move(current_user_details));
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"displayName":"Example User","name":"user@example.test","rpId":"example.test","userId":"dGVzdCB1c2VyIGlk"})");
+  }
+  {
+    // AllAcceptedCredentials
+    std::vector<std::vector<uint8_t>> all_accepted_credentials_ids = {kUserId};
+    auto all_accepted_credentials =
+        blink::mojom::AllAcceptedCredentialsOptions::New(
+            kUserId, std::move(all_accepted_credentials_ids));
+    auto options = PublicKeyCredentialReportOptions::New(
+        kRpId, std::nullopt, std::move(all_accepted_credentials), nullptr);
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(
+        json,
+        R"({"allAcceptedCredentialIds":["dGVzdCB1c2VyIGlk"],"rpId":"example.test","userId":"dGVzdCB1c2VyIGlk"})");
+  }
+  {
+    // UnknownCredentialId
+    auto options =
+        PublicKeyCredentialReportOptions::New(kRpId, kUserId, nullptr, nullptr);
+    base::Value value = ToValue(options);
+    std::string json;
+    JSONStringValueSerializer serializer(&json);
+    ASSERT_TRUE(serializer.Serialize(value));
+    EXPECT_EQ(json,
+              R"({"credentialId":"dGVzdCB1c2VyIGlk","rpId":"example.test"})");
   }
 }
 

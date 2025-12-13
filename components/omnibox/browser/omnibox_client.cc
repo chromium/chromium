@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/string_util.h"
+#include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/gfx/image/image.h"
 
 bool OmniboxClient::CurrentPageExists() const {
@@ -53,12 +54,21 @@ AutocompleteClassifier* OmniboxClient::GetAutocompleteClassifier() {
   return nullptr;
 }
 
+omnibox::OmniboxPopupCloser* OmniboxClient::GetOmniboxPopupCloser() {
+  return nullptr;
+}
+
 bool OmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
   return false;
 }
 
 int OmniboxClient::GetHttpsPortForTesting() const {
   return 0;
+}
+
+metrics::OmniboxEventProto::PageClassification
+OmniboxClient::GetOmniboxComposeboxPageClassification() const {
+  return metrics::OmniboxEventProto::INVALID_SPEC;
 }
 
 bool OmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
@@ -88,6 +98,11 @@ OmniboxClient::GetLensOverlaySuggestInputs() const {
   return std::nullopt;
 }
 
+std::optional<lens::ContextualInputData> OmniboxClient::GetContextualInputData()
+    const {
+  return std::nullopt;
+}
+
 void OmniboxClient::ProcessExtensionMatch(const std::u16string& text,
                                           const TemplateURL* template_url,
                                           const AutocompleteMatch& match,
@@ -114,4 +129,12 @@ gfx::Image OmniboxClient::GetFaviconForKeywordSearchProvider(
 
 bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
   return false;
+}
+
+bool OmniboxClient::IsAimPopupEnabled() const {
+  return false;
+}
+
+omnibox::ChromeAimToolsAndModels OmniboxClient::AimToolMode() const {
+  return omnibox::ChromeAimToolsAndModels::TOOL_MODE_UNSPECIFIED;
 }

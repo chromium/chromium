@@ -63,8 +63,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.LinkedList;
-import java.util.Optional;
+import java.util.ArrayList;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -107,12 +106,11 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                                 ImageType.CREDIT_CARD_ART_IMAGE,
                                 ImageSize.SMALL)))
                 .thenReturn(
-                        Optional.of(
-                                Bitmap.createBitmap(
-                                        /* colors= */ new int[4],
-                                        /* width= */ 2,
-                                        /* height= */ 2,
-                                        Config.ARGB_8888)));
+                        Bitmap.createBitmap(
+                                /* colors= */ new int[4],
+                                /* width= */ 2,
+                                /* height= */ 2,
+                                Config.ARGB_8888));
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
         mBridge = new AutofillVcnEnrollBottomSheetBridge();
 
@@ -129,9 +127,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     private void requestShowContent(WebContents webContents) {
-        LinkedList<LegalMessageLine> googleLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> googleLegalMessages = new ArrayList<>();
         googleLegalMessages.add(new LegalMessageLine("Google legal messages."));
-        LinkedList<LegalMessageLine> issuerLegalMessages = new LinkedList<>();
+        ArrayList<LegalMessageLine> issuerLegalMessages = new ArrayList<>();
         issuerLegalMessages.add(new LegalMessageLine("Issuer legal messages."));
 
         mBridge.requestShowContent(

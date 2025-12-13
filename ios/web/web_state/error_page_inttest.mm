@@ -5,6 +5,7 @@
 #import <functional>
 
 #import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
@@ -92,7 +93,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
                           PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(request.URL);
-    if (URL.path() != path_ || URL.query() == blocked_request_query_) {
+    if (URL.GetPath() != path_ || URL.GetQuery() == blocked_request_query_) {
       decision = PolicyDecision::CancelAndDisplayError(CreateEmbedderError());
     }
     std::move(callback).Run(decision);
@@ -102,7 +103,7 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
                            PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(response.URL);
-    if (URL.path() != path_ || URL.query() != allowed_query_) {
+    if (URL.GetPath() != path_ || URL.GetQuery() != allowed_query_) {
       decision = PolicyDecision::CancelAndDisplayError(CreateEmbedderError());
     }
     std::move(callback).Run(decision);
@@ -160,11 +161,10 @@ class ErrorPageTest : public WebTestWithWebState {
 // Tests that the error page is correctly displayed after navigating back to it
 // multiple times. See http://crbug.com/944037 .
 TEST_F(ErrorPageTest, BackForwardErrorPage) {
-  // TODO(crbug.com/428030191): Re-enable test.
-  if (@available(iOS 26, *)) {
-    GTEST_SKIP() << "Test failing on iOS26.";
+  if (!base::ios::IsRunningOnOrLater(26, 1, 0)) {
+    // Test fails due to WebKit crash before iOS 26.1. crbug.com/428030191
+    return;
   }
-
   test::LoadUrl(web_state(), server_.GetURL("/close-socket"));
   ASSERT_TRUE(WaitForErrorText(web_state(), server_.GetURL("/close-socket")));
 

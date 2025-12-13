@@ -6,9 +6,9 @@ package org.chromium.chrome.browser.compositor.layouts.phone.stack;
 
 import android.content.Context;
 import android.hardware.SensorManager;
-import android.util.Log;
 import android.view.ViewConfiguration;
 
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 
 /**

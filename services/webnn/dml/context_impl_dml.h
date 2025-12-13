@@ -31,15 +31,20 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
  public:
   ContextImplDml(scoped_refptr<Adapter> adapter,
                  mojo::PendingReceiver<mojom::WebNNContext> receiver,
-                 WebNNContextProviderImpl* context_provider,
+                 base::WeakPtr<WebNNContextProviderImpl> context_provider,
                  mojom::CreateContextOptionsPtr options,
+                 mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+                 mojo::ScopedDataPipeProducerHandle read_tensor_producer,
                  std::unique_ptr<CommandRecorder> command_recorder,
-                 const gpu::GpuFeatureInfo& gpu_feature_info);
+                 const gpu::GpuFeatureInfo& gpu_feature_info,
+                 std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+                 scoped_refptr<gpu::MemoryTracker> memory_tracker,
+                 scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+                 gpu::SharedImageManager* shared_image_manager,
+                 scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
   ContextImplDml(const WebNNContextImpl&) = delete;
   ContextImplDml& operator=(const ContextImplDml&) = delete;
-
-  ~ContextImplDml() override;
 
   // static
   static ContextProperties GetProperties(DML_FEATURE_LEVEL feature_level);
@@ -74,16 +79,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         CreateGraphImplCallback callback) = 0;
 
-    virtual void CreateTensorImpl(
-        base::WeakPtr<WebNNContextImpl> context,
+    virtual base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+    CreateTensorImpl(
+        ContextImplDml* context,
         mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
-        mojom::TensorInfoPtr tensor_info,
-        CreateTensorImplCallback callback) = 0;
+        mojom::TensorInfoPtr tensor_info) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
+  ~ContextImplDml() override;
+
   void CreateGraphImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
@@ -93,10 +100,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ContextImplDml final
       base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
       CreateGraphImplCallback callback) override;
 
-  void CreateTensorImpl(
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorImpl(mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
+                   mojom::TensorInfoPtr tensor_info) override;
+
+  base::expected<scoped_refptr<WebNNTensorImpl>, mojom::ErrorPtr>
+  CreateTensorFromSharedImageImpl(
       mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
       mojom::TensorInfoPtr tensor_info,
-      CreateTensorImplCallback callback) override;
+      WebNNTensorImpl::RepresentationPtr representation) override;
 
   // Begins recording commands needed for context operations.
   // If recording failed, calling this function will recreate the recorder to

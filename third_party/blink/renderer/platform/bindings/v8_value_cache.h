@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_VALUE_CACHE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/v8_global_value_map.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

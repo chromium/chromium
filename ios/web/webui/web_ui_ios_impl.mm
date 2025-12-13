@@ -35,8 +35,7 @@ std::u16string WebUIIOS::GetJavascriptCall(
       parameters += u',';
     }
 
-    base::JSONWriter::Write(arg_list[i], &json);
-    parameters += base::UTF8ToUTF16(json);
+    parameters += base::UTF8ToUTF16(base::WriteJson(arg_list[i]).value_or(""));
   }
   return base::ASCIIToUTF16(function_name) + u'(' + parameters + u");";
 }

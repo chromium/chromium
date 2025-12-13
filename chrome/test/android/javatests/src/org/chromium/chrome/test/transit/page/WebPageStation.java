@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import android.util.Pair;
 import android.view.View;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Element;
@@ -15,18 +13,16 @@ import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.test.transit.SoftKeyboardFacility;
-import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
-import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** The screen that shows a loaded webpage with the omnibox and the toolbar. */
-public class WebPageStation extends PageStation {
+public class WebPageStation extends CtaPageStation {
     public Element<WebContents> webContentsElement;
     public ViewElement<UrlBar> urlBarElement;
 
@@ -44,6 +40,11 @@ public class WebPageStation extends PageStation {
         // Make sure that the new tab page is not considered a WebPageStation
         List<String> prohibitedUrls = List.of("chrome://newtab", "chrome-native://newtab");
         declareEnterCondition(new PageUrlDoesNotMatchCondition(prohibitedUrls, loadedTabElement));
+    }
+
+    @Override
+    protected TripBuilder clickUrlBarOrSearchBarTo() {
+        return urlBarElement.clickTo();
     }
 
     public static Builder<WebPageStation> newBuilder() {
@@ -67,7 +68,10 @@ public class WebPageStation extends PageStation {
             String url = mLoadedTabSupplier.get().getUrl().getSpec();
             for (String prohibitedUrl : mProhibitedUrls) {
                 if (url.contains(prohibitedUrl)) {
-                    return notFulfilled("URL: \"%s\"", url);
+                    return notFulfilled(
+                            "URL is \"%s\", which is prohibited. Use the appropriate Station"
+                                    + " subclass instead of WebPageStation.",
+                            url);
                 }
             }
             return fulfilled("URL: \"%s\"", url);
@@ -96,14 +100,14 @@ public class WebPageStation extends PageStation {
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
-                    View contentView = activityTabElement.get().getView();
+                    View contentView = activityTabElement.value().getView();
                     float width = contentView.getWidth();
                     float height = contentView.getHeight();
                     // Start the scroll with some height to avoid touching the nav bar region.
                     float fromY = height - height / 10;
                     float toY = 0;
                     TouchCommon.performDragNoFling(
-                            mActivityElement.get(),
+                            mActivityElement.value(),
                             width / 2,
                             width / 2,
                             fromY,
@@ -118,17 +122,17 @@ public class WebPageStation extends PageStation {
         return runTo(
                 () -> {
                     assertInPhase(Phase.ACTIVE);
-                    View contentView = activityTabElement.get().getView();
+                    View contentView = activityTabElement.value().getView();
                     float width = contentView.getWidth();
                     float height = contentView.getHeight();
 
                     int[] location = new int[2];
-                    toolbarElement.get().getLocationOnScreen(location);
+                    toolbarElement.value().getLocationOnScreen(location);
                     // Start the scroll with 5 additional height to avoid touching the toolbar.
-                    float fromY = location[1] + toolbarElement.get().getBottom() + 5;
+                    float fromY = location[1] + toolbarElement.value().getBottom() + 5;
                     float toY = height;
                     TouchCommon.performDragNoFling(
-                            mActivityElement.get(),
+                            mActivityElement.value(),
                             width / 2,
                             width / 2,
                             fromY,
@@ -150,22 +154,11 @@ public class WebPageStation extends PageStation {
                 () -> {
                     try {
                         JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                webContentsElement.get(), jsCode);
+                                webContentsElement.value(), jsCode);
                     } catch (TimeoutException e) {
                         throw new RuntimeException(e);
                     }
                 });
-    }
-
-    /** Click the URL bar to enter the Omnibox. */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
-            FakeOmniboxSuggestions fakeSuggestions) {
-        OmniboxFacility omniboxFacility =
-                new OmniboxFacility(/* incognito= */ mIsIncognito, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-
-        urlBarElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
-        return Pair.create(omniboxFacility, softKeyboard);
     }
 
     // Condition checks whether web page reaches the bottom by checking viewport position and scroll

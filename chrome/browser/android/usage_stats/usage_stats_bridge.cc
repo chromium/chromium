@@ -23,7 +23,6 @@
 
 using base::android::AppendJavaStringArrayToStringVector;
 using base::android::JavaArrayOfByteArrayToStringVector;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfByteArray;
@@ -41,7 +40,7 @@ bool isSuccess(UsageStatsDatabase::Error error) {
 }  // namespace
 
 static jlong JNI_UsageStatsBridge_Init(JNIEnv* env,
-                                       const JavaParamRef<jobject>& j_this,
+                                       const JavaRef<jobject>& j_this,
                                        Profile* profile) {
   std::unique_ptr<UsageStatsDatabase> usage_stats_database =
       std::make_unique<UsageStatsDatabase>(profile);
@@ -317,7 +316,7 @@ void UsageStatsBridge::OnHistoryDeletions(
       std::vector<std::string> domains;
       domains.reserve(urls.value().size());
       for (const auto& gurl : urls.value()) {
-        domains.push_back(gurl.host());
+        domains.push_back(gurl.GetHost());
       }
       Java_UsageStatsBridge_onHistoryDeletedForDomains(
           env, j_this_, ToJavaArrayOfStrings(env, domains));
@@ -339,3 +338,5 @@ void UsageStatsBridge::HistoryServiceBeingDeleted(
 }
 
 }  // namespace usage_stats
+
+DEFINE_JNI(UsageStatsBridge)

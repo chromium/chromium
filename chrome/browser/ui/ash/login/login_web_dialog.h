@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 

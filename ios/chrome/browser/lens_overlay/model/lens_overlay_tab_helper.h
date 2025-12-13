@@ -127,7 +127,7 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
 
   PrefService* GetProfilePrefs();
 
-  // Handler used to request showing the password bottom sheet.
+  // Handler for Lens Overlay commands.
   __weak id<LensOverlayCommands> commands_handler_;
 
   // Responsible for taking snapshots for the lens overlay

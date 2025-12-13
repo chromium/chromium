@@ -34,7 +34,6 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/site_instance_group.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
@@ -193,6 +192,9 @@ using SpellCheckerCompletionHandlerType = void (
   _lastAssignedSequenceNumber += 1;
   _completionHandlers[@(_lastAssignedSequenceNumber)] = completionHandler;
   return _lastAssignedSequenceNumber;
+}
+
+- (void)dismissCorrectionIndicatorForView:(NSView*)view {
 }
 
 @end
@@ -421,8 +423,7 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
             std::move(site_instance_group),
             routing_id,
             /*hidden=*/false,
-            /*renderer_initiated_creation=*/false,
-            std::make_unique<FrameTokenMessageQueue>()) {
+            /*renderer_initiated_creation=*/false) {
     SetupMockRenderInputRouter();
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
@@ -538,7 +539,6 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
     host_->InitializePaintHolding(false);
 
     base::RunLoop().RunUntilIdle();
-    process_host_->sink().ClearMessages();
   }
 
   void TearDown() override {
@@ -645,8 +645,6 @@ TEST_F(RenderWidgetHostViewMacTest, FilterNonPrintableCharacter) {
 
   // Simulate ctrl+delete, will produce a private use character but shouldn't
   // fire keypress event
-  process_host_->sink().ClearMessages();
-  EXPECT_EQ(0U, process_host_->sink().message_count());
   [rwhv_mac_->GetInProcessNSView()
       keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
                    0x2E, 0xF728, NSEventTypeKeyDown,
@@ -972,8 +970,6 @@ TEST_F(RenderWidgetHostViewMacTest, LostFocusAndGotFocusOnSetActive) {
 }
 
 TEST_F(RenderWidgetHostViewMacTest, LastWheelEventLatencyInfoExists) {
-  process_host_->sink().ClearMessages();
-
   // Send an initial wheel event for scrolling by 3 lines.
   // Verifies that ui::INPUT_EVENT_LATENCY_UI_COMPONENT is added
   // properly in scrollWheel function.
@@ -1636,8 +1632,6 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
     view->TextInputStateChanged(state);
   }
 
-  IPC::TestSink& tab_sink() { return process()->sink(); }
-  IPC::TestSink& child_sink() { return child_process_host_->sink(); }
   TextInputManager* text_input_manager() {
     return delegate_.GetTextInputManager();
   }
@@ -1718,9 +1712,6 @@ TEST_F(InputMethodMacTest, SetMarkedText) {
 // This test makes sure that selectedRange and markedRange are updated correctly
 // in various scenarios.
 TEST_F(InputMethodMacTest, MarkedRangeSelectedRange) {
-  if (!base::FeatureList::IsEnabled(features::kMacImeLiveConversionFix)) {
-    return;
-  }
   // If the replacement range is valid, the range should be replaced with the
   // new text.
   {

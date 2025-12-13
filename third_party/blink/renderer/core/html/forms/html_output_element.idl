@@ -25,9 +25,9 @@
 
 // https://html.spec.whatwg.org/C/#the-output-element
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLOutputElement : HTMLElement {
+    [HTMLConstructor] constructor();
     [PutForwards=value] readonly attribute DOMTokenList htmlFor;
     // Until ReferenceTarget is enabled, this will only ever return HTMLFormElement.
     // https://github.com/whatwg/html/pull/10995

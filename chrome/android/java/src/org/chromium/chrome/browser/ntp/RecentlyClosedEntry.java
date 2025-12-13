@@ -8,26 +8,16 @@ import org.chromium.build.annotations.NullMarked;
 
 import java.util.Date;
 
-/** Represents a recently closed entry from TabRestoreService. */
+/** Represents a recent tab or window closure event. */
 @NullMarked
 public class RecentlyClosedEntry {
-    private final int mSessionId;
     private final Date mDate;
 
     /**
-     * @param sessionId The Session ID of this entry.
      * @param timestamp The milliseconds since the Unix Epoch this entry was created.
      */
-    protected RecentlyClosedEntry(int sessionId, long timestamp) {
-        mSessionId = sessionId;
+    protected RecentlyClosedEntry(long timestamp) {
         mDate = new Date(timestamp);
-    }
-
-    /**
-     * @return the Session ID of the entry in TabRestoreService.
-     */
-    public int getSessionId() {
-        return mSessionId;
     }
 
     /**

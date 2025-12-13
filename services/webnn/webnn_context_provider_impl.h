@@ -9,14 +9,22 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/types/optional_ref.h"
+#include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
+#include "services/webnn/buildflags.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
-#include "services/webnn/webnn_object_impl.h"
+#include "services/webnn/webnn_context_impl.h"
 
 namespace gpu {
 class Scheduler;
@@ -24,7 +32,7 @@ class Scheduler;
 
 namespace webnn {
 
-class WebNNContextImpl;
+class ScopedGpuSequence;
 
 // Maintain a set of WebNNContextImpl instances that are created by the context
 // provider.
@@ -45,10 +53,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
+      gpu::SharedImageManager* shared_image_manager,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id);
+      int32_t client_id,
+      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
 
   // Called to add a another WebNNContextProvider receiver to this
   // existing `WebNNContextProviderImpl` instance.
@@ -62,23 +72,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     kWebNNEnabled = 3,
   };
 
-  // Called to create a WebNNContextProviderImpl as a self-owned receiver.
-  // Optionally returns a reference to the WebNNContextProviderImpl to test
-  // interop.
-  static base::optional_ref<WebNNContextProviderImpl> CreateForTesting(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      WebNNStatus status = WebNNStatus::kWebNNEnabled,
-      LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {
-      }));
-
-  // Called when a WebNNContextImpl has a connection error. After this call, it
-  // is no longer safe to access |impl|.
-  void OnConnectionError(WebNNContextImpl* impl);
+  // Disassociates a `WebNNContextImpl` instance owned by this provider by its
+  // handle. Called when a `WebNNContext` instance has a connection error. After
+  // this call, it is no longer safe to use the WebNNContextImpl.
+  void RemoveWebNNContextImpl(const blink::WebNNContextToken& handle);
 
 #if BUILDFLAG(IS_WIN)
   // Send the contexts lost reason to the renderer process and kill the GPU
   // process to destroy all contexts.
-  void DestroyContextsAndKillGpuProcess(const std::string& reason);
+  void DestroyAllContextsAndKillGpuProcess(const std::string& reason);
 #endif  // BUILDFLAG(IS_WIN)
 
   // Retrieves a `WebNNContextImpl` instance created from this provider.
@@ -86,52 +88,107 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   base::optional_ref<WebNNContextImpl> GetWebNNContextImplForTesting(
       const blink::WebNNContextToken& handle);
 
-  using WebNNContextImplSet = base::flat_set<
-      std::unique_ptr<WebNNContextImpl>,
-      WebNNObjectImpl<blink::WebNNContextToken>::Comparator<WebNNContextImpl>>;
+  using WebNNContextImplPtr =
+      std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>;
+  using WebNNContextImplSet =
+      base::flat_set<WebNNContextImplPtr, WebNNContextImpl::Comparator>;
 
   // The test cases can override the context creating behavior by implementing
   // this class and setting its instance by SetBackendForTesting().
   class BackendForTesting {
    public:
-    virtual std::unique_ptr<WebNNContextImpl> CreateWebNNContext(
-        WebNNContextProviderImpl* context_provider_impl,
+    virtual WebNNContextImplPtr CreateWebNNContext(
+        base::WeakPtr<WebNNContextProviderImpl> context_provider_impl,
         mojom::CreateContextOptionsPtr options,
+        std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+        scoped_refptr<gpu::MemoryTracker> memory_tracker,
+        scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
+        gpu::SharedImageManager* shared_image_manager,
+        scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         CreateWebNNContextCallback callback) = 0;
   };
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
-
-  gpu::Scheduler* scheduler() const { return scheduler_; }
-
-  int32_t client_id() const { return client_id_; }
-
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner() const {
-    return main_thread_task_runner_;
-  }
 
  private:
   WebNNContextProviderImpl(
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
       gpu::GPUInfo gpu_info,
+      gpu::SharedImageManager* shared_image_manager,
       LoseAllContextsCallback lose_all_contexts_callback,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       gpu::Scheduler* scheduler,
-      int32_t client_id);
+      int32_t client_id,
+      mojo::SharedRemote<viz::mojom::GpuHost> gpu_host);
 
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
 
-  scoped_refptr<gpu::SharedContextState> shared_context_state_;
+  base::WeakPtr<WebNNContextProviderImpl> AsWeakPtr() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+    return weak_factory_.GetWeakPtr();
+  }
+
+  // Called after CreateWebNNContext successfully creates a `WebNNContextImpl`.
+  // This associates the context with this provider on the specified sequence.
+  void OnCreateWebNNContextImpl(
+      WebNNContextProvider::CreateWebNNContextCallback callback,
+      mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      WebNNContextImplPtr context_impl);
+
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+  void CreateTFLiteContext(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      CreateWebNNContextCallback callback);
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
+
+#if BUILDFLAG(IS_WIN)
+  void DidEnsureWebNNExecutionProvidersReady(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      mojo::ScopedDataPipeProducerHandle write_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
+      mojo::ScopedDataPipeProducerHandle read_tensor_producer,
+      mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
+      gpu::CommandBufferId command_buffer_id,
+      std::unique_ptr<ScopedGpuSequence> gpu_sequence,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<mojom::WebNNContext> receiver,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
+      CreateWebNNContextCallback callback,
+      base::flat_map<std::string, mojom::EpPackageInfoPtr> ep_package_info);
+#endif  // BUILDFLAG(IS_WIN)
+
+  scoped_refptr<gpu::SharedContextState> shared_context_state_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
+
+  // The lifetime of the shared image manager is managed by the GPU service and
+  // is destroyed after this WebNNProviderImpl is destroyed, which makes it
+  // safe to store the shared image manager as a raw_ptr here.
+  const raw_ptr<gpu::SharedImageManager> shared_image_manager_;
+
   // A callback from `GpuServiceImpl` to terminate the GPU process, which will
   // destroy all contexts.
   LoseAllContextsCallback lose_all_contexts_callback_;
 
-  mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_;
+  mojo::ReceiverSet<mojom::WebNNContextProvider> provider_receivers_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Lifetime of the scheduler is managed by the GPU service. The GPU service
   // destroys the WebNNContextProviderImpl and all its contexts when it
@@ -141,12 +198,28 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 
   // Contexts created by this provider. When a context disconnects,
   // it will destroy itself by removing itself from this set.
-  WebNNContextImplSet impls_;
+  WebNNContextImplSet context_impls_ GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Specifies the thread on which the GPU scheduler should run tasks.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   const int32_t client_id_;
+
+  // The memory tracker from the `shared_context_state_` which is used to create
+  // tensors from shared images.
+  // TODO(crbug.com/345352987): give WebNN its own memory source and
+  // tracker.
+  scoped_refptr<gpu::MemoryTracker> memory_tracker_;
+
+  mojo::SharedRemote<viz::mojom::GpuHost> gpu_host_;
+
+  // SequenceChecker for WebNNContextProviderImpl. It attaches to the sequence
+  // on which this object is constructed. All message dispatches and any access
+  // to `main_thread_task_runner_` must happen on the same sequence.
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  base::WeakPtrFactory<WebNNContextProviderImpl> weak_factory_
+      GUARDED_BY_CONTEXT(main_sequence_checker_){this};
 };
 
 }  // namespace webnn

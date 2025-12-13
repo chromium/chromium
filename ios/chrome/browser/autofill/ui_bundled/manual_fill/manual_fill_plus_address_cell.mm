@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
@@ -24,13 +23,8 @@
 
 namespace {
 
+// The size that the favicon should have.
 constexpr CGFloat kFaviconContainterViewSize = 30;
-
-// Returns the size that the favicon should have.
-CGFloat GetFaviconSize() {
-  return IsKeyboardAccessoryUpgradeEnabled() ? kFaviconContainterViewSize
-                                             : gfx::kFaviconSize;
-}
 
 }  // namespace
 
@@ -111,16 +105,12 @@ CGFloat GetFaviconSize() {
 @property(nonatomic, strong)
     NSMutableArray<NSLayoutConstraint*>* dynamicConstraints;
 
-// The constraints for the visible favicon.
-@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* faviconContraints;
-
 // The view displayed at the top the cell containing the favicon, the site name
 // and an overflow button.
 @property(nonatomic, strong) UIView* headerView;
 
-// The favicon for the plus address. Of type FaviconView when the Keyboard
-// Accessory Upgrade is disabled, and FaviconContainerView when enabled.
-@property(nonatomic, strong) UIView* faviconView;
+// The favicon for the plus address.
+@property(nonatomic, strong) FaviconContainerView* faviconContainerView;
 
 // The label with the site name and host.
 @property(nonatomic, strong) UILabel* siteNameLabel;
@@ -131,9 +121,7 @@ CGFloat GetFaviconSize() {
 // A button showing the plus address.
 @property(nonatomic, strong) UIButton* plusAddressButton;
 
-// Separator line. When the Keyboard Accessory Upgrade feature is enbaled, used
-// to delimit the header from the rest of the cell. When disabled, used when
-// needed to delimit cells.
+// Separator line. Used to delimit the header from the rest of the cell.
 @property(nonatomic, strong) UIView* grayLine;
 
 // The delegate in charge of processing the user actions in this cell.
@@ -154,14 +142,12 @@ CGFloat GetFaviconSize() {
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
-  self.faviconView.hidden = YES;
 
   [NSLayoutConstraint deactivateConstraints:self.dynamicConstraints];
   [self.dynamicConstraints removeAllObjects];
 
   self.siteNameLabel.text = @"";
-  [self configureFaviconWithAttributes:nil];
+  [self setUpFaviconViewWithAttributes:nil];
 
   [self.plusAddressButton setTitle:@"" forState:UIControlStateNormal];
   self.plusAddressButton.enabled = YES;
@@ -194,22 +180,18 @@ CGFloat GetFaviconSize() {
   NSAttributedString* attributedText =
       CreateSiteNameLabelAttributedText(plusAddress, /*should_show_host=*/YES);
   self.siteNameLabel.attributedText = attributedText;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.siteNameLabel.numberOfLines = 0;
-    self.accessibilityLabel =
-        [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
-                                   attributedText.string];
-  }
+  self.siteNameLabel.numberOfLines = 0;
+  self.accessibilityLabel =
+      [NSString stringWithFormat:@"%@, %@", cellIndexAccessibilityLabel,
+                                 attributedText.string];
   self.siteNameLabel.hidden = NO;
-  self.faviconView.hidden = NO;
+  self.faviconContainerView.hidden = NO;
   AddViewToVerticalLeadViews(self.headerView,
                              ManualFillCellView::ElementType::kOther,
                              verticalLeadViews);
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    AddViewToVerticalLeadViews(
-        self.grayLine, ManualFillCellView::ElementType::kHeaderSeparator,
-        verticalLeadViews);
-  }
+  AddViewToVerticalLeadViews(self.grayLine,
+                             ManualFillCellView::ElementType::kHeaderSeparator,
+                             verticalLeadViews);
   if (menuActions && menuActions.count) {
     self.overflowMenuButton.menu = [UIMenu menuWithChildren:menuActions];
     self.overflowMenuButton.hidden = NO;
@@ -224,11 +206,9 @@ CGFloat GetFaviconSize() {
   // Plus Address chip button.
   [self.plusAddressButton setTitle:plusAddress.plusAddress
                           forState:UIControlStateNormal];
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    self.plusAddressButton.accessibilityLabel = l10n_util::GetNSStringF(
-        IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
-        base::SysNSStringToUTF16(plusAddress.plusAddress));
-  }
+  self.plusAddressButton.accessibilityLabel = l10n_util::GetNSStringF(
+      IDS_IOS_MANUAL_FALLBACK_CHIP_ACCESSIBILITY_LABEL,
+      base::SysNSStringToUTF16(plusAddress.plusAddress));
   [plusAddressGroupVerticalLeadChips addObject:self.plusAddressButton];
 
   AddChipGroupsToVerticalLeadViews(@[ plusAddressGroupVerticalLeadChips ],
@@ -237,8 +217,7 @@ CGFloat GetFaviconSize() {
   // Set and activate constraints.
   self.dynamicConstraints = [[NSMutableArray alloc] init];
   AppendVerticalConstraintsSpacingForViews(self.dynamicConstraints,
-                                           verticalLeadViews, self.layoutGuide,
-                                           /*offset=*/0);
+                                           verticalLeadViews, self.layoutGuide);
   [NSLayoutConstraint activateConstraints:self.dynamicConstraints];
 }
 
@@ -247,14 +226,7 @@ CGFloat GetFaviconSize() {
 }
 
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes {
-  if (attributes.faviconImage) {
-    self.faviconView.hidden = NO;
-    [NSLayoutConstraint activateConstraints:self.faviconContraints];
-    [self configureFaviconWithAttributes:attributes];
-    return;
-  }
-  [NSLayoutConstraint deactivateConstraints:self.faviconContraints];
-  self.faviconView.hidden = YES;
+  [self setUpFaviconViewWithAttributes:attributes];
 }
 
 #pragma mark - Private
@@ -269,17 +241,16 @@ CGFloat GetFaviconSize() {
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
 
-  self.faviconView = IsKeyboardAccessoryUpgradeEnabled()
-                         ? [[FaviconContainerView alloc] init]
-                         : [[FaviconView alloc] init];
-  self.faviconView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.faviconView.clipsToBounds = YES;
-  self.faviconView.hidden = YES;
-  self.faviconContraints = @[
-    [self.faviconView.widthAnchor constraintEqualToConstant:GetFaviconSize()],
-    [self.faviconView.heightAnchor
-        constraintEqualToAnchor:self.faviconView.widthAnchor],
-  ];
+  self.faviconContainerView = [[FaviconContainerView alloc] init];
+  self.faviconContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.faviconContainerView.clipsToBounds = YES;
+  self.faviconContainerView.hidden = YES;
+  [NSLayoutConstraint activateConstraints:@[
+    [self.faviconContainerView.widthAnchor
+        constraintEqualToConstant:kFaviconContainterViewSize],
+    [self.faviconContainerView.heightAnchor
+        constraintEqualToAnchor:self.faviconContainerView.widthAnchor],
+  ]];
 
   self.siteNameLabel = CreateLabel();
   // The cell index provided here is only used to set the
@@ -292,8 +263,8 @@ CGFloat GetFaviconSize() {
   self.overflowMenuButton.accessibilityIdentifier =
       manual_fill::kExpandedManualFillPlusAddressOverflowMenuID;
 
-  self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
-                                     self.overflowMenuButton);
+  self.headerView = CreateHeaderView(
+      self.faviconContainerView, self.siteNameLabel, self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.headerView ],
                                       self.layoutGuide);
@@ -305,7 +276,6 @@ CGFloat GetFaviconSize() {
   [self.contentView addSubview:self.plusAddressButton];
   AppendHorizontalConstraintsForViews(
       staticConstraints, @[ self.plusAddressButton ], self.layoutGuide,
-      kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
@@ -327,17 +297,11 @@ CGFloat GetFaviconSize() {
                              requiresHTTPS:NO];
 }
 
-// Configure the favicon with the given `attributes`.
-- (void)configureFaviconWithAttributes:(FaviconAttributes*)attributes {
-  FaviconView* favicon;
-  if (IsKeyboardAccessoryUpgradeEnabled()) {
-    FaviconContainerView* faviconContainerView =
-        static_cast<FaviconContainerView*>(self.faviconView);
-    favicon = faviconContainerView.faviconView;
-  } else {
-    favicon = static_cast<FaviconView*>(self.faviconView);
-  }
-  [favicon configureWithAttributes:attributes];
+// Sets up the favicon with the given `attributes`.
+- (void)setUpFaviconViewWithAttributes:(FaviconAttributes*)attributes {
+  self.faviconContainerView.accessibilityIdentifier =
+      manual_fill::kExpandedManualFillPlusAddressFaviconID;
+  [self.faviconContainerView.faviconView configureWithAttributes:attributes];
 }
 
 @end

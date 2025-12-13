@@ -30,7 +30,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -41,7 +41,7 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -52,19 +52,25 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(AllSiteSettingsTest.TEST_BATCH_NAME)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@EnableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_RELATED_WEBSITE_SETS_UI})
+// TODO(https://crbug.com/464015936): these tests could be flaky because of AnimatedProgressBar.
+@DisableFeatures({
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER
+})
 public class AllSiteSettingsTest {
     public static final String TEST_BATCH_NAME = "AllSiteSettingsTest";
     private static final String A_GITHUB_IO = "a.github.io";
     private static final String B_GITHUB_IO = "b.github.io";
     private static final String C_GITHUB_IO = "c.github.io";
     private static final String D_GITHUB_IO = "d.github.io";
+    private static final int RENDER_TEST_REVISION = 1;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(RENDER_TEST_REVISION)
                     .setBugComponent(Component.UI_BROWSER_MOBILE_SETTINGS)
                     .build();
 
@@ -113,7 +119,7 @@ public class AllSiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             "google.com",
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         SettingsActivity settingsActivity =
@@ -142,13 +148,13 @@ public class AllSiteSettingsTest {
                             ContentSettingsType.COOKIES,
                             A_GITHUB_IO,
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                     WebsitePreferenceBridge.setContentSettingCustomScope(
                             getBrowserContextHandle(),
                             ContentSettingsType.COOKIES,
                             B_GITHUB_IO,
                             "*",
-                            ContentSettingValues.ALLOW);
+                            ContentSetting.ALLOW);
                 });
 
         SettingsActivity settingsActivity =

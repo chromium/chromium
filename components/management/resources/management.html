@@ -17,26 +17,72 @@
         <a id="learn-more-link" target="_blank" href="$i18n{learnMoreURL}">$i18n{learnMore}</a>
       </div>
 
+      <div id="browser-reporting-info" class="hidden">
+        <div id="browser-reporting-title" class="heading">
+            $i18n{browserReporting}
+        </div>
+
+        <div id="browser-reporting-explanation" class="description-text">
+          $i18n{browserReportingExplanation}
+        </div>
+
+        <ul id="browser-reporting-list" class="description-text">
+          <li>$i18n{browserReportingOverview}</li>
+          <li>
+            $i18n{browserReportingDeviceInformation}
+            <ul>
+              <li>$i18n{browserReportingDeviceInformationContinued}</li>
+            </ul>
+          </li>
+          <li>
+            $i18n{browserReportingBrowserAndProfiles}
+            <ul>
+              <li>$i18n{browserReportingBrowserAndProfilesContinued}</li>
+            </ul>
+          </li>
+          <li>$i18n{browserReportingPolicy}</li>
+          <li>$i18nRaw{browserReportingLearnMore}</li>
+        </ul>
+      </div>
+
+      <div id="profile-reporting-info" class="hidden">
+        <div id="profile-reporting-title" class="heading">
+          $i18n{browserReporting}
+        </div>
+
+        <div id="profile-reporting-explanation" class="description-text">
+          $i18n{profileReportingExplanation}
+        </div>
+
+        <ul id="profile-reporting-list" class="description-text">
+          <li>$i18n{profileReportingOverview}</li>
+          <li>$i18n{profileReportingUsername}</li>
+          <li>$i18n{profileReportingBrowser}</li>
+          <li>$i18n{profileReportingPolicy}</li>
+          <li>$i18nRaw{profileReportingLearnMore}</li>
+        </ul>
+      </div>
+
       <div id="connectors-info" class="hidden">
-          <div id="connectors-section-title" class="heading" >$i18n{connectorsSectionTitle}</div>
+        <div id="connectors-section-title" class="heading" >$i18n{connectorsSectionTitle}</div>
 
-          <div id="connectors-section-description" class="description-text">
-            $i18n{connectorsDescription}
-          </div>
+        <div id="connectors-section-description" class="description-text">
+          $i18n{connectorsDescription}
+        </div>
 
-          <div id="security-event-section" class="event-section hidden">
-            <div class="event-title heading" >$i18n{securityEventTitle}</div>
-            <div class="description-text">
-              $i18n{securityEventData}
-            </div>
+        <div id="security-event-section" class="event-section hidden">
+          <div class="event-title heading" >$i18n{securityEventTitle}</div>
+          <div class="description-text">
+            $i18n{securityEventData}
           </div>
+        </div>
 
-          <div id="page-visit-event-section" class="event-section hidden">
-            <div class="event-title heading">$i18n{pageVisitEventTitle}</div>
-            <div class="description-text">
-              $i18n{pageVisitEventData}
-            </div>
+        <div id="page-visit-event-section" class="event-section hidden">
+          <div class="event-title heading">$i18n{pageVisitEventTitle}</div>
+          <div class="description-text">
+            $i18n{pageVisitEventData}
           </div>
+        </div>
       </div>
     </div>
     <div id="unmanaged-info" class="hidden heading">$i18n{unmanagedInfo}</div>

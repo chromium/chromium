@@ -1,0 +1,12 @@
+The test verifies functionality of protocol method CSS.isAppearanceBase.
+".base" isAppearanceBase: true
+".base button" isAppearanceBase: true
+".base option" isAppearanceBase: true
+".base optgroup" isAppearanceBase: true
+".base legend" isAppearanceBase: true
+".auto" isAppearanceBase: false
+".auto button" isAppearanceBase: false
+".auto option" isAppearanceBase: false
+".auto optgroup" isAppearanceBase: false
+".auto legend" isAppearanceBase: false
+

@@ -72,13 +72,12 @@ static_library("trusted_vault") {
 
     deps = [
       "//components/account_id",
-      "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
       "//components/trusted_vault/proto",
       "//crypto",
       "//google_apis",
       "//net",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//third_party/boringssl",
       "//third_party/libxml:xml_reader",
     ]
@@ -122,8 +121,6 @@ if (!is_android) {
     deps = [
       ":test_support",
       ":trusted_vault",
-      "//components/os_crypt/sync",
-      "//components/os_crypt/sync:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/trusted_vault/proto",
       "//google_apis",

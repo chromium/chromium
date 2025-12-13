@@ -4,7 +4,6 @@
 
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"

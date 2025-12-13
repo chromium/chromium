@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/power_metrics/system_power_monitor.h"
 
 #include <array>
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -75,31 +71,35 @@ int64_t CalculateNanojoulesDeltaFromSamples(
     const EnergyMetricsProvider::EnergyMetrics& new_sample,
     const EnergyMetricsProvider::EnergyMetrics& old_sample,
     const char* metric) {
-  if (std::strcmp(metric, kPackagePowerTraceCounterName) == 0) {
+  if (UNSAFE_TODO(std::strcmp(metric, kPackagePowerTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.package_nanojoules -
                                 old_sample.package_nanojoules);
-  } else if (std::strcmp(metric, kCpuPowerTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kCpuPowerTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.cpu_nanojoules -
                                 old_sample.cpu_nanojoules);
-  } else if (std::strcmp(metric, kIntegratedGpuPowerTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(
+                 metric, kIntegratedGpuPowerTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.gpu_nanojoules -
                                 old_sample.gpu_nanojoules);
-  } else if (std::strcmp(metric, kDramPowerTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kDramPowerTraceCounterName)) ==
+             0) {
     return static_cast<int64_t>(new_sample.dram_nanojoules -
                                 old_sample.dram_nanojoules);
-  } else if (std::strcmp(metric, kPsysPowerTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kPsysPowerTraceCounterName)) ==
+             0) {
     return static_cast<int64_t>(new_sample.psys_nanojoules -
                                 old_sample.psys_nanojoules);
-  } else if (std::strcmp(metric, kVddcrVddTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kVddcrVddTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.vdd_nanojoules -
                                 old_sample.vdd_nanojoules);
-  } else if (std::strcmp(metric, kVddcrSocTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kVddcrSocTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.soc_nanojoules -
                                 old_sample.soc_nanojoules);
-  } else if (std::strcmp(metric, kCurrentSocketTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kCurrentSocketTraceCounterName)) ==
+             0) {
     return static_cast<int64_t>(new_sample.socket_nanojoules -
                                 old_sample.socket_nanojoules);
-  } else if (std::strcmp(metric, kApuPowerTraceCounterName) == 0) {
+  } else if (UNSAFE_TODO(std::strcmp(metric, kApuPowerTraceCounterName)) == 0) {
     return static_cast<int64_t>(new_sample.apu_nanojoules -
                                 old_sample.apu_nanojoules);
   }

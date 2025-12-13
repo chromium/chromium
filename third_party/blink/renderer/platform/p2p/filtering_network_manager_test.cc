@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/p2p/filtering_network_manager.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -82,7 +78,7 @@ class MockNetworkManager : public webrtc::NetworkManagerBase {
   // StartUpdating() will trigger another one.
   void StartUpdating() override {
     if (sent_first_update_)
-      SignalNetworksChanged();
+      NotifyNetworksChanged();
   }
   void StopUpdating() override {}
 
@@ -92,15 +88,15 @@ class MockNetworkManager : public webrtc::NetworkManagerBase {
 
   void SendNetworksChanged() {
     sent_first_update_ = true;
-    SignalNetworksChanged();
+    NotifyNetworksChanged();
   }
 
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override {
     return mdns_responder_.get();
   }
 
-  void CopyAndSetNetwork(const webrtc::Network& network) {
-    network_ = std::make_unique<webrtc::Network>(network);
+  void CopyAndSetNetwork(const webrtc::Network* network) {
+    network_ = network->Clone();
     network_->AddIP(network_->GetBestIP());
   }
 
@@ -169,21 +165,20 @@ class MockMediaPermission : public media::MediaPermission {
 
 namespace blink {
 
-class FilteringNetworkManagerTest : public testing::Test,
-                                    public sigslot::has_slots<> {
+class FilteringNetworkManagerTest : public testing::Test {
  public:
   FilteringNetworkManagerTest()
       : media_permission_(new MockMediaPermission()),
         task_runner_(new base::TestSimpleTaskRunner()),
         task_runner_current_default_handle_(task_runner_) {
-    networks_.emplace_back("test_eth0", "Test Network Adapter 1",
-                           webrtc::IPAddress(0x12345600U), 24,
-                           webrtc::ADAPTER_TYPE_ETHERNET),
-        networks_.back().AddIP(webrtc::IPAddress(0x12345678));
-    networks_.emplace_back("test_eth1", "Test Network Adapter 2",
-                           webrtc::IPAddress(0x87654300U), 24,
-                           webrtc::ADAPTER_TYPE_ETHERNET),
-        networks_.back().AddIP(webrtc::IPAddress(0x87654321));
+    networks_.push_back(std::make_unique<webrtc::Network>(
+        "test_eth0", "Test Network Adapter 1", webrtc::IPAddress(0x12345600U),
+        24, webrtc::ADAPTER_TYPE_ETHERNET));
+    networks_.back()->AddIP(webrtc::IPAddress(0x12345678));
+    networks_.push_back(std::make_unique<webrtc::Network>(
+        "test_eth1", "Test Network Adapter 2", webrtc::IPAddress(0x87654300U),
+        24, webrtc::ADAPTER_TYPE_ETHERNET));
+    networks_.back()->AddIP(webrtc::IPAddress(0x87654321));
   }
 
   void SetupNetworkManager(bool multiple_routes_requested) {
@@ -198,19 +193,20 @@ class FilteringNetworkManagerTest : public testing::Test,
       network_manager_.reset(new EmptyNetworkManager(
           base_network_manager_.get(), base_network_manager_->AsWeakPtr()));
     }
-    network_manager_->SignalNetworksChanged.connect(
-        this, &FilteringNetworkManagerTest::OnNetworksChanged);
+    network_manager_->SubscribeNetworksChanged(this,
+                                               [this] { OnNetworksChanged(); });
   }
 
-  void RunTests(TestEntry* tests, size_t size) {
-    for (size_t i = 0; i < size; ++i) {
+  void RunTests(base::span<TestEntry> tests) {
+    for (size_t i = 0; i < tests.size(); ++i) {
       EXPECT_EQ(tests[i].expected_result, ProcessEvent(tests[i].event))
           << " in step: " << i;
     }
   }
 
   void SetNewNetworkForBaseNetworkManager() {
-    base_network_manager_->CopyAndSetNetwork(networks_[next_new_network_id_]);
+    base_network_manager_->CopyAndSetNetwork(
+        networks_[next_new_network_id_].get());
     next_new_network_id_ = (next_new_network_id_ + 1) % networks_.size();
   }
 
@@ -271,7 +267,7 @@ class FilteringNetworkManagerTest : public testing::Test,
   std::unique_ptr<MockMediaPermission> media_permission_;
   bool allow_mdns_obfuscation_ = true;
 
-  std::vector<webrtc::Network> networks_;
+  std::vector<std::unique_ptr<webrtc::Network>> networks_;
   int next_new_network_id_ = 0;
 
   // This field is not vector<raw_ptr<...>> due to interaction with third_party
@@ -306,7 +302,7 @@ TEST_F(FilteringNetworkManagerTest, MultipleRoutesNotRequested) {
       {kMockNetworksChangedWithSameNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -333,7 +329,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByStartUpdating) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is blocked and signaled right after
@@ -358,7 +354,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByPermissionsDenied) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that after permissions have been denied, a network change signal from
@@ -378,7 +374,7 @@ TEST_F(FilteringNetworkManagerTest, BlockMultipleRoutesByNetworksChanged) {
       {kStopUpdating, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -405,7 +401,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByPermissionsGranted) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -431,7 +427,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByStartUpdating) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that multiple routes request is granted and signaled right after
@@ -455,7 +451,7 @@ TEST_F(FilteringNetworkManagerTest, AllowMultipleRoutesByNetworksChanged) {
       {kMockNetworksChangedWithNewNetwork, kNoSignal},
   };
 
-  RunTests(tests, std::size(tests));
+  RunTests(tests);
 }
 
 // Test that the networks provided by the GetNetworks() and
@@ -474,7 +470,7 @@ TEST_F(FilteringNetworkManagerTest, NullMdnsResponderAfterPermissionGranted) {
       // ENUMERATION_ALLOWED.
       {kStartUpdating, kSignalEnumerationAllowed},
   };
-  RunTests(setup_steps, std::size(setup_steps));
+  RunTests(setup_steps);
 
   std::vector<const webrtc::Network*> networks =
       network_manager_->GetNetworks();

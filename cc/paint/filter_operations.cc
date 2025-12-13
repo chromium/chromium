@@ -80,6 +80,13 @@ gfx::Rect FilterOperations::MapRectReverse(const gfx::Rect& rect,
                          accumulate_rect);
 }
 
+gfx::Rect FilterOperations::ExpandRect(const gfx::Rect& rect,
+                                       const SkMatrix& ctm) const {
+  gfx::Rect result = MapRect(rect, ctm);
+  result.Union(MapRectReverse(rect, ctm));
+  return result;
+}
+
 bool FilterOperations::HasFilterThatMovesPixels() const {
   for (size_t i = 0; i < operations_.size(); ++i) {
     const FilterOperation& op = operations_[i];

@@ -131,6 +131,15 @@ bool Equals(webrtc::VideoEncoderFactory::CodecSupport a,
          a.is_power_efficient == b.is_power_efficient;
 }
 
+#if BUILDFLAG(RTC_USE_H265)
+void MaybeEnableOpenH264SoftwareEncoder(
+    std::vector<base::test::FeatureRef>& enabled_features) {
+#if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && BUILDFLAG(ENABLE_OPENH264)
+  enabled_features.push_back(media::kOpenH264SoftwareEncoder);
+#endif
+}
+#endif  //  BUILDFLAG(RTC_USE_H265)
+
 class MockGpuVideoEncodeAcceleratorFactories
     : public media::MockGpuVideoAcceleratorFactories {
  public:
@@ -202,7 +211,7 @@ class RTCVideoEncoderFactoryTest : public ::testing::Test {
 
 TEST_F(RTCVideoEncoderFactoryTest, QueryCodecSupportNoSvc) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine("MediaFoundationH264CbpEncoding", "");
+  scoped_feature_list.InitFromCommandLine("PlatformH264CbpEncoding", "");
 
   ClearDisabledProfilesForTesting();
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
@@ -341,12 +350,7 @@ TEST_F(RTCVideoEncoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
   std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.emplace_back(::features::kWebRtcH265L1T2);
   enabled_features.emplace_back(::features::kWebRtcH265L1T3);
-
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-  enabled_features.emplace_back(blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
@@ -354,9 +358,7 @@ TEST_F(RTCVideoEncoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
 
   EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
               UnorderedElementsAre(
-#if !BUILDFLAG(IS_ANDROID)
                   kH264BaselinePacketizatonMode1Sdp,
-#endif  //  !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
                   kH264ConstrainedBaselinePacketizatonMode1Sdp,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -372,12 +374,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::test::FeatureRef> enabled_features;
   enabled_features.emplace_back(::features::kWebRtcH265L1T2);
-
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-  enabled_features.emplace_back(blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
 
   scoped_feature_list.InitWithFeatures(enabled_features, {});
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
@@ -385,9 +382,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
 
   EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
               UnorderedElementsAre(
-#if !BUILDFLAG(IS_ANDROID)
                   kH264BaselinePacketizatonMode1Sdp,
-#endif  //  !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
                   kH264ConstrainedBaselinePacketizatonMode1Sdp,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
@@ -405,12 +400,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
   disabled_features.emplace_back(::features::kWebRtcH265L1T2);
-
-#if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) && \
-    BUILDFLAG(ENABLE_OPENH264)
-  enabled_features.emplace_back(blink::features::kWebRtcH264WithOpenH264FFmpeg);
-#endif  // BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS) &&
-        // BUILDFLAG(ENABLE_OPENH264)
+  MaybeEnableOpenH264SoftwareEncoder(enabled_features);
 
   scoped_feature_list.InitWithFeatures(enabled_features, disabled_features);
   EXPECT_CALL(mock_gpu_factories_, IsEncoderSupportKnown())
@@ -418,9 +408,7 @@ TEST_F(RTCVideoEncoderFactoryTest,
 
   EXPECT_THAT(encoder_factory_.GetSupportedFormats(),
               UnorderedElementsAre(
-#if !BUILDFLAG(IS_ANDROID)
                   kH264BaselinePacketizatonMode1Sdp,
-#endif  //  !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
                   kH264ConstrainedBaselinePacketizatonMode1Sdp,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)

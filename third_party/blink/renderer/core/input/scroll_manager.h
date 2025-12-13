@@ -27,6 +27,17 @@ class PaintLayerScrollableArea;
 // direction. Used in CanPropagate.
 enum class ScrollPropagationDirection { kHorizontal, kVertical, kBoth, kNone };
 
+// Result of a scroll attempt.
+//
+// kScrolled  – The current scroller consumed the scroll.
+// kContained – The scroll reached a boundary and was contained.
+// kBubbled   – The scroll could not be consumed and bubbled to a parent.
+enum class LogicalScrollResult {
+  kScrolled,
+  kContained,
+  kBubbled,
+};
+
 // This class is deprecated as scrolling is now handled by cc::InputHandler.
 // It is still involved with the following main-thread operations:
 // - keyboard scrolls
@@ -60,11 +71,11 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
   // granularity - The units that the  scroll delta parameter is in.
   // startNode - Optional. If provided, start chaining from the given node.
   //             If not, use the current focus or last clicked node.
-  bool LogicalScroll(mojom::blink::ScrollDirection,
-                     ui::ScrollGranularity,
-                     Node* start_node,
-                     Node* mouse_press_node,
-                     bool scrolling_via_key = false);
+  LogicalScrollResult LogicalScroll(mojom::blink::ScrollDirection,
+                                    ui::ScrollGranularity,
+                                    Node* start_node,
+                                    Node* mouse_press_node,
+                                    bool scrolling_via_key = false);
 
   // Performs a logical scroll that chains, crossing frames, starting from
   // the given node or a reasonable default (focus/last clicked).
@@ -88,10 +99,14 @@ class CORE_EXPORT ScrollManager : public GarbageCollected<ScrollManager> {
                            ScrollPropagationDirection direction);
 
  private:
-  void RecomputeScrollChain(const Node& start_node,
-                            Deque<DOMNodeId>& scroll_chain,
-                            bool is_autoscroll);
-  bool CanScroll(const Node& current_node, bool for_autoscroll);
+  struct ScrollChainResult {
+    Deque<DOMNodeId> chain;
+    bool can_bubble = true;
+  };
+  ScrollChainResult RecomputeScrollChain(
+      const Node& start_node,
+      mojom::blink::ScrollDirection direction);
+  bool CanScroll(const Node& current_node);
 
   const Member<LocalFrame> frame_;
 

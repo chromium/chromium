@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,8 +99,8 @@ void AddStringResources(content::WebUIDataSource* source) {
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_BODY,
                         ui::FormatBytesWithUnits(
-                            crostini::disk::kDownloadSizeBytes,
-                            ui::DATA_UNITS_MEBIBYTE, /*show_units=*/true)));
+                            base::ByteCount(crostini::disk::kDownloadSizeBytes),
+                            ui::DataUnits::kMebibyte, /*show_units=*/true)));
   source->AddString("learnMoreUrl",
                     std::string{chrome::kLinuxAppsLearnMoreURL} +
                         "&b=" + base::SysInfo::GetLsbReleaseBoard());
@@ -108,24 +109,27 @@ void AddStringResources(content::WebUIDataSource* source) {
       "minimumFreeSpaceUnmetError",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_MINIMUM_FREE_SPACE_UNMET_ERROR,
-          ui::FormatBytesWithUnits(crostini::disk::kMinimumDiskSizeBytes +
-                                       crostini::disk::kDiskHeadroomBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kMinimumDiskSizeBytes +
+                              crostini::disk::kDiskHeadroomBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString(
       "lowSpaceAvailableWarning",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_DISK_RESIZE_RECOMMENDED_WARNING,
-          ui::FormatBytesWithUnits(crostini::disk::kRecommendedDiskSizeBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kRecommendedDiskSizeBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString(
       "recommendedDiskSizeLabel",
       l10n_util::GetStringFUTF8(
           IDS_CROSTINI_INSTALLER_RECOMMENDED_DISK_SIZE_LABEL,
-          ui::FormatBytesWithUnits(crostini::disk::kRecommendedDiskSizeBytes,
-                                   ui::DATA_UNITS_GIBIBYTE,
-                                   /*show_units=*/true)));
+          ui::FormatBytesWithUnits(
+              base::ByteCount(crostini::disk::kRecommendedDiskSizeBytes),
+              ui::DataUnits::kGibibyte,
+              /*show_units=*/true)));
   source->AddString("offlineError",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_OFFLINE_ERROR, device_name));

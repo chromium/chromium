@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -31,8 +32,8 @@ class PaymentsDataManager;
 // This struct is passed into the controller when we show the
 // VirtualCardEnrollmentBubble, and it lets the controller customize the
 // bubble based on the fields in this struct. For example, we will show
-// different last 4 digits of a credit card based on the |credit_card| object
-// in this struct.
+// different last 4 digits of a credit card based on the |credit_card|
+// object in this struct.
 struct VirtualCardEnrollmentFields {
   VirtualCardEnrollmentFields();
   VirtualCardEnrollmentFields(const VirtualCardEnrollmentFields&);
@@ -99,7 +100,8 @@ class VirtualCardEnrollmentManager {
   // The parameters should outlive the VirtualCardEnrollmentManager.
   VirtualCardEnrollmentManager(
       PaymentsDataManager* payments_data_manager,
-      payments::PaymentsNetworkInterface* payments_network_interface,
+      payments::MultipleRequestPaymentsNetworkInterface*
+          payments_network_interface,
       AutofillClient* autofill_client = nullptr);
   VirtualCardEnrollmentManager(const VirtualCardEnrollmentManager&) = delete;
   VirtualCardEnrollmentManager& operator=(const VirtualCardEnrollmentManager&) =
@@ -384,7 +386,8 @@ class VirtualCardEnrollmentManager {
 
   // The associated `payments_network_interface_` that is used for all requests
   // to the server.
-  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
+  const raw_ptr<payments::MultipleRequestPaymentsNetworkInterface>
+      payments_network_interface_;
 
   // The database that is used to count instrument_id-keyed strikes to suppress
   // prompting users to enroll in virtual cards.

@@ -33,11 +33,30 @@
         <!-- Autofill Lottie resources -->
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_PASSWORD_LOTTIE" file="resources/autofill/autofill_save_password.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_ADDRESS_LOTTIE" file="resources/autofill/autofill_save_address.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_SUCCESS_LOTTIE" file="resources/autofill/autofill_virtual_card_enroll_confirmation.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_VIRTUAL_CARD_ENROLL_DIALOG_LOTTIE" file="resources/autofill/autofill_virtual_card_enroll_dialog.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_AI_FFR_BANNER_LOTTIE" file="resources/autofill/autofill_ai_ffr_banner.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE" file="resources/autofill/autofill_save_drivers_license.json" compress="brotli"/>
-        <structure type="lottie" name="IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE" file="resources/autofill/autofill_save_passport.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE" file="resources/autofill/autofill_save_passport_and_national_id_card.json" compress="brotli"/>
         <structure type="lottie" name="IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE" file="resources/autofill/autofill_save_vehicle.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE" file="resources/autofill/autofill_save_known_traveler_number_and_redress_number.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE" file="resources/autofill/autofill_save_card_secure.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_CARD_LOCAL_LOTTIE" file="resources/autofill/autofill_save_card_local.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_AUTOFILL_SAVE_SECURITY_CODE_LOTTIE" file="resources/autofill/autofill_save_security_code.json" compress="brotli"/>
+
+        <!-- Shopping resources -->
+        <structure type="lottie" name="IDR_SHOPPING_DISCOUNTS_AVAILABLE_LOTTIE" file="resources/shopping/discounts_available.json" compress="brotli"/>
+
+        <!-- Automated Password Change resources -->
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_SUCCESS_LOTTIE" file="resources/automated_password_change/password_change_success.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_NEUTRAL_LOTTIE" file="resources/automated_password_change/password_change_neutral.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_PASSWORD_CHANGE_WARNING_LOTTIE" file="resources/automated_password_change/password_change_warning.json" compress="brotli"/>
+
+        <!-- Wallet Pass Save Bubble resources -->
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_LOYALTY_CARD_LOTTIE" file="resources/wallet/wallet_save_loyalty_card.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_EVENT_TICKET_LOTTIE" file="resources/wallet/wallet_save_event_ticket.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_BOARDING_PASS_LOTTIE" file="resources/wallet/wallet_save_boarding_pass.json" compress="brotli"/>
+        <structure type="lottie" name="IDR_WALLET_PASS_SAVE_TRANSPORT_TICKET_LOTTIE" file="resources/wallet/wallet_save_transport_ticket.json" compress="brotli"/>
       </if>
     </structures>
     <includes>
@@ -133,8 +152,7 @@
         <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
         <if expr="_google_chrome">
           <then>
-            <include name="IDR_GOOGLE_XKB_MANIFEST" file="${root_gen_dir}\chrome\browser\resources\chromeos\input_method\google_xkb_manifest.json" use_base_dir="false" type="BINDATA" />
-            <include name="IDR_GOOGLE_XKB_MANIFEST_V3" file="${root_gen_dir}\chrome\browser\resources\chromeos\input_method\google_xkb_manifest_v3.json" use_base_dir="false" type="BINDATA" />
+            <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />
           </then>
           <else>
             <include name="IDR_XKB_MANIFEST" file="resources\chromeos\input_method\xkb_manifest.json" type="BINDATA" />
@@ -219,7 +237,6 @@
       </if>
       <if expr="_google_chrome">
         <include name="IDR_PREF_HASH_SEED_BIN" file="resources\settings\internal\pref_hash_seed.bin" type="BINDATA" />
-        <include name="IDR_ADDITIONAL_MODULE_IDS" file="${additional_modules_list_file}" use_base_dir="false" type="BINDATA" />
       </if>
       <if expr="not is_android or enable_extensions_core">
         <!-- Page not available for guest. -->

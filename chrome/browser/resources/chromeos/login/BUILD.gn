@@ -52,7 +52,7 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/ash/login/mojom:mojom",
+    "//chrome/browser/ui/webui/ash/login/mojom",
     "//chrome/browser/ui/webui/ash/login/mojom:mojom_ts__generator",
   ]
 
@@ -74,6 +74,7 @@ build_webui("build") {
     "screens/oobe/demo_setup.ts",
     "screens/oobe/enable_debugging.ts",
     "screens/oobe/enterprise_enrollment.ts",
+    "screens/oobe/fjord_station_setup.ts",
     "screens/oobe/fjord_touch_controller.ts",
     "screens/oobe/hid_detection.ts",
     "screens/oobe/oobe_network.ts",
@@ -89,7 +90,6 @@ build_webui("build") {
     "screens/common/ai_intro.ts",
     "screens/common/app_downloading.ts",
     "screens/common/app_launch_splash.ts",
-    "screens/common/assistant_optin.ts",
     "screens/common/categories_selection.ts",
     "screens/common/choobe.ts",
     "screens/common/consolidated_consent.ts",
@@ -198,6 +198,7 @@ build_webui("build") {
     "components/long_touch_detector.ts",
     "components/mixins/login_screen_mixin.ts",
     "components/mixins/multi_step_mixin.ts",
+    "components/online_auth_utils.ts",
     "components/mixins/oobe_base_mixin.ts",
     "components/mixins/oobe_dialog_host_mixin.ts",
     "components/mixins/oobe_focus_mixin.ts",
@@ -275,22 +276,15 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings = [
-    "/assistant_optin/*|" + rebase_path(
-            "${root_gen_dir}/chrome/browser/resources/chromeos/assistant_optin/assistant_optin_preprocessed/*",
-            target_gen_dir),
-    "//oobe/gaia_auth_host/*|" +
+  ts_path_mappings =
+      [ "//oobe/gaia_auth_host/*|" +
         rebase_path("//chrome/browser/resources/gaia_auth_host/*",
-                    target_gen_dir),
-  ]
+                    target_gen_dir) ]
 
   if (is_chrome_branded) {
     ts_path_mappings += [ "/sync-consent-icons.m.js|" +
                           rebase_path("dummy.d.ts", target_gen_dir) ]
   }
-
-  ts_extra_deps =
-      [ "//chrome/browser/resources/chromeos/assistant_optin:build_grd" ]
 
   webui_context_type = "trusted"
   extra_grdp_deps = [ "../supervision:build_oobe_grdp" ]

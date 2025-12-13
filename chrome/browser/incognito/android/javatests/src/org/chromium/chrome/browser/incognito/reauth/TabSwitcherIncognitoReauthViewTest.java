@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.addBlankTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -120,26 +119,25 @@ public class TabSwitcherIncognitoReauthViewTest {
                 });
     }
 
-    private void openIncognitoReauth(ChromeTabbedActivity cta) {
+    private ChromeTabbedActivity openIncognitoReauth(ChromeTabbedActivity cta) {
         // Open incognito tab.
-        addBlankTabs(cta, true, 1);
-
-        assertTrue(cta.getActivityTab().isIncognito());
+        var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
+        var incognitoActivity = incognitoPage.getActivity();
 
         // Enter tab switcher in incognito mode.
-        enterTabSwitcher(cta);
-        assertTrue(cta.getTabModelSelector().isIncognitoSelected());
+        enterTabSwitcher(incognitoActivity);
+        assertTrue(incognitoActivity.getTabModelSelector().isIncognitoSelected());
 
         // Reload chrome to trigger incognito reauth screen.
-        triggerIncognitoReauthCustomView(cta);
+        triggerIncognitoReauthCustomView(incognitoActivity);
+        return incognitoActivity;
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testIncognitoReauthView_HubRenderTest() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        openIncognitoReauth(cta);
+        var cta = openIncognitoReauth(mActivityTestRule.getActivity());
 
         onView(withId(R.id.hub_toolbar)).check(matches(isDisplayed()));
         onView(withId(R.id.toolbar_action_button)).check(matches(not(isEnabled())));
@@ -154,8 +152,7 @@ public class TabSwitcherIncognitoReauthViewTest {
                 .check(matches(not(isDisplayed())));
 
         mRenderTestRule.render(
-                cta.findViewById(org.chromium.chrome.R.id.tab_switcher_view_holder),
-                "incognito_reauth_view_hub");
+                cta.findViewById(R.id.tab_switcher_view_holder), "incognito_reauth_view_hub");
     }
 
     @Test

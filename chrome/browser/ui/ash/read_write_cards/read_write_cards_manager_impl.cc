@@ -12,7 +12,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h"
@@ -159,7 +158,7 @@ ReadWriteCardsManagerImpl::GetControllers(
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   bool should_show_hmr_card = true;
   if (magic_boost_card_controller_ &&
-      magic_boost_state->IsMagicBoostAvailable()) {
+      magic_boost_state->IsUserEligibleForGenAIFeatures()) {
     should_show_hmr_card = magic_boost_state->ShouldShowHmrCard();
 
     // Ensure the disclaimer view is closed before moving to the next step
@@ -210,7 +209,7 @@ ReadWriteCardsManagerImpl::GetMagicBoostOptInFeatures(
     const content::ContextMenuParams& params,
     const editor_menu::EditorMenuCardContext& editor_menu_card_context) {
   if (!magic_boost_card_controller_ ||
-      !chromeos::MagicBoostState::Get()->IsMagicBoostAvailable()) {
+      !chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
     return std::nullopt;
   }
 

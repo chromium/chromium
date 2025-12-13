@@ -15,7 +15,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
@@ -143,8 +142,9 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    arc_app_test_.PreProfileSetUp();
     profile_ = std::make_unique<TestingProfile>();
-    arc_app_test_.SetUp(profile_.get());
+    arc_app_test_.PostProfileSetUp(profile_.get());
 
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
@@ -159,9 +159,9 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
   void TearDown() override {
     network_handler_test_helper_.reset();
-    arc_app_test_.TearDown();
-
+    arc_app_test_.PreProfileTearDown();
     profile_.reset();
+    arc_app_test_.PostProfileTearDown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -201,8 +201,6 @@ class ArcAppInstallEventLogCollectorTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
   FakeAppInstallEventLogCollectorDelegate delegate_;

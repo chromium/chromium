@@ -8,7 +8,7 @@
 #include <memory>
 #include <optional>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -28,7 +28,7 @@ class NativeViewHostWrapper;
 
 // If a NativeViewHost's native view is a Widget, this native window
 // property is set on the widget, pointing to the owning NativeViewHost.
-extern const char kWidgetNativeViewHostKey[];
+inline constexpr char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
 
 // A View type that hosts a gfx::NativeView. The bounds of the native view are
 // kept in sync with the bounds of this view as it is moved and sized.

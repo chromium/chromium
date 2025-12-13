@@ -4,6 +4,8 @@
 
 #include "ui/display/win/display_config_helper.h"
 
+#include <cstdint>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -67,8 +69,8 @@ DISPLAY_EXPORT std::optional<DISPLAYCONFIG_PATH_INFO> GetDisplayConfigPathInfo(
     device_name.header.adapterId = info.sourceInfo.adapterId;
     device_name.header.id = info.sourceInfo.id;
     if ((::DisplayConfigGetDeviceInfo(&device_name.header) == ERROR_SUCCESS) &&
-        (UNSAFE_TODO(wcscmp(monitor_info.szDevice,
-                            device_name.viewGdiDeviceName)) == 0)) {
+        (FixedArrayToStringView(monitor_info.szDevice) ==
+         FixedArrayToStringView(device_name.viewGdiDeviceName))) {
       return info;
     }
   }

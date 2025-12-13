@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -15,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -39,37 +41,14 @@ namespace autofill {
 // Entity instances are loaded from a webdata table and exposed through
 // EntityDataManager.
 class AttributeInstance;
+struct AutofillFormatString;
 class EntityInstance;
+class EntityInstanceTestApi;
 class EntityTable;
 
 // An attribute instance is a typed string value with additional metadata.
 // It is associated with an EntityInstance. Attributes are used in order to fill
 // fields with information of certain types.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// Note that there are two concepts of types that are relevant here:
-// - AttributeType: This is the type of the attribute itself and determines the
-//   structure of the attribute.
-// - FieldType: This is the type of data that can be requested by consumers from
-//   the attribute.
-//
-// If kAutofillAiNoTagTypes is disabled:
-// `AutofillField` computes two types for the field: One is available through
-// `AutofillField::GetAutofillAiServerTypePredictions()` and represents the
-// type used in order to figure out the appropriate AttributeInstance to fill
-// the field. The other is available through `AutofillField::Type()` and
-// represents the general classification of the field (through Autofill server
-// and heuristic prediction logic).
-//
-// If kAutofillAiNoTagTypes is disabled:
-// It could happen that these two types are totally unrelated (e.g., the former
-// returns PASSPORT_NAME_TAG and the latter returns PHONE_HOME_WHOLE_NUMBER)
-// or that the two types are equal (e.g., both return PASSPORT_NAME_TAG). This
-// is a small problem for setter/getter API that (1) assumes that the provided
-// field type to a given method is supported and (2) doesn't have support for
-// `FieldType`s of group `FieldTypeGroup::kAutofillAi`. See
-// `AttributeInstance::GetNormalizedType()` and the getter/setter methods for
-// how this problem is handled.
 class AttributeInstance final {
  public:
   // Transparent less-than relation based on the AttributeType.
@@ -95,8 +74,16 @@ class AttributeInstance final {
   // instance, formatted according to the given `app_locale`.
   //
   // For more control over the return value, see GetInfo().
-  std::u16string GetCompleteInfo(const std::string& app_locale) const {
+  std::u16string GetCompleteInfo(std::string_view app_locale) const {
     return GetInfo(type_.field_type(), app_locale, std::nullopt);
+  }
+
+  // Returns a string that contains the raw information stored in this attribute
+  // instance.
+  //
+  // For more control over the return value, see GetRawInfo().
+  std::u16string GetCompleteRawInfo() const {
+    return GetRawInfo(type_.field_type());
   }
 
   // Returns the value stored in this attribute instance.
@@ -110,22 +97,14 @@ class AttributeInstance final {
   // grammar of format strings.
   std::u16string GetInfo(
       FieldType field_type,
-      const std::string& app_locale,
-      base::optional_ref<const std::u16string> format_string) const;
-
-  class GetRawInfoPassKey {
-    constexpr GetRawInfoPassKey() = default;
-    friend class AttributeInstance;
-    friend class EntityInstance;
-    friend class EntityTable;
-  };
+      std::string_view app_locale,
+      base::optional_ref<const AutofillFormatString> format_string) const;
 
   // Same as `GetInfo` but returns the value as stored with no formatting
   // whatsoever.
   //
   // See GetInfo() for the meaning of `field_type`.
-  std::u16string GetRawInfo(GetRawInfoPassKey pass_key,
-                            FieldType field_type) const;
+  std::u16string GetRawInfo(FieldType field_type) const;
 
   // Returns the verification status of a value stored in this attribute
   // instance for a specific `type`.
@@ -139,15 +118,19 @@ class AttributeInstance final {
   // See GetInfo() for the meaning of `field_type`.
   //
   // Currently, the `format_string` only matters for dates. Dates are updated
-  // incrementally, e.g., SetInfo(..., u"16", ..., u"DD", ...) only changes the
-  // day and does not reset the month or year. If `value` doesn't fully match
-  // the `format_string`, the function is a no-op, e.g.,
-  // SetInfo(..., u"16/12/2022", ..., u"DD", ...) is a no-op.
+  // incrementally, e.g.,
+  //   SetInfo(..., u"16", ...,
+  //           AutofillFormatString::FromDateFormat(u"DD"), ...);
+  // only changes the day and does not reset the month or year. If `value`
+  // doesn't fully match the `format_string`, e.g.
+  //   SetInfo(..., u"16/12/2022", ...,
+  //           AutofillFormatString::FromDateFormat(u"DD"), ...);
+  // the function is a no-op.
   // See AutofillField::format_string() for the grammar of format strings.
   void SetInfo(FieldType field_type,
                const std::u16string& value,
-               const std::string& app_locale,
-               std::u16string_view format_string,
+               std::string_view app_locale,
+               base::optional_ref<const AutofillFormatString> format_string,
                VerificationStatus status);
 
   // Similar to SetInfo() but without canonicalization: It does not accept
@@ -205,15 +188,61 @@ struct AttributeInstance::CompareByType {
 // metadata. The type is an EntityType.
 class EntityInstance final {
  public:
+  // A globally unique identifier for entities.
+  // Use `base::Uuid` whenever you can for new entities, as it would be
+  // preferred to migrate from this to `base::Uuid`, which is currently not
+  // possible unfortunately because some legacy entities still have IDs with
+  // different formats.
+  struct EntityId : public base::StrongAlias<struct EntityIdTag, std::string> {
+   public:
+    using base::StrongAlias<struct EntityIdTag, std::string>::StrongAlias;
+    explicit EntityId(const base::Uuid uuid)
+        : EntityId(uuid.AsLowercaseString()) {}
+  };
+
+  // Contains information about an entity's metadata stored in the
+  // `entities_metadata` table.
+  struct EntityMetadata {
+    EntityInstance::EntityId guid;
+    base::Time date_modified;
+    size_t use_count;
+    base::Time use_date;
+
+    friend bool operator==(const EntityMetadata&,
+                           const EntityMetadata&) = default;
+  };
+
+  // Controls whether the attributes of the entity instance can be edited by the
+  // user.
+  using AreAttributesReadOnly =
+      base::StrongAlias<class AreAttributesReadOnlyTag, bool>;
+
+  // These values are persisted to a database. Entries should not be renumbered
+  // and numeric values should never be reused.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
+  enum class RecordType {
+    // The entity was created/saved locally, it exists only in the local
+    // `EntityTable`.
+    kLocal = 0,
+    // The entity is stored in Wallet and the current instance is only a local
+    // copy. Changes happening locally or on the Wallet server are synced among
+    // all local storages sharing this entity.
+    kServerWallet = 1,
+    kMaxValue = kServerWallet,
+  };
+
   // `attributes` must be non-empty and their type must be identical to `type`.
   EntityInstance(EntityType type,
                  base::flat_set<AttributeInstance,
                                 AttributeInstance::CompareByType> attributes,
-                 base::Uuid guid,
+                 EntityId guid,
                  std::string nickname,
                  base::Time date_modified,
                  size_t use_count,
-                 base::Time use_date);
+                 base::Time use_date,
+                 RecordType record_type,
+                 AreAttributesReadOnly are_attributes_read_only,
+                 std::string frecency_override);
 
   EntityInstance(const EntityInstance&);
   EntityInstance& operator=(const EntityInstance&);
@@ -225,6 +254,10 @@ class EntityInstance final {
   struct CompareByGuid;
 
   // Comparator that returns the entity with the higher frecency score.
+  // If both entities have non-empty frecency override, the one with the lowest
+  // lexicographical order of the override string will be first.
+  // If one entity has a non-empty frecency override and the other does not,
+  // the entity with the override will be first.
   struct FrecencyOrder {
    public:
     explicit FrecencyOrder(base::Time now);
@@ -238,6 +271,12 @@ class EntityInstance final {
   // submission.
   // `ImportOrder(x, y) == true` means `x` has higher priority than `y`.
   static bool ImportOrder(const EntityInstance& lhs, const EntityInstance& rhs);
+
+  // Comparator that ranks instances by their priority for server migration on
+  // form submission. `MigrationOrder(x, y) == true` means `x` has higher
+  // priority than `y`.
+  static bool MigrationOrder(const EntityInstance& lhs,
+                             const EntityInstance& rhs);
 
   const EntityType& type() const { return type_; }
 
@@ -256,23 +295,50 @@ class EntityInstance final {
   }
 
   // Globally unique identifier of this entity.
-  const base::Uuid& guid() const LIFETIME_BOUND { return guid_; }
+  const EntityId& guid() const LIFETIME_BOUND { return guid_; }
 
   // The nickname assigned to this instance by the user.
   const std::string& nickname() const LIFETIME_BOUND { return nickname_; }
 
   // The latest time the instance, including any of its attributes, was edited.
-  base::Time date_modified() const { return date_modified_; }
+  base::Time date_modified() const { return entity_metadata_.date_modified; }
 
   // Updates the last time an entity was used to fill a form and
   // increases the entity use count.
   void RecordEntityUsed(base::Time date);
 
   // Returns the last time an entity was used to fill a form.
-  base::Time use_date() const { return use_date_; }
+  base::Time use_date() const { return entity_metadata_.use_date; }
 
   // Returns how many times an entity was used to fill a form.
-  size_t use_count() const { return use_count_; }
+  size_t use_count() const { return entity_metadata_.use_count; }
+
+  // Returns the metadata for this instance.
+  const EntityMetadata& metadata() const { return entity_metadata_; }
+
+  // Sets the metadata for this instance.
+  void set_metadata(EntityMetadata metadata) {
+    CHECK_EQ(guid_, metadata.guid);
+    entity_metadata_ = std::move(metadata);
+  }
+
+  // Returns true if the attributes of this entity instance cannot be edited by
+  // the user.
+  AreAttributesReadOnly are_attributes_read_only() const {
+    return are_attributes_read_only_;
+  }
+
+  // Returns the type of storage used for the specific entity.
+  RecordType record_type() const { return record_type_; }
+
+  // Returns the ordering override for the specific entity.
+  const std::string& frecency_override(
+      base::PassKey<EntityTable> pass_key) const {
+    return frecency_override_;
+  }
+
+  // Whether the instance's `record_type` indicates server side storage.
+  bool IsServerInstance() const;
 
   struct EntityMergeability {
     EntityMergeability();
@@ -292,7 +358,7 @@ class EntityInstance final {
     bool is_subset = false;
   };
 
-  // - If `this` is a proper superset of `newer`,
+  // - If `newer` is a proper superset of `this`,
   //   `EntityMergeability::mergeable_attributes` contains the list of
   //   attributes that `newer` has, but `this` does not. These attributes can be
   //   set on `this` to update it.
@@ -308,18 +374,25 @@ class EntityInstance final {
   // dates.
   EntityMergeability GetEntityMergeability(const EntityInstance& newer) const;
 
+  // Returns true if all attributes of `this` are present in `other` with the
+  // same values or if `this` is a proper subset of `other`.
+  bool IsSubsetOf(const EntityInstance& other) const;
+
   friend bool operator==(const EntityInstance&,
                          const EntityInstance&) = default;
 
  private:
+  friend class EntityInstanceTestApi;
+
   EntityType type_;
   base::flat_set<AttributeInstance, AttributeInstance::CompareByType>
       attributes_;
-  base::Uuid guid_;
+  EntityId guid_;
   std::string nickname_;
-  base::Time date_modified_;
-  size_t use_count_;
-  base::Time use_date_;
+  EntityMetadata entity_metadata_;
+  RecordType record_type_;
+  AreAttributesReadOnly are_attributes_read_only_;
+  std::string frecency_override_;
 };
 
 std::ostream& operator<<(std::ostream& os, const AttributeInstance& a);
@@ -328,11 +401,11 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e);
 struct EntityInstance::CompareByGuid {
   using is_transparent = void;
 
-  bool operator()(const EntityInstance& lhs, const base::Uuid& rhs) const {
+  bool operator()(const EntityInstance& lhs, const EntityId& rhs) const {
     return lhs.guid() < rhs;
   }
 
-  bool operator()(const base::Uuid& lhs, const EntityInstance& rhs) const {
+  bool operator()(const EntityId& lhs, const EntityInstance& rhs) const {
     return lhs < rhs.guid();
   }
 

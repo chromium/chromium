@@ -64,7 +64,7 @@ void UndoStep::Unapply() {
   DispatchInputEventEditableContentChanged(
       StartingRootEditableElement(), EndingRootEditableElement(),
       InputEvent::InputType::kHistoryUndo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
+      InputEvent::EventIsComposing::kNotComposing, nullptr);
 
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(StartingSelection(), document_);
@@ -109,7 +109,7 @@ void UndoStep::Reapply() {
   DispatchInputEventEditableContentChanged(
       StartingRootEditableElement(), EndingRootEditableElement(),
       InputEvent::InputType::kHistoryRedo, g_null_atom,
-      InputEvent::EventIsComposing::kNotComposing);
+      InputEvent::EventIsComposing::kNotComposing, nullptr);
 
   const SelectionInDOMTree& new_selection =
       CorrectedSelectionAfterCommand(EndingSelection(), document_);
@@ -148,13 +148,9 @@ void UndoStep::SetEndingSelection(const SelectionForUndoStep& selection) {
 
 String UndoStep::ToString() const {
   StringBuilder builder;
-  builder.Append("UndoStep {commands:[");
-  String delimiter = "\n    ";
-  for (const auto& command : commands_) {
-    builder.Append(delimiter);
-    builder.Append(command->ToString());
-    delimiter = ",\n    ";
-  }
+  builder.Append("UndoStep {commands:[\n    ");
+  builder.AppendRange(commands_, ",\n    ",
+                      [](const auto& command) { return command->ToString(); });
   builder.Append("]}");
   return builder.ReleaseString();
 }

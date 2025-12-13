@@ -61,22 +61,22 @@ class SessionStorageAreaImplTest : public testing::Test {
       : test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_namespace_id2_(
             base::Uuid::GenerateRandomV4().AsLowercaseString()) {
-    leveldb_database_ = AsyncDomStorageDatabase::OpenInMemory(
-        std::nullopt, "SessionStorageAreaImplTestDatabase",
-        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
-        base::DoNothing());
+    // Create an in-memory LevelDB.
+    leveldb_database_ = AsyncDomStorageDatabase::Open(
+        StorageType::kSessionStorage,
+        /*directory=*/base::FilePath(), "SessionStorageAreaImplTestDatabase",
+        /*memory_dump_id=*/std::nullopt, base::DoNothing());
     leveldb_database_->RunDatabaseTask(
-        base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabaseLevelDB& db) {
           return db.Put(StdStringToUint8Vector("map-0-key1"),
                         StdStringToUint8Vector("data1"));
         }),
         base::DoNothing());
 
     std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks =
-        metadata_.SetupNewDatabase();
-    auto map_id = metadata_.RegisterNewMap(
-        metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-        test_storage_key1_, &save_tasks);
+        metadata_.SetupNewDatabaseForTesting();
+    auto map_id =
+        metadata_.RegisterNewMap(test_namespace_id1_, test_storage_key1_);
     DCHECK(map_id->KeyPrefix() == StdStringToUint8Vector("map-0-"));
     leveldb_database_->RunBatchDatabaseTasks(
         RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
@@ -84,13 +84,9 @@ class SessionStorageAreaImplTest : public testing::Test {
   ~SessionStorageAreaImplTest() override = default;
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
-      SessionStorageMetadata::NamespaceEntry namespace_entry,
+      const std::string& namespace_id,
       const blink::StorageKey& storage_key) {
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
-    auto map_data =
-        metadata_.RegisterNewMap(namespace_entry, storage_key, &save_tasks);
-    leveldb_database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
+    auto map_data = metadata_.RegisterNewMap(namespace_id, storage_key);
     return map_data;
   }
 
@@ -120,8 +116,7 @@ TEST_F(SessionStorageAreaImplTest, BasicUsage) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -149,8 +144,7 @@ TEST_F(SessionStorageAreaImplTest, ExplicitlyEmptyMap) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateEmpty(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -175,8 +169,7 @@ TEST_F(SessionStorageAreaImplTest, DoubleBind) {
       .Times(1);
 
   auto ss_leveldb_impl = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -215,8 +208,7 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -225,14 +217,14 @@ TEST_F(SessionStorageAreaImplTest, Cloning) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
-  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
+  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(test_namespace_id2_);
 
   mojo::Remote<blink::mojom::StorageArea> ss_leveldb1;
   ss_leveldb_impl1->Bind(ss_leveldb1.BindNewPipeAndPassReceiver());
@@ -288,8 +280,7 @@ TEST_F(SessionStorageAreaImplTest, NotifyAllDeleted) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -320,8 +311,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -330,14 +320,14 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllOnShared) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
-  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
+  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(test_namespace_id2_);
 
   mojo::Remote<blink::mojom::StorageArea> ss_leveldb1;
   ss_leveldb_impl1->Bind(ss_leveldb1.BindNewPipeAndPassReceiver());
@@ -381,8 +371,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBinding) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -409,8 +398,7 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
       .Times(1);
 
   auto ss_leveldb_impl1 = std::make_unique<SessionStorageAreaImpl>(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      test_storage_key1_,
+      test_namespace_id1_, test_storage_key1_,
       SessionStorageDataMap::CreateFromDisk(
           &listener_,
           metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_)
@@ -419,14 +407,14 @@ TEST_F(SessionStorageAreaImplTest, DeleteAllWithoutBindingOnShared) {
       GetRegisterNewAreaMapCallback());
 
   // Perform a shallow clone.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
+  SessionStorageMetadata::NamespaceEntry clone_entry =
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_);
   metadata_.RegisterShallowClonedNamespace(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_),
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_), &save_tasks);
-  leveldb_database_->RunBatchDatabaseTasks(
-      RunBatchTasksContext::kTest, std::move(save_tasks), base::DoNothing());
-  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(
-      metadata_.GetOrCreateNamespaceEntry(test_namespace_id2_));
+      metadata_.GetOrCreateNamespaceEntry(test_namespace_id1_), clone_entry);
+  leveldb_database_->PutMetadata(
+      SessionStorageMetadata::ToDomStorageMetadata(clone_entry),
+      base::DoNothing());
+  auto ss_leveldb_impl2 = ss_leveldb_impl1->Clone(test_namespace_id2_);
 
   // Same maps are used.
   EXPECT_EQ(ss_leveldb_impl1->data_map(), ss_leveldb_impl2->data_map());

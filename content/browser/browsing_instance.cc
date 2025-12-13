@@ -13,7 +13,6 @@
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
@@ -34,7 +33,7 @@ BrowsingInstance::BrowsingInstance(
     bool is_fixed_storage_partition)
     : isolation_context_(
           BrowsingInstanceId::FromUnsafeValue(next_browsing_instance_id_++),
-          BrowserOrResourceContext(browser_context),
+          browser_context,
           is_guest,
           is_fenced,
           OriginAgentClusterIsolationState::CreateForDefaultIsolation(
@@ -48,10 +47,6 @@ BrowsingInstance::BrowsingInstance(
   if (is_guest) {
     CHECK(is_fixed_storage_partition);
   }
-}
-
-BrowserContext* BrowsingInstance::GetBrowserContext() const {
-  return isolation_context_.browser_or_resource_context().ToBrowserContext();
 }
 
 bool BrowsingInstance::HasSiteInstance(const SiteInfo& site_info) {
@@ -72,8 +67,9 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURL(
   scoped_refptr<SiteInstanceImpl> site_instance =
       GetSiteInstanceForURLHelper(url_info, allow_default_instance);
 
-  if (site_instance)
+  if (site_instance) {
     return site_instance;
+  }
 
   // No current SiteInstance for this site, so let's create one.
   scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
@@ -101,8 +97,9 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const UrlInfo& url_info,
   scoped_refptr<SiteInstanceImpl> site_instance =
       GetSiteInstanceForURLHelper(url_info, allow_default_instance);
 
-  if (site_instance)
+  if (site_instance) {
     return site_instance->GetSiteInfo();
+  }
 
   return ComputeSiteInfoForURL(url_info);
 }
@@ -110,8 +107,9 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const UrlInfo& url_info,
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForSiteInfo(
     const SiteInfo& site_info) {
   auto i = site_instance_map_.find(site_info);
-  if (i != site_instance_map_.end())
+  if (i != site_instance_map_.end()) {
     return i->second.get();
+  }
 
   scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
   instance->SetSite(site_info);
@@ -133,8 +131,9 @@ scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     bool allow_default_instance) {
   const SiteInfo site_info = ComputeSiteInfoForURL(url_info);
   auto i = site_instance_map_.find(site_info);
-  if (i != site_instance_map_.end())
+  if (i != site_instance_map_.end()) {
     return i->second.get();
+  }
 
   // Check to see if we can use the default SiteInstance for sites that don't
   // need to be isolated in their own process.
@@ -238,7 +237,7 @@ BrowsingInstance::~BrowsingInstance() {
   // Remove any origin isolation opt-ins related to this instance.
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  policy->RemoveOptInIsolatedOriginsForBrowsingInstance(
+  policy->RemoveAllStateForBrowsingInstance(
       isolation_context_.browsing_instance_id());
 }
 
@@ -304,9 +303,10 @@ int BrowsingInstance::EstimateOriginAgentClusterOverhead() {
   // it is difficult in practice to account for, so we don't try to.
   for (auto& entry : site_instance_map_) {
     const SiteInfo& site_info = entry.first;
-    GURL process_lock_url = site_info.process_lock_url();
-    if (!process_lock_url.SchemeIs(url::kHttpsScheme))
+    GURL process_lock_url = site_info.GetProcessLockURL();
+    if (!process_lock_url.SchemeIs(url::kHttpsScheme)) {
       continue;
+    }
 
     site_info_set.insert(site_info);
     site_info_set_no_oac.insert(

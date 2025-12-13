@@ -87,6 +87,7 @@
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "v8-statistics.h"
@@ -553,8 +554,8 @@ void BidderWorklet::BeginGenerateBid(
       generate_bid_task->bidder_worklet_non_shared_params
           ->trusted_bidding_signals_keys;
   generate_bid_task->trace_wait_deps_start = base::TimeTicks::Now();
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_generate_bid_deps",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "wait_generate_bid_deps",
+                    perfetto::Track(trace_id));
   if (trusted_signals_cache_key) {
     // A non-null `trusted_signals_cache_key` indicates that the
     // TrustedSignalsCache should be used through the
@@ -726,7 +727,8 @@ void BidderWorklet::ReportWin(
   report_win_task->direct_from_seller_auction_signals_header_ad_slot =
       direct_from_seller_auction_signals_header_ad_slot;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_report_win_deps", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "wait_report_win_deps",
+                    perfetto::Track(trace_id));
   RunReportWinIfReady(report_win_task);
 }
 
@@ -1106,7 +1108,8 @@ void BidderWorklet::V8State::ReportWin(
     uint64_t trace_id,
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  // Matching TRACE_EVENT_BEGIN("fledge", "post_v8_task", ...);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
   base::ElapsedTimer elapsed_timer;
 
   // We may not be allowed any time to run.
@@ -1247,7 +1250,7 @@ void BidderWorklet::V8State::ReportWin(
 
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(isolate);
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "report_win", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "report_win", perfetto::Track(trace_id));
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
       v8_helper_->CreateTimeLimit(
           /*script_timeout=*/browser_signal_reporting_timeout);
@@ -1255,7 +1258,7 @@ void BidderWorklet::V8State::ReportWin(
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             total_timeout.get(), errors_out);
   if (result != AuctionV8Helper::Result::kSuccess) {
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
+    TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
     PostReportWinCallbackToUserThread(
         std::move(callback), /*report_url=*/std::nullopt,
         /*ad_beacon_map=*/{}, /*ad_macro_map=*/{},
@@ -1290,7 +1293,7 @@ void BidderWorklet::V8State::ReportWin(
       v8_helper_->FormatScriptName(unbound_worklet_script),
       is_for_additional_bid ? "reportAdditionalBidWin" : "reportWin", args,
       total_timeout.get(), maybe_report_result_ret, errors_out);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "report_win", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
   base::TimeDelta elapsed = elapsed_timer.Elapsed();
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.ReportWinTime", elapsed);
 
@@ -1442,7 +1445,8 @@ void BidderWorklet::V8State::GenerateBid(
     base::ScopedClosureRunner cleanup_generate_bid_task,
     GenerateBidCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "post_v8_task", trace_id);
+  // Matching TRACE_EVENT_BEGIN("fledge", "post_v8_task", ...);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   // Don't need to run `cleanup_generate_bid_task` if this method is invoked;
   // it's bound to the closure to clean things up if this method got cancelled.
@@ -1831,8 +1835,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       should_exclude_component_ad_due_to_kanon,
       should_exclude_reporting_id_set_due_to_kanon);
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInInterestGroupV8Argument",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "fillInInterestGroupV8Argument",
+                    perfetto::Track(trace_id));
   v8::LocalVector<v8::Value> args(isolate);
   v8::Local<v8::Object> interest_group_object = v8::Object::New(isolate);
   gin::Dictionary interest_group_dict(isolate, interest_group_object);
@@ -1868,8 +1872,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(std::move(interest_group_object));
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInInterestGroupV8Argument",
-                                  trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   if (!AppendJsonValueOrNull(v8_helper_.get(), context, auction_signals_json,
                              &args) ||
@@ -1878,8 +1881,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
     return std::nullopt;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInTrustedSignalsV8Argument",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "fillInTrustedSignalsV8Argument",
+                    perfetto::Track(trace_id));
   v8::Local<v8::Value> trusted_signals;
   SignalsOriginRelation trusted_signals_relation = ClassifyTrustedSignals(
       script_source_url_, trusted_bidding_signals_origin_);
@@ -1901,8 +1904,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   } else {
     args.push_back(v8::Null(isolate));
   }
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInTrustedSignalsV8Argument",
-                                  trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   std::optional<uint32_t> bidding_signals_data_version;
   if (trusted_bidding_signals_result) {
@@ -1910,8 +1912,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
         trusted_bidding_signals_result->GetDataVersion();
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "fillInBrowserSignalsV8Argument",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "fillInBrowserSignalsV8Argument",
+                    perfetto::Track(trace_id));
   v8::Local<v8::Object> browser_signals = v8::Object::New(isolate);
   gin::Dictionary browser_signals_dict(isolate, browser_signals);
   // TODO(crbug.com/336164429): Construct the fields of browser signals lazily.
@@ -1986,8 +1988,8 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
 
   args.push_back(browser_signals);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "fillInBrowserSignalsV8Argument",
-                                  trace_id);
+  // End "fillInBrowserSignalsV8Argument" trace event.
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   v8::Local<v8::Object> direct_from_seller_signals = v8::Object::New(isolate);
   gin::Dictionary direct_from_seller_signals_dict(isolate,
@@ -2020,7 +2022,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
 
   v8::Local<v8::Value> generate_bid_result;
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "generate_bid", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "generate_bid", perfetto::Track(trace_id));
   v8::MaybeLocal<v8::Value> maybe_generate_bid_result;
 
   AuctionV8Helper::Result script_result = v8_helper_->CallFunction(
@@ -2031,7 +2033,7 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       script_result == AuctionV8Helper::Result::kSuccess &&
       maybe_generate_bid_result.ToLocal(&generate_bid_result);
   script_timed_out = script_result == AuctionV8Helper::Result::kTimeout;
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "generate_bid", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   base::TimeDelta time_duration = base::TimeTicks::Now() - start;
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.GenerateBidTime",
@@ -2140,10 +2142,10 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   std::unique_ptr<ContextRecycler> context_recycler =
       std::make_unique<ContextRecycler>(v8_helper_.get());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "get_bidder_context", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "get_bidder_context", perfetto::Track(trace_id));
   ContextRecyclerScope context_recycler_scope(*context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "get_bidder_context", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   // We want this before RunScript, both because it's meant to be visible
   // to globals, and because we don't want to overwrite existing globals.
@@ -2152,11 +2154,11 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   v8::Local<v8::UnboundScript> unbound_worklet_script =
       worklet_script_.Get(v8_helper_->isolate());
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "biddingScript", trace_id);
+  TRACE_EVENT_BEGIN("fledge", "biddingScript", perfetto::Track(trace_id));
   AuctionV8Helper::Result result =
       v8_helper_->RunScript(context, unbound_worklet_script, debug_id_.get(),
                             &total_timeout, errors_out);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "biddingScript", trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));  // "biddingScript"
   base::UmaHistogramTimes("Ads.InterestGroup.Auction.BidScriptTime",
                           base::TimeTicks::Now() - start);
 
@@ -2168,8 +2170,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     return nullptr;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "addBindingsToContextRecycler",
-                                    trace_id);
+  TRACE_EVENT_BEGIN("fledge", "addBindingsToContextRecycler",
+                    perfetto::Track(trace_id));
   context_recycler->AddForDebuggingOnlyBindings();
   context_recycler->AddPrivateAggregationBindings(
       permissions_policy_state_->private_aggregation_allowed,
@@ -2190,8 +2192,7 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddSetPrioritySignalsOverrideBindings();
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
-  TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "addBindingsToContextRecycler",
-                                  trace_id);
+  TRACE_EVENT_END("fledge", perfetto::Track(trace_id));
 
   if (should_deep_freeze && !ExecutionModeHelper::DeepFreezeContext(
                                 context, v8_helper_, errors_out)) {
@@ -2571,8 +2572,7 @@ void BidderWorklet::OnGenerateBidClientDestroyed(
   if (!IsReadyToGenerateBid(*task)) {
     // GenerateBidIfReady is never called so make sure to close out this trace
     // event.
-    TRACE_EVENT_NESTABLE_ASYNC_END0("fledge", "wait_generate_bid_deps",
-                                    task->trace_id);
+    TRACE_EVENT_END("fledge", perfetto::Track(task->trace_id));
 
     CleanUpBidTaskOnUserThread(task);
   } else {
@@ -2717,8 +2717,9 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   // true.
   DCHECK(!task->trusted_bidding_signals_request);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_generate_bid_deps", task->trace_id, "data",
+  // End "wait_generate_bid_deps" trace event.
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2736,7 +2737,7 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
           dict.Add("wait_promises_ms", task->wait_promises.InMillisecondsF());
         }
       });
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   // Normally the PostTask below will eventually get `task` cleaned up once it
   // posts back to DeliverBidCallbackOnUserThread with its results, but that
@@ -2841,8 +2842,9 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
     return;
   }
 
-  TRACE_EVENT_NESTABLE_ASYNC_END1(
-      "fledge", "wait_report_win_deps", task->trace_id, "data",
+  // End "wait_report_win_deps" trace event.
+  TRACE_EVENT_END(
+      "fledge", perfetto::Track(task->trace_id), "data",
       [&](perfetto::TracedValue trace_context) {
         auto dict = std::move(trace_context).WriteDictionary();
         if (!task->wait_code.is_zero()) {
@@ -2853,7 +2855,7 @@ void BidderWorklet::RunReportWinIfReady(ReportWinTaskList::iterator task) {
                    task->wait_direct_from_seller_signals.InMillisecondsF());
         }
       });
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "post_v8_task", task->trace_id);
+  TRACE_EVENT_BEGIN("fledge", "post_v8_task", perfetto::Track(task->trace_id));
 
   // Other than the callback field, no fields of `task` are needed after this
   // point, so can consume them instead of copying them.

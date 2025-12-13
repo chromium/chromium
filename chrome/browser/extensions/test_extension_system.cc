@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/blocklist.h"
+#include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/cws_info_service.h"
@@ -29,6 +29,7 @@
 #include "components/value_store/test_value_store_factory.h"
 #include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/blocklist.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -195,7 +196,8 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
   }
   extension_service_ = std::make_unique<ExtensionService>(
       profile_, command_line, install_directory, unpacked_install_directory,
-      ExtensionPrefs::Get(profile_), Blocklist::Get(profile_),
+      ExtensionPrefs::Get(profile_),
+      BlocklistFactory::GetForBrowserContext(profile_),
       ExtensionErrorController::Get(profile_), autoupdate_enabled,
       extensions_enabled, &ready_);
 

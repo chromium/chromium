@@ -79,17 +79,23 @@ class BrowserUserEducationStorageService
   void SaveProductMessagingData(const user_education::ProductMessagingData&
                                     product_messaging_data) override;
   void ResetProductMessagingData() override;
-  std::optional<user_education::KeyedNtpPromoData> ReadNtpPromoData(
+  std::optional<user_education::NtpPromoData> ReadNtpPromoData(
       const user_education::NtpPromoIdentifier& id) const override;
   void SaveNtpPromoData(const user_education::NtpPromoIdentifier& id,
-                        const user_education::KeyedNtpPromoData& data) override;
-  void ResetNtpPromoData() override;
+                        const user_education::NtpPromoData& data) override;
+  void ResetNtpPromoData(const user_education::NtpPromoIdentifier& id) override;
+  user_education::NtpPromoPreferences ReadNtpPromoPreferences() override;
+  void SaveNtpPromoPreferences(
+      const user_education::NtpPromoPreferences& data) override;
+  void ResetNtpPromoPreferences() override;
 
   // RecentSessionDataStorageService:
   RecentSessionData ReadRecentSessionData() const override;
   void SaveRecentSessionData(
       const RecentSessionData& recent_session_data) override;
   void ResetRecentSessionData();
+
+  Profile* profile() const { return profile_; }
 
  private:
   const raw_ptr<Profile> profile_;

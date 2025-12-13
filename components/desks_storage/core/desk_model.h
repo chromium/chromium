@@ -85,7 +85,7 @@ class DeskModel {
         GetAllEntriesStatus status,
         std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
             entries);
-    GetAllEntriesResult(GetAllEntriesResult& other);
+    GetAllEntriesResult(const GetAllEntriesResult& other);
     ~GetAllEntriesResult();
 
     GetAllEntriesStatus status;

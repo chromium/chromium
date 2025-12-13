@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/string_compare.h"
 #include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service_observer.h"
 #include "ui/base/models/table_model.h"
@@ -20,6 +21,31 @@ class TemplateURLService;
 namespace search_engines {
 enum class ChoiceMadeLocation;
 }
+
+namespace internal {
+
+// Allows sorting site search engines by group (either created by the
+// SiteSearchSettings policy, or not created by policy) and alphabetically
+// inside each group.
+//
+// Alphabetical comparison is case-insensitive according to the current locale.
+// In case of loading errors for ICU, fallback to regular string comparison.
+class OrderByManagedAndAlphabetically {
+ public:
+  OrderByManagedAndAlphabetically();
+  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other);
+  ~OrderByManagedAndAlphabetically();
+
+  bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
+
+  // Exposed for testing
+  std::string GetShortNameSortKey(const std::u16string& short_name) const;
+
+ private:
+  std::unique_ptr<icu::Collator> collator_;
+};
+
+}  // namespace internal
 
 // TemplateURLTableModel is the TableModel implementation used by
 // KeywordEditorView to show the keywords in a TableView.
@@ -34,7 +60,8 @@ enum class ChoiceMadeLocation;
 class TemplateURLTableModel : public ui::TableModel,
                               TemplateURLServiceObserver {
  public:
-  explicit TemplateURLTableModel(TemplateURLService* template_url_service);
+  TemplateURLTableModel(TemplateURLService* template_url_service,
+                        bool ai_mode_enabled);
 
   TemplateURLTableModel(const TemplateURLTableModel&) = delete;
   TemplateURLTableModel& operator=(const TemplateURLTableModel&) = delete;
@@ -122,6 +149,9 @@ class TemplateURLTableModel : public ui::TableModel,
   // Index of the last other engine in entries_. This is used to determine the
   // group boundaries.
   size_t last_other_engine_index_;
+
+  // Whether to show the @aimode keyword. This depends on user eligibility.
+  bool ai_mode_enabled_;
 };
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINES_TEMPLATE_URL_TABLE_MODEL_H_

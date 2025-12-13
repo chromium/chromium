@@ -84,9 +84,6 @@ class PLATFORM_EXPORT WritingDirectionMode {
     return writing_mode_ == other.writing_mode_ &&
            direction_ == other.direction_;
   }
-  bool operator!=(const WritingDirectionMode& other) const {
-    return !operator==(other);
-  }
 
  private:
   WritingMode writing_mode_;

@@ -17,11 +17,13 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
+#import "ios/web/common/crw_obscured_insets_controller.h"
 #import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -42,9 +44,9 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
 
     disabler_ = std::make_unique<OverlayContainerFullscreenDisabler>(
         browser_.get(), kModality);
-    web_view_ =
-        [[WKWebView alloc] initWithFrame:scoped_window_.Get().bounds
-                           configuration:[[WKWebViewConfiguration alloc] init]];
+    web_view_ = [[CRWWebView alloc]
+        initWithFrame:scoped_window_.Get().bounds
+        configuration:[[WKWebViewConfiguration alloc] init]];
     content_view_ = [[CRWWebViewContentView alloc]
         initWithWebView:web_view_
              scrollView:web_view_.scrollView
@@ -90,7 +92,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
   std::unique_ptr<OverlayContainerFullscreenDisabler> disabler_;
   FakeOverlayPresentationContext presentation_context_;
   ScopedKeyWindow scoped_window_;
-  WKWebView* web_view_ = nil;
+  CRWWebView* web_view_ = nil;
   CRWWebViewContentView* content_view_ = nil;
 };
 

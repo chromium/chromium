@@ -11,7 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_layout_delegate.h"
+#import "ios/chrome/browser/authentication/consistency_promo_signin/ui/consistency_layout_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_button_control.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/identity_view.h"
@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -32,8 +33,8 @@ namespace {
 constexpr CGFloat kContentMargin = 16.;
 // Space between elements in `self.contentView`.
 constexpr CGFloat kContentSpacing = 16.;
-// Vertical insets of primary button.
-constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+// Corner radius for the identity button.
+constexpr CGFloat kIdentityButtonControlCornerRadius = 24.;
 
 // Returns font to use for the navigation bar title.
 UIFont* GetNavigationBarTitleFont() {
@@ -60,7 +61,7 @@ UIFont* GetNavigationBarTitleFont() {
 // Button to
 // 1. confirm the default identity and sign-in when an account is available, or
 // 2. add an account when no account is available on the device.
-@property(nonatomic, strong) UIButton* primaryButton;
+@property(nonatomic, strong) ChromeButton* primaryButton;
 // Title for `self.primaryButton` when it needs to show the text "Continue as…".
 // This property is needed to hide the title the activity indicator is shown.
 @property(nonatomic, copy) NSString* continueAsTitle;
@@ -89,7 +90,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.primaryButton.enabled = NO;
   // Text should not be empty, otherwise the top and bottom can’t apply to the
   // text buttom and top line anymore.
-  SetConfigurationTitle(self.primaryButton, @" ");
+  self.primaryButton.title = @" ";
   // Set accessibility label so that VoiceOver won't use the empty string.
   self.primaryButton.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE);
@@ -106,7 +107,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.identityButtonControl.enabled = YES;
   self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
-  SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+  self.primaryButton.title = self.continueAsTitle;
   self.primaryButton.accessibilityLabel = nil;
 }
 
@@ -161,7 +162,7 @@ UIFont* GetNavigationBarTitleFont() {
                                         action:@selector(skipButtonAction:)];
   }
   rightItem.accessibilityIdentifier =
-      kWebSigninSkipButtonAccessibilityIdentifier;
+      kConsistencySigninSkipButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = rightItem;
 
   // Replace the controller view by the scroll view.
@@ -232,14 +233,10 @@ UIFont* GetNavigationBarTitleFont() {
   ]];
   // Add the primary button (the "Continue as"/"Sign in" button).
   self.primaryButton =
-      PrimaryActionButton(/* pointer_interaction_enabled */ YES);
-  UIButtonConfiguration* buttonConfiguration = self.primaryButton.configuration;
-  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-      kPrimaryButtonVerticalInsets, 0, kPrimaryButtonVerticalInsets, 0);
-  self.primaryButton.configuration = buttonConfiguration;
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
 
   self.primaryButton.accessibilityIdentifier =
-      kWebSigninPrimaryButtonAccessibilityIdentifier;
+      kConsistencySigninPrimaryButtonAccessibilityIdentifier;
   self.primaryButton.translatesAutoresizingMaskIntoConstraints = NO;
   [self.primaryButton addTarget:self
                          action:@selector(primaryButtonAction:)
@@ -251,10 +248,16 @@ UIFont* GetNavigationBarTitleFont() {
     [self.primaryButton.widthAnchor
         constraintEqualToAnchor:self.contentView.widthAnchor]
   ]];
+
   // Adjust the identity button control rounded corners to the same value than
   // the "continue as" button.
-  self.identityButtonControl.layer.cornerRadius =
-      self.primaryButton.configuration.background.cornerRadius;
+  if (@available(iOS 26, *)) {
+    self.identityButtonControl.layer.cornerRadius =
+        kIdentityButtonControlCornerRadius;
+  } else {
+    self.identityButtonControl.layer.cornerRadius =
+        self.primaryButton.configuration.background.cornerRadius;
+  }
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();
@@ -341,7 +344,7 @@ UIFont* GetNavigationBarTitleFont() {
 
   // If spinner is active, delay UI updates until stopSpinner() is called.
   if (!self.activityIndicatorView) {
-    SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+    self.primaryButton.title = self.continueAsTitle;
     self.identityButtonControl.hidden = NO;
   }
 }
@@ -354,9 +357,8 @@ UIFont* GetNavigationBarTitleFont() {
   // Hide the IdentityButtonControl, and update the primary button to serve as
   // a "Sign in…" button.
   self.identityButtonControl.hidden = YES;
-  SetConfigurationTitle(
-      self.primaryButton,
-      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN));
+  self.primaryButton.title =
+      l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_SIGN_IN);
 }
 
 #pragma mark - UIAccessibilityAction

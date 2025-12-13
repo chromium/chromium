@@ -89,13 +89,13 @@ TEST_F(OverflowMenuMetricsTest, DestinationWasInitiallyVisible) {
 // Test that ActionWasInitiallyVisible works correctly.
 TEST_F(OverflowMenuMetricsTest, ActionWasInitiallyVisible) {
   NSArray<OverflowMenuAction*>* actions = @[
-    CreateOverflowMenuAction(overflow_menu::ActionType::Follow),
+    CreateOverflowMenuAction(overflow_menu::ActionType::Translate),
     CreateOverflowMenuAction(overflow_menu::ActionType::Bookmark),
     CreateOverflowMenuAction(overflow_menu::ActionType::ReadingList),
   ];
 
-  EXPECT_TRUE(
-      ActionWasInitiallyVisible(overflow_menu::ActionType::Follow, actions, 2));
+  EXPECT_TRUE(ActionWasInitiallyVisible(overflow_menu::ActionType::Translate,
+                                        actions, 2));
   EXPECT_TRUE(ActionWasInitiallyVisible(overflow_menu::ActionType::Bookmark,
                                         actions, 2));
   EXPECT_FALSE(ActionWasInitiallyVisible(overflow_menu::ActionType::ReadingList,

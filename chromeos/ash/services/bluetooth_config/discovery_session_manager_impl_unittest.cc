@@ -68,21 +68,20 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     mock_adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
     ON_CALL(*mock_adapter_, StartScanWithFilter_(testing::_, testing::_))
-        .WillByDefault(testing::Invoke(
-            [this](const device::BluetoothDiscoveryFilter* filter,
-                   StartScanCallback& callback) {
-              EXPECT_FALSE(start_scan_callback_);
-              start_scan_callback_ = std::move(callback);
+        .WillByDefault([this](const device::BluetoothDiscoveryFilter* filter,
+                              StartScanCallback& callback) {
+          EXPECT_FALSE(start_scan_callback_);
+          start_scan_callback_ = std::move(callback);
 
-              if (should_synchronously_invoke_start_scan_callback_) {
-                InvokePendingStartScanCallback(/*success=*/true);
-              }
-            }));
+          if (should_synchronously_invoke_start_scan_callback_) {
+            InvokePendingStartScanCallback(/*success=*/true);
+          }
+        });
     ON_CALL(*mock_adapter_, StopScan(testing::_))
-        .WillByDefault(testing::Invoke([this](StopScanCallback callback) {
+        .WillByDefault([this](StopScanCallback callback) {
           EXPECT_FALSE(stop_scan_callback_);
           stop_scan_callback_ = std::move(callback);
-        }));
+        });
 
     discovery_session_manager_ = std::make_unique<DiscoverySessionManagerImpl>(
         &fake_adapter_state_controller_, mock_adapter_,

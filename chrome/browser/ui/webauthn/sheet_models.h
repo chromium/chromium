@@ -17,6 +17,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/local_authentication_token.h"
 #include "device/fido/pin.h"
+#include "ui/gfx/font_list.h"
 
 namespace gfx {
 class Image;
@@ -53,9 +54,24 @@ class AuthenticatorSheetModelBase
     return dialog_model_;
   }
 
+  // Returns the preferred with for the contents of the dialog, i.e. the
+  // preferred dialog width minus the padding.
+  static int GetPreferredContentWidth();
+
   // Returns a string containing the RP ID, styled as an origin, truncated to a
   // reasonable width.
   static std::u16string GetRelyingPartyIdString(
+      const AuthenticatorRequestDialogModel* dialog_model,
+      gfx::FontList font_list);
+
+  // Returns a string containing the RP ID, styled as an origin, truncated to a
+  // reasonable width. Use this for default sized text, like labels.
+  static std::u16string GetRelyingPartyIdStringLabel(
+      const AuthenticatorRequestDialogModel* dialog_model);
+
+  // Returns a string containing the RP ID, styled as an origin, truncated to a
+  // reasonable width. Use this for title sized text.
+  static std::u16string GetRelyingPartyIdStringTitle(
       const AuthenticatorRequestDialogModel* dialog_model);
 
  protected:
@@ -867,6 +883,7 @@ class CombinedSelectorSheetModel : public AuthenticatorSheetModelBase {
   std::u16string GetCancelButtonLabel() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
+  void OnCancel() override;
 
   size_t selection_index_ = 0;
 };

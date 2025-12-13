@@ -20,9 +20,21 @@ namespace policy {
 // section in the end and self destory.
 class POLICY_EXPORT ScopedCriticalPolicySection {
  public:
-  struct Handles {
-    HANDLE machine_handle;
-    HANDLE user_handle;
+  struct HandleDeleter {
+    void operator()(HANDLE handle) const;
+  };
+
+  using ScopedHandle =
+      std::unique_ptr<std::remove_pointer_t<HANDLE>, HandleDeleter>;
+
+  struct POLICY_EXPORT Handles {
+    Handles();
+    Handles(Handles&&);
+    Handles& operator=(Handles&&);
+    ~Handles();
+
+    ScopedHandle machine_handle;
+    ScopedHandle user_handle;
   };
 
   using OnSectionEnteredCallback = base::OnceCallback<void(Handles)>;
@@ -57,8 +69,8 @@ class POLICY_EXPORT ScopedCriticalPolicySection {
  private:
   void OnSectionEntered(Handles handles);
 
-  HANDLE machine_handle_ = nullptr;
-  HANDLE user_handle_ = nullptr;
+  ScopedHandle machine_handle_;
+  ScopedHandle user_handle_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::OnceClosure callback_;
 

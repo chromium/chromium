@@ -6,6 +6,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

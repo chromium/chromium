@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -19,11 +20,11 @@ class MEDIA_EXPORT Ac3Util {
 
   // Returns the total number of audio samples in the given buffer, which
   // contains several complete AC3 syncframes.
-  static int ParseTotalAc3SampleCount(const uint8_t* data, size_t size);
+  static size_t ParseTotalAc3SampleCount(base::span<const uint8_t> data);
 
   // Returns the total number of audio samples in the given buffer, which
   // contains several complete E-AC3 syncframes.
-  static int ParseTotalEac3SampleCount(const uint8_t* data, size_t size);
+  static size_t ParseTotalEac3SampleCount(base::span<const uint8_t> data);
 };
 
 }  // namespace media

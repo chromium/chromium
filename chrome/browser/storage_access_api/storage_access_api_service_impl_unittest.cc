@@ -58,6 +58,31 @@ class StorageAccessAPIServiceImplTest : public testing::Test {
   base::test::ScopedFeatureList features_;
 };
 
+TEST_F(StorageAccessAPIServiceImplTest, ClearsOriginTrialPref) {
+  const GURL primary_url("https://example.test");
+  const GURL secondary_url("https://foo.test");
+
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  host_content_settings_map->SetContentSettingDefaultScope(
+      primary_url, secondary_url,
+      ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+  ASSERT_EQ(host_content_settings_map->GetContentSetting(
+                primary_url, secondary_url,
+                ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL),
+            ContentSetting::CONTENT_SETTING_ALLOW);
+
+  StorageAccessAPIServiceImpl* service =
+      StorageAccessAPIServiceFactory::GetForBrowserContext(profile());
+  ASSERT_NE(nullptr, service);
+
+  EXPECT_EQ(host_content_settings_map->GetContentSetting(
+                primary_url, secondary_url,
+                ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL),
+            ContentSetting::CONTENT_SETTING_BLOCK);
+}
+
 TEST_F(StorageAccessAPIServiceImplTest, RenewPermissionGrant) {
   url::Origin origin_a(
       url::Origin::Create(GURL(base::StrCat({"https://", kHostA}))));

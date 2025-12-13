@@ -14,6 +14,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorShareAction.TabListEditorShareActionState;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Metrics helper class for the Tab UI module. */
 @NullMarked
 public class TabUiMetricsHelper {
@@ -37,8 +40,11 @@ public class TabUiMetricsHelper {
         TabListEditorActionMetricGroups.PROVIDER_GROUP,
         TabListEditorActionMetricGroups.PROVIDER_UNGROUP,
         TabListEditorActionMetricGroups.UNSELECTED,
-        TabListEditorActionMetricGroups.SELECTED
+        TabListEditorActionMetricGroups.SELECTED,
+        TabListEditorActionMetricGroups.PIN_TABS,
+        TabListEditorActionMetricGroups.UNPIN_TABS
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorActionMetricGroups {
         int BOOKMARK = 0;
         int CLOSE = 1;
@@ -52,6 +58,8 @@ public class TabUiMetricsHelper {
         int PROVIDER_UNGROUP = 9;
         int UNSELECTED = 10;
         int SELECTED = 11;
+        int PIN_TABS = 12;
+        int UNPIN_TABS = 13;
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -61,6 +69,7 @@ public class TabUiMetricsHelper {
         TabListEditorExitMetricGroups.CLOSED_AUTOMATICALLY,
         TabListEditorExitMetricGroups.CLOSED_BY_USER
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorExitMetricGroups {
         int CLOSED = 0;
         int CLOSED_AUTOMATICALLY = 1;
@@ -73,6 +82,7 @@ public class TabUiMetricsHelper {
         TabListEditorOpenMetricGroups.OPEN_FROM_GRID,
         TabListEditorOpenMetricGroups.OPEN_FROM_DIALOG
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabListEditorOpenMetricGroups {
         int OPEN_FROM_GRID = 0;
         int OPEN_FROM_DIALOG = 1;
@@ -87,6 +97,7 @@ public class TabUiMetricsHelper {
         TabGroupCreationFinalSelections.CHANGED_COLOR_AND_TITLE,
         TabGroupCreationFinalSelections.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabGroupCreationFinalSelections {
         int DEFAULT_COLOR_AND_TITLE = 0;
         int CHANGED_COLOR = 1;
@@ -105,6 +116,7 @@ public class TabUiMetricsHelper {
         TabGroupCreationDialogResultAction.DISMISSED_OTHER,
         TabGroupCreationDialogResultAction.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabGroupCreationDialogResultAction {
         int ACCEPTED = 0;
         int DISMISSED_SCRIM_OR_BACKPRESS = 1;
@@ -121,6 +133,7 @@ public class TabUiMetricsHelper {
         TabGroupColorChangeActionType.VIA_OVERFLOW_MENU,
         TabGroupColorChangeActionType.NUM_ENTRIES
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface TabGroupColorChangeActionType {
         int VIA_COLOR_ICON = 0;
         int VIA_OVERFLOW_MENU = 1;
@@ -189,6 +202,12 @@ public class TabUiMetricsHelper {
                 break;
             case TabListEditorActionMetricGroups.SELECTED:
                 RecordUserAction.record("TabMultiSelect.TabSelected");
+                break;
+            case TabListEditorActionMetricGroups.PIN_TABS:
+                RecordUserAction.record("TabMultiSelectV2.TabsPinned");
+                break;
+            case TabListEditorActionMetricGroups.UNPIN_TABS:
+                RecordUserAction.record("TabMultiSelectV2.TabsUnpinned");
                 break;
             default:
                 assert false

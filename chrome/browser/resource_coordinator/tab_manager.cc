@@ -35,6 +35,8 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/memory/oom_memory_details.h"
+#include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
+#include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "chrome/browser/resource_coordinator/resource_coordinator_parts.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
@@ -46,7 +48,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
@@ -100,17 +101,6 @@ void TabManager::Start() {
       ->Start();
 }
 
-LifecycleUnitVector TabManager::GetSortedLifecycleUnits() {
-  LifecycleUnitVector sorted_lifecycle_units(lifecycle_units_.begin(),
-                                             lifecycle_units_.end());
-  // Sort lifecycle_units with ascending importance.
-  std::sort(sorted_lifecycle_units.begin(), sorted_lifecycle_units.end(),
-            [](LifecycleUnit* a, LifecycleUnit* b) {
-              return a->GetSortKey() < b->GetSortKey();
-            });
-  return sorted_lifecycle_units;
-}
-
 WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   if (contents) {
     TabLifecycleUnitExternal* tab_lifecycle_unit_external =
@@ -123,7 +113,9 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
     return nullptr;
   }
 
-  return DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL);
+  return DiscardTabImpl(
+      LifecycleUnitDiscardReason::EXTERNAL,
+      performance_manager::policies::kNonVisiblePagesUrgentProtectionTime);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -148,28 +140,18 @@ bool TabManager::IsInternalPage(const GURL& url) {
   return false;
 }
 
-// TODO(jamescook): This should consider tabs with references to other tabs,
-// such as tabs created with JavaScript window.open(). Potentially consider
-// discarding the entire set together, or use that in the priority computation.
 content::WebContents* TabManager::DiscardTabImpl(
     LifecycleUnitDiscardReason reason,
-    TabDiscardDoneCB tab_discard_done) {
+    base::TimeDelta minimum_time_in_background_to_discard) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  for (LifecycleUnit* lifecycle_unit : GetSortedLifecycleUnits()) {
-    DecisionDetails decision_details;
-    if (lifecycle_unit->CanDiscard(reason, &decision_details) &&
-        lifecycle_unit->Discard(reason)) {
-      TabLifecycleUnitExternal* tab_lifecycle_unit_external =
-          lifecycle_unit->AsTabLifecycleUnitExternal();
-      // For now, all LifecycleUnits are TabLifecycleUnitExternals.
-      DCHECK(tab_lifecycle_unit_external);
-
-      return tab_lifecycle_unit_external->GetWebContents();
-    }
-  }
-
-  return nullptr;
+  performance_manager::Graph* graph =
+      performance_manager::PerformanceManager::GetGraph();
+  CHECK(graph);
+  return performance_manager::policies::PageDiscardingHelper::GetFromGraph(
+             graph)
+      ->DiscardAPage(reason, minimum_time_in_background_to_discard)
+      .first_content_after_discard;
 }
 
 void TabManager::OnLifecycleUnitDestroyed(LifecycleUnit* lifecycle_unit) {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/ash/app_icon_color_cache/app_icon_color_cache.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
@@ -31,7 +27,6 @@
 namespace ash {
 
 BASE_FEATURE(kEnablePersistentAshIconColorCache,
-             "EnablePersistentAshIconColorCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
@@ -246,7 +241,7 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
   // icon.
   const SkColor* current =
       reinterpret_cast<SkColor*>(source.getAddr32(0, height / 2));
-  for (int x = 0; x < width; ++x, ++current) {
+  for (int x = 0; x < width; ++x, UNSAFE_TODO(++current)) {
     if (SkColorGetA(*current) < SK_AlphaOPAQUE) {
       continue;
     }
@@ -257,7 +252,7 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
   // Find the color group for the first opaque pixel on the right edge of the
   // icon.
   current = reinterpret_cast<SkColor*>(source.getAddr32(width - 1, height / 2));
-  for (int x = width - 1; x >= 0; --x, --current) {
+  for (int x = width - 1; x >= 0; --x, UNSAFE_TODO(--current)) {
     if (SkColorGetA(*current) < SK_AlphaOPAQUE) {
       continue;
     }
@@ -276,7 +271,7 @@ sync_pb::AppListSpecifics::ColorGroup CalculateBackgroundColorGroup(
   sync_pb::AppListSpecifics::ColorGroup top_group = sync_pb::AppListSpecifics::
       ColorGroup::AppListSpecifics_ColorGroup_COLOR_BLACK;
   current = reinterpret_cast<SkColor*>(source.getAddr32(width / 2, 0));
-  for (int y = 0; y < height; ++y, current += width) {
+  for (int y = 0; y < height; ++y, UNSAFE_TODO(current += width)) {
     if (SkColorGetA(*current) < SK_AlphaOPAQUE) {
       continue;
     }

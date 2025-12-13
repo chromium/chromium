@@ -60,10 +60,15 @@
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
+#endif
 
 namespace blink {
 
@@ -194,6 +199,27 @@ std::optional<DragOperationsMask> ConvertEffectAllowedToDragOperationsMask(
   if (op == "all")
     return kDragOperationEvery;
   return std::nullopt;
+}
+
+AtomicString ConvertEffectAllowedToDropEffect(
+    const AtomicString& effect_allowed) {
+  auto mask = ConvertEffectAllowedToDragOperationsMask(effect_allowed);
+  if (!mask.has_value()) {
+    return keywords::kNone;
+  }
+  // Defaults to copy if copy if present, then to link if link is present (this
+  // relevant in composite cases like copyMove).  Defaults taken from the table
+  // in https://html.spec.whatwg.org/multipage/dnd.html#the-dragevent-interface
+  if ((mask.value() & kDragOperationCopy) || (mask == kDragOperationEvery)) {
+    return AtomicString("copy");
+  }
+  if (mask.value() & kDragOperationLink) {
+    return AtomicString("link");
+  }
+  if (mask.value() & kDragOperationMove) {
+    return AtomicString("move");
+  }
+  return keywords::kNone;
 }
 
 AtomicString ConvertDragOperationsMaskToEffectAllowed(DragOperationsMask op) {
@@ -546,7 +572,7 @@ void DataTransfer::WriteSelection(const FrameSelection& selection) {
 
   String str = selection.SelectedTextForClipboard();
 #if BUILDFLAG(IS_WIN)
-  ReplaceNewlinesWithWindowsStyleNewlines(str);
+  str = NormalizeLineEndingsToCRLF(str);
 #endif
   ReplaceNBSPWithSpace(str);
   data_object_->SetData(ui::kMimeTypePlainText, str);
@@ -596,9 +622,13 @@ void DataTransfer::SetSourceOperation(DragOperationsMask op) {
   effect_allowed_ = ConvertDragOperationsMaskToEffectAllowed(op);
 }
 
+void DataTransfer::SetDestinationOperationFromEffectAllowed() {
+  setDropEffect(ConvertEffectAllowedToDropEffect(effect_allowed_));
+}
+
 void DataTransfer::SetDestinationOperation(ui::mojom::blink::DragOperation op) {
-  drop_effect_ = ConvertDragOperationsMaskToEffectAllowed(
-      static_cast<DragOperationsMask>(op));
+  setDropEffect(ConvertDragOperationsMaskToEffectAllowed(
+      static_cast<DragOperationsMask>(op)));
 }
 
 DataTransferItemList* DataTransfer::items() {

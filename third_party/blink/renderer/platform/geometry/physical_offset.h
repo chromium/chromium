@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_OFFSET_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PHYSICAL_OFFSET_H_
 
-#include "third_party/blink/renderer/platform/geometry/layout_point.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/point.h"
@@ -68,17 +67,6 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
     return *this;
   }
 
-  // Conversions from/to existing code. New code prefers type safety for
-  // logical/physical distinctions.
-  constexpr explicit PhysicalFixedOffset(const DeprecatedLayoutPoint& point)
-      : left(point.X()), top(point.Y()) {}
-
-  // Conversions from/to existing code. New code prefers type safety for
-  // logical/physical distinctions.
-  constexpr DeprecatedLayoutPoint FaultyToDeprecatedLayoutPoint() const {
-    return {left, top};
-  }
-
   explicit PhysicalFixedOffset(const gfx::Point& point)
       : left(point.x()), top(point.y()) {}
   explicit PhysicalFixedOffset(const gfx::Vector2d& vector)
@@ -109,7 +97,7 @@ struct PLATFORM_EXPORT PhysicalFixedOffset {
   constexpr explicit operator gfx::PointF() const { return {left, top}; }
   constexpr explicit operator gfx::Vector2dF() const { return {left, top}; }
 
-  WTF::String ToString() const;
+  String ToString() const;
 };
 
 using PhysicalOffset = PhysicalFixedOffset<LayoutUnit>;

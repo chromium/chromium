@@ -27,9 +27,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -48,13 +50,13 @@ import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupColorChangeActionType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -73,6 +75,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * A coordinator for TabGridDialog component. Manages the communication with {@link
@@ -89,8 +92,9 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final TabGridDialogMediator mMediator;
     private final PropertyModel mModel;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressChangedSupplier =
+            ObservableSuppliers.createNonNull(false);
+
     private final Activity mActivity;
     private final ObservableSupplier<@Nullable TabGroupModelFilter>
             mCurrentTabGroupModelFilterSupplier;
@@ -248,14 +252,16 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* attachToParent= */ false,
                             mComponentName,
                             /* onModelTokenChange= */ null,
-                            /* hasEmptyView= */ false,
+                            /* emptyViewParent= */ null,
                             /* emptyImageResId= */ Resources.ID_NULL,
                             /* emptyHeadingStringResId= */ Resources.ID_NULL,
                             /* emptySubheadingStringResId= */ Resources.ID_NULL,
                             /* onTabGroupCreation= */ null,
                             /* allowDragAndDrop= */ true,
                             /* tabSwitcherDragHandler= */ null,
-                            /* undoBarExplicitTrigger= */ null);
+                            /* undoBarExplicitTrigger= */ null,
+                            mSnackbarManager,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
             mTabListCoordinator.setOnLongPressTabItemEventListener(mMediator);
             mTabListCoordinator.registerItemType(
                     UiType.COLLABORATION_ACTIVITY_MESSAGE,
@@ -367,7 +373,8 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* edgeToEdgeSupplier= */ null,
                             CreationMode.DIALOG,
                             /* undoBarExplicitTrigger= */ null,
-                            /* componentName= */ null);
+                            /* componentName= */ null,
+                            TabListEditorCoordinator.UNLIMITED_SELECTION);
         }
 
         return mTabListEditorCoordinator.getController();
@@ -416,9 +423,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                         mModel.get(TabGridDialogProperties.IS_INCOGNITO),
                         ColorPickerLayoutType.DOUBLE_ROW,
                         () -> {
-                            assumeNonNull(mColorIconPopupWindow);
-                            mColorIconPopupWindow.dismiss();
-                            mColorIconPopupWindow = null;
+                            if (mColorIconPopupWindow != null) {
+                                mColorIconPopupWindow.dismiss();
+                                mColorIconPopupWindow = null;
+                            }
                             onDismissListener.onDismiss();
                         });
         mColorPickerCoordinator.setSelectedColorItem(
@@ -582,7 +590,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressChangedSupplier;
     }
 

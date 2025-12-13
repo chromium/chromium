@@ -23,7 +23,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -36,11 +36,11 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/url_constants.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
@@ -307,7 +307,7 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
   }
 
   // This is isolated web app.
-  if (manifest_id_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (manifest_id_url.SchemeIs(webapps::kIsolatedAppScheme)) {
     InstallWebBundleFromUrl(manifest_id_url, url, std::move(callback));
     return;
   }
@@ -316,7 +316,7 @@ void PWAHandler::InstallFromUrl(const std::string& in_manifest_id,
     std::move(callback)->sendFailure(
         protocol::Response::MethodNotFound(base::StrCat(
             {"Installing webapp from url ", in_install_url_or_bundle_url,
-             " with scheme [", url.scheme(), "] is not supported yet."})));
+             " with scheme [", url.GetScheme(), "] is not supported yet."})));
     return;
   }
   auto* scheduler = GetScheduler();
@@ -337,7 +337,7 @@ void PWAHandler::InstallWebBundleFromUrl(
     std::unique_ptr<InstallCallback> callback) {
   base::expected<web_package::SignedWebBundleId, std::string>
       expected_bundle_id =
-          web_package::SignedWebBundleId::Create(manifest_url.host());
+          web_package::SignedWebBundleId::Create(manifest_url.GetHost());
 
   if (!expected_bundle_id.has_value()) {
     std::move(callback)->sendFailure(protocol::Response::InvalidParams(
@@ -388,7 +388,7 @@ void PWAHandler::InstallWebBundleFromUrl(
   } else {
     std::move(callback)->sendFailure(protocol::Response::MethodNotFound(
         base::StrCat({"Installing webapp from url ", web_bundle_url.spec(),
-                      " with scheme [", web_bundle_url.scheme(),
+                      " with scheme [", web_bundle_url.GetScheme(),
                       "] is not supported yet."})));
   }
 }
@@ -499,14 +499,8 @@ void PWAHandler::Launch(const std::string& in_manifest_id,
 
     // TODO(crbug.com/338406726): Remove after launches correctly fail when url
     // is out of scope.
-    bool is_in_scope;
-    if (base::FeatureList::IsEnabled(
-            blink::features::kWebAppEnableScopeExtensions)) {
-      is_in_scope =
-          provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
-    } else {
-      is_in_scope = provider->registrar_unsafe().IsUrlInAppScope(*url, app_id);
-    }
+    bool is_in_scope =
+        provider->registrar_unsafe().IsUrlInAppExtendedScope(*url, app_id);
     if (!is_in_scope) {
       std::move(callback)->sendFailure(
           protocol::Response::InvalidParams(base::StrCat(
@@ -576,7 +570,6 @@ void PWAHandler::LaunchFilesInApp(
     provider->scheduler().LaunchApp(
         app_id, *base::CommandLine::ForCurrentProcess(),
         /* current_directory */ base::FilePath{},
-        /* url_handler_launch_url */ std::nullopt,
         /* protocol_handler_launch_url */ std::nullopt,
         /* file_launch_url */ url, paths,
         base::BindOnce(

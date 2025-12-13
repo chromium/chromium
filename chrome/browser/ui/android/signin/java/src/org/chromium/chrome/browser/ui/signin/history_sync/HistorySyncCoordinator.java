@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
-import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 @NullMarked
@@ -31,10 +30,20 @@ public class HistorySyncCoordinator {
 
     /*Delegate for the History Sync MVC */
     public interface HistorySyncDelegate {
-        void dismissHistorySync(boolean isHistorySyncAccepted);
+        /**
+         * Notifies the delegate that the history sync UI has completed its flow and is dismissed.
+         * The delegate is responsible for destroying the HistorySyncCoordinator after this call.
+         *
+         * @param didSignOut Whether the user was signed out as a result of dismissing history sync.
+         *     This can happen if the user clicks the decline button and `shouldSignOutOnDecline` is
+         *     true, or if a sign-out event is triggered externally while the UI is shown.
+         * @param isHistorySyncAccepted Whether the user accepted history sync.
+         */
+        void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted);
 
+        // TODO(crbug.com/453950636): inline delegate implementation directly in HistorySyncMediator
         void recordHistorySyncOptIn(
-                @SigninAccessPoint int accessPoint, @SyncButtonClicked int syncButtonType);
+                @SigninAccessPoint int accessPoint, boolean isHistorySyncAccepted);
     }
 
     private final Activity mActivity;

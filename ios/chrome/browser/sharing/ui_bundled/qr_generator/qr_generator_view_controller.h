@@ -9,7 +9,24 @@
 
 #import "ios/chrome/browser/shared/public/commands/qr_generation_commands.h"
 
-@protocol ConfirmationAlertActionHandler;
+@class QRGeneratorViewController;
+
+// Delegate protocol for the QR generator.
+@protocol QRGeneratorViewControllerDelegate
+
+// Called when the user tapped on the dismiss button of the QR Generator.
+- (void)QRGeneratorViewControllerDidTapDismiss:
+    (QRGeneratorViewController*)generator;
+
+// Called when the user tapped on the confirm button of the QR Generator.
+- (void)QRGeneratorViewControllerDidTapConfirm:
+    (QRGeneratorViewController*)generator;
+
+// Called when the user tapped on the learn more button of the QR Generator.
+- (void)QRGeneratorViewControllerDidTapLearnMore:
+    (QRGeneratorViewController*)generator;
+
+@end
 
 // View controller that displays a QR code representing a given website.
 @interface QRGeneratorViewController : UIViewController
@@ -19,7 +36,7 @@
 - (instancetype)initWithTitle:(NSString*)title pageURL:(NSURL*)pageURL;
 
 // The action handler for interactions in this View Controller.
-@property(nonatomic, weak) id<ConfirmationAlertActionHandler> actionHandler;
+@property(nonatomic, weak) id<QRGeneratorViewControllerDelegate> delegate;
 
 // Returns an image generated from the content of this view controller.
 @property(nonatomic, readonly) UIImage* content;

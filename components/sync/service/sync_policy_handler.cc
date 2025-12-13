@@ -13,6 +13,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
@@ -30,6 +31,16 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
     if (*type == UserSelectableType::kAutofill) {
       syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
                                                  UserSelectableType::kPayments);
+    }
+
+    // If tabs are disabled, also disable saved tab groups, and vice-versa.
+    if (*type == UserSelectableType::kTabs) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(
+          prefs, UserSelectableType::kSavedTabGroups);
+    }
+    if (*type == UserSelectableType::kSavedTabGroups) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
+                                                 UserSelectableType::kTabs);
     }
   }
 

@@ -25,7 +25,6 @@
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/merchant_trust_service.h"
-#include "components/page_info/core/pref_names.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permissions_client.h"
@@ -67,10 +66,11 @@ ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(
 
 bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
   switch (type) {
-    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
-    // incognito.
+    // Notifications, idle detection, and web app installation do not support
+    // CONTENT_SETTING_ALLOW in incognito.
     case ContentSettingsType::NOTIFICATIONS:
     case ContentSettingsType::IDLE_DETECTION:
+    case ContentSettingsType::WEB_APP_INSTALLATION:
       return !GetProfile()->IsOffTheRecord();
     // Media only supports CONTENT_SETTING_ALLOW for secure origins.
     case ContentSettingsType::MEDIASTREAM_MIC:
@@ -94,10 +94,11 @@ bool ChromePageInfoUiDelegate::ShouldShowAllow(ContentSettingsType type) {
 std::u16string ChromePageInfoUiDelegate::GetAutomaticallyBlockedReason(
     ContentSettingsType type) {
   switch (type) {
-    // Notifications and idle detection do not support CONTENT_SETTING_ALLOW in
-    // incognito.
+    // Notifications, idle detection, and web app installation do not support
+    // CONTENT_SETTING_ALLOW in incognito.
     case ContentSettingsType::NOTIFICATIONS:
-    case ContentSettingsType::IDLE_DETECTION: {
+    case ContentSettingsType::IDLE_DETECTION:
+    case ContentSettingsType::WEB_APP_INSTALLATION: {
       if (GetProfile()->IsOffTheRecord()) {
         return l10n_util::GetStringUTF16(
             GetProfile()->IsGuestSession()
@@ -341,11 +342,6 @@ void ChromePageInfoUiDelegate::GetMerchantTrustInfo(
     service->GetMerchantTrustInfo(web_contents_->GetVisibleURL(),
                                   std::move(callback));
   }
-}
-
-void ChromePageInfoUiDelegate::RecordPageInfoWithMerchantTrustOpenTime() {
-  GetProfile()->GetPrefs()->SetTime(prefs::kMerchantTrustPageInfoLastOpenTime,
-                                    clock_->Now());
 }
 
 void ChromePageInfoUiDelegate::RecordMerchantTrustButtonShown() {

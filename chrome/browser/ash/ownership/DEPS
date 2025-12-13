@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
-  "+chrome/common/channel_info.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]

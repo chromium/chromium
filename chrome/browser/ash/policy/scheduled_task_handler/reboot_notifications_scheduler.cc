@@ -10,6 +10,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/containers/small_map.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"

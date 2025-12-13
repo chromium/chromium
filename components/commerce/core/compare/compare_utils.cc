@@ -28,9 +28,7 @@ std::string GetJsonStringForProductClusterIds(
 
   base::Value::Dict json_dict;
   json_dict.Set(kProductIdsKey, std::move(product_id_list));
-  std::string post_data;
-  base::JSONWriter::Write(json_dict, &post_data);
-  return post_data;
+  return base::WriteJson(json_dict).value_or("");
 }
 
 }  // namespace commerce

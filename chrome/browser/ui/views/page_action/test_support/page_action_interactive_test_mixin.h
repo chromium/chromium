@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,21 +31,33 @@ class PageActionInteractiveTestMixin : public T {
       : T(std::forward<Args>(args)...) {}
 
  protected:
-  // Utility to reliably wait for the page action view to be visible. When
-  // animating between icon and suggestion chip, the view passes through a state
-  // where its width is 0. If layout runs (for any reason) in that state, layout
-  // sets the view to invisible. In turn, if a test is asserting that the View
-  // is visible, the temporary switch to invisible state will fail the test
-  // assertion. Animation isn't always used, so emitting a custom event when
-  // the view has reached its target state isn't trivial. So, resort to polling
-  // the View for when its reached a stable visible state.
+  // Utility to reliably wait for the page action view to be visible.
   auto WaitForPageActionButtonVisible(actions::ActionId action_id) {
-    const auto& properties =
-        page_actions::PageActionPropertiesProvider().GetProperties(action_id);
-    if (!IsPageActionMigrated(properties.type)) {
-      return T::Steps(T::WaitForShow(properties.element_identifier));
-    }
+    IconLabelBubbleView* page_action =
+        BrowserView::GetBrowserViewForBrowser(T::browser())
+            ->toolbar_button_provider()
+            ->GetPageActionView(action_id);
 
+    constexpr char kPageActionId[] = "page action view";
+    return T::Steps(T::NameView(kPageActionId, page_action),
+                    T::WaitForShow(kPageActionId));
+  }
+
+  // Utility to invoke the page action.
+  auto InvokePageAction(actions::ActionId action_id) {
+    IconLabelBubbleView* page_action =
+        BrowserView::GetBrowserViewForBrowser(T::browser())
+            ->toolbar_button_provider()
+            ->GetPageActionView(action_id);
+
+    constexpr char kPageActionId[] = "page action view";
+    return T::Steps(T::NameView(kPageActionId, page_action),
+                    T::PressButton(kPageActionId));
+  }
+
+  // Utility to reliably wait for the page action view to be visible in chip
+  // state.
+  auto WaitForPageActionChipVisible(actions::ActionId action_id) {
     auto steps = T::Steps(
         T::PollState(kPageActionButtonVisible,
                      [this, action_id]() {
@@ -56,7 +69,43 @@ class PageActionInteractiveTestMixin : public T {
                      }),
         T::WaitForState(kPageActionButtonVisible, true),
         T::StopObservingState(kPageActionButtonVisible));
-    T::AddDescriptionPrefix(steps, "WaitForPageActionButtonVisible()");
+    T::AddDescriptionPrefix(steps, "WaitForPageActionChipVisible()");
+    return steps;
+  }
+
+  // Utility to reliably wait for the page action view to be visible in icon
+  // state.
+  auto WaitForPageActionIconVisible(actions::ActionId action_id) {
+    auto steps = T::Steps(
+        T::PollState(kPageActionButtonVisible,
+                     [this, action_id]() {
+                       auto* view =
+                           BrowserView::GetBrowserViewForBrowser(T::browser())
+                               ->toolbar_button_provider()
+                               ->GetPageActionView(action_id);
+                       return view->GetVisible() && !view->ShouldShowLabel();
+                     }),
+        T::WaitForState(kPageActionButtonVisible, true),
+        T::StopObservingState(kPageActionButtonVisible));
+    T::AddDescriptionPrefix(steps, "WaitForPageActionIconVisible()");
+    return steps;
+  }
+
+  // Utility to reliably wait for the page action view to not be visible in chip
+  // state.
+  auto WaitForPageActionChipNotVisible(actions::ActionId action_id) {
+    auto steps = T::Steps(
+        T::PollState(kPageActionButtonVisible,
+                     [this, action_id]() {
+                       auto* view =
+                           BrowserView::GetBrowserViewForBrowser(T::browser())
+                               ->toolbar_button_provider()
+                               ->GetPageActionView(action_id);
+                       return view->GetVisible() && !view->is_animating_label();
+                     }),
+        T::WaitForState(kPageActionButtonVisible, false),
+        T::StopObservingState(kPageActionButtonVisible));
+    T::AddDescriptionPrefix(steps, "WaitForPageActionChipNotVisible()");
     return steps;
   }
 };

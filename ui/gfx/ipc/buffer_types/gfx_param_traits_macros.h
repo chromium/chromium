@@ -9,7 +9,7 @@
 #define UI_GFX_IPC_BUFFER_TYPES_GFX_PARAM_TRAITS_MACROS_H_
 
 #include "build/build_config.h"
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/gfx/buffer_types.h"
 
 #undef IPC_MESSAGE_EXPORT
@@ -18,8 +18,6 @@
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferFormat, gfx::BufferFormat::LAST)
 
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferUsage, gfx::BufferUsage::LAST)
-
-IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferPlane, gfx::BufferPlane::LAST)
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT

@@ -117,29 +117,29 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
 
 VP9Decoder::~VP9Decoder() = default;
 
-void VP9Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  auto decoder_buffer_span = base::span(decoder_buffer);
-  const uint8_t* ptr = decoder_buffer_span.data();
-  const size_t size = decoder_buffer_span.size();
-  const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
+void VP9Decoder::SetStream(int32_t id,
+                           scoped_refptr<DecoderBuffer> decoder_buffer) {
+  CHECK(decoder_buffer);
+  decoder_buffer_ = std::move(decoder_buffer);
+  const DecryptConfig* decrypt_config = decoder_buffer_->decrypt_config();
 
-  DCHECK(ptr);
-  DCHECK(size);
-  DVLOG(4) << "New input stream id: " << id << " at: " << (void*)ptr
-           << " size: " << size;
+  DVLOG(4) << "New input stream id: " << id
+           << ", buffer: " << decoder_buffer_->AsHumanReadableString();
   stream_id_ = id;
   std::vector<uint32_t> frame_sizes;
-  if (!GetSpatialLayerFrameSize(decoder_buffer, frame_sizes)) {
+  if (!GetSpatialLayerFrameSize(*decoder_buffer_, frame_sizes)) {
     SetError();
     return;
   }
-  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
-    secure_handle_ = decoder_buffer.side_data()->secure_handle;
+  if (decoder_buffer_->side_data() &&
+      decoder_buffer_->side_data()->secure_handle) {
+    secure_handle_ = decoder_buffer_->side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
   }
 
-  parser_.SetStream(ptr, size, frame_sizes,
+  parser_.SetStream(base::span(*decoder_buffer_).data(),
+                    decoder_buffer_->size(), frame_sizes,
                     decrypt_config ? decrypt_config->Clone() : nullptr);
 }
 
@@ -157,6 +157,7 @@ void VP9Decoder::Reset() {
   ref_frames_.Clear();
 
   parser_.Reset();
+  decoder_buffer_.reset();
 
   secure_handle_ = 0;
 
@@ -429,9 +430,9 @@ VideoColorSpace VP9Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
 }
 
-std::optional<gfx::HDRMetadata> VP9Decoder::GetHDRMetadata() const {
+gfx::HDRMetadata VP9Decoder::GetHDRMetadata() const {
   // VP9 only allow HDR metadata exists in the container.
-  return std::nullopt;
+  return gfx::HDRMetadata();
 }
 
 size_t VP9Decoder::GetRequiredNumOfPictures() const {

@@ -50,7 +50,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   void InstallCallbacksInternal(OverlayRequest* request) override;
 
   // The handler for received responses.
-  raw_ptr<SaveAddressProfileInfobarModalInteractionHandler>
+  raw_ptr<SaveAddressProfileInfobarModalInteractionHandler, DanglingUntriaged>
       interaction_handler_ = nullptr;
 
   base::WeakPtrFactory<

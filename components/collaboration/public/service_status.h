@@ -20,9 +20,15 @@ enum class SigninStatus {
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.collaboration)
 enum class SyncStatus {
+  // Sync-the-feature is disabled but required, or the Sync machinery is fully
+  // disabled (e.g. by command-line switch).
   kNotSyncing = 0,
+  // Syncing is available in principle, but the tab groups type is not enabled.
+  // This may also be returned for signed-out users.
   kSyncWithoutTabGroup = 1,
+  // Syncing of tab groups is enabled.
   kSyncEnabled = 2,
+  // Syncing is disabled due to Enterprise policy.
   kSyncDisabledByEnterprise = 3,
 };
 

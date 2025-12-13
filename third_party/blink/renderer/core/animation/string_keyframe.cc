@@ -38,29 +38,29 @@ using PropertyResolver = StringKeyframe::PropertyResolver;
 
 StringKeyframe::PropertyIterator::PropertyIterator(
     const StringKeyframe* keyframe)
-    : css_properties_(keyframe->css_property_map_->Properties()) {}
+    : css_property_map_(keyframe->css_property_map_) {}
 
 void StringKeyframe::PropertyIterator::Advance(const Keyframe* keyframe) {
-  css_properties_.take_first_elem();
+  index_++;
 }
 
 PropertyHandle StringKeyframe::PropertyIterator::Deref(
     const Keyframe* keyframe) const {
-  DCHECK(
-      To<StringKeyframe>(keyframe)->css_property_map_->Properties().end() ==
-      css_properties_.end());
-  return PropertyHandle(css_properties_.front().Name());
+  DCHECK(To<StringKeyframe>(keyframe)->css_property_map_->Properties().end() ==
+         css_property_map_->Properties().end());
+  DCHECK(!AtEnd(keyframe));
+  return PropertyHandle(css_property_map_->Properties()[index_].Name());
 }
 
 bool StringKeyframe::PropertyIterator::AtEnd(const Keyframe* keyframe) const {
-  return css_properties_.empty();
+  return index_ >= css_property_map_->Properties().size();
 }
 
 Keyframe::PropertyIteratorWrapper
 StringKeyframe::IterableStringKeyframeProperties::begin() const {
   keyframe_->EnsureCssPropertyMap();
   return Keyframe::PropertyIteratorWrapper(
-      keyframe_, std::make_unique<PropertyIterator>(keyframe_));
+      keyframe_, MakeGarbageCollected<PropertyIterator>(keyframe_));
 }
 
 size_t StringKeyframe::IterableStringKeyframeProperties::size() const {

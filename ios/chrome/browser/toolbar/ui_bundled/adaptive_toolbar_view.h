@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-@class MDCProgressView;
 @class ToolbarButton;
+@class ToolbarProgressBar;
 @class ToolbarTabGridButton;
 @class ToolbarToolsMenuButton;
 enum class ToolbarTabGroupState;
@@ -16,12 +16,13 @@ enum class ToolbarTabGroupState;
 // Protocol defining the interface for interacting with a view of the adaptive
 // toolbar.
 @protocol AdaptiveToolbarView <NSObject>
-
+// Button to cancel the edit of the location bar.
+@property(nonatomic, strong, readonly) UIButton* cancelButton;
 // Property to get all the buttons in this view.
 @property(nonatomic, strong, readonly) NSArray<ToolbarButton*>* allButtons;
 
 // Progress bar displayed below the toolbar.
-@property(nonatomic, strong, readonly) MDCProgressView* progressBar;
+@property(nonatomic, strong, readonly) ToolbarProgressBar* progressBar;
 // Button to navigate back.
 @property(nonatomic, strong, readonly) ToolbarButton* backButton;
 // Buttons to navigate forward.
@@ -50,6 +51,9 @@ enum class ToolbarTabGroupState;
     NSLayoutConstraint* locationBarContainerHeight;
 // Button taking the full size of the toolbar. Expands the toolbar when tapped.
 @property(nonatomic, strong, readonly) UIButton* collapsedToolbarButton;
+
+// Height of the location bar.
+@property(nonatomic, assign) CGFloat locationBarHeight;
 
 // Sets the location bar view containing the omnibox.
 - (void)setLocationBarView:(UIView*)locationBarView;

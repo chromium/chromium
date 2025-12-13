@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/x/xproto_types.h"
 
 #include <xcb/xcbext.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
@@ -75,7 +71,8 @@ ReadBuffer::ReadBuffer(scoped_refptr<UnsizedRefCountedMemory> data,
     size_t reply_length = 32 + 4 * reply_header->length;
 
     // libxcb stores the fds after the reply data.
-    fds = reinterpret_cast<const int*>(data->bytes() + reply_length);
+    fds =
+        reinterpret_cast<const int*>(UNSAFE_TODO(data->bytes() + reply_length));
   }
 }
 
@@ -91,7 +88,7 @@ scoped_refptr<UnsizedRefCountedMemory> ReadBuffer::ReadAndAdvance(
 }
 
 int ReadBuffer::TakeFd() {
-  return *fds++;
+  return UNSAFE_TODO(*fds++);
 }
 
 WriteBuffer::WriteBuffer() = default;

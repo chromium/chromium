@@ -23,6 +23,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/combobox/combobox_util.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"

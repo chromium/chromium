@@ -10,11 +10,10 @@
 namespace features {
 
 // Enables Quick Share branding.
-BASE_FEATURE(kIsNameEnabled, "IsNameEnabled", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIsNameEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables contact restriction when not in high-visibility mode.
 BASE_FEATURE(kNearbySharingRestrictToContacts,
-             "NearbySharingRestrictToContacts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsNameEnabled() {

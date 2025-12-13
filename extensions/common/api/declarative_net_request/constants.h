@@ -50,6 +50,8 @@ extern const char kInitiatorDomainsKey[];
 extern const char kExcludedInitiatorDomainsKey[];
 extern const char kRequestDomainsKey[];
 extern const char kExcludedRequestDomainsKey[];
+extern const char kTopDomainsKey[];
+extern const char kExcludedTopDomainsKey[];
 extern const char kResourceTypesKey[];
 extern const char kExcludedResourceTypesKey[];
 extern const char kRequestMethodsKey[];

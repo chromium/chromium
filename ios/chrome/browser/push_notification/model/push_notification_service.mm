@@ -39,43 +39,35 @@ PushNotificationService::GetAccountContextManager() {
   return context_manager_;
 }
 
-void PushNotificationService::SetPreference(NSString* account_id,
+void PushNotificationService::SetPreference(const GaiaId& account_id,
                                             PushNotificationClientId client_id,
                                             bool enabled) {
   DCHECK(context_manager_);
   if (enabled) {
-    [context_manager_ enablePushNotification:client_id
-                                  forAccount:GaiaId(account_id)];
+    [context_manager_ enablePushNotification:client_id forAccount:account_id];
   } else {
-    [context_manager_ disablePushNotification:client_id
-                                   forAccount:GaiaId(account_id)];
+    [context_manager_ disablePushNotification:client_id forAccount:account_id];
   }
   SetPreferences(account_id,
-                 [context_manager_ preferenceMapForAccount:GaiaId(account_id)],
+                 [context_manager_ preferenceMapForAccount:account_id],
                  ^(NSError* error){
                  });
 }
 
 void PushNotificationService::RegisterAccount(
-    NSString* account_id,
+    const GaiaId& account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ addAccount:GaiaId(account_id)]) {
+  if ([context_manager_ addAccount:account_id]) {
     SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
 }
 
 void PushNotificationService::UnregisterAccount(
-    NSString* account_id,
+    const GaiaId& account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ removeAccount:GaiaId(account_id)]) {
+  if ([context_manager_ removeAccount:account_id]) {
     SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
-}
-
-// TODO(crbug.com/343495515): remove after downstream implementation is added.
-std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
-    NSString* gaia_id) {
-  return "";
 }
 
 void PushNotificationService::RegisterProfilePrefs(
@@ -95,7 +87,3 @@ void PushNotificationService::RegisterLocalStatePrefs(
   registry->RegisterDictionaryPref(prefs::kHandledDeliveredNotificationIds);
 }
 
-void PushNotificationService::SetPreferences(
-    NSString* account_id,
-    PreferenceMap preference_map,
-    CompletionHandler completion_handler) {}

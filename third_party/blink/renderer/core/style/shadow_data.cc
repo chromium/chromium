@@ -22,8 +22,6 @@
 
 #include "third_party/blink/renderer/core/style/shadow_data.h"
 
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-
 namespace blink {
 
 ShadowData ShadowData::NeutralValue() {
@@ -36,7 +34,7 @@ gfx::OutsetsF ShadowData::RectOutsets() const {
   // See also https://crbug.com/624175.
   // TODO(fmalita): since the blur extent must reflect rasterization bounds,
   // its value should be queried from Skia (pending API availability).
-  float blur_and_spread = ceil(3 * BlurRadiusToStdDev(Blur())) + Spread();
+  float blur_and_spread = ceil(3 * BlurAsSigma()) + Spread();
   return gfx::OutsetsF()
       .set_left(blur_and_spread - X())
       .set_right(blur_and_spread + X())

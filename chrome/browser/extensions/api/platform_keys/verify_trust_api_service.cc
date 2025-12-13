@@ -10,13 +10,8 @@ namespace extensions {
 
 VerifyTrustApiService::VerifyTrustApiService(content::BrowserContext* context)
     : browser_context_(context) {
-  if (base::FeatureList::IsEnabled(kVerifyTLSServerCertificateUseNetFetcher)) {
-    verify_trust_api_inner_ =
-        std::make_unique<VerifyTrustApiV2>(browser_context_);
-  } else {
-    verify_trust_api_inner_ =
-        std::make_unique<VerifyTrustApiV1>(browser_context_);
-  }
+  verify_trust_api_inner_ =
+      std::make_unique<VerifyTrustApiImpl>(browser_context_);
 }
 
 VerifyTrustApiService::~VerifyTrustApiService() = default;

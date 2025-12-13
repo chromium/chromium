@@ -48,6 +48,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
@@ -261,9 +262,7 @@ void TrayDetailedView::ShowProgress(double value, bool visible) {
             IDS_ASH_STATUS_TRAY_PROGRESS_BAR_ACCESSIBLE_NAME)),
         ax::mojom::NameFrom::kAttribute);
     progress_bar_->SetVisible(false);
-    progress_bar_->SetForegroundColor(
-        AshColorProvider::Get()->GetContentLayerColor(
-            AshColorProvider::ContentLayerType::kIconColorProminent));
+    progress_bar_->SetForegroundColor(cros_tokens::kIconColorProminent);
   }
 
   progress_bar_->SetProperty(views::kElementIdentifierKey,

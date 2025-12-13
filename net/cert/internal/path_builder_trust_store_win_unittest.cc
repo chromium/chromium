@@ -6,8 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/compiler_specific.h"
-#include "base/files/file_util.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/win/wincrypt_shim.h"
@@ -26,7 +25,6 @@
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "third_party/boringssl/src/pki/path_builder.h"
-#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/boringssl/src/pki/simple_path_builder_delegate.h"
 #include "third_party/boringssl/src/pki/trust_store_collection.h"
 #include "third_party/boringssl/src/pki/trust_store_in_memory.h"
@@ -38,7 +36,6 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -118,33 +115,14 @@ class AsyncCertIssuerSourceStatic : public bssl::CertIssuerSource {
   base::RepeatingClosure async_get_callback_;
 };
 
-::testing::AssertionResult ReadTestPem(const std::string& file_name,
-                                       const std::string& block_name,
-                                       std::string* result) {
-  const PemBlockMapping mappings[] = {
-      {block_name.c_str(), result},
-  };
-
-  return ReadTestDataFromPemFile(file_name, mappings);
-}
-
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
     std::shared_ptr<const bssl::ParsedCertificate>* result) {
-  std::string der;
-  ::testing::AssertionResult r = ReadTestPem(
-      "net/data/ssl/certificates/" + file_name, "CERTIFICATE", &der);
-  if (!r)
-    return r;
-  bssl::CertErrors errors;
-  *result = bssl::ParsedCertificate::Create(
-      bssl::UniquePtr<CRYPTO_BUFFER>(CRYPTO_BUFFER_new(
-          reinterpret_cast<const uint8_t*>(der.data()), der.size(), nullptr)),
-      {}, &errors);
+  const std::string path = "net/data/ssl/certificates/" + file_name;
+  *result = ReadCertFromFile(path);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "bssl::ParseCertificate::Create() failed:\n"
-           << errors.ToDebugString();
+           << "ReadCertFromFile(" << path << ") failed";
   }
   return ::testing::AssertionSuccess();
 }
@@ -172,7 +150,7 @@ class PathBuilderMultiRootWindowsTest : public ::testing::Test {
       c_by_d_, c_by_e_, d_by_d_, e_by_e_, f_by_e_;
 
   DeadlineTestingPathBuilderDelegate delegate_;
-  bssl::der::GeneralizedTime time_ = {2017, 3, 1, 0, 0, 0};
+  bssl::der::GeneralizedTime time_ = {2025, 10, 13, 0, 0, 0};
 
   const bssl::InitialExplicitPolicy initial_explicit_policy_ =
       bssl::InitialExplicitPolicy::kFalse;
@@ -191,8 +169,7 @@ void AddToStoreWithEKURestriction(
   crypto::ScopedPCCERT_CONTEXT os_cert(CertCreateCertificateContext(
       X509_ASN_ENCODING, cert->der_cert().data(), cert->der_cert().size()));
 
-  CERT_ENHKEY_USAGE usage;
-  UNSAFE_TODO(memset(&usage, 0, sizeof(usage)));
+  CERT_ENHKEY_USAGE usage = {};
   CertSetEnhancedKeyUsage(os_cert.get(), &usage);
   if (usage_identifier) {
     CertAddEnhancedKeyUsageIdentifier(os_cert.get(), usage_identifier);

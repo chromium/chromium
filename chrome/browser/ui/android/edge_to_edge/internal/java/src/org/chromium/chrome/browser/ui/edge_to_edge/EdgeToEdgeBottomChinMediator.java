@@ -25,8 +25,8 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSupplier;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -108,8 +108,7 @@ class EdgeToEdgeBottomChinMediator
         mBottomControlsStacker = bottomControlsStacker;
         mFullscreenManager = fullscreenManager;
         mDefaultVisibility = defaultVisibility;
-        mIsConstraintChinScrollableWhenStacking =
-                EdgeToEdgeUtils.isConstraintBottomChinScrollableWhenStacking();
+        mIsConstraintChinScrollableWhenStacking = true;
 
         // Add observers.
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(this);
@@ -301,8 +300,6 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-        assert BottomControlsStacker.isDispatchingYOffset();
-
         mYOffset = layerYOffset;
 
         if (isVisible()) {

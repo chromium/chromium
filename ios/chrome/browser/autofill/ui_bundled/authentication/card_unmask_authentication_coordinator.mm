@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
 
+#import "base/memory/weak_ptr.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller.h"
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_coordinator.h"
@@ -14,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/web/public/web_state.h"
 
 @interface CardUnmaskAuthenticationCoordinator () <
     UIAdaptivePresentationControllerDelegate>
@@ -36,6 +39,8 @@
   std::unique_ptr<autofill::CardUnmaskPromptViewBridge> _cvcInputViewBridge;
 
   id<BrowserCoordinatorCommands> _browserCoordinatorCommands;
+
+  std::unique_ptr<web::WebState::ScopedWebContentCoverer> _webContentCoverer;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -58,22 +63,17 @@
 // TODO(crbug.com/333925306): Create a CVC input coordinator/mediator out of the
 // legacy CardUnmaskPromptViewBridge and move this function there.
 - (void)continueWithCvcAuth {
-  // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
-  // tests can easily inject their AutofillClient.
-  autofill::ChromeAutofillClientIOS* client =
-      AutofillTabHelper::FromWebState(
-          self.browser->GetWebStateList()->GetActiveWebState())
-          ->autofill_client();
+  auto* client = autofill::AutofillClientIOS::FromWebState(
+      self.browser->GetWebStateList()->GetActiveWebState());
   CHECK(client);
-  autofill::payments::IOSChromePaymentsAutofillClient* paymentsClient =
-      client->GetPaymentsAutofillClient();
+  auto* paymentsClient = client->GetPaymentsAutofillClient();
   CHECK(paymentsClient);
 
   id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          BrowserCoordinatorCommands);
 
-  autofill::CardUnmaskPromptControllerImpl* cvcInputModelController =
+  autofill::CardUnmaskPromptController* cvcInputModelController =
       paymentsClient->GetCardUnmaskPromptModel();
   _cvcInputViewBridge = std::make_unique<autofill::CardUnmaskPromptViewBridge>(
       cvcInputModelController, _navigationController,
@@ -100,6 +100,10 @@
                                      browser:self.browser];
     [_selectionCoordinator start];
   }
+  // This will call DidCoverWebContent(), and automatically call
+  // DidRevealWebContent() when the coordinator is deallocated.
+  _webContentCoverer = std::make_unique<web::WebState::ScopedWebContentCoverer>(
+      self.browser->GetWebStateList()->GetActiveWebState());
 
   [self.baseViewController presentViewController:_navigationController
                                         animated:YES
@@ -111,6 +115,10 @@
   [_navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
+
+  // Explicitly reset the coverer to reveal the web content immediately.
+  _webContentCoverer.reset();
+
   [_selectionCoordinator stop];
   _selectionCoordinator = nil;
   [_otpInputCoordinator stop];
@@ -122,6 +130,9 @@
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
+  // Explicitly reset the coverer to reveal the web content immediately.
+  _webContentCoverer.reset();
+
   [_browserCoordinatorCommands dismissCardUnmaskAuthentication];
 }
 

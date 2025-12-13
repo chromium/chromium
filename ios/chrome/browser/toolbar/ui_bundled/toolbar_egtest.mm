@@ -6,6 +6,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
@@ -136,8 +137,9 @@ void WaitForEmpyOmnibox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_replaceText(@"foo")];
 
-  id<GREYMatcher> cancelButton =
-      grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+  id<GREYMatcher> cancelButton = grey_allOf(
+      grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
   [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -284,9 +286,11 @@ void WaitForEmpyOmnibox() {
   } else {
     // Typing shield might be unavailable if there are any suggestions
     // displayed in the popup.
+    id<GREYMatcher> cancelButton =
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier);
     [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kToolbarCancelOmniboxEditButtonIdentifier)]
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
         performAction:grey_tap()];
   }
 
@@ -389,7 +393,7 @@ void WaitForEmpyOmnibox() {
     [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   } else {
     id<GREYMatcher> cancelButton =
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier);
     DCHECK(cancelButton);
 
     [[EarlGrey

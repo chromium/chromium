@@ -4,12 +4,18 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 
+#include "base/test/protobuf_matchers.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace bound_session_credentials {
+
+using ::testing::Optional;
+using ::testing::UnorderedPointwise;
+
 namespace {
 
 BoundSessionParams CreateBoundSessionParamsWithNoCookies(
@@ -59,6 +65,18 @@ void UpdateAllDomains(BoundSessionParams& params, const std::string& domain) {
   refresh_url = refresh_url.ReplaceComponents(replacements);
   params.set_refresh_url(refresh_url.spec());
 }
+
+RegisterBoundSessionPayload::Credential
+CreateRegisterBoundSessionPayloadCredential(std::string_view name,
+                                            std::string_view domain,
+                                            std::string_view path) {
+  RegisterBoundSessionPayload::Credential credential;
+  credential.name = name;
+  credential.scope = RegisterBoundSessionPayload::Scope{
+      .domain = std::string(domain), .path = std::string(path)};
+  return credential;
+}
+
 }  // namespace
 
 TEST(BoundSessionParamsUtilTest, Timestamp) {
@@ -93,18 +111,6 @@ TEST(BoundSessionParamsUtilTest, ParamsValidWithCookieDomainWithLeadingDot) {
 TEST(BoundSessionParamsUtilTest, ParamsValidWithCookieDomainWithoutLeadingDot) {
   BoundSessionParams params = CreateValidBoundSessionParams();
   UpdateAllCookieCredentialsDomains(params, "google.com");
-  EXPECT_TRUE(AreParamsValid(params));
-}
-
-TEST(BoundSessionParamsUtilTest, ParamsValidWithoutWsbetaParam) {
-  BoundSessionParams params = CreateValidBoundSessionParams();
-  params.clear_is_wsbeta();
-  EXPECT_TRUE(AreParamsValid(params));
-}
-
-TEST(BoundSessionParamsUtilTest, ParamsValidWithExplicitWsbetaParam) {
-  BoundSessionParams params = CreateValidBoundSessionParams();
-  params.set_is_wsbeta(true);
   EXPECT_TRUE(AreParamsValid(params));
 }
 
@@ -398,6 +404,105 @@ TEST(BoundSessionParamsUtilTest, ResolveEndpointPathAbsoluteOtherScheme) {
 TEST(BoundSessionParamsUtilTest, ResolveEndpointPathInvalidRequestUrl) {
   GURL resolved_url = ResolveEndpointPath(GURL(), "https://google.com/path1");
   EXPECT_FALSE(resolved_url.is_valid());
+}
+
+class CreateBoundSessionsParamsFromRegistrationPayloadTest
+    : public testing::TestWithParam<SessionOrigin> {};
+
+TEST_P(CreateBoundSessionsParamsFromRegistrationPayloadTest, Valid) {
+  const SessionOrigin session_origin = GetParam();
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL("https://example.google.com/request"),
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
+          session_origin);
+
+  ASSERT_TRUE(AreParamsValid(params));
+  EXPECT_EQ(params.session_id(), "test_session_id");
+  EXPECT_EQ(params.refresh_url(), "https://example.google.com/rotate");
+  EXPECT_EQ(params.wrapped_key(), "secret");
+  EXPECT_EQ(params.site(), "https://google.com/");
+  EXPECT_EQ(params.session_origin(), session_origin);
+  const std::vector<bound_session_credentials::Credential>
+      expected_credentials = {
+          CreateCookieCredential("test_cookie_name_1", ".google.com", "/"),
+          CreateCookieCredential("test_cookie_name_2", ".google.com", "/")};
+  EXPECT_THAT(
+      params.credentials(),
+      UnorderedPointwise(base::test::EqualsProto(), expected_credentials));
+}
+
+TEST_P(CreateBoundSessionsParamsFromRegistrationPayloadTest, InvalidSite) {
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
+
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL("https://example.google.com/request"),
+          /*site=*/GURL(), /*wrapped_key=*/"secret", GetParam());
+
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+TEST_P(CreateBoundSessionsParamsFromRegistrationPayloadTest,
+       InvalidRequestUrl) {
+  RegisterBoundSessionPayload payload;
+  payload.session_id = "test_session_id";
+  payload.refresh_url = "/rotate";
+  payload.credentials = {CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_1",
+                             /*domain=*/".google.com", /*path=*/"/"),
+                         CreateRegisterBoundSessionPayloadCredential(
+                             /*name=*/"test_cookie_name_2",
+                             /*domain=*/".google.com", /*path=*/"/")};
+
+  const BoundSessionParams params =
+      CreateBoundSessionsParamsFromRegistrationPayload(
+          payload, /*request_url=*/GURL(),
+          /*site=*/GURL("https://google.com/"), /*wrapped_key=*/"secret",
+          GetParam());
+
+  EXPECT_FALSE(AreParamsValid(params));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    CreateBoundSessionsParamsFromRegistrationPayloadTest,
+    testing::Values(SessionOrigin::SESSION_ORIGIN_REGISTRATION,
+                    SessionOrigin::SESSION_ORIGIN_OAML));
+
+TEST(GetSessionOriginHistogramSuffixTest, Registration) {
+  EXPECT_THAT(GetSessionOriginHistogramSuffix(
+                  SessionOrigin::SESSION_ORIGIN_REGISTRATION),
+              testing::Optional(std::string_view(".FromRegistration")));
+}
+
+TEST(GetSessionOriginHistogramSuffixTest, OAuthMultiLogin) {
+  EXPECT_THAT(
+      GetSessionOriginHistogramSuffix(SessionOrigin::SESSION_ORIGIN_OAML),
+      testing::Optional(std::string_view(".FromOAuthMultiLogin")));
+}
+
+TEST(GetSessionOriginHistogramSuffixTest, Unspecified) {
+  EXPECT_EQ(GetSessionOriginHistogramSuffix(
+                SessionOrigin::SESSION_ORIGIN_UNSPECIFIED),
+            std::nullopt);
 }
 
 }  // namespace bound_session_credentials

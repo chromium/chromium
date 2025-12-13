@@ -23,6 +23,7 @@ import android.os.Parcel;
 import android.os.ResultReceiver;
 import android.util.Pair;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
@@ -36,17 +37,20 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.blink.mojom.GetCredentialOptions;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
+import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.password_manager.BrowserAssistedLoginType;
 import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
@@ -55,9 +59,13 @@ import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.net.GURLUtils;
+import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.Origin;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -68,8 +76,7 @@ import java.util.List;
 /** Uses the Google Play Services Fido2 APIs. Holds the logic of each request. */
 @JNINamespace("webauthn")
 @NullMarked
-public class Fido2CredentialRequest
-        implements Callback<Pair<Integer, Intent>>, WebauthnBrowserBridge.Provider {
+public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     private static final String TAG = "Fido2CredentialRequest";
     static final String NON_EMPTY_ALLOWLIST_ERROR_MSG =
             "Authentication request must have non-empty allowList";
@@ -79,15 +86,26 @@ public class Fido2CredentialRequest
     static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
+    static final String CANCELLED_ERROR_MSG = "[16] Cancelled by user.";
+
+    @IntDef({
+        Fido2ApiRequestType.MAKE_CREDENTIAL,
+        Fido2ApiRequestType.GET_ASSERTION,
+        Fido2ApiRequestType.GET_ASSERTION_HYBRID,
+        Fido2ApiRequestType.GET_ASSERTION_LEGACY
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Fido2ApiRequestType {
+        int MAKE_CREDENTIAL = 0;
+        int GET_ASSERTION = 1;
+        int GET_ASSERTION_HYBRID = 2;
+        int GET_ASSERTION_LEGACY = 3;
+    }
 
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
     // available.
     private final boolean mPlayServicesAvailable;
-    private final AuthenticationContextProvider mAuthenticationContextProvider;
-    private @Nullable GetCredentialResponseCallback mGetCredentialCallback;
-    private @Nullable MakeCredentialResponseCallback mMakeCredentialCallback;
-    private @Nullable AuthenticatorErrorResponseCallback mErrorCallback;
-    private @Nullable RecordOutcomeCallback mRecordingCallback;
+    private AuthenticationContextProvider mAuthenticationContextProvider;
     private CredManHelper mCredManHelper;
     private final IdentityCredentialsHelper mIdentityCredentialsHelper;
     private Barrier mBarrier;
@@ -97,22 +115,33 @@ public class Fido2CredentialRequest
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
     private @Nullable WebauthnBrowserBridge mBrowserBridge;
-    // Values set when errors occur, for metrics recording.
-    private @GetAssertionOutcome int mGetAssertionErrorOutcome = GetAssertionOutcome.OTHER_FAILURE;
-    private @MakeCredentialOutcome int mMakeCredentialErrorOutcome =
-            MakeCredentialOutcome.OTHER_FAILURE;
 
-    public enum ConditionalUiState {
-        NONE,
-        WAITING_FOR_RP_ID_VALIDATION,
-        WAITING_FOR_CREDENTIAL_LIST,
-        WAITING_FOR_SELECTION,
-        REQUEST_SENT_TO_PLATFORM,
-        CANCEL_PENDING,
-        CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE,
+    private RunnableTimer mImmediateTimer = new RunnableTimer();
+
+    // Some modes do credential enumeration in advance of calling a platform API to get a passkey
+    // assertion. In these cases a cancellation before the final request is sent can prevent
+    // UI from being shown. Cancellation is ignored if the UI might already be showing.
+    @IntDef({
+        CancellableUiState.NONE,
+        CancellableUiState.WAITING_FOR_RP_ID_VALIDATION,
+        CancellableUiState.WAITING_FOR_CREDENTIAL_LIST,
+        CancellableUiState.WAITING_FOR_SELECTION,
+        CancellableUiState.REQUEST_SENT_TO_PLATFORM,
+        CancellableUiState.CANCEL_PENDING,
+        CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CancellableUiState {
+        int NONE = 0;
+        int WAITING_FOR_RP_ID_VALIDATION = 1;
+        int WAITING_FOR_CREDENTIAL_LIST = 2;
+        int WAITING_FOR_SELECTION = 3;
+        int REQUEST_SENT_TO_PLATFORM = 4;
+        int CANCEL_PENDING = 5;
+        int CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE = 6;
     }
 
-    private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
+    private @CancellableUiState int mCancellableUiState = CancellableUiState.NONE;
 
     // Not null when the GMSCore-created ClientDataJson needs to be overridden or when using the
     // CredMan API.
@@ -135,54 +164,61 @@ public class Fido2CredentialRequest
         mCredManHelper =
                 new CredManHelper(mAuthenticationContextProvider, this, mPlayServicesAvailable);
         mIdentityCredentialsHelper = new IdentityCredentialsHelper(mAuthenticationContextProvider);
-        mBarrier = new Barrier(this::returnErrorAndResetCallback);
+        mBarrier = new Barrier(mAuthenticationContextProvider);
     }
 
-    private void recordOutcomeMetric() {
-        if (mRecordingCallback != null) {
-            int resultValue;
-            if (mGetCredentialCallback != null) {
-                resultValue = mGetAssertionErrorOutcome;
-            } else {
-                assert mMakeCredentialCallback != null;
-                resultValue = mMakeCredentialErrorOutcome;
-            }
-            mRecordingCallback.record(resultValue);
-            mRecordingCallback = null;
+    public void setAuthenticationContextProvider(
+            AuthenticationContextProvider authenticationContextProvider) {
+        mAuthenticationContextProvider = authenticationContextProvider;
+    }
+
+    private void returnErrorAndResetCallback(
+            int errorCode,
+            @Nullable Integer response,
+            @Nullable @CredentialRequestResult Integer credentialRequestResult) {
+
+        log(TAG, "returnErrorAndResetCallback: %d", errorCode);
+        WebauthnRequestCallback requestCallback =
+                mAuthenticationContextProvider.getRequestCallback();
+        if (requestCallback == null) return;
+        switch (requestCallback.getCallbackType()) {
+            case WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL:
+                RequestMetrics.Builder makeBuilder = new RequestMetrics.Builder();
+                if (response != null) {
+                    makeBuilder.setMakeCredentialOutcome(response);
+                }
+                if (credentialRequestResult != null) {
+                    makeBuilder.setMakeCredentialResult(credentialRequestResult);
+                }
+                requestCallback.onComplete(
+                        WebauthnRequestResponse.forFailedMakeCredential(
+                                errorCode, makeBuilder.build()));
+                break;
+            case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
+                RequestMetrics.Builder builder =
+                        new RequestMetrics.Builder();
+                if (response != null) {
+                    builder.setGetAssertionOutcome(response);
+                }
+                if (credentialRequestResult != null) {
+                    builder.setGetAssertionResult(credentialRequestResult);
+                }
+                requestCallback.onComplete(
+                        WebauthnRequestResponse.forFailedGetCredential(errorCode, builder.build()));
+                break;
+            case WebauthnRequestCallback.CallbackType.REPORT:
+                requestCallback.onComplete(WebauthnRequestResponse.forReport(errorCode));
+                break;
+            default:
+                assert false : "Unknown callback type";
         }
     }
 
-    // Used by CredManHelper to record a specific outcome before calling
-    // returnErrorAndResetCallback.
-    private void setOutcomeAndReturnError(int error, @Nullable Integer metricsOutcome) {
-        if (metricsOutcome != null) {
-            if (mGetCredentialCallback != null) {
-                mGetAssertionErrorOutcome = metricsOutcome;
-            } else if (mMakeCredentialCallback != null) {
-                mMakeCredentialErrorOutcome = metricsOutcome;
-            }
-        }
-        returnErrorAndResetCallback(error);
-    }
-
-    private void returnErrorAndResetCallback(int error) {
-        recordOutcomeMetric();
-        assert mErrorCallback != null;
-        if (mErrorCallback == null) return;
-        mErrorCallback.onError(error);
-        mErrorCallback = null;
-        mGetCredentialCallback = null;
-        mMakeCredentialCallback = null;
-    }
-
-    private Barrier.Mode getBarrierMode() {
+    private @Barrier.Mode int getBarrierMode() {
         @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        Barrier.Mode mode;
+        @Barrier.Mode int mode;
         switch (support) {
             case CredManSupport.DISABLED:
-                mode = Barrier.Mode.ONLY_FIDO_2_API;
-                break;
-            case CredManSupport.IF_REQUIRED:
                 mode = Barrier.Mode.ONLY_FIDO_2_API;
                 break;
             case CredManSupport.FULL_UNLESS_INAPPLICABLE:
@@ -209,33 +245,21 @@ public class Fido2CredentialRequest
      * @param origin The origin that made the WebAuthn call.
      * @param topOrigin The origin of the main frame.
      * @param paymentOptions The options set by Secure Payment Confirmation.
-     * @param callback Success callback.
-     * @param errorCallback Failure callback.
-     * @param recordingCallback Called for reporting error metrics with detailed reasons. This
-     *     should not be called when the operation is successful, because the Success callback does
-     *     this implicitly.
      */
-    @SuppressWarnings("NewApi")
     public void handleMakeCredentialRequest(
             PublicKeyCredentialCreationOptions options,
             @Nullable Bundle maybeBrowserOptions,
             Origin origin,
             @Nullable Origin topOrigin,
-            @Nullable PaymentOptions paymentOptions,
-            MakeCredentialResponseCallback callback,
-            AuthenticatorErrorResponseCallback errorCallback,
-            RecordOutcomeCallback recordingCallback) {
+            @Nullable PaymentOptions paymentOptions) {
         log(TAG, "handleMakeCredentialRequest");
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
-        assert mMakeCredentialCallback == null && mErrorCallback == null;
+        assert mAuthenticationContextProvider.getRequestCallback() != null;
         assert (paymentOptions != null)
                 == (options.isPaymentCredentialCreation
                         && ContentFeatureMap.isEnabled(
                                 BlinkFeatures.SECURE_PAYMENT_CONFIRMATION_BROWSER_BOUND_KEYS));
-        mMakeCredentialCallback = callback;
-        mErrorCallback = errorCallback;
-        mRecordingCallback = recordingCallback;
         @Nullable Origin remoteDesktopOrigin = null;
         if (options.remoteDesktopClientOverride != null
                 && isChrome(mAuthenticationContextProvider.getWebContents())) {
@@ -253,8 +277,10 @@ public class Fido2CredentialRequest
                 remoteDesktopOrigin,
                 (result) -> {
                     if (result.securityCheckResult != AuthenticatorStatus.SUCCESS) {
-                        mMakeCredentialErrorOutcome = MakeCredentialOutcome.SECURITY_ERROR;
-                        returnErrorAndResetCallback(result.securityCheckResult);
+                        returnErrorAndResetCallback(
+                                result.securityCheckResult,
+                                MakeCredentialOutcome.SECURITY_ERROR,
+                                /* credentialRequestResult= */ null);
                         return;
                     }
                     continueMakeCredentialRequestAfterRpIdValidation(
@@ -306,19 +332,17 @@ public class Fido2CredentialRequest
                             options.relyingParty.name,
                             topOrigin);
             if (clientDataHash == null) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                returnErrorAndResetCallback(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        /* response= */ null,
+                        /* credentialRequestResult= */ null);
                 return;
             }
         }
 
         if (options.isConditional) {
             mIdentityCredentialsHelper.handleConditionalCreateRequest(
-                    options,
-                    convertOriginToString(origin),
-                    mClientDataJson,
-                    clientDataHash,
-                    assertNonNull(mMakeCredentialCallback),
-                    this::setOutcomeAndReturnError);
+                    options, convertOriginToString(origin), mClientDataJson, clientDataHash);
             return;
         }
 
@@ -326,7 +350,10 @@ public class Fido2CredentialRequest
             if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
                 if (!mPlayServicesAvailable) {
                     logError(TAG, "Google Play Services' Fido2 API is not available.");
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    returnErrorAndResetCallback(
+                            AuthenticatorStatus.UNKNOWN_ERROR,
+                            /* response= */ null,
+                            /* credentialRequestResult= */ null);
                     return;
                 }
                 try {
@@ -337,12 +364,19 @@ public class Fido2CredentialRequest
                                     Uri.parse(convertOriginToString(origin)),
                                     clientDataHash,
                                     maybeBrowserOptions,
-                                    getMaybeResultReceiver(),
-                                    this::onGotPendingIntent,
-                                    this::onBinderCallException);
+                                    getMaybeResultReceiver(Fido2ApiRequestType.MAKE_CREDENTIAL),
+                                    (pendingIntent) ->
+                                            onGotPendingIntent(
+                                                    pendingIntent,
+                                                    Fido2ApiRequestType.MAKE_CREDENTIAL),
+                                    (e) ->
+                                            onBinderCallException(
+                                                    e, Fido2ApiRequestType.MAKE_CREDENTIAL));
                 } catch (NoSuchAlgorithmException e) {
-                    mMakeCredentialErrorOutcome = MakeCredentialOutcome.ALGORITHM_NOT_SUPPORTED;
-                    returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
+                    returnErrorAndResetCallback(
+                            AuthenticatorStatus.ALGORITHM_UNSUPPORTED,
+                            MakeCredentialOutcome.ALGORITHM_NOT_SUPPORTED,
+                            /* credentialRequestResult= */ null);
                     return;
                 }
                 return;
@@ -352,10 +386,13 @@ public class Fido2CredentialRequest
                             options,
                             convertOriginToString(origin),
                             mClientDataJson,
-                            clientDataHash,
-                            mMakeCredentialCallback,
-                            this::setOutcomeAndReturnError);
-            if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+                            clientDataHash);
+            if (result != AuthenticatorStatus.SUCCESS) {
+                returnErrorAndResetCallback(
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+            }
             return;
         }
 
@@ -380,16 +417,22 @@ public class Fido2CredentialRequest
                             options,
                             convertOriginToString(origin),
                             mClientDataJson,
-                            clientDataHash,
-                            mMakeCredentialCallback,
-                            this::setOutcomeAndReturnError);
-            if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+                            clientDataHash);
+            if (result != AuthenticatorStatus.SUCCESS) {
+                returnErrorAndResetCallback(
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+            }
             return;
         }
 
         if (!mPlayServicesAvailable) {
             logError(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
             return;
         }
 
@@ -401,12 +444,16 @@ public class Fido2CredentialRequest
                             Uri.parse(convertOriginToString(origin)),
                             clientDataHash,
                             maybeBrowserOptions,
-                            getMaybeResultReceiver(),
-                            this::onGotPendingIntent,
-                            this::onBinderCallException);
+                            getMaybeResultReceiver(Fido2ApiRequestType.MAKE_CREDENTIAL),
+                            (pendingIntent) ->
+                                    onGotPendingIntent(
+                                            pendingIntent, Fido2ApiRequestType.MAKE_CREDENTIAL),
+                            (e) -> onBinderCallException(e, Fido2ApiRequestType.MAKE_CREDENTIAL));
         } catch (NoSuchAlgorithmException e) {
-            mMakeCredentialErrorOutcome = MakeCredentialOutcome.ALGORITHM_NOT_SUPPORTED;
-            returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.ALGORITHM_UNSUPPORTED,
+                    MakeCredentialOutcome.ALGORITHM_NOT_SUPPORTED,
+                    /* credentialRequestResult= */ null);
             return;
         }
     }
@@ -420,82 +467,78 @@ public class Fido2CredentialRequest
      * @param topOrigin The origin of the main frame.
      * @param payment Options for Secure Payment Confirmation. May only be non-null if `frameHost`
      *     is non-null.
-     * @param callback Success callback.
-     * @param errorCallback Failure callback.
-     * @param recordingCallback Called for reporting error metrics with detailed reasons. This
-     *     should not be called when the operation is successful, because the Success callback does
-     *     this implicitly.
      */
     @SuppressWarnings("NewApi")
     public void handleGetCredentialRequest(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             Origin origin,
             @Nullable Origin topOrigin,
-            @Nullable PaymentOptions payment,
-            GetCredentialResponseCallback callback,
-            AuthenticatorErrorResponseCallback errorCallback,
-            RecordOutcomeCallback recordingCallback) {
+            @Nullable PaymentOptions payment) {
         log(TAG, "handleGetCredentialRequest");
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         assert frameHost != null;
-        assert mGetCredentialCallback == null && mErrorCallback == null;
-        mGetCredentialCallback = callback;
-        mErrorCallback = errorCallback;
-        mRecordingCallback = recordingCallback;
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
 
         // TODO(https://crbug.com/381219428): Handle challenge_url.
-        if (options.challenge == null) {
-            returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+        if (publicKeyOptions.challenge == null) {
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.NOT_IMPLEMENTED,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
             return;
         }
 
         if (options.mediation == Mediation.IMMEDIATE) {
             WebContents webContents = mAuthenticationContextProvider.getWebContents();
-            // TODO(https://crbug.com/393055190): Implement Immediate Mediation for when CredMan is
-            // not available.
-            if (!isChrome(webContents) || getBarrierMode() == Barrier.Mode.ONLY_FIDO_2_API) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
-                return;
-            }
-            if (options.allowCredentials != null && options.allowCredentials.length != 0) {
-                mGetAssertionErrorOutcome = GetAssertionOutcome.SECURITY_ERROR;
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+            if (publicKeyOptions.allowCredentials != null
+                    && publicKeyOptions.allowCredentials.length != 0) {
+                log(TAG, "Immediate Get called with non-empty allowCredentials");
+                returnErrorAndResetCallback(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        GetAssertionOutcome.SECURITY_ERROR,
+                        /* credentialRequestResult= */ null);
                 return;
             }
             if (webContents != null && webContents.isIncognito()) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                return;
+                log(TAG, "Immediate Get called in Incognito mode");
+                mBarrier.setImmediateIncognito();
             }
         }
 
         @Nullable Origin remoteDesktopOrigin = null;
-        if (options.extensions.remoteDesktopClientOverride != null
+        if (publicKeyOptions.extensions.remoteDesktopClientOverride != null
                 && isChrome(mAuthenticationContextProvider.getWebContents())) {
             // SECURITY: remoteDesktopClientOverride comes from the renderer process and is
             // untrusted. We only use the override origin if the "caller origin" is explicitly
             // allowlisted with an enterprise policy.
             // This validation happens in the security checker's ValidateDomainAndRelyingPartyID
             // method.
-            remoteDesktopOrigin = new Origin(options.extensions.remoteDesktopClientOverride.origin);
+            remoteDesktopOrigin =
+                    new Origin(publicKeyOptions.extensions.remoteDesktopClientOverride.origin);
         }
-        mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
+        mCancellableUiState = CancellableUiState.WAITING_FOR_RP_ID_VALIDATION;
         frameHost.performGetAssertionWebAuthSecurityChecks(
-                options.relyingPartyId,
+                publicKeyOptions.relyingPartyId,
                 origin,
                 payment != null,
                 remoteDesktopOrigin,
                 (results) -> {
-                    if (mConditionalUiState
-                            == ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {
+                    if (mCancellableUiState
+                            == CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {
                         // This request was canceled while waiting for RP ID validation to
                         // complete.
-                        returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                        returnErrorAndResetCallback(
+                                AuthenticatorStatus.ABORT_ERROR,
+                                /* response= */ null,
+                                /* credentialRequestResult= */ null);
                         return;
                     }
-                    mConditionalUiState = ConditionalUiState.NONE;
+                    mCancellableUiState = CancellableUiState.NONE;
                     if (results.securityCheckResult != AuthenticatorStatus.SUCCESS) {
-                        mGetAssertionErrorOutcome = GetAssertionOutcome.SECURITY_ERROR;
-                        returnErrorAndResetCallback(results.securityCheckResult);
+                        returnErrorAndResetCallback(
+                                results.securityCheckResult,
+                                GetAssertionOutcome.SECURITY_ERROR,
+                                /* credentialRequestResult= */ null);
                         return;
                     }
                     continueGetCredentialRequestAfterRpIdValidation(
@@ -505,40 +548,49 @@ public class Fido2CredentialRequest
 
     @SuppressWarnings("NewApi")
     private void continueGetCredentialRequestAfterRpIdValidation(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             Origin origin,
             @Nullable Origin topOrigin,
             @Nullable PaymentOptions payment,
             boolean isCrossOrigin) {
         log(TAG, "continueGetCredentialRequestAfterRpIdValidation");
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
         boolean hasAllowCredentials =
-                options.allowCredentials != null && options.allowCredentials.length != 0;
+                publicKeyOptions.allowCredentials != null
+                        && publicKeyOptions.allowCredentials.length != 0;
 
         if (!hasAllowCredentials) {
             // No UVM support for discoverable credentials.
-            options.extensions.userVerificationMethods = false;
+            publicKeyOptions.extensions.userVerificationMethods = false;
         }
 
-        if (options.extensions.appid != null) {
+        if (publicKeyOptions.extensions.appid != null) {
             mAppIdExtensionUsed = true;
         }
 
         final String callerOriginString = convertOriginToString(origin);
         byte[] clientDataHash = null;
         if (!is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.APP)) {
-            assert options.challenge != null;
+            assert publicKeyOptions.challenge != null;
 
             boolean effectiveCrossOrigin = isCrossOrigin;
             String effectiveOriginString = callerOriginString;
             // Handle remote desktop client override for ClientDataJSON.
             // The origin from remoteDesktopClientOverride is only used after validation in
             // ValidateDomainAndRelyingPartyID() confirmed that the "caller origin" is allowlisted.
-            if (options.extensions.remoteDesktopClientOverride != null) {
+            if (publicKeyOptions.extensions.remoteDesktopClientOverride != null) {
                 effectiveOriginString =
                         convertOriginToString(
-                                new Origin(options.extensions.remoteDesktopClientOverride.origin));
+                                new Origin(
+                                        publicKeyOptions
+                                                .extensions
+                                                .remoteDesktopClientOverride
+                                                .origin));
                 effectiveCrossOrigin =
-                        !options.extensions.remoteDesktopClientOverride.sameOriginWithAncestors;
+                        !publicKeyOptions
+                                .extensions
+                                .remoteDesktopClientOverride
+                                .sameOriginWithAncestors;
             }
             clientDataHash =
                     buildClientDataJsonAndComputeHash(
@@ -546,13 +598,16 @@ public class Fido2CredentialRequest
                                     ? ClientDataRequestType.PAYMENT_GET
                                     : ClientDataRequestType.WEB_AUTHN_GET,
                             effectiveOriginString,
-                            options.challenge,
+                            publicKeyOptions.challenge,
                             effectiveCrossOrigin,
                             payment,
-                            options.relyingPartyId,
+                            publicKeyOptions.relyingPartyId,
                             topOrigin);
             if (clientDataHash == null) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                returnErrorAndResetCallback(
+                        AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                        /* response= */ null,
+                        /* credentialRequestResult= */ null);
                 return;
             }
         } else {
@@ -561,16 +616,27 @@ public class Fido2CredentialRequest
 
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
             if (options.mediation == Mediation.CONDITIONAL) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+                returnErrorAndResetCallback(
+                        AuthenticatorStatus.NOT_IMPLEMENTED,
+                        /* response= */ null,
+                        /* credentialRequestResult= */ null);
                 return;
             }
             if (CredManSupportProvider.getCredManSupportForWebView() == CredManSupport.DISABLED) {
                 if (!mPlayServicesAvailable) {
                     logError(TAG, "Google Play Services' Fido2 Api is not available.");
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    returnErrorAndResetCallback(
+                            AuthenticatorStatus.UNKNOWN_ERROR,
+                            /* response= */ null,
+                            /* credentialRequestResult= */ null);
                     return;
                 }
-                maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
+                maybeDispatchGetAssertionRequest(
+                        options,
+                        callerOriginString,
+                        clientDataHash,
+                        null,
+                        Fido2ApiRequestType.GET_ASSERTION);
                 return;
             }
             int result =
@@ -579,30 +645,32 @@ public class Fido2CredentialRequest
                             callerOriginString,
                             mClientDataJson,
                             clientDataHash,
-                            mGetCredentialCallback,
-                            this::setOutcomeAndReturnError,
                             /* ignoreGpm= */ false);
-            if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+            if (result != AuthenticatorStatus.SUCCESS) {
+                returnErrorAndResetCallback(
+                        result,
+                        /* response= */ null,
+                        CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+            }
             return;
         }
 
         // Payments should still go through Google Play Services.
-        // TODO(https://crbug.com/393055190): Immediate mediation should work with parallel mode
-        // when it is made to work with Chrome UI.
         final byte[] finalClientDataHash = clientDataHash;
-        if (payment == null
-                && (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN
-                        || options.mediation == Mediation.IMMEDIATE)) {
-            if (options.mediation == Mediation.CONDITIONAL) {
+        if (payment == null && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
+            if (options.mediation == Mediation.CONDITIONAL
+                    || options.mediation == Mediation.IMMEDIATE) {
+                if (options.mediation == Mediation.IMMEDIATE) {
+                    startImmediateTimer();
+                }
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
                 mCredManHelper.startPrefetchRequest(
                         options,
                         convertOriginToString(origin),
                         mClientDataJson,
                         clientDataHash,
-                        mGetCredentialCallback,
-                        this::setOutcomeAndReturnError,
                         mBarrier,
+                        this::stopImmediateTimer,
                         /* ignoreGpm= */ false);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
@@ -614,19 +682,12 @@ public class Fido2CredentialRequest
                                             options,
                                             convertOriginToString(origin),
                                             finalClientDataHash,
-                                            /* credentialId= */ null));
+                                            /* credentialId= */ null,
+                                            Fido2ApiRequestType.GET_ASSERTION));
                 }
                 checkForMatchingCredentials(options, origin, clientDataHash);
             } else {
-                if (options.mediation == Mediation.IMMEDIATE) {
-                    // TODO(https://crbug.com/408002783): This should have a distinct
-                    // GetAssertionOutcome for logging.
-                    mCredManHelper.setNoCredentialsFallback(
-                            () ->
-                                    this.returnErrorAndResetCallback(
-                                            AuthenticatorStatus.NOT_ALLOWED_ERROR));
-                } else if (is(
-                        mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
+                if (is(mAuthenticationContextProvider.getWebContents(), WebauthnMode.CHROME)) {
                     // WebauthnMode.CHROME_3PP_ENABLED will keep using CredMan's no credentials UI.
                     mCredManHelper.setNoCredentialsFallback(
                             () ->
@@ -634,7 +695,8 @@ public class Fido2CredentialRequest
                                             options,
                                             convertOriginToString(origin),
                                             finalClientDataHash,
-                                            /* credentialId= */ null));
+                                            /* credentialId= */ null,
+                                            Fido2ApiRequestType.GET_ASSERTION));
                 } else {
                     mCredManHelper.setNoCredentialsFallback(null);
                 }
@@ -644,17 +706,23 @@ public class Fido2CredentialRequest
                                 convertOriginToString(origin),
                                 mClientDataJson,
                                 clientDataHash,
-                                mGetCredentialCallback,
-                                this::setOutcomeAndReturnError,
                                 /* ignoreGpm= */ false);
-                if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
+                if (response != AuthenticatorStatus.SUCCESS) {
+                    returnErrorAndResetCallback(
+                            response,
+                            /* response= */ null,
+                            CredentialRequestResult.ANDROID_CRED_MAN_ERROR);
+                }
             }
             return;
         }
 
         if (!mPlayServicesAvailable) {
             logError(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
             return;
         }
 
@@ -663,7 +731,10 @@ public class Fido2CredentialRequest
         WebContents webContents = mAuthenticationContextProvider.getWebContents();
         if (options.mediation == Mediation.CONDITIONAL
                 && is(webContents, WebauthnMode.CHROME_3PP_ENABLED)) {
-            returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.NOT_IMPLEMENTED,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
             return;
         }
 
@@ -679,26 +750,28 @@ public class Fido2CredentialRequest
                         callerOriginString,
                         mClientDataJson,
                         clientDataHash,
-                        mGetCredentialCallback,
-                        this::setOutcomeAndReturnError,
                         mBarrier,
+                        null,
                         /* ignoreGpm= */ true);
             } else {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
-            mConditionalUiState = ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST;
+            mCancellableUiState = CancellableUiState.WAITING_FOR_CREDENTIAL_LIST;
             GmsCoreGetCredentialsHelper.Reason reason;
             if (payment != null) {
                 reason = GmsCoreGetCredentialsHelper.Reason.PAYMENT;
-            } else if (options.relyingPartyId.equals("google.com")) {
+            } else if (publicKeyOptions.relyingPartyId.equals("google.com")) {
                 reason = GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_GOOGLE_RP;
             } else {
                 reason = GmsCoreGetCredentialsHelper.Reason.GET_ASSERTION_NON_GOOGLE;
             }
+            if (options.mediation == Mediation.IMMEDIATE) {
+                startImmediateTimer();
+            }
             GmsCoreGetCredentialsHelper.getInstance()
                     .getCredentials(
                             mAuthenticationContextProvider,
-                            options.relyingPartyId,
+                            publicKeyOptions.relyingPartyId,
                             reason,
                             (credentials) ->
                                     mBarrier.onFido2ApiSuccessful(
@@ -720,32 +793,37 @@ public class Fido2CredentialRequest
             checkForMatchingCredentials(options, origin, clientDataHash);
             return;
         }
-        maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
+        maybeDispatchGetAssertionRequest(
+                options,
+                callerOriginString,
+                clientDataHash,
+                null,
+                Fido2ApiRequestType.GET_ASSERTION);
     }
 
-    public void cancelConditionalGetAssertion() {
-        log(TAG, "cancelConditionalGetAssertion");
-        mCredManHelper.cancelConditionalGetAssertion();
+    public void cancelGetAssertion() {
+        log(TAG, "cancelGetAssertion");
+        mCredManHelper.cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
 
-        switch (mConditionalUiState) {
-            case WAITING_FOR_RP_ID_VALIDATION:
-                mConditionalUiState = ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE;
+        switch (mCancellableUiState) {
+            case CancellableUiState.WAITING_FOR_RP_ID_VALIDATION:
+                mCancellableUiState = CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE;
                 break;
-            case WAITING_FOR_CREDENTIAL_LIST:
-                mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
+            case CancellableUiState.WAITING_FOR_CREDENTIAL_LIST:
+                mCancellableUiState = CancellableUiState.CANCEL_PENDING;
                 mBarrier.onFido2ApiCancelled();
                 break;
-            case WAITING_FOR_SELECTION:
+            case CancellableUiState.WAITING_FOR_SELECTION:
                 assumeNonNull(getBridge());
                 getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
-                mConditionalUiState = ConditionalUiState.NONE;
+                mCancellableUiState = CancellableUiState.NONE;
                 mBarrier.onFido2ApiCancelled();
                 break;
-            case REQUEST_SENT_TO_PLATFORM:
+            case CancellableUiState.REQUEST_SENT_TO_PLATFORM:
                 // If the platform successfully completes the getAssertion then cancelation is
                 // ignored, but if it returns an error then CANCEL_PENDING removes the option to
                 // try again.
-                mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
+                mCancellableUiState = CancellableUiState.CANCEL_PENDING;
                 break;
             default:
                 // No action
@@ -800,54 +878,45 @@ public class Fido2CredentialRequest
                 });
     }
 
-    public void handleGetMatchingCredentialIdsRequest(
-            String relyingPartyId,
-            byte[][] allowCredentialIds,
-            boolean requireThirdPartyPayment,
-            GetMatchingCredentialIdsResponseCallback callback,
-            AuthenticatorErrorResponseCallback errorCallback) {
-        log(TAG, "handleGetMatchingCredentialIdsRequest");
-        assert mErrorCallback == null;
-        mErrorCallback = errorCallback;
+    public void handleReportRequest(PublicKeyCredentialReportOptions options, Origin origin) {
+        RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
+        assert frameHost != null;
 
-        if (!mPlayServicesAvailable) {
-            logError(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+        if (options.unknownCredentialId == null
+                && options.allAcceptedCredentials == null
+                && options.currentUserDetails == null) {
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
             return;
         }
 
-        GmsCoreGetCredentialsHelper.getInstance()
-                .getCredentials(
-                        mAuthenticationContextProvider,
-                        relyingPartyId,
-                        GmsCoreGetCredentialsHelper.Reason.GET_MATCHING_CREDENTIAL_IDS,
-                        (credentials) ->
-                                onGetMatchingCredentialIdsListReceived(
-                                        credentials,
-                                        allowCredentialIds,
-                                        requireThirdPartyPayment,
-                                        callback),
-                        this::onBinderCallException);
-    }
+        frameHost.performReportWebAuthSecurityChecks(
+                options.relyingPartyId,
+                origin,
+                (results) -> {
+                    log(
+                            TAG,
+                            "handleReportRequest.onSecurityCheckComplete, isCrossOrigin: %b,"
+                                    + " securityCheckResult: %d",
+                            results.isCrossOrigin,
+                            results.securityCheckResult);
 
-    private void onGetMatchingCredentialIdsListReceived(
-            List<WebauthnCredentialDetails> retrievedCredentials,
-            byte[][] allowCredentialIds,
-            boolean requireThirdPartyPayment,
-            GetMatchingCredentialIdsResponseCallback callback) {
-        log(TAG, "onGetMatchingCredentialIdsListReceived");
-        List<byte[]> matchingCredentialIds = new ArrayList<>();
-        for (WebauthnCredentialDetails credential : retrievedCredentials) {
-            if (requireThirdPartyPayment && !credential.mIsPayment) continue;
-
-            for (byte[] allowedId : allowCredentialIds) {
-                if (Arrays.equals(allowedId, credential.mCredentialId)) {
-                    matchingCredentialIds.add(credential.mCredentialId);
-                    break;
-                }
-            }
-        }
-        callback.onResponse(matchingCredentialIds);
+                    WebauthnRequestCallback callback =
+                            assumeNonNull(mAuthenticationContextProvider.getRequestCallback());
+                    if (results.securityCheckResult != AuthenticatorStatus.SUCCESS) {
+                        returnErrorAndResetCallback(
+                                results.securityCheckResult,
+                                /* response= */ null,
+                                /* credentialRequestResult= */ null);
+                        return;
+                    }
+                    mIdentityCredentialsHelper.handleReportRequest(
+                            options, convertOriginToString(origin));
+                    callback.onComplete(
+                            WebauthnRequestResponse.forReport(AuthenticatorStatus.SUCCESS));
+                });
     }
 
     public void overrideBrowserBridgeForTesting(WebauthnBrowserBridge bridge) {
@@ -862,26 +931,34 @@ public class Fido2CredentialRequest
         mBarrier = barrier;
     }
 
+    public void setImmediateTimerForTesting(RunnableTimer timer) {
+        mImmediateTimer = timer;
+    }
+
     private void onWebauthnCredentialDetailsListReceived(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             String callerOriginString,
             byte @Nullable [] clientDataHash,
             List<WebauthnCredentialDetails> credentials) {
         log(TAG, "onWebauthnCredentialDetailsListReceived");
-        assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
-                || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
-
+        assert mCancellableUiState == CancellableUiState.WAITING_FOR_CREDENTIAL_LIST
+                || mCancellableUiState == CancellableUiState.CANCEL_PENDING;
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
         boolean hasAllowCredentials =
-                options.allowCredentials != null && options.allowCredentials.length != 0;
+                publicKeyOptions.allowCredentials != null
+                        && publicKeyOptions.allowCredentials.length != 0;
         boolean isConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         assert isConditionalRequest || !hasAllowCredentials;
+        boolean isImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
-        if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
+        if (mCancellableUiState == CancellableUiState.CANCEL_PENDING) {
             // The request was completed synchronously when the cancellation was received,
             // so no need to return an error to the renderer.
-            mConditionalUiState = ConditionalUiState.NONE;
+            mCancellableUiState = CancellableUiState.NONE;
             return;
         }
+
+        stopImmediateTimer();
 
         List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
         for (WebauthnCredentialDetails credential : credentials) {
@@ -892,7 +969,7 @@ public class Fido2CredentialRequest
                 continue;
             }
 
-            for (PublicKeyCredentialDescriptor descriptor : options.allowCredentials) {
+            for (PublicKeyCredentialDescriptor descriptor : publicKeyOptions.allowCredentials) {
                 if (Arrays.equals(credential.mCredentialId, descriptor.id)) {
                     discoverableCredentials.add(credential);
                     break;
@@ -901,15 +978,21 @@ public class Fido2CredentialRequest
         }
 
         if (!isConditionalRequest
+                && !isImmediateRequest
                 && discoverableCredentials.isEmpty()
                 && getBarrierMode() != Barrier.Mode.BOTH) {
-            mConditionalUiState = ConditionalUiState.NONE;
-            // When no passkeys are present for a non-conditional request, pass the request
-            // through to GMSCore. It will show an error message to the user, but can offer the
-            // user alternatives to use external passkeys.
+            mCancellableUiState = CancellableUiState.NONE;
+            // When no passkeys are present for a non-conditional non-immediate request pass the
+            // request through to GMSCore. It will show an error message to the user, but can offer
+            // the user alternatives to use external passkeys.
             // If the barrier mode is BOTH, the no passkeys state is handled by Chrome. Do not pass
             // the request to GMSCore.
-            maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
+            maybeDispatchGetAssertionRequest(
+                    options,
+                    callerOriginString,
+                    clientDataHash,
+                    null,
+                    Fido2ApiRequestType.GET_ASSERTION);
             return;
         }
 
@@ -918,23 +1001,62 @@ public class Fido2CredentialRequest
             hybridCallback =
                     () ->
                             dispatchHybridGetAssertionRequest(
-                                    options, callerOriginString, clientDataHash);
+                                    publicKeyOptions,
+                                    callerOriginString,
+                                    clientDataHash,
+                                    isConditionalRequest);
         }
 
-        mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
+        @AssertionMediationType int mediationType = AssertionMediationType.MODAL;
+        if (isConditionalRequest) {
+            mediationType = AssertionMediationType.CONDITIONAL;
+        } else if (isImmediateRequest) {
+            if (options.password) {
+                mediationType = AssertionMediationType.IMMEDIATE_WITH_PASSWORDS;
+            } else {
+                if (discoverableCredentials.isEmpty()) {
+                    log(TAG, "Immediate Get request did not display UI: no passkeys found");
+                    // Since passwords were not requested as a part of this immediate request, we
+                    // already know there are no credentials to provide, so the request can be
+                    // rejected now.
+                    returnErrorAndResetCallback(
+                            AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                            /* response= */ null,
+                            /* credentialRequestResult= */ null);
+                    return;
+                }
+                mediationType = AssertionMediationType.IMMEDIATE_PASSKEYS_ONLY;
+            }
+        }
+
+        mCancellableUiState = CancellableUiState.WAITING_FOR_SELECTION;
         assumeNonNull(getBridge());
         getBridge()
                 .onCredentialsDetailsListReceived(
                         mAuthenticationContextProvider.getRenderFrameHost(),
                         discoverableCredentials,
-                        isConditionalRequest,
-                        (selectedCredentialId) ->
+                        mediationType,
+                        (selectedCredential) -> {
+                            if (selectedCredential.webAuthnCredential() != null) {
                                 maybeDispatchGetAssertionRequest(
                                         options,
                                         callerOriginString,
                                         clientDataHash,
-                                        selectedCredentialId),
-                        hybridCallback);
+                                        selectedCredential.webAuthnCredential(),
+                                        Fido2ApiRequestType.GET_ASSERTION);
+                            } else {
+                                assertNonNull(selectedCredential.passwordCredential());
+                                WebauthnRequestCallback callback =
+                                        mAuthenticationContextProvider.getRequestCallback();
+                                if (callback != null) {
+                                    callback.onComplete(
+                                            WebauthnRequestResponse.forSuccessfulPassword(
+                                                    selectedCredential.passwordCredential()));
+                                }
+                            }
+                        },
+                        hybridCallback,
+                        (reason) -> handleNonCredentialReturn(options, reason));
     }
 
     /**
@@ -954,21 +1076,20 @@ public class Fido2CredentialRequest
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void checkForMatchingCredentials(
-            PublicKeyCredentialRequestOptions options,
-            Origin callerOrigin,
-            byte @Nullable [] clientDataHash) {
+            GetCredentialOptions options, Origin callerOrigin, byte @Nullable [] clientDataHash) {
         log(TAG, "checkForMatchingCredentials");
-        assert options.allowCredentials != null;
-        assert options.allowCredentials.length > 0;
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
+        assert publicKeyOptions.allowCredentials != null;
+        assert publicKeyOptions.allowCredentials.length > 0;
         assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
-        Barrier.Mode mode = getBarrierMode();
+        @Barrier.Mode int mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
         GmsCoreGetCredentialsHelper.getInstance()
                 .getCredentials(
                         mAuthenticationContextProvider,
-                        options.relyingPartyId,
+                        publicKeyOptions.relyingPartyId,
                         GmsCoreGetCredentialsHelper.Reason.CHECK_FOR_MATCHING_CREDENTIALS,
                         (credentials) ->
                                 checkForMatchingCredentialsReceived(
@@ -985,24 +1106,23 @@ public class Fido2CredentialRequest
                                     convertOriginToString(callerOrigin),
                                     mClientDataJson,
                                     clientDataHash,
-                                    mGetCredentialCallback,
-                                    this::setOutcomeAndReturnError,
                                     mode == Barrier.Mode.BOTH);
                         });
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     private void checkForMatchingCredentialsReceived(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             Origin callerOrigin,
             byte @Nullable [] clientDataHash,
             List<WebauthnCredentialDetails> retrievedCredentials) {
         log(TAG, "checkForMatchingCredentialsReceived");
-        assert options.allowCredentials != null;
-        assert options.allowCredentials.length > 0;
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
+        assert publicKeyOptions.allowCredentials != null;
+        assert publicKeyOptions.allowCredentials.length > 0;
         assert options.mediation != Mediation.CONDITIONAL;
         assert mPlayServicesAvailable;
-        Barrier.Mode mode = getBarrierMode();
+        @Barrier.Mode int mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
         for (WebauthnCredentialDetails credential : retrievedCredentials) {
@@ -1012,7 +1132,7 @@ public class Fido2CredentialRequest
                 continue;
             }
 
-            for (PublicKeyCredentialDescriptor allowedId : options.allowCredentials) {
+            for (PublicKeyCredentialDescriptor allowedId : publicKeyOptions.allowCredentials) {
                 if (allowedId.type != PublicKeyCredentialType.PUBLIC_KEY) {
                     continue;
                 }
@@ -1026,7 +1146,8 @@ public class Fido2CredentialRequest
                             options,
                             convertOriginToString(callerOrigin),
                             clientDataHash,
-                            /* credentialId= */ null);
+                            /* credentialId= */ null,
+                            Fido2ApiRequestType.GET_ASSERTION_LEGACY);
                     return;
                 }
             }
@@ -1040,7 +1161,8 @@ public class Fido2CredentialRequest
                                 options,
                                 convertOriginToString(callerOrigin),
                                 clientDataHash,
-                                /* credentialId= */ null));
+                                /* credentialId= */ null,
+                                Fido2ApiRequestType.GET_ASSERTION));
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.
         mCredManHelper.startGetRequest(
@@ -1048,138 +1170,160 @@ public class Fido2CredentialRequest
                 convertOriginToString(callerOrigin),
                 mClientDataJson,
                 clientDataHash,
-                mGetCredentialCallback,
-                this::setOutcomeAndReturnError,
                 mode == Barrier.Mode.BOTH);
     }
 
     private void maybeDispatchGetAssertionRequest(
-            PublicKeyCredentialRequestOptions options,
+            GetCredentialOptions options,
             String callerOriginString,
             byte @Nullable [] clientDataHash,
-            byte @Nullable [] credentialId) {
-        log(TAG, "maybeDispatchGetAssertionRequest");
-        assert mConditionalUiState == ConditionalUiState.NONE
-                || mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM
-                || mConditionalUiState == ConditionalUiState.WAITING_FOR_SELECTION;
+            byte @Nullable [] credentialId,
+            @Fido2ApiRequestType int requestType) {
+        log(TAG, "maybeDispatchGetAssertionRequest for request type: %d", requestType);
+        PublicKeyCredentialRequestOptions publicKeyOptions = assumeNonNull(options.publicKey);
+        assert mCancellableUiState == CancellableUiState.NONE
+                || mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM
+                || mCancellableUiState == CancellableUiState.WAITING_FOR_SELECTION;
 
         // If this is called a second time while the first sign-in attempt is still outstanding,
         // ignore the second call.
-        if (mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM) {
+        if (mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM) {
             logError(
                     TAG,
                     "Received a second credential selection while the first still in progress.");
             return;
         }
 
-        mConditionalUiState = ConditionalUiState.NONE;
+        mCancellableUiState = CancellableUiState.NONE;
         if (credentialId != null) {
-            if (credentialId.length == 0) {
-                if (options.mediation == Mediation.CONDITIONAL) {
-                    // An empty credential ID means an error from native code, which can happen if
-                    // the embedder does not support Conditional UI.
-                    logError(TAG, "Empty credential ID from account selection.");
-                    assumeNonNull(getBridge());
-                    getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
-                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
-                    return;
-                }
-                // For non-conditional requests, an empty credential ID means the user dismissed
-                // the account selection dialog.
-                mGetAssertionErrorOutcome = GetAssertionOutcome.USER_CANCELLATION;
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
-                return;
-            }
-            PublicKeyCredentialDescriptor selected_credential = new PublicKeyCredentialDescriptor();
-            selected_credential.type = PublicKeyCredentialType.PUBLIC_KEY;
-            selected_credential.id = credentialId;
-            selected_credential.transports = new int[] {AuthenticatorTransport.INTERNAL};
-            options.allowCredentials = new PublicKeyCredentialDescriptor[] {selected_credential};
+            assert (credentialId.length > 0);
+            PublicKeyCredentialDescriptor selectedCredential = new PublicKeyCredentialDescriptor();
+            selectedCredential.type = PublicKeyCredentialType.PUBLIC_KEY;
+            selectedCredential.id = credentialId;
+            selectedCredential.transports = new int[] {AuthenticatorTransport.INTERNAL};
+            publicKeyOptions.allowCredentials =
+                    new PublicKeyCredentialDescriptor[] {selectedCredential};
         }
 
         if (options.mediation == Mediation.CONDITIONAL) {
-            mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
+            mCancellableUiState = CancellableUiState.REQUEST_SENT_TO_PLATFORM;
         }
 
         Fido2ApiCallHelper.getInstance()
                 .invokeFido2GetAssertion(
                         mAuthenticationContextProvider,
-                        options,
+                        publicKeyOptions,
                         Uri.parse(callerOriginString),
                         clientDataHash,
-                        getMaybeResultReceiver(),
-                        this::onGotPendingIntent,
-                        this::onBinderCallException);
+                        getMaybeResultReceiver(requestType),
+                        (pendingIntent) -> onGotPendingIntent(pendingIntent, requestType),
+                        (e) -> onBinderCallException(e, requestType));
+    }
+
+    private void handleNonCredentialReturn(GetCredentialOptions options, Integer reason) {
+        if (options.mediation == Mediation.IMMEDIATE) {
+            log(TAG, "Immediate Get request did not display UI: Code " + reason);
+            // TODO(https://crbug.com/433543129): Add metrics for the rejection reason
+            // in order to distinguish user dismissal from no credentials being
+            // available.
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
+            return;
+        }
+
+        if (reason == NonCredentialReturnReason.ERROR) {
+            logError(TAG, "Bottom sheet not displayed due to an error.");
+            assumeNonNull(getBridge());
+            getBridge().cleanupRequest(mAuthenticationContextProvider.getRenderFrameHost());
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    /* credentialRequestResult= */ null);
+            return;
+        }
+
+        // Conditional mediation should never return from the user closing the sheet.
+        assert (options.mediation != Mediation.CONDITIONAL);
+        assert (reason == NonCredentialReturnReason.USER_DISMISSED);
+        returnErrorAndResetCallback(
+                AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                GetAssertionOutcome.USER_CANCELLATION,
+                CredentialRequestResult.USER_CANCELLED);
     }
 
     private void dispatchHybridGetAssertionRequest(
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
-            byte @Nullable [] clientDataHash) {
+            byte @Nullable [] clientDataHash,
+            boolean isConditional) {
         log(TAG, "dispatchHybridGetAssertionRequest");
-        assert mConditionalUiState == ConditionalUiState.NONE
-                || mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM
-                || mConditionalUiState == ConditionalUiState.WAITING_FOR_SELECTION;
+        assert mCancellableUiState == CancellableUiState.NONE
+                || mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM
+                || mCancellableUiState == CancellableUiState.WAITING_FOR_SELECTION;
 
-        if (mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM) {
+        if (mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM) {
             logError(
                     TAG,
                     "Received a second credential selection while the first still in progress.");
             return;
         }
-        mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
+        if (isConditional) {
+            mCancellableUiState = CancellableUiState.REQUEST_SENT_TO_PLATFORM;
+        } else {
+            mCancellableUiState = CancellableUiState.NONE;
+        }
 
-        Fido2ApiCallParams params =
-                WebauthnModeProvider.getInstance()
-                        .getFido2ApiCallParams(mAuthenticationContextProvider.getWebContents());
-        assertNonNull(mAuthenticationContextProvider.getContext());
-        assertNonNull(params);
-        Fido2ApiCall call = new Fido2ApiCall(mAuthenticationContextProvider.getContext(), params);
-        Parcel args = call.start();
-        String callbackDescriptor = params.mCallbackDescriptor;
-        Fido2ApiCall.PendingIntentResult result =
-                new Fido2ApiCall.PendingIntentResult(callbackDescriptor);
-        args.writeStrongBinder(result);
-        args.writeInt(1); // This indicates that the following options are present.
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options,
-                Uri.parse(callerOriginString),
-                clientDataHash,
-                /* tunnelId= */ null,
-                /* resultReceiver= */ null,
-                args);
-        Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_HYBRID_SIGN,
-                        Fido2ApiCall.TRANSACTION_HYBRID_SIGN,
-                        args,
-                        result);
-        task.addOnSuccessListener(this::onGotPendingIntent);
-        task.addOnFailureListener(this::onBinderCallException);
+        Fido2ApiCallHelper.getInstance()
+                .invokeFido2HybridGetAssertion(
+                        mAuthenticationContextProvider,
+                        options,
+                        Uri.parse(callerOriginString),
+                        clientDataHash,
+                        (pendingIntent) ->
+                                onGotPendingIntent(
+                                        pendingIntent, Fido2ApiRequestType.GET_ASSERTION_HYBRID),
+                        (e) -> onBinderCallException(e, Fido2ApiRequestType.GET_ASSERTION_HYBRID));
     }
 
     // Handles a PendingIntent from the GMSCore FIDO library.
-    private void onGotPendingIntent(PendingIntent pendingIntent) {
+    private void onGotPendingIntent(
+            PendingIntent pendingIntent, @Fido2ApiRequestType int requestType) {
         log(TAG, "onGotPendingIntent");
         if (pendingIntent == null) {
             logError(TAG, "Didn't receive a pending intent.");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    getCredentialRequestResult(
+                            requestType, /* success= */ false, /* ukmOutcome= */ null));
             return;
         }
 
-        if (!mAuthenticationContextProvider.getIntentSender().showIntent(pendingIntent, this)) {
+        Callback<Pair<Integer, @Nullable Intent>> callback =
+                (result) -> onResult((Pair<Integer, @Nullable Intent>) result, requestType);
+        if (!mAuthenticationContextProvider.getIntentSender().showIntent(pendingIntent, callback)) {
             logError(TAG, "Failed to send intent to FIDO API");
-            returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            returnErrorAndResetCallback(
+                    AuthenticatorStatus.UNKNOWN_ERROR,
+                    /* response= */ null,
+                    getCredentialRequestResult(
+                            requestType, /* success= */ false, /* ukmOutcome= */ null));
             return;
         }
     }
 
-    private void onBinderCallException(Exception e) {
+    private void onBinderCallException(Exception e, @Fido2ApiRequestType int requestType) {
         logError(TAG, "FIDO2 API call failed", e);
-        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        returnErrorAndResetCallback(
+                AuthenticatorStatus.NOT_ALLOWED_ERROR,
+                /* response= */ null,
+                getCredentialRequestResult(
+                        requestType, /* success= */ false, /* ukmOutcome= */ null));
     }
 
-    private @Nullable ResultReceiver getMaybeResultReceiver() {
+    private @Nullable ResultReceiver getMaybeResultReceiver(@Fido2ApiRequestType int requestType) {
         // The FIDO API traditionally returned a PendingIntent, which the calling app was expected
         // to invoke and then receive the result from the Activity it launched.
         //
@@ -1194,12 +1338,12 @@ public class Fido2CredentialRequest
         return new ResultReceiver(new Handler(Looper.getMainLooper())) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
-                onResultReceiverResult(resultData);
+                onResultReceiverResult(resultData, requestType);
             }
         };
     }
 
-    private void onResultReceiverResult(Bundle resultData) {
+    private void onResultReceiverResult(Bundle resultData, @Fido2ApiRequestType int requestType) {
         log(TAG, "onResultReceiverResult");
         int errorCode = AuthenticatorStatus.UNKNOWN_ERROR;
         Object response = null;
@@ -1213,22 +1357,79 @@ public class Fido2CredentialRequest
             }
         }
 
-        handleFido2Response(errorCode, response);
+        Integer browserAssistedLoginType = null;
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
+            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
+            }
+        }
+
+        handleFido2Response(
+                errorCode,
+                response,
+                /* getAssertionOutcome= */ null,
+                /* makeCredentialOutcome= */ null,
+                requestType,
+                browserAssistedLoginType);
+    }
+
+    private @Nullable Integer getCredentialRequestResult(
+            @Fido2ApiRequestType int requestType, boolean success, @Nullable Integer ukmOutcome) {
+        log(TAG, "getCredentialRequestResult: success: " + success + " ukmOutcome: " + ukmOutcome);
+        if (!success) {
+            if (ukmOutcome != null && ukmOutcome == GetAssertionOutcome.USER_CANCELLATION) {
+                return CredentialRequestResult.USER_CANCELLED;
+            }
+            if (ukmOutcome != null && ukmOutcome == GetAssertionOutcome.UI_TIMEOUT) {
+                return CredentialRequestResult.TIMEOUT;
+            }
+            if (ukmOutcome != null && ukmOutcome == MakeCredentialOutcome.USER_CANCELLATION) {
+                return CredentialRequestResult.USER_CANCELLED;
+            }
+            if (ukmOutcome != null && ukmOutcome == MakeCredentialOutcome.UI_TIMEOUT) {
+                return CredentialRequestResult.TIMEOUT;
+            }
+        }
+        if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+            return success
+                    ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
+                    : CredentialRequestResult.ANDROID_FIDO2_ERROR;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+            return success
+                    ? CredentialRequestResult.ANDROID_FIDO2_HYBRID_SUCCESS
+                    : CredentialRequestResult.ANDROID_FIDO2_HYBRID_ERROR;
+        } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+            return success
+                    ? CredentialRequestResult.ANDROID_FIDO2_LEGACY_SUCCESS
+                    : CredentialRequestResult.ANDROID_FIDO2_LEGACY_ERROR;
+        } else if (requestType == Fido2ApiRequestType.MAKE_CREDENTIAL) {
+            return success
+                    ? CredentialRequestResult.ANDROID_FIDO2_SUCCESS
+                    : CredentialRequestResult.ANDROID_FIDO2_ERROR;
+        }
+        return null;
     }
 
     // Handles the result.
-    @Override
-    public void onResult(Pair<Integer, Intent> result) {
+    public void onResult(
+            Pair<Integer, @Nullable Intent> result, @Fido2ApiRequestType int requestType) {
         log(TAG, "onResult");
         final int resultCode = result.first;
-        final Intent data = result.second;
+        final @Nullable Intent data = result.second;
         int errorCode = AuthenticatorStatus.UNKNOWN_ERROR;
         Object response = null;
 
-        assert mConditionalUiState == ConditionalUiState.NONE
-                || mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM
-                || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
+        assert mCancellableUiState == CancellableUiState.NONE
+                || mCancellableUiState == CancellableUiState.REQUEST_SENT_TO_PLATFORM
+                || mCancellableUiState == CancellableUiState.CANCEL_PENDING;
 
+        @GetAssertionOutcome Integer getAssertionOutcome = null;
+        @MakeCredentialOutcome Integer makeCredentialOutcome = null;
         switch (resultCode) {
             case Activity.RESULT_OK:
                 if (data == null) {
@@ -1243,10 +1444,18 @@ public class Fido2CredentialRequest
                 break;
 
             case Activity.RESULT_CANCELED:
-                if (mGetCredentialCallback != null) {
-                    mGetAssertionErrorOutcome = GetAssertionOutcome.USER_CANCELLATION;
-                } else if (mMakeCredentialCallback != null) {
-                    mMakeCredentialErrorOutcome = MakeCredentialOutcome.USER_CANCELLATION;
+                WebauthnRequestCallback callback =
+                        assumeNonNull(mAuthenticationContextProvider.getRequestCallback());
+                switch (callback.getCallbackType()) {
+                    case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
+                        getAssertionOutcome = GetAssertionOutcome.USER_CANCELLATION;
+                        break;
+                    case WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL:
+                        makeCredentialOutcome = MakeCredentialOutcome.USER_CANCELLATION;
+                        break;
+                    case WebauthnRequestCallback.CallbackType.REPORT:
+                        assert false;
+                        break;
                 }
                 errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 break;
@@ -1256,13 +1465,37 @@ public class Fido2CredentialRequest
                 break;
         }
 
-        handleFido2Response(errorCode, response);
+        Integer browserAssistedLoginType = null;
+        if (WebauthnFeatureMap.getInstance()
+                .isEnabled(WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_REQUEST_EXTRA_BUNDLE)) {
+            if (requestType == Fido2ApiRequestType.GET_ASSERTION) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_STORED_IN_GPM;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_HYBRID) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_HYBRID_OR_SECURITY_KEY;
+            } else if (requestType == Fido2ApiRequestType.GET_ASSERTION_LEGACY) {
+                browserAssistedLoginType = BrowserAssistedLoginType.PASSKEY_UNKNOWN;
+            }
+        }
+
+        handleFido2Response(
+                errorCode,
+                response,
+                getAssertionOutcome,
+                makeCredentialOutcome,
+                requestType,
+                browserAssistedLoginType);
     }
 
-    private void handleFido2Response(int errorCode, @Nullable Object response) {
+    private void handleFido2Response(
+            int errorCode,
+            @Nullable Object response,
+            @Nullable @GetAssertionOutcome Integer getAssertionOutcome,
+            @Nullable @MakeCredentialOutcome Integer makeCredentialOutcome,
+            @Fido2ApiRequestType int requestType,
+            @Nullable Integer browserAssistedLoginType) {
         log(TAG, "handleFido2Response");
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
-        if (mConditionalUiState != ConditionalUiState.NONE) {
+        if (mCancellableUiState != CancellableUiState.NONE) {
             if (response == null || response instanceof Pair) {
                 if (response != null) {
                     Pair<Integer, String> error = (Pair<Integer, String>) response;
@@ -1275,22 +1508,29 @@ public class Fido2CredentialRequest
                     errorCode = convertError(error);
                 }
 
-                if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
-                    mConditionalUiState = ConditionalUiState.NONE;
+                if (mCancellableUiState == CancellableUiState.CANCEL_PENDING) {
+                    mCancellableUiState = CancellableUiState.NONE;
                     assumeNonNull(getBridge());
                     getBridge().cleanupRequest(frameHost);
                     mBarrier.onFido2ApiCancelled();
                 } else {
                     // The user can try again by selecting another conditional UI credential.
-                    mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
+                    mCancellableUiState = CancellableUiState.WAITING_FOR_SELECTION;
                 }
                 return;
             }
-            mConditionalUiState = ConditionalUiState.NONE;
+            mCancellableUiState = CancellableUiState.NONE;
             assumeNonNull(getBridge());
             getBridge().cleanupRequest(frameHost);
         }
 
+        WebauthnRequestCallback requestCallback =
+                mAuthenticationContextProvider.getRequestCallback();
+        if (requestCallback == null) {
+            return;
+        }
+        @WebauthnRequestCallback.CallbackType
+        int requestCallbackType = assumeNonNull(requestCallback).getCallbackType();
         if (response == null) {
             // Use the error already set.
         } else if (response instanceof Pair) {
@@ -1302,12 +1542,14 @@ public class Fido2CredentialRequest
                             + " "
                             + (error.second != null ? error.second : ""));
             errorCode = convertError(error);
-            if (mGetCredentialCallback != null) {
-                mGetAssertionErrorOutcome = getAssertionOutcomeCodeFromFidoError(error);
-            } else if (mMakeCredentialCallback != null) {
-                mMakeCredentialErrorOutcome = makeCredentialOutcomeCodeFromFidoError(error);
+            if (requestCallbackType == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL
+                    && getAssertionOutcome == null) {
+                getAssertionOutcome = getAssertionOutcomeCodeFromFidoError(error);
+            } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL
+                    && makeCredentialOutcome == null) {
+                makeCredentialOutcome = makeCredentialOutcomeCodeFromFidoError(error);
             }
-        } else if (mMakeCredentialCallback != null) {
+        } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL) {
             if (response instanceof MakeCredentialAuthenticatorResponse) {
                 MakeCredentialAuthenticatorResponse creationResponse =
                         (MakeCredentialAuthenticatorResponse) response;
@@ -1320,12 +1562,21 @@ public class Fido2CredentialRequest
                 if (mClientDataJson != null) {
                     creationResponse.info.clientDataJson = mClientDataJson;
                 }
-                mMakeCredentialCallback.onRegisterResponse(
-                        AuthenticatorStatus.SUCCESS, creationResponse);
-                mMakeCredentialCallback = null;
+                Integer makeCredentialResult =
+                        getCredentialRequestResult(
+                                requestType, /* success= */ true, /* ukmOutcome= */ null);
+                RequestMetrics.Builder builder =
+                        new RequestMetrics.Builder()
+                                .setMakeCredentialOutcome(MakeCredentialOutcome.SUCCESS);
+                if (makeCredentialResult != null) {
+                    builder.setMakeCredentialResult(makeCredentialResult);
+                }
+                requestCallback.onComplete(
+                        WebauthnRequestResponse.forSuccessfulMakeCredential(
+                                creationResponse, builder.build()));
                 return;
             }
-        } else if (mGetCredentialCallback != null) {
+        } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL) {
             if (response instanceof GetAssertionAuthenticatorResponse) {
                 GetAssertionAuthenticatorResponse r = (GetAssertionAuthenticatorResponse) response;
                 if (mClientDataJson != null) {
@@ -1334,13 +1585,40 @@ public class Fido2CredentialRequest
                     frameHost.notifyWebAuthnAssertionRequestSucceeded();
                 }
                 r.extensions.echoAppidExtension = mAppIdExtensionUsed;
-                mGetCredentialCallback.onCredentialResponse(r, /* passwordCredential= */ null);
-                mGetCredentialCallback = null;
+                Integer getAssertionResult =
+                        getCredentialRequestResult(
+                                requestType, /* success= */ true, /* ukmOutcome= */ null);
+                RequestMetrics.Builder builder =
+                        new RequestMetrics.Builder()
+                                .setGetAssertionOutcome(GetAssertionOutcome.SUCCESS);
+                if (getAssertionResult != null) {
+                    builder.setGetAssertionResult(getAssertionResult);
+                }
+                if (browserAssistedLoginType != null) {
+                    builder.setBrowserAssistedLoginType(browserAssistedLoginType);
+                }
+                requestCallback.onComplete(
+                        WebauthnRequestResponse.forSuccessfulGetAssertion(r, builder.build()));
                 return;
             }
         }
 
-        returnErrorAndResetCallback(errorCode);
+        if (requestCallbackType == WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL) {
+            returnErrorAndResetCallback(
+                    errorCode,
+                    makeCredentialOutcome,
+                    getCredentialRequestResult(
+                            requestType, /* success= */ false, makeCredentialOutcome));
+        } else if (requestCallbackType == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL) {
+            returnErrorAndResetCallback(
+                    errorCode,
+                    getAssertionOutcome,
+                    getCredentialRequestResult(
+                            requestType, /* success= */ false, getAssertionOutcome));
+        } else {
+            returnErrorAndResetCallback(
+                    errorCode, /* response= */ null, /* credentialRequestResult= */ null);
+        }
     }
 
     @MakeCredentialOutcome
@@ -1357,6 +1635,9 @@ public class Fido2CredentialRequest
                         || NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG.equals(errorMsg)) {
                     return MakeCredentialOutcome.RK_NOT_SUPPORTED;
                 }
+                if (CANCELLED_ERROR_MSG.equals(errorMsg)) {
+                    return MakeCredentialOutcome.USER_CANCELLATION;
+                }
                 return MakeCredentialOutcome.PLATFORM_NOT_ALLOWED;
             case Fido2Api.CONSTRAINT_ERR:
                 if (NO_SCREENLOCK_ERROR_MSG.equals(errorMsg)) {
@@ -1367,7 +1648,7 @@ public class Fido2CredentialRequest
                 if (CREDENTIAL_EXISTS_ERROR_MSG.equals(errorMsg)) {
                     return MakeCredentialOutcome.CREDENTIAL_EXCLUDED;
                 }
-                // else fallthrough.
+            // else fallthrough.
             default:
                 return MakeCredentialOutcome.OTHER_FAILURE;
         }
@@ -1387,6 +1668,9 @@ public class Fido2CredentialRequest
                         || NON_VALID_ALLOWED_CREDENTIALS_ERROR_MSG.equals(errorMsg)) {
                     return GetAssertionOutcome.RK_NOT_SUPPORTED;
                 }
+                if (CANCELLED_ERROR_MSG.equals(errorMsg)) {
+                    return GetAssertionOutcome.USER_CANCELLATION;
+                }
                 return GetAssertionOutcome.PLATFORM_NOT_ALLOWED;
             case Fido2Api.CONSTRAINT_ERR:
                 if (NO_SCREENLOCK_ERROR_MSG.equals(errorMsg)) {
@@ -1397,7 +1681,7 @@ public class Fido2CredentialRequest
                 if (LOW_LEVEL_ERROR_MSG.equals(errorMsg)) {
                     return GetAssertionOutcome.CREDENTIAL_NOT_RECOGNIZED;
                 }
-                // else fallthrough.
+            // else fallthrough.
             default:
                 return GetAssertionOutcome.OTHER_FAILURE;
         }
@@ -1430,7 +1714,7 @@ public class Fido2CredentialRequest
                 // The request is not allowed, possibly because the user denied permission.
                 return AuthenticatorStatus.NOT_ALLOWED_ERROR;
             case Fido2Api.DATA_ERR:
-                // Incoming requests were malformed/inadequate. Fallthrough.
+            // Incoming requests were malformed/inadequate. Fallthrough.
             case Fido2Api.NOT_SUPPORTED_ERR:
                 // Request parameters were not supported.
                 return AuthenticatorStatus.ANDROID_NOT_SUPPORTED_ERROR;
@@ -1443,14 +1727,14 @@ public class Fido2CredentialRequest
                 if (CREDENTIAL_EXISTS_ERROR_MSG.equals(errorMsg)) {
                     return AuthenticatorStatus.CREDENTIAL_EXCLUDED;
                 }
-                // else fallthrough.
+            // else fallthrough.
             case Fido2Api.UNKNOWN_ERR:
                 if (LOW_LEVEL_ERROR_MSG.equals(errorMsg)) {
                     // The error message returned from GmsCore when the user attempted to use a
                     // credential that is not registered with a U2F security key.
                     return AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 }
-                // fall through
+            // fall through
             default:
                 return AuthenticatorStatus.UNKNOWN_ERROR;
         }
@@ -1494,6 +1778,30 @@ public class Fido2CredentialRequest
         return messageDigest.digest();
     }
 
+    private void startImmediateTimer() {
+        mImmediateTimer.startTimer(
+                DeviceFeatureList.sWebAuthnImmmediateTimeoutMs.getValue(),
+                this::onImmediateTimeout);
+    }
+
+    private void stopImmediateTimer() {
+        mImmediateTimer.cancelTimer();
+    }
+
+    private void onImmediateTimeout() {
+        WebauthnRequestCallback requestCallback =
+                mAuthenticationContextProvider.getRequestCallback();
+        if (requestCallback == null) {
+            return;
+        }
+        assert requestCallback.getCallbackType()
+                == WebauthnRequestCallback.CallbackType.GET_CREDENTIAL;
+        logError(TAG, "Timed out waiting for immediate request");
+        mCredManHelper.cancelGetAssertion(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        mBarrier.onFido2ApiCancelled(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        mCancellableUiState = CancellableUiState.CANCEL_PENDING;
+    }
+
     @Override
     public @Nullable WebauthnBrowserBridge getBridge() {
         if (!isChrome(mAuthenticationContextProvider.getWebContents())) {
@@ -1521,5 +1829,7 @@ public class Fido2CredentialRequest
         String getOptionsToJson(ByteBuffer serializedOptions);
 
         byte @Nullable [] getCredentialResponseFromJson(String json);
+
+        String reportOptionsToJson(ByteBuffer serializedOptions);
     }
 }

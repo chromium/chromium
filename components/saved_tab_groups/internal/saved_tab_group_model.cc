@@ -214,9 +214,15 @@ void SavedTabGroupModel::UpdateVisualDataLocally(
 
 void SavedTabGroupModel::MakeTabGroupSharedForTesting(
     const LocalTabGroupID& local_group_id,
-    CollaborationId collaboration_id) {
+    syncer::CollaborationId collaboration_id) {
   SavedTabGroup* const group = GetMutableGroup(local_group_id);
   group->SetCollaborationId(std::move(collaboration_id));
+}
+
+void SavedTabGroupModel::MakeTabGroupUnsharedForTesting(
+    const LocalTabGroupID& local_group_id) {
+  SavedTabGroup* const group = GetMutableGroup(local_group_id);
+  group->SetCollaborationId(std::nullopt);
 }
 
 void SavedTabGroupModel::SetIsTransitioningToSaved(
@@ -1035,19 +1041,10 @@ void SavedTabGroupModel::TogglePinState(base::Uuid id) {
   }
   const int index = GetIndexOf(id).value();
   SavedTabGroup saved_group = RemoveImpl(index);
-  bool was_pinned = saved_group.is_pinned();
   saved_group.SetPinned(!saved_group.is_pinned());
   InsertGroupImpl(std::move(saved_group));
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
-  }
-
-  if (was_pinned) {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_Unpinned"));
-  } else {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_SavedTabGroups_Pinned"));
   }
 }
 
@@ -1060,6 +1057,18 @@ void SavedTabGroupModel::UpdateArchivalStatus(const base::Uuid& id,
     archival_time = base::Time::Now();
   }
   group->SetArchivalTime(archival_time);
+
+  for (auto& observer : observers_) {
+    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
+  }
+}
+
+void SavedTabGroupModel::UpdateBookmarkNodeId(
+    const base::Uuid& id,
+    const std::optional<base::Uuid>& bookmark_node_id) {
+  SavedTabGroup* const group = GetMutableGroup(id);
+  CHECK(group);
+  group->SetBookmarkNodeId(bookmark_node_id);
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);

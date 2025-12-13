@@ -11,10 +11,10 @@
 
 namespace {
 // Top margin for the label.
-CGFloat kTopMargin = 20.;
-CGFloat kBottomMargin = 15;
+constexpr CGFloat kTopMargin = 20.;
+constexpr CGFloat kBottomMargin = 15;
 // Leading margin for the label.
-CGFloat kLeadingMargin = 24.;
+constexpr CGFloat kLeadingMargin = 24.;
 }  // namespace
 
 @interface IdentityChooserHeaderView : UITableViewHeaderFooterView

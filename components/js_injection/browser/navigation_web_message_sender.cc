@@ -75,7 +75,7 @@ std::string GetURLTypeForCrashKey(const GURL& url) {
   if (!url.is_valid()) {
     return "invalid";
   }
-  return url.scheme();
+  return url.GetScheme();
 }
 
 void CheckNavigationIsInPrimaryOngoingList(
@@ -140,9 +140,7 @@ namespace features {
 // This should be safe as it is very unlikely for apps to accidentally register
 // listeners with the same name as `kNavigationListenerAllowBFCacheObjectName` /
 // `kNavigationListenerDisableBFCacheObjectName`.
-BASE_FEATURE(kEnableNavigationListener,
-             "EnableNavigationListener",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableNavigationListener, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace js_injection {
@@ -362,9 +360,7 @@ void NavigationWebMessageSender::DidFinishNavigation(
 
 std::unique_ptr<WebMessage> NavigationWebMessageSender::CreateWebMessage(
     base::Value::Dict message_dict) {
-  base::Value message(std::move(message_dict));
-  std::string json_message;
-  base::JSONWriter::Write(message, &json_message);
+  std::string json_message = base::WriteJson(message_dict).value_or("");
   std::unique_ptr<WebMessage> web_message = std::make_unique<WebMessage>();
   web_message->message = base::UTF8ToUTF16(json_message);
   return web_message;

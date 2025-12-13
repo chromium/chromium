@@ -11,7 +11,7 @@
 #include "components/embedder_support/ios/delegate/color_chooser/color_chooser_mediator_ios.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/skia_utils_ios.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace web_contents_delegate_ios {
 

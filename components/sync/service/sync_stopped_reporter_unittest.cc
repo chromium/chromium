@@ -5,9 +5,9 @@
 #include "components/sync/service/sync_stopped_reporter.h"
 
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -21,16 +21,16 @@
 
 namespace syncer {
 
-const char kTestURL[] = "http://chromium.org/test";
-const char kTestURLTrailingSlash[] = "http://chromium.org/test/";
-const char kEventURL[] = "http://chromium.org/test/event";
+constexpr char kTestURL[] = "http://chromium.org/test";
+constexpr char kTestURLTrailingSlash[] = "http://chromium.org/test/";
+constexpr char kEventURL[] = "http://chromium.org/test/event";
 
-const char kTestUserAgent[] = "the_fifth_element";
-const char kAuthToken[] = "multipass";
-const char kCacheGuid[] = "leeloo";
-const char kBirthday[] = "2263";
+constexpr char kTestUserAgent[] = "the_fifth_element";
+constexpr char kAuthToken[] = "multipass";
+constexpr char kCacheGuid[] = "leeloo";
+constexpr char kBirthday[] = "2263";
 
-const char kAuthHeaderPrefix[] = "Bearer ";
+constexpr char kAuthHeaderPrefix[] = "Bearer ";
 
 class SyncStoppedReporterTest : public testing::Test {
  public:
@@ -38,7 +38,14 @@ class SyncStoppedReporterTest : public testing::Test {
   SyncStoppedReporterTest& operator=(const SyncStoppedReporterTest&) = delete;
 
  protected:
-  SyncStoppedReporterTest() = default;
+  SyncStoppedReporterTest()
+      : SyncStoppedReporterTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+
+  explicit SyncStoppedReporterTest(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : task_environment_(time_source) {}
+
   ~SyncStoppedReporterTest() override = default;
 
   void SetUp() override {
@@ -63,8 +70,9 @@ class SyncStoppedReporterTest : public testing::Test {
     return test_shared_loader_factory_;
   }
 
- private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+
+ private:
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -160,10 +168,15 @@ TEST_F(SyncStoppedReporterTest, ServerNotFound) {
   histogram_tester.ExpectTotalCount("Sync.SyncStoppedURLFetchTimedOut", 0);
 }
 
-TEST_F(SyncStoppedReporterTest, Timeout) {
+class MockTimeSyncStoppedReporterTest : public SyncStoppedReporterTest {
+ protected:
+  MockTimeSyncStoppedReporterTest()
+      : SyncStoppedReporterTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
+
+TEST_F(MockTimeSyncStoppedReporterTest, Timeout) {
   base::HistogramTester histogram_tester;
-  // Mock the underlying loop's clock to trigger the timer at will.
-  base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
   // No TestURLLoaderFactory::AddResponse(), so the request stays pending.
 
   SyncStoppedReporter ssr(test_url(), user_agent(),
@@ -173,8 +186,7 @@ TEST_F(SyncStoppedReporterTest, Timeout) {
   ssr.ReportSyncStopped(kAuthToken, kCacheGuid, kBirthday);
 
   // Trigger the timeout, 30 seconds should be more than enough.
-  ASSERT_TRUE(mock_main_runner->HasPendingTask());
-  mock_main_runner->FastForwardBy(base::Seconds(30));
+  task_environment_.FastForwardBy(base::Seconds(30));
   histogram_tester.ExpectUniqueSample("Sync.SyncStoppedURLFetchTimedOut", true,
                                       1);
 }

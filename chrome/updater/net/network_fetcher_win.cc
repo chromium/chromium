@@ -43,33 +43,30 @@
 namespace updater {
 namespace {
 
+decltype(&GetNetworkConnectivityHint) GetGetNetworkConnectivityHint() {
+  HMODULE hmod = LoadLibraryW(L"IPHLPAPI.DLL");
+  if (!hmod) {
+    return nullptr;
+  }
+  // GetNetworkConnectivityHint is not present on Windows < 19041 so this can
+  // return nullptr on failure on older Windows versions.
+  return reinterpret_cast<decltype(&GetNetworkConnectivityHint)>(
+      GetProcAddress(hmod, "GetNetworkConnectivityHint"));
+}
+
 std::optional<int> GetNetworkConnectivityCostHint() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  using GetNetworkConnectivityHint =
-      NTSTATUS(WINAPI*)(NL_NETWORK_CONNECTIVITY_HINT*);
-  static const HMODULE iphlpapi_handle = ::LoadLibrary(L"Iphlpapi.dll");
-  if (!iphlpapi_handle) {
-    VLOG(1) << "Failed to LoadLibrary Iphlpapi.dll";
-    return std::nullopt;
-  }
-  static const HMODULE iphlpapi_module_handle =
-      ::GetModuleHandle(L"Iphlpapi.dll");
-  if (!iphlpapi_module_handle) {
-    VLOG(1) << "Failed to GetModuleHandle Iphlpapi.dll";
-    return std::nullopt;
-  }
-  static const GetNetworkConnectivityHint get_network_connectivity_hint =
-      reinterpret_cast<GetNetworkConnectivityHint>(::GetProcAddress(
-          iphlpapi_module_handle, "GetNetworkConnectivityHint"));
-  if (!get_network_connectivity_hint) {
-    VLOG(1) << "Failed to GetProcAddress for GetNetworkConnectivityHint";
+  static auto get_network_connectivity_hint_fn =
+      GetGetNetworkConnectivityHint();
+  if (!get_network_connectivity_hint_fn) {
+    VLOG(1) << "Failed to lookup GetNetworkConnectivityHint";
     return std::nullopt;
   }
 
   NL_NETWORK_CONNECTIVITY_HINT connectivity_hint{
       .ConnectivityCost = ::NetworkConnectivityCostHintUnknown};
-  NTSTATUS status = get_network_connectivity_hint(&connectivity_hint);
+  NTSTATUS status = get_network_connectivity_hint_fn(&connectivity_hint);
   if (status != NO_ERROR) {
     VLOG(1) << "GetNetworkConnectivityHint failed with status " << status;
     return std::nullopt;
@@ -91,7 +88,7 @@ scoped_refptr<winhttp::ProxyConfiguration> GetProxyConfiguration(
             policy_service_proxy_configuration->proxy_url.value_or("")),
         L""});
   }
-  VLOG(1) << "Using the system configuration for proxy.";
+  VLOG(1) << "Using the auto proxy configuration.";
   return base::MakeRefCounted<winhttp::AutoProxyConfiguration>();
 }
 
@@ -107,6 +104,7 @@ class NetworkFetcher : public update_client::NetworkFetcher {
 
   NetworkFetcher(scoped_refptr<winhttp::SharedHInternet> session_handle,
                  scoped_refptr<winhttp::ProxyConfiguration> proxy_config,
+                 proto::NetworkEvent_UserState user_state,
                  scoped_refptr<UpdaterEventLogger> event_logger);
   ~NetworkFetcher() override;
   NetworkFetcher(const NetworkFetcher&) = delete;
@@ -145,16 +143,19 @@ class NetworkFetcher : public update_client::NetworkFetcher {
   // Usage statistics.
   proto::NetworkEvent event_;
   base::Time request_start_time_;
+  proto::NetworkEvent_UserState user_state_;
 };
 
 NetworkFetcher::NetworkFetcher(
     scoped_refptr<winhttp::SharedHInternet> session_handle,
     scoped_refptr<winhttp::ProxyConfiguration> proxy_config,
+    proto::NetworkEvent_UserState user_state,
     scoped_refptr<UpdaterEventLogger> event_logger)
     : winhttp_network_fetcher_(
           base::MakeRefCounted<winhttp::NetworkFetcher>(session_handle,
                                                         proxy_config)),
-      event_logger_(event_logger) {
+      event_logger_(event_logger),
+      user_state_(user_state) {
   event_.set_stack(proto::NetworkEvent::DIRECT);
 }
 
@@ -257,6 +258,10 @@ void NetworkFetcher::LogEvent(int response_code) {
     event_.set_error_code(response_code);
   }
 
+  if (user_state_ != proto::NetworkEvent_UserState_UNSPECIFIED) {
+    event_.set_user_state(user_state_);
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce([] { return GetNetworkConnectivityCostHint(); }),
@@ -286,6 +291,7 @@ class NetworkFetcherFactory::Impl {
         event_logger_(event_logger) {
     ScopedImpersonation impersonate;
     if (IsSystemInstall()) {
+      user_state_ = proto::NetworkEvent_UserState_NOT_LOGGED_IN;
       HResultOr<ScopedKernelHANDLE> token = GetLoggedOnUserToken();
       VLOG_IF(2, !token.has_value())
           << __func__ << ": GetLoggedOnUserToken failed: " << std::hex
@@ -296,7 +302,12 @@ class NetworkFetcherFactory::Impl {
             << __func__
             << ": Successfully got logged on user token. Impersonate result: "
             << std::hex << hr;
+        if (SUCCEEDED(hr)) {
+          user_state_ = proto::NetworkEvent_UserState_LOGGED_IN;
+        }
       }
+    } else {
+      user_state_ = proto::NetworkEvent_UserState_LOGGED_IN;
     }
     session_handle_ = base::MakeRefCounted<winhttp::SharedHInternet>(
         winhttp::CreateSessionHandle(base::SysUTF8ToWide(GetUpdaterUserAgent()),
@@ -307,16 +318,17 @@ class NetworkFetcherFactory::Impl {
   }
 
   std::unique_ptr<update_client::NetworkFetcher> Create() {
-    return session_handle_
-               ? std::make_unique<NetworkFetcher>(
-                     session_handle_, proxy_configuration_, event_logger_)
-               : nullptr;
+    return session_handle_ ? std::make_unique<NetworkFetcher>(
+                                 session_handle_, proxy_configuration_,
+                                 user_state_, event_logger_)
+                           : nullptr;
   }
 
  private:
   scoped_refptr<winhttp::ProxyConfiguration> proxy_configuration_;
   scoped_refptr<UpdaterEventLogger> event_logger_;
   scoped_refptr<winhttp::SharedHInternet> session_handle_;
+  proto::NetworkEvent_UserState user_state_;
 };
 
 NetworkFetcherFactory::NetworkFetcherFactory(
@@ -330,7 +342,7 @@ NetworkFetcherFactory::~NetworkFetcherFactory() = default;
 std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return impl_->Create();
+  return std::make_unique<LoggingNetworkFetcher>(impl_->Create());
 }
 
 }  // namespace updater

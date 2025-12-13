@@ -10,8 +10,8 @@ found in the LICENSE file.
     android:layout_height="wrap_content">
     <com.google.android.material.button.MaterialButton
         android:id="@+id/color_picker_icon"
-        style="?attr/colorPickerButtonStyle"
-        android:layout_width="@dimen/min_touch_target_size"
-        android:layout_height="@dimen/min_touch_target_size"
+        style="@style/ColorPickerButtonStyle"
+        android:layout_width="?attr/minInteractTargetSize"
+        android:layout_height="?attr/minInteractTargetSize"
         android:checkable="true" />
 </FrameLayout>

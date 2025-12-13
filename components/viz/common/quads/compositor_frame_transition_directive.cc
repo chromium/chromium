@@ -8,8 +8,23 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
 
 namespace viz {
+
+namespace {
+const char* TypeToString(CompositorFrameTransitionDirective::Type type) {
+  switch (type) {
+    case CompositorFrameTransitionDirective::Type::kSave:
+      return "kSave";
+    case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      return "kAnimateRenderer";
+    case CompositorFrameTransitionDirective::Type::kRelease:
+      return "kRelease";
+  }
+  NOTREACHED();
+}
+}  // namespace
 
 // static
 CompositorFrameTransitionDirective
@@ -18,10 +33,12 @@ CompositorFrameTransitionDirective::CreateSave(
     bool maybe_cross_frame_sink,
     uint32_t sequence_id,
     std::vector<SharedElement> shared_elements,
-    const gfx::DisplayColorSpaces& display_color_spaces) {
+    const gfx::DisplayColorSpaces& display_color_spaces,
+    bool delay_layer_tree_view_deletion) {
   return CompositorFrameTransitionDirective(
       transition_token, maybe_cross_frame_sink, sequence_id, Type::kSave,
-      std::move(shared_elements), display_color_spaces);
+      std::move(shared_elements), display_color_spaces,
+      delay_layer_tree_view_deletion);
 }
 
 // static
@@ -29,10 +46,11 @@ CompositorFrameTransitionDirective
 CompositorFrameTransitionDirective::CreateAnimate(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
-    uint32_t sequence_id) {
-  return CompositorFrameTransitionDirective(transition_token,
-                                            maybe_cross_frame_sink, sequence_id,
-                                            Type::kAnimateRenderer);
+    uint32_t sequence_id,
+    bool delay_layer_tree_view_deletion) {
+  return CompositorFrameTransitionDirective(
+      transition_token, maybe_cross_frame_sink, sequence_id,
+      Type::kAnimateRenderer, {}, {}, delay_layer_tree_view_deletion);
 }
 
 // static
@@ -40,9 +58,11 @@ CompositorFrameTransitionDirective
 CompositorFrameTransitionDirective::CreateRelease(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
-    uint32_t sequence_id) {
+    uint32_t sequence_id,
+    bool delay_layer_tree_view_deletion) {
   return CompositorFrameTransitionDirective(
-      transition_token, maybe_cross_frame_sink, sequence_id, Type::kRelease);
+      transition_token, maybe_cross_frame_sink, sequence_id, Type::kRelease, {},
+      {}, delay_layer_tree_view_deletion);
 }
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
@@ -54,13 +74,15 @@ CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
     std::vector<SharedElement> shared_elements,
-    const gfx::DisplayColorSpaces& display_color_spaces)
+    const gfx::DisplayColorSpaces& display_color_spaces,
+    bool delay_layer_tree_view_deletion)
     : transition_token_(transition_token),
       maybe_cross_frame_sink_(maybe_cross_frame_sink),
       sequence_id_(sequence_id),
       type_(type),
       shared_elements_(std::move(shared_elements)),
-      display_color_spaces_(display_color_spaces) {}
+      display_color_spaces_(display_color_spaces),
+      delay_layer_tree_view_deletion_(delay_layer_tree_view_deletion) {}
 
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     const CompositorFrameTransitionDirective&) = default;
@@ -86,5 +108,32 @@ CompositorFrameTransitionDirective::SharedElement::SharedElement(
 CompositorFrameTransitionDirective::SharedElement&
 CompositorFrameTransitionDirective::SharedElement::operator=(SharedElement&&) =
     default;
+
+void CompositorFrameTransitionDirective::SharedElement::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetInteger("render_pass_id", render_pass_id.GetUnsafeValue());
+  value->SetString("view_transition_element_resource_id",
+                   view_transition_element_resource_id.ToString());
+}
+
+void CompositorFrameTransitionDirective::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetString("type", TypeToString(type_));
+  value->SetInteger("sequence_id", sequence_id_);
+  value->SetString("transition_token", transition_token_.ToString());
+  value->SetBoolean("maybe_cross_frame_sink", maybe_cross_frame_sink_);
+
+  value->BeginDictionary("display_color_spaces");
+  display_color_spaces_.AsValueInto(value);
+  value->EndDictionary();
+
+  value->BeginArray("shared_elements");
+  for (const auto& element : shared_elements_) {
+    value->BeginDictionary();
+    element.AsValueInto(value);
+    value->EndDictionary();
+  }
+  value->EndArray();
+}
 
 }  // namespace viz

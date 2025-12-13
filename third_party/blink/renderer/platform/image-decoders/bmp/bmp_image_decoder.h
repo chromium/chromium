@@ -49,12 +49,12 @@ class PLATFORM_EXPORT BMPImageDecoder final : public ImageDecoder {
   // file header could be decoded.
   bool ProcessFileHeader(wtf_size_t& img_data_offset);
 
-  // Uses |fast_reader| and |buffer| to read the file header into |file_header|.
-  // Computes |file_type| from the file header.  Returns whether there was
+  // Uses `fast_reader` and `buffer` to read the file header into `file_header`.
+  // Computes `file_type` from the file header.  Returns whether there was
   // sufficient data available to read the header.
   bool GetFileType(const FastSharedBufferReader& fast_reader,
-                   char* buffer,
-                   const char*& file_header,
+                   base::span<uint8_t> buffer,
+                   base::span<const uint8_t>& file_header,
                    uint16_t& file_type) const;
 
   // An index into |data_| representing how much we've already decoded.

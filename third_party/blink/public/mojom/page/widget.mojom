@@ -49,6 +49,16 @@ struct StylusWritingFocusResult {
   ProximateCharacterRangeBounds? proximate_bounds;
 };
 
+enum DeviceEmulationCacheBehavior {
+  // Clear memory cache when emulation parameters change.
+  kClearCache,
+  // Keep the memory cache when emulation parameters change.
+  // Typically used when committing a navigation in a new Document, which has to
+  // re-sync the device emulation state, but should not clobber the global
+  // memory cache since the parameters did not actually change.
+  kKeepCache,
+};
+
 // Implemented in Blink, this interface defines frame-widget-specific methods that
 // will be invoked from the browser process (e.g. blink::WebFrameWidget).
 interface FrameWidget {
@@ -161,7 +171,8 @@ interface FrameWidget {
       => (ui.mojom.AttributedString? string, gfx.mojom.Point baseline_point);
 
   // Enables device emulator.
-  EnableDeviceEmulation(DeviceEmulationParams parameters);
+  EnableDeviceEmulation(DeviceEmulationParams parameters,
+                        DeviceEmulationCacheBehavior cache_behavior);
 
   // Disables device emulator.
   DisableDeviceEmulation();

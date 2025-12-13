@@ -29,7 +29,7 @@ executable("sha_benchmark") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//crypto:crypto",
+    "//crypto",
   ]
   testonly = true
 }

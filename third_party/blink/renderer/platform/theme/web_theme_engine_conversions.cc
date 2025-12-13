@@ -4,126 +4,67 @@
 
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 
+#include "base/containers/fixed_flat_map.h"
+#include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
+#include "ui/native_theme/native_theme.h"
+
 namespace blink {
 
-// TODO(https://crbug.com/988434): The mapping functions below are duplicated
-// inside Blink and in the Android implementation of WebThemeEngine. They should
-// be implemented in one place where dependencies between Blink and
-// ui::NativeTheme make sense.
-ui::NativeTheme::Part NativeThemePart(WebThemeEngine::Part part) {
-  switch (part) {
-    case WebThemeEngine::kPartScrollbarDownArrow:
-      return ui::NativeTheme::kScrollbarDownArrow;
-    case WebThemeEngine::kPartScrollbarLeftArrow:
-      return ui::NativeTheme::kScrollbarLeftArrow;
-    case WebThemeEngine::kPartScrollbarRightArrow:
-      return ui::NativeTheme::kScrollbarRightArrow;
-    case WebThemeEngine::kPartScrollbarUpArrow:
-      return ui::NativeTheme::kScrollbarUpArrow;
-    case WebThemeEngine::kPartScrollbarHorizontalThumb:
-      return ui::NativeTheme::kScrollbarHorizontalThumb;
-    case WebThemeEngine::kPartScrollbarVerticalThumb:
-      return ui::NativeTheme::kScrollbarVerticalThumb;
-    case WebThemeEngine::kPartScrollbarHorizontalTrack:
-      return ui::NativeTheme::kScrollbarHorizontalTrack;
-    case WebThemeEngine::kPartScrollbarVerticalTrack:
-      return ui::NativeTheme::kScrollbarVerticalTrack;
-    case WebThemeEngine::kPartScrollbarCorner:
-      return ui::NativeTheme::kScrollbarCorner;
-    case WebThemeEngine::kPartCheckbox:
-      return ui::NativeTheme::kCheckbox;
-    case WebThemeEngine::kPartRadio:
-      return ui::NativeTheme::kRadio;
-    case WebThemeEngine::kPartButton:
-      return ui::NativeTheme::kPushButton;
-    case WebThemeEngine::kPartTextField:
-      return ui::NativeTheme::kTextField;
-    case WebThemeEngine::kPartMenuList:
-      return ui::NativeTheme::kMenuList;
-    case WebThemeEngine::kPartSliderTrack:
-      return ui::NativeTheme::kSliderTrack;
-    case WebThemeEngine::kPartSliderThumb:
-      return ui::NativeTheme::kSliderThumb;
-    case WebThemeEngine::kPartInnerSpinButton:
-      return ui::NativeTheme::kInnerSpinButton;
-    case WebThemeEngine::kPartProgressBar:
-      return ui::NativeTheme::kProgressBar;
-    default:
-      return ui::NativeTheme::kScrollbarDownArrow;
-  }
+using WTE = WebThemeEngine;
+using NT = ui::NativeTheme;
+
+NT::Part NativeThemePart(WTE::Part part) {
+  static constexpr auto kPartMap = base::MakeFixedFlatMap<WTE::Part, NT::Part>(
+      {{WTE::kPartScrollbarDownArrow, NT::kScrollbarDownArrow},
+       {WTE::kPartScrollbarLeftArrow, NT::kScrollbarLeftArrow},
+       {WTE::kPartScrollbarRightArrow, NT::kScrollbarRightArrow},
+       {WTE::kPartScrollbarUpArrow, NT::kScrollbarUpArrow},
+       {WTE::kPartScrollbarHorizontalThumb, NT::kScrollbarHorizontalThumb},
+       {WTE::kPartScrollbarVerticalThumb, NT::kScrollbarVerticalThumb},
+       {WTE::kPartScrollbarHorizontalTrack, NT::kScrollbarHorizontalTrack},
+       {WTE::kPartScrollbarVerticalTrack, NT::kScrollbarVerticalTrack},
+       {WTE::kPartScrollbarCorner, NT::kScrollbarCorner},
+       {WTE::kPartCheckbox, NT::kCheckbox},
+       {WTE::kPartRadio, NT::kRadio},
+       {WTE::kPartButton, NT::kPushButton},
+       {WTE::kPartTextField, NT::kTextField},
+       {WTE::kPartMenuList, NT::kMenuList},
+       {WTE::kPartSliderTrack, NT::kSliderTrack},
+       {WTE::kPartSliderThumb, NT::kSliderThumb},
+       {WTE::kPartInnerSpinButton, NT::kInnerSpinButton},
+       {WTE::kPartProgressBar, NT::kProgressBar}});
+  return kPartMap.at(part);
 }
 
-ui::NativeTheme::State NativeThemeState(WebThemeEngine::State state) {
-  switch (state) {
-    case WebThemeEngine::kStateDisabled:
-      return ui::NativeTheme::kDisabled;
-    case WebThemeEngine::kStateHover:
-      return ui::NativeTheme::kHovered;
-    case WebThemeEngine::kStateNormal:
-      return ui::NativeTheme::kNormal;
-    case WebThemeEngine::kStatePressed:
-      return ui::NativeTheme::kPressed;
-    default:
-      return ui::NativeTheme::kDisabled;
-  }
+NT::State NativeThemeState(WTE::State state) {
+  static constexpr auto kStateMap =
+      base::MakeFixedFlatMap<WTE::State, NT::State>(
+          {{WTE::kStateDisabled, NT::kDisabled},
+           {WTE::kStateHover, NT::kHovered},
+           {WTE::kStateNormal, NT::kNormal},
+           {WTE::kStatePressed, NT::kPressed}});
+  return kStateMap.at(state);
 }
 
-ui::NativeTheme::ColorScheme NativeColorScheme(
-    mojom::ColorScheme color_scheme) {
-  switch (color_scheme) {
-    case mojom::ColorScheme::kLight:
-      return ui::NativeTheme::ColorScheme::kLight;
-    case mojom::ColorScheme::kDark:
-      return ui::NativeTheme::ColorScheme::kDark;
-  }
+NT::PreferredColorScheme NativeColorScheme(
+    mojom::blink::ColorScheme color_scheme) {
+  using MCS = mojom::blink::ColorScheme;
+  using NTPCS = NT::PreferredColorScheme;
+  static constexpr auto kColorSchemeMap = base::MakeFixedFlatMap<MCS, NTPCS>(
+      {{MCS::kLight, NTPCS::kLight}, {MCS::kDark, NTPCS::kDark}});
+  return kColorSchemeMap.at(color_scheme);
 }
 
-ui::NativeTheme::SystemThemeColor NativeSystemThemeColor(
-    WebThemeEngine::SystemThemeColor theme_color) {
-  switch (theme_color) {
-    case WebThemeEngine::SystemThemeColor::kButtonFace:
-      return ui::NativeTheme::SystemThemeColor::kButtonFace;
-    case WebThemeEngine::SystemThemeColor::kButtonText:
-      return ui::NativeTheme::SystemThemeColor::kButtonText;
-    case WebThemeEngine::SystemThemeColor::kGrayText:
-      return ui::NativeTheme::SystemThemeColor::kGrayText;
-    case WebThemeEngine::SystemThemeColor::kHighlight:
-      return ui::NativeTheme::SystemThemeColor::kHighlight;
-    case WebThemeEngine::SystemThemeColor::kHighlightText:
-      return ui::NativeTheme::SystemThemeColor::kHighlightText;
-    case WebThemeEngine::SystemThemeColor::kHotlight:
-      return ui::NativeTheme::SystemThemeColor::kHotlight;
-    case WebThemeEngine::SystemThemeColor::kWindow:
-      return ui::NativeTheme::SystemThemeColor::kWindow;
-    case WebThemeEngine::SystemThemeColor::kWindowText:
-      return ui::NativeTheme::SystemThemeColor::kWindowText;
-    default:
-      return ui::NativeTheme::SystemThemeColor::kNotSupported;
-  }
-}
-
-WebThemeEngine::SystemThemeColor WebThemeSystemThemeColor(
-    ui::NativeTheme::SystemThemeColor theme_color) {
-  switch (theme_color) {
-    case ui::NativeTheme::SystemThemeColor::kButtonFace:
-      return WebThemeEngine::SystemThemeColor::kButtonFace;
-    case ui::NativeTheme::SystemThemeColor::kButtonText:
-      return WebThemeEngine::SystemThemeColor::kButtonText;
-    case ui::NativeTheme::SystemThemeColor::kGrayText:
-      return WebThemeEngine::SystemThemeColor::kGrayText;
-    case ui::NativeTheme::SystemThemeColor::kHighlight:
-      return WebThemeEngine::SystemThemeColor::kHighlight;
-    case ui::NativeTheme::SystemThemeColor::kHighlightText:
-      return WebThemeEngine::SystemThemeColor::kHighlightText;
-    case ui::NativeTheme::SystemThemeColor::kHotlight:
-      return WebThemeEngine::SystemThemeColor::kHotlight;
-    case ui::NativeTheme::SystemThemeColor::kWindow:
-      return WebThemeEngine::SystemThemeColor::kWindow;
-    case ui::NativeTheme::SystemThemeColor::kWindowText:
-      return WebThemeEngine::SystemThemeColor::kWindowText;
-    default:
-      return WebThemeEngine::SystemThemeColor::kNotSupported;
-  }
+NT::PreferredContrast NativeContrast(mojom::blink::PreferredContrast contrast) {
+  using MPC = mojom::blink::PreferredContrast;
+  using NTPC = NT::PreferredContrast;
+  static constexpr auto kContrastMap = base::MakeFixedFlatMap<MPC, NTPC>(
+      {{MPC::kMore, NTPC::kMore},
+       {MPC::kLess, NTPC::kLess},
+       {MPC::kNoPreference, NTPC::kNoPreference},
+       {MPC::kCustom, NTPC::kCustom}});
+  return kContrastMap.at(contrast);
 }
 
 }  // namespace blink

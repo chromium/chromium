@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">portocale</translation>
 <translation id="1275718070701477396">Selectat</translation>
 <translation id="1290331692326790741">Semnal slab</translation>
+<translation id="1292474106138697109">Ecran Class Tools</translation>
 <translation id="1300115153046603471">APN-ul este de tip prestabilit și <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Fă conversia</translation>
@@ -206,7 +207,7 @@
 <translation id="1758018619400202187">EAP-TLS</translation>
 <translation id="1758459542619182298"><ph name="CONTROL_TYPE" /> <ph name="KEY_LIST" /></translation>
 <translation id="1759842336958782510">Chrome</translation>
-<translation id="1762353673362288306">Acum poți folosi numai Class Tools</translation>
+<translation id="1762353673362288306">Acum poți folosi numai instrumentele de curs</translation>
 <translation id="1762483337755424125">Transcriere</translation>
 <translation id="1765169783255151332">Schimbă rapid tastele</translation>
 <translation id="1768959921651994223">Tip de autentificare</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
 <translation id="4300272766492248925">Deschide aplicația</translation>
 <translation id="430786093962686457">șifon</translation>
+<translation id="4309762678330556039">Creează automat transcrieri și caută în conținutul audio. Poți crea înregistrări chiar și atunci când nu te-ai conectat la internet.</translation>
 <translation id="4310735698903592804">Imagini de fundal recente bazate pe Google AI</translation>
 <translation id="4320904097188876154">roz neon</translation>
 <translation id="432961742358282111">Dă clic dreapta sau apasă lung pentru a obține definiții, traduceri sau conversii ale unităților. Folosește tastele săgeată la stânga sau la dreapta ca să gestionezi această funcție.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5600027863942488546">A fost testată tasta <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Class Tools permite accesul la ecranul tău pentru <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Te-ai deconectat</translation>
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5628106863521633649">Limbi disponibile</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Niciun scaner disponibil</translation>
-<translation id="6231648282154119906">Fișierele suspecte vor fi scanate automat de Navigarea sigură Google în cadrul protecției îmbunătățite pe care ai ales-o</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6234024205316847054">Afișează contururile</translation>
 <translation id="6243280677745499710">Setată în prezent</translation>
@@ -1408,7 +1410,7 @@
 <translation id="7177485034254901881">Acest <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" />. Administratorii pot să configureze dispozitivul de la distanță.</translation>
 <translation id="7180611975245234373">Actualizați</translation>
 <translation id="7180865173735832675">Personalizează</translation>
-<translation id="7182063559013288142">Hotspot instant</translation>
+<translation id="7182063559013288142">Hotspot instantaneu</translation>
 <translation id="7184043045742675738">Dă clic pe orice tastă pentru a personaliza butonul. Repoziționează tasta folosind mouse-ul sau tastele săgeată.</translation>
 <translation id="7187669805838282391">miercuri</translation>
 <translation id="7205318498545665455">Alege microfonul</translation>
@@ -1765,7 +1767,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8820457400746201697">Mută punctul de contact albastru pe o acțiune. Selectează tasta asociată pentru personalizare.</translation>
 <translation id="8820817407110198400">Marcaje</translation>
 <translation id="8833620912470026819">pădure de cactuși</translation>
-<translation id="8834539327799336565">Conectat</translation>
+<translation id="8834539327799336565">Conectate</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8849799913685544685">far</translation>
 <translation id="8851859208664803097">Oprită – Imprimanta nu poate fi accesată</translation>

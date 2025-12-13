@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/common/file_system/file_system_util.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
@@ -126,7 +122,7 @@ base::FilePath::StringType VirtualPath::GetNormalizedFilePath(
       base::FilePath::StringType(base::FilePath::kSeparators).length();
   for (size_t i = 0; i < num_separators; ++i) {
     std::replace(normalized_path.begin(), normalized_path.end(),
-                 base::FilePath::kSeparators[i], kSeparator);
+                 UNSAFE_TODO(base::FilePath::kSeparators[i]), kSeparator);
   }
 
   return (IsAbsolute(normalized_path))
@@ -168,7 +164,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
 
   // A path of the inner_url contains only mount type part (e.g. "/temporary").
   DCHECK(url.inner_url());
-  std::string inner_path = url.inner_url()->path();
+  std::string inner_path = url.inner_url()->GetPath();
   for (const auto& valid_type : kValidTypes) {
     if (inner_path == valid_type.dir) {
       file_system_type = valid_type.type;
@@ -179,7 +175,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
   if (file_system_type == kFileSystemTypeUnknown)
     return false;
 
-  std::string path = base::UnescapeBinaryURLComponent(url.path_piece());
+  std::string path = base::UnescapeBinaryURLComponent(url.path());
 
   // Ensure the path is relative.
   while (!path.empty() && path[0] == '/')
@@ -210,19 +206,21 @@ GURL GetFileSystemRootURI(const GURL& origin_url, FileSystemType type) {
   std::string url = "filesystem:" + origin_url.GetWithEmptyPath().spec();
   switch (type) {
     case kFileSystemTypeTemporary:
-      url += (kTemporaryDir + 1);  // We don't want the leading slash.
+      url +=
+          UNSAFE_TODO(kTemporaryDir + 1);  // We don't want the leading slash.
       return GURL(url + "/");
     case kFileSystemTypePersistent:
-      url += (kPersistentDir + 1);  // We don't want the leading slash.
+      url +=
+          UNSAFE_TODO(kPersistentDir + 1);  // We don't want the leading slash.
       return GURL(url + "/");
     case kFileSystemTypeExternal:
-      url += (kExternalDir + 1);  // We don't want the leading slash.
+      url += UNSAFE_TODO(kExternalDir + 1);  // We don't want the leading slash.
       return GURL(url + "/");
     case kFileSystemTypeIsolated:
-      url += (kIsolatedDir + 1);  // We don't want the leading slash.
+      url += UNSAFE_TODO(kIsolatedDir + 1);  // We don't want the leading slash.
       return GURL(url + "/");
     case kFileSystemTypeTest:
-      url += (kTestDir + 1);  // We don't want the leading slash.
+      url += UNSAFE_TODO(kTestDir + 1);  // We don't want the leading slash.
       return GURL(url + "/");
       // Internal types are always pointed via isolated or external URLs.
     default:

@@ -363,53 +363,6 @@ class GeminiIntroScreenTester extends ScreenElementApi {
   }
 }
 
-class AssistantScreenTester extends ScreenElementApi {
-  private mainElement: PolymerElementApi;
-  private valueProp: PolymerElementApi;
-  private valuePropSkipButtonText: PolymerElementApi;
-  private relatedInfo: PolymerElementApi;
-
-  constructor() {
-    super('assistant-optin-flow');
-    this.mainElement = new PolymerElementApi(this, '#card');
-    this.valueProp = new PolymerElementApi(this.mainElement, '#valueProp');
-    this.valuePropSkipButtonText =
-        new PolymerElementApi(this.valueProp, '#skip-button-text');
-    this.relatedInfo = new PolymerElementApi(this.mainElement, '#relatedInfo');
-  }
-
-  override shouldSkip(): boolean {
-    return loadTimeData.getBoolean('testapi_shouldSkipAssistant');
-  }
-
-  /**
-   * Returns if the assistant screen is ready for test interaction.
-   */
-  isReadyForTesting(): boolean {
-    return (
-        this.isVisible() &&
-        (this.valueProp.isVisible() || this.relatedInfo.isVisible()));
-  }
-
-  getSkipButtonName(): string {
-    if (this.valueProp.isVisible()) {
-      const valuePropSkipButton = this.valuePropSkipButtonText.element();
-      if (!valuePropSkipButton || !valuePropSkipButton.textContent) {
-        return '';
-      }
-      return valuePropSkipButton.textContent;
-    }
-    return loadTimeData.getString('assistantOptinNoThanksButton');
-  }
-
-  /**
-   * Returns whether we currently show existing user flow.
-   */
-  isPreviousUserFlowShown(): boolean {
-    return this.relatedInfo.isVisible();
-  }
-}
-
 class MarketingOptInScreenTester extends ScreenElementApi {
   private accessibilityButton: PolymerElementApi;
   private accessibilityStep: PolymerElementApi;
@@ -1503,7 +1456,6 @@ export class OobeApiProvider {
       FingerprintScreen: new FingerprintScreenTester(),
       AiIntroScreen: new AiIntroScreenTester(),
       GeminiIntroScreen: new GeminiIntroScreenTester(),
-      AssistantScreen: new AssistantScreenTester(),
       MarketingOptInScreen: new MarketingOptInScreenTester(),
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
       PinSetupScreen: new PinSetupScreenTester(),

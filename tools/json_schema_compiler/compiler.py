@@ -100,7 +100,7 @@ def GenerateSchema(
 
     api_defs.extend(api_def)
 
-  api_model = Model(allow_inline_enums=False)
+  api_model = Model()
 
   # For single-schema compilation make sure that the first (i.e. only) schema
   # is the default one.

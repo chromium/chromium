@@ -29,6 +29,10 @@ class SafeBrowsingApiHandlerBridge {
       base::OnceCallback<void(SBThreatType, const ThreatMetadata&)>;
   using VerifyAppsResponseCallback =
       base::OnceCallback<void(VerifyAppsEnabledResult)>;
+  using HasHarmfulAppsResponseCallback =
+      base::OnceCallback<void(HasHarmfulAppsResultStatus,
+                              /*num_of_apps=*/int,
+                              /*status_code=*/int)>;
   using GetSafetyNetIdResponseCallback =
       base::OnceCallback<void(const std::string&)>;
 
@@ -72,6 +76,11 @@ class SafeBrowsingApiHandlerBridge {
   // with the result of the query.
   void StartEnableVerifyApps(VerifyAppsResponseCallback callback);
 
+  // TODO(crbug.com/446681100): This function is not fully implemented yet and
+  // `callback` won't be invoked. Query whether any potentially harmful app is
+  // present.
+  void StartHasPotentiallyHarmfulApps(HasHarmfulAppsResponseCallback callback);
+
   // Get the SafetyNet ID for the device. Will run `callback` with the result
   // of the query or a cached result, or an empty string if unsuccessful.
   void StartGetSafetyNetId(GetSafetyNetIdResponseCallback callback);
@@ -89,6 +98,13 @@ class SafeBrowsingApiHandlerBridge {
 
   void SetVerifyAppsEnableResultForTesting(VerifyAppsEnabledResult result) {
     verify_apps_enabled_for_testing_ = result;
+  }
+
+  void SetHarmfulAppsResultForTesting(HasHarmfulAppsResultStatus result,
+                                      int num_of_apps,
+                                      int status_code) {
+    harmful_apps_result_for_testing_ =
+        std::make_tuple(result, num_of_apps, status_code);
   }
 
   // Resets the cached value and callback subscriptions list.
@@ -118,6 +134,10 @@ class SafeBrowsingApiHandlerBridge {
   // SafetyNet app verification.
   jlong next_verify_apps_callback_id_ = 0;
 
+  // Used as a key to identify unique requests sent to Java related to
+  // SafetyNet harmful app detection.
+  jlong next_harmful_apps_callback_id_ = 0;
+
   // Whether SafeBrowsing API is available. Set to false if previous call to
   // SafeBrowsing API has encountered a non-recoverable failure. If set to
   // false, future calls to SafeBrowsing API will return safe immediately.
@@ -143,6 +163,11 @@ class SafeBrowsingApiHandlerBridge {
 
   std::optional<VerifyAppsEnabledResult> verify_apps_enabled_for_testing_ =
       std::nullopt;
+
+  std::optional<std::tuple<HasHarmfulAppsResultStatus,
+                           /*num_of_apps=*/int,
+                           /*status_code=*/int>>
+      harmful_apps_result_for_testing_ = std::nullopt;
 
   // Set of URLs specified at the command-line to be enforced on as phishing.
   std::set<GURL> artificially_marked_phishing_urls_;

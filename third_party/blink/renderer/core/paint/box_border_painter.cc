@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/line_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -288,9 +290,9 @@ void DrawBleedAdjustedDRRect(GraphicsContext& context,
       // Based on this, we can avoid background bleeding by filling the
       // *outside* of inner rrect, all the way to the layer bounds (enclosing
       // int rect for the clip, in device space).
-      SkPath path;
-      path.addRRect(SkRRect(inner));
-      path.setFillType(SkPathFillType::kInverseWinding);
+      const SkPath path = SkPathBuilder(SkPathFillType::kInverseWinding)
+                              .addRRect(SkRRect(inner))
+                              .detach();
 
       cc::PaintFlags flags;
       flags.setColor(color.toSkColor4f());
@@ -387,13 +389,13 @@ struct OpacityGroup {
 void ClipPolygon(GraphicsContext& context,
                  base::span<const gfx::PointF> vertices,
                  bool antialiased) {
-  SkPath path;
+  SkPathBuilder path;
   path.moveTo(gfx::PointFToSkPoint(vertices[0]));
   for (size_t i = 1; i < vertices.size(); ++i) {
     path.lineTo(gfx::PointFToSkPoint(vertices[i]));
   }
 
-  context.ClipPath(path, antialiased ? kAntiAliased : kNotAntiAliased);
+  context.ClipPath(path.detach(), antialiased ? kAntiAliased : kNotAntiAliased);
 }
 
 void EnforceDotsAtEndpoints(GraphicsContext& context,
@@ -823,11 +825,12 @@ void FillQuad(GraphicsContext& context,
               const gfx::QuadF& quad,
               const Color& color,
               const AutoDarkMode& auto_dark_mode) {
-  SkPath path;
-  path.moveTo(gfx::PointFToSkPoint(quad.p1()));
-  path.lineTo(gfx::PointFToSkPoint(quad.p2()));
-  path.lineTo(gfx::PointFToSkPoint(quad.p3()));
-  path.lineTo(gfx::PointFToSkPoint(quad.p4()));
+  const SkPath path = SkPathBuilder()
+                          .moveTo(gfx::PointFToSkPoint(quad.p1()))
+                          .lineTo(gfx::PointFToSkPoint(quad.p2()))
+                          .lineTo(gfx::PointFToSkPoint(quad.p3()))
+                          .lineTo(gfx::PointFToSkPoint(quad.p4()))
+                          .detach();
   cc::PaintFlags flags(context.FillFlags());
   flags.setAntiAlias(true);
   flags.setColor(color.toSkColor4f());
@@ -2432,7 +2435,7 @@ void BoxBorderPainter::ClipBorderSidePolygon(BoxSide side,
 PhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
     BorderEdge::DoubleBorderStripe stripe) const {
   return outer_outsets_ -
-         PhysicalBoxStrut(
+         PhysicalBoxStrut::FromInts(
              Edge(BoxSide::kTop).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kRight).GetDoubleBorderStripeWidth(stripe),
              Edge(BoxSide::kBottom).GetDoubleBorderStripeWidth(stripe),
@@ -2441,10 +2444,10 @@ PhysicalBoxStrut BoxBorderPainter::DoubleStripeOutsets(
 
 PhysicalBoxStrut BoxBorderPainter::CenterOutsets() const {
   return outer_outsets_ -
-         PhysicalBoxStrut(Edge(BoxSide::kTop).UsedWidth() * 0.5,
-                          Edge(BoxSide::kRight).UsedWidth() * 0.5,
-                          Edge(BoxSide::kBottom).UsedWidth() * 0.5,
-                          Edge(BoxSide::kLeft).UsedWidth() * 0.5);
+         PhysicalBoxStrut::FromInts(Edge(BoxSide::kTop).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kRight).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kBottom).UsedWidth() * 0.5,
+                                    Edge(BoxSide::kLeft).UsedWidth() * 0.5);
 }
 
 bool BoxBorderPainter::ColorsMatchAtCorner(BoxSide side,

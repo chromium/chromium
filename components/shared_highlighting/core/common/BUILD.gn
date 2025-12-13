@@ -62,7 +62,7 @@ source_set("data_driven_testing") {
     "//third_party/text-fragments-polyfill/src/test/data-driven/input/",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//testing/data_driven_testing",
     "//testing/gtest",
   ]

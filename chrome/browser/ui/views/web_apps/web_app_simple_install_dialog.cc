@@ -51,6 +51,7 @@ namespace web_app {
 
 namespace {
 bool g_auto_accept_pwa_for_testing = false;
+bool g_auto_decline_pwa_for_testing = false;
 bool g_dont_close_on_deactivate = false;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -96,9 +97,12 @@ void ShowSimpleInstallDialogForWebApps(
 
   views::BubbleDialogDelegate* dialog_delegate = nullptr;
 
-  gfx::ImageSkia icon_image(std::make_unique<WebAppInfoImageSource>(
-                                kIconSize, web_app_info->icon_bitmaps.any),
-                            gfx::Size(kIconSize, kIconSize));
+  DialogImageInfo dialog_image_info =
+      web_app_info->GetIconBitmapsForSecureSurfaces();
+  gfx::ImageSkia icon_image(
+      std::make_unique<WebAppInfoImageSource>(
+          kIconSize, std::move(dialog_image_info.bitmaps)),
+      gfx::Size(kIconSize, kIconSize));
   auto app_name = web_app_info->title;
   GURL start_url = web_app_info->start_url();
 
@@ -124,8 +128,9 @@ void ShowSimpleInstallDialogForWebApps(
       .OverrideDefaultButton(ui::mojom::DialogButton::kCancel)
       .AddCustomField(
           std::make_unique<views::BubbleDialogModelHost::CustomView>(
-              WebAppIconNameAndOriginView::Create(icon_image, app_name,
-                                                  start_url),
+              WebAppIconNameAndOriginView::Create(
+                  icon_image, app_name.value(), start_url,
+                  dialog_image_info.is_maskable),
               views::BubbleDialogModelHost::FieldType::kControl));
   // Only show the initiating origin subtitle label for background document
   // installs from the Web Install API.
@@ -158,10 +163,17 @@ void ShowSimpleInstallDialogForWebApps(
   if (g_auto_accept_pwa_for_testing) {
     dialog_delegate->AcceptDialog();
   }
+  if (g_auto_decline_pwa_for_testing) {
+    dialog_delegate->CancelDialog();
+  }
 }
 
 base::AutoReset<bool> SetAutoAcceptPWAInstallConfirmationForTesting() {
   return base::AutoReset<bool>(&g_auto_accept_pwa_for_testing, true);
+}
+
+base::AutoReset<bool> SetAutoDeclinePWAInstallConfirmationForTesting() {
+  return base::AutoReset<bool>(&g_auto_decline_pwa_for_testing, true);
 }
 
 base::AutoReset<bool> SetDontCloseOnDeactivateForTesting() {

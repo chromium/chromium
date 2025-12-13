@@ -442,17 +442,16 @@ void QuickStartMetrics::RecordChallengeBytesRequestEnded(
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequested() {
-  CHECK(!attestation_certificate_timer_)
-      << "Only 1 attestation certificate request can be active at a time";
+  // Timer may already exist if the user entered and cancelled Quick Start.
+  if (attestation_certificate_timer_) {
+    attestation_certificate_timer_.reset();
+  }
+
   attestation_certificate_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
     std::optional<AttestationCertificateRequestErrorCode> error_code) {
-  CHECK(attestation_certificate_timer_)
-      << "Attestation certificate request timer was not active. Unexpected "
-         "response.";
-
   if (error_code) {
     base::UmaHistogramEnumeration(
         kAttestationCertificateFailureReasonHistogramName, error_code.value());
@@ -463,9 +462,11 @@ void QuickStartMetrics::RecordAttestationCertificateRequestEnded(
                               true);
   }
 
-  base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
-                          attestation_certificate_timer_->Elapsed());
-  attestation_certificate_timer_.reset();
+  if (attestation_certificate_timer_) {
+    base::UmaHistogramTimes(kAttestationCertificateFetchDurationHistogramName,
+                            attestation_certificate_timer_->Elapsed());
+    attestation_certificate_timer_.reset();
+  }
 }
 
 void QuickStartMetrics::RecordGaiaAuthenticationStarted() {

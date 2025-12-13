@@ -25,6 +25,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace {
 
@@ -57,10 +58,10 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
       .AddChild(std::move(button_builder))
       .BuildChildren();
 
-  // Add the callback to the button with a delay if it is an autofill sign in
+  // Add the callback to the button with a delay if it is a bubble sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(
-      callback, signin::IsAutofillSigninPromo(access_point));
+  AddOrDelayCallbackForSignInButton(callback,
+                                    signin::IsBubbleSigninPromo(access_point));
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
@@ -77,7 +78,7 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   auto card_title = base::UTF8ToUTF16(account.full_name);
 
   bool is_signin_promo = signin::IsSignInPromo(access_point);
-  bool is_autofill_promo = signin::IsAutofillSigninPromo(access_point);
+  bool is_bubble_promo = signin::IsBubbleSigninPromo(access_point);
 
   const views::BoxLayout::Orientation orientation =
       is_signin_promo ? views::BoxLayout::Orientation::kVertical
@@ -93,8 +94,8 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
   std::unique_ptr<HoverButton> hover_button = std::make_unique<HoverButton>(
       views::Button::PressedCallback(),
       std::make_unique<BadgedProfilePhoto>(
-          is_signin_promo ? BadgedProfilePhoto::BADGE_TYPE_NONE
-                          : BadgedProfilePhoto::BADGE_TYPE_SYNC_OFF,
+          is_signin_promo ? BadgedProfilePhoto::BadgeType::kNone
+                          : BadgedProfilePhoto::BadgeType::kSyncOff,
           account_icon),
       card_title, base::ASCIIToUTF16(account_->email));
 
@@ -128,9 +129,9 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
         std::move(button_accessibility_text));
   }
 
-  // Add the callback to the button with a delay if it is an autofill sign in
+  // Add the callback to the button with a delay if it is a bubble sign in
   // promo.
-  AddOrDelayCallbackForSignInButton(callback, is_autofill_promo);
+  AddOrDelayCallbackForSignInButton(callback, is_bubble_promo);
 
   SetProperty(views::kElementIdentifierKey, kPromoSignInButton);
 }
@@ -141,14 +142,14 @@ views::View* BubbleSignInPromoSignInButtonView::GetSignInButton() const {
 
 void BubbleSignInPromoSignInButtonView::AddOrDelayCallbackForSignInButton(
     views::Button::PressedCallback& callback,
-    bool is_autofill_promo) {
-  // If the promo is triggered from an autofill bubble, ignore any interaction
-  // with the sign in button at first, because the button for an autofill data
+    bool is_bubble_promo) {
+  // If the promo is shown in a separate sign in promo bubble, ignore any
+  // interaction with the sign in button at first, because the button for a data
   // save might be in the same place as the sign in button. If a user double
   // clicked on the save button, it would therefore sign them in directly, or
   // redirect them to a sign in page. The delayed adding of the callback to the
   // button avoids that.
-  if (is_autofill_promo) {
+  if (is_bubble_promo) {
     // Add the callback to the button after the delay.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,

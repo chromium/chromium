@@ -6,6 +6,7 @@
 #define COMPONENTS_GCM_DRIVER_SYSTEM_ENCRYPTOR_H_
 
 #include "base/compiler_specific.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "google_apis/gcm/base/encryptor.h"
 
 namespace gcm {
@@ -13,6 +14,8 @@ namespace gcm {
 // Encryptor that uses the Chrome password manager's encryptor.
 class SystemEncryptor : public Encryptor {
  public:
+  explicit SystemEncryptor(os_crypt_async::Encryptor encryptor);
+
   ~SystemEncryptor() override;
 
   bool EncryptString(const std::string& plaintext,
@@ -20,6 +23,9 @@ class SystemEncryptor : public Encryptor {
 
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
+
+ private:
+  os_crypt_async::Encryptor encryptor_;
 };
 
 }  // namespace gcm

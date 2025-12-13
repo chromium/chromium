@@ -10,46 +10,43 @@
 namespace permissions {
 namespace features {
 
+#if BUILDFLAG(IS_ANDROID)
+// Enables or disables usage of Window Management Web API.
+BASE_FEATURE(kAndroidWindowManagementWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables or disables whether pages with pending permission requests will
 // go into back/forward cache.
 BASE_FEATURE(kBackForwardCacheUnblockPermissionRequest,
-             "BackForwardCacheUnblockPermissionRequest",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kKeyboardLockPrompt,
-             "KeyboardLockPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kKeyboardLockPrompt, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables different positioning of the permission dialog, so that it's placed
 // near the permission element, if possible.
 // This feature should be enabled with blink::features::kPermissionElement.
 BASE_FEATURE(kPermissionElementPromptPositioning,
-             "PermissionElementPromptPositioning",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables heuristic auto-grant for permissions.
+BASE_FEATURE(kPermissionHeuristicAutoGrant, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionPredictionsV2, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionsAIv3, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionsAIv4, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionsAIP92, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPermissionPromiseLifetimeModulation,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
-             "PermissionOnDeviceNotificationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
-             "PermissionOnDeviceGeolocationPredictions",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionPredictionsV2,
-             "PermissionPredictionsV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionsAIv1,
-             "PermissionsAIv1",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionsAIv3,
-             "PermissionsAIv3",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionPromiseLifetimeModulation,
-             "PermissionPromiseLifetimeModulation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to trigger showing a HaTS survey, with the given
 // `probability` and `trigger_id`. The `probability` parameter is defined and
@@ -63,21 +60,17 @@ BASE_FEATURE(kPermissionPromiseLifetimeModulation,
 // configuring `PermissionAction` does not make sense in that case, since the
 // user has not yet taken an action. Therefore, that parameter is ignored in
 // that case.
-BASE_FEATURE(kPermissionsPromptSurvey,
-             "PermissionsPromptSurvey",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPermissionsPromptSurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, use the value of the `allowlist_urls` FeatureParam as the
 // list of origins which would be allowed to access browser permission and
 // device attribute API for a web kiosk session.
 BASE_FEATURE(kAllowMultipleOriginsForWebKioskPermissions,
-             "AllowMultipleOriginsForWebKioskPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
-             "PermissionDedicatedCpssSettingAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #else
@@ -86,56 +79,49 @@ BASE_FEATURE(kPermissionDedicatedCpssSettingAndroid,
 // date set. The timestamp will be later used to auto-revoke the permission,
 // if eligible.
 BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
-             "RecordChooserPermissionLastVisitedTimestamps",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for the mitigation for https://crbug.com/1462709
-BASE_FEATURE(kMitigateUnpartitionedWebviewPermissions,
-             "MitigateUnpartitionedWebviewPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, site settings pages use radio button groups other than toggles.
 // In the meanwhile, CPSS if exist will be a separate radio button group.
 BASE_FEATURE(kPermissionSiteSettingsRadioButton,
-             "PermissionSiteSettingsRadioButton",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, blocks condition to exclude auto granted permissions for
 // storage access exceptions. This will allow RWS permission grants to be
 // visible in the Embedded content settings page.
 BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
-             "ShowRelatedWebsiteSetsPermissionGrants",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, Quiet prompts triggered by CPSS will have "Get Notifications?"
 // as the the chip text instead of the usual "Notifications Blocked".
-BASE_FEATURE(kCpssQuietChipTextUpdate,
-             "CpssQuietChipTextUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCpssQuietChipTextUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCpssUseTfliteSignatureRunner,
-             "CpssUseTfliteSignatureRunner",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCpssUseTfliteSignatureRunner, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// When enabled, FederatedIdentityApiEmbargoDurationDismiss will use values from
-// a field trial.
-BASE_FEATURE(kFedCmUpdatedCooldownPeriod,
-             "FedCmUpdatedCooldownPeriod",
+BASE_FEATURE(kGlicActorPermissionsAutoReject, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSafetyHubUnusedPermissionRevocationForAllSurfaces,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-// When the kill switch is unset, some Chrome features such as
-// Javascript-Optimizers are gated on an additional OS-provided security
-// permission. When the kill switch is set, the OS-provided security permission
-// is ignored when determining whether to enable Chrome features such as
-// Javascript-Optimizers.
-BASE_FEATURE(kOsAdditionalSecurityPermissionKillSwitch,
-             "OsAdditionalSecurityPermissionKillSwitch",
+// When enabled, Chrome returns "DENIED" (instead of "ASK") as permission state
+// for notifications if Chrome does not have and cannot acquire app-level
+// permissions on Android.
+BASE_FEATURE(kReturnDeniedForNotificationsWhenNoAppLevelSettings,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Only applicable if kApproximateGeolocationPermission is enabled. When
+// enabled, will use the returned accuracy from CPSS to select the initial value
+// of the geolocation accuracy (precise/approximate) for geolocation permission
+// prompts.
+BASE_FEATURE(kPermissionPredictionsGeolocationAccuracy,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
+
 namespace feature_params {
 
 const base::FeatureParam<PermissionElementPromptPosition>::Option

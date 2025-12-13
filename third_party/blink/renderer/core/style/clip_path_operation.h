@@ -44,7 +44,6 @@ class ClipPathOperation : public GarbageCollected<ClipPathOperation> {
   virtual void Trace(Visitor* visitor) const {}
 
   virtual bool operator==(const ClipPathOperation&) const = 0;
-  bool operator!=(const ClipPathOperation& o) const { return !(*this == o); }
 
   virtual OperationType GetType() const = 0;
   bool IsSameType(const ClipPathOperation& o) const {

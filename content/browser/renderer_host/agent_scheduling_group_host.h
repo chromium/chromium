@@ -23,8 +23,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-forward.h"
@@ -32,7 +30,6 @@
 
 namespace IPC {
 class ChannelProxy;
-class Message;
 }  // namespace IPC
 
 namespace content {
@@ -129,8 +126,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 
   // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
@@ -150,10 +146,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   static int32_t GetNextID();
 
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
-  //
-  // TODO(crbug.com/40061679): Change back to `raw_ref` after the ad-hoc
-  // debugging is no longer needed to investigate the bug.
-  const base::SafeRef<RenderProcessHost> process_;
+  const raw_ref<RenderProcessHost> process_;
 
   int32_t id_for_debugging_{GetNextID()};
 

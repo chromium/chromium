@@ -27,6 +27,12 @@ class LoyaltyCardFormEventLogger : public FormEventLoggerBase {
 
   ~LoyaltyCardFormEventLogger() override;
 
+  void OnDidShowSuggestions(const FormStructure& form,
+                            const AutofillField& field,
+                            base::TimeTicks form_parsed_timestamp,
+                            bool off_the_record,
+                            base::span<const Suggestion> suggestions) override;
+
   // Triggered when the autofill manager fills a loyalty card suggestion.
   void OnDidFillSuggestion(const FormStructure& form,
                            const AutofillField& field,
@@ -40,7 +46,6 @@ class LoyaltyCardFormEventLogger : public FormEventLoggerBase {
       const GURL& url);
 
  protected:
-  void RecordPollSuggestions() override;
   void RecordParseForm() override;
   void RecordShowSuggestions() override;
 

@@ -32,7 +32,7 @@
 #include "chrome/browser/mac/metrics.h"
 #include "chrome/browser/ui/cocoa/main_menu_builder.h"
 #include "chrome/browser/ui/cocoa/renderer_context_menu/chrome_swizzle_services_menu_updater.h"
-#include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/updater.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"

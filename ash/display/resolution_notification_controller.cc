@@ -151,45 +151,32 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
   constexpr char16_t kTimeoutPlaceHolder[] = u"$1";
 
   std::u16string timeout_message_with_placeholder;
-  if (display::features::IsListAllDisplayModesEnabled()) {
-    const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
-        change_info_->current_resolution.refresh_rate());
-    const std::u16string requested_refresh_rate = ConvertRefreshRateToString16(
-        change_info_->new_resolution.refresh_rate());
+  const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
+      change_info_->current_resolution.refresh_rate());
+  const std::u16string requested_refresh_rate =
+      ConvertRefreshRateToString16(change_info_->new_resolution.refresh_rate());
 
-    const bool no_fallback = actual_display_size == requested_display_size &&
-                             actual_refresh_rate == requested_refresh_rate;
+  const bool no_fallback = actual_display_size == requested_display_size &&
+                           actual_refresh_rate == requested_refresh_rate;
 
-    dialog_title =
-        no_fallback
-            ? l10n_util::GetStringUTF16(
-                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_SUCCESS)
-            : l10n_util::GetStringUTF16(
-                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK);
+  dialog_title =
+      no_fallback
+          ? l10n_util::GetStringUTF16(
+                IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_SUCCESS)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK);
 
-    timeout_message_with_placeholder =
-        no_fallback ? l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW,
-                          display_name, actual_display_size,
-                          actual_refresh_rate, kTimeoutPlaceHolder)
-                    : l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
-                          {display_name, actual_display_size,
-                           actual_refresh_rate, requested_display_size,
-                           requested_refresh_rate, kTimeoutPlaceHolder},
-                          /*offsets=*/nullptr);
-
-  } else {
-    timeout_message_with_placeholder =
-        actual_display_size == requested_display_size
-            ? l10n_util::GetStringFUTF16(
-                  IDS_ASH_RESOLUTION_CHANGE_DIALOG_CHANGED, display_name,
-                  actual_display_size, kTimeoutPlaceHolder)
-            : l10n_util::GetStringFUTF16(
-                  IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK, display_name,
-                  requested_display_size, actual_display_size,
-                  kTimeoutPlaceHolder);
-  }
+  timeout_message_with_placeholder =
+      no_fallback ? l10n_util::GetStringFUTF16(
+                        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW,
+                        display_name, actual_display_size, actual_refresh_rate,
+                        kTimeoutPlaceHolder)
+                  : l10n_util::GetStringFUTF16(
+                        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
+                        {display_name, actual_display_size, actual_refresh_rate,
+                         requested_display_size, requested_refresh_rate,
+                         kTimeoutPlaceHolder},
+                        /*offsets=*/nullptr);
 
   DisplayChangeDialog* dialog = new DisplayChangeDialog(
       std::move(dialog_title), std::move(timeout_message_with_placeholder),

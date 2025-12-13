@@ -6,7 +6,8 @@
 <script>
 async_test( t => {
   window.addEventListener('DOMContentLoaded', () => {
-    internals.settings.setPasswordEchoEnabled(true);
+    internals.settings.setPasswordEchoEnabledPhysical(true);
+    internals.settings.setPasswordEchoEnabledTouch(true);
     const testnode = document.getElementById('testnode');
     testnode.focus();
     document.execCommand("InsertHTML", false, "12x&#x305;&#x332;45");

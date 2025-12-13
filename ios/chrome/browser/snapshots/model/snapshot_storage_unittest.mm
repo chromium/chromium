@@ -8,9 +8,10 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/sessions/model/session_constants.h"
+#import "ios/chrome/browser/snapshots/model/constants.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
@@ -45,9 +46,7 @@ const NSUInteger kSnapshotPixelSize = 8;
 const NSUInteger kSnapshotCacheSize = 3;
 
 // Constants used to construct path to test the storage migration.
-const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
 const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
-const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
 
 // Converts `snapshot_id` into a SnapshotIDWrapper.
 SnapshotIDWrapper* ToWrapper(SnapshotID snapshot_id) {
@@ -85,7 +84,6 @@ class SnapshotStorageTest
       return false;
     }
 
-    const base::FilePath legacy_path;
     const base::FilePath storage_path = scoped_temp_directory_.GetPath();
     switch (GetParam()) {
       case SnapshotStorageKind::kLegacy: {
@@ -93,8 +91,7 @@ class SnapshotStorageTest
             initWithCacheSize:kSnapshotCacheSize];
         snapshot_storage_ =
             [[LegacySnapshotStorage alloc] initWithLRUCache:legacy_lru_cache_
-                                                storagePath:storage_path
-                                                 legacyPath:legacy_path];
+                                                storagePath:storage_path];
         break;
       }
 
@@ -103,8 +100,7 @@ class SnapshotStorageTest
         lru_cache_ = [[SnapshotLRUCache alloc] initWithSize:kSnapshotCacheSize];
         snapshot_storage_ = [[SnapshotStorageImpl alloc]
                initWithLruCache:lru_cache_
-            storageDirectoryUrl:FilePathToNSURL(storage_path)
-             legacyDirectoryUrl:FilePathToNSURL(legacy_path)];
+            storageDirectoryUrl:FilePathToNSURL(storage_path)];
         break;
       }
     }
@@ -400,116 +396,21 @@ TEST_P(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
   [storage removeObserver:observer];
 }
 
-// Tests that creating the SnapshotStorage migrates an existing legacy storage.
-TEST_P(SnapshotStorageTest, MigrateCache) {
+// Tests that creating the SnapshotStorage create the storage directory.
+TEST_P(SnapshotStorageTest, CreateStorage) {
   ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_directory_.GetPath();
 
   const base::FilePath storage_path =
-      root.Append(kSnapshots).Append(kIdentifier);
-
-  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
-                                         .Append(kIdentifier)
-                                         .Append(kSnapshots);
-
-  ASSERT_TRUE(base::CreateDirectory(legacy_path));
-  ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
+      root.Append(kSnapshotsDirName).Append(kIdentifier);
 
   NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
-  NSURL* legacy_url = base::apple::FilePathToNSURL(legacy_path);
   id<SnapshotStorage> storage =
-      [[SnapshotStorageImpl alloc] initWithStorageDirectoryUrl:storage_url
-                                            legacyDirectoryUrl:legacy_url];
+      [[SnapshotStorageImpl alloc] initWithStorageDirectoryUrl:storage_url];
 
   FlushRunLoops(storage);
 
   EXPECT_TRUE(base::DirectoryExists(storage_path));
-  EXPECT_FALSE(base::DirectoryExists(legacy_path));
-
-  // Check that the legacy directory content has been moved.
-  EXPECT_TRUE(base::PathExists(storage_path.Append(kFilename)));
-}
-
-// Tests that creating the SnapshotStorage simply create the storage directory
-// if the legacy path is not specified.
-TEST_P(SnapshotStorageTest, MigrateCache_EmptyLegacyPath) {
-  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_directory_.GetPath();
-
-  const base::FilePath storage_path =
-      root.Append(kSnapshots).Append(kIdentifier);
-
-  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
-  NSURL* legacy_url = base::apple::FilePathToNSURL(base::FilePath());
-  id<SnapshotStorage> storage =
-      [[SnapshotStorageImpl alloc] initWithStorageDirectoryUrl:storage_url
-                                            legacyDirectoryUrl:legacy_url];
-
-  FlushRunLoops(storage);
-
-  EXPECT_TRUE(base::DirectoryExists(storage_path));
-}
-
-// Tests that creating the SnapshotStorage simply create the storage directory
-// if the legacy path does not exists.
-TEST_P(SnapshotStorageTest, MigrateCache_NoLegacyStorage) {
-  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_directory_.GetPath();
-
-  const base::FilePath storage_path =
-      root.Append(kSnapshots).Append(kIdentifier);
-
-  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
-                                         .Append(kIdentifier)
-                                         .Append(kSnapshots);
-
-  ASSERT_FALSE(base::DirectoryExists(legacy_path));
-
-  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
-  NSURL* legacy_url = base::apple::FilePathToNSURL(legacy_path);
-  id<SnapshotStorage> storage =
-      [[SnapshotStorageImpl alloc] initWithStorageDirectoryUrl:storage_url
-                                            legacyDirectoryUrl:legacy_url];
-
-  FlushRunLoops(storage);
-
-  EXPECT_TRUE(base::DirectoryExists(storage_path));
-  EXPECT_FALSE(base::DirectoryExists(legacy_path));
-}
-
-// Tests that creating the SnapshotStorage can fail to create the storage
-// directory and that the legacy directory is left untouch in that case.
-TEST_P(SnapshotStorageTest, MigrateCache_FailCreatingCache) {
-  ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
-  const base::FilePath root = scoped_temp_directory_.GetPath();
-
-  const base::FilePath storage_path =
-      root.Append(kSnapshots).Append(kIdentifier);
-
-  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
-                                         .Append(kIdentifier)
-                                         .Append(kSnapshots);
-
-  ASSERT_TRUE(base::CreateDirectory(legacy_path));
-  ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
-
-  // Create a file with the same name as the storage directory to
-  // simulate a failure (in real world the failure would be caused
-  // by a disk that is full).
-  ASSERT_TRUE(base::CreateDirectory(storage_path.DirName()));
-  ASSERT_TRUE(base::WriteFile(storage_path, ""));
-
-  NSURL* storage_url = base::apple::FilePathToNSURL(storage_path);
-  NSURL* legacy_url = base::apple::FilePathToNSURL(base::FilePath());
-  id<SnapshotStorage> storage =
-      [[SnapshotStorageImpl alloc] initWithStorageDirectoryUrl:storage_url
-                                            legacyDirectoryUrl:legacy_url];
-
-  FlushRunLoops(storage);
-
-  EXPECT_FALSE(base::DirectoryExists(storage_path));
-  EXPECT_TRUE(base::DirectoryExists(legacy_path));
-  EXPECT_TRUE(base::PathExists(legacy_path.Append(kFilename)));
 }
 
 // Tests that retrieving grey snapshot images generated by color images stored

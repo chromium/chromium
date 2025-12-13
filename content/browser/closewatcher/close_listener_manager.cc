@@ -42,7 +42,10 @@ void CloseListenerManager::MaybeUpdateInterceptStatus(
     return;
   }
   should_intercept_ = should_intercept;
-  GetWebContents().GetDelegate()->DidChangeCloseSignalInterceptStatus();
+  auto* delegate = GetWebContents().GetDelegate();
+  if (delegate) {
+    delegate->DidChangeCloseSignalInterceptStatus();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(CloseListenerManager);

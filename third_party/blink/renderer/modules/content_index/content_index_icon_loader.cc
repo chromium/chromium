@@ -91,9 +91,9 @@ void ContentIndexIconLoader::Start(
   Vector<SkBitmap>* icons_ptr = icons.get();
   auto barrier_closure = base::BarrierClosure(
       icon_sizes.size(),
-      WTF::BindOnce(&ContentIndexIconLoader::DidGetIcons, WrapPersistent(this),
-                    std::move(description), std::move(icons),
-                    std::move(callback)));
+      blink::BindOnce(&ContentIndexIconLoader::DidGetIcons,
+                      WrapPersistent(this), std::move(description),
+                      std::move(icons), std::move(callback)));
 
   for (const auto& icon_size : icon_sizes) {
     // TODO(crbug.com/973844): The same `src` may be chosen more than once.
@@ -107,14 +107,14 @@ void ContentIndexIconLoader::Start(
     // |icons_ptr| is safe to use since it is owned by |barrier_closure|.
     FetchIcon(
         execution_context, icon_url, icon_size, threaded_icon_loader,
-        WTF::BindOnce(
+        blink::BindOnce(
             [](base::OnceClosure done_closure, Vector<SkBitmap>* icons_ptr,
                ThreadedIconLoader* icon_loader, SkBitmap icon,
                double resize_scale) {
               icons_ptr->push_back(std::move(icon));
               std::move(done_closure).Run();
             },
-            barrier_closure, WTF::Unretained(icons_ptr),
+            barrier_closure, Unretained(icons_ptr),
             // Pass |threaded_icon_loader| to the callback to make sure it
             // doesn't get destroyed.
             WrapPersistent(threaded_icon_loader)));

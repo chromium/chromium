@@ -292,7 +292,7 @@ double StringConstraintFitnessDistance(const WebString& value,
 
   for (auto& ideal_value : constraint.Ideal()) {
     // TODO(crbug.com/787254): Remove the explicit conversion to WebString when
-    // this method operates solely over WTF::String.
+    // this method operates solely over String.
     if (value == WebString(ideal_value))
       return 0.0;
   }

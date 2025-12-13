@@ -1,7 +1,7 @@
 Name: error-prone annotations
 Short Name: error_prone_annotations
-URL: https://github.com/google/error-prone/tree/master/annotations
-Version: 2.40.0
+URL: https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.45.0/error_prone_annotations-2.45.0.jar
+Version: 2.45.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE

@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -273,8 +274,7 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
   avatar_menu_ = std::make_unique<AvatarMenu>(
-      &profile_manager->GetProfileAttributesStorage(), this,
-      BrowserList::GetInstance()->GetLastActive());
+      &profile_manager->GetProfileAttributesStorage(), this, browser_.get());
   avatar_menu_->RebuildMenu();
   BrowserList::AddObserver(this);
 

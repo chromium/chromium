@@ -15,7 +15,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extension_view_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_unittest.h"
@@ -86,10 +86,9 @@ void ExtensionsToolbarContainerUnitTest::NavigateAndCommit(const GURL& url) {
 ToolbarActionView* ExtensionsToolbarContainerUnitTest::GetPinnedExtensionView(
     const extensions::ExtensionId& extension_id) {
   std::vector<ToolbarActionView*> actions = GetPinnedExtensionViews();
-  auto it =
-      std::ranges::find(actions, extension_id, [](ToolbarActionView* action) {
-        return action->view_controller()->GetId();
-      });
+  auto it = std::ranges::find(
+      actions, extension_id,
+      [](ToolbarActionView* action) { return action->view_model()->GetId(); });
   if (it == actions.end()) {
     return nullptr;
   }
@@ -174,7 +173,8 @@ TEST_F(ExtensionsToolbarContainerUnitTest, ForcePinnedExtensionsCannotReorder) {
         }
       })",
       extensionC->id().c_str());
-  std::optional<base::Value> settings = base::JSONReader::Read(json);
+  std::optional<base::Value> settings =
+      base::JSONReader::Read(json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(settings.has_value());
   profile()->GetTestingPrefService()->SetManagedPref(
       extensions::pref_names::kExtensionManagement,

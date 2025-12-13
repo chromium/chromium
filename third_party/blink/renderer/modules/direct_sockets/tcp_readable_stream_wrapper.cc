@@ -38,17 +38,15 @@ TCPReadableStreamWrapper::TCPReadableStreamWrapper(
       read_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
       close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
       inspector_id_(inspector_id) {
-  read_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPReadableStreamWrapper::OnHandleReady,
-                         WrapWeakPersistent(this)));
+  read_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
+                      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                      BindRepeating(&TCPReadableStreamWrapper::OnHandleReady,
+                                    WrapWeakPersistent(this)));
 
-  close_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPReadableStreamWrapper::OnHandleReset,
-                         WrapWeakPersistent(this)));
+  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPReadableStreamWrapper::OnHandleReset,
+                                     WrapWeakPersistent(this)));
 
   ScriptState::Scope scope(script_state);
 
@@ -121,6 +119,11 @@ void TCPReadableStreamWrapper::Pull() {
         Controller()->enqueue(script_state, buffer, exception_state);
       }
 
+      // It is necessary to check |data_pipe_| as |enqueue()| may run
+      // JavaScript, leading to invalidation of |data_pipe_|.
+      if (!data_pipe_.is_valid()) {
+        return;
+      }
       result = data_pipe_->EndReadData(data_buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
 

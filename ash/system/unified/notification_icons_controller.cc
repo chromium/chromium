@@ -70,7 +70,8 @@ bool ShouldShowNotification(message_center::Notification* notification) {
   if (notifier_id == kVmCameraMicNotifierId ||
       notifier_id == kBatteryNotificationNotifierId ||
       notifier_id == kUsbNotificationNotifierId ||
-      notifier_id == kPrivacyIndicatorsNotifierId) {
+      notifier_id == kPrivacyIndicatorsNotifierId ||
+      notifier_id == kPrivacyIndicatorsMultiCaptureNotifierId) {
     return false;
   }
 
@@ -299,7 +300,7 @@ void NotificationIconsController::UpdateNotificationIndicators() {
 
 void NotificationIconsController::UpdateIconsViewVisibleForDisplaySize() {
   aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
-  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  auto display = display::Screen::Get()->GetDisplayNearestWindow(window);
   const int display_size =
       std::max(display.size().width(), display.size().height());
   icons_view_visible_ = display_size >= kIconsViewDisplaySizeThreshold;
@@ -309,7 +310,7 @@ void NotificationIconsController::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   aura::Window* window = shelf_->status_area_widget()->GetNativeWindow();
-  if (display::Screen::GetScreen()->GetDisplayNearestWindow(window).id() !=
+  if (display::Screen::Get()->GetDisplayNearestWindow(window).id() !=
       display.id()) {
     return;
   }

@@ -15,6 +15,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -175,8 +176,8 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
                         kCellWidth, kCellHeight);
 
     // Make sure background is not drawn outside of the rounded cell.
-    SkPath path;
-    path.addRoundRect(gfx::RectToSkRect(cell_rect), kCellRadius, kCellRadius);
+    const SkPath path = SkPath::RRect(SkRRect::MakeRectXY(
+        gfx::RectToSkRect(cell_rect), kCellRadius, kCellRadius));
     canvas->Save();
     canvas->ClipPath(path, /*do_anti_alias=*/true);
 

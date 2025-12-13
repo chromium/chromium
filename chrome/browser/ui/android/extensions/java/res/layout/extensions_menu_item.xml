@@ -22,8 +22,8 @@ found in the LICENSE file.
     <ImageView
         android:id="@+id/extensions_menu_item_icon"
         style="@style/ListMenuItemIconStyle.Start"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -34,8 +34,23 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        app:layout_constraintEnd_toStartOf="@id/extensions_menu_item_context_menu"
         app:layout_constraintStart_toEndOf="@id/extensions_menu_item_icon"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0" />
+
+    <org.chromium.ui.listmenu.ListMenuButton
+        android:id="@+id/extensions_menu_item_context_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_more_vert"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/extensions_menu_context_menu_tooltip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menuVerticalOverlapAnchor="false"
+        app:menuMaxWidth="@dimen/extension_action_button_list_menu_width" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

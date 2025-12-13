@@ -162,7 +162,8 @@ void RecordInfo::walkBases() {
       if (!type)
         base = GetDependentTemplatedDecl(*it.getType());
       else {
-        base = cast_or_null<CXXRecordDecl>(type->getDecl()->getDefinition());
+        base = cast_or_null<CXXRecordDecl>(
+            type->getOriginalDecl()->getDefinition());
         if (base)
           queue.push_back(base);
       }
@@ -581,20 +582,25 @@ Edge* RecordInfo::CreateEdgeFromOriginalType(const Type* type) {
     return nullptr;
 
   // look for "typedef ... iterator;"
-  if (!isa<ElaboratedType>(type))
+  const TypedefType* typedefType = dyn_cast<TypedefType>(type);
+  if (!typedefType) {
     return nullptr;
-  const ElaboratedType* elaboratedType = cast<ElaboratedType>(type);
-  if (!isa<TypedefType>(elaboratedType->getNamedType()))
-    return nullptr;
-  const TypedefType* typedefType =
-      cast<TypedefType>(elaboratedType->getNamedType());
+  }
+
   std::string typeName = typedefType->getDecl()->getNameAsString();
-  if (!Config::IsIterator(typeName))
+  if (!Config::IsIterator(typeName)) {
     return nullptr;
-  const NestedNameSpecifier* qualifier = elaboratedType->getQualifier();
-  if (!qualifier)
+  }
+
+  NestedNameSpecifier qualifier = typedefType->getQualifier();
+  if (!qualifier) {
     return nullptr;
-  RecordInfo* info = cache_->Lookup(qualifier->getAsType());
+  }
+
+  RecordInfo* info = cache_->Lookup(qualifier.getAsType());
+  if (!info) {
+    return nullptr;
+  }
 
   return new Iterator(info);
 }

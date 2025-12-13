@@ -745,7 +745,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   // quic::QuicSession methods:
   QuicChromiumClientStream* CreateOutgoingBidirectionalStream() override;
-  QuicChromiumClientStream* CreateOutgoingUnidirectionalStream() override;
   const quic::QuicCryptoClientStream* GetCryptoStream() const override;
   quic::QuicCryptoClientStream* GetMutableCryptoStream() override;
   void SetDefaultEncryptionLevel(quic::EncryptionLevel level) override;
@@ -983,7 +982,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // quic::QuicSession methods:
   bool ShouldCreateIncomingStream(quic::QuicStreamId id) override;
   bool ShouldCreateOutgoingBidirectionalStream() override;
-  bool ShouldCreateOutgoingUnidirectionalStream() override;
 
   QuicChromiumClientStream* CreateIncomingStream(
       quic::QuicStreamId id) override;

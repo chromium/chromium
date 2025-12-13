@@ -27,7 +27,6 @@ namespace chromeos::cfm {
 namespace {
 
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::WithArgs;

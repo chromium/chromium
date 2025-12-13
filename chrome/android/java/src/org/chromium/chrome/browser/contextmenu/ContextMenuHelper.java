@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +19,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -113,11 +115,13 @@ public class ContextMenuHelper {
             return;
         }
 
+        Activity activity = windowAndroid.getActivity().get();
+
         mCurrentNativeDelegate =
                 new ContextMenuNativeDelegateImpl(mWebContents, renderFrameHost, params);
         mCurrentPopulator =
                 mPopulatorFactory.createContextMenuPopulator(
-                        windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
+                        activity, params, mCurrentNativeDelegate);
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mOnMenuShown =
@@ -150,7 +154,7 @@ public class ContextMenuHelper {
                     ContextMenuHelperJni.get().onContextMenuClosed(mNativeContextMenuHelper);
                 };
 
-        displayContextMenu(topContentOffsetPx);
+        displayContextMenu(activity, topContentOffsetPx);
     }
 
     @CalledByNative
@@ -170,7 +174,7 @@ public class ContextMenuHelper {
                 mWebContents != null);
     }
 
-    private void displayContextMenu(float topContentOffsetPx) {
+    private void displayContextMenu(Activity activity, float topContentOffsetPx) {
         List<ModelList> items = assumeNonNull(mCurrentPopulator).buildContextMenu();
         assert mOnMenuClosed != null;
         if (items.isEmpty()) {
@@ -186,8 +190,14 @@ public class ContextMenuHelper {
                 && mWindow != null
                 && mCurrentContextMenuParams != null
                 && mOnMenuShown != null;
+
+        boolean isCustomItemPresent =
+                ChromeFeatureList.sCctContextualMenuItems.isEnabled()
+                        && mCurrentPopulator.hasCustomItems();
+
         final ContextMenuCoordinator menuCoordinator =
-                new ContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
+                new ContextMenuCoordinator(
+                        activity, topContentOffsetPx, mCurrentNativeDelegate, isCustomItemPresent);
         mCurrentContextMenu = menuCoordinator;
         mChipDelegate = mCurrentPopulator.getChipDelegate();
 

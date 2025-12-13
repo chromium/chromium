@@ -13,7 +13,6 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/oobe_icons.html.js';
 
-import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -166,9 +165,8 @@ export class ArcVmDataMigrationScreen extends
     this.migrationProgress = Math.floor(migrationProgress);
   }
 
-  setEstimatedRemainingTime(estimatedRemainingTimeInString: String16): void {
-    this.estimatedRemainingTimeInString =
-        String.fromCharCode(...estimatedRemainingTimeInString.data);
+  setEstimatedRemainingTime(estimatedRemainingTimeInString: string): void {
+    this.estimatedRemainingTimeInString =estimatedRemainingTimeInString;
   }
 
   private shouldDisableUpdateButton(

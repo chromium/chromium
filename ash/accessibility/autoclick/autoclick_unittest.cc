@@ -294,9 +294,8 @@ TEST_F(AutoclickTest, MovementThreshold) {
       // location should never get a click.
       FastForwardBy(full_delay * 2);
       EXPECT_EQ(2u, GetMouseEvents().size());
-      gfx::Rect display_bounds = display::Screen::GetScreen()
-                                     ->GetDisplayNearestWindow(root_window)
-                                     .bounds();
+      gfx::Rect display_bounds =
+          display::Screen::Get()->GetDisplayNearestWindow(root_window).bounds();
       EXPECT_EQ(center - gfx::Vector2d(display_bounds.origin().x(),
                                        display_bounds.origin().y()),
                 GetMouseEvents()[0].location());
@@ -467,8 +466,8 @@ TEST_F(AutoclickTest, SynthesizedMouseMovesIgnored) {
   // result, synthesized mouse events will be dispatched to the window, but it
   // should not trigger an autoclick.
   aura::test::EventCountDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithDelegate(
-      &delegate, 123, gfx::Rect(50, 50, 100, 100)));
+  std::unique_ptr<aura::Window> window(CreateTestWindowInShell(
+      {.delegate = &delegate, .bounds = {50, 50, 100, 100}, .window_id = 123}));
   window->Show();
   events = WaitForMouseEvents();
   EXPECT_EQ(0u, events.size());

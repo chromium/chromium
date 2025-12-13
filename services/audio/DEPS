@@ -6,4 +6,5 @@ include_rules = [
    "+media/webrtc",
    "+sandbox",
    "+services/audio/public",
+   "+third_party/tflite",
 ]

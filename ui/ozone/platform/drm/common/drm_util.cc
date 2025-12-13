@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform/drm/common/drm_util.h"
 
 #include <drm_fourcc.h>
@@ -27,6 +22,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -79,7 +75,8 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
 
   // Try to find an encoder for the connector.
   for (int i = 0; i < connector->count_encoders; ++i) {
-    ScopedDrmEncoderPtr encoder = drm.GetEncoder(connector->encoders[i]);
+    ScopedDrmEncoderPtr encoder =
+        drm.GetEncoder(UNSAFE_TODO(connector->encoders[i]));
     if (!encoder)
       continue;
 
@@ -90,8 +87,9 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
       // Check if the encoder is compatible with this CRTC
       int crtc_bit = 1 << j;
       if (!(encoder->possible_crtcs & crtc_bit) ||
-          IsCrtcInUse(resources->crtcs[j], displays))
+          IsCrtcInUse(UNSAFE_TODO(resources->crtcs[j]), displays)) {
         continue;
+      }
 
       int supported_planes =
           std::ranges::count_if(planes, [crtc_bit](const ScopedDrmPlanePtr& p) {
@@ -99,9 +97,9 @@ std::pair<uint32_t /* best_crtc */, uint32_t /* connected_crtc */> GetCrtcs(
           });
       if (supported_planes > most_crtc_planes ||
           (supported_planes == most_crtc_planes &&
-           connected_crtc == resources->crtcs[j])) {
+           connected_crtc == UNSAFE_TODO(resources->crtcs[j]))) {
         most_crtc_planes = supported_planes;
-        best_crtc = resources->crtcs[j];
+        best_crtc = UNSAFE_TODO(resources->crtcs[j]);
       }
     }
   }
@@ -162,7 +160,7 @@ int GetDrmProperty(const DrmWrapper& drm,
                    const std::string& name,
                    ScopedDrmPropertyPtr* property) {
   for (uint32_t i = 0; i < static_cast<uint32_t>(object->count_props); ++i) {
-    ScopedDrmPropertyPtr tmp = drm.GetProperty(object->props[i]);
+    ScopedDrmPropertyPtr tmp = drm.GetProperty(UNSAFE_TODO(object->props[i]));
     if (!tmp)
       continue;
 
@@ -177,8 +175,9 @@ int GetDrmProperty(const DrmWrapper& drm,
 
 std::string GetNameForEnumValue(drmModePropertyRes* property, uint32_t value) {
   for (int i = 0; i < property->count_enums; ++i) {
-    if (property->enums[i].value == value)
-      return property->enums[i].name;
+    if (UNSAFE_TODO(property->enums[i]).value == value) {
+      return UNSAFE_TODO(property->enums[i]).name;
+    }
   }
 
   return std::string();
@@ -193,7 +192,7 @@ ScopedDrmPropertyBlobPtr GetDrmPropertyBlob(const DrmWrapper& drm,
     return nullptr;
 
   if (property->flags & DRM_MODE_PROP_BLOB) {
-    return drm.GetPropertyBlob(connector->prop_values[index]);
+    return drm.GetPropertyBlob(UNSAFE_TODO(connector->prop_values[index]));
   }
 
   return nullptr;
@@ -213,7 +212,7 @@ display::PrivacyScreenState GetPrivacyScreenState(const DrmWrapper& drm,
   // property indicates the true state of the privacy screen.
   if (sw_index >= 0 && hw_index >= 0) {
     const std::string hw_enum_value = GetNameForEnumValue(
-        hw_property.get(), connector->prop_values[hw_index]);
+        hw_property.get(), UNSAFE_TODO(connector->prop_values[hw_index]));
     const display::PrivacyScreenState* state =
         GetInternalTypeValueFromDrmEnum(hw_enum_value, kPrivacyScreenStates);
     return state ? *state : display::kNotSupported;
@@ -225,8 +224,9 @@ display::PrivacyScreenState GetPrivacyScreenState(const DrmWrapper& drm,
   const int legacy_index = GetDrmProperty(
       drm, connector, kPrivacyScreenPropertyNameLegacy, &legacy_property);
   if (legacy_index >= 0) {
-    const std::string legacy_enum_value = GetNameForEnumValue(
-        legacy_property.get(), connector->prop_values[legacy_index]);
+    const std::string legacy_enum_value =
+        GetNameForEnumValue(legacy_property.get(),
+                            UNSAFE_TODO(connector->prop_values[legacy_index]));
     const display::PrivacyScreenState* state = GetInternalTypeValueFromDrmEnum(
         legacy_enum_value, kPrivacyScreenStates);
     return state ? *state : display::kNotSupported;
@@ -263,7 +263,8 @@ bool IsAspectPreserving(const DrmWrapper& drm, drmModeConnector* connector) {
   if (index < 0)
     return false;
 
-  return (GetNameForEnumValue(property.get(), connector->prop_values[index]) ==
+  return (GetNameForEnumValue(property.get(),
+                              UNSAFE_TODO(connector->prop_values[index])) ==
           "Full aspect");
 }
 
@@ -300,11 +301,15 @@ display::PanelOrientation GetPanelOrientation(const DrmWrapper& drm,
   // will be DRM_MODE_PANEL_ORIENTATION_UNKNOWN (which is -1, except
   // `prop_values` is unsigned, so compare against max uint64_t). Assume that
   // panels with unknown orientation have normal orientation.
-  if (connector->prop_values[index] == std::numeric_limits<uint64_t>::max())
+  if (UNSAFE_TODO(connector->prop_values[index]) ==
+      std::numeric_limits<uint64_t>::max()) {
     return display::PanelOrientation::kNormal;
+  }
 
-  DCHECK_LE(connector->prop_values[index], display::PanelOrientation::kLast);
-  return static_cast<display::PanelOrientation>(connector->prop_values[index]);
+  UNSAFE_TODO(DCHECK_LE(connector->prop_values[index],
+                        display::PanelOrientation::kLast));
+  return static_cast<display::PanelOrientation>(
+      UNSAFE_TODO(connector->prop_values[index]));
 }
 
 // Read a file and trim whitespace. If the file can't be read, returns
@@ -542,9 +547,11 @@ ScopedDrmPropertyPtr FindDrmProperty(const DrmWrapper& drm,
                                      drmModeObjectProperties* properties,
                                      const char* name) {
   for (uint32_t i = 0; i < properties->count_props; ++i) {
-    ScopedDrmPropertyPtr property = drm.GetProperty(properties->props[i]);
-    if (property && !strcmp(property->name, name))
+    ScopedDrmPropertyPtr property =
+        drm.GetProperty(UNSAFE_TODO(properties->props[i]));
+    if (property && !UNSAFE_TODO(strcmp(property->name, name))) {
       return property;
+    }
   }
   return nullptr;
 }
@@ -553,8 +560,8 @@ bool GetConnectorPropertyValue(const drmModeConnector* const connector,
                                const uint32_t prop_id,
                                uint64_t* const prop_value) {
   for (int i = 0; i < connector->count_props; i++) {
-    if (connector->props[i] == prop_id) {
-      *prop_value = connector->prop_values[i];
+    if (UNSAFE_TODO(connector->props[i]) == prop_id) {
+      *prop_value = UNSAFE_TODO(connector->prop_values[i]);
       return true;
     }
   }
@@ -616,7 +623,8 @@ bool IsVrrCapable(const DrmWrapper& drm, drmModeConnector* connector) {
   ScopedDrmPropertyPtr vrr_capable_property;
   const int vrr_capable_index = GetDrmProperty(
       drm, connector, kVrrCapablePropertyName, &vrr_capable_property);
-  return vrr_capable_index >= 0 && connector->prop_values[vrr_capable_index];
+  return vrr_capable_index >= 0 &&
+         UNSAFE_TODO(connector->prop_values[vrr_capable_index]);
 }
 
 bool IsVrrEnabled(const DrmWrapper& drm, drmModeCrtc* crtc) {
@@ -625,7 +633,8 @@ bool IsVrrEnabled(const DrmWrapper& drm, drmModeCrtc* crtc) {
   ScopedDrmPropertyPtr vrr_enabled_property;
   const int vrr_enabled_index = GetDrmProperty(
       drm, crtc_props.get(), kVrrEnabledPropertyName, &vrr_enabled_property);
-  return vrr_enabled_index >= 0 && crtc_props->prop_values[vrr_enabled_index];
+  return vrr_enabled_index >= 0 &&
+         UNSAFE_TODO(crtc_props->prop_values[vrr_enabled_index]);
 }
 
 display::VariableRefreshRateState GetVariableRefreshRateState(
@@ -666,14 +675,15 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
     }
 
     ScopedDrmConnectorPtr connector =
-        drm.GetConnector(resources->connectors[i]);
+        drm.GetConnector(UNSAFE_TODO(resources->connectors[i]));
     // In case of zombie connectors, verify that the connector is valid by
     // checking if it has props.
     // Zombie connectors can occur when an MST (which creates a new connector ID
     // upon connection) is disconnected but the kernel hasn't cleaned up the old
     // connector ID yet.
-    if (!connector || !drm.GetObjectProperties(resources->connectors[i],
-                                               DRM_MODE_OBJECT_CONNECTOR)) {
+    if (!connector ||
+        !drm.GetObjectProperties(UNSAFE_TODO(resources->connectors[i]),
+                                 DRM_MODE_OBJECT_CONNECTOR)) {
       continue;
     }
 
@@ -692,7 +702,8 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
   base::flat_map<drmModeConnector*, int> connector_crtcs;
   for (auto* connector : available_connectors) {
     std::vector<uint32_t> encoder_ids(
-        connector->encoders, connector->encoders + connector->count_encoders);
+        connector->encoders,
+        UNSAFE_TODO(connector->encoders + connector->count_encoders));
     connector_crtcs[connector] =
         GetPossibleCrtcsBitmaskFromEncoders(drm, encoder_ids);
   }
@@ -712,7 +723,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
   ScopedDrmPlaneResPtr plane_resources = drm.GetPlaneResources();
   std::vector<ScopedDrmPlanePtr> planes;
   for (uint32_t i = 0; i < plane_resources->count_planes; i++)
-    planes.emplace_back(drm.GetPlane(plane_resources->planes[i]));
+    planes.emplace_back(drm.GetPlane(UNSAFE_TODO(plane_resources->planes[i])));
 
   for (auto* c : available_connectors) {
     uint32_t best_crtc, connected_crtc;
@@ -741,7 +752,7 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
     if (edid_blob) {
       uint8_t* edid_blob_ptr = static_cast<uint8_t*>(edid_blob->data);
       std::vector<uint8_t> edid(edid_blob_ptr,
-                                edid_blob_ptr + edid_blob->length);
+                                UNSAFE_TODO(edid_blob_ptr + edid_blob->length));
       const bool is_external = GetDisplayConnectionType(connector) !=
                                display::DISPLAY_CONNECTION_TYPE_INTERNAL;
       edid_parser = display::EdidParser(std::move(edid), is_external);
@@ -793,7 +804,7 @@ std::vector<uint32_t> GetPossibleCrtcIdsFromBitmask(
     // drm_crtc_index().
     const uint32_t current_crtc_mask = 1 << i;
     if (possible_crtcs_bitmask & current_crtc_mask) {
-      crtcs.push_back(resources->crtcs[i]);
+      crtcs.push_back(UNSAFE_TODO(resources->crtcs[i]));
     }
   }
 
@@ -807,7 +818,7 @@ bool SameMode(const drmModeModeInfo& lhs, const drmModeModeInfo& rhs) {
          lhs.htotal == rhs.htotal && lhs.hskew == rhs.hskew &&
          lhs.vsync_start == rhs.vsync_start && lhs.vsync_end == rhs.vsync_end &&
          lhs.vtotal == rhs.vtotal && lhs.vscan == rhs.vscan &&
-         lhs.flags == rhs.flags && strcmp(lhs.name, rhs.name) == 0;
+         lhs.flags == rhs.flags && UNSAFE_TODO(strcmp(lhs.name, rhs.name)) == 0;
 }
 
 std::unique_ptr<display::DisplayMode> CreateDisplayMode(
@@ -856,7 +867,7 @@ display::DisplaySnapshot::DisplayModeList ExtractDisplayModes(
   *out_native_mode = nullptr;
   display::DisplaySnapshot::DisplayModeList modes;
   for (int i = 0; i < info->connector()->count_modes; ++i) {
-    const drmModeModeInfo& mode = info->connector()->modes[i];
+    const drmModeModeInfo& mode = UNSAFE_TODO(info->connector()->modes[i]);
     modes.push_back(CreateDisplayMode(
         mode, info->edid_parser() ? info->edid_parser()->vsync_rate_min()
                                   : std::nullopt));
@@ -1034,6 +1045,39 @@ int GetFourCCFormatForOpaqueFramebuffer(gfx::BufferFormat format) {
   }
 }
 
+int GetFourCCFormatForOpaqueFramebuffer(viz::SharedImageFormat format) {
+  // DRM atomic interface doesn't currently support specifying an alpha
+  // blending. We can simulate disabling alpha blending creating an fb
+  // with a format without the alpha channel.
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888) {
+    return DRM_FORMAT_XBGR8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_8888 ||
+      format == viz::SinglePlaneFormat::kBGRX_8888) {
+    return DRM_FORMAT_XRGB8888;
+  }
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    return DRM_FORMAT_XRGB2101010;
+  }
+  if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
+    return DRM_FORMAT_XBGR2101010;
+  }
+  if (format == viz::SinglePlaneFormat::kBGR_565) {
+    return DRM_FORMAT_RGB565;
+  }
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    return DRM_FORMAT_NV12;
+  }
+  if (format == viz::MultiPlaneFormat::kYV12) {
+    return DRM_FORMAT_YVU420;
+  }
+  if (format == viz::MultiPlaneFormat::kP010) {
+    return DRM_FORMAT_P010;
+  }
+  NOTREACHED();
+}
+
 const char* GetNameForColorspace(const gfx::ColorSpace color_space) {
   if (color_space == gfx::ColorSpace::CreateHDR10())
     return kColorSpaceBT2020RGBEnumName;
@@ -1046,8 +1090,8 @@ uint64_t GetEnumValueForName(const DrmWrapper& drm,
                              const char* str) {
   ScopedDrmPropertyPtr res = drm.GetProperty(property_id);
   for (int i = 0; i < res->count_enums; ++i) {
-    if (strcmp(res->enums[i].name, str) == 0) {
-      return res->enums[i].value;
+    if (UNSAFE_TODO(strcmp(res->enums[i].name, str)) == 0) {
+      return UNSAFE_TODO(res->enums[i]).value;
     }
   }
   NOTREACHED();
@@ -1195,13 +1239,17 @@ std::string GetEnumNameForProperty(
     const drmModeObjectProperties& property_values) {
   for (uint32_t prop_idx = 0; prop_idx < property_values.count_props;
        ++prop_idx) {
-    if (property_values.props[prop_idx] != property.prop_id)
+    if (UNSAFE_TODO(property_values.props[prop_idx]) != property.prop_id) {
       continue;
+    }
 
     for (int enum_idx = 0; enum_idx < property.count_enums; ++enum_idx) {
-      const drm_mode_property_enum& property_enum = property.enums[enum_idx];
-      if (property_enum.value == property_values.prop_values[prop_idx])
+      const drm_mode_property_enum& property_enum =
+          UNSAFE_TODO(property.enums[enum_idx]);
+      if (property_enum.value ==
+          UNSAFE_TODO(property_values.prop_values[prop_idx])) {
         return property_enum.name;
+      }
     }
   }
 

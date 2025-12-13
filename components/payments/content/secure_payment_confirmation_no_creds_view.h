@@ -34,6 +34,7 @@ class SecurePaymentConfirmationNoCredsView {
       OptOutCallback opt_out_callback) = 0;
   virtual void HideDialog() = 0;
   virtual bool ClickOptOutForTesting() = 0;
+  virtual bool AcceptDialogForTesting() = 0;
 
  protected:
   SecurePaymentConfirmationNoCredsView();

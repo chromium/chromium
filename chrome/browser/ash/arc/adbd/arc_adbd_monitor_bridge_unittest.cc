@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -14,16 +15,20 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_adbd_monitor_instance.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,6 +56,7 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
   void SetUp() override {
     ash::UpstartClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
 
     auto* command_line = base::CommandLine::ForCurrentProcess();
     command_line->InitFromArgv(
@@ -60,20 +66,25 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
 
     // Make the session manager skip creating UI.
     ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+    arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<arc::ArcSessionRunner>(
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     // Log in as a primary profile to enable ARCVM.
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
-    Profile* profile = profile_manager_->CreateTestingProfile(kProfileName);
-    const AccountId account_id(
-        AccountId::FromUserEmail(profile->GetProfileUserName()));
+
+    const AccountId account_id(AccountId::FromUserEmail(kProfileName));
     fake_user_manager_->AddUser(account_id);
     fake_user_manager_->LoginUser(account_id);
+
+    ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
+                                            account_id);
+    Profile* profile = profile_manager_->CreateTestingProfile(kProfileName);
 
     arc_session_manager_->SetProfile(profile);
     arc_session_manager_->Initialize();
@@ -104,7 +115,9 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
     instance_.reset();
     profile_manager_->DeleteTestingProfile(kProfileName);
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::UpstartClient::Shutdown();
   }
@@ -130,10 +143,12 @@ class ArcAdbdMonitorBridgeTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<FakeAdbdMonitorInstance> instance_;
   std::unique_ptr<ArcAdbdMonitorBridge> bridge_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

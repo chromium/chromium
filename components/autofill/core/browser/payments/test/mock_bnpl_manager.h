@@ -32,12 +32,17 @@ class MockBnplManager : public payments::BnplManager {
 
   MOCK_METHOD(void,
               OnAmountExtractionReturned,
-              (const std::optional<uint64_t>&),
+              (const std::optional<int64_t>&, bool),
+              (override));
+
+  MOCK_METHOD(void,
+              OnAmountExtractionReturnedFromAi,
+              (const payments::AiAmountExtractionResult::ResultType result),
               (override));
 
   MOCK_METHOD(void,
               OnDidAcceptBnplSuggestion,
-              (uint64_t final_checkout_amount,
+              (std::optional<int64_t> final_checkout_amount,
                OnBnplVcnFetchedCallback on_bnpl_vcn_fetched_callback),
               (override));
 };

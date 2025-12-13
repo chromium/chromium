@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/base/message_pump_type_mojom_traits.h"
+
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {

@@ -25,6 +25,7 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
 
 namespace signin {
 class IdentityManager;
+enum class Tribool;
 }  // namespace signin
 
 namespace signin_metrics {
@@ -103,10 +104,14 @@ enum class SigninPromoAction {
 @property(nonatomic, strong, readonly) id<SystemIdentity> displayedIdentity;
 
 // Sign-in promo view state. kNeverVisible by default.
-@property(nonatomic, assign) SigninPromoViewState signinPromoViewState;
+@property(nonatomic, assign, readonly)
+    SigninPromoViewState signinPromoViewState;
 
-// YES if the sign-in flow is in progress.
-@property(nonatomic, assign, readonly) BOOL signinInProgress;
+// kTrue if the sign-in flow is in progress.
+// kFalse if the sign-in flow is not in progress.
+// kUnknown if the sign-in flow is quite probably displayed but may have
+// disappeared silently. See crbug.com/395959814.
+@property(nonatomic, assign, readonly) signin::Tribool signinInProgress;
 
 // YES if the promo spinner should be displayed. Either the sign-in or the
 // initial sync is in progress.

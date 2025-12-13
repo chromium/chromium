@@ -12,17 +12,20 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.settings.ContainedRadioButtonGroupPreference;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
+import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText;
 import org.chromium.components.browser_ui.widget.RadioButtonWithEditText.OnTextChangeListener;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,8 +36,8 @@ import java.lang.annotation.RetentionPolicy;
  * represents customized URL set by partner or user.
  */
 @NullMarked
-public final class RadioButtonGroupHomepagePreference extends Preference
-        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener {
+public final class RadioButtonGroupHomepagePreference extends ContainedRadioButtonGroupPreference
+        implements RadioGroup.OnCheckedChangeListener, OnTextChangeListener, ContainmentItem {
     /** A data structure which holds the displayed value and the status for this preference. */
     static class PreferenceValues {
         /** The option that is checked in {@link RadioButtonGroupHomepagePreference}. */
@@ -105,6 +108,11 @@ public final class RadioButtonGroupHomepagePreference extends Preference
         int NUM_ENTRIES = 2;
     }
 
+    /** Listener used to receive updates from this preference. */
+    interface OnHomepagePreferenceChangeListener {
+        void onHomepagePreferenceChange(PreferenceValues newValues);
+    }
+
     private boolean mIsBoundToViewHolder;
 
     private RadioButtonWithEditText mCustomUri;
@@ -113,13 +121,28 @@ public final class RadioButtonGroupHomepagePreference extends Preference
     private RadioButtonWithDescriptionLayout mGroup;
     private TextView mTitle;
 
+    private View mView;
     private @Nullable PreferenceValues mPreferenceValues;
+    private @Nullable ManagedPreferenceDelegate mManagedPrefDelegate;
+    private @Nullable OnHomepagePreferenceChangeListener mListener;
 
     public RadioButtonGroupHomepagePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
 
-        // Inflating from XML.
-        setLayoutResource(R.layout.radio_button_group_homepage_preference);
+    /** Sets the ManagedPreferenceDelegate necessary to use ManagedPreferencesUtils. */
+    void setManagedPreferenceDelegate(ManagedPreferenceDelegate delegate) {
+        mManagedPrefDelegate = delegate;
+        ManagedPreferencesUtils.initPreference(
+                mManagedPrefDelegate,
+                this,
+                /* allowManagedIcon= */ false,
+                /* hasCustomLayout= */ true);
+    }
+
+    /** Sets the listener for homepage preference change. */
+    void setOnHomepagePreferenceChangeListener(OnHomepagePreferenceChangeListener listener) {
+        mListener = listener;
     }
 
     /**
@@ -141,12 +164,17 @@ public final class RadioButtonGroupHomepagePreference extends Preference
                         : HomepageOption.ENTRY_CUSTOM_URI;
 
         mPreferenceValues.mCheckedOption = checkedOption;
+
+        if (mListener != null) {
+            mListener.onHomepagePreferenceChange(mPreferenceValues);
+        }
     }
 
     @Initializer
     @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+        mView = holder.itemView;
         mChromeNtp = (RadioButtonWithDescription) holder.findViewById(R.id.radio_button_chrome_ntp);
         mCustomUri = (RadioButtonWithEditText) holder.findViewById(R.id.radio_button_uri_edit);
 
@@ -166,6 +194,8 @@ public final class RadioButtonGroupHomepagePreference extends Preference
 
         // Set up text listeners after initial value are set.
         mCustomUri.addTextChangeListener(this);
+        // Bind view and preference.
+        ManagedPreferencesUtils.onBindViewToPreference(mManagedPrefDelegate, this, mView);
     }
 
     /** Will be called when the text edit has a value change. */
@@ -178,6 +208,10 @@ public final class RadioButtonGroupHomepagePreference extends Preference
 
         mPreferenceValues.mCheckedOption = HomepageOption.ENTRY_CUSTOM_URI;
         mPreferenceValues.mCustomizedText = newText.toString();
+
+        if (mListener != null) {
+            mListener.onHomepagePreferenceChange(mPreferenceValues);
+        }
     }
 
     /**
@@ -211,6 +245,19 @@ public final class RadioButtonGroupHomepagePreference extends Preference
         mPreferenceValues = value;
     }
 
+    /** Schedules an update of the managed-state views (e.g., managed_disclaimer_text). */
+    public void scheduleManagedViewUpdate() {
+        if (mView != null) {
+            mView.post(
+                    () -> {
+                        if (mManagedPrefDelegate != null && mView != null) {
+                            ManagedPreferencesUtils.onBindViewToPreference(
+                                    mManagedPrefDelegate, this, mView);
+                        }
+                    });
+        }
+    }
+
     /**
      * @return The current preference value stored in the preference.
      */
@@ -232,5 +279,9 @@ public final class RadioButtonGroupHomepagePreference extends Preference
     @VisibleForTesting
     TextView getTitleTextView() {
         return mTitle;
+    }
+
+    View getViewForTesting() {
+        return mView;
     }
 }

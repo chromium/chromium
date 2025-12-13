@@ -21,9 +21,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
-#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -59,6 +59,8 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #endif
 
+using base::test::RunOnceClosure;
+using base::test::TaskEnvironment;
 using testing::_;
 using testing::Contains;
 using testing::DoAll;
@@ -100,6 +102,9 @@ constexpr CloudPolicyClient::MacAddress kDockMacAddress = {170, 187, 204,
                                                            221, 238, 255};
 constexpr char kDockMacAddressStr[] = "AABBCCDDEEFF";
 constexpr char kManufactureDate[] = "fake-manufacture-date";
+constexpr char kFlexSysVendor[] = "fake-flex-sys-vendor";
+constexpr char kFlexProductName[] = "fake-flex-product-name";
+constexpr char kFlexProductVersion[] = "fake-flex-product-version";
 constexpr char kOAuthToken[] = "fake-oauth-token";
 constexpr char kDMToken[] = "fake-dm-token";
 constexpr char kDeviceDMToken[] = "fake-device-dm-token";
@@ -183,7 +188,7 @@ class FakeClientDataDelegate : public ClientDataDelegate {
 
 std::string CreatePolicyData(const std::string& policy_value) {
   em::PolicyData policy_data;
-  policy_data.set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_data.set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_data.set_policy_value(policy_value);
   return policy_data.SerializeAsString();
 }
@@ -193,7 +198,7 @@ em::DeviceManagementRequest GetPolicyRequest() {
 
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->add_requests();
-  policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_fetch_request->set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
   policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
   policy_fetch_request->set_device_dm_token(kDeviceDMToken);
@@ -246,6 +251,7 @@ em::DeviceManagementResponse GetTokenBasedRegistrationResponse() {
   return registration_response;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 em::DeviceManagementRequest GetReregistrationRequest() {
   em::DeviceManagementRequest request;
 
@@ -270,6 +276,8 @@ em::DeviceManagementRequest GetReregistrationRequest() {
   return request;
 }
 
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 em::DeviceManagementRequest GetTokenBasedDeviceRegistrationRequest() {
   em::DeviceManagementRequest request;
   em::DeviceRegisterRequest* register_request =
@@ -281,6 +289,10 @@ em::DeviceManagementRequest GetTokenBasedDeviceRegistrationRequest() {
   register_request->set_brand_code(kBrandCode);
   register_request->set_ethernet_mac_address(kEthernetMacAddressStr);
   register_request->set_dock_mac_address(kDockMacAddressStr);
+  register_request->mutable_smbios_info()->set_sys_vendor(kFlexSysVendor);
+  register_request->mutable_smbios_info()->set_product_name(kFlexProductName);
+  register_request->mutable_smbios_info()->set_product_version(
+      kFlexProductVersion);
   register_request->set_lifetime(
       em::DeviceRegisterRequest::LIFETIME_INDEFINITE);
   register_request->set_flavor(
@@ -462,7 +474,7 @@ class CloudPolicyClientTest : public testing::Test {
       : task_environment_(std::move(task_env)),
         job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
-        policy_type_(dm_protocol::kChromeUserPolicyType) {
+        policy_type_(dm_protocol::GetChromeUserPolicyType()) {
 #if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake_serial_number");
@@ -473,7 +485,8 @@ class CloudPolicyClientTest : public testing::Test {
 
   CloudPolicyClientTest()
       : CloudPolicyClientTest(
-            std::make_unique<base::test::SingleThreadTaskEnvironment>()) {}
+            std::make_unique<base::test::SingleThreadTaskEnvironment>(
+                TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   void RegisterClient(const std::string& device_dm_token) {
     StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
@@ -489,11 +502,15 @@ class CloudPolicyClientTest : public testing::Test {
 
   void RegisterClient() { RegisterClient(kDeviceDMToken); }
 
-  void CreateClient() { CreateClient(kAttestedDeviceId, kManufactureDate); }
+  void CreateClient() {
+    CreateClient(kAttestedDeviceId, kManufactureDate, "", "", "");
+  }
 
   // Flex devices don't have VPD so will not have attested device ID or
   // manufacture date.
-  void CreateFlexClient() { CreateClient("", ""); }
+  void CreateFlexClient() {
+    CreateClient("", "", kFlexSysVendor, kFlexProductName, kFlexProductVersion);
+  }
 
   base::Value::Dict MakeDefaultRealtimeReport() {
     base::Value::Dict context;
@@ -537,36 +554,34 @@ class CloudPolicyClientTest : public testing::Test {
   void RunClientTaskAndWaitRegistration(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
+    base::test::TestFuture<void> future;
     EXPECT_CALL(client_observer, OnRegistrationStateChanged)
-        .WillOnce([&run_loop]() { run_loop.Quit(); });
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void RunClientTaskAndWaitPolicyFetch(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
-    EXPECT_CALL(client_observer, OnPolicyFetched).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
+    base::test::TestFuture<void> future;
+    EXPECT_CALL(client_observer, OnPolicyFetched)
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void RunClientTaskAndWaitError(base::OnceClosure task) {
     NiceMock<MockCloudPolicyClientObserverWithObservation> client_observer(
         client_.get());
-    base::RunLoop run_loop;
-    EXPECT_CALL(client_observer, OnClientError).WillOnce([&run_loop]() {
-      run_loop.Quit();
-    });
+    base::test::TestFuture<void> future;
+    EXPECT_CALL(client_observer, OnClientError)
+        .WillOnce(RunOnceClosure(future.GetCallback()));
 
     std::move(task).Run();
-    run_loop.Run();
+    EXPECT_TRUE(future.Wait());
   }
 
   void ExpectAndCaptureJob(const em::DeviceManagementResponse& response) {
@@ -638,16 +653,20 @@ class CloudPolicyClientTest : public testing::Test {
 
  private:
   void CreateClient(std::string_view attested_device_id,
-                    std::string_view manufacture_date) {
+                    std::string_view manufacture_date,
+                    std::string_view flex_sys_vendor,
+                    std::string_view flex_product_name,
+                    std::string_view flex_product_version) {
     service_.ScheduleInitialization(0);
-    base::RunLoop().RunUntilIdle();
+    task_environment_->FastForwardBy(base::Seconds(60));
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
     client_ = std::make_unique<CloudPolicyClient>(
         kMachineID, kMachineModel, kBrandCode, attested_device_id,
-        kEthernetMacAddress, kDockMacAddress, manufacture_date, &service_,
+        kEthernetMacAddress, kDockMacAddress, manufacture_date, flex_sys_vendor,
+        flex_product_name, flex_product_version, &service_,
         shared_url_loader_factory_,
         base::BindRepeating(
             &MockDeviceDMTokenCallbackObserver::OnDeviceDMTokenRequested,
@@ -660,8 +679,8 @@ class CloudPolicyClientTest : public testing::Test {
 class CloudPolicyClientMultipleThreadsTest : public CloudPolicyClientTest {
  public:
   CloudPolicyClientMultipleThreadsTest()
-      : CloudPolicyClientTest(std::make_unique<base::test::TaskEnvironment>()) {
-  }
+      : CloudPolicyClientTest(std::make_unique<base::test::TaskEnvironment>(
+            TaskEnvironment::TimeSource::MOCK_TIME)) {}
 };
 
 TEST_F(CloudPolicyClientTest, Init) {
@@ -1520,10 +1539,9 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
 
   StrictMock<MockCloudPolicyClientObserverWithObservation> client_observer(
       client_.get());
-  base::RunLoop run_loop;
-  EXPECT_CALL(client_observer, OnClientError).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(client_observer, OnClientError)
+      .WillOnce(RunOnceClosure(future.GetCallback()));
 
   CloudPolicyClient::RegistrationParameters register_user(
       em::DeviceRegisterRequest::USER,
@@ -1531,8 +1549,8 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
   client_->Register(register_user, std::string() /* no client_id*/,
                     kOAuthToken);
   // Verify that registration request is still pending.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
+  task_environment_->FastForwardBy(base::Seconds(60));
+  EXPECT_FALSE(future.IsReady());
 
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
             job_type);
@@ -1552,7 +1570,7 @@ TEST_F(CloudPolicyClientTest, RetryRegistration) {
 
   // Expect failure with yet another retry.
   service_.SendJobResponseNow(&job, net::ERR_NETWORK_CHANGED, 0);
-  run_loop.Run();
+  EXPECT_TRUE(future.Wait());
   EXPECT_FALSE(job.IsActive());
   EXPECT_FALSE(client_->is_registered());
 }
@@ -1765,7 +1783,7 @@ TEST_F(CloudPolicyClientMultipleThreadsTest,
       expected_requests;
   // Expected user policy fetch request.
   std::pair<std::string, std::string> user_policy_key(
-      dm_protocol::kChromeUserPolicyType, std::string());
+      dm_protocol::GetChromeUserPolicyType(), std::string());
   expected_requests[user_policy_key] =
       GetPolicyRequest().policy_request().requests(0);
   // Expected user cloud policy fetch request.
@@ -1890,6 +1908,178 @@ TEST_F(CloudPolicyClientTest, PolicyRequestFailure) {
       1);
 }
 
+TEST_F(CloudPolicyClientTest,
+       PolicyFetchWithSingleExtensionInstallCloudPolicies) {
+  RegisterClient();
+
+  em::DeviceManagementResponse policy_response = GetPolicyResponse();
+
+  // Set up the |expected_responses| and |policy_response|.
+  static const ExtensionIdAndVersion kExtension{"extension_id_1", "1.1.1"};
+
+  typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
+      ResponseMap;
+  ResponseMap expected_responses;
+  std::set<std::pair<std::string, std::string>> expected_namespaces;
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
+  // Copy the user policy fetch request.
+  expected_responses[key].CopyFrom(
+      policy_response.policy_response().responses(0));
+  expected_namespaces.insert(key);
+
+  key.first = dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+
+  em::PolicyData policy_data;
+  policy_data.set_policy_type(key.first);
+  expected_responses[key].set_policy_data(policy_data.SerializeAsString());
+  policy_response.mutable_policy_response()->add_responses()->CopyFrom(
+      expected_responses[key]);
+  expected_namespaces.insert(key);
+
+  // Make a policy fetch.
+  em::DeviceManagementRequest request;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.CaptureRequest(&request),
+                      service_.SendJobOKAsync(policy_response)));
+
+  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType, kExtension));
+  RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
+      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+
+  // Verify that the request includes the expected namespaces.
+  ASSERT_TRUE(request.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = request.policy_request();
+  ASSERT_EQ(2, policy_request.requests_size());
+  for (int i = 0; i < policy_request.requests_size(); ++i) {
+    const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
+    ASSERT_TRUE(fetch_request.has_policy_type());
+    if (fetch_request.policy_type() ==
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
+      EXPECT_EQ(fetch_request.extension_ids_and_version().size(), 1);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_id(),
+                kExtension.extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_version(),
+                kExtension.extension_version);
+      EXPECT_TRUE(fetch_request.has_settings_entity_id());
+    } else {
+      EXPECT_FALSE(fetch_request.has_settings_entity_id());
+    }
+    key = {fetch_request.policy_type(), std::string()};
+    EXPECT_EQ(1u, expected_namespaces.erase(key));
+  }
+  EXPECT_TRUE(expected_namespaces.empty());
+
+  // Verify that the client got all the responses mapped to their namespaces.
+  for (auto it = expected_responses.begin(); it != expected_responses.end();
+       ++it) {
+    const em::PolicyFetchResponse* response =
+        client_->GetPolicyFor(it->first.first, it->first.second);
+    ASSERT_TRUE(response);
+    EXPECT_EQ(it->second.SerializeAsString(), response->SerializeAsString());
+  }
+}
+
+TEST_F(CloudPolicyClientTest,
+       PolicyFetchWithMultipleExtensionInstallCloudPolicies) {
+  RegisterClient();
+
+  em::DeviceManagementResponse policy_response = GetPolicyResponse();
+
+  // Set up the |expected_responses| and |policy_response|.
+  static std::vector<ExtensionIdAndVersion> kExtensions = {
+      {"extension_id_1", "1.1.1"},
+      {"extension_id_2", "2.2.2"},
+      {"extension_id_3", "3.3.3"},
+  };
+
+  typedef std::map<std::pair<std::string, std::string>, em::PolicyFetchResponse>
+      ResponseMap;
+  ResponseMap expected_responses;
+  std::set<std::pair<std::string, std::string>> expected_namespaces;
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
+  // Copy the user policy fetch request.
+  expected_responses[key].CopyFrom(
+      policy_response.policy_response().responses(0));
+  expected_namespaces.insert(key);
+
+  key.first = dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+
+  em::PolicyData policy_data;
+  policy_data.set_policy_type(key.first);
+  expected_responses[key].set_policy_data(policy_data.SerializeAsString());
+  policy_response.mutable_policy_response()->add_responses()->CopyFrom(
+      expected_responses[key]);
+  expected_namespaces.insert(key);
+
+  // Make a policy fetch.
+  em::DeviceManagementRequest request;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(service_.CaptureJobType(&job_type),
+                      service_.CaptureRequest(&request),
+                      service_.SendJobOKAsync(policy_response)));
+
+  base::RepeatingCallback<std::set<ExtensionIdAndVersion>()>
+      extension_ids_and_version_getter = base::BindRepeating([]() {
+        return std::set<ExtensionIdAndVersion>{kExtensions.begin(),
+                                               kExtensions.end()};
+      });
+  client_->AddPolicyTypeToFetch(CloudPolicyClientTypeParams(
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType,
+      std::move(extension_ids_and_version_getter)));
+  RunClientTaskAndWaitPolicyFetch(base::BindLambdaForTesting(
+      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
+
+  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
+            job_type);
+
+  // Verify that the request includes the expected namespaces.
+  ASSERT_TRUE(request.has_policy_request());
+  const em::DevicePolicyRequest& policy_request = request.policy_request();
+  ASSERT_EQ(2, policy_request.requests_size());
+  for (int i = 0; i < policy_request.requests_size(); ++i) {
+    const em::PolicyFetchRequest& fetch_request = policy_request.requests(i);
+    ASSERT_TRUE(fetch_request.has_policy_type());
+    EXPECT_FALSE(fetch_request.has_settings_entity_id());
+    if (fetch_request.policy_type() ==
+        dm_protocol::kChromeExtensionInstallUserCloudPolicyType) {
+      EXPECT_EQ(fetch_request.extension_ids_and_version().size(), 3);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_id(),
+                kExtensions[0].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(0).extension_version(),
+                kExtensions[0].extension_version);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(1).extension_id(),
+                kExtensions[1].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(1).extension_version(),
+                kExtensions[1].extension_version);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(2).extension_id(),
+                kExtensions[2].extension_id);
+      EXPECT_EQ(fetch_request.extension_ids_and_version(2).extension_version(),
+                kExtensions[2].extension_version);
+    }
+    key = {fetch_request.policy_type(), std::string()};
+    EXPECT_EQ(1u, expected_namespaces.erase(key));
+  }
+  EXPECT_TRUE(expected_namespaces.empty());
+
+  // Verify that the client got all the responses mapped to their namespaces.
+  for (auto it = expected_responses.begin(); it != expected_responses.end();
+       ++it) {
+    const em::PolicyFetchResponse* response =
+        client_->GetPolicyFor(it->first.first, it->first.second);
+    ASSERT_TRUE(response);
+    EXPECT_EQ(it->second.SerializeAsString(), response->SerializeAsString());
+  }
+}
+
 TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
   RegisterClient();
 
@@ -1905,8 +2095,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
       ResponseMap;
   ResponseMap expected_responses;
   std::set<std::pair<std::string, std::string>> expected_namespaces;
-  std::pair<std::string, std::string> key(dm_protocol::kChromeUserPolicyType,
-                                          std::string());
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
   // Copy the user policy fetch request.
   expected_responses[key].CopyFrom(
       policy_response.policy_response().responses(0));
@@ -2554,7 +2744,8 @@ TEST_P(CloudPolicyClientUploadSecurityEventReportDeprecatedTest,
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
-  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -2646,7 +2837,8 @@ TEST_F(CloudPolicyClientTest, UploadSecurityEventReportNoResponse) {
   EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
   EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
 
-  std::optional<base::Value> payload = base::JSONReader::Read(job_payload_);
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_payload_, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -2845,8 +3037,8 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMergeDeprecated) {
 
   // The second config should trump the first.
   DeviceManagementService::JobConfiguration* job_config = config.get();
-  std::optional<base::Value> payload =
-      base::JSONReader::Read(job_config->GetPayload());
+  std::optional<base::Value> payload = base::JSONReader::Read(
+      job_config->GetPayload(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(payload);
   const base::Value::Dict& payload_dict = payload->GetDict();
 
@@ -3286,6 +3478,7 @@ TEST_F(CloudPolicyClientTest, RequestGcmIdUpdate) {
             gcm_id_update_request.SerializePartialAsString());
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CloudPolicyClientTest, PolicyReregistration) {
   RegisterClient();
 
@@ -3379,6 +3572,7 @@ TEST_F(CloudPolicyClientTest, PolicyReregistrationFailsWithNonMatchingDMToken) {
   EXPECT_EQ(DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID,
             client_->last_dm_status());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
   CloudPolicyClient::Result result1 =
@@ -3393,58 +3587,6 @@ TEST_F(CloudPolicyClientTest, ResultCopyAssignment) {
   EXPECT_EQ(400, result2.GetNetError());
   EXPECT_EQ(result1.GetResponse(), result2.GetResponse());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(CloudPolicyClientTest, PolicyReregistrationAfterDMTokenDeletion) {
-  RegisterClient();
-  EXPECT_TRUE(client_->is_registered());
-  EXPECT_FALSE(client_->requires_reregistration());
-
-  // Handle 410 (device needs reset) on policy fetch.
-  DeviceManagementService::JobConfiguration::JobType upload_type;
-  em::DeviceManagementResponse response;
-  response.add_error_detail(em::CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN);
-  EXPECT_CALL(job_creation_handler_, OnJobCreation)
-      .WillOnce(DoAll(
-          service_.CaptureJobType(&upload_type),
-          service_.SendJobResponseAsync(
-              net::OK, DeviceManagementService::kDeviceNotFound, response)));
-
-  RunClientTaskAndWaitError(base::BindLambdaForTesting(
-      [this]() { client_->FetchPolicy(kPolicyFetchReason); }));
-
-  EXPECT_EQ(DM_STATUS_SERVICE_DEVICE_NEEDS_RESET, client_->last_dm_status());
-  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_FALSE(client_->is_registered());
-  EXPECT_TRUE(client_->requires_reregistration());
-
-  // Re-register.
-  ExpectAndCaptureJob(GetRegistrationResponse());
-  EXPECT_CALL(device_dmtoken_callback_observer_,
-              OnDeviceDMTokenRequested(
-                  /*user_affiliation_ids=*/std::vector<std::string>()))
-      .WillOnce(Return(kDeviceDMToken));
-  RunClientTaskAndWaitRegistration(base::BindLambdaForTesting([this]() {
-    CloudPolicyClient::RegistrationParameters user_recovery(
-        em::DeviceRegisterRequest::USER,
-        em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_RECOVERY);
-    client_->Register(user_recovery, client_id_, kOAuthToken);
-  }));
-
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
-            upload_type);
-  EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_REGISTRATION,
-            job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::NoAuth());
-  VerifyQueryParameter();
-  EXPECT_EQ(job_request_.SerializePartialAsString(),
-            GetReregistrationRequest().SerializePartialAsString());
-  EXPECT_TRUE(client_->is_registered());
-  EXPECT_FALSE(client_->requires_reregistration());
-  EXPECT_FALSE(client_->GetPolicyFor(policy_type_, std::string()));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CloudPolicyClientTest, RequestFetchRobotAuthCodes) {
   RegisterClient();
@@ -3570,13 +3712,11 @@ TEST_F(CloudPolicyClientTest, DeterminePromotionEligibilityRequest) {
   base::test::TestFuture<const em::GetUserEligiblePromotionsResponse>
       result_future;
 
-  base::RunLoop run_loop;
-  client_->DeterminePromotionEligibility(
-      result_future.GetCallback().Then(run_loop.QuitClosure()));
+  client_->DeterminePromotionEligibility(result_future.GetCallback());
 
   client_->SetOAuthTokenAsAdditionalAuth(kOAuthToken);
-  run_loop.Run();
 
+  EXPECT_TRUE(result_future.Wait());
   EXPECT_EQ(DeviceManagementService::JobConfiguration::
                 TYPE_DETERMINE_PROMOTION_ELIGIBILITY,
             job_type_);

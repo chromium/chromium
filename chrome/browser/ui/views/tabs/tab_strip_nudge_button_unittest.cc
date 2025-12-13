@@ -13,6 +13,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 
 class TabStripNudgeButtonTest : public ChromeViewsTestBase {
  public:
@@ -28,7 +29,7 @@ class TabStripNudgeButtonTest : public ChromeViewsTestBase {
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
         kAutoTabGroupButtonElementId, Edge::kRight,
-        gfx::VectorIcon::EmptyIcon());
+        gfx::VectorIcon::EmptyIcon(), /*show_close_button=*/true);
   }
 
   void MockButtonCallback() { button_callback_count_++; }

@@ -3,16 +3,16 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "local_sync_test.cc": [
-    "+components/power_bookmarks",
+  "single_client_nigori_sync_test\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
-  "single_client_plus_address_sync_test.cc": [
-    "+components/plus_addresses",
+  "single_client_plus_address_sync_test\\.cc": [
+    "+components/plus_addresses/core/browser",
   ],
-  "two_client_power_bookmarks_sync_test.cc": [
-    "+components/power_bookmarks",
-  ],
-  "two_client_web_apps_integration_test_base.h": [
+  "two_client_web_apps_integration_test_base\\.h": [
     "+chrome/browser/ui/views",
+  ],
+  "two_client_web_apps_integration_test_base\\.cc": [
+    "+ash/multi_user/multi_user_window_manager.h",
   ],
 }

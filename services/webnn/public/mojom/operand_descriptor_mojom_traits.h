@@ -23,6 +23,10 @@ struct COMPONENT_EXPORT(WEBNN_MOJOM_TRAITS)
       const webnn::OperandDescriptor& descriptor) {
     return descriptor.shape();
   }
+  static const std::vector<uint32_t>& pending_permutation(
+      const webnn::OperandDescriptor& descriptor) {
+    return descriptor.pending_permutation();
+  }
 
   static bool Read(webnn::mojom::OperandDescriptorDataView data,
                    webnn::OperandDescriptor* out);

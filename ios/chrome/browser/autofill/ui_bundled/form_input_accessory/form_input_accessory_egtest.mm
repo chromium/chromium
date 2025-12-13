@@ -12,6 +12,7 @@
 #import "base/time/time.h"
 #import "components/autofill/core/browser/field_types.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_debug_features.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/credential_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
@@ -35,6 +36,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/base/apple/url_conversions.h"
@@ -67,21 +69,16 @@ constexpr NSString* kExampleBackupPassword = @"backup password";
 
 // Matcher for the autofill password suggestion chip in the keyboard accessory.
 id<GREYMatcher> KeyboardAccessoryPasswordSuggestion(NSString* realm) {
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    NSString* chip_text = kExampleUsername;
-    if ([ChromeEarlGrey isIPadIdiom]) {
-      // On iPad, the suggestion text is an attributed string containing the
-      // signon realm on the 2nd line.
-      chip_text = [NSString stringWithFormat:@"%@\n%@", chip_text, realm];
-    }
-    return grey_allOf(grey_text(chip_text),
-                      grey_ancestor(grey_accessibilityID(
-                          kFormInputAccessoryViewAccessibilityID)),
-                      nil);
+  NSString* chip_text = kExampleUsername;
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // On iPad, the suggestion text is an attributed string containing the
+    // signon realm on the 2nd line.
+    chip_text = [NSString stringWithFormat:@"%@\n%@", chip_text, realm];
   }
-
-  return grey_accessibilityLabel(
-      [NSString stringWithFormat:@"%@ ••••••••", kExampleUsername]);
+  return grey_allOf(grey_text(chip_text),
+                    grey_ancestor(grey_accessibilityID(
+                        kFormInputAccessoryViewAccessibilityID)),
+                    nil);
 }
 
 // Matcher for the autofill backup password suggestion chip in the keyboard
@@ -105,8 +102,7 @@ id<GREYMatcher> KeyboardAccessoryCreditCardSuggestion() {
 
   NSString* username = base::SysUTF16ToNSString(card.GetInfo(
       autofill::CREDIT_CARD_NAME_FULL, l10n_util::GetLocaleOverride()));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // obfuscated credit card on the 2nd line.
     NSString* network = base::SysUTF16ToNSString(
@@ -122,8 +118,7 @@ id<GREYMatcher> KeyboardAccessoryAddressSuggestion(
     autofill::FieldType field_type) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   NSString* value = base::SysUTF16ToNSString(profile.GetRawInfo(field_type));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the
     // street address on the 2nd line.
     NSString* street_address = base::SysUTF16ToNSString(
@@ -140,8 +135,7 @@ id<GREYMatcher> KeyboardAccessoryNameSuggestion() {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   NSString* name =
       base::SysUTF16ToNSString(profile.GetRawInfo(autofill::NAME_FULL));
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled] &&
-      [ChromeEarlGrey isIPadIdiom]) {
+  if ([ChromeEarlGrey isIPadIdiom]) {
     // On iPad, the suggestion text is an attributed string containing the state
     // on the 2nd line.
     NSString* state = base::SysUTF16ToNSString(
@@ -230,6 +224,13 @@ void SlowlyTypeText(NSString* text) {
 
 @implementation FormInputAccessoryEGTest
 
+// Returns whether the two-bubble feature should be enabled for the current
+// test. `NO` is returned to verify all tests pass when the two-bubble feature
+// is disabled.
+- (BOOL)shouldEnableTwoBubbleFeature {
+  return NO;
+}
+
 - (void)setUp {
   [super setUp];
 
@@ -270,8 +271,7 @@ void SlowlyTypeText(NSString* text) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(
-      autofill::features::test::kAutofillServerCommunication);
-  config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
+      autofill::features::debug::kAutofillServerCommunication);
   if ([self isRunningTest:@selector(testFillXframeCreditCardForm)] ||
       [self isRunningTest:@selector(testFillXframeCreditCardFormThrottled)] ||
       [self isRunningTest:@selector
@@ -297,6 +297,13 @@ void SlowlyTypeText(NSString* text) {
         feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;
   }
 
+  if ([self isRunningTest:@selector(testAccountNameEmailIPH)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForNameAndEmail);
+    config.iph_feature_enabled =
+        feature_engagement::kIPHAutofillAccountNameEmailSuggestionFeature.name;
+  }
+
   if ([self isRunningTest:@selector(testReFillAddressFieldsOnForm)]) {
     config.features_enabled.push_back(kAutofillRefillForFormsIos);
     config.features_enabled.push_back(
@@ -306,6 +313,12 @@ void SlowlyTypeText(NSString* text) {
   if ([self isRunningTest:@selector(testUseBackupPassword)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSFillRecoveryPassword);
+  }
+
+  if ([self shouldEnableTwoBubbleFeature]) {
+    config.features_enabled.push_back(kIOSKeyboardAccessoryTwoBubble);
+  } else {
+    config.features_disabled.push_back(kIOSKeyboardAccessoryTwoBubble);
   }
 
   return config;
@@ -489,8 +502,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // with the proper suggestion visible and that tapping on that suggestion
 // properly fills the related fields on the form.
 - (void)testFillPasswordFieldsOnForm {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
@@ -525,8 +538,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that the username field is filled when it is the only field in the
 // sign-in form.
 - (void)testFillFieldOnFormWithSingleUsername {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
@@ -558,8 +571,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that the password field is filled when it is the only field in the
 // sign-in form.
 - (void)testFillFieldOnFormWithSinglePassword {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
   [FormInputAccessoryAppInterface mockReauthenticationModuleExpectedResult:
@@ -946,6 +959,12 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
   [self loadAddressPage];
+
+  // Synchronization off because the tap on element 'kFormZip' completes only
+  // after the IPH has already disappeared. This leads to a subsequent error
+  // when trying to verify that the IPH appeared.
+  ScopedSynchronizationDisabler disabler;
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
 
@@ -953,6 +972,30 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
       IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION));
 
   // Ensure the Home and Work suggestion IPH appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
+}
+
+// Tests the IPH feature for account name and email profile.
+- (void)testAccountNameEmailIPH {
+  // Delete the profile that is added on `-setUp`.
+  [AutofillAppInterface clearProfilesStore];
+  // Store one address.
+  [AutofillAppInterface saveExampleAccountNameEmailProfile];
+
+  [self loadAddressPage];
+
+  // Synchronization off because the tap on element 'kFormZip' completes only
+  // after the IPH has already disappeared. This leads to a subsequent error
+  // when trying to verify that the IPH appeared.
+  ScopedSynchronizationDisabler disabler;
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
+
+  id<GREYMatcher> iph_chip = grey_text(
+      l10n_util::GetNSString(IDS_AUTOFILL_IPH_ACCOUNT_NAME_EMAIL_SUGGESTION));
+
+  // Ensure the Name and Email suggestion IPH appears.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
 }
 
@@ -985,14 +1028,14 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that the manual fill button title is hidden in compact mode (tablets
 // only).
 - (void)testManualFillButtonTitleIsHiddenInCompactMode {
-  if (![ChromeEarlGrey areMultipleWindowsSupported] ||
-      ![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_SKIPPED(
-        @"Skipped for iPhone (the manual fill button has no title on iPhone) "
-        @"or when the Keyboard Accessory Upgrade feature is disabled.");
+        @"Skipped for iPhone (the manual fill button has no title on iPhone)");
   }
   if (@available(iOS 19.0, *)) {
     // TODO(crbug.com/427699033): Re-enable test on iOS 26.
+    // Fails because it assumes a window will be compact after creating a new
+    // window.
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
 
@@ -1033,8 +1076,8 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 // Tests that a backup password appears as expected in the keyboard accessory
 // and that it can be used to fill the form.
 - (void)testUseBackupPassword {
-  // Disable the password bottom sheet.
-  [PasswordSuggestionBottomSheetAppInterface disableBottomSheet];
+  // Disable the credential bottom sheet.
+  [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
   // Set up the reauthentication module.
   [FormInputAccessoryAppInterface setUpMockReauthenticationModule];
@@ -1066,6 +1109,23 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
 
   [self verifyFieldsHaveBeenFilledWithUsername:username
                                       password:backupPassword];
+}
+
+@end
+
+// Reruns all the tests in this file but with the two-bubble feature enabled by
+// default.
+@interface FormInputAccessoryTwoBubbleTestCase : FormInputAccessoryEGTest
+
+@end
+
+@implementation FormInputAccessoryTwoBubbleTestCase
+
+// Returns whether the two-bubble feature should be enabled for the current
+// test. It returns `YES` to rerun tests defined in
+// `FormInputAccessoryEGTest`.
+- (BOOL)shouldEnableTwoBubbleFeature {
+  return YES;
 }
 
 @end

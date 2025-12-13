@@ -2,35 +2,35 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="130631256467250065">Izinguquko zakho zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha idivayisi yakho.</translation>
+<translation id="261308610302996111">Iya
+          kumenyu yeChromium &gt;
+          <ph name="SETTINGS_TITLE" />
+          &gt;
+          <ph name="SYSTEM_TITLE" />
+          &gt;
+          <ph name="PROXIES_TITLE" />
+          bese uqinisekisa ukuthi izilungiselelo zakho zisethwe kokuthi "angabibikho ummeleli" noma "okuqondile."</translation>
 <translation id="275588974610408078">Ukubika kokuphahlazeka akutholakali ku-Chromium.</translation>
 <translation id="3064346599913645280">Ubuka ikhasi le-Chromium eliphephile</translation>
 <translation id="3255926992597692024">I-Chromium izama ukulungisa amasethingi okugcwalisa izindlela zokukhokha.</translation>
 <translation id="358997566136285270">Ilogo ye-Chromium</translation>
 <translation id="4050599136622776556">I-Chromium izama ukuhlela izindlela zokukhokha.</translation>
 <translation id="4365115785552740256">I-Chromium yenziwa ukuthi ibe khona yi-<ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> iphrojekthi yomthombo ovulekile kanye nenye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
-<translation id="4559775032954821361">Hamba kumenyu
-          ye-Chromium &gt;
-          <ph name="SETTINGS_TITLE" />
-          &gt;
-          <ph name="ADVANCED_TITLE" />
-          &gt;
-          <ph name="PROXIES_TITLE" />
-          &gt;
-          Izilungiselelo ze-LAN
-          uphinde uyekise ukukhetha ibhokisi lokuhlola le-"Sebenzisa iseva elibambayo nge-LAN yakho".</translation>
 <translation id="4622039161600275920">Leli khasi livinjwe yi-Chromium</translation>
 <translation id="48558539577516920">Vumela i-Chromium ukufinyelela inethiwekhi kuzilungiselelo zakho zohlelo lokuvikela noma isilwi magciwane.</translation>
 <translation id="4949828774841497663">Iya kuma-Application &gt; Amasethingi Ohlelo &gt; Inethiwekhi, khetha
           inethiwekhi esebenzayo, chofoza inkinobho ethi Imininingwane..., bese uyeka ukukhetha noma yibaphi abameleli
           okungenzeka ukuthi bakhethiwe.</translation>
-<translation id="580822234363523061">Hamba
-          kumenyu ye-Chromium &gt;
+<translation id="6480456350195404966">Iya
+          kumenyu yeChromium &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
-          <ph name="ADVANCED_TITLE" />
+          <ph name="SYSTEM_TITLE" />
           &gt;
           <ph name="PROXIES_TITLE" />
-          uphinde uqiniseke ukuthi ukulungiselelwa kwakho kusethelwe ku-"akukho ummeleli" noma "kuqondile."</translation>
+          &gt;
+          Inethiwekhi ne-inthanethi &gt; Ummeleli
+          bese ususa ukukhetha kokuthi "Thola amasethingi ngokuzenzekelayo".</translation>
 <translation id="648062525172759633">Lawa makhasi enzelwe ukusetshenziswa onjiniyela beChromium, futhi kungenzeka anganakekelwa noma ahlolwe. Ukuze uzinike amandla, funa kokuthi <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, chofoza inkinobho ukuze unike amandla amakhasi okususa iphutha, bese ufuna kuleli khasi futhi.</translation>
 <translation id="6549378540556750549">I-Chromium iphinda yenziwe enye <ph name="BEGIN_LINK_OSS" />isofthiwe yomthombo ovulekile<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Izinguquko zakho zizosebenza ngesikhathi esilandelayo uma uqalisa kabusha i-Chromium.</translation>

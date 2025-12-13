@@ -34,14 +34,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   // Designated initializer. `storageDirectoryUrl` is the file path where all images managed by this
   // ImageFileManager are stored. `storageDirectoryUrl` is not guaranteed to exist. The contents of
   // `storageDirectoryUrl` are entirely managed by this ImageFileManager.
-  //
-  // To support renaming the directory where the snapshots are stored, it is possible to pass a
-  // non-empty path via `legacyDirectoryUrl`. If present, then it will be moved to
-  // `storageDirectoryUrl`.
-  //
-  // TODO(crbug.com/40942167): Remove `legacyDirectoryUrl` when the storage for all users has been
-  // migrated.
-  init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
+  init(storageDirectoryUrl: URL) {
     self.storageDirectory = storageDirectoryUrl
     self.imageScale = SnapshotImageScale.imageScaleForDevice()
     self.mainTaskGroup = DispatchGroup()
@@ -50,10 +43,7 @@ let kJPEGImageQuality: CGFloat = 1.0
       label: "org.chromium.image_file_manager", qos: .default)
     super.init()
 
-    createStorageDirectory(directory: storageDirectoryUrl, legacyDirectory: legacyDirectoryUrl)
-
-    // TODO(crbug.com/40279302): Delete this logic after a few milestones.
-    deleteAllGreyImages(directory: storageDirectoryUrl)
+    createStorageDirectory(directory: storageDirectoryUrl)
   }
 
   // Waits until all tasks are completed. This is used for tests.
@@ -215,17 +205,6 @@ let kJPEGImageQuality: CGFloat = 1.0
     }
   }
 
-  // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a programmatic error if
-  // the two array do not have the same length.
-  func renameSnapshots(oldIDs: [String], newIDs: [SnapshotIDWrapper]) {
-    assert(
-      oldIDs.count == newIDs.count, "The number of old snapshot IDs and new IDs should be same")
-
-    for (oldID, newID) in zip(oldIDs, newIDs) {
-      renameSnapshot(oldID: oldID, newID: newID, imageType: ImageType.kImageTypeColor)
-    }
-  }
-
   // Moves the image in disk from `oldPath` to `newPath`
   func copyImage(oldPath: URL, newPath: URL) {
     backgroundTaskGroup.enter()
@@ -260,9 +239,8 @@ let kJPEGImageQuality: CGFloat = 1.0
     legacyImagePath(snapshotID: snapshotID, imageType: ImageType.kImageTypeColor)
   }
 
-  // Creates a directory that stores images and moves images from `legacyDirectory` to
-  // `directory`.
-  private func createStorageDirectory(directory: URL, legacyDirectory: URL?) {
+  // Creates a directory that stores images.
+  private func createStorageDirectory(directory: URL) {
     backgroundTaskGroup.enter()
     backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
       guard let self = self else { return }
@@ -271,102 +249,8 @@ let kJPEGImageQuality: CGFloat = 1.0
           at: directory, withIntermediateDirectories: true)
       } catch {
         print("Failed to create a snapshot storage: \(error)")
-        backgroundTaskGroup.leave()
-        return
       }
 
-      guard let legacyDirectory = legacyDirectory,
-        FileManager.default.fileExists(atPath: legacyDirectory.path, isDirectory: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-
-      guard
-        let enumerator = FileManager.default.enumerator(
-          at: legacyDirectory, includingPropertiesForKeys: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-      for case let legacyUrl as URL in enumerator {
-        do {
-          let newUrl = directory.appendingPathComponent(legacyUrl.lastPathComponent)
-          try FileManager.default.moveItem(
-            at: legacyUrl, to: newUrl)
-        } catch {
-          print("Failed to move images from a legacy path to a new path: \(error)")
-        }
-      }
-
-      // Delete the `legacyDirectory` once the existing files have been moved.
-      do {
-        try FileManager.default.removeItem(at: legacyDirectory)
-      } catch {
-        print("Failed to delete the legacy directory: \(error)")
-      }
-
-      backgroundTaskGroup.leave()
-    }
-  }
-
-  // Frees up disk by deleting all grey snapshots if they exist in `directory` because grey
-  // snapshots are not stored anymore when `kGreySnapshotOptimization` feature is enabled.
-  // TODO(crbug.com/40279302): This function should be removed in a few milestones
-  // after `kGreySnapshotOptimization` feature is enabled by default.
-  private func deleteAllGreyImages(directory: URL) {
-    backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
-      guard let self = self else { return }
-      guard FileManager.default.fileExists(atPath: storageDirectory.path) else {
-        backgroundTaskGroup.leave()
-        return
-      }
-
-      guard
-        let enumerator = FileManager.default.enumerator(
-          at: storageDirectory, includingPropertiesForKeys: nil)
-      else {
-        backgroundTaskGroup.leave()
-        return
-      }
-      for case let fileUrl as URL in enumerator {
-        do {
-          if fileUrl.absoluteString.contains(
-            suffixForImageType(imageType: ImageType.kImageTypeGrey))
-          {
-            try FileManager.default.removeItem(at: fileUrl)
-          }
-        } catch {
-          print("Failed to delete all grey images: \(error)")
-        }
-      }
-      backgroundTaskGroup.leave()
-    }
-  }
-
-  // Renames the legacy path to the new path with `newID` and `imageType`.
-  private func renameSnapshot(oldID: String, newID: SnapshotIDWrapper, imageType: ImageType) {
-    guard let oldImagePath = legacyImagePath(snapshotID: oldID, imageType: imageType) else {
-      return
-    }
-    guard let newImagePath = imagePath(snapshotID: newID, imageType: imageType) else {
-      return
-    }
-
-    backgroundTaskGroup.enter()
-    backgroundTaskQueue.async(group: backgroundTaskGroup) { [weak self] in
-      guard let self = self else { return }
-      do {
-        // Rename a file only when it's necessary.
-        if FileManager.default.fileExists(atPath: oldImagePath.path)
-          && !FileManager.default.fileExists(atPath: newImagePath.path)
-        {
-          try FileManager.default.moveItem(at: oldImagePath, to: newImagePath)
-        }
-      } catch {
-        print("Failed to rename a file: \(error)")
-      }
       backgroundTaskGroup.leave()
     }
   }

@@ -34,7 +34,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
 #include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -108,9 +107,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   dict->Set("testapi_shouldSkipSplitModifierKeyboardInfo",
             SplitModifierKeyboardInfoScreen::ShouldBeSkipped());
 
-  dict->Set("testapi_shouldSkipAssistant",
-            features::IsOobeSkipAssistantEnabled() ||
-                !BUILDFLAG(ENABLE_CROS_LIBASSISTANT));
+  dict->Set("testapi_shouldSkipAssistant", true);
 
   dict->Set("testapi_isBrandedBuild",
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -121,7 +118,7 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   );
 
   dict->Set("testapi_isOobeInTabletMode",
-            display::Screen::GetScreen()->InTabletMode() ||
+            display::Screen::Get()->InTabletMode() ||
                 switches::ShouldOobeUseTabletModeFirstRun());
   dict->Set("testapi_shouldSkipConsolidatedConsent",
             !BUILDFLAG(GOOGLE_CHROME_BRANDING));

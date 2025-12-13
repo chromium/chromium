@@ -63,10 +63,6 @@ std::unique_ptr<AndroidOverlay> CreateAndroidOverlayCb(
 // Tests require the presence of a software AV1 decoder, which isn't required
 // by Android at this time.
 bool HasAv1Decoder() {
-  if (!MediaCodecUtil::IsAv1DecoderAvailable()) {
-    return false;
-  }
-
   for (const auto& info : GetDecoderInfoCache()) {
     if (info.profile >= AV1PROFILE_MIN && info.profile <= AV1PROFILE_MAX) {
       return true;
@@ -158,8 +154,8 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
         std::make_unique<NiceMock<MockAndroidVideoSurfaceChooser>>();
     surface_chooser_ = surface_chooser.get();
 
-    auto texture_owner = base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>(
-        0, nullptr, nullptr);
+    auto texture_owner =
+        base::MakeRefCounted<NiceMock<gpu::MockTextureOwner>>();
     texture_owner_ = texture_owner.get();
 
     auto video_frame_factory =
@@ -169,9 +165,11 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     ON_CALL(*video_frame_factory_, Initialize(ExpectedOverlayMode(), _))
         .WillByDefault(RunCallback<1>(texture_owner));
 
+    bool is_surface_control_enabled = false;
     auto* mcvd = new MediaCodecVideoDecoder(
-        gpu_preferences_, gpu_feature_info_, std::make_unique<NullMediaLog>(),
-        device_info_.get(), codec_allocator_.get(), std::move(surface_chooser),
+        gpu_preferences_, is_surface_control_enabled,
+        std::make_unique<NullMediaLog>(), device_info_.get(),
+        codec_allocator_.get(), std::move(surface_chooser),
         base::BindRepeating(&CreateAndroidOverlayCb),
         base::BindRepeating(&MediaCodecVideoDecoderTest::RequestOverlayInfoCb,
                             base::Unretained(this)),
@@ -185,11 +183,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   }
 
   VideoFrameFactory::OverlayMode ExpectedOverlayMode() const {
-    const bool want_promotion_hint =
-        device_info_->IsSetOutputSurfaceSupported();
-    return want_promotion_hint
-               ? VideoFrameFactory::OverlayMode::kRequestPromotionHints
-               : VideoFrameFactory::OverlayMode::kDontRequestPromotionHints;
+    return VideoFrameFactory::OverlayMode::kRequestPromotionHints;
   }
 
   void CreateCdm(bool has_media_crypto_context,
@@ -220,12 +214,9 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
 
     // If there is a CDM available, then we expect that MCVD will be waiting
     // for the media crypto object.
-    // TODO(liberato): why does CreateJavaObjectPtr() not link?
     if (cdm_ && cdm_->media_crypto_ready_cb_) {
       std::move(cdm_->media_crypto_ready_cb_)
-          .Run(std::make_unique<base::android::ScopedJavaGlobalRef<jobject>>(
-                   media_crypto_),
-               require_secure_video_decoder_);
+          .Run(media_crypto_, require_secure_video_decoder_);
       // The callback is consumed, mark that we ran it so tests can verify.
       cdm_->ran_media_crypto_ready_cb_ = true;
       base::RunLoop().RunUntilIdle();
@@ -302,9 +293,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     }
   }
 
-  void RequestOverlayInfoCb(bool restart_for_transitions,
-                            ProvideOverlayInfoCB provide_overlay_info_cb) {
-    restart_for_transitions_ = restart_for_transitions;
+  void RequestOverlayInfoCb(ProvideOverlayInfoCB provide_overlay_info_cb) {
     provide_overlay_info_cb_ = std::move(provide_overlay_info_cb);
   }
 
@@ -320,9 +309,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
   raw_ptr<MockVideoFrameFactory> video_frame_factory_ = nullptr;
   NiceMock<base::MockCallback<VideoDecoder::DecodeCB>> decode_cb_;
   ProvideOverlayInfoCB provide_overlay_info_cb_;
-  bool restart_for_transitions_;
   gpu::GpuPreferences gpu_preferences_;
-  gpu::GpuFeatureInfo gpu_feature_info_;
   scoped_refptr<VideoFrame> most_recent_frame_;
 
   // This is not an actual media crypto object.
@@ -368,8 +355,6 @@ TEST_P(MediaCodecVideoDecoderAV1Test, Av1IsSupported) {
   if (!HasAv1Decoder()) {
     return;
   }
-  EXPECT_CALL(*device_info_, IsAv1DecoderAvailable())
-      .WillRepeatedly(Return(true));
   ASSERT_TRUE(Initialize(TestVideoConfig::Normal(VideoCodec::kAV1)));
 }
 
@@ -395,23 +380,6 @@ TEST_P(MediaCodecVideoDecoderTest,
   ASSERT_FALSE(provide_overlay_info_cb_);
   mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
   ASSERT_TRUE(provide_overlay_info_cb_);
-}
-
-TEST_P(MediaCodecVideoDecoderTest,
-       OverlayInfoIsNotRequestedIfOverlaysNotSupported) {
-  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
-  ON_CALL(*device_info_, SupportsOverlaySurfaces())
-      .WillByDefault(Return(false));
-  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
-  ASSERT_FALSE(provide_overlay_info_cb_);
-}
-
-TEST_P(MediaCodecVideoDecoderTest, RestartForOverlayTransitionsFlagIsCorrect) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(true));
-  ASSERT_TRUE(Initialize(TestVideoConfig::Large(codec_)));
-  mcvd_->Decode(fake_decoder_buffer_, decode_cb_.Get());
-  ASSERT_FALSE(restart_for_transitions_);
 }
 
 TEST_P(MediaCodecVideoDecoderTest,
@@ -540,20 +508,7 @@ TEST_P(MediaCodecVideoDecoderTest, CodecIsCreatedWithChosenOverlay) {
       codec_allocator_->most_recent_config->surface.obj()));
 }
 
-TEST_P(MediaCodecVideoDecoderTest,
-       CodecCreationWeakPtrIsInvalidatedBySurfaceDestroyed) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(false));
-  auto* overlay =
-      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(overlay);
-  overlay->OnSurfaceDestroyed();
 
-  // MCVD handles release of the MediaCodec after WeakPtr invalidation.
-  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(NotNull()));
-  auto* codec = codec_allocator_->ProvideMockCodecAsync();
-  ASSERT_TRUE(codec);
-}
 
 TEST_P(MediaCodecVideoDecoderTest, SurfaceChangedWhileCodecCreationPending) {
   auto* overlay =
@@ -582,22 +537,7 @@ TEST_P(MediaCodecVideoDecoderTest, SurfaceDestroyedDoesSyncSurfaceTransition) {
   overlay->OnSurfaceDestroyed();
 }
 
-TEST_P(MediaCodecVideoDecoderTest,
-       SurfaceDestroyedReleasesCodecIfSetSurfaceIsNotSupported) {
-  ON_CALL(*device_info_, IsSetOutputSurfaceSupported())
-      .WillByDefault(Return(false));
-  auto* overlay =
-      InitializeWithOverlay_OneDecodePending(TestVideoConfig::Large(codec_));
-  ASSERT_TRUE(overlay);
-  auto* codec = codec_allocator_->ProvideMockCodecAsync();
 
-  // MCVD must synchronously release the codec.
-  EXPECT_CALL(*codec, SetSurface(_)).Times(0);
-  EXPECT_CALL(*codec_allocator_, MockReleaseMediaCodec(codec));
-  overlay->OnSurfaceDestroyed();
-  // Verify expectations before we delete the MCVD.
-  testing::Mock::VerifyAndClearExpectations(codec_allocator_.get());
-}
 
 TEST_P(MediaCodecVideoDecoderTest, PumpCodecPerformsPendingSurfaceTransitions) {
   ASSERT_TRUE(
@@ -726,7 +666,6 @@ TEST_P(MediaCodecVideoDecoderTest, ResetDoesNotDrainCodecs) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, ElidedEOSForConfigChange) {
-  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
@@ -754,7 +693,6 @@ TEST_P(MediaCodecVideoDecoderTest, ElidedEOSForConfigChange) {
 }
 
 TEST_P(MediaCodecVideoDecoderTest, ElidedEOSSkippedForCodecChange) {
-  base::test::ScopedFeatureList enabled(kMediaCodecElideEOS);
   auto* codec =
       InitializeFully_OneDecodePending(TestVideoConfig::Large(codec_));
   ASSERT_TRUE(codec);
@@ -1041,8 +979,7 @@ static std::vector<VideoCodec> GetTestList() {
 
   if (MediaCodecUtil::IsVp8DecoderAvailable())
     test_codecs.push_back(VideoCodec::kVP8);
-  if (MediaCodecUtil::IsVp9DecoderAvailable())
-    test_codecs.push_back(VideoCodec::kVP9);
+  test_codecs.push_back(VideoCodec::kVP9);
   if (HasAv1Decoder()) {
     test_codecs.push_back(VideoCodec::kAV1);
   }

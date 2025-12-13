@@ -12,7 +12,7 @@
 #include "ui/accessibility/accessibility_features.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "content/public/android/content_jni_headers/ContentFeatureMap_jni.h"
+#include "content/public/android/content_main_dex_jni/ContentFeatureMap_jni.h"
 
 namespace content::android {
 
@@ -22,31 +22,46 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h).
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &blink::features::kAndroidDesktopWebPrefsLargeDisplays,
     &blink::features::kDevicePosture,
     &blink::features::kSecurePaymentConfirmationBrowserBoundKeys,
     &blink::features::kSecurePaymentConfirmationUxRefresh,
     &blink::features::kViewportSegments,
     &input::features::kInputOnViz,
+    &features::kAndroidCaptureKeyEvents,
+    &features::kAndroidCaretBrowsing,
+    &features::kAndroidDevToolsFrontend,
+    &features::kAccessibilityCheckJavaNodeCacheFreshness,
     &features::kAccessibilityDeprecateJavaNodeCache,
     &features::kAccessibilityDeprecateTypeAnnounce,
-    &features::kAccessibilityIncludeLongClickAction,
+    &features::kAccessibilityExtendedSelection,
+    &features::kAccessibilityImproveLiveRegionAnnounce,
+    &features::kAccessibilityMagnificationFollowsFocus,
+    &features::kAccessibilityRequestLayoutBasedActions,
     &features::kAccessibilityPageZoomV2,
     &features::kAccessibilityPopulateSupplementalDescriptionApi,
+    &features::kAccessibilitySequentialFocus,
+    &features::kAccessibilitySetSelectableOnAllNodesWithText,
     &features::kAccessibilityUnifiedSnapshots,
     &features::kAccessibilityManageBroadcastReceiverOnBackground,
+    &features::kAndroidDesktopZoomScaling,
     &features::kAndroidFallbackToNextSlot,
-    &features::kAndroidOpenPdfInline,
+    &features::kAndroidMediaInsertion,
+    &features::kAndroidPkAutocorrectUnderline,
     &features::kStrictHighRankProcessLRU,
     &features::kFedCm,
-    &features::kGroupRebindingForGroupImportance,
     &features::kHidePastePopupOnGSB,
     &features::kReduceGpuPriorityOnBackground,
+    &features::kRemoveCachedProcessFromBindingManager,
     &features::kContinueGestureOnLosingFocus,
+    &features::kScrollAfterOSKViewportShrinkFix,
     &features::kSmartZoom,
     &features::kTouchDragAndContextMenu,
     &features::kWebBluetoothNewPermissionsBackend,
+    &features::kWebContentsDiscard,
     &features::kWebIdentityDigitalCredentials,
     &features::kBtmTtl,
+    &features::kEnableJavalessRenderers,
     &features::kSpareRendererProcessPriority,
 };
 
@@ -64,3 +79,5 @@ static jlong JNI_ContentFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(ContentFeatureMap)

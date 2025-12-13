@@ -59,6 +59,11 @@ found in the LICENSE file.
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@color/default_icon_color_inverse_dark</color>
 
+    <!-- Settings -->
+    <color name="settings_search_logo_color_1">@color/material_primary_90</color>
+    <color name="settings_search_logo_color_2">@color/material_primary_60</color>
+    <color name="settings_search_logo_color_3">@color/material_primary_40</color>
+
     <!-- Tab strip button hover background color -->
     <color name="tab_strip_button_hover_bg_color">@color/baseline_neutral_90</color>
 
@@ -74,4 +79,12 @@ found in the LICENSE file.
 
     <!-- Swipe Refresh Handler -->
     <color name="incognito_swipe_refresh_layout_bg">@color/gm3_baseline_surface_container_dark</color>
+
+    <!-- Tab Strip Dragged Tab Shadow Color -->
+    <color name="tab_strip_reorder_shadow_color">@color/black_alpha_11</color>
+
+    <!-- Tab strip media indicators-->
+    <!-- TODO(crbug.com/454048975): Check with UX about the color.  -->
+    <color name="tab_recording_media_color">@color/google_red_600</color>
+    <color name="tab_sharing_media_color">@color/tab_group_color_picker_blue_dark</color>
 </resources>

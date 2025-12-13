@@ -15,6 +15,7 @@ IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, MostVisited) {
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsFocusTest, CrShortcutInput) {
+  set_test_loader_host(chrome::kChromeUIExtensionsHost);
   RunTest("cr_components/cr_shortcut_input/cr_shortcut_input_test.js",
           "mocha.run()");
 }

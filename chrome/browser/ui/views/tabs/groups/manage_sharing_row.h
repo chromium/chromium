@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_MANAGE_SHARING_ROW_H_
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/public/types.h"
+#include "components/sync/base/collaboration_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -27,7 +27,7 @@ class ManageSharingRow : public views::Button {
 
  public:
   ManageSharingRow(Profile* profile,
-                   const tab_groups::CollaborationId& collaboration_id_,
+                   const syncer::CollaborationId& collaboration_id_,
                    PressedCallback callback);
   void RebuildChildren();
   ~ManageSharingRow() override;
@@ -52,7 +52,7 @@ class ManageSharingRow : public views::Button {
   raw_ptr<ManageSharingAvatarContainer> avatar_container_ = nullptr;
 
   raw_ptr<Profile> profile_ = nullptr;
-  tab_groups::CollaborationId collaboration_id_;
+  syncer::CollaborationId collaboration_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_MANAGE_SHARING_ROW_H_

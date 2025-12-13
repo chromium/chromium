@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/prefs/pref_member.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+
+class ApplicationLocaleStorage;
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -33,7 +36,9 @@ namespace input_method {
 // will be brought down when signing in to a new device but not in future syncs.
 class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
  public:
-  InputMethodSyncer(sync_preferences::PrefServiceSyncable* prefs,
+  // `application_locale_storage` must be non-null, and must outlive `this`.
+  InputMethodSyncer(ApplicationLocaleStorage* application_locale_storage,
+                    sync_preferences::PrefServiceSyncable* prefs,
                     scoped_refptr<InputMethodManager::State> ime_state);
   ~InputMethodSyncer() override;
 
@@ -77,6 +82,7 @@ class InputMethodSyncer : public sync_preferences::PrefServiceSyncableObserver {
   StringPrefMember preload_engines_syncable_;
   StringPrefMember enabled_imes_syncable_;
 
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
   scoped_refptr<InputMethodManager::State> ime_state_;
 

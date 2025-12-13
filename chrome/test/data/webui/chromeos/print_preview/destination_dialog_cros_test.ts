@@ -195,10 +195,8 @@ suite('DestinationDialogCrosTest', function() {
             dialog.shadowRoot!.querySelector('.server-search-box-input')!;
         const serverSelections =
             serverSelector.shadowRoot!.querySelectorAll('.list-item');
-        assertEquals(
-            'Print Server 1', serverSelections[0]!.textContent!.trim());
-        assertEquals(
-            'Print Server 2', serverSelections[1]!.textContent!.trim());
+        assertEquals('Print Server 1', serverSelections[0]!.textContent.trim());
+        assertEquals('Print Server 2', serverSelections[1]!.textContent.trim());
       });
 
   // Tests that choosePrintServers is called when the print server searchable

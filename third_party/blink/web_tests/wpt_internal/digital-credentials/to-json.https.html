@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Digital Identity Credential toJSON tests.</title>
+<link rel="help" href="https://wicg.github.io/digital-identities/">
+<link rel="help" href="https://github.com/w3c-fedid/digital-credentials/pull/179">
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<body>
+<script type="module">
+  import { buildValidNavigatorCredentialsRequest, requestIdentityWithActivation } from '/wpt_internal/digital-credentials/support/helper.js';
+
+promise_test(async t => {
+  let request = buildValidNavigatorCredentialsRequest();
+  let credential = await requestIdentityWithActivation(test_driver, request);
+  let expectedResponseData = { "token": "fake_test_token" };
+  assert_true('toJSON' in credential);
+  const credential_json = credential.toJSON();
+  assert_equals("openid4vp", credential_json.protocol);
+  assert_object_equals(
+   expectedResponseData,
+   credential.data);
+}, 'Test toJSON() for expected JSON structure on DigitalCredential');
+</script>

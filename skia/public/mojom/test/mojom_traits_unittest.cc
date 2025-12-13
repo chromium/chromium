@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "include/core/SkPathBuilder.h"
-#include "include/core/SkRRect.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include <limits>
 
+#include "base/compiler_specific.h"
+#include "include/core/SkPathBuilder.h"
+#include "include/core/SkRRect.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "skia/ext/skcolorspace_primaries.h"
 #include "skia/public/mojom/bitmap.mojom.h"
@@ -176,14 +172,15 @@ TEST(StructTraitsTest, SkColorSpace) {
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<skia::mojom::SkcmsTransferFunction>(
           in_trfn, out_trfn));
-  EXPECT_EQ(memcmp(&in_trfn, &out_trfn, sizeof(in_trfn)), 0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(&in_trfn, &out_trfn, sizeof(in_trfn)), 0));
 
   skcms_Matrix3x3 in_to_xyzd50{
       .vals = {{0.1f, 0.2f, 0.3f}, {0.4f, 0.5f, 0.6f}, {0.7f, 0.8f, 0.9f}}};
   skcms_Matrix3x3 out_to_xyzd50;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<skia::mojom::SkcmsMatrix3x3>(
       in_to_xyzd50, out_to_xyzd50));
-  EXPECT_EQ(memcmp(&in_to_xyzd50, &out_to_xyzd50, sizeof(in_to_xyzd50)), 0);
+  UNSAFE_TODO(EXPECT_EQ(
+      memcmp(&in_to_xyzd50, &out_to_xyzd50, sizeof(in_to_xyzd50)), 0));
 
   sk_sp<SkColorSpace> in_cs = SkColorSpace::MakeRGB(in_trfn, in_to_xyzd50);
   sk_sp<SkColorSpace> out_cs;

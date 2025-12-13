@@ -24,7 +24,7 @@ class CommandData:public RAROptions
     void SetTimeFilters(const wchar *Mod,bool Before,bool Age);
     void SetStoreTimeMode(const wchar *S);
 #endif
-    int64 GetVolSize(const wchar *S,uint DefMultiplier);
+    int64 GetModSize(const wchar *S,uint DefMultiplier);
 
     bool FileLists;
     bool NoMoreSwitches;

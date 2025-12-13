@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_tabs_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/test/tabs_egtest_util.h"
@@ -39,9 +40,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryTitle(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
   http_response->set_content_type("text/html");
-  http_response->set_content("<html><head><title>" + request.GetURL().query() +
-                             "</title></head><body>" +
-                             request.GetURL().query() + "</body></html>");
+  http_response->set_content(
+      "<html><head><title>" + request.GetURL().GetQuery() +
+      "</title></head><body>" + request.GetURL().GetQuery() + "</body></html>");
   return std::move(http_response);
 }
 
@@ -96,6 +97,16 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 
 @implementation PinnedTabsGenericConsistencyTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testCloseAllRegularThenPinnedTabs)] ||
+      [self isRunningTest:@selector(testCloseAllPinnedThenRegularTabs)]) {
+    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
+  }
+
+  return config;
+}
+
 // Waits for the animation (context modal disappearance) to complete.
 - (void)waitForAnimationCompletionWithMacther:(id<GREYMatcher>)elementMatcher {
   // Wait until it's gone.
@@ -127,7 +138,8 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
 }
 
 // Tests that there is only one active (selected) tab at a time.
-- (void)testOneActiveTabAtATime {
+// TODO(crbug.com/440615724): This test is flaky.
+- (void)FLAKY_testOneActiveTabAtATime {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
@@ -328,8 +340,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   // Long tap on the first regular tab.
@@ -346,11 +359,10 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is disabled.
-  [self
-      waitForAnimationCompletionWithMacther:grey_allOf(
-                                                GetMatcherForEditButton(),
-                                                grey_not(grey_enabled()), nil)];
+  // Verify Overflow Menu button is enabled.
+  [self waitForAnimationCompletionWithMacther:
+            grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                       grey_enabled(), nil)];
 
   [self waitForAnimationCompletionWithMacther:GetMatcherForPinnedCellWithTitle(
                                                   @"PinnedTab0")];
@@ -386,9 +398,10 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                                 GetMatcherForDoneButton(),
                                                 grey_not(grey_enabled()), nil)];
 
-  // Verify "Edit" button is disabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
 // Tests closing all the pinned tabs and then all the regular tabs.
@@ -412,8 +425,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   // Long tap on the first pinned tab.
@@ -445,8 +459,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   [[EarlGrey selectElementWithMatcher:GetMatcherForDoneButton()]
       assertWithMatcher:grey_enabled()];
 
-  // Verify "Edit" button is enabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
       assertWithMatcher:grey_enabled()];
 
   [self waitForAnimationCompletionWithMacther:GetMatcherForRegularCellWithTitle(
@@ -468,14 +483,16 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
                                                 GetMatcherForDoneButton(),
                                                 grey_not(grey_enabled()), nil)];
 
-  // Verify "Edit" button is disabled.
-  [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  // Verify Overflow Menu button is enabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOverflowMenuButton()]
+      assertWithMatcher:grey_enabled()];
 }
 
+// TODO(crbug.com/441313129): This test is disabled because of its flakiness.
 // Tests closing all the regular tabs with "Close All" button and then undoing
 // the action.
-- (void)testUndoCloseAllRegularTabs {
+- (void)DISABLED_testUndoCloseAllRegularTabs {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");
@@ -504,14 +521,6 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
   // Tap on "Edit" button.
   [[EarlGrey selectElementWithMatcher:GetMatcherForEditButton()]
       performAction:grey_tap()];
-
-  if (@available(iOS 19, *)) {
-    // TODO(crbug.com/428928323): Investigate why the keyboard appears. Remove
-    // this workaround when it's not needed anymore. On iOS 26, the keyboard
-    // appears when the "Edit" button is tapped and it hides the elements
-    // behind. Close the keyboard by typing a return key.
-    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\\n" flags:0];
-  }
 
   // Tap on "Close All Tabs" menu action.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -563,8 +572,9 @@ GURL GetURLForTitle(net::EmbeddedTestServer* test_server, NSString* title) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// TODO(crbug.com/441313129): This test is disabled because of its flakiness.
 // Tests scrolling of the pinned tabs collection.
-- (void)testPinnedTabsScrolling {
+- (void)DISABLED_testPinnedTabsScrolling {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad. The Pinned Tabs feature is only "
                            @"supported on iPhone.");

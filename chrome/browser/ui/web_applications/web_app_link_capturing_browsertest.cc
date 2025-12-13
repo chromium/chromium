@@ -24,8 +24,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -55,7 +56,8 @@ using content::WebContents;
 using content::test::PrerenderHostObserver;
 using content::test::PrerenderHostRegistryObserver;
 using content::test::PrerenderTestHelper;
-using ui_test_utils::BrowserChangeObserver;
+using ui_test_utils::BrowserCreatedObserver;
+using ui_test_utils::BrowserDestroyedObserver;
 
 namespace web_app {
 namespace {
@@ -188,36 +190,35 @@ class WebAppLinkCapturingBrowserTest
       AddTab(browser, about_blank_);
     }
 
-    BrowserChangeObserver observer(nullptr,
-                                   BrowserChangeObserver::ChangeType::kAdded);
+    BrowserCreatedObserver browser_created_observer;
     NavigateCapturable(browser, url);
 
-    return observer.Wait();
+    return browser_created_observer.Wait();
   }
 
   void ExpectTabs(Browser* test_browser,
                   std::vector<GURL> urls,
                   base::Location location = FROM_HERE) {
     std::string debug_info = "\nOpen browsers:\n";
-    for (Browser* open_browser : *BrowserList::GetInstance()) {
-      debug_info += "  ";
-      if (open_browser == browser()) {
-        debug_info += "Main browser";
-      } else if (open_browser->app_controller()) {
-        debug_info += "App browser";
-      } else {
-        debug_info += "Browser";
-      }
-      debug_info += ":\n";
-      for (int i = 0; i < open_browser->tab_strip_model()->count(); ++i) {
-        debug_info += "   - " +
-                      open_browser->tab_strip_model()
-                          ->GetWebContentsAt(i)
-                          ->GetVisibleURL()
-                          .spec() +
-                      "\n";
-      }
-    }
+    ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+        [this, &debug_info](BrowserWindowInterface* browser) {
+          debug_info += "  ";
+          if (browser == this->browser()) {
+            debug_info += "Main browser";
+          } else if (web_app::AppBrowserController::IsWebApp(browser)) {
+            debug_info += "App browser";
+          } else {
+            debug_info += "Browser";
+          }
+          debug_info += ":\n";
+          const TabStripModel* const tab_model = browser->GetTabStripModel();
+          for (int i = 0; i < tab_model->count(); ++i) {
+            debug_info +=
+                "   - " +
+                tab_model->GetWebContentsAt(i)->GetVisibleURL().spec() + "\n";
+          }
+          return true;
+        });
     SCOPED_TRACE(location.ToString());
     SCOPED_TRACE(debug_info);
     TabStripModel& tab_strip = *test_browser->tab_strip_model();
@@ -338,21 +339,26 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   // navigate-existing in v2.
   NavigateSelf(app_browser, out_of_scope_);
 
-  BrowserChangeObserver observer(nullptr,
-                                 BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   NavigateBlank(browser(), in_scope_1);
   ExpectTabs(browser(), {out_of_scope_});
   if (IsV1()) {
     ExpectTabs(app_browser, {in_scope_1});
   } else {
-    Browser* other_app_browser = observer.Wait();
+    Browser* other_app_browser = browser_created_observer.Wait();
     ExpectTabs(other_app_browser, {in_scope_1});
   }
 }
 
+// TODO(crbug.com/447228160): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AboutBlankNavigationCleanUp DISABLED_AboutBlankNavigationCleanUp
+#else
+#define MAYBE_AboutBlankNavigationCleanUp AboutBlankNavigationCleanUp
+#endif
 // Link captures from about:blank cleans up the about:blank page.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
-                       AboutBlankNavigationCleanUp) {
+                       MAYBE_AboutBlankNavigationCleanUp) {
   if (!ShouldLinksWithExistingFrameTargetsCapture()) {
     GTEST_SKIP();
   }
@@ -362,19 +368,17 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
             base::ok());
 
   ExpectTabs(browser(), {about_blank_});
-  BrowserChangeObserver removed_observer(
-      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+  BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   // Navigate an about:blank page.
-  BrowserChangeObserver observer(nullptr,
-                                 BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   NavigateSelf(browser(), in_scope_1);
-  Browser* app_browser = observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
   ExpectTabs(app_browser, {in_scope_1});
 
   // Old about:blank page cleaned up.
-  removed_observer.Wait();
+  browser_destroyed_observer.Wait();
 }
 
 // JavaScript initiated link captures from about:blank cleans up the about:blank
@@ -390,20 +394,18 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
             base::ok());
 
   ExpectTabs(browser(), {about_blank_});
-  BrowserChangeObserver removed_observer(
-      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+  BrowserDestroyedObserver browser_destroyed_observer(browser());
 
   // Navigate an about:blank page using JavaScript.
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       base::StringPrintf("location = '%s';", in_scope_1.spec().c_str())));
-  Browser* app_browser = added_observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   ExpectTabs(app_browser, {in_scope_1});
 
   // Old about:blank page cleaned up.
-  removed_observer.Wait();
+  browser_destroyed_observer.Wait();
 
   // Must wait for link capturing launch to complete so that its keep alives go
   // out of scope.
@@ -481,14 +483,13 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   ASSERT_NE(nullptr, child_frame);
   content::WaitForHitTestData(child_frame);
 
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
 
   // Click the iframe, which should click the <a> tag and open the app.
   // At this point the hit test data for targeting the event should be valid.
   content::SimulateMouseClickOrTapElementWithId(web_contents, "iframe");
 
-  Browser* app_browser = added_observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_NE(browser(), app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
 }
@@ -508,8 +509,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     AddTab(browser(), about_blank_);
   }
 
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
 
   NavigateCapturable(browser(), GetNestedAppUrl());
 
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   // into the parent app, but other platforms split the URL space and fully
   // respect the child app's user setting.
 #if BUILDFLAG(IS_CHROMEOS)
-  Browser* app_browser = added_observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_NE(browser(), app_browser);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, parent_app_id));
   ExpectTabs(app_browser, {GetNestedAppUrl()});
@@ -527,7 +527,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     // If link capturing is on by default, then the nested app will also be
     // capturing links in it's scope (and thus the nested url will launch a
     // nested app browser. the nested app browser.
-    Browser* app_browser = added_observer.Wait();
+    Browser* app_browser = browser_created_observer.Wait();
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, nested_app_id));
     EXPECT_NE(browser(), app_browser);
     ExpectTabs(app_browser, {GetNestedAppUrl()});
@@ -560,16 +560,14 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   Browser* nested_browser;
   Browser* parent_browser;
   {
-    BrowserChangeObserver added_observer(
-        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    BrowserCreatedObserver browser_created_observer;
     NavigateCapturable(browser(), GetNestedAppUrl());
-    nested_browser = added_observer.Wait();
+    nested_browser = browser_created_observer.Wait();
   }
   {
-    BrowserChangeObserver added_observer(
-        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    BrowserCreatedObserver browser_created_observer;
     NavigateCapturable(browser(), GetParentAppUrl());
-    parent_browser = added_observer.Wait();
+    parent_browser = browser_created_observer.Wait();
   }
   ASSERT_TRUE(nested_browser);
   ASSERT_TRUE(parent_browser);
@@ -633,12 +631,11 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   // Clicking a link from target="_blank" should link capture in v1 and v2.
   {
-    BrowserChangeObserver added_observer(
-        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    BrowserCreatedObserver browser_created_observer;
     ClickLinkAndWait(parent_app, GetNestedAppUrl(), LinkTarget::BLANK,
                      /*rel=*/"");
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(added_observer.Wait(),
-                                                  nested_app_id));
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(
+        browser_created_observer.Wait(), nested_app_id));
   }
 
   // Links clicked within an app popup browser will also capture.
@@ -654,14 +651,13 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     Browser* const popup_browser = OpenPopupAndWait(
         chrome::FindBrowserWithTab(parent_app), GetParentAppUrl(), size);
 
-    BrowserChangeObserver added_observer(
-        nullptr, BrowserChangeObserver::ChangeType::kAdded);
+    BrowserCreatedObserver browser_created_observer;
     ClickLinkAndWait(popup_browser->tab_strip_model()->GetActiveWebContents(),
                      GetNestedAppUrl(),
                      IsV2() ? LinkTarget::BLANK : LinkTarget::SELF,
                      /*rel=*/"");
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(added_observer.Wait(),
-                                                  nested_app_id));
+    EXPECT_TRUE(AppBrowserController::IsForWebApp(
+        browser_created_observer.Wait(), nested_app_id));
   }
 }
 
@@ -711,12 +707,11 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   // The out of scope URL should still be open in the main browser.
   ExpectTabs(browser(), {out_of_scope});
 
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   ClickLinkAndWait(prerender_web_contents(), in_scope, LinkTarget::BLANK,
                    /*rel=*/"");
 
-  Browser* app_browser = added_observer.Wait();
+  Browser* app_browser = browser_created_observer.Wait();
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
   ExpectTabs(app_browser, {in_scope});
 }
@@ -747,14 +742,13 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     prerender_helper_.AddPrerender(in_scope);
   }
 
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   ClickLinkAndWait(prerender_web_contents(), in_scope, LinkTarget::SELF,
                    /*rel=*/"");
 
   if (ShouldLinksWithExistingFrameTargetsCapture()) {
     ExpectTabs(browser(), {out_of_scope});
-    Browser* app_browser = added_observer.Wait();
+    Browser* app_browser = browser_created_observer.Wait();
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id));
     ExpectTabs(app_browser, {in_scope});
   } else {
@@ -797,13 +791,12 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   // Clicking a link that opens a popup should open a regular popup window
   // without link capturing.
-  BrowserChangeObserver added_observer(
-      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  BrowserCreatedObserver browser_created_observer;
   auto navigation_observer = GetTestNavigationObserver(in_scope);
 
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents);
   content::SimulateMouseClickOrTapElementWithId(web_contents, "popup");
-  Browser* popup_browser = added_observer.Wait();
+  Browser* popup_browser = browser_created_observer.Wait();
   // We need to wait for the navigation to complete inside the popup browser, to
   // give link capturing a chance to trigger.
   navigation_observer->Wait();

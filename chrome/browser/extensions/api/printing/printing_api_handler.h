@@ -12,21 +12,22 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefRegistrySimple;
 
@@ -40,10 +41,11 @@ class BrowserContext;
 }  // namespace content
 
 namespace printing {
+class LocalPrinter;
 class PdfBlobDataFlattener;
 class PrintJobController;
-struct PrinterStatus;
 struct PrintJobCreatedInfo;
+struct PrinterStatus;
 }  // namespace printing
 
 namespace extensions {
@@ -74,7 +76,8 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       ExtensionRegistry* extension_registry,
       std::unique_ptr<printing::PrintJobController> print_job_controller,
       std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-      crosapi::mojom::LocalPrinter* local_printer);
+      crosapi::mojom::LocalPrinter* cros_local_printer,
+      ash::LocalPrinter* local_printer);
 
   explicit PrintingAPIHandler(content::BrowserContext* browser_context);
 
@@ -84,7 +87,8 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
       ExtensionRegistry* extension_registry,
       std::unique_ptr<printing::PrintJobController> print_job_controller,
       std::unique_ptr<chromeos::CupsWrapper> cups_wrapper,
-      crosapi::mojom::LocalPrinter* local_printer);
+      crosapi::mojom::LocalPrinter* cros_local_printer,
+      ash::LocalPrinter* local_printer);
 
   PrintingAPIHandler(const PrintingAPIHandler&) = delete;
   PrintingAPIHandler& operator=(const PrintingAPIHandler&) = delete;
@@ -152,15 +156,14 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
                            const std::string& extension_id,
                            PrintJobSubmitter::PrintJobCreationResult result);
 
-  void OnPrintersRetrieved(
-      GetPrintersCallback callback,
-      std::vector<crosapi::mojom::LocalDestinationInfoPtr> data);
+  void OnPrintersRetrieved(GetPrintersCallback callback,
+                           std::vector<chromeos::Printer> printers);
 
   // GetPrinterInfo() calls this function.
   void OnPrinterCapabilitiesRetrieved(
       const std::string& printer_id,
       GetPrinterInfoCallback callback,
-      crosapi::mojom::CapabilitiesResponsePtr caps);
+      const std::optional<printing::PrinterSemanticCapsAndDefaults>& caps);
 
   // OnPrinterCapabilitiesRetrieved() calls this function.
   void OnPrinterStatusRetrieved(
@@ -203,7 +206,9 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   // oldest jobs from `finished_print_jobs_`.
   base::circular_deque<std::string> finished_jobs_order_;
 
-  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_;
+  raw_ptr<crosapi::mojom::LocalPrinter> cros_local_printer_;
+  // Associated with the whole ash browser process globally.
+  raw_ref<ash::LocalPrinter> local_printer_;
 
   mojo::Receiver<crosapi::mojom::PrintJobObserver> receiver_{this};
 

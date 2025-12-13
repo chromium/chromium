@@ -25,6 +25,7 @@ enum class CSSAtRuleID {
   kCSSAtRulePage,
   kCSSAtRulePositionTry,
   kCSSAtRuleProperty,
+  kCSSAtRuleNavigation,
   kCSSAtRuleContainer,
   kCSSAtRuleCounterStyle,
   kCSSAtRuleScope,
@@ -60,6 +61,7 @@ enum class CSSAtRuleID {
   kCSSAtRuleFunction,
   kCSSAtRuleMixin,
   kCSSAtRuleApplyMixin,
+  kCSSAtRuleContents,
   kCSSAtRuleCustomMedia,
 
   kCount  // Must go last.

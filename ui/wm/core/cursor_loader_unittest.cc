@@ -82,8 +82,8 @@ TEST(CursorLoaderTest, GetCursorDataForDefaultCursors) {
                   : std::make_optional(
                         cursor_loader.large_cursor_size_in_dip() * scale);
           const auto cursor_data = GetCursorData(
-              cursor.type(), cursor_size, resource_scale,
-              target_cursor_size_in_px, display.panel_rotation(), cursor_color);
+              cursor.type(), resource_scale, target_cursor_size_in_px,
+              display.panel_rotation(), cursor_color);
           ASSERT_TRUE(cursor_data);
           ASSERT_EQ(cursor_loader_data->bitmaps.size(),
                     cursor_data->bitmaps.size());

@@ -482,7 +482,8 @@ std::unique_ptr<update_client::NetworkFetcher> NetworkFetcherFactory::Create()
     VLOG(1) << "Failed to initialize a curl handle.";
     return nullptr;
   }
-  return std::make_unique<LibcurlNetworkFetcher>(std::move(curl));
+  return std::make_unique<LoggingNetworkFetcher>(
+      std::make_unique<LibcurlNetworkFetcher>(std::move(curl)));
 }
 
 }  // namespace updater

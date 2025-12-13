@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -116,66 +113,74 @@ struct TestMountPoint {
   int disk_info_index;
 };
 
-TestDiskInfo kTestDisks[] = {{"file_path1",
-                              false,
-                              "device_label1",
-                              "drive_label1",
-                              "0123",
-                              "vendor1",
-                              "abcd",
-                              "product1",
-                              "FFFF-FFFF",
-                              "storage_device_path1",
-                              ash::DeviceType::kUSB,
-                              1073741824,
-                              false,
-                              false,
-                              false,
-                              false,
-                              false,
-                              false,
-                              "exfat",
-                              ""},
-                             {"file_path2",
-                              false,
-                              "device_label2",
-                              "drive_label2",
-                              "4567",
-                              "vendor2",
-                              "cdef",
-                              "product2",
-                              "0FFF-FFFF",
-                              "storage_device_path2",
-                              ash::DeviceType::kMobile,
-                              47723,
-                              true,
-                              true,
-                              true,
-                              true,
-                              false,
-                              false,
-                              "exfat",
-                              ""},
-                             {"file_path3",
-                              true,  // write_disabled_by_policy
-                              "device_label3",
-                              "drive_label3",
-                              "89ab",
-                              "vendor3",
-                              "ef01",
-                              "product3",
-                              "00FF-FFFF",
-                              "storage_device_path3",
-                              ash::DeviceType::kOpticalDisc,
-                              0,
-                              true,
-                              false,  // is_hardware_read_only
-                              false,
-                              true,
-                              false,
-                              false,
-                              "exfat",
-                              ""}};
+constexpr auto kTestDisks = std::to_array<TestDiskInfo>({
+    {
+        "file_path1",
+        false,
+        "device_label1",
+        "drive_label1",
+        "0123",
+        "vendor1",
+        "abcd",
+        "product1",
+        "FFFF-FFFF",
+        "storage_device_path1",
+        ash::DeviceType::kUSB,
+        1073741824,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        "exfat",
+        "",
+    },
+    {
+        "file_path2",
+        false,
+        "device_label2",
+        "drive_label2",
+        "4567",
+        "vendor2",
+        "cdef",
+        "product2",
+        "0FFF-FFFF",
+        "storage_device_path2",
+        ash::DeviceType::kMobile,
+        47723,
+        true,
+        true,
+        true,
+        true,
+        false,
+        false,
+        "exfat",
+        "",
+    },
+    {
+        "file_path3",
+        true,  // write_disabled_by_policy
+        "device_label3",
+        "drive_label3",
+        "89ab",
+        "vendor3",
+        "ef01",
+        "product3",
+        "00FF-FFFF",
+        "storage_device_path3",
+        ash::DeviceType::kOpticalDisc,
+        0,
+        true,
+        false,  // is_hardware_read_only
+        false,
+        true,
+        false,
+        false,
+        "exfat",
+        "",
+    },
+});
 
 const char kLocalMountPointName[] = "local";
 
@@ -285,39 +290,37 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
           {mp.source_path, mp.mount_path, mp.mount_type, mp.mount_error});
       int disk_info_index = mp.disk_info_index;
       if (mp.disk_info_index >= 0) {
-        EXPECT_GT(std::size(kTestDisks), static_cast<size_t>(disk_info_index));
-        if (static_cast<size_t>(disk_info_index) >= std::size(kTestDisks)) {
+        EXPECT_GT(kTestDisks.size(), static_cast<size_t>(disk_info_index));
+        if (static_cast<size_t>(disk_info_index) >= kTestDisks.size()) {
           return;
         }
+
+        const TestDiskInfo& disk_info = kTestDisks[disk_info_index];
 
         std::unique_ptr<Disk> disk =
             Disk::Builder()
                 .SetDevicePath(mp.source_path)
                 .SetMountPath(mp.mount_path)
-                .SetWriteDisabledByPolicy(
-                    kTestDisks[disk_info_index].write_disabled_by_policy)
-                .SetFilePath(kTestDisks[disk_info_index].file_path)
-                .SetDeviceLabel(kTestDisks[disk_info_index].device_label)
-                .SetDriveLabel(kTestDisks[disk_info_index].drive_label)
-                .SetVendorId(kTestDisks[disk_info_index].vendor_id)
-                .SetVendorName(kTestDisks[disk_info_index].vendor_name)
-                .SetProductId(kTestDisks[disk_info_index].product_id)
-                .SetProductName(kTestDisks[disk_info_index].product_name)
-                .SetFileSystemUUID(kTestDisks[disk_info_index].fs_uuid)
-                .SetStorageDevicePath(
-                    kTestDisks[disk_info_index].storage_device_path)
-                .SetDeviceType(kTestDisks[disk_info_index].device_type)
-                .SetSizeInBytes(kTestDisks[disk_info_index].size_in_bytes)
-                .SetIsParent(kTestDisks[disk_info_index].is_parent)
-                .SetIsReadOnlyHardware(
-                    kTestDisks[disk_info_index].is_read_only_hardware)
-                .SetHasMedia(kTestDisks[disk_info_index].has_media)
-                .SetOnBootDevice(kTestDisks[disk_info_index].on_boot_device)
-                .SetOnRemovableDevice(
-                    kTestDisks[disk_info_index].on_removable_device)
-                .SetIsHidden(kTestDisks[disk_info_index].is_hidden)
-                .SetFileSystemType(kTestDisks[disk_info_index].file_system_type)
-                .SetBaseMountPath(kTestDisks[disk_info_index].base_mount_path)
+                .SetWriteDisabledByPolicy(disk_info.write_disabled_by_policy)
+                .SetFilePath(disk_info.file_path)
+                .SetDeviceLabel(disk_info.device_label)
+                .SetDriveLabel(disk_info.drive_label)
+                .SetVendorId(disk_info.vendor_id)
+                .SetVendorName(disk_info.vendor_name)
+                .SetProductId(disk_info.product_id)
+                .SetProductName(disk_info.product_name)
+                .SetFileSystemUUID(disk_info.fs_uuid)
+                .SetStorageDevicePath(disk_info.storage_device_path)
+                .SetDeviceType(disk_info.device_type)
+                .SetSizeInBytes(disk_info.size_in_bytes)
+                .SetIsParent(disk_info.is_parent)
+                .SetIsReadOnlyHardware(disk_info.is_read_only_hardware)
+                .SetHasMedia(disk_info.has_media)
+                .SetOnBootDevice(disk_info.on_boot_device)
+                .SetOnRemovableDevice(disk_info.on_removable_device)
+                .SetIsHidden(disk_info.is_hidden)
+                .SetFileSystemType(disk_info.file_system_type)
+                .SetBaseMountPath(disk_info.base_mount_path)
                 .Build();
 
         volumes_.insert(std::move(disk));
@@ -396,48 +399,44 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
                               .AppendASCII("mount_path1")
                               .AsUTF8Unsafe(),
                           _))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("mount_path1", name.value());
-            ++events[0];
-            EXPECT_EQ(1, events[0]);
-            std::move(callback).Run(ash::MountError::kSuccess);
-          }))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("mount_path1", name.value());
-            ++events[1];
-            EXPECT_EQ(1, events[1]);
-            std::move(callback).Run(ash::MountError::kCancelled);
-          }));
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("mount_path1", name.value());
+        ++events[0];
+        EXPECT_EQ(1, events[0]);
+        std::move(callback).Run(ash::MountError::kSuccess);
+      })
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("mount_path1", name.value());
+        ++events[1];
+        EXPECT_EQ(1, events[1]);
+        std::move(callback).Run(ash::MountError::kCancelled);
+      });
 
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(ash::CrosDisksClient::GetArchiveMountPoint()
                               .AppendASCII("archive_mount_path")
                               .AsUTF8Unsafe(),
                           _))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("archive_mount_path", name.value());
-            ++events[2];
-            EXPECT_EQ(1, events[2]);
-            std::move(callback).Run(ash::MountError::kSuccess);
-          }))
-      .WillOnce(testing::Invoke(
-          [&events](const std::string& path,
-                    DiskMountManager::UnmountPathCallback callback) {
-            const auto name = base::FilePath(path).BaseName();
-            EXPECT_EQ("archive_mount_path", name.value());
-            ++events[3];
-            EXPECT_EQ(1, events[3]);
-            std::move(callback).Run(ash::MountError::kNeedPassword);
-          }));
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("archive_mount_path", name.value());
+        ++events[2];
+        EXPECT_EQ(1, events[2]);
+        std::move(callback).Run(ash::MountError::kSuccess);
+      })
+      .WillOnce([&events](const std::string& path,
+                          DiskMountManager::UnmountPathCallback callback) {
+        const auto name = base::FilePath(path).BaseName();
+        EXPECT_EQ("archive_mount_path", name.value());
+        ++events[3];
+        EXPECT_EQ(1, events[3]);
+        std::move(callback).Run(ash::MountError::kNeedPassword);
+      });
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},
                                {.load_as_component = true}))

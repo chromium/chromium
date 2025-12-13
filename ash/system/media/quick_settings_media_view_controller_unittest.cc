@@ -55,14 +55,14 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
 
 TEST_F(QuickSettingsMediaViewControllerTest, ShowOrHideMediaItem) {
   const std::string item_id = "item_id";
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
 
   controller()->ShowMediaItem(item_id, item());
-  EXPECT_EQ(1, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(1u, view()->items_for_testing().size());
   EXPECT_TRUE(view()->items_for_testing().contains(item_id));
 
   controller()->HideMediaItem(item_id);
-  EXPECT_EQ(0, static_cast<int>(view()->items_for_testing().size()));
+  EXPECT_EQ(0u, view()->items_for_testing().size());
 }
 
 TEST_F(QuickSettingsMediaViewControllerTest,

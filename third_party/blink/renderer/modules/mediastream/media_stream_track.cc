@@ -100,8 +100,7 @@ MediaStreamTrack* MediaStreamTrack::FromTransferredState(
       window, user_media_client, UserMediaRequestType::kDisplayMedia, audio,
       video, /*should_prefer_current_tab=*/false,
       /*capture_controller=*/nullptr,
-      MakeGarbageCollected<GetOpenDeviceRequestCallbacks>(),
-      IdentifiableSurface());
+      MakeGarbageCollected<GetOpenDeviceRequestCallbacks>());
   if (!request) {
     return nullptr;
   }

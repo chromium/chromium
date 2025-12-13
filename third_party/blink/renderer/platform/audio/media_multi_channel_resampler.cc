@@ -59,7 +59,8 @@ void MediaMultiChannelResampler::ProvideResamplerInput(
 
   for (int i = 0; i < resampler_output_bus->channels(); ++i) {
     resampler_output_bus_wrapper_->SetChannelMemory(
-        i, resampler_output_bus->channel(i), resampler_output_bus->frames());
+        i, resampler_output_bus->channel(i).data(),
+        resampler_output_bus->frames());
   }
   read_cb_.Run(resampler_frame_delay, resampler_output_bus_wrapper_.get());
 }

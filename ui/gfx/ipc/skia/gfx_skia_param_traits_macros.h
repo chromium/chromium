@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "ipc/ipc_message_macros.h"
+#include "ipc/param_traits_macros.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 #undef IPC_MESSAGE_EXPORT

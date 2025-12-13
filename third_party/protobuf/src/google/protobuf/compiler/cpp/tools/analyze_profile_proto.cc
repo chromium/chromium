@@ -242,7 +242,9 @@ const Descriptor* FindMessageTypeByCppName(const DescriptorPool& pool,
     min_length = pos + 1;
   }
 
-  ABSL_LOG(WARNING) << "Unknown c++ message name '" << name << "'";
+  if (ABSL_VLOG_IS_ON(1)) {
+    ABSL_LOG(WARNING) << "Unknown C++ message name '" << name << "'";
+  }
   return nullptr;
 }
 
@@ -364,8 +366,6 @@ void Aggregate(const FieldDescriptor* field, const PDProtoAnalysis& analysis,
     }
   }
   if (field->is_repeated() && analysis.element_stats.has_value()) {
-    ABSL_LOG(INFO) << "Repeated field: " << field->full_name()
-                   << " has element stats: " << analysis.element_stats->mean;
     stats.repeated_elem_stats += *analysis.element_stats;
   }
 }
@@ -560,7 +560,7 @@ ParallelRunResults RunInParallel(
   ParallelRunResults results;
   {
     ThreadPool threads{static_cast<int>(std::min(num_runs, num_workers))};
-    threads.StartWorkers();
+
     for (size_t i = 0; i < num_runs; ++i) {
       threads.Schedule([i, num_runs, get_run_id, do_work, &results, &mu]() {
         // Asynchronous section.
@@ -571,7 +571,7 @@ ParallelRunResults RunInParallel(
         const absl::Duration duration = absl::Now() - start;
 
         // Synchronous section.
-        absl::MutexLock lock(&mu);
+        absl::MutexLock lock(mu);
         ++results.num_done;
         ++(status.ok() ? results.num_succeeded : results.num_failed);
         results.status.Update(status);
@@ -619,7 +619,7 @@ absl::Status AnalyzeAndAggregateProfileProtosToText(
                          AnalyzeProfileProto(substream, path, options));
 
         // Synchronous section.
-        absl::MutexLock lock(&mu);
+        absl::MutexLock lock(mu);
         Aggregate(stats, merged_stats);
         if (!options.sort_output_by_file_name) {
           stream << substream.str() << std::endl;

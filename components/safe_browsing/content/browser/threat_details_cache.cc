@@ -8,13 +8,18 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
-#include "base/hash/md5.h"
 #include "base/lazy_instance.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/obsolete/md5.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -33,6 +38,10 @@ using content::BrowserThread;
 static const uint32_t kMaxBodySizeBytes = 1024;
 
 namespace safe_browsing {
+
+std::string Md5AsHexForBodyDigest(std::string_view data) {
+  return base::HexEncodeLower(crypto::obsolete::Md5::Hash(data));
+}
 
 ThreatDetailsCacheCollector::ThreatDetailsCacheCollector()
     : resources_(nullptr), result_(nullptr), has_started_(false) {}
@@ -138,7 +147,7 @@ ThreatDetailsCacheCollector::GetResource(const GURL& url) {
 }
 
 void ThreatDetailsCacheCollector::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DVLOG(1) << "OnURLLoaderComplete";
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(current_load_);
@@ -168,10 +177,7 @@ void ThreatDetailsCacheCollector::OnURLLoaderComplete(
   }
 
   ReadResponse(resource);
-  std::string data;
-  if (response_body)
-    data = *response_body;
-  ReadData(resource, data);
+  ReadData(resource, std::move(response_body).value_or(""));
   AdvanceEntry();
 }
 
@@ -222,7 +228,7 @@ void ThreatDetailsCacheCollector::ReadData(
     pb_response->set_body(data);
   }
   pb_response->set_bodylength(data.size());
-  pb_response->set_bodydigest(base::MD5String(data));
+  pb_response->set_bodydigest(Md5AsHexForBodyDigest(data));
 }
 
 void ThreatDetailsCacheCollector::AdvanceEntry() {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
 
 namespace mojo {
@@ -75,8 +71,8 @@ bool CreateSkBitmapForPixelData(SkBitmap* b,
 mojo_base::BigBufferView StructTraits<skia::mojom::BitmapN32DataView,
                                       SkBitmap>::pixel_data(const SkBitmap& b) {
   CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
-  return mojo_base::BigBufferView(
-      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
+  return mojo_base::BigBufferView(UNSAFE_TODO(
+      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize())));
 }
 
 // static
@@ -100,8 +96,8 @@ mojo_base::BigBufferView
 StructTraits<skia::mojom::BitmapWithArbitraryBppDataView, SkBitmap>::pixel_data(
     const SkBitmap& b) {
   CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
-  return mojo_base::BigBufferView(
-      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
+  return mojo_base::BigBufferView(UNSAFE_TODO(
+      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize())));
 }
 
 // static
@@ -125,8 +121,8 @@ mojo_base::BigBufferView
 StructTraits<skia::mojom::BitmapMappedFromTrustedProcessDataView,
              SkBitmap>::pixel_data(const SkBitmap& b) {
   CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
-  return mojo_base::BigBufferView(
-      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
+  return mojo_base::BigBufferView(UNSAFE_TODO(
+      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize())));
 }
 
 // static
@@ -181,7 +177,8 @@ base::span<const uint8_t>
 StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap>::pixel_data(
     const SkBitmap& b) {
   CHECK_EQ(b.rowBytes(), b.info().minRowBytes());
-  return base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize());
+  return UNSAFE_TODO(
+      base::span(static_cast<uint8_t*>(b.getPixels()), b.computeByteSize()));
 }
 
 // static
@@ -195,8 +192,8 @@ bool StructTraits<skia::mojom::InlineBitmapDataView, SkBitmap>::Read(
   mojo::ArrayDataView<uint8_t> pixel_data_view;
   data.GetPixelDataDataView(&pixel_data_view);
 
-  base::span<const uint8_t> pixel_data_bytes(pixel_data_view.data(),
-                                             pixel_data_view.size());
+  base::span<const uint8_t> UNSAFE_TODO(
+      pixel_data_bytes(pixel_data_view.data(), pixel_data_view.size()));
 
   return CreateSkBitmapForPixelData(b, std::move(image_info),
                                     std::move(pixel_data_bytes));

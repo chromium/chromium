@@ -59,7 +59,6 @@ void ChromeColorsService::RevertThemeChangesInternal() {
 }
 
 void ChromeColorsService::SaveThemeRevertState(content::WebContents* tab) {
-  // TODO(crbug.com/41468999): Support theme reverting for multiple tabs.
   if (!prev_theme_reinstaller_) {
     prev_theme_reinstaller_ = theme_service_->BuildReinstallerForCurrentTheme();
     dialog_tab_ = tab;

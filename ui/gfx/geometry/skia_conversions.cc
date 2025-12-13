@@ -2,22 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/skia_conversions.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "third_party/skia/include/core/SkM44.h"
+#include "third_party/skia/include/core/SkMatrix.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
@@ -87,7 +88,7 @@ Size SkISizeToSize(const SkISize& size) {
   return Size(size.width(), size.height());
 }
 
-void QuadFToSkPoints(const QuadF& quad, SkPoint points[4]) {
+void QuadFToSkPoints(const QuadF& quad, base::span<SkPoint, 4> points) {
   points[0] = PointFToSkPoint(quad.p1());
   points[1] = PointFToSkPoint(quad.p2());
   points[2] = PointFToSkPoint(quad.p3());

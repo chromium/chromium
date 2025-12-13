@@ -7,7 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/blocklist.h"
+#include "extensions/browser/blocklist.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"

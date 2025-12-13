@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
@@ -87,11 +88,8 @@ void ReplaceSharedElementWithRenderPass(
       /*mask_resource_id=*/kInvalidResourceId,
       /*mask_uv_rect=*/gfx::RectF(),
       /*mask_texture_size=*/gfx::Size(),
-      /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-      /*filters_origin=*/gfx::PointF(),
       /*tex_coord_rect=*/tex_coord_rect,
-      /*force_anti_aliasing_off=*/false,
-      /*backdrop_filter_quality*/ 1.f);
+      /*force_anti_aliasing_off=*/false);
 }
 
 // This function swaps a SharedElementDrawQuad with a TextureDrawQuad.
@@ -134,10 +132,13 @@ SurfaceAnimationManager::CreateWithSave(
     Surface* surface,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    SaveDirectiveCompleteCallback sequence_id_finished_callback) {
+    SaveDirectiveCompleteCallback sequence_id_finished_callback,
+    ViewTransitionResourcesCapturedCallback
+        view_transition_resources_captured_callback) {
   return base::WrapUnique(new SurfaceAnimationManager(
       directive, surface, shared_image_interface, id_tracker,
-      std::move(sequence_id_finished_callback)));
+      std::move(sequence_id_finished_callback),
+      std::move(view_transition_resources_captured_callback)));
 }
 
 SurfaceAnimationManager::SurfaceAnimationManager(
@@ -145,9 +146,14 @@ SurfaceAnimationManager::SurfaceAnimationManager(
     Surface* surface,
     gpu::SharedImageInterface* shared_image_interface,
     ReservedResourceIdTracker* id_tracker,
-    SaveDirectiveCompleteCallback sequence_id_finished_callback)
+    SaveDirectiveCompleteCallback sequence_id_finished_callback,
+    ViewTransitionResourcesCapturedCallback
+        view_transition_resources_captured_callback)
     : transferable_resource_tracker_(id_tracker),
-      saved_frame_(directive, shared_image_interface) {
+      saved_frame_(directive,
+                   shared_image_interface,
+                   std::move(view_transition_resources_captured_callback)),
+      surface_id_(surface->surface_id()) {
   DCHECK(directive.type() == CompositorFrameTransitionDirective::Type::kSave);
 
   // The SurfaceSavedFrame can dispatch the result asynchronously so use a weak
@@ -249,6 +255,7 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
     const base::flat_map<blink::ViewTransitionToken,
                          std::unique_ptr<SurfaceAnimationManager>>*
         token_to_animation_manager,
+    base::flat_set<SurfaceId>* original_surfaces,
     const DrawQuad& quad,
     CompositorRenderPass& copy_pass) {
   if (quad.material != DrawQuad::Material::kSharedElement) {
@@ -268,6 +275,11 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
                       .ToString();
     return true;
   }
+
+  // Add the original surface id of old frame for cross-doc navigations as a
+  // reference surface for the new compositor frame's metadata (if not already
+  // present).
+  original_surfaces->emplace(manager_it->second->surface_id_);
 
   auto& saved_textures = manager_it->second->saved_textures_;
   if (saved_textures) {
@@ -343,13 +355,18 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
 
+  // Store surfaces of source for cross-document transitions to be
+  // added to `resolved_frame`s referenced_surfaces.
+  base::flat_set<SurfaceId> original_surfaces;
+
   base::flat_map<ViewTransitionElementResourceId, CompositorRenderPass*>
       element_id_to_pass;
   TransitionUtils::FilterCallback filter_callback = base::BindRepeating(
       &SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource,
       base::Unretained(&resolved_frame.resource_list),
       base::Unretained(&element_id_to_pass),
-      base::Unretained(&token_to_animation_manager));
+      base::Unretained(&token_to_animation_manager),
+      base::Unretained(&original_surfaces));
 
   for (auto& render_pass : active_frame.render_pass_list) {
     auto copy_requests = std::move(render_pass->copy_requests);
@@ -368,6 +385,19 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(
     }
 
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
+  }
+
+  if (features::ShouldAckCOREarlyForViewTransition()) {
+    // Add back the surface for old frame as reference surfaces to new
+    // `resolved_frame` metadata.
+    for (auto original_surface : original_surfaces) {
+      // For same document transitions, we can copy elements from same surface,
+      // but don't need to add itself to `referenced_surfaces`.
+      if (original_surface != surface->surface_id()) {
+        resolved_frame.metadata.referenced_surfaces.push_back(
+            SurfaceRange(original_surface));
+      }
+    }
   }
 
   surface->SetActiveFrameForViewTransition(std::move(resolved_frame));

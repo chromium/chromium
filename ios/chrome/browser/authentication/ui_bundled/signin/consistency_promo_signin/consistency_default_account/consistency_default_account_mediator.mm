@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -18,7 +19,9 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/avatar_provider.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -88,6 +91,7 @@ NSString* GetPromoLabelString(
       return l10n_util::GetNSString(
           IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::kSettings:
+    case signin_metrics::AccessPoint::kSettingsYourSavedInfo:
       // No text.
       return nil;
     case signin_metrics::AccessPoint::kStartPage:
@@ -101,7 +105,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kDevicesPage:
-    case signin_metrics::AccessPoint::kSigninPromo:
+    case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kUnknown:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAutofillDropdown:
@@ -140,8 +144,8 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
     case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
     case signin_metrics::AccessPoint::kProductSpecifications:
-    case signin_metrics::AccessPoint::kAccountMenu:
-    case signin_metrics::AccessPoint::kAccountMenuFailedSwitch:
+    case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
+    case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kAddressBubble:
     case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
@@ -152,8 +156,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:
     case signin_metrics::AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
-    case signin_metrics::AccessPoint::
-        kHistorySyncOptinExpansionPillOnInactivity:
     case signin_metrics::AccessPoint::kHistorySyncEducationalTip:
     case signin_metrics::AccessPoint::kManagedProfileAutoSigninIos:
     case signin_metrics::AccessPoint::kNonModalSigninPasswordPromo:
@@ -164,6 +166,9 @@ NSString* GetPromoLabelString(
         kEnterpriseManagementDisclaimerAfterBrowserFocus:
     case signin_metrics::AccessPoint::
         kEnterpriseManagementDisclaimerAfterSignin:
+    case signin_metrics::AccessPoint::kNtpFeaturePromo:
+    case signin_metrics::AccessPoint::kEnterpriseDialogAfterSigninInterception:
+    case signin_metrics::AccessPoint::kCredentialExchangeImport:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.
@@ -271,9 +276,10 @@ NSString* GetPromoLabelString(
           : l10n_util::GetNSString(IDS_CANCEL);
   [_consumer setSkipButtonText:skipButtonText];
 
-  [self selectSelectedIdentity];
+  [self selectDefaultIdentity];
 }
 
+// Sets `self.selectedIdentity` and update the UI.
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   if ([_selectedIdentity isEqual:identity]) {
     return;
@@ -284,9 +290,11 @@ NSString* GetPromoLabelString(
 
 #pragma mark - Private
 
-// Updates the default identity, or hide the default identity if there isn't
-// one present on the device.
-- (void)selectSelectedIdentity {
+// Selects the default identity to be either:
+// * the device default identity if any,
+// * otherwise nil.
+// Also updates the UI accordingly.
+- (void)selectDefaultIdentity {
   if (!_identityManager || !_accountManagerService) {
     return;
   }
@@ -305,8 +313,10 @@ NSString* GetPromoLabelString(
   }
 
   id<SystemIdentity> selectedIdentity = self.selectedIdentity;
-  UIImage* avatar = _accountManagerService->GetIdentityAvatarWithIdentity(
-      selectedIdentity, IdentityAvatarSize::TableViewIcon);
+  UIImage* avatar =
+      GetApplicationContext()->GetIdentityAvatarProvider()->GetIdentityAvatar(
+          selectedIdentity, IdentityAvatarSize::TableViewIcon);
+  CHECK(self.selectedIdentity, base::NotFatalUntil::M147);
   BOOL isManaged = [self isIdentityKnownToBeManaged:selectedIdentity];
   [self.consumer showDefaultAccountWithFullName:selectedIdentity.userFullName
                                       givenName:selectedIdentity.userGivenName
@@ -328,6 +338,7 @@ NSString* GetPromoLabelString(
 // called asynchronously when the management status if retrieved and the
 // identity is managed.
 - (BOOL)isIdentityKnownToBeManaged:(id<SystemIdentity>)identity {
+  CHECK(identity, base::NotFatalUntil::M147);
   if (std::optional<BOOL> managed = IsIdentityManaged(identity);
       managed.has_value()) {
     return managed.value();
@@ -345,7 +356,16 @@ NSString* GetPromoLabelString(
 #pragma mark -  IdentityManagerObserver
 
 - (void)onAccountsOnDeviceChanged {
-  [self selectSelectedIdentity];
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
+    if (_accountManagerService &&
+        !_accountManagerService->IsValidIdentity(self.selectedIdentity)) {
+      // The currently selected identity is not valid anymore. Let’s select the
+      // default identity instead.
+      [self selectDefaultIdentity];
+    }
+  } else {
+    [self selectDefaultIdentity];
+  }
 }
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)info {

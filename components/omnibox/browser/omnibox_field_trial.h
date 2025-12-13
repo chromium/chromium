@@ -15,11 +15,14 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/entity_info.pb.h"
+
+class AutocompleteProviderClient;
 
 namespace base {
 class TimeDelta;
@@ -146,15 +149,7 @@ void GetActiveSuggestFieldTrialHashes(std::vector<uint32_t>* field_trial_hash);
 // particular provider, returns the limit. Otherwise returns the default limit.
 size_t GetProviderMaxMatches(AutocompleteProvider::Type provider);
 
-// Returns whether the feature to limit the number of shown URL matches
-// is enabled.
-bool IsMaxURLMatchesFeatureEnabled();
 
-// Returns the maximum number of URL matches that should be allowed within
-// the Omnibox if there are search-type matches available to replace them.
-// If the capping feature is not enabled, or the parameter cannot be
-// parsed, it returns 0.
-size_t GetMaxURLMatches();
 
 // ---------------------------------------------------------
 // For the HistoryURL provider new scoring experiment that is part of the
@@ -337,7 +332,6 @@ extern const char kMaxNumHQPUrlsIndexedAtStartupOnNonLowEndDevicesParam[];
 
 // Parameter names used by num suggestion experiments.
 extern const char kMaxZeroSuggestMatchesParam[];
-extern const char kOmniboxMaxURLMatchesParam[];
 extern const char kUIMaxAutocompleteMatchesByProviderParam[];
 extern const char kUIMaxAutocompleteMatchesParam[];
 // The URL cutoff and increased limit for dynamic max autocompletion.
@@ -391,9 +385,6 @@ extern const base::FeatureParam<bool> kZeroSuggestPrefetchDebounceFromLastRun;
 // Determines the maximum number of entries stored by the in-memory ZPS cache.
 extern const base::FeatureParam<int> kZeroSuggestCacheMaxSize;
 
-// Returns true if any of the zero-suggest prefetching features are enabled.
-bool IsZeroSuggestPrefetchingEnabled();
-
 // Returns whether zero-suggest prefetching is enabled in the given context.
 bool IsZeroSuggestPrefetchingEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
@@ -406,6 +397,19 @@ bool IsOnFocusZeroSuggestEnabledInContext(
 // popup in the given context.
 bool IsHideSuggestionGroupHeadersEnabledInContext(
     metrics::OmniboxEventProto::PageClassification page_classification);
+
+// Returns whether the deterministic AIM shortcut action in typed state is
+// enabled.
+bool IsDeterministicAimActionInTypedStateEnabled(
+    AutocompleteProviderClient* client);
+
+// Returns whether AIM page action in Omnibox is enabled.
+bool IsAimOmniboxEntrypointEnabled(
+    const AimEligibilityService* aim_eligibility_service);
+
+// Returns whether AIM starter pack is enabled.
+bool IsAimStarterPackEnabled(
+    const AimEligibilityService* aim_eligibility_service);
 
 // Rich autocompletion.
 bool IsRichAutocompletionEnabled();
@@ -637,25 +641,6 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
 // ---------------------------------------------------------
 // Actions In Suggest ->
 
-constexpr base::FeatureParam<bool> kAnswerActionsCounterfactual(
-    &omnibox::kOmniboxAnswerActions,
-    "AnswerActionsCounterfactual",
-    false);
-constexpr base::FeatureParam<bool> kAnswerActionsShowAboveKeyboard(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowAboveKeyboard",
-    false);
-
-constexpr base::FeatureParam<bool> kAnswerActionsShowIfUrlsPresent(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowIfUrlsPresent",
-    false);
-
-constexpr base::FeatureParam<bool> kAnswerActionsShowRichCard(
-    &omnibox::kOmniboxAnswerActions,
-    "ShowRichCard",
-    false);
-
 // <- Actions In Suggest
 // ---------------------------------------------------------
 // Touch Down Trigger For Prefetch ->
@@ -712,14 +697,48 @@ inline constexpr base::FeatureParam<bool> kAndroidDiagInputConnection{
 // ---------------------------------------------------------
 // Mobile Parity update -->
 inline constexpr base::FeatureParam<bool> kMobileParityRetrieveBuiltinFavicon{
-    &omnibox::kOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false};
-
-inline constexpr base::FeatureParam<bool> kMobileParityRetrieveTrueFavicon{
-    &omnibox::kOmniboxMobileParityUpdate, "retrieve_true_favicon", false};
+    &omnibox::kOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", true};
 
 inline constexpr base::FeatureParam<bool> kMobileParityEnableFeedForGoogleOnly{
     &omnibox::kOmniboxMobileParityUpdate, "enable_feed_for_google_only", true};
 // <-- Mobile Parity update
+
+// Aim shortcut for typed state ->
+
+constexpr base::FeatureParam<int> kMinimumTypedCharactersToInvokeAimShortcut(
+    &omnibox::kOmniboxAimShortcutTypedState,
+    "MinimumTypedCharactersToInvokeAimShortcut",
+    1);
+
+// <- Aim shortcut for typed state
+
+#if BUILDFLAG(IS_ANDROID)
+// Omnibox Improvement for Large Form Factors -->
+
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFSwitchToTabChip{
+        &omnibox::kOmniboxImprovementForLFF, "switch_to_tab_chip", false};
+
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFRemoveSuggestionViaButton{
+        &omnibox::kOmniboxImprovementForLFF, "remove_suggestion_via_button",
+        false};
+
+inline constexpr base::FeatureParam<bool>
+    kOmniboxImprovementForLFFPersistEditingState{
+        &omnibox::kOmniboxImprovementForLFF, "persist_editing_state", false};
+
+// <-- Omnibox Improvement for Large Form Factors
+// Fusebox -->
+inline constexpr base::FeatureParam<bool> kOmniboxMultimodalInputMultiContext{
+    &omnibox::kOmniboxMultimodalInput, "multi_context", false};
+
+inline constexpr base::FeatureParam<bool>
+    kOmniboxMultimodalPrioritizeSuggestionsForFirstDocument{
+        &omnibox::kOmniboxMultimodalInput,
+        "prioritize_suggestions_for_first_document", false};
+// <-- Fusebox
+#endif
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

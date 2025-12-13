@@ -19,16 +19,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/usb/usb_device_manager_helper.h"
+#include "crypto/keypair.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 
 namespace base {
 class RefCountedBytes;
 class SingleThreadTaskRunner;
-}
-
-namespace crypto {
-class RSAPrivateKey;
 }
 
 namespace net {
@@ -78,10 +75,10 @@ typedef base::OnceCallback<void(const AndroidUsbDevices&)>
 
 class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
  public:
-  static void Enumerate(crypto::RSAPrivateKey* rsa_key,
+  static void Enumerate(crypto::keypair::PrivateKey rsa_key,
                         AndroidUsbDevicesCallback callback);
 
-  AndroidUsbDevice(crypto::RSAPrivateKey* rsa_key,
+  AndroidUsbDevice(crypto::keypair::PrivateKey rsa_key,
                    const AndroidDeviceInfo& android_device_info,
                    mojo::Remote<device::mojom::UsbDevice> device);
 
@@ -136,7 +133,7 @@ class AndroidUsbDevice : public base::RefCountedThreadSafe<AndroidUsbDevice> {
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  std::unique_ptr<crypto::RSAPrivateKey> rsa_key_;
+  crypto::keypair::PrivateKey rsa_key_;
 
   // Device info
   mojo::Remote<device::mojom::UsbDevice> device_;

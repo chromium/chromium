@@ -8,7 +8,6 @@
 
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_util.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_state.h"
 
 CaptivePortalTabHelper::CaptivePortalTabHelper(web::WebState* web_state) {}

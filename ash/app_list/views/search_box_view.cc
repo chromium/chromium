@@ -21,7 +21,6 @@
 #include "ash/app_list/views/search_box_view_delegate.h"
 #include "ash/app_list/views/search_result_base_view.h"
 #include "ash/ash_element_identifiers.h"
-#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
@@ -61,7 +60,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
-#include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -149,20 +147,6 @@ constexpr auto kGamingPlaceholders =
         SearchBoxView::PlaceholderTextType::kSettings,
         SearchBoxView::PlaceholderTextType::kGames,
     });
-
-constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiLTR = {
-    18,
-    18,
-    4,
-    18,
-};
-
-constexpr gfx::RoundedCornersF kAssistantButtonBackgroundRadiiRTL = {
-    18,
-    18,
-    18,
-    4,
-};
 
 // List of all categories with their corresponding string id that would be shown
 // in the menu.
@@ -528,12 +512,6 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
 
-  // The assistant view delegate could be nullptr in test.
-  if (view_delegate_->GetAssistantViewDelegate()) {
-    assistant_view_delegate_observer_.Observe(
-        view_delegate_->GetAssistantViewDelegate());
-  }
-
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
@@ -547,16 +525,14 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   SetPreferredStyleForAutocompleteText(font_list,
                                        cros_tokens::kCrosSysOnSurfaceVariant);
 
-  if (features::IsLauncherSearchControlEnabled()) {
-    views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
-        &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
-    filter_button->SetFlipCanvasOnPaintForRTLUI(false);
-    std::u16string filter_button_label(
-        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
-    filter_button->GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
-    filter_button->SetTooltipText(filter_button_label);
-  }
+  views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
+      &SearchBoxView::ShowFilterMenu, weak_ptr_factory_.GetWeakPtr()));
+  filter_button->SetFlipCanvasOnPaintForRTLUI(false);
+  std::u16string filter_button_label(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
+  filter_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
+  filter_button->SetTooltipText(filter_button_label);
 
   views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
       &SearchBoxView::CloseButtonPressed, base::Unretained(this)));
@@ -572,16 +548,6 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
   sunfish_button->SetFlipCanvasOnPaintForRTLUI(false);
   // Update the visibility based on the search box model.
   SunfishButtonVisibilityChanged();
-
-  views::ImageButton* assistant_button =
-      CreateAssistantButton(base::BindRepeating(
-          &SearchBoxView::AssistantButtonPressed, base::Unretained(this)));
-  assistant_button->SetFlipCanvasOnPaintForRTLUI(false);
-  std::u16string assistant_button_label(
-      l10n_util::GetStringUTF16(IDS_APP_LIST_START_ASSISTANT));
-  assistant_button->GetViewAccessibility().SetName(assistant_button_label);
-  assistant_button->SetTooltipText(assistant_button_label);
-  SetShowAssistantButton(search_box_model->show_assistant_button());
 
   views::ImageButton* gemini_button = CreateGeminiButton(base::BindRepeating(
       &SearchBoxView::GeminiButtonPressed, base::Unretained(this)));
@@ -626,7 +592,6 @@ void SearchBoxView::SetResultSelectionController(
 }
 
 void SearchBoxView::ResetForShow() {
-  UpdateIphViewVisibility(false);
   if (!is_search_box_active())
     return;
   ClearSearchAndDeactivateSearchBox();
@@ -652,7 +617,6 @@ void SearchBoxView::OnActiveAppListModelsChanged(AppListModel* model,
 
   ResetForShow();
   UpdateSearchIcon();
-  ShowAssistantChanged();
 }
 
 void SearchBoxView::UpdateKeyboardVisibility() {
@@ -726,9 +690,6 @@ void SearchBoxView::HandleQueryChange(std::u16string_view query,
   if (query_changed_callback_) {
     query_changed_callback_.Run();
   }
-
-  // Any query changes will dismiss the Launcher search IPH.
-  UpdateIphViewVisibility(false);
 
   // The search box background depens on whether the query is empty, so schedule
   // repaint when this changes.
@@ -823,23 +784,14 @@ void SearchBoxView::OnThemeChanged() {
                                      GetSearchBoxIconSize()));
   // Update the icon of the Sunfish-session button.
   SunfishButtonVisibilityChanged();
-  assistant_button()->SetImageModel(
-      views::ImageButton::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          chromeos::kAssistantIcon, button_icon_color, GetSearchBoxIconSize()));
-
-  // Image model of `assistant_new_entry_point_button()` is set in
-  // `SearchBoxView::ShowAssistantNewEntryPointChanged`.
 
   if (filter_button()) {
     filter_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kFilterIcon, button_icon_color,
+        ui::ImageModel::FromVectorIcon(vector_icons::kFilterIcon,
+                                       button_icon_color,
                                        GetSearchBoxIconSize()));
   }
-  auto* focus_ring = views::FocusRing::Get(assistant_button());
-  focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetColorId(GetFocusColorId());
 
   if (focus_ring_layer_) {
     focus_ring_layer_->SetColor(
@@ -870,22 +822,6 @@ void SearchBoxView::AddedToWidget() {
     layer()->parent()->StackAtBottom(focus_ring_layer_->layer());
     UpdateSearchBoxFocusPaint();
   }
-}
-
-void SearchBoxView::RunLauncherSearchQuery(std::u16string_view query) {
-  UpdateQuery(query);
-}
-
-void SearchBoxView::OpenAssistantPage() {
-  UpdateIphViewVisibility(false);
-  view_delegate_->StartAssistant(
-      assistant::AssistantEntryPoint::kLauncherSearchIphChip);
-}
-
-void SearchBoxView::OnLauncherSearchChipPressed(std::u16string_view query) {
-  view_delegate_->EndAssistant(
-      assistant::AssistantExitPoint::kLauncherSearchIphChip);
-  UpdateQuery(query);
 }
 
 void SearchBoxView::ShowFilterMenu() {
@@ -961,7 +897,7 @@ void SearchBoxView::OnAfterUserAction(views::Textfield* sender) {
     ResetHighlightRange();
     if (search_box()->GetSelectedRange().length() == 0 &&
         current_query_ != search_box()->GetText()) {
-      RunLauncherSearchQuery(search_box()->GetText());
+      UpdateQuery(search_box()->GetText());
     }
   }
 }
@@ -1044,12 +980,8 @@ void SearchBoxView::UpdateBackground(AppListState target_state) {
 
 void SearchBoxView::UpdateLayout(AppListState target_state,
                                  int target_state_height) {
-  // Horizontal margins are selected to match search box icon's vertical
-  // margins. Space used for iph should be ignored.
-  const int iph_height =
-      GetIphView() ? GetIphView()->GetPreferredSize().height() : 0;
   const int horizontal_spacing =
-      (target_state_height - iph_height - GetSearchBoxIconSize()) / 2;
+      (target_state_height - GetSearchBoxIconSize()) / 2;
   const int horizontal_right_padding =
       horizontal_spacing -
       (GetSearchBoxButtonSize() - GetSearchBoxIconSize()) / 2;
@@ -1227,32 +1159,7 @@ int SearchBoxView::GetSearchBoxButtonSize() {
 }
 
 void SearchBoxView::CloseButtonPressed() {
-  UpdateIphViewVisibility(false);
   delegate_->CloseButtonPressed();
-}
-
-void SearchBoxView::AssistantButtonPressed() {
-  if (GetIphView()) {
-    // Notify the Assistant button is pressed when the IPH is visible and close
-    // the IPH.
-    GetIphView()->NotifyAssistantButtonPressedEvent();
-    UpdateIphViewVisibility(false);
-    delegate_->AssistantButtonPressed();
-    return;
-  }
-
-  // Tries to show an IPH. This can be rejected by various reasons.
-  UpdateIphViewVisibility(true);
-
-  // If UpdateIphViewVisibility() rejected the request, let the delegate_ handle
-  // this.
-  if (!GetIphView()) {
-    delegate_->AssistantButtonPressed();
-    return;
-  }
-
-  // Activate the search box based on UX SPEC.
-  SetSearchBoxActive(true, /*event_type=*/ui::EventType::kUnknown);
 }
 
 void SearchBoxView::GeminiButtonPressed() {
@@ -1398,7 +1305,7 @@ void SearchBoxView::AcceptAutocompleteText() {
   DCHECK(HasAutocompleteText());
   search_box()->ClearSelection();
   ResetHighlightRange();
-  RunLauncherSearchQuery(search_box()->GetText());
+  UpdateQuery(search_box()->GetText());
 }
 
 bool SearchBoxView::HasAutocompleteText() {
@@ -1506,7 +1413,6 @@ void SearchBoxView::EnterSearchResultSelection(const ui::KeyEvent& event) {
 }
 
 void SearchBoxView::ClearSearchAndDeactivateSearchBox() {
-  UpdateIphViewVisibility(false);
   if (!is_search_box_active())
     return;
 
@@ -1745,13 +1651,6 @@ void SearchBoxView::SearchEngineChanged() {
   UpdateSearchIcon();
 }
 
-void SearchBoxView::ShowAssistantChanged() {
-  SetShowAssistantButton(AppListModelProvider::Get()
-                             ->search_model()
-                             ->search_box()
-                             ->show_assistant_button());
-}
-
 void SearchBoxView::ShowGeminiButtonChanged() {
   const std::optional<SearchBoxModel::SearchBoxIconButton>
       gemini_search_box_icon_button = AppListModelProvider::Get()
@@ -1804,64 +1703,6 @@ void SearchBoxView::SunfishButtonVisibilityChanged() {
     sunfish_button()->GetViewAccessibility().SetName(sunfish_button_label);
     sunfish_button()->SetTooltipText(sunfish_button_label);
   }
-}
-
-void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
-  const bool would_trigger_iph =
-      AppListModelProvider::Get()->search_model()->would_trigger_iph();
-  const bool is_iph_showing = GetIphView() != nullptr;
-
-  const bool should_show_iph = can_show_iph && would_trigger_iph;
-
-  if (should_show_iph == is_iph_showing) {
-    return;
-  }
-
-  if (should_show_iph) {
-    std::unique_ptr<ScopedIphSession> scoped_iph_session =
-        view_delegate_->CreateLauncherSearchIphSession();
-    if (!scoped_iph_session) {
-      return;
-    }
-
-    SetIphView(std::make_unique<LauncherSearchIphView>(
-        /*delegate=*/this, /*is_in_tablet_mode=*/!is_app_list_bubble_,
-        std::move(scoped_iph_session),
-        LauncherSearchIphView::UiLocation::kSearchBox));
-
-    auto radii = base::i18n::IsRTL() ? kAssistantButtonBackgroundRadiiRTL
-                                     : kAssistantButtonBackgroundRadiiLTR;
-    assistant_button()->SetBackground(views::CreateRoundedRectBackground(
-        kColorAshControlBackgroundColorInactive, radii));
-
-    auto highlight_path_generator =
-        std::make_unique<RoundRectPathGenerator>(radii);
-    views::HighlightPathGenerator::Install(assistant_button(),
-                                           std::move(highlight_path_generator));
-
-    // The ink drop doesn't automatically pick up on rounded corner changes, so
-    // we need to manually notify it here.
-    views::InkDrop::Get(assistant_button())
-        ->GetInkDrop()
-        ->HostSizeChanged(assistant_button()->size());
-
-    // Update the focus ring.
-    views::FocusRing::Get(assistant_button())->SchedulePaint();
-
-    // Announce the IPH title.
-    GetViewAccessibility().AnnounceAlert(GetIphView()->GetTitleText());
-  } else {
-    DeleteIphView();
-    assistant_button()->SetBackground(nullptr);
-    views::InstallCircleHighlightPathGenerator(assistant_button());
-  }
-
-  // Adding or removing IPH view can change `SearchBoxView` bounds largely.
-  // Re-layout can be necessary on parent views as well. Explicitly call
-  // `InvalidateLayout` to trigger re-layouts on all parent views. Without this,
-  // we can have unnecessary spaces in `SearchBoxView` for an IPH dismiss under
-  // some conditions.
-  InvalidateLayout();
 }
 
 bool SearchBoxView::ShouldProcessAutocomplete() {

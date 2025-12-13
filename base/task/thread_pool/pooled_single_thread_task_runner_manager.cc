@@ -572,7 +572,10 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     }
 
     if (task.delayed_run_time.is_null()) {
-      return GetDelegate()->PostTaskNow(sequence_, nullptr, std::move(task));
+      auto* delegate = GetDelegate();
+      // See https://crbug.com/437901065 for an instance of this occurring.
+      CHECK(delegate);
+      return delegate->PostTaskNow(sequence_, nullptr, std::move(task));
     }
 
     // Unretained(GetDelegate()) is safe because this TaskRunner and its

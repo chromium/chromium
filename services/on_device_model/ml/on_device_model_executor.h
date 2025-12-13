@@ -18,7 +18,6 @@
 #include "base/native_library.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/backend.h"
 #include "services/on_device_model/backend_model.h"
 #include "services/on_device_model/backend_session.h"
@@ -37,12 +36,12 @@ namespace ml {
 class ContextHolder;
 class OnDeviceModelExecutor;
 class Responder;
+class AsrStreamResponder;
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
     : public on_device_model::Backend {
  public:
   explicit BackendImpl(const ml::ChromeML* chrome_ml);
-  ~BackendImpl() override;
 
   // on_device_model::Backend:
   base::expected<void, on_device_model::ServiceDisconnectReason> CanCreate()
@@ -57,8 +56,12 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
       on_device_model::mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel> model)
       override;
-  on_device_model::mojom::DevicePerformanceInfoPtr GetDevicePerformanceInfo()
-      override;
+  std::pair<on_device_model::mojom::DevicePerformanceInfoPtr,
+            on_device_model::mojom::DeviceInfoPtr>
+  GetDeviceAndPerformanceInfo() override;
+
+ protected:
+  ~BackendImpl() override;
 
  private:
   const raw_ptr<const ml::ChromeML> chrome_ml_;
@@ -94,6 +97,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
       const std::string& input,
       base::OnceCallback<void(const std::vector<float>&)> callback) override;
   std::unique_ptr<BackendSession> Clone() override;
+  void AsrStream(on_device_model::mojom::AsrStreamOptionsPtr options,
+                 mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
+                     response) override;
+  void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
 
  private:
   void RemoveContext(ContextHolder* context);
@@ -103,8 +110,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
   SessionAccessor::Ptr session_;
   const uint32_t max_tokens_;
   std::unique_ptr<Responder> responder_;
+  std::unique_ptr<AsrStreamResponder> asr_responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
   std::optional<uint32_t> adaptation_id_;
+  std::optional<std::string> model_response_prefix_;
 };
 
 // Uses the ChromeML API to create a model based on the params passed to
@@ -132,7 +141,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final
   void UnloadAdaptation(uint32_t adaptation_id) override;
 
   ChromeMLConstraint CreateConstraint(
-      const on_device_model::mojom::ResponseConstraint& response_constraint);
+      const on_device_model::mojom::ResponseConstraint& response_constraint,
+      const std::optional<std::string>& prefix);
 
  private:
   on_device_model::mojom::LoadModelResult Init(

@@ -11,12 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
-#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -37,7 +37,9 @@
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/install_approval.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -46,6 +48,12 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/promotion_types.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -138,7 +146,8 @@ void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
 
 void SetExtensionSettings(const std::string& settings_string,
                           TestingProfile* profile) {
-  std::optional<base::Value> settings = base::JSONReader::Read(settings_string);
+  std::optional<base::Value> settings = base::JSONReader::Read(
+      settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(settings.has_value());
   profile->GetTestingPrefService()->SetManagedPref(
       pref_names::kExtensionManagement,
@@ -380,8 +389,8 @@ class WebstorePrivateBeginInstallWithManifest3Test
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    std::optional<base::Value> settings =
-        base::JSONReader::Read(settings_string);
+    std::optional<base::Value> settings = base::JSONReader::Read(
+        settings_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     ASSERT_TRUE(settings);
     profile()->GetTestingPrefService()->SetManagedPref(
         pref_names::kExtensionManagement,
@@ -840,17 +849,7 @@ WebstorePrivateManifestV2DeprecationUnitTest::
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
   switch (GetParam()) {
-    case MV2ExperimentStage::kNone:
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2DeprecationWarning);
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Disabled);
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2Unsupported);
-      break;
     case MV2ExperimentStage::kWarning:
-      enabled_features.push_back(
-          extensions_features::kExtensionManifestV2DeprecationWarning);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
       disabled_features.push_back(
@@ -860,8 +859,6 @@ WebstorePrivateManifestV2DeprecationUnitTest::
       enabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
       disabled_features.push_back(
-          extensions_features::kExtensionManifestV2DeprecationWarning);
-      disabled_features.push_back(
           extensions_features::kExtensionManifestV2Unsupported);
       break;
     case MV2ExperimentStage::kUnsupported:
@@ -869,8 +866,6 @@ WebstorePrivateManifestV2DeprecationUnitTest::
           extensions_features::kExtensionManifestV2Unsupported);
       disabled_features.push_back(
           extensions_features::kExtensionManifestV2Disabled);
-      disabled_features.push_back(
-          extensions_features::kExtensionManifestV2DeprecationWarning);
       break;
   }
 
@@ -880,14 +875,11 @@ WebstorePrivateManifestV2DeprecationUnitTest::
 INSTANTIATE_TEST_SUITE_P(
     ,
     WebstorePrivateManifestV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kNone,
-                    MV2ExperimentStage::kWarning,
+    testing::Values(MV2ExperimentStage::kWarning,
                     MV2ExperimentStage::kDisableWithReEnable,
                     MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
-        case MV2ExperimentStage::kNone:
-          return "ExperimentDisabled";
         case MV2ExperimentStage::kWarning:
           return "WarningExperiment";
         case MV2ExperimentStage::kDisableWithReEnable:
@@ -909,9 +901,6 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
 
   std::string expected;
   switch (GetParam()) {
-    case MV2ExperimentStage::kNone:
-      expected = "inactive";
-      break;
     case MV2ExperimentStage::kWarning:
       expected = "warning";
       break;
@@ -926,5 +915,43 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
   EXPECT_EQ(expected, *response);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if !BUILDFLAG(IS_ANDROID)
+class WebstorePrivateLogEnterprisePromoShownFunctionTest
+    : public WebstorePrivateApiTestBase {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(WebstorePrivateLogEnterprisePromoShownFunctionTest,
+       HistogramRecordedDisplay) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateLogEnterprisePromoShownFunction>();
+
+  api_test_utils::RunFunction(function.get(), "[]", profile());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.CwsPromotionBannerEvent",
+      static_cast<int>(enterprise::CwsPromotionBannerEvent::kDisplayed), 1);
+}
+
+class WebstorePrivateOnEnterprisePromoClickFunctionTest
+    : public WebstorePrivateApiTestBase {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(WebstorePrivateOnEnterprisePromoClickFunctionTest,
+       HistogramRecordedClick) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateOnEnterprisePromoClickFunction>();
+
+  api_test_utils::RunFunction(function.get(), "[]", profile());
+
+  histogram_tester_.ExpectUniqueSample(
+      "Enterprise.CwsPromotionBannerEvent",
+      static_cast<int>(enterprise::CwsPromotionBannerEvent::kClicked), 1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

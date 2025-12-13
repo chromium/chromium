@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -587,5 +588,26 @@ TEST_F(NodeTest, FlatTreeParentForChildDirty) {
   EXPECT_EQ(fallback1->FlatTreeParentForChildDirty(), nullptr);
   EXPECT_EQ(fallback2->FlatTreeParentForChildDirty(), slot2);
 }
+
+#if DCHECK_IS_ON()
+TEST_F(NodeTest, ToStringDisallowedAssignmentRecalc) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id=host>
+      <template shadowrootmode=open>
+        <div contenteditable>
+          <slot name=slot></slot>
+        </div>
+      </template>
+      <div id=element>element</div>
+    </div>
+  )HTML");
+
+  Element* element = GetDocument().getElementById(AtomicString("element"));
+  element->setAttribute(html_names::kSlotAttr, AtomicString("slot"));
+
+  SlotAssignmentRecalcForbiddenScope forbidden_scope(GetDocument());
+  element->ToString();
+}
+#endif
 
 }  // namespace blink

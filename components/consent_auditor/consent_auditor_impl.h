@@ -45,14 +45,6 @@ class ConsentAuditorImpl : public ConsentAuditor {
   void RecordSyncConsent(
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) override;
-  void RecordAssistantActivityControlConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
-      override;
-  void RecordAccountPasswordsConsent(
-      const GaiaId& gaia_id,
-      const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent)
-      override;
   void RecordRecorderSpeakerLabelConsent(
       const GaiaId& gaia_id,
       const sync_pb::UserConsentTypes::RecorderSpeakerLabelConsent& consent)

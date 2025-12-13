@@ -276,11 +276,6 @@ public class OfflineIndicatorMetricsDelegate {
     private void recordShownDurationHistograms() {
         RecordHistogram.recordLongTimesHistogram100(
                 OFFLINE_INDICATOR_SHOWN_DURATION_V2, mTimeInForegroundMs + mTimeInBackgroundMs);
-
-        if (!ChromeSharedPreferences.getInstance()
-                .contains(ChromePreferenceKeys.OFFLINE_INDICATOR_V2_TIME_IN_BACKGROUND_MS)) {
-            assert mNumTimesBackgrounded == 0;
-        }
     }
 
     /**

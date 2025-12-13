@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <cstdint>
@@ -14,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -98,8 +94,8 @@ void NativeMessagingReader::Core::ReadMessage() {
   // Keep reading messages until the stream is closed or an error occurs.
   while (true) {
     MessageLengthType message_length;
-    int read_result = read_stream_.ReadAtCurrentPos(
-        reinterpret_cast<char*>(&message_length), kMessageHeaderSize);
+    int read_result = UNSAFE_TODO(read_stream_.ReadAtCurrentPos(
+        reinterpret_cast<char*>(&message_length), kMessageHeaderSize));
     if (read_result != kMessageHeaderSize) {
       // 0 means EOF which is normal and should not be logged as an error.
       if (read_result != 0) {
@@ -117,8 +113,8 @@ void NativeMessagingReader::Core::ReadMessage() {
     }
 
     std::string message_json(message_length, '\0');
-    read_result =
-        read_stream_.ReadAtCurrentPos(std::data(message_json), message_length);
+    read_result = UNSAFE_TODO(
+        read_stream_.ReadAtCurrentPos(std::data(message_json), message_length));
     if (read_result != static_cast<int>(message_length)) {
       LOG(ERROR) << "Failed to read message body, read returned "
                  << read_result;
@@ -126,7 +122,8 @@ void NativeMessagingReader::Core::ReadMessage() {
       return;
     }
 
-    std::optional<base::Value> message = base::JSONReader::Read(message_json);
+    std::optional<base::Value> message = base::JSONReader::Read(
+        message_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!message) {
       LOG(ERROR) << "Failed to parse JSON message: " << message_json;
       NotifyEof();

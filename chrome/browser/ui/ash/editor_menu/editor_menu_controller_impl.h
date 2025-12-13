@@ -58,7 +58,8 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
   void OnTextfieldArrowButtonPressed(std::u16string_view text) override;
   void OnPromoCardWidgetClosed(
       views::Widget::ClosedReason closed_reason) override;
-  void OnEditorMenuVisibilityChanged(bool visible) override;
+  void OnEditorMenuVisibilityChanged(bool visible,
+                                     bool destroy_session) override;
 
   bool SetBrowserContext(content::BrowserContext* context);
   void LogEditorMode(const EditorMode& editor_mode);
@@ -136,7 +137,7 @@ class EditorMenuControllerImpl : public chromeos::ReadWriteCardController,
 
   // This method is fired whenever the EditorPromoCard, or EditorMenu cards are
   // hidden from the user's view.
-  void OnEditorCardHidden();
+  void OnEditorCardHidden(bool destroy_session = true);
 
   // Disables the editor menu. We do this when we don't want the editor menu
   // buttons or textfield to receive keyboard or mouse input.

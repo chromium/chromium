@@ -60,7 +60,7 @@ static void ReclaimThreadIdentity(void* v) {
   //     association state in this case.
   base_internal::ClearCurrentThreadIdentity();
   {
-    base_internal::SpinLockHolder l(&freelist_lock);
+    base_internal::SpinLockHolder l(freelist_lock);
     identity->next = thread_identity_freelist;
     thread_identity_freelist = identity;
   }
@@ -108,7 +108,7 @@ static base_internal::ThreadIdentity* NewThreadIdentity() {
 
   {
     // Re-use a previously released object if possible.
-    base_internal::SpinLockHolder l(&freelist_lock);
+    base_internal::SpinLockHolder l(freelist_lock);
     if (thread_identity_freelist) {
       identity = thread_identity_freelist;  // Take list-head.
       thread_identity_freelist = thread_identity_freelist->next;

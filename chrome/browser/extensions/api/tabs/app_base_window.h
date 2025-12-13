@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_APP_BASE_WINDOW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+
+static_assert(BUILDFLAG(ENABLE_PLATFORM_APPS));
 
 namespace extensions {
 

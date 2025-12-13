@@ -5,11 +5,15 @@
 #include "cc/metrics/ukm_manager.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/event_metrics.h"
@@ -71,28 +75,35 @@ const char kEndActivateToSubmitCompositorFrame[] =
     "EndActivateToSubmitCompositorFrame";
 const char kSubmitCompositorFrameToPresentationCompositorFrame[] =
     "SubmitCompositorFrameToPresentationCompositorFrame";
+const char kEndActivateToSubmitUpdateDisplayTree[] =
+    "EndActivateToSubmitUpdateDisplayTree";
+const char kSubmitUpdateDisplayTreeToPresentationCompositorFrame[] =
+    "SubmitUpdateDisplayTreeToPresentationCompositorFrame";
+// TreesInViz specific substages
+const char kEndActivateToDrawLayers[] = "EndActivateToDrawLayers";
+const char kDrawLayersToSubmitUpdateDisplayTree[] =
+    "DrawLayersToSubmitUpdateDisplayTree";
+const char kSendUpdateDisplayTreeToReceiveUpdateDisplayTree[] =
+    "SendUpdateDisplayTreeToReceiveUpdateDisplayTree";
+const char kReceiveUpdateDisplayTreeToStartPrepareToDraw[] =
+    "ReceiveUpdateDisplayTreeToStartPrepareToDraw";
+const char kStartPrepareToDrawToStartDrawLayers[] =
+    "StartPrepareToDrawToStartDrawLayers";
+const char kStartDrawLayersToSubmitCompositorFrame[] =
+    "StartDrawLayersToSubmitCompositorFrame";
 const char kVizBreakdownSubmitToReceiveCompositorFrame[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame."
     "SubmitToReceiveCompositorFrame";
 const char kVizBreakdownReceivedCompositorFrameToStartDraw[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame."
     "ReceivedCompositorFrameToStartDraw";
-const char kVizBreakdownStartDrawToSwapStart[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame.StartDrawToSwapStart";
-const char kVizBreakdownSwapStartToSwapEnd[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame.SwapStartToSwapEnd";
+const char kVizBreakdownStartDrawToSwapStart[] = "StartDrawToSwapStart";
+const char kVizBreakdownSwapStartToSwapEnd[] = "SwapStartToSwapEnd";
 const char kVizBreakdownSwapStartToBufferAvailable[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame."
     "SwapStartToBufferAvailable";
 const char kVizBreakdownBufferAvailableToBufferReady[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame."
     "BufferAvailableToBufferReady";
-const char kVizBreakdownBufferReadyToLatch[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame.BufferReadyToLatch";
-const char kVizBreakdownLatchToSwapEnd[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame.LatchToSwapEnd";
+const char kVizBreakdownBufferReadyToLatch[] = "BufferReadyToLatch";
+const char kVizBreakdownLatchToSwapEnd[] = "LatchToSwapEnd";
 const char kVizBreakdownSwapEndToPresentationCompositorFrame[] =
-    "SubmitCompositorFrameToPresentationCompositorFrame."
     "SwapEndToPresentationCompositorFrame";
 const char kTotalLatency[] = "TotalLatency";
 
@@ -106,6 +117,10 @@ const char kScrollbarScroll[] = "ScrollbarScroll";
 const char kTouchScroll[] = "TouchScroll";
 const char kVideo[] = "Video";
 const char kWheelScroll[] = "WheelScroll";
+
+std::string SubstageName(std::string& stage_name, std::string substage_name) {
+  return base::StrCat({stage_name, ".", substage_name});
+}
 
 class UkmManagerTest : public testing::Test {
  public:
@@ -224,8 +239,22 @@ class UkmManagerTest : public testing::Test {
     return breakdown;
   }
 
-  viz::FrameTimingDetails BuildVizBreakdown() {
+  viz::FrameTimingDetails BuildTreesInVizBreakdown() {
     viz::FrameTimingDetails breakdown;
+    // Trees-in-viz relevant timestamps
+    breakdown.start_update_display_tree = AdvanceNowByMs(1);
+    breakdown.start_prepare_to_draw = AdvanceNowByMs(2);
+    breakdown.start_draw_layers = AdvanceNowByMs(3);
+    breakdown.submit_compositor_frame = AdvanceNowByMs(4);
+
+    return breakdown;
+  }
+
+  viz::FrameTimingDetails BuildVizBreakdown(bool trees_in_viz_enabled) {
+    viz::FrameTimingDetails breakdown;
+    if (trees_in_viz_enabled) {
+      breakdown = BuildTreesInVizBreakdown();
+    }
     breakdown.received_compositor_frame_timestamp = AdvanceNowByMs(1);
     breakdown.draw_start_timestamp = AdvanceNowByMs(2);
     breakdown.swap_timings.swap_start = AdvanceNowByMs(3);
@@ -236,6 +265,7 @@ class UkmManagerTest : public testing::Test {
     breakdown.presentation_feedback.timestamp = AdvanceNowByMs(5);
     return breakdown;
   }
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<UkmManager> manager_;
   base::SimpleTestTickClock test_tick_clock_;
 };
@@ -277,6 +307,7 @@ INSTANTIATE_TEST_SUITE_P(
         CompositorFrameReporter::FrameReportType::kCompositorOnlyFrame));
 
 TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
+  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
   const base::TimeTicks begin_impl_time = AdvanceNowByMs(10);
   const base::TimeTicks begin_main_time = AdvanceNowByMs(10);
   const base::TimeTicks begin_main_start_time = AdvanceNowByMs(10);
@@ -286,10 +317,15 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   const base::TimeTicks begin_commit_time = AdvanceNowByMs(10);
   const base::TimeTicks end_commit_time = AdvanceNowByMs(10);
   const base::TimeTicks begin_activate_time = AdvanceNowByMs(10);
-  const base::TimeTicks end_activate_time = AdvanceNowByMs(10);
-  const base::TimeTicks submit_time = AdvanceNowByMs(10);
+  const base::TimeTicks end_activate_time = AdvanceNowByMs(
+      10);  // For trees in viz, this will be trees_in_viz_activate_time_
+  const base::TimeTicks submit_time =
+      AdvanceNowByMs(10);  // For TreesInViz, this will be branch time.
+  // Extra stage for TreesinViz
+  const base::TimeTicks trees_in_viz_viz_start_time = AdvanceNowByMs(11);
 
-  viz::FrameTimingDetails viz_breakdown = BuildVizBreakdown();
+  viz::FrameTimingDetails frame_timing_details =
+      BuildVizBreakdown(trees_in_viz_mode);
 
   std::vector<CompositorFrameReporter::StageData> stage_history = {
       {
@@ -319,23 +355,31 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
           end_activate_time,
       },
       {
-          CompositorFrameReporter::StageType::
-              kEndActivateToSubmitCompositorFrame,
-          end_activate_time,
-          submit_time,
-      },
-      {
-          CompositorFrameReporter::StageType::
-              kSubmitCompositorFrameToPresentationCompositorFrame,
-          submit_time,
-          viz_breakdown.presentation_feedback.timestamp,
-      },
-      {
           CompositorFrameReporter::StageType::kTotalLatency,
           begin_impl_time,
-          viz_breakdown.presentation_feedback.timestamp,
+          frame_timing_details.presentation_feedback.timestamp,
       },
   };
+
+  if (trees_in_viz_mode) {
+    // TreesInViz branch
+    stage_history.emplace_back(CompositorFrameReporter::StageType::
+                                   kEndActivateToSubmitUpdateDisplayTree,
+                               end_activate_time, trees_in_viz_viz_start_time);
+    stage_history.emplace_back(
+        CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+        trees_in_viz_viz_start_time,
+        frame_timing_details.presentation_feedback.timestamp);
+  } else {
+    stage_history.emplace_back(  // Normal branch
+        CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+        end_activate_time, submit_time);
+    stage_history.emplace_back(
+        CompositorFrameReporter::StageType::
+            kSubmitCompositorFrameToPresentationCompositorFrame,
+        submit_time, frame_timing_details.presentation_feedback.timestamp);
+  }
 
   ActiveTrackers active_trackers;
   active_trackers.set(
@@ -348,10 +392,14 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   CompositorFrameReporter::ProcessedBlinkBreakdown processed_blink_breakdown(
       begin_main_time, begin_main_start_time, blink_breakdown);
   CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
-      submit_time, viz_breakdown);
+      submit_time, frame_timing_details);
+  CompositorFrameReporter::ProcessedTreesInVizBreakdown
+      processed_trees_in_viz_breakdown(end_activate_time, submit_time,
+                                       trees_in_viz_viz_start_time,
+                                       frame_timing_details);
   manager_->RecordCompositorLatencyUKM(
       report_types(), stage_history, active_trackers, processed_blink_breakdown,
-      processed_viz_breakdown);
+      processed_viz_breakdown, processed_trees_in_viz_breakdown);
 
   const auto& entries = recorder()->GetEntriesByName(kCompositorLatency);
   EXPECT_EQ(1u, entries.size());
@@ -405,58 +453,123 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   recorder()->ExpectEntryMetric(
       entry, kActivation,
       (end_activate_time - begin_activate_time).InMicroseconds());
+
+  // After Activate, CompositorFrameReporter stages branch
+  std::string activate_stage =
+      (trees_in_viz_mode ? kEndActivateToSubmitUpdateDisplayTree
+                         : kEndActivateToSubmitCompositorFrame);
+  std::string submit_stage =
+      (trees_in_viz_mode ? kSubmitUpdateDisplayTreeToPresentationCompositorFrame
+                         : kSubmitCompositorFrameToPresentationCompositorFrame);
+
+  base::TimeTicks rpc_submit_time =
+      (trees_in_viz_mode ? trees_in_viz_viz_start_time : submit_time);
   recorder()->ExpectEntryMetric(
-      entry, kEndActivateToSubmitCompositorFrame,
-      (submit_time - end_activate_time).InMicroseconds());
+      entry, activate_stage,
+      (rpc_submit_time - end_activate_time).InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kSubmitCompositorFrameToPresentationCompositorFrame,
-      (viz_breakdown.presentation_feedback.timestamp - submit_time)
+      entry, submit_stage,
+      (frame_timing_details.presentation_feedback.timestamp - rpc_submit_time)
+          .InMicroseconds());
+
+  // Tests for new substages introduced by TreesInViz
+  if (trees_in_viz_mode) {
+    // In CC
+    recorder()->ExpectEntryMetric(
+        entry, SubstageName(activate_stage, kEndActivateToDrawLayers),
+        (submit_time - end_activate_time).InMicroseconds());
+
+    recorder()->ExpectEntryMetric(
+        entry,
+        SubstageName(activate_stage, kDrawLayersToSubmitUpdateDisplayTree),
+        (trees_in_viz_viz_start_time - submit_time).InMicroseconds());
+    // CC -> Viz
+    recorder()->ExpectEntryMetric(
+        entry,
+        SubstageName(submit_stage,
+                     kSendUpdateDisplayTreeToReceiveUpdateDisplayTree),
+        (frame_timing_details.start_update_display_tree -
+         trees_in_viz_viz_start_time)
+            .InMicroseconds());
+    // Viz
+    recorder()->ExpectEntryMetric(
+        entry,
+        SubstageName(submit_stage,
+                     kReceiveUpdateDisplayTreeToStartPrepareToDraw),
+        (frame_timing_details.start_prepare_to_draw -
+         frame_timing_details.start_update_display_tree)
+            .InMicroseconds());
+    recorder()->ExpectEntryMetric(
+        entry, SubstageName(submit_stage, kStartPrepareToDrawToStartDrawLayers),
+        (frame_timing_details.start_draw_layers -
+         frame_timing_details.start_prepare_to_draw)
+            .InMicroseconds());
+    recorder()->ExpectEntryMetric(
+        entry,
+        SubstageName(submit_stage, kStartDrawLayersToSubmitCompositorFrame),
+        (frame_timing_details.submit_compositor_frame -
+         frame_timing_details.start_draw_layers)
+            .InMicroseconds());
+  }
+  base::TimeTicks compositor_frame_submit_time =
+      (trees_in_viz_mode ? frame_timing_details.submit_compositor_frame
+                         : submit_time);
+  // Stages present in both paths
+  recorder()->ExpectEntryMetric(
+      entry,
+      SubstageName(submit_stage, kVizBreakdownSubmitToReceiveCompositorFrame),
+      (frame_timing_details.received_compositor_frame_timestamp -
+       compositor_frame_submit_time)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownSubmitToReceiveCompositorFrame,
-      (viz_breakdown.received_compositor_frame_timestamp - submit_time)
+      entry,
+      SubstageName(submit_stage,
+                   kVizBreakdownReceivedCompositorFrameToStartDraw),
+      (frame_timing_details.draw_start_timestamp -
+       frame_timing_details.received_compositor_frame_timestamp)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
-      (viz_breakdown.draw_start_timestamp -
-       viz_breakdown.received_compositor_frame_timestamp)
-          .InMicroseconds());
-  recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
-                                (viz_breakdown.swap_timings.swap_start -
-                                 viz_breakdown.draw_start_timestamp)
-                                    .InMicroseconds());
-  recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
-                                (viz_breakdown.swap_timings.swap_end -
-                                 viz_breakdown.swap_timings.swap_start)
-                                    .InMicroseconds());
-  recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownSwapStartToBufferAvailable,
-      (viz_breakdown.presentation_feedback.available_timestamp -
-       viz_breakdown.swap_timings.swap_start)
+      entry, SubstageName(submit_stage, kVizBreakdownStartDrawToSwapStart),
+      (frame_timing_details.swap_timings.swap_start -
+       frame_timing_details.draw_start_timestamp)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownBufferAvailableToBufferReady,
-      (viz_breakdown.presentation_feedback.ready_timestamp -
-       viz_breakdown.presentation_feedback.available_timestamp)
+      entry, SubstageName(submit_stage, kVizBreakdownSwapStartToSwapEnd),
+      (frame_timing_details.swap_timings.swap_end -
+       frame_timing_details.swap_timings.swap_start)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownBufferReadyToLatch,
-      (viz_breakdown.presentation_feedback.latch_timestamp -
-       viz_breakdown.presentation_feedback.ready_timestamp)
+      entry,
+      SubstageName(submit_stage, kVizBreakdownSwapStartToBufferAvailable),
+      (frame_timing_details.presentation_feedback.available_timestamp -
+       frame_timing_details.swap_timings.swap_start)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownLatchToSwapEnd,
-      (viz_breakdown.swap_timings.swap_end -
-       viz_breakdown.presentation_feedback.latch_timestamp)
+      entry,
+      SubstageName(submit_stage, kVizBreakdownBufferAvailableToBufferReady),
+      (frame_timing_details.presentation_feedback.ready_timestamp -
+       frame_timing_details.presentation_feedback.available_timestamp)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
-      entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
-      (viz_breakdown.presentation_feedback.timestamp -
-       viz_breakdown.swap_timings.swap_end)
+      entry, SubstageName(submit_stage, kVizBreakdownBufferReadyToLatch),
+      (frame_timing_details.presentation_feedback.latch_timestamp -
+       frame_timing_details.presentation_feedback.ready_timestamp)
+          .InMicroseconds());
+  recorder()->ExpectEntryMetric(
+      entry, SubstageName(submit_stage, kVizBreakdownLatchToSwapEnd),
+      (frame_timing_details.swap_timings.swap_end -
+       frame_timing_details.presentation_feedback.latch_timestamp)
+          .InMicroseconds());
+  recorder()->ExpectEntryMetric(
+      entry,
+      SubstageName(submit_stage,
+                   kVizBreakdownSwapEndToPresentationCompositorFrame),
+      (frame_timing_details.presentation_feedback.timestamp -
+       frame_timing_details.swap_timings.swap_end)
           .InMicroseconds());
   recorder()->ExpectEntryMetric(
       entry, kTotalLatency,
-      (viz_breakdown.presentation_feedback.timestamp - begin_impl_time)
+      (frame_timing_details.presentation_feedback.timestamp - begin_impl_time)
           .InMicroseconds());
 
   recorder()->ExpectEntryMetric(entry, kCompositorAnimation, true);
@@ -469,6 +582,7 @@ TEST_P(UkmManagerCompositorLatencyTest, CompositorLatency) {
   EXPECT_FALSE(recorder()->EntryHasMetric(entry, kWheelScroll));
 }
 
+// TODO(crbug.com/443785891): EventLatency metrics support TreesInViz stages.
 TEST_F(UkmManagerTest, EventLatency) {
   const bool kScrollIsInertial = true;
   const bool kScrollIsNotInertial = false;
@@ -500,10 +614,16 @@ TEST_F(UkmManagerTest, EventLatency) {
   const base::TimeTicks begin_commit_time = AdvanceNowByMs(10);
   const base::TimeTicks end_commit_time = AdvanceNowByMs(10);
   const base::TimeTicks begin_activate_time = AdvanceNowByMs(10);
-  const base::TimeTicks end_activate_time = AdvanceNowByMs(10);
-  const base::TimeTicks submit_time = AdvanceNowByMs(10);
+  const base::TimeTicks end_activate_time = AdvanceNowByMs(
+      10);  // For trees in viz, this will be trees_in_viz_activate_time_
+  const base::TimeTicks submit_time =
+      AdvanceNowByMs(10);  // For TreesInViz, this will be branch time.
 
-  viz::FrameTimingDetails viz_breakdown = BuildVizBreakdown();
+  // Extra stages for TreesinViz
+  const base::TimeTicks trees_in_viz_viz_start_time = AdvanceNowByMs(11);
+
+  viz::FrameTimingDetails frame_timing_details =
+      BuildVizBreakdown(base::FeatureList::IsEnabled(features::kTreesInViz));
 
   std::vector<CompositorFrameReporter::StageData> stage_history = {
       {
@@ -533,34 +653,53 @@ TEST_F(UkmManagerTest, EventLatency) {
           end_activate_time,
       },
       {
-          CompositorFrameReporter::StageType::
-              kEndActivateToSubmitCompositorFrame,
-          end_activate_time,
-          submit_time,
-      },
-      {
-          CompositorFrameReporter::StageType::
-              kSubmitCompositorFrameToPresentationCompositorFrame,
-          submit_time,
-          viz_breakdown.presentation_feedback.timestamp,
-      },
-      {
           CompositorFrameReporter::StageType::kTotalLatency,
           begin_impl_time,
-          viz_breakdown.presentation_feedback.timestamp,
+          frame_timing_details.presentation_feedback.timestamp,
       },
   };
+
+  bool trees_in_viz_mode = base::FeatureList::IsEnabled(features::kTreesInViz);
+  if (trees_in_viz_mode) {
+    // TreesInViz branch
+    stage_history.emplace_back(CompositorFrameReporter::StageType::
+                                   kEndActivateToSubmitUpdateDisplayTree,
+                               end_activate_time, trees_in_viz_viz_start_time);
+    stage_history.emplace_back(
+        CompositorFrameReporter::StageType::
+            kSubmitUpdateDisplayTreeToPresentationCompositorFrame,
+        trees_in_viz_viz_start_time,
+        frame_timing_details.presentation_feedback.timestamp);
+
+  } else {
+    stage_history.emplace_back(  // Normal branch
+        CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+        end_activate_time, submit_time);
+    stage_history.emplace_back(
+        CompositorFrameReporter::StageType::
+            kSubmitCompositorFrameToPresentationCompositorFrame,
+        submit_time, frame_timing_details.presentation_feedback.timestamp);
+  }
 
   CompositorFrameReporter::ProcessedBlinkBreakdown processed_blink_breakdown(
       begin_main_time, begin_main_start_time, blink_breakdown);
   CompositorFrameReporter::ProcessedVizBreakdown processed_viz_breakdown(
-      submit_time, viz_breakdown);
+      submit_time, frame_timing_details);
+  CompositorFrameReporter::ProcessedTreesInVizBreakdown
+      processed_trees_in_viz_breakdown(end_activate_time, submit_time,
+                                       trees_in_viz_viz_start_time,
+                                       frame_timing_details);
   manager_->RecordEventLatencyUKM(events_metrics, stage_history,
                                   processed_blink_breakdown,
                                   processed_viz_breakdown);
 
   const auto& entries = recorder()->GetEntriesByName(kEventLatency);
   EXPECT_EQ(4u, entries.size());
+
+  std::string submit_stage =
+      (trees_in_viz_mode ? kSubmitUpdateDisplayTreeToPresentationCompositorFrame
+                         : kSubmitCompositorFrameToPresentationCompositorFrame);
+
   for (size_t i = 0; i < entries.size(); i++) {
     const auto* entry = entries[i].get();
     const auto* event_metrics = events_metrics[i].get();
@@ -643,100 +782,72 @@ TEST_F(UkmManagerTest, EventLatency) {
     recorder()->ExpectEntryMetric(
         entry, kActivation,
         (end_activate_time - begin_activate_time).InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kEndActivateToSubmitCompositorFrame,
-        (submit_time - end_activate_time).InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kSubmitCompositorFrameToPresentationCompositorFrame,
-        (viz_breakdown.presentation_feedback.timestamp - submit_time)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSubmitToReceiveCompositorFrame,
-        (viz_breakdown.received_compositor_frame_timestamp - submit_time)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
-        (viz_breakdown.draw_start_timestamp -
-         viz_breakdown.received_compositor_frame_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
-                                  (viz_breakdown.swap_timings.swap_start -
-                                   viz_breakdown.draw_start_timestamp)
-                                      .InMicroseconds());
-    recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
-                                  (viz_breakdown.swap_timings.swap_end -
-                                   viz_breakdown.swap_timings.swap_start)
-                                      .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSwapStartToBufferAvailable,
-        (viz_breakdown.presentation_feedback.available_timestamp -
-         viz_breakdown.swap_timings.swap_start)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownBufferAvailableToBufferReady,
-        (viz_breakdown.presentation_feedback.ready_timestamp -
-         viz_breakdown.presentation_feedback.available_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownBufferReadyToLatch,
-        (viz_breakdown.presentation_feedback.latch_timestamp -
-         viz_breakdown.presentation_feedback.ready_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownLatchToSwapEnd,
-        (viz_breakdown.swap_timings.swap_end -
-         viz_breakdown.presentation_feedback.latch_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
-        (viz_breakdown.presentation_feedback.timestamp -
-         viz_breakdown.swap_timings.swap_end)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSubmitToReceiveCompositorFrame,
-        (viz_breakdown.received_compositor_frame_timestamp - submit_time)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownReceivedCompositorFrameToStartDraw,
-        (viz_breakdown.draw_start_timestamp -
-         viz_breakdown.received_compositor_frame_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(entry, kVizBreakdownStartDrawToSwapStart,
-                                  (viz_breakdown.swap_timings.swap_start -
-                                   viz_breakdown.draw_start_timestamp)
-                                      .InMicroseconds());
-    recorder()->ExpectEntryMetric(entry, kVizBreakdownSwapStartToSwapEnd,
-                                  (viz_breakdown.swap_timings.swap_end -
-                                   viz_breakdown.swap_timings.swap_start)
-                                      .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSwapStartToBufferAvailable,
-        (viz_breakdown.presentation_feedback.available_timestamp -
-         viz_breakdown.swap_timings.swap_start)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownBufferAvailableToBufferReady,
-        (viz_breakdown.presentation_feedback.ready_timestamp -
-         viz_breakdown.presentation_feedback.available_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownBufferReadyToLatch,
-        (viz_breakdown.presentation_feedback.latch_timestamp -
-         viz_breakdown.presentation_feedback.ready_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownLatchToSwapEnd,
-        (viz_breakdown.swap_timings.swap_end -
-         viz_breakdown.presentation_feedback.latch_timestamp)
-            .InMicroseconds());
-    recorder()->ExpectEntryMetric(
-        entry, kVizBreakdownSwapEndToPresentationCompositorFrame,
-        (viz_breakdown.presentation_feedback.timestamp -
-         viz_breakdown.swap_timings.swap_end)
-            .InMicroseconds());
+    // Normal branch
+    if (!trees_in_viz_mode) {
+      recorder()->ExpectEntryMetric(
+          entry, kEndActivateToSubmitCompositorFrame,
+          (submit_time - end_activate_time).InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry, kSubmitCompositorFrameToPresentationCompositorFrame,
+          (frame_timing_details.presentation_feedback.timestamp - submit_time)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry,
+          SubstageName(submit_stage,
+                       kVizBreakdownSubmitToReceiveCompositorFrame),
+          (frame_timing_details.received_compositor_frame_timestamp -
+           submit_time)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry,
+          SubstageName(submit_stage,
+                       kVizBreakdownReceivedCompositorFrameToStartDraw),
+          (frame_timing_details.draw_start_timestamp -
+           frame_timing_details.received_compositor_frame_timestamp)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry, SubstageName(submit_stage, kVizBreakdownStartDrawToSwapStart),
+          (frame_timing_details.swap_timings.swap_start -
+           frame_timing_details.draw_start_timestamp)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry, SubstageName(submit_stage, kVizBreakdownSwapStartToSwapEnd),
+          (frame_timing_details.swap_timings.swap_end -
+           frame_timing_details.swap_timings.swap_start)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry,
+          SubstageName(submit_stage, kVizBreakdownSwapStartToBufferAvailable),
+          (frame_timing_details.presentation_feedback.available_timestamp -
+           frame_timing_details.swap_timings.swap_start)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry,
+          SubstageName(submit_stage, kVizBreakdownBufferAvailableToBufferReady),
+          (frame_timing_details.presentation_feedback.ready_timestamp -
+           frame_timing_details.presentation_feedback.available_timestamp)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry, SubstageName(submit_stage, kVizBreakdownBufferReadyToLatch),
+          (frame_timing_details.presentation_feedback.latch_timestamp -
+           frame_timing_details.presentation_feedback.ready_timestamp)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry, SubstageName(submit_stage, kVizBreakdownLatchToSwapEnd),
+          (frame_timing_details.swap_timings.swap_end -
+           frame_timing_details.presentation_feedback.latch_timestamp)
+              .InMicroseconds());
+      recorder()->ExpectEntryMetric(
+          entry,
+          SubstageName(submit_stage,
+                       kVizBreakdownSwapEndToPresentationCompositorFrame),
+          (frame_timing_details.presentation_feedback.timestamp -
+           frame_timing_details.swap_timings.swap_end)
+              .InMicroseconds());
+    }
     recorder()->ExpectEntryMetric(
         entry, kTotalLatency,
-        (viz_breakdown.presentation_feedback.timestamp -
+        (frame_timing_details.presentation_feedback.timestamp -
          event_dispatch_times[i].generated)
             .InMicroseconds());
   }

@@ -10,7 +10,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tab_groups/tab_group_id.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic.mojom.h"                    // nogncheck
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"  // nogncheck
+#endif
 
 class BrowserWindowInterface;
 
@@ -40,7 +46,8 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void AddTabAt(const GURL& url,
                 int index,
                 bool foregroud,
-                std::optional<tab_groups::TabGroupId> group) override;
+                std::optional<tab_groups::TabGroupId> group,
+                bool pinned) override;
   Browser* CreateNewStripWithTabs(std::vector<NewStripContents> tabs,
                                   const gfx::Rect& window_bounds,
                                   bool maximize) override;
@@ -48,7 +55,7 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   int GetDragActions() const override;
   bool CanDuplicateContentsAt(int index) override;
   bool IsTabStripEditable() override;
-  void DuplicateContentsAt(int index) override;
+  content::WebContents* DuplicateContentsAt(int index) override;
   void DuplicateSplit(split_tabs::SplitTabId split) override;
   void MoveToExistingWindow(const std::vector<int>& indices,
                             int browser_index) override;
@@ -64,7 +71,6 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
-  bool ShouldDisplayFavicon(content::WebContents* web_contents) const override;
   bool CanReload() const override;
   void AddToReadLater(std::vector<content::WebContents*> web_contents) override;
   bool SupportsReadLater() override;
@@ -82,6 +88,12 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
+#if BUILDFLAG(ENABLE_GLIC)
+  bool IsTabGlicPinned(tabs::TabHandle tab_handle) override;
+  bool GlicPinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+  bool GlicUnpinTabs(base::span<const tabs::TabHandle> tab_handles) override;
+  void OpenGlicWindowFromSharedTab() override;
+#endif
 
  private:
   raw_ptr<BrowserWindowInterface> browser_window_interface_;

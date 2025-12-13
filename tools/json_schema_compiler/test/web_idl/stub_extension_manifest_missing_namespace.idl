@@ -1,0 +1,13 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example invalid WebIDL stub ExtensionManifest definition for manifest keys,
+// which is invalid due to missing the extended attribute we need for the
+// namespace name.
+
+// Example stub manifest key definition missing Namespace extended attribute.
+partial dictionary ExtensionManifest {
+  DOMString string_key;
+  sequence<Item> items;
+};

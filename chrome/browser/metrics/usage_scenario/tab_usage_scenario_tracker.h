@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_observer.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "content/public/browser/visibility.h"

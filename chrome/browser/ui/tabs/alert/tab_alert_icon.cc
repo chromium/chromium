@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_icon.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -23,26 +24,28 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
                                    bool is_frame_active) {
   int group = 0;
   switch (state) {
-    case tabs::TabAlert::MEDIA_RECORDING:
-    case tabs::TabAlert::AUDIO_RECORDING:
-    case tabs::TabAlert::VIDEO_RECORDING:
-    case tabs::TabAlert::DESKTOP_CAPTURING:
+    case tabs::TabAlert::kMediaRecording:
+    case tabs::TabAlert::kAudioRecording:
+    case tabs::TabAlert::kVideoRecording:
+    case tabs::TabAlert::kDesktopCapturing:
       group = 0;
       break;
-    case tabs::TabAlert::TAB_CAPTURING:
-    case tabs::TabAlert::PIP_PLAYING:
-    case tabs::TabAlert::GLIC_ACCESSING:
-    case tabs::TabAlert::GLIC_SHARING:
+    case tabs::TabAlert::kTabCapturing:
+    case tabs::TabAlert::kPipPlaying:
+    case tabs::TabAlert::kGlicAccessing:
+    case tabs::TabAlert::kGlicSharing:
+    case tabs::TabAlert::kActorWaitingOnUser:
+    case tabs::TabAlert::kActorAccessing:
       group = 1;
       break;
-    case tabs::TabAlert::AUDIO_PLAYING:
-    case tabs::TabAlert::AUDIO_MUTING:
-    case tabs::TabAlert::BLUETOOTH_CONNECTED:
-    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
-    case tabs::TabAlert::USB_CONNECTED:
-    case tabs::TabAlert::HID_CONNECTED:
-    case tabs::TabAlert::SERIAL_CONNECTED:
-    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
+    case tabs::TabAlert::kAudioPlaying:
+    case tabs::TabAlert::kAudioMuting:
+    case tabs::TabAlert::kBluetoothConnected:
+    case tabs::TabAlert::kBluetoothScanActive:
+    case tabs::TabAlert::kUsbConnected:
+    case tabs::TabAlert::kHidConnected:
+    case tabs::TabAlert::kSerialConnected:
+    case tabs::TabAlert::kVrPresentingInHeadset:
       group = 2;
       break;
     default:
@@ -67,33 +70,42 @@ ui::ColorId GetAlertIndicatorColor(TabAlert state,
 
 const gfx::VectorIcon& GetAlertIcon(TabAlert alert_state) {
   switch (alert_state) {
-    case TabAlert::AUDIO_PLAYING:
+    case TabAlert::kAudioPlaying:
       return vector_icons::kVolumeUpChromeRefreshIcon;
-    case TabAlert::AUDIO_MUTING:
+    case TabAlert::kAudioMuting:
       return vector_icons::kVolumeOffChromeRefreshIcon;
-    case TabAlert::MEDIA_RECORDING:
-    case TabAlert::AUDIO_RECORDING:
-    case TabAlert::VIDEO_RECORDING:
-    case TabAlert::DESKTOP_CAPTURING:
+    case TabAlert::kMediaRecording:
+    case TabAlert::kAudioRecording:
+    case TabAlert::kVideoRecording:
+    case TabAlert::kDesktopCapturing:
       return vector_icons::kRadioButtonCheckedIcon;
-    case TabAlert::TAB_CAPTURING:
+    case TabAlert::kTabCapturing:
       return vector_icons::kCaptureIcon;
-    case TabAlert::BLUETOOTH_CONNECTED:
+    case TabAlert::kBluetoothConnected:
       return vector_icons::kBluetoothConnectedIcon;
-    case TabAlert::BLUETOOTH_SCAN_ACTIVE:
+    case TabAlert::kBluetoothScanActive:
       return vector_icons::kBluetoothScanningChromeRefreshIcon;
-    case TabAlert::USB_CONNECTED:
+    case TabAlert::kUsbConnected:
       return vector_icons::kUsbChromeRefreshIcon;
-    case TabAlert::HID_CONNECTED:
+    case TabAlert::kHidConnected:
       return vector_icons::kVideogameAssetChromeRefreshIcon;
-    case TabAlert::SERIAL_CONNECTED:
+    case TabAlert::kSerialConnected:
       return vector_icons::kSerialPortChromeRefreshIcon;
-    case TabAlert::PIP_PLAYING:
+    case TabAlert::kPipPlaying:
       return vector_icons::kPictureInPictureAltIcon;
-    case TabAlert::VR_PRESENTING_IN_HEADSET:
+    case TabAlert::kVrPresentingInHeadset:
       return vector_icons::kCardboardIcon;
-    case TabAlert::GLIC_ACCESSING:
-    case TabAlert::GLIC_SHARING:
+    case TabAlert::kActorWaitingOnUser:
+    case TabAlert::kActorAccessing:
+#if BUILDFLAG(ENABLE_GLIC)
+      if (base::FeatureList::IsEnabled(features::kGlicActorUiTaskIconV2)) {
+        return glic::GlicVectorIconManager::GetVectorIcon(
+            IDR_ACTOR_AUTO_BROWSE_ICON);
+      }
+#endif
+      return kTvIcon;
+    case TabAlert::kGlicAccessing:
+    case TabAlert::kGlicSharing:
 #if BUILDFLAG(ENABLE_GLIC)
       return glic::GlicVectorIconManager::GetVectorIcon(
           IDR_GLIC_ACCESSING_ICON);
@@ -108,7 +120,7 @@ ui::ImageModel GetAlertImageModel(TabAlert alert_state,
   // Tab capturing icon uses a different width compared to
   // the other tab alert indicator icons.
   const int image_width =
-      GetLayoutConstant(alert_state == tabs::TabAlert::TAB_CAPTURING
+      GetLayoutConstant(alert_state == tabs::TabAlert::kTabCapturing
                             ? TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH
                             : TAB_ALERT_INDICATOR_ICON_WIDTH);
 

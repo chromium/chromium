@@ -15,19 +15,19 @@ void ViewTransitionTransitionElement::LogSubtree(PseudoElement* node,
   if (!node) {
     return;
   }
-  LOG(INFO) << std::string(indent, ' ') << node->DebugName();
+  VLOG(2) << std::string(indent, ' ') << node->DebugName();
   LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionImagePair,
-                                    node->view_transition_name()),
+                                    node->GetPseudoArgument()),
              indent + 2);
   LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionOld,
-                                    node->view_transition_name()),
+                                    node->GetPseudoArgument()),
              indent + 2);
   LogSubtree(node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionNew,
-                                    node->view_transition_name()),
+                                    node->GetPseudoArgument()),
              indent + 2);
   LogSubtree(
       node->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroupChildren,
-                             node->view_transition_name()),
+                             node->GetPseudoArgument()),
       indent + 2);
   for (auto& name : style_tracker_->GetViewTransitionNames()) {
     LogSubtree(
@@ -65,7 +65,7 @@ ViewTransitionTransitionElement::FindViewTransitionGroupPseudoElement(
   if (parent != this) {
     parent =
         parent->GetPseudoElement(PseudoId::kPseudoIdViewTransitionGroupChildren,
-                                 parent->view_transition_name());
+                                 parent->GetPseudoArgument());
   }
   return parent ? parent->GetPseudoElement(
                       PseudoId::kPseudoIdViewTransitionGroup, name)

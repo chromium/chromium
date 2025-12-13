@@ -50,7 +50,8 @@ class ProtoTranslator {
   std::optional<base::Value> serialized_entry() const {
     json_proto::JsonProtoConverter converter;
     std::string json_array = converter.Convert(input_->serialized_entry());
-    std::optional<base::Value> value = base::JSONReader::Read(json_array);
+    std::optional<base::Value> value = base::JSONReader::Read(
+        json_array, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     return value;
   }
 

@@ -21,6 +21,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -37,9 +38,9 @@
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/native_theme/os_settings_provider.h"
 
 namespace base {
-class CommandLine;
 class FilePath;
 class TimeDelta;
 }  // namespace base
@@ -50,7 +51,7 @@ class DiscardableSharedMemoryManager;
 }
 #endif
 
-namespace ui {
+namespace gfx {
 class ScopedAnimationDurationScaleMode;
 }
 
@@ -273,6 +274,10 @@ class BrowserTestBase : public ::testing::Test {
   // display densities.
   void EnablePixelOutput(float force_device_scale_factor = 1.f);
 
+  // Call this before SetUp() to specify whether fake media stream devices
+  // should be used. True by default.
+  void SetUseFakeMediaStreamDevices(bool use_fake_media_stream_devices);
+
   // Call this before SetUp() to not use GL, but use software compositing
   // instead.
   void UseSoftwareCompositing();
@@ -293,6 +298,12 @@ class BrowserTestBase : public ::testing::Test {
   // This waits for those to complete before we can continue with the test.
   void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
                             const base::TimeDelta& wait_retry_left);
+  // Android browser tests need to wait for the Activity to finish after tests
+  // run to properly shut down the browser.
+  void WaitUntilActivityTeardownIsFinished(
+      base::OnceClosure quit_closure,
+      const base::TimeDelta& wait_retry_left);
+
 #endif
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();
@@ -339,6 +350,23 @@ class BrowserTestBase : public ::testing::Test {
   // Expected exit code.
   int expected_exit_code_ = 0;
 
+  // On ChromeOS, many tests expect the `ash::DarkLightModeController` to
+  // control the `ui::NativeTheme`. Since this is plumbed through
+  // `ui::OsSettingsProviderAsh`, the following instantiation breaks these
+  // tests.
+  // TODO(pkasting): Consider an alternate solution, e.g. changing tests to use
+  // a `ui::MockOsSettingsProvider` instead of the
+  // `ash::DarkLightModeController` and removing the `#if` guards here.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Browser tests should not use the current machine settings for theming, but
+  // should default to a consistent baseline. Instantiating
+  // `ui::OsSettingsProvider` will both provide sane default behavior and
+  // prevent `ui::OsSettingsProvider::Get()` from instantiating a
+  // platform-specific subclass.
+  ui::OsSettingsProvider os_settings_provider_{
+      ui::OsSettingsProvider::PriorityLevel::kTesting};
+#endif
+
   // When true, the compositor will produce pixel output that can be read back
   // for pixel tests.
   bool enable_pixel_output_ = false;
@@ -346,10 +374,15 @@ class BrowserTestBase : public ::testing::Test {
   // When using EnablePixelOutput, the device scale factor is forced to an
   // explicit value to ensure consistent results. This value will be passed to
   // the --force-device-scale-factor flag in SetUp.
-  float force_device_scale_factor_ = 0.f;
+  float force_device_scale_factor_ = 0;
+
+  // When true, fake media stream devices will be used instead of real ones.
+  // Real devices may depend on OS-specific implementations and may not work on
+  // bots.
+  bool use_fake_media_stream_devices_ = true;
 
   // When verifying pixel output, animations are disabled to reduce flakiness.
-  std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
+  std::unique_ptr<gfx::ScopedAnimationDurationScaleMode>
       disable_layer_animations_;
   gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_;
 

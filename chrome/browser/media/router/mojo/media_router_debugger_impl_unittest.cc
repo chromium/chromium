@@ -100,16 +100,16 @@ TEST_F(MediaRouterDebuggerImplTest, OnMirroringStats) {
   // Verify that a non dict value will call notify the observers with a newly
   // constructed empty base::Value::Dict();
   EXPECT_CALL(observer_, OnMirroringStatsUpdated)
-      .WillOnce(testing::Invoke([&](const base::Value::Dict& json_logs) {
+      .WillOnce([&](const base::Value::Dict& json_logs) {
         EXPECT_EQ(empty_dict, json_logs);
-      }));
+      });
   debugger_->OnMirroringStats(non_dict.Clone());
 
   // Verify that a valid dict will notify observers of that value.
   EXPECT_CALL(observer_, OnMirroringStatsUpdated)
-      .WillOnce(testing::Invoke([&](const base::Value::Dict& json_logs) {
+      .WillOnce([&](const base::Value::Dict& json_logs) {
         EXPECT_EQ(dict, json_logs);
-      }));
+      });
   debugger_->OnMirroringStats(base::Value(dict.Clone()));
 }
 

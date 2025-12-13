@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "components/media_message_center/media_notification_item.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 

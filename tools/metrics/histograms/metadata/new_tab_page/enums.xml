@@ -31,18 +31,16 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="HTTP cache hit"/>
 </enum>
 
-<enum name="BottomSheetType">
-  <summary/>
-  <int value="0" label="Main Bottom Sheet"/>
-  <int value="1" label="New Tab Page Cards Bottom Sheet"/>
-  <int value="2" label="Discover Feed Bottom Sheet"/>
+<!-- LINT.IfChange(ChipType) -->
+
+<enum name="ChipType">
+  <int value="0" label="Create Image Chip"/>
+  <int value="1" label="Deep Search Chip"/>
+  <int value="2" label="Recent Tab Chip"/>
+  <int value="3" label="Deep Dive Chip"/>
 </enum>
 
-<enum name="Entry">
-  <summary/>
-  <int value="0" label="App Menu"/>
-  <int value="1" label="Customization button in toolbar"/>
-</enum>
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom:ChipType) -->
 
 <enum name="FailToShowHomeSurfaceReason">
   <int value="0" label="Fail to create a NTP Tab"/>
@@ -213,8 +211,30 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CTA image shown"/>
 </enum>
 
+<!-- LINT.IfChange(NewTabPageLogoShowniOSGoogleDSEEnum) -->
+
+<enum name="NewTabPageLogoShowniOSGoogleDSEEnum">
+  <int value="0" label="Embedded logo shown"/>
+  <int value="1" label="Downloaded logo shown"/>
+  <int value="2" label="Static image doodle shown"/>
+  <int value="3" label="CTA doodle shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.mm:NewTabPageLogoShowniOSGoogleDSEEnum) -->
+
+<!-- LINT.IfChange(NewTabPageLogoShowniOSThirdPartyDSEEnum) -->
+
+<enum name="NewTabPageLogoShowniOSThirdPartyDSEEnum">
+  <int value="0" label="No logo shown"/>
+  <int value="1" label="Downloaded logo shown"/>
+  <int value="2" label="Static image doodle shown"/>
+  <int value="3" label="CTA doodle shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.mm:NewTabPageLogoShowniOSThirdPartyDSEEnum) -->
+
 <enum name="NewTabPageVoiceAction">
-  <int value="0" label="Activated by clicking on the fakebox icon"/>
+  <int value="0" label="Activated by clicking on the icon"/>
   <int value="1" label="Activated by keyboard shortcut"/>
   <int value="2" label="Closed overlay by a user's explicit action"/>
   <int value="3" label="Submitted voice query"/>
@@ -256,6 +276,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Uploaded image"/>
   <int value="5" label="Wallpaper search image"/>
   <int value="6" label="Wallpaper search inspiration image"/>
+</enum>
+
+<enum name="NtpBackgroundImageType">
+  <summary>The type of background image for the New Tab Page.</summary>
+  <int value="0" label="Default"/>
+  <int value="1" label="Upload image"/>
+  <int value="2" label="Chrome color"/>
+  <int value="3" label="Theme collection"/>
+  <int value="4" label="Color from hex"/>
 </enum>
 
 <enum name="NTPCalendarAction">
@@ -323,6 +352,36 @@ chromium-metrics-reviews@google.com.
   <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
 
+<enum name="NtpCustomizationBottomSheetType">
+  <summary/>
+  <int value="0" label="Main Bottom Sheet"/>
+  <int value="1" label="New Tab Page Cards Bottom Sheet"/>
+  <int value="2" label="Discover Feed Bottom Sheet"/>
+  <int value="3" label="New Tab Page Appearance Bottom Sheet"/>
+  <int value="4" label="Most Visited Tiles Bottom Sheet"/>
+  <int value="5" label="Theme Collections"/>
+  <int value="6" label="Single Theme Collection"/>
+  <int value="7" label="Chrome Colors"/>
+  <int value="8" label="Upload Image Photo Picker"/>
+  <int value="9" label="Chrome Default"/>
+</enum>
+
+<enum name="NtpCustomizationEntryPoint">
+  <summary/>
+  <int value="0" label="App Menu"/>
+  <int value="1" label="Customization button in toolbar"/>
+  <int value="2" label="Customization button on NTP for tablet"/>
+</enum>
+
+<enum name="NtpCustomizationThemeUploadImagePreviewInteractions">
+  <summary/>
+  <int value="0" label="Cancel"/>
+  <int value="1" label="Save"/>
+  <int value="2" label="Pinch to resize"/>
+  <int value="3" label="Rotate screen"/>
+  <int value="4" label="Rotate screen and pinch to resize"/>
+</enum>
+
 <enum name="NTPCustomizeChromeBackgroundAction">
   <int value="0"
       label="Collection selected in the 'Chrome backgrounds' dialog."/>
@@ -338,6 +397,21 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="NTP URL has customize chrome parameters."/>
   <int value="3" label="Wallpaper search button clicked."/>
 </enum>
+
+<!-- LINT.IfChange(NTPCustomizeChromePromoEligibility) -->
+
+<enum name="NTPCustomizeChromePromoEligibility">
+  <int value="0" label="Promo can be shown."/>
+  <int value="1" label="Promo auto-opened maximum number of times."/>
+  <int value="2"
+      label="Promo auto-opened maximum number of times per session."/>
+  <int value="3" label="Chrome customized already."/>
+  <int value="4" label="Customize Chrome closed explicitly by the user."/>
+  <int value="5" label="Customize Chrome opened via button before."/>
+  <int value="6" label="Feature config mismatch."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h:NTPCustomizeChromePromoEligibility) -->
 
 <enum name="NTPCustomizeChromeSidePanelAction">
   <int value="0" label="Button to edit theme selected."/>
@@ -366,10 +440,6 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="Show footer toggle clicked"/>
 </enum>
 
-<enum name="NTPCustomizeChromeSidePanelImpression">
-  <int value="0" label="Extensions card section displayed"/>
-</enum>
-
 <enum name="NTPCustomizedFeatures">
   <int value="0" label="Background customized"/>
   <int value="1" label="Shortcut customized"/>
@@ -379,6 +449,9 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Most Visited is enabled"/>
   <int value="1" label="Custom links is enabled"/>
   <int value="2" label="Shortcuts are hidden"/>
+  <int value="3" label="Enterprise shortcuts are enabled"/>
+  <int value="4" label="Enterprise shortcuts and most visited are enabled"/>
+  <int value="5" label="Enterprise shortcuts and custom links are enabled"/>
 </enum>
 
 <enum name="NTPCustomizeLocalImageBackgroundAction">
@@ -397,6 +470,14 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="A custom shortcut was updated."/>
   <int value="7" label="The type of shortcuts displayed was changed."/>
   <int value="8" label="The visibility of shortcuts was changed."/>
+  <int value="9" label="The visibility of personal shortcuts was changed."/>
+  <int value="10" label="The visibility of enterprise shortcuts was changed."/>
+  <int value="11" label="An enterprise shortcut was removed."/>
+  <int value="12" label="An enterprise shortcut action was undone."/>
+  <int value="13"
+      label="All enterprise shortcuts were restored (via menu or message
+             pop-up)."/>
+  <int value="14" label="An enterprise shortcut was updated."/>
 </enum>
 
 <enum name="NTPElement">
@@ -412,6 +493,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Customize Chrome Button"/>
   <int value="10" label="Customize Chrome Dialog"/>
   <int value="11" label="Wallpaper Search Button"/>
+  <int value="12" label="Action Chips"/>
 </enum>
 
 <enum name="NTPImageType">
@@ -462,6 +544,19 @@ chromium-metrics-reviews@google.com.
 <enum name="NtpTabResumeResultStatus">
   <int value="0" label="Error"/>
   <int value="1" label="Success"/>
+</enum>
+
+<enum name="NtpThemeColorId">
+  <int value="0" label="Default"/>
+  <int value="1" label="NTP Colors Blue"/>
+  <int value="2" label="NTP Colors Aqua"/>
+  <int value="3" label="NTP Colors Green"/>
+  <int value="4" label="NTP Colors Viridian"/>
+  <int value="5" label="NTP Colors Citron"/>
+  <int value="6" label="NTP Colors Orange"/>
+  <int value="7" label="NTP Colors Rose"/>
+  <int value="8" label="NTP Colors Fuchsia"/>
+  <int value="9" label="NTP Colors Violet"/>
 </enum>
 
 <enum name="NTPTileTitleSource">
@@ -567,6 +662,9 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="[Deprecated] Open History Search Settings"/>
   <int value="16" label="Open Glic"/>
   <int value="17" label="Open Glic settings"/>
+  <int value="18" label="Prewarm Glic FRE"/>
+  <int value="19" label="Open Split View"/>
+  <int value="20" label="Open Autofill Settings"/>
 </enum>
 
 <!-- LINT.ThenChange(//ui/webui/resources/js/browser_command/browser_command.mojom:Command) -->
@@ -623,7 +721,9 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="From History Navigation Foreground"/>
   <int value="30" label="From Longpress Foreground In Group"/>
   <int value="31" label="From Tab List Interface"/>
-  <int value="32" label="Size"/>
+  <int value="32" label="From Link, Creating New Window"/>
+  <int value="33" label="From Tips Notifications"/>
+  <int value="34" label="Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->
@@ -633,7 +733,7 @@ chromium-metrics-reviews@google.com.
     This enum denotes the type of app on the deleted ntp_tile as part of bug fix
     for crbug.com/1250463
   </summary>
-  <int value="0" label="Default App from most visited links"/>
+  <int value="0" label="Default App from top sites links"/>
   <int value="1" label="Default App with custom links"/>
 </enum>
 

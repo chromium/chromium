@@ -47,7 +47,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool IsExportLxdContainerProgressSignalConnected() override;
   bool IsImportLxdContainerProgressSignalConnected() override;
   bool IsPendingAppListUpdatesSignalConnected() override;
-  bool IsApplyAnsiblePlaybookProgressSignalConnected() override;
   bool IsUpgradeContainerProgressSignalConnected() override;
   bool IsStartLxdProgressSignalConnected() override;
   bool IsFileWatchTriggeredSignalConnected() override;
@@ -126,10 +125,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       chromeos::DBusMethodCallback<
           vm_tools::cicerone::CancelImportLxdContainerResponse> callback)
       override;
-  void ApplyAnsiblePlaybook(
-      const vm_tools::cicerone::ApplyAnsiblePlaybookRequest& request,
-      chromeos::DBusMethodCallback<
-          vm_tools::cicerone::ApplyAnsiblePlaybookResponse> callback) override;
   void ConfigureForArcSideload(
       const vm_tools::cicerone::ConfigureForArcSideloadRequest& request,
       chromeos::DBusMethodCallback<
@@ -336,11 +331,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   void set_lxd_container_os_release(vm_tools::cicerone::OsRelease os_release) {
     lxd_container_os_release_ = std::move(os_release);
   }
-  void set_apply_ansible_playbook_response(
-      const vm_tools::cicerone::ApplyAnsiblePlaybookResponse&
-          apply_ansible_playbook_response) {
-    apply_ansible_playbook_response_ = apply_ansible_playbook_response;
-  }
   void set_enable_arc_sideload_response(
       const vm_tools::cicerone::ConfigureForArcSideloadResponse& response) {
     enable_arc_sideload_response_ = response;
@@ -471,8 +461,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       const vm_tools::cicerone::UninstallPackageProgressSignal& signal);
   void NotifyPendingAppListUpdates(
       const vm_tools::cicerone::PendingAppListUpdatesSignal& signal);
-  void NotifyApplyAnsiblePlaybookProgress(
-      const vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal& signal);
   void NotifyUpgradeContainerProgress(
       const vm_tools::cicerone::UpgradeContainerProgressSignal& signal);
   void NotifyStartLxdProgress(
@@ -503,7 +491,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
   bool is_lxd_container_starting_signal_connected_ = true;
   bool is_export_lxd_container_progress_signal_connected_ = true;
   bool is_import_lxd_container_progress_signal_connected_ = true;
-  bool is_apply_ansible_playbook_progress_signal_connected_ = true;
   bool is_upgrade_container_progress_signal_connected_ = true;
   bool is_start_lxd_progress_signal_connected_ = true;
   bool is_file_watch_triggered_signal_connected_ = true;
@@ -558,8 +545,6 @@ class COMPONENT_EXPORT(CICERONE) FakeCiceroneClient : public CiceroneClient {
       cancel_export_lxd_container_response_;
   vm_tools::cicerone::CancelImportLxdContainerResponse
       cancel_import_lxd_container_response_;
-  vm_tools::cicerone::ApplyAnsiblePlaybookResponse
-      apply_ansible_playbook_response_;
   vm_tools::cicerone::ConfigureForArcSideloadResponse
       enable_arc_sideload_response_;
   vm_tools::cicerone::UpgradeContainerResponse upgrade_container_response_;

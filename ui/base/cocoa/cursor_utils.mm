@@ -122,11 +122,11 @@ NSCursor* CustomNSCursor(const ui::Cursor& cursor) {
   if (custom_scale == 0) {
     custom_scale = 1;
   }
-  NSSize dip_size = NSSizeFromCGSize(
-      gfx::ScaleToFlooredSize(custom_size, 1 / custom_scale).ToCGSize());
-  NSPoint dip_hotspot = NSPointFromCGPoint(
+  NSSize dip_size =
+      gfx::ScaleToFlooredSize(custom_size, 1 / custom_scale).ToCGSize();
+  NSPoint dip_hotspot =
       gfx::ScaleToFlooredPoint(cursor.custom_hotspot(), 1 / custom_scale)
-          .ToCGPoint());
+          .ToCGPoint();
 
   // Both the image and its representation need to have the same size for
   // cursors to appear in high resolution on retina displays. Note that the

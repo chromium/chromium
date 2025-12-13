@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
@@ -46,10 +47,11 @@ class FilePath;
 
 namespace apps {
 
-class AppPublisher;
+class Publisher;
 class AppUpdate;
 class BrowserAppLauncher;
 class PreferredAppsListHandle;
+class PublisherHostFactory;
 
 struct IntentLaunchInfo {
   IntentLaunchInfo();
@@ -79,7 +81,9 @@ struct IntentLaunchInfo {
 class AppServiceProxyBase : public KeyedService,
                             public PreferredAppsImpl::Host {
  public:
-  explicit AppServiceProxyBase(Profile* profile);
+  // `publisher_host_factory` must be non-null and outlive this instance.
+  AppServiceProxyBase(Profile* profile,
+                      PublisherHostFactory* publisher_host_factory);
   AppServiceProxyBase(const AppServiceProxyBase&) = delete;
   AppServiceProxyBase& operator=(const AppServiceProxyBase&) = delete;
   ~AppServiceProxyBase() override;
@@ -101,7 +105,7 @@ class AppServiceProxyBase : public KeyedService,
   // Registers `publisher` with the App Service as exclusively publishing apps
   // of type `app_type`. `publisher` must have a lifetime equal to or longer
   // than this object.
-  void RegisterPublisher(AppType app_type, AppPublisher* publisher);
+  void RegisterPublisher(AppType app_type, Publisher* publisher);
 
   // UnRegisters the publisher for `app_type`, As the publisher(ArcApps) might
   // be destroyed earlier than AppServiceProxy.
@@ -385,7 +389,7 @@ class AppServiceProxyBase : public KeyedService,
   // avoid calling other virtual methods in the AppServiceProxy constructor).
   virtual void Initialize();
 
-  AppPublisher* GetPublisher(AppType app_type);
+  Publisher* GetPublisher(AppType app_type);
 
   // Returns true if the app cannot be launched and a launch prevention dialog
   // is shown to the user (e.g. the app is paused or blocked). Returns false
@@ -431,7 +435,8 @@ class AppServiceProxyBase : public KeyedService,
       const apps::IntentFilterPtr& filter,
       const apps::AppUpdate& update);
 
-  base::flat_map<AppType, raw_ptr<AppPublisher, CtnExperimental>> publishers_;
+  const raw_ref<PublisherHostFactory> publisher_host_factory_;
+  base::flat_map<AppType, raw_ptr<Publisher, CtnExperimental>> publishers_;
 
   apps::AppRegistryCache app_registry_cache_;
   apps::AppCapabilityAccessCache app_capability_access_cache_;
@@ -454,7 +459,7 @@ class AppServiceProxyBase : public KeyedService,
   // WebApps) can run on Chrome.
   std::unique_ptr<apps::BrowserAppLauncher> browser_app_launcher_;
 
-  bool is_using_testing_profile_ = false;
+  bool skip_pause_dialog_for_testing_ = false;
   base::OnceClosure dialog_created_callback_;
 
  private:

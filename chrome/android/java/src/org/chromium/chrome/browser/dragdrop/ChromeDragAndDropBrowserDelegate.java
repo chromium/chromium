@@ -19,9 +19,9 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +34,8 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.ui.dragdrop.DropDataAndroid;
 import org.chromium.ui.dragdrop.DropDataProviderImpl;
 import org.chromium.ui.dragdrop.DropDataProviderUtils;
-import org.chromium.ui.util.XrUtils;
+
+import java.util.function.Supplier;
 
 /** Delegate for browser related functions used by Drag and Drop. */
 @NullMarked
@@ -196,7 +197,7 @@ public class ChromeDragAndDropBrowserDelegate implements DragAndDropBrowserDeleg
         // This is to handle the pending intent on a SysUI level when the drop occurs outside of the
         // source window. The API is available only on Android XR and should not be used on other
         // platforms.
-        if (XrUtils.isXrDevice()) {
+        if (DeviceInfo.isXr()) {
             Intent wrapperIntent = new Intent();
             wrapperIntent.putExtra("system_handled_intent", pendingIntent);
             return new ClipData.Item(clipDataText, wrapperIntent, /* uri= */ null);

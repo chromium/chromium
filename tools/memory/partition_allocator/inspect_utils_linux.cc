@@ -6,11 +6,16 @@
 
 #include <sys/mman.h>
 
+#include <optional>
+#include <string_view>
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -69,15 +74,12 @@ uintptr_t IndexThreadCacheNeedleArray(RemoteProcessMemoryReader& reader,
                            base::File::FLAG_OPEN | base::File::FLAG_READ);
     CHECK(file.IsValid());
     constexpr size_t kMaxFileSize = 10 * (1 << 20);
-    std::vector<char> data(kMaxFileSize);
-    int bytes_read =
-        file.ReadAtCurrentPos(&data[0], static_cast<int>(data.size()) - 1);
-    CHECK_GT(bytes_read, 0) << "Cannot read " << path;
-    data[bytes_read] = '\0';
-    std::string proc_maps(&data[0]);
+    std::vector<uint8_t> data(kMaxFileSize);
+    const std::optional<size_t> bytes_read = file.ReadAtCurrentPos(data);
+    CHECK_GT(bytes_read.value_or(0), 0u) << "Cannot read " << path;
 
     LOG(INFO) << "Parsing the maps";
-    CHECK(base::debug::ParseProcMaps(proc_maps, &regions));
+    CHECK(base::debug::ParseProcMaps(base::as_string_view(data), &regions));
     LOG(INFO) << "Found " << regions.size() << " regions";
   }
 

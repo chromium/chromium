@@ -15,6 +15,8 @@ namespace password_manager {
 
 namespace {
 
+constexpr size_t kFieldInfoCacheSize = 10;
+
 bool IsSameField(const FieldInfo& lhs, const FieldInfo& rhs) {
   return lhs.driver_id == rhs.driver_id && lhs.field_id == rhs.field_id;
 }
@@ -69,9 +71,7 @@ void FieldInfoManager::AddFieldInfo(
     // the field, update the value.
     field_info_cache_.back().field_info.value = new_info.value;
   } else {
-    // Only the last two fields are cached to allow for one possible username
-    // and one OTP/captcha field.
-    if (field_info_cache_.size() >= 2) {
+    if (field_info_cache_.size() >= kFieldInfoCacheSize) {
       ClearOldestFieldInfoEntry();
     }
 
@@ -93,9 +93,18 @@ void FieldInfoManager::AddFieldInfo(
 }
 
 std::vector<FieldInfo> FieldInfoManager::GetFieldInfo(
-    const std::string& signon_realm) {
+    const std::string& signon_realm,
+    std::optional<size_t> num_fields_to_consider) {
   std::vector<FieldInfo> relevant_info;
-  for (const auto& entry : field_info_cache_) {
+
+  size_t start_index = 0;
+  if (num_fields_to_consider.has_value() &&
+      num_fields_to_consider.value() < field_info_cache_.size()) {
+    start_index = field_info_cache_.size() - num_fields_to_consider.value();
+  }
+
+  for (size_t i = start_index; i < field_info_cache_.size(); ++i) {
+    const auto& entry = field_info_cache_[i];
     // TODO(crbug.com/40277063): Consider affiliated matches and PSL extension
     // list.
     if (IsPublicSuffixDomainMatch(entry.field_info.signon_realm,

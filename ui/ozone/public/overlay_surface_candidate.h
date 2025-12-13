@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -50,7 +51,7 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   std::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OVERLAY_TRANSFORM_NONE;
   // Format of the buffer to composite.
-  gfx::BufferFormat format = gfx::BufferFormat::BGRA_8888;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
   // Color space of the buffer
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   // Stacking order of the overlay plane relative to the main surface,

@@ -7,20 +7,24 @@
     svg {
         width: 200px;
         height: 200px;
+        overflow: visible;
+        border: 5px solid transparent;
     }
     .shadow {
         fill: purple;
         transform: translate(10px, 20px);
+        stroke: purple;
+        stroke-width: 10px;
     }
 
     .target {
         fill: green;
         stroke: black;
-        stroke-width: 2px;
+        stroke-width: 10px;
     }
 </style>
 
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="70,10 130,60, 70,110, 10,60" class="shadow" />
-    <polygon points="70,10 130,60, 70,110, 10,60" class="target"  />
+    <polygon points="100,0 200,100, 100,200, 0,100" class="shadow"  />
+    <polygon points="100,0 200,100, 100,200, 0,100" class="target" />
 </svg>

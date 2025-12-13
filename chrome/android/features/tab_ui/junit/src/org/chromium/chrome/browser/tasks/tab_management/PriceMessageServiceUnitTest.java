@@ -35,9 +35,9 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
-import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceMessageType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 
 /** Unit tests for {@link PriceMessageService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -110,9 +110,7 @@ public class PriceMessageServiceUnitTest {
         inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
         inOrder.verify(mMessageObserver, times(1))
-                .messageReady(
-                        eq(MessageService.MessageType.PRICE_MESSAGE),
-                        any(PriceMessageService.PriceMessageData.class));
+                .messageReady(eq(MessageType.PRICE_MESSAGE), any());
         assertEquals(
                 INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
@@ -138,7 +136,7 @@ public class PriceMessageServiceUnitTest {
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
         assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
 
-        mMessageService.dismiss(PriceMessageType.PRICE_WELCOME);
+        mMessageService.dismiss();
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         assertNull(mMessageService.getPriceTabDataForTesting());
     }

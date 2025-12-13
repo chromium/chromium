@@ -9,9 +9,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +40,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.components.visited_url_ranking.url_grouping.TabSelectionType;
 
 import java.util.Collections;
 import java.util.List;
@@ -103,7 +109,8 @@ public class TabCollectionTabModelImplUnitTest {
                         mTabModelDelegate,
                         mAsyncTabParamsManager,
                         mTabRemover,
-                        mTabUngrouper);
+                        mTabUngrouper,
+                        /* supportUndo= */ false);
         mTabModel.addObserver(mTabModelObserver);
     }
 
@@ -218,6 +225,7 @@ public class TabCollectionTabModelImplUnitTest {
         assertEquals(
                 "Tab count should be 0 when native is not initialized", 0, mTabModel.getCount());
         verify(mTabCollectionTabModelImplJni, never()).getTabCountRecursive(anyLong());
+        verify(mTabModelObserver, atLeastOnce()).onDestroy();
     }
 
     @Test
@@ -318,5 +326,159 @@ public class TabCollectionTabModelImplUnitTest {
     @Test
     public void testGetTabsInGroup_Null() {
         assertEquals(Collections.emptyList(), mTabModel.getTabsInGroup(null));
+    }
+
+    @Test
+    public void testSetIndex() {
+        // Simulate a regular Profile.
+        doReturn(false).when(mProfile).isOffTheRecord();
+        doReturn(false).when(mProfile).isIncognitoBranded();
+
+        TabCollectionTabModelImpl model = getModel(mProfile, mTabModelDelegate);
+
+        model.setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModelDelegate).selectModel(/* incognito= */ false);
+
+        // Simulate an incognito Profile.
+        doReturn(true).when(mProfile).isOffTheRecord();
+        doReturn(true).when(mProfile).isIncognitoBranded();
+        reset(mTabModelDelegate);
+
+        TabCollectionTabModelImpl incognitoModel = getModel(mProfile, mTabModelDelegate);
+
+        incognitoModel.setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModelDelegate).selectModel(/* incognito= */ true);
+
+        // Simulate an ephemeral profile.
+        doReturn(true).when(mProfile).isOffTheRecord();
+        doReturn(false).when(mProfile).isIncognitoBranded();
+        reset(mTabModelDelegate);
+
+        TabCollectionTabModelImpl ephemeralModel = getModel(mProfile, mTabModelDelegate);
+
+        ephemeralModel.setIndex(0, TabSelectionType.FROM_USER);
+        verify(mTabModelDelegate).selectModel(/* incognito= */ true);
+    }
+
+    @Test
+    public void testConstructor_isIncognito() {
+        // Mock a profile that is incognito.
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+        doReturn(true).when(mOtrProfile).isIncognitoBranded();
+
+        TabCollectionTabModelImpl incognitoModel =
+                new TabCollectionTabModelImpl(
+                        mOtrProfile,
+                        ActivityType.TABBED,
+                        false,
+                        mRegularTabCreator,
+                        mIncognitoTabCreator,
+                        mOrderController,
+                        mTabContentManager,
+                        mNextTabPolicySupplier,
+                        mTabModelDelegate,
+                        mAsyncTabParamsManager,
+                        mTabRemover,
+                        mTabUngrouper,
+                        /* supportUndo= */ true);
+
+        assertFalse(incognitoModel.supportsPendingClosures());
+    }
+
+    @Test
+    public void testAddTab_willOpenInForeground() {
+        // Mock a profile that is incognito.
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+        doReturn(true).when(mOtrProfile).isIncognitoBranded();
+        when(mTabCollectionTabModelImplJni.init(any(), eq(mOtrProfile)))
+                .thenReturn(TAB_COLLECTION_TAB_MODEL_IMPL_PTR);
+
+        TabCollectionTabModelImpl incognitoModel =
+                new TabCollectionTabModelImpl(
+                        mOtrProfile,
+                        ActivityType.TABBED,
+                        false,
+                        mRegularTabCreator,
+                        mIncognitoTabCreator,
+                        mOrderController,
+                        mTabContentManager,
+                        mNextTabPolicySupplier,
+                        mTabModelDelegate,
+                        mAsyncTabParamsManager,
+                        mTabRemover,
+                        mTabUngrouper,
+                        false);
+
+        MockTab tab = MockTab.createAndInitialize(123, mOtrProfile);
+        tab.setIsInitialized(true);
+        incognitoModel.addTab(
+                tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        verify(mOrderController).willOpenInForeground(TabLaunchType.FROM_CHROME_UI, true);
+    }
+
+    @Test
+    public void testRemoveTabsAndSelectNext_nextIsInOtherModel() {
+        MockTab tabToClose = MockTab.createAndInitialize(123, mProfile);
+        tabToClose.setIsInitialized(true);
+        when(mOrderController.determineInsertionIndex(anyInt(), anyInt(), any())).thenReturn(0);
+        mTabModel.addTab(
+                tabToClose, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        MockTab nextTab = MockTab.createAndInitialize(456, mOtrProfile);
+        nextTab.setIsInitialized(true);
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+
+        TabModel incognitoTabModel = mock();
+        when(mTabModelDelegate.getModel(true)).thenReturn(incognitoTabModel);
+
+        mTabModel.closeTabs(
+                TabClosureParams.closeTab(tabToClose)
+                        .allowUndo(false)
+                        .recommendedNextTab(nextTab)
+                        .build());
+        verify(mTabModelDelegate).getModel(true);
+    }
+
+    @Test
+    public void testGetTabCreator_isIncognito() {
+        // Mock a profile that is incognito.
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+        doReturn(true).when(mOtrProfile).isIncognitoBranded();
+
+        TabCollectionTabModelImpl incognitoModel =
+                new TabCollectionTabModelImpl(
+                        mOtrProfile,
+                        ActivityType.TABBED,
+                        false,
+                        mRegularTabCreator,
+                        mIncognitoTabCreator,
+                        mOrderController,
+                        mTabContentManager,
+                        mNextTabPolicySupplier,
+                        mTabModelDelegate,
+                        mAsyncTabParamsManager,
+                        mTabRemover,
+                        mTabUngrouper,
+                        false);
+
+        assertEquals(mIncognitoTabCreator, incognitoModel.getTabCreator());
+    }
+
+    private static TabCollectionTabModelImpl getModel(
+            Profile profile, TabModelDelegate tabModelDelegate) {
+        return new TabCollectionTabModelImpl(
+                profile,
+                ActivityType.CUSTOM_TAB,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                tabModelDelegate,
+                null,
+                null,
+                null,
+                false);
     }
 }

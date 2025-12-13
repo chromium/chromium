@@ -5,15 +5,18 @@
 #include "chrome/browser/sync/glue/web_contents_state_synced_tab_delegate.h"
 
 #include "chrome/browser/sync/glue/synced_tab_delegate_android.h"
+#include "content/public/browser/browser_context.h"
 
 namespace browser_sync {
 
 WebContentsStateSyncedTabDelegate::WebContentsStateSyncedTabDelegate(
+    Profile* profile,
     TabAndroidDataProvider* tab_android_data_provider,
     std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer)
     : tab_android_data_provider_(tab_android_data_provider),
       web_contents_buffer_(std::move(web_contents_byte_buffer)) {
   web_contents_ = WebContentsState::RestoreContentsFromByteBuffer(
+      static_cast<content::BrowserContext*>(profile),
       web_contents_buffer_.get(), /*initially_hidden=*/true,
       /*no_renderer=*/true);
   if (web_contents_) {
@@ -27,10 +30,11 @@ WebContentsStateSyncedTabDelegate::~WebContentsStateSyncedTabDelegate() =
 
 std::unique_ptr<WebContentsStateSyncedTabDelegate>
 WebContentsStateSyncedTabDelegate::Create(
+    Profile* profile,
     TabAndroidDataProvider* tab_android_data_provider,
     std::unique_ptr<WebContentsStateByteBuffer> web_contents_byte_buffer) {
   auto tab_delegate = base::WrapUnique(new WebContentsStateSyncedTabDelegate(
-      tab_android_data_provider, std::move(web_contents_byte_buffer)));
+      profile, tab_android_data_provider, std::move(web_contents_byte_buffer)));
 
   // If the retrieved web contents of the newly created delegate is still null,
   // indicate for an early exit in the AssociatePlaceholderTab snapshot catch.

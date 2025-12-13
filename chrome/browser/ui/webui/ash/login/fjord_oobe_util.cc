@@ -11,7 +11,7 @@ namespace ash::fjord_util {
 
 namespace {
 const std::set<std::string>& kFjordOobeAllowedLanguages = {
-    "en", "es-419", "en-GB", "de", "fr", "ja", "fr-CA"};
+    "en", "en-GB", "de", "fr", "ja", "fr-CA", "es"};
 }
 
 bool ShouldShowFjordOobe() {

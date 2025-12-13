@@ -1,0 +1,98 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("certificate_provider") {
+  sources = [
+    "certificate_provider_service.h",
+    "certificate_provider_service_factory.h",
+    "pin_dialog_manager.h",
+    "security_token_pin_dialog_host.h",
+    "security_token_pin_dialog_host_popup_impl.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/components/certificate_provider",
+    "//chromeos/components/security_token_pin",
+    "//components/account_id",
+    "//components/keyed_service/core",
+    "//net",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "certificate_provider_service.cc",
+    "certificate_provider_service_factory.cc",
+    "pin_dialog_manager.cc",
+    "security_token_pin_dialog_host_popup_impl.cc",
+  ]
+  deps = [
+    ":certificate_provider",
+    "//chrome/browser/ui/ash/login",
+    "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ui/wm",
+    "//extensions/browser",
+    "//extensions/common",
+    "//third_party/boringssl",
+    "//ui/aura",
+    "//ui/gfx",
+    "//ui/views",
+
+    # Remove this dependency when the following headers get componentized:
+    # - c/b/ui/views/notifications/request_pin_view_chromeos.h
+    "//chrome/browser/ui",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_certificate_provider_extension.cc",
+    "test_certificate_provider_extension.h",
+    "test_certificate_provider_extension_mixin.cc",
+    "test_certificate_provider_extension_mixin.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/test:test_support_ui",
+    "//crypto",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//net",
+  ]
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//chrome/common/extensions",
+    "//chrome/common/extensions/api",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/browser/api/test",
+    "//extensions/common/api",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "certificate_provider_service_unittest.cc" ]
+  deps = [
+    ":certificate_provider",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/boringssl",
+  ]
+}

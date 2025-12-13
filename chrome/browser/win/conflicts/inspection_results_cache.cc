@@ -5,6 +5,8 @@
 #include "chrome/browser/win/conflicts/inspection_results_cache.h"
 
 #include <algorithm>
+#include <array>
+#include <cstdint>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -13,9 +15,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/hash/md5.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
+#include "crypto/obsolete/md5.h"
+
+std::array<uint8_t, crypto::obsolete::Md5::kSize>
+base::Md5ForWinInspectionResultsCache(base::span<const uint8_t> payload) {
+  return crypto::obsolete::Md5::Hash(payload);
+}
 
 namespace {
 
@@ -119,10 +126,9 @@ base::Pickle SerializeInspectionResultsCache(
   }
 
   // Append the md5 digest of the data to detect serializations errors.
-  base::MD5Digest md5_digest;
-  base::MD5Sum(pickle.payload_bytes(), &md5_digest);
-  pickle.WriteBytes(&md5_digest, sizeof(md5_digest));
-
+  std::array<uint8_t, crypto::obsolete::Md5::kSize> md5_digest =
+      Md5ForWinInspectionResultsCache(pickle.payload_bytes());
+  pickle.WriteBytes(&md5_digest, crypto::obsolete::Md5::kSize);
   return pickle;
 }
 
@@ -159,18 +165,20 @@ ReadCacheResult DeserializeInspectionResultsCache(
   }
 
   // Now check the md5 checksum.
-  const base::MD5Digest* read_md5_digest = nullptr;
+  const std::array<uint8_t, crypto::obsolete::Md5::kSize>* read_md5_digest =
+      nullptr;
   if (!pickle_iterator.ReadBytes(
           reinterpret_cast<const char**>(&read_md5_digest),
-          sizeof(*read_md5_digest))) {
+          crypto::obsolete::Md5::kSize)) {
     return ReadCacheResult::kFailDeserializeMD5;
   }
 
   // Check if the md5 checksum matches.
-  base::MD5Digest md5_digest;
   base::span<const uint8_t> payload = pickle.payload_bytes();
-  base::MD5Sum(payload.first(payload.size() - sizeof(md5_digest)), &md5_digest);
-  if (!std::ranges::equal(read_md5_digest->a, md5_digest.a)) {
+  if (!std::ranges::equal(
+          *read_md5_digest,
+          Md5ForWinInspectionResultsCache(
+              payload.first(payload.size() - crypto::obsolete::Md5::kSize)))) {
     return ReadCacheResult::kFailInvalidMD5;
   }
 

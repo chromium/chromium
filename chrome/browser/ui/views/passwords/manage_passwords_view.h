@@ -31,7 +31,7 @@ class ManagePasswordsView : public PasswordBubbleViewBase {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kFooterId);
 
   ManagePasswordsView(content::WebContents* web_contents,
-                      views::View* anchor_view);
+                      views::BubbleAnchor anchor_view);
 
   ManagePasswordsView(const ManagePasswordsView&) = delete;
   ManagePasswordsView& operator=(const ManagePasswordsView&) = delete;

@@ -265,8 +265,12 @@ void MockCryptoClientStream::setHandshakeConfirmedForce(bool state) {
 }
 
 bool MockCryptoClientStream::EarlyDataAccepted() const {
-  // This value is only used for logging. The return value doesn't matter.
-  return false;
+  return encryption_established_ && !handshake_confirmed_ &&
+         (handshake_mode_ == ZERO_RTT || handshake_mode_ == ASYNC_ZERO_RTT);
+}
+
+ssl_early_data_reason_t MockCryptoClientStream::EarlyDataReason() const {
+  return EarlyDataAccepted() ? ssl_early_data_accepted : ssl_early_data_unknown;
 }
 
 const QuicCryptoNegotiatedParameters&

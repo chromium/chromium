@@ -15,7 +15,7 @@
 #include "third_party/skia/include/codec/SkBmpDecoder.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
-#include "third_party/skia/include/codec/SkPngDecoder.h"
+#include "third_party/skia/include/codec/SkPngRustDecoder.h"
 #include "third_party/skia/include/codec/SkWebpDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -72,7 +72,7 @@ TEST(PaintPreviewSerialUtils, TestTransformedPictureProcs) {
 
   // Check that serializing then deserialize the picture works produces a
   // correct clip rect.
-  sk_sp<SkData> serial_pic_data =
+  auto serial_pic_data =
       serial_procs.fPictureProc(pic.get(), serial_procs.fPictureCtx);
   sk_sp<SkPicture> deserial_pic = deserial_procs.fPictureProc(
       serial_pic_data->data(), serial_pic_data->size(),
@@ -362,7 +362,7 @@ TEST(PaintPreviewSerialUtils, TestImageContextEncodeAndDecodePng) {
       path.AppendASCII("components/test/data/paint_preview/test.png"),
       base::File::FLAG_OPEN | base::File::FLAG_READ));
 
-  SkCodecs::Register(SkPngDecoder::Decoder());
+  SkCodecs::Register(SkPngRustDecoder::Decoder());
   TrySerialAndDeserial(SkData::MakeFromStream(&stream, stream.length()));
 }
 

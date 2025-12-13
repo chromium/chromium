@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] CSS Values Test: ::scroll-marker double activation scrolls into view twice
+  assert_equals: ::scroll-marker activation retains focus expected "rgb(0, 0, 255)" but got "rgb(0, 128, 0)"
+Harness: the test ran to completion.
+

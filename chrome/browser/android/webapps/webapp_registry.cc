@@ -13,7 +13,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebappRegistry_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 void WebappRegistry::UnregisterWebappsForUrls(
@@ -95,3 +95,5 @@ bool WebappRegistry::GetNeedsPwaRestore() {
   return Java_WebappRegistry_getNeedsPwaRestore(
       base::android::AttachCurrentThread());
 }
+
+DEFINE_JNI(WebappRegistry)

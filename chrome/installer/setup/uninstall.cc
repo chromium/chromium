@@ -4,11 +4,6 @@
 //
 // This file defines the methods useful for uninstalling Chrome.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/installer/setup/uninstall.h"
 
 #include <windows.h>
@@ -24,6 +19,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -422,7 +418,7 @@ void RemoveFiletypeRegistration(const InstallerState& installer_state,
     ValueEquals prog_id_pred(prog_id);
     for (const wchar_t* const* filetype =
              &ShellUtil::kPotentialFileAssociations[0];
-         *filetype != nullptr; ++filetype) {
+         *filetype != nullptr; UNSAFE_TODO(++filetype)) {
       if (DeleteRegistryValueIf(
               root, (classes_path + *filetype).c_str(), WorkItem::kWow64Default,
               nullptr, prog_id_pred) == ConditionalDeleteResult::DELETED) {
@@ -719,10 +715,12 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   std::wstring file_assoc_key;
   std::wstring open_with_list_key;
   std::wstring open_with_progids_key;
-  for (int i = 0; ShellUtil::kPotentialFileAssociations[i] != nullptr; ++i) {
+  for (int i = 0;
+       UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]) != nullptr; ++i) {
     file_assoc_key.assign(ShellUtil::kRegClasses);
     file_assoc_key.push_back(base::FilePath::kSeparators[0]);
-    file_assoc_key.append(ShellUtil::kPotentialFileAssociations[i]);
+    file_assoc_key.append(
+        UNSAFE_TODO(ShellUtil::kPotentialFileAssociations[i]));
     file_assoc_key.push_back(base::FilePath::kSeparators[0]);
 
     open_with_list_key.assign(file_assoc_key);
@@ -756,7 +754,7 @@ bool DeleteChromeRegistrationKeys(const InstallerState& installer_state,
   std::wstring child_key;
   for (const wchar_t* const* proto =
            &ShellUtil::kPotentialProtocolAssociations[0];
-       *proto != nullptr; ++proto) {
+       *proto != nullptr; UNSAFE_TODO(++proto)) {
     parent_key.resize(base_length);
     parent_key.append(*proto);
     child_key.assign(parent_key).append(ShellUtil::kRegShellOpen);
@@ -784,21 +782,24 @@ void RemoveChromeLegacyRegistryKeys(const base::FilePath& chrome_exe) {
   HKEY roots[] = {HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER};
   for (size_t i = 0; i < std::size(roots); ++i) {
     std::wstring suffix;
-    if (roots[i] == HKEY_LOCAL_MACHINE)
+    if (UNSAFE_TODO(roots[i]) == HKEY_LOCAL_MACHINE) {
       suffix = ShellUtil::GetCurrentInstallationSuffix(chrome_exe);
+    }
 
     // Delete Software\Classes\ChromeExt,
     std::wstring ext_prog_id(ShellUtil::kRegClasses);
     ext_prog_id.push_back(base::FilePath::kSeparators[0]);
     ext_prog_id.append(kChromeExtProgId);
     ext_prog_id.append(suffix);
-    DeleteRegistryKey(roots[i], ext_prog_id, WorkItem::kWow64Default);
+    DeleteRegistryKey(UNSAFE_TODO(roots[i]), ext_prog_id,
+                      WorkItem::kWow64Default);
 
     // Delete Software\Classes\.crx,
     std::wstring ext_association(ShellUtil::kRegClasses);
     ext_association.append(L"\\");
     ext_association.append(L".crx");
-    DeleteRegistryKey(roots[i], ext_association, WorkItem::kWow64Default);
+    DeleteRegistryKey(UNSAFE_TODO(roots[i]), ext_association,
+                      WorkItem::kWow64Default);
   }
 }
 
@@ -913,7 +914,7 @@ InstallStatus UninstallProduct(const ModifyParams& modify_params,
   // in case of errors.
   ClearRlzProductState();
 
-  auto_launch_util::DisableBackgroundStartAtLogin();
+  auto_launch_util::DisableStartAtLogin();
 
   base::FilePath chrome_proxy_exe(
       installer_state.target_path().Append(installer::kChromeProxyExe));

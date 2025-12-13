@@ -11,6 +11,8 @@
 
 namespace segmentation_platform {
 
+using Feature = ComposePromotion::Feature;
+
 class ComposePromotionTest : public DefaultModelTestBase {
  public:
   ComposePromotionTest()
@@ -40,11 +42,14 @@ TEST_F(ComposePromotionTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
-  ExpectClassifierResults(/*inputs=*/{0.49},
+  ModelProvider::Request inputs(Feature::kFeatureCount);
+  inputs[Feature::kLabelRandom] = 0.49;
+  ExpectClassifierResults(inputs,
                           {segmentation_platform::kComposePrmotionLabelShow});
+
+  inputs[Feature::kLabelRandom] = 0.51;
   ExpectClassifierResults(
-      /*inputs=*/{0.51},
-      {segmentation_platform::kComposePrmotionLabelDontShow});
+      inputs, {segmentation_platform::kComposePrmotionLabelDontShow});
 }
 
 }  // namespace segmentation_platform

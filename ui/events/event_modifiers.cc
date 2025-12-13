@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/event_modifiers.h"
 
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 
@@ -37,12 +33,8 @@ constexpr auto kEventFlagFromModifiers = std::to_array<int>({
 
 }  // namespace
 
-EventModifiers::EventModifiers() {
-  memset(
-      modifiers_down_.data(), 0,
-      (modifiers_down_.size() * sizeof(decltype(modifiers_down_)::value_type)));
-}
-EventModifiers::~EventModifiers() {}
+EventModifiers::EventModifiers() = default;
+EventModifiers::~EventModifiers() = default;
 
 void EventModifiers::UpdateModifier(unsigned int modifier, bool down) {
   DCHECK_LT(modifier, static_cast<unsigned int>(MODIFIER_NUM_MODIFIERS));

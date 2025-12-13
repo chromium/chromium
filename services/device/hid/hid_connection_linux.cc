@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/hid/hid_connection_linux.h"
 
 #include <errno.h>
@@ -18,6 +13,9 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
@@ -103,7 +101,8 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
       // Linux adds a 0 to the beginning of the data received from the device.
       auto copied_buffer =
           base::MakeRefCounted<base::RefCountedBytes>(result - 1);
-      memcpy(copied_buffer->as_vector().data(), buffer->data() + 1, result - 1);
+      UNSAFE_TODO(memcpy(copied_buffer->as_vector().data(), buffer->data() + 1,
+                         result - 1));
       return std::make_tuple(true, std::move(copied_buffer), result - 1);
     } else {
       return std::make_tuple(true, std::move(buffer), result);
@@ -131,16 +130,16 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
 
     auto buffer =
         base::MakeRefCounted<base::RefCountedBytes>(report_buffer_size_);
-    uint8_t* data = buffer->as_vector().data();
+    base::span<uint8_t> data = buffer->as_vector();
     size_t length = report_buffer_size_;
     if (!has_report_id_) {
       // Linux will not prefix the buffer with a report ID if report IDs are not
       // used by the device. Prefix the buffer with 0.
-      *data++ = 0;
+      (base::PostIncrementSpan(data))[0] = 0;
       length--;
     }
 
-    ssize_t bytes_read = HANDLE_EINTR(read(fd_.get(), data, length));
+    ssize_t bytes_read = HANDLE_EINTR(read(fd_.get(), data.data(), length));
     if (bytes_read < 0) {
       if (errno != EAGAIN) {
         HID_PLOG(EVENT) << "Read failed";

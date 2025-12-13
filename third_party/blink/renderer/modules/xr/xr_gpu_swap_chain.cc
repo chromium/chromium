@@ -164,16 +164,15 @@ XRGPUMailboxSwapChain::XRGPUMailboxSwapChain(
 }
 
 GPUTexture* XRGPUMailboxSwapChain::ProduceTexture() {
-  const XRLayerSharedImages& shared_images = layer()->GetSharedImages();
+  const XRSharedImageData& content_image_data = layer()->SharedImage();
 
   // TODO(crbug.com/359418629): Allow for other mailboxes as well?
-  CHECK(shared_images.content_image_data.shared_image);
+  CHECK(content_image_data.shared_image);
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromExistingSharedImage(
           device()->GetDawnControlClient(), device()->GetHandle(), descriptor_,
-          shared_images.content_image_data.shared_image,
-          shared_images.content_image_data.sync_token);
+          content_image_data.shared_image, content_image_data.sync_token);
 
   return MakeGarbageCollected<GPUTexture>(
       device(), descriptor_.format, descriptor_.usage,

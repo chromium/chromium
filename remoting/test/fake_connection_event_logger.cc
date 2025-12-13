@@ -106,6 +106,8 @@ class FakeConnectionEventLogger::CounterClientStub
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override {}
   void SetCapabilities(const protocol::Capabilities& capabilities) override {}
   void SetCursorShape(const protocol::CursorShapeInfo& cursor_shape) override {}
+  void SetHostCursorPosition(
+      const protocol::HostCursorPosition& position) override {}
   void SetKeyboardLayout(const protocol::KeyboardLayout& layout) override {}
   void SetPairingResponse(const protocol::PairingResponse& response) override {}
   void SetVideoLayout(const protocol::VideoLayout& video_layout) override {}

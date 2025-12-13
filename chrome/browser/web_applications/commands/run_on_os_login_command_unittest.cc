@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"

@@ -230,6 +230,8 @@ function getMessageFromProgressEvent(
         return str('MOVE_IN_USE_ERROR');
       case chrome.fileManagerPrivate.IoTaskType.DELETE:
         return str('DELETE_IN_USE_ERROR');
+      default:
+        break;
     }
   }
   const detail = getFileErrorString(event.errorName);

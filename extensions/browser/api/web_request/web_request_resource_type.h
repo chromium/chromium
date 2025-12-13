@@ -9,8 +9,13 @@
 
 #include <string_view>
 
-#include "services/network/public/cpp/resource_request.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace network {
+struct ResourceRequest;
+}
 
 namespace extensions {
 

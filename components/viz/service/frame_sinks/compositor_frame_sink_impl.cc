@@ -138,12 +138,19 @@ void CompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
   support_->SetNeedsBeginFrame(needs_begin_frame);
 }
 
-void CompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
-  support_->SetWantsAnimateOnlyBeginFrames();
-}
-
-void CompositorFrameSinkImpl::SetAutoNeedsBeginFrame() {
-  support_->SetAutoNeedsBeginFrame();
+void CompositorFrameSinkImpl::SetParams(
+    mojom::CompositorFrameSinkParamsPtr params) {
+  DCHECK(!params_set_ && !support_->last_created_surface_id().is_valid());
+  params_set_ = true;
+  if (params->wants_animate_only_begin_frames) {
+    support_->SetWantsAnimateOnlyBeginFrames();
+  }
+  if (params->auto_needs_begin_frame) {
+    support_->SetAutoNeedsBeginFrame();
+  }
+  if (params->no_compositor_frame_acks) {
+    support_->SetNoCompositorFrameAcks();
+  }
 }
 
 void CompositorFrameSinkImpl::SubmitCompositorFrame(

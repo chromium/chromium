@@ -11,7 +11,7 @@ import * as Common from 'devtools/core/common/common.js';
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
   await TestRunner.showPanel('network');
 
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
 
   NetworkTestRunner.makeSimpleXHR('GET', 'resources/initiator.css', false, sendBinaryRequest);
 
@@ -23,11 +23,8 @@ import * as Common from 'devtools/core/common/common.js';
     var stream = new TestRunner.StringOutputStream(onSaved);
     var progress = new Common.Progress.Progress();
     await NetworkTestRunner.writeHARLog(
-        stream,
-        NetworkTestRunner.networkRequests(),
-        {sanitize: false},
+        stream, NetworkTestRunner.networkRequests(), {sanitize: false},
         progress);
-    progress.done();
     stream.close();
   }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/web_test/renderer/test_plugin.h"
 
 #include <stddef.h>
@@ -15,6 +10,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -55,14 +52,16 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace content {
 
 namespace {
 
-void PremultiplyAlpha(const uint8_t color_in[3],
+void PremultiplyAlpha(base::span<const uint8_t, 3> color_in,
                       float alpha,
-                      float color_out[4]) {
+                      base::span<float, 4> color_out) {
   for (int i = 0; i < 3; ++i)
     color_out[i] = (color_in[i] / 255.0f) * alpha;
 
@@ -124,25 +123,34 @@ void PrintEventDetails(TestRunner* test_runner,
 
 blink::WebPluginContainer::TouchEventRequestType ParseTouchEventRequestType(
     const blink::WebString& string) {
-  if (string == blink::WebString::FromUTF8("raw"))
+  if (string == blink::WebString::FromUTF8("raw")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeRaw;
-  if (string == blink::WebString::FromUTF8("raw-lowlatency"))
+  }
+  if (string == blink::WebString::FromUTF8("raw-lowlatency")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeRawLowLatency;
-  if (string == blink::WebString::FromUTF8("synthetic"))
+  }
+  if (string == blink::WebString::FromUTF8("synthetic")) {
     return blink::WebPluginContainer::kTouchEventRequestTypeSynthesizedMouse;
+  }
   return blink::WebPluginContainer::kTouchEventRequestTypeNone;
 }
 
 class ScriptableObject
-    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
-          ScriptableObject> {
+    : public gin::WrappableWithNamedPropertyInterceptor<ScriptableObject> {
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kTestPluginScriptableObject};
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
 
   static v8::Local<v8::Object> Create(v8::Isolate* isolate) {
-    ScriptableObject* scriptable_object = new ScriptableObject();
-    return gin::CreateHandle(isolate, scriptable_object)
-        .ToV8()
+    auto* scriptable_object = cppgc::MakeGarbageCollected<ScriptableObject>(
+        isolate->GetCppHeap()->GetAllocationHandle());
+    return gin::ConvertToV8(isolate, scriptable_object)
+        .ToLocalChecked()
         .As<v8::Object>();
   }
 
@@ -156,21 +164,16 @@ class ScriptableObject
     return v8::Local<v8::Value>();
   }
 
- private:
-  explicit ScriptableObject() = default;
+  ScriptableObject() = default;
 
   // gin::DeprecatedWrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return gin::DeprecatedWrappable<ScriptableObject>::GetObjectTemplateBuilder(
-               isolate)
-        .AddNamedPropertyInterceptor();
+    return gin::WrappableWithNamedPropertyInterceptor<
+               ScriptableObject>::GetObjectTemplateBuilder(isolate)
+        .template AddNamedPropertyInterceptor<kWrapperInfo.pointer_tag>();
   }
 };
-
-// static
-gin::DeprecatedWrapperInfo ScriptableObject::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 }  // namespace
 
@@ -186,26 +189,27 @@ TestPlugin::TestPlugin(const blink::WebPluginParams& params,
     const blink::WebString& attribute_name = params.attribute_names[i];
     const blink::WebString& attribute_value = params.attribute_values[i];
 
-    if (attribute_name == "primitive")
+    if (attribute_name == "primitive") {
       scene_.primitive = ParsePrimitive(attribute_value);
-    else if (attribute_name == "background-color")
+    } else if (attribute_name == "background-color") {
       ParseColor(attribute_value, scene_.background_color);
-    else if (attribute_name == "primitive-color")
+    } else if (attribute_name == "primitive-color") {
       ParseColor(attribute_value, scene_.primitive_color);
-    else if (attribute_name == "opacity")
+    } else if (attribute_name == "opacity") {
       scene_.opacity = ParseOpacity(attribute_value);
-    else if (attribute_name == "accepts-touch")
+    } else if (attribute_name == "accepts-touch") {
       touch_event_request_ = ParseTouchEventRequestType(attribute_value);
-    else if (attribute_name == "re-request-touch")
+    } else if (attribute_name == "re-request-touch") {
       re_request_touch_events_ = ParseBoolean(attribute_value);
-    else if (attribute_name == "print-event-details")
+    } else if (attribute_name == "print-event-details") {
       print_event_details_ = ParseBoolean(attribute_value);
-    else if (attribute_name == "can-process-drag")
+    } else if (attribute_name == "can-process-drag") {
       can_process_drag_ = ParseBoolean(attribute_value);
-    else if (attribute_name == "supports-keyboard-focus")
+    } else if (attribute_name == "supports-keyboard-focus") {
       supports_keyboard_focus_ = ParseBoolean(attribute_value);
-    else if (attribute_name == "print-user-gesture-status")
+    } else if (attribute_name == "print-user-gesture-status") {
       print_user_gesture_status_ = ParseBoolean(attribute_value);
+    }
   }
 }
 
@@ -217,12 +221,13 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
 
   container_ = container;
 
-  blink::Platform::ContextAttributes attrs;
   blink::WebURL url = container->GetDocument().Url();
-  blink::Platform::GraphicsInfo gl_info;
+  blink::Platform::WebGLContextInfo gl_info;
   std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider =
-      blink::Platform::Current()->CreateOffscreenGraphicsContext3DProvider(
-          attrs, url, &gl_info);
+      blink::Platform::Current()->CreateWebGLGraphicsContextProvider(
+          /*prefer_low_power_gpu=*/true,
+          /*fail_if_major_performance_caveat=*/false,
+          blink::Platform::kWebGL1ContextType, url, &gl_info);
   if (context_provider && !context_provider->BindToCurrentSequence()) {
     context_provider = nullptr;
   }
@@ -242,8 +247,9 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
     DCHECK(shared_image_interface_);
   }
 
-  if (!InitScene())
+  if (!InitScene()) {
     return false;
+  }
 
   layer_ = cc::TextureLayer::Create(this);
   container_->SetCcLayer(layer_.get());
@@ -259,10 +265,12 @@ bool TestPlugin::Initialize(blink::WebPluginContainer* container) {
 }
 
 void TestPlugin::Destroy() {
-  if (layer_.get())
+  if (layer_.get()) {
     layer_->ClearTexture();
-  if (container_)
+  }
+  if (container_) {
     container_->SetCcLayer(nullptr);
+  }
   layer_ = nullptr;
   DestroyScene();
 
@@ -292,8 +300,9 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
                                 const gfx::Rect& clip_rect,
                                 const gfx::Rect& unobscured_rect,
                                 bool is_visible) {
-  if (clip_rect == rect_)
+  if (clip_rect == rect_) {
     return;
+  }
   rect_ = clip_rect;
 
   if (shared_image_) {
@@ -370,8 +379,9 @@ void TestPlugin::ReleaseSharedImage(
 bool TestPlugin::PrepareTransferableResource(
     viz::TransferableResource* resource,
     viz::ReleaseCallback* release_callback) {
-  if (!content_changed_)
+  if (!content_changed_) {
     return false;
+  }
 
   if (shared_image_) {
     *resource = viz::TransferableResource::Make(
@@ -406,10 +416,12 @@ TestPlugin::Primitive TestPlugin::ParsePrimitive(
 
 // FIXME: This method should already exist. Use it.
 // For now just parse primary colors.
-void TestPlugin::ParseColor(const blink::WebString& string, uint8_t color[3]) {
+void TestPlugin::ParseColor(const blink::WebString& string,
+                            base::span<uint8_t, 3> color) {
   color[0] = color[1] = color[2] = 0;
-  if (string == "black")
+  if (string == "black") {
     return;
+  }
 
   if (string == "red") {
     color[0] = 255;
@@ -432,8 +444,9 @@ bool TestPlugin::ParseBoolean(const blink::WebString& string) {
 }
 
 bool TestPlugin::InitScene() {
-  if (!gl_)
+  if (!gl_) {
     return true;
+  }
 
   float color[4];
   PremultiplyAlpha(scene_.background_color, scene_.opacity, color);
@@ -457,8 +470,9 @@ void TestPlugin::DrawSceneGL() {
   gl_->Viewport(0, 0, rect_.width(), rect_.height());
   gl_->Clear(GL_COLOR_BUFFER_BIT);
 
-  if (scene_.primitive != PrimitiveNone)
+  if (scene_.primitive != PrimitiveNone) {
     DrawPrimitive();
+  }
 }
 
 void TestPlugin::DrawSceneSoftware(void* memory) {
@@ -478,10 +492,14 @@ void TestPlugin::DrawSceneSoftware(void* memory) {
     SkColor foreground_color = SkColorSetARGB(
         static_cast<uint8_t>(scene_.opacity * 255), scene_.primitive_color[0],
         scene_.primitive_color[1], scene_.primitive_color[2]);
-    SkPath triangle_path;
-    triangle_path.moveTo(0.5f * rect_.width(), 0.9f * rect_.height());
-    triangle_path.lineTo(0.1f * rect_.width(), 0.1f * rect_.height());
-    triangle_path.lineTo(0.9f * rect_.width(), 0.1f * rect_.height());
+    const SkPath triangle_path = SkPath::Polygon(
+        {
+            {0.5f * rect_.width(), 0.9f * rect_.height()},
+            {0.1f * rect_.width(), 0.1f * rect_.height()},
+            {0.9f * rect_.width(), 0.1f * rect_.height()},
+        },
+        /*isClosed=*/false);
+
     SkPaint paint;
     paint.setColor(foreground_color);
     paint.setStyle(SkPaint::kFill_Style);
@@ -526,8 +544,9 @@ bool TestPlugin::InitProgram() {
       "}                        \n");
 
   scene_.program = LoadProgram(vertex_source, fragment_source);
-  if (!scene_.program)
+  if (!scene_.program) {
     return false;
+  }
 
   scene_.color_location = gl_->GetUniformLocation(scene_.program, "color");
   scene_.position_location = gl_->GetAttribLocation(scene_.program, "position");
@@ -538,8 +557,9 @@ bool TestPlugin::InitPrimitive() {
   DCHECK_EQ(scene_.primitive, PrimitiveTriangle);
 
   gl_->GenBuffers(1, &scene_.vbo);
-  if (!scene_.vbo)
+  if (!scene_.vbo) {
     return false;
+  }
 
   const float vertices[] = {0.0f, 0.8f, 0.0f,  -0.8f, -0.8f,
                             0.0f, 0.8f, -0.8f, 0.0f};
@@ -604,10 +624,12 @@ GLuint TestPlugin::LoadProgram(const std::string& vertex_source,
       program = 0;
     }
   }
-  if (vertex_shader)
+  if (vertex_shader) {
     gl_->DeleteShader(vertex_shader);
-  if (fragment_shader)
+  }
+  if (fragment_shader) {
     gl_->DeleteShader(fragment_shader);
+  }
 
   return program;
 }
@@ -619,18 +641,22 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
 
   // Don't log gesture events, which aren't exposed to the Pepper API (see
   // ClassifyInputEvent in content/renderer/pepper/event_conversion.cc).
-  if (blink::WebInputEvent::IsGestureEventType(event.GetType()))
+  if (blink::WebInputEvent::IsGestureEventType(event.GetType())) {
     return blink::WebInputEventResult::kNotHandled;
+  }
 
   auto* frame_proxy = static_cast<WebFrameTestProxy*>(
       RenderFrame::FromWebFrame(web_local_frame_));
   const char* event_name = blink::WebInputEvent::GetName(event.GetType());
-  if (!strcmp(event_name, "") || !strcmp(event_name, "Undefined"))
+  if (!UNSAFE_TODO(strcmp(event_name, "")) ||
+      !UNSAFE_TODO(strcmp(event_name, "Undefined"))) {
     event_name = "unknown";
+  }
   test_runner_->PrintMessage(
       std::string("Plugin received event: ") + event_name + "\n", *frame_proxy);
-  if (print_event_details_)
+  if (print_event_details_) {
     PrintEventDetails(test_runner_, *frame_proxy, event);
+  }
 
   if (print_user_gesture_status_) {
     bool has_transient_user_activation =
@@ -641,9 +667,10 @@ blink::WebInputEventResult TestPlugin::HandleInputEvent(
         *frame_proxy);
   }
 
-  if (is_persistent_)
+  if (is_persistent_) {
     test_runner_->PrintMessage(std::string("TestPlugin: isPersistent\n"),
                                *frame_proxy);
+  }
   return blink::WebInputEventResult::kNotHandled;
 }
 

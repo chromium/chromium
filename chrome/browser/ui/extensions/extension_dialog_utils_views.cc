@@ -35,12 +35,29 @@ views::View* GetDialogAnchorView(
 void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
+  ShowDialog(parent, std::vector({extension_id}), std::move(dialog_model));
+}
+
+void ShowModalDialog(gfx::NativeWindow parent,
+                     std::unique_ptr<ui::DialogModel> dialog_model) {
+  constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
+}
+
+void ShowWebModalDialog(content::WebContents* web_contents,
+                        std::unique_ptr<ui::DialogModel> dialog_model) {
+  constrained_window::ShowWebModal(std::move(dialog_model), web_contents);
+}
+
+void ShowDialog(gfx::NativeWindow parent,
+                const std::vector<extensions::ExtensionId>& extension_ids,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
   ExtensionsToolbarContainer* const container =
       parent ? GetExtensionsToolbarContainer(parent) : nullptr;
   if (container && container->GetVisible()) {
-    ShowDialog(container, {extension_id}, std::move(dialog_model));
+    ShowDialog(container, extension_ids, std::move(dialog_model));
   } else {
-    constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
+    // If the container is not available, show a modal dialog.
+    ShowModalDialog(parent, std::move(dialog_model));
   }
 }
 

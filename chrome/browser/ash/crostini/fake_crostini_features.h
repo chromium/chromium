@@ -24,17 +24,17 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
   ~FakeCrostiniFeatures() override;
 
   // CrostiniFeatures:
-  bool CouldBeAllowed(Profile* profile, std::string* reason) override;
-  bool IsAllowedNow(Profile* profile, std::string* reason) override;
-  bool IsEnabled(Profile* profile) override;
-  bool IsExportImportUIAllowed(Profile* profile) override;
-  bool IsRootAccessAllowed(Profile* profile) override;
-  bool IsContainerUpgradeUIAllowed(Profile* profile) override;
+  bool CouldBeAllowed(Profile* profile, std::string* reason) const override;
+  bool IsAllowedNow(Profile* profile, std::string* reason) const override;
+  bool IsEnabled(Profile* profile) const override;
+  bool IsExportImportUIAllowed(Profile* profile) const override;
+  bool IsRootAccessAllowed(Profile* profile) const override;
+  bool IsContainerUpgradeUIAllowed(Profile* profile) const override;
   void CanChangeAdbSideloading(
       Profile* profile,
-      CanChangeAdbSideloadingCallback callback) override;
-  bool IsPortForwardingAllowed(Profile* profile) override;
-  bool IsMultiContainerAllowed(Profile* profile) override;
+      CanChangeAdbSideloadingCallback callback) const override;
+  bool IsPortForwardingAllowed(Profile* profile) const override;
+  bool IsMultiContainerAllowed(Profile* profile) const override;
 
   void SetAll(bool flag);
   void ClearAll();

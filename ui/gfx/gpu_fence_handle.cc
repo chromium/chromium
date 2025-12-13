@@ -100,7 +100,7 @@ bool GpuFenceHandle::is_null() const {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return !smart_fence_.get()->scoped_fence_.is_valid();
 #elif BUILDFLAG(IS_WIN)
-  return !smart_fence_.get()->scoped_fence_.IsValid();
+  return !smart_fence_.get()->scoped_fence_.is_valid();
 #else
   return true;
 #endif

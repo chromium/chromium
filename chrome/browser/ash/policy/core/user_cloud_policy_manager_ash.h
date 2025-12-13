@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -106,6 +106,7 @@ class UserCloudPolicyManagerAsh
   UserCloudPolicyManagerAsh(
       Profile* profile,
       std::unique_ptr<CloudPolicyStore> store,
+      std::unique_ptr<CloudPolicyStore> extension_install_store,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const base::FilePath& component_policy_cache_path,
       PolicyEnforcement enforcement_type,

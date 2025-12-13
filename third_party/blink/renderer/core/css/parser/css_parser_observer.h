@@ -25,8 +25,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_PARSER_OBSERVER_H_
 
-#include "third_party/blink/renderer/core/css/css_property_source_data.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 
 namespace blink {
 
@@ -36,6 +36,8 @@ class CSSParserObserver {
   virtual void StartRuleHeader(StyleRule::RuleType, unsigned offset) = 0;
   virtual void EndRuleHeader(unsigned offset) = 0;
   virtual void ObserveSelector(unsigned start_offset, unsigned end_offset) = 0;
+  virtual void ObserveFontFeatureType(
+      StyleRuleFontFeature::FeatureType type) = 0;
   virtual void StartRuleBody(unsigned offset) = 0;
   virtual void EndRuleBody(unsigned offset) = 0;
   virtual void ObserveProperty(unsigned start_offset,

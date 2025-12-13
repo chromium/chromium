@@ -9,7 +9,7 @@
 
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 
@@ -74,7 +74,7 @@ class WaylandSubsurface : public base::LinkNode<WaylandSubsurface> {
   const raw_ptr<WaylandConnection> connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to
   // this subsurface.
-  const raw_ptr<WaylandWindow, AcrossTasksDanglingUntriaged> parent_;
+  const raw_ptr<WaylandWindow> parent_;
   bool visible_ = false;
 };
 

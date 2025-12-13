@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/trees/mutator_host_client.h"
@@ -154,23 +154,16 @@ class CC_ANIMATION_EXPORT ScrollOffsetAnimationsImpl {
 
   bool IsAnimating() const;
   bool IsAutoScrolling() const;
-  ElementId GetElementId() const;
 
  private:
   // This retrieves the ScrollOffsetAnimationImpl object associated with the
-  // given ElementId. It is only used when MultiImplScrollAnimations is enabled.
+  // given ElementId.
   ScrollOffsetAnimationImpl* GetScrollAnimation(ElementId element_id) const;
 
   raw_ptr<AnimationHost> animation_host_;
 
-  // We have just one animation for impl-only scroll offset animations.
-  // I.e. only one element can have an impl-only scroll offset animation at
-  // any given time.
-  std::unique_ptr<ScrollOffsetAnimationImpl> scroll_offset_animation_;
-
   // This maps each animating scroll container's ElementId to a
-  // ScrollOffsetAnimationImpl object. It is only used when
-  // MultiImplScrollAnimations is enabled.
+  // ScrollOffsetAnimationImpl object..
   base::flat_map<ElementId, std::unique_ptr<ScrollOffsetAnimationImpl>>
       element_to_animation_map_;
 };

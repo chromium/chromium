@@ -55,7 +55,8 @@ class LayoutSVGModelObject : public LayoutObject {
   void QuadsInAncestorInternal(Vector<gfx::QuadF>&,
                                const LayoutBoxModelObject* ancestor,
                                MapCoordinatesFlags) const override;
-  gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
+  gfx::RectF LocalBoundingBoxRectForAccessibility(
+      IncludeDescendants include_descendants) const final;
 
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
@@ -63,7 +64,9 @@ class LayoutSVGModelObject : public LayoutObject {
   void MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+  void StyleDidChange(StyleDifference,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
 
   SVGElement* GetElement() const {
     NOT_DESTROYED();
@@ -88,6 +91,11 @@ class LayoutSVGModelObject : public LayoutObject {
  private:
   // LayoutSVGModelObject subclasses should use GetElement() instead.
   void GetNode() const = delete;
+
+  bool MapToVisualRectInAncestorSpaceInternal(
+      const LayoutBoxModelObject* ancestor,
+      TransformState&,
+      VisualRectFlags) const final;
 
   void AddOutlineRects(OutlineRectCollector&,
                        OutlineInfo*,

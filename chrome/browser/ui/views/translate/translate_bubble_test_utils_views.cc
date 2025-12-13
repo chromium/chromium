@@ -16,9 +16,7 @@
 namespace translate::test_utils {
 
 TranslateBubbleView* GetTranslateBubble(Browser* browser) {
-  return browser->GetFeatures()
-      .translate_bubble_controller()
-      ->GetTranslateBubble();
+  return TranslateBubbleController::From(browser)->GetTranslateBubble();
 }
 
 const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
@@ -31,7 +29,7 @@ const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
 void CloseCurrentBubble(Browser* browser) {
   DCHECK(browser);
   TranslateBubbleController* controller =
-      browser->GetFeatures().translate_bubble_controller();
+      TranslateBubbleController::From(browser);
   if (controller) {
     controller->CloseBubble();
   }

@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -128,8 +129,7 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
 class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginReauthTest()
-      : AuthFlowsLoginTestBase(/* require_reauth */ true) {
-  }
+      : AuthFlowsLoginTestBase(/* require_reauth */ true) {}
   ~AuthFlowsLoginReauthTest() override = default;
 
   void TriggerUserOnlineAuth(const LoginManagerMixin::TestUserInfo user,
@@ -159,12 +159,10 @@ class AuthFlowsLoginReauthWithPinTest : public AuthFlowsLoginReauthTest {
 };
 
 // ----------------------------------------------------------
-
 class AuthFlowsLoginRecoverUserTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginRecoverUserTest()
-      : AuthFlowsLoginTestBase(/* require_reauth */ false) {
-  }
+      : AuthFlowsLoginTestBase(/* require_reauth */ false) {}
 
   ~AuthFlowsLoginRecoverUserTest() override = default;
 
@@ -549,12 +547,16 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTest,
   test::LocalDataLossWarningPageWaiter()->Wait();
 }
 
+// Parameterized on a boolean that represents whether the recovery flow password
+// reset order changes (kRecoveryFlowReorder) are enabled or not.
 class AuthFlowsLoginRecoverUserTestPasswordlessRecovery
-    : public AuthFlowsLoginRecoverUserTest {
+    : public AuthFlowsLoginRecoverUserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   AuthFlowsLoginRecoverUserTestPasswordlessRecovery() {
-    feature_list_.InitAndEnableFeature(
-        ash::features::kAllowPasswordlessRecovery);
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(ash::features::kRecoveryFlowReorder);
+    }
   }
 
  private:
@@ -563,7 +565,7 @@ class AuthFlowsLoginRecoverUserTestPasswordlessRecovery
 
 // Ensures that a user with PIN-only (without recovery) is shown the local data
 // loss warning screen.
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
+IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
                        PinOnlyWithoutRecovery) {
   const auto& user = with_pin_;
   // Start recovery flow without recovery auth factor.
@@ -574,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
 }
 
 // Ensures that going through recovery for the PIN-only scenario works.
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
+IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
                        RecoveryWithPinOnly) {
   const auto& user = with_pin_recovery_;
   // Start recovery flow with recovery auth factor.
@@ -589,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
 }
 
 // Checks that the PIN autosubmit length is properly updated.
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
+IN_PROC_BROWSER_TEST_P(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
                        AutoSubmitLengthIsCorrectlyUpdated) {
   const auto& user = with_pin_recovery_;
 
@@ -606,5 +608,9 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
   login_mixin_.WaitForActiveSession();
   EXPECT_EQ(known_user.GetUserPinLength(user.account_id), 8);
 }
+
+INSTANTIATE_TEST_SUITE_P(AuthFlowsLoginRecoverUserTestPasswordlessRecoveryTests,
+                         AuthFlowsLoginRecoverUserTestPasswordlessRecovery,
+                         ::testing::ValuesIn({true, false}));
 
 }  // namespace ash

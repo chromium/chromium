@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -31,223 +32,271 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::base::test::EqualsProto;
+using ::testing::ElementsAre;
+using ::testing::Pointee;
+using ::testing::ValuesIn;
+
+constexpr auto kNoExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kNoExperimentId;
+constexpr auto kCpssV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
+constexpr auto kAiV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
+constexpr auto kAiV4ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
+
 // Helper common requests and responses. All of these are for the NOTIFICATION
 // type.
 
 // A request that has all counts 0. With user gesture.
-permissions::PredictionRequestFeatures kFeaturesAllCountsZero = {
-    permissions::PermissionRequestGestureType::GESTURE,
-    permissions::RequestType::kNotifications,
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
+permissions::PredictionRequestFeatures createFeaturesAllCountsZero(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
+          .type = permissions::RequestType::kNotifications,
+          .requested_permission_counts = {0, 0, 0, 0},
+          .all_permission_counts = {0, 0, 0, 0},
+          .url = GURL(),
+          .experiment_id = experiment_id};
+}
+
 // A request that has all counts 5 expect for "grants" which are 6. Without user
 // gesture.
-permissions::PredictionRequestFeatures kFeaturesCountsNeedingRounding = {
-    permissions::PermissionRequestGestureType::NO_GESTURE,
-    permissions::RequestType::kNotifications,
-    {6, 5, 5, 5},
-    {6, 5, 5, 5}};
+permissions::PredictionRequestFeatures createFeaturesCountsNeedingRounding(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  return {.gesture = permissions::PermissionRequestGestureType::NO_GESTURE,
+          .type = permissions::RequestType::kNotifications,
+          .requested_permission_counts = {6, 5, 5, 5},
+          .all_permission_counts = {6, 5, 5, 5},
+          .url = GURL(),
+          .experiment_id = experiment_id};
+}
+
 // A request that has all counts 50. With user gesture.
-permissions::PredictionRequestFeatures kFeaturesEvenCountsOver100 = {
-    permissions::PermissionRequestGestureType::GESTURE,
-    permissions::RequestType::kNotifications,
-    {50, 50, 50, 50},
-    {50, 50, 50, 50}};
+permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
+          .type = permissions::RequestType::kNotifications,
+          .requested_permission_counts = {50, 50, 50, 50},
+          .all_permission_counts = {50, 50, 50, 50},
+          .url = GURL(),
+          .experiment_id = experiment_id};
+}
+
 // A request that has all counts 100. With user gesture.
-permissions::PredictionRequestFeatures kFeaturesEvenCountsOver100Alt = {
-    permissions::PermissionRequestGestureType::GESTURE,
-    permissions::RequestType::kNotifications,
-    {100, 100, 100, 100},
-    {100, 100, 100, 100}};
+permissions::PredictionRequestFeatures createFeaturesEvenCountsOver100Alt(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  return {.gesture = permissions::PermissionRequestGestureType::GESTURE,
+          .type = permissions::RequestType::kNotifications,
+          .requested_permission_counts = {100, 100, 100, 100},
+          .all_permission_counts = {100, 100, 100, 100},
+          .url = GURL(),
+          .experiment_id = experiment_id};
+}
+
 // A request that has generic counts 50, and notification counts 0. Without user
 // gesture.
-permissions::PredictionRequestFeatures kFeaturesDifferentCounts = {
-    permissions::PermissionRequestGestureType::NO_GESTURE,
-    permissions::RequestType::kNotifications,
-    {0, 0, 0, 0},
-    {50, 50, 50, 50}};
+permissions::PredictionRequestFeatures createFeaturesDifferentCounts(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  return {.gesture = permissions::PermissionRequestGestureType::NO_GESTURE,
+          .type = permissions::RequestType::kNotifications,
+          .requested_permission_counts = {0, 0, 0, 0},
+          .all_permission_counts = {50, 50, 50, 50},
+          .url = GURL(),
+          .experiment_id = experiment_id};
+}
 
-// A proto request that has all ratios and total counts 0. With user gesture.
-permissions::GeneratePredictionsRequest kRequestAllCountsZero;
+permissions::GeneratePredictionsRequest createRequestAllCountsZero(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  permissions::GeneratePredictionsRequest request;
+  auto* client_features = request.mutable_client_features();
+  client_features->set_platform(permissions::GetCurrentPlatformProto());
+  client_features->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
+  client_features->set_gesture(permissions::ClientFeatures_Gesture_GESTURE);
+  client_features->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
+  client_features->mutable_experiment_config()->set_experiment_id(
+      static_cast<int>(experiment_id));
+
+  auto* client_stats = client_features->mutable_client_stats();
+  client_stats->set_avg_deny_rate(0);
+  client_stats->set_avg_dismiss_rate(0);
+  client_stats->set_avg_grant_rate(0);
+  client_stats->set_avg_ignore_rate(0);
+  client_stats->set_prompts_count(0);
+
+  auto* permission_feature = request.mutable_permission_features()->Add();
+  permission_feature->set_permission_relevance(
+      permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  permission_feature->mutable_notification_permission()->Clear();
+
+  auto* permission_stats = permission_feature->mutable_permission_stats();
+  permission_stats->set_avg_deny_rate(0);
+  permission_stats->set_avg_dismiss_rate(0);
+  permission_stats->set_avg_grant_rate(0);
+  permission_stats->set_avg_ignore_rate(0);
+  permission_stats->set_prompts_count(0);
+
+  return request;
+}
+
 // A proto request that has all ratios 0.24 (~5/21) except for "grants" which
 // are 0.29 (~6/21). Without user gesture.
-permissions::GeneratePredictionsRequest kRequestRoundedCounts;
+permissions::GeneratePredictionsRequest createRequestRoundedCounts(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  permissions::GeneratePredictionsRequest request;
+
+  auto* client_features = request.mutable_client_features();
+  client_features->set_platform(permissions::GetCurrentPlatformProto());
+  client_features->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
+  client_features->set_gesture(permissions::ClientFeatures_Gesture_NO_GESTURE);
+  client_features->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
+  client_features->mutable_experiment_config()->set_experiment_id(
+      static_cast<int>(experiment_id));
+
+  auto* client_stats = client_features->mutable_client_stats();
+  client_stats->set_avg_deny_rate(0.2);
+  client_stats->set_avg_dismiss_rate(0.2);
+  client_stats->set_avg_grant_rate(0.3);
+  client_stats->set_avg_ignore_rate(0.2);
+  client_stats->set_prompts_count(20);
+
+  auto* permission_feature = request.mutable_permission_features()->Add();
+  permission_feature->mutable_notification_permission()->Clear();
+  permission_feature->set_permission_relevance(
+      permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+
+  auto* permission_stats = permission_feature->mutable_permission_stats();
+  permission_stats->set_avg_deny_rate(0.2);
+  permission_stats->set_avg_dismiss_rate(0.2);
+  permission_stats->set_avg_grant_rate(0.3);
+  permission_stats->set_avg_ignore_rate(0.2);
+  permission_stats->set_prompts_count(20);
+
+  return request;
+}
+
 // A proto request that has all ratios .25 and total count 100. With user
 // gesture.
-permissions::GeneratePredictionsRequest kRequestEqualCountsTotal20;
+permissions::GeneratePredictionsRequest createRequestEqualCountsTotal20(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  permissions::GeneratePredictionsRequest request;
+
+  auto* client_features = request.mutable_client_features();
+  client_features->mutable_experiment_config()->set_experiment_id(
+      static_cast<int>(experiment_id));
+  client_features->set_platform(permissions::GetCurrentPlatformProto());
+  client_features->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
+  client_features->set_gesture(permissions::ClientFeatures_Gesture_GESTURE);
+  client_features->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
+
+  auto* client_stats = client_features->mutable_client_stats();
+  client_stats->set_avg_deny_rate(.3);
+  client_stats->set_avg_dismiss_rate(.3);
+  client_stats->set_avg_grant_rate(.3);
+  client_stats->set_avg_ignore_rate(.3);
+  client_stats->set_prompts_count(20);
+
+  auto* permission_feature = request.mutable_permission_features()->Add();
+  permission_feature->mutable_notification_permission()->Clear();
+  permission_feature->set_permission_relevance(
+      permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+
+  auto* permission_stats = permission_feature->mutable_permission_stats();
+  permission_stats->set_avg_deny_rate(.3);
+  permission_stats->set_avg_dismiss_rate(.3);
+  permission_stats->set_avg_grant_rate(.3);
+  permission_stats->set_avg_ignore_rate(.3);
+  permission_stats->set_prompts_count(20);
+
+  return request;
+}
+
 // A proot request that has generic ratios .25 and total count 100 and
 // notifications ratios and counts 0. Without user gesture.
-permissions::GeneratePredictionsRequest kRequestDifferentCounts;
+permissions::GeneratePredictionsRequest createRequestDifferentCounts(
+    permissions::PredictionRequestFeatures::ExperimentId experiment_id =
+        kNoExperimentId) {
+  permissions::GeneratePredictionsRequest request;
+
+  auto* client_features = request.mutable_client_features();
+  client_features->set_platform(permissions::GetCurrentPlatformProto());
+  client_features->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
+  client_features->set_gesture(permissions::ClientFeatures_Gesture_NO_GESTURE);
+  client_features->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
+  client_features->mutable_experiment_config()->set_experiment_id(
+      static_cast<int>(experiment_id));
+
+  auto* client_stats = client_features->mutable_client_stats();
+  client_stats->set_avg_deny_rate(.3);
+  client_stats->set_avg_dismiss_rate(.3);
+  client_stats->set_avg_grant_rate(.3);
+  client_stats->set_avg_ignore_rate(.3);
+  client_stats->set_prompts_count(20);
+
+  auto* permission_feature = request.mutable_permission_features()->Add();
+  permission_feature->mutable_notification_permission()->Clear();
+  permission_feature->set_permission_relevance(
+      permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+
+  auto* permission_stats = permission_feature->mutable_permission_stats();
+  permission_stats->set_avg_deny_rate(0);
+  permission_stats->set_avg_dismiss_rate(0);
+  permission_stats->set_avg_grant_rate(0);
+  permission_stats->set_avg_ignore_rate(0);
+  permission_stats->set_prompts_count(0);
+
+  return request;
+}
 
 // A response that has a likelihood of DiscretizedLikelihood::LIKELY.
-permissions::GeneratePredictionsResponse kResponseLikely;
-
-// A response that has a likelihood of DiscretizedLikelihood::UNLIKELY.
-permissions::GeneratePredictionsResponse kResponseUnlikely;
-
-void InitializeProtoHelperObjects() {
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_deny_rate(0);
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_dismiss_rate(0);
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_grant_rate(0);
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_ignore_rate(0);
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_prompts_count(0);
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(0);
-  kRequestAllCountsZero.mutable_client_features()->set_platform(
-      permissions::GetCurrentPlatformProto());
-  kRequestAllCountsZero.mutable_client_features()->set_platform_enum(
-      permissions::GetCurrentPlatformEnumProto());
-  kRequestAllCountsZero.mutable_client_features()->set_gesture(
-      permissions::ClientFeatures_Gesture_GESTURE);
-  kRequestAllCountsZero.mutable_client_features()->set_gesture_enum(
-      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
-  kRequestAllCountsZero.mutable_permission_features()->Clear();
-  auto* permission_feature =
-      kRequestAllCountsZero.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0);
-  permission_feature->mutable_permission_stats()->set_prompts_count(0);
-  permission_feature->mutable_notification_permission()->Clear();
-
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_deny_rate(0.2);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_dismiss_rate(0.2);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_grant_rate(0.3);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_ignore_rate(0.2);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_prompts_count(20);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(0);
-  kRequestRoundedCounts.mutable_client_features()->set_platform(
-      permissions::GetCurrentPlatformProto());
-  kRequestRoundedCounts.mutable_client_features()->set_platform_enum(
-      permissions::GetCurrentPlatformEnumProto());
-  kRequestRoundedCounts.mutable_client_features()->set_gesture(
-      permissions::ClientFeatures_Gesture_NO_GESTURE);
-  kRequestRoundedCounts.mutable_client_features()->set_gesture_enum(
-      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
-  kRequestRoundedCounts.mutable_permission_features()->Clear();
-  permission_feature =
-      kRequestRoundedCounts.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(0.2);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(0.2);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(0.3);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0.2);
-  permission_feature->mutable_permission_stats()->set_prompts_count(20);
-  permission_feature->mutable_notification_permission()->Clear();
-
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_deny_rate(.3);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_dismiss_rate(.3);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_grant_rate(.3);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_ignore_rate(.3);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_prompts_count(20);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(0);
-  kRequestEqualCountsTotal20.mutable_client_features()->set_platform(
-      permissions::GetCurrentPlatformProto());
-  kRequestEqualCountsTotal20.mutable_client_features()->set_platform_enum(
-      permissions::GetCurrentPlatformEnumProto());
-  kRequestEqualCountsTotal20.mutable_client_features()->set_gesture(
-      permissions::ClientFeatures_Gesture_GESTURE);
-  kRequestEqualCountsTotal20.mutable_client_features()->set_gesture_enum(
-      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
-  kRequestEqualCountsTotal20.mutable_permission_features()->Clear();
-  permission_feature =
-      kRequestEqualCountsTotal20.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(.3);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(.3);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(.3);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(.3);
-  permission_feature->mutable_permission_stats()->set_prompts_count(20);
-  permission_feature->mutable_notification_permission()->Clear();
-
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_deny_rate(.3);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_dismiss_rate(.3);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_grant_rate(.3);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_avg_ignore_rate(.3);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_client_stats()
-      ->set_prompts_count(20);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(0);
-  kRequestDifferentCounts.mutable_client_features()->set_platform(
-      permissions::GetCurrentPlatformProto());
-  kRequestDifferentCounts.mutable_client_features()->set_platform_enum(
-      permissions::GetCurrentPlatformEnumProto());
-  kRequestDifferentCounts.mutable_client_features()->set_gesture(
-      permissions::ClientFeatures_Gesture_NO_GESTURE);
-  kRequestDifferentCounts.mutable_client_features()->set_gesture_enum(
-      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
-  kRequestDifferentCounts.mutable_permission_features()->Clear();
-  permission_feature =
-      kRequestDifferentCounts.mutable_permission_features()->Add();
-  permission_feature->mutable_permission_stats()->set_avg_deny_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_dismiss_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_grant_rate(0);
-  permission_feature->mutable_permission_stats()->set_avg_ignore_rate(0);
-  permission_feature->mutable_permission_stats()->set_prompts_count(0);
-  permission_feature->mutable_notification_permission()->Clear();
-
-  kResponseLikely.mutable_prediction()->Clear();
-  auto* prediction = kResponseLikely.mutable_prediction()->Add();
+permissions::GeneratePredictionsResponse createResponseLikely() {
+  permissions::GeneratePredictionsResponse response;
+  response.mutable_prediction()->Clear();
+  auto* prediction = response.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
+  return response;
+}
 
-  kResponseUnlikely.mutable_prediction()->Clear();
-  prediction = kResponseUnlikely.mutable_prediction()->Add();
+// A response that has a likelihood of DiscretizedLikelihood::UNLIKELY.
+permissions::GeneratePredictionsResponse createResponseUnlikely() {
+  permissions::GeneratePredictionsResponse response;
+  response.mutable_prediction()->Clear();
+  auto* prediction = response.mutable_prediction()->Add();
   prediction->mutable_grant_likelihood()->set_discretized_likelihood(
       permissions::
           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
+  return response;
 }
 
-constexpr auto kCpssV3ExperimentId =
-    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
 }  // namespace
 
 namespace permissions {
+
+struct PredictionServiceTestParam {
+  PredictionRequestFeatures features;
+  GeneratePredictionsRequest expected_request;
+  std::optional<std::string> url_string_for_features;
+};
+
 class PredictionServiceTest : public testing::Test {
  public:
   PredictionServiceTest()
@@ -260,8 +309,6 @@ class PredictionServiceTest : public testing::Test {
   void SetUp() override {
     prediction_service_ =
         std::make_unique<PredictionService>(test_shared_loader_factory_);
-
-    InitializeProtoHelperObjects();
   }
 
   void Respond(const GURL& url,
@@ -337,11 +384,11 @@ class PredictionServiceTest : public testing::Test {
  private:
   std::string GetResponseForUrl(const GURL& url) {
     if (url == kUrl_Unlikely) {
-      return kResponseUnlikely.SerializeAsString();
+      return createResponseUnlikely().SerializeAsString();
     } else if (url == kUrl_Likely) {
-      return kResponseLikely.SerializeAsString();
+      return createResponseLikely().SerializeAsString();
     } else if (url == GURL(permissions::kDefaultPredictionServiceUrl)) {
-      return kResponseLikely.SerializeAsString();
+      return createResponseLikely().SerializeAsString();
     } else if (url == kUrl_Invalid) {
       return "This is not a valid response";
     }
@@ -354,12 +401,11 @@ class PredictionServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
-// This test should be the first one, otherwise it fails.
 TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
+       permissions::features::kPermissionsAIv4},
       {});
 
   struct {
@@ -373,11 +419,12 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
       GURL(kUrl_Likely));
 
   for (const auto& kTest : kTests) {
-    permissions::PredictionRequestFeatures features = kFeaturesAllCountsZero;
+    permissions::PredictionRequestFeatures features =
+        createFeaturesAllCountsZero();
     features.requested_permission_counts.denies = kTest.prompt_count;
 
     permissions::GeneratePredictionsRequest expected_request =
-        kRequestAllCountsZero;
+        createRequestAllCountsZero();
     expected_request.mutable_permission_features()
         ->at(0)
         .mutable_permission_stats()
@@ -395,150 +442,58 @@ TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
     StartLookup(features, &run_loop, nullptr /* response_loop */);
     run_loop.Run();
 
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
+    EXPECT_THAT(received_requests_,
+                ElementsAre(Pointee(EqualsProto(expected_request))));
 
     received_requests_.clear();
   }
 }
 
-TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
+class PredictionServiceProtoRequestTest
+    : public PredictionServiceTest,
+      public testing::WithParamInterface<PredictionServiceTestParam> {};
+
+TEST_P(PredictionServiceProtoRequestTest, BuiltProtoRequestIsCorrect) {
   // Test origin being added correctly in the request.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
+       permissions::features::kPermissionsAIv4},
       {});
-  kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
-  kRequestAllCountsZero.mutable_site_features()->set_origin(
-      "https://www.test.example/");
-  kRequestAllCountsZero.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestRoundedCounts.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestEqualCountsTotal20.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestEqualCountsTotal20.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestDifferentCounts.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
 
-  struct {
-    PredictionRequestFeatures entity;
-    GeneratePredictionsRequest expected_request;
-  } kTests[] = {
-      {kFeaturesAllCountsZero, kRequestAllCountsZero},
-      {kFeaturesCountsNeedingRounding, kRequestRoundedCounts},
-      {kFeaturesEvenCountsOver100, kRequestEqualCountsTotal20},
-      {kFeaturesEvenCountsOver100Alt, kRequestEqualCountsTotal20},
-      {kFeaturesDifferentCounts, kRequestDifferentCounts},
-  };
+  PredictionServiceTestParam param = GetParam();
+  if (param.url_string_for_features.has_value()) {
+    param.features.url = GURL(param.url_string_for_features.value());
+    param.expected_request.mutable_site_features()->set_origin(
+        param.url_string_for_features.value());
+  }
 
   prediction_service_->set_prediction_service_url_for_testing(
       GURL(kUrl_Likely));
-  for (const auto& kTest : kTests) {
-    base::RunLoop run_loop;
-    StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
-    run_loop.Run();
+  base::RunLoop run_loop;
+  StartLookup(param.features, &run_loop, nullptr /* response_loop */);
 
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(kTest.expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
-
-    received_requests_.clear();
-  }
+  run_loop.Run();
+  EXPECT_THAT(received_requests_,
+              ElementsAre(Pointee(EqualsProto(param.expected_request))));
 }
 
-TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
-  // Test origin being added correctly in the request.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionsAIv1},
-      {});
-  kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
-  kRequestAllCountsZero.mutable_site_features()->set_origin(
-      "https://www.test.example/");
-
-  kFeaturesAllCountsZero.experiment_id = kCpssV3ExperimentId;
-  kFeaturesCountsNeedingRounding.experiment_id = kCpssV3ExperimentId;
-  kFeaturesEvenCountsOver100.experiment_id = kCpssV3ExperimentId;
-  kFeaturesEvenCountsOver100Alt.experiment_id = kCpssV3ExperimentId;
-  kFeaturesDifferentCounts.experiment_id = kCpssV3ExperimentId;
-
-  kRequestAllCountsZero.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestRoundedCounts.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestEqualCountsTotal20.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestEqualCountsTotal20.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-  kRequestDifferentCounts.mutable_permission_features()
-      ->at(0)
-      .set_permission_relevance(
-          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
-
-  kRequestAllCountsZero.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(1);
-  kRequestRoundedCounts.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(1);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(1);
-  kRequestEqualCountsTotal20.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(1);
-  kRequestDifferentCounts.mutable_client_features()
-      ->mutable_experiment_config()
-      ->set_experiment_id(1);
-
-  struct {
-    PredictionRequestFeatures entity;
-    GeneratePredictionsRequest expected_request;
-  } kTests[] = {
-      {kFeaturesAllCountsZero, kRequestAllCountsZero},
-      {kFeaturesCountsNeedingRounding, kRequestRoundedCounts},
-      {kFeaturesEvenCountsOver100, kRequestEqualCountsTotal20},
-      {kFeaturesEvenCountsOver100Alt, kRequestEqualCountsTotal20},
-      {kFeaturesDifferentCounts, kRequestDifferentCounts},
-  };
-
-  prediction_service_->set_prediction_service_url_for_testing(
-      GURL(kUrl_Likely));
-  for (const auto& kTest : kTests) {
-    base::RunLoop run_loop;
-    StartLookup(kTest.entity, &run_loop, nullptr /* response_loop */);
-    run_loop.Run();
-
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(kTest.expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
-
-    received_requests_.clear();
-  }
-}
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PredictionServiceProtoRequestTest,
+    ValuesIn(std::vector<PredictionServiceTestParam>{
+        {createFeaturesAllCountsZero(kNoExperimentId),
+         createRequestAllCountsZero(kNoExperimentId),
+         "https://www.test.example/"},
+        {createFeaturesCountsNeedingRounding(kAiV3ExperimentId),
+         createRequestRoundedCounts(kAiV3ExperimentId), std::nullopt},
+        {createFeaturesEvenCountsOver100(kAiV4ExperimentId),
+         createRequestEqualCountsTotal20(kAiV4ExperimentId), std::nullopt},
+        {createFeaturesEvenCountsOver100Alt(kCpssV3ExperimentId),
+         createRequestEqualCountsTotal20(kCpssV3ExperimentId), std::nullopt},
+        {createFeaturesDifferentCounts(kAiV4ExperimentId),
+         createRequestDifferentCounts(kAiV4ExperimentId), std::nullopt},
+    }));
 
 TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   struct {
@@ -549,13 +504,13 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   } kTests[] = {
       // Test different responses.
       {kUrl_Likely,
-       std::optional<GeneratePredictionsResponse>(kResponseLikely)},
+       std::optional<GeneratePredictionsResponse>(createResponseLikely())},
       {kUrl_Unlikely,
-       std::optional<GeneratePredictionsResponse>(kResponseUnlikely)},
+       std::optional<GeneratePredictionsResponse>(createResponseUnlikely())},
 
       // Test the response's timeout.
-      {kUrl_Likely, std::optional<GeneratePredictionsResponse>(kResponseLikely),
-       0.5},
+      {kUrl_Likely,
+       std::optional<GeneratePredictionsResponse>(createResponseLikely()), 0.5},
       {kUrl_Likely, std::nullopt, 2},
 
       // Test error code responses.
@@ -566,7 +521,7 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   for (const auto& kTest : kTests) {
     prediction_service_->set_prediction_service_url_for_testing(kTest.url);
     base::RunLoop response_loop;
-    StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
+    StartLookup(createFeaturesAllCountsZero(), nullptr, &response_loop);
     Respond(kTest.url, kTest.delay_in_seconds, kTest.err_code);
     response_loop.Run();
 
@@ -582,8 +537,8 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   }
 }
 
-// Test that the Web Prediction Service url can be overridden via  command line,
-// and the fallback logic in case the provided url is not valid.
+// Test that the Web Prediction Service url can be overridden via command
+// line, and the fallback logic in case the provided url is not valid.
 TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
   struct {
     std::optional<std::string> command_line_switch_value;
@@ -591,13 +546,14 @@ TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
     permissions::GeneratePredictionsResponse expected_response;
   } kTests[] = {
       // Test without any overrides.
-      {std::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {std::nullopt, GURL(kDefaultPredictionServiceUrl),
+       createResponseLikely()},
 
       // Test only the command line override.
-      {kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
+      {kUrl_Unlikely.spec(), kUrl_Unlikely, createResponseUnlikely()},
       {"this is not a url", GURL(kDefaultPredictionServiceUrl),
-       kResponseLikely},
-      {"", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+       createResponseLikely()},
+      {"", GURL(kDefaultPredictionServiceUrl), createResponseLikely()},
   };
 
   prediction_service_->recalculate_service_url_every_time_for_testing();
@@ -612,7 +568,7 @@ TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
     }
 
     base::RunLoop response_loop;
-    StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
+    StartLookup(createFeaturesAllCountsZero(), nullptr, &response_loop);
     Respond(kTest.expected_request_url);
     response_loop.Run();
     EXPECT_EQ(1u, received_responses_.size());
@@ -625,16 +581,16 @@ TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         kDefaultPredictionServiceUrlSwitchKey);
   }
-}
+}  // namespace permissions
 
 TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
   prediction_service_->set_prediction_service_url_for_testing(kUrl_Likely);
   base::RunLoop response_loop;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
+  StartLookup(createFeaturesAllCountsZero(), nullptr, &response_loop);
 
   prediction_service_->set_prediction_service_url_for_testing(kUrl_Unlikely);
   base::RunLoop response_loop2;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop2);
+  StartLookup(createFeaturesAllCountsZero(), nullptr, &response_loop2);
 
   EXPECT_EQ(2u, prediction_service_->pending_requests_for_testing().size());
 
@@ -643,7 +599,7 @@ TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
 
   EXPECT_EQ(1u, received_responses_.size());
   EXPECT_TRUE(received_responses_[0]);
-  EXPECT_EQ(kResponseUnlikely.SerializeAsString(),
+  EXPECT_EQ(createResponseUnlikely().SerializeAsString(),
             received_responses_[0]->SerializeAsString());
   EXPECT_EQ(1u, prediction_service_->pending_requests_for_testing().size());
 
@@ -652,14 +608,14 @@ TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
 
   EXPECT_EQ(2u, received_responses_.size());
   EXPECT_TRUE(received_responses_[1]);
-  EXPECT_EQ(kResponseLikely.SerializeAsString(),
+  EXPECT_EQ(createResponseLikely().SerializeAsString(),
             received_responses_[1]->SerializeAsString());
   EXPECT_EQ(0u, prediction_service_->pending_requests_for_testing().size());
 }
 
 TEST_F(PredictionServiceTest, InvalidResponse) {
   base::RunLoop response_loop;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
+  StartLookup(createFeaturesAllCountsZero(), nullptr, &response_loop);
   Respond(GURL(kUrl_Invalid));
   response_loop.Run();
   EXPECT_FALSE(received_responses_[0]);

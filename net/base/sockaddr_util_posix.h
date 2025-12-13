@@ -5,7 +5,7 @@
 #ifndef NET_BASE_SOCKADDR_UTIL_POSIX_H_
 #define NET_BASE_SOCKADDR_UTIL_POSIX_H_
 
-#include <string>
+#include <string_view>
 
 #include "net/base/net_export.h"
 
@@ -15,7 +15,7 @@ struct SockaddrStorage;
 
 // Fills |address| with |socket_path| and its length. For Android or Linux
 // platform, this supports abstract namespaces.
-NET_EXPORT bool FillUnixAddress(const std::string& socket_path,
+NET_EXPORT bool FillUnixAddress(std::string_view socket_path,
                                 bool use_abstract_namespace,
                                 SockaddrStorage* address);
 

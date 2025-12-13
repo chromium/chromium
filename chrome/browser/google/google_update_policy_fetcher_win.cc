@@ -29,7 +29,6 @@
 
 namespace {
 
-// TODO(crbug.com/40271852): Add unit tests for these GoogleUpdate policies.
 constexpr char kAutoUpdateCheckPeriodMinutes[] = "AutoUpdateCheckPeriodMinutes";
 constexpr char kDownloadPreference[] = "DownloadPreference";
 constexpr char kForceInstallApps[] = "ForceInstallApps";

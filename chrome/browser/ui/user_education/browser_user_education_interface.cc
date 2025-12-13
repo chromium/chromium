@@ -33,10 +33,3 @@ BrowserUserEducationInterface* BrowserUserEducationInterface::From(
     BrowserWindowInterface* browser) {
   return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
 }
-
-user_education::FeaturePromoController*
-BrowserUserEducationInterface::GetFeaturePromoControllerImpl() {
-  return const_cast<user_education::FeaturePromoController*>(
-      const_cast<const BrowserUserEducationInterface*>(this)
-          ->GetFeaturePromoControllerImpl());
-}

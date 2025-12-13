@@ -21,7 +21,9 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -294,8 +296,10 @@ ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
   return *instance.get();
 }
 
-void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
-                                                    const SkBitmap& bitmap) {
+void ThumbnailTabHelper::StoreThumbnailForTabSwitch(
+    base::TimeTicks start_time,
+    const viz::CopyOutputBitmapWithMetadata& result) {
+  const SkBitmap& bitmap = result.bitmap;
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
                              base::Milliseconds(1), base::Seconds(1), 50);

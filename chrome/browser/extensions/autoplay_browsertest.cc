@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -17,6 +16,10 @@
 #include "extensions/test/test_extension_dir.h"
 #include "media/base/media_switches.h"
 
+// TODO(crbug.com/467442812): Port these tests to desktop Android. This isn't
+// straightforward, as some of the tests rely on manifest V2 behavior, but
+// Android only supports manifest V3. Likewise, Android does not support hosted
+// apps.
 class AutoplayExtensionBrowserTest : public extensions::ExtensionApiTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {

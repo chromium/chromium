@@ -28,6 +28,7 @@
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/ukm/ukm_service.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "content/public/test/browser_task_environment.h"
@@ -97,7 +98,7 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kUmaStorageDimensions,
          features::kClassManagementEnabledMetricsProvider,
-         metrics::dwa::kDwaFeature},
+         metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry},
         {});
 
     // ChromeOs Metrics Provider require g_login_state and power manager client
@@ -105,7 +106,8 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     ash::LoginState::Initialize();
 #else
-    scoped_feature_list_.InitAndEnableFeature(metrics::dwa::kDwaFeature);
+    scoped_feature_list_.InitWithFeatures(
+        {metrics::dwa::kDwaFeature, switches::kDynamicProfileCountry}, {});
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
@@ -114,10 +116,6 @@ class ChromeMetricsServiceClientTest : public testing::Test {
     ash::LoginState::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    // ChromeMetricsServiceClient::Initialize() initializes
-    // IdentifiabilityStudySettings as part of creating the
-    // PrivacyBudgetUkmEntryFilter. Reset them after the test.
-    blink::IdentifiabilityStudySettings::ResetStateForTesting();
   }
 
  protected:
@@ -170,11 +168,16 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterUKMProviders) {
   // Test that UKM service has initialized all its metrics providers listed in
   // ChromeMetricsServiceClient::RegisterUKMProviders, for all platform with one
   // exception on ChromeOS.
-  size_t expected_providers = 11;
+  size_t expected_providers = 10;
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOSMetricsProvider
   expected_providers++;
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
+  // ChromeAndroidMetricsProvider
+  expected_providers++;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<ChromeMetricsServiceClient> chrome_metrics_service_client =
       TestChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
@@ -202,7 +205,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   size_t expected_providers = 2;
 
   // This is the number of metrics providers that are outside any #if macros.
-  expected_providers += 24;
+  expected_providers += 26;
 
   int sample_rate;
   if (ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(
@@ -236,7 +239,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // AmbientModeMetricsProvider, AssistantServiceMetricsProvider,
+  // AmbientModeMetricsProvider,
   // CrosHealthdMetricsProvider, ChromeOSMetricsProvider,
   // ChromeOSHistogramMetricsProvider, ChromeShelfMetricsProvider,
   // ClassManagementEnabledMetricsProvider,
@@ -246,7 +249,7 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // UpdateEngineMetricsProvider, OsSettingsMetricsProvider,
   // UserTypeByDeviceTypeMetricsProvider, WallpaperMetricsProvider,
   // and VmmMetricsProvider.
-  expected_providers += 18;
+  expected_providers += 17;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -268,6 +271,13 @@ TEST_F(ChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
   // DesktopSessionMetricsProvider
   expected_providers += 1;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+  // TabMetricsProvider
+  expected_providers += 1;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // BluetoothMetricsProvider

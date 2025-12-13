@@ -6,7 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
@@ -19,15 +19,6 @@ namespace {
 const std::string kTestData = "Hello world";
 const std::string kTestData1 = "Hello ";
 const std::string kTestData2 = "world";
-
-net::SHA256HashValue GetHash(const std::string& data) {
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  secure_hash->Update(data.c_str(), data.size());
-  net::SHA256HashValue sha256;
-  secure_hash->Finish(sha256);
-  return sha256;
-}
 
 }  // namespace
 
@@ -45,7 +36,7 @@ TEST(SharedDictionaryWriterInMemory, SimpleWrite) {
                     kTestData,
                     std::string(reinterpret_cast<const char*>(buffer->data()),
                                 size));
-                EXPECT_EQ(GetHash(kTestData), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData), hash);
                 finish_callback_called = true;
               }));
   writer->Append(base::as_byte_span(kTestData));
@@ -67,7 +58,7 @@ TEST(SharedDictionaryWriterInMemory, MultipleWrite) {
                     kTestData1 + kTestData2,
                     std::string(reinterpret_cast<const char*>(buffer->data()),
                                 size));
-                EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }));
   writer->Append(base::as_byte_span(kTestData1));

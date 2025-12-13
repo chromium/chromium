@@ -207,12 +207,25 @@
         return create_action(name, context_params);
     };
 
-    const subscribe = function (params) {
-        return create_action("bidi.session.subscribe", {
+    /**
+     * @returns {Promise<(function(): Promise<void>)>}: callback for
+     * unsubscribing from the created subscription.
+     */
+    const subscribe = async function (params) {
+        const action_result = await create_action("bidi.session.subscribe", {
             // Default to subscribing to the window's events.
             contexts: [window],
             ...params
         });
+        const subscription_id = action_result["subscription"];
+
+        return async ()=>{
+            console.log("!!@@## unsubscribing")
+            await create_action("bidi.session.unsubscribe", {
+                // Default to subscribing to the window's events.
+                subscriptions: [subscription_id]
+            });
+        }
     };
 
     window.test_driver_internal.in_automation = true;
@@ -319,7 +332,7 @@
     window.test_driver_internal.bidi.bluetooth.request_device_prompt_updated.subscribe =
         function(params) {
         return subscribe(
-            {params, events: ['bluetooth.requestDevicePromptUpdated']})
+            {...params, events: ['bluetooth.requestDevicePromptUpdated']})
     };
 
     window.test_driver_internal.bidi.bluetooth.request_device_prompt_updated.on =
@@ -336,7 +349,7 @@
     window.test_driver_internal.bidi.bluetooth.gatt_connection_attempted.subscribe =
         function(params) {
         return subscribe(
-            {params, events: ['bluetooth.gattConnectionAttempted']})
+            {...params, events: ['bluetooth.gattConnectionAttempted']})
     };
 
     window.test_driver_internal.bidi.bluetooth.gatt_connection_attempted.on =
@@ -353,7 +366,7 @@
     window.test_driver_internal.bidi.bluetooth.characteristic_event_generated.subscribe =
         function(params) {
         return subscribe(
-            {params, events: ['bluetooth.characteristicEventGenerated']})
+            {...params, events: ['bluetooth.characteristicEventGenerated']})
     };
 
     window.test_driver_internal.bidi.bluetooth.characteristic_event_generated.on =
@@ -370,7 +383,7 @@
     window.test_driver_internal.bidi.bluetooth.descriptor_event_generated.subscribe =
         function(params) {
         return subscribe(
-            {params, events: ['bluetooth.descriptorEventGenerated']});
+            {...params, events: ['bluetooth.descriptorEventGenerated']});
     };
 
     window.test_driver_internal.bidi.bluetooth.descriptor_event_generated.on =
@@ -398,10 +411,28 @@
             });
         }
 
+    window.test_driver_internal.bidi.emulation.set_locale_override = function (params) {
+        return create_action("bidi.emulation.set_locale_override", {
+            // Default to the current window.
+            contexts: [window],
+            ...(params ?? {})
+        });
+    };
+
+    window.test_driver_internal.bidi.emulation.set_screen_orientation_override =
+        function (params) {
+            return create_action(
+                "bidi.emulation.set_screen_orientation_override", {
+                    // Default to the current window.
+                    contexts: [window],
+                    ...(params ?? {})
+                });
+        }
+
     window.test_driver_internal.bidi.log.entry_added.subscribe =
         function (params) {
             return subscribe({
-                params,
+                ...params,
                 events: ["log.entryAdded"]
             })
         };
@@ -443,6 +474,14 @@
     window.test_driver_internal.get_all_cookies = function(context=null) {
         return create_context_action("get_all_cookies", context, {});
     };
+
+    window.test_driver_internal.install_web_extension = function (params, context=null) {
+        return create_context_action("install_web_extension", context, {...params});
+    }
+
+    window.test_driver_internal.uninstall_web_extension = function (extension_id, context=null) {
+        return create_context_action("uninstall_web_extension", context, {extension_id});
+    }
 
     window.test_driver_internal.get_computed_label = function(element) {
         const selector = get_selector(element);
@@ -626,4 +665,12 @@
     window.test_driver_internal.clear_display_features = function(context=null) {
         return create_context_action("clear_display_features", context, {});
     }
+
+    window.test_driver_internal.get_global_privacy_control = function(context=null) {
+        return create_action("get_global_privacy_control", {});
+    };
+
+    window.test_driver_internal.set_global_privacy_control = function(gpc, context=null) {
+        return create_action("set_global_privacy_control", {gpc});
+    };
 })();

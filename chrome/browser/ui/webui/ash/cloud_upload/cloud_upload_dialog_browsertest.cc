@@ -59,6 +59,7 @@
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -67,7 +68,7 @@
 #include "extensions/common/constants.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ash::cloud_upload {
 
@@ -263,10 +264,8 @@ auto IsOpenInOfficeTask() {
 class FileHandlerDialogBrowserTest : public InProcessBrowserTest {
  public:
   FileHandlerDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {chromeos::features::kUploadOfficeToCloud,
-         chromeos::features::kUploadOfficeToCloudForEnterprise},
-        {});
+    feature_list_.InitWithFeatures({chromeos::features::kUploadOfficeToCloud},
+                                   {});
   }
 
   explicit FileHandlerDialogBrowserTest(int num_tasks)
@@ -351,13 +350,12 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest,
   ASSERT_EQ(nullptr, browser);
 
   // Open a files app window.
-  ui_test_utils::BrowserChangeObserver browser_added_observer(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
   base::test::TestFuture<platform_util::OpenOperationResult> future;
   file_manager::util::ShowItemInFolder(profile(), files_.at(0).path(),
                                        future.GetCallback());
   EXPECT_EQ(future.Get(), platform_util::OpenOperationResult::OPEN_SUCCEEDED);
-  browser_added_observer.Wait();
+  browser_created_observer.Wait();
 
   browser = FindSystemWebAppBrowser(profile(), SystemWebAppType::FILE_MANAGER);
   ASSERT_NE(nullptr, browser);
@@ -519,10 +517,10 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
         content::EvalJs(web_contents,
                         "document.querySelector('file-handler-page')"
                         ".localTasks.map(task => task.appId)");
-    if (!eval_result.error.empty()) {
+    if (!eval_result.is_ok()) {
       return false;
     }
-    observed_app_ids = eval_result.ExtractList();
+    observed_app_ids = std::move(eval_result).TakeValue().TakeList();
     return !observed_app_ids.empty();
   }));
 
@@ -638,7 +636,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, DefaultSetForDocsOnly) {
         content::EvalJs(web_contents,
                         "document.querySelector('file-handler-page')"
                         ".localTasks.map(task => task.appId)");
-    if (!eval_result.error.empty()) {
+    if (!eval_result.is_ok()) {
       return false;
     }
     return !eval_result.ExtractList().empty();

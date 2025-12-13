@@ -122,6 +122,7 @@ class StubFeedApi : public FeedApi {
   void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) override {}
   base::Time GetLastFetchTime(SurfaceId surface_id) override;
+  std::vector<std::string> GetFeedUrls(SurfaceId surface_id) override;
   void SetContentOrder(const StreamType& stream_type,
                        ContentOrder content_order) override {}
   ContentOrder GetContentOrder(const StreamType& stream_type) const override;

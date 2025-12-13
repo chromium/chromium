@@ -17,12 +17,12 @@
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/android/gin_java_bridge_value.h"
-#include "content/common/android/hash_set.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "third_party/jni_zero/common_apis.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
@@ -170,7 +170,7 @@ GinJavaBoundObject::ObjectID GinJavaBridgeDispatcherHost::AddObject(
         retained_object_set_.get(env);
   if (!retained_object_set.is_null()) {
     base::AutoLock locker(objects_lock_);
-    JNI_Java_HashSet_add(env, retained_object_set, object);
+    jni_zero::CollectionAdd(env, retained_object_set, object);
   }
   return object_id;
 }
@@ -224,7 +224,7 @@ void GinJavaBridgeDispatcherHost::RemoveFromRetainedObjectSetLocked(
   base::android::ScopedJavaLocalRef<jobject> retained_object_set =
       retained_object_set_.get(env);
   if (!retained_object_set.is_null()) {
-    JNI_Java_HashSet_remove(env, retained_object_set, ref.get(env));
+    jni_zero::CollectionRemove(env, retained_object_set, ref.get(env));
   }
 }
 
@@ -334,14 +334,14 @@ void GinJavaBridgeDispatcherHost::PrimaryMainDocumentElementAvailable() {
       retained_object_set_.get(env);
   base::AutoLock locker(objects_lock_);
   if (!retained_object_set.is_null()) {
-    JNI_Java_HashSet_clear(env, retained_object_set);
+    jni_zero::CollectionClear(env, retained_object_set);
   }
   auto iter = objects_.begin();
   while (iter != objects_.end()) {
     if (iter->second->IsNamed()) {
       if (!retained_object_set.is_null()) {
-        JNI_Java_HashSet_add(
-            env, retained_object_set, iter->second->GetLocalRef(env));
+        jni_zero::CollectionAdd(env, retained_object_set,
+                                iter->second->GetLocalRef(env));
       }
       ++iter;
     } else {

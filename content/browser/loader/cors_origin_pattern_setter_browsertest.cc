@@ -37,6 +37,9 @@ const auto kAllowSubdomains =
     network::mojom::CorsDomainMatchMode::kAllowSubdomains;
 const auto kDisallowSubdomains =
     network::mojom::CorsDomainMatchMode::kDisallowSubdomains;
+const auto kAllowAnyPort = network::mojom::CorsPortMatchMode::kAllowAnyPort;
+const auto kAllowOnlySpecifiedPort =
+    network::mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort;
 
 const char kTestPath[] = "/loader/cors_origin_access_list_test.html";
 
@@ -85,12 +88,13 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
 
   void SetAllowList(const std::string& scheme,
                     const std::string& host,
-                    network::mojom::CorsDomainMatchMode mode) {
+                    uint16_t port,
+                    network::mojom::CorsDomainMatchMode domain_match_mode,
+                    network::mojom::CorsPortMatchMode port_match_mode) {
     {
       std::vector<network::mojom::CorsOriginPatternPtr> list;
       list.push_back(network::mojom::CorsOriginPattern::New(
-          scheme, host, /*port=*/0, mode,
-          network::mojom::CorsPortMatchMode::kAllowAnyPort,
+          scheme, host, port, domain_match_mode, port_match_mode,
           network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
 
       base::RunLoop run_loop;
@@ -106,8 +110,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
     {
       std::vector<network::mojom::CorsOriginPatternPtr> list;
       list.push_back(network::mojom::CorsOriginPattern::New(
-          scheme, host, /*port=*/0, mode,
-          network::mojom::CorsPortMatchMode::kAllowAnyPort,
+          scheme, host, port, domain_match_mode, port_match_mode,
           network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
 
       base::RunLoop run_loop;
@@ -122,7 +125,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
     }
   }
 
-  std::string host_ip() { return embedded_test_server()->base_url().host(); }
+  std::string host_ip() { return embedded_test_server()->base_url().GetHost(); }
 
   const std::u16string& pass_string() const { return pass_string_; }
   const std::u16string& fail_string() const { return fail_string_; }
@@ -153,7 +156,7 @@ class CorsOriginPatternSetterBrowserTest : public ContentBrowserTest {
 
 // Tests if specifying only protocol allows all hosts to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowAll) {
-  SetAllowList("http", "", kAllowSubdomains);
+  SetAllowList("http", "", /*port=*/0, kAllowSubdomains, kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(web_contents(),
@@ -164,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowAll) {
 
 // Tests if specifying only protocol allows all IP address based hosts to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowAllForIp) {
-  SetAllowList("http", "", kAllowSubdomains);
+  SetAllowList("http", "", /*port=*/0, kAllowSubdomains, kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(
@@ -177,7 +180,8 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowAllForIp) {
 
 // Tests if complete allow list set allows only exactly matched host to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowExactHost) {
-  SetAllowList("http", kTestHost, kDisallowSubdomains);
+  SetAllowList("http", kTestHost, /*port=*/0, kDisallowSubdomains,
+               kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(web_contents(),
@@ -190,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowExactHost) {
 // case insensitive way to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
                        AllowExactHostInCaseInsensitive) {
-  SetAllowList("http", kTestHost, kDisallowSubdomains);
+  SetAllowList("http", kTestHost, /*port=*/0, kDisallowSubdomains,
+               kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(
@@ -203,18 +208,24 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
 // Tests if complete allow list set does not allow a host with a different port
 // to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, BlockDifferentPort) {
-  SetAllowList("http", kTestHost, kDisallowSubdomains);
+  SetAllowList("http", kTestHost, embedded_test_server()->port(),
+               kDisallowSubdomains, kAllowOnlySpecifiedPort);
+
+  net::EmbeddedTestServer target_server(net::EmbeddedTestServer::TYPE_HTTP);
+  target_server.ServeFilesFromDirectory(GetTestDataFilePath());
+  ASSERT_TRUE(target_server.Start());
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(base::StringPrintf(
-                          "%s?target=%s&port_diff=1", kTestPath, kTestHost))));
+                          "%s?target=%s&target_port=%d", kTestPath, kTestHost,
+                          target_server.port()))));
   EXPECT_EQ(fail_string(), watcher->WaitAndGetTitle()) << GetReason();
 }
 
 // Tests if complete allow list set allows a subdomain to pass if it is allowed.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowSubdomain) {
-  SetAllowList("http", kTestHost, kAllowSubdomains);
+  SetAllowList("http", kTestHost, /*port=*/0, kAllowSubdomains, kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(
@@ -225,7 +236,8 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, AllowSubdomain) {
 
 // Tests if complete allow list set does not allow a subdomain to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, BlockSubdomain) {
-  SetAllowList("http", kTestHost, kDisallowSubdomains);
+  SetAllowList("http", kTestHost, /*port=*/0, kDisallowSubdomains,
+               kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(
@@ -238,7 +250,8 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest, BlockSubdomain) {
 // protocol to pass.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
                        BlockDifferentProtocol) {
-  SetAllowList("https", kTestHost, kDisallowSubdomains);
+  SetAllowList("https", kTestHost, /*port=*/0, kDisallowSubdomains,
+               kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(web_contents(),
@@ -250,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
 // Tests if IP address based hosts should not follow subdomain match rules.
 IN_PROC_BROWSER_TEST_F(CorsOriginPatternSetterBrowserTest,
                        SubdomainMatchShouldNotBeAppliedForIPAddress) {
-  SetAllowList("http", "*.0.0.1", kAllowSubdomains);
+  SetAllowList("http", "*.0.0.1", /*port=*/0, kAllowSubdomains, kAllowAnyPort);
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();
   EXPECT_TRUE(NavigateToURL(
@@ -299,7 +312,7 @@ class NewContextCorsOriginPatternSetterBrowserTest
 
 IN_PROC_BROWSER_TEST_F(NewContextCorsOriginPatternSetterBrowserTest,
                        PatternListPropagation) {
-  SetAllowList("http", "", kAllowSubdomains);
+  SetAllowList("http", "", /*port=*/0, kAllowSubdomains, kAllowAnyPort);
   CreateWebContents();
 
   std::unique_ptr<TitleWatcher> watcher = CreateWatcher();

@@ -8,9 +8,10 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <IOSurface/IOSurfaceRef.h>
+
 #include <memory>
 
-#include "ui/gfx/buffer_types.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gl/gl_export.h"
 
 namespace gl {
@@ -27,7 +28,7 @@ class GL_EXPORT ScopedEGLSurfaceIOSurface {
       unsigned gl_target,
       IOSurfaceRef io_surface,
       uint32_t plane,
-      gfx::BufferFormat format);
+      viz::SharedImageFormat format);
   ~ScopedEGLSurfaceIOSurface();
 
   // BindTexImage and ReleaseTexImage will bind and unbind the IOSurface to the
@@ -42,7 +43,7 @@ class GL_EXPORT ScopedEGLSurfaceIOSurface {
   bool ValidateTarget(unsigned target) const;
   bool CreatePBuffer(IOSurfaceRef io_surface,
                      uint32_t plane,
-                     gfx::BufferFormat format);
+                     viz::SharedImageFormat format);
   void DestroyPBuffer();
 
   EGLDisplay display_ = nullptr;

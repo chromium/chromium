@@ -23,7 +23,6 @@ include_rules = [
   "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",
   "+third_party/blink/public/mojom/page/page.mojom.h",
   "+third_party/blink/public/mojom/page/prerender_page_param.mojom.h",
-  "+third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h",
   "+services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h",
   "+third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h",
   "+third_party/blink/public/platform",
@@ -54,6 +53,7 @@ specific_include_rules = {
   "extension_throttle_manager.cc": [
     # For net::IsLocalhost.
     "+net/base/url_util.h",
+    "+net/http/http_response_headers.h",
   ],
   "extension_throttle_unittest.cc": [
     "+net/url_request/redirect_info.h",

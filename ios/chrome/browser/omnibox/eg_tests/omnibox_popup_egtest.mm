@@ -37,10 +37,13 @@ namespace {
 /// Returns the popup row containing the `url` as suggestion.
 id<GREYMatcher> PopupRowWithUrl(GURL url) {
   NSString* urlString = [NSString cr_fromString:url.GetContent()];
+  // Lower to visibility threshold for the visibility of the element, because
+  // it can be overlaid by a blur effect view, which isn't considered
+  // translucent by EG.
   id<GREYMatcher> URLMatcher = grey_allOf(
       grey_descendant(
           chrome_test_util::StaticTextWithAccessibilityLabel(urlString)),
-      grey_sufficientlyVisible(), nil);
+      grey_minimumVisiblePercent(0.7), nil);
   return grey_allOf(chrome_test_util::OmniboxPopupRow(), URLMatcher, nil);
 }
 
@@ -216,9 +219,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   // Check that we have the suggestion for the second page, but not the switch
   // as it is the current page.
-
   [[EarlGrey selectElementWithMatcher:PopupRowWithUrl(_URL2)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:SwitchTabElementForUrl(_URL2)]
       assertWithMatcher:grey_not(grey_interactable())];
 }
@@ -228,8 +230,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testDeleteHistoricalSuggestion {
   [self populateHistory];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
-                       [NSString cr_fromString:_URL3.port()]];
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
+                       [NSString cr_fromString:_URL3.GetPort()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
@@ -277,8 +279,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
-                       [NSString cr_fromString:_URL3.port()]];
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
+                       [NSString cr_fromString:_URL3.GetPort()]];
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
   // Check that we have the switch button for the first page.
@@ -301,7 +303,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey waitForWebStateContainingText:kPage3];
 
   [ChromeEarlGreyUI
-      focusOmniboxAndReplaceText:[NSString cr_fromString:_URL3.host()]];
+      focusOmniboxAndReplaceText:[NSString cr_fromString:_URL3.GetHost()]];
 
   // Check that we have the switch button for the second page.
   [[EarlGrey
@@ -326,14 +328,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Open a new tab and switch to the first tab.
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.host()],
-                       [NSString cr_fromString:_URL1.port()]];
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
+                       [NSString cr_fromString:_URL1.GetPort()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxInput)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:omniboxInput];
 
   TapSwitchToTabButton(_URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -358,8 +359,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText([NSString cr_fromString:_URL1.host()])];
+  [ChromeEarlGreyUI
+      replaceTextInOmnibox:[NSString cr_fromString:_URL1.GetHost()]];
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
@@ -424,14 +425,13 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Start typing url of the two opened pages in a new tab.
   [ChromeEarlGrey openNewTab];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.host()],
-                       [NSString cr_fromString:_URL1.port()]];
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL1.GetHost()],
+                       [NSString cr_fromString:_URL1.GetPort()]];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(omniboxInput)];
+  [ChromeEarlGreyUI replaceTextInOmnibox:omniboxInput];
 
   // Check that both elements are displayed.
   // Omnibox can reorder itself in multiple animations, so add an extra wait
@@ -456,8 +456,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   [self populateHistory];
   NSString* omniboxInput = [NSString
-      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.host()],
-                       [NSString cr_fromString:_URL3.port()]];
+      stringWithFormat:@"%@:%@", [NSString cr_fromString:_URL3.GetHost()],
+                       [NSString cr_fromString:_URL3.GetPort()]];
 
   [ChromeEarlGreyUI focusOmniboxAndReplaceText:omniboxInput];
 
@@ -543,8 +543,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText(@"abc")];
+  [ChromeEarlGreyUI replaceTextInOmnibox:@"abc"];
 
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> textMatcher = grey_descendant(
@@ -662,8 +661,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGreyUI focusOmnibox];
 
   // Typing the title of page1.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_replaceText([NSString cr_fromString:kPage1Title])];
+  [ChromeEarlGreyUI replaceTextInOmnibox:[NSString cr_fromString:kPage1Title]];
 
   // Wait for suggestions to show.
   [ChromeEarlGrey
@@ -711,6 +709,40 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Highlight the text you copied row. Accept with Return.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\r" flags:0];
+
+  // The web page should load.
+  [ChromeEarlGrey waitForWebStateContainingText:omnibox::PageContent(1)];
+
+  [ChromeEarlGrey clearPasteboard];
+}
+
+- (void)testHardwareKeyboardSelectLinkYouCopiedAsFirstElement {
+  // Start a server to be able to navigate to a web page.
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&omnibox::OmniboxHTTPResponses));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  const GURL pageURL = self.testServer->GetURL(omnibox::PageURL(1));
+  // Copy link in clipboard.
+  [ChromeEarlGrey
+      copyLinkAsURLToPasteBoard:[NSString cr_fromString:pageURL.spec()]];
+
+  // Focus the fake omnibox.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+
+  // Wait for the clipboard suggestion to show.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:LinkYouCopiedRow()];
+
+  // The omnibox popup may update multiple times.  Don't downArrow until this
+  // is done.
+  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
+
+  // Highlight the text you copied row. Accept with Return.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"downArrow" flags:0];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.1));
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\r" flags:0];

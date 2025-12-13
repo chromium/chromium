@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/omnibox/browser/builtin_provider.h"
 
 #include <stddef.h>
@@ -92,12 +87,12 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
       // Suggest about:blank for substrings, taking URL fixup into account.
       // Chrome does not support trailing slashes or paths for about:blank.
       const std::u16string blank_host = u"blank";
-      const std::u16string host = base::UTF8ToUTF16(url.host());
+      const std::u16string host = base::UTF8ToUTF16(url.GetHost());
       if (base::StartsWith(text, url::kAboutScheme16,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           base::StartsWith(blank_host, host,
                            base::CompareCase::INSENSITIVE_ASCII) &&
-          (url.path().length() <= 1) && !text_ends_with_slash) {
+          (url.GetPath().length() <= 1) && !text_ends_with_slash) {
         std::u16string match(url::kAboutBlankURL16);
         const size_t corrected_length = kAboutSchemeLength + 1 + host.length();
         TermMatches style_matches = {{0, 0, corrected_length}};
@@ -107,7 +102,8 @@ void BuiltinProvider::DoBuiltinAutocompletion(const std::u16string& text) {
       }
 
       // Include the path for sub-pages (e.g. "chrome://settings/browser").
-      std::u16string host_and_path = base::UTF8ToUTF16(url.host() + url.path());
+      std::u16string host_and_path =
+          base::UTF8ToUTF16(url.GetHost() + url.GetPath());
       base::TrimString(host_and_path, u"/", &host_and_path);
       size_t match_length = embedderAbout.length() + host_and_path.length();
       for (Builtins::const_iterator i(builtins_.begin());

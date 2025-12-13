@@ -79,7 +79,7 @@ String Base64Encode(base::span<const uint8_t> data) {
   if (encode_len == 0)
     return String();
   const size_t output_size = modp_b64_encode_data(
-      reinterpret_cast<char*>(result.Characters()),
+      reinterpret_cast<char*>(result.Span().data()),
       reinterpret_cast<const char*>(data.data()), data.size());
   DCHECK_EQ(output_size, encode_len);
   return result.Release();

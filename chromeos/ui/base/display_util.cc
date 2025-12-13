@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/ui/base/display_util.h"
+
+#include "base/notreached.h"
 #include "ui/display/display.h"
 
 namespace chromeos {

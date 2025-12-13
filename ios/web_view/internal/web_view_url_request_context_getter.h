@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -20,11 +20,6 @@ class URLRequestContext;
 class SystemCookieStore;
 }  // namespace net
 
-namespace web {
-class BrowserState;
-class SystemCookieStoreHandle;
-}
-
 namespace ios_web_view {
 
 // WebView implementation of URLRequestContextGetter.
@@ -32,9 +27,11 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
   WebViewURLRequestContextGetter(
       const base::FilePath& base_path,
-      web::BrowserState* browser_state,
       net::NetLog* net_log,
-      const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner);
+      const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner,
+      std::unique_ptr<net::SystemCookieStore> system_cookie_store,
+      std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler>
+          protocol_handler);
 
   WebViewURLRequestContextGetter(const WebViewURLRequestContextGetter&) =
       delete;
@@ -66,7 +63,6 @@ class WebViewURLRequestContextGetter : public net::URLRequestContextGetter {
   // created in constructor and cleared in GetURLRequestContext() where
   // net::URLRequestContext is created.
   std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
-  std::unique_ptr<web::SystemCookieStoreHandle> cookie_store_handle_;
   // Protocol handler for web ui.
   std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler> protocol_handler_;
 

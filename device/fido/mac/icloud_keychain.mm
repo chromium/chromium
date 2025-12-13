@@ -33,14 +33,14 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_parsing_utils.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
 #include "device/fido/mac/icloud_keychain_sys.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
 
 using base::apple::NSDataToSpan;
 
@@ -54,10 +54,6 @@ std::vector<uint8_t> ToVector(NSData* data) {
 }
 
 bool SupportsLargeBlob() {
-  if (!base::FeatureList::IsEnabled(
-          device::kWebAuthnLargeBlobForICloudKeychain)) {
-    return false;
-  }
   if (@available(macOS 14.0, *)) {
     return true;
   }

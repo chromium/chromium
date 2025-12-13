@@ -77,6 +77,9 @@ std::string SourceToString(SourceForRefreshTokenOperation source) {
     case SourceForRefreshTokenOperation::
         kEnterprisePolicy_AccountNotAllowedInContentArea:
       return "AccountsPolicyManager::RemoveUnallowedAccounts";
+    case SourceForRefreshTokenOperation::
+        kDiceAccountReconcilorDelegate_RefreshTokensBoundToDifferentKeys:
+      return "DiceAccountReconcilorDelegate::RefreshTokensBoundToDifferentKeys";
   }
 }
 
@@ -196,13 +199,17 @@ void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenRevoked(
     on_refresh_token_revoked_callback_.Run(account_id, source_string);
   }
 
+  // Copy the account ID to avoid a use-after-free if one of the observers
+  // owns the reference to the account ID and destroys it in
+  // `OnRefreshTokenRevoked()`.
+  CoreAccountId account_id_copy = account_id;
   ScopedBatchChange batch(this);
   for (auto& observer : observer_list_) {
-    observer.OnRefreshTokenRevoked(account_id);
+    observer.OnRefreshTokenRevoked(account_id_copy);
   }
 
   CHECK(on_refresh_token_revoked_notified_callback_);
-  on_refresh_token_revoked_notified_callback_.Run(account_id);
+  on_refresh_token_revoked_notified_callback_.Run(account_id_copy);
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokensLoaded() {

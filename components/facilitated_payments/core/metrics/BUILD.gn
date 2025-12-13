@@ -9,6 +9,7 @@ static_library("metrics") {
   ]
   deps = [
     "//base",
+    "//components/facilitated_payments/core/mojom:pix_code_validator_mojom",
     "//components/facilitated_payments/core/utils",
     "//components/facilitated_payments/core/validation",
     "//services/metrics/public/cpp:metrics_cpp",

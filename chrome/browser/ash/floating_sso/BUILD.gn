@@ -21,20 +21,21 @@ static_library("floating_sso") {
   ]
 
   deps = [
-    "//ash/constants:constants",
+    "//ash/constants",
     "//base",
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
     "//chrome/common",
-    "//chrome/common:channel_info",
-    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/channel",
+    "//chromeos/constants",
     "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync/service",
     "//components/url_matcher",
-    "//components/user_manager:user_manager",
+    "//components/user_manager",
     "//content/public/browser",
     "//net",
   ]
@@ -54,7 +55,7 @@ static_library("test_support") {
   deps = [
     ":floating_sso",
     "//base",
-    "//components/sync/protocol:protocol",
+    "//components/sync/protocol",
     "//components/sync/protocol:util",
   ]
 
@@ -97,7 +98,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/sync:sync",
+    "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
     "//chromeos/constants",

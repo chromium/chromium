@@ -23,6 +23,7 @@ schema:
   items:
     type: string
   type: array
+sensitive: true
 supported_on:
 - chrome.*:84-
 - chrome_os:84-

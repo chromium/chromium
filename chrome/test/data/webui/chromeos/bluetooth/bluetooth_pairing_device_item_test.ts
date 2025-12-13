@@ -50,7 +50,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
     assertTrue(!!deviceName);
     // deviceName uses ! flag because the compilar currently fails when
     // running test locally.
-    assertEquals('BeatsX', deviceName!.textContent!.trim());
+    assertEquals('BeatsX', deviceName!.textContent.trim());
   });
 
   test('pair-device is fired on click or enter', async function() {
@@ -110,7 +110,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
         bluetoothPairingDeviceItem.$.container.ariaLabel;
 
     assertTrue(!!getSecondaryLabel());
-    assertEquals('', getSecondaryLabel().textContent!.trim());
+    assertEquals('', getSecondaryLabel().textContent.trim());
 
     const expectedA11yLabel =
         bluetoothPairingDeviceItem.i18n(
@@ -124,7 +124,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairing'),
-        getSecondaryLabel().textContent!.trim());
+        getSecondaryLabel().textContent.trim());
     assertEquals(
         getItemSecondaryA11yLabel(),
         bluetoothPairingDeviceItem.i18n(
@@ -135,7 +135,7 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     assertEquals(
         bluetoothPairingDeviceItem.i18n('bluetoothPairingFailed'),
-        getSecondaryLabel().textContent!.trim());
+        getSecondaryLabel().textContent.trim());
     assertEquals(
         getItemSecondaryA11yLabel(),
         bluetoothPairingDeviceItem.i18n(
@@ -143,6 +143,6 @@ suite('CrComponentsBluetoothPairingDeviceItemTest', function() {
 
     bluetoothPairingDeviceItem.deviceItemState = DeviceItemState.DEFAULT;
     await flushAsync();
-    assertEquals('', getSecondaryLabel().textContent!.trim());
+    assertEquals('', getSecondaryLabel().textContent.trim());
   });
 });

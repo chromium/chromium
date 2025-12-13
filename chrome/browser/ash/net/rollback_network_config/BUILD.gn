@@ -67,7 +67,7 @@ source_set("unit_tests") {
     "//components/onc",
     "//components/ownership",
     "//components/prefs:test_support",
-    "//components/proxy_config:proxy_config",
+    "//components/proxy_config",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//testing/gtest",

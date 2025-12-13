@@ -90,9 +90,6 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
       case overflow_menu::ActionType::NewWindow:
         finalExpectedActionType = overflow_menu::ActionType::NewWindow;
         break;
-      case overflow_menu::ActionType::Follow:
-        finalExpectedActionType = overflow_menu::ActionType::Follow;
-        break;
       case overflow_menu::ActionType::Bookmark:
         finalExpectedActionType = overflow_menu::ActionType::Bookmark;
         break;
@@ -140,6 +137,12 @@ TEST_F(OverflowMenuConstantsTest, ActionTypeConversion) {
         break;
       case overflow_menu::ActionType::AskBWG:
         finalExpectedActionType = overflow_menu::ActionType::AskBWG;
+        break;
+      case overflow_menu::ActionType::HideToolbars:
+        finalExpectedActionType = overflow_menu::ActionType::HideToolbars;
+        break;
+      case overflow_menu::ActionType::TabGroup:
+        finalExpectedActionType = overflow_menu::ActionType::TabGroup;
         break;
     }
 

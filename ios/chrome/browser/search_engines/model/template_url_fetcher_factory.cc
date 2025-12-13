@@ -32,11 +32,9 @@ TemplateURLFetcherFactory::TemplateURLFetcherFactory()
 TemplateURLFetcherFactory::~TemplateURLFetcherFactory() = default;
 
 std::unique_ptr<KeyedService>
-TemplateURLFetcherFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+TemplateURLFetcherFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<TemplateURLFetcher>(
-      TemplateURLServiceFactory::GetForProfile(
-          ProfileIOS::FromBrowserState(context)));
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace ios

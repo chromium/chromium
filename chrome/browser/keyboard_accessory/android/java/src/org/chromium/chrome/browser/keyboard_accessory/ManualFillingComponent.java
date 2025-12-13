@@ -4,18 +4,17 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.content.Context;
+import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Px;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.autofill.AutofillDelegate;
@@ -24,11 +23,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.AsyncViewStub;
-import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** This component handles the new, non-popup filling UI. */
 @NullMarked
@@ -62,12 +62,11 @@ public interface ManualFillingComponent extends BackPressHandler {
         /**
          * Returns whether Android soft keyboard is showing and ignores all extensions/replacements.
          *
-         * @param context A {@link Context} instance.
          * @param view A {@link View}.
          * @return Returns true if Android's soft keyboard is visible. Ignores
          *     extensions/replacements.
          */
-        boolean isSoftKeyboardShowing(Context context, View view);
+        boolean isSoftKeyboardShowing(View view);
 
         /**
          * Requests Android's soft keyboard.
@@ -108,6 +107,7 @@ public interface ManualFillingComponent extends BackPressHandler {
      * @param keyboardDelegate A {@link SoftKeyboardDelegate} to control only the system keyboard.
      * @param backPressManager A {@link BackPressManager} to register {@link BackPressHandler}.
      * @param edgeToEdgeControllerSupplier A {@link Supplier<EdgeToEdgeController>}.
+     * @param insetObserver An {@link InsetObserver}.
      * @param barStub The {@link AsyncViewStub} used to inflate the keyboard accessory bar.
      */
     void initialize(
@@ -117,7 +117,8 @@ public interface ManualFillingComponent extends BackPressHandler {
             BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
-            Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            InsetObserver insetObserver,
             AsyncViewStub sheetStub,
             AsyncViewStub barStub);
 
@@ -135,24 +136,17 @@ public interface ManualFillingComponent extends BackPressHandler {
     void dismiss();
 
     /**
-     * Notifies the component that a popup window exists so it can be dismissed if necessary.
-     *
-     * @param popup A {@link DropdownPopupWindow} that might be dismissed later.
-     */
-    void notifyPopupAvailable(DropdownPopupWindow popup);
-
-    /**
      * By registering a provider, an empty tab of the given tab type is created. Call {@link
-     * PropertyProvider#notifyObservers(Object)} to fill or update the sheet.
+     * Provider#notifyObservers(Object)} to fill or update the sheet.
      *
      * @param webContents The {@link WebContents} the provided data is meant for.
      * @param sheetType The type of sheet to instantiate and to provide data for.
-     * @param sheetDataProvider The {@link PropertyProvider} the tab will get its data from.
+     * @param sheetDataProvider The {@link Provider} the tab will get its data from.
      */
     void registerSheetDataProvider(
             WebContents webContents,
             @AccessoryTabType int sheetType,
-            PropertyProvider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
+            Provider<KeyboardAccessoryData.AccessorySheetData> sheetDataProvider);
 
     /**
      * Registers an updater delegate which requests new accessory sheets for a given `webContents`.
@@ -165,31 +159,39 @@ public interface ManualFillingComponent extends BackPressHandler {
 
     /**
      * Registers a provider, to provide actions for the keyboard accessory bar. Call {@link
-     * PropertyProvider#notifyObservers(Object)} to fill or update the actions.
+     * Provider#notifyObservers(Object)} to fill or update the actions.
      *
      * @param webContents The {@link WebContents} the provided data is meant for.
-     * @param actionProvider The {@link PropertyProvider} providing actions.
+     * @param actionProvider The {@link Provider} providing actions.
      */
     void registerActionProvider(
-            WebContents webContents,
-            PropertyProvider<KeyboardAccessoryData.Action[]> actionProvider);
+            WebContents webContents, Provider<KeyboardAccessoryData.Action[]> actionProvider);
 
     /**
-     * Registers a provider, to provide autofill suggestions for the keyboard accessory bar. Call
-     * {@link PropertyProvider#notifyObservers(Object)} to fill or update the suggestions.
+     * Sets the bounds of focused field in device-independent. This is used only for dynamically
+     * positioned bars on large-screen devices.
      *
-     * @param autofillProvider The {@link PropertyProvider} providing autofill suggestions.
+     * @param bounds The bounds of the focused field in viewport coordinates given in
+     *     device-independent pixels.
+     */
+    void setFieldBounds(RectF bounds);
+
+    /**
+     * Sets the suggestions to be displayed in the accessory bar.
+     *
+     * @param suggestions A list of {@link AutofillSuggestion}s to be shown.
      * @param delegate The {@link AutofillDelegate} to call for interaction with the suggestions.
      */
-    void registerAutofillProvider(
-            PropertyProvider<List<AutofillSuggestion>> autofillProvider, AutofillDelegate delegate);
+    void setSuggestions(List<AutofillSuggestion> suggestions, AutofillDelegate delegate);
 
     /**
      * Signals that the accessory has permission to show.
      *
      * @param waitForKeyboard signals if the keyboard is requested.
+     * @param isCredentialFieldOrHasAutofillSuggestions signals if the form field is either a
+     *     username/password field or it has autofill suggestions.
      */
-    void show(boolean waitForKeyboard);
+    void show(boolean waitForKeyboard, boolean isCredentialFieldOrHasAutofillSuggestions);
 
     /**
      * Requests to close the active tab in the keyboard accessory. If there is no active tab, this
@@ -246,15 +248,20 @@ public interface ManualFillingComponent extends BackPressHandler {
     boolean removeObserver(Observer observer);
 
     /**
-     * Show a confimation dialog.
+     * Show a deletion confimation dialog.
      *
      * @param title A title of the confirmation dialog.
      * @param message The message of the confirmation dialog.
+     * @param confirmButtonText The text on the confirmation button.
      * @param confirmedCallback A {@link Runnable} to trigger upon confirmation.
      * @param declinedCallback A {@link Runnable} to trigger upon rejection.
      */
-    void confirmOperation(
-            String title, String message, Runnable confirmedCallback, Runnable declinedCallback);
+    void confirmDeletionOperation(
+            String title,
+            CharSequence message,
+            String confirmButtonText,
+            Runnable confirmedCallback,
+            Runnable declinedCallback);
 
     /**
      * Returns the amount that the keyboard will be extended by the filling component when shown.

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_DELEGATE_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_DELEGATE_H_
 
+@class ShowSigninCommand;
+
 // Delegate to communicate back to the NewTabPageCoordinator
 @protocol NewTabPageDelegate
 
@@ -28,6 +30,9 @@
 
 // Returns whether sign-in is enabled for the user.
 - (BOOL)isSignInAllowed;
+
+// Asks the presenter to display the signin UI configured by `command`.
+- (void)showSigninWithCommand:(ShowSigninCommand*)command;
 
 @end
 

@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.settings;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils.parseContainmentAttributes;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -20,14 +21,18 @@ import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.containment.ContainmentItem;
+import org.chromium.components.browser_ui.widget.containment.ContainmentUiUtils;
 
 /** A preference that takes value from a specified list of objects, presented as a dropdown. */
 @NullMarked
-public class SpinnerPreference extends Preference implements Preference.OnPreferenceClickListener {
+public class SpinnerPreference extends Preference
+        implements Preference.OnPreferenceClickListener, ContainmentItem {
     private @Nullable Spinner mSpinner;
     private @Nullable ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
     private final boolean mSingleLine;
+    private final int mBackgroundStyle;
 
     /** Constructor for inflating from XML. */
     public SpinnerPreference(Context context, AttributeSet attrs) {
@@ -35,6 +40,11 @@ public class SpinnerPreference extends Preference implements Preference.OnPrefer
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SpinnerPreference);
         mSingleLine = a.getBoolean(R.styleable.SpinnerPreference_singleLine, false);
         a.recycle();
+
+        ContainmentUiUtils.ContainmentAttributes containmentAttributes =
+                parseContainmentAttributes(context, attrs);
+        mBackgroundStyle = containmentAttributes.backgroundStyle;
+
         if (mSingleLine) {
             setLayoutResource(R.layout.preference_spinner_single_line);
         } else {
@@ -138,5 +148,10 @@ public class SpinnerPreference extends Preference implements Preference.OnPrefer
             mSpinner.performClick();
         }
         return true;
+    }
+
+    @Override
+    public int getCustomBackgroundStyle() {
+        return mBackgroundStyle;
     }
 }

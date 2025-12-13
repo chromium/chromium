@@ -37,6 +37,8 @@
 #include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
+#include "skia/ext/font_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -419,7 +421,7 @@ class TestRectangleBuffer {
                                      << stride_;
     for (int y = top; y < top + height; ++y) {
       for (int x = left; x < left + width; ++x) {
-        SkColor buffer_color = buffer_[x + y * stride_];
+        SkColor buffer_color = UNSAFE_TODO(buffer_[x + y * stride_]);
         EXPECT_EQ(color, buffer_color) << string_ << " at " << x << ", " << y;
       }
     }
@@ -431,7 +433,7 @@ class TestRectangleBuffer {
                                 int top,
                                 int width,
                                 int height) const {
-    SkColor buffer_color = buffer_[left + top * stride_];
+    SkColor buffer_color = UNSAFE_TODO(buffer_[left + top * stride_]);
     EnsureSolidRect(buffer_color, left, top, width, height);
   }
 
@@ -459,6 +461,8 @@ class RenderTextTest : public testing::Test {
   RenderTextTest& operator=(const RenderTextTest&) = delete;
 
  protected:
+  void SetUp() override { skia::InitializeFontRendering(); }
+
   const cc::PaintFlags& GetRendererPaint() {
     return test::RenderTextTestApi::GetRendererPaint(renderer());
   }
@@ -1817,8 +1821,15 @@ const RunListCase kScriptsRunListCases[] = {
     // Devanagari Danda codepoints have large set of script extensions.
     {"dev_danda", u"\u0964\u0965", "[0->1]"},
     // Combining Diacritical Marks (inherited) should only merge with preceding.
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    // ICU 76 changed the script extensions property. See crbug.com/378738904,
+    // the comment #6 in particular.
+    {"diac_lat", u"\u0308fg", "[0->2]"},
+    {"diac_dev", u"क\u0308f", "[0][1->2]"},
+#else
     {"diac_lat", u"\u0308fg", "[0][1->2]"},
     {"diac_dev", u"क\u0308f", "[0->1][2]"},
+#endif
     // ZWJW has the inherited script.
     {"lat_ZWNJ", u"ab\u200Ccd", "[0->4]"},
     {"dev_ZWNJ", u"क\u200Cक", "[0->2]"},
@@ -1856,9 +1867,15 @@ const RunListCase kScriptsRunListCases[] = {
     {"arabic", u"\u0633\u069b\u0763\u077f\u08A2\uFB53", "[5<-0]"},
     {"arabic_lat", u"\u0633\u069b\u0763\u077f\u08A2\uFB53abc", "[6->8][5<-0]"},
     {"arabic_word_ligatures", u"\uFDFD\uFDF3", "[1<-0]"},
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    {"arabic_diac", u"\u069D\u0300", "[1][0]"},
+    {"arabic_diac_lat", u"\u069D\u0300abc", "[2->4][1][0]"},
+    {"arabic_diac_lat2", u"abc\u069D\u0300abc", "[0->2][4][3][5->7]"},
+#else
     {"arabic_diac", u"\u069D\u0300", "[1<-0]"},
     {"arabic_diac_lat", u"\u069D\u0300abc", "[2->4][1<-0]"},
     {"arabic_diac_lat2", u"abc\u069D\u0300abc", "[0->2][4<-3][5->7]"},
+#endif
     {"arabic_lyd", u"\U00010935\U00010930\u06B0\u06B1", "[5<-4][3<-0]"},
     {"arabic_numbers", u"12\u06D034", "[3->4][2][0->1]"},
     {"arabic_letters", u"ab\u06D0cd", "[0->1][2][3->4]"},
@@ -1898,9 +1915,15 @@ const RunListCase kScriptsRunListCases[] = {
     {"unicode_emoticon1", u"(▀̿ĺ̯▀̿ ̿)", "[0][1->2][3->4][5->6][7->8][9]"},
     {"unicode_emoticon2", u"▀̿̿Ĺ̯̿▀̿ ", "[0->2][3->5][6->7][8]"},
     {"unicode_emoticon3", u"( ͡° ͜ʖ ͡°)", "[0][1->2][3][4->5][6][7->8][9][10]"},
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    {"unicode_emoticon4", u"✩·͙*̩̩͙˚̩̥̩̥( ͡ᵔ ͜ʖ ͡ᵔ )*̩̩͙✩·͙˚̩̥̩̥.",
+     "[0][1->2][3->6][7->8][9->11][12][13->14][15][16->17][18][19->20][21][22]"
+     "[23][24->27][28][29->30][31->32][33->35][36]"},
+#else
     {"unicode_emoticon4", u"✩·͙*̩̩͙˚̩̥̩̥( ͡ᵔ ͜ʖ ͡ᵔ )*̩̩͙✩·͙˚̩̥̩̥.",
      "[0][1->2][3->6][7->11][12][13->14][15][16->17][18][19->20][21][22][23]["
      "24->27][28][29->30][31->35][36]"},
+#endif
     {"unicode_emoticon5", u"ヽ(͡◕ ͜ʖ ͡◕)ﾉ",
      "[0][1->2][3][4->5][6][7->8][9][10][11]"},
     {"unicode_art1", u"꧁༒✧ Great ✧༒꧂", "[0][1][2][3][4->8][9][10][11][12]"},
@@ -1908,13 +1931,27 @@ const RunListCase kScriptsRunListCases[] = {
 
     // Combining diacritical sequences.
     {"unicode_diac1", u"\u2123\u0336", "[0->1]"},
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    {"unicode_diac2", u"\u273c\u0325", "[0][1]"},
+#else
     {"unicode_diac2", u"\u273c\u0325", "[0->1]"},
+#endif
     {"unicode_diac3", u"\u2580\u033f", "[0->1]"},
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    {"unicode_diac4", u"\u2022\u0325\u0329", "[0][1->2]"},
+    {"unicode_diac5", u"\u2022\u0325", "[0][1]"},
+#else
     {"unicode_diac4", u"\u2022\u0325\u0329", "[0->2]"},
     {"unicode_diac5", u"\u2022\u0325", "[0->1]"},
+#endif
     {"unicode_diac6", u"\u00b7\u0359\u0325", "[0->2]"},
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+    {"unicode_diac7", u"\u2027\u0329\u0325", "[0->1][2]"},
+    {"unicode_diac8", u"\u0332\u0305\u03c1", "[0][1][2]"},
+#else
     {"unicode_diac7", u"\u2027\u0329\u0325", "[0->2]"},
     {"unicode_diac8", u"\u0332\u0305\u03c1", "[0->1][2]"},
+#endif
 };
 
 INSTANTIATE_TEST_SUITE_P(ItemizeTextToRunsScripts,
@@ -2421,6 +2458,22 @@ TEST_F(RenderTextTest, SetElideBehavior) {
   // Setting a different eliding behavior must trigger a relayout.
   render_text->SetElideBehavior(ELIDE_HEAD);
   EXPECT_EQ(u"…ef", render_text->GetDisplayText());
+}
+
+TEST_F(RenderTextTest, ElideMissingGlyphs) {
+  constexpr int kGlyphWidth = 10;
+  SetGlyphWidth(kGlyphWidth);
+
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(u"𪛗𪛗𪛗𪛗龭疆龭疆龭疆龭疆疆疆疆");
+  render_text->SetCursorEnabled(false);
+  render_text->SetDisplayRect(Rect(0, 0, 10 * kGlyphWidth, 100));
+
+  // Missing glyph state shouldn't change with elision.
+  const bool has_missing_glyphs = GetHarfBuzzRunList()->HasMissingGlyphs();
+  render_text->SetElideBehavior(ELIDE_TAIL);
+  EXPECT_EQ(u"𪛗𪛗𪛗𪛗龭疆龭疆龭…", render_text->GetDisplayText());
+  EXPECT_EQ(has_missing_glyphs, GetHarfBuzzRunList()->HasMissingGlyphs());
 }
 
 TEST_F(RenderTextTest, SetWhitespaceElision) {
@@ -5044,11 +5097,9 @@ TEST_F(RenderTextTest, StringSizeRespectsFontListMetrics) {
   // NOTE: On most platforms, kCJKFontName has different metrics than
   // kTestFontName, but on Android it does not.
   Font test_font(kTestFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(test_font.GetActualFontName()));
+  EXPECT_THAT(test_font.GetActualFontNames(), testing::Contains(kTestFontName));
   Font cjk_font(kCJKFontName, 16);
-  ASSERT_EQ(base::ToLowerASCII(kCJKFontName),
-            base::ToLowerASCII(cjk_font.GetActualFontName()));
+  EXPECT_THAT(cjk_font.GetActualFontNames(), testing::Contains(kCJKFontName));
   Font smaller_font = test_font;
   Font larger_font = cjk_font;
   // "a" should be rendered with the test font, not with the CJK font.
@@ -7058,15 +7109,22 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphCJK) {
 
 TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
   RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // "ꟺ" and "Ｍ" are in the same script, but all OS's split them between
+  // different fonts. This test ensures that each glyph is not in its own
+  // run, but rather that the final rendered runs place adjacent runs with the
+  // same final fallback font in the same run.
   render_text->SetText(u"ꟺＭ");
 
-#if BUILDFLAG(IS_ANDROID)
-  // Android doesn't support either glyph, so they are both missing glyphs in
-  // the same run.
-  EXPECT_EQ(std::vector<std::u16string>({u"ꟺＭ"}), GetRunListStrings());
-  EXPECT_EQ("[0->1]", GetRunListStructureString());
-#else
+  // Must snapshot histograms before checking for missing glyphs.
   base::HistogramTester histograms;
+
+  // This test requires both glyphs to render for merging to occur. If there
+  // are still missing glyphs (this happens on some versions of Android),
+  // return early.
+  if (GetHarfBuzzRunList()->HasMissingGlyphs()) {
+    return;
+  }
   EXPECT_EQ(std::vector<std::u16string>({u"ꟺ", u"Ｍ"}), GetRunListStrings());
   EXPECT_EQ("[0][1]", GetRunListStructureString());
 
@@ -7074,7 +7132,6 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphSmallCaps) {
   histograms.ExpectTotalCount("RenderTextHarfBuzz.ShapeRunsFallback", 1);
   EXPECT_EQ(histograms.GetTotalSum("RenderTextHarfBuzz.ShapeRunsFallback"), 2);
 
-#endif  // BUILDFLAG(IS_ANDROID)
   CheckBoundsForCursorPositions();
 }
 
@@ -7103,9 +7160,15 @@ TEST_F(RenderTextTest, HarfBuzz_SplitRunsWithMissingGlyphDiacDev) {
   RenderTextHarfBuzz* render_text = GetRenderText();
   render_text->SetText(u"क\u0308f");
 
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+  EXPECT_EQ(std::vector<std::u16string>({u"", u"\u0915\u0308f"}),
+            GetRunListStrings());
+  EXPECT_EQ("[0][1->2]", GetRunListStructureString());
+#else
   EXPECT_EQ(std::vector<std::u16string>({u"\x915\x308", u"f"}),
             GetRunListStrings());
   EXPECT_EQ("[0->1][2]", GetRunListStructureString());
+#endif
   CheckBoundsForCursorPositions();
 }
 
@@ -7365,10 +7428,9 @@ TEST_F(RenderTextTest, HarfBuzz_FontListFallback) {
       base::StringPrintf("%s, %s, 12px", kTestFontName, kSymbolFontName));
   const std::vector<Font>& fonts = font_list.GetFonts();
   ASSERT_EQ(2u, fonts.size());
-  ASSERT_EQ(base::ToLowerASCII(kTestFontName),
-            base::ToLowerASCII(fonts[0].GetActualFontName()));
-  ASSERT_EQ(base::ToLowerASCII(kSymbolFontName),
-            base::ToLowerASCII(fonts[1].GetActualFontName()));
+  EXPECT_THAT(fonts[0].GetActualFontNames(), testing::Contains(kTestFontName));
+  EXPECT_THAT(fonts[1].GetActualFontNames(),
+              testing::Contains(kSymbolFontName));
 
   // "⊕" (U+2295, CIRCLED PLUS) should be rendered with Symbol rather than
   // falling back to some other font that's present on the system.

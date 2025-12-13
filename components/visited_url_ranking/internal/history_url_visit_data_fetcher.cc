@@ -128,6 +128,8 @@ void HistoryURLVisitDataFetcher::FetchURLVisitData(
     FetchResultCallback callback) {
   history::QueryOptions query_options;
   query_options.begin_time = options.begin_time;
+  query_options.policy_for_404_visits =
+      history::VisitQuery404sPolicy::kExclude404s;
   query_options.duplicate_policy =
       history::QueryOptions::DuplicateHandling::KEEP_ALL_DUPLICATES;
 

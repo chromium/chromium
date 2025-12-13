@@ -1,0 +1,724 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --color-composebox-submit-button-hover: var(--color-searchbox-results-background-hovered);
+  --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 12px);
+  --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
+  --cr-composebox-submit-container-size: 40px;
+  --cr-icon-button-size: 36px;
+  --input-bottom-spacing: 10px;
+  --text-input-top-spacing: 10px;
+  --text-input-inline-end-spacing: 80px;
+  --text-input-inline-start-spacing: 16px;
+  --text-input-max-height: 190px;
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 26px);
+  --standard-curve: cubic-bezier(0.4, 0, 0.2, 1);
+  --emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --emphasized-curve: linear(
+    0,
+    0.002,
+    0.01 3.6%,
+    0.02 4.9%,
+    0.034,
+    0.053,
+    0.074,
+    0.1,
+    0.128,
+    0.16,
+    0.194 13.4%,
+    0.271 15%,
+    0.344 16.1%,
+    0.477 17.5%,
+    0.544 18.3%,
+    0.607,
+    0.66 20.6%,
+    0.717 22.4%,
+    0.742,
+    0.765,
+    0.788,
+    0.808,
+    0.827,
+    0.845 30.4%,
+    0.865 32.6%,
+    0.866,
+    0.865 32.7%,
+    0.869 33.1%,
+    0.883 35.1%,
+    0.9 37.7%,
+    0.916 40.6%,
+    0.929 43.8%,
+    0.942 47.2%,
+    0.953 51%,
+    0.963 55%,
+    0.972 59.3%,
+    0.979 64%,
+    0.986 69%,
+    0.991 74.4%,
+    0.998 86.4%,
+    1
+  );
+  --border-radius-transition: border-radius var(--collapse-duration)
+    var(--emphasized-curve);
+  --fade-duration: 100ms;
+  --height-expand-duration: 600ms;
+  --icon-entry-transition: opacity var(--expand-ease-out-duration) linear 800ms;
+  --icon-exit-transition: opacity var(--collapse-ease-in-duration)
+    var(--emphasized-accelerate);
+  --lens-icon-animation-duration: 1100ms;
+
+  --submit-enabled-transition: opacity 255ms;
+
+
+
+  border-radius: 30px;
+  box-shadow: var(--cr-searchbox-shadow);
+  font-size: var(--cr-composebox-font-size, 18px);
+  transition: var(--border-radius-transition),
+      /* Fast out (start), slow in (end) box shadow transition. */
+      box-shadow 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  width: var(--cr-composebox-width, 337px);
+}
+
+:host(:not([ntp-realbox-next-enabled])) {
+  --expand-ease-in-duration: 400ms;
+  --expand-delay: 300ms;
+  --expand-ease-out-duration: 300ms;
+  --expand-duration: calc(
+    var(--expand-ease-in-duration) + var(--expand-delay) +
+      var(--expand-ease-out-duration)
+  );
+  --collapse-ease-in-duration: 100ms;
+  --collapse-ease-out-duration: 500ms;
+  --collapse-duration: calc(
+    var(--collapse-ease-in-duration) + var(--collapse-ease-out-duration)
+  );
+}
+
+:host([ntp-realbox-next-enabled]) {
+  --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
+  --input-bottom-spacing: var(--cr-composebox-input-bottom-spacing, 12px);
+  --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
+}
+
+:host([ntp-realbox-next-enabled]) #input::placeholder {
+  font-size: var(--cr-composebox-input-placeholder-font-size, 18px);
+  font-weight: 400;
+}
+
+:host([expanding_]) {
+  border-radius: var(--expanded-border-radius);
+}
+
+#errorScrim {
+  border-radius: inherit;
+}
+
+#composebox {
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+  transition:
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
+}
+
+:host([is-dragging-file_]) #composebox * {
+  pointer-events: none;
+}
+
+search-animated-glow {
+  pointer-events: none;
+  inset: -2px;
+  z-index: 1;
+}
+
+:host([is-collapsible]) #composebox {
+  min-height: 60px;
+  max-height: 60px;
+  transition:
+    max-height var(--collapse-duration) var(--emphasized-curve),
+    min-height var(--collapse-duration) var(--emphasized-curve),
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
+}
+
+:host(:not([is-collapsible])) #composebox {
+  /* If the composebox is not expandable, meaning expanding_ is always true,
+   * then the above transition will never be triggered. Instead, manually
+   * start the animation so it expands as soon as it is rendered */
+  height: 60px;
+}
+
+:host([expanding_]) #composebox {
+  height: calc-size(auto, size);
+  max-height: var(--cr-composebox-max-height, 422px);
+  transition:
+    max-height var(--expand-duration) var(--emphasized-curve),
+    min-height var(--expand-duration) var(--emphasized-curve),
+    opacity var(--fade-duration) ease-in-out,
+    visibility var(--fade-duration) ease-in-out;
+}
+
+:host([is-collapsible][expanding_]) #composebox {
+  min-height: 136px;
+  max-height: 254px;
+}
+
+:host([is-collapsible][expanding_][show-file-carousel_][carousel-on-top_]) #composebox {
+  min-height: calc(136px + 52px);
+}
+
+#inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--input-bottom-spacing);
+  overflow: hidden;
+  width: 100%;
+}
+
+#textContainer {
+  display: flex;
+  flex-direction: row;
+  padding-block-start: var(--cr-composebox-text-container-padding-block-start, 8px);
+  padding-block-end: 0;
+  padding-inline: var(--text-input-inline-start-spacing) 0;
+}
+
+#iconContainer {
+  --text-input-top-spacing: 8px;
+  align-items: center;
+  display: flex;
+  height: 48px;
+  justify-content: center;
+}
+
+#aimIcon {
+  -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: cover;
+  background-color: var(--color-composebox-input-icon);
+  height: 20px;
+  width: 20px;
+}
+
+@media (forced-colors: active) {
+  #aimIcon {
+    background-color: Highlight;
+    border-radius: 4px;
+  }
+}
+
+#inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+#input,
+#smartCompose {
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: var(--cr-composebox-font-size, inherit);
+  line-height: 24px;
+  min-height: 48px;
+  max-height: var(--text-input-max-height);
+  padding-block: var(--text-input-top-spacing) 0;
+  padding-inline: 12px var(--text-input-inline-end-spacing);
+  scrollbar-width: none;
+  width: 100%;
+}
+
+:host(:not[ntp-realbox-next-enabled]) #input {
+  transition: padding var(--height-expand-duration) var(--standard-curve);
+}
+
+#input {
+  animation: color-change 5s infinite;
+  background-color: inherit;
+  border: none;
+  caret-color: var(--google-blue-500);
+  color: var(--color-composebox-font-light);
+  field-sizing: content;
+  mask-image: linear-gradient(transparent 7px, black calc(var(--text-input-top-spacing) + 7px));
+  height: calc-size(fit-content, min(size + 4px, var(--text-input-max-height)));
+  outline: none;
+  position: relative;
+  resize: none;
+}
+
+#input::placeholder {
+  color: var(--cr-composebox-input-placeholder-color, var(--color-composebox-type-ahead));
+}
+
+#smartCompose {
+  pointer-events: none;
+  position: absolute;
+  overflow: scroll;
+  top: 0;
+  left: 0;
+}
+
+:host(:not([smart-compose-enabled_])) #smartCompose {
+  display: none;
+}
+
+#invisibleText {
+  color: transparent;
+  white-space: pre-wrap;
+}
+
+#ghostText {
+  color: var(--color-composebox-type-ahead);
+  white-space: pre-wrap;
+}
+
+#tabChip {
+  align-items: center;
+  border: 1px solid var(--color-composebox-type-ahead-chip);
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: var(--color-composebox-type-ahead-chip);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24px;
+  margin-left: 4px;
+  padding: 6px 8px;
+}
+
+:host([expanding_]) #input,
+:host([expanding_]) #smartCompose {
+  --text-input-top-spacing: 12px;
+}
+
+:host([expanding_][is-collapsible]) #input {
+  --text-input-top-spacing: 24px;
+}
+
+@keyframes color-change {
+  0%, 100%   { caret-color: var(--google-blue-500); }
+  25% { caret-color: var(--google-red-500); }
+  50%  { caret-color: var(--google-yellow-500); }
+  75% { caret-color: var(--google-green-500); }
+}
+
+#input::-webkit-search-decoration,
+#input::-webkit-search-results-button,
+#input::-webkit-search-results-decoration,
+#input::-webkit-search-cancel-button{
+  display: none;
+}
+
+:host([expanding_][show-dropdown_]) cr-composebox-dropdown {
+  padding-bottom: 8px;
+}
+
+.action-icon {
+  --cr-icon-button-focus-outline-color:
+      var(--color-searchbox-results-icon-focused-outline);
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-background-hovered);
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-size: 36px;
+  position: absolute;
+  right: 16px;
+}
+
+:host-context([dir='rtl']) .action-icon {
+  left: 16px;
+  right: unset;
+}
+
+#cancelIcon {
+  --cr-icon-button-fill-color:
+      var(--color-composebox-cancel-button-light);
+  /* SVG is size 20 with 5px of padding so actual size is 10px */
+  /* TODO(crbug.com/460532414) Rename CSS variables to be more
+      distinguishable */
+  --cr-icon-button-icon-size: 20px;
+  position: absolute;
+  top: var(--composebox-cancel-button-top);
+  inset-inline-end: 12px;
+  /* Uses the same transitions as the submit button so they are in sync. */
+  transition: var(--submit-enabled-transition);
+}
+
+:host([searchbox-layout-mode="Compact"]) {
+  /* Used in search-animated-glow-element. */
+  --search-animated-glow-drag-drop-placeholder-top: 16px;
+  /* Changes both composebox and voice-search's: */
+  --composebox-cancel-button-top: 10px;
+  /* Changes voicebox text top padding. */
+  --composebox-voice-search-top-padding: 9px;
+}
+
+:host([expanding_][is-collapsible]) #cancelIcon {
+  top: 16px;
+}
+
+/* Hide the cancel icon when the composebox is expanded and no text is present. */
+:host([is-collapsible]:not([submit-enabled_])) #cancelIcon {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes fade-out-in {
+  0% {
+    opacity: 0;
+  }
+
+  73% {
+    opacity: 0;
+  }
+}
+
+#lensIcon {
+  --cr-icon-button-icon-size: 20px;
+  --cr-icon-image: url(//resources/cr_components/searchbox/icons/camera.svg);
+  bottom: var(--input-bottom-spacing);
+  display: none;
+  opacity: 1;
+  position: absolute;
+  inset-inline-end: 16px;
+  top: 6px;
+}
+
+#lensIcon:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
+  outline-offset: 2px;
+}
+
+:host([expanding_]) #lensIcon {
+  animation: fade-out-in var(--lens-icon-animation-duration) linear;
+  inset-inline-end: 68px;
+  top: auto;
+}
+
+:host([lens-button-disabled_]) #lensIcon {
+  opacity: 0.3;
+}
+
+:host(:not([show-submit_])) #submitContainer,
+:host([show-submit_]:not([submit-enabled_])) #submitContainer{
+  display: none;
+}
+
+#submitContainer {
+  border-radius: 50%;
+  cursor: default; /* For Lens side panel. */
+  height: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
+  bottom: var(--input-bottom-spacing);
+  position: absolute;
+  inset-inline-end: 12px;
+  width: var(--cr-composebox-submit-container-size, var(--cr-icon-button-size));
+}
+
+:host([show-submit_][submit-enabled_]) #submitContainer {
+  cursor: pointer;
+}
+
+#submitOverlay {
+  border-radius: inherit;
+  display: inherit;
+  height: var(--cr-icon-button-size);
+  margin-inline-start: 2px;
+  margin-top: 2px;
+  position: absolute;
+  width: var(--cr-icon-button-size);
+  z-index: 2;
+}
+
+:host([show-submit_][submit-enabled_]) #submitContainer:hover #submitOverlay {
+  background-color: var(--cr-composebox-submit-button-hover-color, var(--color-composebox-submit-button-hover));
+}
+
+#submitIcon {
+  --cr-icon-button-fill-color: var(--color-composebox-submit-button-icon, white);
+  --cr-icon-button-icon-size: 16px;
+  background-color: var(--color-composebox-submit-button-background);
+  margin-inline-start: 0px;
+  inset-inline-start: 2px;
+  opacity: 30%; /* For Lens side panel. */
+  top: 2px;
+  transition: var(--submit-enabled-transition);
+}
+
+#submitContainer:focus-visible {
+  outline: none;
+}
+
+#submitContainer:focus-visible #submitIcon,
+#submitIcon:focus-visible:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-searchbox-results-icon-focused-outline);
+  outline-offset: 2px;
+}
+
+:host([show-submit_][submit-enabled_]) #submitIcon {
+  display: block;
+  opacity: 100%; /* For Lens side panel. */
+}
+
+/* Controls the opacity of the icons when the composebox is expanded/collapsed. */
+.icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host([expanding_]) .icon-fade {
+  opacity: 1;
+  transition: var(--icon-entry-transition);
+}
+
+@media (forced-colors: active) {
+  :host,
+  .action-icon {
+    border: var(--composebox-outline-hcm);
+  }
+}
+
+#suggestionActivity {
+  color: var(--color-composebox-suggestion-activity);
+  display: flex;
+  font-size: 12px;
+  font-weight: 400;
+  justify-content: flex-end;
+  line-height: 18px;
+  padding-bottom: 10px;
+  padding-inline-end: 18px;
+  position: relative;
+}
+
+:host([expanding_][show-file-carousel_][carousel-on-top_]) #inputContainer {
+  padding-top: 60px;
+  --text-input-max-height: 130px;
+}
+
+.carousel-divider {
+  border-radius: 100px;
+  border-top: 1px solid
+    var(--color-composebox-file-carousel-divider);
+  margin-inline-end: 16px;
+  margin-inline-start: var(--text-input-inline-start-spacing);
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+:host([searchbox-layout-mode="Compact"])
+    contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  position: absolute;
+  top: 10px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode^="Tall"][show-dropdown_]) {
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 24px);
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) {
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 30px);
+  --input-bottom-spacing: 10px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) #iconContainer {
+  display: none;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) #textContainer {
+  --text-input-inline-start-spacing: 40px;
+  padding-block: 6px 0;
+}
+
+:host([ntp-realbox-next-enabled]) #input,
+:host([ntp-realbox-next-enabled]) #smartCompose {
+  --text-input-top-spacing: 10px;
+}
+
+:host([ntp-realbox-next-enabled]) #iconContainer {
+  height: 44px;
+}
+
+:host([ntp-realbox-next-enabled]) #submitIcon {
+  --cr-icon-button-icon-size: 12px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) #context {
+  margin-top: -48px;
+}
+
+:host([expanding_][show-dropdown_][ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) cr-composebox-dropdown {
+  padding-bottom: 0;
+  padding-top: 8px;
+}
+
+:host-context([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  margin-top: 10px;
+}
+
+contextual-entrypoint-and-carousel::part(voice-icon) {
+  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
+  --cr-icon-button-margin-end: 0px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 36px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) #submitOverlay,
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='TallBottomContext']) #submitOverlay {
+  position: relative;
+}
+
+:host(:not([ntp-realbox-next-enabled])) contextual-entrypoint-and-carousel::part(voice-icon),
+:host([searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  bottom: 12px;
+  inset-inline-end: 14px;
+  position: absolute;
+}
+
+:host([show-submit_][submit-enabled_]:not([ntp-realbox-next-enabled])) contextual-entrypoint-and-carousel::part(voice-icon) {
+  inset-inline-end: calc(var(--cr-icon-button-size) + 18px);
+}
+
+:host([searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  margin-inline-end: 14px;
+  margin-inline-start: auto;
+  position: static;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  margin-inline-end: 0px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitContainer {
+  margin-inline-end: 10px;
+  margin-inline-start: var(--cr-composebox-submit-button-margin-inline-start, 4px);
+  position: static;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']) #submitIcon {
+  margin-inline-end: 12px;
+  position: relative;
+}
+
+:host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  position: absolute;
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 12px);
+  top: 10px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(carousel-container),
+:host([ntp-realbox-next-enabled][searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(carousel-container) {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']) #submitContainer {
+  margin-inline-end: 0px;
+  margin-inline-start: auto;
+  position: relative;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][context-files-size_="0"]) #submitContainer {
+  bottom: 0px;
+  margin-inline-end: -2px;
+  margin-top: 16px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact']:not([context-files-size_="0"])) #submitContainer {
+  bottom: 14px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) #submitContainer {
+  inset-inline-end: 10px;
+  position: absolute;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])) #submitContainer {
+  bottom: 10px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) #submitContainer {
+  top: 58px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 50px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_][context-files-size_="0"]) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 12px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]:not([context-files-size_="0"])) contextual-entrypoint-and-carousel::part(carousel-divider),
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_]:not([context-files-size_="0"])) contextual-entrypoint-and-carousel::part(carousel-divider) {
+  --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']) contextual-entrypoint-and-carousel::part(voice-icon) {
+  inset-inline-end: calc(var(--cr-composebox-submit-container-size) + 18px);
+}
+
+:host([show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_]) contextual-entrypoint-and-carousel::part(voice-icon) {
+  bottom: unset;
+  top: 60px;
+}
+
+:host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 2px;
+  --cr-icon-button-size: 36px;
+}
+
+:host([ntp-realbox-next-enabled][searchbox-layout-mode^="Tall"]) contextual-entrypoint-and-carousel::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 20px;
+}
+
+:host([searchbox-layout-mode='Compact']) contextual-entrypoint-and-carousel::part(cr-composebox-file-carousel) {
+  margin-top: 14px;
+}
+
+:host([in-voice-search-mode_]) {
+  box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
+}
+
+:host([in-voice-search-mode_]) #suggestionActivity {
+  display: none;
+}
+
+:host([in-voice-search-mode_]) .icon-fade {
+  opacity: 0;
+  transition: var(--icon-exit-transition);
+}
+
+:host([in-voice-search-mode_]) #composebox {
+  opacity: 0;
+  /* CANNOT be display: None since :host depends on its height. */
+  visibility: hidden;
+}
+
+cr-composebox-voice-search {
+  opacity: 1;
+  @starting-style {
+    opacity: 0;  /* Since hidden elements have no previous state. */
+  }
+  transition: opacity 100ms ease-in-out, display 200ms allow-discrete;
+  z-index: 2;
+}
+
+:host(:not([in-voice-search-mode_])) cr-composebox-voice-search {
+  display: none;
+  opacity: 0;
+}

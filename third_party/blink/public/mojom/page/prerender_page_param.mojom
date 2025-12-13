@@ -17,4 +17,8 @@ struct PrerenderParam {
   // If true, dry run paint phase to pre-build a paint tree for the page, so
   // then the intermediate result can be reused after activation.
   bool should_prepare_paint_tree;
+
+  // If true, pauses JavaScript execution until the page is activated.
+  // TODO(crbug.com/428500219): Allow upgrading to a full prerender.
+  bool should_pause_javascript_execution;
 };

@@ -23,11 +23,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "build/build_config.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_power_monitor.h"
-#include "services/audio/loopback_group_member.h"
+#include "services/audio/loopback_source.h"
 
 // An OutputController controls an AudioOutputStream and provides data to this
 // output stream. It executes audio operations like play, pause, stop, etc. on
@@ -60,7 +59,7 @@
 
 namespace audio {
 class OutputController : public media::AudioOutputStream::AudioSourceCallback,
-                         public LoopbackGroupMember {
+                         public LoopbackSource {
  public:
   // An event handler that receives events from the OutputController. The
   // following methods are called on the audio manager thread.
@@ -143,16 +142,6 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   ~OutputController() override;
 
-  // Indicates whether audio power level analysis will be performed.  If false,
-  // ReadCurrentPowerAndClip() can not be called.
-  static constexpr bool will_monitor_audio_levels() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return false;
-#else
-    return true;
-#endif
-  }
-
   // Methods to control playback of the stream.
 
   // Creates the audio output stream. This must be called before Play(). Returns
@@ -203,6 +192,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // Recreates the output stream to play audio to specified device.
   void SwitchAudioOutputDeviceId(const std::string& new_output_device_id);
 
+  // Indicates whether audio power level analysis will be performed.  If false,
+  // ReadCurrentPowerAndClip() can not be called.
+  bool will_monitor_audio_levels() const { return will_monitor_audio_levels_; }
+
  protected:
   // Time constant for AudioPowerMonitor.  See AudioPowerMonitor ctor comments
   // for semantics.  This value was arbitrarily chosen, but seems to work well.
@@ -242,7 +235,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     void RegisterError();
 
     // This function should be called from the stream callback thread.
-    void OnMoreDataCalled();
+    void OnMoreDataCalled(const media::AudioGlitchInfo& glitch_info);
 
    private:
     void WedgeCheck();
@@ -252,6 +245,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
     RAW_PTR_EXCLUSION OutputController* const controller_;
 
     const base::TimeTicks start_time_;
+
+    // Accumulates AudioGlitchInfo provided in OnMoreData callbacks. Only used
+    // for logging purposes.
+    media::AudioGlitchInfo glitch_info_;
 
     bool error_during_callback_ = false;
 
@@ -357,6 +354,10 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   // Request and read data in the same OnMoreData call, to reduce latency.
   const bool request_before_read_;
+
+  // Indicates whether audio power level analysis will be performed.  If false,
+  // ReadCurrentPowerAndClip() can not be called.
+  const bool will_monitor_audio_levels_;
 };
 
 }  // namespace audio

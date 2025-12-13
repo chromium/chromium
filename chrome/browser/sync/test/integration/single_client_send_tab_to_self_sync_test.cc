@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
 
   ASSERT_TRUE(SetupClients());
   secondary_account_helper::SignInUnconsentedAccount(
-      GetProfile(0), &test_url_loader_factory_, "user@g.com");
+      GetProfile(0), &test_url_loader_factory_, "user@gmail.com");
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
   send_tab_to_self::SendTabToSelfModel* model =

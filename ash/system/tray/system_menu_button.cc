@@ -4,7 +4,6 @@
 
 #include "ash/system/tray/system_menu_button.h"
 
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
 #include "ash/system/tray/tray_constants.h"
@@ -13,6 +12,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_utils.h"
@@ -58,13 +58,13 @@ SystemMenuButton::SystemMenuButton(PressedCallback callback,
 }
 
 void SystemMenuButton::SetVectorIcon(const gfx::VectorIcon& icon) {
-  const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(icon, icon_color));
-  SetImageModel(views::Button::STATE_DISABLED,
-                ui::ImageModel::FromVectorIcon(
-                    icon, ColorUtil::GetDisabledColor(icon_color)));
+  SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(icon, cros_tokens::kColorPrimary));
+  SetImageModel(
+      views::Button::STATE_DISABLED,
+      ui::ImageModel::FromVectorIcon(
+          icon, ColorUtil::GetDisabledColor(cros_tokens::kColorPrimary)));
 }
 
 SystemMenuButton::~SystemMenuButton() = default;

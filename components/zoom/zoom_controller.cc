@@ -15,6 +15,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -304,13 +305,13 @@ void ZoomController::SetZoomMode(ZoomMode new_mode) {
       if (!url.is_empty()) {
         std::string host = net::GetHostOrSpecFromURL(url);
 
-        if (zoom_map->HasZoomLevel(url.scheme(), host)) {
+        if (zoom_map->HasZoomLevel(url.GetScheme(), host)) {
           // If there are other tabs with the same origin, then set this tab's
           // zoom level to match theirs. The temporary zoom level will be
           // cleared below, but this call will make sure this tab re-draws at
           // the correct zoom level.
           double origin_zoom_level =
-              zoom_map->GetZoomLevelForHostAndScheme(url.scheme(), host);
+              zoom_map->GetZoomLevelForHostAndScheme(url.GetScheme(), host);
           event_data_->new_zoom_level = origin_zoom_level;
           zoom_map->SetTemporaryZoomLevel(rfh_id, origin_zoom_level);
         } else {
@@ -384,7 +385,7 @@ void ZoomController::ResetZoomModeOnNavigationIfNeeded(const GURL& url) {
   double old_zoom_level =
       zoom_map->GetZoomLevel(web_contents(), rfh->GetGlobalId());
   double new_zoom_level = zoom_map->GetZoomLevelForHostAndScheme(
-      url.scheme(), net::GetHostOrSpecFromURL(url));
+      url.GetScheme(), net::GetHostOrSpecFromURL(url));
   event_data_ = std::make_unique<ZoomChangedEventData>(
       web_contents(), rfh->GetFrameTreeNodeId(), old_zoom_level, new_zoom_level,
       ZOOM_MODE_DEFAULT, false /* can_show_bubble */);

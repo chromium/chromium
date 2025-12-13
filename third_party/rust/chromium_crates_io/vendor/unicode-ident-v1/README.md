@@ -13,7 +13,7 @@ Implementation of [Unicode Standard Annex #31][tr31] for determining which
 
 This crate is a better optimized implementation of the older `unicode-xid`
 crate. This crate uses less static storage, and is able to classify both ASCII
-and non-ASCII codepoints with better performance, 2&ndash;6&times; faster than
+and non-ASCII codepoints with better performance, 6&times; faster than
 `unicode-xid`.
 
 <br>
@@ -41,11 +41,11 @@ different ratios of ASCII to non-ASCII codepoints in the input data.
 
 | | static storage | 0% nonascii | 1% | 10% | 100% nonascii |
 |---|---|---|---|---|---|
-| **`unicode-ident`** | 10.4 K | 1.03 ns | 1.02 ns | 1.11 ns | 1.66 ns |
-| **`unicode-xid`** | 11.8 K | 2.57 ns | 2.74 ns | 3.20 ns | 9.35 ns |
-| **`ucd-trie`** | 10.3 K | 1.27 ns | 1.27 ns | 1.41 ns | 2.53 ns |
-| **`fst`** | 144 K | 49.3 ns | 49.1 ns | 47.1 ns | 27.9 ns |
-| **`roaring`** | 66.1 K | 4.10 ns | 4.05 ns | 4.02 ns | 5.12 ns |
+| **`unicode-ident`** | 10.3 K | 0.41 ns | 0.44 ns | 0.44 ns | 0.93 ns |
+| **`unicode-xid`** | 12.0 K | 2.43 ns | 2.50 ns | 2.85 ns | 8.65 ns |
+| **`ucd-trie`** | 10.4 K | 1.28 ns | 1.25 ns | 1.20 ns | 1.97 ns |
+| **`fst`** | 144 K | 50.9 ns | 51.0 ns | 48.5 ns | 26.7 ns |
+| **`roaring`** | 66.1 K | 4.28 ns | 4.22 ns | 4.25 ns | 4.61 ns |
 
 Source code for the benchmark is provided in the *bench* directory of this repo
 and may be repeated by running `cargo criterion`.
@@ -235,27 +235,19 @@ data structure is straight-line code with no need for branching.
 ```asm
 is_xid_start:
 	mov eax, edi
+	mov ecx, offset unicode_ident::ZERO
 	shr eax, 9
-	lea rcx, [rip + unicode_ident::tables::TRIE_START]
-	add rcx, rax
-	xor eax, eax
-	cmp edi, 201728
-	cmovb rax, rcx
-	test rax, rax
-	lea rcx, [rip + .L__unnamed_1]
-	cmovne rcx, rax
+	cmp edi, 210432
+	lea rax, [rax + unicode_ident::tables::TRIE_START]
+	cmovb rcx, rax
 	movzx eax, byte ptr [rcx]
-	shl rax, 5
-	mov ecx, edi
-	shr ecx, 3
-	and ecx, 63
-	add rcx, rax
-	lea rax, [rip + unicode_ident::tables::LEAF]
-	mov al, byte ptr [rax + rcx]
-	and dil, 7
-	mov ecx, edi
-	shr al, cl
-	and al, 1
+	mov ecx, 1539
+	bextr ecx, edi, ecx
+	and edi, 7
+	shl eax, 5
+	movzx eax, byte ptr [rax + rcx + unicode_ident::tables::LEAF]
+	bt eax, edi
+	setb al
 	ret
 ```
 

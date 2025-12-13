@@ -65,10 +65,12 @@ void LayoutSVGInlineText::TextDidChange() {
     UseCounter::Count(GetDocument(), WebFeature::kSVGTextEdited);
 }
 
-void LayoutSVGInlineText::StyleDidChange(StyleDifference diff,
-                                         const ComputedStyle* old_style) {
+void LayoutSVGInlineText::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutText::StyleDidChange(diff, old_style);
+  LayoutText::StyleDidChange(diff, old_style, style_change_context);
   UpdateScaledFont();
 
   const bool new_collapse = StyleRef().ShouldCollapseWhiteSpaces();
@@ -167,6 +169,16 @@ void LayoutSVGInlineText::UpdateScaledFont() {
   scaled_font_ = ComputeNewScaledFontForStyle(*this, scaling_factor_);
 }
 
+float LayoutSVGInlineText::ComputeFontScale(const LayoutObject& layout_object) {
+  const ComputedStyle& style = layout_object.StyleRef();
+  if (style.GetFontDescription().TextRendering() == kGeometricPrecision) {
+    return 1;
+  }
+  const float scaling_factor =
+      SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(&layout_object);
+  return !scaling_factor ? 1 : scaling_factor;
+}
+
 const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
     const LayoutObject& layout_object,
     float& scaling_factor) {
@@ -174,10 +186,14 @@ const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
 
   // Alter font-size to the right on-screen value to avoid scaling the glyphs
   // themselves, except when GeometricPrecision is specified.
-  scaling_factor =
-      SVGLayoutSupport::CalculateScreenFontSizeScalingFactor(&layout_object);
-  if (!scaling_factor) {
-    scaling_factor = 1;
+  scaling_factor = ComputeFontScale(layout_object);
+
+  const FontDescription& unscaled_font_description = style.GetFontDescription();
+  Document& document = layout_object.GetDocument();
+  float scaled_font_size = FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
+      &document, scaling_factor, unscaled_font_description.IsAbsoluteSize(),
+      unscaled_font_description.SpecifiedSize(), kDoNotApplyMinimumForFontSize);
+  if (scaled_font_size == unscaled_font_description.ComputedSize()) {
     // This is a hack. TextDecorationInfo's constructor wants to compare
     // Font objects _by pointer_ to verify that it's a true override;
     // otherwise, it sets the underline the wrong place. So we need to
@@ -186,26 +202,21 @@ const Font* LayoutSVGInlineText::ComputeNewScaledFontForStyle(
     return MakeGarbageCollected<Font>(*style.GetFont());
   }
 
-  const FontDescription& unscaled_font_description = style.GetFontDescription();
-  if (unscaled_font_description.TextRendering() == kGeometricPrecision)
-    scaling_factor = 1;
-
-  Document& document = layout_object.GetDocument();
-  float scaled_font_size = FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
-      &document, scaling_factor, unscaled_font_description.IsAbsoluteSize(),
-      unscaled_font_description.SpecifiedSize(), kDoNotApplyMinimumForFontSize);
-  if (scaled_font_size == unscaled_font_description.ComputedSize()) {
-    // See above.
-    return MakeGarbageCollected<Font>(*style.GetFont());
-  }
-
   FontDescription font_description = unscaled_font_description;
   font_description.SetComputedSize(scaled_font_size);
+  if (font_description.HasSizeAdjust()) {
+    if (auto adjusted_size =
+            FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+                style.GetFont()->PrimaryFont(), font_description)) {
+      font_description.SetAdjustedSize(adjusted_size.value());
+    }
+  }
+
   const float zoom = style.EffectiveZoom();
   font_description.SetLetterSpacing(
       Length::Fixed(font_description.LetterSpacing() * scaling_factor / zoom));
-  font_description.SetWordSpacing(font_description.WordSpacing() *
-                                  scaling_factor / zoom);
+  font_description.SetWordSpacing(
+      Length::Fixed(font_description.WordSpacing() * scaling_factor / zoom));
 
   return MakeGarbageCollected<Font>(
       font_description, document.GetStyleEngine().GetFontSelector());

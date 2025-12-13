@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab.tab_restore;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 
 import androidx.test.filters.MediumTest;
@@ -16,12 +18,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Token;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -50,6 +53,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 /**
  * End to end tests for {@link HistoricalTabSaverImpl} and its interactions with TabRestoreService.
@@ -84,7 +88,7 @@ public class HistoricalTabSaverImplTest {
         mTabModelSelector = mInitialPage.getTabModelSelector();
         mTabModel = mInitialPage.getTabModel();
         TabRestoreServiceUtils.clearEntries(mTabModelSelector);
-        mTab = mInitialPage.loadedTabElement.get();
+        mTab = mInitialPage.loadedTabElement.value();
         mHistoricalTabSaver = new HistoricalTabSaverImpl(mTabModel);
     }
 
@@ -115,6 +119,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalTab_Frozen_HistoricalTabCreated() {
         final Tab tab =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -135,6 +140,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalTab_Frozen_CannotRestore() {
         final Tab tab =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -178,6 +184,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalGroup_Frozen_HistoricalGroupCreated() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -210,6 +217,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalGroup_Frozen_CannotRestore() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -298,6 +306,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalBulk_Frozen_HistoricalBulkCreated() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -325,6 +334,7 @@ public class HistoricalTabSaverImplTest {
      */
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.LOAD_ALL_TABS_AT_STARTUP)
     public void testCreateHistoricalBulk_Frozen_CannotRestore() {
         final Tab tab0 =
                 mActivityTestRule.loadUrlInNewTab(getUrl(TEST_PAGE_1), /* incognito= */ false);
@@ -439,7 +449,8 @@ public class HistoricalTabSaverImplTest {
                                                 .getProfileProviderSupplier()
                                                 .get()
                                                 .getOriginalProfile()));
-        CriteriaHelper.pollUiThread(() -> archivedTabModelOrchestrator.getTabArchiver() != null);
+        CriteriaHelper.pollUiThread(
+                () -> archivedTabModelOrchestrator.getTabModelSelector() != null);
 
         Supplier<TabModel> archivedTabModelSupplier = archivedTabModelOrchestrator::getTabModel;
         mHistoricalTabSaver.addSecondaryTabModelSupplier(archivedTabModelSupplier);
@@ -483,7 +494,7 @@ public class HistoricalTabSaverImplTest {
 
         Assert.assertEquals("Entry count mismatch.", expectedEntries.size(), actualEntries.size());
         for (int i = 0; i < expectedEntries.size(); ++i) {
-            assert expectedEntries.get(i).size() != 0;
+            assertThat(expectedEntries.get(i)).isNotEmpty();
 
             if (expectedEntries.get(i).size() != 1) {
                 assertBulkClosureEquals(i, expectedEntries.get(i), actualEntries.get(i));

@@ -18,7 +18,6 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -60,10 +59,3 @@ WebuiGalleryUI::WebuiGalleryUI(content::WebUI* web_ui)
 WebuiGalleryUI::~WebuiGalleryUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebuiGalleryUI)
-
-void WebuiGalleryUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}

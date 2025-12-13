@@ -147,7 +147,7 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     }
   }
 
-  if (physical_fragment.IsGrid()) {
+  if (physical_fragment.IsGrid() || physical_fragment.IsGridLanes()) {
     container_builder_.TransferGridLayoutData(
         std::make_unique<GridLayoutData>(*result.GetGridLayoutData()));
   } else if (physical_fragment.IsFrameSet()) {
@@ -269,9 +269,8 @@ const LayoutResult* SimplifiedLayoutAlgorithm::Layout() {
     // calculated it.
     const auto* layer = child.GetLayoutBox()->Layer();
     LogicalStaticPosition position = layer->GetStaticPosition();
-    container_builder_.AddOutOfFlowChildCandidate(
-        To<BlockNode>(child), position.offset, position.inline_edge,
-        position.block_edge, position.align_self_direction);
+    container_builder_.AddOutOfFlowChildCandidate(To<BlockNode>(child),
+                                                  position);
   }
 
   if (previous_fragment.Items()) {

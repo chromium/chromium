@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/wayland_protocol_logger.h"
+
+#include "base/compiler_specific.h"
 
 // We need wl_object declared below.
 #undef WL_HIDE_DEPRECATED
@@ -29,7 +26,7 @@ std::string StringifyWaylandArgument(const wl_interface* type,
 
     // Always advance the pointer before returning, so that the next
     // call to this function will look at the next argument's signature.
-    (*signature_ptr)++;
+    UNSAFE_TODO((*signature_ptr)++);
 
     // The type of `arg` is indicated by this character of the signature.
     switch (s) {
@@ -136,7 +133,8 @@ std::vector<std::string> WaylandProtocolLogger::FormatMessage(
   const char* signature = message->message->signature;
   for (int i = 0; i < message->arguments_count && *signature; i++) {
     return_value.push_back(StringifyWaylandArgument(
-        message->message->types[i], message->arguments[i], &signature));
+        UNSAFE_TODO(message->message->types[i]),
+        UNSAFE_TODO(message->arguments[i]), &signature));
   }
   return return_value;
 }

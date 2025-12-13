@@ -90,7 +90,7 @@ TEST_F(ReauthenticationModuleTest, MAYBE_ReauthReuseNotPermitted) {
 }
 
 // Tests that the previous reauthentication is reused when reuse is permitted
-// and the last successful reauthentication occured less than 60 seconds
+// and the last successful reauthentication occurred less than 60 seconds
 // before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
 #if TARGET_OS_SIMULATOR
@@ -132,7 +132,7 @@ TEST_F(ReauthenticationModuleTest,
 }
 
 // Tests that the previous reauthentication is not reused when reuse is
-// permitted, but the last successful reauthentication occured more than 60
+// permitted, but the last successful reauthentication occurred more than 60
 // seconds before the current attempt.
 // TODO(crbug.com/40167264): The test fails on device.
 #if TARGET_OS_SIMULATOR

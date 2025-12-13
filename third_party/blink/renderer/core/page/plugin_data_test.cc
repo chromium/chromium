@@ -19,12 +19,12 @@ namespace {
 
 class MockPluginRegistry : public mojom::blink::PluginRegistry {
  public:
-  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
-    DidGetPlugins(refresh);
+  void GetPlugins(GetPluginsCallback callback) override {
+    DidGetPlugins();
     std::move(callback).Run(Vector<mojom::blink::PluginInfoPtr>());
   }
 
-  MOCK_METHOD(void, DidGetPlugins, (bool));
+  MOCK_METHOD(void, DidGetPlugins, ());
 };
 
 TEST(PluginDataTest, UpdatePluginList) {
@@ -35,7 +35,7 @@ TEST(PluginDataTest, UpdatePluginList) {
   mojo::Receiver<mojom::blink::PluginRegistry> registry_receiver(
       &mock_plugin_registry);
   TestingPlatformSupport::ScopedOverrideMojoInterface override_plugin_registry(
-      WTF::BindRepeating(
+      BindRepeating(
           [](mojo::Receiver<mojom::blink::PluginRegistry>* registry_receiver,
              const char* interface, mojo::ScopedMessagePipeHandle pipe) {
             if (!UNSAFE_TODO(
@@ -46,9 +46,9 @@ TEST(PluginDataTest, UpdatePluginList) {
               return;
             }
           },
-          WTF::Unretained(&registry_receiver)));
+          Unretained(&registry_receiver)));
 
-  EXPECT_CALL(mock_plugin_registry, DidGetPlugins(false));
+  EXPECT_CALL(mock_plugin_registry, DidGetPlugins());
 
   auto* plugin_data = MakeGarbageCollected<PluginData>();
   plugin_data->UpdatePluginList();

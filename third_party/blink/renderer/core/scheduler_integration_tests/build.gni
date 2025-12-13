@@ -6,6 +6,7 @@ blink_core_tests_scheduler_integration_tests = [
   "frame_scheduler_test.cc",
   "frame_throttling_test.cc",
   "scheduler_affecting_features_test.cc",
+  "scheduler_policy_test.cc",
   "throttling_test.cc",
   "virtual_time_test.cc",
 ]

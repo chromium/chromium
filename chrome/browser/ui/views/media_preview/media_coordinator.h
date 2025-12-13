@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/views/media_preview/camera_preview/camera_coordinator.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/mic_preview/mic_coordinator.h"
-#include "components/permissions/permission_prompt.h"
 #include "content/public/browser/browser_context.h"
 
 namespace views {
@@ -38,15 +37,13 @@ class MediaCoordinator {
     std::vector<std::string> mics;
   };
 
-  MediaCoordinator(
-      ViewType view_type,
-      views::View& parent_view,
-      bool is_subsection,
-      EligibleDevices eligible_devices,
-      base::WeakPtr<content::BrowserContext> browser_context,
-      bool allow_device_selection,
-      const media_preview_metrics::Context& metrics_context,
-      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
+  MediaCoordinator(ViewType view_type,
+                   views::View& parent_view,
+                   bool is_subsection,
+                   EligibleDevices eligible_devices,
+                   base::WeakPtr<content::BrowserContext> browser_context,
+                   bool allow_device_selection,
+                   const media_preview_metrics::Context& metrics_context);
   MediaCoordinator(const MediaCoordinator&) = delete;
   MediaCoordinator& operator=(const MediaCoordinator&) = delete;
   ~MediaCoordinator();
@@ -64,9 +61,6 @@ class MediaCoordinator {
 namespace media_coordinator {
 
 media_preview_metrics::PreviewType GetPreviewTypeFromMediaCoordinatorViewType(
-    MediaCoordinator::ViewType view_type);
-
-media_preview_metrics::PromptType GetPromptTypeFromMediaCoordinatorViewType(
     MediaCoordinator::ViewType view_type);
 
 }  // namespace media_coordinator

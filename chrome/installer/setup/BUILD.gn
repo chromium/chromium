@@ -38,7 +38,7 @@ if (is_win) {
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_rc_strings",
       "//chrome/windows_services/elevated_tracing_service:integration",
-      "//components/crash/core/app:app",
+      "//components/crash/core/app",
       "//components/crash/core/app:crash_export_thunks",
       "//components/crash/core/app:run_as_crashpad_handler",
       "//content/public/common:static_switches",
@@ -52,8 +52,6 @@ if (is_win) {
   static_library("lib") {
     sources = [
       "${branding_path_product}_behaviors.cc",
-      "archive_patch_helper.cc",
-      "archive_patch_helper.h",
       "brand_behaviors.h",
       "configure_app_container_sandbox.cc",
       "configure_app_container_sandbox.h",
@@ -113,9 +111,6 @@ if (is_win) {
       "//components/metrics:client_info",
       "//components/metrics:metrics_pref_names",
       "//components/version_info:channel",
-      "//components/zucchini:zucchini_io",
-      "//components/zucchini:zucchini_lib",
-      "//third_party/bspatch",
       "//third_party/crashpad/crashpad/client",
       "//third_party/crashpad/crashpad/util",
       "//ui/base:fullscreen_win",
@@ -137,7 +132,6 @@ if (is_win) {
   # This test covers the mini installer and setup tests.
   test("setup_unittests") {
     sources = [
-      "archive_patch_helper_unittest.cc",
       "configure_app_container_sandbox_unittest.cc",
       "downgrade_cleanup_unittest.cc",
       "install_unittest.cc",

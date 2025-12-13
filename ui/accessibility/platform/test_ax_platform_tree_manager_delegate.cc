@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
+#include "base/functional/callback.h"
+
 namespace ui {
 
 TestAXPlatformTreeManagerDelegate::TestAXPlatformTreeManagerDelegate()
@@ -72,8 +74,7 @@ TestAXPlatformTreeManagerDelegate::AccessibilityGetWebContentsAccessibility() {
 }
 
 bool TestAXPlatformTreeManagerDelegate::AccessibilityIsWebContentSource() {
-  // Currently only used in web content tests.
-  return true;
+  return is_web_content_source_;
 }
 
 }  // namespace ui

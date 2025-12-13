@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/browser/media/router/discovery/discovery_network_list_wifi.h"
 
 #include <linux/wireless.h>
@@ -16,6 +11,7 @@
 #include <sys/types.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "net/base/network_interfaces_linux.h"
 
@@ -34,7 +30,7 @@ bool MaybeGetWifiSSID(const std::string& if_name, std::string* ssid_out) {
     }
   }
   struct iwreq wreq = {};
-  strncpy(wreq.ifr_name, if_name.data(), IFNAMSIZ - 1);
+  UNSAFE_TODO(strncpy(wreq.ifr_name, if_name.data(), IFNAMSIZ - 1));
 
   char ssid[IW_ESSID_MAX_SIZE + 1] = {};
   wreq.u.essid.pointer = ssid;

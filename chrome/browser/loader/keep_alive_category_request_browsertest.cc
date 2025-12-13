@@ -30,6 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/keep_alive_url_loader_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -49,7 +50,7 @@ using testing::Eq;
 using testing::Key;
 using testing::Not;
 
-constexpr char kSRPEndpoing[] = "/search?q=test";
+constexpr char kSRPEndpoint[] = "/search?q=test";
 
 std::string GetRelativeCategoryUrl(std::string_view relative_url,
                                    std::string_view category) {
@@ -163,6 +164,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest, OneRequest) {
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -196,6 +198,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/true,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       content::KeepAliveRequestTracker::RequestStageType::
@@ -243,6 +246,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -291,6 +295,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveCategoryRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/1,
+      /*num_retries=*/0,
       /*is_context_detached=*/true,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
       content::KeepAliveRequestTracker::RequestStageType::
@@ -321,7 +326,7 @@ class FromGWSNavigationAndKeepAliveRequestBrowserTest
   }
 
   GURL GetSearchResultPageURL() {
-    return server()->GetURL(kGoogleHost, kSRPEndpoing);
+    return server()->GetURL(kGoogleHost, kSRPEndpoint);
   }
 
   const std::string& method() const { return GetParam(); }
@@ -360,6 +365,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -402,6 +408,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -453,6 +460,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       {{content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/1,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -464,6 +472,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/2,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -511,6 +520,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       {{content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/1,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -522,6 +532,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/1,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -562,6 +573,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -608,6 +620,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/2,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -626,6 +639,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
 
 // Tests the case where a SRP sends two different fetch keepalive category
 // requests and then perform two different navigations.
+// Flow: /search -> /search -> /title1.
 IN_PROC_BROWSER_TEST_P(
     FromGWSNavigationAndKeepAliveRequestBrowserTest,
     TwoDifferentCategoryRequestAndTwoDifferentCategoryNavigationsFromSRP) {
@@ -634,35 +648,46 @@ IN_PROC_BROWSER_TEST_P(
   const std::string target_url1 = GetKeepAliveCategoryRequestUrl(category1);
   const std::string target_url2 = GetKeepAliveCategoryRequestUrl(category2);
   ASSERT_TRUE(server()->Start());
-  const std::string nav_target_url1 =
-      GetRelativeCategoryUrl("/title1", category1);
-  const std::string nav_target_url2 =
-      GetRelativeCategoryUrl("/title1", category2);
+  const GURL nav_target_url1 = server()->GetURL(
+      kGoogleHost, GetRelativeCategoryUrl(kSRPEndpoint, category1));
+  const GURL nav_target_url2 = server()->GetURL(
+      kGoogleHost, GetRelativeCategoryUrl("/title1", category2));
 
   // Navigate to search result page.
   ASSERT_TRUE(NavigateToURL(web_contents(), GetSearchResultPageURL()));
   // Ask the page to
   // 1. Send a keepalive request to `target_url1` with `category1`
   // 2. Navigate to `nav_target_url1` with `category1`.
-  ASSERT_THAT(
-      EvalJs(web_contents(), JsReplace(R"(
-    runFetchKeepaliveAndNavigation($1, $2, $3);
-  )",
-                                       target_url1, method(), nav_target_url1)),
-      Eq(k200TextResponse));
+  {
+    content::TestNavigationObserver navigation_observer(nav_target_url1);
+    navigation_observer.WatchWebContents(web_contents());
+    ASSERT_THAT(EvalJs(web_contents(),
+                       JsReplace("runFetchKeepaliveAndNavigation($1, $2, $3);",
+                                 target_url1, method(), nav_target_url1)),
+                Eq(k200TextResponse));
+    // Wait for the navigation to complete to avoid race condition between two
+    // navigations.
+    navigation_observer.WaitForNavigationFinished();
+  }
   // 3. Send a keepalive request to `target_url2` with `category2`
   // 4. Navigate to `nav_target_url2` with `category2`.
-  ASSERT_THAT(
-      EvalJs(web_contents(), JsReplace(R"(
-    runFetchKeepaliveAndNavigation($1, $2, $3);
-  )",
-                                       target_url2, method(), nav_target_url2)),
-      Eq(k200TextResponse));
+  {
+    content::TestNavigationObserver navigation_observer(nav_target_url2);
+    navigation_observer.WatchWebContents(web_contents());
+    ASSERT_THAT(EvalJs(web_contents(),
+                       JsReplace("runFetchKeepaliveAndNavigation($1, $2, $3);",
+                                 target_url2, method(), nav_target_url2)),
+                Eq(k200TextResponse));
+    // Wait for the navigation to complete to avoid race condition between two
+    // navigations.
+    navigation_observer.WaitForNavigationFinished();
+  }
 
   ExpectCommonUkms(
       {{content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/1,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -674,6 +699,7 @@ IN_PROC_BROWSER_TEST_P(
        {content::KeepAliveRequestTracker::RequestType::kFetch,
         /*category_id=*/2,
         /*num_redirects=*/0,
+        /*num_retries=*/0,
         /*is_context_detached=*/false,
         content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
         content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,
@@ -682,7 +708,8 @@ IN_PROC_BROWSER_TEST_P(
         /*failed_extended_error_code=*/std::nullopt,
         /*completed_error_code=*/net::OK,
         /*completed_extended_error_code=*/0}});
-  // Only one navigation should be paired with the fetch keepalive request.
+  // Two navigations with different category IDs should be paired with
+  // corresponding fetch requests.
   ExpectNavigationUkms({{/*category_id=*/1, /*navigation_id=*/std::nullopt,
                          /*keepalive_token=*/std::nullopt},
                         {/*category_id=*/2, /*navigation_id=*/std::nullopt,
@@ -715,6 +742,7 @@ IN_PROC_BROWSER_TEST_P(FromGWSNavigationAndKeepAliveRequestBrowserTest,
       content::KeepAliveRequestTracker::RequestType::kFetch,
       /*category_id=*/1,
       /*num_redirects=*/0,
+      /*num_retries=*/0,
       /*is_context_detached=*/false,
       content::KeepAliveRequestTracker::RequestStageType::kLoaderCompleted,
       content::KeepAliveRequestTracker::RequestStageType::kResponseReceived,

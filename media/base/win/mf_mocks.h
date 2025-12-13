@@ -169,6 +169,44 @@ class MockMFPMPHostApp
       HRESULT(LPCWSTR id, IStream* pStream, REFIID riid, void** ppv));
 };
 
+class MockMFMediaSource
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IMFMediaSource> {
+ public:
+  MockMFMediaSource();
+  ~MockMFMediaSource() override;
+
+  // IMFMediaSource
+  MOCK_STDCALL_METHOD1(GetCharacteristics, HRESULT(DWORD* characteristics));
+  MOCK_STDCALL_METHOD1(
+      CreatePresentationDescriptor,
+      HRESULT(IMFPresentationDescriptor** presentation_descriptor_out));
+  MOCK_STDCALL_METHOD3(
+      Start,
+      HRESULT(IMFPresentationDescriptor* presentation_descriptor,
+              const GUID* guid_time_format,
+              const PROPVARIANT* start_position));
+  MOCK_STDCALL_METHOD0(Stop, HRESULT());
+  MOCK_STDCALL_METHOD0(Pause, HRESULT());
+  MOCK_STDCALL_METHOD0(Shutdown, HRESULT());
+
+  // IMFMediaEventGenerator
+  // Note: IMFMediaSource inherits IMFMediaEventGenerator.
+  MOCK_STDCALL_METHOD2(GetEvent,
+                       HRESULT(DWORD flags, IMFMediaEvent** event_out));
+  MOCK_STDCALL_METHOD2(BeginGetEvent,
+                       HRESULT(IMFAsyncCallback* callback, IUnknown* state));
+  MOCK_STDCALL_METHOD2(EndGetEvent,
+                       HRESULT(IMFAsyncResult* result,
+                               IMFMediaEvent** event_out));
+  MOCK_STDCALL_METHOD4(QueueEvent,
+                       HRESULT(MediaEventType type,
+                               REFGUID extended_type,
+                               HRESULT status,
+                               const PROPVARIANT* value));
+};
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_MOCKS_H_

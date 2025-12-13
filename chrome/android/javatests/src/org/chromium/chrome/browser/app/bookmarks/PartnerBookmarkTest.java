@@ -171,6 +171,7 @@ public class PartnerBookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/443216305")
     public void testCannotSelectPartner() throws Exception {
         mBookmarkTestRule.openFolder(mBookmarkTestRule.getMobileFolder());
         View partner = mBookmarkManagerTestingDelegate.getBookmarkViewHolderByPosition(0).itemView;
@@ -185,6 +186,7 @@ public class PartnerBookmarkTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/442842860")
     public void testPartnerFolderDraggability() throws Exception {
         mBookmarkTestRule.openFolder(mBookmarkTestRule.getMobileFolder());
         ViewHolder partner = mBookmarkManagerTestingDelegate.getBookmarkViewHolderByPosition(0);

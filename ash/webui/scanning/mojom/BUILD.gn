@@ -40,7 +40,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//content/test:test_support",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/device/public/cpp:test_support",
     "//testing/gtest",
     "//ui/gfx",

@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/viz/common/resources/shared_image_format_utils.h",
+  "+components/viz/common/resources/shared_image_format.h",
   "-ui/ozone/platform/drm",
   "+ui/ozone/platform/drm/common",
 ]

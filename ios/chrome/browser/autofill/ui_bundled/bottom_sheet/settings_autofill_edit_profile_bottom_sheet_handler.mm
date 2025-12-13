@@ -29,9 +29,9 @@
   return self;
 }
 
-#pragma mark - AutofillEditProfileBottomSheetHandler
+#pragma mark - AutofillEditProfileHandler
 
-- (void)didCancelBottomSheetView {
+- (void)didCancelSheetView {
   // No-op.
 }
 
@@ -48,7 +48,7 @@
 - (std::unique_ptr<autofill::AutofillProfile>)autofillProfile {
   // Since this is creating a new (empty) address, use the app's locale country
   // code as the default value.
-  AddressCountryCode countryCode =
+  autofill::AddressCountryCode countryCode =
       _addressDataManager->GetDefaultCountryCodeForNewAddress();
 
   std::unique_ptr<autofill::AutofillProfile> autofillProfile =

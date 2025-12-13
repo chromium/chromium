@@ -37,6 +37,25 @@ void OemToExt(const std::string &Src,std::string &Dest)
 // Allows user to select a code page in GUI.
 void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
 {
+  // Optimized code for English only strings. Improved performance on archives
+  // with millions of small files.
+  bool IsLowAscii=true;
+  size_t SrcSize=0;
+  // "unsigned" is important here for correct comparison.
+  for (const unsigned char *S=(const unsigned char *)Src;*S!=0;S++,SrcSize++)
+    if (*S>127)
+    {
+      IsLowAscii=false;
+      break;
+    }
+  if (IsLowAscii)
+  {
+    Dest.resize(SrcSize);
+    for (size_t I=0;Src[I]!=0;I++)
+      Dest[I]=Src[I];
+    return;
+  }
+
 #if defined(_WIN_ALL) // Console Windows RAR.
   if (Encoding==ACTW_UTF8)
     UtfToWide(Src,Dest);

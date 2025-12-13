@@ -13,10 +13,11 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "components/ntp_tiles/constants.h"
-#include "components/ntp_tiles/deleted_tile_type.h"
+#include "components/ntp_tiles/custom_links_util.h"
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/pref_names.h"
+#include "components/ntp_tiles/tile_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
@@ -87,7 +88,8 @@ bool CustomLinksManagerImpl::AddLinkTo(const GURL& url,
     return false;
   }
 
-  if (FindLinkWithUrl(url) != current_links_.end()) {
+  if (custom_links_util::FindLinkWithUrl<Link>(current_links_, url) !=
+      current_links_.end()) {
     return false;
   }
 
@@ -115,11 +117,12 @@ bool CustomLinksManagerImpl::UpdateLink(const GURL& url,
   // Do not update if |new_url| is invalid or already exists in the list.
   if (!new_url.is_empty() &&
       (!new_url.is_valid() ||
-       FindLinkWithUrl(new_url) != current_links_.end())) {
+       custom_links_util::FindLinkWithUrl<Link>(current_links_, new_url) !=
+           current_links_.end())) {
     return false;
   }
 
-  auto it = FindLinkWithUrl(url);
+  auto it = custom_links_util::FindLinkWithUrl<Link>(current_links_, url);
   if (it == current_links_.end()) {
     return false;
   }
@@ -140,32 +143,13 @@ bool CustomLinksManagerImpl::UpdateLink(const GURL& url,
 }
 
 bool CustomLinksManagerImpl::ReorderLink(const GURL& url, size_t new_pos) {
-  if (!IsInitialized() || !url.is_valid() || new_pos < 0 ||
-      new_pos >= current_links_.size()) {
+  if (!IsInitialized()) {
     return false;
   }
 
-  auto curr_it = FindLinkWithUrl(url);
-  if (curr_it == current_links_.end()) {
+  if (!custom_links_util::ReorderLink<Link>(current_links_, previous_links_,
+                                            url, new_pos)) {
     return false;
-  }
-
-  auto new_it = current_links_.begin() + new_pos;
-  if (new_it == curr_it) {
-    return false;
-  }
-
-  previous_links_ = current_links_;
-
-  // If the new position is to the left of the current position, left rotate the
-  // range [new_pos, curr_pos] until the link is first.
-  if (new_it < curr_it) {
-    std::rotate(new_it, curr_it, curr_it + 1);
-  }
-  // If the new position is to the right, we only need to left rotate the range
-  // [curr_pos, new_pos] once so that the link is last.
-  else {
-    std::rotate(curr_it, curr_it + 1, new_it + 1);
   }
 
   StoreLinks();
@@ -177,7 +161,7 @@ bool CustomLinksManagerImpl::DeleteLink(const GURL& url) {
     return false;
   }
 
-  auto it = FindLinkWithUrl(url);
+  auto it = custom_links_util::FindLinkWithUrl<Link>(current_links_, url);
   if (it == current_links_.end()) {
     return false;
   }
@@ -189,13 +173,14 @@ bool CustomLinksManagerImpl::DeleteLink(const GURL& url) {
 }
 
 bool CustomLinksManagerImpl::UndoAction() {
-  if (!IsInitialized() || !previous_links_.has_value()) {
+  if (!IsInitialized()) {
     return false;
   }
 
-  // Replace the current links with the previous state.
-  current_links_ = *previous_links_;
-  previous_links_ = std::nullopt;
+  if (!custom_links_util::UndoAction<Link>(current_links_, previous_links_)) {
+    return false;
+  }
+
   StoreLinks();
   return true;
 }
@@ -225,15 +210,10 @@ void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
       }
     }
     if (default_app_links_deleted) {
-      metrics::RecordsMigratedDefaultAppDeleted(DeletedTileType::kCustomLink);
+      metrics::RecordsMigratedDefaultAppDeleted(TileType::kCustomLinks);
       prefs_->SetBoolean(prefs::kCustomLinksForPreinstalledAppsRemoved, true);
     }
   }
-}
-
-std::vector<CustomLinksManager::Link>::iterator
-CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
-  return std::ranges::find(current_links_, url, &Link::url);
 }
 
 base::CallbackListSubscription
@@ -257,7 +237,8 @@ void CustomLinksManagerImpl::OnHistoryDeletions(
                   [](auto& link) { return link.is_most_visited; });
   } else {
     for (const history::URLRow& row : deletion_info.deleted_rows()) {
-      auto it = FindLinkWithUrl(row.url());
+      auto it =
+          custom_links_util::FindLinkWithUrl<Link>(current_links_, row.url());
       if (it != current_links_.end() && it->is_most_visited) {
         current_links_.erase(it);
       }

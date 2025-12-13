@@ -16,7 +16,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 @implementation ShellNativeAppWindowController {
   // This field is not a raw_ptr<> because it is a pointer to Objective-C
@@ -111,7 +111,7 @@ void ShellNativeAppWindowMac::SetBounds(const gfx::Rect& bounds) {
 
 gfx::Size ShellNativeAppWindowMac::GetContentMinimumSize() const {
   // Content fills the display and cannot be resized.
-  return display::Screen::GetScreen()->GetPrimaryDisplay().bounds().size();
+  return display::Screen::Get()->GetPrimaryDisplay().bounds().size();
 }
 
 gfx::Size ShellNativeAppWindowMac::GetContentMaximumSize() const {

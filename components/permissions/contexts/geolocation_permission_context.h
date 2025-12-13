@@ -100,8 +100,7 @@ class GeolocationPermissionContext : public PermissionContextBase {
       const override;
 
  private:
-  void UpdateTabContext(const PermissionRequestID& id,
-                        const GURL& requesting_frame,
+  void UpdateTabContext(const PermissionRequestData& request_data,
                         bool allowed) override;
 
   device::mojom::GeolocationControl* GetGeolocationControl();

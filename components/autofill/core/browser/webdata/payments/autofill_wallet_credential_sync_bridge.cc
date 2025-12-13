@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+
 #include "base/check.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
@@ -39,7 +41,7 @@ const char kAutofillWalletCredentialSyncBridgeUserDataKey[] =
 void AutofillWalletCredentialSyncBridge::CreateForWebDataServiceAndBackend(
     AutofillWebDataBackend* web_data_backend,
     AutofillWebDataService* web_data_service) {
-  web_data_service->GetDBUserData()->SetUserData(
+  web_data_service->GetDBUserData().SetUserData(
       &kAutofillWalletCredentialSyncBridgeUserDataKey,
       std::make_unique<AutofillWalletCredentialSyncBridge>(
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
@@ -53,7 +55,7 @@ AutofillWalletCredentialSyncBridge*
 AutofillWalletCredentialSyncBridge::FromWebDataService(
     AutofillWebDataService* web_data_service) {
   return static_cast<AutofillWalletCredentialSyncBridge*>(
-      web_data_service->GetDBUserData()->GetUserData(
+      web_data_service->GetDBUserData().GetUserData(
           &kAutofillWalletCredentialSyncBridgeUserDataKey));
 }
 
@@ -109,10 +111,8 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
   PaymentsAutofillTable* table = GetAutofillTable();
 
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
-    sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics =
-        change->data().specifics.autofill_wallet_credential();
     switch (change->type()) {
-      case syncer::EntityChange::ACTION_DELETE:
+      case syncer::EntityChange::ACTION_DELETE: {
         int64_t storage_key;
         if (!table || change->storage_key().empty() ||
             !base::StringToInt64(change->storage_key(), &storage_key) ||
@@ -122,28 +122,33 @@ AutofillWalletCredentialSyncBridge::ApplyIncrementalSyncChanges(
                              kWalletCredentialFailedToDeleteFromDatabase);
         }
         break;
+      }
       // TODO(crbug.com/40926464): Merge the Add and Update APIs for
       // PaymentsAutofillTable.
-      case syncer::EntityChange::ACTION_ADD:
-        if (!table ||
-            !table->AddServerCvc(
-                AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
-                    wallet_credential_specifics))) {
+      case syncer::EntityChange::ACTION_ADD: {
+        const sync_pb::AutofillWalletCredentialSpecifics& specifics =
+            change->data().specifics.autofill_wallet_credential();
+        if (!table || !table->AddServerCvc(
+                         AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
+                             specifics))) {
           return syncer::ModelError(
               FROM_HERE,
               syncer::ModelError::Type::kWalletCredentialFailedToAddDatabase);
         }
         break;
-      case syncer::EntityChange::ACTION_UPDATE:
-        if (!table ||
-            !table->UpdateServerCvc(
-                AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
-                    wallet_credential_specifics))) {
+      }
+      case syncer::EntityChange::ACTION_UPDATE: {
+        const sync_pb::AutofillWalletCredentialSpecifics& specifics =
+            change->data().specifics.autofill_wallet_credential();
+        if (!table || !table->UpdateServerCvc(
+                         AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
+                             specifics))) {
           return syncer::ModelError(
               FROM_HERE, syncer::ModelError::Type::
                              kWalletCredentialFailedToUpdateDatabase);
         }
         break;
+      }
     }
   }
   // Commit the transaction to make sure the data and the metadata with the
@@ -170,14 +175,14 @@ std::unique_ptr<syncer::DataBatch>
 AutofillWalletCredentialSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::ranges::sort(storage_keys);
+  absl::flat_hash_set<std::string> storage_keys_set(storage_keys.begin(),
+                                                    storage_keys.end());
   std::vector<std::unique_ptr<ServerCvc>> filtered_server_cvc_list;
-  for (std::unique_ptr<ServerCvc>& server_cvc_from_list :
+  for (std::unique_ptr<ServerCvc>& server_cvc :
        GetAutofillTable()->GetAllServerCvcs()) {
-    if (std::ranges::binary_search(
-            storage_keys,
-            base::NumberToString(server_cvc_from_list->instrument_id))) {
-      filtered_server_cvc_list.push_back(std::move(server_cvc_from_list));
+    if (storage_keys_set.contains(
+            base::NumberToString(server_cvc->instrument_id))) {
+      filtered_server_cvc_list.push_back(std::move(server_cvc));
     }
   }
   return ConvertToDataBatch(filtered_server_cvc_list);
@@ -215,7 +220,7 @@ void AutofillWalletCredentialSyncBridge::ApplyDisableSyncChanges(
 
   PaymentsAutofillTable* table = GetAutofillTable();
   // Check if we have data to delete.
-  if (table->GetAllServerCvcs().size() == 0) {
+  if (table->GetAllServerCvcs().empty()) {
     return;
   }
   // For this data type, we want to delete all the data (not just the metadata)

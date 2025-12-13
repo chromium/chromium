@@ -15,11 +15,11 @@ public interface LocationProvider {
      *
      * @param enableHighAccuracy Whether or not to enable high accuracy location.
      */
-    public void start(boolean enableHighAccuracy);
+    void start(boolean enableHighAccuracy);
 
     /** Stop listening for location updates. */
-    public void stop();
+    void stop();
 
     /** Returns true if we are currently listening for location updates, false if not. */
-    public boolean isRunning();
+    boolean isRunning();
 }

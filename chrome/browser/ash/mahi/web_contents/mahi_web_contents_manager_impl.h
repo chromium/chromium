@@ -17,7 +17,6 @@
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
-#include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents_observer.h"

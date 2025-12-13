@@ -40,6 +40,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 
 using media_router::MediaRouterMetrics;
 using media_router::mojom::MediaRouteProviderId;

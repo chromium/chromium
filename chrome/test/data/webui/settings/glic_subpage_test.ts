@@ -239,17 +239,19 @@ suite('GlicSubpage', function() {
       assertFalse($<SettingsToggleButtonElement>('tabAccessToggle')!.checked);
     });
 
-    test('TabContextToggleChange', () => {
+    test('TabContextToggleChange', async () => {
       page.setPrefValue(PrefName.TAB_CONTEXT_ENABLED, false);
 
       const tabAccessToggle = $<SettingsToggleButtonElement>('tabAccessToggle');
       assertTrue(!!tabAccessToggle);
 
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
+      await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(tabAccessToggle.checked);
 
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
+      await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(tabAccessToggle.checked);
     });
@@ -257,51 +259,50 @@ suite('GlicSubpage', function() {
     test('TabContextExpand', async () => {
       const tabAccessToggle =
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
-      const expandButton =
-          $<SettingsToggleButtonElement>('tabAccessExpandButton')!;
       const infoCard = $<CrCollapseElement>('tabAccessInfoCollapse')!;
 
       assertFalse(infoCard.opened);
 
-      // Clicking the expand button opens the info card.
-      expandButton.click();
+      // Clicking the host element of the toggle button opens the info card but
+      // does not change the pref.
+      tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
 
-      // Clicking the expand button again collapses the info card.
-      expandButton.click();
+      // Clicking the host element again collapses the info card.
+      tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
 
       // Toggling the setting to on opens the info card.
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting off closes the info card.
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
 
       // Toggling the setting to on while the info card is open leaves it open.
-      expandButton.click();
+      tabAccessToggle.click();
       await flushTasks();
       assertTrue(infoCard.opened);
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertTrue(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertTrue(infoCard.opened);
 
       // Toggling the setting to off while the info card is closed leaves it
       // closed.
-      expandButton.click();
+      tabAccessToggle.click();
       await flushTasks();
       assertFalse(infoCard.opened);
-      tabAccessToggle.click();
+      tabAccessToggle.$.control.click();
       await flushTasks();
       assertFalse(page.getPref(PrefName.TAB_CONTEXT_ENABLED).value);
       assertFalse(infoCard.opened);
@@ -328,7 +329,7 @@ suite('GlicSubpage', function() {
       // Toggles should all have values from the real pref and be enabled.
       let toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(5, toggles.length);
+      assertEquals(7, toggles.length);
 
       await setDisallowedByAdminAndSimulateUpdate(true);
 
@@ -342,7 +343,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button:not([checked])[disabled]');
-      assertEquals(4, toggles.length);
+      assertEquals(7, toggles.length);
 
       // Re-enable the policy, the page should go back to the initial state.
       await setDisallowedByAdminAndSimulateUpdate(false);
@@ -354,7 +355,7 @@ suite('GlicSubpage', function() {
 
       toggles = page.shadowRoot!.querySelectorAll(
           'settings-toggle-button[checked]:not([disabled])');
-      assertEquals(5, toggles.length);
+      assertEquals(7, toggles.length);
     });
 
     test('ManageActivityRow', async () => {
@@ -404,6 +405,12 @@ suite('GlicSubpage', function() {
       const closedCaptionsToggle =
           $<SettingsToggleButtonElement>('closedCaptionsToggle')!;
       assertFalse(isVisible(closedCaptionsToggle));
+    });
+
+    test('DefaultTabContextSettingFeatureDisabled', () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      assertFalse(isVisible(defaultTabAccessToggle));
     });
 
     test('tabstripButtonToggleEnabled', () => {
@@ -472,10 +479,13 @@ suite('GlicSubpage', function() {
             $<SettingsToggleButtonElement>('tabAccessToggle')!;
         assertTrue(!!tabAccessToggle);
 
-        tabAccessToggle.click();
+        tabAccessToggle.$.control.click();
+        await flushTasks();
         await verifyUserAction('Glic.Settings.TabContext.Enabled');
 
-        tabAccessToggle.click();
+
+        tabAccessToggle.$.control.click();
+        await flushTasks();
         await verifyUserAction('Glic.Settings.TabContext.Disabled');
       });
     });
@@ -533,20 +543,6 @@ suite('GlicSubpage', function() {
     });
   });
 
-  suite('TabAccessToggleLearnMoreEnabled', () => {
-    test('tabAccessToggleLearnMoreShown', async () => {
-      const learnMoreElement =
-          page.shadowRoot!.querySelector<HTMLElement>('#tabAccessToggle')!
-              .shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more');
-      assertTrue(!!learnMoreElement);
-      assertEquals(learnMoreElement.href, 'https://google.com/');
-
-      learnMoreElement.click();
-      await assertFeatureInteractionMetrics(
-          AiPageActions.GLIC_SHORTCUTS_TAB_ACCESS_TOGGLE_LEARN_MORE_CLICKED);
-    });
-  });
-
   suite('ClosedCaptionsToggleEnabled', () => {
     test('ClosedCaptionsToggleFeatureEnabled', () => {
       const closedCaptionsToggle =
@@ -587,6 +583,315 @@ suite('GlicSubpage', function() {
     });
   });
 
+  suite('KeepSidepanelOpenOnNewTabsToggleEnabled', () => {
+    test('KeepSidepanelOpenOnNewTabsFeatureEnabled', () => {
+      const keepSidepanelOpenOnNewTabsToggle =
+          $<SettingsToggleButtonElement>('keepSidepanelOpenOnNewTabsToggle')!;
+      assertTrue(isVisible(keepSidepanelOpenOnNewTabsToggle));
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleEnabled', () => {
+      page.setPrefValue(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>(
+              'keepSidepanelOpenOnNewTabsToggle')!.checked);
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleDisabled', () => {
+      page.setPrefValue(
+          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>(
+              'keepSidepanelOpenOnNewTabsToggle')!.checked);
+    });
+
+    test('KeepSidepanelOpenOnNewTabsToggleChanged', async () => {
+      page.setPrefValue(
+          PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED, false);
+
+      const keepSidepanelOpenOnNewTabsToggle =
+          $<SettingsToggleButtonElement>('keepSidepanelOpenOnNewTabsToggle')!;
+      assertTrue(!!keepSidepanelOpenOnNewTabsToggle);
+
+      keepSidepanelOpenOnNewTabsToggle.click();
+      assertTrue(
+          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertTrue(keepSidepanelOpenOnNewTabsToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.KeepSidepanelOpenOnNewTabs.Enabled');
+
+      keepSidepanelOpenOnNewTabsToggle.click();
+      assertFalse(
+          page.getPref(PrefName.KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED).value);
+      assertFalse(keepSidepanelOpenOnNewTabsToggle.checked);
+      await verifyUserAction(
+          'Glic.Settings.KeepSidepanelOpenOnNewTabs.Disabled');
+    });
+  });
+
+  suite('DefaultTabContextSettingFeatureEnabled', () => {
+    test('DefaultTabContextSettingFeatureEnabled', () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      assertTrue(isVisible(defaultTabAccessToggle));
+    });
+
+    test('TabContextSettingHidden', () => {
+      const tabAccessToggle =
+          $<SettingsToggleButtonElement>('tabAccessToggle')!;
+      assertFalse(isVisible(tabAccessToggle));
+    });
+
+    test('ToggleEnabled', () => {
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, true);
+
+      assertTrue(
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
+    });
+
+    test('ToggleDisabled', () => {
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!.checked);
+    });
+
+    test('DefaultTabContextExpand', async () => {
+      const defaultTabAccessToggle =
+          $<SettingsToggleButtonElement>('defaultTabAccessToggle')!;
+      const infoCard = $<CrCollapseElement>('defaultTabAccessInfoCollapse')!;
+      page.setPrefValue(PrefName.DEFAULT_TAB_CONTEXT_ENABLED, false);
+
+      assertFalse(infoCard.opened);
+
+      // Clicking the host element of the toggle button opens the info card but
+      // does not change the pref.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+
+      // Clicking the host element again collapses the info card.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+
+      // Toggling the setting to on opens the info card.
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting off closes the info card.
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(infoCard.opened);
+
+      // Toggling the setting to on while the info card is open leaves it open.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting to off while the info card is closed leaves it
+      // closed.
+      defaultTabAccessToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      defaultTabAccessToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.DEFAULT_TAB_CONTEXT_ENABLED).value);
+      assertFalse(infoCard.opened);
+    });
+  });
+
+  suite('WebActuationSettingFeatureEnabled', () => {
+    test('WebActuationSettingFeatureEnabled', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+    });
+
+    test('ToggleEnabled', () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+
+      assertTrue($<SettingsToggleButtonElement>('webActuationToggle')!.checked);
+    });
+
+    test('ToggleDisabled', () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+
+      assertFalse(
+          $<SettingsToggleButtonElement>('webActuationToggle')!.checked);
+    });
+
+    test('WebActuationExpand', async () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      const infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+
+      assertFalse(infoCard.opened);
+
+      // Clicking the host element of the toggle button expands the info card
+      // but does not change the pref.
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Clicking the host element again collapses the info card.
+      webActuationToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Toggling the setting to on expands the info card.
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertTrue(infoCard.opened);
+      await verifyUserAction('Glic.Settings.WebActuation.Enabled');
+
+      // Toggling the setting off collapses the info card.
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertFalse(infoCard.opened);
+      await verifyUserAction('Glic.Settings.WebActuation.Disabled');
+
+      // Toggling the setting to on while the info card is open leaves it open.
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertTrue(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertTrue(infoCard.opened);
+
+      // Toggling the setting to off while the info card is closed leaves it
+      // closed.
+      webActuationToggle.click();
+      await flushTasks();
+      assertFalse(infoCard.opened);
+      webActuationToggle.$.control.click();
+      await flushTasks();
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+      assertFalse(infoCard.opened);
+    });
+  });
+
+
+  suite('WebActuationToggleVisibleForAllowedTier', () => {
+    test('assert toggle is visible', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+    });
+  });
+
+  suite('WebActuationToggleHiddenForDisallowedTier', () => {
+    test('assert toggle is hidden', () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertFalse(isVisible(webActuationToggle));
+    });
+  });
+
+  suite('WebActuationEnterprisePolicy', () => {
+    function waitOneTick() {
+      return new Promise(resolve => setTimeout(resolve, 0));
+    }
+
+    async function setWebActuationCapability(canActOnWeb: boolean) {
+      webUIListenerCallback(
+          'glic-web-actuation-capability-changed', canActOnWeb);
+      await flushTasks();
+      await waitOneTick();
+      await flushTasks();
+    }
+
+    test('ToggleDisabledByEnterprisePolicy', async () => {
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+      await flushTasks();
+
+      // Verify initial state (enabled).
+      let webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+      assertFalse(webActuationToggle.disabled);
+
+      // Simulate enterprise DISABLING the feature.
+      await setWebActuationCapability(false);
+
+      // Re-query, as dom-if restamped.
+      webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(isVisible(webActuationToggle));
+      assertTrue(webActuationToggle.disabled);
+      assertFalse(webActuationToggle.checked);
+    });
+
+    test('MenuCollapsesWhenDisabledByPolicy', async () => {
+      const webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      let infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, false);
+      assertFalse(infoCard.opened);
+      webActuationToggle.click();
+      await flushTasks();
+      assertTrue(infoCard.opened);
+      assertFalse(page.getPref(PrefName.WEB_ACTUATION_ENABLED).value);
+
+      // Simulate enterprise DISABLING the feature.
+      await setWebActuationCapability(false);
+
+      // Re-query, as dom-if restamped.
+      infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      assertTrue(!!infoCard);
+      assertFalse(infoCard.opened);
+    });
+
+    test('PrefDoesNotExpandMenuWhenDisabledByPolicy', async () => {
+      // Start disabled by enterprise.
+      await setWebActuationCapability(false);
+
+      const infoCard = $<CrCollapseElement>('webActuationInfoCollapse')!;
+      assertTrue(!!infoCard);        // It exists.
+      assertFalse(infoCard.opened);  // Starts closed.
+
+      // Try to enable it via pref (e.g. from sync).
+      page.setPrefValue(PrefName.WEB_ACTUATION_ENABLED, true);
+      await flushTasks();
+
+      // Should still be closed because webActuationEnabledExpanded_
+      // remains false in the enterprise disabled state.
+      assertFalse(infoCard.opened);
+    });
+
+    test('ToggleReEnablesWhenPolicyAllows', async () => {
+      // Start disabled.
+      await setWebActuationCapability(false);
+      let webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertTrue(webActuationToggle.disabled);
+
+      // Simulate enterprise ENABLING it back.
+      await setWebActuationCapability(true);
+
+      webActuationToggle =
+          $<SettingsToggleButtonElement>('webActuationToggle')!;
+      assertFalse(webActuationToggle.disabled);
+    });
+  });
+
   suite('DataProtection_UserStatusCheckEnabled', () => {
     test('DataProtectionStringsShownForEligibleUser', () => {
       page.setPrefValue(
@@ -608,8 +913,6 @@ suite('GlicSubpage', function() {
       assertEquals(
           page.i18n('glicTabAccessToggleSublabelDataProtected'),
           tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/data-protection', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/data-protection', learnMoreLabel.href);
@@ -634,8 +937,6 @@ suite('GlicSubpage', function() {
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
       assertEquals(
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/tab-access', learnMoreLabel.href);
@@ -662,8 +963,6 @@ suite('GlicSubpage', function() {
           $<SettingsToggleButtonElement>('tabAccessToggle')!;
       assertEquals(
           page.i18n('glicTabAccessToggleSublabel'), tabAccessToggle.subLabel);
-      assertEquals(
-          'https://example.com/tab-access', tabAccessToggle.learnMoreUrl);
       const learnMoreLabel =
           $<HTMLAnchorElement>('shortcutTabAccessConsider1LearnMoreLabel')!;
       assertEquals('https://example.com/tab-access', learnMoreLabel.href);

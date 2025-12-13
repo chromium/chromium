@@ -20,7 +20,8 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -62,8 +63,8 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     private final Runnable mOpenNewTabCallback;
     private final Runnable mToolbarClickCallback;
     private final Runnable mCloseButtonCallback;
-    private final UnownedUserDataSupplier<ShareDelegate> mShareDelegateSupplier =
-            new ShareDelegateSupplier();
+    private final SettableObservableSupplier<ShareDelegate> mShareDelegateSupplier =
+            ObservableSuppliers.createMonotonic();
     private final ObservableSupplierImpl<Boolean> mBackPressStateChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Callback<ViewGroup> mOnToolbarCreatedCallback;
@@ -128,7 +129,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
         // the share feature disabled on Preview Tab.
         WindowAndroid window = mWebContents.getTopLevelNativeWindow();
         assert window != null;
-        mShareDelegateSupplier.attach(window.getUnownedUserDataHost());
+        ShareDelegateSupplier.attach(window.getUnownedUserDataHost(), mShareDelegateSupplier);
     }
 
     /**
@@ -307,7 +308,7 @@ public class EphemeralTabSheetContent implements BottomSheetContent {
     @Override
     public void destroy() {
         mThinWebView.destroy();
-        mShareDelegateSupplier.destroy();
+        ShareDelegateSupplier.destroy(mShareDelegateSupplier);
     }
 
     @Override

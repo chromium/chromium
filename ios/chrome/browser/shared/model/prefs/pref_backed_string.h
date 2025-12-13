@@ -1,0 +1,33 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_
+
+#import <Foundation/Foundation.h>
+
+#import <string_view>
+
+#import "ios/chrome/browser/shared/model/utils/observable_string.h"
+
+class PrefService;
+
+// An observable string backed by a pref from a PrefService.
+@interface PrefBackedString : NSObject <ObservableString>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Returns a PrefBackedString backed by `prefName` from `prefs`.
+- (instancetype)initWithPrefService:(PrefService*)prefs
+                           prefName:(std::string_view)prefName
+    NS_DESIGNATED_INITIALIZER;
+
+// Stop observing the pref. Can be called before -dealloc to ensure
+// that the pref is no longer observed, even if the object survives
+// the PrefService (e.g. if the reference is captured by a block).
+- (void)stop;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_BACKED_STRING_H_

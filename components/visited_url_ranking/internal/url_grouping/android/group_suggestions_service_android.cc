@@ -27,7 +27,6 @@
 #include "components/visited_url_ranking/public/jni_headers/UserResponseMetadata_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
@@ -217,11 +216,7 @@ GroupSuggestionsServiceAndroid::GroupSuggestionsServiceAndroid(
   DCHECK(group_suggestions_service_);
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(env, Java_GroupSuggestionsServiceImpl_create(
-                           env, reinterpret_cast<int64_t>(this))
-                           .obj());
-
-  delegate_bridge_ = std::make_unique<SuggestionDelegateBridge>(
-      group_suggestions_service, this);
+                           env, reinterpret_cast<int64_t>(this)));
 }
 
 GroupSuggestionsServiceAndroid::~GroupSuggestionsServiceAndroid() {
@@ -236,12 +231,11 @@ void GroupSuggestionsServiceAndroid::DidAddTab(JNIEnv* env,
                                                               tab_launch_type);
 }
 
-void GroupSuggestionsServiceAndroid::DidSelectTab(
-    JNIEnv* env,
-    int tab_id,
-    const JavaParamRef<jobject>& url,
-    int tab_selection_type,
-    int last_id) {
+void GroupSuggestionsServiceAndroid::DidSelectTab(JNIEnv* env,
+                                                  int tab_id,
+                                                  const JavaRef<jobject>& url,
+                                                  int tab_selection_type,
+                                                  int last_id) {
   group_suggestions_service_->GetTabEventTracker()->DidSelectTab(
       tab_id, url::GURLAndroid::ToNativeGURL(env, url),
       ConvertIntToTabSelectionType(tab_selection_type), last_id);
@@ -305,3 +299,10 @@ GroupSuggestionsServiceAndroid::GetJavaDelegateBridge() {
 }
 
 }  // namespace visited_url_ranking
+
+DEFINE_JNI(DelegateBridge)
+DEFINE_JNI(GroupSuggestionsServiceImpl)
+DEFINE_JNI(CachedSuggestions)
+DEFINE_JNI(GroupSuggestion)
+DEFINE_JNI(GroupSuggestions)
+DEFINE_JNI(UserResponseMetadata)

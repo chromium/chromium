@@ -10,12 +10,10 @@ import android.os.Build;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -31,13 +29,14 @@ import org.chromium.ui.permissions.PermissionPrefs;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * Central class containing the logic for when to trigger notification permission request optionally
  * with a rationale.
  */
 @NullMarked
-public class NotificationPermissionController implements UnownedUserData {
+public class NotificationPermissionController {
     /** Field trial param controlling rationale behavior. */
     public static final String FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION =
             "always_show_rationale_before_requesting_permission";
@@ -114,7 +113,7 @@ public class NotificationPermissionController implements UnownedUserData {
     }
 
     private static final UnownedUserDataKey<NotificationPermissionController> KEY =
-            new UnownedUserDataKey<>(NotificationPermissionController.class);
+            new UnownedUserDataKey<>();
 
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
     private final Supplier<RationaleDelegate> mRationaleDelegateSupplier;
@@ -182,8 +181,7 @@ public class NotificationPermissionController implements UnownedUserData {
      * @return True if any UI was shown (either rationale dialog or OS prompt), false otherwise.
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || ApiCompatibilityUtils.isDemoUser()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || DeviceInfo.isRetailDemoMode()) {
             return false;
         }
 

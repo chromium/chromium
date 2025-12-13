@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_core_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_type.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/modules/ai/ai_features.h"
 
 namespace blink {
 
@@ -171,6 +173,10 @@ mojom::blink::AILanguageModelPromptType ToMojoInputType(
       return mojom::blink::AILanguageModelPromptType::kAudio;
     case V8LanguageModelMessageType::Enum::kImage:
       return mojom::blink::AILanguageModelPromptType::kImage;
+    case V8LanguageModelMessageType::Enum::kToolCall:
+      return mojom::blink::AILanguageModelPromptType::kToolCall;
+    case V8LanguageModelMessageType::Enum::kToolResponse:
+      return mojom::blink::AILanguageModelPromptType::kToolResponse;
   }
 }
 
@@ -298,8 +304,20 @@ std::optional<Vector<String>> ValidateAndCanonicalizeBCP47Languages(
 }
 
 bool RequiresUserActivation(Availability availability) {
-  return availability == Availability::kDownloadable ||
-         availability == Availability::kDownloading;
+  return availability == Availability::kDownloadable;
+}
+
+bool MeetsUserActivationRequirements(LocalDOMWindow* window) {
+  LocalFrame* frame = window->GetFrame();
+  if (!frame) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(kAIRelaxUserActivationReqs)) {
+    return frame->HasStickyUserActivation();
+  } else {
+    return LocalFrame::ConsumeTransientUserActivation(frame);
+  }
 }
 
 RunOnDestruction::RunOnDestruction(base::OnceClosure callback)

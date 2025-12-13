@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/common/media_type_converters.h"
 
 #include <memory>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/limits.h"
 #include "media/base/sample_format.h"
 #include "media/base/subsample_entry.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -224,10 +221,13 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
     return media::AudioBuffer::CreateEOSBuffer();
 
   if (input->frame_count <= 0 ||
-      static_cast<size_t>(input->sample_format) > media::kSampleFormatMax ||
+      static_cast<size_t>(input->sample_format) >
+          media::SampleFormat::kMaxValue ||
       static_cast<size_t>(input->channel_layout) > media::CHANNEL_LAYOUT_MAX ||
-      ChannelLayoutToChannelCount(input->channel_layout) !=
-          input->channel_count) {
+      input->channel_count > media::limits::kMaxChannels ||
+      (input->channel_layout != media::CHANNEL_LAYOUT_DISCRETE &&
+       ChannelLayoutToChannelCount(input->channel_layout) !=
+           input->channel_count)) {
     DLOG(ERROR) << "Receive an invalid audio buffer, replace it with EOS.";
     return media::AudioBuffer::CreateEOSBuffer();
   }
@@ -263,7 +263,7 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   const size_t size_per_channel = input->data.size() / input->channel_count;
   DCHECK_EQ(0u, input->data.size() % input->channel_count);
   for (int i = 0; i < input->channel_count; ++i) {
-    channel_ptrs[i] = input->data.data() + i * size_per_channel;
+    channel_ptrs[i] = UNSAFE_TODO(input->data.data() + i * size_per_channel);
   }
 
   return media::AudioBuffer::CopyFrom(

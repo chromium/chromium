@@ -1,8 +1,17 @@
 Name: Netscape Portable Runtime (NSPR)
 URL: https://hg.mozilla.org/projects/nspr
-Version: 4.8
-Revision: dd5b9aa4631b350ba58e2e83106724808fd9a97f
-License: MPL-1.1
+Version: 4.38.2
+Revision: 488a7a069c8d7405696fd8171ec8fc369834158b
+Update Mechanism: Manual
+License: MPL-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+CPEPrefix: cpe:2.3:a:mozilla:netscape_portable_runtime:4.38.2:*:*:*:*:*:*:*
+
+Description:
+Provides the PR_ParseTimeString() function.
+
+Local Modifications:
+Extended PR_ParseTimeString() to accept some ISO 8601 formats, including
+fractional seconds. See https://codereview.chromium.org/266193002.

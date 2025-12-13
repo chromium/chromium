@@ -14,7 +14,11 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted.h"
 #include "base/process/process.h"
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/thread_annotations.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/win_util.h"
 
@@ -22,38 +26,41 @@ namespace updater {
 
 // AppCommandRunner loads and runs a pre-registered command line from the
 // registry.
-class AppCommandRunner {
+class AppCommandRunner : public base::RefCountedThreadSafe<AppCommandRunner> {
  public:
-  AppCommandRunner();
-  AppCommandRunner(const AppCommandRunner&);
-  AppCommandRunner& operator=(const AppCommandRunner&);
-  ~AppCommandRunner();
+  explicit AppCommandRunner(const std::wstring& app_id);
 
   // Creates an instance of `AppCommandRunner` object corresponding to `app_id`
   // and `command_id`.
-  static HResultOr<AppCommandRunner> LoadAppCommand(
+  static HResultOr<scoped_refptr<AppCommandRunner>> LoadAppCommand(
       UpdaterScope scope,
       const std::wstring& app_id,
       const std::wstring& command_id);
 
   // Loads and returns a vector of `AppCommandRunner` objects corresponding to
   // "AutoRunOnOsUpgradeAppCommands" for `app_id`.
-  static std::vector<AppCommandRunner> LoadAutoRunOnOsUpgradeAppCommands(
-      UpdaterScope scope,
-      const std::wstring& app_id);
+  static std::vector<scoped_refptr<AppCommandRunner>>
+  LoadAutoRunOnOsUpgradeAppCommands(UpdaterScope scope,
+                                    const std::wstring& app_id);
 
   // Runs the AppCommand with the provided `substitutions` and populates
   // `process` if successful.
   HRESULT Run(base::span<const std::wstring> substitutions,
-              base::Process& process) const;
+              base::Process& process);
+
+  // Returns the output that the AppCommand generated, if any.
+  std::string output();
+
+  // Waits until `wait_delta` for the completion of the AppCommand execution.
+  // Returns true if the AppCommand completes execution by `wait_delta`, false
+  // otherwise.
+  bool TimedWait(base::TimeDelta wait_delta = {});
+
+ protected:
+  friend class base::RefCountedThreadSafe<AppCommandRunner>;
+  virtual ~AppCommandRunner();
 
  private:
-  // Starts a process with separate `executable` and `parameters` components.
-  // `executable` needs to be an absolute path.
-  static HRESULT StartProcess(const base::FilePath& executable,
-                              const std::wstring& parameters,
-                              base::Process& process);
-
   // Separates a command line in `command_format` into an `executable` and
   // `parameters`. `executable` needs to be an absolute path, and additionally
   // needs to be under %programfiles% for System `scope`. Parameters on the
@@ -92,15 +99,17 @@ class AppCommandRunner {
       const std::vector<std::wstring>& parameters,
       base::span<const std::wstring> substitutions);
 
-  // Helper method that calls `FormatAppCommandLine` and then `StartProcess`.
-  static HRESULT ExecuteAppCommand(const base::FilePath& executable,
-                                   const std::vector<std::wstring>& parameters,
-                                   base::span<const std::wstring> substitutions,
-                                   base::Process& process);
-
+  const std::wstring app_id_;
   base::FilePath executable_;
   std::vector<std::wstring> parameters_;
+  base::WaitableEvent command_completed_event_;
 
+  // Access to the following object members must be serialized by using the
+  // lock.
+  mutable base::Lock lock_;
+  std::string output_ GUARDED_BY(lock_);
+
+  friend class base::RefCountedThreadSafe<AppCommandRunner>;
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsInvalidPathsTest,
                            TestCases);
   FRIEND_TEST_ALL_PREFIXES(AppCommandFormatComponentsProgramFilesPathsTest,

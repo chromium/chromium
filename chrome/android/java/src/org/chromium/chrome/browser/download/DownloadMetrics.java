@@ -42,7 +42,8 @@ public class DownloadMetrics {
      * @param source The source where the user opened the download media file.
      * @param mimeType The mime type of the download.
      */
-    public static void recordDownloadOpen(@DownloadOpenSource int source, String mimeType) {
+    public static void recordDownloadOpen(
+            @DownloadOpenSource int source, @Nullable String mimeType) {
         @DownloadFilter.Type int type = DownloadFilter.fromMimeType(mimeType);
         if (type == DownloadFilter.Type.VIDEO) {
             RecordHistogram.recordEnumeratedHistogram(

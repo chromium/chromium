@@ -14,15 +14,10 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 namespace content {
 class WebUI;
 }  // namespace content
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 class Browser;
 class SignoutConfirmationHandler;
@@ -49,11 +44,8 @@ class SignoutConfirmationUI
   // Prepares the information to be given to the handler once ready.
   void Initialize(Browser* browser,
                   ChromeSignoutConfirmationPromptVariant variant,
+                  size_t unsynced_data_count,
                   SignoutConfirmationCallback callback);
-
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          pending_receiver);
 
   // Instantiates the implementor of the
   // `signout_confirmation::mojom::PageHandlerFactory` mojo interface passing
@@ -86,6 +78,7 @@ class SignoutConfirmationUI
   void OnMojoHandlersReady(
       Browser* browser,
       ChromeSignoutConfirmationPromptVariant variant,
+      size_t unsynced_data_count,
       SignoutConfirmationCallback callback,
       mojo::PendingRemote<signout_confirmation::mojom::Page> page,
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandler> receiver);
@@ -96,10 +89,6 @@ class SignoutConfirmationUI
       mojo::PendingRemote<signout_confirmation::mojom::Page>,
       mojo::PendingReceiver<signout_confirmation::mojom::PageHandler>)>
       initialize_handler_callback_;
-
-  // Handler that notifies WebUI to fetch new stylesheets containing color
-  // variables if the color provider changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   // Handler implementing Mojo interface to communicate with the WebUI.
   std::unique_ptr<SignoutConfirmationHandler> handler_;

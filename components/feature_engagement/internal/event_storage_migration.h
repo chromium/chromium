@@ -11,6 +11,8 @@
 
 namespace feature_engagement {
 
+class EventModelImpl;
+
 // A EventStorageMigration provides the ability to migrate the event storage
 // from the profile db to the device db.
 // TODO(crbug.com/426624087): Remove this and all the calls related to it once
@@ -40,7 +42,8 @@ class EventStorageMigration {
 
   explicit EventStorageMigration(
       raw_ptr<leveldb_proto::ProtoDatabase<Event>> profile_db,
-      raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db);
+      raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db,
+      raw_ptr<EventModelImpl> device_event_model);
 
   EventStorageMigration(const EventStorageMigration&) = delete;
   EventStorageMigration& operator=(const EventStorageMigration&) = delete;
@@ -54,37 +57,33 @@ class EventStorageMigration {
   using MigrationCallback = base::OnceCallback<void(bool success)>;
 
   // Migrate the event storage from the profile db to the device db.
-  void Migrate(MigrationCallback callback);
+  void Migrate(MigrationCallback callback, uint32_t current_day);
 
  private:
-  // Callback for when an underlying db has been initialized.
-  void OnInitializationComplete(leveldb_proto::Enums::InitStatus status);
-
-  // Called when both underlying db have finished their initialization.
-  void OnDBsInitializationCompleted();
-
   // Called when the profile db has finished loading.
-  void OnLoadEntriesComplete(bool success,
+  void OnLoadEntriesComplete(uint32_t current_day,
+                             bool success,
                              std::unique_ptr<std::vector<Event>> entries);
 
   // Called when the device db has finished writing.
-  void OnEventWrittenCompleted(bool success);
+  void OnEventWrittenCompleted(uint32_t current_day,
+                               std::unique_ptr<std::vector<Event>> entries,
+                               bool success);
 
-  // Barrier closure that is run when both db have initialized.
-  base::RepeatingClosure initialization_complete_barrier_;
+  // Called when the device model has finished updating.
+  void OnDeviceEventModelUpdateCompleted(bool success);
 
   // Callback to be invoked once overall migration is complete.
   MigrationCallback migration_callback_;
-
-  // Tracks the overall success of the initialization process. True if both
-  // underlying db initialize successfully.
-  bool initialization_success_ = false;
 
   // The profile db.
   raw_ptr<leveldb_proto::ProtoDatabase<Event>> profile_db_;
 
   // The device db.
   raw_ptr<leveldb_proto::ProtoDatabase<Event>> device_db_;
+
+  // The event model for the device.
+  raw_ptr<EventModelImpl> device_event_model_;
 
   base::WeakPtrFactory<EventStorageMigration> weak_ptr_factory_{this};
 };

@@ -147,7 +147,7 @@ TEST_P(ParentAccessUiHandlerImplTestParameterized, GetParentAccessUrl) {
         ASSERT_TRUE(webview_url.has_query());
 
         // Split the query string into a map of keys to values.
-        std::string query_str = webview_url.query();
+        std::string query_str = webview_url.GetQuery();
         url::Component query(0, query_str.length());
         url::Component key;
         url::Component value;

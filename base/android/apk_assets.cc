@@ -67,3 +67,5 @@ void DumpLastOpenApkAssetFailure() {
 
 }  // namespace android
 }  // namespace base
+
+DEFINE_JNI(ApkAssets)

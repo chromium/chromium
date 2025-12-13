@@ -48,7 +48,7 @@ constexpr gfx::Size kIconImageSize(56, 56);
 // Returns true if a bubble app list should be used under the current mode.
 bool ShouldUseBubbleAppList() {
   // A bubble app list should be used only when ot is in clamshell mode.
-  return !Shell::Get()->IsInTabletMode();
+  return !display::Screen::Get()->InTabletMode();
 }
 
 }  // namespace

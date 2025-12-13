@@ -10,7 +10,7 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='chapter' interesting name='doc-chapter'
 ++android.view.View role_description='colophon' interesting name='doc-colophon'
 ++android.view.View role_description='conclusion' interesting name='doc-conclusion'
-++android.view.View role_description='cover' interesting name='doc-cover'
+++android.view.View role_description='cover' interesting content_description='doc-cover'
 ++android.view.View role_description='credit' interesting name='doc-credit'
 ++android.view.View role_description='credits' interesting name='doc-credits'
 ++android.view.View role_description='dedication' interesting name='doc-dedication'

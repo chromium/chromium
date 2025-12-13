@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/test/mock_callback.h"
-#include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -36,63 +35,54 @@ class TestAutofillKeyboardAccessoryControllerAutofillClient
 
   // Returns the current controller. Controllers are specific to the `manager`'s
   // AutofillExternalDelegate. Therefore, when there are two consecutive
-  // `popup_controller(x)` and `popup_controller(y)`, the second call hides the
-  // old and creates new controller iff `x` and `y` are distinct.
-  Controller& popup_controller(BrowserAutofillManagerForPopupTest& manager) {
+  // `suggestion_controller(x)` and `suggestion_controller(y)`, the second call
+  // hides the old and creates new controller iff `x` and `y` are distinct.
+  Controller& suggestion_controller(
+      BrowserAutofillManagerForPopupTest& manager) {
     if (manager_of_last_controller_.get() != &manager) {
       DoHide();
-      CHECK(!popup_controller_);
+      CHECK(!suggestion_controller_);
     }
-    if (!popup_controller_) {
-      popup_controller_ =
+    if (!suggestion_controller_) {
+      suggestion_controller_ =
           (new Controller(manager.external_delegate().GetWeakPtrForTest(),
                           &GetWebContents(), gfx::RectF()))
               ->GetWeakPtr();
-      test_api(cast_popup_controller())
+      test_api(cast_suggestion_controller())
           .SetView(std::make_unique<MockAutofillKeyboardAccessoryView>());
-      test_api(cast_popup_controller())
-          .SetAccessLossWarningBridge(
-              std::make_unique<MockPasswordAccessLossWarningBridge>());
       manager_of_last_controller_ = manager.GetWeakPtr();
-      ON_CALL(cast_popup_controller(), Hide)
+      ON_CALL(cast_suggestion_controller(), Hide)
           .WillByDefault(
               [this](SuggestionHidingReason reason) { DoHide(reason); });
     }
-    return cast_popup_controller();
+    return cast_suggestion_controller();
   }
 
   MockAutofillKeyboardAccessoryView* popup_view() {
-    return popup_controller_ ? static_cast<MockAutofillKeyboardAccessoryView*>(
-                                   test_api(cast_popup_controller()).view())
-                             : nullptr;
-  }
-
-  MockPasswordAccessLossWarningBridge* access_loss_warning_bridge() {
-    return popup_controller_
-               ? static_cast<MockPasswordAccessLossWarningBridge*>(
-                     test_api(cast_popup_controller())
-                         .access_loss_warning_bridge())
+    return suggestion_controller_
+               ? static_cast<MockAutofillKeyboardAccessoryView*>(
+                     test_api(cast_suggestion_controller()).view())
                : nullptr;
   }
 
  private:
   void DoHide(SuggestionHidingReason reason) {
-    if (popup_controller_) {
-      cast_popup_controller().DoHide(reason);
+    if (suggestion_controller_) {
+      cast_suggestion_controller().DoHide(reason);
     }
   }
 
   void DoHide() {
-    if (popup_controller_) {
-      cast_popup_controller().DoHide();
+    if (suggestion_controller_) {
+      cast_suggestion_controller().DoHide();
     }
   }
 
-  Controller& cast_popup_controller() {
-    return static_cast<Controller&>(*popup_controller_);
+  Controller& cast_suggestion_controller() {
+    return static_cast<Controller&>(*suggestion_controller_);
   }
 
-  base::WeakPtr<AutofillSuggestionController> popup_controller_;
+  base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   base::WeakPtr<AutofillManager> manager_of_last_controller_;
 };
 

@@ -19,9 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
-import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 
 /**
  * View that displays the device lock page to users and prompts them to create one if none are
@@ -33,7 +30,6 @@ public class DeviceLockView extends LinearLayout {
     private TextView mTitle;
     private TextView mDescription;
     private TextView mNoticeText;
-    private TextViewWithCompoundDrawables mNoticeTextLegacy;
     private DualControlLayout mButtonBar;
     private Button mContinueButton;
     private Button mDismissButton;
@@ -57,23 +53,20 @@ public class DeviceLockView extends LinearLayout {
         mProgressBar.setIndeterminate(true);
         mDescription = findViewById(R.id.device_lock_description);
         mNoticeText = findViewById(R.id.device_lock_notice);
-        mNoticeTextLegacy = findViewById(R.id.device_lock_notice_legacy);
 
-        int buttonWidth =
-                SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
-                        ? ViewGroup.LayoutParams.MATCH_PARENT
-                        : ViewGroup.LayoutParams.WRAP_CONTENT;
         mDismissButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(), ButtonType.SECONDARY_TEXT, "", null);
         mDismissButton.setLayoutParams(
-                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContinueButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(), ButtonType.PRIMARY_FILLED, "", null);
         mContinueButton.setLayoutParams(
-                new ViewGroup.LayoutParams(buttonWidth, ViewGroup.LayoutParams.WRAP_CONTENT));
+                new ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
@@ -83,32 +76,21 @@ public class DeviceLockView extends LinearLayout {
         MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
         int illustrationTopMargin;
 
-        if (SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)) {
-            illustration.setBackgroundColor(Color.TRANSPARENT);
-            illustrationParams.height =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
-            illustrationTopMargin =
-                    getContext()
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.device_lock_dialog_illustration_top_margin);
-            findViewById(R.id.device_lock_notice_container).setVisibility(View.GONE);
-            mNoticeText.setVisibility(View.VISIBLE);
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
-            DeviceLockUtils.updateDialogSubviewMargins(mTitle);
-            DeviceLockUtils.updateDialogSubviewMargins(mDescription);
-            DeviceLockUtils.updateDialogSubviewMargins(mNoticeText);
-            DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
-        } else {
-            illustration.setBackgroundColor(
-                    getContext().getColor(R.color.signin_header_animation_background));
-            illustrationTopMargin = 0;
-            findViewById(R.id.device_lock_notice_container).setVisibility(View.VISIBLE);
-            mNoticeText.setVisibility(View.GONE);
-            mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
-        }
+        illustration.setBackgroundColor(Color.TRANSPARENT);
+        illustrationParams.height =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
+        illustrationTopMargin =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_top_margin);
+        mNoticeText.setVisibility(View.VISIBLE);
+        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
+        DeviceLockUtils.updateDialogSubviewMargins(mTitle);
+        DeviceLockUtils.updateDialogSubviewMargins(mDescription);
+        DeviceLockUtils.updateDialogSubviewMargins(mNoticeText);
+        DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
         illustrationParams.setMargins(
                 illustrationParams.leftMargin,
                 illustrationTopMargin,
@@ -130,9 +112,7 @@ public class DeviceLockView extends LinearLayout {
     }
 
     TextView getNoticeText() {
-        return SigninFeatureMap.isEnabled(SigninFeatures.UNO_FOR_AUTO)
-                ? mNoticeText
-                : mNoticeTextLegacy;
+        return mNoticeText;
     }
 
     TextView getContinueButton() {

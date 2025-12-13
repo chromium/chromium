@@ -31,6 +31,8 @@
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/rand_util.h"
+#include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
+#include "base/sampling_heap_profiler/lock_free_bloom_filter.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/sampling_heap_profiler/sampling_heap_profiler.h"
 #include "base/sequence_checker.h"
@@ -215,6 +217,40 @@ void LogProfilerStats(std::optional<ProcessType> process_type,
           "HeapProfiling.InProcess.SampledAddressCacheUniformity",
           process_type),
       100 * profiler_stats.address_cache_bucket_stats.chi_squared, 0, 200, 50);
+
+  if (base::FeatureList::IsEnabled(base::kUseLockFreeBloomFilter)) {
+    const size_t kMaxSaturationSize = 65;
+    static_assert(kMaxSaturationSize == base::kMaxLockFreeBloomFilterBits + 1,
+                  "LockFreeBloomFilter's max bits has changed. Need to update "
+                  "the metric.");
+
+    const double bloom_filter_hit_rate =
+        profiler_stats.bloom_filter_hits
+            ? (static_cast<double>(profiler_stats.bloom_filter_hits) /
+               (profiler_stats.bloom_filter_hits +
+                profiler_stats.bloom_filter_misses))
+            : 0.0;
+    base::UmaHistogramCounts1M(
+        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitCount",
+                             process_type),
+        profiler_stats.bloom_filter_hits);
+    base::UmaHistogramCounts10000(
+        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterHitRate",
+                             process_type),
+        bloom_filter_hit_rate * 10000);
+    base::UmaHistogramExactLinear(
+        ProcessHistogramName("HeapProfiling.InProcess.BloomFilterMaxSaturation",
+                             process_type),
+        profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
+
+    base::UmaHistogramCounts1M("HeapProfiling.InProcess.BloomFilterHitCount",
+                               profiler_stats.bloom_filter_hits);
+    base::UmaHistogramCounts10000("HeapProfiling.InProcess.BloomFilterHitRate",
+                                  bloom_filter_hit_rate * 10000);
+    base::UmaHistogramExactLinear(
+        "HeapProfiling.InProcess.BloomFilterMaxSaturation",
+        profiler_stats.bloom_filter_max_saturation, kMaxSaturationSize);
+  }
 }
 
 // Retrieves a snapshot from the SamplingHeapProfiler and logs metrics about

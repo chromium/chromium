@@ -109,7 +109,7 @@ suite('cr-input', function() {
     crInput.label = 'foobar';
     await crInput.updateComplete;
     assertEquals('block', getComputedStyle(crInput.$.label).display);
-    assertEquals('foobar', label.textContent!.trim());
+    assertEquals('foobar', label.textContent.trim());
   });
 
   test('valueSetCorrectly', async () => {

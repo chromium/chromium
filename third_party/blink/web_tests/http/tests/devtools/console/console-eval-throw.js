@@ -18,7 +18,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
     const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
     consoleModel.addEventListener(SDK.ConsoleModel.Events.ConsoleCleared, afterCleared);
-    Console.ConsoleView.ConsoleView.clearConsole();
+    Console.ConsoleView.ConsoleView.instance().clearConsole();
 
     function afterCleared() {
       consoleModel.removeEventListener(SDK.ConsoleModel.Events.ConsoleCleared, afterCleared);

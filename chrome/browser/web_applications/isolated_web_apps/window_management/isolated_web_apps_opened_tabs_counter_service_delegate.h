@@ -12,14 +12,14 @@
 
 class Profile;
 
+namespace web_app {
+
 class IsolatedWebAppsOpenedTabsCounterServiceDelegate
     : public message_center::NotificationDelegate {
  public:
   IsolatedWebAppsOpenedTabsCounterServiceDelegate(
       Profile* profile,
       const webapps::AppId& app_id,
-      IsolatedWebAppsOpenedTabsCounterService::CloseWebContentsCallback
-          close_web_contents_callback,
       IsolatedWebAppsOpenedTabsCounterService::NotificationAcknowledgedCallback
           notification_acknowledged_callback,
       IsolatedWebAppsOpenedTabsCounterService::CloseNotificationCallback
@@ -42,12 +42,12 @@ class IsolatedWebAppsOpenedTabsCounterServiceDelegate
   const raw_ref<Profile> profile_;
   const webapps::AppId app_id_;
 
-  IsolatedWebAppsOpenedTabsCounterService::CloseWebContentsCallback
-      close_web_contents_callback_;
   IsolatedWebAppsOpenedTabsCounterService::NotificationAcknowledgedCallback
       notification_acknowledged_callback_;
   IsolatedWebAppsOpenedTabsCounterService::CloseNotificationCallback
       close_notification_callback_;
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_DELEGATE_H_

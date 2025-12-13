@@ -20,8 +20,10 @@
 #include "base/types/expected.h"
 #include "components/url_pattern/url_pattern_util.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_pattern_options.h"
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_canon.h"
+#include "third_party/blink/renderer/core/url_pattern/url_pattern_dummy_url_canon.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -65,45 +67,90 @@ liburlpattern::EncodeCallback GetEncodeCallback(
     std::string_view pattern_utf8,
     Component::Type type,
     std::optional<bool> should_treat_as_standard_url) {
-  switch (type) {
-    case Component::Type::kProtocol:
-      return ::url_pattern::ProtocolEncodeCallback;
-    case Component::Type::kUsername:
-      return ::url_pattern::UsernameEncodeCallback;
-    case Component::Type::kPassword:
-      return ::url_pattern::PasswordEncodeCallback;
-    case Component::Type::kHostname:
-      if (::url_pattern::TreatAsIPv6Hostname(pattern_utf8)) {
-        return ::url_pattern::IPv6HostnameEncodeCallback;
-      } else {
-        return ::url_pattern::HostnameEncodeCallback;
-      }
-    case Component::Type::kPort:
-      return ::url_pattern::PortEncodeCallback;
-    case Component::Type::kPathname:
-      // Different types of URLs use different canonicalization for pathname.
-      // A "standard" URL flattens `.`/`..` and performs full percent encoding.
-      // A "path" URL does not flatten and uses a more lax percent encoding.
-      // The spec calls "path" URLs as "cannot-be-a-base-URL" URLs:
-      //
-      //  https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
-      //
-      // In "path" URL cases, we fall back to the opaque pathname behavior.  We
-      // favor this behavior here because it is better to canonicalize less
-      // since developers can always manually canonicalize inputs for, e.g.,
-      // their custom protocols.
-      CHECK(should_treat_as_standard_url.has_value());
-      if (*should_treat_as_standard_url) {
-        return ::url_pattern::StandardURLPathnameEncodeCallback;
-      } else {
-        return ::url_pattern::PathURLPathnameEncodeCallback;
-      }
-    case Component::Type::kSearch:
-      return ::url_pattern::SearchEncodeCallback;
-    case Component::Type::kHash:
-      return ::url_pattern::HashEncodeCallback;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kURLPatternDummyURLCanonicalization)) {
+    switch (type) {
+      case Component::Type::kProtocol:
+        return blink::url_pattern_dummy_url_canon::ProtocolEncodeCallback;
+      case Component::Type::kUsername:
+        return blink::url_pattern_dummy_url_canon::UsernameEncodeCallback;
+      case Component::Type::kPassword:
+        return blink::url_pattern_dummy_url_canon::PasswordEncodeCallback;
+      case Component::Type::kHostname:
+        if (::url_pattern::TreatAsIPv6Hostname(pattern_utf8)) {
+          return blink::url_pattern_dummy_url_canon::IPv6HostnameEncodeCallback;
+        } else {
+          return blink::url_pattern_dummy_url_canon::HostnameEncodeCallback;
+        }
+      case Component::Type::kPort:
+        return blink::url_pattern_dummy_url_canon::PortEncodeCallback;
+      case Component::Type::kPathname:
+        // Different types of URLs use different canonicalization for pathname.
+        // A "standard" URL flattens `.`/`..` and performs full percent
+        // encoding. A "path" URL does not flatten and uses a more lax percent
+        // encoding. The spec calls "path" URLs as "cannot-be-a-base-URL" URLs:
+        //
+        //  https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+        //
+        // In "path" URL cases, we fall back to the opaque pathname behavior. We
+        // favor this behavior here because it is better to canonicalize less
+        // since developers can always manually canonicalize inputs for, e.g.,
+        // their custom protocols.
+        CHECK(should_treat_as_standard_url.has_value());
+        if (*should_treat_as_standard_url) {
+          return blink::url_pattern_dummy_url_canon::
+              StandardPathnameEncodeCallback;
+        } else {
+          return blink::url_pattern_dummy_url_canon::
+              OpaquePathnameEncodeCallback;
+        }
+      case Component::Type::kSearch:
+        return blink::url_pattern_dummy_url_canon::SearchEncodeCallback;
+      case Component::Type::kHash:
+        return blink::url_pattern_dummy_url_canon::HashEncodeCallback;
+    }
+    NOTREACHED();
+  } else {
+    switch (type) {
+      case Component::Type::kProtocol:
+        return ::url_pattern::ProtocolEncodeCallback;
+      case Component::Type::kUsername:
+        return ::url_pattern::UsernameEncodeCallback;
+      case Component::Type::kPassword:
+        return ::url_pattern::PasswordEncodeCallback;
+      case Component::Type::kHostname:
+        if (::url_pattern::TreatAsIPv6Hostname(pattern_utf8)) {
+          return ::url_pattern::IPv6HostnameEncodeCallback;
+        } else {
+          return ::url_pattern::HostnameEncodeCallback;
+        }
+      case Component::Type::kPort:
+        return ::url_pattern::PortEncodeCallback;
+      case Component::Type::kPathname:
+        // Different types of URLs use different canonicalization for pathname.
+        // A "standard" URL flattens `.`/`..` and performs full percent
+        // encoding. A "path" URL does not flatten and uses a more lax percent
+        // encoding. The spec calls "path" URLs as "cannot-be-a-base-URL" URLs:
+        //
+        //  https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+        //
+        // In "path" URL cases, we fall back to the opaque pathname behavior. We
+        // favor this behavior here because it is better to canonicalize less
+        // since developers can always manually canonicalize inputs for, e.g.,
+        // their custom protocols.
+        CHECK(should_treat_as_standard_url.has_value());
+        if (*should_treat_as_standard_url) {
+          return ::url_pattern::StandardURLPathnameEncodeCallback;
+        } else {
+          return ::url_pattern::PathURLPathnameEncodeCallback;
+        }
+      case Component::Type::kSearch:
+        return ::url_pattern::SearchEncodeCallback;
+      case Component::Type::kHash:
+        return ::url_pattern::HashEncodeCallback;
+    }
+    NOTREACHED();
   }
-  NOTREACHED();
 }
 
 // Utility method to get the correct liburlpattern parse options for a given
@@ -214,8 +261,8 @@ Component* Component::Compile(v8::Isolate* isolate,
                            options);
   if (!parse_result.has_value()) {
     exception_state.ThrowTypeError(
-        "Invalid " + TypeToString(type) + " pattern '" + final_pattern + "'. " +
-        String::FromUTF8(parse_result.error().message()));
+        StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                "'. ", String::FromUTF8(parse_result.error().message())}));
     return nullptr;
   }
 
@@ -251,17 +298,17 @@ Component* Component::Compile(v8::Isolate* isolate,
             MultilineMode::kMultilineDisabled, UnicodeMode::kUnicodeSets);
         if (regexp->IsValid())
           continue;
-        exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                       " pattern '" + final_pattern +
-                                       "'. Custom regular expression group '" +
-                                       group_value + "' is invalid.");
+        exception_state.ThrowTypeError(
+            StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                    "'. Custom regular expression group '", group_value,
+                    "' is invalid."}));
         return nullptr;
       }
       // We couldn't find a bad regexp group, but we still have an overall
       // error.  This shouldn't happen, but we handle it anyway.
-      exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                     " pattern '" + final_pattern +
-                                     "'. An unexpected error has occurred.");
+      exception_state.ThrowTypeError(
+          StrCat({"Invalid ", TypeToString(type), " pattern '", final_pattern,
+                  "'. An unexpected error has occurred."}));
       return nullptr;
     }
 
@@ -354,7 +401,7 @@ bool Component::Match(StringView input,
     group_list->ReserveInitialCapacity(
         base::checked_cast<wtf_size_t>(pattern_group_list.size()));
     for (const auto& pair : pattern_group_list) {
-      // We need to be careful converting the group value to a WTF::String.
+      // We need to be careful converting the group value to a blink::String.
       // If the value is std::nullopt, then we want to use a null String.
       // If the value exists, but is zero length, then we want to use an empty
       // string.  We must handle this explicitly since FromUTF8() can convert
@@ -394,7 +441,7 @@ bool Component::ShouldTreatAsStandardURL() const {
 }
 
 std::optional<String> Component::Generate(
-    const WTF::Vector<std::pair<String, String>>& groups,
+    const Vector<std::pair<String, String>>& groups,
     bool should_treat_as_standard_url,
     ExceptionState& exception_state) const {
   std::string pattern_string = pattern_.GeneratePatternString();

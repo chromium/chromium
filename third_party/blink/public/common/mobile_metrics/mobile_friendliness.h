@@ -13,9 +13,6 @@ namespace blink {
 // Used for UKM logging.
 struct BLINK_COMMON_EXPORT MobileFriendliness {
   bool operator==(const MobileFriendliness& other) const;
-  bool operator!=(const MobileFriendliness& other) const {
-    return !(*this == other);
-  }
 
   // Whether <meta name="viewport" content="width=device-width"> is specified or
   // not.

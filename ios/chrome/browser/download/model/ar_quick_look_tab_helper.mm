@@ -9,7 +9,6 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/escape.h"
@@ -97,7 +96,7 @@ void LogHistogram(web::DownloadTask* download_task) {
 // parse ref).
 GURL ConvertRefToQueryInUrl(const GURL& url) {
   GURL::Replacements replacement;
-  replacement.SetQueryStr(url.ref_piece());
+  replacement.SetQueryStr(url.ref());
   replacement.ClearRef();
 
   return url.ReplaceComponents(replacement);
@@ -166,7 +165,7 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     // URL, but this appears to work well enough for https://crbug.com/1341660
     // issue.
     url = GURL(base::UnescapeURLComponent(
-        url.path(),
+        url.GetPath(),
         base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
   }
 

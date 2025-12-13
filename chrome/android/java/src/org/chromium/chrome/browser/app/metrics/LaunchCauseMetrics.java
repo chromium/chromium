@@ -19,6 +19,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.ui.display.DisplayAndroidManager;
 
@@ -26,6 +28,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Computes and records metrics for what caused Chrome to be launched. */
+@NullMarked
 public abstract class LaunchCauseMetrics
         implements ApplicationStatus.ApplicationStateListener,
                 ApplicationStatus.ActivityStateListener {
@@ -45,9 +48,9 @@ public abstract class LaunchCauseMetrics
     private long mActivityId;
 
     @SuppressLint("StaticFieldLeak")
-    private static Activity sLastResumedActivity;
+    private static @Nullable Activity sLastResumedActivity;
 
-    private static ApplicationStatus.ActivityStateListener sAppActivityListener;
+    private static ApplicationStatus.@Nullable ActivityStateListener sAppActivityListener;
 
     static {
         doStaticInit();

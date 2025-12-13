@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager_uma_helper.h"
 #include "chrome/browser/picture_in_picture/scoped_disallow_picture_in_picture.h"

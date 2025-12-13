@@ -4,8 +4,10 @@
 
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/strings/string_util.h"
 #include "net/http/http_no_vary_search_data.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -75,4 +77,22 @@ bool GetIsJavaScriptEnabledFromPrefetchParameters(
   return Java_AwPrefetchParameters_getIsJavascriptEnabled(env, prefetch_params);
 }
 
+// TODO(crbug.com/455296998): Remove this code for M145.
+bool GetShouldBypassHttpCacheFromHeaders(net::HttpRequestHeaders& headers,
+                                         bool remove_header) {
+  std::optional<std::string> header_value =
+      headers.GetHeader(kDisableHttpCacheHeader);
+  if (header_value) {
+    bool should_bypass = (header_value.value() == "1");
+    if (remove_header) {
+      headers.RemoveHeader(kDisableHttpCacheHeader);
+    }
+    return should_bypass;
+  }
+  return false;
+}
+
 }  // namespace android_webview
+
+DEFINE_JNI(AwNoVarySearchData)
+DEFINE_JNI(AwPrefetchParameters)

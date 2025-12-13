@@ -27,8 +27,9 @@ TabGroupVisualData::TabGroupVisualData(std::u16string title,
       color_(TabGroupColorId::kGrey),
       is_collapsed_(is_collapsed) {
   auto color_id = static_cast<tab_groups::TabGroupColorId>(color_int);
-  if (base::Contains(tab_groups::GetTabGroupColorLabelMap(), color_id))
+  if (base::Contains(tab_groups::GetTabGroupColorLabelMap(), color_id)) {
     color_ = color_id;
+  }
 }
 
 }  // namespace tab_groups

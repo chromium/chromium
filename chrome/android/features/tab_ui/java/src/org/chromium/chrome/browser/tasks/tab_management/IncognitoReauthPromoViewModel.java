@@ -13,6 +13,9 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessageManager.MessageType;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -23,23 +26,29 @@ public class IncognitoReauthPromoViewModel {
      * Create a {@link PropertyModel} for incognito re-auth promo card.
      *
      * @param context The {@link Context} to use.
-     * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
+     * @param msgServiceDismissActionProvider The {@link ServiceDismissActionProvider} to set.
      * @param data The {@link IncognitoReauthPromoMessageService.IncognitoReauthMessageData} to use.
      * @return A {@link PropertyModel} for the given {@code data}.
      */
     public static PropertyModel create(
             Context context,
-            MessageCardView.DismissActionProvider uiDismissActionProvider,
+            ServiceDismissActionProvider<@MessageType Integer> msgServiceDismissActionProvider,
             IncognitoReauthPromoMessageService.IncognitoReauthMessageData data) {
-        String titleText = context.getString(R.string.incognito_reauth_promo_title);
-        String descriptionText = context.getString(R.string.incognito_reauth_promo_description);
+        String titleText =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? context.getString(R.string.incognito_window_reauth_promo_title)
+                        : context.getString(R.string.incognito_reauth_promo_title);
+        String descriptionText =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? context.getString(R.string.incognito_window_reauth_promo_description)
+                        : context.getString(R.string.incognito_reauth_promo_description);
         String actionText = context.getString(R.string.incognito_reauth_lock_action_text);
         String dismissActionText = context.getString(R.string.no_thanks);
 
         return new PropertyModel.Builder(MessageCardViewProperties.ALL_KEYS)
                 .with(
                         MessageCardViewProperties.MESSAGE_TYPE,
-                        MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
                 .with(
                         MessageCardViewProperties
                                 .MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE,
@@ -49,18 +58,15 @@ public class IncognitoReauthPromoViewModel {
                         MessageService.DEFAULT_MESSAGE_IDENTIFIER)
                 .with(
                         MessageCardViewProperties.MESSAGE_TYPE,
-                        MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
+                        MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
-                .with(MessageCardViewProperties.UI_ACTION_PROVIDER, data.getReviewActionProvider())
+                .with(MessageCardViewProperties.UI_ACTION_PROVIDER, data.getAcceptActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.SECONDARY_ACTION_TEXT, dismissActionText)
                 .with(
                         MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
                         view -> {
-                            data.getDismissActionProvider()
-                                    .dismiss(
-                                            MessageService.MessageType
-                                                    .INCOGNITO_REAUTH_PROMO_MESSAGE);
+                            data.getDismissActionProvider().action();
                             RecordHistogram.recordEnumeratedHistogram(
                                     "Android.IncognitoReauth.PromoAcceptedOrDismissed",
                                     IncognitoReauthPromoMessageService

@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/rsa_private_key.h"
 #include "extensions/browser/content_hash_reader.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
@@ -61,8 +60,6 @@ class TestContentVerifySingleJobObserver {
     ObserverClient& operator=(const ObserverClient&) = delete;
 
     // ContentVerifyJob::TestObserver:
-    void JobStarted(const ExtensionId& extension_id,
-                    const base::FilePath& relative_path) override {}
     void JobFinished(const ExtensionId& extension_id,
                      const base::FilePath& relative_path,
                      ContentVerifyJob::FailureReason reason) override;
@@ -127,8 +124,6 @@ class TestContentVerifyJobObserver {
     ObserverClient& operator=(const ObserverClient&) = delete;
 
     // ContentVerifyJob::TestObserver:
-    void JobStarted(const ExtensionId& extension_id,
-                    const base::FilePath& relative_path) override {}
     void JobFinished(const ExtensionId& extension_id,
                      const base::FilePath& relative_path,
                      ContentVerifyJob::FailureReason failure_reason) override;

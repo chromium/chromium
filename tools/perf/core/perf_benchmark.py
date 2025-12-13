@@ -85,9 +85,13 @@ class PerfBenchmark(benchmark.Benchmark):
   def SetExtraBrowserOptions(self, options):
     """To be overridden by perf benchmarks."""
 
+  def SetExtraBrowserOptionsWithBrowser(self, options, possible_browser):
+    """To be overridden by perf benchmarks. Run after SetExtraBrowserOptions."""
+
   def CustomizeOptions(self, finder_options, possible_browser=None):
-    # Subclass of PerfBenchmark should override  SetExtraBrowserOptions to add
-    # more browser options rather than overriding CustomizeOptions.
+    # Subclass of PerfBenchmark should override SetExtraBrowserOptions or
+    # SetExtraBrowserOptionsWithBrowser to add more browser options, rather than
+    # overriding CustomizeOptions.
     super(PerfBenchmark, self).CustomizeOptions(finder_options)
 
     browser_options = finder_options.browser_options
@@ -128,6 +132,11 @@ class PerfBenchmark(benchmark.Benchmark):
     browser_options.AppendExtraBrowserArgs('--propagate-iph-for-testing')
 
     self.SetExtraBrowserOptions(browser_options)
+
+    # SetExtraBrowserOptions is inherited from Telemetry and doesn't take a
+    # possible_browser. PerfBenchmark disallows the usual approach of overriding
+    # CustomizeOptions, so instead it provides this additional hook.
+    self.SetExtraBrowserOptionsWithBrowser(browser_options, possible_browser)
 
   def GetExtraOutDirectories(self):
     # Subclasses of PerfBenchmark should override this method instead of

@@ -11,7 +11,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
@@ -44,6 +43,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -173,7 +173,7 @@ const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
   }
 
   return base::ASCIIToUTF16(
-      base::StrCat({"chrome_screenshot_", url.host(), ".png"}));
+      base::StrCat({"chrome_screenshot_", url.GetHost(), ".png"}));
 }
 
 void ScreenshotCapturedBubble::DownloadButtonPressed() {

@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Platform from 'devtools/core/platform/platform.js';
+import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
 
 (async function() {
@@ -43,7 +44,7 @@ import * as ElementsModule from 'devtools/panels/elements/elements.js';
   }
 
   function dumpFocus() {
-    const element = Platform.DOMUtilities.deepActiveElement(document);
+    const element = UI.DOMUtilities.deepActiveElement(document);
     TestRunner.addResult(`Active element: ${element.tagName}, ${element.className}`);
   }
 })();

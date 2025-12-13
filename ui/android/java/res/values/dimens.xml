@@ -11,12 +11,18 @@ found in the LICENSE file.
     <dimen name="text_size_large">16sp</dimen>
     <dimen name="text_size_medium">14sp</dimen>
     <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_xsmall">11sp</dimen>
+
+    <dimen name="text_size_large_desktop">14sp</dimen>
 
     <dimen name="headline_size_leading" tools:ignore="UnusedResources">28sp</dimen>
     <dimen name="headline2_size_leading" tools:ignore="UnusedResources">24sp</dimen>
     <dimen name="text_size_large_leading" tools:ignore="UnusedResources">24sp</dimen>
     <dimen name="text_size_medium_leading" tools:ignore="UnusedResources">20sp</dimen>
     <dimen name="text_size_small_leading" tools:ignore="UnusedResources">16sp</dimen>
+    <dimen name="text_size_xsmall_leading" tools:ignore="UnusedResources">13sp</dimen>
+
+    <dimen name="text_size_large_leading_desktop" tools:ignore="UnusedResources">20sp</dimen>
 
     <!-- Common alpha values -->
     <item name="default_enabled_alpha" format="float" type="dimen">1.0</item>
@@ -29,21 +35,27 @@ found in the LICENSE file.
         0.50
     </item>
 
+    <!-- Border styles -->
+    <dimen name="dashed_border_dash_width">6dp</dimen>
+    <dimen name="dashed_border_gap_width">6dp</dimen>
+
     <!-- Minimum height/width for a touchable item -->
     <dimen name="min_touch_target_size">48dp</dimen>
+    <!-- Minimum height/width for a clickable item -->
+    <dimen name="min_click_target_size">36dp</dimen>
 
     <!-- Button default measures -->
     <dimen name="button_min_width">88dp</dimen>
     <dimen name="button_bg_vertical_inset">4dp</dimen>
     <dimen name="button_outlined_border_width">1dp</dimen>
 
-    <!-- Menu footer chip measures-->
+    <!-- Menu footer chip measures -->
     <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(12dp) ) / 2 -->
     <dimen name="menu_footer_chip_end_padding">8dp</dimen>
     <dimen name="menu_footer_chip_icon_size">16dp</dimen>
     <dimen name="menu_footer_chip_vertical_inset">8dp</dimen>
 
-    <!-- Custom menu-->
+    <!-- Custom menu -->
     <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
 
     <!-- Dropdown default measures -->
@@ -54,7 +66,7 @@ found in the LICENSE file.
     <dimen name="dropdown_elevation">2dp</dimen>
 
     <!-- Use arbitrary high number so that if the button text spans multiple
-     lines with XL text, the corners will still look fully rounded
+    lines with XL text, the corners will still look fully rounded
      TODO(crbug.com/40770875): Determine the corner radius based on button height-->
     <dimen name="button_compat_corner_radius">500dp</dimen>
 
@@ -63,7 +75,7 @@ found in the LICENSE file.
 
     <!-- Divider Dimensions -->
     <dimen name="divider_height">1dp</dimen>
-    <dimen name="list_section_divider_padding">8dp</dimen>
+    <dimen name="list_divider_layout_height">16dp</dimen>
 
     <!-- Drag shadow dimens -->
     <dimen name="drag_shadow_border_corner_radius">8dp</dimen>
@@ -73,14 +85,13 @@ found in the LICENSE file.
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
     <dimen name="popup_bg_corner_radius">4dp</dimen>
-    <!-- These should be used for Menus with 24dp corner radius. -->
     <dimen name="popup_bg_corner_radius_24dp">24dp</dimen>
-    <dimen name="popup_bg_padding">4dp</dimen>
+    <dimen name="popup_bg_corner_radius_16dp">16dp</dimen>
 
     <!--
-         Fallback values if the corresponding com.android.internal.R dimensions
-         cannot be retrieved by name.
-         Note: Constants taken directly from Android's core/res/values/config.xml.
+    Fallback values if the corresponding com.android.internal.R dimensions
+    cannot be retrieved by name.
+    Note: Constants taken directly from Android's core/res/values/config.xml.
     -->
     <!-- TODO(crbug.com/40600572): Fix and remove lint ignore -->
     <dimen name="config_min_scaling_span" tools:ignore="InOrMmUsage">12.0mm</dimen>
@@ -93,15 +104,35 @@ found in the LICENSE file.
     <!-- List menu & item dimensions -->
     <dimen name="list_menu_bg_corner_radius">4dp</dimen>
     <dimen name="list_menu_vertical_padding">8dp</dimen>
-    <dimen name="list_menu_width">180dp</dimen>
+    <dimen name="list_menu_width">200dp</dimen>
     <dimen name="list_menu_popup_min_width">112dp</dimen>
     <dimen name="list_menu_popup_max_width">280dp</dimen>
     <dimen name="list_menu_item_icon_size">24dp</dimen>
+    <dimen name="list_menu_item_icon_padding">12dp</dimen>
+    <dimen name="list_menu_item_control_padding">8dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
-    <dimen name="list_menu_item_horizontal_padding">12dp</dimen>
-    <dimen name="list_menu_item_text_size">14sp</dimen>
+    <dimen name="list_menu_item_horizontal_padding">16dp</dimen>
     <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
+    <dimen name="list_menu_item_min_height_large">56dp</dimen>
+
+    <dimen name="list_menu_item_icon_size_desktop">20dp</dimen>
+    <dimen name="list_menu_item_icon_padding_desktop">8dp</dimen>
+    <dimen name="list_menu_item_control_padding_desktop">5dp</dimen>
+    <dimen name="list_menu_item_start_icon_end_margin_desktop">12dp</dimen>
+    <dimen name="list_divider_layout_height_desktop">10dp</dimen>
+    <dimen name="list_menu_item_min_height_large_desktop">36dp</dimen>
+
+    <!-- Hierarchical menu -->
+    <dimen name="hierarchical_menu_flyout_popup_horizontal_overlap">8dp</dimen>
+    <!--
+    min_spacing is the minimum non-overlapping width of the main popup
+    and the flyout popup.
+    min_margin is the minimum margin between flyout popup and the edge
+    of the window.
+    -->
+    <dimen name="hierarchical_menu_min_spacing_for_flyout">48dp</dimen>
+    <dimen name="hierarchical_menu_min_margin_for_flyout">48dp</dimen>
 
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
@@ -113,4 +144,10 @@ found in the LICENSE file.
     <dimen name="span_background_border_radius">4dp</dimen>
     <dimen name="span_background_border_width">2dp</dimen>
     <dimen name="span_background_horizontal_padding">4dp</dimen>
+
+    <!-- Keyboard focus outline -->
+    <!-- The size between outline and the view outer bound -->
+    <dimen name="focused_outline_offset">2dp</dimen>
+    <dimen name="focused_outline_stroke_width">2dp</dimen>
+    <dimen name="focused_outline_corner_radius_card">16dp</dimen>
 </resources>

@@ -10,7 +10,6 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/language/core/browser/pref_names.h"
@@ -28,7 +27,9 @@ const char kDefaultProfileLocale[] = "en-US";
 
 // Determines the user's language or locale from the system, first trying
 // the current IME language and falling back to the application locale.
-std::string GetUserLangOrLocaleFromSystem(Profile* profile) {
+std::string GetUserLangOrLocaleFromSystem(
+    Profile* profile,
+    const std::string& application_locale) {
   // Convert from the ID used in the pref to a language identifier.
   std::vector<std::string> input_method_ids;
   input_method_ids.push_back(
@@ -45,7 +46,7 @@ std::string GetUserLangOrLocaleFromSystem(Profile* profile) {
   // If we don't find an IME language, fall back to using the application
   // locale.
   if (user_language.empty())
-    user_language = g_browser_process->GetApplicationLocale();
+    user_language = application_locale;
 
   return user_language.empty() ? kDefaultProfileLocale : user_language;
 }
@@ -162,8 +163,9 @@ std::string GetSupportedLocale(const std::string& lang_or_locale) {
 
   // The code is a supported locale. Return itself.
   // Note that it doesn't matter if the supported locale is online or offline.
-  if (base::Contains(Dictation::GetAllSupportedLocales(), lang_or_locale))
+  if (base::Contains(Dictation::GetAllSupportedLocales(), lang_or_locale)) {
     return lang_or_locale;
+  }
 
   // Finally, get the language code from the locale and try to use it to map
   // to a default locale. For example, "en-XX" should map to "en-US" if "en-XX"
@@ -226,17 +228,19 @@ Dictation::GetAllSupportedLocales() {
 }
 
 // static
-std::string Dictation::DetermineDefaultSupportedLocale(Profile* profile,
-                                                       bool new_user) {
+std::string Dictation::DetermineDefaultSupportedLocale(
+    Profile* profile,
+    bool new_user,
+    const std::string& application_locale) {
   std::string lang_or_locale;
   if (new_user) {
     // This is the first time this user has enabled Dictation. Pick the default
     // language preference based on their application locale.
-    lang_or_locale = g_browser_process->GetApplicationLocale();
+    lang_or_locale = application_locale;
   } else {
     // This user has already had Dictation enabled, but now we need to map
     // from the language they've previously used to a supported locale.
-    lang_or_locale = GetUserLangOrLocaleFromSystem(profile);
+    lang_or_locale = GetUserLangOrLocaleFromSystem(profile, application_locale);
   }
   std::string supported_locale = GetSupportedLocale(lang_or_locale);
   return supported_locale.empty() ? kDefaultProfileLocale : supported_locale;

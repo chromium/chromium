@@ -4,7 +4,7 @@
 
 import type {CrToastManagerElement, DownloadsManagerElement, PageRemote} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, DangerType, loadTimeData, State} from 'chrome://downloads/downloads.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyDownOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -44,14 +44,13 @@ suite('manager tests', function() {
         'a'.repeat(1000) + '.com/document.pdf';
     const displayUrl = 'https://' +
         '啊'.repeat(1000) + '.com/document.pdf';
-    callbackRouterRemote.insertItems(
-        0, [createDownload({
-          fileName: 'file name',
-          state: State.kComplete,
-          sinceString: 'Today',
-          url: stringToMojoUrl(url),
-          displayUrl: stringToMojoString16(displayUrl),
-        })]);
+    callbackRouterRemote.insertItems(0, [createDownload({
+                                       fileName: 'file name',
+                                       state: State.kComplete,
+                                       sinceString: 'Today',
+                                       url: stringToMojoUrl(url),
+                                       displayUrl: displayUrl,
+                                     })]);
     await callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 

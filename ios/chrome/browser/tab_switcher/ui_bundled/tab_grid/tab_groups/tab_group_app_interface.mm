@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 
@@ -34,7 +33,6 @@ namespace {
 
 // Returns the tab group sync service from the first regular profile.
 tab_groups::TabGroupSyncService* GetTabGroupSyncService() {
-  CHECK(IsTabGroupSyncEnabled());
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
 }
@@ -104,7 +102,6 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 @implementation TabGroupAppInterface
 
 + (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups {
-  CHECK(IsTabGroupSyncEnabled());
   for (NSInteger i = 0; i < numberOfGroups; i++) {
     base::Uuid groupID = base::Uuid::GenerateRandomV4();
     std::vector<tab_groups::SavedTabGroupTab> tabs;
@@ -119,22 +116,22 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 }
 
 + (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups
-                           asOwner:(BOOL)owner {
-  CHECK(IsTabGroupSyncEnabled());
+                           asOwner:(BOOL)owner
+                               url:(NSString*)url {
+  GURL gurl(base::SysNSStringToUTF8(url));
   for (NSInteger i = 0; i < numberOfGroups; i++) {
     NSString* collaborationID =
         [NSString stringWithFormat:@"CollaborationID%ld", i];
 
     // Create a shared tab group in the fake server.
-    GetShareKitService()->CreateSharedTabGroupInFakeServer(owner,
-                                                           collaborationID);
+    GetShareKitService()->CreateSharedTabGroupInFakeServer(
+        owner, collaborationID, gurl);
   }
 
   chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);
 }
 
 + (void)removeAtIndex:(unsigned int)index {
-  CHECK(IsTabGroupSyncEnabled());
   std::vector<tab_groups::SavedTabGroup> groups =
       GetTabGroupSyncService()->GetAllGroups();
   tab_groups::SavedTabGroup groupToRemove = groups[index];
@@ -153,8 +150,6 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 }
 
 + (void)cleanup {
-  CHECK(IsTabGroupSyncEnabled());
-
   std::vector<tab_groups::SavedTabGroup> groups =
       GetTabGroupSyncService()->GetAllGroups();
   for (unsigned int i = 0; i < groups.size(); i++) {
@@ -165,7 +160,6 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 }
 
 + (int)countOfSavedTabGroups {
-  CHECK(IsTabGroupSyncEnabled());
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       GetTabGroupSyncService();
   return tabGroupSyncService->GetAllGroups().size();
@@ -193,7 +187,6 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 }
 
 + (void)addSharedTabToGroupAtIndex:(unsigned int)index {
-  CHECK(IsTabGroupSyncEnabled());
   std::vector<tab_groups::SavedTabGroup> groups =
       GetTabGroupSyncService()->GetAllGroups();
   tab_groups::SavedTabGroup group = groups[index];

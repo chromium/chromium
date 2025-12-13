@@ -4,10 +4,10 @@
 
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/ash/quick_answers/test/mock_quick_answers_client.h"
+#include "chrome/browser/ui/ash/quick_answers/ui/magic_boost_user_consent_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
@@ -420,6 +421,88 @@ class QuickAnswersBrowserTest : public QuickAnswersBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest,
+                       MagicBoostConsentViewOnPendingDisclaimer) {
+  if (!IsMagicBoostEnabled()) {
+    GTEST_SKIP() << "This test only applies when Magic Boost is enabled.";
+  }
+
+  // Enable Magic Boost.
+  chrome_test_utils::GetProfile(this)->GetPrefs()->SetBoolean(
+      ash::prefs::kMagicBoostEnabled, true);
+
+  // Assert that HMR is enabled and consent is pending.
+  ASSERT_TRUE(chrome_test_utils::GetProfile(this)->GetPrefs()->GetBoolean(
+      ash::prefs::kHmrEnabled));
+  ASSERT_EQ(chrome_test_utils::GetProfile(this)->GetPrefs()->GetInteger(
+                ash::prefs::kHMRConsentStatus),
+            static_cast<int>(chromeos::HMRConsentStatus::kPendingDisclaimer));
+
+  // Set up mock client to return a dictionary intent.
+  QuickAnswersState::Get()->set_use_text_annotator_for_testing();
+  auto mock_quick_answers_client = CreateMockQuickAnswersClient();
+  ON_CALL(*mock_quick_answers_client, SendRequestForPreprocessing)
+      .WillByDefault([this](const quick_answers::QuickAnswersRequest& request) {
+        QuickAnswersRequest processed_request = request;
+        processed_request.preprocessed_output.intent_info.intent_type =
+            IntentType::kDictionary;
+        processed_request.preprocessed_output.intent_info.intent_text =
+            request.selected_text;
+        static_cast<QuickAnswersControllerImpl*>(controller())
+            ->OnRequestPreprocessFinished(processed_request);
+      });
+  controller()->SetClient(std::move(mock_quick_answers_client));
+
+  // Trigger Quick Answers.
+  views::NamedWidgetShownWaiter consent_view_widget_waiter(
+      views::test::AnyWidgetTestPasskey(),
+      chromeos::ReadWriteCardsUiController::kWidgetName);
+
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  ShowMenuAndWait(params);
+
+  views::Widget* consent_view_widget =
+      consent_view_widget_waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(consent_view_widget);
+
+  // Confirm that MagicBoostUserConsentView is shown.
+  auto* consent_view = static_cast<QuickAnswersControllerImpl*>(controller())
+                           ->quick_answers_ui_controller()
+                           ->magic_boost_user_consent_view();
+  EXPECT_TRUE(consent_view);
+  EXPECT_TRUE(consent_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest,
+                       QuickAnswersDisabledWhenHmrIsDisabled) {
+  if (!IsMagicBoostEnabled()) {
+    GTEST_SKIP() << "This test only applies when Magic Boost is enabled.";
+  }
+
+  // Simulate a user who has consented to GenAI features but has disabled the
+  // HMR feature.
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  profile->GetPrefs()->SetBoolean(ash::prefs::kMagicBoostEnabled, true);
+  profile->GetPrefs()->SetInteger(
+      ash::prefs::kHMRConsentStatus,
+      static_cast<int>(chromeos::HMRConsentStatus::kApproved));
+  profile->GetPrefs()->SetBoolean(ash::prefs::kHmrEnabled, false);
+
+  // Trigger the context menu.
+  ShowMenuParams params;
+  params.selected_text = kTestQuery;
+  base::test::TestFuture<void> future;
+  static_cast<QuickAnswersControllerImpl*>(controller())
+      ->SetOnTextAvailableCallbackForTesting(future.GetCallback());
+  ShowMenuAndWait(params);
+  EXPECT_TRUE(future.Wait());
+
+  // Verify that no Quick Answers UI is shown.
+  EXPECT_EQ(controller()->GetQuickAnswersVisibility(),
+            QuickAnswersVisibility::kClosed);
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest,
                        QuickAnswersViewAboveNotification) {
   SetQuickAnswersEnabled(true);
 
@@ -761,10 +844,10 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedbackUserConsent) {
             controller()->GetQuickAnswersVisibility());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    QuickAnswersBrowserTest,
-    ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         QuickAnswersBrowserTest,
+                         testing::Bool(),
+                         &QuickAnswersBrowserTest::GetTestVariantName);
 
 class RichAnswersBrowserTest : public QuickAnswersBrowserTest {
  protected:
@@ -951,9 +1034,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest, AccessibleProperties) {
             l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    RichAnswersBrowserTest,
-    ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         RichAnswersBrowserTest,
+                         testing::Bool(),
+                         &RichAnswersBrowserTest::GetTestVariantName);
 
 }  // namespace quick_answers

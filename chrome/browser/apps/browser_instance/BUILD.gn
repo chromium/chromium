@@ -6,15 +6,6 @@ assert(is_chromeos)
 
 source_set("browser_instance") {
   sources = [
-    "browser_app_instance.cc",
-    "browser_app_instance.h",
-    "browser_app_instance_map.h",
-    "browser_app_instance_observer.cc",
-    "browser_app_instance_observer.h",
-    "browser_app_instance_registry.cc",
-    "browser_app_instance_registry.h",
-    "browser_app_instance_tracker.cc",
-    "browser_app_instance_tracker.h",
     "web_contents_instance_id_utils.cc",
     "web_contents_instance_id_utils.h",
   ]
@@ -23,48 +14,20 @@ source_set("browser_instance") {
 
   deps = [
     "//base",
-    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash/shelf",
-    "//chrome/browser/ui/tabs:tab_enums",
-    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/web_applications",
     "//chrome/browser/web_applications",
-    "//components/app_constants",
-    "//components/exo",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/browser/web_applications/proto",
     "//components/webapps/common",
+    "//content/public/browser",
     "//extensions/browser",
     "//extensions/common",
-    "//ui/views",
-    "//ui/wm",
+
+    # For circular includes from.
+    "//chrome/browser/ui/ash/shelf",
   ]
 
   # TODO(crbug.com/1402145): Remove circular dependencies.
   allow_circular_includes_from = [ "//chrome/browser/ui/ash/shelf" ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "browser_app_instance_tracker_browsertest.cc" ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/apps/app_service",
-    "//chrome/browser/apps/browser_instance",
-    "//chrome/browser/ash/system_web_apps",
-    "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/devtools:test_support",
-    "//chrome/browser/profiles",
-    "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/tabs:tab_enums",
-    "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications:web_applications_test_support",
-    "//chrome/test:test_support",
-    "//components/webapps/common",
-    "//content/public/common",
-    "//extensions/common",
-  ]
 }

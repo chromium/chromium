@@ -11,7 +11,6 @@ source_set("management") {
   sources = [
     "management_api.cc",
     "management_api.h",
-    "management_api_constants.cc",
     "management_api_constants.h",
     "management_api_delegate.h",
   ]

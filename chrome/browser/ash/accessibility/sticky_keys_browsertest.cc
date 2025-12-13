@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+
 #include <memory>
 
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
@@ -34,7 +35,6 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace ash {
 

@@ -71,3 +71,5 @@ void AndroidMetricsLogUploader::OnUploadComplete(const int32_t status) {
 }
 
 }  // namespace metrics
+
+DEFINE_JNI(AndroidMetricsLogUploader)

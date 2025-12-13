@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_constants.h"
+#include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/web_navigation.h"

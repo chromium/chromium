@@ -9,6 +9,37 @@ enum SSLVersion {
   kTLS13,
 };
 
+// Controls the named groups for key agreement configured in supported_groups
+// and key_share.
+enum SSLNamedGroupsPreset {
+  // The basic defaults for Chromium.
+  //
+  // Supported groups:
+  //   X25519MLKEM768 (0x11EC),
+  //   X25519 (0x001D),
+  //   Secp256r1 (0x0017),
+  //   Secp384r1 (0x0018).
+  // Key shares:
+  //   X25519MLKEM768 (0x11EC),
+  //   X25519 (0x001D).
+  kDefault,
+
+  // A non-default configuration for supported groups intended to satisfy the
+  // requirements of the Commercial National Security Algorithm Suite 2.0 (CNSA
+  // 2.0).
+  //
+  // Supported groups:
+  //   MLKEM1024 (0x0202),
+  //   X25519MLKEM768 (0x11EC),
+  //   Secp384r1 (0x0018),
+  //   Secp256r1 (0x0017),
+  //   X25519 (0x001D).
+  // Key shares:
+  //   X25519MLKEM768 (0x11EC),
+  //   X25519 (0x001D).
+  kCnsa2,
+};
+
 // This is a combination of net::SSLContextConfig and
 // net::CertVerifier::Config's fields. See those two classes for descriptions.
 struct SSLConfig {
@@ -29,6 +60,10 @@ struct SSLConfig {
   // disable TLS_ECDH_ECDSA_WITH_RC4_128_SHA, specify 0xC002.
   array<uint16> disabled_cipher_suites;
 
+  // This configures a compliance policy that sets cipher preferences for
+  // TLS 1.3 to prefer AES-256-GCM over AES-128-GCM over ChaCha20-Poly1305.
+  bool tls13_cipher_prefer_aes_256 = false;
+
   // Patterns for matching hostnames to determine when to allow connection
   // coalescing when client certificates are also in use. Patterns follow
   // the rules for host matching from the URL Blocklist filter format:
@@ -36,6 +71,11 @@ struct SSLConfig {
   // ".example.net" matches exactly "example.net". Hostnames must be
   // canonicalized according to the rules used by GURL.
   array<string> client_cert_pooling_policy;
+
+  // Controls the named groups for key agreement configured in supported_groups
+  // and key_share. See comments on the enum values for details of what each
+  // preset configures.
+  SSLNamedGroupsPreset named_groups_preset = kDefault;
 
   // Controls whether post-quantum key agreement in TLS connections is allowed.
   bool post_quantum_key_agreement_enabled = true;
@@ -47,6 +87,10 @@ struct SSLConfig {
   // TLS Trust Anchor IDs that are configured as trusted, each in binary
   // representation.
   array<array<uint8>> trust_anchor_ids;
+
+  // Merkle Tree Certificate TLS Trust Anchor IDs that are configured as
+  // trusted, each in binary representation.
+  array<array<uint8>> mtc_trust_anchor_ids;
 };
 
 // Receives SSL configuration updates.

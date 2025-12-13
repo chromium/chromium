@@ -4,30 +4,77 @@ Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.Theme.Chromium.TabbedMode" parent="Theme.Chromium.WithWindowAnimation">
-        <item name="android:statusBarColor">@macro/default_bg_color</item>
-        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
-    </style>
-    <style name="Theme.Chromium.TabbedMode" parent="Base.Theme.Chromium.TabbedMode" />
-
     <!-- Omnibox -->
-    <style name="TextAppearance.OmniboxVerboseStatus" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textSize">@dimen/location_bar_url_text_size</item>
+    <style
+        name="TextAppearance.OmniboxVerboseStatus"
+        parent="@android:style/TextAppearance.Medium">
+
+        <item name="android:textSize">
+            @dimen/location_bar_url_text_size
+        </item>
+
     </style>
 
     <!-- Omnibox suggestions -->
     <style name="TextAppearance.OmniboxAnswerDescriptionNegative">
-        <item name="android:textColor">@color/answers_description_text_negative</item>
+        <item name="android:textColor">
+            @color/answers_description_text_negative
+        </item>
     </style>
 
     <style name="TextAppearance.OmniboxAnswerDescriptionPositive">
-        <item name="android:textColor">@color/answers_description_text_positive</item>
+        <item name="android:textColor">
+            @color/answers_description_text_positive
+        </item>
+    </style>
+
+    <!-- Fusebox bar styles -->
+    <style name="Fusebox"/>
+    <style name="Fusebox.PopupMenu"/>
+    <style name="Fusebox.PopupMenu.Header" parent="@style/TextButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">
+            @dimen/min_touch_target_size
+        </item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAlignment">viewStart</item>
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextSmall.Primary
+        </item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="drawableTint">
+            @color/default_icon_color_tint_list
+        </item>
+        <item name="buttonTextColor">@null</item>
+    </style>
+
+    <style
+        name="Fusebox.PopupMenu.Item"
+        parent="@style/Fusebox.PopupMenu.Header">
+
+        <item name="android:textAppearance">
+            @style/TextAppearance.TextMedium.Primary
+        </item>
+
+    </style>
+
+    <style name="Fusebox.PopupMenu.Divider">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:background">?android:attr/listDivider</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
     </style>
 
     <style name="OmniboxIcon" parent="LocationBarButton">
-        <item name="android:layout_width">@dimen/location_bar_status_icon_width</item>
+        <item name="android:layout_width">
+            @dimen/location_bar_status_icon_width
+        </item>
         <item name="android:layout_height">match_parent</item>
     </style>
 
@@ -36,10 +83,16 @@ found in the LICENSE file.
     </style>
 
     <style name="OmniboxActionChip" parent="SuggestionChip">
-        <item name="iconWidth">@dimen/omnibox_pedal_suggestion_icon_size</item>
-        <item name="iconHeight">@dimen/omnibox_pedal_suggestion_icon_size</item>
+        <item name="iconWidth">
+            @dimen/omnibox_pedal_suggestion_icon_size
+        </item>
+        <item name="iconHeight">
+            @dimen/omnibox_pedal_suggestion_icon_size
+        </item>
         <item name="allowMultipleLines">true</item>
-        <item name="multiLineVerticalPadding">@dimen/omnibox_pedal_suggestion_text_vertical_padding</item>
+        <item name="multiLineVerticalPadding">
+            @dimen/omnibox_pedal_suggestion_text_vertical_padding
+        </item>
         <item name="textAlignStart">true</item>
     </style>
 
@@ -49,6 +102,8 @@ found in the LICENSE file.
 
     <style name="OmniboxIncognitoActionChip" parent="OmniboxActionChip">
         <item name="chipColor">@color/default_bg_color_dark</item>
-        <item name="primaryTextAppearance">@style/TextAppearance.TextSmall.Primary.Baseline.Light</item>
+        <item name="primaryTextAppearance">
+            @style/TextAppearance.TextSmall.Primary.Baseline.Light
+        </item>
     </style>
 </resources>

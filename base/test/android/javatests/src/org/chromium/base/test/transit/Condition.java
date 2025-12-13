@@ -11,7 +11,6 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.FormatMethod;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.MonotonicNonNull;
@@ -20,6 +19,7 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A condition that needs to be fulfilled for a state transition to be considered done.
@@ -92,6 +92,11 @@ public abstract class Condition {
      *     #rebuildDescription()} invalidates it.
      */
     public abstract String buildDescription();
+
+    /** Override if Condition should not be run in preCheck(). */
+    public boolean shouldRunInPreCheck() {
+        return true;
+    }
 
     /**
      * Hook run right before the condition starts being checked. Used, for example, to get initial
@@ -185,7 +190,8 @@ public abstract class Condition {
         StringBuilder suppliersMissing = null;
         for (var kv : mDependentSuppliers.entrySet()) {
             Supplier<?> supplier = kv.getValue();
-            if (!supplier.hasValue()) {
+            var value = supplier.get();
+            if (value == null) {
                 if (suppliersMissing == null) {
                     suppliersMissing = new StringBuilder("waiting for suppliers of: ");
                 } else {

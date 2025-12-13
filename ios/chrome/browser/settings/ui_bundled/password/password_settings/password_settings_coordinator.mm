@@ -17,6 +17,8 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
+#import "ios/chrome/browser/credential_exchange/coordinator/credential_export_coordinator.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
@@ -32,7 +34,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/scoped_password_settings_reauth_module_override.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/passwords_in_other_apps/passwords_in_other_apps_coordinator.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -132,7 +134,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     PasswordExportHandler,
     PasswordsInOtherAppsCoordinatorDelegate,
     PopoverLabelViewControllerDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     SettingsNavigationControllerDelegate>
 
 @end
@@ -161,7 +163,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   // passed. Used for requiring authentication when opening Password Settings
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Settings opened.
-  ReauthenticationCoordinator* _reauthCoordinator;
+  LocalReauthenticationCoordinator* _reauthCoordinator;
 
   // Service which gives us a view on users' saved passwords.
   std::unique_ptr<password_manager::SavedPasswordsPresenter>
@@ -179,6 +181,10 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
   // Coordinator for displaying errors in update GPM PIN flow.
   AlertCoordinator* _updateGPMPinErrorCoordinator;
+
+  // Coordinator for handling the credential export flow.
+  CredentialExportCoordinator* _credentialExportCoordinator
+      API_AVAILABLE(ios(26.0));
 }
 
 #pragma mark - ChromeCoordinator
@@ -188,6 +194,9 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
+  webauthn::PasskeyModel* passkeyModel =
+      IOSPasskeyModelFactory::GetForProfile(self.browser->GetProfile());
+
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           IOSChromeAffiliationServiceFactory::GetForProfile(profile),
@@ -195,7 +204,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSChromeAccountPasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForProfile(profile));
+          passkeyModel);
 
   _identity =
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
@@ -203,6 +212,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
                 savedPasswordsPresenter:_savedPasswordsPresenter.get()
+                           passkeyModel:passkeyModel
       bulkMovePasswordsToAccountHandler:self
                           exportHandler:self
                             prefService:profile->GetPrefs()
@@ -263,6 +273,11 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   [_passwordsInOtherAppsCoordinator stop];
   _passwordsInOtherAppsCoordinator.delegate = nil;
   _passwordsInOtherAppsCoordinator = nil;
+
+  if (@available(iOS 26, *)) {
+    [_credentialExportCoordinator stop];
+    _credentialExportCoordinator = nil;
+  }
 
   _passwordSettingsViewController.presentationDelegate = nil;
   _passwordSettingsViewController.delegate = nil;
@@ -358,6 +373,18 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 }
 
 - (void)startExportFlow {
+  if (@available(iOS 26, *)) {
+    if (CredentialExchangeEnabled()) {
+      _credentialExportCoordinator = [[CredentialExportCoordinator alloc]
+          initWithBaseNavigationController:_settingsNavigationController
+                                   browser:self.browser
+                          affiliatedGroups:_savedPasswordsPresenter
+                                               ->GetAffiliatedGroups()];
+      [_credentialExportCoordinator start];
+      return;
+    }
+  }
+
   UIAlertController* exportConfirmation = [UIAlertController
       alertControllerWithTitle:nil
                        message:l10n_util::GetNSString(
@@ -663,15 +690,15 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   [self.delegate passwordSettingsCoordinatorDidRemove:self];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
 }
@@ -757,7 +784,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
     [_reauthCoordinator stopAndPopViewController];
   }
 
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_settingsNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthModule
@@ -848,7 +875,8 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 // Starts the export passwords flow after the user confirmed the corresponding
 // alert.
 - (void)onStartExportFlowConfirmed {
-  [_mediator userDidStartExportFlow];
+  [_mediator
+      userDidStartExportFlow:_passwordSettingsViewController.view.window];
 }
 
 // Cancels the password export flow.

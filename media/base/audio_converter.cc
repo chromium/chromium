@@ -230,8 +230,8 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
           provide_input_dest->CopyTo(temp_dest);
       } else if (volume > 0) {
         for (int i = 0; i < provide_input_dest->channels(); ++i) {
-          vector_math::FMUL(provide_input_dest->channel_span(i), volume,
-                            temp_dest->channel_span(i));
+          vector_math::FMUL(provide_input_dest->channel(i), volume,
+                            temp_dest->channel(i));
         }
       } else {
         // Zero |temp_dest| otherwise, so we're mixing into a clean buffer.
@@ -244,8 +244,8 @@ void AudioConverter::SourceCallback(int fifo_frame_delay, AudioBus* dest) {
     // Volume adjust and mix each mixer input into |temp_dest| after rendering.
     if (volume > 0) {
       for (int i = 0; i < mixer_input_audio_bus_->channels(); ++i) {
-        vector_math::FMAC(mixer_input_audio_bus_->channel_span(i), volume,
-                          temp_dest->channel_span(i));
+        vector_math::FMAC(mixer_input_audio_bus_->channel(i), volume,
+                          temp_dest->channel(i));
       }
     }
   }

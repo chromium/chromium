@@ -7,12 +7,13 @@
 #include <utility>
 
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/common/chrome_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -21,13 +22,12 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_state.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 using std::make_unique;
 
 namespace {
-constexpr int kTabstripComboButtonCornerRadius = 10;
-
 class ControlButtonHighlightPathGenerator
     : public views::HighlightPathGenerator {
  public:
@@ -45,11 +45,13 @@ class ControlButtonHighlightPathGenerator
         control_button_->GetScaledCornerRadius(corner_radius, Edge::kLeft);
     const SkScalar right_radius =
         control_button_->GetScaledCornerRadius(corner_radius, Edge::kRight);
-    const SkScalar radii[8] = {left_radius,  left_radius,  right_radius,
-                               right_radius, right_radius, right_radius,
-                               left_radius,  left_radius};
-    path.addRoundRect(gfx::RectToSkRect(rect), radii);
-    return path;
+    const SkVector radii[4] = {{left_radius,  left_radius},
+                               {right_radius, right_radius},
+                               {right_radius, right_radius},
+                               {left_radius,  left_radius}};
+
+    return SkPath::RRect(
+        SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
   }
 
  private:
@@ -123,11 +125,7 @@ TabStripControlButton::TabStripControlButton(
 
   if (text.size() > 0) {
     SetEnabledTextColors(foreground_frame_active_color_id_);
-    // Required for text to be visible on hover
-    label()->SetPaintToLayer();
-    label()->SetSkipSubpixelRenderingOpacityCheck(true);
-    label()->layer()->SetFillsBoundsOpaquely(false);
-    label()->SetSubpixelRenderingEnabled(false);
+    SetText(text);
   }
 }
 
@@ -157,6 +155,16 @@ void TabStripControlButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   UpdateIcon();
 }
 
+void TabStripControlButton::SetText(std::u16string_view text) {
+  label()->SetText(text);
+  // Required for text to be visible on hover.
+  // TODO(crbug.com/431015299): Fix text on hover and remove.
+  label()->SetPaintToLayer();
+  label()->SetSkipSubpixelRenderingOpacityCheck(true);
+  label()->layer()->SetFillsBoundsOpaquely(false);
+  label()->SetSubpixelRenderingEnabled(false);
+}
+
 ui::ColorId TabStripControlButton::GetBackgroundColor() {
   return (GetWidget() && GetWidget()->ShouldPaintAsActive())
              ? background_frame_active_color_id_
@@ -184,8 +192,7 @@ void TabStripControlButton::UpdateIcon() {
 
 void TabStripControlButton::UpdateInkDrop() {
   const auto* const color_provider = GetColorProvider();
-
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -195,7 +202,7 @@ void TabStripControlButton::UpdateInkDrop() {
 
 void TabStripControlButton::UpdateColors() {
   const auto* const color_provider = GetColorProvider();
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -208,8 +215,7 @@ void TabStripControlButton::UpdateColors() {
 
 void TabStripControlButton::UpdateBackground() {
   const auto* const color_provider = GetColorProvider();
-
-  if (!color_provider) {
+  if (!color_provider || !IsWidgetAlive()) {
     return;
   }
 
@@ -234,9 +240,7 @@ void TabStripControlButton::UpdateBackground() {
 }
 
 int TabStripControlButton::GetCornerRadius() const {
-  return features::IsTabSearchMoving() && !features::HasTabSearchToolbarButton()
-             ? kTabstripComboButtonCornerRadius
-             : TabStripControlButton::kButtonSize.width() / 2;
+  return TabStripControlButton::kButtonSize.width() / 2;
 }
 
 int TabStripControlButton::GetFlatCornerRadius() const {
@@ -285,17 +289,17 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
       GetScaledCornerRadius(top_radius, Edge::kLeft);
   const SkScalar top_right_radius =
       GetScaledCornerRadius(top_radius, Edge::kRight);
-  const SkScalar radii[8] = {top_left_radius,     top_left_radius,
-                             top_right_radius,    top_right_radius,
-                             bottom_right_radius, bottom_right_radius,
-                             bottom_left_radius,  bottom_left_radius};
+  const SkVector radii[4] = {{top_left_radius,     top_left_radius},
+                             {top_right_radius,    top_right_radius},
+                             {bottom_right_radius, bottom_right_radius},
+                             {bottom_left_radius,  bottom_left_radius}};
 
   gfx::Rect rect = GetContentsBounds();
   if (extend_to_top) {
     rect.SetVerticalBounds(0, rect.bottom());
   }
 
-  mask->addRoundRect(gfx::RectToSkRect(rect), radii);
+  *mask = SkPath::RRect(SkRRect::MakeRectRadii(gfx::RectToSkRect(rect), radii));
 
   return true;
 }
@@ -327,6 +331,11 @@ void TabStripControlButton::SetFlatEdgeFactor(float factor) {
 void TabStripControlButton::AnimateToStateForTesting(
     views::InkDropState state) {
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
+}
+
+bool TabStripControlButton::IsWidgetAlive() const {
+  const views::Widget* widget = GetWidget();
+  return widget && !widget->IsClosed();
 }
 
 BEGIN_METADATA(TabStripControlButton)

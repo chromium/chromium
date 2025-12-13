@@ -23,7 +23,7 @@ class PrefRegistrySyncable;
 @interface BookmarkPathCache : NSObject
 
 // Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Caches the bookmark top most row that the user was last viewing.
 + (void)cacheBookmarkTopMostRowWithPrefService:(PrefService*)prefService

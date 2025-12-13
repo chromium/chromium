@@ -18,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 public interface SettingsPromoCardProvider {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({State.PROMO_HIDDEN, State.PROMO_SHOWING})
-    public @interface State {
+    @interface State {
         int PROMO_HIDDEN = 0;
         int PROMO_SHOWING = 1;
     }

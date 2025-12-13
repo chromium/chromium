@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 

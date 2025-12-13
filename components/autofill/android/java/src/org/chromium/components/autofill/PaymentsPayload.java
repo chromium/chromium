@@ -9,7 +9,10 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.AutofillSuggestion.Payload;
+
+import java.util.Objects;
 
 @JNINamespace("autofill")
 @NullMarked
@@ -18,6 +21,7 @@ public final class PaymentsPayload implements Payload {
     private final boolean mShouldDisplayTermsAvailable;
     private final String mGuid;
     private final boolean mIsLocalPaymentsMethod;
+    private @Nullable Long mExtractedAmount;
 
     /**
      * Constructs a payload object for the TouchToFillPaymentMethod bottom sheet.
@@ -56,5 +60,38 @@ public final class PaymentsPayload implements Payload {
 
     public boolean isLocalPaymentsMethod() {
         return mIsLocalPaymentsMethod;
+    }
+
+    public void setExtractedAmount(@Nullable Long extractedAmount) {
+        mExtractedAmount = extractedAmount;
+    }
+
+    public @Nullable Long getExtractedAmount() {
+        return mExtractedAmount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PaymentsPayload other)) {
+            return false;
+        }
+        return this.mLabelContentDescription.equals(other.mLabelContentDescription)
+                && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
+                && this.mGuid.equals(other.mGuid)
+                && this.mIsLocalPaymentsMethod == other.mIsLocalPaymentsMethod
+                && Objects.equals(this.mExtractedAmount, other.mExtractedAmount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                mLabelContentDescription,
+                mShouldDisplayTermsAvailable,
+                mGuid,
+                mIsLocalPaymentsMethod,
+                mExtractedAmount);
     }
 }

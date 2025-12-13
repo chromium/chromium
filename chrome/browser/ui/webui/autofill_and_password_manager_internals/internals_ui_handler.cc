@@ -5,23 +5,29 @@
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
 #include <cstdint>
+#include <optional>
 #include <utility>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/autofill/autofill_ai_model_cache_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/grit/autofill_and_password_manager_internals_resources.h"
 #include "components/grit/autofill_and_password_manager_internals_resources_map.h"
@@ -36,9 +42,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
-#else
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -127,6 +131,9 @@ void InternalsUIHandler::RegisterMessages() {
       "resetCache", base::BindRepeating(&InternalsUIHandler::OnResetCache,
                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "dumpAddresses", base::BindRepeating(&InternalsUIHandler::OnDumpAddresses,
+                                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "getAutofillAiCache",
       base::BindRepeating(&InternalsUIHandler::OnGetAutofillAiCache,
                           base::Unretained(this)));
@@ -134,12 +141,7 @@ void InternalsUIHandler::RegisterMessages() {
       "removeAutofillAiCacheEntry",
       base::BindRepeating(&InternalsUIHandler::OnDeleteAutofillAiCacheEntry,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_ANDROID)
-  web_ui()->RegisterMessageCallback(
-      "resetUpmEviction",
-      base::BindRepeating(&InternalsUIHandler::OnResetUpmEviction,
-                          base::Unretained(this)));
-#else
+#if !BUILDFLAG(IS_ANDROID)
   web_ui()->RegisterMessageCallback(
       "checkAutofillAiPermissions",
       base::BindRepeating(&InternalsUIHandler::CheckAutofillAiPermissions,
@@ -228,13 +230,6 @@ void InternalsUIHandler::OnLoaded(const base::Value::List& args) {
       "notify-about-incognito",
       base::Value(Profile::FromWebUI(web_ui())->IsIncognitoProfile()));
   FireWebUIListener("notify-about-variations", version_ui::GetVariationsList());
-
-#if BUILDFLAG(IS_ANDROID)
-  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-
-  FireWebUIListener("enable-reset-upm-eviction-button",
-                    password_manager_upm_eviction::IsCurrentUserEvicted(prefs));
-#endif
 }
 
 void InternalsUIHandler::OnResetCache(const base::Value::List& args) {
@@ -250,35 +245,32 @@ void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
   FireWebUIListener("notify-reset-done", base::Value(message));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void InternalsUIHandler::OnResetUpmEviction(const base::Value::List& args) {
-  auto* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  bool is_user_unenrolled =
-      password_manager_upm_eviction::IsCurrentUserEvicted(prefs);
-  if (is_user_unenrolled) {
-    prefs->ClearPref(password_manager::prefs::
-                         kUnenrolledFromGoogleMobileServicesDueToErrors);
-  } else {
-    prefs->SetBoolean(
-        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
-        true);
-    prefs->SetInteger(
-        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
-        0);
-    prefs->SetDouble(password_manager::prefs::kTimeOfLastMigrationAttempt, 0.0);
+void InternalsUIHandler::OnDumpAddresses(const base::Value::List& args) {
+  Profile* profile = Profile::FromWebUI(web_ui());
+  PersonalDataManager* pdm =
+      PersonalDataManagerFactory::GetForBrowserContext(profile);
+  if (!pdm) {
+    return;
   }
-  FireWebUIListener("enable-reset-upm-eviction-button",
-                    base::Value(!is_user_unenrolled));
+  LogBuffer log;
+  for (const AutofillProfile* address :
+       pdm->address_data_manager().GetProfiles()) {
+    log << *address;
+  }
+  if (std::optional<base::Value::Dict> result = log.RetrieveResult()) {
+    LogEntry(*result);
+  }
 }
-#else
 
+#if !BUILDFLAG(IS_ANDROID)
 void InternalsUIHandler::CheckAutofillAiPermissions(
     const base::Value::List& args) {
   std::string debug_message;
   const bool may_opt_in = autofill::MayPerformAutofillAiAction(
       CHECK_DEREF(autofill::ContentAutofillClient::FromWebContents(
           web_ui()->GetWebContents())),
-      autofill::AutofillAiAction::kOptIn, &debug_message);
+      autofill::AutofillAiAction::kOptIn, /*entity_type=*/std::nullopt,
+      &debug_message);
   FireWebUIListener(
       "on-autofill-ai-permission-check-done",
       base::Value(
@@ -299,7 +291,7 @@ void InternalsUIHandler::SetDomNodeId(const base::Value::List& args) {
           ContentAutofillDriver::GetForRenderFrameHost(
               web_contents->GetPrimaryMainFrame());
       if (driver) {
-        driver->ExposeDomNodeIDs();
+        driver->ExposeDomNodeIdsInAllFrames();
       }
     }
   }

@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_CONTENT_TEST_SUITE_H_
 #define CONTENT_TEST_CONTENT_TEST_SUITE_H_
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -28,6 +29,7 @@ class ContentTestSuite : public ContentTestSuiteBase {
   void Initialize() override;
 
  private:
+  [[maybe_unused]] base::test::ScopedFeatureList revert_field_trial_features_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
 #if BUILDFLAG(IS_WIN)

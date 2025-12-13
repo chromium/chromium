@@ -7,7 +7,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
-#include "device/fido/public_key_credential_params.h"
+#include "device/fido/public/public_key_credential_params.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize ToJniType()/FromJniType()
@@ -34,12 +34,6 @@ ConvertToListOfPublicKeyCredentialParameters(
 }
 
 }  // namespace
-
-scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance() {
-  JNIEnv* env = jni_zero::AttachCurrentThread();
-  return base::MakeRefCounted<BrowserBoundKeyStoreAndroid>(
-      Java_BrowserBoundKeyStore_getInstance(env));
-}
 
 BrowserBoundKeyStoreAndroid::BrowserBoundKeyStoreAndroid(
     jni_zero::ScopedJavaLocalRef<jobject> impl)
@@ -69,4 +63,13 @@ bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
 
 BrowserBoundKeyStoreAndroid::~BrowserBoundKeyStoreAndroid() = default;
 
+scoped_refptr<BrowserBoundKeyStore> GetBrowserBoundKeyStoreInstance(
+    BrowserBoundKeyStore::Config config) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return base::MakeRefCounted<BrowserBoundKeyStoreAndroid>(
+      Java_BrowserBoundKeyStore_getInstance(env));
+}
+
 }  // namespace payments
+
+DEFINE_JNI(BrowserBoundKeyStore)

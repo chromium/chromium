@@ -8,8 +8,8 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/notreached.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/mailbox_texture_backing.h"
 
+#include "components/viz/common/gpu/raster_context_provider.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/mailbox_ref.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -15,48 +16,34 @@
 namespace blink {
 
 MailboxTextureBacking::MailboxTextureBacking(
-    sk_sp<SkImage> sk_image,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
     scoped_refptr<MailboxRef> mailbox_ref,
     const gfx::Size& size,
     const viz::SharedImageFormat& format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : sk_image_(std::move(sk_image)),
+    scoped_refptr<viz::RasterContextProvider> context_provider)
+    : shared_image_(std::move(shared_image)),
       mailbox_ref_(std::move(mailbox_ref)),
       sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
                                        ToClosestSkColorType(format),
                                        alpha_type,
                                        color_space.ToSkColorSpace())),
-      context_provider_wrapper_(std::move(context_provider_wrapper)) {}
-
-MailboxTextureBacking::MailboxTextureBacking(
-    const gpu::Mailbox& mailbox,
-    scoped_refptr<MailboxRef> mailbox_ref,
-    const gfx::Size& size,
-    const viz::SharedImageFormat& format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper)
-    : mailbox_(mailbox),
-      mailbox_ref_(std::move(mailbox_ref)),
-      sk_image_info_(SkImageInfo::Make(gfx::SizeToSkISize(size),
-                                       ToClosestSkColorType(format),
-                                       alpha_type,
-                                       color_space.ToSkColorSpace())),
-      context_provider_wrapper_(std::move(context_provider_wrapper)) {}
+      context_provider_(std::move(context_provider)) {
+  CHECK(context_provider_);
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  scoped_access_ = shared_image_->BeginRasterAccess(
+      ri, mailbox_ref_->sync_token(), /*readonly=*/true);
+}
 
 MailboxTextureBacking::~MailboxTextureBacking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (context_provider_wrapper_) {
-    gpu::raster::RasterInterface* ri =
-        context_provider_wrapper_->ContextProvider().RasterInterface();
-    // Update the sync token for MailboxRef.
-    ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-    gpu::SyncToken sync_token;
-    ri->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-    mailbox_ref_->set_sync_token(sync_token);
-  }
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  // Update the sync token for MailboxRef.
+  ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
+  gpu::SyncToken sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(scoped_access_));
+  mailbox_ref_->set_sync_token(sync_token);
 }
 
 const SkImageInfo& MailboxTextureBacking::GetSkImageInfo() {
@@ -64,42 +51,29 @@ const SkImageInfo& MailboxTextureBacking::GetSkImageInfo() {
 }
 
 gpu::Mailbox MailboxTextureBacking::GetMailbox() const {
-  return mailbox_;
-}
-
-sk_sp<SkImage> MailboxTextureBacking::GetAcceleratedSkImage() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  return sk_image_;
+  return shared_image_->mailbox();
 }
 
 sk_sp<SkImage> MailboxTextureBacking::GetSkImageViaReadback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!mailbox_.IsZero()) {
-    if (!context_provider_wrapper_)
-      return nullptr;
-    // TODO(jochin): Consider doing some caching and using discardable memory.
-    sk_sp<SkData> image_pixels =
-        TryAllocateSkData(sk_image_info_.computeMinByteSize());
-    if (!image_pixels)
-      return nullptr;
-    uint8_t* writable_pixels =
-        static_cast<uint8_t*>(image_pixels->writable_data());
-    gpu::raster::RasterInterface* ri =
-        context_provider_wrapper_->ContextProvider().RasterInterface();
-    if (!ri->ReadbackImagePixels(
-            mailbox_, sk_image_info_,
-            static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
-            /*plane_index=*/0, writable_pixels)) {
-      return nullptr;
-    }
-
-    return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
-                                    sk_image_info_.minRowBytes());
-  } else if (sk_image_) {
-    return sk_image_->makeNonTextureImage();
+  // TODO(jochin): Consider doing some caching and using discardable memory.
+  sk_sp<SkData> image_pixels =
+      TryAllocateSkData(sk_image_info_.computeMinByteSize());
+  if (!image_pixels) {
+    return nullptr;
   }
-  return nullptr;
+  uint8_t* writable_pixels =
+      static_cast<uint8_t*>(image_pixels->writable_data());
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  if (!ri->ReadbackImagePixels(
+          GetMailbox(), sk_image_info_,
+          static_cast<GLuint>(sk_image_info_.minRowBytes()), 0, 0,
+          /*plane_index=*/0, writable_pixels)) {
+    return nullptr;
+  }
+
+  return SkImages::RasterFromData(sk_image_info_, std::move(image_pixels),
+                                  sk_image_info_.minRowBytes());
 }
 
 bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
@@ -108,33 +82,10 @@ bool MailboxTextureBacking::readPixels(const SkImageInfo& dst_info,
                                        int src_x,
                                        int src_y) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!mailbox_.IsZero()) {
-    if (!context_provider_wrapper_)
-      return false;
-
-    gpu::raster::RasterInterface* ri =
-        context_provider_wrapper_->ContextProvider().RasterInterface();
-    return ri->ReadbackImagePixels(mailbox_, dst_info,
-                                   static_cast<GLuint>(dst_info.minRowBytes()),
-                                   src_x, src_y, /*plane_index=*/0, dst_pixels);
-  } else if (sk_image_) {
-    return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
-                                 src_y);
-  }
-  return false;
-}
-
-void MailboxTextureBacking::FlushPendingSkiaOps() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (!context_provider_wrapper_ || !sk_image_) {
-    return;
-  }
-  GrDirectContext* ctx =
-      context_provider_wrapper_->ContextProvider().GetGrContext();
-  if (!ctx) {
-    return;
-  }
-  ctx->flushAndSubmit(sk_image_);
+  gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
+  return ri->ReadbackImagePixels(GetMailbox(), dst_info,
+                                 static_cast<GLuint>(dst_info.minRowBytes()),
+                                 src_x, src_y, /*plane_index=*/0, dst_pixels);
 }
 
 }  // namespace blink

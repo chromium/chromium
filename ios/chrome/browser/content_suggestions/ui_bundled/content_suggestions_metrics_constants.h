@@ -27,6 +27,7 @@ extern const char kTabResumptionOpenTab[];
 extern const char kTabResumptionWithPriceDropImpression[];
 extern const char kTabResumptionWithPriceTrackingImpression[];
 extern const char kTabResumptionImpression[];
+extern const char kAppBundlePromoImpression[];
 extern const char kContentNotificationSnackbarAction[];
 
 #pragma mark - Enums
@@ -55,6 +56,8 @@ extern const char kMagicStackModuleEngagementPriceTrackingPromoIndexHistogram[];
 extern const char kMagicStackModuleEngagementShopCardIndexHistogram[];
 extern const char kMagicStackModuleEngagementSendTabPromoIndexHistogram[];
 extern const char kMagicStackModuleEngagementTipsIndexHistogram[];
+extern const char kMagicStackModuleEngagementAppBundlePromoIndexHistogram[];
+extern const char kMagicStackModuleEngagementDefaultBrowserIndexHistogram[];
 extern const char kMagicStackModuleDisabledHistogram[];
 extern const char kContentNotificationSnackbarEventHistogram[];
 extern const char kIOSSafetyCheckMagicStackHiddenReason[];

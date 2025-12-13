@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace content {
 

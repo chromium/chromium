@@ -9,11 +9,11 @@ package permissions;
 option optimize_for = LITE_RUNTIME;
 
 // This message is used to provide metadata that is important for AIv3 models to
-// the chromium client. More information at go/permissions-ai-dd. Please update
-// the google3 version of this proto as well if you change this file.
+// the chromium client. Please update the google3 version of this proto as well
+// if you change this file.
 message PermissionsAiv3ModelMetadata {
   // Message used to store the thresholds to convert the ML output to the
-  // PermissionRequestRelevance values defined in chromium source code:
+  // PermissionRequestRelevance values defined in:
   // components/permissions/permission_request_enums.h
   message RelevanceThresholds {
     // The likelihood will be discretized to "kVeryLow" for scores in range

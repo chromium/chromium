@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 181) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 185) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -29,13 +29,12 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | set_app_badge | Site |  | 6 | Not Implemented | Set the app badge for the given site to a value. |  |
 | |
 | # Manifest Update |
-| handle_app_identity_update_dialog_response | UpdateDialogResponse |  | 91 | Implemented | Click Accept or Uninstall in the App Identity Update dialog | finnur@ |
 | manifest_update_scope_to | Site, Site |  | 8 | Implemented | Update the scope of the app at the first site to the second site. |  |
-| manifest_update_icon | Site, UpdateDialogResponse |  | 68 | Implemented | Updates the launcher icon in the manifest of the website. | finnur@ |
-| manifest_update_title | Site, Title, UpdateDialogResponse |  | 88 | Implemented | The website updates it's manifest.json to change the 'title' | finnur@ |
+| manifest_update_icon | Site, Color |  | 68 | Implemented | Updates the launcher icon in the manifest of the website to a specific color. | finnur@ |
+| manifest_update_title | Site, Title |  | 88 | Implemented | The website updates it's manifest.json to change the 'title' | finnur@ |
 | manifest_update_colors | Site |  | 80 | Not Implemented | The website updates it's manifest.json to change the 'theme' color | P3 |
 | manifest_update_display | Site, Display |  | 116 | Implemented |  |  |
-| await_manifest_update | Site |  | 117 | WIP | Does any actions necessary (like closing browser windows) and blocks the execution of the test until the manifest has been updated for the given site. |  |
+| trigger_update_dialog_and_handle_response | UpdateDialogResponse |  | 184 | Implemented | Triggers the app update dialog and either accepts, cancels or ignores the dialog. | dibyapal@ |
 | |
 | # Run on OS Login |
 | apply_run_on_os_login_policy_allowed | Site |  | 100 | Implemented | Apply WebAppSettings policy for run_on_os_login to be allowed | phillis@ |
@@ -127,6 +126,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | enter_full_screen_app |  |  | 168 | Implemented | Enter full screen mode for the app window. | P1 |
 | exit_full_screen_app |  |  | 169 | Implemented | Exit full screen mode for the app window. | P1 |
 | check_window_controls_overlay_toggle_icon | IsShown |  | 170 | Implemented | Checks if the Window Controls Overlay icon exists. | P1 |
+| check_menu_button_pending_update | MenuButtonState |  | 183 | Implementation | Verifies whether the three dot menu is in an expanded state, signifying a pending update or not. | dibyapal@ |
 | # Launching |
 | launch_from_launch_icon | Site |  | 35 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the launch icon in the omnibox (intent picker), |  |
 | launch_from_menu_option | Site |  | 69 | Implemented | Launch the web app by navigating the browser to the web app, and selecting the "Launch _" menu option in the 3-dot menu. | cliffordcheng@, P1 |

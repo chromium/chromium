@@ -600,8 +600,7 @@ export class CommandHandler implements CommandHandlerInterface {
             .send();
         return false;
       case Command.SHOW_TABLES_LIST:
-        (new PanelCommand(PanelCommandType.OPEN_MENUS, 'table_strategy'))
-            .send();
+        (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_table')).send();
         return false;
       case Command.TOGGLE_SEARCH_WIDGET:
         (new PanelCommand(PanelCommandType.SEARCH)).send();
@@ -1519,7 +1518,6 @@ export class CommandHandler implements CommandHandlerInterface {
 
   /**
    * Launch ChromeVox options page in settings app.
-   * TODO(b/268196299): Add test for showing options page.
    */
   private showOptionsPage_(): void {
     // Launch ChromeVox settings (inside ChromeOS Settings App).

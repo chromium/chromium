@@ -81,6 +81,13 @@ declare interface Matrix {
   data: number[];
 }
 
+// https://github.com/w3c/csswg-drafts/issues/9452
+interface ScrollIntoViewOptions {
+  container?: ScrollIntoViewContainer;
+}
+
+type ScrollIntoViewContainer = 'all'|'nearest';
+
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Set/
 interface Set<T> {
   difference(other: Set<T>): Set<T>;
@@ -92,4 +99,14 @@ interface Uint8ArrayConstructor {
     alphabet?: string,
     lastChunkHandling?: string
   }): Uint8Array;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/ImageCapture/grabFrame
+interface ImageCapture {
+  grabFrame(): Promise<ImageBitmap>;
+}
+
+// https://developer.mozilla.org/en-US/docs/Web/API/PerformanceObserver/observe
+interface PerformanceObserverInit {
+  durationThreshold?: number;
 }

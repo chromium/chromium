@@ -8,7 +8,10 @@
 #include <string>
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"

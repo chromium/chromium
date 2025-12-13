@@ -86,8 +86,8 @@ void ExternalDateTimeChooser::OpenDateTimeChooser(
     date_time_dialog_value->suggestions.push_back(suggestion->Clone());
   }
 
-  auto response_callback = WTF::BindOnce(
-      &ExternalDateTimeChooser::ResponseHandler, WrapPersistent(this));
+  auto response_callback =
+      BindOnce(&ExternalDateTimeChooser::ResponseHandler, WrapPersistent(this));
   GetDateTimeChooser(frame).OpenDateTimeDialog(
       std::move(date_time_dialog_value), std::move(response_callback));
 }

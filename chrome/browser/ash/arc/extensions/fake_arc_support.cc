@@ -12,6 +12,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/extensions/arc_support_message_host.h"
@@ -136,8 +137,8 @@ void FakeArcSupport::UnsetMessageHost() {
 
 void FakeArcSupport::PostMessageFromNativeHost(
     const std::string& message_string) {
-  std::optional<base::Value> parsed_json =
-      base::JSONReader::Read(message_string);
+  std::optional<base::Value> parsed_json = base::JSONReader::Read(
+      message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   DCHECK(parsed_json);
 
   const base::Value::Dict& message = parsed_json->GetDict();

@@ -2,7 +2,6 @@
 # dependencies to a minimal set.
 # TODO(crbug.com/40796017): Remove components/metrics, it's only used for tests.
 include_rules = [
-  "+chromeos/ash/components/dbus/featured",
   "-components",
   "+components/compression",
   "+components/crash/android",
@@ -18,4 +17,5 @@ include_rules = [
   "+third_party/protobuf",
   "+third_party/smhasher",
   "+third_party/zlib/google",
+  "+third_party/zstd",
 ]

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 
 #include <certdb.h>
@@ -24,6 +19,7 @@
 #include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
@@ -73,7 +69,8 @@ void RunUnblocker(base::ScopedClosureRunner unblocker) {
 // Returns a vector containing bytes from `value` or an empty vector if `value`
 // is nullptr.
 std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& value) {
-  return value ? std::vector<uint8_t>(value->data, value->data + value->len)
+  return value ? std::vector<uint8_t>(value->data,
+                                      UNSAFE_TODO(value->data + value->len))
                : std::vector<uint8_t>();
 }
 
@@ -610,7 +607,8 @@ void SignOnWorkerThread(crypto::ScopedPK11Slot slot,
     // Convert the RAW ECDSA signature to a DER-encoded ECDSA-Sig-Value.
     bssl::UniquePtr<ECDSA_SIG> sig(ECDSA_SIG_new());
     if (!sig || !BN_bin2bn(signature.data(), order_len, sig->r) ||
-        !BN_bin2bn(signature.data() + order_len, order_len, sig->s)) {
+        !BN_bin2bn(UNSAFE_TODO(signature.data() + order_len), order_len,
+                   sig->s)) {
       return std::move(callback).Run(
           base::unexpected(Error::kFailedToDerEncode));
     }
@@ -795,9 +793,9 @@ void GetCertProvisioningIdOnWorkerThread(
     }
   }
 
-  return std::move(callback).Run(
-      std::string(cert_prov_attribute->data,
-                  cert_prov_attribute->data + cert_prov_attribute->len));
+  return std::move(callback).Run(std::string(
+      cert_prov_attribute->data,
+      UNSAFE_TODO(cert_prov_attribute->data + cert_prov_attribute->len)));
 }
 
 void GetTokenInfoOnWorkerThread(crypto::ScopedPK11Slot slot,
@@ -927,8 +925,8 @@ void SetCertProvisioningProfileIdOnWorkerThread(
 scoped_refptr<const Cert> BuildKcerCert(
     Token token,
     const net::ScopedCERTCertificate& nss_cert) {
-  Pkcs11Id id_bytes(SECItemToBytes(crypto::MakeNssIdFromSpki(
-      base::span(nss_cert->derPublicKey.data, nss_cert->derPublicKey.len))));
+  Pkcs11Id id_bytes(SECItemToBytes(crypto::MakeNssIdFromSpki(UNSAFE_TODO(
+      base::span(nss_cert->derPublicKey.data, nss_cert->derPublicKey.len)))));
 
   std::string nickname;
   if (nss_cert->nickname) {

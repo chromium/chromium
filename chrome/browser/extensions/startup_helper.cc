@@ -19,8 +19,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/verifier_formats.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using content::BrowserThread;
 
@@ -28,7 +31,7 @@ namespace extensions {
 
 namespace {
 
-void PrintPackExtensionMessage(const std::string& message) {
+void PrintPackExtensionMessage(const std::u16string& message) {
   VLOG(1) << message;
 }
 
@@ -44,20 +47,18 @@ void StartupHelper::OnPackSuccess(
     const base::FilePath& crx_path,
     const base::FilePath& output_private_key_path) {
   pack_job_succeeded_ = true;
-  PrintPackExtensionMessage(
-      base::UTF16ToUTF8(
-          PackExtensionJob::StandardSuccessMessage(crx_path,
-                                                   output_private_key_path)));
+  PrintPackExtensionMessage(PackExtensionJob::StandardSuccessMessage(
+      crx_path, output_private_key_path));
 }
 
-void StartupHelper::OnPackFailure(const std::string& error_message,
+void StartupHelper::OnPackFailure(const std::u16string& error_message,
                                   ExtensionCreator::ErrorType type) {
   error_message_ = error_message;
   PrintPackExtensionMessage(error_message);
 }
 
 bool StartupHelper::PackExtension(const base::CommandLine& cmd_line,
-                                  std::string* error) {
+                                  std::u16string* error) {
   if (!cmd_line.HasSwitch(::switches::kPackExtension))
     return false;
 

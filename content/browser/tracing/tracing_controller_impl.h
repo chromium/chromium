@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/task_traits.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
@@ -82,14 +82,10 @@ class TracingControllerImpl : public TracingController,
   ~TracingControllerImpl() override;
   void InitializeDataSources();
   void ConnectToServiceIfNeeded();
-  std::optional<base::Value::Dict> GenerateMetadataDict();
   static void RecorderMetadataToBundle(
       perfetto::protos::pbzero::ChromeEventBundle* bundle);
   static void GenerateMetadataPacket(
       perfetto::protos::pbzero::TracePacket* packet,
-      bool privacy_filtering_enabled);
-  void GenerateMetadataPacketFieldTrials(
-      perfetto::protos::pbzero::ChromeMetadataPacket* metadata_proto,
       bool privacy_filtering_enabled);
 
   // mojo::DataPipeDrainer::Client

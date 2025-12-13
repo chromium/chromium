@@ -9,38 +9,59 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/view_targeter_delegate.h"
-
-class Tab;
 
 namespace gfx {
 class Animation;
 class AnimationDelegate;
 }  // namespace gfx
 
+namespace views {
+class AnimatedImageView;
+}  // namespace views
+
 namespace tabs {
 enum class TabAlert;
 }  // namespace tabs
 
 // This is an ImageButton subclass that serves as both the alert indicator icon
-// (audio, tab capture, etc.), and as a mute button.  It is meant to only be
-// used as a child view of Tab.
+// (audio, tab capture, etc.), and as a mute button. It is intended to be a
+// child view of a tab, which must implement the Delegate interface.
 //
 // When the indicator is transitioned to the audio playing or muting state, the
 // button functionality is enabled and begins handling mouse events.  Otherwise,
 // this view behaves like an image and all mouse events will be handled by the
-// Tab (its parent View).
+// parent tab.
 class AlertIndicatorButton : public views::ImageButton,
                              public views::ViewTargeterDelegate {
   METADATA_HEADER(AlertIndicatorButton, views::ImageButton)
 
  public:
-  explicit AlertIndicatorButton(Tab* parent_tab);
+  // An interface for the parent tab of the alert indicator.
+  class Delegate {
+   public:
+    // Whether click-to-mute should be enabled, given the required width for
+    // activating the tab. Returns false only if the tab is inactive, and the
+    // selectable region is smaller than the required width.
+    virtual bool ShouldEnableMuteToggle(int required_width) = 0;
+
+    // Toggles tab-wide audio muting.
+    virtual void ToggleTabAudioMute() = 0;
+
+    // Returns whether the tab appears more like the active state than the
+    // inactive state, given the current opacity.
+    virtual bool IsApparentlyActive() const = 0;
+
+    // Called when the alert indicator has changed states.
+    virtual void AlertStateChanged() = 0;
+  };
+
+  explicit AlertIndicatorButton(Delegate* delegate);
   AlertIndicatorButton(const AlertIndicatorButton&) = delete;
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;
   ~AlertIndicatorButton() override;
@@ -65,11 +86,25 @@ class AlertIndicatorButton : public views::ImageButton,
   // ResetImages() needs to be called.
   void OnParentTabButtonColorChanged();
 
+  // Sets visibility of animation around alert indicator icon.
+  void UpdateAlertIndicatorAnimation();
+
+  // Returns the current TabAlert for testing.
+  std::optional<tabs::TabAlert> alert_state_for_testing() const {
+    return alert_state_;
+  }
+
+  // For testing purposes.
+  views::AnimatedImageView* GetActorIndicatorSpinnerForTesting() {
+    return actor_indicator_spinner_;
+  }
+
  protected:
   // views::View:
   View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void Layout(PassKey) override;
 
   // views::ViewTargeterDelegate
   bool DoesIntersectRect(const View* target,
@@ -97,14 +132,19 @@ class AlertIndicatorButton : public views::ImageButton,
   std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
       std::optional<tabs::TabAlert> alert_state);
 
-  // Returns the tab (parent view) of this AlertIndicatorButton.
-  Tab* GetTab();
-
   // Resets the images to display on the button to reflect `state` and the
   // parent tab's button color.  Should be called when either of these changes.
   void UpdateIconForAlertState(tabs::TabAlert state);
 
-  const raw_ptr<Tab> parent_tab_;
+  // Loads the resources needed for the actor_indicator_spinner, if not already
+  // loaded.
+  void MaybeLoadActorAccessingSpinner();
+
+  // Sets the bounds for the actor_indicator_spinner depending on button
+  // location and size.
+  void SetActorAccessingSpinnerBounds();
+
+  const raw_ptr<Delegate> delegate_;
 
   std::optional<tabs::TabAlert> alert_state_;
 
@@ -121,6 +161,14 @@ class AlertIndicatorButton : public views::ImageButton,
   // `fade_animation_` being properly initialized, in tests, it does not show
   // the correct duration.
   base::TimeDelta fadeout_animation_duration_for_testing_;
+
+  // The view that contains the spinner displayed around ACTOR_ACCESSING alert
+  // icons.
+  raw_ptr<views::AnimatedImageView> actor_indicator_spinner_;
+  // The playback config for the actor_indicator_spinner.
+  std::optional<lottie::Animation::PlaybackConfig> actor_indicator_config_;
+  // The scaled size of the spinner, stored at creation time.
+  std::optional<gfx::Size> actor_spinner_scaled_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_ALERT_INDICATOR_BUTTON_H_

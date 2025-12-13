@@ -19,9 +19,11 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.Process;
+import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Surface;
@@ -31,6 +33,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.window.TrustedPresentationThresholds;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -38,11 +41,11 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
@@ -50,6 +53,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.lifetime.LifetimeAssert;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
@@ -60,8 +64,10 @@ import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.gfx.OverlayTransform;
 import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionCallback;
@@ -118,8 +124,8 @@ public class WindowAndroid
     private @Nullable View mAnimationPlaceholderView;
 
     /** A mechanism for observing and updating the application window's bottom inset. */
-    private final ApplicationViewportInsetSupplier mApplicationBottomInsetSupplier =
-            new ApplicationViewportInsetSupplier();
+    private final ApplicationViewportInsetTracker mApplicationBottomInsetSupplier =
+            new ApplicationViewportInsetTracker();
 
     private @Nullable AndroidPermissionDelegate mPermissionDelegate;
 
@@ -153,7 +159,7 @@ public class WindowAndroid
         // The color of the hairline.
         public int hairlineColor;
 
-        public static interface Provider {
+        public interface Provider {
             ProgressBarConfig getProgressBarConfig();
         }
     }
@@ -211,6 +217,9 @@ public class WindowAndroid
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
 
+    private @Nullable WindowInsetObserver mWindowInsetObserver;
+    private @Nullable Rect mLastWindowBounds;
+
     /**
      * @param context The application {@link Context}.
      * @param trackOcclusion Whether to track occlusion of the window.
@@ -237,6 +246,18 @@ public class WindowAndroid
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
+        if (mInsetObserver != null
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+                && UiAndroidFeatureList.sAndroidUseCorrectWindowBounds.isEnabled()) {
+            mWindowInsetObserver =
+                    new WindowInsetObserver() {
+                        @Override
+                        public void onInsetChanged() {
+                            maybeSendWindowPositionChangedEventToNative();
+                        }
+                    };
+            mInsetObserver.addObserver(mWindowInsetObserver);
+        }
     }
 
     /**
@@ -256,25 +277,21 @@ public class WindowAndroid
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
+        assert context != null : "Context when creating WindowAndroid must not be null.";
         mContextRef = new ImmutableWeakReference<>(context);
         mDisplayAndroid = display;
         mDisplayAndroid.addObserver(this);
 
-        // Using this setting is gated to Q due to bugs on Razer phones which can freeze the device
-        // if the API is used. See crbug.com/990646.
         // Disable refresh rate change on TV platforms, as it may cause black screen flicker due to
         // display mode changes.
-        mAllowChangeRefreshRate = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isTv(context);
+        mAllowChangeRefreshRate = !isTv(context);
 
         // Multiple refresh rate support is only available on M+.
         recomputeSupportedRefreshRates();
 
         // Configuration.isDisplayServerWideColorGamut must be queried from the window's context.
-        // Because of crbug.com/756180, many devices report true for isScreenWideColorGamut in
-        // 8.0.0, even when they don't actually support wide color gamut.
         // TODO(boliu): Observe configuration changes to update the value of isScreenWideColorGamut.
-        if (!Build.VERSION.RELEASE.equals("8.0.0")
-                && ContextUtils.activityFromContext(context) != null) {
+        if (ContextUtils.activityFromContext(context) != null) {
             Configuration configuration = context.getResources().getConfiguration();
             boolean isScreenWideColorGamut = configuration.isScreenWideColorGamut();
             display.updateIsDisplayServerWideColorGamut(isScreenWideColorGamut);
@@ -301,13 +318,10 @@ public class WindowAndroid
     }
 
     private boolean shouldTrackOcclusion() {
-        // Enable occlusion only for desktop Android. For non-desktop Android, occlusion signals
-        // from Android should be the same as the Activity lifecycle signals that already control
-        // web contents occlusion. Also, on rotate Android seems to send a spurious occlusion
-        // signal. See crbug.com/380209799 for details.
+        // On rotate Android seems to send a spurious occlusion signal. See crbug.com/380209799 for
+        // details.
         return mTrackOcclusion
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && DeviceInfo.isDesktop()
                 && UiAndroidFeatureList.sAndroidWindowOcclusion.isEnabled();
     }
 
@@ -805,10 +819,11 @@ public class WindowAndroid
     public interface IntentCallback {
         /**
          * Handles the data returned by the requested intent.
+         *
          * @param resultCode Result code of the requested intent.
          * @param data The data returned by the intent.
          */
-        void onIntentCompleted(int resultCode, Intent data);
+        void onIntentCompleted(int resultCode, @Nullable Intent data);
     }
 
     /**
@@ -912,8 +927,13 @@ public class WindowAndroid
         return mNativeWindowAndroid;
     }
 
+    /* package */ void setNativePointerForTesting(long ptr) {
+        mNativeWindowAndroid = ptr;
+    }
+
     /**
      * Returns current wheel scroll factor (physical pixels per mouse scroll click).
+     *
      * @return wheel scroll factor or zero if attr retrieval fails.
      */
     private float getMouseWheelScrollFactor() {
@@ -943,7 +963,6 @@ public class WindowAndroid
     // gamut (on supported hardware and os). However it is important for embedders like WebView
     // which do not make the wide gamut decision to check this at run time.
     private boolean getWindowIsWideColorGamut() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false;
         Window window = getWindow();
         if (window == null) return false;
         return window.isWideColorGamut();
@@ -981,7 +1000,7 @@ public class WindowAndroid
     /**
      * @return A mechanism for updating and observing the bottom inset of the browser window.
      */
-    public ApplicationViewportInsetSupplier getApplicationBottomInsetSupplier() {
+    public ApplicationViewportInsetTracker getApplicationBottomInsetTracker() {
         return mApplicationBottomInsetSupplier;
     }
 
@@ -1101,12 +1120,6 @@ public class WindowAndroid
 
     @CalledByNative
     public void setWideColorEnabled(boolean enabled) {
-        // Although this API was added in Android O, it was buggy.
-        // Restrict to Android Q, where it was fixed.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            assert !enabled;
-            return;
-        }
         Window window = getWindow();
         if (window == null) return;
 
@@ -1139,7 +1152,6 @@ public class WindowAndroid
                     && currentMode.getPhysicalHeight() == supportedModes.get(i).getPhysicalHeight()
                     && currentMode.getRefreshRate() != supportedModes.get(i).getRefreshRate()) {
                 supportedRefreshRateModes.add(supportedModes.get(i));
-                continue;
             }
         }
 
@@ -1366,6 +1378,77 @@ public class WindowAndroid
         mPointerLockingViewPrvFocusChangeListener = null;
     }
 
+    @Nullable View getPointerLockChangeViewForTesting() {
+        return mPointerLockChangeView;
+    }
+
+    View.@Nullable OnFocusChangeListener getPointerLockingViewFocusChangeListenerForTesting() {
+        return mPointerLockingViewFocusChangeListener;
+    }
+
+    @CalledByNative
+    private boolean setHasKeyboardCapture(boolean hasCapture) {
+        Window window = getWindow();
+        if (window == null) return false;
+        AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
+                AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate == null) return false;
+        return aconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
+    }
+
+    /**
+     * Returns bounds of this window in global dp coordinates (takes display topology into account).
+     */
+    @CalledByNative
+    @VisibleForTesting(otherwise = PRIVATE)
+    public int @Nullable [] getBoundsInScreenCoordinates() {
+        // For older API levels fall through to default behavior.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return null;
+        }
+
+        final Context context = getContext().get();
+        if (context == null) {
+            return null;
+        }
+
+        final WindowManager wm = context.getSystemService(WindowManager.class);
+        final Rect boundsPx = wm.getCurrentWindowMetrics().getBounds();
+        final DisplayAndroid display = getDisplay();
+        final Rect globalBoundsDp =
+                DisplayUtil.convertLocalPxToGlobalDipCoordinates(display, boundsPx);
+
+        return new int[] {
+            globalBoundsDp.left, globalBoundsDp.top, globalBoundsDp.width(), globalBoundsDp.height()
+        }; // x, y, width, height
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private void maybeSendWindowPositionChangedEventToNative() {
+        final long startTimeMs = SystemClock.elapsedRealtime();
+
+        if (mNativeWindowAndroid == 0) {
+            return;
+        }
+
+        final Context context = mContextRef.get();
+        if (context == null) {
+            return;
+        }
+
+        final WindowManager wm = context.getSystemService(WindowManager.class);
+        final Rect boundsPx = wm.getCurrentWindowMetrics().getBounds();
+        if (boundsPx.equals(mLastWindowBounds)) {
+            return;
+        }
+        mLastWindowBounds = boundsPx;
+
+        WindowAndroidJni.get().onWindowPositionChanged(mNativeWindowAndroid);
+
+        final long durationMs = SystemClock.elapsedRealtime() - startTimeMs;
+        RecordHistogram.recordTimesHistogram("Android.Window.TimeToUpdateWindowBounds", durationMs);
+    }
+
     @NativeMethods
     interface Natives {
         long init(
@@ -1397,5 +1480,7 @@ public class WindowAndroid
         void sendUnfoldLatencyBeginTimestamp(long nativeWindowAndroid, long beginTimestampMs);
 
         void onWindowPointerLockRelease(long nativeWindowAndroid);
+
+        void onWindowPositionChanged(long nativeWindowAndroid);
     }
 }

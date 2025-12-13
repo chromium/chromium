@@ -73,6 +73,8 @@ class AutofillDriverIOSFactory final
 
   AutofillDriverRouter& router() { return router_; }
 
+  std::vector<AutofillDriver*> GetExistingDrivers() override;
+
  private:
   friend class AutofillDriverIOSFactoryTestApi;
 

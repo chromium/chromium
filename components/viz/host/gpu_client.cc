@@ -20,10 +20,12 @@ namespace viz {
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
                      int client_id,
                      uint64_t client_tracing_id,
+                     bool enable_extra_handles_validation,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : delegate_(std::move(delegate)),
       client_id_(client_id),
       client_tracing_id_(client_tracing_id),
+      enable_extra_handles_validation_(enable_extra_handles_validation),
       task_runner_(std::move(task_runner)) {
   DCHECK(delegate_);
   gpu_receivers_.set_disconnect_handler(
@@ -118,6 +120,11 @@ void GpuClient::OnEstablishGpuChannel(
   gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback = std::move(callback_);
 
+  if (callback_for_testing_) {
+    std::move(callback_for_testing_)
+        .Run(status == GpuHostImpl::EstablishChannelStatus::kSuccess);
+  }
+
   if (status == GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid) {
     // GPU process may have crashed or been killed. Try again.
     EstablishGpuChannel(std::move(callback));
@@ -182,9 +189,15 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   gpu_channel_requested_ = true;
   const bool is_gpu_host = false;
   gpu_host->EstablishGpuChannel(
-      client_id_, client_tracing_id_, is_gpu_host, false,
+      client_id_, client_tracing_id_, is_gpu_host,
+      enable_extra_handles_validation_, false,
       base::BindOnce(&GpuClient::OnEstablishGpuChannel,
                      weak_factory_.GetWeakPtr()));
+}
+
+void GpuClient::SetEstablishGpuChannelCallbackForTesting(
+    base::OnceCallback<void(bool)> callback) {
+  callback_for_testing_ = std::move(callback);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

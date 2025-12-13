@@ -7,8 +7,8 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/plus_addresses/settings/plus_address_setting_service_impl.h"
-#import "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_service_impl.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_sync_bridge.h"
 #import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
@@ -36,8 +36,7 @@ PlusAddressSettingServiceFactory::PlusAddressSettingServiceFactory()
 
 std::unique_ptr<KeyedService>
 PlusAddressSettingServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<plus_addresses::PlusAddressSettingServiceImpl>(
       plus_addresses::PlusAddressSettingSyncBridge::CreateBridge(
           DataTypeStoreServiceFactory::GetForProfile(profile)

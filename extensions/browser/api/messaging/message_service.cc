@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -882,22 +884,40 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(
       ExtensionsBrowserClient::Get()->IsSameContext(browser_context, context_));
-  DCHECK_EQ(target_extension != nullptr, !params->target_extension_id.empty());
+  // If `did_enqueue` is true (we waited for a lazy context), `target_extension`
+  // might be null if the context failed to load or the extension was unloaded
+  // while waiting, even if `target_extension_id` is set.
+  if (!did_enqueue) {
+    DCHECK_EQ(target_extension != nullptr,
+              !params->target_extension_id.empty());
+  }
 
   // Check whether the source got closed while in flight.
   const ChannelEndpoint& source = params->source;
 
   bool will_open_channel = true;
+  // Default failure reason.
+  auto failure_reason =
+      MessageTracker::OpenChannelMessagePipelineResult::kWillNotOpenChannel;
 
-  if (!source.IsValid()) {  // Closed while in flight.
+  if (!source.IsValid()) {
+    // Closed while in flight.
     will_open_channel = false;
-  }
-  if (!params->opener_port->IsValidPort()) {
+  } else if (!params->opener_port || !params->opener_port->IsValidPort()) {
+    // Check for null or invalid opener port.
     will_open_channel = false;
-  }
-  if (!params->receiver || !params->receiver->IsValidPort()) {
+  } else if (!params->receiver || !params->receiver->IsValidPort()) {
+    // Check for null or invalid receiver.
     will_open_channel = false;
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
+
+    // If we enqueued this channel (waiting for a lazy context) and the receiver
+    // is now missing or invalid, it means the context likely failed to load
+    // or the extension was unloaded.
+    if (did_enqueue) {
+      failure_reason =
+          MessageTracker::OpenChannelMessagePipelineResult::kNoReceivers;
+    }
   }
 
   auto* message_tracker = MessageTracker::Get(context_);
@@ -914,9 +934,7 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
     pending_lazy_context_channels_.erase(
         params->receiver_port_id.GetChannelId());
     for (const auto& tracking_ids : params->open_channel_tracking_ids) {
-      message_tracker->StopTrackingMessagingStage(
-          tracking_ids, MessageTracker::OpenChannelMessagePipelineResult::
-                            kWillNotOpenChannel);
+      message_tracker->StopTrackingMessagingStage(tracking_ids, failure_reason);
     }
     return;
   }
@@ -931,6 +949,8 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   params->receiver->RemoveCommonFrames(*params->opener_port);
   if (!params->receiver->IsValidPort()) {
     params->opener_port->DispatchOnDisconnect(kReceivingEndDoesntExistError);
+    pending_lazy_context_channels_.erase(
+        params->receiver_port_id.GetChannelId());
     for (const auto& tracking_ids : params->open_channel_tracking_ids) {
       message_tracker->StopTrackingMessagingStage(
           tracking_ids, MessageTracker::OpenChannelMessagePipelineResult::
@@ -1216,6 +1236,14 @@ void MessageService::NotifyResponsePending(const PortId& port_id) {
   it->second->receiver->NotifyResponsePending();
 }
 
+bool MessageService::HasPendingLazyContextChannelsForExtension(
+    const ExtensionId& extension_id) const {
+  return std::ranges::any_of(
+      pending_lazy_context_channels_, [&extension_id](const auto& pair) {
+        return pair.second.extension_id() == extension_id;
+      });
+}
+
 bool MessageService::MaybeAddPendingLazyContextOpenChannelTask(
     BrowserContext* context,
     const Extension* extension,
@@ -1347,7 +1375,7 @@ void MessageService::OnOpenChannelAllowed(
   if (!MaybeAddPendingLazyContextOpenChannelTask(context, target_extension,
                                                  &params, pending_messages)) {
     OpenChannelImpl(context, std::move(params), target_extension,
-                    false /* did_enqueue */);
+                    /*did_enqueue=*/false);
     DispatchPendingMessages(pending_messages, channel_id);
   }
 }
@@ -1358,12 +1386,25 @@ void MessageService::PendingLazyContextOpenChannel(
     std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (context_info == nullptr)
-    return;  // TODO(mpcomplete): notify source of disconnect?
+  auto* message_tracker = MessageTracker::Get(context_);
+
+  if (context_info == nullptr) {
+    // The lazy context failed to load (e.g. the worker failed to start).
+    // Finish tracking the wake-up attempt with a failure.
+    if (!open_channel_wakeup_context_tracking_id.is_empty()) {
+      message_tracker->StopTrackingMessagingStage(
+          open_channel_wakeup_context_tracking_id,
+          MessageTracker::OpenChannelMessagePipelineResult::kNoReceivers);
+    }
+    // `OpenChannelImpl` will handle the cleanup and notify the opener.
+    // We use `context_` as a fallback `BrowserContext`.
+    OpenChannelImpl(context_, std::move(params), /*target_extension=*/nullptr,
+                    /*did_enqueue=*/true);
+    return;
+  }
 
   // Finish tracking SW context wake up.
   if (!open_channel_wakeup_context_tracking_id.is_empty()) {
-    auto* message_tracker = MessageTracker::Get(context_);
     message_tracker->StopTrackingMessagingStage(
         open_channel_wakeup_context_tracking_id,
         MessageTracker::OpenChannelMessagePipelineResult::kWorkerStarted);
@@ -1382,7 +1423,7 @@ void MessageService::PendingLazyContextOpenChannel(
   VerifyLazyContextActive(extension, *context_info);
 
   OpenChannelImpl(context_info->browser_context, std::move(params), extension,
-                  true /* did_enqueue */);
+                  /*did_enqueue=*/true);
 }
 
 void MessageService::DispatchPendingMessages(const PendingMessagesQueue& queue,

@@ -5,6 +5,7 @@
 #include "components/exo/wayland/fuzzer/harness.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "components/exo/display.h"

@@ -19,7 +19,7 @@ class SharedPasswordsNotificationView : public PasswordBubbleViewBase {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
   explicit SharedPasswordsNotificationView(content::WebContents* web_contents,
-                                           views::View* anchor_view);
+                                           views::BubbleAnchor anchor_view);
   ~SharedPasswordsNotificationView() override;
 
  private:

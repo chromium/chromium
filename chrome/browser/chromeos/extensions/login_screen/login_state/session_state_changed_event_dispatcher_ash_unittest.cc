@@ -14,6 +14,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/test/browser_task_environment.h"
@@ -78,7 +79,8 @@ class SessionStateChangedEventDispatcherAshUnittest : public testing::Test {
     // sets up the static instance of |SessionManager| so
     // |session_manager::SessionManager::Get()| will return this particular
     // instance.
-    session_manager_ = std::make_unique<session_manager::SessionManager>();
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());

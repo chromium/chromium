@@ -6,7 +6,6 @@
 
 #import <optional>
 
-#import "base/feature_list.h"
 #import "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #import "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #import "components/enterprise/common/proto/connectors.pb.h"
@@ -16,7 +15,7 @@
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#import "ios/chrome/browser/enterprise/connectors/features.h"
+#import "ios/chrome/browser/enterprise/common/util.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -26,30 +25,6 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_client.h"
-
-namespace {
-
-// Returns policy for the given `profile`. If failed to get policy returns
-// nullptr.
-const enterprise_management::PolicyData* GetPolicyData(ProfileIOS* profile) {
-  if (!profile) {
-    return nullptr;
-  }
-
-  auto* manager = profile->GetUserCloudPolicyManager();
-  if (!manager) {
-    return nullptr;
-  }
-
-  policy::CloudPolicyStore* store = manager->core()->store();
-  if (!store || !store->has_policy()) {
-    return nullptr;
-  }
-
-  return store->policy();
-}
-
-}  // namespace
 
 namespace enterprise_connectors {
 
@@ -79,7 +54,8 @@ base::Value::Dict GetContext(ProfileIOS* profile) {
   if (client_id) {
     context.SetByDottedPath("profile.clientId", *client_id);
   }
-  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  std::optional<std::string> user_dm_token =
+      enterprise::GetUserDmToken(profile);
   if (user_dm_token) {
     context.SetByDottedPath("profile.dmToken", *user_dm_token);
   }
@@ -113,7 +89,8 @@ ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
     metadata.mutable_profile()->set_client_id(*client_id);
   }
 
-  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  std::optional<std::string> user_dm_token =
+      enterprise::GetUserDmToken(profile);
   if (user_dm_token) {
     metadata.mutable_profile()->set_dm_token(*user_dm_token);
   }
@@ -121,23 +98,13 @@ ClientMetadata GetContextAsClientMetadata(ProfileIOS* profile) {
   return metadata;
 }
 
-std::optional<std::string> GetUserDmToken(ProfileIOS* profile) {
-  if (!profile) {
-    return std::nullopt;
-  }
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
-  if (!policy_data || !policy_data->has_request_token()) {
-    return std::nullopt;
-  }
-  return policy_data->request_token();
-}
-
 std::optional<std::string> GetUserClientId(ProfileIOS* profile) {
   if (!profile) {
     return std::nullopt;
   }
 
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
+  const enterprise_management::PolicyData* policy_data =
+      enterprise::GetPolicyData(profile);
   if (!policy_data || !policy_data->has_device_id()) {
     return std::nullopt;
   }
@@ -145,7 +112,8 @@ std::optional<std::string> GetUserClientId(ProfileIOS* profile) {
 }
 
 base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
-  const enterprise_management::PolicyData* policy_data = GetPolicyData(profile);
+  const enterprise_management::PolicyData* policy_data =
+      enterprise::GetPolicyData(profile);
   if (!policy_data) {
     return {};
   }
@@ -180,7 +148,8 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
   if (client_id) {
     request.mutable_profile()->set_client_id(*client_id);
   }
-  std::optional<std::string> user_dm_token = GetUserDmToken(profile);
+  std::optional<std::string> user_dm_token =
+      enterprise::GetUserDmToken(profile);
   if (user_dm_token) {
     request.mutable_profile()->set_dm_token(*user_dm_token);
   }
@@ -189,11 +158,6 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
 }
 
 bool IsEnterpriseUrlFilteringEnabled(EnterpriseRealTimeUrlCheckMode mode) {
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering)) {
-    return false;
-  }
-
   return mode ==
          EnterpriseRealTimeUrlCheckMode::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED;
 }

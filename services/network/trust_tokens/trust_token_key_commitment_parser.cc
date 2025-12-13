@@ -169,8 +169,8 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 
 mojom::TrustTokenKeyCommitmentResultPtr TrustTokenKeyCommitmentParser::Parse(
     std::string_view response_body) {
-  std::optional<base::Value::Dict> maybe_value =
-      base::JSONReader::ReadDict(response_body);
+  std::optional<base::Value::Dict> maybe_value = base::JSONReader::ReadDict(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_value) {
     return nullptr;
   }
@@ -182,8 +182,8 @@ std::unique_ptr<base::flat_map<SuitableTrustTokenOrigin,
                                mojom::TrustTokenKeyCommitmentResultPtr>>
 TrustTokenKeyCommitmentParser::ParseMultipleIssuers(
     std::string_view response_body) {
-  std::optional<base::Value::Dict> maybe_value =
-      base::JSONReader::ReadDict(response_body);
+  std::optional<base::Value::Dict> maybe_value = base::JSONReader::ReadDict(
+      response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!maybe_value) {
     return nullptr;
   }

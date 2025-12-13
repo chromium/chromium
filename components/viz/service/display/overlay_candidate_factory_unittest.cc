@@ -70,7 +70,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
 
   ResourceId CreateResource(bool is_overlay_candidate, GrSurfaceOrigin origin) {
     scoped_refptr<RasterContextProvider> child_context_provider =
-        TestContextProvider::Create();
+        TestContextProvider::CreateGLES();
 
     child_context_provider->BindToCurrentSequence();
 
@@ -95,8 +95,11 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     std::vector<ResourceId> resource_ids_to_transfer;
     resource_ids_to_transfer.push_back(resource_id);
     std::vector<TransferableResource> list;
+
+    CHECK(child_context_provider);
     child_resource_provider_.PrepareSendToParent(
-        resource_ids_to_transfer, &list, child_context_provider.get());
+        resource_ids_to_transfer, &list,
+        child_context_provider->SharedImageInterface());
     resource_provider_.ReceiveFromChild(child_id, list);
 
     // Delete it in the child so it won't be leaked, and will be released once
@@ -252,8 +255,7 @@ AggregatedRenderPassDrawQuad* AddRenderPassQuad(
   auto* rpdq =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(quad_state, quad_rect, quad_rect, rpid, kInvalidResourceId,
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   return rpdq;
 }
 
@@ -663,9 +665,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       quad_list.AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(render_pass.CreateAndAppendSharedQuadState(),
                gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 1, 1, 1), render_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(0, 0), gfx::RectF(), false,
-               1.0);
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
 
   base::flat_map<AggregatedRenderPassId,
                  raw_ptr<cc::FilterOperations, CtnExperimental>>

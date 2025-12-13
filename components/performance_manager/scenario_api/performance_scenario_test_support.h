@@ -70,15 +70,18 @@ namespace performance_scenarios {
 class PerformanceScenarioTestHelper {
  public:
   // Creates a PerformanceScenarioTestHelper holding writable performance
-  // scenario memory, along with read-only memory for all ScenarioScopes.
-  // Returns null if the shared memory couldn't be created or mapped.
+  // scenario memory, along with read-only memory and
+  // PerformanceScenarioObserverLists for all ScenarioScopes. Returns null if
+  // the shared memory couldn't be created or mapped.
   static std::unique_ptr<PerformanceScenarioTestHelper> Create();
 
   // Creates a PerformanceScenarioTestHelper holding writable performance
-  // scenario memory, but doesn't map any read-only memory. Tests can map
-  // read-only memory by passing the result of GetReadOnlyScenarioRegion() to a
-  // ScopedReadOnlyScenarioMemory object. Returns null if the shared memory
-  // couldn't be created.
+  // scenario memory, but doesn't map any read-only memory or create
+  // PerformanceScenarioObserverLists. Tests can map read-only memory by passing
+  // the result of GetReadOnlyScenarioRegion() to a ScopedReadOnlyScenarioMemory
+  // object, and create PerformanceScenarioObserverLists by instantiating a
+  // ScopedScenarioObserverList. Returns null if the shared memory couldn't be
+  // created.
   static std::unique_ptr<PerformanceScenarioTestHelper> CreateWithoutMapping();
 
   ~PerformanceScenarioTestHelper();
@@ -93,12 +96,16 @@ class PerformanceScenarioTestHelper {
       ScenarioScope scope) const;
 
   // Updates the LoadingScenario for the given `scope`, and notifies all
-  // observers.
-  void SetLoadingScenario(ScenarioScope scope, LoadingScenario scenario);
+  // observers if `notify` is true.
+  void SetLoadingScenario(ScenarioScope scope,
+                          LoadingScenario scenario,
+                          bool notify = true);
 
   // Updates the InputScenario for the given `scope`, and notifies all
-  // observers.
-  void SetInputScenario(ScenarioScope scope, InputScenario scenario);
+  // observers if `notify` is true.
+  void SetInputScenario(ScenarioScope scope,
+                        InputScenario scenario,
+                        bool notify = true);
 
  private:
   PerformanceScenarioTestHelper(
@@ -115,6 +122,8 @@ class PerformanceScenarioTestHelper {
 
   std::optional<ScopedReadOnlyScenarioMemory> global_read_only_memory_;
   std::optional<ScopedReadOnlyScenarioMemory> process_read_only_memory_;
+
+  std::optional<ScopedScenarioObserverList> observer_list_;
 };
 
 }  // namespace performance_scenarios

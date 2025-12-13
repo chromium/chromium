@@ -5,10 +5,12 @@
 package org.chromium.ui.test.util;
 
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
@@ -35,7 +37,10 @@ public class TestViewAndroidDelegate extends ViewAndroidDelegate {
      */
     @CalledByNative
     private static TestViewAndroidDelegate create() {
-        return new TestViewAndroidDelegate(/* containerView= */ null);
+        FrameLayout layout = new FrameLayout(ContextUtils.getApplicationContext());
+        layout.setFocusable(true);
+        layout.setFocusableInTouchMode(true);
+        return new TestViewAndroidDelegate(layout);
     }
 
     /**

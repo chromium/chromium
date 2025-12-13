@@ -10,6 +10,7 @@
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/buggy_authentication_view_owner.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/animated_coordinator.h"
@@ -31,7 +32,12 @@ class PrefRegistrySyncable;
 
 // Main class for sign-in coordinator. This class should not be instantiated
 // directly, this should be done using the class methods.
-@interface SigninCoordinator : AnimatedCoordinator
+// Once started and up to iOS 18, the view displayed by
+// `SystemIdentityInteractionManager` may be removed by UIKit without the
+// signoutCompletion being called. Use `viewWillPersist` to
+// check whether it currently is possible. See crbug.com/395959814.
+@interface SigninCoordinator
+    : AnimatedCoordinator <BuggyAuthenticationViewOwner>
 
 // Called when the sign-in dialog is interrupted, canceled or successful.
 // This completion needs to be set before calling -[SigninCoordinator start].
@@ -73,6 +79,8 @@ class PrefRegistrySyncable;
 // an identity, and starts the sign-in flow. If there is no identity on the
 // device, the add account dialog will be displayed, and then the sign-in flow
 // is started with the newly added identity.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     instantSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -88,26 +96,25 @@ class PrefRegistrySyncable;
                                   (const ChangeProfileContinuationProvider&)
                                       continuationProvider;
 
-// Returns a coordinator for upgrade sign-in workflow.
+// Returns a coordinator for fullscreen sign-in promo workflow.
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.
 + (SigninCoordinator*)
-    upgradeSigninPromoCoordinatorWithBaseViewController:
+    fullscreenSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                browser:(Browser*)browser
-                                           contextStyle:
-                                               (SigninContextStyle)contextStyle
-                      changeProfileContinuationProvider:
-                          (const ChangeProfileContinuationProvider&)
-                              changeProfileContinuationProvider;
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                         changeProfileContinuationProvider:
+                             (const ChangeProfileContinuationProvider&)
+                                 changeProfileContinuationProvider;
 
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
-// Note that, up to iOS 18, the view may disappear if the user turn off their
-// screen, without calling the completion block, due to a bug in UIKit. See
-// crbug.com/395959814.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     addAccountCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -115,6 +122,7 @@ class PrefRegistrySyncable;
                                    contextStyle:(SigninContextStyle)contextStyle
                                     accessPoint:
                                         (signin_metrics::AccessPoint)accessPoint
+                                 prefilledEmail:(NSString*)email
                            continuationProvider:
                                (const ChangeProfileContinuationProvider&)
                                    continuationProvider;
@@ -125,9 +133,8 @@ class PrefRegistrySyncable;
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
 // `promoAction` is promo button used to trigger the sign-in.
-// Note that, up to iOS 18, the view may disappear if the user turn off their
-// screen, without calling the completion block, due to a bug in UIKit. See
-// crbug.com/395959814.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     primaryAccountReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -150,9 +157,8 @@ class PrefRegistrySyncable;
 // `contextStyle` is used to customize content on screens.
 // `accessPoint` access point from the sign-in where is started.
 // `promoAction` is promo button used to trigger the sign-in.
-// Note that, up to iOS 18, the view may disappear if the user turn off their
-// screen, without calling the completion block, due to a bug in UIKit. See
-// crbug.com/395959814.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     signinAndSyncReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -174,6 +180,8 @@ class PrefRegistrySyncable;
 // `viewController` presents the promo.
 // This method can return nil if sign-in is not authorized or if there is no
 // account on the device.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     consistencyPromoSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
@@ -196,6 +204,8 @@ class PrefRegistrySyncable;
 // if the user hasn't already approved it.
 // `fullscreenPromo`: whether the promo should be displayed in a fullscreen
 // modal.
+// The owner must be aware that the authentication view may have disappeared
+// silently if `viewWillPersist` is NO.
 + (SigninCoordinator*)
     signinAndHistorySyncCoordinatorWithBaseViewController:
         (UIViewController*)viewController

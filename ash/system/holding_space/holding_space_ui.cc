@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash::holding_space_ui {
 

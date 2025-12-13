@@ -10,7 +10,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
@@ -47,7 +47,8 @@ void GtkUiPlatformX11::OnInitialized() {
   x11::SetXlibErrorHandler();
 }
 
-GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
+GdkWindow* GtkUiPlatformX11::GetGdkWindow(
+    gfx::AcceleratedWidget window_id) const {
   DCHECK(!gtk::GtkCheckVersion(4));
   GdkDisplay* display = gdk_display_get_default();
   GdkWindow* gdk_window = gdk_x11_window_lookup_for_display(
@@ -65,7 +66,7 @@ GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return gdk_window;
 }
 
-bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
+void GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(
       gtk::GtkCheckVersion(4)
@@ -80,7 +81,6 @@ bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
 
   ui::LinuxUiDelegate::GetInstance()->SetTransientWindowForParent(
       parent, static_cast<gfx::AcceleratedWidget>(x11_window));
-  return true;
 }
 
 void GtkUiPlatformX11::ClearTransientFor(gfx::AcceleratedWidget parent) {
@@ -100,7 +100,7 @@ void GtkUiPlatformX11::ShowGtkWindow(GtkWindow* window) {
 std::unique_ptr<ui::LinuxInputMethodContext>
 GtkUiPlatformX11::CreateInputMethodContext(
     ui::LinuxInputMethodContextDelegate* delegate) const {
-  return std::make_unique<InputMethodContextImplGtk>(delegate);
+  return std::make_unique<InputMethodContextImplGtk>(delegate, this);
 }
 
 bool GtkUiPlatformX11::IncludeFontScaleInDeviceScale() const {

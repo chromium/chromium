@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_count.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -39,6 +40,7 @@
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_byte_range.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -360,8 +362,8 @@ class FileSystemDirectoryURLLoader final : public FileSystemEntryURLLoader {
     const std::u16string& name = entry.name.path().LossyDisplayName();
     data_.append(net::GetDirectoryListingEntry(
         name, std::string(),
-        entry.type == filesystem::mojom::FsFileType::DIRECTORY, file_info.size,
-        file_info.last_modified));
+        entry.type == filesystem::mojom::FsFileType::DIRECTORY,
+        base::ByteCount(file_info.size), file_info.last_modified));
 
     if (index < entries_.size() - 1)
       GetMetadata(index + 1);
@@ -488,7 +490,7 @@ class FileSystemFileURLLoader final : public FileSystemEntryURLLoader {
     if (file_info.is_directory) {
       // Redirect to the directory URLLoader.
       GURL::Replacements replacements;
-      std::string new_path = original_request_.url.path();
+      std::string new_path = original_request_.url.GetPath();
       new_path.push_back('/');
       replacements.SetPathStr(new_path);
       const GURL directory_url =
@@ -669,7 +671,7 @@ class FileSystemURLLoaderFactory
       override {
     DVLOG(1) << "CreateLoaderAndStart: " << request.url;
 
-    const std::string path = request.url.path();
+    const std::string path = request.url.GetPath();
 
     // If the path ends with a /, we know it's a directory. If the path refers
     // to a directory and gets dispatched to FileSystemFileURLLoader, that class

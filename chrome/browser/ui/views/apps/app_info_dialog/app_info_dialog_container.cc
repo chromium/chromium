@@ -30,8 +30,8 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/native_frame_view.h"
-#include "ui/views/window/non_client_view.h"
 
 namespace {
 
@@ -95,7 +95,7 @@ class NativeDialogContainer : public views::DialogDelegateView {
 
  private:
   // Overridden from views::WidgetDelegate:
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override {
     auto frame = std::make_unique<FullSizeBubbleFrameView>();
     frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(

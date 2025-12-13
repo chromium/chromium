@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include "base/containers/enum_set.h"
+
 namespace gfx {
 
 // The format needs to be taken into account when mapping a buffer into the
@@ -36,6 +38,12 @@ enum class BufferFormat : uint8_t {
   kMaxValue = LAST
 };
 
+// A struct that represents a set of BufferFormat in a compact way.
+using GpuMemoryBufferFormatSet =
+    base::EnumSet<BufferFormat, BufferFormat::R_8, BufferFormat::LAST>;
+static_assert(static_cast<int>(BufferFormat::R_8) == 0);
+static_assert(static_cast<int>(BufferFormat::LAST) < 64);
+
 // The usage mode affects how a buffer can be used. Only buffers created with
 // *_CPU_READ_WRITE_* can be mapped into the client's address space and accessed
 // by the CPU.
@@ -64,20 +72,6 @@ enum class BufferUsage {
   VEA_READ_CAMERA_AND_CPU_READ_WRITE,
 
   LAST = VEA_READ_CAMERA_AND_CPU_READ_WRITE
-};
-
-struct BufferUsageAndFormat {
-  BufferUsageAndFormat()
-      : usage(BufferUsage::GPU_READ), format(BufferFormat::RGBA_8888) {}
-  BufferUsageAndFormat(BufferUsage usage, BufferFormat format)
-      : usage(usage), format(format) {}
-
-  bool operator==(const BufferUsageAndFormat& other) const {
-    return usage == other.usage && format == other.format;
-  }
-
-  BufferUsage usage;
-  BufferFormat format;
 };
 
 // Used to identify the plane of a GpuMemoryBuffer to use when creating a

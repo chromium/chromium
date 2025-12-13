@@ -33,9 +33,11 @@
 <translation id="5356315618422219272">アプリビュー: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5456409301717116725">この拡張機能には、鍵ファイル「<ph name="KEY_PATH" />」が含まれていますが、おそらくその必要性はありません。</translation>
 <translation id="5486326529110362464">秘密鍵の入力値が存在している必要があります。</translation>
+<translation id="5707185214361380026">次の場所から拡張機能を読み込むことができませんでした:</translation>
 <translation id="5972529113578162692">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> をインストールすることが要件として指定されています。この拡張機能はアンインストールできません。</translation>
 <translation id="6027032947578871493">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />）</translation>
+<translation id="6220413761270491930">拡張機能の読み込みエラー</translation>
 <translation id="6322279351188361895">秘密鍵を読み取ることができませんでした。</translation>
 <translation id="6391538222494443604">入力ディレクトリが存在している必要があります。</translation>
 <translation id="641087317769093025">拡張機能を解凍できませんでした</translation>

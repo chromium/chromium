@@ -63,9 +63,9 @@ ServiceWorkerEventQueue::~ServiceWorkerEventQueue() {
 
 void ServiceWorkerEventQueue::Start() {
   DCHECK(!timer_.IsRunning());
-  timer_.Start(FROM_HERE, kUpdateInterval,
-               WTF::BindRepeating(&ServiceWorkerEventQueue::UpdateStatus,
-                                  WTF::Unretained(this)));
+  timer_.Start(
+      FROM_HERE, kUpdateInterval,
+      BindRepeating(&ServiceWorkerEventQueue::UpdateStatus, Unretained(this)));
   is_ready_for_processing_events_ = true;
   ResetIdleTimeout();
   ProcessEvents();
@@ -106,7 +106,7 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
       std::make_unique<EventInfo>(
           tick_clock_->NowTicks() +
               event->custom_timeout.value_or(kEventTimeout),
-          WTF::BindOnce(std::move(event->abort_callback), event->event_id)));
+          blink::BindOnce(std::move(event->abort_callback), event->event_id)));
 
   queued_online_events_.emplace(event->event_id, std::move(event));
 
@@ -212,7 +212,7 @@ void ServiceWorkerEventQueue::CheckEventQueue() {
 void ServiceWorkerEventQueue::UpdateStatus() {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  // Construct a new map because WTF::HashMap doesn't support deleting elements
+  // Construct a new map because HashMap doesn't support deleting elements
   // while iterating.
   HashMap<int /* event_id */, std::unique_ptr<EventInfo>> new_all_events;
 
@@ -257,12 +257,11 @@ void ServiceWorkerEventQueue::ScheduleIdleCallback(base::TimeDelta delay) {
   DCHECK(!HasInflightEvent());
   DCHECK(!HasScheduledIdleCallback());
 
-  // WTF::Unretained() is safe because the task runner will be destroyed
+  // Unretained() is safe because the task runner will be destroyed
   // before |this| is destroyed at ServiceWorkerGlobalScope::Dispose().
   idle_callback_handle_ = PostDelayedCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback,
-                    WTF::Unretained(this)),
+      BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback, Unretained(this)),
       delay);
 }
 

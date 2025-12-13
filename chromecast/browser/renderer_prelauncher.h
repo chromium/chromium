@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 #define CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ipc/ipc_listener.h"
 #include "url/gurl.h"
 

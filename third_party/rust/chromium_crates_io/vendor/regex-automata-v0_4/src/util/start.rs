@@ -12,7 +12,7 @@ use crate::util::{
 ///
 /// A DFA has a single starting state in the typical textbook description. That
 /// is, it corresponds to the set of all starting states for the NFA that built
-/// it, along with their espsilon closures. In this crate, however, DFAs have
+/// it, along with their epsilon closures. In this crate, however, DFAs have
 /// many possible start states due to a few factors:
 ///
 /// * DFAs support the ability to run either anchored or unanchored searches.

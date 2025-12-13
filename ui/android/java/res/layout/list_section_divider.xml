@@ -8,9 +8,12 @@ found in the LICENSE file.
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/list_section_divider_padding"
-    android:paddingBottom="@dimen/list_section_divider_padding"
+    android:minHeight="?attr/listDividerHeight"
     android:focusable="false"
     android:screenReaderFocusable="false">
-    <include layout="@layout/horizontal_divider" />
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/divider_height"
+        android:layout_gravity="center_vertical"
+        layout="@layout/horizontal_divider" />
 </FrameLayout>

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/progress_dialog/autofill_progress_dialog_mediator.h"
 
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/autofill_progress_dialog_type.h"

@@ -6,59 +6,6 @@ import("//build/config/chromeos/args.gni")
 
 assert(is_chromeos)
 
-static_library("clipboard") {
-  sources = [
-    "clipboard_history_controller_delegate_impl.cc",
-    "clipboard_history_controller_delegate_impl.h",
-    "clipboard_image_model_factory_impl.cc",
-    "clipboard_image_model_factory_impl.h",
-    "clipboard_image_model_request.cc",
-    "clipboard_image_model_request.h",
-    "clipboard_util.cc",
-    "clipboard_util.h",
-  ]
-
-  public_deps = [
-    "//ash",
-    "//ash/public/cpp",
-    "//base",
-    "//content/public/browser",
-    "//ui/base",
-    "//ui/base/clipboard",
-  ]
-
-  deps = [
-    "//ash/constants",
-    "//chromeos/ash/components/browser_context_helper",
-    "//components/user_manager",
-    "//services/data_decoder/public/cpp",
-    "//ui/aura",
-    "//ui/base/clipboard:clipboard_types",
-    "//ui/base/data_transfer_policy",
-    "//ui/gfx",
-    "//ui/views",
-    "//ui/views/controls/webview",
-    "//url",
-  ]
-}
-
-static_library("test_support") {
-  testonly = true
-
-  sources = [
-    "clipboard_history_test_util.cc",
-    "clipboard_history_test_util.h",
-  ]
-
-  public_deps = [
-    ":clipboard",
-    "//ash/public/cpp",
-    "//base",
-  ]
-
-  deps = [ "//testing/gtest" ]
-}
-
 if (!is_chromeos_device) {
   source_set("interactive_ui_tests") {
     testonly = true
@@ -68,12 +15,12 @@ if (!is_chromeos_device) {
     sources = [ "clipboard_history_interactive_uitest.cc" ]
 
     deps = [
-      ":clipboard",
-      ":test_support",
       "//ash",
       "//base",
       "//chrome/browser/ui",
       "//chrome/test:test_support_ui",
+      "//chromeos/ash/experiences/clipboard",
+      "//chromeos/ash/experiences/clipboard:test_support",
       "//content/test:test_support",
       "//net:test_support",
       "//ui/events:test_support",
@@ -89,7 +36,6 @@ source_set("browser_tests") {
   sources = [ "clipboard_history_browsertest.cc" ]
 
   deps = [
-    ":test_support",
     "//ash",
     "//ash:test_support",
     "//ash/constants",
@@ -109,6 +55,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/experiences/clipboard:test_support",
     "//chromeos/constants",
     "//components/user_manager",
     "//content/public/browser",

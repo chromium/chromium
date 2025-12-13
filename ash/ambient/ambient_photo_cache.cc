@@ -6,6 +6,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <optional>
+#include <string>
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
@@ -23,6 +25,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -100,7 +103,7 @@ bool WriteOrDeleteFile(const base::FilePath& path,
     return false;
   }
 
-  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()) <
+  if (base::SysInfo::AmountOfFreeDiskSpace(path.DirName()).value_or(-1) <
       kMaxReservedAvailableDiskSpaceByte) {
     LOG(ERROR) << "Not enough disk space left.";
     return false;
@@ -158,7 +161,7 @@ void OnUrlDownloaded(
     base::OnceCallback<void(std::string&&)> callback,
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (simple_loader->NetError() == net::OK && response_body) {
     std::move(callback).Run(std::move(*response_body));
     return;

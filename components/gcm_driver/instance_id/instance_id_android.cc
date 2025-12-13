@@ -150,10 +150,9 @@ void InstanceIDAndroid::DeleteIDImpl(DeleteIDCallback callback) {
   Java_InstanceIDBridge_deleteInstanceID(env, java_ref_, request_id);
 }
 
-void InstanceIDAndroid::DidGetID(
-    JNIEnv* env,
-    jint request_id,
-    const base::android::JavaParamRef<jstring>& jid) {
+void InstanceIDAndroid::DidGetID(JNIEnv* env,
+                                 jint request_id,
+                                 const base::android::JavaRef<jstring>& jid) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   GetIDCallback* callback = get_id_callbacks_.Lookup(request_id);
@@ -185,7 +184,7 @@ void InstanceIDAndroid::DidGetCreationTime(JNIEnv* env,
 void InstanceIDAndroid::DidGetToken(
     JNIEnv* env,
     jint request_id,
-    const base::android::JavaParamRef<jstring>& jtoken) {
+    const base::android::JavaRef<jstring>& jtoken) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   GetTokenCallback* callback = get_token_callbacks_.Lookup(request_id);
@@ -221,3 +220,5 @@ void InstanceIDAndroid::DidDeleteID(JNIEnv* env,
 }
 
 }  // namespace instance_id
+
+DEFINE_JNI(InstanceIDBridge)

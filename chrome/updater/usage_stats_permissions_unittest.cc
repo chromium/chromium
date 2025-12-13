@@ -136,12 +136,10 @@ class UsageStatsPermissionsTest : public testing::Test {
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  void SetUpdaterUsageStats(bool enabled, UpdaterScope scope) {
+  void SetExemptAppsUsageStats(bool enabled, UpdaterScope scope) {
     SetAppUsageStats(kUpdaterAppId, enabled, scope);
-  }
-
-  void SetCECAUsageStats(bool enabled, UpdaterScope scope) {
     SetAppUsageStats(enterprise_companion::kCompanionAppId, enabled, scope);
+    SetAppUsageStats(kPlatformExperienceHelperAppId, enabled, scope);
   }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
@@ -225,24 +223,21 @@ TEST_F(UsageStatsPermissionsTest, PermissionProviderAllowsRemoteLogging) {
 }
 
 TEST_F(UsageStatsPermissionsTest,
-       PermissionProviderAllowsRemoteLoggingWithCECAAndUpdater) {
-  SetUpdaterUsageStats(true, scope_);
-  SetCECAUsageStats(true, scope_);
+       PermissionProviderAllowsRemoteLoggingWithExemptApps) {
+  SetExemptAppsUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   ASSERT_TRUE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UsageStatsPermissionsTest, UsageStatsProviderChecksPermissionProvider) {
-  SetUpdaterUsageStats(true, scope_);
-  SetCECAUsageStats(true, scope_);
+  SetExemptAppsUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_.app_id, false, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
 }
 
 TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppDisabled) {
-  SetUpdaterUsageStats(true, scope_);
-  SetCECAUsageStats(true, scope_);
+  SetExemptAppsUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   SetAppUsageStats("unsupported_app", false, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
@@ -250,8 +245,7 @@ TEST_F(UsageStatsPermissionsTest,
 
 TEST_F(UsageStatsPermissionsTest,
        PermissionProviderDisallowsRemoteLoggingWithOtherAppEnabled) {
-  SetUpdaterUsageStats(true, scope_);
-  SetCECAUsageStats(true, scope_);
+  SetExemptAppsUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_.app_id, true, scope_);
   SetAppUsageStats("unsupported_app", true, scope_);
   ASSERT_FALSE(RemoteEventLoggingAllowed());
@@ -262,8 +256,7 @@ TEST_F(UsageStatsPermissionsTest,
   if (!IsSystemInstall(scope_)) {
     GTEST_SKIP() << "Not applicable to user-scoped installs";
   }
-  SetUpdaterUsageStats(true, scope_);
-  SetCECAUsageStats(true, scope_);
+  SetExemptAppsUsageStats(true, scope_);
   SetAppUsageStats(fake_permission_provider_.app_id, true, UpdaterScope::kUser);
   SetAppUsageStats(fake_permission_provider_.app_id, false,
                    UpdaterScope::kSystem);

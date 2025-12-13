@@ -9,9 +9,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace {
-std::unique_ptr<KeyedService> BuildDeviceSharingManager(
-    web::BrowserState* context) {
-  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+std::unique_ptr<KeyedService> BuildDeviceSharingManager(ProfileIOS* profile) {
   return std::make_unique<DeviceSharingManagerImpl>(profile);
 }
 }  // namespace
@@ -30,7 +28,7 @@ DeviceSharingManagerFactory* DeviceSharingManagerFactory::GetInstance() {
 }
 
 // static
-BrowserStateKeyedServiceFactory::TestingFactory
+DeviceSharingManagerFactory::TestingFactory
 DeviceSharingManagerFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildDeviceSharingManager);
 }
@@ -41,6 +39,6 @@ DeviceSharingManagerFactory::DeviceSharingManagerFactory()
 
 std::unique_ptr<KeyedService>
 DeviceSharingManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return BuildDeviceSharingManager(context);
+    ProfileIOS* profile) const {
+  return BuildDeviceSharingManager(profile);
 }

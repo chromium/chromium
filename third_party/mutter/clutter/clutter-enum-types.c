@@ -535,6 +535,7 @@ clutter_event_flags_get_type (void)
         { CLUTTER_EVENT_FLAG_RELATIVE_MOTION, "CLUTTER_EVENT_FLAG_RELATIVE_MOTION", "flag-relative-motion" },
         { CLUTTER_EVENT_FLAG_GRAB_NOTIFY, "CLUTTER_EVENT_FLAG_GRAB_NOTIFY", "flag-grab-notify" },
         { CLUTTER_EVENT_FLAG_POINTER_EMULATED, "CLUTTER_EVENT_FLAG_POINTER_EMULATED", "flag-pointer-emulated" },
+        { CLUTTER_EVENT_FLAG_A11Y_MODIFIER_FIRST_CLICK, "CLUTTER_EVENT_FLAG_A11Y_MODIFIER_FIRST_CLICK", "flag-a11y-modifier-first-click" },
         { 0, NULL, NULL }
       };
       GType id;
@@ -1536,6 +1537,7 @@ clutter_draw_debug_flag_get_type (void)
         { CLUTTER_DEBUG_PAINT_DAMAGE_REGION, "CLUTTER_DEBUG_PAINT_DAMAGE_REGION", "paint-damage-region" },
         { CLUTTER_DEBUG_DISABLE_DYNAMIC_MAX_RENDER_TIME, "CLUTTER_DEBUG_DISABLE_DYNAMIC_MAX_RENDER_TIME", "disable-dynamic-max-render-time" },
         { CLUTTER_DEBUG_PAINT_MAX_RENDER_TIME, "CLUTTER_DEBUG_PAINT_MAX_RENDER_TIME", "paint-max-render-time" },
+        { CLUTTER_DEBUG_DISABLE_TRIPLE_BUFFERING, "CLUTTER_DEBUG_DISABLE_TRIPLE_BUFFERING", "disable-triple-buffering" },
         { 0, NULL, NULL }
       };
       GType id;

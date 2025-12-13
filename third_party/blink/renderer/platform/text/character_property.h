@@ -7,50 +7,37 @@
 
 #include <cstdint>
 
+#include "third_party/blink/renderer/platform/text/east_asian_spacing_type.h"
+#include "third_party/blink/renderer/platform/text/han_kerning_char_type.h"
+
 namespace blink {
 
 using CharacterPropertyType = uint16_t;
 
-// TODO(lingqi): Some values are never used. e.g., a char that is Hangul should
-// always be kIsCJKIdeographOrSymbol, os 0b1000 is never used. Attempt to
-// compress the Property.
-enum class CharacterProperty : CharacterPropertyType {
-  kIsCJKIdeographOrSymbol = 1 << 0,
-  kIsPotentialCustomElementNameChar = 1 << 1,
-  kIsBidiControl = 1 << 2,
-  kIsHangul = 1 << 3,
+struct CharacterProperty {
+  CharacterProperty() : CharacterProperty(0) {}
 
-  // Bits to store `HanKerningCharType`.
-  kHanKerningShift = 4,
-  kHanKerningSize = 4,
-  kHanKerningMask = ((1 << kHanKerningSize) - 1),
-  kHanKerningShiftedMask = kHanKerningMask << kHanKerningShift,
+  explicit CharacterProperty(CharacterPropertyType value) {
+    static_assert(sizeof(CharacterProperty) == sizeof(CharacterPropertyType));
+    *reinterpret_cast<CharacterPropertyType*>(this) = value;
+  }
 
-  // Bits to store `EastAsianSpacingType`.
-  kEastAsianSpacingShift = 8,
-  kEastAsianSpacingSize = 2,
-  kEastAsianSpacingShiftedMask = ((1 << kEastAsianSpacingSize) - 1)
-                                 << kEastAsianSpacingShift,
-  kNumBits = kEastAsianSpacingShift + kEastAsianSpacingSize,
+  CharacterPropertyType AsUnsigned() const {
+    static_assert(sizeof(CharacterProperty) == sizeof(CharacterPropertyType));
+    return *reinterpret_cast<const CharacterPropertyType*>(this);
+  }
+
+  bool operator==(const CharacterProperty& other) const {
+    return AsUnsigned() == other.AsUnsigned();
+  }
+
+  bool is_cjk_ideograph_or_symbol : 1;
+  bool is_potential_custom_element_name_char : 1;
+  bool is_bidi_control : 1;
+  bool is_hangul : 1;
+  HanKerningCharType han_kerning : 4;
+  EastAsianSpacingType east_asian_spacing : 2;
 };
-
-static_assert(static_cast<unsigned>(CharacterProperty::kNumBits) <=
-              sizeof(CharacterPropertyType) * 8);
-
-inline CharacterProperty operator|(CharacterProperty a, CharacterProperty b) {
-  return static_cast<CharacterProperty>(static_cast<CharacterPropertyType>(a) |
-                                        static_cast<CharacterPropertyType>(b));
-}
-
-inline CharacterProperty operator&(CharacterProperty a, CharacterProperty b) {
-  return static_cast<CharacterProperty>(static_cast<CharacterPropertyType>(a) &
-                                        static_cast<CharacterPropertyType>(b));
-}
-
-inline CharacterProperty operator|=(CharacterProperty& a, CharacterProperty b) {
-  a = a | b;
-  return a;
-}
 
 }  // namespace blink
 

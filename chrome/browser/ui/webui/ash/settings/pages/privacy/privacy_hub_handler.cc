@@ -8,7 +8,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"

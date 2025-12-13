@@ -19,7 +19,7 @@ namespace {
 const void* const kWebauthnModeUserDataKey = &kWebauthnModeUserDataKey;
 }  // namespace
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using content::WebContents;
 
 class WebauthnModeWrapper : public base::SupportsUserData::Data {
@@ -40,9 +40,9 @@ class WebauthnModeWrapper : public base::SupportsUserData::Data {
 };
 
 // static
-void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
+static void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents,
+    const JavaRef<jobject>& jweb_contents,
     jint mode) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
@@ -53,9 +53,9 @@ void JNI_WebauthnModeProvider_SetWebauthnModeForWebContents(
 }
 
 // static
-jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
+static jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents) {
     return WebauthnMode::NONE;
@@ -68,3 +68,5 @@ jint JNI_WebauthnModeProvider_GetWebauthnModeForWebContents(
 }
 
 }  // namespace webauthn
+
+DEFINE_JNI(WebauthnModeProvider)

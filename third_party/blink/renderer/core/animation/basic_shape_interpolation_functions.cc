@@ -5,13 +5,17 @@
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 
 #include <memory>
+#include <optional>
+
 #include "third_party/blink/renderer/core/animation/css_position_axis_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
 namespace blink {
 
@@ -25,6 +29,8 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
       : type_(BasicShape::kBasicShapePolygonType),
         wind_rule_(wind_rule),
         size_(size) {}
+  BasicShapeNonInterpolableValue(const BasicShapeNonInterpolableValue& other)
+      : type_(other.type_), wind_rule_(other.wind_rule_), size_(other.size_) {}
 
   BasicShape::ShapeType GetShapeType() const { return type_; }
 
@@ -37,8 +43,15 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
     return size_;
   }
 
+  virtual std::optional<GeometryBox> GetGeometryBox() const {
+    return std::nullopt;
+  }
+  virtual std::optional<CoordBox> GetCoordBox() const { return std::nullopt; }
+
   bool IsCompatibleWith(const BasicShapeNonInterpolableValue& other) const {
-    if (GetShapeType() != other.GetShapeType()) {
+    if (GetGeometryBox() != other.GetGeometryBox() ||
+        GetCoordBox() != other.GetCoordBox() ||
+        GetShapeType() != other.GetShapeType()) {
       return false;
     }
     switch (GetShapeType()) {
@@ -55,10 +68,40 @@ class BasicShapeNonInterpolableValue : public NonInterpolableValue {
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
- private:
+ protected:
   const BasicShape::ShapeType type_;
   const WindRule wind_rule_;
   const wtf_size_t size_;
+};
+
+class GeometryBoxBasicShapeNonInterpolableValue final
+    : public BasicShapeNonInterpolableValue {
+ public:
+  GeometryBoxBasicShapeNonInterpolableValue(
+      const BasicShapeNonInterpolableValue& other,
+      GeometryBox geometry_box)
+      : BasicShapeNonInterpolableValue(other), geometry_box_(geometry_box) {}
+
+  std::optional<GeometryBox> GetGeometryBox() const final {
+    return geometry_box_;
+  }
+
+ private:
+  GeometryBox geometry_box_;
+};
+
+class CoordBoxBasicShapeNonInterpolableValue final
+    : public BasicShapeNonInterpolableValue {
+ public:
+  CoordBoxBasicShapeNonInterpolableValue(
+      const BasicShapeNonInterpolableValue& other,
+      CoordBox coord_box)
+      : BasicShapeNonInterpolableValue(other), coord_box_(coord_box) {}
+
+  std::optional<CoordBox> GetCoordBox() const final { return coord_box_; }
+
+ private:
+  CoordBox coord_box_;
 };
 
 DEFINE_NON_INTERPOLABLE_VALUE_TYPE(BasicShapeNonInterpolableValue);
@@ -73,6 +116,38 @@ struct DowncastTraits<BasicShapeNonInterpolableValue> {
 };
 
 namespace {
+
+InterpolationValue AttachBoxes(InterpolationValue&& value,
+                               const CSSProperty& property,
+                               GeometryBox geometry_box,
+                               CoordBox coord_box) {
+  if (!value) {
+    return nullptr;
+  }
+  const auto& non_interpolable =
+      To<BasicShapeNonInterpolableValue>(*value.non_interpolable_value);
+
+  switch (property.PropertyID()) {
+    case CSSPropertyID::kBorderShape:
+    case CSSPropertyID::kClipPath:
+      value.non_interpolable_value =
+          MakeGarbageCollected<GeometryBoxBasicShapeNonInterpolableValue>(
+              non_interpolable, geometry_box);
+      break;
+    case CSSPropertyID::kOffsetPath:
+      value.non_interpolable_value =
+          MakeGarbageCollected<CoordBoxBasicShapeNonInterpolableValue>(
+              non_interpolable, coord_box);
+      break;
+    default:
+      value.non_interpolable_value =
+          MakeGarbageCollected<BasicShapeNonInterpolableValue>(
+              non_interpolable);
+      break;
+  }
+
+  return std::move(value);
+}
 
 InterpolableValue* Unwrap(InterpolationValue&& value) {
   DCHECK(value.interpolable_value);
@@ -685,28 +760,38 @@ BasicShape* CreateBasicShape(
 
 InterpolationValue basic_shape_interpolation_functions::MaybeConvertCSSValue(
     const CSSValue& value,
-    const CSSProperty& property) {
+    const CSSProperty& property,
+    GeometryBox geometry_box,
+    CoordBox coord_box) {
   if (auto* circle_value =
           DynamicTo<cssvalue::CSSBasicShapeCircleValue>(value)) {
-    return circle_functions::ConvertCSSValue(*circle_value, property);
+    return AttachBoxes(
+        circle_functions::ConvertCSSValue(*circle_value, property), property,
+        geometry_box, coord_box);
   }
 
   if (auto* ellipse_value =
           DynamicTo<cssvalue::CSSBasicShapeEllipseValue>(value)) {
-    return ellipse_functions::ConvertCSSValue(*ellipse_value, property);
+    return AttachBoxes(
+        ellipse_functions::ConvertCSSValue(*ellipse_value, property), property,
+        geometry_box, coord_box);
   }
   if (auto* inset_value = DynamicTo<cssvalue::CSSBasicShapeInsetValue>(value)) {
-    return inset_functions::ConvertCSSValue(*inset_value);
+    return AttachBoxes(inset_functions::ConvertCSSValue(*inset_value), property,
+                       geometry_box, coord_box);
   }
   if (auto* rect_value = DynamicTo<cssvalue::CSSBasicShapeRectValue>(value)) {
-    return inset_functions::ConvertCSSValueToInset(*rect_value);
+    return AttachBoxes(inset_functions::ConvertCSSValueToInset(*rect_value),
+                       property, geometry_box, coord_box);
   }
   if (auto* xywh_value = DynamicTo<cssvalue::CSSBasicShapeXYWHValue>(value)) {
-    return inset_functions::ConvertCSSValueToInset(*xywh_value);
+    return AttachBoxes(inset_functions::ConvertCSSValueToInset(*xywh_value),
+                       property, geometry_box, coord_box);
   }
   if (auto* polygon_value =
           DynamicTo<cssvalue::CSSBasicShapePolygonValue>(value)) {
-    return polygon_functions::ConvertCSSValue(*polygon_value);
+    return AttachBoxes(polygon_functions::ConvertCSSValue(*polygon_value),
+                       property, geometry_box, coord_box);
   }
   return nullptr;
 }
@@ -714,23 +799,29 @@ InterpolationValue basic_shape_interpolation_functions::MaybeConvertCSSValue(
 InterpolationValue basic_shape_interpolation_functions::MaybeConvertBasicShape(
     const BasicShape* shape,
     const CSSProperty& property,
-    double zoom) {
+    double zoom,
+    GeometryBox geometry_box,
+    CoordBox coord_box) {
   if (!shape) {
     return nullptr;
   }
   switch (shape->GetType()) {
     case BasicShape::kBasicShapeCircleType:
-      return circle_functions::ConvertBasicShape(To<BasicShapeCircle>(*shape),
-                                                 property, zoom);
+      return AttachBoxes(circle_functions::ConvertBasicShape(
+                             To<BasicShapeCircle>(*shape), property, zoom),
+                         property, geometry_box, coord_box);
     case BasicShape::kBasicShapeEllipseType:
-      return ellipse_functions::ConvertBasicShape(To<BasicShapeEllipse>(*shape),
-                                                  property, zoom);
+      return AttachBoxes(ellipse_functions::ConvertBasicShape(
+                             To<BasicShapeEllipse>(*shape), property, zoom),
+                         property, geometry_box, coord_box);
     case BasicShape::kBasicShapeInsetType:
-      return inset_functions::ConvertBasicShape(To<BasicShapeInset>(*shape),
-                                                property, zoom);
+      return AttachBoxes(inset_functions::ConvertBasicShape(
+                             To<BasicShapeInset>(*shape), property, zoom),
+                         property, geometry_box, coord_box);
     case BasicShape::kBasicShapePolygonType:
-      return polygon_functions::ConvertBasicShape(To<BasicShapePolygon>(*shape),
-                                                  property, zoom);
+      return AttachBoxes(polygon_functions::ConvertBasicShape(
+                             To<BasicShapePolygon>(*shape), property, zoom),
+                         property, geometry_box, coord_box);
     // Handled by PathInterpolationFunction.
     case BasicShape::kStylePathType:
     case BasicShape::kStyleShapeType:
@@ -787,6 +878,19 @@ BasicShape* basic_shape_interpolation_functions::CreateBasicShape(
     default:
       NOTREACHED();
   }
+}
+
+GeometryBox basic_shape_interpolation_functions::GetGeometryBox(
+    const NonInterpolableValue& value,
+    GeometryBox default_box) {
+  return To<BasicShapeNonInterpolableValue>(value).GetGeometryBox().value_or(
+      default_box);
+}
+
+CoordBox basic_shape_interpolation_functions::GetCoordBox(
+    const NonInterpolableValue& value) {
+  return To<BasicShapeNonInterpolableValue>(value).GetCoordBox().value_or(
+      CoordBox::kBorderBox);
 }
 
 }  // namespace blink

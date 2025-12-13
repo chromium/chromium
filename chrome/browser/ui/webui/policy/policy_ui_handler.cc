@@ -15,7 +15,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -56,7 +55,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/browser/policy_conversions.h"
@@ -126,7 +124,6 @@ constexpr char kExtensionsKey[] = "extensions";
 
 namespace features {
 BASE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner,
-             "PolicyPagePromotionEligibilityCheckedBanner",
              base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
@@ -425,7 +422,7 @@ void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 2);
+  CHECK_EQ(args.size(), 2u);
   bool affiliated = args[1].GetBool();
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
@@ -438,7 +435,7 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleGetAppliedTestPolicies(
     const base::Value::List& args) {
-  CHECK_EQ(static_cast<int>(args.size()), 1);
+  CHECK_EQ(args.size(), 1u);
 
   auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
       g_browser_process->browser_policy_connector()

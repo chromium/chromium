@@ -13,6 +13,7 @@
 #include "ash/cancel_mode.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/shutdown_controller.h"
@@ -180,10 +181,27 @@ void DeleteInformedRestoreImage(base::OnceClosure& for_test_callback,
                              std::move(delete_image_cb));
 }
 
+bool IsInformedRestoreEnabledForPrimaryUser() {
+  auto* session_controller_impl = Shell::Get()->session_controller();
+  CHECK(session_controller_impl);
+  auto* prefs = session_controller_impl->GetPrimaryUserPrefService();
+  if (!prefs) {
+    // Note: this may be called on the login screen.
+    return false;
+  }
+  return IsAskEveryTime(prefs);
+}
+
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode.
 // Returns true if the informed restore screenshot should be taken on session
 // state changes.
 bool ShouldTakeInformedRestoreScreenshot() {
+  // If the current active user disables the informed restore feature, we should
+  // not take the screenshot.
+  if (!IsInformedRestoreEnabledForPrimaryUser()) {
+    return false;
+  }
+
   auto* shell = Shell::Get();
   // Do not take the informed restore screenshot if it is in overview mode, lock
   // screen, home launcher or pinned mode.
@@ -196,6 +214,12 @@ bool ShouldTakeInformedRestoreScreenshot() {
   if (session_controller->IsScreenLocked()) {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedInLockScreen);
+    return false;
+  }
+  if (session_controller->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedSessionIsNotActive);
     return false;
   }
   if (session_controller->IsUserGuest() ||
@@ -214,15 +238,27 @@ bool ShouldTakeInformedRestoreScreenshot() {
         ScreenshotOnShutdownStatus::kFailedInPinnedMode);
     return false;
   }
+  // In MUSI scenario, do not take screenshot if another user's desk is active.
+  if (!session_controller->IsUserPrimary()) {
+    RecordScreenshotOnShutdownStatus(
+        ScreenshotOnShutdownStatus::kFailedOtherUserIsActive);
+    return false;
+  }
+
+  auto* multi_user_window_manager = MultiUserWindowManager::Get();
+  CHECK(multi_user_window_manager);
+
+  const AccountId& current_active_user =
+      multi_user_window_manager->CurrentAccountId();
 
   bool has_regular_unminimized_window = false;
   for (aura::Window* window :
        shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk)) {
+    const bool is_minimized = WindowState::Get(window)->IsMinimized();
+
+    // Do not take the screenshot if there is an incognito ash browser window.
     const bool is_non_regular_profile_window =
         !shell->saved_desk_delegate()->IsWindowPersistable(window);
-    const bool is_minimized = WindowState::Get(window)->IsMinimized();
-    // Do not take the screenshot if there is an incognito ash browser window or
-    // a lacros window with the non-regular profile.
     if (!is_minimized && is_non_regular_profile_window) {
       RecordScreenshotOnShutdownStatus(
           ScreenshotOnShutdownStatus::kFailedWithIncognito);
@@ -230,6 +266,17 @@ bool ShouldTakeInformedRestoreScreenshot() {
     }
     has_regular_unminimized_window |=
         !is_non_regular_profile_window && !is_minimized;
+
+    // Do not take the screenshot if there is an window that was moved from
+    // another user's desk.
+    AccountId owner = multi_user_window_manager->GetWindowOwner(window);
+    const bool is_window_owned_by_other_user =
+        owner != EmptyAccountId() && owner != current_active_user;
+    if (!is_minimized && is_window_owned_by_other_user) {
+      RecordScreenshotOnShutdownStatus(
+          ScreenshotOnShutdownStatus::kFailedWithVisibleWindowFromOtherUser);
+      return false;
+    }
   }
 
   // Take the screenshot if there are unminimized non-incognito windows inside
@@ -238,8 +285,10 @@ bool ShouldTakeInformedRestoreScreenshot() {
   if (!has_regular_unminimized_window) {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedWithNoWindows);
+    return false;
   }
-  return has_regular_unminimized_window;
+
+  return true;
 }
 
 // Hide the cursor and lock the cursor as well if `lock` is true.
@@ -884,7 +933,6 @@ void LockStateController::OnDlpRestrictionCheckedAtScreenCapture(
     return;
   }
 
-  // TODO(b/319921650): Finalize the expected behavior on multi-display.
   auto* root = Shell::GetRootWindowForNewWindows();
 
   // Create a new layer that mirrors the painted wallpaper view layer. Adds it

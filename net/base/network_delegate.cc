@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/proxy_resolution/proxy_info.h"
+#include "net/ssl/ssl_info.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 
@@ -55,7 +56,8 @@ int NetworkDelegate::NotifyHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::NotifyHeadersReceived");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(original_response_headers);
@@ -63,7 +65,8 @@ int NetworkDelegate::NotifyHeadersReceived(
   DCHECK(!preserve_fragment_on_redirect_url->has_value());
   return OnHeadersReceived(request, std::move(callback),
                            original_response_headers, override_response_headers,
-                           endpoint, preserve_fragment_on_redirect_url);
+                           endpoint, preserve_fragment_on_redirect_url,
+                           ssl_info);
 }
 
 void NetworkDelegate::NotifyResponseStarted(URLRequest* request,

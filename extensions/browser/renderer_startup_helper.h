@@ -57,6 +57,8 @@ class RendererStartupHelper : public KeyedService,
   // content::RenderProcessHostCreationObserver:
   void OnRenderProcessHostCreated(
       content::RenderProcessHost* process_host) override;
+  void OnRenderProcessLaunched(
+      content::RenderProcessHost* process_host) override;
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(

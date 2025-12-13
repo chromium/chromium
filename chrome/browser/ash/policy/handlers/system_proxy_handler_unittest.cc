@@ -15,13 +15,13 @@
 #include "chrome/browser/ash/net/system_proxy_manager.h"
 #include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_service.pb.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -29,7 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
-using testing::Invoke;
 using testing::WithArg;
 
 namespace {
@@ -43,7 +42,7 @@ namespace policy {
 // with RunLoop::Run() with explicit RunLoop::QuitClosure().
 class SystemProxyHandlerTest : public testing::Test {
  public:
-  SystemProxyHandlerTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  SystemProxyHandlerTest() = default;
   ~SystemProxyHandlerTest() override = default;
 
   // testing::Test
@@ -55,15 +54,16 @@ class SystemProxyHandlerTest : public testing::Test {
 
     system_proxy_handler_ =
         std::make_unique<SystemProxyHandler>(ash::CrosSettings::Get());
-    system_proxy_manager_ =
-        std::make_unique<ash::SystemProxyManager>(local_state_.Get());
+    system_proxy_manager_ = std::make_unique<ash::SystemProxyManager>(
+        TestingBrowserProcess::GetGlobal()->local_state());
     profile_ = std::make_unique<TestingProfile>();
     system_proxy_manager_->StartObservingPrimaryProfilePrefs(profile_.get());
 
     system_proxy_handler_->SetSystemProxyManagerForTesting(
         system_proxy_manager_.get());
-    ash::NetworkHandler::Get()->InitializePrefServices(profile_->GetPrefs(),
-                                                       local_state_.Get());
+    ash::NetworkHandler::Get()->InitializePrefServices(
+        profile_->GetPrefs(),
+        TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   void TearDown() override {
@@ -102,7 +102,6 @@ class SystemProxyHandlerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
-  ScopedTestingLocalState local_state_;
   ash::ScopedTestDeviceSettingsService device_settings_service_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;

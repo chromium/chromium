@@ -95,9 +95,8 @@ TEST_F(AlwaysOnTopControllerTest,
   AlwaysOnTopController* always_on_top_controller =
       controller->always_on_top_controller();
 
-  const gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> always_on_top_window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = {100, 100, 200, 200}}));
   always_on_top_window->SetProperty(aura::client::kZOrderingKey,
                                     ui::ZOrderLevel::kFloatingWindow);
 
@@ -114,7 +113,7 @@ TEST_F(AlwaysOnTopControllerTest, PipContainerReturnedForFloatingPipWindow) {
 
   const gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> pip_window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
 
   WindowState* window_state = WindowState::Get(pip_window.get());
   const WMEvent enter_pip(WM_EVENT_PIP);
@@ -137,7 +136,7 @@ TEST_F(AlwaysOnTopControllerTest,
 
   const gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
 
   aura::Window* container =
       always_on_top_controller->GetContainer(window.get());
@@ -149,7 +148,7 @@ TEST_F(AlwaysOnTopControllerTest,
        FloatingWindowMovedBetweenContainersWhenPipStateChanges) {
   const gfx::Rect bounds(100, 100, 200, 200);
   std::unique_ptr<aura::Window> window(
-      CreateTestWindowInShellWithBounds(bounds));
+      CreateTestWindowInShell({.bounds = bounds}));
   window->SetProperty(aura::client::kZOrderingKey,
                       ui::ZOrderLevel::kFloatingWindow);
 

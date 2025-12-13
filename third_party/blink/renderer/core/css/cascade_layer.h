@@ -26,11 +26,6 @@ class CORE_EXPORT CascadeLayer final : public GarbageCollected<CascadeLayer> {
     return direct_sub_layers_;
   }
 
-  // Getting or setting the order of a layer is only valid for canonical cascade
-  // layers i.e. the unique layer representation for a particular tree scope.
-  const std::optional<uint16_t> GetOrder() const { return order_; }
-  void SetOrder(uint16_t order) { order_ = order; }
-
   CascadeLayer* GetOrAddSubLayer(const StyleRuleBase::LayerName& name);
 
   void Trace(blink::Visitor*) const;
@@ -43,9 +38,7 @@ class CORE_EXPORT CascadeLayer final : public GarbageCollected<CascadeLayer> {
   void ToStringInternal(StringBuilder&, const String&) const;
 
   CascadeLayer* FindDirectSubLayer(const AtomicString&) const;
-  void ComputeLayerOrderInternal(unsigned* next);
 
-  std::optional<uint16_t> order_;
   AtomicString name_;
   HeapVector<Member<CascadeLayer>> direct_sub_layers_;
 };

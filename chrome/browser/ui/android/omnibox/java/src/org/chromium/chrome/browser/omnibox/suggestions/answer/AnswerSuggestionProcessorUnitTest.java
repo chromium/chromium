@@ -9,7 +9,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 
@@ -26,18 +25,24 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
+import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.test.R;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AnswerDataProto.AnswerData;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.Image;
@@ -45,8 +50,6 @@ import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
 import org.chromium.components.omnibox.action.OmniboxAction;
@@ -59,7 +62,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 /** Tests for {@link AnswerSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -81,8 +84,10 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
     private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock Bitmap mBitmap;
     private @Mock AutocompleteInput mInput;
+    private @Mock Supplier<Tab> mTabSupplier;
+    private @Mock Supplier<ShareDelegate> mShareDelegateSupplier;
+    private @Mock BookmarkState mBookmarkState;
 
     private AnswerSuggestionProcessor mProcessor;
     private Locale mDefaultLocale;
@@ -206,10 +211,18 @@ public class AnswerSuggestionProcessorUnitTest {
     public void setUp() {
         mDefaultLocale = Locale.getDefault();
         mContext = Robolectric.buildActivity(Activity.class).setup().get();
-        mContext.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
-        mProcessor =
-                new AnswerSuggestionProcessor(
-                        mContext, mSuggestionHost, mUrlStateProvider, Optional.of(mImageSupplier));
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+        AutocompleteUIContext uiContext =
+                new AutocompleteUIContext(
+                        mContext,
+                        mSuggestionHost,
+                        mUrlStateProvider,
+                        mImageSupplier,
+                        mBookmarkState,
+                        mTabSupplier,
+                        mShareDelegateSupplier,
+                        new ObservableSupplierImpl<>(ControlsPosition.TOP));
+        mProcessor = new AnswerSuggestionProcessor(uiContext);
         OmniboxResourceProvider.disableCachesForTesting();
     }
 
@@ -235,51 +248,6 @@ public class AnswerSuggestionProcessorUnitTest {
             Assert.assertNotNull(
                     "No icon associated with type: " + type.name(), suggHelper.getIcon());
         }
-    }
-
-    @Test
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
-    public void richAnswerCard() {
-        OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
-        SuggestionTestHelper suggHelper =
-                createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, true);
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_leadin));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-        Assert.assertNull(suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
-        Assert.assertEquals(
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_top_padding),
-                suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
-        Assert.assertEquals(
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.omnibox.R.dimen
-                                        .omnibox_simple_card_leadin),
-                suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
-
-        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 1, false);
-        Assert.assertFalse(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-
-        // A rich answer with no actions shouldn't get the card treatment.
-        suggHelper = createRichAnswerSuggestion(AnswerType.ANSWER_TYPE_DICTIONARY, 0, true);
-        Assert.assertEquals(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING),
-                OmniboxResourceProvider.getSuggestionDecorationIconSizeWidth(mContext));
-        Assert.assertFalse(
-                suggHelper.mModel.get(BaseSuggestionViewProperties.USE_LARGE_DECORATION));
-        Assert.assertTrue(suggHelper.mModel.get(BaseSuggestionViewProperties.SHOW_DECORATION));
-        Assert.assertEquals(0, suggHelper.mModel.get(BaseSuggestionViewProperties.TOP_PADDING));
-        Assert.assertEquals(0, suggHelper.mModel.get(AnswerSuggestionViewProperties.RIGHT_PADDING));
-        Assert.assertEquals(
-                1, suggHelper.mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
     }
 
     @Test

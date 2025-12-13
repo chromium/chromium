@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/base64.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -27,7 +27,6 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_manual_filling_controller.h"
-#include "chrome/browser/password_manager/android/access_loss/mock_password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller_test_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_manager_error_message_helper_bridge.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
@@ -57,10 +56,10 @@
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/plus_addresses/fake_plus_address_service.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
-#include "components/plus_addresses/plus_address_test_utils.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/security_state/core/security_state.h"
@@ -103,7 +102,7 @@ using password_manager::TestPasswordStore;
 using plus_addresses::FakePlusAddressService;
 using plus_addresses::PlusProfile;
 using testing::_;
-using testing::AtMost;
+using testing::AnyNumber;
 using testing::ByMove;
 using testing::Eq;
 using testing::Mock;
@@ -235,10 +234,6 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
  public:
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void,
-              OfferPlusAddressCreation,
-              (const url::Origin&, bool, autofill::PlusAddressCallback),
-              (override));
-  MOCK_METHOD(void,
               TriggerPlusAddressUserPerceptionSurvey,
               (plus_addresses::hats::SurveyType),
               (override));
@@ -308,11 +303,6 @@ std::u16string select_passkey_str() {
       IDS_PASSWORD_MANAGER_ACCESSORY_SELECT_PASSKEY);
 }
 
-std::u16string generate_plus_address_str() {
-  return l10n_util::GetStringUTF16(
-      IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID);
-}
-
 std::u16string select_plus_address_str() {
   return l10n_util::GetStringUTF16(
       IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID);
@@ -372,10 +362,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
               web_contents()->GetFocusedFrame()->GetLastCommittedOrigin());
 
     MockPasswordGenerationController::CreateForWebContents(web_contents());
-    profile()->GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(
-            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn));
     mock_pwd_manager_client_ =
         std::make_unique<NiceMock<MockPasswordManagerClient>>(
             CreateInternalAccountPasswordStore(),
@@ -406,12 +392,13 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
     window_android_.get()->get()->AddChild(web_contents()->GetNativeView());
 
     // Make StrictMock ignore calls to hide the trusted vault key retrieval
-    // action.
+    // action - this call happens regularly as a side product of updating other
+    // actions.
     EXPECT_CALL(mock_manual_filling_controller_,
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
                     autofill::AccessoryAction::RETRIEVE_TRUSTED_VAULT_KEY))
-        .Times(AtMost(1));
+        .Times(AnyNumber());
   }
 
   webauthn::WebAuthnCredManDelegate* cred_man_delegate() {
@@ -421,10 +408,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
 
   void CreateSheetController(
       security_state::SecurityLevel security_level = security_state::SECURE) {
-    auto access_loss_bridge =
-        std::make_unique<MockPasswordAccessLossWarningBridge>();
-    mock_access_loss_warning_bridge_ = access_loss_bridge.get();
-
     auto error_message_helper_bridge =
         std::make_unique<MockPasswordManagerErrorMessageHelperBridge>();
     mock_error_message_helper_bridge_ = error_message_helper_bridge.get();
@@ -435,7 +418,7 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&PasswordAccessoryControllerTest::GetBaseDriver,
                             base::Unretained(this)),
         grouped_credential_sheet_test_helper.CreateController(),
-        std::move(access_loss_bridge), std::move(error_message_helper_bridge));
+        std::move(error_message_helper_bridge));
 
     controller()->RegisterFillingSourceObserver(filling_source_observer_.Get());
     controller()->SetSecurityLevelForTesting(security_level);
@@ -494,7 +477,6 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
       filling_source_observer_;
   AcknowledgeGroupedCredentialSheetControllerTestHelper
       grouped_credential_sheet_test_helper;
-  raw_ptr<MockPasswordAccessLossWarningBridge> mock_access_loss_warning_bridge_;
   raw_ptr<MockPasswordManagerErrorMessageHelperBridge>
       mock_error_message_helper_bridge_;
   scoped_refptr<MockPasswordStoreInterface> mock_account_password_store_;
@@ -1261,71 +1243,6 @@ TEST_F(PasswordAccessoryControllerTest,
 }
 
 TEST_F(PasswordAccessoryControllerTest,
-       NoAffiliatedPlusAddresses_AppendsCreatePlusAddressAction) {
-  CreateSheetController();
-
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver(controller()));
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span<const PlusProfile, 0>()));
-
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain))
-          .AppendFooterCommand(generate_plus_address_str(),
-                               autofill::AccessoryAction::
-                                   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-          .Build());
-}
-
-TEST_F(PasswordAccessoryControllerTest,
-       HasAffiliatedPlusAddresses_NoCreatePlusAddressAction) {
-  CreateSheetController();
-
-  MockAffiliatedPlusProfilesProvider provider;
-  EXPECT_CALL(provider, AddObserver);
-  controller()->RegisterPlusProfilesProvider(provider.GetWeakPtr());
-
-  std::vector<PlusProfile> profiles{plus_addresses::test::CreatePlusProfile()};
-  EXPECT_CALL(provider, GetAffiliatedPlusProfiles)
-      .WillRepeatedly(Return(base::span(profiles)));
-
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  // Plus address creation can't be supported while plus address filling is
-  // disabled.
-  plus_address_service().set_is_plus_address_filling_enabled(true);
-  plus_address_service().set_should_offer_plus_address_creation(true);
-
-  // Although the plus address creation is supported, the user has an affiliated
-  // plus address for the current domain. The "Create plus address" action
-  // should not be displayed.
-  EXPECT_EQ(
-      controller()->GetSheetData(),
-      PasswordAccessorySheetDataBuilder(passwords_empty_str(kExampleDomain),
-                                        plus_address_title(kExampleDomain))
-          .AddPlusAddressInfo("https://foo.com", u"plus+foo@plus.plus")
-          .AppendFooterCommand(
-              l10n_util::GetStringUTF16(
-                  IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID),
-              AccessoryAction::MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET)
-          .Build());
-}
-
-TEST_F(PasswordAccessoryControllerTest,
        RecordsAccessoryImpressionsForBlocklisted) {
   CreateSheetController();
 
@@ -1459,7 +1376,7 @@ TEST_F(PasswordAccessoryControllerTest, FillsUsername) {
 
 TEST_F(PasswordAccessoryControllerTest, FillsPasswordIfNoAuthAvailable) {
   // Auth is required to fill passwords in Android automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
 
@@ -1928,37 +1845,6 @@ TEST_F(PasswordAccessoryControllerTest, ShowAndSelectHybridPasskeyOption) {
       autofill::AccessoryAction::CROSS_DEVICE_PASSKEY);
 }
 
-// Verify that the plus address creation bottom sheet is opened when the
-// corresponding action is triggered.
-TEST_F(PasswordAccessoryControllerTest,
-       TriggersPlusAddressCreationBottomSheet) {
-  base::UserActionTester user_action_tester;
-  CreateSheetController();
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-
-  const std::string plus_address = "example@gmail.com";
-  EXPECT_CALL(autofill_client(),
-              OfferPlusAddressCreation(_, /*is_manual_fallback=*/true, _))
-      .WillOnce([&plus_address](const url::Origin&, bool,
-                                autofill::PlusAddressCallback callback) {
-        std::move(callback).Run(plus_address);
-      });
-  EXPECT_CALL(*driver(), FillIntoFocusedField(/*is_password=*/false,
-                                              base::UTF8ToUTF16(plus_address)));
-  // Manual filling sheet is expected to be hidden when the plus address
-  // creation bottom sheet is opened.
-  EXPECT_CALL(mock_manual_filling_controller_, Hide());
-
-  controller()->OnOptionSelected(
-      autofill::AccessoryAction::CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET);
-  EXPECT_EQ(
-      user_action_tester.GetActionCount(
-          "PlusAddresses.CreateSuggestionOnPasswordManualFallbackSelected"),
-      1);
-}
-
 // Verify that when WebAuthnCredentialsDelegate::SelectPasskey can be invoked
 // with a passkey shown in the fallback sheet.
 TEST_F(PasswordAccessoryControllerTest, ShowAndSelectPasskey) {
@@ -2020,53 +1906,6 @@ TEST_F(PasswordAccessoryControllerTest,
           .AppendFooterCommand(manage_passwords_str(),
                                autofill::AccessoryAction::MANAGE_PASSWORDS)
           .Build());
-}
-
-TEST_F(PasswordAccessoryControllerTest,
-       ShowAccessLossWarningSheetOnFillingCredential) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    auto mock_authenticator = std::make_unique<MockDeviceAuthenticator>();
-    ON_CALL(*mock_authenticator, AuthenticateWithMessage)
-        .WillByDefault(
-            base::test::RunOnceCallbackRepeatedly<1>(/*auth_succeeded=*/true));
-    EXPECT_CALL(*password_client(), GetDeviceAuthenticator)
-        .WillOnce(Return(testing::ByMove(std::move(mock_authenticator))))
-        .RetiresOnSaturation();
-  }
-
-  features_.Reset();
-  features_.InitWithFeatures({plus_addresses::features::kPlusAddressesEnabled},
-                             {});
-  CreateSheetController();
-
-  // Set up credentials for filling.
-  std::vector<PasswordForm> matches = {CreateEntry(
-      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
-  cache()->SaveCredentialsAndBlocklistedForOrigin(
-      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
-      url::Origin::Create(GURL(kExampleSite)));
-  controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
-      /*is_field_eligible_for_manual_generation=*/false);
-  AccessorySheetField selected_field =
-      AccessorySheetField::Builder()
-          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
-          .SetDisplayText(u"S3cur3")
-          .SetIsObfuscated(true)
-          .SetSelectable(true)
-          .Build();
-  EXPECT_CALL(*mock_access_loss_warning_bridge_,
-              ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
-                                              /*called_at_startup=*/false))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge_,
-      MaybeShowAccessLossNoticeSheet(
-          profile()->GetPrefs(), _, profile(),
-          /*called_at_startup=*/false,
-          password_manager_android_util::PasswordAccessLossWarningTriggers::
-              kKeyboardAcessorySheet));
-  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
 }
 
 TEST_F(PasswordAccessoryControllerTest, TriggersManagePlusAddress) {
@@ -2148,7 +1987,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowTrustedVaultError) {
 
   EXPECT_CALL(*mock_error_message_helper_bridge_,
               StartTrustedVaultKeyRetrievalFlow(
-                  _, syncer::TrustedVaultUserActionTriggerForUMA::
+                  _, trusted_vault::TrustedVaultUserActionTriggerForUMA::
                          kPasswordManagerKeyboardAccessory));
 
   controller()->OnOptionSelected(
@@ -2238,6 +2077,41 @@ TEST_F(PasswordAccessoryControllerTest,
       /*is_field_eligible_for_manual_generation=*/false);
 }
 
+TEST_F(PasswordAccessoryControllerTest, LogBackupPasswordSelected) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kFillRecoveryPassword);
+  CreateSheetController();
+  std::vector<PasswordForm> matches = {CreateEntry(
+      "Ben", "S3cur3", GURL(kExampleSite), PasswordForm::MatchType::kExact)};
+  matches[0].SetPasswordBackupNote(u"BackupPassword");
+  cache()->SaveCredentialsAndBlocklistedForOrigin(
+      matches, CredentialCache::IsOriginBlocklisted(false), std::nullopt,
+      url::Origin::Create(GURL(kExampleSite)));
+
+  controller()->RefreshSuggestionsForField(
+      FocusedFieldType::kFillablePasswordField,
+      /*is_field_eligible_for_manual_generation=*/false);
+
+  AccessorySheetField selected_field =
+      AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCredentialPassword)
+          .SetDisplayText(u"BackupPassword")
+          .SetIsObfuscated(true)
+          .SetSelectable(true)
+          .Build();
+
+  base::HistogramTester histogram_tester;
+  // Simulate selecting the password.
+  controller()->OnFillingTriggered(autofill::FieldGlobalId(), selected_field);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownItemSelected",
+      password_manager::metrics_util::PasswordDropdownSelectedOption::
+          kBackupPassword,
+      1);
+}
+
 class PasswordAccessoryControllerWithTestStoreTest
     : public PasswordAccessoryControllerTest,
       public testing::WithParamInterface<bool> {
@@ -2247,10 +2121,8 @@ class PasswordAccessoryControllerWithTestStoreTest
 
   void SetUp() override {
     PasswordAccessoryControllerTest::SetUp();
-    test_account_store_->Init(/*prefs=*/nullptr,
-                              /*affiliated_match_helper=*/nullptr);
-    test_profile_store_->Init(/*prefs=*/nullptr,
-                              /*affiliated_match_helper=*/nullptr);
+    test_account_store_->Init(/*affiliated_match_helper=*/nullptr);
+    test_profile_store_->Init(/*affiliated_match_helper=*/nullptr);
   }
 
   void TearDown() override {

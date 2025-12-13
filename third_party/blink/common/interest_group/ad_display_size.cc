@@ -33,10 +33,6 @@ bool AdSize::operator==(const AdSize& other) const {
                   other.height_units);
 }
 
-bool AdSize::operator!=(const AdSize& other) const {
-  return !(*this == other);
-}
-
 bool AdSize::operator<(const AdSize& other) const {
   return std::tie(width, width_units, height, height_units) <
          std::tie(other.width, other.width_units, other.height,

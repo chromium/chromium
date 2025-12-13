@@ -10,7 +10,6 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /**
@@ -36,8 +35,8 @@ public class ChromeBrowserTestRule implements TestRule {
     }
 
     /** Adds an account of the given accountName to the fake AccountManagerFacade. */
-    public CoreAccountInfo addAccount(String accountName) {
-        return mSigninTestRule.addAccount(accountName);
+    public void addAccount(AccountInfo accountInfo) {
+        mSigninTestRule.addAccount(accountInfo);
     }
 
     /** Adds and signs in with {@param account}. */

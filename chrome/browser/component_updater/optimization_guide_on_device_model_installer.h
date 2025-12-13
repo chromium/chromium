@@ -7,6 +7,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/component_updater/component_installer.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 namespace optimization_guide {
 class OnDeviceModelComponentStateManager;
@@ -22,7 +23,8 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   // and could get destroyed slightly later than `state_manager`.
   explicit OptimizationGuideOnDeviceModelInstallerPolicy(
       base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-          state_manager);
+          state_manager,
+      optimization_guide::OnDeviceModelRegistrationAttributes attributes);
   ~OptimizationGuideOnDeviceModelInstallerPolicy() override;
 
   // Overrides for ComponentInstallerPolicy.
@@ -50,14 +52,17 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
   // The on-device state manager should be accessed in the UI thread.
   base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
       state_manager_;
+  const optimization_guide::OnDeviceModelRegistrationAttributes attributes_;
 };
 
+// Register the on-device model component, initiating download if needed.
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
     base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager,
-    bool is_already_installing);
+    optimization_guide::OnDeviceModelRegistrationAttributes attributes);
 
+// Requests uninstallation of the on-device model component.
 void UninstallOptimizationGuideOnDeviceModelComponent(
     base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager);

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -68,7 +69,7 @@ class PopularSitesImpl : public PopularSites {
   void FetchPopularSites();
 
   // Called once SimpleURLLoader completes the network request.
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnDownloadFailed();

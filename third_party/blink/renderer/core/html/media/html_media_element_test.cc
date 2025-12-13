@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -154,8 +155,8 @@ class RequestVisibilityWaiter {
   HTMLMediaElement::RequestVisibilityCallback VisibilityCallback() {
     // base::Unretained() is safe since no further tasks can run after
     // RunLoop::Run() returns.
-    return base::BindOnce(&RequestVisibilityWaiter::RequestVisibility,
-                          base::Unretained(this));
+    return BindOnce(&RequestVisibilityWaiter::RequestVisibility,
+                    Unretained(this));
   }
 
   void WaitUntilDone() {
@@ -234,7 +235,7 @@ class TestMediaPlayerObserver final
 
   void OnPictureInPictureAvailabilityChanged(bool available) override {}
 
-  void OnAudioOutputSinkChanged(const WTF::String& hashed_device_id) override {}
+  void OnAudioOutputSinkChanged(const String& hashed_device_id) override {}
 
   void OnUseAudioServiceChanged(bool uses_audio_service) override {
     received_uses_audio_service_ = uses_audio_service;
@@ -1017,6 +1018,132 @@ TEST_P(HTMLMediaElementTest, DefaultTracksAreEnabled) {
   EXPECT_TRUE(Media()->videoTracks().AnonymousIndexedGetter(0)->selected());
 }
 
+TEST_P(HTMLMediaElementTest, TrackChangeSourceDemuxerIsIgnored) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveFutureData);
+
+  ASSERT_EQ(1u, Media()->audioTracks().length());
+  ASSERT_EQ(1u, Media()->videoTracks().length());
+  AudioTrack* audio_track = Media()->audioTracks().AnonymousIndexedGetter(0);
+  VideoTrack* video_track = Media()->videoTracks().AnonymousIndexedGetter(0);
+
+  // Tracks are enabled by default. Let's disable them to test enabling.
+  // Use kScript source to ensure the player is notified.
+  EXPECT_CALL(*MockMediaPlayer(),
+              EnabledAudioTracksChanged(testing::Eq(std::nullopt)));
+  audio_track->setEnabled(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(),
+              SelectedVideoTrackChanged(testing::Eq(std::nullopt)));
+  video_track->setSelected(false);
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Test AudioTrackChanged with kDemuxer.
+  // We expect that EnabledAudioTracksChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  audio_track->setEnabled(true, TrackBase::ChangeSource::kDemuxer);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Test SelectedVideoTrackChanged with kDemuxer.
+  // We expect that SelectedVideoTrackChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  video_track->setSelected(true, TrackBase::ChangeSource::kDemuxer);
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Disable the tracks again using a non-notifying source before testing the
+  // script source.
+  audio_track->setEnabled(false, TrackBase::ChangeSource::kDemuxer);
+  video_track->setSelected(false, TrackBase::ChangeSource::kDemuxer);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Test AudioTrackChanged with kScript.
+  // We expect that EnabledAudioTracksChanged IS called for script.
+  EXPECT_CALL(*MockMediaPlayer(),
+              EnabledAudioTracksChanged(testing::Optional(audio_track->id())));
+  audio_track->setEnabled(true, TrackBase::ChangeSource::kScript);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Test SelectedVideoTrackChanged with kScript.
+  // We expect that SelectedVideoTrackChanged IS called for script.
+  EXPECT_CALL(*MockMediaPlayer(),
+              SelectedVideoTrackChanged(testing::Optional(video_track->id())));
+  video_track->setSelected(true, TrackBase::ChangeSource::kScript);
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
+TEST_P(HTMLMediaElementTest, SetTrackStateFromDemuxer) {
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  test::RunPendingTasks();
+  SetReadyState(HTMLMediaElement::kHaveFutureData);
+
+  ASSERT_EQ(1u, Media()->audioTracks().length());
+  ASSERT_EQ(1u, Media()->videoTracks().length());
+  AudioTrack* audio_track = Media()->audioTracks().AnonymousIndexedGetter(0);
+  VideoTrack* video_track = Media()->videoTracks().AnonymousIndexedGetter(0);
+
+  // Tracks are enabled by default. Let's disable them to test enabling.
+  // Use kScript source to ensure the player is notified and we start from a
+  // known state.
+  EXPECT_CALL(*MockMediaPlayer(),
+              EnabledAudioTracksChanged(testing::Eq(std::nullopt)));
+  audio_track->setEnabled(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(),
+              SelectedVideoTrackChanged(testing::Eq(std::nullopt)));
+  video_track->setSelected(false);
+  test::RunPendingTasks();
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  ASSERT_FALSE(audio_track->enabled());
+  ASSERT_FALSE(video_track->selected());
+
+  media::MediaTrack audio_media_track = media::MediaTrack::CreateAudioTrack(
+      audio_track->id().Utf8(), media::MediaTrack::AudioKind::kMain, "", "",
+      false, 0);
+  media::MediaTrack video_media_track = media::MediaTrack::CreateVideoTrack(
+      video_track->id().Utf8(), media::MediaTrack::VideoKind::kMain, "", "",
+      false, 0);
+
+  // We expect that EnabledAudioTracksChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(audio_media_track,
+                                   media::MediaTrack::State::kActive);
+  test::RunPendingTasks();
+  EXPECT_TRUE(audio_track->enabled());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // We expect that SelectedVideoTrackChanged is NOT called for demuxer.
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(video_media_track,
+                                   media::MediaTrack::State::kActive);
+  test::RunPendingTasks();
+  EXPECT_TRUE(video_track->selected());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  // Now test deactivation.
+  EXPECT_CALL(*MockMediaPlayer(), EnabledAudioTracksChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(audio_media_track,
+                                   media::MediaTrack::State::kInactive);
+  test::RunPendingTasks();
+  EXPECT_FALSE(audio_track->enabled());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+
+  EXPECT_CALL(*MockMediaPlayer(), SelectedVideoTrackChanged(_)).Times(0);
+  Media()->SetTrackStateForTesting(video_media_track,
+                                   media::MediaTrack::State::kInactive);
+  test::RunPendingTasks();
+  EXPECT_FALSE(video_track->selected());
+  testing::Mock::VerifyAndClearExpectations(MockMediaPlayer());
+}
+
 // Ensure a visibility observer is created for lazy loading.
 TEST_P(HTMLMediaElementTest, VisibilityObserverCreatedForLazyLoad) {
   Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
@@ -1383,17 +1510,17 @@ TEST_P(HTMLMediaElementTest, SendMediaMetadataChangedToObserver) {
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          "unknown", WTF::String(media::GetCodecName(audio_codec)), false,
-          false, WTF::String(), is_encrypted_media)));
+          "unknown", String(media::GetCodecName(audio_codec)), false, false,
+          String(), is_encrypted_media)));
 
   has_video = true;
   NotifyMediaMetadataChanged(has_audio, has_video, audio_codec, video_codec,
                              media_content_type, is_encrypted_media);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          WTF::String(media::GetCodecName(video_codec)),
-          WTF::String(media::GetCodecName(audio_codec)), false, false,
-          WTF::String(), is_encrypted_media)));
+          String(media::GetCodecName(video_codec)),
+          String(media::GetCodecName(audio_codec)), false, false, String(),
+          is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendMediaSizeChangeToObserver) {
@@ -1417,10 +1544,9 @@ TEST_P(HTMLMediaElementTest, SendRemotePlaybackMetadataChangeToObserver) {
   NotifyRemotePlaybackDisabled(is_remote_playback_disabled);
   EXPECT_TRUE(ReceivedRemotePlaybackMetadataChange(
       media_session::mojom::blink::RemotePlaybackMetadata::New(
-          WTF::String(media::GetCodecName(video_codec)),
-          WTF::String(media::GetCodecName(audio_codec)),
-          is_remote_playback_disabled, is_remote_playback_started,
-          WTF::String(), is_encrypted_media)));
+          String(media::GetCodecName(video_codec)),
+          String(media::GetCodecName(audio_codec)), is_remote_playback_disabled,
+          is_remote_playback_started, String(), is_encrypted_media)));
 }
 
 TEST_P(HTMLMediaElementTest, SendUseAudioServiceChangedToObserver) {
@@ -2346,33 +2472,33 @@ TEST_P(HTMLMediaElementTest, StartVideoWithTrackSelectionFragment) {
 
   EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _, _))
       .Times(1)
-      .WillOnce([element = Media(), audio_only](
-                    EmptyWebMediaPlayer::LoadType,
-                    const blink::WebMediaPlayerSource&,
-                    EmptyWebMediaPlayer::CorsMode,
-                    bool) -> WebMediaPlayer::LoadTiming {
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "", true,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "", false,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "", false,
-            0, true));
-        if (!audio_only) {
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video1", media::MediaTrack::VideoKind::kMain, "video1", "", true,
-              0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
-              false, 0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
-              false, 0));
-        }
-        return WebMediaPlayer::LoadTiming::kImmediate;
-      });
+      .WillOnce(
+          [element = Media(), audio_only](EmptyWebMediaPlayer::LoadType,
+                                          const blink::WebMediaPlayerSource&,
+                                          EmptyWebMediaPlayer::CorsMode,
+                                          bool) -> WebMediaPlayer::LoadTiming {
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "",
+                true, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "",
+                false, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "",
+                false, 0, true));
+            if (!audio_only) {
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video1", media::MediaTrack::VideoKind::kMain, "video1", "",
+                  true, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
+                  false, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
+                  false, 0));
+            }
+            return WebMediaPlayer::LoadTiming::kImmediate;
+          });
   Media()->SetSrc(AtomicString(frag_url.c_str()));
   test::RunPendingTasks();
 
@@ -2413,33 +2539,33 @@ TEST_P(HTMLMediaElementTest, StartVideoWithInvalidTrackSelection) {
 
   EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _, _))
       .Times(1)
-      .WillOnce([element = Media(), audio_only](
-                    EmptyWebMediaPlayer::LoadType,
-                    const blink::WebMediaPlayerSource&,
-                    EmptyWebMediaPlayer::CorsMode,
-                    bool) -> WebMediaPlayer::LoadTiming {
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "", true,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "", false,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "", false,
-            0, true));
-        if (!audio_only) {
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video1", media::MediaTrack::VideoKind::kMain, "video1", "", true,
-              0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
-              false, 0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
-              false, 0));
-        }
-        return WebMediaPlayer::LoadTiming::kImmediate;
-      });
+      .WillOnce(
+          [element = Media(), audio_only](EmptyWebMediaPlayer::LoadType,
+                                          const blink::WebMediaPlayerSource&,
+                                          EmptyWebMediaPlayer::CorsMode,
+                                          bool) -> WebMediaPlayer::LoadTiming {
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "",
+                true, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "",
+                false, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "",
+                false, 0, true));
+            if (!audio_only) {
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video1", media::MediaTrack::VideoKind::kMain, "video1", "",
+                  true, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
+                  false, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
+                  false, 0));
+            }
+            return WebMediaPlayer::LoadTiming::kImmediate;
+          });
   Media()->SetSrc(AtomicString(frag_url.c_str()));
   test::RunPendingTasks();
 
@@ -2469,33 +2595,33 @@ TEST_P(HTMLMediaElementTest, StartVideoWithDoubleTrackSelection) {
 
   EXPECT_CALL(*MockMediaPlayer(), Load(_, _, _, _))
       .Times(1)
-      .WillOnce([element = Media(), audio_only](
-                    EmptyWebMediaPlayer::LoadType,
-                    const blink::WebMediaPlayerSource&,
-                    EmptyWebMediaPlayer::CorsMode,
-                    bool) -> WebMediaPlayer::LoadTiming {
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "", true,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "", false,
-            0, true));
-        element->AddMediaTrackForTesting(media::MediaTrack::CreateAudioTrack(
-            "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "", false,
-            0, true));
-        if (!audio_only) {
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video1", media::MediaTrack::VideoKind::kMain, "video1", "", true,
-              0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
-              false, 0));
-          element->AddMediaTrackForTesting(media::MediaTrack::CreateVideoTrack(
-              "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
-              false, 0));
-        }
-        return WebMediaPlayer::LoadTiming::kImmediate;
-      });
+      .WillOnce(
+          [element = Media(), audio_only](EmptyWebMediaPlayer::LoadType,
+                                          const blink::WebMediaPlayerSource&,
+                                          EmptyWebMediaPlayer::CorsMode,
+                                          bool) -> WebMediaPlayer::LoadTiming {
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio1", media::MediaTrack::AudioKind::kMain, "audio1", "",
+                true, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio2", media::MediaTrack::AudioKind::kMain, "audio2", "",
+                false, 0, true));
+            element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+                "audio3", media::MediaTrack::AudioKind::kMain, "audio3", "",
+                false, 0, true));
+            if (!audio_only) {
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video1", media::MediaTrack::VideoKind::kMain, "video1", "",
+                  true, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video2", media::MediaTrack::VideoKind::kMain, "video2", "",
+                  false, 0));
+              element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+                  "video3", media::MediaTrack::VideoKind::kMain, "video3", "",
+                  false, 0));
+            }
+            return WebMediaPlayer::LoadTiming::kImmediate;
+          });
   Media()->SetSrc(AtomicString(frag_url.c_str()));
   test::RunPendingTasks();
 

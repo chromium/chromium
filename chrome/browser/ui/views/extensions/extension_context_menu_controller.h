@@ -12,7 +12,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/context_menu_controller.h"
 
-class ToolbarActionViewController;
+class ToolbarActionViewModel;
 
 namespace views {
 class MenuModelAdapter;
@@ -21,8 +21,21 @@ class MenuRunner;
 
 class ExtensionContextMenuController : public views::ContextMenuController {
  public:
-  explicit ExtensionContextMenuController(
-      ToolbarActionViewController* controller,
+  class Observer {
+   public:
+    // Called when a context menu is shown.
+    virtual void OnContextMenuShown() = 0;
+
+    // Called when a context menu.
+    virtual void OnContextMenuClosed() = 0;
+
+   protected:
+    virtual ~Observer() = default;
+  };
+
+  ExtensionContextMenuController(
+      ToolbarActionViewModel* action_model,
+      Observer* observer,
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source);
 
@@ -52,7 +65,10 @@ class ExtensionContextMenuController : public views::ContextMenuController {
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // This controller contains the data for the extension's context menu.
-  const raw_ptr<ToolbarActionViewController> controller_;
+  const raw_ptr<ToolbarActionViewModel> action_model_;
+
+  // The observer to notify when the context menu opens/closes.
+  const raw_ptr<Observer> observer_;
 
   // Location where the context menu is open from.
   extensions::ExtensionContextMenuModel::ContextMenuSource context_menu_source_;

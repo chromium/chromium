@@ -23,9 +23,8 @@ MakoConsentView::MakoConsentView(WebUIContentsWrapper* contents_wrapper,
   set_corner_radius(kMakoConsentCornerRadius);
   SetModalType(ui::mojom::ModalType::kSystem);
   SetArrowWithoutResizing(views::BubbleBorder::FLOAT);
-  SetAnchorRect(display::Screen::GetScreen()
-                    ->GetDisplayMatching(caret_bounds)
-                    .work_area());
+  SetAnchorRect(
+      display::Screen::Get()->GetDisplayMatching(caret_bounds).work_area());
 }
 
 MakoConsentView::~MakoConsentView() = default;

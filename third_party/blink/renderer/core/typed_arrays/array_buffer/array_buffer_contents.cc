@@ -52,7 +52,6 @@ namespace {
 // TODO(crbug.com/371904440): Clean up the feature after running the experiment,
 // no later than in M136.
 BASE_FEATURE(kGCOnArrayBufferAllocationFailure,
-             "GCOnArrayBufferAllocationFailure",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
@@ -112,24 +111,17 @@ ArrayBufferContents::ArrayBufferContents(
     void* data = nullptr;
 
     if (base::FeatureList::IsEnabled(kGCOnArrayBufferAllocationFailure)) {
-      data = [&]() {
-        for (int i = 0; i < 2; ++i) {
-          void* data = AllocateMemoryOrNull(length, policy);
-          if (data != nullptr) {
-            return data;
-          }
-          if (v8::Isolate::TryGetCurrent() != nullptr) {
-            v8::Isolate::GetCurrent()->MemoryPressureNotification(
-                v8::MemoryPressureLevel::kCritical);
-          }
-        }
-        if (allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
-          return AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
-                                                                    policy);
-        } else {
-          return AllocateMemoryOrNull(length, policy);
-        }
-      }();
+      data = AllocateMemoryOrNull(length, policy);
+      if (!data && v8::Isolate::TryGetCurrent() != nullptr) {
+        v8::Isolate::GetCurrent()->RetryCustomAllocate([&]() {
+          return (data = AllocateMemoryOrNull(length, policy)) != nullptr;
+        });
+      }
+      if (!data &&
+          allocation_failure_behavior == AllocationFailureBehavior::kCrash) {
+        data =
+            AllocateMemory<partition_alloc::AllocFlags::kNone>(length, policy);
+      }
     } else {
       data = (allocation_failure_behavior == AllocationFailureBehavior::kCrash)
                  ? AllocateMemory<partition_alloc::AllocFlags::kNone>(length,
@@ -249,11 +241,11 @@ void* ArrayBufferContents::AllocateMemory(size_t size,
 #endif
   void* data;
   if (policy == kZeroInitialize) {
-    data = WTF::Partitions::ArrayBufferPartition()
+    data = Partitions::ArrayBufferPartition()
                ->Alloc<new_flags | partition_alloc::AllocFlags::kZeroFill>(
                    size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
   } else {
-    data = WTF::Partitions::ArrayBufferPartition()->Alloc<new_flags>(
+    data = Partitions::ArrayBufferPartition()->Alloc<new_flags>(
         size, WTF_HEAP_PROFILER_TYPE_NAME(ArrayBufferContents));
   }
 
@@ -277,10 +269,10 @@ void ArrayBufferContents::FreeMemory(void* data) {
       InstanceCounters::kArrayBufferContentsCounter);
 #ifdef V8_ENABLE_SANDBOX
   // See |AllocateMemory|.
-  WTF::Partitions::ArrayBufferPartition()
+  Partitions::ArrayBufferPartition()
       ->Free<partition_alloc::FreeFlags::kNoMemoryToolOverride>(data);
 #else
-  WTF::Partitions::ArrayBufferPartition()->Free(data);
+  Partitions::ArrayBufferPartition()->Free(data);
 #endif
 }
 

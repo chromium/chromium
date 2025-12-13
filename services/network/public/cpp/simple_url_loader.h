@@ -18,7 +18,8 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
-#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom-forward.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
@@ -40,9 +41,6 @@ struct RedirectInfo;
 
 namespace network {
 struct ResourceRequest;
-namespace mojom {
-class URLLoaderFactory;
-}
 }  // namespace network
 
 namespace network {
@@ -105,13 +103,17 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   static constexpr size_t kMaxUploadStringSizeToCopy = 256 * 1024;
 
   // Callback used when downloading the response body as a std::string.
-  // |response_body| is the body of the response, or nullptr on failure. Note
-  // that |response_body| may be nullptr even if there's a valid response code
-  // like HTTP_OK, which could happen if there's an interruption before the
-  // full response body is received. It is safe to delete the SimpleURLLoader
-  // during the callback.
-  using BodyAsStringCallbackDeprecated =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body)>;
+  // `response_body` is the body of the response, or std::nullopt on failure.
+  // Note:
+  //  - Unless SetAllowPartialResults() is called, `response_body` may be
+  //    std::nullopt even if there's a valid response code like HTTP_OK. This
+  //    can happen when there's an interruption before the full response body
+  //    is received.
+  //  - If `response_body` is not needed, using `DownloadHeadersOnly()` is more
+  //    efficient.
+  //  - If the response might be large, ensure that copies of the underlying
+  //    string value in `response_body` are avoided if possible.
+  //  - It is safe to delete the SimpleURLLoader during the callback.
   using BodyAsStringCallback =
       base::OnceCallback<void(std::optional<std::string> response_body)>;
 
@@ -187,22 +189,19 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
   virtual ~SimpleURLLoader();
 
-  // Starts the request using |url_loader_factory|. The SimpleURLLoader will
+  // Starts the request using `url_loader_factory`. The SimpleURLLoader will
   // accumulate all downloaded data in an in-memory string of bounded size. If
-  // |max_body_size| is exceeded, the request will fail with
-  // net::ERR_INSUFFICIENT_RESOURCES. |max_body_size| must be no greater than
-  // |kMaxBoundedStringDownloadSize|. For anything larger, it's recommended to
+  // `max_body_size` is exceeded, the request will fail with
+  // net::ERR_INSUFFICIENT_RESOURCES. `max_body_size` must be no greater than
+  // `kMaxBoundedStringDownloadSize`. For anything larger, it's recommended to
   // either save to a temp file, or consume the data as it is received.
   //
   // Whether the request succeeds or fails, the URLLoaderFactory pipe is closed,
-  // or the body exceeds |max_body_size|, |body_as_string_callback| will be
+  // or the body exceeds `max_body_size`, `body_as_string_callback` will be
   // invoked on completion. Deleting the SimpleURLLoader before the callback is
   // invoked will result in cancelling the request, and the callback will not be
   // called.
-  virtual void DownloadToString(
-      mojom::URLLoaderFactory* url_loader_factory,
-      BodyAsStringCallbackDeprecated body_as_string_callback,
-      size_t max_body_size) = 0;
+
   virtual void DownloadToString(mojom::URLLoaderFactory* url_loader_factory,
                                 BodyAsStringCallback body_as_string_callback,
                                 size_t max_body_size) = 0;
@@ -212,9 +211,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // exceeded. It's recommended consumers use one of the other download methods
   // instead (DownloadToString if the body is expected to be of reasonable
   // length, or DownloadToFile otherwise).
-  virtual void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      mojom::URLLoaderFactory* url_loader_factory,
-      BodyAsStringCallbackDeprecated body_as_string_callback) = 0;
+
   virtual void DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       mojom::URLLoaderFactory* url_loader_factory,
       BodyAsStringCallback body_as_string_callback) = 0;

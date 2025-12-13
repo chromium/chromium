@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"

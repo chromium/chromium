@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 
@@ -32,11 +33,18 @@ void ThirdPartyCredentialManagerImpl::Store(
   // Don't store empty credentials.
   if (credential.type ==
       password_manager::CredentialType::CREDENTIAL_TYPE_EMPTY) {
+    // Send back an acknowledge response.
+    std::move(callback).Run();
     return;
   }
 
+  if (!credential.password.has_value() || credential.password.value().empty()) {
+    // Send back an acknowledge response.
+    std::move(callback).Run();
+    return;
+  }
   std::u16string username = credential.id.value_or(u"");
-  std::u16string password = credential.password.value_or(u"");
+  std::u16string password = credential.password.value();
   bridge_->Store(username, password,
                  web_contents_->GetPrimaryMainFrame()
                      ->GetLastCommittedOrigin()

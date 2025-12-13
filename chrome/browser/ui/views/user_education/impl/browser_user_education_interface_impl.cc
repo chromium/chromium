@@ -4,13 +4,20 @@
 
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
 
+#include "base/check_is_test.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 BrowserUserEducationInterfaceImpl::BrowserUserEducationInterfaceImpl(
     BrowserWindowInterface* browser)
@@ -21,31 +28,51 @@ BrowserUserEducationInterfaceImpl::~BrowserUserEducationInterfaceImpl() {
 
 void BrowserUserEducationInterfaceImpl::Init(BrowserView* browser_view) {
   CHECK_EQ(State::kUninitialized, state_);
-  state_ = State::kInitialized;
+  state_ = State::kInitializationPending;
 
-  // Only override the controller if the controller has not been overridden for
-  // testing.
-  if (!controller_) {
-    // This returns a unique pointer to a `FeaturePromoControllerCommon`.
-    controller_ = CreateUserEducationResources(browser_view);
+  // Create the context.
+  if (auto* const interface = GetUserEducationService()) {
+    user_education_context_ = base::MakeRefCounted<BrowserUserEducationContext>(
+        *browser_view, interface->user_education_storage_service());
   }
 
-  if (!controller_) {
+  // Need to wait for all of browser setup to complete before attempting to
+  // launch startup promos. Since this method is called during feature/service
+  // creation and before the browser view finishes attaching to the widget, it's
+  // best to delay a minimum of one frame before attempting to queue promos.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserUserEducationInterfaceImpl::CompleteInitialization,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserUserEducationInterfaceImpl::CompleteInitialization() {
+  state_ = State::kInitialized;
+
+  auto* const controller = GetFeaturePromoController();
+  if (!controller) {
     ClearQueuedPromos(
         user_education::FeaturePromoResult::Failure::kBlockedByContext);
     return;
   }
 
+  CHECK(user_education_context_)
+      << "Should not have a controller but no service.";
+
   for (auto& params : queued_params_) {
-    GetFeaturePromoControllerImpl()->MaybeShowStartupPromo(std::move(params));
+    controller->MaybeShowStartupPromo(std::move(params),
+                                      user_education_context_);
   }
   queued_params_.clear();
 }
 
 void BrowserUserEducationInterfaceImpl::TearDown() {
+  if (user_education_context_) {
+    static_cast<BrowserUserEducationContext*>(user_education_context_.get())
+        ->Invalidate(base::PassKey<BrowserUserEducationInterfaceImpl>());
+  }
   state_ = State::kTornDown;
   profile_ = nullptr;
-  controller_.reset();
   ClearQueuedPromos();
 }
 
@@ -54,17 +81,38 @@ BrowserUserEducationInterfaceImpl::GetUserEducationService() {
   return profile_ ? UserEducationServiceFactory::GetForBrowserContext(profile_)
                   : nullptr;
 }
+const UserEducationService*
+BrowserUserEducationInterfaceImpl::GetUserEducationService() const {
+  return profile_ ? UserEducationServiceFactory::GetForBrowserContext(profile_)
+                  : nullptr;
+}
+
+user_education::FeaturePromoController*
+BrowserUserEducationInterfaceImpl::GetFeaturePromoController() {
+  auto* const service = GetUserEducationService();
+  return service ? service->GetFeaturePromoController(
+                       base::PassKey<BrowserUserEducationInterfaceImpl>())
+                 : nullptr;
+}
+
+const user_education::FeaturePromoController*
+BrowserUserEducationInterfaceImpl::GetFeaturePromoController() const {
+  auto* const service = GetUserEducationService();
+  return service ? service->GetFeaturePromoController(
+                       base::PassKey<BrowserUserEducationInterfaceImpl>())
+                 : nullptr;
+}
 
 bool BrowserUserEducationInterfaceImpl::IsFeaturePromoQueued(
     const base::Feature& iph_feature) const {
-  auto* const controller = GetFeaturePromoControllerImpl();
+  auto* const controller = GetFeaturePromoController();
   return controller && controller->GetPromoStatus(iph_feature) ==
                            user_education::FeaturePromoStatus::kQueued;
 }
 
 bool BrowserUserEducationInterfaceImpl::IsFeaturePromoActive(
     const base::Feature& iph_feature) const {
-  auto* const controller = GetFeaturePromoControllerImpl();
+  auto* const controller = GetFeaturePromoController();
   return controller &&
          controller->IsPromoActive(
              iph_feature, user_education::FeaturePromoStatus::kContinued);
@@ -77,8 +125,8 @@ BrowserUserEducationInterfaceImpl::CanShowFeaturePromo(
     return user_education::FeaturePromoResult::kError;
   }
 
-  if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    return controller->CanShowPromo(iph_feature);
+  if (auto* const controller = GetFeaturePromoController()) {
+    return controller->CanShowPromo(iph_feature, user_education_context_);
   }
   return user_education::FeaturePromoResult::kBlockedByContext;
 }
@@ -89,19 +137,30 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
   // failure to retrieve accelerators, which can cause issues for screen reader
   // users.
   if (state_ != State::kInitialized) {
+    std::string_view state_desc;
+    switch (state_) {
+      case State::kUninitialized:
+        state_desc = " before browser initialization";
+        break;
+      case State::kInitializationPending:
+        state_desc = " before browser initialization complete";
+        break;
+      case State::kTornDown:
+        state_desc = " after browser shutdown";
+        break;
+      case State::kInitialized:
+        NOTREACHED();
+    }
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
-               << (state_ == State::kUninitialized
-                       ? " before browser initialization"
-                       : " after browser shutdown")
-               << "; IPH will not be shown.";
+               << state_desc << "; IPH will not be shown.";
     user_education::FeaturePromoController::PostShowPromoResult(
         std::move(params.show_promo_result_callback),
         user_education::FeaturePromoResult::kError);
     return;
   }
 
-  if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    controller->MaybeShowPromo(std::move(params));
+  if (auto* const controller = GetFeaturePromoController()) {
+    controller->MaybeShowPromo(std::move(params), user_education_context_);
     return;
   }
 
@@ -112,7 +171,8 @@ void BrowserUserEducationInterfaceImpl::MaybeShowFeaturePromo(
 
 void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
-  if (state_ == State::kUninitialized) {
+  if (state_ == State::kUninitialized ||
+      state_ == State::kInitializationPending) {
     queued_params_.push_back(std::move(params));
     return;
   }
@@ -126,8 +186,9 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
     return;
   }
 
-  if (auto* const controller = GetFeaturePromoControllerImpl()) {
-    controller->MaybeShowStartupPromo(std::move(params));
+  if (auto* const controller = GetFeaturePromoController()) {
+    controller->MaybeShowStartupPromo(std::move(params),
+                                      user_education_context_);
     return;
   }
 
@@ -138,7 +199,7 @@ void BrowserUserEducationInterfaceImpl::MaybeShowStartupFeaturePromo(
 
 bool BrowserUserEducationInterfaceImpl::AbortFeaturePromo(
     const base::Feature& iph_feature) {
-  auto* const controller = GetFeaturePromoControllerImpl();
+  auto* const controller = GetFeaturePromoController();
   return controller &&
          controller->EndPromo(
              iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
@@ -147,7 +208,7 @@ bool BrowserUserEducationInterfaceImpl::AbortFeaturePromo(
 user_education::FeaturePromoHandle
 BrowserUserEducationInterfaceImpl::CloseFeaturePromoAndContinue(
     const base::Feature& iph_feature) {
-  auto* const controller = GetFeaturePromoControllerImpl();
+  auto* const controller = GetFeaturePromoController();
   if (!controller || controller->GetPromoStatus(iph_feature) !=
                          user_education::FeaturePromoStatus::kBubbleShowing) {
     return user_education::FeaturePromoHandle();
@@ -158,7 +219,7 @@ BrowserUserEducationInterfaceImpl::CloseFeaturePromoAndContinue(
 bool BrowserUserEducationInterfaceImpl::NotifyFeaturePromoFeatureUsed(
     const base::Feature& feature,
     FeaturePromoFeatureUsedAction action) {
-  auto* const controller = GetFeaturePromoControllerImpl();
+  auto* const controller = GetFeaturePromoController();
   if (controller) {
     controller->NotifyFeatureUsedIfValid(feature);
     if (action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
@@ -199,18 +260,6 @@ void BrowserUserEducationInterfaceImpl::NotifyNewBadgeFeatureUsed(
   }
 }
 
-void BrowserUserEducationInterfaceImpl::SetFeaturePromoControllerForTesting(
-    std::unique_ptr<user_education::FeaturePromoController> controller) {
-  CHECK_NE(State::kTornDown, state_);
-  if (state_ == State::kUninitialized) {
-    CHECK(queued_params_.empty())
-        << "Setting the controller from an uninitialized state is only allowed "
-           "in unit tests, and only if no promos have been previously queued.";
-    state_ = State::kInitialized;
-  }
-  controller_ = std::move(controller);
-}
-
 void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
     user_education::FeaturePromoResult::Failure failure) {
   for (auto& params : queued_params_) {
@@ -220,7 +269,7 @@ void BrowserUserEducationInterfaceImpl::ClearQueuedPromos(
   queued_params_.clear();
 }
 
-const user_education::FeaturePromoController*
-BrowserUserEducationInterfaceImpl::GetFeaturePromoControllerImpl() const {
-  return controller_.get();
+const user_education::UserEducationContextPtr&
+BrowserUserEducationInterfaceImpl::GetUserEducationContextImpl() const {
+  return user_education_context_;
 }

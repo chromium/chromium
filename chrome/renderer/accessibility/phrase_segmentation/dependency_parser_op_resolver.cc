@@ -43,12 +43,10 @@ DependencyParserOpResolver::DependencyParserOpResolver() {
       seq_flow_lite::ops::custom::Register_SEQUENCE_STRING_PROJECTION_V2());
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  if (optimization_guide::features::TFLiteXNNPACKDelegateEnabled()) {
-    delegate_creators_.push_back([](TfLiteContext* context) {
-      return tflite::MaybeCreateXNNPACKDelegate(
-          context, tflite::XNNPackQS8Options::default_value);
-    });
-  }
+  delegate_creators_.push_back([](TfLiteContext* context) {
+    return tflite::MaybeCreateXNNPACKDelegate(
+        context, tflite::XNNPackQS8Options::default_value);
+  });
 #endif
 }
 DependencyParserOpResolver::~DependencyParserOpResolver() = default;

@@ -12,8 +12,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -79,8 +79,10 @@ struct WebRequestConditionAttributeFactory {
   }
 };
 
-base::LazyInstance<WebRequestConditionAttributeFactory>::Leaky
-    g_web_request_condition_attribute_factory = LAZY_INSTANCE_INITIALIZER;
+WebRequestConditionAttributeFactory& GetWebRequestConditionAttributeFactory() {
+  static base::NoDestructor<WebRequestConditionAttributeFactory> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -105,7 +107,7 @@ WebRequestConditionAttribute::Create(
     std::string* error) {
   CHECK(value != nullptr && error != nullptr);
   bool bad_message = false;
-  return g_web_request_condition_attribute_factory.Get().factory.Instantiate(
+  return GetWebRequestConditionAttributeFactory().factory.Instantiate(
       name, value, error, &bad_message);
 }
 

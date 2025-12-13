@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -32,7 +33,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_first_run_coordinator_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_sharing/password_sharing_metrics.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/reauthentication_coordinator.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/utils/password_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -58,7 +59,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 @interface PasswordDetailsCoordinator () <
     PasswordDetailsHandler,
     PasswordDetailsMediatorDelegate,
-    ReauthenticationCoordinatorDelegate,
+    LocalReauthenticationCoordinatorDelegate,
     PasswordSharingCoordinatorDelegate,
     PasswordSharingFirstRunCoordinatorDelegate>
 
@@ -70,7 +71,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
 // Module containing the reauthentication mechanism for viewing and copying
 // passwords.
-// Has to be strong for password bottom sheet feature or else it becomes nil.
+// Has to be strong for credential bottom sheet feature or else it becomes nil.
 @property(nonatomic, strong) id<ReauthenticationProtocol>
     reauthenticationModule;
 
@@ -90,7 +91,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 
 // Coordinator for blocking password details until Local Authentication is
 // successful.
-@property(nonatomic, strong) ReauthenticationCoordinator* reauthCoordinator;
+@property(nonatomic, strong)
+    LocalReauthenticationCoordinator* reauthCoordinator;
 
 @end
 
@@ -192,7 +194,6 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
       HandlerForProtocol(dispatcher, ApplicationCommands);
   self.viewController.snackbarHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
-  self.viewController.reauthModule = self.reauthenticationModule;
   if (self.openInEditMode) {
     [self.viewController editButtonPressed];
   }
@@ -432,8 +433,8 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 - (void)updateFormManagers {
   BrowserList* browserList = BrowserListFactory::GetForProfile(self.profile);
 
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kAll)) {
+  for (Browser* browser : browserList->BrowsersOfType(
+           BrowserList::BrowserType::kRegularAndIncognito)) {
     [self updateFormManagersForBrowser:browser];
   }
 }
@@ -443,15 +444,15 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
-#pragma mark - ReauthenticationCoordinatorDelegate
+#pragma mark - LocalReauthenticationCoordinatorDelegate
 
 - (void)successfulReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   [_visitsRecorder maybeRecordVisitMetric];
 }
 
 - (void)dismissUIAfterFailedReauthenticationWithCoordinator:
-    (ReauthenticationCoordinator*)coordinator {
+    (LocalReauthenticationCoordinator*)coordinator {
   CHECK_EQ(_reauthCoordinator, coordinator);
 
   [_delegate dismissPasswordManagerAfterFailedReauthentication];
@@ -528,7 +529,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
 // when the scene is backgrounded and then foregrounded while Password Details
 // is opened.
 - (void)startReauthCoordinator {
-  _reauthCoordinator = [[ReauthenticationCoordinator alloc]
+  _reauthCoordinator = [[LocalReauthenticationCoordinator alloc]
       initWithBaseNavigationController:_baseNavigationController
                                browser:self.browser
                 reauthenticationModule:_reauthenticationModule
@@ -599,6 +600,7 @@ const CGFloat kShareSpinnerMinTimeInSeconds = 0.5;
   if (!webState) {
     return;
   }
+  CHECK(webState->IsRealized(), base::NotFatalUntil::M150);
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();

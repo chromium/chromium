@@ -21,7 +21,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebApkPostShareTargetNavigator_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace webapk {
 
@@ -46,11 +46,11 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
     const jboolean java_is_multipart_encoding,
     std::vector<std::string>& names,
     std::vector<std::string>& values,
-    const JavaParamRef<jbooleanArray>& java_is_value_file_uris,
+    const JavaRef<jbooleanArray>& java_is_value_file_uris,
     std::vector<std::string>& filenames,
     std::vector<std::string>& types,
     std::string& url,
-    const JavaParamRef<jobject>& java_web_contents) {
+    const JavaRef<jobject>& java_web_contents) {
   std::vector<bool> is_value_file_uris;
 
   bool is_multipart_encoding = static_cast<bool>(java_is_multipart_encoding);
@@ -79,3 +79,5 @@ static void JNI_WebApkPostShareTargetNavigator_NativeLoadViewForShareTargetPost(
   webapk::NavigateShareTargetPost(post_data, header_list, share_target_gurl,
                                   web_contents);
 }
+
+DEFINE_JNI(WebApkPostShareTargetNavigator)

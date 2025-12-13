@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,9 +27,23 @@
 
 CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
+    : CacheAliasSearchPrefetchURLLoader(profile,
+                                        network_traffic_annotation,
+                                        /*prefetch_url=*/GURL(),
+                                        Mode::kDryRun) {
+  TRACE_EVENT(
+      "loading",
+      "CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader");
+}
+
+CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
+    Profile* profile,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    const GURL& prefetch_url)
-    : url_loader_factory_(profile->GetDefaultStoragePartition()
+    const GURL& prefetch_url,
+    Mode mode)
+    : mode_(mode),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
       search_prefetch_service_(
           SearchPrefetchServiceFactory::GetForProfile(profile)->GetWeakPtr()),
@@ -80,7 +95,13 @@ void CacheAliasSearchPrefetchURLLoader::StartLoadCachedPrefetchResponse() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
-  prefetch_request.url = prefetch_url_;
+  switch (mode_) {
+    case Mode::kNormal:
+      prefetch_request.url = prefetch_url_;
+      break;
+    case Mode::kDryRun:
+      break;
+  }
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(
@@ -98,7 +119,7 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect(
     FallbackReason fallback_reason) {
   CHECK(can_fallback_);
   can_fallback_ = false;
-
+  TRACE_EVENT("loading", "CacheAliasSearchPrefetchURLLoader::RestartDirect");
   network_url_loader_.reset();
   url_loader_receiver_.reset();
 

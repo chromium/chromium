@@ -14,7 +14,6 @@
 #include <utility>
 
 #include "base/debug/alias.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
@@ -26,6 +25,7 @@
 #include "build/build_config.h"
 #include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
+#include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_types.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
@@ -374,9 +374,8 @@ bool FaviconDatabase::GetFaviconBitmaps(
     favicon_bitmap.bitmap_id = statement.ColumnInt64(0);
     favicon_bitmap.icon_id = icon_id;
     favicon_bitmap.last_updated = statement.ColumnTime(1);
-    std::vector<uint8_t> bitmap_data_blob;
-    statement.ColumnBlobAsVector(2, &bitmap_data_blob);
-    if (!bitmap_data_blob.empty()) {
+    if (std::vector<uint8_t> bitmap_data_blob = statement.ColumnBlobAsVector(2);
+        !bitmap_data_blob.empty()) {
       favicon_bitmap.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
           std::move(bitmap_data_blob));
     }
@@ -409,8 +408,7 @@ bool FaviconDatabase::GetFaviconBitmap(
   }
 
   if (png_icon_data) {
-    std::vector<uint8_t> png_data_blob;
-    statement.ColumnBlobAsVector(1, &png_data_blob);
+    std::vector<uint8_t> png_data_blob = statement.ColumnBlobAsVector(1);
     if (!png_data_blob.empty())
       *png_icon_data =
           base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data_blob));
@@ -735,11 +733,13 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
   return result;
 }
 
-std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
+std::optional<std::pair<GURL, PageUrlType>>
+FaviconDatabase::FindBestPageURLForHost(
     const GURL& url,
     const favicon_base::IconTypeSet& required_icon_types) {
-  if (url.host().empty())
+  if (url.GetHost().empty()) {
     return std::nullopt;
+  }
 
   // This query prioritizes PageUrlType::kRegular over PageUrlType::kRedirect.
   // If PageUrlType is ever changed the ORDER BY clause for page_url_type may
@@ -747,7 +747,8 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
   CHECK_EQ(PageUrlType::kRedirect, PageUrlType::kMaxValue);
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE,
-                             "SELECT icon_mapping.page_url, favicons.icon_type "
+                             "SELECT icon_mapping.page_url, "
+                             "favicons.icon_type, icon_mapping.page_url_type "
                              "FROM icon_mapping "
                              "INNER JOIN favicons "
                              "ON icon_mapping.icon_id = favicons.id "
@@ -760,11 +761,11 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
   // expensive. This statement finds all rows where page_url starts from either
   // "http://<host>/" or "https://<host>/".
   std::string http_prefix =
-      base::StringPrintf("http://%s/", url.host().c_str());
+      base::StringPrintf("http://%s/", url.GetHost().c_str());
   statement.BindString(0, http_prefix);
   statement.BindString(1, database_utils::UpperBoundString(http_prefix));
   std::string https_prefix =
-      base::StringPrintf("https://%s/", url.host().c_str());
+      base::StringPrintf("https://%s/", url.GetHost().c_str());
   statement.BindString(2, https_prefix);
   statement.BindString(3, database_utils::UpperBoundString(https_prefix));
 
@@ -772,8 +773,11 @@ std::optional<GURL> FaviconDatabase::FindBestPageURLForHost(
     favicon_base::IconType icon_type =
         FaviconDatabase::FromPersistedIconType(statement.ColumnInt(1));
 
-    if (required_icon_types.count(icon_type) != 0)
-      return std::make_optional(GURL(statement.ColumnStringView(0)));
+    if (required_icon_types.count(icon_type) != 0) {
+      return std::make_optional(std::make_pair(
+          GURL(statement.ColumnStringView(0)),
+          FaviconDatabase::FromPersistedPageUrlType(statement.ColumnInt64(2))));
+    }
   }
   return std::nullopt;
 }

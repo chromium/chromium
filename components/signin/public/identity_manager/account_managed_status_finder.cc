@@ -718,3 +718,7 @@ jint AccountManagedStatusFinder::GetOutcomeFromNativeObject(JNIEnv* env) const {
 #endif
 
 }  // namespace signin
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(AccountManagedStatusFinder)
+#endif

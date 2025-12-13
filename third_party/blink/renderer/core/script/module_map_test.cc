@@ -176,10 +176,10 @@ class ModuleMapTestModulator final : public DummyModulator {
    private:
     ResolvedModuleType ResolvedModuleTypeFromUrl() {
       const AtomicString& string_url = url_.GetString();
-      if (string_url.Find(".js") != WTF::kNotFound) {
+      if (string_url.Find(".js") != kNotFound) {
         return ResolvedModuleType::kJavaScript;
       }
-      CHECK_NE(string_url.Find(".wasm"), WTF::kNotFound);
+      CHECK_NE(string_url.Find(".wasm"), kNotFound);
       return ResolvedModuleType::kWasm;
     }
 
@@ -220,8 +220,8 @@ void ModuleMapTestModulator::Trace(Visitor* visitor) const {
 void ModuleMapTestModulator::ResolveFetches() {
   for (const auto& test_request : test_requests_) {
     TaskRunner()->PostTask(FROM_HERE,
-                           WTF::BindOnce(&TestRequest::NotifyFetchFinished,
-                                         WrapPersistent(test_request.Get())));
+                           blink::BindOnce(&TestRequest::NotifyFetchFinished,
+                                           WrapPersistent(test_request.Get())));
   }
   test_requests_.clear();
 }

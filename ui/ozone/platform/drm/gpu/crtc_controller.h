@@ -10,7 +10,6 @@
 #include <xf86drmMode.h>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "third_party/libdrm/src/include/drm/drm_fourcc.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/swap_result.h"

@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] [required] softsign positive float32 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test softsign float32 actual 0.3117741644382477 should be close enough to expected 0.8030999898910522 by ULP distance: expected a number less than or equal to 3n but got 11400985n
+[FAIL] [required] softsign positive float16 1D constant tensor
+  assert_less_than_equal: assert_array_approx_equals_ulp: test softsign float16 actual 0.311767578125 should be close enough to expected 0.80322265625 by ULP distance: expected a number less than or equal to 3 but got 1392
+Harness: the test ran to completion.
+

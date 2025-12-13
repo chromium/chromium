@@ -1,0 +1,40 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/sync/synced_set_up/SyncedSetUpUtilsBridge.java" ]
+  deps = [
+    "//base:base_java",
+    "//chrome/browser/profiles/android:java",
+    "//components/sync_preferences/cross_device_pref_tracker/android:java",
+    "//components/sync_preferences/synced_set_up/android:java",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/sync/synced_set_up/SyncedSetUpUtilsBridge.java" ]
+}
+
+source_set("android") {
+  sources = [ "synced_set_up_utils_bridge.cc" ]
+  deps = [
+    ":jni_headers",
+    "//chrome/browser/profiles",
+    "//chrome/browser/sync",
+    "//components/sync_device_info",
+    "//components/sync_preferences/cross_device_pref_tracker",
+    "//components/sync_preferences/synced_set_up:utils",
+    "//components/sync_preferences/synced_set_up/android",
+    "//components/sync_preferences/synced_set_up/android:jni_headers",
+  ]
+}
+#static_library("test_support") {
+#
+#}

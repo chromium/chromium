@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
@@ -150,6 +150,7 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   config.require_low_delay =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime;
   config.required_encoder_type = required_encoder_type;
+  config.manual_reference_buffer_control = opts.manual_reference_buffer_control;
 
   return config;
 }
@@ -173,8 +174,7 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(gfx::Rect(coded_size_).Contains(gfx::Rect(visible_size)));
 
-    const auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
-    const auto si_format = viz::GetSharedImageFormat(buffer_format);
+    const auto si_format = viz::MultiPlaneFormat::kNV12;
     const auto buffer_usage =
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
@@ -539,7 +539,7 @@ void VideoEncodeAcceleratorAdapter::EncodeOnAcceleratorThread(
   // 1. the frame already has GPU buffer
   // 2. frame doesn't need resizing or can be resized by GPU encoder.
   bool use_gpu_buffer =
-      (frame->HasMappableGpuBuffer() ||
+      (frame->HasMappableSharedImage() ||
        (frame->HasSharedImage() && supports_gpu_shared_images_)) &&
       (!frame_needs_resizing || gpu_resize_supported_);
 
@@ -935,12 +935,11 @@ void VideoEncodeAcceleratorAdapter::NotifyEncoderInfoChange(
     const VideoEncoderInfo& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   supports_frame_size_change_ = info.supports_frame_size_change;
+  supports_gpu_shared_images_ = info.supports_gpu_shared_images;
+  gpu_supported_pixel_formats_ = info.gpu_supported_pixel_formats;
 
-  VideoEncoderInfo adjusted_info = info;
-  adjusted_info.supports_gpu_shared_images = supports_gpu_shared_images_;
-  adjusted_info.gpu_supported_pixel_formats = gpu_supported_pixel_formats_;
   if (info_cb_) {
-    info_cb_.Run(adjusted_info);
+    info_cb_.Run(info);
   }
 }
 
@@ -1049,7 +1048,7 @@ VideoEncodeAcceleratorAdapter::PrepareCpuFrame(
     return EncoderStatus(EncoderStatus::Codes::kOutOfMemoryError);
 
   const base::WritableSharedMemoryMapping* mapping = handle->mapping();
-  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
+  auto mapped_src_frame = src_frame->HasMappableSharedImage()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   auto shared_frame = VideoFrame::WrapExternalData(
@@ -1086,7 +1085,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
       std::ranges::find(gpu_supported_pixel_formats_, src_frame->format()) !=
       gpu_supported_pixel_formats_.end();
 
-  if ((src_frame->HasMappableGpuBuffer() || src_frame->HasSharedImage()) &&
+  if ((src_frame->HasMappableSharedImage() || src_frame->HasSharedImage()) &&
       (src_frame->format() == PIXEL_FORMAT_NV12 || is_gpu_supported_format) &&
       (gpu_resize_supported_ || src_frame->coded_size() == dest_coded_size)) {
     // Nothing to do here, the input frame is already what we need
@@ -1114,7 +1113,7 @@ VideoEncodeAcceleratorAdapter::PrepareGpuFrame(
   // This is true because |gpu_frame| is created with
   // |VEA_READ_CAMERA_AND_CPU_READ_WRITE| usage flag.
   auto mapped_gpu_frame = ConvertToMemoryMappedFrame(gpu_frame);
-  auto mapped_src_frame = src_frame->HasMappableGpuBuffer()
+  auto mapped_src_frame = src_frame->HasMappableSharedImage()
                               ? ConvertToMemoryMappedFrame(src_frame)
                               : src_frame;
   if (!mapped_gpu_frame || !mapped_src_frame)

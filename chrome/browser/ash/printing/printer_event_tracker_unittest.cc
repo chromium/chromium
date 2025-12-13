@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/printing/printer_event_tracker.h"
 
 #include "base/time/time.h"
+#include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -279,15 +280,15 @@ TEST_F(PrinterEventTrackerTest, InstalledPrinterUserPpd) {
 
 TEST_F(PrinterEventTrackerTest, InstalledUsbPrinter) {
   tracker_.set_logging(true);
-  PrinterDetector::DetectedPrinter usb_printer;
-  usb_printer.ppd_search_data.usb_vendor_id = kVendorId;
-  usb_printer.ppd_search_data.usb_product_id = kProductId;
-  usb_printer.ppd_search_data.usb_manufacturer = kUsbManufacturer;
-  usb_printer.ppd_search_data.usb_model = kUsbModel;
-  usb_printer.printer.mutable_ppd_reference()->effective_make_and_model =
-      kEffectiveMakeAndModel;
+  chromeos::Printer::PpdReference ppd_reference;
+  ppd_reference.effective_make_and_model = kEffectiveMakeAndModel;
+  chromeos::PrinterSearchData ppd_search_data;
+  ppd_search_data.usb_vendor_id = kVendorId,
+  ppd_search_data.usb_product_id = kProductId,
+  ppd_search_data.usb_manufacturer = kUsbManufacturer,
+  ppd_search_data.usb_model = kUsbModel,
 
-  tracker_.RecordUsbPrinterInstalled(usb_printer,
+  tracker_.RecordUsbPrinterInstalled(ppd_reference, ppd_search_data,
                                      PrinterEventTracker::SetupMode::kUser);
 
   auto events = GetEvents();
@@ -336,13 +337,13 @@ TEST_F(PrinterEventTrackerTest, AbandonedNetworkPrinter) {
 TEST_F(PrinterEventTrackerTest, AbandonedUsbPrinter) {
   tracker_.set_logging(true);
 
-  PrinterDetector::DetectedPrinter usb_printer;
-  usb_printer.ppd_search_data.usb_vendor_id = kVendorId;
-  usb_printer.ppd_search_data.usb_product_id = kProductId;
-  usb_printer.ppd_search_data.usb_manufacturer = kUsbManufacturer;
-  usb_printer.ppd_search_data.usb_model = kUsbModel;
+  chromeos::PrinterSearchData ppd_search_data;
+  ppd_search_data.usb_vendor_id = kVendorId;
+  ppd_search_data.usb_product_id = kProductId;
+  ppd_search_data.usb_manufacturer = kUsbManufacturer;
+  ppd_search_data.usb_model = kUsbModel;
 
-  tracker_.RecordUsbSetupAbandoned(usb_printer);
+  tracker_.RecordUsbSetupAbandoned(ppd_search_data);
 
   auto events = GetEvents();
   ASSERT_FALSE(events.empty());

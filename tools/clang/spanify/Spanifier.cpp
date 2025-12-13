@@ -33,10 +33,27 @@ using namespace clang::ast_matchers;
 
 namespace {
 
+// Specifies how `EmitContainerPointerRewrites()` should behave.
+enum class ContainerPointerRewritesMode {
+  // When `container` is not (and will not be) a span, but is fed into a
+  // spanified context (e.g. a spanified function), `container` must be
+  // wrapped in `base::span()`.
+  kWrapWithBaseSpan,
+
+  // When `container` will be a span, but is positioned on a frontier
+  // (and must have `.data()` appended), `container` should not be
+  // re-wrapped in `base::span`.
+  kDontWrapWithBaseSpan,
+};
+
 // Forward declarations
 std::string GetArraySize(const clang::ArrayTypeLoc& array_type_loc,
                          const clang::SourceManager& source_manager,
                          const clang::ASTContext& ast_context);
+clang::SourceLocation EmitContainerPointerRewrites(
+    const MatchFinder::MatchResult& result,
+    std::string_view key,
+    ContainerPointerRewritesMode mode);
 
 // For debugging/assertions. Dump the match result to stderr.
 void DumpMatchResult(const MatchFinder::MatchResult& result) {
@@ -88,6 +105,78 @@ enum Precedence {
   // Higher priority (stronger ties to the target)
 };
 
+// Returns true if the `loc` is inside a macro expansion, except for the case
+// that the `loc` is at a macro argument of the exceptional macros (EXPECT_ and
+// ASSERT_ family).
+// Tests are in: gtest-macro-original.cc
+bool IsInExcludedMacro(clang::SourceLocation loc,
+                       const clang::ASTContext& ast_context,
+                       const clang::SourceManager& source_manager) {
+  if (!loc.isMacroID()) [[likely]] {
+    return false;
+  }
+
+  // Get the outermost macro name which takes a macro argument at `loc`. Macros
+  // are often implemented with nested macros, and the outermost macro is the
+  // most interesting for us.
+  //
+  // Example:
+  //     #define TOP_MACRO(arg) do { INNER_MACRO(arg); } while (false)
+  //     #define INNER_MACRO(arg2) arg2 += 1
+  //     TOP_MACRO(var);
+  // then, the macro expansion will be
+  //     do { var += 1; } while (false);
+  // When `loc` is at "var" (of "var += 1"), we're interested in the macro name
+  // "TOP_MACRO" rather than "INNER_MACRO".
+  std::string outermost_macro_name;
+  while (source_manager.isMacroArgExpansion(loc)) {
+    outermost_macro_name = std::string(clang::Lexer::getImmediateMacroName(
+        loc, source_manager, ast_context.getLangOpts()));
+    loc = source_manager.getImmediateSpellingLoc(loc);
+  }
+
+  if (loc.isMacroID()) {
+    // This branch handles the following case:
+    //     #define EXPECT_TRUE(expect_arg) if (expect_arg) ; else Crash()
+    //     #define MY_MACRO() EXPECT_TRUE(immediate_value)
+    //     MY_MACRO();
+    // The macro expansion will be:
+    //     if (immediate_value) ; else Crash();
+    // When (the original value of) `loc` was at "immediate_value" (of
+    // "if (immediate_value)"), it was inside a macro expansion of MY_MACRO,
+    // which should be excluded (at least for now).
+    return true;
+  }
+
+  // When `loc` is at a macro argument of the following macros, we'll attempt
+  // the regular rewriting.
+  if (outermost_macro_name.starts_with("ASSERT_") ||
+      outermost_macro_name == "CHECK" ||
+      outermost_macro_name.starts_with("CHECK_") ||
+      outermost_macro_name == "DCHECK" ||
+      outermost_macro_name.starts_with("DCHECK_") ||
+      outermost_macro_name.starts_with("EXPECT_")) {
+    return false;
+  }
+
+  return true;
+}
+
+// Returns true if the Node is inside a macro expansion, except for the case
+// that the Node is inside a macro argument of the exceptional macros (EXPECT_
+// and ASSERT_ family).
+// Tests are in: gtest-macro-original.cc
+AST_POLYMORPHIC_MATCHER(isInExcludedMacroLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  auto loc = Node.getBeginLoc();
+  const clang::ASTContext& ast_context = Finder->getASTContext();
+  const clang::SourceManager& source_manager = ast_context.getSourceManager();
+
+  return IsInExcludedMacro(std::move(loc), ast_context, source_manager);
+}
+
 // This iterates over function parameters and matches the ones that match
 // parm_var_decl_matcher.
 AST_MATCHER_P(clang::FunctionDecl,
@@ -96,12 +185,13 @@ AST_MATCHER_P(clang::FunctionDecl,
               parm_var_decl_matcher) {
   const clang::FunctionDecl& function_decl = Node;
 
-  unsigned num_params = function_decl.getNumParams();
+  const unsigned num_params = function_decl.getNumParams();
   bool is_matching = false;
   clang::ast_matchers::internal::BoundNodesTreeBuilder result;
   for (unsigned i = 0; i < num_params; i++) {
     const clang::ParmVarDecl* param = function_decl.getParamDecl(i);
-    clang::ast_matchers::internal::BoundNodesTreeBuilder param_matches;
+    clang::ast_matchers::internal::BoundNodesTreeBuilder param_matches(
+        *Builder);
     if (parm_var_decl_matcher.matches(*param, Finder, &param_matches)) {
       is_matching = true;
       result.addMatch(param_matches);
@@ -433,11 +523,10 @@ void EmitFrontier(const std::string& lhs_key,
   Emit(llvm::formatv("f {0} {1} {2}\n", lhs_key, rhs_key, replacement));
 }
 
-static std::string GetReplacementDirective(
-    const clang::SourceRange& replacement_range,
-    std::string replacement_text,
-    const clang::SourceManager& source_manager,
-    int precedence = kNeutralPrecedence) {
+std::string GetReplacementDirective(const clang::SourceRange& replacement_range,
+                                    std::string replacement_text,
+                                    const clang::SourceManager& source_manager,
+                                    int precedence = kNeutralPrecedence) {
   clang::tooling::Replacement replacement(
       source_manager, clang::CharSourceRange::getCharRange(replacement_range),
       replacement_text);
@@ -479,6 +568,29 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
   return node;
 }
 
+// Returns a function that, given the SourceLocation argument, tries to get the
+// spelling location (= the original code location before macro expansion) if
+// the given SourceLocation is at a macro argument.
+//
+// Note that `source_manager` and `lang_opts` arguments must outlive the
+// returned function because the returned function references them.
+//
+// Tests are in: gtest-macro-original.cc
+std::function<clang::SourceLocation(clang::SourceLocation)> GetSpellingLocFunc(
+    const clang::SourceManager& source_manager [[clang::lifetimebound]],
+    const clang::LangOptions& lang_opts [[clang::lifetimebound]]) {
+  return [&](clang::SourceLocation loc) -> clang::SourceLocation {
+    if (!loc.isMacroID()) [[likely]] {
+      return loc;
+    }
+    clang::SourceLocation original_loc = loc;
+    while (source_manager.isMacroArgExpansion(loc)) {
+      loc = source_manager.getImmediateSpellingLoc(loc);
+    }
+    return loc.isValid() && loc.isFileID() ? loc : original_loc;
+  };
+}
+
 // The semantics of `getBeginLoc()` and `getEndLoc()` are somewhat
 // surprising (e.g. https://stackoverflow.com/a/59718238). This function
 // tries to do the least surprising thing, specializing for
@@ -488,47 +600,82 @@ const T* GetNodeOrCrash(const MatchFinder::MatchResult& result,
 // *  `clang::CallExpr`
 //
 // and defaults to returning the range of token `expr`.
-clang::SourceRange getExprRange(const clang::Expr* expr,
+clang::SourceRange GetExprRange(const clang::Expr& expr,
                                 const clang::SourceManager& source_manager,
-                                const clang::LangOptions& lang_options) {
-  if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(expr)) {
-    clang::SourceLocation begin_loc = member_expr->getMemberLoc();
+                                const clang::LangOptions& lang_opts) {
+  auto ToSpellingLoc = GetSpellingLocFunc(source_manager, lang_opts);
+
+  if (const auto* member_expr = clang::dyn_cast<clang::MemberExpr>(&expr)) {
+    clang::SourceLocation member_loc =
+        ToSpellingLoc(member_expr->getMemberLoc());
     size_t member_name_length = member_expr->getMemberDecl()->getName().size();
-    clang::SourceLocation end_loc =
-        begin_loc.getLocWithOffset(member_name_length);
-    return {begin_loc, end_loc};
+    return {member_loc, member_loc.getLocWithOffset(member_name_length)};
   }
 
-  if (const auto* decl_ref = clang::dyn_cast<clang::DeclRefExpr>(expr)) {
+  if (const auto* decl_ref = clang::dyn_cast<clang::DeclRefExpr>(&expr)) {
+    assert(decl_ref->getBeginLoc() == decl_ref->getEndLoc() &&
+           "DeclRefExpr doesn't have the expected end loc.");
+    clang::SourceLocation begin_loc = ToSpellingLoc(decl_ref->getBeginLoc());
     auto name = decl_ref->getNameInfo().getName().getAsString();
-    return {decl_ref->getBeginLoc(),
-            decl_ref->getEndLoc().getLocWithOffset(name.size())};
+    return {begin_loc, begin_loc.getLocWithOffset(name.size())};
   }
 
-  if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(expr)) {
-    return {call_expr->getBeginLoc(),
-            call_expr->getRParenLoc().getLocWithOffset(1)};
+  if (const auto* call_expr = clang::dyn_cast<clang::CallExpr>(&expr)) {
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MY_MACRO(func) func
+    //     MY_MACRO(func)(arg1, arg2);
+    //     // The returned range will be `func)(arg1, arg2)`.
+    return {ToSpellingLoc(call_expr->getBeginLoc()),
+            ToSpellingLoc(call_expr->getRParenLoc()).getLocWithOffset(1)};
   }
 
-  if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
-    return {expr->getBeginLoc(),
-            getExprRange(binary_op->getRHS(), source_manager, lang_options)
-                .getEnd()};
+  if (auto* binary_op = clang::dyn_cast<clang::BinaryOperator>(&expr)) {
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MY_MACRO(arg) arg
+    //     MY_MACRO(1) + 2;  // The returned range will be `1) + 2`.
+    //     MY_MACRO(1 +) 2;  // The returned range will be `1 +) 2`.
+    return {
+        ToSpellingLoc(expr.getBeginLoc()),
+        GetExprRange(*binary_op->getRHS(), source_manager, lang_opts).getEnd()};
   }
 
-  return {
-      expr->getBeginLoc(),
-      clang::Lexer::getLocForEndOfToken(expr->getEndLoc(), 0u, source_manager,
-                                        lang_options),
-  };
+  if (auto* uett_expr =
+          clang::dyn_cast<clang::UnaryExprOrTypeTraitExpr>(&expr)) {
+    if (uett_expr->getKind() == clang::UETT_SizeOf) {
+      // Somehow in case of sizeof expr, the last token is not included in the
+      // source range. So skip the next token after the end loc.
+      assert(expr.getBeginLoc() != expr.getEndLoc());
+      clang::SourceLocation begin_loc = ToSpellingLoc(expr.getBeginLoc());
+      clang::SourceLocation end_loc = ToSpellingLoc(expr.getEndLoc());
+      size_t token_length =
+          clang::Lexer::MeasureTokenLength(end_loc, source_manager, lang_opts);
+      return {begin_loc, end_loc.getLocWithOffset(token_length)};
+    }
+  }
+
+  // Somehow single token expressions do not have the expected end location.
+  const clang::SourceLocation begin_location = expr.getBeginLoc();
+  const clang::SourceLocation end_location = expr.getEndLoc();
+  if (begin_location != end_location) {
+    llvm::errs() << "Error: expected token with unhelpful `SourceLocation`s, "
+                    "but got:\n  "
+                 << begin_location.printToString(source_manager) << "\nand\n  "
+                 << end_location.printToString(source_manager) << "\n";
+    assert(false && "Defaults to a single token expr.");
+  }
+
+  clang::SourceLocation begin_loc = ToSpellingLoc(expr.getBeginLoc());
+  size_t token_length =
+      clang::Lexer::MeasureTokenLength(begin_loc, source_manager, lang_opts);
+  return {begin_loc, begin_loc.getLocWithOffset(token_length)};
 }
 
 std::string GetTypeAsString(const clang::QualType& qual_type,
                             const clang::ASTContext& ast_context) {
   clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
   printing_policy.SuppressScope = 0;
+  printing_policy.SuppressTagKeyword = 0;
   printing_policy.SuppressUnwrittenScope = 1;
-  printing_policy.SuppressElaboration = 0;
   printing_policy.SuppressInlineNamespace = 1;
   printing_policy.SuppressDefaultTemplateArgs = 1;
   printing_policy.PrintAsCanonical = 0;
@@ -540,43 +687,55 @@ std::string GetTypeAsString(const clang::QualType& qual_type,
 // type* ptr = reinterpret_cast<type*>(buf);  where buf needs to be rewritten
 // to span and ptr doesn't. The `.data()` call is added right after buffer as
 // follows: type* ptr = reinterpret_cast<type*>(buf.data());
-static clang::SourceRange getSourceRange(
-    const MatchFinder::MatchResult& result) {
+clang::SourceRange getSourceRange(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+
+  auto ToSpellingLoc = GetSpellingLocFunc(source_manager, lang_opts);
+
   if (auto* op =
           result.Nodes.getNodeAs<clang::UnaryOperator>("unaryOperator")) {
     if (op->isPostfix()) {
-      return {op->getBeginLoc(), op->getEndLoc().getLocWithOffset(2)};
+      return {ToSpellingLoc(op->getBeginLoc()),
+              ToSpellingLoc(op->getEndLoc()).getLocWithOffset(2)};
     }
     auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
-    return {op->getBeginLoc(),
-            getExprRange(expr, source_manager, lang_opts).getEnd()};
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MACRO(var) var
+    //     ++MACRO(rhs);  // The range will be `++MACRO(rhs`.
+    return {ToSpellingLoc(op->getBeginLoc()),
+            GetExprRange(*expr, source_manager, lang_opts).getEnd()};
   }
+
   if (auto* op = result.Nodes.getNodeAs<clang::Expr>("binaryOperator")) {
     auto* sub_expr = result.Nodes.getNodeAs<clang::Expr>("binary_op_rhs");
-    auto end_loc = getExprRange(sub_expr, source_manager, lang_opts).getEnd();
-    return {op->getBeginLoc(), end_loc};
+    auto end_loc = GetExprRange(*sub_expr, source_manager, lang_opts).getEnd();
+    // Disclaimer: This doesn't support edge cases like following.
+    //     #define MACRO(var) var
+    //     MACRO(lhs) + MACRO(rhs);  // The range will be `lhs) + MACRO(rhs`.
+    return {ToSpellingLoc(op->getBeginLoc()), end_loc};
   }
+
   if (auto* op = result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
           "raw_ptr_operator++")) {
     auto* callee = op->getDirectCallee();
     if (callee->getNumParams() == 0) {  // postfix op++ on raw_ptr;
       auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
       return clang::SourceRange(
-          getExprRange(expr, source_manager, lang_opts).getEnd());
+          GetExprRange(*expr, source_manager, lang_opts).getEnd());
     }
-    return clang::SourceRange(op->getEndLoc().getLocWithOffset(2));
+    return clang::SourceRange(
+        ToSpellingLoc(op->getEndLoc()).getLocWithOffset(2));
   }
 
   if (auto* expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr")) {
     return clang::SourceRange(
-        getExprRange(expr, source_manager, lang_opts).getEnd());
+        GetExprRange(*expr, source_manager, lang_opts).getEnd());
   }
 
   if (auto* size_expr = result.Nodes.getNodeAs<clang::Expr>("size_node")) {
     return clang::SourceRange(
-        getExprRange(size_expr, source_manager, lang_opts).getEnd());
+        GetExprRange(*size_expr, source_manager, lang_opts).getEnd());
   }
 
   // Not supposed to get here.
@@ -592,57 +751,29 @@ static clang::SourceRange getSourceRange(
   assert(false && "Unexpected match in getSourceRange()");
 }
 
-static void maybeUpdateSourceRangeIfInMacro(
-    const clang::SourceManager& source_manager,
-    const MatchFinder::MatchResult& result,
-    clang::SourceRange& range) {
-  if (!range.isValid() || !range.getBegin().isMacroID()) {
-    return;
+// Unwraps typedef type locs and returns the body type loc.
+//
+// Note that using-declared types are also represented with typedef types in
+// clang, so this function works for both 'typedef' and 'using' declarations.
+//
+// Example TypeLoc structures:
+//     // Given T2 where typedef int T1; using T2 = T1;
+//     TypedefTypeLoc('T2')
+//       --(getDecl)--> TypedefTypeLoc('T1')
+//         --(getDecl)--> BuiltinTypeLoc('int')
+//     => returns BuiltinTypeLoc('int').
+clang::TypeLoc UnwrapTypedefTypeLoc(clang::TypeLoc type_loc) {
+  while (const clang::TypedefTypeLoc typedef_type_loc =
+             type_loc.getAs<clang::TypedefTypeLoc>()) {
+    const clang::TypedefNameDecl* typedef_name_decl =
+        typedef_type_loc.getDecl();
+    type_loc = typedef_name_decl->getTypeSourceInfo()->getTypeLoc();
   }
-  // We need to find the reference to the object that might be getting
-  // accessed and rewritten to find the location to rewrite. SpellingLocation
-  // returns a different position if the source was pointing into the macro
-  // definition. See clang::SourceManager for details but relevant section:
-  //
-  // "Spelling locations represent where the bytes corresponding to a token came
-  // from and expansion locations represent where the location is in the user's
-  // view. In the case of a macro expansion, for example, the spelling location
-  // indicates where the expanded token came from and the expansion location
-  // specifies where it was expanded."
-  auto* rhs_decl_ref =
-      result.Nodes.getNodeAs<clang::DeclRefExpr>("declRefExpr");
-  if (!rhs_decl_ref) {
-    return;
-  }
-  // We're extracting the spellingLocation's position and then we'll move the
-  // location forward by the length of the variable. This will allow us to
-  // insert .data() at the end of the decl_ref.
-  clang::SourceLocation correct_start =
-      source_manager.getSpellingLoc(rhs_decl_ref->getLocation());
-
-  bool invalid_line, invalid_col = false;
-  auto line =
-      source_manager.getSpellingLineNumber(correct_start, &invalid_line);
-  auto col =
-      source_manager.getSpellingColumnNumber(correct_start, &invalid_col);
-  assert(correct_start.isValid() && !invalid_line && !invalid_col &&
-         "Unable to get SpellingLocation info");
-  // Get the name and find the end of the decl_ref.
-  std::string name = rhs_decl_ref->getFoundDecl()->getNameAsString();
-  clang::SourceLocation correct_end = source_manager.translateLineCol(
-      source_manager.getFileID(correct_start), line, col + name.size());
-  assert(correct_end.isValid() &&
-         "Incorrectly got an End SourceLocation for macro");
-  // This returns at the end of the variable being referenced so we can
-  // insert .data(), if we wanted it wrapped in params (variable).data()
-  // we'd need {correct_start, correct_end} but this doesn't seem needed in
-  // macros tested on so far.
-  range = clang::SourceRange{correct_end};
+  return type_loc;
 }
 
-static std::string getNodeFromPointerTypeLoc(
-    const clang::PointerTypeLoc* type_loc,
-    const MatchFinder::MatchResult& result) {
+std::string getNodeFromPointerTypeLoc(const clang::PointerTypeLoc* type_loc,
+                                      const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -715,7 +846,7 @@ static std::string getNodeFromPointerTypeLoc(
   return key;
 }
 
-static std::string getNodeFromRawPtrTypeLoc(
+std::string getNodeFromRawPtrTypeLoc(
     const clang::TemplateSpecializationTypeLoc* raw_ptr_type_loc,
     const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -738,7 +869,7 @@ static std::string getNodeFromRawPtrTypeLoc(
 // Example:
 //    void fct(int arr[])  => void fct(base::span<int> arr)
 //    void fct(int arr[3]) => void fct(base::span<int, 3> arr)
-static std::string getNodeFromFunctionArrayParameter(
+std::string getNodeFromFunctionArrayParameter(
     const clang::TypeLoc* type_loc,
     const clang::ParmVarDecl* param_decl,
     const MatchFinder::MatchResult& result) {
@@ -785,8 +916,8 @@ static std::string getNodeFromFunctionArrayParameter(
   return key;
 }
 
-static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
-                                   const MatchFinder::MatchResult& result) {
+std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
+                            const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
 
@@ -825,7 +956,7 @@ static std::string getNodeFromDecl(const clang::DeclaratorDecl* decl,
   return key;
 }
 
-static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
+void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
   const clang::Expr* deref_expr =
       result.Nodes.getNodeAs<clang::Expr>("deref_expr");
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -853,7 +984,7 @@ static void DecaySpanToPointer(const MatchFinder::MatchResult& result) {
                               kDecaySpanToPointerPrecedence));
 }
 
-static clang::SourceLocation GetBinaryOperationOperatorLoc(
+clang::SourceLocation GetBinaryOperationOperatorLoc(
     const clang::Expr* expr,
     const MatchFinder::MatchResult& result) {
   if (auto* binary_op = clang::dyn_cast_or_null<clang::BinaryOperator>(expr)) {
@@ -899,7 +1030,7 @@ struct CheckedCastReplacement {
 using SubspanExprReplacement =
     std::variant<std::monostate, RangedReplacement, CheckedCastReplacement>;
 
-static SubspanExprReplacement GetSubspanExprReplacement(
+SubspanExprReplacement GetSubspanExprReplacement(
     const clang::Expr* expr,
     const MatchFinder::MatchResult& result,
     std::string_view key) {
@@ -916,7 +1047,7 @@ static SubspanExprReplacement GetSubspanExprReplacement(
 
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::SourceRange range =
-      getExprRange(expr, source_manager, result.Context->getLangOpts());
+      GetExprRange(*expr, source_manager, result.Context->getLangOpts());
 
   if (const auto* integer_literal =
           clang::dyn_cast<clang::IntegerLiteral>(expr)) {
@@ -946,8 +1077,8 @@ static SubspanExprReplacement GetSubspanExprReplacement(
 //     #define MACRO() (will_be_span + offset)
 //
 // See test: 'span-frontier-macro-original.cc'
-static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
-                                 const std::string& key) {
+void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
+                          const std::string& key) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -965,7 +1096,7 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 
   EmitReplacement(
       key, GetReplacementDirective(
-               getExprRange(decl_ref, source_manager, lang_opts).getEnd(),
+               GetExprRange(*decl_ref, source_manager, lang_opts).getEnd(),
                ".data()", source_manager));
 
   clang::CharSourceRange macro_range =
@@ -983,7 +1114,7 @@ static void AdaptBinaryOpInMacro(const MatchFinder::MatchResult& result,
 // Closes an open `base::span(` if present.
 // Returns a `.subspan(` opener.
 // Opens a `base::checked_cast(` if necessary.
-static std::string CreateSubspanOpener(
+std::string CreateSubspanOpener(
     std::string_view prefix,
     const SubspanExprReplacement* subspan_expr_replacement) {
   std::string_view maybe_checked_cast_opener = "";
@@ -997,7 +1128,7 @@ static std::string CreateSubspanOpener(
 // Returns a `.subspan(` closer.
 // Closes an open `base::checked_cast(` if necessary,
 // or appends a `u` to the integer literal expression.
-static std::string CreateSubspanCloser(
+std::string CreateSubspanCloser(
     const SubspanExprReplacement* subspan_expr_replacement) {
   std::string_view maybe_closer = "";
   if (const auto* replacement =
@@ -1010,7 +1141,8 @@ static std::string CreateSubspanCloser(
   return llvm::formatv("{0})", maybe_closer);
 }
 
-static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
+void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
+  const clang::ASTContext& ast_context = *result.Context;
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto* binary_operation =
       GetNodeOrCrash<clang::Expr>(result, "binary_operation", __FUNCTION__);
@@ -1020,8 +1152,9 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
 
   // If `binary_operation` and `rhs_expr` appear inside a macro expansion, then
   // add ".data()" call in the call site instead of adding ".subspan(offset)".
-  if (binary_operation->getBeginLoc().isMacroID() &&
-      rhs_expr->getBeginLoc().isMacroID()) {
+  if (IsInExcludedMacro(binary_operation->getBeginLoc(), ast_context,
+                        source_manager) &&
+      IsInExcludedMacro(rhs_expr->getBeginLoc(), ast_context, source_manager)) {
     AdaptBinaryOpInMacro(result, key);
     return;
   }
@@ -1080,8 +1213,8 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
           {binary_operator_begin, binary_operator_begin.getLocWithOffset(1)},
           subspan_opener, source_manager, -kAdaptBinaryOperationPrecedence));
 
-  const clang::SourceRange operator_rhs_range = getExprRange(
-      binary_op_RHS, source_manager, result.Context->getLangOpts());
+  const clang::SourceRange operator_rhs_range = GetExprRange(
+      *binary_op_RHS, source_manager, result.Context->getLangOpts());
 
   std::string subspan_closer = CreateSubspanCloser(&subspan_expr_replacement);
   EmitReplacement(key, GetReplacementDirective(
@@ -1096,7 +1229,7 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
                                            source_manager));
 }
 
-static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
+void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
@@ -1111,9 +1244,9 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
   // respectively.
   auto* lhs_expr = result.Nodes.getNodeAs<clang::Expr>("rhs_expr");
   auto* binary_op_RHS = result.Nodes.getNodeAs<clang::Expr>("binary_op_RHS");
-  auto lhs_expr_range = getExprRange(lhs_expr, source_manager, lang_opts);
+  auto lhs_expr_range = GetExprRange(*lhs_expr, source_manager, lang_opts);
   auto binary_op_rhs_range =
-      getExprRange(binary_op_RHS, source_manager, lang_opts);
+      GetExprRange(*binary_op_RHS, source_manager, lang_opts);
   auto source_range = clang::SourceRange(lhs_expr_range.getEnd(),
                                          binary_op_rhs_range.getBegin());
 
@@ -1147,7 +1280,7 @@ static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
 //   if(expr) => if(!expr.empty())
 //   if(!expr) => if(expr.empty())
 // Tests are in: operator-bool-original.cc
-static void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
+void DecaySpanToBooleanOp(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string& key = GetRHS(result);
 
@@ -1206,23 +1339,28 @@ void EraseMemberCall(const std::string& node,
 // Return a replacement that appends `.data()` to the matched expression.
 void AppendDataCall(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
+  const std::string key = GetRHS(result);
   auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
 
   std::string replacement_text = ".data()";
 
   if (result.Nodes.getNodeAs<clang::Expr>("unaryOperator")) {
-    // Insert enclosing parenthesis for expressions with UnaryOperators
-    auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
-    EmitReplacement(GetRHS(result),
-                    GetReplacementDirective(begin_range, "(", source_manager,
-                                            kAppendDataCallPrecedence));
-    replacement_text = ").data()";
+    if (result.Nodes.getNodeAs<clang::Expr>("container_buff_address")) {
+      rep_range = EmitContainerPointerRewrites(
+          result, key, ContainerPointerRewritesMode::kDontWrapWithBaseSpan);
+    } else {
+      // Insert enclosing parenthesis for expressions with UnaryOperators
+      auto begin_range = clang::SourceRange(getSourceRange(result).getBegin());
+      EmitReplacement(key,
+                      GetReplacementDirective(begin_range, "(", source_manager,
+                                              kAppendDataCallPrecedence));
+      replacement_text = ").data()";
+    }
   }
 
   EmitReplacement(
-      GetRHS(result),
-      GetReplacementDirective(rep_range, replacement_text, source_manager,
-                              -kAppendDataCallPrecedence));
+      key, GetReplacementDirective(rep_range, replacement_text, source_manager,
+                                   -kAppendDataCallPrecedence));
 }
 
 // Given that we want to emit `.subspan(expr)`,
@@ -1257,97 +1395,152 @@ void RewriteExprForSubspan(const clang::Expr* expr,
   }
 }
 
-// Handle the case where we match `&container[<offset>]` being used as a buffer.
-void EmitContainerPointerRewrites(const MatchFinder::MatchResult& result,
-                                  const std::string& key) {
-  auto replacement_range =
-      GetNodeOrCrash<clang::UnaryOperator>(
-          result, "container_buff_address",
-          "`container_buff_address` previously expected here")
-          ->getSourceRange();
-  replacement_range.setEnd(replacement_range.getEnd().getLocWithOffset(1));
-  const auto& container_decl_ref = *GetNodeOrCrash<clang::DeclRefExpr>(
-      result, "container_decl_ref",
-      "`container_buff_address` implies `container_decl_ref`");
+// Helper function for `EmitContainerPointerRewrites()`.
+//
+// A `&container[offset]` could either be
+// *  a C-style array subscript or
+// *  something with `operator[]` defined.
+//
+// This function helps find the right bracket in either case.
+clang::SourceLocation FindRightBracket(const MatchFinder::MatchResult& result,
+                                       const clang::Expr* subscript_expr) {
+  if (const auto* array_subscript_expr =
+          clang::dyn_cast<clang::ArraySubscriptExpr>(subscript_expr)) {
+    return array_subscript_expr->getRBracketLoc();
+  } else if (const auto* operator_subscript_expr =
+                 clang::dyn_cast<clang::CXXOperatorCallExpr>(subscript_expr)) {
+    return operator_subscript_expr->getRParenLoc();
+  }
+  llvm::errs() << "Error: no matching cast for `subscript_expr` in "
+               << __FUNCTION__ << "\n";
+  DumpMatchResult(result);
+  assert(false);
+}
 
-  std::string container_name = container_decl_ref.getNameInfo().getAsString();
-  std::string replacement_text;
+// Helper function for `EmitContainerPointerRewrites()`.
+//
+// Same motivation as `FindRightBracket()`; returns the expression inside the
+// square brackets.
+const clang::Expr* GetIndexExprForSubspan(
+    const MatchFinder::MatchResult& result,
+    const clang::Expr* subscript_expr) {
+  if (const auto* array_subscript_expr =
+          clang::dyn_cast<clang::ArraySubscriptExpr>(subscript_expr)) {
+    return array_subscript_expr->getIdx();
+  } else if (const auto* operator_subscript_expr =
+                 clang::dyn_cast<clang::CXXOperatorCallExpr>(subscript_expr)) {
+    assert(operator_subscript_expr->getNumArgs() == 2u);
+
+    // Call `IgnoreImpCasts()` to see past the implicit promotion to
+    // `...::size_type` and see the "original" type of the expression.
+    return operator_subscript_expr->getArg(1u)->IgnoreImpCasts();
+  }
+  llvm::errs() << "Error: no matching cast for `subscript_expr` in "
+               << __FUNCTION__ << "\n";
+  DumpMatchResult(result);
+  assert(false);
+}
+
+// Handles `&container[offset]` being used as a buffer.
+//
+// To handle a value passed into a newly spanified function:
+// 1. replaces `&` with `base::span<T>(`
+// 2. replaces `[` with `).subspan(`
+// 3. fixes up the `offset` expression if necessary
+// 4. replaces `]` with `)`
+//
+// To handle a frontier value inside a newly spanified function:
+// [skip step 1]
+// 2. replaces `[` with `.subspan(`
+// etc.
+//
+// Returns the source location just beyond the right-hand bracket.
+clang::SourceLocation EmitContainerPointerRewrites(
+    const MatchFinder::MatchResult& result,
+    std::string_view key,
+    ContainerPointerRewritesMode mode) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::LangOptions& lang_opts = result.Context->getLangOpts();
+  auto replacement_range = GetNodeOrCrash<clang::UnaryOperator>(
+                               result, "unaryOperator", __FUNCTION__)
+                               ->getSourceRange();
+
+  // Stretch across the `&`.
+  replacement_range.setEnd(replacement_range.getBegin().getLocWithOffset(1));
+
+  const auto* subscript_expr =
+      GetNodeOrCrash<clang::Expr>(result, "subscript_expr", __FUNCTION__);
+
+  std::string_view declref_bind_name = "container_decl_ref";
+  std::string_view subspan_opener = ").subspan(";
+  if (mode == ContainerPointerRewritesMode::kDontWrapWithBaseSpan) {
+    declref_bind_name = "rhs_expr";
+    subspan_opener = ".subspan(";
+  }
+
+  const auto& container_decl_ref =
+      *GetNodeOrCrash<clang::Expr>(result, declref_bind_name, __FUNCTION__);
+  const clang::SourceLocation left_bracket =
+      GetExprRange(container_decl_ref, source_manager, lang_opts).getEnd();
+  clang::SourceLocation right_bracket =
+      FindRightBracket(result, subscript_expr);
 
   // Special case: we detected and bound a zero offset (`&buf[0]`).
-  // We need not emit a `.subspan(...)`.
+  // Rather than emit a `.subspan(...)`, we delete the subscript
+  // expression entirely.
   if (result.Nodes.getNodeAs<clang::IntegerLiteral>("zero_container_offset")) {
-    replacement_text = container_name;
-  } else {
-    // Dance around the offset expression and emit one replacement on
-    // either side of it:
-    // `base::span<T>(container_decl_ref).subspan(` <offset> `)`
-
-    // Ready and emit the first replacement; pull the replacement
-    // range back to the opening bracket of the container.
-    replacement_range.setEnd(
-        container_decl_ref.getSourceRange().getBegin().getLocWithOffset(
-            container_name.length() + 1u));
-    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
-        result, "contained_type",
-        "`container_buff_address` implies `contained_type`");
-    replacement_text = llvm::formatv(
-        "base::span<{0}>({1}).subspan(",
-        GetTypeAsString(contained_type, *result.Context), container_name);
-    std::string replacement_directive = GetReplacementDirective(
-        replacement_range, std::move(replacement_text), *result.SourceManager);
-    EmitReplacement(key, replacement_directive);
-
-    // Ready the second replacement; advance the replacement range to
-    // the closing bracket (beyond the offset expression).
-    if (const auto* container_subscript =
-            result.Nodes.getNodeAs<clang::CXXOperatorCallExpr>(
-                "container_subscript")) {
-      // 1. implicit `this` arg and
-      // 2. the subscript expression.
-      if (container_subscript->getNumArgs() != 2u) {
-        llvm::errs() << "\nError: matched `operator[]`, expected exactly two "
-                        "args, but got "
-                     << container_subscript->getNumArgs() << "!\n";
-        DumpMatchResult(result);
-        assert(false && "apparently bogus `operator[]`");
-      }
-
-      // Call `IgnoreImpCasts()` to see past the implicit promotion to
-      // `...::size_type` and look at the "original" type of the
-      // expression.
-      RewriteExprForSubspan(container_subscript->getArg(1u)->IgnoreImpCasts(),
-                            result, key);
-
-      replacement_range = {
-          container_subscript->getRParenLoc(),
-          container_subscript->getRParenLoc().getLocWithOffset(1)};
-    } else {
-      // This is a C-style array.
-      const auto& c_style_array_with_subscript =
-          *GetNodeOrCrash<clang::ArraySubscriptExpr>(
-              result, "c_style_array_with_subscript",
-              "expected when `container_subscript` is not bound");
-      replacement_range = {
-          c_style_array_with_subscript.getEndLoc(),
-          c_style_array_with_subscript.getEndLoc().getLocWithOffset(1)};
-      const auto* subscript = GetNodeOrCrash<clang::Expr>(
-          result, "c_style_array_subscript",
-          "expected when `container_subscript` is not bound");
-      RewriteExprForSubspan(subscript, result, key);
-    }
-    // Close the call to `.subspan()`.
-    replacement_text = ")";
+    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
+                                                 *result.SourceManager));
+    replacement_range = {left_bracket, right_bracket.getLocWithOffset(1)};
+    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
+                                                 *result.SourceManager));
+    return right_bracket.getLocWithOffset(1);
   }
-  std::string replacement_directive = GetReplacementDirective(
-      replacement_range, std::move(replacement_text), *result.SourceManager);
-  EmitReplacement(key, replacement_directive);
+
+  // Step 1
+  if (mode == ContainerPointerRewritesMode::kWrapWithBaseSpan) {
+    // Emit the opening `base::span(`.
+    const auto& contained_type = *GetNodeOrCrash<clang::QualType>(
+        result, "contained_type", __FUNCTION__);
+    EmitReplacement(
+        key,
+        GetReplacementDirective(
+            replacement_range,
+            llvm::formatv("base::span<{0}>(",
+                          GetTypeAsString(contained_type, *result.Context)),
+            source_manager));
+  } else {
+    // Just delete the `&`.
+    EmitReplacement(key,
+                    GetReplacementDirective(
+                        replacement_range,
+                        // Mysteriously, emitting a pure deletion replacement
+                        // also eats the preceding comma in our test cases.
+                        " ", source_manager));
+  }
+
+  // Step 2
+  EmitReplacement(key, GetReplacementDirective(
+                           {left_bracket, left_bracket.getLocWithOffset(1)},
+                           std::string(subspan_opener), source_manager));
+
+  // Step 3
+  const clang::Expr* index = GetIndexExprForSubspan(result, subscript_expr);
+  assert(index);
+  RewriteExprForSubspan(index, result, key);
+
+  // Step 4
+  EmitReplacement(key, GetReplacementDirective(
+                           {right_bracket, right_bracket.getLocWithOffset(1)},
+                           ")", source_manager));
+  return right_bracket.getLocWithOffset(1);
 }
 
 // Handles code that passes address to a local variable as a single element
 // buffer. Wrap it with a span of size=1. Tests are in
 // single-element-buffer-original.cc.
-static void EmitSingleVariableSpan(const std::string& key,
-                                   const MatchFinder::MatchResult& result) {
+void EmitSingleVariableSpan(const std::string& key,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const auto& lang_opts = result.Context->getLangOpts();
 
@@ -1374,7 +1567,7 @@ static void EmitSingleVariableSpan(const std::string& key,
                            source_manager, kEmitSingleVariableSpanPrecedence));
   EmitReplacement(
       key, GetReplacementDirective(
-               getExprRange(operand_expr, source_manager, lang_opts).getEnd(),
+               GetExprRange(*operand_expr, source_manager, lang_opts).getEnd(),
                ")", source_manager, -kEmitSingleVariableSpanPrecedence));
 }
 
@@ -1394,10 +1587,9 @@ static void EmitSingleVariableSpan(const std::string& key,
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static void EmitUnsafeCxxMethodCall(
-    const std::string& key,
-    const clang::CXXMemberCallExpr* member_call_expr,
-    const MatchFinder::MatchResult& result) {
+void EmitUnsafeCxxMethodCall(const std::string& key,
+                             const clang::CXXMemberCallExpr* member_call_expr,
+                             const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* method_decl = GetNodeOrCrash<clang::CXXMethodDecl>(
@@ -1470,9 +1662,9 @@ static void EmitUnsafeCxxMethodCall(
 //
 // Tests are in: unsafe-function-to-macro-original.cc and
 // //base/containers/auto_spanification_helper_unittest.cc
-static void EmitUnsafeFreeFuncCall(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitUnsafeFreeFuncCall(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
 
   const auto* function_decl = GetNodeOrCrash<clang::FunctionDecl>(
@@ -1497,9 +1689,9 @@ static void EmitUnsafeFreeFuncCall(const std::string& key,
                                kBaseAutoSpanificationHelperIncludePath));
 }
 
-static void EmitUnsafeFunctionCall(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitUnsafeFunctionCall(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   if (const clang::CXXMemberCallExpr* member_call_expr =
           clang::dyn_cast<clang::CXXMemberCallExpr>(call_expr)) {
     EmitUnsafeCxxMethodCall(key, member_call_expr, result);
@@ -1519,9 +1711,9 @@ static void EmitUnsafeFunctionCall(const std::string& key,
 // separately.
 //
 // Tests are in: array-tests-original.cc
-static void EmitCArrayIterCallExpr(const std::string& key,
-                                   const clang::CallExpr* call_expr,
-                                   const MatchFinder::MatchResult& result) {
+void EmitCArrayIterCallExpr(const std::string& key,
+                            const clang::CallExpr* call_expr,
+                            const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::LangOptions& lang_opts = result.Context->getLangOpts();
 
@@ -1561,8 +1753,8 @@ static void EmitCArrayIterCallExpr(const std::string& key,
                                       kBaseAutoSpanificationHelperIncludePath));
 }
 
-static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
-                                       const MatchFinder::MatchResult& result) {
+std::string GetNodeFromSizeExpr(const clang::Expr* size_expr,
+                                const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const std::string key = NodeKey(size_expr, source_manager);
 
@@ -1604,7 +1796,8 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
   }
 
   if (result.Nodes.getNodeAs<clang::UnaryOperator>("container_buff_address")) {
-    EmitContainerPointerRewrites(result, key);
+    EmitContainerPointerRewrites(
+        result, key, ContainerPointerRewritesMode::kWrapWithBaseSpan);
   }
 
   EmitReplacement(key, GetIncludeDirective(replacement_range, source_manager));
@@ -1657,7 +1850,7 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 
   // Get the source range of the operand (the 'ptr' part).
   clang::SourceRange operand_range =
-      getExprRange(operand->IgnoreParenImpCasts(), source_manager, lang_opts);
+      GetExprRange(*operand->IgnoreParenImpCasts(), source_manager, lang_opts);
   assert(operand_range.isValid());
 
   clang::SourceLocation operator_end_loc = clang::Lexer::getLocForEndOfToken(
@@ -1758,12 +1951,6 @@ void AddSpanFrontierChange(const std::string& lhs_key,
   const clang::ASTContext& ast_context = *result.Context;
   const auto& lang_opts = ast_context.getLangOpts();
   auto rep_range = clang::SourceRange(getSourceRange(result).getEnd());
-
-  // If we're inside a macro the rep_range computed above is going to be
-  // incorrect because it will point into the file where the macro is defined.
-  // We need to get the "SpellingLocation", and then we figure out the end of
-  // the parameter so we can insert .data() at the end if needed.
-  maybeUpdateSourceRangeIfInMacro(source_manager, result, rep_range);
 
   std::string initial_text =
       clang::Lexer::getSourceText(
@@ -1962,7 +2149,7 @@ std::string RewriteCArrayToStdArray(const clang::QualType& type,
   return result.str();
 }
 
-static const clang::Expr* GetInitExpr(const clang::DeclaratorDecl* decl) {
+const clang::Expr* GetInitExpr(const clang::DeclaratorDecl* decl) {
   const clang::Expr* init_expr = nullptr;
   if (auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     init_expr = var_decl->getInit();
@@ -2174,7 +2361,7 @@ std::pair<std::string, std::string> RewriteStdArrayWithInitList(
       closing_brackets_replacement_directive);
 }
 
-static bool IsMutable(const clang::DeclaratorDecl* decl) {
+bool IsMutable(const clang::DeclaratorDecl* decl) {
   if (const auto* field_decl =
           clang::dyn_cast_or_null<clang::FieldDecl>(decl)) {
     return field_decl->isMutable();
@@ -2182,22 +2369,21 @@ static bool IsMutable(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
-static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
+bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isConstexpr();
   }
   return false;
 }
 
-static bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
+bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isInlineSpecified();
   }
   return false;
 }
 
-static bool IsStaticLocalOrStaticStorageClass(
-    const clang::DeclaratorDecl* decl) {
+bool IsStaticLocalOrStaticStorageClass(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isStaticLocal() ||
            var_decl->getStorageClass() == clang::SC_Static;
@@ -2318,23 +2504,15 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   if (!unnamed_class.empty()) {
     element_type_as_string = unnamed_class;
   } else if (original_element_type->isElaboratedTypeSpecifier()) {
-    // If the `original_element_type` is an elaborated type with a keyword, i.e.
-    // `struct`, `class`, `union`, we will create another ElaboratedType
-    // without the keyword. So `struct funcHasName` will be `funcHasHame`.
-    auto* original_type = new_element_type->getAs<clang::ElaboratedType>();
-
-    // Create a new ElaboratedType without 'struct', 'class', 'union'
-    // keywords.
-    auto new_element_type = ast_context.getElaboratedType(
-        // Use `None` to suppress tag names.
-        clang::ElaboratedTypeKeyword::None,
-        // Keep the same as the original.
-        original_type->getQualifier(),
-        // Keep the same as the original.
-        original_type->getNamedType(),
-        // Remove `OwnedTagDecl`. We don't need IncludeTagDefinition.
-        nullptr);
-    element_type_as_string = GetTypeAsString(new_element_type, ast_context);
+    // `GetTypeAsString` doesn't remove a tag keyword (struct, class, enum, or
+    // union), but we'd like to remove the tag keyword here.
+    clang::PrintingPolicy printing_policy(ast_context.getLangOpts());
+    printing_policy.SuppressTagKeyword = 1;
+    printing_policy.SuppressUnwrittenScope = 1;
+    printing_policy.SuppressInlineNamespace = 1;
+    printing_policy.SuppressDefaultTemplateArgs = 1;
+    printing_policy.PrintAsCanonical = 1;
+    element_type_as_string = new_element_type.getAsString(printing_policy);
   } else {
     element_type_as_string = RewriteCArrayToStdArray(
         new_element_type, array_type_loc.getElementLoc(), source_manager,
@@ -2466,8 +2644,7 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
 //   it == std::begin(c_array)
 //   it != std::end(c_array)
 // Tests are in: array-tests-original.cc
-static void RewriteComparisonWithCArrayIter(
-    const MatchFinder::MatchResult& result) {
+void RewriteComparisonWithCArrayIter(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
   const clang::CallExpr* call_expr = GetNodeOrCrash<clang::CallExpr>(
       result, "c_array_iter_call_expr",
@@ -2477,6 +2654,88 @@ static void RewriteComparisonWithCArrayIter(
   EmitCArrayIterCallExpr(rhs, call_expr, result);
   EmitEdge(lhs, rhs);
   EmitEdge(rhs, lhs);
+}
+
+// When a function declaration (= function type) gets rewritten, rewrites
+// variables of a function pointer type to which the function is assigned.
+//
+// Example:
+//     // function declaration being spanified
+//     int* func(int* arg);
+//     // function pointer variable to be spanified
+//     int* (*var)(int* arg) = func;
+// In the following implementation, `var` is called LHS and `func` is called
+// RHS.
+//
+// Tests are in: func-ptr-var-original.cc
+void RewriteFunctionPointerType(const MatchFinder::MatchResult& result) {
+  const clang::VarDecl* lhs_var_decl = GetNodeOrCrash<clang::VarDecl>(
+      result, "lhs_funcptrvardecl",
+      "The rewriting target variable of function pointer type must be bound.");
+
+  // Get the FunctionProtoTypeLoc of the LHS variable.
+  clang::FunctionProtoTypeLoc lhs_func_proto_type_loc;
+  {
+    const clang::TypeLoc var_type_loc =
+        UnwrapTypedefTypeLoc(lhs_var_decl->getTypeSourceInfo()->getTypeLoc());
+    if (var_type_loc.getAs<clang::AutoTypeLoc>() ||
+        var_type_loc.getAs<clang::DecltypeTypeLoc>()) {
+      return;  // No need to rewrite auto/decltype types.
+    }
+    const clang::PointerTypeLoc pointer_type_loc =
+        var_type_loc.getAs<clang::PointerTypeLoc>();
+    assert(pointer_type_loc && "Failed to get a PointerTypeLoc.");
+    clang::TypeLoc pointee_type_loc = pointer_type_loc.getPointeeLoc();
+    // Unwrap paren type locs.
+    while (clang::ParenTypeLoc paren_type_loc =
+               pointee_type_loc.getAs<clang::ParenTypeLoc>()) {
+      pointee_type_loc = paren_type_loc.getInnerLoc();
+    }
+    lhs_func_proto_type_loc =
+        pointee_type_loc.getAs<clang::FunctionProtoTypeLoc>();
+  }
+  assert(lhs_func_proto_type_loc && "Failed to get a FunctionProtoTypeLoc.");
+
+  // RHS matches with one of the parameter types or the return type of the
+  // function declaration. Rewrite the one matched.
+  const std::string& rhs_key = GetRHS(result);
+
+  // LHS matches with the function pointer type variable (not a parameter type
+  // nor return type unlike RHS). Find the parameter or return type
+  // corresponding to the RHS match, and rewrite it.
+  std::string lhs_key;
+  if (const clang::ParmVarDecl* rhs_parm_var_decl =
+          result.Nodes.getNodeAs<clang::ParmVarDecl>("rhs_begin")) {
+    // One of the function parameter types matches on RHS.
+    const unsigned parm_index = rhs_parm_var_decl->getFunctionScopeIndex();
+    const clang::ParmVarDecl* lhs_parm_var_decl =
+        lhs_func_proto_type_loc.getParam(parm_index);
+    const clang::TypeLoc lhs_parm_type_loc = UnwrapTypedefTypeLoc(
+        lhs_parm_var_decl->getTypeSourceInfo()->getTypeLoc());
+    if (lhs_parm_type_loc.getAs<clang::ArrayTypeLoc>()) {
+      lhs_key = getNodeFromFunctionArrayParameter(&lhs_parm_type_loc,
+                                                  lhs_parm_var_decl, result);
+    } else if (lhs_parm_type_loc.getAs<clang::PointerTypeLoc>()) {
+      lhs_key = getNodeFromDecl(lhs_parm_var_decl, result);
+    } else if (const clang::TemplateSpecializationTypeLoc lhs_raw_ptr_type_loc =
+                   lhs_parm_type_loc
+                       .getAs<clang::TemplateSpecializationTypeLoc>()) {
+      lhs_key = getNodeFromRawPtrTypeLoc(&lhs_raw_ptr_type_loc, result);
+    } else {
+      assert(false && "Unknown kind of clang::TypeLoc at `lhs_parm_type_loc`");
+    }
+  } else {
+    // The function return type matches on RHS.
+    const clang::PointerTypeLoc lhs_return_type_loc =
+        lhs_func_proto_type_loc.getReturnLoc().getAs<clang::PointerTypeLoc>();
+    assert(lhs_return_type_loc);
+    lhs_key = getNodeFromPointerTypeLoc(&lhs_return_type_loc, result);
+  }
+
+  // Whenever RHS (function type) is rewritten, LHS (function pointer type)
+  // should be rewritten, too.
+  EmitEdge(lhs_key, rhs_key);
+  EmitEdge(rhs_key, lhs_key);
 }
 
 // Spanifies the matched function parameter/return type, and connects relevant
@@ -2532,7 +2791,7 @@ static void RewriteComparisonWithCArrayIter(
 //
 // A: Yes, it does suffice. But it's hard to build because GetRHS takes
 // `result` as the argument. When we find a match for arg1 at [2], we no longer
-// have `result` for arg1 at [1]. It's easier to create node_arg1_{1st,2nd] than
+// have `result` for arg1 at [1]. It's easier to create node_arg1_{1st,2nd} than
 // saving the results of GetRHS somewhere and retrieving it.
 void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
@@ -2733,12 +2992,14 @@ std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
 
   if (const clang::Expr* size_expr =
           result.Nodes.getNodeAs<clang::Expr>("size_node")) {
-    return getNodeFromSizeExpr(size_expr, result);
+    return GetNodeFromSizeExpr(size_expr, result);
   }
 
   // Not supposed to get here.
   llvm::errs() << "\n"
-                  "Error: getRHS() encountered an unexpected match.\n"
+                  "Error: "
+               << __FUNCTION__
+               << " encountered an unexpected match.\n"
                   "Expected one of : \n"
                   "  - rhs_type_loc\n"
                   "  - rhs_raw_ptr_type_loc\n"
@@ -2748,7 +3009,7 @@ std::string GetRHSImpl(const MatchFinder::MatchResult& result) {
                   "  - size_node\n"
                   "\n";
   DumpMatchResult(result);
-  assert(false && "Unexpected match in getRHS()");
+  assert(false);
 }
 
 // Extracts the rhs node from the match result.
@@ -2832,8 +3093,7 @@ class Spanifier {
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
-        raw_ptr_plugin::ImplicitFieldDeclaration(),
-        raw_ptr_plugin::isInMacroLocation(),
+        raw_ptr_plugin::ImplicitFieldDeclaration(), isInExcludedMacroLocation(),
         raw_ptr_plugin::isInLocationListedInFilterFile(&paths_to_exclude_));
 
     // Standard exclusions include `raw_ptr` and `span`.
@@ -2854,9 +3114,12 @@ class Spanifier {
                         asString("const char8_t"), asString("const char16_t"),
                         asString("const char32_t"))))))));
     // Matches a pointer type, including `auto` which deduces to a pointer type.
-    auto pointer_type =
-        type(anyOf(non_auto_pointer_type,
-                   autoType(hasDeducedType(qualType(non_auto_pointer_type)))));
+    auto pointer_type = type(anyOf(
+        non_auto_pointer_type,
+        autoType(hasDeducedType(anyOf(
+            qualType(non_auto_pointer_type),
+            decltypeType(hasUnderlyingType(qualType(non_auto_pointer_type)))))),
+        decltypeType(hasUnderlyingType(qualType(non_auto_pointer_type)))));
 
     // Matches a pointer type loc without a restriction like `pointer_type`,
     // which excludes certain pointer types.
@@ -2947,17 +3210,16 @@ class Spanifier {
                     optionally(
                         hasDescendant(integerLiteral(equals(0u))
                                           .bind("zero_container_offset"))))
-                    .bind("container_subscript"),
+                    .bind("subscript_expr"),
                 arraySubscriptExpr(
                     hasBase(
                         declRefExpr(to(varDecl(hasType(arrayType(hasElementType(
                                         qualType().bind("contained_type")))))))
                             .bind("container_decl_ref")),
-                    hasIndex(expr().bind("c_style_array_subscript")),
                     optionally(hasIndex(integerLiteral(equals(0u))
                                             .bind("zero_container_offset"))))
-                    .bind("c_style_array_with_subscript"))))
-            .bind("container_buff_address");
+                    .bind("subscript_expr"))))
+            .bind("unaryOperator");
 
     // T* a = buf.data();
     auto member_data_call =
@@ -3016,7 +3278,7 @@ class Spanifier {
                                qualType(isInteger())
                                    .bind("reinterpret_cast_to_integral_type")))
                     .bind("target_type")))),
-            unless(raw_ptr_plugin::isInMacroLocation()))
+            unless(isInExcludedMacroLocation()))
             .bind("reinterpret_cast")));
 
     // Defines nodes that contain size information, these include:
@@ -3053,7 +3315,9 @@ class Spanifier {
                                  isExpansionInSystemHeader(),
                                  raw_ptr_plugin::isInExternCContext())))),
                        cxxNullPtrLiteralExpr().bind("nullptr_expr"),
-                       cxxNewExpr(), buff_address_from_container,
+                       cxxNewExpr(),
+                       expr(buff_address_from_container)
+                           .bind("container_buff_address"),
                        buff_address_from_single_var))
                 .bind("size_node")),
         reinterpret_cast_wrapper);
@@ -3069,13 +3333,45 @@ class Spanifier {
         callee(cxxMethodDecl(hasName("get"), ofClass(hasName("raw_ptr")))),
         has(memberExpr(has(rhs_expr))));
 
+    // Much the same as `buff_address_from_container` above. This reuses
+    // the same business logic in `EmitContainerPointerRewrites()`, but
+    // specifically covers frontier parameters that already came from
+    // nodes without size information.
+    //
+    // There are two obstacles to total unification:
+    // 1. The call site of `EmitContainerPointerRewrites()` is hard to
+    //    position. We need a key, and depending on the usage mode
+    //    (this site, or the size nodes matched by
+    //    `buff_address_from_container`), the surrounding plumbing
+    //    also needs to change.
+    // 2. The different bindings are hard to unify. Unification is also
+    //    unlikely to greatly improve readability.
+    auto index_into_pointer =
+        unaryOperator(
+            hasOperatorName("&"),
+            hasUnaryOperand(anyOf(
+                arraySubscriptExpr(
+                    hasBase(declRefExpr(to(rhs_var)).bind("rhs_expr")),
+                    optionally(hasIndex(integerLiteral(equals(0u))
+                                            .bind("zero_container_offset"))))
+                    .bind("subscript_expr"),
+                cxxOperatorCallExpr(
+                    callee(functionDecl(hasName("operator[]"))),
+                    hasArgument(0, hasType(raw_ptr_type)),
+                    hasDescendant(declRefExpr(to(rhs_var)).bind("rhs_expr")),
+                    optionally(
+                        hasDescendant(integerLiteral(equals(0u))
+                                          .bind("zero_container_offset"))))
+                    .bind("subscript_expr"))))
+            .bind("unaryOperator");
+
     auto rhs_exprs_without_size_nodes =
         expr(ignoringParenCasts(anyOf(
                  rhs_expr,
                  binaryOperation(
-                     binary_plus_or_minus_operation(binaryOperation(
-                         hasLHS(rhs_expr), hasOperatorName("+"),
-                         unless(raw_ptr_plugin::isInMacroLocation()))),
+                     binary_plus_or_minus_operation(
+                         binaryOperation(hasLHS(rhs_expr), hasOperatorName("+"),
+                                         unless(isInExcludedMacroLocation()))),
                      hasRHS(expr(hasType(isInteger())).bind("binary_op_rhs")),
                      unless(hasParent(binaryOperation(
                          anyOf(hasOperatorName("+"), hasOperatorName("-"))))))
@@ -3086,7 +3382,8 @@ class Spanifier {
                      callee(cxxMethodDecl(ofClass(hasName("raw_ptr")))),
                      hasOperatorName("++"), hasArgument(0, rhs_expr))
                      .bind("raw_ptr_operator++"),
-                 get_calls_on_raw_ptr)),
+                 get_calls_on_raw_ptr,
+                 expr(index_into_pointer).bind("container_buff_address"))),
              reinterpret_cast_wrapper)
             .bind("span_frontier");
 
@@ -3138,7 +3435,7 @@ class Spanifier {
                    cxxOperatorCallExpr(
                        hasOverloadedOperatorName("*"),
                        hasArgument(0, rhs_exprs_without_size_nodes))),
-             unless(raw_ptr_plugin::isInMacroLocation()))
+             unless(isInExcludedMacroLocation()))
             .bind("deref_expr"));
     Match(deref_expression, DecaySpanToPointer);
 
@@ -3266,7 +3563,7 @@ class Spanifier {
     // a = fct();
     // a = reinterpret_cast<>(b);
     // a = (cond) ? expr1 : expr2;
-    auto assignement_relationship = traverse(
+    auto assignment_relationship = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         binaryOperation(hasOperatorName("="),
                         hasOperands(lhs_expr_variations,
@@ -3274,18 +3571,18 @@ class Spanifier {
                                           conditionalOperator(hasTrueExpression(
                                               rhs_expr_variations)))),
                         unless(isExpansionInSystemHeader())));
-    Match(assignement_relationship, MatchAdjacency);
+    Match(assignment_relationship, MatchAdjacency);
 
     // Creates the edge from lhs to false_expr in a ternary conditional
     // operator.
-    auto assignement_relationship2 = traverse(
+    auto assignment_relationship2 = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         binaryOperation(hasOperatorName("="),
                         hasOperands(lhs_expr_variations,
                                     conditionalOperator(hasFalseExpression(
                                         rhs_expr_variations))),
                         unless(isExpansionInSystemHeader())));
-    Match(assignement_relationship2, MatchAdjacency);
+    Match(assignment_relationship2, MatchAdjacency);
 
     // Supports:
     // T* temp = member;
@@ -3305,17 +3602,6 @@ class Spanifier {
             unless(isExpansionInSystemHeader())));
     Match(var_construction, MatchAdjacency);
 
-    // Supports:
-    // it == std::begin(c_array)
-    // it != std::end(c_array)
-    auto equality_op =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 binaryOperation(
-                     anyOf(hasOperatorName("=="), hasOperatorName("!=")),
-                     hasOperands(ignoringParenCasts(lhs_expr_variations),
-                                 ignoringParenCasts(c_array_iter_call_expr))));
-    Match(equality_op, RewriteComparisonWithCArrayIter);
-
     // Creates the edge from lhs to false_expr in a ternary conditional
     // operator.
     auto var_construction2 = traverse(
@@ -3328,6 +3614,17 @@ class Spanifier {
                     hasFalseExpression(rhs_expr_variations)))))))),
             unless(isExpansionInSystemHeader())));
     Match(var_construction2, MatchAdjacency);
+
+    // Supports:
+    // it == std::begin(c_array)
+    // it != std::end(c_array)
+    auto equality_op =
+        traverse(clang::TK_IgnoreUnlessSpelledInSource,
+                 binaryOperation(
+                     anyOf(hasOperatorName("=="), hasOperatorName("!=")),
+                     hasOperands(ignoringParenCasts(lhs_expr_variations),
+                                 ignoringParenCasts(c_array_iter_call_expr))));
+    Match(equality_op, RewriteComparisonWithCArrayIter);
 
     // Supports:
     // return member;
@@ -3432,20 +3729,58 @@ class Spanifier {
                  unless(cxxOperatorCallExpr(hasOperatorName("=")))));
     Match(call_expr, MatchAdjacency);
 
+    // Function pointer types to arbitrary function types, including typedef
+    // types and using-aliased types to function pointer types. No restriction
+    // to parameter types and return type, but the following queries require
+    // the function type to be compatible with the RHS function type.
+    auto fct_ptr_type = type(hasUnqualifiedDesugaredType(
+        pointerType(pointee(ignoringParens(functionProtoType())))));
+
+    // Function declaration with pointer/array/raw_ptr parameter types and/or
+    // pointer return type.
+    //
+    // Note that this query matches each of parameter types and return type
+    // respectively.
+    auto fct_decl =
+        functionDecl(
+            eachOf(forEachParmVarDecl(rhs_param),
+                   hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc"))),
+            unless(exclusions))
+            .bind("fct_decl");
+    auto fct_decl_expr = expr(ignoringParenCasts(declRefExpr(to(fct_decl))));
+
+    // Supports:
+    //     void (*var)(int*) = func;
+    //     int* (*var)() = func;
+    // and equivalent typedef/using variants like:
+    //     using FuncType = void (*)(int*);
+    //     FuncType var = func;
+    auto fct_ptr_var_construction = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        varDecl(hasType(fct_ptr_type), has(fct_decl_expr), unless(exclusions))
+            .bind("lhs_funcptrvardecl"));
+    Match(fct_ptr_var_construction, RewriteFunctionPointerType);
+
+    // Supports:
+    //     void (*var)(int*); var = func;
+    //     int* (*var)(); var = func;
+    // and equivalent typedef/using variants like:
+    //     typedef int* (*FuncType)();
+    //     FuncType var;
+    //     var = func;
+    auto fct_ptr_var_assignment = traverse(
+        clang::TK_IgnoreUnlessSpelledInSource,
+        binaryOperator(hasOperatorName("="),
+                       hasLHS(declRefExpr(
+                           to(varDecl(hasType(fct_ptr_type), unless(exclusions))
+                                  .bind("lhs_funcptrvardecl")))),
+                       hasRHS(fct_decl_expr)));
+    Match(fct_ptr_var_assignment, RewriteFunctionPointerType);
+
     // Map function declaration signature to function definition signature;
     // This is problematic in the case of callbacks defined in function.
-    auto fct_decls_params =
-        traverse(clang::TK_IgnoreUnlessSpelledInSource,
-                 functionDecl(forEachParmVarDecl(rhs_param), unless(exclusions))
-                     .bind("fct_decl"));
-    Match(fct_decls_params, RewriteFunctionParamAndReturnType);
-
-    auto fct_decls_returns = traverse(
-        clang::TK_IgnoreUnlessSpelledInSource,
-        functionDecl(hasReturnTypeLoc(pointer_type_loc.bind("rhs_type_loc")),
-                     unless(exclusions))
-            .bind("fct_decl"));
-    Match(fct_decls_returns, RewriteFunctionParamAndReturnType);
+    auto fct_decls = traverse(clang::TK_IgnoreUnlessSpelledInSource, fct_decl);
+    Match(fct_decls, RewriteFunctionParamAndReturnType);
   }
 
  private:

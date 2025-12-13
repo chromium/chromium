@@ -13,15 +13,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
@@ -34,7 +33,13 @@
 #include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
+#include "components/account_id/account_id.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/user_manager/fake_user_manager_delegate.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,7 +50,6 @@ using testing::_;
 using testing::AnyNumber;
 using testing::Expectation;
 using testing::ExpectationSet;
-using testing::Invoke;
 using testing::Le;
 using testing::MockFunction;
 using testing::SaveArg;
@@ -89,10 +93,7 @@ class CrostiniInstallerTest : public testing::Test {
     base::test::TestFuture<void> result_future_;
   };
 
-  CrostiniInstallerTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
-        browser_part_(g_browser_process->platform_part()) {}
+  CrostiniInstallerTest() : browser_part_(g_browser_process->platform_part()) {}
 
   CrostiniInstallerTest(const CrostiniInstallerTest&) = delete;
   CrostiniInstallerTest& operator=(const CrostiniInstallerTest&) = delete;
@@ -131,7 +132,19 @@ class CrostiniInstallerTest : public testing::Test {
     ash::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_mock_);
 
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<user_manager::FakeUserManagerDelegate>(),
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
+    ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
+                    .AddRegularUser(account_id));
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+
     profile_ = std::make_unique<TestingProfile>();
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+
     // Needed at least for passing IsCrostiniUIAllowedForProfile() test in
     // CrostiniManager.
     crostini_test_helper_ =
@@ -152,7 +165,7 @@ class CrostiniInstallerTest : public testing::Test {
     crostini_installer_.reset();
     crostini_test_helper_.reset();
     profile_.reset();
-
+    user_manager_.Reset();
     ash::disks::MockDiskMountManager::Shutdown();
     ash::SeneschalClient::Shutdown();
     ash::DebugDaemonClient::Shutdown();
@@ -196,12 +209,12 @@ class CrostiniInstallerTest : public testing::Test {
   raw_ptr<WaitingFakeConciergeClient, DanglingUntriaged>
       waiting_fake_concierge_client_ = nullptr;
 
+  user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniTestHelper> crostini_test_helper_;
   std::unique_ptr<CrostiniInstaller> crostini_installer_;
 
  private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };
@@ -230,47 +243,6 @@ TEST_F(CrostiniInstallerTest, InstallFlow) {
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 0);
-
-  EXPECT_TRUE(crostini_installer_->CanInstall())
-      << "Installer should recover to installable state";
-}
-
-TEST_F(CrostiniInstallerTest, InstallFlowWithAnsibleInfra) {
-  MockAnsibleManagementService* mock_ansible_management_service =
-      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
-          profile_.get());
-  AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsiblePlaybookPreference();
-
-  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& conatiner_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(true);
-      });
-
-  double last_progress = 0.0;
-  auto greater_equal_last_progress = Truly(
-      [&last_progress](double progress) { return progress >= last_progress; });
-
-  ExpectationSet expectation_set;
-  expectation_set +=
-      EXPECT_CALL(mock_callbacks_,
-                  OnProgress(_, AllOf(greater_equal_last_progress, Le(1.0))))
-          .WillRepeatedly(SaveArg<1>(&last_progress));
-  // |OnProgress()| should not happens after |OnFinished()|
-  EXPECT_CALL(mock_callbacks_, OnFinished(InstallerError::kNone))
-      .After(expectation_set);
-
-  Install();
-
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample32>(
-          CrostiniInstaller::SetupResult::kSuccess),
-      1);
 
   EXPECT_TRUE(crostini_installer_->CanInstall())
       << "Installer should recover to installable state";
@@ -364,40 +336,6 @@ TEST_F(CrostiniInstallerTest, InstallerError) {
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 0);
-
-  EXPECT_TRUE(crostini_installer_->CanInstall())
-      << "Installer should recover to installable state";
-}
-
-TEST_F(CrostiniInstallerTest, InstallerErrorWhileConfiguring) {
-  MockAnsibleManagementService* mock_ansible_management_service =
-      AnsibleManagementTestHelper::SetUpMockAnsibleManagementService(
-          profile_.get());
-  AnsibleManagementTestHelper test_helper(profile_.get());
-  test_helper.SetUpAnsiblePlaybookPreference();
-
-  EXPECT_CALL(*mock_ansible_management_service, ConfigureContainer).Times(1);
-  ON_CALL(*mock_ansible_management_service, ConfigureContainer)
-      .WillByDefault([](const guest_os::GuestId& container_id,
-                        base::FilePath playbook,
-                        base::OnceCallback<void(bool success)> callback) {
-        std::move(callback).Run(false);
-      });
-  Expectation expect_progresses =
-      EXPECT_CALL(mock_callbacks_, OnProgress(_, _)).Times(AnyNumber());
-  // |OnProgress()| should not happens after |OnFinished()|
-  EXPECT_CALL(mock_callbacks_,
-              OnFinished(InstallerError::kErrorConfiguringContainer))
-      .After(expect_progresses);
-
-  Install();
-
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample(
-      "Crostini.SetupResult",
-      static_cast<base::HistogramBase::Sample32>(
-          CrostiniInstaller::SetupResult::kErrorConfiguringContainer),
-      1);
 
   EXPECT_TRUE(crostini_installer_->CanInstall())
       << "Installer should recover to installable state";

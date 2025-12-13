@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -65,7 +66,7 @@ class MEDIA_EXPORT TrackRunIterator {
   // Caches the CENC data from the given buffer. |buf| must be a buffer starting
   // at the offset given by cenc_offset(), with a |size| of at least
   // cenc_size(). Returns true on success, false on error.
-  bool CacheAuxInfo(const uint8_t* buf, int size);
+  bool CacheAuxInfo(base::span<const uint8_t> buf);
 
   // Returns the maximum buffer location at which no data earlier in the stream
   // will be required in order to read the current or any subsequent sample. You

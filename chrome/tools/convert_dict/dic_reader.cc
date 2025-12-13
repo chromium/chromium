@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chrome/tools/convert_dict/dic_reader.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "chrome/tools/convert_dict/aff_reader.h"
@@ -79,8 +75,8 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     std::vector<std::string> split;
     SplitDicLine(line, &split);
     if (split.empty() || split.size() > 2) {
-      printf("Line %d has extra slashes in the %s file\n", line_number,
-             file_type);
+      UNSAFE_TODO(printf("Line %d has extra slashes in the %s file\n",
+                         line_number, file_type));
       return false;
     }
 
@@ -91,8 +87,9 @@ bool PopulateWordSet(WordSet* word_set, FILE* file, AffReader* aff_reader,
     if (encoding_string == "UTF-8") {
       utf8word = split[0];
     } else if (!aff_reader->EncodingToUTF8(split[0], &utf8word)) {
-      printf("Unable to convert line %d from %s to UTF-8 in the %s file\n",
-             line_number, encoding, file_type);
+      UNSAFE_TODO(
+          printf("Unable to convert line %d from %s to UTF-8 in the %s file\n",
+                 line_number, encoding, file_type));
       return false;
     }
 
@@ -182,8 +179,7 @@ bool DicReader::Read(AffReader* aff_reader) {
 
     // Double check that the affixes are sorted. This isn't strictly necessary
     // but it's nice for the file to have a fixed layout.
-    std::sort(affixes.begin(), affixes.end());
-    std::reverse(affixes.begin(), affixes.end());
+    std::ranges::sort(affixes, std::ranges::greater());
     words_.push_back(std::make_pair(word->first, affixes));
   }
 

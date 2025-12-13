@@ -21,7 +21,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
-#include "components/ukm/ukm_entry_filter.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/ukm/ukm_reporting_service.h"
 
@@ -120,10 +119,6 @@ class UkmService : public UkmRecorderImpl {
   // UKM log. Should be called during MetricsService initialization only.
   virtual void RegisterMetricsProvider(
       std::unique_ptr<metrics::MetricsProvider> provider);
-
-  // Registers the |filter| that is guaranteed to be applied to all subsequent
-  // events that are recorded via this UkmService.
-  void RegisterEventFilter(std::unique_ptr<UkmEntryFilter> filter);
 
   // Registers the names of all of the preferences used by UkmService in
   // the provided PrefRegistry.

@@ -6,6 +6,7 @@
 #define DEVICE_GAMEPAD_GAMEPAD_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <unordered_map>
 #include <utility>
@@ -17,10 +18,13 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/gamepad_provider.h"
+#include "device/gamepad/normalization.h"
 #include "device/gamepad/public/mojom/gamepad.mojom-forward.h"
+#include "device/gamepad/simulated_gamepad_params.h"
 
 namespace device {
 class GamepadConsumer;
@@ -83,6 +87,60 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
   // Returns a duplicate of the shared memory region of the gamepad data.
   base::ReadOnlySharedMemoryRegion DuplicateSharedMemoryRegion();
 
+  // Adds the simulated gamepad described by `params` and returns a token
+  // representing the simulated gamepad.
+  base::UnguessableToken AddSimulatedGamepad(SimulatedGamepadParams params);
+
+  // Removes the simulated gamepad represented by `token`.
+  void RemoveSimulatedGamepad(base::UnguessableToken token);
+
+  // Updates the `logical_value` of the axis at `index` on the simulated gamepad
+  // represented by `token`. Does nothing if `token` does not represent a
+  // gamepad or if it has no axis at that index.
+  void SimulateAxisInput(base::UnguessableToken token,
+                         uint32_t index,
+                         double logical_value);
+
+  // Updates the `logical_value`, `pressed`, and `touched` of the button at
+  // `index` on the simulated gamepad represented by `token`. If `pressed` or
+  // `touched` is `nullopt`, the button's pressed or touched state is computed
+  // from the `logical_value`. Pass non-nullopt to simulate a button with extra
+  // digital switches (aside from the sensor that produces `logical_value`) that
+  // should be used to detect the pressed and/or touched states. Does nothing if
+  // `token` does not represent a gamepad or if it has no button at that
+  // `index`.
+  void SimulateButtonInput(base::UnguessableToken token,
+                           uint32_t index,
+                           double logical_value,
+                           std::optional<bool> pressed,
+                           std::optional<bool> touched);
+
+  // Adds a new touch point on the simulated gamepad represented by `token`.
+  // Returns an identifier for the touch point, or `nullopt` if `token` does not
+  // represent a gamepad or if it has no touch surface with that `surface_id`.
+  std::optional<uint32_t> SimulateTouchInput(base::UnguessableToken token,
+                                             uint32_t surface_id,
+                                             double logical_x,
+                                             double logical_y);
+
+  // Updates the coordinates of the touch point identified by `touch_id` on the
+  // simulated gamepad represented by `token`. Does nothing if `token` does not
+  // represent a gamepad or if it has no active touch point identified by
+  // `touch_id`.
+  void SimulateTouchMove(base::UnguessableToken token,
+                         uint32_t touch_id,
+                         double logical_x,
+                         double logical_y);
+
+  // Removes the touch point identified by `touch_id` on the simulated gamepad
+  // represented by `token`. Does nothing if `token` does not represent a
+  // gamepad or if it has no active touch point identified by `touch_id`.
+  void SimulateTouchEnd(base::UnguessableToken token, uint32_t touch_id);
+
+  // Signals that the simulated gamepad represented by `token` has new inputs.
+  // Does nothing if `token` does not represent a gamepad.
+  void SimulateInputFrame(base::UnguessableToken token);
+
   // Stop/join with the background thread in GamepadProvider |provider_|.
   void Terminate();
 
@@ -91,6 +149,10 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
 
   // Called on IO thread when a gamepad is disconnected.
   void OnGamepadDisconnected(uint32_t index, const Gamepad& pad);
+
+  // Called on IO thread when a gamepad raw input changes (such as axis, button,
+  // or touchpad). Notifies all active consumers about a raw input change.
+  void OnGamepadRawInputChanged(uint32_t index, const Gamepad& pad) override;
 
   // Request playback of a haptic effect on the specified gamepad. Once effect
   // playback is complete or is preempted by a different effect, the callback
@@ -123,6 +185,7 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
 
   GamepadService();
 
+  void EnsureProvider();
   void OnUserGesture();
 
   // GamepadChangeClient implementation.

@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/tpcd/metadata/browser/parser.h"

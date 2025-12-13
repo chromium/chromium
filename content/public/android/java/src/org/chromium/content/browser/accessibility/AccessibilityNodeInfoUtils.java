@@ -58,15 +58,54 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Utility class for common actions involving AccessibilityNodeInfo objects. */
+@JNINamespace("content")
 @NullMarked
-public class AccessibilityNodeInfoUtils {
+public final class AccessibilityNodeInfoUtils {
+    private AccessibilityNodeInfoUtils() {}
+
+    @CalledByNative
+    public static <K> Map<K, int[][]> createTextAttributeRangesMap() {
+        return new HashMap<K, int[][]>();
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapFloatValue(
+            Map<Float, int[][]> map, float value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapIntValue(
+            Map<Integer, int[][]> map, int value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    @CalledByNative
+    public static void setTextAttributeRangesMapStringValue(
+            Map<String, int[][]> map, String value, int[] starts, int[] ends) {
+        setTextAttributeRangesMapValue(map, value, starts, ends);
+    }
+
+    public static <T> void setTextAttributeRangesMapValue(
+            Map<T, int[][]> map, T value, int[] starts, int[] ends) {
+        if (map == null || value == null || starts == null || ends == null) {
+            return;
+        }
+        map.put(value, new int[][] {starts, ends});
+    }
+
     /**
      * Helper method to perform a custom toString on a given AccessibilityNodeInfo object.
      *
@@ -213,12 +252,15 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" partiallyChecked");
         }
 
+        // TODO(crbug.com/443078007): Add extended selection to the expected text.
+
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {
             builder.append(" CollectionInfo:").append(toString(node.getCollectionInfo()));
         }
         if (node.getCollectionItemInfo() != null) {
-            builder.append(" CollectionItemInfo:").append(toString(node.getCollectionItemInfo()));
+            builder.append(" CollectionItemInfo:")
+                    .append(toString(node, node.getCollectionItemInfo()));
         }
         if (node.getRangeInfo() != null) {
             builder.append(" RangeInfo:").append(toString(node.getRangeInfo()));
@@ -278,31 +320,34 @@ public class AccessibilityNodeInfoUtils {
                 "%srows=%s, cols=%s]", prefix, info.getRowCount(), info.getColumnCount());
     }
 
-    private static String toString(AccessibilityNodeInfoCompat.CollectionItemInfoCompat info) {
+    private static String toString(
+            AccessibilityNodeInfoCompat info,
+            AccessibilityNodeInfoCompat.CollectionItemInfoCompat collectionItemInfo) {
         // Only include isHeading and isSelected if true, since both are more often false.
         String prefix = "[";
         if (info.isHeading()) {
-            // Clank only sets CollectionItemInfo.isHeading to true when the node is a table header.
+            // Clank does not set CollectionItemInfo.isHeading because it is deprecated. However, we
             // Name it as "tableHeader" here to differentiate the "heading" string in
-            // AccessibilityNodeInfo level.
+            // AccessibilityNodeInfo level for debugging.
             // Note that in Android, CollectionItemInfo.isHeading API was deprecated and moved to
-            // AccessibilityNodeInfo.isHeading API, but ANI.isHeading will fall back to check
-            // CollectionItemInfo.isHeading. We'll continue logging the CollectionItemInfo.isHeading
-            // information here to differentiate the table header and heading in Clank.
+            // AccessibilityNodeInfo.isHeading API. CollectionItemInfoCompat.isHeading is also
+            // deprecated.
             prefix += "tableHeader, ";
         }
-        if (info.isSelected()) {
+        if (collectionItemInfo.isSelected()) {
             prefix += "selected, ";
         }
         // Only include row/col span if not equal to 1, the default value.
-        if (info.getRowSpan() != 1) {
-            prefix += String.format("rowSpan=%s, ", info.getRowSpan());
+        if (collectionItemInfo.getRowSpan() != 1) {
+            prefix += String.format("rowSpan=%s, ", collectionItemInfo.getRowSpan());
         }
-        if (info.getColumnSpan() != 1) {
-            prefix += String.format("colSpan=%s, ", info.getColumnSpan());
+        if (collectionItemInfo.getColumnSpan() != 1) {
+            prefix += String.format("colSpan=%s, ", collectionItemInfo.getColumnSpan());
         }
+        // TODO(crbug.com/458146866): Print sort direction in AccessibilityNodeInfoUtils.
         return String.format(
-                "%srowIndex=%s, colIndex=%s]", prefix, info.getRowIndex(), info.getColumnIndex());
+                "%srowIndex=%s, colIndex=%s]",
+                prefix, collectionItemInfo.getRowIndex(), collectionItemInfo.getColumnIndex());
     }
 
     private static String toString(AccessibilityNodeInfoCompat.RangeInfoCompat info) {

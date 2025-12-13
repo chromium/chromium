@@ -426,7 +426,7 @@ TEST(StringTest, FindWithCallback) {
   TestMatcher matcher('t');
   // Unretained is safe because callback executes synchronously in Find().
   auto callback = BindRepeating(&TestMatcher::IsTarget, Unretained(&matcher));
-  EXPECT_EQ(WTF::kNotFound, test_string1.Find(callback));
+  EXPECT_EQ(kNotFound, test_string1.Find(callback));
   EXPECT_EQ(1U, test_string2.Find(callback));
 }
 

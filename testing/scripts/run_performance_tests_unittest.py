@@ -416,7 +416,7 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
         'type': 'wpr',
         'path': archive,
         'wpr_go_bin': 'wpr_go_path',
-        'skip_injection': True
+        'skip_deterministic_script_injection': True
     }
 
     crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')

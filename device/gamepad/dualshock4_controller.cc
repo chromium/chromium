@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/dualshock4_controller.h"
 
 #include <algorithm>
@@ -180,7 +175,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
                       std::optional<uint32_t>& initial_touch_id,
                       Gamepad* pad) {
   pad->touch_events_length = 0;
-  GamepadTouch* touches = pad->touch_events;
+  auto& touches = pad->touch_events;
 
   for (const auto& touchpad_data_entry : touchpad_data) {
     auto [touch_id_0, touch_id_1] = id_transform(
@@ -198,7 +193,7 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
             (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
         touch.surface_id = 0;
         // x and y coordinates stored in 3 bytes (12bits each)
-        ReadTouchCoordinates(base::span(raw_touch.data, 3u), touch);
+        ReadTouchCoordinates(raw_touch.data, touch);
       }
     }
   }
@@ -303,15 +298,15 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
   DCHECK(pad);
 
   const ControllerData* controller_data = nullptr;
-  const TouchPadData* touches = nullptr;
+  base::span<const TouchPadData> touches_span;
   uint8_t touches_count = 0;
 
   auto set_controller_and_touch_data =
-      [&controller_data, &touches, &touches_count,
+      [&controller_data, &touches_span, &touches_count,
        is_multitouch_enabled](const auto& data) {
         controller_data = &data->controller_data;
         if (is_multitouch_enabled) {
-          touches = data->touches;
+          touches_span = base::span(data->touches);
           touches_count = data->touches_count;
         }
       };
@@ -338,7 +333,7 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
 
   if (is_multitouch_enabled) {
     pad->supports_touch_events_ = true;
-    ProcessTouchData(base::span(touches, touches_count), transform_touch_id_,
+    ProcessTouchData(touches_span.first(touches_count), transform_touch_id_,
                      initial_touch_id_, pad);
   }
 

@@ -17,7 +17,7 @@ source_set("common") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//ui/base:features",
     "//url",
   ]
@@ -77,4 +77,15 @@ if (is_android) {
       "//ui/android:ui_java",
     ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "string_cleaning_unittest.cc" ]
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
 }

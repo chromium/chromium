@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #import "ios/web_view/internal/sync/web_view_trusted_vault_client.h"
 
 #import <vector>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -26,6 +23,8 @@
 namespace ios_web_view {
 
 namespace {
+
+// Converts `account_info` to a CWVIdentity instance.
 CWVIdentity* CWVIdentityFromCoreAccountInfo(
     const CoreAccountInfo& account_info) {
   return [[CWVIdentity alloc]
@@ -33,6 +32,18 @@ CWVIdentity* CWVIdentityFromCoreAccountInfo(
            fullName:nil
              gaiaID:account_info.gaia.ToNSString()];
 }
+
+// Converts `shared_keys` to std::vector<std::vector<uint8_t>>.
+std::vector<std::vector<uint8_t>> ConvertKeys(NSArray<NSData*>* shared_keys,
+                                              NSError*) {
+  std::vector<std::vector<uint8_t>> result;
+  for (NSData* data in shared_keys) {
+    auto span = base::apple::NSDataToSpan(data);
+    result.emplace_back(span.begin(), span.end());
+  }
+  return result;
+}
+
 }  // namespace
 
 WebViewTrustedVaultClient::WebViewTrustedVaultClient() {}
@@ -76,27 +87,17 @@ void WebViewTrustedVaultClient::FetchKeys(
     return;
   }
 
-  __block auto blockCallback = std::move(callback);
-  [provider
-      fetchKeysForIdentity:CWVIdentityFromCoreAccountInfo(account_info)
-                completion:^(NSArray<NSData*>* shared_keys, NSError* error) {
-                  // TODO(crbug.com/40204010): Share this logic with
-                  // //ios/chrome.
-                  std::vector<std::vector<uint8_t>> shared_key_vector;
-                  for (NSData* data in shared_keys) {
-                    const uint8_t* buffer =
-                        static_cast<const uint8_t*>(data.bytes);
-                    std::vector<uint8_t> value(buffer, buffer + data.length);
-                    shared_key_vector.push_back(value);
-                  }
-                  std::move(blockCallback).Run(shared_key_vector);
-                }];
+  [provider fetchKeysForIdentity:CWVIdentityFromCoreAccountInfo(account_info)
+                      completion:base::CallbackToBlock(
+                                     base::BindOnce(&ConvertKeys)
+                                         .Then(std::move(callback)))];
 }
 
 void WebViewTrustedVaultClient::StoreKeys(
     const GaiaId& gaia_id,
     const std::vector<std::vector<uint8_t>>& keys,
-    int last_key_version) {
+    int last_key_version,
+    std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
   // Not used on iOS.
   NOTREACHED();
 }

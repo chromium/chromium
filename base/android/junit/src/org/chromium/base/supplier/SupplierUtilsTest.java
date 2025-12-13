@@ -15,6 +15,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Supplier;
 
 /** Unit tests for {@link SupplierUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)

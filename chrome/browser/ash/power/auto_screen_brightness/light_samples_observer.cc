@@ -36,7 +36,6 @@ void LightSamplesObserver::OnSampleUpdated(
 
   const auto it = sample.find(channel_index_.value());
   if (it == sample.end()) {
-    LogDataError(DataError::kAlsValue);
     return;
   }
 
@@ -92,8 +91,6 @@ void LightSamplesObserver::Reset() {
   LOG(ERROR) << "Resetting LightSamplesObserver";
   receiver_.reset();
   sensor_device_remote_.reset();
-
-  LogDataError(DataError::kMojoSamplesObserver);
 }
 
 void LightSamplesObserver::GetAllChannelIdsCallback(

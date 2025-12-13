@@ -23,14 +23,12 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/pref_names.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,14 +55,6 @@ class SafetyHubMenuNotificationServiceTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    feature_list_.InitWithFeatures(
-        {
-            features::kSafetyHub,
-#if BUILDFLAG(IS_ANDROID)
-            features::kSafetyHubFollowup,
-#endif  // BUILDFLAG(IS_ANDROID)
-        },
-        {});
     prefs()->SetBoolean(
         safety_hub_prefs::kUnusedSitePermissionsRevocationEnabled, true);
 
@@ -154,9 +144,6 @@ class SafetyHubMenuNotificationServiceTest
     EXPECT_EQ(l10n_util::GetPluralStringFUTF16(string_id, count),
               notification_string);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {

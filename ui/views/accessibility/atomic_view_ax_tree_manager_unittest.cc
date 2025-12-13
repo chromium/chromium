@@ -59,7 +59,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
     EXPECT_EQ(expected.actions, actual.actions);
     EXPECT_EQ(expected.string_attributes, actual.string_attributes);
     EXPECT_EQ(expected.float_attributes, actual.float_attributes);
-    EXPECT_TRUE(expected.bool_attributes->IsEqual(*actual.bool_attributes));
+    EXPECT_EQ(expected.bool_attributes, actual.bool_attributes);
     EXPECT_EQ(expected.intlist_attributes, actual.intlist_attributes);
     EXPECT_EQ(expected.stringlist_attributes, actual.stringlist_attributes);
     EXPECT_EQ(expected.relative_bounds, actual.relative_bounds);

@@ -345,30 +345,4 @@ SkColor4f DebugColors::PaintTimeDisplayTextAndGraphColor() {
   return {75.0f / 255.0f, 155.0f / 255.0f, 55.0f / 255.0f, 1.0f};
 }
 
-SkColor4f DebugColors::NonLCDTextHighlightColor(
-    LCDTextDisallowedReason reason) {
-  switch (reason) {
-    case LCDTextDisallowedReason::kNone:
-    case LCDTextDisallowedReason::kNoText:
-      return SkColors::kTransparent;
-    case LCDTextDisallowedReason::kSetting:
-      return {0.5f, 1.0f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kBackgroundColorNotOpaque:
-      return {0.5f, 0.5f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kContentsNotOpaque:
-      return {1.0f, 0.0f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kNonIntegralTranslation:
-      return {1.0f, 0.5f, 0.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kNonIntegralXOffset:
-    case LCDTextDisallowedReason::kNonIntegralYOffset:
-      return {1.0f, 0.0f, 0.5f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kWillChangeTransform:
-    case LCDTextDisallowedReason::kTransformAnimation:
-      return {0.5f, 0.0f, 1.0f, 96.0f / 255.0f};
-    case LCDTextDisallowedReason::kPixelOrColorEffect:
-      return {0.0f, 0.5f, 0.0f, 96.0f / 255.0f};
-  }
-  NOTREACHED();
-}
-
 }  // namespace cc

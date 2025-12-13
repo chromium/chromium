@@ -98,7 +98,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
   EXPECT_EQ(1u, text_style.shadow->Shadows().size());
   EXPECT_EQ(1, text_style.shadow->Shadows()[0].X());
   EXPECT_EQ(2, text_style.shadow->Shadows()[0].Y());
-  EXPECT_EQ(3, text_style.shadow->Shadows()[0].Blur());
+  EXPECT_EQ(3, text_style.shadow->Shadows()[0].BlurRadius());
   EXPECT_EQ(Color(255, 255, 0),
             text_style.shadow->Shadows()[0].GetColor().GetColor());
 }

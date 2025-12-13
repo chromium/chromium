@@ -109,6 +109,10 @@ bool ScrollbarLayerDelegate::IsOpaque() const {
   return scrollbar_->IsOpaque();
 }
 
+int ScrollbarLayerDelegate::MinimumThumbLength() const {
+  return scrollbar_->GetTheme().MinimumThumbLength(*scrollbar_);
+}
+
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {
   gfx::Rect back_button_rect =
       scrollbar_->GetTheme().BackButtonRect(*scrollbar_);

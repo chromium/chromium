@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.toolbar.adaptive;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -15,13 +15,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Embedder-specific behavior of Adaptive Toolbar. */
 @NullMarked
 public interface AdaptiveToolbarBehavior {
 
     /** List of the button variants both BrApp/CCT have in common. */
-    public static final Set<Integer> COMMON_BUTTONS =
+    Set<Integer> COMMON_BUTTONS =
             Set.of(
                     AdaptiveToolbarButtonVariant.SHARE,
                     AdaptiveToolbarButtonVariant.ADD_TO_BOOKMARKS,
@@ -33,7 +34,7 @@ public interface AdaptiveToolbarBehavior {
                     AdaptiveToolbarButtonVariant.PAGE_SUMMARY);
 
     /** Default list of valid button variants used for BrApp. */
-    public static Set<Integer> sValidButtons = new HashSet<>();
+    Set<Integer> sValidButtons = new HashSet<>();
 
     /** Returns {@code true} if adaptive toolbar button feature is enabled. */
     default boolean shouldInitialize() {
@@ -60,7 +61,8 @@ public interface AdaptiveToolbarBehavior {
      * @param trackerSupplier {@link Tracker} supplier buttons need for instantiation.
      */
     void registerPerSurfaceButtons(
-            AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier);
+            AdaptiveToolbarButtonController controller,
+            Supplier<@Nullable Tracker> trackerSupplier);
 
     /**
      * Filter the segmentation results and pick the one to display on the UI.
@@ -85,11 +87,12 @@ public interface AdaptiveToolbarBehavior {
      *
      * @param context {@link Context} object.
      */
-    public static AdaptiveToolbarBehavior getDefaultBehavior(Context context) {
+    static AdaptiveToolbarBehavior getDefaultBehavior(Context context) {
         return new AdaptiveToolbarBehavior() {
             @Override
             public void registerPerSurfaceButtons(
-                    AdaptiveToolbarButtonController controller, Supplier<Tracker> trackerSupplier) {
+                    AdaptiveToolbarButtonController controller,
+                    Supplier<@Nullable Tracker> trackerSupplier) {
                 // Not implemented by design. Default behavior object is used for
                 // AdaptiveToolbarStatePredictor while this method is used by
                 // AdaptiveToolbarUiCoordinator only.
@@ -125,7 +128,7 @@ public interface AdaptiveToolbarBehavior {
      * @param segmentationResults An ordered list of predicted toolbar button ID.
      * @return The top choice made from the input results.
      */
-    public static int defaultResultFilter(Context context, List<Integer> segmentationResults) {
+    static int defaultResultFilter(Context context, List<Integer> segmentationResults) {
         if (sValidButtons.isEmpty()) {
             sValidButtons.addAll(COMMON_BUTTONS);
             sValidButtons.add(AdaptiveToolbarButtonVariant.NEW_TAB);

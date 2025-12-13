@@ -360,12 +360,12 @@ aura::Window* InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_POPUP;
   params.trusted_source = true;
-  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = true;
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
 
-  return params.browser->window()->GetNativeWindow();
+  return params.browser->GetWindow()->GetNativeWindow();
 }
 
 // AuthStatusConsumer:

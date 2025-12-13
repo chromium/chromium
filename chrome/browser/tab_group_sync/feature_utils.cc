@@ -20,8 +20,9 @@ namespace tab_groups {
 
 #if BUILDFLAG(IS_ANDROID)
 // static
-jboolean JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(JNIEnv* env,
-                                                        Profile* profile) {
+static jboolean JNI_TabGroupSyncFeatures_IsTabGroupSyncEnabled(
+    JNIEnv* env,
+    Profile* profile) {
   DCHECK(profile);
   return IsTabGroupSyncEnabled(profile->GetPrefs());
 }
@@ -34,11 +35,13 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
   // current device but is enabled on one of the remote devices. We will
   // deprecate this after a milestone.
   pref_service->ClearPref(tab_groups::prefs::kSyncableTabGroups);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
-#else
-  return IsTabGroupSyncServiceDesktopMigrationEnabled();
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace tab_groups
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(TabGroupSyncFeatures)
+#endif

@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/chip_button.h"
 
-#import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -29,36 +27,16 @@ TEST_F(ChipButtonTest, SetTitle) {
       scaledFontForFont:[UIFont systemFontOfSize:14 weight:UIFontWeightMedium]];
   NSString* title = @"Title";
 
-  {
-    base::test::ScopedFeatureList feature_list(
-        kIOSKeyboardAccessoryUpgradeForIPad);
+  ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
 
-    ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
+  [button setTitle:title forState:UIControlStateNormal];
 
-    [button setTitle:title forState:UIControlStateNormal];
+  UIButtonConfiguration* button_configuration = button.configuration;
+  EXPECT_TRUE([button_configuration.baseForegroundColor
+      isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
 
-    UIButtonConfiguration* button_configuration = button.configuration;
-    EXPECT_TRUE([button_configuration.baseForegroundColor
-        isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
-
-    EXPECT_NSEQ(button_configuration.attributedTitle.string, title);
-    EXPECT_EQ(GetTitleFont(button_configuration), font);
-  }
-
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
-
-    ChipButton* button = [[ChipButton alloc] initWithFrame:CGRectZero];
-
-    [button setTitle:title forState:UIControlStateNormal];
-
-    UIButtonConfiguration* button_configuration = button.configuration;
-    EXPECT_TRUE([button_configuration.baseForegroundColor
-        isEqual:[UIColor colorNamed:kTextPrimaryColor]]);
-    EXPECT_NSEQ(button.currentTitle, title);
-    EXPECT_NE(button.titleLabel.font, font);
-  }
+  EXPECT_NSEQ(button_configuration.attributedTitle.string, title);
+  EXPECT_EQ(GetTitleFont(button_configuration), font);
 }
 
 // Tests that the font color of the chip button's title is not changed after a

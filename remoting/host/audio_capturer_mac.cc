@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/audio_capturer_mac.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -136,7 +132,7 @@ AudioCapturerMac::GetAudioDevices() {
 
   for (UInt32 i = 0u; i < num_devices; i++) {
     AudioDeviceInfo audio_device;
-    AudioDeviceID device_id = device_ids.get()[i];
+    AudioDeviceID device_id = UNSAFE_TODO(device_ids.get()[i]);
 
     // Get the device name.
     property_address.mSelector = kAudioObjectPropertyName;
@@ -249,10 +245,14 @@ void AudioCapturerMac::HandleInputBuffer(AudioQueueRef aq,
 
   DCHECK_EQ(input_queue_, aq);
   DCHECK(callback_);
-
-  if (!silence_detector_.IsSilence(
-          reinterpret_cast<const int16_t*>(buffer->mAudioData),
-          buffer->mAudioDataByteSize / sizeof(int16_t) / kChannelsPerFrame)) {
+  // SAFETY: `mAudioData` is a raw buffer that's filled by the audio queue.
+  // The size is given by `mAudioDataByteSize`, so it's safe to interpret as
+  // a span of bytes.
+  // See https://developer.apple.com/documentation/audiotoolbox/audioqueuebuffer
+  const auto audio_data = UNSAFE_BUFFERS(
+      base::span(reinterpret_cast<const unsigned char*>(buffer->mAudioData),
+                 buffer->mAudioDataByteSize));
+  if (!silence_detector_.IsSilence(audio_data)) {
     auto packet = std::make_unique<AudioPacket>();
     packet->add_data(buffer->mAudioData, buffer->mAudioDataByteSize);
     packet->set_encoding(AudioPacket::ENCODING_RAW);

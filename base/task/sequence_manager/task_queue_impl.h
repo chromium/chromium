@@ -147,6 +147,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) override;
   std::unique_ptr<QueueEnabledVoter> CreateQueueEnabledVoter() override;
   void RemoveCancelledTasks() override;
+  bool IsBlockedByScopedExecutionFences() override;
 
   void SetQueueEnabled(bool enabled);
   void UnregisterTaskQueue();
@@ -606,6 +607,7 @@ class BASE_EXPORT TaskQueueImpl : public TaskQueue {
   const bool should_monitor_quiescence_;
   const bool should_notify_observers_;
   const bool delayed_fence_allowed_;
+  const bool scoped_execution_fence_allowed_;
 
   const scoped_refptr<SingleThreadTaskRunner> default_task_runner_;
 

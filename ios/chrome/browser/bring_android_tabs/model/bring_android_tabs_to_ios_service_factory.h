@@ -31,11 +31,11 @@ class BringAndroidTabsToIOSServiceFactory
   BringAndroidTabsToIOSServiceFactory();
   ~BringAndroidTabsToIOSServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
-  void RegisterBrowserStatePrefs(
+  // ProfileKeyedServiceFactoryIOS implementation.
+  void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_MODEL_BRING_ANDROID_TABS_TO_IOS_SERVICE_FACTORY_H_

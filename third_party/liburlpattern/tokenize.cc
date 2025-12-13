@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/utf8.h"
@@ -244,7 +245,8 @@ class Tokenizer {
   // read next.  Returns true iff the codepoint was read successfully. On
   // success, `codepoint_` is non-negative.
   [[nodiscard]] bool Next() {
-    U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_);
+    UNSAFE_TODO(
+        U8_NEXT(pattern_.data(), next_index_, pattern_.size(), codepoint_));
     return codepoint_ >= 0;
   }
 

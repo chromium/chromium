@@ -20,13 +20,13 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/mac/authenticator_config.h"
 #include "device/fido/mac/get_assertion_operation.h"
 #include "device/fido/mac/make_credential_operation.h"
 #include "device/fido/mac/util.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device::fido::mac {
 

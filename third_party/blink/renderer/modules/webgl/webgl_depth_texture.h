@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class ExecutionContext;
+
 class WebGLDepthTexture final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -37,7 +39,7 @@ class WebGLDepthTexture final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLDepthTexture(WebGLRenderingContextBase*);
+  WebGLDepthTexture(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 };

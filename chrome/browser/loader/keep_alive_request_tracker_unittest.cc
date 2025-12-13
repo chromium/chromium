@@ -233,6 +233,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LogUkmInDestructor) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/10,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kLoaderCreated,
                   /*previous_stage=*/std::nullopt, *request.keepalive_token);
@@ -252,6 +253,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, RequestStarted) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/20,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kRequestStarted,
                   RequestStageType::kLoaderCreated, *request.keepalive_token);
@@ -274,6 +276,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, OneRedirect) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/30,
                   /*num_redirects=*/1,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kFirstRedirectReceived,
                   RequestStageType::kRequestStarted, *request.keepalive_token);
@@ -300,6 +303,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, TwoRedirects) {
       GetParam().request_type,
       /*category_id=*/40,
       /*num_redirects=*/2,
+      /*num_retries=*/0,
       /*is_context_detached=*/false, RequestStageType::kSecondRedirectReceived,
       RequestStageType::kFirstRedirectReceived, *request.keepalive_token);
   ExpectTimeSortedTimeDeltaUkm(
@@ -327,6 +331,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, ThreeRedirects) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/50,
                   /*num_redirects=*/3,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kThirdOrLaterRedirectReceived,
                   RequestStageType::kSecondRedirectReceived,
@@ -352,6 +357,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, ResponseReceivedAfterRequestStarted) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/60,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kResponseReceived,
                   RequestStageType::kRequestStarted, *request.keepalive_token);
@@ -380,6 +386,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, ResponseReceivedAfterTwoRedirects) {
       GetParam().request_type,
       /*category_id=*/70,
       /*num_redirects=*/2,
+      /*num_retries=*/0,
       /*is_context_detached=*/false, RequestStageType::kResponseReceived,
       RequestStageType::kSecondRedirectReceived, *request.keepalive_token);
   ExpectTimeSortedTimeDeltaUkm(
@@ -407,6 +414,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, RequestFailedAfterRequestStarted) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/80,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kRequestFailed,
                   RequestStageType::kRequestStarted, *request.keepalive_token,
@@ -435,6 +443,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LoaderCompleted) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/90,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kLoaderCompleted,
                   RequestStageType::kResponseReceived, *request.keepalive_token,
@@ -465,6 +474,7 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LoaderCompletedWithError) {
   ExpectCommonUkm(GetParam().request_type,
                   /*category_id=*/100,
                   /*num_redirects=*/0,
+                  /*num_retries=*/0,
                   /*is_context_detached=*/false,
                   RequestStageType::kLoaderCompleted,
                   RequestStageType::kRequestStarted, *request.keepalive_token,
@@ -475,6 +485,88 @@ TEST_P(ChromeKeepAliveRequestTrackerTest, LoaderCompletedWithError) {
 
       {"TimeDelta.RequestStarted", "TimeDelta.LoaderCompleted",
        "TimeDelta.EventLogged"});
+}
+
+TEST_P(ChromeKeepAliveRequestTrackerTest, RequestRetriedAfterRequestFailed) {
+  auto request = CreateRequest(GetUrlWithCategory("test-prefix110"));
+  auto failed_status = CreateCompletionStatus(/*error_code=*/net::ERR_TIMED_OUT,
+                                              /*extended_error_code=*/1);
+  auto retried_status =
+      CreateCompletionStatus(/*error_code=*/net::ERR_TIMED_OUT,
+                             /*extended_error_code=*/1);
+
+  {
+    auto tracker = CreateTracker(request);
+    ASSERT_THAT(tracker, NotNull());
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestStarted);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestFailed,
+                                failed_status);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestRetried,
+                                retried_status);
+  }
+
+  ExpectCommonUkm(
+      GetParam().request_type,
+      /*category_id=*/110,
+      /*num_redirects=*/0,
+      /*num_retries=*/1,
+      /*is_context_detached=*/false, RequestStageType::kRequestRetried,
+      RequestStageType::kRequestFailed, *request.keepalive_token,
+      /*failed_error_code=*/failed_status.error_code,
+      /*failed_extended_error_code=*/failed_status.extended_error_code,
+      /*completed_error_code=*/std::nullopt,
+      /*completed_extended_error_code=*/std::nullopt,
+      /*retried_error_code=*/retried_status.error_code,
+      /*retried_extended_error_code=*/retried_status.extended_error_code);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.RequestFailed",
+       "TimeDelta.RequestRetried", "TimeDelta.EventLogged"});
+}
+
+TEST_P(ChromeKeepAliveRequestTrackerTest, RequestRetriedAfterTwoRedirects) {
+  auto request = CreateRequest(GetUrlWithCategory("test-prefix120"));
+  auto failed_status = CreateCompletionStatus(/*error_code=*/net::ERR_FAILED,
+                                              /*extended_error_code=*/2);
+  auto retried_status = CreateCompletionStatus(/*error_code=*/net::ERR_FAILED,
+                                               /*extended_error_code=*/2);
+
+  {
+    auto tracker = CreateTracker(request);
+    ASSERT_THAT(tracker, NotNull());
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestStarted);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kFirstRedirectReceived);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kSecondRedirectReceived);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestFailed,
+                                failed_status);
+    FastForwardBy(one_time_step());
+    tracker->AdvanceToNextStage(RequestStageType::kRequestRetried,
+                                retried_status);
+  }
+
+  ExpectCommonUkm(
+      GetParam().request_type,
+      /*category_id=*/120,
+      /*num_redirects=*/2,
+      /*num_retries=*/1,
+      /*is_context_detached=*/false, RequestStageType::kRequestRetried,
+      RequestStageType::kRequestFailed, *request.keepalive_token,
+      /*failed_error_code=*/failed_status.error_code,
+      /*failed_extended_error_code=*/failed_status.extended_error_code,
+      /*completed_error_code=*/std::nullopt,
+      /*completed_extended_error_code=*/std::nullopt,
+      /*retried_error_code=*/retried_status.error_code,
+      /*retried_extended_error_code=*/retried_status.extended_error_code);
+  ExpectTimeSortedTimeDeltaUkm(
+      {"TimeDelta.RequestStarted", "TimeDelta.FirstRedirectReceived",
+       "TimeDelta.SecondRedirectReceived", "TimeDelta.RequestFailed",
+       "TimeDelta.RequestRetried", "TimeDelta.EventLogged"});
 }
 
 }  // namespace

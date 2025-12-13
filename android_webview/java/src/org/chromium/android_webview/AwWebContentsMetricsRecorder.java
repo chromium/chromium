@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -17,14 +16,13 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 
 import java.lang.ref.WeakReference;
-import java.util.Set;
 
 /**
  * This class records WebView settings usage.
  *
- * It records histograms at navigationEntryCommitted to show what the settings were on navigation.
- * It also offers static helpers to record the settings as they are configured by the embedding
- * application.
+ * <p>It records histograms at navigationEntryCommitted to show what the settings were on
+ * navigation. It also offers static helpers to record the settings as they are configured by the
+ * embedding application.
  */
 @Lifetime.WebView
 public class AwWebContentsMetricsRecorder extends WebContentsObserver {
@@ -34,15 +32,14 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
     public AwWebContentsMetricsRecorder(
             WebContents webContents, Context context, AwSettings awSettings) {
         super(webContents);
-        mContext = new WeakReference<Context>(context);
-        mAwSettings = new WeakReference<AwSettings>(awSettings);
+        mContext = new WeakReference<>(context);
+        mAwSettings = new WeakReference<>(awSettings);
     }
 
     @Override
     public void navigationEntryCommitted(LoadCommittedDetails details) {
         if (!details.isMainFrame()) return;
         recordDarkModeMetrics();
-        recordRequestedWithHeaderMetrics();
     }
 
     private void recordDarkModeMetrics() {
@@ -67,7 +64,7 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 textLuminance);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void recordDarkModeMetrics(
             int nightMode,
             int lightTheme,
@@ -122,15 +119,6 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                         * DarkModeHelper.LightTheme.LIGHT_THEME_COUNT);
     }
 
-    private void recordRequestedWithHeaderMetrics() {
-        AwSettings awSettings = mAwSettings.get();
-        if (awSettings == null) return;
-        Set<String> allowList = awSettings.getRequestedWithHeaderOriginAllowList();
-        RecordHistogram.recordCount1000Histogram(
-                "Android.WebView.RequestedWithHeader.OnNavigationRequestedWithHeaderAllowListSize",
-                allowList.size());
-    }
-
     public static void recordForceDarkModeAPIUsage(Context context, int forceDarkMode) {
         int value =
                 DarkModeHelper.getNightMode(context) * AwSettings.FORCE_DARK_MODES_COUNT
@@ -147,19 +135,5 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 "Android.WebView.ForceDarkBehavior",
                 forceDarkBehavior,
                 AwSettings.FORCE_DARK_STRATEGY_COUNT);
-    }
-
-    public static void recordRequestedWithHeaderModeAPIUsage(@NonNull Set<String> originAllowList) {
-        RecordHistogram.recordCount1000Histogram(
-                "Android.WebView.RequestedWithHeader.SetRequestedWithHeaderModeAllowListSize",
-                originAllowList.size());
-    }
-
-    public static void recordRequestedWithHeaderModeServiceWorkerAPIUsage(
-            @NonNull Set<String> originAllowList) {
-        RecordHistogram.recordCount1000Histogram(
-                "Android.WebView.RequestedWithHeader."
-                        + "SetServiceWorkerRequestedWithHeaderModeAllowListSize",
-                originAllowList.size());
     }
 }

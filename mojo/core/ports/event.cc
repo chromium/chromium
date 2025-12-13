@@ -2,18 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ports/event.h"
 
 #include <stdint.h>
 #include <string.h>
 
-#include <algorithm>
-
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_math.h"
@@ -115,7 +110,7 @@ static_assert(sizeof(UpdatePreviousPeerEventData) % kPortsMessageAlignment == 0,
 }  // namespace
 
 Event::PortDescriptor::PortDescriptor() {
-  memset(padding, 0, sizeof(padding));
+  UNSAFE_TODO(memset(padding, 0, sizeof(padding)));
 }
 
 Event::~Event() = default;
@@ -137,32 +132,41 @@ ScopedEvent Event::Deserialize(const void* buffer, size_t num_bytes) {
   const size_t data_size = num_bytes - sizeof(*header);
   switch (header->type) {
     case Type::kUserMessage:
-      return UserMessageEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+      return UserMessageEvent::Deserialize(port_name, from_port,
+                                           control_sequence_num,
+                                           UNSAFE_TODO(header + 1), data_size);
     case Type::kPortAccepted:
-      return PortAcceptedEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+      return PortAcceptedEvent::Deserialize(port_name, from_port,
+                                            control_sequence_num,
+                                            UNSAFE_TODO(header + 1), data_size);
     case Type::kObserveProxy:
-      return ObserveProxyEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+      return ObserveProxyEvent::Deserialize(port_name, from_port,
+                                            control_sequence_num,
+                                            UNSAFE_TODO(header + 1), data_size);
     case Type::kObserveProxyAck:
       return ObserveProxyAckEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+          port_name, from_port, control_sequence_num, UNSAFE_TODO(header + 1),
+          data_size);
     case Type::kObserveClosure:
       return ObserveClosureEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+          port_name, from_port, control_sequence_num, UNSAFE_TODO(header + 1),
+          data_size);
     case Type::kMergePort:
-      return MergePortEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+      return MergePortEvent::Deserialize(port_name, from_port,
+                                         control_sequence_num,
+                                         UNSAFE_TODO(header + 1), data_size);
     case Type::kUserMessageReadAckRequest:
       return UserMessageReadAckRequestEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+          port_name, from_port, control_sequence_num, UNSAFE_TODO(header + 1),
+          data_size);
     case Type::kUserMessageReadAck:
       return UserMessageReadAckEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+          port_name, from_port, control_sequence_num, UNSAFE_TODO(header + 1),
+          data_size);
     case Type::kUpdatePreviousPeer:
       return UpdatePreviousPeerEvent::Deserialize(
-          port_name, from_port, control_sequence_num, header + 1, data_size);
+          port_name, from_port, control_sequence_num, UNSAFE_TODO(header + 1),
+          data_size);
     default:
       DVLOG(2) << "Ingoring unknown port event type: "
                << static_cast<uint32_t>(header->type);
@@ -192,7 +196,7 @@ void Event::Serialize(void* buffer) const {
   header->from_port = from_port_;
   header->control_sequence_num = control_sequence_num_;
 #endif
-  SerializeData(header + 1);
+  SerializeData(UNSAFE_TODO(header + 1));
 }
 
 ScopedEvent Event::CloneForBroadcast() const {
@@ -245,13 +249,14 @@ ScopedEvent UserMessageEvent::Deserialize(const PortName& port_name,
       port_name, from_port, control_sequence_num, data->sequence_num));
   event->ReservePorts(data->num_ports);
   const auto* in_descriptors =
-      reinterpret_cast<const PortDescriptor*>(data + 1);
-  std::copy(in_descriptors, in_descriptors + data->num_ports,
-            event->port_descriptors());
+      reinterpret_cast<const PortDescriptor*>(UNSAFE_TODO(data + 1));
+  base::span(event->port_descriptors())
+      .copy_from(UNSAFE_TODO(base::span(in_descriptors, data->num_ports)));
 
-  const auto* in_names =
-      reinterpret_cast<const PortName*>(in_descriptors + data->num_ports);
-  std::copy(in_names, in_names + data->num_ports, event->ports());
+  const auto* in_names = reinterpret_cast<const PortName*>(
+      UNSAFE_TODO(in_descriptors + data->num_ports));
+  base::span(event->ports())
+      .copy_from(UNSAFE_TODO(base::span(in_names, data->num_ports)));
   return std::move(event);
 }
 
@@ -285,11 +290,11 @@ void UserMessageEvent::SerializeData(void* buffer) const {
   data->num_ports = static_cast<uint32_t>(ports_.size());
   data->padding = 0;
 
-  auto* ports_data = reinterpret_cast<PortDescriptor*>(data + 1);
+  auto* ports_data = reinterpret_cast<PortDescriptor*>(UNSAFE_TODO(data + 1));
   std::ranges::copy(port_descriptors_, ports_data);
 
   auto* port_names_data =
-      reinterpret_cast<PortName*>(ports_data + ports_.size());
+      reinterpret_cast<PortName*>(UNSAFE_TODO(ports_data + ports_.size()));
   std::ranges::copy(ports_, port_names_data);
 }
 

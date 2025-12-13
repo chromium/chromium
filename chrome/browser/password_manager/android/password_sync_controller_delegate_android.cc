@@ -4,11 +4,9 @@
 
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -101,11 +99,6 @@ void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
     // Sync setting didn't change, check for changed trusted vault error.
-    if (!base::FeatureList::IsEnabled(
-            password_manager::features::
-                kReloadPasswordsOnTrustedVaultEncryptionChange)) {
-      return;
-    }
     if (!sync_service_has_trusted_vault_error_.has_value() ||
         sync_service_has_trusted_vault_error_ == has_trusted_vault_error) {
       // No change, nothing to notify.

@@ -4,19 +4,20 @@
 
 #include "mojo/public/cpp/base/memory_pressure_level_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
-mojo_base::mojom::MemoryPressureLevel
-EnumTraits<mojo_base::mojom::MemoryPressureLevel,
-           base::MemoryPressureListener::MemoryPressureLevel>::
-    ToMojom(base::MemoryPressureListener::MemoryPressureLevel input) {
+mojo_base::mojom::MemoryPressureLevel EnumTraits<
+    mojo_base::mojom::MemoryPressureLevel,
+    base::MemoryPressureLevel>::ToMojom(base::MemoryPressureLevel input) {
   switch (input) {
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE:
+    case base::MEMORY_PRESSURE_LEVEL_NONE:
       return mojo_base::mojom::MemoryPressureLevel::NONE;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE:
+    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
       return mojo_base::mojom::MemoryPressureLevel::MODERATE;
-    case base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL:
+    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
       return mojo_base::mojom::MemoryPressureLevel::CRITICAL;
   }
   NOTREACHED();
@@ -24,21 +25,18 @@ EnumTraits<mojo_base::mojom::MemoryPressureLevel,
 
 // static
 bool EnumTraits<mojo_base::mojom::MemoryPressureLevel,
-                base::MemoryPressureListener::MemoryPressureLevel>::
+                base::MemoryPressureLevel>::
     FromMojom(mojo_base::mojom::MemoryPressureLevel input,
-              base::MemoryPressureListener::MemoryPressureLevel* output) {
+              base::MemoryPressureLevel* output) {
   switch (input) {
     case mojo_base::mojom::MemoryPressureLevel::NONE:
-      *output = base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_NONE;
+      *output = base::MEMORY_PRESSURE_LEVEL_NONE;
       return true;
     case mojo_base::mojom::MemoryPressureLevel::MODERATE:
-      *output = base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE;
+      *output = base::MEMORY_PRESSURE_LEVEL_MODERATE;
       return true;
     case mojo_base::mojom::MemoryPressureLevel::CRITICAL:
-      *output = base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL;
+      *output = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
       return true;
   }
   return false;

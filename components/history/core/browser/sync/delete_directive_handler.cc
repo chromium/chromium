@@ -41,9 +41,7 @@ std::string DeleteDirectiveToString(
     const sync_pb::HistoryDeleteDirectiveSpecifics& delete_directive) {
   base::Value value =
       syncer::HistoryDeleteDirectiveSpecificsToValue(delete_directive);
-  std::string str;
-  base::JSONWriter::Write(value, &str);
-  return str;
+  return base::WriteJson(value).value_or("");
 }
 
 // Compare time range directives first by start time, then by end time.
@@ -281,9 +279,10 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
   for (const syncer::SyncData& data : time_range_directives) {
     const sync_pb::TimeRangeDirective& time_range_directive =
         data.GetSpecifics().history_delete_directive().time_range_directive();
-    const std::optional<std::string>& app_id =
-        time_range_directive.has_app_id() ? time_range_directive.app_id()
-                                          : kNoAppIdFilter;
+    const std::optional<std::string> app_id =
+        time_range_directive.has_app_id()
+            ? std::optional(time_range_directive.app_id())
+            : std::nullopt;
     app_directives_map[app_id].push_back(data);
   }
 
@@ -313,9 +312,11 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
 
     const sync_pb::TimeRangeDirective& time_range_directive =
         delete_directive.time_range_directive();
-    CHECK((!time_range_directive.has_app_id() &&
-           restrict_app_id == kNoAppIdFilter) ||
-          time_range_directive.app_id() == *restrict_app_id);
+    const std::optional<std::string> directive_app_id =
+        time_range_directive.has_app_id()
+            ? std::optional(time_range_directive.app_id())
+            : std::nullopt;
+    CHECK(directive_app_id == restrict_app_id);
     if (!time_range_directive.has_start_time_usec() ||
         !time_range_directive.has_end_time_usec() ||
         time_range_directive.start_time_usec() >=
@@ -403,7 +404,6 @@ bool DeleteDirectiveHandler::CreateTimeRangeDeleteDirective(
       begin_time.is_null() ? 0 : TimeToUnixUsec(begin_time);
 
   // Determine the actual end time -- it should not be null or in the future.
-  // TODO(dubroy): Use sane time (crbug.com/146090) here when it's available.
   base::Time end = (end_time.is_null() || end_time > now) ? now : end_time;
   // -1 because end time in delete directives is inclusive.
   int64_t end_time_usecs = TimeToUnixUsec(end) - 1;

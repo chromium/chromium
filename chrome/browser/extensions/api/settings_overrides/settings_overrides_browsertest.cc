@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -50,6 +51,8 @@
 #include "extensions/common/switches.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 namespace {
@@ -61,8 +64,6 @@ namespace {
 // The default set of engines (when no country is available) has ids 1, 2
 // and 3. The ID 83 is associated with mail.ru, chosen because it's not part
 // of the prepopulated set where we run tests.
-// TODO(crbug.com/40940777): Update the test to fix the country in such a way
-// that we have more control on what is in the prepopulated set or not.
 const int kTestExtensionPrepopulatedId = 83;
 // TemplateURLData with search engines settings from test extension manifest.
 // chrome/test/data/extensions/settings_override/manifest.json

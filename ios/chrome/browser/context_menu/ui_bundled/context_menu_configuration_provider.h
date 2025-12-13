@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/menu/ui_bundled/menu_histograms.h"
+
 namespace web {
 struct ContextMenuParams;
 class WebState;
@@ -41,6 +43,15 @@ class GURL;
 - (UIContextMenuConfiguration*)
     contextMenuConfigurationForWebState:(web::WebState*)webState
                                  params:(web::ContextMenuParams)params;
+
+// Returns a menu for a context menu, based on its associated `webState` and
+// `params`.
+- (UIMenu*)contextMenuForWebState:(web::WebState*)webState
+                           params:(web::ContextMenuParams)params
+                         scenario:(MenuScenarioHistogram)scenario;
+
+// Record the fact that the menu was shown.
+- (void)recordMenuShown:(MenuScenarioHistogram)scenario;
 
 // Stops the provider.
 - (void)stop;

@@ -1,0 +1,10 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+Must not crash, and transforms to 'Simple_sting_line'. Test for http://crbug.com/599427.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS processor.transformToFragment(doc, document).textContent is "Simple_sting_line"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

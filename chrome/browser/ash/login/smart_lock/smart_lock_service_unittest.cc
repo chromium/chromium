@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -42,6 +41,8 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -322,11 +323,6 @@ class SmartLockServiceTest : public testing::Test {
   // Must outlive TestingProfiles.
   content::BrowserTaskEnvironment task_environment_;
 
-  // PrefService which contains the browser process' local storage. It should be
-  // destructed after TestingProfile.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
@@ -422,7 +418,8 @@ TEST_F(
     GetRemoteDevices_InitiallyNoSyncedDevices_MultiDeviceSetupDialogVisible) {
   SetDisplaySize(gfx::Size(1920, 1200));
 
-  ChromeSessionManager manager;
+  ChromeSessionManager manager{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   manager.OnUserManagerCreated(fake_user_manager_.Get());
 
   auto dialog = std::make_unique<FakeMultiDeviceSetupDialog>();

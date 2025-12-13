@@ -247,7 +247,7 @@ ASH_EXPORT inline constexpr auto kDeveloperAcceleratorData = std::to_array<
      AcceleratorAction::kToggleFullscreen},
     // For testing on Linux desktop where it's hard to rebind the caps lock key.
     {true, ui::VKEY_A, ui::EF_ALT_DOWN, AcceleratorAction::kDevToggleAppList},
-    {true, ui::VKEY_S, ui::EF_ALT_DOWN, AcceleratorAction::kTogglePicker},
+    {true, ui::VKEY_S, ui::EF_ALT_DOWN, AcceleratorAction::kToggleQuickInsert},
 
     // For testing fingerprint ui.
     {true, ui::VKEY_1, kDebugModifier, kTouchFingerprintSensor1},
@@ -328,7 +328,7 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtLoginOrLockScreen = {
     AcceleratorAction::kToggleFullscreenMagnifier,
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
-    AcceleratorAction::kTogglePicker,
+    AcceleratorAction::kToggleQuickInsert,
     AcceleratorAction::kToggleSpokenFeedback,
     AcceleratorAction::kToggleSystemTrayBubble,
     AcceleratorAction::kToggleWifi,
@@ -412,7 +412,7 @@ ASH_EXPORT inline constexpr std::array kActionsAllowedAtModalWindow = {
     AcceleratorAction::kToggleHighContrast,
     AcceleratorAction::kToggleMirrorMode,
     AcceleratorAction::kToggleSpokenFeedback,
-    AcceleratorAction::kTogglePicker,
+    AcceleratorAction::kToggleQuickInsert,
     AcceleratorAction::kToggleWifi,
     AcceleratorAction::kTouchFingerprintSensor1,
     AcceleratorAction::kTouchFingerprintSensor2,

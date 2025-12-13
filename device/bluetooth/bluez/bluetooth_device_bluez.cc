@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
 
 #include <stdio.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -92,11 +88,12 @@ void ParseModalias(const dbus::ObjectPath& object_path,
   BluetoothDevice::VendorIDSource source_value;
   int vendor_value, product_value, device_value;
 
-  if (sscanf(modalias.c_str(), "bluetooth:v%04xp%04xd%04x", &vendor_value,
-             &product_value, &device_value) == 3) {
+  if (UNSAFE_TODO(sscanf(modalias.c_str(), "bluetooth:v%04xp%04xd%04x",
+                         &vendor_value, &product_value, &device_value)) == 3) {
     source_value = BluetoothDevice::VENDOR_ID_BLUETOOTH;
-  } else if (sscanf(modalias.c_str(), "usb:v%04xp%04xd%04x", &vendor_value,
-                    &product_value, &device_value) == 3) {
+  } else if (UNSAFE_TODO(sscanf(modalias.c_str(), "usb:v%04xp%04xd%04x",
+                                &vendor_value, &product_value,
+                                &device_value)) == 3) {
     source_value = BluetoothDevice::VENDOR_ID_USB;
   } else {
     return;

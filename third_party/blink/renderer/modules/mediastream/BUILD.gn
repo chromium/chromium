@@ -19,8 +19,6 @@ blink_modules_sources("mediastream") {
     "crop_target.cc",
     "crop_target.h",
     "dom_window_media_stream.h",
-    "identifiability_metrics.cc",
-    "identifiability_metrics.h",
     "image_capture_device_settings.h",
     "input_device_info.cc",
     "input_device_info.h",
@@ -133,11 +131,11 @@ blink_modules_sources("mediastream") {
     "//build:chromecast_buildflags",
     "//media/capture/mojom:image_capture_blink",
     "//media/webrtc",
-    "//services/viz/public/cpp/gpu:gpu",
+    "//services/viz/public/cpp/gpu",
     "//third_party/blink/public/common",
-    "//third_party/blink/renderer/modules/imagecapture:imagecapture",
-    "//third_party/blink/renderer/modules/screen_details:screen_details",
-    "//third_party/libyuv:libyuv",
+    "//third_party/blink/renderer/modules/imagecapture",
+    "//third_party/blink/renderer/modules/screen_details",
+    "//third_party/libyuv",
   ]
   allow_circular_includes_from =
       [ "//third_party/blink/renderer/modules/imagecapture:imagecapture" ]
@@ -181,7 +179,7 @@ source_set("test_support") {
     "//testing/gmock",
     "//third_party/blink/public:test_headers",
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
-    "//third_party/blink/renderer/modules:modules",
+    "//third_party/blink/renderer/modules",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 

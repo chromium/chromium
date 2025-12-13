@@ -113,6 +113,10 @@
 #pragma mark - TabGridToolbarsGridDelegate
 
 - (void)closeAllButtonTapped:(id)sender {
+  if (base::FeatureList::IsEnabled(kTabSwitcherOverflowMenu)) {
+    [self.incognitoDelegate showCloseAllConfirmationFromSourceView:sender];
+    return;
+  }
   [self closeAllItems];
 }
 
@@ -174,6 +178,7 @@
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc]
           initWithPage:TabGridPageIncognitoTabs];
+  toolbarsConfiguration.overflowMenuButton = YES;
 
   if (self.modeHolder.mode == TabGridMode::kSelection) {
     [self configureButtonsInSelectionMode:toolbarsConfiguration];

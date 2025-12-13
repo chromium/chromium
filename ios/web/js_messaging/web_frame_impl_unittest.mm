@@ -4,6 +4,7 @@
 
 #import "ios/web/js_messaging/web_frame_impl.h"
 
+#import <Foundation/Foundation.h>
 #import <WebKit/WebKit.h>
 
 #import "base/functional/bind.h"
@@ -14,6 +15,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
+#import "components/test/ios/test_utils.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"
@@ -25,6 +27,8 @@ namespace {
 
 const char kFrameId[] = "1effd8f52a067c8d3a01762d3c41dfd8";
 
+const char kFrameInfoRequestUrl[] = "https://test.com";
+
 }  // namespace
 
 namespace web {
@@ -32,19 +36,20 @@ namespace web {
 class WebFrameImplTest : public web::WebTest {
  protected:
   WebFrameImplTest() {
+    mock_ns_url_request_ = OCMClassMock([NSURLRequest class]);
     mock_frame_info_ = OCMClassMock([WKFrameInfo class]);
     mock_web_view_ = OCMClassMock([WKWebView class]);
 
-    OCMStub([mock_web_view_ evaluateJavaScript:OCMOCK_ANY
-                                       inFrame:OCMOCK_ANY
-                                inContentWorld:OCMOCK_ANY
-                             completionHandler:OCMOCK_ANY])
-        .andDo(^(NSInvocation* invocation) {
-          [invocation retainArguments];
-          [invocation getArgument:&last_received_script_ atIndex:2];
-          [invocation getArgument:&last_received_content_world_ atIndex:4];
-        });
+    OCMStub([mock_web_view_
+        evaluateJavaScript:AssignValueToVariable(last_received_script_)
+                   inFrame:OCMOCK_ANY
+            inContentWorld:AssignValueToVariable(last_received_content_world_)
+         completionHandler:OCMOCK_ANY]);
     OCMStub([mock_frame_info_ webView]).andReturn(mock_web_view_);
+    NSURL* url = [[NSURL alloc]
+        initWithString:base::SysUTF8ToNSString(kFrameInfoRequestUrl)];
+    OCMStub([mock_ns_url_request_ URL]).andReturn(url);
+    OCMStub([mock_frame_info_ request]).andReturn(mock_ns_url_request_);
   }
 
   void SetUp() override {
@@ -59,6 +64,7 @@ class WebFrameImplTest : public web::WebTest {
 
   id mock_frame_info_;
   id mock_web_view_;
+  id mock_ns_url_request_;
   NSString* last_received_script_;
   WKContentWorld* last_received_content_world_;
 
@@ -68,13 +74,14 @@ class WebFrameImplTest : public web::WebTest {
 
 // Tests creation of a WebFrame for the main frame.
 TEST_F(WebFrameImplTest, CreateWebFrameForMainFrame) {
-  WebFrameImpl web_frame([[WKFrameInfo alloc] init], kFrameId,
+  WebFrameImpl web_frame(mock_frame_info_, kFrameId,
                          /*is_main_frame=*/true, security_origin_,
                          &fake_web_state_, ContentWorld::kPageContentWorld);
 
   EXPECT_EQ(&fake_web_state_, web_frame.GetWebState());
   EXPECT_TRUE(web_frame.IsMainFrame());
   EXPECT_EQ(security_origin_, web_frame.GetSecurityOrigin());
+  EXPECT_EQ(web_frame.GetUrl(), GURL(kFrameInfoRequestUrl));
   EXPECT_EQ(kFrameId, web_frame.GetFrameId());
 }
 

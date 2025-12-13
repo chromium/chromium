@@ -26,6 +26,7 @@ blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
     result->accelerator = std::move(accelerator);
   }
   result->label = item.label;
+  result->feature_name = item.feature_name;
   result->tool_tip = item.tool_tip;
   result->type =
       static_cast<blink::mojom::CustomContextMenuItemType>(item.type);

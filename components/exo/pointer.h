@@ -26,7 +26,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace viz {
 class CopyOutputResult;

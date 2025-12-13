@@ -50,6 +50,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":certificate_transparency",
+    "//base:build_time",
     "//base/test:test_support",
     "//components/base32",
     "//components/certificate_transparency/data:ct_log_list",

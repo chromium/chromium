@@ -80,7 +80,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   std::string email() const override { return "test@user.com"; }
 
-  std::string url() const override { return kUrl; }
+  const GURL& url() const override { return tab_url_; }
 
   const GURL& tab_url() const override { return tab_url_; }
 
@@ -98,6 +98,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
       const override {
     return {};
   }
+
+  content::WebContents* web_contents() const override { return nullptr; }
 
  private:
   GURL tab_url_{kUrl};
@@ -121,7 +123,7 @@ class ClipboardRequestHandlerTest : public testing::Test {
     *response.add_results() =
         CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
     binary_upload_service_.SetResponse(
-        safe_browsing::CloudBinaryUploadService::Result::SUCCESS,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
         std::move(response));
   }
 
@@ -173,6 +175,7 @@ TEST_F(ClipboardRequestHandlerTest, Text) {
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
   validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectSourceActiveUser(kSourceEmail);
   validator.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,
@@ -249,6 +252,7 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   base::RunLoop run_loop;
   auto validator = helper_->CreateValidator();
   validator.SetDoneClosure(run_loop.QuitClosure());
+  validator.ExpectSourceActiveUser(kSourceEmail);
   validator.ExpectSensitiveDataEvent(
       /*url*/
       kUrl,

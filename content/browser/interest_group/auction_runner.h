@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_AUCTION_RUNNER_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>

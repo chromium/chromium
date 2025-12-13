@@ -22,10 +22,10 @@ Simple XML
 Testing with MimeType: text/xml, and StatusCode: 200
 Content: <bar><foo/></bar>
 
-ResourceType(xhr): SearchableView > widget shadow-xml-view source-code
-ResourceType(fetch): SearchableView > widget shadow-xml-view source-code
-ResourceType(document): SearchableView > widget shadow-xml-view source-code
-ResourceType(other): SearchableView > widget shadow-xml-view source-code
+ResourceType(xhr): SearchableView > shadow-xml-view source-code widget
+ResourceType(fetch): SearchableView > shadow-xml-view source-code widget
+ResourceType(document): SearchableView > shadow-xml-view source-code widget
+ResourceType(other): SearchableView > shadow-xml-view source-code widget
 
 XML MIME But JSON
 Testing with MimeType: text/xml, and StatusCode: 200
@@ -87,10 +87,10 @@ XML With Error 500
 Testing with MimeType: text/xml, and StatusCode: 500
 Content: <bar><foo/></bar>
 
-ResourceType(xhr): SearchableView > widget shadow-xml-view source-code
-ResourceType(fetch): SearchableView > widget shadow-xml-view source-code
-ResourceType(document): SearchableView > widget shadow-xml-view source-code
-ResourceType(other): SearchableView > widget shadow-xml-view source-code
+ResourceType(xhr): SearchableView > shadow-xml-view source-code widget
+ResourceType(fetch): SearchableView > shadow-xml-view source-code widget
+ResourceType(document): SearchableView > shadow-xml-view source-code widget
+ResourceType(other): SearchableView > shadow-xml-view source-code widget
 
 Unknown MIME Text With Error 500
 Testing with MimeType: text/foobar, and StatusCode: 500

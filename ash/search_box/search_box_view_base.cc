@@ -8,14 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -595,32 +593,6 @@ views::ImageView* SearchBoxViewBase::search_icon() {
   return search_icon_;
 }
 
-void SearchBoxViewBase::SetIphView(
-    std::unique_ptr<LauncherSearchIphView> view) {
-  if (GetIphView()) {
-    DCHECK(false) << "SetIphView gets called with an IPH view being shown.";
-
-    DeleteIphView();
-  }
-
-  iph_view_tracker_.SetView(main_container_->AddChildView(std::move(view)));
-}
-
-LauncherSearchIphView* SearchBoxViewBase::GetIphView() {
-  views::View* view = iph_view_tracker_.view();
-  if (!view) {
-    return nullptr;
-  }
-
-  CHECK(views::IsViewClass<LauncherSearchIphView>(view))
-      << "Only LaunchserSearchIph view is supported now";
-  return static_cast<LauncherSearchIphView*>(view);
-}
-
-void SearchBoxViewBase::DeleteIphView() {
-  main_container_->RemoveChildViewT(GetIphView());
-}
-
 void SearchBoxViewBase::TriggerSearch() {
   HandleQueryChange(search_box_->GetText(), /*initiated_by_user=*/false);
 }
@@ -887,13 +859,6 @@ void SearchBoxViewBase::SetSearchBoxBackgroundCornerRadius(int corner_radius) {
 
 void SearchBoxViewBase::SetSearchIconImage(gfx::ImageSkia image) {
   search_icon_->SetSearchIconImage(image);
-}
-
-void SearchBoxViewBase::SetShowAssistantButton(bool show) {
-  DCHECK(assistant_button_);
-  show_assistant_button_ = show;
-  assistant_button_->SetVisible(show);
-  UpdateButtonsVisibility();
 }
 
 void SearchBoxViewBase::SetShowGeminiButton(bool show) {

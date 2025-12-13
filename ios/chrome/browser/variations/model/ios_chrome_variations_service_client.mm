@@ -11,6 +11,7 @@
 #import "components/variations/seed_response.h"
 #import "components/variations/synthetic_trials.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_store.h"
@@ -54,8 +55,15 @@ IOSChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
 }
 
 bool IOSChromeVariationsServiceClient::IsEnterprise() {
-  // TODO(crbug.com/40647432): Implement enterprise check for iOS.
-  return false;
+  BrowserPolicyConnectorIOS* policyConnector =
+      GetApplicationContext()->GetBrowserPolicyConnector();
+
+  // If there are policies enabled or has machine level policies, then we
+  // consider this an enterprise client.
+  return (policyConnector &&
+          (policyConnector->chrome_browser_cloud_management_controller()
+               ->IsEnabled() ||
+           policyConnector->HasMachineLevelPolicies()));
 }
 
 // Nothing to do, as iOS doesn't support multiple profiles.

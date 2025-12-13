@@ -38,6 +38,7 @@ static_library("cleanup") {
     "//chrome/browser/ash/printing/print_management",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//components/app_constants",

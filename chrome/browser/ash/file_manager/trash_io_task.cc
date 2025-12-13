@@ -329,7 +329,7 @@ base::FilePath TrashIOTask::MakeRelativePathAbsoluteFromBasePath(
 void TrashIOTask::GotFreeDiskSpace(
     size_t source_idx,
     const trash::TrashPathsMap::reverse_iterator& it,
-    int64_t free_space) {
+    std::optional<int64_t> free_space) {
   trash::TrashLocation& trash_location = it->second;
   const base::FilePath& trash_parent_path = it->first;
   base::FilePath trash_path = MakeRelativeFromBasePath(
@@ -340,7 +340,7 @@ void TrashIOTask::GotFreeDiskSpace(
   trash_location.trash_info =
       CreateFileSystemURL(progress_.sources[source_idx].url,
                           trash_path.Append(trash::kInfoFolderName));
-  trash_location.free_space = free_space;
+  trash_location.free_space = free_space.value_or(-1);
   trash_location.require_setup = true;
 
   ValidateAndDecrementFreeSpace(source_idx, it);

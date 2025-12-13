@@ -5,6 +5,7 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content::indexed_db {
@@ -17,7 +18,7 @@ IndexedDBValue& IndexedDBValue::operator=(IndexedDBValue&& other) = default;
 
 IndexedDBValue IndexedDBValue::Clone() const {
   IndexedDBValue copy;
-  copy.bits = bits;
+  copy.bits = mojo_base::BigBuffer(base::span(bits));
   copy.external_objects = external_objects;
   return copy;
 }
@@ -25,8 +26,7 @@ IndexedDBValue IndexedDBValue::Clone() const {
 IndexedDBValue::IndexedDBValue(
     const std::string& input_bits,
     const std::vector<IndexedDBExternalObject>& external_objects)
-    : bits(input_bits.begin(), input_bits.end()),
-      external_objects(external_objects) {
+    : bits(base::as_byte_span(input_bits)), external_objects(external_objects) {
   DCHECK(external_objects.empty() || input_bits.size());
 }
 

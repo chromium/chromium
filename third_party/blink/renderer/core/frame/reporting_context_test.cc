@@ -41,8 +41,8 @@ class MockReportingServiceProxy : public mojom::blink::ReportingServiceProxy {
       : broker_(broker), reached_callback_(std::move(reached_callback)) {
     broker_.SetBinderForTesting(
         ReportingServiceProxy::Name_,
-        WTF::BindRepeating(&MockReportingServiceProxy::BindReceiver,
-                           WTF::Unretained(this)));
+        BindRepeating(&MockReportingServiceProxy::BindReceiver,
+                      Unretained(this)));
   }
 
   ~MockReportingServiceProxy() override {

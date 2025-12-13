@@ -117,6 +117,8 @@ class TtsExtension {
               /*ended*/ 1, /*enum size */ 2);
           this.onStop_(/* onEnded = */ true);
           break;
+        default:
+          break;
       }
     });
   }

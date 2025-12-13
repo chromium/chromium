@@ -122,8 +122,7 @@ static bool ExtractUnixLink50(CommandData *Cmd,const wchar *Name,FileHeader *hd)
     // Windows absolute path symlinks in Unix. RAR 5.0 used \??\ prefix
     // for Windows absolute symlinks, since RAR 5.1 /??/ is used.
     // We escape ? as \? to avoid "trigraph" warning
-    if (Target.rfind("\\??\\",0)!=std::string::npos || 
-        Target.rfind("/\?\?/",0)!=std::string::npos)
+    if (starts_with(Target,"\\??\\") || starts_with(Target,"/\?\?/"))
     {
 #if 0 // 2024.12.26: Not used anymore. We unpack absolute Windows symlinks even in Unix.
       uiMsg(UIERROR_SLINKCREATE,nullptr,L"\"" + hd->FileName + L"\" -> \"" + hd->RedirName + L"\"");

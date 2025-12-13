@@ -29,7 +29,6 @@ namespace features {
 
 // https://html.spec.whatwg.org/multipage/system-state.html#security-and-privacy
 BASE_FEATURE(kStripCredentialsForExternalProtocolHandler,
-             "StripCredentialsForExternalProtocolHandler",
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
@@ -57,12 +56,14 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
 ProtocolHandler::ProtocolHandler(
     const std::string& protocol,
     const GURL& url,
-    const std::string& app_id,
+    std::optional<std::string> app_id,
+    std::optional<std::string> extension_id,
     base::Time last_modified,
     blink::ProtocolHandlerSecurityLevel security_level)
     : protocol_(base::ToLowerASCII(protocol)),
       url_(url),
       web_app_id_(app_id),
+      extension_id_(extension_id),
       last_modified_(last_modified),
       security_level_(security_level) {}
 
@@ -72,8 +73,20 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
     const GURL& url,
     const std::string& app_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ProtocolHandler(protocol, url, app_id, base::Time::Now(),
+  return ProtocolHandler(protocol, url, app_id, /*extension_id=*/std::nullopt,
+                         base::Time::Now(),
                          blink::ProtocolHandlerSecurityLevel::kStrict);
+}
+
+// static
+ProtocolHandler ProtocolHandler::CreateExtensionProtocolHandler(
+    const std::string& protocol,
+    const GURL& url,
+    const std::string& extension_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  return ProtocolHandler(
+      protocol, url, /*app_id=*/std::nullopt, extension_id, base::Time::Now(),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
 }
 
 ProtocolHandler::ProtocolHandler() = default;
@@ -137,7 +150,17 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     std::string app_id;
     if (app_id_val->is_string())
       app_id = app_id_val->GetString();
-    return ProtocolHandler(protocol, GURL(url), app_id, time, security_level);
+    return ProtocolHandler(protocol, GURL(url), app_id,
+                           /*extension_id=*/std::nullopt, time, security_level);
+  }
+
+  if (const base::Value* extension_id_val = value.Find("extension_id")) {
+    std::string extension_id;
+    if (extension_id_val->is_string()) {
+      extension_id = extension_id_val->GetString();
+    }
+    return ProtocolHandler(protocol, GURL(url), /*app_id=*/std::nullopt,
+                           extension_id, time, security_level);
   }
 
   return ProtocolHandler(protocol, GURL(url), time, security_level);
@@ -177,6 +200,9 @@ base::Value::Dict ProtocolHandler::Encode() const {
 
   if (web_app_id_.has_value())
     d.Set("app_id", web_app_id_.value());
+  if (extension_id_.has_value()) {
+    d.Set("extension_id", extension_id_.value());
+  }
 
   return d;
 }
@@ -198,7 +224,12 @@ std::u16string ProtocolHandler::GetProtocolDisplayName() const {
 
 #if !defined(NDEBUG)
 std::string ProtocolHandler::ToString() const {
-  return "{ protocol=" + protocol_ + ", url=" + url_.spec() + " }";
+  std::string web_app_id_str =
+      web_app_id_.has_value() ? ", web_app_id= " + *web_app_id_ : "";
+  std::string extension_id_str =
+      extension_id_.has_value() ? ", extension_id= " + *extension_id_ : "";
+  return "{ protocol=" + protocol_ + ", url=" + url_.spec() + web_app_id_str +
+         extension_id_str + " }";
 }
 #endif
 

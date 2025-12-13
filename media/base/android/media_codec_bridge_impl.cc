@@ -14,7 +14,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
@@ -450,9 +449,9 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
   auto j_csd1 = ToJavaByteArray(env, config.csd1);
 
   std::unique_ptr<JniHdrMetadata> jni_hdr_metadata;
-  if (config.hdr_metadata.has_value()) {
+  if (!config.hdr_metadata.IsEmpty()) {
     jni_hdr_metadata = std::make_unique<JniHdrMetadata>(
-        config.container_color_space, config.hdr_metadata.value());
+        config.container_color_space, config.hdr_metadata);
   }
   auto j_hdr_metadata = jni_hdr_metadata ? jni_hdr_metadata->obj() : nullptr;
   auto j_decoder_name = ConvertUTF8ToJavaString(env, config.name);
@@ -464,7 +463,8 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
           config.initial_expected_coded_size.height(), config.surface, j_csd0,
           j_csd1, j_hdr_metadata, /*allowAdaptivePlayback=*/true,
           /*useAsyncApi=*/!!config.on_buffers_available_cb,
-          /*useBlockModel=*/config.use_block_model, j_decoder_name,
+          /*useBlockModel=*/config.use_block_model,
+          /*useLowLatencyMode=*/config.use_low_latency_mode, j_decoder_name,
           config.profile));
   if (j_bridge.is_null()) {
     return nullptr;
@@ -473,34 +473,6 @@ std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoDecoder(
   return base::WrapUnique(new MediaCodecBridgeImpl(
       config.codec_type, config.codec, std::move(j_bridge),
       config.use_block_model, config.on_buffers_available_cb));
-}
-
-// static
-std::unique_ptr<MediaCodecBridge> MediaCodecBridgeImpl::CreateVideoEncoder(
-    VideoCodec codec,
-    const gfx::Size& size,
-    int bit_rate,
-    int frame_rate,
-    int i_frame_interval,
-    int color_format) {
-  const std::string mime = MediaCodecUtil::CodecToAndroidMimeType(codec);
-  if (mime.empty()) {
-    return nullptr;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_mime = ConvertUTF8ToJavaString(env, mime);
-  ScopedJavaGlobalRef<jobject> j_bridge(
-      Java_MediaCodecBridgeBuilder_createVideoEncoder(
-          env, j_mime, size.width(), size.height(), kBitrateModeCBR, bit_rate,
-          frame_rate, i_frame_interval, color_format));
-
-  if (j_bridge.is_null()) {
-    return nullptr;
-  }
-
-  return base::WrapUnique(new MediaCodecBridgeImpl(
-      CodecType::kAny, std::nullopt, std::move(j_bridge)));
 }
 
 // static
@@ -680,22 +652,6 @@ MediaCodecResult MediaCodecBridgeImpl::GetOutputColorSpace(
   return OkStatus();
 }
 
-MediaCodecResult MediaCodecBridgeImpl::GetInputFormat(int* stride,
-                                                      int* slice_height,
-                                                      gfx::Size* encoded_size) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> result =
-      Java_MediaCodecBridge_getInputFormat(env, j_bridge_);
-  if (!result) {
-    return {MediaCodecResult::Codes::kError, "Failed to get input format."};
-  }
-
-  *stride = Java_MediaFormatWrapper_stride(env, result);
-  *slice_height = Java_MediaFormatWrapper_yPlaneHeight(env, result);
-  *encoded_size = gfx::Size(Java_MediaFormatWrapper_width(env, result),
-                            Java_MediaFormatWrapper_height(env, result));
-  return OkStatus();
-}
 MediaCodecResult MediaCodecBridgeImpl::QueueInputBuffer(
     int index,
     base::span<const uint8_t> data,
@@ -960,16 +916,6 @@ bool MediaCodecBridgeImpl::SetSurface(const JavaRef<jobject>& surface) {
   return Java_MediaCodecBridge_setSurface(env, j_bridge_, surface);
 }
 
-void MediaCodecBridgeImpl::SetVideoBitrate(int bps, int frame_rate) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_setVideoBitrate(env, j_bridge_, bps, frame_rate);
-}
-
-void MediaCodecBridgeImpl::RequestKeyFrameSoon() {
-  JNIEnv* env = AttachCurrentThread();
-  Java_MediaCodecBridge_requestKeyFrameSoon(env, j_bridge_);
-}
-
 CodecType MediaCodecBridgeImpl::GetCodecType() const {
   return codec_type_;
 }
@@ -1051,3 +997,6 @@ void MediaCodecBridgeImpl::ReportAnyErrorToUMA(MediaCodecStatus status) {
 }
 
 }  // namespace media
+
+DEFINE_JNI(MediaCodecBridgeBuilder)
+DEFINE_JNI(MediaCodecBridge)

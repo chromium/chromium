@@ -115,6 +115,18 @@ public class SimpleEdgeToEdgePadAdjusterUnitTest {
     }
 
     @Test
+    public void testCreateForViewWithController() {
+        View view = new View(mActivity);
+        var padAdjuster = EdgeToEdgeControllerFactory.createForView(view, mEdgeToEdgeController);
+
+        assertNotNull(padAdjuster);
+        verify(mEdgeToEdgeController).registerAdjuster(padAdjuster);
+
+        padAdjuster.destroy();
+        verify(mEdgeToEdgeController).unregisterAdjuster(padAdjuster);
+    }
+
+    @Test
     public void testCreateForViewAndObserveSupplier() {
         View view = new View(mActivity);
         var padAdjuster =

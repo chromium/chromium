@@ -178,7 +178,8 @@ void ZipFileInstaller::ManifestRead(
     return;
   }
 
-  std::optional<base::Value> result = base::JSONReader::Read(*manifest_content);
+  std::optional<base::Value> result = base::JSONReader::Read(
+      *manifest_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!result || !result->is_dict()) {
     ReportFailure(std::string(kExtensionHandlerFileUnzipError));
     return;
@@ -194,7 +195,7 @@ void ZipFileInstaller::ManifestRead(
         return ZipFileInstaller::ShouldExtractFile(is_theme, file_path) &&
                !ZipFileInstaller::IsManifestFile(file_path);
       },
-      manifest_type == Manifest::TYPE_THEME);
+      manifest_type == Manifest::Type::kTheme);
 
   // TODO(crbug.com/41274425): This silently ignores blocked file types.
   //                         Add install warnings.

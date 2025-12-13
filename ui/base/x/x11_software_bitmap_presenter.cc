@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/x/x11_software_bitmap_presenter.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +23,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/base/x/x11_shm_image_pool.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/atom_cache.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto.h"
@@ -124,9 +120,10 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
   }
   canvas.drawImage(fg_bitmap.asImage(), 0, 0);
 
-  connection->PutImage(
-      {x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16, x_i16, y_i16, 0,
-       d_u8, x11::SizedRefCountedMemory::From(bg, size_t{w_u16} * h_u16)});
+  connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16,
+                        x_i16, y_i16, 0, d_u8,
+                        UNSAFE_TODO(x11::SizedRefCountedMemory::From(
+                            bg, size_t{w_u16} * h_u16))});
 
   return true;
 }

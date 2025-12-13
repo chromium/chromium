@@ -60,10 +60,6 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
 
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
-
   GURL GetURL() {
     return https_server()->GetURL("a.test", "/permissions/requests.html");
   }
@@ -79,13 +75,11 @@ class PermissionChipKombuchaInteractiveUITest : public InteractiveBrowserTest {
  protected:
   using QuietUiReason = permissions::PermissionUiSelector::QuietUiReason;
   using WarningReason = permissions::PermissionUiSelector::WarningReason;
+  using Decision = permissions::PermissionUiSelector::Decision;
 
-  void SetCannedUiDecision(std::optional<QuietUiReason> quiet_ui_reason,
-                           std::optional<WarningReason> warning_reason) {
+  void SetCannedUiDecision(const Decision& decision) {
     test_api_->manager()->set_permission_ui_selector_for_testing(
-        std::make_unique<MockPermissionUiSelector>(
-            permissions::PermissionUiSelector::Decision(quiet_ui_reason,
-                                                        warning_reason)));
+        std::make_unique<MockPermissionUiSelector>(decision));
   }
 
  private:
@@ -116,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
 // request will be dismissed and the chip will be hidden.
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
                        QuietPermissionChipClickTest) {
-  SetCannedUiDecision(QuietUiReason::kEnabledInPrefs, std::nullopt);
+  SetCannedUiDecision(Decision::UseQuietUi(QuietUiReason::kEnabledInPrefs,
+                                           Decision::ShowNoWarning()));
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),
@@ -143,8 +138,8 @@ IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
 // permission request will be dismissed and the chip will be hidden.
 IN_PROC_BROWSER_TEST_F(PermissionChipKombuchaInteractiveUITest,
                        QuietestPermissionChipClickTest) {
-  SetCannedUiDecision(QuietUiReason::kTriggeredDueToAbusiveContent,
-                      std::nullopt);
+  SetCannedUiDecision(Decision::UseQuietUi(
+      QuietUiReason::kTriggeredDueToAbusiveContent, Decision::ShowNoWarning()));
 
   RunTestSequence(
       InstrumentTab(kWebContentsElementId),

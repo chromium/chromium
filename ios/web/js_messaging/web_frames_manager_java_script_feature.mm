@@ -91,8 +91,7 @@ WebFramesManagerJavaScriptFeature::WebFramesManagerJavaScriptFeature(
                FeatureScript::TargetFrames::kAllFrames,
                FeatureScript::ReinjectionBehavior::
                    kReinjectOnDocumentRecreation)},
-          {java_script_features::GetCommonJavaScriptFeature(),
-           java_script_features::GetMessageJavaScriptFeature()}),
+          {java_script_features::GetCommonJavaScriptFeature()}),
       content_world_(content_world),
       browser_state_(browser_state),
       weak_factory_(this) {}

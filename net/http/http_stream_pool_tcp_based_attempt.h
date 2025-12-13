@@ -26,7 +26,7 @@ namespace net {
 class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
  public:
   TcpBasedAttempt(AttemptManager* manager,
-                  bool using_tls,
+                  TcpBasedAttemptSlot* slot,
                   IPEndPoint ip_endpoint);
 
   TcpBasedAttempt(const TcpBasedAttempt&) = delete;
@@ -38,12 +38,13 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
 
   void SetCancelReason(StreamSocketCloseReason reason);
 
+  TcpBasedAttemptSlot* slot() const { return slot_; }
+
+  void ResetSlot() { slot_ = nullptr; }
+
   StreamAttempt* attempt() { return attempt_.get(); }
 
   base::TimeTicks start_time() const { return start_time_; }
-  base::TimeTicks ssl_config_wait_start_time() const {
-    return ssl_config_wait_start_time_;
-  }
 
   const IPEndPoint& ip_endpoint() const { return attempt_->ip_endpoint(); }
 
@@ -55,12 +56,12 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
 
   // TlsStreamAttempt::Delegate implementation:
   void OnTcpHandshakeComplete() override;
-  int WaitForSSLConfigReady(CompletionOnceCallback callback) override;
-  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
-      override;
+  int WaitForTlsHandshakeReady(CompletionOnceCallback callback) override;
+  base::expected<ServiceEndpoint, TlsStreamAttempt::GetServiceEndpointError>
+  GetServiceEndpointForTlsHandshake() override;
 
-  bool IsWaitingSSLConfig() const {
-    return !ssl_config_waiting_callback_.is_null();
+  bool IsWaitingForServiceEndpointReady() const {
+    return !service_endpoint_waiting_callback_.is_null();
   }
 
   // Transfers `ssl_config_waiting_callback_` when `this` is waiting for
@@ -76,6 +77,7 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   const raw_ptr<AttemptManager> manager_;
   const perfetto::Track track_;
   const perfetto::Flow flow_;
+  raw_ptr<TcpBasedAttemptSlot> slot_;
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
   std::optional<int> result_;
@@ -88,10 +90,87 @@ class HttpStreamPool::TcpBasedAttempt : public TlsStreamAttempt::Delegate {
   // Set to true when `this` and `attempt_` should abort. Currently used to
   // handle ECH failure.
   bool is_aborted_ = false;
-  base::TimeTicks ssl_config_wait_start_time_;
-  CompletionOnceCallback ssl_config_waiting_callback_;
+
+  // Set to the time `attempt_` completes the TCP handshake. Only set when the
+  // underlying attempt is TLS. Used for histogram recording.
+  base::TimeTicks tcp_handshake_complete_time_for_tls_;
+
+  base::TimeTicks service_endpoint_wait_start_time_;
+  base::TimeTicks service_endpoint_wait_end_time_;
+  CompletionOnceCallback service_endpoint_waiting_callback_;
 
   base::WeakPtrFactory<TcpBasedAttempt> weak_ptr_factory_{this};
+};
+
+// Groups at most two concurrent TCP-based attempts (one IPv4, one IPv6) into a
+// single “slot” counted against pool limits. Used to work around cases where
+// both address families are available but one is much slower than the other. In
+// such cases, the slow attempt may time out, causing the whole pool to stall,
+// even if the fast attempt would have succeeded. By grouping attempts by
+// address family, we can ensure that at most one attempt per address family is
+// in-flight at any time.
+// TODO(crbug.com/383606724): Figure out a better solution by improving endpoint
+// selection.
+class HttpStreamPool::TcpBasedAttemptSlot {
+ public:
+  TcpBasedAttemptSlot();
+  ~TcpBasedAttemptSlot();
+
+  TcpBasedAttemptSlot(const TcpBasedAttemptSlot&) = delete;
+  TcpBasedAttemptSlot& operator=(const TcpBasedAttemptSlot&) = delete;
+  TcpBasedAttemptSlot(TcpBasedAttemptSlot&&);
+  TcpBasedAttemptSlot& operator=(TcpBasedAttemptSlot&&);
+
+  // Allocates `attempt` to either IPv4 or IPv6 attempt slot based on its IP
+  // address.
+  void AllocateAttempt(std::unique_ptr<TcpBasedAttempt> attempt);
+
+  // Transfers ownership of the attempt matching `raw_attempt` to the caller.
+  std::unique_ptr<TcpBasedAttempt> TakeAttempt(TcpBasedAttempt* raw_attempt);
+
+  TcpBasedAttempt* ipv4_attempt() const { return ipv4_attempt_.get(); }
+  TcpBasedAttempt* ipv6_attempt() const { return ipv6_attempt_.get(); }
+
+  // Returns true if this slot has no attempts.
+  bool empty() const { return !ipv4_attempt() && !ipv6_attempt(); }
+
+  // Returns the most advanced load state of the attempts in this slot.
+  LoadState GetLoadState() const;
+
+  // Transfers SSLConfig waiting callbacks from attempts in this slot to
+  // `callbacks`, if attempts are waiting for SSLConfig.
+  void MaybeTakeSSLConfigWaitingCallbacks(
+      std::vector<CompletionOnceCallback>& callbacks);
+
+  // Returns true when this slot is slow. A slot is considered slow all attempts
+  // it owns are slow.
+  bool IsSlow() const;
+
+  // Returns true if either IPv4 or IPv6 attempt has the given `ip_endpoint`.
+  bool HasIPEndPoint(const IPEndPoint& ip_endpoint) const;
+
+  // Sets the cancel reason of both attempts in this slot.
+  void SetCancelReason(StreamSocketCloseReason reason);
+
+  // Updates `is_slow_` based on current state of `ipv4_attempt_` and
+  // `ipv6_attempt_`. Called when an attempt is added, removed, or marked as
+  // slow.
+  void UpdateIsSlow();
+
+  base::Value::Dict GetInfoAsValue() const;
+
+ private:
+  // Re-calculates whether this slot is considered slow, without updating
+  // `is_slow_`. This is not inlined in UpdateIsSlow() so that it can be used in
+  // DCHECKs.
+  bool CalculateIsSlow() const;
+
+  std::unique_ptr<TcpBasedAttempt> ipv4_attempt_;
+  std::unique_ptr<TcpBasedAttempt> ipv6_attempt_;
+
+  // False if either of `ipv4_attempt_` or `ipv6_attempt_` is non-null and not
+  // slow. Cached to reduced pointer dereferencing overhead of IsSlow() calls.
+  bool is_slow_ = false;
 };
 
 }  // namespace net

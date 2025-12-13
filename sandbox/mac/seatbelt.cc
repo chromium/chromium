@@ -7,6 +7,7 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include <memory>
 #include <utility>
 
 extern "C" {
@@ -22,6 +23,21 @@ int sandbox_init_with_parameters(const char* profile,
 // 1 if sandboxed. Note `type` is actually a sandbox_filter_type enum value, but
 // it is unused currently.
 int sandbox_check(pid_t pid, const char* operation, int type, ...);
+
+// A deleter for std::unique_ptr that frees memory allocated by the sandbox
+// library's error functions.
+struct sandbox_error_deleter {
+  inline void operator()(char* ptr) const {
+    if (ptr) {
+// This function is marked in the SDK as unavailable after macOS 10.8, but there
+// is no replacement, so ignore the deprecation warning.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+      ::sandbox_free_error(ptr);
+#pragma clang diagnostic pop
+    }
+  }
+};
 
 struct sandbox_params_t {
   const char** params;
@@ -49,23 +65,38 @@ namespace sandbox {
 
 namespace {
 
-bool HandleSandboxResult(int rv, char* errorbuf, std::string* error) {
+// `managed_errorbuf` uses a unique_ptr with a deleter to ensure that memory is
+// freed using the sandbox library's deallocation function to prevent unexpected
+// behavior.
+//
+// `managed_errorbuf`'s destructor will automatically call
+// `sandbox_error_deleter` in all return paths.
+bool HandleSandboxResult(
+    int rv,
+    std::unique_ptr<char, sandbox_error_deleter> managed_errorbuf,
+    std::string* error) {
   if (rv == 0) {
-    if (error)
+    if (error) {
       error->clear();
+    }
     return true;
   }
 
-  if (error)
+  char* errorbuf = managed_errorbuf.get();
+
+  // Ensure that we never attempt to assign a nullptr to the `error` string
+  // (crbug.com/40066531).
+  if (error && errorbuf) {
     *error = errorbuf;
-  Seatbelt::FreeError(errorbuf);
+  }
   return false;
 }
 
 bool HandleSandboxErrno(int rv, const char* message, std::string* error) {
   if (rv == 0) {
-    if (error)
+    if (error) {
       error->clear();
+    }
     return true;
   }
 
@@ -122,7 +153,8 @@ bool Seatbelt::Init(const char* profile, uint64_t flags, std::string* error) {
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
   char* errorbuf = nullptr;
   int rv = ::sandbox_init(profile, flags, &errorbuf);
-  return HandleSandboxResult(rv, errorbuf, error);
+  return HandleSandboxResult(
+      rv, std::unique_ptr<char, sandbox_error_deleter>(errorbuf), error);
 #pragma clang diagnostic pop
 }
 
@@ -140,7 +172,8 @@ bool Seatbelt::InitWithParams(const std::string& profile,
   char* errorbuf = nullptr;
   int rv = ::sandbox_init_with_parameters(profile.c_str(), flags,
                                           weak_params.data(), &errorbuf);
-  return HandleSandboxResult(rv, errorbuf, error);
+  return HandleSandboxResult(
+      rv, std::unique_ptr<char, sandbox_error_deleter>(errorbuf), error);
 }
 
 // static
@@ -151,7 +184,9 @@ bool Seatbelt::Compile(const char* profile,
   char* errorbuf = nullptr;
   sandbox_profile_t* sandbox_profile =
       ::sandbox_compile_string(profile, params.params(), &errorbuf);
-  if (!HandleSandboxResult(sandbox_profile ? 0 : -1, errorbuf, error)) {
+  if (!HandleSandboxResult(
+          sandbox_profile ? 0 : -1,
+          std::unique_ptr<char, sandbox_error_deleter>(errorbuf), error)) {
     return false;
   }
   compiled_profile.assign(reinterpret_cast<const char*>(sandbox_profile->data),
@@ -169,16 +204,6 @@ bool Seatbelt::ApplyCompiledProfile(const std::string& profile,
       .size = profile.size()};
   return HandleSandboxErrno(::sandbox_apply(&sbox_profile),
                             "sandbox_apply: ", error);
-}
-
-// static
-void Seatbelt::FreeError(char* errorbuf) {
-// OS X deprecated these functions, but did not provide a suitable replacement,
-// so ignore the deprecation warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  return ::sandbox_free_error(errorbuf);
-#pragma clang diagnostic pop
 }
 
 // static

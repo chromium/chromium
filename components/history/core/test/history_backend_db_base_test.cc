@@ -5,6 +5,7 @@
 #include "components/history/core/test/history_backend_db_base_test.h"
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -16,9 +17,11 @@
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/test/database_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
+#include "sql/test/test_helpers.h"
 #include "url/gurl.h"
 
 namespace history {
@@ -43,9 +46,7 @@ class BackendDelegate : public HistoryBackend::Delegate {
   }
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
-  void NotifyURLVisited(const URLRow& url_row,
-                        const VisitRow& visit_row,
-                        std::optional<int64_t> local_navigation_id) override {}
+  void NotifyURLVisited(VisitedURLInfo visited_url_info) override {}
   void NotifyURLsModified(const URLRows& changed_urls) override {}
   void NotifyDeletions(DeletionInfo deletion_info) override {}
   void NotifyVisitedLinksAdded(const HistoryAddPageArgs& args) override {}
@@ -84,24 +85,14 @@ void HistoryBackendDBBaseTest::TearDown() {
   base::RunLoop().RunUntilIdle();
 }
 
-void HistoryBackendDBBaseTest::CreateBackendAndDatabase() {
+bool HistoryBackendDBBaseTest::CreateBackendAndDatabase() {
   backend_ = base::MakeRefCounted<HistoryBackend>(
       std::make_unique<BackendDelegate>(this), nullptr,
       base::SingleThreadTaskRunner::GetCurrentDefault());
   backend_->Init(false,
                  TestHistoryDatabaseParamsForPath(history_dir_));
   db_ = backend_->db_.get();
-  DCHECK(in_mem_backend_) << "Mem backend should have been set by "
-      "HistoryBackend::Init";
-}
-
-void HistoryBackendDBBaseTest::CreateBackendAndDatabaseAllowFail() {
-  backend_ = base::MakeRefCounted<HistoryBackend>(
-      std::make_unique<BackendDelegate>(this), nullptr,
-      base::SingleThreadTaskRunner::GetCurrentDefault());
-  backend_->Init(false,
-                 TestHistoryDatabaseParamsForPath(history_dir_));
-  db_ = backend_->db_.get();
+  return in_mem_backend_ != nullptr;
 }
 
 void HistoryBackendDBBaseTest::CreateDBVersion(int version) {
@@ -113,11 +104,33 @@ void HistoryBackendDBBaseTest::CreateDBVersion(int version) {
       ExecuteSQLScript(data_path, history_dir_.Append(kHistoryFilename)));
 }
 
+int HistoryBackendDBBaseTest::GetDatabaseVersion() const {
+  sql::Database db(sql::test::kTestTag);
+  CHECK(db.Open(history_dir_.Append(kHistoryFilename)));
+  return sql::InitializedMetaTable(db).GetVersionNumber();
+}
+
+bool HistoryBackendDBBaseTest::SetDatabaseVersion(int version) const {
+  sql::Database db(sql::test::kTestTag);
+  CHECK(db.Open(history_dir_.Append(kHistoryFilename)));
+  return sql::InitializedMetaTable(db).SetVersionNumber(version);
+}
+
 void HistoryBackendDBBaseTest::DeleteBackend() {
   if (backend_) {
+    // The backend is ref-counted and won't be deleted right away if a database
+    // error queued a `KillHistoryDatabase` task (which holds a reference on the
+    // backend). Thus, releasing the backend pointer isn't enough here, we need
+    // to explicitly wait for the object to be deleted.
+    base::RunLoop loop;
+    backend_->SetOnBackendDestroyTask(
+        base::SingleThreadTaskRunner::GetCurrentDefault(), loop.QuitClosure());
+
     backend_->Closing();
     db_ = nullptr;
     backend_ = nullptr;
+
+    loop.Run();
   }
 }
 

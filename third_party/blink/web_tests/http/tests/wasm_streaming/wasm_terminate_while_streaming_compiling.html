@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+
+promise_test(async t => {
+  const url_small = '../../wasm/resources/load-wasm.php?name=small.wasm';
+  const url_large = '../../wasm/resources/load-wasm.php?name=large.wasm';
+
+  console.log('Start compiling small.wasm');
+  WebAssembly.compileStreaming(fetch(url_small))
+    .then(module => console.log(`Small compilation ready: ${module}`),
+          error => messageParent(`Small compilation failed: ${error}`));
+
+  console.log('Start compiling large.wasm');
+  WebAssembly.compileStreaming(fetch(url_large))
+    .then(module => console.log(`Large compilation ready: ${module}`),
+          error => messageParent(`Large compilation failed: ${error}`));
+
+  const ms = Math.floor(Math.random() * 50);
+  console.log(`Waiting for ${ms}ms`);
+  if (ms) await new Promise(resolve => setTimeout(resolve, ms));
+
+  // Then just terminate. This should not crash.
+  console.log('Terminate');
+}, "Test terminating while streaming compilation is running");
+
+</script>
+

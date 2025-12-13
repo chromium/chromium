@@ -35,10 +35,6 @@ ExtensionInstaller::ExtensionInstaller(
       install_immediately_(install_immediately),
       extension_installer_callback_(extension_installer_callback) {}
 
-void ExtensionInstaller::OnUpdateError(int error) {
-  VLOG(1) << "OnUpdateError (" << extension_id_ << ") " << error;
-}
-
 void ExtensionInstaller::Install(
     const base::FilePath& unpack_path,
     const std::string& public_key,

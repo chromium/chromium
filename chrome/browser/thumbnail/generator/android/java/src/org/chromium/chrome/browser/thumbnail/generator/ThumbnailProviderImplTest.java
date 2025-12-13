@@ -13,7 +13,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,8 +28,8 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 
 /** Instrumentation test for {@link ThumbnailProviderImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -40,13 +39,9 @@ public class ThumbnailProviderImplTest {
     private static final String TEST_DIRECTORY =
             "chrome/browser/thumbnail/generator/test/data/android/";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private static ThumbnailProviderImpl sThumbnailProvider;
     private static DiscardableReferencePool sReferencePool;

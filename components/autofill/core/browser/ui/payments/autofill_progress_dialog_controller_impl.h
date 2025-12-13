@@ -25,13 +25,6 @@ enum class AutofillProgressDialogType;
 class AutofillProgressDialogControllerImpl
     : public AutofillProgressDialogController {
  public:
-#if BUILDFLAG(IS_IOS)
-  using CreateAndShowViewCallback =
-      base::OnceCallback<base::WeakPtr<AutofillProgressDialogView>()>;
-#else
-  using CreateAndShowViewCallback =
-      base::OnceCallback<std::unique_ptr<AutofillProgressDialogView>()>;
-#endif
   // The `autofill_progress_dialog_type` determines the type of the progress
   // dialog and `cancel_callback` is the function to invoke when the cancel
   // button is clicked.
@@ -45,11 +38,6 @@ class AutofillProgressDialogControllerImpl
       const AutofillProgressDialogControllerImpl&) = delete;
 
   ~AutofillProgressDialogControllerImpl() override;
-
-  // Show a progress dialog for underlying authorization processes. The
-  // `create_and_show_view_callback` will be invoked immediately to create a
-  // view implementation.
-  void ShowDialog(CreateAndShowViewCallback create_and_show_view_callback);
 
   // Dismisses the progress dialog after the underlying authorization processes
   // have completed. If `show_confirmation_before_closing` is true, the UI
@@ -67,6 +55,8 @@ class AutofillProgressDialogControllerImpl
                          base::OnceClosure());
 
   // AutofillProgressDialogController.
+  void ShowDialog(
+      CreateAndShowViewCallback create_and_show_view_callback) override;
   void OnDismissed(bool is_canceled_by_user) override;
   std::u16string GetLoadingTitle() const override;
   std::u16string GetConfirmationTitle() const override;

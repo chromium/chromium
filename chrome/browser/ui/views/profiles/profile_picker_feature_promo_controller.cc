@@ -32,22 +32,13 @@ ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
       user_education_service->help_bubble_factory_registry());
 }
 
-ui::ElementContext ProfilePickerFeaturePromoController::GetAnchorContext()
-    const {
-  return views::ElementTrackerViews::GetContextForView(profile_picker_view_);
-}
-
 user_education::FeaturePromoResult
 ProfilePickerFeaturePromoController::CanShowPromoForElement(
-    ui::TrackedElement* anchor_element) const {
+    ui::TrackedElement* anchor_element,
+    const user_education::UserEducationContextPtr&) const {
   return ProfilePicker::IsOpen()
              ? user_education::FeaturePromoResult::Success()
              : user_education::FeaturePromoResult::kBlockedByUi;
-}
-
-const ui::AcceleratorProvider*
-ProfilePickerFeaturePromoController::GetAcceleratorProvider() const {
-  return profile_picker_view_;
 }
 
 std::u16string ProfilePickerFeaturePromoController::GetBodyIconAltText() const {
@@ -65,15 +56,22 @@ ProfilePickerFeaturePromoController::GetScreenReaderPromptPromoEventName()
   return feature_engagement::events::kFocusHelpBubbleAcceleratorPromoRead;
 }
 
-std::u16string
-ProfilePickerFeaturePromoController::GetTutorialScreenReaderHint() const {
+std::u16string ProfilePickerFeaturePromoController::GetTutorialScreenReaderHint(
+    const ui::AcceleratorProvider*) const {
   NOTREACHED();
 }
 
 std::u16string
 ProfilePickerFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element) const {
+    ui::TrackedElement* anchor_element,
+    const ui::AcceleratorProvider* accelerator_provider) const {
   return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
       promo_type, profile_picker_view_, anchor_element);
+}
+
+user_education::UserEducationContextPtr
+ProfilePickerFeaturePromoController::GetContextForHelpBubble(
+    const ui::TrackedElement* anchor_element) const {
+  return nullptr;
 }

@@ -17,9 +17,13 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/native_widget_mac.h"
+#include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
 
 namespace views::test {
+
+bool kTestDisabledForVirtualMachineMac =
+    (base::mac::MacOSMajorVersion() == 15) && base::mac::IsVirtualMachine();
 
 // Tests for NativeWidgetMac that rely on global window manager state, and can
 // not be parallelized.
@@ -75,6 +79,11 @@ class NativeWidgetMacInteractiveUITest::Observer : public TestWidgetObserver {
 
 // Test that showing a window causes it to attain global keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
   Widget* widget = MakeWidget();
   observer_ = std::make_unique<Observer>(this, widget);
 
@@ -118,6 +127,11 @@ TEST_P(NativeWidgetMacInteractiveUITest, ShowAttainsKeyStatus) {
 
 // Test that ShowInactive does not take keyWindow status.
 TEST_P(NativeWidgetMacInteractiveUITest, ShowInactiveIgnoresKeyStatus) {
+  // TODO(crbug.com/445214951): Flaky on mac-vm builder for macOS 15.
+  if (kTestDisabledForVirtualMachineMac) {
+    GTEST_SKIP() << "Disabled on macOS Sequoia for virtual machines.";
+  }
+
   WidgetTest::WaitForSystemAppActivation();
   Widget* widget = MakeWidget();
   NSWindow* widget_window = widget->GetNativeWindow().GetNativeNSWindow();
@@ -389,6 +403,91 @@ TEST_F(NativeWidgetMacInteractiveUITest, GlobalNSTextInputContextUpdates) {
 
   widget->Close();
   base::RunLoop().RunUntilIdle();
+}
+
+// Ensure that view accelerators unregistered when closing a widget with type
+// CLIENT_OWNS_WIDGET.
+TEST_F(NativeWidgetMacInteractiveUITest, UnregisterAccelerators) {
+  auto parent_widget = base::WrapUnique<Widget>(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  parent_widget->SetBounds(gfx::Rect(100, 100, 100, 100));
+  ShowKeyWindow(parent_widget.get());
+
+  auto child_widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.parent = parent_widget->GetNativeView();
+  params.child = true;
+  child_widget->Init(std::move(params));
+  child_widget->Show();
+  ASSERT_EQ(child_widget->GetFocusManager(), parent_widget->GetFocusManager());
+
+  auto* focus_manager = parent_widget->GetFocusManager();
+  ui::Accelerator accelerator(ui::VKEY_F10,
+                              ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN);
+  ASSERT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
+  View* view =
+      child_widget->GetContentsView()->AddChildView(std::make_unique<View>());
+  view->AddAccelerator(accelerator);
+  ASSERT_TRUE(focus_manager->IsAcceleratorRegistered(accelerator));
+
+  child_widget.reset();
+  EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(accelerator));
+}
+
+// Regression test for crbug.com/443168930.
+// Widget::CloseAllWidgets() is intended to clean up all platform widgets
+// (typically called at shutdown). The CLIENT_OWNS_WIDGET ownership scheme
+// allows a views::Widget to be destroyed independently of its associated
+// platform widget (wrapped by a NativeWidget). This test ensures that
+// CloseAllWidgets() destroys all platform widgets in the case the corresponding
+// views::Widget has already been destroyed - leaving the platform widget /
+// NativeWidget effectively orphaned.
+TEST_F(NativeWidgetMacInteractiveUITest, ClientOwnsWidget_CloseAllWidgets) {
+  // Counts the number of reported views::Widgets.
+  const auto count_widgets = []() {
+    int count = 0;
+    for (NSWindow* window : [NSApp windows]) {
+      if (Widget::GetWidgetForNativeWindow(gfx::NativeWindow(window))) {
+        count++;
+      }
+    }
+    return count;
+  };
+  // Counts the number of reported NativeWidgets.
+  const auto count_native_widgets = []() {
+    int count = 0;
+    for (NSWindow* window : [NSApp windows]) {
+      if (internal::NativeWidgetPrivate::GetNativeWidgetForNativeWindow(
+              gfx::NativeWindow(window))) {
+        count++;
+      }
+    }
+    return count;
+  };
+
+  // Test should start with zero widgets.
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(0, count_native_widgets());
+
+  // Create a new widget using CLIENT_OWNS_WIDGET.
+  auto widget = base::WrapUnique<Widget>(
+      CreateTopLevelNativeWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  widget->SetBounds(gfx::Rect(100, 100, 100, 100));
+  EXPECT_EQ(1, count_widgets());
+  EXPECT_EQ(1, count_native_widgets());
+
+  // Simulate a client destroying `widget`. The views::Widget should have been
+  // destroyed but the NativeWidget should remain.
+  widget.reset();
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(1, count_native_widgets());
+
+  // CloseAllWidgets() is expected to close all platform widgets, including
+  // those for which the corresponding views::Widget has been destroyed.
+  Widget::CloseAllWidgets();
+  EXPECT_EQ(0, count_widgets());
+  EXPECT_EQ(0, count_native_widgets());
 }
 
 INSTANTIATE_TEST_SUITE_P(NativeWidgetMacInteractiveUITestInstance,

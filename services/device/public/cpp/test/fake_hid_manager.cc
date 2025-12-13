@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/public/cpp/test/fake_hid_manager.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/uuid.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -77,7 +73,8 @@ void FakeHidConnection::Read(ReadCallback callback) {
     return;
   }
 
-  std::vector<uint8_t> buffer(kResult, kResult + sizeof(kResult) - 1);
+  std::vector<uint8_t> buffer(kResult,
+                              UNSAFE_TODO(kResult + sizeof(kResult) - 1));
 
   std::move(callback).Run(true, report_id, buffer);
 }
@@ -102,7 +99,8 @@ void FakeHidConnection::Write(uint8_t report_id,
     return;
   }
 
-  if (memcmp(buffer.data(), kExpected, sizeof(kExpected) - 1) != 0) {
+  if (UNSAFE_TODO(memcmp(buffer.data(), kExpected, sizeof(kExpected) - 1)) !=
+      0) {
     std::move(callback).Run(false);
     return;
   }
@@ -127,7 +125,8 @@ void FakeHidConnection::GetFeatureReport(uint8_t report_id,
   std::vector<uint8_t> buffer;
   if (device_->has_report_id)
     buffer.push_back(report_id);
-  buffer.insert(buffer.end(), kResult, kResult + sizeof(kResult) - 1);
+  buffer.insert(buffer.end(), kResult,
+                UNSAFE_TODO(kResult + sizeof(kResult) - 1));
 
   std::move(callback).Run(true, buffer);
 }
@@ -152,7 +151,8 @@ void FakeHidConnection::SendFeatureReport(uint8_t report_id,
     return;
   }
 
-  if (memcmp(buffer.data(), kExpected, sizeof(kExpected) - 1) != 0) {
+  if (UNSAFE_TODO(memcmp(buffer.data(), kExpected, sizeof(kExpected) - 1)) !=
+      0) {
     std::move(callback).Run(false);
     return;
   }

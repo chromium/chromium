@@ -575,7 +575,7 @@ suite('scanningAppTest', function() {
     assertFalse(resolutionSelect.disabled);
     assertFalse(scanButton.disabled);
     assertTrue(isVisible(scanButton));
-    assertEquals('Scan', scanButton.textContent!.trim());
+    assertEquals('Scan', scanButton.textContent.trim());
     assertFalse(isVisible(cancelButton));
     assertTrue(isVisible(helperText));
     assertFalse(isVisible(scanProgress));
@@ -605,14 +605,14 @@ suite('scanningAppTest', function() {
     assertTrue(isVisible(scanProgress));
     assertFalse(
         isVisible(scanningApp.shadowRoot!.querySelector('scan-done-section')));
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     assertEquals(0, progressBar!.value);
 
     // Simulate a progress update and verify the progress bar and text are
     // updated correctly.
     await fakeScanService.simulateProgress(1, 17);
 
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     assertEquals(17, progressBar!.value);
 
     // Simulate a page complete update and verify the progress bar and
@@ -621,14 +621,14 @@ suite('scanningAppTest', function() {
     await fakeScanService.simulatePageComplete(
         /*pageNumber=*/ 1, ++newPageIndex);
 
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     assertEquals(100, progressBar!.value);
 
     // Simulate a progress update for a second page and verify the
     // progress bar and text are updated correctly.
     await fakeScanService.simulateProgress(2, 53);
 
-    assertEquals('Scanning page 2', progressText.textContent!.trim());
+    assertEquals('Scanning page 2', progressText.textContent.trim());
     assertEquals(53, progressBar!.value);
 
     // Complete the page.
@@ -763,7 +763,7 @@ suite('scanningAppTest', function() {
 
     const scanButton =
         strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement);
-    assertEquals('Scan page 1', scanButton.textContent!.trim());
+    assertEquals('Scan page 1', scanButton.textContent.trim());
     scanButton.click();
     await fakeScanService.whenCalled('startMultiPageScan');
 
@@ -781,7 +781,7 @@ suite('scanningAppTest', function() {
 
     const scanNextPageButton =
         strictQuery('#scanButton', multiPageScan.shadowRoot, CrButtonElement);
-    assertEquals('Scan page 2', scanNextPageButton.textContent!.trim());
+    assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
     scanNextPageButton.click();
     await fakeMultiPageScanController.whenCalled('scanNextPage');
 
@@ -800,7 +800,7 @@ suite('scanningAppTest', function() {
         strictQuery('#scannedImages', scanPreview.shadowRoot, HTMLElement)));
     assertTrue(isVisible(multiPageScan));
 
-    assertEquals('Scan page 3', scanNextPageButton.textContent!.trim());
+    assertEquals('Scan page 3', scanNextPageButton.textContent.trim());
 
     strictQuery('#saveButton', multiPageScan.shadowRoot, CrButtonElement)
         .click();
@@ -840,7 +840,7 @@ suite('scanningAppTest', function() {
         strictQuery('#scanPreview', scanningApp.shadowRoot, HTMLElement);
     const progressText =
         strictQuery('#progressText', scanPreview.shadowRoot, HTMLElement);
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     await fakeScanService.simulatePageComplete(
         /*pageNumber=*/ 1, newPageIndex++);
 
@@ -851,7 +851,7 @@ suite('scanningAppTest', function() {
     scanButton.click();
     await fakeMultiPageScanController.whenCalled('scanNextPage');
 
-    assertEquals('Scanning page 2', progressText.textContent!.trim());
+    assertEquals('Scanning page 2', progressText.textContent.trim());
     await fakeScanService.simulateMultiPageScanFail(ScanResult.kFlatbedOpen);
 
     // The scan failed dialog should open.
@@ -862,7 +862,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Click the dialog's Ok button to await to MULTI_PAGE_NEXT_ACTION
     // state.
@@ -870,11 +870,11 @@ suite('scanningAppTest', function() {
 
     // After the dialog closes, the scan next page button should still
     // say 'Scan Page 2'.
-    assertEquals('Scan page 2', scanButton.textContent!.trim());
+    assertEquals('Scan page 2', scanButton.textContent.trim());
     scanButton.click();
     await fakeMultiPageScanController.whenCalled('scanNextPage');
 
-    assertEquals('Scanning page 2', progressText.textContent!.trim());
+    assertEquals('Scanning page 2', progressText.textContent.trim());
     await fakeScanService.simulatePageComplete(
         /*pageNumber=*/ 1, newPageIndex++);
 
@@ -935,7 +935,7 @@ suite('scanningAppTest', function() {
     // visible and showing the correct page number to scan. The cancel
     // button should be hidden.
     assertTrue(isVisible(scanButton));
-    assertEquals('Scan page 2', scanButton.textContent!.trim());
+    assertEquals('Scan page 2', scanButton.textContent.trim());
     assertFalse(isVisible(cancelButton));
     assertTrue(
         strictQuery('#toast', scanningApp.shadowRoot, CrToastElement).open);
@@ -1058,7 +1058,7 @@ suite('scanningAppTest', function() {
         strictQuery('multi-page-scan', scanningApp.shadowRoot, HTMLElement)
             .shadowRoot!.querySelector('#scanButton');
     assert(scanNextPageButton);
-    assertEquals('Scan page 2', scanNextPageButton.textContent!.trim());
+    assertEquals('Scan page 2', scanNextPageButton.textContent.trim());
   });
 
   // Verify one page can be scanned and then rescanned in a multi-page scan job.
@@ -1100,7 +1100,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         'Rescan page?',
         strictQuery('#dialogTitle', scanPreview.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     strictQuery('#actionButton', scanPreview.shadowRoot, HTMLElement).click();
     await fakeMultiPageScanController.whenCalled('rescanPage');
@@ -1109,7 +1109,7 @@ suite('scanningAppTest', function() {
     // first page.
     progressText =
         strictQuery('#progressText', scanPreview.shadowRoot, HTMLElement);
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     assertEquals(
         pageIndexToRescan, fakeMultiPageScanController.getPageIndexToRescan());
     await fakeScanService.simulatePageComplete(
@@ -1189,7 +1189,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         'Rescan page 1?',
         strictQuery('#dialogTitle', scanPreview.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     strictQuery('#actionButton', scanPreview.shadowRoot, HTMLElement).click();
     await fakeMultiPageScanController.whenCalled('rescanPage');
@@ -1198,7 +1198,7 @@ suite('scanningAppTest', function() {
     // first page.
     progressText =
         strictQuery('#progressText', scanPreview.shadowRoot, HTMLElement);
-    assertEquals('Scanning page 1', progressText.textContent!.trim());
+    assertEquals('Scanning page 1', progressText.textContent.trim());
     assertEquals(
         pageIndexToRescan, fakeMultiPageScanController.getPageIndexToRescan());
     await fakeScanService.simulatePageComplete(
@@ -1213,13 +1213,13 @@ suite('scanningAppTest', function() {
 
     // Verify that after rescanning, the scan button shows the correct
     // next page number to scan.
-    assertEquals('Scan page 3', scanButton.textContent!.trim());
+    assertEquals('Scan page 3', scanButton.textContent.trim());
 
     scanButton.click();
     await fakeMultiPageScanController.whenCalled('scanNextPage');
 
     // Verify the progress text shows we are scanning the third page.
-    assertEquals('Scanning page 3', progressText.textContent!.trim());
+    assertEquals('Scanning page 3', progressText.textContent.trim());
     await fakeScanService.simulatePageComplete(
         /*pageNumber=*/ 1, newPageIndex++);
 
@@ -1281,7 +1281,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Click the dialog's Ok button to await to MULTI_PAGE_NEXT_ACTION
     // state.
@@ -1293,7 +1293,7 @@ suite('scanningAppTest', function() {
     assertArrayEquals(expectedObjectUrls, actualObjectUrls);
 
     // Verify the scan button shows the correct next page number to scan.
-    assertEquals('Scan page 3', scanButton.textContent!.trim());
+    assertEquals('Scan page 3', scanButton.textContent.trim());
   });
 
   // Verify the page size, color, and resolution dropdowns contain the correct
@@ -1314,41 +1314,41 @@ suite('scanningAppTest', function() {
     assertEquals(2, colorModeSelect.length);
     assertEquals(
         getColorModeString(secondColorModes[0]!),
-        colorModeSelect.options[0]!.textContent!.trim());
+        colorModeSelect.options[0]!.textContent.trim());
     assertEquals(
         getColorModeString(secondColorModes[1]!),
-        colorModeSelect.options[1]!.textContent!.trim());
+        colorModeSelect.options[1]!.textContent.trim());
     assertEquals(2, pageSizeSelect.length);
     assertEquals(
         getPageSizeString(secondPageSizes[0]!),
-        pageSizeSelect.options[0]!.textContent!.trim());
+        pageSizeSelect.options[0]!.textContent.trim());
     assertEquals(
         getPageSizeString(secondPageSizes[1]!),
-        pageSizeSelect.options[1]!.textContent!.trim());
+        pageSizeSelect.options[1]!.textContent.trim());
     assertEquals(2, resolutionSelect.length);
     assertEquals(
         secondResolutions[0]!.toString() + ' dpi',
-        resolutionSelect.options[0]!.textContent!.trim());
+        resolutionSelect.options[0]!.textContent.trim());
     assertEquals(
         secondResolutions[1]!.toString() + ' dpi',
-        resolutionSelect.options[1]!.textContent!.trim());
+        resolutionSelect.options[1]!.textContent.trim());
     await changeSelectedIndex(sourceSelect, /*index=*/ 1);
 
     assertEquals(1, colorModeSelect.length);
     assertEquals(
         getColorModeString(thirdColorModes[0]!),
-        colorModeSelect.options[0]!.textContent!.trim());
+        colorModeSelect.options[0]!.textContent.trim());
     assertEquals(1, pageSizeSelect.length);
     assertEquals(
         getPageSizeString(thirdPageSizes[0]!),
-        pageSizeSelect.options[0]!.textContent!.trim());
+        pageSizeSelect.options[0]!.textContent.trim());
     assertEquals(2, resolutionSelect.length);
     assertEquals(
         thirdResolutions[0]!.toString() + ' dpi',
-        resolutionSelect.options[0]!.textContent!.trim());
+        resolutionSelect.options[0]!.textContent.trim());
     assertEquals(
         thirdResolutions[1]!.toString() + ' dpi',
-        resolutionSelect.options[1]!.textContent!.trim());
+        resolutionSelect.options[1]!.textContent.trim());
   });
 
   // Verify the correct message is shown in the scan failed dialog based on the
@@ -1369,7 +1369,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogUnknownErrorText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
 
     scanButton.click();
@@ -1381,7 +1381,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogDeviceBusyText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
 
     scanButton.click();
@@ -1393,7 +1393,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogAdfJammedText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
 
     scanButton.click();
@@ -1405,7 +1405,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogAdfEmptyText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
 
     scanButton.click();
@@ -1417,7 +1417,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogFlatbedOpenText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
 
     scanButton.click();
@@ -1429,7 +1429,7 @@ suite('scanningAppTest', function() {
         loadTimeData.getString('scanFailedDialogIoErrorText'),
         strictQuery(
             '#scanFailedDialogText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     await clickScanFailedDialogOkButton();
   });
 
@@ -1486,7 +1486,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         scanningApp.i18n('scanCanceledToastText'),
         strictQuery('#toastText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   // Verify the cancel scan failed dialog shows when a scan job fails to cancel.
@@ -1528,7 +1528,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         scanningApp.i18n('cancelFailedToastText'),
         strictQuery('#toastText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
     // The scan progress page should still be showing with the cancel
     // button visible.
     const scanPreview =
@@ -1566,7 +1566,7 @@ suite('scanningAppTest', function() {
     assertEquals(
         scanningApp.i18n('startScanFailedToast'),
         strictQuery('#toastText', scanningApp.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     assertFalse(scanButton.disabled);
     assertTrue(isVisible(scanButton));
@@ -2231,13 +2231,13 @@ suite('scanningAppTest', function() {
     const scanButton =
         strictQuery('#scanButton', scanningApp.shadowRoot, CrButtonElement);
     assert(scanButton);
-    assertEquals('Scan page 1', scanButton.textContent!.trim());
+    assertEquals('Scan page 1', scanButton.textContent.trim());
 
     // Leave the multi-page checkbox checked but switch the file type.
     scanningApp.selectedFileType = FileType.kPng.toString();
     await flushTasks();
 
-    assertEquals('Scan', scanButton.textContent!.trim());
+    assertEquals('Scan', scanButton.textContent.trim());
     // When scan button is clicked expect a normal scan to start.
     scanButton.click();
 
@@ -2259,13 +2259,13 @@ suite('scanningAppTest', function() {
     const scanButton =
         strictQuery('#scanButton', scanningApp.shadowRoot, HTMLElement);
     assert(scanButton);
-    assertEquals('Scan page 1', scanButton.textContent!.trim());
+    assertEquals('Scan page 1', scanButton.textContent.trim());
 
     // Leave the multi-page checkbox checked but switch the source.
     scanningApp.selectedSource = ADF_SIMPLEX;
     await flushTasks();
 
-    assertEquals('Scan', scanButton.textContent!.trim());
+    assertEquals('Scan', scanButton.textContent.trim());
 
     // When scan button is clicked expect a normal scan to start.
     scanButton.click();

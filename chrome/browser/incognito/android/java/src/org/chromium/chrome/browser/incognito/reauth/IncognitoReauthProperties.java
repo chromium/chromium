@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.incognito.reauth;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -18,13 +19,16 @@ class IncognitoReauthProperties {
             new ReadableObjectPropertyKey<>("on_unlock_incognito_clicked");
     public static final ReadableObjectPropertyKey<Runnable> ON_SEE_OTHER_TABS_CLICKED =
             new ReadableObjectPropertyKey<>("on_see_other_tabs_clicked");
-    public static final ReadableBooleanPropertyKey IS_FULL_SCREEN =
+    public static final ReadableBooleanPropertyKey IS_SEE_OTHER_TABS_VISIBLE =
             new ReadableBooleanPropertyKey();
     public static final ReadableObjectPropertyKey<ListMenuDelegate> MENU_BUTTON_DELEGATE =
             new ReadableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        ON_UNLOCK_INCOGNITO_CLICKED, ON_SEE_OTHER_TABS_CLICKED, IS_FULL_SCREEN, MENU_BUTTON_DELEGATE
+        ON_UNLOCK_INCOGNITO_CLICKED,
+        ON_SEE_OTHER_TABS_CLICKED,
+        IS_SEE_OTHER_TABS_VISIBLE,
+        MENU_BUTTON_DELEGATE
     };
 
     /**
@@ -52,7 +56,9 @@ class IncognitoReauthProperties {
                         IncognitoReauthProperties.ON_UNLOCK_INCOGNITO_CLICKED,
                         unlockIncognitoRunnable)
                 .with(IncognitoReauthProperties.ON_SEE_OTHER_TABS_CLICKED, seeOtherTabsRunnable)
-                .with(IncognitoReauthProperties.IS_FULL_SCREEN, fullscreen)
+                .with(
+                        IncognitoReauthProperties.IS_SEE_OTHER_TABS_VISIBLE,
+                        fullscreen && !IncognitoUtils.shouldOpenIncognitoAsWindow())
                 .with(IncognitoReauthProperties.MENU_BUTTON_DELEGATE, menuButtonDelegate)
                 .build();
     }

@@ -13,7 +13,7 @@ use crate::util::{
 /// method via the `std::error::Error` trait. This error only occurs when using
 /// convenience routines for building an NFA directly from a pattern string.
 ///
-/// Otherwise, errors typically occur when a limit has been breeched. For
+/// Otherwise, errors typically occur when a limit has been breached. For
 /// example, if the total heap usage of the compiled NFA exceeds the limit
 /// set by [`Config::nfa_size_limit`](crate::nfa::thompson::Config), then
 /// building the NFA will fail.
@@ -154,25 +154,22 @@ impl core::fmt::Display for BuildError {
             }
             BuildErrorKind::TooManyPatterns { given, limit } => write!(
                 f,
-                "attempted to compile {} patterns, \
-                 which exceeds the limit of {}",
-                given, limit,
+                "attempted to compile {given} patterns, \
+                 which exceeds the limit of {limit}",
             ),
             BuildErrorKind::TooManyStates { given, limit } => write!(
                 f,
-                "attempted to compile {} NFA states, \
-                 which exceeds the limit of {}",
-                given, limit,
+                "attempted to compile {given} NFA states, \
+                 which exceeds the limit of {limit}",
             ),
             BuildErrorKind::ExceededSizeLimit { limit } => write!(
                 f,
-                "heap usage during NFA compilation exceeded limit of {}",
-                limit,
+                "heap usage during NFA compilation exceeded limit of {limit}",
             ),
             BuildErrorKind::InvalidCaptureIndex { index } => write!(
                 f,
-                "capture group index {} is invalid (too big or discontinuous)",
-                index,
+                "capture group index {index} is invalid \
+                 (too big or discontinuous)",
             ),
             #[cfg(feature = "syntax")]
             BuildErrorKind::UnsupportedCaptures => write!(

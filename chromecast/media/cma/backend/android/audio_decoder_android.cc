@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromecast/media/cma/backend/android/audio_decoder_android.h"
 
 #include <time.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -489,9 +485,10 @@ void AudioDecoderAndroid::OnBufferDecoded(
         if (c != playout_channel) {
           const size_t channel_size =
               decoded->data_size() / config_.channel_number;
-          std::memcpy(decoded->writable_data() + c * channel_size,
-                      decoded->writable_data() + playout_channel * channel_size,
-                      channel_size);
+          UNSAFE_TODO(std::memcpy(
+              decoded->writable_data() + c * channel_size,
+              decoded->writable_data() + playout_channel * channel_size,
+              channel_size));
         }
       }
     }
@@ -523,8 +520,9 @@ void AudioDecoderAndroid::OnBufferDecoded(
     buffer->set_timestamp(base::TimeDelta());
     const int channel_data_size = input_frames * sizeof(float);
     for (int c = 0; c < config_.channel_number; ++c) {
-      memcpy(buffer->channel_data()[c], decoded->data() + c * channel_data_size,
-             channel_data_size);
+      UNSAFE_TODO(memcpy(buffer->channel_data()[c],
+                         decoded->data() + c * channel_data_size,
+                         channel_data_size));
     }
 
     rate_shifter_->EnqueueBuffer(buffer);
@@ -626,8 +624,9 @@ void AudioDecoderAndroid::PushRateShifted() {
       new DecoderBufferAdapter(base::MakeRefCounted<::media::DecoderBuffer>(
           channel_data_size * config_.channel_number)));
   for (int c = 0; c < config_.channel_number; ++c) {
-    memcpy(output_buffer->writable_data() + c * channel_data_size,
-           rate_shifter_output_->channel(c), channel_data_size);
+    UNSAFE_TODO(memcpy(output_buffer->writable_data() + c * channel_data_size,
+                       rate_shifter_output_->channel(c).data(),
+                       channel_data_size));
   }
   pending_output_frames_ = out_frames;
   sink_->WritePcm(output_buffer);

@@ -19,7 +19,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 public class OverrideUrlLoadingDelegateImpl implements OverrideUrlLoadingDelegate {
     private @Nullable Runnable mOpenGridTabSwitcher;
 
-    public void setOpenGridTabSwitcherCallback(Runnable callback) {
+    public void setOpenGridTabSwitcherCallback(@Nullable Runnable callback) {
         mOpenGridTabSwitcher = callback;
     }
 

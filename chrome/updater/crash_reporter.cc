@@ -14,6 +14,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -27,6 +28,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util/util.h"
+#include "components/update_client/utils.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #include "third_party/crashpad/crashpad/handler/handler_main.h"
@@ -139,14 +141,10 @@ int CrashReporterMain() {
   auto argv_as_utf8 = std::make_unique<char*[]>(argv.size() + 1);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
-#if BUILDFLAG(IS_WIN)
-    storage.push_back(base::WideToUTF8(argv[i]));
-#else
-    storage.push_back(argv[i]);
-#endif
-    argv_as_utf8[i] = &storage[i][0];
+    storage.push_back(update_client::StringTypeToUTF8(argv[i]));
+    UNSAFE_TODO(argv_as_utf8[i]) = &storage[i][0];
   }
-  argv_as_utf8[argv.size()] = nullptr;
+  UNSAFE_TODO(argv_as_utf8[argv.size()]) = nullptr;
 
   return crashpad::HandlerMain(argv.size(), argv_as_utf8.get(),
                                /*user_stream_sources=*/nullptr);

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/qr_code_generator/qr_code_generator.h"
 
 #include <limits>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,13 +28,13 @@ TEST(QRCodeGeneratorTest, Generate) {
   for (const bool use_alphanum : {false, true}) {
     SCOPED_TRACE(use_alphanum);
     // 'A' is in the alphanumeric set, but 'a' is not.
-    memset(input, use_alphanum ? 'A' : 'a', sizeof(input));
+    UNSAFE_TODO(memset(input, use_alphanum ? 'A' : 'a', sizeof(input)));
 
     for (size_t input_len = 30; input_len < kMaxInputLen; input_len += 10) {
       SCOPED_TRACE(input_len);
 
-      base::expected<GeneratedCode, Error> qr_code =
-          GenerateCode(base::span<const uint8_t>(input, input_len));
+      base::expected<GeneratedCode, Error> qr_code = GenerateCode(
+          UNSAFE_TODO(base::span<const uint8_t>(input, input_len)));
       ASSERT_TRUE(qr_code.has_value());
       auto& qr_data = qr_code->data;
 

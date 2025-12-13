@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.thinwebview.internal.ThinWebViewImpl;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Factory for creating a {@link ThinWebView}. */
 @NullMarked
@@ -26,5 +27,18 @@ public class ThinWebViewFactory {
             ThinWebViewConstraints constraints,
             IntentRequestTracker intentRequestTracker) {
         return new ThinWebViewImpl(context, constraints, intentRequestTracker);
+    }
+
+    /**
+     * Creates a {@link ThinWebView} backed by a {@link Surface}. The surface is provided by a
+     * either a {@link TextureView} or {@link SurfaceView}.
+     *
+     * @param context The context to create this view.
+     * @param constraints A set of constraints associated with this view.
+     * @param windowAndroid The {@link WindowAndroid} of the current activity.
+     */
+    public static ThinWebView create(
+            Context context, ThinWebViewConstraints constraints, WindowAndroid windowAndroid) {
+        return new ThinWebViewImpl(context, constraints, windowAndroid);
     }
 }

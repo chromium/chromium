@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -31,9 +32,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_action_runner.h"
 #endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::UTF8ToUTF16;
 using std::u16string;
@@ -205,7 +208,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   enum Action {
     // Navigate to a (non-chrome) page to allow a content script to run.
     ACTION_NAVIGATE,
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // Simulate a browser action click.
     // TODO(crbug.com/395160734): Port ExtensionActionRunner to desktop Android.
     ACTION_BROWSER_ACTION,
@@ -258,7 +261,7 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
         content::WaitForLoadStop(web_contents);
         break;
       }
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
       case ACTION_BROWSER_ACTION: {
         ExtensionActionRunner::GetForWebContents(web_contents)
             ->RunAction(*extension, true);

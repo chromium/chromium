@@ -28,7 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
@@ -47,6 +46,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
 
 /**
  * Handles history overscroll navigation controlling the underlying UI widget. Note: used only from
@@ -186,7 +186,7 @@ class NavigationHandler implements TouchEventObserver {
 
     void setTab(@Nullable Tab tab) {
         if (mTab != null) mTab.removeObserver(mTabObserver);
-        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
+        if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             mBackGestureForTabHistoryInProgress = false;
@@ -226,6 +226,7 @@ class NavigationHandler implements TouchEventObserver {
 
     /**
      * Processes scroll event from {@link SimpleOnGestureListener#onScroll()}.
+     *
      * @param startX X coordinate of the position where gesture swipes from.
      * @param distanceX X delta between previous and current motion event.
      * @param distanceX Y delta between previous and current motion event.
@@ -379,8 +380,8 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /**
-     * @return The type of target to close when left swipe is performed. Could be
-     *         the current tab, Chrome app, or none as defined in {@link CloseTarget}.
+     * @return The type of target to close when left swipe is performed. Could be the current tab,
+     *     Chrome app, or none as defined in {@link CloseTarget}.
      * @param forward {@code true} for forward navigation, or {@code false} for back.
      */
     private @CloseTarget int getCloseIndicator(boolean forward) {
@@ -408,7 +409,7 @@ class NavigationHandler implements TouchEventObserver {
      * @see {@link HistoryNavigationCoordinator#reset()}
      */
     void reset() {
-        if (GestureNavigationUtils.areBackForwardTransitionsEnabled()) {
+        if (GestureNavigationUtils.shouldAnimateBackForwardTransitions()) {
             onGestureEnd(GestureEndState.RESET);
         } else {
             if (mState == GestureState.DRAGGED) {
@@ -489,8 +490,8 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     /**
-     * Get progress of back gesture. This is a mock of
-     * {@link android.window.BackEvent#getProgress()}.
+     * Get progress of back gesture. This is a mock of {@link
+     * android.window.BackEvent#getProgress()}.
      */
     private float getProgress() {
         assert mTab != null;
@@ -538,7 +539,7 @@ class NavigationHandler implements TouchEventObserver {
         return forward;
     }
 
-    private static final Window getWindow(Tab tab) {
+    private static Window getWindow(Tab tab) {
         return assumeNonNull(tab.getWindowAndroidChecked().getActivity().get()).getWindow();
     }
 }

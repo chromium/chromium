@@ -13,10 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/task_traits.h"
@@ -24,8 +24,17 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace policy {
+
+// Returns the SHA-1 hash of the input string. This is used to hash the
+// machine-id for use as a client ID. This is required for backwards
+// compatibility with existing enrolled machines.
+std::array<uint8_t, crypto::obsolete::kSha1Size> Sha1ForMachineId(
+    std::string_view input) {
+  return crypto::obsolete::Sha1::Hash(input);
+}
 
 namespace {
 
@@ -91,8 +100,9 @@ BrowserDMTokenStorageLinux::BrowserDMTokenStorageLinux()
 BrowserDMTokenStorageLinux::~BrowserDMTokenStorageLinux() = default;
 
 std::string BrowserDMTokenStorageLinux::InitClientId() {
-  if (!client_id_.empty())
+  if (!client_id_.empty()) {
     return client_id_;
+  }
 
   // The client ID is derived from /etc/machine-id
   // (https://www.freedesktop.org/software/systemd/man/machine-id.html). As per
@@ -112,7 +122,7 @@ std::string BrowserDMTokenStorageLinux::InitClientId() {
   }
 
   std::string machine_id_base64;
-  base::Base64UrlEncode(base::SHA1HashString(std::string(machine_id_trimmed)),
+  base::Base64UrlEncode(Sha1ForMachineId(machine_id_trimmed),
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &machine_id_base64);
 
@@ -135,8 +145,9 @@ std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
   base::FilePath token_file_path =
       dir_policy_files_path.Append(kEnrollmentTokenFilename);
 
-  if (!base::ReadFileToString(token_file_path, &enrollment_token))
+  if (!base::ReadFileToString(token_file_path, &enrollment_token)) {
     return std::string();
+  }
 
   return std::string(
       base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL));
@@ -145,12 +156,14 @@ std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
 
 std::string BrowserDMTokenStorageLinux::InitDMToken() {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, InitClientId(), false))
+  if (!GetDmTokenFilePath(&token_file_path, InitClientId(), false)) {
     return std::string();
+  }
 
   std::string token;
-  if (!base::ReadFileToString(token_file_path, &token))
+  if (!base::ReadFileToString(token_file_path, &token)) {
     return std::string();
+  }
 
   return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
@@ -170,8 +183,9 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
   base::FilePath options_file_path =
       dir_policy_files_path.Append(kEnrollmentOptionsFilePath);
 
-  if (!base::ReadFileToString(options_file_path, &options))
+  if (!base::ReadFileToString(options_file_path, &options)) {
     return false;
+  }
 
   return base::TrimWhitespaceASCII(options, base::TRIM_ALL) ==
          kEnrollmentMandatoryOption;
@@ -200,8 +214,10 @@ BrowserDMTokenStorageLinux::SaveDMTokenTaskRunner() {
 
 std::string BrowserDMTokenStorageLinux::ReadMachineIdFile() {
   std::string machine_id;
-  if (!base::ReadFileToString(base::FilePath(kMachineIdFilename), &machine_id))
+  if (!base::ReadFileToString(base::FilePath(kMachineIdFilename),
+                              &machine_id)) {
     return std::string();
+  }
   return machine_id;
 }
 

@@ -14,10 +14,14 @@ import java.util.Map;
 
 /** Represents a recent closure of multiple tabs and groups (AKA Window) from TabRestoreService. */
 @NullMarked
-public class RecentlyClosedBulkEvent extends RecentlyClosedEntry {
+public class RecentlyClosedBulkEvent extends SessionRecentlyClosedEntry {
     private final List<RecentlyClosedTab> mTabs = new ArrayList<>();
     private final Map<Token, String> mTabGroupIdToTitle = new HashMap<>();
 
+    /**
+     * @param sessionId The Session ID of this entry.
+     * @param timestamp The milliseconds since the Unix Epoch this entry was created.
+     */
     public RecentlyClosedBulkEvent(int sessionId, long timestamp) {
         super(sessionId, timestamp);
     }

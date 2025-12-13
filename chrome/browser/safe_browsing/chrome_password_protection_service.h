@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_PASSWORD_PROTECTION_SERVICE_H_
 
-#include <map>
-
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -77,8 +77,10 @@ MaybeCreateCommitDeferringCondition(
 
 // ChromePasswordProtectionService extends PasswordProtectionService by adding
 // access to SafeBrowsingNaivigationObserverManager and Profile.
-class ChromePasswordProtectionService : public PasswordProtectionService,
-                                        public KeyedService {
+class ChromePasswordProtectionService
+    : public PasswordProtectionService,
+      public KeyedService,
+      public password_manager::PasswordReuseManager::Observer {
  public:
   using ChangePhishedCredentialsCallback = base::RepeatingCallback<void(
       password_manager::PasswordStoreInterface*,
@@ -163,7 +165,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // to check if the account is a Gmail account as no reporting is done for
   // those accounts. This method is only called if there was already an existing
   // password hash in the hash password manager reused password.
-  void CheckGaiaPasswordChangeForAllSignedInUsers(const std::string& username);
+  void CheckGaiaPasswordChangeForAllSignedInUsers(
+      const std::string& username,
+      password_manager::HashPasswordManager* hash_password_manager);
 
   // Called when user's GAIA password changed. |username| is used to get
   // the account the password is associated with. |is_other_gaia_password|
@@ -300,6 +304,13 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Called before the actual deletion of the object.
   void Shutdown() override;
 
+  // password_manager::PasswordReuseManager::Observer:
+  void HashPasswordManagerAvailable(
+      password_manager::HashPasswordManager* hash_password_manager) override;
+  void HashPasswordStateMaybeChanged(
+      const std::string& username,
+      password_manager::HashPasswordManager* hash_password_manager) override;
+
  protected:
   // PasswordProtectionService overrides.
 
@@ -382,7 +393,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const history::URLRows& deleted_rows) override;
   // Returns base-10 string representation of the uint64t hash.
 
-  std::string GetSyncPasswordHashFromPrefs();
+  std::string GetSyncPasswordHashFromPrefs(
+      password_manager::HashPasswordManager* hash_password_manager) const;
 
   void SetGaiaPasswordHashForTesting(const std::string& new_password_hash) {
     sync_password_hash_ = new_password_hash;
@@ -439,6 +451,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyPersistPhishedSavedPasswordCredential);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyPersistPhishedAccountSavedPasswordCredential);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyGetPingNotSentReason);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
                            VerifyPageLoadToken);
@@ -451,6 +465,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
                            OnEnterpriseTriggerOffGSuite);
   FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceBrowserTest,
                            VerifyIsInExcludedCountry);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyAlertModeForEnterprisePasswordEntryPing);
+  FRIEND_TEST_ALL_PREFIXES(ChromePasswordProtectionServiceTest,
+                           VerifyUserPopulationForOtpPing);
 
  private:
   friend class MockChromePasswordProtectionService;
@@ -558,6 +576,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Code shared by both ctors.
   void Init();
 
+  void SetSyncPasswordHash(const std::string& sync_password_hash);
+
   password_manager::PasswordStoreInterface* GetStoreForReusedCredential(
       const password_manager::MatchingReusedCredential& reused_credential);
 
@@ -572,9 +592,9 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   std::set<raw_ptr<content::WebContents, SetExperimental>>
       web_contents_with_unhandled_enterprise_reuses_;
 
-  // Subscription for state changes. When the callback is notified, it means
-  // HashPasswordManager password data list has changed.
-  base::CallbackListSubscription hash_password_manager_subscription_;
+  base::ScopedObservation<password_manager::PasswordReuseManager,
+                          password_manager::PasswordReuseManager::Observer>
+      scoped_observation_{this};
 
   // Reference to the current profile's VerdictCacheManager. This is unowned.
   raw_ptr<VerdictCacheManager> cache_manager_;
@@ -605,6 +625,8 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   // Used on android to launch Password Checkup.
   std::unique_ptr<PasswordCheckupLauncherHelper> checkup_launcher_;
 #endif
+
+  base::WeakPtrFactory<ChromePasswordProtectionService> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing

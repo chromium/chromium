@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_height_delegate.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui/tab_group_indicator_constants.h"
@@ -29,9 +28,9 @@ namespace {
 // Try to address a crash related to UIMenu and UIAction handling by UIKit
 // (see http://crbug.com/424069384). The fix ensures UIMenu objects have
 // non-empty titles and unique identifiers.
-NSString* kSharedActionsMenuIdentifier = @"kSharedActionsMenuIdentifier";
-NSString* kEditActionsMenuIdentifier = @"kEditActionsMenuIdentifier";
-NSString* kDestructiveActionsMenuIdentifier =
+NSString* const kSharedActionsMenuIdentifier = @"kSharedActionsMenuIdentifier";
+NSString* const kEditActionsMenuIdentifier = @"kEditActionsMenuIdentifier";
+NSString* const kDestructiveActionsMenuIdentifier =
     @"kDestructiveActionsMenuIdentifier";
 
 }  // namespace
@@ -264,41 +263,33 @@ NSString* kDestructiveActionsMenuIdentifier =
 
   // Destructive actions.
   NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
-  if (IsTabGroupSyncEnabled()) {
-    [destructiveActions
-        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-          [weakSelf.mutator closeGroup];
-        }]];
-    if (!_incognito) {
-      switch (_sharingState) {
-        case SharingState::kNotShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                [weakSelf.mutator deleteGroupWithConfirmation:YES];
-              }]];
-          break;
-        }
-        case SharingState::kShared: {
-          [destructiveActions
-              addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
-                [weakSelf.mutator leaveSharedGroupWithConfirmation:YES];
-              }]];
-          break;
-        }
-        case SharingState::kSharedAndOwned: {
-          [destructiveActions
-              addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
-                [weakSelf.mutator deleteSharedGroupWithConfirmation:YES];
-              }]];
-          break;
-        }
+  [destructiveActions addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+                        [weakSelf.mutator closeGroup];
+                      }]];
+  if (!_incognito) {
+    switch (_sharingState) {
+      case SharingState::kNotShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+              [weakSelf.mutator deleteGroupWithConfirmation:YES];
+            }]];
+        break;
+      }
+      case SharingState::kShared: {
+        [destructiveActions
+            addObject:[actionFactory actionToLeaveSharedTabGroupWithBlock:^{
+              [weakSelf.mutator leaveSharedGroupWithConfirmation:YES];
+            }]];
+        break;
+      }
+      case SharingState::kSharedAndOwned: {
+        [destructiveActions
+            addObject:[actionFactory actionToDeleteSharedTabGroupWithBlock:^{
+              [weakSelf.mutator deleteSharedGroupWithConfirmation:YES];
+            }]];
+        break;
       }
     }
-  } else {
-    [destructiveActions
-        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-          [weakSelf.mutator deleteGroupWithConfirmation:NO];
-        }]];
   }
   [menuElements
       addObject:[UIMenu menuWithTitle:@""

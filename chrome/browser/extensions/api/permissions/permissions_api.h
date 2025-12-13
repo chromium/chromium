@@ -11,7 +11,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/permission_set.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

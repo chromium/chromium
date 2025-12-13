@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_COMMON_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_COMMON_H_
 
-#include "base/feature_list.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "url/gurl.h"
 

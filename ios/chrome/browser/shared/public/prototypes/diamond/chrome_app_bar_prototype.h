@@ -7,12 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
+
+class Browser;
+@class DiamondGridButton;
+
 @interface ChromeAppBarPrototype : UIView
 
 // The different buttons of the app bar.
 @property(nonatomic, strong) UIButton* askGeminiButton;
 @property(nonatomic, strong) UIButton* openNewTabButton;
-@property(nonatomic, strong) UIButton* tabGridButton;
+@property(nonatomic, strong) DiamondGridButton* tabGridButton;
+
+@property(nonatomic, assign) Browser* regularBrowser;
+@property(nonatomic, assign) Browser* incognitoBrowser;
+@property(nonatomic, assign) TabGridPage currentPage;
 
 @end
 

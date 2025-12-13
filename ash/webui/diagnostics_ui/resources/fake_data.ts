@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-
 import type {CellularNetwork, EthernetNetwork, NetworkGuidInfo, WiFiNetwork} from './diagnostics_types.js';
 import type {KeyboardInfo} from './input.mojom-webui.js';
 import {BottomLeftLayout, BottomRightLayout, ConnectionType, MechanicalLayout, NumberPadPresence, NumpadLayout, PhysicalLayout, TopRightKey, TopRowKey} from './input.mojom-webui.js';
@@ -19,28 +17,28 @@ export const fakeBatteryChargeStatus: BatteryChargeStatus[] = [
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: stringToMojoString16('3h 15m'),
+    powerTime: '3h 15m',
     batteryState: BatteryState.kCharging,
   },
   {
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kDisconnected,
-    powerTime: stringToMojoString16('3h 01m'),
+    powerTime: '3h 01m',
     batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kDisconnected,
-    powerTime: stringToMojoString16('2h 45m'),
+    powerTime: '2h 45m',
     batteryState: BatteryState.kDischarging,
   },
   {
     chargeNowMilliampHours: 5700,
     currentNowMilliamps: 1123,
     powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: stringToMojoString16('2h 45m'),
+    powerTime: '2h 45m',
     batteryState: BatteryState.kFull,
   },
 ];
@@ -50,7 +48,7 @@ export const fakeBatteryChargeStatus2: BatteryChargeStatus[] = [{
   chargeNowMilliampHours: 4200,
   currentNowMilliamps: 1123,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
-  powerTime: stringToMojoString16('3h 15m'),
+  powerTime: '3h 15m',
 }];
 
 export const fakeBatteryHealth2: BatteryHealth[] = [
@@ -67,7 +65,7 @@ export const fakeBatteryChargeStatus3: BatteryChargeStatus[] = [{
   chargeNowMilliampHours: 0,
   currentNowMilliamps: 0,
   powerAdapterStatus: ExternalPowerSource.kDisconnected,
-  powerTime: stringToMojoString16('0m'),
+  powerTime: '0m',
 }];
 
 export const fakeBatteryHealth3: BatteryHealth[] = [

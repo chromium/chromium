@@ -42,7 +42,6 @@ class StyleReflection : public GarbageCollected<StyleReflection> {
     return direction_ == o.direction_ && offset_ == o.offset_ &&
            mask_ == o.mask_;
   }
-  bool operator!=(const StyleReflection& o) const { return !(*this == o); }
 
   CSSReflectionDirection Direction() const { return direction_; }
   const Length& Offset() const { return offset_; }

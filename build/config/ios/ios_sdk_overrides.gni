@@ -11,12 +11,7 @@ import("//build/config/features.gni")
 declare_args() {
   # Version of iOS that we're targeting.
   if (use_blink) {
-    if (target_platform == "iphoneos") {
-      ios_deployment_target = "26.0"
-    } else {
-      # tvOS requires at least SDK version 17.4.
-      ios_deployment_target = "17.4"
-    }
+    ios_deployment_target = "26.0"
   } else {
     ios_deployment_target = "17.0"
   }
@@ -25,6 +20,5 @@ declare_args() {
 # Always assert that ios_deployment_target is used on non-iOS platforms to
 # prevent unused args warnings.
 if (!is_ios) {
-  assert(ios_deployment_target == "17.0" || ios_deployment_target == "17.4" ||
-         ios_deployment_target == "26.0" || true)
+  not_needed([ "ios_deployment_target" ])
 }

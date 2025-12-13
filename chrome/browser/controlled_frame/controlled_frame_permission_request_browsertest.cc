@@ -369,13 +369,12 @@ class MockHidDelegate : public ChromeHidDelegate {
     chooser_controller_->set_view(mock_chooser_view_.get());
 
     EXPECT_CALL(*mock_chooser_view_.get(), OnOptionsInitialized)
-        .WillOnce(
-            testing::Invoke([this] { chooser_controller_->Select({0}); }));
+        .WillOnce([this] { chooser_controller_->Select({0}); });
   }
 
  private:
-  std::unique_ptr<HidChooserController> chooser_controller_;
   std::unique_ptr<permissions::MockChooserControllerView> mock_chooser_view_;
+  std::unique_ptr<HidChooserController> chooser_controller_;
 };
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {

@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/browser/notification_content_detection/mock_safe_browsing_database_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 
 namespace safe_browsing {
 

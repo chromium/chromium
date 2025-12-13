@@ -20,7 +20,7 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/SyntheticGestureTarget_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -213,3 +213,5 @@ RenderWidgetHostViewAndroid* SyntheticGestureTargetAndroid::GetView() const {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SyntheticGestureTarget)

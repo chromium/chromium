@@ -4,6 +4,10 @@
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browser_context.h"
@@ -56,16 +60,16 @@ void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
 }
 
 void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
-  network::SimpleURLLoader::BodyAsStringCallbackDeprecated callback =
-      base::BindOnce(&BitmapFetcher::OnSimpleLoaderComplete,
-                     weak_factory_.GetWeakPtr());
+  network::SimpleURLLoader::BodyAsStringCallback callback = base::BindOnce(
+      &BitmapFetcher::OnSimpleLoaderComplete, weak_factory_.GetWeakPtr());
 
   // Early exit to handle data URLs.
   if (url_.SchemeIs(url::kDataScheme)) {
     std::string mime_type, charset, data;
-    std::unique_ptr<std::string> response_body;
-    if (net::DataURL::Parse(url_, &mime_type, &charset, &data))
-      response_body = std::make_unique<std::string>(std::move(data));
+    std::optional<std::string> response_body;
+    if (net::DataURL::Parse(url_, &mime_type, &charset, &data)) {
+      response_body = std::move(data);
+    }
 
     // Post a task to maintain our guarantee that the delegate will only be
     // called asynchronously.
@@ -81,7 +85,7 @@ void BitmapFetcher::Start(network::mojom::URLLoaderFactory* loader_factory) {
 }
 
 void BitmapFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   if (!response_body) {
     ReportFailure();
     return;
@@ -89,7 +93,7 @@ void BitmapFetcher::OnSimpleLoaderComplete(
 
   // Call start to begin decoding.  The ImageDecoder will call OnImageDecoded
   // with the data when it is done.
-  ImageDecoder::Start(this, std::move(*response_body));
+  ImageDecoder::Start(this, std::move(response_body).value());
 }
 
 // Methods inherited from ImageDecoder::ImageRequest.

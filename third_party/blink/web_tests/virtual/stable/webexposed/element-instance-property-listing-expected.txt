@@ -60,6 +60,7 @@ namespace http://www.w3.org/1999/xhtml
     property ariaModal
     property ariaMultiLine
     property ariaMultiSelectable
+    property ariaNotify
     property ariaOrientation
     property ariaPlaceholder
     property ariaPosInSet
@@ -173,6 +174,7 @@ namespace http://www.w3.org/1999/xhtml
     property offsetTop
     property offsetWidth
     property onabort
+    property onanimationcancel
     property onanimationend
     property onanimationiteration
     property onanimationstart
@@ -356,6 +358,7 @@ html element a
     property href
     property hrefTranslate
     property hreflang
+    property interestForElement
     property name
     property origin
     property password
@@ -385,6 +388,7 @@ html element area
     property host
     property hostname
     property href
+    property interestForElement
     property noHref
     property origin
     property password
@@ -472,6 +476,8 @@ html element body
     property onafterprint
     property onbeforeprint
     property onbeforeunload
+    property ongamepadconnected
+    property ongamepaddisconnected
     property onhashchange
     property onlanguagechange
     property onmessage
@@ -500,6 +506,7 @@ html element button
     property formMethod
     property formNoValidate
     property formTarget
+    property interestForElement
     property labels
     property name
     property popoverTargetAction
@@ -634,6 +641,8 @@ html element frameset
     property onafterprint
     property onbeforeprint
     property onbeforeunload
+    property ongamepadconnected
+    property ongamepaddisconnected
     property onhashchange
     property onlanguagechange
     property onmessage
@@ -648,6 +657,20 @@ html element frameset
     property onunhandledrejection
     property onunload
     property rows
+html element geolocation
+    property accuracymode
+    property autolocate
+    property error
+    property initialPermissionStatus
+    property invalidReason
+    property isValid
+    property onlocation
+    property onpromptaction
+    property onpromptdismiss
+    property onvalidationstatuschange
+    property permissionStatus
+    property position
+    property watch
 html element h1
     property align
 html element h2
@@ -1301,6 +1324,7 @@ namespace http://www.w3.org/2000/svg
     property ariaModal
     property ariaMultiLine
     property ariaMultiSelectable
+    property ariaNotify
     property ariaOrientation
     property ariaPlaceholder
     property ariaPosInSet
@@ -1394,6 +1418,7 @@ namespace http://www.w3.org/2000/svg
     property nonce
     property normalize
     property onabort
+    property onanimationcancel
     property onanimationend
     property onanimationiteration
     property onanimationstart
@@ -1559,18 +1584,24 @@ namespace http://www.w3.org/2000/svg
     property webkitRequestFullscreen
     property when
 svg element a
+    property download
     property farthestViewportElement
     property getBBox
     property getCTM
     property getScreenCTM
     property href
+    property hreflang
+    property interestForElement
     property nearestViewportElement
+    property ping
+    property referrerPolicy
     property rel
     property relList
     property requiredExtensions
     property systemLanguage
     property target
     property transform
+    property type
 svg element animate
     property beginElement
     property beginElementAt
@@ -2157,6 +2188,7 @@ svg element rect
     property x
     property y
 svg element script
+    property async
     property href
     property type
 svg element set
@@ -2235,7 +2267,15 @@ svg element switch
     property systemLanguage
     property transform
 svg element symbol
+    property farthestViewportElement
+    property getBBox
+    property getCTM
+    property getScreenCTM
+    property nearestViewportElement
     property preserveAspectRatio
+    property requiredExtensions
+    property systemLanguage
+    property transform
     property viewBox
 svg element text
     property LENGTHADJUST_SPACING

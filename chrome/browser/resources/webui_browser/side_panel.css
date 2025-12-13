@@ -1,0 +1,42 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#frame {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: var(--color-toolbar);
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+#header {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+#header h2 {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+#closeButton {
+  --cr-icon-button-icon-size: 16px;
+  /* Put button at the header tail */
+  margin-left: auto;
+}
+
+#content {
+  flex: 1;
+  border-radius: 16px;
+  border: 1px var(--color-side-panel-content-area-separator) solid;
+  overflow: hidden;
+}

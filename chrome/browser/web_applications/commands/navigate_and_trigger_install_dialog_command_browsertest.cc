@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 
   // The browser should have one tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   content::TestNavigationObserver navigation_observer(test_url);
   navigation_observer.StartWatchingNewWebContents();
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
           }));
   navigation_observer.Wait();
   // The browser should now have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // The active tab should be the |test_url| we navigated to.
   EXPECT_EQ(test_url,
             chrome_test_utils::GetActiveWebContents(this)->GetVisibleURL());

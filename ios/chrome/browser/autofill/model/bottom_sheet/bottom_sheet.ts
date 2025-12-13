@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {getFieldIdentifier, getFormIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getElementByUniqueID} from '//components/autofill/ios/form_util/resources/renderer_id.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
- * @fileoverview Adds listeners on the focus event, specifically for elements
+ * @fileoverview Adds listeners on focus related events, specifically for elements
  * provided through a list of renderer IDs, in order for to allow showing a
  * bottom sheet in that context.
  */
@@ -39,11 +42,11 @@ function isObservable(element: HTMLElement): boolean {
  * Returns true if the bottom sheet can be triggered.
  * @private
  */
-function canTriggerBottomSheet(focusedElement: Element) {
+function canTriggerBottomSheet(element: Element) {
   // Verify that the window's layout viewport has a height and a width and also
   // that the element is visible.
   return window.innerHeight > 0 && window.innerWidth > 0 &&
-      gCrWebLegacy.fill.isVisibleNode(focusedElement);
+      fillUtil.isVisibleNode(element);
 }
 
 /*
@@ -71,10 +74,10 @@ function showBottomSheet(hasUserGesture: boolean): void {
 
   const msg = {
     'frameID': gCrWeb.getFrameId(),
-    'formName': gCrWebLegacy.form.getFormIdentifier(form),
-    'formRendererID': gCrWebLegacy.fill.getUniqueID(form),
-    'fieldIdentifier': gCrWebLegacy.form.getFieldIdentifier(field),
-    'fieldRendererID': gCrWebLegacy.fill.getUniqueID(field),
+    'formName': getFormIdentifier(form),
+    'formRendererID': fillUtil.getUniqueID(form),
+    'fieldIdentifier': getFieldIdentifier(field),
+    'fieldRendererID': fillUtil.getUniqueID(field),
     'fieldType': fieldType,
     'type': 'focus',
     'value': fieldValue,
@@ -84,11 +87,37 @@ function showBottomSheet(hasUserGesture: boolean): void {
 }
 
 /**
- * Focus events for observed input elements are messaged to the main
- * application for broadcast to WebStateObservers.
+ * Handles mousedown events for listeners.
  * @private
  */
-function focusEventHandler(event: Event): void {
+function onMouseDown(event: MouseEvent): void {
+  if (!event.target || !(event.target instanceof HTMLElement)) {
+    return;
+  }
+
+  // Field must be empty (ignoring white spaces).
+  if ((event.target instanceof HTMLInputElement) &&
+      event.target.value.trim()) {
+    return;
+  }
+
+  // Show the bottom sheet iff the conditions are right, or bail out otherwise
+  // and let the user fallback to using keyboard for filling the field.
+  if (canTriggerBottomSheet(event.target!)) {
+    // Prevent the keyboard from showing up iff the bottom sheet can be
+    // triggered by preventing the default action of mousedown (focus).
+    event.preventDefault();
+    lastBlurredElement_ = event.target;
+
+    showBottomSheet(event.isTrusted);
+  }
+}
+
+/**
+ * Handles focus events for listeners.
+ * @private
+ */
+function onFocus(event: Event): void {
   if (!event.target || !(event.target instanceof HTMLElement) ||
       (event.target !== document.activeElement)) {
     return;
@@ -118,30 +147,42 @@ function focusEventHandler(event: Event): void {
  */
 function detachListenersInternal(rendererIds: number[]): void {
   for (const rendererId of rendererIds) {
-    const element = gCrWebLegacy.fill.getElementByUniqueID(rendererId);
-    const index = observedElements_.indexOf(element);
-    if (index > -1) {
-      element.removeEventListener('focus', focusEventHandler, true);
-      observedElements_.splice(index, 1);
+    const element = getElementByUniqueID(rendererId);
+    if (element) {
+      const index = observedElements_.indexOf(element);
+      if (index > -1) {
+        // Detach all possible handlers. If the listener wasn't attached, this
+        // will be no op, no errors thrown.
+        element.removeEventListener(
+            'mousedown', onMouseDown as EventListener, true);
+        element.removeEventListener('focus', onFocus, true);
+        observedElements_.splice(index, 1);
+      }
     }
   }
 }
 
 /**
- * Finds the element associated with each provided renderer ID and
- * attaches a listener to each of these elements for the focus event.
- * "allowAutofocus" specifies whether the bottom sheet can be triggered by an
- * already focused field.
+ * Finds the element associated with each provided renderer ID and attaches a
+ * listener to trigger the bottom sheet.
+ * @param rendererIds The IDs of the elements to observe.
+ * @param allowAutofocus Whether the bottom sheet can be triggered by an
+ *     already focused field.
+ * @param useMousedownBlur Whether to do virtual blur from the 'mousedown' event
+ *     instead of doing a brute force 'blur' on the element.
  */
-function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
+// TODO(crbug.com/454044167): Cleanup autofill TS type casting.
+function attachListeners(
+    rendererIds: number[], allowAutofocus: boolean,
+    useMousedownBlur: boolean): void {
   // Build list of elements
   let elementToBlur: HTMLElement|null = null;
   const elementsToObserve: Element[] = [];
   for (const renderer_id of rendererIds) {
-    const element = gCrWebLegacy.fill.getElementByUniqueID(renderer_id);
+    const element = getElementByUniqueID(renderer_id);
     // Only add element to list of observed elements if we aren't already
     // observing it.
-    if (element && isObservable(element) &&
+    if (element && (element instanceof HTMLElement) && isObservable(element) &&
         !observedElements_.find(elem => elem === element)) {
       const autofocused = document.activeElement === element;
       if (allowAutofocus || !autofocused) {
@@ -150,7 +191,8 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
       }
       if (autofocused) {
         // Check if the field is empty (ignoring white spaces).
-        if (element.value.trim() !== '') {
+        if ((element instanceof HTMLInputElement) &&
+            element.value.trim() !== '') {
           // The user has already started filling the active field, so bail out
           // without attaching listeners.
           return;
@@ -164,7 +206,12 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
 
   // Attach the listeners once the IDs are set.
   for (const element of elementsToObserve) {
-    element.addEventListener('focus', focusEventHandler, true);
+    if (useMousedownBlur) {
+      element.addEventListener(
+          'mousedown', onMouseDown as EventListener, true);
+    } else {
+      element.addEventListener('focus', onFocus as EventListener, true);
+    }
     observedElements_.push(element);
   }
 
@@ -173,8 +220,8 @@ function attachListeners(rendererIds: number[], allowAutofocus: boolean): void {
   // and (3) the sheet can be triggered, trigger the bottom sheet immediately
   // and allow restoring the focus later on once the sheet is dismissed.
   if (elementToBlur && canTriggerBottomSheet(elementToBlur!)) {
-    // Remove the focus so the sheet can take over filling without conflicting
-    // with the keyboard.
+    // Blur elements that are already actively focused which is the only effective
+    // way to blur in this case.
     elementToBlur.blur();
     lastBlurredElement_ = elementToBlur;
     showBottomSheet(/*hasUserGesture=*/ false);
@@ -203,8 +250,11 @@ function detachListeners(rendererIds: number[], refocus: boolean): void {
   }
 }
 
-gCrWebLegacy.bottomSheet = {
-  attachListeners,
-  detachListeners,
-  refocusLastBlurredElement,
-};
+const bottomSheetApi = new CrWebApi();
+
+bottomSheetApi.addFunction('attachListeners', attachListeners);
+bottomSheetApi.addFunction('detachListeners', detachListeners);
+bottomSheetApi.addFunction(
+    'refocusLastBlurredElement', refocusLastBlurredElement);
+
+gCrWeb.registerApi('bottomSheet', bottomSheetApi);

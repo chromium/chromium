@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -11,13 +10,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -31,6 +28,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -249,11 +247,16 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 
     content::TestNavigationObserver navigation_observer(expected_launch_url);
     navigation_observer.StartWatchingNewWebContents();
-    content::WebContents* web_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParamsForTesting(std::move(params));
 
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        future;
+    provider->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                    future.GetCallback());
+    auto* web_contents = future.template Get<1>().get();
     navigation_observer.Wait();
     AttachTestConsumer(web_contents);
     return web_contents;
@@ -383,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     auto result = content::EvalJs(web_contents_.get(),
                                   "window.history.replaceState(null, '', "
                                   "window.location.href + '#foo');");
-    EXPECT_TRUE(result.error.empty());
+    EXPECT_TRUE(result.is_ok());
     navigation_observer.Wait();
   }
 

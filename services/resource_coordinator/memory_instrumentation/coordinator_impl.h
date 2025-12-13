@@ -84,8 +84,8 @@ class CoordinatorImpl : public Registry,
 
  private:
   using OSMemDumpMap = base::flat_map<base::ProcessId, mojom::RawOSMemDumpPtr>;
-  using RequestGlobalMemoryDumpInternalCallback =
-      base::OnceCallback<void(bool, uint64_t, mojom::GlobalMemoryDumpPtr)>;
+  using RequestGlobalMemoryDumpInternalCallback = base::OnceCallback<
+      void(mojom::RequestOutcome, uint64_t, mojom::GlobalMemoryDumpPtr)>;
   friend class CoordinatorImplTest;  // For testing
   FRIEND_TEST_ALL_PREFIXES(CoordinatorImplTest,
                            DumpsAreAddedToTraceWhenRequested);
@@ -113,20 +113,20 @@ class CoordinatorImpl : public Registry,
   // Callback of RequestChromeMemoryDump.
   void OnChromeMemoryDumpResponse(
       base::ProcessId process_id,
-      bool success,
+      mojom::RequestOutcome outcome,
       uint64_t dump_guid,
       std::unique_ptr<base::trace_event::ProcessMemoryDump> chrome_memory_dump);
 
   // Callback of RequestOSMemoryDump.
   void OnOSMemoryDumpResponse(uint64_t dump_guid,
                               base::ProcessId process_id,
-                              bool success,
+                              mojom::RequestOutcome outcome,
                               OSMemDumpMap);
 
   // Callback of RequestOSMemoryDumpForVmRegions.
   void OnOSMemoryDumpForVMRegions(uint64_t dump_guid,
                                   base::ProcessId process_id,
-                                  bool success,
+                                  mojom::RequestOutcome outcome,
                                   OSMemDumpMap);
 
   void FinalizeVmRegionDumpIfAllManagersReplied(uint64_t dump_guid);

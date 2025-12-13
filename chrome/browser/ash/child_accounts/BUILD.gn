@@ -81,8 +81,9 @@ static_library("child_accounts") {
     "//chrome/browser/ash/policy/uploading",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profiles",
     "//chrome/common:constants",  # included for chrome/common/pref_names.h
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
@@ -141,6 +142,7 @@ source_set("unit_tests") {
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/child_accounts/apps",
+    "//chrome/browser/ash/child_accounts/parent_access_code",
     "//chrome/browser/ash/child_accounts/time_limits",
     "//chrome/browser/ash/child_accounts/time_limits:test_support",
     "//chrome/browser/prefs",
@@ -154,6 +156,8 @@ source_set("unit_tests") {
     "//components/account_id:test_support",
     "//components/app_constants",
     "//components/services/app_service/public/cpp:test_support",
+    "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//content/test:test_support",
     "//extensions/common",
     "//testing/gtest",
@@ -161,8 +165,6 @@ source_set("unit_tests") {
     # Tests from subdirs:
     "//chrome/browser/ash/child_accounts/on_device_controls:unit_tests",
     "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
-    "//chrome/browser/ash/child_accounts/parent_access_code:unit_tests",
-    "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
     "//chrome/browser/ash/child_accounts/time_limits:unit_tests",
   ]
 

@@ -13,7 +13,10 @@
 #include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/value_store/value_store_change.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace syncer {
 class ModelError;

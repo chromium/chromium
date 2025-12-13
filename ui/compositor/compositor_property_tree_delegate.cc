@@ -45,12 +45,13 @@ void CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded() {
 void CompositorPropertyTreeDelegate::UpdateScrollOffsetFromImpl(
     const cc::ElementId& id,
     const gfx::Vector2dF& delta,
+    cc::ScrollSourceType type,
     const std::optional<cc::TargetSnapAreaElementIds>& snap_target_ids) {
   // TODO(crbug.com/389771428): Implement this w/ layer lists. For now,
   // just call the base class implementation to ensure that we don't get
   // out of date.
   cc::PropertyTreeLayerTreeDelegate::UpdateScrollOffsetFromImpl(
-      id, delta, snap_target_ids);
+      id, delta, type, snap_target_ids);
 }
 
 void CompositorPropertyTreeDelegate::OnAnimateLayers() {

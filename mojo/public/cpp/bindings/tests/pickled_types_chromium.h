@@ -5,12 +5,13 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_H_
 
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_INTERNAL
+#define MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_INTERNAL
+
 #include <stddef.h>
 
-#include <string>
-
-#include "ipc/ipc_message_macros.h"
-#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits.h"
+#include "ipc/param_traits_macros.h"
 
 namespace base {
 class Pickle;
@@ -69,10 +70,14 @@ struct ParamTraits<mojo::test::PickledStructChromium> {
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
                    param_type* r);
-  static void Log(const param_type& p, std::string* l) {}
 };
 
 }  // namespace IPC
+
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_TESTS_PICKLED_TYPES_CHROMIUM_INTERNAL
+
+#undef IPC_MESSAGE_EXPORT
+#define IPC_MESSAGE_EXPORT
 
 IPC_ENUM_TRAITS_MAX_VALUE(mojo::test::PickledEnumChromium,
                           mojo::test::PickledEnumChromium::VALUE_2)

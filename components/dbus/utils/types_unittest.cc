@@ -16,8 +16,6 @@ namespace dbus_utils {
 namespace {
 
 TEST(DBusTypesTraitTest, IsSupportedDBusType) {
-  using internal::IsSupportedDBusType;
-
   // Primitives
   static_assert(IsSupportedDBusType<bool>);
   static_assert(IsSupportedDBusType<uint8_t>);

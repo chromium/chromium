@@ -14,22 +14,24 @@ const char kSigninBrowserContextBaseName[] = "Default";
 const char kLockScreenBrowserContextBaseName[] = "LockScreenProfile";
 const char kShimlessRmaAppBrowserContextBaseName[] = "ShimlessRmaAppProfile";
 
-bool IsSigninBrowserContext(content::BrowserContext* browser_context) {
+bool IsSigninBrowserContext(const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kSigninBrowserContextBaseName;
 }
 
-bool IsLockScreenBrowserContext(content::BrowserContext* browser_context) {
+bool IsLockScreenBrowserContext(
+    const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kLockScreenBrowserContextBaseName;
 }
 
-bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context) {
+bool IsShimlessRmaAppBrowserContext(
+    const content::BrowserContext* browser_context) {
   return browser_context && browser_context->GetPath().BaseName().value() ==
                                 kShimlessRmaAppBrowserContextBaseName;
 }
 
-bool IsUserBrowserContext(content::BrowserContext* browser_context) {
+bool IsUserBrowserContext(const content::BrowserContext* browser_context) {
   // Check `AnnotatedAccountId` as an optimization to avoid creating/destroying
   // `base::FilePath`, which is cpu intensive. See b:402192521 for more details.
   //

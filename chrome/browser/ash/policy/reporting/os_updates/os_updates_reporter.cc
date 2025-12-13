@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
-#include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/version/version_loader.h"
@@ -88,7 +88,7 @@ void OsUpdatesReporter::MaybeReportEvent(
   record.set_current_os_version(os_version.value_or("0.0.0.0"));
 
   record.set_current_channel(
-      std::string(version_info::GetChannelString(chrome::GetChannel())));
+      std::string(version_info::GetChannelString(ash::GetChannel())));
 
   record.set_event_timestamp_sec(base::Time::Now().ToTimeT());
 

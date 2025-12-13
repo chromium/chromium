@@ -27,7 +27,6 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
@@ -43,7 +42,10 @@ import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * This class creates a view for adding, editing, and deleting a local IBAN. A local IBAN gets saved
@@ -63,7 +65,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     protected EditText mValue;
     private Iban mIban;
     private @Nullable Profile mProfile;
-    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -77,6 +79,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         IbanAction.HISTOGRAM_BUCKET_COUNT
     })
     // TODO(b/371041630): Extend IBAN histograms to track nickname usage across all IBAN actions.
+    @Retention(RetentionPolicy.SOURCE)
     @VisibleForTesting
     @interface IbanAction {
         int IBAN_ADDED_WITH_NICKNAME = 0;
@@ -256,7 +259,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

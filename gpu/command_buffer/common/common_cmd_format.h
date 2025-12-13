@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 // This file defines the command buffer commands.
 
 #ifndef GPU_COMMAND_BUFFER_COMMON_COMMON_CMD_FORMAT_H_
@@ -17,6 +12,7 @@
 #include <string.h>
 
 #include "base/atomicops.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/checked_math.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 
@@ -74,7 +70,7 @@ struct SizedResult {
   }
 
   // Copy the result.
-  void CopyResult(void* dst) const { memcpy(dst, &data, size); }
+  void CopyResult(void* dst) const { UNSAFE_TODO(memcpy(dst, &data, size)); }
 
   uint32_t size;  // in bytes.
   int32_t data;   // this is just here to get an offset.

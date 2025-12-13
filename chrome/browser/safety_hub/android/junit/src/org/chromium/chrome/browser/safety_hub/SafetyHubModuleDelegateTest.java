@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -25,14 +26,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.ParameterizedRobolectricTestRunner;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureOverrides;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
@@ -43,26 +40,15 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.function.Supplier;
 
 /** Tests {@link SafetyHubModuleDelegate} */
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class SafetyHubModuleDelegateTest {
-    @ParameterizedRobolectricTestRunner.Parameters
-    public static Collection testCases() {
-        return Arrays.asList(
-                /* isLoginDbDeprecationEnabled= */ true, /* isLoginDbDeprecationEnabled= */ false);
-    }
-
-    @Rule(order = -2)
-    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SafetyHubTestRule mSafetyHubTestRule = new SafetyHubTestRule();
 
-    @ParameterizedRobolectricTestRunner.Parameter public boolean mIsLoginDbDeprecationEnabled;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private Intent mSigninIntent;
@@ -76,11 +62,6 @@ public class SafetyHubModuleDelegateTest {
 
     @Before
     public void setUp() {
-        if (mIsLoginDbDeprecationEnabled) {
-            FeatureOverrides.enable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-        } else {
-            FeatureOverrides.disable(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID);
-        }
         mProfile = mSafetyHubTestRule.getProfile();
         mPasswordCheckIntentForAccountCheckup =
                 mSafetyHubTestRule.getIntentForAccountPasswordCheckup();
@@ -103,8 +84,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testOpenPasswordCheckUi() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setSignedInState(true);
-        mSafetyHubTestRule.setPasswordManagerAvailable(
-                true, ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         Context context = ContextUtils.getApplicationContext();
         mSafetyHubModuleDelegate.showPasswordCheckUi(context);
@@ -114,8 +94,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testOpenLocalPasswordCheckUi() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setSignedInState(true);
-        mSafetyHubTestRule.setPasswordManagerAvailable(
-                true, ChromeFeatureList.isEnabled(ChromeFeatureList.LOGIN_DB_DEPRECATION_ANDROID));
+        mSafetyHubTestRule.setPasswordManagerAvailable(true);
 
         Context context = ContextUtils.getApplicationContext();
         mSafetyHubModuleDelegate.showLocalPasswordCheckUi(context);
@@ -125,6 +104,7 @@ public class SafetyHubModuleDelegateTest {
     @Test
     public void testLaunchSigninPromo() {
         mSafetyHubTestRule.setSignedInState(false);
+        when(mContext.getString(anyInt())).thenReturn("string");
         when(mSigninLauncher.createBottomSheetSigninIntentOrShowError(
                         eq(mContext), eq(mProfile), any(), eq(SigninAccessPoint.SAFETY_CHECK)))
                 .thenReturn(mSigninIntent);

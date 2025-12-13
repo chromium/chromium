@@ -9,9 +9,6 @@
 #include "components/power_bookmarks/common/search_params.h"
 #include "components/power_bookmarks/storage/empty_power_bookmark_database.h"
 #include "components/power_bookmarks/storage/power_bookmark_database_impl.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_bridge.h"
-#include "components/power_bookmarks/storage/power_bookmark_sync_metadata_database.h"
-#include "components/sync/model/client_tag_based_data_type_processor.h"
 
 namespace power_bookmarks {
 
@@ -40,37 +37,12 @@ void PowerBookmarkBackend::Init(bool use_database) {
   // `use_database` is the PowerBookmarkBackend feature toggle on the call site.
   if (use_database) {
     db_ = std::make_unique<PowerBookmarkDatabaseImpl>(database_dir_);
-    bool success = db_->Init();
-
-    // TODO(crbug.com/40247772): Plumb in syncer::ReportUnrecoverableError as
-    // the dump_stack callback.
-    auto change_processor =
-        std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
-            syncer::POWER_BOOKMARK, /*dump_stack=*/base::RepeatingClosure());
-
-    bridge_ = std::make_unique<PowerBookmarkSyncBridge>(
-        db_->GetSyncMetadataDatabase(), this, std::move(change_processor));
-    if (success) {
-      bridge_->Init();
-    } else {
-      bridge_->ReportError(
-          {FROM_HERE,
-           syncer::ModelError::Type::kPowerBookmarkDatabaseInitFailed});
-    }
+    db_->Init();
   } else {
     db_ = std::make_unique<EmptyPowerBookmarkDatabase>();
     bool success = db_->Init();
     DCHECK(success);
   }
-}
-
-base::WeakPtr<syncer::DataTypeControllerDelegate>
-PowerBookmarkBackend::GetSyncControllerDelegate() {
-  // When the current method is called, the bridge is expected to exist
-  // (`use_database` in the Init() method is set iff the PowerBookmarkBackend
-  // feature toggle is enabled).
-  CHECK(bridge_);
-  return bridge_->change_processor()->GetControllerDelegate();
 }
 
 std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForURL(
@@ -112,9 +84,6 @@ bool PowerBookmarkBackend::CreatePower(std::unique_ptr<Power> power) {
   if (!success) {
     return false;
   }
-  if (bridge_ && bridge_->initialized()) {
-    bridge_->SendPowerToSync(*power);
-  }
   return CommitAndNotify(*transaction);
 }
 
@@ -132,9 +101,6 @@ bool PowerBookmarkBackend::UpdatePower(std::unique_ptr<Power> power) {
   if (!success) {
     return false;
   }
-  if (bridge_) {
-    bridge_->SendPowerToSync(*updated_power);
-  }
   return CommitAndNotify(*transaction);
 }
 
@@ -149,9 +115,6 @@ bool PowerBookmarkBackend::DeletePower(const base::Uuid& guid) {
   metrics::RecordPowerDeleted(success);
   if (!success) {
     return false;
-  }
-  if (bridge_ && bridge_->initialized()) {
-    bridge_->NotifySyncForDeletion(guid.AsLowercaseString());
   }
   return CommitAndNotify(*transaction);
 }
@@ -171,50 +134,7 @@ bool PowerBookmarkBackend::DeletePowersForURL(
   if (!success) {
     return false;
   }
-  if (bridge_ && bridge_->initialized()) {
-    for (auto const& guid : deleted_guids) {
-      bridge_->NotifySyncForDeletion(guid);
-    }
-  }
   return CommitAndNotify(*transaction);
-}
-
-std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetAllPowers() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetAllPowers();
-}
-
-std::vector<std::unique_ptr<Power>> PowerBookmarkBackend::GetPowersForGUIDs(
-    const std::vector<std::string>& guids) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetPowersForGUIDs(guids);
-}
-
-std::unique_ptr<Power> PowerBookmarkBackend::GetPowerForGUID(
-    const std::string& guid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetPowerForGUID(guid);
-}
-
-bool PowerBookmarkBackend::CreateOrMergePowerFromSync(const Power& power) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->CreateOrMergePowerFromSync(power);
-}
-
-bool PowerBookmarkBackend::DeletePowerFromSync(const std::string& guid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->DeletePowerFromSync(guid);
-}
-
-PowerBookmarkSyncMetadataDatabase*
-PowerBookmarkBackend::GetSyncMetadataDatabase() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->GetSyncMetadataDatabase();
-}
-
-std::unique_ptr<Transaction> PowerBookmarkBackend::BeginTransaction() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return db_->BeginTransaction();
 }
 
 bool PowerBookmarkBackend::CommitAndNotify(Transaction& transaction) {
@@ -222,11 +142,6 @@ bool PowerBookmarkBackend::CommitAndNotify(Transaction& transaction) {
     NotifyPowersChanged();
     return true;
   } else {
-    if (bridge_ && bridge_->initialized()) {
-      bridge_->change_processor()->ReportError(
-          {FROM_HERE,
-           syncer::ModelError::Type::kPowerBookmarkDatabaseCommitFailed});
-    }
     return false;
   }
 }

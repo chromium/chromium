@@ -86,22 +86,6 @@ TEST_F(RasterFormatTest, DeleteQueriesEXTImmediate) {
   EXPECT_EQ(0, memcmp(ids, ImmediateDataAddress(&cmd), sizeof(ids)));
 }
 
-TEST_F(RasterFormatTest, QueryCounterEXT) {
-  cmds::QueryCounterEXT& cmd = *GetBufferAs<cmds::QueryCounterEXT>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11),
-                           static_cast<GLenum>(12), static_cast<uint32_t>(13),
-                           static_cast<uint32_t>(14), static_cast<GLuint>(15));
-  EXPECT_EQ(static_cast<uint32_t>(cmds::QueryCounterEXT::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.id);
-  EXPECT_EQ(static_cast<GLenum>(12), cmd.target);
-  EXPECT_EQ(static_cast<uint32_t>(13), cmd.sync_data_shm_id);
-  EXPECT_EQ(static_cast<uint32_t>(14), cmd.sync_data_shm_offset);
-  EXPECT_EQ(static_cast<GLuint>(15), cmd.submit_count);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(RasterFormatTest, BeginQueryEXT) {
   cmds::BeginQueryEXT& cmd = *GetBufferAs<cmds::BeginQueryEXT>();
   void* next_cmd =
@@ -387,7 +371,8 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   void* next_cmd =
       cmd.Set(&cmd, static_cast<GLint>(11), static_cast<GLint>(12),
               static_cast<GLint>(13), static_cast<GLint>(14),
-              static_cast<GLsizei>(15), static_cast<GLsizei>(16), data);
+              static_cast<GLsizei>(15), static_cast<GLsizei>(16),
+              static_cast<GLsizei>(17), static_cast<GLsizei>(18), data);
   EXPECT_EQ(
       static_cast<uint32_t>(cmds::CopySharedImageINTERNALImmediate::kCmdId),
       cmd.header.command);
@@ -397,8 +382,10 @@ TEST_F(RasterFormatTest, CopySharedImageINTERNALImmediate) {
   EXPECT_EQ(static_cast<GLint>(12), cmd.yoffset);
   EXPECT_EQ(static_cast<GLint>(13), cmd.x);
   EXPECT_EQ(static_cast<GLint>(14), cmd.y);
-  EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
-  EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
+  EXPECT_EQ(static_cast<GLsizei>(15), cmd.src_width);
+  EXPECT_EQ(static_cast<GLsizei>(16), cmd.src_height);
+  EXPECT_EQ(static_cast<GLsizei>(17), cmd.dest_width);
+  EXPECT_EQ(static_cast<GLsizei>(18), cmd.dest_height);
   CheckBytesWrittenMatchesExpectedSize(
       next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
 }

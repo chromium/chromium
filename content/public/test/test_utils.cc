@@ -24,6 +24,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/origin_agent_cluster_isolation_state.h"
+#include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/site_info.h"
@@ -34,6 +35,7 @@
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -197,7 +199,7 @@ bool AreAllSitesIsolatedForTesting() {
 bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
                                           const url::Origin& origin) {
   OriginAgentClusterIsolationState origin_requests_isolation(
-      OriginAgentClusterIsolationState::CreateNonIsolated());
+      OriginAgentClusterIsolationState::CreateNonIsolatedByDefault());
 
   return static_cast<ChildProcessSecurityPolicyImpl*>(
              ChildProcessSecurityPolicy::GetInstance())
@@ -542,12 +544,13 @@ void EffectiveURLContentBrowserClientHelper::AddTranslation(
   urls_to_modify_[url_to_modify] = url_to_return;
 }
 
-GURL EffectiveURLContentBrowserClientHelper::GetEffectiveURL(const GURL& url) {
+std::optional<GURL> EffectiveURLContentBrowserClientHelper::GetEffectiveURL(
+    const GURL& url) {
   auto it = urls_to_modify_.find(url);
   if (it != urls_to_modify_.end()) {
     return it->second;
   }
-  return url;
+  return std::nullopt;
 }
 
 bool EffectiveURLContentBrowserClientHelper::DoesSiteRequireDedicatedProcess(
@@ -596,7 +599,7 @@ void EffectiveURLContentBrowserClient::AddTranslation(
   helper_.AddTranslation(url_to_modify, url_to_return);
 }
 
-GURL EffectiveURLContentBrowserClient::GetEffectiveURL(
+std::optional<GURL> EffectiveURLContentBrowserClient::GetEffectiveURL(
     BrowserContext* browser_context,
     const GURL& url) {
   return helper_.GetEffectiveURL(url);

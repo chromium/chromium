@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/types/expected.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -47,9 +49,64 @@ void TestProxyDelegate::MakeOnTunnelHeadersReceivedFail(Error result) {
   on_tunnel_headers_received_result_ = result;
 }
 
+void TestProxyDelegate::MaybeCreateOnBeforeTunnelRequestRunLoop() {
+  if (on_before_tunnel_request_run_loop_) {
+    return;
+  }
+  on_before_tunnel_request_run_loop_ = std::make_unique<base::RunLoop>();
+}
+
+void TestProxyDelegate::MakeOnBeforeTunnelRequestCompleteAsync() {
+  CHECK(!on_before_tunnel_request_returns_async_);
+  on_before_tunnel_request_returns_async_ = true;
+}
+
+void TestProxyDelegate::ResumeOnBeforeTunnelRequest() {
+  CHECK(on_before_tunnel_request_returns_async_);
+  CHECK(on_before_tunnel_request_callback_);
+  std::move(on_before_tunnel_request_callback_).Run();
+}
+
+void TestProxyDelegate::WaitForOnBeforeTunnelRequestAsyncCompletion() {
+  CHECK(on_before_tunnel_request_returns_async_);
+  // We don't know whether WaitForOnBeforeTunnelRequestAsyncCompletion or
+  // OnBeforeTunnelRequest will execute first. Allow creating the run loop in
+  // both places to account for that.
+  MaybeCreateOnBeforeTunnelRequestRunLoop();
+  on_before_tunnel_request_run_loop_->Run();
+  on_before_tunnel_request_run_loop_.reset();
+}
+
+void TestProxyDelegate::MaybeCreateOnTunnelHeadersReceivedRunLoop() {
+  if (on_tunnel_headers_received_run_loop_) {
+    return;
+  }
+  on_tunnel_headers_received_run_loop_ = std::make_unique<base::RunLoop>();
+}
+
+void TestProxyDelegate::MakeOnTunnelHeadersReceivedCompleteAsync() {
+  CHECK(!on_tunnel_headers_received_returns_async_);
+  on_tunnel_headers_received_returns_async_ = true;
+}
+void TestProxyDelegate::ResumeOnTunnelHeadersReceived() {
+  CHECK(on_tunnel_headers_received_returns_async_);
+  CHECK(on_tunnel_headers_received_callback_);
+  std::move(on_tunnel_headers_received_callback_)
+      .Run(on_tunnel_headers_received_result_);
+}
+void TestProxyDelegate::WaitForOnTunnelHeadersReceivedAsyncCompletion() {
+  CHECK(on_tunnel_headers_received_returns_async_);
+  // We don't know whether WaitForOnTunnelHeadersReceivedAsyncCompletion or
+  // OnTunnelHeadersReceived will execute first. Allow creating the run loop in
+  // both places to account for that.
+  MaybeCreateOnTunnelHeadersReceivedRunLoop();
+  on_tunnel_headers_received_run_loop_->Run();
+  on_tunnel_headers_received_run_loop_.reset();
+}
+
 void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
+    size_t proxy_index,
     const std::string& response_header_name,
     const std::string& response_header_value,
     size_t call_index) const {
@@ -61,7 +118,7 @@ void TestProxyDelegate::VerifyOnTunnelHeadersReceived(
 
   EXPECT_EQ(proxy_chain,
             on_tunnel_headers_received_proxy_chains_.at(call_index));
-  EXPECT_EQ(chain_index,
+  EXPECT_EQ(proxy_index,
             on_tunnel_headers_received_chain_indices_.at(call_index));
 
   scoped_refptr<HttpResponseHeaders> response_headers =
@@ -88,6 +145,13 @@ void TestProxyDelegate::OnResolveProxy(
 void TestProxyDelegate::OnSuccessfulRequestAfterFailures(
     const ProxyRetryInfoMap& proxy_retry_info) {}
 
+std::optional<bool> TestProxyDelegate::CanFalloverToNextProxyOverride(
+    const net::ProxyChain& proxy_chain,
+    int net_error) {
+  ++on_can_fallover_to_next_proxy_override_count_;
+  return std::nullopt;
+}
+
 void TestProxyDelegate::OnFallback(const ProxyChain& bad_chain, int net_error) {
 }
 
@@ -97,31 +161,56 @@ std::string TestProxyDelegate::GetExtraHeaderValue(
   return ProxyServerToProxyUri(proxy_server);
 }
 
-Error TestProxyDelegate::OnBeforeTunnelRequest(
+base::expected<HttpRequestHeaders, Error>
+TestProxyDelegate::OnBeforeTunnelRequest(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
-    HttpRequestHeaders* extra_headers) {
+    size_t proxy_index,
+    OnBeforeTunnelRequestCallback callback) {
   on_before_tunnel_request_call_count_++;
 
+  HttpRequestHeaders extra_headers;
   if (extra_header_name_) {
-    extra_headers->SetHeader(
+    extra_headers.SetHeader(
         *extra_header_name_,
-        GetExtraHeaderValue(proxy_chain.GetProxyServer(chain_index)));
+        GetExtraHeaderValue(proxy_chain.GetProxyServer(proxy_index)));
   }
 
-  return OK;
+  if (on_before_tunnel_request_returns_async_) {
+    // We don't know whether OnBeforeTunnelRequest or
+    // WaitForOnBeforeTunnelRequestAsyncCompletion will execute first. Allow
+    // creating the run loop in both places to account for that.
+    MaybeCreateOnBeforeTunnelRequestRunLoop();
+    on_before_tunnel_request_run_loop_->Quit();
+    on_before_tunnel_request_callback_ =
+        base::BindOnce(std::move(callback), std::move(extra_headers));
+    return base::unexpected(ERR_IO_PENDING);
+  }
+
+  return extra_headers;
 }
 
 Error TestProxyDelegate::OnTunnelHeadersReceived(
     const ProxyChain& proxy_chain,
-    size_t chain_index,
-    const HttpResponseHeaders& response_headers) {
+    size_t proxy_index,
+    const HttpResponseHeaders& response_headers,
+    CompletionOnceCallback callback) {
   on_tunnel_headers_received_headers_.push_back(
       base::MakeRefCounted<HttpResponseHeaders>(
           response_headers.raw_headers()));
 
   on_tunnel_headers_received_proxy_chains_.push_back(proxy_chain);
-  on_tunnel_headers_received_chain_indices_.push_back(chain_index);
+  on_tunnel_headers_received_chain_indices_.push_back(proxy_index);
+
+  if (on_tunnel_headers_received_returns_async_) {
+    // We don't know whether OnBeforeTunnelRequest or
+    // WaitForOnBeforeTunnelRequestAsyncCompletion will execute first. Allow
+    // creating the run loop in both places to account for that.
+    MaybeCreateOnTunnelHeadersReceivedRunLoop();
+    on_tunnel_headers_received_run_loop_->Quit();
+    on_tunnel_headers_received_callback_ = std::move(callback);
+    return ERR_IO_PENDING;
+  }
+
   return on_tunnel_headers_received_result_;
 }
 

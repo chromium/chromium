@@ -16,7 +16,7 @@ namespace network {
 // when creating a cookie storage policy. It has two parameters, the first one
 // is the domain of a cookie and the second one is the scheme of the domain.
 using DeleteCookiePredicate =
-    base::RepeatingCallback<bool(const std::string&, net::CookieSourceScheme)>;
+    base::RepeatingCallback<bool(std::string_view, net::CookieSourceScheme)>;
 
 }  // namespace network
 

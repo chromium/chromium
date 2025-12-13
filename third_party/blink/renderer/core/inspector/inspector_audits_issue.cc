@@ -6,6 +6,7 @@
 
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/blocked_by_response_reason.mojom-blink.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -88,7 +89,7 @@ std::unique_ptr<protocol::Audits::SourceCodeLocation> CreateProtocolLocation(
                                .setColumnNumber(location.ColumnNumber())
                                .build();
   if (location.ScriptId()) {
-    protocol_location->setScriptId(WTF::String::Number(location.ScriptId()));
+    protocol_location->setScriptId(String::Number(location.ScriptId()));
   }
   return protocol_location;
 }
@@ -114,17 +115,17 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormEmptyIdAndNameAttributesForInputError;
     case mojom::blink::GenericIssueErrorType::
-        kFormAriaLabelledByToNonExistingId:
+        kFormAriaLabelledByToNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormAriaLabelledByToNonExistingId;
+          FormAriaLabelledByToNonExistingIdError;
     case mojom::blink::GenericIssueErrorType::
         kFormInputAssignedAutocompleteValueToIdOrNameAttributeError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           FormInputAssignedAutocompleteValueToIdOrNameAttributeError;
     case mojom::blink::GenericIssueErrorType::
-        kFormLabelHasNeitherForNorNestedInput:
+        kFormLabelHasNeitherForNorNestedInputError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
-          FormLabelHasNeitherForNorNestedInput;
+          FormLabelHasNeitherForNorNestedInputError;
     case mojom::blink::GenericIssueErrorType::
         kFormLabelForMatchesNonExistingIdError:
       return protocol::Audits::GenericIssueErrorTypeEnum::
@@ -136,6 +137,21 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kResponseWasBlockedByORB:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ResponseWasBlockedByORB;
+    case mojom::blink::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          NavigationEntryMarkedSkippable;
+    case mojom::blink::GenericIssueErrorType::
+        kAutofillAndManualTextPolicyControlledFeaturesInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillAndManualTextPolicyControlledFeaturesInfo;
+    case mojom::blink::GenericIssueErrorType::
+        kAutofillPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          AutofillPolicyControlledFeatureInfo;
+    case mojom::blink::GenericIssueErrorType::
+        kManualTextPolicyControlledFeatureInfo:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          ManualTextPolicyControlledFeatureInfo;
   }
 }
 
@@ -719,8 +735,8 @@ void AuditsIssue::ReportPartitioningBlobURLIssue(
 void AuditsIssue::ReportPropertyRuleIssue(
     Document* document,
     const KURL& url,
-    WTF::OrdinalNumber line,
-    WTF::OrdinalNumber column,
+    OrdinalNumber line,
+    OrdinalNumber column,
     protocol::Audits::PropertyRuleIssueReason reason,
     const String& propertyValue) {
   if (!document || !document->GetExecutionContext()) {
@@ -753,11 +769,10 @@ void AuditsIssue::ReportPropertyRuleIssue(
       AuditsIssue(std::move(issue)));
 }
 
-void AuditsIssue::ReportStylesheetLoadingLateImportIssue(
-    Document* document,
-    const KURL& url,
-    WTF::OrdinalNumber line,
-    WTF::OrdinalNumber column) {
+void AuditsIssue::ReportStylesheetLoadingLateImportIssue(Document* document,
+                                                         const KURL& url,
+                                                         OrdinalNumber line,
+                                                         OrdinalNumber column) {
   if (!document || !document->GetExecutionContext()) {
     return;
   }
@@ -791,8 +806,8 @@ void AuditsIssue::ReportStylesheetLoadingRequestFailedIssue(
     const KURL& url,
     const String& request_id,
     const KURL& initiator_url,
-    WTF::OrdinalNumber initiator_line,
-    WTF::OrdinalNumber initiator_column,
+    OrdinalNumber initiator_line,
+    OrdinalNumber initiator_column,
     const String& failureMessage) {
   if (!document || !document->GetExecutionContext()) {
     return;
@@ -896,7 +911,7 @@ void AuditsIssue::ReportElementAccessibilityIssue(
 }
 
 // static
-void AuditsIssue::ReportUserReidentificationIssue(
+void AuditsIssue::ReportUserReidentificationResourceBlockedIssue(
     LocalFrame* frame,
     std::optional<std::string> devtools_request_id,
     const KURL& affected_request_url) {
@@ -907,8 +922,8 @@ void AuditsIssue::ReportUserReidentificationIssue(
           .setRequest(
               protocol::Audits::AffectedRequest::create()
                   .setRequestId(devtools_request_id.has_value()
-                                    ? WTF::String(devtools_request_id.value())
-                                    : WTF::String())
+                                    ? String(devtools_request_id.value())
+                                    : String())
                   .setUrl(affected_request_url)
                   .build())
           .build();
@@ -926,6 +941,83 @@ void AuditsIssue::ReportUserReidentificationIssue(
                    .build();
 
   frame->DomWindow()->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+// static
+void AuditsIssue::ReportUserReidentificationCanvasNoisedIssue(
+    SourceLocation* source_location,
+    ExecutionContext* execution_context) {
+  auto reidentification_issue_details =
+      protocol::Audits::UserReidentificationIssueDetails::create()
+          .setType(protocol::Audits::UserReidentificationIssueTypeEnum::
+                       NoisedCanvasReadback)
+          .setSourceCodeLocation(CreateProtocolLocation(*source_location))
+          .build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setUserReidentificationIssueDetails(
+              std::move(reidentification_issue_details))
+          .build();
+
+  auto issue = protocol::Audits::InspectorIssue::create()
+                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
+                                UserReidentificationIssue)
+                   .setDetails(std::move(protocol_issue_details))
+                   .build();
+
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+// static
+void AuditsIssue::ReportPermissionElementIssue(
+    ExecutionContext* execution_context,
+    DOMNodeId node_id,
+    protocol::Audits::PermissionElementIssueType issue_type,
+    const String& type,
+    bool is_warning,
+    const String& permissionName,
+    const String& occluderNodeInfo,
+    const String& occluderParentNodeInfo,
+    const String& disableReason) {
+  auto permission_element_issue_details =
+      protocol::Audits::PermissionElementIssueDetails::create()
+          .setIssueType(issue_type)
+          .setIsWarning(is_warning)
+          .build();
+
+  if (node_id != kInvalidDOMNodeId) {
+    permission_element_issue_details->setNodeId(node_id);
+  }
+  if (!type.IsNull()) {
+    permission_element_issue_details->setType(type);
+  }
+  if (!permissionName.IsNull()) {
+    permission_element_issue_details->setPermissionName(permissionName);
+  }
+  if (!occluderNodeInfo.IsNull()) {
+    permission_element_issue_details->setOccluderNodeInfo(occluderNodeInfo);
+  }
+  if (!occluderParentNodeInfo.IsNull()) {
+    permission_element_issue_details->setOccluderParentNodeInfo(
+        occluderParentNodeInfo);
+  }
+  if (!disableReason.IsNull()) {
+    permission_element_issue_details->setDisableReason(disableReason);
+  }
+
+  auto issue_details = protocol::Audits::InspectorIssueDetails::create()
+                           .setPermissionElementIssueDetails(
+                               std::move(permission_element_issue_details))
+                           .build();
+
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(
+              protocol::Audits::InspectorIssueCodeEnum::PermissionElementIssue)
+          .setDetails(std::move(issue_details))
+          .build();
+  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
 AuditsIssue AuditsIssue::CreateContentSecurityPolicyIssue(

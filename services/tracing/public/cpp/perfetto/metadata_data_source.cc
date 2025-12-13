@@ -23,7 +23,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/extension_descriptor.pbzero.h"
 
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif
 
 namespace tracing {
@@ -169,7 +169,7 @@ void MetadataDataSource::WriteMetadata(
 #if BUILDFLAG(IS_ANDROID) && defined(OFFICIAL_BUILD)
     // Version code is only set for official builds on Android.
     const std::string& version_code_str =
-        base::android::BuildInfo::GetInstance()->package_version_code();
+        base::android::apk_info::package_version_code();
     if (!version_code_str.empty()) {
       int version_code = 0;
       bool res = base::StringToInt(version_code_str, &version_code);
@@ -216,11 +216,9 @@ void MetadataDataSource::AddMetadataToBundle(
   } else if (value.is_bool()) {
     metadata->set_bool_value(value.GetBool());
   } else if (value.is_string()) {
-    metadata->set_string_value(value.GetString().c_str());
+    metadata->set_string_value(value.GetString());
   } else {
-    std::string json_value;
-    base::JSONWriter::Write(value, &json_value);
-    metadata->set_json_value(json_value.c_str());
+    metadata->set_json_value(base::WriteJson(value).value_or(""));
   }
 }
 

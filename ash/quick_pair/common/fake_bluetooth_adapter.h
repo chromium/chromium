@@ -15,6 +15,7 @@ namespace quick_pair {
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
  public:
+  FakeBluetoothAdapter();
 
   void SetBluetoothIsPowered(bool powered);
 

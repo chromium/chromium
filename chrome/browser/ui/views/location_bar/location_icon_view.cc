@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -19,7 +20,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -328,11 +329,6 @@ void LocationIconView::UpdateIcon() {
 }
 
 void LocationIconView::UpdateBackground() {
-  if (!GetWidget()) {
-    // TODO(crbug.com/423994344): This is mitigation. Remove this check once the
-    // bug is fixed at the root cause.
-    return;
-  }
   CHECK(GetColorProvider());
   const std::u16string& display_text = GetText();
   const bool is_text_dangerous =

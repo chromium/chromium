@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/ozone/platform/wayland/test/mock_xdg_surface.h"
@@ -96,7 +97,7 @@ class MockSurface : public ServerObject {
 
   void set_frame_callback(wl_resource* callback_resource) {
     if (allow_resetting_frame_callback_ && frame_callback_) {
-      wl_resource_destroy(frame_callback_);
+      wl_resource_destroy(frame_callback_.ExtractAsDangling());
       frame_callback_ = nullptr;
     }
     DCHECK(!frame_callback_);
@@ -119,19 +120,22 @@ class MockSurface : public ServerObject {
   int32_t buffer_scale() const { return buffer_scale_; }
   void set_buffer_scale(int32_t buffer_scale) { buffer_scale_ = buffer_scale; }
 
+  base::WeakPtr<MockSurface> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
-  raw_ptr<MockXdgSurface, AcrossTasksDanglingUntriaged> xdg_surface_ = nullptr;
-  raw_ptr<TestSubSurface, AcrossTasksDanglingUntriaged> sub_surface_ = nullptr;
-  raw_ptr<TestViewport, AcrossTasksDanglingUntriaged> viewport_ = nullptr;
+  raw_ptr<MockXdgSurface> xdg_surface_ = nullptr;
+  raw_ptr<TestSubSurface> sub_surface_ = nullptr;
+  raw_ptr<TestViewport> viewport_ = nullptr;
   raw_ptr<TestFractionalScale> fractional_scale_ = nullptr;
-  raw_ptr<TestAlphaBlending, AcrossTasksDanglingUntriaged> blending_ = nullptr;
-  raw_ptr<TestOverlayPrioritizedSurface, AcrossTasksDanglingUntriaged>
-      prioritized_surface_ = nullptr;
+  raw_ptr<TestAlphaBlending> blending_ = nullptr;
+  raw_ptr<TestOverlayPrioritizedSurface> prioritized_surface_ = nullptr;
   raw_ptr<MockLinuxDrmSyncobjSurface> linux_drm_syncobj_surface_ = nullptr;
   gfx::Rect opaque_region_ = {-1, -1, 0, 0};
   gfx::Rect input_region_ = {-1, -1, 0, 0};
 
-  raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> frame_callback_ = nullptr;
+  raw_ptr<wl_resource> frame_callback_ = nullptr;
   bool allow_resetting_frame_callback_ = false;
 
   raw_ptr<wl_resource, AcrossTasksDanglingUntriaged> attached_buffer_ = nullptr;
@@ -139,6 +143,7 @@ class MockSurface : public ServerObject {
       nullptr;
 
   int32_t buffer_scale_ = -1;
+  base::WeakPtrFactory<MockSurface> weak_ptr_factory_{this};
 };
 
 }  // namespace wl

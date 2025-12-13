@@ -9,6 +9,7 @@
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -22,8 +23,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
 
@@ -103,24 +103,12 @@ bool IsGoogleDefaultSearchEngine(ProfileIOS* profile) {
   ProfileIOS* profile = _profileState.profile;
   CHECK(profile);
 
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(profile);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
   const bool isUserSignedIn =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 
-  if (isUserSignedIn) {
-    if (IsWebChannelsEnabled() && IsDiscoverFeedServiceCreatedEarly()) {
-      // Creates the DiscoverFeedService early if the user is signed-in as it is
-      // required to follow web channels (and thus is required to interact with
-      // any tabs, not just the NTP).
-      DiscoverFeedServiceFactory::GetForProfile(profile);
-    }
-  }
-
-  // Only start doing the content notification user eligibility check if
-  // the content notification experiment is enabled.
-  if (IsContentNotificationExperimentEnabled() &&
-      IsContentNotificationProvisionalEnabled(
+  if (IsContentNotificationProvisionalEnabled(
           isUserSignedIn, IsGoogleDefaultSearchEngine(profile),
           profile->GetPrefs())) {
     // This method does not show an UI prompt to the user as provisional

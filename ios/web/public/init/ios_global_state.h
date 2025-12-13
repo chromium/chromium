@@ -5,7 +5,9 @@
 #ifndef IOS_WEB_PUBLIC_INIT_IOS_GLOBAL_STATE_H_
 #define IOS_WEB_PUBLIC_INIT_IOS_GLOBAL_STATE_H_
 
-#import "base/memory/raw_ptr.h"
+#include <string>
+#include <vector>
+
 #include "base/task/thread_pool/thread_pool_instance.h"
 
 namespace base {
@@ -16,12 +18,10 @@ namespace ios_global_state {
 
 // Contains parameters passed to `Create`.
 struct CreateParams {
-  CreateParams() : install_at_exit_manager(false), argc(0), argv(nullptr) {}
-
-  bool install_at_exit_manager;
-
-  int argc;
-  raw_ptr<const char*> argv;
+  CreateParams();
+  ~CreateParams();
+  bool install_at_exit_manager = false;
+  std::vector<std::string> args;
 };
 
 // Creates global state for iOS. This should be called as early as possible in

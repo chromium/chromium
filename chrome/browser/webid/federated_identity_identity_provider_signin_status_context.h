@@ -12,7 +12,6 @@
 #include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/permissions/object_permission_context_base.h"
-#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {

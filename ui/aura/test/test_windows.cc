@@ -11,56 +11,20 @@
 #include "base/strings/string_number_conversions.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
+#include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace aura {
-namespace test {
+namespace aura::test {
 
-Window* CreateTestWindowWithId(int id, Window* parent) {
-  return CreateTestWindowWithDelegate(NULL, id, gfx::Rect(), parent);
-}
-
-Window* CreateTestWindowWithBounds(const gfx::Rect& bounds, Window* parent) {
-  return CreateTestWindowWithDelegate(NULL, 0, bounds, parent);
-}
-
-Window* CreateTestWindow(SkColor color,
-                         int id,
-                         const gfx::Rect& bounds,
-                         Window* parent) {
-  return CreateTestWindowWithDelegate(new ColorTestWindowDelegate(color), id,
-                                      bounds, parent);
-}
-
-Window* CreateTestWindowWithDelegate(WindowDelegate* delegate,
-                                     int id,
-                                     const gfx::Rect& bounds,
-                                     Window* parent) {
-  return CreateTestWindowWithDelegateAndType(
-      delegate, client::WINDOW_TYPE_NORMAL, id, bounds, parent, true);
-}
-
-Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
-                                            client::WindowType type,
-                                            int id,
-                                            const gfx::Rect& bounds,
-                                            Window* parent,
-                                            bool show_on_creation) {
-  Window* window = new Window(delegate, type);
-  window->SetId(id);
-  window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(client::kResizeBehaviorKey,
-                      client::kResizeBehaviorCanResize |
-                          client::kResizeBehaviorCanMaximize |
-                          client::kResizeBehaviorCanFullscreen);
-  window->SetBounds(bounds);
-  if (show_on_creation)
-    window->Show();
-  if (parent)
-    parent->AddChild(window);
-  return window;
+std::unique_ptr<Window> CreateTestWindow(WindowBuilderParams params,
+                                         std::optional<SkColor> color) {
+  TestWindowBuilder builder(params);
+  if (color) {
+    builder.SetDelegate(new ColorTestWindowDelegate(*color));
+  }
+  return builder.AllowAllWindowStates().Build();
 }
 
 template <typename T>
@@ -92,5 +56,4 @@ std::string ChildWindowIDsAsString(aura::Window* parent) {
   return result;
 }
 
-}  // namespace test
-}  // namespace aura
+}  // namespace aura::test

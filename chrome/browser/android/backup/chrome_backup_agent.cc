@@ -21,7 +21,7 @@ static_assert(13 == static_cast<int>(syncer::UserSelectableType::kLastType),
               "When adding a new selectable type, add its pref to"
               "BoolPrefBackupSerializer if the type exists on Android");
 
-void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
+static void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
     JNIEnv* env,
     PrefService* pref_service) {
   // TODO(crbug.com/332710541): This currently doesn't wait for the commit to
@@ -30,10 +30,12 @@ void JNI_ChromeBackupAgentImpl_CommitPendingPrefWrites(
   pref_service->CommitPendingWrite();
 }
 
-void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
+static void JNI_ChromeBackupAgentImpl_MigrateGlobalDataTypePrefsToAccount(
     JNIEnv* env,
     PrefService* pref_service,
     GaiaId& gaia_id) {
   syncer::SyncPrefs sync_prefs(pref_service);
   sync_prefs.MigrateGlobalDataTypePrefsToAccount(pref_service, gaia_id);
 }
+
+DEFINE_JNI(ChromeBackupAgentImpl)

@@ -57,7 +57,7 @@ export class WebCamFaceLandmarker {
     });
 
     Messenger.registerHandler(
-        OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBLE_REMAINING_RETRIES,
+        OffscreenCommandType.FACEGAZE_SW_UPDATE_BUBBLE_REMAINING_RETRIES,
         (message: {remaining: number}) => {
           const text = chrome.i18n.getMessage(
               'facegaze_connect_to_camera', [message.remaining]);
@@ -146,6 +146,14 @@ export class WebCamFaceLandmarker {
 
   stop(): void {
     Messenger.send(OffscreenCommandType.FACEGAZE_WEBCAM_STOP);
+    if (this.intervalID_ !== null) {
+      clearInterval(this.intervalID_);
+      this.intervalID_ = null;
+    }
+  }
+
+  async stopWebCamForTesting(): Promise<void> {
+    await Messenger.send(OffscreenCommandType.FACEGAZE_WEBCAM_STOP_FOR_TEST);
     if (this.intervalID_ !== null) {
       clearInterval(this.intervalID_);
       this.intervalID_ = null;

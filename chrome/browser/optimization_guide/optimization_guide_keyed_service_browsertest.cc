@@ -48,6 +48,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
@@ -104,7 +105,7 @@ class ScopedSetMetricsConsent {
 class OptimizationGuideConsumerWebContentsObserver
     : public content::WebContentsObserver {
  public:
-  OptimizationGuideConsumerWebContentsObserver(
+  explicit OptimizationGuideConsumerWebContentsObserver(
       content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
   ~OptimizationGuideConsumerWebContentsObserver() override = default;
@@ -317,7 +318,7 @@ class OptimizationGuideKeyedServiceBrowserTest
 
     const HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
-            proto::NOSCRIPT, {url_with_hints_.host()}, "simple.html");
+            proto::NOSCRIPT, {url_with_hints_.GetHost()}, "simple.html");
 
     OptimizationHintsComponentUpdateListener::GetInstance()
         ->MaybeUpdateHintsComponent(component_info);
@@ -439,8 +440,7 @@ class OptimizationGuideKeyedServiceBrowserTest
     }
 
     GURL request_url = request.GetURL();
-    std::string dest =
-        base::UnescapeBinaryURLComponent(request_url.query_piece());
+    std::string dest = base::UnescapeBinaryURLComponent(request_url.query());
 
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
@@ -497,15 +497,13 @@ class DogfoodOptimizationGuideKeyedServiceBrowserTest
   }
 };
 
-class OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest
+class OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest
     : public OptimizationGuideKeyedServiceBrowserTest {
  public:
-  OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {
-            {features::kOptimizationGuideOnDeviceModel, {}},
-        },
-        {features::kLogOnDeviceMetricsOnStartup});
+  OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest() {
+    feature_list_.InitWithFeatures({},
+                                   {features::kOptimizationGuideOnDeviceModel,
+                                    features::kLogOnDeviceMetricsOnStartup});
   }
 
  private:
@@ -699,9 +697,14 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
                                       false, 1);
   EXPECT_EQ(OptimizationGuideDecision::kFalse,
             last_can_apply_optimization_decision());
-  histogram_tester.ExpectUniqueSample(
+  // There may be multiple kNoHintAvailable samples but there should not be any
+  // samples in other buckets.
+  auto no_hint_available_count = histogram_tester.GetBucketCount(
       "OptimizationGuide.ApplyDecision.NoScript",
-      static_cast<int>(OptimizationTypeDecision::kNoHintAvailable), 1);
+      OptimizationTypeDecision::kNoHintAvailable);
+  EXPECT_GT(no_hint_available_count, 0);
+  histogram_tester.ExpectTotalCount("OptimizationGuide.ApplyDecision.NoScript",
+                                    no_hint_available_count);
 }
 
 IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
@@ -1080,9 +1083,44 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
+    OptimizationGuideKeyedServiceOnDeviceModelDisabledBrowserTest,
+    PerformanceClassNotComputedWhenDisabled) {
+  constexpr auto kKey = optimization_guide::mojom::OnDeviceFeature::kCompose;
+  auto* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
+
+  base::RunLoop loop;
+  // The call should exit early because the service is not enabled.
+  service->GetOnDeviceModelEligibilityAsync(
+      kKey,
+      /*capabilities=*/{},
+      base::IgnoreArgs<optimization_guide::OnDeviceModelEligibilityReason>(
+          loop.QuitClosure()));
+  loop.Run();
+  histogram_tester()->ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 0);
+}
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+class OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kOptimizationGuideOnDeviceModel, {}},
+        },
+        {features::kLogOnDeviceMetricsOnStartup});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
     OptimizationGuideKeyedServiceStartupLogDisabledBrowserTest,
     PerformanceClassOnlyComputedOnce) {
-  constexpr auto kKey = optimization_guide::ModelBasedCapabilityKey::kCompose;
+  constexpr auto kKey = optimization_guide::mojom::OnDeviceFeature::kCompose;
   auto* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile());
 
@@ -1171,6 +1209,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass", 1);
 }
 #endif
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // CreateGuestBrowser() is not supported for Android or ChromeOS out of the box.

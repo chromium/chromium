@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
@@ -36,10 +38,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
+import java.util.function.Supplier;
+
 /**
  * Creates {@link Tab}, {@link TabModelSelector}, and {@link ChromeTabCreator}s in the context of a
  * Custom Tab activity.
  */
+@NullMarked
 public class CustomTabActivityTabFactory {
     private final Activity mActivity;
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
@@ -52,7 +57,7 @@ public class CustomTabActivityTabFactory {
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final CipherFactory mCipherFactory;
 
-    @Nullable private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
+    private @Nullable CustomTabsTabModelOrchestrator mTabModelOrchestrator;
     @ActivityType int mActivityType;
 
     public CustomTabActivityTabFactory(
@@ -96,33 +101,35 @@ public class CustomTabActivityTabFactory {
 
     /** Calls the {@link TabModelOrchestrator} to create TabModels and TabPersistentStore. */
     public void createTabModels() {
-        mTabModelOrchestrator.createTabModels(
-                mActivity,
-                mProfileProviderSupplier,
-                mTabCreatorManager,
-                mPersistencePolicy,
-                mActivityType,
-                AsyncTabParamsManagerSingleton.getInstance(),
-                mCipherFactory);
+        assumeNonNull(mTabModelOrchestrator)
+                .createTabModels(
+                        mActivity,
+                        mProfileProviderSupplier,
+                        mTabCreatorManager,
+                        mPersistencePolicy,
+                        mActivityType,
+                        AsyncTabParamsManagerSingleton.getInstance(),
+                        mCipherFactory);
     }
 
     /** Returns the previously created {@link TabModelSelector}. */
     public TabModelSelectorBase getTabModelSelector() {
-        getTabModelOrchestrator();
-        if (mTabModelOrchestrator.getTabModelSelector() == null) {
+        TabModelOrchestrator orchestrator = getTabModelOrchestrator();
+        if (orchestrator.getTabModelSelector() == null) {
             assert false;
             createTabModels();
         }
-        return mTabModelOrchestrator.getTabModelSelector();
+        return assertNonNull(orchestrator.getTabModelSelector());
     }
 
     /** Returns the previously created {@link CustomTabsTabModelOrchestrator}. */
-    public CustomTabsTabModelOrchestrator getTabModelOrchestrator() {
-        if (mTabModelOrchestrator == null) {
+    public TabModelOrchestrator getTabModelOrchestrator() {
+        TabModelOrchestrator ret = mTabModelOrchestrator;
+        if (ret == null) {
             assert false;
-            createTabModelOrchestrator();
+            ret = createTabModelOrchestrator();
         }
-        return mTabModelOrchestrator;
+        return ret;
     }
 
     /** Creates a {@link ChromeTabCreator}s for the custom tab. */
@@ -139,13 +146,15 @@ public class CustomTabActivityTabFactory {
                 incognito,
                 AsyncTabParamsManagerSingleton.getInstance(),
                 mTabModelSelectorSupplier,
-                mCompositorViewHolderSupplier);
+                mCompositorViewHolderSupplier,
+                /* multiInstanceManager= */ null);
     }
 
     /** Creates a new tab for a Custom Tab activity */
     public Tab createTab(
             WebContents webContents, TabDelegateFactory delegateFactory, Callback<Tab> action) {
         Intent intent = mIntentDataProvider.getIntent();
+        assertNonNull(mProfileProviderSupplier.get());
         Profile profile =
                 ProfileProvider.getOrCreateProfile(
                         mProfileProviderSupplier.get(), mIntentDataProvider.isOffTheRecord());

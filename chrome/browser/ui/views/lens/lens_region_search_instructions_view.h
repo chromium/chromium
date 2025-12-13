@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -21,9 +22,20 @@ class LensRegionSearchInstructionsView
                   views::BubbleDialogDelegateView)
 
  public:
+  struct LayoutParams {
+    int left_margin;
+    gfx::Insets label_button_insets;
+    int close_button_margin;
+    int vector_icon_size;
+    int label_horizontal_distance;
+    int vertical_distance;
+  };
+
   LensRegionSearchInstructionsView(views::View* anchor_view,
                                    base::OnceClosure close_callback,
-                                   base::OnceClosure escape_callback);
+                                   base::OnceClosure escape_callback,
+                                   const LayoutParams& layout_params,
+                                   int text_message_id);
   LensRegionSearchInstructionsView(const LensRegionSearchInstructionsView&) =
       delete;
   LensRegionSearchInstructionsView& operator=(
@@ -46,6 +58,11 @@ class LensRegionSearchInstructionsView
   // Close button needs to be created on construction in order to not store the
   // close callback.
   std::unique_ptr<views::ImageButton> close_button_;
+
+  // Layout parameters provided by caller.
+  LayoutParams layout_params_;
+
+  const int text_message_id_;
 };
 }  // namespace lens
 #endif  // CHROME_BROWSER_UI_VIEWS_LENS_LENS_REGION_SEARCH_INSTRUCTIONS_VIEW_H_

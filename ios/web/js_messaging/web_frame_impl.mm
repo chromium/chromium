@@ -11,6 +11,7 @@
 #import "base/debug/dump_without_crashing.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ios_util.h"
 #import "base/json/json_writer.h"
 #import "base/logging.h"
@@ -27,6 +28,7 @@
 #import "ios/web/public/js_messaging/web_view_js_utils.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
@@ -39,8 +41,7 @@ NSString* CreateFunctionCallWithParameters(
   NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
 
   for (const auto& value : parameters) {
-    std::string string_value;
-    base::JSONWriter::Write(value, &string_value);
+    std::string string_value = base::WriteJson(value).value_or("");
     [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
   }
 
@@ -119,6 +120,10 @@ bool WebFrameImpl::IsMainFrame() const {
 
 url::Origin WebFrameImpl::GetSecurityOrigin() const {
   return security_origin_;
+}
+
+GURL WebFrameImpl::GetUrl() const {
+  return net::GURLWithNSURL(frame_info_.request.URL);
 }
 
 BrowserState* WebFrameImpl::GetBrowserState() {
@@ -287,7 +292,7 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
 
   UMA_HISTOGRAM_BOOLEAN("IOS.JavaScript.ScriptExecutionFailed", true);
 
-  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) ||
+  if (!base::FeatureList::IsEnabled(features::kLogJavaScriptErrors) &&
       !base::FeatureList::IsEnabled(features::kLogCrWebJavaScriptErrors)) {
     return;
   }

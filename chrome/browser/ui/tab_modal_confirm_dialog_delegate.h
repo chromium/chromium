@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"

@@ -31,7 +31,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/declarative_net_request/dnr_test_base.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
@@ -50,6 +49,7 @@
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/load_error_reporter.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
@@ -786,6 +786,15 @@ TEST_P(SingleRulesetTest, EmptyRequestDomainsList) {
                             *rule.id);
 }
 
+// Ensure that rules with an empty "top_domains" condition fail parsing.
+TEST_P(SingleRulesetTest, EmptyTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->top_domains = std::vector<std::string>();
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_EMPTY_TOP_DOMAINS_LIST,
+                            *rule.id);
+}
+
 // Ensure that rules with a "domains" condition that contains non-ascii
 // characters fail parsing.
 TEST_P(SingleRulesetTest, NonAsciiDomainsList) {
@@ -845,6 +854,26 @@ TEST_P(SingleRulesetTest, NonAsciiExcludedRequestDomainsList) {
   AddRule(rule);
   LoadAndExpectParseFailure(
       ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "top_domains" condition that contains non-ascii
+// characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->top_domains = std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_TOP_DOMAIN, *rule.id);
+}
+
+// Ensure that rules with a "excluded_top_domains" condition that contains
+// non-ascii characters fail parsing.
+TEST_P(SingleRulesetTest, NonAsciiExcludedTopDomainsList) {
+  TestRule rule = CreateGenericRule();
+  rule.condition->excluded_top_domains =
+      std::vector<std::string>({"😎.example"});
+  AddRule(rule);
+  LoadAndExpectParseFailure(ParseResult::ERROR_NON_ASCII_EXCLUDED_TOP_DOMAIN,
+                            *rule.id);
 }
 
 TEST_P(SingleRulesetTest, EmptyResourceTypeList) {
@@ -1015,7 +1044,8 @@ TEST_P(SingleRulesetTest, InvalidJSONRules_Parsed) {
       []
     ]
   )";
-  SetRules(*base::JSONReader::Read(kRules));
+  SetRules(
+      *base::JSONReader::Read(kRules, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
 
   extension_loader()->set_ignore_manifest_warnings(true);
 

@@ -12,7 +12,9 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "pdf/flatten_pdf_result.h"
+#include "pdf/pdf_rect.h"
 #include "pdf/pdf_transform.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "printing/nup_parameters.h"
@@ -24,12 +26,12 @@
 #include "third_party/pdfium/public/fpdf_transformpage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/codec/jpeg_codec.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 using printing::ConvertUnit;
 using printing::ConvertUnitFloat;
@@ -102,48 +104,74 @@ void TransformPDFPageForPrinting(
   const int actual_page_height =
       rotated ? page_size.width() : page_size.height();
 
+  enum class TransformType {
+    kNoScaleOrCenter,
+    kScaleToFit,
+    kCenterWithoutScale
+  };
+
+  TransformType transform_type = TransformType::kNoScaleOrCenter;
   gfx::Rect gfx_printed_rect;
-  bool fitted_scaling;
   switch (scaling_option) {
     case printing::mojom::PrintScalingOption::kFitToPrintableArea:
       gfx_printed_rect = gfx::Rect(content_rect.x(), content_rect.y(),
                                    content_rect.width(), content_rect.height());
-      fitted_scaling = true;
+      transform_type = TransformType::kScaleToFit;
       break;
     case printing::mojom::PrintScalingOption::kFitToPaper:
       gfx_printed_rect = gfx::Rect(page_size.width(), page_size.height());
-      fitted_scaling = true;
+      transform_type = TransformType::kScaleToFit;
+      break;
+    case printing::mojom::PrintScalingOption::kCenterShrinkToFitPaper:
+      if (src_page_size.width() > actual_page_width ||
+          src_page_size.height() > actual_page_height) {
+        gfx_printed_rect = gfx::Rect(page_size.width(), page_size.height());
+        transform_type = TransformType::kScaleToFit;
+      } else {
+        transform_type = TransformType::kCenterWithoutScale;
+      }
       break;
     default:
-      fitted_scaling = false;
+      transform_type = TransformType::kNoScaleOrCenter;
       break;
   }
 
-  if (fitted_scaling) {
+  if (transform_type == TransformType::kScaleToFit) {
     scale_factor =
         CalculateScaleFactor(gfx_printed_rect, src_page_size, rotated);
   }
 
   // Calculate positions for the clip box.
-  PdfRectangle media_box;
-  PdfRectangle crop_box;
-  bool has_media_box =
-      !!FPDFPage_GetMediaBox(page, &media_box.left, &media_box.bottom,
-                             &media_box.right, &media_box.top);
+  PdfRect media_box;
+  PdfRect crop_box;
+  bool has_media_box = !!FPDFPage_GetMediaBox(
+      page, media_box.writable_left(), media_box.writable_bottom(),
+      media_box.writable_right(), media_box.writable_top());
   bool has_crop_box = !!FPDFPage_GetCropBox(
-      page, &crop_box.left, &crop_box.bottom, &crop_box.right, &crop_box.top);
+      page, crop_box.writable_left(), crop_box.writable_bottom(),
+      crop_box.writable_right(), crop_box.writable_top());
   CalculateMediaBoxAndCropBox(rotated, has_media_box, has_crop_box, &media_box,
                               &crop_box);
-  PdfRectangle source_clip_box = CalculateClipBoxBoundary(media_box, crop_box);
-  ScalePdfRectangle(scale_factor, &source_clip_box);
+  PdfRect clip_box = CalculateClipBoxBoundary(media_box, crop_box);
+  clip_box.Scale(scale_factor);
 
   // Calculate the translation offset values.
-  gfx::PointF offset =
-      fitted_scaling
-          ? CalculateScaledClipBoxOffset(gfx_printed_rect, source_clip_box)
-          : CalculateNonScaledClipBoxOffset(
-                src_page_rotation, actual_page_width, actual_page_height,
-                source_clip_box);
+  gfx::Vector2dF offset;
+  switch (transform_type) {
+    case TransformType::kScaleToFit:
+      offset = CalculateScaledClipBoxOffset(gfx_printed_rect, clip_box);
+      break;
+    case TransformType::kCenterWithoutScale:
+      offset = CalculateCenterClipBoxOffset(
+          src_page_rotation, actual_page_width, actual_page_height, clip_box);
+      break;
+    case TransformType::kNoScaleOrCenter:
+      offset = CalculateNonScaledClipBoxOffset(
+          src_page_rotation, actual_page_width, actual_page_height, clip_box);
+      break;
+    default:
+      NOTREACHED();
+  }
 
   // Reset the media box and crop box. When the page has crop box and media box,
   // the plugin will display the crop box contents and not the entire media box.
@@ -154,19 +182,19 @@ void TransformPDFPageForPrinting(
   FPDFPage_SetMediaBox(page, 0, 0, page_size.width(), page_size.height());
   FPDFPage_SetCropBox(page, 0, 0, page_size.width(), page_size.height());
 
-  // Transformation is not required, return. Do this check only after updating
-  // the media box and crop box. For more detailed information, please refer to
-  // the comment block right before FPDF_SetMediaBox and FPDF_GetMediaBox calls.
-  if (scale_factor == 1.0f && offset.IsOrigin())
+  // Transformation is not required, so return early. Do this check only after
+  // updating the media box and crop box. For more detailed information, please
+  // refer to the comment block right before the FPDF_SetMediaBox() and
+  // FPDF_GetMediaBox() calls.
+  if (scale_factor == 1.0f && offset.IsZero()) {
     return;
+  }
 
   // All the positions have been calculated, now manipulate the PDF.
   const FS_MATRIX matrix = {scale_factor, 0.0f,       0.0f,
                             scale_factor, offset.x(), offset.y()};
-  const FS_RECTF cliprect = {
-      source_clip_box.left + offset.x(), source_clip_box.top + offset.y(),
-      source_clip_box.right + offset.x(), source_clip_box.bottom + offset.y()};
-  FPDFPage_TransFormWithClip(page, &matrix, &cliprect);
+  clip_box.Offset(offset.x(), offset.y());
+  FPDFPage_TransFormWithClip(page, &matrix, &FsRectFFromPdfRect(clip_box));
   FPDFPage_TransformAnnots(page, scale_factor, 0, 0, scale_factor, offset.x(),
                            offset.y());
 }
@@ -421,7 +449,7 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
 
   FPDF_RenderPageBitmap(bitmap.get(), page_to_print, 0, 0, bitmap_size.width(),
                         bitmap_size.height(),
-                        ToPDFiumRotation(PageOrientation::kOriginal),
+                        GetClockwiseRotationSteps(PageOrientation::kOriginal),
                         FPDF_PRINTING);
 
   float ratio_x = ConvertUnitFloat(bitmap_size.width(), dpi, kPointsPerInch);

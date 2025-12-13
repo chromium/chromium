@@ -20,7 +20,7 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -101,3 +101,5 @@ static void JNI_ContentViewStaticsImpl_SetWebKitSharedTimersSuspended(
     g_suspended_processes_watcher.Pointer()->ResumeWebkitSharedTimers();
   }
 }
+
+DEFINE_JNI(ContentViewStaticsImpl)

@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/text_constants.h"
@@ -19,7 +20,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_targeter_delegate.h"
 #include "ui/views/widget/widget.h"
 
@@ -88,7 +89,7 @@ bool ShouldShowLandscape(const views::Widget* widget) {
 
   // Get the orientation for |widget|.
   const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           widget->GetNativeWindow());
 
   // The display bounds are updated after a rotation. This means that if the
@@ -145,24 +146,12 @@ std::unique_ptr<views::Label> CreateUnthemedBubbleLabel(
 std::unique_ptr<views::Label> CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width,
-    SkColor color,
+    ui::ColorVariant color,
     const gfx::FontList& font_list,
     int line_height) {
   auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
                                          font_list, line_height);
   label->SetEnabledColor(color);
-  return label;
-}
-
-std::unique_ptr<views::Label> CreateThemedBubbleLabel(
-    const std::u16string& message,
-    views::View* view_defining_max_width,
-    ui::ColorId enabled_color_type,
-    const gfx::FontList& font_list,
-    int line_height) {
-  auto label = CreateUnthemedBubbleLabel(message, view_defining_max_width,
-                                         font_list, line_height);
-  label->SetEnabledColor(enabled_color_type);
   return label;
 }
 

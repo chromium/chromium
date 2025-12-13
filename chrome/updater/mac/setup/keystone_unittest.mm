@@ -19,6 +19,7 @@
 #include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
@@ -56,8 +57,10 @@ TEST_F(KeystoneTest, CreateEmptyPlistFile) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   // Verify plist file is created if not present.
-  const base::FilePath plist_path = temp_dir.GetPath().Append("empty.plist");
-  EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+  const base::FilePath plist_path = temp_dir.GetPath().Append("subdir").Append(
+      LEGACY_GOOGLE_UPDATE_APPID ".plist");
+  EXPECT_TRUE(CreateLegacyPlistFileForTesting(
+      UpdaterScope::kUser, temp_dir.GetPath(), "subdir", ".plist"));
   EXPECT_TRUE(base::PathExists(plist_path));
   int mode = 0;
   EXPECT_TRUE(base::GetPosixFilePermissions(plist_path, &mode));
@@ -67,7 +70,8 @@ TEST_F(KeystoneTest, CreateEmptyPlistFile) {
     // Verify the plist is not re-created when contents didn't change.
     base::Time previous_mtime = base::Time::Now() - base::Days(1);
     EXPECT_TRUE(base::TouchFile(plist_path, previous_mtime, previous_mtime));
-    EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+    EXPECT_TRUE(CreateLegacyPlistFileForTesting(
+        UpdaterScope::kUser, temp_dir.GetPath(), "subdir", ".plist"));
     base::File::Info info;
     EXPECT_TRUE(base::GetFileInfo(plist_path, &info));
     EXPECT_EQ(info.last_modified, previous_mtime);
@@ -79,7 +83,8 @@ TEST_F(KeystoneTest, CreateEmptyPlistFile) {
     EXPECT_TRUE([@{@"foo" : @2} writeToURL:url error:nil]);
     base::Time previous_mtime = base::Time::Now() - base::Days(1);
     EXPECT_TRUE(base::TouchFile(plist_path, previous_mtime, previous_mtime));
-    EXPECT_TRUE(CreateEmptyPlistFile(plist_path));
+    EXPECT_TRUE(CreateLegacyPlistFileForTesting(
+        UpdaterScope::kUser, temp_dir.GetPath(), "subdir", ".plist"));
     base::File::Info info;
     EXPECT_TRUE(base::GetFileInfo(plist_path, &info));
     EXPECT_NE(info.last_modified, previous_mtime);
@@ -104,7 +109,7 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
   EXPECT_TRUE(registration_requests[0].brand_code.empty());
   EXPECT_TRUE(registration_requests[0].brand_path.empty());
   EXPECT_EQ(registration_requests[0].ap, "canary");
-  EXPECT_EQ(registration_requests[0].version, base::Version("1.2.1"));
+  EXPECT_EQ(registration_requests[0].version, "1.2.1");
   EXPECT_EQ(registration_requests[0].existence_checker_path,
             base::FilePath("/"));
   EXPECT_FALSE(registration_requests[0].dla);   // Value is too big.
@@ -114,8 +119,7 @@ TEST_F(KeystoneTest, MigrateKeystoneApps) {
   EXPECT_TRUE(registration_requests[1].brand_code.empty());
   EXPECT_EQ(registration_requests[1].brand_path, base::FilePath("/"));
   EXPECT_EQ(registration_requests[1].ap, "GOOG");
-  EXPECT_EQ(registration_requests[1].version,
-            base::Version("101.100.1000.9999"));
+  EXPECT_EQ(registration_requests[1].version, "101.100.1000.9999");
   EXPECT_EQ(registration_requests[1].existence_checker_path,
             base::FilePath("/"));
   EXPECT_EQ(registration_requests[1].cohort, "TestCohort");

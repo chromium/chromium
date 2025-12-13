@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPE_H_
 
 #include <stdint.h>
+
 #include <limits>
 #include <string>
 #include <utility>
@@ -15,7 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"

@@ -86,13 +86,12 @@ void Av1DecoderDelegate::Run() {
   // superframes which would require specifying a data offset and updated
   // data size. Will need to find/compute the data offset/size from data
   // passed by Chrome to support these bitstreams.
-  CHECK_EQ(
-      dav1d_data_wrap(input_buffer.get(),
-                      static_cast<uint8_t*>(encoded_data_buffer_->GetData()),
-                      encoded_data_buffer_->GetDataSize(),
-                      /*free_callback=*/&NullFreeCallback,
-                      /*cookie=*/nullptr),
-      0);
+  CHECK_EQ(dav1d_data_wrap(input_buffer.get(),
+                           encoded_data_buffer_->GetData().data(),
+                           encoded_data_buffer_->GetData().size(),
+                           /*free_callback=*/&NullFreeCallback,
+                           /*cookie=*/nullptr),
+           0);
 
   CHECK_EQ(dav1d_send_data(dav1d_context_.get(), input_buffer.get()), 0);
 

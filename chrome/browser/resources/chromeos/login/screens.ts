@@ -11,7 +11,6 @@ import './screens/common/add_child.js';
 import './screens/common/ai_intro.js';
 import './screens/common/app_downloading.js';
 import './screens/common/app_launch_splash.js';
-import './screens/common/assistant_optin.js';
 import './screens/common/categories_selection.js';
 import './screens/common/choobe.js';
 import './screens/common/consolidated_consent.js';
@@ -78,6 +77,7 @@ import './screens/oobe/demo_preferences.js';
 import './screens/oobe/demo_setup.js';
 import './screens/oobe/enable_debugging.js';
 import './screens/oobe/enterprise_enrollment.js';
+import './screens/oobe/fjord_station_setup.js';
 import './screens/oobe/fjord_touch_controller.js';
 import './screens/oobe/hid_detection.js';
 import './screens/oobe/oobe_network.js';
@@ -99,11 +99,6 @@ export const commonScreensList: OobeTypes.ScreensList = [
   },
   {tag: 'app-downloading-element', id: 'app-downloading'},
   {tag: 'app-launch-splash-element', id: 'app-launch-splash'},
-  {
-    tag: 'assistant-optin-element',
-    id: 'assistant-optin-flow',
-    condition: 'isOobeAssistantEnabled',
-  },
   {
     tag: 'apply-online-password-element',
     id: 'apply-online-password',
@@ -258,6 +253,11 @@ export const oobeScreensList: OobeTypes.ScreensList = [
   {tag: 'demo-setup-element', id: 'demo-setup'},
   {tag: 'enable-debugging-element', id: 'debugging'},
   {tag: 'enterprise-enrollment-element', id: 'enterprise-enrollment'},
+  {
+    tag: 'fjord-station-setup-element',
+    id: 'fjord-station-setup',
+    condition: 'isFjordOobeEnabled',
+  },
   {
     tag: 'fjord-touch-controller-element',
     id: 'fjord-touch-controller',

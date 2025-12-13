@@ -26,6 +26,7 @@
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/metadata/view_factory.h"
@@ -47,7 +48,6 @@ class ChromeLabsBubbleView;
 class ColorPickerViewTest;
 class ContentSettingBubbleContents;
 class CriticalNotificationBubbleView;
-class CrostiniAnsibleSoftwareConfigView;
 class CrostiniExpiredContainerWarningView;
 class CrostiniForceCloseView;
 class CrostiniPackageInstallFailureView;
@@ -56,8 +56,6 @@ class CrostiniUninstallerView;
 class CrostiniUpdateFilesystemView;
 class DiceWebSigninInterceptionBubbleView;
 class ExtensionInstallDialogView;
-class ExtensionInstallFrictionDialogView;
-class ExtensionInstalledBubbleView;
 class ExtensionPopup;
 class ExtensionsMenuView;
 class FlyingIndicator;
@@ -66,12 +64,12 @@ class HomePageUndoBubble;
 class MediaDialogView;
 class HatsNextWebDialog;
 class IncognitoClearBrowsingDataDialog;
+class IOSPromoBubbleView;
 class LocationBarBubbleDelegateView;
 class NetworkProfileBubbleView;
 class PageInfoBubbleViewBase;
 class PermissionPromptBaseView;
 class PluginVmInstallerView;
-class ProfileCustomizationBubbleView;
 class ProfileMenuViewBase;
 class RemoveSuggestionBubbleDialogDelegateView;
 class StoragePressureBubbleView;
@@ -79,7 +77,6 @@ class TabGroupEditorBubbleView;
 class TabHoverCardBubbleView;
 class TestBubbleView;
 class ToolbarActionHoverCardBubbleView;
-class ToolbarActionsBarBubbleViews;
 class ScreenshotSurfaceTestDialog;
 class WebBubbleView;
 class WebUIBubbleDialogView;
@@ -94,7 +91,6 @@ namespace arc {
 class ArcSplashScreenDialogView;
 class BaseDialogDelegateView;
 class ResizeConfirmationDialogView;
-class RoundedCornerBubbleDialogDelegateView;
 
 namespace input_overlay {
 class DeleteEditShortcut;
@@ -173,6 +169,10 @@ namespace toasts {
 class ToastView;
 }
 
+namespace ui {
+class TrackedElement;
+}  // namespace ui
+
 namespace ui::ime {
 class AnnouncementView;
 class CandidateWindowView;
@@ -222,10 +222,27 @@ FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, ActivateSurface);
 FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
 }  // namespace test
 
+// A bubble can be anchored to a view, a tracked element, or nothing.
+// BubbleAnchor is a variant type that can hold any of these.
+//
+// A tracked element is useful when the element could be either a View or a HTML
+// element in a WebUI. The element can be retrieved using its ElementIdentifier,
+// example:
+//
+//   #include "ui/base/interaction/element_tracker.h"
+//   ui::TrackedElement* element = ui::ElementTracker::GetElementTracker()
+//       ->GetElementInAnyContext(kElementId);
+//   auto bubble_delegate = std::make_unique<BubbleDialogDelegate>(
+//       element, BubbleBorder::Arrow::TOP_LEFT);
+//   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+//   ...
+//
+using BubbleAnchor = std::variant<View*, ui::TrackedElement*, std::nullptr_t>;
+
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:
   BubbleDialogDelegate(
-      View* anchor_view,
+      BubbleAnchor anchor,
       BubbleBorder::Arrow arrow,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
@@ -235,8 +252,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // DialogDelegate:
   BubbleDialogDelegate* AsBubbleDialogDelegate() override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override;
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override;
   ClientView* CreateClientView(Widget* widget) override;
   ax::mojom::Role GetAccessibleWindowRole() final;
 
@@ -284,6 +300,19 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetAnchorRect(const gfx::Rect& rect);
 
   //////////////////////////////////////////////////////////////////////////////
+  // The generic anchor:
+  //
+  // Use this when you want to anchor the bubble to a DOM element in WebUI,
+  // represented by a TrackedElementWebUI.
+  //
+  // The BubbleAnchor is a generic type that can be constructed from a
+  // views::View* or a ui::TrackedElement*. This is designed to be transparently
+  // constructed from a views::View*, so that code that previously uses an
+  // anchor view can easily migrate to accept a WebUI anchor.
+  void SetAnchor(BubbleAnchor anchor);
+  BubbleAnchor GetAnchor() const;
+
+  //////////////////////////////////////////////////////////////////////////////
   // The anchor widget:
   //
   // The bubble will close when the anchor widget closes. Also, when the anchor
@@ -292,7 +321,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // bubble is active, and will optionally resize itself to fit within the
   // anchor widget if the anchor widget's size changes.
   //
-  // The anchor widget can be explicitly set, or is implied by the anchor view.
+  // The anchor widget can be explicitly set, or is implied by the anchor view
+  // or by the generic anchor.
   void SetAnchorWidget(views::Widget* anchor_widget);
   Widget* anchor_widget() { return anchor_widget_; }
   const Widget* anchor_widget() const { return anchor_widget_; }
@@ -456,13 +486,9 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   ui::ColorVariant background_color() const { return color_; }
   void SetBackgroundColor(ui::ColorVariant color);
 
-  void set_title_margins(const gfx::Insets& title_margins) {
-    title_margins_ = title_margins;
-  }
-
-  gfx::Insets footnote_margins() const { return footnote_margins_; }
-  void set_footnote_margins(const gfx::Insets& footnote_margins) {
-    footnote_margins_ = footnote_margins;
+  // TODO(crbug.com/431219296): Deprecate after API migration.
+  gfx::Insets footnote_margins() const {
+    return frame_margins().footnote.value_or(gfx::Insets());
   }
 
   // Sets the content margins to a default picked for smaller bubbles.
@@ -481,12 +507,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
                                         Widget* widget) const {}
 
   // Get the maximum available screen space to place a bubble anchored to
-  // |anchor_view| at |arrow|. If offscreen adjustment is on, this would return
+  // |anchor| at |arrow|. If offscreen adjustment is on, this would return
   // the max space corresponding to the possible arrow positions of the bubble.
   // NOTE: This function should not be called in ozone platforms where global
   // screen coordinates are not available.
   static gfx::Size GetMaxAvailableScreenSpaceToPlaceBubble(
-      View* anchor_view,
+      BubbleAnchor anchor,
       BubbleBorder::Arrow arrow,
       bool adjust_if_offscreen,
       BubbleFrameView::PreferredArrowAdjustment arrow_adjustment);
@@ -505,6 +531,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // TODO(crbug.com/41493925) Not recommended; Use autosize in the constructor
   // instead.
   void SizeToContents();
+
+  // Override this method if you want to position the bubble regardless of its
+  // anchor, while retaining the other anchor view logic.
+  virtual gfx::Rect GetBubbleBounds();
 
  protected:
   // A helper class for logging UMA metrics related to bubbles.
@@ -546,10 +576,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
         allowed_class_names_for_testing_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
-
-  // Override this method if you want to position the bubble regardless of its
-  // anchor, while retaining the other anchor view logic.
-  virtual gfx::Rect GetBubbleBounds();
 
   // Override this to perform initialization after the Widget is created but
   // before it is shown.
@@ -607,7 +633,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void OnBubbleWidgetClosing();
   void OnBubbleWidgetVisibilityChanged(bool visible);
   void OnBubbleWidgetActivationChanged(bool active);
-  void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
   void UpdateFrameColor();
@@ -624,12 +649,11 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   gfx::Rect GetDesiredBubbleBounds();
 
-  gfx::Insets title_margins_;
-  gfx::Insets footnote_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
   BubbleBorder::Shadow shadow_;
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
+  raw_ptr<ui::TrackedElement> anchor_tracked_element_ = nullptr;
   std::unique_ptr<AnchorViewObserver> anchor_view_observer_;
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
@@ -660,9 +684,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   // By default, all BubbleDialogDelegates have parent windows.
   bool has_parent_ = true;
-
-  // Pointer to this bubble's ClientView.
-  raw_ptr<ClientView> client_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
   // Special handler for close_on_deactivate() on Mac. Window (de)activation is
@@ -772,7 +793,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::ColorPickerViewTest;
   friend class ::ContentSettingBubbleContents;
   friend class ::CriticalNotificationBubbleView;
-  friend class ::CrostiniAnsibleSoftwareConfigView;
   friend class ::CrostiniExpiredContainerWarningView;
   friend class ::CrostiniForceCloseView;
   friend class ::CrostiniPackageInstallFailureView;
@@ -781,13 +801,12 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::CrostiniUpdateFilesystemView;
   friend class ::DiceWebSigninInterceptionBubbleView;
   friend class ::ExtensionInstallDialogView;
-  friend class ::ExtensionInstallFrictionDialogView;
-  friend class ::ExtensionInstalledBubbleView;
   friend class ::ExtensionPopup;
   friend class ::ExtensionsMenuView;
   friend class ::FlyingIndicator;
   friend class ::GlobalErrorBubbleView;
   friend class ::HomePageUndoBubble;
+  friend class ::IOSPromoBubbleView;
   friend class ::MediaDialogView;
   friend class ::HatsNextWebDialog;
   friend class ::IncognitoClearBrowsingDataDialog;
@@ -796,7 +815,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::PageInfoBubbleViewBase;
   friend class ::PermissionPromptBaseView;
   friend class ::PluginVmInstallerView;
-  friend class ::ProfileCustomizationBubbleView;
   friend class ::ProfileMenuViewBase;
   friend class ::RemoveSuggestionBubbleDialogDelegateView;
   friend class ::StoragePressureBubbleView;
@@ -804,7 +822,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::TabHoverCardBubbleView;
   friend class ::TestBubbleView;
   friend class ::ToolbarActionHoverCardBubbleView;
-  friend class ::ToolbarActionsBarBubbleViews;
   friend class ::ScreenshotSurfaceTestDialog;
   friend class ::WebBubbleView;
   friend class ::WebUIBubbleDialogView;
@@ -814,7 +831,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::arc::ArcSplashScreenDialogView;
   friend class ::arc::BaseDialogDelegateView;
   friend class ::arc::ResizeConfirmationDialogView;
-  friend class ::arc::RoundedCornerBubbleDialogDelegateView;
   friend class ::arc::input_overlay::DeleteEditShortcut;
   friend class ::arc::input_overlay::RichNudge;
   friend class ::ash::AnchoredNudge;
@@ -897,7 +913,7 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   // argument. Unless on Mac when the bubble needs to use Views base shadow,
   // override it with suitable bubble border type.
   explicit BubbleDialogDelegateView(
-      View* anchor_view = nullptr,
+      BubbleAnchor anchor = nullptr,
       BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_LEFT,
       BubbleBorder::Shadow shadow = BubbleBorder::DIALOG_SHADOW,
       bool autosize = false);
@@ -919,7 +935,7 @@ VIEW_BUILDER_PROPERTY(ui::ImageModel, Icon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, AppIcon)
 VIEW_BUILDER_PROPERTY(ui::ImageModel, MainImage)
 VIEW_BUILDER_PROPERTY(ui::mojom::ModalType, ModalType)
-VIEW_BUILDER_PROPERTY(bool, OwnedByWidget)
+VIEW_BUILDER_PROPERTY(WidgetDelegate::OwnedByWidgetPassKey, OwnedByWidget)
 VIEW_BUILDER_PROPERTY(bool, ShowCloseButton)
 VIEW_BUILDER_PROPERTY(bool, ShowIcon)
 VIEW_BUILDER_PROPERTY(bool, ShowTitle)
@@ -935,6 +951,7 @@ VIEW_BUILDER_PROPERTY(int, DefaultButton)
 VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
 VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
+VIEW_BUILDER_METHOD(set_frame_margins, const DialogDelegate::FrameMargins&)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
 VIEW_BUILDER_METHOD(set_draggable, bool)

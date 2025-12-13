@@ -95,15 +95,15 @@ def main():
 
   # Matches the error start line: file:line:col:{range}: error: ...unsafe...
   error_start_re = re.compile(
-      r"^../../(.*?):(\d+):(\d+):\{(\d+):(\d+)-(\d+):(\d+)\}: "
-      r"(warning|error): .*unsafe.*")
+      rb"^../../(.*?):(\d+):(\d+):\{(\d+):(\d+)-(\d+):(\d+)\}: "
+      rb"(warning|error): .*unsafe.*")
 
   # Read compiler output line by line from standard input
-  for line in sys.stdin:
+  for line in sys.stdin.buffer.read().splitlines():
     match = error_start_re.match(line)
     if match:
       # Canonicalize the file path to handle relative paths consistently
-      abs_file_path = os.path.abspath(match.group(1))
+      abs_file_path = os.path.abspath(match.group(1).decode('ascii'))
 
       # Convert to zero-based indices
       source_range = (int(match.group(4)) - 1, int(match.group(5)) - 1,

@@ -42,7 +42,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
                                                const apps::AppLaunchParams&)>;
 
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
-
+  bool ShouldForceReinstall() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
   BrowserDelegate* GetWindowForLaunch(Profile* profile,
@@ -73,6 +73,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool UseSystemThemeColor() const override;
   bool ShouldAnimateThemeChanges() const override;
+  void SetShouldForceReinstall(bool);
   void SetAppIdsToUninstallAndReplace(const std::vector<webapps::AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
   void SetShouldReuseExistingWindow(bool);
@@ -102,6 +103,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   web_app::WebAppInstallInfoFactory info_factory_;
   std::vector<webapps::AppId> uninstall_and_replace_;
   gfx::Size minimum_window_size_;
+  bool should_force_reinstall_ = false;
   bool single_window_ = true;
   bool show_new_window_menu_option_ = false;
   bool include_launch_directory_ = false;

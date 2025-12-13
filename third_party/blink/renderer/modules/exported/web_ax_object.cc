@@ -90,27 +90,29 @@ mojom::blink::ScrollAlignment::Behavior ToBlinkScrollAlignmentBehavior(
 // A utility class which uses the lifetime of this object to signify when
 // AXObjCache or AXObjectCacheImpl handles programmatic actions.
 class ScopedActionAnnotator {
+  STACK_ALLOCATED();
+
  public:
-  ScopedActionAnnotator(AXObject* obj,
+  ScopedActionAnnotator(AXObject& obj,
                         ax::mojom::blink::Action event_from_action)
-      : cache_(&obj->AXObjectCache()) {
+      : cache_(obj.AXObjectCache()) {
     std::pair<ax::mojom::blink::EventFrom, ax::mojom::blink::Action>
-        event_from_data = cache_->active_event_from_data();
+        event_from_data = cache_.active_event_from_data();
     DCHECK_EQ(event_from_data.first, ax::mojom::blink::EventFrom::kNone)
         << "Multiple ScopedActionAnnotator instances cannot be nested.";
     DCHECK_EQ(event_from_data.second, ax::mojom::blink::Action::kNone)
         << "event_from_action must not be set before construction.";
-    cache_->set_active_event_from_data(ax::mojom::blink::EventFrom::kAction,
-                                       event_from_action);
+    cache_.set_active_event_from_data(ax::mojom::blink::EventFrom::kAction,
+                                      event_from_action);
   }
 
   ~ScopedActionAnnotator() {
-    cache_->set_active_event_from_data(ax::mojom::blink::EventFrom::kNone,
-                                       ax::mojom::blink::Action::kNone);
+    cache_.set_active_event_from_data(ax::mojom::blink::EventFrom::kNone,
+                                      ax::mojom::blink::Action::kNone);
   }
 
  private:
-  Persistent<AXObjectCacheImpl> cache_;
+  AXObjectCacheImpl& cache_;
 };
 
 #if DCHECK_IS_ON()
@@ -416,7 +418,7 @@ WebAXObject WebAXObject::HitTest(const gfx::Point& point) const {
 
   private_->GetDocument()->View()->CheckDoesNotNeedLayout();
 
-  ScopedActionAnnotator annotater(private_.Get(),
+  ScopedActionAnnotator annotater(*private_,
                                   ax::mojom::blink::Action::kHitTest);
   gfx::Point contents_point =
       private_->DocumentFrameView()->SoonToBeRemovedUnscaledViewportToContents(
@@ -460,7 +462,7 @@ bool WebAXObject::PerformAction(const ui::AXActionData& action_data) const {
   if (IsDetached())
     return false;  // Updating lifecycle could detach object.
 
-  ScopedActionAnnotator annotater(private_.Get(), action_data.action);
+  ScopedActionAnnotator annotater(*private_, action_data.action);
   return private_->PerformAction(action_data);
 }
 
@@ -574,7 +576,7 @@ bool WebAXObject::SetSelection(const WebAXObject& anchor_object,
       return true;
     }
   }
-  ScopedActionAnnotator annotater(private_.Get(),
+  ScopedActionAnnotator annotater(*private_,
                                   ax::mojom::blink::Action::kSetSelection);
   AXPosition ax_anchor, ax_focus;
   if (static_cast<const AXObject*>(anchor_object)->IsTextObject() ||
@@ -947,8 +949,10 @@ gfx::Point WebAXObject::MaximumScrollOffset() const {
 void WebAXObject::SetScrollOffset(const gfx::Point& offset) const {
   if (IsDetached())
     return;
-
-  private_->SetScrollOffset(offset);
+  // We can only reach here from `BlinkAXActionTarget::SetScrollOffset`, which
+  // is only used in browser tests, so we will use
+  // `ScrollSourceType::kAbsoluteScroll`.
+  private_->SetScrollOffset(offset, cc::ScrollSourceType::kAbsoluteScroll);
 }
 
 void WebAXObject::GetRelativeBounds(WebAXObject& offset_container,
@@ -975,7 +979,7 @@ bool WebAXObject::ScrollToMakeVisible() const {
     return false;
 
   ScopedActionAnnotator annotater(
-      private_.Get(), ax::mojom::blink::Action::kScrollToMakeVisible);
+      *private_, ax::mojom::blink::Action::kScrollToMakeVisible);
   ui::AXActionData action_data;
   action_data.action = ax::mojom::blink::Action::kScrollToMakeVisible;
   return private_->PerformAction(action_data);
@@ -990,7 +994,7 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
     return false;
 
   ScopedActionAnnotator annotater(
-      private_.Get(), ax::mojom::blink::Action::kScrollToMakeVisible);
+      *private_, ax::mojom::blink::Action::kScrollToMakeVisible);
   auto horizontal_behavior =
       ToBlinkScrollAlignmentBehavior(horizontal_scroll_alignment);
   auto vertical_behavior =

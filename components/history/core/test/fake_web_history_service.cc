@@ -57,9 +57,9 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   FakeRequest& operator=(const FakeRequest&) = delete;
 
   // WebHistoryService::Request implementation.
-  bool IsPending() override;
-  int GetResponseCode() override;
-  const std::string& GetResponseBody() override;
+  bool IsPending() const override;
+  int GetResponseCode() const override;
+  const std::string& GetResponseBody() const override;
   void SetPostData(const std::string& post_data) override;
   void SetPostDataAndType(const std::string& post_data,
                           const std::string& mime_type) override;
@@ -76,7 +76,8 @@ class FakeWebHistoryService::FakeRequest : public WebHistoryService::Request {
   base::Time end_;
   int max_count_;
   bool is_pending_;
-  std::string response_body_;
+  // Needed only because `GetResponseBody()` returns a reference.
+  mutable std::string response_body_;
 };
 
 FakeWebHistoryService::FakeRequest::FakeRequest(
@@ -98,15 +99,15 @@ FakeWebHistoryService::FakeRequest::FakeRequest(
       max_count_(max_count),
       is_pending_(false) {}
 
-bool FakeWebHistoryService::FakeRequest::IsPending() {
+bool FakeWebHistoryService::FakeRequest::IsPending() const {
   return is_pending_;
 }
 
-int FakeWebHistoryService::FakeRequest::GetResponseCode() {
+int FakeWebHistoryService::FakeRequest::GetResponseCode() const {
   return emulate_response_code_;
 }
 
-const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
+const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() const {
   std::string client;
   net::GetValueForKeyInQuery(url_, "client", &client);
 
@@ -144,7 +145,7 @@ const std::string& FakeWebHistoryService::FakeRequest::GetResponseBody() {
         "{ \"history_recording_enabled\": %s }",
         base::ToString(service_->IsWebAndAppActivityEnabled()));
 
-  } else if (url_.host() == kSyncServerHost) {
+  } else if (url_.GetHost() == kSyncServerHost) {
     // Other forms of browsing history query.
     std::unique_ptr<sync_pb::HistoryStatusResponse> history_status(
         new sync_pb::HistoryStatusResponse());
@@ -190,11 +191,10 @@ FakeWebHistoryService::FakeWebHistoryService()
       web_and_app_activity_enabled_(false),
       other_forms_of_browsing_history_present_(false) {}
 
-FakeWebHistoryService::~FakeWebHistoryService() {
-}
+FakeWebHistoryService::~FakeWebHistoryService() = default;
 
-void FakeWebHistoryService::SetupFakeResponse(
-    bool emulate_success, int emulate_response_code) {
+void FakeWebHistoryService::SetupFakeResponse(bool emulate_success,
+                                              int emulate_response_code) {
   emulate_success_ = emulate_success;
   emulate_response_code_ = emulate_response_code;
 }
@@ -239,19 +239,21 @@ FakeWebHistoryService::GetVisitsBetween(base::Time begin,
   return result;
 }
 
-base::Time FakeWebHistoryService::GetTimeForKeyInQuery(
-    const GURL& url, const std::string& key) {
+base::Time FakeWebHistoryService::GetTimeForKeyInQuery(const GURL& url,
+                                                       const std::string& key) {
   std::string value;
-  if (!net::GetValueForKeyInQuery(url, key, &value))
+  if (!net::GetValueForKeyInQuery(url, key, &value)) {
     return base::Time();
+  }
 
   int64_t us;
-  if (!base::StringToInt64(value, &us))
-     return base::Time();
+  if (!base::StringToInt64(value, &us)) {
+    return base::Time();
+  }
   return base::Time::UnixEpoch() + base::Microseconds(us);
 }
-
-FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(
+std::unique_ptr<WebHistoryService::Request>
+FakeWebHistoryService::CreateRequest(
     const GURL& url,
     CompletionCallback callback,
     const net::PartialNetworkTrafficAnnotationTag& partial_traffic_annotation) {
@@ -259,16 +261,19 @@ FakeWebHistoryService::Request* FakeWebHistoryService::CreateRequest(
   base::Time begin = GetTimeForKeyInQuery(url, "min");
   base::Time end = GetTimeForKeyInQuery(url, "max");
 
-  if (end.is_null())
+  if (end.is_null()) {
     end = base::Time::Max();
+  }
 
   int max_count = 0;
   std::string max_count_str;
-  if (net::GetValueForKeyInQuery(url, "num", &max_count_str))
+  if (net::GetValueForKeyInQuery(url, "num", &max_count_str)) {
     base::StringToInt(max_count_str, &max_count);
+  }
 
-  return new FakeRequest(this, url, emulate_success_, emulate_response_code_,
-                         std::move(callback), begin, end, max_count);
+  return std::make_unique<FakeRequest>(
+      this, url, emulate_success_, emulate_response_code_, std::move(callback),
+      begin, end, max_count);
 }
 
 bool FakeWebHistoryService::IsWebAndAppActivityEnabled() {

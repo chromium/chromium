@@ -42,10 +42,13 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   // extra CVDisplayLink VSync running before stopping CVDisplayLink.
   static constexpr int kMaxExtraVSyncs = 12;
 
+  base::WeakPtr<VSyncCallbackMac> GetWeakPtr();
+
  private:
   friend class CADisplayLinkMac;
-  friend struct ObjCState;
   friend class CVDisplayLinkMac;
+  friend class ExternalDisplayLinkMac;
+  friend struct ObjCState;
   friend class DisplayLinkMacSharedState;
   friend class gpu::ImageTransportSurfaceOverlayMacTest;
 
@@ -78,8 +81,8 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   virtual std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) = 0;
 
-  // Get the panel/monitor refresh rate
-  virtual double GetRefreshRate() const = 0;
+  // Get the panel/monitor refresh interval
+  virtual base::TimeDelta GetRefreshInterval() const = 0;
   virtual void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                        base::TimeDelta& max_interval,
                                        base::TimeDelta& granularity) const = 0;

@@ -39,7 +39,7 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -95,6 +95,9 @@ public class ChildProcessConnectionTest {
         public void retire() {
             mBound = false;
         }
+
+        @Override
+        public void rebindService(int bindFlags) {}
 
         public void setBindResult(boolean result) {
             mBindResult = result;
@@ -162,7 +165,7 @@ public class ChildProcessConnectionTest {
         MockitoAnnotations.initMocks(this);
 
         mIChildProcessService = mock(IChildProcessService.class);
-        ApplicationInfo appInfo = BuildInfo.getInstance().getBrowserApplicationInfo();
+        ApplicationInfo appInfo = ApkInfo.getInstance().getBrowserApplicationInfo();
         String[] appInfoStrings = ChildProcessService.convertToStrings(appInfo);
         when(mIChildProcessService.getAppInfoStrings()).thenReturn(appInfoStrings);
         // Capture the parameters passed to the IChildProcessService.setupConnection() call.
@@ -226,12 +229,36 @@ public class ChildProcessConnectionTest {
     @Test
     public void testStrongBinding() {
         ChildProcessConnection connection = createDefaultTestConnection();
-        connection.start(/* useStrongBinding= */ true, /* serviceCallback= */ null);
-        assertTrue(connection.isStrongBindingBound());
+        connection.start(ChildBindingState.STRONG, /* serviceCallback= */ null);
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
 
         connection = createDefaultTestConnection();
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
-        assertFalse(connection.isStrongBindingBound());
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
+    }
+
+    @Test
+    public void testInitialBindingState() {
+        ChildProcessConnection connection = createDefaultTestConnection();
+        connection.start(ChildBindingState.WAIVED, /* serviceCallback= */ null);
+        assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
+        assertEquals(0, connection.getStrongBindingCount());
+        assertEquals(0, connection.getVisibleBindingCount());
+        assertEquals(0, connection.getNotPerceptibleBindingCount());
+
+        connection = createDefaultTestConnection();
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
+        assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
+        assertEquals(0, connection.getStrongBindingCount());
+        assertEquals(1, connection.getVisibleBindingCount());
+        assertEquals(0, connection.getNotPerceptibleBindingCount());
+
+        connection = createDefaultTestConnection();
+        connection.start(ChildBindingState.STRONG, /* serviceCallback= */ null);
+        assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
+        assertEquals(1, connection.getStrongBindingCount());
+        assertEquals(0, connection.getVisibleBindingCount());
+        assertEquals(0, connection.getNotPerceptibleBindingCount());
     }
 
     @Test
@@ -252,7 +279,7 @@ public class ChildProcessConnectionTest {
                         serviceBundle,
                         /* useFallback= */ false);
         // Start the connection without the ChildServiceConnection connecting.
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         assertNotNull(mFirstServiceConnection);
         Intent bindIntent = mFirstServiceConnection.getBindIntent();
         assertNotNull(bindIntent);
@@ -264,8 +291,8 @@ public class ChildProcessConnectionTest {
     public void testServiceStartsSuccessfully() {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
-        Assert.assertTrue(connection.isVisibleBindingBound());
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
+        Assert.assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -286,9 +313,9 @@ public class ChildProcessConnectionTest {
         // Note we use doReturn so the actual bindServiceConnection() method is not called (it would
         // with when(mFirstServiceConnection.bindServiceConnection()).thenReturn(false).
         doReturn(false).when(mFirstServiceConnection).bindServiceConnection();
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
 
-        Assert.assertFalse(connection.isVisibleBindingBound());
+        Assert.assertEquals(ChildBindingState.UNBOUND, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -299,7 +326,7 @@ public class ChildProcessConnectionTest {
     public void testServiceStops() {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.stop();
         verify(mServiceCallback, times(1)).onChildStarted();
@@ -311,7 +338,7 @@ public class ChildProcessConnectionTest {
     public void testServiceDisconnects() {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         mFirstServiceConnection.notifyServiceDisconnected();
         verify(mServiceCallback, times(1)).onChildStarted();
@@ -328,7 +355,7 @@ public class ChildProcessConnectionTest {
                         /* serviceBundle= */ null,
                         /* useFallback= */ false);
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         // Service is started and bindToCallback is not called.
         verify(mServiceCallback, times(1)).onChildStarted();
@@ -346,7 +373,7 @@ public class ChildProcessConnectionTest {
                         /* serviceBundle= */ null,
                         /* useFallback= */ false);
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
         when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         // Service is started and bindToCallback is called.
@@ -365,7 +392,7 @@ public class ChildProcessConnectionTest {
                         /* serviceBundle= */ null,
                         /* useFallback= */ false);
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
         // Pretend bindToCaller returns false, i.e. the service is already bound to a different
         // service.
         when(mIChildProcessService.bindToCaller(any())).thenReturn(false);
@@ -381,7 +408,7 @@ public class ChildProcessConnectionTest {
     public void testSetupConnectionBeforeServiceConnected() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -400,7 +427,7 @@ public class ChildProcessConnectionTest {
     public void testSendPidOnlyWorksOnce() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -422,7 +449,7 @@ public class ChildProcessConnectionTest {
     public void testZygotePidSaved() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -449,7 +476,7 @@ public class ChildProcessConnectionTest {
         // Set up |connection1|.
         ChildProcessConnection connection1 = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection1.start(/* useStrongBinding= */ true, /* serviceCallback= */ null);
+        connection1.start(ChildBindingState.STRONG, /* serviceCallback= */ null);
         connection1.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -472,7 +499,7 @@ public class ChildProcessConnectionTest {
         // Set up |connection2|.
         ChildProcessConnection connection2 = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection2.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection2.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection2.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -498,7 +525,7 @@ public class ChildProcessConnectionTest {
     public void testInvokesZygoteCallback() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -529,7 +556,7 @@ public class ChildProcessConnectionTest {
     public void testConsumeRelroLibInfo() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         connection.setupConnection(
                 createTestArgs(),
                 /* clientInterfaces= */ null,
@@ -556,7 +583,7 @@ public class ChildProcessConnectionTest {
     public void testSetupConnectionAfterServiceConnected() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.setupConnection(
                 createTestArgs(),
@@ -575,7 +602,7 @@ public class ChildProcessConnectionTest {
     public void testKill() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.setupConnection(
                 createTestArgs(),
@@ -592,11 +619,8 @@ public class ChildProcessConnectionTest {
         // Add strong binding so that connection is oom protected.
         connection.removeVisibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
-        }
+        connection.addNotPerceptibleBinding();
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.addVisibleBinding();
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.addStrongBinding();
@@ -614,7 +638,7 @@ public class ChildProcessConnectionTest {
     public void testBindingDowngrade() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.setupConnection(
                 createTestArgs(),
@@ -632,9 +656,7 @@ public class ChildProcessConnectionTest {
         // Add all bindings
         connection.addStrongBinding();
         connection.addVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-        }
+        connection.addNotPerceptibleBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
 
@@ -643,22 +665,17 @@ public class ChildProcessConnectionTest {
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrentOrWhenDied());
         connection.removeVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
 
-            connection.removeNotPerceptibleBinding();
-        }
+        connection.removeNotPerceptibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
 
         // Add all bindings
         connection.addStrongBinding();
         connection.addVisibleBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            connection.addNotPerceptibleBinding();
-        }
+        connection.addNotPerceptibleBinding();
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
 
@@ -667,13 +684,10 @@ public class ChildProcessConnectionTest {
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.STRONG, connection.bindingStateCurrentOrWhenDied());
         connection.removeStrongBinding();
-        if (ChildProcessConnection.supportNotPerceptibleBinding()) {
-            assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
-            assertEquals(
-                    ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrent());
+        assertEquals(ChildBindingState.NOT_PERCEPTIBLE, connection.bindingStateCurrentOrWhenDied());
 
-            connection.removeNotPerceptibleBinding();
-        }
+        connection.removeNotPerceptibleBinding();
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrent());
         assertEquals(ChildBindingState.WAIVED, connection.bindingStateCurrentOrWhenDied());
 
@@ -697,7 +711,7 @@ public class ChildProcessConnectionTest {
     @Test
     public void testUpdateGroupImportanceSmoke() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.updateGroupImportance(1, 2);
@@ -714,7 +728,7 @@ public class ChildProcessConnectionTest {
     public void testExceptionDuringInit() throws RemoteException {
         ChildProcessConnection connection = createDefaultTestConnection();
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, /* serviceCallback= */ null);
+        connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.setupConnection(
                 createTestArgs(),
@@ -749,7 +763,7 @@ public class ChildProcessConnectionTest {
                         serviceBundle,
                         /* useFallback= */ true);
         assertNotNull(mFirstServiceConnection);
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
 
         Assert.assertEquals(4, mMockConnections.size());
         boolean anyServiceConnectionBound = false;
@@ -821,7 +835,7 @@ public class ChildProcessConnectionTest {
         assertNotNull(mFirstServiceConnection);
         mFirstServiceConnection.setBindResult(false);
 
-        connection.start(/* useStrongBinding= */ false, mServiceCallback);
+        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
 
         verify(mServiceCallback, never()).onChildStarted();
         verify(mServiceCallback, never()).onChildStartFailed(any());
@@ -848,7 +862,7 @@ public class ChildProcessConnectionTest {
         }
 
         Assert.assertTrue(boundConnectionCount >= 2);
-        Assert.assertTrue(connection.isVisibleBindingBound());
+        Assert.assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
 
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);

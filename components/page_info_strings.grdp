@@ -250,36 +250,6 @@
     </if>
 
     <!-- Permission values -->
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to allow by the user.">
-      Allow
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_ONCE_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to allow once by the user.">
-      Only this time
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to block by the user.">
-      Block
-    </message>
-    <if expr="not is_android">
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and was explicitly set to mute by the user.">
-      Mute
-    </message>
-    </if>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to ask by the user.">
-      Ask
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to detect important content by the user.">
-      Detect
-    </message>
-
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is allow.">
-      Allow (default)
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is block.">
-      Block (default)
-    </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is ask.">
-      Ask (default)
-    </message>
     <if expr="not is_android">
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_AUTOMATIC_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the button controls the sound permission and is set to the default setting and the default setting is automatic.">
       Automatic (default)
@@ -288,9 +258,6 @@
       Mute (default)
     </message>
     </if>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is detect important content.">
-      Detect (default)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that resets the setting to the default setting which is allow.">
       Use global default (Allow)
@@ -301,9 +268,6 @@
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is ask.">
       Use global default (Ask)
     </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is detect important content.">
-      Use global default (Detect)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to allow.">
       Always allow on this site
@@ -313,9 +277,6 @@
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to ask.">
       Always ask on this site
-    </message>
-     <message name="IDS_PAGE_INFO_MENU_ITEM_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to detect important content.">
-      Always detect important content on this site
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ADS_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI for the ads permission in Block mode">
       Block on this site
@@ -430,7 +391,7 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_BLUETOOTH_SCANNING_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the bluetooth scanning permission is in the ask state and the site can prompt the user to ask if they allow the site to discover nearby Bluetooth devices.">
       Can ask to discover nearby Bluetooth devices
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" translateable="false"  desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
+    <message name="IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the storage access permission is in the ask state and the site can prompt the user to ask if they allow the site to access cookies.">
       Can ask to access cookies
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the web app installation permission is in the ask state and the site can prompt the user to ask if they allow the site to install web apps.">
@@ -857,15 +818,6 @@
   </message>
   <message name="IDS_PAGE_INFO_MERCHANT_TRUST_REVIEWS_SUMMARY_TITLE" desc="The title of the reviews summary section of the merchant trust feature in the page info">
     What people are saying
-  </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_BUTTON" desc="The button in merchant trust page info subpage that open HaTS dialog which allows users to submit a survey about the feature.">
-    Is this helpful?
-  </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_LOADING_BUTTON" desc="The loading state of the button in merchant trust page info subpage. It is shown after user has clicked it but before survey dialog is opened.">
-    Opening survey...
-  </message>
-  <message name="IDS_PAGE_INFO_MERCHANT_TRUST_HATS_FAILED_BUTTON" desc="The failed state of the button in merchant trust page info subpage. It is shown after user has clicked it and the survey failed to load.">
-    An error occurred with the survey.
   </message>
 
   <!-- History strings -->

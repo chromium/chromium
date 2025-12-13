@@ -131,7 +131,7 @@ import * as Console from 'devtools/panels/console/console.js';
     }
   `);
 
-  TestRunner.mainTarget.runtimeAgent().setCustomObjectFormatterEnabled(true);
+  TestRunner.mainTarget.runtimeAgent().invoke_setCustomObjectFormatterEnabled({enabled: true});
   TestRunner.evaluateInPage('logVars()', expandVariablesInConsole);
 
   function expandVariablesInConsole() {

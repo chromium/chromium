@@ -15,7 +15,6 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_provider.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
-#include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
 #include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_helper_bridge.h"
@@ -100,8 +99,6 @@ class PasswordAccessoryControllerImpl
       PasswordDriverSupplierForFocusedFrame driver_supplier,
       std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
           grouped_credential_sheet_controller,
-      std::unique_ptr<PasswordAccessLossWarningBridge>
-          access_loss_warning_bridge,
       std::unique_ptr<PasswordManagerErrorMessageHelperBridge>
           password_manager_error_message_helper_bridge);
 
@@ -133,8 +130,6 @@ class PasswordAccessoryControllerImpl
       PasswordDriverSupplierForFocusedFrame driver_supplier,
       std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
           grouped_credential_sheet_controller,
-      std::unique_ptr<PasswordAccessLossWarningBridge>
-          access_loss_warning_bridge,
       std::unique_ptr<PasswordManagerErrorMessageHelperBridge>
           password_manager_error_message_helper_bridge);
 
@@ -311,10 +306,6 @@ class PasswordAccessoryControllerImpl
   // credential with the grouped match type.
   std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
       grouped_credential_sheet_controller_;
-
-  // Bridge used for showing the password access loss warning sheet after
-  // filling credentials.
-  std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
   const raw_ptr<plus_addresses::PlusAddressService> plus_address_service_;
 

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"

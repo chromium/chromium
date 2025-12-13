@@ -34,17 +34,17 @@ class PrettyPrintJSONListener : public NativeEventListener {
 
   void Invoke(ExecutionContext*, Event* event) override {
     DCHECK_EQ(event->type(), event_type_names::kChange);
-    if (!parsed_json_value_ &&
-        opt_error_.type == JSONParseErrorType::kNoError) {
-      parsed_json_value_ = ParseJSON(pre_->textContent(), &opt_error_);
+    if (original_content_.IsNull()) {
+      original_content_ = pre_->textContent();
+      std::unique_ptr<JSONValue> parsed = ParseJSON(original_content_);
+      if (parsed) {
+        pretty_printed_ = parsed->ToPrettyJSONString();
+      }
     }
-    if (opt_error_.type != JSONParseErrorType::kNoError) {
-      return;
-    }
-    if (checkbox_->Checked()) {
-      pre_->setTextContent(parsed_json_value_->ToPrettyJSONString());
+    if (checkbox_->Checked() && !pretty_printed_.IsNull()) {
+      pre_->setTextContent(pretty_printed_);
     } else {
-      pre_->setTextContent(parsed_json_value_->ToJSONString());
+      pre_->setTextContent(original_content_);
     }
   }
 
@@ -57,8 +57,11 @@ class PrettyPrintJSONListener : public NativeEventListener {
  private:
   Member<HTMLInputElement> checkbox_;
   Member<HTMLPreElement> pre_;
-  JSONParseError opt_error_{.type = JSONParseErrorType::kNoError};
-  std::unique_ptr<JSONValue> parsed_json_value_;
+  // The original and pretty-printed JSON. If `original_content_` is null, we
+  // have not yet attempted to parse `pre_`. If it is non-null, but
+  // `pretty_printed_` is null, the JSON could not be parsed.
+  String original_content_;
+  String pretty_printed_;
 };
 
 class JSONDocumentParser : public HTMLDocumentParser {

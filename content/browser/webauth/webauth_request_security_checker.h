@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 #define CONTENT_BROWSER_WEBAUTH_WEBAUTH_REQUEST_SECURITY_CHECKER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -13,13 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "content/common/content_export.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 #include "url/origin.h"
-
-namespace base {
-class Value;
-}
 
 namespace network {
 class SimpleURLLoader;
@@ -69,20 +66,18 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
     // intended to be called externally except for testing.
     [[nodiscard]] static blink::mojom::AuthenticatorStatus
     ValidateWellKnownJSON(const url::Origin& caller_origin,
-                          const base::Value& json);
+                          std::string_view json);
 
    private:
     RemoteValidation(
         const url::Origin& caller_origin,
         base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback);
 
-    void OnFetchComplete(std::unique_ptr<std::string> body);
-    void OnDecodeComplete(base::expected<base::Value, std::string> maybe_value);
+    void OnFetchComplete(std::optional<std::string> body);
 
     const url::Origin caller_origin_;
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus)> callback_;
     std::unique_ptr<network::SimpleURLLoader> loader_;
-    std::unique_ptr<std::string> json_;
 
     base::WeakPtrFactory<RemoteValidation> weak_factory_{this};
   };

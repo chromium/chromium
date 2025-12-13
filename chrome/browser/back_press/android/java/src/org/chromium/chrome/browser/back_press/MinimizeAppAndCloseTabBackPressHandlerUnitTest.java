@@ -25,14 +25,13 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.TabClosureType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -58,7 +57,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
     @Mock private Tab mTab;
 
     private MinimizeAppAndCloseTabBackPressHandler mHandler;
-    private ObservableSupplierImpl<Tab> mActivityTabSupplier;
+    private SettableNullableObservableSupplier<Tab> mActivityTabSupplier;
 
     @Before
     public void setUp() {
@@ -166,7 +165,6 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.ALLOW_TAB_CLOSING_UPON_MINIMIZATION})
     public void testCloseTabDuringMinimization() {
         createBackPressHandler(true, true);
         Mockito.when(mShouldCloseTab.test(mTab)).thenReturn(true);
@@ -184,6 +182,14 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
                         Mockito.description("Tab should be closed during minimizing the app."))
                 .onResult(mTab);
         histogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testInvokeBackActionOnEscape() {
+        Assert.assertFalse(
+                "invokeBackActionOnEscape should return false.",
+                mHandler.invokeBackActionOnEscape());
     }
 
     private void createBackPressHandler() {
@@ -204,7 +210,7 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTabSupplier = new ObservableSupplierImpl<>();
+                    mActivityTabSupplier = ObservableSuppliers.createNullable();
                 });
         mHandler =
                 ThreadUtils.runOnUiThreadBlocking(

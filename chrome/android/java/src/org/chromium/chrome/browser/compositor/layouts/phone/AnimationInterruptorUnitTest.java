@@ -21,11 +21,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -49,9 +52,13 @@ public class AnimationInterruptorUnitTest {
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
-    private final ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
+            ObservableSuppliers.createNullable();
     private final ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Float> mNtpSearchBoxTransitionPercentageSupplier =
+            new ObservableSupplierImpl<>();
+    private Runnable mInterruptRunnable;
     private AnimationInterruptor mAnimationInterruptor;
     private int mInterruptCount;
 
@@ -59,23 +66,23 @@ public class AnimationInterruptorUnitTest {
     public void setUp() {
         when(mAnimationTab.getUserDataHost()).thenReturn(mUserDataHost);
         TabContextMenuData.getOrCreateForTab(mAnimationTab);
+        mInterruptRunnable = () -> mInterruptCount++;
 
-        Runnable interruptRunnable =
-                () -> {
-                    mInterruptCount++;
-                };
         mAnimationInterruptor =
                 new AnimationInterruptor(
                         mLayoutStateProvider,
                         mCurrentTabSupplier,
                         mAnimationTab,
                         mScrimVisibilitySupplier,
-                        interruptRunnable);
+                        mNtpSearchBoxTransitionPercentageSupplier,
+                        /* isRegularNtp= */ false,
+                        mInterruptRunnable);
 
         verify(mLayoutStateProvider).addObserver(mLayoutStateObserverCaptor.capture());
         verify(mAnimationTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mCurrentTabSupplier.hasObservers());
         assertTrue(mScrimVisibilitySupplier.hasObservers());
+        assertFalse(mNtpSearchBoxTransitionPercentageSupplier.hasObservers());
     }
 
     @After
@@ -84,6 +91,23 @@ public class AnimationInterruptorUnitTest {
         verify(mAnimationTab).removeObserver(any());
         assertFalse(mCurrentTabSupplier.hasObservers());
         assertFalse(mScrimVisibilitySupplier.hasObservers());
+        assertFalse(mNtpSearchBoxTransitionPercentageSupplier.hasObservers());
+    }
+
+    private void recreateAnimationInterruptor(boolean isRegularNtp) {
+        // Reset.
+        mAnimationInterruptor.destroy();
+        Mockito.clearInvocations(mLayoutStateProvider, mAnimationTab);
+
+        mAnimationInterruptor =
+                new AnimationInterruptor(
+                        mLayoutStateProvider,
+                        mCurrentTabSupplier,
+                        mAnimationTab,
+                        mScrimVisibilitySupplier,
+                        mNtpSearchBoxTransitionPercentageSupplier,
+                        isRegularNtp,
+                        mInterruptRunnable);
     }
 
     @Test
@@ -133,5 +157,25 @@ public class AnimationInterruptorUnitTest {
         TabContextMenuData data = TabContextMenuData.getForTab(mAnimationTab);
         data.setLastTriggeringTouchPositionDp(new Point(0, 0));
         assertEquals(1, mInterruptCount);
+    }
+
+    @Test
+    public void testNtpTransitionPercentageChanged_Interrupts() {
+        recreateAnimationInterruptor(/* isRegularNtp= */ true);
+        assertTrue(mNtpSearchBoxTransitionPercentageSupplier.hasObservers());
+
+        mNtpSearchBoxTransitionPercentageSupplier.set(0.1f);
+        assertEquals(1, mInterruptCount);
+    }
+
+    @Test
+    public void testNtpTransitionPercentageChanged_NoInterrup() {
+        recreateAnimationInterruptor(/* isRegularNtp= */ true);
+        assertTrue(mNtpSearchBoxTransitionPercentageSupplier.hasObservers());
+
+        mNtpSearchBoxTransitionPercentageSupplier.set(0f);
+        assertEquals(0, mInterruptCount);
+
+        mAnimationInterruptor.destroy();
     }
 }

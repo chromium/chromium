@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">सुन्तलाहरू</translation>
 <translation id="1275718070701477396">चयन गरिएको</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
+<translation id="1292474106138697109">कक्षाका टुलहरू देखाइने तरिका</translation>
 <translation id="1300115153046603471">APN को प्रकार डिफल्ट र <ph name="ATTACH" /> सेट गरिएको छ।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">रूपान्तरण गर्नुहोस्</translation>
@@ -551,7 +552,7 @@
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="3435896845095436175">सक्षम बनाउनुहोस्</translation>
 <translation id="345256797477978759">विन्डोलाई स्क्रिनको <ph name="DIRECTION" />तिरको ठुलो भागमा डक गर्नुहोस्</translation>
-<translation id="3456078764689556234"><ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> पृष्ठहरू प्रिन्ट गरिए</translation>
+<translation id="3456078764689556234">पेज <ph name="TOTAL_PAGES" /> मध्ये <ph name="PRINTED_PAGES" /> प्रिन्ट गरिए</translation>
 <translation id="345898999683440380">पेज <ph name="PAGE_NUM" /> स्क्यान गरिँदै छ। <ph name="PERCENTAGE_VALUE" />% पूरा भयो।</translation>
 <translation id="3459509316159669723">प्रिन्टिङ</translation>
 <translation id="3462187165860821523"><ph name="DEVICE_NAME" /> अपडेट गरिँदै छ</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
 <translation id="4300272766492248925">एप खोल्नुहोस्</translation>
 <translation id="430786093962686457">सिफन</translation>
+<translation id="4309762678330556039">ट्रान्स्क्रिप्सन स्वतः बनाउनुहोस् र अडियो खोज्नुहोस्। तपाईं आफ्नो डिभाइस इन्टरनेटमा कनेक्ट नहुँदा पनि रेकर्ड गर्न सक्नुहुन्छ।</translation>
 <translation id="4310735698903592804">Google AI प्रयोग गरी बनाइएका हालसालैका वालपेपरहरू</translation>
 <translation id="4320904097188876154">नियोन पिङ्क</translation>
 <translation id="432961742358282111">परिभाषा प्राप्त गर्न, अनुवाद गर्न वा एकाइ रूपान्तरण गर्न राइट क्लिक गर्नुहोस् वा थिचिराख्नुहोस्। यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो कीहरू प्रयोग गर्नुहोस्।</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की थिचेर जाँच गरियो</translation>
 <translation id="5606865426897221650">ट्याब</translation>
+<translation id="5612205513582918357">कक्षाका टुलहरूले <ph name="RECEIVER_NAME" /> सँग तपाईंको स्क्रिन सेयर गरिरहेका छन्</translation>
 <translation id="5613201299517339763">तपाईंलाई साइन आउट गरिएको छ</translation>
 <translation id="5620281292257375798">आन्तरिक प्रयोजनका लागि मात्र</translation>
 <translation id="5628106863521633649">उपलब्ध भाषाहरू</translation>
@@ -1065,7 +1068,7 @@
 <translation id="5695599963893094957">आफ्नो किबोर्डको कुनै की थिच्नुहोस्। तपाईं एकै पटकमा ४ वटासम्म कीहरू थिच्न सक्नुहुन्छ।</translation>
 <translation id="5701381305118179107">केन्द्र</translation>
 <translation id="5703716265115423771">आवाज सानो</translation>
-<translation id="5707900041990977207"><ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /> पृष्ठ</translation>
+<translation id="5707900041990977207">पेज <ph name="TOTAL_PAGES" /> मध्ये <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> परिवर्तन गर्ने बटन।</translation>
 <translation id="5736820754189340309">डेटाको प्रयोगसम्बन्धी तथ्याङ्क रिसेट गरिएको छ</translation>
 <translation id="574392208103952083">मध्यम</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">क्लाउड फ्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
-<translation id="6231648282154119906">तपाईंले छनौट गर्नुभएको उन्नत सुरक्षाअन्तर्गत Google सुरक्षित ब्राउजिङले शङ्कास्पद फाइलहरू स्वतः स्क्यान गर्ने छ</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6234024205316847054">आउटलाइनहरू देखाउनुहोस्</translation>
 <translation id="6243280677745499710">हाल सेट गरिएको</translation>

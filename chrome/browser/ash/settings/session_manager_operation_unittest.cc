@@ -35,7 +35,6 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
-#include "crypto/rsa_private_key.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,8 +108,8 @@ class SessionManagerOperationTest : public testing::Test {
   void CheckPublicKeyLoaded(SessionManagerOperation* op) {
     ASSERT_TRUE(op->public_key().get());
     ASSERT_FALSE(op->public_key()->is_empty());
-    std::vector<uint8_t> public_key;
-    ASSERT_TRUE(policy_.GetSigningKey()->ExportPublicKey(&public_key));
+    std::vector<uint8_t> public_key =
+        policy_.GetSigningKey()->ToSubjectPublicKeyInfo();
     EXPECT_EQ(public_key, op->public_key()->data());
   }
 
@@ -209,7 +208,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
 }
 
 TEST_F(SessionManagerOperationTest, RestartLoad) {
-  owner_key_util_->ImportPrivateKeyAndSetPublicKey(policy_.GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(*policy_.GetSigningKey());
   session_manager_client_.set_device_policy(policy_.GetBlob());
   LoadSettingsOperation op(
       false /* force_key_load */, false /* force_immediate_load */,
@@ -235,12 +234,12 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
 
         // Now install a different key and policy.
         policy->SetSigningKey(
-            *policy::PolicyBuilder::CreateTestOtherSigningKey());
+            policy::PolicyBuilder::CreateTestOtherSigningKey());
         policy->payload().mutable_metrics_enabled()->set_metrics_enabled(true);
         policy->Build();
         session_manager_client->set_device_policy(policy->GetBlob());
         owner_key_util->ImportPrivateKeyAndSetPublicKey(
-            policy->GetSigningKey());
+            *policy->GetSigningKey());
 
         // And restart the operation.
         EXPECT_CALL(*test, OnOperationCompleted(

@@ -21,7 +21,8 @@ INSERT INTO meta VALUES('last_compatible_version','1');
 INSERT INTO bounces VALUES('storage.test', 1, 1, 4, 4, 0, 0 ,0, 0),
                           ('stateful-bounce.test', 0, 0, 4, 4, 1, 1, 0, 0),
                           ('stateless-bounce.test', 0, 0, 4, 4, 0, 0 ,1, 1),
-                          ('both-bounce-kinds.test', 0, 0, 4, 4, 1, 4 ,2, 6);
+                          ('both-bounce-kinds.test', 0, 0, 4, 4, 1, 4 ,2, 6),
+                          ('site-storage-stateful-bounce-drop.test', 1, 1, 0, 0, 0, 0, 0, 0);
 
 
 COMMIT;

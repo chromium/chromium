@@ -32,7 +32,7 @@ void CreateNativeHostSession(
 
   drive_service->GetDriveFsInterface()->CreateNativeHostSession(
       drivefs::mojom::ExtensionConnectionParams::New(
-          GURL(kDriveFsNativeMessageHostOrigins[0]).host()),
+          GURL(kDriveFsNativeMessageHostOrigins[0]).GetHost()),
       std::move(session), std::move(port));
 }
 

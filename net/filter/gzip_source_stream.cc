@@ -99,8 +99,7 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
   // Span that tracks the portion of `input_buffer` that has not yet been
   // process. The data isn't const because the zlib API doesn't use consts for
   // input, but it should not be modified in practice.
-  base::span<uint8_t> input_data =
-      input_buffer->span().first(input_buffer_size);
+  base::span<uint8_t> input_data = input_buffer->first(input_buffer_size);
 
   size_t bytes_out = 0;
   bool state_compressed_entered = false;

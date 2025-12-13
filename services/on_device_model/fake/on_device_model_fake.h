@@ -6,13 +6,13 @@
 #define SERVICES_ON_DEVICE_MODEL_FAKE_ON_DEVICE_MODEL_FAKE_H_
 
 #include "base/component_export.h"
-#include "services/on_device_model/ml/on_device_model_internal.h"
+#include "services/on_device_model/ml/chrome_ml.h"
 
 namespace fake_ml {
 
 COMPONENT_EXPORT(ON_DEVICE_MODEL_FAKE)
 const ml::ChromeML* GetFakeChromeML();
 
-}  // namespace on_device_model
+}  // namespace fake_ml
 
 #endif  // SERVICES_ON_DEVICE_MODEL_FAKE_ON_DEVICE_MODEL_FAKE_H_

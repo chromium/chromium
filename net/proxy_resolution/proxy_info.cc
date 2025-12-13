@@ -27,7 +27,6 @@ void ProxyInfo::Use(const ProxyInfo& other) {
   proxy_list_ = other.proxy_list_;
   proxy_retry_info_ = other.proxy_retry_info_;
   did_bypass_proxy_ = other.did_bypass_proxy_;
-  prt_header_value_ = other.prt_header_value_;
 }
 
 void ProxyInfo::UseDirect() {
@@ -92,8 +91,10 @@ bool ProxyInfo::Fallback(int net_error, const NetLogWithSource& net_log) {
 }
 
 void ProxyInfo::DeprioritizeBadProxyChains(
-    const ProxyRetryInfoMap& proxy_retry_info) {
-  proxy_list_.DeprioritizeBadProxyChains(proxy_retry_info);
+    const ProxyRetryInfoMap& proxy_retry_info,
+    bool remove_bad_proxy_chains) {
+  proxy_list_.DeprioritizeBadProxyChains(proxy_retry_info,
+                                         remove_bad_proxy_chains);
 }
 
 void ProxyInfo::RemoveProxiesWithoutScheme(int scheme_bit_field) {
@@ -106,7 +107,6 @@ void ProxyInfo::Reset() {
   proxy_list_.Clear();
   proxy_retry_info_.clear();
   did_bypass_proxy_ = false;
-  prt_header_value_ = std::nullopt;
 }
 
 bool ProxyInfo::AllChainProxiesAreHttps() const {

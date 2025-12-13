@@ -13,7 +13,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_utils.h"
 
@@ -23,7 +22,7 @@ class RenderFrameHost;
 
 namespace payments::facilitated {
 
-// Android implementation for facilitated payment APIs, such as PIX. Uses
+// Android implementation for facilitated payment APIs, such as Pix. Uses
 // Android APIs through JNI.
 class FacilitatedPaymentsApiClientAndroid
     : public FacilitatedPaymentsApiClient {

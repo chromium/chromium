@@ -15,10 +15,10 @@ public class ComposeplateMetricsUtils {
 
     public static final String HISTOGRAM_COMPOSEPLATE_IMPRESSION =
             "NewTabPage.Composeplate.Impression";
-    public static final String HISTOGRAM_NTP_OMNIBOX_IMPRESSION =
-            "NewTabPage.FakeSearchBox.Impression";
-    public static final String HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION =
-            "NewTabPage.FakeSearchBox.ComposeplateButton.Impression";
+    public static final String HISTOGRAM_NTP_OMNIBOX_IMPRESSION2 =
+            "NewTabPage.FakeSearchBox.Impression2";
+    public static final String HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION2 =
+            "NewTabPage.FakeSearchBox.ComposeplateButton.Impression2";
 
     /**
      * Records a click on a section within the Composeplate row on the New Tab Page.
@@ -46,13 +46,13 @@ public class ComposeplateMetricsUtils {
      * impression count for the button in the fake search box. The event is triggered each time the
      * New Tab Page is shown or the button's visibility is updated.
      */
-    public static void recordFakeSearchBoxImpression() {
-        RecordHistogram.recordCount100Histogram(HISTOGRAM_NTP_OMNIBOX_IMPRESSION, 1);
+    public static void recordFakeSearchBoxImpression2() {
+        RecordHistogram.recordBooleanHistogram(HISTOGRAM_NTP_OMNIBOX_IMPRESSION2, true);
     }
 
     /** Records an impression of composeplate button on the fake search box in the New Tab Page. */
-    public static void recordFakeSearchBoxComposeplateButtonImpression() {
-        RecordHistogram.recordCount100Histogram(
-                HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION, 1);
+    public static void recordFakeSearchBoxComposeplateButtonImpression2(boolean isVisible) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_NTP_OMNIBOX_COMPOSEPLATE_BUTTON_IMPRESSION2, isVisible);
     }
 }

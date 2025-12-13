@@ -6,7 +6,7 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_TRACEABLE_SCREENSHOT_H_
 
 #include "base/atomicops.h"
-#include "base/trace_event/trace_event_impl.h"
+#include "base/trace_event/trace_arguments.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace content {

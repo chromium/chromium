@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -35,7 +35,6 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
     JNIEnv* env,
     base::WeakPtr<UsbServiceAndroid> service,
     const JavaRef<jobject>& usb_device) {
-  auto* build_info = base::android::BuildInfo::GetInstance();
   ScopedJavaLocalRef<jobject> wrapper =
       Java_ChromeUsbDevice_create(env, usb_device);
 
@@ -55,7 +54,8 @@ scoped_refptr<UsbDeviceAndroid> UsbDeviceAndroid::Create(
   // targeting the Q SDK.
   std::u16string serial_number;
   if (service->HasDevicePermission(wrapper) ||
-      build_info->sdk_int() < base::android::SDK_VERSION_Q) {
+      base::android::android_info::sdk_int() <
+          base::android::android_info::SDK_VERSION_Q) {
     ScopedJavaLocalRef<jstring> serial_jstring =
         Java_ChromeUsbDevice_getSerialNumber(env, wrapper);
     if (!serial_jstring.is_null())
@@ -224,3 +224,5 @@ void UsbDeviceAndroid::OnReadWebUsbDescriptors(
 }
 
 }  // namespace device
+
+DEFINE_JNI(ChromeUsbDevice)

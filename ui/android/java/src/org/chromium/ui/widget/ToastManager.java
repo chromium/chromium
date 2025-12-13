@@ -110,9 +110,8 @@ public class ToastManager {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    @Nullable
-    Toast getCurrentToast() {
+    @VisibleForTesting
+    @Nullable Toast getCurrentToast() {
         return mToast;
     }
 

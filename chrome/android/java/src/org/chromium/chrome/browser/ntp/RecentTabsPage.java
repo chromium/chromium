@@ -25,15 +25,14 @@ import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
-import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * The native recent tabs page. Lists recently closed tabs, open windows and tabs from the user's
@@ -73,7 +72,7 @@ public class RecentTabsPage
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
     private @Nullable SmoothTransitionDelegate mSmoothTransitionDelegate;
-    private @Nullable EdgeToEdgePadAdjuster mPadAdjuster;
+    private EdgeToEdgePadAdjuster mPadAdjuster;
     private boolean mIsTouchEnabled = true;
 
     /**
@@ -139,11 +138,9 @@ public class RecentTabsPage
                                 mView.getPaddingBottom());
         mTabStripHeightSupplier.addObserver(mTabStripHeightChangeCallback);
         mEdgeToEdgeSupplier = edgeToEdgeSupplier;
-        if (EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled()) {
-            mPadAdjuster =
-                    EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
-                            mListView, mEdgeToEdgeSupplier);
-        }
+        mPadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        mListView, mEdgeToEdgeSupplier);
 
         onUpdated();
     }

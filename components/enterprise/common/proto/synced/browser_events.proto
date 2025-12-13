@@ -23,6 +23,7 @@ enum EventResult {
   EVENT_RESULT_DETECTED = 5;
   EVENT_RESULT_DATA_MASKED = 6;
   EVENT_RESULT_DATA_UNMASKED = 7;
+  EVENT_RESULT_FORCED_SAVE_TO_CLOUD = 8;
 }
 
 // The reporting target of the events.
@@ -206,6 +207,7 @@ message TriggeredRuleInfo {
     REPORT_ONLY = 1;
     WARN = 2;
     BLOCK = 3;
+    FORCE_SAVE_TO_CLOUD = 4;
   }
 
   Action action = 5;
@@ -271,6 +273,8 @@ message RiskInfo {
     DATA_LOSS = 4;
     // Violates URL filtering rules.
     URL_FILTERING = 5;
+    // Brand abuse detected by customer submitted screenshots.
+    ENTERPRISE_BRAND_ABUSE = 6;
   }
   ThreatType threat_type = 1;
 
@@ -426,7 +430,7 @@ message SafeBrowsingPasswordChangedEvent {
   repeated SecurityAgent security_agents = 4;
 }
 
-// A message for reporting dangerous download events.
+// A message for reporting dangerous download events (malware transfer events).
 // Next ID: 41.
 message SafeBrowsingDangerousDownloadEvent {
   reserved 5, 11, 12, 13, 14, 15, 16;
@@ -447,7 +451,7 @@ message SafeBrowsingDangerousDownloadEvent {
   // The file name.
   string file_name = 2;
 
-  // SHA256 digest of this download.
+  // The file hashes, not limited to downloaded files.
   string download_digest_sha256 = 3;
 
   // Username of the profile. This will be an email address.
@@ -462,6 +466,7 @@ message SafeBrowsingDangerousDownloadEvent {
     UNKNOWN = 5;
     DANGEROUS_FILE_TYPE = 6;
     DANGEROUS_URL = 7;
+    DANGEROUS_ACCOUNT_COMPROMISE = 8;
   }
 
   // Category of dangerous download.
@@ -482,7 +487,8 @@ message SafeBrowsingDangerousDownloadEvent {
   // Size of downloaded content (in bytes).
   uint64 content_size = 9;
 
-  // Which direction the dangerous file was transferred.
+  // Which direction the dangerous file was transferred, can be upload,
+  // download, file transfer (CrOS only).
   DataTransferEventTrigger trigger = 10;
 
   // The address of the webpages that sent the user to this url.

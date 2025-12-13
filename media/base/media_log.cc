@@ -51,11 +51,7 @@ std::string MediaLog::GetErrorMessageLocked() {
 void MediaLog::Stop() {}
 
 bool MediaLog::ShouldLogToDebugConsole() const {
-#if DCHECK_IS_ON()
   return true;
-#else
-  return false;
-#endif
 }
 
 void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
@@ -97,41 +93,12 @@ void MediaLog::AddLogRecord(std::unique_ptr<MediaLogRecord> record) {
     parent_log_record_->media_log->AddLogRecordLocked(std::move(record));
 }
 
-void MediaLog::EmitConsoleErrorLog(base::Value::Dict status_dict) {
-  auto stack = status_dict.Extract(StatusConstants::kStackKey);
-  DCHECK(stack);
-  DCHECK(stack->is_list());
-  DCHECK(!stack->GetList().empty());
-  DCHECK(stack->GetList().front().is_dict());
-
-  auto file =
-      stack->GetList().front().GetDict().Extract(StatusConstants::kFileKey);
-  DCHECK(file);
-  DCHECK(file->is_string());
-
-  auto line =
-      stack->GetList().front().GetDict().Extract(StatusConstants::kLineKey);
-  DCHECK(line);
-  DCHECK(line->is_int());
-
-  auto log_writer = logging::LogMessage(file->GetString().c_str(),
-                                        line->GetInt(), logging::LOGGING_ERROR);
-  if (auto message = status_dict.Extract(StatusConstants::kMsgKey);
-      message && message->is_string()) {
-    auto message_str = message->GetString();
-    if (!message_str.empty()) {
-      log_writer.stream() << message_str << ": ";
-    }
-  }
-  log_writer.stream() << base::WriteJson(status_dict).value_or(std::string());
-}
-
 std::unique_ptr<MediaLogRecord> MediaLog::CreateRecord(
     MediaLogRecord::Type type) {
   auto record = std::make_unique<MediaLogRecord>();
   // Record IDs are populated by event handlers before they are sent to various
   // log viewers, such as the media-internals page, or devtools.
-  record->id = 0;
+  record->id = MediaPlayerLoggingID(0);
   record->type = type;
   record->time = base::TimeTicks::Now();
   return record;

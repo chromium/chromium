@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/command_buffer/service/shared_image/ahardwarebuffer_image_backing_factory.h"
 
-#include "base/android/android_hardware_buffer_compat.h"
+#include <android/hardware_buffer.h>
+
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -62,9 +59,6 @@ class AHardwareBufferImageBackingFactoryTest
   void SetUp() override {
     // AHardwareBuffer is only supported on ANDROID O+. Hence these tests
     // should not be run on android versions less that O.
-    if (!base::AndroidHardwareBufferCompat::IsSupportAvailable()) {
-      GTEST_SKIP() << "AHardwareBuffer not supported";
-    }
 
     if (IsGraphiteDawn() && !IsGraphiteDawnSupported()) {
       GTEST_SKIP() << "Graphite/Dawn not supported";
@@ -327,9 +321,9 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(image_info);
 
-  base::span<uint8_t> pixel_span(
+  base::span<uint8_t> UNSAFE_TODO(pixel_span(
       static_cast<uint8_t*>(expected_bitmap.pixmap().writable_addr()),
-      expected_bitmap.computeByteSize());
+      expected_bitmap.computeByteSize()));
   for (size_t i = 0; i < pixel_span.size(); i++) {
     pixel_span[i] = static_cast<uint8_t>(i);
   }
@@ -365,6 +359,38 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InvalidFormat) {
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
   EXPECT_FALSE(backing);
+}
+
+TEST_P(AHardwareBufferImageBackingFactoryTest,
+       CanCreateMultiplanarBackingWhenPassedGMBHandle) {
+  auto mailbox = Mailbox::Generate();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+
+  AHardwareBuffer* buffer = nullptr;
+  AHardwareBuffer_Desc hwb_desc = {};
+  hwb_desc.width = size.width();
+  hwb_desc.height = size.height();
+  hwb_desc.layers = 1;
+  hwb_desc.format = AHARDWAREBUFFER_FORMAT_Y8Cb8Cr8_420;
+  hwb_desc.usage = AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN;
+  AHardwareBuffer_allocate(&hwb_desc, &buffer);
+  ASSERT_NE(buffer, nullptr);
+
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::ANDROID_HARDWARE_BUFFER;
+  handle.android_hardware_buffer =
+      base::android::ScopedHardwareBufferHandle::Adopt(buffer);
+
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", /*is_thread_safe=*/false, std::move(handle));
+  EXPECT_TRUE(backing);
 }
 
 // Test to check invalid size support.

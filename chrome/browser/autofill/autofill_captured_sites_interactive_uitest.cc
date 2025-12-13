@@ -42,14 +42,15 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_delegate.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -97,8 +98,8 @@ base::FilePath GetReplayFilesRootDirectory() {
   }
 }
 
-autofill::ElementExpr GetElementByXpath(const std::string& xpath) {
-  return autofill::ElementExpr(base::StringPrintf(
+ElementExpr GetElementByXpath(const std::string& xpath) {
+  return ElementExpr(base::StringPrintf(
       "automation_helper.getElementByXpath(`%s`)", xpath.c_str()));
 }
 
@@ -130,20 +131,21 @@ std::optional<std::vector<std::string>> GetExpectedFormSignatures(
 
 // Used to verify that the expected form signatures are submitted during the
 // test.
-class FormSubmissionCounter : public autofill::AutofillManager::Observer {
+class FormSubmissionCounter : public AutofillManager::Observer {
  public:
   explicit FormSubmissionCounter(content::WebContents* web_contents) {
     autofill_managers_observation_.Observe(
-        web_contents, autofill::ScopedAutofillManagersObservation::
-                          InitializationPolicy::kObservePreexistingManagers);
+        ContentAutofillClient::FromWebContents(web_contents),
+        ScopedAutofillManagersObservation::InitializationPolicy::
+            kObservePreexistingManagers);
   }
   ~FormSubmissionCounter() override = default;
 
   // AutofillManager::Observer:
-  void OnFormSubmitted(autofill::AutofillManager& manager,
-                       const autofill::FormData& form_data) override {
-    actual_form_signatures_submitted_.insert(base::NumberToString(
-        autofill::CalculateFormSignature(form_data).value()));
+  void OnBeforeFormSubmitted(AutofillManager& manager,
+                             const FormData& form_data) override {
+    actual_form_signatures_submitted_.insert(
+        base::NumberToString(CalculateFormSignature(form_data).value()));
   }
 
   void VerifyFormSubmissions(
@@ -161,8 +163,7 @@ class FormSubmissionCounter : public autofill::AutofillManager::Observer {
 
  private:
   std::set<std::string> actual_form_signatures_submitted_;
-  autofill::ScopedAutofillManagersObservation autofill_managers_observation_{
-      this};
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 };
 
 // Implements the `kAutofillCapturedSiteTestsMetricsScraper` testing feature.
@@ -171,13 +172,14 @@ class MetricsScraper {
   // Creates a MetricsScraper if the Finch flag is enabled.
   static std::unique_ptr<MetricsScraper> MaybeCreate(const std::string& test) {
     if (!base::FeatureList::IsEnabled(
-            features::test::kAutofillCapturedSiteTestsMetricsScraper)) {
+            features::debug::kAutofillCapturedSiteTestsMetricsScraper)) {
       return nullptr;
     }
     const std::string& output_dir =
-        features::test::kAutofillCapturedSiteTestsMetricsScraperOutputDir.Get();
+        features::debug::kAutofillCapturedSiteTestsMetricsScraperOutputDir
+            .Get();
     const std::string& histogram_regex =
-        features::test::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
+        features::debug::kAutofillCapturedSiteTestsMetricsScraperHistogramRegex
             .Get();
     return base::WrapUnique(new MetricsScraper(
         base::FilePath::FromASCII(output_dir).AppendASCII(test + ".txt"),
@@ -246,7 +248,7 @@ class AutofillCapturedSitesInteractiveTest
     test_delegate()->Observe(autofill_manager);
 
     if (base::FeatureList::IsEnabled(
-            features::test::kAutofillCapturedSiteTestsUseAutofillFlow)) {
+            features::debug::kAutofillCapturedSiteTestsUseAutofillFlow)) {
       if (AutofillFormWithAutofillFlow(web_contents, focus_element_css_selector,
                                        attempts, frame, triggered_field_type)) {
         return true;
@@ -266,7 +268,7 @@ class AutofillCapturedSitesInteractiveTest
       TryToCloseAllPrompts(web_contents);
 
       autofill_manager.client().HideAutofillSuggestions(
-          autofill::SuggestionHidingReason::kViewDestroyed);
+          SuggestionHidingReason::kViewDestroyed);
 
       testing::AssertionResult suggestions_shown = ShowAutofillSuggestion(
           focus_element_css_selector, iframe_path, frame);
@@ -319,7 +321,7 @@ class AutofillCapturedSitesInteractiveTest
     }
 
     autofill_manager.client().HideAutofillSuggestions(
-        autofill::SuggestionHidingReason::kViewDestroyed);
+        SuggestionHidingReason::kViewDestroyed);
     ADD_FAILURE() << "Failed to autofill the form!";
     return false;
   }
@@ -407,23 +409,18 @@ class AutofillCapturedSitesInteractiveTest
     // elements in a form to determine if the form is ready for interaction.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {{features::test::kAutofillServerCommunication, {}},
-         {features::test::kAutofillShowTypePredictions,
+        {{features::debug::kAutofillServerCommunication, {}},
+         {features::debug::kAutofillShowTypePredictions,
           {
               // TODO(crbug.com/410879924): Investigate why the test fails when
               // kAutofillShowTypePredictions is enabled without parameters.
-              {features::test::kAutofillShowTypePredictionsAsTitleParam.name,
+              {features::debug::kAutofillShowTypePredictionsAsTitleParam.name,
                "true"},
           }},
-         {features::test::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
+         {features::debug::kAutofillCapturedSiteTestsUseAutofillFlow, {}}},
         /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
-    // SelectParserRelaxation affects the results from the test data because the
-    // test data may have unclosed <select> tags. Since SelectParserRelaxation
-    // is not enabled by default, we are disabling it for these tests.
-    command_line->AppendSwitchASCII("disable-blink-features",
-                                    "SelectParserRelaxation");
     AutofillUiTest::SetUpCommandLine(command_line);
     SetUpHostResolverRules(command_line);
     captured_sites_test_utils::TestRecipeReplayer::SetUpCommandLine(

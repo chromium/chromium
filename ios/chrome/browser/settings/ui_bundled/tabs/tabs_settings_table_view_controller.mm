@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_table_view_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/i18n/message_formatter.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -12,7 +13,9 @@
 #import "ios/chrome/browser/settings/ui_bundled/tabs/inactive_tabs/inactive_tabs_settings_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/tabs/tabs_settings_table_view_controller_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,11 +26,13 @@ namespace {
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierInactiveTabs = kSectionIdentifierEnumZero,
+  SectionIdentifierTabGroups,
 };
 
 // List of item types.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeInactiveTabs = kItemTypeEnumZero,
+  ItemTypeAutomaticallyOpenTabGroups,
 };
 
 }  // namespace
@@ -35,14 +40,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @implementation TabsSettingsTableViewController {
   // Updatable inactive tabs item.
   TableViewDetailIconItem* _inactiveTabsDetailItem;
+  // Switch item for automatically open tab groups from other devices.
+  TableViewSwitchItem* _automaticallyOpenTabGroupsItem;
   // Current inactive tab days threshold.
   int _inactiveDaysThreshold;
+  // Whether current automatically open tab groups enabled.
+  BOOL _automaticallyOpenTabGroupsEnabled;
 }
 
 - (instancetype)init {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    self.title = l10n_util::GetNSString(IDS_IOS_TABS_MANAGEMENT_SETTINGS);
+    self.title = l10n_util::GetNSString(
+        IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()
+            ? IDS_IOS_TABS_AND_TAB_GROUPS_MANAGEMENT_SETTINGS
+            : IDS_IOS_TABS_MANAGEMENT_SETTINGS);
   }
   return self;
 }
@@ -74,6 +86,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self moveInactiveTabsItem]
       toSectionWithIdentifier:SectionIdentifierInactiveTabs];
   [self updateInactiveTabsItemWithDaysThreshold:_inactiveDaysThreshold];
+
+  if (IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled()) {
+    [model addSectionWithIdentifier:SectionIdentifierTabGroups];
+    [model addItem:[self automaticallyOpenTabGroupsItem]
+        toSectionWithIdentifier:SectionIdentifierTabGroups];
+  }
 }
 
 #pragma mark - SettingsControllerProtocol
@@ -103,19 +121,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self updateInactiveTabsItemWithDaysThreshold:threshold];
 }
 
-#pragma mark - Private
-
-// Called when a row is selected at `indexPath`.
-- (void)performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
-  ItemType type = static_cast<ItemType>(
-      [self.tableViewModel itemTypeForIndexPath:indexPath]);
-  switch (type) {
-    case ItemTypeInactiveTabs:
-      [self.delegate
-          tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
-      break;
+- (void)setAutomaticallyOpenTabGroupsEnabled:(BOOL)enabled {
+  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
+  _automaticallyOpenTabGroupsEnabled = enabled;
+  // Do not update UI when model is not loaded.
+  if (!_automaticallyOpenTabGroupsItem) {
+    return;
   }
+  if (_automaticallyOpenTabGroupsItem.on == enabled) {
+    return;
+  }
+  _automaticallyOpenTabGroupsItem.on = enabled;
+  [self reconfigureCellsForItems:@[ _automaticallyOpenTabGroupsItem ]];
 }
+
+#pragma mark - Model Items
 
 // Returns a newly created TableViewDetailIconItem for the inactive tabs
 // settings menu.
@@ -130,6 +150,47 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _inactiveTabsDetailItem.accessibilityIdentifier =
       kSettingsMoveInactiveTabsCellId;
   return _inactiveTabsDetailItem;
+}
+
+// Returns a newly created TableViewSwitchItem for the automatically open tab
+// groups settings menu.
+- (TableViewSwitchItem*)automaticallyOpenTabGroupsItem {
+  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
+  _automaticallyOpenTabGroupsItem = [[TableViewSwitchItem alloc]
+      initWithType:ItemTypeAutomaticallyOpenTabGroups];
+  _automaticallyOpenTabGroupsItem.text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_AUTOMATICALLY_OPEN_SYNCED_TAB_GROUPS_TITLE);
+  _automaticallyOpenTabGroupsItem.on = _automaticallyOpenTabGroupsEnabled;
+  _automaticallyOpenTabGroupsItem.accessibilityIdentifier =
+      kSettingsAutomaticallyOpenTabGroupsCellId;
+  _automaticallyOpenTabGroupsItem.target = self;
+  _automaticallyOpenTabGroupsItem.selector =
+      @selector(openTabGroupsSwitchToggled:);
+  return _automaticallyOpenTabGroupsItem;
+}
+
+#pragma mark - Switch Action
+
+- (void)openTabGroupsSwitchToggled:(UISwitch*)sender {
+  CHECK(IsAutoOpenRemoteTabGroupsSettingsFeatureEnabled());
+  [self.delegate tabsSettingsTableViewController:self
+                      didUpdateAutoOpenTabGroups:sender.isOn];
+}
+
+#pragma mark - Private
+
+// Called when a row is selected at `indexPath`.
+- (void)performPrimaryActionForRowAtIndexPath:(NSIndexPath*)indexPath {
+  ItemType type = static_cast<ItemType>(
+      [self.tableViewModel itemTypeForIndexPath:indexPath]);
+  switch (type) {
+    case ItemTypeInactiveTabs:
+      [self.delegate
+          tabsSettingsTableViewControllerDidSelectInactiveTabsSettings:self];
+      break;
+    case ItemTypeAutomaticallyOpenTabGroups:
+      break;
+  }
 }
 
 // Updates the detail text for the Inactive tabs item.

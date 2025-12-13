@@ -21,6 +21,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
@@ -110,9 +111,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Pair of |text_changed|, |cursor_changed|.
   using EditCommandResult = std::pair<bool, bool>;
 
-  // Returns the text cursor blink time, or 0 for no blinking.
-  static base::TimeDelta GetCaretBlinkInterval();
-
   // Returns the default FontList used by all textfields.
   static const gfx::FontList& GetDefaultFontList();
 
@@ -134,7 +132,10 @@ class VIEWS_EXPORT Textfield : public View,
   void SetReadOnly(bool read_only);
 
   // Sets the input type; displays only asterisks for TEXT_INPUT_TYPE_PASSWORD.
-  // Other types are not no-op.
+  // Note: The check for TEXT_INPUT_TYPE_NUMBER is stricter than the HTML
+  // number type and only allows digits. This currently only restricts key
+  // events to digits, but does not prevent pasting non-numeric content. Other
+  // input types are currently no-ops.
   // TODO(crbug.com/419034676): restrict inputs appropriately for the type.
   // e.g. TEXT_INPUT_TYPE_NUMBER should take only numbers.
   void SetTextInputType(ui::TextInputType type);
@@ -380,6 +381,8 @@ class VIEWS_EXPORT Textfield : public View,
   // TextfieldModel::Delegate overrides:
   void OnCompositionTextConfirmedOrCleared() override;
   void OnTextChanged() override;
+  void WriteTextToClipboard(ui::ClipboardBuffer clipboard_buffer,
+                            const std::u16string_view& text) override;
 
   // ContextMenuController overrides:
   void ShowContextMenuForViewImpl(

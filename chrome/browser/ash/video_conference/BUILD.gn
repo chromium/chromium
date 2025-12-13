@@ -12,6 +12,8 @@ static_library("video_conference") {
     "video_conference_app_service_client.h",
     "video_conference_ash_feature_client.cc",
     "video_conference_ash_feature_client.h",
+    "video_conference_client_base.cc",
+    "video_conference_client_base.h",
     "video_conference_client_wrapper.cc",
     "video_conference_client_wrapper.h",
     "video_conference_manager_ash.cc",
@@ -79,6 +81,7 @@ source_set("browser_tests") {
     "video_conference_app_service_client_browsertest.cc",
     "video_conference_ash_feature_client_browsertest.cc",
     "video_conference_integration_browsertest.cc",
+    "video_conference_manager_ash_browsertest.cc",
   ]
 
   deps = [

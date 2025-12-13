@@ -23,16 +23,12 @@
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#import "ios/web/navigation/serializable_user_data_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
-#import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/test/fakes/async_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_java_script_dialog_presenter.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -792,62 +788,10 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
   EXPECT_FALSE(observer->update_favicon_url_candidates_info());
 }
 
-// Tests that BuildSessionStorage() and GetTitle() return information about the
-// most recently restored session if no navigation item has been committed. Also
-// tests that re-restoring that session includes updated userData.
-TEST_F(WebStateImplTest, UncommittedRestoreSession) {
-  GURL url("http://test.com");
-  CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
-  session_storage.lastCommittedItemIndex = 0;
-  CRWNavigationItemStorage* item_storage =
-      [[CRWNavigationItemStorage alloc] init];
-  item_storage.title = base::SysNSStringToUTF16(@"Title");
-  item_storage.virtualURL = url;
-  session_storage.itemStorages = @[ item_storage ];
-
-  WebStateImpl web_state =
-      WebStateImpl(WebState::CreateParams(GetBrowserState()), session_storage,
-                   base::ReturnValueOnce<NSData*>(nil));
-
-  // After restoring `web_state` change the uncommitted state's user data.
-  web::SerializableUserDataManager* user_data_manager =
-      web::SerializableUserDataManager::FromWebState(&web_state);
-  user_data_manager->AddSerializableData(@(1), @"user_data_key");
-
-  CRWSessionStorage* extracted_session_storage =
-      web_state.BuildSessionStorage();
-  EXPECT_EQ(0, extracted_session_storage.lastCommittedItemIndex);
-  EXPECT_EQ(1U, extracted_session_storage.itemStorages.count);
-  ASSERT_FALSE(web_state.IsRealized());
-  EXPECT_EQ(u"Title", web_state.GetTitle());
-  EXPECT_EQ(url, web_state.GetVisibleURL());
-
-  // Check that even if the WebState becomes realized, then GetTitle() and
-  // GetVisibleURL() are correct during the navigation history restoration.
-  web_state.SetWebUsageEnabled(false);
-  web_state.ForceRealized();
-
-  ASSERT_TRUE(web_state.IsRealized());
-  EXPECT_EQ(u"Title", web_state.GetTitle());
-  EXPECT_EQ(url, web_state.GetVisibleURL());
-
-  WebStateImpl restored_web_state(WebState::CreateParams(GetBrowserState()),
-                                  extracted_session_storage,
-                                  base::ReturnValueOnce<NSData*>(nil));
-  web::SerializableUserDataManager* restored_user_data_manager =
-      web::SerializableUserDataManager::FromWebState(&restored_web_state);
-  NSNumber* user_data_value = base::apple::ObjCCast<NSNumber>(
-      restored_user_data_manager->GetValueForSerializationKey(
-          @"user_data_key"));
-  EXPECT_EQ(@(1), user_data_value);
-}
-
 // Tests that SerializeToProto() and GetTitle() return information about the
 // most recently restored session if no navigation item has been committed. Also
 // tests that re-restoring that session includes updated userData.
-TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
+TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   GURL url("http://test.com");
   proto::WebStateStorage storage;
   proto::NavigationStorage* navigation_storage = storage.mutable_navigation();
@@ -886,19 +830,6 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
 // Test that lastCommittedItemIndex is end-of-list when there's no defined
 // index, such as during a restore.
 TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
-  WebStateImpl web_state =
-      WebStateImpl(WebState::CreateParams(GetBrowserState()));
-
-  CRWSessionStorage* session_storage = web_state.BuildSessionStorage();
-  EXPECT_EQ(-1, session_storage.lastCommittedItemIndex);
-  EXPECT_NSEQ(@[], session_storage.itemStorages);
-  EXPECT_TRUE(web_state.GetTitle().empty());
-  EXPECT_EQ(GURL(), web_state.GetVisibleURL());
-}
-
-// Test that lastCommittedItemIndex is end-of-list when there's no defined
-// index, such as during a restore.
-TEST_F(WebStateImplTest, NoUncommittedRestoreSessionOptimisedStorage) {
   WebStateImpl web_state =
       WebStateImpl(WebState::CreateParams(GetBrowserState()));
 

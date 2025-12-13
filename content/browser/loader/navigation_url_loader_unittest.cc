@@ -128,13 +128,11 @@ class NavigationURLLoaderTest : public testing::Test {
             nullptr /* blob_url_loader_factory */,
             base::UnguessableToken::Create() /* devtools_navigation_token */,
             base::UnguessableToken::Create() /* devtools_frame_token */,
-            net::HttpRequestHeaders() /* cors_exempt_headers */,
             nullptr /* client_security_state */,
             std::nullopt /* devtools_accepted_stream_types */,
             false /* is_pdf */,
             ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
             std::nullopt /* initiator_document_token */,
-            GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
             nullptr /* serving_page_metrics_container */,
             false /* allow_cookies_from_browser */, 0 /* navigation_id */,
             false /* shared_storage_writable */, false /* is_ad_tagged */,
@@ -214,7 +212,7 @@ TEST_F(NavigationURLLoaderTest, RequestFailedCertErrorFatal) {
   auto* storage_partition = browser_context_->GetDefaultStoragePartition();
   base::RunLoop run_loop;
   storage_partition->GetNetworkContext()->AddHSTS(
-      url.host(), expiry, include_subdomains, run_loop.QuitClosure());
+      url.GetHost(), expiry, include_subdomains, run_loop.QuitClosure());
   run_loop.Run();
 
   TestNavigationURLLoaderDelegate delegate;

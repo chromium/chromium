@@ -161,6 +161,23 @@ std::vector<std::string> MatchPatternsFromUrlPattern(
     match_patterns.push_back(protocol_host_str + path_str + search_query_str);
   }
 
+  // If "*" protocol, supply "ws" and "wss" as matching protocols as well.
+  if (protocol_part.type == liburlpattern::PartType::kFullWildcard) {
+    std::vector<std::string> ws_wss_additional_patterns;
+    for (std::string& match_pattern : match_patterns) {
+      CHECK_EQ(match_pattern[0], '*');
+      std::string pattern_without_wildcard_protocol = match_pattern.substr(1);
+      ws_wss_additional_patterns.push_back("ws" +
+                                           pattern_without_wildcard_protocol);
+      ws_wss_additional_patterns.push_back("wss" +
+                                           pattern_without_wildcard_protocol);
+    }
+
+    match_patterns.insert(match_patterns.end(),
+                          ws_wss_additional_patterns.begin(),
+                          ws_wss_additional_patterns.end());
+  }
+
   return match_patterns;
 }
 }  // namespace
@@ -192,14 +209,14 @@ bool V8URLPatternToMatchPatterns(v8::Isolate* isolate,
   return true;
 }
 
-// This function sends back multiple match patterns to the js layer, even though
-// it gets only one URLPattern via args, because of the discrepancies between
-// how URLPatterns and Match Patterns work. See the stringifying function above
-// for details.
+// This function sends multiple match patterns back to the js layer, even though
+// it gets only one URLPattern object or string via args, because of
+// the discrepancies between how URLPatterns and Match Patterns work.
+// See the stringifying function above for details.
 void WebUrlPatternNatives::URLPatternToMatchPatterns(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK_EQ(1, args.Length());
-  CHECK(args[0]->IsObject());
+  CHECK(args[0]->IsString() || args[0]->IsObject());
   v8::Isolate* isolate = args.GetIsolate();
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   v8::Local<v8::Value> input = args[0];

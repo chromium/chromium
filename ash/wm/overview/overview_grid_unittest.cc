@@ -27,11 +27,11 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -312,9 +312,12 @@ TEST_F(OverviewGridTest, SnappedWindow) {
   VerifyAnimationStates({true, false}, {});
 }
 
-TEST_F(OverviewGridTest, DISABLED_RecordsDelayedDeskBarPresentationMetric) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+TEST_F(OverviewGridTest, RecordsDelayedDeskBarPresentationMetric) {
+  // Use SLOW_DURATION to ensure the enter animation doesn't complete too
+  // quickly (within one frame), which causes the metric to be recorded earlier
+  // than expected by this test's intermediate check.
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
   // Since the windows are not maximized, the desk bar should open after
   // the overview animation is complete, causing
@@ -335,8 +338,8 @@ TEST_F(OverviewGridTest, DISABLED_RecordsDelayedDeskBarPresentationMetric) {
 }
 
 TEST_F(OverviewGridTest, DoesNotRecordDelayedDeskBarPresentationMetric) {
-  ui::ScopedAnimationDurationScaleMode animation_scale(
-      ui::ScopedAnimationDurationScaleMode::FAST_DURATION);
+  gfx::ScopedAnimationDurationScaleMode animation_scale(
+      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
 
   // Since the windows are maximized, the desk bar should open immediately when
   // we enter overview and `kOverviewDelayedDeskBarPresentationHistogram` should

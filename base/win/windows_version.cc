@@ -170,9 +170,6 @@ OSInfo::OSInfo(const _OSVERSIONINFOEXW& version_info,
   version_ = MajorMinorBuildToVersion(
       version_number_.major, version_number_.minor, version_number_.build);
   InitializeWowStatusValuesForProcess(GetCurrentProcess());
-  service_pack_.major = version_info.wServicePackMajor;
-  service_pack_.minor = version_info.wServicePackMinor;
-  service_pack_str_ = WideToUTF8(version_info.szCSDVersion);
 
   processors_ = static_cast<int>(system_info.dwNumberOfProcessors);
   allocation_granularity_ = system_info.dwAllocationGranularity;

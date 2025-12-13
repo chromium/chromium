@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class NewTabPageColorPalette;
+
 // App interface for the NTP.
 @interface NewTabPageAppInterface : NSObject
 
@@ -32,8 +34,8 @@
 // Returns the Discover header label.
 + (UILabel*)discoverHeaderLabel;
 
-// Disables the SetUpList via a pref.
-+ (void)disableSetUpList;
+// Disables Chrome Tips cards via a pref.
++ (void)disableTipsCards;
 
 // Resets SetUpList prefs to clear any completed items.
 + (void)resetSetUpListPrefs;
@@ -46,8 +48,11 @@
 // complete.
 + (BOOL)setUpListItemAutofillInMagicStackIsComplete;
 
-// Returns the title of the Set Up List.
-+ (NSString*)setUpListTitle;
+// Returns the current color palette of the NTP's background.
++ (NewTabPageColorPalette*)currentBackgroundColor;
+
+// Returns whether the NTP has a custom background image.
++ (BOOL)hasBackgroundImage;
 
 @end
 

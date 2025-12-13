@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
 #include <XInput.h>
@@ -21,6 +16,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +30,7 @@
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/nintendo_controller.h"
+#include "device/gamepad/public/cpp/gamepad_features.h"
 #include "device/gamepad/wgi_gamepad_device.h"
 
 namespace device {
@@ -104,6 +101,12 @@ std::optional<GamepadId> GetGamepadId(
                                            product_id);
 }
 
+// Returns true if `gamepad_id` is DualSense or DualSense Edge.
+bool IsPlayStation5Gamepad(GamepadId gamepad_id) {
+  return gamepad_id == GamepadId::kSonyProduct0ce6 ||
+         gamepad_id == GamepadId::kSonyProduct0df2;
+}
+
 // Check if the gamepad should be added by Windows.Gaming.Input. In the
 // situation that a Nintendo or Dualshock4 gamepad is connected, there are
 // dedicated data fetchers designed for these gamepads.
@@ -116,6 +119,12 @@ bool ShouldEnumerateGamepad(GamepadId gamepad_id) {
 
   if (Dualshock4Controller::IsDualshock4(gamepad_id)) {
     // Dualshock4 devices are handled by the RawInput data fetcher.
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kIgnorePS5GamepadsInWgi) &&
+      IsPlayStation5Gamepad(gamepad_id)) {
+    // PlayStation 5 gamepads are handled by the RawInput data fetcher.
     return false;
   }
 

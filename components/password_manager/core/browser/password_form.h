@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_H_
 
 #include <compare>
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -167,12 +166,13 @@ struct PasswordForm {
   // Enum to differentiate between HTML form based authentication, and dialogs
   // using basic or digest schemes. Default is kHtml. Only PasswordForms of the
   // same Scheme will be matched/autofilled against each other.
+  // This is persisted to disk, do not renumber entries.
   enum class Scheme {
-    kHtml,
-    kBasic,
-    kDigest,
-    kOther,
-    kUsernameOnly,
+    kHtml = 0,
+    kBasic = 1,
+    kDigest = 2,
+    kOther = 3,
+    kUsernameOnly = 4,
     kMinValue = kHtml,
     kMaxValue = kUsernameOnly,
   };
@@ -510,6 +510,9 @@ struct PasswordForm {
   // from another user via the password sharing feature.
   bool sharing_notification_displayed = false;
 
+  // Whether the actor login was approved.
+  bool actor_login_approved = false;
+
   // Returns true if this form is considered to be a login form, i.e. it has
   // a username field, a password field and no new password field. It's based
   // on heuristics and may be inaccurate.
@@ -578,8 +581,14 @@ struct PasswordForm {
   std::optional<base::Time> GetPasswordBackupDateCreated() const;
 
   // Updates the note with a password change backup specific
-  // `unique_display_name`.
+  // `unique_display_name`. This always updates the creation timestamp of the
+  // note.
   void SetPasswordBackupNote(const std::u16string& new_note_value);
+
+  // Deletes the backup note from the password, it uses a specific
+  // `unique_display_name` that indicates this was a backup
+  // saved through the password change flow.
+  void DeletePasswordBackupNote();
 
   PasswordForm();
   PasswordForm(const PasswordForm& other);

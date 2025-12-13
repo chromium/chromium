@@ -2978,6 +2978,18 @@ netbsdelf*-gnu)
   dynamic_linker='NetBSD ld.elf_so'
   ;;
 
+netbsdelf*-gnu)
+  version_type=linux
+  need_lib_prefix=no
+  need_version=no
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
+  soname_spec='${libname}${release}${shared_ext}$major'
+  shlibpath_var=LD_LIBRARY_PATH
+  shlibpath_overrides_runpath=no
+  hardcode_into_libs=yes
+  dynamic_linker='NetBSD ld.elf_so'
+  ;;
+
 netbsd*)
   version_type=sunos
   need_lib_prefix=no
@@ -4839,6 +4851,12 @@ m4_if([$1], [CXX], [
 	_LT_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
 	_LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
         ;;
+      # flang / f18. f95 an alias for gfortran or flang on Debian
+      flang* | f18* | f95*)
+	_LT_TAGVAR(lt_prog_compiler_wl, $1)='-Wl,'
+	_LT_TAGVAR(lt_prog_compiler_pic, $1)='-fPIC'
+	_LT_TAGVAR(lt_prog_compiler_static, $1)='-static'
+        ;;
       # icc used to be incompatible with GCC.
       # ICC 10 doesn't accept -KPIC any more.
       icc* | ifort*)
@@ -5092,6 +5110,9 @@ m4_if([$1], [CXX], [
       ;;
     esac
     ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
+    ;;
   *)
     _LT_TAGVAR(export_symbols_cmds, $1)='$NM $libobjs $convenience | $global_symbol_pipe | $SED '\''s/.* //'\'' | sort | uniq > $export_symbols'
     ;;
@@ -5150,6 +5171,9 @@ dnl Note also adjust exclude_expsyms for C++ above.
   interix*)
     # we just hope/assume this is gcc and not c89 (= MSVC++ or ICC)
     with_gnu_ld=yes
+    ;;
+  linux* | k*bsd*-gnu | gnu*)
+    _LT_TAGVAR(link_all_deplibs, $1)=no
     ;;
   esac
 
@@ -5934,6 +5958,7 @@ _LT_EOF
 	if test yes = "$lt_cv_irix_exported_symbol"; then
           _LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags $wl-soname $wl$soname `test -n "$verstring" && func_echo_all "$wl-set_version $wl$verstring"` $wl-update_registry $wl$output_objdir/so_locations $wl-exports_file $wl$export_symbols -o $lib'
 	fi
+	_LT_TAGVAR(link_all_deplibs, $1)=no
       else
 	_LT_TAGVAR(archive_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -o $lib'
 	_LT_TAGVAR(archive_expsym_cmds, $1)='$CC -shared $libobjs $deplibs $compiler_flags -soname $soname `test -n "$verstring" && func_echo_all "-set_version $verstring"` -update_registry $output_objdir/so_locations -exports_file $export_symbols -o $lib'

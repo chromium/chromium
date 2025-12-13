@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 
 // This file implements a dialog allowing the user to pick between installed
 // X session types. It finds sessions by looking for .desktop files in
@@ -257,8 +256,8 @@ std::optional<XSession> TryLoadSession(base::FilePath path) {
   if (gchar** desktop_names =
           g_key_file_get_string_list(key_file.get(), G_KEY_FILE_DESKTOP_GROUP,
                                      "DesktopNames", nullptr, nullptr)) {
-    for (std::size_t i = 0; desktop_names[i]; ++i) {
-      session.desktop_names.push_back(desktop_names[i]);
+    for (std::size_t i = 0; UNSAFE_TODO(desktop_names[i]); ++i) {
+      session.desktop_names.push_back(UNSAFE_TODO(desktop_names[i]));
     }
     g_strfreev(desktop_names);
   }
@@ -271,7 +270,8 @@ std::vector<XSession> CollectXSessions() {
   session_search_dirs.emplace_back("/etc/X11/sessions");
 
   // Returned list is owned by GLib and should not be modified or freed.
-  const gchar* const* system_data_dirs = g_get_system_data_dirs();
+  base::span<const gchar* const> system_data_dirs =
+      UNSAFE_G_GET_SYSTEM_DATA_DIRS();
   // List is null-terminated.
   for (std::size_t i = 0; system_data_dirs[i]; ++i) {
     session_search_dirs.push_back(

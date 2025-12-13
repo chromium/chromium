@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
 #include <algorithm>
 #include <limits>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -241,7 +237,8 @@ bool PlatformSensorFusion::IsSignificantlyDifferent(
     const SensorReading& reading2,
     mojom::SensorType) {
   for (size_t i = 0; i < SensorReadingRaw::kValuesCount; ++i) {
-    if (std::fabs(reading1.raw.values[i] - reading2.raw.values[i]) >=
+    if (std::fabs(UNSAFE_TODO(reading1.raw.values[i]) -
+                  UNSAFE_TODO(reading2.raw.values[i])) >=
         fusion_algorithm_->threshold()) {
       return true;
     }

@@ -28,6 +28,6 @@ bool ShouldExposeGoogleAccountsPrivateApi(
   // uses a dedicated process, rather than sharing process with eTLD+1.
   return rfh_origin == GetAllowedGoogleAccountsOrigin() &&
          rfh->GetSiteInstance()->RequiresDedicatedProcess() &&
-         rfh->GetSiteInstance()->GetSiteURL().host() ==
+         rfh->GetSiteInstance()->GetSiteURL().GetHost() ==
              GetAllowedGoogleAccountsOrigin().host();
 }

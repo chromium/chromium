@@ -15,16 +15,11 @@
 #include "build/build_config.h"
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
 
 namespace media {
 class VideoDecodePerfHistory;
 class WebrtcVideoPerfHistory;
-namespace learning {
-class LearningSession;
-class LearningSessionImpl;
-}  // namespace learning
 }  // namespace media
 
 namespace storage {
@@ -42,10 +37,13 @@ class BrowserContextImpl;
 class BrowsingDataRemoverImpl;
 class DownloadManager;
 class InMemoryFederatedPermissionContext;
-class NavigationEntryScreenshotManager;
 class PermissionController;
 class PrefetchService;
 class StoragePartitionImplMap;
+
+#if BUILDFLAG(IS_ANDROID)
+class NavigationEntryScreenshotManager;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // content-internal parts of BrowserContext.
 //
@@ -75,8 +73,6 @@ class CONTENT_EXPORT BrowserContextImpl {
 
   BrowsingDataRemoverImpl* GetBrowsingDataRemover();
 
-  media::learning::LearningSession* GetLearningSession();
-
   storage::ExternalMountPoints* GetMountPoints();
 
   DownloadManager* GetDownloadManager();
@@ -104,7 +100,9 @@ class CONTENT_EXPORT BrowserContextImpl {
   void SetPrefetchServiceForTesting(
       std::unique_ptr<PrefetchService> prefetch_service);
 
+#if BUILDFLAG(IS_ANDROID)
   NavigationEntryScreenshotManager* GetNavigationEntryScreenshotManager();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   InMemoryFederatedPermissionContext* GetFederatedPermissionContext();
   void ResetFederatedPermissionContext();
@@ -112,10 +110,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   using TraceProto = perfetto::protos::pbzero::ChromeBrowserContext;
   // Write a representation of this object into a trace.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const;
-
-  ResourceContext* GetResourceContext() const {
-    return resource_context_.get();
-  }
 
   BtmServiceImpl* GetBtmService();
   // If the BTM database file should be deleted, wait for it. Otherwise, return
@@ -161,12 +155,13 @@ class CONTENT_EXPORT BrowserContextImpl {
   std::unique_ptr<PermissionController> permission_controller_;
   scoped_refptr<BackgroundSyncScheduler> background_sync_scheduler_;
   std::unique_ptr<PrefetchService> prefetch_service_;
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<NavigationEntryScreenshotManager>
       nav_entry_screenshot_manager_;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<InMemoryFederatedPermissionContext>
       federated_permission_context_;
 
-  std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
   std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
@@ -179,12 +174,6 @@ class CONTENT_EXPORT BrowserContextImpl {
   // TODO: crbug.com/356624038 - delete this when the BTM feature flag is
   // removed.
   base::RunLoop btm_cleanup_loop_;
-
-  // TODO(crbug.com/40604019): Get rid of ResourceContext.
-  // Created on the UI thread, otherwise lives on and is destroyed on the IO
-  // thread.
-  std::unique_ptr<ResourceContext> resource_context_ =
-      std::make_unique<ResourceContext>();
 
 #if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;

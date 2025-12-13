@@ -25,14 +25,10 @@ void LogStateDuration(features_util::PasswordAccountStorageUserState user_state,
 }  // namespace
 
 PasswordSessionDurationsMetricsRecorder::
-    PasswordSessionDurationsMetricsRecorder(PrefService* pref_service,
-                                            syncer::SyncService* sync_service)
-    : pref_service_(pref_service),
-      sync_service_(sync_service),
+    PasswordSessionDurationsMetricsRecorder(syncer::SyncService* sync_service)
+    : sync_service_(sync_service),
       user_state_(features_util::ComputePasswordAccountStorageUserState(
-          pref_service_,
           sync_service_)) {
-  DCHECK(pref_service_);
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
     sync_observation_.Observe(sync_service_.get());
@@ -86,10 +82,16 @@ void PasswordSessionDurationsMetricsRecorder::OnStateChanged(
   CheckForUserStateChange();
 }
 
+void PasswordSessionDurationsMetricsRecorder::OnSyncShutdown(
+    syncer::SyncService* sync) {
+  // Unreachable, since the service owning this instance is Shutdown() before
+  // the SyncService.
+  NOTREACHED();
+}
+
 void PasswordSessionDurationsMetricsRecorder::CheckForUserStateChange() {
   features_util::PasswordAccountStorageUserState new_user_state =
-      features_util::ComputePasswordAccountStorageUserState(pref_service_,
-                                                            sync_service_);
+      features_util::ComputePasswordAccountStorageUserState(sync_service_);
   // If the state is unchanged, nothing to do.
   if (new_user_state == user_state_) {
     return;

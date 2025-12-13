@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PinCandidate, Subscriber, TabContextResult, TabData} from '/glic/glic_api/glic_api.js';
+import type {ObservableValue, PinCandidate, Subscriber, TabContextResult, TabData} from '/glic/glic_api/glic_api.js';
 import {DEFAULT_PDF_SIZE_LIMIT} from '/glic/glic_api/glic_api.js';
 
 import {client, getBrowser, logMessage} from '../client.js';
@@ -22,6 +22,7 @@ interface PinnedTabStateUpdate {
 
 let state: PinnedTabState[] = [];
 let pinCandidateSubscriber: Subscriber|undefined;
+let pinCandidateObservable: ObservableValue<PinCandidate[]>|undefined;
 
 function updateStateWithTabData(tabData: TabData[]) {
   state = state.filter((x) => {
@@ -81,8 +82,10 @@ async function fetchPinnedTabState(
   if (!tabState.tabData.isObservable && observableTabOnly) {
     return update;
   }
+
   try {
-    const viewportScreenshot = observableTabOnly;
+    const viewportScreenshot =
+        observableTabOnly || $.multiTabFetchScreenshot.checked;
     const annotatedPageContent = true;
     const pdfData = true;
     const pdfSizeLimit = DEFAULT_PDF_SIZE_LIMIT;
@@ -215,7 +218,6 @@ function replaceCandidates(candidates: PinCandidate[]) {
     button.innerText = 'Share';
     const clickHandler = async () => {
       await getBrowser()!.pinTabs!([candidate.tabData.tabId]);
-      await fetchCandidates();
     };
     button.addEventListener('click', clickHandler);
     li.appendChild(button);
@@ -227,13 +229,15 @@ function replaceCandidates(candidates: PinCandidate[]) {
 async function fetchCandidates() {
   if (pinCandidateSubscriber) {
     pinCandidateSubscriber.unsubscribe();
+    pinCandidateSubscriber = undefined;
   }
-  pinCandidateSubscriber = getBrowser()!
-                               .getPinCandidates!({
-                                 maxCandidates: 10,
-                                 query: $.shareCandidateQuery.value,
-                               })
-                               .subscribe(replaceCandidates);
+  if (!pinCandidateObservable) {
+    pinCandidateObservable = getBrowser()!.getPinCandidates!({
+      maxCandidates: 10,
+      query: $.shareCandidateQuery.value,
+    });
+  }
+  pinCandidateSubscriber = pinCandidateObservable!.subscribe(replaceCandidates);
 }
 
 client.getInitialized().then(async () => {
@@ -286,19 +290,21 @@ client.getInitialized().then(async () => {
     await updateUi();
   });
 
-  $.shareCandidateQuery.addEventListener('focus', () => {
-    fetchCandidates();
+  $.shareCandidateQuery.addEventListener('input', () => {
+    pinCandidateSubscriber?.unsubscribe();
+    pinCandidateSubscriber = undefined;
+    pinCandidateObservable = undefined;
+    if ($.enableShareCandidates.checked) {
+      fetchCandidates();
+    }
   });
 
-  $.shareCandidateQuery.addEventListener('blur', () => {
-    if (pinCandidateSubscriber) {
-      pinCandidateSubscriber.unsubscribe();
+  $.enableShareCandidates.addEventListener('click', () => {
+    if ($.enableShareCandidates.checked) {
+      fetchCandidates();
+    } else {
+      pinCandidateSubscriber?.unsubscribe();
       pinCandidateSubscriber = undefined;
     }
-    clearCandidates();
-  });
-
-  $.shareCandidateQuery.addEventListener('input', () => {
-    fetchCandidates();
   });
 });

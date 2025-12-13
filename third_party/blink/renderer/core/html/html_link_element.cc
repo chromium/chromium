@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
@@ -33,6 +34,7 @@
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -46,8 +48,11 @@
 #include "third_party/blink/renderer/core/loader/link_loader.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
+#include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -246,7 +251,18 @@ bool HTMLLinkElement::IsLinkCreatedByParser() {
 }
 
 bool HTMLLinkElement::LoadLink(const LinkLoadParameters& params) {
-  return link_loader_->LoadLink(params, GetDocument());
+  bool result = link_loader_->LoadLink(params, GetDocument());
+  // Save the current task state to restore for load/error events. For
+  // efficiency, constrain to links inserted after initial load, since those
+  // will have a null context anyway.
+  // Note: This method doesn't initiate the load for stylesheets (it handles
+  // prelaods, etc.), but it is called by `LinkStyle` before `LoadStyleSheet()`,
+  // so just capture the state here.
+  if (result && !IsCreatedByParser()) {
+    load_initiator_task_state_ =
+        CaptureCurrentTaskState(GetDocument().GetExecutionContext());
+  }
+  return result;
 }
 
 void HTMLLinkElement::LoadStylesheet(const LinkLoadParameters& params,
@@ -339,6 +355,7 @@ void HTMLLinkElement::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   link_loader_->Abort();
+  load_initiator_task_state_ = nullptr;
 
   if (!was_connected) {
     DCHECK(!GetLinkStyle() || !GetLinkStyle()->HasSheet());
@@ -367,17 +384,30 @@ bool HTMLLinkElement::StyleSheetIsLoading() const {
 }
 
 void HTMLLinkElement::LinkLoaded() {
-  if (rel_attribute_.IsLinkPrefetch()) {
-    UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchLoadEvent);
-  }
-  DispatchEvent(*Event::Create(event_type_names::kLoad));
+  DispatchEventWithTaskState(event_type_names::kLoad,
+                             TakeLoadInitiatorTaskState());
 }
 
 void HTMLLinkElement::LinkLoadingErrored() {
+  DispatchEventWithTaskState(event_type_names::kError,
+                             TakeLoadInitiatorTaskState());
+}
+
+void HTMLLinkElement::DispatchEventWithTaskState(
+    const AtomicString& type,
+    scheduler::TaskAttributionInfo* task_state) {
   if (rel_attribute_.IsLinkPrefetch()) {
-    UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchErrorEvent);
+    if (type == event_type_names::kLoad) {
+      UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchLoadEvent);
+    } else if (type == event_type_names::kError) {
+      UseCounter::Count(GetDocument(), WebFeature::kLinkPrefetchErrorEvent);
+    }
   }
-  DispatchEvent(*Event::Create(event_type_names::kError));
+  std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
+      SetCurrentTaskStateIfTopLevel(task_state,
+                                    GetDocument().GetExecutionContext(),
+                                    TaskScopeType::kMiscEvent));
+  DispatchEvent(*Event::Create(type));
 }
 
 bool HTMLLinkElement::SheetLoaded() {
@@ -392,12 +422,12 @@ void HTMLLinkElement::NotifyLoadedSheetAndAllCriticalSubresources(
 }
 
 void HTMLLinkElement::DispatchPendingEvent(
-    std::unique_ptr<IncrementLoadEventDelayCount> count) {
+    std::unique_ptr<IncrementLoadEventDelayCount> count,
+    scheduler::TaskAttributionInfo* task_state) {
   DCHECK(link_);
-  if (link_->HasLoaded())
-    LinkLoaded();
-  else
-    LinkLoadingErrored();
+  DispatchEventWithTaskState(
+      link_->HasLoaded() ? event_type_names::kLoad : event_type_names::kError,
+      task_state);
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because dispatchPendingEvent() is called asynchronously.
@@ -409,9 +439,10 @@ void HTMLLinkElement::ScheduleEvent() {
       .GetTaskRunner(TaskType::kDOMManipulation)
       ->PostTask(
           FROM_HERE,
-          WTF::BindOnce(
+          BindOnce(
               &HTMLLinkElement::DispatchPendingEvent, WrapPersistent(this),
-              std::make_unique<IncrementLoadEventDelayCount>(GetDocument())));
+              std::make_unique<IncrementLoadEventDelayCount>(GetDocument()),
+              WrapPersistent(TakeLoadInitiatorTaskState())));
 }
 
 void HTMLLinkElement::SetToPendingState() {
@@ -471,6 +502,7 @@ void HTMLLinkElement::Trace(Visitor* visitor) const {
   visitor->Trace(link_loader_);
   visitor->Trace(rel_list_);
   visitor->Trace(blocking_attribute_);
+  visitor->Trace(load_initiator_task_state_);
   HTMLElement::Trace(visitor);
   LinkLoaderClient::Trace(visitor);
 }

@@ -60,3 +60,5 @@ void DevUiModuleProvider::EnsureLoaded() {
 DevUiModuleProvider::DevUiModuleProvider() = default;
 
 }  // namespace dev_ui
+
+DEFINE_JNI(DevUiModuleProvider)

@@ -14,12 +14,12 @@
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/test_helper.h"
@@ -93,14 +93,13 @@ class AmbientClientImplTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
+
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          testing_local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           ash::CrosSettings::Get())};
   std::unique_ptr<ash::ProfileUserManagerController>
       profile_user_manager_controller_;

@@ -53,7 +53,7 @@ suite('ExtensionOptionsDialogTests', function() {
           const nameElement = optionsDialog.shadowRoot.querySelector(
               '#icon-and-name-wrapper span');
           assertTrue(!!nameElement);
-          assertEquals(data.name, nameElement.textContent!.trim());
+          assertEquals(data.name, nameElement.textContent.trim());
         });
   });
 });

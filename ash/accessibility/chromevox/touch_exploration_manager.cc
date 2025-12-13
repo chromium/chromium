@@ -142,7 +142,7 @@ void TouchExplorationManager::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
   const display::Display this_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           root_window_controller_->GetRootWindow());
   if (this_display.id() == display.id())
     UpdateTouchExplorationState();
@@ -219,7 +219,7 @@ void TouchExplorationManager::UpdateTouchExplorationState() {
     }
     if (pass_through_surface) {
       const display::Display display =
-          display::Screen::GetScreen()->GetDisplayNearestWindow(
+          display::Screen::Get()->GetDisplayNearestWindow(
               root_window_controller_->GetRootWindow());
       const gfx::Rect work_area = display.work_area();
       touch_exploration_controller_->SetExcludeBounds(work_area);

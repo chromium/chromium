@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/user_verifying_key.h"
 
 #include <windows.h>
@@ -20,6 +15,7 @@
 #include <functional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -164,7 +160,6 @@ class HelloDialogForegrounder
       return;
     }
 
-    constexpr wchar_t kTargetWindowName[] = L"Windows Security";
     constexpr wchar_t kTargetClassName[] = L"Credential Dialog Xaml Host";
     if (state_ == State::kPollingForFirstAppearance) {
       constexpr int kMaxIterations = 40;
@@ -174,7 +169,7 @@ class HelloDialogForegrounder
         return;
       }
 
-      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+      if (HWND hwnd = FindWindowW(kTargetClassName, nullptr)) {
         base::UmaHistogramExactLinear(
             "WebAuthentication.Windows.FindHelloDialogIterationCount",
             iteration,
@@ -189,7 +184,7 @@ class HelloDialogForegrounder
       }
     } else {
       CHECK_EQ(state_, State::kPollingForAuthRetry);
-      if (HWND hwnd = FindWindowW(kTargetClassName, kTargetWindowName)) {
+      if (HWND hwnd = FindWindowW(kTargetClassName, nullptr)) {
         SetForegroundWindow(hwnd);
       }
       interval = 500;
@@ -282,8 +277,8 @@ void OnSigningSuccess(
   }
 
   RecordSignAsyncResult(KeyCredentialSignResult::kSucceeded);
-  std::move(callback).Run(base::ok(
-      std::vector<uint8_t>(signature_data, signature_data + signature_length)));
+  std::move(callback).Run(base::ok(std::vector<uint8_t>(
+      signature_data, UNSAFE_TODO(signature_data + signature_length))));
 }
 
 void OnSigningError(
@@ -376,7 +371,8 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
                                            &pub_key_length);
     CHECK(SUCCEEDED(hr)) << FormatError(
         "Failed to access public key buffer data", hr);
-    return std::vector<uint8_t>(pub_key_data, pub_key_data + pub_key_length);
+    return std::vector<uint8_t>(pub_key_data,
+                                UNSAFE_TODO(pub_key_data + pub_key_length));
   }
 
   const UserVerifyingKeyLabel& GetKeyLabel() const override {

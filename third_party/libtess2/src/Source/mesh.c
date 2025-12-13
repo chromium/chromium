@@ -750,6 +750,8 @@ int tessMeshMergeConvexFaces( TESSmesh *mesh, int maxVertsPerFace )
 
 void tessMeshFlipEdge( TESSmesh *mesh, TESShalfEdge *edge )
 {
+	TESS_NOTUSED(mesh);
+
 	TESShalfEdge *a0 = edge;
 	TESShalfEdge *a1 = a0->Lnext;
 	TESShalfEdge *a2 = a1->Lnext;

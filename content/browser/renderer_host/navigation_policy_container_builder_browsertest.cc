@@ -138,15 +138,14 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 // navigation, if any, or resets those policies when given nullptr.
 IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                        HistoryPoliciesForBlankUrl) {
-  RenderFrameHostImpl* root = root_frame_host();
-
   // First navigate to a local scheme with non-default policies. To do that, we
   // first navigate to a document with a public address space, then have that
   // document navigate itself to `about:blank`. The final blank document
   // inherits its policies from the first document, and stores them in its
   // frame navigation entry for restoring later.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+  RenderFrameHostImpl* root = root_frame_host();
 
   const PolicyContainerPolicies& root_policies = GetPolicies(root);
   EXPECT_EQ(root_policies.ip_address_space,
@@ -219,7 +218,6 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 // initiator's policies are ignored in favor of the policies from the entry.
 IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
                        FinalPoliciesAboutBlankWithInitiatorAndHistory) {
-  RenderFrameHostImpl* root = root_frame_host();
 
   // First navigate to a local scheme with non-default policies. To do that, we
   // first navigate to a document with a public address space, then have that
@@ -227,7 +225,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
   // inherits its policies from the first document, and stores them in its frame
   // navigation entry for restoring later.
   EXPECT_TRUE(NavigateToURL(shell()->web_contents(), PublicUrl()));
-  EXPECT_TRUE(NavigateToURLFromRenderer(root, AboutBlankUrl()));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame_host(), AboutBlankUrl()));
+  RenderFrameHostImpl* root = root_frame_host();
 
   PolicyContainerPolicies initiator_policies;
   initiator_policies.ip_address_space =

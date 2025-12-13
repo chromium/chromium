@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -13,12 +14,15 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.List;
+
 /** A root view for web app header, it manages paddings and notifies about layout changes. */
 @NullMarked
 public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChangeListener {
 
     private @Nullable Callback<Integer> mOnWidthChanged;
     private @Nullable Callback<Integer> mOnVisibilityChangedCallback;
+    private final CutoutDrawable mBackgroundDrawable = new CutoutDrawable();
 
     public WebAppHeaderLayout(Context context) {
         super(context);
@@ -32,6 +36,7 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
     protected void onFinishInflate() {
         super.onFinishInflate();
         addOnLayoutChangeListener(this);
+        setBackground(mBackgroundDrawable);
     }
 
     @Override
@@ -47,6 +52,14 @@ public class WebAppHeaderLayout extends FrameLayout implements View.OnLayoutChan
             int oldBottom) {
         if (mOnWidthChanged == null) return;
         mOnWidthChanged.onResult(right - left);
+    }
+
+    public void setBackgroundDrawableColor(int color) {
+        mBackgroundDrawable.setColor(color);
+    }
+
+    public void setBackgroundCutouts(List<Rect> cutouts) {
+        mBackgroundDrawable.setCutouts(cutouts);
     }
 
     /**

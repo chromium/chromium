@@ -11,20 +11,20 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
 
 import {getTemplate} from './address_remove_confirmation_dialog.html.js';
 
 
 export interface SettingsAddressRemoveConfirmationDialogElement {
   $: {
-    accountAddressDescription: HTMLElement,
-    body: HTMLElement,
+    description: HTMLElement,
     cancel: HTMLElement,
     dialog: CrDialogElement,
-    localAddressDescription: HTMLElement,
     remove: HTMLElement,
-    syncAddressDescription: HTMLElement,
   };
 }
 
@@ -45,38 +45,115 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
       address: Object,
       accountInfo: Object,
 
-      isAccountAddress_: {
-        type: Boolean,
-        computed: 'computeIsAccountAddress_(address)',
+      /**
+       * The title of the confirmation dialog.
+       */
+      confirmationTitle_: {
+        type: String,
+        computed: 'computeConfirmationTitle_()',
       },
 
-      isProfileSyncEnabled_: {
-        type: Boolean,
-        computed: 'computeIsProfileSyncEnabled_(accountInfo)',
-        value: false,
+      /**
+       * The body of the confirmation dialog.
+       */
+      confirmationDescription_: {
+        type: String,
+        computed: 'computeConfirmationDescription_(address, accountInfo)',
+      },
+
+      /**
+       * The label for the remove button.
+       */
+      removeButtonLabel_: {
+        type: String,
+        computed: 'computeRemoveButtonLabel_()',
       },
     };
   }
 
   declare address: chrome.autofillPrivate.AddressEntry;
   declare accountInfo?: chrome.autofillPrivate.AccountInfo;
-  declare private isAccountAddress_: boolean;
-  declare private isProfileSyncEnabled_: boolean;
+
+  declare private confirmationTitle_: string;
+  declare private confirmationDescription_: string;
+  declare private removeButtonLabel_: string;
 
   wasConfirmed(): boolean {
     return this.$.dialog.getNative().returnValue === 'success';
   }
 
-  private computeIsAccountAddress_(
-      address: chrome.autofillPrivate.AddressEntry): boolean {
-    return address.metadata !== undefined &&
-        address.metadata.recordType ===
-        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
+  private computeConfirmationTitle_(): string {
+    if (this.isAccountHomeAddress_()) {
+      return this.i18n('removeHomeAddressConfirmationTitle');
+    }
+
+    if (this.isAccountWorkAddress_()) {
+      return this.i18n('removeWorkAddressConfirmationTitle');
+    }
+
+    return this.isAccountNameEmailAddress_() ?
+        this.i18n('removeNameEmailAddressConfirmationTitle') :
+        this.i18n('removeAddressConfirmationTitle');
   }
 
-  private computeIsProfileSyncEnabled_(
-      accountInfo?: chrome.autofillPrivate.AccountInfo): boolean {
-    return !!accountInfo?.isSyncEnabledForAutofillProfiles;
+  private computeConfirmationDescription_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo?: chrome.autofillPrivate.AccountInfo): TrustedHTML {
+    const isAccountAddress = address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT;
+
+    if (isAccountAddress) {
+      return sanitizeInnerHtml(this.i18n(
+          'deleteAccountAddressRecordTypeNotice', accountInfo?.email || ''));
+    }
+
+    if (this.isAccountHomeAddress_()) {
+      return sanitizeInnerHtml(loadTimeData.getStringF(
+          'deleteHomeAddressNotice',
+          loadTimeData.getString('googleAccountHomeAddressUrl'),
+          accountInfo?.email || ''));
+    }
+
+    if (this.isAccountWorkAddress_()) {
+      return sanitizeInnerHtml(loadTimeData.getStringF(
+          'deleteWorkAddressNotice',
+          loadTimeData.getString('googleAccountWorkAddressUrl'),
+          accountInfo?.email || ''));
+    }
+
+    if (this.isAccountNameEmailAddress_()) {
+      return sanitizeInnerHtml(loadTimeData.getStringF(
+          'deleteNameEmailAddressNotice',
+          loadTimeData.getString('googleAccountNameEmailAddressEditUrl'),
+          accountInfo?.email || ''));
+    }
+
+    const isSyncEnabled = !!accountInfo?.isSyncEnabledForAutofillProfiles;
+    return sanitizeInnerHtml(this.i18n(
+        isSyncEnabled ? 'removeSyncAddressConfirmationDescription' :
+                        'removeLocalAddressConfirmationDescription'));
+  }
+
+  private computeRemoveButtonLabel_(): string {
+    return this.isAccountHomeAddress_() || this.isAccountWorkAddress_() ||
+            this.isAccountNameEmailAddress_() ?
+        this.i18n('removeAddressFromChrome') :
+        this.i18n('removeAddress');
+  }
+
+  private isAccountHomeAddress_(): boolean {
+    return this.address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_HOME;
+  }
+
+  private isAccountWorkAddress_(): boolean {
+    return this.address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_WORK;
+  }
+
+  private isAccountNameEmailAddress_(): boolean {
+    return this.address?.metadata?.recordType ===
+        chrome.autofillPrivate.AddressRecordType.ACCOUNT_NAME_EMAIL;
   }
 
   private onRemoveClick() {

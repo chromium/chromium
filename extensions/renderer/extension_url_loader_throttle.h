@@ -8,25 +8,22 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "extensions/renderer/extension_throttle_manager.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "url/gurl.h"
 
 namespace extensions {
 
-class ExtensionThrottleManager;
+class ExtensionThrottleManagerAccess;
 
 // This class monitors requests issued by extensions and throttles the request
 // if there are too many requests made within a short time to urls with the same
 // scheme, host, port and path. For the exact criteria for throttling, please
 // also see extension_throttle_manager.cc.
-class ExtensionURLLoaderThrottle
-    : public blink::URLLoaderThrottle,
-      public ExtensionThrottleManager::ExtensionThrottleManagerObserver {
+class ExtensionURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
-  explicit ExtensionURLLoaderThrottle(ExtensionThrottleManager* manager);
+  explicit ExtensionURLLoaderThrottle(
+      scoped_refptr<ExtensionThrottleManagerAccess> manager_access);
 
   ExtensionURLLoaderThrottle(const ExtensionURLLoaderThrottle&) = delete;
   ExtensionURLLoaderThrottle& operator=(const ExtensionURLLoaderThrottle&) =
@@ -48,20 +45,12 @@ class ExtensionURLLoaderThrottle
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 
-  // ExtensionThrottleManagerObserver.
-  void OnExtensionThrottleManagerDestruct(
-      ExtensionThrottleManager* manager) override;
-
  private:
   // blink::URLLoaderThrottle:
   void DetachFromCurrentSequence() override;
 
-  raw_ptr<ExtensionThrottleManager> manager_ = nullptr;
+  scoped_refptr<ExtensionThrottleManagerAccess> manager_access_;
   GURL start_request_url_;
-
-  base::ScopedObservation<ExtensionThrottleManager,
-                          ExtensionThrottleManagerObserver>
-      manager_observation_{this};
 };
 
 }  // namespace extensions

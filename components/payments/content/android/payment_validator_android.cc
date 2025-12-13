@@ -22,9 +22,9 @@
 
 namespace payments {
 
-jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
+static jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& buffer) {
+    const base::android::JavaRef<jobject>& buffer) {
   mojom::PaymentDetailsPtr details;
   auto span = base::android::JavaByteBufferToSpan(env, buffer);
   if (!mojom::PaymentDetails::Deserialize(span.data(), span.size(), &details)) {
@@ -35,9 +35,9 @@ jboolean JNI_PaymentValidator_ValidatePaymentDetailsAndroid(
                                 &unused_error_message);
 }
 
-jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
+static jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& buffer) {
+    const base::android::JavaRef<jobject>& buffer) {
   mojom::PaymentValidationErrorsPtr errors;
   auto span = base::android::JavaByteBufferToSpan(env, buffer);
   if (!mojom::PaymentValidationErrors::Deserialize(span.data(), span.size(),
@@ -46,7 +46,9 @@ jboolean JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
   }
   std::string unused_error_message;
   return PaymentsValidators::IsValidPaymentValidationErrorsFormat(
-      std::move(errors), &unused_error_message);
+      errors, &unused_error_message);
 }
 
 }  // namespace payments
+
+DEFINE_JNI(PaymentValidator)

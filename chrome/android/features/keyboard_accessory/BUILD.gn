@@ -22,6 +22,7 @@ java_group("internal_java") {
 group("jni_headers") {
   public_deps = [
     "//chrome/android/features/keyboard_accessory/internal:jni",
+    "//chrome/browser/keyboard_accessory/android/internal:jni",
     "//chrome/browser/keyboard_accessory/android/java:jni",
   ]
 }
@@ -36,9 +37,6 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingUiCaptureTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/PasswordGenerationIntegrationTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetRenderTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipViewRenderTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryTestHelper.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
@@ -54,9 +52,8 @@ android_library("test_java") {
   ]
 
   deps = [
+    ":internal_java",
     ":test_resources",
-    "internal:internal_java",
-    "internal:java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
@@ -67,6 +64,9 @@ android_library("test_java") {
     "//chrome/browser/autofill/test:test_support_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java_resources",
+    "//chrome/browser/keyboard_accessory/android/internal:test_java",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:settings_interface_java",
@@ -79,6 +79,7 @@ android_library("test_java") {
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//components/autofill/android:autofill_java",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -99,6 +100,7 @@ android_library("test_java") {
     "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -119,7 +121,8 @@ android_resources("test_resources") {
 
   sources = [ "javatests/res/layout/test_main.xml" ]
 
-  deps = [ "internal:java_resources" ]
+  deps =
+      [ "//chrome/browser/keyboard_accessory/android/internal:java_resources" ]
 }
 
 robolectric_binary("keyboard_accessory_junit_tests") {
@@ -127,7 +130,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
 
   sources = [
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingControllerTest.java",
-    "junit/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetControllerTest.java",
+    "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipGroupTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupControllerTest.java",
     "junit/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetControllerTest.java",
@@ -147,6 +150,8 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/keyboard_accessory/android/internal:java",
+    "//chrome/browser/keyboard_accessory/android/internal:junit_tests",
     "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/profiles/android:java",
@@ -170,6 +175,8 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/google-truth:google_truth_java",
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",

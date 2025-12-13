@@ -212,12 +212,6 @@ class HeaderParser:
   multi_line_comment_start_re = re.compile(r'\s*/\*')
   enum_line_re = re.compile(r'^\s*(\w+)(\s*\=\s*([^,\n]+))?,?')
   enum_end_re = re.compile(r'^\s*}\s*;\.*$')
-  # Note: For now we only support a very specific `#if` statement to prevent the
-  # possibility of miscalculating whether lines should be ignored when building
-  # for Android.
-  if_buildflag_re = re.compile(
-      r'^#if BUILDFLAG\((\w+)\)(?: \|\| BUILDFLAG\((\w+)\))*$')
-  if_buildflag_end_re = re.compile(r'^#endif.*$')
   generator_error_re = re.compile(r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*$')
   generator_directive_re = re.compile(
       r'^\s*//\s+GENERATED_JAVA_(\w+)\s*:\s*([\.\w]+)$')
@@ -237,25 +231,15 @@ class HeaderParser:
       r'^\s*(?:\[cpp.*\])?\s*enum.*{(?P<enum_entries>.*)}.*$')
 
   def __init__(self, lines, path=''):
-    self._lines = lines
+    self._lines = java_cpp_utils.PreprocessIfBlocks(lines)
     self._path = path
     self._enum_definitions = []
     self._in_enum = False
-    # Indicates whether an #if block was encountered on a previous line (until
-    # an #endif block was seen). When nonzero, `_in_buildflag_android` indicates
-    # whether the blocks were `#if BUILDFLAG(IS_ANDROID)` or not.
-    # Note: Currently only statements like `#if BUILDFLAG(IS_<PLATFORM>)` are
-    # supported.
-    self._in_preprocessor_block = 0
-    self._in_buildflag_android = []
     self._current_definition = None
     self._current_comments = []
     self._generator_directives = DirectiveSet()
     self._multi_line_generator_directive = None
     self._current_enum_entry = ''
-
-  def _ShouldIgnoreLine(self):
-    return self._in_preprocessor_block and not all(self._in_buildflag_android)
 
   def _ApplyGeneratorDirectives(self):
     self._generator_directives.UpdateDefinition(self._current_definition)
@@ -267,19 +251,6 @@ class HeaderParser:
     return self._enum_definitions
 
   def _ParseLine(self, line):
-    if HeaderParser.if_buildflag_re.match(line):
-      self._in_preprocessor_block += 1
-      self._in_buildflag_android.append('BUILDFLAG(IS_ANDROID)' in line)
-      return
-    if self._in_preprocessor_block and HeaderParser.if_buildflag_end_re.match(
-        line):
-      self._in_preprocessor_block -= 1
-      self._in_buildflag_android.pop()
-      return
-
-    if self._ShouldIgnoreLine():
-      return
-
     if self._multi_line_generator_directive:
       self._ParseMultiLineDirectiveLine(line)
       return
@@ -336,7 +307,8 @@ class HeaderParser:
     self._current_enum_entry += ' ' + line.strip()
 
   def _FinalizeCurrentEnumDefinition(self):
-    if self._current_enum_entry:
+    # It has a space as a prefix so strip is needed.
+    if self._current_enum_entry.strip():
       self._ParseCurrentEnumEntry()
     self._ApplyGeneratorDirectives()
     self._current_definition.Finalize()

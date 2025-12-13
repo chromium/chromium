@@ -1,7 +1,7 @@
 Name: Lifecycle ViewModel with SavedState
 Short Name: lifecycle-viewmodel-savedstate-android
-URL: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
-Version: 2.10.0-SNAPSHOT
+URL: https://androidx.dev/snapshots/builds/14586925/artifacts/repository/androidx/lifecycle/lifecycle-viewmodel-savedstate-android/2.11.0-SNAPSHOT/lifecycle-viewmodel-savedstate-android-2.11.0-20251213.041943-1.aar
+Version: 2.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -12,6 +12,9 @@ License Android Compatible: yes
 
 Description:
 Android Lifecycle ViewModel
+
+See also: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.11.0-SNAPSHOT
+
 
 Local Modifications:
 No modifications.

@@ -106,7 +106,7 @@ public class ContentLanguagesPreference extends Preference {
             }
 
             ListMenu.Delegate delegate =
-                    (model) -> {
+                    (model, view) -> {
                         int textId = model.get(ListMenuItemProperties.TITLE_ID);
                         if (textId == R.string.languages_item_option_offer_to_translate) {
                             // Toggle current blocked state of this language.

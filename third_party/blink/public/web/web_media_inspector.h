@@ -53,9 +53,15 @@ using InspectorPlayerErrors = std::vector<InspectorPlayerError>;
 
 class MediaInspectorContext {
  public:
+  // Returns a unique string ID for a new player.
   virtual WebString CreatePlayer() = 0;
 
-  virtual void DestroyPlayer(const WebString& playerId) = 0;
+  virtual void DestroyPlayer(const WebString& player_id) = 0;
+
+  // Associates a player with its owner DOM node.
+  // A `dom_node_id` of 0 means the player is not associated with a DOM node.
+  virtual void SetDomNodeIdForPlayer(const WebString& player_id,
+                                     int dom_node_id) = 0;
 
   virtual void NotifyPlayerEvents(WebString player_id,
                                   const InspectorPlayerEvents&) = 0;

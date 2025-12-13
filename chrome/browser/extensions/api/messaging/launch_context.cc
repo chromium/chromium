@@ -227,7 +227,7 @@ LaunchContext::BackgroundLaunchResult LaunchContext::LaunchInBackground(
     reconnect_command_line.AppendSwitchASCII(
         ::switches::kNativeMessagingConnectHost, native_host_name);
     reconnect_command_line.AppendSwitchASCII(
-        ::switches::kNativeMessagingConnectExtension, origin.host());
+        ::switches::kNativeMessagingConnectExtension, origin.GetHost());
     reconnect_command_line.AppendSwitchASCII(::switches::kEnableFeatures,
                                              features::kOnConnectNative.name);
     reconnect_command_line.AppendSwitchPath(::switches::kProfileDirectory,

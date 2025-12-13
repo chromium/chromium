@@ -12,7 +12,7 @@ export function getHtml(this: HeaderElement) {
   <img id="logo" srcset="chrome://theme/current-channel-logo@4x 4x"
       role="presentation">
   <div class="title-text" id="title"
-      @click=${this.onPageTitleClick_}>
+      @click="${this.onPageTitleClick_}">
     $i18n{pageTitle}
   </div>
   <div id="divider" ?hidden="${!this.subtitle}"></div>

@@ -98,6 +98,12 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
+  void CheckGuardrailsPolicyForRequest(
+      ResourceType resource_type,
+      mojom::blink::RequestContextType request_context,
+      const ResourceResponse& response,
+      const KURL& url) override;
+
   void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
 
   void PopulateResourceRequestBeforeCacheAccess(
@@ -112,9 +118,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
 
-  bool StartSpeculativeImageDecode(Resource* resource,
-                                   base::OnceClosure callback) override;
-  bool SpeculativeDecodeRequestInFlight() const override;
+  bool StartSpeculativeImageDecode(Resource* resource) override;
 
   bool IsPrerendering() const override;
 
@@ -137,6 +141,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
       const FetchInitiatorInfo& initiator_info,
+      bool scan_stack_for_ads,
       subresource_filter::ScopedRule* out_rule) override;
 
   // LoadingBehaviorObserver overrides:
@@ -210,6 +215,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void AddCSPHashReport(
       const String& url,
       const HashMap<HashAlgorithm, String>& integrity_hashes) override;
+  String GetSVGCacheIdentifier() const override;
+
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
   String GetReducedAcceptLanguage() const;

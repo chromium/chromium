@@ -4,7 +4,6 @@
 
 #include "ui/linux/fake_linux_ui.h"
 
-#include "base/time/time.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/gfx/color_palette.h"
@@ -74,10 +73,6 @@ void FakeLinuxUi::GetInactiveSelectionFgColor(SkColor* color) const {
   *color = gfx::kPlaceholderColor;
 }
 
-base::TimeDelta FakeLinuxUi::GetCursorBlinkInterval() const {
-  return base::TimeDelta();
-}
-
 gfx::Image FakeLinuxUi::GetIconForContentType(const std::string& content_type,
                                               int size,
                                               float scale) const {
@@ -87,6 +82,14 @@ gfx::Image FakeLinuxUi::GetIconForContentType(const std::string& content_type,
 LinuxUi::WindowFrameAction FakeLinuxUi::GetWindowFrameAction(
     WindowFrameActionSource source) {
   return WindowFrameAction::kNone;
+}
+
+bool FakeLinuxUi::PrimaryPasteEnabled() const {
+  return true;
+}
+
+int FakeLinuxUi::GetWindowDragThresholdPx() const {
+  return kDefaultWindowDragThreshold;
 }
 
 std::vector<std::string> FakeLinuxUi::GetCmdLineFlagsForCopy() const {
@@ -144,8 +147,8 @@ ui::TextEditCommand FakeLinuxUi::GetTextEditCommandForEvent(
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
-printing::PrintDialogLinuxInterface* FakeLinuxUi::CreatePrintDialog(
-    printing::PrintingContextLinux* context) {
+std::unique_ptr<printing::PrintDialogLinuxInterface>
+FakeLinuxUi::CreatePrintDialog(printing::PrintingContextLinux* context) {
   return nullptr;
 }
 

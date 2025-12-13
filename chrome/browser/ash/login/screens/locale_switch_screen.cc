@@ -74,8 +74,8 @@ class GetLocaleOAuth2PeopleAPICall : public OAuth2ApiCallFlow {
       response_body.emplace();
     }
 
-    std::optional<base::Value::Dict> value =
-        base::JSONReader::ReadDict(*response_body);
+    std::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
+        *response_body, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     if (!value) {
       LOG(ERROR) << __func__ << " Bad response format";
       std::move(failure_callback_).Run();
@@ -312,12 +312,6 @@ void LocaleSwitchScreen::OnRefreshTokensLoaded() {
 }
 
 void LocaleSwitchScreen::FetchPreferredUserLocaleAndSwitchAsync() {
-  // Choose scopes to obtain for the access token.
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kPeopleApiReadOnlyOAuth2Scope);
-  scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  scopes.insert(GaiaConstants::kProfileLanguageReadOnlyOAuth2Scope);
-
   // Choose the mode in which to fetch the access token:
   // see AccessTokenFetcher::Mode below for definitions.
   auto mode =
@@ -326,7 +320,7 @@ void LocaleSwitchScreen::FetchPreferredUserLocaleAndSwitchAsync() {
   // Create the fetcher.
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          "LocaleSwitchScreen", identity_manager_, scopes,
+          signin::OAuthConsumerId::kLocaleSwitchScreen, identity_manager_,
           base::BindOnce(&LocaleSwitchScreen::OnAccessTokenRequestCompleted,
                          weak_factory_.GetWeakPtr()),
           mode, signin::ConsentLevel::kSignin);

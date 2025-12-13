@@ -4,6 +4,9 @@
 
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -307,7 +310,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     std::string config =
         blink::features::kFledgeBiddingAndAuctionKeyConfig.Get();
     if (!config.empty()) {
-      std::optional<base::Value> config_value = base::JSONReader::Read(config);
+      std::optional<base::Value> config_value =
+          base::JSONReader::Read(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (config_value && config_value->is_dict()) {
         for (const auto kv : config_value->GetDict()) {
           if (!kv.second.is_string()) {
@@ -346,7 +350,8 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
   if (base::FeatureList::IsEnabled(blink::features::kFledgeOriginScopedKeys)) {
     std::string config = blink::features::kFledgeOriginScopedKeyConfig.Get();
     if (!config.empty()) {
-      std::optional<base::Value> config_value = base::JSONReader::Read(config);
+      std::optional<base::Value> config_value =
+          base::JSONReader::Read(config, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
       if (config_value && config_value->is_dict()) {
         for (const auto kv : config_value->GetDict()) {
           if (!kv.second.is_string()) {
@@ -464,7 +469,7 @@ void BiddingAndAuctionServerKeyFetcher::AddKeysDebugOverride(
   // Pretend we succeeded in loading from network.
   OnFetchKeysFromNetworkComplete(
       std::move(coordinator),
-      std::make_unique<std::string>(std::move(serialized_keys)));
+      std::make_optional<std::string>(std::move(serialized_keys)));
 }
 
 void BiddingAndAuctionServerKeyFetcher::FetchKeys(
@@ -545,7 +550,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeysFromNetwork(
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromNetworkComplete(
     url::Origin coordinator,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   PerCoordinatorFetcherState& state = fetcher_state_map_.at(coordinator);
   bool was_cached = !state.debug_override && state.loader->LoadedFromCache();
   state.loader.reset();

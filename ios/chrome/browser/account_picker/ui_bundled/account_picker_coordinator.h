@@ -33,7 +33,9 @@ enum class AccessPoint;
 @property(nonatomic, weak)
     UIViewController* accountConfirmationChildViewController;
 
-// The identity currently presented as selected.
+// The identity currently presented as selected. If the identity button is
+// currently hidden through the `AccountPickerConsumer` interface then this will
+// be nil.
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
 // Inits the coordinator.

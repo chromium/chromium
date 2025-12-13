@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
 
 #include <string_view>
@@ -14,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
@@ -84,7 +80,7 @@ void GcpProcHelperTest::CreateHandle(base::win::ScopedHandle* handle) {
       ::CreateFileW(L"nul:", FILE_GENERIC_READ | FILE_GENERIC_WRITE,
                     FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
                     nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr));
-  ASSERT_TRUE(handle->IsValid());
+  ASSERT_TRUE(handle->is_valid());
 }
 
 bool GcpProcHelperTest::TestPipe(
@@ -92,7 +88,7 @@ bool GcpProcHelperTest::TestPipe(
     const base::win::ScopedHandle::Handle& writing) {
   char input_buffer[8];
   char output_buffer[8];
-  strcpy_s(input_buffer, std::size(input_buffer), "hello");
+  UNSAFE_TODO(strcpy_s(input_buffer, std::size(input_buffer), "hello"));
   const DWORD kExpectedDataLength = strlen(input_buffer) + 1;
 
   // Make sure what is written can be read.
@@ -105,11 +101,12 @@ bool GcpProcHelperTest::TestPipe(
   EXPECT_TRUE(ReadFile(reading, output_buffer, std::size(output_buffer), &read,
                        nullptr));
   EXPECT_EQ(kExpectedDataLength, read);
-  return strcmp(input_buffer, output_buffer) == 0;
+  return UNSAFE_TODO(strcmp(input_buffer, output_buffer)) == 0;
 }
 
 void GcpProcHelperTest::StripCrLf(char* buffer) {
-  for (char* p = buffer + strlen(buffer) - 1; p >= buffer; --p) {
+  for (char* p = UNSAFE_TODO(buffer + strlen(buffer) - 1); p >= buffer;
+       UNSAFE_TODO(--p)) {
     if (*p == '\n' || *p == '\r')
       *p = 0;
   }
@@ -146,9 +143,9 @@ TEST_F(GcpProcHelperTest, ScopedStartupInfo_handles) {
 
   // Setting handles in the info should take ownership.
   ASSERT_EQ(S_OK, info.SetStdHandles(&shstdin, &shstdout, &shstderr));
-  ASSERT_FALSE(shstdin.IsValid());
-  ASSERT_FALSE(shstdout.IsValid());
-  ASSERT_FALSE(shstderr.IsValid());
+  ASSERT_FALSE(shstdin.is_valid());
+  ASSERT_FALSE(shstdout.is_valid());
+  ASSERT_FALSE(shstderr.is_valid());
   ASSERT_EQ(static_cast<DWORD>(STARTF_USESTDHANDLES),
             info.GetInfo()->dwFlags & STARTF_USESTDHANDLES);
   ASSERT_NE(INVALID_HANDLE_VALUE, info.GetInfo()->hStdInput);
@@ -165,9 +162,9 @@ TEST_F(GcpProcHelperTest, ScopedStartupInfo_somehandles) {
 
   // Setting handles in the info should take ownership.
   ASSERT_EQ(S_OK, info.SetStdHandles(&shstdin, &shstdout, &shstderr));
-  ASSERT_FALSE(shstdin.IsValid());
-  ASSERT_FALSE(shstdout.IsValid());
-  ASSERT_FALSE(shstderr.IsValid());
+  ASSERT_FALSE(shstdin.is_valid());
+  ASSERT_FALSE(shstdout.is_valid());
+  ASSERT_FALSE(shstderr.is_valid());
   ASSERT_EQ(static_cast<DWORD>(STARTF_USESTDHANDLES),
             info.GetInfo()->dwFlags & STARTF_USESTDHANDLES);
   ASSERT_EQ(::GetStdHandle(STD_INPUT_HANDLE), info.GetInfo()->hStdInput);
@@ -180,8 +177,8 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ParentReads) {
   base::win::ScopedHandle writing;
 
   ASSERT_EQ(S_OK, CreatePipeForChildProcess(false, false, &reading, &writing));
-  ASSERT_TRUE(reading.IsValid());
-  ASSERT_TRUE(writing.IsValid());
+  ASSERT_TRUE(reading.is_valid());
+  ASSERT_TRUE(writing.is_valid());
 
   DWORD flags;
   ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
@@ -198,8 +195,8 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ChildReads) {
   base::win::ScopedHandle writing;
 
   ASSERT_EQ(S_OK, CreatePipeForChildProcess(true, false, &reading, &writing));
-  ASSERT_TRUE(reading.IsValid());
-  ASSERT_TRUE(writing.IsValid());
+  ASSERT_TRUE(reading.is_valid());
+  ASSERT_TRUE(writing.is_valid());
 
   DWORD flags;
   ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
@@ -216,8 +213,8 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ParentReadsNul) {
   base::win::ScopedHandle writing;
 
   ASSERT_EQ(S_OK, CreatePipeForChildProcess(false, true, &reading, &writing));
-  ASSERT_FALSE(reading.IsValid());
-  ASSERT_TRUE(writing.IsValid());  // Writes to nul:
+  ASSERT_FALSE(reading.is_valid());
+  ASSERT_TRUE(writing.is_valid());  // Writes to nul:
 
   DWORD flags;
   ASSERT_TRUE(::GetHandleInformation(writing.Get(), &flags));
@@ -230,8 +227,8 @@ TEST_F(GcpProcHelperTest, CreatePipeForChildProcess_ChildReadsNul) {
   base::win::ScopedHandle writing;
 
   ASSERT_EQ(S_OK, CreatePipeForChildProcess(true, true, &reading, &writing));
-  ASSERT_TRUE(reading.IsValid());  // Reads from nul:
-  ASSERT_FALSE(writing.IsValid());
+  ASSERT_TRUE(reading.is_valid());  // Reads from nul:
+  ASSERT_FALSE(writing.is_valid());
 
   DWORD flags;
   ASSERT_TRUE(::GetHandleInformation(reading.Get(), &flags));
@@ -248,9 +245,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentToChild) {
                                        &parent_handles));
 
   // Check parent handles.
-  ASSERT_TRUE(parent_handles.hstdin_write.IsValid());
-  ASSERT_FALSE(parent_handles.hstdout_read.IsValid());
-  ASSERT_FALSE(parent_handles.hstderr_read.IsValid());
+  ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
+  ASSERT_FALSE(parent_handles.hstdout_read.is_valid());
+  ASSERT_FALSE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles.  stdout and stderr go to nul:.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -273,9 +270,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ChildToParent) {
                                        &parent_handles));
 
   // Check parent handles.
-  ASSERT_FALSE(parent_handles.hstdin_write.IsValid());
-  ASSERT_TRUE(parent_handles.hstdout_read.IsValid());
-  ASSERT_TRUE(parent_handles.hstderr_read.IsValid());
+  ASSERT_FALSE(parent_handles.hstdin_write.is_valid());
+  ASSERT_TRUE(parent_handles.hstdout_read.is_valid());
+  ASSERT_TRUE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles.  stdin comes from nul:.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -298,9 +295,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_ParentChildBirectional) {
                                  &startupinfo, &parent_handles));
 
   // Check parent handles.
-  ASSERT_TRUE(parent_handles.hstdin_write.IsValid());
-  ASSERT_TRUE(parent_handles.hstdout_read.IsValid());
-  ASSERT_TRUE(parent_handles.hstderr_read.IsValid());
+  ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
+  ASSERT_TRUE(parent_handles.hstdout_read.is_valid());
+  ASSERT_TRUE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles.  stdin comes from nul:.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -325,9 +322,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesChildToParent) {
                                        &parent_handles));
 
   // Check parent handles.
-  ASSERT_FALSE(parent_handles.hstdin_write.IsValid());
-  ASSERT_TRUE(parent_handles.hstdout_read.IsValid());
-  ASSERT_FALSE(parent_handles.hstderr_read.IsValid());
+  ASSERT_FALSE(parent_handles.hstdin_write.is_valid());
+  ASSERT_TRUE(parent_handles.hstdout_read.is_valid());
+  ASSERT_FALSE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles. stderr goes to default handle.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -349,9 +346,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesParentToChild) {
                                        &parent_handles));
 
   // Check parent handles.
-  ASSERT_TRUE(parent_handles.hstdin_write.IsValid());
-  ASSERT_FALSE(parent_handles.hstdout_read.IsValid());
-  ASSERT_FALSE(parent_handles.hstderr_read.IsValid());
+  ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
+  ASSERT_FALSE(parent_handles.hstdout_read.is_valid());
+  ASSERT_FALSE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles. stderr goes to default handle.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -373,9 +370,9 @@ TEST_F(GcpProcHelperTest, InitializeStdHandles_SomeHandlesBidirectional) {
                                        &parent_handles));
 
   // Check parent handles.
-  ASSERT_TRUE(parent_handles.hstdin_write.IsValid());
-  ASSERT_TRUE(parent_handles.hstdout_read.IsValid());
-  ASSERT_FALSE(parent_handles.hstderr_read.IsValid());
+  ASSERT_TRUE(parent_handles.hstdin_write.is_valid());
+  ASSERT_TRUE(parent_handles.hstdout_read.is_valid());
+  ASSERT_FALSE(parent_handles.hstderr_read.is_valid());
 
   // Check child handles. stderr goes to default handle.
   ASSERT_NE(nullptr, startupinfo.GetInfo()->hStdInput);
@@ -412,7 +409,7 @@ TEST_F(GcpProcHelperTest, WaitForProcess) {
   // Write to stdin of the child process.
   const int kBufferSize = 16;
   char input_buffer[kBufferSize];
-  strcpy_s(input_buffer, std::size(input_buffer), "hello");
+  UNSAFE_TODO(strcpy_s(input_buffer, std::size(input_buffer), "hello"));
   const DWORD kExpectedDataLength = strlen(input_buffer) + 1;
   DWORD written;
   ASSERT_TRUE(::WriteFile(parent_handles.hstdin_write.Get(), input_buffer,

@@ -9,14 +9,17 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/browser_interface_binders.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
@@ -48,29 +51,58 @@ class VibrationObserver : public WebContentsObserver {
   base::RunLoop run_loop_;
 };
 
+class VibrationContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  using Callback = base::RepeatingCallback<void(
+      RenderFrameHost*,
+      mojo::PendingReceiver<device::mojom::VibrationManager>)>;
+
+  explicit VibrationContentBrowserClient(Callback&& callback)
+      : callback_(std::move(callback)) {}
+
+ protected:
+  void RegisterBrowserInterfaceBindersForFrame(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override {
+    ContentBrowserTestContentBrowserClient::
+        RegisterBrowserInterfaceBindersForFrame(render_frame_host, map);
+    map->Add<device::mojom::VibrationManager>(callback_);
+  }
+
+ private:
+  Callback callback_;
+};
+
 class VibrationTest : public ContentBrowserTest,
                       public device::mojom::VibrationManager {
  public:
-  VibrationTest() {
-    OverrideVibrationManagerBinderForTesting(base::BindRepeating(
-        &VibrationTest::BindVibrationManager, base::Unretained(this)));
-  }
+  VibrationTest() = default;
 
   VibrationTest(const VibrationTest&) = delete;
   VibrationTest& operator=(const VibrationTest&) = delete;
 
-  ~VibrationTest() override {
-    OverrideVibrationManagerBinderForTesting(base::NullCallback());
-  }
+  ~VibrationTest() override = default;
 
   void BindVibrationManager(
-      mojo::PendingReceiver<device::mojom::VibrationManager> receiver,
-      mojo::PendingRemote<device::mojom::VibrationManagerListener> listener) {
+      RenderFrameHost* frame,
+      mojo::PendingReceiver<device::mojom::VibrationManager> receiver) {
     receiver_.Bind(std::move(receiver));
-    listener_.Bind(std::move(listener));
+    listener_.Bind(static_cast<RenderFrameHostImpl*>(frame)
+                       ->CreateVibrationManagerListener());
   }
 
  protected:
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    browser_client_ =
+        std::make_unique<VibrationContentBrowserClient>(base::BindRepeating(
+            &VibrationTest::BindVibrationManager, weak_factory_.GetWeakPtr()));
+    // Create a new renderer now that RegisterBrowserInterfaceBindersForFrame
+    // is overridden.
+    RecreateWindow();
+  }
+
   void TriggerVibrate(int duration, base::OnceClosure vibrate_done) {
     vibrate_done_ = std::move(vibrate_done);
 
@@ -96,6 +128,8 @@ class VibrationTest : public ContentBrowserTest,
   base::OnceClosure vibrate_done_;
   mojo::Receiver<device::mojom::VibrationManager> receiver_{this};
   mojo::Remote<device::mojom::VibrationManagerListener> listener_;
+  std::unique_ptr<VibrationContentBrowserClient> browser_client_;
+  base::WeakPtrFactory<VibrationTest> weak_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_F(VibrationTest, Vibrate) {

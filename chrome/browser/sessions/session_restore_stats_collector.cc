@@ -76,7 +76,7 @@ size_t GetSiteEngagementScore(content::WebContents* contents) {
 }
 
 bool HasLowSiteEngagement(content::WebContents* contents) {
-  // There are 3 ways to handle session restore:
+  // There are 2 ways to handle session restore:
   //
   // Case 1: kBackgroundTabLoadingFromPerformanceManager is disabled.
   //
@@ -84,28 +84,15 @@ bool HasLowSiteEngagement(content::WebContents* contents) {
   // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
   // this.
   //
-  // Case 2: kBackgroundTabLoadingFromPerformanceManager is enabled, and uses
-  // a min value from kBackgroundTabLoadingMinSiteEngagement.
-  //
-  // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
-  // kBackgroundTabLoadingMinSiteEngagement.
-  //
-  // Case 3: kBackgroundTabLoadingFromPerformanceManager is enabled, but
-  // kBackgroundTabLoadingMinSiteEngagement returns 0.
+  // Case 2: kBackgroundTabLoadingFromPerformanceManager is enabled.
   //
   // The session restore algorithm ignores site engagement.
   // SessionRestore.TabCount.LowSiteEngagement counts tabs that are less than
   // SessionRestorePolicy::kMinSiteEngagementToRestore, to see what data the PM
   // algorithm is ignoring.
-  const size_t min_site_engagement =
-      performance_manager::features::kBackgroundTabLoadingMinSiteEngagement
-          .Get();
-  if (min_site_engagement == 0) {
-    return GetSiteEngagementScore(contents) <
-           resource_coordinator::SessionRestorePolicy::
-               kMinSiteEngagementToRestore;
-  }
-  return GetSiteEngagementScore(contents) < min_site_engagement;
+  return GetSiteEngagementScore(contents) <
+         resource_coordinator::SessionRestorePolicy::
+             kMinSiteEngagementToRestore;
 }
 
 bool HasNotificationPermission(content::WebContents* contents) {

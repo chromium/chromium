@@ -10,6 +10,8 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {SaveToDriveState} from '../constants.js';
+
 import {ViewerSaveControlsMixin} from './viewer_save_controls_mixin.js';
 import {getCss} from './viewer_save_to_drive_controls.css.js';
 import {getHtml} from './viewer_save_to_drive_controls.html.js';
@@ -39,18 +41,22 @@ export class ViewerSaveToDriveControlsElement extends ViewerSaveControlsBase {
   static override get properties() {
     return {
       progress: {type: Number},
-      uploading: {
-        type: Boolean,
+      state: {
+        type: String,
         reflect: true,
       },
     };
   }
 
-  protected accessor progress: number = 0;
-  protected accessor uploading: boolean = false;
+  accessor progress: number = 0;
+  accessor state: SaveToDriveState = SaveToDriveState.UNINITIALIZED;
 
   protected getIronIcon(): string {
-    return this.uploading ? 'pdf:arrow-upward-alt' : 'pdf:add-to-drive';
+    return this.isUploading_() ? 'pdf:arrow-upward-alt' : 'pdf:add-to-drive';
+  }
+
+  protected isUploading_(): boolean {
+    return this.state === SaveToDriveState.UPLOADING;
   }
 
   // ViewerSaveControlsMixin implementation.
@@ -68,22 +74,9 @@ export class ViewerSaveToDriveControlsElement extends ViewerSaveControlsBase {
     return this.$.menu;
   }
 
-  /*
-   * Resets the save button back to its initial state.
-   */
-  reset(): void {
-    this.uploading = false;
-  }
-
-  /*
-   * Reflects the current upload progress by updating the icon and
-   * showing the progress ring.
-   * @param progress The current upload progress as a percentage.
-   *                 A value between 0 and 100.
-   */
-  showUploadProgress(progress: number): void {
-    this.uploading = true;
-    this.progress = progress;
+  // ViewerSaveControlsMixin implementation.
+  override shouldShowSaveMenuOnSaveClick(hasEdits: boolean): boolean {
+    return hasEdits && this.state === SaveToDriveState.UNINITIALIZED;
   }
 }
 

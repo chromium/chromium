@@ -4,7 +4,10 @@
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 
-#import <optional>
+#import <AppKit/AppKit.h>
+#import <Foundation/Foundation.h>
+
+#include <optional>
 
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -32,14 +35,18 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
 @interface HistorySwiper ()
 
-// Given a touch event, returns the average touch position.
+// Given a touch event, returns the average touch position. The point returned
+// is in "normalized" coordinates (i.e. `NSTouch.normalizedPosition`) in that
+// each coordinate value is scaled to be in the range [0, 1], with (0, 0) in the
+// lower-left corner and (1, 1) in the upper-right corner.
 - (NSPoint)averagePositionInTouchEvent:(NSEvent*)event;
 
-// Updates internal state with the location information from the touch event.
+// Updates the internal state with the location information from the given touch
+// event.
 - (void)updateCurrentPointFromTouchEvent:(NSEvent*)event;
 
-// Updates the state machine with the given touch event.
-// Returns NO if no further processing of the event should happen.
+// Updates the state machine with the given touch event. Returns NO if no
+// further processing of the event should happen.
 - (BOOL)processTouchEventForHistorySwiping:(NSEvent*)event;
 
 // Returns whether the wheel event should be consumed, and not passed to the
@@ -49,7 +56,8 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 // Shows the history swiper overlay.
 - (void)showHistoryOverlay:(history_swiper::NavigationDirection)direction;
 
-// Removes the history swiper overlay.
+// Removes the history swiper overlay. This is safe to call whether or not the
+// overlay is currently showing.
 - (void)removeHistoryOverlay;
 
 // Called to process a scroll wheel event. Returns YES if the event was consumed
@@ -98,18 +106,23 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
   // --- Touch processing ---
   //
-  // Used to handle the touches when processing the `-touches*WithEvent:`
-  // messages. Not used during Magic Mouse processing.
+  // These ivars are used to handle the touches when processing the
+  // `-touches*WithEvent:` messages. They are not used during Magic Mouse event
+  // processing.
+  //
+  // The ivars `_touchStartPoint`, `_touchCurrentPoint`, and `_gestureTotalY`
+  // are in "normalized" coordinates (i.e. `NSTouch.normalizedPosition`) in that
+  // each coordinate value is scaled to be in the range [0, 1], with (0, 0) in
+  // the lower-left corner and (1, 1) in the upper-right corner.
 
-  // The location of the fingers when the touches started. Valid only when
-  // touches are actively being processed, and reset every time a new set of
-  // touches starts being processed.
-  std::optional<NSPoint> _touchStartPoint;
+  // The location of the fingers when the touches started.
+  NSPoint _touchStartPoint;
 
   // The current location of the fingers in the touches.
   NSPoint _touchCurrentPoint;
 
-  // The total Y distance moved since the beginning of the touches.
+  // The total Y distance moved since the beginning of the touches. Note that
+  // this is a "total distance" and accumulates as the user swipes up and down.
   CGFloat _gestureTotalY;
 
   // The user's intended direction with the history swipe. Set during the
@@ -196,12 +209,11 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
       params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kAuto;
 }
 
-// This method assumes that there is at least 1 touch in the event.
-// The event must correspond to a valid gesture, or else
-// -[NSEvent touchesMatchingPhase:inView:] will fail.
 - (NSPoint)averagePositionInTouchEvent:(NSEvent*)event {
   NSPoint position = NSMakePoint(0, 0);
   int pointCount = 0;
+  // The event must correspond to a valid gesture, or else -[NSEvent
+  // touchesMatchingPhase:inView:] will fail.
   for (NSTouch* touch in [event touchesMatchingPhase:NSTouchPhaseAny
                                               inView:nil]) {
     position.x += touch.normalizedPosition.x;
@@ -219,34 +231,16 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
 - (void)updateCurrentPointFromTouchEvent:(NSEvent*)event {
   NSPoint averagePosition = [self averagePositionInTouchEvent:event];
-
-  // If the start point is valid, then so is the current point.
-  if (_touchStartPoint.has_value()) {
-    _gestureTotalY += std::abs(averagePosition.y - _touchCurrentPoint.y);
-  }
-
-  // Update the current point of the gesture.
+  _gestureTotalY += std::abs(averagePosition.y - _touchCurrentPoint.y);
   _touchCurrentPoint = averagePosition;
-
-  // If the gesture doesn't have a start point, set one.
-  if (!_touchStartPoint.has_value()) {
-    _touchStartPoint = _touchCurrentPoint;
-  }
 }
 
-// Ideally, we'd set the `_touchStartPoint` here, but this method only gets
-// called before the gesture begins, and the touches in an event are only
-// available after the gesture begins.
-//
-// TODO(https://crbug.com/421325703): Is that still true? Experimentation on
-// macOS 15 always shows valid touches during this message. Determine if this is
-// indeed the case, and if so, set the start point here and clean up the use of
-// the optional.
 - (void)touchesBeganWithEvent:(NSEvent*)event {
   _receivingTouchEvents = YES;
 
   // Reset state pertaining to previous trackpad gestures.
-  _touchStartPoint.reset();
+  _touchStartPoint = [self averagePositionInTouchEvent:event];
+  _touchCurrentPoint = _touchStartPoint;
   _gestureTotalY = 0.0;
   _firstScrollUnconsumed = NO;
   _overscrollTriggeredByRenderer = NO;
@@ -259,7 +253,6 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 
 - (void)touchesCancelledWithEvent:(NSEvent*)event {
   _receivingTouchEvents = NO;
-
   if (![self processTouchEventForHistorySwiping:event]) {
     return;
   }
@@ -299,14 +292,11 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
       break;
   }
 
-  // Note that this ensures that both `_touchCurrentPoint` as well as
-  // `_touchStartPoint` are set.
   [self updateCurrentPointFromTouchEvent:event];
 
   // Consider cancelling the history swipe gesture.
   if ([self shouldCancelHorizontalSwipeWithCurrentPoint:_touchCurrentPoint
-                                             startPoint:_touchStartPoint
-                                                            .value()]) {
+                                             startPoint:_touchStartPoint]) {
     [self cancelHistorySwipe];
     return NO;
   }
@@ -320,9 +310,8 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
     // The user is in the process of doing history swiping.  If the history
     // swipe has progressed sufficiently far, stop sending events to the
     // renderer.
-    BOOL sufficientlyFar =
-        std::abs(_touchCurrentPoint.x - _touchStartPoint->x) >
-        kConsumeEventThreshold;
+    BOOL sufficientlyFar = std::abs(_touchCurrentPoint.x - _touchStartPoint.x) >
+                           kConsumeEventThreshold;
     if (sufficientlyFar) {
       _recognitionState = history_swiper::kTracking;
 
@@ -376,7 +365,7 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
 // Returns whether the progress bar has been 100% filled.
 - (BOOL)updateProgressBar {
   NSPoint currentPoint = _touchCurrentPoint;
-  NSPoint startPoint = _touchStartPoint.value();
+  NSPoint startPoint = _touchStartPoint;
 
   CGFloat progress = 0;
   BOOL finished = NO;
@@ -592,11 +581,7 @@ constexpr CGFloat kCancelEventVerticalLowerThreshold = 0.01;
   // determined this early in a gesture, when it's unclear what the user is
   // intending to do. Since it is determined this early, make sure that there
   // is at least a minimal amount of horizontal motion.
-  //
-  // Note that there may not yet have been a "touch moved" event and thus there
-  // might not be a start point set.
-  CGFloat xDelta =
-      _touchCurrentPoint.x - _touchStartPoint.value_or(NSZeroPoint).x;
+  CGFloat xDelta = _touchCurrentPoint.x - _touchStartPoint.x;
   if (std::abs(xDelta) < 0.001) {
     return NO;
   }

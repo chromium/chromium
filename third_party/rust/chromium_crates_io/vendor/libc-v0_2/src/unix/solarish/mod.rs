@@ -1,5 +1,3 @@
-use core::mem::size_of;
-
 use crate::prelude::*;
 
 pub type caddr_t = *mut c_char;
@@ -57,22 +55,9 @@ pub type lgrp_view_t = c_uint;
 pub type posix_spawnattr_t = *mut c_void;
 pub type posix_spawn_file_actions_t = *mut c_void;
 
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
-}
-
-#[cfg_attr(feature = "extra_traits", derive(Debug))]
-pub enum ucred_t {}
-impl Copy for ucred_t {}
-impl Clone for ucred_t {
-    fn clone(&self) -> ucred_t {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
+    pub enum ucred_t {}
 }
 
 s! {
@@ -241,24 +226,24 @@ s! {
         pub gl_pathc: size_t,
         pub gl_pathv: *mut *mut c_char,
         pub gl_offs: size_t,
-        __unused1: *mut c_void,
-        __unused2: c_int,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<c_int>,
         #[cfg(target_os = "illumos")]
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         #[cfg(target_os = "illumos")]
-        __unused4: c_int,
+        __unused4: Padding<c_int>,
         #[cfg(target_os = "illumos")]
-        __unused5: *mut c_void,
+        __unused5: Padding<*mut c_void>,
         #[cfg(target_os = "illumos")]
-        __unused6: *mut c_void,
+        __unused6: Padding<*mut c_void>,
         #[cfg(target_os = "illumos")]
-        __unused7: *mut c_void,
+        __unused7: Padding<*mut c_void>,
         #[cfg(target_os = "illumos")]
-        __unused8: *mut c_void,
+        __unused8: Padding<*mut c_void>,
         #[cfg(target_os = "illumos")]
-        __unused9: *mut c_void,
+        __unused9: Padding<*mut c_void>,
         #[cfg(target_os = "illumos")]
-        __unused10: *mut c_void,
+        __unused10: Padding<*mut c_void>,
     }
 
     pub struct addrinfo {
@@ -315,7 +300,7 @@ s! {
 
     pub struct sched_param {
         pub sched_priority: c_int,
-        sched_pad: [c_int; 8],
+        sched_pad: Padding<[c_int; 8]>,
     }
 
     pub struct Dl_info {
@@ -408,7 +393,7 @@ s! {
         pub mq_maxmsg: c_long,
         pub mq_msgsize: c_long,
         pub mq_curmsgs: c_long,
-        _pad: [c_int; 12],
+        _pad: Padding<[c_int; 12]>,
     }
 
     pub struct port_event {
@@ -499,9 +484,7 @@ s! {
         pub flag: *mut c_int,
         pub val: c_int,
     }
-}
 
-s_no_extra_traits! {
     pub struct sockaddr_un {
         pub sun_family: sa_family_t,
         pub sun_path: [c_char; 108],
@@ -524,20 +507,9 @@ s_no_extra_traits! {
 
     pub struct sockaddr_storage {
         pub ss_family: crate::sa_family_t,
-        __ss_pad1: [u8; 6],
+        __ss_pad1: Padding<[u8; 6]>,
         __ss_align: i64,
-        __ss_pad2: [u8; 240],
-    }
-
-    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
-    pub struct siginfo_t {
-        pub si_signo: c_int,
-        pub si_code: c_int,
-        pub si_errno: c_int,
-        #[cfg(target_pointer_width = "64")]
-        pub si_pad: c_int,
-
-        __data_pad: [c_int; SIGINFO_DATA_SIZE],
+        __ss_pad2: Padding<[u8; 240]>,
     }
 
     pub struct sockaddr_dl {
@@ -556,7 +528,20 @@ s_no_extra_traits! {
         pub sigev_value: crate::sigval,
         pub ss_sp: *mut c_void,
         pub sigev_notify_attributes: *const crate::pthread_attr_t,
-        __sigev_pad2: c_int,
+        __sigev_pad2: Padding<c_int>,
+    }
+}
+
+s_no_extra_traits! {
+    #[cfg_attr(target_pointer_width = "64", repr(align(8)))]
+    pub struct siginfo_t {
+        pub si_signo: c_int,
+        pub si_code: c_int,
+        pub si_errno: c_int,
+        #[cfg(target_pointer_width = "64")]
+        pub si_pad: c_int,
+
+        __data_pad: [c_int; SIGINFO_DATA_SIZE],
     }
 
     #[repr(align(16))]
@@ -574,100 +559,6 @@ s_no_extra_traits! {
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_un {}
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for utsname {}
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-            }
-        }
-
-        impl PartialEq for fd_set {
-            fn eq(&self, other: &fd_set) -> bool {
-                self.fds_bits
-                    .iter()
-                    .zip(other.fds_bits.iter())
-                    .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for fd_set {}
-        impl hash::Hash for fd_set {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.fds_bits.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_family == other.ss_family
-                    && self.__ss_pad1 == other.__ss_pad1
-                    && self.__ss_align == other.__ss_align
-                    && self
-                        .__ss_pad2
-                        .iter()
-                        .zip(other.__ss_pad2.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_storage {}
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_family.hash(state);
-                self.__ss_pad1.hash(state);
-                self.__ss_align.hash(state);
-                self.__ss_pad2.hash(state);
-            }
-        }
-
         impl siginfo_t {
             /// The siginfo_t will have differing contents based on the delivered signal.  Based on
             /// `si_signo`, this determines how many of the `c_int` pad fields contain valid data
@@ -732,54 +623,6 @@ cfg_if! {
             }
         }
 
-        impl PartialEq for sockaddr_dl {
-            fn eq(&self, other: &sockaddr_dl) -> bool {
-                self.sdl_family == other.sdl_family
-                    && self.sdl_index == other.sdl_index
-                    && self.sdl_type == other.sdl_type
-                    && self.sdl_nlen == other.sdl_nlen
-                    && self.sdl_alen == other.sdl_alen
-                    && self.sdl_slen == other.sdl_slen
-                    && self
-                        .sdl_data
-                        .iter()
-                        .zip(other.sdl_data.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_dl {}
-        impl hash::Hash for sockaddr_dl {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sdl_family.hash(state);
-                self.sdl_index.hash(state);
-                self.sdl_type.hash(state);
-                self.sdl_nlen.hash(state);
-                self.sdl_alen.hash(state);
-                self.sdl_slen.hash(state);
-                self.sdl_data.hash(state);
-            }
-        }
-
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_notify == other.sigev_notify
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_value == other.sigev_value
-                    && self.ss_sp == other.ss_sp
-                    && self.sigev_notify_attributes == other.sigev_notify_attributes
-            }
-        }
-        impl Eq for sigevent {}
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_notify.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_value.hash(state);
-                self.ss_sp.hash(state);
-                self.sigev_notify_attributes.hash(state);
-            }
-        }
-
         impl PartialEq for pad128_t {
             fn eq(&self, other: &pad128_t) -> bool {
                 unsafe {
@@ -825,71 +668,38 @@ cfg_if! {
     }
 }
 
-#[repr(C)]
-struct siginfo_fault {
-    addr: *mut c_void,
-    trapno: c_int,
-    pc: *mut crate::caddr_t,
-}
-impl Copy for siginfo_fault {}
-impl Clone for siginfo_fault {
-    fn clone(&self) -> Self {
-        *self
+s_no_extra_traits! {
+    struct siginfo_fault {
+        addr: *mut c_void,
+        trapno: c_int,
+        pc: *mut crate::caddr_t,
     }
-}
 
-#[repr(C)]
-struct siginfo_cldval {
-    utime: crate::clock_t,
-    status: c_int,
-    stime: crate::clock_t,
-}
-impl Copy for siginfo_cldval {}
-impl Clone for siginfo_cldval {
-    fn clone(&self) -> Self {
-        *self
+    struct siginfo_cldval {
+        utime: crate::clock_t,
+        status: c_int,
+        stime: crate::clock_t,
     }
-}
 
-#[repr(C)]
-struct siginfo_killval {
-    uid: crate::uid_t,
-    value: crate::sigval,
-    // Pad out to match the SIGCLD value size
-    _pad: *mut c_void,
-}
-impl Copy for siginfo_killval {}
-impl Clone for siginfo_killval {
-    fn clone(&self) -> Self {
-        *self
+    struct siginfo_killval {
+        uid: crate::uid_t,
+        value: crate::sigval,
+        // Pad out to match the SIGCLD value size
+        _pad: Padding<*mut c_void>,
     }
-}
 
-#[repr(C)]
-struct siginfo_sigcld {
-    pid: crate::pid_t,
-    val: siginfo_cldval,
-    ctid: crate::ctid_t,
-    zoneid: crate::zoneid_t,
-}
-impl Copy for siginfo_sigcld {}
-impl Clone for siginfo_sigcld {
-    fn clone(&self) -> Self {
-        *self
+    struct siginfo_sigcld {
+        pid: crate::pid_t,
+        val: siginfo_cldval,
+        ctid: crate::ctid_t,
+        zoneid: crate::zoneid_t,
     }
-}
 
-#[repr(C)]
-struct siginfo_kill {
-    pid: crate::pid_t,
-    val: siginfo_killval,
-    ctid: crate::ctid_t,
-    zoneid: crate::zoneid_t,
-}
-impl Copy for siginfo_kill {}
-impl Clone for siginfo_kill {
-    fn clone(&self) -> Self {
-        *self
+    struct siginfo_kill {
+        pid: crate::pid_t,
+        val: siginfo_killval,
+        ctid: crate::ctid_t,
+        zoneid: crate::zoneid_t,
     }
 }
 
@@ -1161,9 +971,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const F_LOCK: c_int = 1;
 pub const F_TEST: c_int = 3;
 pub const F_TLOCK: c_int = 2;
@@ -2392,14 +2199,12 @@ const NEWDEV: c_int = 1;
 // sys/sendfile.h
 pub const SFV_FD_SELF: c_int = -2;
 
-const_fn! {
-    {const} fn _CMSG_HDR_ALIGN(p: usize) -> usize {
-        (p + _CMSG_HDR_ALIGNMENT - 1) & !(_CMSG_HDR_ALIGNMENT - 1)
-    }
+const fn _CMSG_HDR_ALIGN(p: usize) -> usize {
+    (p + _CMSG_HDR_ALIGNMENT - 1) & !(_CMSG_HDR_ALIGNMENT - 1)
+}
 
-    {const} fn _CMSG_DATA_ALIGN(p: usize) -> usize {
-        (p + _CMSG_DATA_ALIGNMENT - 1) & !(_CMSG_DATA_ALIGNMENT - 1)
-    }
+const fn _CMSG_DATA_ALIGN(p: usize) -> usize {
+    (p + _CMSG_DATA_ALIGNMENT - 1) & !(_CMSG_DATA_ALIGNMENT - 1)
 }
 
 f! {
@@ -2407,8 +2212,8 @@ f! {
         _CMSG_DATA_ALIGN(cmsg.offset(1) as usize) as *mut c_uchar
     }
 
-    pub {const} fn CMSG_LEN(length: c_uint) -> c_uint {
-        _CMSG_DATA_ALIGN(mem::size_of::<cmsghdr>()) as c_uint + length
+    pub const fn CMSG_LEN(length: c_uint) -> c_uint {
+        _CMSG_DATA_ALIGN(size_of::<cmsghdr>()) as c_uint + length
     }
 
     pub fn CMSG_FIRSTHDR(mhdr: *const crate::msghdr) -> *mut cmsghdr {
@@ -2433,25 +2238,25 @@ f! {
         }
     }
 
-    pub {const} fn CMSG_SPACE(length: c_uint) -> c_uint {
+    pub const fn CMSG_SPACE(length: c_uint) -> c_uint {
         _CMSG_HDR_ALIGN(size_of::<cmsghdr>() as usize + length as usize) as c_uint
     }
 
     pub fn FD_CLR(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] &= !(1 << (fd % bits));
         return;
     }
 
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         return ((*set).fds_bits[fd / bits] & (1 << (fd % bits))) != 0;
     }
 
     pub fn FD_SET(fd: c_int, set: *mut fd_set) -> () {
-        let bits = mem::size_of_val(&(*set).fds_bits[0]) * 8;
+        let bits = size_of_val(&(*set).fds_bits[0]) * 8;
         let fd = fd as usize;
         (*set).fds_bits[fd / bits] |= 1 << (fd % bits);
         return;
@@ -2473,39 +2278,39 @@ safe_f! {
         unsafe { crate::sysconf(_SC_SIGRT_MIN) as c_int }
     }
 
-    pub {const} fn WIFEXITED(status: c_int) -> bool {
+    pub const fn WIFEXITED(status: c_int) -> bool {
         (status & 0xFF) == 0
     }
 
-    pub {const} fn WEXITSTATUS(status: c_int) -> c_int {
+    pub const fn WEXITSTATUS(status: c_int) -> c_int {
         (status >> 8) & 0xFF
     }
 
-    pub {const} fn WTERMSIG(status: c_int) -> c_int {
+    pub const fn WTERMSIG(status: c_int) -> c_int {
         status & 0x7F
     }
 
-    pub {const} fn WIFCONTINUED(status: c_int) -> bool {
+    pub const fn WIFCONTINUED(status: c_int) -> bool {
         (status & 0xffff) == 0xffff
     }
 
-    pub {const} fn WSTOPSIG(status: c_int) -> c_int {
+    pub const fn WSTOPSIG(status: c_int) -> c_int {
         (status & 0xff00) >> 8
     }
 
-    pub {const} fn WIFSIGNALED(status: c_int) -> bool {
+    pub const fn WIFSIGNALED(status: c_int) -> bool {
         ((status & 0xff) > 0) && (status & 0xff00 == 0)
     }
 
-    pub {const} fn WIFSTOPPED(status: c_int) -> bool {
+    pub const fn WIFSTOPPED(status: c_int) -> bool {
         ((status & 0xff) == 0x7f) && ((status & 0xff00) != 0)
     }
 
-    pub {const} fn WCOREDUMP(status: c_int) -> bool {
+    pub const fn WCOREDUMP(status: c_int) -> bool {
         (status & 0x80) != 0
     }
 
-    pub {const} fn MR_GET_TYPE(flags: c_uint) -> c_uint {
+    pub const fn MR_GET_TYPE(flags: c_uint) -> c_uint {
         flags & 0x0000ffff
     }
 }
@@ -3132,6 +2937,21 @@ extern "C" {
     pub fn arc4random_uniform(upper_bound: u32) -> u32;
 
     pub fn secure_getenv(name: *const c_char) -> *mut c_char;
+
+    #[cfg_attr(target_os = "solaris", link_name = "__strftime_xpg7")]
+    pub fn strftime(
+        s: *mut c_char,
+        maxsize: size_t,
+        format: *const c_char,
+        timeptr: *const crate::tm,
+    ) -> size_t;
+    pub fn strftime_l(
+        s: *mut c_char,
+        maxsize: size_t,
+        format: *const c_char,
+        timeptr: *const crate::tm,
+        loc: crate::locale_t,
+    ) -> size_t;
 }
 
 #[link(name = "sendfile")]

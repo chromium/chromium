@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -58,8 +57,10 @@ using ActionRecord = std::tuple<ActionType,
                                 ElementContext,
                                 InteractionTestUtil::InputType>;
 
-const ui::ElementContext kTestContext1(1);
-const ui::ElementContext kTestContext2(2);
+constexpr ui::ElementContext kTestContext1 =
+    ui::ElementContext::CreateFakeContextForTesting(1);
+constexpr ui::ElementContext kTestContext2 =
+    ui::ElementContext::CreateFakeContextForTesting(2);
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestId2);
@@ -193,7 +194,7 @@ struct EmptyCallableObject {
 
 }  // namespace
 
-class InteractiveTestTest : public InteractiveTest {
+class InteractiveTestTest : public InteractiveTestMixin<testing::Test> {
  public:
   InteractiveTestTest() {
     auto simulator = std::make_unique<TestSimulator>();
@@ -1796,6 +1797,8 @@ TEST_F(InteractiveTestTest, CheckStateFails) {
 
 DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PollingStateObserver<int>,
                                     kPollingTestState);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(PollingStateObserver<int>,
+                                    kPollingTestState2);
 
 TEST_F(InteractiveTestTest, PollingStateObserver) {
   UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, poll_cb);
@@ -1839,6 +1842,65 @@ TEST_F(InteractiveTestTest, PollingElementStateObserver) {
       PollElement(kPollingElementTestState, el.identifier(), poll_cb.Get(),
                   base::Milliseconds(50)),
       WaitForState(kPollingElementTestState, "baz"));
+}
+
+TEST_F(InteractiveTestTest, PollStateUntil) {
+  UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, poll_cb);
+  EXPECT_CALL(poll_cb, Run)
+      .WillOnce(testing::Return(0))
+      .WillOnce(testing::Return(1));
+  RunTestSequenceInContext(
+      kTestContext1, PollStateUntil(kPollingTestState, poll_cb.Get(),
+                                    testing::Gt(0), base::Milliseconds(50)));
+}
+
+TEST_F(InteractiveTestTest, PollStateUntilRepeatedly) {
+  UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, poll_cb);
+  EXPECT_CALL(poll_cb, Run)
+      .WillOnce(testing::Return(0))
+      .WillOnce(testing::Return(1))
+      .WillOnce(testing::Return(0))
+      .WillOnce(testing::Return(-1));
+  RunTestSequenceInContext(
+      kTestContext1,
+      PollStateUntil(kPollingTestState, poll_cb.Get(), testing::Gt(0),
+                     base::Milliseconds(50)),
+      PollStateUntil(kPollingTestState, poll_cb.Get(), testing::Lt(0),
+                     base::Milliseconds(50)));
+}
+
+TEST_F(InteractiveTestTest, PollStateUntilInParallel) {
+  const auto kPollTime = base::Milliseconds(50);
+  UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, poll_cb);
+  UNCALLED_MOCK_CALLBACK(PollingStateObserver<int>::PollCallback, poll_cb2);
+  EXPECT_CALL(poll_cb, Run)
+      .WillOnce(testing::Return(0))
+      .WillOnce(testing::Return(1));
+  EXPECT_CALL(poll_cb2, Run)
+      .WillOnce(testing::Return(0))
+      .WillOnce(testing::Return(-1));
+  RunTestSequenceInContext(
+      kTestContext1,
+      InParallel(
+          RunSubsequence(PollStateUntil(kPollingTestState, poll_cb.Get(),
+                                        testing::Gt(0), kPollTime)),
+          RunSubsequence(PollStateUntil(kPollingTestState2, poll_cb2.Get(),
+                                        testing::Lt(0), kPollTime))));
+}
+
+TEST_F(InteractiveTestTest, PollUntil) {
+  int count = 0;
+  RunTestSequenceInContext(
+      kTestContext1,
+      PollUntil([&count]() { return count++ > 1; }, "Polling integer"));
+}
+
+TEST_F(InteractiveTestTest, PollUntilRepeatedly) {
+  int count1 = 0;
+  int count2 = 0;
+  RunTestSequenceInContext(
+      kTestContext1, PollUntil([&count1]() { return count1++ > 2; }, "count1"),
+      PollUntil([&count2]() { return count2++ > 1; }, "count2"));
 }
 
 TEST_F(InteractiveTestTest, SubsequenceHidesElement) {

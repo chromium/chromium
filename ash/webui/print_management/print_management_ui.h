@@ -13,11 +13,6 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-
-namespace ui {
-class ColorChangeHandler;
-}  // namespace ui
 
 namespace ash {
 namespace printing {
@@ -67,10 +62,6 @@ class PrintManagementUI : public ui::MojoWebUIController {
           chromeos::printing::printing_manager::mojom::PrintManagementHandler>
           receiver);
 
-  void BindInterface(
-      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-          receiver);
-
  private:
   const BindPrintingMetadataProviderCallback bind_pending_receiver_callback_;
 
@@ -78,10 +69,6 @@ class PrintManagementUI : public ui::MojoWebUIController {
   // Printer settings.
   std::unique_ptr<ash::printing::printing_manager::PrintManagementHandler>
       print_management_handler_;
-
-  // The color change handler notifies the WebUI when the color provider
-  // changes.
-  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

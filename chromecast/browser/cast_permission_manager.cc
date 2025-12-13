@@ -11,6 +11,7 @@
 #include "chromecast/common/activity_url_filter.h"
 #include "components/cast_receiver/browser/public/permissions_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -139,14 +140,14 @@ CastPermissionManager::~CastPermissionManager() {}
 void CastPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  std::vector<blink::mojom::PermissionStatus> permission_statuses;
+  std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
-    permission_statuses.push_back(GetPermissionStatusInternal(
+    permission_results.emplace_back(GetPermissionStatusInternal(
         permission, render_frame_host, request_description.requesting_origin));
   }
-  std::move(callback).Run(permission_statuses);
+  std::move(callback).Run(permission_results);
 }
 
 void CastPermissionManager::ResetPermission(blink::PermissionType permission,
@@ -156,15 +157,15 @@ void CastPermissionManager::ResetPermission(blink::PermissionType permission,
 void CastPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  std::vector<blink::mojom::PermissionStatus> permission_statuses;
+  std::vector<content::PermissionResult> permission_results;
   for (const auto& permission : request_description.permissions) {
-    permission_statuses.push_back(GetPermissionStatusInternal(
+    permission_results.emplace_back(GetPermissionStatusInternal(
         permission, render_frame_host,
         render_frame_host->GetLastCommittedOrigin().GetURL()));
   }
-  std::move(callback).Run(permission_statuses);
+  std::move(callback).Run(permission_results);
 }
 
 blink::mojom::PermissionStatus CastPermissionManager::GetPermissionStatus(
@@ -185,37 +186,34 @@ CastPermissionManager::GetPermissionResultForOriginWithoutContext(
       GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
                           embedding_origin.GetURL());
 
-  return content::PermissionResult(
-      status, content::PermissionStatusSource::UNSPECIFIED);
+  return content::PermissionResult(status);
 }
 
-blink::mojom::PermissionStatus
-CastPermissionManager::GetPermissionStatusForCurrentDocument(
+content::PermissionResult
+CastPermissionManager::GetPermissionResultForCurrentDocument(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
-  return GetPermissionStatusInternal(
+  return content::PermissionResult(GetPermissionStatusInternal(
       permission_descriptor, render_frame_host,
-      render_frame_host->GetLastCommittedOrigin().GetURL());
+      render_frame_host->GetLastCommittedOrigin().GetURL()));
 }
 
-blink::mojom::PermissionStatus
-CastPermissionManager::GetPermissionStatusForWorker(
+content::PermissionResult CastPermissionManager::GetPermissionResultForWorker(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatusInternal(
-      blink::PermissionDescriptorToPermissionType(permission_descriptor),
-      worker_origin);
+  return content::PermissionResult(
+      GetPermissionStatus(permission_descriptor, worker_origin, worker_origin));
 }
 
-blink::mojom::PermissionStatus
-CastPermissionManager::GetPermissionStatusForEmbeddedRequester(
+content::PermissionResult
+CastPermissionManager::GetPermissionResultForEmbeddedRequester(
     const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
-  return GetPermissionStatusInternal(permission_descriptor, render_frame_host,
-                                     requesting_origin.GetURL());
+  return content::PermissionResult(GetPermissionStatusInternal(
+      permission_descriptor, render_frame_host, requesting_origin.GetURL()));
 }
 
 }  // namespace shell

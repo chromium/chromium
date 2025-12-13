@@ -25,7 +25,7 @@ static_library("web_contents_delegate") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
-    "//ui/shell_dialogs:shell_dialogs",
+    "//ui/shell_dialogs",
     "//url",
   ]
 }

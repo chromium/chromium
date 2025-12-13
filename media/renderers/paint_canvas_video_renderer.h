@@ -83,7 +83,7 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   };
   void Paint(scoped_refptr<VideoFrame> video_frame,
              cc::PaintCanvas* canvas,
-             cc::PaintFlags& flags,
+             const cc::PaintFlags& flags,
              const PaintParams& params,
              viz::RasterContextProvider* raster_context_provider);
 
@@ -114,12 +114,14 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // |rgb_pixels| will be 255 (equivalent to an alpha of 1.0) and therefore the
   // value of |premultiply_alpha| has no effect on the R, G, B samples in
   // |rgb_pixels|.
-  static void ConvertVideoFrameToRGBPixels(const media::VideoFrame* video_frame,
-                                           void* rgb_pixels,
-                                           size_t row_bytes,
-                                           bool premultiply_alpha = true,
-                                           FilterMode filter = kFilterNone,
-                                           bool disable_threading = false);
+  static void ConvertVideoFrameToRGBPixels(
+      const media::VideoFrame* video_frame,
+      void* rgb_pixels,
+      size_t row_bytes,
+      SkColorType dst_color_type = kN32_SkColorType,
+      bool premultiply_alpha = true,
+      FilterMode filter = kFilterNone,
+      bool disable_threading = false);
 
   // The output format that ConvertVideoFrameToRGBPixels will write.
   static viz::SharedImageFormat GetRGBPixelsOutputFormat();

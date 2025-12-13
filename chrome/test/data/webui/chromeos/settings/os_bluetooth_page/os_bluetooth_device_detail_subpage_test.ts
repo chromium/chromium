@@ -318,108 +318,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getTrueWirelessImages());
   });
 
-  test(
-      'Show change settings row, and navigate to subpages' +
-      'w/ no per-device settings',
-      async () => {
-        loadTimeData.overrideValues({
-          enableInputDeviceSettingsSplit: false,
-        });
-
-        init();
-        bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
-
-        const device1 = createDefaultBluetoothDevice(
-            /*id=*/ '12//345&6789',
-            /*publicName=*/ 'BeatsX',
-            /*connectionState=*/
-            DeviceConnectionState.kConnected,
-            /*opt_nickname=*/ 'device1',
-            /*opt_audioCapability=*/
-            AudioOutputCapability.kCapableOfAudioOutput,
-            /*opt_deviceType=*/ DeviceType.kMouse);
-
-        bluetoothConfig.appendToPairedDeviceList([device1]);
-        await flushTasks();
-
-        navigateToDeviceDetailPage('12//345&6789');
-
-        device1.deviceProperties.connectionState =
-            DeviceConnectionState.kNotConnected;
-        bluetoothConfig.updatePairedDevice(device1);
-        await flushTasks();
-        assertNull(getChangeMouseSettings());
-
-        device1.deviceProperties.connectionState =
-            DeviceConnectionState.kConnected;
-        bluetoothConfig.updatePairedDevice(device1);
-        await flushTasks();
-        assertTrue(!!getChangeMouseSettings());
-
-        getChangeMouseSettings()!.click();
-        await flushTasks();
-
-        assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-
-        // Navigate back to the detail page.
-        assertNotEquals(
-            bluetoothDeviceDetailPage.shadowRoot!.activeElement,
-            getChangeMouseSettings());
-        let windowPopstatePromise = eventToPromise('popstate', window);
-        Router.getInstance().navigateToPreviousRoute();
-        await windowPopstatePromise;
-        await waitAfterNextRender(bluetoothDeviceDetailPage);
-
-        assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
-        // Check that |#changeMouseSettings| has been focused.
-        assertEquals(
-            bluetoothDeviceDetailPage.shadowRoot!.activeElement,
-            getChangeMouseSettings());
-
-        device1.deviceProperties.deviceType = DeviceType.kKeyboard;
-        bluetoothConfig.updatePairedDevice(device1);
-
-        await flushTasks();
-        assertNull(getChangeMouseSettings());
-        assertTrue(!!getChangeKeyboardSettings());
-
-        device1.deviceProperties.connectionState =
-            DeviceConnectionState.kNotConnected;
-        bluetoothConfig.updatePairedDevice(device1);
-        await flushTasks();
-        assertNull(getChangeKeyboardSettings());
-
-        device1.deviceProperties.connectionState =
-            DeviceConnectionState.kConnected;
-        bluetoothConfig.updatePairedDevice(device1);
-        await flushTasks();
-        assertTrue(!!getChangeKeyboardSettings());
-
-        getChangeKeyboardSettings()!.click();
-        await flushTasks();
-
-        assertEquals(routes.KEYBOARD, Router.getInstance().currentRoute);
-
-        // Navigate back to the detail page.
-        assertNotEquals(
-            bluetoothDeviceDetailPage.shadowRoot!.activeElement,
-            getChangeKeyboardSettings());
-        windowPopstatePromise = eventToPromise('popstate', window);
-        Router.getInstance().navigateToPreviousRoute();
-        await windowPopstatePromise;
-        await waitAfterNextRender(bluetoothDeviceDetailPage);
-
-        // This is needed or other tests will fail.
-        // TODO(crbug.com/390256207): Figure out how to remove this.
-        getChangeKeyboardSettings()!.click();
-        await flushTasks();
-      });
-
   test('Show change settings row, and navigate to subpages', async () => {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: true,
-    });
-
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -649,10 +548,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertTrue(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertEquals(
-        deviceNickname, getBluetoothDeviceNameLabel().textContent!.trim());
+        deviceNickname, getBluetoothDeviceNameLabel().textContent.trim());
     assertTrue(!!getBluetoothDeviceBatteryInfo());
     assertNull(getNonAudioOutputDeviceMessage());
 
@@ -670,7 +569,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertNull(getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailDisconnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertFalse(bluetoothDeviceDetailPage.getIsDeviceConnectedForTest());
     assertNull(getBluetoothDeviceBatteryInfo());
     assertEquals(
@@ -681,7 +580,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertEquals(
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailHIDMessageDisconnected'),
-        getNonAudioOutputDeviceMessage()!.textContent!.trim());
+        getNonAudioOutputDeviceMessage()!.textContent.trim());
 
     // Simulate connected state and not audio capable.
     device1.deviceProperties.connectionState = DeviceConnectionState.kConnected;
@@ -692,7 +591,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertEquals(
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailHIDMessageConnected'),
-        getNonAudioOutputDeviceMessage()!.textContent!.trim());
+        getNonAudioOutputDeviceMessage()!.textContent.trim());
 
     device1.deviceProperties.audioCapability =
         AudioOutputCapability.kCapableOfAudioOutput;
@@ -709,7 +608,7 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothDeviceDetailConnected'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
   });
 
   test(
@@ -773,12 +672,12 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
     assertTrue(!!getBluetoothConnectDisconnectBtn());
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothConnecting'),
-        getBluetoothStateText().textContent!.trim());
+        getBluetoothStateText().textContent.trim());
     assertNull(getConnectionFailedText());
     assertTrue(getBluetoothConnectDisconnectBtn()!.disabled);
     assertEquals(
         bluetoothDeviceDetailPage.i18n('bluetoothConnect'),
-        getBluetoothConnectDisconnectBtn()!.textContent!.trim());
+        getBluetoothConnectDisconnectBtn()!.textContent.trim());
   });
 
   test('Connect/Disconnect/forget states and error message', async () => {
@@ -809,10 +708,10 @@ suite('<os-settings-bluetooth-device-detail-subpage>', () => {
               isConnectDisconnectBtnDisabled,
               getBluetoothConnectDisconnectBtn()!.disabled);
           assertEquals(
-              bluetoothStateText, getBluetoothStateText().textContent!.trim());
+              bluetoothStateText, getBluetoothStateText().textContent.trim());
           assertEquals(
               connectDisconnectBtnText,
-              getBluetoothConnectDisconnectBtn()!.textContent!.trim());
+              getBluetoothConnectDisconnectBtn()!.textContent.trim());
         };
 
     const id = '12345/6789&';

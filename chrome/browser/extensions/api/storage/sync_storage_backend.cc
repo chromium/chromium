@@ -16,7 +16,10 @@
 #include "components/sync/protocol/entity_data.h"
 #include "extensions/browser/api/storage/backend_task_runner.h"
 #include "extensions/browser/api/storage/value_store_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

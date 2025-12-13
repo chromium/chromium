@@ -1,8 +1,9 @@
 Name: OpenXR SDK
 Short Name: OpenXR
 URL: https://github.com/KhronosGroup/OpenXR-SDK
-Version: 1.1.43
-Revision: 781f2eab3698d653c804ecbd11e0aed47eaad1c6
+Version: 1.1.53
+Revision: 75c53b6e853dc12c7b3c771edc9c9c841b15faaa
+Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSE
 Security Critical: yes
@@ -35,8 +36,8 @@ The following changes should be reflected in `src_overrides/patches`:
 * Forked android_utilites.cpp and manifest_file.cpp to allow for customizing to
 ignore loading in Android ContentProvider supplied paths while investigating and
 waiting for upstreaming.
-* Forked api_layer_interface.cpp to unblock a libc++ roll by cherry-picking
-https://github.com/KhronosGroup/OpenXR-SDK-Source/pull/554
+* Forked AndroidManifest.xml.in to remove unnecessary fields that prevent
+merging with Chrome's AndroidManifest.xml
 
 -------------------- DEPENDENCY DIVIDER --------------------
 
@@ -44,6 +45,8 @@ Name: JNIPP
 Short Name: JNIPP
 URL: https://github.com/mitchdowd/jnipp
 Version: v1.0.0-13-gcdd6293
+Revision: cdd6293fca985993129f5ef5441709fc49ee507f
+Update Mechanism: Manual
 License: MIT
 License File: src/src/external/jnipp/LICENSE
 Security Critical: yes
@@ -65,6 +68,7 @@ Short Name: android-jni-wrappers
 URL: https://gitlab.freedesktop.org/monado/utilities/android-jni-wrappers
 Version: N/A
 Date: 2023-12-13
+Update Mechanism: Manual
 License: Apache-2.0
 License File: src/LICENSES/Apache-2.0.txt
 Security Critical: yes

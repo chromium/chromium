@@ -20,6 +20,7 @@
 <translation id="2226276347425096477">कृपया यस टेक्स्टलाई <ph name="MAX_CHARACTERS" /> वर्णहरू वा कम गर्नुहोस् (तपाईंले हाल <ph name="CURRENT_LENGTH" /> वर्णहरू प्रयोग गरिरहनुभएको छ)।</translation>
 <translation id="2247351761944213033">हप्ता <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्र्याक <ph name="NUMBER" /></translation>
+<translation id="2500270406326775625">डेटा URL</translation>
 <translation id="2507943997699731163">कृपया यस क्षेत्रमा भर्नुहोस्।</translation>
 <translation id="2613802280814924224">कृपया एक वैध परिमाण प्रविष्टि गर्नुहोस्। सबैभन्दा नजिकको वैध परिमाण <ph name="VALID_VALUE" /> हो।</translation>
 <translation id="2653659639078652383">पेश गर्नुहोस्</translation>

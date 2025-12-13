@@ -1,0 +1,69 @@
+<style include="cr-hidden-style settings-shared site-settings-shared"></style>
+<if expr="not is_chromeos and not is_win">
+<settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
+    route-path$="[[routePath]]">
+</if>
+<if expr="is_chromeos or is_win">
+<settings-subpage page-title="$i18n{siteSettingsProtectedContent}"
+    search-label="$i18n{siteSettingsAllSitesSearch}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+</if>
+  <div class="radio-group">
+    <div class="secondary">
+      $i18n{siteSettingsProtectedContentDescription}
+    </div>
+    <h2>$i18n{siteSettingsDefaultBehavior}</h2>
+    <div class="secondary radio-sub-heading">
+      $i18n{siteSettingsDefaultBehaviorDescription}
+    </div>
+    <settings-radio-group
+        pref="{{prefs.webkit.webprefs.encrypted_media_enabled}}"
+        selectable-elements="settings-collapse-radio-button">
+      <settings-collapse-radio-button no-collapse
+          pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+          label="$i18n{siteSettingsProtectedContentAllowed}"
+          name="true"
+          disabled$="[[isGuest_]]"
+          icon="privacy:sync-saved-locally">
+      </settings-collapse-radio-button>
+      <settings-collapse-radio-button no-collapse
+          pref="[[prefs.webkit.webprefs.encrypted_media_enabled]]"
+          label="$i18n{siteSettingsProtectedContentBlocked}"
+          sub-label="$i18n{siteSettingsProtectedContentBlockedSubLabel}"
+          name="false"
+          disabled$="[[isGuest_]]"
+          icon="privacy:sync-saved-locally-off">
+      </settings-collapse-radio-button>
+    </settings-radio-group>
+  </div>
+<if expr="is_chromeos or is_win">
+  <settings-category-default-radio-group
+      header="$i18n{siteSettingsProtectedContentIdentifiers}"
+      description="$i18n{siteSettingsProtectedContentIdentifiersExplanation}"
+      category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
+      block-option-label=
+        "$i18n{siteSettingsProtectedContentIdentifiersBlocked}"
+      block-option-sub-label=
+        "$i18n{siteSettingsProtectedContentIdentifiersBlockedSubLabel}"
+      block-option-icon="privacy:sync-saved-locally-off"
+      allow-option-label=
+        "$i18n{siteSettingsProtectedContentIdentifiersAllowed}"
+<if expr="is_win and _google_chrome">
+      allow-option-sub-label=
+        "$i18n{siteSettingsProtectedContentIdentifiersAllowedSubLabel}"
+</if>
+      allow-option-icon="privacy:sync-saved-locally"
+      disabled$="[[isGuest_]]">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      description="$i18n{siteSettingsCustomizedBehaviorsDescriptionShort}"
+      category="[[contentSettingsTypesEnum_.PROTECTED_CONTENT]]"
+      allow-header=
+        "$i18n{siteSettingsProtectedContentIdentifiersAllowedExceptions}"
+      block-header=
+        "$i18n{siteSettingsProtectedContentIdentifiersBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</if>
+</settings-subpage>

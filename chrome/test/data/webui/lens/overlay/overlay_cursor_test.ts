@@ -10,7 +10,6 @@ import type {CursorTooltipElement} from 'chrome-untrusted://lens-overlay/cursor_
 import type {LensPageRemote} from 'chrome-untrusted://lens-overlay/lens.mojom-webui.js';
 import type {LensOverlayAppElement} from 'chrome-untrusted://lens-overlay/lens_overlay_app.js';
 import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
-import type {TextLayerBase} from 'chrome-untrusted://lens-overlay/text_layer_base.js';
 import {loadTimeData} from 'chrome-untrusted://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
@@ -19,7 +18,7 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 import {fakeScreenshotBitmap, waitForScreenshotRendered} from '../utils/image_utils.js';
 import {createObject} from '../utils/object_utils.js';
 import {simulateStartDrag} from '../utils/selection_utils.js';
-import {createLine, createParagraph, createText, createWord, dispatchTranslateStateEvent} from '../utils/text_utils.js';
+import {createLine, createParagraph, createText, createWord} from '../utils/text_utils.js';
 
 import {TestLensOverlayBrowserProxy} from './test_overlay_browser_proxy.js';
 
@@ -55,10 +54,6 @@ suite('OverlayCursor', () => {
       'cursorTooltipClickMessage': 'Select object',
       'cursorTooltipDragMessage': 'Drag to search',
       'cursorTooltipLivePageMessage': 'Click to exit',
-      // TODO(crbug.com/398040980): After launching simplified selection, the
-      // tests under the SimplifiedSelection suite should instead be moved to
-      // the appropriate suite with conflicting tests removed.
-      'simplifiedSelectionEnabled': false,
     });
 
     lensOverlayElement = document.createElement('lens-overlay-app');
@@ -70,7 +65,8 @@ suite('OverlayCursor', () => {
     tooltipEl = cursorTooltip.$.cursorTooltip;
 
     // Send a fake screenshot to unhide the selection overlay.
-    testBrowserProxy.page.screenshotDataReceived(fakeScreenshotBitmap());
+    testBrowserProxy.page.screenshotDataReceived(
+        fakeScreenshotBitmap(), /*isSidePanelOpen=*/ false);
     await waitForScreenshotRendered(selectionOverlayElement);
 
     // Since the size of the Selection Overlay is based on the screenshot which
@@ -83,10 +79,6 @@ suite('OverlayCursor', () => {
     await addWords();
     await addObjects();
   });
-
-  function getTextSelectionLayer(): TextLayerBase {
-    return selectionOverlayElement.getTextSelectionLayerForTesting();
-  }
 
   // Normalizes the given values to the size of selection overlay.
   function normalizedBox(box: RectF): RectF {
@@ -153,55 +145,6 @@ suite('OverlayCursor', () => {
     simulateHover(appContainerEl);
     return waitAfterNextRender(lensOverlayElement);
   }
-
-  test('Text', async () => {
-    await simulateEnterViewport();
-
-    // Hover over a text element.
-    const textLayer = getTextSelectionLayer();
-    const textElement =
-        textLayer.getElementForTesting().shadowRoot!.querySelector('.word')!;
-    await simulateHover(textElement);
-
-    // Verify the cursor tooltip changed to text string.
-    assertTrue(isRendered(tooltipEl));
-    assertStringContains(tooltipEl.innerHTML, 'Select text');
-
-    // Verify the cursor changed to text and the cursor image changed to text
-    // icon.
-    assertEquals('text', document.body.style.cursor);
-    assertEquals(
-        'url("text.svg")',
-        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
-
-    await simulateUnhover(textElement);
-
-    // Verify the cursor changed to unset and the cursor image is still Lens
-    // icon.
-    assertEquals('unset', document.body.style.cursor);
-    assertEquals(
-        'url("lens.svg")',
-        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
-
-    // Now enable translate mode.
-    dispatchTranslateStateEvent(
-        getTextSelectionLayer().getElementForTesting(), true, 'es');
-
-    // Hover over the selection overlay.
-    await simulateHover(selectionOverlayElement.$.selectionOverlay);
-
-    // Verify the cursor tooltip is the text string, despite the cursor not
-    // hovering over text.
-    assertTrue(isRendered(tooltipEl));
-    assertStringContains(tooltipEl.innerHTML, 'Select text');
-
-    // Verify the cursor changed to text and the cursor image changed to text
-    // icon.
-    assertEquals('text', document.body.style.cursor);
-    assertEquals(
-        'url("text.svg")',
-        selectionOverlayElement.style.getPropertyValue('--cursor-img-url'));
-  });
 
   test('Object', async () => {
     await simulateEnterViewport();
@@ -273,21 +216,6 @@ suite('OverlayCursor', () => {
 
   test('HideTooltip', async () => {
     await simulateEnterViewport();
-
-    // Hover over some text.
-    const textLayer = getTextSelectionLayer();
-    const textElement =
-        textLayer.getElementForTesting().shadowRoot!.querySelector('.word')!;
-    await simulateHover(textElement);
-    assertTrue(isRendered(tooltipEl));
-
-    // Simulate changing hover from text to close button.
-    await simulateUnhover(textElement);
-    await simulateUnhover(selectionOverlayElement);
-    await simulateHover(lensOverlayElement.$.closeButton);
-
-    // Verify no tooltip.
-    assertFalse(isRendered(tooltipEl));
 
     // Hover over the background scrim.
     await simulateUnhover(lensOverlayElement.$.closeButton);

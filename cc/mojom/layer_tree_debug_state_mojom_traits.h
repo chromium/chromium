@@ -80,10 +80,6 @@ struct StructTraits<cc::mojom::LayerTreeDebugStateDataView,
       const cc::LayerTreeDebugState& state) {
     return state.rasterize_only_visible_content;
   }
-  static bool highlight_non_lcd_text_layers(
-      const cc::LayerTreeDebugState& state) {
-    return state.highlight_non_lcd_text_layers;
-  }
   static bool record_rendering_stats(const cc::LayerTreeDebugState& state) {
     return state.RecordRenderingStats();
   }
@@ -120,7 +116,6 @@ struct StructTraits<cc::mojom::LayerTreeDebugStateDataView,
         data.show_layer_animation_bounds_rects();
     out->slow_down_raster_scale_factor = data.slow_down_raster_scale_factor();
     out->rasterize_only_visible_content = data.rasterize_only_visible_content();
-    out->highlight_non_lcd_text_layers = data.highlight_non_lcd_text_layers();
     out->SetRecordRenderingStats(data.record_rendering_stats());
     return true;
   }

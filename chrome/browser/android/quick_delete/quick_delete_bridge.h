@@ -6,25 +6,27 @@
 #define CHROME_BROWSER_ANDROID_QUICK_DELETE_QUICK_DELETE_BRIDGE_H_
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/browsing_data/core/counters/browsing_data_counter.h"
 
 class Profile;
 
-namespace history {
-class HistoryService;
-struct DomainsVisitedResult;
-}  // namespace history
+namespace browsing_data {
+class HistoryCounter;
+}  // namespace browsing_data
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 // The bridge for fetching information and executing commands for the Android
 // Quick Delete UI.
 class QuickDeleteBridge {
  public:
-  explicit QuickDeleteBridge(Profile* profile);
+  explicit QuickDeleteBridge(JNIEnv* env,
+                             const base::android::JavaRef<jobject>& obj,
+                             Profile* profile);
 
   QuickDeleteBridge(const QuickDeleteBridge&) = delete;
   QuickDeleteBridge& operator=(const QuickDeleteBridge&) = delete;
@@ -32,28 +34,24 @@ class QuickDeleteBridge {
 
   void Destroy(JNIEnv* env);
 
-  // Gets the most recently visited synced domain and count of unique domains
-  // visited on all devices within the time period.
-  void GetLastVisitedDomainAndUniqueDomainCount(
-      JNIEnv* env,
-      const jint time_period,
-      const JavaParamRef<jobject>& j_callback);
+  void RestartCounterForTimePeriod(JNIEnv* env, const jint time_period);
 
  private:
+  base::android::ScopedJavaGlobalRef<jobject> jobject_;
+
   raw_ptr<Profile> profile_;
 
-  raw_ptr<history::HistoryService> history_service_;
+  std::unique_ptr<browsing_data::HistoryCounter> history_counter_;
 
   // Tracker for requests to the history service.
   base::CancelableTaskTracker task_tracker_;
 
   base::WeakPtrFactory<QuickDeleteBridge> weak_ptr_factory_{this};
 
-  // Called when the unique domains visited query is completed and informs
-  // the java side that the result is ready.
-  void OnGetLastVisitedDomainAndUniqueDomainCountComplete(
-      const JavaRef<jobject>& j_callback,
-      history::DomainsVisitedResult result);
+  // Called when the history counter result is completed and informs the java
+  // side that the result is ready.
+  void OnHistoryCounterResult(
+      std::unique_ptr<browsing_data::BrowsingDataCounter::Result> result);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_QUICK_DELETE_QUICK_DELETE_BRIDGE_H_

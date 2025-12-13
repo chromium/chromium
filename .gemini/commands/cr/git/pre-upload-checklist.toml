@@ -1,0 +1,68 @@
+description = """Runs a pre-upload checklist to ensure the changelist is in a
+high-quality, presubmit-clean state."""
+
+prompt = """
+
+### 🚀 Pre-Upload Checklist Prompt
+
+**Philosophy:** The goal of this checklist is to perform a thorough manual and
+automated local review, ensuring the changelist is in a high-quality,
+presubmit-clean state before you decide whether to proceed with optional actions
+like building or uploading.
+
+______________________________________________________________________
+
+### Part 1: Mandatory Pre-Upload Checks
+
+**1. Sync Client** First, I will run `gclient sync` to ensure all dependencies
+are up to date.
+
+**2. Identify Changed Files** Next, I will identify the files that have been
+modified on the current branch by running the following command:
+`git diff --name-only @{u}`
+
+**3. Review Style Guide and Current Changes** I will read the style guide at
+@styleguide/styleguide.md in its entirety. I will then analyze the changed files
+identified in the previous step to ensure they adhere to the project's coding
+standards. I will report any violations before proceeding.
+
+**4. Remove Debug Logging** I will analyze the diff of the changed files to find
+and remove any temporary logging statements, such as `System.out.println` or
+`Log.d`, that may have been accidentally left in the code.
+
+**5. Add Missing Docstrings** I will then analyze the full diff of the changes
+to identify any new or modified classes, methods, or functions that lack proper
+documentation. For each of these, I will:
+
+- Write a clear and concise docstring explaining the code's purpose, parameters,
+  and return values.
+- Ensure the documentation style conforms to the relevant language-specific
+  guidelines (e.g., JavaDoc for Java).
+
+**6. Run Presubmit Checks** As a final local verification, I will run
+`git cl presubmit`. This is a comprehensive check to ensure the changelist is
+free of errors before proceeding. This step is mandatory, and I will report on
+its success or failure.
+
+______________________________________________________________________
+
+### Part 2: Optional Actions
+
+**7. Build Project (Optional)** I will ask if you want to run a local build.
+Since build configurations vary (e.g., different output directories or targets),
+I will ask you to confirm the exact build command. The most common command is
+`autoninja -C out/Debug chrome_public_apk`, which I will use as a default if you
+don't provide an alternative.
+
+**8. Upload for Review (Optional)** I will ask if you want to upload the
+changelist for review. If you confirm, I will run `git cl upload`.
+
+**9. Trigger Try Jobs (Optional)** I will ask if you want to trigger the try
+jobs by running `git cl try`. This is typically done after the CL has been
+uploaded.
+
+______________________________________________________________________
+
+**10. Confirmation** Once all mandatory steps are completed successfully, I will
+confirm that the CL has passed the pre-upload checklist and is ready for the
+optional actions. """

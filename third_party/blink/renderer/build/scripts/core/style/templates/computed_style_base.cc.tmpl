@@ -218,4 +218,12 @@ void ComputedStyleBuilderBase::PropagateIndependentInheritedProperties(
   {% endfor %}
 }
 
+void ComputedStyleBuilderBase::CopyHighlightPropertiesFrom(
+    const ComputedStyleBase& originating_element_style)
+{
+  {% for field in computed_style.all_fields if field.highlight_style_comes_from_originating_element %}
+    {{setter_method_name(field)}}(originating_element_style.{{getter_method_name(field)}}());
+  {% endfor %}
+}
+
 } // namespace blink

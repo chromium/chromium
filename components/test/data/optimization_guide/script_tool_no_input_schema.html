@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OK</title>
+</head>
+<body>
+    <script>
+    async function echo(obj) {
+      return obj.text;
+    }
+
+    navigator.modelContext.registerTool({
+      execute: echo,
+      name: "echo",
+      description: "echo input",
+    });
+  </script>
+</body>
+</html>

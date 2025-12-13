@@ -232,10 +232,29 @@ public class Toast {
 
     /**
      * Create a new {@link Toast} with a given priority. See Javadoc for when to use it.
+     *
+     * @param context {@link Context} in which the toast is created.
+     * @param text Text message to be displayed.
+     * @param duration Duration of the toast. Either {@link android.widget.Toast#LENGTH_SHORT} or
+     *     {@link android.widget.Toast#LENGTH_LONG}.
+     * @param priority {@link ToastPriority} to be assigned to the toast.
+     */
+    public static Toast makeTextWithPriority(
+            Context context, String text, int duration, int priority) {
+        return new Builder(context)
+                .withText(text)
+                .withDuration(duration)
+                .withPriority(priority)
+                .build();
+    }
+
+    /**
+     * Create a new {@link Toast} with a given priority. See Javadoc for when to use it.
+     *
      * @param context {@link Context} in which the toast is created.
      * @param resId Resource of for the text message.
-     * @param duration Duration of the toast. Either {@link android.widget.Toast#LENGTH_SHORT}
-     *        or {@link android.widget.Toast#LENGTH_LONG}.
+     * @param duration Duration of the toast. Either {@link android.widget.Toast#LENGTH_SHORT} or
+     *     {@link android.widget.Toast#LENGTH_LONG}.
      * @param priority {@link ToastPriority} to be assigned to the toast.
      */
     public static Toast makeTextWithPriority(

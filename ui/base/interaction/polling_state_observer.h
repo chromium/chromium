@@ -13,7 +13,6 @@
 #include "base/timer/timer.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
-#include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/base/interaction/state_observer.h"
 
 namespace ui::test {

@@ -4,11 +4,11 @@
 
 #include "chrome/browser/metrics/chrome_metrics_extensions_helper.h"
 
-#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
 #include "extensions/browser/process_map.h"
 #endif
 

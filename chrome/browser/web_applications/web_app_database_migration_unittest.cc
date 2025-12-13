@@ -867,5 +867,852 @@ TEST_F(WebAppDatabaseMigrationTest, MigrateToRelativeManifestIdNoFragment) {
   VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
 }
 
+TEST_F(WebAppDatabaseMigrationTest, MigratePendingUpdateInfoWasIgnored) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, everything set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(true);
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Pending update info exists (correct otherwise), no `was_ignored`
+  // state.
+  GURL start_url3("https://app3.com/start");
+  proto::WebApp app_incorrect_pending_info =
+      CreateWebAppProtoForTesting("App 3", start_url3);
+  app_incorrect_pending_info.mutable_pending_update_info()->set_name(
+      "App 3 Update");
+
+  database_factory->WriteProtos({app_correct_pending_info, app_no_pending_info,
+                                 app_incorrect_pending_info});
+
+  // Set version to 3 to trigger the migration to version 4.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(3);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingInfoWasIgnoredMigrated"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_incorrect_pending_info));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Check that app1's `was_ignored` field wasn't updated.
+  EXPECT_TRUE(migrated_app1->pending_update_info()->has_was_ignored());
+  EXPECT_TRUE(migrated_app1->pending_update_info()->was_ignored());
+
+  // Check that app2 did not have a pending update info set.
+  EXPECT_FALSE(migrated_app2->pending_update_info().has_value());
+
+  // Check that app3 now has the `was_ignored` field default set to false.
+  EXPECT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+  EXPECT_FALSE(migrated_app3->pending_update_info()->was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+using WebAppDatabaseIncorrectPendingInfoMigrationTest =
+    WebAppDatabaseMigrationTest;
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest, NoTrusted) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_maps_2;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest, NoManifest) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  trusted_icon_no->set_url("https://icon1.jpg");
+  trusted_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_maps_2;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
+       NoManifestDownloadedSizes) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Do not add trusted icon sizes.
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only trusted icons, no manifest icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_maps_2;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
+       NoTrustedDownloadedSizes) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Do not add manifest icon sizes.
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
+       NoNamePendingUpdateCleared) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons. No name
+  // as well, so the whole pending info should be removed.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Only trusted icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should not have the pending update info.
+  ASSERT_FALSE(migrated_app3->pending_update_info().has_value());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
+       IncorrectSizeNoPurpose) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add manifest icon sizes, but incorrect trusted icon sizes (no purpose).
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_3;
+  purpose_maps_3.Add()->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_maps_3;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
+TEST_F(WebAppDatabaseIncorrectPendingInfoMigrationTest,
+       IncorrectMetadataNoPurpose) {
+  FakeWebAppDatabaseFactory* database_factory =
+      fake_provider().GetDatabaseFactory().AsFakeWebAppDatabaseFactory();
+  ASSERT_TRUE(database_factory);
+
+  // App 1: Correct pending update info, all manifest and trusted icons set.
+  GURL start_url1("https://app1.com/start");
+  proto::WebApp app_correct_pending_info =
+      CreateWebAppProtoForTesting("App 1", start_url1);
+  app_correct_pending_info.mutable_pending_update_info()->set_name(
+      "App 1 Update");
+  app_correct_pending_info.mutable_pending_update_info()->set_was_ignored(
+      false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon->set_url("https://icon1.jpg");
+  manifest_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon.
+  sync_pb::WebAppIconInfo* trusted_icon =
+      app_correct_pending_info.mutable_pending_update_info()
+          ->mutable_trusted_icons()
+          ->Add();
+  trusted_icon->set_url("https://icon2.jpg");
+  trusted_icon->set_size_in_px(32);
+  trusted_icon->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_size_maps;
+  proto::DownloadedIconSizeInfo* downloaded_icon_info_any =
+      purpose_size_maps.Add();
+  downloaded_icon_info_any->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  downloaded_icon_info_any->add_icon_sizes(32);
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_size_maps;
+  *app_correct_pending_info.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_size_maps;
+
+  // App 2: No pending info, everything else is set.
+  GURL start_url2("https://app2.com/start");
+  proto::WebApp app_no_pending_info =
+      CreateWebAppProtoForTesting("App 2", start_url2);
+
+  // App 3: Invalid pending info, only manifest icons, no trusted icons.
+  GURL start_url3("https://app1.com/start");
+  proto::WebApp invalid_app = CreateWebAppProtoForTesting("App 3", start_url3);
+  invalid_app.mutable_pending_update_info()->set_name("App 3 Update");
+  invalid_app.mutable_pending_update_info()->set_was_ignored(false);
+
+  // Add manifest icon.
+  sync_pb::WebAppIconInfo* manifest_icon_no =
+      invalid_app.mutable_pending_update_info()
+          ->mutable_manifest_icons()
+          ->Add();
+  manifest_icon_no->set_url("https://icon1.jpg");
+  manifest_icon_no->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+
+  // Add trusted icon, but remove the purpose to signify an error.
+  sync_pb::WebAppIconInfo* trusted_icon_no =
+      invalid_app.mutable_pending_update_info()->mutable_trusted_icons()->Add();
+  trusted_icon_no->set_url("https://icon1.jpg");
+
+  // Add sizes and purposes
+  google::protobuf::RepeatedPtrField<proto::DownloadedIconSizeInfo>
+      purpose_maps_2;
+  proto::DownloadedIconSizeInfo* icon_info_downloaded = purpose_maps_2.Add();
+  icon_info_downloaded->set_purpose(sync_pb::WebAppIconInfo_Purpose_ANY);
+  icon_info_downloaded->add_icon_sizes(32);
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_manifest_icons() = purpose_maps_2;
+  *invalid_app.mutable_pending_update_info()
+       ->mutable_downloaded_trusted_icons() = purpose_maps_2;
+
+  database_factory->WriteProtos(
+      {app_correct_pending_info, app_no_pending_info, invalid_app});
+
+  // Set version to 4 to trigger the migration to version 5.
+  proto::DatabaseMetadata metadata;
+  metadata.set_version(4);
+  database_factory->WriteMetadata(metadata);
+
+  base::HistogramTester histograms;
+  // Start the system, which should run the migration.
+  test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+  // App 3 was migrated.
+  EXPECT_THAT(histograms.GetAllSamples(
+                  "WebApp.Migrations.PendingUpdateInfoIconDataCorrupted"),
+              base::BucketsAre(base::Bucket(/*min=*/1, /*count=*/1)));
+
+  WebAppRegistrar& registrar = fake_provider().registrar_unsafe();
+
+  // Verify migration results
+  const WebApp* migrated_app1 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_correct_pending_info));
+  const WebApp* migrated_app2 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(app_no_pending_info));
+  const WebApp* migrated_app3 =
+      registrar.GetAppById(GetAppIdFromWebAppProto(invalid_app));
+
+  ASSERT_TRUE(migrated_app1);
+  ASSERT_TRUE(migrated_app2);
+  ASSERT_TRUE(migrated_app3);
+
+  // Migrated app should have other pending update fields set properly.
+  ASSERT_TRUE(migrated_app3->pending_update_info().has_value());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_name());
+  ASSERT_TRUE(migrated_app3->pending_update_info()->has_was_ignored());
+
+  // Check that the data was also updated in the database.
+  VerifyDatabaseRegistryEqualToRegistrar(&fake_provider());
+}
+
 }  // namespace
 }  // namespace web_app

@@ -121,24 +121,23 @@ RubyItemIndexes ParseRubyInInlineItems(const InlineItems& items,
                                        wtf_size_t start_item_index) {
   CHECK_LT(start_item_index, items.size());
   CHECK_EQ(items[start_item_index]->Type(), InlineItem::kOpenRubyColumn);
-  RubyItemIndexes indexes = {start_item_index, WTF::kNotFound, WTF::kNotFound,
-                             WTF::kNotFound};
+  RubyItemIndexes indexes = {start_item_index, kNotFound, kNotFound, kNotFound};
   for (wtf_size_t i = start_item_index + 1; i < items.size(); ++i) {
     const InlineItem& item = *items[i];
     if (item.Type() == InlineItem::kCloseRubyColumn) {
-      if (indexes.base_end == WTF::kNotFound) {
-        DCHECK_EQ(indexes.annotation_start, WTF::kNotFound);
+      if (indexes.base_end == kNotFound) {
+        DCHECK_EQ(indexes.annotation_start, kNotFound);
         indexes.base_end = i;
       } else {
-        DCHECK_NE(indexes.annotation_start, WTF::kNotFound);
+        DCHECK_NE(indexes.annotation_start, kNotFound);
       }
       indexes.column_end = i;
       return indexes;
     }
     if (item.Type() == InlineItem::kOpenTag &&
         item.GetLayoutObject()->IsInlineRubyText()) {
-      DCHECK_EQ(indexes.base_end, WTF::kNotFound);
-      DCHECK_EQ(indexes.annotation_start, WTF::kNotFound);
+      DCHECK_EQ(indexes.base_end, kNotFound);
+      DCHECK_EQ(indexes.annotation_start, kNotFound);
       indexes.base_end = i;
       indexes.annotation_start = i;
     } else if (item.Type() == InlineItem::kOpenRubyColumn) {
@@ -154,7 +153,13 @@ AnnotationOverhang GetOverhang(
     const LineInfo& base_line,
     const HeapVector<LineInfo, 1> annotation_line_list) {
   AnnotationOverhang overhang;
-  ERubyAlign ruby_align = base_line.LineStyle().RubyAlign();
+  const ComputedStyle& base_line_style = base_line.LineStyle();
+
+  if (base_line_style.RubyOverhang() == ERubyOverhang::kNone) {
+    return overhang;
+  }
+
+  ERubyAlign ruby_align = base_line_style.RubyAlign();
   switch (ruby_align) {
     case ERubyAlign::kSpaceBetween:
       return overhang;
@@ -223,7 +228,14 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
   if (previous_item.item->Type() != InlineItem::kText) {
     return false;
   }
-  if (previous_item.item->Style()->FontSize() > ruby_style.FontSize()) {
+  const ComputedStyle& previous_item_style = *previous_item.item->Style();
+  if (previous_item_style.FontSize() > ruby_style.FontSize()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
+      previous_item_style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
+      ruby_style.GetRubyPosition() ==
+          previous_item_style.GetTextEmphasisLineLogicalSide()) {
     return false;
   }
   start_overhang = std::min(start_overhang, previous_item.inline_size / 2);
@@ -258,8 +270,15 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
   if (column_item.pending_end_overhang <= LayoutUnit()) {
     return LayoutUnit();
   }
-  if (column_item.ruby_column->base_line.LineStyle().FontSize() <
-      text_item.Style()->FontSize()) {
+  const ComputedStyle& column_base_line_style =
+      column_item.ruby_column->base_line.LineStyle();
+  if (column_base_line_style.FontSize() < text_item.Style()->FontSize()) {
+    return LayoutUnit();
+  }
+  if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled() &&
+      text_item.Style()->GetTextEmphasisMark() != TextEmphasisMark::kNone &&
+      column_base_line_style.GetRubyPosition() ==
+          text_item.Style()->GetTextEmphasisLineLogicalSide()) {
     return LayoutUnit();
   }
   // Ideally we should refer to inline_size of |text_item| instead of the
@@ -362,6 +381,7 @@ std::pair<LayoutUnit, LayoutUnit> ApplyRubyAlign(LayoutUnit available_line_size,
     case ETextAlign::kStart:
     case ETextAlign::kEnd:
     case ETextAlign::kJustify:
+    case ETextAlign::kMatchParent:
       NOTREACHED();
   }
   return {LayoutUnit(), LayoutUnit()};
@@ -382,8 +402,8 @@ AnnotationMetrics ComputeAnnotationOverflow(
   bool has_under_annotation = false;
 
   const LayoutUnit line_under = line_over + line_box_metrics.LineHeight();
-  bool has_over_emphasis = false;
-  bool has_under_emphasis = false;
+  LayoutUnit over_emphasis;
+  LayoutUnit under_emphasis;
   // TODO(crbug.com/324111880): This loop can be replaced with
   // ComputeLogicalLineEmHeight() after enabling RubyLineBreakable flag.
   for (const LogicalLineItem& item : logical_line) {
@@ -414,10 +434,26 @@ AnnotationMetrics ComputeAnnotationOverflow(
 
     if (const auto* style = item.Style()) {
       if (style->GetTextEmphasisMark() != TextEmphasisMark::kNone) {
-        if (style->GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver)
-          has_over_emphasis = true;
-        else
-          has_under_emphasis = true;
+        if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
+          const auto& emphasis_mark_outsets =
+              InlineBoxState::ComputeEmphasisMarkOutsets(*style,
+                                                         *style->GetFont());
+          if (style->GetTextEmphasisLineLogicalSide() ==
+              LineLogicalSide::kOver) {
+            over_emphasis =
+                std::max(emphasis_mark_outsets.LineHeight(), over_emphasis);
+          } else {
+            under_emphasis =
+                std::max(emphasis_mark_outsets.LineHeight(), under_emphasis);
+          }
+        } else {
+          if (style->GetTextEmphasisLineLogicalSide() ==
+              LineLogicalSide::kOver) {
+            over_emphasis = LayoutUnit(1);
+          } else {
+            under_emphasis = LayoutUnit(1);
+          }
+        }
       }
     }
   }
@@ -426,12 +462,18 @@ AnnotationMetrics ComputeAnnotationOverflow(
     if (annotation_metrics->ascent) {
       LayoutUnit item_over =
           line_box_metrics.ascent - annotation_metrics->ascent;
+      if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
+        item_over -= over_emphasis;
+      }
       content_over = std::min(content_over, item_over);
       has_over_annotation = true;
     }
     if (annotation_metrics->descent) {
       LayoutUnit item_under =
           line_box_metrics.ascent + annotation_metrics->descent;
+      if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
+        item_under += under_emphasis;
+      }
       content_under = std::max(content_under, item_under);
       has_under_annotation = true;
     }
@@ -449,10 +491,12 @@ AnnotationMetrics ComputeAnnotationOverflow(
   // Don't provide annotation space if text-emphasis exists.
   // TODO(layout-dev): If the text-emphasis is in [line_over, line_under],
   // this line can provide annotation space.
-  if (has_over_emphasis)
+  if (over_emphasis > LayoutUnit()) {
     content_over = std::min(content_over, line_over);
-  if (has_under_emphasis)
+  }
+  if (under_emphasis > LayoutUnit()) {
     content_under = std::max(content_under, line_under);
+  }
 
   // With some fonts, text fragment sizes can exceed line-height.
   // We'd like to set overflow only if we have annotations.
@@ -533,11 +577,11 @@ RubyBlockPositionCalculator& RubyBlockPositionCalculator::GroupLines(
   return *this;
 }
 
-void RubyBlockPositionCalculator::HandleRubyLine(
+FontHeight RubyBlockPositionCalculator::HandleRubyLine(
     const RubyLine& current_ruby_line,
     const HeapVector<Member<LogicalRubyColumn>>& column_list) {
   if (column_list.empty()) {
-    return;
+    return FontHeight();
   }
 
   auto create_level_and_update_depth =
@@ -556,6 +600,7 @@ void RubyBlockPositionCalculator::HandleRubyLine(
 
   HeapVector<AnnotationDepth, 1> depth_stack;
   const RubyLevel& current_level = current_ruby_line.Level();
+  FontHeight max_annotation_metrics;
   for (wtf_size_t i = 0; i < column_list.size(); ++i) {
     // Push depth values with zeros.  Actual depths are fixed on closing this
     // ruby column.
@@ -568,13 +613,27 @@ void RubyBlockPositionCalculator::HandleRubyLine(
       return i + 1 >= column_list.size() ||
              column->EndIndex() <= column_list[i + 1]->start_index;
     };
+    FontHeight annotation_metrics;
     while (!depth_stack.empty() && should_close_column()) {
       const auto [annotation_level, closing_depth] =
           create_level_and_update_depth(current_level, depth_stack.back());
       RubyLine& annotation_line = EnsureRubyLine(annotation_level);
       annotation_line.Append(*closing_depth.column);
-      HandleRubyLine(annotation_line, closing_depth.column->RubyColumnList());
+      annotation_metrics += HandleRubyLine(
+          annotation_line, closing_depth.column->RubyColumnList());
       annotation_line.MaybeRecordBaseIndexes(*closing_depth.column);
+
+      LayoutUnit annotation_height =
+          closing_depth.column->annotation_items
+              ? ComputeLogicalLineEmHeight(
+                    *closing_depth.column->annotation_items)
+                    .LineHeight()
+              : LayoutUnit();
+      if (closing_depth.column->ruby_position == RubyPosition::kOver) {
+        annotation_metrics.ascent += annotation_height;
+      } else {
+        annotation_metrics.descent += annotation_height;
+      }
 
       depth_stack.pop_back();
       if (!depth_stack.empty()) {
@@ -585,8 +644,11 @@ void RubyBlockPositionCalculator::HandleRubyLine(
             std::min(parent_depth.under_depth, closing_depth.under_depth);
       }
     }
+    column_list[i]->annotation_metrics = annotation_metrics;
+    max_annotation_metrics.Unite(annotation_metrics);
   }
   CHECK(depth_stack.empty());
+  return max_annotation_metrics;
 }
 
 RubyBlockPositionCalculator::RubyLine&

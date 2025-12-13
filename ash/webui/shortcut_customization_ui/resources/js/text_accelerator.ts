@@ -7,7 +7,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -97,7 +96,7 @@ export class TextAcceleratorElement extends PolymerElement {
     container.innerHTML = window.trustedTypes.emptyHTML;
     const textParts: Node[] = [];
     for (const part of this.parts) {
-      const text = mojoString16ToString(part.text);
+      const text = part.text;
       if (part.type === TextAcceleratorPartType.kPlainText) {
         textParts.push(this.createPlainTextPart(text));
       } else if (part.type === TextAcceleratorPartType.kDelimiter) {

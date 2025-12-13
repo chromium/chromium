@@ -31,13 +31,15 @@ PrerenderAttributes::PrerenderAttributes(
     ui::PageTransition transition_type,
     bool should_warm_up_compositor,
     bool should_prepare_paint_tree,
+    blink::mojom::SpeculationAction prerender_action_type,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
     scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
-    bool allow_reuse)
+    bool allow_reuse,
+    bool form_submission)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
@@ -48,11 +50,13 @@ PrerenderAttributes::PrerenderAttributes(
       transition_type(transition_type),
       should_warm_up_compositor(should_warm_up_compositor),
       should_prepare_paint_tree(should_prepare_paint_tree),
+      prerender_action_type(prerender_action_type),
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
       preload_pipeline_info(std::move(preload_pipeline_info)),
-      allow_reuse(allow_reuse) {
+      allow_reuse(allow_reuse),
+      form_submission(form_submission) {
   if (initiator_render_frame_host) {
     initiator_origin = initiator_render_frame_host->GetLastCommittedOrigin();
     initiator_process_id =
@@ -68,6 +72,14 @@ PrerenderAttributes::PrerenderAttributes(
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());
   CHECK(!IsBrowserInitiated() || !this->speculation_rules_params.has_value());
+  switch (prerender_action_type) {
+    case blink::mojom::SpeculationAction::kPrerender:
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      break;
+    case blink::mojom::SpeculationAction::kPrefetch:
+    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      NOTREACHED();
+  }
 }
 
 PrerenderAttributes::~PrerenderAttributes() = default;

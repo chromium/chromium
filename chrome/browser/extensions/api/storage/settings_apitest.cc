@@ -234,9 +234,7 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
     message.Set("namespace", StorageAreaToString(storage_area));
     message.Set("action", action);
     message.Set("isFinalAction", is_final_action);
-    std::string message_json;
-    base::JSONWriter::Write(message, &message_json);
-    return message_json;
+    return base::WriteJson(message).value_or("");
   }
 
   void SendChangesToSyncableService(
@@ -775,6 +773,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionSettingsManagedStorageApiTest,
 
   // Verify that the test extension is still installed.
   const Extension* extension = GetSingleLoadedExtension();
+  // TODO(crbug.com/40200835): On desktop Android this assert fails because the
+  // extension was not loaded. It's not clear why.
   ASSERT_TRUE(extension);
   EXPECT_EQ(kManagedStorageExtensionId, extension->id());
 

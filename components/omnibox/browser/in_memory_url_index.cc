@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -22,11 +21,13 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/url_index_private_data.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 // Initializes a allowlist of URL schemes.
 void InitializeSchemeAllowlist(SchemeSet* allowlist,
@@ -105,8 +106,8 @@ InMemoryURLIndex::~InMemoryURLIndex() {
 }
 
 void InMemoryURLIndex::Init() {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("omnibox", "InMemoryURLIndex::Init",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("omnibox", "InMemoryURLIndex::Init",
+                    perfetto::Track::FromPointer(this));
 
   if (!history_service_)
     return;
@@ -142,12 +143,16 @@ void InMemoryURLIndex::DeleteURL(const GURL& url) {
   private_data_->DeleteURL(url);
 }
 
-void InMemoryURLIndex::OnURLVisited(history::HistoryService* history_service,
-                                    const history::URLRow& url_row,
-                                    const history::VisitRow& new_visit) {
+void InMemoryURLIndex::OnURLVisited(
+    history::HistoryService* history_service,
+    const history::VisitedURLInfo& visited_url_info) {
   DCHECK_EQ(history_service_, history_service);
-  private_data_->UpdateURL(history_service_, url_row, scheme_allowlist_,
-                           &private_data_tracker_);
+  if (visited_url_info.response_code_category ==
+      history::VisitResponseCodeCategory::k404) {
+    return;
+  }
+  private_data_->UpdateURL(history_service_, visited_url_info.url_row,
+                           scheme_allowlist_, &private_data_tracker_);
 }
 
 void InMemoryURLIndex::OnURLsModified(history::HistoryService* history_service,
@@ -222,8 +227,9 @@ void InMemoryURLIndex::Shutdown() {
 void InMemoryURLIndex::DoneRebuildingPrivateDataFromHistoryDB(
     bool succeeded,
     scoped_refptr<URLIndexPrivateData> private_data) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("omnibox", "InMemoryURLIndex::Init",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END(
+      "omnibox",
+      /* InMemoryURLIndex::Init */ perfetto::Track::FromPointer(this));
   DCHECK(thread_checker_.CalledOnValidThread());
   if (succeeded) {
     private_data_tracker_.TryCancelAll();

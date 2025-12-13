@@ -109,7 +109,9 @@ std::string AXTreeFormatterBase::EvaluateScript(
 
 void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
                                               std::string* contents,
-                                              int depth) const {
+                                              int depth,
+                                              bool* found_subtree,
+                                              int* subtree_depth) const {
   // Check dictionary against node filters, may require us to skip this node
   // and its children.
   if (MatchesNodeFilters(dict))
@@ -135,6 +137,38 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
   // Replace U+202f to ASCII SPACE
   base::ReplaceFirstSubstringAfterOffset(&line, 0, "\u202f", " ");
 
+  // Handle subtree pattern filtering.
+  bool local_found = false;
+  int local_subtree_depth = 0;
+  if (!found_subtree) {
+    found_subtree = &local_found;
+    subtree_depth = &local_subtree_depth;
+  }
+
+  // If we have a subtree pattern and haven't found it yet, check if this line
+  // matches.
+  if (!subtree_pattern_.empty() && !*found_subtree) {
+    if (line.find(subtree_pattern_) != std::string::npos) {
+      *found_subtree = true;
+      *subtree_depth = depth;
+    } else {
+      // Pattern not found yet, skip this node but continue searching children.
+      const base::Value::List* children = dict.FindList(kChildrenDictAttr);
+      if (children) {
+        for (const auto& child : *children) {
+          DCHECK(child.is_dict());
+          RecursiveFormatTree(child.GetDict(), contents, depth + 1,
+                              found_subtree, subtree_depth);
+        }
+      }
+      return;
+    }
+  } else if (!subtree_pattern_.empty() && *found_subtree &&
+             depth <= *subtree_depth) {
+    // We've exited the subtree (returned to same or shallower level), stop.
+    return;
+  }
+
   *contents += line + "\n";
 
   // TODO(accessibility): This can be removed once the UIA tree formatter
@@ -146,7 +180,8 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::Value::Dict& dict,
   if (children) {
     for (const auto& child : *children) {
       DCHECK(child.is_dict());
-      RecursiveFormatTree(child.GetDict(), contents, depth + 1);
+      RecursiveFormatTree(child.GetDict(), contents, depth + 1, found_subtree,
+                          subtree_depth);
     }
   }
 }
@@ -165,6 +200,10 @@ void AXTreeFormatterBase::SetPropertyFilters(
 void AXTreeFormatterBase::SetNodeFilters(
     const std::vector<AXNodeFilter>& node_filters) {
   node_filters_ = node_filters;
+}
+
+void AXTreeFormatterBase::SetSubtreePattern(const std::string& pattern) {
+  subtree_pattern_ = pattern;
 }
 
 void AXTreeFormatterBase::set_show_ids(bool show_ids) {

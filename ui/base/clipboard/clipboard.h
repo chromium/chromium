@@ -102,6 +102,9 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
 
   static bool IsSupportedClipboardBuffer(ClipboardBuffer buffer);
 
+  // Whether to allow pasting on middle click mouse events.
+  static bool IsMiddleClickPasteEnabled();
+
   // Sets the list of threads that are allowed to access the clipboard.
   static void SetAllowedThreads(
       const std::vector<base::PlatformThreadId>& allowed_threads);
@@ -456,11 +459,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // Note: |data| may reference shared memory and may be concurrently mutated.
   virtual void WriteData(const ClipboardFormatType& format,
                          base::span<const uint8_t> data) = 0;
-
-  // Prevent data from being written to the clipboard history and cloud.
-  virtual void WriteClipboardHistory() = 0;
-  virtual void WriteUploadCloudClipboard() = 0;
-  virtual void WriteConfidentialDataForPassword() = 0;
 
   void DispatchPortableRepresentation(const ObjectMapParams& params);
   void DispatchPortableRepresentation(const RawData& data);

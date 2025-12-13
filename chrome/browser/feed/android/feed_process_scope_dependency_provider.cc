@@ -31,8 +31,8 @@ static FeedApi* GetFeedApi() {
 
 static void JNI_FeedProcessScopeDependencyProvider_ProcessViewAction(
     JNIEnv* env,
-    const base::android::JavaParamRef<jbyteArray>& action_data,
-    const base::android::JavaParamRef<jbyteArray>& logging_parameters) {
+    const base::android::JavaRef<jbyteArray>& action_data,
+    const base::android::JavaRef<jbyteArray>& logging_parameters) {
   FeedApi* feed_stream_api = GetFeedApi();
   if (!feed_stream_api)
     return;
@@ -92,3 +92,5 @@ JNI_FeedProcessScopeDependencyProvider_GetFeedLaunchCuiMetadata(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace feed
+
+DEFINE_JNI(FeedProcessScopeDependencyProvider)

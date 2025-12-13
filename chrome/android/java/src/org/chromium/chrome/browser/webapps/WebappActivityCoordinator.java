@@ -6,8 +6,7 @@ package org.chromium.chrome.browser.webapps;
 
 import android.app.Activity;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -21,6 +20,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
  * Coordinator shared between webapp activity and WebAPK activity components. Add methods here if
  * other components need to communicate with either of these components.
  */
+@NullMarked
 public class WebappActivityCoordinator
         implements InflationObserver, PauseResumeWithNativeObserver, StartStopWithNativeObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -91,7 +91,7 @@ public class WebappActivityCoordinator
         }
     }
 
-    private void updateStorage(@NonNull WebappDataStorage storage) {
+    private void updateStorage(WebappDataStorage storage) {
         // The information in the WebappDataStorage may have been purged by the
         // user clearing their history or not launching the web app recently.
         // Restore the data if necessary.

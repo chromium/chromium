@@ -296,10 +296,10 @@ TEST_F(MojoVideoEncodeAcceleratorIntegrationTest, EncodeOneFrame) {
     const bool is_keyframe = true;
 
     EXPECT_CALL(*mock_vea_client, BitstreamBufferReady(kBistreamBufferId, _))
-        .WillOnce(testing::Invoke(
+        .WillOnce(
             [is_keyframe](int32_t, const BitstreamBufferMetadata& metadata) {
               EXPECT_EQ(is_keyframe, metadata.key_frame);
-            }));
+            });
 
     mojo_vea()->Encode(video_frame, is_keyframe);
     base::RunLoop().RunUntilIdle();

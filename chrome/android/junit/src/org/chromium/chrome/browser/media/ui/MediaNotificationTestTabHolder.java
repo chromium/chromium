@@ -9,15 +9,13 @@ import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Page;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.media_session.mojom.MediaSessionAction;
 import org.chromium.services.media_session.MediaMetadata;
@@ -30,9 +28,9 @@ import java.util.stream.Stream;
 /** Utility class for holding a Tab and relevant objects for media notification tests. */
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
-    @Mock MockWebContents mWebContents;
-    @Mock MediaSession mMediaSession;
-    @Mock Tab mTab;
+    MockWebContents mWebContents;
+    MediaSession mMediaSession;
+    Tab mTab;
 
     String mTitle;
     String mUrl;
@@ -49,11 +47,14 @@ public class MediaNotificationTestTabHolder {
     }
 
     public MediaNotificationTestTabHolder(int tabId, String url, String title) {
-        MockitoAnnotations.initMocks(this);
+        mWebContents = mock(MockWebContents.class);
+        mMediaSession = mock(MediaSession.class);
+        mTab = mock(Tab.class);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getId()).thenReturn(tabId);
         when(mWebContents.isIncognito()).thenReturn(false);
+        when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 
         MediaSessionHelper.sOverriddenMediaSession = mMediaSession;
         mMediaSessionTabHelper = new MediaSessionTabHelper(mTab);
@@ -72,6 +73,10 @@ public class MediaNotificationTestTabHolder {
     public void simulateTitleUpdated(String title) {
         mTitle = title;
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver.titleWasSet(title);
+    }
+
+    public void simulateVisibilityChange(int visibility) {
+        when(mWebContents.getVisibility()).thenReturn(visibility);
     }
 
     public void simulateFaviconUpdated(Bitmap icon, GURL iconUrl) {
@@ -129,7 +134,6 @@ public class MediaNotificationTestTabHolder {
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
-                /* isSaveableNavigation= */ false,
                 Page.createForTesting());
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didFinishNavigationInPrimaryMainFrame(navigation);

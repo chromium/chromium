@@ -8,21 +8,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Condition.whether;
 
-import android.util.Pair;
 import android.view.View;
 
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.SimpleConditions;
+import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
-import org.chromium.chrome.test.transit.SoftKeyboardFacility;
-import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
-import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.page.NativePageCondition;
-import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.Collections;
@@ -33,7 +30,7 @@ import java.util.Set;
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
  * WebContents.
  */
-public class RegularNewTabPageStation extends PageStation {
+public class RegularNewTabPageStation extends CtaPageStation {
     public ViewElement<View> searchBoxElement;
     public ViewElement<UrlBar> urlBarElement;
     public ViewElement<View> logoElement;
@@ -45,7 +42,7 @@ public class RegularNewTabPageStation extends PageStation {
         declareElementFactory(
                 mActivityElement,
                 delayedElements -> {
-                    if (mActivityElement.get().isTablet()) {
+                    if (mActivityElement.value().isTablet()) {
                         urlBarElement = delayedElements.declareView(URL_BAR);
                     } else {
                         delayedElements.declareNoView(URL_BAR);
@@ -93,13 +90,8 @@ public class RegularNewTabPageStation extends PageStation {
         return focusOnMvts(siteSuggestions, Collections.emptySet());
     }
 
-    /** Click the URL bar to enter the Omnibox. */
-    public Pair<OmniboxFacility, SoftKeyboardFacility> openOmnibox(
-            FakeOmniboxSuggestions fakeSuggestions) {
-        OmniboxFacility omniboxFacility =
-                new OmniboxFacility(/* incognito= */ false, fakeSuggestions);
-        SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();
-        searchBoxElement.clickTo().enterFacilities(omniboxFacility, softKeyboard);
-        return Pair.create(omniboxFacility, softKeyboard);
+    @Override
+    protected TripBuilder clickUrlBarOrSearchBarTo() {
+        return searchBoxElement.clickTo();
     }
 }

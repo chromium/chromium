@@ -78,18 +78,10 @@ void GainHandler::Process(uint32_t frames_to_process) {
 
 void GainHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   DCHECK(Context()->IsAudioThread());
-  // TODO(crbug.com/40637820): Eventually, the render quantum size will no
-  // longer be hardcoded as 128. At that point, we'll need to switch from
-  // stack allocation to heap allocation.
-  constexpr unsigned render_quantum_frames_expected = 128;
-  CHECK_EQ(GetDeferredTaskHandler().RenderQuantumFrames(),
-           render_quantum_frames_expected);
-  DCHECK_LE(frames_to_process, render_quantum_frames_expected);
-
-  float values[render_quantum_frames_expected];
+  DCHECK_LE(frames_to_process, sample_accurate_gain_values_.size());
 
   gain_->CalculateSampleAccurateValues(
-      base::span(values).first(frames_to_process));
+      sample_accurate_gain_values_.as_span().first(frames_to_process));
 }
 
 // As soon as we know the channel count of our input, we can lazily initialize.

@@ -50,7 +50,7 @@ TEST_F(DTSXTest, NormalInputTest) {
   EXPECT_EQ(dtsx_.GetDecoderProfileCode(), 0u);
   EXPECT_EQ(dtsx_.GetFrameDuration(), 1024);
   EXPECT_EQ(dtsx_.GetMaxPayload(), 4096);
-  EXPECT_EQ(dtsx_.GetNumPresentations(), 0);
+  EXPECT_EQ(dtsx_.GetNumPresentations(), 0u);
   EXPECT_EQ(dtsx_.GetChannelMask(), 63u);
   EXPECT_EQ(dtsx_.GetSamplingFrequency(), 48000);
 }

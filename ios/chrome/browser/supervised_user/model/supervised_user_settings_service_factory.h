@@ -27,10 +27,10 @@ class SupervisedUserSettingsServiceFactory
   SupervisedUserSettingsServiceFactory();
   ~SupervisedUserSettingsServiceFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   bool ServiceIsRequiredForContextInitialization() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_SUPERVISED_USER_SETTINGS_SERVICE_FACTORY_H_

@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorActionMetricGroups;
@@ -131,19 +132,17 @@ public class TabListEditorLegacyGroupAction extends TabListEditorAction {
         // Sort tabs by index prevent visual bugs when undoing.
         List<Tab> sortedTabs = new ArrayList<>(selectedTabs.size());
         TabModel model = tabGroupModelFilter.getTabModel();
-        for (int i = 0; i < model.getCount(); i++) {
-            Tab tab = model.getTabAt(i);
+        for (Tab tab : model) {
             if (!selectedTabs.contains(tab)) continue;
 
             sortedTabs.add(tab);
         }
 
-        List<Tab> tabsToMerge = new ArrayList<>();
-        tabsToMerge.addAll(sortedTabs);
-        tabsToMerge.add(destinationTab);
-        boolean willMergingCreateNewGroup =
-                tabGroupModelFilter.willMergingCreateNewGroup(tabsToMerge);
-        tabGroupModelFilter.mergeListOfTabsToGroup(sortedTabs, destinationTab, /* notify= */ true);
+        boolean willMergingCreateNewGroup = tabGroupModelFilter.willMergingCreateNewGroup(tabs);
+        tabGroupModelFilter.mergeListOfTabsToGroup(
+                sortedTabs,
+                destinationTab,
+                /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
         if (willMergingCreateNewGroup) {
             mTabGroupCreationDialogManager.showDialog(

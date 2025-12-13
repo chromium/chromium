@@ -75,8 +75,8 @@ void DoNothing() {}
 
 class MockErrorCollector : public MultiFileErrorCollector {
  public:
-  MockErrorCollector() {}
-  ~MockErrorCollector() override {}
+  MockErrorCollector() = default;
+  ~MockErrorCollector() override = default;
 
   std::string text_;
 
@@ -1115,7 +1115,7 @@ class GENERATED_SERVICE_TEST_NAME : public testing::Test {
           response_(nullptr),
           done_(nullptr) {}
 
-    ~MockTestService() override {}
+    ~MockTestService() override = default;
 
     void Reset() { called_ = false; }
 
@@ -1361,7 +1361,7 @@ TEST_F(GENERATED_SERVICE_TEST_NAME, NotImplemented) {
   // A service which doesn't implement any methods.
   class UnimplementedService : public UNITTEST::TestService {
    public:
-    UnimplementedService() {}
+    UnimplementedService() = default;
   };
 
   UnimplementedService unimplemented_service;
@@ -2120,7 +2120,7 @@ TEST(HELPERS_TEST_NAME, TestSCCAnalysis) {
     MessageSCCAnalyzer scc_analyzer((Options()));
     const SCC* scc = scc_analyzer.GetSCC(msg.GetDescriptor());
     MessageAnalysis result = scc_analyzer.GetSCCAnalysis(scc);
-    EXPECT_EQ(result.is_recursive, false);
+    EXPECT_EQ(result.is_recursive, true);
     EXPECT_EQ(result.contains_required, true);
     EXPECT_EQ(result.contains_cord, false);
     EXPECT_EQ(result.contains_extension, false);

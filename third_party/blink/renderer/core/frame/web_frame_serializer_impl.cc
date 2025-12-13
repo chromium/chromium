@@ -111,8 +111,7 @@ String GenerateBaseTagDeclaration(const String& base_target) {
   // TODO(yosin) We should call |FrameSerializer::baseTagDeclarationOf()|.
   if (base_target.empty())
     return String("<base href=\".\">");
-  String base_string = "<base href=\".\" target=\"" + base_target + "\">";
-  return base_string;
+  return StrCat({"<base href=\".\" target=\"", base_target, "\">"});
 }
 
 }  // namespace

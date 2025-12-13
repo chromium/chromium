@@ -445,8 +445,8 @@ LayoutUnit ResolveRowGapForMulticol(const ComputedStyle&,
 std::optional<LayoutUnit> ResolveItemToleranceLength(const ComputedStyle&,
                                                      LayoutUnit available_size);
 
-LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle&,
-                                          const LogicalSize& available_size);
+LayoutUnit ResolveItemToleranceForGridLanes(const ComputedStyle&,
+                                            const LogicalSize& available_size);
 
 CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
                                                LayoutUnit available_size);

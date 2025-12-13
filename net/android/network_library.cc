@@ -343,3 +343,6 @@ void UnregisterQuicConnectionClosePayload(int fd) {
 }
 
 }  // namespace net::android
+
+DEFINE_JNI(AndroidNetworkLibrary)
+DEFINE_JNI(DnsStatus)

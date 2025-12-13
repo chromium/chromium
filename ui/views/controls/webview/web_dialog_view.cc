@@ -18,7 +18,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -251,15 +251,14 @@ views::ClientView* WebDialogView::CreateClientView(views::Widget* widget) {
   return this;
 }
 
-std::unique_ptr<NonClientFrameView> WebDialogView::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> WebDialogView::CreateFrameView(Widget* widget) {
   if (!delegate_) {
-    return WidgetDelegate::CreateNonClientFrameView(widget);
+    return WidgetDelegate::CreateFrameView(widget);
   }
 
   switch (delegate_->GetWebDialogFrameKind()) {
     case WebDialogDelegate::FrameKind::kNonClient:
-      return WidgetDelegate::CreateNonClientFrameView(widget);
+      return WidgetDelegate::CreateFrameView(widget);
     case WebDialogDelegate::FrameKind::kDialog:
       return DialogDelegate::CreateDialogFrameView(widget);
     default:

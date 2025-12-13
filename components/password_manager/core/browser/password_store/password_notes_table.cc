@@ -36,8 +36,7 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
   std::map<FormPrimaryKey, std::vector<PasswordNote>> results;
   while (s->Step()) {
     std::u16string unique_display_name = s->ColumnString16(1);
-    std::string encrypted_value;
-    s->ColumnBlobAsString(2, &encrypted_value);
+    std::string encrypted_value = s->ColumnBlobAsString(2);
     std::u16string decrypted_value;
     if (decryptor->DecryptedString(encrypted_value, &decrypted_value) !=
         EncryptionResult::kSuccess) {
@@ -74,7 +73,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
 
 #if BUILDFLAG(IS_IOS)
   if (current_version < 40) {
-    // In version 39 passwords encryption on iOS was migrated to OSCrypt.
+    // In version 39 passwords encryption on iOS was migrated to os_crypt_async.
     // In version 40 password notes encryption on iOS is migrated as well.
     sql::Statement get_notes_statement(
         db_->GetUniqueStatement("SELECT id, value FROM password_notes"));
@@ -82,8 +81,8 @@ bool PasswordNotesTable::MigrateTable(int current_version,
     // Update each note value with the new BLOB.
     while (get_notes_statement.Step()) {
       int id = get_notes_statement.ColumnInt(0);
-      std::string keychain_identifier;
-      get_notes_statement.ColumnBlobAsString(1, &keychain_identifier);
+      std::string keychain_identifier =
+          get_notes_statement.ColumnBlobAsString(1);
       if (keychain_identifier.empty()) {
         continue;
       }
@@ -106,7 +105,7 @@ bool PasswordNotesTable::MigrateTable(int current_version,
         // Stop migration with any other error.
         return false;
       } else {
-        // Encrypt note using OSCrypt.
+        // Encrypt note using os_crypt_async.
         std::string encrypted_note;
         if (encrypt_decrypt_interface_->EncryptedString(plaintext_note,
                                                        &encrypted_note) !=

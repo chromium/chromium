@@ -9,14 +9,17 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/lens/lens_composebox_user_action.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
+#include "components/lens/lens_overlay_non_blocking_privacy_notice_user_action.h"
 #include "components/lens/lens_overlay_side_panel_menu_option.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
 #include "components/lens/lens_permission_user_action.h"
+#include "net/base/net_errors.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace lens {
@@ -55,6 +58,23 @@ struct ContextualSearchboxSessionEndMetrics {
   bool searchbox_shown_ = false;
 };
 
+struct AimSessionEndMetrics {
+  // Indicates whether the AIM searchbox was shown in the session.
+  bool composebox_shown_ = false;
+
+  // Indicates whether the AIM handshake was received in the session.
+  bool handshake_completed_ = false;
+
+  // Indicates whether the AIM searchbox was focused in the session.
+  bool composebox_focused_ = false;
+
+  // Indicates whether a query was issued in the session.
+  bool query_issued_ = false;
+
+  // Indicates whether a query was submitted in the session.
+  bool query_submitted_ = false;
+};
+
 // LINT.IfChange(LensOverlayTextDirectiveResult)
 enum class LensOverlayTextDirectiveResult {
   // The text directive was found on the page.
@@ -79,6 +99,16 @@ std::string DocumentTypeToString(lens::MimeType page_content_type);
 // unsliced.
 void RecordPermissionRequestedToBeShown(
     bool shown,
+    LensOverlayInvocationSource invocation_source);
+
+// Recorded when non-blocking privacy notice is requested to be shown.
+void RecordNonBlockingPrivacyNoticeToBeShown(
+    LensOverlayInvocationSource invocation_source);
+
+// Recorded when a user interaction causes the non-blocking privacy notice to be
+// accepted.
+void RecordNonBlockingPrivacyNoticeAccepted(
+    LensOverlayNonBlockingPrivacyNoticeUserAction user_action,
     LensOverlayInvocationSource invocation_source);
 
 // Records user action in lens permission. Both sliced and unsliced.
@@ -112,6 +142,12 @@ void RecordContextualSearchboxSessionEndMetrics(
     ContextualSearchboxSessionEndMetrics session_end_metrics,
     lens::MimeType page_content_type,
     lens::MimeType document_content_type);
+
+// Records the end of sessions metrics for the AIM searchbox.
+void RecordAimSessionEndMetrics(AimSessionEndMetrics aim_session_end_metrics);
+
+// Records user action in the AIM composebox.
+void RecordAimComposeboxUserAction(LensComposeboxUserAction user_action);
 
 // Records the time in foreground of a lens overlay. Both sliced and unsliced.
 void RecordSessionForegroundDuration(
@@ -190,6 +226,33 @@ void RecordSidePanelMenuOptionSelected(
 // Records the result of handling a text directive in the Lens Overlay.
 void RecordHandleTextDirectiveResult(
     lens::LensOverlayTextDirectiveResult result);
+
+// Records the load status of the side panel iframe.
+void RecordIframeLoadStatus(bool is_error_page, net::Error net_error_code);
+
+// Records the time it takes to close the side panel
+void RecordTimeToCloseOpenedSidePanel(base::TimeDelta duration);
+
+// Records the time it takes to take a screenshot.
+void RecordTimeToScreenshot(base::TimeDelta duration);
+
+// Records the time it takes to fetch bounding boxes.
+void RecordTimeToFetchBoundingBoxes(base::TimeDelta duration);
+
+// Records the time it takes to fetch the PDF page.
+void RecordTimeToFetchPdfPage(base::TimeDelta duration);
+
+// Records the time it takes to check page context eligibility.
+void RecordTimeToCheckPageContextEligibility(base::TimeDelta duration);
+
+// Records the time it takes to create the screenshot bitmap.
+void RecordTimeToCreateScreenshotBitmap(base::TimeDelta duration);
+
+// Records the time it takes to get the page context
+void RecordTimeToGetPageContext(base::TimeDelta duration);
+
+// Records the time it takes for the page to bind
+void RecordTimeToWebuiBound(base::TimeDelta duration);
 
 }  // namespace lens
 

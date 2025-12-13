@@ -171,10 +171,8 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-  std::string variations_json_value;
-  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-
-  source->AddString("versionInfo", variations_json_value);
+  source->AddString("versionInfo",
+                    base::WriteJson(GetVersionInfo()).value_or(""));
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);

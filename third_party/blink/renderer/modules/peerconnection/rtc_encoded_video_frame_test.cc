@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_codec_specifics_vp_8.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_metadata.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -24,6 +25,7 @@
 #include "third_party/webrtc/api/units/time_delta.h"
 
 using testing::_;
+using testing::Eq;
 using testing::NiceMock;
 using testing::Return;
 using testing::ReturnRef;
@@ -102,6 +104,44 @@ webrtc::VideoFrameMetadata MockVP8Metadata(MockTransformableVideoFrame* frame) {
   return webrtc_metadata;
 }
 
+bool AreMetadataEqual(RTCEncodedVideoFrameMetadata* m1,
+                      RTCEncodedVideoFrameMetadata* m2) {
+  return m1->hasFrameId() == m2->hasFrameId() &&
+         (!m1->hasFrameId() || m1->frameId() == m2->frameId()) &&
+         m1->hasDependencies() == m2->hasDependencies() &&
+         (!m1->hasDependencies() || m1->dependencies() == m2->dependencies()) &&
+         m1->hasSpatialIndex() == m2->hasSpatialIndex() &&
+         (!m1->hasSpatialIndex() || m1->spatialIndex() == m2->spatialIndex()) &&
+         m1->hasTemporalIndex() == m2->hasTemporalIndex() &&
+         (!m1->hasTemporalIndex() ||
+          m1->temporalIndex() == m2->temporalIndex()) &&
+         m1->hasHeight() == m2->hasHeight() &&
+         (!m1->hasHeight() || m1->height() == m2->height()) &&
+         m1->hasWidth() == m2->hasWidth() &&
+         (!m1->hasWidth() || m1->width() == m2->width()) &&
+         m1->hasTimestamp() == m2->hasTimestamp() &&
+         (!m1->hasTimestamp() || m1->timestamp() == m2->timestamp()) &&
+         m1->hasRtpTimestamp() == m2->hasRtpTimestamp() &&
+         (!m1->hasRtpTimestamp() || m1->rtpTimestamp() == m2->rtpTimestamp()) &&
+         m1->hasCaptureTime() == m2->hasCaptureTime() &&
+         (!m1->hasCaptureTime() || m1->captureTime() == m2->captureTime()) &&
+         m1->hasSenderCaptureTimeOffset() == m2->hasSenderCaptureTimeOffset() &&
+         (!m1->hasSenderCaptureTimeOffset() ||
+          m1->senderCaptureTimeOffset() == m2->senderCaptureTimeOffset()) &&
+         m1->hasReceiveTime() == m2->hasReceiveTime() &&
+         (!m1->hasReceiveTime() || m1->receiveTime() == m2->receiveTime()) &&
+         m1->hasMimeType() == m2->hasMimeType() &&
+         (!m1->hasMimeType() || m1->mimeType() == m2->mimeType()) &&
+         m1->hasPayloadType() == m2->hasPayloadType() &&
+         (!m1->hasPayloadType() || m1->payloadType() == m2->payloadType()) &&
+         m1->hasContributingSources() == m2->hasContributingSources() &&
+         (!m1->hasContributingSources() ||
+          m1->contributingSources() == m2->contributingSources()) &&
+         m1->hasSynchronizationSource() == m2->hasSynchronizationSource() &&
+         (!m1->hasSynchronizationSource() ||
+          m1->synchronizationSource() == m2->synchronizationSource());
+}
+
 TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   V8TestingScope v8_scope;
 
@@ -126,8 +166,8 @@ TEST_F(RTCEncodedVideoFrameTest, GetMetadataReturnsMetadata) {
   EXPECT_EQ(1, retrieved_metadata->dependencies()[0]);
   EXPECT_EQ(800, retrieved_metadata->width());
   EXPECT_EQ(600, retrieved_metadata->height());
-  EXPECT_EQ(3, retrieved_metadata->spatialIndex());
-  EXPECT_EQ(4, retrieved_metadata->temporalIndex());
+  EXPECT_EQ(3u, retrieved_metadata->spatialIndex());
+  EXPECT_EQ(4u, retrieved_metadata->temporalIndex());
   ASSERT_EQ(1u, retrieved_metadata->contributingSources().size());
   EXPECT_EQ(6u, retrieved_metadata->contributingSources()[0]);
   EXPECT_EQ(17u, retrieved_metadata->rtpTimestamp());
@@ -273,8 +313,10 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataWithFeatureAllowsModifications) {
   EXPECT_EQ(actual_dependencies, new_metadata->dependencies());
   EXPECT_EQ(actual_metadata.GetWidth(), new_metadata->width());
   EXPECT_EQ(actual_metadata.GetHeight(), new_metadata->height());
-  EXPECT_EQ(actual_metadata.GetSpatialIndex(), new_metadata->spatialIndex());
-  EXPECT_EQ(actual_metadata.GetTemporalIndex(), new_metadata->temporalIndex());
+  EXPECT_THAT(actual_metadata.GetSpatialIndex(),
+              Eq(new_metadata->spatialIndex()));
+  EXPECT_THAT(actual_metadata.GetTemporalIndex(),
+              Eq(new_metadata->temporalIndex()));
   EXPECT_EQ(actual_metadata.GetSsrc(), new_metadata->synchronizationSource());
   Vector<uint32_t> actual_csrcs;
   for (const auto& dependency : actual_metadata.GetCsrcs()) {
@@ -305,8 +347,6 @@ TEST_F(RTCEncodedVideoFrameTest, SetMetadataOnEmptyFrameFails) {
                              exception_state);
 
   EXPECT_TRUE(exception_state.HadException());
-  EXPECT_EQ(exception_state.Message(),
-            "Cannot setMetadata: underlying webrtc frame is an empty frame.");
 }
 
 TEST_F(RTCEncodedVideoFrameTest, SetMetadataRejectsInvalidDependencies) {
@@ -441,10 +481,10 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorPreservesVP9CodecSpecifics) {
             webrtc_metadata.GetWidth());
   EXPECT_EQ(new_frame->getMetadata(execution_context)->height(),
             webrtc_metadata.GetHeight());
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->spatialIndex(),
-            webrtc_metadata.GetSpatialIndex());
-  EXPECT_EQ(new_frame->getMetadata(execution_context)->temporalIndex(),
-            webrtc_metadata.GetTemporalIndex());
+  EXPECT_THAT(new_frame->getMetadata(execution_context)->spatialIndex(),
+              Eq(webrtc_metadata.GetSpatialIndex()));
+  EXPECT_THAT(new_frame->getMetadata(execution_context)->temporalIndex(),
+              Eq(webrtc_metadata.GetTemporalIndex()));
   EXPECT_EQ(new_frame->getMetadata(execution_context)->synchronizationSource(),
             webrtc_metadata.GetSsrc());
   std::vector<uint32_t> actual_csrcs;
@@ -601,7 +641,7 @@ TEST_F(RTCEncodedVideoFrameTest, ConstructorOnEmptyFrameWorks) {
 
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_NE(new_frame, nullptr);
-  EXPECT_EQ(new_frame->type(), "empty");
+  EXPECT_EQ(new_frame->type(), V8RTCEncodedVideoFrameType::Enum::kEmpty);
 }
 
 TEST_F(RTCEncodedVideoFrameTest, ConstructorWithMetadataOnEmptyFrameFails) {
@@ -808,6 +848,31 @@ TEST_F(RTCEncodedVideoFrameTest, ReadingDataOnEmptyFrameGivesDetachedFrame) {
   DOMArrayBuffer* data = encoded_frame->data(v8_scope.GetExecutionContext());
   EXPECT_NE(data, nullptr);
   EXPECT_TRUE(data->IsDetached());
+}
+
+TEST_F(RTCEncodedVideoFrameTest,
+       ReadingMetadataOnEmptyFrameReturnsOriginalMetadata) {
+  V8TestingScope v8_scope;
+
+  std::unique_ptr<MockTransformableVideoFrame> frame =
+      std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+  MockVP8Metadata(frame.get());
+
+  RTCEncodedVideoFrame* encoded_frame =
+      MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(frame));
+  V8RTCEncodedVideoFrameType original_type = encoded_frame->type();
+  RTCEncodedVideoFrameMetadata* original_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+
+  encoded_frame->PassWebRtcFrame(v8_scope.GetIsolate(),
+                                 /*detach_frame_data=*/false);
+
+  V8RTCEncodedVideoFrameType post_neuter_type = encoded_frame->type();
+  RTCEncodedVideoFrameMetadata* post_neuter_metadata =
+      encoded_frame->getMetadata(v8_scope.GetExecutionContext());
+
+  EXPECT_EQ(original_type.AsEnum(), post_neuter_type.AsEnum());
+  EXPECT_TRUE(AreMetadataEqual(original_metadata, post_neuter_metadata));
 }
 
 TEST_F(RTCEncodedVideoFrameTest, PassWebRTCDetachesFrameData) {

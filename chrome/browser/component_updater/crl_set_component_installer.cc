@@ -13,9 +13,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/component_updater/component_installer.h"
@@ -77,8 +77,10 @@ class CRLSetData {
   base::FilePath crl_set_path_;
 };
 
-base::LazyInstance<CRLSetData>::Leaky g_crl_set_data =
-    LAZY_INSTANCE_INITIALIZER;
+CRLSetData& GetCRLSetData() {
+  static base::NoDestructor<CRLSetData> crl_set_data;
+  return *crl_set_data;
+}
 
 void CRLSetData::ConfigureCertVerifierServiceFactory() {
   if (crl_set_path_.empty()) {
@@ -127,8 +129,8 @@ void CRLSetPolicy::OnCustomUninstall() {}
 void CRLSetPolicy::ComponentReady(const base::Version& version,
                                   const base::FilePath& install_dir,
                                   base::Value::Dict manifest) {
-  g_crl_set_data.Get().set_crl_set_path(install_dir.Append(kCRLSetFile));
-  g_crl_set_data.Get().ConfigureCertVerifierServiceFactory();
+  GetCRLSetData().set_crl_set_path(install_dir.Append(kCRLSetFile));
+  GetCRLSetData().ConfigureCertVerifierServiceFactory();
 }
 
 base::FilePath CRLSetPolicy::GetRelativeInstallDir() const {

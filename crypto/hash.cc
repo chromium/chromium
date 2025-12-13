@@ -8,30 +8,14 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/files/file.h"
+#include "base/memory/page_size.h"
 #include "base/notreached.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace crypto::hash {
-
-namespace {
-
-// TODO(https://issues.chromium.org/issues/430635196): Deduplicate.
-const EVP_MD* EVPMDForHashKind(HashKind kind) {
-  switch (kind) {
-    case HashKind::kSha1:
-      return EVP_sha1();
-    case HashKind::kSha256:
-      return EVP_sha256();
-    case HashKind::kSha384:
-      return EVP_sha384();
-    case HashKind::kSha512:
-      return EVP_sha512();
-  }
-  NOTREACHED();
-}
-
-}  // namespace
 
 void Hash(HashKind kind,
           base::span<const uint8_t> data,
@@ -77,6 +61,34 @@ std::array<uint8_t, kSha512Size> Sha512(std::string_view data) {
   return Sha512(base::as_byte_span(data));
 }
 
+const EVP_MD* EVPMDForHashKind(HashKind kind) {
+  switch (kind) {
+    case HashKind::kSha1:
+      return EVP_sha1();
+    case HashKind::kSha256:
+      return EVP_sha256();
+    case HashKind::kSha384:
+      return EVP_sha384();
+    case HashKind::kSha512:
+      return EVP_sha512();
+  }
+  NOTREACHED();
+}
+
+std::optional<HashKind> HashKindForEVPMD(const EVP_MD* evp_md) {
+  switch (EVP_MD_type(evp_md)) {
+    case NID_sha1:
+      return crypto::hash::kSha1;
+    case NID_sha256:
+      return crypto::hash::kSha256;
+    case NID_sha384:
+      return crypto::hash::kSha384;
+    case NID_sha512:
+      return crypto::hash::kSha512;
+  }
+  return std::nullopt;
+}
+
 Hasher::Hasher(HashKind kind) {
   CHECK(EVP_DigestInit(ctx_.get(), EVPMDForHashKind(kind)));
 }
@@ -115,6 +127,31 @@ void Hasher::Finish(base::span<uint8_t> digest) {
   CHECK(EVP_MD_CTX_md(ctx_.get())) << "Hasher::Finish() called multiple times";
   CHECK_EQ(digest.size(), EVP_MD_CTX_size(ctx_.get()));
   CHECK(EVP_DigestFinal(ctx_.get(), digest.data(), nullptr));
+}
+
+bool HashFile(HashKind kind, base::File* file, base::span<uint8_t> digest) {
+  if (!file->IsValid()) {
+    // Zero the out digest so that callers that fail to check the return value
+    // won't read uninitialized values.
+    std::ranges::fill(digest, 0);
+    return false;
+  }
+
+  Hasher hasher(kind);
+
+  while (true) {
+    std::array<uint8_t, 4096> buffer;
+    std::optional<size_t> bytes_read = file->ReadAtCurrentPos(buffer);
+    if (!bytes_read.has_value()) {
+      std::ranges::fill(digest, 0);
+      return false;
+    }
+    if (bytes_read.value() == 0) {
+      hasher.Finish(digest);
+      return true;
+    }
+    hasher.Update(base::span(buffer).first(*bytes_read));
+  }
 }
 
 }  // namespace crypto::hash

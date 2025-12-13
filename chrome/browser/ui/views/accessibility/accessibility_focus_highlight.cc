@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
 #include "ui/compositor/compositor.h"
@@ -194,7 +195,7 @@ void AccessibilityFocusHighlight::CreateOrUpdateLayer(gfx::Rect node_bounds) {
 
   // Schedule the animation observer, or update it if needed.
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(layer_bounds);
+      display::Screen::Get()->GetDisplayMatching(layer_bounds);
   ui::Compositor* compositor = root_layer->GetCompositor();
   if (compositor != compositor_) {
     if (compositor_ && compositor_->HasAnimationObserver(this)) {

@@ -17,6 +17,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 

@@ -6,13 +6,12 @@
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_COORDINATOR_H_
 
 #include "base/ios/block_types.h"
-#import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @class BrowserViewController;
 
 // Coordinator for BrowserViewController.
-@interface BrowserCoordinator : ChromeCoordinator <SyncPresenter>
+@interface BrowserCoordinator : ChromeCoordinator
 
 // The main view controller.
 @property(nonatomic, strong, readonly) BrowserViewController* viewController;

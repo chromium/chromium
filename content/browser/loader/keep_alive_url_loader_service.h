@@ -16,7 +16,6 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"

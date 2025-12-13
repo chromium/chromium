@@ -72,6 +72,9 @@ class ValuablesTable : public WebDatabaseTable {
   std::optional<LoyaltyCard> GetLoyaltyCardById(
       ValuableId loyalty_card_id) const;
 
+  // Adds or updates a loyalty card. Returns true on success.
+  bool AddOrUpdateLoyaltyCard(const LoyaltyCard& card);
+
   // Removes the loyalty card from the database using `loyalty_card_id` as a
   // unique identifier. Returns `true` if the operation succeeded.
   bool RemoveLoyaltyCard(ValuableId loyalty_card_id);

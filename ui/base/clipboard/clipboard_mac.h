@@ -13,7 +13,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/callback_list.h"
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_change_notifier.h"
 
@@ -112,9 +111,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
-  void WriteClipboardHistory() override;
-  void WriteUploadCloudClipboard() override;
-  void WriteConfidentialDataForPassword() override;
 
   void WriteBitmapInternal(const SkBitmap& bitmap, NSPasteboard* pasteboard);
   void ReadPngInternal(ClipboardBuffer buffer,

@@ -17,19 +17,18 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public interface FilterProperties {
     /** The {@link View} to show in the content area. */
-    public static final WritableObjectPropertyKey<View> CONTENT_VIEW =
-            new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<View> CONTENT_VIEW = new WritableObjectPropertyKey<>();
 
     /** Which {@code TabType} should be selected. */
-    public static final WritableIntPropertyKey SELECTED_TAB = new WritableIntPropertyKey();
+    WritableIntPropertyKey SELECTED_TAB = new WritableIntPropertyKey();
 
     /** The callback listener for {@code TabType} selection changes. */
-    public static final WritableObjectPropertyKey<Callback</* @TabType */ Integer>>
-            CHANGE_LISTENER = new WritableObjectPropertyKey<>();
+    WritableObjectPropertyKey<Callback</* @TabType */ Integer>> CHANGE_LISTENER =
+            new WritableObjectPropertyKey<>();
 
     /** Whether or not to show the tabs or just show the content. */
-    public static final WritableBooleanPropertyKey SHOW_TABS = new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey SHOW_TABS = new WritableBooleanPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS =
+    PropertyKey[] ALL_KEYS =
             new PropertyKey[] {CONTENT_VIEW, SELECTED_TAB, CHANGE_LISTENER, SHOW_TABS};
 }

@@ -18,7 +18,6 @@
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/file_system_access_write_item.h"
-#include "net/cert/x509_certificate.h"
 
 namespace safe_browsing {
 
@@ -178,14 +177,6 @@ using PendingClientDownloadRequestModification =
 
 // Returns a ClientDownloadRequestModification that is a no-op.
 ClientDownloadRequestModification NoModificationToRequestProto();
-
-// Given a certificate and its immediate issuer certificate, generates the
-// list of strings that need to be checked against the download allowlist to
-// determine whether the certificate is allowlisted.
-void GetCertificateAllowlistStrings(
-    const net::X509Certificate& certificate,
-    const net::X509Certificate& issuer,
-    std::vector<std::string>* allowlist_strings);
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
 

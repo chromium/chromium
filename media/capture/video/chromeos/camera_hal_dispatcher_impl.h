@@ -29,7 +29,6 @@
 #include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

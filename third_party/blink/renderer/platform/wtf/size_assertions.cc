@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 struct SameSizeAsRefCounted {
   uint32_t a;
@@ -87,4 +87,4 @@ ASSERT_SIZE(Vector<INLINE_CAPACITY_PARAMS(3)>,
 static_assert(sizeof(wtf_size_t) <= sizeof(size_t));
 static_assert(std::is_signed_v<wtf_size_t> == std::is_signed_v<size_t>);
 
-}  // namespace WTF
+}  // namespace blink

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-blink.h"
 
 using testing::_;
@@ -86,7 +87,7 @@ class CanvasResourceDispatcherTest
  public:
   scoped_refptr<CanvasResource> DispatchOneFrame() {
     scoped_refptr<CanvasResource> canvas_resource =
-        resource_provider_->ProduceCanvasResource(FlushReason::kTesting);
+        resource_provider_->ProduceCanvasResource(FlushReason::kOther);
     auto canvas_resource_extra = canvas_resource;
     dispatcher_->DispatchFrame(std::move(canvas_resource), SkIRect::MakeEmpty(),
                                /*is_opaque=*/false);
@@ -400,9 +401,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   EXPECT_CALL(*(Dispatcher()), PostImageToPlaceholder(_, _));
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
-      .WillOnce(::testing::WithArg<0>(
-          ::testing::Invoke([context_alpha, expected_throttle](
-                                const viz::CompositorFrame* frame) {
+      .WillOnce(
+          ::testing::WithArg<0>([context_alpha, expected_throttle](
+                                    const viz::CompositorFrame* frame) {
             EXPECT_EQ(frame->metadata.may_throttle_if_undrawn_frames,
                       expected_throttle);
 
@@ -423,16 +424,17 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
             const auto* texture_quad =
                 static_cast<const viz::TextureDrawQuad*>(quad);
-            EXPECT_EQ(texture_quad->uv_top_left, gfx::PointF(0.0f, 0.0f));
-            EXPECT_EQ(texture_quad->uv_bottom_right, gfx::PointF(1.0f, 1.0f));
+            EXPECT_EQ(texture_quad->GetNormalizedTexCoords(
+                          gfx::Size(kWidth, kHeight)),
+                      gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f));
 
             // CanvasResourceSharedImage::CreateSoftware() creates a resource
             // whose origin is top-left.
-            EXPECT_EQ(frame->resource_list.front().origin,
+            EXPECT_EQ(frame->resource_list.front().GetOrigin(),
                       kTopLeft_GrSurfaceOrigin);
-            EXPECT_EQ(frame->resource_list.front().alpha_type,
+            EXPECT_EQ(frame->resource_list.front().GetAlphaType(),
                       kPremul_SkAlphaType);
-          })));
+          }));
 
   constexpr SkIRect damage_rect = SkIRect::MakeWH(kDamageWidth, kDamageHeight);
   Dispatcher()->DispatchFrame(canvas_resource, damage_rect,

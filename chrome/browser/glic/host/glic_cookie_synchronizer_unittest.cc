@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -123,7 +124,10 @@ class GlicCookieSynchronizerTest : public testing::Test {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  base::TimeDelta kCookieSyncDefaultTimeout =
+      GlicCookieSynchronizer::kCookieSyncDefaultTimeout;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   TestingProfile test_profile_;
 
@@ -198,6 +202,46 @@ TEST_F(GlicCookieSynchronizerTest, AuthTransientFailure_MaxRetry) {
   cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
       result.GetCallback());
   EXPECT_FALSE(result.Get());
+}
+
+TEST_F(GlicCookieSynchronizerTest, FailsOnTimeOut) {
+  base::test::TestFuture<bool> result;
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  task_environment_.FastForwardBy(kCookieSyncDefaultTimeout -
+                                  base::Milliseconds(10));
+  EXPECT_FALSE(result.IsReady());
+  task_environment_.FastForwardBy(base::Milliseconds(10));
+  EXPECT_FALSE(result.Get());
+}
+
+TEST_F(GlicCookieSynchronizerTest, FailsMultipleOnTimeOut) {
+  base::test::TestFuture<bool> result;
+  base::test::TestFuture<bool> result2;
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result2.GetCallback());
+
+  task_environment_.FastForwardBy(kCookieSyncDefaultTimeout);
+  EXPECT_FALSE(result.Get());
+  EXPECT_FALSE(result2.Get());
+}
+
+TEST_F(GlicCookieSynchronizerTest, WorksAfterTimeout) {
+  base::test::TestFuture<bool> result;
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+
+  task_environment_.FastForwardBy(kCookieSyncDefaultTimeout);
+  EXPECT_FALSE(result.Get());
+
+  result.Clear();
+  SetResponseForResult(signin::SetAccountsInCookieResult::kSuccess);
+  cookie_synchronizer().CopyCookiesToWebviewStoragePartition(
+      result.GetCallback());
+
+  EXPECT_TRUE(result.Get());
 }
 
 }  // namespace glic

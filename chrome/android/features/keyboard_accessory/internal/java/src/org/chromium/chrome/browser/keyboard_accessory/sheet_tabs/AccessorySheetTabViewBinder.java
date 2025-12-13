@@ -58,6 +58,8 @@ class AccessorySheetTabViewBinder {
                 return new FooterCommandViewHolder(parent);
             case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return new OptionToggleViewHolder(parent);
+            case AccessorySheetDataPiece.Type.DIVIDER:
+                return new DividerViewHolder(parent);
         }
         assert false : "Unhandled type of data piece: " + viewType;
         return null;
@@ -74,6 +76,16 @@ class AccessorySheetTabViewBinder {
             titleView.setText(displayText);
             titleView.setContentDescription(displayText);
         }
+    }
+
+    /** Holds a view that is used as a divider. */
+    static class DividerViewHolder extends ElementViewHolder<Void, View> {
+        DividerViewHolder(ViewGroup parent) {
+            super(parent, R.layout.horizontal_divider);
+        }
+
+        @Override
+        protected void bind(Void unused, View view) {}
     }
 
     /** Holds a clickable {@link TextView} that represents a footer command. */

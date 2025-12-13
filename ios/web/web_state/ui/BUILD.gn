@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//ios/build/config.gni")
 import("//ios/features.gni")
 
@@ -14,13 +15,13 @@ source_set("ui") {
     ":web_view_handler",
     "//base",
     "//build:branding_buildflags",
+    "//build/config/ios:buildflags",
     "//ios/net",
     "//ios/third_party/webkit",
     "//ios/web:core",
     "//ios/web/annotations",
     "//ios/web/browsing_data",
     "//ios/web/common",
-    "//ios/web/common:uikit",
     "//ios/web/download",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
@@ -45,6 +46,7 @@ source_set("ui") {
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/util",
+    "//ios/web/web_state:data_controls",
     "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state:web_view_internal_creation_util",
@@ -55,6 +57,10 @@ source_set("ui") {
     "//ui/base",
     "//url",
   ]
+
+  if (!ios_is_app_extension) {
+    deps += [ "//ios/web/common:uikit" ]
+  }
 
   sources = [
     "crw_media_capture_permission_request.h",

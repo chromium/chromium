@@ -5,7 +5,6 @@
 #include "chromeos/ui/wm/desks/desks_helper.h"
 
 #include "base/check_op.h"
-#include "ui/aura/window.h"
 
 namespace chromeos {
 
@@ -14,7 +13,7 @@ DesksHelper* g_instance = nullptr;
 }  // namespace
 
 // static
-DesksHelper* DesksHelper::Get(aura::Window* window) {
+DesksHelper* DesksHelper::Get() {
   return g_instance;
 }
 

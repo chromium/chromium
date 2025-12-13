@@ -4,14 +4,21 @@
 
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/ukm/ukm_pref_names.h"
+#include "components/ukm/ukm_service.h"
+#include "services/metrics/public/cpp/test_recording_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace {
 
@@ -22,13 +29,33 @@ using chrome::android::GetInitialActivityTypeForTesting;
 using chrome::android::SetActivityType;
 using chrome::android::SetInitialActivityTypeForTesting;
 
+class TestChromeAndroidMetricsProvider : public ChromeAndroidMetricsProvider {
+ public:
+  explicit TestChromeAndroidMetricsProvider(PrefService* local_state)
+      : ChromeAndroidMetricsProvider(local_state) {}
+
+  void set_hardware_class(const std::string& hardware_class) {
+    hardware_class_ = hardware_class;
+  }
+
+ protected:
+  const std::string& GetHardwareClass() const override {
+    return hardware_class_;
+  }
+
+ private:
+  std::string hardware_class_;
+};
+
 class ChromeAndroidMetricsProviderTest
     : public testing::TestWithParam<ActivityType> {
  public:
   ChromeAndroidMetricsProviderTest()
       : metrics_provider_(&pref_service_),
-        orig_activity_type_(GetInitialActivityTypeForTesting()) {
+        orig_activity_type_(GetInitialActivityTypeForTesting()),
+        task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()) {
     ChromeAndroidMetricsProvider::RegisterPrefs(pref_service_.registry());
+    ukm::UkmService::RegisterPrefs(pref_service_.registry());
   }
   ~ChromeAndroidMetricsProviderTest() override {
     // In case the test played with the activity type, restore it to what it
@@ -43,13 +70,58 @@ class ChromeAndroidMetricsProviderTest
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
-  ChromeAndroidMetricsProvider metrics_provider_;
+  TestChromeAndroidMetricsProvider metrics_provider_;
   metrics::ChromeUserMetricsExtension uma_proto_;
   const ActivityType orig_activity_type_;
   base::test::TaskEnvironment task_environment_;
+  metrics::TestMetricsServiceClient client_;
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+};
+
+class MockDemographicMetricsProvider
+    : public metrics::UkmDemographicMetricsProvider {
+ public:
+  ~MockDemographicMetricsProvider() override = default;
+
+  // DemographicMetricsProvider:
+  MOCK_METHOD1(ProvideSyncedUserNoisedBirthYearAndGenderToReport,
+               void(ukm::Report* report));
 };
 
 }  // namespace
+
+int GetPersistedLogCount(TestingPrefServiceSimple& prefs) {
+  return prefs.GetList(ukm::prefs::kUkmUnsentLogStore).size();
+}
+
+TEST_F(ChromeAndroidMetricsProviderTest,
+       NonUKMHistogramShouldNotBeLoggedForAndroidUKMLogging) {
+  ukm::UkmService service(&pref_service_, &client_,
+                          std::make_unique<MockDemographicMetricsProvider>());
+  ukm::TestRecordingHelper recorder(&service);
+  service.Initialize();
+  task_runner_->RunUntilIdle();
+  service.UpdateRecording({ukm::UkmConsentType::MSBB});
+  service.EnableReporting();
+
+  const GURL kURL("https://example.com/");
+  ukm::SourceId id =
+      ukm::ConvertToSourceId(0, ukm::SourceIdType::NOTIFICATION_ID);
+  recorder.UpdateSourceURL(id, kURL);
+
+  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
+  // Verify UKM log is present.
+  EXPECT_EQ(GetPersistedLogCount(pref_service_), 1);
+
+  // Make sure no histogram other than UMA histograms about UKM are logged.
+  EXPECT_EQ(histogram_tester_.GetTotalSum(),
+            histogram_tester_.GetTotalSumForPrefix("UKM"));
+
+  metrics_provider_.set_hardware_class("sample_hardware_class");
+  metrics_provider_.ProvideSystemProfileMetrics(
+      uma_proto_.mutable_system_profile());
+  EXPECT_TRUE(uma_proto_.system_profile().hardware().has_full_hardware_class());
+}
 
 TEST_F(ChromeAndroidMetricsProviderTest,
        ProvideCurrentSessionData_MultiWindowMode) {
@@ -140,8 +212,9 @@ TEST_P(ChromeAndroidMetricsProviderTest, ProvideCurrentSessionData_CustomTabs) {
 // Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, SetActivityType_CustomTabs) {
   // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kPreFirstTab)
+  if (activity_type() == ActivityType::kPreFirstTab) {
     return;
+  }
 
   // Validating startup, so seed the activity type to kPreFirstTab,
   SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);
@@ -193,8 +266,9 @@ TEST_F(ChromeAndroidMetricsProviderTest, NoInitialTab) {
 // Tests initial transition from kPreFirstTab to !kPreFirstTab.
 TEST_P(ChromeAndroidMetricsProviderTest, InitialTab) {
   // kPreFirstTab -> kPreFirstTab is not a valid scenario. Early exit.
-  if (activity_type() == ActivityType::kPreFirstTab)
+  if (activity_type() == ActivityType::kPreFirstTab) {
     return;
+  }
 
   // Validating startup, so seed the activity type to kPreFirstTab,
   SetInitialActivityTypeForTesting(ActivityType::kPreFirstTab);

@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/contextual_search",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/variations/model/client",
+  "+components/omnibox/composebox/ios/composebox_query_controller_ios.h"
+]

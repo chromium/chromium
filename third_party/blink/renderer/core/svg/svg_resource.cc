@@ -189,8 +189,8 @@ LocalSVGResource::LocalSVGResource(TreeScope& tree_scope,
     : tree_scope_(tree_scope) {
   target_ = SVGURIReference::ObserveTarget(
       id_observer_, tree_scope, id,
-      WTF::BindRepeating(&LocalSVGResource::TargetChanged,
-                         WrapWeakPersistent(this), id));
+      BindRepeating(&LocalSVGResource::TargetChanged, WrapWeakPersistent(this),
+                    id));
 }
 
 void LocalSVGResource::Unregister() {

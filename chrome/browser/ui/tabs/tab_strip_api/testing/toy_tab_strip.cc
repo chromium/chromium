@@ -8,6 +8,22 @@
 
 namespace tabs_api::testing {
 
+ToyTabStrip::ToyTabStrip()
+    : tab_strip_collection_(std::make_unique<tabs::TabStripCollection>()),
+      root_{tab_strip_collection_->GetHandle(), std::vector<ToyTab>()} {
+  // Increment id since tab_strip_collection_ uses the next handle as its id.
+  GetNextId();
+}
+
+ToyTab ToyTabStrip::GetToyTabFor(tabs::TabHandle handle) const {
+  for (auto& tab : root_.tabs) {
+    if (tab.tab_handle == handle) {
+      return tab;
+    }
+  }
+  NOTREACHED() << "unknown handle passed in";
+}
+
 void ToyTabStrip::AddTab(ToyTab tab) {
   root_.tabs.push_back(tab);
 }
@@ -57,6 +73,7 @@ tabs::TabHandle ToyTabStrip::AddTabAt(const GURL& url,
 void ToyTabStrip::ActivateTab(tabs::TabHandle handle) {
   for (auto& tab : root_.tabs) {
     tab.active = tab.tab_handle == handle;
+    tab.selected = tab.selected || tab.tab_handle == handle;
   }
 }
 
@@ -81,6 +98,59 @@ void ToyTabStrip::MoveTab(tabs::TabHandle handle, size_t to) {
 int ToyTabStrip::GetNextId() {
   static int id = 0;
   return id++;
+}
+
+std::optional<tab_groups::TabGroupId> ToyTabStrip::GetGroupIdFor(
+    const tabs::TabCollectionHandle& handle) const {
+  for (const auto& group : groups_with_visuals_) {
+    if (group.handle == handle) {
+      return group.id;
+    }
+  }
+  return std::nullopt;
+}
+
+tabs::TabCollectionHandle ToyTabStrip::AddGroup(
+    const tab_groups::TabGroupVisualData& visual_data) {
+  ToyTabGroupData new_group{tab_groups::TabGroupId::GenerateNew(),
+                            tabs::TabCollectionHandle(GetNextId()),
+                            visual_data};
+  auto handle = new_group.handle;
+  groups_with_visuals_.push_back(std::move(new_group));
+  return handle;
+}
+
+const tab_groups::TabGroupVisualData* ToyTabStrip::GetGroupVisualData(
+    const tabs::TabCollectionHandle& handle) const {
+  for (const auto& group : groups_with_visuals_) {
+    if (group.handle == handle) {
+      return &group.visuals;
+    }
+  }
+  return nullptr;
+}
+
+void ToyTabStrip::UpdateGroupVisuals(
+    const tab_groups::TabGroupId& group_id,
+    const tab_groups::TabGroupVisualData& new_visuals) {
+  for (auto& group : groups_with_visuals_) {
+    if (group.id == group_id) {
+      group.visuals = new_visuals;
+      return;
+    }
+  }
+}
+
+void ToyTabStrip::SetActiveTab(tabs::TabHandle handle) {
+  for (auto& tab : root_.tabs) {
+    tab.active = tab.tab_handle == handle;
+  }
+}
+
+void ToyTabStrip::SetTabSelection(std::set<tabs::TabHandle> selection) {
+  for (auto& tab : root_.tabs) {
+    tab.selected = selection.contains(tab.tab_handle);
+  }
 }
 
 }  // namespace tabs_api::testing

@@ -247,6 +247,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   bool is_controllable_ = false;
   bool is_scrubbing_ = false;
   bool prefer_stop_ = false;
+  bool is_in_picture_in_picture_ = false;
 
   int prev_track_count_ = 0;
   int next_track_count_ = 0;

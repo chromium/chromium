@@ -22,6 +22,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace shortcuts {
 

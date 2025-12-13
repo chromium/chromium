@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 
 #include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "android_webview/public/browser/draw_fn.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -119,11 +115,13 @@ bool AwVulkanContextProvider::Globals::Initialize(
 
   gfx::ExtensionSet instance_extensions;
   for (uint32_t i = 0; i < params->enabled_instance_extension_names_length; ++i)
-    instance_extensions.insert(params->enabled_instance_extension_names[i]);
+    instance_extensions.insert(
+        UNSAFE_TODO(params->enabled_instance_extension_names[i]));
 
   gfx::ExtensionSet device_extensions;
   for (uint32_t i = 0; i < params->enabled_device_extension_names_length; ++i)
-    device_extensions.insert(params->enabled_device_extension_names[i]);
+    device_extensions.insert(
+        UNSAFE_TODO(params->enabled_device_extension_names[i]));
 
   if (!InitVulkanForWebView(params->instance, params->physical_device,
                             params->device, params->api_version,

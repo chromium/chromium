@@ -26,7 +26,7 @@ namespace mojo {
 //      from |input|.
 //
 //      Serializable form of a field:
-//        Value or reference of the same type used in the generated stuct
+//        Value or reference of the same type used in the generated struct
 //        wrapper type, or the following alternatives:
 //        - string:
 //          Value or reference of any type that has a StringTraits defined.
@@ -101,7 +101,7 @@ namespace mojo {
 // In the description above, methods having an |input| parameter define it as
 // const reference of T. Actually, it can be a non-const reference of T too.
 // E.g., if T contains Mojo handles or interfaces whose ownership needs to be
-// transferred. Correspondingly, it requies you to always give non-const T
+// transferred. Correspondingly, it requires you to always give non-const T
 // reference/value to the Mojo bindings for serialization:
 //    - if T is used in the "type_mappings" section of a typemap config file,
 //      you need to declare it as pass-by-value:
@@ -144,7 +144,7 @@ namespace mojo {
 template <typename DataViewType, typename T>
 struct StructTraits {
   static_assert(
-      internal::AlwaysFalse<T>::value,
+      false,
       "Cannot find the mojo::StructTraits specialization. Did you confirm "
       "that:"
       "  * the corresponding header file is included in your build file"

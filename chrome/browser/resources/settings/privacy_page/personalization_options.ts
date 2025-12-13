@@ -20,7 +20,13 @@ import '../settings_shared.css.js';
 // <if expr="not is_chromeos">
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+// </if>
 
+// <if expr="_google_chrome">
+// <if expr="is_chromeos">
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+
+// </if>
 // </if>
 
 import type {CrLinkRowElement} from '//resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -171,10 +177,16 @@ export class SettingsPersonalizationOptionsElement extends
   }
 
   private showPriceEmailNotificationsToggle_(): boolean {
+    if (!loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') ||
+        !this.syncStatus) {
+      return false;
+    }
     // Only show the toggle when the user signed in.
-    return loadTimeData.getBoolean('changePriceEmailNotificationsEnabled') &&
-        !!this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SYNCING;
+    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN) {
+      return true;
+    }
+    return this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
   private getPriceEmailNotificationsPrefDesc_(): string {

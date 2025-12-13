@@ -59,6 +59,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsContentInvalid() const;
   bool IsDisabledDescendant() const;
   bool IsEnabled() const;
+  bool IsEditable() const;
   bool IsExpanded() const;
   bool IsFocusable() const override;
   bool IsFormDescendant() const;
@@ -112,6 +113,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
 
   bool HasCharacterLocations() const;
   bool HasImage() const;
+  bool HasLayoutBasedActions() const;
 
   const char* GetClassName() const;
   bool IsChildOfLeaf() const override;
@@ -158,8 +160,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::string GetRoleString() const;
 
   std::u16string GetPaneTitle() const;
-
-  std::u16string GetDialogModalMessageText() const;
 
   std::u16string GetContentInvalidErrorMessage() const;
 
@@ -232,6 +232,22 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int ColumnIndex() const;
   int ColumnSpan() const;
 
+  // These are enums from
+  // android.view.accessibility.AccessibilityNodeInfo.CollectionItemInfo in
+  // Java:
+  enum AndroidSortDirection {
+    ANDROID_SORT_DIRECTION_NONE = 0,
+    ANDROID_SORT_DIRECTION_ASCENDING = 1,
+    ANDROID_SORT_DIRECTION_DESCENDING = 2,
+    ANDROID_SORT_DIRECTION_OTHER = 3
+  };
+
+  // This method converts from ax::mojom::IntAttribute::kSortDirection to
+  // android values. If this node is not a table header, it will return
+  // ANDROID_SORT_DIRECTION_NONE as Android only can set the sort direction on
+  // this kind of node.
+  AndroidSortDirection GetSortDirection() const;
+
   float RangeMin() const;
   float RangeMax() const;
   float RangeCurrentValue() const;
@@ -242,6 +258,17 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
                                 std::vector<int32_t>* starts,
                                 std::vector<int32_t>* ends,
                                 int offset);
+
+  // Enumerates all possible mappings of ax::mojom::StringAttribute::kName to
+  // Android accessibility properties.
+  enum class AndroidNameTo {
+    kUnset = 0,
+    kContainerTitle,
+    kContentDescription,
+    kLabeledBy,
+    kSupplementalDescription,
+    kText,
+  };
 
   // Append line start and end indices for the text of this node
   // (as returned by GetTextContentUTF16()), adding |offset| to each one.
@@ -270,6 +297,14 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // manager to the web_contents_accessibility_android JNI.
   std::u16string GenerateAccessibilityNodeInfoString() const;
 
+  // Used to determine paint order to see in what order nodes are drawn.
+  // Used by Android XR.
+  int GetPaintOrder() const;
+
+  // Returns a list of Android IDs that were set on the node using
+  // aria-labelledby.
+  const std::vector<int> GetLabelledByAndroidIds() const;
+
  protected:
   BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,
                               ui::AXNode* node);
@@ -292,10 +327,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;
   bool HasListMarkerChild() const;
-
-  // Returns true if the accessible name source (kNameFrom) comes from
-  // kAttribute.
-  bool IsAccessibleNameFromAttribute() const;
 
   // This method determines if a node should expose its value as a name, which
   // is placed in the Android API's "text" attribute. For controls that can take
@@ -321,8 +352,17 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
                                            std::optional<size_t> min_length,
                                            AXStyleData* style_data) const;
 
+  // This method determines if a node should expose its editable value.
+  bool ShouldExposeEditableValue() const;
+
+  // Computes the name-to-property mapping on Android.
+  AndroidNameTo ComputeAndroidNameTo() const;
+
   std::u16string old_value_;
   std::u16string new_value_;
+
+  // A cached value for the result of `ComputeAndroidNameTo`.
+  mutable std::optional<AndroidNameTo> name_to_cache_;
 };
 
 }  // namespace content

@@ -79,8 +79,6 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
   bool HasLegalLinkAttribute(const QualifiedName&) const final;
   bool IsHTMLContentAttribute(const Attribute&) const final;
 
-  bool AreAuthorShadowsAllowed() const final { return false; }
-
   void SetLocation(const String&);
   void SetNameAndOpenURL();
   void OpenURL(bool replace_current_item = true);

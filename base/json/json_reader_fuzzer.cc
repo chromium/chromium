@@ -41,8 +41,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string serialized;
     CHECK(JSONWriter::Write(value, &serialized));
 
-    std::optional<Value> deserialized =
-        JSONReader::Read(std::string_view(serialized));
+    std::optional<Value> deserialized = JSONReader::Read(
+        std::string_view(serialized), JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(deserialized);
     CHECK_EQ(value, deserialized.value());
   }

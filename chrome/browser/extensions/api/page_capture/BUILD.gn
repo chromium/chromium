@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("page_capture") {
   sources = [
@@ -15,7 +15,6 @@ source_set("page_capture") {
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//chrome/common/extensions/api",
     "//extensions/browser",
     "//storage/browser",

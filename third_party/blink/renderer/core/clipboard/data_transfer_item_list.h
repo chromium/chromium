@@ -56,8 +56,8 @@ class CORE_EXPORT DataTransferItemList final : public ScriptWrappable {
   DataTransferItem* item(uint32_t index);
   void deleteItem(uint32_t index, ExceptionState&);
   void clear();
-  DataTransferItem* add(const WTF::String& data,
-                        const WTF::String& type,
+  DataTransferItem* add(const String& data,
+                        const String& type,
                         ExceptionState&);
   DataTransferItem* add(File*);
 

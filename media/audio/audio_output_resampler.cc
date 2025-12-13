@@ -25,6 +25,7 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_output_dispatcher_impl.h"
 #include "media/audio/audio_output_proxy.h"
+#include "media/base/audio_bus.h"
 #if BUILDFLAG(IS_WIN)
 #include "media/audio/win/core_audio_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)

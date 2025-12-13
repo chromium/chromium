@@ -259,7 +259,8 @@ class SmartCardProviderPrivateAPI
 
   void RunNextRequestForContext(ContextId scard_context);
 
-  std::string GetListenerExtensionId(const extensions::Event& event);
+  std::optional<std::string> GetListenerExtensionId(
+      const extensions::Event& event);
 
   void OnEstablishContextTimeout(const std::string& provider_extension_id,
                                  RequestId request_id);

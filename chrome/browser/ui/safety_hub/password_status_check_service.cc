@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safety_check/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,19 +48,19 @@ namespace {
 // The map for each day to hold pref name as key and weight as the value.
 std::map<std::string, int> GetDayPrefWeightMap() {
   return {{safety_hub_prefs::kPasswordCheckMonWeight,
-           features::kPasswordCheckMonWeight.Get()},
+           safety_check::features::kPasswordCheckMonWeight.Get()},
           {safety_hub_prefs::kPasswordCheckTueWeight,
-           features::kPasswordCheckTueWeight.Get()},
+           safety_check::features::kPasswordCheckTueWeight.Get()},
           {safety_hub_prefs::kPasswordCheckWedWeight,
-           features::kPasswordCheckWedWeight.Get()},
+           safety_check::features::kPasswordCheckWedWeight.Get()},
           {safety_hub_prefs::kPasswordCheckThuWeight,
-           features::kPasswordCheckThuWeight.Get()},
+           safety_check::features::kPasswordCheckThuWeight.Get()},
           {safety_hub_prefs::kPasswordCheckFriWeight,
-           features::kPasswordCheckFriWeight.Get()},
+           safety_check::features::kPasswordCheckFriWeight.Get()},
           {safety_hub_prefs::kPasswordCheckSatWeight,
-           features::kPasswordCheckSatWeight.Get()},
+           safety_check::features::kPasswordCheckSatWeight.Get()},
           {safety_hub_prefs::kPasswordCheckSunWeight,
-           features::kPasswordCheckSunWeight.Get()}};
+           safety_check::features::kPasswordCheckSunWeight.Get()}};
 }
 
 // Password check will be scheduled randomly but based on the weights of the
@@ -74,18 +75,19 @@ base::TimeDelta FindNewCheckTime() {
   int tomorrow_day_of_week = tomorrow_midnight_exploded.day_of_week;
 
   // Hold the weights of days in a vector.
-  std::vector<int> weight_for_days{features::kPasswordCheckSunWeight.Get(),
-                                   features::kPasswordCheckMonWeight.Get(),
-                                   features::kPasswordCheckTueWeight.Get(),
-                                   features::kPasswordCheckWedWeight.Get(),
-                                   features::kPasswordCheckThuWeight.Get(),
-                                   features::kPasswordCheckFriWeight.Get(),
-                                   features::kPasswordCheckSatWeight.Get()};
+  std::vector<int> weight_for_days{
+      safety_check::features::kPasswordCheckSunWeight.Get(),
+      safety_check::features::kPasswordCheckMonWeight.Get(),
+      safety_check::features::kPasswordCheckTueWeight.Get(),
+      safety_check::features::kPasswordCheckWedWeight.Get(),
+      safety_check::features::kPasswordCheckThuWeight.Get(),
+      safety_check::features::kPasswordCheckFriWeight.Get(),
+      safety_check::features::kPasswordCheckSatWeight.Get()};
 
   // Generate weighted random distribution for the following N days, where N is
   // kBackgroundPasswordCheckInterval.
   const int update_interval_in_days =
-      features::kBackgroundPasswordCheckInterval.Get().InDays();
+      safety_check::features::kBackgroundPasswordCheckInterval.Get().InDays();
   std::vector<int> weights(update_interval_in_days);
   for (int i = 0; i < update_interval_in_days; i++) {
     int day_of_week = tomorrow_day_of_week + i;
@@ -147,7 +149,7 @@ bool ShouldFindNewCheckTime(Profile* profile) {
   // If the current check interval length is different than the scheduled one, a
   // new check time should be found.
   base::TimeDelta update_interval =
-      features::kBackgroundPasswordCheckInterval.Get();
+      safety_check::features::kBackgroundPasswordCheckInterval.Get();
   std::optional<base::TimeDelta> interval_used_for_scheduling =
       base::ValueToTimeDelta(check_schedule_dict.Find(
           safety_hub_prefs::kPasswordCheckIntervalKey));
@@ -383,8 +385,8 @@ void PasswordStatusCheckService::StartRepeatedUpdates() {
   base::TimeDelta password_check_run_delta =
       GetScheduledPasswordCheckTime() - base::Time::Now();
   if (password_check_run_delta.is_negative()) {
-    password_check_run_delta =
-        base::RandTimeDeltaUpTo(features::kPasswordCheckOverdueInterval.Get());
+    password_check_run_delta = base::RandTimeDeltaUpTo(
+        safety_check::features::kPasswordCheckOverdueInterval.Get());
   }
 
   // Check compromised passwords with the interval of password_check_run_delta.
@@ -680,7 +682,7 @@ bool PasswordStatusCheckService::IsInfrastructureReady() const {
 void PasswordStatusCheckService::SetPasswordCheckSchedulePrefsWithInterval(
     base::Time check_time) {
   base::TimeDelta check_interval =
-      features::kBackgroundPasswordCheckInterval.Get();
+      safety_check::features::kBackgroundPasswordCheckInterval.Get();
 
   base::Value::Dict dict;
   dict.Set(safety_hub_prefs::kNextPasswordCheckTimeKey,
@@ -768,7 +770,8 @@ void PasswordStatusCheckService::ScheduleCheckAndStartRepeatedUpdates() {
   // distance between subsequent checks.
   while (scheduled_check_time <
          base::Time::Now() + safety_hub::kMinTimeBetweenPasswordChecks) {
-    scheduled_check_time += features::kBackgroundPasswordCheckInterval.Get();
+    scheduled_check_time +=
+        safety_check::features::kBackgroundPasswordCheckInterval.Get();
   }
 
   SetPasswordCheckSchedulePrefsWithInterval(scheduled_check_time);

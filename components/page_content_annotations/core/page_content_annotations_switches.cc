@@ -28,6 +28,10 @@ const char kPageContentAnnotationsValidationContentVisibility[] =
 const char kPageContentAnnotationsValidationWriteToFile[] =
     "page-content-annotations-validation-write-to-file";
 
+// If enabled, page content annotations requests will not wait for FCP.
+const char kPageContentAnnotationsSkipFCPWaitForTesting[] =
+    "page-content-annotations-skip-fcp-wait-for-testing";
+
 bool ShouldLogPageContentAnnotationsInput() {
   static bool enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
       kPageContentAnnotationsLoggingEnabled);

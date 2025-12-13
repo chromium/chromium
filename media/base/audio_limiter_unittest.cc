@@ -81,7 +81,7 @@ class LimiterTest : public testing::Test {
     ASSERT_EQ(bus->channels(), kChannels);
     // Flip the values in this channel, and slightly change them. This makes
     // sure we catch errors from outputting to the wrong channels.
-    scale_channel(bus->channel_span(1), -0.99f);
+    scale_channel(bus->channel(1), -0.99f);
   }
 
  protected:
@@ -358,7 +358,7 @@ TEST_F(LimiterTest, OutputsFilledSequentially) {
   // the first sample. We will verify when this value gets overwritten.
   constexpr float kGuardSampleValue = 12345.0f;
   auto other_destination = AudioBus::Create(kChannels, kBufferSize);
-  other_destination->channel_span(0)[0] = kGuardSampleValue;
+  other_destination->channel(0)[0] = kGuardSampleValue;
 
   bool callback_signaled = false;
 
@@ -368,7 +368,7 @@ TEST_F(LimiterTest, OutputsFilledSequentially) {
                          // this callback is run, `other_destination` should not
                          // have been written to at all.
                          EXPECT_EQ(kGuardSampleValue,
-                                   other_destination->channel_span(0)[0]);
+                                   other_destination->channel(0)[0]);
                          callback_signaled = true;
                        }));
 
@@ -381,7 +381,7 @@ TEST_F(LimiterTest, OutputsFilledSequentially) {
   // `other_destination` should be partially written to after LimitPeaks()
   // returns.
   EXPECT_TRUE(callback_signaled);
-  EXPECT_NE(kGuardSampleValue, other_destination->channel_span(0)[0]);
+  EXPECT_NE(kGuardSampleValue, other_destination->channel(0)[0]);
 }
 
 // Makes sure the limiter handles buffers of various sizes, including buffers

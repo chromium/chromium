@@ -29,9 +29,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_NG_SHAPE_CACHE_H_
 
 #include "base/hash/hash.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_consumer_registry.h"
+#include "base/memory_coordinator/traits.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -42,14 +47,26 @@
 
 namespace blink {
 
-class NGShapeCache : public GarbageCollected<NGShapeCache> {
+class NGShapeCache : public GarbageCollected<NGShapeCache>,
+                     public base::MemoryConsumer {
+  USING_PRE_FINALIZER(NGShapeCache, Dispose);
+
  public:
   static constexpr unsigned kMaxTextLengthOfEntries = 30;
   static constexpr unsigned kMaxSize = 2048;
 
   explicit NGShapeCache(const SimpleFontData* primary_font)
       : primary_font_(primary_font) {
-    DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
+    if (RuntimeEnabledFeatures::MemoryConsumerForNGShapeCacheEnabled() &&
+        base::MemoryConsumerRegistry::Exists() &&
+        (!base::SingleThreadTaskRunner::HasMainThreadDefault() ||
+         base::SingleThreadTaskRunner::GetMainThreadDefault()
+             ->RunsTasksInCurrentSequence())) {
+      memory_consumer_registration_ =
+          std::make_unique<MemoryConsumerRegistration>(
+              kConsumerId, kNGShapeCacheTraits, this,
+              MemoryConsumerRegistration::CheckUnregister::kDisabled);
+    }
   }
   NGShapeCache(const NGShapeCache&) = delete;
   NGShapeCache& operator=(const NGShapeCache&) = delete;
@@ -57,7 +74,23 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(ltr_string_map_);
     visitor->Trace(rtl_string_map_);
+    visitor->Trace(ltr_string_map_strong_);
+    visitor->Trace(rtl_string_map_strong_);
     visitor->Trace(primary_font_);
+  }
+
+  void Dispose() {
+    if (memory_consumer_registration_) {
+      memory_consumer_registration_->Dispose();
+    }
+  }
+
+  void OnUpdateMemoryLimit() override {}
+  void OnReleaseMemory() override {
+    ltr_string_map_.clear();
+    rtl_string_map_.clear();
+    ltr_string_map_strong_.clear();
+    rtl_string_map_strong_.clear();
   }
 
   template <typename ShapeResultFunc>
@@ -68,7 +101,47 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
       return shape_result_func();
     }
 
-    auto& map = IsLtr(direction) ? ltr_string_map_ : rtl_string_map_;
+    if (RuntimeEnabledFeatures::MemoryConsumerForNGShapeCacheEnabled()) {
+      return GetOrCreateImpl(
+          IsLtr(direction) ? ltr_string_map_strong_ : rtl_string_map_strong_,
+          text, shape_result_func);
+    } else {
+      return GetOrCreateImpl(
+          IsLtr(direction) ? ltr_string_map_ : rtl_string_map_, text,
+          shape_result_func);
+    }
+  }
+
+ private:
+  typedef HeapHashMap<String, WeakMember<const ShapeResult>> SmallStringMap;
+  typedef HeapHashMap<String, Member<const ShapeResult>> SmallStringMapStrong;
+
+  static constexpr char kConsumerId[] = "NGShapeCache";
+  static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits = {
+      .supports_memory_limit =
+          base::MemoryConsumerTraits::SupportsMemoryLimit::kNo,
+      .in_process = base::MemoryConsumerTraits::InProcess::kYes,
+      .estimated_memory_usage =
+          base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      .release_memory_cost =
+          base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      .recreate_memory_cost =
+          base::MemoryConsumerTraits::RecreateMemoryCost::kCheap,
+      .information_retention =
+          base::MemoryConsumerTraits::InformationRetention::kLossless,
+      .memory_release_behavior =
+          base::MemoryConsumerTraits::MemoryReleaseBehavior::kIdempotent,
+      .execution_type = base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      .release_gc_references =
+          base::MemoryConsumerTraits::ReleaseGCReferences::kYes,
+      .garbage_collects_v8_heap =
+          base::MemoryConsumerTraits::GarbageCollectsV8Heap::kNo,
+  };
+
+  template <typename StringMap, typename ShapeResultFunc>
+  const ShapeResult* GetOrCreateImpl(StringMap& map,
+                                     const String& text,
+                                     const ShapeResultFunc& shape_result_func) {
     if (map.size() >= kMaxSize) [[unlikely]] {
       const auto it = map.find(text);
       return (it != map.end() && it->value) ? it->value.Get()
@@ -91,12 +164,13 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
     return result;
   }
 
- private:
-  typedef HeapHashMap<String, WeakMember<const ShapeResult>> SmallStringMap;
-
   SmallStringMap ltr_string_map_;
   SmallStringMap rtl_string_map_;
+  SmallStringMapStrong ltr_string_map_strong_;
+  SmallStringMapStrong rtl_string_map_strong_;
   Member<const SimpleFontData> primary_font_;
+
+  std::unique_ptr<MemoryConsumerRegistration> memory_consumer_registration_;
 };
 
 }  // namespace blink

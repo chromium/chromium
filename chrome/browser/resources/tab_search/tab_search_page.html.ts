@@ -37,11 +37,11 @@ export function getHtml(this: TabSearchPageElement) {
         .items="${this.filteredItems_}"
         @selected-change="${this.onSelectedChanged_}"
         role="listbox"
-        .isSelectable=${(item: any) => {
+        .isSelectable="${(item: any) => {
           return item.constructor.name === 'TabData' ||
               item.constructor.name === 'TabGroupData';
-        }}
-        .template=${(item: any, index: number) => {
+        }}"
+        .template="${(item: any, index: number) => {
       switch (item.constructor.name) {
        case 'TitleItem':
         return html`
@@ -86,7 +86,7 @@ export function getHtml(this: TabSearchPageElement) {
        default:
         return '';
       }
-    }}
+    }}">
     </selectable-lazy-list>
   </div>
   <div id="no-results" ?hidden="${this.filteredItems_.length}">

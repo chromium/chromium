@@ -5,20 +5,20 @@
 #ifndef MEDIA_FILTERS_MAC_AUDIO_TOOLBOX_AUDIO_DECODER_H_
 #define MEDIA_FILTERS_MAC_AUDIO_TOOLBOX_AUDIO_DECODER_H_
 
-#include <memory>
-
 #include <AudioToolbox/AudioToolbox.h>
+
+#include <memory>
 
 #include "base/apple/scoped_typeref.h"
 #include "base/memory/free_deleter.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/audio_discard_helper.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
-class AudioDiscardHelper;
 class LimitingAudioQueue;
 class MediaLog;
 
@@ -56,7 +56,7 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
 
   bool CreateDecoder(const AudioDecoderConfig& config);
 
-  void OnOutputReady(DecoderBuffer::TimeInfo time_info,
+  void OnOutputReady(AudioDiscardHelper::TimeInfo time_info,
                      scoped_refptr<AudioBuffer> output_buffer);
 
   std::unique_ptr<MediaLog> media_log_;

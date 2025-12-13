@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//bookmarks-side-panel.top-chrome/shared/sp_list_item_badge.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
@@ -19,6 +20,7 @@ import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_in
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 
 import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 import {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
@@ -27,8 +29,8 @@ import {getHtml} from './power_bookmark_row.html.js';
 import {PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
-export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
-export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 17;
+export const NESTED_BOOKMARKS_BASE_MARGIN = 28;
+export const NESTED_BOOKMARKS_MARGIN_PER_DEPTH = 12;
 export const BOOKMARK_ROW_LOAD_EVENT = 'bookmark-row-connected-event';
 
 export class PowerBookmarkRowElement extends CrLitElement {
@@ -68,8 +70,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
       toggleExpand: {type: Boolean},
+      isSelected: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
+      hasActiveDrag: {type: Boolean},
+      activeFolderPath: {type: Array},
+      hasFolders: {type: Boolean, reflect: true},
+      sortedChildren: {type: Array},
+      activeSortIndex: {type: Number},
     };
   }
 
@@ -97,10 +105,16 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor rowAriaDescription: string = '';
   accessor trailingIconTooltip: string = '';
   accessor toggleExpand: boolean = false;
+  accessor isSelected: boolean = false;
   accessor imageUrls: {[key: string]: string} = {};
   accessor updatedElementIds: string[] = [];
   accessor isPriceTracked: boolean = false;
   accessor canDrag: boolean = true;
+  accessor hasActiveDrag: boolean = false;
+  accessor activeFolderPath: BookmarksTreeNode[] = [];
+  accessor hasFolders: boolean = false;
+  accessor sortedChildren: BookmarksTreeNode[] = [];
+  accessor activeSortIndex: number = 0;
 
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
@@ -151,6 +165,21 @@ export class PowerBookmarkRowElement extends CrLitElement {
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
+    if (changedProperties.has('bookmark') &&
+        this.bookmark.id !== changedProperties.get('bookmark')?.id) {
+      this.toggleExpand = false;
+      this.sortedChildren =
+          this.bookmark.children ? [...this.bookmark.children] : [];
+      this.bookmarksService_.sortBookmarks(
+          this.sortedChildren, this.activeSortIndex);
+    }
+
+    if (changedProperties.has('activeFolderPath')) {
+      this.isSelected = this.activeFolderPath?.length > 0 &&
+          this.activeFolderPath[this.activeFolderPath.length - 1].id ===
+              this.bookmark.id;
+    }
+
     if (changedProperties.has('compact')) {
       this.listItemSize =
           this.compact ? CrUrlListItemSize.COMPACT : CrUrlListItemSize.LARGE;
@@ -161,6 +190,11 @@ export class PowerBookmarkRowElement extends CrLitElement {
         this.style.setProperty(
             '--margin-per-depth', `${NESTED_BOOKMARKS_MARGIN_PER_DEPTH}px`);
       }
+    }
+
+    if (changedProperties.has('activeSortIndex')) {
+      this.bookmarksService_.sortBookmarks(
+          this.sortedChildren, this.activeSortIndex);
     }
   }
 
@@ -205,10 +239,61 @@ export class PowerBookmarkRowElement extends CrLitElement {
     this.currentUrlListItem_.focus();
   }
 
+  private setExpanded_(expanded: boolean, event?: Event) {
+    if (!this.isFolder_() || this.toggleExpand === expanded) {
+      return;
+    }
+    this.toggleExpand = expanded;
+
+    if (!this.toggleExpand) {
+      this.keyArrowNavigationService_.removeElementsWithin(this);
+    }
+
+    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        bookmark: this.bookmark,
+        expanded: this.toggleExpand,
+        event: event,
+      },
+    }));
+  }
+
   private onKeydown_(e: KeyboardEvent) {
     if (this.shadowRoot.activeElement !== this.currentUrlListItem_) {
       return;
     }
+
+    const isRtl = isRTL();
+    const forwardKey = isRtl ? 'ArrowLeft' : 'ArrowRight';
+    const backwardKey = isRtl ? 'ArrowRight' : 'ArrowLeft';
+
+    if (e.key === forwardKey) {
+      if (this.isFolder_()) {
+        if (!this.toggleExpand) {
+          this.setExpanded_(true);
+        } else if (this.isFolderWithChildren_()) {
+          this.keyArrowNavigationService_.moveFocus(1);
+        }
+      }
+      e.stopPropagation();
+      return;
+    }
+
+    if (e.key === backwardKey) {
+      if (this.isFolder_() && this.toggleExpand) {
+        this.setExpanded_(false);
+      } else {
+        const parentRow =
+            (this.getRootNode() as ShadowRoot)?.host as HTMLElement;
+        parentRow.focus();
+        this.keyArrowNavigationService_.setCurrentFocusIndex(parentRow);
+      }
+      e.stopPropagation();
+      return;
+    }
+
     if (e.shiftKey && e.key === 'Tab') {
       // Hitting shift tab from CrUrlListItem to traverse focus backwards will
       // attempt to move focus to this element, which is responsible for
@@ -270,24 +355,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected onExpandedChanged_(event: CustomEvent<{value: boolean}>) {
     event.preventDefault();
     event.stopPropagation();
-    this.toggleExpand = event.detail.value;
-
-    // Elements are removed from the service without event emission since the
-    // child elements need to be visible and present in the dom in order to be
-    // seen by the parent list element and therefore remove them.
-    if (!this.toggleExpand) {
-      this.keyArrowNavigationService_.removeElementsWithin(this);
-    }
-
-    this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        bookmark: this.bookmark,
-        expanded: this.toggleExpand,
-        event: event,
-      },
-    }));
+    this.setExpanded_(event.detail.value, event);
   }
 
   private onInputDisplayChange_() {
@@ -304,14 +372,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // Ignore clicks on the row when it has an input, to ensure the row doesn't
     // eat input clicks. Also ignore clicks if the row has no associated
     // bookmark, or if the event is a right-click.
-    if (this.isRenamingItem_() || !this.bookmark || event.button === 2) {
-      return;
-    }
-    // In compact view, if the item is a folder, ignore row clicks to toggle
-    // the folder.
-    if (this.shouldExpand_() && !this.hasCheckbox) {
-      // If clicking on a row that's a folder in compact view, move focus to it.
-      this.keyArrowNavigationService_.setCurrentFocusIndex(this);
+    if (this.isRenamingItem_() || !this.bookmark || event.button === 2 ||
+        this.hasActiveDrag) {
       return;
     }
     event.preventDefault();
@@ -479,6 +541,14 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   protected isShoppingCollection_(): boolean {
     return this.bookmark?.id === this.shoppingCollectionFolderId;
+  }
+
+  protected isFolder_(): boolean {
+    return !this.bookmark.url;
+  }
+
+  protected isFolderWithChildren_(): boolean {
+    return this.isFolder_() && !!this.bookmark.children?.length;
   }
 
   protected getBookmarkDescription_(bookmark: BookmarksTreeNode): string

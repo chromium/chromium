@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -53,14 +52,17 @@ public class PendingTabClosureManager {
         /**
          * Called when a TabClosureEvent is completely cancelled and about to be removed.
          *
-         * @param event The event that's been cancelled.
+         * @param undoRunnable The runnable to run if the event was undone.
          */
         void notifyOnCancelingTabClosure(@Nullable Runnable undoRunnable);
+
+        /** Returns all tabs in the model. */
+        List<Tab> getAllTabs();
     }
 
     /** Represents a set of tabs closed together. */
     static class TabClosureEvent {
-        private final LinkedList<Tab> mClosingTabs;
+        private final List<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
         private final @Nullable Runnable mUndoRunnable;
 
@@ -69,7 +71,7 @@ public class PendingTabClosureManager {
          * @param undoRunnable The runnable to run if the event was undone.
          */
         public TabClosureEvent(List<Tab> tabs, @Nullable Runnable undoRunnable) {
-            mClosingTabs = new LinkedList<>(tabs);
+            mClosingTabs = new ArrayList<>(tabs);
             mUnhandledTabs = new HashSet<>(mClosingTabs);
             mUndoRunnable = undoRunnable;
         }
@@ -100,7 +102,7 @@ public class PendingTabClosureManager {
         }
 
         /** Returns the list of tabs marked as closing in this event. */
-        public LinkedList<Tab> getList() {
+        public List<Tab> getList() {
             return mClosingTabs;
         }
 
@@ -178,10 +180,7 @@ public class PendingTabClosureManager {
          */
         public void resetRewoundState() {
             mRewoundTabs.clear();
-
-            for (int i = 0; i < mTabModel.getCount(); i++) {
-                mRewoundTabs.add(mTabModel.getTabAt(i));
-            }
+            mRewoundTabs.addAll(mDelegate.getAllTabs());
         }
 
         /**
@@ -212,7 +211,7 @@ public class PendingTabClosureManager {
         }
 
         /**
-         * Destroy all tabs in this model.  This will check to see if the tab is already destroyed
+         * Destroy all tabs in this model. This will check to see if the tab is already destroyed
          * before destroying it.
          */
         public void destroy() {
@@ -239,7 +238,7 @@ public class PendingTabClosureManager {
     private final PendingTabClosureDelegate mDelegate;
 
     /** Representation of a set of tabs that were closed together. */
-    private final LinkedList<TabClosureEvent> mTabClosureEvents = new LinkedList<>();
+    private final ArrayList<TabClosureEvent> mTabClosureEvents = new ArrayList<>();
 
     /**
      * A {@link TabList} that represents the complete list of {@link Tab}s. This is so that
@@ -420,7 +419,7 @@ public class PendingTabClosureManager {
 
         if (mTabClosureEvents.isEmpty()) return false;
 
-        TabClosureEvent event = mTabClosureEvents.removeLast();
+        TabClosureEvent event = mTabClosureEvents.remove(mTabClosureEvents.size() - 1);
         for (Tab tab : event.getList()) {
             cancelClosureInternal(tab);
         }
@@ -446,22 +445,23 @@ public class PendingTabClosureManager {
     private void cancelClosureInternal(Tab tab) {
         tab.setClosing(false);
 
-        // Find a valid previous tab entry so we know what tab to insert after.  With the following
-        // example, calling cancelTabClosure(4) would need to know to insert after 2.  So we have to
+        // Find a valid previous tab entry so we know what tab to insert after. With the following
+        // example, calling cancelTabClosure(4) would need to know to insert after 2. So we have to
         // track across mRewoundTabs and mTabModel and see what the last valid mTabModel entry was
-        // (2) when we hit the 4 in the rewound list.  An insertIndex of -1 represents the beginning
+        // (2) when we hit the 4 in the rewound list. An insertIndex of -1 represents the beginning
         // of the list, as this is the index of tab to insert after.
         // mTabModel:   0   2     5
         // mRewoundTabs 0 1 2 3 4 5
         int prevIndex = -1;
         final int stopIndex = mRewoundList.indexOf(tab);
+        List<Tab> tabs = mDelegate.getAllTabs();
         for (int rewoundIndex = 0; rewoundIndex < stopIndex; rewoundIndex++) {
             Tab rewoundTab = mRewoundList.getTabAt(rewoundIndex);
-            if (prevIndex == mTabModel.getCount() - 1) break;
-            if (rewoundTab == mTabModel.getTabAt(prevIndex + 1)) prevIndex++;
+            if (prevIndex == tabs.size() - 1) break;
+            if (rewoundTab == tabs.get(prevIndex + 1)) prevIndex++;
         }
 
-        // Figure out where to insert the tab.  Just add one to prevIndex, as -1 represents the
+        // Figure out where to insert the tab. Just add one to prevIndex, as -1 represents the
         // beginning of the list, so we'll insert at 0.
         int insertIndex = prevIndex + 1;
         mDelegate.insertUndoneTabClosureAt(tab, insertIndex);

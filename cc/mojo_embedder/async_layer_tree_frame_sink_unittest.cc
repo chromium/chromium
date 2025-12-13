@@ -201,10 +201,8 @@ class MockCompositorFrameSink : public viz::mojom::CompositorFrameSink {
   MockCompositorFrameSink& operator=(const MockCompositorFrameSink&) = delete;
 
   // viz::mojom::blink::CompositorFrameSink implementation
+  MOCK_METHOD1(SetParams, void(viz::mojom::CompositorFrameSinkParamsPtr));
   MOCK_METHOD1(SetNeedsBeginFrame, void(bool));
-  MOCK_METHOD0(SetWantsAnimateOnlyBeginFrames, void(void));
-  MOCK_METHOD0(SetWantsBeginFrameAcks, void(void));
-  MOCK_METHOD0(SetAutoNeedsBeginFrame, void(void));
   void SubmitCompositorFrame(
       const viz::LocalSurfaceId&,
       viz::CompositorFrame frame,
@@ -224,24 +222,14 @@ class MockCompositorFrameSink : public viz::mojom::CompositorFrameSink {
 
 }  // namespace
 
-// Mocks DidPresentCompositorFrame class in order to test at what point
-// in the frame lifecycle the method gets called.
-class MockFakeLayerTreeFrameSinkClient : public FakeLayerTreeFrameSinkClient {
- public:
-  MOCK_METHOD2(DidPresentCompositorFrame,
-               void(uint32_t frame_token,
-                    const viz::FrameTimingDetails& details));
-};
-
 // Boilerplate code for simple AsyncLayerTreeFrameSink. Friend of
 // AsyncLayerTreeFrameSink.
-class AsyncLayerTreeFrameSinkSimpleTest : public testing::TestWithParam<bool> {
+class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
  public:
   AsyncLayerTreeFrameSinkSimpleTest()
       : task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>(
             base::TestMockTimeTaskRunner::Type::kStandalone)),
-        display_rect_(1, 1),
-        layer_tree_frame_sink_client_(MockFakeLayerTreeFrameSinkClient()) {
+        display_rect_(1, 1) {
     client_to_bind_ = &layer_tree_frame_sink_client_;
   }
 
@@ -281,28 +269,6 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::TestWithParam<bool> {
                                                   hit_test_data_changed);
   }
 
-  void OnBeginFrame(const viz::BeginFrameArgs& args,
-                    const viz::FrameTimingDetailsMap& timing_details,
-                    std::vector<viz::ReturnedResource> resources) {
-    layer_tree_frame_sink_->OnBeginFrame(args, timing_details,
-                                         std::move(resources));
-  }
-
-  void DidNotProduceFrame(const viz::BeginFrameAck& ack,
-                          FrameSkippedReason reason) {
-    layer_tree_frame_sink_->DidNotProduceFrame(ack, reason);
-  }
-
-  void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed) {
-    layer_tree_frame_sink_->SubmitCompositorFrame(std::move(frame),
-                                                  hit_test_data_changed);
-  }
-
-  void SetNeedsBeginFrame() {
-    layer_tree_frame_sink_->OnNeedsBeginFrames(true);
-  }
-
   const viz::HitTestRegionList& GetHitTestData() const {
     return layer_tree_frame_sink_->get_last_hit_test_data_for_testing();
   }
@@ -312,7 +278,7 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::TestWithParam<bool> {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   gfx::Rect display_rect_;
   std::unique_ptr<AsyncLayerTreeFrameSink> layer_tree_frame_sink_;
-  MockFakeLayerTreeFrameSinkClient layer_tree_frame_sink_client_;
+  FakeLayerTreeFrameSinkClient layer_tree_frame_sink_client_;
   raw_ptr<LayerTreeFrameSinkClient> client_to_bind_;
   mojo::Remote<viz::mojom::CompositorFrameSinkClient> client_remote_;
   std::unique_ptr<MockCompositorFrameSink> mock_compositor_frame_sink_;
@@ -432,97 +398,6 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
 
   EXPECT_FALSE(
       viz::HitTestRegionList::IsEqual(hit_test_region_list, GetHitTestData()));
-}
-
-class AsyncLayerTreeFrameSinkMetricsRefactorTest
-    : public AsyncLayerTreeFrameSinkSimpleTest {
- public:
-  AsyncLayerTreeFrameSinkMetricsRefactorTest() {
-    if (!GetParam()) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kExportFrameTimingAfterFrameDone);
-    }
-  }
-  ~AsyncLayerTreeFrameSinkMetricsRefactorTest() override = default;
-
-  viz::BeginFrameArgs CreateAndDispatchNewBeginFrame() {
-    viz::BeginFrameArgs args = viz::CreateBeginFrameArgsForTesting(
-        BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
-        base::TimeTicks() + base::Milliseconds(1));
-    viz::FrameTimingDetailsMap timing_details_map;
-    viz::FrameTimingDetails timing_details;
-    timing_details.presentation_feedback.timestamp = base::TimeTicks::Now();
-    timing_details_map[++frame_token_] = timing_details;
-    SetNeedsBeginFrame();
-    OnBeginFrame(args, timing_details_map,
-                 std::vector<viz::ReturnedResource>());
-    return args;
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  uint32_t frame_token_ = 0;
-};
-
-INSTANTIATE_TEST_SUITE_P(AsyncLayerTreeFrameSinkRefactorTest,
-                         AsyncLayerTreeFrameSinkMetricsRefactorTest,
-                         testing::Bool(),
-                         [](auto& param) {
-                           return (param.param) ? "MetricExportOnEndFrame"
-                                                : "MetricExportOnBeginFrame";
-                         });
-
-TEST_P(AsyncLayerTreeFrameSinkMetricsRefactorTest, DroppedFrameExportsMetrics) {
-  // Establish that DidPresentCompositorFrame should be called exactly once.
-  EXPECT_CALL(layer_tree_frame_sink_client_,
-              DidPresentCompositorFrame(testing::_, testing::_))
-      .Times(GetParam() ? 0 : 1);
-
-  // Simulate an OnBeginFrame call from viz.
-  viz::BeginFrameArgs args = CreateAndDispatchNewBeginFrame();
-  testing::Mock::VerifyAndClearExpectations(&layer_tree_frame_sink_client_);
-
-  // Check that that either the OnBeginFrame call or the subsequent
-  // DidNotProduceFrame call has exported timing metrics to the client,
-  // depending on test params.
-  if (GetParam()) {
-    EXPECT_CALL(layer_tree_frame_sink_client_,
-                DidPresentCompositorFrame(testing::_, testing::_))
-        .Times(1);
-    DidNotProduceFrame(viz::BeginFrameAck(args, false),
-                       FrameSkippedReason::kDrawThrottled);
-    testing::Mock::VerifyAndClearExpectations(&layer_tree_frame_sink_client_);
-  }
-}
-
-TEST_P(AsyncLayerTreeFrameSinkMetricsRefactorTest, SubmitFrameExportsMetrics) {
-  // Establish that DidPresentCompositorFrame should be called exactly once.
-  EXPECT_CALL(layer_tree_frame_sink_client_,
-              DidPresentCompositorFrame(testing::_, testing::_))
-      .Times(GetParam() ? 0 : 1);
-
-  // Simulate an OnBeginFrame call from viz.
-  viz::BeginFrameArgs args = CreateAndDispatchNewBeginFrame();
-  testing::Mock::VerifyAndClearExpectations(&layer_tree_frame_sink_client_);
-
-  // Check that that either the OnBeginFrame call or the subsequent
-  // SubmitCompositorFrame call has exported timing metrics to the client,
-  // depending on test params.
-  if (GetParam()) {
-    EXPECT_CALL(layer_tree_frame_sink_client_,
-                DidPresentCompositorFrame(testing::_, testing::_))
-        .Times(1);
-    // Valid frame requires a pass list.
-    viz::CompositorRenderPassList pass_list;
-    auto pass = viz::CompositorRenderPass::Create();
-    pass->id = viz::CompositorRenderPassId{1};
-    pass->output_rect = display_rect_;
-    pass_list.push_back(std::move(pass));
-    SubmitCompositorFrame(viz::CompositorFrameBuilder()
-                              .SetRenderPassList(std::move(pass_list))
-                              .Build(),
-                          false);
-    testing::Mock::VerifyAndClearExpectations(&layer_tree_frame_sink_client_);
-  }
 }
 
 // Boilerplate code for begin frame test of AsyncLayerTreeFrameSink.
@@ -673,6 +548,86 @@ TEST_F(AsyncLayerTreeFrameSinkBeginFrameTest,
       base::FeatureList::IsEnabled(features::kNoLateBeginFrames) ? 3u : 4u,
       frame_tracking_client_.begin_frame_count());
   layer_tree_frame_sink_->DetachFromClient();
+}
+
+class AsyncLayerTreeFrameSinkManualBeginFrameTest
+    : public AsyncLayerTreeFrameSinkSimpleTest {
+ public:
+  AsyncLayerTreeFrameSinkManualBeginFrameTest() {
+    client_to_bind_ = &frame_tracking_client_;
+  }
+
+  void SetUp() override {
+    init_params_.manual_begin_frame = true;
+    init_params_.auto_needs_begin_frame = true;
+    AsyncLayerTreeFrameSinkSimpleTest::SetUp();
+  }
+
+  void TearDown() override {
+    layer_tree_frame_sink_->DetachFromClient();
+    AsyncLayerTreeFrameSinkSimpleTest::TearDown();
+  }
+
+  BeginFrameTrackingLayerTreeFrameSinkClient frame_tracking_client_;
+};
+
+TEST_F(AsyncLayerTreeFrameSinkManualBeginFrameTest, SendsManualBeginFrame) {
+  // A manual begin frame should be sent when the client is bound.
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(1u, frame_tracking_client_.begin_frame_count());
+  EXPECT_EQ(viz::BeginFrameArgs::kManualSourceId,
+            frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.source_id);
+  EXPECT_EQ(
+      1u,
+      frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.sequence_number);
+
+  // It shouldn't send another one if needs begin frames doesn't change.
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(1u, frame_tracking_client_.begin_frame_count());
+
+  // It should send another one if we stop needing begin frames and then start
+  // again.
+  frame_tracking_client_.SetObservingBeginFrame(false);
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(1u, frame_tracking_client_.begin_frame_count());
+
+  frame_tracking_client_.SetObservingBeginFrame(true);
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(2u, frame_tracking_client_.begin_frame_count());
+  EXPECT_EQ(viz::BeginFrameArgs::kManualSourceId,
+            frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.source_id);
+  EXPECT_EQ(
+      2u,
+      frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.sequence_number);
+}
+
+TEST_F(AsyncLayerTreeFrameSinkManualBeginFrameTest,
+       ReceivesVizBeginFrameAfterManual) {
+  // A manual begin frame should be sent when the client is bound.
+  task_runner_->RunUntilIdle();
+  EXPECT_EQ(1u, frame_tracking_client_.begin_frame_count());
+  EXPECT_EQ(viz::BeginFrameArgs::kManualSourceId,
+            frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.source_id);
+  EXPECT_EQ(
+      1u,
+      frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.sequence_number);
+
+  // Now send a real begin frame from viz.
+  viz::BeginFrameArgs args = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, 0, 10,
+      frame_tracking_client_.LastUsedBeginFrameArgs().frame_time +
+          base::Milliseconds(16));
+
+  client_remote_->OnBeginFrame(args, {}, {});
+  task_runner_->RunUntilIdle();
+
+  // The client should have received the viz begin frame.
+  EXPECT_EQ(2u, frame_tracking_client_.begin_frame_count());
+  EXPECT_NE(viz::BeginFrameArgs::kManualSourceId,
+            frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.source_id);
+  EXPECT_EQ(
+      10u,
+      frame_tracking_client_.LastUsedBeginFrameArgs().frame_id.sequence_number);
 }
 
 }  // namespace mojo_embedder

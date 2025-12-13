@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "fuchsia_web/runners/cast/api_bindings_client.h"
+
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding.h>
 
 #include "base/barrier_closure.h"
-#include "base/files/file_util.h"
 #include "base/fuchsia/mem_buffer_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "content/public/test/browser_test.h"
@@ -18,7 +20,6 @@
 #include "fuchsia_web/common/test/frame_for_test.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/common/test/test_navigation_listener.h"
-#include "fuchsia_web/runners/cast/api_bindings_client.h"
 #include "fuchsia_web/runners/cast/named_message_port_connector_fuchsia.h"
 #include "fuchsia_web/runners/cast/test/fake_api_bindings.h"
 #include "fuchsia_web/webengine/test/web_engine_browser_test.h"

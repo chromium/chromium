@@ -321,7 +321,7 @@ void ConnectionFactoryImpl::StartConnection(bool ignore_connection_failure) {
 
   connecting_ = true;
   GURL current_endpoint = GetCurrentEndpoint();
-  recorder_->RecordConnectionInitiated(current_endpoint.host());
+  recorder_->RecordConnectionInitiated(current_endpoint.GetHost());
 
   socket_factory_.reset();
   get_socket_factory_callback_.Run(

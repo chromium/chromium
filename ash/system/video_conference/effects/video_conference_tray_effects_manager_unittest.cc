@@ -17,7 +17,6 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "ui/views/controls/button/button.h"

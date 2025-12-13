@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
@@ -23,16 +24,19 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.url.GURL;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.function.Supplier;
 
 /**
  * Class that observes url and tab changes in order to track when browsing stops and starts for each
  * visited fully-qualified domain name (FQDN).
  */
 @SuppressLint("NewApi")
+@NullMarked
 public class PageViewObserver extends EmptyTabObserver {
     private static final String TAG = "PageViewObserver";
 
@@ -43,12 +47,12 @@ public class PageViewObserver extends EmptyTabObserver {
     private final SuspensionTracker mSuspensionTracker;
     private final Supplier<TabContentManager> mTabContentManagerSupplier;
 
-    private Tab mCurrentTab;
-    private String mLastFqdn;
+    private @Nullable Tab mCurrentTab;
+    private @Nullable String mLastFqdn;
 
     PageViewObserver(
             Activity activity,
-            ObservableSupplier<Tab> tabSupplier,
+            NullableObservableSupplier<Tab> tabSupplier,
             EventTracker eventTracker,
             TokenTracker tokenTracker,
             SuspensionTracker suspensionTracker,
@@ -75,8 +79,13 @@ public class PageViewObserver extends EmptyTabObserver {
     }
 
     @Override
-    public void onUpdateUrl(Tab tab, GURL url) {
+    public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
         assert tab == mCurrentTab;
+        // We only want to check for suspended tabs on new navigations, not on same-document
+        // navigations like fragment changes or history.pushState.
+        if (navigationHandle.isSameDocument()) return;
+
+        GURL url = navigationHandle.getUrl();
         String newFqdn = getValidFqdnOrEmptyString(url);
         // We don't call updateUrl() here to avoid reporting start events for domains
         // that never paint, e.g. link shorteners. We still need to check the SuspendedTab
@@ -168,12 +177,14 @@ public class PageViewObserver extends EmptyTabObserver {
     private void reportStop() {
         mEventTracker.addWebsiteEvent(
                 new WebsiteEvent(
-                        System.currentTimeMillis(), mLastFqdn, WebsiteEvent.EventType.STOP));
+                        System.currentTimeMillis(),
+                        assumeNonNull(mLastFqdn),
+                        WebsiteEvent.EventType.STOP));
         reportToPlatformIfDomainIsTracked("reportUsageStop", mLastFqdn);
         mLastFqdn = null;
     }
 
-    private void activeTabChanged(Tab tab) {
+    private void activeTabChanged(@Nullable Tab tab) {
         mCurrentTab = tab;
         if (mCurrentTab == null) {
             updateUrl(null);
@@ -187,7 +198,7 @@ public class PageViewObserver extends EmptyTabObserver {
         }
     }
 
-    private void reportToPlatformIfDomainIsTracked(String reportMethodName, String fqdn) {
+    private void reportToPlatformIfDomainIsTracked(String reportMethodName, @Nullable String fqdn) {
         mTokenTracker
                 .getTokenForFqdn(fqdn)
                 .then(
@@ -213,7 +224,7 @@ public class PageViewObserver extends EmptyTabObserver {
                         });
     }
 
-    private static String getValidFqdnOrEmptyString(GURL url) {
+    private static String getValidFqdnOrEmptyString(@Nullable GURL url) {
         if (GURL.isEmptyOrInvalid(url)) return "";
         return url.getHost();
     }

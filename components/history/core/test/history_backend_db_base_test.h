@@ -10,10 +10,9 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/test/history_unittest_base.h"
 #include "sql/init_status.h"
@@ -46,10 +45,12 @@ class HistoryBackendDBBaseTest : public HistoryUnitTestBase {
 
   // Creates the HistoryBackend and HistoryDatabase on the current thread,
   // assigning the values to backend_ and db_.
-  void CreateBackendAndDatabase();
-  void CreateBackendAndDatabaseAllowFail();
+  [[nodiscard]] bool CreateBackendAndDatabase();
 
   void CreateDBVersion(int version);
+
+  int GetDatabaseVersion() const;
+  bool SetDatabaseVersion(int version) const;
 
   void DeleteBackend();
 

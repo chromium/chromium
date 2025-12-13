@@ -10,12 +10,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/ash/components/dbus/system_proxy/system_proxy_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "components/prefs/pref_service.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -224,9 +224,7 @@ TEST_F(ProxyResolutionServiceProviderTest,
 class ProxyResolutionServiceWithSystemProxyTest
     : public ProxyResolutionServiceProviderTest {
  public:
-  ProxyResolutionServiceWithSystemProxyTest()
-      : ProxyResolutionServiceProviderTest(),
-        local_state_(TestingBrowserProcess::GetGlobal()) {}
+  ProxyResolutionServiceWithSystemProxyTest() = default;
   ~ProxyResolutionServiceWithSystemProxyTest() override = default;
 
   // testing::Test
@@ -236,7 +234,8 @@ class ProxyResolutionServiceWithSystemProxyTest
     ProxyResolutionServiceProviderTest::SetUp();
 
     SystemProxyClient::InitializeFake();
-    SystemProxyManager::Initialize(local_state_.Get());
+    SystemProxyManager::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
     SystemProxyManager::Get()->SetSystemServicesProxyUrlForTest(
         "system-proxy:3128");
   }
@@ -269,9 +268,6 @@ class ProxyResolutionServiceWithSystemProxyTest
     EXPECT_TRUE(reader.PopString(&result->proxy_info));
     EXPECT_TRUE(reader.PopString(&result->error));
   }
-
- protected:
-  ScopedTestingLocalState local_state_;
 
  private:
   NetworkHandlerTestHelper network_handler_test_helper_;

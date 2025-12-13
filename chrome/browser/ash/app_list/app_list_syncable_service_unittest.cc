@@ -1363,7 +1363,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
   for (int i = 0; i < max_items_in_first_page - 1; ++i) {
     std::unique_ptr<ChromeAppListItem> item =
         std::make_unique<ChromeAppListItem>(
-            profile_.get(), GenerateId("item_id" + base::NumberToString(i)),
+            profile(), GenerateId("item_id" + base::NumberToString(i)),
             model_updater);
     ItemTestApi(item.get()).SetPosition(last_app_position);
     model_updater->AddItem(std::move(item));
@@ -1379,7 +1379,7 @@ TEST_F(AppListSyncableServiceTest, FirstAvailablePosition) {
   // Fill up the first page.
   std::unique_ptr<ChromeAppListItem> app_item =
       std::make_unique<ChromeAppListItem>(
-          profile_.get(),
+          profile(),
           GenerateId("item_id" + base::NumberToString(max_items_in_first_page)),
           model_updater);
   const syncer::StringOrdinal new_item_position =
@@ -1492,7 +1492,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
   EXPECT_FALSE(GetSyncItem(ephemeral_app_id));
 
   std::unique_ptr<ChromeAppListItem> ephemeral_app_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), ephemeral_app_id,
+      std::make_unique<ChromeAppListItem>(profile(), ephemeral_app_id,
                                           model_updater);
   ephemeral_app_item->SetIsEphemeral(true);
   // Can't use InstallExtension() because it calls AppRegistryCache::OnApps()
@@ -1509,7 +1509,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
 
   // Ephemeral sync items are not added to the local storage.
   const base::Value::Dict& local_items =
-      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile()->GetPrefs()->GetDict(prefs::kAppListLocalState);
 
   const base::Value::Dict* dict_item = local_items.FindDict(ephemeral_app_id);
   EXPECT_FALSE(dict_item);
@@ -1542,7 +1542,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralFoldersNotSynced) {
   syncer::StringOrdinal position =
       syncer::StringOrdinal::CreateInitialOrdinal();
   std::unique_ptr<ChromeAppListItem> ephemeral_folder_item =
-      std::make_unique<ChromeAppListItem>(profile_.get(), ephemeral_folder_id,
+      std::make_unique<ChromeAppListItem>(profile(), ephemeral_folder_id,
                                           model_updater);
   ephemeral_folder_item->SetChromeIsFolder(true);
   ephemeral_folder_item->SetChromeName("Folder");
@@ -1560,7 +1560,7 @@ TEST_F(AppListSyncableServiceTest, EphemeralFoldersNotSynced) {
 
   // Ephemeral sync items are not added to the local storage.
   const base::Value::Dict& local_items =
-      profile_->GetPrefs()->GetDict(prefs::kAppListLocalState);
+      profile()->GetPrefs()->GetDict(prefs::kAppListLocalState);
   const base::Value::Dict* dict_item =
       local_items.FindDict(ephemeral_folder_id);
   EXPECT_FALSE(dict_item);
@@ -3127,7 +3127,7 @@ TEST_F(AppListSyncableServiceTest, NewAppPlacementInitiallyOnlyFolders) {
   const std::string kFolderItemId1 = GenerateId("folder_id1");
   AppListModelUpdater* model_updater = GetModelUpdater();
   std::unique_ptr<ChromeAppListItem> folder_item1 =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId1,
+      std::make_unique<ChromeAppListItem>(profile(), kFolderItemId1,
                                           model_updater);
   folder_item1->SetChromeIsFolder(true);
   ItemTestApi(folder_item1.get()).SetPosition(position);
@@ -3137,7 +3137,7 @@ TEST_F(AppListSyncableServiceTest, NewAppPlacementInitiallyOnlyFolders) {
 
   const std::string kFolderItemId2 = GenerateId("folder_id2");
   std::unique_ptr<ChromeAppListItem> folder_item2 =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId2,
+      std::make_unique<ChromeAppListItem>(profile(), kFolderItemId2,
                                           model_updater);
   folder_item2->SetChromeIsFolder(true);
   ItemTestApi(folder_item2.get()).SetPosition(position);
@@ -3147,7 +3147,7 @@ TEST_F(AppListSyncableServiceTest, NewAppPlacementInitiallyOnlyFolders) {
 
   const std::string kFolderItemId3 = GenerateId("folder_id3");
   std::unique_ptr<ChromeAppListItem> folder_item3 =
-      std::make_unique<ChromeAppListItem>(profile_.get(), kFolderItemId3,
+      std::make_unique<ChromeAppListItem>(profile(), kFolderItemId3,
                                           model_updater);
   folder_item3->SetChromeIsFolder(true);
   ItemTestApi(folder_item3.get()).SetPosition(position);
@@ -4013,11 +4013,11 @@ TEST_F(AppListSyncableServiceAppPreloadTest, LauncherOrdering) {
     app->installer_package_id = package_id;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 /*should_notify_initialized=*/false);
+    apps::AppServiceProxyFactory::GetForProfile(profile())->OnApps(
+        std::move(deltas), apps::AppType::kUnknown,
+        /*should_notify_initialized=*/false);
     auto item = std::make_unique<ChromeAppListItem>(
-        profile_.get(), package_id.identifier(), GetModelUpdater());
+        profile(), package_id.identifier(), GetModelUpdater());
     ItemTestApi(item.get()).SetName(package_id.identifier());
     app_list_syncable_service()->AddItem(std::move(item));
   };

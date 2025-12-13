@@ -75,16 +75,21 @@ FetcherConfig GetFetcherConfig(bool is_subject_to_parental_controls) {
          "controls";
   return kClassifyUrlConfigBestEffort;
 #elif BUILDFLAG(IS_ANDROID)
-  // Android enforces at the OS level that supervised users must have valid sign
-  // in credentials (and triggers a reauth if not). We can therefore wait for a
-  // valid access token to be available before calling ClassifyUrl, to avoid
-  // window conditions where the access token is not yet available (eg. during
-  // startup). All other users can try with their credentials if available.
+  // Android enforces at the OS level that family link supervised users must
+  // have valid sign in credentials (and triggers a reauth if not). We can
+  // therefore wait for a valid access token to be available before calling
+  // ClassifyUrl, to avoid window conditions where the access token is not yet
+  // available (eg. during startup).
   if (is_subject_to_parental_controls ||
-      !base::FeatureList::IsEnabled(kAllowNonFamilyLinkUrlFilterMode)) {
+      !ClassifyUrlWithoutCredentialsForLocalSupervision()) {
     return kClassifyUrlConfigWaitUntilAccessTokenAvailable;
   }
-  // Other android users do not include credentials.
+
+  CHECK(!is_subject_to_parental_controls &&
+        ClassifyUrlWithoutCredentialsForLocalSupervision())
+      << "Mode not intended for family link users (or misconfigured "
+         "experiment; enable kAllowNonFamilyLinkUrlFilterMode (backs "
+         "ClassifyUrlWithoutCredentialsForLocalSupervision()))";
   return kClassifyUrlConfigWithoutCredentials;
 #else
   // Other platforms use default configuration, which strictly requires

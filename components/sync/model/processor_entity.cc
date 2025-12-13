@@ -28,7 +28,7 @@ namespace syncer {
 namespace {
 
 bool MetadataIsValid(const sync_pb::EntityMetadata& metadata) {
-  return metadata.has_client_tag_hash() && metadata.has_creation_time() &&
+  return !metadata.client_tag_hash().empty() && metadata.has_creation_time() &&
          metadata.sequence_number() >= metadata.acked_sequence_number();
 }
 
@@ -81,6 +81,10 @@ ProcessorEntity::ProcessorEntity(const std::string& storage_key,
 }
 
 ProcessorEntity::~ProcessorEntity() = default;
+
+ClientTagHash ProcessorEntity::GetClientTagHash() const {
+  return ClientTagHash::FromHashed(metadata_.client_tag_hash());
+}
 
 void ProcessorEntity::SetStorageKey(const std::string& storage_key) {
   DCHECK(storage_key_.empty());
@@ -143,6 +147,12 @@ bool ProcessorEntity::MatchesBaseData(const EntityData& data) const {
 
 bool ProcessorEntity::IsUnsynced() const {
   return metadata_.sequence_number() > metadata_.acked_sequence_number();
+}
+
+bool ProcessorEntity::IsUnsyncedLocalCreation() const {
+  // `kUncommittedVersion` implies that the entity is unsynced but add this
+  // condition for clarity.
+  return metadata_.server_version() == kUncommittedVersion && IsUnsynced();
 }
 
 bool ProcessorEntity::RequiresCommitRequest() const {

@@ -74,6 +74,7 @@
 <translation id="1274654146705270731">pomaranče</translation>
 <translation id="1275718070701477396">Riadok bol vybratý</translation>
 <translation id="1290331692326790741">slabý signál</translation>
+<translation id="1292474106138697109">Zobrazenie učebných nástrojov</translation>
 <translation id="1300115153046603471">Názov prístupového bodu (APN) je predvolený typ a <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301340234286078471">Konverzia</translation>
@@ -756,6 +757,7 @@
 <translation id="4300073214558989">Počet obrázkov: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4300272766492248925">Otvoriť aplikáciu</translation>
 <translation id="430786093962686457">šifón</translation>
+<translation id="4309762678330556039">Automaticky vytvárajte prepisy a vyhľadávajte zvuk. Nahrávky môžete vytvárať, aj keď nemáte pripojenie k internetu.</translation>
 <translation id="4310735698903592804">Nedávne tapety používajú umelú inteligenciu od Googlu</translation>
 <translation id="4320904097188876154">neónovoružovom</translation>
 <translation id="432961742358282111">Kliknutím pravým tlačidlom alebo pridržaním získate definície, preklady alebo prevody jednotiek. Túto funkciu môžete spravovať pomocou klávesov so šípkou doprava alebo doľava.</translation>
@@ -1045,6 +1047,7 @@
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5600027863942488546">Bol otestovaný kláves <ph name="KEY_NAME" /></translation>
 <translation id="5606865426897221650">Tab</translation>
+<translation id="5612205513582918357">Učebné nástroje zdieľajú vašu obrazovku so zariadením <ph name="RECEIVER_NAME" /></translation>
 <translation id="5613201299517339763">Odhlásili ste sa</translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5628106863521633649">Dostupné jazyky</translation>
@@ -1178,7 +1181,6 @@
 <translation id="6205145102504628069">Tok oblakov</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nie sú k dispozícii žiadne skenery</translation>
-<translation id="6231648282154119906">Bezpečné prehliadanie Google bude automaticky kontrolovať podozrivé súbory v rámci vybranej rozšírenej ochrany</translation>
 <translation id="6232017090690406397">Batéria</translation>
 <translation id="6234024205316847054">Zobraziť ohraničenie</translation>
 <translation id="6243280677745499710">Práve nastavená</translation>

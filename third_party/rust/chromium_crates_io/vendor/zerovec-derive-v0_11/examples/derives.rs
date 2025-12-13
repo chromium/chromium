@@ -71,7 +71,7 @@ unsafe impl EncodeAsVarULE<RelationULE> for Relation<'_> {
 }
 
 impl RelationULE {
-    pub fn as_relation(&self) -> Relation {
+    pub fn as_relation(&self) -> Relation<'_> {
         Relation {
             andor_polarity_operand: self.andor_polarity_operand,
             modulo: u32::from_unaligned(self.modulo),

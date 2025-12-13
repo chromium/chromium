@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/media/create_cdm_uma_helper.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_session_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace blink {
 
@@ -35,8 +36,8 @@ CdmSessionAdapter::~CdmSessionAdapter() = default;
 void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
                                   const media::CdmConfig& cdm_config,
                                   WebCdmCreatedCB web_cdm_created_cb) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "CdmSessionAdapter::CreateCdm",
-                                    ++trace_id_);
+  TRACE_EVENT_BEGIN("media", "CdmSessionAdapter::CreateCdm",
+                    perfetto::Track(++trace_id_));
 
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -50,13 +51,13 @@ void CdmSessionAdapter::CreateCdm(media::CdmFactory* cdm_factory,
 
   cdm_factory->Create(
       cdm_config,
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
-      WTF::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
-                         weak_this),
-      WTF::BindOnce(&CdmSessionAdapter::OnCdmCreated, WTF::RetainedRef(this),
-                    cdm_config, start_time));
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionMessage, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionClosed, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionKeysChange, weak_this),
+      blink::BindRepeating(&CdmSessionAdapter::OnSessionExpirationUpdate,
+                           weak_this),
+      blink::BindOnce(&CdmSessionAdapter::OnCdmCreated,
+                      blink::RetainedRef(this), cdm_config, start_time));
 }
 
 void CdmSessionAdapter::SetServerCertificate(
@@ -165,9 +166,8 @@ void CdmSessionAdapter::OnCdmCreated(
            << (cdm ? "success" : "failure (" + base::ToString(status) + ")");
   DCHECK(!cdm_);
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2("media", "CdmSessionAdapter::CreateCdm",
-                                  trace_id_, "success", base::ToString(cdm),
-                                  "status", status);
+  TRACE_EVENT_END("media", perfetto::Track(trace_id_), "success",
+                  base::ToString(cdm), "status", status);
 
   auto key_system_uma_prefix = GetUMAPrefixForCdm(cdm_config);
   ReportCreateCdmStatusUMA(key_system_uma_prefix, cdm != nullptr, status);

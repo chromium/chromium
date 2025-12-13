@@ -22,6 +22,11 @@ import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.phone.stack.StackScroller;
+import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
+import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
+import org.chromium.ui.dragdrop.DragDropGlobalState;
 
 /** Tests for {@link ScrollDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -52,6 +57,8 @@ public class ScrollDelegateUnitTest {
     @Mock private StripLayoutTab mTab2;
     @Mock private StripLayoutTab mTab3;
     @Mock private StripLayoutTab mTab4;
+    @Mock private Tab mDraggedTab;
+
     private StripLayoutView[] mViews;
 
     @Before
@@ -141,6 +148,7 @@ public class ScrollDelegateUnitTest {
         // Tabs 3 and 4 will be ignored.
         when(mTab3.isClosed()).thenReturn(true);
         when(mTab4.isDraggedOffStrip()).thenReturn(true);
+        setupDragDropState();
 
         // stripWidth = width(150) - leftMargin(5) - rightMargin(5) = 140
         // viewsWidth = 3*(viewWidth(110) - overlapWidth(10)) + overlapWidth(10) = 310
@@ -200,5 +208,14 @@ public class ScrollDelegateUnitTest {
                 /* message= */ "Expected a different scroll duration for the given distance,",
                 expectedScrollDuration,
                 mScrollDelegate.getScrollDuration(scrollDelta));
+    }
+
+    private void setupDragDropState() {
+        ChromeDropDataAndroid dropData =
+                new ChromeTabDropDataAndroid.Builder().withTab(mDraggedTab).build();
+        DragDropGlobalState.TrackerToken dragTrackerToken =
+                DragDropGlobalState.store(
+                        /* dragSourceInstanceId= */ 1, dropData, /* dragShadowBuilder= */ null);
+        TabDragHandlerBase.setDragTrackerTokenForTesting(dragTrackerToken);
     }
 }

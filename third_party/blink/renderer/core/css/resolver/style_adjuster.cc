@@ -132,14 +132,9 @@ TouchAction AdjustTouchActionForElement(TouchAction touch_action,
   bool is_child_document =
       element == document_element && element->GetDocument().LocalOwner();
   if (scrolls_overflow || is_child_document) {
-    touch_action |= TouchAction::kPan | TouchAction::kInternalPanXScrolls |
-                    TouchAction::kInternalNotWritable;
-    // TODO(crbug.com/378027646): Remove after making a decision regarding
-    // handwriting enablement.
-    touch_action |= TouchAction::kInternalHandwritingPanningRules;
-  }
-  if (is_child_document) {
-    touch_action |= TouchAction::kInternalHandwriting;
+    return touch_action | TouchAction::kPan |
+           TouchAction::kInternalPanXScrolls |
+           TouchAction::kInternalNotWritable;
   }
   return touch_action;
 }
@@ -185,8 +180,10 @@ void StyleAdjuster::AdjustStyleForSvgElement(
     // Note that SetFooBar() is more efficient than ResetFooBar() if the current
     // value is same as the reset value.
     builder.SetTextDecorationSkipInk(ETextDecorationSkipInk::kAuto);
-    builder.SetTextDecorationStyle(
-        ETextDecorationStyle::kSolid);  // crbug.com/1246719
+    if (!RuntimeEnabledFeatures::SvgEnableTextDecorationCssStylingEnabled()) {
+      builder.SetTextDecorationStyle(
+          ETextDecorationStyle::kSolid);  // crbug.com/1246719
+    }
     builder.SetTextDecorationThickness(TextDecorationThickness(Length::Auto()));
     builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
     builder.SetTextUnderlineOffset(Length());  // crbug.com/1247912
@@ -257,7 +254,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
-    case EDisplay::kMasonry:
+    case EDisplay::kGridLanes:
       return display;
     case EDisplay::kInlineTable:
       return EDisplay::kTable;
@@ -277,8 +274,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kListItem;
     case EDisplay::kInlineFlowRootListItem:
       return EDisplay::kFlowRootListItem;
-    case EDisplay::kInlineMasonry:
-      return EDisplay::kMasonry;
+    case EDisplay::kInlineGridLanes:
+      return EDisplay::kGridLanes;
 
     case EDisplay::kContents:
     case EDisplay::kInline:
@@ -315,8 +312,8 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
       return EDisplay::kInlineFlex;
     case EDisplay::kGrid:
       return EDisplay::kInlineGrid;
-    case EDisplay::kMasonry:
-      return EDisplay::kInlineMasonry;
+    case EDisplay::kGridLanes:
+      return EDisplay::kInlineGridLanes;
     case EDisplay::kBlockMath:
       return EDisplay::kMath;
     case EDisplay::kBlockRuby:
@@ -331,7 +328,7 @@ static EDisplay EquivalentInlineDisplay(EDisplay display) {
     case EDisplay::kInlineGrid:
     case EDisplay::kInlineLayoutCustom:
     case EDisplay::kInlineListItem:
-    case EDisplay::kInlineMasonry:
+    case EDisplay::kInlineGridLanes:
     case EDisplay::kInlineTable:
     case EDisplay::kMath:
     case EDisplay::kRuby:
@@ -391,7 +388,7 @@ static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
 static bool LayoutParentStyleForcesZIndexToCreateStackingContext(
     const ComputedStyle& layout_parent_style) {
   return layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-         layout_parent_style.IsDisplayMasonryBox();
+         layout_parent_style.IsDisplayGridLanesBox();
 }
 
 void StyleAdjuster::AdjustStyleForEditing(ComputedStyleBuilder& builder,
@@ -426,10 +423,8 @@ void StyleAdjuster::AdjustStyleForTextCombine(ComputedStyleBuilder& builder) {
   const auto line_height = builder.FontHeight();
   const auto size =
       LengthSize(Length::Fixed(line_height), Length::Fixed(one_em));
-  builder.SetContainIntrinsicWidth(
-      StyleIntrinsicLength(false, false, size.Width()));
-  builder.SetContainIntrinsicHeight(
-      StyleIntrinsicLength(false, false, size.Height()));
+  builder.SetContainIntrinsicWidth(StyleIntrinsicLength(size.Width()));
+  builder.SetContainIntrinsicHeight(StyleIntrinsicLength(size.Height()));
   builder.SetHeight(size.Height());
   builder.SetLineHeight(size.Height());
   builder.SetMaxHeight(size.Height());
@@ -448,7 +443,7 @@ void StyleAdjuster::AdjustStyleForCombinedText(ComputedStyleBuilder& builder) {
   builder.SetTextEmphasisMark(TextEmphasisMark::kNone);
   builder.SetVerticalAlign(EVerticalAlign::kMiddle);
   builder.SetWordBreak(EWordBreak::kKeepAll);
-  builder.SetWordSpacing(0.0f);
+  builder.SetWordSpacing(/* 'normal' */ Length::Fixed(0.0f));
   builder.SetWritingMode(WritingMode::kHorizontalTb);
 
   builder.SetBaseTextDecorationData(nullptr);
@@ -513,10 +508,20 @@ static void AdjustStyleForMarker(ComputedStyleBuilder& builder,
   }
 }
 
-static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
-                                      HTMLElement& element) {
-  if (builder.HasBaseSelectAppearance()) {
-    builder.SetInBaseSelectAppearance(true);
+// static
+void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
+                                              HTMLElement& element) {
+  if (builder.HasBaseAppearance() &&
+      element.SupportsBaseAppearance(builder.Appearance())) {
+    builder.SetInBaseAppearance(true);
+  }
+  if (builder.InBaseAppearance() && !builder.HasBaseAppearance()) {
+    // Don't allow base appearance to be inherited to elements which actually
+    // support the appearance property.
+    if (element.SupportsBaseAppearance(AppearanceValue::kBase) ||
+        element.SupportsBaseAppearance(AppearanceValue::kBaseSelect)) {
+      builder.SetInBaseAppearance(false);
+    }
   }
 
   // <div> and <span> are the most common elements on the web, we skip all the
@@ -613,13 +618,6 @@ static void AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
     return;
   }
 
-  if (!RuntimeEnabledFeatures::ListStylePositionQuirkStandardEnabled()) {
-    if (IsA<HTMLUListElement>(element) || IsA<HTMLOListElement>(element)) {
-      builder.SetIsInsideListElement();
-      return;
-    }
-  }
-
   if (builder.Display() == EDisplay::kContents) {
     // See https://drafts.csswg.org/css-display/#unbox-html
     // Some of these elements are handled with other adjustments above.
@@ -701,12 +699,13 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   }
 }
 
-// g-issues.chromium.org/issues/349835587
-// https://github.com/WICG/canvas-place-element
-static bool IsCanvasDrawElement(const Element* element) {
+// https://github.com/WICG/html-in-canvas
+// The `layoutsubtree` attribute ... causes the direct children of the <canvas>
+// to have a stacking context and become a containing block for all descendants.
+static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
+    const Element* element) {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && element &&
-      element->IsInCanvasSubtree()) {
-    // Placed elements are always immediate children of the canvas.
+      element->IsCanvasOrInCanvasSubtree()) {
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->layoutSubtree();
@@ -733,10 +732,11 @@ void StyleAdjuster::AdjustStyleForDisplay(
     const ComputedStyle& layout_parent_style,
     const Element* element,
     Document* document) {
-  bool is_canvas_draw_element = IsCanvasDrawElement(element);
+  bool force_canvas_child_layout_subtree_styles =
+      ForceStackingAndContainingBlockForCanvasLayoutSubtree(element);
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
-      is_canvas_draw_element) {
+      force_canvas_child_layout_subtree_styles) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
@@ -745,12 +745,13 @@ void StyleAdjuster::AdjustStyleForDisplay(
       }
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
-        layout_parent_style.IsDisplayMasonryBox() ||
-        layout_parent_style.IsDisplayMathType() || is_canvas_draw_element) {
+        layout_parent_style.IsDisplayGridLanesBox() ||
+        layout_parent_style.IsDisplayMathType() ||
+        force_canvas_child_layout_subtree_styles) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
 
-    if (is_canvas_draw_element) {
+    if (force_canvas_child_layout_subtree_styles) {
       builder.SetPosition(EPosition::kStatic);
       builder.SetContain(builder.Contain() | kContainsPaint);
     }
@@ -802,6 +803,11 @@ void StyleAdjuster::AdjustStyleForDisplay(
       builder.Display() == EDisplay::kTableHeaderGroup ||
       builder.Display() == EDisplay::kTableRow ||
       builder.Display() == EDisplay::kTableRowGroup) {
+    // TODO(crbug.com/40527196): This effectively changes the *computed
+    // value* of 'writing-mode', which is too late at this point.
+    //
+    // Note: if/when this is fixed, we can reinstate the NOTREACHED()
+    // at the end of StyleCascade::ResolvePendingSubstitution().
     builder.SetWritingMode(layout_parent_style.GetWritingMode());
     builder.SetTextOrientation(layout_parent_style.GetTextOrientation());
     builder.UpdateFontOrientation();
@@ -814,8 +820,9 @@ void StyleAdjuster::AdjustStyleForDisplay(
 
   // display: -webkit-box when used with (-webkit)-line-clamp
   if (builder.BoxOrient() == EBoxOrient::kVertical &&
-      (builder.WebkitLineClamp() != 0 || builder.StandardLineClamp() != 0 ||
-       builder.HasAutoStandardLineClamp())) {
+      (builder.WebkitLineClamp() != 0 ||
+       builder.Continue() == EContinue::kCollapse ||
+       builder.Continue() == EContinue::kWebkitLegacy)) {
     if (builder.Display() == EDisplay::kWebkitBox) {
       builder.SetDisplay(EDisplay::kFlowRoot);
       builder.SetIsSpecifiedDisplayWebkitBox();
@@ -933,45 +940,18 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
-  const bool is_writable = IsEditableElement(element, builder) &&
-                           !IsPasswordFieldWithUnrevealedPassword(element);
   // TODO(crbug.com/40232387): Full style invalidation is needed when this
   // feature status changes at runtime as it affects the computed style.
   if (RuntimeEnabledFeatures::StylusHandwritingEnabled() &&
       (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
-      is_writable) {
+      IsEditableElement(element, builder) &&
+      !IsPasswordFieldWithUnrevealedPassword(element)) {
     element_touch_action &= ~TouchAction::kInternalNotWritable;
   }
 
-  const TouchAction effective_touch_action =
-      (element_touch_action & inherited_action) | enforced_by_policy;
   // Apply the adjusted parent effective touch actions.
-  builder.SetEffectiveTouchAction(effective_touch_action);
-
-  if (is_writable && effective_touch_action != TouchAction::kNone) {
-    const auto would_lose_handwriting =
-        [effective_touch_action](TouchAction handwriting_touch_action) {
-          return (effective_touch_action & handwriting_touch_action) !=
-                 handwriting_touch_action;
-        };
-    // TODO(crbug.com/378027646) : This use counter counts how many pages would
-    // lose handwriting capabilities on platforms that support it if the
-    // handwriting keyword were implemented on this CSS attribute.
-    if (would_lose_handwriting(TouchAction::kInternalHandwriting)) {
-      UseCounter::Count(
-          element->GetDocument(),
-          WebFeature::kNonNoneTouchActionWouldLoseEditableHandwriting);
-    }
-    // Similar to the use counter above, but this will measure how many pages
-    // would lose handwriting capabilities if the handwriting keyword follows
-    // the rules for panning (being re-enabled when on a scrollable element).
-    if (would_lose_handwriting(TouchAction::kInternalHandwritingPanningRules)) {
-      UseCounter::Count(
-          element->GetDocument(),
-          WebFeature::
-              kNonNoneTouchActionWouldLoseEditableHandwritingRestoredByScroller);
-    }
-  }
+  builder.SetEffectiveTouchAction((element_touch_action & inherited_action) |
+                                  enforced_by_policy);
 
   // Propagate touch action to child frames.
   if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(element)) {
@@ -1019,6 +999,17 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
     builder.SetInternalForcedBackgroundColor(
         builder.InternalForcedBackgroundColor().ResolveSystemColor(
             color_scheme, color_provider, is_in_web_app_scope));
+  }
+  // Per the CSS Color Adjustment specification [1]:
+  // In forced-colors mode, if 'font-variant-emoji' computes to 'normal' or
+  // 'unicode', emoji should be forced to render in their monochrome
+  // (text-style) variant, if available.
+  //
+  // [1] https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties
+  FontVariantEmoji variant = builder.GetFontDescription().VariantEmoji();
+  if (RuntimeEnabledFeatures::EmojiMonochromeRenderingEnabled() &&
+      (variant == kNormalVariantEmoji || variant == kUnicodeVariantEmoji)) {
+    builder.SetFontVariantEmoji(kTextVariantEmoji);
   }
   if (builder.InternalForcedColor().IsSystemColor()) {
     builder.SetInternalForcedColor(
@@ -1078,6 +1069,14 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 
+  bool is_transition_scope = false;
+  if (element) {
+    if (const ViewTransition* view_transition =
+            ViewTransitionUtils::GetTransition(*element)) {
+      is_transition_scope = (view_transition->Scope() == element);
+    }
+  }
+
   if (builder.Display() != EDisplay::kNone) {
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
@@ -1085,8 +1084,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Elements in the top layer must be out-of-flow positioned.
     // Root elements that are in the top layer should just be left alone
     // because the fullscreen.css doesn't apply any style to them.
+    //
+    // Similarly, overscroll-position elements must be out of flow positioned
+    // with a box.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
-        builder.StyleType() == kPseudoIdBackdrop) {
+        builder.StyleType() == kPseudoIdBackdrop ||
+        builder.OverscrollPosition()) {
       if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }
@@ -1152,6 +1155,19 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         builder.HasBackdropFilter()) {
       builder.SetBackdropFilter(FilterOperations());
     }
+
+    if (is_transition_scope && !is_document_element) {
+      builder.SetContain(builder.Contain() | kContainsLayout);
+    } else if (builder.OverscrollArea() &&
+               !builder.OverscrollArea()->GetNames().empty()) {
+      // TODO(crbug.com/467112943): Layout containment is currently forced to
+      // ensure that the container of the overscroll areas actually contains
+      // the overscroll areas. However, requiring layout containment is
+      // overly restrictive to the child content that can be used within
+      // the scroller. We should remove this requirement while ensure they are
+      // layout children of the container element.
+      builder.SetContain(builder.Contain() | kContainsLayout);
+    }
   } else {
     AdjustStyleForFirstLetter(builder, parent_style);
   }
@@ -1175,16 +1191,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
       IsCanvasWithDrawElements(element) ||
-      (builder.Contain() & kContainsViewTransition)) {
+      (builder.Contain() & kContainsViewTransition) || is_transition_scope) {
     builder.SetForcesStackingContext(true);
-  } else if (element) {
-    // The scoped element of a view transition requires a stacking context.
-    if (const ViewTransition* view_transition =
-            ViewTransitionUtils::GetTransition(*element)) {
-      if (view_transition->Scope() == element) {
-        builder.SetForcesStackingContext(true);
-      }
-    }
   }
 
   if (builder.OverflowX() != EOverflow::kVisible ||
@@ -1270,7 +1278,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     builder.MutableBackgroundInternal().ClearImage();
   }
 
-  if (element && builder.TextOverflow() == ETextOverflow::kEllipsis) {
+  if (element && !builder.TextOverflow().IsClip()) {
     const AtomicString& pseudo_id = element->ShadowPseudoId();
     if (pseudo_id == shadow_element_names::kPseudoInputPlaceholder ||
         pseudo_id == shadow_element_names::kPseudoInternalInputSuggested) {

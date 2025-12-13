@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains enums to be used across C++ and Typescript files.
+module autofill.mojom;
+
+// Enum to identify the type of an Autofill AI entity.
+// Based on
+// components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+enum EntityTypeName {
+  kPassport = 0,
+  kDriversLicense = 1,
+  kVehicle = 2,
+  kNationalIdCard = 3,
+  kKnownTravelerNumber = 4,
+  kRedressNumber = 5,
+  kFlightReservation = 6,
+};

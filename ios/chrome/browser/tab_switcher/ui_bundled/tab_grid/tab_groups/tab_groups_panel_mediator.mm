@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_sync_service_observer_bridge.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_panel_cell.h"
@@ -316,7 +318,13 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)newTabButtonTapped:(id)sender {
-  NOTREACHED() << "Should not be called in Tab Groups.";
+  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
+    // Start the tab group creation.
+    [self.tabGroupsCommands showTabGroupCreationWithoutTabs];
+    base::RecordAction(base::UserMetricsAction("MobileTabGridCreateTabGroup"));
+  } else {
+    NOTREACHED() << "Should not be called in Tab Groups.";
+  }
 }
 
 - (void)selectAllButtonTapped:(id)sender {
@@ -340,6 +348,17 @@ NSString* CreationText(base::Time creation_date) {
 }
 
 - (void)selectTabsButtonTapped:(id)sender {
+  NOTREACHED() << "Should not be called in Tab Groups.";
+}
+
+- (void)pageActionMenuEntrypointTapped:(id)sender {
+  NOTREACHED() << "Should not be called in Tab Groups.";
+}
+- (void)createNewTabGroupButtonTapped:(id)sender {
+  NOTREACHED() << "Should not be called in Tab Groups.";
+}
+
+- (void)deleteBrowsingDataButtonTapped:(id)sender {
   NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
@@ -539,6 +558,11 @@ NSString* CreationText(base::Time creation_date) {
   // Done button is enabled if there is at least one Regular tab.
   toolbarsConfiguration.doneButton =
       _regularWebStateList && !_regularWebStateList->empty();
+
+  if (base::FeatureList::IsEnabled(kTabRecallNewTabGroupButton)) {
+    toolbarsConfiguration.newTabButton = YES;
+  }
+
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
 
@@ -581,8 +605,8 @@ NSString* CreationText(base::Time creation_date) {
     return;
   }
 
-  tab_groups::CollaborationId collaborationId =
-      tab_groups::CollaborationId(groupId.value());
+  syncer::CollaborationId collaborationId =
+      syncer::CollaborationId(groupId.value());
   std::vector<tab_groups::SavedTabGroup> groups =
       _tabGroupSyncService->GetAllGroups();
 

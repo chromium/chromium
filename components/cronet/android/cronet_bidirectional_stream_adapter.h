@@ -14,7 +14,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
@@ -27,6 +27,25 @@ namespace cronet {
 
 class CronetContextAdapter;
 class IOBufferWithByteBuffer;
+
+// Struct to hold the Cronet metrics that needs to be passed back to the java
+// layer.
+struct CronetMetrics final {
+  // We can use a local reference here because in all uses of this struct the
+  // ref is short-lived - the reference is passed to Java shortly after
+  // construction and does not escape the stack.
+  // org.chromium.net.impl.CronetMetrics
+  base::android::ScopedJavaLocalRef<jobject> cronet_metrics;
+  bool quic_connection_migration_attempted;
+  bool quic_connection_migration_successful;
+  // This is not ideal as it's preventing us from using designated initializers,
+  // but sadly the Chromium "complex constructor has an inline body" check is
+  // not giving us a choice.
+  // https://www.chromium.org/developers/coding-style/chromium-style-checker-errors/#constructordestructor-errors
+  CronetMetrics();
+  CronetMetrics(const CronetMetrics& metrics);
+  ~CronetMetrics();
+};
 
 // Convenient wrapper to hold Java references and data to represent the pending
 // data to be written.
@@ -71,7 +90,7 @@ class CronetBidirectionalStreamAdapter
   CronetBidirectionalStreamAdapter(
       CronetContextAdapter* context,
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbidi_stream,
+      const base::android::JavaRef<jobject>& jbidi_stream,
       bool jsend_request_headers_automatically,
       bool traffic_stats_tag_set,
       int32_t traffic_stats_tag,
@@ -94,10 +113,10 @@ class CronetBidirectionalStreamAdapter
   // Returns position of invalid header value in |jheaders| if header name is
   // not valid.
   jint Start(JNIEnv* env,
-             const base::android::JavaParamRef<jstring>& jurl,
+             const base::android::JavaRef<jstring>& jurl,
              jint jpriority,
-             const base::android::JavaParamRef<jstring>& jmethod,
-             const base::android::JavaParamRef<jobjectArray>& jheaders,
+             const base::android::JavaRef<jstring>& jmethod,
+             const base::android::JavaRef<jobjectArray>& jheaders,
              jboolean jend_of_stream);
 
   // Sends request headers to server.
@@ -116,7 +135,7 @@ class CronetBidirectionalStreamAdapter
   // exceeding |jlimit|. Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during read.
   jboolean ReadData(JNIEnv* env,
-                    const base::android::JavaParamRef<jobject>& jbyte_buffer,
+                    const base::android::JavaRef<jobject>& jbyte_buffer,
                     jint jposition,
                     jint jlimit);
 
@@ -126,18 +145,16 @@ class CronetBidirectionalStreamAdapter
   // Arguments are preserved to ensure that |jbyte_buffer|
   // is not modified by the application during write. The |jend_of_stream| is
   // passed to remote to indicate end of stream.
-  jboolean WritevData(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& jbyte_buffers,
-      const base::android::JavaParamRef<jintArray>& jpositions,
-      const base::android::JavaParamRef<jintArray>& jlimits,
-      jboolean jend_of_stream);
+  jboolean WritevData(JNIEnv* env,
+                      const base::android::JavaRef<jobjectArray>& jbyte_buffers,
+                      const base::android::JavaRef<jintArray>& jpositions,
+                      const base::android::JavaRef<jintArray>& jlimits,
+                      jboolean jend_of_stream);
 
   // Releases all resources for the request and deletes the object itself.
-  // |jsend_on_canceled| indicates if Java onCanceled callback should be
-  // issued to indicate that no more callbacks will be issued.
-  void Destroy(JNIEnv* env,
-               jboolean jsend_on_canceled);
+  // Responsible for collecting the metrics before destroying the object and
+  // calling back into the java layer.
+  void Destroy(JNIEnv* env);
 
  private:
   // net::BidirectionalStream::Delegate implementations:
@@ -157,14 +174,14 @@ class CronetBidirectionalStreamAdapter
       int buffer_size);
   void WritevDataOnNetworkThread(
       std::unique_ptr<PendingWriteData> pending_write_data);
-  void DestroyOnNetworkThread(bool send_on_canceled);
+  void DestroyOnNetworkThreadThenCallback();
   // Gets headers as a Java array.
   base::android::ScopedJavaLocalRef<jobjectArray> GetHeadersArray(
       JNIEnv* env,
       const quiche::HttpHeaderBlock& header_block);
-  // Reports metrics to the Java layer if the stream was ever started. Called on
-  // the network thread immediately before the adapter destroys itself.
-  void MaybeReportMetrics();
+  // Passes metrics to the Java layer if the stream existed (didn't fail to
+  // start). Must be called on the network thread.
+  std::optional<CronetMetrics> GetMetrics();
   const raw_ptr<CronetContextAdapter> context_;
 
   // Java object that owns this CronetBidirectionalStreamAdapter.

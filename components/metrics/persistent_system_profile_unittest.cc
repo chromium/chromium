@@ -65,6 +65,8 @@ class PersistentSystemProfileTest : public testing::Test {
   std::unique_ptr<PersistentSystemProfile::RecordAllocator> records_;
 };
 
+namespace {
+
 TEST_F(PersistentSystemProfileTest, Create) {
   uint32_t type;
   base::PersistentMemoryAllocator::Iterator iter(memory_allocator());
@@ -251,4 +253,5 @@ TEST_F(PersistentSystemProfileTest, DeleteFieldTrials) {
   EXPECT_EQ(variations::HashName("bar2"), fetched.field_trial(0).group_id());
 }
 
+}  // namespace
 }  // namespace metrics

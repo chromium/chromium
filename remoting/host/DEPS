@@ -1,12 +1,14 @@
 include_rules = [
   "+ash",
   "+cc/output",
+  "+components/dbus",
   "+components/named_mojo_ipc_server",
   "+components/policy/core/common",
   "+components/viz/common",
   "+components/webrtc",
   "+extensions/browser/api/messaging",
   "+google_apis",
+  "+media/audio",
   # Checks the availability of hardware encoder on Windows.
   "+media/base/win/mf_initializer.h",
   "+media/gpu/windows/media_foundation_video_encode_accelerator_win.h",

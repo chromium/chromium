@@ -63,8 +63,12 @@ std::unordered_set<uint64_t> ProcessStack(
   auto write_render_pass = [&str](const CompositorRenderPass* pass) {
     str << "(" << pass << ") render pass id=" << pass->id.GetUnsafeValue()
         << " output_rect=" << pass->output_rect.ToString();
-    if (pass->view_transition_element_resource_id.IsValid())
+    if (pass->view_transition_element_resource_id.IsValid()) {
       str << " " << pass->view_transition_element_resource_id.ToString();
+    }
+    if (!pass->backdrop_filters.IsEmpty()) {
+      str << " w/backdrop_filters";
+    }
     str << "\n";
   };
   auto write_sqs = [&str](const SharedQuadState* sqs) {
@@ -173,9 +177,10 @@ std::unordered_set<uint64_t> ProcessStack(
 
 }  // namespace
 
-std::string TransitionUtils::RenderPassListToString(
-    const CompositorRenderPassList& list) {
+std::string TransitionUtils::CompositorFrameToString(
+    const CompositorFrame& frame) {
   std::ostringstream str;
+  const CompositorRenderPassList& list = frame.render_pass_list;
 
   if (list.size() > kMaxListToProcess || list.empty()) {
     str << "RenderPassList too large or too small (" << list.size()

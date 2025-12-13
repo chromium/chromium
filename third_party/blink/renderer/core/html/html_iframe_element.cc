@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
@@ -94,8 +95,10 @@ HTMLIFrameElement::~HTMLIFrameElement() = default;
 
 const AttrNameToTrustedType& HTMLIFrameElement::GetCheckedAttributeTypes()
     const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"srcdoc", SpecificTrustedType::kHTML}}));
+  DEFINE_STATIC_LOCAL(
+      AttrNameToTrustedType, attribute_map,
+      ({{"srcdoc", std::pair{SpecificTrustedType::kHTML,
+                             trusted_types_names::kHTMLIFrameElement}}}));
   return attribute_map;
 }
 
@@ -289,7 +292,8 @@ void HTMLIFrameElement::ParseAttribute(
       if (new_browsing_topics) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kIframeBrowsingTopicsAttribute);
-        UseCounter::Count(GetDocument(), WebFeature::kTopicsAPIAll);
+        Deprecation::CountDeprecation(GetExecutionContext(),
+                                      WebFeature::kTopicsAPIAll);
       }
 
       if (new_browsing_topics != old_browsing_topics) {
@@ -330,6 +334,9 @@ void HTMLIFrameElement::ParseAttribute(
       if (!params.new_value.IsNull()) {
         UseCounter::Count(GetDocument(),
                           WebFeature::kSharedStorageAPI_Iframe_Attribute);
+        Deprecation::CountDeprecation(
+            GetExecutionContext(),
+            mojom::blink::WebFeature::kSharedStorageAPIAll);
       }
     }
   } else if (name == html_names::kCredentiallessAttr &&
@@ -721,9 +728,9 @@ const V8UnionStringOrTrustedHTML* HTMLIFrameElement::srcdoc() const {
 
 void HTMLIFrameElement::setSrcdoc(const V8UnionStringOrTrustedHTML* value,
                                   ExceptionState& exception_state) {
-  String compliantValue =
-      TrustedTypesCheckForHTML(value, GetExecutionContext(),
-                               "HTMLIFrameElement", "srcdoc", exception_state);
+  String compliantValue = TrustedTypesCheckForHTML(
+      value, GetExecutionContext(), trusted_types_names::kHTMLIFrameElement,
+      trusted_types_names::kSrcdoc, exception_state);
   if (exception_state.HadException()) {
     return;
   }

@@ -13,9 +13,7 @@
 
 namespace enterprise_commands {
 
-BASE_FEATURE(kUserRemoteCommands,
-             "UserRemoteCommands",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kUserRemoteCommands, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 UserRemoteCommandsServiceFactory*
@@ -40,7 +38,7 @@ UserRemoteCommandsServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   // UserCloudPolicyManager doesn't exist in some test environments. In those
   // cases, we skip the creation of KeyedService here.
-  if (!profile->GetUserCloudPolicyManager()) {
+  if (!profile->GetCloudPolicyManager()) {
     return nullptr;
   }
   return std::make_unique<UserRemoteCommandsService>(profile);

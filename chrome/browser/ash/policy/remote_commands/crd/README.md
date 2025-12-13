@@ -2,11 +2,11 @@ Chrome Remote Desktop
 ---------------------
 
 
-This directory contains the code that controls the remote admin triggered
-Chrome Remote Desktop (CRD) sessions.
+This directory contains the code that controls the remotely triggered Chrome
+Remote Desktop (CRD) sessions.
 
-These sessions are started through a remote command (sent from the DPanel
-devices page).
+These sessions are started through a remote command typically sent from the
+DPanel devices page or issued by Class Tools (boca) teachers.
 
 Remote Commands
 ---------------

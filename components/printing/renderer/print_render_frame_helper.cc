@@ -53,6 +53,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
 #include "printing/print_job_constants.h"
+#include "printing/printing_features.h"
 #include "printing/units.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -64,7 +65,6 @@
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "third_party/blink/public/mojom/page/prerender_page_param.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
-#include "third_party/blink/public/mojom/partitioned_popins/partitioned_popin_params.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -177,8 +177,7 @@ void ExecuteScript(blink::WebLocalFrame* frame,
                    std::string_view prefix,
                    const base::Value& parameters,
                    std::string_view suffix) {
-  std::string json;
-  base::JSONWriter::Write(parameters, &json);
+  std::string json = base::WriteJson(parameters).value_or("");
   frame->ExecuteScript(blink::WebScriptSource(
       blink::WebString::FromUTF8(base::StrCat({prefix, json, suffix}))));
 }
@@ -478,7 +477,7 @@ ScalingType ScalingTypeFromJobSettings(const base::Value::Dict& job_settings) {
 //
 // We crop the source page size to fit the printable area or we print only the
 // left top page contents when
-// (1) Source is PDF and the user has requested not to fit to printable area
+// (1) Source is PDF and the user has requested to customize the scaling
 // via |job_settings|.
 // (2) Source is PDF. This is the first preview request and print scaling
 // option is disabled for initiator renderer plugin.
@@ -497,8 +496,17 @@ mojom::PrintScalingOption GetPrintScalingOption(
     ScalingType scaling_type = ScalingTypeFromJobSettings(job_settings);
     // The following conditions are ordered for an optimization that avoids
     // calling PDFShouldDisableScaling(), which has to make a call using PPAPI.
-    if (scaling_type == DEFAULT || scaling_type == CUSTOM)
+    if (scaling_type == CUSTOM) {
       return mojom::PrintScalingOption::kNone;
+    }
+
+    if (scaling_type == DEFAULT) {
+      return base::FeatureList::IsEnabled(
+                 features::kAlignPdfDefaultPrintSettingsWithHTML)
+                 ? mojom::PrintScalingOption::kCenterShrinkToFitPaper
+                 : mojom::PrintScalingOption::kNone;
+    }
+
     if (params.is_first_request &&
         PDFShouldDisableScaling(frame, node, params, true)) {
       return mojom::PrintScalingOption::kNone;
@@ -674,7 +682,6 @@ class HeaderAndFooterContext {
         /*page_base_background_color=*/std::nullopt,
         /*browsing_context_group_token=*/base::UnguessableToken::Create(),
         /*color_provider_colors=*/nullptr,
-        /*partitioned_popin_params=*/nullptr,
         /*history_index=*/-1,
         /*history_length=*/0);
     view->GetSettings()->SetJavaScriptEnabled(true);
@@ -968,7 +975,6 @@ void PrepareFrameAndViewForPrint::CopySelection(
       /*page_base_background_color=*/std::nullopt,
       /*browsing_context_group_token=*/base::UnguessableToken::Create(),
       /*color_provider_colors=*/nullptr,
-      /*partitioned_popin_params=*/nullptr,
       /*history_index=*/-1,
       /*history_length=*/0);
   blink::WebView::ApplyWebPreferences(prefs, web_view);
@@ -2897,7 +2903,7 @@ bool PrintRenderFrameHelper::PrintPreviewContext::CreatePreviewDocument(
 }
 
 void PrintRenderFrameHelper::PrintPreviewContext::RenderedPreviewPage(
-    const base::TimeDelta& page_time) {
+    base::TimeDelta page_time) {
   DCHECK_EQ(State::kRendering, state_);
   document_render_time_ += page_time;
 }

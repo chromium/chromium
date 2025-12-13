@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -261,6 +262,48 @@ void OnscreenContentProvider::DidUpdateFavicon(
   for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
     consumer->DidUpdateFavicon(*session.begin());
   }
+}
+
+void OnscreenContentProvider::DidUpdateSensitivityScore(
+    float sensitivity_score) {
+  if (!content_capture::features::ShouldSendMetadataForDataShare() ||
+      !ShouldCapture(web_contents()->GetLastCommittedURL())) {
+    return;
+  }
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->DidUpdateSensitivityScore(web_contents()->GetLastCommittedURL(),
+                                        sensitivity_score);
+  }
+}
+
+void OnscreenContentProvider::DidUpdateLanguageDetails(
+    const std::string& detected_language,
+    float language_confidence) {
+  if (!content_capture::features::ShouldSendMetadataForDataShare() ||
+      !ShouldCapture(web_contents()->GetLastCommittedURL())) {
+    return;
+  }
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->DidUpdateLanguageDetails(web_contents()->GetLastCommittedURL(),
+                                       detected_language, language_confidence);
+  }
+}
+
+void OnscreenContentProvider::ClearContentCaptureMetadata() {
+  if (!content_capture::features::ShouldSendMetadataForDataShare()) {
+    return;
+  }
+
+  for (content_capture::ContentCaptureConsumer* consumer : consumers_) {
+    consumer->ClearContentCaptureMetadata();
+  }
+}
+
+void OnscreenContentProvider::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // This signal comes when a navigation finished in the WebContents. Clearing
+  // the Java-side builder.
+  ClearContentCaptureMetadata();
 }
 
 void OnscreenContentProvider::BuildContentCaptureSession(

@@ -25,17 +25,6 @@
 @property(nonatomic, weak) id<SafeBrowsingEnhancedProtectionCoordinatorDelegate>
     delegate;
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser NS_UNAVAILABLE;
-
-// Designated initializer.
-// `viewController`: navigation controller.
-// `browser`: browser.
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-    NS_DESIGNATED_INITIALIZER;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_SAFE_BROWSING_SAFE_BROWSING_ENHANCED_PROTECTION_COORDINATOR_H_

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/public/cpp/test/in_process_data_decoder.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
@@ -100,7 +99,6 @@ class SeaPenMetadataUtilsTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  InProcessDataDecoder decoder_;
 };
 
 TEST_F(SeaPenMetadataUtilsTest, SeaPenTextQueryToDict) {

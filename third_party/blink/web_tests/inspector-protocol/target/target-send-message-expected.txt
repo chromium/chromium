@@ -1,4 +1,5 @@
 Tests sendMessage with invalid message.
+{"method":"Inspector.workerScriptLoaded","params":{}}
 JSON syntax error..
 {"error":{"code":-32700,"message":"JSON: string literal expected at position 57"}}
 JSON with primitive value..

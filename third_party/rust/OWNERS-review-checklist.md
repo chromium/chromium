@@ -18,14 +18,9 @@ because ultimately we trust the reviewer’s judgement here.
 
 ## Review checklist
 
-* **ATL+Director approval**: Is it an import of a new crate?
-  If so, then check if 1) ATL approval has been obtained
-  and 2) a Chrome Director has been CC-ed on a post to
-  [the rust-fyi@ group](https://groups.google.com/a/chromium.org/g/rust-fyi)
-  (step 3 from
-  [go/chrome-rust](https://goto2.corp.google.com/chrome-rust)
-  [Google-internal]), and 3) `OWNERS` file for the new crate is present
-  (unless it is a foundational, shared-ownership crate).
+* **ATL approval**: Is it an import of a new crate? If so, then check if 1) ATL
+  approval has been obtained, and 2) that an `OWNERS` file for the new crate is
+  present (unless it is a foundational, shared-ownership crate).
     - High-level goal: Ensure that an LGTM from `//third_party/rust/OWNERS`
       doesn’t accidentally bypass the requirement for a generic third-party
       review by `//third_party/OWNERS`.

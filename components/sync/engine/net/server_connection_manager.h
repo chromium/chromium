@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 
 namespace syncer {
@@ -72,12 +73,12 @@ struct ServerConnectionEvent {
       : connection_code(code) {}
 };
 
-class ServerConnectionEventListener {
+class ServerConnectionEventListener : public base::CheckedObserver {
  public:
   virtual void OnServerConnectionEvent(const ServerConnectionEvent& event) = 0;
 
  protected:
-  virtual ~ServerConnectionEventListener() = default;
+  ~ServerConnectionEventListener() override = default;
 };
 
 // Use this class to interact with the sync server.
@@ -141,7 +142,7 @@ class ServerConnectionManager {
   // The access token to use in authenticated requests.
   std::string access_token_;
 
-  base::ObserverList<ServerConnectionEventListener>::Unchecked listeners_;
+  base::ObserverList<ServerConnectionEventListener> listeners_;
 
   HttpResponse server_response_;
 

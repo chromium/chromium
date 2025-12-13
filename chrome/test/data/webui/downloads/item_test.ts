@@ -4,7 +4,7 @@
 
 import type {CrIconElement, CrToastManagerElement, DownloadsItemElement} from 'chrome://downloads/downloads.js';
 import {BrowserProxy, DangerType, IconLoaderImpl, loadTimeData, SafeBrowsingState, State, TailoredWarningType} from 'chrome://downloads/downloads.js';
-import {stringToMojoString16, stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
+import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -54,7 +54,7 @@ suite('ItemTest', function() {
       hideDate: false,
       state: State.kComplete,
       url: undefined,
-      displayUrl: stringToMojoString16(displayUrl),
+      displayUrl: displayUrl,
     });
     await microtasksFinished();
 
@@ -73,8 +73,7 @@ suite('ItemTest', function() {
         item.data = createDownload({
           hideDate: false,
           state: State.kComplete,
-          displayInitiatorOrigin:
-              stringToMojoString16('https://initiator.test'),
+          displayInitiatorOrigin: 'https://initiator.test',
         });
         await microtasksFinished();
 
@@ -91,7 +90,7 @@ suite('ItemTest', function() {
     item.data = createDownload({
       hideDate: false,
       state: State.kComplete,
-      displayInitiatorOrigin: stringToMojoString16(''),
+      displayInitiatorOrigin: '',
     });
     await microtasksFinished();
 
@@ -107,7 +106,7 @@ suite('ItemTest', function() {
       fileExternallyRemoved: false,
       hideDate: true,
       state: State.kDangerous,
-      displayInitiatorOrigin: stringToMojoString16('https://displaytest.com'),
+      displayInitiatorOrigin: 'https://displaytest.com',
     });
     await microtasksFinished();
 
@@ -124,7 +123,7 @@ suite('ItemTest', function() {
       hideDate: true,
       state: State.kComplete,
       url: stringToMojoUrl('http://evil.com'),
-      displayInitiatorOrigin: stringToMojoString16('http://display.com'),
+      displayInitiatorOrigin: 'http://display.com',
     });
     await microtasksFinished();
 
@@ -142,7 +141,7 @@ suite('ItemTest', function() {
       hideDate: false,
       state: State.kComplete,
       url: stringToMojoUrl(url),
-      displayUrl: stringToMojoString16(displayUrl),
+      displayUrl: displayUrl,
     });
     await microtasksFinished();
 
@@ -397,8 +396,8 @@ suite('ItemTest', function() {
     function assertDescriptionText(expected: string) {
       assertEquals(
           expected,
-          item.shadowRoot.querySelector('.description:not([hidden])')!
-              .textContent!.trim());
+          item.shadowRoot.querySelector(
+                             '.description:not([hidden])')!.textContent.trim());
     }
 
     // Suspicious archive
@@ -544,7 +543,7 @@ suite('ItemTest', function() {
     assertEquals(
         loadTimeData.getString('controlLocalPasswordScan'),
         item.shadowRoot.querySelector<HTMLElement>(
-                           '#deepScan')!.textContent!.trim());
+                           '#deepScan')!.textContent.trim());
   });
 
   test('open anyway dropdown button shown on failed deep scan', async () => {

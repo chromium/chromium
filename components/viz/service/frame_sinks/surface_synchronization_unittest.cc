@@ -736,10 +736,14 @@ TEST_F(SurfaceSynchronizationTest, ResourcesOnlyReturnedOnce) {
   // The parent submits a CompositorFrame that depends on |child_id| before
   // the child submits a CompositorFrame. The CompositorFrame also has
   // resources in its resource list.
-  TransferableResource resource;
+  auto shared_image = gpu::ClientSharedImage::CreateForTesting(
+      {SinglePlaneFormat::kALPHA_8, gfx::Size(1234, 5678), gfx::ColorSpace(),
+       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ});
+  TransferableResource resource = TransferableResource::Make(
+      shared_image, TransferableResource::ResourceSource::kTest,
+      gpu::SyncToken());
   resource.id = ResourceId(1337);
-  resource.format = SinglePlaneFormat::kALPHA_8;
-  resource.size = gfx::Size(1234, 5678);
   std::vector<TransferableResource> resource_list = {resource};
   parent_support().SubmitCompositorFrame(
       parent_id.local_surface_id(),
@@ -2118,7 +2122,7 @@ TEST_F(SurfaceSynchronizationTest, FrameIndexWithPendingFrames) {
                           std::vector<TransferableResource>()));
   Surface* parent_surface =
       frame_sink_manager().surface_manager()->GetSurfaceForId(parent_id);
-  uint64_t initial_frame_index = parent_surface->GetActiveFrameIndex();
+  uint32_t initial_frame_index = parent_surface->GetActiveFrameIndex();
 
   // Submit frames with unresolved dependencies. GetActiveFrameIndex should
   // return the same value as before.
@@ -2175,7 +2179,7 @@ TEST_F(SurfaceSynchronizationTest, ActiveFrameIndex) {
       child_id2.local_surface_id(),
       MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
   EXPECT_TRUE(parent_surface()->HasActiveFrame());
-  uint64_t expected_index = kFrameIndexStart;
+  uint32_t expected_index = kFrameIndexStart;
   EXPECT_EQ(expected_index, parent_surface()->GetActiveFrameIndex());
 }
 
@@ -2982,7 +2986,7 @@ TEST_F(SurfaceSynchronizationTest,
 
   // Killing the child sink should unblock the frame because it is known
   // the dependency can never fulfill.
-  frame_sink_manager().InvalidateFrameSinkId(kChildFrameSink1);
+  frame_sink_manager().InvalidateFrameSinkId(kChildFrameSink1, {});
   EXPECT_TRUE(parent_surface()->HasActiveFrame());
   EXPECT_FALSE(parent_surface()->HasPendingFrame());
   EXPECT_EQ(parent_id, parent_support().last_activated_surface_id());
@@ -3459,10 +3463,8 @@ class SurfaceSynchronizationTestDrawImmediatelyWithActivationAck
     : public SurfaceSynchronizationTest {
  public:
   SurfaceSynchronizationTestDrawImmediatelyWithActivationAck() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kAckOnSurfaceActivationWhenInteractive,
-         features::kDrawImmediatelyWhenInteractive},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAckOnSurfaceActivationWhenInteractive);
   }
   ~SurfaceSynchronizationTestDrawImmediatelyWithActivationAck() override =
       default;

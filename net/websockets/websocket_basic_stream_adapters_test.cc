@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "net/base/host_port_pair.h"
@@ -81,10 +82,13 @@
 #include "net/third_party/quiche/src/quiche/common/simple_buffer_allocator.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
+#include "net/third_party/quiche/src/quiche/quic/core/frames/quic_blocked_frame.h"
+#include "net/third_party/quiche/src/quiche/quic/core/frames/quic_window_update_frame.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/qpack/qpack_decoder.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection_id.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_error_codes.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
@@ -97,6 +101,8 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_connection_id_generator.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/mock_random.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/qpack/qpack_test_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_flow_controller_peer.h"
+#include "net/third_party/quiche/src/quiche/quic/test_tools/quic_stream_peer.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/websockets/websocket_test_util.h"
@@ -115,7 +121,6 @@ class X509Certificate;
 
 using testing::_;
 using testing::AnyNumber;
-using testing::Invoke;
 using testing::Return;
 using testing::StrictMock;
 using testing::Test;
@@ -1213,6 +1218,14 @@ class WebSocketQuicStreamAdapterTest
         .Build();
   }
 
+  std::string ConstructDataFrameForVersion(std::string_view body,
+                                           quic::ParsedQuicVersion version) {
+    DCHECK(version.HasIetfQuicFrames());
+    quiche::QuicheBuffer buffer = quic::HttpEncoder::SerializeDataFrameHeader(
+        body.size(), quiche::SimpleBufferAllocator::Get());
+    return base::StrCat({std::string_view(buffer.data(), buffer.size()), body});
+  }
+
   std::unique_ptr<quic::QuicReceivedPacket> ConstructRstPacket(
       uint64_t packet_number,
       quic::QuicRstStreamErrorCode error_code) {
@@ -1283,11 +1296,12 @@ class WebSocketQuicStreamAdapterTest
         /*server_info=*/nullptr,
         QuicSessionAliasKey(
             url::SchemeHostPort(),
-            QuicSessionKey("mail.example.org", 80, PRIVACY_MODE_DISABLED,
-                           ProxyChain::Direct(), SessionUsage::kDestination,
-                           SocketTag(), NetworkAnonymizationKey(),
-                           SecureDnsPolicy::kAllow,
-                           /*require_dns_https_alpn=*/false)),
+            QuicSessionKey(
+                "mail.example.org", 80, PRIVACY_MODE_DISABLED,
+                ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                /*require_dns_https_alpn=*/false,
+                /*disable_cert_verification_network_fetches=*/false)),
         /*require_confirmation=*/false,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
@@ -1399,6 +1413,8 @@ TEST_P(WebSocketQuicStreamAdapterTest, Disconnect) {
       SYNCHRONOUS,
       ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
 
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
+
   Initialize();
 
   net::QuicChromiumClientSession::Handle* session_handle =
@@ -1492,6 +1508,8 @@ TEST_P(WebSocketQuicStreamAdapterTest, SendRequestHeadersThenDisconnect) {
       SYNCHRONOUS,
       ConstructRstPacket(packet_number++, quic::QUIC_STREAM_CANCELLED));
 
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
+
   Initialize();
 
   net::QuicChromiumClientSession::Handle* session_handle =
@@ -1536,9 +1554,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, OnHeadersReceivedThenDisconnect) {
                                             quic::QUIC_STREAM_CANCELLED, 1, 0));
   base::RunLoop run_loop;
   auto quit_closure = run_loop.QuitClosure();
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     std::move(quit_closure).Run();
-  }));
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
 
   Initialize();
 
@@ -1596,9 +1615,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, Read) {
                                             quic::QUIC_STREAM_CANCELLED, 3, 0));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
 
   Initialize();
 
@@ -1680,9 +1700,10 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
                                             quic::QUIC_STREAM_CANCELLED, 4, 0));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce(Invoke([&]() {
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
     run_loop.Quit();
-  }));
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
 
   Initialize();
 
@@ -1729,6 +1750,544 @@ TEST_P(WebSocketQuicStreamAdapterTest, ReadIntoSmallBuffer) {
 
   EXPECT_TRUE(mock_quic_data_.AllReadDataConsumed());
   EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
+}
+
+TEST_P(WebSocketQuicStreamAdapterTest, Write) {
+  int client_packet_number = 1;
+  int server_packet_number = 1;
+
+  // Client sends SETTINGS
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(client_packet_number++));
+
+  // Client sends REQUEST HEADERS
+  SpdyTestUtil spdy_util;
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRequestHeadersPacket(
+                       client_packet_number++, client_data_stream_id1_, false,
+                       ConvertRequestPriorityToQuicPriority(LOWEST),
+                       std::move(request_header_block), nullptr));
+
+  // Server sends RESPONSE HEADERS
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 server_packet_number++, client_data_stream_id1_, false,
+                 std::move(response_header_block), nullptr));
+
+  // Server ACKs client packets 1-2 (SETTINGS + REQUEST HEADERS).
+  mock_quic_data_.AddRead(ASYNC, server_maker_.Packet(server_packet_number++)
+                                     .AddAckFrame(1, 2, 1)
+                                     .Build());
+
+  // Client sends ACK + DATA frame in ONE packet.
+  // write operation for testing is configured.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(client_packet_number++)
+          .AddAckFrame(1, 2, 1)  // ACK server packets #1 and #2
+          .AddStreamFrame(client_data_stream_id1_, false,
+                          ConstructDataFrameForVersion("test data", version_))
+          .Build());
+
+  // Server ACKs the DATA packet. While the write in this test completed
+  // synchronously, processing this ACK is necessary to keep the mock connection
+  // state valid and ensure a clean disconnect.
+  mock_quic_data_.AddRead(ASYNC,
+                          server_maker_.Packet(server_packet_number++)
+                              .AddAckFrame(1, 3, 1)
+                              .Build());  // Server ACKs client packet 3 (DATA)
+
+  // Client sends RST_STREAM on disconnect.
+  // This write happens synchronously when Disconnect() is called.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(client_packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  // Add a dummy read to prevent QUIC auto-read crash
+  // After ACK at seq 5, QUIC tries to read again - provide EOF/close
+  // Must be ASYNC because we're in a callback context (not actively reading)
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  // STARTS TEST EXECUTION
+
+  bool headers_received = false;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
+    headers_received = true;
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  // Send request headers (triggers SEQ #0 and #1).
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  // Wait for response headers (triggers SEQ #2).
+  session_->StartReading();
+
+  // Wait for server ACKs of headers (SEQ #3 - SETTINGS + REQUEST).
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return headers_received &&
+           mock_quic_data_.GetSequencedSocketData()->IsIdle();
+  }));
+
+  auto write_buf = base::MakeRefCounted<StringIOBuffer>("test data");
+  // Perform the write. Since the mock socket write is synchronous, this should
+  // complete synchronously.
+  int rv = adapter->Write(write_buf.get(), write_buf->size(), base::DoNothing(),
+                          TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  EXPECT_EQ(9, rv);
+
+  // Run the loop to process pending events, such as the server's ACK for the
+  // recently written data. This ensures the mock socket is not in a stopped
+  // state when Disconnect() is called.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return mock_quic_data_.GetSequencedSocketData()->IsIdle(); }));
+
+  // Disconnect (triggers SEQ #6 RST).
+  adapter->Disconnect();
+
+  // Process cleanup (SEQ #7).
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return mock_quic_data_.AllReadDataConsumed() &&
+           mock_quic_data_.AllWriteDataConsumed();
+  }));
+
+  EXPECT_TRUE(mock_quic_data_.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
+}
+
+// Tests that Write returns ERR_IO_PENDING when the stream's send buffer
+// exceeds the threshold, and completes asynchronously when buffer space
+// becomes available via OnCanWriteNewData.
+TEST_P(WebSocketQuicStreamAdapterTest, WritePendingWhenBufferFull) {
+  // Set a threshold so we can control when buffer crosses it.
+  // With threshold=100, first write of 90 bytes succeeds, second write of 20
+  // bytes (total 110 >= 100) returns ERR_IO_PENDING.
+  SetQuicheFlag(quic_buffered_data_threshold, 100);
+
+  int client_packet_number = 1;
+  int server_packet_number = 1;
+
+  // Client sends SETTINGS
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(client_packet_number++));
+
+  // Client sends REQUEST HEADERS
+  SpdyTestUtil spdy_util;
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRequestHeadersPacket(
+                       client_packet_number++, client_data_stream_id1_, false,
+                       ConvertRequestPriorityToQuicPriority(LOWEST),
+                       std::move(request_header_block), nullptr));
+
+  // Server sends RESPONSE HEADERS
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 server_packet_number++, client_data_stream_id1_, false,
+                 std::move(response_header_block), nullptr));
+
+  // Server ACKs client packets 1-2 (SETTINGS + REQUEST HEADERS).
+  mock_quic_data_.AddRead(ASYNC, server_maker_.Packet(server_packet_number++)
+                                     .AddAckFrame(1, 2, 1)
+                                     .Build());
+
+  // First data: 90 bytes (below threshold, will buffer but write succeeds).
+  std::string first_data(90, 'x');
+
+  // Second data: 20 bytes (total 110 bytes > 100 threshold, will block).
+  std::string second_data(20, 'y');
+
+  // Explicitly block stream/connection flow control by setting SendWindowSize
+  // to 0. When attempting to write with flow control = 0, QUIC will buffer the
+  // data and send BLOCKED frames to the peer. We expect both stream-level
+  // (STREAM_BLOCKED at offset ~170) and connection-level (DATA_BLOCKED at
+  // offset ~195) frames, as both were previously restricted. The exact offsets
+  // are based on header sizes after the handshake.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(client_packet_number++)
+          .AddAckFrame(1, 2, 1)  // ACK server packets 1-2
+          .AddFrame(quic::QuicFrame(quic::QuicBlockedFrame(
+              1,                        // control_frame_id
+              client_data_stream_id1_,  // stream_id for stream-level BLOCKED
+              170)))                    // offset where stream is blocked
+          .AddFrame(quic::QuicFrame(quic::QuicBlockedFrame(
+              2,  // control_frame_id
+              quic::QuicUtils::GetInvalidStreamId(version_.transport_version),
+              195)))  // offset where connection is blocked
+          .Build());
+
+  // Pause to allow second write before WINDOW_UPDATE arrives
+  mock_quic_data_.AddReadPause();
+
+  // Server sends WINDOW_UPDATE frames (MAX_STREAM_DATA and MAX_DATA in QUIC)
+  // to unblock both stream and connection flow control. The large offset
+  // (10000) ensures enough credit for all buffered data (headers ~170 bytes +
+  // ~115 bytes buffered data).
+  mock_quic_data_.AddRead(
+      ASYNC,
+      server_maker_.Packet(server_packet_number++)
+          .AddFrame(quic::QuicFrame(quic::QuicWindowUpdateFrame(
+              1,                        // control_frame_id
+              client_data_stream_id1_,  // stream_id for stream-level
+              10000)))                  // max_data: large enough for all data
+          .AddFrame(quic::QuicFrame(quic::QuicWindowUpdateFrame(
+              2,  // control_frame_id
+              quic::QuicUtils::GetInvalidStreamId(version_.transport_version),
+              10000)))  // max_data for connection
+          .Build());
+
+  // When flow control unblocks, QUIC will flush ALL buffered data in a single
+  // packet. Both first_data (90 bytes) and second_data (20 bytes) were queued
+  // while flow control was blocked, so they get sent together as one coalesced
+  // stream frame.
+  std::string combined_data =
+      ConstructDataFrameForVersion(first_data, version_) +
+      ConstructDataFrameForVersion(second_data, version_);
+
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(client_packet_number++)
+          .AddAckFrame(1, 3, 1)  // ACK server packets 1-3
+          .AddStreamFrame(client_data_stream_id1_, false, combined_data)
+          .Build());
+
+  // Server ACKs the client packets (SETTINGS, HEADERS, BLOCKED, combined DATA).
+  mock_quic_data_.AddRead(ASYNC, server_maker_.Packet(server_packet_number++)
+                                     .AddAckFrame(1, 4, 1)
+                                     .Build());
+
+  // Client sends RST_STREAM on disconnect.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      ConstructRstPacket(client_packet_number++, quic::QUIC_STREAM_CANCELLED));
+
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  // STARTS TEST EXECUTION
+
+  bool headers_received = false;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
+    headers_received = true;
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_ABORTED));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  // Wait for response headers and server ACK.
+  session_->StartReading();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return headers_received &&
+           mock_quic_data_.GetSequencedSocketData()->IsIdle();
+  }));
+
+  // Restrict the stream's flow control send window to prevent any data
+  // from being sent immediately. We set the offset to current bytes_sent,
+  // which makes SendWindowSize = 0 (blocked).
+  // This forces all data to accumulate in the buffer, allowing us to test
+  // the threshold-based blocking behavior.
+  quic::QuicStream* quic_stream =
+      session_->GetActiveStream(client_data_stream_id1_);
+  ASSERT_TRUE(quic_stream);
+
+  // Get the current bytes sent so we can set window to exactly that offset
+  // (making remaining window = 0)
+  quic::QuicStreamOffset current_stream_offset =
+      quic::test::QuicStreamPeer::SendWindowOffset(quic_stream) -
+      quic::test::QuicStreamPeer::SendWindowSize(quic_stream);
+
+  // Set stream flow control: offset = current bytes sent, so window size = 0
+  quic::test::QuicStreamPeer::SetSendWindowOffset(quic_stream,
+                                                  current_stream_offset);
+
+  // Also restrict the connection-level flow control similarly
+  quic::QuicStreamOffset current_conn_offset =
+      quic::test::QuicFlowControllerPeer::SendWindowOffset(
+          session_->flow_controller()) -
+      quic::test::QuicFlowControllerPeer::SendWindowSize(
+          session_->flow_controller());
+  quic::test::QuicFlowControllerPeer::SetSendWindowOffset(
+      session_->flow_controller(), current_conn_offset);
+
+  // First write: 90 bytes. With flow control blocked, all data is buffered.
+  // BufferedDataBytes = 90 < threshold(100), so CanWriteNewData() = true.
+  // Write should complete synchronously with return value = 90.
+  auto write_buf1 = base::MakeRefCounted<StringIOBuffer>(first_data);
+  int rv = adapter->Write(write_buf1.get(), write_buf1->size(),
+                          base::DoNothing(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(static_cast<int>(first_data.size()), rv);
+
+  // Second write: 20 bytes. Total buffered = 90 + 20 = 110 bytes.
+  // BufferedDataBytes = 110 >= threshold(100), so CanWriteNewData() = false.
+  // Write should return ERR_IO_PENDING.
+  auto write_buf2 = base::MakeRefCounted<StringIOBuffer>(second_data);
+  TestCompletionCallback write_callback2;
+  rv = adapter->Write(write_buf2.get(), write_buf2->size(),
+                      write_callback2.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(ERR_IO_PENDING, rv);
+
+  // Resume the mock data - this will deliver the MAX_STREAM_DATA frame,
+  // which opens flow control window, triggers sending of buffered data,
+  // calls OnCanWriteNewData, and completes the second write.
+  mock_quic_data_.Resume();
+
+  // Wait for the second write to complete.
+  rv = write_callback2.WaitForResult();
+  EXPECT_EQ(static_cast<int>(second_data.size()), rv);
+
+  // Wait for the server to ACK the combined DATA packet (server packet #4).
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return mock_quic_data_.GetSequencedSocketData()->IsIdle(); }));
+
+  adapter->Disconnect();
+
+  // Process cleanup.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return mock_quic_data_.AllReadDataConsumed() &&
+           mock_quic_data_.AllWriteDataConsumed();
+  }));
+
+  EXPECT_TRUE(mock_quic_data_.AllReadDataConsumed());
+  EXPECT_TRUE(mock_quic_data_.AllWriteDataConsumed());
+}
+
+// Tests that receiving a RST_STREAM from the server while a Write() is pending
+// correctly completes the write callback with an error.
+TEST_P(WebSocketQuicStreamAdapterTest, RstStreamReceivedWhileWritePending) {
+  SetQuicheFlag(quic_buffered_data_threshold, 100);
+
+  int client_packet_number = 1;
+  int server_packet_number = 1;
+
+  // Client sends SETTINGS.
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(client_packet_number++));
+
+  // Client sends REQUEST HEADERS.
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRequestHeadersPacket(
+                       client_packet_number++, client_data_stream_id1_, false,
+                       ConvertRequestPriorityToQuicPriority(LOWEST),
+                       std::move(request_header_block), nullptr));
+
+  // Server sends RESPONSE HEADERS.
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 server_packet_number++, client_data_stream_id1_, false,
+                 std::move(response_header_block), nullptr));
+
+  // Server ACKs client packets 1-2 (SETTINGS + REQUEST HEADERS).
+  mock_quic_data_.AddRead(ASYNC, server_maker_.Packet(server_packet_number++)
+                                     .AddAckFrame(1, 2, 1)
+                                     .Build());
+
+  // Client sends ACK + BLOCKED frames when flow control is exhausted.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS,
+      client_maker_.Packet(client_packet_number++)
+          .AddAckFrame(1, 2, 1)
+          .AddFrame(quic::QuicFrame(
+              quic::QuicBlockedFrame(1, client_data_stream_id1_, 170)))
+          .AddFrame(quic::QuicFrame(quic::QuicBlockedFrame(
+              2,
+              quic::QuicUtils::GetInvalidStreamId(version_.transport_version),
+              195)))
+          .Build());
+
+  mock_quic_data_.AddReadPause();
+
+  // Server terminates stream with STOP_SENDING + RST_STREAM.
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.Packet(server_packet_number++)
+                 .AddStopSendingFrame(client_data_stream_id1_,
+                                      quic::QUIC_STREAM_PEER_GOING_AWAY)
+                 .AddRstStreamFrame(client_data_stream_id1_,
+                                    quic::QUIC_STREAM_PEER_GOING_AWAY)
+                 .Build());
+
+  // Client MUST respond with RST_STREAM.
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.Packet(client_packet_number++)
+                       .AddAckFrame(1, 3, 1)
+                       .AddRstStreamFrame(client_data_stream_id1_,
+                                          quic::QUIC_STREAM_PEER_GOING_AWAY)
+                       .Build());
+
+  // Session continues reading after stream closes. Required for test teardown.
+  mock_quic_data_.AddRead(ASYNC, ERR_IO_PENDING);
+  mock_quic_data_.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+
+  bool headers_received = false;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_)).WillOnce([&]() {
+    headers_received = true;
+  });
+  EXPECT_CALL(mock_delegate_, OnClose(_));
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  // Wait for response headers and server ACK.
+  session_->StartReading();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return headers_received &&
+           mock_quic_data_.GetSequencedSocketData()->IsIdle();
+  }));
+
+  // Block flow control to force writes to buffer.
+  quic::QuicStream* quic_stream =
+      session_->GetActiveStream(client_data_stream_id1_);
+  ASSERT_TRUE(quic_stream);
+
+  quic::QuicStreamOffset current_stream_offset =
+      quic::test::QuicStreamPeer::SendWindowOffset(quic_stream) -
+      quic::test::QuicStreamPeer::SendWindowSize(quic_stream);
+  quic::test::QuicStreamPeer::SetSendWindowOffset(quic_stream,
+                                                  current_stream_offset);
+
+  quic::QuicStreamOffset current_conn_offset =
+      quic::test::QuicFlowControllerPeer::SendWindowOffset(
+          session_->flow_controller()) -
+      quic::test::QuicFlowControllerPeer::SendWindowSize(
+          session_->flow_controller());
+  quic::test::QuicFlowControllerPeer::SetSendWindowOffset(
+      session_->flow_controller(), current_conn_offset);
+
+  // First write (90 bytes): buffers, returns synchronously.
+  std::string first_data(90, 'x');
+  auto write_buf1 = base::MakeRefCounted<StringIOBuffer>(first_data);
+  int rv = adapter->Write(write_buf1.get(), write_buf1->size(),
+                          base::DoNothing(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(static_cast<int>(first_data.size()), rv);
+
+  // Second write (20 bytes): total 110 >= threshold, returns ERR_IO_PENDING.
+  std::string second_data(20, 'y');
+  auto write_buf2 = base::MakeRefCounted<StringIOBuffer>(second_data);
+  TestCompletionCallback write_callback;
+  rv = adapter->Write(write_buf2.get(), write_buf2->size(),
+                      write_callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_EQ(ERR_IO_PENDING, rv);
+
+  // Resume mock data to deliver the RST_STREAM while write is pending.
+  mock_quic_data_.Resume();
+
+  // Write callback completes with error.
+  rv = write_callback.WaitForResult();
+  EXPECT_THAT(rv, IsError(ERR_QUIC_PROTOCOL_ERROR));
+
+  // Connection session cleanup.
+  mock_quic_data_.Resume();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return mock_quic_data_.AllReadDataConsumed() &&
+           mock_quic_data_.AllWriteDataConsumed();
+  }));
+}
+
+// Tests that OnClose is called when the server sends a CONNECTION_CLOSE frame.
+TEST_P(WebSocketQuicStreamAdapterTest, ConnectionCloseTriggersOnClose) {
+  int client_packet_number = 1;
+  int server_packet_number = 1;
+
+  // Client sends SETTINGS.
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(client_packet_number++));
+
+  // Client sends REQUEST HEADERS.
+  quiche::HttpHeaderBlock request_header_block = WebSocketHttp2Request(
+      "/", "www.example.org:443", "http://www.example.org", {});
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, client_maker_.MakeRequestHeadersPacket(
+                       client_packet_number++, client_data_stream_id1_, false,
+                       ConvertRequestPriorityToQuicPriority(LOWEST),
+                       std::move(request_header_block), nullptr));
+
+  // Server sends RESPONSE HEADERS.
+  quiche::HttpHeaderBlock response_header_block = WebSocketHttp2Response({});
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.MakeResponseHeadersPacket(
+                 server_packet_number++, client_data_stream_id1_, false,
+                 std::move(response_header_block), nullptr));
+
+  // Server sends CONNECTION_CLOSE frame (connection-level error).
+  // After receiving CONNECTION_CLOSE, the session is closed and no more
+  // reads occur, so we don't add additional mock reads.
+  mock_quic_data_.AddRead(
+      ASYNC, server_maker_.Packet(server_packet_number++)
+                 .AddConnectionCloseFrame(quic::QUIC_PEER_GOING_AWAY,
+                                          "Server shutting down")
+                 .Build());
+
+  bool on_close_called = false;
+  EXPECT_CALL(mock_delegate_, OnHeadersReceived(_));
+  EXPECT_CALL(mock_delegate_, OnClose(ERR_QUIC_PROTOCOL_ERROR)).WillOnce([&]() {
+    on_close_called = true;
+  });
+
+  Initialize();
+
+  net::QuicChromiumClientSession::Handle* session_handle =
+      GetQuicSessionHandle();
+  ASSERT_TRUE(session_handle);
+
+  TestWebSocketQuicStreamAdapterCompletionCallback callback;
+  std::unique_ptr<WebSocketQuicStreamAdapter> adapter =
+      session_handle->CreateWebSocketQuicStreamAdapter(
+          &mock_delegate_, callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
+  ASSERT_TRUE(adapter);
+  EXPECT_TRUE(adapter->is_initialized());
+
+  adapter->WriteHeaders(RequestHeaders(), false);
+
+  // Start reading to process server packets. This will receive the response
+  // headers and then the CONNECTION_CLOSE frame, triggering OnClose.
+  session_->StartReading();
+
+  ASSERT_TRUE(base::test::RunUntil([&] { return on_close_called; }));
 }
 
 }  // namespace net::test

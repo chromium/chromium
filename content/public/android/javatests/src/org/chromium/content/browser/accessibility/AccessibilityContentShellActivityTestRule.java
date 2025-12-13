@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.ANP_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.END_OF_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.NODE_TIMEOUT_ERROR;
@@ -30,14 +31,22 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.StringJoiner;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** Custom activity test rule for any content shell tests related to accessibility. */
 @SuppressLint("VisibleForTests")
@@ -55,6 +64,9 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     protected static final String MISSING_FILE_ERROR =
             "Input file could not be read, perhaps the file is missing?";
 
+    protected static final String EVENT_WAITING_ERROR =
+            "prepareToWaitForNextEvent must be called before waitForNextEventToFire";
+
     // Member variables required for testing framework. Although they are the same object, we will
     // instantiate an object of type |AccessibilityNodeProvider| for convenience.
     protected static final String BASE_DIRECTORY = "/chromium_tests_root";
@@ -64,15 +76,38 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     // Tracker for all events and actions performed during a given test.
     private AccessibilityActionAndEventTracker mTracker;
 
+    private @Nullable CountDownLatch mEventLatch;
+
     public AccessibilityContentShellActivityTestRule() {
         super();
+    }
+
+    /** Wait until the event tracked by prepareToWaitForNextEvent() has been received. */
+    public void waitForNextEventToFire() {
+        Assert.assertNotNull(EVENT_WAITING_ERROR, mEventLatch);
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            try {
+                mEventLatch.await(DEFAULT_MAX_TIME_TO_POLL, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Assert.fail("Interrupted while waiting for event: " + e);
+            }
+        });
+    }
+
+    /**
+     * Enable the latch and wait for the next accessibility event. This should be called right
+     * before the action that is expected to trigger an event.
+     */
+    public void prepareToWaitForNextEvent() {
+        mEventLatch = new CountDownLatch(1);
+        mTracker.setEventLatch(mEventLatch);
     }
 
     /**
      * Helper methods for setup of a basic web contents accessibility unit test.
      *
      * <p>Equivalent to calling {@link #setupTestFromFile(String, boolean)} with true
-     *
      */
     /* @Before */
     protected void setupTestFromFile(String file) {
@@ -133,6 +168,11 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 });
 
         mWcax = getWebContentsAccessibility();
+
+        // Empty map to imply no throttle delay for events.
+        Map<Integer, Integer> TestingThrottleDelays = new HashMap<>();
+        mWcax.setThrottleDelayForTesting(TestingThrottleDelays);
+
         mNodeProvider = getAccessibilityNodeProvider();
 
         mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
@@ -228,6 +268,18 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
+     * Helper method to get the virtual view IDs of the nodes that label a given node.
+     *
+     * @param nodeId The virtual view ID of the node whose labeled by nodes are being requested.
+     * @return The virtual view IDs of the nodes that label the specified node.
+     */
+    protected int[] getLabeledByNodeIds(int nodeId) {
+        int[] labeledByNodeIds = mWcax.getLabeledByNodeIdsForTesting(nodeId);
+        Assert.assertNotNull("Unable to find the labeledByNodeIds for nodeId: " + nodeId);
+        return labeledByNodeIds;
+    }
+
+    /**
      * Helper method to recursively search a tree of virtual views under an
      * AccessibilityNodeProvider and return one whose text or contentDescription equals |text|.
      * Returns the virtual view ID of the matching node, if found, and View.NO_ID if not.
@@ -253,18 +305,36 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     }
 
     /**
-     * Helper method to block until findNodeMatching() returns a valid node matching
-     * the given criteria. Returns the virtual view ID of the matching node, if found, and
-     * asserts if not.
+     * Helper method to block until findNodeMatching() returns a valid node matching the given
+     * criteria. Returns the virtual view ID of the matching node, if found, and asserts if not.
      */
     public <T> int waitForNodeMatching(
             AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
+        return waitForNodeMatching(
+                matcher,
+                element,
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    /**
+     * Helper method to block until findNodeMatching() returns a valid node matching the given
+     * criteria. Additionally allows specifying timeout and check interval. Returns the virtual view
+     * ID of the matching node, if found, and asserts if not.
+     */
+    public <T> int waitForNodeMatching(
+            AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher,
+            T element,
+            long maxTimeoutMs,
+            long checkIntervalMs) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             findNodeMatching(mWcax.getRootIdForTesting(), matcher, element),
                             Matchers.not(View.NO_ID));
-                });
+                },
+                maxTimeoutMs,
+                checkIntervalMs);
 
         int virtualViewId =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -314,11 +384,23 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 () -> getWebContents().evaluateJavaScriptForTests(method, null));
     }
 
+    public String executeJSAndGetResult(String method) throws TimeoutException {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    javascriptHelper.evaluateJavaScriptForTests(getWebContents(), method);
+                });
+        javascriptHelper.waitUntilHasValue();
+        return javascriptHelper.getJsonResultAndClear();
+    }
+
     /**
      * Helper method to focus a given node.
      *
-     * @param virtualViewId     The virtualViewId of the node to focus
-     * @throws Throwable        Error
+     * @param virtualViewId The virtualViewId of the node to focus
+     * @throws Throwable Error
      */
     public void focusNode(int virtualViewId) throws Throwable {
         // Focus given node, assert actions were performed, then poll until node is updated.
@@ -404,6 +486,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 AccessibilityNodeInfoUtils.toString(
                         nodeInfo, includeScreenSizeDependentAttributes));
 
+        builder.append(getLabeledByString(rootNodevvId));
+
         // Recursively generate strings for all descendants.
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
             int childId = getChildId(rootNodevvId, i);
@@ -437,6 +521,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 .append(
                         AccessibilityNodeInfoUtils.toString(
                                 node, includeScreenSizeDependentAttributes));
+        builder.append(getLabeledByString(nodeId));
+
         for (int j = 0; j < node.getChildCount(); ++j) {
             int childId = getChildId(nodeId, j);
             AccessibilityNodeInfoCompat childNodeInfo =
@@ -448,6 +534,50 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                     indent + "++",
                     includeScreenSizeDependentAttributes);
         }
+    }
+
+    private String getLabeledByString(int nodeId) {
+        int[] labeledByNodeIds = getLabeledByNodeIds(nodeId);
+        if (labeledByNodeIds.length == 0) {
+            return "";
+        }
+
+        StringJoiner joiner = new StringJoiner(", ");
+        for (int labeledByNodeId : labeledByNodeIds) {
+            AccessibilityNodeInfoCompat labeledByNode =
+                    createAccessibilityNodeInfoBlocking(labeledByNodeId);
+            Assert.assertNotNull(
+                    "Could not create AccessibilityNodeInfo for labeledByNodeId: "
+                            + labeledByNodeId,
+                    labeledByNode);
+
+            String resourceId = labeledByNode.getViewIdResourceName();
+            if (resourceId == null) {
+                continue;
+            }
+
+            CharSequence text = labeledByNode.getText();
+            CharSequence contentDescription = labeledByNode.getContentDescription();
+
+            if (text == null && contentDescription == null) {
+                continue;
+            }
+
+            StringBuilder builder = new StringBuilder();
+            builder.append(resourceId).append("=");
+            if (text != null) {
+                builder.append("(text:\"").append(text).append("\")");
+            } else {
+                builder.append("(contentDescription:\"").append(contentDescription).append("\")");
+            }
+            joiner.add(builder);
+        }
+
+        if (joiner.length() == 0) {
+            return "";
+        }
+
+        return " labeledByIds:[" + joiner + "]";
     }
 
     /**

@@ -244,6 +244,20 @@ TEST(LayoutUnitTest, LayoutUnitRounding) {
       (LayoutUnit::Min() + epsilon).Round());
 }
 
+TEST(LayoutUnitTest, FromFloatEncompassRound) {
+  auto result = LayoutUnit::FromFloatEncompassRound(55.152481f, 55.152481f);
+  EXPECT_EQ(LayoutUnit(55.140625f), result.first);
+  EXPECT_EQ(LayoutUnit(55.140625f), result.second);
+
+  result = LayoutUnit::FromFloatEncompassRound(55.152481f, 56.25f);
+  EXPECT_EQ(LayoutUnit(55.140625f), result.first);
+  EXPECT_EQ(LayoutUnit(56.25f), result.second);
+
+  result = LayoutUnit::FromFloatEncompassRound(54.25f, 55.152481f);
+  EXPECT_EQ(LayoutUnit(54.25f), result.first);
+  EXPECT_EQ(LayoutUnit(55.156250f), result.second);
+}
+
 TEST(LayoutUnitTest, LayoutUnitSnapSizeToPixel) {
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1), LayoutUnit(0)));
   EXPECT_EQ(1, SnapSizeToPixel(LayoutUnit(1), LayoutUnit(0.5)));

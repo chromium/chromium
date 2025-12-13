@@ -110,7 +110,8 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
       GetStyleRuleScope().ChildRules().size());
   for (StyleRuleBase* child_rule : GetStyleRuleScope().ChildRules()) {
     new_child_rules.push_back(
-        child_rule->Renest(new_style_scope->RuleForNesting()));
+        child_rule->Clone(new_style_scope->RuleForNesting(),
+                          /*mixin_parameter_bindings=*/nullptr));
   }
   group_rule_ = MakeGarbageCollected<StyleRuleScope>(
       *new_style_scope, std::move(new_child_rules));

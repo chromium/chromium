@@ -17,7 +17,7 @@
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/x/window_cache.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"

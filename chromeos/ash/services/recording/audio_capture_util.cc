@@ -77,8 +77,8 @@ void AccumulateBusTo(const media::AudioBus& source,
   const size_t count = base::checked_cast<size_t>(length);
 
   for (int i = 0; i < source.channels(); ++i) {
-    auto src = source.channel_span(i).first(count);
-    auto dest = destination->channel_span(i).subspan(dest_offset, count);
+    auto src = source.channel(i).first(count);
+    auto dest = destination->channel(i).subspan(dest_offset, count);
     if (CanUseVectorMath(src, dest)) {
       media::vector_math::FMAC(src, /*scale=*/1, dest);
     } else {

@@ -8,6 +8,8 @@
 #include "base/values.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 
+class GURL;
+
 namespace base {
 class CommandLine;
 }  // namespace base
@@ -17,5 +19,16 @@ class CommandLine;
 WEB_ENGINE_EXPORT bool UpdateCommandLineFromConfigFile(
     const base::Value::Dict& config,
     base::CommandLine* command_line);
+
+// Returns if a service worker should be persistent even when the resources are
+// limited.
+WEB_ENGINE_EXPORT bool IsProtectedServiceWorker(const GURL& scope);
+
+// Returns if a document or service worker of |origin| is allowed using
+// Notification permission.
+// On WebEngine, the platform notification is not supported, i.e. the
+// notification won't show up to the end users. But if Notification permission
+// is granted, WebEngine treats the display of the notifications as succeeded.
+WEB_ENGINE_EXPORT bool AllowNotifications(const GURL& origin);
 
 #endif  // FUCHSIA_WEB_WEBENGINE_BROWSER_WEB_ENGINE_CONFIG_H_

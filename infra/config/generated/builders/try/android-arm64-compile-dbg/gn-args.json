@@ -3,6 +3,7 @@
     "android_static_analysis": "off",
     "debuggable_apks": false,
     "enable_android_secondary_abi": true,
+    "enable_r8_tracerefs": true,
     "ffmpeg_branding": "Chrome",
     "is_component_build": true,
     "is_debug": true,

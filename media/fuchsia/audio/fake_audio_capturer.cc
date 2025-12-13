@@ -134,7 +134,7 @@ void FakeAudioCapturer::ProducePackets() {
     return;
   }
   base::FixedArray<char> data(GetPacketSize());
-  UNSAFE_TODO(memset(data.data(), 0, data.memsize()));
+  std::ranges::fill(data, 0);
   SendData(start_timestamp_ + base::Seconds(1) * packet_index_ *
                                   frames_per_packet_ /
                                   stream_type_->frames_per_second,

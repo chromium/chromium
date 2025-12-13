@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -68,7 +70,7 @@ public class PolicyLoadListener implements OneshotSupplier<Boolean> {
     public void destroy() {
         mCallbackController.destroy();
         if (mPolicyServiceObserver != null) {
-            mPolicyServiceSupplier.get().removeObserver(mPolicyServiceObserver);
+            assumeNonNull(mPolicyServiceSupplier.get()).removeObserver(mPolicyServiceObserver);
             mPolicyServiceObserver = null;
         }
     }

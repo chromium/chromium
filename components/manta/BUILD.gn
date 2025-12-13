@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 component("manta") {
   sources = [
     "anchovy/anchovy_proto_helper.cc",
@@ -29,7 +27,7 @@ component("manta") {
   deps = [
     "proto",
     "//base",
-    "//components/account_id:account_id",
+    "//components/account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
@@ -49,7 +47,10 @@ component("manta") {
       "walrus_provider.cc",
       "walrus_provider.h",
     ]
-    deps += [ "//chromeos/constants:constants" ]
+    deps += [
+      "//chromeos/components/magic_boost/public/cpp",
+      "//chromeos/constants",
+    ]
   }
 }
 

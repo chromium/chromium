@@ -62,7 +62,7 @@ impl Writeable for FormattedDecimal<'_> {
                         break Ok(());
                     }
                 };
-                #[allow(clippy::indexing_slicing)] // digit_at in 0..=9
+                #[expect(clippy::indexing_slicing)] // digit_at in 0..=9
                 w.write_char(self.digits[self.value.digit_at(m) as usize])?;
                 if grouper::check(
                     upper_magnitude,
@@ -83,7 +83,7 @@ impl Writeable for FormattedDecimal<'_> {
             w.with_part(parts::FRACTION, |w| {
                 let mut m = -1; // read in the previous loop
                 loop {
-                    #[allow(clippy::indexing_slicing)] // digit_at in 0..=9
+                    #[expect(clippy::indexing_slicing)] // digit_at in 0..=9
                     w.write_char(self.digits[self.value.digit_at(m) as usize])?;
                     m = match range.next() {
                         Some(m) => m,

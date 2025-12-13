@@ -6,6 +6,7 @@ include_rules = [
   "+components/shared_highlighting/core/common",
   "+components/url_formatter",
   "+crypto",
+  "+ios/components/enterprise/data_controls",
   "+ios/components/security_interstitials/https_only_mode/feature.h",
   "+ios/net",
   "+ios/web",

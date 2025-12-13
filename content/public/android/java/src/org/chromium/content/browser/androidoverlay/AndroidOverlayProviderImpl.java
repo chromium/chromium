@@ -104,7 +104,7 @@ public class AndroidOverlayProviderImpl implements AndroidOverlayProvider {
     }
 
     /** Mojo factory. */
-    public static class Factory implements InterfaceFactory<AndroidOverlayProvider> {
+    public static class Factory implements InterfaceFactory<@Nullable AndroidOverlayProvider> {
         private static @Nullable AndroidOverlayProviderImpl sImpl;
 
         public Factory() {}

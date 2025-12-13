@@ -5,6 +5,7 @@
 #ifndef UI_GL_VSYNC_THREAD_WIN_DCOMP_H_
 #define UI_GL_VSYNC_THREAD_WIN_DCOMP_H_
 
+#include "ui/gl/gl_export.h"
 #include "ui/gl/vsync_provider_win_dcomp.h"
 #include "ui/gl/vsync_thread_win.h"
 

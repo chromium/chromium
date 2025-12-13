@@ -8,15 +8,9 @@ namespace data_controls {
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kEnableClipboardDataControlsAndroid,
-             "EnableClipboardDataControlsAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kEnableDownloadDataControlsDesktop,
-             "EnableDownloadDataControlsDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+BASE_FEATURE(kEnableDownloadDataControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace data_controls

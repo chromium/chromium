@@ -7,6 +7,7 @@
 
 #include <queue>
 
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
@@ -22,6 +23,58 @@
 #include "net/base/backoff_entry.h"
 
 namespace ash::cfm {
+
+// UMA metric definitions
+constexpr char kEnqueuedPayloadSizeMetricName[] =
+    "Browser.Cfm.Artemis.EnqueuedPayloadSize";
+
+constexpr char kLoggerServiceResponseMetricName[] =
+    "Browser.Cfm.Artemis.LoggerServiceResponse";
+
+constexpr char kNumberOfRetriesBeforeSuccessfulEnqueueMetricName[] =
+    "Browser.Cfm.Artemis.NumberOfRetriesBeforeSuccessfulEnqueue";
+
+constexpr char kPayloadQueueSizeMetricName[] =
+    "Browser.Cfm.Artemis.PayloadQueueSize";
+
+constexpr char kSetupStatusMetricName[] = "Browser.Cfm.Artemis.SetupStatus";
+
+constexpr char kTimeSinceLastSuccessfulEnqueueMetricName[] =
+    "Browser.Cfm.Artemis.TimeSinceLastSuccessfulEnqueue";
+
+constexpr char kTimeWaitedBeforeEnqueueRetryMetricName[] =
+    "Browser.Cfm.Artemis.TimeWaitedBeforeEnqueueRetry";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(LoggerResponse)
+enum class LoggerResponse {
+  // Note that this is just a subset of possible error messages that we
+  // can get from the Logger service. We are only concerned with a handful.
+  // For more comprehensive tracking, we should consider adding another
+  // recorder in the Logger service itself with all the errors.
+  kOk = 0,
+  kOther = 1,  // catch-all for other errors
+  kDeniedDueToThrottling = 2,
+  kUnauthenticated = 3,
+  kUnavailable = 4,
+  kMaxValue = kUnavailable,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:CfmArtemisLoggerResponse)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SetupStatus)
+enum class SetupStatus {
+  kSetupSucceeded = 0,
+  kDeviceInfoServiceBindFailure = 1,
+  kLoggerServiceBindFailure = 2,
+  kNoRobotEmailFound = 3,
+  kMaxValue = kNoRobotEmailFound,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:CfmArtemisSetupStatus)
 
 // This service manages the aggregation of data from one or more
 // DataSources, as well as "processing" the data, which includes
@@ -98,7 +151,7 @@ class DataAggregatorService : public CfmObserver,
   void AppendEntriesToActivePayload(
       const std::string& source_name,
       const std::vector<std::string>& serialized_entries);
-  bool IsPayloadReadyForUpload() const;
+  bool DidActivePayloadReachMaxSize() const;
   void AddActivePayloadToPendingQueue();
   void EnqueueNextPendingTransportPayload();
   void InitiateEnqueueRequest();
@@ -121,8 +174,7 @@ class DataAggregatorService : public CfmObserver,
   mojo::Remote<chromeos::cfm::mojom::MeetDevicesInfo> device_info_remote_;
 
   // The current payload that is to be eventually Enqueue()'d to the
-  // CfmLogger. This will collect data until certain conditions are met
-  // (see IsPayloadReadyForUpload() method for details).
+  // CfmLogger. This will collect data until the payload reaches a max size.
   proto::TransportPayload active_transport_payload_;
 
   // A queue of currently pending transport payloads that are waiting
@@ -136,6 +188,10 @@ class DataAggregatorService : public CfmObserver,
   // Used to track the time since we last pushed a payload to the wire.
   // Will be used as a timeout of sorts for the next push.
   base::TimeTicks last_upload_time_;
+
+  // Tracks the number of retries before a successful enqueue. Resets to
+  // zero on success.
+  size_t current_enqueue_retries_ = 0;
 
   // Set to true between when we call Enqueue() and when we get a
   // successful callback response.

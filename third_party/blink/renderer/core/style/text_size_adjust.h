@@ -33,8 +33,6 @@ class TextSizeAdjust {
     return adjustment_ == o.adjustment_;
   }
 
-  bool operator!=(const TextSizeAdjust& o) const { return !(*this == o); }
-
  private:
   // Percent adjustment, without units (i.e., 10% is .1 and not 10). Negative
   // values indicate 'auto' adjustment.

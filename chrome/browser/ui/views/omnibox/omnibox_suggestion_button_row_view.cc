@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -19,8 +21,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
-#include "components/omnibox/browser/omnibox_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -34,6 +34,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -45,6 +46,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -117,6 +119,162 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
 BEGIN_METADATA(OmniboxSuggestionRowChip)
 END_METADATA
 
+class OmniboxSuggestionButtonRowLayout : public views::LayoutManager {
+ public:
+  OmniboxSuggestionButtonRowLayout() = default;
+  ~OmniboxSuggestionButtonRowLayout() override = default;
+
+  gfx::Size GetMinimumSize(const views::View* host) const override {
+    return CalculateSize(
+        host, [](const views::View* v) { return v->GetMinimumSize(); });
+  }
+
+  gfx::Size GetPreferredSize(const views::View* host) const override {
+    return CalculateSize(
+        host, [](const views::View* v) { return v->GetPreferredSize({}); });
+  }
+
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override {
+    return GetPreferredSize(host);
+  }
+
+  // This layout is similar to a `FlexLayout` with `kPreferredSnapToZero`, with
+  // a priority to give children their preferred size from left to right. With
+  // the additional constraint that once there is not enough space to expand a
+  // child to its preferred size, all remaining children after it are forced to
+  // be displayed at their minimum sizes. The goal is to collapse the children
+  // to their minimum sizes from right to left as the available space decreases,
+  // strictly in that order.
+  //
+  // If there is space to show all children at their preferred sizes, the layout
+  // will look like this:
+  // +--------------------------------------------------------------+
+  // |  preferred_size_1  |  preferred_size_2  |  preferred_size_3  |
+  // +--------------------------------------------------------------+
+  // But as the available space decreases, the layout will look like this:
+  // +---------------------------------------------------+
+  // |  preferred_size_1  |  preferred_size_2  |  min_3  |
+  // +---------------------------------------------------+
+  // And then this:
+  // +----------------------------------------+
+  // |  preferred_size_1  |  min_2  |  min_3  |
+  // +----------------------------------------+
+  // And finally this:
+  // +-----------------------------+
+  // |  min_1  |  min_2  |  min_3  |
+  // +-----------------------------+
+  //
+  // `FlexLayout` cannot be used because, if there is room to expand any of the
+  // children, it will always do so regardless of child order or weight values.
+  // Which leads to the following undesired behavior, where the children are
+  // collapsed from right to left, according their order values:
+  // +--------------------------------------------+
+  // |  big_preferred_size_1  |  min_2  |  min_3  |
+  // +--------------------------------------------+
+  // But then when there is not enough space to show the first child at its
+  // preferred size, if the child in the middle has a smaller preferred size
+  // than the first child, it is expanded to fill the remaining space, resulting
+  // in the following:
+  // +----------------------------------------+
+  // |  min_1  |  preferred_size_2  |  min_3  |
+  // +----------------------------------------+
+  // Which violates our requirement to strictly collapse in order, from right to
+  // left.
+  void Layout(views::View* host) override {
+    const gfx::Size& host_size = host->bounds().size();
+
+    // The total width used is, at a minimum, the minimum width of the host
+    // view, which is the sum of the minimum widths of all children plus insets.
+    // In the loop below, we will accumulate any additional width required to
+    // show children at their preferred width, for those children that are
+    // allowed to expand.
+    int total_width_used = GetMinimumSize(host).width();
+
+    const int y = row_insets_.top() + button_insets_.top();
+    int current_x = row_insets_.left();
+    bool allow_expansion = true;
+    // This loop positions the visible children one by one, checking to see if
+    // the additional width required to display them at their preferred width is
+    // available. If it is, the child is allocated its preferred width with
+    // `SetBoundsRect()`. If not, the child is allocated its minimum width and
+    // `allow_expansion` is set to false to force the remaining children to also
+    // be allocated only their minimum widths.
+    for (views::View* child : host->children()) {
+      if (!child->GetVisible()) {
+        continue;
+      }
+
+      const gfx::Size& child_minimum_size = child->GetMinimumSize();
+      const gfx::Size& child_preferred_size = child->GetPreferredSize({});
+      int additional_width_for_preferred =
+          child_preferred_size.width() - child_minimum_size.width();
+      // This is the key element of logic for this layout. Here we check to see
+      // if all the width used so far plus the additional width for this child's
+      // preferred width is less than or equal to the total width available (the
+      // host width).
+      bool preferred_width_available =
+          total_width_used + additional_width_for_preferred <=
+          host_size.width();
+      allow_expansion = allow_expansion && preferred_width_available;
+      int child_allocated_width = allow_expansion ? child_preferred_size.width()
+                                                  : child_minimum_size.width();
+
+      child->SetBoundsRect(
+          {{current_x + button_insets_.left(), y},
+           {child_allocated_width, child_preferred_size.height()}});
+      total_width_used += allow_expansion ? additional_width_for_preferred : 0;
+      current_x += child_allocated_width + button_insets_.width();
+    }
+  }
+
+ private:
+  // Both `GetMinimumSize()` and `GetPreferredSize()` require identical logic,
+  // but based on the host's children's minimum or preferred sizes,
+  // respectively. This function captures that common logic and accepts a lambda
+  // to get the minimum or preferred size from each child.
+  template <typename ChildSizeGetter>
+  gfx::Size CalculateSize(const views::View* host,
+                          ChildSizeGetter get_child_size) const {
+    const auto& children = host->children();
+
+    int width = 0;
+    int height = 0;
+    // Accumulate the total width and biggest height of all visible children.
+    for (const views::View* child : children) {
+      if (!child->GetVisible()) {
+        continue;
+      }
+      const gfx::Size child_size = get_child_size(child);
+      width += child_size.width() + button_insets_.width();
+      height = std::max(height, child_size.height() + button_insets_.height());
+    }
+    // Add in the button row insets.
+    // NOTE: This logic does not include any option for the "collapse margins"
+    // behavior that FlexLayout offers. If it's required in the future, it could
+    // be added here.
+    width += row_insets_.width();
+    height += row_insets_.height();
+
+    return {width, height};
+  }
+
+  // TODO(crbug.com/422549792): These insets need to be adjusted to be larger on
+  //   right and left in order to show more space when the suggestion text/view
+  //   is not visible. Which will then require coordination with the insets of
+  //   the suggestion text/view. Additionally, the values here were selected to
+  //   produce the designed layout, but they should either be explained further
+  //   here or specified with `ChromeLayoutProvider`.
+  gfx::Insets row_insets_ = gfx::Insets::TLBR(6, 4, 6, 0);
+  gfx::Insets button_insets_ =
+      gfx::Insets::TLBR(0,
+                        0,
+                        0,
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
+};
+
 // A button, like the switch-to-tab or keyword buttons. Contains icon & text.
 // Can be focused and selected.
 class OmniboxSuggestionRowButton : public views::MdTextButton {
@@ -167,6 +325,15 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       delete;
 
   ~OmniboxSuggestionRowButton() override = default;
+
+  // Suggestion row buttons are allowed to collapse to the size of their icons
+  // and insets only. Whether they are allocated their preferred size, which
+  // also includes the label, is controlled by OmniboxSuggestionButtonRowLayout.
+  gfx::Size GetMinimumSize() const override {
+    gfx::Size size = image_container_view()->GetPreferredSize({});
+    size.Enlarge(GetInsets().width(), GetInsets().height());
+    return size;
+  }
 
   void SetThemeState(OmniboxPartState theme_state) {
     if (theme_state_ == theme_state) {
@@ -252,21 +419,8 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     OmniboxPopupViewViews* popup_view,
     int model_index)
     : popup_view_(popup_view), model_index_(model_index) {
-  const auto insets = gfx::Insets::TLBR(6, 0, 6, 0);
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-      .SetCollapseMargins(true)
-      .SetInteriorMargin(insets)
-      .SetDefault(
-          views::kMarginsKey,
-          // Set left margin to 4 instead of
-          // `DISTANCE_RELATED_BUTTON_HORIZONTAL` (8) because there's already
-          // built-in padding between the suggestion text and the button row.
-          gfx::Insets::TLBR(0, 4, 0,
-                            ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  SetLayoutManager(std::make_unique<OmniboxSuggestionButtonRowLayout>());
   BuildViews();
-
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 }
 
@@ -300,9 +454,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     keyword_button_ = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        CONTEXT_OMNIBOX_PRIMARY,
-        vector_icons::kSearchChromeRefreshIcon, gfx::Image(), popup_view_,
-        selection));
+        CONTEXT_OMNIBOX_PRIMARY, vector_icons::kSearchChromeRefreshIcon,
+        gfx::Image(), popup_view_, selection));
   }
 
   // Only create buttons for existent actions.
@@ -314,9 +467,8 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
     auto* button = AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
         base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                             base::Unretained(this), selection),
-        match().IsToolbelt()
-            ? CONTEXT_OMNIBOX_TOOLBELT_BUTTON
-            : CONTEXT_OMNIBOX_PRIMARY,
+        match().IsToolbelt() ? CONTEXT_OMNIBOX_TOOLBELT_BUTTON
+                             : CONTEXT_OMNIBOX_PRIMARY,
         match().actions[action_index]->GetVectorIcon(),
         match().actions[action_index]->GetIconImage(), popup_view_, selection));
     action_buttons_.push_back(button);
@@ -329,9 +481,7 @@ void OmniboxSuggestionButtonRowView::Layout(PassKey) {
   LayoutSuperclass<View>(this);
 
   const auto bounds = GetLocalBounds();
-  SkPath path;
-  path.addRect(RectToSkRect(bounds), SkPathDirection::kCW, 0);
-  SetClipPath(path);
+  SetClipPath(SkPath::Rect(RectToSkRect(bounds)));
 }
 
 void OmniboxSuggestionButtonRowView::UpdateFromModel() {
@@ -362,16 +512,9 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     SetPillButtonVisibility(keyword_button_,
                             OmniboxPopupSelection::KEYWORD_MODE);
     if (keyword_button_->GetVisible()) {
-      std::u16string keyword;
-      std::u16string keyword_placeholder;
-      bool is_keyword_hint = false;
-      match().GetKeywordUIState(
-          popup_view_->controller()->client()->GetTemplateURLService(),
-          popup_view_->controller()->client()->IsHistoryEmbeddingsEnabled(),
-          &keyword, &keyword_placeholder, &is_keyword_hint);
-
+      CHECK(!match().associated_keyword.empty());
       const auto names = SelectedKeywordView::GetKeywordLabelNames(
-          keyword,
+          match().associated_keyword,
           popup_view_->controller()->client()->GetTemplateURLService());
       keyword_button_->SetText(names.full_name);
       keyword_button_->GetViewAccessibility().SetName(
@@ -396,6 +539,14 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
         action_button->SetIcon(action->GetVectorIcon());
       }
     }
+  }
+
+  // Clear focus. Otherwise, an updated button might show the focus ring if the
+  // button its replacing was previously focused.
+  if (previous_active_button_) {
+    views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+    previous_active_button_->GetViewAccessibility().SetIsSelected(false);
+    previous_active_button_ = nullptr;
   }
 
   const bool is_any_child_visible =
@@ -465,8 +616,9 @@ const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
     OmniboxPopupSelection::LineState state) {
-  button->SetVisible(popup_view_->model()->IsPopupControlPresentOnMatch(
-      OmniboxPopupSelection(model_index_, state)));
+  button->SetVisible(
+      popup_view_->controller()->edit_model()->IsPopupControlPresentOnMatch(
+          OmniboxPopupSelection(model_index_, state)));
 }
 
 void OmniboxSuggestionButtonRowView::ButtonPressed(
@@ -475,25 +627,26 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
   if (selection.state == OmniboxPopupSelection::KEYWORD_MODE) {
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
-    popup_view_->model()->SetPopupSelection(selection);
+    popup_view_->controller()->edit_model()->SetPopupSelection(selection);
     // Don't re-enter keyword mode if already in it. This occurs when the user
     // was in keyword mode and re-clicked the same or a different keyword chip.
-    if (popup_view_->model()->is_keyword_hint()) {
+    if (popup_view_->controller()->edit_model()->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
                                : metrics::OmniboxEventProto::TAP_HINT_VIEW;
-      popup_view_->model()->AcceptKeyword(entry_method);
+      popup_view_->controller()->edit_model()->AcceptKeyword(entry_method);
     }
   } else {
     if (omnibox_feature_configs::Toolbelt::Get()
             .select_toolbelt_before_opening &&
         match().IsToolbelt()) {
-      popup_view_->model()->SetPopupSelection(selection);
+      popup_view_->controller()->edit_model()->SetPopupSelection(selection);
     }
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
-    popup_view_->model()->OpenSelection(selection, event.time_stamp(),
-                                        disposition);
+    popup_view_->controller()->edit_model()->OpenSelection(
+        selection, event.time_stamp(), disposition,
+        /*via_keyboard=*/event.IsKeyEvent());
   }
 }
 

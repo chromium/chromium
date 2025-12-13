@@ -74,10 +74,17 @@ EncoderStatus FakeVideoEncodeAccelerator::Initialize(
 
 void FakeVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                         bool force_keyframe) {
+  VideoEncoder::EncodeOptions options(/*key_frame=*/force_keyframe);
+  Encode(std::move(frame), options);
+}
+
+void FakeVideoEncodeAccelerator::Encode(
+    scoped_refptr<VideoFrame> frame,
+    const VideoEncoder::EncodeOptions& options) {
   DCHECK(client_);
   FrameToEncode encode;
   encode.frame = frame;
-  encode.force_keyframe = force_keyframe;
+  encode.options = options;
   queued_frames_.push(encode);
   EncodeTask();
 }
@@ -178,7 +185,7 @@ void FakeVideoEncodeAccelerator::EncodeTask() {
     queued_frames_.pop();
 
     if (next_frame_is_first_frame_) {
-      frame_to_encode.force_keyframe = true;
+      frame_to_encode.options.key_frame = true;
       next_frame_is_first_frame_ = false;
     }
 
@@ -199,12 +206,12 @@ void FakeVideoEncodeAccelerator::DoBitstreamBufferReady(
   }
 
   BitstreamBufferMetadata metadata(kMinimumOutputBufferSize,
-                                   frame_to_encode.force_keyframe,
+                                   frame_to_encode.options.key_frame,
                                    frame_to_encode.frame->timestamp());
   metadata.encoded_size = frame_to_encode.frame->coded_size();
 
   if (!encoding_callback_.is_null()) {
-    metadata = encoding_callback_.Run(buffer, frame_to_encode.force_keyframe,
+    metadata = encoding_callback_.Run(buffer, frame_to_encode.options.key_frame,
                                       frame_to_encode.frame);
   }
 

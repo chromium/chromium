@@ -8,12 +8,12 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/plus_addresses/features.h"
-#import "components/plus_addresses/metrics/plus_address_metrics.h"
-#import "components/plus_addresses/plus_address_service.h"
-#import "components/plus_addresses/plus_address_types.h"
-#import "components/plus_addresses/plus_address_ui_utils.h"
-#import "components/plus_addresses/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/core/browser/metrics/plus_address_metrics.h"
+#import "components/plus_addresses/core/browser/plus_address_service.h"
+#import "components/plus_addresses/core/browser/plus_address_types.h"
+#import "components/plus_addresses/core/browser/plus_address_ui_utils.h"
+#import "components/plus_addresses/core/browser/settings/plus_address_setting_service.h"
+#import "components/plus_addresses/core/common/features.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -56,7 +56,7 @@ enum class PlusAddressAction {
   url::Origin _mainFrameOrigin;
   // The reserved plus address, which is then eligible for confirmation.
   NSString* _reservedPlusAddress;
-  raw_ptr<UrlLoadingBrowserAgent> _urlLoader;
+  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _urlLoader;
   BOOL _incognito;
 
   // The delegate for this mediator.

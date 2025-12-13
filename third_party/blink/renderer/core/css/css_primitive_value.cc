@@ -833,139 +833,139 @@ CSSPrimitiveValue::UnitType CSSPrimitiveValue::LengthUnitTypeToUnitType(
   NOTREACHED();
 }
 
-const char* CSSPrimitiveValue::UnitTypeToString(UnitType type) {
+StringView CSSPrimitiveValue::UnitTypeToString(UnitType type) {
   switch (type) {
     case UnitType::kNumber:
     case UnitType::kInteger:
     case UnitType::kUserUnits:
-      return "";
+      return StringView("");
     case UnitType::kPercentage:
-      return "%";
+      return StringView("%");
     case UnitType::kEms:
     case UnitType::kQuirkyEms:
-      return "em";
+      return StringView("em");
     case UnitType::kExs:
-      return "ex";
+      return StringView("ex");
     case UnitType::kRexs:
-      return "rex";
+      return StringView("rex");
     case UnitType::kRems:
-      return "rem";
+      return StringView("rem");
     case UnitType::kChs:
-      return "ch";
+      return StringView("ch");
     case UnitType::kRchs:
-      return "rch";
+      return StringView("rch");
     case UnitType::kIcs:
-      return "ic";
+      return StringView("ic");
     case UnitType::kRics:
-      return "ric";
+      return StringView("ric");
     case UnitType::kLhs:
-      return "lh";
+      return StringView("lh");
     case UnitType::kRlhs:
-      return "rlh";
+      return StringView("rlh");
     case UnitType::kCaps:
-      return "cap";
+      return StringView("cap");
     case UnitType::kRcaps:
-      return "rcap";
+      return StringView("rcap");
     case UnitType::kPixels:
-      return "px";
+      return StringView("px");
     case UnitType::kCentimeters:
-      return "cm";
+      return StringView("cm");
     case UnitType::kDotsPerPixel:
-      return "dppx";
+      return StringView("dppx");
     case UnitType::kX:
-      return "x";
+      return StringView("x");
     case UnitType::kDotsPerInch:
-      return "dpi";
+      return StringView("dpi");
     case UnitType::kDotsPerCentimeter:
-      return "dpcm";
+      return StringView("dpcm");
     case UnitType::kMillimeters:
-      return "mm";
+      return StringView("mm");
     case UnitType::kQuarterMillimeters:
-      return "q";
+      return StringView("q");
     case UnitType::kInches:
-      return "in";
+      return StringView("in");
     case UnitType::kPoints:
-      return "pt";
+      return StringView("pt");
     case UnitType::kPicas:
-      return "pc";
+      return StringView("pc");
     case UnitType::kDegrees:
-      return "deg";
+      return StringView("deg");
     case UnitType::kRadians:
-      return "rad";
+      return StringView("rad");
     case UnitType::kGradians:
-      return "grad";
+      return StringView("grad");
     case UnitType::kMilliseconds:
-      return "ms";
+      return StringView("ms");
     case UnitType::kSeconds:
-      return "s";
+      return StringView("s");
     case UnitType::kHertz:
-      return "hz";
+      return StringView("hz");
     case UnitType::kKilohertz:
-      return "khz";
+      return StringView("khz");
     case UnitType::kTurns:
-      return "turn";
+      return StringView("turn");
     case UnitType::kFlex:
-      return "fr";
+      return StringView("fr");
     case UnitType::kViewportWidth:
-      return "vw";
+      return StringView("vw");
     case UnitType::kViewportHeight:
-      return "vh";
+      return StringView("vh");
     case UnitType::kViewportInlineSize:
-      return "vi";
+      return StringView("vi");
     case UnitType::kViewportBlockSize:
-      return "vb";
+      return StringView("vb");
     case UnitType::kViewportMin:
-      return "vmin";
+      return StringView("vmin");
     case UnitType::kViewportMax:
-      return "vmax";
+      return StringView("vmax");
     case UnitType::kSmallViewportWidth:
-      return "svw";
+      return StringView("svw");
     case UnitType::kSmallViewportHeight:
-      return "svh";
+      return StringView("svh");
     case UnitType::kSmallViewportInlineSize:
-      return "svi";
+      return StringView("svi");
     case UnitType::kSmallViewportBlockSize:
-      return "svb";
+      return StringView("svb");
     case UnitType::kSmallViewportMin:
-      return "svmin";
+      return StringView("svmin");
     case UnitType::kSmallViewportMax:
-      return "svmax";
+      return StringView("svmax");
     case UnitType::kLargeViewportWidth:
-      return "lvw";
+      return StringView("lvw");
     case UnitType::kLargeViewportHeight:
-      return "lvh";
+      return StringView("lvh");
     case UnitType::kLargeViewportInlineSize:
-      return "lvi";
+      return StringView("lvi");
     case UnitType::kLargeViewportBlockSize:
-      return "lvb";
+      return StringView("lvb");
     case UnitType::kLargeViewportMin:
-      return "lvmin";
+      return StringView("lvmin");
     case UnitType::kLargeViewportMax:
-      return "lvmax";
+      return StringView("lvmax");
     case UnitType::kDynamicViewportWidth:
-      return "dvw";
+      return StringView("dvw");
     case UnitType::kDynamicViewportHeight:
-      return "dvh";
+      return StringView("dvh");
     case UnitType::kDynamicViewportInlineSize:
-      return "dvi";
+      return StringView("dvi");
     case UnitType::kDynamicViewportBlockSize:
-      return "dvb";
+      return StringView("dvb");
     case UnitType::kDynamicViewportMin:
-      return "dvmin";
+      return StringView("dvmin");
     case UnitType::kDynamicViewportMax:
-      return "dvmax";
+      return StringView("dvmax");
     case UnitType::kContainerWidth:
-      return "cqw";
+      return StringView("cqw");
     case UnitType::kContainerHeight:
-      return "cqh";
+      return StringView("cqh");
     case UnitType::kContainerInlineSize:
-      return "cqi";
+      return StringView("cqi");
     case UnitType::kContainerBlockSize:
-      return "cqb";
+      return StringView("cqb");
     case UnitType::kContainerMin:
-      return "cqmin";
+      return StringView("cqmin");
     case UnitType::kContainerMax:
-      return "cqmax";
+      return StringView("cqmax");
     default:
       break;
   }

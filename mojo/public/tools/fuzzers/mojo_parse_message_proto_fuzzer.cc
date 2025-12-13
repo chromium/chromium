@@ -10,21 +10,23 @@
 // Implementation of a proto version of mojo_parse_message_fuzzer that sends
 // multiple messages per run.
 
-#include "build/build_config.h"
-#if BUILDFLAG(IS_WIN)
-#include "base/at_exit.h"
-#endif  // BUILDFLAG(IS_WIN)
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
 #include "mojo/public/tools/fuzzers/mojo_fuzzer.pb.h"
+#include "mojo/public/tools/fuzzers/suppress_validation_error_logging.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/at_exit.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace mojo_proto_fuzzer {
 

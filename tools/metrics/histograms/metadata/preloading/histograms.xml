@@ -99,6 +99,57 @@ chromium-metrics-reviews@google.com.
   <variant name="Unspecified" summary=""/>
 </variants>
 
+<variants name="PreloadServingMetricsActualMatchSuffix">
+  <variant name="" summary="No condition"/>
+  <variant name=".ForActualMatch"
+      summary="Recorded if the match ended as actual match."/>
+  <variant name=".ForNotActualMatch"
+      summary="Recorded if the match started as potential match but ended as
+               not actual match."/>
+</variants>
+
+<variants name="PreloadServingMetricsPrefix">
+  <variant name="PreloadServingMetrics.ForNavigationCommitted"
+      summary="Recorded when a navigation is committed. Doesn't include a
+               prerender initial navigation. Metrics are about the
+               navigation."/>
+  <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed"
+      summary="Recorded when a prerender initial navigation failed. Metrics
+               are about the prerender initial navigation."/>
+  <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.FallbackAborted.Match0"
+      summary="Recorded when a prerender initial navigation failed and is
+               aborted by PrerenderURLLoaderThrottle. Metrics are about the
+               prerender initial navigation and the first prefetch matching."/>
+  <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.FallbackAborted.Match1"
+      summary="Recorded when a prerender initial navigation failed and is
+               aborted by PrerenderURLLoaderThrottle. Metrics are about the
+               prerender initial navigation and the second prefetch matching."/>
+  <variant
+      name="PreloadServingMetrics.ForPrerenderInitialNavigationFailed.WithMatchDurationGe10000"
+      summary="Recorded when a prerender initial navigation failed and the
+               first prefetch matching took duration greater than or equal to
+               10000ms. Metrics are about the prerender initial navigation."/>
+  <variant name="PreloadServingMetrics.ForPrerenderInitialNavigationUsed"
+      summary="Recorded when a prerender activation is committed. Metrics are
+               about the prerender initial navigation that is used."/>
+</variants>
+
+<variants name="PreloadServingMetricsPrerenderFallbackMatchSuffix">
+  <variant name=".Match0" summary="For the first prefetch matching."/>
+  <variant name=".Match1" summary="For the second prefetch matching."/>
+</variants>
+
+<variants name="WithPreloadSuffix">
+  <variant name="WithoutPreload"
+      summary="Recorded for a navigation without preloads."/>
+  <variant name="WithPrefetch"
+      summary="Recorded for a navigation used prefetch."/>
+  <variant name="WithPrerender"
+      summary="Recorded for a navigation used prerender."/>
+</variants>
+
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
     expires_after="2024-09-29">
@@ -138,7 +189,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2025-12-28">
+    enum="PredictorConfusionMatrix" expires_after="2026-05-03">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -155,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2025-12-28">
+    enum="PredictorConfusionMatrix" expires_after="2026-05-03">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -173,7 +224,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.{PrefetchDataPipeTeeStateLoadingOrSizeExceeded}"
-    units="count" expires_after="2025-12-28">
+    units="count" expires_after="2026-05-03">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -190,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrefetchDataPipeTeeDtorState"
-    enum="PrefetchDataPipeTeeState" expires_after="2025-12-28">
+    enum="PrefetchDataPipeTeeState" expires_after="2026-05-03">
   <owner>kenoss@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -215,7 +266,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Prefetch.PrefetchStatus"
-    enum="PrefetchProxyPrefetchStatus" expires_after="2025-12-07">
+    enum="PrefetchProxyPrefetchStatus" expires_after="2026-04-12">
   <owner>adithyas@chromium.org</owner>
   <owner>portals-team@google.com</owner>
   <summary>
@@ -252,7 +303,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2025-12-28">
+    enum="PredictorConfusionMatrix" expires_after="2026-05-03">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -272,7 +323,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2025-12-21">
+    enum="PredictorConfusionMatrix" expires_after="2026-04-26">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -293,7 +344,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.TriggeringOutcome"
-    enum="PreloadingTriggeringOutcome" expires_after="2025-12-21">
+    enum="PreloadingTriggeringOutcome" expires_after="2026-04-26">
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
@@ -306,6 +357,266 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="PreloadingType" variants="PreloadingType"/>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="PreloadServingMetrics.PageLoad.Clients.PaintTiming.NavigationToFirstContentfulPaint.{WithPreloadSuffix}"
+    units="ms" expires_after="2026-05-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    FirstContentfulPaint.
+
+    Recorded when {WithPreloadSuffix}.
+  </summary>
+  <token key="WithPreloadSuffix" variants="WithPreloadSuffix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ActualMatchThen.TimeFromPrefetchContainerAddedToMatchStart"
+    units="ms" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The duration from when the used prefetch container is added to the start of
+    prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and the prefetch matching ended
+    as actual match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.Count"
+    units="count" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of prefetches that are matched with a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaop"
+    units="bool" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether a prefetch ahead of prerender existed at the timing of prefetch
+    matching.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.PotentialCandidateServingResultAndServableStateAndMatcherAction"
+    units="code" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The combination of `PrefetchPotentialCandidateServingResult`,
+    `PrefetchServableState`, and `PrefetchMatchResolverAction`.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.PrefetchStatus"
+    enum="PrefetchStatus" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The status of the prefetch at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.QueueIndexPlus1"
+    units="count" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The index of the prefetch in the queue, plus one. 0 if the prefetch is not
+    in the queue at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.QueueSize"
+    units="count" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The size of the prefetch queue at the timing of prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.ExistsPaopThen.ServableStateAndMatcherAction"
+    units="code" expires_after="2026-05-31">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The servable state of the prefetch and the PrefetchMatchResolver's action
+    taken.
+
+    Recorded when {PreloadServingMetricsPrefix} and a prefetch ahead of
+    prerender exisited.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsPotentialMatch"
+    units="bool" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation started as potential
+    match.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.IsPotentialMatch.WithAheadOfPrerender"
+    units="bool" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation started as potential
+    match with prefetch ahead of prerender.
+
+    Recorded when {PreloadServingMetricsPrefix} and the navigation is prerender
+    initial navigation.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.IsActualMatch"
+    units="bool" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Whether the first prefetch matching for a navigation ended as actual match.
+
+    Recorded when {PreloadServingMetricsPrefix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.MatchDuration{PreloadServingMetricsActualMatchSuffix}"
+    units="ms" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Duration for the first prefetch matching for a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix}, the first prefetch matching
+    started as potential match, and {PreloadServingMetricsActualMatchSuffix}.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+  <token key="PreloadServingMetricsActualMatchSuffix"
+      variants="PreloadServingMetricsActualMatchSuffix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.NumberOfInitialCandidates"
+    units="count" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of initial candidates of the first prefetch matching for a
+    navigation.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.NumberOfInitialCandidatesBlockUntilHead"
+    units="count" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    The number of blocking initial candidates of the first prefetch matching for
+    a navigation.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.PotentialCandidateServingResult.Last"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    `PrefetchPotentialCandidateServingResult` of the last candidate in the first
+    prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix} and the first prefetch matching
+    started as a potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
+</histogram>
+
+<histogram
+    name="{PreloadServingMetricsPrefix}.PrefetchMatchMetrics.PotentialMatchThen.WithAheadOfPrerender.PotentialCandidateServingResult"
+    enum="PrefetchPotentialCandidateServingResult" expires_after="2026-05-24">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    `PrefetchPotentialCandidateServingResult` of prefetch ahead of prerender in
+    the first prefetch matching.
+
+    Recorded when {PreloadServingMetricsPrefix}, the navigation is prerender
+    initial navigation, and the prefetch ahead of prerender is potential match.
+  </summary>
+  <token key="PreloadServingMetricsPrefix"
+      variants="PreloadServingMetricsPrefix"/>
 </histogram>
 
 </histograms>

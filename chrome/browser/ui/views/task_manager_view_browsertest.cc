@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test.h"
@@ -107,10 +108,14 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
   // Looks up a tab based on its tab ID.
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
-    auto& all_tabs = AllTabContentses();
-    auto it = std::ranges::find(all_tabs, tab_id,
-                                &sessions::SessionTabHelper::IdForTab);
-    return (it == all_tabs.end()) ? nullptr : *it;
+    content::WebContents* found = nullptr;
+    tabs::ForEachTabInterface([tab_id, &found](tabs::TabInterface* tab) {
+      if (sessions::SessionTabHelper::IdForTab(tab->GetContents()) == tab_id) {
+        found = tab->GetContents();
+      }
+      return !found;
+    });
+    return found;
   }
 
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
@@ -450,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, RestoreBounds) {
   // Also make sure that the task manager is not restored off-screen.
   // This is a regression test for https://crbug.com/308606
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(non_default_bounds);
+      display::Screen::Get()->GetDisplayMatching(non_default_bounds);
   const gfx::Rect offscreen_bounds =
       default_bounds + gfx::Vector2d(0, display.bounds().bottom());
   GetView()->GetWidget()->SetBounds(offscreen_bounds);
@@ -472,6 +477,18 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
 
   EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
 }
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAcceleratorOnWindows) {
+  chrome::ShowTaskManager(browser());
+
+  EXPECT_FALSE(GetView()->GetWidget()->IsClosed());
+
+  GetView()->AcceleratorPressed(ui::Accelerator(ui::VKEY_F4, ui::EF_ALT_DOWN));
+
+  EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AppType) {

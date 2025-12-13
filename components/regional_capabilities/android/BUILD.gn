@@ -8,7 +8,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [ "java/src/org/chromium/components/regional_capabilities/RegionalCapabilitiesService.java" ]
 
-  srcjar_deps = [ ":jni_headers" ]
+  srcjar_deps = [
+    ":java_enum_srcjar",
+    ":jni_headers",
+  ]
 
   deps = [
     "//base:base_java",
@@ -16,6 +19,12 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
+}
+
+java_cpp_enum("java_enum_srcjar") {
+  # Do not depend on this target directly. Use the :java target instead.
+  visibility = [ ":*" ]
+  sources = [ "../program_settings.h" ]
 }
 
 generate_jni("jni_headers") {
@@ -32,7 +41,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/regional_capabilities/android:java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
 }

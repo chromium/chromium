@@ -58,6 +58,32 @@ inline constexpr crypto::SignatureVerifier::SignatureAlgorithm
         crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256,
 };
 
+// Error codes from the service on per-request failures. These can be returned
+// alongside success responses in some cases.
+// Needs to match `RequestError` in
+// //third_party/cloud_authenticator/processor/src/lib.rs.
+// Update `kMinValue` and `kMaxValue` when adding or removing values.
+enum class RequestError : int {
+  // An error code not known by the client.
+  kUnknown = -9999,
+
+  kNoSupportedAlgorithm = 1,
+  kDuplicate = 2,
+  kIncorrectPIN = 3,
+  kPINLocked = 4,
+  kPINOutdated = 5,
+  kRecoveryKeyStoreDowngrade = 6,
+  kCohortNotYetDeprecated = 7,
+
+  // Ranges for known error codes.
+  kMinValue = kNoSupportedAlgorithm,
+  kMaxValue = kCohortNotYetDeprecated,
+};
+
+// Converts `code` into a `RequestError` value. If the value is unknown, returns
+// `RequestError::kUnknown`.
+COMPONENT_EXPORT(DEVICE_FIDO) RequestError GetRequestError(int code);
+
 // Keys in the top-level request message.
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandEncodedRequestsKey[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCommandDeviceIdKey[];
@@ -84,9 +110,10 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrapKeyCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGenKeyPairCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapCommandName[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPasskeysWrapPinCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreWrapAsMemberCommandName[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreWrapPinAndSecretCommandName[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreRewrapCommandName[];
 
@@ -109,6 +136,7 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingKeyToWrap[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kPinHash[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGeneration[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kClaimKey[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappedPinKey[];
 
 // Wrapping response keys
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kWrappingResponsePublicKey[];
@@ -128,11 +156,16 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreCertXml[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreSigXml[];
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const char kRecoveryKeyStoreCreateNewVault[];
 
 // Constants for the recovery key store service, which is used in conjunction
 // with the enclave.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreURL[];
+
+// These URLs can be overridden via Finch for experimentation. See
+// WebAuthenticationEnclaveTrustedVaultCohort.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kRecoveryKeyStoreCertFileURL[];
 COMPONENT_EXPORT(DEVICE_FIDO)

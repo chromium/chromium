@@ -14,6 +14,9 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 /**
  * This class is responsible for binding view properties from {@link ModalDialogProperties} to a
  * {@link ModalDialogView}.
@@ -33,9 +36,20 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.TITLE_ICON == propertyKey) {
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
         } else if (ModalDialogProperties.MESSAGE_PARAGRAPH_1 == propertyKey) {
-            view.setMessageParagraph1(model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1));
+            assert model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS) == null
+                    : "Do not use MESSAGE_PARAGRAPH_1 and MESSAGE_PARAGRAPHS at the same time.";
+            CharSequence message = model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1);
+            if (TextUtils.isEmpty(message)) {
+                view.setMessageParagraphs(null);
+            } else {
+                view.setMessageParagraphs(new ArrayList<>(Collections.singletonList(message)));
+            }
         } else if (ModalDialogProperties.MESSAGE_PARAGRAPHS == propertyKey) {
+            assert model.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1) == null
+                    : "Do not use MESSAGE_PARAGRAPH_1 and MESSAGE_PARAGRAPHS at the same time.";
             view.setMessageParagraphs(model.get(ModalDialogProperties.MESSAGE_PARAGRAPHS));
+        } else if (ModalDialogProperties.MENU_ITEMS == propertyKey) {
+            view.setMenuItems(model.get(ModalDialogProperties.MENU_ITEMS));
         } else if (ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST == propertyKey) {
             assert checkFilterTouchConsistency(model);
             assert checkDefaultButtonsNotCombinedWithButtonGroup(model);
@@ -150,6 +164,10 @@ public class ModalDialogViewBinder
         } else if (ModalDialogProperties.CHANGE_CUSTOM_VIEW_OR_BUTTONS == propertyKey) {
             // Intentionally left empty since this is a property used for switching button group to
             // default buttons, or switching custom view.
+        } else if (ModalDialogProperties.DISABLE_SCRIM == propertyKey) {
+            // Intentionally left empty since this is a property used for the dialog container.
+        } else if (ModalDialogProperties.MAX_HEIGHT == propertyKey) {
+            view.setMaxHeight(model.get(ModalDialogProperties.MAX_HEIGHT));
         } else {
             assert false : "Unhandled property detected in ModalDialogViewBinder!";
         }

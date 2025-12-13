@@ -24,7 +24,7 @@
 
 namespace {
 
-// TODO(crbug.com/392931069): These limits are arbitrary. Decide if they are
+// TODO(crbug.com/436300890): These limits are arbitrary. Decide if they are
 // okay or need tweaking.
 constexpr base::TimeDelta k2QwacLoaderTimeout = base::Seconds(15);
 constexpr size_t k2QwacMaxSize = 100 * 1024;
@@ -100,7 +100,7 @@ QwacWebContentsObserver::QwacStatus::QwacStatus(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader_->SetTimeoutDuration(k2QwacLoaderTimeout);
 
-  // TODO(crbug.com/392931069): Is it possible to link this request to the
+  // TODO(crbug.com/436300891): Is it possible to link this request to the
   // initiating request in the netlog? ResourceRequest has
   // `net_log_create_info` and `net_log_reference_info` but the comments say
   // they should only be used from within the network service, and I don't know
@@ -309,7 +309,7 @@ void QwacWebContentsObserver::DidFinishNavigation(
       url_loader_factory.BindNewPipeAndPassReceiver());
 
   QwacStatus::CreateForPage(
-      page, navigation_handle->GetURL().host(),
+      page, navigation_handle->GetURL().GetHost(),
       navigation_handle->GetSSLInfo()->cert, std::move(full_qwac_url),
       /*initiator=*/render_frame_host->GetLastCommittedOrigin(),
       std::move(url_loader_factory));

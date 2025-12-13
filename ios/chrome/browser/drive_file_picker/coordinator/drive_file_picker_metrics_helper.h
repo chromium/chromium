@@ -8,18 +8,9 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_options.h"
 
 struct ChooseFileEvent;
-
-// The different first level options the user can select.
-enum class DriveFilePickerFirstLevel {
-  kMyDrive,
-  kSharedDrive,
-  kSharedWithMe,
-  kStarred,
-  kRecent,
-  kSearch
-};
 
 // The different state of search.
 enum class DriveFilePickerSearchState {
@@ -66,8 +57,8 @@ enum class DriveFilePickerSearchState {
 - (void)reportOutcomeMetrics;
 
 // Reports the sorting changes.
-- (void)reportSortingCriteriaChange:(DriveItemsSortingType)criteria
-                      withDirection:(DriveItemsSortingOrder)direction;
+- (void)reportSortingCriterionChange:(DriveFilePickerSortingCriterion)criterion
+                       withDirection:(DriveFilePickerSortingDirection)direction;
 
 // Reports the filter changes.
 - (void)reportFilterChange:(DriveFilePickerFilter)filter;

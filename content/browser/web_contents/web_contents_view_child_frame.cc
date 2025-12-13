@@ -12,6 +12,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/display/display_util.h"
@@ -103,11 +104,35 @@ gfx::Rect WebContentsViewChildFrame::GetContainerBounds() const {
 }
 
 void WebContentsViewChildFrame::SetInitialFocus() {
-  NOTREACHED();
+  // This should only be reachable in Webium, not other uses.
+  CHECK(base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents));
+
+  if (web_contents_->FocusLocationBarByDefault()) {
+    web_contents_->SetFocusToLocationBar();
+  } else {
+    Focus();
+  }
 }
 
 gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
-  NOTREACHED();
+  if (RenderWidgetHostView* view = web_contents_->GetRenderWidgetHostView()) {
+    return view->GetViewBounds();
+  }
+
+  return gfx::Rect();
+}
+
+void WebContentsViewChildFrame::Resize(const gfx::Rect& new_bounds) {
+  // This is intentionally empty. The size of WebContentsViewChildFrame is
+  // controlled by the embedder.
+}
+
+gfx::Size WebContentsViewChildFrame::GetSize() const {
+  if (RenderWidgetHostView* view = web_contents_->GetRenderWidgetHostView()) {
+    return view->GetViewBounds().size();
+  }
+
+  return gfx::Size();
 }
 
 void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
@@ -162,7 +187,20 @@ void WebContentsViewChildFrame::RestoreFocus() {
 }
 
 void WebContentsViewChildFrame::Focus() {
-  NOTIMPLEMENTED();
+  if (!base::FeatureList::IsEnabled(features::kAttachUnownedInnerWebContents)) {
+    return;
+  }
+
+  if (delegate_ && delegate_->Focus()) {
+    return;
+  }
+
+  RenderWidgetHostView* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    rwhv->Focus();
+  }
+
+  web_contents_->SetAsFocusedWebContentsIfNecessary();
 }
 
 void WebContentsViewChildFrame::StoreFocus() {
@@ -199,7 +237,10 @@ void WebContentsViewChildFrame::TakeFocus(bool reverse) {
 void WebContentsViewChildFrame::ShowContextMenu(
     RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
-  NOTREACHED();
+  if (delegate_) {
+    delegate_->ShowContextMenu(render_frame_host, params);
+    // WARNING: we may have been deleted during the call to ShowContextMenu().
+  }
 }
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)

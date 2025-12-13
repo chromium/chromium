@@ -151,7 +151,7 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   // of the on-device setting. See https://crbug.com/938538.
   bool is_hardcoded_url =
       original_url.SchemeIs(content::kChromeUIScheme) &&
-      original_url.host() == safe_browsing::kChromeUISafeBrowsingHost;
+      original_url.GetHost() == safe_browsing::kChromeUISafeBrowsingHost;
   if (is_hardcoded_url)
     return false;
 
@@ -319,3 +319,6 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSafeBrowsingConfigHelper)
+DEFINE_JNI(AwSafeBrowsingSafeModeAction)

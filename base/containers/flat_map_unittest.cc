@@ -14,6 +14,7 @@
 #include "base/test/move_only_int.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 
 // A flat_map is basically a interface to flat_tree. So several basic
 // operations are tested to make sure things are set up properly, but the bulk
@@ -49,6 +50,31 @@ class ImplicitInt {
   }
 
   int data_;
+};
+
+template <typename T>
+struct ResetOnMove {
+  explicit ResetOnMove(T val) : val(std::move(val)) {}
+  ResetOnMove(const ResetOnMove& other) = default;
+  ResetOnMove& operator=(const ResetOnMove& other) = default;
+  ResetOnMove(ResetOnMove&& other) : val(std::exchange(other.val, T())) {}
+  ResetOnMove& operator=(ResetOnMove&& other) {
+    val = std::exchange(other.val, T());
+    return *this;
+  }
+
+  friend constexpr auto operator<=>(const ResetOnMove& lhs,
+                                    const ResetOnMove& rhs) = default;
+
+  friend constexpr auto operator<=>(const T& lhs, const ResetOnMove& rhs) {
+    return lhs <=> rhs.val;
+  }
+
+  friend constexpr auto operator<=>(const ResetOnMove& lhs, const T& rhs) {
+    return lhs.val <=> rhs;
+  }
+
+  T val = {};
 };
 
 }  // namespace
@@ -184,6 +210,28 @@ TEST(FlatMap, CopySwap) {
   EXPECT_THAT(copy, ElementsAre(std::make_pair(1, 1), std::make_pair(2, 2)));
 }
 
+// operator[](Key&)
+TEST(FlatMap, SubscriptMutableKey) {
+  base::flat_map<ResetOnMove<int>, int> m;
+
+  // Default construct elements that don't exist yet.
+  ResetOnMove key(1);
+  int& s = m[key];
+  EXPECT_EQ(0, s);
+  EXPECT_EQ(1u, m.size());
+  EXPECT_EQ(1, key.val);
+
+  // The returned mapped reference should refer into the map.
+  s = 22;
+  EXPECT_EQ(22, m[key]);
+  EXPECT_EQ(1, key.val);
+
+  // Overwrite existing elements.
+  m[key] = 44;
+  EXPECT_EQ(44, m[key]);
+  EXPECT_EQ(1, key.val);
+}
+
 // operator[](const Key&)
 TEST(FlatMap, SubscriptConstKey) {
   base::flat_map<std::string, int> m;
@@ -218,6 +266,24 @@ TEST(FlatMap, SubscriptMoveOnlyKey) {
   // Overwrite existing elements.
   m[MoveOnlyInt(1)] = 44;
   EXPECT_EQ(44, m[MoveOnlyInt(1)]);
+}
+
+// operator[](K&&)
+TEST(FlatMap, SubscriptConstructibleKey) {
+  base::flat_map<std::string, int> m;
+
+  // Default construct elements that don't exist yet.
+  int& s = m[std::string_view("a")];
+  EXPECT_EQ(0, s);
+  EXPECT_EQ(1u, m.size());
+
+  // The returned mapped reference should refer into the map.
+  s = 22;
+  EXPECT_EQ(22, m[std::string_view("a")]);
+
+  // Overwrite existing elements.
+  m[std::string_view("a")] = 44;
+  EXPECT_EQ(44, m[std::string_view("a")]);
 }
 
 // Mapped& at(const Key&)
@@ -474,6 +540,22 @@ TEST(FlatMap, DeductionGuides) {
     flat_map map(std::move(v));
     static_assert(std::is_same_v<decltype(map), flat_map<int, float>>);
   }
+}
+
+TEST(FlatMap, AbslHashValue) {
+  enum class Word { kCabbage, kLettuce, kKale };
+  using Map = flat_map<Word, std::string>;
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      // These two are identical.
+      Map({{Word::kCabbage, "green"}, {Word::kLettuce, "green"}}),
+      Map({{Word::kCabbage, "green"}, {Word::kLettuce, "green"}}),
+      // `flat_map` is ordered, so this is also identical.
+      Map({{Word::kLettuce, "green"}, {Word::kCabbage, "green"}}),
+      // Different content.
+      Map({{Word::kKale, "green"}, {Word::kLettuce, "green"}}),
+      Map({}),
+      Map({{Word::kCabbage, "purple"}, {Word::kLettuce, "green"}}),
+  }));
 }
 
 }  // namespace base

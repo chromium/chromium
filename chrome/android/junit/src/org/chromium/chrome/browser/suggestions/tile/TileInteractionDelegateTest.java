@@ -4,10 +4,15 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -18,12 +23,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -31,18 +36,19 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
+import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManagerJni;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
+import org.chromium.ui.base.MotionEventTestUtils;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TileInteractionDelegateTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)
 public class TileInteractionDelegateTest {
 
     private static class TileGroupForTest extends TileGroup {
@@ -77,31 +83,44 @@ public class TileInteractionDelegateTest {
     }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Tile mTile;
-    @Mock SuggestionsTileView mTileView;
-    @Mock SiteSuggestion mData;
-    @Mock SuggestionsUiDelegate mSuggestionsUiDelegate;
-    @Mock ContextMenuManager mContextMenuManager;
-    @Mock TileGroup.Delegate mTileGroupDelegate;
-    @Mock TileGroup.TileDragDelegate mTileDragDelegate;
-    @Mock OfflinePageBridge mOfflinePageBridge;
-    @Mock private Runnable mSnapshotTileGridChangedRunnable;
-    @Mock private Runnable mTileCountChangedRunnable;
+    @Mock private Tile mTile;
+    @Mock private SuggestionsTileView mTileView;
+    @Mock private SiteSuggestion mData;
+    @Mock private SuggestionsUiDelegate mSuggestionsUiDelegate;
+    @Mock private ContextMenuManager mContextMenuManager;
+    @Mock private TileGroup.Delegate mTileGroupDelegate;
+    @Mock private TileDragDelegate mTileDragDelegate;
+    @Mock private OfflinePageBridge mOfflinePageBridge;
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileRenderer mTileRenderer;
     @Mock private AndroidPrerenderManager mAndroidPrerenderManager;
     @Mock private AndroidPrerenderManager.Natives mNativeMock;
+    @Mock private TileGroup.CustomTileModificationDelegate mCustomTileModificationDelegate;
 
     @Captor
     ArgumentCaptor<View.OnTouchListener> mOnTouchListenerCaptor =
             ArgumentCaptor.forClass(View.OnTouchListener.class);
 
+    private TileInteractionDelegateImpl mDelegate;
+
     @Before
     public void setUp() {
         when(mTile.getUrl()).thenReturn(new GURL("https://example.com"));
         when(mTile.getData()).thenReturn(mData);
-        when(mAndroidPrerenderManager.startPrerendering(any())).thenReturn(true);
         AndroidPrerenderManagerJni.setInstanceForTesting(mNativeMock);
+    }
+
+    private void setupForCustomTileTests() {
+        when(mTile.getSource()).thenReturn(TileSource.CUSTOM_LINKS);
+        when(mTile.getSectionType()).thenReturn(TileSectionType.PERSONALIZED);
+        mDelegate =
+                new TileInteractionDelegateImpl(
+                        mock(ContextMenuManager.class),
+                        mTileGroupDelegate,
+                        mTileDragDelegate,
+                        mCustomTileModificationDelegate,
+                        mTile,
+                        mTileView);
     }
 
     @Test
@@ -129,6 +148,34 @@ public class TileInteractionDelegateTest {
         tileInteractionDelegate.onClick(mTileView);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.R, manifest = Config.NONE)
+    public void testTileInteractionDelegate_longClick() {
+        TileGroup tileGroup =
+                new TileGroup(
+                        mTileRenderer,
+                        mSuggestionsUiDelegate,
+                        mContextMenuManager,
+                        mTileGroupDelegate,
+                        mTileDragDelegate,
+                        mTileGroupObserver,
+                        mOfflinePageBridge);
+        tileGroup.onIconMadeAvailable(new GURL("https://example.com"));
+        TileGroup.TileSetupDelegate tileSetupCallback = tileGroup.getTileSetupDelegate();
+        TileGroup.TileInteractionDelegate tileInteractionDelegate =
+                tileSetupCallback.createInteractionDelegate(mTile, mTileView);
+        // Verify long click event shows menu.
+        tileInteractionDelegate.onLongClick(mTileView);
+        verify(mContextMenuManager).showListContextMenu(eq(mTileView), any());
+
+        // Verify secondary click event is handled as long click.
+        when(mTileView.hasOnLongClickListeners()).thenReturn(true);
+        MotionEvent secondaryClickEvent = MotionEventTestUtils.getTrackRightClickEvent();
+        tileInteractionDelegate.onGenericMotion(mTileView, secondaryClickEvent);
+        verify(mTileView).performLongClick();
+        verify(mContextMenuManager).showListContextMenu(eq(mTileView), any());
     }
 
     @Test
@@ -179,8 +226,7 @@ public class TileInteractionDelegateTest {
         verify(mTileView).setOnTouchListener(mOnTouchListenerCaptor.capture());
         mOnTouchListenerCaptor.getValue().onTouch(mTileView, event);
         ShadowLooper.idleMainLooper(200, TimeUnit.MILLISECONDS);
-        Mockito.verify(mAndroidPrerenderManager, Mockito.timeout(1000))
-                .startPrerendering(ArgumentMatchers.any());
+        Mockito.verify(mAndroidPrerenderManager, Mockito.timeout(1000)).startPrerendering(any());
         // The second onTouch with the same tile should be considered to be duplicate and should be
         // skipped by maybePrerender, and this should not cause any error.
         mOnTouchListenerCaptor.getValue().onTouch(mTileView, event);
@@ -190,5 +236,53 @@ public class TileInteractionDelegateTest {
         // called.
         Mockito.verify(mAndroidPrerenderManager).stopPrerendering();
         AndroidPrerenderManager.clearAndroidPrerenderManagerForTesting();
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testIsItemSupported_MoveUp_FirstTile() {
+        setupForCustomTileTests();
+        when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(true);
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.MOVE_UP));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testIsItemSupported_MoveUp_NotFirstTile() {
+        setupForCustomTileTests();
+        when(mTileDragDelegate.isFirstDraggableTile(mTileView)).thenReturn(false);
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.MOVE_UP));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testIsItemSupported_MoveDown_LastTile() {
+        setupForCustomTileTests();
+        when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(true);
+        assertFalse(mDelegate.isItemSupported(ContextMenuItemId.MOVE_DOWN));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testIsItemSupported_MoveDown_NotLastTile() {
+        setupForCustomTileTests();
+        when(mTileDragDelegate.isLastDraggableTile(mTileView)).thenReturn(false);
+        assertTrue(mDelegate.isItemSupported(ContextMenuItemId.MOVE_DOWN));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testMoveItemUp() {
+        setupForCustomTileTests();
+        mDelegate.moveItemUp();
+        verify(mTileDragDelegate).swapTiles(mTileView, -1, mDelegate);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_CUSTOMIZATION})
+    public void testMoveItemDown() {
+        setupForCustomTileTests();
+        mDelegate.moveItemDown();
+        verify(mTileDragDelegate).swapTiles(mTileView, 1, mDelegate);
     }
 }

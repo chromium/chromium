@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_CONNECTION_CHANGE_OBSERVER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/reconnect_notifier.h"
 #include "services/network/network_context.h"

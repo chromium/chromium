@@ -8,22 +8,22 @@
  * a certain category under Site Settings.
  */
 import '../settings_shared.css.js';
+import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
-import '../privacy_page/collapse_radio_button.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radio_button.js';
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
-import type {SettingsCollapseRadioButtonElement} from '../privacy_page/collapse_radio_button.js';
 
 import {ContentSetting, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './settings_category_default_radio_group.html.js';
+import type {DefaultContentSetting} from './site_settings_browser_proxy.js';
+import {DefaultSettingSource} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {DefaultContentSetting} from './site_settings_prefs_browser_proxy.js';
-import {DefaultSettingSource} from './site_settings_prefs_browser_proxy.js';
 import {isSettingEnabled} from './site_settings_util.js';
 
 /**
@@ -227,6 +227,8 @@ export class SettingsCategoryDefaultRadioGroupElement extends
           break;
         case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
+          break;
+        default:
           break;
       }
       this.set('pref_.controlledBy', controlledBy);

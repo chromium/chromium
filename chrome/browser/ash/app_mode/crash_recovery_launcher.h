@@ -8,11 +8,14 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/profiles/profile.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -25,7 +28,10 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
       base::OnceCallback<void(bool success,
                               const std::optional<std::string>& app_name)>;
 
-  CrashRecoveryLauncher(Profile& profile, const KioskAppId& kiosk_app_id);
+  // `local_state` must be non-null, and must outlive `this`.
+  CrashRecoveryLauncher(PrefService* local_state,
+                        Profile& profile,
+                        const KioskAppId& kiosk_app_id);
   ~CrashRecoveryLauncher() override;
   CrashRecoveryLauncher(const CrashRecoveryLauncher&) = delete;
   CrashRecoveryLauncher& operator=(const CrashRecoveryLauncher&) = delete;
@@ -47,6 +53,7 @@ class CrashRecoveryLauncher : public KioskAppLauncher::NetworkDelegate,
   void OnAppWindowCreated(const std::optional<std::string>& app_name) override;
   void OnLaunchFailed(KioskAppLaunchError::Error error) override;
 
+  const raw_ref<PrefService> local_state_;
   const KioskAppId kiosk_app_id_;
   const raw_ref<Profile> profile_;
   OnDoneCallback done_callback_;

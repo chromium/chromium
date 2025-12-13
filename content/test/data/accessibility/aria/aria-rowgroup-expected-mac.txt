@@ -1,6 +1,5 @@
 AXWebArea
 ++AXTable
-++++AXGroup
-++++++AXRow
-++++++AXRow
+++++AXRow
+++++AXRow
 ++++AXGroup

@@ -4776,10 +4776,9 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferANGLE);
   if (strcmp(name, "glBlitFramebufferNV") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBlitFramebufferNV);
-  if (strcmp(name, "glBlobCacheCallbacksANGLE") == 0) {
+  if (strcmp(name, "glBlobCacheCallbacksANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glBlobCacheCallbacksANGLE);
-  }
   if (strcmp(name, "glBufferData") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBufferData);
   if (strcmp(name, "glBufferSubData") == 0)

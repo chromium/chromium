@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/domain_reliability/monitor.h"
 
 #include <memory>
@@ -15,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -101,8 +97,8 @@ void DomainReliabilityMonitor::Shutdown() {
 }
 
 void DomainReliabilityMonitor::AddBakedInConfigs() {
-  for (size_t i = 0; kBakedInJsonConfigs[i]; ++i) {
-    std::string_view json(kBakedInJsonConfigs[i]);
+  for (size_t i = 0; UNSAFE_TODO(kBakedInJsonConfigs[i]); ++i) {
+    std::string_view json(UNSAFE_TODO(kBakedInJsonConfigs[i]));
     std::unique_ptr<const DomainReliabilityConfig> config =
         DomainReliabilityConfig::FromJSON(json);
     // Guard against accidentally checking in malformed JSON configs.

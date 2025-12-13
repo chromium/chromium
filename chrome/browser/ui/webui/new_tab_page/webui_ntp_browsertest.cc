@@ -3,16 +3,26 @@
 // found in the LICENSE file.
 
 #include <set>
+#include <string>
 
 #include "base/containers/contains.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ntp_tiles/features.h"
+#include "components/ntp_tiles/tile_type.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -93,6 +103,10 @@ class WebUiNtpBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -240,3 +254,64 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, HandlesTabModelChanges) {
   // Re-insert the tab into the tab strip, creating a new TabModel.
   tab_strip_model->AppendWebContents(std::move(extracted_contents), true);
 }
+
+class WebUiNtpEnterpriseShortcutsBrowserTest
+    : public WebUiNtpBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebUiNtpEnterpriseShortcutsBrowserTest() {
+    // Enable/disable the enterprise shortcuts feature.
+    if (IsEnterpriseShortcutsEnabled()) {
+      feature_list_.InitAndEnableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+    } else {
+      feature_list_.InitAndDisableFeature(ntp_tiles::kNtpEnterpriseShortcuts);
+    }
+  }
+
+  bool IsEnterpriseShortcutsEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// TODO(crbug.com/442038064): Re-enable once flakiness is addressed.
+IN_PROC_BROWSER_TEST_P(WebUiNtpEnterpriseShortcutsBrowserTest,
+                       DISABLED_EnterpriseShortcuts) {
+  // 1. Set the user preference to use enterprise shortcuts.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ntp_prefs::kNtpCustomLinksVisible, false);
+  browser()->profile()->GetPrefs()->SetBoolean(
+      ntp_prefs::kNtpEnterpriseShortcutsVisible, true);
+
+  // 2. Navigate to the New Tab Page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUINewTabPageURL)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // 3. Verify through JavaScript that the page is configured correctly.
+  // - If feature enabled, enterprise shorctus are displayed.
+  // - If feature disabled, custom links are displayed.
+  const std::string js_check = base::StringPrintf(
+      R"((() => {
+          const mostVisited = document.querySelector('ntp-app')?.shadowRoot
+                                    ?.querySelector('cr-most-visited');
+          if (!mostVisited) {
+            return false;
+          }
+          const hasEnterprise =
+              mostVisited.hasAttribute('enterprise-shortcuts-enabled_');
+          const hasCustom =
+              mostVisited.hasAttribute('custom-links-enabled_');
+          return hasEnterprise === %s && hasCustom === %s;
+        })())",
+      IsEnterpriseShortcutsEnabled() ? "true" : "false",
+      !IsEnterpriseShortcutsEnabled() ? "true" : "false");
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return content::EvalJs(web_contents, js_check).ExtractBool(); }));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebUiNtpEnterpriseShortcutsBrowserTest,
+                         testing::Bool());

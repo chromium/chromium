@@ -141,22 +141,6 @@ void ConstVectorDeducesAsConstSpan() {
   span<int> s = span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
-// A span can only be constructed from a range rvalue when the element type is
-// read-only or the range is a borrowed range.
-void SpanFromNonConstRvalueRange() {
-  std::array<bool, 3> arr = {true, false, true};
-  [[maybe_unused]] auto a = span(std::move(arr));  // expected-error {{no matching conversion}}
-
-  std::string str = "ok";
-  [[maybe_unused]] auto b = span(std::move(str));  // expected-error {{no matching conversion}}
-
-  std::u16string str16 = u"ok";
-  [[maybe_unused]] auto c = span(std::move(str16));  // expected-error {{no matching conversion}}
-
-  std::vector<int> vec = {1, 2, 3, 4, 5};
-  [[maybe_unused]] auto d = span(std::move(vec));  // expected-error {{no matching conversion}}
-}
-
 void Dangling() {
   // `std::array` destroyed at the end of the full expression.
   [[maybe_unused]] auto a = span<const int>(std::to_array({1, 2, 3}));     // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}

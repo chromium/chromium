@@ -7,7 +7,9 @@
 #include "base/functional/bind.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui_url_loader_factory.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -32,12 +34,12 @@ void WebUIURLFetcher::Start() {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
   if (!render_frame_host) {
-    std::move(callback_).Run(false, nullptr);
+    std::move(callback_).Run(false, std::string());
     return;
   }
 
   mojo::Remote<network::mojom::URLLoaderFactory> factory(
-      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.scheme(),
+      content::CreateWebUIURLLoaderFactory(render_frame_host, url_.GetScheme(),
                                            {}));
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -70,20 +72,16 @@ void WebUIURLFetcher::Start() {
 }
 
 void WebUIURLFetcher::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   if (fetcher_->ResponseInfo() && fetcher_->ResponseInfo()->headers) {
     response_code = fetcher_->ResponseInfo()->headers->response_code();
   }
 
   fetcher_.reset();
-  std::unique_ptr<std::string> data;
-  if (response_body) {
-    data = std::move(response_body);
-  } else {
-    data = std::make_unique<std::string>();
-  }
-  std::move(callback_).Run(response_code == 200, std::move(data));
+
+  bool success = response_code == 200 && response_body.has_value();
+  std::move(callback_).Run(success, std::move(response_body).value_or(""));
 }
 
 }  // namespace extensions

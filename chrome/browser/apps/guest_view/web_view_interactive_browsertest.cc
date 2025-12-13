@@ -299,8 +299,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
         base::StringPrintf("onAppMessage('%s');", message.c_str())));
   }
 
-  void SetupTest(const std::string& app_name,
-                 const std::string& guest_url_spec) {
+  void SetupTest(const std::string& app_name) {
     ASSERT_TRUE(StartEmbeddedTestServer());
 
     LoadAndLaunchPlatformApp(app_name.c_str(), "connected");
@@ -572,8 +571,7 @@ class DISABLED_WebViewPopupInteractiveTest : public WebViewInteractiveTest {};
 #define MAYBE_PointerLock DISABLED_PointerLock
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest, MAYBE_PointerLock) {
-  SetupTest("web_view/pointer_lock",
-            "/extensions/platform_apps/web_view/pointer_lock/guest.html");
+  SetupTest("web_view/pointer_lock");
 
   // Move the mouse over the Lock Pointer button.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
@@ -643,8 +641,7 @@ IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest, MAYBE_PointerLock) {
 #endif
 IN_PROC_BROWSER_TEST_F(WebViewPointerLockInteractiveTest,
                        MAYBE_PointerLockFocus) {
-  SetupTest("web_view/pointer_lock_focus",
-            "/extensions/platform_apps/web_view/pointer_lock_focus/guest.html");
+  SetupTest("web_view/pointer_lock_focus");
 
   // Move the mouse over the Lock Pointer button.
   ASSERT_TRUE(ui_test_utils::SendMouseMoveSync(
@@ -879,9 +876,7 @@ IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, EditCommands) {
 // Tests that guests receive edit commands and respond appropriately.
 IN_PROC_BROWSER_TEST_F(WebViewInteractiveTest, EditCommandsNoMenu) {
   ExtensionTestMessageListener focus_listener("Focused");
-  SetupTest("web_view/edit_commands_no_menu",
-            "/extensions/platform_apps/web_view/edit_commands_no_menu/"
-            "guest.html");
+  SetupTest("web_view/edit_commands_no_menu");
   ASSERT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(GetPlatformAppWindow()));
   // Ensure that an input gets focused before sending a key event.
   ASSERT_TRUE(focus_listener.WaitUntilSatisfied());

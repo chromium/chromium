@@ -104,7 +104,7 @@ bool PollUntilEvalToTrue(const std::string& script, RenderFrameHost* rfh) {
   while (base::Time::Now() - start_time < timeout) {
     EvalJsResult result = EvalJs(rfh, script);
 
-    if (!result.error.empty()) {
+    if (!result.is_ok()) {
       return false;
     } else if (result.ExtractBool()) {
       return true;

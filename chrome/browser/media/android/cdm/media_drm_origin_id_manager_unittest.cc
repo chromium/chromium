@@ -413,9 +413,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChange) {
   // Try to pre-provision a bunch of origin IDs. Provisioning will fail, so
   // there will not be a bunch of origin IDs created. However, it should be
   // watching for a network change.
-  // TODO(crbug.com/41433110): Currently the code returns an origin ID even if
-  // provisioning fails. Update this once it returns an empty origin ID when
-  // pre-provisioning fails.
+
   EXPECT_CALL(*this, GetProvisioningResult())
       .WillOnce(Return(std::nullopt))
       .WillRepeatedly(InvokeWithoutArgs(&base::UnguessableToken::Create));
@@ -463,9 +461,7 @@ TEST_F(MediaDrmOriginIdManagerTest, NetworkChangeFails) {
   // |kConnectionAttempts| connections to a network. GetProvisioningResult()
   // should only be called once for the GetOriginId() call +
   // |kConnectionAttempts| when a network connection is detected.
-  // TODO(crbug.com/41433110): Currently the code returns an origin ID even if
-  // provisioning fails. Update this once it returns an empty origin ID when
-  // pre-provisioning fails.
+
   EXPECT_CALL(*this, GetProvisioningResult())
       .Times(kConnectionAttempts + 1)
       .WillOnce(Return(std::nullopt));

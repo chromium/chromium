@@ -24,10 +24,9 @@ class CookieControlsBridge : public CookieControlsObserver {
   // CookieControlsController.
   CookieControlsBridge(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents_android,
-      const base::android::JavaParamRef<jobject>&
-          joriginal_browser_context_handle,
+      const base::android::JavaRef<jobject>& obj,
+      const base::android::JavaRef<jobject>& jweb_contents_android,
+      const base::android::JavaRef<jobject>& joriginal_browser_context_handle,
       bool is_incognito_branded);
 
   CookieControlsBridge(const CookieControlsBridge&) = delete;
@@ -37,9 +36,8 @@ class CookieControlsBridge : public CookieControlsObserver {
 
   void UpdateWebContents(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jweb_contents_android,
-      const base::android::JavaParamRef<jobject>&
-          joriginal_browser_context_handle,
+      const base::android::JavaRef<jobject>& jweb_contents_android,
+      const base::android::JavaRef<jobject>& joriginal_browser_context_handle,
       bool is_incognito_branded);
 
   // Destroys the CookieControlsBridge object. This needs to be called on the
@@ -48,8 +46,6 @@ class CookieControlsBridge : public CookieControlsObserver {
 
   void SetThirdPartyCookieBlockingEnabledForSite(JNIEnv* env,
                                                  bool block_cookies);
-
-  void OnTrackingProtectionsChangedForSite(JNIEnv* env);
 
   void OnUiClosing(JNIEnv* env);
 

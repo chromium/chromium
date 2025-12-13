@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -40,6 +39,7 @@ class Button;
 
 namespace ui {
 class ColorProvider;
+class TrackedElement;
 }  // namespace ui
 
 // This class provides the UI for different menus that are created by user
@@ -79,9 +79,17 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kProfileManagementLabel = 20,
     kSigninReauthButton = 21,
     kAutofillSettingsButton = 22,
-    kHistorySyncOptInButton = 23,
+    // DEPRECATED: kHistorySyncOptInButton = 23,
     kBatchUploadButton = 24,
-    kMaxValue = kBatchUploadButton,
+    kAccountSettingsButton = 25,
+    kGoogleServicesSettingsButton = 26,
+    kHistorySyncButton = 27,
+    kBatchUploadWithBookmarksAsPrimaryButton = 28,
+    kBatchUploadAsPrimaryButton = 29,
+    kBatchUploadWindows10DepreciationAsPrimaryButton = 30,
+    kPasskeyUnlockButton = 31,
+
+    kMaxValue = kPasskeyUnlockButton,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 
@@ -113,12 +121,14 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     // Must not be empty.
     std::u16string title;
 
-    // If `subtitle` is empty, no subtitle is shown (see disclaimer below).
+    // Only shown if not empty (see disclaimer below).
+    std::u16string email_subtitle;
     std::u16string subtitle;
 
     // If `button_text` is empty, no button is shown.
     // Disclaimer: This function does not support showing a button with no
-    // subtitle. If the `subtitle` is empty then `button_text` must be empty.
+    // subtitle. If the `subtitle` or `email_subtitle` are empty then
+    // `button_text` must be empty.
     std::u16string button_text;
 
     // If `button_image` is empty, the button has no image.
@@ -143,7 +153,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kOtherProfileImageSize = 16;
 
   // `browser` must not be nullptr.
-  ProfileMenuViewBase(views::Button* anchor_button, Browser* browser);
+  ProfileMenuViewBase(ui::TrackedElement* anchor_element, Browser* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;
@@ -155,22 +165,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // See `IdentitySectionParams` for documentation of the parameters.
   void SetProfileIdentityWithCallToAction(IdentitySectionParams params);
 
-  // Promo buttons have the following Ui aspects:
-  // - are shown right after identity section and before other buttons.
-  // - background color.
-  // - first promo button has a top rounded corners.
-  // - last promo button has bottom rounded corners.
-  // - slight separation between promo buttons.
-  // - limit to the first 2 promo shown.
-  void AddPromoButton(const std::u16string& text,
-                      base::RepeatingClosure action,
-                      const gfx::VectorIcon& icon);
-
-  void AddFeatureButton(
-      const std::u16string& text,
-      base::RepeatingClosure action,
-      const gfx::VectorIcon& icon = gfx::VectorIcon::EmptyIcon(),
-      float icon_to_image_ratio = 1.0f);
+  void AddFeatureButton(const std::u16string& text,
+                        base::RepeatingClosure action,
+                        const gfx::VectorIcon& icon,
+                        float icon_to_image_ratio = 1.0f);
   void SetProfileManagementHeading(const std::u16string& heading);
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,
@@ -183,8 +181,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   void AddBottomMargin();
 
-  // Should be called inside each button/link action.
-  void RecordClick(ActionableItem item);
+  // Records an explicit user click on an actionable item.
+  // Must be called inside each button/link action, which also helps
+  // `ProfileMenuView` differentiate between menu dismissals and actual user
+  // interactions. See `actionable_item_clicked_`.
+  // TODO(crbug.com/433727015): Ensure all actionable item clicks are recorded.
+  void OnActionableItemClicked(ActionableItem item);
 
   Profile& profile() const { return *profile_; }
 
@@ -196,6 +198,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void set_perform_menu_actions_for_testing(bool perform_menu_actions) {
     perform_menu_actions_ = perform_menu_actions;
   }
+  bool actionable_item_clicked() const { return actionable_item_clicked_; }
 
  private:
   class AXMenuWidgetObserver;
@@ -228,13 +231,12 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
 
   const raw_ref<Profile> profile_;
 
-  // `anchor_button_` usually lives in a separate Views hierarchy than the menu
+  // `anchor_view_` usually lives in a separate Views hierarchy than the menu
   // view. Use a ViewTracker to avoid potential UAF crashes.
-  views::ViewTracker anchor_button_;
+  views::ViewTracker anchor_view_;
 
   // Component containers.
   raw_ptr<views::View> identity_info_container_ = nullptr;
-  raw_ptr<views::View> promo_container_ = nullptr;
   raw_ptr<views::View> features_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_separator_container_ = nullptr;
   raw_ptr<views::View> profile_mgmt_heading_container_ = nullptr;
@@ -252,6 +254,13 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // May be disabled by tests that only watch to histogram records and don't
   // care about actual actions.
   bool perform_menu_actions_ = true;
+
+  // True if a user clicked an actionable item and the click was recorded via
+  // `OnActionableItemClicked`. This flag helps `ProfileMenuView`
+  // distinguish between users dismissing the menu (e.g., via the Escape key or
+  // by clicking outside) and performing an explicit action. Menu dismissals
+  // (when this flag is false) trigger a HaTS survey.
+  bool actionable_item_clicked_ = false;
 
   CloseBubbleOnTabActivationHelper close_bubble_helper_;
 

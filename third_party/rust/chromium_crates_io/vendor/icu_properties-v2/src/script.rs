@@ -310,7 +310,7 @@ impl ScriptWithExtensions {
     ///
     /// [📚 Help choosing a constructor](icu_provider::constructors)
     #[cfg(feature = "compiled_data")]
-    #[allow(clippy::new_ret_no_self)]
+    #[expect(clippy::new_ret_no_self)]
     pub fn new() -> ScriptWithExtensionsBorrowed<'static> {
         ScriptWithExtensionsBorrowed::new()
     }
@@ -579,10 +579,9 @@ impl<'a> ScriptWithExtensionsBorrowed<'a> {
     ///     0x0303..=0x0304, // COMBINING TILDE..COMBINING MACRON
     ///     0x0307..=0x0308, // COMBINING DOT ABOVE..COMBINING DIAERESIS
     ///     0x030A..=0x030A, // COMBINING RING ABOVE
-    ///     0x0320..=0x0320, // COMBINING MINUS SIGN BELOW
     ///     0x0323..=0x0325, // COMBINING DOT BELOW..COMBINING RING BELOW
     ///     0x032D..=0x032E, // COMBINING CIRCUMFLEX ACCENT BELOW..COMBINING BREVE BELOW
-    ///     0x0330..=0x0330, // COMBINING TILDE BELOW
+    ///     0x0330..=0x0331, // COMBINING TILDE BELOW..COMBINING MACRON BELOW
     ///     0x060C..=0x060C, // ARABIC COMMA
     ///     0x061B..=0x061C, // ARABIC SEMICOLON, ARABIC LETTER MARK
     ///     0x061F..=0x061F, // ARABIC QUESTION MARK
@@ -624,6 +623,8 @@ impl<'a> ScriptWithExtensionsBorrowed<'a> {
 
     /// Returns a [`CodePointInversionList`] for the given [`Script`] which represents all
     /// code points for which `has_script` will return true.
+    ///
+    /// ✨ *Enabled with the `alloc` Cargo feature.*
     ///
     /// # Examples
     ///

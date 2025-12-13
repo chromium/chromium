@@ -151,5 +151,15 @@ NewTabPageColorPalette* CreateColorPaletteFromSeedColor(
                                    FromTone(PaletteTone(secondary, 70)),
                                    FromTone(PaletteTone(secondary, 60)))];
 
+  ntp_palette.monogramColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(primary, 40)),
+                                   FromTone(PaletteTone(primary, 80)))];
+
+  ntp_palette.headerButtonColor = [UIColor
+      colorWithDynamicProvider:GetDynamicProvider(
+                                   FromTone(PaletteTone(secondary, 95)),
+                                   FromTone(PaletteTone(secondary, 30)))];
+
   return ntp_palette;
 }

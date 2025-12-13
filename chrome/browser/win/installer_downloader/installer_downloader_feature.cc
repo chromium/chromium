@@ -8,8 +8,6 @@
 
 namespace installer_downloader {
 
-BASE_FEATURE(kInstallerDownloader,
-             "InstallerDownloader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kInstallerDownloader, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace installer_downloader

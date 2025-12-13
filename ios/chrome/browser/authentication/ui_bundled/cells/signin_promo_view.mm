@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/image/image_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -716,11 +717,11 @@ constexpr CGFloat kNonProfileBackgroundImageCompactHeightWidth = 54.0;
 // Updates promo for no accounts mode.
 - (void)activateNoAccountsMode {
   DCHECK_EQ(self.mode, SigninPromoViewModeNoAccounts);
-#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   UIImage* logo = [UIImage imageNamed:kChromeSigninPromoLogoImage];
 #else
   UIImage* logo = [UIImage imageNamed:kChromiumSigninPromoLogoImage];
-#endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+#endif  // BUILDFLAG(IOS_USE_BRANDED_ASSETS)
   DCHECK(logo);
   self.imageView.image = logo;
   self.secondaryButton.hidden = YES;

@@ -16,6 +16,22 @@ const HIGHLIGHTER_OPACITY: number = 0.4;
 // LINT.ThenChange(//pdf/pdf_ink_brush.cc:HighlighterOpacity)
 // </if>
 
+// <if expr="enable_pdf_save_to_drive">
+const SAVE_TO_DRIVE_ACCOUNT_CHOOSER_URL: string =
+    'https://accounts.google.com/AccountChooser';
+
+const SAVE_TO_DRIVE_CONSUMER_MANAGE_STORAGE_URL: string =
+    'https://one.google.com/storage' +
+    '?utm_source=drive' +
+    '&utm_medium=desktop' +
+    '&utm_campaign=error_dialog_oos';
+
+const SAVE_TO_DRIVE_DASHER_MANAGE_STORAGE_URL: string =
+    'https://drive.google.com/drive/quota';
+
+const SAVE_TO_DRIVE_DRIVE_URL: string = 'https://drive.google.com';
+// </if>
+
 export interface DocumentDimensionsMessageData {
   type: string;
   height: number;
@@ -114,3 +130,46 @@ export function hexToColor(hex: string): Color {
   };
 }
 // </if>
+
+/* Verifies that the array buffer is suitable for the beginning of a PDF.
+ *
+ * @param buffer The beginning of data for a PDF.
+ */
+export function verifyPdfHeader(buffer: ArrayBuffer) {
+  const MIN_FILE_SIZE = '%PDF1.0'.length;
+
+  // Verify the first bytes to make sure it's a PDF.
+  const bufView = new Uint8Array(buffer);
+  assert(bufView.length >= MIN_FILE_SIZE);
+  assert(
+      String.fromCharCode(
+          bufView[0]!, bufView[1]!, bufView[2]!, bufView[3]!) === '%PDF');
+}
+
+// <if expr="enable_pdf_save_to_drive">
+function getChooserRequiredUrl(
+    accountEmail: string, redirectUrl: string): string {
+  const url = new URL(SAVE_TO_DRIVE_ACCOUNT_CHOOSER_URL);
+  url.searchParams.set('Email', accountEmail);
+  url.searchParams.set('faa', '1');
+  url.searchParams.set('continue', redirectUrl);
+  return url.href;
+}
+
+export function getSaveToDriveManageStorageUrl(
+    accountEmail: string, accountIsManaged: boolean): string {
+  const redirectUrl = accountIsManaged ?
+      SAVE_TO_DRIVE_DASHER_MANAGE_STORAGE_URL :
+      SAVE_TO_DRIVE_CONSUMER_MANAGE_STORAGE_URL;
+
+  return getChooserRequiredUrl(accountEmail, redirectUrl);
+}
+
+export function getSaveToDriveOpenInDriveUrl(
+    accountEmail: string, driveItemId: string): string {
+  const url = new URL(SAVE_TO_DRIVE_DRIVE_URL);
+  url.searchParams.set('action', 'locate');
+  url.searchParams.set('id', driveItemId);
+  return getChooserRequiredUrl(accountEmail, url.href);
+}
+// </if> enable_pdf_save_to_drive

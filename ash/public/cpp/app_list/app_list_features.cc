@@ -10,32 +10,14 @@
 
 namespace app_list_features {
 
-BASE_FEATURE(kEnableAppReinstallZeroState,
-             "EnableAppReinstallZeroState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableAppListLaunchRecording,
-             "EnableAppListLaunchRecording",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableAppListLaunchRecording, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableExactMatchForNonLatinLocale,
-             "EnableExactMatchForNonLatinLocale",
              base::FEATURE_ENABLED_BY_DEFAULT);
 // DO NOT REMOVE: Tast integration tests use this feature. (See crbug/1340267)
-BASE_FEATURE(kForceShowContinueSection,
-             "ForceShowContinueSection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kDynamicSearchUpdateAnimation,
-             "DynamicSearchUpdateAnimation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kLauncherPlayStoreSearch,
-             "LauncherPlayStoreSearch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAppsCollections,
-             "AppsCollections",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsAppReinstallZeroStateEnabled() {
-  return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
-}
+BASE_FEATURE(kForceShowContinueSection, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicSearchUpdateAnimation, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kLauncherPlayStoreSearch, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kAppsCollections, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsExactMatchForNonLatinLocaleEnabled() {
   return base::FeatureList::IsEnabled(kEnableExactMatchForNonLatinLocale);

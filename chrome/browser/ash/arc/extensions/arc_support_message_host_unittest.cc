@@ -106,8 +106,8 @@ TEST_F(ArcSupportMessageHostTest, SendMessage) {
   message_host()->SendMessage(value);
 
   ASSERT_EQ(1u, client()->messages().size());
-  std::optional<base::Value> recieved_value =
-      base::JSONReader::Read(client()->messages()[0]);
+  std::optional<base::Value> recieved_value = base::JSONReader::Read(
+      client()->messages()[0], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   EXPECT_EQ(value, recieved_value->GetDict());
 }
 
@@ -119,9 +119,7 @@ TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
   TestObserver observer;
   message_host()->SetObserver(&observer);
 
-  std::string value_string;
-  base::JSONWriter::Write(value, &value_string);
-  OnMessage(value_string);
+  OnMessage(base::WriteJson(value).value_or(""));
 
   message_host()->SetObserver(nullptr);
 

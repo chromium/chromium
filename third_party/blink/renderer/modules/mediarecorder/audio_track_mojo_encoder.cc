@@ -25,16 +25,16 @@ namespace blink {
 
 AudioTrackMojoEncoder::AudioTrackMojoEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoder_task_runner,
-    AudioTrackRecorder::CodecId codec,
+    media::AudioCodec codec,
     OnEncodedAudioCB on_encoded_audio_cb,
     OnEncodedAudioErrorCB on_encoded_audio_error_cb,
     uint32_t bits_per_second)
     : AudioTrackEncoder(std::move(on_encoded_audio_cb),
                         std::move(on_encoded_audio_error_cb)),
       encoder_task_runner_(std::move(encoder_task_runner)),
+      codec_(codec),
       bits_per_second_(bits_per_second) {
-  DCHECK_EQ(codec, AudioTrackRecorder::CodecId::kAac);
-  codec_ = codec;
+  DCHECK_EQ(codec, media::AudioCodec::kAAC);
 }
 
 void AudioTrackMojoEncoder::OnSetFormat(
@@ -74,7 +74,7 @@ void AudioTrackMojoEncoder::OnSetFormat(
   }
 
   media::AudioEncoder::Options options = {};
-  if (codec_ == AudioTrackRecorder::CodecId::kAac) {
+  if (codec_ == media::AudioCodec::kAAC) {
     options.codec = media::AudioCodec::kAAC;
   } else {
     DVLOG(1) << "Unsupported codec: " << static_cast<int>(codec_);
@@ -89,12 +89,12 @@ void AudioTrackMojoEncoder::OnSetFormat(
 
   auto output_cb = base::BindPostTask(
       encoder_task_runner_,
-      WTF::BindRepeating(&AudioTrackMojoEncoder::OnEncodeOutput,
-                         weak_factory_.GetWeakPtr()));
-  auto done_cb =
-      base::BindPostTask(encoder_task_runner_,
-                         WTF::BindOnce(&AudioTrackMojoEncoder::OnInitializeDone,
-                                       weak_factory_.GetWeakPtr()));
+      blink::BindRepeating(&AudioTrackMojoEncoder::OnEncodeOutput,
+                           weak_factory_.GetWeakPtr()));
+  auto done_cb = base::BindPostTask(
+      encoder_task_runner_,
+      blink::BindOnce(&AudioTrackMojoEncoder::OnInitializeDone,
+                      weak_factory_.GetWeakPtr()));
   mojo_encoder_->Initialize(options, std::move(output_cb), std::move(done_cb));
 }
 
@@ -127,9 +127,10 @@ void AudioTrackMojoEncoder::EncodeAudio(
 void AudioTrackMojoEncoder::DoEncodeAudio(
     std::unique_ptr<media::AudioBus> input_bus,
     base::TimeTicks capture_time) {
-  auto done_cb = base::BindPostTask(
-      encoder_task_runner_, WTF::BindOnce(&AudioTrackMojoEncoder::OnEncodeDone,
-                                          weak_factory_.GetWeakPtr()));
+  auto done_cb =
+      base::BindPostTask(encoder_task_runner_,
+                         blink::BindOnce(&AudioTrackMojoEncoder::OnEncodeDone,
+                                         weak_factory_.GetWeakPtr()));
   mojo_encoder_->Encode(std::move(input_bus), capture_time, std::move(done_cb));
 }
 

@@ -42,7 +42,10 @@ std::unique_ptr<PrefService> CreatePrefService() {
 
 }  // namespace
 
-TEST(GetUserPopulationTest, PopulatesPopulation) {
+TEST(GetUserPopulationTest, PopulatesPopulation_WithoutSBERDeprecation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
   base::test::TaskEnvironment task_environment;
   auto pref_service = CreatePrefService();
 
@@ -68,6 +71,45 @@ TEST(GetUserPopulationTest, PopulatesPopulation) {
                                  nullptr, std::nullopt, std::nullopt);
   EXPECT_EQ(population.user_population(),
             ChromeUserPopulation::EXTENDED_REPORTING);
+}
+
+TEST(GetUserPopulationTest, PopulatesPopulation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  base::test::TaskEnvironment task_environment;
+  auto pref_service = CreatePrefService();
+
+  SetSafeBrowsingState(pref_service.get(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  ChromeUserPopulation population =
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
+                        std::nullopt, std::nullopt);
+  EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
+
+  SetSafeBrowsingState(pref_service.get(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  population = GetUserPopulation(pref_service.get(), false, false, false, false,
+                                 nullptr, std::nullopt, std::nullopt);
+
+  EXPECT_EQ(population.user_population(),
+            ChromeUserPopulation::ENHANCED_PROTECTION);
+}
+
+TEST(GetUserPopulationTest, PopulatesPopulation_EsbIgnoresSberPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kExtendedReportingRemovePrefDependency);
+  base::test::TaskEnvironment task_environment;
+  auto pref_service = CreatePrefService();
+
+  SetSafeBrowsingState(pref_service.get(),
+                       SafeBrowsingState::STANDARD_PROTECTION);
+  SetExtendedReportingPrefForTests(pref_service.get(), true);
+  ChromeUserPopulation population =
+      GetUserPopulation(pref_service.get(), false, false, false, false, nullptr,
+                        std::nullopt, std::nullopt);
+  EXPECT_EQ(population.user_population(), ChromeUserPopulation::SAFE_BROWSING);
 }
 
 TEST(GetUserPopulationTest, PopulatesMBB) {

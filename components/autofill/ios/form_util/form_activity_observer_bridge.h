@@ -21,7 +21,8 @@
 - (void)webState:(web::WebState*)webState
     didSubmitDocumentWithFormData:(const autofill::FormData&)formData
                    hasUserGesture:(BOOL)hasUserGesture
-                          inFrame:(web::WebFrame*)frame;
+                          inFrame:(web::WebFrame*)frame
+                   perfectFilling:(BOOL)perfectFilling;
 
 // Invoked by FormActivityObserverBridge::FormRemoved.
 - (void)webState:(web::WebState*)webState
@@ -59,7 +60,8 @@ class FormActivityObserverBridge : public FormActivityObserver {
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
                          const FormData& form_data,
-                         bool has_user_gesture) override;
+                         bool has_user_gesture,
+                         bool perfect_filling) override;
 
   void FormRemoved(web::WebState* web_state,
                    web::WebFrame* sender_frame,

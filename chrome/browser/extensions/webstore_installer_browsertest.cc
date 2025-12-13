@@ -12,18 +12,21 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/install_approval.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_approval.h"
+#include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

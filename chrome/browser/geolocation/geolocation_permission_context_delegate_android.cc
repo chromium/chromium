@@ -45,20 +45,22 @@ bool GeolocationPermissionContextDelegateAndroid::DecidePermission(
 
   if (web_contents->GetDelegate() &&
       web_contents->GetDelegate()->GetInstalledWebappGeolocationContext()) {
+    auto data = permissions::PermissionRequestData(
+        context, request_data.id,
+        content::PermissionRequestDescription(
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    blink::PermissionType::GEOLOCATION)),
+        request_data.requesting_origin,
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            rfh->GetMainFrame()));
+    data.embedded_permission_request_descriptor =
+        request_data.embedded_permission_request_descriptor.Clone();
     InstalledWebappBridge::PermissionCallback permission_callback =
         base::BindOnce(
             &permissions::GeolocationPermissionContext::NotifyPermissionSet,
-            context->GetWeakPtr(),
-            permissions::PermissionRequestData(
-                context, request_data.id,
-                content::PermissionRequestDescription(
-                    content::PermissionDescriptorUtil::
-                        CreatePermissionDescriptorForPermissionType(
-                            blink::PermissionType::GEOLOCATION)),
-                request_data.requesting_origin,
-                permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-                    rfh->GetMainFrame())),
-            std::move(*callback), false /* persist */);
+            context->GetWeakPtr(), std::move(data), std::move(*callback),
+            false /* persist */);
     InstalledWebappBridge::DecidePermission(
         ContentSettingsType::GEOLOCATION, request_data.requesting_origin,
         web_contents->GetLastCommittedURL(), std::move(permission_callback));

@@ -4,14 +4,12 @@
 
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client_chromeos.h"
 
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/country_codes/country_codes.h"
-#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/variations/service/variations_service.h"
 
 using ::country_codes::CountryId;
@@ -51,7 +49,6 @@ std::optional<CountryId> GetVpdCountry() {
   }
   if (vpd_region == "GCC" || vpd_region == "LATAM-ES-419" ||
       vpd_region == "NORDIC") {
-    // TODO: crbug.com/377475851 - Implement a lookup for the groupings.
     base::UmaHistogramEnumeration(kCrOSMissingVariationData, kGroupedRegion);
     return {};
   }
@@ -101,22 +98,12 @@ RegionalCapabilitiesServiceClientChromeOS::
     ~RegionalCapabilitiesServiceClientChromeOS() = default;
 
 CountryId RegionalCapabilitiesServiceClientChromeOS::GetFallbackCountryId() {
-  if (const std::optional<CountryId> vpd_country = GetVpdCountry();
-      vpd_country.has_value()) {
-    return *vpd_country;
-  }
-  return country_codes::GetCurrentCountryID();
+  return GetVpdCountry().value_or(country_codes::GetCurrentCountryID());
 }
 
 void RegionalCapabilitiesServiceClientChromeOS::FetchCountryId(
     CountryIdCallback on_country_id_fetched) {
-  const CountryId fetched_country_id =
-      base::FeatureList::IsEnabled(
-          switches::kUseFinchPermanentCountryForFetchCountryId)
-          ? variations_permanent_country_id_
-          : GetVariationsLatestCountryId();
-
-  std::move(on_country_id_fetched).Run(fetched_country_id);
+  std::move(on_country_id_fetched).Run(variations_permanent_country_id_);
 }
 
 }  // namespace regional_capabilities

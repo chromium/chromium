@@ -15,14 +15,14 @@
 namespace media {
 
 GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() = default;
-
 GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
 bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
                                       const mojom::PlaneStridesPtr& strides) {
-  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
-  if (!gfx_format) {
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToVizSIFormat(format);
+  if (!si_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
   }
@@ -30,24 +30,24 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
   // so we try the usage flag that covers all use cases.
   // JPEG capture buffer is backed by R8 pixel buffer.
   const gfx::BufferUsage usage =
-      *gfx_format == gfx::BufferFormat::R_8
+      format == PIXEL_FORMAT_MJPEG
           ? gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE
           : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-
   shared_image_ =
-      buffer_factory_.CreateSharedImage(dimensions, *gfx_format, usage);
-  return shared_image_ ? true : false;
+      buffer_factory_.CreateSharedImage(dimensions, *si_format, usage);
+  return !!shared_image_;
 }
 
 bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
-  if (!gfx_format) {
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToVizSIFormat(format);
+  if (!si_format) {
     return false;
   }
-  return (viz::GetSharedImageFormat(*gfx_format) == shared_image_->format() &&
+  return (*si_format == shared_image_->format() &&
           dimensions == shared_image_->size());
 }
 
@@ -64,21 +64,10 @@ GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   CHECK(shared_image_);
-  // Overriding the GpuMemoryBufferHandle id to an invalid id to avoid buffer
-  // collision in GpuMemoryBufferFactoryNativePixmap when we pass the handle
-  // to a different process. (crbug.com/993265)
-  //
-  // This will force the GPU process to look up the real native pixmap handle
-  // through the DMA-buf fds in [1] when creating SharedImage, instead of
-  // re-using a wrong pixmap handle in the cache.
-  //
-  // [1]: https://tinyurl.com/yymtv22y
-  // TODO(crbug.com/359601431): Remove this method once all
-  // GpuMemoryBufferTrackers are converted to use MappableSI.
-  // Note that the above case of buffer collision will not be an issue with use
-  // of MappableSI everywhere since it does not internally use or cache buffer
-  // ids to refer to underlying buffer. Instead all the shared images are
-  // referred to by mailboxes.
+
+  // TODO(crbug.com/359601431): Change this flow to talk entirely in terms of
+  // SharedImage once all GpuMemoryBufferTrackers are converted to use
+  // MappableSI.
   gfx::GpuMemoryBufferHandle handle =
       shared_image_->CloneGpuMemoryBufferHandle();
   return handle;

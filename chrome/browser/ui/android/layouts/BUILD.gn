@@ -21,6 +21,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/layouts/components/VirtualView.java",
     "java/src/org/chromium/chrome/browser/layouts/scene_layer/SceneLayer.java",
     "java/src/org/chromium/chrome/browser/layouts/scene_layer/SceneOverlayLayer.java",
+    "java/src/org/chromium/chrome/browser/layouts/toolbar/ToolbarWidthConsumer.java",
   ]
 
   deps = [

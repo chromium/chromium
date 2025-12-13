@@ -7,22 +7,26 @@
 
 #include <string>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/test/test_browser_ui.h"
 #include "ui/base/interaction/interaction_test_util.h"
 
 namespace ui {
 class TrackedElement;
 }  // namespace ui
 
-class Browser;
-
-class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
+class InteractionTestUtilBrowser {
  public:
-  InteractionTestUtilBrowser();
-  ~InteractionTestUtilBrowser() override;
+  // Static class only.
+  InteractionTestUtilBrowser() = delete;
+
+  // Populates the appropriate simulators for a browser.
+  static void PopulateSimulators(ui::test::InteractionTestUtil& test_util);
 
   // Returns the browser that matches the given context, or nullptr if none
   // can be found.
-  static Browser* GetBrowserFromContext(ui::ElementContext context);
+  static BrowserWindowInterface* GetBrowserFromContext(
+      ui::ElementContext context);
 
   // Takes a screenshot based on the contents of `element` and compares with
   // Skia Gold. May return ActionResult::kKnownIncompatible on platforms and
@@ -55,7 +59,8 @@ class InteractionTestUtilBrowser : public ui::test::InteractionTestUtil {
   static ui::test::ActionResult CompareScreenshot(
       ui::TrackedElement* element,
       const std::string& screenshot_name,
-      const std::string& baseline_cl);
+      const std::string& baseline_cl,
+      const ScreenshotOptions& options = {});
 
   // As `CompareScreenshot()` but takes a screenshot of the entire surface
   // containing `element_in_surface`, not just the element itself. Be careful

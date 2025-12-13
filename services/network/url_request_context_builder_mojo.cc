@@ -34,7 +34,7 @@ void URLRequestContextBuilderMojo::SetMojoProxyResolverFactory(
 
 #if BUILDFLAG(IS_WIN)
 void URLRequestContextBuilderMojo::SetMojoWindowsSystemProxyResolver(
-    mojo::PendingRemote<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+    mojo::PendingRemote<proxy_resolver::mojom::SystemProxyResolver>
         mojo_windows_system_proxy_resolver) {
   mojo_windows_system_proxy_resolver_ =
       std::move(mojo_windows_system_proxy_resolver);

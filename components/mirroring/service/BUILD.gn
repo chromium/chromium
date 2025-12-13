@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//testing/test.gni")
-import("//third_party/libaom/options.gni")
 
 component("mirroring_service") {
   sources = [
@@ -56,7 +55,7 @@ component("mirroring_service") {
     "//media/cast/openscreen:remoting_utils",
     "//media/gpu",
     "//media/mojo/clients",
-    "//media/mojo/common:common",
+    "//media/mojo/common",
     "//media/mojo/mojom",
     "//media/mojo/mojom:remoting",
     "//media/remoting:remoting_device_capability",

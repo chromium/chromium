@@ -7,21 +7,21 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/view_class_properties.h"
-
-DEFINE_ELEMENT_IDENTIFIER_VALUE(kNtpFooterId);
 
 namespace new_tab_footer {
 
 NewTabFooterWebView::NewTabFooterWebView(BrowserWindowInterface* browser)
     : views::WebView(browser->GetProfile()), browser_(browser) {
-  SetProperty(views::kElementIdentifierKey, kNtpFooterId);
+  SetProperty(views::kElementIdentifierKey, kNtpFooterViewElementId);
 }
 
 NewTabFooterWebView::~NewTabFooterWebView() {

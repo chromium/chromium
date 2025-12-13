@@ -10,7 +10,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/modules/modules_export.h"

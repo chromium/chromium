@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/win/event_trace_data.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +56,7 @@ void EventTraceDataTest::InitForLogMessage() {
 
   size_t message_length = strlen(kTestLogMessage) + 1;
   buffer_.resize(message_length);
-  memcpy(buffer_.data(), kTestLogMessage, message_length);
+  UNSAFE_TODO(memcpy(buffer_.data(), kTestLogMessage, message_length));
 
   event_trace_.MofData = buffer_.data();
   event_trace_.MofLength = buffer_.size();
@@ -72,27 +68,27 @@ void EventTraceDataTest::InitForLogMessageFull() {
   // Set up the stack trace info.
   size_t data_size = sizeof(DWORD);
   size_t offset = ReserveBufferSpace(data_size);
-  memcpy(buffer_.data() + offset, &kStackDepth, data_size);
+  UNSAFE_TODO(memcpy(buffer_.data() + offset, &kStackDepth, data_size));
 
   // Allocate space for the 'stack trace' info.
   data_size = kStackDepth * sizeof(intptr_t);
   offset = ReserveBufferSpace(data_size);
-  memset(buffer_.data() + offset, 0, data_size);
+  UNSAFE_TODO(memset(buffer_.data() + offset, 0, data_size));
 
   // Set the line number.
   data_size = sizeof(DWORD);
   offset = ReserveBufferSpace(data_size);
-  memcpy(buffer_.data() + offset, &kLineNumber, data_size);
+  UNSAFE_TODO(memcpy(buffer_.data() + offset, &kLineNumber, data_size));
 
   // Set the file path.
   data_size = strlen(kFilePath) + 1;
   offset = ReserveBufferSpace(data_size);
-  memcpy(buffer_.data() + offset, &kFilePath, data_size);
+  UNSAFE_TODO(memcpy(buffer_.data() + offset, &kFilePath, data_size));
 
   // Set the log message.
   data_size = strlen(kTestLogMessage) + 1;
   offset = ReserveBufferSpace(data_size);
-  memcpy(buffer_.data() + offset, &kTestLogMessage, data_size);
+  UNSAFE_TODO(memcpy(buffer_.data() + offset, &kTestLogMessage, data_size));
 
   event_trace_.MofData = buffer_.data();
   event_trace_.MofLength = buffer_.size();

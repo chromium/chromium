@@ -116,6 +116,7 @@ class WaylandTabletTool {
   };
 
   FrameData frame_data_;
+  EventPointerType pointer_type_ = EventPointerType::kPen;
 };
 
 class WaylandTabletTool::Delegate {

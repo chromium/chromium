@@ -7,14 +7,22 @@
 #include <vector>
 
 #include "base/values.h"
+#include "chrome/browser/content_settings/generated_javascript_optimizer_pref.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
+#include "chrome/browser/site_protection/site_familiarity_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/db/fake_database_manager.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -45,6 +53,9 @@ class V8OptimizerPolicyTest
     // This is needed for this test to run properly on platforms where
     //  --site-per-process isn't the default, such as Android.
     content::IsolateAllSitesForTesting(command_line);
+
+    embedded_test_server()->SetCertHostnames(
+        {"foo.com", "bar.com", "unrelated.com"});
   }
 
   void SetPolicyValue(PolicyMap* map, const char* key, const char* value) {
@@ -71,11 +82,17 @@ class V8OptimizerPolicyTest
   }
 
   void NavigateAndExpectPolicyResult(const char* hostname,
-                                     bool expect_disabled) {
+                                     bool expect_v8_disabled) {
     ASSERT_TRUE(NavigateToUrl(
         embedded_https_test_server().GetURL(hostname, "/title1.html"), this));
-    EXPECT_EQ(expect_disabled,
+    EXPECT_EQ(expect_v8_disabled,
               current_frame_host()->GetProcess()->AreV8OptimizationsDisabled());
+  }
+
+  void NavigateToFreshBrowsingInstance() {
+    // Navigate to different origin so that the next navigation is in a
+    // different BrowsingInstance.
+    ASSERT_TRUE(NavigateToUrl(GURL("https://unrelated.com"), this));
   }
 
   content::RenderFrameHost* current_frame_host() {
@@ -83,6 +100,8 @@ class V8OptimizerPolicyTest
   }
 
  protected:
+  Profile* profile() { return chrome_test_utils::GetProfile(this); }
+
   void AddDefaultPolicy(PolicyMap* policies) {
     switch (GetParam()) {
       case DISABLED_BY_DEFAULT:
@@ -153,6 +172,8 @@ IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest, V8OptimizerHostnameMatching) {
   // Check subdomains work.
   ConfigurePolicy(nullptr, "foo.com");
   NavigateAndExpectPolicyResult("foo.com", true);
+
+  NavigateToFreshBrowsingInstance();
   if (content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault()) {
     // Under origin isolation, the origin is passed into
     // AreV8OptimizationsDisabledForSite(), and the origin does not match the
@@ -164,19 +185,24 @@ IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest, V8OptimizerHostnameMatching) {
     // policy.
     NavigateAndExpectPolicyResult("subdomain.foo.com", true);
   }
+
   ConfigurePolicy(nullptr, "[*.]foo.com");
+  NavigateToFreshBrowsingInstance();
   NavigateAndExpectPolicyResult("subdomain.foo.com", true);
 
   // Policy applies to different domain.
   ConfigurePolicy(nullptr, "foo.com");
+  NavigateToFreshBrowsingInstance();
   NavigateAndExpectPolicyResult("bar.com", expected_for_default);
 
   // Policy applies to a subdomain.
   ConfigurePolicy(nullptr, "subdomain.foo.com");
+  NavigateToFreshBrowsingInstance();
   NavigateAndExpectPolicyResult("foo.com", expected_for_default);
   // Since there is a specific rule for subdomain.foo.com that differs from the
   // default policy, subdomain.foo.com will have origin isolation applied and
   // will match the policy defined above.
+  NavigateToFreshBrowsingInstance();
   NavigateAndExpectPolicyResult("subdomain.foo.com", true);
 }
 
@@ -188,6 +214,64 @@ INSTANTIATE_TEST_SUITE_P(DefaultEnabled,
                          testing::Values(ENABLED_BY_DEFAULT));
 INSTANTIATE_TEST_SUITE_P(DefaultNotSet,
                          V8OptimizerPolicyTest,
+                         testing::Values(NOT_SET));
+
+class V8OptimizerPolicyTest_UseSiteFamiliarity : public V8OptimizerPolicyTest {
+ public:
+  V8OptimizerPolicyTest_UseSiteFamiliarity() {
+    feature_list_
+        .InitWithFeatures(/*enabled_features=*/
+                          {features::kProcessSelectionDeferringConditions,
+                           content_settings::features::
+                               kBlockV8OptimizerOnUnfamiliarSitesSetting},
+                          /*disabled_features=*/{});
+  }
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    V8OptimizerPolicyTest::CreatedBrowserMainParts(browser_main_parts);
+    // Test UI manager and test database manager should be set before
+    // the browser is started but after threads are created.
+    factory_.SetTestDatabaseManager(
+        new safe_browsing::FakeSafeBrowsingDatabaseManager(
+            content::GetUIThreadTaskRunner({})));
+    safe_browsing::SafeBrowsingService::RegisterFactory(&factory_);
+  }
+
+  ~V8OptimizerPolicyTest_UseSiteFamiliarity() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  safe_browsing::TestSafeBrowsingServiceFactory factory_;
+};
+
+// Test that the default v8-optimizer value set by enterprise policy takes
+// precedence over any heuristics related to "unfamiliar sites".
+// When there is no policy, v8-optimizers should be disabled because the site
+// has never been visited and is not on the
+// safe-browsing-high-confidence-allowlist.
+IN_PROC_BROWSER_TEST_P(V8OptimizerPolicyTest_UseSiteFamiliarity,
+                       PolicyTakesPrecedence) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kJavascriptOptimizerBlockedForUnfamiliarSites, true);
+  EXPECT_TRUE(
+      site_protection::AreV8OptimizationsDisabledOnUnfamiliarSites(profile()));
+
+  PolicyMap policies;
+  AddDefaultPolicy(&policies);
+  provider_.UpdateChromePolicy(policies);
+
+  bool expect_v8_disabled = (GetParam() == NOT_SET);
+  NavigateAndExpectPolicyResult("foo.com", expect_v8_disabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(DefaultEnabled,
+                         V8OptimizerPolicyTest_UseSiteFamiliarity,
+                         testing::Values(ENABLED_BY_DEFAULT));
+INSTANTIATE_TEST_SUITE_P(DefaultNotSet,
+                         V8OptimizerPolicyTest_UseSiteFamiliarity,
                          testing::Values(NOT_SET));
 
 }  // namespace policy

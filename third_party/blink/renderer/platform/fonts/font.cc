@@ -29,17 +29,14 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_list.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
-#include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
-#include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/character.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -58,6 +55,21 @@ FontFallbackList* GetOrCreateFontFallbackList(
                                       ? font_selector->GetFontFallbackMap()
                                       : FontCache::Get().GetFontFallbackMap();
   return fallback_map.Get(font_description);
+}
+
+const ShapeResult* ShapeWordWithoutSpacing(const TextRun& word_run,
+                                           const Font& font) {
+  ShapeCacheEntry* cache_entry = font.GetShapeCache()->Add(word_run);
+  if (cache_entry && *cache_entry) {
+    return *cache_entry;
+  }
+
+  HarfBuzzShaper shaper(word_run.NormalizedUTF16());
+  ShapeResult* shape_result = shaper.Shape(&font, word_run.Direction());
+  if (cache_entry) {
+    *cache_entry = shape_result;
+  }
+  return shape_result;
 }
 
 }  // namespace
@@ -104,106 +116,14 @@ void Font::DrawText(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  ShapeResultBloberizer::FillGlyphsNG bloberizer(
+  // For performance avoid stack initialization on this large object.
+  STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphsNG bloberizer(
       GetFontDescription(), text_info.text, text_info.from, text_info.to,
       text_info.shape_result,
       draw_type == Font::DrawType::kGlyphsOnly
           ? ShapeResultBloberizer::Type::kNormal
           : ShapeResultBloberizer::Type::kEmitText);
   DrawTextBlobs(bloberizer.Blobs(), *canvas, point, flags, node_id);
-}
-
-bool Font::DeprecatedDrawBidiText(
-    cc::PaintCanvas* canvas,
-    const TextRunPaintInfo& run_info,
-    const gfx::PointF& point,
-    CustomFontNotReadyAction custom_font_not_ready_action,
-    const cc::PaintFlags& flags,
-    DrawType draw_type) const {
-  // Don't draw anything while we are using custom fonts that are in the process
-  // of loading, except if the 'force' argument is set to true (in which case it
-  // will use a fallback font).
-  if (ShouldSkipDrawing() &&
-      custom_font_not_ready_action == kDoNotPaintIfFontNotReady)
-    return false;
-
-  const TextRun& run = run_info.run;
-  if (!run.length()) {
-    return true;
-  }
-  bool is_sub_run = (run_info.from != 0 || run_info.to != run.length());
-
-  if (run.DirectionalOverride()) [[unlikely]] {
-    // If directional override, create a new string with Unicode directional
-    // override characters.
-    const String text_with_override =
-        BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
-                                                     run.Direction());
-    TextRun run_with_override(text_with_override, run.Direction(),
-                              /* directional_override */ false,
-                              run.NormalizeSpace());
-    return DeprecatedDrawBidiText(canvas, TextRunPaintInfo(run_with_override),
-                                  point, custom_font_not_ready_action, flags,
-                                  draw_type);
-  }
-
-  BidiParagraph::Runs bidi_runs;
-  if (run.Is8Bit() && IsLtr(run.Direction())) {
-    // U+0000-00FF are L or neutral, it's unidirectional if 8 bits and LTR.
-    bidi_runs.emplace_back(0, run.length(), 0);
-  } else {
-    String text = run.ToStringView().ToString();
-    text.Ensure16Bit();
-    BidiParagraph bidi(text, run.Direction());
-    bidi.GetVisualRuns(text, &bidi_runs);
-  }
-
-  gfx::PointF curr_point = point;
-  CachingWordShaper word_shaper(*this);
-  for (const BidiParagraph::Run& bidi_run : bidi_runs) {
-    if (bidi_run.end <= run_info.from || run_info.to <= bidi_run.start) {
-      continue;
-    }
-
-    TextRun subrun =
-        run.SubRun(bidi_run.start, bidi_run.Length(), bidi_run.Direction());
-    TextRunPaintInfo subrun_info(subrun);
-    CharacterRange range(0, 0, 0, 0);
-    if (is_sub_run) [[unlikely]] {
-      // Calculate the required indexes for this specific run.
-      subrun_info.from =
-          run_info.from < bidi_run.start ? 0 : run_info.from - bidi_run.start;
-      subrun_info.to = run_info.to > bidi_run.end
-                           ? bidi_run.Length()
-                           : run_info.to - bidi_run.start;
-      // The range provides information required for positioning the subrun.
-      range = word_shaper.GetCharacterRange(subrun, subrun_info.from,
-                                            subrun_info.to);
-    }
-
-    ShapeResultBuffer buffer;
-    word_shaper.FillResultBuffer(subrun, &buffer);
-
-    // Fix regression with -ftrivial-auto-var-init=pattern. See
-    // crbug.com/1055652.
-    STACK_UNINITIALIZED ShapeResultBloberizer::FillGlyphs bloberizer(
-        GetFontDescription(), subrun_info, buffer,
-        draw_type == Font::DrawType::kGlyphsOnly
-            ? ShapeResultBloberizer::Type::kNormal
-            : ShapeResultBloberizer::Type::kEmitText);
-    if (is_sub_run) [[unlikely]] {
-      // Align the subrun with the point given.
-      curr_point.Offset(-range.start, 0);
-    }
-    DrawTextBlobs(bloberizer.Blobs(), *canvas, curr_point, flags);
-
-    if (is_sub_run) [[unlikely]] {
-      curr_point.Offset(range.Width(), 0);
-    } else {
-      curr_point.Offset(bloberizer.Advance(), 0);
-    }
-  }
-  return true;
 }
 
 void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
@@ -214,7 +134,6 @@ void Font::DrawEmphasisMarks(cc::PaintCanvas* canvas,
   if (ShouldSkipDrawing())
     return;
 
-  FontCachePurgePreventer purge_preventer;
   const auto emphasis_glyph_data = GetEmphasisMarkGlyphData(mark);
   if (!emphasis_glyph_data.font_data)
     return;
@@ -238,69 +157,6 @@ gfx::RectF Font::TextInkBounds(const TextFragmentPaintInfo& text_info) const {
   // ShapeResultView::ComputeInkBounds method.
   // 1: https://skia.org/user/api/SkTextBlob_Reference#SkTextBlob_bounds
   return text_info.shape_result->ComputeInkBounds();
-}
-
-float Font::DeprecatedWidth(const TextRun& run,
-                            gfx::RectF* glyph_bounds) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.Width(run, glyph_bounds);
-}
-
-float Font::DeprecatedSubRunWidth(const TextRun& run,
-                                  unsigned from,
-                                  unsigned to,
-                                  gfx::RectF* glyph_bounds) const {
-  if (run.length() == 0) {
-    return 0;
-  }
-
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-
-  // Run bidi algorithm on the given text. Step 5 of:
-  // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  String text16 = run.ToStringView().ToString();
-  text16.Ensure16Bit();
-  BidiParagraph bidi;
-  bidi.SetParagraph(text16, run.Direction());
-  BidiParagraph::Runs runs;
-  bidi.GetVisualRuns(text16, &runs);
-
-  float x_pos = 0;
-  for (const BidiParagraph::Run& visual_run : runs) {
-    if (visual_run.end <= from || to <= visual_run.start) {
-      continue;
-    }
-    // Calculate the required indexes for this specific run.
-    unsigned run_from = from < visual_run.start ? 0 : from - visual_run.start;
-    unsigned run_to =
-        to > visual_run.end ? visual_run.Length() : to - visual_run.start;
-
-    // Measure the subrun.
-    TextRun text_run(
-        StringView(run.ToStringView(), visual_run.start, visual_run.Length()),
-        visual_run.Direction(), /* directional_override */ false,
-        /* normalize_space */ true);
-    CharacterRange character_range =
-        shaper.GetCharacterRange(text_run, run_from, run_to);
-
-    // Accumulate the position and the glyph bounding box.
-    if (glyph_bounds) {
-      gfx::RectF range_bounds(character_range.start, -character_range.ascent,
-                              character_range.Width(),
-                              character_range.Height());
-      // GetCharacterRange() returns bounds positioned as if the whole run was
-      // there, so the rect has to be moved to align with the current position.
-      range_bounds.Offset(-range_bounds.x() + x_pos, 0);
-      glyph_bounds->Union(range_bounds);
-    }
-    x_pos += character_range.Width();
-  }
-  if (glyph_bounds != nullptr) {
-    glyph_bounds->Offset(-glyph_bounds->x(), 0);
-  }
-  return x_pos;
 }
 
 namespace {  // anonymous namespace
@@ -391,17 +247,6 @@ void Font::ReportNotDefGlyph() const {
     fontSelector->ReportNotDefGlyph();
 }
 
-void Font::ReportEmojiSegmentGlyphCoverage(unsigned num_clusters,
-                                           unsigned num_broken_clusters) const {
-  FontSelector* fontSelector = EnsureFontFallbackList()->GetFontSelector();
-  // See ReportNotDefGlyph(), sometimes no fontSelector is available in non-DOM
-  // usages of Font.
-  if (fontSelector) {
-    fontSelector->ReportEmojiSegmentGlyphCoverage(num_clusters,
-                                                  num_broken_clusters);
-  }
-}
-
 void Font::WillUseFontData(const String& text) const {
   const FontDescription& font_description = GetFontDescription();
   const FontFamily& family = font_description.Family();
@@ -422,12 +267,16 @@ void Font::WillUseFontData(const String& text) const {
 GlyphData Font::GetEmphasisMarkGlyphData(const AtomicString& mark) const {
   if (mark.empty())
     return GlyphData();
-  return CachingWordShaper(*this).EmphasisMarkGlyphData(TextRun(mark));
+  if (!RuntimeEnabledFeatures::EmphasisMarkShapeCacheEnabled()) {
+    return ShapeWordWithoutSpacing(TextRun(mark), *this)
+        ->EmphasisMarkGlyphData(font_description_);
+  }
+  return EnsureFontFallbackList()
+      ->GetOrCreateEmphasisMarkShape(*this, mark)
+      .EmphasisMarkGlyphData(font_description_);
 }
 
 int Font::EmphasisMarkAscent(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
@@ -437,8 +286,6 @@ int Font::EmphasisMarkAscent(const AtomicString& mark) const {
 }
 
 int Font::EmphasisMarkDescent(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)
@@ -448,8 +295,6 @@ int Font::EmphasisMarkDescent(const AtomicString& mark) const {
 }
 
 int Font::EmphasisMarkHeight(const AtomicString& mark) const {
-  FontCachePurgePreventer purge_preventer;
-
   const auto mark_glyph_data = GetEmphasisMarkGlyphData(mark);
   const SimpleFontData* mark_font_data = mark_glyph_data.font_data;
   if (!mark_font_data)

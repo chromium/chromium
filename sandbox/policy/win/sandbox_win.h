@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/process/launch.h"
 #include "base/process/process_handle.h"
 #include "base/timer/elapsed_timer.h"

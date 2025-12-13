@@ -16,7 +16,7 @@ void StyleScopeData::AddTriggeredImplicitScope(const StyleScope& style_scope) {
 
 void StyleScopeData::RemoveTriggeredImplicitScope(
     const StyleScope& style_scope) {
-  WTF::Erase(triggered_implicit_scopes_, &style_scope);
+  Erase(triggered_implicit_scopes_, &style_scope);
 }
 
 bool StyleScopeData::TriggersScope(const StyleScope& style_scope) const {

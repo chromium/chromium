@@ -171,7 +171,7 @@ TEST_F(DownloadCommandsTest,
   GURL learn_more_url = commands().GetLearnMoreURLForInterruptedDownload();
   std::string name_value_pair = base::StringPrintf(
       "ctx=%d", download::DOWNLOAD_INTERRUPT_REASON_NETWORK_DISCONNECTED);
-  EXPECT_LT(0u, learn_more_url.query().find(name_value_pair))
+  EXPECT_LT(0u, learn_more_url.GetQuery().find(name_value_pair))
       << learn_more_url.spec();
 }
 

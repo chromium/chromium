@@ -29,6 +29,7 @@
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
@@ -94,6 +95,10 @@ autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
   return votes_uploader_;
 }
 
+bool AndroidAutofillClient::HasPersonalDataManager() const {
+  return false;
+}
+
 autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
   NOTREACHED();
 }
@@ -143,7 +148,7 @@ autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
 
-autofill::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
+strike_database::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
   return nullptr;
 }
 
@@ -193,7 +198,7 @@ void AndroidAutofillClient::ShowAutofillSettings(
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
-    bool is_migration_to_account,
+    SaveAddressBubbleType save_address_bubble_type,
     AddressProfileSavePromptCallback callback) {
   NOTIMPLEMENTED();
 }
@@ -226,8 +231,8 @@ bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
   NOTREACHED();
 }
 
-bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
-  NOTREACHED();
+bool AndroidAutofillClient::IsWalletStorageEnabled() const {
+  return false;
 }
 
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
@@ -240,10 +245,6 @@ bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   // be implemented in a meaningful way.
   NOTREACHED();
 }
-
-void AndroidAutofillClient::DidFillForm(
-    autofill::AutofillTriggerSource trigger_source,
-    bool is_refill) {}
 
 bool AndroidAutofillClient::IsContextSecure() const {
   // Note: As of crbug.com/701018, Chrome relies on ChromeSecurityStateTabHelper

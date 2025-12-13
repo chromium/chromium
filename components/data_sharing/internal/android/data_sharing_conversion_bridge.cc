@@ -102,3 +102,5 @@ DataSharingConversionBridge::CreateSharedDataPreviewOrFailureOutcome(
       env, j_preview, static_cast<int>(failure));
 }
 }  // namespace data_sharing
+
+DEFINE_JNI(DataSharingConversionBridge)

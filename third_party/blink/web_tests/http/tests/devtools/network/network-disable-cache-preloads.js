@@ -11,7 +11,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   await TestRunner.showPanel('network');
 
   await TestRunner.navigatePromise('resources/network-disable-cache-preloads.php');
-  await TestRunner.NetworkAgent.setCacheDisabled(true);
+  await TestRunner.NetworkAgent.invoke_setCacheDisabled({cacheDisabled: true});
   TestRunner.reloadPage(step2);
 
   function step2(msg) {

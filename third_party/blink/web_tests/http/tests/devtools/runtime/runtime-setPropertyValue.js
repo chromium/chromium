@@ -43,9 +43,9 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       TestRunner.evaluateInPage('dumpObject(\'Initial\')', step0);
 
       async function step0() {
-        var result = await TestRunner.RuntimeAgent.evaluate('object1');
+        var {result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'object1'});
         obj1 = TestRunner.runtimeModel.createRemoteObject(result);
-        result = await TestRunner.RuntimeAgent.evaluate('object2');
+        ({result} = await TestRunner.RuntimeAgent.invoke_evaluate({expression: 'object2'}));
         obj2 = TestRunner.runtimeModel.createRemoteObject(result);
         next();
       }

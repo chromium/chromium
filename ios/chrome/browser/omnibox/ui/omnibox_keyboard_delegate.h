@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-/// Keyboard actions used by both the textfield and popup.
+/// Keyboard actions used by both the text input and popup.
 enum class OmniboxKeyboardAction {
   kUpArrow,
   kDownArrow,
@@ -16,12 +16,12 @@ enum class OmniboxKeyboardAction {
   kReturnKey,
 };
 
-// Keyboard inputs in the omnibox are received by OmniboxTextFieldIOS. Some keys
-// are handled by the textfield and others by the popup to control
+// Keyboard inputs in the omnibox are received by theomnibox text input. Some
+// keys are handled by the text input and others by the popup to control
 // highlight/focus. These keys are forwarded to the popup. If the popup cannot
 // handle these keys, it fallbacks to the text field. ex: Left and Right arrow
 // keys can control the highlight of OmniboxPopupCarouselCell or move the text
-// caret in OmniboxTextFieldIOS.
+// caret in the omnibox text input.
 // Note: This API may be deprecated with iOS 14, with focus/highlight handled
 // by UIFocusSystem available in iOS 15.
 @protocol OmniboxKeyboardDelegate <NSObject>

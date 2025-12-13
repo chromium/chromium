@@ -12,12 +12,9 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "chrome/enterprise_companion/telemetry_logger/telemetry_logger.h"
 #include "chrome/updater/persisted_data.h"

@@ -77,10 +77,14 @@ class AudioManagerAndroid {
         private final @Nullable String mName;
         private final int mType;
 
-        public AudioDevice(int id, @Nullable String name, int type) {
+        // Empty if arbitrary sample rates are supported.
+        private final int[] mSampleRates;
+
+        public AudioDevice(int id, @Nullable String name, int type, int[] sampleRates) {
             mId = id;
             mName = name;
             mType = type;
+            mSampleRates = sampleRates;
         }
 
         @CalledByNative("AudioDevice")
@@ -97,14 +101,15 @@ class AudioManagerAndroid {
         private int type() {
             return mType;
         }
+
+        @CalledByNative("AudioDevice")
+        private @JniType("std::vector<int>") int[] sampleRates() {
+            return mSampleRates;
+        }
     }
 
     // Use 44.1kHz as the default sampling rate.
     private static final int DEFAULT_SAMPLING_RATE = 44100;
-    // Randomly picked up frame size which is close to return value on N4.
-    // Return this value when getProperty(PROPERTY_OUTPUT_FRAMES_PER_BUFFER)
-    // fails.
-    private static final int DEFAULT_FRAME_PER_BUFFER = 256;
 
     private final AudioManager mAudioManager;
     private final long mNativeAudioManagerAndroid;
@@ -125,6 +130,10 @@ class AudioManagerAndroid {
     private final ContentResolver mContentResolver;
     private @Nullable ContentObserver mSettingsObserver;
     private @Nullable HandlerThread mSettingsObserverThread;
+
+    private @Nullable AudioDeviceListener mDeviceListener;
+
+    private @Nullable ScoStateListener mScoStateListener;
 
     private final CommunicationDeviceSelector mCommunicationDeviceSelector;
 
@@ -173,7 +182,33 @@ class AudioManagerAndroid {
         }
 
         mCommunicationDeviceSelector.init();
+
         mIsInitialized = true;
+    }
+
+    /**
+     * Initializes the device listener, which listens for changes to the list of audio devices
+     * exposed by the OS.
+     */
+    @CalledByNative
+    private void initDeviceListener() {
+        mDeviceListener =
+                new AudioDeviceListener(
+                        added -> AudioManagerAndroidJni.get().onDevicesChanged(added));
+    }
+
+    /**
+     * Initializes the SCO state listener, which listens for changes to the SCO state reported by
+     * the OS.
+     */
+    @CalledByNative
+    private void initScoStateListener() {
+        mScoStateListener =
+                new ScoStateListener(
+                        state -> {
+                            AudioManagerAndroidJni.get()
+                                    .onScoStateChanged(mNativeAudioManagerAndroid, state);
+                        });
     }
 
     /**
@@ -187,6 +222,14 @@ class AudioManagerAndroid {
         if (!mIsInitialized) return;
 
         stopObservingVolumeChanges();
+
+        if (mDeviceListener != null) {
+            mDeviceListener.destroy();
+        }
+
+        if (mScoStateListener != null) {
+            mScoStateListener.destroy();
+        }
 
         mCommunicationDeviceSelector.close();
 
@@ -332,7 +375,8 @@ class AudioManagerAndroid {
                 // `android.os.Build.MODEL` to facilitate providing a custom fallback name instead.
                 name = null;
             }
-            devices.add(new AudioDevice(id, name, type));
+            int[] sampleRates = deviceInfo.getSampleRates();
+            devices.add(new AudioDevice(id, name, type, sampleRates));
         }
         return devices.toArray(new AudioDevice[0]);
     }
@@ -362,12 +406,6 @@ class AudioManagerAndroid {
         return mCommunicationDeviceSelector.getDevices();
     }
 
-    /** Gets whether Bluetooth SCO is currently enabled. */
-    @CalledByNative
-    private boolean isBluetoothScoOn() {
-        return mCommunicationDeviceSelector.isBluetoothScoOn();
-    }
-
     /** Requests for Bluetooth SCO to be enabled or disabled. This request may fail. */
     @CalledByNative
     private void maybeSetBluetoothScoState(boolean state) {
@@ -390,7 +428,7 @@ class AudioManagerAndroid {
      * @param channels number of channels
      */
     @CalledByNative
-    private static int getMinInputFrameSize(int sampleRate, int channels) {
+    private static int getMinInputFramesPerBuffer(int sampleRate, int channels) {
         int channelConfig;
         if (channels == 1) {
             channelConfig = AudioFormat.CHANNEL_IN_MONO;
@@ -412,7 +450,7 @@ class AudioManagerAndroid {
      * @param channels number of channels
      */
     @CalledByNative
-    private static int getMinOutputFrameSize(int sampleRate, int channels) {
+    private static int getMinOutputFramesPerBuffer(int sampleRate, int channels) {
         int channelConfig;
         if (channels == 1) {
             channelConfig = AudioFormat.CHANNEL_OUT_MONO;
@@ -435,12 +473,10 @@ class AudioManagerAndroid {
     }
 
     @CalledByNative
-    private int getAudioLowLatencyOutputFrameSize() {
+    private int getAudioLowLatencyOutputFramesPerBuffer() {
         String framesPerBuffer =
                 mAudioManager.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-        return framesPerBuffer == null
-                ? DEFAULT_FRAME_PER_BUFFER
-                : Integer.parseInt(framesPerBuffer);
+        return framesPerBuffer == null ? 0 : Integer.parseInt(framesPerBuffer);
     }
 
     @CalledByNative
@@ -742,6 +778,10 @@ class AudioManagerAndroid {
 
     @NativeMethods
     interface Natives {
+        void onDevicesChanged(boolean added);
+
         void setMute(long nativeAudioManagerAndroid, boolean muted);
+
+        void onScoStateChanged(long nativeAudioManagerAndroid, boolean state);
     }
 }

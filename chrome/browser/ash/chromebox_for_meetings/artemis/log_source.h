@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_file.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/persistent_db.h"
-#include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_data_aggregator.mojom.h"
 
 namespace ash::cfm {
 
@@ -30,8 +29,9 @@ inline constexpr int kInvalidFileInode = -1;
 class LogSource : public LocalDataSource {
  public:
   LogSource(const std::string& filepath,
+            size_t data_buffer_size_limit_,
             base::TimeDelta poll_rate,
-            size_t batch_size);
+            size_t num_lines_per_batch);
   LogSource(const LogSource&) = delete;
   LogSource& operator=(const LogSource&) = delete;
   ~LogSource() override;
@@ -45,8 +45,9 @@ class LogSource : public LocalDataSource {
   // Getter that returns the proper LogSource child class depending
   // on the provided filename.
   static std::unique_ptr<LogSource> Create(const std::string& filename,
+                                           size_t data_buffer_size_limit,
                                            base::TimeDelta poll_rate,
-                                           size_t batch_size);
+                                           size_t num_lines_per_batch);
 
   bool InitializeFile();
 
@@ -69,7 +70,7 @@ class LogSource : public LocalDataSource {
   LogFile log_file_;
 
   // Number of lines to read from the log file at each iteration.
-  const size_t batch_size_;
+  const size_t num_lines_per_batch_;
 
   // Keep track of the last-known inode to detect when the underlying
   // file has rotated. Inodes will not change when the file is renamed.

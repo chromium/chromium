@@ -32,7 +32,7 @@ public class PageInfoConnectionController
     private final WebContents mWebContents;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
-    private final String mContentPublisher;
+    private final @Nullable String mContentPublisher;
     private final boolean mIsInternalPage;
     private @Nullable String mTitle;
     private @Nullable ConnectionInfoView mInfoView;
@@ -43,7 +43,7 @@ public class PageInfoConnectionController
             PageInfoRowView view,
             WebContents webContents,
             PageInfoControllerDelegate delegate,
-            String publisher,
+            @Nullable String publisher,
             boolean isInternalPage) {
         mMainController = mainController;
         mRowView = view;
@@ -67,6 +67,11 @@ public class PageInfoConnectionController
     public View createViewForSubpage(ViewGroup parent) {
         mContainer = new FrameLayout(mRowView.getContext());
         mInfoView = ConnectionInfoView.create(mRowView.getContext(), mWebContents, this);
+        return mContainer;
+    }
+
+    @Override
+    public @Nullable View getCurrentSubpageView() {
         return mContainer;
     }
 
@@ -168,6 +173,9 @@ public class PageInfoConnectionController
         rowParams.iconResId =
                 SecurityStatusIcon.getSecurityIconResource(
                         securityLevel,
+                        () ->
+                                SecurityStateModel.getMaliciousContentStatusForWebContents(
+                                        mWebContents),
                         /* isSmallDevice= */ false,
                         /* skipIconForNeutralState= */ false,
                         /* useLockIconForSecureState= */ true);
@@ -193,4 +201,7 @@ public class PageInfoConnectionController
 
     @Override
     public void updateRowIfNeeded() {}
+
+    @Override
+    public void updateSubpageIfNeeded() {}
 }

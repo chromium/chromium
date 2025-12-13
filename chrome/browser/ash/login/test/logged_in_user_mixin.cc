@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -160,7 +161,7 @@ void LoggedInUserMixin::LogInUser(
     login_manager_.WaitForActiveSession();
     // If should_launch_browser was set to true, then ensures
     // InProcessBrowserTest::browser() doesn't return nullptr.
-    test_base_->SelectFirstBrowser();
+    test_base_->SetBrowser(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
   }
 }
 

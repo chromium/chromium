@@ -42,7 +42,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
 #import "ios/testing/scoped_block_swizzler.h"
-#import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -53,6 +52,10 @@ namespace {
 
 // Profile name used in unit tests, see `TestProfileIOS` for more info.
 constexpr char kTestProfileName[] = "Test";
+
+// Profile name used to simulate a different profile for multi-profile
+// notification tests.
+constexpr char kOtherProfileName[] = "Other";
 
 // Returns app upgrade details for an outdated application.
 UpgradeRecommendedDetails OutdatedAppDetails() {
@@ -84,9 +87,8 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
-        base::BindRepeating(
-            &password_manager::BuildPasswordStore<
-                web::BrowserState, password_manager::TestPasswordStore>));
+        base::BindOnce(&password_manager::BuildPasswordStore<
+                       ProfileIOS, password_manager::TestPasswordStore>));
 
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
@@ -111,6 +113,9 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
 
     notification_client_ = std::make_unique<SafetyCheckNotificationClient>(
         profile_.get(), base::SequencedTaskRunner::GetCurrentDefault());
+
+    // By default, assume no pending requests exist. Tests can override this.
+    StubGetPendingRequests(nil);
   }
 
   void TearDown() override { safety_check_manager_->StopSafetyCheck(); }
@@ -130,7 +135,7 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
   }
 
   // Stubs the notification center's completion callback for
-  // getPendingNotificationRequestsWithCompletionHandler.
+  // `-getPendingNotificationRequestsWithCompletionHandler:`.
   void StubGetPendingRequests(NSArray<UNNotificationRequest*>* requests) {
     auto completionCaller =
         ^BOOL(void (^completion)(NSArray<UNNotificationRequest*>* requests)) {
@@ -140,6 +145,41 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
     OCMStub([mock_notification_center_
         getPendingNotificationRequestsWithCompletionHandler:
             [OCMArg checkWithBlock:completionCaller]]);
+  }
+
+  // Stubs the notification center's completion callback for
+  // `-getDeliveredNotificationsWithCompletionHandler:`.
+  void StubGetDeliveredNotifications(NSArray<UNNotification*>* notifications) {
+    auto completionCaller =
+        ^BOOL(void (^completion)(NSArray<UNNotification*>* notifications)) {
+          if (completion) {
+            completion(notifications);
+          }
+          return YES;
+        };
+    OCMStub([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            [OCMArg checkWithBlock:completionCaller]]);
+  }
+
+  // Helper to create a mock `UNNotification` with specific `notification_id`
+  // and `profile_name`.
+  id CreateMockNotification(NSString* notification_id, NSString* profile_name) {
+    id mock_notification = OCMClassMock([UNNotification class]);
+    id mock_request = OCMClassMock([UNNotificationRequest class]);
+    id mock_content = OCMClassMock([UNNotificationContent class]);
+
+    OCMStub([mock_notification request]).andReturn(mock_request);
+    OCMStub([mock_request identifier]).andReturn(notification_id);
+    OCMStub([mock_request content]).andReturn(mock_content);
+
+    NSDictionary* user_info = @{};
+    if (profile_name) {
+      user_info = @{kOriginatingProfileNameKey : profile_name};
+    }
+    OCMStub([mock_content userInfo]).andReturn(user_info);
+
+    return mock_notification;
   }
 
   // Returns an `OCMArg` that verifies a `UNNotificationRequest` was passed
@@ -194,7 +234,29 @@ class SafetyCheckNotificationClientTest : public PlatformTest {
     ExpectNotificationRequest(arg);
   }
 
+  // Sets up an `OCMock` expectation that delivered notifications matching
+  // `notification_id` are removed.
+  void ExpectNotificationRemoval(NSString* notification_id) {
+    id notification_ids_matcher =
+        [OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* identifiers) {
+          EXPECT_TRUE([identifiers containsObject:notification_id]);
+          return YES;
+        }];
+
+    OCMExpect([mock_notification_center_
+        removeDeliveredNotificationsWithIdentifiers:notification_ids_matcher]);
+  }
+
  protected:
+  // Simulates the scene becoming active in the foreground, triggering the
+  // notification scheduling logic.
+  void SimulateSceneActive() {
+    base::RunLoop run_loop;
+    notification_client_->OnSceneActiveForegroundBrowserReady(
+        run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -232,15 +294,9 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesSafeBrowsingNotification) {
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
-  StubGetPendingRequests(nil);
   ExpectNotificationRequest(kSafetyCheckSafeBrowsingNotificationID);
 
-  base::RunLoop run_loop;
-
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
@@ -248,7 +304,6 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesSafeBrowsingNotification) {
 // Tests that a Update Chrome notification is correctly scheduled when the user
 // has an available app update.
 TEST_F(SafetyCheckNotificationClientTest, SchedulesUpdateChromeNotification) {
-  StubGetPendingRequests(nil);
   ExpectNotificationRequest(kSafetyCheckUpdateChromeNotificationID);
 
   // Simulate an available app update.
@@ -261,12 +316,7 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesUpdateChromeNotification) {
   safety_check_manager_->HandleOmahaResponse(OutdatedAppDetails());
   task_environment_.RunUntilIdle();
 
-  base::RunLoop run_loop;
-
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
@@ -274,7 +324,6 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesUpdateChromeNotification) {
 // Tests that a Password notification is correctly scheduled when the user
 // has a compromised credential.
 TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
-  StubGetPendingRequests(nil);
   ExpectNotificationRequest(kSafetyCheckPasswordNotificationID);
 
   password_manager::InsecurePasswordCounts counts = {
@@ -286,12 +335,7 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
   safety_check_manager_->SetPasswordCheckStateForTesting(
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
-  base::RunLoop run_loop;
-
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
@@ -305,7 +349,7 @@ TEST_F(SafetyCheckNotificationClientTest, ProvisionalDisallowedByPolicy) {
       updateAuthorizationStatusPref:UNAuthorizationStatusProvisional];
   GetApplicationContext()->GetLocalState()->ClearPref(
       prefs::kAppLevelPushNotificationPermissions);
-  StubGetPendingRequests(nil);
+
   OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
                                         withCompletionHandler:[OCMArg any]]);
   password_manager::InsecurePasswordCounts counts = {
@@ -315,10 +359,7 @@ TEST_F(SafetyCheckNotificationClientTest, ProvisionalDisallowedByPolicy) {
   safety_check_manager_->SetPasswordCheckStateForTesting(
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
-  base::RunLoop run_loop;
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
@@ -326,7 +367,6 @@ TEST_F(SafetyCheckNotificationClientTest, ProvisionalDisallowedByPolicy) {
 // Tests that the IOS.Notifications.SafetyCheck.Triggered histogram is properly
 // fired when a Safety Check notification is triggered.
 TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
-  StubGetPendingRequests(nil);
   base::HistogramTester histogram_tester;
 
   password_manager::InsecurePasswordCounts counts = {
@@ -340,21 +380,11 @@ TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
 
   // First invocation of OnSceneActiveForegroundBrowserReady
   // This schedules the notification for the first time.
-  {
-    base::RunLoop run_loop;
-    notification_client_->OnSceneActiveForegroundBrowserReady(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  SimulateSceneActive();
 
   // Second invocation of OnSceneActiveForegroundBrowserReady
   // This simulates a follow-up where the notification is marked as triggered.
-  {
-    base::RunLoop run_loop;
-    notification_client_->OnSceneActiveForegroundBrowserReady(
-        run_loop.QuitClosure());
-    run_loop.Run();
-  }
+  SimulateSceneActive();
 
   // Verify histogram was fired after the second invocation.
   histogram_tester.ExpectBucketCount(
@@ -366,7 +396,6 @@ TEST_F(SafetyCheckNotificationClientTest, FiresTriggeredHistogram) {
 // delivered to the notification center.
 TEST_F(SafetyCheckNotificationClientTest,
        NotificationNotScheduledIfAlreadyPresent) {
-  StubGetPendingRequests(nil);
   // Expect that a notification request with ID
   // `kSafetyCheckPasswordNotificationID` is NOT made.
   RejectNotificationRequest(kSafetyCheckPasswordNotificationID);
@@ -387,10 +416,7 @@ TEST_F(SafetyCheckNotificationClientTest,
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
   // Run the notification scheduling logic.
-  base::RunLoop run_loop;
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  SimulateSceneActive();
 
   // Verify that no notification request was made.
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
@@ -400,7 +426,6 @@ TEST_F(SafetyCheckNotificationClientTest,
 // period expires.
 TEST_F(SafetyCheckNotificationClientTest,
        NotificationScheduledAfterSuppressionPeriodExpires) {
-  StubGetPendingRequests(nil);
   // Expect that a notification request IS made.
   ExpectNotificationRequest(kSafetyCheckPasswordNotificationID);
 
@@ -418,10 +443,7 @@ TEST_F(SafetyCheckNotificationClientTest,
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
   // Run the notification scheduling logic.
-  base::RunLoop run_loop;
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  SimulateSceneActive();
 
   // Verify that the notification request was made.
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
@@ -434,14 +456,10 @@ TEST_F(SafetyCheckNotificationClientTest,
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnhanced, false);
   pref_service_->SetBoolean(prefs::kSafeBrowsingEnabled, false);
 
-  StubGetPendingRequests(nil);
   ExpectProfileNotificationRequest(kSafetyCheckSafeBrowsingNotificationID,
                                    base::SysUTF8ToNSString(kTestProfileName));
 
-  base::RunLoop run_loop;
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 
@@ -455,7 +473,6 @@ TEST_F(SafetyCheckNotificationClientTest,
 TEST_F(SafetyCheckNotificationClientTest,
        SchedulesPasswordNotificationWithProfile) {
   base::HistogramTester histogram_tester;
-  StubGetPendingRequests(nil);
   ExpectProfileNotificationRequest(kSafetyCheckPasswordNotificationID,
                                    base::SysUTF8ToNSString(kTestProfileName));
 
@@ -465,13 +482,182 @@ TEST_F(SafetyCheckNotificationClientTest,
   safety_check_manager_->SetPasswordCheckStateForTesting(
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
 
-  base::RunLoop run_loop;
-  notification_client_->OnSceneActiveForegroundBrowserReady(
-      run_loop.QuitClosure());
-  run_loop.Run();
+  SimulateSceneActive();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   histogram_tester.ExpectUniqueSample("IOS.Notifications.SafetyCheck.Requested",
                                       SafetyCheckNotificationType::kPasswords,
                                       1);
+}
+
+// Tests that password notifications are removed when the user signs out.
+TEST_F(SafetyCheckNotificationClientTest,
+       ClearsPasswordNotificationsOnSignOut) {
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckPasswordNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+  ExpectNotificationRemoval(kSafetyCheckPasswordNotificationID);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kSignedOut);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that password notifications are removed when the state becomes `Safe`.
+TEST_F(SafetyCheckNotificationClientTest,
+       ClearsPasswordNotificationsWhenPasswordIssueFixed) {
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckPasswordNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+  ExpectNotificationRemoval(kSafetyCheckPasswordNotificationID);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kSafe);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that Safe Browsing notifications are removed when the state becomes
+// `Safe`.
+TEST_F(SafetyCheckNotificationClientTest,
+       ClearsSafeBrowsingNotificationsWhenIssueFixed) {
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckSafeBrowsingNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+  ExpectNotificationRemoval(kSafetyCheckSafeBrowsingNotificationID);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetSafeBrowsingCheckStateForTesting(
+      SafeBrowsingSafetyCheckState::kSafe);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that Update Chrome notifications are removed when the state becomes
+// `UpToDate`.
+TEST_F(SafetyCheckNotificationClientTest,
+       ClearsUpdateChromeNotificationsWhenIssueFixed) {
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckUpdateChromeNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+  ExpectNotificationRemoval(kSafetyCheckUpdateChromeNotificationID);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetUpdateChromeCheckStateForTesting(
+      UpdateChromeSafetyCheckState::kUpToDate);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that password notifications are NOT removed if they belong to a
+// different profile.
+TEST_F(SafetyCheckNotificationClientTest,
+       DoesNotRemovePasswordNotificationForDifferentProfile) {
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckPasswordNotificationID,
+                             base::SysUTF8ToNSString(kOtherProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+
+  // Expect NO removal calls.
+  OCMReject([mock_notification_center_
+      removeDeliveredNotificationsWithIdentifiers:[OCMArg any]]);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kSafe);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that Update Chrome notifications ARE removed even if they belong to
+// a different profile, because they are effectively profile-agnostic.
+TEST_F(SafetyCheckNotificationClientTest,
+       RemovesUpdateChromeNotificationIgnoringProfile) {
+  // Simulate an Update Chrome notification belonging to "Other".
+  id mock_notification =
+      CreateMockNotification(kSafetyCheckUpdateChromeNotificationID,
+                             base::SysUTF8ToNSString(kOtherProfileName));
+
+  StubGetDeliveredNotifications(@[ mock_notification ]);
+  ExpectNotificationRemoval(kSafetyCheckUpdateChromeNotificationID);
+
+  SimulateSceneActive();
+
+  safety_check_manager_->SetUpdateChromeCheckStateForTesting(
+      UpdateChromeSafetyCheckState::kUpToDate);
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that multiple notifications are removed when several issues are
+// resolved simultaneously.
+TEST_F(SafetyCheckNotificationClientTest, ClearsMultipleNotifications) {
+  // Simulate delivered notifications for Passwords, Safe Browsing, and Update
+  // Chrome.
+  id mock_password_notification =
+      CreateMockNotification(kSafetyCheckPasswordNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_safe_browsing_notification =
+      CreateMockNotification(kSafetyCheckSafeBrowsingNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+  id mock_update_chrome_notification =
+      CreateMockNotification(kSafetyCheckUpdateChromeNotificationID,
+                             base::SysUTF8ToNSString(kTestProfileName));
+
+  StubGetDeliveredNotifications(@[
+    mock_password_notification, mock_safe_browsing_notification,
+    mock_update_chrome_notification
+  ]);
+
+  // Expect removal of all three notification types.
+  id notification_ids_matcher =
+      [OCMArg checkWithBlock:^BOOL(NSArray<NSString*>* identifiers) {
+        EXPECT_EQ(identifiers.count, 3u);
+        EXPECT_TRUE(
+            [identifiers containsObject:kSafetyCheckPasswordNotificationID]);
+        EXPECT_TRUE([identifiers
+            containsObject:kSafetyCheckSafeBrowsingNotificationID]);
+        EXPECT_TRUE([identifiers
+            containsObject:kSafetyCheckUpdateChromeNotificationID]);
+        return YES;
+      }];
+  OCMExpect([mock_notification_center_
+      removeDeliveredNotificationsWithIdentifiers:notification_ids_matcher]);
+
+  // Simulate all issues being resolved.
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kSafe);
+  safety_check_manager_->SetSafeBrowsingCheckStateForTesting(
+      SafeBrowsingSafetyCheckState::kSafe);
+  safety_check_manager_->SetUpdateChromeCheckStateForTesting(
+      UpdateChromeSafetyCheckState::kUpToDate);
+
+  // Trigger the notification clear and reschedule logic.
+  SimulateSceneActive();
+
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }

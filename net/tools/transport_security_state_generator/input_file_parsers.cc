@@ -339,15 +339,15 @@ bool ParseJSON(std::string_view hsts_json,
       "test",        "public-suffix", "google",      "custom",
       "bulk-legacy", "bulk-18-weeks", "bulk-1-year", "public-suffix-requested"};
 
-  std::optional<base::Value::Dict> hsts_dict =
-      base::JSONReader::ReadDict(hsts_json);
+  std::optional<base::Value::Dict> hsts_dict = base::JSONReader::ReadDict(
+      hsts_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!hsts_dict) {
     LOG(ERROR) << "Could not parse the input HSTS JSON file";
     return false;
   }
 
-  std::optional<base::Value::Dict> pins_dict =
-      base::JSONReader::ReadDict(pins_json);
+  std::optional<base::Value::Dict> pins_dict = base::JSONReader::ReadDict(
+      pins_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!pins_dict) {
     LOG(ERROR) << "Could not parse the input pins JSON file";
     return false;
@@ -507,11 +507,7 @@ bool ParseJSON(std::string_view hsts_json,
     }
     std::string name = *maybe_name;
 
-    const std::string* maybe_report_uri = parsed->FindString("report_uri");
-    std::string report_uri =
-        maybe_report_uri ? *maybe_report_uri : std::string();
-
-    auto pinset = std::make_unique<Pinset>(name, report_uri);
+    auto pinset = std::make_unique<Pinset>(name);
 
     const base::Value::List* pinset_static_hashes_list =
         parsed->FindList("static_spki_hashes");

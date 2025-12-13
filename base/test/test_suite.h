@@ -64,6 +64,11 @@ class TestSuite {
   // Disables checks for certain global objects being leaked across tests.
   void DisableCheckForLeakedGlobals();
 
+  // Resets the ScopedFeatureList instance that is initialized for each test.
+  // This may be needed in cases where there's an exit() in the middle of a test
+  // that has its own ScopedFeatureList, such as fuzz tests.
+  static void ResetScopedFeatureListInstance();
+
  protected:
   // By default fatal log messages (e.g. from DCHECKs) result in error dialogs
   // which gum up buildbots. Use a minimalistic assert handler which just

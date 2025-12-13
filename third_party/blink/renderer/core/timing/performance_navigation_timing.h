@@ -9,7 +9,6 @@
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_timing_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
@@ -25,7 +24,6 @@ struct DocumentLoadTimingValues;
 class DocumentLoader;
 class LocalDOMWindow;
 class ExecutionContext;
-class V8NavigationEntropy;
 
 class CORE_EXPORT PerformanceNavigationTiming final
     : public PerformanceResourceTiming,
@@ -58,8 +56,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   uint16_t redirectCount() const;
   NotRestoredReasons* notRestoredReasons() const;
   PerformanceTimingConfidence* confidence() const;
-  V8NavigationEntropy systemEntropy() const;
-  DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
+  DOMHighResTimeStamp criticalCHRestart() const;
 
   // PerformanceResourceTiming overrides:
   DOMHighResTimeStamp fetchStart() const override;
@@ -81,11 +78,11 @@ class CORE_EXPORT PerformanceNavigationTiming final
   static V8NavigationTimingType::Enum GetNavigationTimingType(
       WebNavigationType);
 
-  V8NavigationEntropy::Enum GetSystemEntropy() const;
   DocumentLoader* GetDocumentLoader() const;
 
   NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
+  PerformanceTimingConfidence* GetConfidence() const;
 
   const network::mojom::NavigationDeliveryType navigation_delivery_type_;
   const WebNavigationType navigation_type_;

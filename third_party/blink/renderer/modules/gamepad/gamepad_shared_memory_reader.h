@@ -55,6 +55,8 @@ class GamepadSharedMemoryReader
                         const device::Gamepad& gamepad) override;
   void GamepadDisconnected(uint32_t index,
                            const device::Gamepad& gamepad) override;
+  void GamepadRawInputChanged(uint32_t index,
+                              const device::Gamepad& gamepad) override;
 
   base::ReadOnlySharedMemoryRegion renderer_shared_buffer_region_;
   base::ReadOnlySharedMemoryMapping renderer_shared_buffer_mapping_;

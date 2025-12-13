@@ -30,7 +30,7 @@
 /// setting for start states to be tagged. The reason for this is
 /// that a DFA search loop is usually written to execute a prefilter once it
 /// enters a start state. But if there is no prefilter, this handling can be
-/// quite diastrous as the DFA may ping-pong between the special handling code
+/// quite disastrous as the DFA may ping-pong between the special handling code
 /// and a possible optimized hot path for handling untagged states. When start
 /// states aren't specialized, then they are untagged and remain in the hot
 /// path.
@@ -180,7 +180,7 @@ impl LazyStateID {
     const MASK_QUIT: usize = 1 << (LazyStateID::MAX_BIT - 2);
     const MASK_START: usize = 1 << (LazyStateID::MAX_BIT - 3);
     const MASK_MATCH: usize = 1 << (LazyStateID::MAX_BIT - 4);
-    const MAX: usize = LazyStateID::MASK_MATCH - 1;
+    pub(crate) const MAX: usize = LazyStateID::MASK_MATCH - 1;
 
     /// Create a new lazy state ID.
     ///

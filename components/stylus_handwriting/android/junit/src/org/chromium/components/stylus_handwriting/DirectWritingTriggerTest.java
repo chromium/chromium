@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.RequiresApi;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,19 +34,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.stylus_handwriting.test_support.ShadowDirectWritingSettingsHelper;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link DirectWritingTrigger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(
-        manifest = Config.NONE,
-        shadows = {ShadowDirectWritingSettingsHelper.class})
 public class DirectWritingTriggerTest {
     @Mock private WebContents mWebContents;
     @Mock private DirectWritingServiceBinder mDwServiceBinder;
@@ -68,13 +62,7 @@ public class DirectWritingTriggerTest {
         doReturn(mContext).when(mContainerView).getContext();
 
         // DirectWritingTrigger class comes into action only when Setting is enabled.
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
-    }
-
-    @After
-    public void tearDown() {
-        // Reset shadow settings.
-        ShadowDirectWritingSettingsHelper.setEnabled(false);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
     }
 
     private MotionEvent getMotionEvent(int toolType, int action) {
@@ -150,7 +138,7 @@ public class DirectWritingTriggerTest {
     @Test
     @Feature({"Stylus Handwriting"})
     public void testOnFocusChanged_lostFocus() {
-        ShadowDirectWritingSettingsHelper.setEnabled(false);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(false);
         mDwTrigger.updateDwSettings(mContext);
 
         mDwTrigger.onFocusChanged(false);
@@ -159,7 +147,7 @@ public class DirectWritingTriggerTest {
         // stop recognition is not called until StylusWritingImeCallback is set.
         verify(mDwServiceBinder, never()).onStopRecognition(any(), any(), any());
 
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
         mDwTrigger.updateDwSettings(mContext);
         mDwTrigger.onFocusChanged(false);
         verify(mDwServiceBinder).hideDwToolbar();
@@ -274,13 +262,13 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testUpdateHandlerStateGainFocus() {
         // Test behaviour when window gains focus with DW setting disabled.
-        ShadowDirectWritingSettingsHelper.setEnabled(false);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(false);
         mDwTrigger.updateHandlerState(mContext, true);
         verify(mDwTrigger).updateDwSettings(mContext);
         verify(mDwServiceBinder, never()).hideDwToolbar();
         verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
         mDwTrigger.updateHandlerState(mContext, true);
         verify(mDwServiceBinder, never()).hideDwToolbar();
         verify(mDwServiceBinder).handleWindowFocusChanged(mContext, true);
@@ -290,14 +278,14 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testUpdateHandlerStateLostFocus() {
         // Test behaviour when window loses focus with DW setting disabled.
-        ShadowDirectWritingSettingsHelper.setEnabled(false);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(false);
         mDwTrigger.updateHandlerState(mContext, false);
         verify(mDwTrigger, never()).updateDwSettings(any());
         verify(mDwServiceBinder, never()).hideDwToolbar();
         verify(mDwServiceBinder, never()).handleWindowFocusChanged(any(), anyBoolean());
 
         // Test behaviour when window loses focus with DW setting already enabled.
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
         mDwTrigger.updateDwSettings(mContext);
 
         mDwTrigger.updateHandlerState(mContext, false);
@@ -311,7 +299,7 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testFocusNodeChanged_isEditable() {
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
         mDwTrigger.updateDwSettings(mContext);
         mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         // Simulate an ACTION_UP to check if stop recognition is called when editable is focused.
@@ -338,7 +326,7 @@ public class DirectWritingTriggerTest {
     @Feature({"Stylus Handwriting"})
     public void testFocusNodeChanged_isNotEditable() {
         doReturn(true).when(mDwServiceBinder).isServiceConnected();
-        ShadowDirectWritingSettingsHelper.setEnabled(true);
+        DirectWritingSettingsHelper.setIsEnabledForTesting(true);
         mDwTrigger.updateDwSettings(mContext);
         mDwTrigger.setServiceCallbackForTest(mDwServiceCallback);
         // Simulate an ACTION_UP to verify hide DW toolbar is called when node is not editable.

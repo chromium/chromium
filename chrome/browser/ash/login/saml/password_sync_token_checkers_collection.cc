@@ -67,8 +67,9 @@ void PasswordSyncTokenCheckersCollection::OnInvalidSyncToken(
   const std::string* sync_token = known_user.GetPasswordSyncToken(account_id);
   if (!sync_token)
     return;
-  if (base::Contains(sync_token_checkers_, *sync_token))
+  if (base::Contains(sync_token_checkers_, *sync_token)) {
     sync_token_checkers_.erase(*sync_token);
+  }
 }
 
 }  // namespace ash

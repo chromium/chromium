@@ -9,14 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 #include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
+#include "chrome/browser/ui/views/web_apps/protocol_handler_picker_coordinator.h"
 #include "chrome/browser/web_applications/app_service/publisher_helper.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -120,52 +119,9 @@ void OnArcHandled(const GURL& url,
     new ExternalProtocolDialog(web_contents.get(), url,
                                base::UTF8ToUTF16(registration->name()),
                                initiating_origin, initiator_document);
-  } else if (url.scheme() == url::kTelScheme) {
+  } else if (url.GetScheme() == url::kTelScheme) {
     new ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
   }
-}
-
-std::string GetAppName(apps::AppServiceProxy* proxy,
-                       const std::string& app_id) {
-  std::optional<std::string> app_name;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id,
-      [&](const apps::AppUpdate& update) { app_name = update.ShortName(); });
-  CHECK(app_name);
-  return *app_name;
-}
-
-void HandleWebAppManifestProtocolHandler(
-    Profile* profile,
-    WebContents* web_contents,
-    const GURL& url,
-    const std::vector<std::string>& app_ids,
-    const std::optional<url::Origin>& initiating_origin,
-    content::WeakDocumentPtr initiator_document) {
-  CHECK(!app_ids.empty());
-  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
-  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (app_ids.size() > 1) {
-    // TODO(crbug.com/422422887): Figure out how to disambiguate conflicting
-    // protocol handlers; for now, pick the first one in the list.
-    static constexpr std::string_view kConfictingProtocolHandlersWarning =
-        "There's more than one web application handling %s links : [%s]; "
-        "ChromeOS currently doesn't support disambiguating multiple handlers.";
-    if (content::RenderFrameHost* rfh =
-            initiator_document.AsRenderFrameHostIfValid()) {
-      std::vector<std::string> app_names = base::ToVector(
-          app_ids,
-          [&](const auto& app_id) { return GetAppName(proxy, app_id); });
-      rfh->AddMessageToConsole(
-          blink::mojom::ConsoleMessageLevel::kWarning,
-          base::StringPrintf(kConfictingProtocolHandlersWarning, url.scheme(),
-                             base::JoinString(app_names, ",")));
-    }
-  }
-
-  new ExternalProtocolDialog(web_contents, url,
-                             base::UTF8ToUTF16(GetAppName(proxy, app_ids[0])),
-                             initiating_origin, std::move(initiator_document));
 }
 
 }  // namespace
@@ -194,8 +150,8 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
   if (std::vector<std::string> app_ids =
           web_app::GetWebAppIdsForProtocolUrl(profile, url);
       !app_ids.empty()) {
-    HandleWebAppManifestProtocolHandler(profile, web_contents, url, app_ids,
-                                        initiating_origin, initiator_document);
+    web_app::LaunchProtocolUrlInPreferredApp(web_contents, url, app_ids,
+                                             initiating_origin);
     return;
   }
 

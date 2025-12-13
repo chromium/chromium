@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "chromecast/browser/cast_browser_main_parts.h"
 
 #include <stddef.h>
@@ -18,7 +13,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -173,7 +168,8 @@ void RunClosureOnSignal(int signum) {
   }
 
   char message[48] = "Received close signal: ";
-  strncat(message, strsignal(signum), sizeof(message) - strlen(message) - 1);
+  UNSAFE_TODO(strncat(message, strsignal(signum),
+                      sizeof(message) - strlen(message) - 1));
   RAW_LOG(INFO, message);
 
   DCHECK(g_signal_closure);
@@ -193,7 +189,7 @@ void RegisterClosureOnSignal(base::OnceClosure closure) {
   g_main_pthread = pthread_self();
 
   struct sigaction sa_new;
-  memset(&sa_new, 0, sizeof(sa_new));
+  UNSAFE_TODO(memset(&sa_new, 0, sizeof(sa_new)));
   sa_new.sa_handler = RunClosureOnSignal;
   sigfillset(&sa_new.sa_mask);
   sa_new.sa_flags = SA_RESTART;
@@ -220,7 +216,7 @@ void KillOnAlarm(int signum) {
 
 void RegisterKillOnAlarm(int timeout_seconds) {
   struct sigaction sa_new;
-  memset(&sa_new, 0, sizeof(sa_new));
+  UNSAFE_TODO(memset(&sa_new, 0, sizeof(sa_new)));
   sa_new.sa_handler = KillOnAlarm;
   sigfillset(&sa_new.sa_mask);
   sa_new.sa_flags = SA_RESTART;
@@ -241,7 +237,7 @@ void DeregisterKillOnAlarm() {
   alarm(0);
 
   struct sigaction sa_new;
-  memset(&sa_new, 0, sizeof(sa_new));
+  UNSAFE_TODO(memset(&sa_new, 0, sizeof(sa_new)));
   sa_new.sa_handler = SIG_DFL;
   sigfillset(&sa_new.sa_mask);
   sa_new.sa_flags = SA_RESTART;
@@ -528,7 +524,7 @@ int CastBrowserMainParts::PreCreateThreads() {
 #if defined(USE_AURA)
   cast_screen_ = std::make_unique<CastScreen>();
   cast_browser_process_->SetCastScreen(cast_screen_.get());
-  DCHECK(!display::Screen::GetScreen());
+  DCHECK(!display::Screen::Get());
   display::Screen::SetScreenInstance(cast_screen_.get());
   cast_browser_process_->SetDisplayConfigurator(
       std::make_unique<CastDisplayConfigurator>(cast_screen_.get()));

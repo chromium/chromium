@@ -16,14 +16,15 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ActivityOptionsCompat;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
+import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -51,13 +52,14 @@ import java.util.function.Consumer;
  * to get a crash stack. This is done to prevent Android from labeling the whole process as "bad"
  * and blocking taps on the widget. See http://crbug.com/712061.
  */
+@NullMarked
 public class SearchWidgetProvider extends AppWidgetProvider {
     /** Wraps up all things that a {@link SearchWidgetProvider} can request things from. */
     static class SearchWidgetProviderDelegate implements Consumer<SearchActivityPreferences> {
         private final Context mContext;
         private final @Nullable AppWidgetManager mManager;
 
-        public SearchWidgetProviderDelegate(Context context) {
+        public SearchWidgetProviderDelegate(@Nullable Context context) {
             mContext = context == null ? ContextUtils.getApplicationContext() : context;
             mManager = AppWidgetManager.getInstance(mContext);
         }
@@ -94,30 +96,32 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     public static final String EXTRA_FROM_SEARCH_WIDGET =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_WIDGET";
 
-    /** Number of consecutive crashes this widget will absorb before giving up. */
-    private static final int CRASH_LIMIT = 3;
-
     private static final Object DELEGATE_LOCK = new Object();
 
     @SuppressLint("StaticFieldLeak")
-    private static SearchWidgetProviderDelegate sDelegate;
+    private static @Nullable SearchWidgetProviderDelegate sDelegate;
 
     public static void initialize() {
         SearchActivityPreferencesManager.addObserver(getDelegate());
+        // This is a one-time operation to remove the obsolete key.
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES);
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+        if (Intent.ACTION_LOCALE_CHANGED.equals(intent.getAction())) {
+            run(() -> performUpdate(null, null));
+        }
     }
 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
-        run(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        performUpdate(ids, null);
-                    }
-                });
+        run(() -> performUpdate(ids, null));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
         SearchActivityClient client =
                 new SearchActivityClientImpl(context, IntentOrigin.SEARCH_WIDGET);
@@ -141,8 +145,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
                 optionsBundle);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static void performUpdate(int[] ids, SearchActivityPreferences prefs) {
+    @VisibleForTesting
+    public static void performUpdate(
+            int @Nullable [] ids, @Nullable SearchActivityPreferences prefs) {
         SearchWidgetProviderDelegate delegate = getDelegate();
         if (ids == null) ids = delegate.getAllSearchWidgetIds();
         if (prefs == null) prefs = SearchActivityPreferencesManager.getCurrent();
@@ -158,7 +163,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     private static RemoteViews createWidgetViews(
-            Context context, String engineName, boolean isVoiceSearchAvailable) {
+            Context context, @Nullable String engineName, boolean isVoiceSearchAvailable) {
         RemoteViews views =
                 new RemoteViews(context.getPackageName(), R.layout.search_widget_template);
 
@@ -177,21 +182,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         return views;
     }
 
-    /** Updates the number of consecutive crashes this widget has absorbed. */
-    @SuppressLint({"ApplySharedPref", "CommitPrefEdits"})
-    static void updateNumConsecutiveCrashes(int newValue) {
-        SharedPreferencesManager prefs = getDelegate().getChromeSharedPreferences();
-        if (getNumConsecutiveCrashes(prefs) == newValue) return;
-
-        // This metric is committed synchronously because it relates to crashes.
-        prefs.writeIntSync(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES, newValue);
-    }
-
-    @VisibleForTesting
-    static int getNumConsecutiveCrashes(SharedPreferencesManager prefs) {
-        return prefs.readInt(ChromePreferenceKeys.SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES);
-    }
-
     private static SearchWidgetProviderDelegate getDelegate() {
         synchronized (DELEGATE_LOCK) {
             if (sDelegate == null) {
@@ -205,22 +195,9 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     static void run(Runnable runnable) {
         try {
             runnable.run();
-            updateNumConsecutiveCrashes(0);
         } catch (Exception e) {
-            int numCrashes =
-                    getNumConsecutiveCrashes(getDelegate().getChromeSharedPreferences()) + 1;
-            updateNumConsecutiveCrashes(numCrashes);
-
-            if (numCrashes < CRASH_LIMIT) {
-                // Absorb the crash.
-                Log.e(
-                        SearchActivity.TAG,
-                        "Absorbing exception caught when attempting to launch widget.",
-                        e);
-            } else {
-                // Too many crashes have happened consecutively.  Let Android handle it.
-                throw e;
-            }
+            // Report the exception instead of crashing.
+            JavaExceptionReporter.reportException(e);
         }
     }
 

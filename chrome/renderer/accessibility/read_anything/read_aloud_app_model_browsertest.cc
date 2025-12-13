@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "read_anything_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -78,24 +79,21 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     scoped_feature_list_.InitAndEnableFeature(features::kReadAnythingReadAloud);
   }
 
-  void EnablePhraseHighlighting() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudPhraseHighlighting},
-        {});
+  void DisableReadAloud() {
+    scoped_feature_list_.InitWithFeatures({},
+                                          {features::kReadAnythingReadAloud});
   }
 
   std::vector<ui::AXNodeID> MoveToNextGranularityAndGetText(
       const std::set<ui::AXNodeID>* current_nodes) {
     model().MovePositionToNextGranularity();
-    return model().GetCurrentText(false, false, current_nodes);
+    return model().GetCurrentText(false, false, current_nodes).node_ids;
   }
 
   std::vector<ui::AXNodeID> MoveToPreviousGranularityAndGetText(
       const std::set<ui::AXNodeID>* current_nodes) {
     model().MovePositionToPreviousGranularity();
-    return model().GetCurrentText(false, false, current_nodes);
+    return model().GetCurrentText(false, false, current_nodes).node_ids;
   }
 
   a11y::ReadAloudCurrentGranularity GetNextNodes(
@@ -187,9 +185,20 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
     ExpectHighlightAtIndexMatches(highlight_index, text_ranges, true);
   }
 
+  std::vector<ReadAloudTextSegment> GetCurrentTextSegments(
+      const std::set<ui::AXNodeID>* current_nodes,
+      bool is_pdf = false,
+      bool is_docs = false) {
+    return model_->GetCurrentTextSegments(is_pdf, is_docs, current_nodes);
+  }
+
   ReadAloudAppModel& model() { return *model_; }
 
- private:
+  static constexpr ui::AXNodeID kId1 = 2;
+  static constexpr ui::AXNodeID kId2 = 3;
+  static constexpr ui::AXNodeID kId3 = 4;
+
+ protected:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
   raw_ptr<ReadAloudAppModel> model_ = nullptr;
@@ -203,6 +212,7 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
 // Read Aloud is currently only enabled by default on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ReadAnythingReadAloudAppModelTest, LogSpeechStop_WithoutReadAloud) {
+  DisableReadAloud();
   auto source = ReadAloudAppModel::ReadAloudStopSource::kCloseReadingMode;
   base::HistogramTester histogram_tester;
 
@@ -254,6 +264,31 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
       ReadAloudAppModel::kAudioStartTimeSuccessHistogramName, 0);
   histogram_tester.ExpectTotalCount(
       ReadAloudAppModel::kAudioStartTimeFailureHistogramName, 0);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechNotPlaying) {
+  EnableReadAloud();
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest,
+       LogSpeechStop_WithReadAloud_LogsStopSourceWithSpeechPlaying) {
+  EnableReadAloud();
+  SetSpeechPlaying(true);
+  auto source = ReadAloudAppModel::ReadAloudStopSource::kFinishContent;
+  base::HistogramTester histogram_tester;
+
+  LogSpeechStop(source);
+
+  histogram_tester.ExpectUniqueSample(
+      ReadAloudAppModel::kSpeechStopSourceHistogramName, source, 1);
 }
 
 TEST_F(ReadAnythingReadAloudAppModelTest, SetAudioCurrentlyPlaying_LogsDelay) {
@@ -353,7 +388,216 @@ TEST_F(ReadAnythingReadAloudAppModelTest, DefaultLanguageCode) {
   EXPECT_EQ(DefaultLanguage(), lang2);
 }
 
-TEST_F(ReadAnythingReadAloudAppModelTest,
+// TODO: crbug.com/440400392 - Ensure that phrase highlighting works with the
+// TS text segmentation implementation.
+class ReadAnythingReadAloudAppModelV8SegmentationTest
+    : public ReadAnythingReadAloudAppModelTest {
+ public:
+  void SetUp() override {
+    // Phrase highlighting currently doesn't work with the TS text segmentation
+    // implementation, so we need to disable it to test phrase highlighting.
+    scoped_feature_list_.InitWithFeatures(
+        {features::kReadAnythingReadAloud,
+         features::kReadAnythingReadAloudPhraseHighlighting},
+        {features::kReadAnythingReadAloudTSTextSegmentation});
+    ReadAnythingReadAloudAppModelTest::SetUp();
+  }
+};
+
+TEST_F(
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+  model().PreprocessTextForSpeech(false, false, &current_nodes);
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 3u);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(7, {{kId1, 0, 17}});
+  ExpectPhraseHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 0, 17}});
+
+  int base_length = sentence1.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(26, {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  base_length += sentence2.length();
+  ExpectPhraseHighlightAtIndexMatches(base_length - 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(base_length,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
+                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  ExpectPhraseHighlightAtIndexMatches(40, {{kId3, 3, 21}});
+
+  ExpectPhraseHighlightAtIndexMatches(base_length + sentence3.length() - 1,
+                                      {{kId3, 21, 31}});
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length());
+
+  // Out-of-bounds nodes return an empty array.
+  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length() + 1);
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
+}
+
+TEST_F(
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  model().GetDependencyParserModel().UpdateWithFile(test::GetValidModelFile());
+  DependencyParserModel& phrase_model = model().GetDependencyParserModel();
+
+  EXPECT_TRUE(phrase_model.IsAvailable());
+
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy or ";
+  std::u16string sentence2 = u"earthbound, no ";
+  std::u16string sentence3 = u"worries or doubts interfere.";
+
+  // Expected phrases:
+  // Never feel heavy or earthbound, /no worries or doubts interfere.
+  // Expected phrase breaks: 0, 32
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+  model().PreprocessTextForSpeech(false, false, &current_nodes);
+
+  // Wait till all async calculations complete.
+  task_environment_.RunUntilIdle();
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 3u);
+
+  // First character (N) => first phrase
+  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 20th character (e of earthbound) => first phrase
+  ExpectPhraseHighlightAtIndexMatches(20, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 31st character (space before "no") => first phrase
+  ExpectPhraseHighlightAtIndexMatches(31, {{kId1, 0, 20}, {kId2, 0, 12}});
+
+  // 32nd character (n of no) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(32, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 35th character (w of worries) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(35, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 62nd character (final .) => second phrase
+  ExpectPhraseHighlightAtIndexMatches(62, {{kId2, 12, 15}, {kId3, 0, 28}});
+
+  // 63rd character (past the end of the sentence) => empty
+  ExpectPhraseHighlightAtIndexEmpty(63);
+
+  // Invalid indices.
+  ExpectPhraseHighlightAtIndexEmpty(535);
+  ExpectPhraseHighlightAtIndexEmpty(-10);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetHighlightForCurrentSegmentIndex_ReturnsCorrectNodes) {
+  // Text indices             0 123456789012345678901
+  std::u16string sentence = u"I\'m crossing the line!";
+  ui::AXNodeData static_text = test::TextNode(kId1, sentence);
+
+  const std::set<ui::AXNodeID> current_nodes =
+      InitializeWithAndProcessNodes({std::move(static_text)});
+
+  // Before there are any processed granularities, GetHighlightStartIndex
+  // should return an invalid id.
+  ExpectHighlightAtIndexEmpty(1);
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 1u);
+
+  // Since we just have one node with one text segment, the returned index
+  // should equal the passed parameter.
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 4}});
+  ExpectHighlightAtIndexMatches(3, {{kId1, 3, 4}});
+  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 13}});
+  ExpectHighlightAtIndexMatches(sentence.length() - 1, {{kId1, 21, 22}});
+  ExpectHighlightAtIndexEmpty(static_cast<int>(sentence.length()));
+}
+
+TEST_F(
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetHighlightForCurrentSegmentIndex_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
+  // Text indices:             0123456789012345678901234567890
+  std::u16string sentence1 = u"Never feel heavy ";
+  std::u16string sentence2 = u"or earthbound, ";
+  std::u16string sentence3 = u"no worries or doubts interfere.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  // Before there are any processed granularities,
+  // GetHighlightForCurrentSegmentIndex should return an empty array.
+  ExpectHighlightAtIndexEmpty(1);
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 3u);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  int base_length = sentence1.length();
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
+  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId1, 16, 17}});
+  ExpectHighlightAtIndexMatches(base_length, {{kId2, 0, 3}});
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  base_length += sentence2.length();
+  ExpectHighlightAtIndexMatches(sentence1.length() + 1, {{kId2, 1, 3}});
+  ExpectHighlightAtIndexMatches(26, {{kId2, 9, 15}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId2, 14, 15}});
+  ExpectHighlightAtIndexMatches(base_length, {{kId3, 0, 3}});
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  base_length += sentence3.length();
+  ExpectHighlightAtIndexMatches(sentence1.length() + sentence2.length() + 1,
+                                {{kId3, 1, 3}});
+  ExpectHighlightAtIndexMatches(40, {{kId3, 8, 11}});
+  ExpectHighlightAtIndexMatches(base_length - 1, {{kId3, 30, 31}});
+  ExpectHighlightAtIndexEmpty(base_length);
+
+  // Out-of-bounds nodes return an empty array.
+  ExpectHighlightAtIndexEmpty(base_length);
+  ExpectHighlightAtIndexEmpty(535);
+  ExpectHighlightAtIndexEmpty(-10);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
        GetNextValidPosition_UsesCurrentGranularity) {
   std::u16string sentence1 = u"But from up here. The ";
   std::u16string sentence2 = u"world ";
@@ -361,9 +605,6 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
       u"looks so small. And suddenly life seems so clear. And from up here. "
       u"You coast past it all. The obstacles just disappear.";
 
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
   ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
@@ -380,8 +621,6 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   // The first segment was returned correctly.
   EXPECT_EQ(current_granularity.node_ids.size(), 1u);
   EXPECT_TRUE(base::Contains(current_granularity.node_ids, kId1));
-  EXPECT_EQ(model().GetCurrentTextStartIndex(kId1), -1);
-  EXPECT_EQ(model().GetCurrentTextEndIndex(kId1), -1);
 
   ui::AXNodePosition::AXPositionInstance new_position =
       GetNextNodePosition(&current_nodes);
@@ -398,15 +637,124 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   EXPECT_EQ(new_position->anchor_id(), kId3);
 }
 
-TEST_F(ReadAnythingReadAloudAppModelTest,
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest, GetNextValidPosition) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+
+  // Getting the next node position shouldn't update the current AXPosition.
+  new_position = GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId2);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetNextValidPosition_SkipsNonTextNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId3, sentence2);
+
+  ui::AXNodeData empty_node;
+  empty_node.role = ax::mojom::Role::kNone;
+  empty_node.id = kId2;
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(empty_node),
+       std::move(static_text2)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
+  EXPECT_EQ(new_position->GetText(), sentence2);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetNextValidPosition_SkipsNonDistilledNode) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  InitializeWithAndProcessNodes({std::move(static_text1),
+                                 std::move(static_text2),
+                                 std::move(static_text3)});
+  // Don't distill the node with id 3.
+  std::set<ui::AXNodeID> current_nodes;
+  current_nodes.insert(kId1);
+  current_nodes.insert(kId3);
+  InitAXPositionWithNode(kId1);
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetNextValidPosition_SkipsNodeWithHTMLTag) {
+  std::u16string sentence1 = u"This is a sentence.";
+  std::u16string sentence2 = u"This is another sentence.";
+  std::u16string sentence3 = u"And this is yet another sentence.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes);
+  EXPECT_EQ(new_position->anchor_id(), kId3);
+  EXPECT_EQ(new_position->GetText(), sentence3);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
+  std::u16string sentence1 = u"This is a sentence.";
+  ui::AXNodeData static_text = test::TextNode(/* id= */ 2, sentence1);
+  ui::AXNodeData empty_node1;
+  empty_node1.role = ax::mojom::Role::kNone;
+  empty_node1.id = 3;
+  ui::AXNodeData empty_node2;
+  empty_node2.role = ax::mojom::Role::kNone;
+  empty_node2.id = 4;
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text), std::move(empty_node1), std::move(empty_node2)});
+
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      a11y::ReadAloudCurrentGranularity();
+  current_granularity.AddText(static_text.id, 0, sentence1.length(), sentence1);
+
+  ui::AXNodePosition::AXPositionInstance new_position =
+      GetNextNodePosition(&current_nodes, current_granularity);
+  EXPECT_TRUE(new_position->IsNullPosition());
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
        GetNextNodes_AfterResetReadAloudState_StartsOver) {
   std::u16string sentence1 = u"Where the north wind meets the sea. ";
   std::u16string sentence2 = u"There's a river full of memory. ";
   std::u16string sentence3 = u"Sleep my darling safe and sound. ";
 
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
   ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
@@ -444,90 +792,52 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   EXPECT_EQ(first_granularity.text, sentence1);
 }
 
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetHighlightForCurrentSegmentIndex_ReturnsCorrectNodes) {
-  // Text indices             0 123456789012345678901
-  std::u16string sentence = u"I\'m crossing the line!";
-  static constexpr ui::AXNodeID kId = 2;
-  ui::AXNodeData static_text = test::TextNode(kId, sentence);
-
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetCurrentTextSegments_ReturnsCorrectSegments) {
+  std::u16string sentence = u"I broke into a million pieces";
+  ui::AXNodeData static_text = test::TextNode(kId1, sentence);
   const std::set<ui::AXNodeID> current_nodes =
       InitializeWithAndProcessNodes({std::move(static_text)});
 
-  // Before there are any processed granularities, GetHighlightStartIndex
-  // should return an invalid id.
-  ExpectHighlightAtIndexEmpty(1);
+  std::vector<ReadAloudTextSegment> segments =
+      model().GetCurrentTextSegments(false, false, &current_nodes);
 
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
-  EXPECT_EQ(node_ids.size(), 1u);
-
-  // Since we just have one node with one text segment, the returned index
-  // should equal the passed parameter.
-  ExpectHighlightAtIndexMatches(0, {{kId, 0, 4}});
-  ExpectHighlightAtIndexMatches(3, {{kId, 3, 4}});
-  ExpectHighlightAtIndexMatches(7, {{kId, 7, 13}});
-  ExpectHighlightAtIndexMatches(sentence.length() - 1, {{kId, 21, 22}});
-  ExpectHighlightAtIndexEmpty(static_cast<int>(sentence.length()));
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(sentence.size(), segments.at(0).text_end);
 }
 
 TEST_F(
-    ReadAnythingReadAloudAppModelTest,
-    GetHighlightForCurrentSegmentIndex_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  // Text indices:             0123456789012345678901234567890
-  std::u16string sentence1 = u"Never feel heavy ";
-  std::u16string sentence2 = u"or earthbound, ";
-  std::u16string sentence3 = u"no worries or doubts interfere.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetCurrentTextSegments_SentenceSpansMultipleNodes_ReturnsCorrectSegments) {
+  std::u16string sentence1 = u"and I can't go back, ";
+  std::u16string sentence2 = u"But now I'm seeing all the beauty ";
+  std::u16string sentence3 = u"in the broken glass.";
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
   ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
   const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
       {std::move(static_text1), std::move(static_text2),
        std::move(static_text3)});
 
-  // Before there are any processed granularities,
-  // GetHighlightForCurrentSegmentIndex should return an empty array.
-  ExpectHighlightAtIndexEmpty(1);
+  std::vector<ReadAloudTextSegment> segments =
+      model().GetCurrentTextSegments(false, false, &current_nodes);
 
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
-  EXPECT_EQ(node_ids.size(), 3u);
-
-  // Spot check that indices 0->sentence1.length() map to the first node id.
-  int base_length = sentence1.length();
-  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
-  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
-  ExpectHighlightAtIndexMatches(base_length - 1, {{kId1, 16, 17}});
-  ExpectHighlightAtIndexMatches(base_length, {{kId2, 0, 3}});
-
-  // Spot check that indices in sentence 2 map to the second node id.
-  base_length += sentence2.length();
-  ExpectHighlightAtIndexMatches(sentence1.length() + 1, {{kId2, 1, 3}});
-  ExpectHighlightAtIndexMatches(26, {{kId2, 9, 15}});
-  ExpectHighlightAtIndexMatches(base_length - 1, {{kId2, 14, 15}});
-  ExpectHighlightAtIndexMatches(base_length, {{kId3, 0, 3}});
-
-  // Spot check that indices in sentence 3 map to the third node id.
-  base_length += sentence3.length();
-  ExpectHighlightAtIndexMatches(sentence1.length() + sentence2.length() + 1,
-                                {{kId3, 1, 3}});
-  ExpectHighlightAtIndexMatches(40, {{kId3, 8, 11}});
-  ExpectHighlightAtIndexMatches(base_length - 1, {{kId3, 30, 31}});
-  ExpectHighlightAtIndexEmpty(base_length);
-
-  // Out-of-bounds nodes return an empty array.
-  ExpectHighlightAtIndexEmpty(base_length);
-  ExpectHighlightAtIndexEmpty(535);
-  ExpectHighlightAtIndexEmpty(-10);
+  EXPECT_EQ(3u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(sentence1.size(), segments.at(0).text_end);
+  EXPECT_EQ(kId2, segments.at(1).id);
+  EXPECT_EQ(0u, segments.at(1).text_start);
+  EXPECT_EQ(sentence2.size(), segments.at(1).text_end);
+  EXPECT_EQ(kId3, segments.at(2).id);
+  EXPECT_EQ(0u, segments.at(2).text_start);
+  EXPECT_EQ(sentence3.size(), segments.at(2).text_end);
 }
 
 TEST_F(
-    ReadAnythingReadAloudAppModelTest,
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
     GetHighlightForCurrentSegmentIndex_NodeSpansMultipleSentences_ReturnsCorrectNodes) {
   // Text indices:            0 12345678901234 5678901234
   std::u16string segment1 = u"I\'m taking what\'s mine! ";
@@ -541,8 +851,6 @@ TEST_F(
   std::u16string node1_text = segment1 + segment2 + segment3 + segment4;
   std::u16string node2_text = u"line.";
 
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
   ui::AXNodeData static_text1 = test::TextNode(kId1, node1_text);
   ui::AXNodeData static_text2 = test::TextNode(kId2, node2_text);
 
@@ -553,7 +861,7 @@ TEST_F(
   ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
   EXPECT_EQ(node_ids.size(), 1u);
 
   // Storing as a separate variable so we don't need to cast every time.
@@ -643,67 +951,13 @@ TEST_F(
       static_cast<int>(segment4.length() + node2_text.length()));
 }
 
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetHighlightForCurrentSegmentIndex_AfterNext_ReturnsCorrectNodes) {
-  // Text indices:             012345678901234567890123456789012
-  std::u16string sentence1 = u"Never feel heavy or earthbound. ";
-  std::u16string sentence2 = u"No worries or doubts ";
-  std::u16string sentence3 = u"interfere.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-
-  // Before there are any processed granularities,
-  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
-  ExpectHighlightAtIndexEmpty(1);
-
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
-  EXPECT_EQ(node_ids.size(), 1u);
-
-  // Spot check that indices 0->sentence1.length() map to the first node id.
-  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
-  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
-  ExpectHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 31, 32}});
-  ExpectHighlightAtIndexEmpty(sentence1.length());
-
-  // Move to the next granularity.
-  node_ids = MoveToNextGranularityAndGetText(&current_nodes);
-  EXPECT_EQ(node_ids.size(), 2u);
-
-  // Spot check that indices in sentence 2 map to the second node id.
-  ExpectHighlightAtIndexMatches(0, {{kId2, 0, 3}});
-  ExpectHighlightAtIndexMatches(7, {{kId2, 7, 11}});
-  ExpectHighlightAtIndexMatches(sentence2.length() - 1, {{kId2, 20, 21}});
-
-  // Spot check that indices in sentence 3 map to the third node id.
-  ExpectHighlightAtIndexMatches(sentence2.length() + 1, {{kId3, 1, 10}});
-  ExpectHighlightAtIndexMatches(27, {{kId3, 6, 10}});
-  ExpectHighlightAtIndexMatches(sentence2.length() + sentence3.length() - 1,
-                                {{kId3, 9, 10}});
-
-  // Out-of-bounds nodes return invalid.
-  ExpectHighlightAtIndexEmpty(sentence2.length() + sentence3.length() + 1);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest,
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
        GetHighlightForCurrentSegmentIndex_AfterPrevious_ReturnsCorrectNodes) {
   // Text indices:             01234567890123456789012345678901234567890
   std::u16string sentence1 = u"There's nothing but you ";
   std::u16string sentence2 = u"looking down on the view from up here. ";
   std::u16string sentence3 = u"Stretch out with the wind behind you.";
 
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
   ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
@@ -717,7 +971,7 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
   EXPECT_EQ(node_ids.size(), 2u);
 
   // Move forward.
@@ -748,7 +1002,93 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   ExpectHighlightAtIndexEmpty(sentence1.length() + sentence2.length() + 1);
 }
 
-TEST_F(ReadAnythingReadAloudAppModelTest,
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetHighlightForCurrentSegmentIndex_AfterNext_ReturnsCorrectNodes) {
+  // Text indices:             012345678901234567890123456789012
+  std::u16string sentence1 = u"Never feel heavy or earthbound. ";
+  std::u16string sentence2 = u"No worries or doubts ";
+  std::u16string sentence3 = u"interfere.";
+
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  // Before there are any processed granularities,
+  // GetNodeIdForCurrentSegmentIndex should return an invalid id.
+  ExpectHighlightAtIndexEmpty(1);
+
+  std::vector<ui::AXNodeID> node_ids =
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
+  EXPECT_EQ(node_ids.size(), 1u);
+
+  // Spot check that indices 0->sentence1.length() map to the first node id.
+  ExpectHighlightAtIndexMatches(0, {{kId1, 0, 6}});
+  ExpectHighlightAtIndexMatches(7, {{kId1, 7, 11}});
+  ExpectHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 31, 32}});
+  ExpectHighlightAtIndexEmpty(sentence1.length());
+
+  // Move to the next granularity.
+  node_ids = MoveToNextGranularityAndGetText(&current_nodes);
+  EXPECT_EQ(node_ids.size(), 2u);
+
+  // Spot check that indices in sentence 2 map to the second node id.
+  ExpectHighlightAtIndexMatches(0, {{kId2, 0, 3}});
+  ExpectHighlightAtIndexMatches(7, {{kId2, 7, 11}});
+  ExpectHighlightAtIndexMatches(sentence2.length() - 1, {{kId2, 20, 21}});
+
+  // Spot check that indices in sentence 3 map to the third node id.
+  ExpectHighlightAtIndexMatches(sentence2.length() + 1, {{kId3, 1, 10}});
+  ExpectHighlightAtIndexMatches(27, {{kId3, 6, 10}});
+  ExpectHighlightAtIndexMatches(sentence2.length() + sentence3.length() - 1,
+                                {{kId3, 9, 10}});
+
+  // Out-of-bounds nodes return invalid.
+  ExpectHighlightAtIndexEmpty(sentence2.length() + sentence3.length() + 1);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
+       GetCurrentTextSegments_AfterPrevious_ReturnsCorrectNodes) {
+  std::u16string sentence1 =
+      u"Why did I cover up the colors stuck inside my head? ";
+  std::u16string sentence2 = u"I should've let the jagged edges ";
+  std::u16string sentence3 = u"meet the light instead.";
+  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
+  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
+  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
+      {std::move(static_text1), std::move(static_text2),
+       std::move(static_text3)});
+
+  std::vector<ReadAloudTextSegment> segments =
+      model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(sentence1.size(), segments.at(0).text_end);
+
+  MoveToNextGranularityAndGetText(&current_nodes);
+  segments = model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(2u, segments.size());
+  EXPECT_EQ(kId2, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(sentence2.size(), segments.at(0).text_end);
+  EXPECT_EQ(kId3, segments.at(1).id);
+  EXPECT_EQ(0u, segments.at(1).text_start);
+  EXPECT_EQ(sentence3.size(), segments.at(1).text_end);
+
+  MoveToPreviousGranularityAndGetText(&current_nodes);
+  segments = model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(sentence1.size(), segments.at(0).text_end);
+}
+
+TEST_F(ReadAnythingReadAloudAppModelV8SegmentationTest,
        GetHighlightForCurrentSegmentIndex_MultinodeWords_ReturnsCorrectLength) {
   std::u16string word1 = u"Stretch ";
   std::u16string word2 = u"out ";
@@ -761,8 +1101,6 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   std::u16string sentence1 = word1 + word2 + word3 + word4 + word5 + word6;
   std::u16string sentence2 = word7 + word8;
 
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
   ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
   ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
 
@@ -774,7 +1112,7 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
   ExpectHighlightAtIndexEmpty(1);
 
   std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
+      model().GetCurrentText(false, false, &current_nodes).node_ids;
   EXPECT_EQ(node_ids.size(), 2u);
 
   // Throughout first word.
@@ -809,250 +1147,55 @@ TEST_F(ReadAnythingReadAloudAppModelTest,
 }
 
 TEST_F(
-    ReadAnythingReadAloudAppModelTest,
-    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_NoModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  EnablePhraseHighlighting();
-
-  // Text indices:             0123456789012345678901234567890
-  std::u16string sentence1 = u"Never feel heavy ";
-  std::u16string sentence2 = u"or earthbound, ";
-  std::u16string sentence3 = u"no worries or doubts interfere.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
+    ReadAnythingReadAloudAppModelV8SegmentationTest,
+    GetCurrentTextSegments_NodeSpansMultipleSentences_ReturnsCorrectSegments) {
+  std::u16string segment1 = u"The scars are part of me! ";
+  std::u16string segment2 = u"Darkness and harmony. ";
+  std::u16string segment3 = u"My voice without the lies. ";
+  std::u16string segment4 = u"This is what it sounds ";
+  std::u16string node1_text = segment1 + segment2 + segment3 + segment4;
+  std::u16string node2_text = u"like.";
+  int end1 = segment1.size();
+  int end2 = end1 + segment2.size();
+  int end3 = end2 + segment3.size();
+  int end4 = end3 + segment4.size();
+  ui::AXNodeData static_text1 = test::TextNode(kId1, node1_text);
+  ui::AXNodeData static_text2 = test::TextNode(kId2, node2_text);
   const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-  model().PreprocessTextForSpeech(false, false, &current_nodes);
+      {std::move(static_text1), std::move(static_text2)});
 
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
-  EXPECT_EQ(node_ids.size(), 3u);
+  // The first sentence is all of segment1.
+  std::vector<ReadAloudTextSegment> segments =
+      model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(0u, segments.at(0).text_start);
+  EXPECT_EQ(end1, segments.at(0).text_end);
 
-  // Spot check that indices 0->sentence1.length() map to the first node id.
-  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 17}});
-  ExpectPhraseHighlightAtIndexMatches(7, {{kId1, 0, 17}});
-  ExpectPhraseHighlightAtIndexMatches(sentence1.length() - 1, {{kId1, 0, 17}});
+  // Next sentence is all of segment2.
+  MoveToNextGranularityAndGetText(&current_nodes);
+  segments = model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(end1, segments.at(0).text_start);
+  EXPECT_EQ(end2, segments.at(0).text_end);
 
-  int base_length = sentence1.length();
-  ExpectPhraseHighlightAtIndexMatches(base_length,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
+  // Next sentence is all of segment3.
+  MoveToNextGranularityAndGetText(&current_nodes);
+  segments = model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(1u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(end2, segments.at(0).text_start);
+  EXPECT_EQ(end3, segments.at(0).text_end);
 
-  // Spot check that indices in sentence 2 map to the second node id.
-  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(26, {{kId2, 0, 15}, {kId3, 0, 3}});
-
-  base_length += sentence2.length();
-  ExpectPhraseHighlightAtIndexMatches(base_length - 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(base_length,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-
-  // Spot check that indices in sentence 3 map to the third node id.
-  ExpectPhraseHighlightAtIndexMatches(base_length + 1,
-                                      {{kId2, 0, 15}, {kId3, 0, 3}});
-  ExpectPhraseHighlightAtIndexMatches(40, {{kId3, 3, 21}});
-
-  ExpectPhraseHighlightAtIndexMatches(base_length + sentence3.length() - 1,
-                                      {{kId3, 21, 31}});
-  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length());
-
-  // Out-of-bounds nodes return an empty array.
-  ExpectPhraseHighlightAtIndexEmpty(base_length + sentence3.length() + 1);
-  ExpectPhraseHighlightAtIndexEmpty(535);
-  ExpectPhraseHighlightAtIndexEmpty(-10);
-}
-
-TEST_F(
-    ReadAnythingReadAloudAppModelTest,
-    GetHighlightForCurrentSegmentIndex_PhrasesEnabled_ValidModel_SentenceSpansMultipleNodes_ReturnsCorrectNodes) {
-  EnablePhraseHighlighting();
-
-  model().GetDependencyParserModel().UpdateWithFile(test::GetValidModelFile());
-  DependencyParserModel& phrase_model = model().GetDependencyParserModel();
-
-  EXPECT_TRUE(phrase_model.IsAvailable());
-
-  // Text indices:             0123456789012345678901234567890
-  std::u16string sentence1 = u"Never feel heavy or ";
-  std::u16string sentence2 = u"earthbound, no ";
-  std::u16string sentence3 = u"worries or doubts interfere.";
-
-  // Expected phrases:
-  // Never feel heavy or earthbound, /no worries or doubts interfere.
-  // Expected phrase breaks: 0, 32
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-  model().PreprocessTextForSpeech(false, false, &current_nodes);
-
-  // Wait till all async calculations complete.
-  task_environment_.RunUntilIdle();
-
-  std::vector<ui::AXNodeID> node_ids =
-      model().GetCurrentText(false, false, &current_nodes);
-  EXPECT_EQ(node_ids.size(), 3u);
-
-  // First character (N) => first phrase
-  ExpectPhraseHighlightAtIndexMatches(0, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 20th character (e of earthbound) => first phrase
-  ExpectPhraseHighlightAtIndexMatches(20, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 31st character (space before "no") => first phrase
-  ExpectPhraseHighlightAtIndexMatches(31, {{kId1, 0, 20}, {kId2, 0, 12}});
-
-  // 32nd character (n of no) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(32, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 35th character (w of worries) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(35, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 62nd character (final .) => second phrase
-  ExpectPhraseHighlightAtIndexMatches(62, {{kId2, 12, 15}, {kId3, 0, 28}});
-
-  // 63rd character (past the end of the sentence) => empty
-  ExpectPhraseHighlightAtIndexEmpty(63);
-
-  // Invalid indices.
-  ExpectPhraseHighlightAtIndexEmpty(535);
-  ExpectPhraseHighlightAtIndexEmpty(-10);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest, GetNextValidPosition) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(&current_nodes);
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-
-  // Getting the next node position shouldn't update the current AXPosition.
-  new_position = GetNextNodePosition(&current_nodes);
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetNextValidPosition_SkipsNonTextNode) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-
-  ui::AXNodeData empty_node;
-  empty_node.role = ax::mojom::Role::kNone;
-  empty_node.id = 3;
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(empty_node),
-       std::move(static_text2)});
-
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(&current_nodes);
-  EXPECT_EQ(new_position->anchor_id(), kId2);
-  EXPECT_EQ(new_position->GetText(), sentence2);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetNextValidPosition_SkipsNonDistilledNode) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-
-  InitializeWithAndProcessNodes({std::move(static_text1),
-                                 std::move(static_text2),
-                                 std::move(static_text3)});
-  // Don't distill the node with id 3.
-  std::set<ui::AXNodeID> current_nodes;
-  current_nodes.insert(kId1);
-  current_nodes.insert(kId3);
-  InitAXPositionWithNode(kId1);
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(&current_nodes);
-  EXPECT_EQ(new_position->anchor_id(), kId3);
-  EXPECT_EQ(new_position->GetText(), sentence3);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetNextValidPosition_SkipsNodeWithHTMLTag) {
-  std::u16string sentence1 = u"This is a sentence.";
-  std::u16string sentence2 = u"This is another sentence.";
-  std::u16string sentence3 = u"And this is yet another sentence.";
-
-  static constexpr ui::AXNodeID kId1 = 2;
-  static constexpr ui::AXNodeID kId2 = 3;
-  static constexpr ui::AXNodeID kId3 = 4;
-  ui::AXNodeData static_text1 = test::TextNode(kId1, sentence1);
-  ui::AXNodeData static_text2 = test::TextNode(kId2, sentence2);
-  ui::AXNodeData static_text3 = test::TextNode(kId3, sentence3);
-  static_text2.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "h1");
-
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text1), std::move(static_text2),
-       std::move(static_text3)});
-
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(&current_nodes);
-  EXPECT_EQ(new_position->anchor_id(), kId3);
-  EXPECT_EQ(new_position->GetText(), sentence3);
-}
-
-TEST_F(ReadAnythingReadAloudAppModelTest,
-       GetNextValidPosition_ReturnsNullPositionAtEndOfTree) {
-  std::u16string sentence1 = u"This is a sentence.";
-  ui::AXNodeData static_text = test::TextNode(/* id= */ 2, sentence1);
-  ui::AXNodeData empty_node1;
-  empty_node1.role = ax::mojom::Role::kNone;
-  empty_node1.id = 3;
-  ui::AXNodeData empty_node2;
-  empty_node2.role = ax::mojom::Role::kNone;
-  empty_node2.id = 4;
-  const std::set<ui::AXNodeID> current_nodes = InitializeWithAndProcessNodes(
-      {std::move(static_text), std::move(empty_node1), std::move(empty_node2)});
-
-  a11y::ReadAloudCurrentGranularity current_granularity =
-      a11y::ReadAloudCurrentGranularity();
-  current_granularity.AddText(static_text.id, 0, sentence1.length(), sentence1);
-
-  ui::AXNodePosition::AXPositionInstance new_position =
-      GetNextNodePosition(&current_nodes, current_granularity);
-  EXPECT_TRUE(new_position->IsNullPosition());
+  // Final sentence is all of segment4 in node1 plus all of node2.
+  MoveToNextGranularityAndGetText(&current_nodes);
+  segments = model().GetCurrentTextSegments(false, false, &current_nodes);
+  EXPECT_EQ(2u, segments.size());
+  EXPECT_EQ(kId1, segments.at(0).id);
+  EXPECT_EQ(end3, segments.at(0).text_start);
+  EXPECT_EQ(end4, segments.at(0).text_end);
+  EXPECT_EQ(kId2, segments.at(1).id);
+  EXPECT_EQ(0, segments.at(1).text_start);
+  EXPECT_EQ(node2_text.size(), segments.at(1).text_end);
 }

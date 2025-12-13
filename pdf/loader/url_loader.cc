@@ -55,7 +55,7 @@ class HeadersToString final : public blink::WebHTTPHeaderVisitor {
 
  private:
   // Reference allows writing directly into `UrlResponse::headers`.
-  const raw_ref<std::string, DanglingUntriaged> buffer_ref_;
+  const raw_ref<std::string> buffer_ref_;
 };
 
 }  // namespace
@@ -141,7 +141,7 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
 }
 
 // Modeled on `ppapi::proxy::URLLoaderResource::ReadResponseBody()`.
-void UrlLoader::ReadResponseBody(base::span<char> buffer,
+void UrlLoader::ReadResponseBody(base::span<uint8_t> buffer,
                                  base::OnceCallback<void(int)> callback) {
   // Can be in `kLoadComplete` if still reading after loading finished.
   DCHECK(state_ == LoadingState::kStreamingData ||
@@ -241,20 +241,20 @@ void UrlLoader::DidFail(const blink::WebURLError& error) {
          state_ == LoadingState::kStreamingData)
       << static_cast<int>(state_);
 
-  Result pp_error = Result::kErrorFailed;
+  Result result = Result::kErrorFailed;
   switch (error.reason()) {
     case net::ERR_ACCESS_DENIED:
     case net::ERR_NETWORK_ACCESS_DENIED:
-      pp_error = Result::kErrorNoAccess;
+      result = Result::kErrorNoAccess;
       break;
 
     default:
       if (error.is_web_security_violation())
-        pp_error = Result::kErrorNoAccess;
+        result = Result::kErrorNoAccess;
       break;
   }
 
-  AbortLoad(pp_error);
+  AbortLoad(result);
 }
 
 void UrlLoader::AbortLoad(Result result) {

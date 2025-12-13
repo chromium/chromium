@@ -22,7 +22,7 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
     content::BrowserContext* browser_context) {
   // Verify that the feature is enabled and the host is a valid extension id.
   if (!url.SchemeIs(kExtensionScheme) ||
-      !crx_file::id_util::IdIsValid(url.host())) {
+      !crx_file::id_util::IdIsValid(url.GetHost())) {
     return std::nullopt;
   }
 
@@ -30,14 +30,16 @@ std::optional<GURL> TransformToDynamicURLIfNecessary(
   auto* registry = ExtensionRegistry::Get(browser_context);
   DCHECK(registry);
   const Extension* extension =
-      registry->enabled_extensions().GetByID(url.host());
+      registry->enabled_extensions().GetByID(url.GetHost());
   if (!extension || extension->manifest_version() < 3 ||
-      !WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, url.path())) {
+      !WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension,
+                                                       url.GetPath())) {
     return std::nullopt;
   }
 
   // Return the dynamic url.
-  return Extension::ResolveExtensionURL(extension->dynamic_url(), url.path());
+  return Extension::ResolveExtensionURL(extension->dynamic_url(),
+                                        url.GetPath());
 }
 
 }  // namespace extensions

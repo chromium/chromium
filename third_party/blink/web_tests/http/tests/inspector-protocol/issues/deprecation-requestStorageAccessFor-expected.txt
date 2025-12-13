@@ -1,0 +1,21 @@
+Tests that deprecation issues are reported for requestStorageAccessFor
+Inspector issue: {
+    issue : {
+        code : DeprecationIssue
+        details : {
+            deprecationIssueDetails : {
+                affectedFrame : {
+                    frameId : <string>
+                }
+                sourceCodeLocation : {
+                    columnNumber : 10
+                    lineNumber : 0
+                    scriptId : <string>
+                    url :
+                }
+                type : StorageAccessAPI_requestStorageAccessFor_Method
+            }
+        }
+    }
+}
+

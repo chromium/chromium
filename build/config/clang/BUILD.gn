@@ -6,20 +6,9 @@ import("//build/config/pch.gni")
 import("//build/config/rust.gni")
 import("clang.gni")
 
-declare_args() {
-  # Whether to use Clang runtime libraries from the ChromeOS chroot.
-  # This should be true iff using the compiler from the chroot.
-  use_cros_sysroot_libs =
-      is_chromeos_device && current_toolchain == default_toolchain
-}
-
 if (is_ios) {
   # For `target_environment` and `target_platform`.
   import("//build/config/apple/mobile_config.gni")
-}
-
-if (use_cros_sysroot_libs) {
-  import("//build/toolchain/cros_toolchain.gni")  # For `cros_target_cc`
 }
 
 # Helper function for adding cflags to use a clang plugin.
@@ -96,12 +85,7 @@ clang_plugin("find_bad_constructs") {
     # The plugin is built directly into clang, so there's no need to load it
     # dynamically.
     plugin = "find-bad-constructs"
-    plugin_arguments = [
-      "span-ctor-from-string-literal",
-      "raw-ref-template-as-trivial-member",
-      "raw-span-template-as-trivial-member",
-      "check-stack-allocated",
-    ]
+    plugin_arguments = [ "check-stack-allocated" ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
       plugin_arguments += [ "check-ipc" ]
@@ -125,12 +109,22 @@ clang_plugin("find_bad_constructs") {
 # not serialized to precompiled header files, and thus we get warnings that we
 # should not.
 clang_plugin("unsafe_buffers") {
-  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
-      !enable_precompiled_headers) {
-    cflags = [ "-DUNSAFE_BUFFERS_BUILD" ]
-    plugin = "unsafe-buffers"
-    plugin_arguments =
-        [ rebase_path(clang_unsafe_buffers_paths, root_build_dir) ]
+  if (clang_use_chrome_plugins || clang_use_unsafe_buffers_plugin) {
+    if (clang_unsafe_buffers_paths != "" && !enable_precompiled_headers) {
+      cflags = [
+        # If -Werror is set, the plugin still suppresses the warning from
+        # printing, but clang still exits with a nonzero status because an error
+        # occurred.
+        # To prevent this, we use -Wno-error. If -Werror is set, the plugin
+        # upgrades this to an error manually, thus ignoring the -Wno-error.
+        "-DUNSAFE_BUFFERS_BUILD",
+        "-Wunsafe-buffer-usage",
+        "-Wno-error=unsafe-buffer-usage",
+      ]
+      plugin = "unsafe-buffers"
+      plugin_arguments =
+          [ rebase_path(clang_unsafe_buffers_paths, root_build_dir) ]
+    }
   }
 }
 
@@ -155,15 +149,6 @@ group("llvm-symbolizer_data") {
   }
 }
 
-_cros_resource_dir = ""
-if (use_cros_sysroot_libs) {
-  _cros_resource_dir =
-      exec_script(rebase_path("../../toolchain/cros/get_resource_dir.py"),
-                  [ cros_target_cc ],
-                  "trim string",
-                  [])
-}
-
 template("clang_lib") {
   if (!defined(invoker.libname) || is_wasm) {
     not_needed(invoker, "*")
@@ -177,7 +162,6 @@ template("clang_lib") {
       _suffix = ""
       _ext = "a"
 
-      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
       if (is_win) {
         _dir = "windows"
         _prefix = ""
@@ -193,20 +177,6 @@ template("clang_lib") {
         }
       } else if (is_apple) {
         _dir = "darwin"
-      } else if (use_cros_sysroot_libs) {
-        _clang_lib_dir = _cros_resource_dir
-        _dir = "lib/linux"
-        if (current_cpu == "x64") {
-          _suffix = "-x86_64"
-        } else if (current_cpu == "x86") {
-          _suffix = "-i386"
-        } else if (current_cpu == "arm") {
-          _suffix = "-armhf"
-        } else if (current_cpu == "arm64") {
-          _suffix = "-aarch64"
-        } else {
-          assert(false)  # Unhandled cpu type
-        }
       } else if (is_linux || is_chromeos) {
         if (current_cpu == "x64") {
           _dir = "x86_64-unknown-linux-gnu"
@@ -254,15 +224,9 @@ template("clang_lib") {
         assert(false)  # Unhandled target platform
       }
 
+      _clang_lib_dir = "$clang_base_path/lib/clang/$clang_version/lib"
       _lib_file = "${_prefix}clang_rt.${_libname}${_suffix}.${_ext}"
       libs = [ "$_clang_lib_dir/$_dir/$_lib_file" ]
-
-      # HACK: using ChromeOS' compiler-rt results in DSOs exporting
-      # compiler-rt symbols; figure out why it's (presumably) not using hidden
-      # visibility for most symbols.
-      if (use_cros_sysroot_libs) {
-        ldflags = [ "-Wl,--exclude-libs=$_lib_file" ]
-      }
     }
   }
 }

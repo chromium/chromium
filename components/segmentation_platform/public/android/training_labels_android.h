@@ -8,7 +8,7 @@
 #include "base/android/jni_android.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace segmentation_platform {
 

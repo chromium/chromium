@@ -9,7 +9,7 @@ import type {PrivateStateTokensListContainerElement} from './list_container.js';
 export function getHtml(this: PrivateStateTokensListContainerElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-  <div class="cr-centered-card-container class="flex">
+  <div class="cr-centered-card-container flex">
     <h2>$i18n{privateStateTokensHeadingLabel}</h2>
     <div class="flex">
       <p class="inline-text cr-secondary-text">

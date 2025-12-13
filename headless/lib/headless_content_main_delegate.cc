@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "headless/lib/headless_content_main_delegate.h"
 
 #include <cstdint>
@@ -16,11 +11,13 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/logging/logging_settings.h"
 #include "base/notimplemented.h"
 #include "base/path_service.h"
 #include "base/process/current_process.h"
@@ -88,7 +85,11 @@
 namespace headless {
 
 namespace features {
-BASE_FEATURE(kVirtualTime, "VirtualTime", base::FEATURE_DISABLED_BY_DEFAULT);
+// In addition to the switches below, this feature also suppresses audio
+// decoding and rendering. Audio plays in real time and does not respect virtual
+// time, and video tracks are kept in sync with audio. For virtual time to work
+// with video playback, audio must be suppressed.
+BASE_FEATURE(kVirtualTime, base::FEATURE_DISABLED_BY_DEFAULT);
 }
 
 const base::FilePath::CharType kDefaultProfileName[] =
@@ -469,7 +470,7 @@ HeadlessContentMainDelegate::RunProcess(
 void SIGTERMProfilingShutdown(int signal) {
   content::Profiling::Stop();
   struct sigaction sigact;
-  memset(&sigact, 0, sizeof(sigact));
+  UNSAFE_TODO(memset(&sigact, 0, sizeof(sigact)));
   sigact.sa_handler = SIG_DFL;
   CHECK_EQ(sigaction(SIGTERM, &sigact, NULL), 0);
   raise(signal);

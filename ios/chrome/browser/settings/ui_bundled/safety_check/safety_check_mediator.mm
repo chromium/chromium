@@ -288,6 +288,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         kInfoCircleSymbol, kLeadingSymbolImagePointSize);
     _updateCheckItem.leadingIcon = updateCheckIcon;
     _updateCheckItem.leadingIconTintColor = [UIColor colorNamed:kGrey400Color];
+    _updateCheckItem.infoButtonTarget = self;
+    _updateCheckItem.infoButtonSelector = @selector(infoButtonWasTapped:);
+    _updateCheckItem.infoButtonTag = UpdateItemType;
     ResetSettingsCheckItem(_updateCheckItem);
 
     // Show unsafe state if the app is out of date and safety check already
@@ -303,6 +306,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         [[SettingsCheckItem alloc] initWithType:PasswordItemType];
     _passwordCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_PASSWORDS_TITLE);
+    _passwordCheckItem.infoButtonTarget = self;
+    _passwordCheckItem.infoButtonSelector = @selector(infoButtonWasTapped:);
+    _passwordCheckItem.infoButtonTag = PasswordItemType;
 
     UIImage* passwordCheckIcon = CustomSymbolTemplateWithPointSize(
         kPasswordSymbol, kLeadingSymbolImagePointSize);
@@ -335,6 +341,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     _safeBrowsingCheckItem.leadingIcon = safeBrowsingCheckIcon;
     _safeBrowsingCheckItem.leadingIconTintColor =
         [UIColor colorNamed:kGrey400Color];
+    _safeBrowsingCheckItem.infoButtonTarget = self;
+    _safeBrowsingCheckItem.infoButtonSelector = @selector(infoButtonWasTapped:);
+    _safeBrowsingCheckItem.infoButtonTag = SafeBrowsingItemType;
     ResetSettingsCheckItem(_safeBrowsingCheckItem);
 
     _checkStartState = CheckStartStateDefault;
@@ -564,13 +573,18 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   }
 }
 
-- (BOOL)isItemWithErrorInfo:(TableViewItem*)item {
-  SafetyCheckItemType type = static_cast<SafetyCheckItemType>(item.type);
-  return (type != CheckStartItemType && type != NotificationsOptInItemType);
+#pragma mark - BooleanObserver
+
+- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
+  [self checkAndReconfigureSafeBrowsingState];
 }
 
-- (void)infoButtonWasTapped:(UIButton*)buttonView
-              usingItemType:(NSInteger)itemType {
+#pragma mark - Private methods
+
+// Called when user tapped on the information button of an item. Shows popover
+// with detailed description of an error if needed.
+- (void)infoButtonWasTapped:(UIButton*)buttonView {
+  NSInteger itemType = buttonView.tag;
   // Show the managed popover if needed.
   if (itemType == SafeBrowsingItemType &&
       self.safeBrowsingCheckRowState == SafeBrowsingCheckRowStateManaged) {
@@ -601,14 +615,6 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   // Push popover to coordinator.
   [self.handler showErrorInfoFrom:buttonView withText:info];
 }
-
-#pragma mark - BooleanObserver
-
-- (void)booleanDidChange:(id<ObservableBoolean>)observableBoolean {
-  [self checkAndReconfigureSafeBrowsingState];
-}
-
-#pragma mark - Private methods
 
 // Computes the text needed for a popover on `itemType` if available.
 - (NSAttributedString*)popoverInfoForType:(NSInteger)itemType {
@@ -785,7 +791,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // Computes whether user is capable to run password check in Google Account.
 - (BOOL)canUseAccountPasswordCheckup {
   return password_manager::features_util::IsAccountStorageEnabled(
-             self.userPrefService, self.syncService) &&
+             self.syncService) &&
          !self.syncService->GetUserSettings()->IsEncryptEverythingEnabled();
 }
 
@@ -843,9 +849,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   // Otherwise start a check.
   self.checkStartTime = base::Time::Now();
 
-  if (IsSafetyCheckMagicStackEnabled()) {
-    [self updateTimestampOfLastRun];
-  }
+  [self updateTimestampOfLastRun];
 
   // Record the current state of the checks.
   self.previousUpdateCheckRowState = self.updateCheckRowState;
@@ -964,9 +968,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   if (self.checkDidRun && issuesFound) {
     [self updateTimestampOfLastCheck];
 
-    if (IsSafetyCheckMagicStackEnabled()) {
-      [self updateTimestampOfLastRun];
-    }
+    [self updateTimestampOfLastRun];
 
     self.checkDidRun = NO;
   } else if (self.checkDidRun && !issuesFound) {
@@ -976,9 +978,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
            forKey:kTimestampOfLastIssueFoundKey];
     self.checkDidRun = NO;
 
-    if (IsSafetyCheckMagicStackEnabled()) {
-      [self updateTimestampOfLastRun];
-    }
+    [self updateTimestampOfLastRun];
   }
   // If no checks are still running, reset `checkStartItem`.
   self.checkStartState = CheckStartStateDefault;

@@ -214,6 +214,11 @@ void PictureInPictureOcclusionTracker::SetWidgetOcclusionStateForTesting(
   UpdateObserverStateForWidget(observed_widget, /*force_update=*/true);
 }
 
+void PictureInPictureOcclusionTracker::
+    FireBoundsChangedThrottleTimerForTesting() {
+  bounds_changed_throttle_timer_.FireNow();
+}
+
 void PictureInPictureOcclusionTracker::ObserveWidgetAndParents(
     views::Widget* widget,
     bool directly_observe_this_widget) {

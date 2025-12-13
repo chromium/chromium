@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"

@@ -41,11 +41,10 @@
 // For the `std::optional<T>` case:
 //   If the result is `std::nullopt`, causes the calling function to return. If
 //   no additional arguments are given, the function return value is the return
-//   value of `rexpr` (i.e. an unbound `std::optional<T>`). Otherwise, the
-//   additional arguments are treated as an invocable that returns some type
-//   (including `void`) convertible to the function's return type; that is, the
-//   function returns the result of `std::invoke(...)` on the additional
-//   arguments.
+//   value of `rexpr` (i.e. `std::nullopt`). Otherwise, the additional arguments
+//   are treated as an invocable that returns some type (including `void`)
+//   convertible to the function's return type; that is, the function returns
+//   the result of `std::invoke(...)` on the additional arguments.
 //
 // # Interface
 //
@@ -289,15 +288,37 @@ class UnexpectedDeducer {
     }
   }
 
-  // Allow implicit conversion from `Ret()` to either `expected<T, E>` (for
-  // arbitrary `T`) or `E`.
+  // Allow implicit conversion from `Ret()` to types that can be converted from
+  // `unexpected<E>`, e.g. `base::expected<T, Err>` with arbitrary `T` and
+  // compatible `Err`.
+  template <typename T, typename Err>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr operator expected<T, Err>() && noexcept
+    requires(std::convertible_to<E, Err>)
+  {
+    return expected<T, Err>(unexpect, std::move(lambda_)(std::move(arg_)));
+  }
+
+  // Allow implicit conversion from `std::nullopt` to compatible types, e.g.
+  // `std::optional<T>` with arbitrary `T`.
   template <typename T>
   // NOLINTNEXTLINE(google-explicit-constructor)
-  constexpr operator expected<T, E>() && noexcept
-    requires(!std::is_void_v<E>)
+  constexpr operator T() && noexcept
+    requires(std::convertible_to<E, T> && std::same_as<E, std::nullopt_t>)
   {
-    return expected<T, E>(unexpect, std::move(lambda_)(std::move(arg_)));
+    return std::move(lambda_)(std::move(arg_));
   }
+
+  // Allow implicit conversion from `nullptr` to compatible types, e.g. `T*` or
+  // `std::unique_ptr<T>`.
+  template <typename T>
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  constexpr operator T() && noexcept
+    requires(std::convertible_to<E, T> && std::same_as<E, std::nullptr_t>)
+  {
+    return std::move(lambda_)(std::move(arg_));
+  }
+
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr operator E() && noexcept
     requires(!std::is_void_v<E>)
@@ -378,8 +399,7 @@ struct Trampoline {
                            base::internal::Trampoline(), __VA_ARGS__,         \
                            std::move(base_internal_expected__).error()));     \
                  } else {                                                     \
-                   return BASE_IF(BASE_IS_EMPTY(__VA_ARGS__),                 \
-                                  std::move(base_internal_expected__),        \
+                   return BASE_IF(BASE_IS_EMPTY(__VA_ARGS__), std::nullopt,   \
                                   std::invoke(base::internal::Trampoline(),   \
                                               __VA_ARGS__));                  \
                  }                                                            \

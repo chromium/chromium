@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/skia_color_space_util.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 
 namespace gfx {
 
@@ -103,10 +99,11 @@ SkM44 COLOR_SPACE_EXPORT SkM44FromSkcmsMatrix3x3(const skcms_Matrix3x3& in) {
 SkM44 SkM44FromRowMajor3x3(const float* data) {
   DCHECK(data);
   // clang-format off
-  return SkM44(data[0], data[1], data[2], 0,
-               data[3], data[4], data[5], 0,
-               data[6], data[7], data[8], 0,
-               0, 0, 0, 1);
+  return SkM44(
+      data[0], UNSAFE_TODO(data[1]), UNSAFE_TODO(data[2]), 0,
+      UNSAFE_TODO(data[3]), UNSAFE_TODO(data[4]), UNSAFE_TODO(data[5]), 0,
+      UNSAFE_TODO(data[6]), UNSAFE_TODO(data[7]), UNSAFE_TODO(data[8]), 0,
+      0, 0, 0, 1);
   // clang-format on
 }
 

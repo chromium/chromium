@@ -4,6 +4,8 @@
 
 #include "components/enterprise/browser/reporting/user_security_signals_service.h"
 
+#include "base/run_loop.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -11,6 +13,10 @@
 #include "components/device_signals/core/common/signals_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_util.h"
+#include "components/policy/core/common/mock_policy_service.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -31,6 +37,7 @@ namespace {
 
 constexpr char kReportTriggerMetricName[] =
     "Enterprise.SecurityReport.User.Trigger";
+constexpr char kFakePolicyName[] = "TestPolicy";
 
 class MockUserSecuritySignalsServiceDelegate
     : public UserSecuritySignalsService::Delegate {
@@ -48,7 +55,7 @@ class MockUserSecuritySignalsServiceDelegate
 net::CanonicalCookie GetTestCookie(const GURL& url, const std::string& name) {
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
-          url, name, /*value=*/"cookie_value", /*domain=*/"." + url.host(),
+          url, name, /*value=*/"cookie_value", /*domain=*/"." + url.GetHost(),
           /*path=*/"/", /*creation_time=*/base::Time(),
           /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
           /*secure=*/true, /*http_only=*/false,
@@ -95,8 +102,8 @@ class UserSecuritySignalsServiceTest : public testing::Test {
       EXPECT_CALL(delegate_, GetCookieManager());
     }
 
-    service_ = std::make_unique<UserSecuritySignalsService>(&testing_prefs_,
-                                                            &delegate_);
+    service_ = std::make_unique<UserSecuritySignalsService>(
+        &testing_prefs_, &delegate_, &policy_service_);
     service_->Start();
     task_environment_.RunUntilIdle();
 
@@ -142,6 +149,11 @@ class UserSecuritySignalsServiceTest : public testing::Test {
           base::ToString(new_cadence.InHours()) + "h"}});
   }
 
+  void InitializePolicyUpdateReportTrigger(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        enterprise_signals::features::kPolicyDataCollectionEnabled, enabled);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -149,13 +161,14 @@ class UserSecuritySignalsServiceTest : public testing::Test {
   std::unique_ptr<UserSecuritySignalsService> service_ = nullptr;
   testing::StrictMock<MockUserSecuritySignalsServiceDelegate> delegate_;
   network::TestCookieManager test_cookie_manager_;
+  policy::MockPolicyService policy_service_;
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(UserSecuritySignalsServiceTest, NotStarted) {
-  service_ =
-      std::make_unique<UserSecuritySignalsService>(&testing_prefs_, &delegate_);
+  service_ = std::make_unique<UserSecuritySignalsService>(
+      &testing_prefs_, &delegate_, &policy_service_);
 
   EXPECT_FALSE(service_->IsSecuritySignalsReportingEnabled());
   EXPECT_FALSE(service_->ShouldUseCookies());
@@ -189,6 +202,141 @@ TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithoutCookies) {
 
   histogram_tester_.ExpectUniqueSample(kReportTriggerMetricName,
                                        SecurityReportTrigger::kTimer, 1);
+}
+
+TEST_F(UserSecuritySignalsServiceTest,
+       PolicyCollectionEnabled_PolicyChangeTriggersReport) {
+  SetEnabledPolicy(true);
+  InitializePolicyUpdateReportTrigger(true);
+  policy::PolicyNamespace ns(policy::POLICY_DOMAIN_CHROME, std::string());
+  policy::PolicyMap previous;
+  policy::PolicyMap current;
+  current.Set(kFakePolicyName, policy::POLICY_LEVEL_MANDATORY,
+              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+              base::Value(true), nullptr);
+  EXPECT_CALL(policy_service_, AddObserver).Times(1);
+
+  CreateAndRunSignalsService();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate_,
+              OnReportEventTriggered(SecurityReportTrigger::kPolicyChange))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+
+  service_->OnPolicyUpdated(ns, previous, current);
+  run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kPolicyChange, 1);
+}
+
+TEST_F(
+    UserSecuritySignalsServiceTest,
+    PolicyCollectionEnabled_PolicyUpdateWithNoPolicyChange_DoesNotTriggersReport) {
+  SetEnabledPolicy(true);
+  InitializePolicyUpdateReportTrigger(true);
+  policy::PolicyNamespace ns(policy::POLICY_DOMAIN_CHROME, std::string());
+  policy::PolicyMap previous;
+  previous.Set(kFakePolicyName, policy::POLICY_LEVEL_MANDATORY,
+               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+               base::Value(true), nullptr);
+  policy::PolicyMap current;
+  current.Set(kFakePolicyName, policy::POLICY_LEVEL_MANDATORY,
+              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+              base::Value(true), nullptr);
+  EXPECT_CALL(policy_service_, AddObserver).Times(1);
+
+  CreateAndRunSignalsService();
+
+  EXPECT_CALL(delegate_,
+              OnReportEventTriggered(SecurityReportTrigger::kPolicyChange))
+      .Times(0);
+
+  service_->OnPolicyUpdated(ns, previous, current);
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
+}
+
+TEST_F(
+    UserSecuritySignalsServiceTest,
+    PolicyCollectionEnabled_TogglingSignalsCollectionPolicy_UpdatesPolicyObservation) {
+  // Initial start with policy disabled.
+  SetEnabledPolicy(false);
+  InitializePolicyUpdateReportTrigger(true);
+  EXPECT_CALL(policy_service_, AddObserver).Times(0);
+
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/false,
+                             /*expect_using_cookie=*/false);
+
+  testing::Mock::VerifyAndClearExpectations(&policy_service_);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Enabling the policy should add an observer.
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_))
+      .Times(1)
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(policy_service_, AddObserver).Times(1);
+  SetEnabledPolicy(true);
+
+  service_->Start();
+  run_loop.Run();
+}
+
+TEST_F(
+    UserSecuritySignalsServiceTest,
+    PolicyCollectionDisabled_TogglingSignalsCollectionPolicy_DoesNotUpdatePolicyObservation) {
+  // Initial start with policy disabled.
+  SetEnabledPolicy(false);
+  InitializePolicyUpdateReportTrigger(false);
+  EXPECT_CALL(policy_service_, AddObserver).Times(0);
+
+  CreateAndRunSignalsService(/*expect_reporting_enabled=*/false,
+                             /*expect_using_cookie=*/false);
+
+  testing::Mock::VerifyAndClearExpectations(&policy_service_);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+
+  // Enabling the policy should not add an observer.
+  base::RunLoop run_loop;
+  EXPECT_CALL(delegate_, OnReportEventTriggered(_))
+      .Times(1)
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  EXPECT_CALL(policy_service_, AddObserver).Times(0);
+  SetEnabledPolicy(true);
+
+  service_->Start();
+  run_loop.Run();
+
+  testing::Mock::VerifyAndClearExpectations(&policy_service_);
+  testing::Mock::VerifyAndClearExpectations(&delegate_);
+}
+
+TEST_F(UserSecuritySignalsServiceTest,
+       PolicyCollectionDisabled_PolicyUpdate_DoesNotTriggersReport) {
+  SetEnabledPolicy(true);
+  InitializePolicyUpdateReportTrigger(false);
+  policy::PolicyNamespace ns(policy::POLICY_DOMAIN_CHROME, std::string());
+  policy::PolicyMap previous;
+  policy::PolicyMap current;
+  current.Set(kFakePolicyName, policy::POLICY_LEVEL_MANDATORY,
+              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+              base::Value(true), nullptr);
+  EXPECT_CALL(policy_service_, AddObserver).Times(0);
+
+  CreateAndRunSignalsService();
+
+  EXPECT_CALL(delegate_,
+              OnReportEventTriggered(SecurityReportTrigger::kPolicyChange))
+      .Times(0);
+
+  service_->OnPolicyUpdated(ns, previous, current);
+
+  histogram_tester_.ExpectBucketCount(kReportTriggerMetricName,
+                                      SecurityReportTrigger::kTimer, 1);
 }
 
 TEST_F(UserSecuritySignalsServiceTest, PolicyEnabledWithCookies_FastForwards) {
@@ -270,8 +418,8 @@ TEST_F(UserSecuritySignalsServiceTest,
   // Having a broken cookie manager should not cause crashes.
   EXPECT_CALL(delegate_, GetCookieManager()).WillOnce(Return(nullptr));
 
-  service_ =
-      std::make_unique<UserSecuritySignalsService>(&testing_prefs_, &delegate_);
+  service_ = std::make_unique<UserSecuritySignalsService>(
+      &testing_prefs_, &delegate_, &policy_service_);
   service_->Start();
   task_environment_.RunUntilIdle();
 
@@ -343,8 +491,9 @@ TEST_F(UserSecuritySignalsServiceTest,
   CreateAndRunSignalsService(/*expect_reporting_enabled=*/true,
                              /*expect_using_cookie=*/true);
 
-  // Fake that various cookie change events were triggered, none with "INSERT".
-  // This means no additional report should be triggered.
+  // Fake that various cookie change events were triggered, none with "INSERT" /
+  // "INSERTED_NO_VALUE_CHANGE_OVERWRITE". This means no additional report
+  // should be triggered.
   const auto kCases = std::to_array<net::CookieChangeCause>({
       net::CookieChangeCause::EXPLICIT,
       net::CookieChangeCause::UNKNOWN_DELETION,

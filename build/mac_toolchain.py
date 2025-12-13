@@ -33,8 +33,9 @@ def LoadPList(path):
     return plistlib.load(f)
 
 
-# This contains binaries from Xcode 16.4 (16F6) along with the macOS SDK 15.5
-# (24F74). To build these packages, see comments in build/xcode_binaries.yaml.
+# This contains binaries from Xcode 26.1 (17B55) along with the macOS 26.1 SDK
+# (25B74, which is like macOS 26.1 25B78) and the Metal toolchain (17B55,
+# 32023). To build these packages, see comments in build/xcode_binaries.yaml.
 #
 # To update the version numbers, open Xcode's "About Xcode" or run `xcodebuild
 # -version` for the Xcode version, and run `xcrun --show-sdk-version` and `xcrun
@@ -45,17 +46,17 @@ def LoadPList(path):
 # MAC_BINARIES_LABEL.
 
 MAC_BINARIES_LABEL = 'infra_internal/ios/xcode/xcode_binaries/mac-amd64'
-MAC_BINARIES_TAG = 'F1uq3udJtPSmTDjMME_VqfH5PfdlNy2zKWvgVy-tBZoC'
+MAC_BINARIES_TAG = 'KM0dL82d3TJB4BwYtiKoigl4qzysx7smLv6ucDz2zrwC'
 
 # The toolchain will not be downloaded if the minimum OS version is not met. 19
-# is the major version number for macOS 10.15. Xcode 15.0 only runs on macOS
-# 13.5 and newer, but some bots are still running older OS versions. macOS
-# 10.15.4, the OS minimum through Xcode 12.4, still seems to work.
+# is the Darwin major version number for macOS 10.15. Xcode 26.0 17A324 only
+# runs on macOS 15.6 and newer, but some bots are still running older OS
+# versions. macOS 10.15.4, the OS minimum through Xcode 12.4, still seems to
+# work.
 MAC_MINIMUM_OS_VERSION = [19, 4]
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 TOOLCHAIN_ROOT = os.path.join(BASE_DIR, 'mac_files')
-TOOLCHAIN_BUILD_DIR = os.path.join(TOOLCHAIN_ROOT, 'Xcode.app')
 
 # Always integrity-check the entire SDK. Mac SDK packages are complex and often
 # hit edge cases in cipd (eg https://crbug.com/1033987,

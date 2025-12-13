@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "crypto/secure_hash.h"
 
 #include <stddef.h>
@@ -26,9 +21,7 @@ class SecureHashSHA256 : public SecureHash {
  public:
   SecureHashSHA256() { SHA256_Init(&ctx_); }
 
-  SecureHashSHA256(const SecureHashSHA256& other) {
-    memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
-  }
+  SecureHashSHA256(const SecureHashSHA256& other) : ctx_(other.ctx_) {}
 
   ~SecureHashSHA256() override {
     OPENSSL_cleanse(&ctx_, sizeof(ctx_));
@@ -58,9 +51,7 @@ class SecureHashSHA512 : public SecureHash {
  public:
   SecureHashSHA512() { SHA512_Init(&ctx_); }
 
-  SecureHashSHA512(const SecureHashSHA512& other) {
-    memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
-  }
+  SecureHashSHA512(const SecureHashSHA512& other) : ctx_(other.ctx_) {}
 
   ~SecureHashSHA512() override { OPENSSL_cleanse(&ctx_, sizeof(ctx_)); }
 
@@ -96,22 +87,6 @@ std::unique_ptr<SecureHash> SecureHash::Create(Algorithm algorithm) {
       NOTIMPLEMENTED();
       return nullptr;
   }
-}
-
-void SecureHash::Update(const void* input, size_t len) {
-  // SAFETY: This API is deprecated & being migrated away from. It can't be
-  // safely implemented at the moment.
-  // TODO(https://crbug.com/364687923): Remove this.
-  return Update(UNSAFE_BUFFERS(
-      base::span<const uint8_t>(static_cast<const uint8_t*>(input), len)));
-}
-
-void SecureHash::Finish(void* output, size_t len) {
-  // SAFETY: This API is deprecated & being migrated away from. It can't be
-  // safely implemented at the moment.
-  // TODO(https://crbug.com/364687923): Remove this.
-  return Finish(
-      UNSAFE_BUFFERS(base::span<uint8_t>(static_cast<uint8_t*>(output), len)));
 }
 
 }  // namespace crypto

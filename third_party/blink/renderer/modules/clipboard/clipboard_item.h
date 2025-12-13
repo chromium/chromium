@@ -5,20 +5,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CLIPBOARD_CLIPBOARD_ITEM_H_
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_blob_string.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
 class Blob;
 class ScriptState;
+class ExecutionContext;
 
 // A `ClipboardItem` holds data that was read from or will be written to the
 // system clipboard. Spec:
 // https://w3c.github.io/clipboard-apis/#clipboard-item-interface
-class ClipboardItem final : public ScriptWrappable {
+class MODULES_EXPORT ClipboardItem final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -39,7 +44,8 @@ class ClipboardItem final : public ScriptWrappable {
   explicit ClipboardItem(
       const HeapVector<
           std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>&
-          representations);
+          representations,
+      absl::uint128 sequence_number = 0);
 
   // Returns the MIME types contained in the `ClipboardItem`.
   // Spec: https://w3c.github.io/clipboard-apis/#dom-clipboarditem-types
@@ -54,7 +60,7 @@ class ClipboardItem final : public ScriptWrappable {
   // https://w3c.github.io/clipboard-apis/#dom-clipboarditem-gettype
   ScriptPromise<Blob> getType(ScriptState* script_state,
                               const String& type,
-                              ExceptionState& exception_state) const;
+                              ExceptionState& exception_state);
 
   // Checks if a particular MIME type is supported by the Async Clipboard API.
   // `type` refers to a MIME type or a custom MIME type with a "web " prefix.
@@ -73,12 +79,17 @@ class ClipboardItem final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void CaptureTelemetry(ExecutionContext* context, const String& type);
   // Stores built-in and web custom MIME types.
   HeapVector<std::pair<String, MemberScriptPromise<V8UnionBlobOrString>>>
       representations_;
 
   // The vector of custom MIME types that have a "web " prefix.
   Vector<String> custom_format_types_;
+
+  absl::uint128 sequence_number_;
+  HashMap<String, base::TimeTicks> last_get_type_calls_;
+  base::TimeTicks creation_time_;
 };
 
 }  // namespace blink
